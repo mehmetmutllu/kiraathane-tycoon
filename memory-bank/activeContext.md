@@ -3,8 +3,16 @@
 > En sık güncellenen dosya. Her anlamlı adımdan sonra güncelle.
 
 ## Şu an neredeyiz
-Faz 0 + Faz 1 bitti. Responsive yön eklendi. **Faz 2:** 2a (çay yükseltme) ✅,
-2b (generic pad sistemi) ✅ bitti ve test edildi. Sıradaki: **2c (yardımcı garson).**
+Faz 0 + Faz 1 bitti. Responsive yön eklendi. **Faz 2:** 2a (yükseltme) ✅, 2b (generic pad) ✅,
+**2-UX (mekânsal etkileşim D-009)** ✅ bitti ve test edildi. Sıradaki: **2c (yardımcı garson).**
+
+## En son ne yapıldı (kullanıcı feedback'i sonrası)
+Kullanıcı çalışan oyunu görüp istedi → mekânsal etkileşime geçildi (D-009):
+- Pad'ler artık açtıkları objenin TAM yerinde (LAYOUT.padPos hedef konumlara taşındı).
+- Çay yükseltme havada buton DEĞİL: ocağın önünde `LAYOUT.upgradeZone`; üstünde dur →
+  HUD alt-orta bar dolar → seviye artar. `activeZone` state'i HUD barını sürer.
+- Ocak seviyesi: 3D rozet (drei Html "Çay Lv N") + semaver büyür/renk ısınır.
+- Pad set: table2, table3, station2 (addStation, servis ×0.85), samovar (servis ×0.7).
 
 ## En son ne yapıldı
 - Ortam doğrulandı, Playwright MCP eklendi, Vite + React 19 + R3F stack kuruldu.

@@ -10,25 +10,29 @@ import {
 import { defaultSave, loadSave, writeSave, clearSave, type SaveData } from './save';
 
 // ---- Sahne yerleşimi (dünya birimi, zemin y=0) ----
+// Her pad/zone, açtığı/etkilediği objenin TAM yerinde durur (mekânsal tycoon).
 export const LAYOUT = {
-  entrance: [0, 0.6, 7.5] as Vec3,
+  entrance: [0, 0.6, 6.5] as Vec3,
   player: [0, 0.6, 2] as Vec3,
-  // Çaydanlık yerleri (stations sayısına göre çizilir).
-  stations: [[-1.5, 0, -5] as Vec3, [3, 0, -5] as Vec3],
+  // Çay ocakları (stations sayısına göre çizilir). [0] ana ocak.
+  stations: [[-2, 0, -5] as Vec3, [2, 0, -5] as Vec3],
   bounds: 7,
   // Masa slotları + müşterinin oturduğu yer (seat).
   tables: [
-    { table: [-3, 0, -1.5] as Vec3, seat: [-3, 0.6, -0.3] as Vec3 },
-    { table: [3, 0, -1.5] as Vec3, seat: [3, 0.6, -0.3] as Vec3 },
-    { table: [-3, 0, 2.0] as Vec3, seat: [-3, 0.6, 3.2] as Vec3 },
-    { table: [3, 0, 2.0] as Vec3, seat: [3, 0.6, 3.2] as Vec3 },
+    { table: [-4, 0, -1] as Vec3, seat: [-4, 0.6, 0.1] as Vec3 },
+    { table: [4, 0, -1] as Vec3, seat: [4, 0.6, 0.1] as Vec3 },
+    { table: [-4, 0, 2.5] as Vec3, seat: [-4, 0.6, 3.6] as Vec3 },
+    { table: [4, 0, 2.5] as Vec3, seat: [4, 0.6, 3.6] as Vec3 },
   ],
-  // Pad pozisyonları (config'teki pad id'sine göre).
+  // Pad pozisyonları: açtıkları objenin yerinde.
   padPos: {
-    table2: [-1.5, 0, 3.8] as Vec3,
-    station2: [1.5, 0, 3.8] as Vec3,
-    samovar: [0, 0, 5.2] as Vec3,
+    table2: [4, 0, -1] as Vec3, // 2. masa slotu
+    table3: [-4, 0, 2.5] as Vec3, // 3. masa slotu
+    station2: [2, 0, -5] as Vec3, // 2. ocak yeri
+    samovar: [2, 0, -3.4] as Vec3, // ocakların önü (semavere geçiş)
   } as Record<string, Vec3>,
+  // Mekânsal çay yükseltme noktası: ana ocağın önünde dur → altta bar dolar.
+  upgradeZone: [-2, 0, -3.4] as Vec3,
 } as const;
 
 const NPC_SPEED = 2.6;
@@ -75,6 +79,14 @@ function findFreeTable(npcs: Npc[], tables: number): number {
   return -1;
 }
 
+/** Oyuncunun o an üstünde durduğu/doldurduğu zone (HUD'da alttaki bar). */
+export interface ActiveZone {
+  kind: 'pad' | 'upgrade';
+  label: string;
+  fill: number;
+  cost: number;
+}
+
 export interface GameState {
   // Kalıcı
   wallet: Decimal;
@@ -91,6 +103,8 @@ export interface GameState {
   npcs: Npc[];
   coins: Coin[];
   npcCount: number;
+  upgradeFill: number;
+  activeZone: ActiveZone | null;
   offlineEarned: number;
   // Dahili
   spawnTimer: number;
@@ -133,6 +147,8 @@ export const useGame = create<GameState>((set, get) => ({
   npcs: [],
   coins: [],
   npcCount: 0,
+  upgradeFill: 0,
+  activeZone: null,
   offlineEarned: 0,
   spawnTimer: 1,
   saveTimer: SAVE_INTERVAL,
@@ -170,6 +186,8 @@ export const useGame = create<GameState>((set, get) => ({
       npcs: [],
       coins: [],
       npcCount: 0,
+      upgradeFill: 0,
+      activeZone: null,
       spawnTimer: 1,
       saveTimer: SAVE_INTERVAL,
       nextId: 1,
@@ -190,6 +208,9 @@ export const useGame = create<GameState>((set, get) => ({
     let serviceSpeedMult = s.serviceSpeedMult;
     let padsDone = s.padsDone;
     let padFill = s.padFill;
+    let upgradeFill = s.upgradeFill;
+    let activeZone: ActiveZone | null = null;
+    let stationLevel = s.stationLevel;
     let nextId = s.nextId;
     let spawnTimer = s.spawnTimer - dt;
 
@@ -238,7 +259,7 @@ export const useGame = create<GameState>((set, get) => ({
             coins.push({
               id: nextId++,
               pos: [slot.table[0] + (Math.random() - 0.5), 0.3, slot.table[2] + 0.6 + (Math.random() - 0.5)],
-              value: Math.round(teaPrice(s.stationLevel)),
+              value: Math.round(teaPrice(stationLevel)),
             });
             n.state = 'leaving';
           }
@@ -273,35 +294,66 @@ export const useGame = create<GameState>((set, get) => ({
       coins = keep;
     }
 
-    // --- Pad doldurma (sıradaki aktif pad) ---
+    // --- Pad doldurma (sıradaki aktif pad; pad açtığı objenin yerinde) ---
     const pad = currentPad(padsDone);
     if (pad) {
       const padPos = LAYOUT.padPos[pad.id];
-      if (padPos && dist2D(player, padPos) < PAD_RADIUS && wallet.gt(0)) {
-        const remaining = pad.cost - padFill;
-        const amt = Math.min(pad.fillRate * dt, wallet.toNumber(), remaining);
-        if (amt > 0) {
-          padFill += amt;
-          wallet = wallet.sub(amt);
-          if (padFill >= pad.cost) {
-            // Pad tamamlandı: etkiyi uygula, bir sonrakine geç.
-            switch (pad.effect.type) {
-              case 'addTable':
-                tables = Math.min(LAYOUT.tables.length, tables + 1);
-                break;
-              case 'addTableStation':
-                tables = Math.min(LAYOUT.tables.length, tables + 1);
-                stations = Math.min(LAYOUT.stations.length, stations + 1);
-                break;
-              case 'serviceSpeed':
-                serviceSpeedMult *= pad.effect.factor;
-                break;
-            }
-            padsDone = [...padsDone, pad.id];
-            padFill = 0;
+      if (padPos && dist2D(player, padPos) < PAD_RADIUS) {
+        activeZone = { kind: 'pad', label: pad.label, fill: padFill, cost: pad.cost };
+        if (wallet.gt(0)) {
+          const amt = Math.min(pad.fillRate * dt, wallet.toNumber(), pad.cost - padFill);
+          if (amt > 0) {
+            padFill += amt;
+            wallet = wallet.sub(amt);
           }
         }
+        if (padFill >= pad.cost) {
+          // Pad tamamlandı: etkiyi uygula, bir sonrakine geç.
+          switch (pad.effect.type) {
+            case 'addTable':
+              tables = Math.min(LAYOUT.tables.length, tables + 1);
+              break;
+            case 'addStation':
+              stations = Math.min(LAYOUT.stations.length, stations + 1);
+              serviceSpeedMult *= C.teaStation.extraStationSpeedFactor;
+              break;
+            case 'serviceSpeed':
+              serviceSpeedMult *= pad.effect.factor;
+              break;
+          }
+          padsDone = [...padsDone, pad.id];
+          padFill = 0;
+          activeZone = null;
+        }
+        if (activeZone) activeZone.fill = padFill;
       }
+    }
+
+    // --- Mekânsal çay yükseltme noktası (ana ocağın önünde dur → altta bar dolar) ---
+    if (stationLevel < stationSoftMaxLevel()) {
+      if (dist2D(player, LAYOUT.upgradeZone) < PAD_RADIUS) {
+        const cost = stationUpgradeCost(stationLevel);
+        if (wallet.gt(0)) {
+          const amt = Math.min(C.teaStation.upgradeFillRate * dt, wallet.toNumber(), cost - upgradeFill);
+          if (amt > 0) {
+            upgradeFill += amt;
+            wallet = wallet.sub(amt);
+          }
+        }
+        if (upgradeFill >= cost) {
+          stationLevel += 1;
+          upgradeFill = 0;
+        }
+        const nextCost = stationLevel < stationSoftMaxLevel() ? stationUpgradeCost(stationLevel) : cost;
+        activeZone = {
+          kind: 'upgrade',
+          label: `Çay Ocağı L${stationLevel}${stationLevel < stationSoftMaxLevel() ? ` → L${stationLevel + 1}` : ' (max)'}`,
+          fill: upgradeFill,
+          cost: nextCost,
+        };
+      }
+    } else {
+      upgradeFill = 0;
     }
 
     // --- Periyodik kayıt ---
@@ -318,9 +370,12 @@ export const useGame = create<GameState>((set, get) => ({
       lifetime,
       tables,
       stations,
+      stationLevel,
       serviceSpeedMult,
       padsDone,
       padFill,
+      upgradeFill,
+      activeZone,
       player,
       spawnTimer,
       saveTimer,

@@ -36,6 +36,9 @@ export function installDevHooks(): void {
       currentPad: pad ? pad.id : null,
       padCost: pad ? pad.cost : 0,
       padPos: pad ? LAYOUT.padPos[pad.id] : null,
+      upgradeFill: Math.floor(s.upgradeFill),
+      upgradeZonePos: LAYOUT.upgradeZone,
+      activeZone: s.activeZone ? { kind: s.activeZone.kind, label: s.activeZone.label } : null,
       player: s.player.map((n) => +n.toFixed(2)),
       offlineEarned: s.offlineEarned,
     };

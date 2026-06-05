@@ -37,6 +37,18 @@ bozar → tek kaynak kilidi. Bütçe gelirse Synty POLYGON'a topluca geçiş kul
 **Gerekçe:** Mobil idle için yeterli; bulut kayıt en sona opsiyonel. Şema değişince eski
 kayıtlar migrate edilir, kullanıcı ilerlemesi kaybolmaz.
 
+## D-009 · Mekânsal (Roblox-tycoon) etkileşim — havada buton yok (2026-06-05)
+**Karar:** Satın alma/yükseltmeler **mekânsal**: oyuncu objenin yerine gider, üstünde durur,
+**ekranın altında bir bar dolar**. Pad'ler açtıkları objenin TAM yerinde durur (girişte
+genel noktada değil). Havada UI butonu kullanılmaz.
+**Gerekçe:** Kullanıcı çalışan oyunu görüp belirtti — yeni ocak pad'den uzakta belirince
+kafa karıştı, alttaki yükseltme butonunu sevmedi. Tür beklentisi (Roblox tycoon) ile uyumlu.
+**Uygulama:** LAYOUT.padPos pad'leri hedef konuma taşıdı; çay yükseltmesi `LAYOUT.upgradeZone`
+noktası (ocağın önü) — tick'te doldurma + seviye artışı; HUD'da `activeZone` ile alt-orta bar.
+Eski 2a UI butonu kaldırıldı. Ocak seviyesi 3D rozet + semaver büyümesi/renk ile gösterilir.
+**Not:** Faz 4'te onlarca yükseltme gelirse "objeye dokun → panel" hibrit düşünülebilir;
+temel akış mekânsal kalır.
+
 ## D-008 · Ekran yönü: portrait birincil, landscape destekli, kilit YOK (2026-06-05)
 **Karar:** Oyun **dikey (portrait)** tasarım hedefi; ama ekran çevrilince **yatay
 (landscape)** da oynanabilir. Orientation kilidi konmaz; arayüz responsive.

@@ -50,6 +50,10 @@ export const economyConfig = {
       masterDiamondCost: 15,
       masterOutputMult: 2.0,
     } satisfies UpgradeSpec,
+    /** Yükseltme noktasında saniyede cüzdandan akan ₺ (mekânsal yükseltme). */
+    upgradeFillRate: 60,
+    /** Her ek çay ocağı (station) sipariş süresini bu kadar çarpar (paralel demleme). */
+    extraStationSpeedFactor: 0.85,
   },
 
   /** NPC (müşteri) yaşam döngüsü zamanlamaları (sn). */
@@ -76,16 +80,17 @@ export const economyConfig = {
 
   /**
    * Satın-alma pad'leri (Roblox-tycoon mantığı; cüzdandan pad'e ₺ akar). Sıralı:
-   * bir pad ancak önceki tamamlanınca aktifleşir. Pad pozisyonları LAYOUT.padPos'ta.
-   * effect:
-   *   addTable        → +1 masa (paralel müşteri kapasitesi)
-   *   addTableStation → +1 masa & +1 çaydanlık yeri (görsel 2. istasyon)
-   *   serviceSpeed    → sipariş süresi ×factor (semaver = daha hızlı servis)
+   * bir pad ancak önceki tamamlanınca aktifleşir. Her pad, açtığı objenin TAM yerinde
+   * durur (pozisyonlar LAYOUT.padPos). effect:
+   *   addTable     → +1 masa (o masanın yerinde inşa olur)
+   *   addStation   → +1 çay ocağı (sipariş süresi extraStationSpeedFactor ile hızlanır)
+   *   serviceSpeed → sipariş süresi ×factor (semaver = daha hızlı servis)
    */
   pads: [
     { id: 'table2', label: '2. Masa', cost: 150, fillRate: 40, effect: { type: 'addTable' } },
-    { id: 'station2', label: 'Yeni Çaydanlık Yeri', cost: 600, fillRate: 60, effect: { type: 'addTableStation' } },
-    { id: 'samovar', label: 'Semavere Geçiş', cost: 1500, fillRate: 90, effect: { type: 'serviceSpeed', factor: 0.7 } },
+    { id: 'table3', label: '3. Masa', cost: 500, fillRate: 55, effect: { type: 'addTable' } },
+    { id: 'station2', label: 'Yeni Çay Ocağı', cost: 1200, fillRate: 75, effect: { type: 'addStation' } },
+    { id: 'samovar', label: 'Semavere Geçiş', cost: 3000, fillRate: 110, effect: { type: 'serviceSpeed', factor: 0.7 } },
   ],
 
   /** Oyuncu sahip karakteri hareketi. */

@@ -129,17 +129,36 @@ describe('generic pad sistemi (Faz 2b)', () => {
     expect(completeCurrentPad()).toBe('table2');
     expect(useGame.getState().tables).toBe(2);
 
-    // 2) Yeni Çaydanlık Yeri → tables→3, stations→2
-    expect(completeCurrentPad()).toBe('station2');
+    // 2) 3. Masa → tables 2→3
+    expect(completeCurrentPad()).toBe('table3');
     expect(useGame.getState().tables).toBe(3);
-    expect(useGame.getState().stations).toBe(2);
 
-    // 3) Semavere Geçiş → servis hızı çarpanı 0.7
+    // 3) Yeni Çay Ocağı → stations 1→2, servis hızı ×0.85
+    expect(completeCurrentPad()).toBe('station2');
+    expect(useGame.getState().stations).toBe(2);
+    expect(useGame.getState().serviceSpeedMult).toBeCloseTo(0.85, 5);
+
+    // 4) Semavere Geçiş → servis hızı ×0.7 (toplam 0.85*0.7)
     expect(completeCurrentPad()).toBe('samovar');
-    expect(useGame.getState().serviceSpeedMult).toBeCloseTo(0.7, 5);
+    expect(useGame.getState().serviceSpeedMult).toBeCloseTo(0.85 * 0.7, 5);
 
     // Hepsi açıldı
-    expect(useGame.getState().padsDone.length).toBe(3);
+    expect(useGame.getState().padsDone.length).toBe(4);
     expect(currentPad(useGame.getState().padsDone)).toBeNull();
+  });
+});
+
+describe('mekânsal çay yükseltme noktası (zone)', () => {
+  it('yükseltme noktasında durunca seviye artar ve activeZone kind=upgrade olur', () => {
+    useGame.getState().hardReset();
+    useGame.getState().addMoney(30); // sadece L1 (25₺) yeter; L2'ye dolarken kalır (max'a varmaz)
+    const z = LAYOUT.upgradeZone;
+    useGame.setState({ player: [z[0], 0.6, z[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+    expect(useGame.getState().stationLevel).toBe(0);
+
+    for (let i = 0; i < 50; i++) useGame.getState().tick(0.1);
+
+    expect(useGame.getState().stationLevel).toBeGreaterThan(0);
+    expect(useGame.getState().activeZone?.kind).toBe('upgrade');
   });
 });

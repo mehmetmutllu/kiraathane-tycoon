@@ -48,13 +48,15 @@ try {
   if (after.coins > 0 || after.lifetime > 0) pass(`Müşteri ödedi / para düştü (coins=${after.coins}, lifetime=${after.lifetime})`);
   else fail('Para düşmedi (coins=0, lifetime=0)');
 
-  // Çay yükseltme butonu: para ekle → tıkla → seviye artmalı
+  // Mekânsal çay yükseltme: para ekle + yükseltme noktasına ışınla + zaman sar → seviye artmalı
   const beforeLvl = (await page.evaluate(() => window.__game())).stationLevel;
   await page.evaluate(() => window.__addMoney(100000));
-  await page.click('[data-testid="upgrade-station"]');
-  const afterLvl = (await page.evaluate(() => window.__game())).stationLevel;
-  if (afterLvl === beforeLvl + 1) pass(`Çay yükseltme butonu çalışıyor (L${beforeLvl}→L${afterLvl})`);
-  else fail(`Yükseltme butonu seviye artırmadı (L${beforeLvl}→L${afterLvl})`);
+  const uz = (await page.evaluate(() => window.__game())).upgradeZonePos;
+  await page.evaluate((pos) => window.__teleport(pos[0], pos[2]), uz);
+  const afterUp = await page.evaluate(() => window.__advanceTime(5));
+  if (afterUp.stationLevel > beforeLvl)
+    pass(`Mekânsal çay yükseltme çalışıyor (L${beforeLvl}→L${afterUp.stationLevel})`);
+  else fail(`Yükseltme noktası seviye artırmadı (L${beforeLvl}→L${afterUp.stationLevel})`);
 
   // Generic pad: para ekle + ilk pad'in üstüne ışınla + zamanı sar → 2. masa açılmalı
   const padInfo = await page.evaluate(() => window.__game());

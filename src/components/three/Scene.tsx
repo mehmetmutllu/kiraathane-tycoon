@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Html } from '@react-three/drei';
 import { Vector3 } from 'three';
-import { useGame, LAYOUT } from '../../game/store';
+import { useGame, LAYOUT, stationSoftMaxLevel } from '../../game/store';
 import { Player } from './Player';
 import { Tables } from './Tables';
 import { TeaStation } from './TeaStation';
@@ -36,15 +37,42 @@ function CameraRig() {
   return null;
 }
 
-// Açık çaydanlık yerlerini çiz (stations sayısına göre).
+// Açık çay ocaklarını çiz; ana ocak (i=0) seviye + rozet gösterir.
 function Stations() {
   const stations = useGame((s) => s.stations);
+  const stationLevel = useGame((s) => s.stationLevel);
   return (
     <>
       {LAYOUT.stations.slice(0, stations).map((p, i) => (
-        <TeaStation key={i} position={p} />
+        <TeaStation key={i} position={p} level={i === 0 ? stationLevel : 0} showBadge={i === 0} />
       ))}
     </>
+  );
+}
+
+// Mekânsal çay yükseltme noktası (ana ocağın önünde). Üstünde dur → altta bar dolar.
+function UpgradeZone() {
+  const stationLevel = useGame((s) => s.stationLevel);
+  if (stationLevel >= stationSoftMaxLevel()) return null;
+  const [x, , z] = LAYOUT.upgradeZone;
+  return (
+    <group position={[x, 0, z]}>
+      <mesh receiveShadow position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[1.1, 32]} />
+        <meshStandardMaterial color="#7a5c12" />
+      </mesh>
+      <mesh position={[0, 0.04, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[0.9, 1.05, 32]} />
+        <meshStandardMaterial color="#ffd54f" emissive="#ffb300" emissiveIntensity={0.4} />
+      </mesh>
+      <mesh position={[0, 0.8, 0]}>
+        <coneGeometry args={[0.22, 0.45, 4]} />
+        <meshStandardMaterial color="#ffd54f" emissive="#ffb300" emissiveIntensity={0.5} />
+      </mesh>
+      <Html position={[0, 1.5, 0]} center distanceFactor={9} zIndexRange={[5, 0]}>
+        <div className="badge3d gold">☕ Yükselt</div>
+      </Html>
+    </group>
   );
 }
 
@@ -105,6 +133,7 @@ export function Scene() {
       <Stations />
       <Tables />
       <Pad />
+      <UpgradeZone />
       <Customers />
       <Coins />
       <Player />

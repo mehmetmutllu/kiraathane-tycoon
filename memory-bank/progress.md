@@ -36,15 +36,21 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   + semaver/yeni çaydanlık yeri pad'leri.
 
 ## Faz 2 — Mutfak + garson 🔧
-- ✅ **2a:** Çay istasyonu yükseltme L1-L4 (₺) — store.upgradeStation, HUD buton,
-     __addMoney/__upgradeStation kancaları. Çay değeri seviyeyle çarpan artar (zaten
-     teaPrice'a bağlı). L5 (Usta 💎/video) Faz 4. Vitest 9/9, smoke 8/8 (gerçek buton tıklama).
+- ✅ **2a:** Çay istasyonu yükseltme L1-L4 (₺). (NOT: UI butonu D-009 ile **mekânsal
+     yükseltme noktasına** çevrildi — aşağı bak.) Çay değeri seviyeyle çarpan artar.
+     L5 (Usta 💎/video) Faz 4.
 - ✅ **2b:** Generic pad sistemi. Tek-amaçlı pad → config'te sıralı **pad listesi**
      (id/label/cost/fillRate/effect). Pad'ler: 2. Masa (addTable), Yeni Çaydanlık Yeri
      (addTableStation: +masa & +istasyon, 2. istasyon çizilir), Semavere Geçiş
      (serviceSpeed ×0.7 = daha hızlı servis). State: stations/serviceSpeedMult/padsDone;
      kayıt v3→v4 migrasyonu (eski tables≥2 → table2 done). __teleport dev kancası.
      Vitest 9/9, smoke 9/9 (tarayıcıda table2 pad'i açıldı).
+- ✅ **2-UX (D-009):** Mekânsal etkileşim. Pad'ler açtıkları objenin yerinde (2.masa,
+     3.masa, yeni ocak, semaver — her biri kendi konumunda). Çay yükseltme = ocağın
+     önünde **upgradeZone**; üstünde dur → alt-orta barı dolar → seviye artar (havada buton
+     yok). Ocak seviyesi 3D rozet (drei Html) + semaver büyümesi/renk ile görünür. Pad set
+     güncellendi (table2/table3/station2/samovar); addStation servis hızını ×0.85 hızlandırır.
+     Vitest 10/10, smoke 9/9.
 - ⏳ **2c:** Yardımcı garson (sipariş istasyondan masaya otomatik taşınır)
 
 ## Faz 3 — Çeşitlilik + sosyal ⏳
