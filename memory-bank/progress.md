@@ -51,7 +51,10 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
      yok). Ocak seviyesi 3D rozet (drei Html) + semaver büyümesi/renk ile görünür. Pad set
      güncellendi (table2/table3/station2/samovar); addStation servis hızını ×0.85 hızlandırır.
      Vitest 10/10, smoke 9/9.
-- ⏳ **2c:** Yardımcı garson (sipariş istasyondan masaya otomatik taşınır)
+- ⏳ **2-EKO (öncelik, D-010):** Ekonomi v2 — yükseltme throughput'u (çay/dk) artırır
+     (fiyat değil), gelir = darboğaz × fiyat, sıralı önkoşullu gating, hacim-tabanlı fiyat.
+     Tasarım raporu: `docs/progression-and-economy-v2.md`. **2c'den ÖNCE uygulanacak.**
+- ⏳ **2c:** Yardımcı garson (sipariş istasyondan masaya otomatik taşınır) — ekonomi v2 sonrası
 
 ## Faz 3 — Çeşitlilik + sosyal ⏳
 - ⏳ Kahve / tost / pizza istasyonları

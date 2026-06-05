@@ -21,7 +21,17 @@ Kullanıcı çalışan oyunu görüp istedi → mekânsal etkileşime geçildi (
   HUD, joystick, kayıt+offline, dev kancaları, fallback Model loader.
 - Testler: Vitest 6/6 ✅, headless duman (tools/smoke.mjs) 6/6 ✅, build temiz, konsol temiz.
 
-## TAM sıradaki adım (Faz 2c — yardımcı garson)
+## ÖNEMLİ — Ekonomi v2 yeniden tasarımı (kullanıcı feedback'i 2026-06-05)
+Kullanıcı mevcut ekonomiyi eleştirdi; **uygulamadan önce** tasarım raporu yazıldı:
+`docs/progression-and-economy-v2.md` (Karar D-010). Özet:
+- Yükseltme **fiyatı değil throughput'u (çay/dk)** artırır; gelir = darboğaz × fiyat.
+- Tüm açılış/yükseltmeler **önkoşullu sıra (gating)** ile (`requires`).
+- Pad: yükseltme objenin yanında, açılış objenin yerinde; her pad tek slota bağlı.
+- Fiyat sabit taban (hacim-tabanlı). Maliyet eğrisi r≈1.12. Tempo: ilk alım <90sn.
+**Sıradaki oturum:** ÖNCE bu ekonomi v2'yi uygula (config+store+gating+simulate+test),
+SONRA Faz 2c (garson). Açık sorular raporun §5'inde — kullanıcıya sor.
+
+## TAM sıradaki adım (Faz 2c — yardımcı garson, ekonomi v2 SONRASI)
 1. Garson, bir pad ile açılsın (config.pads'e `waiter` effekti ekle ya da ayrı bir
    "hasWaiter" pad'i). Açılınca state'e `hasWaiter=true` (persist).
 2. Garson varlığı: store'da basit durum makinesi (istasyon→masaya yürü→servis→istasyona

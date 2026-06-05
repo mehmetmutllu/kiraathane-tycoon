@@ -1,5 +1,10 @@
 # economy — Ekonomi Tasarımı
 
+> ⚠️ GÜNCEL YÖN: Bu dokümandaki "çay fiyatı seviyeyle artar" yaklaşımı **D-010 ile değişti**.
+> Yeni model (yükseltme = throughput/çay-dk, sıralı gating, hacim-tabanlı fiyat):
+> **`docs/progression-and-economy-v2.md`**. Aşağısı tarihsel/temel referans olarak kalıyor.
+
+
 > Tüm sayılar `src/config/economy.config.ts`'te (TEK kaynak). Bu doküman tasarımı ve
 > formülleri açıklar; ince ayar `tools/simulate.ts` çıktısına bakılarak yapılır.
 

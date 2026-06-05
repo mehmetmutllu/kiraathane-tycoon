@@ -37,6 +37,18 @@ bozar → tek kaynak kilidi. Bütçe gelirse Synty POLYGON'a topluca geçiş kul
 **Gerekçe:** Mobil idle için yeterli; bulut kayıt en sona opsiyonel. Şema değişince eski
 kayıtlar migrate edilir, kullanıcı ilerlemesi kaybolmaz.
 
+## D-010 · Ekonomi v2: throughput modeli + sıralı gating (2026-06-05)
+**Karar:** Yükseltmeler çay FİYATINI değil **throughput'u (servis edilen çay/dk)** artırır.
+Gelir, kapasite zincirinin **darboğazına** bağlı (talep→masa→ocak→garson). Tüm açılış/
+yükseltmeler **önkoşullu sıra** (gating) ile gelir. Fiyat hacim-tabanlı (sabit taban; artış
+prestige/menü ile). Maliyet eğrisi geometrik (r≈1.12).
+**Gerekçe:** Kullanıcı feedback'i — fiyatın seviyeyle artması gerçekçi değil; "sistem/fiyat
+politikası" ve net sıra şart. Idle Miner / restoran-idle araştırması bottleneck dengesini
+doğruluyor (darboğaz = israf).
+**Durum:** Tasarım/plan hazır → `docs/progression-and-economy-v2.md`. Implementasyon sonraki
+oturum(lar)da (mevcut fiyat-çarpanı modeli değişecek). Önceki D-?'lerdeki "teaPrice seviyeyle
+artar" yaklaşımı bu kararla GEÇERSİZ.
+
 ## D-009 · Mekânsal (Roblox-tycoon) etkileşim — havada buton yok (2026-06-05)
 **Karar:** Satın alma/yükseltmeler **mekânsal**: oyuncu objenin yerine gider, üstünde durur,
 **ekranın altında bir bar dolar**. Pad'ler açtıkları objenin TAM yerinde durur (girişte
