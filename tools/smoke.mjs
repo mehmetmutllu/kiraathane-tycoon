@@ -41,12 +41,31 @@ try {
   if (moved.player[0] > init.player[0] + 0.3) pass(`Klavye hareketi çalışıyor (x ${init.player[0]}→${moved.player[0]})`);
   else fail(`Klavye ile hareket olmadı (x ${init.player[0]}→${moved.player[0]})`);
 
-  // Zamanı ileri sar → NPC ödesin, para düşsün
-  const after = await page.evaluate(() => window.__advanceTime(120));
-  if (after.npcCount > 0) pass(`NPC akışı çalışıyor (npcCount=${after.npcCount})`);
+  // Zamanı ileri sar → müşteri otursun, ocak hazır-kuyruğa demlesin (D-011)
+  const seated = await page.evaluate(() => window.__advanceTime(15));
+  if (seated.npcCount > 0) pass(`NPC akışı çalışıyor (npcCount=${seated.npcCount})`);
   else fail('NPC oluşmadı');
-  if (after.coins > 0 || after.lifetime > 0) pass(`Müşteri ödedi / para düştü (coins=${after.coins}, lifetime=${after.lifetime})`);
-  else fail('Para düşmedi (coins=0, lifetime=0)');
+  if (seated.readyCups > 0) pass(`Ocak hazır-kuyruğa demledi (readyCups=${seated.readyCups})`);
+  else fail(`Hazır çay demlenmedi (readyCups=${seated.readyCups})`);
+  if (seated.waitingCount > 0) pass(`Müşteri çay bekliyor (waitingCount=${seated.waitingCount})`);
+  else fail(`Bekleyen müşteri yok (waitingCount=${seated.waitingCount})`);
+
+  // Manuel servis: ocağa git (tepsi dolar) → bekleyen koltuğa git (çay bırak) → ödeme + toplama
+  const seat = seated.firstWaitingSeat;
+  await page.evaluate((p) => window.__teleport(p[0], p[2]), seated.stationPos);
+  const loaded = await page.evaluate(() => window.__advanceTime(0.5));
+  if (loaded.tray > 0) pass(`Tepsi ocaktan doldu (tray=${loaded.tray}/${loaded.trayCap})`);
+  else fail(`Tepsi dolmadı (tray=${loaded.tray})`);
+
+  if (seat) {
+    await page.evaluate((p) => window.__teleport(p[0], p[2]), seat);
+    const served = await page.evaluate(() => window.__advanceTime(8));
+    if (served.lifetime > 0)
+      pass(`Manuel servis → ödeme → toplama çalışıyor (lifetime=${Math.floor(served.lifetime)})`);
+    else fail(`Servis sonrası para gelmedi (lifetime=${served.lifetime}, tray=${served.tray})`);
+  } else {
+    fail('Bekleyen müşteri koltuğu bulunamadı (firstWaitingSeat null)');
+  }
 
   // Gating: para ekle (lifetime ≥ 30) → ilk aktif pad table2 olmalı, açılış sırasını doğrula.
   await page.evaluate(() => window.__addMoney(300));

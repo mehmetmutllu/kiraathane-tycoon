@@ -11,10 +11,13 @@ export function TeaStation({
   position,
   level = 0,
   showBadge = false,
+  readyCups = 0,
 }: {
   position: Vec3;
   level?: number;
   showBadge?: boolean;
+  /** Tezgâhta bekleyen hazır çay (D-011 hazır-kuyruk) — küçük bardaklar olarak çizilir. */
+  readyCups?: number;
 }) {
   const bodyH = 0.7 + level * 0.12;
   const color = LEVEL_COLOR[Math.min(level, LEVEL_COLOR.length - 1)];
@@ -43,6 +46,13 @@ export function TeaStation({
               <cylinderGeometry args={[0.04, 0.04, 0.2, 8]} />
               <meshStandardMaterial color="#5d4037" />
             </mesh>
+            {/* hazır çaylar (tezgâh önünde sıralı küçük bardaklar) */}
+            {Array.from({ length: readyCups }).map((_, i) => (
+              <mesh key={i} castShadow position={[-0.5 + (i % 6) * 0.2, 0.96, 0.28]}>
+                <cylinderGeometry args={[0.06, 0.05, 0.16, 8]} />
+                <meshStandardMaterial color="#c0392b" emissive="#7a1f17" emissiveIntensity={0.25} />
+              </mesh>
+            ))}
           </group>
         }
       />

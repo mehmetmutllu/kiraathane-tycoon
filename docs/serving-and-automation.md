@@ -1,93 +1,104 @@
-# Servis & Otomasyon Tasarımı — manuel çay taşıma + garson kısmi otomasyon
+# Servis, Personel & Mekân Modeli — manuel-önce, kademeli otomasyon (My Hotel DNA)
 
-> ÖNERİ / TASLAK (2026-06-06). Kullanıcı geri bildirimi sonrası servis döngüsünün yeniden
-> tasarımı. **Bu doküman karar değil, öneridir; kullanıcı onayı bekliyor.** Onaylanınca
-> D-011 "uygulandı"ya çekilir ve Faz 2c bu modele göre yapılır.
-> Önceki plan ("garson çayı otomatik taşır") bunun yerini alır.
+> ✅ FİNAL (2026-06-06). Kullanıcı onayladı. D-011 (servis) + D-012 (zone/personel) +
+> D-013 (primitive sanat) bu dokümana dayanır. Önceki "garson çayı otomatik taşır" planı
+> ve "kasa/kayıt" fikri İPTAL edildi.
 
-## 1. Sorun (kullanıcı feedback'i 2026-06-06)
-1. **Şu an garson yokken bile çay otomatik servis ediliyor.** Oyuncu hiç çay taşımıyor —
-   tutarsız ve oynanışsız. Oyuncu çayı kendi getirip götürmeli.
-2. **Ama sürekli tek-tek taşımak istenmiyor.** "Çay tepsisi olur elimde… sürekli taşımamam
-   gerek" → bir turda birden çok çay taşıyabilmeli.
-3. **Para toplama + yükseltmeler oyuncuda kalmalı.** Mekânda yürümek çekirdek eğlence; çok
-   şey otomatikleşirse "yürüyecek yer kalmaz" (oyuncunun yapacak işi kalmaz).
-4. **Garson kısmi yardımcı olmalı.** Açılınca o da taşır ama yavaş; "o ana kadarki tüm
-   ilerlemeyi tek başına taşıyabilmemeli" → garson mekânı tek başına döndüremez, oyuncu hâlâ aktif.
+## 0. Tek cümle
+Oyuncu her işi **önce kendi** yapar (tepsiyle servis, kirli bardak/para toplama); büyüdükçe
+o işe **bölgeye özel personel** alır; bir salon dolunca **yeni salon + yeni personel slotu**
+açılır. Referans: My Perfect Hotel (arcade-idle). Para toplama **kalıcı manuel** (çekirdek eğlence).
 
-## 2. Araştırma özeti (kaynaklar §6)
-- **Idle Restaurant Tycoon:** otomasyon **kademeli** — her operasyona garson/şef tutulur;
-  "yeterli garson yoksa müşteriler aç kalır" = klasik **bottleneck baskısı**. Oyuncu personel
-  sayısı ↔ maaş maliyeti dengeler. Otomasyon kârı çoğaltır, yokken bile çalışır.
-- **Roblox tycoon (dropper→konveyör→collector):** erken oyunda **manuel** etkileşim/para
-  toplama; otomasyon (auto-collect, ek dropper, konveyör hızı) **ilerlemeyle açılan** bir ödül.
-  Çekirdek his: önce sen koştur, sonra otomatikleştir.
-- **Çıkarım:** Manuel-önce, kademeli-otomasyon. Otomasyon oyuncuyu işsiz bırakmaz; **işi
-  kaydırır** (servisi garsona devret → sen toplamaya/büyütmeye odaklan).
-
-## 3. Önerilen model
-
-### 3.1 İki elli aktif döngü (çekirdek)
-Oyuncunun her zaman iki manuel işi var; oyun bunları dengelemekten doğar:
+## 1. Müşteri döngüsü (çember) — KASA YOK
 ```
-  [SERVİS]   ocak ready-kuyruğu → tepsiye al → masalara dağıt
-  [TOPLAMA]  ödenen paralar yere düşer → yürüyüp topla
+Giriş → boş masaya YÜRÜ/OTUR → çay bekler (sabır timer'ı) →
+OCAK hazır-kuyruğa demler → oyuncu/garson TEPSİ ile masaya taşır → içer →
+öder (para yere düşer) → SEN toplarsın → masada KİRLİ bardak kalır →
+topla → bulaşıkta yıka → temiz bardak havuzuna döner → müşteri çıkar
 ```
-- Erken oyun: oyuncu **hem servis hem toplama** yapar (tek masa, kolay).
-- Mekân büyüdükçe ikisini birden yetiştirmek zorlaşır → **garson** alıp servisi (kısmen)
-  devreder, oyuncu toplama + yükseltmeye kayar. Böylece oyuncu ne işsiz kalır ne boğulur.
+- **Kasa/kayıt/karşılama YOK.** Müşteri girer, direkt boş masaya oturur (mevcut davranış korunur).
+- Sabır aşımında müşteri **sessizce kalkıp gider** (ödeme yok, ceza/öfke yok → çocuk-güvenli).
 
-### 3.2 Ocak ready-kuyruğu (brewing = gerçek kapasite)
-- Ocak, `brewTime`de bir çay demler ve tezgâhta **hazır çay** olarak biriktirir.
-- **Kuyruk kapasitesi** var (ör. 3–5). Kuyruk doluysa ocak demlemeyi **durdurur** (israf yok ama
-  üretim durur) → teslimat darboğaz olur. Kuyruk boşsa servis için **çay beklenir** → brewing darboğaz.
-- Bu, D-010 §3.1'deki throughput zincirini **sahnede gerçek** kılar (şu an per-masa paralel
-  demleme bottleneck'i görünmez kılıyordu).
+## 2. Manuel işler ve devri (her biri bölgeye özel personelle otomatikleşir)
+| İş | Önce (oyuncu) | Sonra (personel) | Ne zaman |
+|---|---|---|---|
+| Tepsiyle çay servisi | sen | **Garson** | 2. masadan sonra (gated) |
+| Kirli bardak topla + yıka | sen | **Bulaşıkçı** | bardak döngüsüyle |
+| Tuvalet kâğıdı yenileme | sen | **Temizlikçi** | tuvalet ODASI açılınca |
+| **Para toplama** | sen | — **kalıcı SEN** | hiç (oto toplayıcı YOK) |
 
-### 3.3 Tepsi (manuel servis, ama toplu)
-- Oyuncu ocağa gelir → tepsiye hazır çaylardan **N tane** alır (tepsi kapasitesi C).
-- Oturan, çay bekleyen müşterilere yürür → tepsiden çay bırakır → müşteri içer → öder.
-- **Tepsi kapasitesi upgradable** (C: 2 → 4 → 6…). Yüksek C = tur başına çok masa = az koşturma.
-  "Sürekli tek-tek taşıma" sorununu çözer; yine de gidip-gelmek gerekir (oynanış korunur).
+## 3. Ocak hazır-kuyruğu (throughput'u sahnede gerçek kılar — D-010 §3.1)
+- Ocak `brewTime`'da bir bardak çay demler, tezgâhta **hazır** biriktirir.
+- **Kuyruk kapasitesi ocak seviyesine bağlı** (L0=3, her seviye +1; ayrı upgrade DEĞİL).
+- Kuyruk doluysa demleme **durur** (teslimat darboğaz); boşsa servis **çay bekler** (demleme darboğaz).
+- Ocak seviyesi hem demleme hızını hem kuyruk kapasitesini büyütür.
 
-### 3.4 Sabır + bottleneck (çocuk-güvenli)
-- Oturan müşterinin **sabır timer'ı** var. Zamanında çay gelmezse **sessizce kalkar gider**
-  (kayıp = o gelir; sert ceza/öfke animasyonu yok → çocuk-güvenli).
-- Bu baskı, "yeterince hızlı servis et" hedefini verir; darboğazı (masa/ocak/servis) yükseltmeye iter.
+## 4. Tepsi (manuel ama toplu servis)
+- Oyuncu ocağa yaklaşınca tepsiye hazır çaylardan **kapasite kadar** alır (yakınlık, dokunma yok).
+- Bekleyen masalara yürür → yakınlıkta çay bırakır → müşteri içmeye başlar.
+- **Tepsi kapasitesi yükseltilebilir** (2 → 4 → 6 → 8; Faz 2e). Hareket hızı + tepsi = erken öncelikli yükseltmeler.
+- "Sürekli tek-tek taşıma" sorununu çözer; yine de gidip-gelmek gerekir (oynanış korunur).
 
-### 3.5 Garson = kısmi otomasyon (tam değil)
-- Garson, oyuncuyla **aynı döngüyü** yapan özerk NPC: ocak→tepsi→masa→ocak.
-- **Kasıtlı sınırlar** (tek başına her şeyi taşıyamasın):
-  - Oyuncudan **yavaş** yürür ve/veya **küçük tepsi** taşır.
-  - Tek garson, büyüyen mekânın servisinin yalnız bir kısmına yetişir → kalanı oyuncu kapatır.
-  - **Ek/yükseltme garson** (gated) = daha çok otomasyon. Geç oyunda çok garson ≈ tam otomasyon,
-    ama o noktada oyuncunun işi toplama + büyütme + prestige olur.
-- Açılışı `requires` zincirine girer (ör. prev:['table3'] veya 'samovar' sonrası).
+## 5. Bardak döngüsü (My Hotel "odayı temizle" karşılığı — Faz 2e)
+- **Bardak = sınırlı kaynak.** Temiz bardak biterse servis edilemez → kirlileri toplamaya mecbur kalırsın (darboğaz).
+- Ocak temiz bardağa demler → tepsiyle git → müşteri içer → masada **kirli bardak** kalır.
+- Oyuncu kirli bardakları toplar → **bulaşık** noktasında yıkar → temiz havuza döner.
+- **Bardak havuzu ocak seviyesine bağlı** (L0=örn. 4, her seviye +2).
+- Sonra **bulaşıkçı** yıkamayı devralır.
+- İki "çember": **servis (temiz çay git)** + **toplama (kirli bardak/para dön)** → zengin ama boğmayan aktif döngü.
+- **Çaydanlığa ham çay/su getirme YOK** (sürekli ham-madde taşımak angarya; bardak döngüsü zaten kaynak-darboğazı verir).
 
-### 3.6 Para toplama kalıcı manuel (çekirdek korunur)
-- Para toplama oyuncunun **kalıcı işi** — garson servisi devralsa bile oyuncu yürümeye devam eder.
-- (Opsiyonel, Faz 4) yavaş/kısmi **otomatik toplayıcı** (prestige/ödüllü) düşünülebilir ama
-  çekirdeği değiştirmez; erken-orta oyunda toplama tamamen elle (öneri).
+## 6. Garson = kısmi otomasyon (bölgeye özel)
+- Garson, oyuncuyla **aynı döngüyü** yapan özerk NPC: ocak→tepsi→bekleyen masa→ocak.
+- **Bölgeye özel** (global havuz değil): 1 ocak ≈ 4 masa kümesine 1 garson.
+- **Kasıtlı sınırlar:** oyuncudan yavaş ve/veya küçük tepsi → tek garson büyüyen mekânı tek
+  başına döndüremez; kalanı + para toplamayı oyuncu kapatır.
+- Ek/yükseltme garson (gated) = daha çok otomasyon; geç oyunda oyuncunun işi toplama + büyütme + prestige.
 
-## 4. Uygulama etkisi (onaylanırsa, Faz 2c)
-- **NPC durum makinesi:** `ordering` (otomatik timer) → `waitingForTea` (servis bekler) + `drinking`.
-- **Ocak:** `readyCups` kuyruğu (kapasite) + demleme timer'ı (kuyruk doluysa durur).
-- **Oyuncu durumu:** `tray` (taşınan çay sayısı, kapasite C). Ocakta otomatik dol, masada bırak (yakınlık).
-- **Garson:** basit FSM (ocak→en yakın bekleyen masa→bırak→dön), hız/tepsi parametreli; `hasWaiter` persist.
-- **economy.config:** `tray` (kapasite + upgrade), `brew.queueCapacity`, `npc.patience`,
-  `waiter` (hız, tepsi, requires). Hepsi data-driven; `simulate.ts` zinciri bu darboğazlarla güncellenir.
-- **Kayıt:** yeni alanlar (trayLevel, hasWaiter…) → `saveVersion` artır + migrasyon.
-- **Test:** servis döngüsü (tepsiyle teslim → ödeme), sabır-aşımı (servis yoksa müşteri gider),
-  garson teslimi; smoke'ta görsel-durum kancaları (`__game().tray`, `readyCups`, `hasWaiter`).
+## 7. Mekân / salon (zone) modeli — genişleme
+- Mekân **salonlara** bölünür. Bir salon = ~{1 ocak : 4 masa} + (açılırsa tuvalet/bulaşık odaları).
+- **Başlangıç dengesi:** 1 ocak : 4 masa (mevcut 2 ocak/geniş alan yeniden dengelenecek — Faz 2d).
+- Bir salonun **tüm slotları açılınca** yeni salon kilidi açılır.
+- **Yeni salon açılınca otomatik 1. ocak + 1. masa kurulu gelir** (oyuncu hemen servis edebilir);
+  salonun gerisini (ek masa/ocak/oda) oyuncu parayla açar.
+- **Tuvalet = parayla açılan ODA** (başlangıçta yok); açılınca tuvalet kâğıdı yenileme işi + temizlikçi gelir.
+- Personel **bölge-başı**: her salonun kendi garson/bulaşıkçı/temizlikçi slotları.
 
-## 5. Açık sorular (kullanıcıya)
-1. **Sabır aşımı:** sessizce gitsin (öneri, çocuk-güvenli) mi, yoksa sadece daha az mı öder?
-2. **Tepsi kapasite** başlangıç/eğri (2→4→6?) ve maliyet.
-3. **Garson:** global havuz mu (her yere koşar) yoksa bölge-başı mı (okey salonu/teras ayrı)?
-4. **Otomatik para toplayıcı** hiç gelsin mi? (Öneri: erken-orta oyunda HAYIR; en erken Faz 4 kısmi.)
-5. **Ocak ready-kuyruğu kapasitesi** upgradable mı, sabit mi?
+## 8. Masa yükseltmesinin işlevi (D-010 uyumlu — fiyat sabit)
+- Masa yükseltmesi fiyatı artırmaz; **konfor → müşteri sabrını artırır** (tek tepsi turunda daha
+  çok masaya yetişirsin) **+ kozmetik/imaj**. İtibar Faz 4 prestige'e bağlanır.
 
-## 6. Kaynaklar
-- Idle Restaurant Tycoon (Kolibri Games) — resmi site + CouchClicker/T4G rehberleri (otomasyon = kademeli personel; bottleneck baskısı)
-- Roblox tycoon dropper/konveyör/collector kalıpları (Roblox DevForum, Buzzy.GG) — manuel-önce, otomasyon-ilerlemeyle
-- (Bağlam) Idle Miner Tycoon yönetici/otomasyon dengesi — `docs/progression-and-economy-v2.md` §7
+## 9. Para toplama kalıcı manuel
+- Oto para toplayıcı **YOK** (kullanıcı kararı). En fazla Faz 4'te yavaş/kısmi prestige ödülü düşünülür; çekirdeği değiştirmez.
+
+## 10. Görsel yaklaşım (D-013): primitive = nihai sanat stili
+- My Perfect Hotel "kodla çizilmiş" değil; Unity'de **düz-gölgeli, dokusuz, tek-renk low-poly**
+  modeller kullanıyor → "primitive" görünür. Bizim **greybox-first** (box/cylinder/capsule + düz
+  renk + yumuşak gölge) yaklaşımımız aynı estetiği üretir.
+- **Karar:** primitive'leri placeholder değil **kasıtlı sanat stili** kabul et; cila = renk paleti,
+  flat/toon shading, yumuşak gölge, "juice" (zıplama/ölçek), ışık. Faz 6 .glb geçişi **opsiyonel/hafif**
+  olur. Türk'e özgü birkaç obje (semaver, ince belli bardak, nargile) yine CC0/AI model eklenebilir, zorunlu değil.
+
+## 11. Uygulama sırası (küçük, test edilebilir dilimler)
+**Faz 2 kalanı (servis çekirdeği):**
+- **2c (HEMEN):** manuel tepsi servisi + ocak hazır-kuyruğu + sabır + sessiz-ayrılma. Çay artık oto
+  servis EDİLMEZ. (Personel/kasa/tuvalet/zone YOK.) `tray`/`readyCups`/`brewProgress` **transient** →
+  kalıcı şema değişmez, `SAVE_VERSION` 4'te kalır.
+- **2d:** Garson (bölge-başı, yavaş/küçük tepsi, 2. masa sonrası gated) + harita dengesi (1 ocak:4 masa). `hasWaiter` persist → saveVersion bump.
+- **2e:** Bardak/bulaşık döngüsü (bardak=ocak seviyesine bağlı, kirli→yıka) + bulaşıkçı + tepsi yükseltme. saveVersion bump.
+
+**Faz 3 (My-Hotel zone & roller):**
+- **3a:** Salon genişleme sistemi (salon dol → yeni salon + oto ocak/masa + personel slotları).
+- **3b:** Tuvalet odası + tuvalet kâğıdı + temizlikçi.
+- **3c:** Menü çeşitliliği (kahve/tost) + masa-yükseltme işlevi (sabır/imaj). Okey/tavla/nargile sonra.
+
+## 12. Açık mikro-sorular (uygulama sırasında netleşir, bloklayıcı değil)
+- Tepsi/hareket hızı yükseltme maliyet eğrisi (2e dengelemede).
+- Garson hız/tepsi oranı (oyuncunun ~%50-60'ı?) — 2d dengelemede simulate ile.
+- Bardak havuzu tam eğrisi (2e).
+
+## 13. Kaynaklar
+- My Perfect Hotel deconstruction (Udonis; arpubrothers) — arcade-idle döngü: manuel-önce, personel-otomasyon, kat/zone genişleme.
+- Idle Restaurant Tycoon — kademeli personel, bottleneck baskısı.
+- Roblox tycoon — erken manuel etkileşim, otomasyon ilerlemeyle.
+- Perfect Hotel Unity template'leri — low-poly flat-shaded asset yaklaşımı (D-013 dayanağı).

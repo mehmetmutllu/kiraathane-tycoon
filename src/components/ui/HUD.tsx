@@ -1,10 +1,12 @@
-import { useGame } from '../../game/store';
+import { useGame, trayCapacity } from '../../game/store';
 import { fmt } from '../../game/decimal';
 
 export function HUD() {
   const wallet = useGame((s) => s.wallet);
   const diamonds = useGame((s) => s.diamonds);
   const tables = useGame((s) => s.tables);
+  const tray = useGame((s) => s.tray);
+  const readyCups = useGame((s) => s.readyCups);
   const offlineEarned = useGame((s) => s.offlineEarned);
   const zone = useGame((s) => s.activeZone);
   const nextStep = useGame((s) => s.nextStepLabel);
@@ -22,6 +24,12 @@ export function HUD() {
         </div>
         <div className="chip" data-testid="tables">
           🪑 {tables}
+        </div>
+        <div className="chip" data-testid="tray" title="Tepsindeki çay / kapasite">
+          🫖 {tray}/{trayCapacity()}
+        </div>
+        <div className="chip" data-testid="ready" title="Ocakta bekleyen hazır çay">
+          ☕ {readyCups}
         </div>
       </div>
 
@@ -55,7 +63,7 @@ export function HUD() {
       )}
 
       <div className="hint">
-        WASD / ok tuşları · mobilde joystick · paraları topla · yeşil zeminlerin üstünde dur (masa, ocak, yükseltme)
+        WASD / joystick · ocağa git → tepsi dolar → bekleyen masaya götür · paraları topla · yeşil zeminlerde yükselt
       </div>
     </div>
   );

@@ -86,12 +86,42 @@ export const economyConfig = {
     spawnInterval: 1.6,
     /** Boş masaya yürüme/oturma payı. */
     walkTime: 2,
-    /** Çay bekleme süresi (servis/demleme; stationLevel throughput'u bunu kısaltır). */
+    /** Bir bardak çay demleme süresi (sn) — stationLevel throughput'u bunu kısaltır. */
     orderTime: 6,
     /** İçip ödeme yapma süresi. */
     eatTime: 4,
+    /**
+     * Oturan müşteri çay için bu kadar sn bekler (D-011); süre dolmadan servis
+     * edilmezse SESSİZCE kalkıp gider (ödeme yok, ceza yok → çocuk-güvenli).
+     */
+    patience: 18,
     /** Aynı anda mekândaki maksimum müşteri. */
     maxConcurrent: 8,
+  },
+
+  /**
+   * Servis döngüsü (D-011): çay artık OTOMATİK servis edilmez. Ocak hazır-kuyruğa demler;
+   * oyuncu (sonra garson) çayı TEPSİ ile taşır. Yakınlık temelli (dokunma yok, mekânsal).
+   */
+  serving: {
+    /** Tepsi taban kapasitesi (tek turda taşınan çay). Yükseltme Faz 2e (2→4→6→8). */
+    trayCapacityBase: 2,
+    /** Oyuncunun ocaktan çay alma yakınlığı (dünya birimi). */
+    pickupRadius: 1.6,
+    /** Oyuncunun masaya çay bırakma yakınlığı. */
+    serveRadius: 1.6,
+  },
+
+  /**
+   * Ocak hazır-kuyruğu (D-011 §3): demlenen çay tezgâhta birikir. Kuyruk doluysa demleme
+   * durur (teslimat darboğaz); boşsa servis çay bekler (demleme darboğaz). Kapasite ocak
+   * seviyesine bağlı (ayrı upgrade DEĞİL) → ocağı büyütmek hız + kapasite verir.
+   */
+  brew: {
+    /** L0 hazır-kuyruk kapasitesi. */
+    queueBase: 3,
+    /** Her ocak seviyesi kuyruğa eklenen kapasite. */
+    queuePerLevel: 1,
   },
 
   /** Yere düşen para. */
@@ -170,6 +200,11 @@ export function requiresMet(req: Requires | undefined, g: GateState): boolean {
 /** n. ₺ yükseltme seviyesinin maliyeti (level 1..masterLevel-1). */
 export function upgradeCost(spec: UpgradeSpec, level: number): number {
   return Math.floor(spec.costBase * Math.pow(spec.costGrowth, level - 1));
+}
+
+/** Ocak hazır-kuyruğu kapasitesi: ocak seviyesiyle büyür (D-011 §3). */
+export function brewQueueCapacity(stationLevel: number): number {
+  return economyConfig.brew.queueBase + economyConfig.brew.queuePerLevel * stationLevel;
 }
 
 /** Verilen seviyedeki toplam çıktı çarpanı (L5 usta sıçramasını da içerir). */

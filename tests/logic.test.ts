@@ -3,6 +3,7 @@ import {
   economyConfig,
   upgradeCost,
   upgradeOutputMultiplier,
+  brewQueueCapacity,
 } from '../src/config/economy.config';
 import { D, fmt } from '../src/game/decimal';
 import {
@@ -12,6 +13,7 @@ import {
   nextStep,
   stationSoftMaxLevel,
   stationUpgradeCost,
+  trayCapacity,
   TEA_PRICE,
   brewTime,
 } from '../src/game/store';
@@ -64,35 +66,61 @@ describe('sayı biçimlendirme', () => {
   });
 });
 
-describe('simülasyon — NPC tam yaşam döngüsü', () => {
-  it('müşteri gelir, servis edilir ve para üretir', () => {
+describe('servis döngüsü (D-011 / Faz 2c)', () => {
+  // Oyuncuyu kimseyi servis edemeyeceği, pad doldurmayacağı uzak bir köşeye park eder.
+  function parkPlayerAway() {
+    useGame.setState({ player: [0, 0.6, 2], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+  }
+
+  it('ocak hazır-kuyruğa demler; kapasiteyi (ocak seviyesine bağlı) AŞMAZ', () => {
     useGame.getState().hardReset();
-    expect(useGame.getState().tables).toBe(1);
-
-    // ~50 sn simüle et (gel→otur→sipariş→iç→öde döngüsü ~13 sn)
-    for (let i = 0; i < 500; i++) useGame.getState().tick(0.1);
-
+    parkPlayerAway();
+    // Uzun süre: hiç servis yok → kuyruk dolar ama kapasitede durur.
+    for (let i = 0; i < 1200; i++) useGame.getState().tick(0.1);
     const s = useGame.getState();
-    expect(s.npcCount).toBeGreaterThan(0);
-    // Oyuncu masada değil → paralar yerde birikir (toplanmadı)
-    expect(s.coins.length).toBeGreaterThan(0);
+    expect(s.readyCups).toBeGreaterThan(0);
+    expect(s.readyCups).toBeLessThanOrEqual(brewQueueCapacity(s.stationLevel));
   });
 
-  it('oyuncu parayı toplayınca cüzdan artar', () => {
+  it('servis EDİLMEYEN müşteri sabır aşımında SESSİZCE gider (ödeme yok)', () => {
     useGame.getState().hardReset();
-    // bir müşteri ödeyene kadar ilerlet
+    parkPlayerAway();
+    // Sabır + döngü süresinden uzun simüle et; oyuncu servis etmiyor.
+    for (let i = 0; i < 600; i++) useGame.getState().tick(0.1);
+    const s = useGame.getState();
+    // Müşteriler gelip gidiyor ama hiç ödeme olmadı.
+    expect(s.lifetime.toNumber()).toBe(0);
+    expect(s.coins.length).toBe(0);
+  });
+
+  it('ocaktan tepsiye al → bekleyen masaya bırak → müşteri içer, öder, para toplanır', () => {
+    useGame.getState().hardReset();
+    parkPlayerAway();
+    // Bir müşteri otursun + çay demlensin.
     for (let i = 0; i < 200; i++) useGame.getState().tick(0.1);
-    let s = useGame.getState();
-    // bir coin oluştuysa oyuncuyu üstüne koy ve bir tick işlet
-    if (s.coins.length > 0) {
-      const c = s.coins[0];
-      useGame.setState({ player: [c.pos[0], 0.6, c.pos[2]] });
-      const before = useGame.getState().wallet.toNumber();
-      useGame.getState().tick(0.1);
-      const after = useGame.getState().wallet.toNumber();
-      expect(after).toBeGreaterThan(before);
-    }
-    expect(s.lifetime.toNumber()).toBeGreaterThanOrEqual(0);
+    expect(useGame.getState().readyCups).toBeGreaterThan(0);
+    const waiting = useGame.getState().npcs.find((n) => n.state === 'waitingForTea');
+    expect(waiting).toBeTruthy();
+
+    // 1) Ocağa git → tepsi dolar.
+    const st = LAYOUT.stations[0];
+    useGame.setState({ player: [st[0], 0.6, st[2]] });
+    useGame.getState().tick(0.1);
+    const trayLoaded = useGame.getState().tray;
+    expect(trayLoaded).toBeGreaterThan(0);
+    expect(trayLoaded).toBeLessThanOrEqual(trayCapacity());
+
+    // 2) Bekleyen müşterinin koltuğuna git → çay bırak.
+    const seat = LAYOUT.tables[waiting!.tableIndex].seat;
+    useGame.setState({ player: [seat[0], 0.6, seat[2]] });
+    useGame.getState().tick(0.1);
+    const served = useGame.getState().npcs.find((n) => n.id === waiting!.id);
+    expect(served?.state).toBe('drinking'); // servis edildi
+    expect(useGame.getState().tray).toBe(trayLoaded - 1); // tepsiden bir çay gitti
+
+    // 3) İçme süresi sonunda öder; oyuncu koltukta olduğundan parayı toplar → lifetime artar.
+    for (let i = 0; i < 80; i++) useGame.getState().tick(0.1);
+    expect(useGame.getState().lifetime.toNumber()).toBeGreaterThan(0);
   });
 });
 

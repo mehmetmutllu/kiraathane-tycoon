@@ -1,7 +1,7 @@
 // Test/dev kancaları. 3D sahne görsel doğrulanamaz; durum buradan okunur.
 // window.__game  -> salt-okunur anlık görüntü
 // window.__advanceTime(sn) -> simülasyonu hızlı ileri sar
-import { useGame, currentPad, LAYOUT } from './store';
+import { useGame, currentPad, LAYOUT, trayCapacity } from './store';
 import type { Vec3 } from './types';
 
 declare global {
@@ -36,6 +36,17 @@ export function installDevHooks(): void {
       serviceSpeedMult: +s.serviceSpeedMult.toFixed(3),
       padsDone: [...s.padsDone],
       npcCount: s.npcCount,
+      // Servis durumu (D-011)
+      readyCups: s.readyCups,
+      tray: s.tray,
+      trayCap: trayCapacity(),
+      waitingCount: s.npcs.filter((n) => n.state === 'waitingForTea').length,
+      stationPos: LAYOUT.stations[0],
+      // Servis edilmeyi bekleyen ilk müşterinin koltuğu (smoke servis testi için) — yoksa null.
+      firstWaitingSeat: (() => {
+        const w = s.npcs.find((n) => n.state === 'waitingForTea');
+        return w ? LAYOUT.tables[w.tableIndex].seat : null;
+      })(),
       coins: s.coins.length,
       padFill: Math.floor(s.padFill),
       currentPad: pad ? pad.id : null,

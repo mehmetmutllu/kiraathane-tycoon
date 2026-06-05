@@ -60,12 +60,23 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
      bottleneck modeline yeniden yazıldı: ilk alım **84sn (<90 hedef ✓)**, otomasyon ~8dk.
      Vitest 14/14, smoke 9/9, build temiz. (Maliyetler: table2=35, table3=120, station2=360,
      samovar=850; costGrowth 1.5.)
-- ⏳ **2c (SIRADAKİ):** Yardımcı garson (sipariş istasyondan masaya otomatik taşınır).
+- ✅ **2c (D-011):** Manuel tepsi servisi. Çay artık OTO servis EDİLMEZ. NPC FSM: `ordering` →
+     `waitingForTea` + **sabır timer'ı** (18sn, aşınca sessizce gider, ödeme yok). Ocak **hazır-kuyruğu**
+     (`readyCups`+`brewProgress`, kapasite `brewQueueCapacity(level)`=3+level; dolunca demleme durur).
+     Oyuncu **tepsi** (`tray`, kapasite 2; ocakta dol — yakınlık, bekleyen masaya bırak — yakınlık).
+     `tray/readyCups/brewProgress` **transient** → kalıcı şema değişmedi, **SAVE_VERSION 4'te kaldı**.
+     Görsel: oyuncu elinde tepsi+bardaklar, ocak tezgâhında hazır çaylar, bekleyen müşteri baloncuğu.
+     HUD: 🫖 tepsi/kapasite + ☕ hazır çay. devHooks: readyCups/tray/trayCap/waitingCount/stationPos/
+     firstWaitingSeat. Vitest **15/15**, smoke **12/12** (demle→tepsi→servis→ödeme→toplama), build temiz, sim 84sn.
+- ⏳ **2d (SIRADAKİ):** Garson (bölge-başı, yavaş/küçük tepsi, 2. masa sonrası gated) + harita
+     dengesi (1 ocak : 4 masa). `hasWaiter` persist → saveVersion bump.
+- ⏳ **2e:** Bardak/bulaşık döngüsü (bardak=ocak seviyesine bağlı, kirli→yıka) + bulaşıkçı + tepsi yükseltme.
 
-## Faz 3 — Çeşitlilik + sosyal ⏳
-- ⏳ Kahve / tost / pizza istasyonları
-- ⏳ Okey / tavla masaları (4 kişilik, uzun oturan, istikrarlı gelir)
-- ⏳ Nargile, alan genişleme
+## Faz 3 — My-Hotel zone & roller ⏳ (D-012 ile yeniden çerçevelendi)
+- ⏳ **3a:** Salon (zone) genişleme: salon dol → yeni salon + oto 1.ocak/1.masa + personel slotları.
+- ⏳ **3b:** Tuvalet ODASI (parayla açılır) + tuvalet kâğıdı yenileme + temizlikçi.
+- ⏳ **3c:** Menü çeşitliliği (kahve/tost) + masa-yükseltme işlevi (sabır/imaj). Okey/tavla/nargile sonra.
+- NOT: KASA YOK (D-012). Görsel: primitive = nihai sanat stili (D-013).
 
 ## Faz 4 — Ekonomi / meta ⏳
 - ⏳ Evrensel 5-seviye yükseltme (L5 💎/video) tüm objelerde

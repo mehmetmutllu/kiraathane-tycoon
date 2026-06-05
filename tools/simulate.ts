@@ -9,6 +9,11 @@
  *   - Çay fiyatı sabit (basePrice); yükseltme fiyatı DEĞİL throughput'u (çay/dk) artırır.
  *   - Yükseltmeler/açılışlar sıralı önkoşullarla (`requires`) kilitli.
  * Otomatik oyuncu, gating sırasına uyarak parası yettikçe sıradaki adımı alır.
+ *
+ * NOT (D-011, 2c): çay artık manuel tepsiyle servis ediliyor. Bu simülasyon, oyuncunun/
+ * garsonun servise YETİŞTİĞİ ideal durumu (kararlı-durum throughput tavanı) modeller —
+ * döngü ≈ yürü + demle + iç. Servis darboğazı (oyuncu yavaşsa müşteri sabırsızlanıp gider)
+ * sahnede gerçek; garson hız/tepsi dengesi 2d'de buraya eklenecek.
  */
 import {
   economyConfig as C,

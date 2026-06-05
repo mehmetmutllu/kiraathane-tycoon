@@ -3,7 +3,7 @@ import type { Npc } from '../../game/types';
 import { Model } from './Model';
 
 function Customer({ npc }: { npc: Npc }) {
-  const waiting = npc.state === 'ordering';
+  const waiting = npc.state === 'waitingForTea';
   return (
     <group position={[npc.pos[0], 0, npc.pos[2]]}>
       <Model

@@ -41,10 +41,17 @@ function CameraRig() {
 function Stations() {
   const stations = useGame((s) => s.stations);
   const stationLevel = useGame((s) => s.stationLevel);
+  const readyCups = useGame((s) => s.readyCups);
   return (
     <>
       {LAYOUT.stations.slice(0, stations).map((p, i) => (
-        <TeaStation key={i} position={p} level={i === 0 ? stationLevel : 0} showBadge={i === 0} />
+        <TeaStation
+          key={i}
+          position={p}
+          level={i === 0 ? stationLevel : 0}
+          showBadge={i === 0}
+          readyCups={i === 0 ? readyCups : 0}
+        />
       ))}
     </>
   );

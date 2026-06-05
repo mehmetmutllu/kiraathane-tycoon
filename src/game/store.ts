@@ -6,6 +6,7 @@ import {
   upgradeOutputMultiplier,
   upgradeCost,
   requiresMet,
+  brewQueueCapacity,
   type PadDef,
   type GateState,
   type Requires,
@@ -74,10 +75,13 @@ function brewThroughputMult(level: number): number {
   return upgradeOutputMultiplier(C.teaStation.upgrade, level);
 }
 
-/** Bir müşterinin sipariş/demleme süresi (sn) — throughput arttıkça kısalır. */
+/** Bir bardak çayın demlenme süresi (sn) — throughput arttıkça kısalır. */
 function brewTime(level: number, serviceSpeedMult: number): number {
   return (C.npc.orderTime * serviceSpeedMult) / brewThroughputMult(level);
 }
+
+/** Oyuncunun tepsi kapasitesi (tek turda taşınan çay). Yükseltme Faz 2e. */
+export const trayCapacity = () => C.serving.trayCapacityBase;
 
 /** Çevrimdışı gelir oranı (₺/sn) — bottleneck idealize: oturma × sabit fiyat / döngü. */
 function incomeRate(tables: number, level: number, serviceSpeedMult = 1): number {
@@ -110,11 +114,17 @@ export interface GameState {
   serviceSpeedMult: number;
   padsDone: string[];
   padFill: number;
-  // Transient
+  // Transient (kaydedilmez — D-011 servis durumu yeniden kurulur)
   player: Vec3;
   npcs: Npc[];
   coins: Coin[];
   npcCount: number;
+  /** Ocak hazır-kuyruğundaki demlenmiş çay sayısı. */
+  readyCups: number;
+  /** Demlenmekte olan bardağın ilerleme süresi (sn). */
+  brewProgress: number;
+  /** Oyuncunun tepsisinde taşıdığı çay sayısı. */
+  tray: number;
   upgradeFill: number;
   activeZone: ActiveZone | null;
   nextStepLabel: string;
@@ -189,6 +199,9 @@ export const useGame = create<GameState>((set, get) => ({
   npcs: [],
   coins: [],
   npcCount: 0,
+  readyCups: 0,
+  brewProgress: 0,
+  tray: 0,
   upgradeFill: 0,
   activeZone: null,
   nextStepLabel: '',
@@ -229,6 +242,9 @@ export const useGame = create<GameState>((set, get) => ({
       npcs: [],
       coins: [],
       npcCount: 0,
+      readyCups: 0,
+      brewProgress: 0,
+      tray: 0,
       upgradeFill: 0,
       activeZone: null,
       nextStepLabel: nextStep({
@@ -260,8 +276,24 @@ export const useGame = create<GameState>((set, get) => ({
     let upgradeFill = s.upgradeFill;
     let activeZone: ActiveZone | null = null;
     let stationLevel = s.stationLevel;
+    let readyCups = s.readyCups;
+    let brewProgress = s.brewProgress;
+    let tray = s.tray;
     let nextId = s.nextId;
     let spawnTimer = s.spawnTimer - dt;
+
+    // --- Ocak hazır-kuyruğu (demleme) — D-011 §3 ---
+    // Ocak, kuyruk dolana kadar çay demler; doluyken durur (teslimat darboğaz olur).
+    const queueCap = brewQueueCapacity(stationLevel);
+    const cupBrewTime = brewTime(stationLevel, serviceSpeedMult);
+    if (readyCups < queueCap) {
+      brewProgress += dt;
+      while (readyCups < queueCap && brewProgress >= cupBrewTime) {
+        readyCups += 1;
+        brewProgress -= cupBrewTime;
+      }
+    }
+    if (readyCups >= queueCap) brewProgress = Math.min(brewProgress, cupBrewTime);
 
     // --- Spawn ---
     const activeCount = npcs.filter((n) => n.state !== 'leaving').length;
@@ -290,17 +322,15 @@ export const useGame = create<GameState>((set, get) => ({
       switch (n.state) {
         case 'toTable':
           if (moveToward(n.pos, slot.seat, step)) {
-            n.state = 'ordering';
-            // Demleme süresi: stationLevel throughput'u arttıkça kısalır (fiyat sabit).
-            n.timer = brewTime(stationLevel, serviceSpeedMult);
+            // Oturdu; çay servisini bekler. Sabır timer'ı başlar (D-011).
+            n.state = 'waitingForTea';
+            n.timer = C.npc.patience;
           }
           break;
-        case 'ordering':
+        case 'waitingForTea':
+          // Çay artık OTO gelmez — oyuncu/garson tepsiyle bırakmalı. Sabır biterse sessizce gider.
           n.timer -= dt;
-          if (n.timer <= 0) {
-            n.state = 'drinking';
-            n.timer = C.npc.eatTime;
-          }
+          if (n.timer <= 0) n.state = 'leaving';
           break;
         case 'drinking':
           n.timer -= dt;
@@ -342,6 +372,32 @@ export const useGame = create<GameState>((set, get) => ({
         }
       }
       coins = keep;
+    }
+
+    // --- Servis (D-011): ocakta tepsiyi doldur, bekleyen masalara çay bırak (yakınlık) ---
+    const trayCap = trayCapacity();
+    // Ocağa yaklaşınca hazır çaylardan tepsi dolar (herhangi bir açık ocak yeterli).
+    if (tray < trayCap && readyCups > 0) {
+      for (let i = 0; i < stations; i++) {
+        if (dist2D(player, LAYOUT.stations[i]) < C.serving.pickupRadius) {
+          const take = Math.min(trayCap - tray, readyCups);
+          tray += take;
+          readyCups -= take;
+          break;
+        }
+      }
+    }
+    // Bekleyen masaya yaklaşınca tepsiden çay bırak → müşteri içmeye başlar (toplu servis).
+    if (tray > 0) {
+      for (const n of liveNpcs) {
+        if (tray <= 0) break;
+        if (n.state !== 'waitingForTea') continue;
+        if (dist2D(player, LAYOUT.tables[n.tableIndex].seat) < C.serving.serveRadius) {
+          n.state = 'drinking';
+          n.timer = C.npc.eatTime;
+          tray -= 1;
+        }
+      }
     }
 
     // --- Pad doldurma (sıradaki aktif pad; pad açtığı objenin yerinde) ---
@@ -435,6 +491,9 @@ export const useGame = create<GameState>((set, get) => ({
       activeZone,
       nextStepLabel,
       player,
+      readyCups,
+      brewProgress,
+      tray,
       spawnTimer,
       saveTimer,
       nextId,
