@@ -8,10 +8,23 @@ import { D, fmt } from '../src/game/decimal';
 import {
   useGame,
   LAYOUT,
-  padCost,
+  currentPad,
   stationSoftMaxLevel,
   stationUpgradeCost,
 } from '../src/game/store';
+
+// Sıradaki pad'i, oyuncuyu üstüne koyup para ekleyerek tamamlar; tamamlanan id'yi döner.
+function completeCurrentPad(): string | null {
+  const pad = currentPad(useGame.getState().padsDone);
+  if (!pad) return null;
+  const pos = LAYOUT.padPos[pad.id];
+  useGame.getState().addMoney(pad.cost + 50);
+  useGame.setState({ player: [pos[0], 0.6, pos[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+  for (let i = 0; i < 400 && currentPad(useGame.getState().padsDone)?.id === pad.id; i++) {
+    useGame.getState().tick(0.1);
+  }
+  return pad.id;
+}
 
 const spec = economyConfig.teaStation.upgrade;
 
@@ -106,21 +119,27 @@ describe('çay istasyonu yükseltme (Faz 2a)', () => {
   });
 });
 
-describe('pad genişlemesi — 2. masa açılışı', () => {
-  it('oyuncu pad üstünde dururken cüzdandan dolar ve masa açılır', () => {
+describe('generic pad sistemi (Faz 2b)', () => {
+  it("pad'ler config sırasıyla açılır ve etkileri uygulanır", () => {
     useGame.getState().hardReset();
     expect(useGame.getState().tables).toBe(1);
-    // Yeterli para + oyuncuyu pad'in üstüne koy
-    useGame.setState({
-      wallet: D(padCost() + 50),
-      player: [LAYOUT.pad[0], 0.6, LAYOUT.pad[2]],
-      inputKeyboard: [0, 0],
-      inputJoystick: [0, 0],
-    });
-    // ~6 sn dur (fillRate ile 150₺ ~3.75 sn'de dolar)
-    for (let i = 0; i < 80; i++) useGame.getState().tick(0.1);
-    const s = useGame.getState();
-    expect(s.tables).toBe(2);
-    expect(s.wallet.toNumber()).toBeLessThan(padCost() + 50);
+    expect(currentPad([])?.id).toBe('table2');
+
+    // 1) 2. Masa → tables 1→2
+    expect(completeCurrentPad()).toBe('table2');
+    expect(useGame.getState().tables).toBe(2);
+
+    // 2) Yeni Çaydanlık Yeri → tables→3, stations→2
+    expect(completeCurrentPad()).toBe('station2');
+    expect(useGame.getState().tables).toBe(3);
+    expect(useGame.getState().stations).toBe(2);
+
+    // 3) Semavere Geçiş → servis hızı çarpanı 0.7
+    expect(completeCurrentPad()).toBe('samovar');
+    expect(useGame.getState().serviceSpeedMult).toBeCloseTo(0.7, 5);
+
+    // Hepsi açıldı
+    expect(useGame.getState().padsDone.length).toBe(3);
+    expect(currentPad(useGame.getState().padsDone)).toBeNull();
   });
 });

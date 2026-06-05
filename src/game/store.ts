@@ -5,6 +5,7 @@ import {
   economyConfig as C,
   upgradeOutputMultiplier,
   upgradeCost,
+  type PadDef,
 } from '../config/economy.config';
 import { defaultSave, loadSave, writeSave, clearSave, type SaveData } from './save';
 
@@ -12,8 +13,8 @@ import { defaultSave, loadSave, writeSave, clearSave, type SaveData } from './sa
 export const LAYOUT = {
   entrance: [0, 0.6, 7.5] as Vec3,
   player: [0, 0.6, 2] as Vec3,
-  station: [0, 0, -5] as Vec3,
-  pad: [0, 0, 3.5] as Vec3,
+  // Çaydanlık yerleri (stations sayısına göre çizilir).
+  stations: [[-1.5, 0, -5] as Vec3, [3, 0, -5] as Vec3],
   bounds: 7,
   // Masa slotları + müşterinin oturduğu yer (seat).
   tables: [
@@ -22,6 +23,12 @@ export const LAYOUT = {
     { table: [-3, 0, 2.0] as Vec3, seat: [-3, 0.6, 3.2] as Vec3 },
     { table: [3, 0, 2.0] as Vec3, seat: [3, 0.6, 3.2] as Vec3 },
   ],
+  // Pad pozisyonları (config'teki pad id'sine göre).
+  padPos: {
+    table2: [-1.5, 0, 3.8] as Vec3,
+    station2: [1.5, 0, 3.8] as Vec3,
+    samovar: [0, 0, 5.2] as Vec3,
+  } as Record<string, Vec3>,
 } as const;
 
 const NPC_SPEED = 2.6;
@@ -56,9 +63,9 @@ function teaPrice(level: number): number {
   return C.teaStation.basePrice * upgradeOutputMultiplier(C.teaStation.upgrade, level);
 }
 
-/** Çevrimdışı gelir oranı (₺/sn) — tek istasyon idealize. */
-function incomeRate(tables: number, level: number): number {
-  const cycle = C.npc.walkTime + C.npc.orderTime + C.npc.eatTime;
+/** Çevrimdışı gelir oranı (₺/sn) — masa kapasitesi + servis hızına göre idealize. */
+function incomeRate(tables: number, level: number, serviceSpeedMult = 1): number {
+  const cycle = C.npc.walkTime + C.npc.orderTime * serviceSpeedMult + C.npc.eatTime;
   return (tables * teaPrice(level)) / cycle;
 }
 
@@ -74,7 +81,10 @@ export interface GameState {
   diamonds: Decimal;
   lifetime: Decimal;
   tables: number;
+  stations: number;
   stationLevel: number;
+  serviceSpeedMult: number;
+  padsDone: string[];
   padFill: number;
   // Transient
   player: Vec3;
@@ -99,7 +109,10 @@ export interface GameState {
   hardReset: () => void;
 }
 
-export const padCost = () => C.pads.table2.cost;
+/** Sıradaki açılmamış pad (hepsi açıldıysa null). Pad'ler config sırasıyla aktifleşir. */
+export function currentPad(padsDone: string[]): PadDef | null {
+  return (C.pads as readonly PadDef[]).find((p) => !padsDone.includes(p.id)) ?? null;
+}
 
 /** ₺ ile çıkılabilen en yüksek istasyon seviyesi (L5 = Usta, 💎/video — Faz 4). */
 export const stationSoftMaxLevel = () => C.teaStation.upgrade.masterLevel - 1;
@@ -111,7 +124,10 @@ export const useGame = create<GameState>((set, get) => ({
   diamonds: D(0),
   lifetime: D(0),
   tables: 1,
+  stations: 1,
   stationLevel: 0,
+  serviceSpeedMult: 1,
+  padsDone: [],
   padFill: 0,
   player: [...LAYOUT.player] as Vec3,
   npcs: [],
@@ -133,7 +149,9 @@ export const useGame = create<GameState>((set, get) => ({
     let lifetime = D(save.lifetime);
     let offlineEarned = 0;
     if (elapsed > 30) {
-      offlineEarned = Math.floor(incomeRate(save.tables, save.stationLevel) * Math.min(elapsed, cap));
+      offlineEarned = Math.floor(
+        incomeRate(save.tables, save.stationLevel, save.serviceSpeedMult) * Math.min(elapsed, cap),
+      );
       wallet = wallet.add(offlineEarned);
       lifetime = lifetime.add(offlineEarned);
     }
@@ -142,7 +160,10 @@ export const useGame = create<GameState>((set, get) => ({
       lifetime,
       diamonds: D(save.diamonds),
       tables: save.tables,
+      stations: save.stations,
       stationLevel: save.stationLevel,
+      serviceSpeedMult: save.serviceSpeedMult,
+      padsDone: [...save.padsDone],
       padFill: save.padFill,
       offlineEarned,
       player: [...LAYOUT.player] as Vec3,
@@ -165,10 +186,12 @@ export const useGame = create<GameState>((set, get) => ({
     let wallet = s.wallet;
     let lifetime = s.lifetime;
     let tables = s.tables;
+    let stations = s.stations;
+    let serviceSpeedMult = s.serviceSpeedMult;
+    let padsDone = s.padsDone;
     let padFill = s.padFill;
     let nextId = s.nextId;
     let spawnTimer = s.spawnTimer - dt;
-    const padDone = tables >= 2;
 
     // --- Spawn ---
     const activeCount = npcs.filter((n) => n.state !== 'leaving').length;
@@ -198,7 +221,7 @@ export const useGame = create<GameState>((set, get) => ({
         case 'toTable':
           if (moveToward(n.pos, slot.seat, step)) {
             n.state = 'ordering';
-            n.timer = C.npc.orderTime;
+            n.timer = C.npc.orderTime * serviceSpeedMult;
           }
           break;
         case 'ordering':
@@ -250,18 +273,32 @@ export const useGame = create<GameState>((set, get) => ({
       coins = keep;
     }
 
-    // --- Pad doldurma ---
-    if (!padDone) {
-      const cost = padCost();
-      if (dist2D(player, LAYOUT.pad) < PAD_RADIUS && wallet.gt(0)) {
-        const remaining = cost - padFill;
-        const amt = Math.min(C.pads.table2.fillRate * dt, wallet.toNumber(), remaining);
+    // --- Pad doldurma (sıradaki aktif pad) ---
+    const pad = currentPad(padsDone);
+    if (pad) {
+      const padPos = LAYOUT.padPos[pad.id];
+      if (padPos && dist2D(player, padPos) < PAD_RADIUS && wallet.gt(0)) {
+        const remaining = pad.cost - padFill;
+        const amt = Math.min(pad.fillRate * dt, wallet.toNumber(), remaining);
         if (amt > 0) {
           padFill += amt;
           wallet = wallet.sub(amt);
-          if (padFill >= cost) {
-            padFill = cost;
-            tables = 2;
+          if (padFill >= pad.cost) {
+            // Pad tamamlandı: etkiyi uygula, bir sonrakine geç.
+            switch (pad.effect.type) {
+              case 'addTable':
+                tables = Math.min(LAYOUT.tables.length, tables + 1);
+                break;
+              case 'addTableStation':
+                tables = Math.min(LAYOUT.tables.length, tables + 1);
+                stations = Math.min(LAYOUT.stations.length, stations + 1);
+                break;
+              case 'serviceSpeed':
+                serviceSpeedMult *= pad.effect.factor;
+                break;
+            }
+            padsDone = [...padsDone, pad.id];
+            padFill = 0;
           }
         }
       }
@@ -280,6 +317,9 @@ export const useGame = create<GameState>((set, get) => ({
       wallet,
       lifetime,
       tables,
+      stations,
+      serviceSpeedMult,
+      padsDone,
       padFill,
       player,
       spawnTimer,
@@ -317,7 +357,10 @@ export const useGame = create<GameState>((set, get) => ({
       diamonds: s.diamonds.toString(),
       lifetime: s.lifetime.toString(),
       tables: s.tables,
+      stations: s.stations,
       stationLevel: s.stationLevel,
+      serviceSpeedMult: s.serviceSpeedMult,
+      padsDone: [...s.padsDone],
       padFill: s.padFill,
       lastSaved: Date.now(),
     });

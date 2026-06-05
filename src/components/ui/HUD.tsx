@@ -1,6 +1,6 @@
 import {
   useGame,
-  padCost,
+  currentPad,
   stationSoftMaxLevel,
   stationUpgradeCost,
 } from '../../game/store';
@@ -11,11 +11,13 @@ export function HUD() {
   const diamonds = useGame((s) => s.diamonds);
   const tables = useGame((s) => s.tables);
   const padFill = useGame((s) => s.padFill);
+  const padsDone = useGame((s) => s.padsDone);
   const offlineEarned = useGame((s) => s.offlineEarned);
   const stationLevel = useGame((s) => s.stationLevel);
   const upgradeStation = useGame((s) => s.upgradeStation);
 
-  const padPct = tables >= 2 ? 100 : Math.min(100, (padFill / padCost()) * 100);
+  const pad = currentPad(padsDone);
+  const padPct = pad ? Math.min(100, (padFill / pad.cost) * 100) : 100;
 
   const softMax = stationSoftMaxLevel();
   const atSoftMax = stationLevel >= softMax;
@@ -42,14 +44,14 @@ export function HUD() {
         </div>
       )}
 
-      {tables < 2 && (
+      {pad && (
         <div className="pad-status" data-testid="pad-status">
-          <div className="pad-label">2. masa pad'i — üstünde dur, cüzdandan dolar</div>
+          <div className="pad-label">{pad.label} — pad üstünde dur, cüzdandan dolar</div>
           <div className="pad-bar">
             <div className="pad-fill" style={{ width: `${padPct}%` }} />
           </div>
           <div className="pad-num">
-            {Math.floor(padFill)} / {padCost()} ₺
+            {Math.floor(padFill).toLocaleString('tr-TR')} / {pad.cost.toLocaleString('tr-TR')} ₺
           </div>
         </div>
       )}

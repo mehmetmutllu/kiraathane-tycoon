@@ -56,6 +56,19 @@ try {
   if (afterLvl === beforeLvl + 1) pass(`Çay yükseltme butonu çalışıyor (L${beforeLvl}→L${afterLvl})`);
   else fail(`Yükseltme butonu seviye artırmadı (L${beforeLvl}→L${afterLvl})`);
 
+  // Generic pad: para ekle + ilk pad'in üstüne ışınla + zamanı sar → 2. masa açılmalı
+  const padInfo = await page.evaluate(() => window.__game());
+  if (padInfo.currentPad === 'table2' && padInfo.padPos) {
+    await page.evaluate(() => window.__addMoney(300));
+    await page.evaluate((pos) => window.__teleport(pos[0], pos[2]), padInfo.padPos);
+    const afterPad = await page.evaluate(() => window.__advanceTime(8));
+    if (afterPad.tables >= 2 && afterPad.padsDone.includes('table2'))
+      pass(`Pad sistemi çalışıyor (table2 açıldı, masa=${afterPad.tables}, sıradaki=${afterPad.currentPad})`);
+    else fail(`Pad açılmadı (tables=${afterPad.tables}, padsDone=${JSON.stringify(afterPad.padsDone)})`);
+  } else {
+    fail(`Beklenen ilk pad table2 değil: ${padInfo.currentPad}`);
+  }
+
   // Dikey (portrait) orana çevir → responsive kamera/HUD hatasız mı
   await page.setViewportSize({ width: 412, height: 915 });
   await page.waitForTimeout(500);

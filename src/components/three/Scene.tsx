@@ -36,6 +36,18 @@ function CameraRig() {
   return null;
 }
 
+// Açık çaydanlık yerlerini çiz (stations sayısına göre).
+function Stations() {
+  const stations = useGame((s) => s.stations);
+  return (
+    <>
+      {LAYOUT.stations.slice(0, stations).map((p, i) => (
+        <TeaStation key={i} position={p} />
+      ))}
+    </>
+  );
+}
+
 function Ground() {
   return (
     <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
@@ -90,7 +102,7 @@ export function Scene() {
       />
       <Ground />
       <Walls />
-      <TeaStation />
+      <Stations />
       <Tables />
       <Pad />
       <Customers />

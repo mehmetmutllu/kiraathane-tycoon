@@ -3,8 +3,8 @@
 > En sık güncellenen dosya. Her anlamlı adımdan sonra güncelle.
 
 ## Şu an neredeyiz
-Faz 0 + Faz 1 bitti. Responsive yön (portrait+landscape) eklendi. **Faz 2 başladı:**
-2a (çay yükseltme L1-L4) bitti ve test edildi. Sıradaki: **2b (generic pad sistemi).**
+Faz 0 + Faz 1 bitti. Responsive yön eklendi. **Faz 2:** 2a (çay yükseltme) ✅,
+2b (generic pad sistemi) ✅ bitti ve test edildi. Sıradaki: **2c (yardımcı garson).**
 
 ## En son ne yapıldı
 - Ortam doğrulandı, Playwright MCP eklendi, Vite + React 19 + R3F stack kuruldu.
@@ -13,16 +13,18 @@ Faz 0 + Faz 1 bitti. Responsive yön (portrait+landscape) eklendi. **Faz 2 başl
   HUD, joystick, kayıt+offline, dev kancaları, fallback Model loader.
 - Testler: Vitest 6/6 ✅, headless duman (tools/smoke.mjs) 6/6 ✅, build temiz, konsol temiz.
 
-## TAM sıradaki adım (Faz 2b — generic pad sistemi)
-1. `economy.config.pads`'i tek `table2`'den **pad listesine** çevir: her pad
-   `{ id, label, cost, fillRate, effect }`. Faz 1 davranışı korunmalı (2. masa).
-2. Store'daki tek `padFill` + sabit `LAYOUT.pad`'i **pad başına** duruma çevir
-   (her açık pad'in fill'i; açılınca effect uygulanır: tables++ / yeni istasyon / semaver).
-   Kayıt şemasını migrate et (saveVersion++; eski `padFill` → ilk pad'e map).
-3. Pad'leri sahnede çoklu çiz; HUD pad ilerlemesini aktif pad'e göre göster.
-4. Pad effect'leri: 2. masa (mevcut), **yeni çaydanlık yeri** (2. istasyon), **semavere
-   geçiş** (görsel + kapasite/hız etkisi). Vitest + smoke ekle.
-5. Sonra **2c (garson)**. Faz bitince oturum-bitir.
+## TAM sıradaki adım (Faz 2c — yardımcı garson)
+1. Garson, bir pad ile açılsın (config.pads'e `waiter` effekti ekle ya da ayrı bir
+   "hasWaiter" pad'i). Açılınca state'e `hasWaiter=true` (persist).
+2. Garson varlığı: store'da basit durum makinesi (istasyon→masaya yürü→servis→istasyona
+   dön). Şu an servis timer ile otomatik; garson VARSA görsel taşıma + (opsiyonel) servis
+   hızına/erişilebilirliğe etki. Sahip artık çoğunlukla para toplar/büyütür.
+3. Sahnede garson kapsülü (farklı renk) + yol animasyonu. window.__game'e hasWaiter ekle.
+4. Vitest + smoke. Faz 2 (2a+2b+2c) bitince Faz 2'yi ✅ işaretle, oturum-bitir.
+
+## Faydalı dev kancaları (konsol)
+`__game()`, `__advanceTime(60)`, `__addMoney(1000)`, `__upgradeStation()`,
+`__teleport(x,z)` (pad'e ışınla: padPos `__game().padPos`), `__resetGame()`.
 
 ## Açık sorular / kararlar
 - Pad sistemi şu an tek-amaçlı (2. masa). Faz 2'de generic "pad listesi" yapısına

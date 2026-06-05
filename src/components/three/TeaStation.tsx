@@ -1,11 +1,10 @@
-import { LAYOUT } from '../../game/store';
+import type { Vec3 } from '../../game/types';
 import { Model } from './Model';
 
 // Çay istasyonu (greybox: tezgah + semaver silindiri). Faz 6'da tea_station.glb/samovar.glb.
-export function TeaStation() {
-  const [x, , z] = LAYOUT.station;
+export function TeaStation({ position }: { position: Vec3 }) {
   return (
-    <group position={[x, 0, z]}>
+    <group position={[position[0], 0, position[2]]}>
       <Model
         fallback={
           <group>

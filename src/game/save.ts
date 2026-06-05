@@ -10,7 +10,10 @@ export interface SaveData {
   diamonds: string;
   lifetime: string;
   tables: number;
+  stations: number;
   stationLevel: number;
+  serviceSpeedMult: number;
+  padsDone: string[];
   padFill: number;
   lastSaved: number; // epoch ms
 }
@@ -22,7 +25,10 @@ export function defaultSave(): SaveData {
     diamonds: '0',
     lifetime: '0',
     tables: 1,
+    stations: 1,
     stationLevel: 0,
+    serviceSpeedMult: 1,
+    padsDone: [],
     padFill: 0,
     lastSaved: Date.now(),
   };
@@ -42,6 +48,21 @@ function migrate(raw: Record<string, unknown>): SaveData {
     data.stationLevel = Number(raw.stationLevel ?? 0) || 0;
     data.padFill = Number(raw.padFill ?? 0) || 0;
     v = 3;
+  }
+
+  // v3 -> v4: tek-amaçlı pad → generic pad listesi.
+  // Eski tables>=2 ise 'table2' pad'i tamamlanmış sayılır; yarım padFill korunur.
+  if (v < 4) {
+    const tables = Number(data.tables ?? 1) || 1;
+    data.stations = Number(raw.stations ?? 1) || 1;
+    data.serviceSpeedMult = Number(raw.serviceSpeedMult ?? 1) || 1;
+    data.padsDone = Array.isArray(raw.padsDone)
+      ? (raw.padsDone as string[])
+      : tables >= 2
+        ? ['table2']
+        : [];
+    data.padFill = tables >= 2 ? 0 : Number(raw.padFill ?? 0) || 0;
+    v = 4;
   }
 
   data.saveVersion = SAVE_VERSION;

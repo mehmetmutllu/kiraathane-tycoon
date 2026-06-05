@@ -1,7 +1,8 @@
 // Test/dev kancaları. 3D sahne görsel doğrulanamaz; durum buradan okunur.
 // window.__game  -> salt-okunur anlık görüntü
 // window.__advanceTime(sn) -> simülasyonu hızlı ileri sar
-import { useGame, padCost } from './store';
+import { useGame, currentPad, LAYOUT } from './store';
+import type { Vec3 } from './types';
 
 declare global {
   interface Window {
@@ -10,6 +11,7 @@ declare global {
     __resetGame?: () => void;
     __addMoney?: (amount: number) => Record<string, unknown>;
     __upgradeStation?: () => boolean;
+    __teleport?: (x: number, z: number) => Record<string, unknown>;
   }
 }
 
@@ -18,17 +20,22 @@ export function installDevHooks(): void {
 
   window.__game = () => {
     const s = useGame.getState();
+    const pad = currentPad(s.padsDone);
     return {
       wallet: s.wallet.toNumber(),
       diamonds: s.diamonds.toNumber(),
       lifetime: s.lifetime.toNumber(),
       tables: s.tables,
-      stations: 1,
+      stations: s.stations,
       stationLevel: s.stationLevel,
+      serviceSpeedMult: +s.serviceSpeedMult.toFixed(3),
+      padsDone: [...s.padsDone],
       npcCount: s.npcCount,
       coins: s.coins.length,
       padFill: Math.floor(s.padFill),
-      padCost: padCost(),
+      currentPad: pad ? pad.id : null,
+      padCost: pad ? pad.cost : 0,
+      padPos: pad ? LAYOUT.padPos[pad.id] : null,
       player: s.player.map((n) => +n.toFixed(2)),
       offlineEarned: s.offlineEarned,
     };
@@ -56,4 +63,9 @@ export function installDevHooks(): void {
   };
 
   window.__upgradeStation = () => useGame.getState().upgradeStation();
+
+  window.__teleport = (x: number, z: number) => {
+    useGame.setState({ player: [x, 0.6, z] as Vec3 });
+    return window.__game!();
+  };
 }

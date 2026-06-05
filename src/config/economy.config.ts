@@ -9,7 +9,7 @@
  *   L5 (Usta)   = masterDiamondCost 💎 VEYA 1 ödüllü video; outputMult yerine masterOutputMult
  */
 
-export const SAVE_VERSION = 3;
+export const SAVE_VERSION = 4;
 
 export const CURRENCY = {
   soft: '₺', // Para — müşteriden kazanılır
@@ -74,15 +74,19 @@ export const economyConfig = {
     pickupRadius: 1.4,
   },
 
-  /** Satın-alma pad'leri (Roblox-tycoon mantığı; cüzdandan pad'e ₺ akar). */
-  pads: {
-    /** Faz 1: 2. masayı/çaydanlık yerini açan pad. */
-    table2: {
-      cost: 150,
-      /** Karakter pad üstündeyken saniyede cüzdandan pad'e akan ₺. */
-      fillRate: 40,
-    },
-  },
+  /**
+   * Satın-alma pad'leri (Roblox-tycoon mantığı; cüzdandan pad'e ₺ akar). Sıralı:
+   * bir pad ancak önceki tamamlanınca aktifleşir. Pad pozisyonları LAYOUT.padPos'ta.
+   * effect:
+   *   addTable        → +1 masa (paralel müşteri kapasitesi)
+   *   addTableStation → +1 masa & +1 çaydanlık yeri (görsel 2. istasyon)
+   *   serviceSpeed    → sipariş süresi ×factor (semaver = daha hızlı servis)
+   */
+  pads: [
+    { id: 'table2', label: '2. Masa', cost: 150, fillRate: 40, effect: { type: 'addTable' } },
+    { id: 'station2', label: 'Yeni Çaydanlık Yeri', cost: 600, fillRate: 60, effect: { type: 'addTableStation' } },
+    { id: 'samovar', label: 'Semavere Geçiş', cost: 1500, fillRate: 90, effect: { type: 'serviceSpeed', factor: 0.7 } },
+  ],
 
   /** Oyuncu sahip karakteri hareketi. */
   player: {
@@ -107,6 +111,8 @@ export const economyConfig = {
 } as const;
 
 export type EconomyConfig = typeof economyConfig;
+export type PadDef = EconomyConfig['pads'][number];
+export type PadEffect = PadDef['effect'];
 
 /** n. ₺ yükseltme seviyesinin maliyeti (level 1..masterLevel-1). */
 export function upgradeCost(spec: UpgradeSpec, level: number): number {
