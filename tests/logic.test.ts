@@ -5,7 +5,13 @@ import {
   upgradeOutputMultiplier,
 } from '../src/config/economy.config';
 import { D, fmt } from '../src/game/decimal';
-import { useGame, LAYOUT, padCost } from '../src/game/store';
+import {
+  useGame,
+  LAYOUT,
+  padCost,
+  stationSoftMaxLevel,
+  stationUpgradeCost,
+} from '../src/game/store';
 
 const spec = economyConfig.teaStation.upgrade;
 
@@ -65,6 +71,38 @@ describe('simülasyon — NPC tam yaşam döngüsü', () => {
       expect(after).toBeGreaterThan(before);
     }
     expect(s.lifetime.toNumber()).toBeGreaterThanOrEqual(0);
+  });
+});
+
+describe('çay istasyonu yükseltme (Faz 2a)', () => {
+  it('₺ ile L1→L4 yükselir; sonra ₺ ile çıkamaz (L5 = Usta 💎)', () => {
+    useGame.getState().hardReset();
+    useGame.getState().addMoney(1_000_000);
+    expect(useGame.getState().stationLevel).toBe(0);
+
+    expect(useGame.getState().upgradeStation()).toBe(true);
+    expect(useGame.getState().stationLevel).toBe(1);
+
+    for (let i = 0; i < 10; i++) useGame.getState().upgradeStation();
+    expect(useGame.getState().stationLevel).toBe(stationSoftMaxLevel());
+    expect(useGame.getState().upgradeStation()).toBe(false); // L5 ₺ ile açılmaz
+  });
+
+  it('maliyet geometrik artar ve cüzdandan düşülür', () => {
+    useGame.getState().hardReset();
+    useGame.getState().addMoney(1_000_000);
+    const c1 = stationUpgradeCost(0);
+    const c2 = stationUpgradeCost(1);
+    expect(c2).toBeGreaterThan(c1);
+    const before = useGame.getState().wallet.toNumber();
+    useGame.getState().upgradeStation();
+    expect(useGame.getState().wallet.toNumber()).toBeCloseTo(before - c1, 5);
+  });
+
+  it('para yetmezse yükseltmez', () => {
+    useGame.getState().hardReset();
+    expect(useGame.getState().upgradeStation()).toBe(false);
+    expect(useGame.getState().stationLevel).toBe(0);
   });
 });
 

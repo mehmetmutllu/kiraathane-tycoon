@@ -35,11 +35,13 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 - **Sıradaki kilometre taşı:** Faz 2 — yardımcı garson + çaydanlık yükseltme seviyeleri
   + semaver/yeni çaydanlık yeri pad'leri.
 
-## Faz 2 — Mutfak + garson ⏳
-- ⏳ Yardımcı garson (sipariş mutfaktan masaya otomatik taşınır)
-- ⏳ Çaydanlık yükseltme seviyeleri (L1-L4 ₺)
-- ⏳ Semavere geçiş pad'i
-- ⏳ Yeni çaydanlık yeri açma pad'i
+## Faz 2 — Mutfak + garson 🔧
+- ✅ **2a:** Çay istasyonu yükseltme L1-L4 (₺) — store.upgradeStation, HUD buton,
+     __addMoney/__upgradeStation kancaları. Çay değeri seviyeyle çarpan artar (zaten
+     teaPrice'a bağlı). L5 (Usta 💎/video) Faz 4. Vitest 9/9, smoke 8/8 (gerçek buton tıklama).
+- ⏳ **2b:** Generic pad sistemi (tek-amaçlı pad → pad listesi) + yeni çaydanlık yeri /
+     semavere geçiş pad'leri
+- ⏳ **2c:** Yardımcı garson (sipariş istasyondan masaya otomatik taşınır)
 
 ## Faz 3 — Çeşitlilik + sosyal ⏳
 - ⏳ Kahve / tost / pizza istasyonları

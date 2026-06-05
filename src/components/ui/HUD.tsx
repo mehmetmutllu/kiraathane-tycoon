@@ -1,4 +1,9 @@
-import { useGame, padCost } from '../../game/store';
+import {
+  useGame,
+  padCost,
+  stationSoftMaxLevel,
+  stationUpgradeCost,
+} from '../../game/store';
 import { fmt } from '../../game/decimal';
 
 export function HUD() {
@@ -7,8 +12,15 @@ export function HUD() {
   const tables = useGame((s) => s.tables);
   const padFill = useGame((s) => s.padFill);
   const offlineEarned = useGame((s) => s.offlineEarned);
+  const stationLevel = useGame((s) => s.stationLevel);
+  const upgradeStation = useGame((s) => s.upgradeStation);
 
   const padPct = tables >= 2 ? 100 : Math.min(100, (padFill / padCost()) * 100);
+
+  const softMax = stationSoftMaxLevel();
+  const atSoftMax = stationLevel >= softMax;
+  const nextCost = stationUpgradeCost(stationLevel);
+  const canUpgrade = !atSoftMax && wallet.gte(nextCost);
 
   return (
     <div className="hud" data-testid="hud">
@@ -41,6 +53,23 @@ export function HUD() {
           </div>
         </div>
       )}
+
+      <div className="controls">
+        <button
+          type="button"
+          className="btn upgrade"
+          data-testid="upgrade-station"
+          disabled={!canUpgrade}
+          onClick={() => upgradeStation()}
+        >
+          <span className="btn-title">
+            ☕ Çay {atSoftMax ? `L${softMax} (max)` : `L${stationLevel} → L${stationLevel + 1}`}
+          </span>
+          <span className="btn-sub">
+            {atSoftMax ? 'Usta (L5) 💎 — yakında' : `₺ ${nextCost.toLocaleString('tr-TR')}`}
+          </span>
+        </button>
+      </div>
 
       <div className="hint">Hareket: WASD / ok tuşları · mobilde sol-alt joystick · paraların üstünden geç</div>
     </div>

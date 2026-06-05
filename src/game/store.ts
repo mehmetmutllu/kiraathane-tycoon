@@ -4,6 +4,7 @@ import type { Coin, Npc, Vec3 } from './types';
 import {
   economyConfig as C,
   upgradeOutputMultiplier,
+  upgradeCost,
 } from '../config/economy.config';
 import { defaultSave, loadSave, writeSave, clearSave, type SaveData } from './save';
 
@@ -92,11 +93,18 @@ export interface GameState {
   tick: (dt: number) => void;
   setKeyboardInput: (x: number, z: number) => void;
   setJoystickInput: (x: number, z: number) => void;
+  upgradeStation: () => boolean;
+  addMoney: (amount: number) => void;
   saveNow: () => void;
   hardReset: () => void;
 }
 
 export const padCost = () => C.pads.table2.cost;
+
+/** ₺ ile çıkılabilen en yüksek istasyon seviyesi (L5 = Usta, 💎/video — Faz 4). */
+export const stationSoftMaxLevel = () => C.teaStation.upgrade.masterLevel - 1;
+/** Mevcut seviyeden bir sonraki ₺ yükseltmenin maliyeti. */
+export const stationUpgradeCost = (level: number) => upgradeCost(C.teaStation.upgrade, level + 1);
 
 export const useGame = create<GameState>((set, get) => ({
   wallet: D(0),
@@ -283,6 +291,23 @@ export const useGame = create<GameState>((set, get) => ({
 
   setKeyboardInput: (x, z) => set({ inputKeyboard: [x, z] }),
   setJoystickInput: (x, z) => set({ inputJoystick: [x, z] }),
+
+  // Çay istasyonu yükseltme (₺ ile L1-L4). L5 Usta = 💎/video (Faz 4).
+  upgradeStation: () => {
+    const s = get();
+    if (s.stationLevel >= stationSoftMaxLevel()) return false;
+    const cost = stationUpgradeCost(s.stationLevel);
+    if (s.wallet.lt(cost)) return false;
+    set({ wallet: s.wallet.sub(cost), stationLevel: s.stationLevel + 1 });
+    get().saveNow();
+    return true;
+  },
+
+  // Test/geliştirme yardımcısı: cüzdana para ekle.
+  addMoney: (amount) => {
+    const s = get();
+    set({ wallet: s.wallet.add(amount), lifetime: s.lifetime.add(amount) });
+  },
 
   saveNow: () => {
     const s = get();

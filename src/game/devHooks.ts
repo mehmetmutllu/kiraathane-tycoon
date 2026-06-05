@@ -8,6 +8,8 @@ declare global {
     __game?: () => Record<string, unknown>;
     __advanceTime?: (seconds: number) => Record<string, unknown>;
     __resetGame?: () => void;
+    __addMoney?: (amount: number) => Record<string, unknown>;
+    __upgradeStation?: () => boolean;
   }
 }
 
@@ -47,4 +49,11 @@ export function installDevHooks(): void {
   };
 
   window.__resetGame = () => useGame.getState().hardReset();
+
+  window.__addMoney = (amount: number) => {
+    useGame.getState().addMoney(amount);
+    return window.__game!();
+  };
+
+  window.__upgradeStation = () => useGame.getState().upgradeStation();
 }
