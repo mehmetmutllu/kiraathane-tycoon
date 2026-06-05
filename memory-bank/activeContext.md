@@ -2,17 +2,26 @@
 
 > En sık güncellenen dosya. Her anlamlı adımdan sonra güncelle.
 
-## Şu an neredeyiz
-Faz 0 + Faz 1 bitti. Responsive yön eklendi. **Faz 2:** 2a (yükseltme) ✅, 2b (generic pad) ✅,
-**2-UX (mekânsal etkileşim D-009)** ✅ bitti ve test edildi. Sıradaki: **2c (yardımcı garson).**
+## Şu an neredeyiz (oturum kapandı 2026-06-05)
+Faz 0 + Faz 1 ✅. Responsive yön ✅. Faz 2: 2a ✅, 2b ✅, 2-UX (mekânsal D-009) ✅.
+Ardından **Ekonomi v2 tasarımı + kararları kilitlendi (D-010)** — kod henüz YAZILMADI.
+**Sıradaki oturum (ÖNCELİK):** Ekonomi v2'yi UYGULA, SONRA Faz 2c (garson).
 
-## En son ne yapıldı (kullanıcı feedback'i sonrası)
-Kullanıcı çalışan oyunu görüp istedi → mekânsal etkileşime geçildi (D-009):
-- Pad'ler artık açtıkları objenin TAM yerinde (LAYOUT.padPos hedef konumlara taşındı).
-- Çay yükseltme havada buton DEĞİL: ocağın önünde `LAYOUT.upgradeZone`; üstünde dur →
-  HUD alt-orta bar dolar → seviye artar. `activeZone` state'i HUD barını sürer.
-- Ocak seviyesi: 3D rozet (drei Html "Çay Lv N") + semaver büyür/renk ısınır.
-- Pad set: table2, table3, station2 (addStation, servis ×0.85), samovar (servis ×0.7).
+## En son ne yapıldı (bu oturumun sonu)
+- Kullanıcı feedback'i → ekonomi/ilerleme yeniden tasarlandı (uygulama değil, plan):
+  `docs/progression-and-economy-v2.md` + D-010.
+- Kilitlenen kararlar: (1) çay fiyatı sabit, artış yeni menü ürünleriyle; (2) talep
+  kapasiteyi otomatik takip eder (~%15 önde, mekân hep dolu) + Tabela/İtibar & ödüllü video
+  opsiyonel; (3) gating omurgası "önceki alındı" önkoşul zinciri + lifetime-₺ destek.
+- Daha öncesinde (aynı oturum): mekânsal etkileşim (D-009) — pad'ler objenin yerinde,
+  çay yükseltme `LAYOUT.upgradeZone`'da (alt-orta bar), ocak seviyesi rozet+semaver görseli.
+- Testler: Vitest 10/10 ✅, smoke 9/9 ✅. Tree temiz, origin/main ile senkron.
+
+## ⚠️ Ekonomi v2 uygulanırken DİKKAT (sonraki oturum)
+- Mevcut kodda `teaPrice(stationLevel)` çay değerini seviyeyle ARTIRIYOR — bu D-010 ile
+  GEÇERSİZ. stationLevel etkisini **fiyattan → brewRate (çay/dk)** taşı; gelir = darboğaz×fiyat.
+- Pad/zone'lara `requires` (prev/minTables/minStationLevel/minLifetime) ekle; görünürlüğü gate'le.
+- `tools/simulate.ts`'i bottleneck modeline güncelle; tempo (ilk alım <90sn) doğrula.
 
 ## En son ne yapıldı
 - Ortam doğrulandı, Playwright MCP eklendi, Vite + React 19 + R3F stack kuruldu.
