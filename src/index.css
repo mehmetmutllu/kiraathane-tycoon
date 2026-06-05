@@ -75,6 +75,22 @@ body,
   font-weight: 600;
 }
 
+.next-step {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 96px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 213, 79, 0.5);
+  color: #ffe082;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
 .pad-status {
   position: absolute;
   top: 12px;

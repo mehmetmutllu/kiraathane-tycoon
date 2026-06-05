@@ -51,10 +51,16 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
      yok). Ocak seviyesi 3D rozet (drei Html) + semaver büyümesi/renk ile görünür. Pad set
      güncellendi (table2/table3/station2/samovar); addStation servis hızını ×0.85 hızlandırır.
      Vitest 10/10, smoke 9/9.
-- ⏳ **2-EKO (öncelik, D-010):** Ekonomi v2 — yükseltme throughput'u (çay/dk) artırır
-     (fiyat değil), gelir = darboğaz × fiyat, sıralı önkoşullu gating, hacim-tabanlı fiyat.
-     Tasarım raporu: `docs/progression-and-economy-v2.md`. **2c'den ÖNCE uygulanacak.**
-- ⏳ **2c:** Yardımcı garson (sipariş istasyondan masaya otomatik taşınır) — ekonomi v2 sonrası
+- ✅ **2-EKO (D-010):** Ekonomi v2 UYGULANDI. Çay fiyatı SABİT (basePrice 5₺); stationLevel
+     artık throughput'u (demleme süresini kısaltır = çay/dk ↑) artırır, FİYATI değil. Coin
+     değeri = TEA_PRICE sabit. Talep kapasiteyi takip eder (spawnInterval 1.6 → mekân hep dolu).
+     Gating: `Requires` (prev/minTables/minStationLevel/minLifetime) + `requiresMet`; pad'ler ve
+     yükseltme zone'u gate'li (zincir: 2.Masa[lifetime≥30] → ocak L≥1 → 3.Masa → 2.Ocak →
+     Semaver). `currentPad(GateState)`, `upgradeZoneUnlocked`, `nextStep` HUD rehberi. simulate.ts
+     bottleneck modeline yeniden yazıldı: ilk alım **84sn (<90 hedef ✓)**, otomasyon ~8dk.
+     Vitest 14/14, smoke 9/9, build temiz. (Maliyetler: table2=35, table3=120, station2=360,
+     samovar=850; costGrowth 1.5.)
+- ⏳ **2c (SIRADAKİ):** Yardımcı garson (sipariş istasyondan masaya otomatik taşınır).
 
 ## Faz 3 — Çeşitlilik + sosyal ⏳
 - ⏳ Kahve / tost / pizza istasyonları

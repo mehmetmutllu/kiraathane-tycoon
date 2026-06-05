@@ -9,18 +9,27 @@ import {
   useGame,
   LAYOUT,
   currentPad,
+  nextStep,
   stationSoftMaxLevel,
   stationUpgradeCost,
+  TEA_PRICE,
+  brewTime,
 } from '../src/game/store';
 
-// Sıradaki pad'i, oyuncuyu üstüne koyup para ekleyerek tamamlar; tamamlanan id'yi döner.
+// Mevcut ilerleme durumundan gating (requires) için GateState üretir.
+function gate() {
+  const s = useGame.getState();
+  return { padsDone: s.padsDone, tables: s.tables, stationLevel: s.stationLevel, lifetime: s.lifetime.toNumber() };
+}
+
+// Sıradaki aktif pad'i, oyuncuyu üstüne koyup para ekleyerek tamamlar; tamamlanan id'yi döner.
 function completeCurrentPad(): string | null {
-  const pad = currentPad(useGame.getState().padsDone);
+  const pad = currentPad(gate());
   if (!pad) return null;
   const pos = LAYOUT.padPos[pad.id];
   useGame.getState().addMoney(pad.cost + 50);
   useGame.setState({ player: [pos[0], 0.6, pos[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
-  for (let i = 0; i < 400 && currentPad(useGame.getState().padsDone)?.id === pad.id; i++) {
+  for (let i = 0; i < 400 && currentPad(gate())?.id === pad.id; i++) {
     useGame.getState().tick(0.1);
   }
   return pad.id;
@@ -119,17 +128,27 @@ describe('çay istasyonu yükseltme (Faz 2a)', () => {
   });
 });
 
-describe('generic pad sistemi (Faz 2b)', () => {
-  it("pad'ler config sırasıyla açılır ve etkileri uygulanır", () => {
+describe('generic pad sistemi + gating (Faz 2b / ekonomi v2)', () => {
+  it("pad'ler önkoşul (requires) sırasıyla açılır ve etkileri uygulanır", () => {
     useGame.getState().hardReset();
     expect(useGame.getState().tables).toBe(1);
-    expect(currentPad([])?.id).toBe('table2');
+    // table2 minLifetime:30 ile kilitli — lifetime 0 iken aktif pad yok.
+    expect(currentPad(gate())).toBeNull();
+    useGame.getState().addMoney(50); // lifetime ≥ 30 → table2 açılır
+    expect(currentPad(gate())?.id).toBe('table2');
 
     // 1) 2. Masa → tables 1→2
     expect(completeCurrentPad()).toBe('table2');
     expect(useGame.getState().tables).toBe(2);
 
-    // 2) 3. Masa → tables 2→3
+    // table3 minStationLevel:1 ile kilitli → ocak yükseltilmeden pad yok
+    expect(currentPad(gate())).toBeNull();
+    useGame.getState().addMoney(1000);
+    expect(useGame.getState().upgradeStation()).toBe(true);
+    expect(useGame.getState().stationLevel).toBe(1);
+
+    // 2) 3. Masa → tables 2→3 (artık açık)
+    expect(currentPad(gate())?.id).toBe('table3');
     expect(completeCurrentPad()).toBe('table3');
     expect(useGame.getState().tables).toBe(3);
 
@@ -144,21 +163,59 @@ describe('generic pad sistemi (Faz 2b)', () => {
 
     // Hepsi açıldı
     expect(useGame.getState().padsDone.length).toBe(4);
-    expect(currentPad(useGame.getState().padsDone)).toBeNull();
+    expect(currentPad(gate())).toBeNull();
   });
 });
 
-describe('mekânsal çay yükseltme noktası (zone)', () => {
-  it('yükseltme noktasında durunca seviye artar ve activeZone kind=upgrade olur', () => {
+describe('ekonomi v2 — seviye throughputu artırır, fiyatı DEĞİL (D-010)', () => {
+  it('stationLevel arttıkça demleme süresi kısalır (çay/dk ↑); fiyat sabit kalır', () => {
+    const t0 = brewTime(0, 1);
+    const t1 = brewTime(1, 1);
+    const t2 = brewTime(2, 1);
+    expect(t1).toBeLessThan(t0); // throughput arttı → süre kısaldı
+    expect(t2).toBeLessThan(t1);
+    // Fiyat sabit: müşterinin bıraktığı coin değeri seviyeden bağımsız.
+    expect(TEA_PRICE).toBe(economyConfig.teaStation.basePrice);
+  });
+
+  it('servis hızı (semaver/ek ocak) da demlemeyi kısaltır', () => {
+    expect(brewTime(0, 0.7)).toBeLessThan(brewTime(0, 1));
+  });
+
+  it('nextStep gating durumuna göre doğru yönlendirir', () => {
+    // Başlangıç: table2 minLifetime:30 ile kilitli → "₺30 kazan" yönlendirmesi
+    expect(nextStep({ padsDone: [], tables: 1, stationLevel: 0, lifetime: 0 })).toContain('30');
+    // lifetime yeterli → sıradaki = 2. Masa
+    expect(nextStep({ padsDone: [], tables: 1, stationLevel: 0, lifetime: 100 })).toContain('2. Masa');
+    // table2 alındı, table3 minStationLevel:1 ile kilitli → ocak yükselt yönlendirmesi
+    expect(nextStep({ padsDone: ['table2'], tables: 2, stationLevel: 0, lifetime: 200 })).toContain('ocağı');
+  });
+});
+
+describe('mekânsal çay yükseltme noktası (zone) + gating', () => {
+  it('önkoşul (2. masa) karşılanmadan zone pasiftir', () => {
     useGame.getState().hardReset();
-    useGame.getState().addMoney(30); // sadece L1 (25₺) yeter; L2'ye dolarken kalır (max'a varmaz)
+    useGame.getState().addMoney(1000);
     const z = LAYOUT.upgradeZone;
     useGame.setState({ player: [z[0], 0.6, z[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+    for (let i = 0; i < 50; i++) useGame.getState().tick(0.1);
+    // table2 açılmadığı için yükseltme noktası çalışmaz.
     expect(useGame.getState().stationLevel).toBe(0);
+  });
+
+  it('table2 açıldıktan sonra noktada durunca seviye artar (activeZone kind=upgrade)', () => {
+    useGame.getState().hardReset();
+    useGame.getState().addMoney(50);
+    expect(completeCurrentPad()).toBe('table2'); // önkoşulu karşıla
+
+    useGame.getState().addMoney(30); // L1 (25₺) yeter; max'a varmaz
+    const z = LAYOUT.upgradeZone;
+    useGame.setState({ player: [z[0], 0.6, z[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+    const before = useGame.getState().stationLevel;
 
     for (let i = 0; i < 50; i++) useGame.getState().tick(0.1);
 
-    expect(useGame.getState().stationLevel).toBeGreaterThan(0);
+    expect(useGame.getState().stationLevel).toBeGreaterThan(before);
     expect(useGame.getState().activeZone?.kind).toBe('upgrade');
   });
 });

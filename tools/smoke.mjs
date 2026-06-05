@@ -48,7 +48,20 @@ try {
   if (after.coins > 0 || after.lifetime > 0) pass(`Müşteri ödedi / para düştü (coins=${after.coins}, lifetime=${after.lifetime})`);
   else fail('Para düşmedi (coins=0, lifetime=0)');
 
-  // Mekânsal çay yükseltme: para ekle + yükseltme noktasına ışınla + zaman sar → seviye artmalı
+  // Gating: para ekle (lifetime ≥ 30) → ilk aktif pad table2 olmalı, açılış sırasını doğrula.
+  await page.evaluate(() => window.__addMoney(300));
+  const padInfo = await page.evaluate(() => window.__game());
+  if (padInfo.currentPad === 'table2' && padInfo.padPos) {
+    await page.evaluate((pos) => window.__teleport(pos[0], pos[2]), padInfo.padPos);
+    const afterPad = await page.evaluate(() => window.__advanceTime(8));
+    if (afterPad.tables >= 2 && afterPad.padsDone.includes('table2'))
+      pass(`Pad sistemi + gating çalışıyor (table2 açıldı, masa=${afterPad.tables}, sıradaki=${afterPad.nextStep})`);
+    else fail(`Pad açılmadı (tables=${afterPad.tables}, padsDone=${JSON.stringify(afterPad.padsDone)})`);
+  } else {
+    fail(`Beklenen ilk aktif pad table2 değil: ${padInfo.currentPad} (nextStep=${padInfo.nextStep})`);
+  }
+
+  // Mekânsal çay yükseltme (table2 sonrası açılır): para ekle + noktaya ışınla + zaman sar → seviye artmalı
   const beforeLvl = (await page.evaluate(() => window.__game())).stationLevel;
   await page.evaluate(() => window.__addMoney(100000));
   const uz = (await page.evaluate(() => window.__game())).upgradeZonePos;
@@ -57,19 +70,6 @@ try {
   if (afterUp.stationLevel > beforeLvl)
     pass(`Mekânsal çay yükseltme çalışıyor (L${beforeLvl}→L${afterUp.stationLevel})`);
   else fail(`Yükseltme noktası seviye artırmadı (L${beforeLvl}→L${afterUp.stationLevel})`);
-
-  // Generic pad: para ekle + ilk pad'in üstüne ışınla + zamanı sar → 2. masa açılmalı
-  const padInfo = await page.evaluate(() => window.__game());
-  if (padInfo.currentPad === 'table2' && padInfo.padPos) {
-    await page.evaluate(() => window.__addMoney(300));
-    await page.evaluate((pos) => window.__teleport(pos[0], pos[2]), padInfo.padPos);
-    const afterPad = await page.evaluate(() => window.__advanceTime(8));
-    if (afterPad.tables >= 2 && afterPad.padsDone.includes('table2'))
-      pass(`Pad sistemi çalışıyor (table2 açıldı, masa=${afterPad.tables}, sıradaki=${afterPad.currentPad})`);
-    else fail(`Pad açılmadı (tables=${afterPad.tables}, padsDone=${JSON.stringify(afterPad.padsDone)})`);
-  } else {
-    fail(`Beklenen ilk pad table2 değil: ${padInfo.currentPad}`);
-  }
 
   // Dikey (portrait) orana çevir → responsive kamera/HUD hatasız mı
   await page.setViewportSize({ width: 412, height: 915 });

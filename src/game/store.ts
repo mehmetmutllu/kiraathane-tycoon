@@ -5,7 +5,10 @@ import {
   economyConfig as C,
   upgradeOutputMultiplier,
   upgradeCost,
+  requiresMet,
   type PadDef,
+  type GateState,
+  type Requires,
 } from '../config/economy.config';
 import { defaultSave, loadSave, writeSave, clearSave, type SaveData } from './save';
 
@@ -63,14 +66,23 @@ function moveToward(pos: Vec3, target: RVec3, step: number): boolean {
   return false;
 }
 
-function teaPrice(level: number): number {
-  return C.teaStation.basePrice * upgradeOutputMultiplier(C.teaStation.upgrade, level);
+// EKONOMİ v2 (D-010): çay fiyatı SABİT; seviye fiyatı değil throughput'u (çay/dk) artırır.
+const TEA_PRICE = C.teaStation.basePrice;
+
+/** stationLevel'in demleme hız (throughput) çarpanı — çay/dk; fiyatı DEĞİL. */
+function brewThroughputMult(level: number): number {
+  return upgradeOutputMultiplier(C.teaStation.upgrade, level);
 }
 
-/** Çevrimdışı gelir oranı (₺/sn) — masa kapasitesi + servis hızına göre idealize. */
+/** Bir müşterinin sipariş/demleme süresi (sn) — throughput arttıkça kısalır. */
+function brewTime(level: number, serviceSpeedMult: number): number {
+  return (C.npc.orderTime * serviceSpeedMult) / brewThroughputMult(level);
+}
+
+/** Çevrimdışı gelir oranı (₺/sn) — bottleneck idealize: oturma × sabit fiyat / döngü. */
 function incomeRate(tables: number, level: number, serviceSpeedMult = 1): number {
-  const cycle = C.npc.walkTime + C.npc.orderTime * serviceSpeedMult + C.npc.eatTime;
-  return (tables * teaPrice(level)) / cycle;
+  const cycle = C.npc.walkTime + brewTime(level, serviceSpeedMult) + C.npc.eatTime;
+  return (tables * TEA_PRICE) / cycle;
 }
 
 function findFreeTable(npcs: Npc[], tables: number): number {
@@ -105,6 +117,7 @@ export interface GameState {
   npcCount: number;
   upgradeFill: number;
   activeZone: ActiveZone | null;
+  nextStepLabel: string;
   offlineEarned: number;
   // Dahili
   spawnTimer: number;
@@ -123,9 +136,38 @@ export interface GameState {
   hardReset: () => void;
 }
 
-/** Sıradaki açılmamış pad (hepsi açıldıysa null). Pad'ler config sırasıyla aktifleşir. */
-export function currentPad(padsDone: string[]): PadDef | null {
-  return (C.pads as readonly PadDef[]).find((p) => !padsDone.includes(p.id)) ?? null;
+/**
+ * Şu an aktif pad: ilk açılmamış VE `requires` koşulu karşılanan pad (yoksa null).
+ * Önkoşul zinciri (prev) sayesinde sıralıdır; bir sonraki pad gate'liyse null döner
+ * (oyuncu önce önkoşulu — ör. ocak yükseltmesi — tamamlamalı).
+ */
+export function currentPad(g: GateState): PadDef | null {
+  return (C.pads as readonly PadDef[]).find(
+    (p) => !g.padsDone.includes(p.id) && requiresMet(p.requires, g),
+  ) ?? null;
+}
+
+/** İstasyon yükseltme noktası şu an aktif mi (önkoşulu karşılandı mı)? */
+export function upgradeZoneUnlocked(g: GateState): boolean {
+  return requiresMet(C.teaStation.upgradeRequires, g);
+}
+
+/** HUD için tek satırlık "sıradaki adım" yönlendirmesi. */
+export function nextStep(g: GateState): string {
+  const pad = currentPad(g);
+  if (pad) return `Sıradaki: ${pad.label} (₺${pad.cost})`;
+  // Aktif pad yok → ilk açılmamış pad neyle kilitli, onu söyle.
+  const undone = (C.pads as readonly PadDef[]).find((p) => !g.padsDone.includes(p.id));
+  if (undone) {
+    const r = undone.requires as Requires | undefined;
+    if (r?.minStationLevel != null && g.stationLevel < r.minStationLevel)
+      return `Çay ocağını L${r.minStationLevel} yap → ${undone.label}`;
+    if (r?.minLifetime != null && g.lifetime < r.minLifetime)
+      return `₺${r.minLifetime} kazan → ${undone.label}`;
+    return `${undone.label} için ilerle`;
+  }
+  if (g.stationLevel < stationSoftMaxLevel()) return 'Çay ocağını yükseltmeye devam et';
+  return 'Tüm açılışlar tamam ✓';
 }
 
 /** ₺ ile çıkılabilen en yüksek istasyon seviyesi (L5 = Usta, 💎/video — Faz 4). */
@@ -149,6 +191,7 @@ export const useGame = create<GameState>((set, get) => ({
   npcCount: 0,
   upgradeFill: 0,
   activeZone: null,
+  nextStepLabel: '',
   offlineEarned: 0,
   spawnTimer: 1,
   saveTimer: SAVE_INTERVAL,
@@ -188,6 +231,12 @@ export const useGame = create<GameState>((set, get) => ({
       npcCount: 0,
       upgradeFill: 0,
       activeZone: null,
+      nextStepLabel: nextStep({
+        padsDone: save.padsDone,
+        tables: save.tables,
+        stationLevel: save.stationLevel,
+        lifetime: lifetime.toNumber(),
+      }),
       spawnTimer: 1,
       saveTimer: SAVE_INTERVAL,
       nextId: 1,
@@ -242,7 +291,8 @@ export const useGame = create<GameState>((set, get) => ({
         case 'toTable':
           if (moveToward(n.pos, slot.seat, step)) {
             n.state = 'ordering';
-            n.timer = C.npc.orderTime * serviceSpeedMult;
+            // Demleme süresi: stationLevel throughput'u arttıkça kısalır (fiyat sabit).
+            n.timer = brewTime(stationLevel, serviceSpeedMult);
           }
           break;
         case 'ordering':
@@ -255,11 +305,11 @@ export const useGame = create<GameState>((set, get) => ({
         case 'drinking':
           n.timer -= dt;
           if (n.timer <= 0) {
-            // Öde: parayı masanın yanına düşür.
+            // Öde: parayı masanın yanına düşür (fiyat sabit; gelir hacimden gelir).
             coins.push({
               id: nextId++,
               pos: [slot.table[0] + (Math.random() - 0.5), 0.3, slot.table[2] + 0.6 + (Math.random() - 0.5)],
-              value: Math.round(teaPrice(stationLevel)),
+              value: TEA_PRICE,
             });
             n.state = 'leaving';
           }
@@ -295,7 +345,8 @@ export const useGame = create<GameState>((set, get) => ({
     }
 
     // --- Pad doldurma (sıradaki aktif pad; pad açtığı objenin yerinde) ---
-    const pad = currentPad(padsDone);
+    const padGate: GateState = { padsDone, tables, stationLevel, lifetime: lifetime.toNumber() };
+    const pad = currentPad(padGate);
     if (pad) {
       const padPos = LAYOUT.padPos[pad.id];
       if (padPos && dist2D(player, padPos) < PAD_RADIUS) {
@@ -330,7 +381,11 @@ export const useGame = create<GameState>((set, get) => ({
     }
 
     // --- Mekânsal çay yükseltme noktası (ana ocağın önünde dur → altta bar dolar) ---
-    if (stationLevel < stationSoftMaxLevel()) {
+    // Gating: önce 2. masa açılmalı (D-010 sırası); aksi halde nokta pasif.
+    const upgradeUnlocked = upgradeZoneUnlocked({
+      padsDone, tables, stationLevel, lifetime: lifetime.toNumber(),
+    });
+    if (upgradeUnlocked && stationLevel < stationSoftMaxLevel()) {
       if (dist2D(player, LAYOUT.upgradeZone) < PAD_RADIUS) {
         const cost = stationUpgradeCost(stationLevel);
         if (wallet.gt(0)) {
@@ -363,6 +418,8 @@ export const useGame = create<GameState>((set, get) => ({
       get().saveNow();
     }
 
+    const nextStepLabel = nextStep({ padsDone, tables, stationLevel, lifetime: lifetime.toNumber() });
+
     set({
       npcs: liveNpcs,
       coins,
@@ -376,6 +433,7 @@ export const useGame = create<GameState>((set, get) => ({
       padFill,
       upgradeFill,
       activeZone,
+      nextStepLabel,
       player,
       spawnTimer,
       saveTimer,
@@ -427,4 +485,4 @@ export const useGame = create<GameState>((set, get) => ({
   },
 }));
 
-export { teaPrice, incomeRate };
+export { TEA_PRICE, brewThroughputMult, brewTime, incomeRate };

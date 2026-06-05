@@ -1,43 +1,102 @@
 /**
- * simulate.ts — Ekonomi curve'ünü simüle eder ve her kilometre taşına ~ne kadar sürede
- * ulaşıldığını yazar. Dengeleme için config sayıları oynanıp tekrar çalıştırılır.
+ * simulate.ts — Ekonomi v2 (D-010) BOTTLENECK modelini simüle eder ve her kilometre
+ * taşına ~ne kadar sürede ulaşıldığını yazar. Dengeleme için config sayıları oynanıp
+ * tekrar çalıştırılır.
  *
- * Çalıştır:  npx tsx tools/simulate.ts
- *            (veya)  node --import tsx tools/simulate.ts
+ * Çalıştır:  npx tsx tools/simulate.ts   (veya)  node --import tsx tools/simulate.ts
  *
- * Not: Faz 1 basit modelini simüle eder (tek çay istasyonu + sahip toplaması ideal).
- * Faz 2+ geldikçe garson/istasyon çeşitliliği eklenecek.
+ * Model: gelir = (oturma kapasitesi) × SABİT fiyat / döngü süresi.
+ *   - Çay fiyatı sabit (basePrice); yükseltme fiyatı DEĞİL throughput'u (çay/dk) artırır.
+ *   - Yükseltmeler/açılışlar sıralı önkoşullarla (`requires`) kilitli.
+ * Otomatik oyuncu, gating sırasına uyarak parası yettikçe sıradaki adımı alır.
  */
-import { economyConfig as C, upgradeCost } from '../src/config/economy.config.ts';
+import {
+  economyConfig as C,
+  upgradeCost,
+  upgradeOutputMultiplier,
+  requiresMet,
+  type GateState,
+} from '../src/config/economy.config.ts';
 
 const DT = 1; // saniyelik adım
+const TEA_PRICE = C.teaStation.basePrice;
+const SOFT_MAX = C.teaStation.upgrade.masterLevel - 1; // ₺ ile çıkılabilen en yüksek seviye
 
 interface State {
-  t: number; // geçen süre (sn)
-  wallet: number; // anlık ₺
-  lifetime: number; // toplam kazanılan ₺
-  teaLevel: number; // çay yükseltme seviyesi (0..4 ₺ ile)
-  tables: number; // açık masa sayısı
+  t: number;
+  wallet: number;
+  lifetime: number;
+  stationLevel: number;
+  tables: number;
+  stations: number;
+  serviceSpeedMult: number;
+  padsDone: string[];
 }
 
-function teaPrice(level: number): number {
-  return C.teaStation.basePrice * Math.pow(C.teaStation.upgrade.outputMult, level);
+function gateOf(s: State): GateState {
+  return { padsDone: s.padsDone, tables: s.tables, stationLevel: s.stationLevel, lifetime: s.lifetime };
 }
 
-// Bir masanın saniyelik ortalama ₺ gelir oranı (NPC döngüsü idealize).
-function ratePerTable(level: number): number {
-  const cycle = C.npc.walkTime + C.npc.orderTime + C.npc.eatTime; // bir müşteri ~12 sn
-  return teaPrice(level) / cycle;
+// Demleme süresi (sn): throughput (stationLevel + servis hızı) arttıkça kısalır.
+function brewTime(s: State): number {
+  return (C.npc.orderTime * s.serviceSpeedMult) / upgradeOutputMultiplier(C.teaStation.upgrade, s.stationLevel);
 }
 
-function totalRate(s: State): number {
-  return s.tables * ratePerTable(s.teaLevel);
+// Gelir oranı (₺/sn): oturma kapasitesi × sabit fiyat / müşteri döngü süresi.
+function rate(s: State): number {
+  const cycle = C.npc.walkTime + brewTime(s) + C.npc.eatTime;
+  return (s.tables * TEA_PRICE) / cycle;
+}
+
+// Sıradaki aktif pad (gating karşılanmış, henüz alınmamış).
+function currentPad(s: State) {
+  const g = gateOf(s);
+  return C.pads.find((p) => !s.padsDone.includes(p.id) && requiresMet(p.requires, g)) ?? null;
+}
+
+function upgradeUnlocked(s: State): boolean {
+  return requiresMet(C.teaStation.upgradeRequires, gateOf(s)) && s.stationLevel < SOFT_MAX;
+}
+
+// Otomatik oyuncu: sıradaki aktif pad'i ya da (pad gate'liyse) ocak yükseltmesini al.
+function trySpend(s: State): void {
+  const pad = currentPad(s);
+  if (pad) {
+    if (s.wallet >= pad.cost) {
+      s.wallet -= pad.cost;
+      s.padsDone.push(pad.id);
+      switch (pad.effect.type) {
+        case 'addTable':
+          s.tables += 1;
+          break;
+        case 'addStation':
+          s.stations += 1;
+          s.serviceSpeedMult *= C.teaStation.extraStationSpeedFactor;
+          break;
+        case 'serviceSpeed':
+          s.serviceSpeedMult *= pad.effect.factor;
+          break;
+      }
+    }
+    return;
+  }
+  // Aktif pad yok → ocak yükseltmesi açıksa onu al (sıradaki pad'in önkoşulu olabilir).
+  if (upgradeUnlocked(s)) {
+    const cost = upgradeCost(C.teaStation.upgrade, s.stationLevel + 1);
+    if (s.wallet >= cost) {
+      s.wallet -= cost;
+      s.stationLevel += 1;
+    }
+  }
 }
 
 const milestones: { name: string; hit: (s: State) => boolean; done?: boolean }[] = [
-  { name: '2. masa pad dolar (150 ₺)', hit: (s) => s.lifetime >= C.pads.table2.cost },
-  { name: 'Çay yükseltme L1', hit: (s) => s.teaLevel >= 1 },
-  { name: 'Çay yükseltme L4 (Usta öncesi)', hit: (s) => s.teaLevel >= 4 },
+  { name: 'İlk satın alma (2. Masa)', hit: (s) => s.padsDone.includes('table2') },
+  { name: 'Çay ocağı L1 (throughput)', hit: (s) => s.stationLevel >= 1 },
+  { name: '3. Masa açıldı', hit: (s) => s.padsDone.includes('table3') },
+  { name: '2. Çay Ocağı açıldı', hit: (s) => s.padsDone.includes('station2') },
+  { name: 'Semavere geçiş', hit: (s) => s.padsDone.includes('samovar') },
+  { name: 'Çay ocağı L4 (Usta öncesi)', hit: (s) => s.stationLevel >= SOFT_MAX },
   { name: 'lifetime 1.000 ₺', hit: (s) => s.lifetime >= 1_000 },
   { name: 'lifetime 10.000 ₺', hit: (s) => s.lifetime >= 10_000 },
   { name: 'İlk prestige cazip (İtibar ≥ 1)', hit: (s) => s.lifetime >= C.prestige.repScale },
@@ -50,44 +109,35 @@ function fmtTime(sec: number): string {
 }
 
 function run() {
-  const s: State = { t: 0, wallet: 0, lifetime: 0, teaLevel: 0, tables: 1 };
+  const s: State = {
+    t: 0, wallet: 0, lifetime: 0, stationLevel: 0, tables: 1, stations: 1, serviceSpeedMult: 1, padsDone: [],
+  };
   const MAX_T = 60 * 60 * 6; // 6 saat üst sınır
 
-  console.log('=== Köşe Kıraathanesi — Ekonomi Simülasyonu (Faz 1 modeli) ===\n');
-  console.log(`Başlangıç: ${s.tables} masa, çay fiyatı ${teaPrice(0)} ₺, oran ${totalRate(s).toFixed(2)} ₺/sn\n`);
+  console.log('=== Köşe Kıraathanesi — Ekonomi v2 Simülasyonu (bottleneck modeli) ===\n');
+  console.log(`Sabit çay fiyatı: ${TEA_PRICE} ₺ · Başlangıç: ${s.tables} masa, oran ${rate(s).toFixed(2)} ₺/sn\n`);
 
   while (s.t < MAX_T) {
-    const inc = totalRate(s) * DT;
+    const inc = rate(s) * DT;
     s.wallet += inc;
     s.lifetime += inc;
     s.t += DT;
-
-    // Basit otomatik harcama davranışı: önce 2. masa, sonra çay yükseltmeleri.
-    if (s.tables < 2 && s.wallet >= C.pads.table2.cost) {
-      s.wallet -= C.pads.table2.cost;
-      s.tables = 2;
-    } else if (s.tables >= 2 && s.teaLevel < 4) {
-      const cost = upgradeCost(C.teaStation.upgrade, s.teaLevel + 1);
-      if (s.wallet >= cost) {
-        s.wallet -= cost;
-        s.teaLevel += 1;
-      }
-    }
+    trySpend(s);
 
     for (const m of milestones) {
       if (!m.done && m.hit(s)) {
         m.done = true;
-        console.log(`  ✓ ${m.name.padEnd(38)} @ ${fmtTime(s.t)}  (oran ${totalRate(s).toFixed(2)} ₺/sn)`);
+        console.log(`  ✓ ${m.name.padEnd(34)} @ ${fmtTime(s.t).padStart(7)}  (oran ${rate(s).toFixed(2)} ₺/sn, L${s.stationLevel}, ${s.tables} masa)`);
       }
     }
     if (milestones.every((m) => m.done)) break;
   }
 
-  console.log('\n--- Notlar ---');
-  console.log('Hedef tempo: ilk 5-10 dk her ~20-40 sn bir satın alma. Yukarıdaki süreler');
-  console.log('bu hedeften çok saparsa economy.config.ts (price/cost/growth) ayarlanmalı.');
+  console.log('\n--- Tempo denetimi (D-010 §3.6) ---');
+  console.log('Hedef: ilk satın alma < 90 sn; ilk 5-10 dk her ~20-40 sn bir alım; otomasyon < 15 dk.');
   const notHit = milestones.filter((m) => !m.done).map((m) => m.name);
   if (notHit.length) console.log('6 saatte ulaşılamayan:', notHit.join(', '));
+  else console.log('Tüm kilometre taşlarına ulaşıldı.');
 }
 
 run();

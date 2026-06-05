@@ -20,7 +20,12 @@ export function installDevHooks(): void {
 
   window.__game = () => {
     const s = useGame.getState();
-    const pad = currentPad(s.padsDone);
+    const pad = currentPad({
+      padsDone: s.padsDone,
+      tables: s.tables,
+      stationLevel: s.stationLevel,
+      lifetime: s.lifetime.toNumber(),
+    });
     return {
       wallet: s.wallet.toNumber(),
       diamonds: s.diamonds.toNumber(),
@@ -36,6 +41,7 @@ export function installDevHooks(): void {
       currentPad: pad ? pad.id : null,
       padCost: pad ? pad.cost : 0,
       padPos: pad ? LAYOUT.padPos[pad.id] : null,
+      nextStep: s.nextStepLabel,
       upgradeFill: Math.floor(s.upgradeFill),
       upgradeZonePos: LAYOUT.upgradeZone,
       activeZone: s.activeZone ? { kind: s.activeZone.kind, label: s.activeZone.label } : null,

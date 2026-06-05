@@ -2,26 +2,42 @@
 
 > En sık güncellenen dosya. Her anlamlı adımdan sonra güncelle.
 
-## Şu an neredeyiz (oturum kapandı 2026-06-05)
-Faz 0 + Faz 1 ✅. Responsive yön ✅. Faz 2: 2a ✅, 2b ✅, 2-UX (mekânsal D-009) ✅.
-Ardından **Ekonomi v2 tasarımı + kararları kilitlendi (D-010)** — kod henüz YAZILMADI.
-**Sıradaki oturum (ÖNCELİK):** Ekonomi v2'yi UYGULA, SONRA Faz 2c (garson).
+## Şu an neredeyiz (2026-06-06)
+Faz 0 + Faz 1 ✅. Responsive yön ✅. Faz 2: 2a ✅, 2b ✅, 2-UX (D-009) ✅,
+**2-EKO Ekonomi v2 (D-010) ✅ UYGULANDI.** **Sıradaki: Faz 2c — yardımcı garson.**
 
-## En son ne yapıldı (bu oturumun sonu)
-- Kullanıcı feedback'i → ekonomi/ilerleme yeniden tasarlandı (uygulama değil, plan):
-  `docs/progression-and-economy-v2.md` + D-010.
-- Kilitlenen kararlar: (1) çay fiyatı sabit, artış yeni menü ürünleriyle; (2) talep
-  kapasiteyi otomatik takip eder (~%15 önde, mekân hep dolu) + Tabela/İtibar & ödüllü video
-  opsiyonel; (3) gating omurgası "önceki alındı" önkoşul zinciri + lifetime-₺ destek.
-- Daha öncesinde (aynı oturum): mekânsal etkileşim (D-009) — pad'ler objenin yerinde,
-  çay yükseltme `LAYOUT.upgradeZone`'da (alt-orta bar), ocak seviyesi rozet+semaver görseli.
-- Testler: Vitest 10/10 ✅, smoke 9/9 ✅. Tree temiz, origin/main ile senkron.
+## En son ne yapıldı (bu oturum — Ekonomi v2)
+- **Fiyat→throughput:** `teaPrice(level)` KALDIRILDI. Coin değeri = sabit `TEA_PRICE` (5₺).
+  stationLevel demleme süresini kısaltır (`brewTime`, `brewThroughputMult`) → çay/dk ↑.
+- **Talep takibi:** `npc.spawnInterval` 4→1.6, boşalan koltuk hızla dolar (mekân hep dolu).
+- **Gating:** config'e `Requires` + `requiresMet`; her pad'e ve `teaStation.upgradeRequires`'e
+  önkoşul. `currentPad(GateState)` (eski `currentPad(padsDone)` imzası DEĞİŞTİ), yeni
+  `upgradeZoneUnlocked`, `nextStep`. Zincir: 2.Masa(lifetime≥30) → ocak L≥1 → 3.Masa → 2.Ocak → Semaver.
+- **HUD:** `nextStepLabel` (state'e eklendi, tick'te hesaplanıyor) → "👉 Sıradaki adım" rozeti.
+- **simulate.ts** bottleneck modeline yeniden yazıldı (eski kırık array erişimi düzeldi);
+  ilk alım 84sn, 3.masa ~4dk, otomasyon ~8dk.
+- **Maliyetler (tempo):** table2=35, table3=120, station2=360, samovar=850; upgrade costGrowth 1.5.
+- Testler: **Vitest 14/14 ✅, smoke 9/9 ✅, build temiz.** (Henüz COMMIT EDİLMEDİ — oturum-bitir bekliyor.)
+- Değişen dosyalar: economy.config.ts, store.ts, devHooks.ts, Pad.tsx, Scene.tsx, HUD.tsx,
+  index.css, tools/simulate.ts, tools/smoke.mjs, tests/logic.test.ts.
 
-## ⚠️ Ekonomi v2 uygulanırken DİKKAT (sonraki oturum)
-- Mevcut kodda `teaPrice(stationLevel)` çay değerini seviyeyle ARTIRIYOR — bu D-010 ile
-  GEÇERSİZ. stationLevel etkisini **fiyattan → brewRate (çay/dk)** taşı; gelir = darboğaz×fiyat.
-- Pad/zone'lara `requires` (prev/minTables/minStationLevel/minLifetime) ekle; görünürlüğü gate'le.
-- `tools/simulate.ts`'i bottleneck modeline güncelle; tempo (ilk alım <90sn) doğrula.
+## ⚠️ Faz 2c YENİDEN TASARLANDI — servis sistemi önerisi (D-011, ONAY BEKLİYOR)
+Kullanıcı (2026-06-06) eski "garson çayı otomatik taşır" planını eleştirdi; yeni öneri yazıldı:
+`docs/serving-and-automation.md` + D-011 (TASLAK). **Kod YAZILMADI; sonraki oturumda kullanıcı
+onayı alınıp uygulanacak.** Özet:
+- Şu an garson yokken bile çay otomatik servis ediliyor — YANLIŞ. Oyuncu çayı kendi taşımalı.
+- **Tepsi** mekaniği: ocaktan N çay al (kapasite upgradable), tek turda birçok masaya dağıt
+  ("sürekli tek-tek taşıma" istenmiyor).
+- **Ocak ready-kuyruğu** + müşteri **sabır timer'ı** → throughput zinciri SAHNEDE gerçek
+  (D-010 §3.1'i tamamlar). Sabır aşınca müşteri sessizce gider (çocuk-güvenli).
+- **Garson = kısmi assist:** yavaş/küçük tepsi; tek başına büyüyen mekânı döndüremez → oyuncu hâlâ aktif.
+- **Para toplama + yükseltmeler kalıcı MANUEL** (çekirdek eğlence; aşırı otomasyon = "yürüyecek yer kalmaz").
+- Uygulanırsa NPC FSM'e `waitingForTea`, ocağa `readyCups`, oyuncu/garsona `tray` eklenecek;
+  saveVersion artır + migrasyon. Açık sorular doc §5'te — ÖNCE kullanıcıya sor.
+
+## ÖNCE KULLANICIYA SOR (sonraki oturum açılışı)
+D-011 açık soruları (doc §5): sabır cezası şiddeti · tepsi kapasite eğrisi · garson global mi
+bölge-başı mı · otomatik toplayıcı hiç gelsin mi (öneri: erken-orta HAYIR) · ready-kuyruk upgradable mı.
 
 ## En son ne yapıldı
 - Ortam doğrulandı, Playwright MCP eklendi, Vite + React 19 + R3F stack kuruldu.
@@ -40,14 +56,16 @@ Kullanıcı mevcut ekonomiyi eleştirdi; **uygulamadan önce** tasarım raporu y
 **Sıradaki oturum:** ÖNCE bu ekonomi v2'yi uygula (config+store+gating+simulate+test),
 SONRA Faz 2c (garson). Açık sorular raporun §5'inde — kullanıcıya sor.
 
-## TAM sıradaki adım (Faz 2c — yardımcı garson, ekonomi v2 SONRASI)
-1. Garson, bir pad ile açılsın (config.pads'e `waiter` effekti ekle ya da ayrı bir
-   "hasWaiter" pad'i). Açılınca state'e `hasWaiter=true` (persist).
-2. Garson varlığı: store'da basit durum makinesi (istasyon→masaya yürü→servis→istasyona
-   dön). Şu an servis timer ile otomatik; garson VARSA görsel taşıma + (opsiyonel) servis
-   hızına/erişilebilirliğe etki. Sahip artık çoğunlukla para toplar/büyütür.
-3. Sahnede garson kapsülü (farklı renk) + yol animasyonu. window.__game'e hasWaiter ekle.
-4. Vitest + smoke. Faz 2 (2a+2b+2c) bitince Faz 2'yi ✅ işaretle, oturum-bitir.
+## TAM sıradaki adım (Faz 2c — D-011 onayı + uygulama)
+1. **ÖNCE** D-011 açık sorularını (yukarıda + doc §5) kullanıcıya sor, kararları kilitle.
+2. economy.config'e `tray` (kapasite+upgrade), `brew.queueCapacity`, `npc.patience`, `waiter`
+   (hız/tepsi/requires) ekle (data-driven).
+3. store: NPC FSM'e `waitingForTea`; ocak `readyCups` kuyruğu + demleme timer'ı; oyuncu `tray`
+   (ocakta dol, masada bırak — yakınlık). serviceSpeedMult artık demleme timer'ına değil
+   üretim/teslimat hızlarına bağlanacak. saveVersion 4→5 + migrasyon.
+4. Garson FSM (ocak→bekleyen masa→bırak→dön), yavaş/küçük tepsi; `hasWaiter` persist; bir pad'le açılır.
+5. devHooks'a `tray`, `readyCups`, `hasWaiter`; Vitest + smoke (servis döngüsü, sabır-aşımı, garson teslimi).
+6. Faz 2 (2a+2b+2-EKO+2c) bitince Faz 2'yi ✅ işaretle.
 
 ## Faydalı dev kancaları (konsol)
 `__game()`, `__advanceTime(60)`, `__addMoney(1000)`, `__upgradeStation()`,

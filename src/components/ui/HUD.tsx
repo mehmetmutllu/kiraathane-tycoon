@@ -7,6 +7,7 @@ export function HUD() {
   const tables = useGame((s) => s.tables);
   const offlineEarned = useGame((s) => s.offlineEarned);
   const zone = useGame((s) => s.activeZone);
+  const nextStep = useGame((s) => s.nextStepLabel);
 
   const zonePct = zone ? Math.min(100, (zone.fill / zone.cost) * 100) : 0;
 
@@ -27,6 +28,13 @@ export function HUD() {
       {offlineEarned > 0 && (
         <div className="offline" data-testid="offline">
           Yokken kazanılan: ₺ {Math.floor(offlineEarned).toLocaleString('tr-TR')}
+        </div>
+      )}
+
+      {/* Sıradaki adım rehberi (bir zone üstünde değilken) */}
+      {!zone && nextStep && (
+        <div className="next-step" data-testid="next-step">
+          👉 {nextStep}
         </div>
       )}
 

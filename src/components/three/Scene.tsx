@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import { Vector3 } from 'three';
-import { useGame, LAYOUT, stationSoftMaxLevel } from '../../game/store';
+import { useGame, LAYOUT, stationSoftMaxLevel, upgradeZoneUnlocked } from '../../game/store';
 import { Player } from './Player';
 import { Tables } from './Tables';
 import { TeaStation } from './TeaStation';
@@ -53,7 +53,11 @@ function Stations() {
 // Mekânsal çay yükseltme noktası (ana ocağın önünde). Üstünde dur → altta bar dolar.
 function UpgradeZone() {
   const stationLevel = useGame((s) => s.stationLevel);
+  const padsDone = useGame((s) => s.padsDone);
+  const tables = useGame((s) => s.tables);
+  const lifetime = useGame((s) => s.lifetime);
   if (stationLevel >= stationSoftMaxLevel()) return null;
+  if (!upgradeZoneUnlocked({ padsDone, tables, stationLevel, lifetime: lifetime.toNumber() })) return null;
   const [x, , z] = LAYOUT.upgradeZone;
   return (
     <group position={[x, 0, z]}>

@@ -5,7 +5,10 @@ import { useGame, LAYOUT, currentPad } from '../../game/store';
 export function Pad() {
   const padsDone = useGame((s) => s.padsDone);
   const padFill = useGame((s) => s.padFill);
-  const pad = currentPad(padsDone);
+  const tables = useGame((s) => s.tables);
+  const stationLevel = useGame((s) => s.stationLevel);
+  const lifetime = useGame((s) => s.lifetime);
+  const pad = currentPad({ padsDone, tables, stationLevel, lifetime: lifetime.toNumber() });
   if (!pad) return null;
 
   const pos = LAYOUT.padPos[pad.id];

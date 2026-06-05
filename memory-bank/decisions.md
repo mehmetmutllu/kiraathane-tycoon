@@ -45,13 +45,41 @@ prestige/menü ile). Maliyet eğrisi geometrik (r≈1.12).
 **Gerekçe:** Kullanıcı feedback'i — fiyatın seviyeyle artması gerçekçi değil; "sistem/fiyat
 politikası" ve net sıra şart. Idle Miner / restoran-idle araştırması bottleneck dengesini
 doğruluyor (darboğaz = israf).
-**Durum:** Tasarım/plan hazır → `docs/progression-and-economy-v2.md`. Implementasyon sonraki
-oturum(lar)da (mevcut fiyat-çarpanı modeli değişecek). Önceki D-?'lerdeki "teaPrice seviyeyle
-artar" yaklaşımı bu kararla GEÇERSİZ.
+**Durum:** ✅ UYGULANDI (2026-06-06). `teaPrice(level)` kaldırıldı (coin=sabit TEA_PRICE);
+stationLevel demleme süresini kısaltır (brewTime/brewThroughputMult); `Requires`+`requiresMet`
+gating (pad + upgrade zone); `currentPad(GateState)`, `nextStep` HUD rehberi; simulate.ts
+bottleneck modeli (ilk alım 84sn). Vitest 14/14, smoke 9/9.
 **Alt kararlar (kullanıcı onayı 2026-06-05):** (1) Çay fiyatı şimdilik **sabit**; artış sonra
 **yeni menü ürünleriyle** (tost/kahve/pizza). (2) Talep **kapasiteyi otomatik takip eder**
 (~%15 önde, mekân hep dolu); Tabela/İtibar + ödüllü video opsiyonel/sonra. (3) Gating omurgası
 **"önceki alındı" önkoşul zinciri**; lifetime-₺ eşikleri destekleyici ikinci katman.
+
+## D-011 · Servis sistemi: manuel çay taşıma (tepsi) + garson kısmi otomasyon — TASLAK/ÖNERİ (2026-06-06)
+**Durum:** ⏳ ÖNERİ — kullanıcı onayı BEKLİYOR (sonraki oturumda netleşecek). Henüz kod yok.
+Detay tasarım: `docs/serving-and-automation.md`.
+**Bağlam (kullanıcı feedback'i 2026-06-06):**
+- Para toplama + yükseltmeler **oyuncuda kalsın** (mekânda yürümek çekirdek eğlence; fazla
+  otomasyon olursa "yürüyecek yer kalmaz").
+- Şu an garson yokken bile çay OTOMATİK servis ediliyor — bu yanlış. Oyuncu çayı kendi
+  taşımalı; ama "sürekli tek tek taşımak" istenmiyor → **tepsi** (birden çok çay taşı).
+- **Garson** açılınca o da taşır ama yavaş; **o ana kadarki tüm ilerlemeyi tek başına
+  taşıyamamalı** → kısmi yardım, oyuncu hâlâ aktif.
+**Önerilen model (özet):**
+1. **Ocak ready-kuyruğu:** demlenen çaylar tezgâhta "hazır" birikir (kapasite = brewing throughput).
+2. **Tepsi:** oyuncu ocaktan tepsiye N çay alır (kapasite upgradable), tek turda birçok masaya dağıtır.
+3. **Sabır/bottleneck:** oturan müşterinin sabır timer'ı; zamanında servis edilmezse sessizce
+   gider (çocuk-güvenli, sert ceza yok). Ready-kuyruk dolarsa brewing durur (teslimat darboğaz),
+   boşsa oyuncu bekler (brewing darboğaz) → zincir SAHNEDE gerçek olur (D-010 §3.1'i tamamlar).
+4. **Garson = kısmi assist:** aynı döngüyü (ocak→tepsi→masa) özerk ama yavaş/küçük tepsiyle yapar;
+   tek garson büyüyen mekânı yetiştiremez → oyuncu yardım eder + parayı toplar. Ek/upgrade garson = daha çok otomasyon (gated).
+5. **Para toplama kalıcı manuel** (çekirdek). Otomatik toplayıcı en fazla Faz 4'te yavaş/kısmi assist; çekirdeği değiştirmez.
+**Gerekçe (araştırma):** Idle Restaurant Tycoon — otomasyon kademeli (yeterli garson yoksa
+müşteri aç kalır = bottleneck baskısı); Roblox tycoon — erken manuel etkileşim/toplama, otomasyon
+ilerlemeyle açılır. İki elli aktif döngü (servis ↔ toplama) 3D yürüme-tycoon'unu eğlenceli tutar.
+**Açık sorular:** sabır cezası şiddeti; tepsi kapasite eğrisi; garson global havuz mu bölge-başı mı;
+otomatik toplayıcı hiç gelsin mi (öneri: erken-orta oyunda HAYIR).
+**Etki:** Bu, eski "garson çayı otomatik taşır" planının (Faz 2c) yerini alır — NPC durum makinesine
+`waitingForTea` durumu, ocak ready-kuyruğu, oyuncu/garson taşıma durumu eklenecek (kayda değer rework).
 
 ## D-009 · Mekânsal (Roblox-tycoon) etkileşim — havada buton yok (2026-06-05)
 **Karar:** Satın alma/yükseltmeler **mekânsal**: oyuncu objenin yerine gider, üstünde durur,
