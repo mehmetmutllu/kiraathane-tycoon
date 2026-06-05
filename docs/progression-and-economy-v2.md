@@ -43,8 +43,16 @@ gelir/dk ≈ min(talep, oturma_kapasitesi, pişirme_kapasitesi, servis_kapasites
 - **Masalar (oturma):** masa ↑ → aynı anda ağırlanan müşteri ↑.
 - **Garson (servis):** çayı ocaktan masaya taşır. Garson yokken **sahip** taşır (yavaş, manuel);
   garson varken otomatik (hızlı). Garson seviyesi servis hızını artırır.
-- **Talep (müşteri akışı):** müşteriler bir hızda gelir; yer doluysa kısa süre bekler/gider.
-  İleride tabela/itibar/ödüllü-video ile artırılır.
+- **Talep (müşteri akışı) — KARAR:** Talep **kapasiteyi otomatik takip eder**, hafif önde
+  (~%15 headroom). Yani mekân **hep dolu** hisseder; oyuncu erken oyunda ayrı "talep grindi"
+  yapmaz — darboğaz hep kendi kapasite zinciri (masa/ocak/garson) olur. Yer doluysa müşteri
+  kısa süre bekler, dolmazsa gider.
+  - **Tabela / İtibar (opsiyonel kol, sonra):** headroom'u/varış hızını daha da artırır —
+    kapasiteyi daha hızlı doldurmak/kuyruk oluşturmak için. İlerleme için zorunlu değil.
+  - **Ödüllü video → anlık kalabalık** (Faz 5): boş masalar varken işe yarar.
+  > Neden: Restaurant Tycoon 2/3 + Idle Restaurant Tycoon'da müşteri ya kapasiteyi takip eder
+  > ya pazarlamayla büyür; "boş restoran" hayal kırıklığını önlemek için talep-otomatik taban
+  > + opsiyonel pazarlama kolu en dengeli yaklaşım. (Kaynaklar §7.)
 
 > Tasarım dersi: oyuncu kapasiteleri **dengelemeli**. Sadece ocağı yükseltirse masalar
 > dolar, çaylar birikir → israf. Bu, satın alma kararlarını anlamlı kılar.
@@ -106,10 +114,24 @@ requires?: {
 5. `simulate.ts`: bottleneck modeline güncelle; tempo raporu.
 6. Testler (Vitest + smoke) güncelle; sonra **Faz 2c — garson**.
 
-## 5. Açık tasarım soruları (kullanıcıya)
-- Çay fiyatı tamamen sabit mi kalsın, yoksa ayrı bir "kalite/menü" koluyla mı artsın (geç oyun)?
-- Talep (müşteri akışı) baştan kapasiteye eşit mi gelsin, yoksa ayrı "tabela/itibar" koluyla mı artsın?
-- Gating eşikleri: lifetime-₺ mi (otomatik tempo) yoksa "önceki şey alındı" mı (net sıra) — yoksa ikisi?
+## 5. Tasarım kararları (kullanıcı onayı 2026-06-05)
+- **Çay fiyatı:** şimdilik **sabit taban**. Artış fiyat-çarpanıyla DEĞİL; zamanla açılan
+  **yeni menü ürünleriyle** (tost, kahve, pizza...) gelir — her ürünün kendi fiyatı/throughput'u.
+- **Talep:** **kapasiteyi otomatik takip eder** (~%15 önde) → mekân hep dolu. Ayrı "Tabela/
+  İtibar" kolu + ödüllü video **opsiyonel/sonra** talebi artırır (zorunlu değil). (bkz §3.1)
+- **Gating:** **temel = "önceki şey alındı"** (önkoşul zinciri); **lifetime-₺ eşikleri
+  destekleyici** ikinci katman (tempoyu pürüzsüzleştirmek için). İkisi dengeli, ama omurga
+  önkoşul sırası.
+
+### Gating veri modeli (somut)
+```ts
+requires?: {
+  prev?: string[];        // OMURGA: bu id'ler tamamlanmadan açılmaz
+  minTables?: number;
+  minStationLevel?: number;
+  minLifetime?: number;   // DESTEK: tempo için yumuşak eşik (opsiyonel)
+}
+```
 
 ## 6. Skill / araç önerileri
 Kurulu bundled skill'ler (ek kurulum gerekmez, gerektiğinde çağrılır):

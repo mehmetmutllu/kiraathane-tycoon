@@ -48,6 +48,10 @@ doğruluyor (darboğaz = israf).
 **Durum:** Tasarım/plan hazır → `docs/progression-and-economy-v2.md`. Implementasyon sonraki
 oturum(lar)da (mevcut fiyat-çarpanı modeli değişecek). Önceki D-?'lerdeki "teaPrice seviyeyle
 artar" yaklaşımı bu kararla GEÇERSİZ.
+**Alt kararlar (kullanıcı onayı 2026-06-05):** (1) Çay fiyatı şimdilik **sabit**; artış sonra
+**yeni menü ürünleriyle** (tost/kahve/pizza). (2) Talep **kapasiteyi otomatik takip eder**
+(~%15 önde, mekân hep dolu); Tabela/İtibar + ödüllü video opsiyonel/sonra. (3) Gating omurgası
+**"önceki alındı" önkoşul zinciri**; lifetime-₺ eşikleri destekleyici ikinci katman.
 
 ## D-009 · Mekânsal (Roblox-tycoon) etkileşim — havada buton yok (2026-06-05)
 **Karar:** Satın alma/yükseltmeler **mekânsal**: oyuncu objenin yerine gider, üstünde durur,
