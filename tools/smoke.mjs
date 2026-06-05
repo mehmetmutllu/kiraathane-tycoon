@@ -48,6 +48,14 @@ try {
   if (after.coins > 0 || after.lifetime > 0) pass(`Müşteri ödedi / para düştü (coins=${after.coins}, lifetime=${after.lifetime})`);
   else fail('Para düşmedi (coins=0, lifetime=0)');
 
+  // Dikey (portrait) orana çevir → responsive kamera/HUD hatasız mı
+  await page.setViewportSize({ width: 412, height: 915 });
+  await page.waitForTimeout(500);
+  const portrait = await page.evaluate(() => window.__game());
+  const canvasOk = await page.$('canvas');
+  if (canvasOk && typeof portrait.tables === 'number') pass('Portrait orana uyum sağladı (canvas + durum okunuyor)');
+  else fail('Portrait orana geçişte sorun');
+
   if (consoleErrors.length === 0) pass('Konsol hatası yok');
   else fail(`Konsol hataları: ${consoleErrors.slice(0, 5).join(' | ')}`);
 } catch (e) {

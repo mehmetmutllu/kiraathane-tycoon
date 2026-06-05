@@ -147,3 +147,51 @@ body,
   background: rgba(255, 255, 255, 0.35);
   border: 2px solid rgba(255, 255, 255, 0.5);
 }
+
+/* ---- Mobil yön desteği (portrait birincil, landscape destekli, kilit yok) ---- */
+/* Çentik / güvenli alan boşlukları */
+@supports (padding: env(safe-area-inset-top)) {
+  .hud-top {
+    top: calc(12px + env(safe-area-inset-top));
+    left: calc(12px + env(safe-area-inset-left));
+  }
+  .pad-status {
+    top: calc(12px + env(safe-area-inset-top));
+    right: calc(12px + env(safe-area-inset-right));
+  }
+  .joystick {
+    left: calc(24px + env(safe-area-inset-left));
+    bottom: calc(24px + env(safe-area-inset-bottom));
+  }
+}
+
+/* Kısa yatay ekran (telefon landscape): UI küçült, çakışmayı önle */
+@media (orientation: landscape) and (max-height: 480px) {
+  .chip {
+    font-size: 15px;
+    padding: 6px 10px;
+  }
+  .pad-status {
+    width: 180px;
+    padding: 8px 10px;
+  }
+  .joystick {
+    width: 110px;
+    height: 110px;
+  }
+  .joystick-knob {
+    width: 48px;
+    height: 48px;
+    margin: -24px 0 0 -24px;
+  }
+  .hint {
+    font-size: 11px;
+  }
+}
+
+/* Çok dar dikey ekran: pad kutusunu daralt */
+@media (orientation: portrait) and (max-width: 380px) {
+  .pad-status {
+    width: 170px;
+  }
+}

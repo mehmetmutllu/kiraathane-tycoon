@@ -42,6 +42,10 @@ yükseltme / yeni istasyon / pad doldur → kapasite & gelir artar → tekrar
 
 Sahip karakteri: kapsül (greybox). Kamera yumuşak takip; çarpışma rapier ile.
 
+**Ekran yönü:** Birincil hedef **dikey (portrait)**; ekran çevrilince **yatay
+(landscape)** da oynanır. Yön kilidi yok — arayüz responsive, kamera ekran oranına göre
+otomatik çerçevelenir (portrait'te geri çekilir). Karar: `decisions.md` D-008.
+
 ## 5. Özellik listesi → Faz eşlemesi
 | Özellik | Faz |
 |---|---|

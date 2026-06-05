@@ -37,6 +37,16 @@ bozar → tek kaynak kilidi. Bütçe gelirse Synty POLYGON'a topluca geçiş kul
 **Gerekçe:** Mobil idle için yeterli; bulut kayıt en sona opsiyonel. Şema değişince eski
 kayıtlar migrate edilir, kullanıcı ilerlemesi kaybolmaz.
 
+## D-008 · Ekran yönü: portrait birincil, landscape destekli, kilit YOK (2026-06-05)
+**Karar:** Oyun **dikey (portrait)** tasarım hedefi; ama ekran çevrilince **yatay
+(landscape)** da oynanabilir. Orientation kilidi konmaz; arayüz responsive.
+**Gerekçe:** Idle/tycoon mobilde tek elle dikey oynanış birincil; landscape'i de
+desteklemek R3F'in otomatik resize'ı sayesinde düşük maliyetli (kamera çerçeveleme +
+birkaç CSS kuralı). Kullanıcı isteği.
+**Uygulama:** `CameraRig` (Scene.tsx) ekran oranına göre kamerayı çerçeveler
+(aspect<1 → geri çek, fit = clamp(1/aspect,1,1.7)); `index.css`'te safe-area insets +
+orientation media query'leri; smoke testinde portrait kontrolü.
+
 ## D-007 · Etik + çocuk-güvenli monetizasyon (2026-06-05)
 **Karar:** İnterstitial sıklık-sınırlı + sadece doğal aralarda; rewarded hep opsiyonel;
 gerçek parayla loot-box yok; reklam SDK'sı çocuğa-yönelik/sınırlı-veri modunda.

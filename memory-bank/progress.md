@@ -30,6 +30,8 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   - Ekonomi tempo: ilk satın alma simülasyonda ~6 dk (hedef 20-40sn'den yavaş) —
     Faz 2/4 dengelemede economy.config ayarlanacak.
   - Çay servisi Faz 1'de timer ile otomatik; manuel taşıma Faz 2 (garson) ile gelecek.
+- ✅ Responsive ekran yönü: portrait birincil + landscape destekli (kamera oran-uyumlu,
+     safe-area + orientation CSS); smoke 7/7. (Karar D-008.)
 - **Sıradaki kilometre taşı:** Faz 2 — yardımcı garson + çaydanlık yükseltme seviyeleri
   + semaver/yeni çaydanlık yeri pad'leri.
 

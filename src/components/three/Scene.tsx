@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Vector3 } from 'three';
 import { useGame, LAYOUT } from '../../game/store';
@@ -16,14 +17,19 @@ function Simulation() {
 }
 
 // Kamera sahip karakterini yumuşak takip eder (omuz-üstü izometrik).
+// Ekran oranına göre çerçeveler: portrait (dar) → kamera geri çekilir; landscape → normal.
+// Yön kilidi yok; çevirince otomatik uyum sağlar.
 function CameraRig() {
-  const { camera } = useThree();
-  const target = new Vector3();
-  const desired = new Vector3();
+  const { camera, size } = useThree();
+  const target = useMemo(() => new Vector3(), []);
+  const desired = useMemo(() => new Vector3(), []);
   useFrame((_, dt) => {
     const p = useGame.getState().player;
+    const aspect = size.width / Math.max(1, size.height);
+    const fit = aspect < 1 ? Math.min(1.7, Math.max(1, 1 / aspect)) : 1;
+    const d = 9 * fit;
     target.set(p[0], 0.6, p[2]);
-    desired.set(p[0], 9, p[2] + 9);
+    desired.set(p[0], d, p[2] + d);
     camera.position.lerp(desired, Math.min(1, dt * 4));
     camera.lookAt(target);
   });
