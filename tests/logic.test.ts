@@ -10,6 +10,7 @@ import {
   useGame,
   LAYOUT,
   currentPad,
+  availableOptionalPads,
   nextStep,
   stationSoftMaxLevel,
   stationUpgradeCost,
@@ -17,6 +18,7 @@ import {
   TEA_PRICE,
   brewTime,
 } from '../src/game/store';
+import { migrate, defaultSave } from '../src/game/save';
 
 // Mevcut ilerleme durumundan gating (requires) için GateState üretir.
 function gate() {
@@ -192,6 +194,88 @@ describe('generic pad sistemi + gating (Faz 2b / ekonomi v2)', () => {
     // Hepsi açıldı
     expect(useGame.getState().padsDone.length).toBe(4);
     expect(currentPad(gate())).toBeNull();
+  });
+});
+
+// Bir opsiyonel pad'i (ör. garson) oyuncuyu üstüne koyup parayla tamamlar; başarılıysa true.
+function completeOptionalPad(id: string): boolean {
+  const pad = availableOptionalPads(gate()).find((p) => p.id === id);
+  if (!pad) return false;
+  const pos = LAYOUT.padPos[pad.id];
+  useGame.getState().addMoney(pad.cost + 50);
+  useGame.setState({ player: [pos[0], 0.6, pos[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+  for (let i = 0; i < 400 && !useGame.getState().padsDone.includes(id); i++) useGame.getState().tick(0.1);
+  return useGame.getState().padsDone.includes(id);
+}
+
+describe('garson — opsiyonel kısmi assist (Faz 2d / D-012)', () => {
+  it("garson pad'i OPSİYONEL: alınmasa da omurga zinciri (sonraki masa) açılmaya devam eder", () => {
+    useGame.getState().hardReset();
+    useGame.getState().addMoney(50); // lifetime ≥ 30 → table2 açılır
+    expect(completeCurrentPad()).toBe('table2');
+
+    // 2. masa sonrası: garson alınabilir opsiyonel pad olarak görünür AMA omurga pad'i DEĞİL.
+    expect(availableOptionalPads(gate()).map((p) => p.id)).toContain('waiter');
+    expect(currentPad(gate())).toBeNull(); // table3 minStationLevel:1 ile gated; garson omurgayı tıkamaz
+
+    // Garson HİÇ alınmadan ocak yükselt → omurga normal devam etmeli (table3 aktifleşir).
+    useGame.getState().addMoney(1000);
+    expect(useGame.getState().upgradeStation()).toBe(true);
+    expect(currentPad(gate())?.id).toBe('table3'); // garson değil, sıradaki masa
+    expect(useGame.getState().hasWaiter).toBe(false);
+  });
+
+  it('garson tutulunca hasWaiter=true olur ve garson varlığı kurulur', () => {
+    useGame.getState().hardReset();
+    useGame.getState().addMoney(50);
+    expect(completeCurrentPad()).toBe('table2');
+    expect(useGame.getState().hasWaiter).toBe(false);
+
+    expect(completeOptionalPad('waiter')).toBe(true);
+    expect(useGame.getState().hasWaiter).toBe(true);
+    expect(useGame.getState().waiter).not.toBeNull();
+    // Tamamlanan opsiyonel pad bir daha alınabilir listede olmamalı.
+    expect(availableOptionalPads(gate()).map((p) => p.id)).not.toContain('waiter');
+  });
+
+  it('garson bekleyen müşteriye çay servis eder (oyuncu uzakta → kısmi assist)', () => {
+    useGame.getState().hardReset();
+    // Garsonu doğrudan kur, oyuncuyu kimseyi servis edemeyeceği köşeye park et.
+    useGame.setState({
+      hasWaiter: true,
+      waiter: { pos: [...LAYOUT.waiterHome] as [number, number, number], tray: 0 },
+      player: [0, 0.6, 2],
+      inputKeyboard: [0, 0],
+      inputJoystick: [0, 0],
+    });
+    // Oyuncu servis etmeden: yalnız garson sayesinde müşteri içip ödesin (yere para düşer).
+    for (let i = 0; i < 900; i++) useGame.getState().tick(0.1);
+    const s = useGame.getState();
+    // Garson en az bir müşteriye servis etti → ödeme parası yere düştü (oyuncu uzakta, toplamadı).
+    expect(s.coins.length).toBeGreaterThan(0);
+  });
+});
+
+describe('kayıt migrasyonu v4 → v5 (padFill → padFills + hasWaiter)', () => {
+  it('eski tek padFill, aktif omurga pad id\'sine taşınır; hasWaiter false', () => {
+    const v5 = migrate({
+      saveVersion: 4,
+      wallet: '100', diamonds: '0', lifetime: '50',
+      tables: 1, stations: 1, stationLevel: 0, serviceSpeedMult: 1,
+      padsDone: [], padFill: 20,
+    });
+    // lifetime 50 ≥ 30 → table2 aktif omurga pad'i → padFill ona atanır.
+    expect(v5.saveVersion).toBe(5);
+    expect(v5.padFills).toEqual({ table2: 20 });
+    expect(v5.hasWaiter).toBe(false);
+    expect((v5 as Record<string, unknown>).padFill).toBeUndefined();
+  });
+
+  it('v5 varsayılan kayıt padFills={} ve hasWaiter=false içerir', () => {
+    const d = defaultSave();
+    expect(d.saveVersion).toBe(5);
+    expect(d.padFills).toEqual({});
+    expect(d.hasWaiter).toBe(false);
   });
 });
 

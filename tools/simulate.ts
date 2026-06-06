@@ -53,10 +53,10 @@ function rate(s: State): number {
   return (s.tables * TEA_PRICE) / cycle;
 }
 
-// Sıradaki aktif pad (gating karşılanmış, henüz alınmamış).
+// Sıradaki aktif OMURGA pad'i (opsiyoneller atlanır; gating karşılanmış, henüz alınmamış).
 function currentPad(s: State) {
   const g = gateOf(s);
-  return C.pads.find((p) => !s.padsDone.includes(p.id) && requiresMet(p.requires, g)) ?? null;
+  return C.pads.find((p) => !p.optional && !s.padsDone.includes(p.id) && requiresMet(p.requires, g)) ?? null;
 }
 
 function upgradeUnlocked(s: State): boolean {
@@ -143,6 +143,13 @@ function run() {
   const notHit = milestones.filter((m) => !m.done).map((m) => m.name);
   if (notHit.length) console.log('6 saatte ulaşılamayan:', notHit.join(', '));
   else console.log('Tüm kilometre taşlarına ulaşıldı.');
+
+  console.log('\n--- Servis kapasitesi (Faz 2d, bilgi) ---');
+  console.log(
+    `Garson OPSİYONEL (₺${C.pads.find((p) => p.id === 'waiter')?.cost ?? '?'}, omurgayı KİLİTLEMEZ): ` +
+      `hız ${C.waiter.moveSpeed} br/sn, tepsi ${C.waiter.trayCapacity}. Oyuncudan yavaş → kısmi assist, ` +
+      `oyuncu hâlâ gerekli. Yukarıdaki tempo idealize servis (oyuncu yetişiyor) varsayar.`,
+  );
 }
 
 run();

@@ -1,7 +1,7 @@
 // Test/dev kancaları. 3D sahne görsel doğrulanamaz; durum buradan okunur.
 // window.__game  -> salt-okunur anlık görüntü
 // window.__advanceTime(sn) -> simülasyonu hızlı ileri sar
-import { useGame, currentPad, LAYOUT, trayCapacity } from './store';
+import { useGame, currentPad, availableOptionalPads, LAYOUT, trayCapacity } from './store';
 import type { Vec3 } from './types';
 
 declare global {
@@ -20,12 +20,13 @@ export function installDevHooks(): void {
 
   window.__game = () => {
     const s = useGame.getState();
-    const pad = currentPad({
+    const gate = {
       padsDone: s.padsDone,
       tables: s.tables,
       stationLevel: s.stationLevel,
       lifetime: s.lifetime.toNumber(),
-    });
+    };
+    const pad = currentPad(gate);
     return {
       wallet: s.wallet.toNumber(),
       diamonds: s.diamonds.toNumber(),
@@ -48,10 +49,20 @@ export function installDevHooks(): void {
         return w ? LAYOUT.tables[w.tableIndex].seat : null;
       })(),
       coins: s.coins.length,
-      padFill: Math.floor(s.padFill),
+      padFill: Math.floor(pad ? s.padFills[pad.id] ?? 0 : 0),
       currentPad: pad ? pad.id : null,
       padCost: pad ? pad.cost : 0,
       padPos: pad ? LAYOUT.padPos[pad.id] : null,
+      // Opsiyonel pad'ler (garson vb.) — omurgayı kilitlemez; smoke "garson tut" testi için.
+      optionalPads: availableOptionalPads(gate).map((p) => ({
+        id: p.id,
+        cost: p.cost,
+        pos: LAYOUT.padPos[p.id],
+      })),
+      // Garson durumu (Faz 2d)
+      hasWaiter: s.hasWaiter,
+      waiterTray: s.waiter ? s.waiter.tray : 0,
+      waiterPos: s.waiter ? s.waiter.pos.map((n) => +n.toFixed(2)) : null,
       nextStep: s.nextStepLabel,
       upgradeFill: Math.floor(s.upgradeFill),
       upgradeZonePos: LAYOUT.upgradeZone,

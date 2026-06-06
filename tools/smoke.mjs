@@ -80,6 +80,28 @@ try {
     fail(`Beklenen ilk aktif pad table2 değil: ${padInfo.currentPad} (nextStep=${padInfo.nextStep})`);
   }
 
+  // Garson (Faz 2d, OPSİYONEL pad): table2 sonrası alınabilir listede olmalı; tutunca hasWaiter=true.
+  const optInfo = await page.evaluate(() => window.__game());
+  const waiterPad = (optInfo.optionalPads || []).find((p) => p.id === 'waiter');
+  if (waiterPad && waiterPad.pos) {
+    pass('Garson opsiyonel pad olarak sunuluyor (omurgayı kilitlemez)');
+    await page.evaluate(() => window.__addMoney(300));
+    await page.evaluate((pos) => window.__teleport(pos[0], pos[2]), waiterPad.pos);
+    const hired = await page.evaluate(() => window.__advanceTime(8));
+    if (hired.hasWaiter) pass('Garson tutuldu (hasWaiter=true)');
+    else fail(`Garson tutulamadı (hasWaiter=${hired.hasWaiter})`);
+
+    // Kısmi assist: oyuncuyu kimseyi servis edemeyeceği köşeye park et → garson tek başına servis edip para düşürmeli.
+    await page.evaluate(() => window.__teleport(0, 2));
+    const beforeCoins = (await page.evaluate(() => window.__game())).coins;
+    const assisted = await page.evaluate(() => window.__advanceTime(40));
+    if (assisted.coins > beforeCoins)
+      pass(`Garson kısmi assist çalışıyor (oyuncu uzakta, düşen para ${beforeCoins}→${assisted.coins})`);
+    else fail(`Garson servis etmedi (coins ${beforeCoins}→${assisted.coins}, waiterTray=${assisted.waiterTray})`);
+  } else {
+    fail(`Garson opsiyonel pad listesinde yok: ${JSON.stringify(optInfo.optionalPads)}`);
+  }
+
   // Mekânsal çay yükseltme (table2 sonrası açılır): para ekle + noktaya ışınla + zaman sar → seviye artmalı
   const beforeLvl = (await page.evaluate(() => window.__game())).stationLevel;
   await page.evaluate(() => window.__addMoney(100000));

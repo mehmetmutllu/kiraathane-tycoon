@@ -1,5 +1,5 @@
 // localStorage kayıt + saveVersion migrasyon. Backend yok: cihaz = veritabanı.
-import { SAVE_VERSION } from '../config/economy.config';
+import { SAVE_VERSION, economyConfig, requiresMet, type PadDef } from '../config/economy.config';
 
 const KEY = 'kiraathane.save';
 
@@ -14,7 +14,10 @@ export interface SaveData {
   stationLevel: number;
   serviceSpeedMult: number;
   padsDone: string[];
-  padFill: number;
+  /** Aktif pad'lerin kısmi dolumu (pad id → ₺). Aynı anda birden çok pad doldurulabilir (v5). */
+  padFills: Record<string, number>;
+  /** Garson tutuldu mu (Faz 2d opsiyonel pad). */
+  hasWaiter: boolean;
   lastSaved: number; // epoch ms
 }
 
@@ -29,15 +32,26 @@ export function defaultSave(): SaveData {
     stationLevel: 0,
     serviceSpeedMult: 1,
     padsDone: [],
-    padFill: 0,
+    padFills: {},
+    hasWaiter: false,
     lastSaved: Date.now(),
   };
 }
 
+/** v4'teki tek `padFill` sayısı hangi omurga pad'ine aitse o id'yi bulur (opsiyoneller atlanır). */
+function backbonePadId(g: { padsDone: string[]; tables: number; stationLevel: number; lifetime: number }): string | null {
+  const p = (economyConfig.pads as readonly PadDef[]).find(
+    (pd) => !pd.optional && !g.padsDone.includes(pd.id) && requiresMet(pd.requires, g),
+  );
+  return p ? p.id : null;
+}
+
 /** Eski sürüm kayıtları güncel şemaya taşır (ilerleme kaybolmaz). */
-function migrate(raw: Record<string, unknown>): SaveData {
+export function migrate(raw: Record<string, unknown>): SaveData {
   const data = { ...defaultSave(), ...raw } as SaveData;
   let v = typeof raw.saveVersion === 'number' ? raw.saveVersion : 0;
+  // v4'e kadar tek sayıydı; v5'te padFills'e taşınır.
+  let pendingFill = Number((raw as { padFill?: unknown }).padFill ?? 0) || 0;
 
   // v0/v1/v2 -> v3: eksik alanları default'la, türleri normalize et.
   if (v < 3) {
@@ -46,7 +60,7 @@ function migrate(raw: Record<string, unknown>): SaveData {
     data.lifetime = String(raw.lifetime ?? raw.wallet ?? '0');
     data.tables = Number(raw.tables ?? 1) || 1;
     data.stationLevel = Number(raw.stationLevel ?? 0) || 0;
-    data.padFill = Number(raw.padFill ?? 0) || 0;
+    pendingFill = Number(raw.padFill ?? 0) || 0;
     v = 3;
   }
 
@@ -61,10 +75,26 @@ function migrate(raw: Record<string, unknown>): SaveData {
       : tables >= 2
         ? ['table2']
         : [];
-    data.padFill = tables >= 2 ? 0 : Number(raw.padFill ?? 0) || 0;
+    if (tables >= 2) pendingFill = 0;
     v = 4;
   }
 
+  // v4 -> v5: tek `padFill` → `padFills` kaydı (eş zamanlı omurga + opsiyonel pad dolumu için).
+  // Eski kısmi dolum, o an aktif olan OMURGA pad'ine atanır (ilerleme kaybolmaz). Garson yok.
+  if (v < 5) {
+    const padsDone = Array.isArray(data.padsDone) ? data.padsDone : [];
+    const id = backbonePadId({
+      padsDone,
+      tables: Number(data.tables ?? 1) || 1,
+      stationLevel: Number(data.stationLevel ?? 0) || 0,
+      lifetime: Number(data.lifetime ?? 0) || 0,
+    });
+    data.padFills = pendingFill > 0 && id ? { [id]: pendingFill } : {};
+    data.hasWaiter = false;
+    v = 5;
+  }
+
+  delete (data as { padFill?: unknown }).padFill;
   data.saveVersion = SAVE_VERSION;
   return data;
 }

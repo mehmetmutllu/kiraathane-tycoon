@@ -21,3 +21,11 @@ export interface Coin {
   pos: Vec3;
   value: number;
 }
+
+// Garson (Faz 2d, opsiyonel). Transient: hasWaiter persist edilir ama konum/tepsi her
+// oturumda yeniden kurulur. Durum örtük: tray>0 ise teslimata, değilse ocağa yönelir.
+export interface Waiter {
+  pos: Vec3;
+  /** Tepsisinde taşıdığı çay (0..waiter.trayCapacity). */
+  tray: number;
+}

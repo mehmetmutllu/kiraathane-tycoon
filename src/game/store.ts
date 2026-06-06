@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { Decimal, D } from './decimal';
-import type { Coin, Npc, Vec3 } from './types';
+import type { Coin, Npc, Vec3, Waiter } from './types';
 import {
   economyConfig as C,
   upgradeOutputMultiplier,
@@ -31,12 +31,15 @@ export const LAYOUT = {
   // Pad pozisyonları: açtıkları objenin yerinde.
   padPos: {
     table2: [4, 0, -1] as Vec3, // 2. masa slotu
+    waiter: [-2, 0, 4] as Vec3, // personel köşesi (giriş yanı, masalardan uzak)
     table3: [-4, 0, 2.5] as Vec3, // 3. masa slotu
     station2: [2, 0, -5] as Vec3, // 2. ocak yeri
     samovar: [2, 0, -3.4] as Vec3, // ocakların önü (semavere geçiş)
   } as Record<string, Vec3>,
   // Mekânsal çay yükseltme noktası: ana ocağın önünde dur → altta bar dolar.
   upgradeZone: [-2, 0, -3.4] as Vec3,
+  // Garson boştayken bekleyeceği köşe (personel home).
+  waiterHome: [2, 0, 4] as Vec3,
 } as const;
 
 const NPC_SPEED = 2.6;
@@ -113,12 +116,17 @@ export interface GameState {
   stationLevel: number;
   serviceSpeedMult: number;
   padsDone: string[];
-  padFill: number;
+  /** Aktif pad'lerin kısmi dolumu (pad id → ₺). Eş zamanlı omurga + opsiyonel için kayıt (v5). */
+  padFills: Record<string, number>;
+  /** Garson tutuldu mu (Faz 2d opsiyonel pad; persist). */
+  hasWaiter: boolean;
   // Transient (kaydedilmez — D-011 servis durumu yeniden kurulur)
   player: Vec3;
   npcs: Npc[];
   coins: Coin[];
   npcCount: number;
+  /** Garson (hasWaiter ise) — konum/tepsi transient, her oturumda kurulur. */
+  waiter: Waiter | null;
   /** Ocak hazır-kuyruğundaki demlenmiş çay sayısı. */
   readyCups: number;
   /** Demlenmekte olan bardağın ilerleme süresi (sn). */
@@ -147,14 +155,24 @@ export interface GameState {
 }
 
 /**
- * Şu an aktif pad: ilk açılmamış VE `requires` koşulu karşılanan pad (yoksa null).
- * Önkoşul zinciri (prev) sayesinde sıralıdır; bir sonraki pad gate'liyse null döner
- * (oyuncu önce önkoşulu — ör. ocak yükseltmesi — tamamlamalı).
+ * Şu an aktif OMURGA pad'i: ilk açılmamış, opsiyonel OLMAYAN, `requires` koşulu karşılanan pad.
+ * Opsiyonel pad'ler (ör. garson) atlanır → alınmasalar da omurga (sonraki masa/ocak) açılmaya
+ * devam eder. Önkoşul zinciri (prev) sayesinde sıralıdır; sonraki gate'liyse null döner.
  */
 export function currentPad(g: GateState): PadDef | null {
   return (C.pads as readonly PadDef[]).find(
-    (p) => !g.padsDone.includes(p.id) && requiresMet(p.requires, g),
+    (p) => !p.optional && !g.padsDone.includes(p.id) && requiresMet(p.requires, g),
   ) ?? null;
+}
+
+/**
+ * Şu an alınabilir opsiyonel pad'ler (garson vb.): açılmamış, `optional:true`, koşulu karşılanan.
+ * Omurgadan bağımsız; oyuncu isterse alır. Aynı anda omurga pad'iyle birlikte aktif olabilir.
+ */
+export function availableOptionalPads(g: GateState): PadDef[] {
+  return (C.pads as readonly PadDef[]).filter(
+    (p) => p.optional && !g.padsDone.includes(p.id) && requiresMet(p.requires, g),
+  );
 }
 
 /** İstasyon yükseltme noktası şu an aktif mi (önkoşulu karşılandı mı)? */
@@ -166,8 +184,8 @@ export function upgradeZoneUnlocked(g: GateState): boolean {
 export function nextStep(g: GateState): string {
   const pad = currentPad(g);
   if (pad) return `Sıradaki: ${pad.label} (₺${pad.cost})`;
-  // Aktif pad yok → ilk açılmamış pad neyle kilitli, onu söyle.
-  const undone = (C.pads as readonly PadDef[]).find((p) => !g.padsDone.includes(p.id));
+  // Aktif omurga pad yok → ilk açılmamış omurga pad neyle kilitli, onu söyle (opsiyoneller atlanır).
+  const undone = (C.pads as readonly PadDef[]).find((p) => !p.optional && !g.padsDone.includes(p.id));
   if (undone) {
     const r = undone.requires as Requires | undefined;
     if (r?.minStationLevel != null && g.stationLevel < r.minStationLevel)
@@ -194,11 +212,13 @@ export const useGame = create<GameState>((set, get) => ({
   stationLevel: 0,
   serviceSpeedMult: 1,
   padsDone: [],
-  padFill: 0,
+  padFills: {},
+  hasWaiter: false,
   player: [...LAYOUT.player] as Vec3,
   npcs: [],
   coins: [],
   npcCount: 0,
+  waiter: null,
   readyCups: 0,
   brewProgress: 0,
   tray: 0,
@@ -236,12 +256,14 @@ export const useGame = create<GameState>((set, get) => ({
       stationLevel: save.stationLevel,
       serviceSpeedMult: save.serviceSpeedMult,
       padsDone: [...save.padsDone],
-      padFill: save.padFill,
+      padFills: { ...save.padFills },
+      hasWaiter: save.hasWaiter,
       offlineEarned,
       player: [...LAYOUT.player] as Vec3,
       npcs: [],
       coins: [],
       npcCount: 0,
+      waiter: save.hasWaiter ? { pos: [...LAYOUT.waiterHome] as Vec3, tray: 0 } : null,
       readyCups: 0,
       brewProgress: 0,
       tray: 0,
@@ -272,7 +294,8 @@ export const useGame = create<GameState>((set, get) => ({
     let stations = s.stations;
     let serviceSpeedMult = s.serviceSpeedMult;
     let padsDone = s.padsDone;
-    let padFill = s.padFill;
+    let padFills = s.padFills;
+    let hasWaiter = s.hasWaiter;
     let upgradeFill = s.upgradeFill;
     let activeZone: ActiveZone | null = null;
     let stationLevel = s.stationLevel;
@@ -400,40 +423,98 @@ export const useGame = create<GameState>((set, get) => ({
       }
     }
 
-    // --- Pad doldurma (sıradaki aktif pad; pad açtığı objenin yerinde) ---
-    const padGate: GateState = { padsDone, tables, stationLevel, lifetime: lifetime.toNumber() };
-    const pad = currentPad(padGate);
-    if (pad) {
-      const padPos = LAYOUT.padPos[pad.id];
-      if (padPos && dist2D(player, padPos) < PAD_RADIUS) {
-        activeZone = { kind: 'pad', label: pad.label, fill: padFill, cost: pad.cost };
-        if (wallet.gt(0)) {
-          const amt = Math.min(pad.fillRate * dt, wallet.toNumber(), pad.cost - padFill);
-          if (amt > 0) {
-            padFill += amt;
-            wallet = wallet.sub(amt);
-          }
-        }
-        if (padFill >= pad.cost) {
-          // Pad tamamlandı: etkiyi uygula, bir sonrakine geç.
-          switch (pad.effect.type) {
-            case 'addTable':
-              tables = Math.min(LAYOUT.tables.length, tables + 1);
-              break;
-            case 'addStation':
-              stations = Math.min(LAYOUT.stations.length, stations + 1);
-              serviceSpeedMult *= C.teaStation.extraStationSpeedFactor;
-              break;
-            case 'serviceSpeed':
-              serviceSpeedMult *= pad.effect.factor;
-              break;
-          }
-          padsDone = [...padsDone, pad.id];
-          padFill = 0;
-          activeZone = null;
-        }
-        if (activeZone) activeZone.fill = padFill;
+    // --- Garson (D-012 opsiyonel kısmi assist): ocaktan çay al → en yakın bekleyen masaya götür ---
+    // Oyuncudan yavaş + tek tepsili; tek başına büyüyen mekânı döndüremez (oyuncu hâlâ gerekli).
+    let waiter: Waiter | null = s.waiter;
+    if (hasWaiter) {
+      const w: Waiter = waiter
+        ? { pos: [...waiter.pos] as Vec3, tray: waiter.tray }
+        : { pos: [...LAYOUT.waiterHome] as Vec3, tray: 0 };
+      const wStep = C.waiter.moveSpeed * dt;
+      const wTrayCap = C.waiter.trayCapacity;
+      const waitingNpcs = liveNpcs.filter((n) => n.state === 'waitingForTea');
+      // En yakın açık ocağı bul (yükleme/bekleme hedefi).
+      let nearStation = LAYOUT.stations[0];
+      let nsd = Infinity;
+      for (let i = 0; i < stations; i++) {
+        const d = dist2D(w.pos, LAYOUT.stations[i]);
+        if (d < nsd) { nsd = d; nearStation = LAYOUT.stations[i]; }
       }
+      if (w.tray > 0 && waitingNpcs.length > 0) {
+        // Teslimat: en yakın bekleyen müşteriye git, varınca çayı bırak.
+        let best = waitingNpcs[0];
+        let bd = Infinity;
+        for (const n of waitingNpcs) {
+          const d = dist2D(w.pos, LAYOUT.tables[n.tableIndex].seat);
+          if (d < bd) { bd = d; best = n; }
+        }
+        if (moveToward(w.pos, LAYOUT.tables[best.tableIndex].seat, wStep)) {
+          best.state = 'drinking';
+          best.timer = C.npc.eatTime;
+          w.tray -= 1;
+        }
+      } else if (w.tray < wTrayCap && waitingNpcs.length > 0) {
+        // Yükleme: ocağa git; varınca hazır çaydan tepsiye al (yoksa orada bekler).
+        if (moveToward(w.pos, nearStation, wStep) && readyCups > 0) {
+          const take = Math.min(wTrayCap - w.tray, readyCups);
+          w.tray += take;
+          readyCups -= take;
+        }
+      } else {
+        // Boşta: personel köşesine dön.
+        moveToward(w.pos, LAYOUT.waiterHome, wStep);
+      }
+      waiter = w;
+    } else {
+      waiter = null;
+    }
+
+    // --- Pad doldurma (omurga + opsiyonel pad'ler; her pad açtığı objenin yerinde) ---
+    // Oyuncu fiziksel olarak aynı anda tek pad'in üstünde olabilir → bulunca işle ve çık.
+    const padGate: GateState = { padsDone, tables, stationLevel, lifetime: lifetime.toNumber() };
+    const activePads: PadDef[] = [];
+    const backbonePad = currentPad(padGate);
+    if (backbonePad) activePads.push(backbonePad);
+    for (const op of availableOptionalPads(padGate)) activePads.push(op);
+    for (const pad of activePads) {
+      const padPos = LAYOUT.padPos[pad.id];
+      if (!padPos || dist2D(player, padPos) >= PAD_RADIUS) continue;
+      let fill = padFills[pad.id] ?? 0;
+      if (wallet.gt(0)) {
+        const amt = Math.min(pad.fillRate * dt, wallet.toNumber(), pad.cost - fill);
+        if (amt > 0) {
+          fill += amt;
+          wallet = wallet.sub(amt);
+        }
+      }
+      if (fill >= pad.cost) {
+        // Pad tamamlandı: etkiyi uygula, kısmi dolumu temizle.
+        switch (pad.effect.type) {
+          case 'addTable':
+            tables = Math.min(LAYOUT.tables.length, tables + 1);
+            break;
+          case 'addStation':
+            stations = Math.min(LAYOUT.stations.length, stations + 1);
+            serviceSpeedMult *= C.teaStation.extraStationSpeedFactor;
+            break;
+          case 'serviceSpeed':
+            serviceSpeedMult *= pad.effect.factor;
+            break;
+          case 'hireWaiter':
+            hasWaiter = true;
+            waiter = { pos: [...LAYOUT.waiterHome] as Vec3, tray: 0 };
+            break;
+        }
+        padsDone = [...padsDone, pad.id];
+        const rest = { ...padFills };
+        delete rest[pad.id];
+        padFills = rest;
+        activeZone = null;
+      } else {
+        padFills = { ...padFills, [pad.id]: fill };
+        activeZone = { kind: 'pad', label: pad.label, fill, cost: pad.cost };
+      }
+      break;
     }
 
     // --- Mekânsal çay yükseltme noktası (ana ocağın önünde dur → altta bar dolar) ---
@@ -486,11 +567,13 @@ export const useGame = create<GameState>((set, get) => ({
       stationLevel,
       serviceSpeedMult,
       padsDone,
-      padFill,
+      padFills,
+      hasWaiter,
       upgradeFill,
       activeZone,
       nextStepLabel,
       player,
+      waiter,
       readyCups,
       brewProgress,
       tray,
@@ -533,7 +616,8 @@ export const useGame = create<GameState>((set, get) => ({
       stationLevel: s.stationLevel,
       serviceSpeedMult: s.serviceSpeedMult,
       padsDone: [...s.padsDone],
-      padFill: s.padFill,
+      padFills: { ...s.padFills },
+      hasWaiter: s.hasWaiter,
       lastSaved: Date.now(),
     });
   },

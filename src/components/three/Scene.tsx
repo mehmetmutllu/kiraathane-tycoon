@@ -4,6 +4,7 @@ import { Html } from '@react-three/drei';
 import { Vector3 } from 'three';
 import { useGame, LAYOUT, stationSoftMaxLevel, upgradeZoneUnlocked } from '../../game/store';
 import { Player } from './Player';
+import { Waiter } from './Waiter';
 import { Tables } from './Tables';
 import { TeaStation } from './TeaStation';
 import { Customers } from './Customers';
@@ -148,6 +149,7 @@ export function Scene() {
       <Customers />
       <Coins />
       <Player />
+      <Waiter />
       <CameraRig />
       <Simulation />
     </Canvas>

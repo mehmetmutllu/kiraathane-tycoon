@@ -13,7 +13,7 @@
  *   L5 (Usta)   = masterDiamondCost 💎 VEYA 1 ödüllü video; outputMult yerine masterOutputMult
  */
 
-export const SAVE_VERSION = 4;
+export const SAVE_VERSION = 5;
 
 export const CURRENCY = {
   soft: '₺', // Para — müşteriden kazanılır
@@ -113,6 +113,18 @@ export const economyConfig = {
   },
 
   /**
+   * Garson (Faz 2d, opsiyonel — `waiter` pad'iyle tutulur, ZORUNLU değil). KISMİ assist:
+   * oyuncudan YAVAŞ ve KÜÇÜK tepsili → tek başına büyüyen mekânı döndüremez; oyuncu hâlâ gerekli.
+   * Ocaktan tek çay alır, en yakın bekleyen müşteriye götürür, döner (D-012 bölge-başı personel).
+   */
+  waiter: {
+    /** Hareket hızı (dünya birimi/sn). Oyuncudan (player.moveSpeed) belirgin yavaş. */
+    moveSpeed: 1.8,
+    /** Tepsi kapasitesi (tek seferde taşıdığı çay). Oyuncununkinden küçük. */
+    trayCapacity: 1,
+  },
+
+  /**
    * Ocak hazır-kuyruğu (D-011 §3): demlenen çay tezgâhta birikir. Kuyruk doluysa demleme
    * durur (teslimat darboğaz); boşsa servis çay bekler (demleme darboğaz). Kapasite ocak
    * seviyesine bağlı (ayrı upgrade DEĞİL) → ocağı büyütmek hız + kapasite verir.
@@ -139,17 +151,22 @@ export const economyConfig = {
    *   addTable     → +1 masa (oturma kapasitesi; o masanın yerinde inşa olur)
    *   addStation   → +1 çay ocağı (pişirme kapasitesi; extraStationSpeedFactor ile hızlanır)
    *   serviceSpeed → demleme süresi ×factor (semaver = daha hızlı throughput)
+   *   hireWaiter   → garson tut (opsiyonel kısmi servis yardımı; bkz. `waiter`)
+   * `optional:true` pad'ler OMURGA zincirini KİLİTLEMEZ: alınmasa da sonraki masalar/ocaklar açılır
+   * (oyuncu isterse alır, istemezse kendi gezerek servis eder). `currentPad` opsiyonelleri atlar.
    * Maliyetler tempo hedefine göre ayarlı (ilk alım <90sn; simulate.ts doğrular).
-   * Zincir: 2.Masa → (ocak L≥1) → 3.Masa → 2.Ocak → Semaver.
+   * Omurga zinciri: 2.Masa → (ocak L≥1) → 3.Masa → 2.Ocak → Semaver.  Opsiyonel: Garson (2.Masa sonrası).
    */
   pads: [
-    { id: 'table2', label: '2. Masa', cost: 35, fillRate: 40,
+    { id: 'table2', label: '2. Masa', cost: 35, fillRate: 40, optional: false,
       requires: { minLifetime: 30 }, effect: { type: 'addTable' } },
-    { id: 'table3', label: '3. Masa', cost: 120, fillRate: 55,
+    { id: 'waiter', label: 'Garson Tut', cost: 150, fillRate: 50, optional: true,
+      requires: { prev: ['table2'] }, effect: { type: 'hireWaiter' } },
+    { id: 'table3', label: '3. Masa', cost: 120, fillRate: 55, optional: false,
       requires: { prev: ['table2'], minStationLevel: 1 }, effect: { type: 'addTable' } },
-    { id: 'station2', label: 'Yeni Çay Ocağı', cost: 360, fillRate: 75,
+    { id: 'station2', label: 'Yeni Çay Ocağı', cost: 360, fillRate: 75, optional: false,
       requires: { prev: ['table3'] }, effect: { type: 'addStation' } },
-    { id: 'samovar', label: 'Semavere Geçiş', cost: 850, fillRate: 110,
+    { id: 'samovar', label: 'Semavere Geçiş', cost: 850, fillRate: 110, optional: false,
       requires: { prev: ['station2'] }, effect: { type: 'serviceSpeed', factor: 0.7 } },
   ],
 
