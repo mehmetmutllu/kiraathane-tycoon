@@ -54,8 +54,12 @@ bottleneck modeli (ilk alım 84sn). Vitest 14/14, smoke 9/9.
 (~%15 önde, mekân hep dolu); Tabela/İtibar + ödüllü video opsiyonel/sonra. (3) Gating omurgası
 **"önceki alındı" önkoşul zinciri**; lifetime-₺ eşikleri destekleyici ikinci katman.
 
-## D-015 · State tek-doğru-kaynaktan türetilir (denormalizasyon yasak) — KARARLAŞTI, UYGULANACAK (2026-06-06)
-**Durum:** ✅ Kullanıcı onayı 2026-06-06; **uygulama sonraki oturuma ertelendi** (Faz 2e'den ÖNCE yapılacak).
+## D-015 · State tek-doğru-kaynaktan türetilir (denormalizasyon yasak) — ✅ UYGULANDI (2026-06-06)
+**Durum:** ✅ UYGULANDI (2026-06-06). `economy.config.ts`'e saf `derivedFromPads(padsDone)` eklendi; store
+(init+tick) ondan okur, pad açılınca yalnız `padsDone` büyür (tick mutasyonları kalktı); SaveData'dan
+`tables/stations/serviceSpeedMult/hasWaiter` çıkarıldı; **SAVE_VERSION 7→8** + v7→v8 migrasyon (eski
+`hasWaiter:true` → `padsDone`'a `waiter`). simulate.ts da türetir. Çelişen sahte alanların türetmeye
+sızamadığı + store'un daima tutarlı kaldığı testlerle ispatlandı. Vitest 25/25, build temiz, sim 84sn, smoke 15/15.
 **Karar:** Pad'lerden **türetilebilen** değerler ayrı state/kayıt alanı olarak TUTULMAZ; tek doğru kaynak
 `padsDone`'dan türetilir. Türetilenler: `tables` (1 + addTable sayısı), `stations` (1 + addStation sayısı),
 `serviceSpeedMult` (serviceSpeed/addStation çarpanlarının çarpımı), `hasWaiter` (`padsDone.includes('waiter')`).

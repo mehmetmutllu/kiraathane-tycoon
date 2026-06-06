@@ -20,6 +20,7 @@ import {
   upgradeCost,
   upgradeOutputMultiplier,
   requiresMet,
+  derivedFromPads,
   type GateState,
 } from '../src/config/economy.config.ts';
 
@@ -27,30 +28,29 @@ const DT = 1; // saniyelik adım
 const TEA_PRICE = C.teaStation.basePrice;
 const SOFT_MAX = C.teaStation.upgrade.masterLevel - 1; // ₺ ile çıkılabilen en yüksek seviye
 
+// D-015: tables/serviceSpeedMult ayrı tutulmaz; padsDone'dan türetilir (store ile aynı kaynak).
 interface State {
   t: number;
   wallet: number;
   lifetime: number;
   stationLevel: number;
-  tables: number;
-  stations: number;
-  serviceSpeedMult: number;
   padsDone: string[];
 }
 
 function gateOf(s: State): GateState {
-  return { padsDone: s.padsDone, tables: s.tables, stationLevel: s.stationLevel, lifetime: s.lifetime };
+  return { padsDone: s.padsDone, tables: derivedFromPads(s.padsDone).tables, stationLevel: s.stationLevel, lifetime: s.lifetime };
 }
 
 // Demleme süresi (sn): throughput (stationLevel + servis hızı) arttıkça kısalır.
 function brewTime(s: State): number {
-  return (C.npc.orderTime * s.serviceSpeedMult) / upgradeOutputMultiplier(C.teaStation.upgrade, s.stationLevel);
+  const { serviceSpeedMult } = derivedFromPads(s.padsDone);
+  return (C.npc.orderTime * serviceSpeedMult) / upgradeOutputMultiplier(C.teaStation.upgrade, s.stationLevel);
 }
 
 // Gelir oranı (₺/sn): oturma kapasitesi × sabit fiyat / müşteri döngü süresi.
 function rate(s: State): number {
   const cycle = C.npc.walkTime + brewTime(s) + C.npc.eatTime;
-  return (s.tables * TEA_PRICE) / cycle;
+  return (derivedFromPads(s.padsDone).tables * TEA_PRICE) / cycle;
 }
 
 // Sıradaki aktif OMURGA pad'i (opsiyoneller atlanır; gating karşılanmış, henüz alınmamış).
@@ -69,15 +69,7 @@ function trySpend(s: State): void {
   if (pad) {
     if (s.wallet >= pad.cost) {
       s.wallet -= pad.cost;
-      s.padsDone.push(pad.id);
-      switch (pad.effect.type) {
-        case 'addTable':
-          s.tables += 1;
-          break;
-        case 'serviceSpeed':
-          s.serviceSpeedMult *= pad.effect.factor;
-          break;
-      }
+      s.padsDone.push(pad.id); // D-015: etkiler (tables/serviceSpeedMult) padsDone'dan türetilir.
     }
     return;
   }
@@ -111,12 +103,12 @@ function fmtTime(sec: number): string {
 
 function run() {
   const s: State = {
-    t: 0, wallet: 0, lifetime: 0, stationLevel: 0, tables: 1, stations: 1, serviceSpeedMult: 1, padsDone: [],
+    t: 0, wallet: 0, lifetime: 0, stationLevel: 0, padsDone: [],
   };
   const MAX_T = 60 * 60 * 6; // 6 saat üst sınır
 
   console.log('=== Köşe Kıraathanesi — Ekonomi v2 Simülasyonu (bottleneck modeli) ===\n');
-  console.log(`Sabit çay fiyatı: ${TEA_PRICE} ₺ · Başlangıç: ${s.tables} masa, oran ${rate(s).toFixed(2)} ₺/sn\n`);
+  console.log(`Sabit çay fiyatı: ${TEA_PRICE} ₺ · Başlangıç: ${derivedFromPads(s.padsDone).tables} masa, oran ${rate(s).toFixed(2)} ₺/sn\n`);
 
   while (s.t < MAX_T) {
     const inc = rate(s) * DT;
@@ -128,7 +120,7 @@ function run() {
     for (const m of milestones) {
       if (!m.done && m.hit(s)) {
         m.done = true;
-        console.log(`  ✓ ${m.name.padEnd(34)} @ ${fmtTime(s.t).padStart(7)}  (oran ${rate(s).toFixed(2)} ₺/sn, L${s.stationLevel}, ${s.tables} masa)`);
+        console.log(`  ✓ ${m.name.padEnd(34)} @ ${fmtTime(s.t).padStart(7)}  (oran ${rate(s).toFixed(2)} ₺/sn, L${s.stationLevel}, ${derivedFromPads(s.padsDone).tables} masa)`);
       }
     }
     if (milestones.every((m) => m.done)) break;

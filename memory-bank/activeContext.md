@@ -4,15 +4,34 @@
 
 ## Şu an neredeyiz (2026-06-06)
 Faz 0 + Faz 1 ✅. Faz 2: 2a ✅, 2b ✅, 2-UX (D-009) ✅, 2-EKO (D-010) ✅, 2c (D-011) ✅,
-2d-garson (D-014) ✅, **2d-harita — başlangıç salonu 1 ocak : 4 masa (D-012) ✅ UYGULANDI.**
-**Sıradaki: D-015 — state tek-doğru-kaynaktan türetme refactor'ı (kullanıcı onayladı, sonraki oturuma ertelendi); Faz 2e ondan sonra.**
+2d-garson (D-014) ✅, 2d-harita 1 ocak : 4 masa (D-012) ✅, **D-015 — state tek-doğru-kaynaktan türetme ✅ UYGULANDI.**
+**Sıradaki: Faz 2e — bardak/bulaşık döngüsü + tepsi yükseltme (aşağıda TAM adımlar).**
 
 Servis/personel/zone modeli kullanıcı onayıyla KİLİTLENDİ:
 - **D-011** (servis) ✅, **D-012** (zone/salon + bölge-başı personel + **KASA YOK** + tuvalet=oda + para toplama kalıcı manuel),
   **D-013** (primitive = nihai sanat stili), **D-014** (garson = opsiyonel/omurgayı kilitlemeyen pad ✅).
   Tam tasarım: `docs/serving-and-automation.md`.
 
-## En son ne yapıldı (bu oturum — 2d-harita, D-012 1 ocak : 4 masa)
+## En son ne yapıldı (bu oturum — D-015 state türetme refactor'ı)
+- **`economy.config.ts`:** saf `derivedFromPads(padsDone) → {tables, stations, serviceSpeedMult, hasWaiter}` +
+  `DerivedState` tipi. `SAVE_VERSION 7→8`. (stations şu an hep 1; Faz 3a addStation pad'leriyle artacak.)
+- **`store.ts`:** GameState yine `tables/stations/serviceSpeedMult/hasWaiter` alanlarını TUTAR (bileşenler okur) ama
+  bunlar artık YALNIZ `derivedFromPads`'ten set edilir. init save.padsDone'dan türetir (eski `min(stations,...)`
+  kelepçesi kalktı). tick: başta `derived` (frame anlık görüntüsü, const); pad tamamlanınca SADECE `padsDone += id`,
+  switch-effect mutasyonları silindi; sonda `out = derivedFromPads(padsDone)` → set + garson varlığı kurulur.
+  saveNow türetilenleri yazmaz.
+- **`save.ts`:** SaveData/defaultSave'den 4 türetilen alan çıkarıldı. migrate gevşek `d: Record` üstünde çalışır,
+  sonda yalnız v8 alanlarını üretir; **v7→v8 adımı:** eski `hasWaiter:true` → `padsDone`'a `waiter` taşınır.
+- **`tools/simulate.ts`:** State'ten tables/stations/serviceSpeedMult çıktı; rate/brewTime/gate `derivedFromPads`'ten
+  okur; pad alımında yalnız `padsDone.push`. Ekonomi SABİT (ilk alım 84sn, table4 @7.5dk, semaver 14.9dk).
+- **Testler:** garson testi `padsDone:['table2','waiter']` ile kuruldu (sahte `hasWaiter` set artık işe yaramaz);
+  yeni testler: derivedFromPads tutarlılığı, **kayıttaki çelişen sahte `tables/hasWaiter` türetmeye SIZAMAZ**,
+  **store pad açıldıkça daima `derivedFromPads(padsDone)` ile tutarlı (desenkronizasyon üretilemez)**.
+- **Doğrulama:** **Vitest 25/25 ✅, build temiz ✅, sim 84sn ✅, smoke 15/15 ✅.**
+- Değişen dosyalar: economy.config.ts, store.ts, save.ts, tools/simulate.ts, tests/logic.test.ts, progress.md,
+  decisions.md, activeContext.md. (Henüz commit'lenmedi — oturum-bitir'de.)
+
+## (önceki oturum — 2d-harita, D-012 1 ocak : 4 masa)
 - **Başlangıç salonu 1 ocak : 4 masa'ya çekildi.** Omurga pad zinciri: 2.Masa → (ocak L≥1) → 3.Masa →
   **4.Masa (YENİ, addTable, cost 300/fillRate 75, requires prev table3)** → Semaver (requires prev table4).
 - **`station2` omurgadan ÇIKARILDI** (D-012: 2. ocak Faz 3a'da yeni salonla otomatik gelir). `addStation` effect
@@ -40,18 +59,7 @@ Servis/personel/zone modeli kullanıcı onayıyla KİLİTLENDİ:
   Çakışma giderildi (currentPad=samovar). Kalıcı vitest testleri (v6→v7 senaryosu dahil).
 - **Doğrulama:** Vitest **22/22**, build temiz. Commit `c0e9e24` (v6 fix) + sonraki commit (v7 bump) push'landı.
 
-## TAM sıradaki adım (D-015 — state tek-doğru-kaynaktan türetme refactor'ı; Faz 2e'den ÖNCE)
-> Kullanıcı bu refactor'ı onayladı ama uygulamayı SONRAKİ OTURUMA erteledi (2026-06-06). Faz 2e'den önce yapılacak.
-**Sorun:** `tables/stations/serviceSpeedMult/hasWaiter` hem ayrı state/kayıt alanı hem `padsDone`'da örtük →
-desenkronize olunca masa+pad çakışması gibi açıklar (bu oturumda v6/v7 migration patch'iyle yamandı, kök çözüm değil).
-**Yapılacak (D-015 detayında):**
-1. economy.config'e saf `derivedFromPads(padsDone)` → {tables, stations, serviceSpeedMult, hasWaiter}.
-2. store: pad açılınca SADECE `padsDone`'a ekle; gerisini türet (tek yazım); tick'teki `tables++`/`serviceSpeedMult*=` kalkar.
-3. save: türetilenleri KAYDETME (yüklemede türet); **SAVE_VERSION 7→8** + migrasyon (eski kayıt padsDone'undan türet);
-   v5/v6/v7 addTable-senkron patch'leri sadeleşir.
-4. Testler: desenkronizasyonun artık üretilemediğini ispatla. Vitest + smoke + build yeşil; docs güncelle.
-
-## Ondan SONRA (Faz 2e — bardak/bulaşık döngüsü)
+## TAM sıradaki adım (Faz 2e — bardak/bulaşık döngüsü + tepsi yükseltme)
 1. **Bardak kaynağı:** servis edilen her çay bir "kirli bardak" üretir (masada/tepside birikir). Bardak kapasitesi
    ocak seviyesine bağlı (L0~4, +2/lvl) → bardak biterse demleme/servis durur (yeni darboğaz).
 2. **Kirli→topla→yıka:** oyuncu kirli bardakları toplar → bulaşık istasyonuna götürür → yıkanır (temiz havuza döner).

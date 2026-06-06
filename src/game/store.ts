@@ -7,6 +7,7 @@ import {
   upgradeCost,
   requiresMet,
   brewQueueCapacity,
+  derivedFromPads,
   type PadDef,
   type GateState,
   type Requires,
@@ -235,6 +236,8 @@ export const useGame = create<GameState>((set, get) => ({
 
   init: () => {
     const save: SaveData = loadSave();
+    // D-015: tables/stations/serviceSpeedMult/hasWaiter padsDone'dan TÜRETİLİR (ayrı saklanmaz).
+    const derived = derivedFromPads(save.padsDone);
     // Çevrimdışı gelir
     const elapsed = Math.max(0, (Date.now() - save.lastSaved) / 1000);
     const cap = C.offline.baseCapHours * 3600;
@@ -243,7 +246,7 @@ export const useGame = create<GameState>((set, get) => ({
     let offlineEarned = 0;
     if (elapsed > 30) {
       offlineEarned = Math.floor(
-        incomeRate(save.tables, save.stationLevel, save.serviceSpeedMult) * Math.min(elapsed, cap),
+        incomeRate(derived.tables, save.stationLevel, derived.serviceSpeedMult) * Math.min(elapsed, cap),
       );
       wallet = wallet.add(offlineEarned);
       lifetime = lifetime.add(offlineEarned);
@@ -252,20 +255,19 @@ export const useGame = create<GameState>((set, get) => ({
       wallet,
       lifetime,
       diamonds: D(save.diamonds),
-      tables: save.tables,
-      // Tek salonda tek ocak (D-012); eski çok-ocaklı kayıtlar LAYOUT taşmasın diye kelepçelenir.
-      stations: Math.min(save.stations, LAYOUT.stations.length),
+      tables: derived.tables,
+      stations: derived.stations,
       stationLevel: save.stationLevel,
-      serviceSpeedMult: save.serviceSpeedMult,
+      serviceSpeedMult: derived.serviceSpeedMult,
       padsDone: [...save.padsDone],
       padFills: { ...save.padFills },
-      hasWaiter: save.hasWaiter,
+      hasWaiter: derived.hasWaiter,
       offlineEarned,
       player: [...LAYOUT.player] as Vec3,
       npcs: [],
       coins: [],
       npcCount: 0,
-      waiter: save.hasWaiter ? { pos: [...LAYOUT.waiterHome] as Vec3, tray: 0 } : null,
+      waiter: derived.hasWaiter ? { pos: [...LAYOUT.waiterHome] as Vec3, tray: 0 } : null,
       readyCups: 0,
       brewProgress: 0,
       tray: 0,
@@ -273,7 +275,7 @@ export const useGame = create<GameState>((set, get) => ({
       activeZone: null,
       nextStepLabel: nextStep({
         padsDone: save.padsDone,
-        tables: save.tables,
+        tables: derived.tables,
         stationLevel: save.stationLevel,
         lifetime: lifetime.toNumber(),
       }),
@@ -292,12 +294,15 @@ export const useGame = create<GameState>((set, get) => ({
     let coins: Coin[] = s.coins.map((c) => ({ ...c }));
     let wallet = s.wallet;
     let lifetime = s.lifetime;
-    let tables = s.tables;
-    const stations = s.stations;
-    let serviceSpeedMult = s.serviceSpeedMult;
     let padsDone = s.padsDone;
     let padFills = s.padFills;
-    let hasWaiter = s.hasWaiter;
+    // D-015: tables/stations/serviceSpeedMult/hasWaiter padsDone'dan TÜRETİLİR (frame anlık görüntüsü;
+    // tick içinde ayrıca mutasyona uğramaz — pad açılınca yalnız padsDone büyür, gerisi yeniden türetilir).
+    const derived = derivedFromPads(padsDone);
+    const tables = derived.tables;
+    const stations = derived.stations;
+    const serviceSpeedMult = derived.serviceSpeedMult;
+    const hasWaiter = derived.hasWaiter;
     let upgradeFill = s.upgradeFill;
     let activeZone: ActiveZone | null = null;
     let stationLevel = s.stationLevel;
@@ -490,19 +495,7 @@ export const useGame = create<GameState>((set, get) => ({
         }
       }
       if (fill >= pad.cost) {
-        // Pad tamamlandı: etkiyi uygula, kısmi dolumu temizle.
-        switch (pad.effect.type) {
-          case 'addTable':
-            tables = Math.min(LAYOUT.tables.length, tables + 1);
-            break;
-          case 'serviceSpeed':
-            serviceSpeedMult *= pad.effect.factor;
-            break;
-          case 'hireWaiter':
-            hasWaiter = true;
-            waiter = { pos: [...LAYOUT.waiterHome] as Vec3, tray: 0 };
-            break;
-        }
+        // Pad tamamlandı: SADECE padsDone'a ekle (etkiler türetilir, D-015), kısmi dolumu temizle.
         padsDone = [...padsDone, pad.id];
         const rest = { ...padFills };
         delete rest[pad.id];
@@ -546,6 +539,11 @@ export const useGame = create<GameState>((set, get) => ({
       upgradeFill = 0;
     }
 
+    // --- D-015: padsDone değiştiyse türetilen alanlar yeniden hesaplanır (tek yazım noktası) ---
+    const out = derivedFromPads(padsDone);
+    // Garson pad'i bu frame tamamlandıysa varlığını kur (hasWaiter artık türetilir).
+    if (out.hasWaiter && !waiter) waiter = { pos: [...LAYOUT.waiterHome] as Vec3, tray: 0 };
+
     // --- Periyodik kayıt ---
     let saveTimer = s.saveTimer - dt;
     if (saveTimer <= 0) {
@@ -553,20 +551,20 @@ export const useGame = create<GameState>((set, get) => ({
       get().saveNow();
     }
 
-    const nextStepLabel = nextStep({ padsDone, tables, stationLevel, lifetime: lifetime.toNumber() });
+    const nextStepLabel = nextStep({ padsDone, tables: out.tables, stationLevel, lifetime: lifetime.toNumber() });
 
     set({
       npcs: liveNpcs,
       coins,
       wallet,
       lifetime,
-      tables,
-      stations,
+      tables: out.tables,
+      stations: out.stations,
       stationLevel,
-      serviceSpeedMult,
+      serviceSpeedMult: out.serviceSpeedMult,
       padsDone,
       padFills,
-      hasWaiter,
+      hasWaiter: out.hasWaiter,
       upgradeFill,
       activeZone,
       nextStepLabel,
@@ -604,18 +602,15 @@ export const useGame = create<GameState>((set, get) => ({
 
   saveNow: () => {
     const s = get();
+    // D-015: tables/stations/serviceSpeedMult/hasWaiter KAYDEDİLMEZ — yüklemede padsDone'dan türetilir.
     writeSave({
       ...defaultSave(),
       wallet: s.wallet.toString(),
       diamonds: s.diamonds.toString(),
       lifetime: s.lifetime.toString(),
-      tables: s.tables,
-      stations: s.stations,
       stationLevel: s.stationLevel,
-      serviceSpeedMult: s.serviceSpeedMult,
       padsDone: [...s.padsDone],
       padFills: { ...s.padFills },
-      hasWaiter: s.hasWaiter,
       lastSaved: Date.now(),
     });
   },

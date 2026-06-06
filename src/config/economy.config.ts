@@ -13,7 +13,7 @@
  *   L5 (Usta)   = masterDiamondCost 💎 VEYA 1 ödüllü video; outputMult yerine masterOutputMult
  */
 
-export const SAVE_VERSION = 7;
+export const SAVE_VERSION = 8;
 
 export const CURRENCY = {
   soft: '₺', // Para — müşteriden kazanılır
@@ -197,6 +197,43 @@ export const economyConfig = {
 export type EconomyConfig = typeof economyConfig;
 export type PadDef = EconomyConfig['pads'][number];
 export type PadEffect = PadDef['effect'];
+
+/** Pad listesinden TÜRETİLEN durum (D-015). Bu alanlar AYRI saklanmaz. */
+export interface DerivedState {
+  tables: number;
+  stations: number;
+  serviceSpeedMult: number;
+  hasWaiter: boolean;
+}
+
+/**
+ * D-015: `padsDone` TEK doğru kaynak. `tables/stations/serviceSpeedMult/hasWaiter`
+ * buradan türetilir → masa sayacı ile pad listesi gibi alanlar yapısal olarak
+ * DESENKRONİZE OLAMAZ (eski v6/v7 senkron-yamaları gereksizleşir).
+ * `stations` şu an tek salon = tek ocak (D-012); Faz 3a addStation pad'leriyle artacak.
+ */
+export function derivedFromPads(padsDone: readonly string[]): DerivedState {
+  let tables = 1;
+  let serviceSpeedMult = 1;
+  let hasWaiter = false;
+  const byId = new Map<string, PadDef>((economyConfig.pads as readonly PadDef[]).map((p) => [p.id, p]));
+  for (const id of padsDone) {
+    const pad = byId.get(id);
+    if (!pad) continue;
+    switch (pad.effect.type) {
+      case 'addTable':
+        tables += 1;
+        break;
+      case 'serviceSpeed':
+        serviceSpeedMult *= pad.effect.factor;
+        break;
+      case 'hireWaiter':
+        hasWaiter = true;
+        break;
+    }
+  }
+  return { tables, stations: 1, serviceSpeedMult, hasWaiter };
+}
 
 /** Gating değerlendirmesi için gereken (salt-okunur) ilerleme durumu. */
 export interface GateState {

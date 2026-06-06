@@ -4,6 +4,7 @@ import {
   upgradeCost,
   upgradeOutputMultiplier,
   brewQueueCapacity,
+  derivedFromPads,
 } from '../src/config/economy.config';
 import { D, fmt } from '../src/game/decimal';
 import {
@@ -240,8 +241,10 @@ describe('garson — opsiyonel kısmi assist (Faz 2d / D-012)', () => {
 
   it('garson bekleyen müşteriye çay servis eder (oyuncu uzakta → kısmi assist)', () => {
     useGame.getState().hardReset();
-    // Garsonu doğrudan kur, oyuncuyu kimseyi servis edemeyeceği köşeye park et.
+    // D-015: hasWaiter padsDone'dan türetilir → garsonu padsDone üzerinden kur (sahte set işe yaramaz).
+    // Oyuncuyu kimseyi servis edemeyeceği köşeye park et.
     useGame.setState({
+      padsDone: ['table2', 'waiter'],
       hasWaiter: true,
       waiter: { pos: [...LAYOUT.waiterHome] as [number, number, number], tray: 0 },
       player: [0, 0.6, 2],
@@ -256,8 +259,8 @@ describe('garson — opsiyonel kısmi assist (Faz 2d / D-012)', () => {
   });
 });
 
-describe('kayıt migrasyonu v4/v5/v6 → v7 (padFills, station2 çıkışı, addTable senkron)', () => {
-  it('eski tek padFill, aktif omurga pad id\'sine taşınır; hasWaiter false; saveVersion 7', () => {
+describe('kayıt migrasyonu v4/v5/v6/v7 → v8 (padFills, station2 çıkışı, addTable senkron, türetme)', () => {
+  it('eski tek padFill, aktif omurga pad id\'sine taşınır; saveVersion 8; türetilenler saklanmaz', () => {
     const m = migrate({
       saveVersion: 4,
       wallet: '100', diamonds: '0', lifetime: '50',
@@ -265,46 +268,98 @@ describe('kayıt migrasyonu v4/v5/v6 → v7 (padFills, station2 çıkışı, add
       padsDone: [], padFill: 20,
     });
     // lifetime 50 ≥ 30 → table2 aktif omurga pad'i → padFill ona atanır.
-    expect(m.saveVersion).toBe(7);
+    expect(m.saveVersion).toBe(8);
     expect(m.padFills).toEqual({ table2: 20 });
-    expect(m.hasWaiter).toBe(false);
+    // D-015: türetilen alanlar artık kayıtta YOK; garson alınmamış → padsDone'da 'waiter' yok.
+    expect((m as Record<string, unknown>).tables).toBeUndefined();
+    expect((m as Record<string, unknown>).hasWaiter).toBeUndefined();
+    expect(m.padsDone).not.toContain('waiter');
     expect((m as Record<string, unknown>).padFill).toBeUndefined();
   });
 
-  it('v5 → v7: station2 padsDone/padFills\'ten çıkar, stations 1\'e kelepçelenir (ilerleme korunur)', () => {
+  it('v5 → v8: station2 çıkar; hasWaiter:true → padsDone\'a \'waiter\' taşınır (garson korunur)', () => {
     const m = migrate({
       saveVersion: 5,
       wallet: '500', diamonds: '0', lifetime: '2000',
       tables: 3, stations: 2, stationLevel: 1, serviceSpeedMult: 0.85,
       padsDone: ['table2', 'table3', 'station2'], padFills: { station2: 100, samovar: 40 }, hasWaiter: true,
     });
-    expect(m.saveVersion).toBe(7);
-    expect(m.padsDone).toEqual(['table2', 'table3']); // station2 kalktı, tables=3 → table4 eklenmez
+    expect(m.saveVersion).toBe(8);
+    expect(m.padsDone).toEqual(['table2', 'table3', 'waiter']); // station2 kalktı; eski hasWaiter → waiter pad'i
     expect(m.padFills).toEqual({ samovar: 40 }); // station2 dolumu temizlendi, diğeri durur
-    expect(m.stations).toBe(1); // tek salon = tek ocak
-    expect(m.hasWaiter).toBe(true); // garson korunur
+    // Türetme: tek salon = tek ocak, garson korunur.
+    const d = derivedFromPads(m.padsDone);
+    expect(d.stations).toBe(1);
+    expect(d.hasWaiter).toBe(true);
+    expect(d.tables).toBe(3); // table2 + table3 (station2 türetmeyi etkilemez)
   });
 
-  it('v6 → v7: v6\'da takılı (senkronsuz) tables=4 kaydı düzelir → table4 done (çakışma önlenir)', () => {
+  it('v6 → v8: v6\'da takılı (senkronsuz) tables=4 kaydı düzelir → table4 done (çakışma önlenir)', () => {
     // Kullanıcının gerçek durumu: önceki migration v6'ya yükseltmiş ama addTable senkronu yoktu.
     const m = migrate({
       saveVersion: 6, wallet: '0', diamonds: '0', lifetime: '9000',
       tables: 4, stations: 1, stationLevel: 2, serviceSpeedMult: 1,
       padsDone: ['table2', 'table3'], padFills: {}, hasWaiter: false,
     });
-    expect(m.saveVersion).toBe(7);
+    expect(m.saveVersion).toBe(8);
     // 4. masa zaten çiziliyken table4 pad'i bir daha belirmemeli (aynı konumda çakışır).
     expect(m.padsDone).toContain('table4');
-    expect(m.tables).toBe(4);
-    // Tutarlı: currentPad artık table4 değil samovar olur.
-    expect(currentPad({ padsDone: m.padsDone, tables: m.tables, stationLevel: m.stationLevel, lifetime: 9000 })?.id).toBe('samovar');
+    // Türetilen masa sayısı padsDone'dan gelir = 4; tutarlı: currentPad artık samovar.
+    const tables = derivedFromPads(m.padsDone).tables;
+    expect(tables).toBe(4);
+    expect(currentPad({ padsDone: m.padsDone, tables, stationLevel: m.stationLevel, lifetime: 9000 })?.id).toBe('samovar');
   });
 
-  it('v7 varsayılan kayıt padFills={} ve hasWaiter=false içerir', () => {
+  it('v8 varsayılan kayıt padFills={} içerir; türetilen alan tutmaz', () => {
     const d = defaultSave();
-    expect(d.saveVersion).toBe(7);
+    expect(d.saveVersion).toBe(8);
     expect(d.padFills).toEqual({});
-    expect(d.hasWaiter).toBe(false);
+    expect((d as Record<string, unknown>).tables).toBeUndefined();
+    expect((d as Record<string, unknown>).hasWaiter).toBeUndefined();
+  });
+});
+
+describe('D-015 — tek doğru kaynak: türetilen alanlar padsDone\'dan, kayıttaki sahte değer SIZAMAZ', () => {
+  it('derivedFromPads padsDone\'dan tutarlı türetir (masa/garson/servis hızı)', () => {
+    expect(derivedFromPads([]).tables).toBe(1);
+    expect(derivedFromPads(['table2', 'table3', 'table4']).tables).toBe(4);
+    expect(derivedFromPads(['waiter']).hasWaiter).toBe(true);
+    expect(derivedFromPads([]).hasWaiter).toBe(false);
+    expect(derivedFromPads(['samovar']).serviceSpeedMult).toBeCloseTo(0.7, 5);
+    expect(derivedFromPads([]).stations).toBe(1);
+    // Bilinmeyen pad id'leri yok sayılır (ileri/geri uyum).
+    expect(derivedFromPads(['table2', 'station2', 'bogus']).tables).toBe(2);
+  });
+
+  it('kayıtta padsDone ile ÇELİŞEN tables/hasWaiter alanları olsa bile türetme yalnız padsDone\'a bakar', () => {
+    // v8 kaydına kasten çelişkili (eski/bozuk) sahte alanlar ekle — migrate bunları DROP eder.
+    const m = migrate({
+      saveVersion: 8, wallet: '0', diamonds: '0', lifetime: '0',
+      stationLevel: 0, padsDone: ['table2'], padFills: {},
+      tables: 99, stations: 7, serviceSpeedMult: 0.1, hasWaiter: true, // ÇELİŞKİ: padsDone'da yok
+    } as unknown as Record<string, unknown>);
+    expect((m as Record<string, unknown>).tables).toBeUndefined();
+    expect((m as Record<string, unknown>).hasWaiter).toBeUndefined();
+    // Tek doğru kaynak padsDone → türetme sahte alanları yok sayar.
+    const d = derivedFromPads(m.padsDone);
+    expect(d.tables).toBe(2); // 1 + table2
+    expect(d.hasWaiter).toBe(false); // 'waiter' padsDone'da değil
+    expect(d.serviceSpeedMult).toBe(1);
+  });
+
+  it('store: pad açıldıkça tables/hasWaiter padsDone ile DAİMA tutarlı (desenkronizasyon üretilemez)', () => {
+    useGame.getState().hardReset();
+    useGame.getState().addMoney(50);
+    completeCurrentPad(); // table2
+    let s = useGame.getState();
+    expect(s.tables).toBe(derivedFromPads(s.padsDone).tables);
+    expect(s.hasWaiter).toBe(derivedFromPads(s.padsDone).hasWaiter);
+
+    completeOptionalPad('waiter');
+    s = useGame.getState();
+    expect(s.hasWaiter).toBe(true);
+    expect(s.hasWaiter).toBe(derivedFromPads(s.padsDone).hasWaiter);
+    expect(s.tables).toBe(derivedFromPads(s.padsDone).tables);
   });
 });
 
