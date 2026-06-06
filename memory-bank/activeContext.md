@@ -3,17 +3,33 @@
 > En sık güncellenen dosya. Her anlamlı adımdan sonra güncelle.
 
 ## Şu an neredeyiz (2026-06-06)
-Faz 0 + Faz 1 ✅. Faz 2: 2a ✅, 2b ✅, 2-UX (D-009) ✅, 2-EKO (D-010) ✅, 2c (D-011) ✅,
-2d-garson (D-014) ✅, 2d-harita 1 ocak : 4 masa (D-012) ✅, D-015 türetme ✅,
-**2e-A (bardak döngüsü + bulaşıkçı) ✅ UYGULANDI (commit'lenecek).**
-**Sıradaki: Faz 2e-B — tepsi yükseltme (trayCapacity 2→4→6→8, mekânsal nokta, trayLevel persist → SAVE_VERSION 8→9).**
+Faz 0 + Faz 1 ✅. **Faz 2 TAMAMEN BİTTİ:** 2a, 2b, 2-UX (D-009), 2-EKO (D-010), 2c (D-011),
+2d-garson (D-014), 2d-harita 1 ocak:4 masa (D-012), D-015 türetme, **2e-A (bardak döngüsü + bulaşıkçı) ✅,
+2e-B (tepsi yükseltme 2→4→6→8) ✅.** SAVE_VERSION şu an **9**.
+**Sıradaki: Faz 3a — salon (zone) genişleme** (salon dol → yeni salon + oto 1.ocak/1.masa + personel slotları;
+addStation effect tipi & extraStationSpeedFactor burada devreye girer; docs/serving-and-automation.md §7).
 
 Servis/personel/zone modeli kullanıcı onayıyla KİLİTLENDİ:
 - **D-011** (servis) ✅, **D-012** (zone/salon + bölge-başı personel + **KASA YOK** + tuvalet=oda + para toplama kalıcı manuel),
   **D-013** (primitive = nihai sanat stili), **D-014** (garson = opsiyonel/omurgayı kilitlemeyen pad ✅).
   Tam tasarım: `docs/serving-and-automation.md`.
 
-## En son ne yapıldı (bu oturum — 2e-A bardak döngüsü + bulaşıkçı)
+## En son ne yapıldı (bu oturum — 2e-B tepsi yükseltme)
+- **Tepsi kapasitesi yükseltilebilir** mekânsal noktayla (çay yükseltme deseni): **2→4→6→8** (`trayCapacityForLevel`
+  = trayCapacityBase 2 + perLevel 2 × level; maxLevel 3). `LAYOUT.trayUpgradeZone` [0,0,4.5] (giriş önü, doğal yol).
+  Gating `C.serving.trayUpgradeRequires` = prev table3. Maliyet `trayUpgradeCost` (costBase 80, growth 1.8), fillRate 60.
+- **`trayLevel` PERSIST** (stationLevel deseni): store GameState + init(save.trayLevel) + saveNow yazar; tick'te
+  `trayCapacity(trayLevel)` hem servis tepsisi hem kirli-toplama kapasitesi için. Ayrı transient `trayUpgradeFill`
+  biriktirici (çay `upgradeFill` gibi). **SAVE_VERSION 8→9 + v8→v9 migrasyonu** (trayLevel eksikse 0, varsa korunur).
+- Render: Scene.TrayUpgradeZone (mavi disk + 🫖). HUD tepsi chip'i `trayCapacity(trayLevel)`. devHooks: trayLevel,
+  trayUpgradeZonePos, trayCap seviyeli. Yardımcılar: `trayMaxLevel`, `trayNextCost`, `trayUpgradeZoneUnlocked`.
+- **NOT (test ortamı):** vitest **node** ortamında (jsdom yok) → `localStorage` yok, writeSave/loadSave sessizce no-op.
+  Kalıcılık şema-düzeyinde migrate() ile test edilir; canlı yazımı **smoke** (gerçek tarayıcı) doğrular.
+- **Doğrulama:** **Vitest 37/37 ✅, build temiz ✅, sim 84sn ✅, smoke 19/19 ✅** (3. masa aç → tepsi 2→6, L2).
+- Değişen: economy.config.ts, save.ts, store.ts, devHooks.ts, Scene.tsx, HUD.tsx, tests/logic.test.ts, tools/smoke.mjs,
+  progress.md, activeContext.md.
+
+## (önceki — 2e-A bardak döngüsü + bulaşıkçı, commit f93de78)
 - **Bardak SINIRLI kaynak:** demleme bir TEMİZ bardak harcar (`cleanCups`); temiz biterse demleme DURUR
   (yeni darboğaz → kirli topla/yıka çemberi zorunlu). İçen müşteri masada KİRLİ bardak bırakır (`dishes[]`,
   coins gibi mekânsal nesne). Oyuncu yakınlıkla toplar (`carriedDirty`, kapasite = trayCapacity) → **bulaşık
@@ -90,20 +106,23 @@ Servis/personel/zone modeli kullanıcı onayıyla KİLİTLENDİ:
   Çakışma giderildi (currentPad=samovar). Kalıcı vitest testleri (v6→v7 senaryosu dahil).
 - **Doğrulama:** Vitest **22/22**, build temiz. Commit `c0e9e24` (v6 fix) + sonraki commit (v7 bump) push'landı.
 
-## TAM sıradaki adım (Faz 2e — bardak/bulaşık döngüsü + tepsi yükseltme)
-1. **Bardak kaynağı:** servis edilen her çay bir "kirli bardak" üretir (masada/tepside birikir). Bardak kapasitesi
-   ocak seviyesine bağlı (L0~4, +2/lvl) → bardak biterse demleme/servis durur (yeni darboğaz).
-2. **Kirli→topla→yıka:** oyuncu kirli bardakları toplar → bulaşık istasyonuna götürür → yıkanır (temiz havuza döner).
-   Yeni bulaşık istasyonu + (opsiyonel) **bulaşıkçı** personel pad'i (garson deseni: optional, omurgayı kilitlemez).
-3. **Tepsi yükseltme** (Faz 2e): trayCapacityBase 2→4→6→8 (mekânsal yükseltme noktası, çay yükseltme gibi).
-4. SAVE_VERSION bump + migrasyon; Vitest + smoke + sim yeşil; docs güncelle.
+## TAM sıradaki adım (Faz 3a — salon/zone genişleme)
+docs/serving-and-automation.md §7 kilitli tasarım:
+1. **Salon dolunca yeni salon kilidi açılır** (mevcut salonun tüm omurga slotları = 4 masa + semaver tamam → genişleme gate'i).
+2. **Yeni salon açılınca oto 1.ocak + 1.masa kurulu gelir** (oyuncu hemen servis edebilir); gerisini parayla açar.
+   → `addStation` effect tipi ve `extraStationSpeedFactor` BURADA devreye girer (şu an config'te bekliyor); `derivedFromPads`
+   `stations` artık 1'e sabit değil, salon pad'lerinden türetilir (D-015 korunur).
+3. **Bölge-başı personel slotları:** her salonun kendi garson/bulaşıkçı'sı (global havuz değil).
+4. LAYOUT çok-salonlu olur; SAVE_VERSION bump + migrasyon; Vitest + smoke + sim yeşil; docs güncelle.
+   AÇIK SORU (kod yazmadan önce sor): salon yerleşimi (yan yana mı, kapıyla mı?) + kamera/sınır genişlemesi.
 
 ## Sonraki dilimler (kilitli plan — docs/serving-and-automation.md §11)
 - **Faz 3:** 3a salon genişleme (yeni salon + oto ocak/masa + personel slotu) · 3b tuvalet odası + temizlikçi · 3c menü (kahve/tost) + masa-yükseltme işlevi.
 
 ## Faydalı dev kancaları (konsol)
-`__game()` (artık readyCups/tray/trayCap/waitingCount/stationPos/firstWaitingSeat de var),
-`__advanceTime(60)`, `__addMoney(1000)`, `__upgradeStation()`, `__teleport(x,z)`, `__resetGame()`.
+`__game()` (readyCups/tray/trayCap/trayLevel/waitingCount/stationPos/firstWaitingSeat + bardak döngüsü:
+cleanCups/dirtyCount/carriedDirty/dishStationPos/firstDishPos/hasDishwasher/dishwasherTray/Pos +
+trayUpgradeZonePos/upgradeZonePos), `__advanceTime(60)`, `__addMoney(1000)`, `__upgradeStation()`, `__teleport(x,z)`, `__resetGame()`.
 Servis testi: ocağa ışınla (`__game().stationPos`) → tick → tepsi dolar; bekleyen koltuğa ışınla
 (`__game().firstWaitingSeat`) → tick → servis.
 

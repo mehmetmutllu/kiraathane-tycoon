@@ -13,7 +13,7 @@
  *   L5 (Usta)   = masterDiamondCost 💎 VEYA 1 ödüllü video; outputMult yerine masterOutputMult
  */
 
-export const SAVE_VERSION = 8;
+export const SAVE_VERSION = 9;
 
 export const CURRENCY = {
   soft: '₺', // Para — müşteriden kazanılır
@@ -104,12 +104,32 @@ export const economyConfig = {
    * oyuncu (sonra garson) çayı TEPSİ ile taşır. Yakınlık temelli (dokunma yok, mekânsal).
    */
   serving: {
-    /** Tepsi taban kapasitesi (tek turda taşınan çay). Yükseltme Faz 2e (2→4→6→8). */
+    /** Tepsi taban kapasitesi (L0 = tek turda taşınan çay/kirli). */
     trayCapacityBase: 2,
     /** Oyuncunun ocaktan çay alma yakınlığı (dünya birimi). */
     pickupRadius: 1.6,
     /** Oyuncunun masaya çay bırakma yakınlığı. */
     serveRadius: 1.6,
+    /**
+     * Tepsi kapasite yükseltmesi (Faz 2e-B): mekânsal nokta (çay yükseltme gibi), kapasite
+     * 2→4→6→8 (perLevel +2, maxLevel 3). Hareket erken-öncelikli QoL: tek turda daha çok
+     * çay taşı + daha çok kirli topla → gidip-gelme azalır (oynanış korunur). Coin değeri gibi
+     * fiyatı DEĞİL akışı (tek turdaki iş hacmini) büyütür.
+     */
+    trayUpgrade: {
+      /** Her seviye tepsiye eklenen kapasite. */
+      perLevel: 2,
+      /** ₺ ile çıkılabilen en yüksek tepsi seviyesi (L0..maxLevel). */
+      maxLevel: 3,
+      /** L1 maliyeti (₺). */
+      costBase: 80,
+      /** Maliyet geometrik büyüme oranı. */
+      costGrowth: 1.8,
+      /** Yükseltme noktasında saniyede cüzdandan akan ₺. */
+      fillRate: 60,
+    },
+    /** Tepsi yükseltme noktasının önkoşulu: 3. masadan sonra (daha çok masa → daha büyük tepsi). */
+    trayUpgradeRequires: { prev: ['table3'] } satisfies Requires,
   },
 
   /**
@@ -303,6 +323,17 @@ export function brewQueueCapacity(stationLevel: number): number {
 /** Toplam bardak havuzu (temiz+kirli+akıştaki): ocak seviyesiyle büyür (Faz 2e §5). */
 export function cupPoolCapacity(stationLevel: number): number {
   return economyConfig.cups.poolBase + economyConfig.cups.poolPerLevel * stationLevel;
+}
+
+/** Tepsi kapasitesi: taban + seviye (Faz 2e-B). L0=2, L1=4, L2=6, L3=8. */
+export function trayCapacityForLevel(level: number): number {
+  return economyConfig.serving.trayCapacityBase + economyConfig.serving.trayUpgrade.perLevel * level;
+}
+
+/** Mevcut seviyeden bir sonraki tepsi yükseltmesinin maliyeti (₺). */
+export function trayUpgradeCost(level: number): number {
+  const u = economyConfig.serving.trayUpgrade;
+  return Math.floor(u.costBase * Math.pow(u.costGrowth, level));
 }
 
 /** Verilen seviyedeki toplam çıktı çarpanı (L5 usta sıçramasını da içerir). */

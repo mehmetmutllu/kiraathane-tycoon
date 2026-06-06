@@ -40,7 +40,9 @@ export function installDevHooks(): void {
       // Servis durumu (D-011)
       readyCups: s.readyCups,
       tray: s.tray,
-      trayCap: trayCapacity(),
+      trayCap: trayCapacity(s.trayLevel),
+      trayLevel: s.trayLevel,
+      trayUpgradeZonePos: LAYOUT.trayUpgradeZone,
       waitingCount: s.npcs.filter((n) => n.state === 'waitingForTea').length,
       stationPos: LAYOUT.stations[0],
       // Servis edilmeyi bekleyen ilk müşterinin koltuğu (smoke servis testi için) — yoksa null.

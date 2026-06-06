@@ -14,6 +14,8 @@ export interface SaveData {
   diamonds: string;
   lifetime: string;
   stationLevel: number;
+  /** Tepsi kapasite yükseltme seviyesi (Faz 2e-B; 0..trayUpgrade.maxLevel). */
+  trayLevel: number;
   padsDone: string[];
   /** Aktif pad'lerin kısmi dolumu (pad id → ₺). Aynı anda birden çok pad doldurulabilir (v5). */
   padFills: Record<string, number>;
@@ -27,6 +29,7 @@ export function defaultSave(): SaveData {
     diamonds: '0',
     lifetime: '0',
     stationLevel: 0,
+    trayLevel: 0,
     padsDone: [],
     padFills: {},
     lastSaved: Date.now(),
@@ -122,13 +125,20 @@ export function migrate(raw: Record<string, unknown>): SaveData {
     v = 8;
   }
 
-  // Sona kalan v8 şeması: türetilen alanlar (tables/stations/serviceSpeedMult/hasWaiter) ve eski `padFill` yazılmaz.
+  // v8 -> v9 (Faz 2e-B): tepsi kapasite yükseltme seviyesi eklendi (yeni oyuncu = L0; ilerleme korunur).
+  if (v < 9) {
+    d.trayLevel = Number(d.trayLevel ?? 0) || 0;
+    v = 9;
+  }
+
+  // Sona kalan v9 şeması: türetilen alanlar (tables/stations/serviceSpeedMult/hasWaiter) ve eski `padFill` yazılmaz.
   return {
     saveVersion: SAVE_VERSION,
     wallet: String(d.wallet ?? '0'),
     diamonds: String(d.diamonds ?? '0'),
     lifetime: String(d.lifetime ?? '0'),
     stationLevel: Number(d.stationLevel ?? 0) || 0,
+    trayLevel: Number(d.trayLevel ?? 0) || 0,
     padsDone: Array.isArray(d.padsDone) ? (d.padsDone as string[]) : [],
     padFills:
       d.padFills && typeof d.padFills === 'object' ? (d.padFills as Record<string, number>) : {},

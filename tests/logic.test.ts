@@ -17,6 +17,8 @@ import {
   stationSoftMaxLevel,
   stationUpgradeCost,
   trayCapacity,
+  trayMaxLevel,
+  trayNextCost,
   TEA_PRICE,
   brewTime,
 } from '../src/game/store';
@@ -426,8 +428,61 @@ describe('bulaşıkçı — opsiyonel kısmi assist (Faz 2e)', () => {
   });
 });
 
-describe('kayıt migrasyonu v4/v5/v6/v7 → v8 (padFills, station2 çıkışı, addTable senkron, türetme)', () => {
-  it('eski tek padFill, aktif omurga pad id\'sine taşınır; saveVersion 8; türetilenler saklanmaz', () => {
+describe('tepsi yükseltme (Faz 2e-B) — mekânsal nokta, kapasite 2→4→6→8', () => {
+  // table3'e kadar ilerlet (tepsi yükseltme noktasının önkoşulu: prev table3).
+  function reachTable3() {
+    useGame.getState().hardReset();
+    useGame.getState().addMoney(50);
+    completeCurrentPad(); // table2
+    useGame.getState().addMoney(2000);
+    useGame.getState().upgradeStation(); // L1 → table3 gate açılır
+    completeCurrentPad(); // table3
+  }
+
+  it('kapasite seviyeyle 2→4→6→8 büyür', () => {
+    expect(trayCapacity(0)).toBe(2);
+    expect(trayCapacity(1)).toBe(4);
+    expect(trayCapacity(2)).toBe(6);
+    expect(trayCapacity(3)).toBe(8);
+    expect(trayMaxLevel()).toBe(3);
+  });
+
+  it('önkoşul (3. masa) karşılanmadan tepsi noktası pasiftir', () => {
+    useGame.getState().hardReset();
+    useGame.getState().addMoney(50);
+    completeCurrentPad(); // sadece table2
+    useGame.getState().addMoney(100000);
+    const z = LAYOUT.trayUpgradeZone;
+    useGame.setState({ player: [z[0], 0.6, z[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+    for (let i = 0; i < 50; i++) useGame.getState().tick(0.1);
+    expect(useGame.getState().trayLevel).toBe(0); // table3 yok → yükseltme olmaz
+  });
+
+  it('3. masadan sonra noktada durunca tepsi seviyesi artar + kalıcı yazılır', () => {
+    reachTable3();
+    expect(useGame.getState().trayLevel).toBe(0);
+    useGame.getState().addMoney(trayNextCost(0) + 50);
+    const z = LAYOUT.trayUpgradeZone;
+    useGame.setState({ player: [z[0], 0.6, z[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+    for (let i = 0; i < 60; i++) useGame.getState().tick(0.1);
+    expect(useGame.getState().trayLevel).toBeGreaterThan(0);
+    expect(useGame.getState().activeZone?.kind).toBe('upgrade');
+  });
+
+  it('maliyet geometrik artar ve max seviyede durur (₺ ile aşılamaz)', () => {
+    expect(trayNextCost(1)).toBeGreaterThan(trayNextCost(0));
+    reachTable3();
+    useGame.getState().addMoney(10_000_000);
+    const z = LAYOUT.trayUpgradeZone;
+    useGame.setState({ player: [z[0], 0.6, z[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+    for (let i = 0; i < 600; i++) useGame.getState().tick(0.1);
+    expect(useGame.getState().trayLevel).toBe(trayMaxLevel()); // max'ta durur, taşmaz
+    expect(trayCapacity(useGame.getState().trayLevel)).toBe(8);
+  });
+});
+
+describe('kayıt migrasyonu v4..v8 → v9 (padFills, station2 çıkışı, addTable senkron, türetme, trayLevel)', () => {
+  it('eski tek padFill, aktif omurga pad id\'sine taşınır; saveVersion 9; türetilenler saklanmaz; trayLevel=0', () => {
     const m = migrate({
       saveVersion: 4,
       wallet: '100', diamonds: '0', lifetime: '50',
@@ -435,8 +490,9 @@ describe('kayıt migrasyonu v4/v5/v6/v7 → v8 (padFills, station2 çıkışı, 
       padsDone: [], padFill: 20,
     });
     // lifetime 50 ≥ 30 → table2 aktif omurga pad'i → padFill ona atanır.
-    expect(m.saveVersion).toBe(8);
+    expect(m.saveVersion).toBe(9);
     expect(m.padFills).toEqual({ table2: 20 });
+    expect(m.trayLevel).toBe(0); // v9: eski kayıtta tepsi yükseltmesi yok → L0
     // D-015: türetilen alanlar artık kayıtta YOK; garson alınmamış → padsDone'da 'waiter' yok.
     expect((m as Record<string, unknown>).tables).toBeUndefined();
     expect((m as Record<string, unknown>).hasWaiter).toBeUndefined();
@@ -444,14 +500,14 @@ describe('kayıt migrasyonu v4/v5/v6/v7 → v8 (padFills, station2 çıkışı, 
     expect((m as Record<string, unknown>).padFill).toBeUndefined();
   });
 
-  it('v5 → v8: station2 çıkar; hasWaiter:true → padsDone\'a \'waiter\' taşınır (garson korunur)', () => {
+  it('v5 → v9: station2 çıkar; hasWaiter:true → padsDone\'a \'waiter\' taşınır (garson korunur)', () => {
     const m = migrate({
       saveVersion: 5,
       wallet: '500', diamonds: '0', lifetime: '2000',
       tables: 3, stations: 2, stationLevel: 1, serviceSpeedMult: 0.85,
       padsDone: ['table2', 'table3', 'station2'], padFills: { station2: 100, samovar: 40 }, hasWaiter: true,
     });
-    expect(m.saveVersion).toBe(8);
+    expect(m.saveVersion).toBe(9);
     expect(m.padsDone).toEqual(['table2', 'table3', 'waiter']); // station2 kalktı; eski hasWaiter → waiter pad'i
     expect(m.padFills).toEqual({ samovar: 40 }); // station2 dolumu temizlendi, diğeri durur
     // Türetme: tek salon = tek ocak, garson korunur.
@@ -461,14 +517,14 @@ describe('kayıt migrasyonu v4/v5/v6/v7 → v8 (padFills, station2 çıkışı, 
     expect(d.tables).toBe(3); // table2 + table3 (station2 türetmeyi etkilemez)
   });
 
-  it('v6 → v8: v6\'da takılı (senkronsuz) tables=4 kaydı düzelir → table4 done (çakışma önlenir)', () => {
+  it('v6 → v9: v6\'da takılı (senkronsuz) tables=4 kaydı düzelir → table4 done (çakışma önlenir)', () => {
     // Kullanıcının gerçek durumu: önceki migration v6'ya yükseltmiş ama addTable senkronu yoktu.
     const m = migrate({
       saveVersion: 6, wallet: '0', diamonds: '0', lifetime: '9000',
       tables: 4, stations: 1, stationLevel: 2, serviceSpeedMult: 1,
       padsDone: ['table2', 'table3'], padFills: {}, hasWaiter: false,
     });
-    expect(m.saveVersion).toBe(8);
+    expect(m.saveVersion).toBe(9);
     // 4. masa zaten çiziliyken table4 pad'i bir daha belirmemeli (aynı konumda çakışır).
     expect(m.padsDone).toContain('table4');
     // Türetilen masa sayısı padsDone'dan gelir = 4; tutarlı: currentPad artık samovar.
@@ -477,10 +533,25 @@ describe('kayıt migrasyonu v4/v5/v6/v7 → v8 (padFills, station2 çıkışı, 
     expect(currentPad({ padsDone: m.padsDone, tables, stationLevel: m.stationLevel, lifetime: 9000 })?.id).toBe('samovar');
   });
 
-  it('v8 varsayılan kayıt padFills={} içerir; türetilen alan tutmaz', () => {
+  it('v8 → v9: mevcut trayLevel korunur; eksikse 0\'lanır', () => {
+    const kept = migrate({
+      saveVersion: 8, wallet: '0', diamonds: '0', lifetime: '0',
+      stationLevel: 0, padsDone: ['table2'], padFills: {}, trayLevel: 2,
+    } as unknown as Record<string, unknown>);
+    expect(kept.saveVersion).toBe(9);
+    expect(kept.trayLevel).toBe(2);
+    const missing = migrate({
+      saveVersion: 8, wallet: '0', diamonds: '0', lifetime: '0',
+      stationLevel: 0, padsDone: ['table2'], padFills: {},
+    } as unknown as Record<string, unknown>);
+    expect(missing.trayLevel).toBe(0);
+  });
+
+  it('v9 varsayılan kayıt padFills={} + trayLevel=0 içerir; türetilen alan tutmaz', () => {
     const d = defaultSave();
-    expect(d.saveVersion).toBe(8);
+    expect(d.saveVersion).toBe(9);
     expect(d.padFills).toEqual({});
+    expect(d.trayLevel).toBe(0);
     expect((d as Record<string, unknown>).tables).toBeUndefined();
     expect((d as Record<string, unknown>).hasWaiter).toBeUndefined();
   });

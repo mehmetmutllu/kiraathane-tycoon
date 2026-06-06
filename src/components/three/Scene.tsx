@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import { Vector3 } from 'three';
-import { useGame, LAYOUT, stationSoftMaxLevel, upgradeZoneUnlocked } from '../../game/store';
+import { useGame, LAYOUT, stationSoftMaxLevel, upgradeZoneUnlocked, trayMaxLevel, trayUpgradeZoneUnlocked } from '../../game/store';
 import { Player } from './Player';
 import { Waiter } from './Waiter';
 import { Dishwasher } from './Dishwasher';
@@ -117,6 +117,37 @@ function DishStation() {
   );
 }
 
+// Mekânsal tepsi yükseltme noktası (Faz 2e-B): giriş önünde. Üstünde dur → kapasite 2→4→6→8.
+function TrayUpgradeZone() {
+  const trayLevel = useGame((s) => s.trayLevel);
+  const padsDone = useGame((s) => s.padsDone);
+  const tables = useGame((s) => s.tables);
+  const stationLevel = useGame((s) => s.stationLevel);
+  const lifetime = useGame((s) => s.lifetime);
+  if (trayLevel >= trayMaxLevel()) return null;
+  if (!trayUpgradeZoneUnlocked({ padsDone, tables, stationLevel, lifetime: lifetime.toNumber() })) return null;
+  const [x, , z] = LAYOUT.trayUpgradeZone;
+  return (
+    <group position={[x, 0, z]}>
+      <mesh receiveShadow position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[1.1, 32]} />
+        <meshStandardMaterial color="#12466b" />
+      </mesh>
+      <mesh position={[0, 0.04, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[0.9, 1.05, 32]} />
+        <meshStandardMaterial color="#4fc3f7" emissive="#0288d1" emissiveIntensity={0.4} />
+      </mesh>
+      <mesh position={[0, 0.8, 0]}>
+        <coneGeometry args={[0.22, 0.45, 4]} />
+        <meshStandardMaterial color="#4fc3f7" emissive="#0288d1" emissiveIntensity={0.5} />
+      </mesh>
+      <Html position={[0, 1.5, 0]} center distanceFactor={9} zIndexRange={[5, 0]}>
+        <div className="badge3d">🫖 Tepsi</div>
+      </Html>
+    </group>
+  );
+}
+
 function Ground() {
   return (
     <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
@@ -176,6 +207,7 @@ export function Scene() {
       <Tables />
       <Pad />
       <UpgradeZone />
+      <TrayUpgradeZone />
       <Customers />
       <Coins />
       <Dishes />
