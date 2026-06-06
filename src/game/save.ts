@@ -131,7 +131,14 @@ export function migrate(raw: Record<string, unknown>): SaveData {
     v = 9;
   }
 
-  // Sona kalan v9 şeması: türetilen alanlar (tables/stations/serviceSpeedMult/hasWaiter) ve eski `padFill` yazılmaz.
+  // v9 -> v10 (Faz 2f): max tepsi kapasitesi 8→6 (maxLevel 3→2). Eski L3 kaydı yeni max'a clamp'lenir
+  // (kapasite düştü; ilerleme/₺ korunur, sadece tepsi seviyesi tavana çekilir).
+  if (v < 10) {
+    d.trayLevel = Math.min(Number(d.trayLevel ?? 0) || 0, economyConfig.serving.trayUpgrade.maxLevel);
+    v = 10;
+  }
+
+  // Sona kalan v10 şeması: türetilen alanlar (tables/stations/serviceSpeedMult/hasWaiter) ve eski `padFill` yazılmaz.
   return {
     saveVersion: SAVE_VERSION,
     wallet: String(d.wallet ?? '0'),

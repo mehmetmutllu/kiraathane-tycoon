@@ -1,5 +1,8 @@
+import { useRef } from 'react';
+import type { Group } from 'three';
 import { useGame } from '../../game/store';
 import { Model } from './Model';
+import { useFacing } from './useFacing';
 
 // Bulaşıkçının taşıdığı kirli bardaklar (gri silindir, garsonun kırmızı çayından ayrılır).
 function CarriedDirty({ count }: { count: number }) {
@@ -23,18 +26,22 @@ function CarriedDirty({ count }: { count: number }) {
 // Bulaşıkçı (greybox: gri-mavi önlüklü kapsül, garson/sahipten ayırt edilir). Faz 6'da .glb takılır.
 export function Dishwasher() {
   const dishwasher = useGame((s) => s.dishwasher);
+  const ref = useRef<Group>(null);
+  useFacing(ref, dishwasher?.pos[0] ?? 0, dishwasher?.pos[2] ?? 0);
   if (!dishwasher) return null;
   return (
     <group position={[dishwasher.pos[0], 0, dishwasher.pos[2]]}>
-      <Model
-        fallback={
-          <mesh castShadow position={[0, 0.55, 0]}>
-            <capsuleGeometry args={[0.32, 0.6, 6, 12]} />
-            <meshStandardMaterial color="#4a6b82" />
-          </mesh>
-        }
-      />
-      <CarriedDirty count={dishwasher.tray} />
+      <group ref={ref}>
+        <Model
+          fallback={
+            <mesh castShadow position={[0, 0.55, 0]}>
+              <capsuleGeometry args={[0.32, 0.6, 6, 12]} />
+              <meshStandardMaterial color="#4a6b82" />
+            </mesh>
+          }
+        />
+        <CarriedDirty count={dishwasher.tray} />
+      </group>
     </group>
   );
 }

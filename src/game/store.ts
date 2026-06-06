@@ -19,39 +19,42 @@ import { defaultSave, loadSave, writeSave, clearSave, type SaveData } from './sa
 
 // ---- Sahne yerleşimi (dünya birimi, zemin y=0) ----
 // Her pad/zone, açtığı/etkilediği objenin TAM yerinde durur (mekânsal tycoon).
+// FAZ 2f yerleşim (D-013 sunum cilası): ocak + bulaşık sol-ARKA köşede BİTİŞİK "mutfak bloğu";
+// alan küçültüldü (bounds 7→5); 4 masa 2×2 sıkı; zone/pad noktaları eş-zamanlı çakışmayacak şekilde
+// (aynı anda aktif olabilen dolum noktaları ≥2.6 br, yıkama/dolum ≥2.9 br) yerleştirildi.
 export const LAYOUT = {
-  entrance: [0, 0.6, 6.5] as Vec3,
-  player: [0, 0.6, 2.5] as Vec3,
-  // Çay ocağı (D-012: başlangıç salonu TEK ana ocak; 4 masaya throughput'la yetişir).
+  entrance: [0, 0.6, 5.0] as Vec3,
+  player: [0, 0.6, 2.6] as Vec3,
+  // Çay ocağı (D-012: başlangıç salonu TEK ana ocak). Sol-arka köşe (bulaşıkla bitişik mutfak bloğu).
   // 2. ocak Faz 3a'da YENİ salonla gelir → burada tek eleman.
-  stations: [[0, 0, -5] as Vec3],
-  bounds: 7,
-  // Masa slotları (1 ocak : 4 masa, 2×2 derli toplu) + müşterinin oturduğu yer (seat = table + z+1.1).
+  stations: [[-3.6, 0, -3.6] as Vec3],
+  bounds: 5,
+  // Masa slotları (1 ocak : 4 masa, 2×2 sıkı) + müşterinin oturduğu yer (seat = table + z+1.0).
   tables: [
-    { table: [-2.5, 0, -1.5] as Vec3, seat: [-2.5, 0.6, -0.4] as Vec3 },
-    { table: [2.5, 0, -1.5] as Vec3, seat: [2.5, 0.6, -0.4] as Vec3 },
-    { table: [-2.5, 0, 1.2] as Vec3, seat: [-2.5, 0.6, 2.3] as Vec3 },
-    { table: [2.5, 0, 1.2] as Vec3, seat: [2.5, 0.6, 2.3] as Vec3 },
+    { table: [0, 0, -1.2] as Vec3, seat: [0, 0.6, -0.2] as Vec3 },
+    { table: [2.6, 0, -1.2] as Vec3, seat: [2.6, 0.6, -0.2] as Vec3 },
+    { table: [0, 0, 1.2] as Vec3, seat: [0, 0.6, 2.2] as Vec3 },
+    { table: [2.6, 0, 1.2] as Vec3, seat: [2.6, 0.6, 2.2] as Vec3 },
   ],
-  // Pad pozisyonları: açtıkları objenin yerinde.
+  // Pad pozisyonları: açtıkları objenin yerinde (masa pad'leri sıralı → eş-zamanlı çakışmaz).
   padPos: {
-    table2: [2.5, 0, -1.5] as Vec3, // 2. masa slotu
-    table3: [-2.5, 0, 1.2] as Vec3, // 3. masa slotu
-    table4: [2.5, 0, 1.2] as Vec3, // 4. masa slotu
-    samovar: [1.6, 0, -3.4] as Vec3, // ana ocağın sağ-önü (semavere geçiş)
-    waiter: [-4.5, 0, 4] as Vec3, // personel köşesi (giriş sol-yanı, masalardan uzak)
-    dishwasher: [-4.8, 0, -1.0] as Vec3, // bulaşık noktasının yanı (sol duvar)
+    table2: [2.6, 0, -1.2] as Vec3, // 2. masa slotu
+    table3: [0, 0, 1.2] as Vec3, // 3. masa slotu
+    table4: [2.6, 0, 1.2] as Vec3, // 4. masa slotu
+    samovar: [1.5, 0, -3.6] as Vec3, // arka duvar, mutfak bloğunun sağı (semavere geçiş)
+    waiter: [-4.2, 0, 3.5] as Vec3, // sol duvar önü (personel)
+    dishwasher: [4.2, 0, 3.5] as Vec3, // sağ duvar önü (personel)
   } as Record<string, Vec3>,
-  // Mekânsal çay yükseltme noktası: ana ocağın sol-önünde dur → altta bar dolar (semaverle çakışmaz).
-  upgradeZone: [-1.6, 0, -3.4] as Vec3,
-  // Mekânsal tepsi yükseltme noktası (Faz 2e-B): giriş önü orta (oyuncunun doğal yolu, masalardan uzak).
-  trayUpgradeZone: [0, 0, 4.5] as Vec3,
-  // Garson boştayken bekleyeceği köşe (personel home).
-  waiterHome: [4.5, 0, 4] as Vec3,
-  // Bulaşık noktası (Faz 2e): sol duvar, masalardan/yükseltme noktasından uzak. Kirliler burada yıkanır.
-  dishStation: [-4.8, 0, -3.0] as Vec3,
-  // Bulaşıkçı boştayken bekleyeceği köşe (sol-orta).
-  dishwasherHome: [-4.8, 0, 1.5] as Vec3,
+  // Mekânsal çay yükseltme noktası: ocağın önünde dur → altta bar dolar (ocak pickup'ından uzakta).
+  upgradeZone: [-3.6, 0, -1.3] as Vec3,
+  // Mekânsal tepsi yükseltme noktası (Faz 2e-B): giriş önü orta (oyuncunun doğal yolu).
+  trayUpgradeZone: [0, 0, 4.0] as Vec3,
+  // Garson boştayken bekleyeceği köşe (sol-ön, pad'inin altı).
+  waiterHome: [-4.2, 0, 2.2] as Vec3,
+  // Bulaşık noktası (Faz 2e): sol-arka köşe, ocağa BİTİŞİK (mutfak bloğu). Kirliler burada yıkanır.
+  dishStation: [-1.7, 0, -3.6] as Vec3,
+  // Bulaşıkçı boştayken bekleyeceği köşe (sağ-ön, pad'inin altı).
+  dishwasherHome: [4.2, 0, 2.2] as Vec3,
 } as const;
 
 const NPC_SPEED = 2.6;
@@ -297,7 +300,8 @@ export const useGame = create<GameState>((set, get) => ({
       tables: derived.tables,
       stations: derived.stations,
       stationLevel: save.stationLevel,
-      trayLevel: save.trayLevel,
+      // Savunmacı: eski kayıt yeni max'tan yüksek tepsi seviyesi taşıyorsa tavana çek (Faz 2f 8→6).
+      trayLevel: Math.min(save.trayLevel, C.serving.trayUpgrade.maxLevel),
       serviceSpeedMult: derived.serviceSpeedMult,
       padsDone: [...save.padsDone],
       padFills: { ...save.padFills },
@@ -338,7 +342,8 @@ export const useGame = create<GameState>((set, get) => ({
     const s = get();
 
     const npcs: Npc[] = s.npcs.map((n) => ({ ...n, pos: [...n.pos] as Vec3 }));
-    let coins: Coin[] = s.coins.map((c) => ({ ...c }));
+    // pos klonlanır (mıknatıs hareketinde mutasyon önceki state'i bozmasın).
+    let coins: Coin[] = s.coins.map((c) => ({ ...c, pos: [...c.pos] as Vec3 }));
     let dishes: Dish[] = s.dishes.map((d) => ({ ...d, pos: [...d.pos] as Vec3 }));
     let wallet = s.wallet;
     let lifetime = s.lifetime;
@@ -450,10 +455,16 @@ export const useGame = create<GameState>((set, get) => ({
     player[0] = Math.max(-LAYOUT.bounds, Math.min(LAYOUT.bounds, player[0]));
     player[2] = Math.max(-LAYOUT.bounds, Math.min(LAYOUT.bounds, player[2]));
 
-    // --- Para toplama (yakınlık) ---
+    // --- Para mıknatısı + toplama (Faz 2f juice) ---
+    // attractRadius içine giren para oyuncuya doğru GERÇEKTEN akar (hız > oyuncu hızı → daima yetişir),
+    // pickupRadius'a varınca toplanır. Mıknatıs store'da yapıldığı için görsel = mantık → "yapışıp
+    // toplanmayan para" bug'ı yapısal olarak imkansız (Coins.tsx sadece c.pos'u çizer).
     if (coins.length) {
       const keep: Coin[] = [];
       for (const c of coins) {
+        if (dist2D(player, c.pos) < C.money.attractRadius) {
+          moveToward(c.pos, player, C.money.attractSpeed * dt);
+        }
         if (dist2D(player, c.pos) < C.money.pickupRadius) {
           wallet = wallet.add(c.value);
           lifetime = lifetime.add(c.value);
@@ -467,7 +478,9 @@ export const useGame = create<GameState>((set, get) => ({
     // --- Servis (D-011): ocakta tepsiyi doldur, bekleyen masalara çay bırak (yakınlık) ---
     const trayCap = trayCapacity(trayLevel);
     // Ocağa yaklaşınca hazır çaylardan tepsi dolar (herhangi bir açık ocak yeterli).
-    if (tray < trayCap && readyCups > 0) {
+    // Faz 2f "eli boşken" kısıtı (karar 2026-06-06): kirli taşırken (carriedDirty>0) temiz ALINMAZ
+    // → tepside hep tek tür (tek renk); "götür → topla → yıka" ritmi korunur.
+    if (tray < trayCap && readyCups > 0 && carriedDirty === 0) {
       for (let i = 0; i < stations; i++) {
         if (dist2D(player, LAYOUT.stations[i]) < C.serving.pickupRadius) {
           const take = Math.min(trayCap - tray, readyCups);
@@ -491,8 +504,9 @@ export const useGame = create<GameState>((set, get) => ({
     }
 
     // --- Bardak döngüsü (Faz 2e): oyuncu masadaki kirli bardakları toplar, bulaşıkta yıkar (yakınlık) ---
+    // Faz 2f "eli boşken" kısıtı (simetrik): temiz çay taşırken (tray>0) kirli TOPLANMAZ → tepsi tek renk.
     const dirtyCap = trayCapacity(trayLevel);
-    if (carriedDirty < dirtyCap && dishes.length) {
+    if (tray === 0 && carriedDirty < dirtyCap && dishes.length) {
       const keep: Dish[] = [];
       for (const d of dishes) {
         if (carriedDirty < dirtyCap && dist2D(player, d.pos) < C.cups.collectRadius) carriedDirty += 1;

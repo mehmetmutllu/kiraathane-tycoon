@@ -31,7 +31,7 @@ function CameraRig() {
     const p = useGame.getState().player;
     const aspect = size.width / Math.max(1, size.height);
     const fit = aspect < 1 ? Math.min(1.7, Math.max(1, 1 / aspect)) : 1;
-    const d = 9 * fit;
+    const d = 8 * fit;
     target.set(p[0], 0.6, p[2]);
     desired.set(p[0], d, p[2] + d);
     camera.position.lerp(desired, Math.min(1, dt * 4));
@@ -117,7 +117,7 @@ function DishStation() {
   );
 }
 
-// Mekânsal tepsi yükseltme noktası (Faz 2e-B): giriş önünde. Üstünde dur → kapasite 2→4→6→8.
+// Mekânsal tepsi yükseltme noktası (Faz 2e-B): giriş önünde. Üstünde dur → kapasite 2→4→6 (Faz 2f max 6).
 function TrayUpgradeZone() {
   const trayLevel = useGame((s) => s.trayLevel);
   const padsDone = useGame((s) => s.padsDone);

@@ -1,4 +1,9 @@
-# Faz 2f — Görsel / Animasyon / Yerleşim Cilası (PLAN)
+# Faz 2f — Görsel / Animasyon / Yerleşim Cilası (✅ UYGULANDI 2026-06-06)
+
+> DURUM: TAMAMLANDI. 4 madde de uygulandı (A taşıma öne 3×2 ızgara + eli-boşken kısıtı, B max 8→6/SAVE_VERSION 10,
+> C ocak+bulaşık köşe mutfak bloğu + bounds 7→5, D juice: para süzülme/+₺ floating/radial/buhar/idle bob/yön dönüşü).
+> Vitest 40/40, build temiz, sim 84sn, smoke 19/19. Detay: memory-bank/progress.md + activeContext.md.
+
 
 > Kaynak: kullanıcı build incelemesi (2026-06-06). **Çalışan mantık doğru**; bunlar sunum katmanı.
 > Araştırma: My Perfect Hotel / arcade-idle konvansiyonları + R3F juice teknikleri. D-013 (primitive = nihai

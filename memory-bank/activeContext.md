@@ -3,20 +3,44 @@
 > En sık güncellenen dosya. Her anlamlı adımdan sonra güncelle.
 
 ## Şu an neredeyiz (2026-06-06)
-Faz 0 + Faz 1 ✅. **Faz 2 TAMAMEN BİTTİ:** 2a, 2b, 2-UX (D-009), 2-EKO (D-010), 2c (D-011),
-2d-garson (D-014), 2d-harita 1 ocak:4 masa (D-012), D-015 türetme, **2e-A (bardak döngüsü + bulaşıkçı) ✅,
-2e-B (tepsi yükseltme 2→4→6→8) ✅.** SAVE_VERSION şu an **9**.
-**Sıradaki: Faz 2f — görsel/animasyon/yerleşim cilası** (kullanıcı build incelemesi geri bildirimi; mantık
-değişmez). Plan: `docs/visual-and-layout-polish.md`. **Faz 2f, Faz 3a'dan ÖNCE.** Ardından Faz 3a (zone genişleme).
-**ÖNEMLİ:** 2f'ye başlamadan kullanıcıya 4 açık kararı sor (max tepsi 6 mı/istif mi, carry tek-tepsi-iki-renk
-mi/kısıt mı, yerleşim 2f mi/3a mı, react-spring'siz hafif animasyon mı).
+Faz 0 + Faz 1 ✅. **Faz 2 TAMAMEN BİTTİ** (2a–2e) + **Faz 2f (görsel/animasyon/yerleşim cilası) ✅.**
+SAVE_VERSION şu an **10**. Max tepsi kapasitesi **6** (3×2 ızgara). **Sıradaki: Faz 3a — salon/zone genişleme**
+(aşağı bak; AÇIK SORU: salon yerleşimi yan-yana mı/kapıyla mı + kamera/sınır genişlemesi → kod yazmadan SOR).
 
 Servis/personel/zone modeli kullanıcı onayıyla KİLİTLENDİ:
 - **D-011** (servis) ✅, **D-012** (zone/salon + bölge-başı personel + **KASA YOK** + tuvalet=oda + para toplama kalıcı manuel),
   **D-013** (primitive = nihai sanat stili), **D-014** (garson = opsiyonel/omurgayı kilitlemeyen pad ✅).
   Tam tasarım: `docs/serving-and-automation.md`.
 
-## En son ne yapıldı (bu oturum — 2e-B tepsi yükseltme)
+## En son ne yapıldı (bu oturum — Faz 2f görsel/animasyon/yerleşim cilası)
+Kullanıcı 4 kararı onayladı: ızgara (istif değil), yerleşim bana bırakıldı (taşmasın yeter), react-spring'siz hafif
+animasyon. (Asset sorusu yanıtlandı: animasyonlar = kod/bedava; 3D modeller = Faz 6, CC0 Quaternius/Kenney + AI Türk objeleri.)
+- **(B) Max tepsi 8→6:** `economy.config.serving.trayUpgrade.maxLevel` 3→2 (L0=2/L1=4/L2=6). **SAVE_VERSION 9→10** +
+  v9→v10 migrasyonu (eski L3 → max'a clamp) + store init savunmacı clamp.
+- **(A) Taşıma öne tepsiye:** `Player.tsx` kafadaki DirtyStack KALDIRILDI; temiz(kırmızı)+kirli(gri) ellerin önünde tek
+  tepside **3×2 ızgara** (CupTray, taşmaz). **"Eli boşken" kısıtı (store.ts):** servis `tray<cap && carriedDirty===0`,
+  kirli toplama `tray===0` → tepside hep tek renk. Waiter/Dishwasher zaten önde taşıyor → değişmedi.
+- **(C) Yerleşim (LAYOUT):** ocak `[-3.6,0,-3.6]` + bulaşık `[-1.7,0,-3.6]` sol-ARKA köşede BİTİŞİK mutfak bloğu;
+  **bounds 7→5**; 4 masa 2×2 sıkı (x 0/2.6, z ∓1.2); upgradeZone/samovar/trayUpgrade/personel pad'leri eş-zamanlı
+  çakışmayacak aralıkta (aktif fill ≥2.6, yıkama/fill ≥2.9); Scene kamera d 9→8. Render bileşenleri LAYOUT'tan okur → otomatik uydu.
+- **(D) Juice (useFrame/damp, react-spring YOK):** para mıknatısı (aşağı bug-fix), toplanınca "+₺" floating (CSS `floatUp`
+  keyframe, per-frame JS yok); `Player.tsx` baş üstü radial ilerleme (activeZone fill/cost; pad=yeşil, yükseltme=altın);
+  `TeaStation.tsx` semaver buharı (Puff, 2 adet); `Customers.tsx` otururken idle bob; yeni `useFacing.ts` (damp yön
+  dönüşü) Player/Waiter/Dishwasher/Customer'a uygulandı.
+- **🐛→✅ Para mıknatısı bug-fix (kullanıcı gözlemi: "bir coin peşime takılıp arkama yapıştı"):** İlk uygulamada süzülme
+  GÖRSEL-only'di (Coins.tsx mesh'i oyuncuya damp'lerken store toplamayı paranın ESKİ düşme konumuna göre yapıyordu) →
+  oyuncu 1.4'e girmeden geçince para görsel olarak yapışıp asla toplanmıyordu. **Çözüm:** mıknatıs STORE'a taşındı —
+  `economy.config.money.attractRadius 2.6/attractSpeed 9` (>oyuncu 4.5 → daima yetişir); tick'te attract içindeki coin
+  `moveToward(player)` ile GERÇEKTEN akar, pickupRadius'a varınca toplanır. Coins.tsx artık yalnız `c.pos`'u çizer
+  (görsel=mantık → "yapışan para" yapısal imkansız). coins map'inde `pos` klonlandı (mutasyon güvenliği). Yeni vitest:
+  pickup'a hiç girilmeden mıknatısla toplanır + attract dışı çekilmez.
+- **Doğrulama:** **Vitest 40/40 ✅** (eli-boşken kısıtı + v9→v10 clamp + kapasite 2→4→6 testleri eklendi), **build temiz ✅,
+  sim 84sn ✅ (mantık değişmedi), smoke 19/19 ✅, konsol temiz, gözle doğrulandı** (kompakt köşe mutfağı, derli masalar, çakışma yok).
+- Değişen: economy.config.ts, save.ts, store.ts (LAYOUT+kısıt), Scene.tsx, Player.tsx, Coins.tsx, Customers.tsx,
+  TeaStation.tsx, Waiter.tsx, Dishwasher.tsx, index.css, tests/logic.test.ts, +yeni useFacing.ts; progress.md, activeContext.md.
+  (Henüz commit'lenmedi — oturum-bitir'de.)
+
+## (önceki — 2e-B tepsi yükseltme)
 - **Tepsi kapasitesi yükseltilebilir** mekânsal noktayla (çay yükseltme deseni): **2→4→6→8** (`trayCapacityForLevel`
   = trayCapacityBase 2 + perLevel 2 × level; maxLevel 3). `LAYOUT.trayUpgradeZone` [0,0,4.5] (giriş önü, doğal yol).
   Gating `C.serving.trayUpgradeRequires` = prev table3. Maliyet `trayUpgradeCost` (costBase 80, growth 1.8), fillRate 60.
@@ -108,22 +132,7 @@ Servis/personel/zone modeli kullanıcı onayıyla KİLİTLENDİ:
   Çakışma giderildi (currentPad=samovar). Kalıcı vitest testleri (v6→v7 senaryosu dahil).
 - **Doğrulama:** Vitest **22/22**, build temiz. Commit `c0e9e24` (v6 fix) + sonraki commit (v7 bump) push'landı.
 
-## TAM sıradaki adım (Faz 2f — görsel/animasyon/yerleşim cilası)
-Kullanıcı build incelemesi geri bildirimi (2026-06-06). Tam plan + araştırma: `docs/visual-and-layout-polish.md`.
-**Çalışan mantık doğru — sunum katmanı.** ÖNCE 4 açık kararı sor (docs §Açık kararlar), SONRA uygula:
-1. **Carry kafadan→tepsiye + "eli boşken" kısıtı (✅ KARAR):** `Player.tsx` DirtyStack [0,1.05,-0.4] (baş)
-   kaldır; taşınan ellerin ÖNÜNDEKİ tek tepside (tek seferde tek tür); baş üstü yalnız radial bar. Aynı düzeltme
-   Waiter/Dishwasher. **Mantık kısıtı:** servis bloğu `tray<trayCap && carriedDirty===0`; kirli toplama `tray===0`
-   (simetrik: temiz taşırken kirli toplanmaz, kirli taşırken temiz alınmaz → tepside hep tek renk).
-2. **Max taşma:** ✅ KARAR — max kapasite **8→6** indirilecek (kullanıcı onayı 2026-06-06). trayLevel clamp +
-   küçük migrasyon gerek. Sunum dizilimi (3×2 ızgara / istif) açık — sunuma sonra karar verilecek.
-3. **Yerleşim:** `store.ts LAYOUT` ocak+bulaşık sol-arka köşede BİTİŞİK; bounds 7→~5; masaları sıkılaştır;
-   Scene/kamera uysun. (Faz 3a zone zemini: tek "salon bloğu".)
-4. **Juice:** pickup/drop scale-pop (useFrame/damp), coin uçuşu + "+₺" floating (drei Html), baş üstü radial
-   progress (pad/yükseltme), semaver buharı, müşteri idle bob, yürüyüş yön dönüşü (damp). react-spring EKLEME.
-5. Doğrulama: vitest + smoke (yeni kancalar) + sim 84sn yeşil; görsel his GÖZLE değerlendirilir.
-
-## Faz 2f SONRASI sıradaki adım (Faz 3a — salon/zone genişleme)
+## TAM sıradaki adım (Faz 3a — salon/zone genişleme)
 docs/serving-and-automation.md §7 kilitli tasarım:
 1. **Salon dolunca yeni salon kilidi açılır** (mevcut salonun tüm omurga slotları = 4 masa + semaver tamam → genişleme gate'i).
 2. **Yeni salon açılınca oto 1.ocak + 1.masa kurulu gelir** (oyuncu hemen servis edebilir); gerisini parayla açar.

@@ -1,9 +1,34 @@
+import { useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
+import type { Mesh, MeshStandardMaterial } from 'three';
 import type { Vec3 } from '../../game/types';
 import { Model } from './Model';
 
 // Seviyeye göre semaver rengi (greybox görsel değişim).
 const LEVEL_COLOR = ['#b08d57', '#c9a063', '#d4af37', '#e0b94a', '#ffd700', '#ffea00'];
+
+// Semaver buharı (Faz 2f juice): tek bir buhar topu yükselip solar, döngüye girer.
+function Puff({ baseY, phase }: { baseY: number; phase: number }) {
+  const ref = useRef<Mesh>(null);
+  const RANGE = 0.6;
+  useFrame((st) => {
+    const m = ref.current;
+    if (!m) return;
+    const t = (st.clock.elapsedTime * 0.5 + phase) % 1; // 0→1 döngü
+    m.position.y = baseY + t * RANGE;
+    m.position.x = Math.sin((t + phase) * Math.PI * 2) * 0.06;
+    const s = 0.5 + t * 0.8;
+    m.scale.setScalar(s);
+    (m.material as MeshStandardMaterial).opacity = (1 - t) * 0.45;
+  });
+  return (
+    <mesh ref={ref} position={[0, baseY, 0]}>
+      <sphereGeometry args={[0.07, 8, 8]} />
+      <meshStandardMaterial color="#ffffff" transparent opacity={0.4} depthWrite={false} />
+    </mesh>
+  );
+}
 
 // Çay ocağı (greybox: tezgah + semaver). Seviye arttıkça semaver büyür/rengi ısınır.
 // showBadge=true ise üstünde "Çay Lv N" rozeti gösterir. Faz 6'da .glb takılır.
@@ -53,6 +78,9 @@ export function TeaStation({
                 <meshStandardMaterial color="#c0392b" emissive="#7a1f17" emissiveIntensity={0.25} />
               </mesh>
             ))}
+            {/* semaver buharı (tepe küresinin üstünden yükselir) */}
+            <Puff baseY={0.9 + bodyH + 0.28} phase={0} />
+            <Puff baseY={0.9 + bodyH + 0.28} phase={0.5} />
           </group>
         }
       />

@@ -380,6 +380,34 @@ describe('bardak döngüsü (Faz 2e) — demleme temiz harcar, içen kirli bıra
     expect(useGame.getState().cleanCups).toBe(before + economyConfig.cups.poolPerLevel);
     expect(cupPoolCapacity(1)).toBe(cupPoolCapacity(0) + economyConfig.cups.poolPerLevel);
   });
+
+  // Faz 2f "eli boşken" kısıtı (karar 2026-06-06): tepside hep TEK tür → tek renk taşıma.
+  it('kirli taşırken (carriedDirty>0) ocaktan temiz çay ALINMAZ', () => {
+    useGame.getState().hardReset();
+    const st = LAYOUT.stations[0];
+    // Hazır çay olsun + elinde kirli olsun → ocağa gitse de temizi alamamalı.
+    useGame.setState({
+      player: [st[0], 0.6, st[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0],
+      readyCups: 3, carriedDirty: 1, tray: 0,
+    });
+    useGame.getState().tick(0.1);
+    expect(useGame.getState().tray).toBe(0); // kirli elindeyken temiz alınmadı
+    expect(useGame.getState().carriedDirty).toBe(1);
+  });
+
+  it('temiz çay taşırken (tray>0) masadaki kirli TOPLANMAZ (simetrik)', () => {
+    useGame.getState().hardReset();
+    // Bir masaya kirli bardak koy, oyuncuyu üstüne park et, elinde temiz çay olsun.
+    const dishPos: [number, number, number] = [1, 0.95, 1];
+    useGame.setState({
+      player: [dishPos[0], 0.6, dishPos[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0],
+      tray: 1, carriedDirty: 0,
+      dishes: [{ id: 9001, pos: dishPos }],
+    });
+    useGame.getState().tick(0.1);
+    expect(useGame.getState().carriedDirty).toBe(0); // temiz elindeyken kirli toplanmadı
+    expect(useGame.getState().dishes.length).toBe(1);
+  });
 });
 
 describe('bulaşıkçı — opsiyonel kısmi assist (Faz 2e)', () => {
@@ -428,7 +456,37 @@ describe('bulaşıkçı — opsiyonel kısmi assist (Faz 2e)', () => {
   });
 });
 
-describe('tepsi yükseltme (Faz 2e-B) — mekânsal nokta, kapasite 2→4→6→8', () => {
+describe('para mıknatısı (Faz 2f) — attract yarıçapındaki para oyuncuya akar + toplanır', () => {
+  it('düşme noktasının pickup yarıçapına HİÇ girilmese de para mıknatısla toplanır (bug düzeltmesi)', () => {
+    useGame.getState().hardReset();
+    // Para, oyuncudan pickup (1.4) DIŞINDA ama attract (2.6) İÇİNDE düşsün.
+    const px = 0;
+    const coinX = px + (economyConfig.money.pickupRadius + economyConfig.money.attractRadius) / 2; // ~2.0
+    useGame.setState({
+      player: [px, 0.6, 0], inputKeyboard: [0, 0], inputJoystick: [0, 0],
+      coins: [{ id: 5555, pos: [coinX, 0.3, 0], value: 5 }],
+    });
+    const before = useGame.getState().wallet.toNumber();
+    // Oyuncu yerinde dursa bile mıknatıs parayı çeker → birkaç tick'te toplanır.
+    for (let i = 0; i < 20; i++) useGame.getState().tick(0.1);
+    expect(useGame.getState().coins.length).toBe(0);
+    expect(useGame.getState().wallet.toNumber()).toBe(before + 5);
+  });
+
+  it('attract yarıçapı DIŞINDAKİ para çekilmez (oyuncu uzaktayken yerinde kalır)', () => {
+    useGame.getState().hardReset();
+    const far = economyConfig.money.attractRadius + 2; // attract dışında
+    useGame.setState({
+      player: [0, 0.6, 0], inputKeyboard: [0, 0], inputJoystick: [0, 0],
+      coins: [{ id: 5556, pos: [far, 0.3, 0], value: 5 }],
+    });
+    for (let i = 0; i < 10; i++) useGame.getState().tick(0.1);
+    expect(useGame.getState().coins.length).toBe(1); // toplanmadı
+    expect(useGame.getState().coins[0].pos[0]).toBeCloseTo(far, 5); // hareket etmedi
+  });
+});
+
+describe('tepsi yükseltme (Faz 2e-B) — mekânsal nokta, kapasite 2→4→6 (Faz 2f max 6)', () => {
   // table3'e kadar ilerlet (tepsi yükseltme noktasının önkoşulu: prev table3).
   function reachTable3() {
     useGame.getState().hardReset();
@@ -439,12 +497,11 @@ describe('tepsi yükseltme (Faz 2e-B) — mekânsal nokta, kapasite 2→4→6→
     completeCurrentPad(); // table3
   }
 
-  it('kapasite seviyeyle 2→4→6→8 büyür', () => {
+  it('kapasite seviyeyle 2→4→6 büyür (Faz 2f: max 6 = 3×2 ızgara)', () => {
     expect(trayCapacity(0)).toBe(2);
     expect(trayCapacity(1)).toBe(4);
     expect(trayCapacity(2)).toBe(6);
-    expect(trayCapacity(3)).toBe(8);
-    expect(trayMaxLevel()).toBe(3);
+    expect(trayMaxLevel()).toBe(2);
   });
 
   it('önkoşul (3. masa) karşılanmadan tepsi noktası pasiftir', () => {
@@ -464,8 +521,10 @@ describe('tepsi yükseltme (Faz 2e-B) — mekânsal nokta, kapasite 2→4→6→
     useGame.getState().addMoney(trayNextCost(0) + 50);
     const z = LAYOUT.trayUpgradeZone;
     useGame.setState({ player: [z[0], 0.6, z[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
-    for (let i = 0; i < 60; i++) useGame.getState().tick(0.1);
+    // 20 tick (~2s): L1 (cost/fillRate ≈ 1.33s) tamamlanır ama L2'ye (max) ulaşmaz → zone aktif kalır.
+    for (let i = 0; i < 20; i++) useGame.getState().tick(0.1);
     expect(useGame.getState().trayLevel).toBeGreaterThan(0);
+    expect(useGame.getState().trayLevel).toBeLessThan(trayMaxLevel()); // henüz max değil → zone gösterilir
     expect(useGame.getState().activeZone?.kind).toBe('upgrade');
   });
 
@@ -477,12 +536,12 @@ describe('tepsi yükseltme (Faz 2e-B) — mekânsal nokta, kapasite 2→4→6→
     useGame.setState({ player: [z[0], 0.6, z[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
     for (let i = 0; i < 600; i++) useGame.getState().tick(0.1);
     expect(useGame.getState().trayLevel).toBe(trayMaxLevel()); // max'ta durur, taşmaz
-    expect(trayCapacity(useGame.getState().trayLevel)).toBe(8);
+    expect(trayCapacity(useGame.getState().trayLevel)).toBe(6);
   });
 });
 
-describe('kayıt migrasyonu v4..v8 → v9 (padFills, station2 çıkışı, addTable senkron, türetme, trayLevel)', () => {
-  it('eski tek padFill, aktif omurga pad id\'sine taşınır; saveVersion 9; türetilenler saklanmaz; trayLevel=0', () => {
+describe('kayıt migrasyonu v4..v10 (padFills, station2 çıkışı, addTable senkron, türetme, trayLevel, tepsi clamp)', () => {
+  it('eski tek padFill, aktif omurga pad id\'sine taşınır; saveVersion 10; türetilenler saklanmaz; trayLevel=0', () => {
     const m = migrate({
       saveVersion: 4,
       wallet: '100', diamonds: '0', lifetime: '50',
@@ -490,9 +549,9 @@ describe('kayıt migrasyonu v4..v8 → v9 (padFills, station2 çıkışı, addTa
       padsDone: [], padFill: 20,
     });
     // lifetime 50 ≥ 30 → table2 aktif omurga pad'i → padFill ona atanır.
-    expect(m.saveVersion).toBe(9);
+    expect(m.saveVersion).toBe(10);
     expect(m.padFills).toEqual({ table2: 20 });
-    expect(m.trayLevel).toBe(0); // v9: eski kayıtta tepsi yükseltmesi yok → L0
+    expect(m.trayLevel).toBe(0); // eski kayıtta tepsi yükseltmesi yok → L0
     // D-015: türetilen alanlar artık kayıtta YOK; garson alınmamış → padsDone'da 'waiter' yok.
     expect((m as Record<string, unknown>).tables).toBeUndefined();
     expect((m as Record<string, unknown>).hasWaiter).toBeUndefined();
@@ -507,7 +566,7 @@ describe('kayıt migrasyonu v4..v8 → v9 (padFills, station2 çıkışı, addTa
       tables: 3, stations: 2, stationLevel: 1, serviceSpeedMult: 0.85,
       padsDone: ['table2', 'table3', 'station2'], padFills: { station2: 100, samovar: 40 }, hasWaiter: true,
     });
-    expect(m.saveVersion).toBe(9);
+    expect(m.saveVersion).toBe(10);
     expect(m.padsDone).toEqual(['table2', 'table3', 'waiter']); // station2 kalktı; eski hasWaiter → waiter pad'i
     expect(m.padFills).toEqual({ samovar: 40 }); // station2 dolumu temizlendi, diğeri durur
     // Türetme: tek salon = tek ocak, garson korunur.
@@ -524,7 +583,7 @@ describe('kayıt migrasyonu v4..v8 → v9 (padFills, station2 çıkışı, addTa
       tables: 4, stations: 1, stationLevel: 2, serviceSpeedMult: 1,
       padsDone: ['table2', 'table3'], padFills: {}, hasWaiter: false,
     });
-    expect(m.saveVersion).toBe(9);
+    expect(m.saveVersion).toBe(10);
     // 4. masa zaten çiziliyken table4 pad'i bir daha belirmemeli (aynı konumda çakışır).
     expect(m.padsDone).toContain('table4');
     // Türetilen masa sayısı padsDone'dan gelir = 4; tutarlı: currentPad artık samovar.
@@ -533,13 +592,13 @@ describe('kayıt migrasyonu v4..v8 → v9 (padFills, station2 çıkışı, addTa
     expect(currentPad({ padsDone: m.padsDone, tables, stationLevel: m.stationLevel, lifetime: 9000 })?.id).toBe('samovar');
   });
 
-  it('v8 → v9: mevcut trayLevel korunur; eksikse 0\'lanır', () => {
+  it('v8 → v10: mevcut trayLevel korunur (≤ yeni max); eksikse 0\'lanır', () => {
     const kept = migrate({
       saveVersion: 8, wallet: '0', diamonds: '0', lifetime: '0',
       stationLevel: 0, padsDone: ['table2'], padFills: {}, trayLevel: 2,
     } as unknown as Record<string, unknown>);
-    expect(kept.saveVersion).toBe(9);
-    expect(kept.trayLevel).toBe(2);
+    expect(kept.saveVersion).toBe(10);
+    expect(kept.trayLevel).toBe(2); // 2 ≤ yeni max (2) → korunur
     const missing = migrate({
       saveVersion: 8, wallet: '0', diamonds: '0', lifetime: '0',
       stationLevel: 0, padsDone: ['table2'], padFills: {},
@@ -547,9 +606,19 @@ describe('kayıt migrasyonu v4..v8 → v9 (padFills, station2 çıkışı, addTa
     expect(missing.trayLevel).toBe(0);
   });
 
-  it('v9 varsayılan kayıt padFills={} + trayLevel=0 içerir; türetilen alan tutmaz', () => {
+  it('v9 → v10: eski L3 tepsi kaydı yeni max\'a (2) clamp\'lenir (kapasite 8→6)', () => {
+    const m = migrate({
+      saveVersion: 9, wallet: '0', diamonds: '0', lifetime: '0',
+      stationLevel: 0, padsDone: ['table2', 'table3'], padFills: {}, trayLevel: 3,
+    } as unknown as Record<string, unknown>);
+    expect(m.saveVersion).toBe(10);
+    expect(m.trayLevel).toBe(2); // L3 → tavana çekildi
+    expect(trayCapacity(m.trayLevel)).toBe(6); // taşmayan max kapasite
+  });
+
+  it('v10 varsayılan kayıt padFills={} + trayLevel=0 içerir; türetilen alan tutmaz', () => {
     const d = defaultSave();
-    expect(d.saveVersion).toBe(9);
+    expect(d.saveVersion).toBe(10);
     expect(d.padFills).toEqual({});
     expect(d.trayLevel).toBe(0);
     expect((d as Record<string, unknown>).tables).toBeUndefined();

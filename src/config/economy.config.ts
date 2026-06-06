@@ -13,7 +13,7 @@
  *   L5 (Usta)   = masterDiamondCost 💎 VEYA 1 ödüllü video; outputMult yerine masterOutputMult
  */
 
-export const SAVE_VERSION = 9;
+export const SAVE_VERSION = 10;
 
 export const CURRENCY = {
   soft: '₺', // Para — müşteriden kazanılır
@@ -112,15 +112,16 @@ export const economyConfig = {
     serveRadius: 1.6,
     /**
      * Tepsi kapasite yükseltmesi (Faz 2e-B): mekânsal nokta (çay yükseltme gibi), kapasite
-     * 2→4→6→8 (perLevel +2, maxLevel 3). Hareket erken-öncelikli QoL: tek turda daha çok
+     * 2→4→6 (perLevel +2, maxLevel 2 → max 6). Hareket erken-öncelikli QoL: tek turda daha çok
      * çay taşı + daha çok kirli topla → gidip-gelme azalır (oynanış korunur). Coin değeri gibi
-     * fiyatı DEĞİL akışı (tek turdaki iş hacmini) büyütür.
+     * fiyatı DEĞİL akışı (tek turdaki iş hacmini) büyütür. Max 6 = 3×2 ızgara taşıma (Faz 2f:
+     * kafa istifi yerine ellerin önünde tek tepside, taşmadan diz; D-013 sunum cilası).
      */
     trayUpgrade: {
       /** Her seviye tepsiye eklenen kapasite. */
       perLevel: 2,
-      /** ₺ ile çıkılabilen en yüksek tepsi seviyesi (L0..maxLevel). */
-      maxLevel: 3,
+      /** ₺ ile çıkılabilen en yüksek tepsi seviyesi (L0..maxLevel → max kapasite 6 = 3×2). */
+      maxLevel: 2,
       /** L1 maliyeti (₺). */
       costBase: 80,
       /** Maliyet geometrik büyüme oranı. */
@@ -192,6 +193,13 @@ export const economyConfig = {
     lifetime: 0,
     /** Sahip karakterinin toplama yarıçapı (dünya birimi). */
     pickupRadius: 1.4,
+    /**
+     * Faz 2f juice: bu yarıçapa giren para oyuncuya doğru AKAR (klasik tycoon mıknatısı) ve yaklaşınca
+     * toplanır. Mıknatıs store'da gerçek hareket olarak yapılır (görsel-only değil) → para asla oyuncuya
+     * "yapışıp toplanmadan peşinden gelmez". Hız oyuncu hızından (4.5) yüksek olmalı ki daima yetişip toplasın.
+     */
+    attractRadius: 2.6,
+    attractSpeed: 9,
   },
 
   /**
@@ -325,7 +333,7 @@ export function cupPoolCapacity(stationLevel: number): number {
   return economyConfig.cups.poolBase + economyConfig.cups.poolPerLevel * stationLevel;
 }
 
-/** Tepsi kapasitesi: taban + seviye (Faz 2e-B). L0=2, L1=4, L2=6, L3=8. */
+/** Tepsi kapasitesi: taban + seviye (Faz 2e-B). L0=2, L1=4, L2=6 (max). */
 export function trayCapacityForLevel(level: number): number {
   return economyConfig.serving.trayCapacityBase + economyConfig.serving.trayUpgrade.perLevel * level;
 }

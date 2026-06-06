@@ -1,5 +1,8 @@
+import { useRef } from 'react';
+import type { Group } from 'three';
 import { useGame } from '../../game/store';
 import { Model } from './Model';
+import { useFacing } from './useFacing';
 
 // Garson elindeki küçük tepsi (kapasite 1 → tek bardak).
 function WaiterTray({ count }: { count: number }) {
@@ -21,18 +24,22 @@ function WaiterTray({ count }: { count: number }) {
 // Garson (greybox: yeşil önlüklü kapsül, sahipten ayırt edilir). Faz 6'da waiter.glb takılır.
 export function Waiter() {
   const waiter = useGame((s) => s.waiter);
+  const ref = useRef<Group>(null);
+  useFacing(ref, waiter?.pos[0] ?? 0, waiter?.pos[2] ?? 0);
   if (!waiter) return null;
   return (
     <group position={[waiter.pos[0], 0, waiter.pos[2]]}>
-      <Model
-        fallback={
-          <mesh castShadow position={[0, 0.55, 0]}>
-            <capsuleGeometry args={[0.32, 0.6, 6, 12]} />
-            <meshStandardMaterial color="#2e8b57" />
-          </mesh>
-        }
-      />
-      <WaiterTray count={waiter.tray} />
+      <group ref={ref}>
+        <Model
+          fallback={
+            <mesh castShadow position={[0, 0.55, 0]}>
+              <capsuleGeometry args={[0.32, 0.6, 6, 12]} />
+              <meshStandardMaterial color="#2e8b57" />
+            </mesh>
+          }
+        />
+        <WaiterTray count={waiter.tray} />
+      </group>
     </group>
   );
 }
