@@ -136,6 +136,36 @@ export const economyConfig = {
     queuePerLevel: 1,
   },
 
+  /**
+   * Bardak döngüsü (Faz 2e §5): bardak SINIRLI kaynak (My Hotel "odayı temizle" karşılığı).
+   * Demleme bir TEMİZ bardak harcar; içen müşteri masada KİRLİ bardak bırakır; oyuncu (sonra
+   * bulaşıkçı) kirlileri toplayıp BULAŞIK noktasında yıkar → temiz havuza döner. Temiz biterse
+   * demleme DURUR → ikinci çember (kirli topla/yıka) zorunlu olur. Havuz ocak seviyesiyle büyür.
+   * Bardak sayıları TRANSIENT (her oturumda havuz dolu temizle başlar; readyCups/tray gibi).
+   */
+  cups: {
+    /** L0 toplam bardak havuzu (temiz+kirli+akıştaki tüm bardaklar). */
+    poolBase: 10,
+    /** Her ocak seviyesi havuza eklenen bardak. */
+    poolPerLevel: 2,
+    /** Oyuncunun masadaki kirli bardağı toplama yakınlığı. */
+    collectRadius: 1.4,
+    /** Bulaşık noktasında yıkama yakınlığı (varınca taşınan kirliler temize döner). */
+    washRadius: 1.6,
+  },
+
+  /**
+   * Bulaşıkçı (Faz 2e opsiyonel — garson deseni: `dishwasher` pad'iyle tutulur, ZORUNLU değil).
+   * Kısmi assist: oyuncudan yavaş + küçük taşıma → tek başına yetişmez, oyuncu hâlâ gerekli.
+   * Kirli bardakları toplar → bulaşık noktasına götürür → yıkar (temiz havuza döner).
+   */
+  dishwasher: {
+    /** Hareket hızı (dünya birimi/sn). Oyuncudan yavaş. */
+    moveSpeed: 1.8,
+    /** Tek seferde taşıdığı kirli bardak. */
+    carryCapacity: 2,
+  },
+
   /** Yere düşen para. */
   money: {
     /** Düşen para kaç sn sonra kaybolur (0 = asla; Faz 4 otomatik toplayıcı). */
@@ -166,6 +196,8 @@ export const economyConfig = {
       requires: { prev: ['table2'] }, effect: { type: 'hireWaiter' } },
     { id: 'table3', label: '3. Masa', cost: 120, fillRate: 55, optional: false,
       requires: { prev: ['table2'], minStationLevel: 1 }, effect: { type: 'addTable' } },
+    { id: 'dishwasher', label: 'Bulaşıkçı Tut', cost: 280, fillRate: 60, optional: true,
+      requires: { prev: ['table3'] }, effect: { type: 'hireDishwasher' } },
     { id: 'table4', label: '4. Masa', cost: 300, fillRate: 75, optional: false,
       requires: { prev: ['table3'] }, effect: { type: 'addTable' } },
     { id: 'samovar', label: 'Semavere Geçiş', cost: 850, fillRate: 110, optional: false,
@@ -204,6 +236,7 @@ export interface DerivedState {
   stations: number;
   serviceSpeedMult: number;
   hasWaiter: boolean;
+  hasDishwasher: boolean;
 }
 
 /**
@@ -216,6 +249,7 @@ export function derivedFromPads(padsDone: readonly string[]): DerivedState {
   let tables = 1;
   let serviceSpeedMult = 1;
   let hasWaiter = false;
+  let hasDishwasher = false;
   const byId = new Map<string, PadDef>((economyConfig.pads as readonly PadDef[]).map((p) => [p.id, p]));
   for (const id of padsDone) {
     const pad = byId.get(id);
@@ -230,9 +264,12 @@ export function derivedFromPads(padsDone: readonly string[]): DerivedState {
       case 'hireWaiter':
         hasWaiter = true;
         break;
+      case 'hireDishwasher':
+        hasDishwasher = true;
+        break;
     }
   }
-  return { tables, stations: 1, serviceSpeedMult, hasWaiter };
+  return { tables, stations: 1, serviceSpeedMult, hasWaiter, hasDishwasher };
 }
 
 /** Gating değerlendirmesi için gereken (salt-okunur) ilerleme durumu. */
@@ -261,6 +298,11 @@ export function upgradeCost(spec: UpgradeSpec, level: number): number {
 /** Ocak hazır-kuyruğu kapasitesi: ocak seviyesiyle büyür (D-011 §3). */
 export function brewQueueCapacity(stationLevel: number): number {
   return economyConfig.brew.queueBase + economyConfig.brew.queuePerLevel * stationLevel;
+}
+
+/** Toplam bardak havuzu (temiz+kirli+akıştaki): ocak seviyesiyle büyür (Faz 2e §5). */
+export function cupPoolCapacity(stationLevel: number): number {
+  return economyConfig.cups.poolBase + economyConfig.cups.poolPerLevel * stationLevel;
 }
 
 /** Verilen seviyedeki toplam çıktı çarpanı (L5 usta sıçramasını da içerir). */

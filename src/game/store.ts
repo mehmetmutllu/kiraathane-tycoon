@@ -1,12 +1,13 @@
 import { create } from 'zustand';
 import { Decimal, D } from './decimal';
-import type { Coin, Npc, Vec3, Waiter } from './types';
+import type { Coin, Dish, Npc, Vec3, Waiter } from './types';
 import {
   economyConfig as C,
   upgradeOutputMultiplier,
   upgradeCost,
   requiresMet,
   brewQueueCapacity,
+  cupPoolCapacity,
   derivedFromPads,
   type PadDef,
   type GateState,
@@ -37,11 +38,16 @@ export const LAYOUT = {
     table4: [2.5, 0, 1.2] as Vec3, // 4. masa slotu
     samovar: [1.6, 0, -3.4] as Vec3, // ana ocağın sağ-önü (semavere geçiş)
     waiter: [-4.5, 0, 4] as Vec3, // personel köşesi (giriş sol-yanı, masalardan uzak)
+    dishwasher: [-4.8, 0, -1.0] as Vec3, // bulaşık noktasının yanı (sol duvar)
   } as Record<string, Vec3>,
   // Mekânsal çay yükseltme noktası: ana ocağın sol-önünde dur → altta bar dolar (semaverle çakışmaz).
   upgradeZone: [-1.6, 0, -3.4] as Vec3,
   // Garson boştayken bekleyeceği köşe (personel home).
   waiterHome: [4.5, 0, 4] as Vec3,
+  // Bulaşık noktası (Faz 2e): sol duvar, masalardan/yükseltme noktasından uzak. Kirliler burada yıkanır.
+  dishStation: [-4.8, 0, -3.0] as Vec3,
+  // Bulaşıkçı boştayken bekleyeceği köşe (sol-orta).
+  dishwasherHome: [-4.8, 0, 1.5] as Vec3,
 } as const;
 
 const NPC_SPEED = 2.6;
@@ -85,7 +91,7 @@ function brewTime(level: number, serviceSpeedMult: number): number {
   return (C.npc.orderTime * serviceSpeedMult) / brewThroughputMult(level);
 }
 
-/** Oyuncunun tepsi kapasitesi (tek turda taşınan çay). Yükseltme Faz 2e. */
+/** Oyuncunun tepsi kapasitesi (tek turda taşınan çay/kirli). Yükseltme Faz 2e (Dilim B). */
 export const trayCapacity = () => C.serving.trayCapacityBase;
 
 /** Çevrimdışı gelir oranı (₺/sn) — bottleneck idealize: oturma × sabit fiyat / döngü. */
@@ -122,6 +128,8 @@ export interface GameState {
   padFills: Record<string, number>;
   /** Garson tutuldu mu (Faz 2d opsiyonel pad; persist). */
   hasWaiter: boolean;
+  /** Bulaşıkçı tutuldu mu (Faz 2e opsiyonel pad; padsDone'dan türetilir). */
+  hasDishwasher: boolean;
   // Transient (kaydedilmez — D-011 servis durumu yeniden kurulur)
   player: Vec3;
   npcs: Npc[];
@@ -129,12 +137,20 @@ export interface GameState {
   npcCount: number;
   /** Garson (hasWaiter ise) — konum/tepsi transient, her oturumda kurulur. */
   waiter: Waiter | null;
+  /** Bulaşıkçı (hasDishwasher ise) — konum/taşıdığı kirli transient. */
+  dishwasher: Waiter | null;
   /** Ocak hazır-kuyruğundaki demlenmiş çay sayısı. */
   readyCups: number;
   /** Demlenmekte olan bardağın ilerleme süresi (sn). */
   brewProgress: number;
   /** Oyuncunun tepsisinde taşıdığı çay sayısı. */
   tray: number;
+  /** Temiz bardak havuzu (demleme bundan harcar; biterse demleme durur). Faz 2e. */
+  cleanCups: number;
+  /** Masalarda bekleyen kirli bardaklar (mekânsal nesneler). */
+  dishes: Dish[];
+  /** Oyuncunun bulaşığa götürmek için taşıdığı kirli bardak. */
+  carriedDirty: number;
   upgradeFill: number;
   activeZone: ActiveZone | null;
   nextStepLabel: string;
@@ -216,14 +232,19 @@ export const useGame = create<GameState>((set, get) => ({
   padsDone: [],
   padFills: {},
   hasWaiter: false,
+  hasDishwasher: false,
   player: [...LAYOUT.player] as Vec3,
   npcs: [],
   coins: [],
   npcCount: 0,
   waiter: null,
+  dishwasher: null,
   readyCups: 0,
   brewProgress: 0,
   tray: 0,
+  cleanCups: cupPoolCapacity(0),
+  dishes: [],
+  carriedDirty: 0,
   upgradeFill: 0,
   activeZone: null,
   nextStepLabel: '',
@@ -262,15 +283,21 @@ export const useGame = create<GameState>((set, get) => ({
       padsDone: [...save.padsDone],
       padFills: { ...save.padFills },
       hasWaiter: derived.hasWaiter,
+      hasDishwasher: derived.hasDishwasher,
       offlineEarned,
       player: [...LAYOUT.player] as Vec3,
       npcs: [],
       coins: [],
       npcCount: 0,
       waiter: derived.hasWaiter ? { pos: [...LAYOUT.waiterHome] as Vec3, tray: 0 } : null,
+      dishwasher: derived.hasDishwasher ? { pos: [...LAYOUT.dishwasherHome] as Vec3, tray: 0 } : null,
       readyCups: 0,
       brewProgress: 0,
       tray: 0,
+      // Bardak havuzu her oturumda dolu-temiz başlar (transient; readyCups/tray gibi).
+      cleanCups: cupPoolCapacity(save.stationLevel),
+      dishes: [],
+      carriedDirty: 0,
       upgradeFill: 0,
       activeZone: null,
       nextStepLabel: nextStep({
@@ -292,38 +319,44 @@ export const useGame = create<GameState>((set, get) => ({
 
     const npcs: Npc[] = s.npcs.map((n) => ({ ...n, pos: [...n.pos] as Vec3 }));
     let coins: Coin[] = s.coins.map((c) => ({ ...c }));
+    let dishes: Dish[] = s.dishes.map((d) => ({ ...d, pos: [...d.pos] as Vec3 }));
     let wallet = s.wallet;
     let lifetime = s.lifetime;
     let padsDone = s.padsDone;
     let padFills = s.padFills;
-    // D-015: tables/stations/serviceSpeedMult/hasWaiter padsDone'dan TÜRETİLİR (frame anlık görüntüsü;
-    // tick içinde ayrıca mutasyona uğramaz — pad açılınca yalnız padsDone büyür, gerisi yeniden türetilir).
+    // D-015: tables/stations/serviceSpeedMult/hasWaiter/hasDishwasher padsDone'dan TÜRETİLİR (frame anlık
+    // görüntüsü; tick içinde ayrıca mutasyona uğramaz — pad açılınca yalnız padsDone büyür, gerisi türetilir).
     const derived = derivedFromPads(padsDone);
     const tables = derived.tables;
     const stations = derived.stations;
     const serviceSpeedMult = derived.serviceSpeedMult;
     const hasWaiter = derived.hasWaiter;
+    const hasDishwasher = derived.hasDishwasher;
     let upgradeFill = s.upgradeFill;
     let activeZone: ActiveZone | null = null;
     let stationLevel = s.stationLevel;
     let readyCups = s.readyCups;
     let brewProgress = s.brewProgress;
     let tray = s.tray;
+    let cleanCups = s.cleanCups;
+    let carriedDirty = s.carriedDirty;
     let nextId = s.nextId;
     let spawnTimer = s.spawnTimer - dt;
 
-    // --- Ocak hazır-kuyruğu (demleme) — D-011 §3 ---
+    // --- Ocak hazır-kuyruğu (demleme) — D-011 §3 + bardak döngüsü (Faz 2e §5) ---
     // Ocak, kuyruk dolana kadar çay demler; doluyken durur (teslimat darboğaz olur).
+    // Her demleme bir TEMİZ bardak harcar; temiz biterse demleme DURUR (yeni darboğaz → kirli topla/yıka).
     const queueCap = brewQueueCapacity(stationLevel);
     const cupBrewTime = brewTime(stationLevel, serviceSpeedMult);
-    if (readyCups < queueCap) {
+    if (readyCups < queueCap && cleanCups > 0) {
       brewProgress += dt;
-      while (readyCups < queueCap && brewProgress >= cupBrewTime) {
+      while (readyCups < queueCap && cleanCups > 0 && brewProgress >= cupBrewTime) {
         readyCups += 1;
+        cleanCups -= 1;
         brewProgress -= cupBrewTime;
       }
     }
-    if (readyCups >= queueCap) brewProgress = Math.min(brewProgress, cupBrewTime);
+    if (readyCups >= queueCap || cleanCups <= 0) brewProgress = Math.min(brewProgress, cupBrewTime);
 
     // --- Spawn ---
     const activeCount = npcs.filter((n) => n.state !== 'leaving').length;
@@ -370,6 +403,11 @@ export const useGame = create<GameState>((set, get) => ({
               id: nextId++,
               pos: [slot.table[0] + (Math.random() - 0.5), 0.3, slot.table[2] + 0.6 + (Math.random() - 0.5)],
               value: TEA_PRICE,
+            });
+            // İçtiği bardak masada KİRLİ kalır (Faz 2e): toplanıp yıkanmalı, yoksa temiz biter.
+            dishes.push({
+              id: nextId++,
+              pos: [slot.table[0] + (Math.random() - 0.5) * 0.6, 0.95, slot.table[2] + (Math.random() - 0.5) * 0.6],
             });
             n.state = 'leaving';
           }
@@ -430,6 +468,22 @@ export const useGame = create<GameState>((set, get) => ({
       }
     }
 
+    // --- Bardak döngüsü (Faz 2e): oyuncu masadaki kirli bardakları toplar, bulaşıkta yıkar (yakınlık) ---
+    const dirtyCap = trayCapacity();
+    if (carriedDirty < dirtyCap && dishes.length) {
+      const keep: Dish[] = [];
+      for (const d of dishes) {
+        if (carriedDirty < dirtyCap && dist2D(player, d.pos) < C.cups.collectRadius) carriedDirty += 1;
+        else keep.push(d);
+      }
+      dishes = keep;
+    }
+    // Bulaşık noktasına yaklaşınca taşınan kirliler yıkanır → temiz havuza döner.
+    if (carriedDirty > 0 && dist2D(player, LAYOUT.dishStation) < C.cups.washRadius) {
+      cleanCups += carriedDirty;
+      carriedDirty = 0;
+    }
+
     // --- Garson (D-012 opsiyonel kısmi assist): ocaktan çay al → en yakın bekleyen masaya götür ---
     // Oyuncudan yavaş + tek tepsili; tek başına büyüyen mekânı döndüremez (oyuncu hâlâ gerekli).
     let waiter: Waiter | null = s.waiter;
@@ -484,6 +538,42 @@ export const useGame = create<GameState>((set, get) => ({
       waiter = null;
     }
 
+    // --- Bulaşıkçı (Faz 2e opsiyonel kısmi assist): kirli topla → bulaşığa götür → yıka ---
+    // Garson deseni: oyuncudan yavaş + küçük taşıma → tek başına yetişmez (oyuncu hâlâ gerekli).
+    let dishwasher: Waiter | null = s.dishwasher;
+    if (hasDishwasher) {
+      const dw: Waiter = dishwasher
+        ? { pos: [...dishwasher.pos] as Vec3, tray: dishwasher.tray }
+        : { pos: [...LAYOUT.dishwasherHome] as Vec3, tray: 0 };
+      const dStep = C.dishwasher.moveSpeed * dt;
+      const dCap = C.dishwasher.carryCapacity;
+      if (dw.tray >= dCap || (dw.tray > 0 && dishes.length === 0)) {
+        // Dolu (ya da elinde var ama toplanacak kalmadı) → bulaşığa götür, yıka.
+        if (moveToward(dw.pos, LAYOUT.dishStation, dStep)) {
+          cleanCups += dw.tray;
+          dw.tray = 0;
+        }
+      } else if (dishes.length > 0) {
+        // Topla: en yakın kirli bardağa git; varınca al (kapasiteye kadar tek tek).
+        let target = dishes[0];
+        let td = Infinity;
+        for (const d of dishes) {
+          const dd = dist2D(dw.pos, d.pos);
+          if (dd < td) { td = dd; target = d; }
+        }
+        if (moveToward(dw.pos, target.pos, dStep)) {
+          dishes = dishes.filter((d) => d.id !== target.id);
+          dw.tray += 1;
+        }
+      } else {
+        // Boşta: köşeye dön.
+        moveToward(dw.pos, LAYOUT.dishwasherHome, dStep);
+      }
+      dishwasher = dw;
+    } else {
+      dishwasher = null;
+    }
+
     // --- Pad doldurma (omurga + opsiyonel pad'ler; her pad açtığı objenin yerinde) ---
     // Oyuncu fiziksel olarak aynı anda tek pad'in üstünde olabilir → bulunca işle ve çık.
     const padGate: GateState = { padsDone, tables, stationLevel, lifetime: lifetime.toNumber() };
@@ -534,6 +624,7 @@ export const useGame = create<GameState>((set, get) => ({
         if (upgradeFill >= cost) {
           stationLevel += 1;
           upgradeFill = 0;
+          cleanCups += C.cups.poolPerLevel; // havuz ocak seviyesiyle büyür (Faz 2e)
         }
         const nextCost = stationLevel < stationSoftMaxLevel() ? stationUpgradeCost(stationLevel) : cost;
         activeZone = {
@@ -551,6 +642,8 @@ export const useGame = create<GameState>((set, get) => ({
     const out = derivedFromPads(padsDone);
     // Garson pad'i bu frame tamamlandıysa varlığını kur (hasWaiter artık türetilir).
     if (out.hasWaiter && !waiter) waiter = { pos: [...LAYOUT.waiterHome] as Vec3, tray: 0 };
+    // Bulaşıkçı pad'i bu frame tamamlandıysa varlığını kur.
+    if (out.hasDishwasher && !dishwasher) dishwasher = { pos: [...LAYOUT.dishwasherHome] as Vec3, tray: 0 };
 
     // --- Periyodik kayıt ---
     let saveTimer = s.saveTimer - dt;
@@ -564,6 +657,7 @@ export const useGame = create<GameState>((set, get) => ({
     set({
       npcs: liveNpcs,
       coins,
+      dishes,
       wallet,
       lifetime,
       tables: out.tables,
@@ -573,14 +667,18 @@ export const useGame = create<GameState>((set, get) => ({
       padsDone,
       padFills,
       hasWaiter: out.hasWaiter,
+      hasDishwasher: out.hasDishwasher,
       upgradeFill,
       activeZone,
       nextStepLabel,
       player,
       waiter,
+      dishwasher,
       readyCups,
       brewProgress,
       tray,
+      cleanCups,
+      carriedDirty,
       spawnTimer,
       saveTimer,
       nextId,
@@ -597,7 +695,11 @@ export const useGame = create<GameState>((set, get) => ({
     if (s.stationLevel >= stationSoftMaxLevel()) return false;
     const cost = stationUpgradeCost(s.stationLevel);
     if (s.wallet.lt(cost)) return false;
-    set({ wallet: s.wallet.sub(cost), stationLevel: s.stationLevel + 1 });
+    set({
+      wallet: s.wallet.sub(cost),
+      stationLevel: s.stationLevel + 1,
+      cleanCups: s.cleanCups + C.cups.poolPerLevel, // havuz ocak seviyesiyle büyür (Faz 2e)
+    });
     get().saveNow();
     return true;
   },

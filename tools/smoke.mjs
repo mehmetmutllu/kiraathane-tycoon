@@ -112,6 +112,31 @@ try {
     pass(`Mekânsal çay yükseltme çalışıyor (L${beforeLvl}→L${afterUp.stationLevel})`);
   else fail(`Yükseltme noktası seviye artırmadı (L${beforeLvl}→L${afterUp.stationLevel})`);
 
+  // Bardak döngüsü (Faz 2e): garson servis ederken kirli bardak üretilir → oyuncu toplar → bulaşıkta yıkar.
+  await page.evaluate(() => window.__teleport(0, 6.5)); // oyuncu uzakta; garson servis etsin, kirli birikir
+  const cupRun = await page.evaluate(() => window.__advanceTime(30));
+  if (cupRun.dirtyCount > 0 || cupRun.carriedDirty > 0) {
+    pass(`Kirli bardak üretiliyor (içen müşteri masada bırakıyor, dirty=${cupRun.dirtyCount})`);
+    const dishPos = cupRun.firstDishPos;
+    if (dishPos) {
+      const beforeClean = cupRun.cleanCups;
+      await page.evaluate((p) => window.__teleport(p[0], p[2]), dishPos);
+      const collected = await page.evaluate(() => window.__advanceTime(0.5));
+      if (collected.carriedDirty > 0) pass(`Kirli bardak toplanıyor (carriedDirty=${collected.carriedDirty})`);
+      else fail(`Kirli bardak toplanmadı (carriedDirty=${collected.carriedDirty})`);
+      // Bulaşığa götür → yıka → temiz havuza döner
+      await page.evaluate((p) => window.__teleport(p[0], p[2]), collected.dishStationPos);
+      const washed = await page.evaluate(() => window.__advanceTime(0.5));
+      if (washed.carriedDirty === 0 && washed.cleanCups + washed.readyCups >= beforeClean)
+        pass(`Bulaşıkta yıkanıyor (taşınan→temize döndü, clean+ready=${washed.cleanCups + washed.readyCups})`);
+      else fail(`Yıkama olmadı (carriedDirty=${washed.carriedDirty}, clean=${washed.cleanCups})`);
+    } else {
+      fail('Kirli bardak konumu okunamadı (firstDishPos null)');
+    }
+  } else {
+    fail(`Kirli bardak üretilmedi (dirty=${cupRun.dirtyCount}, carried=${cupRun.carriedDirty})`);
+  }
+
   // Dikey (portrait) orana çevir → responsive kamera/HUD hatasız mı
   await page.setViewportSize({ width: 412, height: 915 });
   await page.waitForTimeout(500);

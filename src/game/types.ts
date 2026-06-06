@@ -22,10 +22,18 @@ export interface Coin {
   value: number;
 }
 
+// Kirli bardak (Faz 2e). İçen müşteri kalkınca masada bırakılır (coins gibi mekânsal nesne).
+// Oyuncu/bulaşıkçı toplar → bulaşıkta yıkar → temiz havuza döner. Transient.
+export interface Dish {
+  id: number;
+  pos: Vec3;
+}
+
 // Garson (Faz 2d, opsiyonel). Transient: hasWaiter persist edilir ama konum/tepsi her
 // oturumda yeniden kurulur. Durum örtük: tray>0 ise teslimata, değilse ocağa yönelir.
+// (Bulaşıkçı da aynı yapıyı kullanır: `tray` = taşınan kirli bardak sayısı.)
 export interface Waiter {
   pos: Vec3;
-  /** Tepsisinde taşıdığı çay (0..waiter.trayCapacity). */
+  /** Taşıdığı bardak (garson: çay; bulaşıkçı: kirli). 0..ilgili kapasite. */
   tray: number;
 }

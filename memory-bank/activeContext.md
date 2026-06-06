@@ -4,15 +4,36 @@
 
 ## Şu an neredeyiz (2026-06-06)
 Faz 0 + Faz 1 ✅. Faz 2: 2a ✅, 2b ✅, 2-UX (D-009) ✅, 2-EKO (D-010) ✅, 2c (D-011) ✅,
-2d-garson (D-014) ✅, 2d-harita 1 ocak : 4 masa (D-012) ✅, **D-015 — state tek-doğru-kaynaktan türetme ✅ UYGULANDI.**
-**Sıradaki: Faz 2e — bardak/bulaşık döngüsü + tepsi yükseltme (aşağıda TAM adımlar).**
+2d-garson (D-014) ✅, 2d-harita 1 ocak : 4 masa (D-012) ✅, D-015 türetme ✅,
+**2e-A (bardak döngüsü + bulaşıkçı) ✅ UYGULANDI (commit'lenecek).**
+**Sıradaki: Faz 2e-B — tepsi yükseltme (trayCapacity 2→4→6→8, mekânsal nokta, trayLevel persist → SAVE_VERSION 8→9).**
 
 Servis/personel/zone modeli kullanıcı onayıyla KİLİTLENDİ:
 - **D-011** (servis) ✅, **D-012** (zone/salon + bölge-başı personel + **KASA YOK** + tuvalet=oda + para toplama kalıcı manuel),
   **D-013** (primitive = nihai sanat stili), **D-014** (garson = opsiyonel/omurgayı kilitlemeyen pad ✅).
   Tam tasarım: `docs/serving-and-automation.md`.
 
-## En son ne yapıldı (bu oturum — garson anti-starvation)
+## En son ne yapıldı (bu oturum — 2e-A bardak döngüsü + bulaşıkçı)
+- **Bardak SINIRLI kaynak:** demleme bir TEMİZ bardak harcar (`cleanCups`); temiz biterse demleme DURUR
+  (yeni darboğaz → kirli topla/yıka çemberi zorunlu). İçen müşteri masada KİRLİ bardak bırakır (`dishes[]`,
+  coins gibi mekânsal nesne). Oyuncu yakınlıkla toplar (`carriedDirty`, kapasite = trayCapacity) → **bulaşık
+  noktasında** (`LAYOUT.dishStation` [-4.8,0,-3]) yıkar → temiz havuza döner. Havuz ocak seviyesine bağlı
+  (`cupPoolCapacity` poolBase 10 + 2/lvl); seviye artınca (zone + upgradeStation) cleanCups += poolPerLevel.
+- **Bulaşıkçı** = opsiyonel pad (`dishwasher`, ₺280, requires prev table3, garson deseni). `hasDishwasher`
+  derivedFromPads'ten (D-015, effect `hireDishwasher`). FSM: en yakın kirliyi topla (kapasiteye kadar) →
+  bulaşığa götür → yıka → boşta dishwasherHome [-4.8,0,1.5]. Oyuncudan yavaş/küçük → kısmi assist.
+- **KORUNUM:** toplam bardak = havuz değişmezi (clean+ready+tray+carried+dishes+drinking+waiter.tray+
+  dishwasher.tray); her geçiş atomik tek bardak taşır. Vitest'te totalCups() ile doğrulandı.
+- **Kalıcılık:** bardak sayıları TRANSIENT (her oturum dolu-temiz başlar) → **şema değişmedi, SAVE_VERSION 8'de KALDI**
+  (bulaşıkçı=pad zaten padsDone'da). Migrasyon gerekmedi.
+- **Render:** Dishes.tsx (gri kirli), Dishwasher.tsx (gri-mavi kapsül + gri yığın), Scene.DishStation (lavabo),
+  Player DirtyStack (sırtta gri), HUD 🧼 temiz / 🧽 kirli chip'leri, hint güncellendi.
+- **devHooks:** cleanCups, dirtyCount, carriedDirty, dishStationPos, firstDishPos, hasDishwasher, dishwasherTray/Pos.
+- **Doğrulama:** **Vitest 32/32 ✅, build temiz ✅, sim 84sn ✅ (idealize tempo değişmedi), smoke 18/18 ✅** (kirli üret→topla→yıka).
+- Değişen: economy.config.ts, types.ts, store.ts, devHooks.ts, Player/Scene/HUD + yeni Dishes.tsx/Dishwasher.tsx,
+  tools/simulate.ts (not), tests/logic.test.ts, tools/smoke.mjs, progress.md, activeContext.md.
+
+## (önceki — garson anti-starvation)
 - **Sorun (kullanıcı gözlemi):** Garson "en yakın bekleyene" gidiyordu → ön masalar sürekli dolunca arka masalara
   hiç gidemiyor, sabırları (18sn) dolup sessizce gidiyordu (kaçan gelir, kötü dağılım).
 - **Çözüm:** `store.ts` garson teslimat bloğunda hedef "en yakın" → **"en acil" (sabrı en az kalan = en düşük `timer`)**;

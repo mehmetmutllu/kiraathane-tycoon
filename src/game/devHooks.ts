@@ -49,6 +49,15 @@ export function installDevHooks(): void {
         return w ? LAYOUT.tables[w.tableIndex].seat : null;
       })(),
       coins: s.coins.length,
+      // Bardak döngüsü (Faz 2e)
+      cleanCups: s.cleanCups,
+      dirtyCount: s.dishes.length,
+      carriedDirty: s.carriedDirty,
+      dishStationPos: LAYOUT.dishStation,
+      firstDishPos: s.dishes[0] ? s.dishes[0].pos : null,
+      hasDishwasher: s.hasDishwasher,
+      dishwasherTray: s.dishwasher ? s.dishwasher.tray : 0,
+      dishwasherPos: s.dishwasher ? s.dishwasher.pos.map((n) => +n.toFixed(2)) : null,
       padFill: Math.floor(pad ? s.padFills[pad.id] ?? 0 : 0),
       currentPad: pad ? pad.id : null,
       padCost: pad ? pad.cost : 0,

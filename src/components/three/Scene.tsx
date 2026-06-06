@@ -5,6 +5,8 @@ import { Vector3 } from 'three';
 import { useGame, LAYOUT, stationSoftMaxLevel, upgradeZoneUnlocked } from '../../game/store';
 import { Player } from './Player';
 import { Waiter } from './Waiter';
+import { Dishwasher } from './Dishwasher';
+import { Dishes } from './Dishes';
 import { Tables } from './Tables';
 import { TeaStation } from './TeaStation';
 import { Customers } from './Customers';
@@ -88,6 +90,33 @@ function UpgradeZone() {
   );
 }
 
+// Bulaşık noktası (Faz 2e): kirli bardaklar burada yıkanır. Üstünde dur → taşınan kirliler temize döner.
+function DishStation() {
+  const [x, , z] = LAYOUT.dishStation;
+  return (
+    <group position={[x, 0, z]}>
+      {/* tezgah */}
+      <mesh castShadow receiveShadow position={[0, 0.45, 0]}>
+        <boxGeometry args={[1.4, 0.9, 0.8]} />
+        <meshStandardMaterial color="#607d8b" />
+      </mesh>
+      {/* lavabo çukuru */}
+      <mesh position={[0, 0.9, 0]}>
+        <boxGeometry args={[1.0, 0.12, 0.5]} />
+        <meshStandardMaterial color="#90a4ae" metalness={0.5} roughness={0.4} />
+      </mesh>
+      {/* musluk */}
+      <mesh castShadow position={[0, 1.15, -0.2]}>
+        <cylinderGeometry args={[0.04, 0.04, 0.4, 8]} />
+        <meshStandardMaterial color="#b0bec5" metalness={0.6} roughness={0.3} />
+      </mesh>
+      <Html position={[0, 1.7, 0]} center distanceFactor={9} pointerEvents="none" zIndexRange={[5, 0]}>
+        <div className="badge3d">🧼 Bulaşık</div>
+      </Html>
+    </group>
+  );
+}
+
 function Ground() {
   return (
     <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
@@ -143,13 +172,16 @@ export function Scene() {
       <Ground />
       <Walls />
       <Stations />
+      <DishStation />
       <Tables />
       <Pad />
       <UpgradeZone />
       <Customers />
       <Coins />
+      <Dishes />
       <Player />
       <Waiter />
+      <Dishwasher />
       <CameraRig />
       <Simulation />
     </Canvas>

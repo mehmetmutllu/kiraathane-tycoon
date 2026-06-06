@@ -14,6 +14,8 @@
  * garsonun servise YETİŞTİĞİ ideal durumu (kararlı-durum throughput tavanı) modeller —
  * döngü ≈ yürü + demle + iç. Servis darboğazı (oyuncu yavaşsa müşteri sabırsızlanıp gider)
  * sahnede gerçek; garson hız/tepsi dengesi 2d'de buraya eklenecek.
+ * NOT (Faz 2e): bardak döngüsü (temiz biterse demleme durur; kirli topla/yıka) de GERÇEK-ZAMANLI
+ * bir darboğazdır, idealize tempoda modellenmez (oyuncu/bulaşıkçı yetişiyor varsayılır).
  */
 import {
   economyConfig as C,

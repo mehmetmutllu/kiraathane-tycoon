@@ -7,6 +7,9 @@ export function HUD() {
   const tables = useGame((s) => s.tables);
   const tray = useGame((s) => s.tray);
   const readyCups = useGame((s) => s.readyCups);
+  const cleanCups = useGame((s) => s.cleanCups);
+  const dirtyCount = useGame((s) => s.dishes.length);
+  const carriedDirty = useGame((s) => s.carriedDirty);
   const offlineEarned = useGame((s) => s.offlineEarned);
   const zone = useGame((s) => s.activeZone);
   const nextStep = useGame((s) => s.nextStepLabel);
@@ -30,6 +33,12 @@ export function HUD() {
         </div>
         <div className="chip" data-testid="ready" title="Ocakta bekleyen hazır çay">
           ☕ {readyCups}
+        </div>
+        <div className="chip" data-testid="clean" title="Temiz bardak (biterse demleme durur)">
+          🧼 {cleanCups}
+        </div>
+        <div className="chip" data-testid="dirty" title="Kirli bardak (topla → bulaşıkta yıka)">
+          🧽 {dirtyCount + carriedDirty}
         </div>
       </div>
 
@@ -63,7 +72,7 @@ export function HUD() {
       )}
 
       <div className="hint">
-        WASD / joystick · ocağa git → tepsi dolar → bekleyen masaya götür · paraları topla · yeşil zeminlerde yükselt
+        WASD / joystick · ocağa git → tepsi dolar → bekleyen masaya götür · paraları topla · kirli bardakları bulaşıkta yıka · yeşil zeminlerde yükselt
       </div>
     </div>
   );

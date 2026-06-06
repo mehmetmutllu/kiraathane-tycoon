@@ -4,6 +4,7 @@ import {
   upgradeCost,
   upgradeOutputMultiplier,
   brewQueueCapacity,
+  cupPoolCapacity,
   derivedFromPads,
 } from '../src/config/economy.config';
 import { D, fmt } from '../src/game/decimal';
@@ -293,6 +294,138 @@ describe('garson — opsiyonel kısmi assist (Faz 2d / D-012)', () => {
   });
 });
 
+describe('bardak döngüsü (Faz 2e) — demleme temiz harcar, içen kirli bırakır, topla+yıka', () => {
+  // Sistemdeki TÜM bardakları say (korunum değişmezi: toplam = havuz kapasitesi).
+  function totalCups() {
+    const s = useGame.getState();
+    const drinking = s.npcs.filter((n) => n.state === 'drinking').length;
+    return (
+      s.cleanCups + s.readyCups + s.tray + s.carriedDirty + s.dishes.length + drinking +
+      (s.waiter?.tray ?? 0) + (s.dishwasher?.tray ?? 0)
+    );
+  }
+
+  it('başlangıçta temiz havuz dolu; demleme temiz harcar (toplam bardak KORUNUR)', () => {
+    useGame.getState().hardReset();
+    useGame.setState({ player: [0, 0.6, 2], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+    const pool = cupPoolCapacity(0);
+    expect(useGame.getState().cleanCups).toBe(pool);
+    // Servis yok → ocak hazır-kuyruğu temizden demler; clean azalır, ready artar, TOPLAM sabit.
+    for (let i = 0; i < 300; i++) useGame.getState().tick(0.1);
+    const s = useGame.getState();
+    expect(s.readyCups).toBeGreaterThan(0);
+    expect(s.cleanCups).toBeLessThan(pool);
+    expect(totalCups()).toBe(pool); // korunum
+  });
+
+  it('temiz bardak biterse demleme DURUR (yeni darboğaz)', () => {
+    useGame.getState().hardReset();
+    useGame.setState({ player: [0, 0.6, 2], inputKeyboard: [0, 0], inputJoystick: [0, 0], cleanCups: 0, readyCups: 0, brewProgress: 0 });
+    for (let i = 0; i < 200; i++) useGame.getState().tick(0.1);
+    // Temiz yokken hiç çay demlenemez.
+    expect(useGame.getState().readyCups).toBe(0);
+  });
+
+  it('içen müşteri masada KİRLİ bardak bırakır; oyuncu toplar → bulaşıkta yıkar → temize döner', () => {
+    useGame.getState().hardReset();
+    useGame.setState({ player: [0, 0.6, 2], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+    const pool = cupPoolCapacity(0);
+    // Müşteri otursun + çay demlensin.
+    for (let i = 0; i < 200; i++) useGame.getState().tick(0.1);
+    const waiting = useGame.getState().npcs.find((n) => n.state === 'waitingForTea');
+    expect(waiting).toBeTruthy();
+
+    // Ocaktan tepsiye al → bekleyen masaya götür → servis.
+    const st = LAYOUT.stations[0];
+    useGame.setState({ player: [st[0], 0.6, st[2]] });
+    useGame.getState().tick(0.1);
+    const seat = LAYOUT.tables[waiting!.tableIndex].seat;
+    useGame.setState({ player: [seat[0], 0.6, seat[2]] });
+    useGame.getState().tick(0.1);
+    expect(useGame.getState().npcs.find((n) => n.id === waiting!.id)?.state).toBe('drinking');
+
+    // İçme bitince masada kirli bardak belirir (oyuncuyu uzağa park et ki otomatik toplamasın).
+    useGame.setState({ player: [0, 0.6, 6.5] });
+    const before = useGame.getState().dishes.length;
+    for (let i = 0; i < 80; i++) useGame.getState().tick(0.1);
+    expect(useGame.getState().dishes.length).toBeGreaterThan(before);
+    expect(totalCups()).toBe(pool); // korunum hâlâ geçerli
+
+    // Kirli bardağa git → topla (carriedDirty artar, dishes azalır).
+    const dish = useGame.getState().dishes[0];
+    useGame.setState({ player: [dish.pos[0], 0.6, dish.pos[2]] });
+    const dishesBefore = useGame.getState().dishes.length;
+    useGame.getState().tick(0.1);
+    expect(useGame.getState().carriedDirty).toBeGreaterThan(0);
+    expect(useGame.getState().dishes.length).toBe(dishesBefore - 1);
+
+    // Bulaşığa git → yıka (carriedDirty 0, cleanCups artar).
+    const cleanBefore = useGame.getState().cleanCups;
+    const carried = useGame.getState().carriedDirty;
+    const ds = LAYOUT.dishStation;
+    useGame.setState({ player: [ds[0], 0.6, ds[2]] });
+    useGame.getState().tick(0.1);
+    expect(useGame.getState().carriedDirty).toBe(0);
+    expect(useGame.getState().cleanCups).toBe(cleanBefore + carried);
+    expect(totalCups()).toBe(pool);
+  });
+
+  it('ocak seviyesi artınca temiz havuz büyür (cupPoolCapacity)', () => {
+    useGame.getState().hardReset();
+    useGame.getState().addMoney(1_000_000);
+    const before = useGame.getState().cleanCups;
+    expect(useGame.getState().upgradeStation()).toBe(true);
+    expect(useGame.getState().cleanCups).toBe(before + economyConfig.cups.poolPerLevel);
+    expect(cupPoolCapacity(1)).toBe(cupPoolCapacity(0) + economyConfig.cups.poolPerLevel);
+  });
+});
+
+describe('bulaşıkçı — opsiyonel kısmi assist (Faz 2e)', () => {
+  it('bulaşıkçı pad OPSİYONEL: alınmasa da omurga (sonraki masa) açılmaya devam eder', () => {
+    useGame.getState().hardReset();
+    useGame.getState().addMoney(50);
+    expect(completeCurrentPad()).toBe('table2');
+    useGame.getState().addMoney(1000);
+    expect(useGame.getState().upgradeStation()).toBe(true); // table3 minStationLevel:1
+    expect(completeCurrentPad()).toBe('table3');
+    // table3 sonrası bulaşıkçı opsiyonel olarak görünür ama omurga pad'i DEĞİL.
+    expect(availableOptionalPads(gate()).map((p) => p.id)).toContain('dishwasher');
+    expect(useGame.getState().hasDishwasher).toBe(false);
+  });
+
+  it('bulaşıkçı tutulunca hasDishwasher=true; kirlileri toplayıp yıkar (oyuncu uzakta → kısmi assist)', () => {
+    useGame.getState().hardReset();
+    // D-015: hasDishwasher padsDone'dan türetilir → padsDone üzerinden kur. NPC'siz izole sahne.
+    const ds = LAYOUT.dishStation;
+    useGame.setState({
+      padsDone: ['table2', 'table3', 'dishwasher'],
+      hasDishwasher: true,
+      dishwasher: { pos: [...LAYOUT.dishwasherHome] as [number, number, number], tray: 0 },
+      player: [0, 0.6, 6.5], // oyuncu uzakta; yalnız bulaşıkçı çalışsın
+      inputKeyboard: [0, 0],
+      inputJoystick: [0, 0],
+      npcs: [], // yeni müşteri/yeni kirli karışmasın
+      // İki kirli bardak masalara serpiştir; temiz havuzu düşür ki yıkamanın etkisi görünsün.
+      dishes: [
+        { id: 9001, pos: [LAYOUT.tables[0].table[0], 0.95, LAYOUT.tables[0].table[2]] as [number, number, number] },
+        { id: 9002, pos: [LAYOUT.tables[1].table[0], 0.95, LAYOUT.tables[1].table[2]] as [number, number, number] },
+      ],
+      cleanCups: 0,
+      readyCups: 0,
+      spawnTimer: 999, // yeni müşteri/yeni kirli olmasın
+    });
+    expect(useGame.getState().hasDishwasher).toBe(true);
+    const dirtyBefore = useGame.getState().dishes.length;
+    for (let i = 0; i < 600; i++) useGame.getState().tick(0.1);
+    const s = useGame.getState();
+    // Bulaşıkçı kirlileri toplayıp bulaşıkta yıkadı → kirli temizlendi, bardaklar sisteme döndü
+    // (yıkanan temiz bardakları ocak hemen demleyebilir → cleanCups + readyCups olarak ölç).
+    expect(s.dishes.length).toBeLessThan(dirtyBefore);
+    expect(s.cleanCups + s.readyCups).toBeGreaterThan(0);
+    void ds;
+  });
+});
+
 describe('kayıt migrasyonu v4/v5/v6/v7 → v8 (padFills, station2 çıkışı, addTable senkron, türetme)', () => {
   it('eski tek padFill, aktif omurga pad id\'sine taşınır; saveVersion 8; türetilenler saklanmaz', () => {
     const m = migrate({
@@ -359,6 +492,8 @@ describe('D-015 — tek doğru kaynak: türetilen alanlar padsDone\'dan, kayıtt
     expect(derivedFromPads(['table2', 'table3', 'table4']).tables).toBe(4);
     expect(derivedFromPads(['waiter']).hasWaiter).toBe(true);
     expect(derivedFromPads([]).hasWaiter).toBe(false);
+    expect(derivedFromPads(['dishwasher']).hasDishwasher).toBe(true);
+    expect(derivedFromPads([]).hasDishwasher).toBe(false);
     expect(derivedFromPads(['samovar']).serviceSpeedMult).toBeCloseTo(0.7, 5);
     expect(derivedFromPads([]).stations).toBe(1);
     // Bilinmeyen pad id'leri yok sayılır (ileri/geri uyum).
