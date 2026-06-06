@@ -13,7 +13,7 @@
  *   L5 (Usta)   = masterDiamondCost 💎 VEYA 1 ödüllü video; outputMult yerine masterOutputMult
  */
 
-export const SAVE_VERSION = 6;
+export const SAVE_VERSION = 7;
 
 export const CURRENCY = {
   soft: '₺', // Para — müşteriden kazanılır

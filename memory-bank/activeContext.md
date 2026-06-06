@@ -34,9 +34,11 @@ Servis/personel/zone modeli kullanıcı onayıyla KİLİTLENDİ:
 - **Bulgu:** Kullanıcı eski kayıtla açınca "4. masa zaten var + üstünde pad" gördü. Tanı (geçici playwright scripti,
   A/B/C senaryoları): `tables=4` AMA `table4` padsDone'da yokken, `table4` pad'i çizili 4. masayla TAM aynı konumda
   ([2.5,0,1.2]) çakışıyor. Kök neden: `addTable` gating'i masa SAYISINA bakmıyordu (sadece `prev:table3`).
-- **Düzeltme:** save.ts migration v5→v6'ya `addTable` pad'lerini masa sayısıyla senkronlama eklendi (i. addTable =
-  (i+2). masa; masa çiziliyse pad done). Çakışma giderildi (C senaryosu artık currentPad=samovar). Kalıcı vitest testi eklendi.
-- **Doğrulama:** Vitest **22/22**, build temiz. **Bu düzeltme HENÜZ COMMIT EDİLMEDİ.**
+- **Düzeltme:** `addTable` pad'lerini masa sayısıyla senkronlama (i. addTable = (i+2). masa; masa çiziliyse pad done).
+  **ÖNEMLİ:** kullanıcının kaydı ilk commit'te zaten v6'ya yükseldiği için (loadSave güncel sürümde migrate'i atlar)
+  senkron ayrı **v6→v7** adımına konuldu ve **SAVE_VERSION 6→7** yapıldı → v6'da takılı bozuk kayıt da düzelir.
+  Çakışma giderildi (currentPad=samovar). Kalıcı vitest testleri (v6→v7 senaryosu dahil).
+- **Doğrulama:** Vitest **22/22**, build temiz. Commit `c0e9e24` (v6 fix) + sonraki commit (v7 bump) push'landı.
 
 ## TAM sıradaki adım (Faz 2e — bardak/bulaşık döngüsü)
 1. **Bardak kaynağı:** servis edilen her çay bir "kirli bardak" üretir (masada/tepside birikir). Bardak kapasitesi

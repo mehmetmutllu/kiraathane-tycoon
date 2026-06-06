@@ -256,8 +256,8 @@ describe('garson — opsiyonel kısmi assist (Faz 2d / D-012)', () => {
   });
 });
 
-describe('kayıt migrasyonu v4 → v6 (padFill → padFills + hasWaiter; station2 çıkışı)', () => {
-  it('eski tek padFill, aktif omurga pad id\'sine taşınır; hasWaiter false; saveVersion 6', () => {
+describe('kayıt migrasyonu v4/v5/v6 → v7 (padFills, station2 çıkışı, addTable senkron)', () => {
+  it('eski tek padFill, aktif omurga pad id\'sine taşınır; hasWaiter false; saveVersion 7', () => {
     const m = migrate({
       saveVersion: 4,
       wallet: '100', diamonds: '0', lifetime: '50',
@@ -265,32 +265,34 @@ describe('kayıt migrasyonu v4 → v6 (padFill → padFills + hasWaiter; station
       padsDone: [], padFill: 20,
     });
     // lifetime 50 ≥ 30 → table2 aktif omurga pad'i → padFill ona atanır.
-    expect(m.saveVersion).toBe(6);
+    expect(m.saveVersion).toBe(7);
     expect(m.padFills).toEqual({ table2: 20 });
     expect(m.hasWaiter).toBe(false);
     expect((m as Record<string, unknown>).padFill).toBeUndefined();
   });
 
-  it('v5 → v6: station2 padsDone/padFills\'ten çıkar, stations 1\'e kelepçelenir (ilerleme korunur)', () => {
+  it('v5 → v7: station2 padsDone/padFills\'ten çıkar, stations 1\'e kelepçelenir (ilerleme korunur)', () => {
     const m = migrate({
       saveVersion: 5,
       wallet: '500', diamonds: '0', lifetime: '2000',
       tables: 3, stations: 2, stationLevel: 1, serviceSpeedMult: 0.85,
       padsDone: ['table2', 'table3', 'station2'], padFills: { station2: 100, samovar: 40 }, hasWaiter: true,
     });
-    expect(m.saveVersion).toBe(6);
-    expect(m.padsDone).toEqual(['table2', 'table3']); // station2 kalktı
+    expect(m.saveVersion).toBe(7);
+    expect(m.padsDone).toEqual(['table2', 'table3']); // station2 kalktı, tables=3 → table4 eklenmez
     expect(m.padFills).toEqual({ samovar: 40 }); // station2 dolumu temizlendi, diğeri durur
     expect(m.stations).toBe(1); // tek salon = tek ocak
     expect(m.hasWaiter).toBe(true); // garson korunur
   });
 
-  it('v5 → v6: tables zaten 4 ise table4 done işaretlenir (çizili masa + pad çakışması önlenir)', () => {
+  it('v6 → v7: v6\'da takılı (senkronsuz) tables=4 kaydı düzelir → table4 done (çakışma önlenir)', () => {
+    // Kullanıcının gerçek durumu: önceki migration v6'ya yükseltmiş ama addTable senkronu yoktu.
     const m = migrate({
-      saveVersion: 5, wallet: '0', diamonds: '0', lifetime: '9000',
+      saveVersion: 6, wallet: '0', diamonds: '0', lifetime: '9000',
       tables: 4, stations: 1, stationLevel: 2, serviceSpeedMult: 1,
       padsDone: ['table2', 'table3'], padFills: {}, hasWaiter: false,
     });
+    expect(m.saveVersion).toBe(7);
     // 4. masa zaten çiziliyken table4 pad'i bir daha belirmemeli (aynı konumda çakışır).
     expect(m.padsDone).toContain('table4');
     expect(m.tables).toBe(4);
@@ -298,9 +300,9 @@ describe('kayıt migrasyonu v4 → v6 (padFill → padFills + hasWaiter; station
     expect(currentPad({ padsDone: m.padsDone, tables: m.tables, stationLevel: m.stationLevel, lifetime: 9000 })?.id).toBe('samovar');
   });
 
-  it('v6 varsayılan kayıt padFills={} ve hasWaiter=false içerir', () => {
+  it('v7 varsayılan kayıt padFills={} ve hasWaiter=false içerir', () => {
     const d = defaultSave();
-    expect(d.saveVersion).toBe(6);
+    expect(d.saveVersion).toBe(7);
     expect(d.padFills).toEqual({});
     expect(d.hasWaiter).toBe(false);
   });

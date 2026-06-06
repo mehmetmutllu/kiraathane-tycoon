@@ -104,13 +104,19 @@ export function migrate(raw: Record<string, unknown>): SaveData {
       data.padFills = rest;
     }
     data.stations = 1;
-    // addTable pad'lerini mevcut masa SAYISIYLA senkronla: çizili bir masa varken o masanın
-    // pad'i bir daha belirmesin (yoksa pad masayla TAM aynı konumda çakışır). i. addTable = (i+2). masa.
+    v = 6;
+  }
+
+  // v6 -> v7: addTable pad'lerini mevcut masa SAYISIYLA senkronla. Çizili bir masa varken o masanın
+  // pad'i bir daha belirmesin (yoksa pad masayla TAM aynı konumda çakışır). i. addTable = (i+2). masa.
+  // AYRI sürüm adımı: v6'da takılı kalmış (senkronsuz) kayıtlar da düzelsin diye.
+  if (v < 7) {
+    data.padsDone = Array.isArray(data.padsDone) ? data.padsDone : [];
     const addTablePads = (economyConfig.pads as readonly PadDef[]).filter((p) => p.effect.type === 'addTable');
     addTablePads.forEach((p, i) => {
       if ((Number(data.tables) || 1) >= i + 2 && !data.padsDone.includes(p.id)) data.padsDone.push(p.id);
     });
-    v = 6;
+    v = 7;
   }
 
   delete (data as { padFill?: unknown }).padFill;
