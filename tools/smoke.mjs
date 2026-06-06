@@ -91,8 +91,9 @@ try {
     if (hired.hasWaiter) pass('Garson tutuldu (hasWaiter=true)');
     else fail(`Garson tutulamadı (hasWaiter=${hired.hasWaiter})`);
 
-    // Kısmi assist: oyuncuyu kimseyi servis edemeyeceği köşeye park et → garson tek başına servis edip para düşürmeli.
-    await page.evaluate(() => window.__teleport(0, 2));
+    // Kısmi assist: oyuncuyu kimseyi servis edemeyeceği uzak köşeye park et → garson tek başına servis edip para düşürmeli.
+    // (Yeni sol-yaslı yerleşim: masalar solda; sağ-arka köşe tüm masalardan attract yarıçapı dışında.)
+    await page.evaluate(() => window.__teleport(5.2, 4.2));
     const beforeCoins = (await page.evaluate(() => window.__game())).coins;
     const assisted = await page.evaluate(() => window.__advanceTime(40));
     if (assisted.coins > beforeCoins)
@@ -113,7 +114,7 @@ try {
   else fail(`Yükseltme noktası seviye artırmadı (L${beforeLvl}→L${afterUp.stationLevel})`);
 
   // Bardak döngüsü (Faz 2e): garson servis ederken kirli bardak üretilir → oyuncu toplar → bulaşıkta yıkar.
-  await page.evaluate(() => window.__teleport(0, 6.5)); // oyuncu uzakta; garson servis etsin, kirli birikir
+  await page.evaluate(() => window.__teleport(5.2, 4.2)); // oyuncu uzak köşede; garson servis etsin, kirli birikir
   const cupRun = await page.evaluate(() => window.__advanceTime(30));
   if (cupRun.dirtyCount > 0 || cupRun.carriedDirty > 0) {
     pass(`Kirli bardak üretiliyor (içen müşteri masada bırakıyor, dirty=${cupRun.dirtyCount})`);

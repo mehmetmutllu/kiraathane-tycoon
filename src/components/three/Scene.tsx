@@ -31,7 +31,7 @@ function CameraRig() {
     const p = useGame.getState().player;
     const aspect = size.width / Math.max(1, size.height);
     const fit = aspect < 1 ? Math.min(1.7, Math.max(1, 1 / aspect)) : 1;
-    const d = 8 * fit;
+    const d = 9 * fit; // 2g v5 (D-016): büyük alan → kamera geri (karakterler alana göre küçük görünür)
     target.set(p[0], 0.6, p[2]);
     desired.set(p[0], d, p[2] + d);
     camera.position.lerp(desired, Math.min(1, dt * 4));
@@ -157,22 +157,31 @@ function Ground() {
   );
 }
 
+// Duvarlar oynanabilir alanı (asimetrik area) sarar: arka + sol + sağ; ön açık (giriş).
 function Walls() {
-  const b = LAYOUT.bounds + 1;
+  const a = LAYOUT.area;
+  const m = 0.5; // alan kenarı ile duvar arası küçük pay
+  const x0 = a.minX - m, x1 = a.maxX + m, z0 = a.minZ - m, z1 = a.maxZ + m;
+  const w = x1 - x0, d = z1 - z0;
+  const cx = (x0 + x1) / 2;
+  const cz = (z0 + z1) / 2;
   const h = 1.2;
   const common = { color: '#a1887f' } as const;
   return (
     <group>
-      <mesh position={[0, h / 2, -b]}>
-        <boxGeometry args={[b * 2, h, 0.2]} />
+      {/* arka duvar */}
+      <mesh position={[cx, h / 2, z0]}>
+        <boxGeometry args={[w, h, 0.2]} />
         <meshStandardMaterial {...common} />
       </mesh>
-      <mesh position={[-b, h / 2, 0]}>
-        <boxGeometry args={[0.2, h, b * 2]} />
+      {/* sol duvar */}
+      <mesh position={[x0, h / 2, cz]}>
+        <boxGeometry args={[0.2, h, d]} />
         <meshStandardMaterial {...common} />
       </mesh>
-      <mesh position={[b, h / 2, 0]}>
-        <boxGeometry args={[0.2, h, b * 2]} />
+      {/* sağ duvar */}
+      <mesh position={[x1, h / 2, cz]}>
+        <boxGeometry args={[0.2, h, d]} />
         <meshStandardMaterial {...common} />
       </mesh>
     </group>

@@ -139,8 +139,8 @@ export const economyConfig = {
    * Ocaktan tek çay alır, en yakın bekleyen müşteriye götürür, döner (D-012 bölge-başı personel).
    */
   waiter: {
-    /** Hareket hızı (dünya birimi/sn). Oyuncudan (player.moveSpeed) belirgin yavaş. */
-    moveSpeed: 1.8,
+    /** Hareket hızı (dünya birimi/sn). Oyuncudan (player.moveSpeed 4.5) belirgin yavaş (2g: 1.8→1.5, "çok hızlı"). */
+    moveSpeed: 1.5,
     /** Tepsi kapasitesi (tek seferde taşıdığı çay). Oyuncununkinden küçük. */
     trayCapacity: 1,
   },

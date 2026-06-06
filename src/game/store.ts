@@ -19,43 +19,117 @@ import { defaultSave, loadSave, writeSave, clearSave, type SaveData } from './sa
 
 // ---- Sahne yerleşimi (dünya birimi, zemin y=0) ----
 // Her pad/zone, açtığı/etkilediği objenin TAM yerinde durur (mekânsal tycoon).
-// FAZ 2f yerleşim (D-013 sunum cilası): ocak + bulaşık sol-ARKA köşede BİTİŞİK "mutfak bloğu";
-// alan küçültüldü (bounds 7→5); 4 masa 2×2 sıkı; zone/pad noktaları eş-zamanlı çakışmayacak şekilde
-// (aynı anda aktif olabilen dolum noktaları ≥2.6 br, yıkama/dolum ≥2.9 br) yerleştirildi.
+// FAZ 2g yerleşim v3 (D-016, kullanıcı feedback 2026-06-07 #2: v2 sıkıştı/hapsetti, masalar iri, personel
+// hâlâ masadan geçiyor): ALAN GENİŞ (ferah) ama içerik SOL-ÖN'de TUĞLA (offset) dizilimle → her koltuğa
+// açık dikey koridor; SAĞ TARAF BOŞ (büyüme/küçük-başlangıç hissi). Mutfak sol-arka köşede duvara 0.
+// Masalar KÜÇÜLDÜ (tableHalf 0.75→0.6). Collision: oyuncu mobilya+sandalye+aktör (HAPSETMEZ: zaten içindeyse
+// çıkışa izin); garson/bulaşıkçı masa gövdelerinden DOLAŞIR (moveAvoid).
 export const LAYOUT = {
-  entrance: [0, 0.6, 5.0] as Vec3,
-  player: [0, 0.6, 2.6] as Vec3,
-  // Çay ocağı (D-012: başlangıç salonu TEK ana ocak). Sol-arka köşe (bulaşıkla bitişik mutfak bloğu).
-  // 2. ocak Faz 3a'da YENİ salonla gelir → burada tek eleman.
-  stations: [[-3.6, 0, -3.6] as Vec3],
-  bounds: 5,
-  // Masa slotları (1 ocak : 4 masa, 2×2 sıkı) + müşterinin oturduğu yer (seat = table + z+1.0).
+  entrance: [0, 0.6, 4.2] as Vec3,
+  player: [0, 0.6, 2.8] as Vec3,
+  // Çay ocağı (D-016: zone'un TEK ana ocağı). Arka duvar şeridinin solu, duvara 0.
+  stations: [[-3.0, 0, -4.4] as Vec3],
+  // Oynanabilir alan BÜYÜK (kullanıcı: "alan baya büyümeli, karakterler alana göre iri"). Masalar köşelere
+  // yayılır → orta geniş yürüme alanı, sandalyeler kenarda kalır (koridor tıkanmaz).
+  area: { minX: -5.5, maxX: 5.5, minZ: -5.0, maxZ: 4.5 },
+  // Masa slotları — 2×2, KÖŞELERE YAYIK (kolon gap 5, satır gap 3.6) → her yön bol açık; sandalye(seat=table z+1)
+  // merkezi koridoru tıkamaz. Kolon x -2.5/2.5, satır z -2.2/1.4.
   tables: [
-    { table: [0, 0, -1.2] as Vec3, seat: [0, 0.6, -0.2] as Vec3 },
-    { table: [2.6, 0, -1.2] as Vec3, seat: [2.6, 0.6, -0.2] as Vec3 },
-    { table: [0, 0, 1.2] as Vec3, seat: [0, 0.6, 2.2] as Vec3 },
-    { table: [2.6, 0, 1.2] as Vec3, seat: [2.6, 0.6, 2.2] as Vec3 },
+    { table: [-2.5, 0, -2.2] as Vec3, seat: [-2.5, 0.6, -1.2] as Vec3 },
+    { table: [2.5, 0, -2.2] as Vec3, seat: [2.5, 0.6, -1.2] as Vec3 },
+    { table: [-2.5, 0, 1.4] as Vec3, seat: [-2.5, 0.6, 2.4] as Vec3 },
+    { table: [2.5, 0, 1.4] as Vec3, seat: [2.5, 0.6, 2.4] as Vec3 },
   ],
   // Pad pozisyonları: açtıkları objenin yerinde (masa pad'leri sıralı → eş-zamanlı çakışmaz).
   padPos: {
-    table2: [2.6, 0, -1.2] as Vec3, // 2. masa slotu
-    table3: [0, 0, 1.2] as Vec3, // 3. masa slotu
-    table4: [2.6, 0, 1.2] as Vec3, // 4. masa slotu
-    samovar: [1.5, 0, -3.6] as Vec3, // arka duvar, mutfak bloğunun sağı (semavere geçiş)
-    waiter: [-4.2, 0, 3.5] as Vec3, // sol duvar önü (personel)
-    dishwasher: [4.2, 0, 3.5] as Vec3, // sağ duvar önü (personel)
+    table2: [2.5, 0, -2.2] as Vec3, // 2. masa slotu
+    table3: [-2.5, 0, 1.4] as Vec3, // 3. masa slotu
+    table4: [2.5, 0, 1.4] as Vec3, // 4. masa slotu
+    samovar: [1.0, 0, -4.4] as Vec3, // arka duvar şeridi, bulaşığın sağı (semavere geçiş)
+    waiter: [-4.8, 0, 2.0] as Vec3, // sol-uzak (personel)
+    dishwasher: [4.8, 0, 2.0] as Vec3, // sağ-uzak (personel)
   } as Record<string, Vec3>,
-  // Mekânsal çay yükseltme noktası: ocağın önünde dur → altta bar dolar (ocak pickup'ından uzakta).
-  upgradeZone: [-3.6, 0, -1.3] as Vec3,
+  // Mekânsal çay yükseltme noktası: ocağın solunda açık şeritte (masa kapatmaz; sol lane'den erişilir).
+  upgradeZone: [-3.5, 0, -3.0] as Vec3,
   // Mekânsal tepsi yükseltme noktası (Faz 2e-B): giriş önü orta (oyuncunun doğal yolu).
-  trayUpgradeZone: [0, 0, 4.0] as Vec3,
-  // Garson boştayken bekleyeceği köşe (sol-ön, pad'inin altı).
-  waiterHome: [-4.2, 0, 2.2] as Vec3,
-  // Bulaşık noktası (Faz 2e): sol-arka köşe, ocağa BİTİŞİK (mutfak bloğu). Kirliler burada yıkanır.
-  dishStation: [-1.7, 0, -3.6] as Vec3,
-  // Bulaşıkçı boştayken bekleyeceği köşe (sağ-ön, pad'inin altı).
-  dishwasherHome: [4.2, 0, 2.2] as Vec3,
+  trayUpgradeZone: [0, 0, 3.8] as Vec3,
+  // Garson boştayken bekleyeceği köşe (sol-uzak, pad'inin altı).
+  waiterHome: [-4.8, 0, 0.8] as Vec3,
+  // Bulaşık noktası (Faz 2e): arka duvar şeridi, ocağın sağında. ocaktan dist 2.0>washRadius 1.6
+  // (ocakta dururken kirli yıkanmaz; ayrı etkileşim).
+  dishStation: [-1.0, 0, -4.4] as Vec3,
+  // Bulaşıkçı boştayken bekleyeceği köşe (sağ-uzak, pad'inin altı).
+  dishwasherHome: [4.8, 0, 0.8] as Vec3,
+  // --- Collision footprint'leri (yarı-boyut [hx,hz]; D-016): GÖRSEL mesh'lere yaslı → oyuncu objeye
+  // "değiyor gibi" sokulur, arada boşluk kalmaz. (ocak tezgah 2.2×0.8, bulaşık 1.4×0.8, masa r0.5, sandalye 0.42.)
+  playerRadius: 0.35, // oyuncu kapsül görsel yarıçapı = standoff'u görsel kenara denk getirir
+  actorRadius: 0.28, // garson/bulaşıkçı engel-kaçınma yarıçapı
+  stationHalf: [1.1, 0.4] as [number, number],
+  dishHalf: [0.7, 0.4] as [number, number],
+  tableHalf: [0.5, 0.5] as [number, number],
+  chairHalf: [0.22, 0.22] as [number, number], // sandalye + oturan müşteri
+  actorHalf: [0.3, 0.3] as [number, number], // yürüyen müşteri / garson / bulaşıkçı (oyuncu engeli)
 } as const;
+
+/** Collision engeli: merkez (Vec3) + yarı-boyut [hx,hz]. */
+interface Solid {
+  c: RVec3;
+  h: readonly [number, number];
+}
+
+/** O an SAHNEDE var olan SABİT katı engeller (ocak + bulaşık hep; açık masalar + sandalyeleri). */
+function activeSolids(tables: number): Solid[] {
+  const solids: Solid[] = [
+    { c: LAYOUT.stations[0], h: LAYOUT.stationHalf },
+    { c: LAYOUT.dishStation, h: LAYOUT.dishHalf },
+  ];
+  for (let i = 0; i < tables; i++) {
+    solids.push({ c: LAYOUT.tables[i].table, h: LAYOUT.tableHalf });
+    solids.push({ c: LAYOUT.tables[i].seat, h: LAYOUT.chairHalf }); // sandalye (içine girilemez)
+  }
+  // NOT: 'samovar' pad'inin ayrı görünür mesh'i yok → collision EKLENMEZ (görünmez duvar olmasın).
+  return solids;
+}
+
+/** Yalnız açık masa GÖVDELERİ — personel (garson/bulaşıkçı) bunların ETRAFINDAN dolaşır (ocak/bulaşık/
+ *  koltuk hariç: personel onlara erişmeli). */
+function tableSolids(tables: number): Solid[] {
+  const solids: Solid[] = [];
+  for (let i = 0; i < tables; i++) solids.push({ c: LAYOUT.tables[i].table, h: LAYOUT.tableHalf });
+  return solids;
+}
+
+/** (x,z) noktası (yarıçap r şişirilmiş) herhangi bir katı engelin içinde mi? */
+function hitsSolid(x: number, z: number, solids: Solid[], r: number): boolean {
+  for (const s of solids) {
+    if (Math.abs(x - s.c[0]) < s.h[0] + r && Math.abs(z - s.c[2]) < s.h[1] + r) return true;
+  }
+  return false;
+}
+
+/** Engel-kaçınmalı hareket (personel): hedefe doğru git; engele çarparsa eksen-başı KAY (etrafından dolaş).
+ *  Varış: hedefe step kadar yaklaşınca true (hedef engel değilse erişilir). pos yerinde değişir. */
+function moveAvoid(pos: Vec3, target: RVec3, step: number, solids: Solid[], r: number): boolean {
+  const dx = target[0] - pos[0];
+  const dz = target[2] - pos[2];
+  const d = Math.hypot(dx, dz);
+  if (d <= step || d < 0.001) {
+    pos[0] = target[0];
+    pos[2] = target[2];
+    return true;
+  }
+  const ux = (dx / d) * step;
+  const uz = (dz / d) * step;
+  if (!hitsSolid(pos[0] + ux, pos[2] + uz, solids, r)) {
+    pos[0] += ux;
+    pos[2] += uz;
+  } else if (!hitsSolid(pos[0] + ux, pos[2], solids, r)) {
+    pos[0] += ux; // x ekseninde kay
+  } else if (!hitsSolid(pos[0], pos[2] + uz, solids, r)) {
+    pos[2] += uz; // z ekseninde kay
+  }
+  return false;
+}
 
 const NPC_SPEED = 2.6;
 const PAD_RADIUS = 1.3;
@@ -357,6 +431,9 @@ export const useGame = create<GameState>((set, get) => ({
     const serviceSpeedMult = derived.serviceSpeedMult;
     const hasWaiter = derived.hasWaiter;
     const hasDishwasher = derived.hasDishwasher;
+    // Müşteri + personel masa GÖVDELERİNDEN dolaşır (D-016 v4): ocak/bulaşık/koltuk engel değil (erişmeli).
+    const obstacles = tableSolids(tables);
+    const ar = LAYOUT.actorRadius;
     let upgradeFill = s.upgradeFill;
     let activeZone: ActiveZone | null = null;
     let stationLevel = s.stationLevel;
@@ -411,7 +488,7 @@ export const useGame = create<GameState>((set, get) => ({
       const slot = LAYOUT.tables[n.tableIndex];
       switch (n.state) {
         case 'toTable':
-          if (moveToward(n.pos, slot.seat, step)) {
+          if (moveAvoid(n.pos, slot.seat, step, obstacles, ar)) {
             // Oturdu; çay servisini bekler. Sabır timer'ı başlar (D-011).
             n.state = 'waitingForTea';
             n.timer = C.npc.patience;
@@ -440,20 +517,40 @@ export const useGame = create<GameState>((set, get) => ({
           }
           break;
         case 'leaving':
-          if (moveToward(n.pos, LAYOUT.entrance, step)) removed.push(n.id);
+          if (moveAvoid(n.pos, LAYOUT.entrance, step, obstacles, ar)) removed.push(n.id);
           break;
       }
     }
     const liveNpcs = removed.length ? npcs.filter((n) => !removed.includes(n.id)) : npcs;
 
-    // --- Oyuncu hareketi ---
+    // --- Oyuncu hareketi (D-016: mobilya collision'ı) ---
+    // Collision YALNIZ input'la harekette uygulanır (eksen-başı kayma); doğrudan setState/__teleport
+    // (testler/dev kancası) input'suz konum atadığında engellenmez → birim/smoke testleri etkilenmez.
     const jMag = Math.hypot(s.inputJoystick[0], s.inputJoystick[1]);
     const input = jMag > 0.05 ? s.inputJoystick : s.inputKeyboard;
-    const player = [...s.player] as Vec3;
-    player[0] += input[0] * C.player.moveSpeed * dt;
-    player[2] += input[1] * C.player.moveSpeed * dt;
-    player[0] = Math.max(-LAYOUT.bounds, Math.min(LAYOUT.bounds, player[0]));
-    player[2] = Math.max(-LAYOUT.bounds, Math.min(LAYOUT.bounds, player[2]));
+    const A = LAYOUT.area;
+    const pr = LAYOUT.playerRadius;
+    const oldX = s.player[0];
+    const oldZ = s.player[2];
+    const dxIn = input[0] * C.player.moveSpeed * dt;
+    const dzIn = input[1] * C.player.moveSpeed * dt;
+    let nx = Math.max(A.minX, Math.min(A.maxX, oldX + dxIn));
+    let nz = Math.max(A.minZ, Math.min(A.maxZ, oldZ + dzIn));
+    if (dxIn !== 0 || dzIn !== 0) {
+      // MOBİLYA = KATI engel (asla içinden geçilmez), eksen-başı kayma (diyagonalde kenardan süzülür,
+      // kafa kafaya gelince durur). Zorlama istisnası YOK → zorlasan da masanın içine geçemezsin.
+      const furn = activeSolids(tables);
+      if (dxIn !== 0 && hitsSolid(nx, oldZ, furn, pr)) nx = oldX;
+      if (dzIn !== 0 && hitsSolid(nx, nz, furn, pr)) nz = oldZ;
+      // AKTÖRLER (müşteri/garson/bulaşıkçı) = YUMUŞAK: HAPSETMEZ (biri üstüne gelirse ters yöne çıkılır).
+      const actors: Solid[] = [];
+      for (const n of liveNpcs) actors.push({ c: n.pos, h: LAYOUT.actorHalf });
+      if (s.waiter) actors.push({ c: s.waiter.pos, h: LAYOUT.actorHalf });
+      if (s.dishwasher) actors.push({ c: s.dishwasher.pos, h: LAYOUT.actorHalf });
+      if (nx !== oldX && hitsSolid(nx, oldZ, actors, pr) && !hitsSolid(oldX, oldZ, actors, pr)) nx = oldX;
+      if (nz !== oldZ && hitsSolid(nx, nz, actors, pr) && !hitsSolid(nx, oldZ, actors, pr)) nz = oldZ;
+    }
+    const player = [nx, s.player[1], nz] as Vec3;
 
     // --- Para mıknatısı + toplama (Faz 2f juice) ---
     // attractRadius içine giren para oyuncuya doğru GERÇEKTEN akar (hız > oyuncu hızı → daima yetişir),
@@ -553,21 +650,21 @@ export const useGame = create<GameState>((set, get) => ({
             best = n;
           }
         }
-        if (moveToward(w.pos, LAYOUT.tables[best.tableIndex].seat, wStep)) {
+        if (moveAvoid(w.pos, LAYOUT.tables[best.tableIndex].seat, wStep, obstacles, ar)) {
           best.state = 'drinking';
           best.timer = C.npc.eatTime;
           w.tray -= 1;
         }
       } else if (w.tray < wTrayCap && waitingNpcs.length > 0) {
         // Yükleme: ocağa git; varınca hazır çaydan tepsiye al (yoksa orada bekler).
-        if (moveToward(w.pos, nearStation, wStep) && readyCups > 0) {
+        if (moveAvoid(w.pos, nearStation, wStep, obstacles, ar) && readyCups > 0) {
           const take = Math.min(wTrayCap - w.tray, readyCups);
           w.tray += take;
           readyCups -= take;
         }
       } else {
         // Boşta: personel köşesine dön.
-        moveToward(w.pos, LAYOUT.waiterHome, wStep);
+        moveAvoid(w.pos, LAYOUT.waiterHome, wStep, obstacles, ar);
       }
       waiter = w;
     } else {
@@ -584,26 +681,28 @@ export const useGame = create<GameState>((set, get) => ({
       const dStep = C.dishwasher.moveSpeed * dt;
       const dCap = C.dishwasher.carryCapacity;
       if (dw.tray >= dCap || (dw.tray > 0 && dishes.length === 0)) {
-        // Dolu (ya da elinde var ama toplanacak kalmadı) → bulaşığa götür, yıka.
-        if (moveToward(dw.pos, LAYOUT.dishStation, dStep)) {
+        // Dolu (ya da elinde var ama toplanacak kalmadı) → bulaşığa götür, yıka (bulaşık engel değil).
+        if (moveAvoid(dw.pos, LAYOUT.dishStation, dStep, obstacles, ar)) {
           cleanCups += dw.tray;
           dw.tray = 0;
         }
       } else if (dishes.length > 0) {
-        // Topla: en yakın kirli bardağa git; varınca al (kapasiteye kadar tek tek).
+        // Topla: en yakın kirli bardağa DOLAŞARAK yaklaş; collectRadius'a girince al (kirli masa üstünde,
+        // masa gövdesi engel → tam varış imkansız; mesafe-tabanlı toplama).
         let target = dishes[0];
         let td = Infinity;
         for (const d of dishes) {
           const dd = dist2D(dw.pos, d.pos);
           if (dd < td) { td = dd; target = d; }
         }
-        if (moveToward(dw.pos, target.pos, dStep)) {
+        moveAvoid(dw.pos, target.pos, dStep, obstacles, ar);
+        if (dist2D(dw.pos, target.pos) < C.cups.collectRadius) {
           dishes = dishes.filter((d) => d.id !== target.id);
           dw.tray += 1;
         }
       } else {
         // Boşta: köşeye dön.
-        moveToward(dw.pos, LAYOUT.dishwasherHome, dStep);
+        moveAvoid(dw.pos, LAYOUT.dishwasherHome, dStep, obstacles, ar);
       }
       dishwasher = dw;
     } else {

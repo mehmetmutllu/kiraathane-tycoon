@@ -149,11 +149,34 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
      toplanır. Coins.tsx artık yalnız `c.pos`'u çizer (görsel=mantık → yapışan para imkansız); coins map `pos` klonlandı.
      Yeni vitest: pickup'a hiç girilmeden mıknatısla toplanır + attract dışı çekilmez. **Vitest 42/42, build temiz, smoke 19/19.**
 
-## Faz 3 — My-Hotel zone & roller ⏳ (D-012 ile yeniden çerçevelendi)
-- ⏳ **3a:** Salon (zone) genişleme: salon dol → yeni salon + oto 1.ocak/1.masa + personel slotları.
-- ⏳ **3b:** Tuvalet ODASI (parayla açılır) + tuvalet kâğıdı yenileme + temizlikçi.
-- ⏳ **3c:** Menü çeşitliliği (kahve/tost) + masa-yükseltme işlevi (sabır/imaj). Okey/tavla/nargile sonra.
-- NOT: KASA YOK (D-012). Görsel: primitive = nihai sanat stili (D-013).
+## Faz 2g/2h/2i — His & yerleşim & yükseltme & onboarding ⏳ (D-016 ile eklendi)
+- 🔧 **2g (his/yerleşim/collision/tuning, TEK zone):** **v5 GEÇERLİ** (kullanıcı feedback 2026-06-07 #4: sandalyeler koridor
+  tıkıyor, karakterler iri → "alan baya büyümeli") — ✅ **BÜYÜK alan** `area`{minX-5.5,maxX5.5,minZ-5.0,maxZ4.5}; ✅ masalar
+  **köşelere yayık 2×2** (kolon x-2.5/2.5 gap5, satır z-2.2/1.4 gap3.6) → orta geniş yürüme, sandalye kenarda (tıkanmaz);
+  ✅ kamera d 9 (karakter alana göre küçük); mutfak arka duvarda (ocak[-3.0,-4.4], bulaşık[-1.0,-4.4], semaver[1.0,-4.4]);
+  ✅ müşteri+garson+bulaşıkçı masa gövdesinden DOLAŞIR (`moveAvoid`+`tableSolids`; bulaşıkçı mesafe-tabanlı); ✅ oyuncu
+  collision HAPSETMEZ; garson `moveSpeed 1.5`; `hitsSolid(r)`. **build temiz, Vitest 44/44, sim 84sn, smoke 19/19, konsol
+  temiz, görsel doğrulandı.** KALAN (ops.): spawn/sipariş tempo + "sayı düzeni". SAVE_VERSION değişmedi. (v2/v3/v4 terk.)
+- ~~v2/v3/v4~~ **(TERK — referans):**
+  mutfak (ocak `[-2.7,0,-3.0]`+bulaşık `[-1.0,0,-3.0]`+semaver `[0.6,0,-3.0]`) sol-arka duvara 0; masalar **mutfağın
+  TAM ÖNÜNDE** 2×2 (x-2.0/0.0, z-1.2/0.9) → "çapraz/geniş" gitti; ✅ **asimetrik `area`** {minX-3.5,maxX2.5,minZ-3.6,maxZ3.4}
+  (içeriği sıkı sarar; `bounds` kaldırıldı); ✅ **collision SABİT+DİNAMİK** (ocak/bulaşık/masa/sandalye + müşteri/garson/
+  bulaşıkçı; `*Half`+playerRadius0.35; yalnız input'la harekette eksen-başı kayma → teleport/setState etkilenmez); ✅ garson
+  `moveSpeed 1.8→1.5`; ✅ kamera `d 8→7`; Walls asimetrik area'ya göre. smoke "park" `(2.5,-3.0)`. **build temiz, Vitest
+  44/44 (collision testleri+), sim 84sn, smoke 19/19, konsol temiz.** KALAN (ops.): spawn/sipariş tempo + "sayı düzeni". SAVE_VERSION değişmedi.
+- ⏳ **2h (masa yükseltme + BAHŞİŞ):** masa zone-başı yükseltilir (2. masa açılınca belirir, serbest/paralel);
+  etki = bahşiş↑ (`tipBase×seviye`) + sabır↑. Çay fiyatı SABİT (D-010). Yükseltme görseli: küçük altın halka+rozet
+  (parası yetince parlar). SAVE_VERSION bump (masaSeviyesi persist). simulate bahşişi gelire katar.
+- ⏳ **2i (onboarding/işaretçi katmanı):** ilk açılışta hareket + ilk masa-açma işaretçisi/zoom; sonraki açılışlarda
+  küçük "Yeni ▲" rozeti. Sadece ilk sefere özel tam tutorial.
+
+## Faz 3 — Kat & zone çoğaltma & roller ⏳ (D-016 ile yeniden çerçevelendi)
+- ⏳ **3a:** Zone çoğaltma: zone'u atomik modül yap, **kat başına ~4 zone (2×2 ızgara)**; zone-açma omurga pad'i;
+  yeni zone'da oto 1.ocak(L1)+1.masa; `stations` türetme (D-015 korunur); tek kapı + rastgele oturma + zone'a bölünmüş servis.
+- ⏳ **3b:** Kat geçişi: kat dolunca **merdiven** açılır → ekran kararma → üst kat; dinamik bounds/kamera; SAVE bump.
+- ⏳ **3c:** Tuvalet ODASI + DEPO (KATA özel, parayla açılır) + tuvalet kâğıdı döngüsü (depodan al→tak) + temizlikçi.
+- ⏳ **3d:** Menü çeşitliliği (kahve/tost — mutfak şeridine eklenir). Okey/tavla/nargile üst katlar.
+- NOT: KASA YOK (D-012/D-016). Bulaşık zone'a özel, tuvalet+depo kata özel. Görsel: primitive = nihai stil (D-013).
 
 ## Faz 4 — Ekonomi / meta ⏳
 - ⏳ Evrensel 5-seviye yükseltme (L5 💎/video) tüm objelerde

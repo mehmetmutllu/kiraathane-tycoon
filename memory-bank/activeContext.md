@@ -3,16 +3,71 @@
 > En sık güncellenen dosya. Her anlamlı adımdan sonra güncelle.
 
 ## Şu an neredeyiz (2026-06-06)
-Faz 0 + Faz 1 ✅. **Faz 2 TAMAMEN BİTTİ** (2a–2e) + **Faz 2f (görsel/animasyon/yerleşim cilası) ✅.**
-SAVE_VERSION şu an **10**. Max tepsi kapasitesi **6** (3×2 ızgara). **Sıradaki: Faz 3a — salon/zone genişleme**
-(aşağı bak; AÇIK SORU: salon yerleşimi yan-yana mı/kapıyla mı + kamera/sınır genişlemesi → kod yazmadan SOR).
+Faz 0 + Faz 1 ✅. **Faz 2 (2a–2f) BİTTİ.** SAVE_VERSION **10**, max tepsi **6**.
+**YENİ TASARIM KİLİDİ: D-016** (kullanıcı onayı 2026-06-06) — D-012 "açık-alan salon"u **kat + zone ızgarası** ile
+DEĞİŞTİRDİ. Çok turlu tasarım tartışması sonucu yol haritası revize edildi (aşağı bak). **Sıradaki: Faz 2g** (his/yerleşim/
+collision/tuning, tek zone). docs'a yazıldı: decisions.md D-016, progress.md (2g/2h/2i + revize Faz 3).
 
-Servis/personel/zone modeli kullanıcı onayıyla KİLİTLENDİ:
-- **D-011** (servis) ✅, **D-012** (zone/salon + bölge-başı personel + **KASA YOK** + tuvalet=oda + para toplama kalıcı manuel),
-  **D-013** (primitive = nihai sanat stili), **D-014** (garson = opsiyonel/omurgayı kilitlemeyen pad ✅).
-  Tam tasarım: `docs/serving-and-automation.md`.
+**D-016 özeti (tam metin decisions.md):**
+- **ZONE = atomik birim:** 1 ocak + 1 bulaşık + 1→4 masa (pad) + ops. garson/bulaşıkçı. **1 ocak:4 masa, paylaşımsız.**
+  Başlangıç 1 ocak(L1)+TEK masa; 2.→3.→4. masa omurga pad'iyle.
+- **Tek kapı + rastgele oturma**; oturma havuzu global, **servis kaynakları (ocak kuyruğu/garson/bulaşıkçı) zone'a bölünür.**
+- **KAT modeli:** kat = max ~4 zone (2×2); kat dolunca merdiven→kararma→üst kat. Üst katlar: balkon/okey/nargile.
+- **Açma SIRALI** (omurga, büyük yeşil disk) **vs Yükseltme SERBEST/paralel** (sıra yok, açılan her obje; küçük altın
+  halka+rozet, parası yetince parlar). Yükseltme kavramı **2. masa açılınca** tanıtılır.
+- **Masa yükseltme = BAHŞİŞ↑ (`tipBase×seviye`, öneri tipBase=2) + sabır↑**, zone-başı. Çay fiyatı SABİT (D-010).
+  Bekleme-süreli bahşiş Faz 4'e ERTELENDİ.
+- **Bulaşık zone'a özel; Tuvalet+Depo KATA özel** (kâğıt döngüsü: depodan al→tak→temizlikçi).
+- **Yerleşim:** mutfak sol-üst duvara 0 (arkası geçilemez), masalar sağda, dar başlangıç, **collision**. Şekil değişimi Faz 6 asset.
+- **Onboarding** ilk sefere özel (masa-açma). **Garson yavaşlatılır**, tempo simulate ile dengelenir.
 
-## En son ne yapıldı (bu oturum — Faz 2f görsel/animasyon/yerleşim cilası)
+Önceki kilitler korunur: **D-011** (servis) ✅, **D-013** (primitive=nihai stil), **D-014** (garson opsiyonel pad) ✅,
+**D-009** (mekânsal etkileşim), **D-015** (state türetme). D-012'nin KASA-YOK/bölge-başı-personel/manuel-toplama parçaları geçerli.
+Tam servis tasarımı: `docs/serving-and-automation.md` (zone/kat detayı D-016'da).
+
+## En son ne yapıldı (bu oturum — Faz 2g his/yerleşim/collision/tuning, D-016) — YERLEŞİM v3
+Çok turlu tasarım → D-016 kilitlendi. Yerleşim 4 kez revize edildi (kullanıcı önizleme feedback'leri); **v5 GEÇERLİ.**
+- **v5 (2026-06-07 #4 — GEÇERLİ):** Kullanıcı: "iğrenç, sandalyelerden yürüyemiyorum (koridorlar tıkalı); karakterler
+  alana göre çok iri → ALAN BÜYÜMELİ HEM DE BAYA." → ölçek düzeltmesi: alan büyütüldü + masalar köşelere yayıldı.
+  - **BÜYÜK alan** `area={minX:-5.5,maxX:5.5,minZ:-5.0,maxZ:4.5}`; masalar **köşelere yayık 2×2** (kolon x -2.5/2.5 gap 5,
+    satır z -2.2/1.4 gap 3.6) → orta geniş yürüme alanı, sandalyeler kenarda (koridor tıkanmaz). Kamera d 7→9 (karakterler
+    alana göre küçük görünür). Mutfak arka duvarda: ocak[-3.0,-4.4], bulaşık[-1.0,-4.4] (dist 2.0>washR), semaver[1.0,-4.4].
+    upgradeZone ocağın solu [-3.5,-3.0]; trayUpgradeZone [0,3.8]; entrance/player orta-ön [0,..]; personel x±4.8.
+  - Önceki davranışlar korunur: müşteri+garson+bulaşıkçı masa gövdesinden DOLAŞIR (`moveAvoid`+`tableSolids`); oyuncu
+    collision HAPSETMEZ; bulaşıkçı toplama mesafe-tabanlı; `hitsSolid(r)` yarıçaplı. smoke park (5.2,4.2).
+  - Görsel doğrulandı (ekran görüntüsü): büyük ferah salon, 4 masa dört köşede, orta açık, karakterler uygun ölçekte.
+  - **Collision footprint düzeltmesi (kullanıcı: "masaya çok sokulmam gerekiyor, arada boşluk fazla"):** `*Half`'lar
+    GÖRSEL mesh'e yaslandı → "değiyor gibi" sokulma, boşluk yok. stationHalf [0.8,0.6]→[1.1,0.4] (ocak tezgah 2.2×0.8),
+    dishHalf →[0.7,0.4] (bulaşık 1.4×0.8), tableHalf →[0.5,0.5] (masa r0.5), chairHalf →[0.22,0.22] (sandalye 0.42).
+    playerRadius 0.35 (=kapsül görsel yarıçapı → standoff görsel kenara denk). **'samovar' collision KALDIRILDI** (ayrı
+    görünür mesh'i yok → görünmez duvardı); `activeSolids(tables)` (padsDone param atıldı). Vitest 44/44, smoke 19/19, build temiz.
+  - **Mobilya KATI (zorlasan da geçilmez):** oyuncu collision'ı ayrıştı — MOBİLYA katı (hapsetme istisnası YOK → zorlasan da
+    içine geçmez), eksen-başı kayma (diyagonalde süzülür, kafa kafaya gelince DURUR); AKTÖRLER (npc/garson/bulaşıkçı) yumuşak
+    (hapsetmez). NOT: kısa süre denenen "kafa kafaya kenardan otomatik kayma (deflection)" kullanıcı isteğiyle GERİ ALINDI
+    (daha kötü hissettirdi); sadece "zorlayınca içine geçmesin" kaldı. Vitest 44/44, smoke 19/19, build temiz.
+- **v4 (terk):** orta-boy/hizalı ama sandalyeler koridor tıkadı + iri ölçek. v3 çapraz-geniş, v2 dar (hepsi terk).
+
+**Eski v2 detayı (referans, geçerli değil):**
+- **Yerleşim v2 (LAYOUT, store.ts) — SOLA-YASLI KOMPAKT BLOK:** mutfak (ocak `[-2.7,0,-3.0]` + bulaşık `[-1.0,0,-3.0]` +
+  semaver `[0.6,0,-3.0]`) sol-ARKA köşede duvara 0; **masalar mutfağın TAM ÖNÜNDE** (aynı sol blok) — 2×2 x -2.0/0.0,
+  z -1.2/0.9 (seat=table z+1.0). "Çapraz/geniş" duruş gitti. **Asimetrik oynanabilir alan** `area={minX:-3.5,maxX:2.5,
+  minZ:-3.6,maxZ:3.4}` (içeriği sıkı sarar → boş sağ taraf yok; `bounds` alanı KALDIRILDI). upgradeZone `[-2.7,0,-2.0]`
+  (ocak-masa arası boşluk; oyuncu ocağa dayanır, PAD_RADIUS 1.3 içinde → dolar); trayUpgradeZone `[-1.0,0,3.0]`; waiter/
+  dishwasher pad `[-3.0,0,3.0]`/`[2.0,0,3.0]`, home `[-3.0,0,2.0]`/`[2.0,0,2.0]`; entrance `[-1.0,..,3.3]`, player `[-1.0,..,1.8]`.
+- **Collision (D-016) — SABİT + DİNAMİK:** sabit = ocak/bulaşık/açık-masa/sandalye(seat)/(semaver alınmışsa); **dinamik =
+  her müşteri + garson + bulaşıkçı** (`actorHalf`/`chairHalf`). `activeSolids()` sabitleri, hareket bloğu liveNpcs+waiter+
+  dishwasher'ı ekler. Çözüm **yalnız input'la harekette** (eksen-başı kayma) → doğrudan setState/__teleport input'suz
+  konumu ETKİLEMEZ → testler korunur. Oyuncu artık mobilya/müşteri/garson/sandalye içine giremiyor.
+- **Tuning:** `waiter.moveSpeed 1.8→1.5`. Kamera `d 8→7`. Walls asimetrik `area`'ya göre çizilir (arka+sol+sağ; ön açık).
+- **Smoke uyarlaması:** "uzağa park" konumları `(0,2)`/`(0,6.5)` → `(2.5,-3.0)` (sol-yaslı yerleşimde sağ-arka köşe tüm
+  masalardan attract-yarıçapı dışı → garson-assist/kirli-birikim testleri sağlam).
+- **Doğrulama:** **build temiz ✅, Vitest 44/44 ✅** (collision: önünde durma + input'suz teleport collision'sız),
+  **sim 84sn sabit ✅, smoke 19/19 ✅, konsol temiz.** Önizleme: http://localhost:5173/
+- Değişen: economy.config.ts, store.ts (LAYOUT v2+area+collision), Scene.tsx (Walls/kamera), tools/smoke.mjs,
+  tests/logic.test.ts; decisions.md (D-016), progress.md, activeContext.md. **Henüz commit yok** (ortam git repo'su değil).
+- **2g KALAN (opsiyonel):** müşteri spawn/sipariş tempo ince-ayarı + "sayı düzeni". NOT: SAVE_VERSION değişmedi (persist alan yok).
+
+## (önceki oturum — Faz 2f görsel/animasyon/yerleşim cilası)
 Kullanıcı 4 kararı onayladı: ızgara (istif değil), yerleşim bana bırakıldı (taşmasın yeter), react-spring'siz hafif
 animasyon. (Asset sorusu yanıtlandı: animasyonlar = kod/bedava; 3D modeller = Faz 6, CC0 Quaternius/Kenney + AI Türk objeleri.)
 - **(B) Max tepsi 8→6:** `economy.config.serving.trayUpgrade.maxLevel` 3→2 (L0=2/L1=4/L2=6). **SAVE_VERSION 9→10** +
@@ -132,18 +187,22 @@ animasyon. (Asset sorusu yanıtlandı: animasyonlar = kod/bedava; 3D modeller = 
   Çakışma giderildi (currentPad=samovar). Kalıcı vitest testleri (v6→v7 senaryosu dahil).
 - **Doğrulama:** Vitest **22/22**, build temiz. Commit `c0e9e24` (v6 fix) + sonraki commit (v7 bump) push'landı.
 
-## TAM sıradaki adım (Faz 3a — salon/zone genişleme)
-docs/serving-and-automation.md §7 kilitli tasarım:
-1. **Salon dolunca yeni salon kilidi açılır** (mevcut salonun tüm omurga slotları = 4 masa + semaver tamam → genişleme gate'i).
-2. **Yeni salon açılınca oto 1.ocak + 1.masa kurulu gelir** (oyuncu hemen servis edebilir); gerisini parayla açar.
-   → `addStation` effect tipi ve `extraStationSpeedFactor` BURADA devreye girer (şu an config'te bekliyor); `derivedFromPads`
-   `stations` artık 1'e sabit değil, salon pad'lerinden türetilir (D-015 korunur).
-3. **Bölge-başı personel slotları:** her salonun kendi garson/bulaşıkçı'sı (global havuz değil).
-4. LAYOUT çok-salonlu olur; SAVE_VERSION bump + migrasyon; Vitest + smoke + sim yeşil; docs güncelle.
-   AÇIK SORU (kod yazmadan önce sor): salon yerleşimi (yan yana mı, kapıyla mı?) + kamera/sınır genişlemesi.
+## TAM sıradaki adım (Faz 2g — his & yerleşim & collision & tuning, TEK zone)
+D-016 kararıyla, çoğaltmadan ÖNCE tek zone'u mükemmel hissettir (şablon olsun). İş kalemleri:
+1. **Yerleşim:** mutfak şeridi sol-üst köşede duvara 0 (ocak + bulaşık bitişik, arkası geçilemez); tost/kahve için sağına
+   yer ayır; **masalar sağda** 2×2; **bounds küçült** (dar başlangıç → boş-büyük-alan hissi biter); kamera/duvar uydur.
+2. **Collision:** ocak/bulaşık/masa = katı AABB engel; oyuncu içine giremez (kenardan kayar). (Personel hedefleri obje ÖNÜ;
+   gerekirse onlara da uygula.) Yeni: footprint tanımı LAYOUT'a; store hareket çözümüne AABB push-out.
+3. **Tuning:** `waiter.moveSpeed` düşür (çok hızlı); müşteri `spawnInterval`/`orderTime` temposu simulate ile yeniden
+   dengele (frantik değil akışkan, ilk-alım hedefini koru); sayıları tek şablona topla.
+4. Vitest + sim + smoke yeşil; progress/activeContext + (gerekirse) docs güncelle; SAVE_VERSION yalnız persist alan değişirse bump.
+   NOT: tek-masa başlangıç ZATEN var (derivedFromPads tables=1); 2g'de masa SAYISI değil ALAN/HİS düzeltilir.
 
-## Sonraki dilimler (kilitli plan — docs/serving-and-automation.md §11)
-- **Faz 3:** 3a salon genişleme (yeni salon + oto ocak/masa + personel slotu) · 3b tuvalet odası + temizlikçi · 3c menü (kahve/tost) + masa-yükseltme işlevi.
+## Sonraki dilimler (kilitli plan — D-016)
+- **2h:** masa yükseltme + bahşiş (zone-başı; 2. masa açılınca; bahşiş `tipBase×seviye` + sabır↑; SAVE bump).
+- **2i:** onboarding/işaretçi katmanı (ilk masa-açma; sonraki açılışlar "Yeni ▲" rozeti).
+- **Faz 3:** 3a zone çoğaltma (kat başına ~4 zone, 2×2 ızgara, zone-açma pad'i, stations türetme) · 3b kat geçişi
+  (merdiven/kararma/üst kat) · 3c tuvalet+depo+temizlikçi (kata özel) · 3d menü (tost/kahve mutfak şeridine).
 
 ## Faydalı dev kancaları (konsol)
 `__game()` (readyCups/tray/trayCap/trayLevel/waitingCount/stationPos/firstWaitingSeat + bardak döngüsü:

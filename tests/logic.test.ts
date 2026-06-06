@@ -724,3 +724,31 @@ describe('mekânsal çay yükseltme noktası (zone) + gating', () => {
     expect(useGame.getState().activeZone?.kind).toBe('upgrade');
   });
 });
+
+describe('mobilya collision (D-016) — oyuncu ocağın/masanın içine giremez', () => {
+  it('input ile ocağa yürürken İÇİNE GİRMEZ (kenarından kayar) + hareket eder', () => {
+    useGame.getState().hardReset();
+    const ocak = LAYOUT.stations[0];
+    const startX = ocak[0] - 0.6; // ocağın solu (masa kutusundan uzak, ocak x-menzilinde) → -z'ye yürü
+    const startZ = -1.4;
+    useGame.setState({ player: [startX, 0.6, startZ], inputKeyboard: [0, -1], inputJoystick: [0, 0], npcs: [], spawnTimer: 999 });
+    for (let i = 0; i < 60; i++) useGame.getState().tick(0.1);
+    const p = useGame.getState().player;
+    // Oyuncu merkezi ocak AABB'sinin İÇİNDE OLMAMALI (içine girmedi; kenardan kaydı/durdu).
+    const insideOcak = Math.abs(p[0] - ocak[0]) < LAYOUT.stationHalf[0] && Math.abs(p[2] - ocak[2]) < LAYOUT.stationHalf[1];
+    expect(insideOcak).toBe(false);
+    // Dead-lock değil: bir yere hareket etti (kenara kaydı veya ocağa yaklaştı).
+    expect(p[0] !== startX || p[2] !== startZ).toBe(true);
+  });
+
+  it('input olmadan (teleport/setState) collision uygulanmaz → testler/dev kancası etkilenmez', () => {
+    useGame.getState().hardReset();
+    const ocak = LAYOUT.stations[0];
+    // Doğrudan ocağın merkezine ışınla (kutu içi), input yok → konum AYNEN korunur (push-out yok).
+    useGame.setState({ player: [ocak[0], 0.6, ocak[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0], npcs: [], spawnTimer: 999 });
+    useGame.getState().tick(0.1);
+    const p = useGame.getState().player;
+    expect(p[0]).toBeCloseTo(ocak[0], 5);
+    expect(p[2]).toBeCloseTo(ocak[2], 5);
+  });
+});
