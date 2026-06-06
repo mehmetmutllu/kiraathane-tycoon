@@ -5,7 +5,7 @@
 ## Şu an neredeyiz (2026-06-06)
 Faz 0 + Faz 1 ✅. Faz 2: 2a ✅, 2b ✅, 2-UX (D-009) ✅, 2-EKO (D-010) ✅, 2c (D-011) ✅,
 2d-garson (D-014) ✅, **2d-harita — başlangıç salonu 1 ocak : 4 masa (D-012) ✅ UYGULANDI.**
-**Sıradaki: Faz 2e — bardak/bulaşık döngüsü + bulaşıkçı + tepsi yükseltme.**
+**Sıradaki: D-015 — state tek-doğru-kaynaktan türetme refactor'ı (kullanıcı onayladı, sonraki oturuma ertelendi); Faz 2e ondan sonra.**
 
 Servis/personel/zone modeli kullanıcı onayıyla KİLİTLENDİ:
 - **D-011** (servis) ✅, **D-012** (zone/salon + bölge-başı personel + **KASA YOK** + tuvalet=oda + para toplama kalıcı manuel),
@@ -40,7 +40,18 @@ Servis/personel/zone modeli kullanıcı onayıyla KİLİTLENDİ:
   Çakışma giderildi (currentPad=samovar). Kalıcı vitest testleri (v6→v7 senaryosu dahil).
 - **Doğrulama:** Vitest **22/22**, build temiz. Commit `c0e9e24` (v6 fix) + sonraki commit (v7 bump) push'landı.
 
-## TAM sıradaki adım (Faz 2e — bardak/bulaşık döngüsü)
+## TAM sıradaki adım (D-015 — state tek-doğru-kaynaktan türetme refactor'ı; Faz 2e'den ÖNCE)
+> Kullanıcı bu refactor'ı onayladı ama uygulamayı SONRAKİ OTURUMA erteledi (2026-06-06). Faz 2e'den önce yapılacak.
+**Sorun:** `tables/stations/serviceSpeedMult/hasWaiter` hem ayrı state/kayıt alanı hem `padsDone`'da örtük →
+desenkronize olunca masa+pad çakışması gibi açıklar (bu oturumda v6/v7 migration patch'iyle yamandı, kök çözüm değil).
+**Yapılacak (D-015 detayında):**
+1. economy.config'e saf `derivedFromPads(padsDone)` → {tables, stations, serviceSpeedMult, hasWaiter}.
+2. store: pad açılınca SADECE `padsDone`'a ekle; gerisini türet (tek yazım); tick'teki `tables++`/`serviceSpeedMult*=` kalkar.
+3. save: türetilenleri KAYDETME (yüklemede türet); **SAVE_VERSION 7→8** + migrasyon (eski kayıt padsDone'undan türet);
+   v5/v6/v7 addTable-senkron patch'leri sadeleşir.
+4. Testler: desenkronizasyonun artık üretilemediğini ispatla. Vitest + smoke + build yeşil; docs güncelle.
+
+## Ondan SONRA (Faz 2e — bardak/bulaşık döngüsü)
 1. **Bardak kaynağı:** servis edilen her çay bir "kirli bardak" üretir (masada/tepside birikir). Bardak kapasitesi
    ocak seviyesine bağlı (L0~4, +2/lvl) → bardak biterse demleme/servis durur (yeni darboğaz).
 2. **Kirli→topla→yıka:** oyuncu kirli bardakları toplar → bulaşık istasyonuna götürür → yıkanır (temiz havuza döner).

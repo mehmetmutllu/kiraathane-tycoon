@@ -91,7 +91,11 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
      bakıyordu, masa sayısına değil). Migration v5→v6'ya: `addTable` pad'lerini mevcut masa sayısıyla **senkronla**
      (i. addTable = (i+2). masa; masa zaten çiziliyse pad'i `padsDone`'a ekle → bir daha belirmez). Geçici playwright
      tanı scripti (tools/check-migration.mjs) ile A/B/C senaryoları doğrulandı, sonra silindi; kalıcı vitest testi eklendi.
-- ⏳ **2e (SIRADAKİ):** Bardak/bulaşık döngüsü (bardak=ocak seviyesine bağlı, kirli→yıka) + bulaşıkçı + tepsi yükseltme.
+- ⏳ **D-015 (SIRADAKİ, Faz 2e'den ÖNCE):** State tek-doğru-kaynaktan türetme refactor'ı. `tables/stations/
+     serviceSpeedMult/hasWaiter` ayrı saklanmayı bırakıp `padsDone`'dan türetilir → masa+pad çakışması gibi
+     desenkronizasyon açıkları YAPISAL kapanır (bu oturumdaki v6/v7 migration patch'leri kök çözüm değildi).
+     SAVE_VERSION 7→8. Kullanıcı onayladı, sonraki oturuma ertelendi. Detay: decisions.md D-015 + activeContext.
+- ⏳ **2e:** Bardak/bulaşık döngüsü (bardak=ocak seviyesine bağlı, kirli→yıka) + bulaşıkçı + tepsi yükseltme.
 
 ## Faz 3 — My-Hotel zone & roller ⏳ (D-012 ile yeniden çerçevelendi)
 - ⏳ **3a:** Salon (zone) genişleme: salon dol → yeni salon + oto 1.ocak/1.masa + personel slotları.
