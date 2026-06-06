@@ -113,8 +113,8 @@ Kullanıcı build incelemesi geri bildirimi (2026-06-06). Tam plan + araştırma
 **Çalışan mantık doğru — sunum katmanı.** ÖNCE 4 açık kararı sor (docs §Açık kararlar), SONRA uygula:
 1. **Carry kafadan→tepsiye:** `Player.tsx` DirtyStack [0,1.05,-0.4] (baş) kaldır; temiz+kirli ellerin ÖNÜNDEKİ
    tek tepside istif/2×N ızgara; baş üstü yalnız radial bar. Aynı düzeltme Waiter/Dishwasher.
-2. **Max taşma:** `economy.config.ts serving.trayUpgrade` kapasite görseli ızgara/istif; gerekirse maxLevel 8→6
-   (düşerse trayLevel clamp + küçük migrasyon).
+2. **Max taşma:** ✅ KARAR — max kapasite **8→6** indirilecek (kullanıcı onayı 2026-06-06). trayLevel clamp +
+   küçük migrasyon gerek. Sunum dizilimi (3×2 ızgara / istif) açık — sunuma sonra karar verilecek.
 3. **Yerleşim:** `store.ts LAYOUT` ocak+bulaşık sol-arka köşede BİTİŞİK; bounds 7→~5; masaları sıkılaştır;
    Scene/kamera uysun. (Faz 3a zone zemini: tek "salon bloğu".)
 4. **Juice:** pickup/drop scale-pop (useFrame/damp), coin uçuşu + "+₺" floating (drei Html), baş üstü radial

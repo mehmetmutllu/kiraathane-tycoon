@@ -37,7 +37,9 @@
      semaver buharı; müşteri idle bob; yürüyenler hareket yönüne döner (damp rotation).
 
 ## Açık kararlar (sonraki oturum başında kullanıcıya SOR)
-1. Max tepsi: 6'ya indir mi, yoksa 8 kalsın istif görseli mi?
+1. ✅ KARAR (2026-06-06): Max tepsi kapasitesi **8→6'ya İNDİRİLECEK** (kullanıcı: "max kapasite kesin
+   azalmalı, 6 olabilir"). Düşerse eski kayıttaki `trayLevel` clamp + küçük migrasyon. Sunum dizilimi
+   (3×2 ızgara mı / istif mi) HENÜZ açık — "sunumlara sonra karar veririz". NOT: 6 = 3×2 (3×3 değil, o 9 olur).
 2. Carry: tek tepside iki renk mi, yoksa "kirliyi sadece el boşken taşı" mantık kısıtı mı?
 3. Alan/yerleşim: 2f'de tek-blok mu, yoksa doğrudan 3a ile mi?
 4. Bağımlılık: react-spring eklemeden hafif useFrame/damp ile mi (öneri: evet)?
