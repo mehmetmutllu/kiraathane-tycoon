@@ -28,7 +28,15 @@ Servis/personel/zone modeli kullanıcı onayıyla KİLİTLENDİ:
 - Testler: **Vitest 21/21 ✅** (table4 omurga adımı, v4→v6 + v5→v6 migrasyon), **build temiz**, **sim ilk-alım 84sn**
   (omurga ~15dk, table4 @7.5dk), **smoke 15/15 ✅** (tek-ocak yerleşiminde servis+garson assist+yükseltme L0→L4).
 - Değişen dosyalar: economy.config.ts, store.ts, save.ts, tools/simulate.ts, tests/logic.test.ts, progress.md, activeContext.md.
-- **Henüz COMMIT EDİLMEDİ** — oturum-bitir bekliyor.
+- Commit `2105083` push'landı.
+
+## Takip düzeltmesi (aynı oturum — eski-kayıt masa+pad çakışması)
+- **Bulgu:** Kullanıcı eski kayıtla açınca "4. masa zaten var + üstünde pad" gördü. Tanı (geçici playwright scripti,
+  A/B/C senaryoları): `tables=4` AMA `table4` padsDone'da yokken, `table4` pad'i çizili 4. masayla TAM aynı konumda
+  ([2.5,0,1.2]) çakışıyor. Kök neden: `addTable` gating'i masa SAYISINA bakmıyordu (sadece `prev:table3`).
+- **Düzeltme:** save.ts migration v5→v6'ya `addTable` pad'lerini masa sayısıyla senkronlama eklendi (i. addTable =
+  (i+2). masa; masa çiziliyse pad done). Çakışma giderildi (C senaryosu artık currentPad=samovar). Kalıcı vitest testi eklendi.
+- **Doğrulama:** Vitest **22/22**, build temiz. **Bu düzeltme HENÜZ COMMIT EDİLMEDİ.**
 
 ## TAM sıradaki adım (Faz 2e — bardak/bulaşık döngüsü)
 1. **Bardak kaynağı:** servis edilen her çay bir "kirli bardak" üretir (masada/tepside birikir). Bardak kapasitesi

@@ -285,6 +285,19 @@ describe('kayıt migrasyonu v4 → v6 (padFill → padFills + hasWaiter; station
     expect(m.hasWaiter).toBe(true); // garson korunur
   });
 
+  it('v5 → v6: tables zaten 4 ise table4 done işaretlenir (çizili masa + pad çakışması önlenir)', () => {
+    const m = migrate({
+      saveVersion: 5, wallet: '0', diamonds: '0', lifetime: '9000',
+      tables: 4, stations: 1, stationLevel: 2, serviceSpeedMult: 1,
+      padsDone: ['table2', 'table3'], padFills: {}, hasWaiter: false,
+    });
+    // 4. masa zaten çiziliyken table4 pad'i bir daha belirmemeli (aynı konumda çakışır).
+    expect(m.padsDone).toContain('table4');
+    expect(m.tables).toBe(4);
+    // Tutarlı: currentPad artık table4 değil samovar olur.
+    expect(currentPad({ padsDone: m.padsDone, tables: m.tables, stationLevel: m.stationLevel, lifetime: 9000 })?.id).toBe('samovar');
+  });
+
   it('v6 varsayılan kayıt padFills={} ve hasWaiter=false içerir', () => {
     const d = defaultSave();
     expect(d.saveVersion).toBe(6);
