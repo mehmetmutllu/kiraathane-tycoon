@@ -182,14 +182,14 @@ describe('generic pad sistemi + gating (Faz 2b / ekonomi v2)', () => {
     expect(completeCurrentPad()).toBe('table3');
     expect(useGame.getState().tables).toBe(3);
 
-    // 3) Yeni Çay Ocağı → stations 1→2, servis hızı ×0.85
-    expect(completeCurrentPad()).toBe('station2');
-    expect(useGame.getState().stations).toBe(2);
-    expect(useGame.getState().serviceSpeedMult).toBeCloseTo(0.85, 5);
+    // 3) 4. Masa → tables 3→4 (salon 1 ocak : 4 masa dolar; D-012). Tek ocak korunur.
+    expect(completeCurrentPad()).toBe('table4');
+    expect(useGame.getState().tables).toBe(4);
+    expect(useGame.getState().stations).toBe(1);
 
-    // 4) Semavere Geçiş → servis hızı ×0.7 (toplam 0.85*0.7)
+    // 4) Semavere Geçiş → servis hızı ×0.7 (tek ocağın 4 masaya yetişme kapağı)
     expect(completeCurrentPad()).toBe('samovar');
-    expect(useGame.getState().serviceSpeedMult).toBeCloseTo(0.85 * 0.7, 5);
+    expect(useGame.getState().serviceSpeedMult).toBeCloseTo(0.7, 5);
 
     // Hepsi açıldı
     expect(useGame.getState().padsDone.length).toBe(4);
@@ -256,24 +256,38 @@ describe('garson — opsiyonel kısmi assist (Faz 2d / D-012)', () => {
   });
 });
 
-describe('kayıt migrasyonu v4 → v5 (padFill → padFills + hasWaiter)', () => {
-  it('eski tek padFill, aktif omurga pad id\'sine taşınır; hasWaiter false', () => {
-    const v5 = migrate({
+describe('kayıt migrasyonu v4 → v6 (padFill → padFills + hasWaiter; station2 çıkışı)', () => {
+  it('eski tek padFill, aktif omurga pad id\'sine taşınır; hasWaiter false; saveVersion 6', () => {
+    const m = migrate({
       saveVersion: 4,
       wallet: '100', diamonds: '0', lifetime: '50',
       tables: 1, stations: 1, stationLevel: 0, serviceSpeedMult: 1,
       padsDone: [], padFill: 20,
     });
     // lifetime 50 ≥ 30 → table2 aktif omurga pad'i → padFill ona atanır.
-    expect(v5.saveVersion).toBe(5);
-    expect(v5.padFills).toEqual({ table2: 20 });
-    expect(v5.hasWaiter).toBe(false);
-    expect((v5 as Record<string, unknown>).padFill).toBeUndefined();
+    expect(m.saveVersion).toBe(6);
+    expect(m.padFills).toEqual({ table2: 20 });
+    expect(m.hasWaiter).toBe(false);
+    expect((m as Record<string, unknown>).padFill).toBeUndefined();
   });
 
-  it('v5 varsayılan kayıt padFills={} ve hasWaiter=false içerir', () => {
+  it('v5 → v6: station2 padsDone/padFills\'ten çıkar, stations 1\'e kelepçelenir (ilerleme korunur)', () => {
+    const m = migrate({
+      saveVersion: 5,
+      wallet: '500', diamonds: '0', lifetime: '2000',
+      tables: 3, stations: 2, stationLevel: 1, serviceSpeedMult: 0.85,
+      padsDone: ['table2', 'table3', 'station2'], padFills: { station2: 100, samovar: 40 }, hasWaiter: true,
+    });
+    expect(m.saveVersion).toBe(6);
+    expect(m.padsDone).toEqual(['table2', 'table3']); // station2 kalktı
+    expect(m.padFills).toEqual({ samovar: 40 }); // station2 dolumu temizlendi, diğeri durur
+    expect(m.stations).toBe(1); // tek salon = tek ocak
+    expect(m.hasWaiter).toBe(true); // garson korunur
+  });
+
+  it('v6 varsayılan kayıt padFills={} ve hasWaiter=false içerir', () => {
     const d = defaultSave();
-    expect(d.saveVersion).toBe(5);
+    expect(d.saveVersion).toBe(6);
     expect(d.padFills).toEqual({});
     expect(d.hasWaiter).toBe(false);
   });

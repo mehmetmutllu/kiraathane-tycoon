@@ -17,29 +17,30 @@ import { defaultSave, loadSave, writeSave, clearSave, type SaveData } from './sa
 // Her pad/zone, açtığı/etkilediği objenin TAM yerinde durur (mekânsal tycoon).
 export const LAYOUT = {
   entrance: [0, 0.6, 6.5] as Vec3,
-  player: [0, 0.6, 2] as Vec3,
-  // Çay ocakları (stations sayısına göre çizilir). [0] ana ocak.
-  stations: [[-2, 0, -5] as Vec3, [2, 0, -5] as Vec3],
+  player: [0, 0.6, 2.5] as Vec3,
+  // Çay ocağı (D-012: başlangıç salonu TEK ana ocak; 4 masaya throughput'la yetişir).
+  // 2. ocak Faz 3a'da YENİ salonla gelir → burada tek eleman.
+  stations: [[0, 0, -5] as Vec3],
   bounds: 7,
-  // Masa slotları + müşterinin oturduğu yer (seat).
+  // Masa slotları (1 ocak : 4 masa, 2×2 derli toplu) + müşterinin oturduğu yer (seat = table + z+1.1).
   tables: [
-    { table: [-4, 0, -1] as Vec3, seat: [-4, 0.6, 0.1] as Vec3 },
-    { table: [4, 0, -1] as Vec3, seat: [4, 0.6, 0.1] as Vec3 },
-    { table: [-4, 0, 2.5] as Vec3, seat: [-4, 0.6, 3.6] as Vec3 },
-    { table: [4, 0, 2.5] as Vec3, seat: [4, 0.6, 3.6] as Vec3 },
+    { table: [-2.5, 0, -1.5] as Vec3, seat: [-2.5, 0.6, -0.4] as Vec3 },
+    { table: [2.5, 0, -1.5] as Vec3, seat: [2.5, 0.6, -0.4] as Vec3 },
+    { table: [-2.5, 0, 1.2] as Vec3, seat: [-2.5, 0.6, 2.3] as Vec3 },
+    { table: [2.5, 0, 1.2] as Vec3, seat: [2.5, 0.6, 2.3] as Vec3 },
   ],
   // Pad pozisyonları: açtıkları objenin yerinde.
   padPos: {
-    table2: [4, 0, -1] as Vec3, // 2. masa slotu
-    waiter: [-2, 0, 4] as Vec3, // personel köşesi (giriş yanı, masalardan uzak)
-    table3: [-4, 0, 2.5] as Vec3, // 3. masa slotu
-    station2: [2, 0, -5] as Vec3, // 2. ocak yeri
-    samovar: [2, 0, -3.4] as Vec3, // ocakların önü (semavere geçiş)
+    table2: [2.5, 0, -1.5] as Vec3, // 2. masa slotu
+    table3: [-2.5, 0, 1.2] as Vec3, // 3. masa slotu
+    table4: [2.5, 0, 1.2] as Vec3, // 4. masa slotu
+    samovar: [1.6, 0, -3.4] as Vec3, // ana ocağın sağ-önü (semavere geçiş)
+    waiter: [-4.5, 0, 4] as Vec3, // personel köşesi (giriş sol-yanı, masalardan uzak)
   } as Record<string, Vec3>,
-  // Mekânsal çay yükseltme noktası: ana ocağın önünde dur → altta bar dolar.
-  upgradeZone: [-2, 0, -3.4] as Vec3,
+  // Mekânsal çay yükseltme noktası: ana ocağın sol-önünde dur → altta bar dolar (semaverle çakışmaz).
+  upgradeZone: [-1.6, 0, -3.4] as Vec3,
   // Garson boştayken bekleyeceği köşe (personel home).
-  waiterHome: [2, 0, 4] as Vec3,
+  waiterHome: [4.5, 0, 4] as Vec3,
 } as const;
 
 const NPC_SPEED = 2.6;
@@ -252,7 +253,8 @@ export const useGame = create<GameState>((set, get) => ({
       lifetime,
       diamonds: D(save.diamonds),
       tables: save.tables,
-      stations: save.stations,
+      // Tek salonda tek ocak (D-012); eski çok-ocaklı kayıtlar LAYOUT taşmasın diye kelepçelenir.
+      stations: Math.min(save.stations, LAYOUT.stations.length),
       stationLevel: save.stationLevel,
       serviceSpeedMult: save.serviceSpeedMult,
       padsDone: [...save.padsDone],
@@ -291,7 +293,7 @@ export const useGame = create<GameState>((set, get) => ({
     let wallet = s.wallet;
     let lifetime = s.lifetime;
     let tables = s.tables;
-    let stations = s.stations;
+    const stations = s.stations;
     let serviceSpeedMult = s.serviceSpeedMult;
     let padsDone = s.padsDone;
     let padFills = s.padFills;
@@ -492,10 +494,6 @@ export const useGame = create<GameState>((set, get) => ({
         switch (pad.effect.type) {
           case 'addTable':
             tables = Math.min(LAYOUT.tables.length, tables + 1);
-            break;
-          case 'addStation':
-            stations = Math.min(LAYOUT.stations.length, stations + 1);
-            serviceSpeedMult *= C.teaStation.extraStationSpeedFactor;
             break;
           case 'serviceSpeed':
             serviceSpeedMult *= pad.effect.factor;

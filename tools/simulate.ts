@@ -74,10 +74,6 @@ function trySpend(s: State): void {
         case 'addTable':
           s.tables += 1;
           break;
-        case 'addStation':
-          s.stations += 1;
-          s.serviceSpeedMult *= C.teaStation.extraStationSpeedFactor;
-          break;
         case 'serviceSpeed':
           s.serviceSpeedMult *= pad.effect.factor;
           break;
@@ -99,7 +95,7 @@ const milestones: { name: string; hit: (s: State) => boolean; done?: boolean }[]
   { name: 'İlk satın alma (2. Masa)', hit: (s) => s.padsDone.includes('table2') },
   { name: 'Çay ocağı L1 (throughput)', hit: (s) => s.stationLevel >= 1 },
   { name: '3. Masa açıldı', hit: (s) => s.padsDone.includes('table3') },
-  { name: '2. Çay Ocağı açıldı', hit: (s) => s.padsDone.includes('station2') },
+  { name: '4. Masa açıldı (salon dolu)', hit: (s) => s.padsDone.includes('table4') },
   { name: 'Semavere geçiş', hit: (s) => s.padsDone.includes('samovar') },
   { name: 'Çay ocağı L4 (Usta öncesi)', hit: (s) => s.stationLevel >= SOFT_MAX },
   { name: 'lifetime 1.000 ₺', hit: (s) => s.lifetime >= 1_000 },

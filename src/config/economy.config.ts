@@ -13,7 +13,7 @@
  *   L5 (Usta)   = masterDiamondCost 💎 VEYA 1 ödüllü video; outputMult yerine masterOutputMult
  */
 
-export const SAVE_VERSION = 5;
+export const SAVE_VERSION = 6;
 
 export const CURRENCY = {
   soft: '₺', // Para — müşteriden kazanılır
@@ -155,7 +155,9 @@ export const economyConfig = {
    * `optional:true` pad'ler OMURGA zincirini KİLİTLEMEZ: alınmasa da sonraki masalar/ocaklar açılır
    * (oyuncu isterse alır, istemezse kendi gezerek servis eder). `currentPad` opsiyonelleri atlar.
    * Maliyetler tempo hedefine göre ayarlı (ilk alım <90sn; simulate.ts doğrular).
-   * Omurga zinciri: 2.Masa → (ocak L≥1) → 3.Masa → 2.Ocak → Semaver.  Opsiyonel: Garson (2.Masa sonrası).
+   * BAŞLANGIÇ SALONU = 1 ocak : 4 masa (D-012). Omurga: 2.Masa → (ocak L≥1) → 3.Masa → 4.Masa → Semaver.
+   * Tek ana ocak 4 masaya throughput'la yetişir (ocak seviyesi + semaver). 2. ocak Faz 3a'da YENİ salonla
+   * otomatik gelir (addStation effect tipi orada kullanılır). Opsiyonel: Garson (2.Masa sonrası).
    */
   pads: [
     { id: 'table2', label: '2. Masa', cost: 35, fillRate: 40, optional: false,
@@ -164,10 +166,10 @@ export const economyConfig = {
       requires: { prev: ['table2'] }, effect: { type: 'hireWaiter' } },
     { id: 'table3', label: '3. Masa', cost: 120, fillRate: 55, optional: false,
       requires: { prev: ['table2'], minStationLevel: 1 }, effect: { type: 'addTable' } },
-    { id: 'station2', label: 'Yeni Çay Ocağı', cost: 360, fillRate: 75, optional: false,
-      requires: { prev: ['table3'] }, effect: { type: 'addStation' } },
+    { id: 'table4', label: '4. Masa', cost: 300, fillRate: 75, optional: false,
+      requires: { prev: ['table3'] }, effect: { type: 'addTable' } },
     { id: 'samovar', label: 'Semavere Geçiş', cost: 850, fillRate: 110, optional: false,
-      requires: { prev: ['station2'] }, effect: { type: 'serviceSpeed', factor: 0.7 } },
+      requires: { prev: ['table4'] }, effect: { type: 'serviceSpeed', factor: 0.7 } },
   ],
 
   /** Oyuncu sahip karakteri hareketi. */

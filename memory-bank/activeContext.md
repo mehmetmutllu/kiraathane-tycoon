@@ -4,44 +4,41 @@
 
 ## Şu an neredeyiz (2026-06-06)
 Faz 0 + Faz 1 ✅. Faz 2: 2a ✅, 2b ✅, 2-UX (D-009) ✅, 2-EKO (D-010) ✅, 2c (D-011) ✅,
-**2d-garson — OPSİYONEL garson pad + garson FSM (D-014) ✅ UYGULANDI.**
-**Sıradaki: Faz 2d-harita — harita dengesi 1 ocak : 4 masa (D-012).**
+2d-garson (D-014) ✅, **2d-harita — başlangıç salonu 1 ocak : 4 masa (D-012) ✅ UYGULANDI.**
+**Sıradaki: Faz 2e — bardak/bulaşık döngüsü + bulaşıkçı + tepsi yükseltme.**
 
 Servis/personel/zone modeli kullanıcı onayıyla KİLİTLENDİ:
 - **D-011** (servis) ✅, **D-012** (zone/salon + bölge-başı personel + **KASA YOK** + tuvalet=oda + para toplama kalıcı manuel),
   **D-013** (primitive = nihai sanat stili), **D-014** (garson = opsiyonel/omurgayı kilitlemeyen pad ✅).
   Tam tasarım: `docs/serving-and-automation.md`.
 
-## En son ne yapıldı (bu oturum — 2d-garson, D-014)
-- **Garson OPSİYONEL** (kullanıcı isteği): table2 sonrası "Garson Tut" pad'i gelir ama ZORUNLU değil —
-  alınmazsa oyuncu masa açmaya devam eder, kendi gezerek servis eder.
-- **Pad sistemi "omurga + opsiyonel" ayrıldı:** `currentPad` artık `optional` pad'leri ATLAR (omurga
-  kilitlenmez); yeni `availableOptionalPads(g)`. PadDef'e `optional?:boolean`; `waiter` pad'i
-  (₺150, optional, requires prev table2, effect `hireWaiter`).
-- **Çoklu eş zamanlı dolum:** tek `padFill` sayısı → **`padFills` kaydı** (pad id → ₺). **SAVE_VERSION 4→5**
-  + migrasyon (eski dolum aktif omurga pad'ine taşınır; `migrate` artık export). `hasWaiter` **persist**.
-- **Garson FSM** (sadece hasWaiter): ocaktan tek tepsi (`config.waiter.trayCapacity`=1) → en yakın
-  `waitingForTea` masaya götür → bırak (drinking) → boşta `LAYOUT.waiterHome`'a dön. `config.waiter.moveSpeed`=1.8
-  (oyuncudan yavaş) = kısmi assist. `waiter` TRANSIENT (konum/tepsi), hasWaiter persist.
-- Görsel: **Waiter.tsx** (yeşil kapsül + küçük tepsi), **Pad.tsx** omurga+opsiyonel render (opsiyonel mavi +
-  Html etiket "Garson Tut ₺150"), Scene'e Waiter eklendi. devHooks: hasWaiter/waiterTray/waiterPos/optionalPads;
-  padFill artık aktif omurga pad'inin dolumunu gösterir.
-- Testler: **Vitest 20/20 ✅** (opsiyonel pad omurgayı kilitlemez, hireWaiter, garson kısmi-assist oyuncu uzakta,
-  v4→v5 migrasyon), **smoke 15/15 ✅** (garson tut + assist), build temiz, sim **84sn** (ekonomi sabit).
-- Değişen dosyalar: economy.config.ts, types.ts, store.ts, save.ts, devHooks.ts, Pad.tsx, Scene.tsx,
-  **Waiter.tsx (yeni)**, tools/simulate.ts, tools/smoke.mjs, tests/logic.test.ts,
-  memory-bank/decisions.md (D-014), progress.md, activeContext.md.
+## En son ne yapıldı (bu oturum — 2d-harita, D-012 1 ocak : 4 masa)
+- **Başlangıç salonu 1 ocak : 4 masa'ya çekildi.** Omurga pad zinciri: 2.Masa → (ocak L≥1) → 3.Masa →
+  **4.Masa (YENİ, addTable, cost 300/fillRate 75, requires prev table3)** → Semaver (requires prev table4).
+- **`station2` omurgadan ÇIKARILDI** (D-012: 2. ocak Faz 3a'da yeni salonla otomatik gelir). `addStation` effect
+  tipi pads'ten düştü → store.ts ve simulate.ts'teki `case 'addStation'` (ölü) kaldırıldı; `extraStationSpeedFactor`
+  config'te Faz 3a için kaldı. tick'teki `stations` artık `const`.
+- **LAYOUT:** tek ana ocak `[0,0,-5]`; 4 masa 2×2 derli toplu (x ±2.5, z -1.5/1.2; seat = table + z+1.1).
+  padPos table2/table3/table4 masa slotlarında; **samovar sağ-ön [1.6,-3.4]**, **upgradeZone sol-ön [-1.6,-3.4]**
+  (çakışmaz); waiter [-4.5,4], waiterHome [4.5,4]; player start [0,2.5]. `stations` artık tek elemanlı dizi.
+- **SAVE_VERSION 5→6 + migrasyon (v5→v6):** station2 padsDone/padFills'ten çıkarılır, `stations=1` kelepçe
+  (ilerleme/₺ korunur). init'te de savunmacı `min(save.stations, LAYOUT.stations.length)` → eski çok-ocaklı kayıt taşmaz.
+- Render bileşenleri (Pad/Scene/Tables/Stations) veri-güdümlü → table4 otomatik geldi, station2 düştü, kod değişmedi.
+  smoke.mjs de pozisyonları kancalardan okur → değişmedi.
+- Testler: **Vitest 21/21 ✅** (table4 omurga adımı, v4→v6 + v5→v6 migrasyon), **build temiz**, **sim ilk-alım 84sn**
+  (omurga ~15dk, table4 @7.5dk), **smoke 15/15 ✅** (tek-ocak yerleşiminde servis+garson assist+yükseltme L0→L4).
+- Değişen dosyalar: economy.config.ts, store.ts, save.ts, tools/simulate.ts, tests/logic.test.ts, progress.md, activeContext.md.
 - **Henüz COMMIT EDİLMEDİ** — oturum-bitir bekliyor.
 
-## TAM sıradaki adım (Faz 2d-harita — 1 ocak : 4 masa dengesi)
-1. **LAYOUT yeniden düzen:** D-012 hedefi 1 ocak : 4 masa. Mevcut 2 ocak ([-2,-5]/[2,-5]) + 4 masa
-   yerleşimini 1 ana ocağın 4 masaya yetişebileceği orana çek; `station2` pad'ini bu orana göre gözden geçir.
-2. **padPos/seat/waiterHome/upgradeZone** pozisyonlarını yeni yerleşime uydur (çakışma yok, bounds içinde).
-3. Garson + oyuncu servis mesafeleri yeni haritada makul mü doğrula (smoke teleport testleri geçmeli).
-4. (Opsiyonel) simulate.ts'e gerçek servis-darboğazı modeli: oyuncu+garson cups/sn vs talep; tempo etkisini ölç.
+## TAM sıradaki adım (Faz 2e — bardak/bulaşık döngüsü)
+1. **Bardak kaynağı:** servis edilen her çay bir "kirli bardak" üretir (masada/tepside birikir). Bardak kapasitesi
+   ocak seviyesine bağlı (L0~4, +2/lvl) → bardak biterse demleme/servis durur (yeni darboğaz).
+2. **Kirli→topla→yıka:** oyuncu kirli bardakları toplar → bulaşık istasyonuna götürür → yıkanır (temiz havuza döner).
+   Yeni bulaşık istasyonu + (opsiyonel) **bulaşıkçı** personel pad'i (garson deseni: optional, omurgayı kilitlemez).
+3. **Tepsi yükseltme** (Faz 2e): trayCapacityBase 2→4→6→8 (mekânsal yükseltme noktası, çay yükseltme gibi).
+4. SAVE_VERSION bump + migrasyon; Vitest + smoke + sim yeşil; docs güncelle.
 
 ## Sonraki dilimler (kilitli plan — docs/serving-and-automation.md §11)
-- **2e:** Bardak/bulaşık döngüsü (bardak=ocak seviyesine bağlı L0~4 +2/lvl; kirli→topla→yıka) + bulaşıkçı + tepsi yükseltme.
 - **Faz 3:** 3a salon genişleme (yeni salon + oto ocak/masa + personel slotu) · 3b tuvalet odası + temizlikçi · 3c menü (kahve/tost) + masa-yükseltme işlevi.
 
 ## Faydalı dev kancaları (konsol)

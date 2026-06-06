@@ -94,6 +94,19 @@ export function migrate(raw: Record<string, unknown>): SaveData {
     v = 5;
   }
 
+  // v5 -> v6: 'station2' pad'i omurgadan çıkarıldı (D-012: salon = 1 ocak : 4 masa; 2. ocak Faz 3a'da).
+  // Referansları temizle, tek salonu (tek ocak) koru — ilerleme kaybolmaz (kazanılan ₺/seviye durur).
+  if (v < 6) {
+    data.padsDone = (Array.isArray(data.padsDone) ? data.padsDone : []).filter((id) => id !== 'station2');
+    if (data.padFills && 'station2' in data.padFills) {
+      const { station2: _drop, ...rest } = data.padFills;
+      void _drop;
+      data.padFills = rest;
+    }
+    data.stations = 1;
+    v = 6;
+  }
+
   delete (data as { padFill?: unknown }).padFill;
   data.saveVersion = SAVE_VERSION;
   return data;
