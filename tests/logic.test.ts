@@ -239,6 +239,40 @@ describe('garson — opsiyonel kısmi assist (Faz 2d / D-012)', () => {
     expect(availableOptionalPads(gate()).map((p) => p.id)).not.toContain('waiter');
   });
 
+  it('garson en ACİL (sabrı en az) bekleyene gider — yakın ama sabrı bol masa atlanır (anti-starvation)', () => {
+    useGame.getState().hardReset();
+    const nearIdx = 0;
+    const farIdx = 3;
+    const nearSeat = LAYOUT.tables[nearIdx].seat;
+    const farSeat = LAYOUT.tables[farIdx].seat;
+    const dist = (a: number[], b: readonly number[]) => Math.hypot(a[0] - b[0], a[2] - b[2]);
+    // Garsonu YAKIN masanın koltuğuna (mesafe ~0) tepsi dolu koy. İki bekleyen:
+    //  - 901: yakın AMA sabrı bol (timer 17)   - 902: uzak AMA acil (timer 2)
+    // "En yakın" politikasıyla 901 anında servis edilirdi; "en acil" ile garson 902'ye yönelmeli.
+    useGame.setState({
+      padsDone: ['table2', 'table3', 'table4', 'waiter'],
+      hasWaiter: true,
+      waiter: { pos: [nearSeat[0], 0.6, nearSeat[2]] as [number, number, number], tray: 1 },
+      player: [0, 0.6, 6.5],
+      inputKeyboard: [0, 0],
+      inputJoystick: [0, 0],
+      npcs: [
+        { id: 901, state: 'waitingForTea', pos: [...nearSeat] as [number, number, number], tableIndex: nearIdx, timer: 17, color: '#27ae60' },
+        { id: 902, state: 'waitingForTea', pos: [...farSeat] as [number, number, number], tableIndex: farIdx, timer: 2, color: '#c0392b' },
+      ],
+      spawnTimer: 999, // bu testte yeni müşteri spawn olmasın
+    });
+    const startFarDist = dist([nearSeat[0], 0.6, nearSeat[2]], farSeat);
+    useGame.getState().tick(0.1);
+    const s = useGame.getState();
+    const near = s.npcs.find((n) => n.id === 901);
+    // Yakın ama sabrı bol masa SERVİS EDİLMEDİ (nearest-first olsaydı anında 'drinking' olurdu).
+    expect(near?.state).toBe('waitingForTea');
+    expect(s.waiter?.tray).toBe(1); // henüz teslim yok (uzak masaya yürüyor)
+    // Garson acil (uzak) masaya YÖNELDİ → ona yaklaştı.
+    expect(dist(s.waiter!.pos, farSeat)).toBeLessThan(startFarDist);
+  });
+
   it('garson bekleyen müşteriye çay servis eder (oyuncu uzakta → kısmi assist)', () => {
     useGame.getState().hardReset();
     // D-015: hasWaiter padsDone'dan türetilir → garsonu padsDone üzerinden kur (sahte set işe yaramaz).

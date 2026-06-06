@@ -448,12 +448,20 @@ export const useGame = create<GameState>((set, get) => ({
         if (d < nsd) { nsd = d; nearStation = LAYOUT.stations[i]; }
       }
       if (w.tray > 0 && waitingNpcs.length > 0) {
-        // Teslimat: en yakın bekleyen müşteriye git, varınca çayı bırak.
+        // Teslimat: en ACİL (sabrı en az kalan = en düşük timer) bekleyene git; eşitlikte en yakın.
+        // "En yakın" yerine "en acil" → ön masalar sürekli dolsa da arka masalar AÇLIKTAN ölmez
+        // (tüm sabır timer'ları aynı hızda azaldığı için bu pratikte kararlı bir FIFO'dur, salınım yapmaz).
+        // Garsonun hız/tepsi limiti değişmez → D-014 "partial assist" tasarımı korunur.
         let best = waitingNpcs[0];
-        let bd = Infinity;
+        let bestTimer = Infinity;
+        let bestDist = Infinity;
         for (const n of waitingNpcs) {
           const d = dist2D(w.pos, LAYOUT.tables[n.tableIndex].seat);
-          if (d < bd) { bd = d; best = n; }
+          if (n.timer < bestTimer - 1e-6 || (Math.abs(n.timer - bestTimer) <= 1e-6 && d < bestDist)) {
+            bestTimer = n.timer;
+            bestDist = d;
+            best = n;
+          }
         }
         if (moveToward(w.pos, LAYOUT.tables[best.tableIndex].seat, wStep)) {
           best.state = 'drinking';
