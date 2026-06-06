@@ -111,8 +111,10 @@ Servis/personel/zone modeli kullanıcı onayıyla KİLİTLENDİ:
 ## TAM sıradaki adım (Faz 2f — görsel/animasyon/yerleşim cilası)
 Kullanıcı build incelemesi geri bildirimi (2026-06-06). Tam plan + araştırma: `docs/visual-and-layout-polish.md`.
 **Çalışan mantık doğru — sunum katmanı.** ÖNCE 4 açık kararı sor (docs §Açık kararlar), SONRA uygula:
-1. **Carry kafadan→tepsiye:** `Player.tsx` DirtyStack [0,1.05,-0.4] (baş) kaldır; temiz+kirli ellerin ÖNÜNDEKİ
-   tek tepside istif/2×N ızgara; baş üstü yalnız radial bar. Aynı düzeltme Waiter/Dishwasher.
+1. **Carry kafadan→tepsiye + "eli boşken" kısıtı (✅ KARAR):** `Player.tsx` DirtyStack [0,1.05,-0.4] (baş)
+   kaldır; taşınan ellerin ÖNÜNDEKİ tek tepside (tek seferde tek tür); baş üstü yalnız radial bar. Aynı düzeltme
+   Waiter/Dishwasher. **Mantık kısıtı:** servis bloğu `tray<trayCap && carriedDirty===0`; kirli toplama `tray===0`
+   (simetrik: temiz taşırken kirli toplanmaz, kirli taşırken temiz alınmaz → tepside hep tek renk).
 2. **Max taşma:** ✅ KARAR — max kapasite **8→6** indirilecek (kullanıcı onayı 2026-06-06). trayLevel clamp +
    küçük migrasyon gerek. Sunum dizilimi (3×2 ızgara / istif) açık — sunuma sonra karar verilecek.
 3. **Yerleşim:** `store.ts LAYOUT` ocak+bulaşık sol-arka köşede BİTİŞİK; bounds 7→~5; masaları sıkılaştır;

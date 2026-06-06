@@ -40,7 +40,10 @@
 1. ✅ KARAR (2026-06-06): Max tepsi kapasitesi **8→6'ya İNDİRİLECEK** (kullanıcı: "max kapasite kesin
    azalmalı, 6 olabilir"). Düşerse eski kayıttaki `trayLevel` clamp + küçük migrasyon. Sunum dizilimi
    (3×2 ızgara mı / istif mi) HENÜZ açık — "sunumlara sonra karar veririz". NOT: 6 = 3×2 (3×3 değil, o 9 olur).
-2. Carry: tek tepside iki renk mi, yoksa "kirliyi sadece el boşken taşı" mantık kısıtı mı?
+2. ✅ KARAR (2026-06-06): **"Eli boşken" kısıtı.** Temiz çay taşırken (`tray>0`) kirli TOPLANAMAZ; temiz tepsi
+   boşalınca kirli toplama başlar. Simetrik: kirli taşırken (`carriedDirty>0`) ocaktan temiz ALINAMAZ. Tek seferde
+   tek tür → tepside hep tek renk; "götür → topla → yıka" ritmi; arcade-idle "her turda tek istif". UYGULAMA:
+   store.ts servis bloğu `tray<trayCap && carriedDirty===0` koşulu; kirli toplama bloğu `tray===0` koşulu.
 3. Alan/yerleşim: 2f'de tek-blok mu, yoksa doğrudan 3a ile mi?
 4. Bağımlılık: react-spring eklemeden hafif useFrame/damp ile mi (öneri: evet)?
 
