@@ -183,8 +183,8 @@ function run() {
   console.log('\n--- Servis kapasitesi (Faz 2d, bilgi) ---');
   console.log(
     `Garson OPSİYONEL (₺${C.pads.find((p) => p.id === 'waiter')?.cost ?? '?'}, omurgayı KİLİTLEMEZ): ` +
-      `hız ${C.waiter.moveSpeed} br/sn, tepsi ${C.waiter.trayCapacity}. Oyuncudan yavaş → kısmi assist, ` +
-      `oyuncu hâlâ gerekli. Yukarıdaki tempo idealize servis (oyuncu yetişiyor) varsayar.`,
+      `hız L1 ${C.waiter.moveSpeedByLevel[0]}→L2 ${C.waiter.moveSpeedByLevel[1]} br/sn (₺${C.waiter.upgradeCost} yükseltme), ` +
+      `tepsi ${C.waiter.trayCapacity}. Oyuncudan yavaş → kısmi assist (ekonomi idealize servis varsayar; sabit).`,
   );
 }
 

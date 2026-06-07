@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Köşe Kıraathanesi</string>
+    <string name="title_activity_main">Köşe Kıraathanesi</string>
+    <string name="package_name">com.kosekiraathanesi.game</string>
+    <string name="custom_url_scheme">com.kosekiraathanesi.game</string>
+</resources>

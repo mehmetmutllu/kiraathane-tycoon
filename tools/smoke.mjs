@@ -110,6 +110,16 @@ try {
     if (assisted.coins > beforeCoins)
       pass(`Garson kısmi assist çalışıyor (oyuncu uzakta, düşen para ${beforeCoins}→${assisted.coins})`);
     else fail(`Garson servis etmedi (coins ${beforeCoins}→${assisted.coins}, waiterTray=${assisted.waiterTray})`);
+
+    // Garson L2 hız yükseltme (D-018 §6): garson tutulunca tuttuğun noktada işaret belirir; üstünde dur → L2 olur.
+    const wUp = await page.evaluate(() => window.__game());
+    const beforeWL = wUp.waiterLevel;
+    await page.evaluate(() => window.__addMoney(500));
+    await page.evaluate((pos) => window.__teleport(pos[0], pos[2]), wUp.waiterUpgradeSpotPos);
+    const wL2 = await page.evaluate(() => window.__advanceTime(6));
+    if (wL2.waiterLevel > beforeWL)
+      pass(`Garson hız yükseltme çalışıyor (L${beforeWL + 1}→L${wL2.waiterLevel + 1})`);
+    else fail(`Garson hız yükseltmedi (waiterLevel ${beforeWL}→${wL2.waiterLevel})`);
   } else {
     fail(`Garson opsiyonel pad listesinde yok: ${JSON.stringify(optInfo.optionalPads)}`);
   }
@@ -171,6 +181,13 @@ try {
   } else {
     fail(`Masa yükseltme için 4. masa açık değil (padsDone=${JSON.stringify(preTable.padsDone)})`);
   }
+
+  // Yeni-özellik bildirimi (D-019 §4): ilerleme boyunca açılan ikincil özellikler bildirilmiş olmalı.
+  const reveals = (await page.evaluate(() => window.__game())).revealSeen || [];
+  const wantReveals = ['upgrade', 'opt:waiter', 'waiterUp', 'tableUp'];
+  const missing = wantReveals.filter((k) => !reveals.includes(k));
+  if (missing.length === 0) pass(`Yeni-özellik bildirimi çalışıyor (reveal: ${reveals.join(', ')})`);
+  else fail(`Eksik reveal bildirimi: ${missing.join(', ')} (görülen: ${reveals.join(', ')})`);
 
   // Dikey (portrait) orana çevir → responsive kamera/HUD hatasız mı
   await page.setViewportSize({ width: 412, height: 915 });

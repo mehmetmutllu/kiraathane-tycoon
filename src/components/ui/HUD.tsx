@@ -12,6 +12,7 @@ export function HUD() {
   const carriedDirty = useGame((s) => s.carriedDirty);
   const offlineEarned = useGame((s) => s.offlineEarned);
   const zone = useGame((s) => s.activeZone);
+  const notice = useGame((s) => s.notice);
   const nextStep = useGame((s) => s.nextStepLabel);
 
   const zonePct = zone ? Math.min(100, (zone.fill / zone.cost) * 100) : 0;
@@ -48,6 +49,13 @@ export function HUD() {
         </div>
       )}
 
+      {/* Yeni-özellik bildirimi (D-019 §4): bir özellik açılınca kısa toast (kendi kendine kaybolur). */}
+      {notice && (
+        <div className="notice" data-testid="notice" key={notice.text}>
+          {notice.text}
+        </div>
+      )}
+
       {/* Sıradaki adım rehberi (bir zone üstünde değilken) */}
       {!zone && nextStep && (
         <div className="next-step" data-testid="next-step">
@@ -70,10 +78,6 @@ export function HUD() {
           </div>
         </div>
       )}
-
-      <div className="hint">
-        WASD / joystick · ocağa git → tepsi dolar → bekleyen masaya götür · paraları topla · kirli bardakları bulaşıkta yıka · yeşil zeminlerde yükselt
-      </div>
     </div>
   );
 }

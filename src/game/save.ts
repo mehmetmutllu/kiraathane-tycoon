@@ -16,6 +16,8 @@ export interface SaveData {
   stationLevel: number;
   /** Masa-başı yükseltme seviyeleri (Faz 2h; index = masa slotu; bahşiş+sabır; My Hotel oda mantığı). */
   tableLevels: number[];
+  /** Garson hız yükseltme seviyesi (Faz 2 D-018 §7; 0 = taban, 1 = L2; garson tutulduysa anlamlı). */
+  waiterLevel: number;
   padsDone: string[];
   /** Aktif pad'lerin kısmi dolumu (pad id → ₺). Aynı anda birden çok pad doldurulabilir (v5). */
   padFills: Record<string, number>;
@@ -30,6 +32,7 @@ export function defaultSave(): SaveData {
     lifetime: '0',
     stationLevel: 0,
     tableLevels: [],
+    waiterLevel: 0,
     padsDone: [],
     padFills: {},
     lastSaved: Date.now(),
@@ -171,8 +174,17 @@ export function migrate(raw: Record<string, unknown>): SaveData {
     v = 14;
   }
 
-  // Sona kalan v14 şeması: türetilen alanlar (tables/stations/serviceSpeedMult/hasWaiter), eski `padFill`,
-  // kaldırılan `trayLevel` ve 'samovar' referansı yazılmaz.
+  // v14 -> v15 (D-018 adım 6): garson L2 hız yükseltmesi → yeni `waiterLevel` persist alanı (eksikse 0).
+  if (v < 15) {
+    d.waiterLevel = Math.min(
+      Number(d.waiterLevel ?? 0) || 0,
+      economyConfig.waiter.moveSpeedByLevel.length - 1,
+    );
+    v = 15;
+  }
+
+  // Sona kalan v15 şeması: türetilen alanlar (tables/stations/serviceSpeedMult/hasWaiter), eski `padFill`,
+  // kaldırılan `trayLevel` ve 'samovar' referansı yazılmaz; `waiterLevel` eklendi.
   return {
     saveVersion: SAVE_VERSION,
     wallet: String(d.wallet ?? '0'),
@@ -180,6 +192,10 @@ export function migrate(raw: Record<string, unknown>): SaveData {
     lifetime: String(d.lifetime ?? '0'),
     stationLevel: Number(d.stationLevel ?? 0) || 0,
     tableLevels: Array.isArray(d.tableLevels) ? (d.tableLevels as number[]).map((n) => Number(n) || 0) : [],
+    waiterLevel: Math.min(
+      Number(d.waiterLevel ?? 0) || 0,
+      economyConfig.waiter.moveSpeedByLevel.length - 1,
+    ),
     padsDone: Array.isArray(d.padsDone) ? (d.padsDone as string[]) : [],
     padFills:
       d.padFills && typeof d.padFills === 'object' ? (d.padFills as Record<string, number>) : {},

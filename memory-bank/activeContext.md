@@ -2,7 +2,53 @@
 
 > En sık güncellenen dosya. Her anlamlı adımdan sonra güncelle.
 
-## Şu an neredeyiz (2026-06-07 — GÜNCEL: D-019 madde 2-3 (reveal sırası + gating) + L1-başlangıç UYGULANDI, gözle onay bekliyor)
+## Şu an neredeyiz (2026-06-07 — EN GÜNCEL: MOBİL CİLA + ANDROID APK hazır → kullanıcı cihazda test edecek)
+Kullanıcı önizleme sonrası mobil istekleri verdi; hepsi yapıldı + Android APK derlendi (arkadaşına da gönderecek).
+**Mobil cila (5):** (1) **drag-anywhere joystick** — ekranın her yerine basıp sürükle, joystick parmağın yerinde belirir
+(`touch-layer` tüm ekran + floating `.joystick`); (2) **alttaki WASD/ipucu yazısı KALDIRILDI** (`.hint` silindi); (3) **kamera
+BAYA yakın** (CameraRig d 9→6, portrait geri-çekme 1.7→1.3); (4) **üst chip'ler responsive** (`.hud-top` flex-wrap + küçült +
+portrait media query); (5) **sokak/kapı z-fighting** giderildi (sokak düzlemleri y-ayrımı + polygonOffset; kapı çerçevesi
+duvarın tamamen önüne, kesişme yok). Playwright ile portrait + drag-anywhere görsel doğrulandı.
+**ANDROID APK (Capacitor 8.4, Faz 7 öne çekildi):** `npx cap add android` → debug APK derlendi →
+**`KoseKiraathanesi-debug.apk` (~4.6 MB)** proje kökünde (git-ignored). Ortam: SDK `C:\flutter\bin`, build JDK = Android Studio
+JBR 21 (`gradle.properties org.gradle.java.home`; sistem JDK 23 AGP'yi kırıyor). Yeniden derleme: `npm run apk`. Telefon
+tarayıcısı testi: `npm run dev:host` → LAN URL. Detay: architecture.md "Android APK derleme".
+**Doğrulama:** vitest 69/69, web build temiz, sim 84sn, smoke 22/22, APK BUILD SUCCESSFUL (JAVA_HOME'suz da çalışıyor).
+
+### >>> SONRAKİ OTURUM — İLK İŞ: KULLANICIDAN FEEDBACK İSTE <<<
+Kullanıcı APK'yı **telefonda test etti (2026-06-08)** ve dedi ki: "bir sonraki oturumda bana feedback sor, orada gördüklerimi
+yazacağım, ona göre hareket edeceğiz." → **Bu oturum commit+push ile kaydedildi.** SONRAKİ oturumda (`/kiraathane-devam`),
+özet verdikten SONRA başka iş yapmadan **kullanıcıya telefonda ne gördüğünü/neyi beğenmediğini SOR** (drag-anywhere kontrol,
+kamera yakınlığı, z-fighting/titreme, chip'ler, genel his, Faz 2 akışı). Aldığın bulgulara göre düzelt/ayarla; bulgu yoksa Faz 3a
+(zone çoğaltma) önerisini getir. Feedback almadan yeni özelliğe/refactor'a girme.
+
+## (önceki) FAZ 2 TEK-ZONE TAMAM
+**Bu oturumda kalan tek-zone işleri bitti (3 parça):**
+1. **D-018 adım 6 — GARSON L2:** garson hızı seviyeli (`waiter.moveSpeedByLevel [1.8, 2.6]`), ₺200 mekânsal yükseltme noktası
+   (`LAYOUT.waiterUpgradeSpot [-4.6,0,-0.9]`, tutma pad'inin ARKASINDA → tutar tutmaz akmaz; `WAITER_UP_RADIUS 1.0`). `waiterLevel`
+   PERSIST → **SAVE_VERSION 14→15 + v14→v15** (eksikse 0, clamp). `FILL_WAITER` dwell dolum (biriken ₺ korunur). Scene `WaiterUpgradeMarker`
+   (altın sade işaret, L2'de kaybolur). Ekonomi DEĞİŞMEZ (sim 84sn sabit).
+2. **D-019 madde 4 — YENİ-ÖZELLİK BİLDİRİMİ:** özellik İLK açılınca üst-orta toast (`notice`, HUD `.notice` pop). `revealKeys` helper +
+   `revealSeen` baseline init'te kurulur → yeniden-yükleme spam'ı YOK (persist gerekmez). Reveal: çay yükseltme / garson / bulaşıkçı /
+   garson hız / masa yükseltme (omurga masa pad'leri HARİÇ — onlar nextStep).
+3. **D-017 §6 — KAMERA DAMPING:** CameraRig kare-hızı BAĞIMSIZ damping `1-exp(-8·dt)` konuma VE pürüzsüz lookAt hedefine AYNI katsayı
+   (rijit offset → sallanma yok) + dt clamp + fit/d yalnız resize'da + ilk kare anında yerleşir.
+
+**Doğrulama:** Vitest **69/69**, build temiz, sim **84sn SABİT**, smoke **22/22** (garson L1→L2 + reveal upgrade/opt:waiter/waiterUp/
+opt:dishwasher/tableUp), konsol temiz, Playwright ekran görüntüsü ile görsel kontrol (4 masa + sade yükseltme işaretleri + toast üretildi).
+SAVE_VERSION **15**.
+
+### >>> SIRADAKİ (kullanıcı planı) <<<
+Kullanıcı: "tek zonedakileri tamamla → ben uçtan uca test edeyim → bulgularla OPSİYONEL bir ara-faz olabilir → sonra Faz 3 (zone çoğaltma)."
+**Bu oturumda Faz 2 tek-zone TAMAMLANDI.** Sonraki adım: **kullanıcı oyunu baştan sona oynayıp test etsin** (gözle onay + his). Bulgular
+gelirse önce onları gider (ara-faz), yoksa **Faz 3a (zone çoğaltma / kat-ızgara modeli, D-016)** başlar. Henüz commit/push YAPILMADI
+(kullanıcı test etmeden bekletiliyor; "oturumu bitir" denince oturum-bitir protokolü çalışır).
+
+**ÖNİZLEME:** `npm run dev` → http://localhost:5200/ (port değişebilir). Test edilecekler: garson tut → garson hız noktasında (sol kenar,
+tutma yerinin arkasında) L2 yap; her yeni özellik açılınca toast çıkıyor mu; yürürken kamera sallanmıyor mu; masa/çay/garson yükseltme akışı.
+
+---
+## (önceki) D-019 madde 2-3 (reveal sırası + gating) + L1-başlangıç
 **Pad/yükseltme ÇIKIŞ SIRASI sadeleştirildi (kullanıcı: "2. masa açılınca birden 4 yükseltme geldi").** Yeni reveal:
 başta sadece 2.Masa → 2.Masa açılınca **çay ocağı yükseltme + 3.Masa** → ocak bir kez yükselince **garson** belirir
 → 3.Masa açılınca **bulaşıkçı** → **4 masa da açılınca masa yükseltme işaretleri** (geç oyun). Böylece 2.masada 4 işaret

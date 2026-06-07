@@ -13,7 +13,7 @@
  *   L5 (Usta)   = masterDiamondCost 💎 VEYA 1 ödüllü video; outputMult yerine masterOutputMult
  */
 
-export const SAVE_VERSION = 14;
+export const SAVE_VERSION = 15;
 
 export const CURRENCY = {
   soft: '₺', // Para — müşteriden kazanılır
@@ -146,11 +146,21 @@ export const economyConfig = {
    * Ocaktan tek çay alır, en yakın bekleyen müşteriye götürür, döner (D-012 bölge-başı personel).
    */
   waiter: {
-    /** Hareket hızı (dünya birimi/sn). Oyuncudan (player.moveSpeed 4.5) yavaş = kısmi assist.
-     *  (2g: 1.8→1.5→1.4 küçültüldü; ALAN BÜYÜYÜNCE çok yavaş kaldı → kullanıcı isteğiyle eski 1.8'e döndü.) */
-    moveSpeed: 1.8,
+    /**
+     * Seviye-başı hareket hızı (dünya birimi/sn; index = waiterLevel). L1 (taban) = garson tutulunca;
+     * L2 = mekânsal yükseltme ile (D-018 §7). Oyuncudan (player.moveSpeed 4.5) HER seviyede yavaş =
+     * kısmi assist korunur (D-014: garson tek başına büyüyen mekânı döndüremez). L1 1.8 alan büyüyünce
+     * doğrulanmış kullanılır hız; L2 2.6 belirgin hızlanma ama hâlâ oyuncunun çok altında.
+     */
+    moveSpeedByLevel: [1.8, 2.6],
     /** Tepsi kapasitesi (tek seferde taşıdığı çay). Oyuncununkinden küçük. */
     trayCapacity: 1,
+    /** Garson L2 yükseltme maliyeti (₺). Tek seviye (L1→L2); L3+ Faz 4 (💎/video). */
+    upgradeCost: 200,
+    /** Mekânsal garson yükseltme noktasında saniyede cüzdandan akan ₺. */
+    upgradeFillRate: 60,
+    /** Yükseltme noktası önkoşulu: garson tutulmuş olmalı (tutulunca belirir). */
+    upgradeRequires: { prev: ['waiter'] } satisfies Requires,
   },
 
   /**
@@ -364,6 +374,17 @@ export function tableTip(level: number): number {
 /** Müşteri sabrı (sn) — masa seviyesiyle artar (taban + perLevel × seviye). Faz 2h. */
 export function tablePatience(level: number): number {
   return economyConfig.npc.patience + economyConfig.tables.patiencePerLevel * level;
+}
+
+/** Garson hareket hızı (seviye index'e göre; aşırı seviyede son değere kelepçelenir). Faz 2 D-018 §7. */
+export function waiterSpeed(level: number): number {
+  const arr = economyConfig.waiter.moveSpeedByLevel;
+  return arr[Math.min(Math.max(level, 0), arr.length - 1)];
+}
+
+/** ₺ ile çıkılabilen en yüksek garson seviyesi (index; L1=0 taban → L2=1). */
+export function waiterSoftMaxLevel(): number {
+  return economyConfig.waiter.moveSpeedByLevel.length - 1;
 }
 
 /** Verilen seviyedeki toplam çıktı çarpanı (L5 usta sıçramasını da içerir). */

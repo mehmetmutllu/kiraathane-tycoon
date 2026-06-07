@@ -247,7 +247,37 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
        masa-yük @10.2dk, 10k @35dk. "Usta" master (💎/video) Faz 4. **SAVE_VERSION 13→14 + v13→v14** (samovar padsDone+padFills'ten
        düşer; ilerleme korunur). **Vitest 61/61, build temiz, sim 84sn, smoke 20/20.** Değişen: economy.config.ts, save.ts, store.ts,
        simulate.ts, tests/logic.test.ts. (decisions.md D-018 §5.)
-     - ⏳ **SIRADAKİ → D-018 adım 6 (garson L2)** + D-019 madde 4 (yeni-özellik bildirimi: kamera zoom/pinboard) + D-017 §6 kamera damping.
+     - ✅ **D-018 adım 6 (GARSON L2 — gözle onay bekliyor):** garson hızı seviyeli `moveSpeedByLevel [1.8, 2.6]` (L1 taban/L2);
+       config `waiter.upgradeCost 200`, `upgradeFillRate 60`, `upgradeRequires prev:['waiter']`; helper `waiterSpeed`/`waiterSoftMaxLevel`.
+       Mekânsal yükseltme noktası `LAYOUT.waiterUpgradeSpot [-4.6,0,-0.9]` (tutma pad'inin z=1.5 ARKASINDA → tutar tutmaz aynı noktada
+       yükseltmeye akmaz; `WAITER_UP_RADIUS 1.0` masa-yük noktalarıyla çakışmaz). `waiterLevel` **PERSIST** → **SAVE_VERSION 14→15 +
+       v14→v15 migrasyon** (eksikse 0, soft max'a clamp). `FILL_WAITER` dolum noktası (FILL_TEA deseni, dwell — biriken ₺ korunur).
+       Scene `WaiterUpgradeMarker` (altın sade zemin işareti, L2'de kaybolur). Garson hareketi `waiterSpeed(waiterLevel)` kullanır.
+       Ekonomi DEĞİŞMEZ (garson opsiyonel/idealize; sim 84sn sabit; simulate.ts info satırı L1→L2 gösterir). devHooks waiterLevel/
+       waiterUpgradeSpotPos. **Vitest 66/66, build temiz, sim 84sn, smoke 21/21.**
+     - ✅ **D-019 madde 4 (YENİ-ÖZELLİK BİLDİRİMİ — gözle onay bekliyor):** bir ikincil özellik (çay yükseltme/garson/bulaşıkçı/garson
+       hız/masa yükseltme) İLK kez açılınca üst-orta **toast** (`notice {text,ttl 4.5}`, transient; HUD `.notice` CSS pop animasyonu,
+       `key=text` ile remount). `revealKeys(gate,hasWaiter,waiterLevel)` saf helper; `revealSeen` baseline **init'te mevcut açık
+       özelliklerle kurulur** → yeniden yüklemede spam YOK (persist GEREKMEZ). Omurga masa pad'leri DAHİL DEĞİL (nextStep ile yönlenir).
+       devHooks notice/revealSeen. **Vitest 69/69** (3 yeni: açılınca tetikler / garson reveal / baseline suppress), smoke 22/22
+       (reveal: upgrade, opt:waiter, waiterUp, opt:dishwasher, tableUp).
+     - ✅ **D-017 §6 (KAMERA DAMPING — gözle onay bekliyor):** CameraRig kök-neden fix. Eski: konum `lerp(dt*4)` kare-hızına BAĞLI +
+       `lookAt(TAM oyuncu)` → konum geriden gelirken bakış dalgalanıp dünya SALLANIYORDU. Yeni: kare-hızı BAĞIMSIZ damping `a=1-exp(-8·dt)`
+       AYNI katsayıyla hem konuma hem **pürüzsüzleştirilmiş lookAt hedefine** (rijit offset → sallanma yok) + `dt` clamp 0.05 (hitch sıçramaz)
+       + `fit/d` YALNIZ gerçek resize'da (her kare size okuması mobil viewport titremesini taşıyordu) + ilk kare `copy` (başlangıç sıçraması yok).
+       (Görsel — kullanıcı gözle onaylayacak.) build temiz, smoke 22/22, konsol temiz.
+     - ✅ **FAZ 2 TEK-ZONE TAMAM (gözle onay + uçtan uca kullanıcı testi bekliyor):** D-018 (6 adım) + D-019 (4 madde) + D-017 (§1-§6)
+       bitti. Kullanıcı planı: tek zone'u uçtan uca test → bulgulara göre OPSİYONEL ara-faz → sonra Faz 3a (zone çoğaltma).
+     - ✅ **MOBİL CİLA ara-fazı (kullanıcı feedback 2026-06-07, önizleme sonrası):** (1) **drag-anywhere joystick** (ekranın her
+       yerinden sürükle; `touch-layer` + floating `.joystick`; Joystick.tsx yeniden yazıldı), (2) **alttaki `.hint` yazısı kaldırıldı**
+       (HUD + CSS), (3) **kamera BAYA yakın** (CameraRig d 9→6, portrait 1.7→1.3), (4) **üst chip'ler responsive** (`.hud-top` flex-wrap +
+       portrait media query), (5) **sokak/kapı z-fighting fix** (Scene Street düzlemleri y-ayrımı+polygonOffset; kapı çerçevesi duvar önüne).
+       Playwright portrait + drag-anywhere doğrulandı. Değişen: Joystick.tsx, HUD.tsx, Scene.tsx, index.css. vitest 69/69, smoke 22/22.
+     - ✅ **ANDROID APK (Capacitor 8.4 — Faz 7 öne çekildi; kullanıcı cihazda test + arkadaşına gönderecek):** `cap init`
+       (`com.kosekiraathanesi.game`, webDir dist) + `cap add android` → **debug APK derlendi** (`KoseKiraathanesi-debug.apk` ~4.6MB,
+       kök, git-ignored). Ortam: SDK `C:\flutter\bin` (local.properties), build JDK = Android Studio JBR 21 (gradle.properties;
+       sistem JDK 23 AGP'yi kırar). Script'ler: `npm run apk` (yeniden derle), `npm run dev:host` (telefon tarayıcısı LAN testi),
+       `npm run cap:sync`. Detay: architecture.md. (Faz 7 tam cila — instancing/atlas/60fps/AdMob/IAP — sonraya kalır.)
      (Orijinal sıra:) (1) bug-fix kapı z-fighting + table2-kararma (Suspense) → (2) TRAY YÜKSELTME KALDIR (tepsi sabit 2) → (3)
      KESİK-KÖŞELİ zemin kartı + masa yükseltme MERKEZDEN KENARA (sol→sol/sağ→sağ, orta boş) + DWELL (~1.5sn, üstünden geçince para
      gitmesin) → (4) sıralı reveal zinciri (yakınlık-gizleme YOK) → (5) SEMAVER=OCAK L4 (premium 💎/video, kilitli; ayrı pad kalkar;

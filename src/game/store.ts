@@ -12,6 +12,8 @@ import {
   tableTip,
   tablePatience,
   derivedFromPads,
+  waiterSpeed,
+  waiterSoftMaxLevel as waiterSoftMaxLevelCfg,
   type PadDef,
   type GateState,
   type Requires,
@@ -61,6 +63,10 @@ export const LAYOUT = {
   upgradeZone: [-1.6, 0, -3.0] as Vec3,
   // Garson boştayken bekleyeceği köşe (sol-kenar, pad'inin arkası).
   waiterHome: [-4.6, 0, -1.6] as Vec3,
+  // Garson hız yükseltme noktası (D-018 §6): garson köşesinde, tutma pad'inin (z=1.5) ARKASINDA (z=-0.9) →
+  // garson tutar tutmaz aynı noktada yükseltmeye akmaz (ayrı bilinçli adım). Masa-yükseltme noktalarından
+  // (∓3.7 @ z=0/3) ve pickup/çay-yükseltme'den uzak (çakışma yok).
+  waiterUpgradeSpot: [-4.6, 0, -0.9] as Vec3,
   // Bulaşık noktası (Faz 2e): mutfak kümesi, ocağın sağında BİTİŞİK (D-017 §1: ocaktan AYRILMAZ).
   // ocaktan dist 2.2 → footprint'ler çakışmaz ama mutfak kümesi olarak yan yana (kirli yıkama mutfakta).
   dishStation: [0.6, 0, -4.8] as Vec3,
@@ -211,9 +217,12 @@ const NPC_SPEED = 2.6;
 const PAD_RADIUS = 1.3;
 // Masa-başı yükseltme noktasının yarıçapı (Faz 2h). Pad'lerden küçük → komşu masanın noktasını tetiklemez.
 const TABLE_UP_RADIUS = 1.0;
+// Garson hız yükseltme noktasının yarıçapı (D-018 §6). Komşu masa-yükseltme noktasıyla çakışmayacak küçüklükte.
+const WAITER_UP_RADIUS = 1.0;
 // DWELL kanonik dolum-noktası id'leri (D-018 §2): pad'ler kendi id'sini kullanır; bunlar yükseltme noktaları.
 export const FILL_TEA = 'tea';
 export const FILL_TABLE = 'tableUp:'; // gerçek id = FILL_TABLE + masaIndex (ör. 'tableUp:0')
+export const FILL_WAITER = 'waiterUp'; // garson hız yükseltme noktası (D-018 §6)
 const SAVE_INTERVAL = 2; // sn
 const NPC_COLORS = ['#c0392b', '#27ae60', '#2980b9', '#8e44ad', '#d35400', '#16a085'];
 
@@ -298,6 +307,29 @@ export interface ActiveZone {
   cost: number;
 }
 
+/** Yeni-özellik bildirimi (D-019 §4): bir özellik İLK kez açılınca beliren kısa toast (ttl = kalan sn). */
+export interface GameNotice {
+  text: string;
+  ttl: number;
+}
+
+/**
+ * Şu an açık olan "yeni-özellik" reveal anahtarları (D-019 §4). Bir anahtar revealSeen'de YOKKEN belirirse
+ * toast tetiklenir. revealSeen baseline init'te mevcut açık özelliklerle kurulur → yeniden yüklemede zaten
+ * açık olanlar tekrar bildirmez (persist gerekmez). Omurga masa pad'leri DAHİL DEĞİL (onlar nextStep ile
+ * yönlendirilir; bildirim yalnız ikincil özellikler: yükseltmeler + opsiyonel personel).
+ */
+function revealKeys(g: GateState, hasWaiter: boolean, waiterLevel: number): [string, string][] {
+  const out: [string, string][] = [];
+  if (requiresMet(C.teaStation.upgradeRequires, g) && g.stationLevel < stationSoftMaxLevel())
+    out.push(['upgrade', 'Yeni: Çay ocağını yükseltebilirsin ☕']);
+  for (const op of availableOptionalPads(g)) out.push([`opt:${op.id}`, `Yeni: ${op.label} 🔓`]);
+  if (hasWaiter && waiterUpgradeUnlocked(g, waiterLevel))
+    out.push(['waiterUp', 'Yeni: Garsonu hızlandırabilirsin ⚡']);
+  if (tableUpgradeZoneUnlocked(g)) out.push(['tableUp', 'Yeni: Masaları yükseltebilirsin 🪑']);
+  return out;
+}
+
 export interface GameState {
   // Kalıcı
   wallet: Decimal;
@@ -308,6 +340,8 @@ export interface GameState {
   stationLevel: number;
   /** Masa-başı yükseltme seviyeleri (Faz 2h; persist; index = masa slotu; bahşiş + sabır). My Hotel oda mantığı. */
   tableLevels: number[];
+  /** Garson hız yükseltme seviyesi (D-018 §6; persist; 0 = taban, 1 = L2). Garson tutulduysa anlamlı. */
+  waiterLevel: number;
   serviceSpeedMult: number;
   padsDone: string[];
   /** Aktif pad'lerin kısmi dolumu (pad id → ₺). Eş zamanlı omurga + opsiyonel için kayıt (v5). */
@@ -340,7 +374,13 @@ export interface GameState {
   upgradeFill: number;
   /** Masa-başı yükseltme noktalarındaki kısmi dolum (transient; index = masa slotu). */
   tableUpgradeFills: number[];
+  /** Garson hız yükseltme noktasındaki kısmi dolum (transient; D-018 dwell — çıkınca sıfırlanmaz). */
+  waiterUpgradeFill: number;
   activeZone: ActiveZone | null;
+  /** Yeni-özellik toast'u (D-019 §4) — transient; null ise gösterilmez. */
+  notice: GameNotice | null;
+  /** Bu oturumda zaten bildirilmiş reveal anahtarları (transient; init'te açık olanlarla doldurulur). */
+  revealSeen: string[];
   nextStepLabel: string;
   offlineEarned: number;
   // Dahili
@@ -404,6 +444,15 @@ export function nextStep(g: GateState): string {
   return 'Tüm açılışlar tamam ✓';
 }
 
+/** ₺ ile çıkılabilen en yüksek garson seviyesi (index; L1=0 taban → L2=1). */
+export const waiterSoftMaxLevel = waiterSoftMaxLevelCfg;
+/** Garson L2 yükseltme maliyeti (₺). */
+export const waiterUpgradeCost = () => C.waiter.upgradeCost;
+/** Garson hız yükseltme noktası şu an aktif mi (garson tutuldu + seviye max değil)? */
+export function waiterUpgradeUnlocked(g: GateState, level: number): boolean {
+  return requiresMet(C.waiter.upgradeRequires, g) && level < waiterSoftMaxLevelCfg();
+}
+
 /** ₺ ile çıkılabilen en yüksek istasyon seviyesi (L5 = Usta, 💎/video — Faz 4). */
 export const stationSoftMaxLevel = () => C.teaStation.upgrade.masterLevel - 1;
 /** Mevcut seviyeden bir sonraki ₺ yükseltmenin maliyeti. */
@@ -417,6 +466,7 @@ export const useGame = create<GameState>((set, get) => ({
   stations: 1,
   stationLevel: 0,
   tableLevels: LAYOUT.tables.map(() => 0),
+  waiterLevel: 0,
   serviceSpeedMult: 1,
   padsDone: [],
   padFills: {},
@@ -436,7 +486,10 @@ export const useGame = create<GameState>((set, get) => ({
   carriedDirty: 0,
   upgradeFill: 0,
   tableUpgradeFills: LAYOUT.tables.map(() => 0),
+  waiterUpgradeFill: 0,
   activeZone: null,
+  notice: null,
+  revealSeen: [],
   nextStepLabel: '',
   offlineEarned: 0,
   spawnTimer: 1,
@@ -471,6 +524,7 @@ export const useGame = create<GameState>((set, get) => ({
       stationLevel: save.stationLevel,
       // Masa-başı seviyeleri: slot sayısına normalize et + her birini soft max'a clamp'le.
       tableLevels: LAYOUT.tables.map((_, i) => Math.min(save.tableLevels[i] ?? 0, tableSoftMaxLevel())),
+      waiterLevel: Math.min(save.waiterLevel ?? 0, waiterSoftMaxLevelCfg()),
       serviceSpeedMult: derived.serviceSpeedMult,
       padsDone: [...save.padsDone],
       padFills: { ...save.padFills },
@@ -492,7 +546,15 @@ export const useGame = create<GameState>((set, get) => ({
       carriedDirty: 0,
       upgradeFill: 0,
       tableUpgradeFills: LAYOUT.tables.map(() => 0),
+      waiterUpgradeFill: 0,
       activeZone: null,
+      notice: null,
+      // revealSeen baseline: yüklemede ZATEN açık olan özellikler bildirilmiş sayılır (yeniden yükleme spam'ı yok).
+      revealSeen: revealKeys(
+        { padsDone: save.padsDone, tables: derived.tables, stationLevel: save.stationLevel, lifetime: lifetime.toNumber() },
+        derived.hasWaiter,
+        Math.min(save.waiterLevel ?? 0, waiterSoftMaxLevelCfg()),
+      ).map(([k]) => k),
       nextStepLabel: nextStep({
         padsDone: save.padsDone,
         tables: derived.tables,
@@ -534,6 +596,7 @@ export const useGame = create<GameState>((set, get) => ({
     let upgradeFill = s.upgradeFill;
     let activeZone: ActiveZone | null = null;
     let stationLevel = s.stationLevel;
+    let waiterLevel = s.waiterLevel;
     const tableLevels = s.tableLevels.slice(); // masa-başı seviyeler (kopya; bu tick'te yükseltilebilir)
     let readyCups = s.readyCups;
     let brewProgress = s.brewProgress;
@@ -541,6 +604,9 @@ export const useGame = create<GameState>((set, get) => ({
     let cleanCups = s.cleanCups;
     let carriedDirty = s.carriedDirty;
     const tableUpgradeFills = s.tableUpgradeFills.slice();
+    let waiterUpgradeFill = s.waiterUpgradeFill;
+    let notice = s.notice;
+    let revealSeen = s.revealSeen;
     let nextId = s.nextId;
     let spawnTimer = s.spawnTimer - dt;
 
@@ -737,7 +803,7 @@ export const useGame = create<GameState>((set, get) => ({
       const w: Waiter = waiter
         ? { pos: [...waiter.pos] as Vec3, tray: waiter.tray }
         : { pos: [...LAYOUT.waiterHome] as Vec3, tray: 0 };
-      const wStep = C.waiter.moveSpeed * dt;
+      const wStep = waiterSpeed(waiterLevel) * dt;
       const wTrayCap = C.waiter.trayCapacity;
       // Garson kirli masaya çay GÖTÜRMEZ (D-019): o masa temizlenene kadar teslimat hedefi sayılmaz
       // (oyuncu hâlâ elle servis edebilir; kirli masa baskısı garsonu da kapsar).
@@ -837,6 +903,21 @@ export const useGame = create<GameState>((set, get) => ({
 
     const upgradeUnlocked = upgradeZoneUnlocked(padGate) && stationLevel < stationSoftMaxLevel();
     const tableUnlocked = tableUpgradeZoneUnlocked(padGate);
+    const waiterUpUnlocked = hasWaiter && waiterUpgradeUnlocked(padGate, waiterLevel);
+
+    // --- Yeni-özellik bildirimi (D-019 §4) ---
+    // Bir ikincil özellik (yükseltme/personel) İLK kez açıldığında kısa toast. revealSeen baseline init'te
+    // kurulduğu için zaten açık olanlar tekrar bildirmez (yeniden-yükleme spam'ı yok; persist gerekmez).
+    for (const [key, text] of revealKeys(padGate, hasWaiter, waiterLevel)) {
+      if (!revealSeen.includes(key)) {
+        revealSeen = [...revealSeen, key];
+        notice = { text, ttl: 4.5 };
+      }
+    }
+    if (notice) {
+      const ttl = notice.ttl - dt;
+      notice = ttl > 0 ? { text: notice.text, ttl } : null;
+    }
 
     // Oyuncu DURUYOR mu? (input ~0). Para yalnız dururken akar → üstünden geçerken (hareket) alınmaz.
     const fillReady = Math.hypot(input[0], input[1]) <= 0.1;
@@ -848,6 +929,7 @@ export const useGame = create<GameState>((set, get) => ({
       if (pp && dist2D(player, pp) < PAD_RADIUS) { onFillId = pad.id; break; }
     }
     if (!onFillId && upgradeUnlocked && dist2D(player, LAYOUT.upgradeZone) < PAD_RADIUS) onFillId = FILL_TEA;
+    if (!onFillId && waiterUpUnlocked && dist2D(player, LAYOUT.waiterUpgradeSpot) < WAITER_UP_RADIUS) onFillId = FILL_WAITER;
     if (!onFillId && tableUnlocked) {
       for (let i = 0; i < tables; i++) {
         if (tableLevels[i] >= tableSoftMaxLevel()) continue;
@@ -918,6 +1000,30 @@ export const useGame = create<GameState>((set, get) => ({
       };
     }
 
+    // --- Mekânsal garson hız yükseltme (D-018 §6): garsonu tuttuğun noktada dur → garson L2 hızlanır.
+    // Biriken ₺ KORUNUR (çıkınca sıfırlanmaz; D-018 dwell). Tek seviye (L1→L2); sonrası max → işaret kapanır.
+    if (onFillId === FILL_WAITER) {
+      const cost = C.waiter.upgradeCost;
+      if (fillReady && wallet.gt(0)) {
+        const amt = Math.min(C.waiter.upgradeFillRate * dt, wallet.toNumber(), cost - waiterUpgradeFill);
+        if (amt > 0) {
+          waiterUpgradeFill += amt;
+          wallet = wallet.sub(amt);
+        }
+      }
+      if (waiterUpgradeFill >= cost) {
+        waiterLevel += 1;
+        waiterUpgradeFill = 0;
+      }
+      // GÖRSEL: garson L1'den başlar (iç waiterLevel 0-tabanlı; etiket +1). Soft max sonrası işaret görünmez.
+      activeZone = {
+        kind: 'upgrade',
+        label: `Garson L${waiterLevel + 1}${waiterLevel < waiterSoftMaxLevelCfg() ? ` → L${waiterLevel + 2} (hız)` : ''}`,
+        fill: waiterUpgradeFill,
+        cost,
+      };
+    }
+
     // --- Mekânsal masa yükseltme (Faz 2h, MASA-BAŞI / My Hotel): açık masanın KENARINDAKİ noktada dur → o masanın
     // bahşişi + sabrı artar. Gating: 2. masa açılınca belirir (D-018 §1: işaretler kenara taşındı). ---
     if (onFillId != null && onFillId.startsWith(FILL_TABLE)) {
@@ -972,6 +1078,7 @@ export const useGame = create<GameState>((set, get) => ({
       stations: out.stations,
       stationLevel,
       tableLevels,
+      waiterLevel,
       serviceSpeedMult: out.serviceSpeedMult,
       padsDone,
       padFills,
@@ -979,7 +1086,10 @@ export const useGame = create<GameState>((set, get) => ({
       hasDishwasher: out.hasDishwasher,
       upgradeFill,
       tableUpgradeFills,
+      waiterUpgradeFill,
       activeZone,
+      notice,
+      revealSeen,
       nextStepLabel,
       player,
       waiter,
@@ -1030,6 +1140,7 @@ export const useGame = create<GameState>((set, get) => ({
       lifetime: s.lifetime.toString(),
       stationLevel: s.stationLevel,
       tableLevels: [...s.tableLevels],
+      waiterLevel: s.waiterLevel,
       padsDone: [...s.padsDone],
       padFills: { ...s.padFills },
       lastSaved: Date.now(),

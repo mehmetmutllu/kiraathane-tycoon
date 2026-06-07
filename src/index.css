@@ -40,20 +40,23 @@ body,
   position: absolute;
   top: 12px;
   left: 12px;
+  right: 12px;
   display: flex;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .chip {
   background: rgba(0, 0, 0, 0.55);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 999px;
-  padding: 8px 14px;
-  font-size: 18px;
+  padding: 6px 11px;
+  font-size: 16px;
   font-weight: 700;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
+  white-space: nowrap;
   backdrop-filter: blur(4px);
 }
 
@@ -73,6 +76,36 @@ body,
   border-radius: 8px;
   font-size: 14px;
   font-weight: 600;
+}
+
+/* Yeni-özellik bildirimi (D-019 §4): üst-orta toast, açılışta hafif pop, ardından store ttl ile kaybolur */
+.notice {
+  position: absolute;
+  left: 50%;
+  top: 64px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, rgba(255, 179, 0, 0.95), rgba(245, 124, 0, 0.95));
+  color: #1a1208;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  padding: 9px 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 800;
+  white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+  animation: noticePop 0.32s cubic-bezier(0.18, 0.9, 0.3, 1.3) both;
+}
+
+@keyframes noticePop {
+  0% {
+    transform: translateX(-50%) translateY(-10px) scale(0.85);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(-50%) translateY(0) scale(1);
+    opacity: 1;
+  }
 }
 
 .next-step {
@@ -270,30 +303,29 @@ body,
   opacity: 0.95;
 }
 
-.hint {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 12px;
-  opacity: 0.7;
-  text-align: center;
-  width: 70%;
-  pointer-events: none;
+/* ---- Drag-anywhere dokunmatik kontrol ---- */
+/* Tüm ekranı kaplayan görünmez pointer katmanı (parmak her yerden hareket başlatır). */
+.touch-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  touch-action: none;
+  pointer-events: auto;
+  background: transparent;
 }
 
-/* ---- Joystick ---- */
+/* Joystick parmağın bastığı yerde BELİRİR (left/top JS ile origin'e ayarlanır, transform ile merkezlenir). */
 .joystick {
-  position: absolute;
-  left: 24px;
-  bottom: 24px;
+  position: fixed;
   width: 130px;
   height: 130px;
+  margin: 0;
+  transform: translate(-50%, -50%);
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.08);
-  border: 2px solid rgba(255, 255, 255, 0.18);
-  touch-action: none;
-  z-index: 10;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  pointer-events: none;
+  z-index: 6;
 }
 
 .joystick-knob {
@@ -304,8 +336,8 @@ body,
   height: 56px;
   margin: -28px 0 0 -28px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.35);
-  border: 2px solid rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.38);
+  border: 2px solid rgba(255, 255, 255, 0.55);
 }
 
 /* ---- Mobil yön desteği (portrait birincil, landscape destekli, kilit yok) ---- */
@@ -319,38 +351,27 @@ body,
     top: calc(12px + env(safe-area-inset-top));
     right: calc(12px + env(safe-area-inset-right));
   }
-  .joystick {
-    left: calc(24px + env(safe-area-inset-left));
-    bottom: calc(24px + env(safe-area-inset-bottom));
-  }
 }
 
 /* Kısa yatay ekran (telefon landscape): UI küçült, çakışmayı önle */
 @media (orientation: landscape) and (max-height: 480px) {
   .chip {
-    font-size: 15px;
-    padding: 6px 10px;
+    font-size: 14px;
+    padding: 5px 9px;
   }
   .pad-status {
     width: 180px;
     padding: 8px 10px;
   }
-  .joystick {
-    width: 110px;
-    height: 110px;
-  }
-  .joystick-knob {
-    width: 48px;
-    height: 48px;
-    margin: -24px 0 0 -24px;
-  }
-  .hint {
-    font-size: 11px;
-  }
 }
 
-/* Çok dar dikey ekran: pad kutusunu daralt */
-@media (orientation: portrait) and (max-width: 380px) {
+/* Dar dikey ekran (telefon portrait): chip'ler taşmasın, daha küçük */
+@media (orientation: portrait) and (max-width: 480px) {
+  .chip {
+    font-size: 13px;
+    padding: 5px 9px;
+    gap: 4px;
+  }
   .pad-status {
     width: 170px;
   }

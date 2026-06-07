@@ -1,7 +1,7 @@
-import { Suspense, useMemo } from 'react';
+import { Suspense, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Vector3 } from 'three';
-import { useGame, LAYOUT, stationSoftMaxLevel, stationUpgradeCost, upgradeZoneUnlocked, tableSoftMaxLevel, tableUpgradeZoneUnlocked, tableNextCost } from '../../game/store';
+import { useGame, LAYOUT, stationSoftMaxLevel, stationUpgradeCost, upgradeZoneUnlocked, tableSoftMaxLevel, tableUpgradeZoneUnlocked, tableNextCost, waiterSoftMaxLevel, waiterUpgradeCost } from '../../game/store';
 import { GroundMarker } from './GroundMarker';
 import { Player } from './Player';
 import { Waiter } from './Waiter';
@@ -23,19 +23,43 @@ function Simulation() {
 // Kamera sahip karakterini yumuşak takip eder (omuz-üstü izometrik).
 // Ekran oranına göre çerçeveler: portrait (dar) → kamera geri çekilir; landscape → normal.
 // Yön kilidi yok; çevirince otomatik uyum sağlar.
+// D-017 §6 (kamera sallanması fix): eski kod konumu kare-hızına BAĞLI lerp'lerken lookAt'ı TAM oyuncuya
+// nişanlıyordu → konum geriden gelirken bakış yönü dalgalanıp dünya SALLANIYORDU. Çözüm: kare-hızı BAĞIMSIZ
+// damping (1-exp(-k·dt)) AYNI katsayıyla hem konuma hem lookAt hedefine uygulanır → kamera↔hedef offset'i
+// rijit kalır (sallanma yok) + dt clamp (hitch sıçramaz) + fit/d YALNIZ gerçek resize'da (her kare size
+// okuması mobil viewport titremesini kameraya taşırdı).
 function CameraRig() {
   const { camera, size } = useThree();
-  const target = useMemo(() => new Vector3(), []);
   const desired = useMemo(() => new Vector3(), []);
-  useFrame((_, dt) => {
+  const look = useMemo(() => new Vector3(), []); // pürüzsüzleştirilmiş lookAt hedefi (oyuncuyla aynı damping)
+  const tmp = useMemo(() => new Vector3(), []);
+  const st = useRef({ d: 0, w: 0, h: 0, ready: false });
+  useFrame((_, rawDt) => {
+    const dt = Math.min(Math.max(rawDt, 0), 0.05); // clamp: kare atlamasında kamera sıçramasın
     const p = useGame.getState().player;
-    const aspect = size.width / Math.max(1, size.height);
-    const fit = aspect < 1 ? Math.min(1.7, Math.max(1, 1 / aspect)) : 1;
-    const d = 9 * fit; // 2g v5 (D-016): büyük alan → kamera geri (karakterler alana göre küçük görünür)
-    target.set(p[0], 0.6, p[2]);
+    // fit/d YALNIZ ekran boyutu gerçekten değişince (resize/orientation) hesaplanır.
+    if (size.width !== st.current.w || size.height !== st.current.h) {
+      st.current.w = size.width;
+      st.current.h = size.height;
+      const aspect = size.width / Math.max(1, size.height);
+      // Kullanıcı isteği (2026-06-07): kadraj BAYA daha yakın (özellikle mobil). Taban d 9→6; portrait'te
+      // dar ekran için ölçülü geri çekme (eski 1.7 cap çok uzaklaştırıyordu → 1.3).
+      const fit = aspect < 1 ? Math.min(1.3, 1 / aspect) : 1;
+      st.current.d = 6 * fit;
+    }
+    const d = st.current.d;
     desired.set(p[0], d, p[2] + d);
-    camera.position.lerp(desired, Math.min(1, dt * 4));
-    camera.lookAt(target);
+    tmp.set(p[0], 0.6, p[2]);
+    if (!st.current.ready) {
+      camera.position.copy(desired); // ilk kare: anında yerleş (başlangıç lerp sıçraması olmasın)
+      look.copy(tmp);
+      st.current.ready = true;
+    } else {
+      const a = 1 - Math.exp(-8 * dt); // kare-hızı bağımsız damping katsayısı (konum + lookAt AYNI k)
+      camera.position.lerp(desired, a);
+      look.lerp(tmp, a);
+    }
+    camera.lookAt(look);
   });
   return null;
 }
@@ -142,6 +166,28 @@ function TableUpgradeMarkers() {
   );
 }
 
+// Garson hız yükseltme işareti (D-018 §6): garson tutulunca, tuttuğun noktada belirir (altın = yükseltme).
+// Tek seviye (L1→L2); L2'ye çıkınca işaret kaybolur. Sade zemin işareti (D-017 §2).
+function WaiterUpgradeMarker() {
+  const hasWaiter = useGame((s) => s.hasWaiter);
+  const waiterLevel = useGame((s) => s.waiterLevel);
+  const fill = useGame((s) => s.waiterUpgradeFill);
+  const wallet = useGame((s) => s.wallet);
+  if (!hasWaiter || waiterLevel >= waiterSoftMaxLevel()) return null;
+  const cost = waiterUpgradeCost();
+  return (
+    <GroundMarker
+      pos={LAYOUT.waiterUpgradeSpot}
+      label="Garson Hız"
+      sub={`₺${cost}`}
+      tint="#ffce54"
+      radius={0.6}
+      progress={fill / cost}
+      afford={wallet.toNumber() >= cost}
+    />
+  );
+}
+
 function Ground() {
   return (
     <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
@@ -193,18 +239,19 @@ function Walls() {
         <boxGeometry args={[rightFrontW, h, t]} />
         <meshStandardMaterial {...common} />
       </mesh>
-      {/* kapı sövesi (boşluğun üstünde lento) — ön duvarla eş-düzlem z-fighting'i için hafif ÖNE (dışa) offset */}
-      <mesh position={[0, h - 0.12, z1 + 0.06]}>
-        <boxGeometry args={[doorHalf * 2 + 0.3, 0.24, t]} />
+      {/* kapı sövesi (boşluğun üstünde lento) — ön duvarın TAMAMEN ÖNÜNDE (z1+t/2=0.1 → merkez z1+0.22, derinlik
+          azaltıldı) → duvar gövdesiyle KESİŞMEZ (eski +0.06 kesişip titriyordu); ince derinlik dış cephede durur. */}
+      <mesh position={[0, h - 0.12, z1 + 0.22]}>
+        <boxGeometry args={[doorHalf * 2 + 0.3, 0.24, 0.12]} />
         <meshStandardMaterial color="#8d6e63" />
       </mesh>
-      {/* kapı çerçevesi (iki yan direk) — aynı offset ile ön duvar yüzeyiyle çakışmaz */}
-      <mesh position={[-doorHalf, h / 2, z1 + 0.06]}>
-        <boxGeometry args={[0.12, h, t]} />
+      {/* kapı çerçevesi (iki yan direk) — duvarın önünde, kesişmesiz */}
+      <mesh position={[-doorHalf, h / 2, z1 + 0.22]}>
+        <boxGeometry args={[0.12, h, 0.12]} />
         <meshStandardMaterial color="#6d4c41" />
       </mesh>
-      <mesh position={[doorHalf, h / 2, z1 + 0.06]}>
-        <boxGeometry args={[0.12, h, t]} />
+      <mesh position={[doorHalf, h / 2, z1 + 0.22]}>
+        <boxGeometry args={[0.12, h, 0.12]} />
         <meshStandardMaterial color="#6d4c41" />
       </mesh>
     </group>
@@ -217,23 +264,26 @@ function Street() {
   const a = LAYOUT.area;
   const z1 = a.maxZ + 0.5; // ön duvar hattı
   const buildingColors = ['#7e6b8f', '#6b8f7e', '#8f7e6b', '#6b7d8f', '#8f6b7d'];
+  // z-fighting fix (kullanıcı: "sokakta/kapıda hareket ederken parazitlenme"): sokak düzlemleri zemin (y=0) ile
+  // EŞ-DÜZLEM olunca titriyordu (asfalt zemin kenarıyla çakışıyordu). Net y ayrımı (≥0.02) + polygonOffset →
+  // kamera hareket ederken titreme biter. Sokak düzlemleri opak → altındaki zemini kapatır (boşluk görünmez).
   return (
     <group>
       {/* kaldırım şeridi (kapının hemen önü) */}
-      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.005, z1 + 1.2]}>
+      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.04, z1 + 1.2]}>
         <planeGeometry args={[24, 2.4]} />
-        <meshStandardMaterial color="#9e9e9e" />
+        <meshStandardMaterial color="#9e9e9e" polygonOffset polygonOffsetFactor={-2} polygonOffsetUnits={-2} />
       </mesh>
       {/* asfalt cadde */}
-      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, z1 + 5.5]}>
+      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, z1 + 5.5]}>
         <planeGeometry args={[40, 6]} />
-        <meshStandardMaterial color="#37424a" />
+        <meshStandardMaterial color="#37424a" polygonOffset polygonOffsetFactor={-1} polygonOffsetUnits={-1} />
       </mesh>
       {/* yol orta çizgileri */}
       {[-8, -4, 0, 4, 8].map((x) => (
-        <mesh key={x} rotation={[-Math.PI / 2, 0, 0]} position={[x, 0.01, z1 + 5.5]}>
+        <mesh key={x} rotation={[-Math.PI / 2, 0, 0]} position={[x, 0.06, z1 + 5.5]}>
           <planeGeometry args={[1.4, 0.18]} />
-          <meshStandardMaterial color="#c9b458" />
+          <meshStandardMaterial color="#c9b458" polygonOffset polygonOffsetFactor={-3} polygonOffsetUnits={-3} />
         </mesh>
       ))}
       {/* karşı binalar (cadde ötesi cephe) */}
@@ -289,6 +339,7 @@ export function Scene() {
       <Suspense fallback={null}>
         <Pad />
         <UpgradeZone />
+        <WaiterUpgradeMarker />
         <TableUpgradeMarkers />
       </Suspense>
       <CameraRig />

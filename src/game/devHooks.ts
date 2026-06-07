@@ -74,11 +74,16 @@ export function installDevHooks(): void {
         cost: p.cost,
         pos: LAYOUT.padPos[p.id],
       })),
-      // Garson durumu (Faz 2d)
+      // Garson durumu (Faz 2d) + hız yükseltme (D-018 §6)
       hasWaiter: s.hasWaiter,
       waiterTray: s.waiter ? s.waiter.tray : 0,
       waiterPos: s.waiter ? s.waiter.pos.map((n) => +n.toFixed(2)) : null,
+      waiterLevel: s.waiterLevel,
+      waiterUpgradeSpotPos: LAYOUT.waiterUpgradeSpot,
       nextStep: s.nextStepLabel,
+      // Yeni-özellik bildirimi (D-019 §4): anlık toast metni + bu oturumda bildirilmiş reveal anahtarları.
+      notice: s.notice ? s.notice.text : null,
+      revealSeen: [...s.revealSeen],
       upgradeFill: Math.floor(s.upgradeFill),
       upgradeZonePos: LAYOUT.upgradeZone,
       activeZone: s.activeZone ? { kind: s.activeZone.kind, label: s.activeZone.label } : null,

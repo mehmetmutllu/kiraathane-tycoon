@@ -9,6 +9,7 @@ import {
   tableUpgradeCost,
   tableTip,
   tablePatience,
+  waiterSpeed,
   SAVE_VERSION,
 } from '../src/config/economy.config';
 import { D, fmt } from '../src/game/decimal';
@@ -23,6 +24,9 @@ import {
   trayCapacity,
   tableSoftMaxLevel,
   tableUpgradeZoneUnlocked,
+  waiterSoftMaxLevel,
+  waiterUpgradeCost,
+  waiterUpgradeUnlocked,
   TEA_PRICE,
   brewTime,
   dirtyTables,
@@ -298,6 +302,119 @@ describe('garson — opsiyonel kısmi assist (Faz 2d / D-012)', () => {
     // Garson en az bir müşteriye servis etti → ödeme parası yere düştü (oyuncu uzakta, toplamadı).
     expect(s.coins.length).toBeGreaterThan(0);
   });
+
+  it('garson hızı seviyeyle artar (L2 > L1); aşırı seviye son değere kelepçelenir (D-018 §6)', () => {
+    expect(waiterSpeed(1)).toBeGreaterThan(waiterSpeed(0));
+    expect(waiterSpeed(0)).toBe(economyConfig.waiter.moveSpeedByLevel[0]);
+    expect(waiterSpeed(99)).toBe(waiterSpeed(waiterSoftMaxLevel())); // clamp
+  });
+
+  it('garson hız yükseltme noktası garson TUTULMADAN kilitli, tutulunca açılır, max\'ta tekrar kilitlenir', () => {
+    useGame.getState().hardReset();
+    const g0 = { padsDone: ['table2'], tables: 2, stationLevel: 1, lifetime: 0 };
+    expect(waiterUpgradeUnlocked(g0, 0)).toBe(false); // garson yok → kilitli
+    const g1 = { padsDone: ['table2', 'waiter'], tables: 2, stationLevel: 1, lifetime: 0 };
+    expect(waiterUpgradeUnlocked(g1, 0)).toBe(true); // tutuldu → açık
+    expect(waiterUpgradeUnlocked(g1, waiterSoftMaxLevel())).toBe(false); // max → kapanır
+  });
+
+  it('garsonu tuttuğun noktada dur → ₺ akar → garson L2 olur (waiterLevel 0→1); sonra nokta kapanır', () => {
+    useGame.getState().hardReset();
+    const spot = LAYOUT.waiterUpgradeSpot;
+    useGame.setState({
+      padsDone: ['table2', 'waiter'],
+      hasWaiter: true,
+      waiter: { pos: [...LAYOUT.waiterHome] as [number, number, number], tray: 0 },
+      player: [spot[0], 0.6, spot[2]],
+      inputKeyboard: [0, 0],
+      inputJoystick: [0, 0],
+      spawnTimer: 999, // bu testte müşteri akışı karışmasın
+    });
+    useGame.getState().addMoney(waiterUpgradeCost() + 100);
+    expect(useGame.getState().waiterLevel).toBe(0);
+    for (let i = 0; i < 300 && useGame.getState().waiterLevel === 0; i++) useGame.getState().tick(0.1);
+    expect(useGame.getState().waiterLevel).toBe(1);
+    // Soft max'a ulaştı → yükseltme noktası artık kilitli (işaret kaybolur).
+    const s = useGame.getState();
+    expect(waiterUpgradeUnlocked({ padsDone: s.padsDone, tables: s.tables, stationLevel: s.stationLevel, lifetime: s.lifetime.toNumber() }, s.waiterLevel)).toBe(false);
+  });
+
+  it('waiterLevel kayıt round-trip\'inde korunur (saveNow→init persist)', () => {
+    // node test ortamında localStorage yok → geçici mock ile gerçek persistence'ı doğrula.
+    const mem: Record<string, string> = {};
+    const g = globalThis as Record<string, unknown>;
+    const orig = g.localStorage;
+    g.localStorage = {
+      getItem: (k: string) => (k in mem ? mem[k] : null),
+      setItem: (k: string, v: string) => { mem[k] = v; },
+      removeItem: (k: string) => { delete mem[k]; },
+    };
+    try {
+      useGame.getState().hardReset();
+      useGame.setState({ padsDone: ['table2', 'waiter'], waiterLevel: 1 });
+      useGame.getState().saveNow();
+      useGame.getState().init();
+      expect(useGame.getState().waiterLevel).toBe(1);
+    } finally {
+      g.localStorage = orig;
+    }
+  });
+});
+
+describe('yeni-özellik bildirimi (D-019 §4)', () => {
+  it('yeni oyunda ikincil özellik yok → revealSeen boş; bir özellik açılınca toast tetiklenir', () => {
+    useGame.getState().hardReset();
+    expect(useGame.getState().revealSeen).toEqual([]);
+    expect(useGame.getState().notice).toBeNull();
+    // 2. masa aç → çay ocağı yükseltme açılır (ikincil özellik).
+    useGame.getState().addMoney(50);
+    expect(completeCurrentPad()).toBe('table2');
+    // table2 tamamlandıktan SONRAKİ tick'te 'upgrade' reveal'ı belirir (oyuncuyu uzak köşeye park et).
+    useGame.setState({ player: [0, 0.6, 2], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+    useGame.getState().tick(0.1);
+    expect(useGame.getState().revealSeen).toContain('upgrade');
+    expect(useGame.getState().notice).not.toBeNull();
+  });
+
+  it('garson tutulabilir olunca \'opt:waiter\' bildirilir (ocak L1 sonrası reveal)', () => {
+    useGame.getState().hardReset();
+    useGame.getState().addMoney(50);
+    completeCurrentPad(); // table2
+    useGame.getState().addMoney(1000);
+    expect(useGame.getState().upgradeStation()).toBe(true); // ocak L1 → garson reveal'ı açılır
+    useGame.setState({ player: [0, 0.6, 2], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+    useGame.getState().tick(0.1);
+    expect(useGame.getState().revealSeen).toContain('opt:waiter');
+  });
+
+  it('yeniden yüklemede ZATEN açık özellikler tekrar bildirilmez (baseline; spam yok)', () => {
+    const mem: Record<string, string> = {};
+    const g = globalThis as Record<string, unknown>;
+    const orig = g.localStorage;
+    g.localStorage = {
+      getItem: (k: string) => (k in mem ? mem[k] : null),
+      setItem: (k: string, v: string) => { mem[k] = v; },
+      removeItem: (k: string) => { delete mem[k]; },
+    };
+    try {
+      useGame.getState().hardReset();
+      // table2 açık + ocak L1 → çay yükseltme + garson zaten açık bir kayıt.
+      useGame.setState({ padsDone: ['table2'], stationLevel: 1 });
+      useGame.getState().saveNow();
+      useGame.getState().init();
+      const s = useGame.getState();
+      // Baseline açık özellikleri içerir → ilk açılışta toast YOK.
+      expect(s.revealSeen).toContain('upgrade');
+      expect(s.revealSeen).toContain('opt:waiter');
+      expect(s.notice).toBeNull();
+      // Park + tick → zaten açık olanlar yeniden bildirilmez.
+      useGame.setState({ player: [0, 0.6, 2], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+      useGame.getState().tick(0.1);
+      expect(useGame.getState().notice).toBeNull();
+    } finally {
+      g.localStorage = orig;
+    }
+  });
 });
 
 describe('bardak döngüsü (Faz 2e) — demleme temiz harcar, içen kirli bırakır, topla+yıka', () => {
@@ -555,7 +672,7 @@ describe('tepsi kapasitesi (D-018: yükseltme kaldırıldı → sabit 2)', () =>
   });
 });
 
-describe('kayıt migrasyonu v4..v14 (padFills, station2/samovar çıkışı, addTable senkron, türetme, trayLevel düşüşü, tableLevels)', () => {
+describe('kayıt migrasyonu v4..v15 (padFills, station2/samovar çıkışı, addTable senkron, türetme, trayLevel düşüşü, tableLevels, waiterLevel)', () => {
   it('eski tek padFill, aktif omurga pad id\'sine taşınır; türetilenler + trayLevel saklanmaz', () => {
     const m = migrate({
       saveVersion: 4,
@@ -620,6 +737,23 @@ describe('kayıt migrasyonu v4..v14 (padFills, station2/samovar çıkışı, add
     expect(m.wallet).toBe('900'); // ₺ ilerleme kaybolmaz
   });
 
+  it('v14 → v15 (D-018 adım 6): waiterLevel eklenir (eksikse 0; varsa korunup soft max\'a clamp\'lenir)', () => {
+    // Eski v14 kaydında waiterLevel YOK → 0 gelir.
+    const m = migrate({
+      saveVersion: 14, wallet: '300', diamonds: '0', lifetime: '4000',
+      stationLevel: 2, padsDone: ['table2', 'waiter'], padFills: {}, tableLevels: [],
+    } as unknown as Record<string, unknown>);
+    expect(m.saveVersion).toBe(SAVE_VERSION);
+    expect(m.waiterLevel).toBe(0);
+    // Aşırı (bozuk) waiterLevel soft max'a clamp'lenir (moveSpeedByLevel uzunluğu - 1).
+    const cap = economyConfig.waiter.moveSpeedByLevel.length - 1;
+    const m2 = migrate({
+      saveVersion: 14, wallet: '0', diamonds: '0', lifetime: '0',
+      stationLevel: 0, padsDone: ['table2', 'waiter'], padFills: {}, tableLevels: [], waiterLevel: 99,
+    } as unknown as Record<string, unknown>);
+    expect(m2.waiterLevel).toBe(cap);
+  });
+
   it('v12 → v13 (D-018): eski trayLevel persist alanı DÜŞER (tepsi sabit; şemada yok)', () => {
     const m = migrate({
       saveVersion: 12, wallet: '0', diamonds: '0', lifetime: '0',
@@ -636,6 +770,7 @@ describe('kayıt migrasyonu v4..v14 (padFills, station2/samovar çıkışı, add
     expect(d.padFills).toEqual({});
     expect((d as Record<string, unknown>).trayLevel).toBeUndefined();
     expect(d.tableLevels).toEqual([]);
+    expect(d.waiterLevel).toBe(0);
     expect((d as Record<string, unknown>).tables).toBeUndefined();
     expect((d as Record<string, unknown>).hasWaiter).toBeUndefined();
   });

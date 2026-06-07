@@ -3,54 +3,60 @@ import { useGame } from '../../game/store';
 
 const RADIUS = 55;
 
-// Sol-alt dokunmatik joystick (mobil). Masaüstünde fareyle de çalışır; klavye paraleldir.
+// Drag-anywhere dokunmatik kontrol (mobil standardı): ekranın HERHANGİ bir yerine parmak basıp sürükleyince
+// hareket eder; joystick parmağın bastığı yerde BELİRİR (sabit köşe joystick yok). Masaüstünde fareyle de çalışır;
+// klavye paraleldir. Tüm ekranı kaplayan görünmez katman pointer alır; HUD chip'leri pointer-events:none olduğundan
+// engellenmez.
 export function Joystick() {
   const setJoystick = useGame((s) => s.setJoystickInput);
-  const baseRef = useRef<HTMLDivElement>(null);
-  const [knob, setKnob] = useState({ x: 0, y: 0 });
-  const active = useRef(false);
+  const [stick, setStick] = useState<{ ox: number; oy: number; kx: number; ky: number } | null>(null);
+  const origin = useRef<{ x: number; y: number } | null>(null);
 
-  const update = (clientX: number, clientY: number) => {
-    const base = baseRef.current;
-    if (!base) return;
-    const r = base.getBoundingClientRect();
-    const cx = r.left + r.width / 2;
-    const cy = r.top + r.height / 2;
-    let dx = clientX - cx;
-    let dy = clientY - cy;
+  const move = (clientX: number, clientY: number) => {
+    const o = origin.current;
+    if (!o) return;
+    let dx = clientX - o.x;
+    let dy = clientY - o.y;
     const d = Math.hypot(dx, dy);
     if (d > RADIUS) {
       dx = (dx / d) * RADIUS;
       dy = (dy / d) * RADIUS;
     }
-    setKnob({ x: dx, y: dy });
+    setStick({ ox: o.x, oy: o.y, kx: dx, ky: dy });
     // ekran yukarı (dy<0) = ileri (z<0)
     setJoystick(+(dx / RADIUS).toFixed(3), +(dy / RADIUS).toFixed(3));
   };
 
   const end = () => {
-    active.current = false;
-    setKnob({ x: 0, y: 0 });
+    origin.current = null;
+    setStick(null);
     setJoystick(0, 0);
   };
 
   return (
     <div
-      ref={baseRef}
-      className="joystick"
+      className="touch-layer"
       data-testid="joystick"
       onPointerDown={(e) => {
-        active.current = true;
-        (e.target as HTMLElement).setPointerCapture(e.pointerId);
-        update(e.clientX, e.clientY);
+        origin.current = { x: e.clientX, y: e.clientY };
+        setStick({ ox: e.clientX, oy: e.clientY, kx: 0, ky: 0 });
+        try {
+          e.currentTarget.setPointerCapture(e.pointerId);
+        } catch {
+          /* bazı tarayıcılarda sentetik/edge pointer'da atabilir — yakalama olmadan da çalışır */
+        }
       }}
       onPointerMove={(e) => {
-        if (active.current) update(e.clientX, e.clientY);
+        if (origin.current) move(e.clientX, e.clientY);
       }}
       onPointerUp={end}
       onPointerCancel={end}
     >
-      <div className="joystick-knob" style={{ transform: `translate(${knob.x}px, ${knob.y}px)` }} />
+      {stick && (
+        <div className="joystick" style={{ left: stick.ox, top: stick.oy }}>
+          <div className="joystick-knob" style={{ transform: `translate(${stick.kx}px, ${stick.ky}px)` }} />
+        </div>
+      )}
     </div>
   );
 }

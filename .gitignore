@@ -19,6 +19,8 @@ coverage
 .playwright-mcp/
 # kök dizindeki tanı/önizleme ekran görüntüleri (oyun assetleri public/ altında)
 /*.png
+# Kök dizine kopyalanan APK (cihaza atmak için; build çıktısı, git'e girmez)
+/*.apk
 
 # Editor directories and files
 .vscode/*
