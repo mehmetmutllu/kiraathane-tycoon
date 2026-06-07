@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import { Vector3 } from 'three';
-import { useGame, LAYOUT, stationSoftMaxLevel, upgradeZoneUnlocked, trayMaxLevel, trayUpgradeZoneUnlocked } from '../../game/store';
+import { useGame, LAYOUT, stationSoftMaxLevel, upgradeZoneUnlocked, trayMaxLevel, trayUpgradeZoneUnlocked, tableSoftMaxLevel, tableUpgradeZoneUnlocked, tableNextCost } from '../../game/store';
 import { Player } from './Player';
 import { Waiter } from './Waiter';
 import { Dishwasher } from './Dishwasher';
@@ -148,6 +148,42 @@ function TrayUpgradeZone() {
   );
 }
 
+// Masa-başı yükseltme işaretleri (Faz 2h, My Hotel oda mantığı): her AÇIK masanın YANINDA sade küçük
+// işaret (altın halka/yazı YOK). Parası yetince hafif yeşil parlar; bilgi (seviye/maliyet) HUD bar'ında.
+function TableUpgradeMarkers() {
+  const tables = useGame((s) => s.tables);
+  const tableLevels = useGame((s) => s.tableLevels);
+  const wallet = useGame((s) => s.wallet);
+  const padsDone = useGame((s) => s.padsDone);
+  const stationLevel = useGame((s) => s.stationLevel);
+  const lifetime = useGame((s) => s.lifetime);
+  if (!tableUpgradeZoneUnlocked({ padsDone, tables, stationLevel, lifetime: lifetime.toNumber() })) return null;
+  const cash = wallet.toNumber();
+  return (
+    <>
+      {LAYOUT.tables.slice(0, tables).map((t, i) => {
+        const lvl = tableLevels[i] ?? 0;
+        if (lvl >= tableSoftMaxLevel()) return null; // max → işaret gizlenir
+        const afford = cash >= tableNextCost(lvl);
+        const [x, , z] = t.upgradeSpot;
+        const lit = afford ? '#43a047' : '#000000';
+        return (
+          <group key={i} position={[x, 0, z]}>
+            <mesh receiveShadow position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+              <circleGeometry args={[0.5, 24]} />
+              <meshStandardMaterial color={afford ? '#2e7d32' : '#3a4750'} emissive={lit} emissiveIntensity={afford ? 0.5 : 0} />
+            </mesh>
+            <mesh position={[0, 0.32, 0]}>
+              <coneGeometry args={[0.14, 0.28, 4]} />
+              <meshStandardMaterial color={afford ? '#66bb6a' : '#546e7a'} emissive={lit} emissiveIntensity={afford ? 0.5 : 0} />
+            </mesh>
+          </group>
+        );
+      })}
+    </>
+  );
+}
+
 function Ground() {
   return (
     <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
@@ -217,6 +253,7 @@ export function Scene() {
       <Pad />
       <UpgradeZone />
       <TrayUpgradeZone />
+      <TableUpgradeMarkers />
       <Customers />
       <Coins />
       <Dishes />

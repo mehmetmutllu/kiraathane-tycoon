@@ -13,7 +13,7 @@
  *   L5 (Usta)   = masterDiamondCost 💎 VEYA 1 ödüllü video; outputMult yerine masterOutputMult
  */
 
-export const SAVE_VERSION = 10;
+export const SAVE_VERSION = 12;
 
 export const CURRENCY = {
   soft: '₺', // Para — müşteriden kazanılır
@@ -75,6 +75,33 @@ export const economyConfig = {
     upgradeFillRate: 60,
     /** Her ek çay ocağı (station) sipariş süresini bu kadar çarpar (paralel demleme). */
     extraStationSpeedFactor: 0.85,
+  },
+
+  /**
+   * Masa yükseltme (Faz 2h — MASA-BAŞI / My Hotel oda yükseltme mantığı; D-016 §5 "zone-başı" kullanıcı
+   * isteğiyle DEĞİŞTİRİLDİ 2026-06-07): HER masanın KENDİ seviyesi var (`tableLevels[i]`), her masanın
+   * YANINDA ayrı yükseltme noktası (LAYOUT.tables[i].upgradeSpot). Çay fiyatı SABİT kalır (D-010 bozulmaz).
+   * O masanın seviyesi iki şeyi artırır (yalnız o masaya oturan müşteri için):
+   *   - BAHŞİŞ: çay fiyatına EK `tipBase × seviye` ₺.
+   *   - SABIR: `patiencePerLevel × seviye` sn daha uzun bekler.
+   * 2. masa açılınca belirir (upgradeRequires); açma SIRALI değil yükseltme SERBEST/paraleldir.
+   * Bekleme-süreli bahşiş (zamanında servis = tam) Faz 4'e ERTELENDİ.
+   */
+  tables: {
+    upgrade: {
+      costBase: 60,
+      costGrowth: 1.6, // L1 60 / L2 96 / L3 153 / L4 245
+      masterLevel: 5, // L5 (Usta) 💎/video — Faz 4; ₺ ile soft max L4
+      masterDiamondCost: 12,
+    },
+    /** Yükseltme noktasında saniyede cüzdandan akan ₺ (mekânsal yükseltme). */
+    upgradeFillRate: 60,
+    /** Önkoşul: 2. masa açılınca belirir (D-016 §4 — yükseltme kavramı 2. masada tanıtılır). */
+    upgradeRequires: { prev: ['table2'] } satisfies Requires,
+    /** Servis başına ek bahşiş = tipBase × masaSeviyesi (L0 = 0 bahşiş, sadece sabit fiyat). */
+    tipBase: 2,
+    /** Masa seviyesi başına eklenen sabır (sn). */
+    patiencePerLevel: 2,
   },
 
   /** NPC (müşteri) yaşam döngüsü zamanlamaları (sn). */
@@ -139,8 +166,9 @@ export const economyConfig = {
    * Ocaktan tek çay alır, en yakın bekleyen müşteriye götürür, döner (D-012 bölge-başı personel).
    */
   waiter: {
-    /** Hareket hızı (dünya birimi/sn). Oyuncudan (player.moveSpeed 4.5) belirgin yavaş (2g: 1.8→1.5, "çok hızlı"). */
-    moveSpeed: 1.5,
+    /** Hareket hızı (dünya birimi/sn). Oyuncudan (player.moveSpeed 4.5) yavaş = kısmi assist.
+     *  (2g: 1.8→1.5→1.4 küçültüldü; ALAN BÜYÜYÜNCE çok yavaş kaldı → kullanıcı isteğiyle eski 1.8'e döndü.) */
+    moveSpeed: 1.8,
     /** Tepsi kapasitesi (tek seferde taşıdığı çay). Oyuncununkinden küçük. */
     trayCapacity: 1,
   },
@@ -342,6 +370,22 @@ export function trayCapacityForLevel(level: number): number {
 export function trayUpgradeCost(level: number): number {
   const u = economyConfig.serving.trayUpgrade;
   return Math.floor(u.costBase * Math.pow(u.costGrowth, level));
+}
+
+/** Mevcut masa seviyesinden bir sonraki yükseltmenin maliyeti (₺). Faz 2h. */
+export function tableUpgradeCost(level: number): number {
+  const u = economyConfig.tables.upgrade;
+  return Math.floor(u.costBase * Math.pow(u.costGrowth, level));
+}
+
+/** Servis başına ek bahşiş (₺) — masa seviyesiyle artar (çay fiyatı sabit kalır). Faz 2h. */
+export function tableTip(level: number): number {
+  return economyConfig.tables.tipBase * level;
+}
+
+/** Müşteri sabrı (sn) — masa seviyesiyle artar (taban + perLevel × seviye). Faz 2h. */
+export function tablePatience(level: number): number {
+  return economyConfig.npc.patience + economyConfig.tables.patiencePerLevel * level;
 }
 
 /** Verilen seviyedeki toplam çıktı çarpanı (L5 usta sıçramasını da içerir). */

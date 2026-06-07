@@ -6,6 +6,10 @@ import {
   brewQueueCapacity,
   cupPoolCapacity,
   derivedFromPads,
+  tableUpgradeCost,
+  tableTip,
+  tablePatience,
+  SAVE_VERSION,
 } from '../src/config/economy.config';
 import { D, fmt } from '../src/game/decimal';
 import {
@@ -19,10 +23,13 @@ import {
   trayCapacity,
   trayMaxLevel,
   trayNextCost,
+  tableSoftMaxLevel,
+  tableUpgradeZoneUnlocked,
   TEA_PRICE,
   brewTime,
 } from '../src/game/store';
 import { migrate, defaultSave } from '../src/game/save';
+import { buildNavGrid, findNavPath } from '../src/game/nav';
 
 // Mevcut ilerleme durumundan gating (requires) için GateState üretir.
 function gate() {
@@ -540,7 +547,7 @@ describe('tepsi yükseltme (Faz 2e-B) — mekânsal nokta, kapasite 2→4→6 (F
   });
 });
 
-describe('kayıt migrasyonu v4..v10 (padFills, station2 çıkışı, addTable senkron, türetme, trayLevel, tepsi clamp)', () => {
+describe('kayıt migrasyonu v4..v12 (padFills, station2 çıkışı, addTable senkron, türetme, trayLevel, tepsi clamp, tableLevels)', () => {
   it('eski tek padFill, aktif omurga pad id\'sine taşınır; saveVersion 10; türetilenler saklanmaz; trayLevel=0', () => {
     const m = migrate({
       saveVersion: 4,
@@ -549,7 +556,7 @@ describe('kayıt migrasyonu v4..v10 (padFills, station2 çıkışı, addTable se
       padsDone: [], padFill: 20,
     });
     // lifetime 50 ≥ 30 → table2 aktif omurga pad'i → padFill ona atanır.
-    expect(m.saveVersion).toBe(10);
+    expect(m.saveVersion).toBe(SAVE_VERSION);
     expect(m.padFills).toEqual({ table2: 20 });
     expect(m.trayLevel).toBe(0); // eski kayıtta tepsi yükseltmesi yok → L0
     // D-015: türetilen alanlar artık kayıtta YOK; garson alınmamış → padsDone'da 'waiter' yok.
@@ -566,7 +573,7 @@ describe('kayıt migrasyonu v4..v10 (padFills, station2 çıkışı, addTable se
       tables: 3, stations: 2, stationLevel: 1, serviceSpeedMult: 0.85,
       padsDone: ['table2', 'table3', 'station2'], padFills: { station2: 100, samovar: 40 }, hasWaiter: true,
     });
-    expect(m.saveVersion).toBe(10);
+    expect(m.saveVersion).toBe(SAVE_VERSION);
     expect(m.padsDone).toEqual(['table2', 'table3', 'waiter']); // station2 kalktı; eski hasWaiter → waiter pad'i
     expect(m.padFills).toEqual({ samovar: 40 }); // station2 dolumu temizlendi, diğeri durur
     // Türetme: tek salon = tek ocak, garson korunur.
@@ -583,7 +590,7 @@ describe('kayıt migrasyonu v4..v10 (padFills, station2 çıkışı, addTable se
       tables: 4, stations: 1, stationLevel: 2, serviceSpeedMult: 1,
       padsDone: ['table2', 'table3'], padFills: {}, hasWaiter: false,
     });
-    expect(m.saveVersion).toBe(10);
+    expect(m.saveVersion).toBe(SAVE_VERSION);
     // 4. masa zaten çiziliyken table4 pad'i bir daha belirmemeli (aynı konumda çakışır).
     expect(m.padsDone).toContain('table4');
     // Türetilen masa sayısı padsDone'dan gelir = 4; tutarlı: currentPad artık samovar.
@@ -597,7 +604,7 @@ describe('kayıt migrasyonu v4..v10 (padFills, station2 çıkışı, addTable se
       saveVersion: 8, wallet: '0', diamonds: '0', lifetime: '0',
       stationLevel: 0, padsDone: ['table2'], padFills: {}, trayLevel: 2,
     } as unknown as Record<string, unknown>);
-    expect(kept.saveVersion).toBe(10);
+    expect(kept.saveVersion).toBe(SAVE_VERSION);
     expect(kept.trayLevel).toBe(2); // 2 ≤ yeni max (2) → korunur
     const missing = migrate({
       saveVersion: 8, wallet: '0', diamonds: '0', lifetime: '0',
@@ -611,16 +618,17 @@ describe('kayıt migrasyonu v4..v10 (padFills, station2 çıkışı, addTable se
       saveVersion: 9, wallet: '0', diamonds: '0', lifetime: '0',
       stationLevel: 0, padsDone: ['table2', 'table3'], padFills: {}, trayLevel: 3,
     } as unknown as Record<string, unknown>);
-    expect(m.saveVersion).toBe(10);
+    expect(m.saveVersion).toBe(SAVE_VERSION);
     expect(m.trayLevel).toBe(2); // L3 → tavana çekildi
     expect(trayCapacity(m.trayLevel)).toBe(6); // taşmayan max kapasite
   });
 
   it('v10 varsayılan kayıt padFills={} + trayLevel=0 içerir; türetilen alan tutmaz', () => {
     const d = defaultSave();
-    expect(d.saveVersion).toBe(10);
+    expect(d.saveVersion).toBe(SAVE_VERSION);
     expect(d.padFills).toEqual({});
     expect(d.trayLevel).toBe(0);
+    expect(d.tableLevels).toEqual([]);
     expect((d as Record<string, unknown>).tables).toBeUndefined();
     expect((d as Record<string, unknown>).hasWaiter).toBeUndefined();
   });
@@ -750,5 +758,169 @@ describe('mobilya collision (D-016) — oyuncu ocağın/masanın içine giremez'
     const p = useGame.getState().player;
     expect(p[0]).toBeCloseTo(ocak[0], 5);
     expect(p[2]).toBeCloseTo(ocak[2], 5);
+  });
+});
+
+describe('personel yol bulma (nav.ts — BFS, kilitlenme yok)', () => {
+  // Oyundaki ile aynı engeller: ocak + bulaşık + 4 masa (koltuk/semaver hariç).
+  function navSolids() {
+    const solids = [
+      { c: LAYOUT.stations[0], h: LAYOUT.stationHalf },
+      { c: LAYOUT.dishStation, h: LAYOUT.dishHalf },
+    ];
+    for (const t of LAYOUT.tables) solids.push({ c: t.table, h: LAYOUT.tableHalf });
+    return solids;
+  }
+  const grid = () => buildNavGrid(LAYOUT.area, 0.3, navSolids(), LAYOUT.actorRadius);
+  const REACH = 1.1;
+
+  it('ocaktan HER masaya yol bulunur (kolon-bloklu arka masalar dahil)', () => {
+    const g = grid();
+    const station = LAYOUT.stations[0];
+    for (const t of LAYOUT.tables) {
+      const path = findNavPath(g, station, t.table[0], t.table[2], REACH);
+      expect(path).not.toBeNull(); // ulaşılamayan masa YOK
+    }
+  });
+
+  it('engel TAM aradayken etrafından dolaşır (eski moveAvoid kilitlenirdi)', () => {
+    const g = grid();
+    // table0 (sol-üst, ocağa yakın) ile table2 (sol-alt) aynı x kolonunda; table0 tam arada.
+    const t0 = LAYOUT.tables[0].table; // [-2.5,-2.2]
+    const t2 = LAYOUT.tables[2].table; // [-2.5, 1.4]
+    // table0'ın hemen ARKASINDAN (ocak tarafı) table2'ye yol iste.
+    const behind: [number, number, number] = [t0[0], 0, t0[2] - 1.0];
+    const path = findNavPath(g, behind, t2[0], t2[2], REACH);
+    expect(path).not.toBeNull();
+    // Yol, table0 gövdesinin İÇİNDEN geçmemeli (her waypoint masa footprint+aktör yarıçapı dışında).
+    const blockedHalf = LAYOUT.tableHalf[0] + LAYOUT.actorRadius;
+    for (const [wx, wz] of path!) {
+      const insideT0 = Math.abs(wx - t0[0]) < blockedHalf && Math.abs(wz - t0[2]) < blockedHalf;
+      expect(insideT0).toBe(false);
+    }
+  });
+
+  it('garson kolon-bloklu ARKA masaya gerçekten servis eder (deadlock yok, entegrasyon)', () => {
+    useGame.getState().hardReset();
+    const backIdx = 2; // sol-alt masa: ocak ile arasında table0 var (eski sistemde kilitlenirdi)
+    useGame.setState({
+      padsDone: ['table2', 'table3', 'table4', 'waiter'],
+      hasWaiter: true,
+      // Garsonu ocakta tepsi DOLU başlat → doğruca teslimata yönelir.
+      waiter: { pos: [...LAYOUT.stations[0]] as [number, number, number], tray: 1 },
+      player: [0, 0.6, 4.2], // oyuncu uzakta (servis etmesin)
+      inputKeyboard: [0, 0],
+      inputJoystick: [0, 0],
+      npcs: [
+        { id: 950, state: 'waitingForTea', pos: [...LAYOUT.tables[backIdx].seat] as [number, number, number], tableIndex: backIdx, timer: 999, color: '#27ae60' },
+      ],
+      spawnTimer: 999, // yeni müşteri spawn olmasın
+    });
+    // Garson (hız 1.8) rotayı dolaşıp masaya VARANA kadar simüle et (deadlock olsaydı asla varmazdı).
+    let servedState = 'waitingForTea';
+    for (let i = 0; i < 120 && servedState === 'waitingForTea'; i++) {
+      useGame.getState().tick(0.1);
+      servedState = useGame.getState().npcs.find((n) => n.id === 950)?.state ?? 'leaving';
+    }
+    // Müşteri sabrı 999 → tek çıkış yolu SERVİS (drinking) → arka masaya gerçekten ulaşıldı (takılmadı).
+    expect(servedState).not.toBe('waitingForTea');
+    expect(useGame.getState().waiter?.tray).toBe(0); // çayı bıraktı
+  });
+});
+
+describe('masa yükseltme + bahşiş (Faz 2h)', () => {
+  it('maliyet eğrisi geometrik (60 × 1.6^lvl)', () => {
+    expect(tableUpgradeCost(0)).toBe(60);
+    expect(tableUpgradeCost(1)).toBe(96);
+    expect(tableUpgradeCost(2)).toBe(153);
+    expect(tableUpgradeCost(3)).toBe(245);
+  });
+
+  it('bahşiş ve sabır seviyeyle artar; L0 nötr', () => {
+    expect(tableTip(0)).toBe(0);
+    expect(tableTip(2)).toBe(economyConfig.tables.tipBase * 2);
+    expect(tablePatience(0)).toBe(economyConfig.npc.patience);
+    expect(tablePatience(2)).toBe(economyConfig.npc.patience + economyConfig.tables.patiencePerLevel * 2);
+  });
+
+  it('yükseltme noktası 2. masa açılınca belirir (önce kilitli)', () => {
+    useGame.getState().hardReset();
+    expect(tableUpgradeZoneUnlocked(gate())).toBe(false); // başta table2 yok
+    useGame.setState({ padsDone: ['table2'] });
+    expect(tableUpgradeZoneUnlocked(gate())).toBe(true);
+  });
+
+  it('ödeyen müşteri çay fiyatı + OTURDUĞU masanın bahşişini bırakır (masa-başı)', () => {
+    useGame.getState().hardReset();
+    const seat = LAYOUT.tables[0].seat;
+    useGame.setState({
+      tableLevels: [2, 0, 0, 0], // sadece 0. masa L2 → bahşiş = tipBase×2
+      player: [0, 0.6, 99], // uzak → düşen para toplanmasın
+      inputKeyboard: [0, 0],
+      inputJoystick: [0, 0],
+      coins: [],
+      npcs: [{ id: 970, state: 'drinking', pos: [...seat] as [number, number, number], tableIndex: 0, timer: 0.05, color: '#27ae60' }],
+      spawnTimer: 999,
+    });
+    useGame.getState().tick(0.1); // drinking timer biter → öder
+    const coin = useGame.getState().coins.find((c) => c.value === TEA_PRICE + tableTip(2));
+    expect(coin).toBeTruthy(); // 5 + 4 = 9 ₺ düştü
+  });
+
+  it('oturan müşterinin sabrı OTURDUĞU masanın seviyesiyle uzar', () => {
+    useGame.getState().hardReset();
+    const seat = LAYOUT.tables[0].seat;
+    useGame.setState({
+      tableLevels: [2, 0, 0, 0],
+      player: [0, 0.6, 99],
+      inputKeyboard: [0, 0],
+      inputJoystick: [0, 0],
+      // Koltuğun üstünde 'toTable' → bu tick oturur, timer = tablePatience(2).
+      npcs: [{ id: 971, state: 'toTable', pos: [...seat] as [number, number, number], tableIndex: 0, timer: 0, color: '#2980b9' }],
+      spawnTimer: 999,
+    });
+    useGame.getState().tick(0.05);
+    const n = useGame.getState().npcs.find((x) => x.id === 971);
+    expect(n?.state).toBe('waitingForTea');
+    expect(n?.timer).toBeGreaterThan(economyConfig.npc.patience); // taban 18'den fazla
+    expect(n?.timer).toBeCloseTo(tablePatience(2), 5);
+  });
+
+  it('yükseltme MASA-BAŞI: bir masanın noktasında dur → SADECE o masa yükselir (diğerleri 0)', () => {
+    useGame.getState().hardReset();
+    // 4 masayı aç (omurga padsDone) + bol para; oyuncuyu 0. masanın yükseltme noktasına koy.
+    useGame.setState({
+      padsDone: ['table2', 'table3', 'table4'],
+      tableLevels: [0, 0, 0, 0],
+      wallet: D(5000),
+      player: [LAYOUT.tables[0].upgradeSpot[0], 0.6, LAYOUT.tables[0].upgradeSpot[2]],
+      inputKeyboard: [0, 0],
+      inputJoystick: [0, 0],
+      npcs: [],
+      spawnTimer: 999,
+    });
+    for (let i = 0; i < 40; i++) useGame.getState().tick(0.1);
+    const lv = useGame.getState().tableLevels;
+    expect(lv[0]).toBeGreaterThan(0); // 0. masa yükseldi
+    expect(lv[1]).toBe(0); // komşu masalar ETKİLENMEDİ (toplu değil)
+    expect(lv[2]).toBe(0);
+    expect(lv[3]).toBe(0);
+  });
+
+  it('tableLevels kayıttan korunur; v10→v12 migrasyon zinciri (eski tek seviye → her masaya)', () => {
+    // v10 kaydı (masa yükseltmesi yok) → tüm masalar 0.
+    const v10raw: Record<string, unknown> = {
+      saveVersion: 10, wallet: '500', diamonds: '0', lifetime: '500',
+      stationLevel: 2, trayLevel: 1, padsDone: ['table2', 'table3'], padFills: {}, lastSaved: Date.now(),
+    };
+    const m = migrate(v10raw);
+    expect(m.saveVersion).toBe(SAVE_VERSION);
+    expect(Array.isArray(m.tableLevels)).toBe(true);
+    expect(m.tableLevels.every((n) => n === 0)).toBe(true);
+    expect((m as Record<string, unknown>).tableLevel).toBeUndefined(); // eski tek alan kalmadı
+    // v11 kaydı (eski tek tableLevel=2) → v12'de HER masaya uygulanır (zone-geneli → masa-başı).
+    const v11 = migrate({ ...v10raw, saveVersion: 11, tableLevel: 2 });
+    expect(v11.tableLevels.length).toBeGreaterThanOrEqual(4);
+    expect(v11.tableLevels.every((n) => n === 2)).toBe(true);
   });
 });

@@ -44,17 +44,20 @@ function HeadRadial() {
   if (!zone) return null;
   const progress = Math.max(0.001, Math.min(1, zone.fill / zone.cost));
   const col = zone.kind === 'upgrade' ? '#ffd54f' : '#66bb6a';
+  // Segment sayısı ilerlemeyle ORANTILI → her dilim SABİT açıda kalır; büyürken sadece uçta yeni dilim
+  // eklenir (tüm yay her frame yeniden dağılıp titremez). depthWrite kapalı + hafif y-offset → z-fighting yok.
+  const segments = Math.max(1, Math.round(progress * 48));
   return (
     <group position={[0, 1.55, 0]} rotation={[-Math.PI / 2, 0, 0]}>
       {/* zemin halkası (soluk) */}
-      <mesh>
-        <ringGeometry args={[0.18, 0.28, 24]} />
-        <meshBasicMaterial color="#000000" transparent opacity={0.35} />
+      <mesh renderOrder={1}>
+        <ringGeometry args={[0.18, 0.28, 48]} />
+        <meshBasicMaterial color="#000000" transparent opacity={0.35} depthWrite={false} />
       </mesh>
-      {/* dolan yay (üstten başlar, saat yönünde) */}
-      <mesh rotation={[0, 0, Math.PI / 2]}>
-        <ringGeometry args={[0.18, 0.28, 32, 1, 0, progress * Math.PI * 2]} />
-        <meshBasicMaterial color={col} transparent opacity={0.95} />
+      {/* dolan yay (üstten başlar, saat yönünde) — bg'nin hafif üstünde, ayrı render sırası */}
+      <mesh rotation={[0, 0, Math.PI / 2]} position={[0, 0, 0.003]} renderOrder={2}>
+        <ringGeometry args={[0.18, 0.28, segments, 1, 0, progress * Math.PI * 2]} />
+        <meshBasicMaterial color={col} transparent opacity={0.95} depthWrite={false} />
       </mesh>
     </group>
   );

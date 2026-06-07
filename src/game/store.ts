@@ -10,12 +10,16 @@ import {
   cupPoolCapacity,
   trayCapacityForLevel,
   trayUpgradeCost,
+  tableUpgradeCost,
+  tableTip,
+  tablePatience,
   derivedFromPads,
   type PadDef,
   type GateState,
   type Requires,
 } from '../config/economy.config';
 import { defaultSave, loadSave, writeSave, clearSave, type SaveData } from './save';
+import { buildNavGrid, findNavPath, type NavGrid, type NavSolid } from './nav';
 
 // ---- Sahne yerleşimi (dünya birimi, zemin y=0) ----
 // Her pad/zone, açtığı/etkilediği objenin TAM yerinde durur (mekânsal tycoon).
@@ -34,11 +38,12 @@ export const LAYOUT = {
   area: { minX: -5.5, maxX: 5.5, minZ: -5.0, maxZ: 4.5 },
   // Masa slotları — 2×2, KÖŞELERE YAYIK (kolon gap 5, satır gap 3.6) → her yön bol açık; sandalye(seat=table z+1)
   // merkezi koridoru tıkamaz. Kolon x -2.5/2.5, satır z -2.2/1.4.
+  // upgradeSpot (Faz 2h masa-başı): masanın YANINDA (merkeze doğru +1.2 x), oyuncu burada durunca O masa yükselir.
   tables: [
-    { table: [-2.5, 0, -2.2] as Vec3, seat: [-2.5, 0.6, -1.2] as Vec3 },
-    { table: [2.5, 0, -2.2] as Vec3, seat: [2.5, 0.6, -1.2] as Vec3 },
-    { table: [-2.5, 0, 1.4] as Vec3, seat: [-2.5, 0.6, 2.4] as Vec3 },
-    { table: [2.5, 0, 1.4] as Vec3, seat: [2.5, 0.6, 2.4] as Vec3 },
+    { table: [-2.5, 0, -2.2] as Vec3, seat: [-2.5, 0.6, -1.2] as Vec3, upgradeSpot: [-1.3, 0, -2.2] as Vec3 },
+    { table: [2.5, 0, -2.2] as Vec3, seat: [2.5, 0.6, -1.2] as Vec3, upgradeSpot: [1.3, 0, -2.2] as Vec3 },
+    { table: [-2.5, 0, 1.4] as Vec3, seat: [-2.5, 0.6, 2.4] as Vec3, upgradeSpot: [-1.3, 0, 1.4] as Vec3 },
+    { table: [2.5, 0, 1.4] as Vec3, seat: [2.5, 0.6, 2.4] as Vec3, upgradeSpot: [1.3, 0, 1.4] as Vec3 },
   ],
   // Pad pozisyonları: açtıkları objenin yerinde (masa pad'leri sıralı → eş-zamanlı çakışmaz).
   padPos: {
@@ -131,8 +136,80 @@ function moveAvoid(pos: Vec3, target: RVec3, step: number, solids: Solid[], r: n
   return false;
 }
 
+// --- Personel yol bulma (nav.ts) ---
+// Garson/bulaşıkçı GERÇEK rota izler (BFS) → eski moveAvoid eksen-kayması bir masayı dolaşamayıp
+// kilitleniyordu (ön masada takılı kalma, arka masa açlığı, salınım). Oyuncu BUNU KULLANMAZ.
+const NAV_CELL = 0.3; // ızgara hücre boyu (dünya birimi) — masalar arası koridorları açık tutar.
+// Personel "yanına varınca teslim/al" mesafeleri (GEOMETRİK: footprint yarısı + aktör yarıçapı + küçük pay).
+// Masaya BİTİŞİK teslim → "tam masaya gelmeden veriyor" hissi biter (eski serveRadius 1.6 yerine ~1.05).
+const REACH_TABLE = LAYOUT.tableHalf[0] + LAYOUT.actorRadius + 0.25; // ocaktan masaya servis
+const REACH_STATION = LAYOUT.stationHalf[1] + LAYOUT.actorRadius + 0.4; // ocaktan tepsi yükleme
+const REACH_WASH = LAYOUT.dishHalf[1] + LAYOUT.actorRadius + 0.4; // bulaşıkta yıkama
+const REACH_HOME = 0.4; // boştayken köşeye dönüş
+
+/** Personelin GÖVDE engeli saydığı katılar (ocak + bulaşık + açık masalar). Koltuk/semaver hariç. */
+function navSolids(tables: number): NavSolid[] {
+  const solids: NavSolid[] = [
+    { c: LAYOUT.stations[0], h: LAYOUT.stationHalf },
+    { c: LAYOUT.dishStation, h: LAYOUT.dishHalf },
+  ];
+  for (let i = 0; i < tables; i++) solids.push({ c: LAYOUT.tables[i].table, h: LAYOUT.tableHalf });
+  return solids;
+}
+
+// Izgara masa sayısına göre cache'lenir (masa açılınca yeniden kurulur; her frame değil).
+let navCache: { tables: number; grid: NavGrid } | null = null;
+function getNavGrid(tables: number): NavGrid {
+  if (navCache && navCache.tables === tables) return navCache.grid;
+  const grid = buildNavGrid(LAYOUT.area, NAV_CELL, navSolids(tables), LAYOUT.actorRadius);
+  navCache = { tables, grid };
+  return grid;
+}
+
+/** Personeli hedefe BFS rotasıyla bir adım ilerlet; merkeze `reach` mesafesine girince true. pos yerinde değişir.
+ *  `avoid` verilirse (oyuncu konumu) personel onun ÜSTÜNE BİNMEZ → kenarından ayrılır (oyuncuya göre hareket eder);
+ *  `avoidSolids` (masa gövdeleri) verilirse oyuncudan kaçarken masaya itilmez. */
+function navStep(
+  pos: Vec3,
+  target: RVec3,
+  step: number,
+  grid: NavGrid,
+  reach: number,
+  avoid?: RVec3,
+  avoidSolids?: Solid[],
+): boolean {
+  if (dist2D(pos, target) <= reach) return true;
+  const path = findNavPath(grid, pos, target[0], target[2], reach);
+  if (path && path.length > 0) {
+    moveToward(pos, [path[0][0], pos[1], path[0][1]], step); // bir sonraki waypoint'e
+  } else {
+    moveToward(pos, target, step); // yol yoksa (nadir) en iyi çaba: doğrudan
+  }
+  // Oyuncudan ayrış (boids separation): personel oyuncunun ÜSTÜNE binmesin → onu da hesaba katarak kenara geçsin.
+  // Oyuncu otoriter (input'la hareket); personel ona yer açar. Masaya itecekse itme (hafif örtüşmeye izin ver).
+  if (avoid) {
+    const minD = LAYOUT.actorRadius + LAYOUT.playerRadius;
+    const dx = pos[0] - avoid[0];
+    const dz = pos[2] - avoid[2];
+    const d = Math.hypot(dx, dz);
+    if (d < minD) {
+      const ux = d < 1e-4 ? 1 : dx / d;
+      const uz = d < 1e-4 ? 0 : dz / d;
+      const nx = avoid[0] + ux * minD;
+      const nz = avoid[2] + uz * minD;
+      if (!avoidSolids || !hitsSolid(nx, nz, avoidSolids, LAYOUT.actorRadius)) {
+        pos[0] = nx;
+        pos[2] = nz;
+      }
+    }
+  }
+  return dist2D(pos, target) <= reach;
+}
+
 const NPC_SPEED = 2.6;
 const PAD_RADIUS = 1.3;
+// Masa-başı yükseltme noktasının yarıçapı (Faz 2h). Pad'lerden küçük → komşu masanın noktasını tetiklemez.
+const TABLE_UP_RADIUS = 1.0;
 const SAVE_INTERVAL = 2; // sn
 const NPC_COLORS = ['#c0392b', '#27ae60', '#2980b9', '#8e44ad', '#d35400', '#16a085'];
 
@@ -183,6 +260,15 @@ export function trayUpgradeZoneUnlocked(g: GateState): boolean {
   return requiresMet(C.serving.trayUpgradeRequires, g);
 }
 
+/** ₺ ile çıkılabilen en yüksek masa seviyesi (L5 = Usta, 💎/video — Faz 4). */
+export const tableSoftMaxLevel = () => C.tables.upgrade.masterLevel - 1;
+/** Mevcut seviyeden bir sonraki masa yükseltmesinin maliyeti (₺). */
+export const tableNextCost = (level: number) => tableUpgradeCost(level);
+/** Masa yükseltme noktası şu an aktif mi (önkoşulu karşılandı mı)? */
+export function tableUpgradeZoneUnlocked(g: GateState): boolean {
+  return requiresMet(C.tables.upgradeRequires, g);
+}
+
 /** Çevrimdışı gelir oranı (₺/sn) — bottleneck idealize: oturma × sabit fiyat / döngü. */
 function incomeRate(tables: number, level: number, serviceSpeedMult = 1): number {
   const cycle = C.npc.walkTime + brewTime(level, serviceSpeedMult) + C.npc.eatTime;
@@ -213,6 +299,8 @@ export interface GameState {
   stationLevel: number;
   /** Tepsi kapasite yükseltme seviyesi (Faz 2e-B; persist). */
   trayLevel: number;
+  /** Masa-başı yükseltme seviyeleri (Faz 2h; persist; index = masa slotu; bahşiş + sabır). My Hotel oda mantığı. */
+  tableLevels: number[];
   serviceSpeedMult: number;
   padsDone: string[];
   /** Aktif pad'lerin kısmi dolumu (pad id → ₺). Eş zamanlı omurga + opsiyonel için kayıt (v5). */
@@ -245,6 +333,8 @@ export interface GameState {
   upgradeFill: number;
   /** Tepsi yükseltme noktasındaki kısmi dolum (transient; çay yükseltme gibi). */
   trayUpgradeFill: number;
+  /** Masa-başı yükseltme noktalarındaki kısmi dolum (transient; index = masa slotu). */
+  tableUpgradeFills: number[];
   activeZone: ActiveZone | null;
   nextStepLabel: string;
   offlineEarned: number;
@@ -322,6 +412,7 @@ export const useGame = create<GameState>((set, get) => ({
   stations: 1,
   stationLevel: 0,
   trayLevel: 0,
+  tableLevels: LAYOUT.tables.map(() => 0),
   serviceSpeedMult: 1,
   padsDone: [],
   padFills: {},
@@ -341,6 +432,7 @@ export const useGame = create<GameState>((set, get) => ({
   carriedDirty: 0,
   upgradeFill: 0,
   trayUpgradeFill: 0,
+  tableUpgradeFills: LAYOUT.tables.map(() => 0),
   activeZone: null,
   nextStepLabel: '',
   offlineEarned: 0,
@@ -376,6 +468,8 @@ export const useGame = create<GameState>((set, get) => ({
       stationLevel: save.stationLevel,
       // Savunmacı: eski kayıt yeni max'tan yüksek tepsi seviyesi taşıyorsa tavana çek (Faz 2f 8→6).
       trayLevel: Math.min(save.trayLevel, C.serving.trayUpgrade.maxLevel),
+      // Masa-başı seviyeleri: slot sayısına normalize et + her birini soft max'a clamp'le.
+      tableLevels: LAYOUT.tables.map((_, i) => Math.min(save.tableLevels[i] ?? 0, tableSoftMaxLevel())),
       serviceSpeedMult: derived.serviceSpeedMult,
       padsDone: [...save.padsDone],
       padFills: { ...save.padFills },
@@ -397,6 +491,7 @@ export const useGame = create<GameState>((set, get) => ({
       carriedDirty: 0,
       upgradeFill: 0,
       trayUpgradeFill: 0,
+      tableUpgradeFills: LAYOUT.tables.map(() => 0),
       activeZone: null,
       nextStepLabel: nextStep({
         padsDone: save.padsDone,
@@ -434,16 +529,20 @@ export const useGame = create<GameState>((set, get) => ({
     // Müşteri + personel masa GÖVDELERİNDEN dolaşır (D-016 v4): ocak/bulaşık/koltuk engel değil (erişmeli).
     const obstacles = tableSolids(tables);
     const ar = LAYOUT.actorRadius;
+    // Personel (garson/bulaşıkçı) BFS ızgarası — masa sayısına göre cache'li.
+    const navGrid = getNavGrid(tables);
     let upgradeFill = s.upgradeFill;
     let activeZone: ActiveZone | null = null;
     let stationLevel = s.stationLevel;
     let trayLevel = s.trayLevel;
+    const tableLevels = s.tableLevels.slice(); // masa-başı seviyeler (kopya; bu tick'te yükseltilebilir)
     let readyCups = s.readyCups;
     let brewProgress = s.brewProgress;
     let tray = s.tray;
     let cleanCups = s.cleanCups;
     let carriedDirty = s.carriedDirty;
     let trayUpgradeFill = s.trayUpgradeFill;
+    const tableUpgradeFills = s.tableUpgradeFills.slice();
     let nextId = s.nextId;
     let spawnTimer = s.spawnTimer - dt;
 
@@ -489,9 +588,9 @@ export const useGame = create<GameState>((set, get) => ({
       switch (n.state) {
         case 'toTable':
           if (moveAvoid(n.pos, slot.seat, step, obstacles, ar)) {
-            // Oturdu; çay servisini bekler. Sabır timer'ı başlar (D-011).
+            // Oturdu; çay servisini bekler. Sabır timer'ı başlar (D-011); OTURDUĞU masanın seviyesi sabrı uzatır (Faz 2h).
             n.state = 'waitingForTea';
-            n.timer = C.npc.patience;
+            n.timer = tablePatience(tableLevels[n.tableIndex] ?? 0);
           }
           break;
         case 'waitingForTea':
@@ -502,11 +601,11 @@ export const useGame = create<GameState>((set, get) => ({
         case 'drinking':
           n.timer -= dt;
           if (n.timer <= 0) {
-            // Öde: parayı masanın yanına düşür (fiyat sabit; gelir hacimden gelir).
+            // Öde: parayı masanın yanına düşür (çay fiyatı SABİT + OTURDUĞU masanın seviyesi bahşişi, Faz 2h).
             coins.push({
               id: nextId++,
               pos: [slot.table[0] + (Math.random() - 0.5), 0.3, slot.table[2] + 0.6 + (Math.random() - 0.5)],
-              value: TEA_PRICE,
+              value: TEA_PRICE + tableTip(tableLevels[n.tableIndex] ?? 0),
             });
             // İçtiği bardak masada KİRLİ kalır (Faz 2e): toplanıp yıkanmalı, yoksa temiz biter.
             dishes.push({
@@ -588,11 +687,12 @@ export const useGame = create<GameState>((set, get) => ({
       }
     }
     // Bekleyen masaya yaklaşınca tepsiden çay bırak → müşteri içmeye başlar (toplu servis).
+    // Servis MASAYA yakınlıkla → masanın HER tarafından bırakılabilir (koltuk değil; arkadan da geçerli).
     if (tray > 0) {
       for (const n of liveNpcs) {
         if (tray <= 0) break;
         if (n.state !== 'waitingForTea') continue;
-        if (dist2D(player, LAYOUT.tables[n.tableIndex].seat) < C.serving.serveRadius) {
+        if (dist2D(player, LAYOUT.tables[n.tableIndex].table) < C.serving.serveRadius) {
           n.state = 'drinking';
           n.timer = C.npc.eatTime;
           tray -= 1;
@@ -643,28 +743,31 @@ export const useGame = create<GameState>((set, get) => ({
         let bestTimer = Infinity;
         let bestDist = Infinity;
         for (const n of waitingNpcs) {
-          const d = dist2D(w.pos, LAYOUT.tables[n.tableIndex].seat);
+          const d = dist2D(w.pos, LAYOUT.tables[n.tableIndex].table);
           if (n.timer < bestTimer - 1e-6 || (Math.abs(n.timer - bestTimer) <= 1e-6 && d < bestDist)) {
             bestTimer = n.timer;
             bestDist = d;
             best = n;
           }
         }
-        if (moveAvoid(w.pos, LAYOUT.tables[best.tableIndex].seat, wStep, obstacles, ar)) {
+        // Servis: masaya BFS rotasıyla yaklaş (engeli gerçekten dolaşır → ön masada kilitlenme/salınım
+        // biter), masaya bitişik (REACH_TABLE) gelince teslim et → her taraftan + "tam masaya gelince".
+        const targetTable = LAYOUT.tables[best.tableIndex].table;
+        if (navStep(w.pos, targetTable, wStep, navGrid, REACH_TABLE, player, obstacles)) {
           best.state = 'drinking';
           best.timer = C.npc.eatTime;
           w.tray -= 1;
         }
       } else if (w.tray < wTrayCap && waitingNpcs.length > 0) {
-        // Yükleme: ocağa git; varınca hazır çaydan tepsiye al (yoksa orada bekler).
-        if (moveAvoid(w.pos, nearStation, wStep, obstacles, ar) && readyCups > 0) {
+        // Yükleme: ocağa BFS rotasıyla git; bitişik gelince hazır çaydan tepsiye al (yoksa orada bekler).
+        if (navStep(w.pos, nearStation, wStep, navGrid, REACH_STATION, player, obstacles) && readyCups > 0) {
           const take = Math.min(wTrayCap - w.tray, readyCups);
           w.tray += take;
           readyCups -= take;
         }
       } else {
         // Boşta: personel köşesine dön.
-        moveAvoid(w.pos, LAYOUT.waiterHome, wStep, obstacles, ar);
+        navStep(w.pos, LAYOUT.waiterHome, wStep, navGrid, REACH_HOME, player, obstacles);
       }
       waiter = w;
     } else {
@@ -681,28 +784,27 @@ export const useGame = create<GameState>((set, get) => ({
       const dStep = C.dishwasher.moveSpeed * dt;
       const dCap = C.dishwasher.carryCapacity;
       if (dw.tray >= dCap || (dw.tray > 0 && dishes.length === 0)) {
-        // Dolu (ya da elinde var ama toplanacak kalmadı) → bulaşığa götür, yıka (bulaşık engel değil).
-        if (moveAvoid(dw.pos, LAYOUT.dishStation, dStep, obstacles, ar)) {
+        // Dolu (ya da elinde var ama toplanacak kalmadı) → bulaşığa BFS rotasıyla götür, bitişikte yıka.
+        if (navStep(dw.pos, LAYOUT.dishStation, dStep, navGrid, REACH_WASH, player, obstacles)) {
           cleanCups += dw.tray;
           dw.tray = 0;
         }
       } else if (dishes.length > 0) {
-        // Topla: en yakın kirli bardağa DOLAŞARAK yaklaş; collectRadius'a girince al (kirli masa üstünde,
-        // masa gövdesi engel → tam varış imkansız; mesafe-tabanlı toplama).
+        // Topla: en yakın kirli bardağa BFS rotasıyla yaklaş; collectRadius'a girince al (kirli masa
+        // üstünde, masa gövdesi engel → tam varış imkansız; mesafe-tabanlı toplama).
         let target = dishes[0];
         let td = Infinity;
         for (const d of dishes) {
           const dd = dist2D(dw.pos, d.pos);
           if (dd < td) { td = dd; target = d; }
         }
-        moveAvoid(dw.pos, target.pos, dStep, obstacles, ar);
-        if (dist2D(dw.pos, target.pos) < C.cups.collectRadius) {
+        if (navStep(dw.pos, target.pos, dStep, navGrid, C.cups.collectRadius, player, obstacles)) {
           dishes = dishes.filter((d) => d.id !== target.id);
           dw.tray += 1;
         }
       } else {
         // Boşta: köşeye dön.
-        moveAvoid(dw.pos, LAYOUT.dishwasherHome, dStep, obstacles, ar);
+        navStep(dw.pos, LAYOUT.dishwasherHome, dStep, navGrid, REACH_HOME, player, obstacles);
       }
       dishwasher = dw;
     } else {
@@ -804,6 +906,40 @@ export const useGame = create<GameState>((set, get) => ({
       trayUpgradeFill = 0;
     }
 
+    // --- Mekânsal masa yükseltme (Faz 2h, MASA-BAŞI / My Hotel): her açık masanın YANINDAKİ noktada dur →
+    // O masanın bahşişi + sabrı artar. Gating: 2. masa açılınca belirir. Oyuncu aynı anda tek noktada (break). ---
+    const tableUnlocked = tableUpgradeZoneUnlocked({
+      padsDone, tables, stationLevel, lifetime: lifetime.toNumber(),
+    });
+    if (tableUnlocked) {
+      for (let i = 0; i < tables; i++) {
+        if (tableLevels[i] >= tableSoftMaxLevel()) continue;
+        if (dist2D(player, LAYOUT.tables[i].upgradeSpot) >= TABLE_UP_RADIUS) continue;
+        const cost = tableNextCost(tableLevels[i]);
+        let fill = tableUpgradeFills[i] ?? 0;
+        if (wallet.gt(0)) {
+          const amt = Math.min(C.tables.upgradeFillRate * dt, wallet.toNumber(), cost - fill);
+          if (amt > 0) {
+            fill += amt;
+            wallet = wallet.sub(amt);
+          }
+        }
+        if (fill >= cost) {
+          tableLevels[i] += 1;
+          fill = 0;
+        }
+        tableUpgradeFills[i] = fill;
+        const nextCost = tableLevels[i] < tableSoftMaxLevel() ? tableNextCost(tableLevels[i]) : cost;
+        activeZone = {
+          kind: 'upgrade',
+          label: `Masa ${i + 1}: L${tableLevels[i]}${tableLevels[i] < tableSoftMaxLevel() ? ` → L${tableLevels[i] + 1} (+${C.tables.tipBase} bahşiş)` : ' (max)'}`,
+          fill,
+          cost: nextCost,
+        };
+        break;
+      }
+    }
+
     // --- D-015: padsDone değiştiyse türetilen alanlar yeniden hesaplanır (tek yazım noktası) ---
     const out = derivedFromPads(padsDone);
     // Garson pad'i bu frame tamamlandıysa varlığını kur (hasWaiter artık türetilir).
@@ -830,6 +966,7 @@ export const useGame = create<GameState>((set, get) => ({
       stations: out.stations,
       stationLevel,
       trayLevel,
+      tableLevels,
       serviceSpeedMult: out.serviceSpeedMult,
       padsDone,
       padFills,
@@ -837,6 +974,7 @@ export const useGame = create<GameState>((set, get) => ({
       hasDishwasher: out.hasDishwasher,
       upgradeFill,
       trayUpgradeFill,
+      tableUpgradeFills,
       activeZone,
       nextStepLabel,
       player,
@@ -888,6 +1026,7 @@ export const useGame = create<GameState>((set, get) => ({
       lifetime: s.lifetime.toString(),
       stationLevel: s.stationLevel,
       trayLevel: s.trayLevel,
+      tableLevels: [...s.tableLevels],
       padsDone: [...s.padsDone],
       padFills: { ...s.padFills },
       lastSaved: Date.now(),

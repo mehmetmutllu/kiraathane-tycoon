@@ -161,6 +161,24 @@ try {
     fail(`Tepsi yükseltme için 3. masa açılamadı (padsDone=${JSON.stringify(preTray.padsDone)})`);
   }
 
+  // Masa yükseltme (Faz 2h, MASA-BAŞI): 2. masa açılınca her masanın YANINDAKİ nokta aktif. 0. masanın
+  // noktasına git → SADECE o masa yükselir (bahşiş+sabır); komşu masa etkilenmez.
+  const preTable = await page.evaluate(() => window.__game());
+  if ((preTable.padsDone || []).includes('table2')) {
+    const before0 = (preTable.tableLevels || [])[0] ?? 0;
+    const before1 = (preTable.tableLevels || [])[1] ?? 0;
+    await page.evaluate(() => window.__addMoney(5000));
+    await page.evaluate((pos) => window.__teleport(pos[0], pos[2]), preTable.tableUpgradeSpots[0]);
+    const afterTable = await page.evaluate(() => window.__advanceTime(6));
+    const after0 = (afterTable.tableLevels || [])[0] ?? 0;
+    const after1 = (afterTable.tableLevels || [])[1] ?? 0;
+    if (after0 > before0 && after1 === before1)
+      pass(`Masa-başı yükseltme çalışıyor (0. masa ${before0}→${after0}, 1. masa ${after1} sabit)`);
+    else fail(`Masa-başı yükseltme hatalı (0:${before0}→${after0}, 1:${before1}→${after1})`);
+  } else {
+    fail(`Masa yükseltme için 2. masa açık değil (padsDone=${JSON.stringify(preTable.padsDone)})`);
+  }
+
   // Dikey (portrait) orana çevir → responsive kamera/HUD hatasız mı
   await page.setViewportSize({ width: 412, height: 915 });
   await page.waitForTimeout(500);

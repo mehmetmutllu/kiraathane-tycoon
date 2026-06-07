@@ -2,7 +2,46 @@
 
 > En sık güncellenen dosya. Her anlamlı adımdan sonra güncelle.
 
-## Şu an neredeyiz (2026-06-06)
+## Şu an neredeyiz (2026-06-07 — GÜNCEL)
+**Faz 2g + 2h (masa-başı yükseltme) + radial-fix + garson-oyuncu kaçınma UYGULANDI ve büyük ölçüde onaylandı.**
+SAVE_VERSION **12**. **Vitest 54/54, build temiz, sim 84sn, smoke 20/20.**
+
+### >>> SIRADAKİ İŞ: D-017 redesign (KARAR ONAYLANDI, UYGULAMA SONRAKİ SOHBETTE) <<<
+Kullanıcı 2026-06-07 önizleme feedback'i sonrası Faz 2 cila redesign'ı kararlaştı (decisions.md **D-017**, progress.md "2-REDESIGN").
+6 adım (sırayla uygula, her biri Vitest+sim+smoke yeşil + gözle onay):
+1. **Yerleşim:** masalar ocaktan UZAK (>3.2, hedef ~5; **bulaşık ocaktan AYRILMAZ**, mutfak arka duvar kümesi), gerekirse alan
+   derinliği artar → tek noktada çay-al+servis/kirli-al+yıka imkânsız. nav/garson/işaret/semaver konumları uyar + "çakışma yok" testi.
+2. **Pad/işaret:** küçük (~0.5) + **zeminde DÜZ yazı** (havada rozet YOK); renk: yeşil=aç/mavi=opsiyonel/altın=yükseltme.
+3. **Sıralı reveal + onboarding (ilk oyun):** öncekiyle etkileşilene dek gizli; 2.masa→garsona zoom(atlanabilir)→"3.Masayı Aç"→
+   ocak yükseltme sonra; sonraki açılış "Yeni" rozeti; onboardStep persist.
+4. **Gating:** table3'ten minStationLevel:1 kalkar; simulate denge (84sn sabit kalmalı).
+5. **Servis kısıtı GEVŞET:** çay+kirli BAĞIMSIZ taşınır (eli-boşken kısıtı deadlock → kirli birikip toplanamıyordu).
+6. **Kamera sallanması fix (kök neden TEŞHİS EDİLDİ):** CameraRig (Scene.tsx) `lerp(desired, dt*4)` kare-hızı bağımlı +
+   `lookAt(tam oyuncu)` → trailing mesafe dalgalanınca dünya sallanıyor; dt clamp yok; fit/d her kare size'dan. Çözüm: kare-hızı
+   bağımsız damping (`1-exp(-k*dt)`) konum+lookAt'a TUTARLI + dt clamp + fit/d yalnız resize'da. NOT: sim deterministik & pürüzsüz,
+   sorun yalnız kamerada.
+
+- **Faz 2h (MASA-BAŞI, son hali):** Kullanıcı ilk "zone-başı/toplu + merkez altın disk + ★L rozet" uygulamasını REDDETTİ →
+  **her masanın AYRI seviyesi** (`tableLevels[i]`), **her masanın YANINDA ayrı nokta** (`LAYOUT.tables[i].upgradeSpot`, +1.2x merkeze),
+  My Hotel oda mantığı. Çay fiyatı SABİT; OTURULAN masanın seviyesi BAHŞİŞ↑ (coin=5+tipBase×lvl) + SABIR↑ (+2/lvl). 2. masa açılınca belirir.
+  Görsel: masanın yanında **sade küçük işaret** (altın halka YOK, dünya-içi L yazısı YOK; parası yetince yeşil parlar); bilgi HUD bar'ında.
+  Sayılar (data-driven): tipBase 2, patience +2/lvl, maliyet 60×1.6^lvl (60/96/153/245), soft max L4. SAVE 10→11→12 migrasyon zinciri.
+  Karar: D-016 §5 "zone-başı"→"masa-başı" güncellendi (decisions.md). Hafıza: feedback_upgrade_per_object.md.
+- **Baş üstü radial ilerleme cızırtı düzeltmesi (2026-06-07):** Kullanıcı "dolma animasyonu cızırtılı" dedi. İki neden: (1) arka halka
+  ile dolan yay TAM aynı düzlemdeydi → z-fighting; (2) `ringGeometry` sabit 32 segmenti değişen yay uzunluğuna her frame yeniden
+  dağıtıyordu → tüm yay titriyordu. Düzeltme (Player.tsx HeadRadial): yay `position z +0.003` + her iki materyal `depthWrite=false` +
+  `renderOrder` (z-fighting yok); segment sayısı ilerlemeyle ORANTILI (`round(progress*48)`) → sabit açısal dilim, sadece uçta yeni
+  dilim eklenir (titremez). build temiz, smoke 20/20, konsol temiz. **GÖZLE onay bekliyor.**
+- **Test sıfırlama (kullanıcıya):** tarayıcı **DevTools Console** sekmesinde `__resetGame()` (çift alt çizgi + parantez). AMPİRİK
+  DOĞRULANDI çalışıyor (playwright: tables 2→1, padsDone temizlendi, localStorage null). En garantili: `localStorage.clear()` sonra F5.
+  Para: `__addMoney(500)`, zaman: `__advanceTime(60)`. E2E: testten önce `localStorage.clear()` + reload.
+- **Garson/bulaşıkçı oyuncudan KAÇINIR (2026-06-07):** Kullanıcı "garson benim içimden geçiyor, bana göre hareket etmeli." navStep'e
+  opsiyonel `avoid`(oyuncu)+`avoidSolids`(masa) eklendi: personel oyuncunun üstüne binmeyip kenarına ayrılır (boids separation;
+  masaya itecekse itmez). Oyuncu otoriter (input), personel yer açar → "garson etrafından geçer" hissi. Garson+bulaşıkçı tüm navStep
+  çağrılarına player+obstacles geçti. Vitest 54/54, build temiz, smoke 20/20. GÖZLE onay bekliyor.
+- **Sıradaki:** 2h gözle onaylanırsa → **Faz 2i** (onboarding/işaretçi: ilk masa-açma + sonraki açılışlar "Yeni ▲" rozet).
+
+## (eski) Şu an neredeyiz (2026-06-06)
 Faz 0 + Faz 1 ✅. **Faz 2 (2a–2f) BİTTİ.** SAVE_VERSION **10**, max tepsi **6**.
 **YENİ TASARIM KİLİDİ: D-016** (kullanıcı onayı 2026-06-06) — D-012 "açık-alan salon"u **kat + zone ızgarası** ile
 DEĞİŞTİRDİ. Çok turlu tasarım tartışması sonucu yol haritası revize edildi (aşağı bak). **Sıradaki: Faz 2g** (his/yerleşim/
@@ -65,7 +104,20 @@ Tam servis tasarımı: `docs/serving-and-automation.md` (zone/kat detayı D-016'
   **sim 84sn sabit ✅, smoke 19/19 ✅, konsol temiz.** Önizleme: http://localhost:5173/
 - Değişen: economy.config.ts, store.ts (LAYOUT v2+area+collision), Scene.tsx (Walls/kamera), tools/smoke.mjs,
   tests/logic.test.ts; decisions.md (D-016), progress.md, activeContext.md. **Henüz commit yok** (ortam git repo'su değil).
-- **2g KALAN (opsiyonel):** müşteri spawn/sipariş tempo ince-ayarı + "sayı düzeni". NOT: SAVE_VERSION değişmedi (persist alan yok).
+- **2g servis-her-taraftan + garson kilitlenme düzeltmesi (2026-06-07 #2 — kullanıcı: "garson sol-üst masanın önünde takıldı, servis yapamıyor; engeli dolaşamıyor; alan büyük, garson eski hızına dönsün"):**
+  - **KÖK NEDEN:** garson teslimatı KOLTUK noktasına (`seat`) gidip oraya VARMAYI (`moveAvoid===true`) bekliyordu. Koltuk masanın bir tarafında; garson ters/mutfak tarafından gelince masa TAM aradadır → `moveAvoid`'in basit eksen-kayması tek engeli dolaşamayıp KİLİTLENİYORDU (gerçek pathfinding yok).
+  - **ÇÖZÜM:** servis MASA MERKEZİNE yakınlıkla (her taraftan). Garson teslimat: `seat`→`table` merkez, teslim koşulu `moveAvoid===true` yerine `dist2D(w.pos, table) < serveRadius(1.6)` → masaya yaklaşınca (hangi yön olursa) bırakır, engelin ardına geçmek gerekmez (bulaşıkçının çalışan deseni). Oyuncu servisi de `seat`→`table` yakınlığı (arkadan da servis). En-acil hedef seçimi korunur (timer önce; mesafe `table`'a göre tie-break). Bardak toplama zaten masa-yarıçaplı (her taraftan) → değişmedi.
+  - **GARSON HIZI:** `waiter.moveSpeed 1.4→1.8` (eski hız). Alan büyüdüğü için 1.5/1.4 çok yavaş kalıyordu; kullanıcı "eski hızına dönsün". Müşteri geliş hızı AYNI (spawnInterval 1.6, orderTime 6 — "müşteriler aynı hızda").
+  - **Doğrulama:** Vitest 44/44 ✅ (anti-starvation + servis testleri geçer: koltuk masaya 1.0 < serveRadius 1.6), build temiz, sim 84sn (garson hesabı etkilemez), smoke **19/19** ✅ — garson assist düşen para **1→8** (önceden 1→2; artık gerçekten servis ediyor, takılmıyor). SAVE_VERSION değişmedi. **Faz 2g BİTTİ → sıradaki Faz 2h.**
+  - Değişen: economy.config.ts (waiter.moveSpeed), store.ts (oyuncu+garson servis masa-yakınlığı).
+- **2g GERÇEK YOL BULMA — garson kilitlenme KÖK çözüm (2026-06-07 #3 — kullanıcı: "yine bug; tam masaya gelmeden veriyor; ön masada takılı kalıp arka masaya gidemiyor, engeli anlamıyor → arka masa sabrı doluyor; elinde çayla sol-üst↔sağ-üst↔sol-alt salınıyor; SERVİSE OPTİMİZASYON + harita düzeni ŞART"):**
+  - **TEŞHİS:** `moveAvoid` (eksen-başı kayma) GERÇEK pathfinding değildi → masa aktör ile hedef arasında TAM ortadaysa (mutfak arka duvarda, ön masa arka masayı x-kolonunda kapatıyor) tek engeli dolaşamayıp KİLİTLENİYORDU. Tüm belirtiler bunun (deadlock + en-acil hedef değişince yarı-yaklaşıp salınım). "Uzaktan veriyor" = serveRadius 1.6 (kenardan 1.1).
+  - **KULLANICI KARARI:** "sen mantıklı olanı yap, layout'a karar veremedim, olmazsa değişiriz ama mantıksal sorun çözülsün." → pathfinding eklendi, **layout v5 KORUNDU** (görseli zaten onaylıydı).
+  - **ÇÖZÜM — `src/game/nav.ts` (YENİ):** kaba ızgara (NAV_CELL 0.3) BFS yol bulma. `buildNavGrid(area,cell,solids,inflate=actorRadius)` + `findNavPath(grid,start,tx,tz,reach)` (8-yön, köşe-kesme engelli, bloklu-başlangıç en yakın açığa snap). Saf modül (LAYOUT'tan bağımsız → circular import yok; store solid'leri verir). **store.ts:** `navSolids`(ocak+bulaşık+masalar; koltuk/semaver hariç) + `getNavGrid(tables)` cache + `navStep(pos,target,step,grid,reach)`. Garson + bulaşıkçı artık `moveAvoid` yerine `navStep` → engeli GERÇEKTEN dolaşır. **Oyuncu DEĞİŞMEDİ** (input+kendi collision). Müşteriler de moveAvoid'te kaldı (kendi koltuğuna gider, blokaj yok).
+  - **Teslim mesafesi (geometrik, footprint+actorRadius+pay):** REACH_TABLE ~1.05 (servis), REACH_STATION/WASH ~1.08, REACH_HOME 0.4. Masaya BİTİŞİK teslim → "tam masaya gelmeden veriyor" biter.
+  - **Doğrulama:** **Vitest 47/47** (3 yeni nav testi: ocaktan HER masaya yol var + engel-tam-aradayken dolaşır + garson kolon-bloklu ARKA masaya gerçekten servis eder/deadlock yok), build temiz, sim 84sn (garson hesabı etkilemez), smoke 19/19. SAVE_VERSION değişmedi.
+  - Değişen: YENİ nav.ts; store.ts (nav entegrasyonu, garson+bulaşıkçı). **GÖZLE doğrulama BEKLİYOR** (kullanıcı önizlemede garsonun artık takılmadan tüm masalara servis ettiğini teyit etmeli — 3D nav kod testiyle değil gözle onaylanır).
+- ~~**2g KALAN (opsiyonel):** müşteri spawn/sipariş tempo ince-ayarı + "sayı düzeni". NOT: SAVE_VERSION değişmedi (persist alan yok).~~ (tempo yapıldı — yukarı bak)
 
 ## (önceki oturum — Faz 2f görsel/animasyon/yerleşim cilası)
 Kullanıcı 4 kararı onayladı: ızgara (istif değil), yerleşim bana bırakıldı (taşmasın yeter), react-spring'siz hafif

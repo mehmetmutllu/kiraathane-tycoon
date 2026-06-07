@@ -16,6 +16,8 @@ export interface SaveData {
   stationLevel: number;
   /** Tepsi kapasite yükseltme seviyesi (Faz 2e-B; 0..trayUpgrade.maxLevel). */
   trayLevel: number;
+  /** Masa-başı yükseltme seviyeleri (Faz 2h; index = masa slotu; bahşiş+sabır; My Hotel oda mantığı). */
+  tableLevels: number[];
   padsDone: string[];
   /** Aktif pad'lerin kısmi dolumu (pad id → ₺). Aynı anda birden çok pad doldurulabilir (v5). */
   padFills: Record<string, number>;
@@ -30,6 +32,7 @@ export function defaultSave(): SaveData {
     lifetime: '0',
     stationLevel: 0,
     trayLevel: 0,
+    tableLevels: [],
     padsDone: [],
     padFills: {},
     lastSaved: Date.now(),
@@ -138,7 +141,29 @@ export function migrate(raw: Record<string, unknown>): SaveData {
     v = 10;
   }
 
-  // Sona kalan v10 şeması: türetilen alanlar (tables/stations/serviceSpeedMult/hasWaiter) ve eski `padFill` yazılmaz.
+  // v10 -> v11 (Faz 2h): tek (zone-geneli) masa yükseltme seviyesi eklendi.
+  if (v < 11) {
+    d.tableLevel = Math.min(
+      Number(d.tableLevel ?? 0) || 0,
+      economyConfig.tables.upgrade.masterLevel - 1,
+    );
+    v = 11;
+  }
+
+  // v11 -> v12 (Faz 2h rework): masa yükseltme ZONE-geneli → MASA-BAŞI (kullanıcı isteği 2026-06-07).
+  // Eski tek `tableLevel` her masa slotuna uygulanır (ilerleme korunur); artık `tableLevels` dizisi.
+  if (v < 12) {
+    const slots = economyConfig.pads.filter((p) => p.effect.type === 'addTable').length + 1; // 1 başlangıç + addTable'lar
+    const cap = economyConfig.tables.upgrade.masterLevel - 1;
+    const old = Math.min(Number(d.tableLevel ?? 0) || 0, cap);
+    d.tableLevels = Array.isArray(d.tableLevels)
+      ? (d.tableLevels as number[]).map((n) => Math.min(Number(n) || 0, cap))
+      : Array.from({ length: slots }, () => old);
+    delete d.tableLevel;
+    v = 12;
+  }
+
+  // Sona kalan v12 şeması: türetilen alanlar (tables/stations/serviceSpeedMult/hasWaiter) ve eski `padFill` yazılmaz.
   return {
     saveVersion: SAVE_VERSION,
     wallet: String(d.wallet ?? '0'),
@@ -146,6 +171,7 @@ export function migrate(raw: Record<string, unknown>): SaveData {
     lifetime: String(d.lifetime ?? '0'),
     stationLevel: Number(d.stationLevel ?? 0) || 0,
     trayLevel: Number(d.trayLevel ?? 0) || 0,
+    tableLevels: Array.isArray(d.tableLevels) ? (d.tableLevels as number[]).map((n) => Number(n) || 0) : [],
     padsDone: Array.isArray(d.padsDone) ? (d.padsDone as string[]) : [],
     padFills:
       d.padFills && typeof d.padFills === 'object' ? (d.padFills as Record<string, number>) : {},

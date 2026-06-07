@@ -150,13 +150,21 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
      Yeni vitest: pickup'a hiç girilmeden mıknatısla toplanır + attract dışı çekilmez. **Vitest 42/42, build temiz, smoke 19/19.**
 
 ## Faz 2g/2h/2i — His & yerleşim & yükseltme & onboarding ⏳ (D-016 ile eklendi)
-- 🔧 **2g (his/yerleşim/collision/tuning, TEK zone):** **v5 GEÇERLİ** (kullanıcı feedback 2026-06-07 #4: sandalyeler koridor
+- ✅ **2g (his/yerleşim/collision/tuning, TEK zone):** **v5 GEÇERLİ** (kullanıcı feedback 2026-06-07 #4: sandalyeler koridor
   tıkıyor, karakterler iri → "alan baya büyümeli") — ✅ **BÜYÜK alan** `area`{minX-5.5,maxX5.5,minZ-5.0,maxZ4.5}; ✅ masalar
   **köşelere yayık 2×2** (kolon x-2.5/2.5 gap5, satır z-2.2/1.4 gap3.6) → orta geniş yürüme, sandalye kenarda (tıkanmaz);
   ✅ kamera d 9 (karakter alana göre küçük); mutfak arka duvarda (ocak[-3.0,-4.4], bulaşık[-1.0,-4.4], semaver[1.0,-4.4]);
   ✅ müşteri+garson+bulaşıkçı masa gövdesinden DOLAŞIR (`moveAvoid`+`tableSolids`; bulaşıkçı mesafe-tabanlı); ✅ oyuncu
   collision HAPSETMEZ; garson `moveSpeed 1.5`; `hitsSolid(r)`. **build temiz, Vitest 44/44, sim 84sn, smoke 19/19, konsol
-  temiz, görsel doğrulandı.** KALAN (ops.): spawn/sipariş tempo + "sayı düzeni". SAVE_VERSION değişmedi. (v2/v3/v4 terk.)
+  temiz, görsel doğrulandı.** **SERVİS-HER-TARAFTAN + garson kilitlenme fix (2026-06-07 #2):** garson teslimatı `seat`'e VARMAYI beklediği
+  için (moveAvoid eksen-kayması tek engeli dolaşamaz) masanın arkasında KİLİTLENİYORDU → servis MASA MERKEZİNE yakınlıkla (oyuncu+garson:
+  `seat`→`table`, teslim `dist<serveRadius 1.6`, her taraftan). Garson `moveSpeed 1.4→1.8` (eski hız; alan büyük). Müşteri geliş AYNI
+  (spawnInterval 1.6). Vitest 44/44, smoke 19/19 (assist düşen para 1→8), build temiz, sim 84sn. SAVE_VERSION değişmedi. (v2/v3/v4 terk.)
+  - 🐛→✅ **GERÇEK YOL BULMA (nav.ts, 2026-06-07 #3):** `moveAvoid` eksen-kayması GERÇEK pathfinding değildi → masa aktör ile hedef arasında TAM
+    ortadayken (ön masa arka masayı kolonda kapatır) KİLİTLENİYORDU (ön masada takılma, arka masa açlığı, salınım, uzaktan-verme). YENİ `src/game/nav.ts`:
+    kaba ızgara (0.3) BFS (`buildNavGrid`+`findNavPath`, 8-yön, köşe-kesme engelli, bloklu-başlangıç snap). store: `navSolids`/`getNavGrid` cache/`navStep`;
+    GARSON + BULAŞIKÇI `moveAvoid`→`navStep` (oyuncu+müşteri değişmedi). Teslim masaya BİTİŞİK (REACH_TABLE~1.05). **Vitest 47/47** (3 nav testi),
+    build temiz, sim 84sn, smoke 19/19. SAVE_VERSION değişmedi. **Faz 2g BİTTİ (gözle onay bekliyor).** Değişen: YENİ nav.ts, store.ts.
 - ~~v2/v3/v4~~ **(TERK — referans):**
   mutfak (ocak `[-2.7,0,-3.0]`+bulaşık `[-1.0,0,-3.0]`+semaver `[0.6,0,-3.0]`) sol-arka duvara 0; masalar **mutfağın
   TAM ÖNÜNDE** 2×2 (x-2.0/0.0, z-1.2/0.9) → "çapraz/geniş" gitti; ✅ **asimetrik `area`** {minX-3.5,maxX2.5,minZ-3.6,maxZ3.4}
@@ -164,11 +172,39 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   bulaşıkçı; `*Half`+playerRadius0.35; yalnız input'la harekette eksen-başı kayma → teleport/setState etkilenmez); ✅ garson
   `moveSpeed 1.8→1.5`; ✅ kamera `d 8→7`; Walls asimetrik area'ya göre. smoke "park" `(2.5,-3.0)`. **build temiz, Vitest
   44/44 (collision testleri+), sim 84sn, smoke 19/19, konsol temiz.** KALAN (ops.): spawn/sipariş tempo + "sayı düzeni". SAVE_VERSION değişmedi.
-- ⏳ **2h (masa yükseltme + BAHŞİŞ):** masa zone-başı yükseltilir (2. masa açılınca belirir, serbest/paralel);
-  etki = bahşiş↑ (`tipBase×seviye`) + sabır↑. Çay fiyatı SABİT (D-010). Yükseltme görseli: küçük altın halka+rozet
-  (parası yetince parlar). SAVE_VERSION bump (masaSeviyesi persist). simulate bahşişi gelire katar.
-- ⏳ **2i (onboarding/işaretçi katmanı):** ilk açılışta hareket + ilk masa-açma işaretçisi/zoom; sonraki açılışlarda
-  küçük "Yeni ▲" rozeti. Sadece ilk sefere özel tam tutorial.
+- 🔧→✅ **2h-rework (MASA-BAŞI, kullanıcı isteği 2026-06-07):** "toplu değil, her masanın yükseltmesi AYRI (My Hotel oda mantığı),
+  masanın YANINDA, etrafında altın halka YOK, üzerinde L yazısı YOK." → `tableLevel`(number) **→ `tableLevels`(number[])**; her açık
+  masanın YANINDA ayrı nokta (`LAYOUT.tables[i].upgradeSpot`, +1.2x merkeze; TABLE_UP_RADIUS 1.0); bahşiş+sabır OTURULAN masanın
+  seviyesinden. Merkez altın TableUpgradeZone + ★L rozet KALDIRILDI → `TableUpgradeMarkers` (her masanın yanında sade küçük işaret;
+  parası yetince yeşil parlar; yazı yok). **SAVE_VERSION 11→12 + v11→v12 migrasyon** (eski tek tableLevel → her masaya). simulate
+  masa-başı (idealize tüm masalar eşit; 1 seviye = masa×maliyet). devHooks tableLevels+tableUpgradeSpots. **Vitest 54/54, build temiz,
+  sim 84sn, smoke 20/20** (masa-başı: 0. masa 0→3, komşu sabit). decisions.md D-016 §5 "zone-başı"→"masa-başı" güncellendi. **GÖZLE onay bekliyor.**
+- ~~**2h (masa yükseltme + BAHŞİŞ) — ilk uygulama (TERK, zone-başı):**~~ Masa ZONE-başı yükseltilir (4 masa birlikte), mekânsal nokta
+  4 masanın ORTASINDA (`LAYOUT.tableUpgradeZone [0,0,-0.4]`); çay/tepsi yükseltme deseninin aynısı. **Çay fiyatı SABİT** (D-010
+  bozulmadı). Seviye iki şeyi artırır: **BAHŞİŞ** (servis başına ek `tipBase×seviye` ₺ → coin value = TEA_PRICE + tip) + **SABIR**
+  (`patiencePerLevel×seviye` sn). 2. masa açılınca belirir (`tables.upgradeRequires prev:table2`). `tableLevel` **PERSIST** →
+  **SAVE_VERSION 10→11 + v10→v11 migrasyon** (eksikse 0, softMax'a clamp). Config sayıları: tipBase 2, patiencePerLevel 2,
+  upgrade{costBase 60, growth 1.6 → 60/96/153/245, masterLevel 5 → soft max L4}, upgradeFillRate 60. Helper: tableUpgradeCost/
+  tableTip/tablePatience (config) + tableSoftMaxLevel/tableNextCost/tableUpgradeZoneUnlocked (store). Render: Scene.TableUpgradeZone
+  (altın disk 🪑) + Tables.tsx masa üstü ★L rozeti (level>0). devHooks: tableLevel/tableUpgradeZonePos. simulate: bahşiş gelire katıldı
+  (rate = tables×(TEA_PRICE+tip)/cycle; idealize oyuncu omurga+ocak sonrası masa yükseltir). **İlk-alım 84sn SABİT** (table2 gate
+  değişmedi); bahşiş geç-oyunu hızlandırır (lifetime 10k 68dk→36.5dk). **Vitest 53/53, build temiz, sim 84sn, smoke 20/20.**
+  Değişen: economy.config.ts, store.ts, save.ts, Scene.tsx, Tables.tsx, devHooks.ts, tools/simulate.ts, tests/logic.test.ts, tools/smoke.mjs.
+  **GÖZLE onay bekliyor** (yükseltme noktası ortada + masa rozetleri + bahşiş hissi).
+- ⏳ **2-REDESIGN (D-017, kullanıcı onayı 2026-06-07 — SONRAKİ SOHBETTE uygulanacak):** Faz 2 cila redesign'ı, 6 adım:
+  1. **Yerleşim:** masalar ocaktan UZAK (>2R=3.2, hedef ~5), bulaşık ocaktan AYRILMAZ (mutfak arka duvarda küme), gerekirse
+     alan derinliği artar → tek noktada çay-al+servis/kirli-al+yıka imkânsız (yürüme döngüsü). nav/garson/işaret konumları uyar +
+     "çakışma yok" testi.
+  2. **Pad/işaret redesign:** küçük (~0.5) + **zeminde DÜZ yazı** (havada Html rozet yok); renk dili yeşil=aç/mavi=opsiyonel/altın=yükseltme.
+  3. **Sıralı reveal + onboarding (ilk oyun):** hepsi-birden yok (öncekiyle etkileşilene dek gizli); 2.masa→garsona zoom (atlanabilir)→
+     "3.Masayı Aç"→ocak yükseltme sonra; ilk-oyun sonrası "Yeni" rozeti. onboardStep persist.
+  4. **Gating:** table3'ten minStationLevel:1 kalkar (2.masa→garson→3.masa); simulate yeniden denge (ilk-alım 84sn sabit).
+  5. **Servis kısıtı GEVŞER:** çay+kirli BAĞIMSIZ taşınır (eli-boşken kısıtı deadlock yapıyordu — kirli birikip toplanamıyor).
+  6. **Kamera sallanması fix:** CameraRig dt-bağımlı lerp + lookAt(tam oyuncu) → sallanma; kare-hızı bağımsız damping (konum+lookAt
+     tutarlı) + dt clamp + fit/d sadece resize'da. (Kök neden bu oturumda teşhis edildi.)
+  Detay: decisions.md D-017. Her adım Vitest+sim+smoke yeşil + gözle onay.
+- ⏳ **2i (onboarding/işaretçi katmanı):** D-017 §3'e taşındı (yukarı). Eski tanım: ilk açılışta hareket + ilk masa-açma
+  işaretçisi/zoom; sonraki açılışlarda küçük "Yeni ▲" rozeti.
 
 ## Faz 3 — Kat & zone çoğaltma & roller ⏳ (D-016 ile yeniden çerçevelendi)
 - ⏳ **3a:** Zone çoğaltma: zone'u atomik modül yap, **kat başına ~4 zone (2×2 ızgara)**; zone-açma omurga pad'i;

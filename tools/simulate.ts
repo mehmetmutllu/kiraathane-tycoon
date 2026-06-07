@@ -23,12 +23,15 @@ import {
   upgradeOutputMultiplier,
   requiresMet,
   derivedFromPads,
+  tableUpgradeCost,
+  tableTip,
   type GateState,
 } from '../src/config/economy.config.ts';
 
 const DT = 1; // saniyelik adım
 const TEA_PRICE = C.teaStation.basePrice;
 const SOFT_MAX = C.teaStation.upgrade.masterLevel - 1; // ₺ ile çıkılabilen en yüksek seviye
+const TABLE_SOFT_MAX = C.tables.upgrade.masterLevel - 1; // ₺ ile çıkılabilen en yüksek masa seviyesi
 
 // D-015: tables/serviceSpeedMult ayrı tutulmaz; padsDone'dan türetilir (store ile aynı kaynak).
 interface State {
@@ -36,6 +39,7 @@ interface State {
   wallet: number;
   lifetime: number;
   stationLevel: number;
+  tableLevel: number;
   padsDone: string[];
 }
 
@@ -49,10 +53,15 @@ function brewTime(s: State): number {
   return (C.npc.orderTime * serviceSpeedMult) / upgradeOutputMultiplier(C.teaStation.upgrade, s.stationLevel);
 }
 
-// Gelir oranı (₺/sn): oturma kapasitesi × sabit fiyat / müşteri döngü süresi.
+// Gelir oranı (₺/sn): oturma kapasitesi × (sabit fiyat + masa bahşişi) / müşteri döngü süresi.
+// Bahşiş (Faz 2h) fiyatı değil servis başına EK gelir ekler (çay fiyatı D-010 ile sabit kalır).
 function rate(s: State): number {
   const cycle = C.npc.walkTime + brewTime(s) + C.npc.eatTime;
-  return (derivedFromPads(s.padsDone).tables * TEA_PRICE) / cycle;
+  return (derivedFromPads(s.padsDone).tables * (TEA_PRICE + tableTip(s.tableLevel))) / cycle;
+}
+
+function tableUpgradeUnlocked(s: State): boolean {
+  return requiresMet(C.tables.upgradeRequires, gateOf(s)) && s.tableLevel < TABLE_SOFT_MAX;
 }
 
 // Sıradaki aktif OMURGA pad'i (opsiyoneller atlanır; gating karşılanmış, henüz alınmamış).
@@ -75,12 +84,23 @@ function trySpend(s: State): void {
     }
     return;
   }
-  // Aktif pad yok → ocak yükseltmesi açıksa onu al (sıradaki pad'in önkoşulu olabilir).
+  // Aktif pad yok → ocak yükseltmesi açıksa onu al (sıradaki pad'in önkoşulu olabilir; öncelik omurga akışı).
   if (upgradeUnlocked(s)) {
     const cost = upgradeCost(C.teaStation.upgrade, s.stationLevel + 1);
     if (s.wallet >= cost) {
       s.wallet -= cost;
       s.stationLevel += 1;
+    }
+    return;
+  }
+  // Omurga + ocak bitti/kilitli → masa yükseltmesi (opsiyonel/paralel gelir artışı; bahşiş) al.
+  // MASA-BAŞI (Faz 2h rework): idealize oyuncu tüm açık masaları eşit yükseltir → bir seviye = masa sayısı × maliyet.
+  if (tableUpgradeUnlocked(s)) {
+    const tables = derivedFromPads(s.padsDone).tables;
+    const cost = tableUpgradeCost(s.tableLevel) * tables;
+    if (s.wallet >= cost) {
+      s.wallet -= cost;
+      s.tableLevel += 1;
     }
   }
 }
@@ -90,6 +110,7 @@ const milestones: { name: string; hit: (s: State) => boolean; done?: boolean }[]
   { name: 'Çay ocağı L1 (throughput)', hit: (s) => s.stationLevel >= 1 },
   { name: '3. Masa açıldı', hit: (s) => s.padsDone.includes('table3') },
   { name: '4. Masa açıldı (salon dolu)', hit: (s) => s.padsDone.includes('table4') },
+  { name: 'Masa yükseltme L1 (bahşiş)', hit: (s) => s.tableLevel >= 1 },
   { name: 'Semavere geçiş', hit: (s) => s.padsDone.includes('samovar') },
   { name: 'Çay ocağı L4 (Usta öncesi)', hit: (s) => s.stationLevel >= SOFT_MAX },
   { name: 'lifetime 1.000 ₺', hit: (s) => s.lifetime >= 1_000 },
@@ -105,7 +126,7 @@ function fmtTime(sec: number): string {
 
 function run() {
   const s: State = {
-    t: 0, wallet: 0, lifetime: 0, stationLevel: 0, padsDone: [],
+    t: 0, wallet: 0, lifetime: 0, stationLevel: 0, tableLevel: 0, padsDone: [],
   };
   const MAX_T = 60 * 60 * 6; // 6 saat üst sınır
 

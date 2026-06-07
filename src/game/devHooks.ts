@@ -43,6 +43,9 @@ export function installDevHooks(): void {
       trayCap: trayCapacity(s.trayLevel),
       trayLevel: s.trayLevel,
       trayUpgradeZonePos: LAYOUT.trayUpgradeZone,
+      // Masa-başı yükseltme (Faz 2h): her masanın seviyesi + yanındaki yükseltme noktaları
+      tableLevels: [...s.tableLevels],
+      tableUpgradeSpots: LAYOUT.tables.map((t) => t.upgradeSpot),
       waitingCount: s.npcs.filter((n) => n.state === 'waitingForTea').length,
       stationPos: LAYOUT.stations[0],
       // Servis edilmeyi bekleyen ilk müşterinin koltuğu (smoke servis testi için) — yoksa null.
