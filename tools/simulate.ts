@@ -53,11 +53,26 @@ function brewTime(s: State): number {
   return (C.npc.orderTime * serviceSpeedMult) / upgradeOutputMultiplier(C.teaStation.upgrade, s.stationLevel);
 }
 
-// Gelir oranı (₺/sn): oturma kapasitesi × (sabit fiyat + masa bahşişi) / müşteri döngü süresi.
-// Bahşiş (Faz 2h) fiyatı değil servis başına EK gelir ekler (çay fiyatı D-010 ile sabit kalır).
+// Gelir oranı (₺/sn): servis edilen çay/sn × (sabit fiyat + masa bahşişi).
+// DARBOĞAZ modeli (D-019): tek ocak SINIRLI throughput'a sahip → servis hızı, TALEP ile ARZIN MİNİMUMU:
+//   - talep (masalar dolu): tables / cycle   (her masa cycle başına 1 çay tüketir)
+//   - arz (ocak demleme):   1 / brewTime      (tek ocak brewTime'da 1 çay demler)
+// Masa açmak (table3'ten gate kalkınca) tek başına geliri artırmaz; ocak darboğazsa ocak yükseltmek gerekir
+// → "tek ocak 4 masaya yetişmeli" gerçeği modellenir (D-019 §2/§3). 1 masada talep<arz → eski davranış (ilk-alım 84sn sabit).
 function rate(s: State): number {
   const cycle = C.npc.walkTime + brewTime(s) + C.npc.eatTime;
-  return (derivedFromPads(s.padsDone).tables * (TEA_PRICE + tableTip(s.tableLevel))) / cycle;
+  const tables = derivedFromPads(s.padsDone).tables;
+  const demand = tables / cycle;
+  const supply = 1 / brewTime(s);
+  return Math.min(demand, supply) * (TEA_PRICE + tableTip(s.tableLevel));
+}
+
+// Ocak şu an darboğaz mı (talep ≥ arz)? Akıllı oyuncu bu durumda masadan ÖNCE ocağı yükseltir.
+function ocakBottleneck(s: State): boolean {
+  const cycle = C.npc.walkTime + brewTime(s) + C.npc.eatTime;
+  const demand = derivedFromPads(s.padsDone).tables / cycle;
+  const supply = 1 / brewTime(s);
+  return demand > supply * 0.95; // 1 masada false (talep<<arz); 2+ masada true → ocak yükselt
 }
 
 function tableUpgradeUnlocked(s: State): boolean {
@@ -74,8 +89,19 @@ function upgradeUnlocked(s: State): boolean {
   return requiresMet(C.teaStation.upgradeRequires, gateOf(s)) && s.stationLevel < SOFT_MAX;
 }
 
-// Otomatik oyuncu: sıradaki aktif pad'i ya da (pad gate'liyse) ocak yükseltmesini al.
+// Otomatik (akıllı) oyuncu: ocak DARBOĞAZSA masadan önce ocağı yükseltir (throughput'u açar); değilse
+// omurga pad'ini (masa/semaver) alır; o da bitince masa-başı yükseltme (bahşiş). D-019: masa gate'i kalktı,
+// ama akıllı oyuncu ocağı kendiliğinden yükseltir → tempo eski gated akışa benzer kalır (ilk-alım 84sn sabit).
 function trySpend(s: State): void {
+  // 1) Ocak darboğazsa ve yükseltme açıksa → önce ocağı yükselt (tek ocak masalara yetişsin).
+  if (ocakBottleneck(s) && upgradeUnlocked(s)) {
+    const cost = upgradeCost(C.teaStation.upgrade, s.stationLevel + 1);
+    if (s.wallet >= cost) {
+      s.wallet -= cost;
+      s.stationLevel += 1;
+    }
+    return;
+  }
   const pad = currentPad(s);
   if (pad) {
     if (s.wallet >= pad.cost) {
@@ -110,9 +136,8 @@ const milestones: { name: string; hit: (s: State) => boolean; done?: boolean }[]
   { name: 'Çay ocağı L1 (throughput)', hit: (s) => s.stationLevel >= 1 },
   { name: '3. Masa açıldı', hit: (s) => s.padsDone.includes('table3') },
   { name: '4. Masa açıldı (salon dolu)', hit: (s) => s.padsDone.includes('table4') },
+  { name: 'Çay ocağı L4 (semaver/üst, tek ocak 4 masaya yetişir)', hit: (s) => s.stationLevel >= SOFT_MAX },
   { name: 'Masa yükseltme L1 (bahşiş)', hit: (s) => s.tableLevel >= 1 },
-  { name: 'Semavere geçiş', hit: (s) => s.padsDone.includes('samovar') },
-  { name: 'Çay ocağı L4 (Usta öncesi)', hit: (s) => s.stationLevel >= SOFT_MAX },
   { name: 'lifetime 1.000 ₺', hit: (s) => s.lifetime >= 1_000 },
   { name: 'lifetime 10.000 ₺', hit: (s) => s.lifetime >= 10_000 },
   { name: 'İlk prestige cazip (İtibar ≥ 1)', hit: (s) => s.lifetime >= C.prestige.repScale },

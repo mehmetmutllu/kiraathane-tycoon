@@ -1,7 +1,7 @@
 // Test/dev kancaları. 3D sahne görsel doğrulanamaz; durum buradan okunur.
 // window.__game  -> salt-okunur anlık görüntü
 // window.__advanceTime(sn) -> simülasyonu hızlı ileri sar
-import { useGame, currentPad, availableOptionalPads, LAYOUT, trayCapacity } from './store';
+import { useGame, currentPad, availableOptionalPads, LAYOUT, trayCapacity, dirtyTables } from './store';
 import type { Vec3 } from './types';
 
 declare global {
@@ -58,6 +58,9 @@ export function installDevHooks(): void {
       carriedDirty: s.carriedDirty,
       dishStationPos: LAYOUT.dishStation,
       firstDishPos: s.dishes[0] ? s.dishes[0].pos : null,
+      // Kirli masa mekaniği (D-019): eşiği aşan masa indeksleri (müşteri oturmaz + garson götürmez).
+      dirtyTables: [...dirtyTables(s.dishes)],
+      dishesByTable: LAYOUT.tables.map((_, i) => s.dishes.filter((d) => d.tableIndex === i).length),
       hasDishwasher: s.hasDishwasher,
       dishwasherTray: s.dishwasher ? s.dishwasher.tray : 0,
       dishwasherPos: s.dishwasher ? s.dishwasher.pos.map((n) => +n.toFixed(2)) : null,

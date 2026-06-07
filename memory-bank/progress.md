@@ -221,6 +221,33 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
        geçerken alınmaz, durunca HEMEN, countdown yok; çay-fill leave'de sıfırlanmıyor. 3 hareket-temelli vitest.
        Vitest 57/57, build temiz, sim 84sn, smoke 19/19, gözle ✓ (sade işaret döndü).
      - ⏳ **adım 4+ (SIRADAKİ):** sıralı reveal zinciri → semaver=ocak L4 (+ekonomi denge) → garson L2.
+     - ✅ **D-019 madde 1 (KİRLİ MASA mekaniği — YENİ oynanış, gözle onay bekliyor):** Her kirli bardak (`Dish.tableIndex`)
+       bırakıldığı masaya etiketlenir; bir masada `cups.dirtyThreshold`(2)'den FAZLA = **3+ kirli → masa KİRLİ**. Kirli masaya
+       (a) üstünde alçak primitive yeşilimsi **koku bulutu** (StinkCloud, Dishes.tsx, hafif bob — havada UI değil), (b) **garson
+       çay GÖTÜRMEZ** (garson `waitingNpcs` kirli masayı filtreler), (c) **YENİ MÜŞTERİ OTURMAZ** (`findFreeTable(npcs,tables,dirty)`
+       kirli masayı boş saymaz) → oyuncu ≤2 toplayınca masa normale döner (temizlik baskısı). `dirtyTables(dishes)` saf helper
+       (export); devHooks `dirtyTables`+`dishesByTable`. **SAVE_VERSION 13 DEĞİŞMEDİ** (dishes transient, persist alan yok).
+       Ekonomi etkilenmez (sim idealize oyuncu yetişir; **84sn sabit**). **Vitest 60/60** (3 yeni: eşik aşımı, oturmaz, garson-
+       götürmez), build temiz, sim 84sn, smoke 19/19, konsol temiz. Değişen: types.ts, economy.config.ts, store.ts, Dishes.tsx,
+       devHooks.ts, tests/logic.test.ts. (decisions.md D-019 madde 1.)
+       **GÖZLE ONAYLANDI** (kullanıcı 2026-06-07: "3 kirli masada koku bulutu çıktı + müşteri gelmedi"; ileride koku yerine
+       temizlik/kirli-bardak ikonu onboarding'de düşünülecek).
+     - ✅ **D-019 madde 2-3 (reveal sırası + gating sadeleştirme) + L1-BAŞLANGIÇ (kullanıcı isteği, gözle onay bekliyor):**
+       Kullanıcı: "2. masa açılınca birden 4 yükseltme geldi" → ÇIKIŞ SIRASI: başta 2.Masa → açılınca **çay yükseltme + 3.Masa**
+       → ocak bir kez yükselince **garson** → 3.Masa açılınca **bulaşıkçı** → **4 masa açılınca masa yükseltme**. Config:
+       `table3`'ten `minStationLevel:1` KALKTI (D-019 §2); `waiter`'a `minStationLevel:1` (reveal); `tables.upgradeRequires`
+       `prev:['table4']`. **L1-başlangıç:** çay ocağı/masalar GÖRSEL L1'den (iç 0-tabanlı; `activeZone.label` +1; softmax→"Usta 💎").
+       **Sim bottleneck:** `rate=min(talep, ocak-arzı)×(fiyat+bahşiş)`; `trySpend` ocak darboğazsa önce ocağı yükseltir. **İlk-alım
+       84sn SABİT** (ocak L1 @1.9dk, 4.masa @8dk, masa-yük @15.7dk). SAVE_VERSION 13 değişmedi. **Vitest 60/60, build temiz, sim
+       84sn, smoke 20/20.** Değişen: economy.config.ts, store.ts, simulate.ts, logic.test.ts, smoke.mjs. (decisions.md D-019 §2/§3.)
+     - ✅ **D-018 adım 5 (SEMAVER = OCAK ÜST YÜKSELTMESİ — gözle onay bekliyor):** ayrı `samovar` omurga pad'i (₺850, serviceSpeed
+       ×0.7) KALDIRILDI → semaver = çay ocağının üst yükseltmesi (TeaStation seviyeyle büyüyen semaveri zaten çiziyor); omurga
+       table4'te biter. `derivedFromPads` serviceSpeed case silindi (serviceSpeedMult hep 1; Faz 3a için alan kaldı). EKONOMİ
+       (sim bottleneck): tek ocak ₺ L4 (×3.32) 4 masaya yetişir (arz 0.553 > talep 0.512); ilk-alım **84sn SABİT**, ocak L4 @8.7dk,
+       masa-yük @10.2dk, 10k @35dk. "Usta" master (💎/video) Faz 4. **SAVE_VERSION 13→14 + v13→v14** (samovar padsDone+padFills'ten
+       düşer; ilerleme korunur). **Vitest 61/61, build temiz, sim 84sn, smoke 20/20.** Değişen: economy.config.ts, save.ts, store.ts,
+       simulate.ts, tests/logic.test.ts. (decisions.md D-018 §5.)
+     - ⏳ **SIRADAKİ → D-018 adım 6 (garson L2)** + D-019 madde 4 (yeni-özellik bildirimi: kamera zoom/pinboard) + D-017 §6 kamera damping.
      (Orijinal sıra:) (1) bug-fix kapı z-fighting + table2-kararma (Suspense) → (2) TRAY YÜKSELTME KALDIR (tepsi sabit 2) → (3)
      KESİK-KÖŞELİ zemin kartı + masa yükseltme MERKEZDEN KENARA (sol→sol/sağ→sağ, orta boş) + DWELL (~1.5sn, üstünden geçince para
      gitmesin) → (4) sıralı reveal zinciri (yakınlık-gizleme YOK) → (5) SEMAVER=OCAK L4 (premium 💎/video, kilitli; ayrı pad kalkar;

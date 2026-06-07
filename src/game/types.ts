@@ -24,9 +24,11 @@ export interface Coin {
 
 // Kirli bardak (Faz 2e). İçen müşteri kalkınca masada bırakılır (coins gibi mekânsal nesne).
 // Oyuncu/bulaşıkçı toplar → bulaşıkta yıkar → temiz havuza döner. Transient.
+// tableIndex (D-019): bırakıldığı masa → masa-başı kirli sayısı (eşik aşılınca masa KİRLİ olur).
 export interface Dish {
   id: number;
   pos: Vec3;
+  tableIndex: number;
 }
 
 // Garson (Faz 2d, opsiyonel). Transient: hasWaiter persist edilir ama konum/tepsi her

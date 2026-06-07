@@ -154,14 +154,25 @@ export function migrate(raw: Record<string, unknown>): SaveData {
   }
 
   // v12 -> v13 (D-018): TRAY YÜKSELTME KALDIRILDI → `trayLevel` persist alanı düşer (tepsi sabit 2).
-  // (Aynı sürümde semaver pad düşürme + waiterLevel ekleme adımları sonraki D-018 dilimlerinde gelecek.)
   if (v < 13) {
     delete d.trayLevel;
     v = 13;
   }
 
-  // Sona kalan v13 şeması: türetilen alanlar (tables/stations/serviceSpeedMult/hasWaiter), eski `padFill` ve
-  // kaldırılan `trayLevel` yazılmaz.
+  // v13 -> v14 (D-018 adım 5): 'samovar' ayrı pad'i KALDIRILDI (semaver = çay ocağı üst yükseltmesi).
+  // Eski kayıttan 'samovar' referanslarını temizle (ilerleme/₺ korunur; dead id kalmaz; station2 deseni).
+  if (v < 14) {
+    d.padsDone = (Array.isArray(d.padsDone) ? (d.padsDone as string[]) : []).filter((id) => id !== 'samovar');
+    if (d.padFills && typeof d.padFills === 'object' && 'samovar' in (d.padFills as object)) {
+      const { samovar: _drop, ...rest } = d.padFills as Record<string, number>;
+      void _drop;
+      d.padFills = rest;
+    }
+    v = 14;
+  }
+
+  // Sona kalan v14 şeması: türetilen alanlar (tables/stations/serviceSpeedMult/hasWaiter), eski `padFill`,
+  // kaldırılan `trayLevel` ve 'samovar' referansı yazılmaz.
   return {
     saveVersion: SAVE_VERSION,
     wallet: String(d.wallet ?? '0'),

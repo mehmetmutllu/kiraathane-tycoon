@@ -2,7 +2,54 @@
 
 > En sık güncellenen dosya. Her anlamlı adımdan sonra güncelle.
 
-## Şu an neredeyiz (2026-06-07 — GÜNCEL: D-018 adım 1+2 BİTTİ, adım 3 GERİ ALINDI+düzeltildi)
+## Şu an neredeyiz (2026-06-07 — GÜNCEL: D-019 madde 2-3 (reveal sırası + gating) + L1-başlangıç UYGULANDI, gözle onay bekliyor)
+**Pad/yükseltme ÇIKIŞ SIRASI sadeleştirildi (kullanıcı: "2. masa açılınca birden 4 yükseltme geldi").** Yeni reveal:
+başta sadece 2.Masa → 2.Masa açılınca **çay ocağı yükseltme + 3.Masa** → ocak bir kez yükselince **garson** belirir
+→ 3.Masa açılınca **bulaşıkçı** → **4 masa da açılınca masa yükseltme işaretleri** (geç oyun). Böylece 2.masada 4 işaret
+patlamaz. Config gating: `table3`'ten `minStationLevel:1` KALKTI (D-019 §2 — masa açmak yükseltme gerektirmez);
+`waiter`'a `minStationLevel:1` EKLENDİ (garson reveal); `tables.upgradeRequires` `prev:['table2']`→**`prev:['table4']`**.
+**L1-BAŞLANGIÇ (kullanıcı isteği):** çay ocağı + masalar GÖRSEL olarak **L1**'den başlar (iç stationLevel/tableLevels
+0-tabanlı KALIR — ekonomi değişmez; sadece `activeZone.label` `seviye+1` gösterir; soft max → "Usta 💎"). **Sim BOTTLENECK
+modeli:** `rate = min(talep tables/cycle, arz 1/brewTime) × (fiyat+bahşiş)` → tek ocak gerçek darboğaz; `trySpend` ocak
+darboğazsa masadan ÖNCE ocağı yükseltir (akıllı oyuncu). **İlk-alım 84sn SABİT** (1 masada talep<arz → değişmez); ocak L1
+@1.9dk emergent, 4.masa @8dk, masa-yük @15.7dk. SAVE_VERSION **13** (değişmedi). **Vitest 60/60, build temiz, sim 84sn,
+smoke 20/20, konsol temiz.** Değişen: economy.config.ts (gating), store.ts (L1 etiket ×2), tools/simulate.ts (bottleneck+
+akıllı ocak), tests/logic.test.ts (gating testleri yeni sıraya), tools/smoke.mjs (ocak→garson→table3/4→masa-yük sırası).
+**ÖNİZLEME (gözle onay):** http://localhost:5199/ — 2.masa açınca artık 4 işaret patlıyor mu, ocak/masa L1'den mi başlıyor kontrol et.
+
+### D-018 adım 5 — SEMAVER = OCAK ÜST YÜKSELTMESİ (samovar ayrı pad KALDIRILDI) — gözle onay bekliyor
+Kullanıcı: "semavere geç pad'i kalkacaktı, ne zaman?" → ayrı `samovar` omurga pad'i (₺850, serviceSpeed ×0.7) **KALDIRILDI**.
+Semaver artık çay ocağının üst yükseltmesidir (TeaStation seviyeyle büyüyen semaveri zaten çiziyor); omurga zinciri **table4'te
+biter**. `derivedFromPads`'ten `serviceSpeed` case'i silindi (serviceSpeedMult hep 1; Faz 3a addStation için alan duruyor).
+**EKONOMİ (sim bottleneck ile doğrulandı):** tek ocak ₺ L4 (throughput ×3.32) 4 masaya YETİŞİR → arz 0.553 > talep 0.512;
+ilk-alım **84sn SABİT**, ocak L4 @8.7dk, masa-yük @10.2dk, lifetime 10k @35dk (samovar tasarrufu kalkınca biraz hızlandı).
+"Usta" master tier (💎/video) Faz 4'e kaldı. **SAVE_VERSION 13→14 + v13→v14 migrasyon** (samovar padsDone+padFills'ten düşer,
+ilerleme korunur). **Vitest 61/61, build temiz, sim 84sn, smoke 20/20, konsol temiz.** Değişen: economy.config.ts (samovar pad
++ serviceSpeed case sil, SAVE_VERSION 14), save.ts (v13→v14), store.ts (LAYOUT.padPos.samovar sil), simulate.ts (milestone),
+tests/logic.test.ts (samovar referansları + v13→v14 testi).
+**SIRADAKİ:** D-018 adım 6 (garson L2: 1.4→1.8, yan-kenar yükseltme kartı, persist waiterLevel) + D-019 madde 4 (yeni-özellik
+bildirimi: özellik açılınca kamera zoom/pinboard) + D-017 §6 kamera damping.
+
+### >>> KULLANICI PLANI (2026-06-07, oturum sonu) <<<
+Kullanıcı kararı: **"tek zone'da olan HER ŞEYİ hallet → sonra ben baştan sona test edeyim → ardından zone yükseltme (Faz 3a)
+kısmına geçeriz."** Yani Faz 2'nin tek-zone cilası TAM bitmeli (kalan: D-018 adım 6 + D-019 madde 4 + D-017 §6 kamera),
+sonra kullanıcı tek zone'u uçtan uca oynayıp onaylayacak, SONRA Faz 3a (zone çoğaltma) başlayacak. **Bu oturum BURADA kaydedildi.**
+Sonraki oturum: kalan tek-zone işleriyle başla (adım 6 garson L2 önce önerilir — küçük, izole, persist waiterLevel + SAVE bump).
+
+### (önceki) D-019 madde 1 — KİRLİ MASA mekaniği (BİTTİ, gözle onaylandı)
+**D-019 madde 1 (KİRLİ MASA) BİTTİ.** Her kirli bardak bırakıldığı masaya etiketlenir (`Dish.tableIndex`); bir
+masada `cups.dirtyThreshold` (2)'den FAZLA = **3+ kirli → masa KİRLİ**: (a) masa üstünde alçak primitive yeşilimsi
+"koku" bulutu (StinkCloud, Dishes.tsx; hafif bob), (b) **garson o masaya çay GÖTÜRMEZ** (`waitingNpcs` kirli masayı
+filtreler), (c) **YENİ MÜŞTERİ OTURMAZ** (`findFreeTable(npcs, tables, dirty)` kirli masayı boş saymaz). Oyuncu
+≤2'ye indirince masa normale döner. `dirtyTables(dishes)` helper export; devHooks `dirtyTables`+`dishesByTable`.
+SAVE_VERSION **13** (DEĞİŞMEDİ — dishes transient, persist alan yok). **Vitest 60/60 (3 yeni: eşik/oturmaz/garson-götürmez),
+build temiz, sim 84sn (1.4dk; ekonomi etkilenmez), smoke 19/19, konsol temiz.** Değişen: types.ts (Dish.tableIndex),
+economy.config.ts (cups.dirtyThreshold), store.ts (dirtyTables/findFreeTable/spawn/garson/dish-push+export), Dishes.tsx
+(StinkCloud), devHooks.ts, tests/logic.test.ts.
+**ÖNİZLEME (gözle onay):** http://localhost:5199/ — kirli masada koku bulutu + müşteri o masaya oturmuyor mu kontrol et.
+(Test: bir masaya servis et, parayı/kirliyi toplama, 3 müşteri çevriminden sonra masa kirlenmeli.)
+
+### (önceki) D-018 adım 1+2+3 (BİTTİ)
 **D-018 DEVAM. Adım 1 (bug-fix) + 2 (tray kaldır) BİTTİ. Adım 3: KART TASARIMI KULLANICI TARAFINDAN REDDEDİLDİ →
 SADE işaretlere geri alındı; DWELL süre-sayma yerine HAREKET-TEMELLİ yapıldı. Kenar-yerleşim KORUNDU.**
 SAVE_VERSION **13**. **Vitest 57/57, build temiz, sim 84sn (1.4dk), smoke 19/19, konsol temiz.**
@@ -24,12 +71,10 @@ SAVE_VERSION **13**. **Vitest 57/57, build temiz, sim 84sn (1.4dk), smoke 19/19,
   LAYOUT spot/pad korundu), GroundMarker.tsx (sade haline döndü), Pad.tsx + Scene.tsx (dwell prop çıkarıldı),
   tests/logic.test.ts (hareket-temelli 3 test). FILL_TEA/FILL_TABLE store-içi export (onFillId için).
 
-### >>> SIRADAKİ İŞ (SONRAKİ OTURUM): D-019 + kalan D-018 <<<
+### >>> SIRADAKİ İŞ: D-019 madde 2-4 + kalan D-018 <<<
 Kullanıcı feedback 2026-06-07 (tam metin decisions.md **D-019**). Ana kaygı: "her şey çok yer kaplıyor" → sade ekran.
-1. **KİRLİ MASA mekaniği:** dish→`tableIndex` etiketi + masa-başı kirli sayısı; **>2 (3+) kirli → masa KİRLİ** →
-   (a) üstünde küçük ALÇAK primitive "kirli/koku" işareti, (b) garson o masaya çay GÖTÜRMEZ, (c) **YENİ MÜŞTERİ HİÇ OTURMAZ**
-   (`findFreeTable` kirli masayı atlar) → oyuncu ≤2'ye indirene kadar.
-2. **Çay ocağı yükseltme noktasını ÇAY-ALMA'dan AYIR + SOL DUVAR ile ocak arasına koy** (çay alırken zorla tetiklenmesin;
+1. ✅ **KİRLİ MASA mekaniği — UYGULANDI (gözle onay bekliyor; yukarı bak).**
+2. **(SIRADAKİ) Çay ocağı yükseltme noktasını ÇAY-ALMA'dan AYIR + SOL DUVAR ile ocak arasına koy** (çay alırken zorla tetiklenmesin;
    ocaktan >2.9 br). **`table3`'ten `minStationLevel:1` KALK** (masa açmak yükseltme gerektirmesin).
 3. **Yükseltme gating (sade ekran):** ÖNERİ → çay ocağı yükseltme 2. masadan sonra; MASA yükseltmeleri table4 sonra. (Kesinleştir,
    simülasyonla denge, ilk-alım 84sn sabit.)

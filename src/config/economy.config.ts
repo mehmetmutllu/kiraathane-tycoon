@@ -13,7 +13,7 @@
  *   L5 (Usta)   = masterDiamondCost 💎 VEYA 1 ödüllü video; outputMult yerine masterOutputMult
  */
 
-export const SAVE_VERSION = 13;
+export const SAVE_VERSION = 14;
 
 export const CURRENCY = {
   soft: '₺', // Para — müşteriden kazanılır
@@ -96,8 +96,9 @@ export const economyConfig = {
     },
     /** Yükseltme noktasında saniyede cüzdandan akan ₺ (mekânsal yükseltme). */
     upgradeFillRate: 60,
-    /** Önkoşul: 2. masa açılınca belirir (D-016 §4 — yükseltme kavramı 2. masada tanıtılır). */
-    upgradeRequires: { prev: ['table2'] } satisfies Requires,
+    /** Önkoşul: TÜM masalar (4) açılınca belirir (D-019 §3 — masa yükseltmeleri GEÇ oyun derinliği; erken
+     *  ekran sade kalsın diye masa-başı yükseltme işaretleri 4. masaya kadar gizli). */
+    upgradeRequires: { prev: ['table4'] } satisfies Requires,
     /** Servis başına ek bahşiş = tipBase × masaSeviyesi (L0 = 0 bahşiş, sadece sabit fiyat). */
     tipBase: 2,
     /** Masa seviyesi başına eklenen sabır (sn). */
@@ -180,6 +181,13 @@ export const economyConfig = {
     collectRadius: 1.4,
     /** Bulaşık noktasında yıkama yakınlığı (varınca taşınan kirliler temize döner). */
     washRadius: 1.6,
+    /**
+     * Kirli masa eşiği (D-019): bir masada bu sayıdan FAZLA (>) kirli bardak birikince masa KİRLİ olur.
+     * Eşik 2 → 2'den fazla = 3+ kirli ⇒ masa kirli (kullanıcı isteği "2'den fazla / 3+"). Kirli masaya:
+     * yeni müşteri OTURMAZ + garson çay GÖTÜRMEZ + üstünde "koku" işareti. Oyuncu eşiğe (≤2) indirene
+     * kadar masa kilitli → temizlik baskısı.
+     */
+    dirtyThreshold: 2,
   },
 
   /**
@@ -227,16 +235,21 @@ export const economyConfig = {
   pads: [
     { id: 'table2', label: '2. Masa', cost: 35, fillRate: 40, optional: false,
       requires: { minLifetime: 30 }, effect: { type: 'addTable' } },
+    // Garson: D-019 reveal sırası — "çay ocağı bir kez yükseltilince" belirir (minStationLevel:1) → 2. masa
+    // açılınca aynı anda 4 işaret patlamaz; önce çay yükseltme öğrenilir, sonra garson tanıtılır.
     { id: 'waiter', label: 'Garson Tut', cost: 150, fillRate: 50, optional: true,
-      requires: { prev: ['table2'] }, effect: { type: 'hireWaiter' } },
+      requires: { prev: ['table2'], minStationLevel: 1 }, effect: { type: 'hireWaiter' } },
+    // 3. Masa: D-019 §2 — masa açmak ARTIK yükseltme gerektirmez (minStationLevel:1 KALKTI). Ocak doğal
+    // darboğaz olarak kalır (oyuncu isteyince yükseltir), zorunlu gate değil.
     { id: 'table3', label: '3. Masa', cost: 120, fillRate: 55, optional: false,
-      requires: { prev: ['table2'], minStationLevel: 1 }, effect: { type: 'addTable' } },
+      requires: { prev: ['table2'] }, effect: { type: 'addTable' } },
     { id: 'dishwasher', label: 'Bulaşıkçı Tut', cost: 280, fillRate: 60, optional: true,
       requires: { prev: ['table3'] }, effect: { type: 'hireDishwasher' } },
     { id: 'table4', label: '4. Masa', cost: 300, fillRate: 75, optional: false,
       requires: { prev: ['table3'] }, effect: { type: 'addTable' } },
-    { id: 'samovar', label: 'Semavere Geçiş', cost: 850, fillRate: 110, optional: false,
-      requires: { prev: ['table4'] }, effect: { type: 'serviceSpeed', factor: 0.7 } },
+    // (D-018 adım 5) Ayrı "Semavere Geçiş" pad'i KALDIRILDI: semaver artık çay ocağının üst yükseltmesidir
+    // (TeaStation seviyeyle büyüyen semaveri zaten çizer). Tek ocak ₺ yükseltmeleriyle (L4, throughput ×3.32)
+    // 4 masaya yetişir; "Usta" master tier (💎/video) Faz 4. Omurga zinciri artık table4'te biter.
   ],
 
   /** Oyuncu sahip karakteri hareketi. */
@@ -292,9 +305,6 @@ export function derivedFromPads(padsDone: readonly string[]): DerivedState {
     switch (pad.effect.type) {
       case 'addTable':
         tables += 1;
-        break;
-      case 'serviceSpeed':
-        serviceSpeedMult *= pad.effect.factor;
         break;
       case 'hireWaiter':
         hasWaiter = true;

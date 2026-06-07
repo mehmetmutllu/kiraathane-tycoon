@@ -80,7 +80,18 @@ try {
     fail(`Beklenen ilk aktif pad table2 değil: ${padInfo.currentPad} (nextStep=${padInfo.nextStep})`);
   }
 
-  // Garson (Faz 2d, OPSİYONEL pad): table2 sonrası alınabilir listede olmalı; tutunca hasWaiter=true.
+  // Mekânsal çay yükseltme (table2 sonrası açılır): para ekle + noktaya ışınla + zaman sar → seviye artmalı.
+  // (D-019 reveal: ocak yükseltme garsondan ÖNCE — garson "ocak L1 olunca" belirir.)
+  const beforeLvl = (await page.evaluate(() => window.__game())).stationLevel;
+  await page.evaluate(() => window.__addMoney(100000));
+  const uz = (await page.evaluate(() => window.__game())).upgradeZonePos;
+  await page.evaluate((pos) => window.__teleport(pos[0], pos[2]), uz);
+  const afterUp = await page.evaluate(() => window.__advanceTime(5));
+  if (afterUp.stationLevel > beforeLvl)
+    pass(`Mekânsal çay yükseltme çalışıyor (L${beforeLvl}→L${afterUp.stationLevel})`);
+  else fail(`Yükseltme noktası seviye artırmadı (L${beforeLvl}→L${afterUp.stationLevel})`);
+
+  // Garson (Faz 2d, OPSİYONEL pad): D-019 reveal → ocak L1 SONRASI alınabilir listede olmalı; tutunca hasWaiter=true.
   const optInfo = await page.evaluate(() => window.__game());
   const waiterPad = (optInfo.optionalPads || []).find((p) => p.id === 'waiter');
   if (waiterPad && waiterPad.pos) {
@@ -102,16 +113,6 @@ try {
   } else {
     fail(`Garson opsiyonel pad listesinde yok: ${JSON.stringify(optInfo.optionalPads)}`);
   }
-
-  // Mekânsal çay yükseltme (table2 sonrası açılır): para ekle + noktaya ışınla + zaman sar → seviye artmalı
-  const beforeLvl = (await page.evaluate(() => window.__game())).stationLevel;
-  await page.evaluate(() => window.__addMoney(100000));
-  const uz = (await page.evaluate(() => window.__game())).upgradeZonePos;
-  await page.evaluate((pos) => window.__teleport(pos[0], pos[2]), uz);
-  const afterUp = await page.evaluate(() => window.__advanceTime(5));
-  if (afterUp.stationLevel > beforeLvl)
-    pass(`Mekânsal çay yükseltme çalışıyor (L${beforeLvl}→L${afterUp.stationLevel})`);
-  else fail(`Yükseltme noktası seviye artırmadı (L${beforeLvl}→L${afterUp.stationLevel})`);
 
   // Bardak döngüsü (Faz 2e): garson servis ederken kirli bardak üretilir → oyuncu toplar → bulaşıkta yıkar.
   await page.evaluate(() => window.__teleport(5.2, 4.2)); // oyuncu uzak köşede; garson servis etsin, kirli birikir
@@ -140,10 +141,23 @@ try {
 
   // (D-018: tepsi yükseltme KALDIRILDI → tepsi sabit 2; ilgili smoke testi de kaldırıldı.)
 
-  // Masa yükseltme (Faz 2h, MASA-BAŞI): 2. masa açılınca her masanın YANINDAKİ nokta aktif. 0. masanın
+  // Omurga: 3. ve 4. masayı aç (D-019 §3: masa yükseltme işaretleri TÜM masalar açılınca belirir).
+  for (const id of ['table3', 'table4']) {
+    await page.evaluate(() => window.__addMoney(2000));
+    const g = await page.evaluate(() => window.__game());
+    if (g.currentPad === id && g.padPos) {
+      await page.evaluate((pos) => window.__teleport(pos[0], pos[2]), g.padPos);
+      await page.evaluate(() => window.__advanceTime(8));
+    }
+  }
+  const opened = await page.evaluate(() => window.__game());
+  if ((opened.padsDone || []).includes('table4')) pass(`Omurga açıldı (3. + 4. masa, padsDone=${opened.padsDone.length})`);
+  else fail(`3./4. masa açılmadı (padsDone=${JSON.stringify(opened.padsDone)})`);
+
+  // Masa yükseltme (Faz 2h, MASA-BAŞI): TÜM masalar açılınca her masanın YANINDAKİ nokta aktif. 0. masanın
   // noktasına git → SADECE o masa yükselir (bahşiş+sabır); komşu masa etkilenmez.
   const preTable = await page.evaluate(() => window.__game());
-  if ((preTable.padsDone || []).includes('table2')) {
+  if ((preTable.padsDone || []).includes('table4')) {
     const before0 = (preTable.tableLevels || [])[0] ?? 0;
     const before1 = (preTable.tableLevels || [])[1] ?? 0;
     await page.evaluate(() => window.__addMoney(5000));
@@ -155,7 +169,7 @@ try {
       pass(`Masa-başı yükseltme çalışıyor (0. masa ${before0}→${after0}, 1. masa ${after1} sabit)`);
     else fail(`Masa-başı yükseltme hatalı (0:${before0}→${after0}, 1:${before1}→${after1})`);
   } else {
-    fail(`Masa yükseltme için 2. masa açık değil (padsDone=${JSON.stringify(preTable.padsDone)})`);
+    fail(`Masa yükseltme için 4. masa açık değil (padsDone=${JSON.stringify(preTable.padsDone)})`);
   }
 
   // Dikey (portrait) orana çevir → responsive kamera/HUD hatasız mı

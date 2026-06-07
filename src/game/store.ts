@@ -50,7 +50,7 @@ export const LAYOUT = {
     table2: [2.4, 0, 0.0] as Vec3, // 2. masa slotu (ön-sağ)
     table3: [-2.4, 0, 3.0] as Vec3, // 3. masa slotu (arka-sol)
     table4: [2.4, 0, 3.0] as Vec3, // 4. masa slotu (arka-sağ)
-    samovar: [-3.8, 0, -4.8] as Vec3, // mutfak kümesi, ocağın solu (semavere geçiş)
+    // (samovar pad'i kaldırıldı — D-018 adım 5; semaver = çay ocağı üst yükseltmesi.)
     // Personel pad'leri sol/sağ kenar, masa SATIRLARI ARASINDA (z=1.5) → masa-yükseltme noktalarıyla (z=0/3)
     // çakışmaz (D-018 §1 kenar-yerleşim: upgrade spot [∓3.7,0/3] ile pad [∓4.6,1.5] arası 1.75>PAD_RADIUS).
     waiter: [-4.6, 0, 1.5] as Vec3, // sol-kenar orta (GÖRÜNÜR)
@@ -271,9 +271,22 @@ function incomeRate(tables: number, level: number, serviceSpeedMult = 1): number
   return (tables * TEA_PRICE) / cycle;
 }
 
-function findFreeTable(npcs: Npc[], tables: number): number {
+/**
+ * Kirli masaların index kümesi (D-019): bir masada `dirtyThreshold`'tan FAZLA (>) kirli bardak varsa kirli.
+ * Kirli masaya yeni müşteri oturmaz + garson çay götürmez → oyuncu eşiğe inene kadar masa kilitli (temizlik baskısı).
+ */
+function dirtyTables(dishes: Dish[]): Set<number> {
+  const counts = new Map<number, number>();
+  for (const d of dishes) counts.set(d.tableIndex, (counts.get(d.tableIndex) ?? 0) + 1);
+  const dirty = new Set<number>();
+  for (const [idx, n] of counts) if (n > C.cups.dirtyThreshold) dirty.add(idx);
+  return dirty;
+}
+
+function findFreeTable(npcs: Npc[], tables: number, dirty: Set<number>): number {
   const used = new Set(npcs.filter((n) => n.state !== 'leaving').map((n) => n.tableIndex));
-  for (let i = 0; i < tables; i++) if (!used.has(i)) return i;
+  // Kirli masa "boş" sayılmaz (D-019): müşteri temizlenene kadar oturmaz.
+  for (let i = 0; i < tables; i++) if (!used.has(i) && !dirty.has(i)) return i;
   return -1;
 }
 
@@ -546,10 +559,13 @@ export const useGame = create<GameState>((set, get) => ({
     }
     if (readyCups >= queueCap || cleanCups <= 0) brewProgress = Math.min(brewProgress, cupBrewTime);
 
+    // Kirli masalar (D-019): eşiği aşan masalar müşteriye/garsona kapalı (temizlik baskısı).
+    const dirty = dirtyTables(dishes);
+
     // --- Spawn ---
     const activeCount = npcs.filter((n) => n.state !== 'leaving').length;
     if (spawnTimer <= 0 && activeCount < C.npc.maxConcurrent) {
-      const free = findFreeTable(npcs, tables);
+      const free = findFreeTable(npcs, tables, dirty);
       if (free >= 0) {
         npcs.push({
           id: nextId++,
@@ -597,9 +613,11 @@ export const useGame = create<GameState>((set, get) => ({
               value: TEA_PRICE + tableTip(tableLevels[n.tableIndex] ?? 0),
             });
             // İçtiği bardak masada KİRLİ kalır (Faz 2e): toplanıp yıkanmalı, yoksa temiz biter.
+            // tableIndex ile masaya etiketlenir (D-019): masa-başı eşik aşılınca masa KİRLİ olur.
             dishes.push({
               id: nextId++,
               pos: [slot.table[0] + (Math.random() - 0.5) * 0.6, 0.95, slot.table[2] + (Math.random() - 0.5) * 0.6],
+              tableIndex: n.tableIndex,
             });
             n.state = 'leaving';
           }
@@ -721,7 +739,9 @@ export const useGame = create<GameState>((set, get) => ({
         : { pos: [...LAYOUT.waiterHome] as Vec3, tray: 0 };
       const wStep = C.waiter.moveSpeed * dt;
       const wTrayCap = C.waiter.trayCapacity;
-      const waitingNpcs = liveNpcs.filter((n) => n.state === 'waitingForTea');
+      // Garson kirli masaya çay GÖTÜRMEZ (D-019): o masa temizlenene kadar teslimat hedefi sayılmaz
+      // (oyuncu hâlâ elle servis edebilir; kirli masa baskısı garsonu da kapsar).
+      const waitingNpcs = liveNpcs.filter((n) => n.state === 'waitingForTea' && !dirty.has(n.tableIndex));
       // En yakın açık ocağı bul (yükleme/bekleme hedefi).
       let nearStation = LAYOUT.stations[0];
       let nsd = Infinity;
@@ -889,9 +909,10 @@ export const useGame = create<GameState>((set, get) => ({
         cleanCups += C.cups.poolPerLevel; // havuz ocak seviyesiyle büyür (Faz 2e)
       }
       const nextCost = stationLevel < stationSoftMaxLevel() ? stationUpgradeCost(stationLevel) : cost;
+      // GÖRSEL: ocak L1'den başlar (iç stationLevel 0-tabanlı; etiket +1). Soft max → "Usta" (💎/video, Faz 4).
       activeZone = {
         kind: 'upgrade',
-        label: `Çay Ocağı L${stationLevel}${stationLevel < stationSoftMaxLevel() ? ` → L${stationLevel + 1}` : ' (max)'}`,
+        label: `Çay Ocağı L${stationLevel + 1}${stationLevel < stationSoftMaxLevel() ? ` → L${stationLevel + 2}` : ' (Usta 💎)'}`,
         fill: upgradeFill,
         cost: nextCost,
       };
@@ -916,9 +937,10 @@ export const useGame = create<GameState>((set, get) => ({
       }
       tableUpgradeFills[i] = fill;
       const nextCost = tableLevels[i] < tableSoftMaxLevel() ? tableNextCost(tableLevels[i]) : cost;
+      // GÖRSEL: masa L1'den başlar (iç tableLevels 0-tabanlı; etiket +1). Soft max → "Usta" (💎/video, Faz 4).
       activeZone = {
         kind: 'upgrade',
-        label: `Masa ${i + 1}: L${tableLevels[i]}${tableLevels[i] < tableSoftMaxLevel() ? ` → L${tableLevels[i] + 1} (+${C.tables.tipBase} bahşiş)` : ' (max)'}`,
+        label: `Masa ${i + 1}: L${tableLevels[i] + 1}${tableLevels[i] < tableSoftMaxLevel() ? ` → L${tableLevels[i] + 2} (+${C.tables.tipBase} bahşiş)` : ' (Usta 💎)'}`,
         fill,
         cost: nextCost,
       };
@@ -1020,4 +1042,4 @@ export const useGame = create<GameState>((set, get) => ({
   },
 }));
 
-export { TEA_PRICE, brewThroughputMult, brewTime, incomeRate };
+export { TEA_PRICE, brewThroughputMult, brewTime, incomeRate, dirtyTables };

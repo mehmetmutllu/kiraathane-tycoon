@@ -25,6 +25,7 @@ import {
   tableUpgradeZoneUnlocked,
   TEA_PRICE,
   brewTime,
+  dirtyTables,
 } from '../src/game/store';
 import { migrate, defaultSave } from '../src/game/save';
 import { buildNavGrid, findNavPath } from '../src/game/nav';
@@ -180,13 +181,7 @@ describe('generic pad sistemi + gating (Faz 2b / ekonomi v2)', () => {
     expect(completeCurrentPad()).toBe('table2');
     expect(useGame.getState().tables).toBe(2);
 
-    // table3 minStationLevel:1 ile kilitli → ocak yükseltilmeden pad yok
-    expect(currentPad(gate())).toBeNull();
-    useGame.getState().addMoney(1000);
-    expect(useGame.getState().upgradeStation()).toBe(true);
-    expect(useGame.getState().stationLevel).toBe(1);
-
-    // 2) 3. Masa → tables 2→3 (artık açık)
+    // 2) 3. Masa → D-019 §2: masa açmak ARTIK ocak yükseltme gerektirmez → 2. masa sonrası hemen aktif omurga.
     expect(currentPad(gate())?.id).toBe('table3');
     expect(completeCurrentPad()).toBe('table3');
     expect(useGame.getState().tables).toBe(3);
@@ -196,13 +191,11 @@ describe('generic pad sistemi + gating (Faz 2b / ekonomi v2)', () => {
     expect(useGame.getState().tables).toBe(4);
     expect(useGame.getState().stations).toBe(1);
 
-    // 4) Semavere Geçiş → servis hızı ×0.7 (tek ocağın 4 masaya yetişme kapağı)
-    expect(completeCurrentPad()).toBe('samovar');
-    expect(useGame.getState().serviceSpeedMult).toBeCloseTo(0.7, 5);
-
-    // Hepsi açıldı
-    expect(useGame.getState().padsDone.length).toBe(4);
+    // D-018 adım 5: ayrı "Semavere Geçiş" pad'i KALDIRILDI (semaver = çay ocağı üst yükseltmesi).
+    // Omurga zinciri table4'te biter → sonrası ocak yükseltme (upgrade zone) + masa-başı.
+    expect(useGame.getState().padsDone.length).toBe(3); // table2 + table3 + table4
     expect(currentPad(gate())).toBeNull();
+    expect(useGame.getState().serviceSpeedMult).toBe(1); // serviceSpeed pad yok → hep 1
   });
 });
 
@@ -223,13 +216,16 @@ describe('garson — opsiyonel kısmi assist (Faz 2d / D-012)', () => {
     useGame.getState().addMoney(50); // lifetime ≥ 30 → table2 açılır
     expect(completeCurrentPad()).toBe('table2');
 
-    // 2. masa sonrası: garson alınabilir opsiyonel pad olarak görünür AMA omurga pad'i DEĞİL.
-    expect(availableOptionalPads(gate()).map((p) => p.id)).toContain('waiter');
-    expect(currentPad(gate())).toBeNull(); // table3 minStationLevel:1 ile gated; garson omurgayı tıkamaz
+    // D-019 reveal: garson "çay ocağı yükseltilince" belirir → 2. masa sonrası (ocak L0) HENÜZ yok.
+    expect(availableOptionalPads(gate()).map((p) => p.id)).not.toContain('waiter');
+    // Omurga garsondan bağımsız: 3. masa hemen aktif (D-019 §2 ocak gerektirmez).
+    expect(currentPad(gate())?.id).toBe('table3');
 
-    // Garson HİÇ alınmadan ocak yükselt → omurga normal devam etmeli (table3 aktifleşir).
+    // Ocağı bir kez yükselt → garson belirir (reveal); omurga (table3) hâlâ açık.
     useGame.getState().addMoney(1000);
     expect(useGame.getState().upgradeStation()).toBe(true);
+    expect(useGame.getState().stationLevel).toBe(1);
+    expect(availableOptionalPads(gate()).map((p) => p.id)).toContain('waiter');
     expect(currentPad(gate())?.id).toBe('table3'); // garson değil, sıradaki masa
     expect(useGame.getState().hasWaiter).toBe(false);
   });
@@ -240,6 +236,9 @@ describe('garson — opsiyonel kısmi assist (Faz 2d / D-012)', () => {
     expect(completeCurrentPad()).toBe('table2');
     expect(useGame.getState().hasWaiter).toBe(false);
 
+    // Garson ocak L1 ister (D-019 reveal) → önce ocağı yükselt.
+    useGame.getState().addMoney(1000);
+    expect(useGame.getState().upgradeStation()).toBe(true);
     expect(completeOptionalPad('waiter')).toBe(true);
     expect(useGame.getState().hasWaiter).toBe(true);
     expect(useGame.getState().waiter).not.toBeNull();
@@ -407,11 +406,70 @@ describe('bardak döngüsü (Faz 2e) — demleme temiz harcar, içen kirli bıra
     useGame.setState({
       player: [dishPos[0], 0.6, dishPos[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0],
       tray: 1, carriedDirty: 0,
-      dishes: [{ id: 9001, pos: dishPos }],
+      dishes: [{ id: 9001, pos: dishPos, tableIndex: 0 }],
     });
     useGame.getState().tick(0.1);
     expect(useGame.getState().carriedDirty).toBe(0); // temiz elindeyken kirli toplanmadı
     expect(useGame.getState().dishes.length).toBe(1);
+  });
+});
+
+describe('kirli masa mekaniği (D-019) — eşik aşılınca masa kilitlenir', () => {
+  const T = economyConfig.cups.dirtyThreshold;
+  function dishOn(idx: number, id: number) {
+    const t = LAYOUT.tables[idx].table;
+    return { id, pos: [t[0], 0.95, t[2]] as [number, number, number], tableIndex: idx };
+  }
+
+  it('dirtyTables: eşik kadar kirli temiz sayılır, eşiği AŞINCA kirli olur', () => {
+    // T kadar kirli (= eşik) → henüz kirli değil.
+    const atThreshold = Array.from({ length: T }, (_, i) => dishOn(0, 1000 + i));
+    expect(dirtyTables(atThreshold).has(0)).toBe(false);
+    // T+1 kirli (eşiği aşar) → kirli.
+    const overThreshold = Array.from({ length: T + 1 }, (_, i) => dishOn(0, 2000 + i));
+    expect(dirtyTables(overThreshold).has(0)).toBe(true);
+  });
+
+  it('kirli masaya YENİ müşteri oturmaz (findFreeTable atlar); temizlenince yeniden açılır', () => {
+    useGame.getState().hardReset();
+    // 2 masa aç (table2) → masa 0 kirli olsun, masa 1 temiz.
+    useGame.getState().addMoney(50);
+    expect(completeCurrentPad()).toBe('table2');
+    const dirtyDishes = Array.from({ length: T + 1 }, (_, i) => dishOn(0, 3000 + i));
+    useGame.setState({
+      player: [0, 0.6, 6.5], inputKeyboard: [0, 0], inputJoystick: [0, 0],
+      npcs: [], dishes: dirtyDishes, spawnTimer: 0,
+    });
+    // Müşteriler gelir → yalnız temiz masaya (1) oturur, kirli masaya (0) ASLA.
+    for (let i = 0; i < 200; i++) useGame.getState().tick(0.1);
+    const seated = useGame.getState().npcs.filter((n) => n.state !== 'leaving' && n.state !== 'toTable');
+    expect(seated.every((n) => n.tableIndex !== 0)).toBe(true);
+    expect(useGame.getState().npcs.some((n) => n.tableIndex === 1)).toBe(true);
+
+    // Kirliyi eşik altına indir → masa 0 yeniden boş sayılır.
+    useGame.setState({ dishes: [dishOn(0, 9999)] });
+    expect(dirtyTables(useGame.getState().dishes).has(0)).toBe(false);
+  });
+
+  it('garson kirli masaya çay GÖTÜRMEZ (teslimat hedefi sayılmaz)', () => {
+    useGame.getState().hardReset();
+    useGame.getState().addMoney(50);
+    expect(completeCurrentPad()).toBe('table2');
+    // Garson tepsisinde çay; masa 0 kirli + orada bekleyen müşteri var.
+    const idx = 0;
+    const seat = LAYOUT.tables[idx].seat;
+    const dirtyDishes = Array.from({ length: T + 1 }, (_, i) => dishOn(idx, 4000 + i));
+    useGame.setState({
+      padsDone: ['table2', 'waiter'], hasWaiter: true,
+      waiter: { pos: [LAYOUT.tables[idx].table[0], 0.6, LAYOUT.tables[idx].table[2]], tray: 1 },
+      player: [0, 0.6, 6.5], inputKeyboard: [0, 0], inputJoystick: [0, 0],
+      npcs: [{ id: 880, state: 'waitingForTea', pos: [...seat] as [number, number, number], tableIndex: idx, timer: 999, color: '#27ae60' }],
+      dishes: dirtyDishes, spawnTimer: 999,
+    });
+    for (let i = 0; i < 50; i++) useGame.getState().tick(0.1);
+    // Kirli masaya servis yapılmadı → müşteri hâlâ bekliyor, garson tepsisi dolu.
+    expect(useGame.getState().npcs.find((n) => n.id === 880)?.state).toBe('waitingForTea');
+    expect(useGame.getState().waiter?.tray).toBe(1);
   });
 });
 
@@ -442,8 +500,8 @@ describe('bulaşıkçı — opsiyonel kısmi assist (Faz 2e)', () => {
       npcs: [], // yeni müşteri/yeni kirli karışmasın
       // İki kirli bardak masalara serpiştir; temiz havuzu düşür ki yıkamanın etkisi görünsün.
       dishes: [
-        { id: 9001, pos: [LAYOUT.tables[0].table[0], 0.95, LAYOUT.tables[0].table[2]] as [number, number, number] },
-        { id: 9002, pos: [LAYOUT.tables[1].table[0], 0.95, LAYOUT.tables[1].table[2]] as [number, number, number] },
+        { id: 9001, pos: [LAYOUT.tables[0].table[0], 0.95, LAYOUT.tables[0].table[2]] as [number, number, number], tableIndex: 0 },
+        { id: 9002, pos: [LAYOUT.tables[1].table[0], 0.95, LAYOUT.tables[1].table[2]] as [number, number, number], tableIndex: 1 },
       ],
       cleanCups: 0,
       readyCups: 0,
@@ -497,7 +555,7 @@ describe('tepsi kapasitesi (D-018: yükseltme kaldırıldı → sabit 2)', () =>
   });
 });
 
-describe('kayıt migrasyonu v4..v13 (padFills, station2 çıkışı, addTable senkron, türetme, trayLevel düşüşü, tableLevels)', () => {
+describe('kayıt migrasyonu v4..v14 (padFills, station2/samovar çıkışı, addTable senkron, türetme, trayLevel düşüşü, tableLevels)', () => {
   it('eski tek padFill, aktif omurga pad id\'sine taşınır; türetilenler + trayLevel saklanmaz', () => {
     const m = migrate({
       saveVersion: 4,
@@ -524,7 +582,7 @@ describe('kayıt migrasyonu v4..v13 (padFills, station2 çıkışı, addTable se
     });
     expect(m.saveVersion).toBe(SAVE_VERSION);
     expect(m.padsDone).toEqual(['table2', 'table3', 'waiter']); // station2 kalktı; eski hasWaiter → waiter pad'i
-    expect(m.padFills).toEqual({ samovar: 40 }); // station2 dolumu temizlendi, diğeri durur
+    expect(m.padFills).toEqual({}); // station2 (v6) + samovar (v14) dolumları temizlendi
     // Türetme: tek salon = tek ocak, garson korunur.
     const d = derivedFromPads(m.padsDone);
     expect(d.stations).toBe(1);
@@ -542,10 +600,24 @@ describe('kayıt migrasyonu v4..v13 (padFills, station2 çıkışı, addTable se
     expect(m.saveVersion).toBe(SAVE_VERSION);
     // 4. masa zaten çiziliyken table4 pad'i bir daha belirmemeli (aynı konumda çakışır).
     expect(m.padsDone).toContain('table4');
-    // Türetilen masa sayısı padsDone'dan gelir = 4; tutarlı: currentPad artık samovar.
+    // Türetilen masa sayısı padsDone'dan gelir = 4; omurga table4'te biter (samovar pad'i kaldırıldı) → currentPad null.
     const tables = derivedFromPads(m.padsDone).tables;
     expect(tables).toBe(4);
-    expect(currentPad({ padsDone: m.padsDone, tables, stationLevel: m.stationLevel, lifetime: 9000 })?.id).toBe('samovar');
+    expect(currentPad({ padsDone: m.padsDone, tables, stationLevel: m.stationLevel, lifetime: 9000 })).toBeNull();
+  });
+
+  it('v13 → v14 (D-018 adım 5): samovar referansı padsDone + padFills\'ten DÜŞER (ilerleme korunur)', () => {
+    const m = migrate({
+      saveVersion: 13, wallet: '900', diamonds: '0', lifetime: '5000',
+      stationLevel: 2, padsDone: ['table2', 'table3', 'table4', 'samovar'],
+      padFills: { samovar: 200 }, tableLevels: [1, 0, 0, 0],
+    } as unknown as Record<string, unknown>);
+    expect(m.saveVersion).toBe(SAVE_VERSION);
+    expect(m.padsDone).not.toContain('samovar'); // dead id temizlendi
+    expect(m.padsDone).toEqual(['table2', 'table3', 'table4']);
+    expect(m.padFills).toEqual({}); // samovar dolumu temizlendi
+    expect(derivedFromPads(m.padsDone).tables).toBe(4); // 4 masa korunur
+    expect(m.wallet).toBe('900'); // ₺ ilerleme kaybolmaz
   });
 
   it('v12 → v13 (D-018): eski trayLevel persist alanı DÜŞER (tepsi sabit; şemada yok)', () => {
@@ -577,7 +649,8 @@ describe('D-015 — tek doğru kaynak: türetilen alanlar padsDone\'dan, kayıtt
     expect(derivedFromPads([]).hasWaiter).toBe(false);
     expect(derivedFromPads(['dishwasher']).hasDishwasher).toBe(true);
     expect(derivedFromPads([]).hasDishwasher).toBe(false);
-    expect(derivedFromPads(['samovar']).serviceSpeedMult).toBeCloseTo(0.7, 5);
+    // samovar pad'i kaldırıldı (D-018 adım 5) → artık bilinmeyen id, etki yok (serviceSpeedMult hep 1).
+    expect(derivedFromPads(['samovar']).serviceSpeedMult).toBe(1);
     expect(derivedFromPads([]).stations).toBe(1);
     // Bilinmeyen pad id'leri yok sayılır (ileri/geri uyum).
     expect(derivedFromPads(['table2', 'station2', 'bogus']).tables).toBe(2);
@@ -607,6 +680,9 @@ describe('D-015 — tek doğru kaynak: türetilen alanlar padsDone\'dan, kayıtt
     expect(s.tables).toBe(derivedFromPads(s.padsDone).tables);
     expect(s.hasWaiter).toBe(derivedFromPads(s.padsDone).hasWaiter);
 
+    // Garson D-019 reveal: ocak L1 ister → önce yükselt, sonra tut.
+    useGame.getState().addMoney(1000);
+    useGame.getState().upgradeStation();
     completeOptionalPad('waiter');
     s = useGame.getState();
     expect(s.hasWaiter).toBe(true);
@@ -635,8 +711,8 @@ describe('ekonomi v2 — seviye throughputu artırır, fiyatı DEĞİL (D-010)',
     expect(nextStep({ padsDone: [], tables: 1, stationLevel: 0, lifetime: 0 })).toContain('30');
     // lifetime yeterli → sıradaki = 2. Masa
     expect(nextStep({ padsDone: [], tables: 1, stationLevel: 0, lifetime: 100 })).toContain('2. Masa');
-    // table2 alındı, table3 minStationLevel:1 ile kilitli → ocak yükselt yönlendirmesi
-    expect(nextStep({ padsDone: ['table2'], tables: 2, stationLevel: 0, lifetime: 200 })).toContain('ocağı');
+    // table2 alındı → D-019 §2: 3. Masa ocak gerektirmez, doğrudan sıradaki omurga.
+    expect(nextStep({ padsDone: ['table2'], tables: 2, stationLevel: 0, lifetime: 200 })).toContain('3. Masa');
   });
 });
 
@@ -813,11 +889,13 @@ describe('masa yükseltme + bahşiş (Faz 2h)', () => {
     expect(tablePatience(2)).toBe(economyConfig.npc.patience + economyConfig.tables.patiencePerLevel * 2);
   });
 
-  it('yükseltme noktası 2. masa açılınca belirir (önce kilitli)', () => {
+  it('yükseltme noktası TÜM masalar (table4) açılınca belirir — erken oyunda gizli (D-019 §3)', () => {
     useGame.getState().hardReset();
-    expect(tableUpgradeZoneUnlocked(gate())).toBe(false); // başta table2 yok
-    useGame.setState({ padsDone: ['table2'] });
-    expect(tableUpgradeZoneUnlocked(gate())).toBe(true);
+    expect(tableUpgradeZoneUnlocked(gate())).toBe(false); // başta
+    useGame.setState({ padsDone: ['table2', 'table3'] });
+    expect(tableUpgradeZoneUnlocked(gate())).toBe(false); // hâlâ kilitli (table4 lazım → erken ekran sade)
+    useGame.setState({ padsDone: ['table2', 'table3', 'table4'] });
+    expect(tableUpgradeZoneUnlocked(gate())).toBe(true); // 4. masa açılınca belirir
   });
 
   it('ödeyen müşteri çay fiyatı + OTURDUĞU masanın bahşişini bırakır (masa-başı)', () => {
