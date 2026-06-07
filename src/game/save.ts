@@ -14,8 +14,6 @@ export interface SaveData {
   diamonds: string;
   lifetime: string;
   stationLevel: number;
-  /** Tepsi kapasite yükseltme seviyesi (Faz 2e-B; 0..trayUpgrade.maxLevel). */
-  trayLevel: number;
   /** Masa-başı yükseltme seviyeleri (Faz 2h; index = masa slotu; bahşiş+sabır; My Hotel oda mantığı). */
   tableLevels: number[];
   padsDone: string[];
@@ -31,7 +29,6 @@ export function defaultSave(): SaveData {
     diamonds: '0',
     lifetime: '0',
     stationLevel: 0,
-    trayLevel: 0,
     tableLevels: [],
     padsDone: [],
     padFills: {},
@@ -128,18 +125,11 @@ export function migrate(raw: Record<string, unknown>): SaveData {
     v = 8;
   }
 
-  // v8 -> v9 (Faz 2e-B): tepsi kapasite yükseltme seviyesi eklendi (yeni oyuncu = L0; ilerleme korunur).
-  if (v < 9) {
-    d.trayLevel = Number(d.trayLevel ?? 0) || 0;
-    v = 9;
-  }
-
-  // v9 -> v10 (Faz 2f): max tepsi kapasitesi 8→6 (maxLevel 3→2). Eski L3 kaydı yeni max'a clamp'lenir
-  // (kapasite düştü; ilerleme/₺ korunur, sadece tepsi seviyesi tavana çekilir).
-  if (v < 10) {
-    d.trayLevel = Math.min(Number(d.trayLevel ?? 0) || 0, economyConfig.serving.trayUpgrade.maxLevel);
-    v = 10;
-  }
+  // v8 -> v9 (Faz 2e-B): tepsi kapasite yükseltme seviyesi eklenmişti. D-018'de tray yükseltme TAMAMEN
+  // kaldırıldı (v12→v13) → bu adım artık sadece sürüm ilerletir (trayLevel v13'te düşürülür).
+  if (v < 9) v = 9;
+  // v9 -> v10 (Faz 2f): max tepsi kapasitesi ayarıydı; tray yükseltme kaldırıldığı için sadece sürüm ilerletir.
+  if (v < 10) v = 10;
 
   // v10 -> v11 (Faz 2h): tek (zone-geneli) masa yükseltme seviyesi eklendi.
   if (v < 11) {
@@ -163,14 +153,21 @@ export function migrate(raw: Record<string, unknown>): SaveData {
     v = 12;
   }
 
-  // Sona kalan v12 şeması: türetilen alanlar (tables/stations/serviceSpeedMult/hasWaiter) ve eski `padFill` yazılmaz.
+  // v12 -> v13 (D-018): TRAY YÜKSELTME KALDIRILDI → `trayLevel` persist alanı düşer (tepsi sabit 2).
+  // (Aynı sürümde semaver pad düşürme + waiterLevel ekleme adımları sonraki D-018 dilimlerinde gelecek.)
+  if (v < 13) {
+    delete d.trayLevel;
+    v = 13;
+  }
+
+  // Sona kalan v13 şeması: türetilen alanlar (tables/stations/serviceSpeedMult/hasWaiter), eski `padFill` ve
+  // kaldırılan `trayLevel` yazılmaz.
   return {
     saveVersion: SAVE_VERSION,
     wallet: String(d.wallet ?? '0'),
     diamonds: String(d.diamonds ?? '0'),
     lifetime: String(d.lifetime ?? '0'),
     stationLevel: Number(d.stationLevel ?? 0) || 0,
-    trayLevel: Number(d.trayLevel ?? 0) || 0,
     tableLevels: Array.isArray(d.tableLevels) ? (d.tableLevels as number[]).map((n) => Number(n) || 0) : [],
     padsDone: Array.isArray(d.padsDone) ? (d.padsDone as string[]) : [],
     padFills:

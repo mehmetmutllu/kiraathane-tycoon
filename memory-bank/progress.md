@@ -207,8 +207,21 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
      SOKAKTAN yürüyüp kapıdan girer/çıkar (LAYOUT.street, NPC toTable/leaving kapı akışı). **Vitest 58/58, build temiz, sim 84sn,
      smoke 20/20.** SAVE_VERSION 12. Değişen: store.ts, Scene.tsx, Pad.tsx, TeaStation.tsx, YENİ GroundMarker.tsx, logic.test.ts.
      GÖZLE ONAYLANDI (world-door-street.png, markers-3tables.png).
-  3. ⏳ **D-018 (ONAYLANDI 2026-06-07, SONRAKİ SOHBET) — Faz 2 cila v2:** Kullanıcı 2. tur feedback. Tam karar decisions.md **D-018**.
-     Sıra: (1) bug-fix kapı z-fighting + table2-kararma (Suspense/preloadFont) → (2) TRAY YÜKSELTME KALDIR (tepsi sabit 2) → (3)
+  3. 🔧 **D-018 (UYGULAMA BAŞLADI 2026-06-07) — Faz 2 cila v2:** Kullanıcı 2. tur feedback. Tam karar decisions.md **D-018**.
+     - ✅ **adım 1 (bug-fix):** (a) kapı z-fighting → lento/direk `z1+0.06` offset. (b) table2 KARARMA → DÜNYA Suspense
+       DIŞINDA, yalnız Text-marker'lar (Pad/UpgradeZone/TableUpgradeMarkers) ayrı `<Suspense fallback={null}>` →
+       font yüklenirken dünya kararmaz. module-scope preloadFont CDN fetch'i smoke networkidle'ı bozdu → kaldırıldı
+       (font lazy; **Faz 7 TODO: fontu yerele bundle'la**). Gözle ✓.
+     - ✅ **adım 2 (tray yükseltme KALDIR):** tepsi sabit 2; tüm trayUpgrade/trayLevel/trayUpgradeFill/TrayUpgradeZone/
+       helper/test/smoke/devHooks silindi. **SAVE_VERSION 12→13** + v12→v13 (trayLevel düşer). Vitest 54/54, build temiz,
+       sim 84sn, smoke 19/19, konsol temiz, gözle ✓.
+     - 🔧 **adım 3 (kenar-yerleşim + etkileşim):** KART denemesi kullanıcı tarafından REDDEDİLDİ ("çok kötü") → GroundMarker
+       eski SADE zemin işaretine geri alındı (D-017 §2). KENAR-YERLEŞİM korundu (upgradeSpot ∓3.7; personel pad z=1.5).
+       DWELL süre-sayma DEĞİL **HAREKET-TEMELLİ**: para yalnız oyuncu DURUNCA akar (`fillReady = hypot(input)<=0.1`) →
+       geçerken alınmaz, durunca HEMEN, countdown yok; çay-fill leave'de sıfırlanmıyor. 3 hareket-temelli vitest.
+       Vitest 57/57, build temiz, sim 84sn, smoke 19/19, gözle ✓ (sade işaret döndü).
+     - ⏳ **adım 4+ (SIRADAKİ):** sıralı reveal zinciri → semaver=ocak L4 (+ekonomi denge) → garson L2.
+     (Orijinal sıra:) (1) bug-fix kapı z-fighting + table2-kararma (Suspense) → (2) TRAY YÜKSELTME KALDIR (tepsi sabit 2) → (3)
      KESİK-KÖŞELİ zemin kartı + masa yükseltme MERKEZDEN KENARA (sol→sol/sağ→sağ, orta boş) + DWELL (~1.5sn, üstünden geçince para
      gitmesin) → (4) sıralı reveal zinciri (yakınlık-gizleme YOK) → (5) SEMAVER=OCAK L4 (premium 💎/video, kilitli; ayrı pad kalkar;
      ekonomi simülatörle yeniden denge, 84sn sabit) → (6) GARSON L2 (L1 1.4→L2 1.8, yan-kenar yükseltme kartı). Etkileşim: yürü+dur

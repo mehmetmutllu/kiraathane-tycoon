@@ -2,9 +2,74 @@
 
 > En sık güncellenen dosya. Her anlamlı adımdan sonra güncelle.
 
-## Şu an neredeyiz (2026-06-07 — GÜNCEL)
-**D-017 adım 1 (yerleşim) GÖZLE ONAYLANDI. Sonra: kritik bug-fix + adım 2 (sade işaretler) + sokak/kapı dünyası UYGULANDI.**
-SAVE_VERSION **12** (persist alan değişmedi). **Vitest 58/58, build temiz, sim 84sn, smoke 20/20.**
+## Şu an neredeyiz (2026-06-07 — GÜNCEL: D-018 adım 1+2 BİTTİ, adım 3 GERİ ALINDI+düzeltildi)
+**D-018 DEVAM. Adım 1 (bug-fix) + 2 (tray kaldır) BİTTİ. Adım 3: KART TASARIMI KULLANICI TARAFINDAN REDDEDİLDİ →
+SADE işaretlere geri alındı; DWELL süre-sayma yerine HAREKET-TEMELLİ yapıldı. Kenar-yerleşim KORUNDU.**
+SAVE_VERSION **13**. **Vitest 57/57, build temiz, sim 84sn (1.4dk), smoke 19/19, konsol temiz.**
+
+### D-018 adım 3 — kullanıcı feedback'i (2026-06-07): "kart çok kötü oldu, eski haline çevir; dwell süre saymasın"
+- **(1) GroundMarker GERİ ALINDI:** kesik-köşeli billboard kart → **eski SADE düz zemin işareti** (D-017 §2 stili:
+  şeffaf beyaz çember + ince kategori halkası + DÜZ zemin yazısı + ₺ + dolum yayı). Kart denemesi terk.
+  **DERS:** kullanıcı havada/dik kart sevmiyor → mekânsal sade zemin işareti tercih (feedback_*).
+- **(2) KENAR-YERLEŞİM KORUNDU:** `tables[i].upgradeSpot` sol kolon **−3.7** / sağ kolon **+3.7** (orta koridor boş);
+  personel pad'leri masa satırları ARASINA **z=1.5** (waiter/dishwasher [∓4.6,0,1.5]) → −3.7 spot ile çakışma yok.
+  (Kullanıcı placement'i ayrıca eleştirmedi; istenirse merkeze geri alınabilir.)
+- **(3) DWELL → HAREKET-TEMELLİ (süre YOK):** Kullanıcı "önce 1.5sn sayıyor sonra başlıyor — HAYIR; üstünden geçerken
+  almasın ama durduğu anda HEMEN başlasın, bekleme süresi de dolmasın." → süre sayacı (`dwellId`/`dwellTime`/`dwellDelay`)
+  KALDIRILDI. Yeni: `fillReady = hypot(input) <= 0.1` (oyuncu DURUYOR mu). Para yalnız oyuncu durunca akar → geçerken
+  (hareket) hiç alınmaz, input bırakınca HEMEN başlar, countdown görseli yok. `onFillId` (pad.id/FILL_TEA/FILL_TABLE+i)
+  tek aktif nokta seçer; üç dolum bloğu `fillReady && wallet>0` ile akar. Çay-fill leave'de SIFIRLANMIYOR (biriken korunur).
+  3 vitest: geçerken(hareket) akmaz + durunca hemen akar + biriken korunur.
+- Değişen: economy.config.ts (interaction bloğu kaldırıldı), store.ts (fillReady hareket gate, dwell state çıkarıldı,
+  LAYOUT spot/pad korundu), GroundMarker.tsx (sade haline döndü), Pad.tsx + Scene.tsx (dwell prop çıkarıldı),
+  tests/logic.test.ts (hareket-temelli 3 test). FILL_TEA/FILL_TABLE store-içi export (onFillId için).
+
+### >>> SIRADAKİ İŞ (SONRAKİ OTURUM): D-019 + kalan D-018 <<<
+Kullanıcı feedback 2026-06-07 (tam metin decisions.md **D-019**). Ana kaygı: "her şey çok yer kaplıyor" → sade ekran.
+1. **KİRLİ MASA mekaniği:** dish→`tableIndex` etiketi + masa-başı kirli sayısı; **>2 (3+) kirli → masa KİRLİ** →
+   (a) üstünde küçük ALÇAK primitive "kirli/koku" işareti, (b) garson o masaya çay GÖTÜRMEZ, (c) **YENİ MÜŞTERİ HİÇ OTURMAZ**
+   (`findFreeTable` kirli masayı atlar) → oyuncu ≤2'ye indirene kadar.
+2. **Çay ocağı yükseltme noktasını ÇAY-ALMA'dan AYIR + SOL DUVAR ile ocak arasına koy** (çay alırken zorla tetiklenmesin;
+   ocaktan >2.9 br). **`table3`'ten `minStationLevel:1` KALK** (masa açmak yükseltme gerektirmesin).
+3. **Yükseltme gating (sade ekran):** ÖNERİ → çay ocağı yükseltme 2. masadan sonra; MASA yükseltmeleri table4 sonra. (Kesinleştir,
+   simülasyonla denge, ilk-alım 84sn sabit.)
+4. **Personel pad'leri SAĞ-ARKA köşe** (garson+bulaşıkçı tutma; ör. [4.6,−1.5] / [4.6,−3.2]).
+5. **YENİ-ÖZELLİK BİLDİRİMİ:** özellik açılınca kamera zoom / "pinboard" bildirim (garson tutma vb.) — D-018 §4 reveal/onboarding ile.
+Ayrıca kalan D-018: adım 5 (semaver=ocak L4 + ekonomi denge), adım 6 (garson L2), §6 kamera damping.
+
+### (eski plan) D-018 adım 4 — SIRALI REVEAL zinciri (D-019 §5 ile birleşti)
+"Al-pad → (inşa) → o nesnenin yükseltmeleri" zinciri; hepsi birden dökülmez; yakınlık-gizleme YOK. padsDone'dan
+türetilir, ek persist yok. Sonra adım 5 (semaver=ocak L4 + ekonomi denge) + adım 6 (garson L2). Detay: decisions.md D-018 §4/§5/§6.
+
+### (önceki) D-018 adım 1+2
+
+### D-018 adım 1 — BUG-FIX (BİTTİ, gözle ✓)
+- **(b) table2 açılınca KARARMA fix (KÖK):** drei `<Text>` (GroundMarker) troika fontunu ilk mount'ta yükler ve
+  SUSPEND eder; Suspense sınırı yoktu → tüm sahne kararıyordu. ÇÖZÜM: Scene.tsx'te DÜNYA (Ground/Walls/Tables/Player/
+  mutfak) Suspense DIŞINDA; SADECE Text içeren marker'lar (`Pad`/`UpgradeZone`/`TableUpgradeMarkers`) ayrı
+  `<Suspense fallback={null}>` içinde → font yüklenirken yalnız küçük işaret yazısı bekler, dünya HİÇ kararmaz.
+  NOT: troika modern sürümü `font` belirtilmezse unicode-font-resolver'dan **CDN (jsdelivr)** font verisi çeker.
+  İlk denenen module-scope `preloadFont` boot'ta bu CDN fetch'i tetikleyip smoke `networkidle`'ı bozdu (+ offline
+  Faz 7 riski) → KALDIRILDI; font artık lazy (ilk marker'da) yüklenir, nested-Suspense kararmayı zaten önler.
+  **Faz 7 TODO: fontu YERELE bundle'la (offline + CDN bağımsız).**
+- **(a) kapı z-fighting fix:** lento + 2 yan direk ön duvarla eş-düzlemdeydi (z=z1) → `z1+0.06` offset + derinlik t.
+
+### D-018 adım 2 — TRAY YÜKSELTME KALDIRILDI (BİTTİ, gözle ✓)
+- Tepsi SABİT 2 (`C.serving.trayCapacity`). Silinen: economy.config `trayUpgrade`+`trayUpgradeRequires`+helper'lar
+  (`trayCapacityForLevel`/`trayUpgradeCost`); store `trayLevel`/`trayUpgradeFill` state + tick yükseltme bloğu +
+  `trayMaxLevel`/`trayNextCost`/`trayUpgradeZoneUnlocked`/`LAYOUT.trayUpgradeZone`; Scene `TrayUpgradeZone`; devHooks
+  `trayLevel`/`trayUpgradeZonePos`; HUD trayLevel. `trayCapacity()` artık no-arg sabit döner.
+- **SAVE_VERSION 12→13 + v12→v13 migrasyon** (trayLevel persist alanı DÜŞER; v9/v10 adımları artık sadece sürüm
+  ilerletir). Eski v9/v10 tray clamp testleri → tek "v12→v13 trayLevel düşer" testine indirgendi.
+- Değişen: economy.config.ts, store.ts, save.ts, Scene.tsx, devHooks.ts, HUD.tsx, tests/logic.test.ts, tools/smoke.mjs.
+
+### >>> SIRADAKİ: D-018 adım 3 — KESİK-KÖŞELİ KART + KENAR-YERLEŞİM + DWELL <<<
+GroundMarker çember→dashed/kesik-köşeli yuvarlatılmış kare kart (eylem/lvl/₺ + dolum çubuğu + yeşil/gri, yazı kart
+hizasında küçük DİK-OKUNUR). Masa yükseltme işaretleri MERKEZDEN KENARA (sol masa→sol x≈−3.7, sağ→sağ x≈+3.7; orta
+omurga boş). DWELL ~1.5sn (noktaya girince halka hemen, para sonra akar; çıkınca sıfırlanır, biriken korunur →
+"üstünden geçince param gidiyor" çözülür). Detay: decisions.md D-018 §1/§2/§3.
+
+### (eski) D-017 adım 1+2 (önceki sohbet, SAVE 12 — GÖZLE ONAYLANDI)
 
 ### Bu turda yapılanlar (kullanıcı feedback 2026-06-07: "masa içinde hapsoldum + padler çirkin/her yerde + duvar/kapı/sokak istiyorum")
 - 🐛→✅ **Masa açınca hapsolma (KRİTİK):** Masa pad'i oyuncunun DURDUĞU yerde belirince oyuncu masanın içinde kalıp hareket

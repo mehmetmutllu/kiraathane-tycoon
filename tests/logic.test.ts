@@ -21,8 +21,6 @@ import {
   stationSoftMaxLevel,
   stationUpgradeCost,
   trayCapacity,
-  trayMaxLevel,
-  trayNextCost,
   tableSoftMaxLevel,
   tableUpgradeZoneUnlocked,
   TEA_PRICE,
@@ -493,62 +491,14 @@ describe('para mıknatısı (Faz 2f) — attract yarıçapındaki para oyuncuya 
   });
 });
 
-describe('tepsi yükseltme (Faz 2e-B) — mekânsal nokta, kapasite 2→4→6 (Faz 2f max 6)', () => {
-  // table3'e kadar ilerlet (tepsi yükseltme noktasının önkoşulu: prev table3).
-  function reachTable3() {
-    useGame.getState().hardReset();
-    useGame.getState().addMoney(50);
-    completeCurrentPad(); // table2
-    useGame.getState().addMoney(2000);
-    useGame.getState().upgradeStation(); // L1 → table3 gate açılır
-    completeCurrentPad(); // table3
-  }
-
-  it('kapasite seviyeyle 2→4→6 büyür (Faz 2f: max 6 = 3×2 ızgara)', () => {
-    expect(trayCapacity(0)).toBe(2);
-    expect(trayCapacity(1)).toBe(4);
-    expect(trayCapacity(2)).toBe(6);
-    expect(trayMaxLevel()).toBe(2);
-  });
-
-  it('önkoşul (3. masa) karşılanmadan tepsi noktası pasiftir', () => {
-    useGame.getState().hardReset();
-    useGame.getState().addMoney(50);
-    completeCurrentPad(); // sadece table2
-    useGame.getState().addMoney(100000);
-    const z = LAYOUT.trayUpgradeZone;
-    useGame.setState({ player: [z[0], 0.6, z[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
-    for (let i = 0; i < 50; i++) useGame.getState().tick(0.1);
-    expect(useGame.getState().trayLevel).toBe(0); // table3 yok → yükseltme olmaz
-  });
-
-  it('3. masadan sonra noktada durunca tepsi seviyesi artar + kalıcı yazılır', () => {
-    reachTable3();
-    expect(useGame.getState().trayLevel).toBe(0);
-    useGame.getState().addMoney(trayNextCost(0) + 50);
-    const z = LAYOUT.trayUpgradeZone;
-    useGame.setState({ player: [z[0], 0.6, z[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
-    // 20 tick (~2s): L1 (cost/fillRate ≈ 1.33s) tamamlanır ama L2'ye (max) ulaşmaz → zone aktif kalır.
-    for (let i = 0; i < 20; i++) useGame.getState().tick(0.1);
-    expect(useGame.getState().trayLevel).toBeGreaterThan(0);
-    expect(useGame.getState().trayLevel).toBeLessThan(trayMaxLevel()); // henüz max değil → zone gösterilir
-    expect(useGame.getState().activeZone?.kind).toBe('upgrade');
-  });
-
-  it('maliyet geometrik artar ve max seviyede durur (₺ ile aşılamaz)', () => {
-    expect(trayNextCost(1)).toBeGreaterThan(trayNextCost(0));
-    reachTable3();
-    useGame.getState().addMoney(10_000_000);
-    const z = LAYOUT.trayUpgradeZone;
-    useGame.setState({ player: [z[0], 0.6, z[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
-    for (let i = 0; i < 600; i++) useGame.getState().tick(0.1);
-    expect(useGame.getState().trayLevel).toBe(trayMaxLevel()); // max'ta durur, taşmaz
-    expect(trayCapacity(useGame.getState().trayLevel)).toBe(6);
+describe('tepsi kapasitesi (D-018: yükseltme kaldırıldı → sabit 2)', () => {
+  it('tepsi kapasitesi sabittir (2)', () => {
+    expect(trayCapacity()).toBe(2);
   });
 });
 
-describe('kayıt migrasyonu v4..v12 (padFills, station2 çıkışı, addTable senkron, türetme, trayLevel, tepsi clamp, tableLevels)', () => {
-  it('eski tek padFill, aktif omurga pad id\'sine taşınır; saveVersion 10; türetilenler saklanmaz; trayLevel=0', () => {
+describe('kayıt migrasyonu v4..v13 (padFills, station2 çıkışı, addTable senkron, türetme, trayLevel düşüşü, tableLevels)', () => {
+  it('eski tek padFill, aktif omurga pad id\'sine taşınır; türetilenler + trayLevel saklanmaz', () => {
     const m = migrate({
       saveVersion: 4,
       wallet: '100', diamonds: '0', lifetime: '50',
@@ -558,7 +508,6 @@ describe('kayıt migrasyonu v4..v12 (padFills, station2 çıkışı, addTable se
     // lifetime 50 ≥ 30 → table2 aktif omurga pad'i → padFill ona atanır.
     expect(m.saveVersion).toBe(SAVE_VERSION);
     expect(m.padFills).toEqual({ table2: 20 });
-    expect(m.trayLevel).toBe(0); // eski kayıtta tepsi yükseltmesi yok → L0
     // D-015: türetilen alanlar artık kayıtta YOK; garson alınmamış → padsDone'da 'waiter' yok.
     expect((m as Record<string, unknown>).tables).toBeUndefined();
     expect((m as Record<string, unknown>).hasWaiter).toBeUndefined();
@@ -599,35 +548,21 @@ describe('kayıt migrasyonu v4..v12 (padFills, station2 çıkışı, addTable se
     expect(currentPad({ padsDone: m.padsDone, tables, stationLevel: m.stationLevel, lifetime: 9000 })?.id).toBe('samovar');
   });
 
-  it('v8 → v10: mevcut trayLevel korunur (≤ yeni max); eksikse 0\'lanır', () => {
-    const kept = migrate({
-      saveVersion: 8, wallet: '0', diamonds: '0', lifetime: '0',
-      stationLevel: 0, padsDone: ['table2'], padFills: {}, trayLevel: 2,
-    } as unknown as Record<string, unknown>);
-    expect(kept.saveVersion).toBe(SAVE_VERSION);
-    expect(kept.trayLevel).toBe(2); // 2 ≤ yeni max (2) → korunur
-    const missing = migrate({
-      saveVersion: 8, wallet: '0', diamonds: '0', lifetime: '0',
-      stationLevel: 0, padsDone: ['table2'], padFills: {},
-    } as unknown as Record<string, unknown>);
-    expect(missing.trayLevel).toBe(0);
-  });
-
-  it('v9 → v10: eski L3 tepsi kaydı yeni max\'a (2) clamp\'lenir (kapasite 8→6)', () => {
+  it('v12 → v13 (D-018): eski trayLevel persist alanı DÜŞER (tepsi sabit; şemada yok)', () => {
     const m = migrate({
-      saveVersion: 9, wallet: '0', diamonds: '0', lifetime: '0',
-      stationLevel: 0, padsDone: ['table2', 'table3'], padFills: {}, trayLevel: 3,
+      saveVersion: 12, wallet: '0', diamonds: '0', lifetime: '0',
+      stationLevel: 0, padsDone: ['table2', 'table3'], padFills: {}, trayLevel: 2, tableLevels: [],
     } as unknown as Record<string, unknown>);
     expect(m.saveVersion).toBe(SAVE_VERSION);
-    expect(m.trayLevel).toBe(2); // L3 → tavana çekildi
-    expect(trayCapacity(m.trayLevel)).toBe(6); // taşmayan max kapasite
+    expect((m as Record<string, unknown>).trayLevel).toBeUndefined(); // tray yükseltme kaldırıldı
+    expect(trayCapacity()).toBe(2); // kapasite sabit
   });
 
-  it('v10 varsayılan kayıt padFills={} + trayLevel=0 içerir; türetilen alan tutmaz', () => {
+  it('varsayılan kayıt padFills={} içerir; türetilen + kaldırılan (trayLevel) alanlar tutulmaz', () => {
     const d = defaultSave();
     expect(d.saveVersion).toBe(SAVE_VERSION);
     expect(d.padFills).toEqual({});
-    expect(d.trayLevel).toBe(0);
+    expect((d as Record<string, unknown>).trayLevel).toBeUndefined();
     expect(d.tableLevels).toEqual([]);
     expect((d as Record<string, unknown>).tables).toBeUndefined();
     expect((d as Record<string, unknown>).hasWaiter).toBeUndefined();
@@ -957,5 +892,50 @@ describe('masa yükseltme + bahşiş (Faz 2h)', () => {
     const v11 = migrate({ ...v10raw, saveVersion: 11, tableLevel: 2 });
     expect(v11.tableLevels.length).toBeGreaterThanOrEqual(4);
     expect(v11.tableLevels.every((n) => n === 2)).toBe(true);
+  });
+});
+
+describe('Etkileşim HAREKET-temelli (D-018 §2): üstünden geçerken alma, durunca hemen al', () => {
+  function placeOnPad() {
+    useGame.getState().hardReset();
+    useGame.getState().addMoney(1000); // wallet + lifetime (table2 gate'i için lifetime≥30)
+    const pad = currentPad(gate())!; // table2 (omurga)
+    const pos = LAYOUT.padPos[pad.id];
+    useGame.setState({ player: [pos[0], 0.6, pos[2]], npcs: [], spawnTimer: 999 });
+    return { pad, pos };
+  }
+
+  it('üstünden GEÇERKEN (hareket halinde) para AKMAZ', () => {
+    const { pad, pos } = placeOnPad();
+    // Her tick'te pad'e geri koy + HAREKET input'u → konumdan değil HAREKETTEN ötürü akmadığını test eder.
+    for (let i = 0; i < 12; i++) {
+      useGame.setState({ player: [pos[0], 0.6, pos[2]], inputKeyboard: [1, 0], inputJoystick: [0, 0] });
+      useGame.getState().tick(0.1);
+    }
+    expect(useGame.getState().wallet.toNumber()).toBe(1000); // hiç harcanmadı
+    expect(useGame.getState().padsDone).not.toContain(pad.id);
+  });
+
+  it('DURUNCA (input ~0) para HEMEN akmaya başlar (sayaç/countdown yok)', () => {
+    const { pos } = placeOnPad();
+    useGame.setState({ player: [pos[0], 0.6, pos[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+    useGame.getState().tick(0.1); // TEK tick yeter → para hemen akar
+    expect(useGame.getState().wallet.toNumber()).toBeLessThan(1000);
+  });
+
+  it('biriken ₺ KORUNUR: noktadan çıkınca kısmi dolum sıfırlanmaz', () => {
+    const { pad, pos } = placeOnPad();
+    useGame.setState({ wallet: D(20) }); // cost(35)'ten AZ → tamamlanmaz, kısmi kalır
+    for (let i = 0; i < 6; i++) {
+      useGame.setState({ player: [pos[0], 0.6, pos[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+      useGame.getState().tick(0.1);
+    }
+    const accrued = useGame.getState().padFills[pad.id] ?? 0;
+    expect(accrued).toBeGreaterThan(0);
+    expect(useGame.getState().padsDone).not.toContain(pad.id); // tamamlanmadı (20<35)
+    // ÇIK → biriken dolum korunur.
+    useGame.setState({ player: [pos[0] + 6, 0.6, pos[2]] });
+    useGame.getState().tick(0.1);
+    expect(useGame.getState().padFills[pad.id] ?? 0).toBeCloseTo(accrued, 5);
   });
 });

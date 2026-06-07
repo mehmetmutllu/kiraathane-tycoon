@@ -1,7 +1,7 @@
-import { useMemo } from 'react';
+import { Suspense, useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Vector3 } from 'three';
-import { useGame, LAYOUT, stationSoftMaxLevel, stationUpgradeCost, upgradeZoneUnlocked, trayMaxLevel, trayNextCost, trayUpgradeZoneUnlocked, tableSoftMaxLevel, tableUpgradeZoneUnlocked, tableNextCost } from '../../game/store';
+import { useGame, LAYOUT, stationSoftMaxLevel, stationUpgradeCost, upgradeZoneUnlocked, tableSoftMaxLevel, tableUpgradeZoneUnlocked, tableNextCost } from '../../game/store';
 import { GroundMarker } from './GroundMarker';
 import { Player } from './Player';
 import { Waiter } from './Waiter';
@@ -107,32 +107,8 @@ function DishStation() {
   );
 }
 
-// Mekânsal tepsi yükseltme noktası (Faz 2e-B): giriş önünde. Üstünde dur → kapasite 2→4→6 (sade zemin işareti).
-function TrayUpgradeZone() {
-  const trayLevel = useGame((s) => s.trayLevel);
-  const trayUpgradeFill = useGame((s) => s.trayUpgradeFill);
-  const wallet = useGame((s) => s.wallet);
-  const padsDone = useGame((s) => s.padsDone);
-  const tables = useGame((s) => s.tables);
-  const stationLevel = useGame((s) => s.stationLevel);
-  const lifetime = useGame((s) => s.lifetime);
-  if (trayLevel >= trayMaxLevel()) return null;
-  if (!trayUpgradeZoneUnlocked({ padsDone, tables, stationLevel, lifetime: lifetime.toNumber() })) return null;
-  const cost = trayNextCost(trayLevel);
-  return (
-    <GroundMarker
-      pos={LAYOUT.trayUpgradeZone}
-      label="Tepsi Yükselt"
-      sub={`₺${cost}`}
-      tint="#ffce54"
-      progress={trayUpgradeFill / cost}
-      afford={wallet.toNumber() >= cost}
-    />
-  );
-}
-
-// Masa-başı yükseltme işaretleri (Faz 2h, My Hotel oda mantığı): her AÇIK masanın YANINDA sade küçük
-// zemin işareti ("Masa" + ₺maliyet). Parası yetince hafif parlar; D-017 §2 sadelik (havada rozet yok).
+// Masa-başı yükseltme işaretleri (Faz 2h + D-018 §1 KENAR-YERLEŞİM): her AÇIK masanın DUVAR-KENARI tarafında
+// kesik-köşeli kart ("Masa N" + Lvl + ₺maliyet). Orta koridor boş kalır; dwell ile para hemen gitmez.
 function TableUpgradeMarkers() {
   const tables = useGame((s) => s.tables);
   const tableLevels = useGame((s) => s.tableLevels);
@@ -217,18 +193,18 @@ function Walls() {
         <boxGeometry args={[rightFrontW, h, t]} />
         <meshStandardMaterial {...common} />
       </mesh>
-      {/* kapı sövesi (boşluğun üstünde lento) */}
-      <mesh position={[0, h - 0.12, z1]}>
-        <boxGeometry args={[doorHalf * 2 + 0.3, 0.24, t + 0.05]} />
+      {/* kapı sövesi (boşluğun üstünde lento) — ön duvarla eş-düzlem z-fighting'i için hafif ÖNE (dışa) offset */}
+      <mesh position={[0, h - 0.12, z1 + 0.06]}>
+        <boxGeometry args={[doorHalf * 2 + 0.3, 0.24, t]} />
         <meshStandardMaterial color="#8d6e63" />
       </mesh>
-      {/* kapı çerçevesi (iki yan direk) */}
-      <mesh position={[-doorHalf, h / 2, z1]}>
-        <boxGeometry args={[0.12, h, t + 0.06]} />
+      {/* kapı çerçevesi (iki yan direk) — aynı offset ile ön duvar yüzeyiyle çakışmaz */}
+      <mesh position={[-doorHalf, h / 2, z1 + 0.06]}>
+        <boxGeometry args={[0.12, h, t]} />
         <meshStandardMaterial color="#6d4c41" />
       </mesh>
-      <mesh position={[doorHalf, h / 2, z1]}>
-        <boxGeometry args={[0.12, h, t + 0.06]} />
+      <mesh position={[doorHalf, h / 2, z1 + 0.06]}>
+        <boxGeometry args={[0.12, h, t]} />
         <meshStandardMaterial color="#6d4c41" />
       </mesh>
     </group>
@@ -301,16 +277,20 @@ export function Scene() {
       <Stations />
       <DishStation />
       <Tables />
-      <Pad />
-      <UpgradeZone />
-      <TrayUpgradeZone />
-      <TableUpgradeMarkers />
       <Customers />
       <Coins />
       <Dishes />
       <Player />
       <Waiter />
       <Dishwasher />
+      {/* Zemin işaretleri drei <Text> kullanır; troika fontu ilk Text mount olunca yüklenir ve SUSPEND eder.
+          Yalnız bu marker'ları ayrı Suspense'e al → font yüklenirken SADECE küçük işaret yazısı bekler,
+          DÜNYA (masa/oyuncu/mutfak) hiç kararmaz (kullanıcı bug'ı: "table2 açılınca sahne kararıyor"). */}
+      <Suspense fallback={null}>
+        <Pad />
+        <UpgradeZone />
+        <TableUpgradeMarkers />
+      </Suspense>
       <CameraRig />
       <Simulation />
     </Canvas>

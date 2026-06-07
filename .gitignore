@@ -16,6 +16,9 @@ dist-ssr
 test-results
 playwright-report
 coverage
+.playwright-mcp/
+# kök dizindeki tanı/önizleme ekran görüntüleri (oyun assetleri public/ altında)
+/*.png
 
 # Editor directories and files
 .vscode/*

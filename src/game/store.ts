@@ -8,8 +8,6 @@ import {
   requiresMet,
   brewQueueCapacity,
   cupPoolCapacity,
-  trayCapacityForLevel,
-  trayUpgradeCost,
   tableUpgradeCost,
   tableTip,
   tablePatience,
@@ -39,12 +37,13 @@ export const LAYOUT = {
   area: { minX: -5.3, maxX: 5.3, minZ: -5.3, maxZ: 5.0 },
   // Masa slotları — 2×2, MUTFAKTAN UZAK ÖNDE (kolon x ∓2.4, satır z 0.0/3.0). Ön sıra ocaktan ~4.9 br
   // (>2R=3.2) → tek noktada çay-al+servis imkânsız. seat = table z+1.0 (müşteri masanın önünde, girişe dönük).
-  // upgradeSpot (Faz 2h masa-başı): masanın YANINDA (merkeze doğru +1.2 x), oyuncu burada durunca O masa yükselir.
+  // upgradeSpot (D-018 §1 KENAR-YERLEŞİM): masanın DUVAR-KENARI tarafında (sol kolon → SOLA x≈−3.7, sağ kolon →
+  // SAĞA x≈+3.7) → orta "omurga" koridor boş kalır (kullanıcı: "sağdakilerin sağına soldakilerin soluna").
   tables: [
-    { table: [-2.4, 0, 0.0] as Vec3, seat: [-2.4, 0.6, 1.0] as Vec3, upgradeSpot: [-1.2, 0, 0.0] as Vec3 },
-    { table: [2.4, 0, 0.0] as Vec3, seat: [2.4, 0.6, 1.0] as Vec3, upgradeSpot: [1.2, 0, 0.0] as Vec3 },
-    { table: [-2.4, 0, 3.0] as Vec3, seat: [-2.4, 0.6, 4.0] as Vec3, upgradeSpot: [-1.2, 0, 3.0] as Vec3 },
-    { table: [2.4, 0, 3.0] as Vec3, seat: [2.4, 0.6, 4.0] as Vec3, upgradeSpot: [1.2, 0, 3.0] as Vec3 },
+    { table: [-2.4, 0, 0.0] as Vec3, seat: [-2.4, 0.6, 1.0] as Vec3, upgradeSpot: [-3.7, 0, 0.0] as Vec3 },
+    { table: [2.4, 0, 0.0] as Vec3, seat: [2.4, 0.6, 1.0] as Vec3, upgradeSpot: [3.7, 0, 0.0] as Vec3 },
+    { table: [-2.4, 0, 3.0] as Vec3, seat: [-2.4, 0.6, 4.0] as Vec3, upgradeSpot: [-3.7, 0, 3.0] as Vec3 },
+    { table: [2.4, 0, 3.0] as Vec3, seat: [2.4, 0.6, 4.0] as Vec3, upgradeSpot: [3.7, 0, 3.0] as Vec3 },
   ],
   // Pad pozisyonları: açtıkları objenin yerinde (masa pad'leri sıralı → eş-zamanlı çakışmaz).
   padPos: {
@@ -52,14 +51,14 @@ export const LAYOUT = {
     table3: [-2.4, 0, 3.0] as Vec3, // 3. masa slotu (arka-sol)
     table4: [2.4, 0, 3.0] as Vec3, // 4. masa slotu (arka-sağ)
     samovar: [-3.8, 0, -4.8] as Vec3, // mutfak kümesi, ocağın solu (semavere geçiş)
-    waiter: [-4.6, 0, 0.0] as Vec3, // sol-kenar orta (GÖRÜNÜR; eski arka köşe ekran-dışı kalıyordu)
-    dishwasher: [4.6, 0, 0.0] as Vec3, // sağ-kenar orta (GÖRÜNÜR)
+    // Personel pad'leri sol/sağ kenar, masa SATIRLARI ARASINDA (z=1.5) → masa-yükseltme noktalarıyla (z=0/3)
+    // çakışmaz (D-018 §1 kenar-yerleşim: upgrade spot [∓3.7,0/3] ile pad [∓4.6,1.5] arası 1.75>PAD_RADIUS).
+    waiter: [-4.6, 0, 1.5] as Vec3, // sol-kenar orta (GÖRÜNÜR)
+    dishwasher: [4.6, 0, 1.5] as Vec3, // sağ-kenar orta (GÖRÜNÜR)
   } as Record<string, Vec3>,
   // Mekânsal çay yükseltme noktası: ocağın TAM önünde (dist 1.8 > pickupRadius 1.6 → pickup ile çakışmaz;
   // personel pad'lerinden uzak → para çekişmesi yok).
   upgradeZone: [-1.6, 0, -3.0] as Vec3,
-  // Mekânsal tepsi yükseltme noktası (Faz 2e-B): giriş önü orta (oyuncunun doğal yolu).
-  trayUpgradeZone: [0, 0, 4.3] as Vec3,
   // Garson boştayken bekleyeceği köşe (sol-kenar, pad'inin arkası).
   waiterHome: [-4.6, 0, -1.6] as Vec3,
   // Bulaşık noktası (Faz 2e): mutfak kümesi, ocağın sağında BİTİŞİK (D-017 §1: ocaktan AYRILMAZ).
@@ -212,6 +211,9 @@ const NPC_SPEED = 2.6;
 const PAD_RADIUS = 1.3;
 // Masa-başı yükseltme noktasının yarıçapı (Faz 2h). Pad'lerden küçük → komşu masanın noktasını tetiklemez.
 const TABLE_UP_RADIUS = 1.0;
+// DWELL kanonik dolum-noktası id'leri (D-018 §2): pad'ler kendi id'sini kullanır; bunlar yükseltme noktaları.
+export const FILL_TEA = 'tea';
+export const FILL_TABLE = 'tableUp:'; // gerçek id = FILL_TABLE + masaIndex (ör. 'tableUp:0')
 const SAVE_INTERVAL = 2; // sn
 const NPC_COLORS = ['#c0392b', '#27ae60', '#2980b9', '#8e44ad', '#d35400', '#16a085'];
 
@@ -251,16 +253,8 @@ function brewTime(level: number, serviceSpeedMult: number): number {
   return (C.npc.orderTime * serviceSpeedMult) / brewThroughputMult(level);
 }
 
-/** Oyuncunun tepsi kapasitesi (tek turda taşınan çay/kirli). Seviye ile büyür (Faz 2e-B). */
-export const trayCapacity = (level = 0) => trayCapacityForLevel(level);
-/** ₺ ile çıkılabilen en yüksek tepsi seviyesi. */
-export const trayMaxLevel = () => C.serving.trayUpgrade.maxLevel;
-/** Mevcut seviyeden bir sonraki tepsi yükseltmesinin maliyeti. */
-export const trayNextCost = (level: number) => trayUpgradeCost(level);
-/** Tepsi yükseltme noktası şu an aktif mi (önkoşulu karşılandı mı)? */
-export function trayUpgradeZoneUnlocked(g: GateState): boolean {
-  return requiresMet(C.serving.trayUpgradeRequires, g);
-}
+/** Oyuncunun tepsi kapasitesi (tek turda taşınan çay/kirli). D-018: sabit (yükseltme kaldırıldı). */
+export const trayCapacity = () => C.serving.trayCapacity;
 
 /** ₺ ile çıkılabilen en yüksek masa seviyesi (L5 = Usta, 💎/video — Faz 4). */
 export const tableSoftMaxLevel = () => C.tables.upgrade.masterLevel - 1;
@@ -299,8 +293,6 @@ export interface GameState {
   tables: number;
   stations: number;
   stationLevel: number;
-  /** Tepsi kapasite yükseltme seviyesi (Faz 2e-B; persist). */
-  trayLevel: number;
   /** Masa-başı yükseltme seviyeleri (Faz 2h; persist; index = masa slotu; bahşiş + sabır). My Hotel oda mantığı. */
   tableLevels: number[];
   serviceSpeedMult: number;
@@ -333,8 +325,6 @@ export interface GameState {
   /** Oyuncunun bulaşığa götürmek için taşıdığı kirli bardak. */
   carriedDirty: number;
   upgradeFill: number;
-  /** Tepsi yükseltme noktasındaki kısmi dolum (transient; çay yükseltme gibi). */
-  trayUpgradeFill: number;
   /** Masa-başı yükseltme noktalarındaki kısmi dolum (transient; index = masa slotu). */
   tableUpgradeFills: number[];
   activeZone: ActiveZone | null;
@@ -413,7 +403,6 @@ export const useGame = create<GameState>((set, get) => ({
   tables: 1,
   stations: 1,
   stationLevel: 0,
-  trayLevel: 0,
   tableLevels: LAYOUT.tables.map(() => 0),
   serviceSpeedMult: 1,
   padsDone: [],
@@ -433,7 +422,6 @@ export const useGame = create<GameState>((set, get) => ({
   dishes: [],
   carriedDirty: 0,
   upgradeFill: 0,
-  trayUpgradeFill: 0,
   tableUpgradeFills: LAYOUT.tables.map(() => 0),
   activeZone: null,
   nextStepLabel: '',
@@ -468,8 +456,6 @@ export const useGame = create<GameState>((set, get) => ({
       tables: derived.tables,
       stations: derived.stations,
       stationLevel: save.stationLevel,
-      // Savunmacı: eski kayıt yeni max'tan yüksek tepsi seviyesi taşıyorsa tavana çek (Faz 2f 8→6).
-      trayLevel: Math.min(save.trayLevel, C.serving.trayUpgrade.maxLevel),
       // Masa-başı seviyeleri: slot sayısına normalize et + her birini soft max'a clamp'le.
       tableLevels: LAYOUT.tables.map((_, i) => Math.min(save.tableLevels[i] ?? 0, tableSoftMaxLevel())),
       serviceSpeedMult: derived.serviceSpeedMult,
@@ -492,7 +478,6 @@ export const useGame = create<GameState>((set, get) => ({
       dishes: [],
       carriedDirty: 0,
       upgradeFill: 0,
-      trayUpgradeFill: 0,
       tableUpgradeFills: LAYOUT.tables.map(() => 0),
       activeZone: null,
       nextStepLabel: nextStep({
@@ -536,14 +521,12 @@ export const useGame = create<GameState>((set, get) => ({
     let upgradeFill = s.upgradeFill;
     let activeZone: ActiveZone | null = null;
     let stationLevel = s.stationLevel;
-    let trayLevel = s.trayLevel;
     const tableLevels = s.tableLevels.slice(); // masa-başı seviyeler (kopya; bu tick'te yükseltilebilir)
     let readyCups = s.readyCups;
     let brewProgress = s.brewProgress;
     let tray = s.tray;
     let cleanCups = s.cleanCups;
     let carriedDirty = s.carriedDirty;
-    let trayUpgradeFill = s.trayUpgradeFill;
     const tableUpgradeFills = s.tableUpgradeFills.slice();
     let nextId = s.nextId;
     let spawnTimer = s.spawnTimer - dt;
@@ -684,7 +667,7 @@ export const useGame = create<GameState>((set, get) => ({
     }
 
     // --- Servis (D-011): ocakta tepsiyi doldur, bekleyen masalara çay bırak (yakınlık) ---
-    const trayCap = trayCapacity(trayLevel);
+    const trayCap = trayCapacity();
     // Ocağa yaklaşınca hazır çaylardan tepsi dolar (herhangi bir açık ocak yeterli).
     // Faz 2f "eli boşken" kısıtı (karar 2026-06-06): kirli taşırken (carriedDirty>0) temiz ALINMAZ
     // → tepside hep tek tür (tek renk); "götür → topla → yıka" ritmi korunur.
@@ -714,7 +697,7 @@ export const useGame = create<GameState>((set, get) => ({
 
     // --- Bardak döngüsü (Faz 2e): oyuncu masadaki kirli bardakları toplar, bulaşıkta yıkar (yakınlık) ---
     // Faz 2f "eli boşken" kısıtı (simetrik): temiz çay taşırken (tray>0) kirli TOPLANMAZ → tepsi tek renk.
-    const dirtyCap = trayCapacity(trayLevel);
+    const dirtyCap = trayCapacity();
     if (tray === 0 && carriedDirty < dirtyCap && dishes.length) {
       const keep: Dish[] = [];
       for (const d of dishes) {
@@ -823,34 +806,56 @@ export const useGame = create<GameState>((set, get) => ({
       dishwasher = null;
     }
 
-    // --- Pad doldurma (omurga + opsiyonel pad'ler; her pad açtığı objenin yerinde) ---
-    // Oyuncu fiziksel olarak aynı anda tek pad'in üstünde olabilir → bulunca işle ve çık.
+    // --- Mekânsal etkileşim noktaları (D-018 §2, HAREKET-TEMELLİ) ---
+    // Oyuncu fiziksel olarak aynı anda TEK dolum noktasının üstünde olabilir. Para yalnız oyuncu DURUNCA akar:
+    // üstünden GEÇERKEN (hareket halinde) hiç alınmaz, DURDUĞU (input bıraktığı) anda HEMEN başlar (sayaç/countdown YOK).
     const padGate: GateState = { padsDone, tables, stationLevel, lifetime: lifetime.toNumber() };
     const activePads: PadDef[] = [];
     const backbonePad = currentPad(padGate);
     if (backbonePad) activePads.push(backbonePad);
     for (const op of availableOptionalPads(padGate)) activePads.push(op);
+
+    const upgradeUnlocked = upgradeZoneUnlocked(padGate) && stationLevel < stationSoftMaxLevel();
+    const tableUnlocked = tableUpgradeZoneUnlocked(padGate);
+
+    // Oyuncu DURUYOR mu? (input ~0). Para yalnız dururken akar → üstünden geçerken (hareket) alınmaz.
+    const fillReady = Math.hypot(input[0], input[1]) <= 0.1;
+
+    // Oyuncunun şu an üstünde durduğu dolum noktasının kanonik id'si (pad.id / FILL_TEA / FILL_TABLE+i).
+    let onFillId: string | null = null;
     for (const pad of activePads) {
-      const padPos = LAYOUT.padPos[pad.id];
-      if (!padPos || dist2D(player, padPos) >= PAD_RADIUS) continue;
-      let fill = padFills[pad.id] ?? 0;
-      if (wallet.gt(0)) {
-        const amt = Math.min(pad.fillRate * dt, wallet.toNumber(), pad.cost - fill);
+      const pp = LAYOUT.padPos[pad.id];
+      if (pp && dist2D(player, pp) < PAD_RADIUS) { onFillId = pad.id; break; }
+    }
+    if (!onFillId && upgradeUnlocked && dist2D(player, LAYOUT.upgradeZone) < PAD_RADIUS) onFillId = FILL_TEA;
+    if (!onFillId && tableUnlocked) {
+      for (let i = 0; i < tables; i++) {
+        if (tableLevels[i] >= tableSoftMaxLevel()) continue;
+        if (dist2D(player, LAYOUT.tables[i].upgradeSpot) < TABLE_UP_RADIUS) { onFillId = FILL_TABLE + i; break; }
+      }
+    }
+
+    // --- Pad doldurma (omurga + opsiyonel; her pad açtığı objenin yerinde) ---
+    const activePad = onFillId ? activePads.find((p) => p.id === onFillId) : undefined;
+    if (activePad) {
+      const padPos = LAYOUT.padPos[activePad.id]!;
+      let fill = padFills[activePad.id] ?? 0;
+      if (fillReady && wallet.gt(0)) {
+        const amt = Math.min(activePad.fillRate * dt, wallet.toNumber(), activePad.cost - fill);
         if (amt > 0) {
           fill += amt;
           wallet = wallet.sub(amt);
         }
       }
-      if (fill >= pad.cost) {
+      if (fill >= activePad.cost) {
         // Pad tamamlandı: SADECE padsDone'a ekle (etkiler türetilir, D-015), kısmi dolumu temizle.
-        padsDone = [...padsDone, pad.id];
+        padsDone = [...padsDone, activePad.id];
         const rest = { ...padFills };
-        delete rest[pad.id];
+        delete rest[activePad.id];
         padFills = rest;
         activeZone = null;
-        // Masa pad'i oyuncunun DURDUĞU yerde belirir → oyuncu masanın içinde kalmasın, anında dışarı it
-        // (collision escape guard zaten çıkışa izin verir ama bu, beklemeden temiz bir konum verir).
-        if (pad.effect.type === 'addTable') {
+        // Masa pad'i oyuncunun DURDUĞU yerde belirir → oyuncu masanın içinde kalmasın, anında dışarı it.
+        if (activePad.effect.type === 'addTable') {
           const out = LAYOUT.tableHalf[0] + pr + 0.1;
           let ex = player[0] - padPos[0];
           let ez = player[2] - padPos[2];
@@ -862,107 +867,61 @@ export const useGame = create<GameState>((set, get) => ({
           }
         }
       } else {
-        padFills = { ...padFills, [pad.id]: fill };
-        activeZone = { kind: 'pad', label: pad.label, fill, cost: pad.cost };
+        padFills = { ...padFills, [activePad.id]: fill };
+        activeZone = { kind: 'pad', label: activePad.label, fill, cost: activePad.cost };
       }
-      break;
     }
 
     // --- Mekânsal çay yükseltme noktası (ana ocağın önünde dur → altta bar dolar) ---
-    // Gating: önce 2. masa açılmalı (D-010 sırası); aksi halde nokta pasif.
-    const upgradeUnlocked = upgradeZoneUnlocked({
-      padsDone, tables, stationLevel, lifetime: lifetime.toNumber(),
-    });
-    if (upgradeUnlocked && stationLevel < stationSoftMaxLevel()) {
-      if (dist2D(player, LAYOUT.upgradeZone) < PAD_RADIUS) {
-        const cost = stationUpgradeCost(stationLevel);
-        if (wallet.gt(0)) {
-          const amt = Math.min(C.teaStation.upgradeFillRate * dt, wallet.toNumber(), cost - upgradeFill);
-          if (amt > 0) {
-            upgradeFill += amt;
-            wallet = wallet.sub(amt);
-          }
+    // Biriken ₺ KORUNUR (çıkınca sıfırlanmaz; D-018 dwell) → para harcanıp boşa gitmez.
+    if (onFillId === FILL_TEA) {
+      const cost = stationUpgradeCost(stationLevel);
+      if (fillReady && wallet.gt(0)) {
+        const amt = Math.min(C.teaStation.upgradeFillRate * dt, wallet.toNumber(), cost - upgradeFill);
+        if (amt > 0) {
+          upgradeFill += amt;
+          wallet = wallet.sub(amt);
         }
-        if (upgradeFill >= cost) {
-          stationLevel += 1;
-          upgradeFill = 0;
-          cleanCups += C.cups.poolPerLevel; // havuz ocak seviyesiyle büyür (Faz 2e)
-        }
-        const nextCost = stationLevel < stationSoftMaxLevel() ? stationUpgradeCost(stationLevel) : cost;
-        activeZone = {
-          kind: 'upgrade',
-          label: `Çay Ocağı L${stationLevel}${stationLevel < stationSoftMaxLevel() ? ` → L${stationLevel + 1}` : ' (max)'}`,
-          fill: upgradeFill,
-          cost: nextCost,
-        };
       }
-    } else {
-      upgradeFill = 0;
+      if (upgradeFill >= cost) {
+        stationLevel += 1;
+        upgradeFill = 0;
+        cleanCups += C.cups.poolPerLevel; // havuz ocak seviyesiyle büyür (Faz 2e)
+      }
+      const nextCost = stationLevel < stationSoftMaxLevel() ? stationUpgradeCost(stationLevel) : cost;
+      activeZone = {
+        kind: 'upgrade',
+        label: `Çay Ocağı L${stationLevel}${stationLevel < stationSoftMaxLevel() ? ` → L${stationLevel + 1}` : ' (max)'}`,
+        fill: upgradeFill,
+        cost: nextCost,
+      };
     }
 
-    // --- Mekânsal tepsi yükseltme noktası (Faz 2e-B): giriş önünde dur → tepsi kapasitesi büyür ---
-    // Gating: 3. masadan sonra açılır (trayUpgradeRequires). Çay yükseltme noktasıyla aynı desen.
-    const trayUnlocked = trayUpgradeZoneUnlocked({
-      padsDone, tables, stationLevel, lifetime: lifetime.toNumber(),
-    });
-    if (trayUnlocked && trayLevel < trayMaxLevel()) {
-      if (dist2D(player, LAYOUT.trayUpgradeZone) < PAD_RADIUS) {
-        const cost = trayNextCost(trayLevel);
-        if (wallet.gt(0)) {
-          const amt = Math.min(C.serving.trayUpgrade.fillRate * dt, wallet.toNumber(), cost - trayUpgradeFill);
-          if (amt > 0) {
-            trayUpgradeFill += amt;
-            wallet = wallet.sub(amt);
-          }
+    // --- Mekânsal masa yükseltme (Faz 2h, MASA-BAŞI / My Hotel): açık masanın KENARINDAKİ noktada dur → o masanın
+    // bahşişi + sabrı artar. Gating: 2. masa açılınca belirir (D-018 §1: işaretler kenara taşındı). ---
+    if (onFillId != null && onFillId.startsWith(FILL_TABLE)) {
+      const i = Number(onFillId.slice(FILL_TABLE.length));
+      const cost = tableNextCost(tableLevels[i]);
+      let fill = tableUpgradeFills[i] ?? 0;
+      if (fillReady && wallet.gt(0)) {
+        const amt = Math.min(C.tables.upgradeFillRate * dt, wallet.toNumber(), cost - fill);
+        if (amt > 0) {
+          fill += amt;
+          wallet = wallet.sub(amt);
         }
-        if (trayUpgradeFill >= cost) {
-          trayLevel += 1;
-          trayUpgradeFill = 0;
-        }
-        const nextCost = trayLevel < trayMaxLevel() ? trayNextCost(trayLevel) : cost;
-        activeZone = {
-          kind: 'upgrade',
-          label: `Tepsi ${trayCapacity(trayLevel)}${trayLevel < trayMaxLevel() ? ` → ${trayCapacity(trayLevel + 1)}` : ' (max)'}`,
-          fill: trayUpgradeFill,
-          cost: nextCost,
-        };
       }
-    } else {
-      trayUpgradeFill = 0;
-    }
-
-    // --- Mekânsal masa yükseltme (Faz 2h, MASA-BAŞI / My Hotel): her açık masanın YANINDAKİ noktada dur →
-    // O masanın bahşişi + sabrı artar. Gating: 2. masa açılınca belirir. Oyuncu aynı anda tek noktada (break). ---
-    const tableUnlocked = tableUpgradeZoneUnlocked({
-      padsDone, tables, stationLevel, lifetime: lifetime.toNumber(),
-    });
-    if (tableUnlocked) {
-      for (let i = 0; i < tables; i++) {
-        if (tableLevels[i] >= tableSoftMaxLevel()) continue;
-        if (dist2D(player, LAYOUT.tables[i].upgradeSpot) >= TABLE_UP_RADIUS) continue;
-        const cost = tableNextCost(tableLevels[i]);
-        let fill = tableUpgradeFills[i] ?? 0;
-        if (wallet.gt(0)) {
-          const amt = Math.min(C.tables.upgradeFillRate * dt, wallet.toNumber(), cost - fill);
-          if (amt > 0) {
-            fill += amt;
-            wallet = wallet.sub(amt);
-          }
-        }
-        if (fill >= cost) {
-          tableLevels[i] += 1;
-          fill = 0;
-        }
-        tableUpgradeFills[i] = fill;
-        const nextCost = tableLevels[i] < tableSoftMaxLevel() ? tableNextCost(tableLevels[i]) : cost;
-        activeZone = {
-          kind: 'upgrade',
-          label: `Masa ${i + 1}: L${tableLevels[i]}${tableLevels[i] < tableSoftMaxLevel() ? ` → L${tableLevels[i] + 1} (+${C.tables.tipBase} bahşiş)` : ' (max)'}`,
-          fill,
-          cost: nextCost,
-        };
-        break;
+      if (fill >= cost) {
+        tableLevels[i] += 1;
+        fill = 0;
       }
+      tableUpgradeFills[i] = fill;
+      const nextCost = tableLevels[i] < tableSoftMaxLevel() ? tableNextCost(tableLevels[i]) : cost;
+      activeZone = {
+        kind: 'upgrade',
+        label: `Masa ${i + 1}: L${tableLevels[i]}${tableLevels[i] < tableSoftMaxLevel() ? ` → L${tableLevels[i] + 1} (+${C.tables.tipBase} bahşiş)` : ' (max)'}`,
+        fill,
+        cost: nextCost,
+      };
     }
 
     // --- D-015: padsDone değiştiyse türetilen alanlar yeniden hesaplanır (tek yazım noktası) ---
@@ -990,7 +949,6 @@ export const useGame = create<GameState>((set, get) => ({
       tables: out.tables,
       stations: out.stations,
       stationLevel,
-      trayLevel,
       tableLevels,
       serviceSpeedMult: out.serviceSpeedMult,
       padsDone,
@@ -998,7 +956,6 @@ export const useGame = create<GameState>((set, get) => ({
       hasWaiter: out.hasWaiter,
       hasDishwasher: out.hasDishwasher,
       upgradeFill,
-      trayUpgradeFill,
       tableUpgradeFills,
       activeZone,
       nextStepLabel,
@@ -1050,7 +1007,6 @@ export const useGame = create<GameState>((set, get) => ({
       diamonds: s.diamonds.toString(),
       lifetime: s.lifetime.toString(),
       stationLevel: s.stationLevel,
-      trayLevel: s.trayLevel,
       tableLevels: [...s.tableLevels],
       padsDone: [...s.padsDone],
       padFills: { ...s.padFills },

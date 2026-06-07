@@ -6,7 +6,6 @@ export function HUD() {
   const diamonds = useGame((s) => s.diamonds);
   const tables = useGame((s) => s.tables);
   const tray = useGame((s) => s.tray);
-  const trayLevel = useGame((s) => s.trayLevel);
   const readyCups = useGame((s) => s.readyCups);
   const cleanCups = useGame((s) => s.cleanCups);
   const dirtyCount = useGame((s) => s.dishes.length);
@@ -30,7 +29,7 @@ export function HUD() {
           🪑 {tables}
         </div>
         <div className="chip" data-testid="tray" title="Tepsindeki çay / kapasite">
-          🫖 {tray}/{trayCapacity(trayLevel)}
+          🫖 {tray}/{trayCapacity()}
         </div>
         <div className="chip" data-testid="ready" title="Ocakta bekleyen hazır çay">
           ☕ {readyCups}

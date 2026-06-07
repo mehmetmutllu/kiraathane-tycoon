@@ -40,9 +40,7 @@ export function installDevHooks(): void {
       // Servis durumu (D-011)
       readyCups: s.readyCups,
       tray: s.tray,
-      trayCap: trayCapacity(s.trayLevel),
-      trayLevel: s.trayLevel,
-      trayUpgradeZonePos: LAYOUT.trayUpgradeZone,
+      trayCap: trayCapacity(),
       // Masa-başı yükseltme (Faz 2h): her masanın seviyesi + yanındaki yükseltme noktaları
       tableLevels: [...s.tableLevels],
       tableUpgradeSpots: LAYOUT.tables.map((t) => t.upgradeSpot),

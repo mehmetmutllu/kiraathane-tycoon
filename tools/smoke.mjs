@@ -138,28 +138,7 @@ try {
     fail(`Kirli bardak üretilmedi (dirty=${cupRun.dirtyCount}, carried=${cupRun.carriedDirty})`);
   }
 
-  // Tepsi yükseltme (Faz 2e-B): 3. masa açılınca giriş önündeki nokta aktifleşir → kapasite 2→4...
-  await page.evaluate(() => window.__addMoney(5000));
-  // Omurga pad'lerini sırayla aç (table3'e kadar): currentPad'e ışınla + zaman sar.
-  for (let i = 0; i < 4; i++) {
-    const g = await page.evaluate(() => window.__game());
-    if ((g.padsDone || []).includes('table3')) break;
-    if (!g.currentPad || !g.padPos) break;
-    await page.evaluate((pos) => window.__teleport(pos[0], pos[2]), g.padPos);
-    await page.evaluate(() => window.__advanceTime(8));
-  }
-  const preTray = await page.evaluate(() => window.__game());
-  if ((preTray.padsDone || []).includes('table3')) {
-    const beforeCap = preTray.trayCap;
-    await page.evaluate(() => window.__addMoney(5000));
-    await page.evaluate((pos) => window.__teleport(pos[0], pos[2]), preTray.trayUpgradeZonePos);
-    const afterTray = await page.evaluate(() => window.__advanceTime(6));
-    if (afterTray.trayLevel > 0 && afterTray.trayCap > beforeCap)
-      pass(`Tepsi yükseltme çalışıyor (kapasite ${beforeCap}→${afterTray.trayCap}, L${afterTray.trayLevel})`);
-    else fail(`Tepsi yükseltme olmadı (cap ${beforeCap}→${afterTray.trayCap}, L${afterTray.trayLevel})`);
-  } else {
-    fail(`Tepsi yükseltme için 3. masa açılamadı (padsDone=${JSON.stringify(preTray.padsDone)})`);
-  }
+  // (D-018: tepsi yükseltme KALDIRILDI → tepsi sabit 2; ilgili smoke testi de kaldırıldı.)
 
   // Masa yükseltme (Faz 2h, MASA-BAŞI): 2. masa açılınca her masanın YANINDAKİ nokta aktif. 0. masanın
   // noktasına git → SADECE o masa yükselir (bahşiş+sabır); komşu masa etkilenmez.
