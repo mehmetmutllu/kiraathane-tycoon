@@ -23,48 +23,50 @@ import { buildNavGrid, findNavPath, type NavGrid, type NavSolid } from './nav';
 
 // ---- Sahne yerleşimi (dünya birimi, zemin y=0) ----
 // Her pad/zone, açtığı/etkilediği objenin TAM yerinde durur (mekânsal tycoon).
-// FAZ 2g yerleşim v3 (D-016, kullanıcı feedback 2026-06-07 #2: v2 sıkıştı/hapsetti, masalar iri, personel
-// hâlâ masadan geçiyor): ALAN GENİŞ (ferah) ama içerik SOL-ÖN'de TUĞLA (offset) dizilimle → her koltuğa
-// açık dikey koridor; SAĞ TARAF BOŞ (büyüme/küçük-başlangıç hissi). Mutfak sol-arka köşede duvara 0.
-// Masalar KÜÇÜLDÜ (tableHalf 0.75→0.6). Collision: oyuncu mobilya+sandalye+aktör (HAPSETMEZ: zaten içindeyse
-// çıkışa izin); garson/bulaşıkçı masa gövdelerinden DOLAŞIR (moveAvoid).
+// FAZ 2 REDESIGN v6 (D-017 §1, kullanıcı feedback 2026-06-07: "tek noktada çay-al+servis yapılıyor, yürüme
+// döngüsü yok"): MUTFAK ARKA DUVARDA KÜME (ocak+bulaşık+semaver bitişik, AYRILMAZ); MASALAR ÖNE UZAK 2×2 →
+// her masa↔ocak mesafesi >2R=3.2 (ön sıra ~4.9, hedef ~5) → tek noktada "çay-al+servis" veya "kirli-al+yıka"
+// İMKÂNSIZ, yürüme döngüsü ZORLANIR. Orta geniş koridor (kolon ±2.4, gap 4.8). Collision: oyuncu mobilya+
+// sandalye+aktör (HAPSETMEZ); garson/bulaşıkçı masa gövdelerinden GERÇEK rota ile dolaşır (nav.ts BFS).
 export const LAYOUT = {
-  entrance: [0, 0.6, 4.2] as Vec3,
-  player: [0, 0.6, 2.8] as Vec3,
-  // Çay ocağı (D-016: zone'un TEK ana ocağı). Arka duvar şeridinin solu, duvara 0.
-  stations: [[-3.0, 0, -4.4] as Vec3],
-  // Oynanabilir alan BÜYÜK (kullanıcı: "alan baya büyümeli, karakterler alana göre iri"). Masalar köşelere
-  // yayılır → orta geniş yürüme alanı, sandalyeler kenarda kalır (koridor tıkanmaz).
-  area: { minX: -5.5, maxX: 5.5, minZ: -5.0, maxZ: 4.5 },
-  // Masa slotları — 2×2, KÖŞELERE YAYIK (kolon gap 5, satır gap 3.6) → her yön bol açık; sandalye(seat=table z+1)
-  // merkezi koridoru tıkamaz. Kolon x -2.5/2.5, satır z -2.2/1.4.
+  entrance: [0, 0.6, 4.8] as Vec3, // kapı eşiği (ön duvardaki boşluk, x=0)
+  // Sokak doğuş noktası: ön duvarın DIŞI (müşteriler buradan yürüyerek kapıya gelir / çıkarken buraya döner).
+  street: [0, 0.6, 8.0] as Vec3,
+  player: [0, 0.6, 1.5] as Vec3,
+  // Çay ocağı (D-016: zone'un TEK ana ocağı). Mutfak kümesinin solu, arka duvara 0.
+  stations: [[-1.6, 0, -4.8] as Vec3],
+  // Oynanabilir alan — derinlik artırıldı (D-017 §1: mutfak↔masa ayrımı için). Ön/arka koridor + kenar personel.
+  area: { minX: -5.3, maxX: 5.3, minZ: -5.3, maxZ: 5.0 },
+  // Masa slotları — 2×2, MUTFAKTAN UZAK ÖNDE (kolon x ∓2.4, satır z 0.0/3.0). Ön sıra ocaktan ~4.9 br
+  // (>2R=3.2) → tek noktada çay-al+servis imkânsız. seat = table z+1.0 (müşteri masanın önünde, girişe dönük).
   // upgradeSpot (Faz 2h masa-başı): masanın YANINDA (merkeze doğru +1.2 x), oyuncu burada durunca O masa yükselir.
   tables: [
-    { table: [-2.5, 0, -2.2] as Vec3, seat: [-2.5, 0.6, -1.2] as Vec3, upgradeSpot: [-1.3, 0, -2.2] as Vec3 },
-    { table: [2.5, 0, -2.2] as Vec3, seat: [2.5, 0.6, -1.2] as Vec3, upgradeSpot: [1.3, 0, -2.2] as Vec3 },
-    { table: [-2.5, 0, 1.4] as Vec3, seat: [-2.5, 0.6, 2.4] as Vec3, upgradeSpot: [-1.3, 0, 1.4] as Vec3 },
-    { table: [2.5, 0, 1.4] as Vec3, seat: [2.5, 0.6, 2.4] as Vec3, upgradeSpot: [1.3, 0, 1.4] as Vec3 },
+    { table: [-2.4, 0, 0.0] as Vec3, seat: [-2.4, 0.6, 1.0] as Vec3, upgradeSpot: [-1.2, 0, 0.0] as Vec3 },
+    { table: [2.4, 0, 0.0] as Vec3, seat: [2.4, 0.6, 1.0] as Vec3, upgradeSpot: [1.2, 0, 0.0] as Vec3 },
+    { table: [-2.4, 0, 3.0] as Vec3, seat: [-2.4, 0.6, 4.0] as Vec3, upgradeSpot: [-1.2, 0, 3.0] as Vec3 },
+    { table: [2.4, 0, 3.0] as Vec3, seat: [2.4, 0.6, 4.0] as Vec3, upgradeSpot: [1.2, 0, 3.0] as Vec3 },
   ],
   // Pad pozisyonları: açtıkları objenin yerinde (masa pad'leri sıralı → eş-zamanlı çakışmaz).
   padPos: {
-    table2: [2.5, 0, -2.2] as Vec3, // 2. masa slotu
-    table3: [-2.5, 0, 1.4] as Vec3, // 3. masa slotu
-    table4: [2.5, 0, 1.4] as Vec3, // 4. masa slotu
-    samovar: [1.0, 0, -4.4] as Vec3, // arka duvar şeridi, bulaşığın sağı (semavere geçiş)
-    waiter: [-4.8, 0, 2.0] as Vec3, // sol-uzak (personel)
-    dishwasher: [4.8, 0, 2.0] as Vec3, // sağ-uzak (personel)
+    table2: [2.4, 0, 0.0] as Vec3, // 2. masa slotu (ön-sağ)
+    table3: [-2.4, 0, 3.0] as Vec3, // 3. masa slotu (arka-sol)
+    table4: [2.4, 0, 3.0] as Vec3, // 4. masa slotu (arka-sağ)
+    samovar: [-3.8, 0, -4.8] as Vec3, // mutfak kümesi, ocağın solu (semavere geçiş)
+    waiter: [-4.6, 0, 0.0] as Vec3, // sol-kenar orta (GÖRÜNÜR; eski arka köşe ekran-dışı kalıyordu)
+    dishwasher: [4.6, 0, 0.0] as Vec3, // sağ-kenar orta (GÖRÜNÜR)
   } as Record<string, Vec3>,
-  // Mekânsal çay yükseltme noktası: ocağın solunda açık şeritte (masa kapatmaz; sol lane'den erişilir).
-  upgradeZone: [-3.5, 0, -3.0] as Vec3,
+  // Mekânsal çay yükseltme noktası: ocağın TAM önünde (dist 1.8 > pickupRadius 1.6 → pickup ile çakışmaz;
+  // personel pad'lerinden uzak → para çekişmesi yok).
+  upgradeZone: [-1.6, 0, -3.0] as Vec3,
   // Mekânsal tepsi yükseltme noktası (Faz 2e-B): giriş önü orta (oyuncunun doğal yolu).
-  trayUpgradeZone: [0, 0, 3.8] as Vec3,
-  // Garson boştayken bekleyeceği köşe (sol-uzak, pad'inin altı).
-  waiterHome: [-4.8, 0, 0.8] as Vec3,
-  // Bulaşık noktası (Faz 2e): arka duvar şeridi, ocağın sağında. ocaktan dist 2.0>washRadius 1.6
-  // (ocakta dururken kirli yıkanmaz; ayrı etkileşim).
-  dishStation: [-1.0, 0, -4.4] as Vec3,
-  // Bulaşıkçı boştayken bekleyeceği köşe (sağ-uzak, pad'inin altı).
-  dishwasherHome: [4.8, 0, 0.8] as Vec3,
+  trayUpgradeZone: [0, 0, 4.3] as Vec3,
+  // Garson boştayken bekleyeceği köşe (sol-kenar, pad'inin arkası).
+  waiterHome: [-4.6, 0, -1.6] as Vec3,
+  // Bulaşık noktası (Faz 2e): mutfak kümesi, ocağın sağında BİTİŞİK (D-017 §1: ocaktan AYRILMAZ).
+  // ocaktan dist 2.2 → footprint'ler çakışmaz ama mutfak kümesi olarak yan yana (kirli yıkama mutfakta).
+  dishStation: [0.6, 0, -4.8] as Vec3,
+  // Bulaşıkçı boştayken bekleyeceği köşe (sağ-kenar, pad'inin arkası).
+  dishwasherHome: [4.6, 0, -1.6] as Vec3,
   // --- Collision footprint'leri (yarı-boyut [hx,hz]; D-016): GÖRSEL mesh'lere yaslı → oyuncu objeye
   // "değiyor gibi" sokulur, arada boşluk kalmaz. (ocak tezgah 2.2×0.8, bulaşık 1.4×0.8, masa r0.5, sandalye 0.42.)
   playerRadius: 0.35, // oyuncu kapsül görsel yarıçapı = standoff'u görsel kenara denk getirir
@@ -569,7 +571,7 @@ export const useGame = create<GameState>((set, get) => ({
         npcs.push({
           id: nextId++,
           state: 'toTable',
-          pos: [...LAYOUT.entrance] as Vec3,
+          pos: [...LAYOUT.street] as Vec3, // sokakta belir → kapıya yürü → koltuğa (dış dünya hissi)
           tableIndex: free,
           timer: 0,
           color: NPC_COLORS[Math.floor(Math.random() * NPC_COLORS.length)],
@@ -586,13 +588,17 @@ export const useGame = create<GameState>((set, get) => ({
     for (const n of npcs) {
       const slot = LAYOUT.tables[n.tableIndex];
       switch (n.state) {
-        case 'toTable':
-          if (moveAvoid(n.pos, slot.seat, step, obstacles, ar)) {
+        case 'toTable': {
+          // Önce KAPIYA (sokaktaysa), sonra koltuğa → müşteri kapıdan girip içeri yürür (front-wall gap).
+          const goingIn = n.pos[2] > LAYOUT.entrance[2] + 0.2;
+          const tgt = goingIn ? LAYOUT.entrance : slot.seat;
+          if (moveAvoid(n.pos, tgt, step, obstacles, ar) && !goingIn) {
             // Oturdu; çay servisini bekler. Sabır timer'ı başlar (D-011); OTURDUĞU masanın seviyesi sabrı uzatır (Faz 2h).
             n.state = 'waitingForTea';
             n.timer = tablePatience(tableLevels[n.tableIndex] ?? 0);
           }
           break;
+        }
         case 'waitingForTea':
           // Çay artık OTO gelmez — oyuncu/garson tepsiyle bırakmalı. Sabır biterse sessizce gider.
           n.timer -= dt;
@@ -615,9 +621,13 @@ export const useGame = create<GameState>((set, get) => ({
             n.state = 'leaving';
           }
           break;
-        case 'leaving':
-          if (moveAvoid(n.pos, LAYOUT.entrance, step, obstacles, ar)) removed.push(n.id);
+        case 'leaving': {
+          // Önce KAPIYA (içerdeyse), sonra SOKAĞA → müşteri kapıdan çıkıp sokakta kaybolur.
+          const goingOut = n.pos[2] >= LAYOUT.entrance[2] - 0.2;
+          const tgt = goingOut ? LAYOUT.street : LAYOUT.entrance;
+          if (moveAvoid(n.pos, tgt, step, obstacles, ar) && goingOut) removed.push(n.id);
           break;
+        }
       }
     }
     const liveNpcs = removed.length ? npcs.filter((n) => !removed.includes(n.id)) : npcs;
@@ -636,11 +646,13 @@ export const useGame = create<GameState>((set, get) => ({
     let nx = Math.max(A.minX, Math.min(A.maxX, oldX + dxIn));
     let nz = Math.max(A.minZ, Math.min(A.maxZ, oldZ + dzIn));
     if (dxIn !== 0 || dzIn !== 0) {
-      // MOBİLYA = KATI engel (asla içinden geçilmez), eksen-başı kayma (diyagonalde kenardan süzülür,
-      // kafa kafaya gelince durur). Zorlama istisnası YOK → zorlasan da masanın içine geçemezsin.
+      // MOBİLYA = KATI engel: yeni bir engele GİRİŞ bloklanır (eksen-başı kayma; kafa kafaya gelince durur).
+      // AMA oyuncu zaten bir engelin İÇİNDEyse (ör. üstünde masa açıldı) kilitlenmesin → çıkışına izin ver
+      // (aktör collision'ındaki desenin aynısı). Böylece "zorlasan da giremezsin" korunur ama hapsolmazsın.
       const furn = activeSolids(tables);
-      if (dxIn !== 0 && hitsSolid(nx, oldZ, furn, pr)) nx = oldX;
-      if (dzIn !== 0 && hitsSolid(nx, nz, furn, pr)) nz = oldZ;
+      const stuckInFurn = hitsSolid(oldX, oldZ, furn, pr);
+      if (dxIn !== 0 && hitsSolid(nx, oldZ, furn, pr) && !stuckInFurn) nx = oldX;
+      if (dzIn !== 0 && hitsSolid(nx, nz, furn, pr) && !stuckInFurn) nz = oldZ;
       // AKTÖRLER (müşteri/garson/bulaşıkçı) = YUMUŞAK: HAPSETMEZ (biri üstüne gelirse ters yöne çıkılır).
       const actors: Solid[] = [];
       for (const n of liveNpcs) actors.push({ c: n.pos, h: LAYOUT.actorHalf });
@@ -836,6 +848,19 @@ export const useGame = create<GameState>((set, get) => ({
         delete rest[pad.id];
         padFills = rest;
         activeZone = null;
+        // Masa pad'i oyuncunun DURDUĞU yerde belirir → oyuncu masanın içinde kalmasın, anında dışarı it
+        // (collision escape guard zaten çıkışa izin verir ama bu, beklemeden temiz bir konum verir).
+        if (pad.effect.type === 'addTable') {
+          const out = LAYOUT.tableHalf[0] + pr + 0.1;
+          let ex = player[0] - padPos[0];
+          let ez = player[2] - padPos[2];
+          const ed = Math.hypot(ex, ez);
+          if (ed < out) {
+            if (ed < 1e-4) { ex = 0; ez = 1; } else { ex /= ed; ez /= ed; }
+            player[0] = padPos[0] + ex * out;
+            player[2] = padPos[2] + ez * out;
+          }
+        }
       } else {
         padFills = { ...padFills, [pad.id]: fill };
         activeZone = { kind: 'pad', label: pad.label, fill, cost: pad.cost };

@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Html } from '@react-three/drei';
 import { Vector3 } from 'three';
-import { useGame, LAYOUT, stationSoftMaxLevel, upgradeZoneUnlocked, trayMaxLevel, trayUpgradeZoneUnlocked, tableSoftMaxLevel, tableUpgradeZoneUnlocked, tableNextCost } from '../../game/store';
+import { useGame, LAYOUT, stationSoftMaxLevel, stationUpgradeCost, upgradeZoneUnlocked, trayMaxLevel, trayNextCost, trayUpgradeZoneUnlocked, tableSoftMaxLevel, tableUpgradeZoneUnlocked, tableNextCost } from '../../game/store';
+import { GroundMarker } from './GroundMarker';
 import { Player } from './Player';
 import { Waiter } from './Waiter';
 import { Dishwasher } from './Dishwasher';
@@ -52,7 +52,6 @@ function Stations() {
           key={i}
           position={p}
           level={i === 0 ? stationLevel : 0}
-          showBadge={i === 0}
           readyCups={i === 0 ? readyCups : 0}
         />
       ))}
@@ -60,37 +59,31 @@ function Stations() {
   );
 }
 
-// Mekânsal çay yükseltme noktası (ana ocağın önünde). Üstünde dur → altta bar dolar.
+// Mekânsal çay yükseltme noktası (ana ocağın önünde). Üstünde dur → dolum yayı ilerler (sade zemin işareti).
 function UpgradeZone() {
   const stationLevel = useGame((s) => s.stationLevel);
+  const upgradeFill = useGame((s) => s.upgradeFill);
+  const wallet = useGame((s) => s.wallet);
   const padsDone = useGame((s) => s.padsDone);
   const tables = useGame((s) => s.tables);
   const lifetime = useGame((s) => s.lifetime);
   if (stationLevel >= stationSoftMaxLevel()) return null;
   if (!upgradeZoneUnlocked({ padsDone, tables, stationLevel, lifetime: lifetime.toNumber() })) return null;
-  const [x, , z] = LAYOUT.upgradeZone;
+  const cost = stationUpgradeCost(stationLevel);
   return (
-    <group position={[x, 0, z]}>
-      <mesh receiveShadow position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <circleGeometry args={[1.1, 32]} />
-        <meshStandardMaterial color="#7a5c12" />
-      </mesh>
-      <mesh position={[0, 0.04, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[0.9, 1.05, 32]} />
-        <meshStandardMaterial color="#ffd54f" emissive="#ffb300" emissiveIntensity={0.4} />
-      </mesh>
-      <mesh position={[0, 0.8, 0]}>
-        <coneGeometry args={[0.22, 0.45, 4]} />
-        <meshStandardMaterial color="#ffd54f" emissive="#ffb300" emissiveIntensity={0.5} />
-      </mesh>
-      <Html position={[0, 1.5, 0]} center distanceFactor={9} zIndexRange={[5, 0]}>
-        <div className="badge3d gold">☕ Yükselt</div>
-      </Html>
-    </group>
+    <GroundMarker
+      pos={LAYOUT.upgradeZone}
+      label="Çay Yükselt"
+      sub={`₺${cost}`}
+      tint="#ffce54"
+      progress={upgradeFill / cost}
+      afford={wallet.toNumber() >= cost}
+    />
   );
 }
 
 // Bulaşık noktası (Faz 2e): kirli bardaklar burada yıkanır. Üstünde dur → taşınan kirliler temize döner.
+// (Havadaki etiket KALDIRILDI — lavabo görseli zaten ne olduğunu anlatır; D-017 §2 sadelik.)
 function DishStation() {
   const [x, , z] = LAYOUT.dishStation;
   return (
@@ -110,49 +103,40 @@ function DishStation() {
         <cylinderGeometry args={[0.04, 0.04, 0.4, 8]} />
         <meshStandardMaterial color="#b0bec5" metalness={0.6} roughness={0.3} />
       </mesh>
-      <Html position={[0, 1.7, 0]} center distanceFactor={9} pointerEvents="none" zIndexRange={[5, 0]}>
-        <div className="badge3d">🧼 Bulaşık</div>
-      </Html>
     </group>
   );
 }
 
-// Mekânsal tepsi yükseltme noktası (Faz 2e-B): giriş önünde. Üstünde dur → kapasite 2→4→6 (Faz 2f max 6).
+// Mekânsal tepsi yükseltme noktası (Faz 2e-B): giriş önünde. Üstünde dur → kapasite 2→4→6 (sade zemin işareti).
 function TrayUpgradeZone() {
   const trayLevel = useGame((s) => s.trayLevel);
+  const trayUpgradeFill = useGame((s) => s.trayUpgradeFill);
+  const wallet = useGame((s) => s.wallet);
   const padsDone = useGame((s) => s.padsDone);
   const tables = useGame((s) => s.tables);
   const stationLevel = useGame((s) => s.stationLevel);
   const lifetime = useGame((s) => s.lifetime);
   if (trayLevel >= trayMaxLevel()) return null;
   if (!trayUpgradeZoneUnlocked({ padsDone, tables, stationLevel, lifetime: lifetime.toNumber() })) return null;
-  const [x, , z] = LAYOUT.trayUpgradeZone;
+  const cost = trayNextCost(trayLevel);
   return (
-    <group position={[x, 0, z]}>
-      <mesh receiveShadow position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <circleGeometry args={[1.1, 32]} />
-        <meshStandardMaterial color="#12466b" />
-      </mesh>
-      <mesh position={[0, 0.04, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[0.9, 1.05, 32]} />
-        <meshStandardMaterial color="#4fc3f7" emissive="#0288d1" emissiveIntensity={0.4} />
-      </mesh>
-      <mesh position={[0, 0.8, 0]}>
-        <coneGeometry args={[0.22, 0.45, 4]} />
-        <meshStandardMaterial color="#4fc3f7" emissive="#0288d1" emissiveIntensity={0.5} />
-      </mesh>
-      <Html position={[0, 1.5, 0]} center distanceFactor={9} zIndexRange={[5, 0]}>
-        <div className="badge3d">🫖 Tepsi</div>
-      </Html>
-    </group>
+    <GroundMarker
+      pos={LAYOUT.trayUpgradeZone}
+      label="Tepsi Yükselt"
+      sub={`₺${cost}`}
+      tint="#ffce54"
+      progress={trayUpgradeFill / cost}
+      afford={wallet.toNumber() >= cost}
+    />
   );
 }
 
 // Masa-başı yükseltme işaretleri (Faz 2h, My Hotel oda mantığı): her AÇIK masanın YANINDA sade küçük
-// işaret (altın halka/yazı YOK). Parası yetince hafif yeşil parlar; bilgi (seviye/maliyet) HUD bar'ında.
+// zemin işareti ("Masa" + ₺maliyet). Parası yetince hafif parlar; D-017 §2 sadelik (havada rozet yok).
 function TableUpgradeMarkers() {
   const tables = useGame((s) => s.tables);
   const tableLevels = useGame((s) => s.tableLevels);
+  const tableUpgradeFills = useGame((s) => s.tableUpgradeFills);
   const wallet = useGame((s) => s.wallet);
   const padsDone = useGame((s) => s.padsDone);
   const stationLevel = useGame((s) => s.stationLevel);
@@ -164,20 +148,18 @@ function TableUpgradeMarkers() {
       {LAYOUT.tables.slice(0, tables).map((t, i) => {
         const lvl = tableLevels[i] ?? 0;
         if (lvl >= tableSoftMaxLevel()) return null; // max → işaret gizlenir
-        const afford = cash >= tableNextCost(lvl);
-        const [x, , z] = t.upgradeSpot;
-        const lit = afford ? '#43a047' : '#000000';
+        const cost = tableNextCost(lvl);
         return (
-          <group key={i} position={[x, 0, z]}>
-            <mesh receiveShadow position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-              <circleGeometry args={[0.5, 24]} />
-              <meshStandardMaterial color={afford ? '#2e7d32' : '#3a4750'} emissive={lit} emissiveIntensity={afford ? 0.5 : 0} />
-            </mesh>
-            <mesh position={[0, 0.32, 0]}>
-              <coneGeometry args={[0.14, 0.28, 4]} />
-              <meshStandardMaterial color={afford ? '#66bb6a' : '#546e7a'} emissive={lit} emissiveIntensity={afford ? 0.5 : 0} />
-            </mesh>
-          </group>
+          <GroundMarker
+            key={i}
+            pos={t.upgradeSpot}
+            label="Masa"
+            sub={`₺${cost}`}
+            tint="#ffce54"
+            radius={0.6}
+            progress={(tableUpgradeFills[i] ?? 0) / cost}
+            afford={cash >= cost}
+          />
         );
       })}
     </>
@@ -193,7 +175,8 @@ function Ground() {
   );
 }
 
-// Duvarlar oynanabilir alanı (asimetrik area) sarar: arka + sol + sağ; ön açık (giriş).
+// Duvarlar oynanabilir alanı (asimetrik area) sarar: arka + sol + sağ + ÖN (kapı boşluğuyla).
+// Kapı: ön duvarın ortasında x∈[-doorHalf,doorHalf] boşluk → müşteriler buradan girip çıkar (entrance x=0).
 function Walls() {
   const a = LAYOUT.area;
   const m = 0.5; // alan kenarı ile duvar arası küçük pay
@@ -202,24 +185,91 @@ function Walls() {
   const cx = (x0 + x1) / 2;
   const cz = (z0 + z1) / 2;
   const h = 1.2;
+  const t = 0.2;
+  const doorHalf = 1.3; // kapı yarı-genişliği (x=0 merkezli boşluk)
+  const leftFrontW = -doorHalf - x0; // sol ön parça genişliği
+  const rightFrontW = x1 - doorHalf; // sağ ön parça genişliği
   const common = { color: '#a1887f' } as const;
   return (
     <group>
       {/* arka duvar */}
       <mesh position={[cx, h / 2, z0]}>
-        <boxGeometry args={[w, h, 0.2]} />
+        <boxGeometry args={[w, h, t]} />
         <meshStandardMaterial {...common} />
       </mesh>
       {/* sol duvar */}
       <mesh position={[x0, h / 2, cz]}>
-        <boxGeometry args={[0.2, h, d]} />
+        <boxGeometry args={[t, h, d]} />
         <meshStandardMaterial {...common} />
       </mesh>
       {/* sağ duvar */}
       <mesh position={[x1, h / 2, cz]}>
-        <boxGeometry args={[0.2, h, d]} />
+        <boxGeometry args={[t, h, d]} />
         <meshStandardMaterial {...common} />
       </mesh>
+      {/* ön duvar — SOL parça (kapı boşluğunun solu) */}
+      <mesh position={[(x0 - doorHalf) / 2, h / 2, z1]}>
+        <boxGeometry args={[leftFrontW, h, t]} />
+        <meshStandardMaterial {...common} />
+      </mesh>
+      {/* ön duvar — SAĞ parça (kapı boşluğunun sağı) */}
+      <mesh position={[(doorHalf + x1) / 2, h / 2, z1]}>
+        <boxGeometry args={[rightFrontW, h, t]} />
+        <meshStandardMaterial {...common} />
+      </mesh>
+      {/* kapı sövesi (boşluğun üstünde lento) */}
+      <mesh position={[0, h - 0.12, z1]}>
+        <boxGeometry args={[doorHalf * 2 + 0.3, 0.24, t + 0.05]} />
+        <meshStandardMaterial color="#8d6e63" />
+      </mesh>
+      {/* kapı çerçevesi (iki yan direk) */}
+      <mesh position={[-doorHalf, h / 2, z1]}>
+        <boxGeometry args={[0.12, h, t + 0.06]} />
+        <meshStandardMaterial color="#6d4c41" />
+      </mesh>
+      <mesh position={[doorHalf, h / 2, z1]}>
+        <boxGeometry args={[0.12, h, t + 0.06]} />
+        <meshStandardMaterial color="#6d4c41" />
+      </mesh>
+    </group>
+  );
+}
+
+// Dış dünya (D-017 kullanıcı isteği): ön duvarın DIŞINDA sokak + kaldırım + karşı binalar → müşterilerin
+// kapıdan girip çıktığı "dış dünya" hissi. Salt görsel (collision yok); low-poly stilize (D-013).
+function Street() {
+  const a = LAYOUT.area;
+  const z1 = a.maxZ + 0.5; // ön duvar hattı
+  const buildingColors = ['#7e6b8f', '#6b8f7e', '#8f7e6b', '#6b7d8f', '#8f6b7d'];
+  return (
+    <group>
+      {/* kaldırım şeridi (kapının hemen önü) */}
+      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.005, z1 + 1.2]}>
+        <planeGeometry args={[24, 2.4]} />
+        <meshStandardMaterial color="#9e9e9e" />
+      </mesh>
+      {/* asfalt cadde */}
+      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, z1 + 5.5]}>
+        <planeGeometry args={[40, 6]} />
+        <meshStandardMaterial color="#37424a" />
+      </mesh>
+      {/* yol orta çizgileri */}
+      {[-8, -4, 0, 4, 8].map((x) => (
+        <mesh key={x} rotation={[-Math.PI / 2, 0, 0]} position={[x, 0.01, z1 + 5.5]}>
+          <planeGeometry args={[1.4, 0.18]} />
+          <meshStandardMaterial color="#c9b458" />
+        </mesh>
+      ))}
+      {/* karşı binalar (cadde ötesi cephe) */}
+      {[-9, -5.6, -2.2, 1.2, 4.6, 8].map((x, i) => {
+        const bh = 4 + ((i * 1.7) % 3);
+        return (
+          <mesh key={x} castShadow position={[x, bh / 2, z1 + 9]}>
+            <boxGeometry args={[3, bh, 2]} />
+            <meshStandardMaterial color={buildingColors[i % buildingColors.length]} />
+          </mesh>
+        );
+      })}
     </group>
   );
 }
@@ -246,6 +296,7 @@ export function Scene() {
         shadow-camera-bottom={-12}
       />
       <Ground />
+      <Street />
       <Walls />
       <Stations />
       <DishStation />

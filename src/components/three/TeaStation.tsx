@@ -1,6 +1,5 @@
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Html } from '@react-three/drei';
 import type { Mesh, MeshStandardMaterial } from 'three';
 import type { Vec3 } from '../../game/types';
 import { Model } from './Model';
@@ -30,17 +29,15 @@ function Puff({ baseY, phase }: { baseY: number; phase: number }) {
   );
 }
 
-// Çay ocağı (greybox: tezgah + semaver). Seviye arttıkça semaver büyür/rengi ısınır.
-// showBadge=true ise üstünde "Çay Lv N" rozeti gösterir. Faz 6'da .glb takılır.
+// Çay ocağı (greybox: tezgah + semaver). Seviye arttıkça semaver büyür/rengi ısınır (seviye GÖRSEL
+// olarak okunur; havada "Çay Lv" rozeti KALDIRILDI — D-017 §2 sadelik). Faz 6'da .glb takılır.
 export function TeaStation({
   position,
   level = 0,
-  showBadge = false,
   readyCups = 0,
 }: {
   position: Vec3;
   level?: number;
-  showBadge?: boolean;
   /** Tezgâhta bekleyen hazır çay (D-011 hazır-kuyruk) — küçük bardaklar olarak çizilir. */
   readyCups?: number;
 }) {
@@ -84,11 +81,6 @@ export function TeaStation({
           </group>
         }
       />
-      {showBadge && (
-        <Html position={[0, 2.3, 0]} center distanceFactor={9} pointerEvents="none" zIndexRange={[5, 0]}>
-          <div className="badge3d">Çay Lv {level}</div>
-        </Html>
-      )}
     </group>
   );
 }

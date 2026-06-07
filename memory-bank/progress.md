@@ -191,10 +191,29 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   değişmedi); bahşiş geç-oyunu hızlandırır (lifetime 10k 68dk→36.5dk). **Vitest 53/53, build temiz, sim 84sn, smoke 20/20.**
   Değişen: economy.config.ts, store.ts, save.ts, Scene.tsx, Tables.tsx, devHooks.ts, tools/simulate.ts, tests/logic.test.ts, tools/smoke.mjs.
   **GÖZLE onay bekliyor** (yükseltme noktası ortada + masa rozetleri + bahşiş hissi).
-- ⏳ **2-REDESIGN (D-017, kullanıcı onayı 2026-06-07 — SONRAKİ SOHBETTE uygulanacak):** Faz 2 cila redesign'ı, 6 adım:
-  1. **Yerleşim:** masalar ocaktan UZAK (>2R=3.2, hedef ~5), bulaşık ocaktan AYRILMAZ (mutfak arka duvarda küme), gerekirse
-     alan derinliği artar → tek noktada çay-al+servis/kirli-al+yıka imkânsız (yürüme döngüsü). nav/garson/işaret konumları uyar +
-     "çakışma yok" testi.
+- 🔧 **2-REDESIGN (D-017, kullanıcı onayı 2026-06-07 — UYGULAMA BAŞLADI):** Faz 2 cila redesign'ı, 6 adım:
+  1. ✅ **Yerleşim UYGULANDI (LAYOUT v6):** mutfak ARKA DUVAR KÜMESİ (ocak[-1.6,-4.8]+bulaşık[0.6,-4.8] bitişik+semaver[-3.8,-4.8]);
+     masalar ÖNE UZAK 2×2 (kolon ∓2.4, satır z 0.0/3.0) → masa↔ocak >2R=3.2 (başlangıç table0 ocaktan 4.87, eski 2.26); area
+     derinleşti {minX-5.3,maxX5.3,minZ-5.3,maxZ5.0}; çay-yükseltme ocağın önü [-1.6,-3.0] (pickup/personel pad çakışması yok —
+     garson-pad para çekişmesi bug'ı bulundu&düzeltildi); personel pad/home arka köşeler. nav/garson/masa-yükseltme LAYOUT'tan
+     türeyip otomatik uydu. YENİ "çakışma yok" testleri (ocak/bulaşık dairesi masa dairesiyle birleşmez). GÖZLE ONAYLANDI.
+  1b. 🐛→✅ **Masa açınca HAPSOLMA fix (kritik):** mobilya collision'ına "zaten içindeyse çıkışa izin" guard'ı (aktör deseni) +
+     masa pad'i tamamlanınca oyuncu footprint dışına itilir. Yeni vitest. Gözle doğrulandı.
+  2. ✅ **SADE ZEMİN İŞARETLERİ (D-017 §2):** havadaki Html rozet + iri disk/koni KALDIRILDI → YENİ GroundMarker.tsx (drei Text):
+     yerde ufak şeffaf beyaz çember + zemin yazısı ("2. Masa"/"Garson"/"Çay Yükselt"/"Masa") + ₺maliyet; renk dili (yeşil=aç/
+     mavi=opsiyonel/altın=yükseltme) + afford parıltı + progress yayı. Pad/UpgradeZone/TrayUpgradeZone/TableUpgradeMarkers + Dish/
+     TeaStation havada etiketleri silindi. Sıralı reveal (light): opsiyonel pad AYNI ANDA tek; personel pad görünür orta-kenara taşındı.
+  + ✅ **DIŞ DÜNYA (kullanıcı eki):** ön duvar+KAPI boşluğu (söve/çerçeve) + Street() (kaldırım/asfalt/yol/binalar) + müşteriler
+     SOKAKTAN yürüyüp kapıdan girer/çıkar (LAYOUT.street, NPC toTable/leaving kapı akışı). **Vitest 58/58, build temiz, sim 84sn,
+     smoke 20/20.** SAVE_VERSION 12. Değişen: store.ts, Scene.tsx, Pad.tsx, TeaStation.tsx, YENİ GroundMarker.tsx, logic.test.ts.
+     GÖZLE ONAYLANDI (world-door-street.png, markers-3tables.png).
+  3. ⏳ **D-018 (ONAYLANDI 2026-06-07, SONRAKİ SOHBET) — Faz 2 cila v2:** Kullanıcı 2. tur feedback. Tam karar decisions.md **D-018**.
+     Sıra: (1) bug-fix kapı z-fighting + table2-kararma (Suspense/preloadFont) → (2) TRAY YÜKSELTME KALDIR (tepsi sabit 2) → (3)
+     KESİK-KÖŞELİ zemin kartı + masa yükseltme MERKEZDEN KENARA (sol→sol/sağ→sağ, orta boş) + DWELL (~1.5sn, üstünden geçince para
+     gitmesin) → (4) sıralı reveal zinciri (yakınlık-gizleme YOK) → (5) SEMAVER=OCAK L4 (premium 💎/video, kilitli; ayrı pad kalkar;
+     ekonomi simülatörle yeniden denge, 84sn sabit) → (6) GARSON L2 (L1 1.4→L2 1.8, yan-kenar yükseltme kartı). Etkileşim: yürü+dur
+     (tıklama YOK). Alan GENİŞLEMEZ (placement çözümü, My Perfect Hotel modeli — araştırma destekli). **SAVE_VERSION 12→13** (trayLevel
+     düşer, samovar düşer, waiterLevel eklenir). Kalan D-017 §4/§5/§6 bununla birlikte.
   2. **Pad/işaret redesign:** küçük (~0.5) + **zeminde DÜZ yazı** (havada Html rozet yok); renk dili yeşil=aç/mavi=opsiyonel/altın=yükseltme.
   3. **Sıralı reveal + onboarding (ilk oyun):** hepsi-birden yok (öncekiyle etkileşilene dek gizli); 2.masa→garsona zoom (atlanabilir)→
      "3.Masayı Aç"→ocak yükseltme sonra; ilk-oyun sonrası "Yeni" rozeti. onboardStep persist.

@@ -749,6 +749,18 @@ describe('mobilya collision (D-016) — oyuncu ocağın/masanın içine giremez'
     expect(p[0] !== startX || p[2] !== startZ).toBe(true);
   });
 
+  it('mobilyanın İÇİNDE kalırsa (ör. üstünde masa açıldı) çıkışına izin verilir (hapsolmaz)', () => {
+    useGame.getState().hardReset();
+    const tbl = LAYOUT.tables[0].table; // oyuncuyu masanın TAM merkezine koy (içinde)
+    // Masadan UZAĞA (merkeze ters, +x) input ver → birkaç tick'te footprint dışına çıkmalı.
+    useGame.setState({ player: [tbl[0], 0.6, tbl[2]], inputKeyboard: [1, 0], inputJoystick: [0, 0], npcs: [], spawnTimer: 999 });
+    for (let i = 0; i < 40; i++) useGame.getState().tick(0.1);
+    const p = useGame.getState().player;
+    const half = LAYOUT.tableHalf[0] + LAYOUT.playerRadius;
+    const stillInside = Math.abs(p[0] - tbl[0]) < half && Math.abs(p[2] - tbl[2]) < half;
+    expect(stillInside).toBe(false); // dışarı çıkabildi (eski sürümde kilitlenip içeride kalırdı)
+  });
+
   it('input olmadan (teleport/setState) collision uygulanmaz → testler/dev kancası etkilenmez', () => {
     useGame.getState().hardReset();
     const ocak = LAYOUT.stations[0];
@@ -758,6 +770,29 @@ describe('mobilya collision (D-016) — oyuncu ocağın/masanın içine giremez'
     const p = useGame.getState().player;
     expect(p[0]).toBeCloseTo(ocak[0], 5);
     expect(p[2]).toBeCloseTo(ocak[2], 5);
+  });
+});
+
+describe('yerleşim — yürüme döngüsü zorlanır (D-017 §1, çakışma yok)', () => {
+  function dist2D(a: readonly number[], b: readonly number[]) {
+    return Math.hypot(a[0] - b[0], a[2] - b[2]);
+  }
+  it('hiçbir masa ocağın çay-alma + servis dairelerinin BİRLEŞİĞİNDE değil (tek noktada çay-al+servis imkânsız)', () => {
+    const stove = LAYOUT.stations[0];
+    const minSep = economyConfig.serving.pickupRadius + economyConfig.serving.serveRadius; // 1.6+1.6 = 3.2 (=2R)
+    for (const t of LAYOUT.tables) {
+      expect(dist2D(stove, t.table)).toBeGreaterThan(minSep);
+    }
+  });
+  it('hiçbir masa bulaşığın yıkama + kirli-toplama dairelerinin BİRLEŞİĞİNDE değil (tek noktada kirli-al+yıka imkânsız)', () => {
+    const dish = LAYOUT.dishStation;
+    const minSep = economyConfig.cups.washRadius + economyConfig.cups.collectRadius; // 1.6+1.4 = 3.0
+    for (const t of LAYOUT.tables) {
+      expect(dist2D(dish, t.table)).toBeGreaterThan(minSep);
+    }
+  });
+  it('başlangıç masası (table0) ocaktan hedef ~5 br uzak (yürüme döngüsü en baştan zorlanır)', () => {
+    expect(dist2D(LAYOUT.stations[0], LAYOUT.tables[0].table)).toBeGreaterThan(4);
   });
 });
 
@@ -785,9 +820,9 @@ describe('personel yol bulma (nav.ts — BFS, kilitlenme yok)', () => {
 
   it('engel TAM aradayken etrafından dolaşır (eski moveAvoid kilitlenirdi)', () => {
     const g = grid();
-    // table0 (sol-üst, ocağa yakın) ile table2 (sol-alt) aynı x kolonunda; table0 tam arada.
-    const t0 = LAYOUT.tables[0].table; // [-2.5,-2.2]
-    const t2 = LAYOUT.tables[2].table; // [-2.5, 1.4]
+    // table0 (ön-sol) ile table2 (arka-sol) aynı x kolonunda; table0 ocak ile table2 arasında.
+    const t0 = LAYOUT.tables[0].table; // [-2.4, 0.0]
+    const t2 = LAYOUT.tables[2].table; // [-2.4, 3.0]
     // table0'ın hemen ARKASINDAN (ocak tarafı) table2'ye yol iste.
     const behind: [number, number, number] = [t0[0], 0, t0[2] - 1.0];
     const path = findNavPath(g, behind, t2[0], t2[2], REACH);

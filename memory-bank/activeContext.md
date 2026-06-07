@@ -3,14 +3,61 @@
 > En sık güncellenen dosya. Her anlamlı adımdan sonra güncelle.
 
 ## Şu an neredeyiz (2026-06-07 — GÜNCEL)
-**Faz 2g + 2h (masa-başı yükseltme) + radial-fix + garson-oyuncu kaçınma UYGULANDI ve büyük ölçüde onaylandı.**
-SAVE_VERSION **12**. **Vitest 54/54, build temiz, sim 84sn, smoke 20/20.**
+**D-017 adım 1 (yerleşim) GÖZLE ONAYLANDI. Sonra: kritik bug-fix + adım 2 (sade işaretler) + sokak/kapı dünyası UYGULANDI.**
+SAVE_VERSION **12** (persist alan değişmedi). **Vitest 58/58, build temiz, sim 84sn, smoke 20/20.**
 
-### >>> SIRADAKİ İŞ: D-017 redesign (KARAR ONAYLANDI, UYGULAMA SONRAKİ SOHBETTE) <<<
-Kullanıcı 2026-06-07 önizleme feedback'i sonrası Faz 2 cila redesign'ı kararlaştı (decisions.md **D-017**, progress.md "2-REDESIGN").
-6 adım (sırayla uygula, her biri Vitest+sim+smoke yeşil + gözle onay):
-1. **Yerleşim:** masalar ocaktan UZAK (>3.2, hedef ~5; **bulaşık ocaktan AYRILMAZ**, mutfak arka duvar kümesi), gerekirse alan
-   derinliği artar → tek noktada çay-al+servis/kirli-al+yıka imkânsız. nav/garson/işaret/semaver konumları uyar + "çakışma yok" testi.
+### Bu turda yapılanlar (kullanıcı feedback 2026-06-07: "masa içinde hapsoldum + padler çirkin/her yerde + duvar/kapı/sokak istiyorum")
+- 🐛→✅ **Masa açınca hapsolma (KRİTİK):** Masa pad'i oyuncunun DURDUĞU yerde belirince oyuncu masanın içinde kalıp hareket
+  edemiyordu. KÖK NEDEN: mobilya collision'ında (store.ts) "zaten içindeyse çıkışa izin" guard'ı YOKtu (aktör collision'ında
+  vardı). Düzeltme: `stuckInFurn = hitsSolid(oldX,oldZ,furn,pr)` → içindeyken eksen blokları atlanır (çıkışa izin; "zorlasan da
+  GİRİŞ engellenir" korunur) + masa pad'i tamamlanınca oyuncu yeni masanın footprint'i DIŞINA itilir (anında temiz konum). Yeni
+  vitest (masa merkezine koy → input ver → footprint dışına çıkar). Gözle doğrulandı (table3 açıldı, oyuncu z 3.0→3.95'e itildi).
+- ✅ **Adım 2 — SADE ZEMİN İŞARETLERİ (D-017 §2):** Havadaki Html rozetler + iri disk/koni KALDIRILDI. Yeni `GroundMarker.tsx`
+  (drei `<Text>`): yerde UFAK şeffaf beyazımsı çember + ortasında DÜZ zemin yazısı (ne yapacağı: "2. Masa"/"Garson Tut"/"Çay
+  Yükselt"/"Masa") + ₺maliyet alt satır; ince kategori halkası (yeşil=aç/mavi=opsiyonel/altın=yükseltme); parası yetince parlar
+  (afford) + dolum yayı (progress). Uygulandı: Pad.tsx, Scene UpgradeZone/TrayUpgradeZone/TableUpgradeMarkers. DishStation "🧼
+  Bulaşık" + TeaStation "Çay Lv" havada etiketleri SİLİNDİ (lavabo/semaver görseli zaten anlatır).
+- ✅ **Sıralı reveal (light, D-017 §3 kısmi):** Pad.tsx artık opsiyonel pad'lerin HEPSİNİ değil AYNI ANDA TEK ilk alınabiliri
+  gösterir (garson → alınınca bulaşıkçı). Personel pad/home konumları arka köşeden GÖRÜNÜR orta-kenara taşındı (waiter/dishwasher
+  pad [∓4.6,0,0.0], home [∓4.6,0,-1.6]) — eski "bulaşıkçı dairesi yarı ekran-dışı" şikayeti çözüldü. TAM onboarding (reveal-on-
+  interact + kamera zoom + "Yeni" rozeti + onboardStep persist) HÂLÂ BEKLİYOR (step 3 proper).
+- ✅ **DIŞ DÜNYA (kullanıcı isteği — D-017 dışı ek):** Ön duvar + **kapı boşluğu** (x=0, doorHalf 1.3, söve+çerçeve) eklendi
+  (Walls front 2 parça). Müşteriler artık `LAYOUT.street [0,_,8.0]` SOKAKTA belirir → kapıya yürür → koltuğa (toTable goingIn);
+  çıkarken kapı→sokak→kaybolur (leaving goingOut). Yeni `Street()` (kaldırım + asfalt + yol çizgileri + karşı binalar; salt görsel).
+  NOT: kamera mağazaya (-z) baktığı için karşı binalar pratikte görünmüyor (sokak/kaldırım + kapıdan giren müşteri görünür); daha
+  fazla "dış dünya" istenirse kamera açısı (step 6) ile birlikte ele alınmalı.
+- **Değişen:** store.ts (LAYOUT street/personel konum + bug-fix + NPC kapı akışı + masa-eject), tests/logic.test.ts (escape testi),
+  YENİ GroundMarker.tsx + Street, Pad.tsx (sade+reveal), Scene.tsx (zones sade + Walls kapı + Street), TeaStation.tsx (badge sil).
+### >>> SIRADAKİ İŞ (SONRAKİ SOHBET): D-018 ONAYLANDI — Faz 2 cila v2 <<<
+Kullanıcı ikinci tur feedback + onay (2026-06-07). Tam karar: **decisions.md D-018** (araştırma destekli — My Perfect Hotel modeli).
+Özet (uygulama sırası):
+1. **BUG-FIX:** (a) kapı z-fighting (lento/çerçeve ön duvarla eş-düzlem → z offset). (b) table2 açılınca KARARMA = App.tsx'te Canvas
+   çevresinde `<Suspense>` YOK → drei `<Text>` font SDF suspend edip sahneyi karartıyor → `<Suspense fallback={null}>` + `preloadFont({characters})`.
+2. **TRAY YÜKSELTME KALDIR** (gereksiz; tepsi sabit 2). trayUpgrade/TrayUpgradeZone/trayLevel/trayUpgradeFill/helper/test/smoke/devHooks sil.
+3. **KESİK-KÖŞELİ ZEMİN KARTI + KENAR-YERLEŞİM + DWELL:** GroundMarker çember→dashed-köşe kare kart (eylem/lvl/₺ + dolum çubuğu +
+   yeşil/gri, yazı kart hizasında küçük DİK-OKUNUR). Masa yükseltme işaretleri MERKEZDEN KENARA (sol masa→sol x≈−3.7, sağ→sağ x≈+3.7;
+   orta omurga boş). Dwell: noktaya girince halka hemen, para ~1.5sn sonra akar; çıkınca sıfırlanır (biriken korunur). YAKINLIK-GİZLEME YOK.
+4. **SIRALI REVEAL zinciri:** al-pad→(inşa)→o nesnenin yükseltmeleri; hepsi birden dökülmez; opsiyonel tek tek (zaten). padsDone'dan türetilir (ek persist yok).
+5. **SEMAVER = OCAK L4 (premium 💎/video, şimdilik GÖRÜNÜR-KİLİTLİ):** ayrı `samovar` pad kalkar; ocak L1-L3 ₺, L4=semaver (hız×0.7+throughput
+   sıçraması); masterLevel 4. EKONOMİ: tek ocak L3 (2.46x) 4 masaya yetişmeli → simülatörle yeniden denge (ilk-alım 84sn SABİT). 
+6. **GARSON L2:** L1=1.4 (yavaş) → L2=1.8 (şimdiki); garson yanında yan-kenar yükseltme kartı (tutulunca açılır). Yeni persist waiterLevel.
+- **SAVE_VERSION 12→13** (tek migrasyon: trayLevel düşer, samovar padsDone/padFills'ten düşer, waiterLevel=0 eklenir; ilerleme korunur).
+- Etkileşim KARARI: yürü+dur (dwell), TIKLAMA YOK (araştırma: tür standardı stand-to-fill). Alan GENİŞLEMEZ (placement sorunu).
+- Kalan D-017 §4 gating / §5 bağımsız çay+kirli taşıma / §6 kamera sallanması bu işlerle birlikte ele alınır.
+
+### >>> SIRADAKİ İŞ: D-017 redesign — adım 1 BİTTİ (gözle onay), sonra adım 2 <<<
+Faz 2 cila redesign'ı (decisions.md **D-017**, progress.md "2-REDESIGN"). 6 adım (sırayla, her biri Vitest+sim+smoke yeşil + gözle onay):
+1. ✅ **Yerleşim UYGULANDI (LAYOUT v6, D-017 §1):** Mutfak ARKA DUVARDA KÜME — ocak `[-1.6,-4.8]` + bulaşık `[0.6,-4.8]`
+   (bitişik, AYRILMAZ) + semaver pad `[-3.8,-4.8]`. Masalar ÖNE UZAK 2×2 (kolon x ∓2.4, satır z 0.0/3.0) → her masa↔ocak
+   >2R=3.2 (ön sıra ~4.9, başlangıç masası table0 ocaktan **4.87**; eski **2.26** idi = tek noktada her şey bug'ı çözüldü).
+   area derinleşti `{minX-5.3,maxX5.3,minZ-5.3,maxZ5.0}`. Çay-yükseltme noktası ocağın TAM önü `[-1.6,-3.0]` (pickup+personel
+   pad çakışması yok — taşınmasaydı garson pad'iyle para çekişirdi, bug bulundu&düzeltildi). trayUpgradeZone `[0,4.3]`, personel
+   pad/home arka köşeler (waiter `[-4.8,-3.0]`/home`[-4.8,-1.6]`; dishwasher `[4.8,-3.0]`/home`[4.8,-1.6]`). player start `[0,1.5]`,
+   entrance `[0,4.8]`. nav ızgarası/garson yolu/masa-yükseltme noktaları LAYOUT'tan türediği için otomatik uydu. YENİ "çakışma yok"
+   testleri (masa ocak pickup+serve birleşiğinde DEĞİL; masa bulaşık wash+collect birleşiğinde DEĞİL; table0 ocaktan >4 br).
+   **Değişen:** store.ts (LAYOUT + upgradeZone), tests/logic.test.ts (3 invariant testi + nav yorumları). Gözle: ekran görüntüsü
+   (layout-v6-start.png) — mutfak arkada, önde geniş yürüme alanı, başlangıç masası uzakta. Ekonomi/persist SABİT (SAVE_VERSION 12).
+1-eski. ~~Yerleşim: masalar ocaktan UZAK (>3.2, hedef ~5)~~ → yukarı (uygulandı).
 2. **Pad/işaret:** küçük (~0.5) + **zeminde DÜZ yazı** (havada rozet YOK); renk: yeşil=aç/mavi=opsiyonel/altın=yükseltme.
 3. **Sıralı reveal + onboarding (ilk oyun):** öncekiyle etkileşilene dek gizli; 2.masa→garsona zoom(atlanabilir)→"3.Masayı Aç"→
    ocak yükseltme sonra; sonraki açılış "Yeni" rozeti; onboardStep persist.
