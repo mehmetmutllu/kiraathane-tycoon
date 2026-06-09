@@ -36,8 +36,16 @@ açılınca açık/kapalı gibi flip); offline = idealize aktif oranın %100'ü 
   butona pointerdown joystick'i TETİKLEMİYOR. CSS-only (test/şema etkilenmez).
 **Doğrulama:** sim ilk-alım **60sn** / 10k @35.7dk (idealize → gerçek solo ~1-1.5sa); **vitest 71/71**, build temiz, **smoke 22/22**,
 konsol temiz. Önizleme: http://localhost:5201/.
-**SIRADAKİ:** kullanıcı telefonda test → feedback → ince ayar; sorun yoksa Faz 3a. **İkinci ilerleme ekseni** (nakit-dışı zone
-gate) Faz 3a (çoklu zone) ile birlikte yapılacak — tek-zone için offline kısıntısı yeterli olduğundan ertelendi. (Henüz commit/push YOK.)
+### >>> SONRAKİ OTURUM — KULLANICI FEEDBACK BEKLENİYOR (2026-06-09) <<<
+Kullanıcı telefonda kısa test etti, APK push'landı (commit 902cac9). Erken geri bildirim: **"onboarding HAREKETLİ olmalı"**
+→ şu anki onboarding sade STATİK koç metin bandı (`.coach`); kullanıcı bunun yerine **hareketli/dinamik** bir onboarding
+istiyor (muhtemelen: hedefe doğru animasyonlu işaretçi/ok, yanıp sönen/zıplayan ipucu, ya da kameranın ilgili objeye yönelmesi —
+SONRAKİ oturumda kullanıcıya tam ne hayal ettiğini SOR: ok/parıltı mı, animasyonlu el/işaretçi mi, zoom mu). Etkileşim modeli
+korunur (havada kart YOK, hareket-temelli). Kullanıcı: "bir sonraki chatte feedback vereceğim, ben test edip döneceğim" →
+SONRAKİ oturumda özet verdikten sonra **başka iş yapmadan kullanıcının test feedback'ini bekle/iste**, sonra onboarding'i
+hareketlendir + gelen bulguları uygula.
+**SIRADAKİ (feedback sonrası):** onboarding'i hareketli yap; ekonomi/akış ince ayarı; sorun yoksa Faz 3a. **İkinci ilerleme
+ekseni** (nakit-dışı zone gate) + **tost/yemek (tost makinesi)** Faz 3a/3d'ye ertelendi (bkz. D-020).
 
 ## (önceki) MOBİL CİLA + ANDROID APK (kullanıcı cihazda test etti)
 Kullanıcı önizleme sonrası mobil istekleri verdi; hepsi yapıldı + Android APK derlendi (arkadaşına da gönderecek).
