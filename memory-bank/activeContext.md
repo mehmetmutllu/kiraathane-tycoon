@@ -1,8 +1,18 @@
 # activeContext — ŞU AN
 
-> En sık güncellenen dosya. Her anlamlı adımdan sonra güncelle.
+> En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
-## ŞU AN (2026-06-10 GECE — HUD SIFIRDAN REDESIGN + LEVEL/XP + AYARLAR; SAVE v17) — KULLANICI GÖZ ATACAK
+## ŞU AN (2026-06-11 SABAH — 🌙 GECE OTURUMU TAMAMLANDI: 7/7 madde ✅; SAVE v18)
+Gece listesi bitti (detay aşağıdaki ✅'lı maddeler + progress.md): (1) ocak-yükseltme para yeme fix'i,
+(2) kat master planı (docs/floorplan-master.md), (3) **ZONE-2 ÇALIŞIR** (per-zone ocak+bulaşık D-022,
+SAVE v17→v18, quest +7), (4) görsel kimlik (palette.ts + kilim/lambri/tabure/örtü-evrimi/TV/tabela),
+(5) curve raporu (docs/curve-report.md — **Ö1-Ö4 SABAH ONAYI BEKLİYOR, uygulanmadı**), (6) çaycı
+karakter prototipi, (7) YENİ APK (kök `KoseKiraathanesi-debug.apk`, 5.1MB) + **`GECE-RAPORU-2026-06-10.md`**
+(kökte — kullanıcı sabah BUNU okusun). vitest 85/85 · smoke 27/27 · sim 60sn · konsol 0 hata · 6 commit push'lu.
+**SABAH KARARLARI:** (a) curve Ö1-Ö4 (önerim Ö1+Ö2), (b) lavabo mekaniği zamanı (önerim zone-3 ile),
+(c) görsel kimlik feedback'i (renkler palette.ts'te tek dosya), (d) telefonda zone-2 akışı testi.
+
+## (ÖNCEKİ — 2026-06-10 GECE BAŞI: HUD SIFIRDAN REDESIGN + LEVEL/XP + AYARLAR; SAVE v17)
 Kullanıcının "UI oyun gibi değil / ikonlar AI slop" feedback'i üzerine TAM UI redesign UYGULANDI (onaylı akış:
 gerçek tycoon HUD referans araştırması → mock → kullanıcı onayı → uygulama → Playwright didik didik):
 - **Referans araştırması:** My Perfect Hotel (gerçek HUD ×2 YouTube karesi), MPH-Empire, My Mini Mart, Burger
