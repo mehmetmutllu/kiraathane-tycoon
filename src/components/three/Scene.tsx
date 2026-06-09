@@ -3,6 +3,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Vector3 } from 'three';
 import { useGame, LAYOUT, stationSoftMaxLevel, stationUpgradeCost, upgradeZoneUnlockedZ, tableSoftMaxLevel, tableUpgradeZoneUnlocked, tableNextCost, waiterSoftMaxLevel, waiterUpgradeCost, waiterUpgradeUnlockedZ } from '../../game/store';
 import { GroundMarker } from './GroundMarker';
+import { PALETTE } from '../../config/palette';
 import { Player } from './Player';
 import { Waiter } from './Waiter';
 import { Dishwasher } from './Dishwasher';
@@ -231,12 +232,57 @@ function WaiterUpgradeMarker() {
 }
 
 function Ground() {
-  // İki zone'u da kapsayan zemin (bina alanı merkez x=6'ya kaydı).
+  // İki zone'u da kapsayan AHŞAP zemin (görsel kimlik: sıcak parke) + zone başına KIRMIZI KİLİM
+  // (masa bölgesinin altında; bordür + iç dikdörtgen — flat low-poly kilim).
   return (
-    <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[6, 0, 0]}>
-      <planeGeometry args={[38, 18]} />
-      <meshStandardMaterial color="#cfb997" />
-    </mesh>
+    <group>
+      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[6, 0, 0]}>
+        <planeGeometry args={[38, 18]} />
+        <meshStandardMaterial color={PALETTE.floorWood} />
+      </mesh>
+      {LAYOUT.zoneAreas.map((za, z) => {
+        const cx = (za.minX + za.maxX) / 2;
+        return (
+          <group key={z}>
+            {/* y: zemin(0) < kilim(0.008/0.014) < GroundMarker tabanı(0.02) — z-fight yok.
+                Kilim masa bölgesini sarar ama kenarlarda AHŞAP görünür (ilk deneme 8.6×6.2 salonu
+                bilardo masasına çevirmişti — küçültüldü). */}
+            <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[cx, 0.008, 1.5]}>
+              <planeGeometry args={[6.6, 4.6]} />
+              <meshStandardMaterial color={PALETTE.carpetBorder} />
+            </mesh>
+            <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[cx, 0.014, 1.5]}>
+              <planeGeometry args={[6.0, 4.0]} />
+              <meshStandardMaterial color={PALETTE.carpet} />
+            </mesh>
+          </group>
+        );
+      })}
+    </group>
+  );
+}
+
+// TV köşesi (zone-1 arka duvar, mutfağın sağında): askılı TV + açık ekran. Zone-4 "TV salonu"
+// konseptinin öncü dekoru (kat planı: floorplan-master.md).
+function TvCorner() {
+  return (
+    <group position={[3.6, 0, -5.1]}>
+      {/* duvar konsolu */}
+      <mesh castShadow position={[0, 1.55, 0]}>
+        <boxGeometry args={[0.12, 0.5, 0.12]} />
+        <meshStandardMaterial color={PALETTE.tvStand} />
+      </mesh>
+      {/* TV çerçevesi */}
+      <mesh castShadow position={[0, 1.85, 0.12]} rotation={[0.18, 0, 0]}>
+        <boxGeometry args={[1.5, 0.85, 0.1]} />
+        <meshStandardMaterial color={PALETTE.tvFrame} />
+      </mesh>
+      {/* ekran (hafif ışıldar — maç yayını hissi) */}
+      <mesh position={[0, 1.85, 0.18]} rotation={[0.18, 0, 0]}>
+        <boxGeometry args={[1.32, 0.68, 0.02]} />
+        <meshStandardMaterial color={PALETTE.tvScreen} emissive={PALETTE.tvScreen} emissiveIntensity={0.55} />
+      </mesh>
+    </group>
   );
 }
 
@@ -269,7 +315,6 @@ function Walls() {
   const h = 1.2;
   const t = 0.2;
   const doorHalf = 1.3; // kapı yarı-genişliği (her entrance x'i merkezli boşluk)
-  const common = { color: '#a1887f' } as const;
   // Ön duvar parçaları: kapı boşlukları arasında kalan segmentler.
   const doorXs = LAYOUT.entrances.map((e) => e[0]);
   const cuts = [x0, ...doorXs.flatMap((dx) => [dx - doorHalf, dx + doorHalf]), x1];
@@ -282,54 +327,53 @@ function Walls() {
   return (
     <group>
       {/* arka duvar */}
-      <mesh position={[cx, h / 2, z0]}>
-        <boxGeometry args={[w, h, t]} />
-        <meshStandardMaterial {...common} />
-      </mesh>
+      <WallPiece x={cx} z={z0} w={w} dDepth={t} h={h} />
       {/* sol + sağ dış duvarlar */}
-      <mesh position={[x0, h / 2, cz]}>
-        <boxGeometry args={[t, h, d]} />
-        <meshStandardMaterial {...common} />
-      </mesh>
-      <mesh position={[x1, h / 2, cz]}>
-        <boxGeometry args={[t, h, d]} />
-        <meshStandardMaterial {...common} />
-      </mesh>
+      <WallPiece x={x0} z={cz} w={t} dDepth={d} h={h} />
+      <WallPiece x={x1} z={cz} w={t} dDepth={d} h={h} />
       {/* ön duvar segmentleri (kapı boşlukları arası) */}
       {frontSegs.map(([sx, ex], i) =>
         ex - sx > 0.01 ? (
-          <mesh key={i} position={[(sx + ex) / 2, h / 2, z1]}>
-            <boxGeometry args={[ex - sx, h, t]} />
-            <meshStandardMaterial {...common} />
-          </mesh>
+          <WallPiece key={i} x={(sx + ex) / 2} z={z1} w={ex - sx} dDepth={t} h={h} />
         ) : null,
       )}
       {/* İÇ BÖLME duvarı (zone-1 | zone-2), geçit boşluğuyla */}
-      <mesh position={[dv.x, h / 2, (z0 + gapLo) / 2]}>
-        <boxGeometry args={[dv.half * 2, h, gapLo - z0]} />
-        <meshStandardMaterial {...common} />
-      </mesh>
-      <mesh position={[dv.x, h / 2, (gapHi + z1) / 2]}>
-        <boxGeometry args={[dv.half * 2, h, z1 - gapHi]} />
-        <meshStandardMaterial {...common} />
-      </mesh>
+      <WallPiece x={dv.x} z={(z0 + gapLo) / 2} w={dv.half * 2} dDepth={gapLo - z0} h={h} />
+      <WallPiece x={dv.x} z={(gapHi + z1) / 2} w={dv.half * 2} dDepth={z1 - gapHi} h={h} />
       {/* kapı söveleri + çerçeveleri (her zone kapısı; ön duvarın TAMAMEN önünde — z-fighting yok) */}
       {doorXs.map((dx) => (
         <group key={dx}>
           <mesh position={[dx, h - 0.12, z1 + 0.22]}>
             <boxGeometry args={[doorHalf * 2 + 0.3, 0.24, 0.12]} />
-            <meshStandardMaterial color="#8d6e63" />
+            <meshStandardMaterial color={PALETTE.lintel} />
           </mesh>
           <mesh position={[dx - doorHalf, h / 2, z1 + 0.22]}>
             <boxGeometry args={[0.12, h, 0.12]} />
-            <meshStandardMaterial color="#6d4c41" />
+            <meshStandardMaterial color={PALETTE.doorWood} />
           </mesh>
           <mesh position={[dx + doorHalf, h / 2, z1 + 0.22]}>
             <boxGeometry args={[0.12, h, 0.12]} />
-            <meshStandardMaterial color="#6d4c41" />
+            <meshStandardMaterial color={PALETTE.doorWood} />
           </mesh>
         </group>
       ))}
+    </group>
+  );
+}
+
+// Duvar parçası: krem üst + koyu ahşap LAMBRİ kuşağı (görsel kimlik — gerçek kıraathane duvarı).
+function WallPiece({ x, z, w, dDepth, h }: { x: number; z: number; w: number; dDepth: number; h: number }) {
+  const wh = 0.5; // lambri yüksekliği
+  return (
+    <group>
+      <mesh position={[x, wh + (h - wh) / 2, z]}>
+        <boxGeometry args={[w, h - wh, dDepth]} />
+        <meshStandardMaterial color={PALETTE.wallCream} />
+      </mesh>
+      <mesh position={[x, wh / 2, z]}>
+        <boxGeometry args={[w + 0.04, wh, dDepth + 0.04]} />
+        <meshStandardMaterial color={PALETTE.wainscot} />
+      </mesh>
     </group>
   );
 }
@@ -372,6 +416,54 @@ function Street() {
           </mesh>
         );
       })}
+      {/* KAPI ÖNÜ (görsel kimlik): her kapıda yeşil TENTE + kaldırımda bahçe masaları + saksılar.
+          Salt görsel (collision yok); müşteri yolu (kapı hizası) boş bırakıldı. */}
+      {LAYOUT.entrances.map((e) => (
+        <group key={e[0]}>
+          {/* TABELA şeridi (dikey — eğimli tente kamera +z'den bakınca ekranı kapatıyordu; dikey yüzey
+              üstten bakışta incecik kalır, kimliği taşır) */}
+          <mesh castShadow position={[e[0], 1.42, z1 + 0.3]}>
+            <boxGeometry args={[3.4, 0.34, 0.06]} />
+            <meshStandardMaterial color={PALETTE.awning} />
+          </mesh>
+          <mesh position={[e[0], 1.22, z1 + 0.31]}>
+            <boxGeometry args={[3.4, 0.05, 0.06]} />
+            <meshStandardMaterial color={PALETTE.awningStripe} />
+          </mesh>
+          {/* bahçe masaları (kapının iki yanı, kaldırımda) + tabureler */}
+          {[-2.3, 2.3].map((dx) => (
+            <group key={dx} position={[e[0] + dx, 0, z1 + 1.15]}>
+              <mesh castShadow position={[0, 0.42, 0]}>
+                <cylinderGeometry args={[0.36, 0.36, 0.06, 12]} />
+                <meshStandardMaterial color={PALETTE.outdoorTable} />
+              </mesh>
+              <mesh castShadow position={[0, 0.2, 0]}>
+                <cylinderGeometry args={[0.06, 0.09, 0.4, 8]} />
+                <meshStandardMaterial color={PALETTE.tableLeg} />
+              </mesh>
+              {[-0.55, 0.55].map((sx) => (
+                <mesh key={sx} castShadow position={[sx, 0.17, 0]}>
+                  <cylinderGeometry args={[0.13, 0.15, 0.34, 8]} />
+                  <meshStandardMaterial color={PALETTE.stool} />
+                </mesh>
+              ))}
+            </group>
+          ))}
+          {/* saksı bitkiler (duvar dibi, kapının iki yanı) */}
+          {[-1.7, 1.7].map((dx) => (
+            <group key={`p${dx}`} position={[e[0] + dx, 0, z1 + 0.42]}>
+              <mesh castShadow position={[0, 0.18, 0]}>
+                <cylinderGeometry args={[0.16, 0.12, 0.36, 8]} />
+                <meshStandardMaterial color={PALETTE.planter} />
+              </mesh>
+              <mesh castShadow position={[0, 0.46, 0]}>
+                <sphereGeometry args={[0.2, 8, 8]} />
+                <meshStandardMaterial color={PALETTE.plant} />
+              </mesh>
+            </group>
+          ))}
+        </group>
+      ))}
     </group>
   );
 }
@@ -401,6 +493,7 @@ export function Scene() {
       <LockedZoneShade />
       <Street />
       <Walls />
+      <TvCorner />
       <Stations />
       <DishStation />
       <Tables />

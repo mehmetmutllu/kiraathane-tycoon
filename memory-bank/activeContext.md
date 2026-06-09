@@ -65,9 +65,15 @@ oyun oynayayım. Çizgi güzel — tasarım/mantık/görev yoğunluğunda küç�
    örtü; zone2 pad'i geçitte ₺1200 (sabah curve onayıyla kalibre edilecek); per-zone personel + müşteri kendi
    kapısından; cleanCups GLOBAL depo; quest hattı +7 görev. vitest 85/85, smoke 27/27, sim 60sn, Playwright canlı ✓
    (geçit input'la geçilir, duvar bloklar, 2. ocak demler, z2 müşterisi oturur). Detay: progress.md + docs/zone2-design.md.
-4. **Türk kıraathane GÖRSEL KİMLİĞİ:** renk paleti (çay/bakır/ahşap), zemin+duvar tasarımı, masa+TABURE redesign
-   (gerçek kıraathane formu), yükseltme görsel evrim tablosu ÇOK NET (L1→L4 renk/desen/şekil: örtü/zemin/duvar) →
-   spec + uygulama. TV köşesi dekoru. **SOKAK GÜZELLEŞTİRME** + kapı önü bahçe masaları (kullanıcı: "yapabiliyorsan yap").
+4. ✅ **Türk kıraathane GÖRSEL KİMLİĞİ (BİTTİ):** YENİ `src/config/palette.ts` (TEK renk kaynağı — varyant
+   denemek = tek dosya) + `docs/visual-identity.md` (evrim tablosu). Uygulanan: ahşap parke zemin + zone-başına
+   kırmızı KİLİM (bordürlü; ilk deneme 8.6×6.2 "bilardo masası" gibiydi → 6.6×4.6 küçültüldü); duvarlar krem +
+   koyu ahşap LAMBRİ kuşağı (WallPiece helper — bölme dahil); masa redesign: yuvarlak tabla + merkez ayak + İKİ
+   MİNDERLİ TABURE (koltuk kutusu emekli; seat collision AYNI, 2. tabure salt görsel); **masa örtüsü = seviye
+   evrimi** (L1 çıplak → çuha yeşili → bordo → lacivert → altın; tableclothByLevel) — Playwright'ta L3 lacivert
+   doğrulandı; TV köşesi (zone-1 arka duvar, ışıldayan ekran); sokak: kapı üstü TABELA şeridi (eğimli tente
+   kamera +z'den bakınca ekranı kapatıyordu → dikey şerit), kapı önü bahçe masaları+tabureler+saksılar.
+   **vitest 85/85, build temiz, smoke 27/27, konsol 0 hata.** Screenshots: night-4-visual-v3.png, night-4-table-evolution.png.
 5. **Curve raporu:** 3 profil + zone-2 geçiş temposu sayı tablosu (denge değişikliği SABAH ONAYINA — onaysız uygulanmaz).
 6. **Karakter prototipi** (vakit kalırsa): eklemli gövde/şapka/önlük + screenshot.
 7. **SABAH PAKETİ:** en sonda `npm run apk` ile YENİ APK + screenshot'lı gece raporu (kullanıcı telefonda test edecek).
