@@ -30,6 +30,10 @@ açılınca açık/kapalı gibi flip); offline = idealize aktif oranın %100'ü 
   `.next-step` gizlenir; `store.onboardHint` transient (init+tick). **Sıfırlama butonu** `.reset-btn` sol-altta (window.confirm
   onaylı → hardReset=clearSave+init) cihazda test için. devHooks `onboardHint`. Yeni vitest (5 adım). **vitest 71/71, build temiz,
   smoke 22/22, Playwright gözle doğrulandı (onboarding-reset.png).** Faz 2'de açık tek kalem (onboarding) BİTTİ.
+- **🐛→✅ Sıfırla butonu dokunuş çakışması (kullanıcı 2026-06-09):** drag-anywhere `.touch-layer` (z:5) butonla aynı z-index'te
+  olduğu için DOM sırasıyla üstte kalıp dokunuşu çalıyordu (joystick tetikleniyor, buton tıklanmıyordu). Fix: `.reset-btn`
+  z-index 5→**10** (touch-layer 5 + joystick 6 üstünde). Playwright doğruladı: butonun merkezinde en üst eleman reset-btn,
+  butona pointerdown joystick'i TETİKLEMİYOR. CSS-only (test/şema etkilenmez).
 **Doğrulama:** sim ilk-alım **60sn** / 10k @35.7dk (idealize → gerçek solo ~1-1.5sa); **vitest 71/71**, build temiz, **smoke 22/22**,
 konsol temiz. Önizleme: http://localhost:5201/.
 **SIRADAKİ:** kullanıcı telefonda test → feedback → ince ayar; sorun yoksa Faz 3a. **İkinci ilerleme ekseni** (nakit-dışı zone
