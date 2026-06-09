@@ -27,7 +27,8 @@ function Coin({ x, z }: { x: number; z: number }) {
   );
 }
 
-// Toplanınca yükselip solan "+₺" yazısı (CSS animasyonu floatUp; ~0.9s sonra kaldırılır).
+// Toplanınca yükselip solan "+para" yazısı (CSS animasyonu floatUp; ~0.9s sonra kaldırılır).
+// ₺ sembolü display'den kalktı (2026-06-09) → küçük altın para ikonu + sayı.
 function MoneyFloater({ x, z, value, onDone }: { x: number; z: number; value: number; onDone: () => void }) {
   useEffect(() => {
     const t = setTimeout(onDone, 900);
@@ -36,7 +37,9 @@ function MoneyFloater({ x, z, value, onDone }: { x: number; z: number; value: nu
   return (
     <group position={[x, 1.3, z]}>
       <Html center distanceFactor={9} pointerEvents="none" zIndexRange={[5, 0]}>
-        <div className="floater">+₺{value}</div>
+        <div className="floater">
+          <span className="coin-icon sm" />+{value}
+        </div>
       </Html>
     </group>
   );

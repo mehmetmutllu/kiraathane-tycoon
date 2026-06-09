@@ -1,7 +1,7 @@
 import { Suspense, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Vector3 } from 'three';
-import { useGame, LAYOUT, stationSoftMaxLevel, stationUpgradeCost, upgradeZoneUnlocked, tableSoftMaxLevel, tableUpgradeZoneUnlocked, tableNextCost, waiterSoftMaxLevel, waiterUpgradeCost } from '../../game/store';
+import { useGame, LAYOUT, stationSoftMaxLevel, stationUpgradeCost, upgradeZoneUnlocked, tableSoftMaxLevel, tableUpgradeZoneUnlocked, tableNextCost, waiterSoftMaxLevel, waiterUpgradeCost, waiterUpgradeUnlocked } from '../../game/store';
 import { GroundMarker } from './GroundMarker';
 import { Player } from './Player';
 import { Waiter } from './Waiter';
@@ -36,7 +36,8 @@ function CameraRig() {
   const st = useRef({ d: 0, w: 0, h: 0, ready: false });
   useFrame((_, rawDt) => {
     const dt = Math.min(Math.max(rawDt, 0), 0.05); // clamp: kare atlamasında kamera sıçramasın
-    const p = useGame.getState().player;
+    const g = useGame.getState();
+    const p = g.player;
     // fit/d YALNIZ ekran boyutu gerçekten değişince (resize/orientation) hesaplanır.
     if (size.width !== st.current.w || size.height !== st.current.h) {
       st.current.w = size.width;
@@ -47,15 +48,24 @@ function CameraRig() {
       const fit = aspect < 1 ? Math.min(1.4, 1 / aspect) : 1;
       st.current.d = 7 * fit;
     }
-    const d = st.current.d;
-    desired.set(p[0], d, p[2] + d);
-    tmp.set(p[0], 0.6, p[2]);
+    // KAMERA ODAĞI (quest sistemi): odak varken hedefe kay + hafif zoom; girdi gelince store odağı
+    // iptal eder → buradaki damping kendiliğinden oyuncuya geri süzülür (ek durum makinesi yok).
+    const focus = g.camFocus;
+    const d = focus ? st.current.d * 0.72 : st.current.d;
+    if (focus) {
+      desired.set(focus.pos[0], d, focus.pos[2] + d);
+      tmp.set(focus.pos[0], 0.6, focus.pos[2]);
+    } else {
+      desired.set(p[0], d, p[2] + d);
+      tmp.set(p[0], 0.6, p[2]);
+    }
     if (!st.current.ready) {
       camera.position.copy(desired); // ilk kare: anında yerleş (başlangıç lerp sıçraması olmasın)
       look.copy(tmp);
       st.current.ready = true;
     } else {
-      const a = 1 - Math.exp(-8 * dt); // kare-hızı bağımsız damping katsayısı (konum + lookAt AYNI k)
+      // Kare-hızı bağımsız damping (konum + lookAt AYNI k → sallanma yok). Odak panı biraz yavaş (süzülme hissi).
+      const a = 1 - Math.exp(-(focus ? 5 : 8) * dt);
       camera.position.lerp(desired, a);
       look.lerp(tmp, a);
     }
@@ -98,7 +108,8 @@ function UpgradeZone() {
     <GroundMarker
       pos={LAYOUT.upgradeZone}
       label="Çay Yükselt"
-      sub={`₺${cost}`}
+      sub={String(cost)}
+      coin
       tint="#ffce54"
       progress={upgradeFill / cost}
       afford={wallet.toNumber() >= cost}
@@ -154,7 +165,8 @@ function TableUpgradeMarkers() {
             key={i}
             pos={t.upgradeSpot}
             label="Masa"
-            sub={`₺${cost}`}
+            sub={String(cost)}
+            coin
             tint="#ffce54"
             radius={0.6}
             progress={(tableUpgradeFills[i] ?? 0) / cost}
@@ -173,13 +185,22 @@ function WaiterUpgradeMarker() {
   const waiterLevel = useGame((s) => s.waiterLevel);
   const fill = useGame((s) => s.waiterUpgradeFill);
   const wallet = useGame((s) => s.wallet);
+  const padsDone = useGame((s) => s.padsDone);
+  const tables = useGame((s) => s.tables);
+  const stationLevel = useGame((s) => s.stationLevel);
+  const lifetime = useGame((s) => s.lifetime);
+  const waiterServed = useGame((s) => s.stats.waiterServed);
   if (!hasWaiter || waiterLevel >= waiterSoftMaxLevel()) return null;
+  // Arka-plan şartı (minWaiterServed): garson 20 çay taşımadan işaret hiç görünmez (store dolumu da kapalı).
+  const gate = { padsDone, tables, stationLevel, lifetime: lifetime.toNumber(), waiterServed };
+  if (!waiterUpgradeUnlocked(gate, waiterLevel)) return null;
   const cost = waiterUpgradeCost();
   return (
     <GroundMarker
       pos={LAYOUT.waiterUpgradeSpot}
       label="Garson Hız"
-      sub={`₺${cost}`}
+      sub={String(cost)}
+      coin
       tint="#ffce54"
       radius={0.6}
       progress={fill / cost}

@@ -1,7 +1,9 @@
 // Test/dev kancaları. 3D sahne görsel doğrulanamaz; durum buradan okunur.
 // window.__game  -> salt-okunur anlık görüntü
 // window.__advanceTime(sn) -> simülasyonu hızlı ileri sar
-import { useGame, currentPad, availableOptionalPads, LAYOUT, trayCapacity, dirtyTables } from './store';
+import { useGame, visiblePads, questCounterValue, LAYOUT, trayCapacity, dirtyTables } from './store';
+import { economyConfig } from '../config/economy.config';
+import type { SaveStats } from './save';
 import type { Vec3 } from './types';
 
 declare global {
@@ -12,6 +14,10 @@ declare global {
     __addMoney?: (amount: number) => Record<string, unknown>;
     __upgradeStation?: () => boolean;
     __teleport?: (x: number, z: number) => Record<string, unknown>;
+    /** Quest hattında belirli göreve atla (id ile; smoke testleri sıralı sayaç görevlerini beklemesin). */
+    __setQuest?: (id: string) => Record<string, unknown>;
+    /** Kalıcı sayaç ver (ör. waiterServed=20 → arka-plan reveal şartını test et). */
+    __grantStat?: (key: string, value: number) => Record<string, unknown>;
   }
 }
 
@@ -25,8 +31,10 @@ export function installDevHooks(): void {
       tables: s.tables,
       stationLevel: s.stationLevel,
       lifetime: s.lifetime.toNumber(),
+      waiterServed: s.stats.waiterServed,
     };
-    const pad = currentPad(gate);
+    // Quest sistemi: görünür pad = aktif görevin pad'i (ekranda tek pad).
+    const pad = visiblePads(s.questIndex, gate)[0] ?? null;
     return {
       wallet: s.wallet.toNumber(),
       diamonds: s.diamonds.toNumber(),
@@ -68,20 +76,17 @@ export function installDevHooks(): void {
       currentPad: pad ? pad.id : null,
       padCost: pad ? pad.cost : 0,
       padPos: pad ? LAYOUT.padPos[pad.id] : null,
-      // Opsiyonel pad'ler (garson vb.) — omurgayı kilitlemez; smoke "garson tut" testi için.
-      optionalPads: availableOptionalPads(gate).map((p) => ({
-        id: p.id,
-        cost: p.cost,
-        pos: LAYOUT.padPos[p.id],
-      })),
       // Garson durumu (Faz 2d) + hız yükseltme (D-018 §6)
       hasWaiter: s.hasWaiter,
       waiterTray: s.waiter ? s.waiter.tray : 0,
       waiterPos: s.waiter ? s.waiter.pos.map((n) => +n.toFixed(2)) : null,
       waiterLevel: s.waiterLevel,
       waiterUpgradeSpotPos: LAYOUT.waiterUpgradeSpot,
-      nextStep: s.nextStepLabel,
-      onboardHint: s.onboardHint,
+      // Quest sistemi (2026-06-09): aktif görev + sayaçlar + kamera odağı.
+      questIndex: s.questIndex,
+      quest: s.quest ? { id: s.quest.id, title: s.quest.title, cur: s.quest.cur, total: s.quest.total } : null,
+      stats: { ...s.stats },
+      camFocus: s.camFocus ? { pos: s.camFocus.pos, ttl: +s.camFocus.ttl.toFixed(2) } : null,
       // Yeni-özellik bildirimi (D-019 §4): anlık toast metni + bu oturumda bildirilmiş reveal anahtarları.
       notice: s.notice ? s.notice.text : null,
       revealSeen: [...s.revealSeen],
@@ -118,6 +123,23 @@ export function installDevHooks(): void {
 
   window.__teleport = (x: number, z: number) => {
     useGame.setState({ player: [x, 0.6, z] as Vec3 });
+    return window.__game!();
+  };
+
+  window.__setQuest = (id: string) => {
+    const idx = economyConfig.quests.findIndex((q) => q.id === id);
+    if (idx >= 0) {
+      const s = useGame.getState();
+      // Sayaç görevi ise delta tabanı ŞU ANKİ sayaç (görev şimdi başlamış gibi).
+      const base = questCounterValue(economyConfig.quests[idx].target, s.stats) ?? 0;
+      useGame.setState({ questIndex: idx, questBase: base });
+    }
+    return window.__game!();
+  };
+
+  window.__grantStat = (key: string, value: number) => {
+    const s = useGame.getState();
+    useGame.setState({ stats: { ...s.stats, [key]: value } as SaveStats });
     return window.__game!();
   };
 }

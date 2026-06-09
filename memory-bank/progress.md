@@ -314,6 +314,30 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   karşılıyor. Yeni vitest (5 adım). **vitest 71/71, build temiz, smoke 22/22, Playwright gözle ✓.** Değişen: store.ts, HUD.tsx,
   index.css, devHooks.ts, tests/logic.test.ts. (Zoom/atlanabilir tur şimdilik YOK — sade koç ipucu yeterli; istenirse eklenir.)
 
+## Faz 2-QUEST — Fable brief Adım 1+2: görev sistemi + UI game-feel ✅ (D-021, 2026-06-10)
+- ✅ **Quest hattı (config-driven):** `economy.config.quests[]` 13 sıralı görev (pickup→serve→coin→table2→5-servis→
+  ocak L2→3-yıkama→table3→garson→bulaşıkçı→table4→garson-hız→masa-yük). Sayaç görevleri questBase'ten DELTA;
+  `questIndex/questBase` + `stats{teaPickups,teasServed,coinsCollected,dishesWashed,waiterServed}` PERSIST →
+  **SAVE_VERSION 15→16 + tohumlamalı migrasyon** (ilk karşılanmamış görevde durur; garson tutulmuşsa waiterServed=20).
+- ✅ **Personel zorunlu omurga** (D-014 geçersiz): pads zinciri table2→table3→waiter→dishwasher→table4; optional kalktı.
+- ✅ **Ekranda TEK PAD:** `visiblePads(questIndex, gate)` — tick dolumu + Pad.tsx çizimi aynı kaynak.
+- ✅ **Arka-plan reveal şartı:** `Requires.minWaiterServed:20` (garson hız yükseltmesi); revealKeys waiterServed'li gate.
+- ✅ **Kamera odak:** `camFocus` transient; görev barı dokunuşu + görev geçişi + reveal + ilk açılış panı; CameraRig
+  odakta d×0.72 + k=5 damping; girdi anında iptal. (Kullanıcının "hareketli onboarding" vizyonunun 1. fazı.)
+- ✅ **HUD game-feel:** yalnız para (CSS altın coin ikonu; ₺ display'den TAMAMEN kalktı, 3D'de pul mesh) + 💎 chip;
+  offline = modal kart [Tamam]; sıfırla → dişli menüsü; coach + next-step + onboardingHint/nextStep helper'ları SİLİNDİ.
+- ✅ **Dev kancaları:** `__setQuest(id)`, `__grantStat(k,v)`; __game quest/stats/camFocus döner.
+- **Doğrulama: vitest 72/72, build temiz, sim ilk-alım 60sn, smoke 27/27, Playwright görsel ✓** (görev barı, kamera
+  odak, offline modal, coin pulları, tek-pad kuralı). Kullanıcı canlı önizlemede oynadı (feedback bekleniyor).
+- 🔧 **KULLANICI FEEDBACK (2026-06-10, oturum kapanışı):** UI beğenilmedi — "chip'ler/ekran dağılımı/görev barı hiçbiri
+  istediğim gibi değil, hâlâ oyun gibi değil; ikonlar aşırı AI slop". SONRAKİ OTURUM: (1) gerçek tycoon UI ekran
+  görüntüleri araştırılıp HUD SIFIRDAN tasarlanacak, (2) gerçek ikon asset'leri üretilecek (SVG/sprite ya da Kenney
+  CC0 UI), (3) oyun-hissi font (yerel bundle, TR destekli), (4) zone-2'yi erken getirme + per-zone vs merkezi-servis
+  kararı netleşecek. Detay: activeContext "SONRAKİ OTURUM ANA GÖREVİ".
+- ⏳ **Adım 3:** curve'ü 3-profil simülasyonla ciddi hesapla + sayı tablosu onaya. ⏳ **Adım 4:** Faz 3a zone-2.
+- ⏳ **Zone mimarisi kararı AÇIK:** per-zone ocak+bulaşık MI, merkezi servis + zone-başı personel Mİ — kullanıcı tekrar
+  sordu, onaylanmış model YOK; sonraki oturumda artı/eksi tablosuyla karara bağlanacak.
+
 ## Faz 3 — Kat & zone çoğaltma & roller ⏳ (D-016 ile yeniden çerçevelendi)
 - ⏳ **3a:** Zone çoğaltma: zone'u atomik modül yap, **kat başına ~4 zone (2×2 ızgara)**; zone-açma omurga pad'i;
   yeni zone'da oto 1.ocak(L1)+1.masa; `stations` türetme (D-015 korunur); tek kapı + rastgele oturma + zone'a bölünmüş servis.

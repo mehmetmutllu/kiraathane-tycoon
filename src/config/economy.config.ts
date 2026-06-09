@@ -13,7 +13,7 @@
  *   L5 (Usta)   = masterDiamondCost 💎 VEYA 1 ödüllü video; outputMult yerine masterOutputMult
  */
 
-export const SAVE_VERSION = 15;
+export const SAVE_VERSION = 16;
 
 export const CURRENCY = {
   soft: '₺', // Para — müşteriden kazanılır
@@ -49,6 +49,33 @@ export interface Requires {
   minStationLevel?: number;
   /** DESTEK: toplam kazanılan ₺ yumuşak eşiği (tempo). */
   minLifetime?: number;
+  /**
+   * ARKA-PLAN ŞARTI (kullanıcı 2026-06-09: "garsonu açtım, hemen hızlandırma geldi — öyle olmasın"):
+   * garson en az bu kadar çay taşımadan ilgili yükseltme görünmez → yeni özellik sindirilmeden
+   * üstüne yenisi yığılmaz.
+   */
+  minWaiterServed?: number;
+}
+
+/**
+ * Görev hedefi (quest sistemi, 2026-06-09). Sayaç hedefleri (count'lu) görev BAŞLADIĞINDAN itibaren
+ * delta sayılır; durum hedefleri (pad/level) doğrudan oyun durumundan okunur.
+ */
+export type QuestTarget =
+  | { type: 'pickupTea'; count: number } // ocaktan tepsiye çay al
+  | { type: 'serveTea'; count: number } // oyuncu eliyle masaya çay bırak
+  | { type: 'collectCoin'; count: number } // yerden para topla
+  | { type: 'washDish'; count: number } // oyuncu eliyle bulaşıkta kirli yıka
+  | { type: 'pad'; id: string } // pad'i tamamla (masa aç / personel tut)
+  | { type: 'stationLevel'; level: number } // çay ocağı seviyesi
+  | { type: 'waiterLevel'; level: number } // garson hız seviyesi
+  | { type: 'tableLevel'; level: number }; // HERHANGİ bir masa bu seviyeye ulaşsın
+
+/** Sıralı görev (tek aktif; üst görev barında gösterilir, kamera hedefe yönlendirilebilir). */
+export interface QuestDef {
+  id: string;
+  title: string;
+  target: QuestTarget;
 }
 
 export const economyConfig = {
@@ -164,8 +191,11 @@ export const economyConfig = {
     upgradeCost: 250,
     /** Mekânsal garson yükseltme noktasında saniyede cüzdandan akan ₺. */
     upgradeFillRate: 60,
-    /** Yükseltme noktası önkoşulu: garson tutulmuş olmalı (tutulunca belirir). */
-    upgradeRequires: { prev: ['waiter'] } satisfies Requires,
+    /**
+     * Yükseltme noktası önkoşulu: garson tutulmuş + en az 20 çay TAŞIMIŞ olmalı (arka-plan şartı;
+     * kullanıcı 2026-06-09: tutar tutmaz hızlandırma belirmesin — önce garson işbaşında görülsün).
+     */
+    upgradeRequires: { prev: ['waiter'], minWaiterServed: 20 } satisfies Requires,
   },
 
   /**
@@ -248,24 +278,47 @@ export const economyConfig = {
    * otomatik gelir (addStation effect tipi orada kullanılır). Opsiyonel: Garson (2.Masa sonrası).
    */
   pads: [
+    // QUEST HATTI (2026-06-09, kullanıcı onayı): personel pad'leri OPSİYONEL DEĞİL — sıralı görev hattının
+    // zorunlu halkaları (My Perfect Hotel modeli; D-014 "garson opsiyonel" kararı geçersiz). Omurga sırası
+    // quests[] ile birebir: table2 → table3 → waiter → dishwasher → table4. Görünürlük quest sisteminde
+    // (yalnız aktif görevin pad'i çizilir → "ekranda tek pad"); requires zinciri güvenlik ağı olarak kalır.
     { id: 'table2', label: '2. Masa', cost: 25, fillRate: 40, optional: false,
       requires: { minLifetime: 20 }, effect: { type: 'addTable' } },
-    // Garson: D-019 reveal sırası — "çay ocağı bir kez yükseltilince" belirir (minStationLevel:1) → 2. masa
-    // açılınca aynı anda 4 işaret patlamaz; önce çay yükseltme öğrenilir, sonra garson tanıtılır.
-    { id: 'waiter', label: 'Garson Tut', cost: 150, fillRate: 50, optional: true,
-      requires: { prev: ['table2'], minStationLevel: 1 }, effect: { type: 'hireWaiter' } },
-    // 3. Masa: D-019 §2 — masa açmak ARTIK yükseltme gerektirmez (minStationLevel:1 KALKTI). Ocak doğal
-    // darboğaz olarak kalır (oyuncu isteyince yükseltir), zorunlu gate değil.
     { id: 'table3', label: '3. Masa', cost: 130, fillRate: 55, optional: false,
       requires: { prev: ['table2'] }, effect: { type: 'addTable' } },
-    { id: 'dishwasher', label: 'Bulaşıkçı Tut', cost: 330, fillRate: 60, optional: true,
-      requires: { prev: ['table3'] }, effect: { type: 'hireDishwasher' } },
+    { id: 'waiter', label: 'Garson Tut', cost: 150, fillRate: 50, optional: false,
+      requires: { prev: ['table3'] }, effect: { type: 'hireWaiter' } },
+    { id: 'dishwasher', label: 'Bulaşıkçı Tut', cost: 330, fillRate: 60, optional: false,
+      requires: { prev: ['waiter'] }, effect: { type: 'hireDishwasher' } },
     { id: 'table4', label: '4. Masa', cost: 420, fillRate: 75, optional: false,
-      requires: { prev: ['table3'] }, effect: { type: 'addTable' } },
+      requires: { prev: ['dishwasher'] }, effect: { type: 'addTable' } },
     // (D-018 adım 5) Ayrı "Semavere Geçiş" pad'i KALDIRILDI: semaver artık çay ocağının üst yükseltmesidir
     // (TeaStation seviyeyle büyüyen semaveri zaten çizer). Tek ocak ₺ yükseltmeleriyle (L4, throughput ×3.32)
     // 4 masaya yetişir; "Usta" master tier (💎/video) Faz 4. Omurga zinciri artık table4'te biter.
   ],
+
+  /**
+   * GÖREV HATTI (2026-06-09, Fable brief §1+§4): ilerleme sıralı TEK görevle yönlendirilir.
+   * Üst-orta görev barı aktif görevi gösterir; dokununca kamera hedefe kayar. Sayaç hedefleri
+   * (count) görev BAŞLADIĞINDAN itibaren DELTA sayılır (kümülatif değil — questBase store'da).
+   * Pad görevleri sırasında YALNIZ o pad'in işareti çizilir ("ekranda tek pad").
+   * Görev hattı bitince serbest oyun: kalan yükseltme noktaları zaten kalıcı-sade görünür.
+   */
+  quests: [
+    { id: 'q_pickup', title: 'Ocaktan çay al', target: { type: 'pickupTea', count: 1 } },
+    { id: 'q_serve1', title: 'Çayı müşteriye götür', target: { type: 'serveTea', count: 1 } },
+    { id: 'q_coin', title: 'Yere düşen parayı topla', target: { type: 'collectCoin', count: 1 } },
+    { id: 'q_table2', title: '2. Masayı aç', target: { type: 'pad', id: 'table2' } },
+    { id: 'q_serve5', title: '5 çay servis et', target: { type: 'serveTea', count: 5 } },
+    { id: 'q_station2', title: 'Çay ocağını yükselt', target: { type: 'stationLevel', level: 1 } },
+    { id: 'q_wash', title: '3 kirli bardak yıka', target: { type: 'washDish', count: 3 } },
+    { id: 'q_table3', title: '3. Masayı aç', target: { type: 'pad', id: 'table3' } },
+    { id: 'q_waiter', title: 'Garson tut', target: { type: 'pad', id: 'waiter' } },
+    { id: 'q_dish', title: 'Bulaşıkçı tut', target: { type: 'pad', id: 'dishwasher' } },
+    { id: 'q_table4', title: '4. Masayı aç', target: { type: 'pad', id: 'table4' } },
+    { id: 'q_waiterL2', title: 'Garsonu hızlandır', target: { type: 'waiterLevel', level: 1 } },
+    { id: 'q_tableL2', title: 'Bir masayı yükselt', target: { type: 'tableLevel', level: 1 } },
+  ] as readonly QuestDef[],
 
   /** Oyuncu sahip karakteri hareketi. */
   player: {
@@ -345,6 +398,8 @@ export interface GateState {
   tables: number;
   stationLevel: number;
   lifetime: number;
+  /** Garsonun bugüne dek taşıdığı çay (arka-plan şartları için; eski çağıranlar vermeyebilir → 0). */
+  waiterServed?: number;
 }
 
 /** Bir `requires` koşulu mevcut ilerleme durumunca karşılanıyor mu? */
@@ -354,6 +409,7 @@ export function requiresMet(req: Requires | undefined, g: GateState): boolean {
   if (req.minTables != null && g.tables < req.minTables) return false;
   if (req.minStationLevel != null && g.stationLevel < req.minStationLevel) return false;
   if (req.minLifetime != null && g.lifetime < req.minLifetime) return false;
+  if (req.minWaiterServed != null && (g.waiterServed ?? 0) < req.minWaiterServed) return false;
   return true;
 }
 

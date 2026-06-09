@@ -16,9 +16,10 @@ import {
   waiterSoftMaxLevel as waiterSoftMaxLevelCfg,
   type PadDef,
   type GateState,
-  type Requires,
+  type QuestDef,
+  type QuestTarget,
 } from '../config/economy.config';
-import { defaultSave, loadSave, writeSave, clearSave, type SaveData } from './save';
+import { defaultSave, defaultStats, loadSave, writeSave, clearSave, type SaveData, type SaveStats } from './save';
 import { buildNavGrid, findNavPath, type NavGrid, type NavSolid } from './nav';
 
 // ---- Sahne yerleşimi (dünya birimi, zemin y=0) ----
@@ -381,9 +382,16 @@ export interface GameState {
   notice: GameNotice | null;
   /** Bu oturumda zaten bildirilmiş reveal anahtarları (transient; init'te açık olanlarla doldurulur). */
   revealSeen: string[];
-  nextStepLabel: string;
-  /** İlk-oyun onboarding koç ipucu (2. masa açılana kadar; transient, durumdan türetilir). Faz 2i. */
-  onboardHint: string | null;
+  /** Kalıcı eylem sayaçları (quest + arka-plan reveal şartları; v16 persist). */
+  stats: SaveStats;
+  /** Sıradaki görevin index'i (persist; >= quests.length ⇒ görev hattı bitti). */
+  questIndex: number;
+  /** Aktif sayaç görevinin başlangıç sayaç değeri (persist; delta hedefi tabanı). */
+  questBase: number;
+  /** Üst görev barı görünümü (transient; her tick türetilir; null = hat bitti). */
+  quest: QuestView | null;
+  /** Kamera odak isteği (transient): görev barına dokununca / yeni şey açılınca hedefe pan. */
+  camFocus: CamFocus | null;
   offlineEarned: number;
   // Dahili
   spawnTimer: number;
@@ -398,6 +406,8 @@ export interface GameState {
   setJoystickInput: (x: number, z: number) => void;
   upgradeStation: () => boolean;
   addMoney: (amount: number) => void;
+  /** Görev barına dokununca: kamera aktif görevin hedefine kayar (görev yoksa no-op). */
+  focusQuest: () => void;
   saveNow: () => void;
   hardReset: () => void;
 }
@@ -428,43 +438,117 @@ export function upgradeZoneUnlocked(g: GateState): boolean {
   return requiresMet(C.teaStation.upgradeRequires, g);
 }
 
-/** HUD için tek satırlık "sıradaki adım" yönlendirmesi. */
-export function nextStep(g: GateState): string {
-  const pad = currentPad(g);
-  if (pad) return `Sıradaki: ${pad.label} (₺${pad.cost})`;
-  // Aktif omurga pad yok → ilk açılmamış omurga pad neyle kilitli, onu söyle (opsiyoneller atlanır).
-  const undone = (C.pads as readonly PadDef[]).find((p) => !p.optional && !g.padsDone.includes(p.id));
-  if (undone) {
-    const r = undone.requires as Requires | undefined;
-    if (r?.minStationLevel != null && g.stationLevel < r.minStationLevel)
-      return `Çay ocağını L${r.minStationLevel} yap → ${undone.label}`;
-    if (r?.minLifetime != null && g.lifetime < r.minLifetime)
-      return `₺${r.minLifetime} kazan → ${undone.label}`;
-    return `${undone.label} için ilerle`;
-  }
-  if (g.stationLevel < stationSoftMaxLevel()) return 'Çay ocağını yükseltmeye devam et';
-  return 'Tüm açılışlar tamam ✓';
+// ============================== QUEST MOTORU (2026-06-09) ==============================
+// İlerleme sıralı TEK görevle yönlendirilir (Fable brief §1+§4; eski nextStep + onboardingHint
+// koç bandının yerini alır). Sayaç görevleri questBase'ten DELTA sayılır; durum görevleri
+// (pad/level) doğrudan oyun durumundan okunur.
+
+/** Quest değerlendirme bağlamı (salt-okunur anlık görüntü). */
+export interface QuestCtx {
+  padsDone: string[];
+  stationLevel: number;
+  waiterLevel: number;
+  tableLevels: number[];
+  stats: SaveStats;
+  questBase: number;
 }
 
+/** Sayaç hedefinin baktığı kümülatif sayaç değeri (durum hedefleri için null). */
+export function questCounterValue(target: QuestTarget, stats: SaveStats): number | null {
+  switch (target.type) {
+    case 'pickupTea': return stats.teaPickups;
+    case 'serveTea': return stats.teasServed;
+    case 'collectCoin': return stats.coinsCollected;
+    case 'washDish': return stats.dishesWashed;
+    default: return null;
+  }
+}
+
+/** Görev hedefi karşılandı mı? */
+export function questTargetMet(target: QuestTarget, ctx: QuestCtx): boolean {
+  const counter = questCounterValue(target, ctx.stats);
+  if (counter != null) {
+    const count = (target as { count: number }).count;
+    return counter - ctx.questBase >= count;
+  }
+  switch (target.type) {
+    case 'pad': return ctx.padsDone.includes(target.id);
+    case 'stationLevel': return ctx.stationLevel >= target.level;
+    case 'waiterLevel': return ctx.waiterLevel >= target.level;
+    case 'tableLevel': return ctx.tableLevels.some((l) => l >= target.level);
+    default: return false;
+  }
+}
+
+/** HUD görev barı görünümü (transient; her tick türetilir). */
+export interface QuestView {
+  id: string;
+  title: string;
+  /** Sayaç görevlerinde ilerleme (cur/total); durum görevlerinde null. */
+  cur: number | null;
+  total: number | null;
+  /** Pad görevlerinde maliyet (görev barında gösterilir). */
+  cost: number | null;
+}
+
+function questView(q: QuestDef, ctx: QuestCtx): QuestView {
+  const counter = questCounterValue(q.target, ctx.stats);
+  const count = counter != null ? (q.target as { count: number }).count : null;
+  const pad =
+    q.target.type === 'pad'
+      ? (C.pads as readonly PadDef[]).find((p) => p.id === (q.target as { id: string }).id)
+      : undefined;
+  return {
+    id: q.id,
+    title: q.title,
+    cur: counter != null && count != null ? Math.max(0, Math.min(count, counter - ctx.questBase)) : null,
+    total: count,
+    cost: pad ? pad.cost : null,
+  };
+}
+
+/** Görev hedefinin DÜNYA konumu (kamera odak + işaret görünürlüğü). */
+export function questFocusPos(target: QuestTarget, tableLevels: number[], tables: number): RVec3 {
+  switch (target.type) {
+    case 'pickupTea': return LAYOUT.stations[0];
+    case 'washDish': return LAYOUT.dishStation;
+    case 'pad': return LAYOUT.padPos[target.id] ?? LAYOUT.stations[0];
+    case 'stationLevel': return LAYOUT.upgradeZone;
+    case 'waiterLevel': return LAYOUT.waiterUpgradeSpot;
+    case 'tableLevel': {
+      // İlk yükseltilebilir (soft max altı) AÇIK masanın yükseltme noktası.
+      for (let i = 0; i < tables; i++) {
+        if ((tableLevels[i] ?? 0) < tableSoftMaxLevel()) return LAYOUT.tables[i].upgradeSpot;
+      }
+      return LAYOUT.tables[0].upgradeSpot;
+    }
+    default: // serveTea / collectCoin → masa bölgesinin ortası
+      return [0, 0, 1.5];
+  }
+}
+
+/** Kamera odak isteği (transient): CameraRig bu hedefe kayar/zoom yapar, ttl bitince/girdiyle döner. */
+export interface CamFocus {
+  pos: [number, number, number];
+  ttl: number;
+}
+const CAM_FOCUS_TTL = 2.2; // sn — kayma + kısa bekleme; joystick girdisi anında iptal eder
+
 /**
- * İlk-oyun onboarding koç ipucu (Faz 2i): 2. masa açılana kadar çekirdek döngüyü adım adım öğretir,
- * açılınca null döner (onboarding biter). KALICI durum gerektirmez — tamamen oyun durumundan türetilir
- * (oyunu sıfırlayınca tekrar belirir). Mevcut kayıtta table2 zaten açıksa hiç görünmez.
+ * EKRANDA TEK PAD (quest sistemi): görünür/doldurulabilir pad'ler. Pad görevi sırasında YALNIZ o pad;
+ * pad-dışı görevde HİÇ pad; görev hattı bittiyse güvenlik ağı olarak klasik omurga sırası (normalde
+ * hat tüm pad'leri kapsadığından boş kalır). Hem tick (dolum) hem Pad.tsx (çizim) BUNU kullanır →
+ * görsel ile mantık ayrışamaz.
  */
-export function onboardingHint(g: {
-  table2Done: boolean;
-  lifetime: number;
-  walletPos: boolean;
-  trayHasTea: boolean;
-  coins: number;
-}): string | null {
-  if (g.table2Done) return null;
-  if (g.lifetime <= 0)
-    return g.trayHasTea
-      ? 'Çayı bekleyen müşteriye götür → masaya yaklaş'
-      : 'Ekranı sürükleyip ocağa git → çayı tepsine al';
-  if (!g.walletPos && g.coins > 0) return 'Yere düşen parayı topla → üstünden geç';
-  return 'Parayı biriktir → zemindeki "2. Masa" işaretinde bekle';
+export function visiblePads(questIndex: number, g: GateState): PadDef[] {
+  const q = questIndex < C.quests.length ? C.quests[questIndex] : null;
+  if (q) {
+    if (q.target.type !== 'pad') return [];
+    const p = (C.pads as readonly PadDef[]).find((pd) => pd.id === (q.target as { id: string }).id);
+    return p && !g.padsDone.includes(p.id) && requiresMet(p.requires, g) ? [p] : [];
+  }
+  const bp = currentPad(g);
+  return bp ? [bp] : [];
 }
 
 /** ₺ ile çıkılabilen en yüksek garson seviyesi (index; L1=0 taban → L2=1). */
@@ -513,8 +597,11 @@ export const useGame = create<GameState>((set, get) => ({
   activeZone: null,
   notice: null,
   revealSeen: [],
-  nextStepLabel: '',
-  onboardHint: null,
+  stats: defaultStats(),
+  questIndex: 0,
+  questBase: 0,
+  quest: null,
+  camFocus: null,
   offlineEarned: 0,
   spawnTimer: 1,
   saveTimer: SAVE_INTERVAL,
@@ -577,23 +664,38 @@ export const useGame = create<GameState>((set, get) => ({
       notice: null,
       // revealSeen baseline: yüklemede ZATEN açık olan özellikler bildirilmiş sayılır (yeniden yükleme spam'ı yok).
       revealSeen: revealKeys(
-        { padsDone: save.padsDone, tables: derived.tables, stationLevel: save.stationLevel, lifetime: lifetime.toNumber() },
+        {
+          padsDone: save.padsDone,
+          tables: derived.tables,
+          stationLevel: save.stationLevel,
+          lifetime: lifetime.toNumber(),
+          waiterServed: save.stats.waiterServed,
+        },
         derived.hasWaiter,
         Math.min(save.waiterLevel ?? 0, waiterSoftMaxLevelCfg()),
       ).map(([k]) => k),
-      nextStepLabel: nextStep({
-        padsDone: save.padsDone,
-        tables: derived.tables,
-        stationLevel: save.stationLevel,
-        lifetime: lifetime.toNumber(),
-      }),
-      onboardHint: onboardingHint({
-        table2Done: save.padsDone.includes('table2'),
-        lifetime: lifetime.toNumber(),
-        walletPos: wallet.gt(0),
-        trayHasTea: false,
-        coins: 0,
-      }),
+      stats: { ...save.stats },
+      questIndex: save.questIndex,
+      questBase: save.questBase,
+      quest:
+        save.questIndex < C.quests.length
+          ? questView(C.quests[save.questIndex], {
+              padsDone: save.padsDone,
+              stationLevel: save.stationLevel,
+              waiterLevel: Math.min(save.waiterLevel ?? 0, waiterSoftMaxLevelCfg()),
+              tableLevels: save.tableLevels,
+              stats: save.stats,
+              questBase: save.questBase,
+            })
+          : null,
+      // İlk oyun (taze kayıt): kamera ilk görevin hedefine kısa pan → "hareketli" onboarding girişi.
+      camFocus:
+        save.questIndex === 0 && lifetime.lte(0)
+          ? (() => {
+              const p0 = questFocusPos(C.quests[0].target, save.tableLevels, derived.tables);
+              return { pos: [p0[0], p0[1], p0[2]] as [number, number, number], ttl: 3 };
+            })()
+          : null,
       spawnTimer: 1,
       saveTimer: SAVE_INTERVAL,
       nextId: 1,
@@ -640,6 +742,10 @@ export const useGame = create<GameState>((set, get) => ({
     let waiterUpgradeFill = s.waiterUpgradeFill;
     let notice = s.notice;
     let revealSeen = s.revealSeen;
+    const stats: SaveStats = { ...s.stats }; // kalıcı eylem sayaçları (bu tick'te artabilir)
+    let questIndex = s.questIndex;
+    let questBase = s.questBase;
+    let camFocus = s.camFocus;
     let nextId = s.nextId;
     let spawnTimer = s.spawnTimer - dt;
 
@@ -776,6 +882,7 @@ export const useGame = create<GameState>((set, get) => ({
         if (dist2D(player, c.pos) < C.money.pickupRadius) {
           wallet = wallet.add(c.value);
           lifetime = lifetime.add(c.value);
+          stats.coinsCollected += 1;
         } else {
           keep.push(c);
         }
@@ -794,6 +901,7 @@ export const useGame = create<GameState>((set, get) => ({
           const take = Math.min(trayCap - tray - carriedDirty, readyCups);
           tray += take;
           readyCups -= take;
+          if (take > 0) stats.teaPickups += take;
           break;
         }
       }
@@ -808,6 +916,7 @@ export const useGame = create<GameState>((set, get) => ({
           n.state = 'drinking';
           n.timer = C.npc.eatTime;
           tray -= 1;
+          stats.teasServed += 1;
         }
       }
     }
@@ -825,6 +934,7 @@ export const useGame = create<GameState>((set, get) => ({
     // Bulaşık noktasına yaklaşınca taşınan kirliler yıkanır → temiz havuza döner.
     if (carriedDirty > 0 && dist2D(player, LAYOUT.dishStation) < C.cups.washRadius) {
       cleanCups += carriedDirty;
+      stats.dishesWashed += carriedDirty;
       carriedDirty = 0;
     }
 
@@ -870,6 +980,7 @@ export const useGame = create<GameState>((set, get) => ({
           best.state = 'drinking';
           best.timer = C.npc.eatTime;
           w.tray -= 1;
+          stats.waiterServed += 1;
         }
       } else if (w.tray < wTrayCap && waitingNpcs.length > 0) {
         // Yükleme: ocağa BFS rotasıyla git; bitişik gelince hazır çaydan tepsiye al (yoksa orada bekler).
@@ -927,11 +1038,15 @@ export const useGame = create<GameState>((set, get) => ({
     // --- Mekânsal etkileşim noktaları (D-018 §2, HAREKET-TEMELLİ) ---
     // Oyuncu fiziksel olarak aynı anda TEK dolum noktasının üstünde olabilir. Para yalnız oyuncu DURUNCA akar:
     // üstünden GEÇERKEN (hareket halinde) hiç alınmaz, DURDUĞU (input bıraktığı) anda HEMEN başlar (sayaç/countdown YOK).
-    const padGate: GateState = { padsDone, tables, stationLevel, lifetime: lifetime.toNumber() };
-    const activePads: PadDef[] = [];
-    const backbonePad = currentPad(padGate);
-    if (backbonePad) activePads.push(backbonePad);
-    for (const op of availableOptionalPads(padGate)) activePads.push(op);
+    const padGate: GateState = {
+      padsDone,
+      tables,
+      stationLevel,
+      lifetime: lifetime.toNumber(),
+      waiterServed: stats.waiterServed,
+    };
+    // EKRANDA TEK PAD (quest sistemi): görünürlük visiblePads'ten (Pad.tsx ile aynı kaynak).
+    const activePads: PadDef[] = visiblePads(questIndex, padGate);
 
     const upgradeUnlocked = upgradeZoneUnlocked(padGate) && stationLevel < stationSoftMaxLevel();
     const tableUnlocked = tableUpgradeZoneUnlocked(padGate);
@@ -944,6 +1059,13 @@ export const useGame = create<GameState>((set, get) => ({
       if (!revealSeen.includes(key)) {
         revealSeen = [...revealSeen, key];
         notice = { text, ttl: 4.5 };
+        // Yeni açılan noktaya anlık kamera pan ("orada bir şey var" — kullanıcı isteği 2026-06-09).
+        const rp =
+          key === 'upgrade' ? LAYOUT.upgradeZone
+          : key === 'waiterUp' ? LAYOUT.waiterUpgradeSpot
+          : key === 'tableUp' ? LAYOUT.tables[0].upgradeSpot
+          : null;
+        if (rp) camFocus = { pos: [rp[0], rp[1], rp[2]], ttl: CAM_FOCUS_TTL };
       }
     }
     if (notice) {
@@ -1091,21 +1213,47 @@ export const useGame = create<GameState>((set, get) => ({
     // Bulaşıkçı pad'i bu frame tamamlandıysa varlığını kur.
     if (out.hasDishwasher && !dishwasher) dishwasher = { pos: [...LAYOUT.dishwasherHome] as Vec3, tray: 0 };
 
+    // --- GÖREV İLERLEMESİ ---
+    // Aktif görev karşılandıysa sıradakine geç (aynı tick'te birden çok karşılanabilir — ör. migrasyon
+    // sonrası): tamamlama toast'u + kamera YENİ hedefe pan ("orada bir şey var" hissi, kullanıcı isteği).
+    const questCtx: QuestCtx = {
+      padsDone,
+      stationLevel,
+      waiterLevel,
+      tableLevels,
+      stats,
+      questBase,
+    };
+    let questAdvanced = false;
+    while (questIndex < C.quests.length && questTargetMet(C.quests[questIndex].target, questCtx)) {
+      notice = { text: `✓ ${C.quests[questIndex].title}`, ttl: 3.5 };
+      questIndex += 1;
+      questAdvanced = true;
+      // Sonraki sayaç görevinin delta tabanı = sayacın ŞU ANKİ değeri.
+      const nt = questIndex < C.quests.length ? C.quests[questIndex].target : null;
+      const counterNow = nt ? questCounterValue(nt, stats) : null;
+      questBase = counterNow ?? 0;
+      questCtx.questBase = questBase;
+    }
+    if (questAdvanced && questIndex < C.quests.length) {
+      const p = questFocusPos(C.quests[questIndex].target, tableLevels, out.tables);
+      camFocus = { pos: [p[0], p[1], p[2]], ttl: CAM_FOCUS_TTL };
+    }
+    // Kamera odağı: joystick/klavye girdisi anında iptal eder (oyuncu kontrolü üstün); süre dolunca biter.
+    if (camFocus) {
+      const ttl = camFocus.ttl - dt;
+      const moving = Math.hypot(input[0], input[1]) > 0.1;
+      camFocus = ttl > 0 && !moving ? { pos: camFocus.pos, ttl } : null;
+    }
+    const quest =
+      questIndex < C.quests.length ? questView(C.quests[questIndex], questCtx) : null;
+
     // --- Periyodik kayıt ---
     let saveTimer = s.saveTimer - dt;
     if (saveTimer <= 0) {
       saveTimer = SAVE_INTERVAL;
       get().saveNow();
     }
-
-    const nextStepLabel = nextStep({ padsDone, tables: out.tables, stationLevel, lifetime: lifetime.toNumber() });
-    const onboardHint = onboardingHint({
-      table2Done: padsDone.includes('table2'),
-      lifetime: lifetime.toNumber(),
-      walletPos: wallet.gt(0),
-      trayHasTea: tray > 0,
-      coins: coins.length,
-    });
 
     set({
       npcs: liveNpcs,
@@ -1129,8 +1277,11 @@ export const useGame = create<GameState>((set, get) => ({
       activeZone,
       notice,
       revealSeen,
-      nextStepLabel,
-      onboardHint,
+      stats,
+      questIndex,
+      questBase,
+      quest,
+      camFocus,
       player,
       waiter,
       dishwasher,
@@ -1170,6 +1321,14 @@ export const useGame = create<GameState>((set, get) => ({
     set({ wallet: s.wallet.add(amount), lifetime: s.lifetime.add(amount) });
   },
 
+  // Görev barına dokununca: kamera aktif görevin hedefine kayar (kullanıcı onboarding isteği).
+  focusQuest: () => {
+    const s = get();
+    if (s.questIndex >= C.quests.length) return;
+    const p = questFocusPos(C.quests[s.questIndex].target, s.tableLevels, s.tables);
+    set({ camFocus: { pos: [p[0], p[1], p[2]], ttl: CAM_FOCUS_TTL } });
+  },
+
   saveNow: () => {
     const s = get();
     // D-015: tables/stations/serviceSpeedMult/hasWaiter KAYDEDİLMEZ — yüklemede padsDone'dan türetilir.
@@ -1183,6 +1342,9 @@ export const useGame = create<GameState>((set, get) => ({
       waiterLevel: s.waiterLevel,
       padsDone: [...s.padsDone],
       padFills: { ...s.padFills },
+      stats: { ...s.stats },
+      questIndex: s.questIndex,
+      questBase: s.questBase,
       lastSaved: Date.now(),
     });
   },

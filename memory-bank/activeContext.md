@@ -2,6 +2,51 @@
 
 > En sık güncellenen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-06-10 — FABLE 5 BRIEF ADIM 1+2 UYGULANDI: quest sistemi + UI game-feel; D-021)
+Fable brief'in onaylı 4-adımlı planından **Adım 1 (quest/görev sistemi + kamera) ve Adım 2 (reveal arka-plan şartları)
+TAMAM**; HUD game-feel revizyonu da (kullanıcı isteğiyle) Adım 1'e dahil edildi. Tam karar: **decisions.md D-021.**
+- **Quest hattı:** `quests[]` 13 sıralı görev; üst-orta görev barı (dokun → kamera hedefe pan/zoom, joystick iptal eder);
+  görev geçişi + reveal + ilk açılışta otomatik kamera panı. Ekranda TEK pad (`visiblePads`). Personel ZORUNLU omurga
+  (D-014 geçersiz). Garson-hız işareti garson 20 çay taşımadan görünmez (`minWaiterServed`, stats sayaçları persist).
+- **HUD:** sadece para (altın coin ikonu — ₺ display'den tamamen kalktı) + 💎 chip; offline = modal kart [Tamam];
+  sıfırla dişli menüsünde; coach + next-step silindi. GroundMarker fiyatları coin puluyla.
+- **SAVE 15→16** + questIndex/stats tohumlamalı migrasyon (eski oyuncu başa düşmez; garson tutulmamışsa hat q_waiter'da durur).
+- **Doğrulama:** vitest 72/72, build temiz, sim ilk-alım 60sn, smoke 27/27, Playwright görsel ✓ (görev barı/kamera/modal).
+  Dev kancaları: `__setQuest(id)`, `__grantStat(k,v)`. Kullanıcı oturum sırasında canlı önizlemede bizzat oynamaya başladı.
+### >>> SONRAKİ OTURUM ANA GÖREVİ — KULLANICI FEEDBACK'İ (2026-06-10, oturum kapanışında verildi) <<<
+Kullanıcı quest sistemini gördü ama **UI'dan memnun DEĞİL** ("üstteki chip'ler, ekran dağılımı, görev barı —
+hiçbir şey istediğim gibi değil; hâlâ oyun gibi değil"). İstekler:
+1. **UI'ı SIFIRDAN tasarla — GERÇEK tycoon oyunlarının arayüz fotoğraflarını inceleyerek.** Birden fazla oyunun
+   (My Perfect Hotel, Idle Miner, vb.) HUD ekran görüntülerini araştır/incele; chip yerleşimi, görev barı, ekran
+   dağılımını onlara bakarak yeniden kur. (Web araştırması + görsel referans analizi gerekir.)
+2. **İkonlar "aşırı AI slop"** — düzgün asset istiyor: "gerekirse Claude ile asset üret veya farklı bir yapay zeka
+   kullan, ama çöz." → SVG/sprite ikon seti üret (para, elmas, görev, ayarlar...), CSS-circle coin gibi geçici
+   çözümler yerine gerçek ikonografi. (Kenney CC0 UI pack de değerlendirilebilir — asset stil kilidiyle uyumlu.)
+3. **Font düzenlemesi:** system-ui yerine oyun hissi veren font (yuvarlak/bold, TR karakter destekli; bundle'a
+   yerel olarak eklenmeli — D-018 font-CDN dersi: networkidle bozulmasın).
+4. **Zone sorusu:** "zone mantığını ŞU AN getirmek ne kadar mantıklı, öyle de mi test etsek?" → Kullanıcı zone-2'yi
+   erken getirip denemeye açık. Adım 3 (curve) ile Adım 4 (zone) sıralaması sonraki oturumda kullanıcıyla netleşsin.
+5. **Zone mimarisi HÂLÂ AÇIK:** per-zone ocak+bulaşık mı, yoksa ANA SERVİS NOKTASI (merkezi ocak+bulaşık) + zone-başı
+   garson/bulaşıkçı mı? D-021'deki per-zone önerim ONAYLANMADI — kullanıcı iki seçeneği tekrar sordu. Sonraki oturumda
+   iki modeli artı/eksi tablosuyla (taşıma mesafesi, darboğaz, ekran karmaşası, balance grind) kısaca karşılaştırıp
+   NET öneri + onay al; istenirse prototip karşılaştırması.
+Sıra önerisi: (1) UI redesign (referans araştırması → mock → onay → uygula) → (2) zone modeli kararı + zone-2
+prototipi → (3) curve hesabı (Adım 3) zone yapısına göre.
+
+### (genel sıradaki — değişmedi)
+- Adım 3: simulate.ts 3-profil curve hesabı · Adım 4: Faz 3a zone-2 · Faz 4+: prestige/elmas/mağaza.
+
+## >>> (TAMAMLANDI 2026-06-10) ÖNCEKİ ANA GÖREV: FABLE 5 BRIEF (2026-06-09) <<<
+Kullanıcı büyük tasarım/denge geri bildirimi verdi → tek brief'e döküldü: **`docs/fable5-progression-redesign-brief.md`**.
+Sonraki sohbette kullanıcı `/model` ile **Claude Fable 5**'e (9 Haz 2026 çıktı, Mythos-sınıfı) geçip o brief'i çalıştıracak;
+Fable kendi yapar veya alt-agent'lara dağıtır. Kapsam (8 başlık): (1) **görev/quest tabanlı progression, ekranda TEK pad**;
+(2) **4-zone mimarisi** — per-zone servis mi tek servis mi (KARAR araştırmayla) + üst kata çıkış; (3) **aktif↔idle dengesi**
+(My Hotel: yavaş temizlikçi → flip yok); (4) **onboarding (hareketli) + UI/menü + üst chip + para birimi ₺→jenerik money ikonu**;
+(5) **karakter + görsel-evrim** (seviyeyle değişen Türk/kıraathane estetiği); (6) **kozmetik mağaza** (parke/duvar kağıdı);
+(7) **tam denge geçişi** (çay fiyatı, garson/bulaşıkçı hız+zaman, her yükseltme neyi ne kadar etkiler). **Yöntem:**
+araştır→öner→kullanıcı onayı→uygula (kod yazmadan önce sor). Bu oturumda kod YAZILMADI, sadece brief hazırlandı.
+**NOT:** onboarding "hareketli olmalı" feedback'i + telefon test feedback'i hâlâ beklemede (aşağıdaki blok) — Fable önce bunu sorsun.
+
 ## Şu an neredeyiz (2026-06-09 — EKONOMİ TEMPO + OFFLINE + KAMERA AYARI → kullanıcı telefonda test edecek)
 Kullanıcı telefon feedback'i: (1) başta AŞIRI yavaş; (2) 1 gece sonra ~18k birikip ilk zone tek seferde bitti (offline
 kısıtsız hissi); (3) garson+bulaşıkçı açılınca her şey çok hızlı/ucuz; (4) kamera çok yakın. 2 agent (idle-tycoon tempo

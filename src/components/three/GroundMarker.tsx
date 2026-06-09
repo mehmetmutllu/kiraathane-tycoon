@@ -11,6 +11,7 @@ export function GroundMarker({
   pos,
   label,
   sub,
+  coin = false,
   tint,
   progress = 0,
   afford = false,
@@ -19,6 +20,8 @@ export function GroundMarker({
   pos: Vec3;
   label: string;
   sub?: string;
+  /** Sub bir maliyetse yanına küçük altın para pulu çiz (₺ yazısı display'den kalktı — 2026-06-09). */
+  coin?: boolean;
   tint: string;
   progress?: number;
   afford?: boolean;
@@ -60,18 +63,32 @@ export function GroundMarker({
         {label}
       </Text>
       {sub && (
-        <Text
-          position={[0, 0.05, 0.26]}
-          rotation={[-Math.PI / 2, 0, 0]}
-          fontSize={0.2}
-          color="#ffe082"
-          anchorX="center"
-          anchorY="middle"
-          outlineWidth={0.012}
-          outlineColor="#1a1a1a"
-        >
-          {sub}
-        </Text>
+        <>
+          {coin && (
+            <group position={[-0.16 - sub.length * 0.055, 0.05, 0.26]}>
+              <mesh rotation={[-Math.PI / 2, 0, 0]}>
+                <circleGeometry args={[0.085, 20]} />
+                <meshBasicMaterial color="#ffc933" depthWrite={false} />
+              </mesh>
+              <mesh position={[0, 0.004, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+                <ringGeometry args={[0.062, 0.085, 20]} />
+                <meshBasicMaterial color="#b87400" depthWrite={false} />
+              </mesh>
+            </group>
+          )}
+          <Text
+            position={[coin ? 0.06 : 0, 0.05, 0.26]}
+            rotation={[-Math.PI / 2, 0, 0]}
+            fontSize={0.2}
+            color="#ffe082"
+            anchorX="center"
+            anchorY="middle"
+            outlineWidth={0.012}
+            outlineColor="#1a1a1a"
+          >
+            {sub}
+          </Text>
+        </>
       )}
     </group>
   );

@@ -1,5 +1,5 @@
 // localStorage kayıt + saveVersion migrasyon. Backend yok: cihaz = veritabanı.
-import { SAVE_VERSION, economyConfig, requiresMet, type PadDef } from '../config/economy.config';
+import { SAVE_VERSION, economyConfig, requiresMet, type PadDef, type QuestTarget } from '../config/economy.config';
 
 const KEY = 'kiraathane.save';
 
@@ -8,6 +8,24 @@ const KEY = 'kiraathane.save';
  * D-015: tables/stations/serviceSpeedMult/hasWaiter SAKLANMAZ — `padsDone`'dan türetilir
  * (derivedFromPads). Böylece sayaç ile pad listesi yapısal olarak desenkronize olamaz.
  */
+/** Kalıcı oyun sayaçları (quest sistemi v16): oyuncu eylemleri + garson taşıması. */
+export interface SaveStats {
+  /** Oyuncunun ocaktan tepsiye aldığı toplam çay. */
+  teaPickups: number;
+  /** Oyuncunun ELİYLE masaya bıraktığı toplam çay (garson hariç). */
+  teasServed: number;
+  /** Yerden toplanan toplam para adedi. */
+  coinsCollected: number;
+  /** Oyuncunun ELİYLE bulaşıkta yıkadığı toplam kirli bardak (bulaşıkçı hariç). */
+  dishesWashed: number;
+  /** Garsonun bugüne dek taşıdığı toplam çay (arka-plan reveal şartları). */
+  waiterServed: number;
+}
+
+export function defaultStats(): SaveStats {
+  return { teaPickups: 0, teasServed: 0, coinsCollected: 0, dishesWashed: 0, waiterServed: 0 };
+}
+
 export interface SaveData {
   saveVersion: number;
   wallet: string;
@@ -21,6 +39,12 @@ export interface SaveData {
   padsDone: string[];
   /** Aktif pad'lerin kısmi dolumu (pad id → ₺). Aynı anda birden çok pad doldurulabilir (v5). */
   padFills: Record<string, number>;
+  /** Kalıcı eylem sayaçları (quest + arka-plan reveal şartları; v16). */
+  stats: SaveStats;
+  /** Sıradaki görevin index'i (economyConfig.quests; >= length ⇒ görev hattı bitti; v16). */
+  questIndex: number;
+  /** Aktif SAYAÇ görevinin başlangıç sayaç değeri (delta hedefi için taban; v16). */
+  questBase: number;
   lastSaved: number; // epoch ms
 }
 
@@ -35,8 +59,50 @@ export function defaultSave(): SaveData {
     waiterLevel: 0,
     padsDone: [],
     padFills: {},
+    stats: defaultStats(),
+    questIndex: 0,
+    questBase: 0,
     lastSaved: Date.now(),
   };
+}
+
+/**
+ * Eski (quest-öncesi) kayıttan görev hattındaki yeri tohumlar (v15→v16). Kural: baştan yürü,
+ * - karşılanan DURUM görevi (pad/level) → geç;
+ * - karşılanmayan durum görevi → DUR (aktif görev bu: ör. eski kayıtta garson hiç tutulmadıysa
+ *   "Garson tut" aktif olur — atlanırsa sonraki görevler garsonsuz kilitlenirdi);
+ * - SAYAÇ görevi → ilerisinde karşılanmış bir durum görevi varsa (veya öğretici sayaçsa ve oyuncu
+ *   zaten kazanç yapmışsa) tamam say, yoksa DUR.
+ */
+function seedQuestIndex(d: Record<string, unknown>): number {
+  const quests = economyConfig.quests;
+  const padsDone = Array.isArray(d.padsDone) ? (d.padsDone as string[]) : [];
+  const stationLevel = Number(d.stationLevel ?? 0) || 0;
+  const waiterLevel = Number(d.waiterLevel ?? 0) || 0;
+  const tableLevels = Array.isArray(d.tableLevels) ? (d.tableLevels as number[]).map((n) => Number(n) || 0) : [];
+  const lifetime = Number(d.lifetime ?? 0) || 0;
+  const stateMet = (t: QuestTarget): boolean | null => {
+    switch (t.type) {
+      case 'pad': return padsDone.includes(t.id);
+      case 'stationLevel': return stationLevel >= t.level;
+      case 'waiterLevel': return waiterLevel >= t.level;
+      case 'tableLevel': return tableLevels.some((l) => l >= t.level);
+      default: return null; // sayaç görevi — eski kayıttan bilinemez
+    }
+  };
+  let lastStateMet = -1;
+  for (let i = 0; i < quests.length; i++) if (stateMet(quests[i].target) === true) lastStateMet = i;
+  let idx = 0;
+  while (idx < quests.length) {
+    const met = stateMet(quests[idx].target);
+    if (met === true) { idx++; continue; }
+    // Sayaç görevi: ilerisinde yapılmış durum görevi varsa, ya da hiç yoksa bile oyuncu öğreticiyi
+    // geçecek kadar kazanmışsa (lifetime ≥ table2 eşiği 20) tamam say.
+    const counterDone = met === null && (idx < lastStateMet || (lastStateMet === -1 && lifetime >= 20));
+    if (counterDone) { idx++; continue; }
+    break;
+  }
+  return idx;
 }
 
 /** v4'teki tek `padFill` sayısı hangi omurga pad'ine aitse o id'yi bulur (opsiyoneller atlanır). */
@@ -183,8 +249,23 @@ export function migrate(raw: Record<string, unknown>): SaveData {
     v = 15;
   }
 
-  // Sona kalan v15 şeması: türetilen alanlar (tables/stations/serviceSpeedMult/hasWaiter), eski `padFill`,
-  // kaldırılan `trayLevel` ve 'samovar' referansı yazılmaz; `waiterLevel` eklendi.
+  // v15 -> v16 (QUEST SİSTEMİ): kalıcı eylem sayaçları (stats) + questIndex/questBase eklendi.
+  // Eski oyuncu görev hattının başına DÜŞMEZ: questIndex mevcut ilerlemeden tohumlanır (yapılmış
+  // durum görevleri + öncesindeki sayaç görevleri tamam sayılır). Garson zaten tutulmuşsa
+  // waiterServed=20 tohumlanır ki hız-yükseltme işareti (minWaiterServed) elinden alınmasın.
+  if (v < 16) {
+    const stats = defaultStats();
+    const padsDone = Array.isArray(d.padsDone) ? (d.padsDone as string[]) : [];
+    if (padsDone.includes('waiter')) stats.waiterServed = 20;
+    d.stats = stats;
+    d.questIndex = seedQuestIndex(d);
+    d.questBase = 0;
+    v = 16;
+  }
+
+  // Sona kalan v16 şeması: türetilen alanlar (tables/stations/serviceSpeedMult/hasWaiter), eski `padFill`,
+  // kaldırılan `trayLevel` ve 'samovar' referansı yazılmaz; stats/questIndex/questBase eklendi (v16).
+  const rawStats = (d.stats && typeof d.stats === 'object' ? d.stats : {}) as Partial<SaveStats>;
   return {
     saveVersion: SAVE_VERSION,
     wallet: String(d.wallet ?? '0'),
@@ -199,6 +280,15 @@ export function migrate(raw: Record<string, unknown>): SaveData {
     padsDone: Array.isArray(d.padsDone) ? (d.padsDone as string[]) : [],
     padFills:
       d.padFills && typeof d.padFills === 'object' ? (d.padFills as Record<string, number>) : {},
+    stats: {
+      teaPickups: Number(rawStats.teaPickups ?? 0) || 0,
+      teasServed: Number(rawStats.teasServed ?? 0) || 0,
+      coinsCollected: Number(rawStats.coinsCollected ?? 0) || 0,
+      dishesWashed: Number(rawStats.dishesWashed ?? 0) || 0,
+      waiterServed: Number(rawStats.waiterServed ?? 0) || 0,
+    },
+    questIndex: Math.max(0, Math.min(Number(d.questIndex ?? 0) || 0, economyConfig.quests.length)),
+    questBase: Math.max(0, Number(d.questBase ?? 0) || 0),
     lastSaved: Number(d.lastSaved ?? Date.now()) || Date.now(),
   };
 }

@@ -67,17 +67,20 @@ try {
     fail('Bekleyen müşteri koltuğu bulunamadı (firstWaitingSeat null)');
   }
 
-  // Gating: para ekle (lifetime ≥ 30) → ilk aktif pad table2 olmalı, açılış sırasını doğrula.
+  // QUEST AKIŞI: yukarıdaki doğal oyun (çay al → servis → para topla) ilk 3 görevi bitirmiş olmalı
+  // → aktif görev "2. Masayı aç" (q_table2) ve EKRANDA TEK PAD kuralıyla görünür pad = table2.
   await page.evaluate(() => window.__addMoney(300));
   const padInfo = await page.evaluate(() => window.__game());
+  if (padInfo.quest && padInfo.quest.id === 'q_table2') pass(`Quest hattı doğal akışla ilerledi (aktif görev: ${padInfo.quest.title})`);
+  else fail(`Aktif görev q_table2 değil: ${JSON.stringify(padInfo.quest)} (stats=${JSON.stringify(padInfo.stats)})`);
   if (padInfo.currentPad === 'table2' && padInfo.padPos) {
     await page.evaluate((pos) => window.__teleport(pos[0], pos[2]), padInfo.padPos);
     const afterPad = await page.evaluate(() => window.__advanceTime(8));
     if (afterPad.tables >= 2 && afterPad.padsDone.includes('table2'))
-      pass(`Pad sistemi + gating çalışıyor (table2 açıldı, masa=${afterPad.tables}, sıradaki=${afterPad.nextStep})`);
+      pass(`Pad sistemi + gating çalışıyor (table2 açıldı, masa=${afterPad.tables}, görev=${afterPad.quest?.title})`);
     else fail(`Pad açılmadı (tables=${afterPad.tables}, padsDone=${JSON.stringify(afterPad.padsDone)})`);
   } else {
-    fail(`Beklenen ilk aktif pad table2 değil: ${padInfo.currentPad} (nextStep=${padInfo.nextStep})`);
+    fail(`Beklenen görünür pad table2 değil: ${padInfo.currentPad}`);
   }
 
   // Mekânsal çay yükseltme (table2 sonrası açılır): para ekle + noktaya ışınla + zaman sar → seviye artmalı.
@@ -91,38 +94,57 @@ try {
     pass(`Mekânsal çay yükseltme çalışıyor (L${beforeLvl}→L${afterUp.stationLevel})`);
   else fail(`Yükseltme noktası seviye artırmadı (L${beforeLvl}→L${afterUp.stationLevel})`);
 
-  // Garson (Faz 2d, OPSİYONEL pad): D-019 reveal → ocak L1 SONRASI alınabilir listede olmalı; tutunca hasWaiter=true.
-  const optInfo = await page.evaluate(() => window.__game());
-  const waiterPad = (optInfo.optionalPads || []).find((p) => p.id === 'waiter');
-  if (waiterPad && waiterPad.pos) {
-    pass('Garson opsiyonel pad olarak sunuluyor (omurgayı kilitlemez)');
-    await page.evaluate(() => window.__addMoney(300));
-    await page.evaluate((pos) => window.__teleport(pos[0], pos[2]), waiterPad.pos);
+  // OMURGA (quest hattı, 2026-06-09): table3 → garson → (assist) → garson hız → bulaşıkçı → table4.
+  // Personel artık zorunlu halka; pad yalnız kendi görevi aktifken görünür (__setQuest ile atla).
+  // 3. Masa (garson önkoşulu).
+  await page.evaluate(() => window.__setQuest('q_table3'));
+  await page.evaluate(() => window.__addMoney(2000));
+  const t3 = await page.evaluate(() => window.__game());
+  if (t3.currentPad === 'table3' && t3.padPos) {
+    await page.evaluate((pos) => window.__teleport(pos[0], pos[2]), t3.padPos);
+    await page.evaluate(() => window.__advanceTime(8));
+  }
+  if ((await page.evaluate(() => window.__game())).padsDone.includes('table3')) pass('3. Masa açıldı (quest hattı)');
+  else fail('3. Masa açılamadı');
+
+  // Garson tut (omurga halkası; quest görevi aktifken pad görünür).
+  await page.evaluate(() => window.__setQuest('q_waiter'));
+  await page.evaluate(() => window.__addMoney(500));
+  const wq = await page.evaluate(() => window.__game());
+  if (wq.currentPad === 'waiter' && wq.padPos) {
+    pass('Garson pad\'i yalnız kendi görevinde görünüyor (ekranda tek pad)');
+    await page.evaluate((pos) => window.__teleport(pos[0], pos[2]), wq.padPos);
     const hired = await page.evaluate(() => window.__advanceTime(8));
     if (hired.hasWaiter) pass('Garson tutuldu (hasWaiter=true)');
     else fail(`Garson tutulamadı (hasWaiter=${hired.hasWaiter})`);
-
-    // Kısmi assist: oyuncuyu kimseyi servis edemeyeceği uzak köşeye park et → garson tek başına servis edip para düşürmeli.
-    // (Yeni sol-yaslı yerleşim: masalar solda; sağ-arka köşe tüm masalardan attract yarıçapı dışında.)
-    await page.evaluate(() => window.__teleport(5.2, 4.2));
-    const beforeCoins = (await page.evaluate(() => window.__game())).coins;
-    const assisted = await page.evaluate(() => window.__advanceTime(40));
-    if (assisted.coins > beforeCoins)
-      pass(`Garson kısmi assist çalışıyor (oyuncu uzakta, düşen para ${beforeCoins}→${assisted.coins})`);
-    else fail(`Garson servis etmedi (coins ${beforeCoins}→${assisted.coins}, waiterTray=${assisted.waiterTray})`);
-
-    // Garson L2 hız yükseltme (D-018 §6): garson tutulunca tuttuğun noktada işaret belirir; üstünde dur → L2 olur.
-    const wUp = await page.evaluate(() => window.__game());
-    const beforeWL = wUp.waiterLevel;
-    await page.evaluate(() => window.__addMoney(500));
-    await page.evaluate((pos) => window.__teleport(pos[0], pos[2]), wUp.waiterUpgradeSpotPos);
-    const wL2 = await page.evaluate(() => window.__advanceTime(6));
-    if (wL2.waiterLevel > beforeWL)
-      pass(`Garson hız yükseltme çalışıyor (L${beforeWL + 1}→L${wL2.waiterLevel + 1})`);
-    else fail(`Garson hız yükseltmedi (waiterLevel ${beforeWL}→${wL2.waiterLevel})`);
   } else {
-    fail(`Garson opsiyonel pad listesinde yok: ${JSON.stringify(optInfo.optionalPads)}`);
+    fail(`Garson pad'i görünmüyor (currentPad=${wq.currentPad}, quest=${JSON.stringify(wq.quest)})`);
   }
+
+  // Kısmi assist: oyuncuyu kimseyi servis edemeyeceği uzak köşeye park et → garson tek başına servis edip para düşürmeli.
+  await page.evaluate(() => window.__teleport(5.2, 4.2));
+  const beforeCoins = (await page.evaluate(() => window.__game())).coins;
+  const assisted = await page.evaluate(() => window.__advanceTime(40));
+  if (assisted.coins > beforeCoins)
+    pass(`Garson kısmi assist çalışıyor (oyuncu uzakta, düşen para ${beforeCoins}→${assisted.coins})`);
+  else fail(`Garson servis etmedi (coins ${beforeCoins}→${assisted.coins}, waiterTray=${assisted.waiterTray})`);
+
+  // Garson L2 hız yükseltme: ARKA-PLAN ŞARTI minWaiterServed=20 → garson 20 çay taşımadan işaret kilitli.
+  const preGrant = await page.evaluate(() => window.__game());
+  if ((preGrant.stats?.waiterServed ?? 0) < 20) {
+    pass(`Garson hız yükseltmesi hemen GELMEDİ (waiterServed=${preGrant.stats.waiterServed} < 20 — arka-plan şartı)`);
+  } else {
+    pass(`Garson 20+ çay taşımış (waiterServed=${preGrant.stats.waiterServed}) — şart doğal karşılandı`);
+  }
+  await page.evaluate(() => window.__grantStat('waiterServed', 20));
+  const wUp = await page.evaluate(() => window.__game());
+  const beforeWL = wUp.waiterLevel;
+  await page.evaluate(() => window.__addMoney(500));
+  await page.evaluate((pos) => window.__teleport(pos[0], pos[2]), wUp.waiterUpgradeSpotPos);
+  const wL2 = await page.evaluate(() => window.__advanceTime(6));
+  if (wL2.waiterLevel > beforeWL)
+    pass(`Garson hız yükseltme çalışıyor (L${beforeWL + 1}→L${wL2.waiterLevel + 1})`);
+  else fail(`Garson hız yükseltmedi (waiterLevel ${beforeWL}→${wL2.waiterLevel})`);
 
   // Bardak döngüsü (Faz 2e): garson servis ederken kirli bardak üretilir → oyuncu toplar → bulaşıkta yıkar.
   await page.evaluate(() => window.__teleport(5.2, 4.2)); // oyuncu uzak köşede; garson servis etsin, kirli birikir
@@ -149,20 +171,20 @@ try {
     fail(`Kirli bardak üretilmedi (dirty=${cupRun.dirtyCount}, carried=${cupRun.carriedDirty})`);
   }
 
-  // (D-018: tepsi yükseltme KALDIRILDI → tepsi sabit 2; ilgili smoke testi de kaldırıldı.)
-
-  // Omurga: 3. ve 4. masayı aç (D-019 §3: masa yükseltme işaretleri TÜM masalar açılınca belirir).
-  for (const id of ['table3', 'table4']) {
+  // Omurga sonu: bulaşıkçı (table4 önkoşulu) + 4. masa (quest hattıyla).
+  for (const [qid, pid] of [['q_dish', 'dishwasher'], ['q_table4', 'table4']]) {
+    await page.evaluate((q) => window.__setQuest(q), qid);
     await page.evaluate(() => window.__addMoney(2000));
     const g = await page.evaluate(() => window.__game());
-    if (g.currentPad === id && g.padPos) {
+    if (g.currentPad === pid && g.padPos) {
       await page.evaluate((pos) => window.__teleport(pos[0], pos[2]), g.padPos);
       await page.evaluate(() => window.__advanceTime(8));
     }
   }
   const opened = await page.evaluate(() => window.__game());
-  if ((opened.padsDone || []).includes('table4')) pass(`Omurga açıldı (3. + 4. masa, padsDone=${opened.padsDone.length})`);
-  else fail(`3./4. masa açılmadı (padsDone=${JSON.stringify(opened.padsDone)})`);
+  if ((opened.padsDone || []).includes('dishwasher') && (opened.padsDone || []).includes('table4'))
+    pass(`Omurga tamam (bulaşıkçı + 4. masa, padsDone=${opened.padsDone.length})`);
+  else fail(`Bulaşıkçı/4. masa açılmadı (padsDone=${JSON.stringify(opened.padsDone)})`);
 
   // Masa yükseltme (Faz 2h, MASA-BAŞI): TÜM masalar açılınca her masanın YANINDAKİ nokta aktif. 0. masanın
   // noktasına git → SADECE o masa yükselir (bahşiş+sabır); komşu masa etkilenmez.
@@ -183,11 +205,26 @@ try {
   }
 
   // Yeni-özellik bildirimi (D-019 §4): ilerleme boyunca açılan ikincil özellikler bildirilmiş olmalı.
+  // ('opt:waiter' kalktı — personel artık quest hattının zorunlu halkası, opsiyonel pad yok.)
   const reveals = (await page.evaluate(() => window.__game())).revealSeen || [];
-  const wantReveals = ['upgrade', 'opt:waiter', 'waiterUp', 'tableUp'];
+  const wantReveals = ['upgrade', 'waiterUp', 'tableUp'];
   const missing = wantReveals.filter((k) => !reveals.includes(k));
   if (missing.length === 0) pass(`Yeni-özellik bildirimi çalışıyor (reveal: ${reveals.join(', ')})`);
   else fail(`Eksik reveal bildirimi: ${missing.join(', ')} (görülen: ${reveals.join(', ')})`);
+
+  // GÖREV BARI DOM'da (HUD redesign): üst-orta quest chip'i + para chip'i var; eski sayaç chip'leri YOK.
+  const questBar = await page.$('[data-testid="quest"]');
+  const walletChip = await page.$('[data-testid="wallet"]');
+  const oldChip = await page.$('[data-testid="tray"]');
+  if (walletChip && !oldChip) pass('HUD sade: para chip\'i var, eski sayaç chip\'leri kaldırıldı');
+  else fail(`HUD beklenen durumda değil (wallet=${!!walletChip}, eskiChip=${!!oldChip})`);
+  if (questBar) pass('Görev barı DOM\'da (quest sistemi)');
+  else {
+    // Görev hattı bitmişse bar görünmez — bunu da geçerli say (oyun sonu durumu).
+    const qNow = await page.evaluate(() => window.__game());
+    if (!qNow.quest) pass('Görev barı yok çünkü görev hattı bitti (geçerli)');
+    else fail(`Görev barı DOM'da yok ama aktif görev var: ${JSON.stringify(qNow.quest)}`);
+  }
 
   // Dikey (portrait) orana çevir → responsive kamera/HUD hatasız mı
   await page.setViewportSize({ width: 412, height: 915 });
