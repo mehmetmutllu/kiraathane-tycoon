@@ -2,7 +2,40 @@
 
 > En sık güncellenen dosya. Her anlamlı adımdan sonra güncelle.
 
-## Şu an neredeyiz (2026-06-07 — EN GÜNCEL: MOBİL CİLA + ANDROID APK hazır → kullanıcı cihazda test edecek)
+## Şu an neredeyiz (2026-06-09 — EKONOMİ TEMPO + OFFLINE + KAMERA AYARI → kullanıcı telefonda test edecek)
+Kullanıcı telefon feedback'i: (1) başta AŞIRI yavaş; (2) 1 gece sonra ~18k birikip ilk zone tek seferde bitti (offline
+kısıtsız hissi); (3) garson+bulaşıkçı açılınca her şey çok hızlı/ucuz; (4) kamera çok yakın. 2 agent (idle-tycoon tempo
+araştırması + kod tarama) + bizzat Playwright/devHooks taraması yapıldı. **KÖK:** tek darboğaz = MANUEL SERVİS (yardımcılar
+açılınca açık/kapalı gibi flip); offline = idealize aktif oranın %100'ü × 2h cap = gelişmiş dükkânda ~18k (ölçümle teyit:
+120sn pasif=0 gelir; offline matematiği 2.56₺/sn×7200=18.4k).
+**UYGULANAN (kullanıcı onayıyla, SAVE_VERSION 15 DEĞİŞMEDİ — hepsi config/kod, şema değişmedi):**
+- **Offline sert kısıldı:** YENİ `offline.rateMult 0.5` + `baseCapHours 2→1` (store.ts init çarpanı uygular) → built shop
+  18.4k→**~4.6k** (4× az), orta dükkân ~1.7k. Hedef: "birkaç yükseltme parası, oyuncu nefes alsın; zone'u tek seferde bitirmesin."
+- **Eğri garson noktasında ayarlandı:** garson ÖNCESİ ucuz (table2 35→25 & minLifetime 30→20; çay yük. tabanı 25→20) →
+  **ilk alım 84sn→60sn**; SONRASI ölçülü pahalı (table3 120→130, table4 300→420, bulaşıkçı 280→330, masa yük. growth
+  1.6→1.8 = L1-4 **60/108/194/349**, garson L2 hız 2.6→2.3 & maliyet 200→250). "Abartma, akış sürsün, zone ~1sa+ aktif oyunda bitsin."
+- **Kamera uzaklaştırıldı:** Scene.tsx CameraRig d 6→7, portrait clamp 1.3→1.4.
+- **🐛→✅ DEADLOCK FIX + PAYLAŞIMLI TEPSİ (kullanıcı bug raporu 2026-06-09):** Eski "eli boşken / tek renk tepsi"
+  kısıtı (Faz 2f) deadlock yapıyordu: elinde çay + TÜM masalar kirli → bırakacak bekleyen masa yok (kirli masada
+  müşteri oturmaz) + çay elindeyken kirli toplanamaz (`tray===0` şartı) → ne bırakır ne temizler = sonsuz kilit.
+  Kullanıcı "neden hep böyle olmasın" dedi → **PAYLAŞIMLI kapasiteli karışık tepsi:** `serving.trayCapacity 2→4`,
+  çay + kirli AYNI tepsiyi paylaşır (toplam ≤ trayCap); iki gate (`carriedDirty===0` / `tray===0`) KALDIRILDI →
+  yapısal kilit-geçirmez + solo angarya azalır. store.ts servis+toplama blokları `tray+carriedDirty<trayCap`;
+  Player.tsx tek CupTray çay(kırmızı)+kirli(gri) ardışık dizer (üst üste binmez). Yeni vitest "DEADLOCK YOK" testi.
+  SAVE değişmedi (trayCap transient/config). vitest 70/70, build temiz, smoke 22/22 (tray 3/4, kirli 4 toplandı).
+- **✅ ONBOARDING (Faz 2i) + SIFIRLAMA BUTONU (kullanıcı isteği 2026-06-09):** İlk-oyun koç ipucu `onboardingHint(g)` saf helper —
+  2. masa açılana kadar çekirdek döngüyü ADIM ADIM öğretir (ocağa git→çayı al → müşteriye götür → parayı topla → "2. Masa"
+  işaretinde bekle), açılınca null. KALICI durum YOK, oyun durumundan türetilir (SAVE değişmedi); mevcut kayıtta table2 zaten
+  açıksa hiç görünmez; **sıfırlayınca tekrar belirir.** HUD `.coach` yeşil bant (sade, havada kart yok); onboarding aktifken
+  `.next-step` gizlenir; `store.onboardHint` transient (init+tick). **Sıfırlama butonu** `.reset-btn` sol-altta (window.confirm
+  onaylı → hardReset=clearSave+init) cihazda test için. devHooks `onboardHint`. Yeni vitest (5 adım). **vitest 71/71, build temiz,
+  smoke 22/22, Playwright gözle doğrulandı (onboarding-reset.png).** Faz 2'de açık tek kalem (onboarding) BİTTİ.
+**Doğrulama:** sim ilk-alım **60sn** / 10k @35.7dk (idealize → gerçek solo ~1-1.5sa); **vitest 71/71**, build temiz, **smoke 22/22**,
+konsol temiz. Önizleme: http://localhost:5201/.
+**SIRADAKİ:** kullanıcı telefonda test → feedback → ince ayar; sorun yoksa Faz 3a. **İkinci ilerleme ekseni** (nakit-dışı zone
+gate) Faz 3a (çoklu zone) ile birlikte yapılacak — tek-zone için offline kısıntısı yeterli olduğundan ertelendi. (Henüz commit/push YOK.)
+
+## (önceki) MOBİL CİLA + ANDROID APK (kullanıcı cihazda test etti)
 Kullanıcı önizleme sonrası mobil istekleri verdi; hepsi yapıldı + Android APK derlendi (arkadaşına da gönderecek).
 **Mobil cila (5):** (1) **drag-anywhere joystick** — ekranın her yerine basıp sürükle, joystick parmağın yerinde belirir
 (`touch-layer` tüm ekran + floating `.joystick`); (2) **alttaki WASD/ipucu yazısı KALDIRILDI** (`.hint` silindi); (3) **kamera

@@ -5,10 +5,11 @@ import { Model } from './Model';
 import { useFacing } from './useFacing';
 
 // Bardakları ellerin ÖNÜNDEKİ tek tepside 3×2 ızgaraya dizer (Faz 2f): max 6 bardak taşmaz,
-// kafa/sırt istifi yok. "Eli boşken" kısıtı (store) tepside hep TEK tür (renk) garanti eder:
-// temiz çay = kırmızı, kirli = gri. count 0 ise hiçbir şey çizilmez.
-function CupTray({ count, color, dirty = false }: { count: number; color: string; dirty?: boolean }) {
-  if (count <= 0) return null;
+// Tek ön tepsi, PAYLAŞIMLI kapasite: önce temiz çaylar (kırmızı), sonra kirliler (gri) ardışık dizilir →
+// karışık taşımada üst üste binmez (tea + dirty aynı ızgarayı sırayla paylaşır). count 0 ise hiçbir şey çizilmez.
+function CupTray({ tea, dirty }: { tea: number; dirty: number }) {
+  const total = tea + dirty;
+  if (total <= 0) return null;
   const colSpacing = 0.16;
   const rowSpacing = 0.15;
   return (
@@ -18,17 +19,18 @@ function CupTray({ count, color, dirty = false }: { count: number; color: string
         <boxGeometry args={[0.56, 0.04, 0.38]} />
         <meshStandardMaterial color="#8d6e63" />
       </mesh>
-      {Array.from({ length: count }).map((_, i) => {
+      {Array.from({ length: total }).map((_, i) => {
+        const isDirty = i >= tea;
         const col = i % 3; // 0..2 → x: -1,0,1
         const row = Math.floor(i / 3); // 0..1 → z: arka/ön
         return (
           <mesh key={i} castShadow position={[(col - 1) * colSpacing, 0.1, (row - 0.5) * rowSpacing]}>
             <cylinderGeometry args={[0.05, 0.04, 0.14, 8]} />
             <meshStandardMaterial
-              color={color}
-              roughness={dirty ? 0.9 : 0.5}
-              emissive={dirty ? '#000000' : '#7a1f17'}
-              emissiveIntensity={dirty ? 0 : 0.25}
+              color={isDirty ? '#8d8276' : '#c0392b'}
+              roughness={isDirty ? 0.9 : 0.5}
+              emissive={isDirty ? '#000000' : '#7a1f17'}
+              emissiveIntensity={isDirty ? 0 : 0.25}
             />
           </mesh>
         );
@@ -64,7 +66,7 @@ function HeadRadial() {
 }
 
 // Sahip karakteri (greybox: altın kapsül). Faz 6'da owner.glb takılır.
-// Taşıma tek ön tepside: "eli boşken" kısıtı sayesinde aynı anda yalnız biri (>0) → çakışmaz.
+// Taşıma tek ön tepside: çay + kirli PAYLAŞIMLI kapasiteyle ardışık dizilir (karışık taşıma → çakışmaz).
 export function Player() {
   const p = useGame((s) => s.player);
   const tray = useGame((s) => s.tray);
@@ -83,8 +85,7 @@ export function Player() {
             </mesh>
           }
         />
-        <CupTray count={tray} color="#c0392b" />
-        <CupTray count={carriedDirty} color="#8d8276" dirty />
+        <CupTray tea={tray} dirty={carriedDirty} />
       </group>
       <HeadRadial />
     </group>

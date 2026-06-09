@@ -14,11 +14,20 @@ export function HUD() {
   const zone = useGame((s) => s.activeZone);
   const notice = useGame((s) => s.notice);
   const nextStep = useGame((s) => s.nextStepLabel);
+  const onboardHint = useGame((s) => s.onboardHint);
+  const hardReset = useGame((s) => s.hardReset);
 
   const zonePct = zone ? Math.min(100, (zone.fill / zone.cost) * 100) : 0;
 
+  const onReset = () => {
+    if (window.confirm('Oyunu sıfırla? Bu cihazdaki tüm ilerleme silinecek.')) hardReset();
+  };
+
   return (
     <div className="hud" data-testid="hud">
+      <button className="reset-btn" data-testid="reset" onClick={onReset} title="Oyunu sıfırla (test)">
+        ↺ Sıfırla
+      </button>
       <div className="hud-top">
         <div className="chip" data-testid="wallet">
           <span className="cur">₺</span> {fmt(wallet)}
@@ -56,8 +65,15 @@ export function HUD() {
         </div>
       )}
 
-      {/* Sıradaki adım rehberi (bir zone üstünde değilken) */}
-      {!zone && nextStep && (
+      {/* İlk-oyun onboarding koç ipucu (Faz 2i) — 2. masa açılana kadar çekirdek döngüyü öğretir */}
+      {onboardHint && (
+        <div className="coach" data-testid="coach" key={onboardHint}>
+          🫖 {onboardHint}
+        </div>
+      )}
+
+      {/* Sıradaki adım rehberi (bir zone üstünde değilken; onboarding sırasında gizlenir, koç yönlendirir) */}
+      {!zone && !onboardHint && nextStep && (
         <div className="next-step" data-testid="next-step">
           👉 {nextStep}
         </div>

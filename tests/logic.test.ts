@@ -19,6 +19,7 @@ import {
   currentPad,
   availableOptionalPads,
   nextStep,
+  onboardingHint,
   stationSoftMaxLevel,
   stationUpgradeCost,
   trayCapacity,
@@ -502,23 +503,23 @@ describe('bardak döngüsü (Faz 2e) — demleme temiz harcar, içen kirli bıra
     expect(cupPoolCapacity(1)).toBe(cupPoolCapacity(0) + economyConfig.cups.poolPerLevel);
   });
 
-  // Faz 2f "eli boşken" kısıtı (karar 2026-06-06): tepside hep TEK tür → tek renk taşıma.
-  it('kirli taşırken (carriedDirty>0) ocaktan temiz çay ALINMAZ', () => {
+  // PAYLAŞIMLI kapasite (2026-06-09): çay + kirli aynı tepsiyi paylaşır; karışık taşıma serbest, deadlock yok.
+  it('kirli taşırken ocaktan temiz çay ALINIR (karışık taşıma; toplam trayCap sınırı)', () => {
     useGame.getState().hardReset();
     const st = LAYOUT.stations[0];
-    // Hazır çay olsun + elinde kirli olsun → ocağa gitse de temizi alamamalı.
+    // Elinde kirli varken ocağa gidince temizi de alabilmeli (toplam trayCap'i aşmadan).
     useGame.setState({
       player: [st[0], 0.6, st[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0],
       readyCups: 3, carriedDirty: 1, tray: 0,
     });
     useGame.getState().tick(0.1);
-    expect(useGame.getState().tray).toBe(0); // kirli elindeyken temiz alınmadı
-    expect(useGame.getState().carriedDirty).toBe(1);
+    expect(useGame.getState().tray).toBeGreaterThan(0); // kirli elindeyken de temiz alındı
+    expect(useGame.getState().tray + useGame.getState().carriedDirty).toBeLessThanOrEqual(trayCapacity());
   });
 
-  it('temiz çay taşırken (tray>0) masadaki kirli TOPLANMAZ (simetrik)', () => {
+  it('temiz çay taşırken masadaki kirli TOPLANIR (karışık taşıma; simetrik)', () => {
     useGame.getState().hardReset();
-    // Bir masaya kirli bardak koy, oyuncuyu üstüne park et, elinde temiz çay olsun.
+    // Bir masaya kirli bardak koy, oyuncuyu üstüne park et, elinde temiz çay olsun → kirliyi de alabilmeli.
     const dishPos: [number, number, number] = [1, 0.95, 1];
     useGame.setState({
       player: [dishPos[0], 0.6, dishPos[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0],
@@ -526,8 +527,23 @@ describe('bardak döngüsü (Faz 2e) — demleme temiz harcar, içen kirli bıra
       dishes: [{ id: 9001, pos: dishPos, tableIndex: 0 }],
     });
     useGame.getState().tick(0.1);
-    expect(useGame.getState().carriedDirty).toBe(0); // temiz elindeyken kirli toplanmadı
-    expect(useGame.getState().dishes.length).toBe(1);
+    expect(useGame.getState().carriedDirty).toBe(1); // temiz elindeyken kirli toplandı
+    expect(useGame.getState().dishes.length).toBe(0);
+  });
+
+  it('DEADLOCK YOK: elinde çay + tüm masalar kirli → kirli toplanıp temizlenebilir', () => {
+    useGame.getState().hardReset();
+    // Elinde 1 çay; bir masada eşik üstü kirli (masa kilitli, bekleyen yok) → eskiden kilitlenirdi.
+    const dishPos: [number, number, number] = [1, 0.95, 1];
+    const dishes = Array.from({ length: 3 }, (_, i) => ({ id: 9100 + i, pos: dishPos, tableIndex: 0 }));
+    useGame.setState({
+      player: [dishPos[0], 0.6, dishPos[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0],
+      tray: 1, carriedDirty: 0, dishes,
+    });
+    useGame.getState().tick(0.1);
+    // Çay elindeyken kirli toplanabildi → kilit kırıldı.
+    expect(useGame.getState().carriedDirty).toBeGreaterThan(0);
+    expect(useGame.getState().tray + useGame.getState().carriedDirty).toBeLessThanOrEqual(trayCapacity());
   });
 });
 
@@ -666,9 +682,9 @@ describe('para mıknatısı (Faz 2f) — attract yarıçapındaki para oyuncuya 
   });
 });
 
-describe('tepsi kapasitesi (D-018: yükseltme kaldırıldı → sabit 2)', () => {
-  it('tepsi kapasitesi sabittir (2)', () => {
-    expect(trayCapacity()).toBe(2);
+describe('tepsi kapasitesi (D-018: yükseltme kaldırıldı → sabit; 2026-06-09: paylaşımlı, 4)', () => {
+  it('tepsi kapasitesi sabittir (4, çay+kirli paylaşımlı)', () => {
+    expect(trayCapacity()).toBe(4);
   });
 });
 
@@ -761,7 +777,7 @@ describe('kayıt migrasyonu v4..v15 (padFills, station2/samovar çıkışı, add
     } as unknown as Record<string, unknown>);
     expect(m.saveVersion).toBe(SAVE_VERSION);
     expect((m as Record<string, unknown>).trayLevel).toBeUndefined(); // tray yükseltme kaldırıldı
-    expect(trayCapacity()).toBe(2); // kapasite sabit
+    expect(trayCapacity()).toBe(4); // kapasite sabit (paylaşımlı çay+kirli)
   });
 
   it('varsayılan kayıt padFills={} içerir; türetilen + kaldırılan (trayLevel) alanlar tutulmaz', () => {
@@ -841,9 +857,27 @@ describe('ekonomi v2 — seviye throughputu artırır, fiyatı DEĞİL (D-010)',
     expect(brewTime(0, 0.7)).toBeLessThan(brewTime(0, 1));
   });
 
+  it('onboarding koç ipucu: çekirdek döngüyü sırayla öğretir, 2. masa açılınca biter (Faz 2i)', () => {
+    // Hiç çay servis edilmedi, tepsi boş → ocağa yönlendir.
+    expect(onboardingHint({ table2Done: false, lifetime: 0, walletPos: false, trayHasTea: false, coins: 0 }))
+      .toContain('ocağa git');
+    // Tepside çay var → müşteriye götür.
+    expect(onboardingHint({ table2Done: false, lifetime: 0, walletPos: false, trayHasTea: true, coins: 0 }))
+      .toContain('müşteriye götür');
+    // Servis oldu (lifetime>0), para yerde, cüzdan boş → parayı topla.
+    expect(onboardingHint({ table2Done: false, lifetime: 5, walletPos: false, trayHasTea: false, coins: 1 }))
+      .toContain('parayı topla');
+    // Para toplandı → 2. masa işaretine yönlendir.
+    expect(onboardingHint({ table2Done: false, lifetime: 5, walletPos: true, trayHasTea: false, coins: 0 }))
+      .toContain('2. Masa');
+    // 2. masa açıldı → onboarding biter (null).
+    expect(onboardingHint({ table2Done: true, lifetime: 100, walletPos: true, trayHasTea: false, coins: 0 }))
+      .toBeNull();
+  });
+
   it('nextStep gating durumuna göre doğru yönlendirir', () => {
-    // Başlangıç: table2 minLifetime:30 ile kilitli → "₺30 kazan" yönlendirmesi
-    expect(nextStep({ padsDone: [], tables: 1, stationLevel: 0, lifetime: 0 })).toContain('30');
+    // Başlangıç: table2 minLifetime:20 ile kilitli → "₺20 kazan" yönlendirmesi
+    expect(nextStep({ padsDone: [], tables: 1, stationLevel: 0, lifetime: 0 })).toContain('20');
     // lifetime yeterli → sıradaki = 2. Masa
     expect(nextStep({ padsDone: [], tables: 1, stationLevel: 0, lifetime: 100 })).toContain('2. Masa');
     // table2 alındı → D-019 §2: 3. Masa ocak gerektirmez, doğrudan sıradaki omurga.
@@ -1010,11 +1044,11 @@ describe('personel yol bulma (nav.ts — BFS, kilitlenme yok)', () => {
 });
 
 describe('masa yükseltme + bahşiş (Faz 2h)', () => {
-  it('maliyet eğrisi geometrik (60 × 1.6^lvl)', () => {
+  it('maliyet eğrisi geometrik (60 × 1.8^lvl)', () => {
     expect(tableUpgradeCost(0)).toBe(60);
-    expect(tableUpgradeCost(1)).toBe(96);
-    expect(tableUpgradeCost(2)).toBe(153);
-    expect(tableUpgradeCost(3)).toBe(245);
+    expect(tableUpgradeCost(1)).toBe(108);
+    expect(tableUpgradeCost(2)).toBe(194);
+    expect(tableUpgradeCost(3)).toBe(349);
   });
 
   it('bahşiş ve sabır seviyeyle artar; L0 nötr', () => {
@@ -1138,14 +1172,14 @@ describe('Etkileşim HAREKET-temelli (D-018 §2): üstünden geçerken alma, dur
 
   it('biriken ₺ KORUNUR: noktadan çıkınca kısmi dolum sıfırlanmaz', () => {
     const { pad, pos } = placeOnPad();
-    useGame.setState({ wallet: D(20) }); // cost(35)'ten AZ → tamamlanmaz, kısmi kalır
+    useGame.setState({ wallet: D(20) }); // cost(25)'ten AZ → tamamlanmaz, kısmi kalır
     for (let i = 0; i < 6; i++) {
       useGame.setState({ player: [pos[0], 0.6, pos[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
       useGame.getState().tick(0.1);
     }
     const accrued = useGame.getState().padFills[pad.id] ?? 0;
     expect(accrued).toBeGreaterThan(0);
-    expect(useGame.getState().padsDone).not.toContain(pad.id); // tamamlanmadı (20<35)
+    expect(useGame.getState().padsDone).not.toContain(pad.id); // tamamlanmadı (20<25)
     // ÇIK → biriken dolum korunur.
     useGame.setState({ player: [pos[0] + 6, 0.6, pos[2]] });
     useGame.getState().tick(0.1);

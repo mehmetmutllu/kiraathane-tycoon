@@ -81,6 +81,7 @@ export function installDevHooks(): void {
       waiterLevel: s.waiterLevel,
       waiterUpgradeSpotPos: LAYOUT.waiterUpgradeSpot,
       nextStep: s.nextStepLabel,
+      onboardHint: s.onboardHint,
       // Yeni-özellik bildirimi (D-019 §4): anlık toast metni + bu oturumda bildirilmiş reveal anahtarları.
       notice: s.notice ? s.notice.text : null,
       revealSeen: [...s.revealSeen],

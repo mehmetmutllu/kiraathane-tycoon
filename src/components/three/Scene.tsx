@@ -42,10 +42,10 @@ function CameraRig() {
       st.current.w = size.width;
       st.current.h = size.height;
       const aspect = size.width / Math.max(1, size.height);
-      // Kullanıcı isteği (2026-06-07): kadraj BAYA daha yakın (özellikle mobil). Taban d 9→6; portrait'te
-      // dar ekran için ölçülü geri çekme (eski 1.7 cap çok uzaklaştırıyordu → 1.3).
-      const fit = aspect < 1 ? Math.min(1.3, 1 / aspect) : 1;
-      st.current.d = 6 * fit;
+      // Kullanıcı isteği (2026-06-09): telefonda "çok yakın" hissi → biraz geri çek. Taban d 6→7; portrait'te
+      // dar ekran için ölçülü geri çekme (clamp 1.3→1.4).
+      const fit = aspect < 1 ? Math.min(1.4, 1 / aspect) : 1;
+      st.current.d = 7 * fit;
     }
     const d = st.current.d;
     desired.set(p[0], d, p[2] + d);

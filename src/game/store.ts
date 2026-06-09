@@ -382,6 +382,8 @@ export interface GameState {
   /** Bu oturumda zaten bildirilmiş reveal anahtarları (transient; init'te açık olanlarla doldurulur). */
   revealSeen: string[];
   nextStepLabel: string;
+  /** İlk-oyun onboarding koç ipucu (2. masa açılana kadar; transient, durumdan türetilir). Faz 2i. */
+  onboardHint: string | null;
   offlineEarned: number;
   // Dahili
   spawnTimer: number;
@@ -444,6 +446,27 @@ export function nextStep(g: GateState): string {
   return 'Tüm açılışlar tamam ✓';
 }
 
+/**
+ * İlk-oyun onboarding koç ipucu (Faz 2i): 2. masa açılana kadar çekirdek döngüyü adım adım öğretir,
+ * açılınca null döner (onboarding biter). KALICI durum gerektirmez — tamamen oyun durumundan türetilir
+ * (oyunu sıfırlayınca tekrar belirir). Mevcut kayıtta table2 zaten açıksa hiç görünmez.
+ */
+export function onboardingHint(g: {
+  table2Done: boolean;
+  lifetime: number;
+  walletPos: boolean;
+  trayHasTea: boolean;
+  coins: number;
+}): string | null {
+  if (g.table2Done) return null;
+  if (g.lifetime <= 0)
+    return g.trayHasTea
+      ? 'Çayı bekleyen müşteriye götür → masaya yaklaş'
+      : 'Ekranı sürükleyip ocağa git → çayı tepsine al';
+  if (!g.walletPos && g.coins > 0) return 'Yere düşen parayı topla → üstünden geç';
+  return 'Parayı biriktir → zemindeki "2. Masa" işaretinde bekle';
+}
+
 /** ₺ ile çıkılabilen en yüksek garson seviyesi (index; L1=0 taban → L2=1). */
 export const waiterSoftMaxLevel = waiterSoftMaxLevelCfg;
 /** Garson L2 yükseltme maliyeti (₺). */
@@ -491,6 +514,7 @@ export const useGame = create<GameState>((set, get) => ({
   notice: null,
   revealSeen: [],
   nextStepLabel: '',
+  onboardHint: null,
   offlineEarned: 0,
   spawnTimer: 1,
   saveTimer: SAVE_INTERVAL,
@@ -510,7 +534,9 @@ export const useGame = create<GameState>((set, get) => ({
     let offlineEarned = 0;
     if (elapsed > 30) {
       offlineEarned = Math.floor(
-        incomeRate(derived.tables, save.stationLevel, derived.serviceSpeedMult) * Math.min(elapsed, cap),
+        incomeRate(derived.tables, save.stationLevel, derived.serviceSpeedMult) *
+          C.offline.rateMult *
+          Math.min(elapsed, cap),
       );
       wallet = wallet.add(offlineEarned);
       lifetime = lifetime.add(offlineEarned);
@@ -560,6 +586,13 @@ export const useGame = create<GameState>((set, get) => ({
         tables: derived.tables,
         stationLevel: save.stationLevel,
         lifetime: lifetime.toNumber(),
+      }),
+      onboardHint: onboardingHint({
+        table2Done: save.padsDone.includes('table2'),
+        lifetime: lifetime.toNumber(),
+        walletPos: wallet.gt(0),
+        trayHasTea: false,
+        coins: 0,
       }),
       spawnTimer: 1,
       saveTimer: SAVE_INTERVAL,
@@ -753,12 +786,12 @@ export const useGame = create<GameState>((set, get) => ({
     // --- Servis (D-011): ocakta tepsiyi doldur, bekleyen masalara çay bırak (yakınlık) ---
     const trayCap = trayCapacity();
     // Ocağa yaklaşınca hazır çaylardan tepsi dolar (herhangi bir açık ocak yeterli).
-    // Faz 2f "eli boşken" kısıtı (karar 2026-06-06): kirli taşırken (carriedDirty>0) temiz ALINMAZ
-    // → tepside hep tek tür (tek renk); "götür → topla → yıka" ritmi korunur.
-    if (tray < trayCap && readyCups > 0 && carriedDirty === 0) {
+    // PAYLAŞIMLI kapasite (2026-06-09): çay + kirli aynı tepsiyi paylaşır → toplam trayCap'i aşamaz.
+    // Karışık taşımaya izin verilir (eski "eli boşken" kısıtı kaldırıldı; deadlock'u engeller).
+    if (tray + carriedDirty < trayCap && readyCups > 0) {
       for (let i = 0; i < stations; i++) {
         if (dist2D(player, LAYOUT.stations[i]) < C.serving.pickupRadius) {
-          const take = Math.min(trayCap - tray, readyCups);
+          const take = Math.min(trayCap - tray - carriedDirty, readyCups);
           tray += take;
           readyCups -= take;
           break;
@@ -780,12 +813,11 @@ export const useGame = create<GameState>((set, get) => ({
     }
 
     // --- Bardak döngüsü (Faz 2e): oyuncu masadaki kirli bardakları toplar, bulaşıkta yıkar (yakınlık) ---
-    // Faz 2f "eli boşken" kısıtı (simetrik): temiz çay taşırken (tray>0) kirli TOPLANMAZ → tepsi tek renk.
-    const dirtyCap = trayCapacity();
-    if (tray === 0 && carriedDirty < dirtyCap && dishes.length) {
+    // PAYLAŞIMLI kapasite (2026-06-09): çay taşırken de kirli toplanabilir → toplam trayCap'i aşamaz.
+    if (tray + carriedDirty < trayCap && dishes.length) {
       const keep: Dish[] = [];
       for (const d of dishes) {
-        if (carriedDirty < dirtyCap && dist2D(player, d.pos) < C.cups.collectRadius) carriedDirty += 1;
+        if (tray + carriedDirty < trayCap && dist2D(player, d.pos) < C.cups.collectRadius) carriedDirty += 1;
         else keep.push(d);
       }
       dishes = keep;
@@ -1067,6 +1099,13 @@ export const useGame = create<GameState>((set, get) => ({
     }
 
     const nextStepLabel = nextStep({ padsDone, tables: out.tables, stationLevel, lifetime: lifetime.toNumber() });
+    const onboardHint = onboardingHint({
+      table2Done: padsDone.includes('table2'),
+      lifetime: lifetime.toNumber(),
+      walletPos: wallet.gt(0),
+      trayHasTea: tray > 0,
+      coins: coins.length,
+    });
 
     set({
       npcs: liveNpcs,
@@ -1091,6 +1130,7 @@ export const useGame = create<GameState>((set, get) => ({
       notice,
       revealSeen,
       nextStepLabel,
+      onboardHint,
       player,
       waiter,
       dishwasher,

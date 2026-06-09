@@ -124,6 +124,50 @@ body,
   pointer-events: none;
 }
 
+/* İlk-oyun onboarding koç ipucu (Faz 2i): next-step'in biraz üstünde, dikkat çeken ama sade bant. */
+.coach {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 128px;
+  max-width: 88vw;
+  background: linear-gradient(180deg, rgba(38, 90, 70, 0.95), rgba(22, 64, 50, 0.95));
+  border: 1px solid rgba(126, 230, 190, 0.55);
+  color: #d7f7ea;
+  padding: 9px 16px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  pointer-events: none;
+  animation: coachPop 0.25s ease-out;
+}
+
+@keyframes coachPop {
+  from { transform: translate(-50%, 6px); opacity: 0; }
+  to { transform: translate(-50%, 0); opacity: 1; }
+}
+
+/* Sıfırlama butonu (test): sol-alt köşe, küçük; onay ister. */
+.reset-btn {
+  position: absolute;
+  left: 12px;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  z-index: 5;
+  pointer-events: auto;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #f0f0f0;
+  padding: 7px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.reset-btn:active {
+  background: rgba(0, 0, 0, 0.75);
+}
+
 .pad-status {
   position: absolute;
   top: 12px;

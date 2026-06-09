@@ -278,6 +278,20 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
        kök, git-ignored). Ortam: SDK `C:\flutter\bin` (local.properties), build JDK = Android Studio JBR 21 (gradle.properties;
        sistem JDK 23 AGP'yi kırar). Script'ler: `npm run apk` (yeniden derle), `npm run dev:host` (telefon tarayıcısı LAN testi),
        `npm run cap:sync`. Detay: architecture.md. (Faz 7 tam cila — instancing/atlas/60fps/AdMob/IAP — sonraya kalır.)
+     - ✅ **EKONOMİ TEMPO + OFFLINE + KAMERA AYARI (kullanıcı telefon feedback'i 2026-06-09):** KÖK = tek darboğaz manuel servis
+       (yardımcılar açılınca flip), offline %100 idealize × 2h = built shop ~18k. Onaylı düzeltmeler (SAVE_VERSION 15 SABİT, config/kod):
+       (a) **offline sert kıs:** YENİ `offline.rateMult 0.5` + `baseCapHours 2→1` → built 18.4k→~4.6k, mid ~1.7k (store.ts init çarpan).
+       (b) **eğri garson noktasında:** öncesi ucuz (table2 35→25 & minLifetime 30→20; çay yük. tabanı 25→20 → ilk-alım 84→60sn);
+       sonrası ölçülü pahalı (table3 120→130, table4 300→420, bulaşıkçı 280→330, masa yük. growth 1.6→1.8 [60/108/194/349], garson L2
+       2.6→2.3 & 200→250). (c) **kamera** Scene.tsx d 6→7, portrait clamp 1.3→1.4. **vitest 69/69, build temiz, sim ilk-alım 60sn, smoke
+       22/22.** İkinci ilerleme ekseni (nakit-dışı zone gate) Faz 3a'ya ertelendi. Değişen: economy.config.ts, store.ts, Scene.tsx,
+       tests/logic.test.ts. **Kullanıcı telefonda test edip feedback verecek.**
+     - 🐛→✅ **DEADLOCK FIX + PAYLAŞIMLI TEPSİ (kullanıcı bug 2026-06-09):** elinde çay + tüm masalar kirli → bırakacak
+       bekleyen masa yok + çay elindeyken kirli toplanamaz (eski Faz 2f "eli boşken/tek renk" kısıtı) → sonsuz kilit.
+       Çözüm (kullanıcı "neden hep böyle olmasın"): **paylaşımlı karışık tepsi** `serving.trayCapacity 2→4`, çay+kirli
+       aynı tepsiyi paylaşır (toplam ≤ trayCap); `carriedDirty===0`/`tray===0` gate'leri kaldırıldı → kilit-geçirmez +
+       solo angarya az. store.ts servis/toplama `tray+carriedDirty<trayCap`; Player.tsx tek CupTray ardışık dizer.
+       Yeni "DEADLOCK YOK" vitest. SAVE değişmedi. **vitest 70/70, build temiz, smoke 22/22 (tray 3/4, kirli 4).**
      (Orijinal sıra:) (1) bug-fix kapı z-fighting + table2-kararma (Suspense) → (2) TRAY YÜKSELTME KALDIR (tepsi sabit 2) → (3)
      KESİK-KÖŞELİ zemin kartı + masa yükseltme MERKEZDEN KENARA (sol→sol/sağ→sağ, orta boş) + DWELL (~1.5sn, üstünden geçince para
      gitmesin) → (4) sıralı reveal zinciri (yakınlık-gizleme YOK) → (5) SEMAVER=OCAK L4 (premium 💎/video, kilitli; ayrı pad kalkar;
@@ -292,8 +306,13 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   6. **Kamera sallanması fix:** CameraRig dt-bağımlı lerp + lookAt(tam oyuncu) → sallanma; kare-hızı bağımsız damping (konum+lookAt
      tutarlı) + dt clamp + fit/d sadece resize'da. (Kök neden bu oturumda teşhis edildi.)
   Detay: decisions.md D-017. Her adım Vitest+sim+smoke yeşil + gözle onay.
-- ⏳ **2i (onboarding/işaretçi katmanı):** D-017 §3'e taşındı (yukarı). Eski tanım: ilk açılışta hareket + ilk masa-açma
-  işaretçisi/zoom; sonraki açılışlarda küçük "Yeni ▲" rozeti.
+- ✅ **2i (onboarding) + SIFIRLAMA BUTONU (2026-06-09):** İlk-oyun koç ipucu `onboardingHint(g)` saf helper — 2. masa
+  açılana kadar çekirdek döngüyü adım adım öğretir (ocağa git→çayı al → müşteriye götür → parayı topla → "2. Masa" işareti),
+  açılınca null. KALICI durum YOK (durumdan türetilir; SAVE değişmedi); mevcut kayıtta table2 açıksa görünmez; sıfırlayınca
+  tekrar belirir. HUD `.coach` yeşil bant (havada kart yok), onboarding aktifken `.next-step` gizli. **Sıfırlama butonu**
+  `.reset-btn` sol-altta (confirm → hardReset) cihazda test için. Yeni-özellik toast'ları (D-019 §4) "Yeni" bildirimini zaten
+  karşılıyor. Yeni vitest (5 adım). **vitest 71/71, build temiz, smoke 22/22, Playwright gözle ✓.** Değişen: store.ts, HUD.tsx,
+  index.css, devHooks.ts, tests/logic.test.ts. (Zoom/atlanabilir tur şimdilik YOK — sade koç ipucu yeterli; istenirse eklenir.)
 
 ## Faz 3 — Kat & zone çoğaltma & roller ⏳ (D-016 ile yeniden çerçevelendi)
 - ⏳ **3a:** Zone çoğaltma: zone'u atomik modül yap, **kat başına ~4 zone (2×2 ızgara)**; zone-açma omurga pad'i;

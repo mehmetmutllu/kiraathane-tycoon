@@ -62,7 +62,7 @@ export const economyConfig = {
     /** Servis edilen çay başına SABİT ₺ (yükseltme bunu DEĞİL, throughput'u büyütür). */
     basePrice: 5,
     upgrade: {
-      costBase: 25,
+      costBase: 20, // garson öncesi: erken yükseltme ucuz, akış hızlansın (kullanıcı 2026-06-09)
       costGrowth: 1.5,
       outputMult: 1.35, // throughput (çay/dk) çarpanı — demleme süresini kısaltır
       masterLevel: 5,
@@ -90,7 +90,7 @@ export const economyConfig = {
   tables: {
     upgrade: {
       costBase: 60,
-      costGrowth: 1.6, // L1 60 / L2 96 / L3 153 / L4 245
+      costGrowth: 1.8, // garson sonrası derinlik: L1 60 / L2 108 / L3 194 / L4 350 (eski 1.6 fazla ucuzdu)
       masterLevel: 5, // L5 (Usta) 💎/video — Faz 4; ₺ ile soft max L4
       masterDiamondCost: 12,
     },
@@ -132,8 +132,13 @@ export const economyConfig = {
    * oyuncu (sonra garson) çayı TEPSİ ile taşır. Yakınlık temelli (dokunma yok, mekânsal).
    */
   serving: {
-    /** Tepsi kapasitesi (D-018: yükseltme KALDIRILDI → sabit). Tek turda taşınan çay/kirli. */
-    trayCapacity: 2,
+    /**
+     * Tepsi kapasitesi — PAYLAŞIMLI (kullanıcı isteği 2026-06-09): çay + kirli bardak AYNI tepsiyi paylaşır,
+     * toplam `trayCapacity`'yi aşamaz (ör. 4 gözlü tepside 2 çay + 2 kirli). Eski "eli boşken / tek renk"
+     * kısıtı KALDIRILDI çünkü deadlock yapıyordu (elinde çay + tüm masalar kirli → ne bırakabilir ne
+     * toplayabilirdi). Karışık taşıma yapısal olarak kilit-geçirmez + solo angaryayı azaltır.
+     */
+    trayCapacity: 4,
     /** Oyuncunun ocaktan çay alma yakınlığı (dünya birimi). */
     pickupRadius: 1.6,
     /** Oyuncunun masaya çay bırakma yakınlığı. */
@@ -152,11 +157,11 @@ export const economyConfig = {
      * kısmi assist korunur (D-014: garson tek başına büyüyen mekânı döndüremez). L1 1.8 alan büyüyünce
      * doğrulanmış kullanılır hız; L2 2.6 belirgin hızlanma ama hâlâ oyuncunun çok altında.
      */
-    moveSpeedByLevel: [1.8, 2.6],
+    moveSpeedByLevel: [1.8, 2.3],
     /** Tepsi kapasitesi (tek seferde taşıdığı çay). Oyuncununkinden küçük. */
     trayCapacity: 1,
     /** Garson L2 yükseltme maliyeti (₺). Tek seviye (L1→L2); L3+ Faz 4 (💎/video). */
-    upgradeCost: 200,
+    upgradeCost: 250,
     /** Mekânsal garson yükseltme noktasında saniyede cüzdandan akan ₺. */
     upgradeFillRate: 60,
     /** Yükseltme noktası önkoşulu: garson tutulmuş olmalı (tutulunca belirir). */
@@ -243,19 +248,19 @@ export const economyConfig = {
    * otomatik gelir (addStation effect tipi orada kullanılır). Opsiyonel: Garson (2.Masa sonrası).
    */
   pads: [
-    { id: 'table2', label: '2. Masa', cost: 35, fillRate: 40, optional: false,
-      requires: { minLifetime: 30 }, effect: { type: 'addTable' } },
+    { id: 'table2', label: '2. Masa', cost: 25, fillRate: 40, optional: false,
+      requires: { minLifetime: 20 }, effect: { type: 'addTable' } },
     // Garson: D-019 reveal sırası — "çay ocağı bir kez yükseltilince" belirir (minStationLevel:1) → 2. masa
     // açılınca aynı anda 4 işaret patlamaz; önce çay yükseltme öğrenilir, sonra garson tanıtılır.
     { id: 'waiter', label: 'Garson Tut', cost: 150, fillRate: 50, optional: true,
       requires: { prev: ['table2'], minStationLevel: 1 }, effect: { type: 'hireWaiter' } },
     // 3. Masa: D-019 §2 — masa açmak ARTIK yükseltme gerektirmez (minStationLevel:1 KALKTI). Ocak doğal
     // darboğaz olarak kalır (oyuncu isteyince yükseltir), zorunlu gate değil.
-    { id: 'table3', label: '3. Masa', cost: 120, fillRate: 55, optional: false,
+    { id: 'table3', label: '3. Masa', cost: 130, fillRate: 55, optional: false,
       requires: { prev: ['table2'] }, effect: { type: 'addTable' } },
-    { id: 'dishwasher', label: 'Bulaşıkçı Tut', cost: 280, fillRate: 60, optional: true,
+    { id: 'dishwasher', label: 'Bulaşıkçı Tut', cost: 330, fillRate: 60, optional: true,
       requires: { prev: ['table3'] }, effect: { type: 'hireDishwasher' } },
-    { id: 'table4', label: '4. Masa', cost: 300, fillRate: 75, optional: false,
+    { id: 'table4', label: '4. Masa', cost: 420, fillRate: 75, optional: false,
       requires: { prev: ['table3'] }, effect: { type: 'addTable' } },
     // (D-018 adım 5) Ayrı "Semavere Geçiş" pad'i KALDIRILDI: semaver artık çay ocağının üst yükseltmesidir
     // (TeaStation seviyeyle büyüyen semaveri zaten çizer). Tek ocak ₺ yükseltmeleriyle (L4, throughput ×3.32)
@@ -267,9 +272,16 @@ export const economyConfig = {
     moveSpeed: 4.5, // dünya birimi / sn
   },
 
-  /** Çevrimdışı (offline) gelir. */
+  /**
+   * Çevrimdışı (offline) gelir (kullanıcı isteği 2026-06-09: sert kıs → "birkaç yükseltme parası, oyuncu
+   * nefes alsın; zone'u tek seferde bitirmesin"). İki kol birlikte kısar:
+   *   - rateMult: offline oranı, idealize aktif oranın bu kadarı (1 = %100; 0.5 = yarı). Gerçek oyuncu
+   *     idealize oranı tutturamadığından <1 olması "offline aktiften fazla ödüyor" sorununu da giderir.
+   *   - baseCapHours: offline'da SAYILAN en fazla süre (cap). Bundan uzun kalınsa fazlası işlemez.
+   */
   offline: {
-    baseCapHours: 2,
+    baseCapHours: 1,
+    rateMult: 0.5,
     /** Elmas ile uzatma başına eklenen saat (Faz 4). */
     diamondExtendHours: 8,
   },
