@@ -55,10 +55,11 @@ oyun oynayayım. Çizgi güzel — tasarım/mantık/görev yoğunluğunda küç�
    [-1.6,-1.7]'ye (merkez mesafe 3.1 ≥ 1.6+1.3) + pickup-yarıçapı guard'ı + 2 vitest (geometri değişmezi +
    davranış). Vitest 80/80, smoke 27/27, sim 60sn, Playwright canlı ✓ (para sabit kaldı, çay alındı; yeni
    noktada dolum çalışıyor). Screenshot: night-1-upgradezone-fix.png (kök, git-ignored).
-2. **Gerçek kıraathane/cafe araştırması → ZEMİN KAT MASTER PLANI:** internetten gerçek Türk kıraathanesi iç
-   yapısı (ocakbaşı/tuvalet/depo/TV/giriş) → docs/'a kat planı: 4 zone 2×2 + tuvalet/lavabo + depo + mutfak-tost
-   şeridi yeri + TV köşesi + dış bahçe masaları. Üst kat: balkon + okey/tavla notu. (Lavabo MEKANİĞİ gece yapılmaz —
-   öneri zone-3 ile; sabah netleşir. Yer rezerve.)
+2. ✅ **Kıraathane araştırması → KAT MASTER PLANI (BİTTİ):** web araştırması (Yahya Kaptan bölümlü kahvehane
+   örneği, Ticaret Bakanlığı kıraathanecilik kılavuzu, tipoloji) → **`docs/floorplan-master.md`**: zemin kat
+   ASCII planı (zone1-2 önde çay salonları, zone3 tost / zone4 TV-köşesi arka sırada, DEPO sol-arka +
+   TUVALET sağ-arka köşe odaları rezerve, merdiven ön-sağ, sokak bahçe masaları); üst kat okey/tavla+balkon
+   notu; gerçek-kıraathane → oyun karşılığı tablosu. Lavabo mekaniği sabaha (zone-3 önerisi).
 3. **Zone-2 ÇALIŞIR:** zone modül refactor → zemin katın 2. çay salonu (kendi ocak+bulaşık köşesi), zone-açma
    pad'i, SAVE bump+migrasyon, sim/smoke/vitest yeşil.
 4. **Türk kıraathane GÖRSEL KİMLİĞİ:** renk paleti (çay/bakır/ahşap), zemin+duvar tasarımı, masa+TABURE redesign
