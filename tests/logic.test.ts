@@ -33,6 +33,7 @@ import {
   TEA_PRICE,
   brewTime,
   dirtyTables,
+  PAD_RADIUS,
 } from '../src/game/store';
 import { migrate, defaultSave, defaultStats } from '../src/game/save';
 import { buildNavGrid, findNavPath } from '../src/game/nav';
@@ -966,6 +967,37 @@ describe('mekânsal çay yükseltme noktası (zone) + gating', () => {
 
     expect(useGame.getState().stationLevel).toBeGreaterThan(before);
     expect(useGame.getState().activeZone?.kind).toBe('upgrade');
+  });
+
+  it('GEOMETRİ DEĞİŞMEZİ: yükseltme dairesi pickup dairesiyle KESİŞEMEZ (gece fix 2026-06-10)', () => {
+    // Çay almaya gelen oyuncu tezgâh önünde dururken dolum tetiklenmesin diye merkez mesafesi
+    // iki yarıçapın toplamından az olamaz (eski [-1.6,-3.0] bunu ihlal ediyordu → para yiyordu).
+    const st = LAYOUT.stations[0];
+    const z = LAYOUT.upgradeZone;
+    const dist = Math.hypot(st[0] - z[0], st[2] - z[2]);
+    expect(dist).toBeGreaterThanOrEqual(economyConfig.serving.pickupRadius + PAD_RADIUS);
+  });
+
+  it('çay almak için tezgâh önünde dururken yükseltme PARA ÇEKMEZ (pickup-yarıçapı guard\'ı)', () => {
+    useGame.getState().hardReset();
+    expect(completePad('table2')).toBe(true); // yükseltme noktası açık
+    useGame.getState().addMoney(100);
+
+    // Oyuncu tezgâhın TAM önünde (collision standoff ≈ z=-4.0): pickup yarıçapının İÇİNDE.
+    const st = LAYOUT.stations[0];
+    const front: [number, number, number] = [st[0], 0.6, st[2] + LAYOUT.stationHalf[1] + LAYOUT.playerRadius + 0.05];
+    expect(Math.hypot(front[0] - st[0], front[2] - st[2])).toBeLessThan(economyConfig.serving.pickupRadius);
+    useGame.setState({ player: front, inputKeyboard: [0, 0], inputJoystick: [0, 0], npcs: [], spawnTimer: 999 });
+
+    const walletBefore = useGame.getState().wallet.toNumber();
+    // Demleme (6sn/bardak) tamamlanıp çay tepsiye alınana kadar bekle (en az bir pickup yaşansın).
+    for (let i = 0; i < 200 && useGame.getState().tray === 0; i++) useGame.getState().tick(0.1);
+
+    // Durduğu halde (fillReady) ne dolum başladı ne para gitti; çay tepsiye alınabildi.
+    expect(useGame.getState().upgradeFill).toBe(0);
+    expect(useGame.getState().stationLevel).toBe(0);
+    expect(useGame.getState().wallet.toNumber()).toBe(walletBefore);
+    expect(useGame.getState().tray).toBeGreaterThan(0);
   });
 });
 

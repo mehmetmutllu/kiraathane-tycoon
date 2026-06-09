@@ -70,9 +70,11 @@ export const LAYOUT = {
     waiter: [-4.6, 0, 1.5] as Vec3, // sol-kenar orta (GÖRÜNÜR)
     dishwasher: [4.6, 0, 1.5] as Vec3, // sağ-kenar orta (GÖRÜNÜR)
   } as Record<string, Vec3>,
-  // Mekânsal çay yükseltme noktası: ocağın TAM önünde (dist 1.8 > pickupRadius 1.6 → pickup ile çakışmaz;
-  // personel pad'lerinden uzak → para çekişmesi yok).
-  upgradeZone: [-1.6, 0, -3.0] as Vec3,
+  // Mekânsal çay yükseltme noktası: ocağın önünde ama pickup'tan TAM AYRIK. Merkez mesafesi
+  // (3.1) ≥ pickupRadius (1.6) + PAD_RADIUS (1.3) → iki daire KESİŞEMEZ; çay almaya gelen
+  // oyuncu tezgâh önünde dururken (z≈-4.05) dolum tetiklenmez (gece fix 2026-06-10; eski
+  // [-1.6,-3.0] merkez-merkez 1.8'e bakıyordu, daire kesişimini ıskalıyordu → para yiyordu).
+  upgradeZone: [-1.6, 0, -1.7] as Vec3,
   // Garson boştayken bekleyeceği köşe (sol-kenar, pad'inin arkası).
   waiterHome: [-4.6, 0, -1.6] as Vec3,
   // Garson hız yükseltme noktası (D-018 §6): garson köşesinde, tutma pad'inin (z=1.5) ARKASINDA (z=-0.9) →
@@ -226,7 +228,7 @@ function navStep(
 }
 
 const NPC_SPEED = 2.6;
-const PAD_RADIUS = 1.3;
+export const PAD_RADIUS = 1.3;
 // Masa-başı yükseltme noktasının yarıçapı (Faz 2h). Pad'lerden küçük → komşu masanın noktasını tetiklemez.
 const TABLE_UP_RADIUS = 1.0;
 // Garson hız yükseltme noktasının yarıçapı (D-018 §6). Komşu masa-yükseltme noktasıyla çakışmayacak küçüklükte.
@@ -1120,7 +1122,10 @@ export const useGame = create<GameState>((set, get) => ({
       const pp = LAYOUT.padPos[pad.id];
       if (pp && dist2D(player, pp) < PAD_RADIUS) { onFillId = pad.id; break; }
     }
-    if (!onFillId && upgradeUnlocked && dist2D(player, LAYOUT.upgradeZone) < PAD_RADIUS) onFillId = FILL_TEA;
+    // GUARD (gece fix 2026-06-10): oyuncu ocağın pickup yarıçapındaysa niyeti ÇAY ALMAK'tır —
+    // yükseltme dolumu kesinlikle başlamaz (mekânsal ayrımın yanında ikinci emniyet).
+    const inPickupRange = LAYOUT.stations.some((st) => dist2D(player, st) < C.serving.pickupRadius);
+    if (!onFillId && upgradeUnlocked && !inPickupRange && dist2D(player, LAYOUT.upgradeZone) < PAD_RADIUS) onFillId = FILL_TEA;
     if (!onFillId && waiterUpUnlocked && dist2D(player, LAYOUT.waiterUpgradeSpot) < WAITER_UP_RADIUS) onFillId = FILL_WAITER;
     if (!onFillId && tableUnlocked) {
       for (let i = 0; i < tables; i++) {

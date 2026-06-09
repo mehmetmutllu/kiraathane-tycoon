@@ -50,9 +50,11 @@ KULLANICI TALİMATI (2026-06-10 gece): "sabaha kadar kesintisiz çalış; kalite
 context'i hesaba katarak sağlıklı iş yapabildiğin son ana kadar git; sabah kalktığımda telefonumda güzel bir
 oyun oynayayım. Çizgi güzel — tasarım/mantık/görev yoğunluğunda küçük değişiklikler olabilir sadece."
 **GECE GÖREV LİSTESİ (kullanıcı ONAYLI, sırayla; her milestone: test+screenshot+memory-bank+commit+PUSH):**
-1. **Ocak-yükseltme para yeme fix'i:** kullanıcı bug'ı — çay alırken FILL_TEA dolumu para çekiyor (yükseltmeyi
-   sona bırakmak istiyor ama ocağa her gelişte yiyor). Çözüm: yükseltme noktasını pickup yarıçapından mekânsal
-   AYIR + "ocakta hazır çay varken / pickup yarıçapındayken dolum başlamaz" guard'ı + vitest.
+1. ✅ **Ocak-yükseltme para yeme fix'i (BİTTİ 2026-06-10 gece):** KÖK = daire kesişimi (tezgâh önü oyuncu
+   pozisyonu upgradeZone PAD_RADIUS'u içindeydi; eski yorum merkez-merkez 1.8'e bakıyordu). Fix: upgradeZone
+   [-1.6,-1.7]'ye (merkez mesafe 3.1 ≥ 1.6+1.3) + pickup-yarıçapı guard'ı + 2 vitest (geometri değişmezi +
+   davranış). Vitest 80/80, smoke 27/27, sim 60sn, Playwright canlı ✓ (para sabit kaldı, çay alındı; yeni
+   noktada dolum çalışıyor). Screenshot: night-1-upgradezone-fix.png (kök, git-ignored).
 2. **Gerçek kıraathane/cafe araştırması → ZEMİN KAT MASTER PLANI:** internetten gerçek Türk kıraathanesi iç
    yapısı (ocakbaşı/tuvalet/depo/TV/giriş) → docs/'a kat planı: 4 zone 2×2 + tuvalet/lavabo + depo + mutfak-tost
    şeridi yeri + TV köşesi + dış bahçe masaları. Üst kat: balkon + okey/tavla notu. (Lavabo MEKANİĞİ gece yapılmaz —

@@ -359,7 +359,15 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   teması (zone 3-4 farklı konsept), okey/tavla üst kat + balkon; tuvalet+depo+TV köşesi+dış bahçe kat planında.
 - 🌙 **SIRADAKİ = GECE OTURUMU (onaylı 7 maddelik liste activeContext'te):** ocak-yükseltme fix → kıraathane
   araştırması+kat planı → zone-2 çalışır → görsel kimlik+sokak → curve raporu → karakter → APK+sabah raporu.
-- **Bilinen bug:** ocağa çay almaya gelince FILL_TEA yükseltme dolumu istemeden para çekiyor (gece 1. madde).
+- 🐛→✅ **GECE 1/7 — ocak-yükseltme para yeme fix'i (2026-06-10 gece):** KÖK: çay almaya gelen oyuncu tezgâh
+  önünde (z≈-4.05) dururken upgradeZone'a [-1.6,-3.0] mesafesi 1.05 < PAD_RADIUS 1.3 → FILL_TEA tetikleniyordu
+  (koddaki "dist 1.8 çakışmaz" yorumu merkez-merkez mesafeye bakmış, DAİRE KESİŞİMİNİ ıskalamıştı). İKİ katman:
+  (a) upgradeZone [-1.6,-3.0]→**[-1.6,-1.7]** (merkez mesafesi 3.1 ≥ pickup 1.6 + PAD 1.3 = 2.9 → daireler
+  kesişEMEZ); (b) GUARD: oyuncu HERHANGİ ocağın pickup yarıçapındaysa FILL_TEA hiç devreye girmez (geometri
+  değişse de emniyet). PAD_RADIUS export edildi. 2 yeni vitest: geometri değişmezi (dist ≥ r1+r2) + davranış
+  (tezgâh önünde 20sn dur: para sabit, dolum 0, çay tepsiye alınıyor). **Vitest 80/80, build temiz, sim 60sn
+  sabit, smoke 27/27, Playwright canlı doğrulama (guard + yeni noktada dolum çalışıyor), konsol 0 hata.**
+  Değişen: store.ts (LAYOUT.upgradeZone + guard), logic.test.ts. SAVE değişmedi.
 - ⏳ **Adım 3:** curve'ü 3-profil simülasyonla ciddi hesapla + sayı tablosu onaya. ⏳ **Adım 4:** Faz 3a zone-2.
 - ⏳ **Zone mimarisi kararı AÇIK:** per-zone ocak+bulaşık MI, merkezi servis + zone-başı personel Mİ — kullanıcı tekrar
   sordu, onaylanmış model YOK; sonraki oturumda artı/eksi tablosuyla karara bağlanacak.
