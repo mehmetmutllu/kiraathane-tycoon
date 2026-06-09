@@ -1,6 +1,10 @@
 import { Text } from '@react-three/drei';
 import type { Vec3 } from '../../game/types';
 
+/** Oyun fontu (Baloo 2, OFL) — YEREL bundle; troika'nın CDN default fontu kullanılmaz
+ * (D-018 dersi + offline APK'da zemin yazıları her zaman çalışsın; Faz 7 TODO kapandı). */
+const GAME_FONT_3D = '/assets/fonts/Baloo2.ttf';
+
 /**
  * Sade zemin işareti (D-017 §2): havada Html rozet / iri disk+koni YOK. Yerde UFAK, şeffaf beyazımsı
  * çember + ortasında DÜZ zemin yazısı (ne yapacağı: "Yeni Masa" / "Garson" / "Yükselt") + maliyet.
@@ -49,6 +53,8 @@ export function GroundMarker({
       )}
       {/* zemin yazısı (havada değil; objenin değil yerin üstünde) */}
       <Text
+        font={GAME_FONT_3D}
+        fontWeight={700}
         position={[0, 0.05, sub ? -0.12 : 0]}
         rotation={[-Math.PI / 2, 0, 0]}
         fontSize={0.26}
@@ -77,6 +83,8 @@ export function GroundMarker({
             </group>
           )}
           <Text
+            font={GAME_FONT_3D}
+            fontWeight={700}
             position={[coin ? 0.06 : 0, 0.05, 0.26]}
             rotation={[-Math.PI / 2, 0, 0]}
             fontSize={0.2}

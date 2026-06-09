@@ -14,12 +14,23 @@ import {
   derivedFromPads,
   waiterSpeed,
   waiterSoftMaxLevel as waiterSoftMaxLevelCfg,
+  levelProgress,
   type PadDef,
   type GateState,
   type QuestDef,
   type QuestTarget,
 } from '../config/economy.config';
-import { defaultSave, defaultStats, loadSave, writeSave, clearSave, type SaveData, type SaveStats } from './save';
+import {
+  defaultSave,
+  defaultStats,
+  defaultSettings,
+  loadSave,
+  writeSave,
+  clearSave,
+  type SaveData,
+  type SaveStats,
+  type SaveSettings,
+} from './save';
 import { buildNavGrid, findNavPath, type NavGrid, type NavSolid } from './nav';
 
 // ---- Sahne yerleşimi (dünya birimi, zemin y=0) ----
@@ -252,6 +263,9 @@ function moveToward(pos: Vec3, target: RVec3, step: number): boolean {
 
 // EKONOMİ v2 (D-010): çay fiyatı SABİT; seviye fiyatı değil throughput'u (çay/dk) artırır.
 const TEA_PRICE = C.teaStation.basePrice;
+// Bulaşık öğretilmeden kirli bardak çıkmaz (onboarding gate, 2026-06-10): ilk washDish görevinin index'i.
+// Görev hattında yoksa -1 → gate hep açık (questIndex >= -1).
+const WASH_QUEST_INDEX = C.quests.findIndex((q) => q.target.type === 'washDish');
 
 /** stationLevel'in demleme hız (throughput) çarpanı — çay/dk; fiyatı DEĞİL. */
 function brewThroughputMult(level: number): number {
@@ -388,6 +402,10 @@ export interface GameState {
   questIndex: number;
   /** Aktif sayaç görevinin başlangıç sayaç değeri (persist; delta hedefi tabanı). */
   questBase: number;
+  /** Toplam oyuncu XP'si (persist v17). Seviye `levelProgress(xp)` ile türetilir — ayrı saklanmaz. */
+  xp: number;
+  /** Oyuncu ayarları (persist v17): ses/müzik/bildirim. */
+  settings: SaveSettings;
   /** Üst görev barı görünümü (transient; her tick türetilir; null = hat bitti). */
   quest: QuestView | null;
   /** Kamera odak isteği (transient): görev barına dokununca / yeni şey açılınca hedefe pan. */
@@ -408,6 +426,8 @@ export interface GameState {
   addMoney: (amount: number) => void;
   /** Görev barına dokununca: kamera aktif görevin hedefine kayar (görev yoksa no-op). */
   focusQuest: () => void;
+  /** Ayar değiştir (ayarlar modalı) — anında kaydedilir. */
+  setSetting: (key: keyof SaveSettings, value: boolean) => void;
   saveNow: () => void;
   hardReset: () => void;
 }
@@ -484,6 +504,8 @@ export function questTargetMet(target: QuestTarget, ctx: QuestCtx): boolean {
 export interface QuestView {
   id: string;
   title: string;
+  /** Görev hedefi (HUD görev fotoğrafı hedef tipine göre seçilir). */
+  target: QuestTarget;
   /** Sayaç görevlerinde ilerleme (cur/total); durum görevlerinde null. */
   cur: number | null;
   total: number | null;
@@ -501,6 +523,7 @@ function questView(q: QuestDef, ctx: QuestCtx): QuestView {
   return {
     id: q.id,
     title: q.title,
+    target: q.target,
     cur: counter != null && count != null ? Math.max(0, Math.min(count, counter - ctx.questBase)) : null,
     total: count,
     cost: pad ? pad.cost : null,
@@ -600,6 +623,8 @@ export const useGame = create<GameState>((set, get) => ({
   stats: defaultStats(),
   questIndex: 0,
   questBase: 0,
+  xp: 0,
+  settings: defaultSettings(),
   quest: null,
   camFocus: null,
   offlineEarned: 0,
@@ -677,6 +702,8 @@ export const useGame = create<GameState>((set, get) => ({
       stats: { ...save.stats },
       questIndex: save.questIndex,
       questBase: save.questBase,
+      xp: save.xp,
+      settings: { ...save.settings },
       quest:
         save.questIndex < C.quests.length
           ? questView(C.quests[save.questIndex], {
@@ -742,6 +769,7 @@ export const useGame = create<GameState>((set, get) => ({
     let waiterUpgradeFill = s.waiterUpgradeFill;
     let notice = s.notice;
     let revealSeen = s.revealSeen;
+    let xp = s.xp; // toplam XP (bu tick'te eylem ödülleriyle artabilir; level türetilir)
     const stats: SaveStats = { ...s.stats }; // kalıcı eylem sayaçları (bu tick'te artabilir)
     let questIndex = s.questIndex;
     let questBase = s.questBase;
@@ -819,11 +847,18 @@ export const useGame = create<GameState>((set, get) => ({
             });
             // İçtiği bardak masada KİRLİ kalır (Faz 2e): toplanıp yıkanmalı, yoksa temiz biter.
             // tableIndex ile masaya etiketlenir (D-019): masa-başı eşik aşılınca masa KİRLİ olur.
-            dishes.push({
-              id: nextId++,
-              pos: [slot.table[0] + (Math.random() - 0.5) * 0.6, 0.95, slot.table[2] + (Math.random() - 0.5) * 0.6],
-              tableIndex: n.tableIndex,
-            });
+            // ONBOARDING GATE (kullanıcı 2026-06-10): bulaşık MEKANİĞİ öğretilmeden (q_wash görevi
+            // gelmeden) kirli bardak HİÇ çıkmaz — bardak doğrudan temiz havuza döner (korunum bozulmaz,
+            // demleme durmaz). q_wash aktif olduğu andan itibaren kirli bırakılır → görevle birlikte öğrenilir.
+            if (questIndex >= WASH_QUEST_INDEX) {
+              dishes.push({
+                id: nextId++,
+                pos: [slot.table[0] + (Math.random() - 0.5) * 0.6, 0.95, slot.table[2] + (Math.random() - 0.5) * 0.6],
+                tableIndex: n.tableIndex,
+              });
+            } else {
+              cleanCups += 1;
+            }
             n.state = 'leaving';
           }
           break;
@@ -917,6 +952,7 @@ export const useGame = create<GameState>((set, get) => ({
           n.timer = C.npc.eatTime;
           tray -= 1;
           stats.teasServed += 1;
+          xp += C.xp.perTeaServed;
         }
       }
     }
@@ -935,6 +971,7 @@ export const useGame = create<GameState>((set, get) => ({
     if (carriedDirty > 0 && dist2D(player, LAYOUT.dishStation) < C.cups.washRadius) {
       cleanCups += carriedDirty;
       stats.dishesWashed += carriedDirty;
+      xp += C.xp.perDishWashed * carriedDirty;
       carriedDirty = 0;
     }
 
@@ -981,6 +1018,7 @@ export const useGame = create<GameState>((set, get) => ({
           best.timer = C.npc.eatTime;
           w.tray -= 1;
           stats.waiterServed += 1;
+          xp += C.xp.perWaiterServed;
         }
       } else if (w.tray < wTrayCap && waitingNpcs.length > 0) {
         // Yükleme: ocağa BFS rotasıyla git; bitişik gelince hazır çaydan tepsiye al (yoksa orada bekler).
@@ -1106,6 +1144,7 @@ export const useGame = create<GameState>((set, get) => ({
       if (fill >= activePad.cost) {
         // Pad tamamlandı: SADECE padsDone'a ekle (etkiler türetilir, D-015), kısmi dolumu temizle.
         padsDone = [...padsDone, activePad.id];
+        xp += C.xp.perPad;
         const rest = { ...padFills };
         delete rest[activePad.id];
         padFills = rest;
@@ -1141,6 +1180,7 @@ export const useGame = create<GameState>((set, get) => ({
       }
       if (upgradeFill >= cost) {
         stationLevel += 1;
+        xp += C.xp.perUpgrade;
         upgradeFill = 0;
         cleanCups += C.cups.poolPerLevel; // havuz ocak seviyesiyle büyür (Faz 2e)
       }
@@ -1167,6 +1207,7 @@ export const useGame = create<GameState>((set, get) => ({
       }
       if (waiterUpgradeFill >= cost) {
         waiterLevel += 1;
+        xp += C.xp.perUpgrade;
         waiterUpgradeFill = 0;
       }
       // GÖRSEL: garson L1'den başlar (iç waiterLevel 0-tabanlı; etiket +1). Soft max sonrası işaret görünmez.
@@ -1193,6 +1234,7 @@ export const useGame = create<GameState>((set, get) => ({
       }
       if (fill >= cost) {
         tableLevels[i] += 1;
+        xp += C.xp.perUpgrade;
         fill = 0;
       }
       tableUpgradeFills[i] = fill;
@@ -1228,6 +1270,7 @@ export const useGame = create<GameState>((set, get) => ({
     while (questIndex < C.quests.length && questTargetMet(C.quests[questIndex].target, questCtx)) {
       notice = { text: `✓ ${C.quests[questIndex].title}`, ttl: 3.5 };
       questIndex += 1;
+      xp += C.xp.perQuest;
       questAdvanced = true;
       // Sonraki sayaç görevinin delta tabanı = sayacın ŞU ANKİ değeri.
       const nt = questIndex < C.quests.length ? C.quests[questIndex].target : null;
@@ -1247,6 +1290,14 @@ export const useGame = create<GameState>((set, get) => ({
     }
     const quest =
       questIndex < C.quests.length ? questView(C.quests[questIndex], questCtx) : null;
+
+    // --- Level-up bildirimi: toplam XP bu tick'te seviye atlattıysa toast (görev toast'ını ezebilir;
+    // seviye daha nadir ve daha büyük haber). Level ayrı saklanmaz — levelProgress(xp) türetir. ---
+    if (xp !== s.xp) {
+      const before = levelProgress(s.xp).level;
+      const after = levelProgress(xp).level;
+      if (after > before) notice = { text: `🎉 Seviye ${after}!`, ttl: 4.5 };
+    }
 
     // --- Periyodik kayıt ---
     let saveTimer = s.saveTimer - dt;
@@ -1280,6 +1331,7 @@ export const useGame = create<GameState>((set, get) => ({
       stats,
       questIndex,
       questBase,
+      xp,
       quest,
       camFocus,
       player,
@@ -1309,6 +1361,7 @@ export const useGame = create<GameState>((set, get) => ({
     set({
       wallet: s.wallet.sub(cost),
       stationLevel: s.stationLevel + 1,
+      xp: s.xp + C.xp.perUpgrade,
       cleanCups: s.cleanCups + C.cups.poolPerLevel, // havuz ocak seviyesiyle büyür (Faz 2e)
     });
     get().saveNow();
@@ -1329,6 +1382,11 @@ export const useGame = create<GameState>((set, get) => ({
     set({ camFocus: { pos: [p[0], p[1], p[2]], ttl: CAM_FOCUS_TTL } });
   },
 
+  setSetting: (key, value) => {
+    set({ settings: { ...get().settings, [key]: value } });
+    get().saveNow();
+  },
+
   saveNow: () => {
     const s = get();
     // D-015: tables/stations/serviceSpeedMult/hasWaiter KAYDEDİLMEZ — yüklemede padsDone'dan türetilir.
@@ -1345,6 +1403,8 @@ export const useGame = create<GameState>((set, get) => ({
       stats: { ...s.stats },
       questIndex: s.questIndex,
       questBase: s.questBase,
+      xp: s.xp,
+      settings: { ...s.settings },
       lastSaved: Date.now(),
     });
   },

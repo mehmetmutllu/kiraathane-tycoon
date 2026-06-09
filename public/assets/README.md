@@ -23,6 +23,14 @@ Detay: `docs/assets.md`.
 | coin.glb | Para (₺) | sarı silindir | Kenney | CC0 | ⏳ greybox |
 | pad.glb | Satın-alma pad'i | düz silindir | (basit) | — | ⏳ greybox |
 
+## Fontlar (`public/assets/fonts/`)
+| Dosya | Açıklama | Kaynak | Lisans | Durum |
+|---|---|---|---|---|
+| Baloo2.ttf | 3D zemin yazıları (drei Text/troika; TR latin-ext) — variable | Google Fonts (google/fonts repo) | OFL 1.1 | ✅ eklendi |
+
+> UI fontları (Baloo 2 + Lilita One) npm `@fontsource/*` paketlerinden YEREL bundle'lanır
+> (main.tsx; CDN yok). İkisi de OFL 1.1.
+
 ## Sesler (`public/assets/audio/`)
 | Dosya | Açıklama | Kaynak | Lisans | Durum |
 |---|---|---|---|---|

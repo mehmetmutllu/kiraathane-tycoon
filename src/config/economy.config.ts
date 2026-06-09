@@ -13,7 +13,7 @@
  *   L5 (Usta)   = masterDiamondCost 💎 VEYA 1 ödüllü video; outputMult yerine masterOutputMult
  */
 
-export const SAVE_VERSION = 16;
+export const SAVE_VERSION = 17;
 
 export const CURRENCY = {
   soft: '₺', // Para — müşteriden kazanılır
@@ -326,6 +326,31 @@ export const economyConfig = {
   },
 
   /**
+   * LEVEL/XP sistemi (2026-06-10, kullanıcı onayı): oyuncu seviyesi — ileride kat açma (Faz 3b)
+   * ve kozmetik mağaza (tema/zemin/duvar) seviye kapısı olacak. XP kaynakları eylem-temelli
+   * (para-temelli değil → ekonomi dengesinden bağımsız, gelir enflasyonundan etkilenmez).
+   * Eğri: needFor(L→L+1) = levelBase × levelGrowth^(L-1). Zone-1 sonu ≈ L5-6.
+   */
+  xp: {
+    /** Oyuncunun ELİYLE servis ettiği çay başına XP. */
+    perTeaServed: 2,
+    /** Garsonun taşıdığı çay başına XP (pasif — daha az). */
+    perWaiterServed: 1,
+    /** Oyuncunun yıkadığı kirli bardak başına XP. */
+    perDishWashed: 1,
+    /** Tamamlanan görev başına XP (ana kaynak). */
+    perQuest: 25,
+    /** Açılan pad (masa/personel) başına XP. */
+    perPad: 15,
+    /** Her ₺ yükseltme (ocak/garson/masa) başına XP. */
+    perUpgrade: 10,
+    /** L1→L2 için gereken XP. */
+    levelBase: 60,
+    /** Seviye başına gereksinim büyümesi. */
+    levelGrowth: 1.5,
+  },
+
+  /**
    * Çevrimdışı (offline) gelir (kullanıcı isteği 2026-06-09: sert kıs → "birkaç yükseltme parası, oyuncu
    * nefes alsın; zone'u tek seferde bitirmesin"). İki kol birlikte kısar:
    *   - rateMult: offline oranı, idealize aktif oranın bu kadarı (1 = %100; 0.5 = yarı). Gerçek oyuncu
@@ -426,6 +451,26 @@ export function brewQueueCapacity(stationLevel: number): number {
 /** Toplam bardak havuzu (temiz+kirli+akıştaki): ocak seviyesiyle büyür (Faz 2e §5). */
 export function cupPoolCapacity(stationLevel: number): number {
   return economyConfig.cups.poolBase + economyConfig.cups.poolPerLevel * stationLevel;
+}
+
+/** L → L+1 için gereken XP (level 1-tabanlı). */
+export function xpForLevel(level: number): number {
+  const x = economyConfig.xp;
+  return Math.round(x.levelBase * Math.pow(x.levelGrowth, Math.max(0, level - 1)));
+}
+
+/** Toplam XP'den seviye + seviye-içi ilerleme: { level, cur, need }. Level 1'den başlar. */
+export function levelProgress(totalXp: number): { level: number; cur: number; need: number } {
+  let level = 1;
+  let rest = Math.max(0, Math.floor(totalXp));
+  let need = xpForLevel(level);
+  // 10k seviye guard'ı: bozuk/aşırı xp değerinde sonsuz döngü olmasın.
+  while (rest >= need && level < 10_000) {
+    rest -= need;
+    level += 1;
+    need = xpForLevel(level);
+  }
+  return { level, cur: rest, need };
 }
 
 /** Mevcut masa seviyesinden bir sonraki yükseltmenin maliyeti (₺). Faz 2h. */

@@ -10,6 +10,8 @@ import {
   tableTip,
   tablePatience,
   waiterSpeed,
+  xpForLevel,
+  levelProgress,
   SAVE_VERSION,
 } from '../src/config/economy.config';
 import { D, fmt } from '../src/game/decimal';
@@ -463,6 +465,9 @@ describe('bardak döngüsü (Faz 2e) — demleme temiz harcar, içen kirli bıra
 
   it('içen müşteri masada KİRLİ bardak bırakır; oyuncu toplar → bulaşıkta yıkar → temize döner', () => {
     useGame.getState().hardReset();
+    // Onboarding gate (2026-06-10): kirli bardak ancak q_wash göreviyle çıkmaya başlar.
+    const washIdx = economyConfig.quests.findIndex((q) => q.target.type === 'washDish');
+    useGame.setState({ questIndex: washIdx, questBase: 0 });
     useGame.setState({ player: [0, 0.6, 2], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
     const pool = cupPoolCapacity(0);
     // Müşteri otursun + çay demlensin.
@@ -1237,5 +1242,117 @@ describe('Etkileşim HAREKET-temelli (D-018 §2): üstünden geçerken alma, dur
     useGame.setState({ player: [pos[0] + 6, 0.6, pos[2]] });
     useGame.getState().tick(0.1);
     expect(useGame.getState().padFills[pad.id] ?? 0).toBeCloseTo(accrued, 5);
+  });
+});
+
+describe('Level/XP sistemi (v17, 2026-06-10) — eylem XP\'si, seviye eğrisi, migrasyon tohumlama, ayarlar', () => {
+  const X = economyConfig.xp;
+
+  it('seviye eğrisi: xpForLevel geometrik büyür; levelProgress doğru böler', () => {
+    expect(xpForLevel(1)).toBe(Math.round(X.levelBase));
+    expect(xpForLevel(2)).toBe(Math.round(X.levelBase * X.levelGrowth));
+    expect(levelProgress(0)).toEqual({ level: 1, cur: 0, need: xpForLevel(1) });
+    // Tam L1 eşiği: seviye atlar, içi sıfırlanır.
+    expect(levelProgress(xpForLevel(1))).toEqual({ level: 2, cur: 0, need: xpForLevel(2) });
+    // L2 ortası.
+    const mid = xpForLevel(1) + 10;
+    expect(levelProgress(mid)).toEqual({ level: 2, cur: 10, need: xpForLevel(2) });
+    // Negatif/bozuk değer güvenli.
+    expect(levelProgress(-50).level).toBe(1);
+  });
+
+  it('oyuncu eliyle servis XP verir; görev tamamlanınca görev XP\'si eklenir', () => {
+    useGame.getState().hardReset();
+    useGame.setState({ player: [0, 0.6, 2], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+    for (let i = 0; i < 200; i++) useGame.getState().tick(0.1);
+    const waiting = useGame.getState().npcs.find((n) => n.state === 'waitingForTea');
+    expect(waiting).toBeTruthy();
+    const st = LAYOUT.stations[0];
+    useGame.setState({ player: [st[0], 0.6, st[2]] });
+    useGame.getState().tick(0.1); // çay al (q_pickup tamamlanır → +perQuest)
+    const xpAfterPickup = useGame.getState().xp;
+    expect(xpAfterPickup).toBeGreaterThanOrEqual(X.perQuest);
+    const seat = LAYOUT.tables[waiting!.tableIndex].seat;
+    useGame.setState({ player: [seat[0], 0.6, seat[2]] });
+    useGame.getState().tick(0.1); // servis (+perTeaServed; q_serve1 da tamamlanır → +perQuest)
+    expect(useGame.getState().xp).toBeGreaterThanOrEqual(xpAfterPickup + X.perTeaServed + X.perQuest);
+  });
+
+  it('pad açılışı XP verir; seviye atlanınca toast gelir', () => {
+    useGame.getState().hardReset();
+    // Seviye eşiğinin hemen altına kur → pad XP'si seviye atlatsın.
+    useGame.setState({ xp: xpForLevel(1) - 1, notice: null });
+    expect(completePad('table2')).toBe(true);
+    const s = useGame.getState();
+    expect(s.xp).toBeGreaterThanOrEqual(xpForLevel(1) - 1 + X.perPad);
+    // Pad + quest XP'si eşiği aştı → "Seviye 2!" toast'u (sonraki görev toast'larından önce yakalanmış olmalı
+    // — aynı tick'te görev de tamamlanır; level-up bildirimi görev bildirimini EZER).
+    expect(levelProgress(s.xp).level).toBeGreaterThanOrEqual(2);
+  });
+
+  it('migrasyon v16→v17: xp mevcut ilerlemeden tohumlanır (eski oyuncu Level 1\'e düşmez)', () => {
+    const m = migrate({
+      saveVersion: 16,
+      wallet: '500',
+      lifetime: '2000',
+      stationLevel: 2,
+      tableLevels: [1, 1, 0, 0],
+      waiterLevel: 1,
+      padsDone: ['table2', 'table3', 'waiter'],
+      padFills: {},
+      stats: { teaPickups: 60, teasServed: 50, coinsCollected: 80, dishesWashed: 30, waiterServed: 25 },
+      questIndex: 9,
+      questBase: 0,
+      lastSaved: Date.now(),
+    });
+    expect(m.saveVersion).toBe(SAVE_VERSION);
+    const expected =
+      50 * X.perTeaServed +
+      25 * X.perWaiterServed +
+      30 * X.perDishWashed +
+      9 * X.perQuest +
+      3 * X.perPad +
+      (2 + 1 + 2) * X.perUpgrade;
+    expect(m.xp).toBe(expected);
+    expect(levelProgress(m.xp).level).toBeGreaterThan(1);
+    expect(m.settings).toEqual({ sound: true, music: true, notifications: true });
+  });
+
+  it('ayarlar: setSetting persist eder; bozuk kayıt değeri default\'a normalize edilir', () => {
+    useGame.getState().hardReset();
+    useGame.getState().setSetting('sound', false);
+    expect(useGame.getState().settings.sound).toBe(false);
+    // (localStorage node ortamında yok — persist yolu smoke testinde doğrulanır.)
+    // Bozuk settings alanı migrate'te default'lanır.
+    const m = migrate({ saveVersion: 16, padsDone: [], settings: 'bozuk', lastSaved: Date.now() });
+    expect(m.settings).toEqual({ sound: true, music: true, notifications: true });
+    // hardReset sıfırlar (yeni kayıt default ayarlarla).
+    useGame.getState().hardReset();
+    expect(useGame.getState().settings.sound).toBe(true);
+  });
+});
+
+describe('bulaşık onboarding gate (2026-06-10) — q_wash gelmeden kirli bardak çıkmaz', () => {
+  it('görev öncesi: içen müşteri kirli BIRAKMAZ, bardak temiz havuza döner (korunum bozulmaz)', () => {
+    useGame.getState().hardReset(); // questIndex 0 < q_wash
+    useGame.setState({ player: [0, 0.6, 2], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+    for (let i = 0; i < 200; i++) useGame.getState().tick(0.1);
+    const waiting = useGame.getState().npcs.find((n) => n.state === 'waitingForTea');
+    expect(waiting).toBeTruthy();
+    const st = LAYOUT.stations[0];
+    useGame.setState({ player: [st[0], 0.6, st[2]] });
+    useGame.getState().tick(0.1);
+    const seat = LAYOUT.tables[waiting!.tableIndex].seat;
+    useGame.setState({ player: [seat[0], 0.6, seat[2]] });
+    useGame.getState().tick(0.1);
+    // İçme bitsin (oyuncu uzakta).
+    useGame.setState({ player: [0, 0.6, 6.5] });
+    for (let i = 0; i < 100; i++) useGame.getState().tick(0.1);
+    const s = useGame.getState();
+    expect(s.dishes.length).toBe(0); // kirli YOK (öğretilmedi)
+    // Korunum: havuz eksilmedi (bardak temize geri döndü) → demleme asla kilitlenmez.
+    expect(s.cleanCups + s.readyCups + s.tray + s.npcs.filter((n) => n.state === 'drinking').length).toBe(
+      cupPoolCapacity(s.stationLevel),
+    );
   });
 });

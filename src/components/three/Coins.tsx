@@ -37,9 +37,7 @@ function MoneyFloater({ x, z, value, onDone }: { x: number; z: number; value: nu
   return (
     <group position={[x, 1.3, z]}>
       <Html center distanceFactor={9} pointerEvents="none" zIndexRange={[5, 0]}>
-        <div className="floater">
-          <span className="coin-icon sm" />+{value}
-        </div>
+        <div className="floater">+{value}</div>
       </Html>
     </group>
   );
@@ -49,6 +47,9 @@ function MoneyFloater({ x, z, value, onDone }: { x: number; z: number; value: nu
 export function Coins() {
   const coins = useGame((s) => s.coins);
   const prev = useRef<Map<number, { x: number; z: number; value: number }>>(new Map());
+  // Floater key'i coin id'sinden BAĞIMSIZ monoton sayaç: oyun sıfırlanınca store nextId başa döner,
+  // coin id'leri tekrar eder → id'yle key'lemek "duplicate key" hatası üretirdi (kök neden).
+  const floaterSeq = useRef(0);
   const [floaters, setFloaters] = useState<{ id: number; x: number; z: number; value: number }[]>([]);
 
   useEffect(() => {
@@ -57,7 +58,7 @@ export function Coins() {
     const collected: { id: number; x: number; z: number; value: number }[] = [];
     const p = useGame.getState().player;
     for (const [id, info] of prev.current) {
-      if (!cur.has(id)) collected.push({ id, x: p[0], z: p[2], value: info.value });
+      if (!cur.has(id)) collected.push({ id: ++floaterSeq.current, x: p[0], z: p[2], value: info.value });
     }
     prev.current = cur;
     if (collected.length) setFloaters((f) => [...f, ...collected]);

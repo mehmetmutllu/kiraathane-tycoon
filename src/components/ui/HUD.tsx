@@ -1,16 +1,22 @@
 import { useState } from 'react';
 import { useGame } from '../../game/store';
 import { fmt } from '../../game/decimal';
+import { levelProgress } from '../../config/economy.config';
+import { CoinIcon, GemIcon, StarBadge, GearIcon, MailIcon, QuestPhoto } from './icons';
 
 /**
- * HUD (game-feel redesign 2026-06-09): yalnız GEREKEN bilgi — para + elmas chip'i, üst-orta GÖREV BARI
- * (dokun → kamera hedefe kayar), offline kazanç oyun-tarzı MODAL kart (sol-üstte sabit yazı YOK),
- * sıfırlama ayarlar dişlisi menüsünde. Tepsi/bardak/masa sayaçları KALDIRILDI (bilgi zaten dünyada
- * görünüyor: elindeki tepsi, ocaktaki bardaklar, masalar).
+ * HUD — gerçek tycoon yerleşimi (UI redesign 2026-06-10; referans: My Perfect Hotel HUD grameri).
+ *   SOL-ÜST: seviye yıldızı + XP barı; hemen altında küçük dişli (ayarlar) + posta butonları.
+ *   SAĞ-ÜST: chip'siz para + elmas (ikon + konturlu rakam, yan yana).
+ *   SAĞ-ÜST ALTI: görev kartı — görev fotoğrafı + adı + ilerleme barı (dokun → kamera hedefe).
+ *   ALT EKRAN BOŞ (joystick drag-anywhere, görünmez).
  */
 export function HUD() {
   const wallet = useGame((s) => s.wallet);
   const diamonds = useGame((s) => s.diamonds);
+  const xp = useGame((s) => s.xp);
+  const settings = useGame((s) => s.settings);
+  const setSetting = useGame((s) => s.setSetting);
   const offlineEarned = useGame((s) => s.offlineEarned);
   const zone = useGame((s) => s.activeZone);
   const notice = useGame((s) => s.notice);
@@ -18,66 +24,126 @@ export function HUD() {
   const focusQuest = useGame((s) => s.focusQuest);
   const hardReset = useGame((s) => s.hardReset);
   const [offlineSeen, setOfflineSeen] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [panel, setPanel] = useState<'settings' | 'mail' | null>(null);
 
+  const lvl = levelProgress(xp);
   const zonePct = zone ? Math.min(100, (zone.fill / zone.cost) * 100) : 0;
+  const questPct = quest && quest.total != null ? Math.min(100, ((quest.cur ?? 0) / quest.total) * 100) : null;
   const showOffline = offlineEarned > 0 && !offlineSeen;
 
   const onReset = () => {
-    setMenuOpen(false);
-    if (window.confirm('Oyunu sıfırla? Bu cihazdaki tüm ilerleme silinecek.')) hardReset();
+    if (window.confirm('Oyunu sıfırla? Bu cihazdaki tüm ilerleme silinecek.')) {
+      setPanel(null);
+      hardReset();
+    }
   };
 
   return (
     <div className="hud" data-testid="hud">
-      <div className="hud-top">
-        <div className="chip" data-testid="wallet">
-          <span className="coin-icon" /> {fmt(wallet)}
+      {/* SOL-ÜST: seviye + XP barı; altında dişli + posta */}
+      <div className="lvl-unit pill" data-testid="level">
+        <div className="lvl-star">
+          <StarBadge size={56} />
+          <span className="lvl-num" data-testid="level-num">{lvl.level}</span>
         </div>
-        <div className="chip" data-testid="diamonds">
-          <span className="cur gem">💎</span> {fmt(diamonds)}
+        <div className="lvl-bar">
+          <div className="lvl-fill" style={{ width: `${Math.min(100, (lvl.cur / lvl.need) * 100)}%` }} />
+          <span className="lvl-text">{lvl.cur}/{lvl.need}</span>
+        </div>
+      </div>
+      <div className="side-btns">
+        <button className="icon-btn" data-testid="gear" title="Ayarlar" onClick={() => setPanel('settings')}>
+          <GearIcon />
+        </button>
+        <button className="icon-btn" data-testid="mail" title="Posta" onClick={() => setPanel('mail')}>
+          <MailIcon />
+        </button>
+      </div>
+
+      {/* SAĞ-ÜST: chip'siz para + elmas */}
+      <div className="cur-row">
+        <div className="cur-item pill" data-testid="wallet">
+          <CoinIcon size={34} />
+          <span className="cur-val">{fmt(wallet)}</span>
+        </div>
+        <div className="cur-item pill" data-testid="diamonds">
+          <GemIcon size={32} />
+          <span className="cur-val">{fmt(diamonds)}</span>
         </div>
       </div>
 
-      {/* Ayarlar dişlisi (sağ-üst): sıfırlama burada — ekranda ayrı test butonu yok */}
-      <button className="gear-btn" data-testid="gear" onClick={() => setMenuOpen((v) => !v)} title="Ayarlar">
-        ⚙️
-      </button>
-      {menuOpen && (
-        <div className="menu" data-testid="menu">
-          <button className="menu-item" data-testid="reset" onClick={onReset}>
-            ↺ Oyunu Sıfırla
-          </button>
-        </div>
-      )}
-
-      {/* GÖREV BARI (üst-orta): tek aktif görev; dokun → kamera hedefe kayar (quest sistemi) */}
+      {/* SAĞ-ÜST ALTI: görev kartı (foto + ad + ilerleme barı); dokun → kamera hedefe */}
       {quest && (
-        <button className="quest-bar" data-testid="quest" key={quest.id} onClick={() => focusQuest()}>
-          <span className="quest-ico">🎯</span>
-          <span className="quest-title">{quest.title}</span>
-          {quest.total != null && (
-            <span className="quest-prog" data-testid="quest-prog">
-              {quest.cur}/{quest.total}
-            </span>
-          )}
-          {quest.cost != null && (
-            <span className="quest-cost">
-              <span className="coin-icon sm" />
-              {quest.cost}
-            </span>
-          )}
+        <button className="quest-card" data-testid="quest" key={quest.id} onClick={() => focusQuest()}>
+          <span className="quest-photo">
+            <QuestPhoto target={quest.target} size={46} />
+          </span>
+          <span className="quest-body">
+            <span className="quest-title">{quest.title}</span>
+            {questPct != null ? (
+              <span className="quest-track">
+                <span className="quest-fill" style={{ width: `${questPct}%` }} />
+                <span className="quest-count" data-testid="quest-prog">{quest.cur}/{quest.total}</span>
+              </span>
+            ) : quest.cost != null ? (
+              <span className="quest-cost">
+                <CoinIcon size={17} />
+                {quest.cost}
+              </span>
+            ) : (
+              <span className="quest-track">
+                <span className="quest-count">Hedefe git</span>
+              </span>
+            )}
+          </span>
         </button>
       )}
 
-      {/* OFFLINE KAZANÇ — oyun-tarzı kart: Tamam'a basınca kapanır (sabit köşe yazısı değil) */}
+      {/* AYARLAR modalı: ses/müzik/bildirim + sıfırla */}
+      {panel === 'settings' && (
+        <div className="modal-backdrop" data-testid="menu" onClick={() => setPanel(null)}>
+          <div className="modal-card settings-card" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-title">Ayarlar</div>
+            <SettingRow label="Ses" value={settings.sound} onChange={(v) => setSetting('sound', v)} testid="set-sound" />
+            <SettingRow label="Müzik" value={settings.music} onChange={(v) => setSetting('music', v)} testid="set-music" />
+            <SettingRow
+              label="Bildirimler"
+              value={settings.notifications}
+              onChange={(v) => setSetting('notifications', v)}
+              testid="set-notifications"
+            />
+            <button className="danger-btn" data-testid="reset" onClick={onReset}>
+              ↺ Oyunu Sıfırla
+            </button>
+            <button className="modal-btn" data-testid="settings-ok" onClick={() => setPanel(null)}>
+              Tamam
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* POSTA modalı (gelecekte gelen kutusu/ödüller — şimdilik boş) */}
+      {panel === 'mail' && (
+        <div className="modal-backdrop" data-testid="mail-panel" onClick={() => setPanel(null)}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-emoji">📬</div>
+            <div className="modal-title">Posta kutun boş</div>
+            <div className="modal-sub">Ödüller ve haberler yakında burada görünecek.</div>
+            <button className="modal-btn" onClick={() => setPanel(null)}>
+              Tamam
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* OFFLINE KAZANÇ — oyun-tarzı kart */}
       {showOffline && (
         <div className="modal-backdrop" data-testid="offline">
           <div className="modal-card">
             <div className="modal-emoji">🌙</div>
             <div className="modal-title">Sen yokken kıraathane çalıştı</div>
             <div className="modal-amount">
-              <span className="coin-icon" /> +{Math.floor(offlineEarned).toLocaleString('tr-TR')}
+              <CoinIcon size={26} /> +{Math.floor(offlineEarned).toLocaleString('tr-TR')}
             </div>
             <button className="modal-btn" data-testid="offline-ok" onClick={() => setOfflineSeen(true)}>
               Tamam
@@ -86,7 +152,7 @@ export function HUD() {
         </div>
       )}
 
-      {/* Yeni-özellik bildirimi (D-019 §4): bir özellik açılınca kısa toast (kendi kendine kaybolur). */}
+      {/* Yeni-özellik / görev / seviye toast'u */}
       {notice && (
         <div className="notice" data-testid="notice" key={notice.text}>
           {notice.text}
@@ -96,19 +162,42 @@ export function HUD() {
       {/* Üstünde durulan zone (pad/yükseltme) — altta dolan bar */}
       {zone && (
         <div className="zone-bar" data-testid="zone-bar" data-kind={zone.kind}>
-          <div className="zone-label">
-            {zone.kind === 'upgrade' ? '☕ ' : '🏗️ '}
-            {zone.label}
-          </div>
+          <div className="zone-label">{zone.label}</div>
           <div className="zone-track">
             <div className="zone-fill" style={{ width: `${zonePct}%` }} />
           </div>
           <div className="zone-num">
-            <span className="coin-icon sm" /> {Math.floor(zone.fill).toLocaleString('tr-TR')} /{' '}
-            {zone.cost.toLocaleString('tr-TR')}
+            <CoinIcon size={15} /> {Math.floor(zone.fill).toLocaleString('tr-TR')} / {zone.cost.toLocaleString('tr-TR')}
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function SettingRow({
+  label,
+  value,
+  onChange,
+  testid,
+}: {
+  label: string;
+  value: boolean;
+  onChange: (v: boolean) => void;
+  testid: string;
+}) {
+  return (
+    <div className="setting-row">
+      <span className="setting-label">{label}</span>
+      <button
+        className={`switch${value ? ' on' : ''}`}
+        data-testid={testid}
+        role="switch"
+        aria-checked={value}
+        onClick={() => onChange(!value)}
+      >
+        <span className="switch-knob" />
+      </button>
     </div>
   );
 }

@@ -26,6 +26,17 @@ export function defaultStats(): SaveStats {
   return { teaPickups: 0, teasServed: 0, coinsCollected: 0, dishesWashed: 0, waiterServed: 0 };
 }
 
+/** Oyuncu ayarları (v17 persist). Ses/müzik Faz 6'da, bildirimler Capacitor'da (Faz 5/7) okunur. */
+export interface SaveSettings {
+  sound: boolean;
+  music: boolean;
+  notifications: boolean;
+}
+
+export function defaultSettings(): SaveSettings {
+  return { sound: true, music: true, notifications: true };
+}
+
 export interface SaveData {
   saveVersion: number;
   wallet: string;
@@ -45,6 +56,10 @@ export interface SaveData {
   questIndex: number;
   /** Aktif SAYAÇ görevinin başlangıç sayaç değeri (delta hedefi için taban; v16). */
   questBase: number;
+  /** Toplam oyuncu XP'si (v17; level `levelProgress(xp)` ile türetilir — ayrı saklanmaz). */
+  xp: number;
+  /** Oyuncu ayarları (v17). */
+  settings: SaveSettings;
   lastSaved: number; // epoch ms
 }
 
@@ -62,6 +77,8 @@ export function defaultSave(): SaveData {
     stats: defaultStats(),
     questIndex: 0,
     questBase: 0,
+    xp: 0,
+    settings: defaultSettings(),
     lastSaved: Date.now(),
   };
 }
@@ -263,6 +280,28 @@ export function migrate(raw: Record<string, unknown>): SaveData {
     v = 16;
   }
 
+  // v16 -> v17 (LEVEL/XP + AYARLAR): toplam `xp` + `settings` eklendi. Eski oyuncu Level 1'e
+  // DÜŞMEZ: xp mevcut ilerlemeden (stats sayaçları + questIndex + padsDone + ₺ seviyeleri)
+  // config'teki XP oranlarıyla tohumlanır — sanki baştan beri XP kazanıyormuş gibi.
+  if (v < 17) {
+    const x = economyConfig.xp;
+    const st = (d.stats && typeof d.stats === 'object' ? d.stats : {}) as Partial<SaveStats>;
+    const tableLevels = Array.isArray(d.tableLevels) ? (d.tableLevels as number[]) : [];
+    const upgrades =
+      (Number(d.stationLevel ?? 0) || 0) +
+      (Number(d.waiterLevel ?? 0) || 0) +
+      tableLevels.reduce((a, n) => a + (Number(n) || 0), 0);
+    d.xp =
+      (Number(st.teasServed ?? 0) || 0) * x.perTeaServed +
+      (Number(st.waiterServed ?? 0) || 0) * x.perWaiterServed +
+      (Number(st.dishesWashed ?? 0) || 0) * x.perDishWashed +
+      (Number(d.questIndex ?? 0) || 0) * x.perQuest +
+      (Array.isArray(d.padsDone) ? (d.padsDone as string[]).length : 0) * x.perPad +
+      upgrades * x.perUpgrade;
+    d.settings = defaultSettings();
+    v = 17;
+  }
+
   // Sona kalan v16 şeması: türetilen alanlar (tables/stations/serviceSpeedMult/hasWaiter), eski `padFill`,
   // kaldırılan `trayLevel` ve 'samovar' referansı yazılmaz; stats/questIndex/questBase eklendi (v16).
   const rawStats = (d.stats && typeof d.stats === 'object' ? d.stats : {}) as Partial<SaveStats>;
@@ -289,6 +328,16 @@ export function migrate(raw: Record<string, unknown>): SaveData {
     },
     questIndex: Math.max(0, Math.min(Number(d.questIndex ?? 0) || 0, economyConfig.quests.length)),
     questBase: Math.max(0, Number(d.questBase ?? 0) || 0),
+    xp: Math.max(0, Number(d.xp ?? 0) || 0),
+    settings: (() => {
+      const raw = (d.settings && typeof d.settings === 'object' ? d.settings : {}) as Partial<SaveSettings>;
+      const def = defaultSettings();
+      return {
+        sound: typeof raw.sound === 'boolean' ? raw.sound : def.sound,
+        music: typeof raw.music === 'boolean' ? raw.music : def.music,
+        notifications: typeof raw.notifications === 'boolean' ? raw.notifications : def.notifications,
+      };
+    })(),
     lastSaved: Number(d.lastSaved ?? Date.now()) || Date.now(),
   };
 }

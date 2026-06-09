@@ -334,6 +334,32 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   görüntüleri araştırılıp HUD SIFIRDAN tasarlanacak, (2) gerçek ikon asset'leri üretilecek (SVG/sprite ya da Kenney
   CC0 UI), (3) oyun-hissi font (yerel bundle, TR destekli), (4) zone-2'yi erken getirme + per-zone vs merkezi-servis
   kararı netleşecek. Detay: activeContext "SONRAKİ OTURUM ANA GÖREVİ".
+- ✅ **HUD SIFIRDAN REDESIGN + LEVEL/XP + AYARLAR (2026-06-10 gece; SAVE 16→17):** Kullanıcı "UI oyun gibi değil /
+  ikonlar AI slop" dedi → onaylı akış (referans araştırması → mock → onay → uygulama → Playwright didik didik).
+  (1) **Referans:** MPH gerçek HUD (YouTube kare) + MPH-Empire + My Mini Mart + Burger Please App Store görselleri
+  görsel incelendi (yalnız 3D arcade-idle; 2D'ler elendi — kullanıcı isteği). (2) **Yerleşim MPH birebir** (kullanıcı
+  tarifi): sol-üst yıldız(seviye)+XP barı, altında küçük dişli+posta; sağ-üst CHİP'SİZ para+elmas (SVG+Lilita konturlu
+  rakam); altında görev kartı (görev FOTOĞRAFI+ad+ilerleme barı; dokun→kamera). (3) **icons.tsx** elle çizilmiş gradyanlı
+  SVG seti (coin/gem/star/gear/mail/QuestPhoto) — emoji+CSS-circle bitti. (4) **Font yerel:** Baloo 2 + Lilita One
+  (@fontsource, main.tsx); 3D zemin yazıları Baloo2.ttf (public/assets/fonts, OFL manifestte) → troika CDN default'u
+  kalktı (D-018 Faz 7 TODO kapandı). (5) **LEVEL/XP:** config.xp (eylem-temelli; eğri 60×1.5^L) + xpForLevel/levelProgress;
+  xp persist; tick'te servis/yıkama/garson/pad/yükseltme/görev XP'si; level-up toast. **v16→v17 migrasyon xp'yi eski
+  ilerlemeden TOHUMLAR.** İleride: kat L-kapısı (3b) + kozmetik mağaza. (6) **Ayarlar modalı:** ses/müzik/bildirim
+  toggle (persist, setSetting) + Oyunu Sıfırla; posta "boş" modalı. (7) **🐛 kök-neden fix:** floater key'i coin id →
+  bağımsız sayaç (reset sonrası duplicate-key React hatası her kare basıyordu). **vitest 77/77 (5 yeni), build temiz,
+  sim 60sn sabit, smoke 27/27, konsol 0 hata, 320/390/768/landscape taşma yok.** Değişen: economy.config, save, store,
+  devHooks, HUD, index.css, main.tsx, Coins, GroundMarker, YENİ icons.tsx, assets/fonts, tests. **Kullanıcı feedback bekleniyor.**
+- ✅ **HUD v2 ince ayar (kullanıcı 1. tur feedback, aynı oturum):** (1) 🐛 KRİTİK: üst HUD öğeleri touch-layer
+  altında kaldığından TIKLANAMIYORDU → z-index 10 (reset-btn dersi tekrarı; bundan böyle tıklama testleri GERÇEK
+  Playwright click ile). (2) Level ünitesi BÜTÜNLEŞİK tek pill (yıldız gömülü+bar içinde); para/elmas aynı pill
+  ailesinde chip + level ile piksel hizalı. (3) Zemin yazıları fontWeight 700 (Baloo2 variable). (4) **Bulaşık
+  onboarding gate:** q_wash görevi gelmeden kirli çıkmaz (bardak temize döner; korunum testli). **vitest 78/78,
+  smoke 27/27, build temiz, 320/landscape taşma yok.**
+- ✅ **ZONE KARARI (D-022, kullanıcı onaylı):** per-zone TEMALI ocak+bulaşık; kat başına 4 zone 2×2; zemin kat çay
+  teması (zone 3-4 farklı konsept), okey/tavla üst kat + balkon; tuvalet+depo+TV köşesi+dış bahçe kat planında.
+- 🌙 **SIRADAKİ = GECE OTURUMU (onaylı 7 maddelik liste activeContext'te):** ocak-yükseltme fix → kıraathane
+  araştırması+kat planı → zone-2 çalışır → görsel kimlik+sokak → curve raporu → karakter → APK+sabah raporu.
+- **Bilinen bug:** ocağa çay almaya gelince FILL_TEA yükseltme dolumu istemeden para çekiyor (gece 1. madde).
 - ⏳ **Adım 3:** curve'ü 3-profil simülasyonla ciddi hesapla + sayı tablosu onaya. ⏳ **Adım 4:** Faz 3a zone-2.
 - ⏳ **Zone mimarisi kararı AÇIK:** per-zone ocak+bulaşık MI, merkezi servis + zone-başı personel Mİ — kullanıcı tekrar
   sordu, onaylanmış model YOK; sonraki oturumda artı/eksi tablosuyla karara bağlanacak.

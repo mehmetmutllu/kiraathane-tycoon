@@ -1,3 +1,20 @@
+/* Köşe Kıraathanesi — UI redesign 2026-06-10 (gerçek tycoon HUD grameri; referans: My Perfect Hotel).
+   Fontlar YEREL bundle (main.tsx @fontsource importları; CDN yok — D-018 dersi). */
+
+:root {
+  --font-game: 'Baloo 2', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-num: 'Lilita One', 'Baloo 2', system-ui, sans-serif;
+  --ink: #4a2c12; /* koyu kahve kontur/metin */
+  --cream: #fdf3e3;
+  --gold-1: #ffd54f;
+  --gold-2: #ffb300;
+  --green-1: #9ccc65;
+  --green-2: #689f38;
+  --sat: env(safe-area-inset-top, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -11,7 +28,7 @@ body,
   height: 100%;
   overflow: hidden;
   background: #1f2933;
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-game);
   -webkit-user-select: none;
   user-select: none;
   touch-action: none;
@@ -28,7 +45,7 @@ body,
   display: block;
 }
 
-/* ---- HUD ---- */
+/* ---- HUD kökü ---- */
 .hud {
   position: absolute;
   inset: 0;
@@ -36,178 +53,259 @@ body,
   color: #fff;
 }
 
-.hud-top {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
+/* Konturlu oyun yazısı (şeker stil): beyaz dolgu + koyu stroke, stroke dolgunun ALTINDA kalır. */
+.cur-val,
+.lvl-num,
+.quest-count,
+.lvl-text {
+  font-family: var(--font-num);
+  font-weight: 400;
+  color: #fff;
+  paint-order: stroke fill;
+  -webkit-text-stroke: 4px var(--ink);
+  letter-spacing: 0.02em;
 }
 
-.chip {
-  background: rgba(0, 0, 0, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 999px;
-  padding: 6px 11px;
-  font-size: 16px;
-  font-weight: 700;
+/* ---- ÜST SIRA ORTAK DİL: ceviz-kahve hap (pill) ailesi — level / para / elmas / görev kartı
+   aynı malzemeden → "ayrı ayrı duran parçalar" hissi biter (kullanıcı feedback 2026-06-10).
+   Hepsi AYNI top hizasında (--top-row) ve touch-layer'ın (z:5) ÜSTÜNDE (z:10 — tıklanabilirlik!). */
+.hud {
+  --top-row: calc(12px + var(--sat));
+  --pill-h: 32px;
+}
+
+.pill {
+  position: relative;
+  height: var(--pill-h);
   display: flex;
   align-items: center;
-  gap: 5px;
-  white-space: nowrap;
-  backdrop-filter: blur(4px);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(78, 52, 46, 0.94), rgba(56, 36, 30, 0.94));
+  border: 2.5px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35), inset 0 -3px 0 rgba(0, 0, 0, 0.25);
 }
 
-.chip .cur {
-  color: #ffd54f;
-}
-.chip .cur.gem {
-  color: #4fc3f7;
-}
-
-/* Jenerik altın para ikonu (₺/TL display'den tamamen kalktı — kullanıcı 2026-06-09) */
-.coin-icon {
-  display: inline-block;
-  width: 17px;
-  height: 17px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #fff3c4, #ffc933 55%, #f59f00);
-  border: 2px solid #b87400;
-  box-shadow: inset 0 -2px 2px rgba(0, 0, 0, 0.18), 0 1px 2px rgba(0, 0, 0, 0.35);
-  flex: none;
-  vertical-align: -2px;
-}
-.coin-icon.sm {
-  width: 13px;
-  height: 13px;
-  border-width: 1.5px;
-}
-
-/* Ayarlar dişlisi (sağ-üst) + küçük menü */
-.gear-btn {
+/* ---- SOL-ÜST: seviye ünitesi = TEK parça (yıldız hapın kenarına gömülü + içinde XP barı) ---- */
+.lvl-unit {
   position: absolute;
-  top: calc(10px + env(safe-area-inset-top, 0px));
-  right: calc(10px + env(safe-area-inset-right, 0px));
+  top: var(--top-row);
+  left: calc(12px + var(--sal));
   z-index: 10;
+  padding: 0 10px 0 46px;
+}
+
+.lvl-star {
+  position: absolute;
+  left: -14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 54px;
+  height: 54px;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.4));
+}
+.lvl-star svg {
+  width: 100%;
+  height: 100%;
+}
+
+.lvl-num {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding-top: 3px;
+  font-size: 19px;
+  -webkit-text-stroke: 4px #8a5a00;
+}
+
+.lvl-bar {
+  position: relative;
+  height: 16px;
+  width: 84px;
+  border-radius: 9px;
+  background: rgba(20, 10, 4, 0.7);
+  overflow: hidden;
+}
+
+.lvl-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  border-radius: 9px;
+  background: linear-gradient(var(--green-1), var(--green-2));
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.35);
+  transition: width 0.25s ease;
+}
+
+.lvl-text {
+  position: relative;
+  display: block;
+  text-align: center;
+  font-size: 10.5px;
+  line-height: 14px;
+  -webkit-text-stroke: 3px #33401d;
+}
+
+/* ---- SOL-ÜST ALTI: küçük dişli + posta (aynı ceviz dil, yuvarlak) ---- */
+.side-btns {
+  position: absolute;
+  top: calc(58px + var(--sat));
+  left: calc(12px + var(--sal));
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.icon-btn {
   pointer-events: auto;
   width: 40px;
   height: 40px;
+  border: 2.5px solid rgba(255, 255, 255, 0.95);
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  background: rgba(0, 0, 0, 0.55);
-  font-size: 19px;
-  line-height: 1;
+  background: linear-gradient(180deg, rgba(78, 52, 46, 0.94), rgba(56, 36, 30, 0.94));
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35), inset 0 -3px 0 rgba(0, 0, 0, 0.25);
+  display: grid;
+  place-items: center;
   cursor: pointer;
-  backdrop-filter: blur(4px);
+  padding: 0;
 }
-.gear-btn:active {
-  transform: scale(0.94);
+.icon-btn:active {
+  transform: translateY(2px) scale(0.96);
 }
 
-.menu {
+/* ---- SAĞ-ÜST: para + elmas chip'leri (level ünitesiyle AYNI hiza + AYNI dil) ---- */
+.cur-row {
   position: absolute;
-  top: calc(56px + env(safe-area-inset-top, 0px));
-  right: calc(10px + env(safe-area-inset-right, 0px));
-  z-index: 11;
-  pointer-events: auto;
-  background: rgba(20, 28, 36, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 12px;
-  padding: 6px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-  animation: noticePop 0.18s ease-out both;
+  top: var(--top-row);
+  right: calc(12px + var(--sar));
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
 
-.menu-item {
-  display: block;
-  width: 100%;
-  background: none;
-  border: none;
-  color: #ffd2cc;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 700;
-  padding: 9px 14px;
-  border-radius: 8px;
-  cursor: pointer;
-  text-align: left;
-}
-.menu-item:active {
-  background: rgba(255, 255, 255, 0.1);
+.cur-item {
+  min-width: 76px;
+  justify-content: flex-end;
+  padding: 0 12px 0 26px;
 }
 
-/* GÖREV BARI (üst-orta, quest sistemi): tek aktif görev; dokununca kamera hedefe kayar. */
-.quest-bar {
+.cur-item > svg {
   position: absolute;
-  left: 50%;
-  top: calc(14px + env(safe-area-inset-top, 0px));
-  transform: translateX(-50%);
+  left: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.4));
+}
+
+.cur-val {
+  font-size: 16px;
+}
+
+/* ---- SAĞ-ÜST ALTI: görev kartı ---- */
+.quest-card {
+  position: absolute;
+  top: calc(56px + var(--sat));
+  right: calc(10px + var(--sar));
   z-index: 10;
   pointer-events: auto;
   display: flex;
   align-items: center;
   gap: 8px;
-  max-width: min(78vw, 420px);
-  padding: 9px 16px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 213, 79, 0.55);
-  background: linear-gradient(180deg, rgba(38, 50, 66, 0.95), rgba(24, 33, 46, 0.95));
-  color: #fff;
-  font-family: inherit;
+  width: min(208px, 58vw);
+  padding: 6px 10px 6px 6px;
+  border: 2.5px solid rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(78, 52, 46, 0.94), rgba(56, 36, 30, 0.94));
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4), inset 0 -3px 0 rgba(0, 0, 0, 0.25);
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(4px);
-  animation: questIn 0.4s cubic-bezier(0.18, 0.9, 0.3, 1.25) both;
-  white-space: nowrap;
+  font-family: var(--font-game);
+  text-align: left;
+  animation: cardPop 0.4s cubic-bezier(0.18, 0.9, 0.3, 1.25) both;
 }
-.quest-bar:active {
-  transform: translateX(-50%) scale(0.97);
+.quest-card:active {
+  transform: scale(0.96);
 }
 
-@keyframes questIn {
+@keyframes cardPop {
   0% {
-    transform: translateX(-50%) translateY(-16px) scale(0.9);
+    transform: translateY(-12px) scale(0.88);
     opacity: 0;
   }
   100% {
-    transform: translateX(-50%) translateY(0) scale(1);
+    transform: translateY(0) scale(1);
     opacity: 1;
   }
 }
 
-.quest-ico {
-  font-size: 15px;
+.quest-photo {
+  flex: none;
+  width: 46px;
+  height: 46px;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
+}
+
+.quest-body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .quest-title {
-  font-size: 14px;
-  font-weight: 800;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.quest-prog {
   font-size: 13px;
   font-weight: 800;
-  color: #9fe6b8;
-  background: rgba(67, 209, 122, 0.16);
-  border: 1px solid rgba(67, 209, 122, 0.4);
-  padding: 2px 9px;
-  border-radius: 999px;
+  color: #ffe9c7;
+  line-height: 1.15;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.quest-track {
+  position: relative;
+  height: 15px;
+  border-radius: 8px;
+  background: rgba(20, 10, 4, 0.7);
+  overflow: hidden;
+}
+
+.quest-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  border-radius: 8px;
+  background: linear-gradient(var(--green-1), var(--green-2));
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.35);
+  transition: width 0.25s ease;
+}
+
+.quest-count {
+  position: relative;
+  display: block;
+  text-align: center;
+  font-size: 10.5px;
+  line-height: 13px;
+  -webkit-text-stroke: 3px #33401d;
 }
 
 .quest-cost {
   display: flex;
   align-items: center;
   gap: 4px;
+  font-family: var(--font-num);
   font-size: 13px;
-  font-weight: 800;
-  color: #ffe082;
+  color: var(--gold-1);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
 
-/* Oyun-tarzı modal kart (offline kazanç vb.) */
+/* ---- Oyun-tarzı modal kart (offline, ayarlar, posta) ---- */
 .modal-backdrop {
   position: absolute;
   inset: 0;
@@ -221,13 +319,13 @@ body,
 }
 
 .modal-card {
-  width: min(78vw, 320px);
-  background: linear-gradient(180deg, #2c3a4d, #1d2937);
-  border: 1px solid rgba(255, 213, 79, 0.4);
-  border-radius: 20px;
+  width: min(80vw, 320px);
+  background: linear-gradient(180deg, #fdf6e9, #f6e3c2);
+  border: 3px solid #fff;
+  border-radius: 22px;
   padding: 22px 20px 18px;
   text-align: center;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55), inset 0 -5px 0 rgba(150, 100, 40, 0.25);
   animation: cardIn 0.35s cubic-bezier(0.18, 0.9, 0.3, 1.25) both;
 }
 
@@ -248,10 +346,17 @@ body,
 }
 
 .modal-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: #cfe3f7;
-  margin-bottom: 10px;
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+
+.modal-sub {
+  font-size: 13px;
+  font-weight: 600;
+  color: #8a6a48;
+  margin-bottom: 14px;
 }
 
 .modal-amount {
@@ -259,9 +364,10 @@ body,
   align-items: center;
   justify-content: center;
   gap: 8px;
+  font-family: var(--font-num);
   font-size: 26px;
-  font-weight: 900;
-  color: #ffe082;
+  color: #f59f00;
+  text-shadow: 0 1px 0 #fff;
   margin-bottom: 16px;
 }
 
@@ -269,31 +375,103 @@ body,
   pointer-events: auto;
   min-width: 140px;
   padding: 11px 22px;
-  border: none;
+  border: 2.5px solid #fff;
   border-radius: 999px;
-  background: linear-gradient(180deg, #ffd54f, #ffb300);
-  color: #271a02;
-  font-family: inherit;
+  background: linear-gradient(180deg, var(--gold-1), var(--gold-2));
+  color: #4a2c02;
+  font-family: var(--font-game);
   font-size: 16px;
-  font-weight: 900;
+  font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 3px 0 #b87400;
+  box-shadow: 0 4px 0 #b87400, 0 6px 10px rgba(0, 0, 0, 0.25);
 }
 .modal-btn:active {
   transform: translateY(2px);
-  box-shadow: 0 1px 0 #b87400;
+  box-shadow: 0 2px 0 #b87400, 0 4px 8px rgba(0, 0, 0, 0.25);
 }
 
-/* Yeni-özellik bildirimi (D-019 §4): üst-orta toast, açılışta hafif pop, ardından store ttl ile kaybolur */
+/* ---- Ayarlar modalı ---- */
+.settings-card .modal-btn {
+  margin-top: 4px;
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 4px;
+  border-bottom: 1.5px solid rgba(150, 100, 40, 0.18);
+}
+
+.setting-label {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.switch {
+  pointer-events: auto;
+  position: relative;
+  width: 54px;
+  height: 30px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(#b0a395, #8d8275);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: background 0.15s ease;
+  padding: 0;
+}
+.switch.on {
+  background: linear-gradient(var(--green-1), var(--green-2));
+}
+
+.switch-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+  transition: left 0.15s ease;
+}
+.switch.on .switch-knob {
+  left: 27px;
+}
+
+.danger-btn {
+  pointer-events: auto;
+  display: block;
+  width: 100%;
+  margin: 14px 0 10px;
+  padding: 10px 16px;
+  border: 2.5px solid #fff;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ef5350, #c62828);
+  color: #fff;
+  font-family: var(--font-game);
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #8e1c1c, 0 6px 10px rgba(0, 0, 0, 0.2);
+}
+.danger-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #8e1c1c;
+}
+
+/* ---- Yeni-özellik / görev / seviye toast'u (üst-orta) ---- */
 .notice {
   position: absolute;
   left: 50%;
-  top: calc(70px + env(safe-area-inset-top, 0px)); /* görev barının altı */
+  top: calc(78px + var(--sat));
   transform: translateX(-50%);
-  background: linear-gradient(180deg, rgba(255, 179, 0, 0.95), rgba(245, 124, 0, 0.95));
-  color: #1a1208;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  padding: 9px 18px;
+  background: linear-gradient(180deg, rgba(255, 179, 0, 0.97), rgba(245, 124, 0, 0.97));
+  color: #2b1a04;
+  border: 2.5px solid rgba(255, 255, 255, 0.9);
+  padding: 8px 18px;
   border-radius: 999px;
   font-size: 14px;
   font-weight: 800;
@@ -314,122 +492,15 @@ body,
   }
 }
 
-.pad-status {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 220px;
-  background: rgba(0, 0, 0, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 10px;
-  padding: 10px 12px;
-  font-size: 12px;
-}
-
-.pad-label {
-  opacity: 0.85;
-  margin-bottom: 6px;
-}
-
-.pad-bar {
-  height: 10px;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.pad-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #66bb6a, #43a047);
-  transition: width 0.12s linear;
-}
-
-.pad-num {
-  margin-top: 4px;
-  text-align: right;
-  font-weight: 700;
-}
-
-.controls {
-  position: absolute;
-  right: 16px;
-  bottom: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  pointer-events: auto;
-}
-
-.btn {
-  pointer-events: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
-  min-width: 150px;
-  padding: 10px 14px;
-  border: none;
-  border-radius: 12px;
-  color: #fff;
-  font-family: inherit;
-  cursor: pointer;
-  background: linear-gradient(180deg, #43a047, #2e7d32);
-  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.35);
-  transition: transform 0.06s ease, filter 0.12s ease;
-}
-
-.btn:active {
-  transform: translateY(2px);
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
-}
-
-.btn:disabled {
-  background: linear-gradient(180deg, #5a6470, #444c55);
-  color: rgba(255, 255, 255, 0.55);
-  cursor: not-allowed;
-  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.25);
-}
-
-.btn-title {
-  font-size: 15px;
-  font-weight: 800;
-}
-
-.btn-sub {
-  font-size: 12px;
-  font-weight: 600;
-  opacity: 0.92;
-}
-
-/* 3D dünya rozetleri (drei Html) */
-.badge3d {
-  pointer-events: none;
-  white-space: nowrap;
-  font-family: system-ui, sans-serif;
-  font-size: 22px;
-  font-weight: 800;
-  color: #fff;
-  background: rgba(0, 0, 0, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 4px 10px;
-  border-radius: 999px;
-  transform: translateY(-50%);
-}
-
-.badge3d.gold {
-  color: #ffe082;
-  border-color: rgba(255, 213, 79, 0.5);
-}
-
-/* Toplanınca yükselip solan "+₺" (Faz 2f juice; CSS animasyonu, per-frame JS yok) */
+/* ---- Toplanınca yükselip solan "+₺" (Coins.tsx juice) ---- */
 .floater {
   pointer-events: none;
   white-space: nowrap;
-  font-family: system-ui, sans-serif;
+  font-family: var(--font-num);
   font-size: 20px;
-  font-weight: 900;
-  color: #ffe082;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  color: var(--gold-1);
+  paint-order: stroke fill;
+  -webkit-text-stroke: 4px var(--ink);
   animation: floatUp 0.9s ease-out forwards;
 }
 
@@ -448,53 +519,58 @@ body,
   }
 }
 
-/* Üstünde durulan zone barı (alt-orta) */
+/* ---- Üstünde durulan zone barı (alt-orta) ---- */
 .zone-bar {
   position: absolute;
   left: 50%;
   bottom: 92px;
   transform: translateX(-50%);
-  width: min(360px, 78vw);
-  background: rgba(0, 0, 0, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 12px;
+  width: min(340px, 76vw);
+  background: linear-gradient(180deg, rgba(78, 52, 46, 0.94), rgba(56, 36, 30, 0.94));
+  border: 2.5px solid rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
   padding: 10px 14px;
   text-align: center;
-  backdrop-filter: blur(4px);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4), inset 0 -3px 0 rgba(0, 0, 0, 0.25);
 }
 
 .zone-label {
   font-size: 14px;
   font-weight: 800;
+  color: #ffe9c7;
   margin-bottom: 6px;
 }
 
 .zone-track {
-  height: 14px;
-  background: rgba(255, 255, 255, 0.15);
+  height: 15px;
+  background: rgba(20, 10, 4, 0.7);
   border-radius: 8px;
   overflow: hidden;
 }
 
 .zone-fill {
   height: 100%;
-  background: linear-gradient(90deg, #ffd54f, #ffb300);
+  background: linear-gradient(var(--gold-1), var(--gold-2));
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.35);
   transition: width 0.1s linear;
 }
 
 .zone-bar[data-kind='pad'] .zone-fill {
-  background: linear-gradient(90deg, #66bb6a, #43a047);
+  background: linear-gradient(var(--green-1), var(--green-2));
 }
 
 .zone-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
   margin-top: 5px;
+  font-family: var(--font-num);
   font-size: 12px;
-  font-weight: 700;
-  opacity: 0.95;
+  color: #ffe9c7;
 }
 
 /* ---- Drag-anywhere dokunmatik kontrol ---- */
-/* Tüm ekranı kaplayan görünmez pointer katmanı (parmak her yerden hareket başlatır). */
 .touch-layer {
   position: fixed;
   inset: 0;
@@ -504,7 +580,6 @@ body,
   background: transparent;
 }
 
-/* Joystick parmağın bastığı yerde BELİRİR (left/top JS ile origin'e ayarlanır, transform ile merkezlenir). */
 .joystick {
   position: fixed;
   width: 130px;
@@ -530,39 +605,116 @@ body,
   border: 2px solid rgba(255, 255, 255, 0.55);
 }
 
-/* ---- Mobil yön desteği (portrait birincil, landscape destekli, kilit yok) ---- */
-/* Çentik / güvenli alan boşlukları */
-@supports (padding: env(safe-area-inset-top)) {
-  .hud-top {
-    top: calc(12px + env(safe-area-inset-top));
-    left: calc(12px + env(safe-area-inset-left));
-  }
-  .pad-status {
-    top: calc(12px + env(safe-area-inset-top));
-    right: calc(12px + env(safe-area-inset-right));
-  }
-}
+/* ---- Responsive (portrait birincil, landscape destekli) ---- */
 
-/* Kısa yatay ekran (telefon landscape): UI küçült, çakışmayı önle */
-@media (orientation: landscape) and (max-height: 480px) {
-  .chip {
+/* Dar dikey ekran: ölçek küçült, görev kartı daralt, taşma imkânsız */
+@media (max-width: 400px) {
+  .hud {
+    --pill-h: 28px;
+  }
+  .lvl-unit {
+    padding: 0 8px 0 40px;
+  }
+  .lvl-star {
+    width: 46px;
+    height: 46px;
+    left: -12px;
+  }
+  .lvl-num {
+    font-size: 16px;
+  }
+  .lvl-bar {
+    width: 68px;
+    height: 14px;
+  }
+  .cur-row {
+    gap: 12px;
+  }
+  .cur-item {
+    min-width: 64px;
+    padding: 0 10px 0 22px;
+  }
+  .cur-item > svg {
+    width: 28px;
+    height: 28px;
+  }
+  .cur-val {
     font-size: 14px;
-    padding: 5px 9px;
   }
-  .pad-status {
-    width: 180px;
-    padding: 8px 10px;
+  .quest-card {
+    width: min(180px, 54vw);
+    top: calc(50px + var(--sat));
+  }
+  .quest-title {
+    font-size: 12px;
+  }
+  .icon-btn {
+    width: 36px;
+    height: 36px;
+  }
+  .side-btns {
+    top: calc(52px + var(--sat));
   }
 }
 
-/* Dar dikey ekran (telefon portrait): chip'ler taşmasın, daha küçük */
-@media (orientation: portrait) and (max-width: 480px) {
-  .chip {
-    font-size: 13px;
-    padding: 5px 9px;
-    gap: 4px;
+/* Kısa yatay ekran (telefon landscape): üst öğeler küçülür, görev kartı sağda kalır */
+@media (orientation: landscape) and (max-height: 480px) {
+  .hud {
+    --pill-h: 26px;
   }
-  .pad-status {
-    width: 170px;
+  .lvl-unit {
+    padding: 0 8px 0 38px;
+  }
+  .lvl-star {
+    width: 42px;
+    height: 42px;
+    left: -11px;
+  }
+  .lvl-num {
+    font-size: 14px;
+  }
+  .lvl-bar {
+    width: 64px;
+    height: 13px;
+  }
+  .lvl-text {
+    font-size: 9.5px;
+    line-height: 11px;
+  }
+  .cur-item {
+    min-width: 60px;
+    padding: 0 10px 0 20px;
+  }
+  .cur-item > svg {
+    width: 26px;
+    height: 26px;
+  }
+  .cur-val {
+    font-size: 13px;
+  }
+  .quest-card {
+    width: 178px;
+    top: calc(48px + var(--sat));
+    padding: 4px 8px 4px 4px;
+  }
+  .quest-photo,
+  .quest-photo svg {
+    width: 38px;
+    height: 38px;
+  }
+  .quest-title {
+    font-size: 11px;
+  }
+  .side-btns {
+    top: calc(50px + var(--sat));
+    flex-direction: row;
+  }
+  .icon-btn {
+    width: 34px;
+    height: 34px;
+  }
+  .zone-bar {
+    bottom: 56px;
+    width: min(300px, 56vw);
   }
 }

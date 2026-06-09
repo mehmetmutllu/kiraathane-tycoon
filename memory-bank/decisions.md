@@ -1,5 +1,38 @@
 # decisions — Tasarım/Teknik Karar Günlüğü
 
+## D-023 · HUD REDESIGN v1+v2 (MPH grameri) + LEVEL/XP + AYARLAR + bulaşık onboarding gate (2026-06-10 gece)
+**Bağlam:** Kullanıcı D-021 HUD'unu reddetti ("oyun gibi değil, ikonlar AI slop") → onaylı akış: gerçek tycoon HUD
+araştırması (YALNIZ 3D arcade-idle: MPH gerçek HUD/MPH-Empire/My Mini Mart/Burger Please; 2D'ler elendi) → mock →
+onay → uygulama → Playwright (GERÇEK click ile) doğrulama.
+**Kararlar (kullanıcı onaylı):**
+- **Yerleşim MPH birebir:** sol-üst BÜTÜNLEŞİK level pill'i (yıldız gömülü + XP barı), altında yuvarlak dişli+posta;
+  sağ-üst para+elmas AYNI pill ailesinde chip (hiza piksel-eş); sağ-üst altı görev kartı (hedef-tipine göre SVG
+  fotoğraf + ad + ilerleme/maliyet; dokun→kamera). Ceviz-kahve pill ortak dil; alt ekran boş.
+- **İkon:** elle çizilmiş gradyanlı SVG seti `icons.tsx` (emoji/CSS-shape yasak — kalıcı kural).
+- **Font:** Baloo 2 + Lilita One @fontsource YEREL; 3D zemin yazıları `public/assets/fonts/Baloo2.ttf` (OFL)
+  + fontWeight 700 → troika CDN default'u kalktı (D-018 TODO kapandı).
+- **LEVEL/XP (v17):** eylem-temelli XP (config.xp; servis 2/garson 1/yıkama 1/görev 25/pad 15/yükseltme 10;
+  eğri 60×1.5^L); xp persist + v16→v17 migrasyonu eski ilerlemeden TOHUMLAR; level-up toast. İleride kat L-kapısı +
+  kozmetik mağaza (mağaza HUD yeri: sol buton sütunu, posta altı).
+- **Ayarlar modalı:** ses/müzik/bildirim toggle (persist `settings`) + Oyunu Sıfırla; posta = boş gelen kutusu.
+- **Bulaşık onboarding gate:** q_wash görevi gelmeden kirli bardak çıkmaz (bardak temize döner — korunum/deadlock
+  korunur); mekanik görevle öğrenilir.
+- **Bug dersleri:** (1) üst HUD öğeleri touch-layer altında kaldı → z-index 10; tıklanabilirlik GERÇEK Playwright
+  click ile test edilir (evaluate .click() hit-testing yapmaz). (2) Floater key'i coin id → reset sonrası id çakışması;
+  bağımsız monoton sayaç.
+**Durum:** vitest 78/78, smoke 27/27, build temiz, sim 60sn sabit, 320/390/768/landscape taşma yok.
+
+## D-022 · ZONE MİMARİSİ: per-zone TEMALI servis + kat planı (2026-06-10 gece, kullanıcı onaylı)
+**Bağlam:** "Tek merkezi servis mi, per-zone ocak+bulaşık mı?" sorusu artı/eksi tablosuyla karara bağlandı.
+**Karar:** **PER-ZONE ocak+bulaşık** — gerekçe: sabır 18sn vs merkezi servisin 15-20 br taşıma mesafesi (müşteri
+çay gelmeden gider), garson "kısmi assist"inin korunması, zone-paralel temiz idle matematiği, her zone'un servis
+köşesinin yükseltmeyle GÖRSEL evrimi ("köşeyi döşeme" isteği per-zone'da yaşar). Kopyala-yapıştır değil TEMALI.
+**Kat planı (kullanıcı düzeltmesi — D-016 ile uyumlu):** kat başına 4 zone (2×2). **Zemin kat = çay teması**:
+zone 1-2 çay salonu (per-zone ocak+bulaşık), **zone 3-4 FARKLI konsept** (mutfak/tost şeridi, TV köşesi adayları).
+Kata özel ortak alanlar: tuvalet/lavabo + depo (3c), TV köşesi (maç saati rush — mekanik Faz 4), dış bahçe
+masaları (sokak vitrini). **Okey/tavla/nargile ÜST katlar** (3b merdiven) + üst katta BALKON. Lavabo mekaniği
+önerisi: zone-3 ile birlikte (gece sadece yer rezerve edilir) — sabah kullanıcıyla netleşecek.
+
 ## D-021 · QUEST SİSTEMİ + zorunlu personel + kamera odak + HUD game-feel (2026-06-10, Fable brief §1+§4)
 **Bağlam:** Kullanıcı telefon feedback'i (2026-06-09): erken oyun sıkıcı grind; offline ~1.9k kalan TÜM içeriği aldı
 ("oyun bitti"); onboarding vizyonu = üstte görev barı + tıklayınca kamera hedefe kayar + yeni açılan şeye otomatik pan +

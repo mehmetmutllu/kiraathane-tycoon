@@ -2,7 +2,7 @@
 // window.__game  -> salt-okunur anlık görüntü
 // window.__advanceTime(sn) -> simülasyonu hızlı ileri sar
 import { useGame, visiblePads, questCounterValue, LAYOUT, trayCapacity, dirtyTables } from './store';
-import { economyConfig } from '../config/economy.config';
+import { economyConfig, levelProgress } from '../config/economy.config';
 import type { SaveStats } from './save';
 import type { Vec3 } from './types';
 
@@ -86,6 +86,10 @@ export function installDevHooks(): void {
       questIndex: s.questIndex,
       quest: s.quest ? { id: s.quest.id, title: s.quest.title, cur: s.quest.cur, total: s.quest.total } : null,
       stats: { ...s.stats },
+      // Level/XP sistemi (v17): toplam xp + türetilen seviye/ilerleme + ayarlar.
+      xp: s.xp,
+      level: levelProgress(s.xp),
+      settings: { ...s.settings },
       camFocus: s.camFocus ? { pos: s.camFocus.pos, ttl: +s.camFocus.ttl.toFixed(2) } : null,
       // Yeni-özellik bildirimi (D-019 §4): anlık toast metni + bu oturumda bildirilmiş reveal anahtarları.
       notice: s.notice ? s.notice.text : null,

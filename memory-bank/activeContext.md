@@ -2,7 +2,73 @@
 
 > En sık güncellenen dosya. Her anlamlı adımdan sonra güncelle.
 
-## ŞU AN (2026-06-10 — FABLE 5 BRIEF ADIM 1+2 UYGULANDI: quest sistemi + UI game-feel; D-021)
+## ŞU AN (2026-06-10 GECE — HUD SIFIRDAN REDESIGN + LEVEL/XP + AYARLAR; SAVE v17) — KULLANICI GÖZ ATACAK
+Kullanıcının "UI oyun gibi değil / ikonlar AI slop" feedback'i üzerine TAM UI redesign UYGULANDI (onaylı akış:
+gerçek tycoon HUD referans araştırması → mock → kullanıcı onayı → uygulama → Playwright didik didik):
+- **Referans araştırması:** My Perfect Hotel (gerçek HUD ×2 YouTube karesi), MPH-Empire, My Mini Mart, Burger
+  Please! App Store görüntüleri indirilip görsel incelendi (kullanıcı: 2D oyunlara BAKMA, MPH-benzeri 3D'lere bak).
+  Ortak gramer çıkarıldı: konturlu bold yuvarlak font, 3D-görünümlü ikonlar, K/M kısaltma, yıldız+XP barı,
+  alt ekran boş. (Telifli referans görselleri repo'ya KONMADI.)
+- **Yerleşim (kullanıcı tarifi, MPH birebir):** SOL-ÜST yıldız rozet (seviye) + yeşil XP barı; altında küçük
+  dişli + posta butonu. SAĞ-ÜST chip'siz para+elmas (SVG ikon + Lilita konturlu rakam). SAĞ-ÜST ALTI görev
+  kartı: görev FOTOĞRAFI (hedef tipine göre SVG sahne) + ad + yeşil ilerleme barı / maliyet; dokun → kamera odak.
+- **İkonlar:** `src/components/ui/icons.tsx` — elle çizilmiş gradyanlı SVG seti (CoinIcon/GemIcon/StarBadge/
+  GearIcon/MailIcon/QuestPhoto). Emoji + CSS-circle coin TAMAMEN gitti.
+- **Font:** Baloo 2 (metin) + Lilita One (rakam) @fontsource'tan YEREL bundle (main.tsx; CDN yok). 3D zemin
+  yazıları (GroundMarker drei Text) `public/assets/fonts/Baloo2.ttf` (OFL, manifestte) — troika CDN default'u
+  kalktı, D-018'in "fontu yerele bundle'la" Faz 7 TODO'su KAPANDI.
+- **LEVEL/XP sistemi (kullanıcı onayladı; ileride kat L-kapısı + kozmetik mağaza):** `economy.config.xp`
+  (eylem-temelli: servis 2 / garson 1 / yıkama 1 / görev 25 / pad 15 / yükseltme 10; eğri 60×1.5^L),
+  `xpForLevel`/`levelProgress` helper. xp PERSIST → **SAVE_VERSION 16→17 + migrasyon** (xp eski stats/quest/
+  pad/seviyelerden TOHUMLANIR — eski oyuncu L1'e düşmez). Level-up toast "🎉 Seviye N!".
+- **Ayarlar modalı:** dişli → Ses/Müzik/Bildirimler toggle'ları (`settings` persist v17, `setSetting` anında
+  kaydeder) + Oyunu Sıfırla (confirm) + Tamam. Posta butonu → "Posta kutun boş" modalı (ileride gelen kutusu).
+  Eski `.reset-btn`/dişli-menü kalktı. Offline modal yeni krem/altın stile geçti.
+- **🐛→✅ Duplicate-key bug (kök neden):** floater'lar coin id'siyle key'liydi; reset sonrası store nextId başa
+  dönünce id çakışıp her kare React hatası basıyordu → floater'a bağımsız monoton sayaç (Coins.tsx).
+- **Doğrulama:** vitest **77/77** (5 yeni: eğri, eylem-XP, pad-XP+level-up, v17 tohumlama, ayar persist),
+  build temiz, sim ilk-alım 60sn DEĞİŞMEDİ, smoke **27/27**, konsol 0 hata; Playwright görsel: 320/390/768
+  portrait + 844×390 landscape taşma YOK; ayar toggle persist canlı doğrulandı.
+- **Mock artefaktı:** `tools/hud-mock.html` (+backdrop png) — onay sürecinde kullanıldı, referans olarak duruyor.
+### HUD v2 ince ayarları (kullanıcı 1. tur feedback'i AYNI OTURUMDA uygulandı, 2026-06-10 gece):
+- **🐛 KRİTİK tıklama fix:** dişli/posta/görev karta DOKUNULAMIYORDU — touch-layer (z:5) üst HUD öğelerinin
+  üstündeydi (reset-btn dersinin tekrarı). Tüm üst widget'lar z-index:10. DERS: tıklanabilirlik testini
+  evaluate .click() ile DEĞİL gerçek hit-testing yapan Playwright click ile doğrula (bu kez öyle doğrulandı).
+- **Bütünleşik level ünitesi:** ayrı duran yıldız+bar "çirkin" → TEK ceviz-kahve pill (yıldız kenara gömülü,
+  XP barı içinde); para+elmas da AYNI pill ailesinde chip'e girdi (kullanıcının "chip olmalı mı?" tereddütüne
+  cevap: tutarlılık) ve level ile AYNI hizada (hizaFarki=0 ölçüldü). Renk: tutarlı ceviz ailesi (kullanıcı
+  alternatif renk bulamadı; istenirse bordo accent denenir).
+- **Zemin yazıları bold:** GroundMarker drei Text `fontWeight 700` (Baloo2 variable TTF ekseni) — HUD fontuyla uyumlu.
+- **Bulaşık onboarding gate:** q_wash görevi gelmeden kirli bardak HİÇ çıkmaz (bardak temize geri döner —
+  korunum bozulmaz, demleme kilitlenmez); görev gelince mekanik başlar. WASH_QUEST_INDEX store'da.
+- **Doğrulama:** vitest **78/78**, build temiz, smoke 27/27, 320/landscape taşma yok, gerçek-click ayar+posta+görev ✓.
+### ✅ ZONE KARARI ONAYLANDI (D-022): per-zone TEMALI ocak+bulaşık; kat başına 4 zone (2×2).
+Zemin kat = çay teması (zone 1-2 çay salonu; zone 3-4 FARKLI konsept: tost/TV adayları); okey/tavla ÜST kat + balkon.
+
+### >>> SONRAKİ OTURUM = 🌙 GECE OTURUMU (kullanıcı UYUYOR — "devam" deyince DURMADAN çalış) <<<
+KULLANICI TALİMATI (2026-06-10 gece): "sabaha kadar kesintisiz çalış; kaliteli iş yapabildiğin sürece yap,
+context'i hesaba katarak sağlıklı iş yapabildiğin son ana kadar git; sabah kalktığımda telefonumda güzel bir
+oyun oynayayım. Çizgi güzel — tasarım/mantık/görev yoğunluğunda küçük değişiklikler olabilir sadece."
+**GECE GÖREV LİSTESİ (kullanıcı ONAYLI, sırayla; her milestone: test+screenshot+memory-bank+commit+PUSH):**
+1. **Ocak-yükseltme para yeme fix'i:** kullanıcı bug'ı — çay alırken FILL_TEA dolumu para çekiyor (yükseltmeyi
+   sona bırakmak istiyor ama ocağa her gelişte yiyor). Çözüm: yükseltme noktasını pickup yarıçapından mekânsal
+   AYIR + "ocakta hazır çay varken / pickup yarıçapındayken dolum başlamaz" guard'ı + vitest.
+2. **Gerçek kıraathane/cafe araştırması → ZEMİN KAT MASTER PLANI:** internetten gerçek Türk kıraathanesi iç
+   yapısı (ocakbaşı/tuvalet/depo/TV/giriş) → docs/'a kat planı: 4 zone 2×2 + tuvalet/lavabo + depo + mutfak-tost
+   şeridi yeri + TV köşesi + dış bahçe masaları. Üst kat: balkon + okey/tavla notu. (Lavabo MEKANİĞİ gece yapılmaz —
+   öneri zone-3 ile; sabah netleşir. Yer rezerve.)
+3. **Zone-2 ÇALIŞIR:** zone modül refactor → zemin katın 2. çay salonu (kendi ocak+bulaşık köşesi), zone-açma
+   pad'i, SAVE bump+migrasyon, sim/smoke/vitest yeşil.
+4. **Türk kıraathane GÖRSEL KİMLİĞİ:** renk paleti (çay/bakır/ahşap), zemin+duvar tasarımı, masa+TABURE redesign
+   (gerçek kıraathane formu), yükseltme görsel evrim tablosu ÇOK NET (L1→L4 renk/desen/şekil: örtü/zemin/duvar) →
+   spec + uygulama. TV köşesi dekoru. **SOKAK GÜZELLEŞTİRME** + kapı önü bahçe masaları (kullanıcı: "yapabiliyorsan yap").
+5. **Curve raporu:** 3 profil + zone-2 geçiş temposu sayı tablosu (denge değişikliği SABAH ONAYINA — onaysız uygulanmaz).
+6. **Karakter prototipi** (vakit kalırsa): eklemli gövde/şapka/önlük + screenshot.
+7. **SABAH PAKETİ:** en sonda `npm run apk` ile YENİ APK + screenshot'lı gece raporu (kullanıcı telefonda test edecek).
+İLKELER: çizgiyi koru; görsel beğeni işlerinde varyant bırak, geri dönüşü zor şey yapma; mağazaya dokunma;
+context tükenmeden düzenli commit+push + memory-bank güncelle (sonraki pencere kaldığı yerden alır).
+
+## (ÖNCEKİ — 2026-06-10 GÜNDÜZ: FABLE 5 BRIEF ADIM 1+2 UYGULANDI: quest sistemi + UI game-feel; D-021)
 Fable brief'in onaylı 4-adımlı planından **Adım 1 (quest/görev sistemi + kamera) ve Adım 2 (reveal arka-plan şartları)
 TAMAM**; HUD game-feel revizyonu da (kullanıcı isteğiyle) Adım 1'e dahil edildi. Tam karar: **decisions.md D-021.**
 - **Quest hattı:** `quests[]` 13 sıralı görev; üst-orta görev barı (dokun → kamera hedefe pan/zoom, joystick iptal eder);
