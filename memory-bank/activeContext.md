@@ -74,7 +74,11 @@ oyun oynayayım. Çizgi güzel — tasarım/mantık/görev yoğunluğunda küç�
    doğrulandı; TV köşesi (zone-1 arka duvar, ışıldayan ekran); sokak: kapı üstü TABELA şeridi (eğimli tente
    kamera +z'den bakınca ekranı kapatıyordu → dikey şerit), kapı önü bahçe masaları+tabureler+saksılar.
    **vitest 85/85, build temiz, smoke 27/27, konsol 0 hata.** Screenshots: night-4-visual-v3.png, night-4-table-evolution.png.
-5. **Curve raporu:** 3 profil + zone-2 geçiş temposu sayı tablosu (denge değişikliği SABAH ONAYINA — onaysız uygulanmaz).
+5. ✅ **Curve raporu (BİTTİ — SABAH ONAYI BEKLİYOR, uygulanmadı):** `docs/curve-report.md` — sim zone'lu
+   bottleneck modeline genişletildi (per-zone arz/talep + 3-profil verim 0.80/0.55/0.35; idealize ilk-alım
+   60sn SABİT). Bulgular: zone-1 ömrü hedefin altında (Normal ~25dk; hedef ~1sa), zone-2 kapısı 39dk, zone-2
+   içi 25dk (düz). **ÖNERİLER (onay bekliyor): Ö1 zone2 1200→2000; Ö2 z2 zinciri ×1.3; Ö3 q_z2serve 5→10;
+   Ö4 (alt.) zone2'ye minLifetime 6000.** Offline Faz-4 notu: zone-2 sonu oran ~11₺/sn → offline tek giriş ~20k.
 6. **Karakter prototipi** (vakit kalırsa): eklemli gövde/şapka/önlük + screenshot.
 7. **SABAH PAKETİ:** en sonda `npm run apk` ile YENİ APK + screenshot'lı gece raporu (kullanıcı telefonda test edecek).
 İLKELER: çizgiyi koru; görsel beğeni işlerinde varyant bırak, geri dönüşü zor şey yapma; mağazaya dokunma;
