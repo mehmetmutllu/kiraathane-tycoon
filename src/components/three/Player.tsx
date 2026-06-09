@@ -3,6 +3,59 @@ import type { Group } from 'three';
 import { useGame } from '../../game/store';
 import { Model } from './Model';
 import { useFacing } from './useFacing';
+import { PALETTE } from '../../config/palette';
+
+// Çaycı karakter prototipi (gece 6/7): PARÇALI gövde (Faz 6 animasyon iskeletine hazırlık —
+// her uzuv ayrı mesh). Kasket + krem gömlek + bordo önlük + bıyık; flat low-poly (D-013).
+function OwnerBody() {
+  return (
+    <group>
+      {/* pantolon (alt gövde) */}
+      <mesh castShadow position={[0, 0.28, 0]}>
+        <cylinderGeometry args={[0.26, 0.3, 0.56, 12]} />
+        <meshStandardMaterial color={PALETTE.pants} />
+      </mesh>
+      {/* gömlek (üst gövde) */}
+      <mesh castShadow position={[0, 0.72, 0]}>
+        <cylinderGeometry args={[0.3, 0.26, 0.34, 12]} />
+        <meshStandardMaterial color={PALETTE.shirt} />
+      </mesh>
+      {/* önlük (göğüsten dize, önde) */}
+      <mesh castShadow position={[0, 0.52, 0.24]} rotation={[0.06, 0, 0]}>
+        <boxGeometry args={[0.4, 0.62, 0.06]} />
+        <meshStandardMaterial color={PALETTE.apron} />
+      </mesh>
+      {/* kollar (yanlarda, hafif öne) */}
+      <mesh castShadow position={[-0.36, 0.72, 0.12]} rotation={[0.5, 0, 0.15]}>
+        <capsuleGeometry args={[0.07, 0.34, 4, 8]} />
+        <meshStandardMaterial color={PALETTE.shirt} />
+      </mesh>
+      <mesh castShadow position={[0.36, 0.72, 0.12]} rotation={[0.5, 0, -0.15]}>
+        <capsuleGeometry args={[0.07, 0.34, 4, 8]} />
+        <meshStandardMaterial color={PALETTE.skin} />
+      </mesh>
+      {/* baş */}
+      <mesh castShadow position={[0, 1.08, 0]}>
+        <sphereGeometry args={[0.21, 14, 12]} />
+        <meshStandardMaterial color={PALETTE.skin} />
+      </mesh>
+      {/* bıyık (yüzün önünde) */}
+      <mesh position={[0, 1.02, 0.18]}>
+        <boxGeometry args={[0.16, 0.045, 0.04]} />
+        <meshStandardMaterial color={PALETTE.mustache} />
+      </mesh>
+      {/* kasket: tepe + öne vizör */}
+      <mesh castShadow position={[0, 1.24, 0]}>
+        <cylinderGeometry args={[0.2, 0.23, 0.1, 12]} />
+        <meshStandardMaterial color={PALETTE.cap} />
+      </mesh>
+      <mesh castShadow position={[0, 1.2, 0.2]}>
+        <boxGeometry args={[0.3, 0.03, 0.18]} />
+        <meshStandardMaterial color={PALETTE.cap} />
+      </mesh>
+    </group>
+  );
+}
 
 // Bardakları ellerin ÖNÜNDEKİ tek tepside 3×2 ızgaraya dizer (Faz 2f): max 6 bardak taşmaz,
 // Tek ön tepsi, PAYLAŞIMLI kapasite: önce temiz çaylar (kırmızı), sonra kirliler (gri) ardışık dizilir →
@@ -77,14 +130,7 @@ export function Player() {
     <group position={[p[0], 0, p[2]]}>
       {/* yön dönüşü gövde+tepsiye uygulanır; baş üstü radial dönmesin diye ayrı grupta */}
       <group ref={ref}>
-        <Model
-          fallback={
-            <mesh castShadow position={[0, 0.6, 0]}>
-              <capsuleGeometry args={[0.35, 0.7, 6, 12]} />
-              <meshStandardMaterial color="#f1c40f" />
-            </mesh>
-          }
-        />
+        <Model fallback={<OwnerBody />} />
         <CupTray tea={tray} dirty={carriedDirty} />
       </group>
       <HeadRadial />

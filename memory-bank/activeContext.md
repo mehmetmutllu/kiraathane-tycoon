@@ -79,7 +79,9 @@ oyun oynayayım. Çizgi güzel — tasarım/mantık/görev yoğunluğunda küç�
    60sn SABİT). Bulgular: zone-1 ömrü hedefin altında (Normal ~25dk; hedef ~1sa), zone-2 kapısı 39dk, zone-2
    içi 25dk (düz). **ÖNERİLER (onay bekliyor): Ö1 zone2 1200→2000; Ö2 z2 zinciri ×1.3; Ö3 q_z2serve 5→10;
    Ö4 (alt.) zone2'ye minLifetime 6000.** Offline Faz-4 notu: zone-2 sonu oran ~11₺/sn → offline tek giriş ~20k.
-6. **Karakter prototipi** (vakit kalırsa): eklemli gövde/şapka/önlük + screenshot.
+6. ✅ **Karakter prototipi (BİTTİ):** Player altın kapsül → PARÇALI çaycı gövdesi (`OwnerBody`, Player.tsx;
+   her uzuv ayrı mesh = Faz 6 animasyon hazırlığı): kasket+vizör, ten baş+bıyık, krem gömlek, bordo önlük,
+   koyu pantolon, iki kol; renkler palette.ts'te. Screenshot: night-6-character.png. vitest 85/85, smoke 27/27.
 7. **SABAH PAKETİ:** en sonda `npm run apk` ile YENİ APK + screenshot'lı gece raporu (kullanıcı telefonda test edecek).
 İLKELER: çizgiyi koru; görsel beğeni işlerinde varyant bırak, geri dönüşü zor şey yapma; mağazaya dokunma;
 context tükenmeden düzenli commit+push + memory-bank güncelle (sonraki pencere kaldığı yerden alır).

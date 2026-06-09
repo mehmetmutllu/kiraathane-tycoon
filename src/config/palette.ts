@@ -29,6 +29,13 @@ export const PALETTE = {
   tvFrame: '#263238',
   tvScreen: '#7ec8a9', // açık ekran (maç yeşili)
   tvStand: '#4e342e',
+  // Sahip karakteri (çaycı — gece 6/7 prototip)
+  skin: '#e0ac69',
+  shirt: '#f3ecd9', // krem gömlek
+  pants: '#3e3a36', // koyu pantolon
+  apron: '#7a2230', // bordo çaycı önlüğü
+  cap: '#4a3728', // kasket
+  mustache: '#3a2a1d',
   // Sokak
   awning: '#2e6b4f', // kıraathane tentesi (koyu yeşil)
   awningStripe: '#e6d7b8',
