@@ -13,7 +13,20 @@
  *   L5 (Usta)   = masterDiamondCost 💎 VEYA 1 ödüllü video; outputMult yerine masterOutputMult
  */
 
-export const SAVE_VERSION = 17;
+export const SAVE_VERSION = 18;
+
+/**
+ * ZONE modeli (Faz 3a + D-022, gece 2026-06-10): zemin kat zone'ları. Her zone kendi TEMALI
+ * ocak+bulaşık köşesine sahip (per-zone servis); masa slotları GLOBAL index'lidir
+ * (zone z → slotlar [z*TABLES_PER_ZONE, z*TABLES_PER_ZONE+4)). Açılış sırası gating'le katı
+ * (zone2 pad'i table4 ister) → açık masa index'leri DAİMA bitişiktir (0..tables-1).
+ */
+export const TABLES_PER_ZONE = 4;
+export const MAX_ZONES = 2;
+/** Global masa index'inin ait olduğu zone. */
+export function zoneOfTable(tableIndex: number): number {
+  return Math.min(MAX_ZONES - 1, Math.floor(tableIndex / TABLES_PER_ZONE));
+}
 
 export const CURRENCY = {
   soft: '₺', // Para — müşteriden kazanılır
@@ -282,19 +295,34 @@ export const economyConfig = {
     // zorunlu halkaları (My Perfect Hotel modeli; D-014 "garson opsiyonel" kararı geçersiz). Omurga sırası
     // quests[] ile birebir: table2 → table3 → waiter → dishwasher → table4. Görünürlük quest sisteminde
     // (yalnız aktif görevin pad'i çizilir → "ekranda tek pad"); requires zinciri güvenlik ağı olarak kalır.
-    { id: 'table2', label: '2. Masa', cost: 25, fillRate: 40, optional: false,
+    { id: 'table2', label: '2. Masa', cost: 25, fillRate: 40, optional: false, zone: 0,
       requires: { minLifetime: 20 }, effect: { type: 'addTable' } },
-    { id: 'table3', label: '3. Masa', cost: 130, fillRate: 55, optional: false,
+    { id: 'table3', label: '3. Masa', cost: 130, fillRate: 55, optional: false, zone: 0,
       requires: { prev: ['table2'] }, effect: { type: 'addTable' } },
-    { id: 'waiter', label: 'Garson Tut', cost: 150, fillRate: 50, optional: false,
+    { id: 'waiter', label: 'Garson Tut', cost: 150, fillRate: 50, optional: false, zone: 0,
       requires: { prev: ['table3'] }, effect: { type: 'hireWaiter' } },
-    { id: 'dishwasher', label: 'Bulaşıkçı Tut', cost: 330, fillRate: 60, optional: false,
+    { id: 'dishwasher', label: 'Bulaşıkçı Tut', cost: 330, fillRate: 60, optional: false, zone: 0,
       requires: { prev: ['waiter'] }, effect: { type: 'hireDishwasher' } },
-    { id: 'table4', label: '4. Masa', cost: 420, fillRate: 75, optional: false,
+    { id: 'table4', label: '4. Masa', cost: 420, fillRate: 75, optional: false, zone: 0,
       requires: { prev: ['dishwasher'] }, effect: { type: 'addTable' } },
     // (D-018 adım 5) Ayrı "Semavere Geçiş" pad'i KALDIRILDI: semaver artık çay ocağının üst yükseltmesidir
     // (TeaStation seviyeyle büyüyen semaveri zaten çizer). Tek ocak ₺ yükseltmeleriyle (L4, throughput ×3.32)
-    // 4 masaya yetişir; "Usta" master tier (💎/video) Faz 4. Omurga zinciri artık table4'te biter.
+    // 4 masaya yetişir; "Usta" master tier (💎/video) Faz 4. Zone-1 omurgası table4'te biter.
+    // --- ZONE-2 zinciri (Faz 3a + D-022, gece 2026-06-10): per-zone TEMALI ocak+bulaşık. Unlock pad'i
+    // bölme duvarındaki GEÇİTTE; açılınca zone-2 OTOMATİK 1 ocak (L1) + 1 masa + 1 bulaşık köşesiyle gelir.
+    // Maliyetler GECE BAŞLANGIÇ değerleri — curve raporu (madde 5) sabah onayıyla kalibre edilir.
+    { id: 'zone2', label: '2. Salon', cost: 1200, fillRate: 150, optional: false, zone: 0,
+      requires: { prev: ['table4'] }, effect: { type: 'unlockZone' } },
+    { id: 'z2table2', label: '2. Masa', cost: 250, fillRate: 80, optional: false, zone: 1,
+      requires: { prev: ['zone2'] }, effect: { type: 'addTable' } },
+    { id: 'z2waiter', label: 'Garson Tut', cost: 400, fillRate: 80, optional: false, zone: 1,
+      requires: { prev: ['z2table2'] }, effect: { type: 'hireWaiter' } },
+    { id: 'z2table3', label: '3. Masa', cost: 600, fillRate: 90, optional: false, zone: 1,
+      requires: { prev: ['z2waiter'] }, effect: { type: 'addTable' } },
+    { id: 'z2dishwasher', label: 'Bulaşıkçı Tut', cost: 800, fillRate: 100, optional: false, zone: 1,
+      requires: { prev: ['z2table3'] }, effect: { type: 'hireDishwasher' } },
+    { id: 'z2table4', label: '4. Masa', cost: 1100, fillRate: 110, optional: false, zone: 1,
+      requires: { prev: ['z2dishwasher'] }, effect: { type: 'addTable' } },
   ],
 
   /**
@@ -318,6 +346,14 @@ export const economyConfig = {
     { id: 'q_table4', title: '4. Masayı aç', target: { type: 'pad', id: 'table4' } },
     { id: 'q_waiterL2', title: 'Garsonu hızlandır', target: { type: 'waiterLevel', level: 1 } },
     { id: 'q_tableL2', title: 'Bir masayı yükselt', target: { type: 'tableLevel', level: 1 } },
+    // --- ZONE-2 görev hattı (Faz 3a + D-022): geçitteki pad → yeni salonun kendi zinciri.
+    { id: 'q_zone2', title: '2. Salonu aç', target: { type: 'pad', id: 'zone2' } },
+    { id: 'q_z2serve', title: 'Yeni salonda 5 çay servis et', target: { type: 'serveTea', count: 5 } },
+    { id: 'q_z2table2', title: 'Salon 2: 2. Masayı aç', target: { type: 'pad', id: 'z2table2' } },
+    { id: 'q_z2waiter', title: 'Salon 2: Garson tut', target: { type: 'pad', id: 'z2waiter' } },
+    { id: 'q_z2table3', title: 'Salon 2: 3. Masayı aç', target: { type: 'pad', id: 'z2table3' } },
+    { id: 'q_z2dish', title: 'Salon 2: Bulaşıkçı tut', target: { type: 'pad', id: 'z2dishwasher' } },
+    { id: 'q_z2table4', title: 'Salon 2: 4. Masayı aç', target: { type: 'pad', id: 'z2table4' } },
   ] as readonly QuestDef[],
 
   /** Oyuncu sahip karakteri hareketi. */
@@ -380,10 +416,22 @@ export type PadEffect = PadDef['effect'];
 
 /** Pad listesinden TÜRETİLEN durum (D-015). Bu alanlar AYRI saklanmaz. */
 export interface DerivedState {
+  /** Açık zone sayısı (1 = yalnız zone-1). */
+  zonesOpen: number;
+  /** Zone başına açık masa sayısı (kapalı zone = 0; açık zone min 1 — Faz 3a oto-masa). */
+  tablesByZone: number[];
+  /** Zone başına garson tutuldu mu. */
+  hasWaiterByZone: boolean[];
+  /** Zone başına bulaşıkçı tutuldu mu. */
+  hasDishwasherByZone: boolean[];
+  /** GLOBAL açık masa sayısı — index'ler BİTİŞİK (zone sırası gating'le katı; HUD/test geri-uyumu). */
   tables: number;
+  /** Açık ocak sayısı = zonesOpen (per-zone 1 ocak, D-022). */
   stations: number;
   serviceSpeedMult: number;
+  /** Zone-1 garsonu (geri uyum: gate/reveal/testler). */
   hasWaiter: boolean;
+  /** Zone-1 bulaşıkçısı (geri uyum). */
   hasDishwasher: boolean;
 }
 
@@ -394,27 +442,48 @@ export interface DerivedState {
  * `stations` şu an tek salon = tek ocak (D-012); Faz 3a addStation pad'leriyle artacak.
  */
 export function derivedFromPads(padsDone: readonly string[]): DerivedState {
-  let tables = 1;
-  let serviceSpeedMult = 1;
-  let hasWaiter = false;
-  let hasDishwasher = false;
   const byId = new Map<string, PadDef>((economyConfig.pads as readonly PadDef[]).map((p) => [p.id, p]));
+  // 1. geçiş: zone açılışları (zone-2 pad etkileri ancak zone açıkken sayılır — savunmacı).
+  let zonesOpen = 1;
+  for (const id of padsDone) {
+    const pad = byId.get(id);
+    if (pad && pad.effect.type === 'unlockZone') zonesOpen = Math.min(MAX_ZONES, zonesOpen + 1);
+  }
+  const tablesByZone: number[] = Array.from({ length: MAX_ZONES }, (_, z) => (z < zonesOpen ? 1 : 0));
+  const hasWaiterByZone = Array.from({ length: MAX_ZONES }, () => false);
+  const hasDishwasherByZone = Array.from({ length: MAX_ZONES }, () => false);
   for (const id of padsDone) {
     const pad = byId.get(id);
     if (!pad) continue;
+    const z = (pad as { zone?: number }).zone ?? 0;
+    if (z >= zonesOpen) continue; // kapalı zone'un pad'i etki edemez (bozuk kayda karşı)
     switch (pad.effect.type) {
       case 'addTable':
-        tables += 1;
+        tablesByZone[z] = Math.min(TABLES_PER_ZONE, tablesByZone[z] + 1);
         break;
       case 'hireWaiter':
-        hasWaiter = true;
+        hasWaiterByZone[z] = true;
         break;
       case 'hireDishwasher':
-        hasDishwasher = true;
+        hasDishwasherByZone[z] = true;
         break;
     }
   }
-  return { tables, stations: 1, serviceSpeedMult, hasWaiter, hasDishwasher };
+  // Global masa index'leri BİTİŞİK kalmalı: zone-2 açıksa zone-1 yapısal olarak doludur (zone2 pad'i
+  // table4 ister); bozuk kayda karşı kelepçe (yoksa slot atlanır, index kayardı).
+  if (zonesOpen > 1) tablesByZone[0] = TABLES_PER_ZONE;
+  const tables = tablesByZone.reduce((a, n) => a + n, 0);
+  return {
+    zonesOpen,
+    tablesByZone,
+    hasWaiterByZone,
+    hasDishwasherByZone,
+    tables,
+    stations: zonesOpen,
+    serviceSpeedMult: 1,
+    hasWaiter: hasWaiterByZone[0],
+    hasDishwasher: hasDishwasherByZone[0],
+  };
 }
 
 /** Gating değerlendirmesi için gereken (salt-okunur) ilerleme durumu. */

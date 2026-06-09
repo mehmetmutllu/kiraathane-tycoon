@@ -60,8 +60,11 @@ oyun oynayayım. Çizgi güzel — tasarım/mantık/görev yoğunluğunda küç�
    ASCII planı (zone1-2 önde çay salonları, zone3 tost / zone4 TV-köşesi arka sırada, DEPO sol-arka +
    TUVALET sağ-arka köşe odaları rezerve, merdiven ön-sağ, sokak bahçe masaları); üst kat okey/tavla+balkon
    notu; gerçek-kıraathane → oyun karşılığı tablosu. Lavabo mekaniği sabaha (zone-3 önerisi).
-3. **Zone-2 ÇALIŞIR:** zone modül refactor → zemin katın 2. çay salonu (kendi ocak+bulaşık köşesi), zone-açma
-   pad'i, SAVE bump+migrasyon, sim/smoke/vitest yeşil.
+3. ✅ **Zone-2 ÇALIŞIR (BİTTİ; SAVE v17→v18):** per-zone ocak+bulaşık (D-022); LAYOUT zone-şablonu (+X offset 12);
+   global bitişik masa indeksleri (0-3 z1 / 4-7 z2); bölme duvarı + HEP açık geçit (z=-0.75) + kilitliyken karanlık
+   örtü; zone2 pad'i geçitte ₺1200 (sabah curve onayıyla kalibre edilecek); per-zone personel + müşteri kendi
+   kapısından; cleanCups GLOBAL depo; quest hattı +7 görev. vitest 85/85, smoke 27/27, sim 60sn, Playwright canlı ✓
+   (geçit input'la geçilir, duvar bloklar, 2. ocak demler, z2 müşterisi oturur). Detay: progress.md + docs/zone2-design.md.
 4. **Türk kıraathane GÖRSEL KİMLİĞİ:** renk paleti (çay/bakır/ahşap), zemin+duvar tasarımı, masa+TABURE redesign
    (gerçek kıraathane formu), yükseltme görsel evrim tablosu ÇOK NET (L1→L4 renk/desen/şekil: örtü/zemin/duvar) →
    spec + uygulama. TV köşesi dekoru. **SOKAK GÜZELLEŞTİRME** + kapı önü bahçe masaları (kullanıcı: "yapabiliyorsan yap").

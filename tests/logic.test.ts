@@ -34,6 +34,7 @@ import {
   brewTime,
   dirtyTables,
   PAD_RADIUS,
+  totalCupPool,
 } from '../src/game/store';
 import { migrate, defaultSave, defaultStats } from '../src/game/save';
 import { buildNavGrid, findNavPath } from '../src/game/nav';
@@ -44,7 +45,7 @@ function gate() {
   return {
     padsDone: s.padsDone,
     tables: s.tables,
-    stationLevel: s.stationLevel,
+    stationLevel: s.stationLevels[0],
     lifetime: s.lifetime.toNumber(),
     waiterServed: s.stats.waiterServed,
   };
@@ -112,8 +113,8 @@ describe('servis döngüsü (D-011 / Faz 2c)', () => {
     // Uzun süre: hiç servis yok → kuyruk dolar ama kapasitede durur.
     for (let i = 0; i < 1200; i++) useGame.getState().tick(0.1);
     const s = useGame.getState();
-    expect(s.readyCups).toBeGreaterThan(0);
-    expect(s.readyCups).toBeLessThanOrEqual(brewQueueCapacity(s.stationLevel));
+    expect(s.readyCupsByZone[0]).toBeGreaterThan(0);
+    expect(s.readyCupsByZone[0]).toBeLessThanOrEqual(brewQueueCapacity(s.stationLevels[0]));
   });
 
   it('servis EDİLMEYEN müşteri sabır aşımında SESSİZCE gider (ödeme yok)', () => {
@@ -132,7 +133,7 @@ describe('servis döngüsü (D-011 / Faz 2c)', () => {
     parkPlayerAway();
     // Bir müşteri otursun + çay demlensin.
     for (let i = 0; i < 200; i++) useGame.getState().tick(0.1);
-    expect(useGame.getState().readyCups).toBeGreaterThan(0);
+    expect(useGame.getState().readyCupsByZone[0]).toBeGreaterThan(0);
     const waiting = useGame.getState().npcs.find((n) => n.state === 'waitingForTea');
     expect(waiting).toBeTruthy();
 
@@ -162,13 +163,13 @@ describe('çay istasyonu yükseltme (Faz 2a)', () => {
   it('₺ ile L1→L4 yükselir; sonra ₺ ile çıkamaz (L5 = Usta 💎)', () => {
     useGame.getState().hardReset();
     useGame.getState().addMoney(1_000_000);
-    expect(useGame.getState().stationLevel).toBe(0);
+    expect(useGame.getState().stationLevels[0]).toBe(0);
 
     expect(useGame.getState().upgradeStation()).toBe(true);
-    expect(useGame.getState().stationLevel).toBe(1);
+    expect(useGame.getState().stationLevels[0]).toBe(1);
 
     for (let i = 0; i < 10; i++) useGame.getState().upgradeStation();
-    expect(useGame.getState().stationLevel).toBe(stationSoftMaxLevel());
+    expect(useGame.getState().stationLevels[0]).toBe(stationSoftMaxLevel());
     expect(useGame.getState().upgradeStation()).toBe(false); // L5 ₺ ile açılmaz
   });
 
@@ -186,7 +187,7 @@ describe('çay istasyonu yükseltme (Faz 2a)', () => {
   it('para yetmezse yükseltmez', () => {
     useGame.getState().hardReset();
     expect(useGame.getState().upgradeStation()).toBe(false);
-    expect(useGame.getState().stationLevel).toBe(0);
+    expect(useGame.getState().stationLevels[0]).toBe(0);
   });
 });
 
@@ -210,11 +211,11 @@ describe('generic pad sistemi + gating (quest hattı omurgası, 2026-06-09)', ()
     // Personel artık OPSİYONEL DEĞİL: garson omurganın 3. halkası (D-014 kararı güncellendi).
     expect(currentPad(gate())?.id).toBe('waiter');
     expect(completePad('waiter')).toBe(true);
-    expect(useGame.getState().hasWaiter).toBe(true);
+    expect(useGame.getState().waiters[0]).not.toBeNull();
 
     expect(currentPad(gate())?.id).toBe('dishwasher');
     expect(completePad('dishwasher')).toBe(true);
-    expect(useGame.getState().hasDishwasher).toBe(true);
+    expect(useGame.getState().dishwashers[0]).not.toBeNull();
 
     expect(currentPad(gate())?.id).toBe('table4');
     expect(completePad('table4')).toBe(true);
@@ -222,7 +223,8 @@ describe('generic pad sistemi + gating (quest hattı omurgası, 2026-06-09)', ()
     expect(useGame.getState().stations).toBe(1);
 
     expect(useGame.getState().padsDone.length).toBe(5);
-    expect(currentPad(gate())).toBeNull();
+    // Zone-1 omurgası bitti → sıradaki omurga halkası ZONE-2 açılışı (Faz 3a).
+    expect(currentPad(gate())?.id).toBe('zone2');
     expect(useGame.getState().serviceSpeedMult).toBe(1); // serviceSpeed pad yok → hep 1
   });
 
@@ -246,11 +248,11 @@ describe('garson — quest hattında zorunlu personel (2026-06-09; eski D-014 op
     useGame.getState().hardReset();
     useGame.getState().addMoney(50);
     expect(completePad('table2')).toBe(true);
-    expect(useGame.getState().hasWaiter).toBe(false);
+    expect(useGame.getState().waiters[0]).toBeNull();
     expect(completePad('table3')).toBe(true);
     expect(completePad('waiter')).toBe(true);
-    expect(useGame.getState().hasWaiter).toBe(true);
-    expect(useGame.getState().waiter).not.toBeNull();
+    expect(useGame.getState().waiters[0]).not.toBeNull();
+    expect(useGame.getState().waiters[0]).not.toBeNull();
     // Tamamlanan pad bir daha görünür listede olmamalı.
     expect(visiblePads(useGame.getState().questIndex, gate()).map((p) => p.id)).not.toContain('waiter');
   });
@@ -267,8 +269,7 @@ describe('garson — quest hattında zorunlu personel (2026-06-09; eski D-014 op
     // "En yakın" politikasıyla 901 anında servis edilirdi; "en acil" ile garson 902'ye yönelmeli.
     useGame.setState({
       padsDone: ['table2', 'table3', 'table4', 'waiter'],
-      hasWaiter: true,
-      waiter: { pos: [nearSeat[0], 0.6, nearSeat[2]] as [number, number, number], tray: 1 },
+      waiters: [{ pos: [nearSeat[0], 0.6, nearSeat[2]] as [number, number, number], tray: 1 }, null],
       player: [0, 0.6, 6.5],
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
@@ -284,9 +285,9 @@ describe('garson — quest hattında zorunlu personel (2026-06-09; eski D-014 op
     const near = s.npcs.find((n) => n.id === 901);
     // Yakın ama sabrı bol masa SERVİS EDİLMEDİ (nearest-first olsaydı anında 'drinking' olurdu).
     expect(near?.state).toBe('waitingForTea');
-    expect(s.waiter?.tray).toBe(1); // henüz teslim yok (uzak masaya yürüyor)
+    expect(s.waiters[0]?.tray).toBe(1); // henüz teslim yok (uzak masaya yürüyor)
     // Garson acil (uzak) masaya YÖNELDİ → ona yaklaştı.
-    expect(dist(s.waiter!.pos, farSeat)).toBeLessThan(startFarDist);
+    expect(dist(s.waiters[0]!.pos, farSeat)).toBeLessThan(startFarDist);
   });
 
   it('garson bekleyen müşteriye çay servis eder (oyuncu uzakta → kısmi assist)', () => {
@@ -295,8 +296,7 @@ describe('garson — quest hattında zorunlu personel (2026-06-09; eski D-014 op
     // Oyuncuyu kimseyi servis edemeyeceği köşeye park et.
     useGame.setState({
       padsDone: ['table2', 'waiter'],
-      hasWaiter: true,
-      waiter: { pos: [...LAYOUT.waiterHome] as [number, number, number], tray: 0 },
+      waiters: [{ pos: [...LAYOUT.waiterHome] as [number, number, number], tray: 0 }, null],
       player: [0, 0.6, 2],
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
@@ -331,8 +331,7 @@ describe('garson — quest hattında zorunlu personel (2026-06-09; eski D-014 op
     const spot = LAYOUT.waiterUpgradeSpot;
     useGame.setState({
       padsDone: ['table2', 'waiter'],
-      hasWaiter: true,
-      waiter: { pos: [...LAYOUT.waiterHome] as [number, number, number], tray: 0 },
+      waiters: [{ pos: [...LAYOUT.waiterHome] as [number, number, number], tray: 0 }, null],
       player: [spot[0], 0.6, spot[2]],
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
@@ -340,12 +339,12 @@ describe('garson — quest hattında zorunlu personel (2026-06-09; eski D-014 op
       spawnTimer: 999, // bu testte müşteri akışı karışmasın
     });
     useGame.getState().addMoney(waiterUpgradeCost() + 100);
-    expect(useGame.getState().waiterLevel).toBe(0);
-    for (let i = 0; i < 300 && useGame.getState().waiterLevel === 0; i++) useGame.getState().tick(0.1);
-    expect(useGame.getState().waiterLevel).toBe(1);
+    expect(useGame.getState().waiterLevels[0]).toBe(0);
+    for (let i = 0; i < 300 && useGame.getState().waiterLevels[0] === 0; i++) useGame.getState().tick(0.1);
+    expect(useGame.getState().waiterLevels[0]).toBe(1);
     // Soft max'a ulaştı → yükseltme noktası artık kilitli (işaret kaybolur).
     const s = useGame.getState();
-    expect(waiterUpgradeUnlocked({ padsDone: s.padsDone, tables: s.tables, stationLevel: s.stationLevel, lifetime: s.lifetime.toNumber(), waiterServed: s.stats.waiterServed }, s.waiterLevel)).toBe(false);
+    expect(waiterUpgradeUnlocked({ padsDone: s.padsDone, tables: s.tables, stationLevel: s.stationLevels[0], lifetime: s.lifetime.toNumber(), waiterServed: s.stats.waiterServed }, s.waiterLevels[0])).toBe(false);
   });
 
   it('waiterLevel kayıt round-trip\'inde korunur (saveNow→init persist)', () => {
@@ -360,10 +359,10 @@ describe('garson — quest hattında zorunlu personel (2026-06-09; eski D-014 op
     };
     try {
       useGame.getState().hardReset();
-      useGame.setState({ padsDone: ['table2', 'waiter'], waiterLevel: 1 });
+      useGame.setState({ padsDone: ['table2', 'waiter'], waiterLevels: [1, 0] });
       useGame.getState().saveNow();
       useGame.getState().init();
-      expect(useGame.getState().waiterLevel).toBe(1);
+      expect(useGame.getState().waiterLevels[0]).toBe(1);
     } finally {
       g.localStorage = orig;
     }
@@ -390,8 +389,7 @@ describe('yeni-özellik bildirimi (D-019 §4)', () => {
     useGame.getState().hardReset();
     useGame.setState({
       padsDone: ['table2', 'table3', 'waiter'],
-      hasWaiter: true,
-      waiter: { pos: [...LAYOUT.waiterHome] as [number, number, number], tray: 0 },
+      waiters: [{ pos: [...LAYOUT.waiterHome] as [number, number, number], tray: 0 }, null],
       player: [0, 0.6, 2], inputKeyboard: [0, 0], inputJoystick: [0, 0],
       npcs: [], spawnTimer: 999,
       stats: { ...defaultStats(), waiterServed: 19 },
@@ -415,7 +413,7 @@ describe('yeni-özellik bildirimi (D-019 §4)', () => {
     try {
       useGame.getState().hardReset();
       // table2 açık + ocak L1 → çay yükseltme zaten açık bir kayıt.
-      useGame.setState({ padsDone: ['table2'], stationLevel: 1 });
+      useGame.setState({ padsDone: ['table2'], stationLevels: [1, 0] });
       useGame.getState().saveNow();
       useGame.getState().init();
       const s = useGame.getState();
@@ -438,8 +436,8 @@ describe('bardak döngüsü (Faz 2e) — demleme temiz harcar, içen kirli bıra
     const s = useGame.getState();
     const drinking = s.npcs.filter((n) => n.state === 'drinking').length;
     return (
-      s.cleanCups + s.readyCups + s.tray + s.carriedDirty + s.dishes.length + drinking +
-      (s.waiter?.tray ?? 0) + (s.dishwasher?.tray ?? 0)
+      s.cleanCups + s.readyCupsByZone[0] + s.tray + s.carriedDirty + s.dishes.length + drinking +
+      (s.waiters[0]?.tray ?? 0) + (s.dishwashers[0]?.tray ?? 0)
     );
   }
 
@@ -451,17 +449,17 @@ describe('bardak döngüsü (Faz 2e) — demleme temiz harcar, içen kirli bıra
     // Servis yok → ocak hazır-kuyruğu temizden demler; clean azalır, ready artar, TOPLAM sabit.
     for (let i = 0; i < 300; i++) useGame.getState().tick(0.1);
     const s = useGame.getState();
-    expect(s.readyCups).toBeGreaterThan(0);
+    expect(s.readyCupsByZone[0]).toBeGreaterThan(0);
     expect(s.cleanCups).toBeLessThan(pool);
     expect(totalCups()).toBe(pool); // korunum
   });
 
   it('temiz bardak biterse demleme DURUR (yeni darboğaz)', () => {
     useGame.getState().hardReset();
-    useGame.setState({ player: [0, 0.6, 2], inputKeyboard: [0, 0], inputJoystick: [0, 0], cleanCups: 0, readyCups: 0, brewProgress: 0 });
+    useGame.setState({ player: [0, 0.6, 2], inputKeyboard: [0, 0], inputJoystick: [0, 0], cleanCups: 0, readyCupsByZone: [0, 0], brewProgressByZone: [0, 0] });
     for (let i = 0; i < 200; i++) useGame.getState().tick(0.1);
     // Temiz yokken hiç çay demlenemez.
-    expect(useGame.getState().readyCups).toBe(0);
+    expect(useGame.getState().readyCupsByZone[0]).toBe(0);
   });
 
   it('içen müşteri masada KİRLİ bardak bırakır; oyuncu toplar → bulaşıkta yıkar → temize döner', () => {
@@ -527,7 +525,7 @@ describe('bardak döngüsü (Faz 2e) — demleme temiz harcar, içen kirli bıra
     // Elinde kirli varken ocağa gidince temizi de alabilmeli (toplam trayCap'i aşmadan).
     useGame.setState({
       player: [st[0], 0.6, st[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0],
-      readyCups: 3, carriedDirty: 1, tray: 0,
+      readyCupsByZone: [3, 0], carriedDirty: 1, tray: 0,
     });
     useGame.getState().tick(0.1);
     expect(useGame.getState().tray).toBeGreaterThan(0); // kirli elindeyken de temiz alındı
@@ -610,8 +608,8 @@ describe('kirli masa mekaniği (D-019) — eşik aşılınca masa kilitlenir', (
     const seat = LAYOUT.tables[idx].seat;
     const dirtyDishes = Array.from({ length: T + 1 }, (_, i) => dishOn(idx, 4000 + i));
     useGame.setState({
-      padsDone: ['table2', 'waiter'], hasWaiter: true,
-      waiter: { pos: [LAYOUT.tables[idx].table[0], 0.6, LAYOUT.tables[idx].table[2]], tray: 1 },
+      padsDone: ['table2', 'waiter'],
+      waiters: [{ pos: [LAYOUT.tables[idx].table[0], 0.6, LAYOUT.tables[idx].table[2]] as [number, number, number], tray: 1 }, null],
       player: [0, 0.6, 6.5], inputKeyboard: [0, 0], inputJoystick: [0, 0],
       npcs: [{ id: 880, state: 'waitingForTea', pos: [...seat] as [number, number, number], tableIndex: idx, timer: 999, color: '#27ae60' }],
       dishes: dirtyDishes, spawnTimer: 999,
@@ -619,7 +617,7 @@ describe('kirli masa mekaniği (D-019) — eşik aşılınca masa kilitlenir', (
     for (let i = 0; i < 50; i++) useGame.getState().tick(0.1);
     // Kirli masaya servis yapılmadı → müşteri hâlâ bekliyor, garson tepsisi dolu.
     expect(useGame.getState().npcs.find((n) => n.id === 880)?.state).toBe('waitingForTea');
-    expect(useGame.getState().waiter?.tray).toBe(1);
+    expect(useGame.getState().waiters[0]?.tray).toBe(1);
   });
 });
 
@@ -634,7 +632,7 @@ describe('bulaşıkçı — quest hattında zorunlu personel (Faz 2e; 2026-06-09
     expect(currentPad(gate())?.id).toBe('dishwasher');
     expect(visiblePads(questIndexFor('table4'), gate())).toEqual([]); // başka pad görevi → requires kilitli
     expect(visiblePads(questIndexFor('dishwasher'), gate()).map((p) => p.id)).toEqual(['dishwasher']);
-    expect(useGame.getState().hasDishwasher).toBe(false);
+    expect(useGame.getState().dishwashers[0]).toBeNull();
   });
 
   it('bulaşıkçı tutulunca hasDishwasher=true; kirlileri toplayıp yıkar (oyuncu uzakta → kısmi assist)', () => {
@@ -643,8 +641,7 @@ describe('bulaşıkçı — quest hattında zorunlu personel (Faz 2e; 2026-06-09
     const ds = LAYOUT.dishStation;
     useGame.setState({
       padsDone: ['table2', 'table3', 'dishwasher'],
-      hasDishwasher: true,
-      dishwasher: { pos: [...LAYOUT.dishwasherHome] as [number, number, number], tray: 0 },
+      dishwashers: [{ pos: [...LAYOUT.dishwasherHome] as [number, number, number], tray: 0 }, null],
       player: [0, 0.6, 6.5], // oyuncu uzakta; yalnız bulaşıkçı çalışsın
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
@@ -658,14 +655,14 @@ describe('bulaşıkçı — quest hattında zorunlu personel (Faz 2e; 2026-06-09
       readyCups: 0,
       spawnTimer: 999, // yeni müşteri/yeni kirli olmasın
     });
-    expect(useGame.getState().hasDishwasher).toBe(true);
+    expect(useGame.getState().dishwashers[0]).not.toBeNull();
     const dirtyBefore = useGame.getState().dishes.length;
     for (let i = 0; i < 600; i++) useGame.getState().tick(0.1);
     const s = useGame.getState();
     // Bulaşıkçı kirlileri toplayıp bulaşıkta yıkadı → kirli temizlendi, bardaklar sisteme döndü
     // (yıkanan temiz bardakları ocak hemen demleyebilir → cleanCups + readyCups olarak ölç).
     expect(s.dishes.length).toBeLessThan(dirtyBefore);
-    expect(s.cleanCups + s.readyCups).toBeGreaterThan(0);
+    expect(s.cleanCups + s.readyCupsByZone[0]).toBeGreaterThan(0);
     void ds;
   });
 });
@@ -782,14 +779,14 @@ describe('kayıt migrasyonu v4..v15 (padFills, station2/samovar çıkışı, add
       stationLevel: 2, padsDone: ['table2', 'waiter'], padFills: {}, tableLevels: [],
     } as unknown as Record<string, unknown>);
     expect(m.saveVersion).toBe(SAVE_VERSION);
-    expect(m.waiterLevel).toBe(0);
+    expect(m.waiterLevels[0]).toBe(0);
     // Aşırı (bozuk) waiterLevel soft max'a clamp'lenir (moveSpeedByLevel uzunluğu - 1).
     const cap = economyConfig.waiter.moveSpeedByLevel.length - 1;
     const m2 = migrate({
       saveVersion: 14, wallet: '0', diamonds: '0', lifetime: '0',
       stationLevel: 0, padsDone: ['table2', 'waiter'], padFills: {}, tableLevels: [], waiterLevel: 99,
     } as unknown as Record<string, unknown>);
-    expect(m2.waiterLevel).toBe(cap);
+    expect(m2.waiterLevels[0]).toBe(cap);
   });
 
   it('v15 → v16 (QUEST): stats/questIndex/questBase eklenir; ilerleme tohumlanır (başa düşülmez)', () => {
@@ -831,7 +828,7 @@ describe('kayıt migrasyonu v4..v15 (padFills, station2/samovar çıkışı, add
     expect(d.padFills).toEqual({});
     expect((d as Record<string, unknown>).trayLevel).toBeUndefined();
     expect(d.tableLevels).toEqual([]);
-    expect(d.waiterLevel).toBe(0);
+    expect(d.waiterLevels).toEqual([]); // v18: diziler boş başlar; init MAX_ZONES'a 0'la doldurur
     expect((d as Record<string, unknown>).tables).toBeUndefined();
     expect((d as Record<string, unknown>).hasWaiter).toBeUndefined();
   });
@@ -874,14 +871,14 @@ describe('D-015 — tek doğru kaynak: türetilen alanlar padsDone\'dan, kayıtt
     completePad('table2');
     let s = useGame.getState();
     expect(s.tables).toBe(derivedFromPads(s.padsDone).tables);
-    expect(s.hasWaiter).toBe(derivedFromPads(s.padsDone).hasWaiter);
+    expect(s.waiters[0] != null).toBe(derivedFromPads(s.padsDone).hasWaiter);
 
     // Garson omurgada table3'ten sonra (quest hattı).
     completePad('table3');
     completePad('waiter');
     s = useGame.getState();
-    expect(s.hasWaiter).toBe(true);
-    expect(s.hasWaiter).toBe(derivedFromPads(s.padsDone).hasWaiter);
+    expect(s.waiters[0]).not.toBeNull();
+    expect(s.waiters[0] != null).toBe(derivedFromPads(s.padsDone).hasWaiter);
     expect(s.tables).toBe(derivedFromPads(s.padsDone).tables);
   });
 });
@@ -908,7 +905,7 @@ describe('ekonomi v2 — seviye throughputu artırır, fiyatı DEĞİL (D-010)',
     expect(useGame.getState().quest?.id).toBe('q_pickup');
     // Çay demlensin (oyuncu uzakta).
     useGame.setState({ player: [0, 0.6, 2], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
-    for (let i = 0; i < 200 && useGame.getState().readyCups === 0; i++) useGame.getState().tick(0.1);
+    for (let i = 0; i < 200 && useGame.getState().readyCupsByZone[0] === 0; i++) useGame.getState().tick(0.1);
     // 1) Ocağa git → tepsiye al → görev 1 tamam, sıradaki "müşteriye götür".
     const st = LAYOUT.stations[0];
     useGame.setState({ player: [st[0], 0.6, st[2]] });
@@ -950,7 +947,7 @@ describe('mekânsal çay yükseltme noktası (zone) + gating', () => {
     useGame.setState({ player: [z[0], 0.6, z[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
     for (let i = 0; i < 50; i++) useGame.getState().tick(0.1);
     // table2 açılmadığı için yükseltme noktası çalışmaz.
-    expect(useGame.getState().stationLevel).toBe(0);
+    expect(useGame.getState().stationLevels[0]).toBe(0);
   });
 
   it('table2 açıldıktan sonra noktada durunca seviye artar (activeZone kind=upgrade)', () => {
@@ -961,11 +958,11 @@ describe('mekânsal çay yükseltme noktası (zone) + gating', () => {
     useGame.getState().addMoney(30); // L1 (25₺) yeter; max'a varmaz
     const z = LAYOUT.upgradeZone;
     useGame.setState({ player: [z[0], 0.6, z[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
-    const before = useGame.getState().stationLevel;
+    const before = useGame.getState().stationLevels[0];
 
     for (let i = 0; i < 50; i++) useGame.getState().tick(0.1);
 
-    expect(useGame.getState().stationLevel).toBeGreaterThan(before);
+    expect(useGame.getState().stationLevels[0]).toBeGreaterThan(before);
     expect(useGame.getState().activeZone?.kind).toBe('upgrade');
   });
 
@@ -994,8 +991,8 @@ describe('mekânsal çay yükseltme noktası (zone) + gating', () => {
     for (let i = 0; i < 200 && useGame.getState().tray === 0; i++) useGame.getState().tick(0.1);
 
     // Durduğu halde (fillReady) ne dolum başladı ne para gitti; çay tepsiye alınabildi.
-    expect(useGame.getState().upgradeFill).toBe(0);
-    expect(useGame.getState().stationLevel).toBe(0);
+    expect(useGame.getState().upgradeFills[0]).toBe(0);
+    expect(useGame.getState().stationLevels[0]).toBe(0);
     expect(useGame.getState().wallet.toNumber()).toBe(walletBefore);
     expect(useGame.getState().tray).toBeGreaterThan(0);
   });
@@ -1108,9 +1105,8 @@ describe('personel yol bulma (nav.ts — BFS, kilitlenme yok)', () => {
     const backIdx = 2; // sol-alt masa: ocak ile arasında table0 var (eski sistemde kilitlenirdi)
     useGame.setState({
       padsDone: ['table2', 'table3', 'table4', 'waiter'],
-      hasWaiter: true,
       // Garsonu ocakta tepsi DOLU başlat → doğruca teslimata yönelir.
-      waiter: { pos: [...LAYOUT.stations[0]] as [number, number, number], tray: 1 },
+      waiters: [{ pos: [...LAYOUT.stations[0]] as [number, number, number], tray: 1 }, null],
       player: [0, 0.6, 4.2], // oyuncu uzakta (servis etmesin)
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
@@ -1127,7 +1123,7 @@ describe('personel yol bulma (nav.ts — BFS, kilitlenme yok)', () => {
     }
     // Müşteri sabrı 999 → tek çıkış yolu SERVİS (drinking) → arka masaya gerçekten ulaşıldı (takılmadı).
     expect(servedState).not.toBe('waitingForTea');
-    expect(useGame.getState().waiter?.tray).toBe(0); // çayı bıraktı
+    expect(useGame.getState().waiters[0]?.tray).toBe(0); // çayı bıraktı
   });
 });
 
@@ -1383,8 +1379,91 @@ describe('bulaşık onboarding gate (2026-06-10) — q_wash gelmeden kirli barda
     const s = useGame.getState();
     expect(s.dishes.length).toBe(0); // kirli YOK (öğretilmedi)
     // Korunum: havuz eksilmedi (bardak temize geri döndü) → demleme asla kilitlenmez.
-    expect(s.cleanCups + s.readyCups + s.tray + s.npcs.filter((n) => n.state === 'drinking').length).toBe(
-      cupPoolCapacity(s.stationLevel),
+    expect(s.cleanCups + s.readyCupsByZone[0] + s.tray + s.npcs.filter((n) => n.state === 'drinking').length).toBe(
+      cupPoolCapacity(s.stationLevels[0]),
     );
+  });
+});
+
+describe('ZONE-2 (Faz 3a + D-022) — per-zone ocak+bulaşık, geçit pad\'i, migrasyon', () => {
+  const Z1_CHAIN = ['table2', 'table3', 'waiter', 'dishwasher', 'table4'];
+
+  it('derivedFromPads: zone2 açılınca zonesOpen=2, oto +1 masa (slot 4), per-zone personel ayrı', () => {
+    const d1 = derivedFromPads([...Z1_CHAIN]);
+    expect(d1.zonesOpen).toBe(1);
+    expect(d1.tables).toBe(4);
+    const d2 = derivedFromPads([...Z1_CHAIN, 'zone2']);
+    expect(d2.zonesOpen).toBe(2);
+    expect(d2.stations).toBe(2);
+    expect(d2.tables).toBe(5); // zone-2 oto 1. masa
+    expect(d2.tablesByZone).toEqual([4, 1]);
+    expect(d2.hasWaiterByZone).toEqual([true, false]); // z1 garsonu z2'ye SIZMAZ
+    const d3 = derivedFromPads([...Z1_CHAIN, 'zone2', 'z2table2', 'z2waiter']);
+    expect(d3.tables).toBe(6);
+    expect(d3.hasWaiterByZone).toEqual([true, true]);
+  });
+
+  it('savunmacı: zone2 pad\'i YOKKEN z2 pad\'leri etki edemez (bozuk kayıt sızamaz)', () => {
+    const d = derivedFromPads(['z2table2', 'z2waiter']);
+    expect(d.zonesOpen).toBe(1);
+    expect(d.tables).toBe(1);
+    expect(d.hasWaiterByZone[1]).toBe(false);
+  });
+
+  it('STORE entegrasyon: geçit pad\'iyle zone-2 açılır → 2. ocak demler, oyuncu 2. ocaktan alır, zone-2 masasına müşteri oturur', () => {
+    useGame.getState().hardReset();
+    useGame.setState({ padsDone: [...Z1_CHAIN] });
+    useGame.getState().addMoney(50); // lifetime tabanı
+    expect(completePad('zone2')).toBe(true);
+    const s0 = useGame.getState();
+    expect(s0.zonesOpen).toBe(2);
+    expect(s0.tables).toBe(5);
+    // 2. ocak kendi kuyruğuna demler (oyuncu uzakta).
+    useGame.setState({ player: [0, 0.6, 4.5], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+    for (let i = 0; i < 300 && useGame.getState().readyCupsByZone[1] === 0; i++) useGame.getState().tick(0.1);
+    expect(useGame.getState().readyCupsByZone[1]).toBeGreaterThan(0);
+    // Oyuncu zone-2 ocağından tepsiye alır.
+    const st2 = LAYOUT.stations[1];
+    useGame.setState({ player: [st2[0], 0.6, st2[2]] });
+    useGame.getState().tick(0.1);
+    expect(useGame.getState().tray).toBeGreaterThan(0);
+    // Zone-2 masasına (global slot >= 4) müşteri oturur (kendi kapısından gelir).
+    let sawZone2Npc = false;
+    for (let i = 0; i < 600 && !sawZone2Npc; i++) {
+      useGame.getState().tick(0.1);
+      sawZone2Npc = useGame.getState().npcs.some((n) => n.tableIndex >= 4);
+    }
+    expect(sawZone2Npc).toBe(true);
+  });
+
+  it('bardak korunumu zone-2 ile GLOBAL: unlock poolBase ekler; toplam bardak değişmezi sürer', () => {
+    useGame.getState().hardReset();
+    useGame.setState({ padsDone: [...Z1_CHAIN] });
+    useGame.getState().addMoney(50);
+    expect(completePad('zone2')).toBe(true);
+    // Bir süre oyna (demleme + müşteri akışı) — q_wash geçildi (questIndex zone2 sonrası) → kirli çıkar.
+    for (let i = 0; i < 400; i++) useGame.getState().tick(0.1);
+    const s = useGame.getState();
+    const drinking = s.npcs.filter((n) => n.state === 'drinking').length;
+    const total =
+      s.cleanCups + s.readyCupsByZone[0] + s.readyCupsByZone[1] + s.tray + s.carriedDirty +
+      s.dishes.length + drinking +
+      (s.waiters[0]?.tray ?? 0) + (s.waiters[1]?.tray ?? 0) +
+      (s.dishwashers[0]?.tray ?? 0) + (s.dishwashers[1]?.tray ?? 0);
+    expect(total).toBe(totalCupPool(s.zonesOpen, s.stationLevels));
+  });
+
+  it('kayıt migrasyonu v17→v18: skaler stationLevel/waiterLevel zone-1 dizisine taşınır (ilerleme korunur)', () => {
+    const m = migrate({
+      saveVersion: 17, wallet: '500', diamonds: '0', lifetime: '5000',
+      stationLevel: 3, waiterLevel: 1, padsDone: [...Z1_CHAIN], padFills: {},
+      tableLevels: [1, 0, 0, 0], stats: defaultStats(), questIndex: 13, questBase: 0,
+      xp: 100, settings: { sound: true, music: true, notifications: true }, lastSaved: Date.now(),
+    });
+    expect(m.saveVersion).toBe(SAVE_VERSION);
+    expect(m.stationLevels).toEqual([3]);
+    expect(m.waiterLevels).toEqual([1]);
+    expect((m as Record<string, unknown>).stationLevel).toBeUndefined();
+    expect((m as Record<string, unknown>).waiterLevel).toBeUndefined();
   });
 });

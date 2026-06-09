@@ -372,9 +372,29 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 - ⏳ **Zone mimarisi kararı AÇIK:** per-zone ocak+bulaşık MI, merkezi servis + zone-başı personel Mİ — kullanıcı tekrar
   sordu, onaylanmış model YOK; sonraki oturumda artı/eksi tablosuyla karara bağlanacak.
 
-## Faz 3 — Kat & zone çoğaltma & roller ⏳ (D-016 ile yeniden çerçevelendi)
-- ⏳ **3a:** Zone çoğaltma: zone'u atomik modül yap, **kat başına ~4 zone (2×2 ızgara)**; zone-açma omurga pad'i;
-  yeni zone'da oto 1.ocak(L1)+1.masa; `stations` türetme (D-015 korunur); tek kapı + rastgele oturma + zone'a bölünmüş servis.
+## Faz 3 — Kat & zone çoğaltma & roller 🔧 (D-016 ile yeniden çerçevelendi)
+- ✅ **3a ZONE-2 ÇALIŞIR (GECE 3/7, 2026-06-10; SAVE 17→18):** Per-zone TEMALI ocak+bulaşık (D-022) uygulandı.
+  **Model:** LAYOUT zone-şablonlu (zone-1 koordinatları AYNEN = şablon; zone-2 = +X offset ZONE_DX 12);
+  global düz diziler (tables 8 slot — 0-3 z1 / 4-7 z2, stations[2], dishStations[2], upgradeZones[2],
+  waiterHomes/dishwasherHomes/waiterUpgradeSpots[2], entrances/streets[2]); eski tekil alanlar zone-1 alias.
+  **Masa indeksleri GLOBAL BİTİŞİK** (zone2 pad'i table4 ister → yapısal; derived'da savunmacı kelepçe) →
+  NPC/dish/tableLevels kodu neredeyse değişmedi. **Bölme duvarı** (x=6.0) oyuncu+nav solid'i, ortada HEP açık
+  GEÇİT (z=-0.75±0.9); zone-2 kilitliyken karanlık örtü (LockedZoneShade) + boş salon; 'zone2' pad'i geçit
+  ortasında (₺1200 GECE başlangıcı — sabah curve onayıyla kalibre). **Per-zone state:** stationLevels[]/
+  waiterLevels[] PERSIST (**SAVE v17→v18 migrasyonu**: skalerler zone-1'e); readyCupsByZone/brewProgressByZone/
+  upgradeFills/waiterUpgradeFills/waiters/dishwashers transient diziler. **cleanCups GLOBAL tek depo**
+  (totalCupPool = zone×poolBase + Σseviye×perLevel; unlock poolBase ekler) → korunum değişmezi global sürer.
+  **Personel per-zone:** garson/bulaşıkçı yalnız kendi zone'unun masa/ocak/lavabosuna bakar; zone-2'de yeniden
+  tutulur (z2waiter/z2dishwasher pad'leri). **Müşteri kendi zone kapısından** girer/çıkar (streets/entrances per
+  zone; moveAvoid zone-içi kalır). **Quest hattı +7 görev** (q_zone2 → q_z2serve → z2 masa/garson/bulaşıkçı
+  zinciri). FILL id'leri zone'lu ('tea:z','waiterUp:z'). derivedFromPads → zonesOpen/tablesByZone/hasWaiterByZone/
+  hasDishwasherByZone (+geri-uyum tables/hasWaiter=z1). Scene: çift kapı+söve, bölme duvarı, geniş zemin/sokak,
+  per-zone ocak/lavabo/marker'lar; Waiter/Dishwasher bileşenleri dizi. devHooks geri-uyumlu (eski anahtarlar=z1,
+  yeni `zones[]`). **Doğrulama: vitest 85/85 (5 yeni zone testi: derived/savunmacı/store-entegrasyon/korunum/
+  v18 migrasyon), build temiz, sim ilk-alım 60sn SABİT, smoke 27/27, Playwright canlı: zinciri oyna→zone2 aç→
+  2. ocak demler→oyuncudan pickup→z2 masasına müşteri→geçitten input'la GEÇİLİR (8.55) / duvar BLOKLAR (5.4),
+  konsol 0 hata.** Screenshot: night-3-zone2-station.png + night-3-zone2-locked.png. Tasarım: docs/zone2-design.md.
+- ⏳ **3a kalan:** zone 3-4 (tost/TV konsepti) + kat planındaki servis odaları (floorplan-master.md).
 - ⏳ **3b:** Kat geçişi: kat dolunca **merdiven** açılır → ekran kararma → üst kat; dinamik bounds/kamera; SAVE bump.
 - ⏳ **3c:** Tuvalet ODASI + DEPO (KATA özel, parayla açılır) + tuvalet kâğıdı döngüsü (depodan al→tak) + temizlikçi.
 - ⏳ **3d:** Menü çeşitliliği (kahve/tost — mutfak şeridine eklenir). Okey/tavla/nargile üst katlar.

@@ -7,7 +7,7 @@ export function Pad() {
   const padsDone = useGame((s) => s.padsDone);
   const padFills = useGame((s) => s.padFills);
   const tables = useGame((s) => s.tables);
-  const stationLevel = useGame((s) => s.stationLevel);
+  const stationLevel = useGame((s) => s.stationLevels[0]);
   const lifetime = useGame((s) => s.lifetime);
   const wallet = useGame((s) => s.wallet);
   const questIndex = useGame((s) => s.questIndex);

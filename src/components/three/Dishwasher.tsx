@@ -23,14 +23,12 @@ function CarriedDirty({ count }: { count: number }) {
   );
 }
 
-// Bulaşıkçı (greybox: gri-mavi önlüklü kapsül, garson/sahipten ayırt edilir). Faz 6'da .glb takılır.
-export function Dishwasher() {
-  const dishwasher = useGame((s) => s.dishwasher);
+// Tek bulaşıkçı gövdesi (hook'lar per-unit kalsın diye ayrı bileşen).
+function DishwasherUnit({ pos, tray }: { pos: [number, number, number]; tray: number }) {
   const ref = useRef<Group>(null);
-  useFacing(ref, dishwasher?.pos[0] ?? 0, dishwasher?.pos[2] ?? 0);
-  if (!dishwasher) return null;
+  useFacing(ref, pos[0], pos[2]);
   return (
-    <group position={[dishwasher.pos[0], 0, dishwasher.pos[2]]}>
+    <group position={[pos[0], 0, pos[2]]}>
       <group ref={ref}>
         <Model
           fallback={
@@ -40,8 +38,18 @@ export function Dishwasher() {
             </mesh>
           }
         />
-        <CarriedDirty count={dishwasher.tray} />
+        <CarriedDirty count={tray} />
       </group>
     </group>
+  );
+}
+
+// Bulaşıkçılar (zone başına; greybox: gri-mavi önlüklü kapsül). Faz 6'da .glb takılır.
+export function Dishwasher() {
+  const dishwashers = useGame((s) => s.dishwashers);
+  return (
+    <>
+      {dishwashers.map((dw, z) => (dw ? <DishwasherUnit key={z} pos={dw.pos} tray={dw.tray} /> : null))}
+    </>
   );
 }

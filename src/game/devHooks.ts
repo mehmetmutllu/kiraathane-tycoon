@@ -29,7 +29,7 @@ export function installDevHooks(): void {
     const gate = {
       padsDone: s.padsDone,
       tables: s.tables,
-      stationLevel: s.stationLevel,
+      stationLevel: s.stationLevels[0],
       lifetime: s.lifetime.toNumber(),
       waiterServed: s.stats.waiterServed,
     };
@@ -41,12 +41,24 @@ export function installDevHooks(): void {
       lifetime: s.lifetime.toNumber(),
       tables: s.tables,
       stations: s.stations,
-      stationLevel: s.stationLevel,
+      // Zone modeli (Faz 3a): geri-uyum anahtarları zone-1'i gösterir; per-zone detay `zones`'ta.
+      zonesOpen: s.zonesOpen,
+      zones: Array.from({ length: s.zonesOpen }, (_, z) => ({
+        stationLevel: s.stationLevels[z],
+        readyCups: s.readyCupsByZone[z],
+        hasWaiter: s.waiters[z] != null,
+        hasDishwasher: s.dishwashers[z] != null,
+        waiterLevel: s.waiterLevels[z],
+        stationPos: LAYOUT.stations[z],
+        dishStationPos: LAYOUT.dishStations[z],
+        upgradeZonePos: LAYOUT.upgradeZones[z],
+      })),
+      stationLevel: s.stationLevels[0],
       serviceSpeedMult: +s.serviceSpeedMult.toFixed(3),
       padsDone: [...s.padsDone],
       npcCount: s.npcCount,
-      // Servis durumu (D-011)
-      readyCups: s.readyCups,
+      // Servis durumu (D-011) — zone-1 geri-uyum
+      readyCups: s.readyCupsByZone[0],
       tray: s.tray,
       trayCap: trayCapacity(),
       // Masa-başı yükseltme (Faz 2h): her masanın seviyesi + yanındaki yükseltme noktaları
@@ -69,18 +81,18 @@ export function installDevHooks(): void {
       // Kirli masa mekaniği (D-019): eşiği aşan masa indeksleri (müşteri oturmaz + garson götürmez).
       dirtyTables: [...dirtyTables(s.dishes)],
       dishesByTable: LAYOUT.tables.map((_, i) => s.dishes.filter((d) => d.tableIndex === i).length),
-      hasDishwasher: s.hasDishwasher,
-      dishwasherTray: s.dishwasher ? s.dishwasher.tray : 0,
-      dishwasherPos: s.dishwasher ? s.dishwasher.pos.map((n) => +n.toFixed(2)) : null,
+      hasDishwasher: s.dishwashers[0] != null,
+      dishwasherTray: s.dishwashers[0] ? s.dishwashers[0].tray : 0,
+      dishwasherPos: s.dishwashers[0] ? s.dishwashers[0].pos.map((n) => +n.toFixed(2)) : null,
       padFill: Math.floor(pad ? s.padFills[pad.id] ?? 0 : 0),
       currentPad: pad ? pad.id : null,
       padCost: pad ? pad.cost : 0,
       padPos: pad ? LAYOUT.padPos[pad.id] : null,
-      // Garson durumu (Faz 2d) + hız yükseltme (D-018 §6)
-      hasWaiter: s.hasWaiter,
-      waiterTray: s.waiter ? s.waiter.tray : 0,
-      waiterPos: s.waiter ? s.waiter.pos.map((n) => +n.toFixed(2)) : null,
-      waiterLevel: s.waiterLevel,
+      // Garson durumu (Faz 2d) + hız yükseltme (D-018 §6) — zone-1 geri-uyum
+      hasWaiter: s.waiters[0] != null,
+      waiterTray: s.waiters[0] ? s.waiters[0].tray : 0,
+      waiterPos: s.waiters[0] ? s.waiters[0].pos.map((n) => +n.toFixed(2)) : null,
+      waiterLevel: s.waiterLevels[0],
       waiterUpgradeSpotPos: LAYOUT.waiterUpgradeSpot,
       // Quest sistemi (2026-06-09): aktif görev + sayaçlar + kamera odağı.
       questIndex: s.questIndex,
@@ -94,7 +106,7 @@ export function installDevHooks(): void {
       // Yeni-özellik bildirimi (D-019 §4): anlık toast metni + bu oturumda bildirilmiş reveal anahtarları.
       notice: s.notice ? s.notice.text : null,
       revealSeen: [...s.revealSeen],
-      upgradeFill: Math.floor(s.upgradeFill),
+      upgradeFill: Math.floor(s.upgradeFills[0]),
       upgradeZonePos: LAYOUT.upgradeZone,
       activeZone: s.activeZone ? { kind: s.activeZone.kind, label: s.activeZone.label } : null,
       player: s.player.map((n) => +n.toFixed(2)),

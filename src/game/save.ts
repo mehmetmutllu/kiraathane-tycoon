@@ -42,11 +42,12 @@ export interface SaveData {
   wallet: string;
   diamonds: string;
   lifetime: string;
-  stationLevel: number;
-  /** Masa-başı yükseltme seviyeleri (Faz 2h; index = masa slotu; bahşiş+sabır; My Hotel oda mantığı). */
+  /** Zone başına çay ocağı seviyesi (v18; index = zone; per-zone ocak, D-022). */
+  stationLevels: number[];
+  /** Masa-başı yükseltme seviyeleri (Faz 2h; index = GLOBAL masa slotu; bahşiş+sabır). */
   tableLevels: number[];
-  /** Garson hız yükseltme seviyesi (Faz 2 D-018 §7; 0 = taban, 1 = L2; garson tutulduysa anlamlı). */
-  waiterLevel: number;
+  /** Zone başına garson hız seviyesi (v18; 0 = taban, 1 = L2; o zone'da garson tutulduysa anlamlı). */
+  waiterLevels: number[];
   padsDone: string[];
   /** Aktif pad'lerin kısmi dolumu (pad id → ₺). Aynı anda birden çok pad doldurulabilir (v5). */
   padFills: Record<string, number>;
@@ -69,9 +70,9 @@ export function defaultSave(): SaveData {
     wallet: '0',
     diamonds: '0',
     lifetime: '0',
-    stationLevel: 0,
+    stationLevels: [],
     tableLevels: [],
-    waiterLevel: 0,
+    waiterLevels: [],
     padsDone: [],
     padFills: {},
     stats: defaultStats(),
@@ -94,8 +95,8 @@ export function defaultSave(): SaveData {
 function seedQuestIndex(d: Record<string, unknown>): number {
   const quests = economyConfig.quests;
   const padsDone = Array.isArray(d.padsDone) ? (d.padsDone as string[]) : [];
-  const stationLevel = Number(d.stationLevel ?? 0) || 0;
-  const waiterLevel = Number(d.waiterLevel ?? 0) || 0;
+  const stationLevel = Number((Array.isArray(d.stationLevels) ? (d.stationLevels as number[])[0] : d.stationLevel) ?? 0) || 0;
+  const waiterLevel = Number((Array.isArray(d.waiterLevels) ? (d.waiterLevels as number[])[0] : d.waiterLevel) ?? 0) || 0;
   const tableLevels = Array.isArray(d.tableLevels) ? (d.tableLevels as number[]).map((n) => Number(n) || 0) : [];
   const lifetime = Number(d.lifetime ?? 0) || 0;
   const stateMet = (t: QuestTarget): boolean | null => {
@@ -302,6 +303,16 @@ export function migrate(raw: Record<string, unknown>): SaveData {
     v = 17;
   }
 
+  // v17 -> v18 (ZONE-2, Faz 3a + D-022): per-zone ocak + garson → skaler `stationLevel`/`waiterLevel`
+  // DİZİYE taşınır (eski değerler zone-1'e; zone-2 sıfırdan başlar). İlerleme kaybolmaz.
+  if (v < 18) {
+    d.stationLevels = [Number(d.stationLevel ?? 0) || 0];
+    d.waiterLevels = [Number(d.waiterLevel ?? 0) || 0];
+    delete d.stationLevel;
+    delete d.waiterLevel;
+    v = 18;
+  }
+
   // Sona kalan v16 şeması: türetilen alanlar (tables/stations/serviceSpeedMult/hasWaiter), eski `padFill`,
   // kaldırılan `trayLevel` ve 'samovar' referansı yazılmaz; stats/questIndex/questBase eklendi (v16).
   const rawStats = (d.stats && typeof d.stats === 'object' ? d.stats : {}) as Partial<SaveStats>;
@@ -310,12 +321,15 @@ export function migrate(raw: Record<string, unknown>): SaveData {
     wallet: String(d.wallet ?? '0'),
     diamonds: String(d.diamonds ?? '0'),
     lifetime: String(d.lifetime ?? '0'),
-    stationLevel: Number(d.stationLevel ?? 0) || 0,
+    stationLevels: Array.isArray(d.stationLevels)
+      ? (d.stationLevels as number[]).map((n) => Number(n) || 0)
+      : [],
     tableLevels: Array.isArray(d.tableLevels) ? (d.tableLevels as number[]).map((n) => Number(n) || 0) : [],
-    waiterLevel: Math.min(
-      Number(d.waiterLevel ?? 0) || 0,
-      economyConfig.waiter.moveSpeedByLevel.length - 1,
-    ),
+    waiterLevels: Array.isArray(d.waiterLevels)
+      ? (d.waiterLevels as number[]).map((n) =>
+          Math.min(Number(n) || 0, economyConfig.waiter.moveSpeedByLevel.length - 1),
+        )
+      : [],
     padsDone: Array.isArray(d.padsDone) ? (d.padsDone as string[]) : [],
     padFills:
       d.padFills && typeof d.padFills === 'object' ? (d.padFills as Record<string, number>) : {},

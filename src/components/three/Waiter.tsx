@@ -21,14 +21,12 @@ function WaiterTray({ count }: { count: number }) {
   );
 }
 
-// Garson (greybox: yeşil önlüklü kapsül, sahipten ayırt edilir). Faz 6'da waiter.glb takılır.
-export function Waiter() {
-  const waiter = useGame((s) => s.waiter);
+// Tek garson gövdesi (hook'lar per-unit kalsın diye ayrı bileşen).
+function WaiterUnit({ pos, tray }: { pos: [number, number, number]; tray: number }) {
   const ref = useRef<Group>(null);
-  useFacing(ref, waiter?.pos[0] ?? 0, waiter?.pos[2] ?? 0);
-  if (!waiter) return null;
+  useFacing(ref, pos[0], pos[2]);
   return (
-    <group position={[waiter.pos[0], 0, waiter.pos[2]]}>
+    <group position={[pos[0], 0, pos[2]]}>
       <group ref={ref}>
         <Model
           fallback={
@@ -38,8 +36,18 @@ export function Waiter() {
             </mesh>
           }
         />
-        <WaiterTray count={waiter.tray} />
+        <WaiterTray count={tray} />
       </group>
     </group>
+  );
+}
+
+// Garsonlar (zone başına; greybox: yeşil önlüklü kapsül). Faz 6'da waiter.glb takılır.
+export function Waiter() {
+  const waiters = useGame((s) => s.waiters);
+  return (
+    <>
+      {waiters.map((w, z) => (w ? <WaiterUnit key={z} pos={w.pos} tray={w.tray} /> : null))}
+    </>
   );
 }

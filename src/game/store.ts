@@ -15,6 +15,8 @@ import {
   waiterSpeed,
   waiterSoftMaxLevel as waiterSoftMaxLevelCfg,
   levelProgress,
+  MAX_ZONES,
+  zoneOfTable,
   type PadDef,
   type GateState,
   type QuestDef,
@@ -40,51 +42,74 @@ import { buildNavGrid, findNavPath, type NavGrid, type NavSolid } from './nav';
 // her masa↔ocak mesafesi >2R=3.2 (ön sıra ~4.9, hedef ~5) → tek noktada "çay-al+servis" veya "kirli-al+yıka"
 // İMKÂNSIZ, yürüme döngüsü ZORLANIR. Orta geniş koridor (kolon ±2.4, gap 4.8). Collision: oyuncu mobilya+
 // sandalye+aktör (HAPSETMEZ); garson/bulaşıkçı masa gövdelerinden GERÇEK rota ile dolaşır (nav.ts BFS).
+// --- ZONE ŞABLONU (Faz 3a + D-022): zone-1 iç yerleşimi = bugüne kadarki mutlak koordinatlar.
+// Zone-2 = AYNI şablon +X offset (ZONE_DX). Global düz diziler (tables 8 slot, stations[2], ...)
+// eski kodun index mantığını korur (zone z → masa slotları [z*4, z*4+4)).
+const ZONE_DX = 12.0;
+const ZONE_OFFSETS = [0, ZONE_DX] as const;
+const off = (dx: number, v: readonly [number, number, number]): Vec3 => [v[0] + dx, v[1], v[2]];
+
+const BASE_TABLES = [
+  { table: [-2.4, 0, 0.0], seat: [-2.4, 0.6, 1.0], upgradeSpot: [-3.7, 0, 0.0] },
+  { table: [2.4, 0, 0.0], seat: [2.4, 0.6, 1.0], upgradeSpot: [3.7, 0, 0.0] },
+  { table: [-2.4, 0, 3.0], seat: [-2.4, 0.6, 4.0], upgradeSpot: [-3.7, 0, 3.0] },
+  { table: [2.4, 0, 3.0], seat: [2.4, 0.6, 4.0], upgradeSpot: [3.7, 0, 3.0] },
+] as const;
+
+const ALL_TABLES = ZONE_OFFSETS.flatMap((dx) =>
+  BASE_TABLES.map((t) => ({
+    table: off(dx, t.table),
+    seat: off(dx, t.seat),
+    upgradeSpot: off(dx, t.upgradeSpot),
+  })),
+);
+
 export const LAYOUT = {
-  entrance: [0, 0.6, 4.8] as Vec3, // kapı eşiği (ön duvardaki boşluk, x=0)
-  // Sokak doğuş noktası: ön duvarın DIŞI (müşteriler buradan yürüyerek kapıya gelir / çıkarken buraya döner).
+  // Zone başına kapı eşiği + sokak doğuş noktası (müşteri KENDİ zone'unun kapısından girer/çıkar →
+  // moveAvoid zone-içi kalır, bölme duvarında takılma riski yok).
+  entrances: ZONE_OFFSETS.map((dx) => off(dx, [0, 0.6, 4.8])),
+  streets: ZONE_OFFSETS.map((dx) => off(dx, [0, 0.6, 8.0])),
+  entrance: [0, 0.6, 4.8] as Vec3, // zone-1 alias (testler/eski kod)
   street: [0, 0.6, 8.0] as Vec3,
   player: [0, 0.6, 1.5] as Vec3,
-  // Çay ocağı (D-016: zone'un TEK ana ocağı). Mutfak kümesinin solu, arka duvara 0.
-  stations: [[-1.6, 0, -4.8] as Vec3],
-  // Oynanabilir alan — derinlik artırıldı (D-017 §1: mutfak↔masa ayrımı için). Ön/arka koridor + kenar personel.
-  area: { minX: -5.3, maxX: 5.3, minZ: -5.3, maxZ: 5.0 },
-  // Masa slotları — 2×2, MUTFAKTAN UZAK ÖNDE (kolon x ∓2.4, satır z 0.0/3.0). Ön sıra ocaktan ~4.9 br
-  // (>2R=3.2) → tek noktada çay-al+servis imkânsız. seat = table z+1.0 (müşteri masanın önünde, girişe dönük).
-  // upgradeSpot (D-018 §1 KENAR-YERLEŞİM): masanın DUVAR-KENARI tarafında (sol kolon → SOLA x≈−3.7, sağ kolon →
-  // SAĞA x≈+3.7) → orta "omurga" koridor boş kalır (kullanıcı: "sağdakilerin sağına soldakilerin soluna").
-  tables: [
-    { table: [-2.4, 0, 0.0] as Vec3, seat: [-2.4, 0.6, 1.0] as Vec3, upgradeSpot: [-3.7, 0, 0.0] as Vec3 },
-    { table: [2.4, 0, 0.0] as Vec3, seat: [2.4, 0.6, 1.0] as Vec3, upgradeSpot: [3.7, 0, 0.0] as Vec3 },
-    { table: [-2.4, 0, 3.0] as Vec3, seat: [-2.4, 0.6, 4.0] as Vec3, upgradeSpot: [-3.7, 0, 3.0] as Vec3 },
-    { table: [2.4, 0, 3.0] as Vec3, seat: [2.4, 0.6, 4.0] as Vec3, upgradeSpot: [3.7, 0, 3.0] as Vec3 },
-  ],
-  // Pad pozisyonları: açtıkları objenin yerinde (masa pad'leri sıralı → eş-zamanlı çakışmaz).
+  // Zone başına çay ocağı (per-zone TEMALI ocak, D-022). Mutfak kümesinin solu, arka duvara 0.
+  stations: ZONE_OFFSETS.map((dx) => off(dx, [-1.6, 0, -4.8])),
+  // Oynanabilir alan: İKİ zone'u da kapsar (tek bina; bölme duvarı katı engel, geçit z=-0.75).
+  area: { minX: -5.3, maxX: 5.3 + ZONE_DX, minZ: -5.3, maxZ: 5.0 },
+  // Zone başına yerel alan (duvar çizimi/etiketler için).
+  zoneAreas: ZONE_OFFSETS.map((dx) => ({ minX: -5.3 + dx, maxX: 5.3 + dx, minZ: -5.3, maxZ: 5.0 })),
+  // Bölme duvarı: iki zone arasında, ortasında GEÇİT (z=gapZ±gapHalf). Geçit HEP açık (zone-2
+  // kilitliyken salon boş ve karanlık; pad geçidin ortasında "2. Salon" der).
+  divider: { x: 6.0, gapZ: -0.75, gapHalf: 0.9, half: 0.15 }, // (5.3+6.7)/2 — zone sınırlarının ortası
+  // Masa slotları — GLOBAL 8 slot (0-3 zone-1, 4-7 zone-2); zone içi 2×2 düzen değişmedi (D-017 §1).
+  tables: ALL_TABLES,
+  // Pad pozisyonları: açtıkları objenin yerinde. zone2 pad'i bölme geçidinin ORTASINDA.
   padPos: {
-    table2: [2.4, 0, 0.0] as Vec3, // 2. masa slotu (ön-sağ)
-    table3: [-2.4, 0, 3.0] as Vec3, // 3. masa slotu (arka-sol)
-    table4: [2.4, 0, 3.0] as Vec3, // 4. masa slotu (arka-sağ)
-    // (samovar pad'i kaldırıldı — D-018 adım 5; semaver = çay ocağı üst yükseltmesi.)
-    // Personel pad'leri sol/sağ kenar, masa SATIRLARI ARASINDA (z=1.5) → masa-yükseltme noktalarıyla (z=0/3)
-    // çakışmaz (D-018 §1 kenar-yerleşim: upgrade spot [∓3.7,0/3] ile pad [∓4.6,1.5] arası 1.75>PAD_RADIUS).
-    waiter: [-4.6, 0, 1.5] as Vec3, // sol-kenar orta (GÖRÜNÜR)
-    dishwasher: [4.6, 0, 1.5] as Vec3, // sağ-kenar orta (GÖRÜNÜR)
+    table2: ALL_TABLES[1].table,
+    table3: ALL_TABLES[2].table,
+    table4: ALL_TABLES[3].table,
+    waiter: [-4.6, 0, 1.5] as Vec3, // sol-kenar orta (D-018 §1 kenar-yerleşim)
+    dishwasher: [4.6, 0, 1.5] as Vec3, // sağ-kenar orta
+    zone2: [6.0, 0, -0.75] as Vec3, // geçit ortası (divider.x, divider.gapZ)
+    z2table2: ALL_TABLES[5].table,
+    z2table3: ALL_TABLES[6].table,
+    z2table4: ALL_TABLES[7].table,
+    z2waiter: off(ZONE_DX, [-4.6, 0, 1.5]),
+    z2dishwasher: off(ZONE_DX, [4.6, 0, 1.5]),
   } as Record<string, Vec3>,
-  // Mekânsal çay yükseltme noktası: ocağın önünde ama pickup'tan TAM AYRIK. Merkez mesafesi
-  // (3.1) ≥ pickupRadius (1.6) + PAD_RADIUS (1.3) → iki daire KESİŞEMEZ; çay almaya gelen
-  // oyuncu tezgâh önünde dururken (z≈-4.05) dolum tetiklenmez (gece fix 2026-06-10; eski
-  // [-1.6,-3.0] merkez-merkez 1.8'e bakıyordu, daire kesişimini ıskalıyordu → para yiyordu).
-  upgradeZone: [-1.6, 0, -1.7] as Vec3,
-  // Garson boştayken bekleyeceği köşe (sol-kenar, pad'inin arkası).
+  // Zone başına mekânsal çay yükseltme noktası: ocağın önünde ama pickup'tan TAM AYRIK. Merkez mesafesi
+  // (3.1) ≥ pickupRadius (1.6) + PAD_RADIUS (1.3) → iki daire KESİŞEMEZ (gece fix 2026-06-10).
+  upgradeZones: ZONE_OFFSETS.map((dx) => off(dx, [-1.6, 0, -1.7])),
+  upgradeZone: [-1.6, 0, -1.7] as Vec3, // zone-1 alias (testler/eski kod)
+  // Zone başına personel köşeleri + garson hız yükseltme noktası (D-018 §6 yerleşimi zone-yerel aynı).
+  waiterHomes: ZONE_OFFSETS.map((dx) => off(dx, [-4.6, 0, -1.6])),
   waiterHome: [-4.6, 0, -1.6] as Vec3,
-  // Garson hız yükseltme noktası (D-018 §6): garson köşesinde, tutma pad'inin (z=1.5) ARKASINDA (z=-0.9) →
-  // garson tutar tutmaz aynı noktada yükseltmeye akmaz (ayrı bilinçli adım). Masa-yükseltme noktalarından
-  // (∓3.7 @ z=0/3) ve pickup/çay-yükseltme'den uzak (çakışma yok).
+  waiterUpgradeSpots: ZONE_OFFSETS.map((dx) => off(dx, [-4.6, 0, -0.9])),
   waiterUpgradeSpot: [-4.6, 0, -0.9] as Vec3,
-  // Bulaşık noktası (Faz 2e): mutfak kümesi, ocağın sağında BİTİŞİK (D-017 §1: ocaktan AYRILMAZ).
-  // ocaktan dist 2.2 → footprint'ler çakışmaz ama mutfak kümesi olarak yan yana (kirli yıkama mutfakta).
+  // Zone başına bulaşık noktası (per-zone bulaşık köşesi, D-022; mutfak kümesinde ocağın sağı).
+  dishStations: ZONE_OFFSETS.map((dx) => off(dx, [0.6, 0, -4.8])),
   dishStation: [0.6, 0, -4.8] as Vec3,
-  // Bulaşıkçı boştayken bekleyeceği köşe (sağ-kenar, pad'inin arkası).
+  dishwasherHomes: ZONE_OFFSETS.map((dx) => off(dx, [4.6, 0, -1.6])),
   dishwasherHome: [4.6, 0, -1.6] as Vec3,
   // --- Collision footprint'leri (yarı-boyut [hx,hz]; D-016): GÖRSEL mesh'lere yaslı → oyuncu objeye
   // "değiyor gibi" sokulur, arada boşluk kalmaz. (ocak tezgah 2.2×0.8, bulaşık 1.4×0.8, masa r0.5, sandalye 0.42.)
@@ -103,17 +128,32 @@ interface Solid {
   h: readonly [number, number];
 }
 
-/** O an SAHNEDE var olan SABİT katı engeller (ocak + bulaşık hep; açık masalar + sandalyeleri). */
-function activeSolids(tables: number): Solid[] {
-  const solids: Solid[] = [
-    { c: LAYOUT.stations[0], h: LAYOUT.stationHalf },
-    { c: LAYOUT.dishStation, h: LAYOUT.dishHalf },
+/** Bölme duvarı katıları (iki segment; ortada geçit). Duvar HEP var (zone-2 kilitliyken de). */
+function dividerSolids(): Solid[] {
+  const d = LAYOUT.divider;
+  const a = LAYOUT.area;
+  const z0 = a.minZ - 0.5;
+  const z1 = a.maxZ + 0.5;
+  const gapLo = d.gapZ - d.gapHalf;
+  const gapHi = d.gapZ + d.gapHalf;
+  return [
+    { c: [d.x, 0, (z0 + gapLo) / 2] as Vec3, h: [d.half, (gapLo - z0) / 2] },
+    { c: [d.x, 0, (gapHi + z1) / 2] as Vec3, h: [d.half, (z1 - gapHi) / 2] },
   ];
+}
+
+/** O an SAHNEDE var olan SABİT katı engeller (açık zone'ların ocak+bulaşığı; açık masalar + sandalyeler;
+ *  bölme duvarı HEP). Kapalı zone'un mobilyası ÇİZİLMEZ → collision da eklenmez (görünmez duvar olmasın). */
+function activeSolids(tables: number, zonesOpen: number): Solid[] {
+  const solids: Solid[] = [...dividerSolids()];
+  for (let z = 0; z < zonesOpen; z++) {
+    solids.push({ c: LAYOUT.stations[z], h: LAYOUT.stationHalf });
+    solids.push({ c: LAYOUT.dishStations[z], h: LAYOUT.dishHalf });
+  }
   for (let i = 0; i < tables; i++) {
     solids.push({ c: LAYOUT.tables[i].table, h: LAYOUT.tableHalf });
     solids.push({ c: LAYOUT.tables[i].seat, h: LAYOUT.chairHalf }); // sandalye (içine girilemez)
   }
-  // NOT: 'samovar' pad'inin ayrı görünür mesh'i yok → collision EKLENMEZ (görünmez duvar olmasın).
   return solids;
 }
 
@@ -168,22 +208,24 @@ const REACH_STATION = LAYOUT.stationHalf[1] + LAYOUT.actorRadius + 0.4; // ocakt
 const REACH_WASH = LAYOUT.dishHalf[1] + LAYOUT.actorRadius + 0.4; // bulaşıkta yıkama
 const REACH_HOME = 0.4; // boştayken köşeye dönüş
 
-/** Personelin GÖVDE engeli saydığı katılar (ocak + bulaşık + açık masalar). Koltuk/semaver hariç. */
-function navSolids(tables: number): NavSolid[] {
-  const solids: NavSolid[] = [
-    { c: LAYOUT.stations[0], h: LAYOUT.stationHalf },
-    { c: LAYOUT.dishStation, h: LAYOUT.dishHalf },
-  ];
+/** Personelin GÖVDE engeli saydığı katılar (açık zone'ların ocak+bulaşığı + açık masalar + bölme duvarı). */
+function navSolids(tables: number, zonesOpen: number): NavSolid[] {
+  const solids: NavSolid[] = [...dividerSolids()];
+  for (let z = 0; z < zonesOpen; z++) {
+    solids.push({ c: LAYOUT.stations[z], h: LAYOUT.stationHalf });
+    solids.push({ c: LAYOUT.dishStations[z], h: LAYOUT.dishHalf });
+  }
   for (let i = 0; i < tables; i++) solids.push({ c: LAYOUT.tables[i].table, h: LAYOUT.tableHalf });
   return solids;
 }
 
-// Izgara masa sayısına göre cache'lenir (masa açılınca yeniden kurulur; her frame değil).
-let navCache: { tables: number; grid: NavGrid } | null = null;
-function getNavGrid(tables: number): NavGrid {
-  if (navCache && navCache.tables === tables) return navCache.grid;
-  const grid = buildNavGrid(LAYOUT.area, NAV_CELL, navSolids(tables), LAYOUT.actorRadius);
-  navCache = { tables, grid };
+// Izgara masa+zone sayısına göre cache'lenir (masa/zone açılınca yeniden kurulur; her frame değil).
+let navCache: { key: string; grid: NavGrid } | null = null;
+function getNavGrid(tables: number, zonesOpen: number): NavGrid {
+  const key = `${tables}|${zonesOpen}`;
+  if (navCache && navCache.key === key) return navCache.grid;
+  const grid = buildNavGrid(LAYOUT.area, NAV_CELL, navSolids(tables, zonesOpen), LAYOUT.actorRadius);
+  navCache = { key, grid };
   return grid;
 }
 
@@ -233,10 +275,27 @@ export const PAD_RADIUS = 1.3;
 const TABLE_UP_RADIUS = 1.0;
 // Garson hız yükseltme noktasının yarıçapı (D-018 §6). Komşu masa-yükseltme noktasıyla çakışmayacak küçüklükte.
 const WAITER_UP_RADIUS = 1.0;
-// DWELL kanonik dolum-noktası id'leri (D-018 §2): pad'ler kendi id'sini kullanır; bunlar yükseltme noktaları.
-export const FILL_TEA = 'tea';
-export const FILL_TABLE = 'tableUp:'; // gerçek id = FILL_TABLE + masaIndex (ör. 'tableUp:0')
-export const FILL_WAITER = 'waiterUp'; // garson hız yükseltme noktası (D-018 §6)
+// DWELL kanonik dolum-noktası id'leri (D-018 §2): pad'ler kendi id'sini kullanır; bunlar yükseltme
+// noktaları. Zone'lu öneklerdir: gerçek id = önek + index ('tea:0', 'waiterUp:1', 'tableUp:5').
+export const FILL_TEA = 'tea:'; // + zone index
+export const FILL_TABLE = 'tableUp:'; // + GLOBAL masa index
+export const FILL_WAITER = 'waiterUp:'; // + zone index (garson hız yükseltme, D-018 §6)
+
+/** Zone z'nin garson pad id'si (per-zone personel). */
+export const waiterPadId = (z: number) => (z === 0 ? 'waiter' : 'z2waiter');
+
+/** Zone z'nin çay-yükseltme noktası açık mı? (z1: table2 önkoşulu; z2: zone açık olması yeter.) */
+export function upgradeZoneUnlockedZ(z: number, g: GateState): boolean {
+  return z === 0 ? requiresMet(C.teaStation.upgradeRequires, g) : g.padsDone.includes('zone2');
+}
+
+/** Zone z'nin garson-hız noktası açık mı? (o zone'un garsonu + global minWaiterServed + seviye < max) */
+export function waiterUpgradeUnlockedZ(z: number, g: GateState, level: number): boolean {
+  if (!g.padsDone.includes(waiterPadId(z))) return false;
+  const minServed = C.waiter.upgradeRequires.minWaiterServed ?? 0;
+  if ((g.waiterServed ?? 0) < minServed) return false;
+  return level < waiterSoftMaxLevelCfg();
+}
 const SAVE_INTERVAL = 2; // sn
 const NPC_COLORS = ['#c0392b', '#27ae60', '#2980b9', '#8e44ad', '#d35400', '#16a085'];
 
@@ -281,6 +340,13 @@ function brewTime(level: number, serviceSpeedMult: number): number {
 
 /** Oyuncunun tepsi kapasitesi (tek turda taşınan çay/kirli). D-018: sabit (yükseltme kaldırıldı). */
 export const trayCapacity = () => C.serving.trayCapacity;
+
+/** GLOBAL bardak havuzu kapasitesi: açık zone başına taban + açık ocak seviyeleri toplamı (Faz 3a). */
+export function totalCupPool(zonesOpen: number, stationLevels: number[]): number {
+  let lv = 0;
+  for (let z = 0; z < zonesOpen; z++) lv += stationLevels[z] ?? 0;
+  return zonesOpen * C.cups.poolBase + C.cups.poolPerLevel * lv;
+}
 
 /** ₺ ile çıkılabilen en yüksek masa seviyesi (L5 = Usta, 💎/video — Faz 4). */
 export const tableSoftMaxLevel = () => C.tables.upgrade.masterLevel - 1;
@@ -354,45 +420,45 @@ export interface GameState {
   lifetime: Decimal;
   tables: number;
   stations: number;
-  stationLevel: number;
-  /** Masa-başı yükseltme seviyeleri (Faz 2h; persist; index = masa slotu; bahşiş + sabır). My Hotel oda mantığı. */
+  /** Açık zone sayısı (derivedFromPads anlık görüntüsü; 1 = yalnız zone-1). */
+  zonesOpen: number;
+  /** Zone başına çay ocağı seviyesi (persist v18; per-zone ocak, D-022). */
+  stationLevels: number[];
+  /** Masa-başı yükseltme seviyeleri (Faz 2h; persist; index = GLOBAL masa slotu; bahşiş + sabır). */
   tableLevels: number[];
-  /** Garson hız yükseltme seviyesi (D-018 §6; persist; 0 = taban, 1 = L2). Garson tutulduysa anlamlı. */
-  waiterLevel: number;
+  /** Zone başına garson hız seviyesi (persist v18; 0 = taban, 1 = L2). */
+  waiterLevels: number[];
   serviceSpeedMult: number;
   padsDone: string[];
   /** Aktif pad'lerin kısmi dolumu (pad id → ₺). Eş zamanlı omurga + opsiyonel için kayıt (v5). */
   padFills: Record<string, number>;
-  /** Garson tutuldu mu (Faz 2d opsiyonel pad; persist). */
-  hasWaiter: boolean;
-  /** Bulaşıkçı tutuldu mu (Faz 2e opsiyonel pad; padsDone'dan türetilir). */
-  hasDishwasher: boolean;
   // Transient (kaydedilmez — D-011 servis durumu yeniden kurulur)
   player: Vec3;
   npcs: Npc[];
   coins: Coin[];
   npcCount: number;
-  /** Garson (hasWaiter ise) — konum/tepsi transient, her oturumda kurulur. */
-  waiter: Waiter | null;
-  /** Bulaşıkçı (hasDishwasher ise) — konum/taşıdığı kirli transient. */
-  dishwasher: Waiter | null;
-  /** Ocak hazır-kuyruğundaki demlenmiş çay sayısı. */
-  readyCups: number;
-  /** Demlenmekte olan bardağın ilerleme süresi (sn). */
-  brewProgress: number;
+  /** Zone başına garson (o zone'da tutulduysa) — konum/tepsi transient, her oturumda kurulur. */
+  waiters: (Waiter | null)[];
+  /** Zone başına bulaşıkçı — konum/taşıdığı kirli transient. */
+  dishwashers: (Waiter | null)[];
+  /** Zone başına ocak hazır-kuyruğundaki demlenmiş çay sayısı. */
+  readyCupsByZone: number[];
+  /** Zone başına demlenmekte olan bardağın ilerleme süresi (sn). */
+  brewProgressByZone: number[];
   /** Oyuncunun tepsisinde taşıdığı çay sayısı. */
   tray: number;
-  /** Temiz bardak havuzu (demleme bundan harcar; biterse demleme durur). Faz 2e. */
+  /** Temiz bardak havuzu — GLOBAL tek depo (zone'lar ortak; korunum değişmezi global kalır). Faz 2e. */
   cleanCups: number;
   /** Masalarda bekleyen kirli bardaklar (mekânsal nesneler). */
   dishes: Dish[];
   /** Oyuncunun bulaşığa götürmek için taşıdığı kirli bardak. */
   carriedDirty: number;
-  upgradeFill: number;
-  /** Masa-başı yükseltme noktalarındaki kısmi dolum (transient; index = masa slotu). */
+  /** Zone başına çay-yükseltme noktası kısmi dolumu (transient; D-018 dwell). */
+  upgradeFills: number[];
+  /** Masa-başı yükseltme noktalarındaki kısmi dolum (transient; index = GLOBAL masa slotu). */
   tableUpgradeFills: number[];
-  /** Garson hız yükseltme noktasındaki kısmi dolum (transient; D-018 dwell — çıkınca sıfırlanmaz). */
-  waiterUpgradeFill: number;
+  /** Zone başına garson hız yükseltme dolumu (transient; D-018 dwell — çıkınca sıfırlanmaz). */
+  waiterUpgradeFills: number[];
   activeZone: ActiveZone | null;
   /** Yeni-özellik toast'u (D-019 §4) — transient; null ise gösterilmez. */
   notice: GameNotice | null;
@@ -596,29 +662,28 @@ export const useGame = create<GameState>((set, get) => ({
   lifetime: D(0),
   tables: 1,
   stations: 1,
-  stationLevel: 0,
+  zonesOpen: 1,
+  stationLevels: Array.from({ length: MAX_ZONES }, () => 0),
   tableLevels: LAYOUT.tables.map(() => 0),
-  waiterLevel: 0,
+  waiterLevels: Array.from({ length: MAX_ZONES }, () => 0),
   serviceSpeedMult: 1,
   padsDone: [],
   padFills: {},
-  hasWaiter: false,
-  hasDishwasher: false,
   player: [...LAYOUT.player] as Vec3,
   npcs: [],
   coins: [],
   npcCount: 0,
-  waiter: null,
-  dishwasher: null,
-  readyCups: 0,
-  brewProgress: 0,
+  waiters: Array.from({ length: MAX_ZONES }, () => null),
+  dishwashers: Array.from({ length: MAX_ZONES }, () => null),
+  readyCupsByZone: Array.from({ length: MAX_ZONES }, () => 0),
+  brewProgressByZone: Array.from({ length: MAX_ZONES }, () => 0),
   tray: 0,
   cleanCups: cupPoolCapacity(0),
   dishes: [],
   carriedDirty: 0,
-  upgradeFill: 0,
+  upgradeFills: Array.from({ length: MAX_ZONES }, () => 0),
   tableUpgradeFills: LAYOUT.tables.map(() => 0),
-  waiterUpgradeFill: 0,
+  waiterUpgradeFills: Array.from({ length: MAX_ZONES }, () => 0),
   activeZone: null,
   notice: null,
   revealSeen: [],
@@ -638,20 +703,25 @@ export const useGame = create<GameState>((set, get) => ({
 
   init: () => {
     const save: SaveData = loadSave();
-    // D-015: tables/stations/serviceSpeedMult/hasWaiter padsDone'dan TÜRETİLİR (ayrı saklanmaz).
+    // D-015: tables/stations/zonesOpen/personel padsDone'dan TÜRETİLİR (ayrı saklanmaz).
     const derived = derivedFromPads(save.padsDone);
-    // Çevrimdışı gelir
+    const stationLevels = Array.from({ length: MAX_ZONES }, (_, z) =>
+      Math.min(save.stationLevels[z] ?? 0, stationSoftMaxLevel()),
+    );
+    const waiterLevels = Array.from({ length: MAX_ZONES }, (_, z) =>
+      Math.min(save.waiterLevels[z] ?? 0, waiterSoftMaxLevelCfg()),
+    );
+    // Çevrimdışı gelir: açık zone'ların idealize oranları TOPLAMI.
     const elapsed = Math.max(0, (Date.now() - save.lastSaved) / 1000);
     const cap = C.offline.baseCapHours * 3600;
     let wallet = D(save.wallet);
     let lifetime = D(save.lifetime);
     let offlineEarned = 0;
     if (elapsed > 30) {
-      offlineEarned = Math.floor(
-        incomeRate(derived.tables, save.stationLevel, derived.serviceSpeedMult) *
-          C.offline.rateMult *
-          Math.min(elapsed, cap),
-      );
+      let rate = 0;
+      for (let z = 0; z < derived.zonesOpen; z++)
+        rate += incomeRate(derived.tablesByZone[z], stationLevels[z], derived.serviceSpeedMult);
+      offlineEarned = Math.floor(rate * C.offline.rateMult * Math.min(elapsed, cap));
       wallet = wallet.add(offlineEarned);
       lifetime = lifetime.add(offlineEarned);
     }
@@ -661,32 +731,36 @@ export const useGame = create<GameState>((set, get) => ({
       diamonds: D(save.diamonds),
       tables: derived.tables,
       stations: derived.stations,
-      stationLevel: save.stationLevel,
+      zonesOpen: derived.zonesOpen,
+      stationLevels,
       // Masa-başı seviyeleri: slot sayısına normalize et + her birini soft max'a clamp'le.
       tableLevels: LAYOUT.tables.map((_, i) => Math.min(save.tableLevels[i] ?? 0, tableSoftMaxLevel())),
-      waiterLevel: Math.min(save.waiterLevel ?? 0, waiterSoftMaxLevelCfg()),
+      waiterLevels,
       serviceSpeedMult: derived.serviceSpeedMult,
       padsDone: [...save.padsDone],
       padFills: { ...save.padFills },
-      hasWaiter: derived.hasWaiter,
-      hasDishwasher: derived.hasDishwasher,
       offlineEarned,
       player: [...LAYOUT.player] as Vec3,
       npcs: [],
       coins: [],
       npcCount: 0,
-      waiter: derived.hasWaiter ? { pos: [...LAYOUT.waiterHome] as Vec3, tray: 0 } : null,
-      dishwasher: derived.hasDishwasher ? { pos: [...LAYOUT.dishwasherHome] as Vec3, tray: 0 } : null,
-      readyCups: 0,
-      brewProgress: 0,
+      waiters: Array.from({ length: MAX_ZONES }, (_, z) =>
+        derived.hasWaiterByZone[z] ? { pos: [...LAYOUT.waiterHomes[z]] as Vec3, tray: 0 } : null,
+      ),
+      dishwashers: Array.from({ length: MAX_ZONES }, (_, z) =>
+        derived.hasDishwasherByZone[z] ? { pos: [...LAYOUT.dishwasherHomes[z]] as Vec3, tray: 0 } : null,
+      ),
+      readyCupsByZone: Array.from({ length: MAX_ZONES }, () => 0),
+      brewProgressByZone: Array.from({ length: MAX_ZONES }, () => 0),
       tray: 0,
-      // Bardak havuzu her oturumda dolu-temiz başlar (transient; readyCups/tray gibi).
-      cleanCups: cupPoolCapacity(save.stationLevel),
+      // Bardak havuzu her oturumda dolu-temiz başlar (transient). GLOBAL tek depo:
+      // zone başına taban + açık zone ocak seviyelerinin toplamı.
+      cleanCups: totalCupPool(derived.zonesOpen, stationLevels),
       dishes: [],
       carriedDirty: 0,
-      upgradeFill: 0,
+      upgradeFills: Array.from({ length: MAX_ZONES }, () => 0),
       tableUpgradeFills: LAYOUT.tables.map(() => 0),
-      waiterUpgradeFill: 0,
+      waiterUpgradeFills: Array.from({ length: MAX_ZONES }, () => 0),
       activeZone: null,
       notice: null,
       // revealSeen baseline: yüklemede ZATEN açık olan özellikler bildirilmiş sayılır (yeniden yükleme spam'ı yok).
@@ -694,12 +768,12 @@ export const useGame = create<GameState>((set, get) => ({
         {
           padsDone: save.padsDone,
           tables: derived.tables,
-          stationLevel: save.stationLevel,
+          stationLevel: stationLevels[0],
           lifetime: lifetime.toNumber(),
           waiterServed: save.stats.waiterServed,
         },
         derived.hasWaiter,
-        Math.min(save.waiterLevel ?? 0, waiterSoftMaxLevelCfg()),
+        waiterLevels[0],
       ).map(([k]) => k),
       stats: { ...save.stats },
       questIndex: save.questIndex,
@@ -710,8 +784,8 @@ export const useGame = create<GameState>((set, get) => ({
         save.questIndex < C.quests.length
           ? questView(C.quests[save.questIndex], {
               padsDone: save.padsDone,
-              stationLevel: save.stationLevel,
-              waiterLevel: Math.min(save.waiterLevel ?? 0, waiterSoftMaxLevelCfg()),
+              stationLevel: stationLevels[0],
+              waiterLevel: waiterLevels[0],
               tableLevels: save.tableLevels,
               stats: save.stats,
               questBase: save.questBase,
@@ -748,27 +822,25 @@ export const useGame = create<GameState>((set, get) => ({
     // görüntüsü; tick içinde ayrıca mutasyona uğramaz — pad açılınca yalnız padsDone büyür, gerisi türetilir).
     const derived = derivedFromPads(padsDone);
     const tables = derived.tables;
-    const stations = derived.stations;
+    const zonesOpen = derived.zonesOpen;
     const serviceSpeedMult = derived.serviceSpeedMult;
-    const hasWaiter = derived.hasWaiter;
-    const hasDishwasher = derived.hasDishwasher;
     // Müşteri + personel masa GÖVDELERİNDEN dolaşır (D-016 v4): ocak/bulaşık/koltuk engel değil (erişmeli).
     const obstacles = tableSolids(tables);
     const ar = LAYOUT.actorRadius;
-    // Personel (garson/bulaşıkçı) BFS ızgarası — masa sayısına göre cache'li.
-    const navGrid = getNavGrid(tables);
-    let upgradeFill = s.upgradeFill;
+    // Personel (garson/bulaşıkçı) BFS ızgarası — masa+zone sayısına göre cache'li.
+    const navGrid = getNavGrid(tables, zonesOpen);
+    const upgradeFills = s.upgradeFills.slice();
     let activeZone: ActiveZone | null = null;
-    let stationLevel = s.stationLevel;
-    let waiterLevel = s.waiterLevel;
+    const stationLevels = s.stationLevels.slice(); // zone başına ocak seviyesi (bu tick'te yükselebilir)
+    const waiterLevels = s.waiterLevels.slice();
     const tableLevels = s.tableLevels.slice(); // masa-başı seviyeler (kopya; bu tick'te yükseltilebilir)
-    let readyCups = s.readyCups;
-    let brewProgress = s.brewProgress;
+    const readyCupsByZone = s.readyCupsByZone.slice();
+    const brewProgressByZone = s.brewProgressByZone.slice();
     let tray = s.tray;
     let cleanCups = s.cleanCups;
     let carriedDirty = s.carriedDirty;
     const tableUpgradeFills = s.tableUpgradeFills.slice();
-    let waiterUpgradeFill = s.waiterUpgradeFill;
+    const waiterUpgradeFills = s.waiterUpgradeFills.slice();
     let notice = s.notice;
     let revealSeen = s.revealSeen;
     let xp = s.xp; // toplam XP (bu tick'te eylem ödülleriyle artabilir; level türetilir)
@@ -779,20 +851,22 @@ export const useGame = create<GameState>((set, get) => ({
     let nextId = s.nextId;
     let spawnTimer = s.spawnTimer - dt;
 
-    // --- Ocak hazır-kuyruğu (demleme) — D-011 §3 + bardak döngüsü (Faz 2e §5) ---
-    // Ocak, kuyruk dolana kadar çay demler; doluyken durur (teslimat darboğaz olur).
-    // Her demleme bir TEMİZ bardak harcar; temiz biterse demleme DURUR (yeni darboğaz → kirli topla/yıka).
-    const queueCap = brewQueueCapacity(stationLevel);
-    const cupBrewTime = brewTime(stationLevel, serviceSpeedMult);
-    if (readyCups < queueCap && cleanCups > 0) {
-      brewProgress += dt;
-      while (readyCups < queueCap && cleanCups > 0 && brewProgress >= cupBrewTime) {
-        readyCups += 1;
-        cleanCups -= 1;
-        brewProgress -= cupBrewTime;
+    // --- Ocak hazır-kuyruğu (demleme) — D-011 §3 + bardak döngüsü (Faz 2e §5), ZONE BAŞINA ---
+    // Her açık zone'un ocağı kendi kuyruğuna demler (per-zone ocak, D-022); TEMİZ bardak GLOBAL havuzdan.
+    for (let z = 0; z < zonesOpen; z++) {
+      const queueCap = brewQueueCapacity(stationLevels[z]);
+      const cupBrewTime = brewTime(stationLevels[z], serviceSpeedMult);
+      if (readyCupsByZone[z] < queueCap && cleanCups > 0) {
+        brewProgressByZone[z] += dt;
+        while (readyCupsByZone[z] < queueCap && cleanCups > 0 && brewProgressByZone[z] >= cupBrewTime) {
+          readyCupsByZone[z] += 1;
+          cleanCups -= 1;
+          brewProgressByZone[z] -= cupBrewTime;
+        }
       }
+      if (readyCupsByZone[z] >= queueCap || cleanCups <= 0)
+        brewProgressByZone[z] = Math.min(brewProgressByZone[z], cupBrewTime);
     }
-    if (readyCups >= queueCap || cleanCups <= 0) brewProgress = Math.min(brewProgress, cupBrewTime);
 
     // Kirli masalar (D-019): eşiği aşan masalar müşteriye/garsona kapalı (temizlik baskısı).
     const dirty = dirtyTables(dishes);
@@ -805,7 +879,8 @@ export const useGame = create<GameState>((set, get) => ({
         npcs.push({
           id: nextId++,
           state: 'toTable',
-          pos: [...LAYOUT.street] as Vec3, // sokakta belir → kapıya yürü → koltuğa (dış dünya hissi)
+          // KENDİ zone'unun sokağında belir → o zone'un kapısından girer (dış dünya hissi).
+          pos: [...LAYOUT.streets[zoneOfTable(free)]] as Vec3,
           tableIndex: free,
           timer: 0,
           color: NPC_COLORS[Math.floor(Math.random() * NPC_COLORS.length)],
@@ -821,11 +896,14 @@ export const useGame = create<GameState>((set, get) => ({
     const removed: number[] = [];
     for (const n of npcs) {
       const slot = LAYOUT.tables[n.tableIndex];
+      // Müşteri KENDİ zone'unun kapısını/sokağını kullanır (zone-yerel hareket; bölme duvarı sorunu yok).
+      const nEntrance = LAYOUT.entrances[zoneOfTable(n.tableIndex)];
+      const nStreet = LAYOUT.streets[zoneOfTable(n.tableIndex)];
       switch (n.state) {
         case 'toTable': {
           // Önce KAPIYA (sokaktaysa), sonra koltuğa → müşteri kapıdan girip içeri yürür (front-wall gap).
-          const goingIn = n.pos[2] > LAYOUT.entrance[2] + 0.2;
-          const tgt = goingIn ? LAYOUT.entrance : slot.seat;
+          const goingIn = n.pos[2] > nEntrance[2] + 0.2;
+          const tgt = goingIn ? nEntrance : slot.seat;
           if (moveAvoid(n.pos, tgt, step, obstacles, ar) && !goingIn) {
             // Oturdu; çay servisini bekler. Sabır timer'ı başlar (D-011); OTURDUĞU masanın seviyesi sabrı uzatır (Faz 2h).
             n.state = 'waitingForTea';
@@ -866,8 +944,8 @@ export const useGame = create<GameState>((set, get) => ({
           break;
         case 'leaving': {
           // Önce KAPIYA (içerdeyse), sonra SOKAĞA → müşteri kapıdan çıkıp sokakta kaybolur.
-          const goingOut = n.pos[2] >= LAYOUT.entrance[2] - 0.2;
-          const tgt = goingOut ? LAYOUT.street : LAYOUT.entrance;
+          const goingOut = n.pos[2] >= nEntrance[2] - 0.2;
+          const tgt = goingOut ? nStreet : nEntrance;
           if (moveAvoid(n.pos, tgt, step, obstacles, ar) && goingOut) removed.push(n.id);
           break;
         }
@@ -892,15 +970,15 @@ export const useGame = create<GameState>((set, get) => ({
       // MOBİLYA = KATI engel: yeni bir engele GİRİŞ bloklanır (eksen-başı kayma; kafa kafaya gelince durur).
       // AMA oyuncu zaten bir engelin İÇİNDEyse (ör. üstünde masa açıldı) kilitlenmesin → çıkışına izin ver
       // (aktör collision'ındaki desenin aynısı). Böylece "zorlasan da giremezsin" korunur ama hapsolmazsın.
-      const furn = activeSolids(tables);
+      const furn = activeSolids(tables, zonesOpen);
       const stuckInFurn = hitsSolid(oldX, oldZ, furn, pr);
       if (dxIn !== 0 && hitsSolid(nx, oldZ, furn, pr) && !stuckInFurn) nx = oldX;
       if (dzIn !== 0 && hitsSolid(nx, nz, furn, pr) && !stuckInFurn) nz = oldZ;
       // AKTÖRLER (müşteri/garson/bulaşıkçı) = YUMUŞAK: HAPSETMEZ (biri üstüne gelirse ters yöne çıkılır).
       const actors: Solid[] = [];
       for (const n of liveNpcs) actors.push({ c: n.pos, h: LAYOUT.actorHalf });
-      if (s.waiter) actors.push({ c: s.waiter.pos, h: LAYOUT.actorHalf });
-      if (s.dishwasher) actors.push({ c: s.dishwasher.pos, h: LAYOUT.actorHalf });
+      for (const w of s.waiters) if (w) actors.push({ c: w.pos, h: LAYOUT.actorHalf });
+      for (const dw of s.dishwashers) if (dw) actors.push({ c: dw.pos, h: LAYOUT.actorHalf });
       if (nx !== oldX && hitsSolid(nx, oldZ, actors, pr) && !hitsSolid(oldX, oldZ, actors, pr)) nx = oldX;
       if (nz !== oldZ && hitsSolid(nx, nz, actors, pr) && !hitsSolid(nx, oldZ, actors, pr)) nz = oldZ;
     }
@@ -932,12 +1010,12 @@ export const useGame = create<GameState>((set, get) => ({
     // Ocağa yaklaşınca hazır çaylardan tepsi dolar (herhangi bir açık ocak yeterli).
     // PAYLAŞIMLI kapasite (2026-06-09): çay + kirli aynı tepsiyi paylaşır → toplam trayCap'i aşamaz.
     // Karışık taşımaya izin verilir (eski "eli boşken" kısıtı kaldırıldı; deadlock'u engeller).
-    if (tray + carriedDirty < trayCap && readyCups > 0) {
-      for (let i = 0; i < stations; i++) {
-        if (dist2D(player, LAYOUT.stations[i]) < C.serving.pickupRadius) {
-          const take = Math.min(trayCap - tray - carriedDirty, readyCups);
+    if (tray + carriedDirty < trayCap) {
+      for (let z = 0; z < zonesOpen; z++) {
+        if (readyCupsByZone[z] > 0 && dist2D(player, LAYOUT.stations[z]) < C.serving.pickupRadius) {
+          const take = Math.min(trayCap - tray - carriedDirty, readyCupsByZone[z]);
           tray += take;
-          readyCups -= take;
+          readyCupsByZone[z] -= take;
           if (take > 0) stats.teaPickups += take;
           break;
         }
@@ -969,38 +1047,39 @@ export const useGame = create<GameState>((set, get) => ({
       }
       dishes = keep;
     }
-    // Bulaşık noktasına yaklaşınca taşınan kirliler yıkanır → temiz havuza döner.
-    if (carriedDirty > 0 && dist2D(player, LAYOUT.dishStation) < C.cups.washRadius) {
-      cleanCups += carriedDirty;
-      stats.dishesWashed += carriedDirty;
-      xp += C.xp.perDishWashed * carriedDirty;
-      carriedDirty = 0;
+    // HERHANGİ açık zone'un bulaşık noktasına yaklaşınca taşınan kirliler yıkanır → GLOBAL temiz havuza.
+    if (carriedDirty > 0) {
+      for (let z = 0; z < zonesOpen; z++) {
+        if (dist2D(player, LAYOUT.dishStations[z]) < C.cups.washRadius) {
+          cleanCups += carriedDirty;
+          stats.dishesWashed += carriedDirty;
+          xp += C.xp.perDishWashed * carriedDirty;
+          carriedDirty = 0;
+          break;
+        }
+      }
     }
 
-    // --- Garson (D-012 opsiyonel kısmi assist): ocaktan çay al → en yakın bekleyen masaya götür ---
-    // Oyuncudan yavaş + tek tepsili; tek başına büyüyen mekânı döndüremez (oyuncu hâlâ gerekli).
-    let waiter: Waiter | null = s.waiter;
-    if (hasWaiter) {
-      const w: Waiter = waiter
-        ? { pos: [...waiter.pos] as Vec3, tray: waiter.tray }
-        : { pos: [...LAYOUT.waiterHome] as Vec3, tray: 0 };
-      const wStep = waiterSpeed(waiterLevel) * dt;
-      const wTrayCap = C.waiter.trayCapacity;
-      // Garson kirli masaya çay GÖTÜRMEZ (D-019): o masa temizlenene kadar teslimat hedefi sayılmaz
-      // (oyuncu hâlâ elle servis edebilir; kirli masa baskısı garsonu da kapsar).
-      const waitingNpcs = liveNpcs.filter((n) => n.state === 'waitingForTea' && !dirty.has(n.tableIndex));
-      // En yakın açık ocağı bul (yükleme/bekleme hedefi).
-      let nearStation = LAYOUT.stations[0];
-      let nsd = Infinity;
-      for (let i = 0; i < stations; i++) {
-        const d = dist2D(w.pos, LAYOUT.stations[i]);
-        if (d < nsd) { nsd = d; nearStation = LAYOUT.stations[i]; }
+    // --- Garson (D-012 kısmi assist), ZONE BAŞINA: kendi zone'unun ocağından alır, kendi zone'unun
+    // bekleyen masalarına götürür (per-zone personel, D-022). Oyuncudan yavaş + tek tepsili.
+    const waiters: (Waiter | null)[] = s.waiters.slice();
+    for (let z = 0; z < MAX_ZONES; z++) {
+      if (z >= zonesOpen || !derived.hasWaiterByZone[z]) {
+        waiters[z] = null;
+        continue;
       }
+      const prev = waiters[z];
+      const w: Waiter = prev
+        ? { pos: [...prev.pos] as Vec3, tray: prev.tray }
+        : { pos: [...LAYOUT.waiterHomes[z]] as Vec3, tray: 0 };
+      const wStep = waiterSpeed(waiterLevels[z]) * dt;
+      const wTrayCap = C.waiter.trayCapacity;
+      // Garson kirli masaya çay GÖTÜRMEZ (D-019) + yalnız KENDİ zone'unun masalarına bakar.
+      const waitingNpcs = liveNpcs.filter(
+        (n) => n.state === 'waitingForTea' && !dirty.has(n.tableIndex) && zoneOfTable(n.tableIndex) === z,
+      );
       if (w.tray > 0 && waitingNpcs.length > 0) {
-        // Teslimat: en ACİL (sabrı en az kalan = en düşük timer) bekleyene git; eşitlikte en yakın.
-        // "En yakın" yerine "en acil" → ön masalar sürekli dolsa da arka masalar AÇLIKTAN ölmez
-        // (tüm sabır timer'ları aynı hızda azaldığı için bu pratikte kararlı bir FIFO'dur, salınım yapmaz).
-        // Garsonun hız/tepsi limiti değişmez → D-014 "partial assist" tasarımı korunur.
+        // Teslimat: en ACİL (sabrı en az kalan) bekleyene; eşitlikte en yakın (anti-starvation).
         let best = waitingNpcs[0];
         let bestTimer = Infinity;
         let bestDist = Infinity;
@@ -1012,8 +1091,6 @@ export const useGame = create<GameState>((set, get) => ({
             best = n;
           }
         }
-        // Servis: masaya BFS rotasıyla yaklaş (engeli gerçekten dolaşır → ön masada kilitlenme/salınım
-        // biter), masaya bitişik (REACH_TABLE) gelince teslim et → her taraftan + "tam masaya gelince".
         const targetTable = LAYOUT.tables[best.tableIndex].table;
         if (navStep(w.pos, targetTable, wStep, navGrid, REACH_TABLE, player, obstacles)) {
           best.state = 'drinking';
@@ -1023,42 +1100,48 @@ export const useGame = create<GameState>((set, get) => ({
           xp += C.xp.perWaiterServed;
         }
       } else if (w.tray < wTrayCap && waitingNpcs.length > 0) {
-        // Yükleme: ocağa BFS rotasıyla git; bitişik gelince hazır çaydan tepsiye al (yoksa orada bekler).
-        if (navStep(w.pos, nearStation, wStep, navGrid, REACH_STATION, player, obstacles) && readyCups > 0) {
-          const take = Math.min(wTrayCap - w.tray, readyCups);
+        // Yükleme: KENDİ zone'unun ocağına git; bitişik gelince hazır çaydan tepsiye al.
+        if (
+          navStep(w.pos, LAYOUT.stations[z], wStep, navGrid, REACH_STATION, player, obstacles) &&
+          readyCupsByZone[z] > 0
+        ) {
+          const take = Math.min(wTrayCap - w.tray, readyCupsByZone[z]);
           w.tray += take;
-          readyCups -= take;
+          readyCupsByZone[z] -= take;
         }
       } else {
-        // Boşta: personel köşesine dön.
-        navStep(w.pos, LAYOUT.waiterHome, wStep, navGrid, REACH_HOME, player, obstacles);
+        // Boşta: kendi zone'unun personel köşesine dön.
+        navStep(w.pos, LAYOUT.waiterHomes[z], wStep, navGrid, REACH_HOME, player, obstacles);
       }
-      waiter = w;
-    } else {
-      waiter = null;
+      waiters[z] = w;
     }
 
-    // --- Bulaşıkçı (Faz 2e opsiyonel kısmi assist): kirli topla → bulaşığa götür → yıka ---
-    // Garson deseni: oyuncudan yavaş + küçük taşıma → tek başına yetişmez (oyuncu hâlâ gerekli).
-    let dishwasher: Waiter | null = s.dishwasher;
-    if (hasDishwasher) {
-      const dw: Waiter = dishwasher
-        ? { pos: [...dishwasher.pos] as Vec3, tray: dishwasher.tray }
-        : { pos: [...LAYOUT.dishwasherHome] as Vec3, tray: 0 };
+    // --- Bulaşıkçı (Faz 2e kısmi assist), ZONE BAŞINA: kendi zone'unun kirlilerini toplar,
+    // kendi zone'unun bulaşık noktasında yıkar (per-zone bulaşık köşesi, D-022).
+    const dishwashers: (Waiter | null)[] = s.dishwashers.slice();
+    for (let z = 0; z < MAX_ZONES; z++) {
+      if (z >= zonesOpen || !derived.hasDishwasherByZone[z]) {
+        dishwashers[z] = null;
+        continue;
+      }
+      const prevDw = dishwashers[z];
+      const dw: Waiter = prevDw
+        ? { pos: [...prevDw.pos] as Vec3, tray: prevDw.tray }
+        : { pos: [...LAYOUT.dishwasherHomes[z]] as Vec3, tray: 0 };
       const dStep = C.dishwasher.moveSpeed * dt;
       const dCap = C.dishwasher.carryCapacity;
-      if (dw.tray >= dCap || (dw.tray > 0 && dishes.length === 0)) {
-        // Dolu (ya da elinde var ama toplanacak kalmadı) → bulaşığa BFS rotasıyla götür, bitişikte yıka.
-        if (navStep(dw.pos, LAYOUT.dishStation, dStep, navGrid, REACH_WASH, player, obstacles)) {
+      const zoneDishes = dishes.filter((d) => zoneOfTable(d.tableIndex) === z);
+      if (dw.tray >= dCap || (dw.tray > 0 && zoneDishes.length === 0)) {
+        // Dolu (ya da elinde var ama toplanacak kalmadı) → KENDİ zone'unun bulaşığında yıka.
+        if (navStep(dw.pos, LAYOUT.dishStations[z], dStep, navGrid, REACH_WASH, player, obstacles)) {
           cleanCups += dw.tray;
           dw.tray = 0;
         }
-      } else if (dishes.length > 0) {
-        // Topla: en yakın kirli bardağa BFS rotasıyla yaklaş; collectRadius'a girince al (kirli masa
-        // üstünde, masa gövdesi engel → tam varış imkansız; mesafe-tabanlı toplama).
-        let target = dishes[0];
+      } else if (zoneDishes.length > 0) {
+        // Topla: kendi zone'undaki en yakın kirli bardağa yaklaş; collectRadius'a girince al.
+        let target = zoneDishes[0];
         let td = Infinity;
-        for (const d of dishes) {
+        for (const d of zoneDishes) {
           const dd = dist2D(dw.pos, d.pos);
           if (dd < td) { td = dd; target = d; }
         }
@@ -1067,12 +1150,10 @@ export const useGame = create<GameState>((set, get) => ({
           dw.tray += 1;
         }
       } else {
-        // Boşta: köşeye dön.
-        navStep(dw.pos, LAYOUT.dishwasherHome, dStep, navGrid, REACH_HOME, player, obstacles);
+        // Boşta: kendi zone'unun köşesine dön.
+        navStep(dw.pos, LAYOUT.dishwasherHomes[z], dStep, navGrid, REACH_HOME, player, obstacles);
       }
-      dishwasher = dw;
-    } else {
-      dishwasher = null;
+      dishwashers[z] = dw;
     }
 
     // --- Mekânsal etkileşim noktaları (D-018 §2, HAREKET-TEMELLİ) ---
@@ -1081,21 +1162,19 @@ export const useGame = create<GameState>((set, get) => ({
     const padGate: GateState = {
       padsDone,
       tables,
-      stationLevel,
+      stationLevel: stationLevels[0],
       lifetime: lifetime.toNumber(),
       waiterServed: stats.waiterServed,
     };
     // EKRANDA TEK PAD (quest sistemi): görünürlük visiblePads'ten (Pad.tsx ile aynı kaynak).
     const activePads: PadDef[] = visiblePads(questIndex, padGate);
 
-    const upgradeUnlocked = upgradeZoneUnlocked(padGate) && stationLevel < stationSoftMaxLevel();
     const tableUnlocked = tableUpgradeZoneUnlocked(padGate);
-    const waiterUpUnlocked = hasWaiter && waiterUpgradeUnlocked(padGate, waiterLevel);
 
     // --- Yeni-özellik bildirimi (D-019 §4) ---
     // Bir ikincil özellik (yükseltme/personel) İLK kez açıldığında kısa toast. revealSeen baseline init'te
     // kurulduğu için zaten açık olanlar tekrar bildirmez (yeniden-yükleme spam'ı yok; persist gerekmez).
-    for (const [key, text] of revealKeys(padGate, hasWaiter, waiterLevel)) {
+    for (const [key, text] of revealKeys(padGate, derived.hasWaiter, waiterLevels[0])) {
       if (!revealSeen.includes(key)) {
         revealSeen = [...revealSeen, key];
         notice = { text, ttl: 4.5 };
@@ -1116,17 +1195,30 @@ export const useGame = create<GameState>((set, get) => ({
     // Oyuncu DURUYOR mu? (input ~0). Para yalnız dururken akar → üstünden geçerken (hareket) alınmaz.
     const fillReady = Math.hypot(input[0], input[1]) <= 0.1;
 
-    // Oyuncunun şu an üstünde durduğu dolum noktasının kanonik id'si (pad.id / FILL_TEA / FILL_TABLE+i).
+    // Oyuncunun şu an üstünde durduğu dolum noktasının kanonik id'si (pad.id / 'tea:z' / 'waiterUp:z' / 'tableUp:i').
     let onFillId: string | null = null;
     for (const pad of activePads) {
       const pp = LAYOUT.padPos[pad.id];
       if (pp && dist2D(player, pp) < PAD_RADIUS) { onFillId = pad.id; break; }
     }
-    // GUARD (gece fix 2026-06-10): oyuncu ocağın pickup yarıçapındaysa niyeti ÇAY ALMAK'tır —
+    // GUARD (gece fix 2026-06-10): oyuncu AÇIK bir ocağın pickup yarıçapındaysa niyeti ÇAY ALMAK'tır —
     // yükseltme dolumu kesinlikle başlamaz (mekânsal ayrımın yanında ikinci emniyet).
-    const inPickupRange = LAYOUT.stations.some((st) => dist2D(player, st) < C.serving.pickupRadius);
-    if (!onFillId && upgradeUnlocked && !inPickupRange && dist2D(player, LAYOUT.upgradeZone) < PAD_RADIUS) onFillId = FILL_TEA;
-    if (!onFillId && waiterUpUnlocked && dist2D(player, LAYOUT.waiterUpgradeSpot) < WAITER_UP_RADIUS) onFillId = FILL_WAITER;
+    let inPickupRange = false;
+    for (let z = 0; z < zonesOpen; z++)
+      if (dist2D(player, LAYOUT.stations[z]) < C.serving.pickupRadius) { inPickupRange = true; break; }
+    if (!onFillId && !inPickupRange) {
+      for (let z = 0; z < zonesOpen; z++) {
+        if (!upgradeZoneUnlockedZ(z, padGate) || stationLevels[z] >= stationSoftMaxLevel()) continue;
+        if (dist2D(player, LAYOUT.upgradeZones[z]) < PAD_RADIUS) { onFillId = FILL_TEA + z; break; }
+      }
+    }
+    if (!onFillId) {
+      for (let z = 0; z < zonesOpen; z++) {
+        if (!derived.hasWaiterByZone[z]) continue;
+        if (!waiterUpgradeUnlockedZ(z, padGate, waiterLevels[z])) continue;
+        if (dist2D(player, LAYOUT.waiterUpgradeSpots[z]) < WAITER_UP_RADIUS) { onFillId = FILL_WAITER + z; break; }
+      }
+    }
     if (!onFillId && tableUnlocked) {
       for (let i = 0; i < tables; i++) {
         if (tableLevels[i] >= tableSoftMaxLevel()) continue;
@@ -1154,6 +1246,13 @@ export const useGame = create<GameState>((set, get) => ({
         delete rest[activePad.id];
         padFills = rest;
         activeZone = null;
+        // Zone açılışı (Faz 3a): yeni salon kendi bardak stoğuyla gelir + kamera yeni salona pan
+        // ("orada yeni bir dünya var" hissi — quest kamerası ayrıca sıradaki göreve döner).
+        if (activePad.effect.type === 'unlockZone') {
+          cleanCups += C.cups.poolBase;
+          const za = LAYOUT.zoneAreas[1];
+          camFocus = { pos: [(za.minX + za.maxX) / 2, 0, 0.6], ttl: CAM_FOCUS_TTL + 1 };
+        }
         // Masa pad'i oyuncunun DURDUĞU yerde belirir → oyuncu masanın içinde kalmasın, anında dışarı it.
         if (activePad.effect.type === 'addTable') {
           const out = LAYOUT.tableHalf[0] + pr + 0.1;
@@ -1172,54 +1271,58 @@ export const useGame = create<GameState>((set, get) => ({
       }
     }
 
-    // --- Mekânsal çay yükseltme noktası (ana ocağın önünde dur → altta bar dolar) ---
+    // --- Mekânsal çay yükseltme noktası (ZONE BAŞINA; ocağın önünde dur → altta bar dolar) ---
     // Biriken ₺ KORUNUR (çıkınca sıfırlanmaz; D-018 dwell) → para harcanıp boşa gitmez.
-    if (onFillId === FILL_TEA) {
-      const cost = stationUpgradeCost(stationLevel);
+    if (onFillId != null && onFillId.startsWith(FILL_TEA)) {
+      const z = Number(onFillId.slice(FILL_TEA.length));
+      const cost = stationUpgradeCost(stationLevels[z]);
       if (fillReady && wallet.gt(0)) {
-        const amt = Math.min(C.teaStation.upgradeFillRate * dt, wallet.toNumber(), cost - upgradeFill);
+        const amt = Math.min(C.teaStation.upgradeFillRate * dt, wallet.toNumber(), cost - upgradeFills[z]);
         if (amt > 0) {
-          upgradeFill += amt;
+          upgradeFills[z] += amt;
           wallet = wallet.sub(amt);
         }
       }
-      if (upgradeFill >= cost) {
-        stationLevel += 1;
+      if (upgradeFills[z] >= cost) {
+        stationLevels[z] += 1;
         xp += C.xp.perUpgrade;
-        upgradeFill = 0;
-        cleanCups += C.cups.poolPerLevel; // havuz ocak seviyesiyle büyür (Faz 2e)
+        upgradeFills[z] = 0;
+        cleanCups += C.cups.poolPerLevel; // havuz ocak seviyesiyle büyür (Faz 2e; global depo)
       }
-      const nextCost = stationLevel < stationSoftMaxLevel() ? stationUpgradeCost(stationLevel) : cost;
-      // GÖRSEL: ocak L1'den başlar (iç stationLevel 0-tabanlı; etiket +1). Soft max → "Usta" (💎/video, Faz 4).
+      const lv = stationLevels[z];
+      const nextCost = lv < stationSoftMaxLevel() ? stationUpgradeCost(lv) : cost;
+      // GÖRSEL: ocak L1'den başlar (iç seviye 0-tabanlı; etiket +1). Soft max → "Usta" (💎/video, Faz 4).
       activeZone = {
         kind: 'upgrade',
-        label: `Çay Ocağı L${stationLevel + 1}${stationLevel < stationSoftMaxLevel() ? ` → L${stationLevel + 2}` : ' (Usta 💎)'}`,
-        fill: upgradeFill,
+        label: `Çay Ocağı L${lv + 1}${lv < stationSoftMaxLevel() ? ` → L${lv + 2}` : ' (Usta 💎)'}`,
+        fill: upgradeFills[z],
         cost: nextCost,
       };
     }
 
-    // --- Mekânsal garson hız yükseltme (D-018 §6): garsonu tuttuğun noktada dur → garson L2 hızlanır.
+    // --- Mekânsal garson hız yükseltme (D-018 §6, ZONE BAŞINA): o zone'un noktasında dur → garsonu hızlanır.
     // Biriken ₺ KORUNUR (çıkınca sıfırlanmaz; D-018 dwell). Tek seviye (L1→L2); sonrası max → işaret kapanır.
-    if (onFillId === FILL_WAITER) {
+    if (onFillId != null && onFillId.startsWith(FILL_WAITER)) {
+      const z = Number(onFillId.slice(FILL_WAITER.length));
       const cost = C.waiter.upgradeCost;
       if (fillReady && wallet.gt(0)) {
-        const amt = Math.min(C.waiter.upgradeFillRate * dt, wallet.toNumber(), cost - waiterUpgradeFill);
+        const amt = Math.min(C.waiter.upgradeFillRate * dt, wallet.toNumber(), cost - waiterUpgradeFills[z]);
         if (amt > 0) {
-          waiterUpgradeFill += amt;
+          waiterUpgradeFills[z] += amt;
           wallet = wallet.sub(amt);
         }
       }
-      if (waiterUpgradeFill >= cost) {
-        waiterLevel += 1;
+      if (waiterUpgradeFills[z] >= cost) {
+        waiterLevels[z] += 1;
         xp += C.xp.perUpgrade;
-        waiterUpgradeFill = 0;
+        waiterUpgradeFills[z] = 0;
       }
-      // GÖRSEL: garson L1'den başlar (iç waiterLevel 0-tabanlı; etiket +1). Soft max sonrası işaret görünmez.
+      const lv = waiterLevels[z];
+      // GÖRSEL: garson L1'den başlar (iç seviye 0-tabanlı; etiket +1). Soft max sonrası işaret görünmez.
       activeZone = {
         kind: 'upgrade',
-        label: `Garson L${waiterLevel + 1}${waiterLevel < waiterSoftMaxLevelCfg() ? ` → L${waiterLevel + 2} (hız)` : ''}`,
-        fill: waiterUpgradeFill,
+        label: `Garson L${lv + 1}${lv < waiterSoftMaxLevelCfg() ? ` → L${lv + 2} (hız)` : ''}`,
+        fill: waiterUpgradeFills[z],
         cost,
       };
     }
@@ -1255,18 +1358,21 @@ export const useGame = create<GameState>((set, get) => ({
 
     // --- D-015: padsDone değiştiyse türetilen alanlar yeniden hesaplanır (tek yazım noktası) ---
     const out = derivedFromPads(padsDone);
-    // Garson pad'i bu frame tamamlandıysa varlığını kur (hasWaiter artık türetilir).
-    if (out.hasWaiter && !waiter) waiter = { pos: [...LAYOUT.waiterHome] as Vec3, tray: 0 };
-    // Bulaşıkçı pad'i bu frame tamamlandıysa varlığını kur.
-    if (out.hasDishwasher && !dishwasher) dishwasher = { pos: [...LAYOUT.dishwasherHome] as Vec3, tray: 0 };
+    // Personel pad'i bu frame tamamlandıysa varlığını KENDİ zone'unda kur (türetilir).
+    for (let z = 0; z < out.zonesOpen; z++) {
+      if (out.hasWaiterByZone[z] && !waiters[z])
+        waiters[z] = { pos: [...LAYOUT.waiterHomes[z]] as Vec3, tray: 0 };
+      if (out.hasDishwasherByZone[z] && !dishwashers[z])
+        dishwashers[z] = { pos: [...LAYOUT.dishwasherHomes[z]] as Vec3, tray: 0 };
+    }
 
     // --- GÖREV İLERLEMESİ ---
     // Aktif görev karşılandıysa sıradakine geç (aynı tick'te birden çok karşılanabilir — ör. migrasyon
     // sonrası): tamamlama toast'u + kamera YENİ hedefe pan ("orada bir şey var" hissi, kullanıcı isteği).
     const questCtx: QuestCtx = {
       padsDone,
-      stationLevel,
-      waiterLevel,
+      stationLevel: stationLevels[0],
+      waiterLevel: waiterLevels[0],
       tableLevels,
       stats,
       questBase,
@@ -1319,17 +1425,16 @@ export const useGame = create<GameState>((set, get) => ({
       lifetime,
       tables: out.tables,
       stations: out.stations,
-      stationLevel,
+      zonesOpen: out.zonesOpen,
+      stationLevels,
       tableLevels,
-      waiterLevel,
+      waiterLevels,
       serviceSpeedMult: out.serviceSpeedMult,
       padsDone,
       padFills,
-      hasWaiter: out.hasWaiter,
-      hasDishwasher: out.hasDishwasher,
-      upgradeFill,
+      upgradeFills,
       tableUpgradeFills,
-      waiterUpgradeFill,
+      waiterUpgradeFills,
       activeZone,
       notice,
       revealSeen,
@@ -1340,10 +1445,10 @@ export const useGame = create<GameState>((set, get) => ({
       quest,
       camFocus,
       player,
-      waiter,
-      dishwasher,
-      readyCups,
-      brewProgress,
+      waiters,
+      dishwashers,
+      readyCupsByZone,
+      brewProgressByZone,
       tray,
       cleanCups,
       carriedDirty,
@@ -1357,15 +1462,17 @@ export const useGame = create<GameState>((set, get) => ({
   setKeyboardInput: (x, z) => set({ inputKeyboard: [x, z] }),
   setJoystickInput: (x, z) => set({ inputJoystick: [x, z] }),
 
-  // Çay istasyonu yükseltme (₺ ile L1-L4). L5 Usta = 💎/video (Faz 4).
+  // Zone-1 çay ocağı yükseltme (₺ ile L1-L4; dev kancası/test). L5 Usta = 💎/video (Faz 4).
   upgradeStation: () => {
     const s = get();
-    if (s.stationLevel >= stationSoftMaxLevel()) return false;
-    const cost = stationUpgradeCost(s.stationLevel);
+    if (s.stationLevels[0] >= stationSoftMaxLevel()) return false;
+    const cost = stationUpgradeCost(s.stationLevels[0]);
     if (s.wallet.lt(cost)) return false;
+    const stationLevels = s.stationLevels.slice();
+    stationLevels[0] += 1;
     set({
       wallet: s.wallet.sub(cost),
-      stationLevel: s.stationLevel + 1,
+      stationLevels,
       xp: s.xp + C.xp.perUpgrade,
       cleanCups: s.cleanCups + C.cups.poolPerLevel, // havuz ocak seviyesiyle büyür (Faz 2e)
     });
@@ -1400,9 +1507,9 @@ export const useGame = create<GameState>((set, get) => ({
       wallet: s.wallet.toString(),
       diamonds: s.diamonds.toString(),
       lifetime: s.lifetime.toString(),
-      stationLevel: s.stationLevel,
+      stationLevels: [...s.stationLevels],
       tableLevels: [...s.tableLevels],
-      waiterLevel: s.waiterLevel,
+      waiterLevels: [...s.waiterLevels],
       padsDone: [...s.padsDone],
       padFills: { ...s.padFills },
       stats: { ...s.stats },
