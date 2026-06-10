@@ -13,6 +13,13 @@ import {
   xpForLevel,
   levelProgress,
   SAVE_VERSION,
+  charValue,
+  charNextCost,
+  charMaxTier,
+  charLevel,
+  trayCapacityFor,
+  attractRadiusFor,
+  playerSpeedFor,
 } from '../src/config/economy.config';
 import { D, fmt } from '../src/game/decimal';
 import {
@@ -671,9 +678,9 @@ describe('bulaşıkçı — quest hattında zorunlu personel (Faz 2e; 2026-06-09
 describe('para mıknatısı (Faz 2f) — attract yarıçapındaki para oyuncuya akar + toplanır', () => {
   it('düşme noktasının pickup yarıçapına HİÇ girilmese de para mıknatısla toplanır (bug düzeltmesi)', () => {
     useGame.getState().hardReset();
-    // Para, oyuncudan pickup (1.4) DIŞINDA ama attract (2.6) İÇİNDE düşsün.
+    // Para, oyuncudan pickup (1.4) DIŞINDA ama attract (taban kademe 2.6) İÇİNDE düşsün.
     const px = 0;
-    const coinX = px + (economyConfig.money.pickupRadius + economyConfig.money.attractRadius) / 2; // ~2.0
+    const coinX = px + (economyConfig.money.pickupRadius + attractRadiusFor(0)) / 2; // ~2.0
     useGame.setState({
       player: [px, 0.6, 0], inputKeyboard: [0, 0], inputJoystick: [0, 0],
       coins: [{ id: 5555, pos: [coinX, 0.3, 0], value: 5 }],
@@ -687,7 +694,7 @@ describe('para mıknatısı (Faz 2f) — attract yarıçapındaki para oyuncuya 
 
   it('attract yarıçapı DIŞINDAKİ para çekilmez (oyuncu uzaktayken yerinde kalır)', () => {
     useGame.getState().hardReset();
-    const far = economyConfig.money.attractRadius + 2; // attract dışında
+    const far = attractRadiusFor(0) + 2; // attract dışında (taban kademe)
     useGame.setState({
       player: [0, 0.6, 0], inputKeyboard: [0, 0], inputJoystick: [0, 0],
       coins: [{ id: 5556, pos: [far, 0.3, 0], value: 5 }],
@@ -698,8 +705,19 @@ describe('para mıknatısı (Faz 2f) — attract yarıçapındaki para oyuncuya 
   });
 });
 
-describe('tepsi kapasitesi (D-018: yükseltme kaldırıldı → sabit; 2026-06-09: paylaşımlı, 4)', () => {
-  it('tepsi kapasitesi sabittir (4, çay+kirli paylaşımlı)', () => {
+describe('tepsi kapasitesi (v20: karakter tepsi kademesinden türetilir; paylaşımlı çay+kirli)', () => {
+  it('kademe → kapasite eğrisi: 2→3→4→5→6; taşan kademe son değere kelepçelenir', () => {
+    expect(trayCapacityFor(0)).toBe(2); // yeni oyun
+    expect(trayCapacityFor(1)).toBe(3);
+    expect(trayCapacityFor(2)).toBe(4); // eski kayıt hediyesi (migrasyon T2)
+    expect(trayCapacityFor(4)).toBe(6);
+    expect(trayCapacityFor(99)).toBe(6);
+  });
+
+  it('arg\'sız trayCapacity() canlı store kademesini okur (devHooks geri-uyumu)', () => {
+    useGame.getState().hardReset();
+    expect(trayCapacity()).toBe(2);
+    useGame.setState({ charUpgrades: { tray: 2, magnet: 0, speed: 0 } });
     expect(trayCapacity()).toBe(4);
   });
 });
@@ -809,8 +827,9 @@ describe('kayıt migrasyonu v4..v15 (padFills, station2/samovar çıkışı, add
       padFills: {}, tableLevels: [0, 0, 0, 0], waiterLevel: 0,
     } as unknown as Record<string, unknown>);
     expect(m2.stats.waiterServed).toBe(20);
-    // Tüm pad'ler açık + waiterLevel 0 → hat "Garsonu hızlandır"da durur.
-    expect(economyConfig.quests[m2.questIndex]?.id).toBe('q_waiterL2');
+    // Tüm pad'ler açık + magnet 0 → hat q_charMagnet'te durur (v20: tepsi görevleri T2 hediyesiyle
+    // tamam sayılır; mıknatıs görevi eski oyuncuya doğal sırasında verilir).
+    expect(economyConfig.quests[m2.questIndex]?.id).toBe('q_charMagnet');
   });
 
   it('v12 → v13 (D-018): eski trayLevel persist alanı DÜŞER (tepsi sabit; şemada yok)', () => {
@@ -819,8 +838,10 @@ describe('kayıt migrasyonu v4..v15 (padFills, station2/samovar çıkışı, add
       stationLevel: 0, padsDone: ['table2', 'table3'], padFills: {}, trayLevel: 2, tableLevels: [],
     } as unknown as Record<string, unknown>);
     expect(m.saveVersion).toBe(SAVE_VERSION);
-    expect((m as Record<string, unknown>).trayLevel).toBeUndefined(); // tray yükseltme kaldırıldı
-    expect(trayCapacity()).toBe(4); // kapasite sabit (paylaşımlı çay+kirli)
+    expect((m as Record<string, unknown>).trayLevel).toBeUndefined(); // eski tray yükseltmesi şemada yok
+    // v20: eski kayda T2 hediye → kapasite 4 KORUNUR (eski trayLevel'dan bağımsız).
+    expect(m.charUpgrades).toEqual({ tray: 2, magnet: 0, speed: 0 });
+    expect(trayCapacity(m.charUpgrades.tray)).toBe(4);
   });
 
   it('varsayılan kayıt padFills={} içerir; türetilen + kaldırılan (trayLevel) alanlar tutulmaz', () => {
@@ -1566,6 +1587,131 @@ describe('kozmetik mağaza (WP6, v19) — zone-başına tema satın alma + migra
     expect(m.wallThemeByZone).toEqual([]);
     expect(m.ownedCosmetics).toEqual([]);
     expect(m.wallet).toBe('500');
-    expect(m.questIndex).toBe(5);
+    // v20 id-eşleme: eski index 5 = 'q_station2' → yeni listede aynı görev (index kaysa da id korunur).
+    expect(economyConfig.quests[m.questIndex]?.id).toBe('q_station2');
+  });
+});
+
+describe('karakter yükseltmeleri (v20) — eğri, satın alma, migrasyon, görev akışı', () => {
+  it('fiyat eğrisi: T1-T2 ucuz, T3-T4 çok pahalı; max kademede null; değerler tasarımla birebir', () => {
+    expect(economyConfig.character.tray.costs).toEqual([150, 500, 15_000, 60_000]);
+    expect(charNextCost('tray', 0)).toBe(150);
+    expect(charNextCost('tray', 3)).toBe(60_000);
+    expect(charNextCost('tray', 4)).toBeNull(); // MAX
+    expect(charNextCost('magnet', 2)).toBe(2_800);
+    expect(charNextCost('magnet', 3)).toBeNull();
+    expect(charNextCost('speed', 0)).toBe(400);
+    expect(charMaxTier('tray')).toBe(4);
+    expect(charMaxTier('magnet')).toBe(3);
+    expect(charMaxTier('speed')).toBe(3);
+    // Değer türeticileri (kademe → etkin değer).
+    expect(attractRadiusFor(0)).toBeCloseTo(2.6);
+    expect(attractRadiusFor(3)).toBeCloseTo(5.0);
+    expect(playerSpeedFor(0)).toBeCloseTo(4.5);
+    expect(playerSpeedFor(3)).toBeCloseTo(5.4); // tavan +%20 (bilinçli düşük)
+    expect(charValue('speed', 99)).toBeCloseTo(5.4); // kelepçe
+  });
+
+  it('buyCharUpgrade: para yetmezse false; yeterliyse kademe+1, ₺ düşer, XP verir; max\'ta false', () => {
+    useGame.getState().hardReset();
+    expect(useGame.getState().charUpgrades).toEqual({ tray: 0, magnet: 0, speed: 0 });
+    expect(useGame.getState().buyCharUpgrade('tray')).toBe(false); // cüzdan 0
+    useGame.getState().addMoney(200);
+    const xpBefore = useGame.getState().xp;
+    expect(useGame.getState().buyCharUpgrade('tray')).toBe(true);
+    const s = useGame.getState();
+    expect(s.charUpgrades.tray).toBe(1);
+    expect(s.wallet.toNumber()).toBe(50); // 200 - 150
+    expect(s.xp).toBe(xpBefore + economyConfig.xp.perUpgrade);
+    expect(charLevel(s.charUpgrades)).toBe(1);
+    // Max kademede satın alma reddedilir.
+    useGame.setState({ charUpgrades: { tray: 4, magnet: 0, speed: 0 } });
+    useGame.getState().addMoney(1_000_000);
+    expect(useGame.getState().buyCharUpgrade('tray')).toBe(false);
+  });
+
+  it('tepsi kapasitesi oyunda kademeden türetilir: yeni oyun 2 bardakla sınırlı, T1 sonrası 3', () => {
+    useGame.getState().hardReset();
+    // Ocakta 5 hazır çay olsun; oyuncu ocağa yaklaşsın → tepsiye EN FAZLA kapasite kadar alır.
+    const st = LAYOUT.stations[0];
+    useGame.setState({
+      readyCupsByZone: [5, 0], cleanCups: 10,
+      player: [st[0] + 1.0, 0.6, st[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0],
+    });
+    useGame.getState().tick(0.1);
+    expect(useGame.getState().tray).toBe(2); // kapasite 2 (tier 0)
+    // T1 alınca kapasite 3 → kalan çaydan 1 daha alınabilir.
+    useGame.setState({ charUpgrades: { tray: 1, magnet: 0, speed: 0 } });
+    useGame.getState().tick(0.1);
+    expect(useGame.getState().tray).toBe(3);
+  });
+
+  it('charStat görevi: q_charTray1 tepsi T1 alınınca tamamlanır; kamera odağı SIÇRAMAZ (3D hedef yok)', () => {
+    useGame.getState().hardReset();
+    const idx = economyConfig.quests.findIndex((q) => q.id === 'q_charTray1');
+    expect(idx).toBeGreaterThan(economyConfig.quests.findIndex((q) => q.id === 'q_table2')); // table2 SONRASI
+    expect(idx).toBeLessThan(economyConfig.quests.findIndex((q) => q.id === 'q_serve5')); // q_serve5 ÖNCESİ
+    useGame.setState({ questIndex: idx, questBase: 0, camFocus: null });
+    // charStat görevinin dünya konumu yok → focusQuest no-op (kamera sıçramaz).
+    useGame.getState().focusQuest();
+    expect(useGame.getState().camFocus).toBeNull();
+    expect(questFocusPos({ type: 'charStat', stat: 'tray', tier: 1 }, [], 1)).toBeNull();
+    // Satın al → bir sonraki tick görevi tamamlar, hat ilerler.
+    useGame.getState().addMoney(200);
+    expect(useGame.getState().buyCharUpgrade('tray')).toBe(true);
+    useGame.getState().tick(0.1);
+    expect(useGame.getState().questIndex).toBeGreaterThan(idx);
+    expect(useGame.getState().quest?.id).toBe('q_serve5');
+  });
+
+  it('görev zamanlaması (kullanıcı: "aşırı önemli"): charTray2 q_table3→q_waiter arası; charMagnet q_table4→q_waiterL2 arası; T3/T4 ve hız görevsiz', () => {
+    const ids = economyConfig.quests.map((q) => q.id);
+    const between = (a: string, x: string, b: string) =>
+      ids.indexOf(a) < ids.indexOf(x) && ids.indexOf(x) < ids.indexOf(b);
+    expect(between('q_table2', 'q_charTray1', 'q_serve5')).toBe(true);
+    expect(between('q_table3', 'q_charTray2', 'q_waiter')).toBe(true);
+    expect(between('q_table4', 'q_charMagnet', 'q_waiterL2')).toBe(true);
+    // T3/T4 ve hız için görev YOK (bilinçli — "çok zor" hedefler görevle dayatılmaz).
+    const charQuests = economyConfig.quests.filter((q) => q.target.type === 'charStat');
+    expect(charQuests.length).toBe(3);
+    expect(charQuests.some((q) => q.target.type === 'charStat' && q.target.stat === 'speed')).toBe(false);
+    expect(
+      charQuests.some((q) => q.target.type === 'charStat' && q.target.stat === 'tray' && q.target.tier > 2),
+    ).toBe(false);
+  });
+
+  it('kayıt v19→v20: T2 hediye + charPanelSeen false + questIndex İD-EŞLEMELİ (aktif görev korunur)', () => {
+    // Aktif görev q_serve5 (eski index 4) olan v19 kaydı → yeni listede q_serve5 index 5'e kayar.
+    const m = migrate({
+      saveVersion: 19, wallet: '100', diamonds: '0', lifetime: '300',
+      stationLevels: [1], waiterLevels: [0], padsDone: ['table2'], padFills: {},
+      tableLevels: [0, 0, 0, 0], stats: { ...defaultStats(), teasServed: 3 }, questIndex: 4, questBase: 1,
+      xp: 50, settings: { sound: true, music: true, notifications: true },
+      floorThemeByZone: [], wallThemeByZone: [], ownedCosmetics: [], lastSaved: Date.now(),
+    });
+    expect(m.saveVersion).toBe(SAVE_VERSION);
+    expect(m.charUpgrades).toEqual({ tray: 2, magnet: 0, speed: 0 }); // hediye → kapasite 4 korunur
+    expect(m.charPanelSeen).toBe(false);
+    expect(economyConfig.quests[m.questIndex]?.id).toBe('q_serve5'); // id korunur (index 4→5)
+    // Hat bitmiş v19 kaydı → yeni hatta da bitmiş (yeni görevler dayatılmaz).
+    const m2 = migrate({
+      saveVersion: 19, wallet: '0', diamonds: '0', lifetime: '99999',
+      stationLevels: [4, 4], waiterLevels: [1, 1],
+      padsDone: ['table2', 'table3', 'waiter', 'dishwasher', 'table4', 'zone2', 'z2table2', 'z2waiter', 'z2table3', 'z2dishwasher', 'z2table4'],
+      padFills: {}, tableLevels: [], stats: defaultStats(), questIndex: 20, questBase: 0,
+      xp: 0, settings: { sound: true, music: true, notifications: true },
+      floorThemeByZone: [], wallThemeByZone: [], ownedCosmetics: [], lastSaved: Date.now(),
+    });
+    expect(m2.questIndex).toBe(economyConfig.quests.length);
+    // Bozuk/aşırı kademe max'a kelepçelenir.
+    const m3 = migrate({ ...m, saveVersion: 20, charUpgrades: { tray: 99, magnet: -5, speed: 2 } } as unknown as Record<string, unknown>);
+    expect(m3.charUpgrades).toEqual({ tray: charMaxTier('tray'), magnet: 0, speed: 2 });
+  });
+
+  it('yeni oyun tepsi 2 başlar (trayCapacityFor 0) — eski "sabit 4" değişti', () => {
+    const d = defaultSave();
+    expect(d.charUpgrades).toEqual({ tray: 0, magnet: 0, speed: 0 });
+    expect(trayCapacityFor(d.charUpgrades.tray)).toBe(2);
+    expect(d.charPanelSeen).toBe(false);
   });
 });

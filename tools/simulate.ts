@@ -23,7 +23,9 @@ import {
   derivedFromPads,
   tableUpgradeCost,
   tableTip,
+  charNextCost,
   MAX_ZONES,
+  type CharStat,
   type GateState,
 } from '../src/config/economy.config.ts';
 
@@ -40,6 +42,8 @@ interface State {
   stationLevels: number[]; // zone başına ocak seviyesi (v18 modeli)
   tableLevel: number; // idealize: tüm masalar eşit yükseltilir
   padsDone: string[];
+  /** Karakter kademeleri (v20): quest hattındaki alımlar simüle edilir (T1/T2/M1). */
+  char: { tray: number; magnet: number; speed: number };
 }
 
 function gateOf(s: State): GateState {
@@ -99,8 +103,25 @@ function currentPad(s: State) {
   return C.pads.find((p) => !p.optional && !s.padsDone.includes(p.id) && requiresMet(p.requires, g)) ?? null;
 }
 
-// Otomatik (akıllı) oyuncu: önce DARBOĞAZ ocak (en ucuz), sonra omurga pad'i, sonra açık ocak,
-// en son masa-başı yükseltme (bahşiş). Zone-2 açılınca onun ocağı/masaları da akışa girer.
+/** Quest hattındaki sıradaki karakter alımı (v20): q_charTray1 table2 sonrası, q_charTray2 table3
+ *  sonrası, q_charMagnet table4 sonrası. Görev hattı ilerlemeyi bloklar → sim'de de öncelikli. */
+function nextCharBuy(s: State): { stat: CharStat; cost: number } | null {
+  const steps: { stat: CharStat; tier: number; after: string }[] = [
+    { stat: 'tray', tier: 1, after: 'table2' },
+    { stat: 'tray', tier: 2, after: 'table3' },
+    { stat: 'magnet', tier: 1, after: 'table4' },
+  ];
+  for (const st of steps) {
+    if (s.padsDone.includes(st.after) && s.char[st.stat] < st.tier) {
+      const cost = charNextCost(st.stat, s.char[st.stat]);
+      if (cost != null) return { stat: st.stat, cost };
+    }
+  }
+  return null;
+}
+
+// Otomatik (akıllı) oyuncu: önce DARBOĞAZ ocak (en ucuz), sonra KARAKTER görevi alımı (quest hattı
+// bloklar), sonra omurga pad'i, sonra açık ocak, en son masa-başı yükseltme (bahşiş).
 function trySpend(s: State): void {
   const d = derivedFromPads(s.padsDone);
   // 1) Darboğaz ocaklar (en ucuzu önce)
@@ -116,6 +137,15 @@ function trySpend(s: State): void {
     if (s.wallet >= bcost) {
       s.wallet -= bcost;
       s.stationLevels[bz] += 1;
+    }
+    return;
+  }
+  // 1.5) Karakter görevi alımı (v20 — quest hattı sıradaki pad'den önce bunu ister)
+  const cb = nextCharBuy(s);
+  if (cb) {
+    if (s.wallet >= cb.cost) {
+      s.wallet -= cb.cost;
+      s.char[cb.stat] += 1;
     }
     return;
   }
@@ -152,11 +182,14 @@ function trySpend(s: State): void {
 interface Milestone { name: string; hit: (s: State) => boolean }
 const MILESTONES: Milestone[] = [
   { name: 'İlk satın alma (2. Masa)', hit: (s) => s.padsDone.includes('table2') },
+  { name: 'Karakter: Tepsi T1 (150₺)', hit: (s) => s.char.tray >= 1 },
   { name: 'Çay ocağı L1 (z1)', hit: (s) => s.stationLevels[0] >= 1 },
   { name: '3. Masa', hit: (s) => s.padsDone.includes('table3') },
+  { name: 'Karakter: Tepsi T2 (500₺)', hit: (s) => s.char.tray >= 2 },
   { name: 'Garson', hit: (s) => s.padsDone.includes('waiter') },
   { name: 'Bulaşıkçı', hit: (s) => s.padsDone.includes('dishwasher') },
   { name: '4. Masa (zone-1 dolu)', hit: (s) => s.padsDone.includes('table4') },
+  { name: 'Karakter: Mıknatıs M1 (250₺)', hit: (s) => s.char.magnet >= 1 },
   { name: 'Çay ocağı L4 (z1 semaver)', hit: (s) => s.stationLevels[0] >= SOFT_MAX },
   { name: 'ZONE-2 AÇILDI (₺1200)', hit: (s) => s.padsDone.includes('zone2') },
   { name: 'Z2: 2. Masa', hit: (s) => s.padsDone.includes('z2table2') },
@@ -181,6 +214,7 @@ function runProfile(eff: number, log = false): Map<string, number> {
     t: 0, wallet: 0, lifetime: 0,
     stationLevels: Array.from({ length: MAX_ZONES }, () => 0),
     tableLevel: 0, padsDone: [],
+    char: { tray: 0, magnet: 0, speed: 0 },
   };
   const MAX_T = 60 * 60 * 6;
   const done = new Map<string, number>();
@@ -207,7 +241,10 @@ function runProfile(eff: number, log = false): Map<string, number> {
 
 function run() {
   console.log('=== Köşe Kıraathanesi — Ekonomi v2 Simülasyonu (zone\'lu bottleneck modeli) ===\n');
-  const s0: State = { t: 0, wallet: 0, lifetime: 0, stationLevels: [0, 0], tableLevel: 0, padsDone: [] };
+  const s0: State = {
+    t: 0, wallet: 0, lifetime: 0, stationLevels: [0, 0], tableLevel: 0, padsDone: [],
+    char: { tray: 0, magnet: 0, speed: 0 },
+  };
   console.log(`Sabit çay fiyatı: ${TEA_PRICE} ₺ · Başlangıç: 1 masa, oran ${rate(s0).toFixed(2)} ₺/sn\n`);
 
   console.log('--- İDEALİZE (verim 1.0 — tempo denetimi bununla) ---');

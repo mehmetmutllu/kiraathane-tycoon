@@ -18,6 +18,13 @@ import {
   MAX_ZONES,
   TABLES_PER_ZONE,
   zoneOfTable,
+  charMaxTier,
+  charNextCost,
+  trayCapacityFor,
+  attractRadiusFor,
+  playerSpeedFor,
+  type CharStat,
+  type CharUpgrades,
   type PadDef,
   type GateState,
   type Requires,
@@ -28,6 +35,7 @@ import {
   defaultSave,
   defaultStats,
   defaultSettings,
+  defaultCharUpgrades,
   loadSave,
   writeSave,
   clearSave,
@@ -356,8 +364,12 @@ function brewTime(level: number, serviceSpeedMult: number): number {
   return (C.npc.orderTime * serviceSpeedMult) / brewThroughputMult(level);
 }
 
-/** Oyuncunun tepsi kapasitesi (tek turda taşınan çay/kirli). D-018: sabit (yükseltme kaldırıldı). */
-export const trayCapacity = () => C.serving.trayCapacity;
+/** Oyuncunun tepsi kapasitesi (tek turda taşınan çay/kirli) — karakter tepsi kademesinden türetilir
+ *  (v20; D-018'in "sabit" kararı karakter yükseltmeleriyle değişti). Arg'sız çağrı canlı store'dan okur
+ *  (devHooks/testler geri-uyumu). */
+export function trayCapacity(tier?: number): number {
+  return trayCapacityFor(tier ?? useGame.getState().charUpgrades.tray);
+}
 
 /** GLOBAL bardak havuzu kapasitesi: açık zone başına taban + açık ocak seviyeleri toplamı (Faz 3a). */
 export function totalCupPool(zonesOpen: number, stationLevels: number[]): number {
@@ -496,6 +508,10 @@ export interface GameState {
   floorThemeByZone: string[];
   wallThemeByZone: string[];
   ownedCosmetics: string[];
+  /** Karakter yükseltme kademeleri (persist v20): tepsi/mıknatıs/hız. Karakter seviyesi türetilir. */
+  charUpgrades: CharUpgrades;
+  /** Karakter paneli ilk-sefer spotlight'ı görüldü mü (persist v20). */
+  charPanelSeen: boolean;
   /** Üst görev barı görünümü (transient; her tick türetilir; null = hat bitti). */
   quest: QuestView | null;
   /** Kamera odak isteği (transient): görev barına dokununca / yeni şey açılınca hedefe pan. */
@@ -523,6 +539,13 @@ export interface GameState {
    * false), sahip olunan tema ücretsiz yeniden seçilir. Başarıda anında kaydedilir.
    */
   buyCosmetic: (kind: 'floor' | 'wall', id: string, zone: number) => boolean;
+  /**
+   * Karakter özelliği satın al (v20, karakter paneli): cüzdan yeterliyse kademe +1 (yetmezse/max'taysa
+   * false). Başarıda anında kaydedilir; charStat görevi varsa sonraki tick'te tamamlanır.
+   */
+  buyCharUpgrade: (stat: CharStat) => boolean;
+  /** Karakter paneli ilk-sefer spotlight'ını kapat (butona dokununca; persist — bir daha çıkmaz). */
+  markCharPanelSeen: () => void;
   saveNow: () => void;
   hardReset: () => void;
 }
@@ -566,6 +589,8 @@ export interface QuestCtx {
   tableLevels: number[];
   stats: SaveStats;
   questBase: number;
+  /** Karakter yükseltme kademeleri (v20; charStat görevleri için). */
+  charUpgrades: CharUpgrades;
 }
 
 /** Sayaç hedefinin baktığı kümülatif sayaç değeri (durum hedefleri için null). */
@@ -591,6 +616,7 @@ export function questTargetMet(target: QuestTarget, ctx: QuestCtx): boolean {
     case 'stationLevel': return ctx.stationLevel >= target.level;
     case 'waiterLevel': return ctx.waiterLevel >= target.level;
     case 'tableLevel': return ctx.tableLevels.some((l) => l >= target.level);
+    case 'charStat': return ctx.charUpgrades[target.stat] >= target.tier;
     default: return false;
   }
 }
@@ -615,21 +641,25 @@ function questView(q: QuestDef, ctx: QuestCtx): QuestView {
     q.target.type === 'pad'
       ? (C.pads as readonly PadDef[]).find((p) => p.id === (q.target as { id: string }).id)
       : undefined;
+  // charStat görevinde maliyet = hedef kademeye ulaştıran satın almanın ₺'si (görev kartında gösterilir).
+  const charCost = q.target.type === 'charStat' ? charNextCost(q.target.stat, q.target.tier - 1) : null;
   return {
     id: q.id,
     title: q.title,
     target: q.target,
     cur: counter != null && count != null ? Math.max(0, Math.min(count, counter - ctx.questBase)) : null,
     total: count,
-    cost: pad ? pad.cost : null,
+    cost: pad ? pad.cost : charCost,
   };
 }
 
 /** Görev hedefinin DÜNYA konumu (kamera odak + işaret görünürlüğü). zone = görevin salonu
- *  (2026-06-11 fix: z2 görevlerinde kamera zone-1'e zoom atıyordu — hedefler zone-1 alias'larına sabitti). */
-export function questFocusPos(target: QuestTarget, tableLevels: number[], tables: number, zone = 0): RVec3 {
+ *  (2026-06-11 fix: z2 görevlerinde kamera zone-1'e zoom atıyordu — hedefler zone-1 alias'larına sabitti).
+ *  charStat görevlerinde 3D hedef YOK → null (kamera sıçramaz; yönlendirme HUD buton efektiyle). */
+export function questFocusPos(target: QuestTarget, tableLevels: number[], tables: number, zone = 0): RVec3 | null {
   const z = Math.min(Math.max(zone, 0), MAX_ZONES - 1);
   switch (target.type) {
+    case 'charStat': return null;
     case 'pickupTea': return LAYOUT.stations[z];
     case 'washDish': return LAYOUT.dishStations[z];
     case 'pad': return LAYOUT.padPos[target.id] ?? LAYOUT.stations[z];
@@ -745,6 +775,8 @@ export const useGame = create<GameState>((set, get) => ({
   floorThemeByZone: Array.from({ length: MAX_ZONES }, () => 'parke'),
   wallThemeByZone: Array.from({ length: MAX_ZONES }, () => 'krem'),
   ownedCosmetics: [],
+  charUpgrades: defaultCharUpgrades(),
+  charPanelSeen: false,
   quest: null,
   camFocus: null,
   offlineEarned: 0,
@@ -764,6 +796,12 @@ export const useGame = create<GameState>((set, get) => ({
     const waiterLevels = Array.from({ length: MAX_ZONES }, (_, z) =>
       Math.min(save.waiterLevels[z] ?? 0, waiterSoftMaxLevelCfg()),
     );
+    // Karakter kademeleri (v20): bozuk/aşırı değer max kademeye kelepçelenir (stationLevels deseni).
+    const charUpgrades: CharUpgrades = {
+      tray: Math.max(0, Math.min(save.charUpgrades?.tray ?? 0, charMaxTier('tray'))),
+      magnet: Math.max(0, Math.min(save.charUpgrades?.magnet ?? 0, charMaxTier('magnet'))),
+      speed: Math.max(0, Math.min(save.charUpgrades?.speed ?? 0, charMaxTier('speed'))),
+    };
     // Çevrimdışı gelir: açık zone'ların idealize oranları TOPLAMI; süre + PARA tavanlı (computeOfflineEarned).
     const elapsed = Math.max(0, (Date.now() - save.lastSaved) / 1000);
     let wallet = D(save.wallet);
@@ -835,6 +873,8 @@ export const useGame = create<GameState>((set, get) => ({
       floorThemeByZone: Array.from({ length: MAX_ZONES }, (_, z) => save.floorThemeByZone[z] ?? 'parke'),
       wallThemeByZone: Array.from({ length: MAX_ZONES }, (_, z) => save.wallThemeByZone[z] ?? 'krem'),
       ownedCosmetics: [...save.ownedCosmetics],
+      charUpgrades,
+      charPanelSeen: save.charPanelSeen,
       quest:
         save.questIndex < C.quests.length
           ? questView(C.quests[save.questIndex], {
@@ -844,6 +884,7 @@ export const useGame = create<GameState>((set, get) => ({
               tableLevels: save.tableLevels,
               stats: save.stats,
               questBase: save.questBase,
+              charUpgrades,
             })
           : null,
       // İlk oyun (taze kayıt): kamera ilk görevin hedefine kısa pan → "hareketli" onboarding girişi.
@@ -851,7 +892,7 @@ export const useGame = create<GameState>((set, get) => ({
         save.questIndex === 0 && lifetime.lte(0)
           ? (() => {
               const p0 = questFocusPos(C.quests[0].target, save.tableLevels, derived.tables);
-              return { pos: [p0[0], p0[1], p0[2]] as [number, number, number], ttl: 3 };
+              return p0 ? { pos: [p0[0], p0[1], p0[2]] as [number, number, number], ttl: 3 } : null;
             })()
           : null,
       spawnTimer: 1,
@@ -1026,8 +1067,9 @@ export const useGame = create<GameState>((set, get) => ({
     const pr = LAYOUT.playerRadius;
     const oldX = s.player[0];
     const oldZ = s.player[2];
-    const dxIn = input[0] * C.player.moveSpeed * dt;
-    const dzIn = input[1] * C.player.moveSpeed * dt;
+    const moveSpeed = playerSpeedFor(s.charUpgrades.speed); // hız kademesinden (v20)
+    const dxIn = input[0] * moveSpeed * dt;
+    const dzIn = input[1] * moveSpeed * dt;
     // Oyuncu yalnız AÇIK zone'larda gezer (duvar yok — D-023; kilitli salonun karanlığına girilmez).
     const openMaxX = LAYOUT.zoneAreas[zonesOpen - 1].maxX;
     let nx = Math.max(A.minX, Math.min(openMaxX, oldX + dxIn));
@@ -1055,9 +1097,10 @@ export const useGame = create<GameState>((set, get) => ({
     // pickupRadius'a varınca toplanır. Mıknatıs store'da yapıldığı için görsel = mantık → "yapışıp
     // toplanmayan para" bug'ı yapısal olarak imkansız (Coins.tsx sadece c.pos'u çizer).
     if (coins.length) {
+      const attractR = attractRadiusFor(s.charUpgrades.magnet); // mıknatıs kademesinden (v20)
       const keep: Coin[] = [];
       for (const c of coins) {
-        if (dist2D(player, c.pos) < C.money.attractRadius) {
+        if (dist2D(player, c.pos) < attractR) {
           moveToward(c.pos, player, C.money.attractSpeed * dt);
         }
         if (dist2D(player, c.pos) < C.money.pickupRadius) {
@@ -1072,7 +1115,7 @@ export const useGame = create<GameState>((set, get) => ({
     }
 
     // --- Servis (D-011): ocakta tepsiyi doldur, bekleyen masalara çay bırak (yakınlık) ---
-    const trayCap = trayCapacity();
+    const trayCap = trayCapacity(s.charUpgrades.tray);
     // Ocağa yaklaşınca hazır çaylardan tepsi dolar (herhangi bir açık ocak yeterli).
     // PAYLAŞIMLI kapasite (2026-06-09): çay + kirli aynı tepsiyi paylaşır → toplam trayCap'i aşamaz.
     // Karışık taşımaya izin verilir (eski "eli boşken" kısıtı kaldırıldı; deadlock'u engeller).
@@ -1442,6 +1485,7 @@ export const useGame = create<GameState>((set, get) => ({
       tableLevels,
       stats,
       questBase,
+      charUpgrades: s.charUpgrades,
     };
     let questAdvanced = false;
     while (questIndex < C.quests.length && questTargetMet(C.quests[questIndex].target, questCtx)) {
@@ -1457,7 +1501,8 @@ export const useGame = create<GameState>((set, get) => ({
     }
     if (questAdvanced && questIndex < C.quests.length) {
       const q = C.quests[questIndex];
-      requestFocus(questFocusPos(q.target, tableLevels, out.tables, q.zone ?? 0), 2);
+      const fp = questFocusPos(q.target, tableLevels, out.tables, q.zone ?? 0);
+      if (fp) requestFocus(fp, 2); // charStat görevinde 3D hedef yok → kamera sıçramaz (buton efekti yönlendirir)
     }
     // Kamera odağı: joystick/klavye girdisi iptal eder (oyuncu kontrolü üstün); süre dolunca biter.
     // Deadzone 0.25 (2026-06-11 fix: 0.1 joystick titremesinde odağı yanlışlıkla bozuyordu).
@@ -1559,7 +1604,7 @@ export const useGame = create<GameState>((set, get) => ({
     if (s.questIndex >= C.quests.length) return;
     const q = C.quests[s.questIndex];
     const p = questFocusPos(q.target, s.tableLevels, s.tables, q.zone ?? 0);
-    set({ camFocus: { pos: [p[0], p[1], p[2]], ttl: CAM_FOCUS_TTL } });
+    if (p) set({ camFocus: { pos: [p[0], p[1], p[2]], ttl: CAM_FOCUS_TTL } });
   },
 
   setSetting: (key, value) => {
@@ -1591,6 +1636,27 @@ export const useGame = create<GameState>((set, get) => ({
     return true;
   },
 
+  // Karakter özelliği satın al (v20 — panel butonundan; mekânsal pad değil, kullanıcı onaylı tasarım).
+  buyCharUpgrade: (stat) => {
+    const s = get();
+    const tier = s.charUpgrades[stat];
+    const cost = charNextCost(stat, tier);
+    if (cost == null || s.wallet.lt(cost)) return false;
+    set({
+      wallet: s.wallet.sub(cost),
+      charUpgrades: { ...s.charUpgrades, [stat]: tier + 1 },
+      xp: s.xp + C.xp.perUpgrade,
+    });
+    get().saveNow();
+    return true;
+  },
+
+  markCharPanelSeen: () => {
+    if (get().charPanelSeen) return;
+    set({ charPanelSeen: true });
+    get().saveNow();
+  },
+
   saveNow: () => {
     const s = get();
     // D-015: tables/stations/serviceSpeedMult/hasWaiter KAYDEDİLMEZ — yüklemede padsDone'dan türetilir.
@@ -1612,6 +1678,8 @@ export const useGame = create<GameState>((set, get) => ({
       floorThemeByZone: [...s.floorThemeByZone],
       wallThemeByZone: [...s.wallThemeByZone],
       ownedCosmetics: [...s.ownedCosmetics],
+      charUpgrades: { ...s.charUpgrades },
+      charPanelSeen: s.charPanelSeen,
       lastSaved: Date.now(),
     });
   },

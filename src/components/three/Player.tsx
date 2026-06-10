@@ -4,10 +4,12 @@ import { useGame } from '../../game/store';
 import { Model } from './Model';
 import { useFacing } from './useFacing';
 import { PALETTE } from '../../config/palette';
+import { trayCapacityFor } from '../../config/economy.config';
 
 // Çaycı karakter prototipi (gece 6/7): PARÇALI gövde (Faz 6 animasyon iskeletine hazırlık —
 // her uzuv ayrı mesh). Kasket + krem gömlek + bordo önlük + bıyık; flat low-poly (D-013).
-function OwnerBody() {
+// EXPORT: karakter paneli (v20) mini Canvas'ta aynı gövdeyi 3/4 açıdan gösterir.
+export function OwnerBody() {
   return (
     <group>
       {/* pantolon (alt gövde) */}
@@ -60,16 +62,23 @@ function OwnerBody() {
 // Bardakları ellerin ÖNÜNDEKİ tek tepside 3×2 ızgaraya dizer (Faz 2f): max 6 bardak taşmaz,
 // Tek ön tepsi, PAYLAŞIMLI kapasite: önce temiz çaylar (kırmızı), sonra kirliler (gri) ardışık dizilir →
 // karışık taşımada üst üste binmez (tea + dirty aynı ızgarayı sırayla paylaşır). count 0 ise hiçbir şey çizilmez.
-function CupTray({ tea, dirty }: { tea: number; dirty: number }) {
+// cap (v20): tepsi TABANI kapasiteyle büyür (karakter yükseltmesinin gözle görülür ödülü).
+// EXPORT: karakter paneli canlı tepsi önizlemesi aynı bileşeni kullanır.
+export function CupTray({ tea, dirty, cap = 6 }: { tea: number; dirty: number; cap?: number }) {
   const total = tea + dirty;
   if (total <= 0) return null;
   const colSpacing = 0.16;
   const rowSpacing = 0.15;
+  const cols = Math.min(Math.max(cap, total, 1), 3);
+  const rows = Math.ceil(Math.min(Math.max(cap, total, 1), 6) / 3);
   return (
     <group position={[0, 1.0, 0.45]}>
-      {/* tepsi tabanı (3×2 ızgarayı taşıyacak boyut) */}
-      <mesh castShadow position={[0, 0, 0]}>
-        <boxGeometry args={[0.56, 0.04, 0.38]} />
+      {/* tepsi tabanı (kapasitenin ızgarasını taşıyacak boyut; ızgaranın gerçek merkezine oturur) */}
+      <mesh
+        castShadow
+        position={[((cols - 1) / 2 - 1) * colSpacing, 0, ((rows - 1) / 2 - 0.5) * rowSpacing]}
+      >
+        <boxGeometry args={[cols * colSpacing + 0.1, 0.04, rows * rowSpacing + 0.14]} />
         <meshStandardMaterial color="#8d6e63" />
       </mesh>
       {Array.from({ length: total }).map((_, i) => {
@@ -100,13 +109,14 @@ export function Player() {
   const p = useGame((s) => s.player);
   const tray = useGame((s) => s.tray);
   const carriedDirty = useGame((s) => s.carriedDirty);
+  const trayTier = useGame((s) => s.charUpgrades.tray);
   const ref = useRef<Group>(null);
   useFacing(ref, p[0], p[2]);
   return (
     <group position={[p[0], 0, p[2]]}>
       <group ref={ref}>
         <Model fallback={<OwnerBody />} />
-        <CupTray tea={tray} dirty={carriedDirty} />
+        <CupTray tea={tray} dirty={carriedDirty} cap={trayCapacityFor(trayTier)} />
       </group>
     </group>
   );

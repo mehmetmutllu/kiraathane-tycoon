@@ -91,6 +91,24 @@ export function BrushIcon({ size = 22 }: { size?: number }) {
   );
 }
 
+/** Çaycı portresi (karakter paneli butonu, v20): kasket + bıyık — oyundaki sahip karakterin yüzü. */
+export function CharIcon({ size = 22 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
+      {/* yüz */}
+      <circle cx="12" cy="13" r="6.4" fill="#ffcc80" stroke="#e0a96d" strokeWidth="1.1" />
+      {/* kasket: tepe + vizör */}
+      <path d="M5.6 10.2c0-3.6 2.9-5.8 6.4-5.8s6.4 2.2 6.4 5.8H5.6z" fill="#5d4037" />
+      <rect x="4.4" y="9.4" width="15.2" height="2" rx="1" fill="#4e342e" />
+      {/* bıyık */}
+      <path d="M8.6 15.4c1 .9 2.2 1.2 3.4 1.2s2.4-.3 3.4-1.2c-.6 1.8-1.9 2.6-3.4 2.6s-2.8-.8-3.4-2.6z" fill="#4e342e" />
+      {/* gözler */}
+      <circle cx="9.7" cy="13.2" r="0.8" fill="#3e2723" />
+      <circle cx="14.3" cy="13.2" r="0.8" fill="#3e2723" />
+    </svg>
+  );
+}
+
 /** Posta/zarf (gelecekte gelen kutusu — MPH deseni). */
 export function MailIcon({ size = 22 }: { size?: number }) {
   return (
@@ -157,6 +175,74 @@ function WashIcon() {
   );
 }
 
+/** Tepsi + çay bardakları (karakter tepsi yükseltmesi — quest fotoğrafı + panel kartı). */
+export function TrayIcon({ size }: { size?: number }) {
+  const inner = (
+    <g>
+      <rect x="8" y="28" width="32" height="4.5" rx="2.2" fill="#8d6e63" stroke="#5d4037" strokeWidth="1.3" />
+      {[15, 24, 33].map((x) => (
+        <g key={x}>
+          <path d={`M${x - 3.6} 16h7.2l-1 5.5c-.2 1.2-.2 2.2 0 3.4l.6 3.1h-6.4l.6-3.1c.2-1.2.2-2.2 0-3.4l-1-5.5z`} fill="#c62828" stroke="#8e1c1c" strokeWidth="1" />
+          <ellipse cx={x} cy="16.6" rx="3.4" ry="1.1" fill="#ef5350" />
+        </g>
+      ))}
+    </g>
+  );
+  if (size == null) return inner;
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
+      {inner}
+    </svg>
+  );
+}
+
+/** Para mıknatısı (karakter mıknatıs yükseltmesi — quest fotoğrafı + panel kartı). */
+export function MagnetIcon({ size }: { size?: number }) {
+  const inner = (
+    <g>
+      <path
+        d="M14 10v12a10 10 0 0 0 20 0V10h-7v12a3 3 0 0 1-6 0V10h-7z"
+        fill="#e53935"
+        stroke="#9c1f1c"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+      <rect x="14" y="10" width="7" height="6" fill="#eceff1" stroke="#9c1f1c" strokeWidth="1.4" />
+      <rect x="27" y="10" width="7" height="6" fill="#eceff1" stroke="#9c1f1c" strokeWidth="1.4" />
+      <ellipse cx="24" cy="40" rx="8" ry="3.4" fill="#ffd54f" stroke="#8d5b00" strokeWidth="1.2" />
+    </g>
+  );
+  if (size == null) return inner;
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
+      {inner}
+    </svg>
+  );
+}
+
+/** Koşu/hız botu (karakter hız yükseltmesi — panel kartı). */
+export function BootIcon({ size }: { size?: number }) {
+  const inner = (
+    <g>
+      <path
+        d="M16 8h9v14c0 2 1.5 3.5 3.5 4l7 1.8c2.4.6 4 2.2 4 4.7V36H12v-8.5L16 22V8z"
+        fill="#6d4c41"
+        stroke="#4e342e"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+      <rect x="12" y="33" width="27.5" height="4.5" rx="2.2" fill="#3e2723" />
+      <path d="M4 16h8M2 22h8M4 28h8" stroke="#90caf9" strokeWidth="2.4" strokeLinecap="round" />
+    </g>
+  );
+  if (size == null) return inner;
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
+      {inner}
+    </svg>
+  );
+}
+
 function UpArrowOverlay() {
   return (
     <g>
@@ -212,6 +298,12 @@ export function QuestPhoto({ target, size = 44 }: { target: QuestTarget; size?: 
     case 'tableLevel':
       bg = '#6d4c41';
       inner = <TableIcon />;
+      up = true;
+      break;
+    case 'charStat':
+      // Karakter görevleri (v20): tepsi/mıknatıs/hız fotoğrafı (3D hedef yok — buton efekti yönlendirir).
+      bg = '#7b4a2d';
+      inner = target.stat === 'tray' ? <TrayIcon /> : target.stat === 'magnet' ? <MagnetIcon /> : <BootIcon />;
       up = true;
       break;
   }

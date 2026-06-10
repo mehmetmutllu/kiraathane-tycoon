@@ -1,5 +1,13 @@
 // localStorage kayıt + saveVersion migrasyon. Backend yok: cihaz = veritabanı.
-import { SAVE_VERSION, economyConfig, requiresMet, type PadDef, type QuestTarget } from '../config/economy.config';
+import {
+  SAVE_VERSION,
+  economyConfig,
+  requiresMet,
+  charMaxTier,
+  type CharUpgrades,
+  type PadDef,
+  type QuestTarget,
+} from '../config/economy.config';
 
 const KEY = 'kiraathane.save';
 
@@ -66,7 +74,15 @@ export interface SaveData {
   floorThemeByZone: string[];
   wallThemeByZone: string[];
   ownedCosmetics: string[];
+  /** Karakter yükseltme kademeleri (v20): tepsi/mıknatıs/hız. Karakter seviyesi türetilir. */
+  charUpgrades: CharUpgrades;
+  /** Karakter paneli ilk-sefer spotlight'ı görüldü mü (v20; butona dokununca true, bir daha çıkmaz). */
+  charPanelSeen: boolean;
   lastSaved: number; // epoch ms
+}
+
+export function defaultCharUpgrades(): CharUpgrades {
+  return { tray: 0, magnet: 0, speed: 0 };
 }
 
 export function defaultSave(): SaveData {
@@ -88,6 +104,8 @@ export function defaultSave(): SaveData {
     floorThemeByZone: [],
     wallThemeByZone: [],
     ownedCosmetics: [],
+    charUpgrades: defaultCharUpgrades(),
+    charPanelSeen: false,
     lastSaved: Date.now(),
   };
 }
@@ -107,12 +125,16 @@ function seedQuestIndex(d: Record<string, unknown>): number {
   const waiterLevel = Number((Array.isArray(d.waiterLevels) ? (d.waiterLevels as number[])[0] : d.waiterLevel) ?? 0) || 0;
   const tableLevels = Array.isArray(d.tableLevels) ? (d.tableLevels as number[]).map((n) => Number(n) || 0) : [];
   const lifetime = Number(d.lifetime ?? 0) || 0;
+  // charStat (v20): bu fonksiyon yalnız v<16 kayıtlar için çalışır ve onların HEPSİ v20 adımında
+  // T2 hediyesi alır → tepsi görevleri (tier ≤ 2) tamam sayılır, mıknatıs/hız sayılmaz.
+  const giftChar: CharUpgrades = { tray: 2, magnet: 0, speed: 0 };
   const stateMet = (t: QuestTarget): boolean | null => {
     switch (t.type) {
       case 'pad': return padsDone.includes(t.id);
       case 'stationLevel': return stationLevel >= t.level;
       case 'waiterLevel': return waiterLevel >= t.level;
       case 'tableLevel': return tableLevels.some((l) => l >= t.level);
+      case 'charStat': return giftChar[t.stat] >= t.tier;
       default: return null; // sayaç görevi — eski kayıttan bilinemez
     }
   };
@@ -145,6 +167,9 @@ export function migrate(raw: Record<string, unknown>): SaveData {
   // Gevşek çalışma kaydı: eski (artık saklanmayan) alanlar burada okunur, sona kalan v8 şemasına yazılmaz.
   const d: Record<string, unknown> = { ...raw };
   let v = typeof raw.saveVersion === 'number' ? raw.saveVersion : 0;
+  // Giriş sürümü (v20 questIndex id-eşlemesi için): v<16 kayıtlarda questIndex zaten YENİ listeyle
+  // tohumlanır (seedQuestIndex güncel C.quests'i kullanır) → onlara id-eşleme uygulanmaz.
+  const entryV = v;
   // v4'e kadar tek sayıydı; v5'te padFills'e taşınır.
   let pendingFill = Number((raw as { padFill?: unknown }).padFill ?? 0) || 0;
 
@@ -330,6 +355,33 @@ export function migrate(raw: Record<string, unknown>): SaveData {
     v = 19;
   }
 
+  // v19 -> v20 (KARAKTER YÜKSELTMELERİ): charUpgrades + charPanelSeen eklendi; quest hattına 3 görev
+  // (q_charTray1/q_charTray2/q_charMagnet) ARAYA girdi → questIndex İD-EŞLEMELİ taşınır (index kayar!).
+  if (v < 20) {
+    // Eski kayda T2 HEDİYE (bugüne kadarki kapasite 4 korunur — kullanıcı onaylı). Yeni oyun 0 (=2) başlar;
+    // bu kod yoluna hiç girmez (defaultSave). v<16'dan gelen ÇOK eski kayıtlarda da ilerleme varsa kapasite
+    // 4'tü → aynı hediye geçerli.
+    d.charUpgrades = { tray: 2, magnet: 0, speed: 0 };
+    d.charPanelSeen = false;
+    // questIndex id-eşleme: v19 görev sırası (charStat görevleri YOKKEN) → aktif görevin İD'si bulunur,
+    // yeni listedeki index'i yazılır. v<16 girişlerinde questIndex seedQuestIndex ile zaten YENİ listede.
+    if (entryV >= 16) {
+      const OLD_QUEST_IDS = [
+        'q_pickup', 'q_serve1', 'q_coin', 'q_table2', 'q_serve5', 'q_station2', 'q_wash', 'q_table3',
+        'q_waiter', 'q_dish', 'q_table4', 'q_waiterL2', 'q_tableL2', 'q_zone2', 'q_z2serve',
+        'q_z2table2', 'q_z2waiter', 'q_z2table3', 'q_z2dish', 'q_z2table4',
+      ];
+      const oldIdx = Math.max(0, Number(d.questIndex ?? 0) || 0);
+      if (oldIdx >= OLD_QUEST_IDS.length) {
+        d.questIndex = economyConfig.quests.length; // hat bitmişti → yeni hatta da bitmiş sayılır
+      } else {
+        const ni = economyConfig.quests.findIndex((q) => q.id === OLD_QUEST_IDS[oldIdx]);
+        if (ni >= 0) d.questIndex = ni;
+      }
+    }
+    v = 20;
+  }
+
   // Sona kalan v16 şeması: türetilen alanlar (tables/stations/serviceSpeedMult/hasWaiter), eski `padFill`,
   // kaldırılan `trayLevel` ve 'samovar' referansı yazılmaz; stats/questIndex/questBase eklendi (v16).
   const rawStats = (d.stats && typeof d.stats === 'object' ? d.stats : {}) as Partial<SaveStats>;
@@ -372,6 +424,13 @@ export function migrate(raw: Record<string, unknown>): SaveData {
     floorThemeByZone: Array.isArray(d.floorThemeByZone) ? (d.floorThemeByZone as string[]) : [],
     wallThemeByZone: Array.isArray(d.wallThemeByZone) ? (d.wallThemeByZone as string[]) : [],
     ownedCosmetics: Array.isArray(d.ownedCosmetics) ? (d.ownedCosmetics as string[]) : [],
+    charUpgrades: (() => {
+      const raw = (d.charUpgrades && typeof d.charUpgrades === 'object' ? d.charUpgrades : {}) as Partial<CharUpgrades>;
+      const clamp = (stat: keyof CharUpgrades) =>
+        Math.max(0, Math.min(Number(raw[stat] ?? 0) || 0, charMaxTier(stat)));
+      return { tray: clamp('tray'), magnet: clamp('magnet'), speed: clamp('speed') };
+    })(),
+    charPanelSeen: d.charPanelSeen === true,
     lastSaved: Number(d.lastSaved ?? Date.now()) || Date.now(),
   };
 }

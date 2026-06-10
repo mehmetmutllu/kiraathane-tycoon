@@ -13,7 +13,7 @@
  *   L5 (Usta)   = masterDiamondCost 💎 VEYA 1 ödüllü video; outputMult yerine masterOutputMult
  */
 
-export const SAVE_VERSION = 19;
+export const SAVE_VERSION = 20;
 
 /**
  * ZONE modeli (Faz 3a + D-022, gece 2026-06-10): zemin kat zone'ları. Her zone kendi TEMALI
@@ -82,7 +82,17 @@ export type QuestTarget =
   | { type: 'pad'; id: string } // pad'i tamamla (masa aç / personel tut)
   | { type: 'stationLevel'; level: number } // çay ocağı seviyesi
   | { type: 'waiterLevel'; level: number } // garson hız seviyesi
-  | { type: 'tableLevel'; level: number }; // HERHANGİ bir masa bu seviyeye ulaşsın
+  | { type: 'tableLevel'; level: number } // HERHANGİ bir masa bu seviyeye ulaşsın
+  | { type: 'charStat'; stat: CharStat; tier: number }; // karakter özelliği bu kademeye ulaşsın (v20)
+
+/** Karakter özellikleri (v20): tepsi kapasitesi / para mıknatısı / hareket hızı. */
+export type CharStat = 'tray' | 'magnet' | 'speed';
+/** Özellik-başı satın alınmış kademeler (persist v20). Karakter seviyesi = toplam kademe (türetilir). */
+export interface CharUpgrades {
+  tray: number;
+  magnet: number;
+  speed: number;
+}
 
 /** Sıralı görev (tek aktif; üst görev barında gösterilir, kamera hedefe yönlendirilebilir). */
 export interface QuestDef {
@@ -174,17 +184,30 @@ export const economyConfig = {
    * oyuncu (sonra garson) çayı TEPSİ ile taşır. Yakınlık temelli (dokunma yok, mekânsal).
    */
   serving: {
-    /**
-     * Tepsi kapasitesi — PAYLAŞIMLI (kullanıcı isteği 2026-06-09): çay + kirli bardak AYNI tepsiyi paylaşır,
-     * toplam `trayCapacity`'yi aşamaz (ör. 4 gözlü tepside 2 çay + 2 kirli). Eski "eli boşken / tek renk"
-     * kısıtı KALDIRILDI çünkü deadlock yapıyordu (elinde çay + tüm masalar kirli → ne bırakabilir ne
-     * toplayabilirdi). Karışık taşıma yapısal olarak kilit-geçirmez + solo angaryayı azaltır.
-     */
-    trayCapacity: 4,
+    // Tepsi kapasitesi ARTIK karakter yükseltmesinden türetilir (v20: character.tray; trayCapacity()).
+    // PAYLAŞIMLI tepsi kuralı aynen: çay + kirli AYNI tepsiyi paylaşır, toplam kapasiteyi aşamaz
+    // (eski "eli boşken / tek renk" kısıtı deadlock yaptığı için kaldırılmıştı; karışık taşıma kilit-geçirmez).
     /** Oyuncunun ocaktan çay alma yakınlığı (dünya birimi). */
     pickupRadius: 1.6,
     /** Oyuncunun masaya çay bırakma yakınlığı. */
     serveRadius: 1.6,
+  },
+
+  /**
+   * KARAKTER YÜKSELTMELERİ (v20; docs/character-upgrades-design.md — kullanıcı onaylı):
+   * özellik-bazlı satın alma (buyCharUpgrade); karakter seviyesi = toplam kademe (salt görsel).
+   * values[kademe] = etkin değer (0 = başlangıç); costs[k] = k → k+1 yükseltmenin ₺ maliyeti.
+   * Tepsi T1-T2 BASİT, T3-T4 ÇOK ZOR (kullanıcı: "ilk 4 basit, 5-6 çok zor" — garson varken 5-6
+   * kapasite lüks/aspirasyonel para-biriktirme hedefi; kozmetik 10-18k bandını TAKİP eder).
+   * Yükseltmeler OYUNCUYU güçlendirir, oyunu otomatikleştirmez (D-014 aktif oynanış korunur).
+   */
+  character: {
+    /** Tepsi kapasitesi (oyuncunun tek turda taşıdığı çay+kirli toplamı). Yeni oyun 2 başlar. */
+    tray: { values: [2, 3, 4, 5, 6], costs: [150, 500, 15_000, 60_000] },
+    /** Para mıknatısı yarıçapı (dünya birimi; money.attractRadius'un yerini aldı). */
+    magnet: { values: [2.6, 3.4, 4.2, 5.0], costs: [250, 900, 2_800] },
+    /** Hareket hızı (dünya birimi/sn; player.moveSpeed'in yerini aldı). Tavan +%20 bilinçli düşük. */
+    speed: { values: [4.5, 4.8, 5.1, 5.4], costs: [400, 1_400, 4_500] },
   },
 
   /**
@@ -195,7 +218,7 @@ export const economyConfig = {
   waiter: {
     /**
      * Seviye-başı hareket hızı (dünya birimi/sn; index = waiterLevel). L1 (taban) = garson tutulunca;
-     * L2 = mekânsal yükseltme ile (D-018 §7). Oyuncudan (player.moveSpeed 4.5) HER seviyede yavaş =
+     * L2 = mekânsal yükseltme ile (D-018 §7). Oyuncudan (character.speed taban 4.5) HER seviyede yavaş =
      * kısmi assist korunur (D-014: garson tek başına büyüyen mekânı döndüremez).
      * 2026-06-11 (kullanıcı onaylı): per-zone mutfakla (D-025) mesafeler kısalınca garson "çok hızlı"
      * hissettirdi → 1.8/2.3 → 1.5/2.0. Tur hesabı: ocak→en uzak masa ~8.7 br → L1 tek yön ~5.8sn,
@@ -271,11 +294,11 @@ export const economyConfig = {
     /** Sahip karakterinin toplama yarıçapı (dünya birimi). */
     pickupRadius: 1.4,
     /**
-     * Faz 2f juice: bu yarıçapa giren para oyuncuya doğru AKAR (klasik tycoon mıknatısı) ve yaklaşınca
-     * toplanır. Mıknatıs store'da gerçek hareket olarak yapılır (görsel-only değil) → para asla oyuncuya
-     * "yapışıp toplanmadan peşinden gelmez". Hız oyuncu hızından (4.5) yüksek olmalı ki daima yetişip toplasın.
+     * Faz 2f juice: attractRadius'a (v20: character.magnet kademesinden türetilir — attractRadius())
+     * giren para oyuncuya doğru AKAR (klasik tycoon mıknatısı) ve yaklaşınca toplanır. Mıknatıs store'da
+     * gerçek hareket olarak yapılır (görsel-only değil) → para asla oyuncuya "yapışıp toplanmadan
+     * peşinden gelmez". Hız max oyuncu hızından (5.4) yüksek olmalı ki daima yetişip toplasın.
      */
-    attractRadius: 2.6,
     attractSpeed: 9,
   },
 
@@ -337,17 +360,25 @@ export const economyConfig = {
    * Görev hattı bitince serbest oyun: kalan yükseltme noktaları zaten kalıcı-sade görünür.
    */
   quests: [
+    // Karakter görevleri (v20) — zamanlama kullanıcı talimatıyla BİRİNCİ öncelik
+    // (docs/character-upgrades-design.md §5): q_charTray1 q_serve5'ten HEMEN ÖNCE (2 masa + tepsi 2
+    // darlığı TAM o anda yaşanır; T1=150₺ o noktada rahat); q_charTray2 q_table3→q_waiter ARASI
+    // (3 masa solo dönerken kapasite 4 anlamlı — önce kendi gücü, sonra otomasyon); q_charMagnet
+    // q_table4 SONRASI (4 masa + garson döneminde yere düşen para zirve yapar). T3/T4 ve hız GÖREVSİZ.
     { id: 'q_pickup', title: 'Ocaktan çay al', target: { type: 'pickupTea', count: 1 } },
     { id: 'q_serve1', title: 'Çayı müşteriye götür', target: { type: 'serveTea', count: 1 } },
     { id: 'q_coin', title: 'Yere düşen parayı topla', target: { type: 'collectCoin', count: 1 } },
     { id: 'q_table2', title: '2. Masayı aç', target: { type: 'pad', id: 'table2' } },
+    { id: 'q_charTray1', title: 'Tepsini büyüt', target: { type: 'charStat', stat: 'tray', tier: 1 } },
     { id: 'q_serve5', title: '5 çay servis et', target: { type: 'serveTea', count: 5 } },
     { id: 'q_station2', title: 'Çay ocağını yükselt', target: { type: 'stationLevel', level: 1 } },
     { id: 'q_wash', title: '3 kirli bardak yıka', target: { type: 'washDish', count: 3 } },
     { id: 'q_table3', title: '3. Masayı aç', target: { type: 'pad', id: 'table3' } },
+    { id: 'q_charTray2', title: "Tepsini 4'e çıkar", target: { type: 'charStat', stat: 'tray', tier: 2 } },
     { id: 'q_waiter', title: 'Garson tut', target: { type: 'pad', id: 'waiter' } },
     { id: 'q_dish', title: 'Bulaşıkçı tut', target: { type: 'pad', id: 'dishwasher' } },
     { id: 'q_table4', title: '4. Masayı aç', target: { type: 'pad', id: 'table4' } },
+    { id: 'q_charMagnet', title: 'Para mıknatısını güçlendir', target: { type: 'charStat', stat: 'magnet', tier: 1 } },
     { id: 'q_waiterL2', title: 'Garsonu hızlandır', target: { type: 'waiterLevel', level: 1 } },
     { id: 'q_tableL2', title: 'Bir masayı yükselt', target: { type: 'tableLevel', level: 1 } },
     // --- ZONE-2 görev hattı (Faz 3a + D-022): geçitteki pad → yeni salonun kendi zinciri.
@@ -360,10 +391,7 @@ export const economyConfig = {
     { id: 'q_z2table4', title: 'Salon 2: 4. Masayı aç', target: { type: 'pad', id: 'z2table4' }, zone: 1 },
   ] as readonly QuestDef[],
 
-  /** Oyuncu sahip karakteri hareketi. */
-  player: {
-    moveSpeed: 4.5, // dünya birimi / sn
-  },
+  // Oyuncu hareket hızı v20'de character.speed kademesinden türetilir (playerSpeed()).
 
   /**
    * LEVEL/XP sistemi (2026-06-10, kullanıcı onayı): oyuncu seviyesi — ileride kat açma (Faz 3b)
@@ -601,6 +629,45 @@ export function waiterSpeed(level: number): number {
 /** ₺ ile çıkılabilen en yüksek garson seviyesi (index; L1=0 taban → L2=1). */
 export function waiterSoftMaxLevel(): number {
   return economyConfig.waiter.moveSpeedByLevel.length - 1;
+}
+
+// ---- Karakter yükseltmeleri (v20) — kademe → değer türeticileri (TEK kaynak: economyConfig.character) ----
+
+/** Özelliğin max kademesi (= satın alınabilir yükseltme sayısı). */
+export function charMaxTier(stat: CharStat): number {
+  return economyConfig.character[stat].costs.length;
+}
+
+/** Kademenin etkin değeri (taşan/bozuk kademe son değere kelepçelenir). */
+export function charValue(stat: CharStat, tier: number): number {
+  const arr = economyConfig.character[stat].values;
+  return arr[Math.min(Math.max(tier, 0), arr.length - 1)];
+}
+
+/** tier → tier+1 yükseltmenin ₺ maliyeti; max kademede null. */
+export function charNextCost(stat: CharStat, tier: number): number | null {
+  const costs = economyConfig.character[stat].costs;
+  return tier >= 0 && tier < costs.length ? costs[tier] : null;
+}
+
+/** Karakter seviyesi = alınan toplam kademe (salt görsel rozet; HUD yıldız-seviyesinden ayrı). */
+export function charLevel(u: CharUpgrades): number {
+  return u.tray + u.magnet + u.speed;
+}
+
+/** Oyuncunun tepsi kapasitesi (çay+kirli PAYLAŞIMLI toplam) — tepsi kademesinden. */
+export function trayCapacityFor(tier: number): number {
+  return charValue('tray', tier);
+}
+
+/** Para mıknatısı yarıçapı — mıknatıs kademesinden. */
+export function attractRadiusFor(tier: number): number {
+  return charValue('magnet', tier);
+}
+
+/** Oyuncu hareket hızı (dünya birimi/sn) — hız kademesinden. */
+export function playerSpeedFor(tier: number): number {
+  return charValue('speed', tier);
 }
 
 /** Verilen seviyedeki toplam çıktı çarpanı (L5 usta sıçramasını da içerir). */

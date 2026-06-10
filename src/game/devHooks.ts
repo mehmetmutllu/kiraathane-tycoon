@@ -2,7 +2,7 @@
 // window.__game  -> salt-okunur anlık görüntü
 // window.__advanceTime(sn) -> simülasyonu hızlı ileri sar
 import { useGame, visiblePads, questCounterValue, LAYOUT, trayCapacity, dirtyTables } from './store';
-import { economyConfig, levelProgress } from '../config/economy.config';
+import { economyConfig, levelProgress, charLevel, type CharStat } from '../config/economy.config';
 import type { SaveStats } from './save';
 import type { Vec3 } from './types';
 
@@ -18,6 +18,8 @@ declare global {
     __setQuest?: (id: string) => Record<string, unknown>;
     /** Kalıcı sayaç ver (ör. waiterServed=20 → arka-plan reveal şartını test et). */
     __grantStat?: (key: string, value: number) => Record<string, unknown>;
+    /** Karakter özelliği satın al (v20; panel butonunun store yolu). */
+    __buyChar?: (stat: CharStat) => boolean;
   }
 }
 
@@ -102,6 +104,10 @@ export function installDevHooks(): void {
       xp: s.xp,
       level: levelProgress(s.xp),
       settings: { ...s.settings },
+      // Karakter yükseltmeleri (v20): kademeler + türetilen karakter seviyesi + spotlight bayrağı.
+      charUpgrades: { ...s.charUpgrades },
+      charLevel: charLevel(s.charUpgrades),
+      charPanelSeen: s.charPanelSeen,
       camFocus: s.camFocus ? { pos: s.camFocus.pos, ttl: +s.camFocus.ttl.toFixed(2) } : null,
       // Yeni-özellik bildirimi (D-019 §4): anlık toast metni + bu oturumda bildirilmiş reveal anahtarları.
       notice: s.notice ? s.notice.text : null,
@@ -152,6 +158,8 @@ export function installDevHooks(): void {
     }
     return window.__game!();
   };
+
+  window.__buyChar = (stat: CharStat) => useGame.getState().buyCharUpgrade(stat);
 
   window.__grantStat = (key: string, value: number) => {
     const s = useGame.getState();

@@ -3,7 +3,8 @@ import { useGame } from '../../game/store';
 import { fmt } from '../../game/decimal';
 import { levelProgress, economyConfig } from '../../config/economy.config';
 import { FLOOR_THEMES, WALL_THEMES } from '../../config/palette';
-import { CoinIcon, GemIcon, StarBadge, GearIcon, MailIcon, BrushIcon, QuestPhoto } from './icons';
+import { CoinIcon, GemIcon, StarBadge, GearIcon, MailIcon, BrushIcon, CharIcon, QuestPhoto } from './icons';
+import { CharacterPanel } from './CharacterPanel';
 
 /**
  * HUD — gerçek tycoon yerleşimi (UI redesign 2026-06-10; referans: My Perfect Hotel HUD grameri).
@@ -23,12 +24,23 @@ export function HUD() {
   const quest = useGame((s) => s.quest);
   const focusQuest = useGame((s) => s.focusQuest);
   const hardReset = useGame((s) => s.hardReset);
+  const charPanelSeen = useGame((s) => s.charPanelSeen);
+  const markCharPanelSeen = useGame((s) => s.markCharPanelSeen);
   const [offlineSeen, setOfflineSeen] = useState(false);
-  const [panel, setPanel] = useState<'settings' | 'mail' | 'shop' | null>(null);
+  const [panel, setPanel] = useState<'settings' | 'mail' | 'shop' | 'char' | null>(null);
 
   const lvl = levelProgress(xp);
   const questPct = quest && quest.total != null ? Math.min(100, ((quest.cur ?? 0) / quest.total) * 100) : null;
   const showOffline = offlineEarned > 0 && !offlineSeen;
+  // Karakter görevi aktifken butonda altın nabız + "!" rozeti; İLK karakter görevinde tek-seferlik
+  // spotlight karartması (dokununca kapanır, persist — bir daha çıkmaz). Tasarım: char-upgrades §6.
+  const charQuestActive = quest?.target.type === 'charStat';
+  const spotlight = charQuestActive && !charPanelSeen && panel == null && !showOffline;
+
+  const openCharPanel = () => {
+    markCharPanelSeen();
+    setPanel('char');
+  };
 
   const onReset = () => {
     if (window.confirm('Oyunu sıfırla? Bu cihazdaki tüm ilerleme silinecek.')) {
@@ -50,7 +62,9 @@ export function HUD() {
           <span className="lvl-text">{lvl.cur}/{lvl.need}</span>
         </div>
       </div>
-      <div className="side-btns">
+      {/* İlk karakter görevi spotlight'ı: karartma + buton kümesi öne çıkar (tek seferlik) */}
+      {spotlight && <div className="spotlight-backdrop" data-testid="char-spotlight" onClick={markCharPanelSeen} />}
+      <div className={`side-btns${spotlight ? ' spot' : ''}`}>
         <button className="icon-btn" data-testid="gear" title="Ayarlar" onClick={() => setPanel('settings')}>
           <GearIcon />
         </button>
@@ -59,6 +73,15 @@ export function HUD() {
         </button>
         <button className="icon-btn" data-testid="shop" title="Dekor Mağazası" onClick={() => setPanel('shop')}>
           <BrushIcon />
+        </button>
+        <button
+          className={`icon-btn char-btn${charQuestActive ? ' pulse' : ''}`}
+          data-testid="char"
+          title="Karakter"
+          onClick={openCharPanel}
+        >
+          <CharIcon />
+          {charQuestActive && <span className="char-bang">!</span>}
         </button>
       </div>
 
@@ -126,6 +149,9 @@ export function HUD() {
 
       {/* DEKOR MAĞAZASI modalı (WP6): zemin + duvar temaları zone-başına satın alınır */}
       {panel === 'shop' && <ShopPanel onClose={() => setPanel(null)} />}
+
+      {/* KARAKTER modalı (v20): 3/4 açı önizleme + tepsi/mıknatıs/hız kartları */}
+      {panel === 'char' && <CharacterPanel onClose={() => setPanel(null)} />}
 
       {/* POSTA modalı (gelecekte gelen kutusu/ödüller — şimdilik boş) */}
       {panel === 'mail' && (
