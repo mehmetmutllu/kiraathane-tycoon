@@ -196,10 +196,12 @@ export const economyConfig = {
     /**
      * Seviye-başı hareket hızı (dünya birimi/sn; index = waiterLevel). L1 (taban) = garson tutulunca;
      * L2 = mekânsal yükseltme ile (D-018 §7). Oyuncudan (player.moveSpeed 4.5) HER seviyede yavaş =
-     * kısmi assist korunur (D-014: garson tek başına büyüyen mekânı döndüremez). L1 1.8 alan büyüyünce
-     * doğrulanmış kullanılır hız; L2 2.6 belirgin hızlanma ama hâlâ oyuncunun çok altında.
+     * kısmi assist korunur (D-014: garson tek başına büyüyen mekânı döndüremez).
+     * 2026-06-11 (kullanıcı onaylı): per-zone mutfakla (D-025) mesafeler kısalınca garson "çok hızlı"
+     * hissettirdi → 1.8/2.3 → 1.5/2.0. Tur hesabı: ocak→en uzak masa ~8.7 br → L1 tek yön ~5.8sn,
+     * tur ~12sn < sabır 18sn (güvenli pay sürer).
      */
-    moveSpeedByLevel: [1.8, 2.3],
+    moveSpeedByLevel: [1.5, 2.0],
     /** Tepsi kapasitesi (tek seferde taşıdığı çay). Oyuncununkinden küçük. */
     trayCapacity: 1,
     /** Garson L2 yükseltme maliyeti (₺). Tek seviye (L1→L2); L3+ Faz 4 (💎/video). */

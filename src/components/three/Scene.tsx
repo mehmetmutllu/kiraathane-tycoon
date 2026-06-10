@@ -97,8 +97,8 @@ function Stations() {
 // D-025: her açık zone'un ocağı kendi duvarında → zone-2 açılınca onun da çaycısı belirir (aynalı).
 function KitchenHand({ x, faceIn }: { x: number; faceIn: number }) {
   const ref = useRef<Group>(null);
-  const zMin = -3.7;
-  const zMax = -1.3; // ocak modülü boyunca (z -2.5 ± 1.2)
+  const zMin = -4.6;
+  const zMax = -1.4; // mutfak bloğu boyunca (bulaşık -4.9..-3.5 + ocak -3.6..-1.4)
   useFrame((st) => {
     const grp = ref.current;
     if (!grp) return;
@@ -224,9 +224,10 @@ function UpgradeZone() {
 
 // Bulaşık noktaları (Faz 2e; ZONE BAŞINA, D-022): kirli bardaklar burada yıkanır.
 // (Havadaki etiket KALDIRILDI — lavabo görseli zaten ne olduğunu anlatır; D-017 §2 sadelik.)
-function DishStationUnit({ pos }: { pos: readonly [number, number, number] }) {
+// D-025 rev. A: modül kendi ocağının bitişiğinde, yan duvara paralel (rotasyon ocakla aynı).
+function DishStationUnit({ pos, rot }: { pos: readonly [number, number, number]; rot: number }) {
   return (
-    <group position={[pos[0], 0, pos[2]]}>
+    <group position={[pos[0], 0, pos[2]]} rotation={[0, rot, 0]}>
       {/* tezgah */}
       <mesh castShadow receiveShadow position={[0, 0.45, 0]}>
         <boxGeometry args={[1.4, 0.9, 0.8]} />
@@ -251,7 +252,7 @@ function DishStation() {
   return (
     <>
       {LAYOUT.dishStations.slice(0, zonesOpen).map((p, z) => (
-        <DishStationUnit key={z} pos={p} />
+        <DishStationUnit key={z} pos={p} rot={LAYOUT.stationRots[z]} />
       ))}
     </>
   );

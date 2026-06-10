@@ -2,7 +2,16 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
-## ŞU AN (2026-06-11 FEEDBACK TURU-2 UYGULANDI — YERLEŞİM v3, D-025; SAVE v19 değişmedi)
+## ŞU AN (2026-06-11 FEEDBACK TURU-3 — D-025 rev. A: TEK MUTFAK BLOĞU + yavaş garson; SAVE v19)
+Kullanıcı turu-2'ye "bulaşık ayrı garip" dedi; iki seçenek sunuldu, **A'yı seçti** (uygulandı):
+- Bulaşık kendi ocağının HEMEN BİTİŞİĞİNDE (z1 sol/z2 sağ duvar TEK mutfak bloğu; dishHalf döndü).
+- GARSON YAVAŞLATILDI (onaylı): [1.8,2.3]→[1.5,2.0] — tur ~12sn < sabır 18sn (ölçüm 51 servis/180sn).
+- Masa sıraları hafif yukarı (-1.0/1.9); bulaşıkçı pad'i [0.2,-4.5] (pad daireleri kesişmez).
+- Görev zoom'ları canlı doğrulandı (yeni bulaşık/ocak/çay pad'i/zone-2 merkez).
+**ONAY BEKLEYEN:** `docs/character-upgrades-design.md` — karakter yükseltme sistemi (tepsi 2→6,
+mıknatıs, hız; özellik-bazlı model; SAVE v20 planı; 5 onay sorusu §7). Kullanıcı onaylarsa uygulanacak.
+
+## (ÖNCEKİ — 2026-06-11 FEEDBACK TURU-2 UYGULANDI — YERLEŞİM v3, D-025; SAVE v19 değişmedi)
 Kullanıcı PC başında değildi; tasarım+uygulama+doğrulama tek oturumda bitirildi (agent'sız, bizzat):
 - **Per-zone AYNALI mutfak:** z2'nin kendi ocağı (sağ duvar) + bulaşık arka duvarda ocaktan AYRI →
   zone-2 garson turu ~21sn→~10sn (sabır 18sn artık dolmuyor; 180sn ölçümünde 50 servis, kaçan yok).

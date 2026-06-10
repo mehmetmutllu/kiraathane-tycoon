@@ -484,6 +484,12 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   şerit bug'ı). KARAR: 2 garson (salon başına 1; 3.sü fazla otomasyon — D-014). **vitest 91/91, build
   temiz, smoke 27/27, Playwright canlı (2 zone kurulu, dama+yeşil duvar gerçek satın alma, L4 masa),
   konsol 0 hata.**
+- ✅ **D-025 rev. A (2026-06-11 turu-3, kullanıcı seçimi):** bulaşık kendi ocağının bitişiğine (yan
+  duvarda TEK mutfak bloğu, z2 aynalı) + garson yavaşlatıldı [1.5,2.0] (onaylı; tur ~12sn < sabır 18)
+  + masa sıraları yukarı + bulaşıkçı pad'i ferah + görev zoom'ları canlı doğrulandı. vitest 91/91,
+  smoke 27/27, konsol 0.
+- 🟡 **ONAY BEKLİYOR:** karakter yükseltme sistemi tasarımı → `docs/character-upgrades-design.md`
+  (tepsi 2→6 + mıknatıs + hız; özellik-bazlı; SAVE v20; quest entegrasyonu; §7'de 5 onay sorusu).
 - ⏳ **3a kalan:** zone 3-4 (tost/TV konsepti) + kat planındaki servis odaları (floorplan-master.md).
 - ⏳ **3b:** Kat geçişi: kat dolunca **merdiven** açılır → ekran kararma → üst kat; dinamik bounds/kamera; SAVE bump.
 - ⏳ **3c:** Tuvalet ODASI + DEPO (KATA özel, parayla açılır) + tuvalet kâğıdı döngüsü (depodan al→tak) + temizlikçi.

@@ -71,10 +71,10 @@ const mir = (z: number, v: readonly [number, number, number]): Vec3 =>
 // Açılış sırası ÖN sıradan (kapıya yakın, ocağa uzak — başlangıç masası ocaktan >4 br: yürüme
 // döngüsü en baştan zorlanır, D-017 §1) → arka sıra sonra açılır.
 const BASE_TABLES = [
-  { table: [-1.2, 0, 2.2], seat: [-1.2, 0.6, 2.98], upgradeSpot: [0.0, 0, 3.4] },
-  { table: [3.2, 0, 2.2], seat: [3.2, 0.6, 2.98], upgradeSpot: [2.0, 0, 3.4] },
-  { table: [-1.2, 0, -0.6], seat: [-1.2, 0.6, 0.18], upgradeSpot: [0.0, 0, 0.6] },
-  { table: [3.2, 0, -0.6], seat: [3.2, 0.6, 0.18], upgradeSpot: [2.0, 0, 0.6] },
+  { table: [-1.2, 0, 1.9], seat: [-1.2, 0.6, 2.68], upgradeSpot: [0.0, 0, 3.1] },
+  { table: [3.2, 0, 1.9], seat: [3.2, 0.6, 2.68], upgradeSpot: [2.0, 0, 3.1] },
+  { table: [-1.2, 0, -1.0], seat: [-1.2, 0.6, -0.22], upgradeSpot: [0.0, 0, 0.2] },
+  { table: [3.2, 0, -1.0], seat: [3.2, 0.6, -0.22], upgradeSpot: [2.0, 0, 0.2] },
 ] as const;
 
 const ALL_TABLES = ZONE_OFFSETS.flatMap((_, z) =>
@@ -115,13 +115,15 @@ export const LAYOUT = {
     table3: ALL_TABLES[2].table,
     table4: ALL_TABLES[3].table,
     waiter: [-4.6, 0, 1.5] as Vec3, // kendi ocağının önünde, kenarda (D-018 §1 kenar-yerleşim)
-    dishwasher: [3.3, 0, -3.4] as Vec3, // kendi bulaşığının yanında (washRadius 1.6 DIŞI: mesafe 2.09)
+    // Bulaşıkçı pad'i: mutfak bloğunun arka köşesi açıklığında (çay pad'iyle dolum daireleri
+    // KESİŞMEZ: ayrım 3.28 > 2×PAD_RADIUS 2.6 — "pad'ler sık olmasın" isteği).
+    dishwasher: [0.2, 0, -4.5] as Vec3,
     zone2: [5.3, 0, 0.6] as Vec3, // zone sınırı (duvarsız eşik)
     z2table2: ALL_TABLES[5].table,
     z2table3: ALL_TABLES[6].table,
     z2table4: ALL_TABLES[7].table,
     z2waiter: mir(1, [-4.6, 0, 1.5]),
-    z2dishwasher: mir(1, [3.3, 0, -3.4]),
+    z2dishwasher: mir(1, [0.2, 0, -4.5]),
   } as Record<string, Vec3>,
   // Zone başına mekânsal çay yükseltme noktası: kendi modülünün HEMEN YANINDA (kullanıcı 2026-06-11:
   // "yükseltme ocağın yanında dursun" — My Hotel obje-başı desen). PAD MERKEZİ her ocağın
@@ -134,17 +136,19 @@ export const LAYOUT = {
   waiterHome: [-4.7, 0, 4.2] as Vec3,
   waiterUpgradeSpots: ZONE_OFFSETS.map((_, z) => mir(z, [-3.5, 0, 4.4])),
   waiterUpgradeSpot: [-3.5, 0, 4.4] as Vec3,
-  // Bulaşık modülleri: ARKA duvar dibi, ocaktan AYRI (D-025 "çay ocağı ile bulaşık tek yerde olmasın").
-  dishStations: ZONE_OFFSETS.map((_, z) => mir(z, [1.8, 0, -4.85])),
-  dishStation: [1.8, 0, -4.85] as Vec3,
-  dishwasherHomes: ZONE_OFFSETS.map((_, z) => mir(z, [1.8, 0, -3.6])),
-  dishwasherHome: [1.8, 0, -3.6] as Vec3,
+  // Bulaşık modülleri (D-025 rev. A, kullanıcı 2026-06-11: "bulaşık ocağın yanında olsun"):
+  // kendi ocağının HEMEN ÜSTÜNDE, AYNI yan duvarda bitişik (ocak z -3.6..-1.4, bulaşık z -4.9..-3.5
+  // → tek mutfak bloğu). Zone-2 aynalı (sağ duvar).
+  dishStations: ZONE_OFFSETS.map((_, z) => mir(z, [-4.35, 0, -4.2])),
+  dishStation: [-4.35, 0, -4.2] as Vec3,
+  dishwasherHomes: ZONE_OFFSETS.map((_, z) => mir(z, [-3.3, 0, -4.2])),
+  dishwasherHome: [-3.3, 0, -4.2] as Vec3,
   // --- Collision footprint'leri (yarı-boyut [hx,hz]; D-016): GÖRSEL mesh'lere yaslı → oyuncu objeye
   // "değiyor gibi" sokulur, arada boşluk kalmaz. (ocak tezgah 2.2×0.8, bulaşık 1.4×0.8, masa r0.5, sandalye 0.42.)
   playerRadius: 0.35, // oyuncu kapsül görsel yarıçapı = standoff'u görsel kenara denk getirir
   actorRadius: 0.28, // garson/bulaşıkçı engel-kaçınma yarıçapı
   stationHalf: [0.4, 1.1] as [number, number], // sol duvara paralel modül (uzun kenar z'de — D-023 şerit)
-  dishHalf: [0.7, 0.4] as [number, number],
+  dishHalf: [0.4, 0.7] as [number, number], // yan duvara paralel modül (uzun kenar z'de — ocak gibi)
   tableHalf: [0.5, 0.5] as [number, number],
   chairHalf: [0.22, 0.22] as [number, number], // sandalye + oturan müşteri
   actorHalf: [0.3, 0.3] as [number, number], // yürüyen müşteri / garson / bulaşıkçı (oyuncu engeli)

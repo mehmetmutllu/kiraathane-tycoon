@@ -20,6 +20,13 @@ Geometri testi: pad merkezi pickup dışı +0.3 (eski 2.9 toplamı yerine; picku
 **Doğrulama:** vitest 91/91, build temiz, smoke 27/27, Playwright canlı: iki zone tam kurulu, bulaşıkçılar yeni
 konumda çalışıyor (oyuncu yol üstünde DURURSA personel bekler — önceden de olan davranış), dama+yeşil duvar satın
 alımı görsel doğru, masa L4 kare+altın+4 tabure, konsol 0 hata.
+**REV. A (aynı gün, kullanıcı seçimi):** "Bulaşığın ocaktan ayrı durması garip" → iki seçenek sunuldu;
+kullanıcı A'yı seçti: bulaşık kendi ocağının HEMEN BİTİŞİĞİNE (aynı yan duvar; z1 sol/z2 sağ TEK MUTFAK BLOĞU;
+dish [-4.35,-4.2] aynalı, dishHalf [0.4,0.7] döndü, görsel rotasyon stationRots). Bulaşıkçı pad'i [0.2,-4.5]
+(çay pad'iyle dolum daireleri kesişmez: 3.28 > 2.6). Masa sıraları hafif yukarı (-1.0/1.9). GARSON YAVAŞLATILDI
+(kullanıcı onaylı): moveSpeedByLevel [1.8,2.3]→[1.5,2.0] — per-zone mutfakla "çok hızlı" hissetti; tur ~12sn <
+sabır 18sn korunur (canlı ölçüm: 180sn'de 51 servis, kaçan yok). Görev zoom'ları canlı doğrulandı (q_wash→yeni
+bulaşık, q_station2→çay pad'i, q_pickup→ocak, q_z2serve→zone-2 merkez).
 
 ## D-024 · DÜNYA v2: duvarsız tek salon + TEK kapı + SOL DUVARDA L MUTFAK ŞERİDİ (2026-06-11 gece; D-022 revizyonu)
 **Bağlam:** Kullanıcı feedback'i (feedback-2026-06-11.md §B): "zone'lar arasında duvar OLMAMALI, alan genişleyince
