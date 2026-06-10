@@ -31,7 +31,7 @@ function PreviewModel({ cap }: { cap: number }) {
   useFrame((st, dt) => {
     const t = st.clock.elapsedTime;
     if (sway.current) {
-      sway.current.rotation.y = -0.55 + Math.sin(t * 0.6) * 0.1;
+      sway.current.rotation.y = -0.38 + Math.sin(t * 0.6) * 0.1;
       sway.current.position.y = Math.sin(t * 1.6) * 0.015;
     }
     if (trayG.current) {
@@ -81,8 +81,8 @@ export function CharacterPanel({ onClose }: { onClose: () => void }) {
         <div className="char-canvas">
           <Canvas
             dpr={[1, 1.5]}
-            camera={{ position: [0.9, 1.4, 1.6], fov: 38 }}
-            onCreated={({ camera }) => camera.lookAt(0, 0.85, 0)}
+            camera={{ position: [0.75, 1.45, 2.05], fov: 36 }}
+            onCreated={({ camera }) => camera.lookAt(0, 0.78, 0.1)}
           >
             <ambientLight intensity={0.85} />
             <directionalLight position={[2, 4, 3]} intensity={1.2} />

@@ -126,7 +126,9 @@ export const LAYOUT = {
     // Bulaşıkçı pad'i: mutfak bloğunun arka köşesi açıklığında (çay pad'iyle dolum daireleri
     // KESİŞMEZ: ayrım 3.28 > 2×PAD_RADIUS 2.6 — "pad'ler sık olmasın" isteği).
     dishwasher: [0.2, 0, -4.5] as Vec3,
-    zone2: [5.3, 0, 0.6] as Vec3, // zone sınırı (duvarsız eşik)
+    // Zone sınırının HEMEN zone-1 tarafında (2026-06-11: kilitli salon TAM karanlık örtülü —
+    // pad halkası/etiketi karanlığa taşmasın diye eşikten ~0.75 içeri alındı).
+    zone2: [4.55, 0, 0.6] as Vec3,
     z2table2: ALL_TABLES[5].table,
     z2table3: ALL_TABLES[6].table,
     z2table4: ALL_TABLES[7].table,

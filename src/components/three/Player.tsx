@@ -6,43 +6,80 @@ import { useFacing } from './useFacing';
 import { PALETTE } from '../../config/palette';
 import { trayCapacityFor } from '../../config/economy.config';
 
-// Çaycı karakter prototipi (gece 6/7): PARÇALI gövde (Faz 6 animasyon iskeletine hazırlık —
-// her uzuv ayrı mesh). Kasket + krem gömlek + bordo önlük + bıyık; flat low-poly (D-013).
+// Çaycı karakter v2 (2026-06-11 kullanıcı isteği: "kollar bacaklar falan güzel olsun"): PARÇALI
+// gövde (Faz 6 animasyon iskeletine hazırlık — her uzuv ayrı mesh). AYRI bacaklar + ayakkabılar,
+// iki simetrik kol (gömlek kollu + ten rengi eller, tepsiye uzanır), gözler + burun.
+// Kasket + krem gömlek + bordo önlük + bıyık; flat low-poly (D-013).
 // EXPORT: karakter paneli (v20) mini Canvas'ta aynı gövdeyi 3/4 açıdan gösterir.
+const SHOE = '#2e2a26';
 export function OwnerBody() {
   return (
     <group>
-      {/* pantolon (alt gövde) */}
-      <mesh castShadow position={[0, 0.28, 0]}>
-        <cylinderGeometry args={[0.26, 0.3, 0.56, 12]} />
+      {/* bacaklar + ayakkabılar (ayrı uzuvlar) */}
+      {[-0.11, 0.11].map((x) => (
+        <group key={x} position={[x, 0, 0]}>
+          <mesh castShadow position={[0, 0.24, 0]}>
+            <capsuleGeometry args={[0.085, 0.24, 4, 8]} />
+            <meshStandardMaterial color={PALETTE.pants} />
+          </mesh>
+          <mesh castShadow position={[0, 0.05, 0.04]}>
+            <boxGeometry args={[0.15, 0.09, 0.27]} />
+            <meshStandardMaterial color={SHOE} />
+          </mesh>
+        </group>
+      ))}
+      {/* kalça (pantolon üstü) */}
+      <mesh castShadow position={[0, 0.44, 0]}>
+        <cylinderGeometry args={[0.24, 0.26, 0.18, 12]} />
         <meshStandardMaterial color={PALETTE.pants} />
       </mesh>
-      {/* gömlek (üst gövde) */}
-      <mesh castShadow position={[0, 0.72, 0]}>
-        <cylinderGeometry args={[0.3, 0.26, 0.34, 12]} />
+      {/* gömlek gövde + omuz hattı */}
+      <mesh castShadow position={[0, 0.67, 0]}>
+        <cylinderGeometry args={[0.27, 0.24, 0.32, 12]} />
         <meshStandardMaterial color={PALETTE.shirt} />
       </mesh>
-      {/* önlük (göğüsten dize, önde) */}
-      <mesh castShadow position={[0, 0.52, 0.24]} rotation={[0.06, 0, 0]}>
-        <boxGeometry args={[0.4, 0.62, 0.06]} />
+      <mesh castShadow position={[0, 0.85, 0]}>
+        <cylinderGeometry args={[0.29, 0.27, 0.12, 12]} />
+        <meshStandardMaterial color={PALETTE.shirt} />
+      </mesh>
+      {/* önlük (göğüsten dize) + bel bağı */}
+      <mesh castShadow position={[0, 0.55, 0.235]} rotation={[0.06, 0, 0]}>
+        <boxGeometry args={[0.4, 0.6, 0.05]} />
         <meshStandardMaterial color={PALETTE.apron} />
       </mesh>
-      {/* kollar (yanlarda, hafif öne) */}
-      <mesh castShadow position={[-0.36, 0.72, 0.12]} rotation={[0.5, 0, 0.15]}>
-        <capsuleGeometry args={[0.07, 0.34, 4, 8]} />
-        <meshStandardMaterial color={PALETTE.shirt} />
+      <mesh position={[0, 0.5, 0]}>
+        <cylinderGeometry args={[0.255, 0.255, 0.05, 12]} />
+        <meshStandardMaterial color={PALETTE.apron} />
       </mesh>
-      <mesh castShadow position={[0.36, 0.72, 0.12]} rotation={[0.5, 0, -0.15]}>
-        <capsuleGeometry args={[0.07, 0.34, 4, 8]} />
-        <meshStandardMaterial color={PALETTE.skin} />
-      </mesh>
-      {/* baş */}
+      {/* kollar: omuzdan ÖNE-YUKARI tepsiye uzanır; uçta ten rengi eller (tepsi kenarlarını tutar) */}
+      {[-1, 1].map((s) => (
+        <group key={s} position={[s * 0.3, 0.86, 0.04]} rotation={[-1.9, 0, s * -0.12]}>
+          <mesh castShadow position={[0, -0.16, 0]}>
+            <capsuleGeometry args={[0.065, 0.26, 4, 8]} />
+            <meshStandardMaterial color={PALETTE.shirt} />
+          </mesh>
+          <mesh castShadow position={[0, -0.33, 0]}>
+            <sphereGeometry args={[0.072, 10, 8]} />
+            <meshStandardMaterial color={PALETTE.skin} />
+          </mesh>
+        </group>
+      ))}
+      {/* baş + yüz (gözler, burun, bıyık) */}
       <mesh castShadow position={[0, 1.08, 0]}>
         <sphereGeometry args={[0.21, 14, 12]} />
         <meshStandardMaterial color={PALETTE.skin} />
       </mesh>
-      {/* bıyık (yüzün önünde) */}
-      <mesh position={[0, 1.02, 0.18]}>
+      {[-0.072, 0.072].map((x) => (
+        <mesh key={x} position={[x, 1.115, 0.185]}>
+          <sphereGeometry args={[0.022, 8, 6]} />
+          <meshStandardMaterial color="#2b2118" />
+        </mesh>
+      ))}
+      <mesh position={[0, 1.07, 0.205]}>
+        <sphereGeometry args={[0.032, 8, 6]} />
+        <meshStandardMaterial color="#d49a55" />
+      </mesh>
+      <mesh position={[0, 1.018, 0.183]}>
         <boxGeometry args={[0.16, 0.045, 0.04]} />
         <meshStandardMaterial color={PALETTE.mustache} />
       </mesh>

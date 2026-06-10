@@ -1,6 +1,6 @@
-import { Suspense, useMemo, useRef } from 'react';
+import { Suspense, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Vector3, type Group, type MeshStandardMaterial } from 'three';
+import { Vector3, type Group, type MeshBasicMaterial, type MeshStandardMaterial } from 'three';
 import { useGame, LAYOUT, stationSoftMaxLevel, stationUpgradeCost, upgradeZoneUnlockedZ, tableSoftMaxLevel, tableUpgradeZoneUnlocked, tableNextCost, waiterSoftMaxLevel, waiterUpgradeCost, waiterUpgradeUnlockedZ } from '../../game/store';
 import { GroundMarker } from './GroundMarker';
 import { PALETTE, FLOOR_THEMES, WALL_THEMES } from '../../config/palette';
@@ -548,22 +548,35 @@ function DecorProps() {
   );
 }
 
-// Zone-2 KİLİTLİYKEN üstüne yarı saydam karanlık örtü: "henüz açılmamış salon" hissi (Roblox-tycoon).
-// Pad'i geçitte; oyuncu içeri girebilir ama mobilya/müşteri yok.
+// Zone-2 KİLİTLİYKEN TAM GİZLİ (kullanıcı 2026-06-11: "açılmadan hiç ama hiç görünmesin"):
+// salon, eski yarı saydam örtü yerine TAM OPAK karanlık HACİMLE örtülür (void — zemin/duvar/dekor
+// hiçbiri seçilemez; zone-1'den bakınca salonun bittiği yerde düz karanlık görünür). Pad açılınca
+// ~1.8sn'de karanlıktan aydınlığa FADE (kamera panı zaten yeni salona döner) → "karanlıktan çıkış"
+// reveal'i. Fade bitince örtü tamamen kalkar (maliyet sıfır).
 function LockedZoneShade() {
   const zonesOpen = useGame((s) => s.zonesOpen);
-  if (zonesOpen > 1) return null;
+  const mat = useRef<MeshBasicMaterial>(null);
+  const [gone, setGone] = useState(false);
+  useFrame((_, dt) => {
+    if (!mat.current || zonesOpen <= 1) return;
+    mat.current.opacity = Math.max(0, mat.current.opacity - dt / 1.8);
+    if (mat.current.opacity <= 0) setGone(true);
+  });
+  if (gone) return null;
+  // Hacim zone-2'nin TÜM iç alanı + dış duvarlarını kaplar (sağ/arka/ön duvar payları dahil);
+  // zone-1 tarafına TAŞMAZ (sınır x=zoneBorderX'te keskin karanlık yüzü = salonun "sonu").
   const za = LAYOUT.zoneAreas[1];
+  const x0 = za.minX;
+  const x1 = za.maxX + 0.8; // dış duvar (area+0.5 + kalınlık) payı
+  const z0 = za.minZ - 0.8;
+  const z1 = za.maxZ + 0.8;
   return (
     <group>
-      <mesh
-        rotation={[-Math.PI / 2, 0, 0]}
-        position={[(za.minX + za.maxX) / 2, 0.03, (za.minZ + za.maxZ) / 2]}
-      >
-        <planeGeometry args={[za.maxX - za.minX + 1, za.maxZ - za.minZ + 1]} />
-        <meshStandardMaterial color="#10161c" transparent opacity={0.55} polygonOffset polygonOffsetFactor={-2} polygonOffsetUnits={-2} />
+      <mesh position={[(x0 + x1) / 2, 1.1, (z0 + z1) / 2]} renderOrder={999}>
+        <boxGeometry args={[x1 - x0, 2.2, z1 - z0]} />
+        <meshBasicMaterial ref={mat} color="#070a0e" transparent opacity={1} depthWrite={false} />
       </mesh>
-      {/* zone sınırı zemin çizgisi (duvarsız eşik — D-023): kilitliyken görünür, açılınca tek salon */}
+      {/* zone sınırı zemin çizgisi (duvarsız eşik — D-023): kilitliyken eşiği işaretler, açılınca tek salon */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[LAYOUT.zoneBorderX, 0.035, 0]}>
         <planeGeometry args={[0.16, 10.6]} />
         <meshStandardMaterial color="#d9b24a" polygonOffset polygonOffsetFactor={-3} polygonOffsetUnits={-3} />
