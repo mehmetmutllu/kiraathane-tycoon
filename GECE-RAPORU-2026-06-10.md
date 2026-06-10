@@ -56,6 +56,11 @@ APK + bu rapor.
 2. **Lavabo/tuvalet mekaniği** zone-3 ile mi gelsin (önerim) yoksa daha erken mi?
 3. Görsel kimlikte beğenmediğin renk varsa `palette.ts`'te tek satır.
 
+## Önizleme
+Dev sunucu açık bırakıldı: **http://localhost:5173/** (kapanmışsa `npm run dev`).
+Not: `npm run apk` sırasında gradle, vite'ın izlediği `android/` klasörünü yeniden yazınca
+dev sunucu çöküyordu — vite.config'e watcher ignore eklendi (kalıcı fix).
+
 ## Doğrulama durumu
 vitest **85/85** · build temiz · sim ilk-alım **60sn sabit** · smoke **27/27** ·
 konsol 0 hata · 5 commit push'landı (`main`).
