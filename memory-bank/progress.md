@@ -519,6 +519,17 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   ÖNÜNE (yeni sıra ...q_charMagnet→q_zone2→q_waiterL2→q_tableL2→q_z2serve...; v22 İD-eşleme +
   q_zone2-atlanmış-kayıt güvenlik kelepçesi). vitest 110/110, build, sim (zone-2 ~32dk), smoke 27/27,
   Playwright canlı (duvar/reveal/migrasyon/toast/arka-masa müşterisi), konsol 0. (Henüz commit'lenmedi.)
+- ✅ **TELEFON FEEDBACK TURU-2 (2026-06-11, v22 APK canlı testi; SAVE v22→v23):** (1) bulaşıkçı pad
+  330→200 (kullanıcı verdi); (2) TÜM dolum işaretleri KALAN tutarı gösterir (maliyet−dolum; afford da
+  kalana bakar); (3) müşteri kapı-önü takılması KÖK çözüm — buildNavGrid ceil taşması alanın dışına
+  hücre açıyordu (z 5.05>5.0) → "içeri gir" eşiğiyle sonsuz salınım; alan-dışı hücreler bloke + gerçek
+  dt (1/60) regresyon testi + çöp kovası duvar dibine; (4) görev senkronu v23 — q_z2serve q_zone2'nin
+  hemen arkasına + stats.teasServedByZone (zone'lu serveTea YALNIZ o salonu sayar) + İD-eşlemeli
+  questIndex migrasyonu (q_waiterL2/q_tableL2 aktifse q_z2serve'e, questBase=0); (5) semaver yana,
+  bardaklar sol yarıda 2×4 (gömülme bitti); (6) garson çayı SADECE ÖNDEN alır (stationPickups +
+  REACH_PICKUP); (7) garson boşta ÜST sırada (waiterHomes mutfak yanına); (8) Tepsiyi Boşalt butonu
+  (çaylar gider, bardak temiz havuza; spotlight onboarding, trayTipSeen persist). vitest 119/119,
+  sim (config'ten etiketler), smoke 27/27, Playwright canlı (migrasyon enjeksiyonu dahil), konsol 0.
 - ⏳ **3a kalan:** zone 3-4 (tost/TV konsepti) + kat planındaki servis odaları (floorplan-master.md).
 - ⏳ **3b:** Kat geçişi: kat dolunca **merdiven** açılır → ekran kararma → üst kat; dinamik bounds/kamera; SAVE bump.
 - ⏳ **3c:** Tuvalet ODASI + DEPO (KATA özel, parayla açılır) + tuvalet kâğıdı döngüsü (depodan al→tak) + temizlikçi.

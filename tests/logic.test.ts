@@ -818,8 +818,8 @@ describe('kayıt migrasyonu v4..v15 (padFills, station2/samovar çıkışı, add
       stationLevel: 2, padsDone: ['table2', 'table3'], padFills: {}, tableLevels: [0, 0, 0, 0], waiterLevel: 0,
     } as unknown as Record<string, unknown>);
     expect(m.saveVersion).toBe(SAVE_VERSION);
-    // Sayaçlar sıfırdan (garson yok → tohum yok); v21 zone-başı sayaç [0, 0] ile gelir.
-    expect(m.stats).toEqual({ ...defaultStats(), waiterServedByZone: [0, 0] });
+    // Sayaçlar sıfırdan (garson yok → tohum yok); v21/v23 zone-başı sayaçlar [0, 0] ile gelir.
+    expect(m.stats).toEqual({ ...defaultStats(), waiterServedByZone: [0, 0], teasServedByZone: [0, 0] });
     // Tohumlama: öğretici sayaçlar + table2 + araları tamam; garson tutulmadığı için hat q_waiter'da durur.
     expect(economyConfig.quests[m.questIndex]?.id).toBe('q_waiter');
     expect(m.questBase).toBe(0);
@@ -1177,6 +1177,42 @@ describe('personel yol bulma (nav.ts — BFS, kilitlenme yok)', () => {
     const npc = useGame.getState().npcs.find((n) => n.id === 960)!;
     expect(npc.pos[0]).toBeCloseTo(LAYOUT.tables[backIdx].seat[0], 5);
     expect(npc.pos[2]).toBeCloseTo(LAYOUT.tables[backIdx].seat[2], 5);
+  });
+
+  it('nav ızgarası oyun alanının DIŞINA hücre açmaz (taşan satır kapı önü salınımı yapıyordu)', () => {
+    // KÖK NEDEN (telefon 2026-06-11): rows=ceil ile son satır merkezi z≈5.05 > area.maxZ 5.0 →
+    // kapıdan girip SAĞA gidecek müşterinin ilk waypoint'i bu satıra düşünce z>5.0'a itiliyor,
+    // "kapıya yürü" dalı geri çekiyor → kapı yanında (çöp kovası hizasında) sonsuz salınım.
+    const g = buildNavGrid(LAYOUT.area, 0.3, navSolids(), LAYOUT.actorRadius);
+    for (let r = 0; r < g.rows; r++) {
+      const z = g.minZ + (r + 0.5) * g.cell;
+      if (z > LAYOUT.area.maxZ) {
+        for (let c = 0; c < g.cols; c++) expect(g.blocked[r * g.cols + c]).toBe(1);
+      }
+    }
+  });
+
+  it('MÜŞTERİ sokaktan SAĞ ön masaya GERÇEK frame dt ile oturur (kapı önü salınım regresyonu)', () => {
+    useGame.getState().hardReset();
+    const rightIdx = 1; // ön-SAĞ masa: kapıdan sonra rota sağa kırar (telefon bug senaryosu)
+    useGame.setState({
+      padsDone: ['table2'],
+      player: [-4.5, 0.6, 4.2], // oyuncu uzakta
+      inputKeyboard: [0, 0],
+      inputJoystick: [0, 0],
+      npcs: [
+        { id: 962, state: 'toTable', pos: [...LAYOUT.streets[0]] as [number, number, number], tableIndex: rightIdx, timer: 0, color: '#27ae60' },
+      ],
+      spawnTimer: 999,
+    });
+    // GERÇEK frame adımı (1/60): telefondaki küçük adımlar hücre-sınırı salınımını tetikliyordu;
+    // dt=0.1'lik eski testler bunu atlıyordu. 35 sn simüle (30sn vazgeçme sigortasından uzun).
+    let st = 'toTable';
+    for (let i = 0; i < 35 * 60 && st === 'toTable'; i++) {
+      useGame.getState().tick(1 / 60);
+      st = useGame.getState().npcs.find((n) => n.id === 962)?.state ?? 'gone';
+    }
+    expect(st).toBe('waitingForTea'); // oturdu — salınıma takılıp vazgeçmedi
   });
 
   it('MÜŞTERİ arka masadan çıkışta kapıya BFS ile gider ve sokakta silinir', () => {
@@ -1839,11 +1875,12 @@ describe('zone-2 yükseltme gating (v21) — zone-1 deseni aynalanır (önce kap
 describe('görev sırası v22 — q_zone2 yükseltme görevlerinden ÖNCE + v21→v22 migrasyonu', () => {
   const qi = (id: string) => economyConfig.quests.findIndex((q) => q.id === id);
 
-  it('yeni sıra: q_charMagnet → q_zone2 → q_waiterL2 → q_tableL2 (2. salon yükseltme istemez)', () => {
+  it('sıra (v23 rev.): q_charMagnet → q_zone2 → q_z2serve → q_waiterL2 → q_tableL2 (önce yeni salonu yaşa)', () => {
     expect(qi('q_zone2')).toBeGreaterThan(qi('q_charMagnet'));
-    expect(qi('q_zone2')).toBeLessThan(qi('q_waiterL2'));
+    expect(qi('q_z2serve')).toBe(qi('q_zone2') + 1); // salon açılır açılmaz görev ORADA (kamera çelişkisi yok)
+    expect(qi('q_z2serve')).toBeLessThan(qi('q_waiterL2'));
     expect(qi('q_waiterL2')).toBeLessThan(qi('q_tableL2'));
-    expect(qi('q_tableL2')).toBeLessThan(qi('q_z2serve'));
+    expect(qi('q_tableL2')).toBeLessThan(qi('q_z2table2'));
   });
 
   function v21Save(questIndex: number, padsDone: string[]) {
@@ -1884,5 +1921,111 @@ describe('görev sırası v22 — q_zone2 yükseltme görevlerinden ÖNCE + v21�
       floorThemeByZone: [], wallThemeByZone: [], ownedCosmetics: [], lastSaved: Date.now(),
     } as unknown as Record<string, unknown>);
     expect(economyConfig.quests[m.questIndex]?.id).toBe('q_zone2');
+  });
+});
+
+describe('görev senkronu v23 — q_z2serve öne + zone-başı servis sayacı + v22→v23 migrasyonu', () => {
+  function v22Save(questIndex: number, padsDone: string[], extra: Record<string, unknown> = {}) {
+    return {
+      saveVersion: 22, wallet: '0', diamonds: '0', lifetime: '9000',
+      stationLevels: [3, 0], waiterLevels: [0, 0], padFills: {}, tableLevels: [],
+      padsDone,
+      stats: { ...defaultStats(), teasServed: 40, waiterServed: 50, waiterServedByZone: [50, 0] },
+      questIndex, questBase: 0, xp: 0,
+      settings: { sound: true, music: true, notifications: true },
+      floorThemeByZone: [], wallThemeByZone: [], ownedCosmetics: [],
+      charUpgrades: { tray: 2, magnet: 0, speed: 0 }, charPanelSeen: true, lastSaved: Date.now(),
+      ...extra,
+    } as unknown as Record<string, unknown>;
+  }
+  const Z1_FULL = ['table2', 'table3', 'waiter', 'dishwasher', 'table4'];
+
+  it('v22 kaydı q_waiterL2/q_tableL2 aktifken → q_z2serve aktif olur (görev sessizce atlanmaz)', () => {
+    // Eski v22 sırasında 15 = q_waiterL2, 16 = q_tableL2 (zone2 ile z2serve ARASINDA kalıyorlardı).
+    const m1 = migrate(v22Save(15, [...Z1_FULL, 'zone2']));
+    expect(economyConfig.quests[m1.questIndex]?.id).toBe('q_z2serve');
+    const m2 = migrate(v22Save(16, [...Z1_FULL, 'zone2']));
+    expect(economyConfig.quests[m2.questIndex]?.id).toBe('q_z2serve');
+  });
+
+  it('v22 kaydı q_z2serve aktifken → İD korunur + questBase SIFIRLANIR (eski taban global sayaçtı)', () => {
+    const m = migrate(v22Save(17, [...Z1_FULL, 'zone2'], { questBase: 35 }));
+    expect(economyConfig.quests[m.questIndex]?.id).toBe('q_z2serve');
+    expect(m.questBase).toBe(0); // yeni sayaç (z2=0) tabanı — 35 kalsa görev asla bitmezdi
+  });
+
+  it('v22→v23 stats: teasServedByZone tohumlanır (global→z1, z2=0); diğer İD-eşlemeler kayar', () => {
+    const m = migrate(v22Save(12, Z1_FULL.slice(0, 4))); // eski 12 = q_table4
+    expect(m.stats.teasServedByZone).toEqual([40, 0]);
+    expect(economyConfig.quests[m.questIndex]?.id).toBe('q_table4');
+  });
+
+  it('zone\'lu serveTea sayacı: zone-1 servisi q_z2serve\'ü İLERLETMEZ, zone-2 servisi ilerletir', () => {
+    const stats = { ...defaultStats(), teasServed: 99, teasServedByZone: [99, 0] };
+    const target = { type: 'serveTea', count: 5, zone: 1 } as const;
+    const ctx = {
+      padsDone: [], stationLevel: 0, waiterLevel: 0, tableLevels: [], stats, questBase: 0,
+      charUpgrades: { tray: 0, magnet: 0, speed: 0 },
+    };
+    expect(questCounterValue(target, stats)).toBe(0); // global 99 SIZMAZ
+    expect(questTargetMet(target, ctx)).toBe(false);
+    stats.teasServedByZone[1] = 5;
+    expect(questTargetMet(target, ctx)).toBe(true);
+    // zone'suz hedef eski (global) davranışını korur.
+    expect(questCounterValue({ type: 'serveTea', count: 5 }, stats)).toBe(99);
+  });
+
+  it('emptyTray (v23): çaylar atılır, bardaklar TEMİZ havuza döner (korunum); kirliler tepside kalır', () => {
+    useGame.getState().hardReset();
+    const before = useGame.getState().cleanCups;
+    useGame.setState({ tray: 3, cleanCups: before - 3, carriedDirty: 1 });
+    useGame.getState().emptyTray();
+    const s = useGame.getState();
+    expect(s.tray).toBe(0);
+    expect(s.cleanCups).toBe(before); // bardak korunumu: 3 bardak temiz rafa döndü
+    expect(s.carriedDirty).toBe(1); // kirliler etkilenmez (onlar lavaboya gidiyor)
+    // Tepsi boşken no-op.
+    useGame.getState().emptyTray();
+    expect(useGame.getState().cleanCups).toBe(before);
+  });
+
+  it('trayTipSeen kayıt round-trip\'inde korunur (markTrayTipSeen → saveNow → init)', () => {
+    // node test ortamında localStorage yok → geçici mock ile gerçek persistence'ı doğrula.
+    const mem: Record<string, string> = {};
+    const g = globalThis as Record<string, unknown>;
+    const orig = g.localStorage;
+    g.localStorage = {
+      getItem: (k: string) => (k in mem ? mem[k] : null),
+      setItem: (k: string, v: string) => { mem[k] = v; },
+      removeItem: (k: string) => { delete mem[k]; },
+    };
+    try {
+      useGame.getState().hardReset();
+      expect(useGame.getState().trayTipSeen).toBe(false);
+      useGame.getState().markTrayTipSeen();
+      useGame.getState().init();
+      expect(useGame.getState().trayTipSeen).toBe(true);
+    } finally {
+      g.localStorage = orig;
+    }
+  });
+
+  it('STORE entegrasyon: oyuncunun z2 masasına el servisi teasServedByZone[1]\'i artırır', () => {
+    useGame.getState().hardReset();
+    const z2Table = 4; // zone-2 oto-masası (slot 4)
+    useGame.setState({
+      padsDone: [...Z1_FULL, 'zone2'],
+      tray: 1,
+      player: [LAYOUT.tables[z2Table].table[0], 0.6, LAYOUT.tables[z2Table].table[2]],
+      inputKeyboard: [0, 0],
+      inputJoystick: [0, 0],
+      npcs: [
+        { id: 970, state: 'waitingForTea', pos: [...LAYOUT.tables[z2Table].seat] as [number, number, number], tableIndex: z2Table, timer: 999, color: '#27ae60' },
+      ],
+      spawnTimer: 999,
+    });
+    useGame.getState().tick(0.1);
+    expect(useGame.getState().stats.teasServedByZone[1]).toBe(1);
+    expect(useGame.getState().stats.teasServedByZone[0] ?? 0).toBe(0);
   });
 });

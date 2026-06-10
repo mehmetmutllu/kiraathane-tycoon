@@ -2,7 +2,45 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
-## ŞU AN (2026-06-11 — TELEFON FEEDBACK TURU-1 ✅ COMMIT+PUSH (6aa7325) + YENİ APK, SAVE v22)
+## ŞU AN (2026-06-11 — TELEFON FEEDBACK TURU-2 ✅ UYGULANDI, SAVE v23)
+Kullanıcı v22 APK'yı CANLI test ederken 8 maddelik turu-2 feedback'i verdi; HEPSİ onaylanıp uygulandı:
+1. **Bulaşıkçı pad 330→200** (kullanıcı verdi — "git gel bitmiyor").
+2. **Pad'lerde KALAN tutar**: 4 işaret tipi de (pad + çay/masa/garson yükseltme) `ceil(maliyet−dolum)`
+   gösterir; `afford` da kalana bakar (100'e 50 verdiysen "50" yazar + 50'yle parlar).
+3. **Müşteri kapı-önü takılması KÖK ÇÖZÜM**: `buildNavGrid` ceil yüzünden son satır hücre merkezleri
+   alanın DIŞINA taşıyordu (z≈5.05 > maxZ 5.0) → kapıdan girip SAĞA kıracak müşterinin ilk waypoint'i
+   oraya düşünce "içeri gir" eşiğiyle (z>5.0→kapıya dön) SONSUZ SALINIM (çöp kovası hizası, kullanıcının
+   gördüğü bug). Alan-dışı hücreler artık BLOKE. 2 yeni vitest: gerçek dt (1/60) ile sokaktan SAĞ masaya
+   oturma (eski dt=0.1 testleri bug'ı atlıyordu — kırmızı→yeşil) + ızgara sınır değişmezi. Çöp kovası
+   kapı şeridinden ön duvar dibine ([1.6,4.5]→[2.5,4.85]) taşındı (salt görsel).
+4. **Görev senkronu v23**: q_z2serve, q_zone2'nin HEMEN arkasına (salon açılınca kamera oraya pan
+   atarken görev zone-1'e geri yollamıyordu çelişkisi bitti); yeni sıra ...q_charMagnet → q_zone2 →
+   q_z2serve → q_waiterL2 → q_tableL2 → q_z2table2... + **stats.teasServedByZone** (zone'lu serveTea
+   hedefi YALNIZ o salonu sayar — eski global sayaç "Yeni salonda 5 çay"ı z1'de de dolduruyordu).
+   **SAVE v22→v23**: İD-eşlemeli questIndex (entryV≥22; eski aktif q_waiterL2/q_tableL2 → q_z2serve'e
+   alınır, yoksa görev sessizce atlanırdı), q_z2serve aktifse questBase=0, teasServedByZone tohumu
+   [global, 0].
+5. **Semaver/bardak çakışması**: semaver tezgâhın yanına (lokal x+0.55), hazır bardaklar sol yarıda
+   2 sıra × 4 (max kuyruk 8) — gömülme bitti.
+6. **Garson SADECE ÖNDEN çay alır**: `LAYOUT.stationPickups` (modül ön yüzü, z2 aynalı) + REACH_PICKUP
+   0.45; eski merkez+geniş-yarıçap hedefi arka çaycı koridorunu da kabul ediyordu. Canlı 60sn örnekleme:
+   ocak bandında hiç arkaya geçmedi.
+7. **Garson boşta ÜST SIRADA bekler**: waiterHomes sol-alt [-4.7,4.2] → mutfak bloğu yanı [-3.5,-3.4]
+   (z2 aynalı); bulaşıkçı zaten üstteydi (yerinde).
+8. **Tepsiyi Boşalt butonu** (onaylı tasarım): tepside ≥1 çay varken sağ-alt buton (TrayEmptyIcon SVG +
+   adet rozeti); basınca çaylar gider, bardaklar TEMİZ havuza döner (korunum; kirliler kalır). İlk
+   belirişte spotlight + açıklama balonu (`trayTipSeen` persist; charPanelSeen kalıbı). `emptyTray`/
+   `markTrayTipSeen` store aksiyonları. NOT: ocak önünde basılırsa canlı döngü tepsiyi anında yeniden
+   doldurur (pickup yarıçapı) — bug değil, bilinçli.
+**Doğrulama:** vitest **119/119** (7 yeni) · build temiz · sim (etiketler artık config'ten; bulaşıkçı
+~19dk, zone-2 ~45dk normal — tempo korunmuş) · smoke **27/27** · Playwright canlı: tepsi butonu+spotlight,
+pad'de kalan ("80" = 200−120), v22→v23 migrasyon enjeksiyonla birebir (q_dish korundu, dolum 120 korundu),
+zone-sayaçlı q_z2serve (z1 servisi ilerletmedi, z2 ilerletti), garson önden alım + üst sıra idle, konsol 0 hata.
+NOT (canlı test tekniği): sayfanın beforeunload-otosave'i localStorage enjeksiyonunu eziyor —
+enjeksiyon+`Storage.prototype.setItem=noop`+reload AYNI evaluate bloğunda yapılmalı.
+**SIRADAKİ:** yeni APK (v23) kullanıcıya; oynadıkça turu-3 feedback'leri gelecek.
+
+## (ÖNCEKİ — 2026-06-11 — TELEFON FEEDBACK TURU-1 ✅ COMMIT+PUSH (6aa7325) + YENİ APK, SAVE v22)
 Kullanıcı v21 APK telefon testinden 6 maddelik feedback verdi; HEPSİ uygulandı:
 1. **Müşteri takılma bug'ı (KÖK çözüm):** "masaya müşteri gelmiyor / müşteriler kümeleniyor" =
    müşteriler hâlâ `moveAvoid` (eksen-kayma) kullanıyordu; yerleşim v3'te ÖN-SIRA masa, kapı ile

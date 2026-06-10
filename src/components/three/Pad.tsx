@@ -22,16 +22,18 @@ export function Pad() {
       {pads.map((pad) => {
         const fill = padFills[pad.id] ?? 0;
         const isHire = pad.effect.type === 'hireWaiter' || pad.effect.type === 'hireDishwasher';
+        // KALAN tutar gösterilir (2026-06-11 feedback: "100'e 50 verdiysem 50 yazsın").
+        const remaining = Math.max(0, Math.ceil(pad.cost - fill));
         return (
           <GroundMarker
             key={pad.id}
             pos={LAYOUT.padPos[pad.id]}
             label={pad.label}
-            sub={String(pad.cost)}
+            sub={String(remaining)}
             coin
             tint={isHire ? '#42a5f5' : '#43d17a'}
             progress={fill / pad.cost}
-            afford={cash >= pad.cost}
+            afford={cash >= remaining}
           />
         );
       })}

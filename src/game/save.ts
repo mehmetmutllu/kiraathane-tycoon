@@ -31,10 +31,21 @@ export interface SaveStats {
   /** ZONE-BAŞINA garson taşıma sayacı (v21): her salonun hızlandırma noktası KENDİ garsonunun
    *  işini sayar (z2 garsonu tutulur tutulmaz hızlandırma belirmesin — sindirme ilkesi). */
   waiterServedByZone: number[];
+  /** ZONE-BAŞINA oyuncu el servisi (v23): zone'lu serveTea görevleri (q_z2serve) YALNIZ o salonun
+   *  servisini sayar — eski global sayaç "Yeni salonda 5 çay" görevini zone-1'de de dolduruyordu. */
+  teasServedByZone: number[];
 }
 
 export function defaultStats(): SaveStats {
-  return { teaPickups: 0, teasServed: 0, coinsCollected: 0, dishesWashed: 0, waiterServed: 0, waiterServedByZone: [] };
+  return {
+    teaPickups: 0,
+    teasServed: 0,
+    coinsCollected: 0,
+    dishesWashed: 0,
+    waiterServed: 0,
+    waiterServedByZone: [],
+    teasServedByZone: [],
+  };
 }
 
 /** Oyuncu ayarları (v17 persist). Ses/müzik Faz 6'da, bildirimler Capacitor'da (Faz 5/7) okunur. */
@@ -81,6 +92,8 @@ export interface SaveData {
   charUpgrades: CharUpgrades;
   /** Karakter paneli ilk-sefer spotlight'ı görüldü mü (v20; butona dokununca true, bir daha çıkmaz). */
   charPanelSeen: boolean;
+  /** Tepsi-boşalt butonu ilk-sefer spotlight'ı görüldü mü (v23; charPanelSeen deseni). */
+  trayTipSeen: boolean;
   lastSaved: number; // epoch ms
 }
 
@@ -109,6 +122,7 @@ export function defaultSave(): SaveData {
     ownedCosmetics: [],
     charUpgrades: defaultCharUpgrades(),
     charPanelSeen: false,
+    trayTipSeen: false,
     lastSaved: Date.now(),
   };
 }
@@ -435,6 +449,44 @@ export function migrate(raw: Record<string, unknown>): SaveData {
     v = 22;
   }
 
+  // v22 -> v23 (GÖREV SENKRONU + ZONE-BAŞI SERVİS SAYACI, telefon turu-2 2026-06-11):
+  // q_z2serve, q_zone2'nin HEMEN arkasına alındı (salon açılınca görev oyuncuyu zone-1'e geri
+  // yollamasın); stats.teasServedByZone eklendi (zone'lu serveTea görevleri o salonu sayar).
+  if (v < 23) {
+    // Zone-başı servis tohumlama: global sayaç zone-1'e (tarihsel servisler fiilen ağırlıkla z1;
+    // z2 payı bilinemez → z2 0'dan sayar — görev "yeni" servis istediğinden adil).
+    const st = (d.stats && typeof d.stats === 'object' ? d.stats : {}) as Partial<SaveStats>;
+    d.stats = { ...st, teasServedByZone: [Number(st.teasServed ?? 0) || 0, 0] };
+    // questIndex İD-eşleme: yalnız entryV >= 22 (v22 SIRASINI ham index olarak kullanan kayıtlar) —
+    // daha eski girişler önceki adımlarda zaten GÜNCEL listeye İD ile eşlendi.
+    if (entryV >= 22) {
+      const V22_QUEST_IDS = [
+        'q_pickup', 'q_serve1', 'q_coin', 'q_table2', 'q_charTray1', 'q_serve5', 'q_station2',
+        'q_wash', 'q_table3', 'q_charTray2', 'q_waiter', 'q_dish', 'q_table4', 'q_charMagnet',
+        'q_zone2', 'q_waiterL2', 'q_tableL2', 'q_z2serve', 'q_z2table2', 'q_z2waiter',
+        'q_z2table3', 'q_z2dish', 'q_z2table4',
+      ];
+      const oldIdx = Math.max(0, Number(d.questIndex ?? 0) || 0);
+      if (oldIdx >= V22_QUEST_IDS.length) {
+        d.questIndex = economyConfig.quests.length;
+      } else {
+        const oldId = V22_QUEST_IDS[oldIdx];
+        // Eski sırada zone2 ile z2serve ARASINDAKİ yükseltme görevlerindeyse → q_z2serve'e alınır
+        // (yoksa yeni sırada q_z2serve sessizce atlanırdı); tamamlanmış yükseltme görevleri
+        // sonrasında tick auto-advance ile anında geçilir (ilerleme kaybolmaz).
+        const targetId = oldId === 'q_waiterL2' || oldId === 'q_tableL2' ? 'q_z2serve' : oldId;
+        const ni = economyConfig.quests.findIndex((q) => q.id === targetId);
+        if (ni >= 0) d.questIndex = ni;
+      }
+    }
+    // Aktif görev q_z2serve ise eski questBase GLOBAL sayaca göreydi → yeni sayacın (z2=0) tabanı 0.
+    {
+      const qi = Number(d.questIndex ?? 0) || 0;
+      if (economyConfig.quests[qi]?.id === 'q_z2serve') d.questBase = 0;
+    }
+    v = 23;
+  }
+
   // Sona kalan v16 şeması: türetilen alanlar (tables/stations/serviceSpeedMult/hasWaiter), eski `padFill`,
   // kaldırılan `trayLevel` ve 'samovar' referansı yazılmaz; stats/questIndex/questBase eklendi (v16).
   const rawStats = (d.stats && typeof d.stats === 'object' ? d.stats : {}) as Partial<SaveStats>;
@@ -464,6 +516,9 @@ export function migrate(raw: Record<string, unknown>): SaveData {
       waiterServedByZone: Array.isArray(rawStats.waiterServedByZone)
         ? rawStats.waiterServedByZone.map((n) => Number(n) || 0)
         : [],
+      teasServedByZone: Array.isArray(rawStats.teasServedByZone)
+        ? rawStats.teasServedByZone.map((n) => Number(n) || 0)
+        : [],
     },
     questIndex: Math.max(0, Math.min(Number(d.questIndex ?? 0) || 0, economyConfig.quests.length)),
     questBase: Math.max(0, Number(d.questBase ?? 0) || 0),
@@ -487,6 +542,7 @@ export function migrate(raw: Record<string, unknown>): SaveData {
       return { tray: clamp('tray'), magnet: clamp('magnet'), speed: clamp('speed') };
     })(),
     charPanelSeen: d.charPanelSeen === true,
+    trayTipSeen: d.trayTipSeen === true,
     lastSaved: Number(d.lastSaved ?? Date.now()) || Date.now(),
   };
 }

@@ -143,9 +143,14 @@ export const LAYOUT = {
   // tetiklenmez; ayrıca tick'teki pickup-guard'ı pickup alanı içinde dolumu zaten kilitler (vitest).
   upgradeZones: ZONE_OFFSETS.map((_, z) => mir(z, [-4.35, 0, -0.5])),
   upgradeZone: [-4.35, 0, -0.5] as Vec3, // zone-1 alias (testler/eski kod)
+  // Garson çay-alma noktası: modülün ÖN yüzü (2026-06-11 feedback: bardaklar önde, garson arkadaki
+  // çaycı koridorundan ALMASIN — eski merkez+yarıçap hedefi arka koridoru da kabul ediyordu). z2 aynalı.
+  stationPickups: ZONE_OFFSETS.map((_, z) => mir(z, [-3.5, 0, -2.5])),
   // Zone başına personel köşeleri + garson hız noktası (aynalı şablon).
-  waiterHomes: ZONE_OFFSETS.map((_, z) => mir(z, [-4.7, 0, 4.2])),
-  waiterHome: [-4.7, 0, 4.2] as Vec3,
+  // Garson boşta ÜST sırada, kendi mutfak bloğunun yanında bekler (2026-06-11 feedback: "sol altta
+  // değil üst sırada dursun"). Çay pickup önünden (stationPickups z -2.5) ve bulaşıkçı köşesinden uzak.
+  waiterHomes: ZONE_OFFSETS.map((_, z) => mir(z, [-3.5, 0, -3.4])),
+  waiterHome: [-3.5, 0, -3.4] as Vec3,
   waiterUpgradeSpots: ZONE_OFFSETS.map((_, z) => mir(z, [-3.5, 0, 4.4])),
   waiterUpgradeSpot: [-3.5, 0, 4.4] as Vec3,
   // Bulaşık modülleri (D-025 rev. A, kullanıcı 2026-06-11: "bulaşık ocağın yanında olsun"):
@@ -210,7 +215,9 @@ const NAV_CELL = 0.3; // ızgara hücre boyu (dünya birimi) — masalar arası 
 // Personel "yanına varınca teslim/al" mesafeleri (GEOMETRİK: footprint yarısı + aktör yarıçapı + küçük pay).
 // Masaya BİTİŞİK teslim → "tam masaya gelmeden veriyor" hissi biter (eski serveRadius 1.6 yerine ~1.05).
 const REACH_TABLE = LAYOUT.tableHalf[0] + LAYOUT.actorRadius + 0.25; // ocaktan masaya servis
-const REACH_STATION = LAYOUT.stationHalf[0] + LAYOUT.actorRadius + 0.4; // ocaktan tepsi yükleme (dar kenar +x'te)
+// Tepsi yükleme: ocağın ÖN yüzündeki pickup noktasına varış (2026-06-11: merkez+geniş yarıçap
+// arka çaycı koridorunu da kabul ediyordu → garson arkadan çay alıyordu; bardaklar ÖNDE).
+const REACH_PICKUP = 0.45;
 const REACH_WASH = LAYOUT.dishHalf[1] + LAYOUT.actorRadius + 0.4; // bulaşıkta yıkama
 const REACH_HOME = 0.4; // boştayken köşeye dönüş
 
@@ -518,6 +525,8 @@ export interface GameState {
   charUpgrades: CharUpgrades;
   /** Karakter paneli ilk-sefer spotlight'ı görüldü mü (persist v20). */
   charPanelSeen: boolean;
+  /** Tepsi-boşalt butonu ilk-sefer spotlight'ı görüldü mü (persist v23). */
+  trayTipSeen: boolean;
   /** Üst görev barı görünümü (transient; her tick türetilir; null = hat bitti). */
   quest: QuestView | null;
   /** Kamera odak isteği (transient): görev barına dokununca / yeni şey açılınca hedefe pan. */
@@ -552,6 +561,14 @@ export interface GameState {
   buyCharUpgrade: (stat: CharStat) => boolean;
   /** Karakter paneli ilk-sefer spotlight'ını kapat (butona dokununca; persist — bir daha çıkmaz). */
   markCharPanelSeen: () => void;
+  /**
+   * Tepsiyi boşalt (v23, telefon turu-2): tepsideki ÇAYLAR atılır, bardakları temiz havuza döner
+   * (korunum bozulmaz; çay ziyan = küçük bedel, istismarı engeller). Taşınan KİRLİLER kalır —
+   * onlar zaten lavaboya gidiyor. Tepsi çayla doluyken müşteriler kalkarsa kilitlenme çözücüsü.
+   */
+  emptyTray: () => void;
+  /** Tepsi-boşalt butonu ilk-sefer spotlight'ını kapat (persist — bir daha çıkmaz). */
+  markTrayTipSeen: () => void;
   saveNow: () => void;
   hardReset: () => void;
 }
@@ -603,7 +620,9 @@ export interface QuestCtx {
 export function questCounterValue(target: QuestTarget, stats: SaveStats): number | null {
   switch (target.type) {
     case 'pickupTea': return stats.teaPickups;
-    case 'serveTea': return stats.teasServed;
+    case 'serveTea':
+      // zone'lu hedef (v23): yalnız o salonun el servisi sayılır ("Yeni salonda 5 çay" gerçek olsun).
+      return target.zone != null ? stats.teasServedByZone[target.zone] ?? 0 : stats.teasServed;
     case 'collectCoin': return stats.coinsCollected;
     case 'washDish': return stats.dishesWashed;
     default: return null;
@@ -783,6 +802,7 @@ export const useGame = create<GameState>((set, get) => ({
   ownedCosmetics: [],
   charUpgrades: defaultCharUpgrades(),
   charPanelSeen: false,
+  trayTipSeen: false,
   quest: null,
   camFocus: null,
   offlineEarned: 0,
@@ -884,6 +904,7 @@ export const useGame = create<GameState>((set, get) => ({
       ownedCosmetics: [...save.ownedCosmetics],
       charUpgrades,
       charPanelSeen: save.charPanelSeen,
+      trayTipSeen: save.trayTipSeen,
       quest:
         save.questIndex < C.quests.length
           ? questView(C.quests[save.questIndex], {
@@ -1164,6 +1185,8 @@ export const useGame = create<GameState>((set, get) => ({
           n.timer = C.npc.eatTime;
           tray -= 1;
           stats.teasServed += 1;
+          const sz = zoneOfTable(n.tableIndex); // v23: zone'lu serveTea görevleri o salonu sayar
+          stats.teasServedByZone[sz] = (stats.teasServedByZone[sz] ?? 0) + 1;
           xp += C.xp.perTeaServed;
         }
       }
@@ -1233,9 +1256,9 @@ export const useGame = create<GameState>((set, get) => ({
           xp += C.xp.perWaiterServed;
         }
       } else if (w.tray < wTrayCap && waitingNpcs.length > 0) {
-        // Yükleme: KENDİ zone'unun ocağına git; bitişik gelince hazır çaydan tepsiye al.
+        // Yükleme: KENDİ zone'unun ocağının ÖN yüzüne git (bardaklar önde); varınca tepsiye al.
         if (
-          navStep(w.pos, LAYOUT.stations[z], wStep, navGrid, REACH_STATION, player, obstacles) &&
+          navStep(w.pos, LAYOUT.stationPickups[z], wStep, navGrid, REACH_PICKUP, player, obstacles) &&
           readyCupsByZone[z] > 0
         ) {
           const take = Math.min(wTrayCap - w.tray, readyCupsByZone[z]);
@@ -1677,6 +1700,19 @@ export const useGame = create<GameState>((set, get) => ({
     get().saveNow();
   },
 
+  emptyTray: () => {
+    const s = get();
+    if (s.tray <= 0) return;
+    // Çaylar atılır, bardakları temiz havuza döner (korunum); kirliler tepside KALIR.
+    set({ tray: 0, cleanCups: s.cleanCups + s.tray });
+  },
+
+  markTrayTipSeen: () => {
+    if (get().trayTipSeen) return;
+    set({ trayTipSeen: true });
+    get().saveNow();
+  },
+
   saveNow: () => {
     const s = get();
     // D-015: tables/stations/serviceSpeedMult/hasWaiter KAYDEDİLMEZ — yüklemede padsDone'dan türetilir.
@@ -1700,6 +1736,7 @@ export const useGame = create<GameState>((set, get) => ({
       ownedCosmetics: [...s.ownedCosmetics],
       charUpgrades: { ...s.charUpgrades },
       charPanelSeen: s.charPanelSeen,
+      trayTipSeen: s.trayTipSeen,
       lastSaved: Date.now(),
     });
   },

@@ -53,31 +53,35 @@ export function TeaStation({
               <boxGeometry args={[2.2, 0.9, 0.8]} />
               <meshStandardMaterial color="#795548" />
             </mesh>
-            {/* semaver gövde (seviyeyle büyür) */}
-            <mesh castShadow position={[0, 0.9 + bodyH / 2, 0]}>
-              <cylinderGeometry args={[0.28, 0.34, bodyH, 16]} />
-              <meshStandardMaterial color={color} metalness={0.6} roughness={0.3} />
-            </mesh>
-            {/* semaver tepe */}
-            <mesh castShadow position={[0, 0.9 + bodyH + 0.12, 0]}>
-              <sphereGeometry args={[0.18, 12, 12]} />
-              <meshStandardMaterial color={color} metalness={0.6} roughness={0.3} />
-            </mesh>
-            {/* musluk */}
-            <mesh castShadow position={[0, 0.9 + bodyH * 0.4, 0.34]} rotation={[Math.PI / 2, 0, 0]}>
-              <cylinderGeometry args={[0.04, 0.04, 0.2, 8]} />
-              <meshStandardMaterial color="#5d4037" />
-            </mesh>
-            {/* hazır çaylar (tezgâh önünde sıralı küçük bardaklar) */}
+            {/* Semaver tezgâhın BİR YANINDA (2026-06-11 feedback: bardaklar ortadaki semaverin
+                içine gömülüyordu) — bardaklar diğer yarıda 2 sıra, gövdeyle hiç kesişmez. */}
+            <group position={[0.55, 0, 0]}>
+              {/* semaver gövde (seviyeyle büyür) */}
+              <mesh castShadow position={[0, 0.9 + bodyH / 2, 0]}>
+                <cylinderGeometry args={[0.28, 0.34, bodyH, 16]} />
+                <meshStandardMaterial color={color} metalness={0.6} roughness={0.3} />
+              </mesh>
+              {/* semaver tepe */}
+              <mesh castShadow position={[0, 0.9 + bodyH + 0.12, 0]}>
+                <sphereGeometry args={[0.18, 12, 12]} />
+                <meshStandardMaterial color={color} metalness={0.6} roughness={0.3} />
+              </mesh>
+              {/* musluk */}
+              <mesh castShadow position={[0, 0.9 + bodyH * 0.4, 0.34]} rotation={[Math.PI / 2, 0, 0]}>
+                <cylinderGeometry args={[0.04, 0.04, 0.2, 8]} />
+                <meshStandardMaterial color="#5d4037" />
+              </mesh>
+              {/* semaver buharı (tepe küresinin üstünden yükselir) */}
+              <Puff baseY={0.9 + bodyH + 0.28} phase={0} />
+              <Puff baseY={0.9 + bodyH + 0.28} phase={0.5} />
+            </group>
+            {/* hazır çaylar — tezgâhın SOL yarısında 2 sıra × 4 (max kuyruk 8; ön sıra önce dolar) */}
             {Array.from({ length: readyCups }).map((_, i) => (
-              <mesh key={i} castShadow position={[-0.5 + (i % 6) * 0.2, 0.96, 0.28]}>
+              <mesh key={i} castShadow position={[-1.0 + (i % 4) * 0.24, 0.96, i < 4 ? 0.24 : 0.0]}>
                 <cylinderGeometry args={[0.06, 0.05, 0.16, 8]} />
                 <meshStandardMaterial color="#c0392b" emissive="#7a1f17" emissiveIntensity={0.25} />
               </mesh>
             ))}
-            {/* semaver buharı (tepe küresinin üstünden yükselir) */}
-            <Puff baseY={0.9 + bodyH + 0.28} phase={0} />
-            <Puff baseY={0.9 + bodyH + 0.28} phase={0.5} />
           </group>
         }
       />

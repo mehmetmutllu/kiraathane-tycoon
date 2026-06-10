@@ -212,16 +212,18 @@ function UpgradeZone() {
         if (stationLevels[z] >= stationSoftMaxLevel()) return null;
         if (!upgradeZoneUnlockedZ(z, gate)) return null;
         const cost = stationUpgradeCost(stationLevels[z]);
+        // KALAN tutar (2026-06-11 feedback: kısmi dolum düşülmüş hali yazsın).
+        const remaining = Math.max(0, Math.ceil(cost - upgradeFills[z]));
         return (
           <GroundMarker
             key={z}
             pos={LAYOUT.upgradeZones[z]}
             label="Çay Yükselt"
-            sub={String(cost)}
+            sub={String(remaining)}
             coin
             tint="#ffce54"
             progress={upgradeFills[z] / cost}
-            afford={wallet.toNumber() >= cost}
+            afford={wallet.toNumber() >= remaining}
           />
         );
       })}
@@ -285,17 +287,18 @@ function TableUpgradeMarkers() {
         const lvl = tableLevels[i] ?? 0;
         if (lvl >= tableSoftMaxLevel()) return null; // max → işaret gizlenir
         const cost = tableNextCost(lvl);
+        const remaining = Math.max(0, Math.ceil(cost - (tableUpgradeFills[i] ?? 0)));
         return (
           <GroundMarker
             key={i}
             pos={t.upgradeSpot}
             label="Masa"
-            sub={String(cost)}
+            sub={String(remaining)}
             coin
             tint="#ffce54"
             radius={0.6}
             progress={(tableUpgradeFills[i] ?? 0) / cost}
-            afford={cash >= cost}
+            afford={cash >= remaining}
           />
         );
       })}
@@ -331,17 +334,18 @@ function WaiterUpgradeMarker() {
         if (!w || waiterLevels[z] >= waiterSoftMaxLevel()) return null;
         // Arka-plan şartı (minWaiterServed): garson 20 çay taşımadan işaret hiç görünmez (store dolumu da kapalı).
         if (!waiterUpgradeUnlockedZ(z, gate, waiterLevels[z])) return null;
+        const remaining = Math.max(0, Math.ceil(cost - waiterUpgradeFills[z]));
         return (
           <GroundMarker
             key={z}
             pos={LAYOUT.waiterUpgradeSpots[z]}
             label="Garson Hız"
-            sub={String(cost)}
+            sub={String(remaining)}
             coin
             tint="#ffce54"
             radius={0.6}
             progress={waiterUpgradeFills[z] / cost}
-            afford={wallet.toNumber() >= cost}
+            afford={wallet.toNumber() >= remaining}
           />
         );
       })}
@@ -492,8 +496,9 @@ function TvCorner() {
 function DecorProps() {
   return (
     <group>
-      {/* çöp kovası (kapı yanı): gövde + kapak + sallanan kapak kulpu + yan şeritler */}
-      <group position={[1.6, 0, 4.5]}>
+      {/* çöp kovası (kapı yanı, ÖN DUVAR DİBİ — 2026-06-11: yürüme şeridinin ortasındaydı,
+          takılan müşteri onun üstünde titreyince "kova engelliyor" hissi verdi) */}
+      <group position={[2.5, 0, 4.85]}>
         <mesh castShadow position={[0, 0.3, 0]}>
           <cylinderGeometry args={[0.2, 0.16, 0.6, 12]} />
           <meshStandardMaterial color={PALETTE.trashBody} metalness={0.3} roughness={0.6} />

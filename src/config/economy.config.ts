@@ -13,7 +13,7 @@
  *   L5 (Usta)   = masterDiamondCost 💎 VEYA 1 ödüllü video; outputMult yerine masterOutputMult
  */
 
-export const SAVE_VERSION = 22;
+export const SAVE_VERSION = 23;
 
 /**
  * ZONE modeli (Faz 3a + D-022, gece 2026-06-10): zemin kat zone'ları. Her zone kendi TEMALI
@@ -76,7 +76,9 @@ export interface Requires {
  */
 export type QuestTarget =
   | { type: 'pickupTea'; count: number } // ocaktan tepsiye çay al
-  | { type: 'serveTea'; count: number } // oyuncu eliyle masaya çay bırak
+  // zone verilirse YALNIZ o salondaki servisler sayılır (v23: "Yeni salonda 5 çay" gerçekten
+  // salon-2'de saysın — eski global sayaç zone-1 servisini de sayıyordu).
+  | { type: 'serveTea'; count: number; zone?: number } // oyuncu eliyle masaya çay bırak
   | { type: 'collectCoin'; count: number } // yerden para topla
   | { type: 'washDish'; count: number } // oyuncu eliyle bulaşıkta kirli yıka
   | { type: 'pad'; id: string } // pad'i tamamla (masa aç / personel tut)
@@ -333,7 +335,8 @@ export const economyConfig = {
       requires: { prev: ['table2'] }, effect: { type: 'addTable' } },
     { id: 'waiter', label: 'Garson Tut', cost: 150, fillRate: 50, optional: false, zone: 0,
       requires: { prev: ['table3'] }, effect: { type: 'hireWaiter' } },
-    { id: 'dishwasher', label: 'Bulaşıkçı Tut', cost: 330, fillRate: 60, optional: false, zone: 0,
+    // 2026-06-11 telefon feedback turu-2: 330 "aşırı fazla, git gel bitmiyor" → 200 (kullanıcı verdi).
+    { id: 'dishwasher', label: 'Bulaşıkçı Tut', cost: 200, fillRate: 60, optional: false, zone: 0,
       requires: { prev: ['waiter'] }, effect: { type: 'hireDishwasher' } },
     { id: 'table4', label: '4. Masa', cost: 420, fillRate: 75, optional: false, zone: 0,
       requires: { prev: ['dishwasher'] }, effect: { type: 'addTable' } },
@@ -387,10 +390,13 @@ export const economyConfig = {
     // --- ZONE-2 görev hattı (Faz 3a + D-022): geçitteki pad → yeni salonun kendi zinciri.
     // v22 (kullanıcı 2026-06-11): q_zone2 YÜKSELTME görevlerinin (garson hız + masa) ÖNÜNE alındı —
     // "2. salon için yükseltmelerin tamamlanmasına gerek yok"; tüm zone-1 pad'leri (table4 zinciri) yeter.
+    // v23 (görev senkronu, 2026-06-11 turu-2): q_z2serve q_zone2'nin HEMEN arkasına — salon açılınca
+    // kamera oraya pan atarken görev oyuncuyu zone-1'e geri yollamasın; önce yeni salonu yaşa,
+    // sonra zone-1 yükseltmeleri (q_waiterL2/q_tableL2). target.zone=1: yalnız salon-2 servisleri sayar.
     { id: 'q_zone2', title: '2. Salonu aç', target: { type: 'pad', id: 'zone2' } },
+    { id: 'q_z2serve', title: 'Yeni salonda 5 çay servis et', target: { type: 'serveTea', count: 5, zone: 1 }, zone: 1 },
     { id: 'q_waiterL2', title: 'Garsonu hızlandır', target: { type: 'waiterLevel', level: 1 } },
     { id: 'q_tableL2', title: 'Bir masayı yükselt', target: { type: 'tableLevel', level: 1 } },
-    { id: 'q_z2serve', title: 'Yeni salonda 5 çay servis et', target: { type: 'serveTea', count: 5 }, zone: 1 },
     { id: 'q_z2table2', title: 'Salon 2: 2. Masayı aç', target: { type: 'pad', id: 'z2table2' }, zone: 1 },
     { id: 'q_z2waiter', title: 'Salon 2: Garson tut', target: { type: 'pad', id: 'z2waiter' }, zone: 1 },
     { id: 'q_z2table3', title: 'Salon 2: 3. Masayı aç', target: { type: 'pad', id: 'z2table3' }, zone: 1 },

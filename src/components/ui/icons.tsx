@@ -98,6 +98,34 @@ export function BangBadge({ size = 30 }: { size?: number }) {
   );
 }
 
+/** Tepsi + geri oku (tepsiyi boşalt butonu, v23): kahve tepsi üstünde çay bardağı, sol-üstte geri oku.
+ *  (TrayIcon'dan AYRI: o, karakter tepsi yükseltmesinin görev fotoğrafı.) */
+export function TrayEmptyIcon({ size = 28 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
+      <defs>
+        <linearGradient id="ic-tray" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#a1887f" />
+          <stop offset="1" stopColor="#5d4037" />
+        </linearGradient>
+        <linearGradient id="ic-tray-tea" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#ef5350" />
+          <stop offset="1" stopColor="#b71c1c" />
+        </linearGradient>
+      </defs>
+      {/* tepsi */}
+      <ellipse cx="24" cy="36" rx="18" ry="6.5" fill="#3e2723" />
+      <ellipse cx="24" cy="34" rx="18" ry="6.5" fill="url(#ic-tray)" stroke="#fff" strokeWidth="2" />
+      {/* ince belli çay bardağı */}
+      <path d="M19.5 18c0 3 1.4 4.6 1.4 7.2 0 2.4-1 3.8-1 5.8h8.2c0-2-1-3.4-1-5.8 0-2.6 1.4-4.2 1.4-7.2h-9z"
+        fill="url(#ic-tray-tea)" stroke="#fff" strokeWidth="1.8" strokeLinejoin="round" />
+      {/* geri oku (çaylar ocağa/rafa döner) */}
+      <path d="M11 14a8.5 8.5 0 0 1 14.5-3.5" stroke="#fff" strokeWidth="3.4" fill="none" strokeLinecap="round" />
+      <path d="M11 7.5V14h6.4" stroke="#fff" strokeWidth="3.4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 /** Ayarlar dişlisi (beyaz). */
 export function GearIcon({ size = 22 }: { size?: number }) {
   return (

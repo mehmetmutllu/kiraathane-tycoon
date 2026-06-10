@@ -44,6 +44,13 @@ export function buildNavGrid(area: NavArea, cell: number, solids: NavSolid[], in
     const z = area.minZ + (r + 0.5) * cell;
     for (let c = 0; c < cols; c++) {
       const x = area.minX + (c + 0.5) * cell;
+      // ceil yüzünden son satır/sütun merkezi alanın DIŞINA taşabilir (z≈5.05 > maxZ 5.0) —
+      // bu hücreler KAPALI: kapıdan girip sağa kıracak müşterinin ilk waypoint'i buraya düşünce
+      // "içeri gir" eşiğiyle (z>5.0 → kapıya dön) sonsuz salınım yapıyordu (telefon 2026-06-11).
+      if (x > area.maxX || z > area.maxZ) {
+        blocked[r * cols + c] = 1;
+        continue;
+      }
       for (const s of solids) {
         if (Math.abs(x - s.c[0]) < s.h[0] + inflate && Math.abs(z - s.c[2]) < s.h[1] + inflate) {
           blocked[r * cols + c] = 1;
