@@ -488,8 +488,12 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   duvarda TEK mutfak bloğu, z2 aynalı) + garson yavaşlatıldı [1.5,2.0] (onaylı; tur ~12sn < sabır 18)
   + masa sıraları yukarı + bulaşıkçı pad'i ferah + görev zoom'ları canlı doğrulandı. vitest 91/91,
   smoke 27/27, konsol 0.
-- 🟡 **ONAY BEKLİYOR:** karakter yükseltme sistemi tasarımı → `docs/character-upgrades-design.md`
-  (tepsi 2→6 + mıknatıs + hız; özellik-bazlı; SAVE v20; quest entegrasyonu; §7'de 5 onay sorusu).
+- 🟢 **ONAYLANDI — SONRAKİ OTURUMDA UYGULANACAK:** karakter yükseltme sistemi →
+  `docs/character-upgrades-design.md` (kullanıcı revizyonlu final: buton SOL kümede 4. + yatay
+  sıra ≤ seviye pill; tepsi T1-T2 ucuz / T3-T4 çok pahalı 15k/60k; görev zamanlaması birinci
+  öncelik — q_charTray1 q_serve5 ÖNCESİ, q_charTray2 q_table3-q_waiter arası, q_charMagnet
+  q_table4 sonrası; buton nabız efekti + ilk-sefer spotlight; panelde 3/4 açı karakter + canlı
+  tepsi önizleme; SAVE v20 + questIndex İD-EŞLEMELİ migrasyon).
 - ⏳ **3a kalan:** zone 3-4 (tost/TV konsepti) + kat planındaki servis odaları (floorplan-master.md).
 - ⏳ **3b:** Kat geçişi: kat dolunca **merdiven** açılır → ekran kararma → üst kat; dinamik bounds/kamera; SAVE bump.
 - ⏳ **3c:** Tuvalet ODASI + DEPO (KATA özel, parayla açılır) + tuvalet kâğıdı döngüsü (depodan al→tak) + temizlikçi.
