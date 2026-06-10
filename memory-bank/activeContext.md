@@ -2,6 +2,13 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## >>> SONRAKİ OTURUM İLK İŞ: KULLANICIYA FEEDBACK'İNİ SOR <<<
+Kullanıcı (2026-06-11 sabah, gece paketini gördükten sonra): **"ÇOK BÜYÜK feedback'lerim var, ben sana
+anlatacağım"** dedi ve oturumu kapattırdı. İçerik henüz BİLİNMİYOR. Sonraki oturum /kiraathane-devam
+sonrası özetten hemen sonra İLK SORU: "Feedback'lerini dinliyorum — gece paketinde (zone-2, görsel
+kimlik, karakter, curve önerileri Ö1-Ö4, APK) neyi nasıl değiştirelim?" Feedback alınmadan yeni işe
+BAŞLAMA; curve önerileri (Ö1-Ö4) de feedback'le birlikte karara bağlansın.
+
 ## ŞU AN (2026-06-11 SABAH — 🌙 GECE OTURUMU TAMAMLANDI: 7/7 madde ✅; SAVE v18)
 Gece listesi bitti (detay aşağıdaki ✅'lı maddeler + progress.md): (1) ocak-yükseltme para yeme fix'i,
 (2) kat master planı (docs/floorplan-master.md), (3) **ZONE-2 ÇALIŞIR** (per-zone ocak+bulaşık D-022,
