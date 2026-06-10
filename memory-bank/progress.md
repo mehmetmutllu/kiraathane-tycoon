@@ -369,8 +369,14 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   sabit, smoke 27/27, Playwright canlı doğrulama (guard + yeni noktada dolum çalışıyor), konsol 0 hata.**
   Değişen: store.ts (LAYOUT.upgradeZone + guard), logic.test.ts. SAVE değişmedi.
 - ⏳ **Adım 3:** curve'ü 3-profil simülasyonla ciddi hesapla + sayı tablosu onaya. ⏳ **Adım 4:** Faz 3a zone-2.
-- ⏳ **Zone mimarisi kararı AÇIK:** per-zone ocak+bulaşık MI, merkezi servis + zone-başı personel Mİ — kullanıcı tekrar
-  sordu, onaylanmış model YOK; sonraki oturumda artı/eksi tablosuyla karara bağlanacak.
+- ⏳ **Zone mimarisi kararı AÇIK (2026-06-11 feedback'iyle netleşmeye yakın):** kullanıcı "zone'lar arası duvar OLMASIN,
+  tek salon, TEK kapı, mutfak sol duvara paralel L-şerit (zone açıldıkça uzar)" dedi → fiilen MERKEZİ SERVİS + zone-başı
+  personel modeli; D-022 revizyonu onay bekliyor (docs/feedback-2026-06-11.md §G karar noktası).
+- 📋 **KULLANICI BÜYÜK FEEDBACK (2026-06-11) → ARAŞTIRMA+PLAN BİTTİ, KOD YAZILMADI:** tamamı `docs/feedback-2026-06-11.md`.
+  19 madde (buglar: table2 pad gate, z2 kamera odağı, toast z-index, offline 7k; dünya: duvarsız tek salon/tek kapı/L mutfak
+  şeridi/çaycı NPC; görsel: parke-fayans zemin, masa ŞEKİL evrimi, klasik çay ocağı+çaydanlık sayısı, TV içeriği, karakter
+  asset'leri [Quaternius önerisi], dekor; sistem: tek dolum göstergesi, kozmetik mağaza 10k+/zone). Bug kök nedenleri kodda
+  doğrulandı (E tablosu); iş paketleri WP1-WP6 + 5 karar sorusu hazır. Sonraki oturum: onay → WP1'den başla.
 
 ## Faz 3 — Kat & zone çoğaltma & roller 🔧 (D-016 ile yeniden çerçevelendi)
 - ✅ **3a ZONE-2 ÇALIŞIR (GECE 3/7, 2026-06-10; SAVE 17→18):** Per-zone TEMALI ocak+bulaşık (D-022) uygulandı.

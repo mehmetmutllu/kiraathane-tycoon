@@ -2,14 +2,24 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
-## >>> SONRAKİ OTURUM İLK İŞ: KULLANICIYA FEEDBACK'İNİ SOR <<<
-Kullanıcı (2026-06-11 sabah, gece paketini gördükten sonra): **"ÇOK BÜYÜK feedback'lerim var, ben sana
-anlatacağım"** dedi ve oturumu kapattırdı. İçerik henüz BİLİNMİYOR. Sonraki oturum /kiraathane-devam
-sonrası özetten hemen sonra İLK SORU: "Feedback'lerini dinliyorum — gece paketinde (zone-2, görsel
-kimlik, karakter, curve önerileri Ö1-Ö4, APK) neyi nasıl değiştirelim?" Feedback alınmadan yeni işe
-BAŞLAMA; curve önerileri (Ö1-Ö4) de feedback'le birlikte karara bağlansın.
+## >>> SONRAKİ OTURUM İLK İŞ: docs/feedback-2026-06-11.md PLANINI KULLANICIYLA ONAYLA <<<
+Kullanıcı BÜYÜK feedback'ini verdi (2026-06-11); TAMAMI + bug kök nedenleri + asset araştırması +
+iş paketi planı **`docs/feedback-2026-06-11.md`**'de. KOD YAZILMADI (planla-onayla-uygula).
+Sonraki oturum akışı: (1) H bölümündeki 5 KARAR sorusunu kullanıcıya sor (merkezi mutfak-şeridi
+modeli / Quaternius UAL $9.99 / kirli masa A-B / tek dolum göstergesi hangisi / curve Ö1-Ö4),
+(2) onaylananlara göre WP1 (hızlı bug paketi: table2 pad gate, questFocusPos zone, camFocus akışı,
+toast z-index, offline nerf) ile BAŞLA, sonra WP2 dünya-v2 → WP3 ASSET (kullanıcıya göre en önemli).
+Özet: duvarsız TEK salon + tek kapı + sol duvarda L mutfak şeridi (çaycı NPC) + parke/fayans zemin +
+masa şekil-evrimi + Quaternius karakterler + kozmetik mağaza (10k+/zone) + offline para-tavanı.
 
-## ŞU AN (2026-06-11 SABAH — 🌙 GECE OTURUMU TAMAMLANDI: 7/7 madde ✅; SAVE v18)
+## ŞU AN (2026-06-11 — FEEDBACK ALINDI + ARAŞTIRMA/PLAN BİTTİ; kod değişmedi, SAVE v18)
+Kullanıcı feedback'i işlendi → docs/feedback-2026-06-11.md (A-D feedback, E bug kök nedenleri,
+F asset araştırması [öneri: Quaternius Modular Men+Women CC0 + UAL], G dünya-v2/kat planı revizyonu
+[duvarsız tek salon = fiilen MERKEZİ SERVİS modeli → D-022 revizyon karar noktası], H iş paketleri
+WP1-WP6 + 5 karar sorusu). Offline 7k bug'ı doğrulandı: oran×0.5×min(geçen,1sa), zone-2'de oran
+~4₺/sn → 1sa tavanda ~7.2k; tavan süreye var paraya yok.
+
+## (ÖNCEKİ — 2026-06-11 SABAH: 🌙 GECE OTURUMU TAMAMLANDI 7/7 ✅; SAVE v18)
 Gece listesi bitti (detay aşağıdaki ✅'lı maddeler + progress.md): (1) ocak-yükseltme para yeme fix'i,
 (2) kat master planı (docs/floorplan-master.md), (3) **ZONE-2 ÇALIŞIR** (per-zone ocak+bulaşık D-022,
 SAVE v17→v18, quest +7), (4) görsel kimlik (palette.ts + kilim/lambri/tabure/örtü-evrimi/TV/tabela),
