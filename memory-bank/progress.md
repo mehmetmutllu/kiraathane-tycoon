@@ -400,6 +400,17 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   v18 migrasyon), build temiz, sim ilk-alım 60sn SABİT, smoke 27/27, Playwright canlı: zinciri oyna→zone2 aç→
   2. ocak demler→oyuncudan pickup→z2 masasına müşteri→geçitten input'la GEÇİLİR (8.55) / duvar BLOKLAR (5.4),
   konsol 0 hata.** Screenshot: night-3-zone2-station.png + night-3-zone2-locked.png. Tasarım: docs/zone2-design.md.
+- ✅ **WP1 hızlı bug paketi (GECE-2 1/6, 2026-06-11; feedback-2026-06-11.md §E):** 5 fix:
+  (1) **table2 pad gate:** aktif görevin hedef pad'inde TEMPO gate'leri (minLifetime vb.) atlanır,
+  `prev` omurga zinciri güvenlik ağı olarak kalır (visiblePads). (2) **questFocusPos zone parametresi**
+  (+QuestDef.zone; z2 görevleri zone:1) → z2 görevinde kamera artık zone-2'ye bakar; serveTea odağı
+  zone alanı ortası. (3) **camFocus tick-içi öncelik** (requestFocus: reveal 1 < görev 2 < zone 3;
+  düşük yükseği ezemez) + TTL eşitlendi (zone +1 kalktı) + kamera-iptal deadzone 0.1→0.25 (joystick
+  titremesi odağı bozmasın). (4) **toast z-index 15** + max-width (görev kartının altında kalmaz/taşmaz).
+  (5) **OFFLINE NERF (kullanıcı bizzat istedi):** rateMult 0.5→0.2 + YENİ capNextPadFrac 0.6 = para
+  tavanı (sıradaki omurga pad maliyetinin %60'ı; pad'ler bittiyse en pahalı pad referans) —
+  `computeOfflineEarned` saf helper. Kapa-aç 7k bug'ı kapandı (z1-sonu tavan: 1200×0.6=720₺).
+  **Doğrulama: vitest 89/89 (4 yeni), build temiz, sim İDEALİZE ilk-alım 60sn SABİT, smoke 27/27.**
 - ⏳ **3a kalan:** zone 3-4 (tost/TV konsepti) + kat planındaki servis odaları (floorplan-master.md).
 - ⏳ **3b:** Kat geçişi: kat dolunca **merdiven** açılır → ekran kararma → üst kat; dinamik bounds/kamera; SAVE bump.
 - ⏳ **3c:** Tuvalet ODASI + DEPO (KATA özel, parayla açılır) + tuvalet kâğıdı döngüsü (depodan al→tak) + temizlikçi.

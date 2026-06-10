@@ -89,6 +89,8 @@ export interface QuestDef {
   id: string;
   title: string;
   target: QuestTarget;
+  /** Hedefin zone'u (kamera odağı doğru salona baksın; yoksa 0). */
+  zone?: number;
 }
 
 export const economyConfig = {
@@ -348,12 +350,12 @@ export const economyConfig = {
     { id: 'q_tableL2', title: 'Bir masayı yükselt', target: { type: 'tableLevel', level: 1 } },
     // --- ZONE-2 görev hattı (Faz 3a + D-022): geçitteki pad → yeni salonun kendi zinciri.
     { id: 'q_zone2', title: '2. Salonu aç', target: { type: 'pad', id: 'zone2' } },
-    { id: 'q_z2serve', title: 'Yeni salonda 5 çay servis et', target: { type: 'serveTea', count: 5 } },
-    { id: 'q_z2table2', title: 'Salon 2: 2. Masayı aç', target: { type: 'pad', id: 'z2table2' } },
-    { id: 'q_z2waiter', title: 'Salon 2: Garson tut', target: { type: 'pad', id: 'z2waiter' } },
-    { id: 'q_z2table3', title: 'Salon 2: 3. Masayı aç', target: { type: 'pad', id: 'z2table3' } },
-    { id: 'q_z2dish', title: 'Salon 2: Bulaşıkçı tut', target: { type: 'pad', id: 'z2dishwasher' } },
-    { id: 'q_z2table4', title: 'Salon 2: 4. Masayı aç', target: { type: 'pad', id: 'z2table4' } },
+    { id: 'q_z2serve', title: 'Yeni salonda 5 çay servis et', target: { type: 'serveTea', count: 5 }, zone: 1 },
+    { id: 'q_z2table2', title: 'Salon 2: 2. Masayı aç', target: { type: 'pad', id: 'z2table2' }, zone: 1 },
+    { id: 'q_z2waiter', title: 'Salon 2: Garson tut', target: { type: 'pad', id: 'z2waiter' }, zone: 1 },
+    { id: 'q_z2table3', title: 'Salon 2: 3. Masayı aç', target: { type: 'pad', id: 'z2table3' }, zone: 1 },
+    { id: 'q_z2dish', title: 'Salon 2: Bulaşıkçı tut', target: { type: 'pad', id: 'z2dishwasher' }, zone: 1 },
+    { id: 'q_z2table4', title: 'Salon 2: 4. Masayı aç', target: { type: 'pad', id: 'z2table4' }, zone: 1 },
   ] as readonly QuestDef[],
 
   /** Oyuncu sahip karakteri hareketi. */
@@ -395,7 +397,17 @@ export const economyConfig = {
    */
   offline: {
     baseCapHours: 1,
-    rateMult: 0.5,
+    /**
+     * 2026-06-11 nerf (kullanıcı: kapa-aç 7k verdi — "aktif denge iyi, offline'ı kıs"): 0.5 → 0.2.
+     * Endüstri normu offline = aktifin %5-20'si (Idle Miner ~%10; MPH fiilen 0); rewarded ×2 Faz 4'te.
+     */
+    rateMult: 0.2,
+    /**
+     * PARA tavanı: offline kazanç, sıradaki omurga pad maliyetinin bu ORANINI aşamaz (süre tavanından
+     * BAĞIMSIZ ikinci kelepçe). Oran tavanı tek başına yetmiyordu: zone-2'de idealize oran ~4₺/sn →
+     * 1sa × 0.5 ≈ 7.2k = zone'u tek girişte bitiriyordu. Hedef: "birkaç yükseltme parası, zone asla".
+     */
+    capNextPadFrac: 0.6,
     /** Elmas ile uzatma başına eklenen saat (Faz 4). */
     diamondExtendHours: 8,
   },

@@ -16,9 +16,11 @@ import {
   waiterSoftMaxLevel as waiterSoftMaxLevelCfg,
   levelProgress,
   MAX_ZONES,
+  TABLES_PER_ZONE,
   zoneOfTable,
   type PadDef,
   type GateState,
+  type Requires,
   type QuestDef,
   type QuestTarget,
 } from '../config/economy.config';
@@ -598,23 +600,27 @@ function questView(q: QuestDef, ctx: QuestCtx): QuestView {
   };
 }
 
-/** Görev hedefinin DÜNYA konumu (kamera odak + işaret görünürlüğü). */
-export function questFocusPos(target: QuestTarget, tableLevels: number[], tables: number): RVec3 {
+/** Görev hedefinin DÜNYA konumu (kamera odak + işaret görünürlüğü). zone = görevin salonu
+ *  (2026-06-11 fix: z2 görevlerinde kamera zone-1'e zoom atıyordu — hedefler zone-1 alias'larına sabitti). */
+export function questFocusPos(target: QuestTarget, tableLevels: number[], tables: number, zone = 0): RVec3 {
+  const z = Math.min(Math.max(zone, 0), MAX_ZONES - 1);
   switch (target.type) {
-    case 'pickupTea': return LAYOUT.stations[0];
-    case 'washDish': return LAYOUT.dishStation;
-    case 'pad': return LAYOUT.padPos[target.id] ?? LAYOUT.stations[0];
-    case 'stationLevel': return LAYOUT.upgradeZone;
-    case 'waiterLevel': return LAYOUT.waiterUpgradeSpot;
+    case 'pickupTea': return LAYOUT.stations[z];
+    case 'washDish': return LAYOUT.dishStations[z];
+    case 'pad': return LAYOUT.padPos[target.id] ?? LAYOUT.stations[z];
+    case 'stationLevel': return LAYOUT.upgradeZones[z];
+    case 'waiterLevel': return LAYOUT.waiterUpgradeSpots[z];
     case 'tableLevel': {
-      // İlk yükseltilebilir (soft max altı) AÇIK masanın yükseltme noktası.
-      for (let i = 0; i < tables; i++) {
+      // O zone'dan başlayarak ilk yükseltilebilir (soft max altı) AÇIK masanın yükseltme noktası.
+      for (let i = z * TABLES_PER_ZONE; i < tables; i++) {
         if ((tableLevels[i] ?? 0) < tableSoftMaxLevel()) return LAYOUT.tables[i].upgradeSpot;
       }
-      return LAYOUT.tables[0].upgradeSpot;
+      return LAYOUT.tables[Math.min(z * TABLES_PER_ZONE, tables - 1) || 0].upgradeSpot;
     }
-    default: // serveTea / collectCoin → masa bölgesinin ortası
-      return [0, 0, 1.5];
+    default: { // serveTea / collectCoin → o zone'un masa bölgesinin ortası
+      const za = LAYOUT.zoneAreas[z];
+      return [(za.minX + za.maxX) / 2, 0, 1.5];
+    }
   }
 }
 
@@ -636,10 +642,29 @@ export function visiblePads(questIndex: number, g: GateState): PadDef[] {
   if (q) {
     if (q.target.type !== 'pad') return [];
     const p = (C.pads as readonly PadDef[]).find((pd) => pd.id === (q.target as { id: string }).id);
-    return p && !g.padsDone.includes(p.id) && requiresMet(p.requires, g) ? [p] : [];
+    // AKTİF görevin hedef pad'inde TEMPO gate'leri (minLifetime vb.) ATLANIR (2026-06-11 fix:
+    // "2. Masayı aç" görevi verilmişken table2 minLifetime:20 pad'i gizliyordu — görev hattı sıralı =
+    // tempo kaynağı). `prev` OMURGA zinciri yapısal güvenlik ağı olarak KALIR (bozuk kayda karşı).
+    const req = p ? (p.requires as Requires | undefined) : undefined;
+    const prevOk = !req?.prev || req.prev.every((id) => g.padsDone.includes(id));
+    return p && !g.padsDone.includes(p.id) && prevOk ? [p] : [];
   }
   const bp = currentPad(g);
   return bp ? [bp] : [];
+}
+
+/**
+ * Offline kazanç (saf — vitest edilebilir; 2026-06-11 nerf): oran × rateMult × min(süre, süre-tavanı),
+ * SONRA PARA tavanı = sıradaki omurga pad maliyeti × capNextPadFrac (tüm pad'ler bittiyse en pahalı pad
+ * referans alınır). İki kelepçe birlikte: kapa-aç ~7k verip zone'u tek girişte bitirme bug'ı kapanır.
+ */
+export function computeOfflineEarned(rate: number, elapsedSec: number, padsDone: readonly string[]): number {
+  const capSec = C.offline.baseCapHours * 3600;
+  const raw = Math.floor(rate * C.offline.rateMult * Math.min(elapsedSec, capSec));
+  const pads = C.pads as readonly PadDef[];
+  const next = pads.find((p) => !p.optional && !padsDone.includes(p.id));
+  const refCost = next ? next.cost : Math.max(...pads.map((p) => p.cost));
+  return Math.min(raw, Math.floor(refCost * C.offline.capNextPadFrac));
 }
 
 /** ₺ ile çıkılabilen en yüksek garson seviyesi (index; L1=0 taban → L2=1). */
@@ -711,9 +736,8 @@ export const useGame = create<GameState>((set, get) => ({
     const waiterLevels = Array.from({ length: MAX_ZONES }, (_, z) =>
       Math.min(save.waiterLevels[z] ?? 0, waiterSoftMaxLevelCfg()),
     );
-    // Çevrimdışı gelir: açık zone'ların idealize oranları TOPLAMI.
+    // Çevrimdışı gelir: açık zone'ların idealize oranları TOPLAMI; süre + PARA tavanlı (computeOfflineEarned).
     const elapsed = Math.max(0, (Date.now() - save.lastSaved) / 1000);
-    const cap = C.offline.baseCapHours * 3600;
     let wallet = D(save.wallet);
     let lifetime = D(save.lifetime);
     let offlineEarned = 0;
@@ -721,7 +745,7 @@ export const useGame = create<GameState>((set, get) => ({
       let rate = 0;
       for (let z = 0; z < derived.zonesOpen; z++)
         rate += incomeRate(derived.tablesByZone[z], stationLevels[z], derived.serviceSpeedMult);
-      offlineEarned = Math.floor(rate * C.offline.rateMult * Math.min(elapsed, cap));
+      offlineEarned = computeOfflineEarned(rate, elapsed, save.padsDone);
       wallet = wallet.add(offlineEarned);
       lifetime = lifetime.add(offlineEarned);
     }
@@ -848,6 +872,15 @@ export const useGame = create<GameState>((set, get) => ({
     let questIndex = s.questIndex;
     let questBase = s.questBase;
     let camFocus = s.camFocus;
+    // Kamera odak tetikleri aynı tick'te üst üste binebilir (reveal + görev geçişi + zone açılışı) —
+    // 2026-06-11 fix: tick-içi ÖNCELİK (reveal 1 < görev 2 < zone 3); düşük öncelik yükseği EZEMEZ.
+    let camPrio = 0;
+    const requestFocus = (pos: RVec3, prio: number) => {
+      if (prio >= camPrio) {
+        camFocus = { pos: [pos[0], pos[1], pos[2]], ttl: CAM_FOCUS_TTL };
+        camPrio = prio;
+      }
+    };
     let nextId = s.nextId;
     let spawnTimer = s.spawnTimer - dt;
 
@@ -1184,7 +1217,7 @@ export const useGame = create<GameState>((set, get) => ({
           : key === 'waiterUp' ? LAYOUT.waiterUpgradeSpot
           : key === 'tableUp' ? LAYOUT.tables[0].upgradeSpot
           : null;
-        if (rp) camFocus = { pos: [rp[0], rp[1], rp[2]], ttl: CAM_FOCUS_TTL };
+        if (rp) requestFocus(rp, 1);
       }
     }
     if (notice) {
@@ -1251,7 +1284,7 @@ export const useGame = create<GameState>((set, get) => ({
         if (activePad.effect.type === 'unlockZone') {
           cleanCups += C.cups.poolBase;
           const za = LAYOUT.zoneAreas[1];
-          camFocus = { pos: [(za.minX + za.maxX) / 2, 0, 0.6], ttl: CAM_FOCUS_TTL + 1 };
+          requestFocus([(za.minX + za.maxX) / 2, 0, 0.6], 3); // en yüksek öncelik; TTL eşit (akış pürüzsüz)
         }
         // Masa pad'i oyuncunun DURDUĞU yerde belirir → oyuncu masanın içinde kalmasın, anında dışarı it.
         if (activePad.effect.type === 'addTable') {
@@ -1390,13 +1423,14 @@ export const useGame = create<GameState>((set, get) => ({
       questCtx.questBase = questBase;
     }
     if (questAdvanced && questIndex < C.quests.length) {
-      const p = questFocusPos(C.quests[questIndex].target, tableLevels, out.tables);
-      camFocus = { pos: [p[0], p[1], p[2]], ttl: CAM_FOCUS_TTL };
+      const q = C.quests[questIndex];
+      requestFocus(questFocusPos(q.target, tableLevels, out.tables, q.zone ?? 0), 2);
     }
-    // Kamera odağı: joystick/klavye girdisi anında iptal eder (oyuncu kontrolü üstün); süre dolunca biter.
+    // Kamera odağı: joystick/klavye girdisi iptal eder (oyuncu kontrolü üstün); süre dolunca biter.
+    // Deadzone 0.25 (2026-06-11 fix: 0.1 joystick titremesinde odağı yanlışlıkla bozuyordu).
     if (camFocus) {
       const ttl = camFocus.ttl - dt;
-      const moving = Math.hypot(input[0], input[1]) > 0.1;
+      const moving = Math.hypot(input[0], input[1]) > 0.25;
       camFocus = ttl > 0 && !moving ? { pos: camFocus.pos, ttl } : null;
     }
     const quest =
@@ -1490,7 +1524,8 @@ export const useGame = create<GameState>((set, get) => ({
   focusQuest: () => {
     const s = get();
     if (s.questIndex >= C.quests.length) return;
-    const p = questFocusPos(C.quests[s.questIndex].target, s.tableLevels, s.tables);
+    const q = C.quests[s.questIndex];
+    const p = questFocusPos(q.target, s.tableLevels, s.tables, q.zone ?? 0);
     set({ camFocus: { pos: [p[0], p[1], p[2]], ttl: CAM_FOCUS_TTL } });
   },
 

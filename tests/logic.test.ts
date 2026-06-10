@@ -20,6 +20,8 @@ import {
   LAYOUT,
   currentPad,
   visiblePads,
+  questFocusPos,
+  computeOfflineEarned,
   questTargetMet,
   questCounterValue,
   stationSoftMaxLevel,
@@ -1465,5 +1467,63 @@ describe('ZONE-2 (Faz 3a + D-022) — per-zone ocak+bulaşık, geçit pad\'i, mi
     expect(m.waiterLevels).toEqual([1]);
     expect((m as Record<string, unknown>).stationLevel).toBeUndefined();
     expect((m as Record<string, unknown>).waiterLevel).toBeUndefined();
+  });
+});
+
+describe('WP1 bug paketi (2026-06-11) — quest-pad gate, zone kamera odağı, offline tavanları', () => {
+  it("aktif görevin hedef pad'i requires gate'ini ATLAR (q_table2 verilmişken pad görünür)", () => {
+    useGame.getState().hardReset();
+    const qi = economyConfig.quests.findIndex((q) => q.id === 'q_table2');
+    useGame.setState({ questIndex: qi, questBase: 0 });
+    const g = gate();
+    expect(g.lifetime).toBeLessThan(20); // minLifetime:20 KARŞILANMIYOR ama görev aktif...
+    expect(visiblePads(qi, g).map((p) => p.id)).toEqual(['table2']); // ...pad yine görünür
+    // Görev-dışı güvenlik ağında gate hâlâ işler (currentPad requires'a bakar).
+    expect(currentPad(g)).toBeNull();
+  });
+
+  it('questFocusPos zone-2 görevlerinde zone-2 koordinatına bakar (zone parametresi)', () => {
+    // serveTea zone 1 → zone-2 salon ortası (x zone-1 alanının dışında).
+    const p = questFocusPos({ type: 'serveTea', count: 5 }, [], 8, 1);
+    expect(p[0]).toBeGreaterThan(LAYOUT.zoneAreas[0].maxX);
+    // stationLevel / washDish / pickupTea zone 1 → zone-2 noktaları.
+    expect(questFocusPos({ type: 'stationLevel', level: 1 }, [], 8, 1)).toEqual(LAYOUT.upgradeZones[1]);
+    expect(questFocusPos({ type: 'washDish', count: 3 }, [], 8, 1)).toEqual(LAYOUT.dishStations[1]);
+    expect(questFocusPos({ type: 'pickupTea', count: 1 }, [], 8, 1)).toEqual(LAYOUT.stations[1]);
+    // zone verilmezse eski davranış (zone-1) — geri uyum.
+    expect(questFocusPos({ type: 'stationLevel', level: 1 }, [], 4)).toEqual(LAYOUT.upgradeZones[0]);
+    // Config: tüm z2 görevleri zone:1 işaretli (kamera asla zone-1'e zoom atmaz).
+    for (const q of economyConfig.quests) {
+      if (q.id.startsWith('q_z2')) expect(q.zone).toBe(1);
+    }
+  });
+
+  it('offline PARA tavanı: kazanç sıradaki omurga pad maliyetinin oranını aşamaz', () => {
+    const frac = economyConfig.offline.capNextPadFrac;
+    // Taze oyun: sıradaki pad table2 (25₺) → dev oran bile tavana kelepçelenir.
+    expect(computeOfflineEarned(100, 3600, [])).toBe(Math.floor(25 * frac));
+    // Zone-1 bitti: sıradaki zone2 pad'i (1200₺) → ~4₺/sn × 1sa bile zone'u BİTİREMEZ.
+    const z1 = ['table2', 'table3', 'waiter', 'dishwasher', 'table4'];
+    const capped = computeOfflineEarned(4, 3600, z1);
+    expect(capped).toBe(Math.floor(1200 * frac));
+    const zone2Cost = economyConfig.pads.find((p) => p.id === 'zone2')!.cost;
+    expect(capped).toBeLessThan(zone2Cost);
+    // Düşük oran tavana takılmaz (normal formül işler).
+    expect(computeOfflineEarned(0.05, 600, z1)).toBe(
+      Math.floor(0.05 * economyConfig.offline.rateMult * 600),
+    );
+    // Tüm pad'ler bitti: referans = en pahalı pad (tavansız kalmaz).
+    const all = economyConfig.pads.map((p) => p.id);
+    const maxCost = Math.max(...economyConfig.pads.map((p) => p.cost));
+    expect(computeOfflineEarned(1000, 7200, all)).toBe(Math.floor(maxCost * frac));
+  });
+
+  it('offline SÜRE tavanı hâlâ işler (cap üstü süre işlemez) + rateMult nerf 0.2', () => {
+    expect(economyConfig.offline.rateMult).toBeLessThanOrEqual(0.25);
+    const z1 = ['table2', 'table3', 'waiter', 'dishwasher', 'table4'];
+    const oneHour = computeOfflineEarned(0.5, 3600, z1);
+    const threeHours = computeOfflineEarned(0.5, 3 * 3600, z1);
+    expect(threeHours).toBe(oneHour); // 1sa tavanından sonrası işlemez
+    expect(oneHour).toBe(Math.floor(0.5 * economyConfig.offline.rateMult * 3600));
   });
 });

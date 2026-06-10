@@ -468,6 +468,10 @@ body,
   left: 50%;
   top: calc(78px + var(--sat));
   transform: translateX(-50%);
+  z-index: 15; /* görev kartı (10) dahil tüm HUD'un ÜSTÜNDE (2026-06-11 fix: kartın altında kalıyordu) */
+  max-width: min(72vw, 340px); /* dar ekranda sağ-üst görev kartına taşmasın */
+  overflow: hidden;
+  text-overflow: ellipsis;
   background: linear-gradient(180deg, rgba(255, 179, 0, 0.97), rgba(245, 124, 0, 0.97));
   color: #2b1a04;
   border: 2.5px solid rgba(255, 255, 255, 0.9);
