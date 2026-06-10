@@ -27,6 +27,13 @@ Playwright gerçek-tıklama (panel satın alma, spotlight, zone reveal) · konso
 **SIRADAKİ ADAY İŞLER:** kullanıcının APK/telefon feedback'i; T3/T4 fiyatlarının gerçek oyunda hissi;
 karakter kıyafet kozmetikleri (Dekor Mağazası rafı — gelecek); UAL Pro/asset kararı hâlâ açık.
 
+## >>> SONRAKİ OTURUM: KULLANICI TELEFON TESTİ FEEDBACK'LERİYLE GELECEK <<<
+Kullanıcı yeni APK'yı (kök, 5.1MB, v21) kurup test ediyor. Oturum feedback'leri dinleyerek başlar.
+Test edilmesi beklenenler: (a) salon-2 yükseltmelerinin sıralı açılışı (ocak→z2 2. masa sonrası,
+masalar→z2 dolunca, garson hız→kendi 20 taşıması), (b) kilitli salonun TAM karanlık görünümü +
+açılışta karanlıktan aydınlığa fade, (c) karakter yükseltme akışı (görev zamanlaması, panel,
+spotlight, T1-T2 fiyat hissi), (d) çaycı v2 gövdesi, (e) yeni oyun tepsi-2 temposu (eski kayıtta T2 hediye).
+
 ## EK (2026-06-12 — ZONE-2 YÜKSELTME GATING'İ v21 ✅, kullanıcı isteği "zone-2'de de düzen olmalı")
 Tür araştırması (önce kapasite, sonra verim — Idle Miner/Dino Park konvansiyonu) + zone-1 deseni AYNALANDI:
 - **z2 ocak yükseltmesi**: salon açılır açılmaz DEĞİL → z2table2 sonrası (`teaStation.upgradeRequiresByZone`).
