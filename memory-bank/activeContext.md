@@ -2,15 +2,27 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
-## >>> SONRAKİ OTURUM İLK İŞ: docs/feedback-2026-06-11.md PLANINI KULLANICIYLA ONAYLA <<<
-Kullanıcı BÜYÜK feedback'ini verdi (2026-06-11); TAMAMI + bug kök nedenleri + asset araştırması +
-iş paketi planı **`docs/feedback-2026-06-11.md`**'de. KOD YAZILMADI (planla-onayla-uygula).
-Sonraki oturum akışı: (1) H bölümündeki 5 KARAR sorusunu kullanıcıya sor (merkezi mutfak-şeridi
-modeli / Quaternius UAL $9.99 / kirli masa A-B / tek dolum göstergesi hangisi / curve Ö1-Ö4),
-(2) onaylananlara göre WP1 (hızlı bug paketi: table2 pad gate, questFocusPos zone, camFocus akışı,
-toast z-index, offline nerf) ile BAŞLA, sonra WP2 dünya-v2 → WP3 ASSET (kullanıcıya göre en önemli).
-Özet: duvarsız TEK salon + tek kapı + sol duvarda L mutfak şeridi (çaycı NPC) + parke/fayans zemin +
-masa şekil-evrimi + Quaternius karakterler + kozmetik mağaza (10k+/zone) + offline para-tavanı.
+## >>> SONRAKİ OTURUM = 🌙 GECE OTURUMU: SORU SORMADAN DİREKT BAŞLA (kullanıcı UYUYOR) <<<
+Kullanıcı (2026-06-11): "bir sonraki chatte bir şey sormadan direkt başlasın, ben uyuyacağım."
+Plan: **`docs/feedback-2026-06-11.md`** (A-D feedback, E bug kök nedenleri, F asset, G dünya-v2,
+H iş paketleri WP1-WP6). H'deki 5 karar VARSAYILANLARA bağlandı (kullanıcıya bildirildi, itiraz gelmedi):
+1. **Merkezi mutfak şeridi ONAYLI** (duvarsız tek salon + tek kapı + sol duvarda L tezgah —
+   kullanıcının kendi tarifi; D-022 "per-zone ocak" bu yönde revize edilir, decisions.md'ye işle).
+2. **UAL Pro $9.99 ALINAMAZ** (ödeme kullanıcıda) → Quaternius ÜCRETSİZ paketler + 45 ücretsiz
+   animasyonla ilerle; yetmeyen animasyonları sabah raporuna not düş.
+3. **Kirli masa:** duman kalkar → kirli masa görünümü + temizlik ikonu; sabaha A/B screenshot.
+4. **Dolum göstergesi:** SADECE dünya-içi pad halkası kalır (alt bar + baş üstü radial kalkar).
+5. **Curve Ö1-Ö4 SABAHA** (denge onaysız uygulanmaz) — AMA offline nerf ONAYLI (kullanıcı bizzat
+   istedi: rateMult 0.2-0.25 + PARA tavanı; feedback §E5).
+**ÇALIŞMA SIRASI (kesintisiz, her milestone test+screenshot+memory-bank+commit+PUSH):**
+WP1 hızlı bug paketi (table2 pad gate, questFocusPos zone, camFocus akışı, toast z-index, offline
+nerf) → WP2 dünya-v2 (G bölümü: duvar kalkar, tek kapı, L mutfak şeridi + çaycı NPC, ocak-yükseltme
+pad'i duvar boşluğuna, merdiven/depo/tuvalet rezervleri; SAVE bump muhtemel) → WP3 ASSET (Quaternius
+Modular Men/Women indir→manifest→karakter+animasyon entegrasyonu; müşteri varyasyonu; prop/dekor) →
+WP4 görsel kimlik v2 (parke/fayans canvas-tile, masa ŞEKİL evrimi, klasik çay ocağı+çaydanlık sayısı,
+TV içeriği, kirli masa) → WP5 tek gösterge → WP6 kozmetik mağaza. En sonda `npm run apk` + sabah raporu
+(GECE-RAPORU formatı). İLKELER: gece protokolü (feedback_night_session.md); çizgiyi koru; geri dönüşü
+zor şey yapma; context tükenmeden commit+push+memory-bank güncelle.
 
 ## ŞU AN (2026-06-11 — FEEDBACK ALINDI + ARAŞTIRMA/PLAN BİTTİ; kod değişmedi, SAVE v18)
 Kullanıcı feedback'i işlendi → docs/feedback-2026-06-11.md (A-D feedback, E bug kök nedenleri,
