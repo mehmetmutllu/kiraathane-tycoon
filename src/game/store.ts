@@ -45,26 +45,43 @@ import { buildNavGrid, findNavPath, type NavGrid, type NavSolid } from './nav';
 // İMKÂNSIZ, yürüme döngüsü ZORLANIR. Orta geniş koridor (kolon ±2.4, gap 4.8). Collision: oyuncu mobilya+
 // sandalye+aktör (HAPSETMEZ); garson/bulaşıkçı masa gövdelerinden GERÇEK rota ile dolaşır (nav.ts BFS).
 // --- ZONE ŞABLONU (Faz 3a + D-022): zone-1 iç yerleşimi = bugüne kadarki mutlak koordinatlar.
-// Zone-2 = AYNI şablon +X offset (ZONE_DX). Global düz diziler (tables 8 slot, stations[2], ...)
-// eski kodun index mantığını korur (zone z → masa slotları [z*4, z*4+4)).
+// Global düz diziler (tables 8 slot, stations[2], ...) eski kodun index mantığını korur
+// (zone z → masa slotları [z*4, z*4+4)).
 // Kullanıcı feedback (2026-06-11): bölme duvarı kalkınca iki salon arasında ölü boşluk kaldı →
 // zone'lar bitişik (zone-1 maxX = zone-2 minX = 5.3; duvar YOK, sınır zemin çizgisi).
+// --- YERLEŞİM v3 (2026-06-11 kullanıcı feedback'i, D-025): PER-ZONE MUTFAK + AYNALI ŞABLON.
+// Şikayetler: (a) çay ocağı + bulaşık tek köşede küme; (b) zone-2 servisi sol şeritten → garson turu
+// ~19sn > sabır 18sn (müşteri kalkar); (c) yükseltme pad alanı dar; (d) masa pad'leri ocağa giriyor;
+// (e) ekran alt duvara yakın, üstler boş. Çözüm: HER salonun çay ocağı KENDİ yan duvarında
+// (z1 sol / z2 sağ = şablonun zone merkezine göre AYNALISI), bulaşık ARKA duvarda (ocaktan ayrı),
+// masalar sağa+yukarı kaydı, masa pad'leri masanın kapı-tarafı ÇAPRAZINDA (ocak tarafında değil).
+// Garson/bulaşıkçı turu artık zone'dan bağımsız kısa (z2 ocak→en uzak masa ≈ 8.8 birim ≈ z1 ile aynı).
 const ZONE_DX = 10.6;
 const ZONE_OFFSETS = [0, ZONE_DX] as const;
-const off = (dx: number, v: readonly [number, number, number]): Vec3 => [v[0] + dx, v[1], v[2]];
+// Zone z için şablon noktası: z1 = aynen; z2 = zone merkezine göre AYNALI (x → ZONE_DX − x;
+// zone-1 merkezi 0, zone-2 merkezi ZONE_DX olduğundan ayna formülü bu kadar sade).
+const mir = (z: number, v: readonly [number, number, number]): Vec3 =>
+  z === 0 ? [v[0], v[1], v[2]] : [ZONE_DX - v[0], v[1], v[2]];
 
+
+// Masa şablonu (zone-yerel): 2×2, sağa+yukarı kaymış (kolonlar -1.2/3.2, sıralar -0.6/2.2).
+// seat = GÜNEY sandalye (masaya 0.78 — "sandalye masaya yakın olmalı"); upgradeSpot = kapı-tarafı
+// çapraz köşe (orta koridora bakar; ocak/bulaşık tarafına TAŞMAZ; dwell hareketsiz-dolum olduğundan
+// koridordan yürüyerek geçmek para çekmez).
+// Açılış sırası ÖN sıradan (kapıya yakın, ocağa uzak — başlangıç masası ocaktan >4 br: yürüme
+// döngüsü en baştan zorlanır, D-017 §1) → arka sıra sonra açılır.
 const BASE_TABLES = [
-  { table: [-2.4, 0, 0.0], seat: [-2.4, 0.6, 1.0], upgradeSpot: [-3.7, 0, 0.0] },
-  { table: [2.4, 0, 0.0], seat: [2.4, 0.6, 1.0], upgradeSpot: [3.7, 0, 0.0] },
-  { table: [-2.4, 0, 3.0], seat: [-2.4, 0.6, 4.0], upgradeSpot: [-3.7, 0, 3.0] },
-  { table: [2.4, 0, 3.0], seat: [2.4, 0.6, 4.0], upgradeSpot: [3.7, 0, 3.0] },
+  { table: [-1.2, 0, 2.2], seat: [-1.2, 0.6, 2.98], upgradeSpot: [0.0, 0, 3.4] },
+  { table: [3.2, 0, 2.2], seat: [3.2, 0.6, 2.98], upgradeSpot: [2.0, 0, 3.4] },
+  { table: [-1.2, 0, -0.6], seat: [-1.2, 0.6, 0.18], upgradeSpot: [0.0, 0, 0.6] },
+  { table: [3.2, 0, -0.6], seat: [3.2, 0.6, 0.18], upgradeSpot: [2.0, 0, 0.6] },
 ] as const;
 
-const ALL_TABLES = ZONE_OFFSETS.flatMap((dx) =>
+const ALL_TABLES = ZONE_OFFSETS.flatMap((_, z) =>
   BASE_TABLES.map((t) => ({
-    table: off(dx, t.table),
-    seat: off(dx, t.seat),
-    upgradeSpot: off(dx, t.upgradeSpot),
+    table: mir(z, t.table),
+    seat: mir(z, t.seat),
+    upgradeSpot: mir(z, t.upgradeSpot),
   })),
 );
 
@@ -79,8 +96,11 @@ export const LAYOUT = {
   entrance: [0, 0.6, 4.8] as Vec3, // alias (testler/eski kod)
   street: [0, 0.6, 8.0] as Vec3,
   player: [0, 0.6, 1.5] as Vec3,
-  // Ocak modülleri: sol duvar şeridi (duvar -5.3; arkada çaycı koridoru ~0.55). Modül z'leri öne doğru.
-  stations: [[-4.35, 0, -3.6] as Vec3, [-4.35, 0, -1.3] as Vec3],
+  // Ocak modülleri (D-025 per-zone mutfak): z1 SOL duvar ortası, z2 SAĞ duvar ortası (aynalı).
+  // Arkada çaycı koridoru (~0.55) iki yanda da korunur.
+  stations: ZONE_OFFSETS.map((_, z) => mir(z, [-4.35, 0, -2.5])),
+  // Modül dönüşü: ön yüz salona bakar (z1 +x → +90°; z2 −x → −90°).
+  stationRots: [Math.PI / 2, -Math.PI / 2],
   // Oynanabilir alan: iki zone'u da kapsar (tek bina). Oyuncu AÇIK zone'lara kelepçelenir (tick).
   area: { minX: -5.3, maxX: 5.3 + ZONE_DX, minZ: -5.3, maxZ: 5.0 },
   // Zone başına yerel alan (zemin/etiket + kilitli örtü için). Zone sınır çizgisi x=6.0.
@@ -94,32 +114,31 @@ export const LAYOUT = {
     table2: ALL_TABLES[1].table,
     table3: ALL_TABLES[2].table,
     table4: ALL_TABLES[3].table,
-    waiter: [-4.6, 0, 1.5] as Vec3, // sol-kenar orta (D-018 §1 kenar-yerleşim)
-    dishwasher: [4.6, 0, 1.5] as Vec3, // sağ-kenar orta
+    waiter: [-4.6, 0, 1.5] as Vec3, // kendi ocağının önünde, kenarda (D-018 §1 kenar-yerleşim)
+    dishwasher: [3.3, 0, -3.4] as Vec3, // kendi bulaşığının yanında (washRadius 1.6 DIŞI: mesafe 2.09)
     zone2: [5.3, 0, 0.6] as Vec3, // zone sınırı (duvarsız eşik)
     z2table2: ALL_TABLES[5].table,
     z2table3: ALL_TABLES[6].table,
     z2table4: ALL_TABLES[7].table,
-    z2waiter: off(ZONE_DX, [-4.6, 0, 1.5]),
-    z2dishwasher: off(ZONE_DX, [4.6, 0, 1.5]),
+    z2waiter: mir(1, [-4.6, 0, 1.5]),
+    z2dishwasher: mir(1, [3.3, 0, -3.4]),
   } as Record<string, Vec3>,
   // Zone başına mekânsal çay yükseltme noktası: kendi modülünün HEMEN YANINDA (kullanıcı 2026-06-11:
   // "yükseltme ocağın yanında dursun" — My Hotel obje-başı desen). PAD MERKEZİ her ocağın
   // pickupRadius'unun (1.6) DIŞINDA kalır (+marj) → pad üstünde dururken çay-alma tetiklenmez;
   // ayrıca tick'teki pickup-guard'ı pickup alanı içinde dolumu zaten kilitler (vitest doğrular).
-  upgradeZones: [[-2.4, 0, -3.4] as Vec3, [-2.4, 0, -0.8] as Vec3],
-  upgradeZone: [-2.4, 0, -3.4] as Vec3, // zone-1 alias (testler/eski kod)
-  // Zone başına personel köşeleri + garson hız noktası. Eski sol-köşe (-4.6,-1.6) artık şeridin içinde →
-  // sol-ÖN kenara taşındı (zone-yerel şablon korunur; zone-2 +12).
-  waiterHomes: ZONE_OFFSETS.map((dx) => off(dx, [-4.7, 0, 4.2])),
+  upgradeZones: ZONE_OFFSETS.map((_, z) => mir(z, [-2.4, 0, -2.5])),
+  upgradeZone: [-2.4, 0, -2.5] as Vec3, // zone-1 alias (testler/eski kod)
+  // Zone başına personel köşeleri + garson hız noktası (aynalı şablon).
+  waiterHomes: ZONE_OFFSETS.map((_, z) => mir(z, [-4.7, 0, 4.2])),
   waiterHome: [-4.7, 0, 4.2] as Vec3,
-  waiterUpgradeSpots: ZONE_OFFSETS.map((dx) => off(dx, [-3.5, 0, 4.4])),
+  waiterUpgradeSpots: ZONE_OFFSETS.map((_, z) => mir(z, [-3.5, 0, 4.4])),
   waiterUpgradeSpot: [-3.5, 0, 4.4] as Vec3,
-  // Bulaşık modülleri: arka duvar dibi, L'nin kısa kolu (köşeden sağa doğru; per-zone yıkama noktası).
-  dishStations: [[-2.8, 0, -4.85] as Vec3, [-1.3, 0, -4.85] as Vec3],
-  dishStation: [-2.8, 0, -4.85] as Vec3,
-  dishwasherHomes: ZONE_OFFSETS.map((dx) => off(dx, [4.6, 0, -1.6])),
-  dishwasherHome: [4.6, 0, -1.6] as Vec3,
+  // Bulaşık modülleri: ARKA duvar dibi, ocaktan AYRI (D-025 "çay ocağı ile bulaşık tek yerde olmasın").
+  dishStations: ZONE_OFFSETS.map((_, z) => mir(z, [1.8, 0, -4.85])),
+  dishStation: [1.8, 0, -4.85] as Vec3,
+  dishwasherHomes: ZONE_OFFSETS.map((_, z) => mir(z, [1.8, 0, -3.6])),
+  dishwasherHome: [1.8, 0, -3.6] as Vec3,
   // --- Collision footprint'leri (yarı-boyut [hx,hz]; D-016): GÖRSEL mesh'lere yaslı → oyuncu objeye
   // "değiyor gibi" sokulur, arada boşluk kalmaz. (ocak tezgah 2.2×0.8, bulaşık 1.4×0.8, masa r0.5, sandalye 0.42.)
   playerRadius: 0.35, // oyuncu kapsül görsel yarıçapı = standoff'u görsel kenara denk getirir

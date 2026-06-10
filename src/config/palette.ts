@@ -7,8 +7,8 @@
 export const PALETTE = {
   // Zemin
   floorWood: '#b98a5a', // sıcak ahşap zemin (düz renk)
-  carpet: '#8e3b3b', // kırmızı kilim (küçük vurgu halısı — WP4'te küçüldü)
-  carpetBorder: '#5f2727', // kilim bordürü
+  carpet: '#84504a', // kilim — yumuşatılmış toprak-bordo (kullanıcı 2026-06-11: eski kırmızı "çok cırtlak")
+  carpetBorder: '#553630', // kilim bordürü
   // Duvar
   wallCream: '#e6d7b8', // üst duvar (krem badana)
   wainscot: '#6d4c41', // lambri kuşağı (alt ahşap şerit)
@@ -48,13 +48,15 @@ export const PALETTE = {
 } as const;
 
 /** Kozmetik zemin temaları (WP6) — economy.config.cosmetics.floorThemes id'leriyle eşleşir.
- *  Zone zemini DÜZ base rengiyle boyanır (canvas-tile geri alındı, 2026-06-11);
- *  alt yalnız mağaza önizleme swatch'ında kullanılır. */
-export const FLOOR_THEMES: Record<string, { base: string; alt: string }> = {
-  parke: { base: '#b98a5a', alt: '#ad7e4f' },
-  fayans: { base: '#e8dcc8', alt: '#ddd0b8' },
-  dama: { base: '#ece6da', alt: '#7d4a3a' },
-  ceviz: { base: '#8a5a3b', alt: '#7c4f33' },
+ *  kind 'flat': zone zemini DÜZ base rengi (canvas-tile geri alındı, 2026-06-11).
+ *  kind 'checker': base taban + alt renkte BÜYÜK kare quad'larla satranç deseni (dama kimliği
+ *  düz renkte kayboluyordu — kullanıcı bug'ı "damalı seçtim beyaz duruyor").
+ *  alt ayrıca mağaza önizleme swatch'ında kullanılır. */
+export const FLOOR_THEMES: Record<string, { kind: 'flat' | 'checker'; base: string; alt: string }> = {
+  parke: { kind: 'flat', base: '#b98a5a', alt: '#ad7e4f' },
+  fayans: { kind: 'flat', base: '#e8dcc8', alt: '#ddd0b8' },
+  dama: { kind: 'checker', base: '#ece6da', alt: '#7d4a3a' },
+  ceviz: { kind: 'flat', base: '#8a5a3b', alt: '#7c4f33' },
 };
 
 /** Kozmetik duvar temaları (WP6) — üst badana + lambri kuşağı ikilisi. */

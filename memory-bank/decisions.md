@@ -1,5 +1,26 @@
 # decisions — Tasarım/Teknik Karar Günlüğü
 
+## D-025 · YERLEŞİM v3: PER-ZONE AYNALI MUTFAK + bulaşık ayrı + kare masa evrimi (2026-06-11, kullanıcı feedback'i; D-024 revizyonu)
+**Bağlam:** Kullanıcı sabah feedback'i: (a) "çay ocağı ile bulaşığı tek yerde toplamışsın" (L-köşe kümesi);
+(b) zone-2 servisi sol şeritten → garson turu ~21sn > sabır 18sn (müşteri kaçar — kullanıcı öngördü, ölçümle doğrulandı);
+(c) yükseltme pad alanı dar; (d) masa pad'leri ocağa giriyor; (e) ekran alt duvara yakın, üstler boş;
+(f) masa KARE kalarak evrilsin (yuvarlak/sekizgen formlar gitti); (g) seviye başına +1 sandalye (4'e kadar), sandalye yakın;
+(h) kilim rengi cırtlak; (i) mağaza: dama düz beyaz görünüyor + duvar dibinde eski renk zemin şeridi.
+**Karar:** D-024'ün L-şeridi kaldırıldı → **HER salonun mutfağı KENDİ içinde, AYNALI şablon** (mir: x→ZONE_DX−x):
+ocak z1 SOL duvar ortası [-4.35,-2.5] / z2 SAĞ duvar ortası [14.95,-2.5] (stationRots ±90°); bulaşık ARKA duvarda
+ocaktan AYRI [1.8,-4.85]/[8.8,-4.85]; çay pad'i ocağın yanında [-2.4,-2.5]/[13.0,-2.5]; her zone'un kendi çaycı NPC'si.
+Masalar sağa+yukarı (kolon -1.2/3.2, sıra -0.6/2.2; açılış sırası ÖN sıradan — başlangıç masası ocaktan >4 br);
+masa pad'leri kapı-tarafı ÇAPRAZDA (orta koridor; dolum hareketsizken aktığından yürüyerek geçmek para çekmez).
+Garson turu artık zone'dan bağımsız ~10sn < sabır 18sn (ölçüm: 180sn'de 50 garson servisi, kaçan yok).
+**2 GARSON kararı:** salon başına 1 garson (toplam 2) YETERLİ — 3.sü fazla otomasyon (D-014) + zone modelini bozar;
+tempo gerekirse L2 hız (1.8→2.3) var. Görsel: kare masa + örtü/etek/pirinç bant evrimi; sandalye=min(4,seviye+1)
+(S=oturma collision'lı, N/E/W salt görsel); kilim toprak-bordo (#84504a) ve masa bloğuna ortalanır (LAYOUT.tables'tan
+türetilir); dama=BÜYÜK düz-renk quad satranç deseni (canvas doku değil); zone zemin overlay'i DUVARA kadar (+0.55).
+Geometri testi: pad merkezi pickup dışı +0.3 (eski 2.9 toplamı yerine; pickup-guard asıl emniyet) + tüm zone'lar döngüde.
+**Doğrulama:** vitest 91/91, build temiz, smoke 27/27, Playwright canlı: iki zone tam kurulu, bulaşıkçılar yeni
+konumda çalışıyor (oyuncu yol üstünde DURURSA personel bekler — önceden de olan davranış), dama+yeşil duvar satın
+alımı görsel doğru, masa L4 kare+altın+4 tabure, konsol 0 hata.
+
 ## D-024 · DÜNYA v2: duvarsız tek salon + TEK kapı + SOL DUVARDA L MUTFAK ŞERİDİ (2026-06-11 gece; D-022 revizyonu)
 **Bağlam:** Kullanıcı feedback'i (feedback-2026-06-11.md §B): "zone'lar arasında duvar OLMAMALI, alan genişleyince
 tek salon dursun; müşteriler TEK kapıdan girsin; çay ocağı+bulaşık BİTİŞİK sol duvara paralel L-şerit; duvar-tezgah

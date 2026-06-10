@@ -75,8 +75,8 @@ function CameraRig() {
   return null;
 }
 
-// Açık zone'ların çay ocağı MODÜLLERİ (per-zone mekanik, D-022; FİZİKSEL konum sol duvar şeridi, D-023).
-// Modül sol duvara paralel: +90° dönük (ön yüz +x, salona bakar). Zone açıldıkça şerit öne uzar.
+// Açık zone'ların çay ocağı MODÜLLERİ (per-zone mutfak, D-025): z1 sol duvar, z2 sağ duvar (aynalı).
+// Modül kendi duvarına paralel; ön yüz salona bakar (rotasyon LAYOUT.stationRots'tan).
 function Stations() {
   const zonesOpen = useGame((s) => s.zonesOpen);
   const stationLevels = useGame((s) => s.stationLevels);
@@ -84,26 +84,21 @@ function Stations() {
   return (
     <>
       {LAYOUT.stations.slice(0, zonesOpen).map((p, z) => (
-        <group key={z} position={[p[0], 0, p[2]]} rotation={[0, Math.PI / 2, 0]}>
+        <group key={z} position={[p[0], 0, p[2]]} rotation={[0, LAYOUT.stationRots[z], 0]}>
           <TeaStation position={[0, 0, 0]} level={stationLevels[z]} readyCups={readyCupsByZone[z]} />
         </group>
       ))}
-      {/* L-köşe dolgu tezgâhı (şerit ile bulaşık kolu arasındaki köşe — salt görsel) */}
-      <mesh castShadow receiveShadow position={[-4.1, 0.45, -4.85]}>
-        <boxGeometry args={[1.3, 0.9, 0.8]} />
-        <meshStandardMaterial color={PALETTE.counterWood} />
-      </mesh>
     </>
   );
 }
 
 // Çaycı NPC (D-023; kullanıcı tarifi: "duvar ile tezgah arasında çalışan biri"). SALT GÖRSEL —
-// mekaniğe dokunmaz: şerit arkası koridorda yürür, bulaşık/çay düzenliyormuş gibi durup eğilir.
-function KitchenStaff() {
-  const zonesOpen = useGame((s) => s.zonesOpen);
+// mekaniğe dokunmaz: kendi ocağının arkasındaki koridorda yürür, durup tezgâha dönüp "iş yapar".
+// D-025: her açık zone'un ocağı kendi duvarında → zone-2 açılınca onun da çaycısı belirir (aynalı).
+function KitchenHand({ x, faceIn }: { x: number; faceIn: number }) {
   const ref = useRef<Group>(null);
-  const zMin = -4.5;
-  const zMax = zonesOpen > 1 ? -0.5 : -2.6; // şerit uzadıkça yürüyüş rotası uzar
+  const zMin = -3.7;
+  const zMax = -1.3; // ocak modülü boyunca (z -2.5 ± 1.2)
   useFrame((st) => {
     const grp = ref.current;
     if (!grp) return;
@@ -112,11 +107,11 @@ function KitchenStaff() {
     grp.position.z = zMin + u * (zMax - zMin);
     // Rota ucunda durup tezgâha dönüp "iş yapar" (eğilme); arada yürür (hafif zıplama).
     const speed = Math.abs(Math.cos(t));
-    grp.rotation.y = speed < 0.25 ? Math.PI / 2 : Math.cos(t) > 0 ? 0 : Math.PI;
+    grp.rotation.y = speed < 0.25 ? faceIn : Math.cos(t) > 0 ? 0 : Math.PI;
     grp.position.y = speed < 0.25 ? -0.04 + Math.sin(st.clock.elapsedTime * 3) * 0.02 : Math.abs(Math.sin(st.clock.elapsedTime * 7)) * 0.04;
   });
   return (
-    <group ref={ref} position={[-5.0, 0, -3]}>
+    <group ref={ref} position={[x, 0, -3]}>
       {/* bacaklar + gövde + önlük + baş (low-poly; palette = tek renk kaynağı) */}
       <mesh castShadow position={[0, 0.25, 0]}>
         <boxGeometry args={[0.26, 0.5, 0.18]} />
@@ -139,6 +134,17 @@ function KitchenStaff() {
         <meshStandardMaterial color={PALETTE.cap} />
       </mesh>
     </group>
+  );
+}
+
+function KitchenStaff() {
+  const zonesOpen = useGame((s) => s.zonesOpen);
+  return (
+    <>
+      {/* z1: sol duvar arkası (tezgâha dönüş +x); z2: sağ duvar arkası (dönüş −x) */}
+      <KitchenHand x={-5.0} faceIn={Math.PI / 2} />
+      {zonesOpen > 1 ? <KitchenHand x={15.6} faceIn={-Math.PI / 2} /> : null}
+    </>
   );
 }
 
@@ -325,11 +331,43 @@ function WaiterUpgradeMarker() {
   );
 }
 
+// Dama temasının deseni: BÜYÜK düz-renk kare quad'lar (canvas doku DEĞİL — kullanıcı tile dokusunu
+// reddetti; low-poly satranç deseni primitive stile uyar). Yalnız alt-renk kareleri çizilir
+// (taban zaten base renk); kenarlarda kareler alana kırpılır.
+function CheckerTiles({ x0, x1, z0, z1, color }: { x0: number; x1: number; z0: number; z1: number; color: string }) {
+  const ts = 1.3;
+  const nx = Math.ceil((x1 - x0) / ts);
+  const nz = Math.ceil((z1 - z0) / ts);
+  const tiles: [number, number, number, number][] = [];
+  for (let i = 0; i < nx; i++) {
+    for (let j = 0; j < nz; j++) {
+      if ((i + j) % 2 === 0) continue;
+      const tx0 = x0 + i * ts;
+      const tz0 = z0 + j * ts;
+      const tx1 = Math.min(tx0 + ts, x1);
+      const tz1 = Math.min(tz0 + ts, z1);
+      tiles.push([(tx0 + tx1) / 2, (tz0 + tz1) / 2, tx1 - tx0, tz1 - tz0]);
+    }
+  }
+  return (
+    <group>
+      {tiles.map(([cx, cz, w, d], i) => (
+        <mesh key={i} receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[cx, 0.006, cz]}>
+          <planeGeometry args={[w, d]} />
+          <meshStandardMaterial color={color} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
 function Ground() {
   // İki zone'u da kapsayan AHŞAP zemin (DÜZ renk — canvas-tile geri alındı, kullanıcı 2026-06-11:
-  // "zemin iğrenç oldu"). WP6 kozmetik teması KORUNUR: zone overlay'i temanın base DÜZ rengiyle
-  // boyanır (floorThemeByZone persist). Zone başına KIRMIZI KİLİM (masa bölgesinin altında).
+  // "zemin iğrenç oldu"). WP6 kozmetik teması KORUNUR: zone overlay'i temanın DÜZ base rengi
+  // (+dama temasında quad satranç deseni). Kilim o zone'un masa bloğunun altına ortalanır
+  // (tek doğru kaynak: LAYOUT.tables — zone-2 aynalı olsa da doğru yere düşer).
   const floorThemeByZone = useGame((s) => s.floorThemeByZone);
+  const last = LAYOUT.zoneAreas.length - 1;
   return (
     <group>
       <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[6, 0, 0]}>
@@ -337,24 +375,30 @@ function Ground() {
         <meshStandardMaterial color={PALETTE.floorWood} />
       </mesh>
       {LAYOUT.zoneAreas.map((za, z) => {
-        const cx = (za.minX + za.maxX) / 2;
-        const cz = (za.minZ + za.maxZ) / 2;
-        const w = za.maxX - za.minX;
-        const dpt = za.maxZ - za.minZ;
+        // Overlay DUVARA KADAR uzar (dış kenarlarda +0.55) — duvar dibinde eski renk şerit kalmaz
+        // (kullanıcı bug'ı 2026-06-11). Zone'lar arası ortak kenar (x=5.3) olduğu gibi kalır.
+        const x0 = za.minX - (z === 0 ? 0.55 : 0);
+        const x1 = za.maxX + (z === last ? 0.55 : 0);
+        const z0 = za.minZ - 0.55;
+        const z1 = za.maxZ + 0.55;
         const theme = FLOOR_THEMES[floorThemeByZone[z] ?? 'parke'] ?? FLOOR_THEMES.parke;
+        const zt = LAYOUT.tables.slice(z * 4, z * 4 + 4);
+        const ccx = zt.reduce((a, t) => a + t.table[0], 0) / zt.length;
+        const ccz = zt.reduce((a, t) => a + t.table[2], 0) / zt.length;
         return (
           <group key={z}>
-            {/* y: taban(0) < zone overlay(0.004) < kilim(0.008/0.014) < GroundMarker(0.02) — z-fight yok. */}
-            <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[cx, 0.004, cz]}>
-              <planeGeometry args={[w, dpt]} />
+            {/* y: taban(0) < overlay(0.004) < dama(0.006) < kilim(0.008/0.014) < GroundMarker(0.02). */}
+            <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[(x0 + x1) / 2, 0.004, (z0 + z1) / 2]}>
+              <planeGeometry args={[x1 - x0, z1 - z0]} />
               <meshStandardMaterial color={theme.base} />
             </mesh>
-            <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[cx, 0.008, 1.5]}>
-              <planeGeometry args={[6.6, 4.6]} />
+            {theme.kind === 'checker' ? <CheckerTiles x0={x0} x1={x1} z0={z0} z1={z1} color={theme.alt} /> : null}
+            <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[ccx, 0.008, ccz]}>
+              <planeGeometry args={[7.0, 4.8]} />
               <meshStandardMaterial color={PALETTE.carpetBorder} />
             </mesh>
-            <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[cx, 0.014, 1.5]}>
-              <planeGeometry args={[6.0, 4.0]} />
+            <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[ccx, 0.014, ccz]}>
+              <planeGeometry args={[6.4, 4.2]} />
               <meshStandardMaterial color={PALETTE.carpet} />
             </mesh>
           </group>
@@ -428,7 +472,7 @@ function DecorProps() {
   return (
     <group>
       {/* çöp kovası (kapı yanı): gövde + kapak + sallanan kapak kulpu + yan şeritler */}
-      <group position={[1.9, 0, 4.35]}>
+      <group position={[1.6, 0, 4.5]}>
         <mesh castShadow position={[0, 0.3, 0]}>
           <cylinderGeometry args={[0.2, 0.16, 0.6, 12]} />
           <meshStandardMaterial color={PALETTE.trashBody} metalness={0.3} roughness={0.6} />
@@ -448,8 +492,8 @@ function DecorProps() {
           <meshStandardMaterial color={PALETTE.trashLid} />
         </mesh>
       </group>
-      {/* mutfak ucu çöp kovası */}
-      <group position={[-4.9, 0, 0.5]} scale={0.85}>
+      {/* mutfak ucu çöp kovası (ocak ile garson pad'i arasında, ikisine de girmez) */}
+      <group position={[-4.95, 0, -0.9]} scale={0.85}>
         <mesh castShadow position={[0, 0.3, 0]}>
           <cylinderGeometry args={[0.2, 0.16, 0.6, 12]} />
           <meshStandardMaterial color={PALETTE.trashBody} metalness={0.3} roughness={0.6} />
@@ -463,7 +507,7 @@ function DecorProps() {
       {[
         [4.9, -4.6],
         [4.9, 4.4],
-        [-4.9, 4.5],
+        [-5.0, 2.9],
       ].map(([px, pz]) => (
         <group key={`${px}${pz}`} position={[px, 0, pz]}>
           <mesh castShadow position={[0, 0.22, 0]}>
@@ -480,8 +524,8 @@ function DecorProps() {
           </mesh>
         </group>
       ))}
-      {/* duvar saati (arka duvar, TV solu) */}
-      <group position={[1.2, 2.1, -5.18]}>
+      {/* duvar saati (arka duvar — bulaşık tezgâhının solunda boş duvar) */}
+      <group position={[-1.6, 2.1, -5.18]}>
         <mesh rotation={[Math.PI / 2, 0, 0]}>
           <cylinderGeometry args={[0.18, 0.18, 0.05, 16]} />
           <meshStandardMaterial color={PALETTE.wainscot} />

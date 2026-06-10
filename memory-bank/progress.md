@@ -474,6 +474,16 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   yeni karakter paketi kullanıcıyla seçilecek (UAL/Synty linkleri verildi). **Doğrulama: vitest 91/91,
   build temiz, Playwright canlı (primitive karakterler, düz zemin, bitişik salonlar, pad ocak yanında,
   konsol 0 hata).**
+- ✅ **YERLEŞİM v3 (2026-06-11, kullanıcı feedback turu-2; D-025):** per-zone AYNALI mutfak (z1 ocak
+  sol / z2 ocak sağ duvar; bulaşık ARKA duvarda ocaktan ayrı; her zone kendi çaycısı) → zone-2 garson
+  turu ~21sn→~10sn < sabır 18sn (ölçüm: 180sn'de 50 servis, kaçan yok). Masalar sağa+yukarı (kolon
+  -1.2/3.2, sıra -0.6/2.2; açılış ön sıradan), masa pad'leri kapı-tarafı çaprazda (ocağa girmez),
+  çay pad'i ocağın yanında ferah. KARE masa evrimi (örtü→etek→pirinç bant→altın; yuvarlak/sekizgen
+  gitti) + sandalye=min(4,seviye+1) + sandalye masaya 0.78. Kilim toprak-bordo + masa bloğuna ortalı.
+  Mağaza fix: dama=büyük quad satranç deseni (düz beyaz bug'ı), zemin overlay duvara kadar (eski renk
+  şerit bug'ı). KARAR: 2 garson (salon başına 1; 3.sü fazla otomasyon — D-014). **vitest 91/91, build
+  temiz, smoke 27/27, Playwright canlı (2 zone kurulu, dama+yeşil duvar gerçek satın alma, L4 masa),
+  konsol 0 hata.**
 - ⏳ **3a kalan:** zone 3-4 (tost/TV konsepti) + kat planındaki servis odaları (floorplan-master.md).
 - ⏳ **3b:** Kat geçişi: kat dolunca **merdiven** açılır → ekran kararma → üst kat; dinamik bounds/kamera; SAVE bump.
 - ⏳ **3c:** Tuvalet ODASI + DEPO (KATA özel, parayla açılır) + tuvalet kâğıdı döngüsü (depodan al→tak) + temizlikçi.

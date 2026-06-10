@@ -2,7 +2,18 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
-## ŞU AN (2026-06-11 SABAH FEEDBACK'İ UYGULANDI — WP3/WP4 kısmi GERİ ALMA; SAVE v19 değişmedi)
+## ŞU AN (2026-06-11 FEEDBACK TURU-2 UYGULANDI — YERLEŞİM v3, D-025; SAVE v19 değişmedi)
+Kullanıcı PC başında değildi; tasarım+uygulama+doğrulama tek oturumda bitirildi (agent'sız, bizzat):
+- **Per-zone AYNALI mutfak:** z2'nin kendi ocağı (sağ duvar) + bulaşık arka duvarda ocaktan AYRI →
+  zone-2 garson turu ~21sn→~10sn (sabır 18sn artık dolmuyor; 180sn ölçümünde 50 servis, kaçan yok).
+- **Masalar sağa+yukarı**, masa pad'leri kapı çaprazında; çay pad'i ocağın yanında ferah alanda.
+- **KARE masa evrimi** + seviye başına sandalye (4'e kadar) + yakın oturma (0.78).
+- **Mağaza fix:** dama=quad satranç deseni; zemin overlay duvara kadar; kilim yumuşak toprak-bordo.
+- **KARAR (raporlandı): 2 GARSON** (salon başına 1) — 3.sü fazla otomasyon, L2 hız yedek var.
+Kullanıcı dönünce: telefonda/tarayıcıda OYNAYIP yerleşim v3 hissini değerlendirecek; masa açılış
+sırası ÖN sıradan (t0 ön-sol) — feedback'e açık. APK hâlâ ESKİ (istenirse yeni derlenir).
+
+## (ÖNCEKİ — 2026-06-11 SABAH FEEDBACK'İ UYGULANDI — WP3/WP4 kısmi GERİ ALMA; SAVE v19 değişmedi)
 Kullanıcı gece-2 paketine feedback verdi: **"assetler çok kötü oldu — karakterler küçük, zemin
 iğrenç, çay ocağı birleşmesi kötü; konsept My Hotel tarzı olmalı."** Yapılan (detay progress.md):
 - Karakterler/zemin/çay ocağı/bulaşık ESKİYE döndü (primitive + düz zemin + semaver + lavabo/koku).
