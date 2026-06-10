@@ -63,6 +63,41 @@ export function StarBadge({ size = 54 }: { size?: number }) {
   );
 }
 
+/** Yeşil onay madalyonu (görev-tamam toast'u). */
+export function CheckBadge({ size = 30 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
+      <defs>
+        <linearGradient id="ic-check" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#9ccc65" />
+          <stop offset="1" stopColor="#558b2f" />
+        </linearGradient>
+      </defs>
+      <circle cx="24" cy="24" r="20" fill="url(#ic-check)" stroke="#fff" strokeWidth="3.5" />
+      <path d="M14.5 24.5l6.5 6.5 12.5-13" stroke="#fff" strokeWidth="5.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M10 17a15 15 0 0 1 11-8.5" stroke="rgba(255,255,255,.45)" strokeWidth="3" fill="none" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+/** Altın ünlem madalyonu (yeni-özellik reveal toast'u). */
+export function BangBadge({ size = 30 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
+      <defs>
+        <linearGradient id="ic-bang" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#ffd54f" />
+          <stop offset="1" stopColor="#f57c00" />
+        </linearGradient>
+      </defs>
+      <circle cx="24" cy="24" r="20" fill="url(#ic-bang)" stroke="#fff" strokeWidth="3.5" />
+      <rect x="20.8" y="11" width="6.4" height="17" rx="3.2" fill="#fff" />
+      <circle cx="24" cy="35" r="3.6" fill="#fff" />
+      <path d="M10 17a15 15 0 0 1 11-8.5" stroke="rgba(255,255,255,.45)" strokeWidth="3" fill="none" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 /** Ayarlar dişlisi (beyaz). */
 export function GearIcon({ size = 22 }: { size?: number }) {
   return (

@@ -402,6 +402,39 @@ export function migrate(raw: Record<string, unknown>): SaveData {
     v = 21;
   }
 
+  // v21 -> v22 (GÖREV SIRASI): q_zone2, yükseltme görevlerinin (q_waiterL2/q_tableL2) ÖNÜNE alındı
+  // (kullanıcı: 2. salon için yükseltme gerekmesin). questIndex İD-EŞLEMELİ taşınır — yalnız
+  // entryV >= 20 girişlerde (v20/v21 sırasını kullanan kayıtlar): daha eski girişler v20 adımında /
+  // seedQuestIndex'te zaten GÜNCEL listeye eşlendi, ikinci eşleme bozardı.
+  if (v < 22) {
+    if (entryV >= 20) {
+      const V21_QUEST_IDS = [
+        'q_pickup', 'q_serve1', 'q_coin', 'q_table2', 'q_charTray1', 'q_serve5', 'q_station2',
+        'q_wash', 'q_table3', 'q_charTray2', 'q_waiter', 'q_dish', 'q_table4', 'q_charMagnet',
+        'q_waiterL2', 'q_tableL2', 'q_zone2', 'q_z2serve', 'q_z2table2', 'q_z2waiter',
+        'q_z2table3', 'q_z2dish', 'q_z2table4',
+      ];
+      const oldIdx = Math.max(0, Number(d.questIndex ?? 0) || 0);
+      if (oldIdx >= V21_QUEST_IDS.length) {
+        d.questIndex = economyConfig.quests.length;
+      } else {
+        const ni = economyConfig.quests.findIndex((q) => q.id === V21_QUEST_IDS[oldIdx]);
+        if (ni >= 0) d.questIndex = ni;
+      }
+    }
+    // GÜVENLİK (tüm girişler): aktif görev q_zone2'nin İLERİSİNDE ama zone2 pad'i alınmamışsa
+    // (eski sırada yükseltme görevleri zone2'den ÖNCEYDİ) q_zone2 atlanmış olur → hat z2 görevlerinde
+    // kilitlenirdi. questIndex q_zone2'ye geri çekilir; zaten tamamlanmış sonraki görevler tick'teki
+    // auto-advance ile anında geçilir (ilerleme kaybolmaz).
+    {
+      const zi = economyConfig.quests.findIndex((q) => q.id === 'q_zone2');
+      const padsDone = Array.isArray(d.padsDone) ? (d.padsDone as string[]) : [];
+      const qi = Number(d.questIndex ?? 0) || 0;
+      if (zi >= 0 && qi > zi && !padsDone.includes('zone2')) d.questIndex = zi;
+    }
+    v = 22;
+  }
+
   // Sona kalan v16 şeması: türetilen alanlar (tables/stations/serviceSpeedMult/hasWaiter), eski `padFill`,
   // kaldırılan `trayLevel` ve 'samovar' referansı yazılmaz; stats/questIndex/questBase eklendi (v16).
   const rawStats = (d.stats && typeof d.stats === 'object' ? d.stats : {}) as Partial<SaveStats>;

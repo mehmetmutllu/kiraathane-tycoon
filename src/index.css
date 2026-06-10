@@ -643,32 +643,46 @@ body,
   box-shadow: 0 2px 0 #8e1c1c;
 }
 
-/* ---- Yeni-özellik / görev / seviye toast'u (üst-orta) ---- */
+/* ---- Yeni-özellik / görev / seviye toast'u (ALT-orta; 2026-06-11 redesign — üstteki görev
+   kartına biniyordu + eski turuncu hap "çirkin" bulundu. Krem kart + sol SVG madalyon, alttan
+   yumuşak yükselme; alt ekran joystick-görünmez olduğundan boş ve güvenli.) ---- */
 .notice {
   position: absolute;
   left: 50%;
-  top: calc(78px + var(--sat));
+  bottom: calc(88px + env(safe-area-inset-bottom, 0px));
   transform: translateX(-50%);
-  z-index: 15; /* görev kartı (10) dahil tüm HUD'un ÜSTÜNDE (2026-06-11 fix: kartın altında kalıyordu) */
-  max-width: min(72vw, 340px); /* dar ekranda sağ-üst görev kartına taşmasın */
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  max-width: min(86vw, 380px);
+  background: linear-gradient(180deg, var(--cream), #f3e0bf);
+  color: var(--ink);
+  border: 2px solid #e6c896;
+  border-bottom-width: 4px; /* hafif "kabarık kart" hissi (HUD pill diliyle aynı) */
+  padding: 8px 16px 8px 10px;
+  border-radius: 16px;
+  font-family: var(--font-game);
+  font-size: 15px;
+  font-weight: 800;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.38);
+  pointer-events: none;
+  animation: noticeUp 0.38s cubic-bezier(0.18, 0.9, 0.3, 1.2) both;
+}
+.notice-badge {
+  display: flex;
+  flex: none;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25));
+}
+.notice-text {
   overflow: hidden;
   text-overflow: ellipsis;
-  background: linear-gradient(180deg, rgba(255, 179, 0, 0.97), rgba(245, 124, 0, 0.97));
-  color: #2b1a04;
-  border: 2.5px solid rgba(255, 255, 255, 0.9);
-  padding: 8px 18px;
-  border-radius: 999px;
-  font-size: 14px;
-  font-weight: 800;
   white-space: nowrap;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
-  pointer-events: none;
-  animation: noticePop 0.32s cubic-bezier(0.18, 0.9, 0.3, 1.3) both;
 }
 
-@keyframes noticePop {
+@keyframes noticeUp {
   0% {
-    transform: translateX(-50%) translateY(-10px) scale(0.85);
+    transform: translateX(-50%) translateY(26px) scale(0.88);
     opacity: 0;
   }
   100% {

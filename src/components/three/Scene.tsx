@@ -1,6 +1,6 @@
-import { Suspense, useMemo, useRef, useState } from 'react';
+import { Suspense, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Vector3, type Group, type MeshBasicMaterial, type MeshStandardMaterial } from 'three';
+import { Vector3, type Group, type MeshStandardMaterial } from 'three';
 import { useGame, LAYOUT, stationSoftMaxLevel, stationUpgradeCost, upgradeZoneUnlockedZ, tableSoftMaxLevel, tableUpgradeUnlockedZ, tableNextCost, waiterSoftMaxLevel, waiterUpgradeCost, waiterUpgradeUnlockedZ } from '../../game/store';
 import { zoneOfTable } from '../../config/economy.config';
 import { GroundMarker } from './GroundMarker';
@@ -153,6 +153,8 @@ function KitchenStaff() {
 // bitişik ek odalar) + MERDİVEN ön-sağ köşe (Faz 3b üst kat). Salt görsel greybox rezerv.
 function ReservedRooms() {
   const a = LAYOUT.area;
+  // Tuvalet + merdiven zone-2 bölgesinde → salon kilitliyken çizilmez (kapalı taraf BOŞ arsa).
+  const zonesOpen = useGame((s) => s.zonesOpen);
   return (
     <group>
       {/* DEPO (sol-arka ek oda) */}
@@ -166,6 +168,8 @@ function ReservedRooms() {
           <meshStandardMaterial color={PALETTE.doorWood} />
         </mesh>
       </group>
+      {zonesOpen > 1 && (
+        <>
       {/* TUVALET (sağ-arka ek oda) */}
       <group position={[13.8, 0, a.minZ - 1.6]}>
         <mesh castShadow position={[0, 0.7, 0]}>
@@ -186,6 +190,8 @@ function ReservedRooms() {
           </mesh>
         ))}
       </group>
+        </>
+      )}
     </group>
   );
 }
@@ -379,14 +385,17 @@ function Ground() {
   // (+dama temasında quad satranç deseni). Kilim o zone'un masa bloğunun altına ortalanır
   // (tek doğru kaynak: LAYOUT.tables — zone-2 aynalı olsa da doğru yere düşer).
   const floorThemeByZone = useGame((s) => s.floorThemeByZone);
-  const last = LAYOUT.zoneAreas.length - 1;
+  // Kilitli zone'un zemini ÇİZİLMEZ (2026-06-11: karanlık örtü kalktı — kapalı salon "boş arsa";
+  // taban ahşap düzlem dışarıda her yerde zaten görünür, kilitli bölge de onunla aynı kalır).
+  const zonesOpen = useGame((s) => s.zonesOpen);
+  const last = zonesOpen - 1;
   return (
     <group>
       <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[6, 0, 0]}>
         <planeGeometry args={[38, 18]} />
         <meshStandardMaterial color={PALETTE.floorWood} />
       </mesh>
-      {LAYOUT.zoneAreas.map((za, z) => {
+      {LAYOUT.zoneAreas.slice(0, zonesOpen).map((za, z) => {
         // Overlay DUVARA KADAR uzar (dış kenarlarda +0.55) — duvar dibinde eski renk şerit kalmaz
         // (kullanıcı bug'ı 2026-06-11). Zone'lar arası ortak kenar (x=5.3) olduğu gibi kalır.
         const x0 = za.minX - (z === 0 ? 0.55 : 0);
@@ -559,54 +568,25 @@ function DecorProps() {
   );
 }
 
-// Zone-2 KİLİTLİYKEN TAM GİZLİ (kullanıcı 2026-06-11: "açılmadan hiç ama hiç görünmesin"):
-// salon, eski yarı saydam örtü yerine TAM OPAK karanlık HACİMLE örtülür (void — zemin/duvar/dekor
-// hiçbiri seçilemez; zone-1'den bakınca salonun bittiği yerde düz karanlık görünür). Pad açılınca
-// ~1.8sn'de karanlıktan aydınlığa FADE (kamera panı zaten yeni salona döner) → "karanlıktan çıkış"
-// reveal'i. Fade bitince örtü tamamen kalkar (maliyet sıfır).
-function LockedZoneShade() {
-  const zonesOpen = useGame((s) => s.zonesOpen);
-  const mat = useRef<MeshBasicMaterial>(null);
-  const [gone, setGone] = useState(false);
-  useFrame((_, dt) => {
-    if (!mat.current || zonesOpen <= 1) return;
-    mat.current.opacity = Math.max(0, mat.current.opacity - dt / 1.8);
-    if (mat.current.opacity <= 0) setGone(true);
-  });
-  if (gone) return null;
-  // Hacim zone-2'nin TÜM iç alanı + dış duvarlarını kaplar (sağ/arka/ön duvar payları dahil);
-  // zone-1 tarafına TAŞMAZ (sınır x=zoneBorderX'te keskin karanlık yüzü = salonun "sonu").
-  const za = LAYOUT.zoneAreas[1];
-  const x0 = za.minX;
-  const x1 = za.maxX + 0.8; // dış duvar (area+0.5 + kalınlık) payı
-  const z0 = za.minZ - 0.8;
-  const z1 = za.maxZ + 0.8;
-  return (
-    <group>
-      <mesh position={[(x0 + x1) / 2, 1.1, (z0 + z1) / 2]} renderOrder={999}>
-        <boxGeometry args={[x1 - x0, 2.2, z1 - z0]} />
-        <meshBasicMaterial ref={mat} color="#070a0e" transparent opacity={1} depthWrite={false} />
-      </mesh>
-      {/* zone sınırı zemin çizgisi (duvarsız eşik — D-023): kilitliyken eşiği işaretler, açılınca tek salon */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[LAYOUT.zoneBorderX, 0.035, 0]}>
-        <planeGeometry args={[0.16, 10.6]} />
-        <meshStandardMaterial color="#d9b24a" polygonOffset polygonOffsetFactor={-3} polygonOffsetUnits={-3} />
-      </mesh>
-    </group>
-  );
-}
-
-// Duvarlar TÜM binayı (iki zone) sarar: arka + sol + sağ + ÖN. TEK KAPI (zone-1 ortası; D-023 —
-// tüm müşteriler buradan girer/çıkar). İÇ BÖLME DUVARI YOK: tek salon, zone sınırı zemin çizgisi.
+// Duvarlar yalnız AÇIK zone'ları sarar (2026-06-11 telefon feedback'i: karanlık örtü hacmi mobilde
+// AYDINLIK göründü + zone sınırındaki kelepçe "görünmez engel" hissi verdi → örtü KALDIRILDI, bina
+// kilitliyken zone-1'i 4 GERÇEK duvarla biter; sağ duvar zone sınırına oturur = kelepçe duvar olur).
+// Zone-2 kilitliyken HİÇ ÇİZİLMEZ (yanı düz "boş arsa"); pad açılınca bina sağa uzar (kamera panı var).
+// TEK KAPI (zone-1 ortası; D-023 — tüm müşteriler buradan girer/çıkar). Açıkken İÇ BÖLME DUVARI YOK.
 function Walls() {
+  const zonesOpen = useGame((s) => s.zonesOpen);
   // WP6: duvar teması zone-başına (wallThemeByZone persist): arka duvar zone sınırında ikiye bölünür,
   // sol dış duvar = zone-1, sağ dış = zone-2; ön segmentler orta noktasının zone'una boyanır.
   const wallThemeByZone = useGame((s) => s.wallThemeByZone);
   const themeOf = (z: number) => WALL_THEMES[wallThemeByZone[z] ?? 'krem'] ?? WALL_THEMES.krem;
-  const themeAtX = (x: number) => themeOf(x < LAYOUT.zoneBorderX ? 0 : 1);
   const a = LAYOUT.area;
   const m = 0.5; // alan kenarı ile duvar arası küçük pay
-  const x0 = a.minX - m, x1 = a.maxX + m, z0 = a.minZ - m, z1 = a.maxZ + m;
+  // Sağ duvar AÇIK zone'ların sonunda: kilitliyken zone-1 kenarı (5.3+m → oyuncu kelepçesi 5.3 ile
+  // dış duvarlardaki standoff'un AYNISI), zone-2 açılınca binanın gerçek sonu.
+  const openMaxX = LAYOUT.zoneAreas[Math.min(zonesOpen, LAYOUT.zoneAreas.length) - 1].maxX;
+  const open2 = zonesOpen > 1;
+  const themeAtX = (x: number) => themeOf(open2 && x >= LAYOUT.zoneBorderX ? 1 : 0);
+  const x0 = a.minX - m, x1 = openMaxX + m, z0 = a.minZ - m, z1 = a.maxZ + m;
   const d = z1 - z0;
   const cz = (z0 + z1) / 2;
   const h = 1.2;
@@ -619,17 +599,23 @@ function Walls() {
   const frontSegs: [number, number][] = [];
   for (let i = 0; i < cuts.length; i += 2) {
     const [sx, ex] = [cuts[i], cuts[i + 1]];
-    if (sx < bx && ex > bx) frontSegs.push([sx, bx], [bx, ex]); // tema sınırında böl
+    if (open2 && sx < bx && ex > bx) frontSegs.push([sx, bx], [bx, ex]); // tema sınırında böl
     else frontSegs.push([sx, ex]);
   }
   return (
     <group>
-      {/* arka duvar (zone sınırında tema bölmesi) */}
-      <WallPiece x={(x0 + bx) / 2} z={z0} w={bx - x0} dDepth={t} h={h} theme={themeOf(0)} />
-      <WallPiece x={(bx + x1) / 2} z={z0} w={x1 - bx} dDepth={t} h={h} theme={themeOf(1)} />
-      {/* sol + sağ dış duvarlar */}
+      {/* arka duvar (zone-2 açıksa sınırda tema bölmesi) */}
+      {open2 ? (
+        <>
+          <WallPiece x={(x0 + bx) / 2} z={z0} w={bx - x0} dDepth={t} h={h} theme={themeOf(0)} />
+          <WallPiece x={(bx + x1) / 2} z={z0} w={x1 - bx} dDepth={t} h={h} theme={themeOf(1)} />
+        </>
+      ) : (
+        <WallPiece x={(x0 + x1) / 2} z={z0} w={x1 - x0} dDepth={t} h={h} theme={themeOf(0)} />
+      )}
+      {/* sol + sağ dış duvarlar (kilitliyken sağ duvar = zone sınırı, zone-1 temalı) */}
       <WallPiece x={x0} z={cz} w={t} dDepth={d} h={h} theme={themeOf(0)} />
-      <WallPiece x={x1} z={cz} w={t} dDepth={d} h={h} theme={themeOf(1)} />
+      <WallPiece x={x1} z={cz} w={t} dDepth={d} h={h} theme={themeOf(open2 ? 1 : 0)} />
       {/* ön duvar segmentleri (kapı boşlukları arası) */}
       {frontSegs.map(([sx, ex], i) =>
         ex - sx > 0.01 ? (
@@ -802,7 +788,6 @@ export function Scene() {
         shadow-camera-bottom={-12}
       />
       <Ground />
-      <LockedZoneShade />
       <Street />
       <Walls />
       <TvCorner />

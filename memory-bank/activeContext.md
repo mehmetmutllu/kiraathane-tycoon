@@ -2,7 +2,40 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
-## ŞU AN (2026-06-11/12 — KARAKTER YÜKSELTME v20 ✅ + ZONE-2 TAM GİZLEME ✅ + ÇAYCI v2 ✅ + YENİ APK)
+## ŞU AN (2026-06-11 — TELEFON FEEDBACK TURU-1 UYGULANDI, SAVE v21→v22; commit bekliyor)
+Kullanıcı v21 APK telefon testinden 6 maddelik feedback verdi; HEPSİ uygulandı:
+1. **Müşteri takılma bug'ı (KÖK çözüm):** "masaya müşteri gelmiyor / müşteriler kümeleniyor" =
+   müşteriler hâlâ `moveAvoid` (eksen-kayma) kullanıyordu; yerleşim v3'te ÖN-SIRA masa, kapı ile
+   ARKA koltuk arasına TAM giriyor → müşteri kilitlenip masayı SÜRESİZ rezerve ediyordu (garsondaki
+   eski deadlock'un aynısı). Müşteri de salon içinde **navStep (BFS)** kullanır (kapı↔koltuk);
+   sokak segmenti düz `moveToward`. +30sn vazgeçme sigortası (toTable'da timer). `moveAvoid` SİLİNDİ
+   (çağıran kalmadı). 2 yeni vitest (arka masaya oturur + çıkışta takılmaz).
+2. **Zone-2 gizleme → 4 GERÇEK DUVAR:** karanlık hacim telefonda AYDINLIK göründü + kelepçe
+   "görünmez engel" hissi verdi → `LockedZoneShade` SİLİNDİ. Duvarlar yalnız AÇIK zone'ları sarar
+   (sağ duvar kilitliyken zone sınırında = kelepçe duvara dönüşür; standoff dış duvarlarla birebir).
+   Kilitliyken zone-2 zemin overlay/kilim + tuvalet/merdiven ÇİZİLMEZ (yanı boş arsa). Açılınca bina
+   sağa uzar (kamera panı mevcuttu). Ground/Walls/ReservedRooms zonesOpen'a bağlandı.
+3. **Çay yükseltme pad'i ocağın ALTINA:** upgradeZones [-2.4,-2.5]→[-4.35,-0.5] (sol duvar, modülün
+   kapı tarafı; ocak merkez ayrımı 2.0 > pickup 1.6). Garson pad'i çakışmasın diye [-4.6,1.5]→[-4.6,2.2]
+   (ayrım 2.71 > 2×PAD_RADIUS 2.6). z2 aynalı otomatik.
+4. **Tepsi fiyatları (kullanıcı verdi):** T1/T2 150/500 → **75/150**. T3/T4 (15k/60k) DOKUNULMADI
+   (onaysız denge değişikliği yok — kullanıcı isterse sonra).
+5. **Toast redesign + ALT-ORTA:** üstte görev kartına biniyordu + "çirkin" → alt-orta (bottom 88px),
+   krem kart + tür-bazlı SVG madalyon (görev=yeşil CheckBadge, seviye=StarBadge, reveal=altın BangBadge),
+   emoji prefix'leri ('✓','🎉') metinden çıktı; `GameNotice.kind` eklendi.
+6. **Zone-2 gating — yükseltmesiz:** q_zone2 görevi yükseltme görevlerinin (q_waiterL2/q_tableL2)
+   ÖNÜNE alındı (yeni sıra: q_charMagnet → q_zone2 → q_waiterL2 → q_tableL2 → q_z2serve). Pad zinciri
+   zaten tüm z1 pad'lerini istiyordu (table4←dishwasher←waiter←table3). **SAVE v21→v22**: questIndex
+   İD-EŞLEMELİ (yalnız entryV≥20) + GÜVENLİK kelepçesi (aktif görev q_zone2'nin ilerisinde ama zone2
+   pad'i alınmamışsa q_zone2'ye geri çekilir — yoksa hat q_z2serve'de kilitlenirdi; tamamlanmış sonraki
+   görevler tick auto-advance ile anında geçilir).
+**Doğrulama:** vitest **110/110** (4 yeni: 2 müşteri-nav + 3 v22 migrasyon/sıra) · build temiz ·
+sim (zone-2 ~32dk, tempo korunmuş) · smoke **27/27** · Playwright canlı: kilitli duvar görünümü,
+zone-2 satın alma + duvar uzaması, v21→v22 kelepçesi canlı (questIndex 14 → q_zone2), toast alt-orta
+DOM+görsel, arka masada oturan müşteriler, konsol 0 hata. **Henüz commit'lenmedi; APK YENİLENMEDİ.**
+**SIRADAKİ:** kullanıcı onayı → commit+push + istenirse yeni APK; kullanıcı testine devam.
+
+## (ÖNCEKİ — 2026-06-11/12 — KARAKTER YÜKSELTME v20 ✅ + ZONE-2 TAM GİZLEME ✅ + ÇAYCI v2 ✅ + YENİ APK)
 **Karakter yükseltme sistemi UYGULANDI** (commit 0955e21 — onaylı tasarım birebir):
 - `economy.config.character` (tepsi [2..6] 150/500/15k/60k · mıknatıs [2.6..5.0] · hız [4.5..5.4])
   + türeticiler (`trayCapacityFor/attractRadiusFor/playerSpeedFor`, `charNextCost`, `charLevel`).

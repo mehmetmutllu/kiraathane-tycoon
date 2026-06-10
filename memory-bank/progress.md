@@ -508,6 +508,17 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   (`stats.waiterServedByZone`, **SAVE v21** migrasyonu: global→z1 + z2waiter tutulmuşsa eşik tohumu);
   reveal toast'ları zone-başına ("Salon 2:" öneki + kendi pan hedefi). vitest 104/104, sim tempo aynı,
   smoke 27/27, Playwright canlı gating doğrulandı, konsol 0.
+- ✅ **TELEFON FEEDBACK TURU-1 (2026-06-11, v21 APK testi; SAVE v21→v22):** (1) müşteri takılma KÖK
+  çözümü — müşteriler salon içinde navStep/BFS (moveAvoid SİLİNDİ; ön-sıra masa kapı↔arka-koltuk
+  arasında kilitliyordu, masa süresiz rezerve kalıyordu) + 30sn vazgeçme sigortası; (2) karanlık örtü
+  hacmi KALDIRILDI → duvarlar yalnız AÇIK zone'ları sarar (kilitli zone-2 = boş arsa: overlay/kilim/
+  tuvalet/merdiven çizilmez; sağ duvar zone sınırında = "görünmez engel" duvara dönüştü); (3) çay
+  yükseltme pad'i ocağın ALTINA sol duvara ([-4.35,-0.5]; garson pad'i [-4.6,2.2]'ye kaydı, ayrım 2.71);
+  (4) tepsi T1/T2 75/150 (kullanıcı kararı; T3/T4 dokunulmadı); (5) toast ALT-ORTA + krem kart +
+  tür-bazlı SVG madalyon (GameNotice.kind; emoji prefix kalktı); (6) q_zone2 yükseltme görevlerinin
+  ÖNÜNE (yeni sıra ...q_charMagnet→q_zone2→q_waiterL2→q_tableL2→q_z2serve...; v22 İD-eşleme +
+  q_zone2-atlanmış-kayıt güvenlik kelepçesi). vitest 110/110, build, sim (zone-2 ~32dk), smoke 27/27,
+  Playwright canlı (duvar/reveal/migrasyon/toast/arka-masa müşterisi), konsol 0. (Henüz commit'lenmedi.)
 - ⏳ **3a kalan:** zone 3-4 (tost/TV konsepti) + kat planındaki servis odaları (floorplan-master.md).
 - ⏳ **3b:** Kat geçişi: kat dolunca **merdiven** açılır → ekran kararma → üst kat; dinamik bounds/kamera; SAVE bump.
 - ⏳ **3c:** Tuvalet ODASI + DEPO (KATA özel, parayla açılır) + tuvalet kâğıdı döngüsü (depodan al→tak) + temizlikçi.

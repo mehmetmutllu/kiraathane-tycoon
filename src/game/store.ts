@@ -122,7 +122,9 @@ export const LAYOUT = {
     table2: ALL_TABLES[1].table,
     table3: ALL_TABLES[2].table,
     table4: ALL_TABLES[3].table,
-    waiter: [-4.6, 0, 1.5] as Vec3, // kendi ocağının önünde, kenarda (D-018 §1 kenar-yerleşim)
+    // Sol duvarda, çay-yükseltme noktasının altında (2026-06-11: çay pad'i ocağın altına taşındı,
+    // dolum daireleri kesişmesin diye garson pad'i güneye kaydı: ayrım 2.71 > 2×PAD_RADIUS 2.6).
+    waiter: [-4.6, 0, 2.2] as Vec3,
     // Bulaşıkçı pad'i: mutfak bloğunun arka köşesi açıklığında (çay pad'iyle dolum daireleri
     // KESİŞMEZ: ayrım 3.28 > 2×PAD_RADIUS 2.6 — "pad'ler sık olmasın" isteği).
     dishwasher: [0.2, 0, -4.5] as Vec3,
@@ -132,15 +134,15 @@ export const LAYOUT = {
     z2table2: ALL_TABLES[5].table,
     z2table3: ALL_TABLES[6].table,
     z2table4: ALL_TABLES[7].table,
-    z2waiter: mir(1, [-4.6, 0, 1.5]),
+    z2waiter: mir(1, [-4.6, 0, 2.2]),
     z2dishwasher: mir(1, [0.2, 0, -4.5]),
   } as Record<string, Vec3>,
-  // Zone başına mekânsal çay yükseltme noktası: kendi modülünün HEMEN YANINDA (kullanıcı 2026-06-11:
-  // "yükseltme ocağın yanında dursun" — My Hotel obje-başı desen). PAD MERKEZİ her ocağın
-  // pickupRadius'unun (1.6) DIŞINDA kalır (+marj) → pad üstünde dururken çay-alma tetiklenmez;
-  // ayrıca tick'teki pickup-guard'ı pickup alanı içinde dolumu zaten kilitler (vitest doğrular).
-  upgradeZones: ZONE_OFFSETS.map((_, z) => mir(z, [-2.4, 0, -2.5])),
-  upgradeZone: [-2.4, 0, -2.5] as Vec3, // zone-1 alias (testler/eski kod)
+  // Zone başına mekânsal çay yükseltme noktası: kendi duvarında, modülün ALTINDA (kapı tarafı —
+  // kullanıcı 2026-06-11: "ocağın önünde değil altında, sol duvarda dursun"). PAD MERKEZİ ocağın
+  // pickupRadius'unun (1.6) DIŞINDA kalır (merkez ayrımı 2.0) → pad üstünde dururken çay-alma
+  // tetiklenmez; ayrıca tick'teki pickup-guard'ı pickup alanı içinde dolumu zaten kilitler (vitest).
+  upgradeZones: ZONE_OFFSETS.map((_, z) => mir(z, [-4.35, 0, -0.5])),
+  upgradeZone: [-4.35, 0, -0.5] as Vec3, // zone-1 alias (testler/eski kod)
   // Zone başına personel köşeleri + garson hız noktası (aynalı şablon).
   waiterHomes: ZONE_OFFSETS.map((_, z) => mir(z, [-4.7, 0, 4.2])),
   waiterHome: [-4.7, 0, 4.2] as Vec3,
@@ -197,30 +199,6 @@ function tableSolids(tables: number): Solid[] {
 function hitsSolid(x: number, z: number, solids: Solid[], r: number): boolean {
   for (const s of solids) {
     if (Math.abs(x - s.c[0]) < s.h[0] + r && Math.abs(z - s.c[2]) < s.h[1] + r) return true;
-  }
-  return false;
-}
-
-/** Engel-kaçınmalı hareket (personel): hedefe doğru git; engele çarparsa eksen-başı KAY (etrafından dolaş).
- *  Varış: hedefe step kadar yaklaşınca true (hedef engel değilse erişilir). pos yerinde değişir. */
-function moveAvoid(pos: Vec3, target: RVec3, step: number, solids: Solid[], r: number): boolean {
-  const dx = target[0] - pos[0];
-  const dz = target[2] - pos[2];
-  const d = Math.hypot(dx, dz);
-  if (d <= step || d < 0.001) {
-    pos[0] = target[0];
-    pos[2] = target[2];
-    return true;
-  }
-  const ux = (dx / d) * step;
-  const uz = (dz / d) * step;
-  if (!hitsSolid(pos[0] + ux, pos[2] + uz, solids, r)) {
-    pos[0] += ux;
-    pos[2] += uz;
-  } else if (!hitsSolid(pos[0] + ux, pos[2], solids, r)) {
-    pos[0] += ux; // x ekseninde kay
-  } else if (!hitsSolid(pos[0], pos[2] + uz, solids, r)) {
-    pos[2] += uz; // z ekseninde kay
   }
   return false;
 }
@@ -435,10 +413,12 @@ export interface ActiveZone {
   cost: number;
 }
 
-/** Yeni-özellik bildirimi (D-019 §4): bir özellik İLK kez açılınca beliren kısa toast (ttl = kalan sn). */
+/** Yeni-özellik bildirimi (D-019 §4): bir özellik İLK kez açılınca beliren kısa toast (ttl = kalan sn).
+ *  kind → HUD'daki SVG rozeti seçer (emoji yok — UI game-feel kuralı). */
 export interface GameNotice {
   text: string;
   ttl: number;
+  kind: 'quest' | 'level' | 'reveal';
 }
 
 /**
@@ -949,9 +929,8 @@ export const useGame = create<GameState>((set, get) => ({
     const tables = derived.tables;
     const zonesOpen = derived.zonesOpen;
     const serviceSpeedMult = derived.serviceSpeedMult;
-    // Müşteri + personel masa GÖVDELERİNDEN dolaşır (D-016 v4): ocak/bulaşık/koltuk engel değil (erişmeli).
+    // Personelin oyuncudan kaçarken masaya itilmemesi için masa gövdeleri (navStep avoidSolids).
     const obstacles = tableSolids(tables);
-    const ar = LAYOUT.actorRadius;
     // Personel (garson/bulaşıkçı) BFS ızgarası — masa+zone sayısına göre cache'li.
     const navGrid = getNavGrid(tables, zonesOpen);
     const upgradeFills = s.upgradeFills.slice();
@@ -1036,13 +1015,24 @@ export const useGame = create<GameState>((set, get) => ({
       const nStreet = LAYOUT.streets[zoneOfTable(n.tableIndex)];
       switch (n.state) {
         case 'toTable': {
-          // Önce KAPIYA (sokaktaysa), sonra koltuğa → müşteri kapıdan girip içeri yürür (front-wall gap).
+          // Önce KAPIYA (sokaktaysa düz yürü — dışarıda engel yok), sonra koltuğa BFS rotayla
+          // (navStep): eksen-kayması (moveAvoid) ön-sıra masayı dolaşamayıp KİLİTLENİYORDU →
+          // müşteri arka masaya hiç oturamıyor, masayı süresiz rezerve ediyordu (telefon bug'ı 2026-06-11).
           const goingIn = n.pos[2] > nEntrance[2] + 0.2;
-          const tgt = goingIn ? nEntrance : slot.seat;
-          if (moveAvoid(n.pos, tgt, step, obstacles, ar) && !goingIn) {
-            // Oturdu; çay servisini bekler. Sabır timer'ı başlar (D-011); OTURDUĞU masanın seviyesi sabrı uzatır (Faz 2h).
+          if (goingIn) {
+            moveToward(n.pos, nEntrance, step);
+          } else if (navStep(n.pos, slot.seat, step, navGrid, 0.5)) {
+            // Oturdu (koltuğa tam otur); çay servisini bekler. Sabır timer'ı başlar (D-011);
+            // OTURDUĞU masanın seviyesi sabrı uzatır (Faz 2h).
+            n.pos[0] = slot.seat[0];
+            n.pos[2] = slot.seat[2];
             n.state = 'waitingForTea';
             n.timer = tablePatience(tableLevels[n.tableIndex] ?? 0);
+          } else {
+            // Sigorta: rota bulunamayıp uzun süre oturamadıysa vazgeçip gider — masa SÜRESİZ
+            // rezerve kalamaz (timer toTable'da yürüme-süresi sayacı olarak kullanılır).
+            n.timer += dt;
+            if (n.timer > 30) n.state = 'leaving';
           }
           break;
         }
@@ -1078,10 +1068,13 @@ export const useGame = create<GameState>((set, get) => ({
           }
           break;
         case 'leaving': {
-          // Önce KAPIYA (içerdeyse), sonra SOKAĞA → müşteri kapıdan çıkıp sokakta kaybolur.
-          const goingOut = n.pos[2] >= nEntrance[2] - 0.2;
-          const tgt = goingOut ? nStreet : nEntrance;
-          if (moveAvoid(n.pos, tgt, step, obstacles, ar) && goingOut) removed.push(n.id);
+          // Önce KAPIYA (içerdeyse BFS rotayla — masalara takılmaz), sonra SOKAĞA düz yürü.
+          const nearDoor = n.pos[2] >= nEntrance[2] - 0.2 || dist2D(n.pos, nEntrance) <= 0.45;
+          if (nearDoor) {
+            if (moveToward(n.pos, nStreet, step)) removed.push(n.id);
+          } else {
+            navStep(n.pos, nEntrance, step, navGrid, 0.4);
+          }
           break;
         }
       }
@@ -1316,14 +1309,14 @@ export const useGame = create<GameState>((set, get) => ({
     for (const [key, text, rp] of revealKeys(padGate, zonesOpen, stationLevels, derived.hasWaiterByZone, waiterLevels)) {
       if (!revealSeen.includes(key)) {
         revealSeen = [...revealSeen, key];
-        notice = { text, ttl: 4.5 };
+        notice = { text, ttl: 4.5, kind: 'reveal' };
         // Yeni açılan noktaya anlık kamera pan ("orada bir şey var" — kullanıcı isteği 2026-06-09).
         if (rp) requestFocus(rp, 1);
       }
     }
     if (notice) {
       const ttl = notice.ttl - dt;
-      notice = ttl > 0 ? { text: notice.text, ttl } : null;
+      notice = ttl > 0 ? { ...notice, ttl } : null;
     }
 
     // Oyuncu DURUYOR mu? (input ~0). Para yalnız dururken akar → üstünden geçerken (hareket) alınmaz.
@@ -1516,7 +1509,7 @@ export const useGame = create<GameState>((set, get) => ({
     };
     let questAdvanced = false;
     while (questIndex < C.quests.length && questTargetMet(C.quests[questIndex].target, questCtx)) {
-      notice = { text: `✓ ${C.quests[questIndex].title}`, ttl: 3.5 };
+      notice = { text: C.quests[questIndex].title, ttl: 3.5, kind: 'quest' };
       questIndex += 1;
       xp += C.xp.perQuest;
       questAdvanced = true;
@@ -1546,7 +1539,7 @@ export const useGame = create<GameState>((set, get) => ({
     if (xp !== s.xp) {
       const before = levelProgress(s.xp).level;
       const after = levelProgress(xp).level;
-      if (after > before) notice = { text: `🎉 Seviye ${after}!`, ttl: 4.5 };
+      if (after > before) notice = { text: `Seviye ${after}!`, ttl: 4.5, kind: 'level' };
     }
 
     // --- Periyodik kayıt ---

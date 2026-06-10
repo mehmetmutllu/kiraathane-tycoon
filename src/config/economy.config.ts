@@ -13,7 +13,7 @@
  *   L5 (Usta)   = masterDiamondCost 💎 VEYA 1 ödüllü video; outputMult yerine masterOutputMult
  */
 
-export const SAVE_VERSION = 21;
+export const SAVE_VERSION = 22;
 
 /**
  * ZONE modeli (Faz 3a + D-022, gece 2026-06-10): zemin kat zone'ları. Her zone kendi TEMALI
@@ -207,7 +207,8 @@ export const economyConfig = {
    */
   character: {
     /** Tepsi kapasitesi (oyuncunun tek turda taşıdığı çay+kirli toplamı). Yeni oyun 2 başlar. */
-    tray: { values: [2, 3, 4, 5, 6], costs: [150, 500, 15_000, 60_000] },
+    // T1/T2 2026-06-11 kullanıcı kararı: 150/500 → 75/150 ("tepsi o kadar olmamalı; azıcık hız katarız").
+    tray: { values: [2, 3, 4, 5, 6], costs: [75, 150, 15_000, 60_000] },
     /** Para mıknatısı yarıçapı (dünya birimi; money.attractRadius'un yerini aldı). */
     magnet: { values: [2.6, 3.4, 4.2, 5.0], costs: [250, 900, 2_800] },
     /** Hareket hızı (dünya birimi/sn; player.moveSpeed'in yerini aldı). Tavan +%20 bilinçli düşük. */
@@ -366,7 +367,7 @@ export const economyConfig = {
   quests: [
     // Karakter görevleri (v20) — zamanlama kullanıcı talimatıyla BİRİNCİ öncelik
     // (docs/character-upgrades-design.md §5): q_charTray1 q_serve5'ten HEMEN ÖNCE (2 masa + tepsi 2
-    // darlığı TAM o anda yaşanır; T1=150₺ o noktada rahat); q_charTray2 q_table3→q_waiter ARASI
+    // darlığı TAM o anda yaşanır; T1=75₺ o noktada rahat); q_charTray2 q_table3→q_waiter ARASI
     // (3 masa solo dönerken kapasite 4 anlamlı — önce kendi gücü, sonra otomasyon); q_charMagnet
     // q_table4 SONRASI (4 masa + garson döneminde yere düşen para zirve yapar). T3/T4 ve hız GÖREVSİZ.
     { id: 'q_pickup', title: 'Ocaktan çay al', target: { type: 'pickupTea', count: 1 } },
@@ -383,10 +384,12 @@ export const economyConfig = {
     { id: 'q_dish', title: 'Bulaşıkçı tut', target: { type: 'pad', id: 'dishwasher' } },
     { id: 'q_table4', title: '4. Masayı aç', target: { type: 'pad', id: 'table4' } },
     { id: 'q_charMagnet', title: 'Para mıknatısını güçlendir', target: { type: 'charStat', stat: 'magnet', tier: 1 } },
+    // --- ZONE-2 görev hattı (Faz 3a + D-022): geçitteki pad → yeni salonun kendi zinciri.
+    // v22 (kullanıcı 2026-06-11): q_zone2 YÜKSELTME görevlerinin (garson hız + masa) ÖNÜNE alındı —
+    // "2. salon için yükseltmelerin tamamlanmasına gerek yok"; tüm zone-1 pad'leri (table4 zinciri) yeter.
+    { id: 'q_zone2', title: '2. Salonu aç', target: { type: 'pad', id: 'zone2' } },
     { id: 'q_waiterL2', title: 'Garsonu hızlandır', target: { type: 'waiterLevel', level: 1 } },
     { id: 'q_tableL2', title: 'Bir masayı yükselt', target: { type: 'tableLevel', level: 1 } },
-    // --- ZONE-2 görev hattı (Faz 3a + D-022): geçitteki pad → yeni salonun kendi zinciri.
-    { id: 'q_zone2', title: '2. Salonu aç', target: { type: 'pad', id: 'zone2' } },
     { id: 'q_z2serve', title: 'Yeni salonda 5 çay servis et', target: { type: 'serveTea', count: 5 }, zone: 1 },
     { id: 'q_z2table2', title: 'Salon 2: 2. Masayı aç', target: { type: 'pad', id: 'z2table2' }, zone: 1 },
     { id: 'q_z2waiter', title: 'Salon 2: Garson tut', target: { type: 'pad', id: 'z2waiter' }, zone: 1 },

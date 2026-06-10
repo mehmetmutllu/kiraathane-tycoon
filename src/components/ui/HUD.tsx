@@ -3,7 +3,7 @@ import { useGame } from '../../game/store';
 import { fmt } from '../../game/decimal';
 import { levelProgress, economyConfig } from '../../config/economy.config';
 import { FLOOR_THEMES, WALL_THEMES } from '../../config/palette';
-import { CoinIcon, GemIcon, StarBadge, GearIcon, MailIcon, BrushIcon, CharIcon, QuestPhoto } from './icons';
+import { CoinIcon, GemIcon, StarBadge, GearIcon, MailIcon, BrushIcon, CharIcon, QuestPhoto, CheckBadge, BangBadge } from './icons';
 import { CharacterPanel } from './CharacterPanel';
 
 /**
@@ -183,10 +183,14 @@ export function HUD() {
         </div>
       )}
 
-      {/* Yeni-özellik / görev / seviye toast'u */}
+      {/* Yeni-özellik / görev / seviye toast'u — ALT-ORTA (üstteki görev kartıyla çakışmaz);
+          türe göre SVG madalyon: görev=yeşil onay, seviye=yıldız, reveal=altın ünlem */}
       {notice && (
         <div className="notice" data-testid="notice" key={notice.text}>
-          {notice.text}
+          <span className="notice-badge">
+            {notice.kind === 'quest' ? <CheckBadge size={30} /> : notice.kind === 'level' ? <StarBadge size={30} /> : <BangBadge size={30} />}
+          </span>
+          <span className="notice-text">{notice.text}</span>
         </div>
       )}
 

@@ -1154,6 +1154,51 @@ describe('personel yol bulma (nav.ts — BFS, kilitlenme yok)', () => {
     expect(servedState).not.toBe('waitingForTea');
     expect(useGame.getState().waiters[0]?.tray).toBe(0); // çayı bıraktı
   });
+
+  it('MÜŞTERİ kolon-bloklu ARKA masaya gerçekten oturur (eski moveAvoid ön masada kilitleniyordu)', () => {
+    useGame.getState().hardReset();
+    const backIdx = 2; // arka-sol masa: kapı ile koltuk arasında table0 TAM kolonda
+    useGame.setState({
+      padsDone: ['table2', 'table3'],
+      player: [4.5, 0.6, 4.2], // oyuncu uzakta
+      inputKeyboard: [0, 0],
+      inputJoystick: [0, 0],
+      npcs: [
+        { id: 960, state: 'toTable', pos: [...LAYOUT.entrances[0]] as [number, number, number], tableIndex: backIdx, timer: 0, color: '#27ae60' },
+      ],
+      spawnTimer: 999,
+    });
+    let st = 'toTable';
+    for (let i = 0; i < 120 && st === 'toTable'; i++) {
+      useGame.getState().tick(0.1);
+      st = useGame.getState().npcs.find((n) => n.id === 960)?.state ?? 'gone';
+    }
+    expect(st).toBe('waitingForTea'); // oturdu (takılıp 30sn vazgeçme sigortasına düşmedi)
+    const npc = useGame.getState().npcs.find((n) => n.id === 960)!;
+    expect(npc.pos[0]).toBeCloseTo(LAYOUT.tables[backIdx].seat[0], 5);
+    expect(npc.pos[2]).toBeCloseTo(LAYOUT.tables[backIdx].seat[2], 5);
+  });
+
+  it('MÜŞTERİ arka masadan çıkışta kapıya BFS ile gider ve sokakta silinir', () => {
+    useGame.getState().hardReset();
+    const backIdx = 2;
+    useGame.setState({
+      padsDone: ['table2', 'table3'],
+      player: [4.5, 0.6, 4.2],
+      inputKeyboard: [0, 0],
+      inputJoystick: [0, 0],
+      npcs: [
+        { id: 961, state: 'leaving', pos: [...LAYOUT.tables[backIdx].seat] as [number, number, number], tableIndex: backIdx, timer: 0, color: '#27ae60' },
+      ],
+      spawnTimer: 999,
+    });
+    let gone = false;
+    for (let i = 0; i < 150 && !gone; i++) {
+      useGame.getState().tick(0.1);
+      gone = !useGame.getState().npcs.some((n) => n.id === 961);
+    }
+    expect(gone).toBe(true); // kapıdan çıkıp sokakta kayboldu (takılmadı)
+  });
 });
 
 describe('masa yükseltme + bahşiş (Faz 2h)', () => {
@@ -1598,8 +1643,8 @@ describe('kozmetik mağaza (WP6, v19) — zone-başına tema satın alma + migra
 
 describe('karakter yükseltmeleri (v20) — eğri, satın alma, migrasyon, görev akışı', () => {
   it('fiyat eğrisi: T1-T2 ucuz, T3-T4 çok pahalı; max kademede null; değerler tasarımla birebir', () => {
-    expect(economyConfig.character.tray.costs).toEqual([150, 500, 15_000, 60_000]);
-    expect(charNextCost('tray', 0)).toBe(150);
+    expect(economyConfig.character.tray.costs).toEqual([75, 150, 15_000, 60_000]);
+    expect(charNextCost('tray', 0)).toBe(75);
     expect(charNextCost('tray', 3)).toBe(60_000);
     expect(charNextCost('tray', 4)).toBeNull(); // MAX
     expect(charNextCost('magnet', 2)).toBe(2_800);
@@ -1625,7 +1670,7 @@ describe('karakter yükseltmeleri (v20) — eğri, satın alma, migrasyon, göre
     expect(useGame.getState().buyCharUpgrade('tray')).toBe(true);
     const s = useGame.getState();
     expect(s.charUpgrades.tray).toBe(1);
-    expect(s.wallet.toNumber()).toBe(50); // 200 - 150
+    expect(s.wallet.toNumber()).toBe(125); // 200 - 75
     expect(s.xp).toBe(xpBefore + economyConfig.xp.perUpgrade);
     expect(charLevel(s.charUpgrades)).toBe(1);
     // Max kademede satın alma reddedilir.
@@ -1788,5 +1833,56 @@ describe('zone-2 yükseltme gating (v21) — zone-1 deseni aynalanır (önce kap
     } as unknown as Record<string, unknown>);
     // z2 garsonu zaten tutulmuş → bugün görünür olan hızlandırma işareti yarın kaybolmasın (eşik tohumu).
     expect(m2.stats.waiterServedByZone).toEqual([50, economyConfig.waiter.upgradeRequires.minWaiterServed]);
+  });
+});
+
+describe('görev sırası v22 — q_zone2 yükseltme görevlerinden ÖNCE + v21→v22 migrasyonu', () => {
+  const qi = (id: string) => economyConfig.quests.findIndex((q) => q.id === id);
+
+  it('yeni sıra: q_charMagnet → q_zone2 → q_waiterL2 → q_tableL2 (2. salon yükseltme istemez)', () => {
+    expect(qi('q_zone2')).toBeGreaterThan(qi('q_charMagnet'));
+    expect(qi('q_zone2')).toBeLessThan(qi('q_waiterL2'));
+    expect(qi('q_waiterL2')).toBeLessThan(qi('q_tableL2'));
+    expect(qi('q_tableL2')).toBeLessThan(qi('q_z2serve'));
+  });
+
+  function v21Save(questIndex: number, padsDone: string[]) {
+    return {
+      saveVersion: 21, wallet: '0', diamonds: '0', lifetime: '9000',
+      stationLevels: [3, 0], waiterLevels: [0, 0], padFills: {}, tableLevels: [],
+      padsDone,
+      stats: { ...defaultStats(), waiterServed: 50, waiterServedByZone: [50, 0] },
+      questIndex, questBase: 0, xp: 0,
+      settings: { sound: true, music: true, notifications: true },
+      floorThemeByZone: [], wallThemeByZone: [], ownedCosmetics: [],
+      charUpgrades: { tray: 2, magnet: 0, speed: 0 }, charPanelSeen: true, lastSaved: Date.now(),
+    } as unknown as Record<string, unknown>;
+  }
+
+  it('v21 kaydı q_waiterL2 aktifken (eski index 14, zone2 alınmamış) → q_zone2 aktif olur (hat kilitlenmez)', () => {
+    // Eski v21 sırasında 14 = q_waiterL2; zone2 padsDone'da YOK → düz İD-eşleme q_zone2 görevini
+    // atlardı ve hat q_z2serve'de (zone-2'siz) kilitlenirdi. Güvenlik kelepçesi q_zone2'ye çeker.
+    const m = migrate(v21Save(14, ['table2', 'table3', 'waiter', 'dishwasher', 'table4']));
+    expect(economyConfig.quests[m.questIndex]?.id).toBe('q_zone2');
+  });
+
+  it('v21 kaydı zone-2 zincirindeyken (zone2 alınmış) → aynı görev İD-eşlenir, geri çekilmez', () => {
+    const oldIdx = 18; // eski v21 sırasında 18 = q_z2table2
+    const m = migrate(v21Save(oldIdx, ['table2', 'table3', 'waiter', 'dishwasher', 'table4', 'zone2']));
+    expect(economyConfig.quests[m.questIndex]?.id).toBe('q_z2table2');
+  });
+
+  it('v20-ÖNCESİ giriş (v19) çifte eşlenmez: v20 adımı güncel listeye eşler, v22 yalnız kelepçe uygular', () => {
+    // v19 kaydında charStat görevleri yok; eski v19 sırasında 11 = q_waiterL2. zone2 alınmamış →
+    // v20 adımı güncel listede q_waiterL2'ye eşler, v22 kelepçesi q_zone2'ye çeker.
+    const m = migrate({
+      saveVersion: 19, wallet: '0', diamonds: '0', lifetime: '9000',
+      stationLevels: [3, 0], waiterLevels: [0, 0], padFills: {}, tableLevels: [],
+      padsDone: ['table2', 'table3', 'waiter', 'dishwasher', 'table4'],
+      stats: { ...defaultStats(), waiterServed: 50 }, questIndex: 11, questBase: 0, xp: 0,
+      settings: { sound: true, music: true, notifications: true },
+      floorThemeByZone: [], wallThemeByZone: [], ownedCosmetics: [], lastSaved: Date.now(),
+    } as unknown as Record<string, unknown>);
+    expect(economyConfig.quests[m.questIndex]?.id).toBe('q_zone2');
   });
 });
