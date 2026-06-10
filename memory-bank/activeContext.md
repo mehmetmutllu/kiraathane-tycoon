@@ -2,27 +2,16 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
-## >>> SONRAKİ OTURUM = 🌙 GECE OTURUMU: SORU SORMADAN DİREKT BAŞLA (kullanıcı UYUYOR) <<<
-Kullanıcı (2026-06-11): "bir sonraki chatte bir şey sormadan direkt başlasın, ben uyuyacağım."
-Plan: **`docs/feedback-2026-06-11.md`** (A-D feedback, E bug kök nedenleri, F asset, G dünya-v2,
-H iş paketleri WP1-WP6). H'deki 5 karar VARSAYILANLARA bağlandı (kullanıcıya bildirildi, itiraz gelmedi):
-1. **Merkezi mutfak şeridi ONAYLI** (duvarsız tek salon + tek kapı + sol duvarda L tezgah —
-   kullanıcının kendi tarifi; D-022 "per-zone ocak" bu yönde revize edilir, decisions.md'ye işle).
-2. **UAL Pro $9.99 ALINAMAZ** (ödeme kullanıcıda) → Quaternius ÜCRETSİZ paketler + 45 ücretsiz
-   animasyonla ilerle; yetmeyen animasyonları sabah raporuna not düş.
-3. **Kirli masa:** duman kalkar → kirli masa görünümü + temizlik ikonu; sabaha A/B screenshot.
-4. **Dolum göstergesi:** SADECE dünya-içi pad halkası kalır (alt bar + baş üstü radial kalkar).
-5. **Curve Ö1-Ö4 SABAHA** (denge onaysız uygulanmaz) — AMA offline nerf ONAYLI (kullanıcı bizzat
-   istedi: rateMult 0.2-0.25 + PARA tavanı; feedback §E5).
-**ÇALIŞMA SIRASI (kesintisiz, her milestone test+screenshot+memory-bank+commit+PUSH):**
-WP1 hızlı bug paketi (table2 pad gate, questFocusPos zone, camFocus akışı, toast z-index, offline
-nerf) → WP2 dünya-v2 (G bölümü: duvar kalkar, tek kapı, L mutfak şeridi + çaycı NPC, ocak-yükseltme
-pad'i duvar boşluğuna, merdiven/depo/tuvalet rezervleri; SAVE bump muhtemel) → WP3 ASSET (Quaternius
-Modular Men/Women indir→manifest→karakter+animasyon entegrasyonu; müşteri varyasyonu; prop/dekor) →
-WP4 görsel kimlik v2 (parke/fayans canvas-tile, masa ŞEKİL evrimi, klasik çay ocağı+çaydanlık sayısı,
-TV içeriği, kirli masa) → WP5 tek gösterge → WP6 kozmetik mağaza. En sonda `npm run apk` + sabah raporu
-(GECE-RAPORU formatı). İLKELER: gece protokolü (feedback_night_session.md); çizgiyi koru; geri dönüşü
-zor şey yapma; context tükenmeden commit+push+memory-bank güncelle.
+## >>> SONRAKİ OTURUM = ☀️ SABAH: kullanıcı GECE-RAPORU-2026-06-11.md'yi okumuş olacak <<<
+GECE-2 (2026-06-11→12) TAMAMLANDI: WP1-WP6 hepsi uygulandı + yeni APK (kök
+`KoseKiraathanesi-debug.apk`, 8.8MB — karakter modelleri dahil) + GECE-RAPORU-2026-06-11.md.
+**Sabah kullanıcıdan beklenen kararlar (rapor sonunda):**
+1. Kirli masa A (koku bulutu) / B (leke+sünger, AKTİF) — night2-wp4-dirty-A/B.png.
+2. UAL Pro $9.99 (Sit/Carry animasyonu — oturan müşteri gömülme çözümü; satın alma kullanıcıda).
+3. Curve Ö1-Ö4 (docs/curve-report.md) + dünya-v2 sonrası zone-2 servis mesafesi/tempo telefon testi.
+4. Telefon testi: tek salon hissi, karakterler, mağaza, offline kapa-aç (artık ≤ pad %60 tavanlı).
+NOT: `npm run apk` script'i Git-Bash'ten `gradlew.bat`'ı bulamaz — bash'te
+`cd android && cmd //c ".\gradlew.bat assembleDebug"` kullan (npm/cmd'den sorunsuz).
 
 ## ŞU AN (2026-06-11 GECE-2 🌙 — WP1-WP6 HEPSİ ✅; sırada SABAH PAKETİ: APK + rapor; SAVE v19)
 **TÜM iş paketleri UYGULANDI** (detay progress.md): WP1 bug paketi · WP2 dünya v2 (D-024) ·
@@ -30,9 +19,9 @@ WP3 Quaternius karakterler (10 CC0 glb + Character.tsx) · WP4 görsel kimlik v2
 masa şekil evrimi, klasik ocak, TV maç, kirli masa B + A/B screenshot, dekor) · WP5 tek gösterge ·
 WP6 kozmetik mağaza (SAVE v18→v19; buyCosmetic; per-zone tema; gerçek-tıklama doğrulandı).
 vitest 91/91 · build temiz · smoke 27/27 · Playwright canlı ✓ · konsol 0 hata.
-**SIRADAKİ: sabah paketi** — `npm run apk` + GECE-RAPORU-2026-06-11.md (screenshot'lı).
-⚠️ Sabah kararları: UAL Pro $9.99 (Sit/Carry), kirli masa A/B seçimi, curve Ö1-Ö4,
-zone-2 servis mesafesi/tempo telefon testi.
+**SABAH PAKETİ DE BİTTİ:** yeni APK (kök, 8.8MB) + GECE-RAPORU-2026-06-11.md yazıldı.
+⚠️ Sabah kararları (yukarıdaki blok): kirli masa A/B, UAL Pro $9.99, curve Ö1-Ö4 + z2 tempo,
+telefon testi.
 
 ## (ÖNCEKİ — 2026-06-11 GÜNDÜZ: FEEDBACK ALINDI + ARAŞTIRMA/PLAN BİTTİ; kod değişmedi, SAVE v18)
 Kullanıcı feedback'i işlendi → docs/feedback-2026-06-11.md (A-D feedback, E bug kök nedenleri,
