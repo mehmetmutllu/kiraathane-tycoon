@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import type { Group } from 'three';
 import { useGame } from '../../game/store';
-import { Character } from './Character';
+import { Model } from './Model';
 import { useFacing } from './useFacing';
 import { PALETTE } from '../../config/palette';
 
@@ -94,22 +94,18 @@ function CupTray({ tea, dirty }: { tea: number; dirty: number }) {
 
 // (WP5: baş üstü radial KALDIRILDI — tek dolum göstergesi = dünya-içi pad halkası; feedback §D18.)
 
-// Sahip karakteri: Quaternius Worker (çaycı; WP3) — hareket halinde Walk, dururken Idle.
-// Yüklenemezse OwnerBody primitive'ine düşer. Taşıma tek ön tepside (karışık taşıma → çakışmaz).
+// Sahip karakteri (primitive çaycı = nihai stil, D-013). Taşıma tek ön tepside
+// (karışık taşıma → çakışmaz).
 export function Player() {
   const p = useGame((s) => s.player);
   const tray = useGame((s) => s.tray);
   const carriedDirty = useGame((s) => s.carriedDirty);
-  const moving = useGame(
-    (s) => Math.hypot(s.inputJoystick[0], s.inputJoystick[1]) > 0.05 || Math.hypot(s.inputKeyboard[0], s.inputKeyboard[1]) > 0.05,
-  );
   const ref = useRef<Group>(null);
   useFacing(ref, p[0], p[2]);
   return (
     <group position={[p[0], 0, p[2]]}>
-      {/* yön dönüşü gövde+tepsiye uygulanır; baş üstü radial dönmesin diye ayrı grupta */}
       <group ref={ref}>
-        <Character model="Worker.glb" anim={moving ? 'Run' : 'Idle'} fallback={<OwnerBody />} />
+        <Model fallback={<OwnerBody />} />
         <CupTray tea={tray} dirty={carriedDirty} />
       </group>
     </group>

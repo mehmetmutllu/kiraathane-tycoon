@@ -6,9 +6,7 @@
  */
 export const PALETTE = {
   // Zemin
-  floorWood: '#b98a5a', // sıcak ahşap parke (taban)
-  floorWoodAlt: '#ad7e4f', // parke ikinci ton (canvas-tile şeritleri, WP4)
-  floorSeam: '#8a6038', // parke derzi
+  floorWood: '#b98a5a', // sıcak ahşap zemin (düz renk)
   carpet: '#8e3b3b', // kırmızı kilim (küçük vurgu halısı — WP4'te küçüldü)
   carpetBorder: '#5f2727', // kilim bordürü
   // Duvar
@@ -27,14 +25,6 @@ export const PALETTE = {
   counterWood: '#795548',
   copper: '#b87333', // bakır (semaver tabanı, tepsi dekoru)
   brass: '#d4af37',
-  steel: '#9aa7ad', // paslanmaz tezgah (klasik çay ocağı, WP4)
-  steelDark: '#6e7a80', // kuzine gövdesi
-  kettleBottom: '#c9cdd0', // alt kazan (çelik çaydanlık)
-  kettleTop: '#b03a2e', // üst demlik (emaye kırmızı)
-  // Kirli masa (WP4 B-varyantı)
-  stain: '#7a6242', // masa lekesi
-  sponge: '#f2d023', // temizlik süngeri
-  spongeFoam: '#eaf6ff',
   // Dekor
   trashBody: '#5c6b73',
   trashLid: '#465259',
@@ -57,13 +47,14 @@ export const PALETTE = {
   outdoorTable: '#8d6e63',
 } as const;
 
-/** Kozmetik zemin temaları (WP6) — economy.config.cosmetics.floorThemes id'leriyle eşleşir;
- *  floorTexture.ts canvas üreteci bu parametrelerle tile üretir. */
-export const FLOOR_THEMES: Record<string, { kind: 'parquet' | 'tile'; base: string; alt: string; seam: string }> = {
-  parke: { kind: 'parquet', base: '#b98a5a', alt: '#ad7e4f', seam: '#8a6038' },
-  fayans: { kind: 'tile', base: '#e8dcc8', alt: '#ddd0b8', seam: '#c2b094' },
-  dama: { kind: 'tile', base: '#ece6da', alt: '#7d4a3a', seam: '#594036' },
-  ceviz: { kind: 'parquet', base: '#8a5a3b', alt: '#7c4f33', seam: '#5e3a24' },
+/** Kozmetik zemin temaları (WP6) — economy.config.cosmetics.floorThemes id'leriyle eşleşir.
+ *  Zone zemini DÜZ base rengiyle boyanır (canvas-tile geri alındı, 2026-06-11);
+ *  alt yalnız mağaza önizleme swatch'ında kullanılır. */
+export const FLOOR_THEMES: Record<string, { base: string; alt: string }> = {
+  parke: { base: '#b98a5a', alt: '#ad7e4f' },
+  fayans: { base: '#e8dcc8', alt: '#ddd0b8' },
+  dama: { base: '#ece6da', alt: '#7d4a3a' },
+  ceviz: { base: '#8a5a3b', alt: '#7c4f33' },
 };
 
 /** Kozmetik duvar temaları (WP6) — üst badana + lambri kuşağı ikilisi. */

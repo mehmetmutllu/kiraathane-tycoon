@@ -416,7 +416,7 @@ export const economyConfig = {
    * KOZMETİK MAĞAZA (WP6, 2026-06-11; feedback §D19): zemin + duvar temaları ZONE-BAŞINA ₺ ile
    * satın alınır — PAHALI (geç oyun para biriktirme hedefi; "tek zone için 10k+"). Satın alınan
    * tema o zone için kalıcı sahipliktir (ownedCosmetics); tekrar seçmek ücretsiz. Görsel karşılıklar
-   * palette.ts FLOOR_THEMES/WALL_THEMES'te (canvas-tile üreteci aynı — floorTexture.ts).
+   * palette.ts FLOOR_THEMES/WALL_THEMES'te (zone zemini temanın DÜZ base rengiyle boyanır).
    */
   cosmetics: {
     floorThemes: [

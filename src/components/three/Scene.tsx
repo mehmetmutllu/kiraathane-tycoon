@@ -3,8 +3,6 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Vector3, type Group, type MeshStandardMaterial } from 'three';
 import { useGame, LAYOUT, stationSoftMaxLevel, stationUpgradeCost, upgradeZoneUnlockedZ, tableSoftMaxLevel, tableUpgradeZoneUnlocked, tableNextCost, waiterSoftMaxLevel, waiterUpgradeCost, waiterUpgradeUnlockedZ } from '../../game/store';
 import { GroundMarker } from './GroundMarker';
-import { Character } from './Character';
-import { makeFloorTexture } from './floorTexture';
 import { PALETTE, FLOOR_THEMES, WALL_THEMES } from '../../config/palette';
 import { Player } from './Player';
 import { Waiter } from './Waiter';
@@ -100,7 +98,7 @@ function Stations() {
 }
 
 // Çaycı NPC (D-023; kullanıcı tarifi: "duvar ile tezgah arasında çalışan biri"). SALT GÖRSEL —
-// mekaniğe dokunmaz: şerit arkası koridorda sürekli volta atar (Quaternius W_Casual + Walk; WP3).
+// mekaniğe dokunmaz: şerit arkası koridorda yürür, bulaşık/çay düzenliyormuş gibi durup eğilir.
 function KitchenStaff() {
   const zonesOpen = useGame((s) => s.zonesOpen);
   const ref = useRef<Group>(null);
@@ -109,23 +107,37 @@ function KitchenStaff() {
   useFrame((st) => {
     const grp = ref.current;
     if (!grp) return;
-    const t = st.clock.elapsedTime * 0.35;
+    const t = st.clock.elapsedTime * 0.3;
     const u = (Math.sin(t) + 1) / 2;
     grp.position.z = zMin + u * (zMax - zMin);
-    grp.rotation.y = Math.cos(t) > 0 ? 0 : Math.PI; // gidiş yönüne dön
+    // Rota ucunda durup tezgâha dönüp "iş yapar" (eğilme); arada yürür (hafif zıplama).
+    const speed = Math.abs(Math.cos(t));
+    grp.rotation.y = speed < 0.25 ? Math.PI / 2 : Math.cos(t) > 0 ? 0 : Math.PI;
+    grp.position.y = speed < 0.25 ? -0.04 + Math.sin(st.clock.elapsedTime * 3) * 0.02 : Math.abs(Math.sin(st.clock.elapsedTime * 7)) * 0.04;
   });
   return (
-    <group ref={ref} position={[-5.0, 0, -3]} scale={0.85}>
-      <Character
-        model="W_Casual.glb"
-        anim="Walk"
-        fallback={
-          <mesh castShadow position={[0, 0.5, 0]}>
-            <capsuleGeometry args={[0.16, 0.6, 6, 10]} />
-            <meshStandardMaterial color={PALETTE.apron} />
-          </mesh>
-        }
-      />
+    <group ref={ref} position={[-5.0, 0, -3]}>
+      {/* bacaklar + gövde + önlük + baş (low-poly; palette = tek renk kaynağı) */}
+      <mesh castShadow position={[0, 0.25, 0]}>
+        <boxGeometry args={[0.26, 0.5, 0.18]} />
+        <meshStandardMaterial color={PALETTE.pants} />
+      </mesh>
+      <mesh castShadow position={[0, 0.66, 0]}>
+        <boxGeometry args={[0.3, 0.34, 0.2]} />
+        <meshStandardMaterial color={PALETTE.shirt} />
+      </mesh>
+      <mesh position={[0, 0.6, 0.105]}>
+        <boxGeometry args={[0.26, 0.4, 0.02]} />
+        <meshStandardMaterial color={PALETTE.apron} />
+      </mesh>
+      <mesh castShadow position={[0, 0.95, 0]}>
+        <sphereGeometry args={[0.13, 10, 10]} />
+        <meshStandardMaterial color={PALETTE.skin} />
+      </mesh>
+      <mesh position={[0, 1.04, 0]}>
+        <cylinderGeometry args={[0.135, 0.14, 0.06, 10]} />
+        <meshStandardMaterial color={PALETTE.cap} />
+      </mesh>
     </group>
   );
 }
@@ -148,7 +160,7 @@ function ReservedRooms() {
         </mesh>
       </group>
       {/* TUVALET (sağ-arka ek oda) */}
-      <group position={[15.2, 0, a.minZ - 1.6]}>
+      <group position={[13.8, 0, a.minZ - 1.6]}>
         <mesh castShadow position={[0, 0.7, 0]}>
           <boxGeometry args={[2.4, 1.4, 2.2]} />
           <meshStandardMaterial color={PALETTE.wallCream} />
@@ -159,7 +171,7 @@ function ReservedRooms() {
         </mesh>
       </group>
       {/* MERDİVEN (ön-sağ köşe; Faz 3b "üst kat" rezervi — basamak silüeti) */}
-      <group position={[16.2, 0, 3.6]} rotation={[0, Math.PI, 0]}>
+      <group position={[14.8, 0, 3.6]} rotation={[0, Math.PI, 0]}>
         {[0, 1, 2, 3].map((i) => (
           <mesh key={i} castShadow position={[0, 0.12 + i * 0.24, -i * 0.34]}>
             <boxGeometry args={[1.4, 0.24, 0.34]} />
@@ -314,16 +326,15 @@ function WaiterUpgradeMarker() {
 }
 
 function Ground() {
-  // WP4 (feedback §C12): zemin = CANVAS-TILE dokusu (makeFloorTexture — indirme yok, MPH tarzı hafif
-  // desen). WP6: zone başına TEMA (kozmetik mağaza; floorThemeByZone persist) — taban plane default
-  // parke (kenar/dış alan), her zone'un üstüne kendi tema overlay'i. Kilim küçük vurgu halısı.
+  // İki zone'u da kapsayan AHŞAP zemin (DÜZ renk — canvas-tile geri alındı, kullanıcı 2026-06-11:
+  // "zemin iğrenç oldu"). WP6 kozmetik teması KORUNUR: zone overlay'i temanın base DÜZ rengiyle
+  // boyanır (floorThemeByZone persist). Zone başına KIRMIZI KİLİM (masa bölgesinin altında).
   const floorThemeByZone = useGame((s) => s.floorThemeByZone);
-  const baseTex = useMemo(() => makeFloorTexture(FLOOR_THEMES.parke, 19, 9), []);
   return (
     <group>
       <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[6, 0, 0]}>
         <planeGeometry args={[38, 18]} />
-        <meshStandardMaterial map={baseTex} />
+        <meshStandardMaterial color={PALETTE.floorWood} />
       </mesh>
       {LAYOUT.zoneAreas.map((za, z) => {
         const cx = (za.minX + za.maxX) / 2;
@@ -331,20 +342,19 @@ function Ground() {
         const w = za.maxX - za.minX;
         const dpt = za.maxZ - za.minZ;
         const theme = FLOOR_THEMES[floorThemeByZone[z] ?? 'parke'] ?? FLOOR_THEMES.parke;
-        const tex = makeFloorTexture(theme, w / 2, dpt / 2); // üreteç cache'li — her frame yeni doku üretmez
         return (
           <group key={z}>
             {/* y: taban(0) < zone overlay(0.004) < kilim(0.008/0.014) < GroundMarker(0.02) — z-fight yok. */}
             <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[cx, 0.004, cz]}>
               <planeGeometry args={[w, dpt]} />
-              <meshStandardMaterial map={tex} />
+              <meshStandardMaterial color={theme.base} />
             </mesh>
             <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[cx, 0.008, 1.5]}>
-              <planeGeometry args={[3.6, 2.5]} />
+              <planeGeometry args={[6.6, 4.6]} />
               <meshStandardMaterial color={PALETTE.carpetBorder} />
             </mesh>
             <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[cx, 0.014, 1.5]}>
-              <planeGeometry args={[3.2, 2.1]} />
+              <planeGeometry args={[6.0, 4.0]} />
               <meshStandardMaterial color={PALETTE.carpet} />
             </mesh>
           </group>

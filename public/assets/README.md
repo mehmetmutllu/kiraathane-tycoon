@@ -6,23 +6,10 @@
 Stil kilidi: **Quaternius / Kenney (CC0)** low-poly. Türk objeleri: AI üretimi (Meshy/Tripo).
 Detay: `docs/assets.md`.
 
-## Karakterler (`public/assets/models/characters/` — WP3, 2026-06-11) ✅
-Kaynak: **Quaternius Ultimate Modular Men + Women** (CC0 1.0 Universal — License.txt indirildi/doğrulandı;
-https://quaternius.com/packs/ultimatemodularcharacters.html + ultimatemodularwomen.html).
-`tools/optimize-chars.mjs` ile hazırlandı: yalnız Idle/Idle_Neutral/Walk/Run/Wave/Interact animasyonları
-kaldı (24→6), resample+dedup+prune+quantize (KHR_mesh_quantization — three.js native, decoder yok),
-.gltf→.glb (~3MB→~0.95MB/model). Yükleyici: `src/components/three/Character.tsx` (fallback: primitive).
-
-| Dosya (.glb) | Oyundaki rol | Lisans | Durum |
-|---|---|---|---|
-| Worker.glb | OYUNCU (çaycı/sahip) | CC0 | ✅ |
-| Suit.glb | Garson | CC0 | ✅ |
-| Casual_Hoodie.glb | Bulaşıkçı + müşteri havuzu | CC0 | ✅ |
-| W_Casual.glb | Çaycı NPC (tezgâh arkası) + müşteri havuzu | CC0 | ✅ |
-| Casual_2 / Farmer / Punk / Adventurer / W_Formal / W_Suit .glb | Müşteri çeşitlilik havuzu | CC0 | ✅ |
-
-> NOT: Pakette Sit/Carry animasyonu YOK (oturan müşteri tabure içine gömülür; tepsi elde sabit grup).
-> Sit/Carry için Universal Animation Library **Pro ($9.99)** sabah kararı bekliyor (feedback §F).
+## Karakterler — KALDIRILDI (2026-06-11 kullanıcı kararı)
+WP3'te eklenen Quaternius Modular Men/Women glb'leri kullanıcı feedback'iyle geri alındı
+("konsepte uygun değil; My Hotel tarzı olmalı"). Karakterler primitive (parçalı gövde) stile döndü.
+Yeni karakter paketi seçimi kullanıcıyla birlikte yapılacak (aday: Synty POLYGON / Quaternius UAL).
 
 ## Modeller (`public/assets/models/`)
 | Dosya (.glb) | Açıklama | Greybox karşılığı | Kaynak | Lisans | Durum |

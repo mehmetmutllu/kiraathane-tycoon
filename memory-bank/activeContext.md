@@ -2,7 +2,21 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
-## >>> SONRAKİ OTURUM = ☀️ SABAH: kullanıcı GECE-RAPORU-2026-06-11.md'yi okumuş olacak <<<
+## ŞU AN (2026-06-11 SABAH FEEDBACK'İ UYGULANDI — WP3/WP4 kısmi GERİ ALMA; SAVE v19 değişmedi)
+Kullanıcı gece-2 paketine feedback verdi: **"assetler çok kötü oldu — karakterler küçük, zemin
+iğrenç, çay ocağı birleşmesi kötü; konsept My Hotel tarzı olmalı."** Yapılan (detay progress.md):
+- Karakterler/zemin/çay ocağı/bulaşık ESKİYE döndü (primitive + düz zemin + semaver + lavabo/koku).
+  Quaternius glb'leri ve pipeline repo'dan SİLİNDİ. WP5 (tek gösterge) + WP6 (mağaza, düz renkle) korundu.
+- Çay yükseltme pad'i ocağın hemen yanına (kullanıcı "soluna" dedi — solda duvar/çaycı koridoru var,
+  salon tarafına bitişik koyuldu; kullanıcı görüp onaylayacak). Geometri testi gevşetildi (pickup-guard asıl).
+- Zone'lar bitişik (ZONE_DX 10.6, sınır x=5.3) — duvarsız "ölü boşluk" kapandı. Duvar yine YOK.
+**AÇIK KONU — YENİ KARAKTER/ASSET SEÇİMİ:** kullanıcı $9.99 listesini inceleyecek (UAL Pro:
+https://quaternius.itch.io/universal-animation-library · B planı Synty POLYGON City $29.99).
+Karakter paketi BİRLİKTE seçilecek; seçilmeden karakter asset'i ekleme. APK henüz YENİLENMEDİ
+(eski APK'da silinen karakterler var — kullanıcı isterse yeni APK derle).
+Kalan sabah kararları: curve Ö1-Ö4 (docs/curve-report.md) + telefon tempo testi.
+
+## (ÖNCEKİ) >>> ☀️ SABAH: kullanıcı GECE-RAPORU-2026-06-11.md'yi okumuş olacak <<<
 GECE-2 (2026-06-11→12) TAMAMLANDI: WP1-WP6 hepsi uygulandı + yeni APK (kök
 `KoseKiraathanesi-debug.apk`, 8.8MB — karakter modelleri dahil) + GECE-RAPORU-2026-06-11.md.
 **Sabah kullanıcıdan beklenen kararlar (rapor sonunda):**

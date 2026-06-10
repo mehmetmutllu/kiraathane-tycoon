@@ -459,6 +459,21 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   modalı (swatch+ad+fiyat+S1/S2 uygula; seçili ✓ altın). **Doğrulama: vitest 91/91 (buy+v19 migrasyon),
   build temiz, smoke 27/27, Playwright GERÇEK tıklamayla satın alma (10k düştü, fayans+yeşil uygulandı,
   reload sonrası persist ✓), konsol 0 hata.** Screenshots: night2-wp6-shop.png, night2-wp6-themes2.png.
+- ✅ **SABAH FEEDBACK GERİ ALMASI (2026-06-11, kullanıcı kararı):** WP3+WP4'ün bir kısmı GERİ ALINDI
+  ("assetler çok kötü; karakterler küçük, zemin iğrenç, çay ocağı birleşmesi kötü; My Hotel tarzı olmalı"):
+  (1) **Karakterler → primitive** (Quaternius 10 glb + Character.tsx + optimize-chars.mjs + @gltf-transform
+  SİLİNDİ; Player/Waiter/Dishwasher/Customers/çaycı NPC eski parçalı-gövde/kapsül; HeadRadial GERİ GELMEDİ
+  — WP5 korundu). (2) **Zemin → DÜZ renk** (floorTexture.ts canvas-tile silindi; WP6 mağaza temaları
+  KORUNDU — zone overlay temanın düz base rengi, swatch base+alt; kilim eski büyük boy 6.6×4.6).
+  (3) **Çay ocağı → eski semaver** (kuzine/çaydanlık katları/boyler gitti). (4) **Bulaşık → eski**
+  (lavabo üniteleri + yeşil koku bulutu; leke+sünger B-varyantı gitti — A/B kararı kapandı).
+  KORUNAN WP4: masa şekil evrimi, TV maç, dekor prop'ları. (5) **Çay yükseltme pad'i ocağın hemen
+  yanına** (upgradeZones [-2.4,-3.4]/[-2.4,-0.8]; geometri testi "pad merkezi pickup dışında +0.3"
+  olarak gevşetildi — pickup-guard testi asıl emniyet). (6) **Zone'lar bitişik** (ZONE_DX 12→10.6,
+  zoneBorderX 5.3; duvarsız boşluk kapandı; TUVALET/MERDİVEN rezervleri kaydı). **Asset kararı açık:**
+  yeni karakter paketi kullanıcıyla seçilecek (UAL/Synty linkleri verildi). **Doğrulama: vitest 91/91,
+  build temiz, Playwright canlı (primitive karakterler, düz zemin, bitişik salonlar, pad ocak yanında,
+  konsol 0 hata).**
 - ⏳ **3a kalan:** zone 3-4 (tost/TV konsepti) + kat planındaki servis odaları (floorplan-master.md).
 - ⏳ **3b:** Kat geçişi: kat dolunca **merdiven** açılır → ekran kararma → üst kat; dinamik bounds/kamera; SAVE bump.
 - ⏳ **3c:** Tuvalet ODASI + DEPO (KATA özel, parayla açılır) + tuvalet kâğıdı döngüsü (depodan al→tak) + temizlikçi.

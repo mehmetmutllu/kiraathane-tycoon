@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import type { Group } from 'three';
 import { useGame } from '../../game/store';
-import { Character } from './Character';
+import { Model } from './Model';
 import { useFacing } from './useFacing';
 
 // Bulaşıkçının taşıdığı kirli bardaklar (gri silindir, garsonun kırmızı çayından ayrılır).
@@ -23,20 +23,14 @@ function CarriedDirty({ count }: { count: number }) {
   );
 }
 
-// Tek bulaşıkçı gövdesi (hook'lar per-unit kalsın diye ayrı bileşen). Quaternius Casual_Hoodie =
-// bulaşıkçı (WP3); hareket pos delta'sından (garson deseni).
+// Tek bulaşıkçı gövdesi (hook'lar per-unit kalsın diye ayrı bileşen).
 function DishwasherUnit({ pos, tray }: { pos: [number, number, number]; tray: number }) {
   const ref = useRef<Group>(null);
-  const last = useRef<[number, number]>([pos[0], pos[2]]);
-  const moving = Math.hypot(pos[0] - last.current[0], pos[2] - last.current[1]) > 0.004;
-  last.current = [pos[0], pos[2]];
   useFacing(ref, pos[0], pos[2]);
   return (
     <group position={[pos[0], 0, pos[2]]}>
       <group ref={ref}>
-        <Character
-          model="Casual_Hoodie.glb"
-          anim={moving ? 'Walk' : 'Idle'}
+        <Model
           fallback={
             <mesh castShadow position={[0, 0.55, 0]}>
               <capsuleGeometry args={[0.32, 0.6, 6, 12]} />

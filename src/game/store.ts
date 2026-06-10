@@ -47,7 +47,9 @@ import { buildNavGrid, findNavPath, type NavGrid, type NavSolid } from './nav';
 // --- ZONE ŞABLONU (Faz 3a + D-022): zone-1 iç yerleşimi = bugüne kadarki mutlak koordinatlar.
 // Zone-2 = AYNI şablon +X offset (ZONE_DX). Global düz diziler (tables 8 slot, stations[2], ...)
 // eski kodun index mantığını korur (zone z → masa slotları [z*4, z*4+4)).
-const ZONE_DX = 12.0;
+// Kullanıcı feedback (2026-06-11): bölme duvarı kalkınca iki salon arasında ölü boşluk kaldı →
+// zone'lar bitişik (zone-1 maxX = zone-2 minX = 5.3; duvar YOK, sınır zemin çizgisi).
+const ZONE_DX = 10.6;
 const ZONE_OFFSETS = [0, ZONE_DX] as const;
 const off = (dx: number, v: readonly [number, number, number]): Vec3 => [v[0] + dx, v[1], v[2]];
 
@@ -83,8 +85,8 @@ export const LAYOUT = {
   area: { minX: -5.3, maxX: 5.3 + ZONE_DX, minZ: -5.3, maxZ: 5.0 },
   // Zone başına yerel alan (zemin/etiket + kilitli örtü için). Zone sınır çizgisi x=6.0.
   zoneAreas: ZONE_OFFSETS.map((dx) => ({ minX: -5.3 + dx, maxX: 5.3 + dx, minZ: -5.3, maxZ: 5.0 })),
-  // Zone-1 | zone-2 sınır çizgisi (görsel; DUVAR YOK — D-023).
-  zoneBorderX: 6.0,
+  // Zone-1 | zone-2 sınır çizgisi (görsel; DUVAR YOK — D-023). Zone'lar bitişik → sınır = ortak kenar.
+  zoneBorderX: 5.3,
   // Masa slotları — GLOBAL 8 slot (0-3 zone-1, 4-7 zone-2); zone içi 2×2 düzen değişmedi (D-017 §1).
   tables: ALL_TABLES,
   // Pad pozisyonları: açtıkları objenin yerinde. zone2 pad'i zone sınır çizgisinin ortasında.
@@ -94,18 +96,19 @@ export const LAYOUT = {
     table4: ALL_TABLES[3].table,
     waiter: [-4.6, 0, 1.5] as Vec3, // sol-kenar orta (D-018 §1 kenar-yerleşim)
     dishwasher: [4.6, 0, 1.5] as Vec3, // sağ-kenar orta
-    zone2: [6.0, 0, 0.6] as Vec3, // zone sınırı (duvarsız eşik)
+    zone2: [5.3, 0, 0.6] as Vec3, // zone sınırı (duvarsız eşik)
     z2table2: ALL_TABLES[5].table,
     z2table3: ALL_TABLES[6].table,
     z2table4: ALL_TABLES[7].table,
     z2waiter: off(ZONE_DX, [-4.6, 0, 1.5]),
     z2dishwasher: off(ZONE_DX, [4.6, 0, 1.5]),
   } as Record<string, Vec3>,
-  // Zone başına mekânsal çay yükseltme noktası: kendi modülünün önünde (şeridin sağ açıklığında) ama
-  // HER ocağın pickup'ından TAM AYRIK: her modüle merkez mesafesi ≥ pickupRadius(1.6) + PAD_RADIUS(1.3)
-  // = 2.9 (gece fix 2026-06-10 değişmezi korunur; vitest geometri testi doğrular).
-  upgradeZones: [[-1.4, 0, -3.4] as Vec3, [0.5, 0, -3.4] as Vec3],
-  upgradeZone: [-1.4, 0, -3.4] as Vec3, // zone-1 alias (testler/eski kod)
+  // Zone başına mekânsal çay yükseltme noktası: kendi modülünün HEMEN YANINDA (kullanıcı 2026-06-11:
+  // "yükseltme ocağın yanında dursun" — My Hotel obje-başı desen). PAD MERKEZİ her ocağın
+  // pickupRadius'unun (1.6) DIŞINDA kalır (+marj) → pad üstünde dururken çay-alma tetiklenmez;
+  // ayrıca tick'teki pickup-guard'ı pickup alanı içinde dolumu zaten kilitler (vitest doğrular).
+  upgradeZones: [[-2.4, 0, -3.4] as Vec3, [-2.4, 0, -0.8] as Vec3],
+  upgradeZone: [-2.4, 0, -3.4] as Vec3, // zone-1 alias (testler/eski kod)
   // Zone başına personel köşeleri + garson hız noktası. Eski sol-köşe (-4.6,-1.6) artık şeridin içinde →
   // sol-ÖN kenara taşındı (zone-yerel şablon korunur; zone-2 +12).
   waiterHomes: ZONE_OFFSETS.map((dx) => off(dx, [-4.7, 0, 4.2])),

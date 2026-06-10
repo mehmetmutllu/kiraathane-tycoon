@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import type { Group } from 'three';
 import { useGame } from '../../game/store';
 import type { Npc } from '../../game/types';
-import { Character, CUSTOMER_MODELS } from './Character';
+import { Model } from './Model';
 import { useFacing } from './useFacing';
 
 function Customer({ npc }: { npc: Npc }) {
@@ -18,18 +18,11 @@ function Customer({ npc }: { npc: Npc }) {
     if (!b) return;
     b.position.y = seated ? Math.sin(st.clock.elapsedTime * 2 + npc.id) * 0.04 : 0;
   });
-  // Müşteri çeşitliliği (WP3): model id'den deterministik seçilir → aynı müşteri hep aynı görünür,
-  // kalabalık HEP FARKLI hisseder. Otururken model taburenin içine GÖMÜLÜR (Quaternius setinde
-  // Sit animasyonu yok — UAL Pro $9.99 sabah kararı; masa/tabure bacakları zaten gizler).
-  const model = CUSTOMER_MODELS[npc.id % CUSTOMER_MODELS.length];
   return (
     <group position={[npc.pos[0], 0, npc.pos[2]]}>
       <group ref={ref}>
         <group ref={bob}>
-          <Character
-            model={model}
-            anim={seated ? 'Idle' : 'Walk'}
-            y={seated ? -0.32 : 0}
+          <Model
             fallback={
               <mesh castShadow position={[0, 0, 0]}>
                 <capsuleGeometry args={[0.3, 0.6, 6, 10]} />

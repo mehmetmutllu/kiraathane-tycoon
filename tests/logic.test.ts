@@ -35,7 +35,6 @@ import {
   TEA_PRICE,
   brewTime,
   dirtyTables,
-  PAD_RADIUS,
   totalCupPool,
 } from '../src/game/store';
 import { migrate, defaultSave, defaultStats } from '../src/game/save';
@@ -968,13 +967,16 @@ describe('mekânsal çay yükseltme noktası (zone) + gating', () => {
     expect(useGame.getState().activeZone?.kind).toBe('upgrade');
   });
 
-  it('GEOMETRİ DEĞİŞMEZİ: yükseltme dairesi pickup dairesiyle KESİŞEMEZ (gece fix 2026-06-10)', () => {
-    // Çay almaya gelen oyuncu tezgâh önünde dururken dolum tetiklenmesin diye merkez mesafesi
-    // iki yarıçapın toplamından az olamaz (eski [-1.6,-3.0] bunu ihlal ediyordu → para yiyordu).
-    const st = LAYOUT.stations[0];
-    const z = LAYOUT.upgradeZone;
-    const dist = Math.hypot(st[0] - z[0], st[2] - z[2]);
-    expect(dist).toBeGreaterThanOrEqual(economyConfig.serving.pickupRadius + PAD_RADIUS);
+  it('GEOMETRİ DEĞİŞMEZİ: yükseltme PAD MERKEZİ pickup dairesinin DIŞINDA (kullanıcı 2026-06-11: pad ocağın yanında)', () => {
+    // Pad ocağa bitişik durur (My Hotel obje-başı desen) ama MERKEZİ pickup yarıçapının dışında
+    // kalmalı (+0.3 marj) → pad merkezinde duran oyuncu çay-alma alanına girmez; pickup alanı
+    // içindeyken dolum zaten tick'teki pickup-guard'ıyla kilitli (alttaki test).
+    for (let z = 0; z < LAYOUT.stations.length; z++) {
+      const st = LAYOUT.stations[z];
+      const up = LAYOUT.upgradeZones[z];
+      const dist = Math.hypot(st[0] - up[0], st[2] - up[2]);
+      expect(dist).toBeGreaterThanOrEqual(economyConfig.serving.pickupRadius + 0.3);
+    }
   });
 
   it('çay almak için tezgâh önünde dururken yükseltme PARA ÇEKMEZ (pickup-yarıçapı guard\'ı)', () => {
