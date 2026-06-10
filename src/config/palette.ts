@@ -6,8 +6,10 @@
  */
 export const PALETTE = {
   // Zemin
-  floorWood: '#b98a5a', // sıcak ahşap parke
-  carpet: '#8e3b3b', // kırmızı kilim (masa bölgesi)
+  floorWood: '#b98a5a', // sıcak ahşap parke (taban)
+  floorWoodAlt: '#ad7e4f', // parke ikinci ton (canvas-tile şeritleri, WP4)
+  floorSeam: '#8a6038', // parke derzi
+  carpet: '#8e3b3b', // kırmızı kilim (küçük vurgu halısı — WP4'te küçüldü)
   carpetBorder: '#5f2727', // kilim bordürü
   // Duvar
   wallCream: '#e6d7b8', // üst duvar (krem badana)
@@ -25,6 +27,17 @@ export const PALETTE = {
   counterWood: '#795548',
   copper: '#b87333', // bakır (semaver tabanı, tepsi dekoru)
   brass: '#d4af37',
+  steel: '#9aa7ad', // paslanmaz tezgah (klasik çay ocağı, WP4)
+  steelDark: '#6e7a80', // kuzine gövdesi
+  kettleBottom: '#c9cdd0', // alt kazan (çelik çaydanlık)
+  kettleTop: '#b03a2e', // üst demlik (emaye kırmızı)
+  // Kirli masa (WP4 B-varyantı)
+  stain: '#7a6242', // masa lekesi
+  sponge: '#f2d023', // temizlik süngeri
+  spongeFoam: '#eaf6ff',
+  // Dekor
+  trashBody: '#5c6b73',
+  trashLid: '#465259',
   // TV köşesi
   tvFrame: '#263238',
   tvScreen: '#7ec8a9', // açık ekran (maç yeşili)

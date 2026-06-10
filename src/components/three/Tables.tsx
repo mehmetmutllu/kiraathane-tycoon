@@ -19,34 +19,71 @@ function Stool({ x, z }: { x: number; z: number }) {
   );
 }
 
-// Kıraathane masası: yuvarlak ahşap tabla + merkez ayak + İKİ tabure.
-// Seviye GÖRSEL okunur (kullanıcı isteği, evrim tablosu docs/visual-identity.md):
-// L1(iç 0) çıplak ahşap → L2 yeşil çuha → L3 bordo → L4 lacivert → L5 altın örtü.
+// Kıraathane masası — SEVİYEYLE ŞEKİL DE EVRİLİR (WP4, feedback §C13: "sadece renk değil şekil"):
+//   L0: klasik kare çay evi masası (4 ince ayak, çıplak ahşap)
+//   L1: yuvarlak tabla + merkez ayak + çuha yeşili örtü
+//   L2: yuvarlak + bordo örtü + örtü ETEĞİ (sarkan kumaş)
+//   L3: sekizgen tabla + lacivert örtü + pirinç kenar bandı
+//   L4: sekizgen + ALTIN örtü + etek + pirinç bant (en gösterişli)
+// Collision/oturma DEĞİŞMEZ (tableHalf 0.5 sabit; salt görsel evrim).
 function Table({ x, z, level }: { x: number; z: number; level: number }) {
   const cloth = PALETTE.tableclothByLevel[Math.min(level, PALETTE.tableclothByLevel.length - 1)];
+  const seg = level >= 3 ? 8 : 16; // L3+: sekizgen tabla
   return (
     <group position={[x, 0, z]}>
       <Model
         fallback={
-          <group>
-            {/* tabla */}
-            <mesh castShadow receiveShadow position={[0, 0.5, 0]}>
-              <cylinderGeometry args={[0.5, 0.5, 0.08, 16]} />
-              <meshStandardMaterial color={PALETTE.tableWood} />
-            </mesh>
-            {/* masa örtüsü (seviye ≥ 1): tablanın üstünde hafif taşan ince disk */}
-            {cloth ? (
-              <mesh castShadow position={[0, 0.555, 0]}>
-                <cylinderGeometry args={[0.53, 0.53, 0.03, 16]} />
-                <meshStandardMaterial color={cloth} />
+          level === 0 ? (
+            <group>
+              {/* L0: kare tabla + 4 ince ayak */}
+              <mesh castShadow receiveShadow position={[0, 0.5, 0]}>
+                <boxGeometry args={[0.95, 0.07, 0.95]} />
+                <meshStandardMaterial color={PALETTE.tableWood} />
               </mesh>
-            ) : null}
-            {/* ayak */}
-            <mesh castShadow position={[0, 0.25, 0]}>
-              <cylinderGeometry args={[0.1, 0.12, 0.5, 8]} />
-              <meshStandardMaterial color={PALETTE.tableLeg} />
-            </mesh>
-          </group>
+              {[-0.38, 0.38].flatMap((lx) =>
+                [-0.38, 0.38].map((lz) => (
+                  <mesh key={`${lx}${lz}`} castShadow position={[lx, 0.24, lz]}>
+                    <boxGeometry args={[0.07, 0.48, 0.07]} />
+                    <meshStandardMaterial color={PALETTE.tableLeg} />
+                  </mesh>
+                )),
+              )}
+            </group>
+          ) : (
+            <group>
+              {/* tabla (L3+ sekizgen) */}
+              <mesh castShadow receiveShadow position={[0, 0.5, 0]}>
+                <cylinderGeometry args={[0.5, 0.5, 0.08, seg]} />
+                <meshStandardMaterial color={PALETTE.tableWood} />
+              </mesh>
+              {/* örtü diski */}
+              {cloth ? (
+                <mesh castShadow position={[0, 0.555, 0]}>
+                  <cylinderGeometry args={[0.53, 0.53, 0.03, seg]} />
+                  <meshStandardMaterial color={cloth} />
+                </mesh>
+              ) : null}
+              {/* örtü ETEĞİ (L2 ve L4: sarkan kumaş konisi) */}
+              {cloth && (level === 2 || level >= 4) ? (
+                <mesh castShadow position={[0, 0.42, 0]}>
+                  <cylinderGeometry args={[0.53, 0.44, 0.24, seg, 1, true]} />
+                  <meshStandardMaterial color={cloth} side={2} />
+                </mesh>
+              ) : null}
+              {/* pirinç kenar bandı (L3+) */}
+              {level >= 3 ? (
+                <mesh position={[0, 0.5, 0]}>
+                  <cylinderGeometry args={[0.515, 0.515, 0.085, seg, 1, true]} />
+                  <meshStandardMaterial color={PALETTE.brass} metalness={0.7} roughness={0.3} side={2} />
+                </mesh>
+              ) : null}
+              {/* merkez ayak */}
+              <mesh castShadow position={[0, 0.25, 0]}>
+                <cylinderGeometry args={[0.1, 0.12, 0.5, 8]} />
+                <meshStandardMaterial color={PALETTE.tableLeg} />
+              </mesh>
+            </group>
+          )
         }
       />
       {/* müşteri taburesi (seat konumu — collision/oturma AYNI) + karşı tabure (salt görsel) */}

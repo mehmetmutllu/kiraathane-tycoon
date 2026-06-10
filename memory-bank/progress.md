@@ -433,6 +433,20 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   Oturan müşteri tabure içine gömülür (Sit anim YOK — UAL Pro $9.99 sabah kararı; tepsi/carry de öyle).
   **Doğrulama: vitest 89/89, build temiz, smoke 27/27, Playwright canlı (karakterler+anim, konsol 0).**
   Screenshots: night2-wp3-scale2.png, night2-wp3-final.png. Manifest güncellendi (README.md).
+- ✅ **WP4 GÖRSEL KİMLİK v2 (GECE-2 4/6, 2026-06-11):** (1) **Zemin = canvas-tile PARKE**
+  (`floorTexture.ts` üreteci: 128px parke/fayans tile + RepeatWrapping, cache'li; WP6 mağaza temaları
+  aynı üreteçten; renkler palette.ts) — kilim masa halısı olmaktan çıktı, zone ortasında KÜÇÜK vurgu
+  kilimi (3.6×2.5). (2) **Masa ŞEKİL evrimi** (§C13): L0 kare 4-ayak → L1 yuvarlak+çuha → L2 +bordo
+  etek → L3 sekizgen+laci+pirinç bant → L4 altın örtü+etek+bant (collision sabit). (3) **KLASİK ÇAY
+  OCAĞI** (§C15): paslanmaz tezgah + koyu kuzine + İKİ KATLI çaydanlıklar (sayı=1+seviye, max 5; çelik
+  kazan+kırmızı emaye demlik+kulp+ağız) + musluklu boyler (renk seviyeyle ısınır) + buhar. (4) **TV'DE
+  MAÇ OYNAR** (§C16): saha+orta çizgi+gezen top+skor bandı+parlaklık titremesi. (5) **KİRLİ MASA A/B**
+  (§C17): `DIRTY_VARIANT='dirty'` AKTİF (tabla lekeleri + dönen sünger+köpük ikonu); 'cloud' (eski
+  yeşil duman) tek satırlık sabitle geri gelir — screenshots: night2-wp4-dirty-A.png (duman) /
+  night2-wp4-dirty-B.png (kirli+sünger), SABAH SEÇİMİ. (6) **Dekor** (§C11): detaylı çöp kovaları
+  (kapı+mutfak), iç saksılar (3 köşe), duvar saati. **Doğrulama: vitest 89/89, build temiz, smoke
+  27/27, Playwright canlı (parke/ocak L3 4-çaydanlık/L4 masa/TV; konsol 0).** Screenshots:
+  night2-wp4-kitchen.png, night2-wp4-station-l3.png, night2-wp4-table-evolution.png.
 - ⏳ **3a kalan:** zone 3-4 (tost/TV konsepti) + kat planındaki servis odaları (floorplan-master.md).
 - ⏳ **3b:** Kat geçişi: kat dolunca **merdiven** açılır → ekran kararma → üst kat; dinamik bounds/kamera; SAVE bump.
 - ⏳ **3c:** Tuvalet ODASI + DEPO (KATA özel, parayla açılır) + tuvalet kâğıdı döngüsü (depodan al→tak) + temizlikçi.

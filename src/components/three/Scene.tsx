@@ -1,9 +1,10 @@
 import { Suspense, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Vector3, type Group } from 'three';
+import { Vector3, type Group, type MeshStandardMaterial } from 'three';
 import { useGame, LAYOUT, stationSoftMaxLevel, stationUpgradeCost, upgradeZoneUnlockedZ, tableSoftMaxLevel, tableUpgradeZoneUnlocked, tableNextCost, waiterSoftMaxLevel, waiterUpgradeCost, waiterUpgradeUnlockedZ } from '../../game/store';
 import { GroundMarker } from './GroundMarker';
 import { Character } from './Character';
+import { makeFloorTexture } from './floorTexture';
 import { PALETTE } from '../../config/palette';
 import { Player } from './Player';
 import { Waiter } from './Waiter';
@@ -313,27 +314,35 @@ function WaiterUpgradeMarker() {
 }
 
 function Ground() {
-  // İki zone'u da kapsayan AHŞAP zemin (görsel kimlik: sıcak parke) + zone başına KIRMIZI KİLİM
-  // (masa bölgesinin altında; bordür + iç dikdörtgen — flat low-poly kilim).
+  // WP4 (feedback §C12): zemin = CANVAS-TILE PARKE dokusu (makeFloorTexture — indirme yok, MPH tarzı
+  // hafif desen; kozmetik mağaza temaları aynı üreteçten). Kilim KÜÇÜLDÜ: masa bölgesini kaplayan halı
+  // değil, zone ortasında küçük vurgu kilimi (Türk kimliği korunur, "bilardo masası" hissi yok).
+  const floorTex = useMemo(
+    () =>
+      makeFloorTexture(
+        { kind: 'parquet', base: PALETTE.floorWood, alt: PALETTE.floorWoodAlt, seam: PALETTE.floorSeam },
+        19, // 38 birim / 2 birim-tile
+        9,
+      ),
+    [],
+  );
   return (
     <group>
       <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[6, 0, 0]}>
         <planeGeometry args={[38, 18]} />
-        <meshStandardMaterial color={PALETTE.floorWood} />
+        <meshStandardMaterial map={floorTex} />
       </mesh>
       {LAYOUT.zoneAreas.map((za, z) => {
         const cx = (za.minX + za.maxX) / 2;
         return (
           <group key={z}>
-            {/* y: zemin(0) < kilim(0.008/0.014) < GroundMarker tabanı(0.02) — z-fight yok.
-                Kilim masa bölgesini sarar ama kenarlarda AHŞAP görünür (ilk deneme 8.6×6.2 salonu
-                bilardo masasına çevirmişti — küçültüldü). */}
+            {/* y: zemin(0) < kilim(0.008/0.014) < GroundMarker tabanı(0.02) — z-fight yok. */}
             <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[cx, 0.008, 1.5]}>
-              <planeGeometry args={[6.6, 4.6]} />
+              <planeGeometry args={[3.6, 2.5]} />
               <meshStandardMaterial color={PALETTE.carpetBorder} />
             </mesh>
             <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[cx, 0.014, 1.5]}>
-              <planeGeometry args={[6.0, 4.0]} />
+              <planeGeometry args={[3.2, 2.1]} />
               <meshStandardMaterial color={PALETTE.carpet} />
             </mesh>
           </group>
@@ -343,9 +352,20 @@ function Ground() {
   );
 }
 
-// TV köşesi (zone-1 arka duvar, mutfağın sağında): askılı TV + açık ekran. Zone-4 "TV salonu"
-// konseptinin öncü dekoru (kat planı: floorplan-master.md).
+// TV köşesi (zone-1 arka duvar): askılı TV + EKRANDA MAÇ OYNAR (WP4, feedback §C16):
+// yeşil saha + orta çizgi + gezen top + üst skor bandı; ekran parlaklığı hafif titrer (canlı yayın hissi).
 function TvCorner() {
+  const ball = useRef<Group>(null);
+  const screen = useRef<MeshStandardMaterial>(null);
+  useFrame((st) => {
+    const t = st.clock.elapsedTime;
+    if (ball.current) {
+      // Top sahada elips çizer + ara sıra yön değişimi hissi (iki frekansın bileşimi).
+      ball.current.position.x = Math.sin(t * 0.9) * 0.5 + Math.sin(t * 2.3) * 0.08;
+      ball.current.position.y = Math.cos(t * 1.4) * 0.2;
+    }
+    if (screen.current) screen.current.emissiveIntensity = 0.5 + Math.sin(t * 7.3) * 0.06;
+  });
   return (
     <group position={[3.6, 0, -5.1]}>
       {/* duvar konsolu */}
@@ -358,11 +378,115 @@ function TvCorner() {
         <boxGeometry args={[1.5, 0.85, 0.1]} />
         <meshStandardMaterial color={PALETTE.tvFrame} />
       </mesh>
-      {/* ekran (hafif ışıldar — maç yayını hissi) */}
-      <mesh position={[0, 1.85, 0.18]} rotation={[0.18, 0, 0]}>
-        <boxGeometry args={[1.32, 0.68, 0.02]} />
-        <meshStandardMaterial color={PALETTE.tvScreen} emissive={PALETTE.tvScreen} emissiveIntensity={0.55} />
-      </mesh>
+      {/* ekran içeriği (saha + çizgi + top + skor bandı) — çerçeveye paralel grup */}
+      <group position={[0, 1.85, 0.18]} rotation={[0.18, 0, 0]}>
+        <mesh>
+          <boxGeometry args={[1.32, 0.68, 0.02]} />
+          <meshStandardMaterial ref={screen} color={PALETTE.tvScreen} emissive={PALETTE.tvScreen} emissiveIntensity={0.5} />
+        </mesh>
+        {/* orta çizgi + orta yuvarlak */}
+        <mesh position={[0, 0, 0.012]}>
+          <boxGeometry args={[0.02, 0.62, 0.004]} />
+          <meshStandardMaterial color="#e8f5ee" emissive="#e8f5ee" emissiveIntensity={0.3} />
+        </mesh>
+        <mesh position={[0, 0, 0.012]} rotation={[0, 0, 0]}>
+          <torusGeometry args={[0.12, 0.008, 6, 16]} />
+          <meshStandardMaterial color="#e8f5ee" emissive="#e8f5ee" emissiveIntensity={0.3} />
+        </mesh>
+        {/* gezen top */}
+        <group ref={ball} position={[0, 0, 0.016]}>
+          <mesh>
+            <sphereGeometry args={[0.035, 8, 8]} />
+            <meshStandardMaterial color="#ffffff" emissive="#ffffff" emissiveIntensity={0.5} />
+          </mesh>
+        </group>
+        {/* skor bandı (üst) */}
+        <mesh position={[-0.42, 0.27, 0.012]}>
+          <boxGeometry args={[0.42, 0.09, 0.004]} />
+          <meshStandardMaterial color="#1c2733" emissive="#3a546e" emissiveIntensity={0.4} />
+        </mesh>
+      </group>
+    </group>
+  );
+}
+
+// Dekor prop'ları (WP4, feedback §C11: "her yer boş"): detaylı çöp kovası + iç mekân saksıları +
+// duvar saati. Salt görsel (yürüme yollarının dışında, collision yok; primitive = nihai stil D-013).
+function DecorProps() {
+  return (
+    <group>
+      {/* çöp kovası (kapı yanı): gövde + kapak + sallanan kapak kulpu + yan şeritler */}
+      <group position={[1.9, 0, 4.35]}>
+        <mesh castShadow position={[0, 0.3, 0]}>
+          <cylinderGeometry args={[0.2, 0.16, 0.6, 12]} />
+          <meshStandardMaterial color={PALETTE.trashBody} metalness={0.3} roughness={0.6} />
+        </mesh>
+        {[0.14, 0.32, 0.5].map((h) => (
+          <mesh key={h} position={[0, h, 0]} rotation={[Math.PI / 2, 0, 0]}>
+            <torusGeometry args={[0.187, 0.008, 6, 14]} />
+            <meshStandardMaterial color={PALETTE.trashLid} />
+          </mesh>
+        ))}
+        <mesh castShadow position={[0, 0.63, 0]}>
+          <cylinderGeometry args={[0.21, 0.21, 0.06, 12]} />
+          <meshStandardMaterial color={PALETTE.trashLid} metalness={0.3} roughness={0.5} />
+        </mesh>
+        <mesh castShadow position={[0, 0.69, 0]}>
+          <cylinderGeometry args={[0.03, 0.03, 0.05, 8]} />
+          <meshStandardMaterial color={PALETTE.trashLid} />
+        </mesh>
+      </group>
+      {/* mutfak ucu çöp kovası */}
+      <group position={[-4.9, 0, 0.5]} scale={0.85}>
+        <mesh castShadow position={[0, 0.3, 0]}>
+          <cylinderGeometry args={[0.2, 0.16, 0.6, 12]} />
+          <meshStandardMaterial color={PALETTE.trashBody} metalness={0.3} roughness={0.6} />
+        </mesh>
+        <mesh castShadow position={[0, 0.63, 0]}>
+          <cylinderGeometry args={[0.21, 0.21, 0.06, 12]} />
+          <meshStandardMaterial color={PALETTE.trashLid} metalness={0.3} roughness={0.5} />
+        </mesh>
+      </group>
+      {/* iç mekân saksıları (köşeler; sokak saksısının iç versiyonu) */}
+      {[
+        [4.9, -4.6],
+        [4.9, 4.4],
+        [-4.9, 4.5],
+      ].map(([px, pz]) => (
+        <group key={`${px}${pz}`} position={[px, 0, pz]}>
+          <mesh castShadow position={[0, 0.22, 0]}>
+            <cylinderGeometry args={[0.18, 0.14, 0.44, 8]} />
+            <meshStandardMaterial color={PALETTE.planter} />
+          </mesh>
+          <mesh castShadow position={[0, 0.58, 0]}>
+            <sphereGeometry args={[0.24, 8, 8]} />
+            <meshStandardMaterial color={PALETTE.plant} />
+          </mesh>
+          <mesh castShadow position={[0, 0.78, 0]}>
+            <sphereGeometry args={[0.16, 8, 8]} />
+            <meshStandardMaterial color={PALETTE.plant} />
+          </mesh>
+        </group>
+      ))}
+      {/* duvar saati (arka duvar, TV solu) */}
+      <group position={[1.2, 2.1, -5.18]}>
+        <mesh rotation={[Math.PI / 2, 0, 0]}>
+          <cylinderGeometry args={[0.18, 0.18, 0.05, 16]} />
+          <meshStandardMaterial color={PALETTE.wainscot} />
+        </mesh>
+        <mesh position={[0, 0, 0.03]} rotation={[Math.PI / 2, 0, 0]}>
+          <cylinderGeometry args={[0.14, 0.14, 0.02, 16]} />
+          <meshStandardMaterial color="#f4efe2" />
+        </mesh>
+        <mesh position={[0, 0.04, 0.045]}>
+          <boxGeometry args={[0.015, 0.09, 0.01]} />
+          <meshStandardMaterial color="#2b2b2b" />
+        </mesh>
+        <mesh position={[0.03, 0, 0.045]} rotation={[0, 0, -Math.PI / 3]}>
+          <boxGeometry args={[0.012, 0.07, 0.01]} />
+          <meshStandardMaterial color="#2b2b2b" />
+        </mesh>
+      </group>
     </group>
   );
 }
@@ -575,6 +699,7 @@ export function Scene() {
       <Street />
       <Walls />
       <TvCorner />
+      <DecorProps />
       <ReservedRooms />
       <Stations />
       <KitchenStaff />
