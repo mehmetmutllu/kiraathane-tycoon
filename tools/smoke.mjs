@@ -207,7 +207,8 @@ try {
   // Yeni-özellik bildirimi (D-019 §4): ilerleme boyunca açılan ikincil özellikler bildirilmiş olmalı.
   // ('opt:waiter' kalktı — personel artık quest hattının zorunlu halkası, opsiyonel pad yok.)
   const reveals = (await page.evaluate(() => window.__game())).revealSeen || [];
-  const wantReveals = ['upgrade', 'waiterUp', 'tableUp'];
+  // v21: reveal anahtarları zone-başına ('upgrade:0' = zone-1 ocak yükseltmesi vb.).
+  const wantReveals = ['upgrade:0', 'waiterUp:0', 'tableUp:0'];
   const missing = wantReveals.filter((k) => !reveals.includes(k));
   if (missing.length === 0) pass(`Yeni-özellik bildirimi çalışıyor (reveal: ${reveals.join(', ')})`);
   else fail(`Eksik reveal bildirimi: ${missing.join(', ')} (görülen: ${reveals.join(', ')})`);

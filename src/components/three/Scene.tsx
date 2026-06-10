@@ -1,7 +1,8 @@
 import { Suspense, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Vector3, type Group, type MeshBasicMaterial, type MeshStandardMaterial } from 'three';
-import { useGame, LAYOUT, stationSoftMaxLevel, stationUpgradeCost, upgradeZoneUnlockedZ, tableSoftMaxLevel, tableUpgradeZoneUnlocked, tableNextCost, waiterSoftMaxLevel, waiterUpgradeCost, waiterUpgradeUnlockedZ } from '../../game/store';
+import { useGame, LAYOUT, stationSoftMaxLevel, stationUpgradeCost, upgradeZoneUnlockedZ, tableSoftMaxLevel, tableUpgradeUnlockedZ, tableNextCost, waiterSoftMaxLevel, waiterUpgradeCost, waiterUpgradeUnlockedZ } from '../../game/store';
+import { zoneOfTable } from '../../config/economy.config';
 import { GroundMarker } from './GroundMarker';
 import { PALETTE, FLOOR_THEMES, WALL_THEMES } from '../../config/palette';
 import { Player } from './Player';
@@ -268,11 +269,13 @@ function TableUpgradeMarkers() {
   const padsDone = useGame((s) => s.padsDone);
   const stationLevel = useGame((s) => s.stationLevels[0]);
   const lifetime = useGame((s) => s.lifetime);
-  if (!tableUpgradeZoneUnlocked({ padsDone, tables, stationLevel, lifetime: lifetime.toNumber() })) return null;
+  const gate = { padsDone, tables, stationLevel, lifetime: lifetime.toNumber() };
   const cash = wallet.toNumber();
   return (
     <>
       {LAYOUT.tables.slice(0, tables).map((t, i) => {
+        // v21: her masanın işareti KENDİ zone'unun gate'ine bağlı (o salonun 4 masası açık mı).
+        if (!tableUpgradeUnlockedZ(zoneOfTable(i), gate)) return null;
         const lvl = tableLevels[i] ?? 0;
         if (lvl >= tableSoftMaxLevel()) return null; // max → işaret gizlenir
         const cost = tableNextCost(lvl);
@@ -306,7 +309,15 @@ function WaiterUpgradeMarker() {
   const stationLevels = useGame((s) => s.stationLevels);
   const lifetime = useGame((s) => s.lifetime);
   const waiterServed = useGame((s) => s.stats.waiterServed);
-  const gate = { padsDone, tables, stationLevel: stationLevels[0], lifetime: lifetime.toNumber(), waiterServed };
+  const waiterServedByZone = useGame((s) => s.stats.waiterServedByZone);
+  const gate = {
+    padsDone,
+    tables,
+    stationLevel: stationLevels[0],
+    lifetime: lifetime.toNumber(),
+    waiterServed,
+    waiterServedByZone,
+  };
   const cost = waiterUpgradeCost();
   return (
     <>

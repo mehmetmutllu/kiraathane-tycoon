@@ -27,6 +27,17 @@ Playwright gerçek-tıklama (panel satın alma, spotlight, zone reveal) · konso
 **SIRADAKİ ADAY İŞLER:** kullanıcının APK/telefon feedback'i; T3/T4 fiyatlarının gerçek oyunda hissi;
 karakter kıyafet kozmetikleri (Dekor Mağazası rafı — gelecek); UAL Pro/asset kararı hâlâ açık.
 
+## EK (2026-06-12 — ZONE-2 YÜKSELTME GATING'İ v21 ✅, kullanıcı isteği "zone-2'de de düzen olmalı")
+Tür araştırması (önce kapasite, sonra verim — Idle Miner/Dino Park konvansiyonu) + zone-1 deseni AYNALANDI:
+- **z2 ocak yükseltmesi**: salon açılır açılmaz DEĞİL → z2table2 sonrası (`teaStation.upgradeRequiresByZone`).
+- **z2 masa yükseltmeleri**: z2table4 sonrası, per-zone gate (`tables.upgradeRequiresByZone` + `tableUpgradeUnlockedZ`).
+- **z2 garson hızlandırma**: KENDİ garsonunun 20 taşıması (`stats.waiterServedByZone`, **SAVE v20→v21**:
+  global→z1; z2waiter zaten tutulmuşsa eşik tohumu — görünür işaret elinden alınmaz). z0 global ile harman (geri-uyum).
+- **Reveal toast'ları zone-başına** (`upgrade:z/waiterUp:z/tableUp:z`, "Salon 2:" öneki + pan hedefi revealKeys'ten).
+Doğrulama: vitest **104/104** (6 yeni gating/migrasyon testi) · sim (z2L1 artık z2table2 SONRASI, tempo aynı) ·
+smoke **27/27** (anahtar adları güncellendi) · Playwright canlı (upgrade:1 doğru anda, waiterUp:1 doğru şekilde YOK) ·
+konsol 0. YENİ APK kökte. NOT: dev sunucu artık 5178 portunda olabilir (5173-5177 dolu).
+
 ## (ÖNCEKİ — 2026-06-11 FEEDBACK TURU-3 — D-025 rev. A: TEK MUTFAK BLOĞU + yavaş garson; SAVE v19)
 Kullanıcı turu-2'ye "bulaşık ayrı garip" dedi; iki seçenek sunuldu, **A'yı seçti** (uygulandı):
 - Bulaşık kendi ocağının HEMEN BİTİŞİĞİNDE (z1 sol/z2 sağ duvar TEK mutfak bloğu; dishHalf döndü).

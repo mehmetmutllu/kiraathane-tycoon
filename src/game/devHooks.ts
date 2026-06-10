@@ -34,6 +34,7 @@ export function installDevHooks(): void {
       stationLevel: s.stationLevels[0],
       lifetime: s.lifetime.toNumber(),
       waiterServed: s.stats.waiterServed,
+      waiterServedByZone: s.stats.waiterServedByZone,
     };
     // Quest sistemi: görünür pad = aktif görevin pad'i (ekranda tek pad).
     const pad = visiblePads(s.questIndex, gate)[0] ?? null;

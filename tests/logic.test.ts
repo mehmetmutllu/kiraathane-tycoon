@@ -36,6 +36,9 @@ import {
   trayCapacity,
   tableSoftMaxLevel,
   tableUpgradeZoneUnlocked,
+  tableUpgradeUnlockedZ,
+  upgradeZoneUnlockedZ,
+  waiterUpgradeUnlockedZ,
   waiterSoftMaxLevel,
   waiterUpgradeCost,
   waiterUpgradeUnlocked,
@@ -387,7 +390,7 @@ describe('yeni-özellik bildirimi (D-019 §4)', () => {
     // table2 tamamlandıktan SONRAKİ tick'te 'upgrade' reveal'ı belirir (oyuncuyu uzak köşeye park et).
     useGame.setState({ player: [0, 0.6, 2], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
     useGame.getState().tick(0.1);
-    expect(useGame.getState().revealSeen).toContain('upgrade');
+    expect(useGame.getState().revealSeen).toContain('upgrade:0'); // v21: anahtarlar zone-başına
     expect(useGame.getState().notice).not.toBeNull();
     // Yeni açılan noktaya kamera pan istendi (kullanıcı 2026-06-09: "orada bir şey var" hissi).
     expect(useGame.getState().camFocus).not.toBeNull();
@@ -403,10 +406,10 @@ describe('yeni-özellik bildirimi (D-019 §4)', () => {
       stats: { ...defaultStats(), waiterServed: 19 },
     });
     useGame.getState().tick(0.1);
-    expect(useGame.getState().revealSeen).not.toContain('waiterUp'); // 19 < 20 → henüz yok
+    expect(useGame.getState().revealSeen).not.toContain('waiterUp:0'); // 19 < 20 → henüz yok
     useGame.setState({ stats: { ...defaultStats(), waiterServed: 20 } });
     useGame.getState().tick(0.1);
-    expect(useGame.getState().revealSeen).toContain('waiterUp'); // eşik aşıldı → bildirildi
+    expect(useGame.getState().revealSeen).toContain('waiterUp:0'); // eşik aşıldı → bildirildi
   });
 
   it('yeniden yüklemede ZATEN açık özellikler tekrar bildirilmez (baseline; spam yok)', () => {
@@ -426,7 +429,7 @@ describe('yeni-özellik bildirimi (D-019 §4)', () => {
       useGame.getState().init();
       const s = useGame.getState();
       // Baseline açık özellikleri içerir → ilk açılışta toast YOK.
-      expect(s.revealSeen).toContain('upgrade');
+      expect(s.revealSeen).toContain('upgrade:0');
       expect(s.notice).toBeNull();
       // Park + tick → zaten açık olanlar yeniden bildirilmez.
       useGame.setState({ player: [0, 0.6, 2], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
@@ -815,7 +818,8 @@ describe('kayıt migrasyonu v4..v15 (padFills, station2/samovar çıkışı, add
       stationLevel: 2, padsDone: ['table2', 'table3'], padFills: {}, tableLevels: [0, 0, 0, 0], waiterLevel: 0,
     } as unknown as Record<string, unknown>);
     expect(m.saveVersion).toBe(SAVE_VERSION);
-    expect(m.stats).toEqual(defaultStats()); // sayaçlar sıfırdan (garson yok → tohum yok)
+    // Sayaçlar sıfırdan (garson yok → tohum yok); v21 zone-başı sayaç [0, 0] ile gelir.
+    expect(m.stats).toEqual({ ...defaultStats(), waiterServedByZone: [0, 0] });
     // Tohumlama: öğretici sayaçlar + table2 + araları tamam; garson tutulmadığı için hat q_waiter'da durur.
     expect(economyConfig.quests[m.questIndex]?.id).toBe('q_waiter');
     expect(m.questBase).toBe(0);
@@ -1713,5 +1717,76 @@ describe('karakter yükseltmeleri (v20) — eğri, satın alma, migrasyon, göre
     expect(d.charUpgrades).toEqual({ tray: 0, magnet: 0, speed: 0 });
     expect(trayCapacityFor(d.charUpgrades.tray)).toBe(2);
     expect(d.charPanelSeen).toBe(false);
+  });
+});
+
+describe('zone-2 yükseltme gating (v21) — zone-1 deseni aynalanır (önce kapasite, sonra verim)', () => {
+  const Z1_FULL = ['table2', 'table3', 'waiter', 'dishwasher', 'table4'];
+  const g = (padsDone: string[], extra: Partial<GateLike> = {}) => ({
+    padsDone, tables: 0, stationLevel: 0, lifetime: 0, ...extra,
+  });
+  type GateLike = {
+    padsDone: string[]; tables: number; stationLevel: number; lifetime: number;
+    waiterServed?: number; waiterServedByZone?: number[];
+  };
+
+  it('z2 ocak yükseltmesi: salon açılır açılmaz DEĞİL, z2 2. masası açılınca belirir (z1: table2 deseni)', () => {
+    expect(upgradeZoneUnlockedZ(1, g([...Z1_FULL, 'zone2']))).toBe(false); // salon yeni açıldı → kapalı
+    expect(upgradeZoneUnlockedZ(1, g([...Z1_FULL, 'zone2', 'z2table2']))).toBe(true);
+    // Zone-1 davranışı değişmedi.
+    expect(upgradeZoneUnlockedZ(0, g([]))).toBe(false);
+    expect(upgradeZoneUnlockedZ(0, g(['table2']))).toBe(true);
+  });
+
+  it('z2 masa yükseltmeleri: o salonun 4 masası da açılınca belirir (z1: table4 deseni)', () => {
+    const half = [...Z1_FULL, 'zone2', 'z2table2', 'z2waiter', 'z2table3'];
+    expect(tableUpgradeUnlockedZ(0, g(Z1_FULL))).toBe(true); // z1 dolu → z1 masaları açık
+    expect(tableUpgradeUnlockedZ(1, g(half))).toBe(false); // z2 henüz dolu değil → z2 masaları kilitli
+    expect(tableUpgradeUnlockedZ(1, g([...half, 'z2dishwasher', 'z2table4']))).toBe(true);
+  });
+
+  it('z2 garson hızlandırma: KENDİ garsonu 20 taşımadan belirmez (global sayaç z1den dolu olsa bile)', () => {
+    const pads = [...Z1_FULL, 'zone2', 'z2table2', 'z2waiter'];
+    // Global 99 ama z2 garsonu daha 5 taşıdı → kapalı (eski bug: tutar tutmaz beliriyordu).
+    expect(waiterUpgradeUnlockedZ(1, g(pads, { waiterServed: 99, waiterServedByZone: [99, 5] }), 0)).toBe(false);
+    expect(waiterUpgradeUnlockedZ(1, g(pads, { waiterServed: 99, waiterServedByZone: [99, 20] }), 0)).toBe(true);
+    // z1 geri-uyum: global sayaç yeterli (eski kayıt/dev kancası).
+    expect(waiterUpgradeUnlockedZ(0, g(pads, { waiterServed: 20 }), 0)).toBe(true);
+  });
+
+  it('tick z2 garson taşımasını KENDİ zone sayacına yazar', () => {
+    useGame.getState().hardReset();
+    const before = useGame.getState().stats.waiterServedByZone.slice();
+    // z1 garsonuna bir teslimat yaptır: garson tepside 1 çay + bekleyen müşteri masada.
+    useGame.setState({
+      padsDone: ['table2', 'table3', 'waiter'],
+      waiters: [{ pos: [...LAYOUT.tables[0].table] as [number, number, number], tray: 1 }, null],
+      npcs: [{ id: 1, state: 'waitingForTea', pos: [...LAYOUT.tables[0].seat] as [number, number, number], tableIndex: 0, timer: 18, color: '#fff' }],
+      spawnTimer: 999, player: [0, 0.6, 4], inputKeyboard: [0, 0], inputJoystick: [0, 0],
+    });
+    for (let i = 0; i < 30 && useGame.getState().stats.waiterServed === 0; i++) useGame.getState().tick(0.1);
+    const st = useGame.getState().stats;
+    expect(st.waiterServed).toBe(1);
+    expect(st.waiterServedByZone[0] ?? 0).toBe((before[0] ?? 0) + 1);
+    expect(st.waiterServedByZone[1] ?? 0).toBe(0);
+  });
+
+  it('kayıt v20→v21: zone-başı sayaç tohumlanır (global→z1; z2waiter tutulmuşsa eşik, değilse 0)', () => {
+    const base = {
+      saveVersion: 20, wallet: '0', diamonds: '0', lifetime: '5000',
+      stationLevels: [3, 0], waiterLevels: [0, 0], padFills: {}, tableLevels: [],
+      stats: { ...defaultStats(), waiterServed: 50 }, questIndex: 0, questBase: 0, xp: 0,
+      settings: { sound: true, music: true, notifications: true },
+      floorThemeByZone: [], wallThemeByZone: [], ownedCosmetics: [],
+      charUpgrades: { tray: 2, magnet: 0, speed: 0 }, charPanelSeen: false, lastSaved: Date.now(),
+    };
+    const m1 = migrate({ ...base, padsDone: ['table2', 'waiter'] } as unknown as Record<string, unknown>);
+    expect(m1.stats.waiterServedByZone).toEqual([50, 0]); // z2 garsonu yok → sıfırdan sayar
+    const m2 = migrate({
+      ...base,
+      padsDone: ['table2', 'table3', 'waiter', 'dishwasher', 'table4', 'zone2', 'z2table2', 'z2waiter'],
+    } as unknown as Record<string, unknown>);
+    // z2 garsonu zaten tutulmuş → bugün görünür olan hızlandırma işareti yarın kaybolmasın (eşik tohumu).
+    expect(m2.stats.waiterServedByZone).toEqual([50, economyConfig.waiter.upgradeRequires.minWaiterServed]);
   });
 });

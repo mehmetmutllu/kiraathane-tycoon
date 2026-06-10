@@ -13,7 +13,7 @@
  *   L5 (Usta)   = masterDiamondCost 💎 VEYA 1 ödüllü video; outputMult yerine masterOutputMult
  */
 
-export const SAVE_VERSION = 20;
+export const SAVE_VERSION = 21;
 
 /**
  * ZONE modeli (Faz 3a + D-022, gece 2026-06-10): zemin kat zone'ları. Her zone kendi TEMALI
@@ -121,8 +121,12 @@ export const economyConfig = {
       masterDiamondCost: 15,
       masterOutputMult: 2.0,
     } satisfies UpgradeSpec,
-    /** Yükseltme noktasının önkoşulu: önce 2. masa açılmalı (D-010 §3.4 sırası). */
-    upgradeRequires: { prev: ['table2'] } satisfies Requires,
+    /**
+     * Yükseltme noktasının ZONE-BAŞINA önkoşulu (v21 — kullanıcı 2026-06-12: "zone-2'de de düzen
+     * olmalı"): her salonun ocak yükseltmesi O salonun 2. masası açılınca belirir (tür konvansiyonu:
+     * önce kapasite, sonra verim — zone-1 deseni aynalanır). index = zone.
+     */
+    upgradeRequiresByZone: [{ prev: ['table2'] }, { prev: ['z2table2'] }] satisfies readonly Requires[],
     /** Yükseltme noktasında saniyede cüzdandan akan ₺ (mekânsal yükseltme). */
     upgradeFillRate: 60,
     /** Her ek çay ocağı (station) sipariş süresini bu kadar çarpar (paralel demleme). */
@@ -148,9 +152,9 @@ export const economyConfig = {
     },
     /** Yükseltme noktasında saniyede cüzdandan akan ₺ (mekânsal yükseltme). */
     upgradeFillRate: 60,
-    /** Önkoşul: TÜM masalar (4) açılınca belirir (D-019 §3 — masa yükseltmeleri GEÇ oyun derinliği; erken
-     *  ekran sade kalsın diye masa-başı yükseltme işaretleri 4. masaya kadar gizli). */
-    upgradeRequires: { prev: ['table4'] } satisfies Requires,
+    /** ZONE-BAŞINA önkoşul (v21): o salonun masa yükseltmeleri, O salonun 4 masası da açılınca belirir
+     *  (D-019 §3 — masa yükseltmeleri geç-oyun derinliği; erken ekran sade; zone-1 deseni aynalanır). */
+    upgradeRequiresByZone: [{ prev: ['table4'] }, { prev: ['z2table4'] }] satisfies readonly Requires[],
     /** Servis başına ek bahşiş = tipBase × masaSeviyesi (L0 = 0 bahşiş, sadece sabit fiyat). */
     tipBase: 2,
     /** Masa seviyesi başına eklenen sabır (sn). */
@@ -556,6 +560,8 @@ export interface GateState {
   lifetime: number;
   /** Garsonun bugüne dek taşıdığı çay (arka-plan şartları için; eski çağıranlar vermeyebilir → 0). */
   waiterServed?: number;
+  /** ZONE-BAŞINA garson taşıma sayacı (v21 — z2 hızlandırma kendi garsonunun işini saysın). */
+  waiterServedByZone?: number[];
 }
 
 /** Bir `requires` koşulu mevcut ilerleme durumunca karşılanıyor mu? */

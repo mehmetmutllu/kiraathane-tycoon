@@ -28,10 +28,13 @@ export interface SaveStats {
   dishesWashed: number;
   /** Garsonun bugüne dek taşıdığı toplam çay (arka-plan reveal şartları). */
   waiterServed: number;
+  /** ZONE-BAŞINA garson taşıma sayacı (v21): her salonun hızlandırma noktası KENDİ garsonunun
+   *  işini sayar (z2 garsonu tutulur tutulmaz hızlandırma belirmesin — sindirme ilkesi). */
+  waiterServedByZone: number[];
 }
 
 export function defaultStats(): SaveStats {
-  return { teaPickups: 0, teasServed: 0, coinsCollected: 0, dishesWashed: 0, waiterServed: 0 };
+  return { teaPickups: 0, teasServed: 0, coinsCollected: 0, dishesWashed: 0, waiterServed: 0, waiterServedByZone: [] };
 }
 
 /** Oyuncu ayarları (v17 persist). Ses/müzik Faz 6'da, bildirimler Capacitor'da (Faz 5/7) okunur. */
@@ -382,6 +385,23 @@ export function migrate(raw: Record<string, unknown>): SaveData {
     v = 20;
   }
 
+  // v20 -> v21 (ZONE-BAŞI GARSON SAYACI): stats.waiterServedByZone eklendi. Eski global sayaç
+  // zone-1'e yazılır (z1 hızlandırma işareti elinden alınmaz); z2 garsonu zaten tutulmuşsa z2'ye
+  // eşik tohumlanır (bugün görünür olan işaret yarın kaybolmasın), yoksa 0'dan sayar.
+  if (v < 21) {
+    const st = (d.stats && typeof d.stats === 'object' ? d.stats : {}) as Partial<SaveStats>;
+    const padsDone = Array.isArray(d.padsDone) ? (d.padsDone as string[]) : [];
+    const minServed = economyConfig.waiter.upgradeRequires.minWaiterServed ?? 0;
+    d.stats = {
+      ...st,
+      waiterServedByZone: [
+        Number(st.waiterServed ?? 0) || 0,
+        padsDone.includes('z2waiter') ? minServed : 0,
+      ],
+    };
+    v = 21;
+  }
+
   // Sona kalan v16 şeması: türetilen alanlar (tables/stations/serviceSpeedMult/hasWaiter), eski `padFill`,
   // kaldırılan `trayLevel` ve 'samovar' referansı yazılmaz; stats/questIndex/questBase eklendi (v16).
   const rawStats = (d.stats && typeof d.stats === 'object' ? d.stats : {}) as Partial<SaveStats>;
@@ -408,6 +428,9 @@ export function migrate(raw: Record<string, unknown>): SaveData {
       coinsCollected: Number(rawStats.coinsCollected ?? 0) || 0,
       dishesWashed: Number(rawStats.dishesWashed ?? 0) || 0,
       waiterServed: Number(rawStats.waiterServed ?? 0) || 0,
+      waiterServedByZone: Array.isArray(rawStats.waiterServedByZone)
+        ? rawStats.waiterServedByZone.map((n) => Number(n) || 0)
+        : [],
     },
     questIndex: Math.max(0, Math.min(Number(d.questIndex ?? 0) || 0, economyConfig.quests.length)),
     questBase: Math.max(0, Number(d.questBase ?? 0) || 0),

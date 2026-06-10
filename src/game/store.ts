@@ -312,16 +312,29 @@ export const FILL_WAITER = 'waiterUp:'; // + zone index (garson hız yükseltme,
 /** Zone z'nin garson pad id'si (per-zone personel). */
 export const waiterPadId = (z: number) => (z === 0 ? 'waiter' : 'z2waiter');
 
-/** Zone z'nin çay-yükseltme noktası açık mı? (z1: table2 önkoşulu; z2: zone açık olması yeter.) */
+/** Zone z'nin çay-yükseltme noktası açık mı? (v21: her salonun KENDİ 2. masası önkoşul —
+ *  upgradeRequiresByZone; zone-1 deseni aynalanır, "önce kapasite sonra verim".) */
 export function upgradeZoneUnlockedZ(z: number, g: GateState): boolean {
-  return z === 0 ? requiresMet(C.teaStation.upgradeRequires, g) : g.padsDone.includes('zone2');
+  return requiresMet(C.teaStation.upgradeRequiresByZone[z], g);
 }
 
-/** Zone z'nin garson-hız noktası açık mı? (o zone'un garsonu + global minWaiterServed + seviye < max) */
+/** Zone z'nin masa yükseltmeleri açık mı? (v21: o salonun 4 masası da açılınca — per-zone D-019 §3.) */
+export function tableUpgradeUnlockedZ(z: number, g: GateState): boolean {
+  return requiresMet(C.tables.upgradeRequiresByZone[z], g);
+}
+
+/** Zone z'nin garson-hız noktası açık mı? (v21: o zone'un garsonu + KENDİ garsonunun
+ *  minWaiterServed taşıması — z2 garsonu tutulur tutulmaz hızlandırma belirmez, sindirme ilkesi.) */
 export function waiterUpgradeUnlockedZ(z: number, g: GateState, level: number): boolean {
   if (!g.padsDone.includes(waiterPadId(z))) return false;
   const minServed = C.waiter.upgradeRequires.minWaiterServed ?? 0;
-  if ((g.waiterServed ?? 0) < minServed) return false;
+  // z0 global sayaçla harmanlanır (tarihsel davranış + eski test/dev kancası geri-uyumu);
+  // z>0 yalnız KENDİ garsonunun taşımasını sayar.
+  const served =
+    z === 0
+      ? Math.max(g.waiterServed ?? 0, g.waiterServedByZone?.[0] ?? 0)
+      : g.waiterServedByZone?.[z] ?? 0;
+  if (served < minServed) return false;
   return level < waiterSoftMaxLevelCfg();
 }
 const SAVE_INTERVAL = 2; // sn
@@ -384,9 +397,9 @@ export function totalCupPool(zonesOpen: number, stationLevels: number[]): number
 export const tableSoftMaxLevel = () => C.tables.upgrade.masterLevel - 1;
 /** Mevcut seviyeden bir sonraki masa yükseltmesinin maliyeti (₺). */
 export const tableNextCost = (level: number) => tableUpgradeCost(level);
-/** Masa yükseltme noktası şu an aktif mi (önkoşulu karşılandı mı)? */
+/** Zone-1 masa yükseltme gate'i (geri uyum: testler/eski çağıranlar; per-zone için tableUpgradeUnlockedZ). */
 export function tableUpgradeZoneUnlocked(g: GateState): boolean {
-  return requiresMet(C.tables.upgradeRequires, g);
+  return tableUpgradeUnlockedZ(0, g);
 }
 
 /** Çevrimdışı gelir oranı (₺/sn) — bottleneck idealize: oturma × sabit fiyat / döngü. */
@@ -429,19 +442,30 @@ export interface GameNotice {
 }
 
 /**
- * Şu an açık olan "yeni-özellik" reveal anahtarları (D-019 §4). Bir anahtar revealSeen'de YOKKEN belirirse
- * toast tetiklenir. revealSeen baseline init'te mevcut açık özelliklerle kurulur → yeniden yüklemede zaten
- * açık olanlar tekrar bildirmez (persist gerekmez). Omurga masa pad'leri DAHİL DEĞİL (onlar nextStep ile
- * yönlendirilir; bildirim yalnız ikincil özellikler: yükseltmeler + opsiyonel personel).
+ * Şu an açık olan "yeni-özellik" reveal anahtarları (D-019 §4) — v21'den beri ZONE-BAŞINA
+ * (kullanıcı 2026-06-12: zone-2 yükseltmeleri de düzenli açılsın + bildirilsin). Bir anahtar
+ * revealSeen'de YOKKEN belirirse toast + kamera panı tetiklenir. revealSeen baseline init'te
+ * mevcut açık özelliklerle kurulur → yeniden yüklemede zaten açık olanlar tekrar bildirmez.
+ * Dönen üçlü: [anahtar, metin, pan hedefi (null = pan yok)].
  */
-function revealKeys(g: GateState, hasWaiter: boolean, waiterLevel: number): [string, string][] {
-  const out: [string, string][] = [];
-  if (requiresMet(C.teaStation.upgradeRequires, g) && g.stationLevel < stationSoftMaxLevel())
-    out.push(['upgrade', 'Yeni: Çay ocağını yükseltebilirsin ☕']);
-  for (const op of availableOptionalPads(g)) out.push([`opt:${op.id}`, `Yeni: ${op.label} 🔓`]);
-  if (hasWaiter && waiterUpgradeUnlocked(g, waiterLevel))
-    out.push(['waiterUp', 'Yeni: Garsonu hızlandırabilirsin ⚡']);
-  if (tableUpgradeZoneUnlocked(g)) out.push(['tableUp', 'Yeni: Masaları yükseltebilirsin 🪑']);
+function revealKeys(
+  g: GateState,
+  zonesOpen: number,
+  stationLevels: number[],
+  hasWaiterByZone: boolean[],
+  waiterLevels: number[],
+): [string, string, RVec3 | null][] {
+  const out: [string, string, RVec3 | null][] = [];
+  const pre = (z: number) => (z === 0 ? '' : `Salon ${z + 1}: `);
+  for (let z = 0; z < zonesOpen; z++) {
+    if (upgradeZoneUnlockedZ(z, g) && (stationLevels[z] ?? 0) < stationSoftMaxLevel())
+      out.push([`upgrade:${z}`, `Yeni: ${pre(z)}Çay ocağını yükseltebilirsin ☕`, LAYOUT.upgradeZones[z]]);
+    if (hasWaiterByZone[z] && waiterUpgradeUnlockedZ(z, g, waiterLevels[z] ?? 0))
+      out.push([`waiterUp:${z}`, `Yeni: ${pre(z)}Garsonu hızlandırabilirsin ⚡`, LAYOUT.waiterUpgradeSpots[z]]);
+    if (tableUpgradeUnlockedZ(z, g))
+      out.push([`tableUp:${z}`, `Yeni: ${pre(z)}Masaları yükseltebilirsin 🪑`, LAYOUT.tables[z * TABLES_PER_ZONE].upgradeSpot]);
+  }
+  for (const op of availableOptionalPads(g)) out.push([`opt:${op.id}`, `Yeni: ${op.label} 🔓`, null]);
   return out;
 }
 
@@ -573,9 +597,9 @@ export function availableOptionalPads(g: GateState): PadDef[] {
   );
 }
 
-/** İstasyon yükseltme noktası şu an aktif mi (önkoşulu karşılandı mı)? */
+/** Zone-1 istasyon yükseltme gate'i (geri uyum: testler/eski çağıranlar; per-zone için upgradeZoneUnlockedZ). */
 export function upgradeZoneUnlocked(g: GateState): boolean {
-  return requiresMet(C.teaStation.upgradeRequires, g);
+  return upgradeZoneUnlockedZ(0, g);
 }
 
 // ============================== QUEST MOTORU (2026-06-09) ==============================
@@ -863,9 +887,12 @@ export const useGame = create<GameState>((set, get) => ({
           stationLevel: stationLevels[0],
           lifetime: lifetime.toNumber(),
           waiterServed: save.stats.waiterServed,
+          waiterServedByZone: save.stats.waiterServedByZone,
         },
-        derived.hasWaiter,
-        waiterLevels[0],
+        derived.zonesOpen,
+        stationLevels,
+        derived.hasWaiterByZone,
+        waiterLevels,
       ).map(([k]) => k),
       stats: { ...save.stats },
       questIndex: save.questIndex,
@@ -942,7 +969,8 @@ export const useGame = create<GameState>((set, get) => ({
     let notice = s.notice;
     let revealSeen = s.revealSeen;
     let xp = s.xp; // toplam XP (bu tick'te eylem ödülleriyle artabilir; level türetilir)
-    const stats: SaveStats = { ...s.stats }; // kalıcı eylem sayaçları (bu tick'te artabilir)
+    // Kalıcı eylem sayaçları (bu tick'te artabilir). waiterServedByZone dizisi de klonlanır (v21).
+    const stats: SaveStats = { ...s.stats, waiterServedByZone: s.stats.waiterServedByZone.slice() };
     let questIndex = s.questIndex;
     let questBase = s.questBase;
     let camFocus = s.camFocus;
@@ -1208,6 +1236,7 @@ export const useGame = create<GameState>((set, get) => ({
           best.timer = C.npc.eatTime;
           w.tray -= 1;
           stats.waiterServed += 1;
+          stats.waiterServedByZone[z] = (stats.waiterServedByZone[z] ?? 0) + 1; // v21: zone-başı sayaç
           xp += C.xp.perWaiterServed;
         }
       } else if (w.tray < wTrayCap && waitingNpcs.length > 0) {
@@ -1276,25 +1305,19 @@ export const useGame = create<GameState>((set, get) => ({
       stationLevel: stationLevels[0],
       lifetime: lifetime.toNumber(),
       waiterServed: stats.waiterServed,
+      waiterServedByZone: stats.waiterServedByZone,
     };
     // EKRANDA TEK PAD (quest sistemi): görünürlük visiblePads'ten (Pad.tsx ile aynı kaynak).
     const activePads: PadDef[] = visiblePads(questIndex, padGate);
 
-    const tableUnlocked = tableUpgradeZoneUnlocked(padGate);
-
-    // --- Yeni-özellik bildirimi (D-019 §4) ---
-    // Bir ikincil özellik (yükseltme/personel) İLK kez açıldığında kısa toast. revealSeen baseline init'te
-    // kurulduğu için zaten açık olanlar tekrar bildirmez (yeniden-yükleme spam'ı yok; persist gerekmez).
-    for (const [key, text] of revealKeys(padGate, derived.hasWaiter, waiterLevels[0])) {
+    // --- Yeni-özellik bildirimi (D-019 §4; v21 zone-başına) ---
+    // Bir ikincil özellik (yükseltme/personel) İLK kez açıldığında kısa toast + pan. revealSeen baseline
+    // init'te kurulduğu için zaten açık olanlar tekrar bildirmez (yeniden-yükleme spam'ı yok; persist gerekmez).
+    for (const [key, text, rp] of revealKeys(padGate, zonesOpen, stationLevels, derived.hasWaiterByZone, waiterLevels)) {
       if (!revealSeen.includes(key)) {
         revealSeen = [...revealSeen, key];
         notice = { text, ttl: 4.5 };
         // Yeni açılan noktaya anlık kamera pan ("orada bir şey var" — kullanıcı isteği 2026-06-09).
-        const rp =
-          key === 'upgrade' ? LAYOUT.upgradeZone
-          : key === 'waiterUp' ? LAYOUT.waiterUpgradeSpot
-          : key === 'tableUp' ? LAYOUT.tables[0].upgradeSpot
-          : null;
         if (rp) requestFocus(rp, 1);
       }
     }
@@ -1330,8 +1353,10 @@ export const useGame = create<GameState>((set, get) => ({
         if (dist2D(player, LAYOUT.waiterUpgradeSpots[z]) < WAITER_UP_RADIUS) { onFillId = FILL_WAITER + z; break; }
       }
     }
-    if (!onFillId && tableUnlocked) {
+    if (!onFillId) {
       for (let i = 0; i < tables; i++) {
+        // v21: her masanın yükseltmesi KENDİ zone'unun gate'ine bağlı (o salonun 4 masası açık mı).
+        if (!tableUpgradeUnlockedZ(zoneOfTable(i), padGate)) continue;
         if (tableLevels[i] >= tableSoftMaxLevel()) continue;
         if (dist2D(player, LAYOUT.tables[i].upgradeSpot) < TABLE_UP_RADIUS) { onFillId = FILL_TABLE + i; break; }
       }

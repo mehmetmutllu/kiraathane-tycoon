@@ -87,15 +87,15 @@ function ocakBottleneckZ(s: State, z: number): boolean {
   return d.tablesByZone[z] / cycle > (1 / bt) * 0.95;
 }
 
-// Zone'un ocak yükseltmesi açık mı? (z1: table2 önkoşulu; z2: zone açık olması yeter — store ile aynı.)
+// Zone'un ocak yükseltmesi açık mı? (v21: her salonun KENDİ 2. masası önkoşul — store ile aynı.)
 function upgradeUnlockedZ(s: State, z: number): boolean {
   if (s.stationLevels[z] >= SOFT_MAX) return false;
-  if (z === 0) return requiresMet(C.teaStation.upgradeRequires, gateOf(s));
-  return s.padsDone.includes('zone2');
+  return requiresMet(C.teaStation.upgradeRequiresByZone[z], gateOf(s));
 }
 
+// İdealize tek tableLevel: zone-1 gate'i referans (v21 per-zone; sim masa seviyesini tekilleştirir).
 function tableUpgradeUnlocked(s: State): boolean {
-  return requiresMet(C.tables.upgradeRequires, gateOf(s)) && s.tableLevel < TABLE_SOFT_MAX;
+  return requiresMet(C.tables.upgradeRequiresByZone[0], gateOf(s)) && s.tableLevel < TABLE_SOFT_MAX;
 }
 
 function currentPad(s: State) {

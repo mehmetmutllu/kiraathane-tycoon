@@ -502,6 +502,12 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   HACİMLE örtülü (hiçbir şey görünmez); pad açılınca ~1.8sn karanlıktan aydınlığa fade + kamera panı.
   zone2 pad'i eşiğin zone-1 tarafına (x 4.55). **ÇAYCI v2:** ayrı bacak+ayakkabı, tepsiye uzanan
   simetrik kollar+eller, göz/burun; panel kadraj düzeltildi. YENİ APK kökte (5.1MB). (commit 2c80a20)
+- ✅ **ZONE-2 YÜKSELTME GATING'İ v21 (2026-06-12, kullanıcı: "zone-2'de de düzen olmalı"):** zone-1
+  deseni per-zone aynalandı — z2 ocak yük. z2table2 sonrası (`upgradeRequiresByZone`); z2 masa yük.
+  z2table4 sonrası (`tableUpgradeUnlockedZ`); z2 garson hızlandırma KENDİ garsonunun 20 taşıması
+  (`stats.waiterServedByZone`, **SAVE v21** migrasyonu: global→z1 + z2waiter tutulmuşsa eşik tohumu);
+  reveal toast'ları zone-başına ("Salon 2:" öneki + kendi pan hedefi). vitest 104/104, sim tempo aynı,
+  smoke 27/27, Playwright canlı gating doğrulandı, konsol 0.
 - ⏳ **3a kalan:** zone 3-4 (tost/TV konsepti) + kat planındaki servis odaları (floorplan-master.md).
 - ⏳ **3b:** Kat geçişi: kat dolunca **merdiven** açılır → ekran kararma → üst kat; dinamik bounds/kamera; SAVE bump.
 - ⏳ **3c:** Tuvalet ODASI + DEPO (KATA özel, parayla açılır) + tuvalet kâğıdı döngüsü (depodan al→tak) + temizlikçi.
