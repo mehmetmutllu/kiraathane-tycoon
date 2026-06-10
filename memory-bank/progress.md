@@ -422,6 +422,17 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   müşterisi tek kapıdan, z2 kamera [12,0,1.5], konsol 0 hata).** Screenshots: night2-wp2-strip.png,
   night2-wp2-landscape.png, night2-wp2-frontleft.png (kök, git-ignored).
   ⚠️ Denge notu (sabah): zone-2 servis mesafesi arttı (şerit solda) — telefon testi + curve Ö1-Ö4 ile ele alınmalı.
+- ✅ **WP3 KARAKTER ASSET'LERİ (GECE-2 3/6, 2026-06-11):** Quaternius Ultimate Modular Men+Women (CC0,
+  License.txt doğrulandı) → 10 model `public/assets/models/characters/*.glb`. **Pipeline:**
+  `tools/optimize-chars.mjs` (@gltf-transform: yalnız Idle/Walk/Run/Wave/Interact kaldı 24→6,
+  resample+dedup+prune+quantize KHR_mesh_quantization=decoder'sız, gltf→glb ~3MB→~0.95MB).
+  **`Character.tsx`:** SkeletonUtils.clone (bağımsız iskelet) + useAnimations crossfade + preload +
+  primitive fallback (offline/hata güvenli). **Entegrasyon:** OYUNCU=Worker (Run/Idle, tepsi grupta),
+  GARSON=Suit, BULAŞIKÇI=Casual_Hoodie (pos-delta'dan Walk/Idle), MÜŞTERİLER=8 modellik havuz
+  (id→deterministik; hep farklı), ÇAYCI NPC=W_Casual (Walk volta). Ölçek 0.58 (masa oranı ölçüldü).
+  Oturan müşteri tabure içine gömülür (Sit anim YOK — UAL Pro $9.99 sabah kararı; tepsi/carry de öyle).
+  **Doğrulama: vitest 89/89, build temiz, smoke 27/27, Playwright canlı (karakterler+anim, konsol 0).**
+  Screenshots: night2-wp3-scale2.png, night2-wp3-final.png. Manifest güncellendi (README.md).
 - ⏳ **3a kalan:** zone 3-4 (tost/TV konsepti) + kat planındaki servis odaları (floorplan-master.md).
 - ⏳ **3b:** Kat geçişi: kat dolunca **merdiven** açılır → ekran kararma → üst kat; dinamik bounds/kamera; SAVE bump.
 - ⏳ **3c:** Tuvalet ODASI + DEPO (KATA özel, parayla açılır) + tuvalet kâğıdı döngüsü (depodan al→tak) + temizlikçi.

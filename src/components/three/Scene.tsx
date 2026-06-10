@@ -3,6 +3,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Vector3, type Group } from 'three';
 import { useGame, LAYOUT, stationSoftMaxLevel, stationUpgradeCost, upgradeZoneUnlockedZ, tableSoftMaxLevel, tableUpgradeZoneUnlocked, tableNextCost, waiterSoftMaxLevel, waiterUpgradeCost, waiterUpgradeUnlockedZ } from '../../game/store';
 import { GroundMarker } from './GroundMarker';
+import { Character } from './Character';
 import { PALETTE } from '../../config/palette';
 import { Player } from './Player';
 import { Waiter } from './Waiter';
@@ -98,7 +99,7 @@ function Stations() {
 }
 
 // Çaycı NPC (D-023; kullanıcı tarifi: "duvar ile tezgah arasında çalışan biri"). SALT GÖRSEL —
-// mekaniğe dokunmaz: şerit arkası koridorda yürür, bulaşık/çay düzenliyormuş gibi durup eğilir.
+// mekaniğe dokunmaz: şerit arkası koridorda sürekli volta atar (Quaternius W_Casual + Walk; WP3).
 function KitchenStaff() {
   const zonesOpen = useGame((s) => s.zonesOpen);
   const ref = useRef<Group>(null);
@@ -107,37 +108,23 @@ function KitchenStaff() {
   useFrame((st) => {
     const grp = ref.current;
     if (!grp) return;
-    const t = st.clock.elapsedTime * 0.3;
+    const t = st.clock.elapsedTime * 0.35;
     const u = (Math.sin(t) + 1) / 2;
     grp.position.z = zMin + u * (zMax - zMin);
-    // Rota ucunda durup tezgâha dönüp "iş yapar" (eğilme); arada yürür (hafif zıplama).
-    const speed = Math.abs(Math.cos(t));
-    grp.rotation.y = speed < 0.25 ? Math.PI / 2 : Math.cos(t) > 0 ? 0 : Math.PI;
-    grp.position.y = speed < 0.25 ? -0.04 + Math.sin(st.clock.elapsedTime * 3) * 0.02 : Math.abs(Math.sin(st.clock.elapsedTime * 7)) * 0.04;
+    grp.rotation.y = Math.cos(t) > 0 ? 0 : Math.PI; // gidiş yönüne dön
   });
   return (
-    <group ref={ref} position={[-5.0, 0, -3]}>
-      {/* bacaklar + gövde + önlük + baş (low-poly; palette = tek renk kaynağı) */}
-      <mesh castShadow position={[0, 0.25, 0]}>
-        <boxGeometry args={[0.26, 0.5, 0.18]} />
-        <meshStandardMaterial color={PALETTE.pants} />
-      </mesh>
-      <mesh castShadow position={[0, 0.66, 0]}>
-        <boxGeometry args={[0.3, 0.34, 0.2]} />
-        <meshStandardMaterial color={PALETTE.shirt} />
-      </mesh>
-      <mesh position={[0, 0.6, 0.105]}>
-        <boxGeometry args={[0.26, 0.4, 0.02]} />
-        <meshStandardMaterial color={PALETTE.apron} />
-      </mesh>
-      <mesh castShadow position={[0, 0.95, 0]}>
-        <sphereGeometry args={[0.13, 10, 10]} />
-        <meshStandardMaterial color={PALETTE.skin} />
-      </mesh>
-      <mesh position={[0, 1.04, 0]}>
-        <cylinderGeometry args={[0.135, 0.14, 0.06, 10]} />
-        <meshStandardMaterial color={PALETTE.cap} />
-      </mesh>
+    <group ref={ref} position={[-5.0, 0, -3]} scale={0.85}>
+      <Character
+        model="W_Casual.glb"
+        anim="Walk"
+        fallback={
+          <mesh castShadow position={[0, 0.5, 0]}>
+            <capsuleGeometry args={[0.16, 0.6, 6, 10]} />
+            <meshStandardMaterial color={PALETTE.apron} />
+          </mesh>
+        }
+      />
     </group>
   );
 }

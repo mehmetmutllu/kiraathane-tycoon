@@ -24,12 +24,13 @@ TV içeriği, kirli masa) → WP5 tek gösterge → WP6 kozmetik mağaza. En son
 (GECE-RAPORU formatı). İLKELER: gece protokolü (feedback_night_session.md); çizgiyi koru; geri dönüşü
 zor şey yapma; context tükenmeden commit+push+memory-bank güncelle.
 
-## ŞU AN (2026-06-11 GECE-2 🌙 — WP1 ✅ + WP2 ✅; sırada WP3 ASSET; SAVE v18)
-**WP1** (bug paketi) + **WP2** (dünya v2 — D-024: duvarsız tek salon, tek kapı, sol duvar L mutfak
-şeridi, çaycı NPC, rezervler; per-zone mekanik + SAVE değişmedi) UYGULANDI, detay progress.md.
-vitest 89/89 · build temiz · smoke 27/27 · Playwright canlı ✓. **SIRADAKİ: WP3 ASSET**
-(Quaternius Modular Men/Women indir → manifest → karakter+animasyon; müşteri varyasyonu; prop'lar).
-⚠️ Sabaha: zone-2 servis mesafesi arttı (şerit solda) — telefon testi + curve Ö1-Ö4 birlikte.
+## ŞU AN (2026-06-11 GECE-2 🌙 — WP1 ✅ WP2 ✅ WP3 ✅; sırada WP4 görsel kimlik v2; SAVE v18)
+**WP1** (bug paketi) + **WP2** (dünya v2, D-024) + **WP3** (Quaternius karakterler: 10 CC0 glb,
+Character.tsx, oyuncu/garson/bulaşıkçı/8-model müşteri havuzu/çaycı NPC animasyonlu) UYGULANDI —
+detay progress.md. vitest 89/89 · build temiz · smoke 27/27 · Playwright canlı ✓.
+**SIRADAKİ: WP4** (parke/fayans canvas-tile zemin, masa ŞEKİL evrimi, klasik çay ocağı+çaydanlık
+sayısı, TV içeriği, kirli masa A/B, çöp kovası/dekor prop'ları) → WP5 (tek gösterge) → WP6 (mağaza).
+⚠️ Sabaha: UAL Pro $9.99 (Sit/Carry anim), zone-2 servis mesafesi/tempo, curve Ö1-Ö4, kirli masa A/B.
 
 ## (ÖNCEKİ — 2026-06-11 GÜNDÜZ: FEEDBACK ALINDI + ARAŞTIRMA/PLAN BİTTİ; kod değişmedi, SAVE v18)
 Kullanıcı feedback'i işlendi → docs/feedback-2026-06-11.md (A-D feedback, E bug kök nedenleri,
