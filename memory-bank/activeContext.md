@@ -2,7 +2,7 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
-## ŞU AN (2026-06-11 — TELEFON FEEDBACK TURU-1 UYGULANDI, SAVE v21→v22; commit bekliyor)
+## ŞU AN (2026-06-11 — TELEFON FEEDBACK TURU-1 ✅ COMMIT+PUSH (6aa7325) + YENİ APK, SAVE v22)
 Kullanıcı v21 APK telefon testinden 6 maddelik feedback verdi; HEPSİ uygulandı:
 1. **Müşteri takılma bug'ı (KÖK çözüm):** "masaya müşteri gelmiyor / müşteriler kümeleniyor" =
    müşteriler hâlâ `moveAvoid` (eksen-kayma) kullanıyordu; yerleşim v3'te ÖN-SIRA masa, kapı ile
@@ -32,8 +32,9 @@ Kullanıcı v21 APK telefon testinden 6 maddelik feedback verdi; HEPSİ uyguland
 **Doğrulama:** vitest **110/110** (4 yeni: 2 müşteri-nav + 3 v22 migrasyon/sıra) · build temiz ·
 sim (zone-2 ~32dk, tempo korunmuş) · smoke **27/27** · Playwright canlı: kilitli duvar görünümü,
 zone-2 satın alma + duvar uzaması, v21→v22 kelepçesi canlı (questIndex 14 → q_zone2), toast alt-orta
-DOM+görsel, arka masada oturan müşteriler, konsol 0 hata. **Henüz commit'lenmedi; APK YENİLENMEDİ.**
-**SIRADAKİ:** kullanıcı onayı → commit+push + istenirse yeni APK; kullanıcı testine devam.
+DOM+görsel, arka masada oturan müşteriler, konsol 0 hata.
+**Commit 6aa7325 push'landı + YENİ APK derlendi (kök `KoseKiraathanesi-debug.apk`, 5.1MB, v22).**
+**SIRADAKİ:** kullanıcı yeni APK'yı telefonda test eder; feedback turu-2 ile devam.
 
 ## (ÖNCEKİ — 2026-06-11/12 — KARAKTER YÜKSELTME v20 ✅ + ZONE-2 TAM GİZLEME ✅ + ÇAYCI v2 ✅ + YENİ APK)
 **Karakter yükseltme sistemi UYGULANDI** (commit 0955e21 — onaylı tasarım birebir):
