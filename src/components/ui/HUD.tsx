@@ -18,7 +18,6 @@ export function HUD() {
   const settings = useGame((s) => s.settings);
   const setSetting = useGame((s) => s.setSetting);
   const offlineEarned = useGame((s) => s.offlineEarned);
-  const zone = useGame((s) => s.activeZone);
   const notice = useGame((s) => s.notice);
   const quest = useGame((s) => s.quest);
   const focusQuest = useGame((s) => s.focusQuest);
@@ -27,7 +26,6 @@ export function HUD() {
   const [panel, setPanel] = useState<'settings' | 'mail' | null>(null);
 
   const lvl = levelProgress(xp);
-  const zonePct = zone ? Math.min(100, (zone.fill / zone.cost) * 100) : 0;
   const questPct = quest && quest.total != null ? Math.min(100, ((quest.cur ?? 0) / quest.total) * 100) : null;
   const showOffline = offlineEarned > 0 && !offlineSeen;
 
@@ -159,18 +157,8 @@ export function HUD() {
         </div>
       )}
 
-      {/* Üstünde durulan zone (pad/yükseltme) — altta dolan bar */}
-      {zone && (
-        <div className="zone-bar" data-testid="zone-bar" data-kind={zone.kind}>
-          <div className="zone-label">{zone.label}</div>
-          <div className="zone-track">
-            <div className="zone-fill" style={{ width: `${zonePct}%` }} />
-          </div>
-          <div className="zone-num">
-            <CoinIcon size={15} /> {Math.floor(zone.fill).toLocaleString('tr-TR')} / {zone.cost.toLocaleString('tr-TR')}
-          </div>
-        </div>
-      )}
+      {/* Dolum göstergesi TEK: dünya-içi pad halkası (GroundMarker progress). Alt bar + baş üstü
+          radial KALDIRILDI (WP5, feedback §D18 — 3 gösterge aynı anda fazlaydı). */}
     </div>
   );
 }

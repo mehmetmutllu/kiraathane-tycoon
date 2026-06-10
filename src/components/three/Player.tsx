@@ -92,31 +92,7 @@ function CupTray({ tea, dirty }: { tea: number; dirty: number }) {
   );
 }
 
-// Baş üstü radial (halka) ilerleme: bir zone üstünde dururken doluluk yayı (Faz 2f juice).
-// Taşıma DEĞİL görev göstergesi (araştırma §). pad = yeşil, yükseltme = altın.
-function HeadRadial() {
-  const zone = useGame((s) => s.activeZone);
-  if (!zone) return null;
-  const progress = Math.max(0.001, Math.min(1, zone.fill / zone.cost));
-  const col = zone.kind === 'upgrade' ? '#ffd54f' : '#66bb6a';
-  // Segment sayısı ilerlemeyle ORANTILI → her dilim SABİT açıda kalır; büyürken sadece uçta yeni dilim
-  // eklenir (tüm yay her frame yeniden dağılıp titremez). depthWrite kapalı + hafif y-offset → z-fighting yok.
-  const segments = Math.max(1, Math.round(progress * 48));
-  return (
-    <group position={[0, 1.55, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-      {/* zemin halkası (soluk) */}
-      <mesh renderOrder={1}>
-        <ringGeometry args={[0.18, 0.28, 48]} />
-        <meshBasicMaterial color="#000000" transparent opacity={0.35} depthWrite={false} />
-      </mesh>
-      {/* dolan yay (üstten başlar, saat yönünde) — bg'nin hafif üstünde, ayrı render sırası */}
-      <mesh rotation={[0, 0, Math.PI / 2]} position={[0, 0, 0.003]} renderOrder={2}>
-        <ringGeometry args={[0.18, 0.28, segments, 1, 0, progress * Math.PI * 2]} />
-        <meshBasicMaterial color={col} transparent opacity={0.95} depthWrite={false} />
-      </mesh>
-    </group>
-  );
-}
+// (WP5: baş üstü radial KALDIRILDI — tek dolum göstergesi = dünya-içi pad halkası; feedback §D18.)
 
 // Sahip karakteri: Quaternius Worker (çaycı; WP3) — hareket halinde Walk, dururken Idle.
 // Yüklenemezse OwnerBody primitive'ine düşer. Taşıma tek ön tepside (karışık taşıma → çakışmaz).
@@ -136,7 +112,6 @@ export function Player() {
         <Character model="Worker.glb" anim={moving ? 'Run' : 'Idle'} fallback={<OwnerBody />} />
         <CupTray tea={tray} dirty={carriedDirty} />
       </group>
-      <HeadRadial />
     </group>
   );
 }
