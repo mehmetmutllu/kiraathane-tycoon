@@ -411,6 +411,17 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   tavanı (sıradaki omurga pad maliyetinin %60'ı; pad'ler bittiyse en pahalı pad referans) —
   `computeOfflineEarned` saf helper. Kapa-aç 7k bug'ı kapandı (z1-sonu tavan: 1200×0.6=720₺).
   **Doğrulama: vitest 89/89 (4 yeni), build temiz, sim İDEALİZE ilk-alım 60sn SABİT, smoke 27/27.**
+- ✅ **WP2 DÜNYA v2 (GECE-2 2/6, 2026-06-11; D-024 — D-022 fiziksel revizyonu):** duvarsız TEK SALON
+  (divider solid+görsel+geçit SİLİNDİ; kilitli zone = karanlık örtü + zemin sınır çizgisi; oyuncu açık
+  zone'lara openMaxX clamp'li), TEK KAPI (entrances/streets tek nokta; Walls/Street uniq kapı), mutfak =
+  SOL DUVAR L-ŞERİDİ (ocak modülleri sol duvara paralel +90° dönük, zone açıldıkça öne uzar; bulaşık arka
+  duvar dibinde kısa kol; L-köşe dolgu tezgâhı), upgradeZones modül önünde (≥2.9 değişmezi), ÇAYCI NPC
+  (KitchenStaff — koridorda yürür/eğilir, salt görsel), DEPO/TUVALET ek odaları + MERDİVEN rezervi.
+  Per-zone MEKANİK ve SAVE v18 DEĞİŞMEDİ. waiterHome/upgradeSpot sol-ön köşeye (marker çakışması ölçülüp
+  düzeltildi). **Doğrulama: vitest 89/89, build temiz, smoke 27/27, Playwright canlı (şerit pickup, z2
+  müşterisi tek kapıdan, z2 kamera [12,0,1.5], konsol 0 hata).** Screenshots: night2-wp2-strip.png,
+  night2-wp2-landscape.png, night2-wp2-frontleft.png (kök, git-ignored).
+  ⚠️ Denge notu (sabah): zone-2 servis mesafesi arttı (şerit solda) — telefon testi + curve Ö1-Ö4 ile ele alınmalı.
 - ⏳ **3a kalan:** zone 3-4 (tost/TV konsepti) + kat planındaki servis odaları (floorplan-master.md).
 - ⏳ **3b:** Kat geçişi: kat dolunca **merdiven** açılır → ekran kararma → üst kat; dinamik bounds/kamera; SAVE bump.
 - ⏳ **3c:** Tuvalet ODASI + DEPO (KATA özel, parayla açılır) + tuvalet kâğıdı döngüsü (depodan al→tak) + temizlikçi.

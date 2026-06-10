@@ -24,12 +24,12 @@ TV içeriği, kirli masa) → WP5 tek gösterge → WP6 kozmetik mağaza. En son
 (GECE-RAPORU formatı). İLKELER: gece protokolü (feedback_night_session.md); çizgiyi koru; geri dönüşü
 zor şey yapma; context tükenmeden commit+push+memory-bank güncelle.
 
-## ŞU AN (2026-06-11 GECE-2 🌙 — WP1 BİTTİ ✅; sırada WP2 dünya-v2; SAVE v18)
-**WP1 hızlı bug paketi UYGULANDI** (detay progress.md): table2 quest-pad tempo-gate atlama,
-questFocusPos zone parametresi (z2 kamera fix), camFocus öncelik+deadzone 0.25, toast z-index 15,
-offline nerf (rateMult 0.2 + para tavanı capNextPadFrac 0.6, computeOfflineEarned helper).
-vitest 89/89 · build temiz · sim 60sn sabit · smoke 27/27. **SIRADAKİ: WP2** (duvar kalkar, tek kapı,
-sol duvarda L mutfak şeridi, çaycı NPC, pad yeri, rezervler; D-022 revizyonu decisions.md'ye).
+## ŞU AN (2026-06-11 GECE-2 🌙 — WP1 ✅ + WP2 ✅; sırada WP3 ASSET; SAVE v18)
+**WP1** (bug paketi) + **WP2** (dünya v2 — D-024: duvarsız tek salon, tek kapı, sol duvar L mutfak
+şeridi, çaycı NPC, rezervler; per-zone mekanik + SAVE değişmedi) UYGULANDI, detay progress.md.
+vitest 89/89 · build temiz · smoke 27/27 · Playwright canlı ✓. **SIRADAKİ: WP3 ASSET**
+(Quaternius Modular Men/Women indir → manifest → karakter+animasyon; müşteri varyasyonu; prop'lar).
+⚠️ Sabaha: zone-2 servis mesafesi arttı (şerit solda) — telefon testi + curve Ö1-Ö4 birlikte.
 
 ## (ÖNCEKİ — 2026-06-11 GÜNDÜZ: FEEDBACK ALINDI + ARAŞTIRMA/PLAN BİTTİ; kod değişmedi, SAVE v18)
 Kullanıcı feedback'i işlendi → docs/feedback-2026-06-11.md (A-D feedback, E bug kök nedenleri,

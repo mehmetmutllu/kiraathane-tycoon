@@ -1,6 +1,6 @@
 import { Suspense, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Vector3 } from 'three';
+import { Vector3, type Group } from 'three';
 import { useGame, LAYOUT, stationSoftMaxLevel, stationUpgradeCost, upgradeZoneUnlockedZ, tableSoftMaxLevel, tableUpgradeZoneUnlocked, tableNextCost, waiterSoftMaxLevel, waiterUpgradeCost, waiterUpgradeUnlockedZ } from '../../game/store';
 import { GroundMarker } from './GroundMarker';
 import { PALETTE } from '../../config/palette';
@@ -75,7 +75,8 @@ function CameraRig() {
   return null;
 }
 
-// Açık zone'ların çay ocakları (per-zone ocak, D-022); her biri kendi seviyesi/hazır çayıyla.
+// Açık zone'ların çay ocağı MODÜLLERİ (per-zone mekanik, D-022; FİZİKSEL konum sol duvar şeridi, D-023).
+// Modül sol duvara paralel: +90° dönük (ön yüz +x, salona bakar). Zone açıldıkça şerit öne uzar.
 function Stations() {
   const zonesOpen = useGame((s) => s.zonesOpen);
   const stationLevels = useGame((s) => s.stationLevels);
@@ -83,9 +84,102 @@ function Stations() {
   return (
     <>
       {LAYOUT.stations.slice(0, zonesOpen).map((p, z) => (
-        <TeaStation key={z} position={p} level={stationLevels[z]} readyCups={readyCupsByZone[z]} />
+        <group key={z} position={[p[0], 0, p[2]]} rotation={[0, Math.PI / 2, 0]}>
+          <TeaStation position={[0, 0, 0]} level={stationLevels[z]} readyCups={readyCupsByZone[z]} />
+        </group>
       ))}
+      {/* L-köşe dolgu tezgâhı (şerit ile bulaşık kolu arasındaki köşe — salt görsel) */}
+      <mesh castShadow receiveShadow position={[-4.1, 0.45, -4.85]}>
+        <boxGeometry args={[1.3, 0.9, 0.8]} />
+        <meshStandardMaterial color={PALETTE.counterWood} />
+      </mesh>
     </>
+  );
+}
+
+// Çaycı NPC (D-023; kullanıcı tarifi: "duvar ile tezgah arasında çalışan biri"). SALT GÖRSEL —
+// mekaniğe dokunmaz: şerit arkası koridorda yürür, bulaşık/çay düzenliyormuş gibi durup eğilir.
+function KitchenStaff() {
+  const zonesOpen = useGame((s) => s.zonesOpen);
+  const ref = useRef<Group>(null);
+  const zMin = -4.5;
+  const zMax = zonesOpen > 1 ? -0.5 : -2.6; // şerit uzadıkça yürüyüş rotası uzar
+  useFrame((st) => {
+    const grp = ref.current;
+    if (!grp) return;
+    const t = st.clock.elapsedTime * 0.3;
+    const u = (Math.sin(t) + 1) / 2;
+    grp.position.z = zMin + u * (zMax - zMin);
+    // Rota ucunda durup tezgâha dönüp "iş yapar" (eğilme); arada yürür (hafif zıplama).
+    const speed = Math.abs(Math.cos(t));
+    grp.rotation.y = speed < 0.25 ? Math.PI / 2 : Math.cos(t) > 0 ? 0 : Math.PI;
+    grp.position.y = speed < 0.25 ? -0.04 + Math.sin(st.clock.elapsedTime * 3) * 0.02 : Math.abs(Math.sin(st.clock.elapsedTime * 7)) * 0.04;
+  });
+  return (
+    <group ref={ref} position={[-5.0, 0, -3]}>
+      {/* bacaklar + gövde + önlük + baş (low-poly; palette = tek renk kaynağı) */}
+      <mesh castShadow position={[0, 0.25, 0]}>
+        <boxGeometry args={[0.26, 0.5, 0.18]} />
+        <meshStandardMaterial color={PALETTE.pants} />
+      </mesh>
+      <mesh castShadow position={[0, 0.66, 0]}>
+        <boxGeometry args={[0.3, 0.34, 0.2]} />
+        <meshStandardMaterial color={PALETTE.shirt} />
+      </mesh>
+      <mesh position={[0, 0.6, 0.105]}>
+        <boxGeometry args={[0.26, 0.4, 0.02]} />
+        <meshStandardMaterial color={PALETTE.apron} />
+      </mesh>
+      <mesh castShadow position={[0, 0.95, 0]}>
+        <sphereGeometry args={[0.13, 10, 10]} />
+        <meshStandardMaterial color={PALETTE.skin} />
+      </mesh>
+      <mesh position={[0, 1.04, 0]}>
+        <cylinderGeometry args={[0.135, 0.14, 0.06, 10]} />
+        <meshStandardMaterial color={PALETTE.cap} />
+      </mesh>
+    </group>
+  );
+}
+
+// Rezerve servis odaları (floorplan-master.md; D-023): DEPO sol-arka + TUVALET sağ-arka (bina arkasına
+// bitişik ek odalar) + MERDİVEN ön-sağ köşe (Faz 3b üst kat). Salt görsel greybox rezerv.
+function ReservedRooms() {
+  const a = LAYOUT.area;
+  return (
+    <group>
+      {/* DEPO (sol-arka ek oda) */}
+      <group position={[-3.2, 0, a.minZ - 1.6]}>
+        <mesh castShadow position={[0, 0.7, 0]}>
+          <boxGeometry args={[3.0, 1.4, 2.2]} />
+          <meshStandardMaterial color={PALETTE.wainscot} />
+        </mesh>
+        <mesh position={[0, 0.55, 1.11]}>
+          <boxGeometry args={[0.9, 1.1, 0.04]} />
+          <meshStandardMaterial color={PALETTE.doorWood} />
+        </mesh>
+      </group>
+      {/* TUVALET (sağ-arka ek oda) */}
+      <group position={[15.2, 0, a.minZ - 1.6]}>
+        <mesh castShadow position={[0, 0.7, 0]}>
+          <boxGeometry args={[2.4, 1.4, 2.2]} />
+          <meshStandardMaterial color={PALETTE.wallCream} />
+        </mesh>
+        <mesh position={[0, 0.55, 1.11]}>
+          <boxGeometry args={[0.8, 1.1, 0.04]} />
+          <meshStandardMaterial color={PALETTE.doorWood} />
+        </mesh>
+      </group>
+      {/* MERDİVEN (ön-sağ köşe; Faz 3b "üst kat" rezervi — basamak silüeti) */}
+      <group position={[16.2, 0, 3.6]} rotation={[0, Math.PI, 0]}>
+        {[0, 1, 2, 3].map((i) => (
+          <mesh key={i} castShadow position={[0, 0.12 + i * 0.24, -i * 0.34]}>
+            <boxGeometry args={[1.4, 0.24, 0.34]} />
+            <meshStandardMaterial color={PALETTE.lintel} />
+          </mesh>
+        ))}
+      </group>
+    </group>
   );
 }
 
@@ -293,18 +387,25 @@ function LockedZoneShade() {
   if (zonesOpen > 1) return null;
   const za = LAYOUT.zoneAreas[1];
   return (
-    <mesh
-      rotation={[-Math.PI / 2, 0, 0]}
-      position={[(za.minX + za.maxX) / 2, 0.03, (za.minZ + za.maxZ) / 2]}
-    >
-      <planeGeometry args={[za.maxX - za.minX + 1, za.maxZ - za.minZ + 1]} />
-      <meshStandardMaterial color="#10161c" transparent opacity={0.55} polygonOffset polygonOffsetFactor={-2} polygonOffsetUnits={-2} />
-    </mesh>
+    <group>
+      <mesh
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[(za.minX + za.maxX) / 2, 0.03, (za.minZ + za.maxZ) / 2]}
+      >
+        <planeGeometry args={[za.maxX - za.minX + 1, za.maxZ - za.minZ + 1]} />
+        <meshStandardMaterial color="#10161c" transparent opacity={0.55} polygonOffset polygonOffsetFactor={-2} polygonOffsetUnits={-2} />
+      </mesh>
+      {/* zone sınırı zemin çizgisi (duvarsız eşik — D-023): kilitliyken görünür, açılınca tek salon */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[LAYOUT.zoneBorderX, 0.035, 0]}>
+        <planeGeometry args={[0.16, 10.6]} />
+        <meshStandardMaterial color="#d9b24a" polygonOffset polygonOffsetFactor={-3} polygonOffsetUnits={-3} />
+      </mesh>
+    </group>
   );
 }
 
-// Duvarlar TÜM binayı (iki zone) sarar: arka + sol + sağ + ÖN (her zone'un kendi kapı boşluğu) +
-// İÇ BÖLME duvarı (ortasında geçit; zone-2'ye buradan yürünür).
+// Duvarlar TÜM binayı (iki zone) sarar: arka + sol + sağ + ÖN. TEK KAPI (zone-1 ortası; D-023 —
+// tüm müşteriler buradan girer/çıkar). İÇ BÖLME DUVARI YOK: tek salon, zone sınırı zemin çizgisi.
 function Walls() {
   const a = LAYOUT.area;
   const m = 0.5; // alan kenarı ile duvar arası küçük pay
@@ -315,15 +416,11 @@ function Walls() {
   const h = 1.2;
   const t = 0.2;
   const doorHalf = 1.3; // kapı yarı-genişliği (her entrance x'i merkezli boşluk)
-  // Ön duvar parçaları: kapı boşlukları arasında kalan segmentler.
-  const doorXs = LAYOUT.entrances.map((e) => e[0]);
+  // Ön duvar parçaları: TEK kapı boşluğu (entrances artık aynı nokta — uniq).
+  const doorXs = [...new Set(LAYOUT.entrances.map((e) => e[0]))];
   const cuts = [x0, ...doorXs.flatMap((dx) => [dx - doorHalf, dx + doorHalf]), x1];
   const frontSegs: [number, number][] = [];
   for (let i = 0; i < cuts.length; i += 2) frontSegs.push([cuts[i], cuts[i + 1]]);
-  // Bölme duvarı segmentleri (geçit boşluğu hariç).
-  const dv = LAYOUT.divider;
-  const gapLo = dv.gapZ - dv.gapHalf;
-  const gapHi = dv.gapZ + dv.gapHalf;
   return (
     <group>
       {/* arka duvar */}
@@ -337,10 +434,7 @@ function Walls() {
           <WallPiece key={i} x={(sx + ex) / 2} z={z1} w={ex - sx} dDepth={t} h={h} />
         ) : null,
       )}
-      {/* İÇ BÖLME duvarı (zone-1 | zone-2), geçit boşluğuyla */}
-      <WallPiece x={dv.x} z={(z0 + gapLo) / 2} w={dv.half * 2} dDepth={gapLo - z0} h={h} />
-      <WallPiece x={dv.x} z={(gapHi + z1) / 2} w={dv.half * 2} dDepth={z1 - gapHi} h={h} />
-      {/* kapı söveleri + çerçeveleri (her zone kapısı; ön duvarın TAMAMEN önünde — z-fighting yok) */}
+      {/* kapı sövesi + çerçevesi (ön duvarın TAMAMEN önünde — z-fighting yok) */}
       {doorXs.map((dx) => (
         <group key={dx}>
           <mesh position={[dx, h - 0.12, z1 + 0.22]}>
@@ -416,9 +510,9 @@ function Street() {
           </mesh>
         );
       })}
-      {/* KAPI ÖNÜ (görsel kimlik): her kapıda yeşil TENTE + kaldırımda bahçe masaları + saksılar.
+      {/* KAPI ÖNÜ (görsel kimlik): TEK kapıda yeşil TENTE + kaldırımda bahçe masaları + saksılar.
           Salt görsel (collision yok); müşteri yolu (kapı hizası) boş bırakıldı. */}
-      {LAYOUT.entrances.map((e) => (
+      {LAYOUT.entrances.slice(0, 1).map((e) => (
         <group key={e[0]}>
           {/* TABELA şeridi (dikey — eğimli tente kamera +z'den bakınca ekranı kapatıyordu; dikey yüzey
               üstten bakışta incecik kalır, kimliği taşır) */}
@@ -494,7 +588,9 @@ export function Scene() {
       <Street />
       <Walls />
       <TvCorner />
+      <ReservedRooms />
       <Stations />
+      <KitchenStaff />
       <DishStation />
       <Tables />
       <Customers />

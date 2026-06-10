@@ -1,5 +1,24 @@
 # decisions — Tasarım/Teknik Karar Günlüğü
 
+## D-024 · DÜNYA v2: duvarsız tek salon + TEK kapı + SOL DUVARDA L MUTFAK ŞERİDİ (2026-06-11 gece; D-022 revizyonu)
+**Bağlam:** Kullanıcı feedback'i (feedback-2026-06-11.md §B): "zone'lar arasında duvar OLMAMALI, alan genişleyince
+tek salon dursun; müşteriler TEK kapıdan girsin; çay ocağı+bulaşık BİTİŞİK sol duvara paralel L-şerit; duvar-tezgah
+arasında çalışan biri (çaycı); yükseltme noktaları tezgahın önünde." Gece oturumu varsayılan kararı (itiraz gelmedi).
+**Karar:** D-022'nin "per-zone TEMALI ocak" FİZİKSEL kısmı revize edildi: **per-zone MEKANİK AYNEN KORUNUR**
+(stations[z]/dishStations[z]/per-zone personel/readyCupsByZone — kod ve SAVE v18 değişmedi), ama TÜM modüller
+**sol duvar L-şeridinde** durur: ocak modülleri sol duvara paralel (zone açıldıkça şerit ÖNE uzar; ileride tost
+makinesi eklenir), bulaşık modülleri arka duvar dibinde L'nin kısa kolu. Taşıma mesafesi zone uzaklığıyla doğal
+zorluk üretir (zone-2 masaları kapı/şeritten uzak). **Bölme duvarı + per-zone kapılar KALKTI** (divider solid +
+görsel + geçit silindi); kilitli zone = karanlık örtü + zemin sınır çizgisi; oyuncu AÇIK zone'lara kelepçeli
+(openMaxX clamp — görünmez duvar yok, karanlığa girilmez). zone2 pad'i sınır çizgisi üstünde.
+**Yerleşim sabitleri:** stations [-4.35,-3.6]/[-4.35,-1.3] (stationHalf [0.4,1.1] döndü); dish [-2.8,-4.85]/
+[-1.3,-4.85]; upgradeZones [-1.4,-3.4]/[0.5,-3.4] (HER modüle ≥2.9 = pickup 1.6 + PAD 1.3 değişmezi korunur);
+waiterHome/upgradeSpot sol-ÖN köşeye taşındı (eski yer şeridin içinde kalıyordu; masa marker çakışması ölçülüp
+düzeltildi). ÇAYCI NPC (KitchenStaff, salt görsel) duvar-tezgah koridorunda yürür/eğilir. Rezervler: DEPO sol-arka
+ek oda, TUVALET sağ-arka ek oda, MERDİVEN ön-sağ basamak silüeti (floorplan-master.md ile uyumlu).
+**Doğrulama:** vitest 89/89 (geometri değişmezi dahil), build temiz, smoke 27/27, Playwright canlı: şeritten pickup,
+zone-2 müşterisi tek kapıdan masaya oturdu, z2 görev kamerası [12,0,1.5], konsol 0 hata.
+
 ## D-023 · HUD REDESIGN v1+v2 (MPH grameri) + LEVEL/XP + AYARLAR + bulaşık onboarding gate (2026-06-10 gece)
 **Bağlam:** Kullanıcı D-021 HUD'unu reddetti ("oyun gibi değil, ikonlar AI slop") → onaylı akış: gerçek tycoon HUD
 araştırması (YALNIZ 3D arcade-idle: MPH gerçek HUD/MPH-Empire/My Mini Mart/Burger Please; 2D'ler elendi) → mock →
