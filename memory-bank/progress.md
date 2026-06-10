@@ -488,12 +488,20 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   duvarda TEK mutfak bloğu, z2 aynalı) + garson yavaşlatıldı [1.5,2.0] (onaylı; tur ~12sn < sabır 18)
   + masa sıraları yukarı + bulaşıkçı pad'i ferah + görev zoom'ları canlı doğrulandı. vitest 91/91,
   smoke 27/27, konsol 0.
-- 🟢 **ONAYLANDI — SONRAKİ OTURUMDA UYGULANACAK:** karakter yükseltme sistemi →
-  `docs/character-upgrades-design.md` (kullanıcı revizyonlu final: buton SOL kümede 4. + yatay
-  sıra ≤ seviye pill; tepsi T1-T2 ucuz / T3-T4 çok pahalı 15k/60k; görev zamanlaması birinci
-  öncelik — q_charTray1 q_serve5 ÖNCESİ, q_charTray2 q_table3-q_waiter arası, q_charMagnet
-  q_table4 sonrası; buton nabız efekti + ilk-sefer spotlight; panelde 3/4 açı karakter + canlı
-  tepsi önizleme; SAVE v20 + questIndex İD-EŞLEMELİ migrasyon).
+- ✅ **KARAKTER YÜKSELTME SİSTEMİ v20 UYGULANDI (2026-06-11/12; tasarım: docs/character-upgrades-design.md):**
+  `economy.config.character` (tepsi [2..6] 150/500/15k/60k · mıknatıs [2.6..5.0] 250/900/2.8k ·
+  hız [4.5..5.4] 400/1.4k/4.5k) + türeticiler; eski sabitler (serving.trayCapacity / money.attractRadius /
+  player.moveSpeed) kademeden türetilir oldu. **SAVE v19→v20**: eski kayda T2 hediye (kapasite 4 korunur),
+  questIndex İD-EŞLEMELİ (entryV≥16; v<16 seedQuestIndex hediye değerleriyle), charPanelSeen persist.
+  3 charStat görevi onaylı zamanlamada; charStat'ta kamera sıçramaz. HUD sol küme YATAY 4-buton
+  (genişlik ≤ seviye pill, 390px'te 116≤130 ölçüldü) + CharacterPanel (mini Canvas 3/4 açı + canlı
+  tepsi önizleme pop + 3 kart) + altın nabız/"!" + tek-seferlik spotlight. `__buyChar` kancası;
+  sim'e karakter alımları (T1 ~4dk idealize). **vitest 99/99, build, smoke 27/27, Playwright
+  gerçek-tıklama, konsol 0.** (commit 0955e21)
+- ✅ **ZONE-2 TAM GİZLEME + REVEAL (2026-06-11/12 kullanıcı feedback'i):** kilitli salon opak karanlık
+  HACİMLE örtülü (hiçbir şey görünmez); pad açılınca ~1.8sn karanlıktan aydınlığa fade + kamera panı.
+  zone2 pad'i eşiğin zone-1 tarafına (x 4.55). **ÇAYCI v2:** ayrı bacak+ayakkabı, tepsiye uzanan
+  simetrik kollar+eller, göz/burun; panel kadraj düzeltildi. YENİ APK kökte (5.1MB). (commit 2c80a20)
 - ⏳ **3a kalan:** zone 3-4 (tost/TV konsepti) + kat planındaki servis odaları (floorplan-master.md).
 - ⏳ **3b:** Kat geçişi: kat dolunca **merdiven** açılır → ekran kararma → üst kat; dinamik bounds/kamera; SAVE bump.
 - ⏳ **3c:** Tuvalet ODASI + DEPO (KATA özel, parayla açılır) + tuvalet kâğıdı döngüsü (depodan al→tak) + temizlikçi.

@@ -2,18 +2,30 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
-## >>> SONRAKİ OTURUMUN İŞİ: KARAKTER YÜKSELTME SİSTEMİNİ UYGULA (ONAYLANDI) <<<
-Plan TAM ve ONAYLI: **`docs/character-upgrades-design.md`** (2026-06-11 kullanıcı revizyonlarıyla).
-Kritik noktalar (detay dokümanda — oradan çalış):
-- Tepsi 2→6 (T1-T2 ucuz 150/500; T3-T4 ÇOK pahalı 15k/60k — kullanıcı: "ilk 4 basit, 5-6 çok zor")
-  + mıknatıs + hız; özellik-bazlı model; SAVE v19→v20 (eski kayda T2 hediye; questIndex İD-EŞLEMELİ
-  migrasyon — index kayar!).
-- Buton SOL kümede 4. (ayar/posta/dekor/KARAKTER, yatay tek sıra, genişlik ≤ seviye pill).
-- Panel: karakter ORTADA 3/4 yukarı-çapraz açı (mini Canvas) + elindeki tepside CANLI bardak
-  önizleme (yükseltince +1 pop) + 3 özellik kartı.
-- GÖREV ZAMANLAMASI BİRİNCİ ÖNCELİK (kullanıcı: "aşırı önemli"): q_charTray1 q_serve5'ten ÖNCE,
-  q_charTray2 q_table3→q_waiter arası, q_charMagnet q_table4 sonrası; T3/T4 ve hız görevsiz.
-- Karakter görevi gelince butonda altın nabız + "!"; İLK seferde tek-seferlik spotlight karartması.
+## ŞU AN (2026-06-11/12 — KARAKTER YÜKSELTME v20 ✅ + ZONE-2 TAM GİZLEME ✅ + ÇAYCI v2 ✅ + YENİ APK)
+**Karakter yükseltme sistemi UYGULANDI** (commit 0955e21 — onaylı tasarım birebir):
+- `economy.config.character` (tepsi [2..6] 150/500/15k/60k · mıknatıs [2.6..5.0] · hız [4.5..5.4])
+  + türeticiler (`trayCapacityFor/attractRadiusFor/playerSpeedFor`, `charNextCost`, `charLevel`).
+  Eski sabitler (serving.trayCapacity, money.attractRadius, player.moveSpeed) KALKTI — kademeden türetilir.
+- **SAVE v19→v20**: eski kayda `tray:2` HEDİYE (kapasite 4 korunur); yeni oyun tepsi 2;
+  `questIndex` İD-EŞLEMELİ migrasyon (entryV≥16 ise; v<16 zaten yeni listeyle tohumlanır,
+  seedQuestIndex charStat'ı hediye değerleriyle değerlendirir). `charPanelSeen` persist (spotlight 1 kez).
+- 3 charStat görevi onaylı zamanlamada (q_charTray1 q_table2→q_serve5; q_charTray2 q_table3→q_waiter;
+  q_charMagnet q_table4→q_waiterL2); charStat'ta kamera SIÇRAMAZ (questFocusPos null).
+- HUD: sol küme YATAY 4-buton (⚙✉🖌👤, genişlik ≤ seviye pill — 390px'te 116≤130 ölçüldü);
+  görev aktifken altın nabız + "!"; ilk seferde spotlight karartma. `CharacterPanel.tsx`:
+  mini Canvas 3/4 açı + canlı tepsi önizleme (satın almada pop) + 3 kart. `__buyChar` dev kancası.
+**Kullanıcı feedback turu aynı oturumda yapıldı:**
+- **Zone-2 TAM GİZLİ** (commit 2c80a20): kilitliyken opak karanlık HACİM (void — hiçbir şey görünmez);
+  pad açılınca ~1.8sn karanlıktan aydınlığa fade + kamera panı. zone2 pad'i eşiğin zone-1 tarafına
+  (x 5.3→4.55) alındı (halka/etiket karanlığa taşmasın).
+- **Çaycı v2**: ayrı bacaklar+ayakkabı, tepsiye uzanan simetrik kollar+ten eller, göz/burun;
+  panel kamera kadrajı düzeltildi (tam gövde 3/4).
+- **YENİ APK**: kök `KoseKiraathanesi-debug.apk` (5.1MB) — kullanıcı telefona kuracak.
+Doğrulama: vitest **99/99** · build temiz · smoke **27/27** · sim (T1 ~4dk idealize, akış sağlıklı) ·
+Playwright gerçek-tıklama (panel satın alma, spotlight, zone reveal) · konsol 0 hata.
+**SIRADAKİ ADAY İŞLER:** kullanıcının APK/telefon feedback'i; T3/T4 fiyatlarının gerçek oyunda hissi;
+karakter kıyafet kozmetikleri (Dekor Mağazası rafı — gelecek); UAL Pro/asset kararı hâlâ açık.
 
 ## (ÖNCEKİ — 2026-06-11 FEEDBACK TURU-3 — D-025 rev. A: TEK MUTFAK BLOĞU + yavaş garson; SAVE v19)
 Kullanıcı turu-2'ye "bulaşık ayrı garip" dedi; iki seçenek sunuldu, **A'yı seçti** (uygulandı):
