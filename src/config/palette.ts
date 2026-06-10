@@ -56,3 +56,19 @@ export const PALETTE = {
   plant: '#3f7d44',
   outdoorTable: '#8d6e63',
 } as const;
+
+/** Kozmetik zemin temaları (WP6) — economy.config.cosmetics.floorThemes id'leriyle eşleşir;
+ *  floorTexture.ts canvas üreteci bu parametrelerle tile üretir. */
+export const FLOOR_THEMES: Record<string, { kind: 'parquet' | 'tile'; base: string; alt: string; seam: string }> = {
+  parke: { kind: 'parquet', base: '#b98a5a', alt: '#ad7e4f', seam: '#8a6038' },
+  fayans: { kind: 'tile', base: '#e8dcc8', alt: '#ddd0b8', seam: '#c2b094' },
+  dama: { kind: 'tile', base: '#ece6da', alt: '#7d4a3a', seam: '#594036' },
+  ceviz: { kind: 'parquet', base: '#8a5a3b', alt: '#7c4f33', seam: '#5e3a24' },
+};
+
+/** Kozmetik duvar temaları (WP6) — üst badana + lambri kuşağı ikilisi. */
+export const WALL_THEMES: Record<string, { cream: string; wainscot: string }> = {
+  krem: { cream: '#e6d7b8', wainscot: '#6d4c41' },
+  yesil: { cream: '#cfe3cd', wainscot: '#3f6347' },
+  mavi: { cream: '#cfe0ea', wainscot: '#34557a' },
+};

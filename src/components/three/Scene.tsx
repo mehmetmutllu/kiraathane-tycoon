@@ -5,7 +5,7 @@ import { useGame, LAYOUT, stationSoftMaxLevel, stationUpgradeCost, upgradeZoneUn
 import { GroundMarker } from './GroundMarker';
 import { Character } from './Character';
 import { makeFloorTexture } from './floorTexture';
-import { PALETTE } from '../../config/palette';
+import { PALETTE, FLOOR_THEMES, WALL_THEMES } from '../../config/palette';
 import { Player } from './Player';
 import { Waiter } from './Waiter';
 import { Dishwasher } from './Dishwasher';
@@ -314,29 +314,31 @@ function WaiterUpgradeMarker() {
 }
 
 function Ground() {
-  // WP4 (feedback §C12): zemin = CANVAS-TILE PARKE dokusu (makeFloorTexture — indirme yok, MPH tarzı
-  // hafif desen; kozmetik mağaza temaları aynı üreteçten). Kilim KÜÇÜLDÜ: masa bölgesini kaplayan halı
-  // değil, zone ortasında küçük vurgu kilimi (Türk kimliği korunur, "bilardo masası" hissi yok).
-  const floorTex = useMemo(
-    () =>
-      makeFloorTexture(
-        { kind: 'parquet', base: PALETTE.floorWood, alt: PALETTE.floorWoodAlt, seam: PALETTE.floorSeam },
-        19, // 38 birim / 2 birim-tile
-        9,
-      ),
-    [],
-  );
+  // WP4 (feedback §C12): zemin = CANVAS-TILE dokusu (makeFloorTexture — indirme yok, MPH tarzı hafif
+  // desen). WP6: zone başına TEMA (kozmetik mağaza; floorThemeByZone persist) — taban plane default
+  // parke (kenar/dış alan), her zone'un üstüne kendi tema overlay'i. Kilim küçük vurgu halısı.
+  const floorThemeByZone = useGame((s) => s.floorThemeByZone);
+  const baseTex = useMemo(() => makeFloorTexture(FLOOR_THEMES.parke, 19, 9), []);
   return (
     <group>
       <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[6, 0, 0]}>
         <planeGeometry args={[38, 18]} />
-        <meshStandardMaterial map={floorTex} />
+        <meshStandardMaterial map={baseTex} />
       </mesh>
       {LAYOUT.zoneAreas.map((za, z) => {
         const cx = (za.minX + za.maxX) / 2;
+        const cz = (za.minZ + za.maxZ) / 2;
+        const w = za.maxX - za.minX;
+        const dpt = za.maxZ - za.minZ;
+        const theme = FLOOR_THEMES[floorThemeByZone[z] ?? 'parke'] ?? FLOOR_THEMES.parke;
+        const tex = makeFloorTexture(theme, w / 2, dpt / 2); // üreteç cache'li — her frame yeni doku üretmez
         return (
           <group key={z}>
-            {/* y: zemin(0) < kilim(0.008/0.014) < GroundMarker tabanı(0.02) — z-fight yok. */}
+            {/* y: taban(0) < zone overlay(0.004) < kilim(0.008/0.014) < GroundMarker(0.02) — z-fight yok. */}
+            <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[cx, 0.004, cz]}>
+              <planeGeometry args={[w, dpt]} />
+              <meshStandardMaterial map={tex} />
+            </mesh>
             <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[cx, 0.008, 1.5]}>
               <planeGeometry args={[3.6, 2.5]} />
               <meshStandardMaterial color={PALETTE.carpetBorder} />
@@ -518,31 +520,41 @@ function LockedZoneShade() {
 // Duvarlar TÜM binayı (iki zone) sarar: arka + sol + sağ + ÖN. TEK KAPI (zone-1 ortası; D-023 —
 // tüm müşteriler buradan girer/çıkar). İÇ BÖLME DUVARI YOK: tek salon, zone sınırı zemin çizgisi.
 function Walls() {
+  // WP6: duvar teması zone-başına (wallThemeByZone persist): arka duvar zone sınırında ikiye bölünür,
+  // sol dış duvar = zone-1, sağ dış = zone-2; ön segmentler orta noktasının zone'una boyanır.
+  const wallThemeByZone = useGame((s) => s.wallThemeByZone);
+  const themeOf = (z: number) => WALL_THEMES[wallThemeByZone[z] ?? 'krem'] ?? WALL_THEMES.krem;
+  const themeAtX = (x: number) => themeOf(x < LAYOUT.zoneBorderX ? 0 : 1);
   const a = LAYOUT.area;
   const m = 0.5; // alan kenarı ile duvar arası küçük pay
   const x0 = a.minX - m, x1 = a.maxX + m, z0 = a.minZ - m, z1 = a.maxZ + m;
-  const w = x1 - x0, d = z1 - z0;
-  const cx = (x0 + x1) / 2;
+  const d = z1 - z0;
   const cz = (z0 + z1) / 2;
   const h = 1.2;
   const t = 0.2;
+  const bx = LAYOUT.zoneBorderX;
   const doorHalf = 1.3; // kapı yarı-genişliği (her entrance x'i merkezli boşluk)
-  // Ön duvar parçaları: TEK kapı boşluğu (entrances artık aynı nokta — uniq).
+  // Ön duvar parçaları: TEK kapı boşluğu (entrances artık aynı nokta — uniq) + zone sınırı kesiği.
   const doorXs = [...new Set(LAYOUT.entrances.map((e) => e[0]))];
   const cuts = [x0, ...doorXs.flatMap((dx) => [dx - doorHalf, dx + doorHalf]), x1];
   const frontSegs: [number, number][] = [];
-  for (let i = 0; i < cuts.length; i += 2) frontSegs.push([cuts[i], cuts[i + 1]]);
+  for (let i = 0; i < cuts.length; i += 2) {
+    const [sx, ex] = [cuts[i], cuts[i + 1]];
+    if (sx < bx && ex > bx) frontSegs.push([sx, bx], [bx, ex]); // tema sınırında böl
+    else frontSegs.push([sx, ex]);
+  }
   return (
     <group>
-      {/* arka duvar */}
-      <WallPiece x={cx} z={z0} w={w} dDepth={t} h={h} />
+      {/* arka duvar (zone sınırında tema bölmesi) */}
+      <WallPiece x={(x0 + bx) / 2} z={z0} w={bx - x0} dDepth={t} h={h} theme={themeOf(0)} />
+      <WallPiece x={(bx + x1) / 2} z={z0} w={x1 - bx} dDepth={t} h={h} theme={themeOf(1)} />
       {/* sol + sağ dış duvarlar */}
-      <WallPiece x={x0} z={cz} w={t} dDepth={d} h={h} />
-      <WallPiece x={x1} z={cz} w={t} dDepth={d} h={h} />
+      <WallPiece x={x0} z={cz} w={t} dDepth={d} h={h} theme={themeOf(0)} />
+      <WallPiece x={x1} z={cz} w={t} dDepth={d} h={h} theme={themeOf(1)} />
       {/* ön duvar segmentleri (kapı boşlukları arası) */}
       {frontSegs.map(([sx, ex], i) =>
         ex - sx > 0.01 ? (
-          <WallPiece key={i} x={(sx + ex) / 2} z={z1} w={ex - sx} dDepth={t} h={h} />
+          <WallPiece key={i} x={(sx + ex) / 2} z={z1} w={ex - sx} dDepth={t} h={h} theme={themeAtX((sx + ex) / 2)} />
         ) : null,
       )}
       {/* kapı sövesi + çerçevesi (ön duvarın TAMAMEN önünde — z-fighting yok) */}
@@ -566,18 +578,34 @@ function Walls() {
   );
 }
 
-// Duvar parçası: krem üst + koyu ahşap LAMBRİ kuşağı (görsel kimlik — gerçek kıraathane duvarı).
-function WallPiece({ x, z, w, dDepth, h }: { x: number; z: number; w: number; dDepth: number; h: number }) {
+// Duvar parçası: badana üst + lambri kuşağı. Renkler tema'dan (WP6 kozmetik; default krem).
+function WallPiece({
+  x,
+  z,
+  w,
+  dDepth,
+  h,
+  theme,
+}: {
+  x: number;
+  z: number;
+  w: number;
+  dDepth: number;
+  h: number;
+  theme?: { cream: string; wainscot: string };
+}) {
   const wh = 0.5; // lambri yüksekliği
+  const cream = theme?.cream ?? PALETTE.wallCream;
+  const wainscot = theme?.wainscot ?? PALETTE.wainscot;
   return (
     <group>
       <mesh position={[x, wh + (h - wh) / 2, z]}>
         <boxGeometry args={[w, h - wh, dDepth]} />
-        <meshStandardMaterial color={PALETTE.wallCream} />
+        <meshStandardMaterial color={cream} />
       </mesh>
       <mesh position={[x, wh / 2, z]}>
         <boxGeometry args={[w + 0.04, wh, dDepth + 0.04]} />
-        <meshStandardMaterial color={PALETTE.wainscot} />
+        <meshStandardMaterial color={wainscot} />
       </mesh>
     </group>
   );

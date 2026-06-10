@@ -447,6 +447,18 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   (kapı+mutfak), iç saksılar (3 köşe), duvar saati. **Doğrulama: vitest 89/89, build temiz, smoke
   27/27, Playwright canlı (parke/ocak L3 4-çaydanlık/L4 masa/TV; konsol 0).** Screenshots:
   night2-wp4-kitchen.png, night2-wp4-station-l3.png, night2-wp4-table-evolution.png.
+- ✅ **WP5 TEK DOLUM GÖSTERGESİ (GECE-2 5/6):** alt-orta zone-bar (HUD+CSS) + baş üstü HeadRadial
+  (Player) KALDIRILDI; tek kaynak = dünya-içi pad halkası (GroundMarker progress). Feedback §D18.
+- ✅ **WP6 KOZMETİK MAĞAZA (GECE-2 6/6, 2026-06-11; SAVE v18→v19):** zemin (4: parke/fayans/dama/ceviz)
+  + duvar (3: krem/yeşil/mavi) temaları ZONE-BAŞINA ₺ ile satın alınır (10-18k; feedback §D19 "pahalı,
+  para hedefi"). Config: `economy.config.cosmetics`; görsel: palette `FLOOR_THEMES/WALL_THEMES` +
+  canvas-tile üreteci (WP4'tekiyle AYNI). Store: `floorThemeByZone/wallThemeByZone/ownedCosmetics`
+  persist (v19 migrasyon) + `buyCosmetic(kind,id,zone)` (sahiplik kalıcı — geri dönüş ücretsiz; kapalı
+  zone reddedilir). Sahne: Ground per-zone tema overlay; Walls zone-bölmeli tema (arka duvar sınırda
+  ikiye, sol/sağ dış duvar kendi zone'u). UI: fırça `BrushIcon` butonu (dişli sütunu) → Dekor Mağazası
+  modalı (swatch+ad+fiyat+S1/S2 uygula; seçili ✓ altın). **Doğrulama: vitest 91/91 (buy+v19 migrasyon),
+  build temiz, smoke 27/27, Playwright GERÇEK tıklamayla satın alma (10k düştü, fayans+yeşil uygulandı,
+  reload sonrası persist ✓), konsol 0 hata.** Screenshots: night2-wp6-shop.png, night2-wp6-themes2.png.
 - ⏳ **3a kalan:** zone 3-4 (tost/TV konsepti) + kat planındaki servis odaları (floorplan-master.md).
 - ⏳ **3b:** Kat geçişi: kat dolunca **merdiven** açılır → ekran kararma → üst kat; dinamik bounds/kamera; SAVE bump.
 - ⏳ **3c:** Tuvalet ODASI + DEPO (KATA özel, parayla açılır) + tuvalet kâğıdı döngüsü (depodan al→tak) + temizlikçi.

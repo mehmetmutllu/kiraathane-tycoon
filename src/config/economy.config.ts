@@ -13,7 +13,7 @@
  *   L5 (Usta)   = masterDiamondCost 💎 VEYA 1 ödüllü video; outputMult yerine masterOutputMult
  */
 
-export const SAVE_VERSION = 18;
+export const SAVE_VERSION = 19;
 
 /**
  * ZONE modeli (Faz 3a + D-022, gece 2026-06-10): zemin kat zone'ları. Her zone kendi TEMALI
@@ -410,6 +410,26 @@ export const economyConfig = {
     capNextPadFrac: 0.6,
     /** Elmas ile uzatma başına eklenen saat (Faz 4). */
     diamondExtendHours: 8,
+  },
+
+  /**
+   * KOZMETİK MAĞAZA (WP6, 2026-06-11; feedback §D19): zemin + duvar temaları ZONE-BAŞINA ₺ ile
+   * satın alınır — PAHALI (geç oyun para biriktirme hedefi; "tek zone için 10k+"). Satın alınan
+   * tema o zone için kalıcı sahipliktir (ownedCosmetics); tekrar seçmek ücretsiz. Görsel karşılıklar
+   * palette.ts FLOOR_THEMES/WALL_THEMES'te (canvas-tile üreteci aynı — floorTexture.ts).
+   */
+  cosmetics: {
+    floorThemes: [
+      { id: 'parke', label: 'Klasik Parke', cost: 0 },
+      { id: 'fayans', label: 'Krem Fayans', cost: 10_000 },
+      { id: 'dama', label: 'Dama Fayans', cost: 14_000 },
+      { id: 'ceviz', label: 'Ceviz Parke', cost: 18_000 },
+    ],
+    wallThemes: [
+      { id: 'krem', label: 'Krem Badana', cost: 0 },
+      { id: 'yesil', label: 'Çay Yeşili', cost: 10_000 },
+      { id: 'mavi', label: 'Çini Mavisi', cost: 14_000 },
+    ],
   },
 
   /** Prestige "Renovasyon" (Faz 4). */

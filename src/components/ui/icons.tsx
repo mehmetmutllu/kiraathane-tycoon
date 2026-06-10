@@ -75,6 +75,22 @@ export function GearIcon({ size = 22 }: { size?: number }) {
   );
 }
 
+/** Boya fırçası (kozmetik dekor mağazası, WP6). */
+export function BrushIcon({ size = 22 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
+      <path
+        d="M19.6 3.2c.9-.6 2.1-.5 2.8.3.7.8.6 2-.2 2.8l-8.4 8.2-3-3 8.8-8.3z"
+        fill="#fff"
+      />
+      <path
+        d="M9.8 12.6l2.8 2.8c-.5 1.7-1.5 3-3.1 3.8-1.6.8-3.6 1-5.9.6 1-.9 1.4-1.9 1.5-3 .1-1.6.9-3.1 2.5-3.9.7-.35 1.5-.45 2.2-.3z"
+        fill="#ffca6e"
+      />
+    </svg>
+  );
+}
+
 /** Posta/zarf (gelecekte gelen kutusu — MPH deseni). */
 export function MailIcon({ size = 22 }: { size?: number }) {
   return (

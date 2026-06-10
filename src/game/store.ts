@@ -466,6 +466,10 @@ export interface GameState {
   xp: number;
   /** Oyuncu ayarları (persist v17): ses/müzik/bildirim. */
   settings: SaveSettings;
+  /** Kozmetik mağaza (persist v19, WP6): zone başına seçili tema + sahiplikler (`kind:id:zN`). */
+  floorThemeByZone: string[];
+  wallThemeByZone: string[];
+  ownedCosmetics: string[];
   /** Üst görev barı görünümü (transient; her tick türetilir; null = hat bitti). */
   quest: QuestView | null;
   /** Kamera odak isteği (transient): görev barına dokununca / yeni şey açılınca hedefe pan. */
@@ -488,6 +492,11 @@ export interface GameState {
   focusQuest: () => void;
   /** Ayar değiştir (ayarlar modalı) — anında kaydedilir. */
   setSetting: (key: keyof SaveSettings, value: boolean) => void;
+  /**
+   * Kozmetik tema satın al/uygula (WP6): zone AÇIK olmalı; ilk satın alma ₺ düşer (cüzdan yetmezse
+   * false), sahip olunan tema ücretsiz yeniden seçilir. Başarıda anında kaydedilir.
+   */
+  buyCosmetic: (kind: 'floor' | 'wall', id: string, zone: number) => boolean;
   saveNow: () => void;
   hardReset: () => void;
 }
@@ -707,6 +716,9 @@ export const useGame = create<GameState>((set, get) => ({
   questBase: 0,
   xp: 0,
   settings: defaultSettings(),
+  floorThemeByZone: Array.from({ length: MAX_ZONES }, () => 'parke'),
+  wallThemeByZone: Array.from({ length: MAX_ZONES }, () => 'krem'),
+  ownedCosmetics: [],
   quest: null,
   camFocus: null,
   offlineEarned: 0,
@@ -794,6 +806,9 @@ export const useGame = create<GameState>((set, get) => ({
       questBase: save.questBase,
       xp: save.xp,
       settings: { ...save.settings },
+      floorThemeByZone: Array.from({ length: MAX_ZONES }, (_, z) => save.floorThemeByZone[z] ?? 'parke'),
+      wallThemeByZone: Array.from({ length: MAX_ZONES }, (_, z) => save.wallThemeByZone[z] ?? 'krem'),
+      ownedCosmetics: [...save.ownedCosmetics],
       quest:
         save.questIndex < C.quests.length
           ? questView(C.quests[save.questIndex], {
@@ -1526,6 +1541,30 @@ export const useGame = create<GameState>((set, get) => ({
     get().saveNow();
   },
 
+  // Kozmetik tema satın al/uygula (WP6 — feedback §D19). Zone açık + tema tanımlı olmalı;
+  // sahip değilse cüzdandan düşer (yetmezse false), sahipse ücretsiz uygulanır.
+  buyCosmetic: (kind, id, zone) => {
+    const s = get();
+    if (zone < 0 || zone >= s.zonesOpen) return false;
+    const themes = kind === 'floor' ? C.cosmetics.floorThemes : C.cosmetics.wallThemes;
+    const theme = themes.find((t) => t.id === id);
+    if (!theme) return false;
+    const key = `${kind}:${id}:z${zone}`;
+    let wallet = s.wallet;
+    let ownedCosmetics = s.ownedCosmetics;
+    if (theme.cost > 0 && !ownedCosmetics.includes(key)) {
+      if (wallet.lt(theme.cost)) return false;
+      wallet = wallet.sub(theme.cost);
+      ownedCosmetics = [...ownedCosmetics, key];
+    }
+    const arrKey = kind === 'floor' ? 'floorThemeByZone' : 'wallThemeByZone';
+    const arr = (kind === 'floor' ? s.floorThemeByZone : s.wallThemeByZone).slice();
+    arr[zone] = id;
+    set({ wallet, ownedCosmetics, [arrKey]: arr });
+    get().saveNow();
+    return true;
+  },
+
   saveNow: () => {
     const s = get();
     // D-015: tables/stations/serviceSpeedMult/hasWaiter KAYDEDİLMEZ — yüklemede padsDone'dan türetilir.
@@ -1544,6 +1583,9 @@ export const useGame = create<GameState>((set, get) => ({
       questBase: s.questBase,
       xp: s.xp,
       settings: { ...s.settings },
+      floorThemeByZone: [...s.floorThemeByZone],
+      wallThemeByZone: [...s.wallThemeByZone],
+      ownedCosmetics: [...s.ownedCosmetics],
       lastSaved: Date.now(),
     });
   },

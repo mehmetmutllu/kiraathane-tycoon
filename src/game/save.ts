@@ -61,6 +61,11 @@ export interface SaveData {
   xp: number;
   /** Oyuncu ayarları (v17). */
   settings: SaveSettings;
+  /** Kozmetik mağaza (v19, WP6): zone başına seçili zemin/duvar teması + satın alınan sahiplikler
+   *  (`kind:id:zN` anahtarları — tekrar seçmek ücretsiz). */
+  floorThemeByZone: string[];
+  wallThemeByZone: string[];
+  ownedCosmetics: string[];
   lastSaved: number; // epoch ms
 }
 
@@ -80,6 +85,9 @@ export function defaultSave(): SaveData {
     questBase: 0,
     xp: 0,
     settings: defaultSettings(),
+    floorThemeByZone: [],
+    wallThemeByZone: [],
+    ownedCosmetics: [],
     lastSaved: Date.now(),
   };
 }
@@ -313,6 +321,15 @@ export function migrate(raw: Record<string, unknown>): SaveData {
     v = 18;
   }
 
+  // v18 -> v19 (KOZMETİK MAĞAZA, WP6): zone başına zemin/duvar tema seçimi + sahiplik listesi.
+  // Eski oyuncu default temalarla başlar (boş dizi = init'te 'parke'/'krem' doldurulur).
+  if (v < 19) {
+    d.floorThemeByZone = [];
+    d.wallThemeByZone = [];
+    d.ownedCosmetics = [];
+    v = 19;
+  }
+
   // Sona kalan v16 şeması: türetilen alanlar (tables/stations/serviceSpeedMult/hasWaiter), eski `padFill`,
   // kaldırılan `trayLevel` ve 'samovar' referansı yazılmaz; stats/questIndex/questBase eklendi (v16).
   const rawStats = (d.stats && typeof d.stats === 'object' ? d.stats : {}) as Partial<SaveStats>;
@@ -352,6 +369,9 @@ export function migrate(raw: Record<string, unknown>): SaveData {
         notifications: typeof raw.notifications === 'boolean' ? raw.notifications : def.notifications,
       };
     })(),
+    floorThemeByZone: Array.isArray(d.floorThemeByZone) ? (d.floorThemeByZone as string[]) : [],
+    wallThemeByZone: Array.isArray(d.wallThemeByZone) ? (d.wallThemeByZone as string[]) : [],
+    ownedCosmetics: Array.isArray(d.ownedCosmetics) ? (d.ownedCosmetics as string[]) : [],
     lastSaved: Number(d.lastSaved ?? Date.now()) || Date.now(),
   };
 }

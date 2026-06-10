@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useGame } from '../../game/store';
 import { fmt } from '../../game/decimal';
-import { levelProgress } from '../../config/economy.config';
-import { CoinIcon, GemIcon, StarBadge, GearIcon, MailIcon, QuestPhoto } from './icons';
+import { levelProgress, economyConfig } from '../../config/economy.config';
+import { FLOOR_THEMES, WALL_THEMES } from '../../config/palette';
+import { CoinIcon, GemIcon, StarBadge, GearIcon, MailIcon, BrushIcon, QuestPhoto } from './icons';
 
 /**
  * HUD — gerçek tycoon yerleşimi (UI redesign 2026-06-10; referans: My Perfect Hotel HUD grameri).
@@ -23,7 +24,7 @@ export function HUD() {
   const focusQuest = useGame((s) => s.focusQuest);
   const hardReset = useGame((s) => s.hardReset);
   const [offlineSeen, setOfflineSeen] = useState(false);
-  const [panel, setPanel] = useState<'settings' | 'mail' | null>(null);
+  const [panel, setPanel] = useState<'settings' | 'mail' | 'shop' | null>(null);
 
   const lvl = levelProgress(xp);
   const questPct = quest && quest.total != null ? Math.min(100, ((quest.cur ?? 0) / quest.total) * 100) : null;
@@ -55,6 +56,9 @@ export function HUD() {
         </button>
         <button className="icon-btn" data-testid="mail" title="Posta" onClick={() => setPanel('mail')}>
           <MailIcon />
+        </button>
+        <button className="icon-btn" data-testid="shop" title="Dekor Mağazası" onClick={() => setPanel('shop')}>
+          <BrushIcon />
         </button>
       </div>
 
@@ -120,6 +124,9 @@ export function HUD() {
         </div>
       )}
 
+      {/* DEKOR MAĞAZASI modalı (WP6): zemin + duvar temaları zone-başına satın alınır */}
+      {panel === 'shop' && <ShopPanel onClose={() => setPanel(null)} />}
+
       {/* POSTA modalı (gelecekte gelen kutusu/ödüller — şimdilik boş) */}
       {panel === 'mail' && (
         <div className="modal-backdrop" data-testid="mail-panel" onClick={() => setPanel(null)}>
@@ -159,6 +166,78 @@ export function HUD() {
 
       {/* Dolum göstergesi TEK: dünya-içi pad halkası (GroundMarker progress). Alt bar + baş üstü
           radial KALDIRILDI (WP5, feedback §D18 — 3 gösterge aynı anda fazlaydı). */}
+    </div>
+  );
+}
+
+/** Dekor mağazası (WP6 — feedback §D19): tema satırı = renk önizleme + ad + fiyat + zone uygula
+ *  butonları (yalnız AÇIK zone'lar). İlk satın alma ₺ düşer; sahip olunan tema ücretsiz seçilir. */
+function ShopPanel({ onClose }: { onClose: () => void }) {
+  const wallet = useGame((s) => s.wallet);
+  const zonesOpen = useGame((s) => s.zonesOpen);
+  const floorThemeByZone = useGame((s) => s.floorThemeByZone);
+  const wallThemeByZone = useGame((s) => s.wallThemeByZone);
+  const ownedCosmetics = useGame((s) => s.ownedCosmetics);
+  const buyCosmetic = useGame((s) => s.buyCosmetic);
+  const cash = wallet.toNumber();
+
+  const renderRows = (kind: 'floor' | 'wall') => {
+    const themes = kind === 'floor' ? economyConfig.cosmetics.floorThemes : economyConfig.cosmetics.wallThemes;
+    const selected = kind === 'floor' ? floorThemeByZone : wallThemeByZone;
+    return themes.map((t) => {
+      const sw =
+        kind === 'floor'
+          ? [FLOOR_THEMES[t.id]?.base ?? '#999', FLOOR_THEMES[t.id]?.alt ?? '#777']
+          : [WALL_THEMES[t.id]?.cream ?? '#999', WALL_THEMES[t.id]?.wainscot ?? '#777'];
+      return (
+        <div className="shop-row" key={`${kind}:${t.id}`}>
+          <span className="shop-swatch">
+            <i style={{ background: sw[0] }} />
+            <i style={{ background: sw[1] }} />
+          </span>
+          <span className="shop-info">
+            <span className="shop-name">{t.label}</span>
+            {t.cost > 0 && (
+              <span className="shop-cost">
+                <CoinIcon size={14} /> {t.cost.toLocaleString('tr-TR')} / salon
+              </span>
+            )}
+          </span>
+          <span className="shop-zones">
+            {Array.from({ length: zonesOpen }, (_, z) => {
+              const isSel = selected[z] === t.id;
+              const owned = t.cost === 0 || ownedCosmetics.includes(`${kind}:${t.id}:z${z}`);
+              const afford = owned || cash >= t.cost;
+              return (
+                <button
+                  key={z}
+                  className={`shop-zone-btn${isSel ? ' sel' : ''}`}
+                  data-testid={`shop-${kind}-${t.id}-z${z}`}
+                  disabled={isSel || !afford}
+                  onClick={() => buyCosmetic(kind, t.id, z)}
+                >
+                  {isSel ? '✓ ' : ''}S{z + 1}
+                </button>
+              );
+            })}
+          </span>
+        </div>
+      );
+    });
+  };
+
+  return (
+    <div className="modal-backdrop" data-testid="shop-panel" onClick={onClose}>
+      <div className="modal-card shop-card" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-title">Dekor Mağazası</div>
+        <div className="shop-section">Zemin</div>
+        {renderRows('floor')}
+        <div className="shop-section">Duvar</div>
+        {renderRows('wall')}
+        <button className="modal-btn" data-testid="shop-ok" onClick={onClose}>
+          Tamam
+        </button>
+      </div>
     </div>
   );
 }

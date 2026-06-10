@@ -1527,3 +1527,43 @@ describe('WP1 bug paketi (2026-06-11) — quest-pad gate, zone kamera odağı, o
     expect(oneHour).toBe(Math.floor(0.5 * economyConfig.offline.rateMult * 3600));
   });
 });
+
+describe('kozmetik mağaza (WP6, v19) — zone-başına tema satın alma + migrasyon', () => {
+  it('satın alma cüzdandan düşer, tema uygulanır, sahiplik kalıcı (geri dönüş ücretsiz)', () => {
+    useGame.getState().hardReset();
+    const floor = economyConfig.cosmetics.floorThemes.find((t) => t.cost > 0)!;
+    // Para yokken satın alınamaz.
+    expect(useGame.getState().buyCosmetic('floor', floor.id, 0)).toBe(false);
+    expect(useGame.getState().floorThemeByZone[0]).toBe('parke');
+    // Yeterli parayla satın alınır + uygulanır + cüzdan düşer.
+    useGame.getState().addMoney(floor.cost + 500);
+    const before = useGame.getState().wallet.toNumber();
+    expect(useGame.getState().buyCosmetic('floor', floor.id, 0)).toBe(true);
+    expect(useGame.getState().floorThemeByZone[0]).toBe(floor.id);
+    expect(useGame.getState().wallet.toNumber()).toBe(before - floor.cost);
+    expect(useGame.getState().ownedCosmetics).toContain(`floor:${floor.id}:z0`);
+    // Default'a dön (ücretsiz) + sahip olunan temaya GERİ dönmek de ücretsiz.
+    expect(useGame.getState().buyCosmetic('floor', 'parke', 0)).toBe(true);
+    const w2 = useGame.getState().wallet.toNumber();
+    expect(useGame.getState().buyCosmetic('floor', floor.id, 0)).toBe(true);
+    expect(useGame.getState().wallet.toNumber()).toBe(w2); // ikinci kez para düşmez
+    // Kapalı zone'a uygulanamaz (zonesOpen 1) + tanımsız tema reddedilir.
+    expect(useGame.getState().buyCosmetic('wall', 'yesil', 1)).toBe(false);
+    expect(useGame.getState().buyCosmetic('floor', 'yok-boyle-tema', 0)).toBe(false);
+  });
+
+  it('kayıt v18→v19: kozmetik alanları default ile gelir (eski ilerleme korunur)', () => {
+    const m = migrate({
+      saveVersion: 18, wallet: '500', diamonds: '0', lifetime: '5000',
+      stationLevels: [3], waiterLevels: [1], padsDone: ['table2'], padFills: {},
+      tableLevels: [1, 0, 0, 0], stats: defaultStats(), questIndex: 5, questBase: 0,
+      xp: 100, settings: { sound: true, music: true, notifications: true }, lastSaved: Date.now(),
+    });
+    expect(m.saveVersion).toBe(SAVE_VERSION);
+    expect(m.floorThemeByZone).toEqual([]);
+    expect(m.wallThemeByZone).toEqual([]);
+    expect(m.ownedCosmetics).toEqual([]);
+    expect(m.wallet).toBe('500');
+    expect(m.questIndex).toBe(5);
+  });
+});
