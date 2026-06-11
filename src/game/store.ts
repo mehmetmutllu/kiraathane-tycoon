@@ -18,6 +18,8 @@ import {
   MAX_ZONES,
   TABLES_PER_ZONE,
   zoneOfTable,
+  PRODUCTS,
+  zoneProduct,
   charMaxTier,
   charNextCost,
   trayCapacityFor,
@@ -462,9 +464,10 @@ function brewThroughputMult(level: number): number {
   return upgradeOutputMultiplier(C.teaStation.upgrade, level);
 }
 
-/** Bir bardak çayın demlenme süresi (sn) — throughput arttıkça kısalır. */
-function brewTime(level: number, serviceSpeedMult: number): number {
-  return (C.npc.orderTime * serviceSpeedMult) / brewThroughputMult(level);
+/** Bir birim ürünün hazırlanma süresi (sn) — throughput arttıkça kısalır. prepTime verilmezse çay
+ *  (geri uyum: eski çağıranlar/testler); tost zone'u PRODUCTS.tost.prepTime geçer (M3). */
+function brewTime(level: number, serviceSpeedMult: number, prepTime: number = C.npc.orderTime): number {
+  return (prepTime * serviceSpeedMult) / brewThroughputMult(level);
 }
 
 /** Oyuncunun tepsi kapasitesi (tek turda taşınan çay/kirli) — karakter tepsi kademesinden türetilir
@@ -490,10 +493,12 @@ export function tableUpgradeZoneUnlocked(g: GateState): boolean {
   return tableUpgradeUnlockedZ(0, g);
 }
 
-/** Çevrimdışı gelir oranı (₺/sn) — bottleneck idealize: oturma × sabit fiyat / döngü. */
-function incomeRate(tables: number, level: number, serviceSpeedMult = 1): number {
-  const cycle = C.npc.walkTime + brewTime(level, serviceSpeedMult) + C.npc.eatTime;
-  return (tables * TEA_PRICE) / cycle;
+/** Çevrimdışı gelir oranı (₺/sn) — bottleneck idealize: oturma × ürün fiyatı / döngü.
+ *  M3: zone verilirse o zone'un ÜRÜNÜ (tost pahalı+yavaş) hesaba girer. */
+function incomeRate(tables: number, level: number, serviceSpeedMult = 1, z = 0): number {
+  const prod = PRODUCTS[zoneProduct(z)];
+  const cycle = C.npc.walkTime + brewTime(level, serviceSpeedMult, prod.prepTime) + C.npc.eatTime;
+  return (tables * prod.price) / cycle;
 }
 
 /**
@@ -595,6 +600,9 @@ export interface GameState {
   brewProgressByZone: number[];
   /** Oyuncunun tepsisinde taşıdığı çay sayısı. */
   tray: number;
+  /** Oyuncunun tepsisinde taşıdığı TOST sayısı (M3 ikinci ürün hattı; kapasite tray+trayFood+
+   *  carriedDirty toplamı üzerinden PAYLAŞIMLIDIR). */
+  trayFood: number;
   /** Temiz bardak havuzu — GLOBAL tek depo (zone'lar ortak; korunum değişmezi global kalır). Faz 2e. */
   cleanCups: number;
   /** Masalarda bekleyen kirli bardaklar (mekânsal nesneler). */
@@ -866,8 +874,12 @@ export function waiterUpgradeUnlocked(g: GateState, level: number): boolean {
 
 /** ₺ ile çıkılabilen en yüksek istasyon seviyesi (L5 = Usta, 💎/video — Faz 4). */
 export const stationSoftMaxLevel = () => C.teaStation.upgrade.masterLevel - 1;
-/** Mevcut seviyeden bir sonraki ₺ yükseltmenin maliyeti. */
+/** Mevcut seviyeden bir sonraki ₺ yükseltmenin maliyeti (çay eğrisi; zone-farkındalı için *Z). */
 export const stationUpgradeCost = (level: number) => upgradeCost(C.teaStation.upgrade, level + 1);
+/** Zone'un istasyon yükseltme maliyeti: çay eğrisi × ürünün upgradeCostMult'u (M3 — tost tezgâhı
+ *  geç-oyun, çay eğrisi orada komik ucuz kalırdı). */
+export const stationUpgradeCostZ = (z: number, level: number) =>
+  Math.floor(upgradeCost(C.teaStation.upgrade, level + 1) * PRODUCTS[zoneProduct(z)].upgradeCostMult);
 
 export const useGame = create<GameState>((set, get) => ({
   wallet: D(0),
@@ -891,6 +903,7 @@ export const useGame = create<GameState>((set, get) => ({
   readyCupsByZone: Array.from({ length: MAX_ZONES }, () => 0),
   brewProgressByZone: Array.from({ length: MAX_ZONES }, () => 0),
   tray: 0,
+  trayFood: 0,
   cleanCups: cupPoolCapacity(0),
   dishes: [],
   carriedDirty: 0,
@@ -944,7 +957,7 @@ export const useGame = create<GameState>((set, get) => ({
     if (elapsed > 30) {
       let rate = 0;
       for (let z = 0; z < derived.zonesOpen; z++)
-        rate += incomeRate(derived.tablesByZone[z], stationLevels[z], derived.serviceSpeedMult);
+        rate += incomeRate(derived.tablesByZone[z], stationLevels[z], derived.serviceSpeedMult, z);
       offlineEarned = computeOfflineEarned(rate, elapsed, save.padsDone);
       wallet = wallet.add(offlineEarned);
       lifetime = lifetime.add(offlineEarned);
@@ -977,6 +990,7 @@ export const useGame = create<GameState>((set, get) => ({
       readyCupsByZone: Array.from({ length: MAX_ZONES }, () => 0),
       brewProgressByZone: Array.from({ length: MAX_ZONES }, () => 0),
       tray: 0,
+      trayFood: 0,
       // Bardak havuzu her oturumda dolu-temiz başlar (transient). GLOBAL tek depo:
       // zone başına taban + açık zone ocak seviyelerinin toplamı.
       cleanCups: totalCupPool(derived.zonesOpen, stationLevels),
@@ -1070,6 +1084,7 @@ export const useGame = create<GameState>((set, get) => ({
     const readyCupsByZone = s.readyCupsByZone.slice();
     const brewProgressByZone = s.brewProgressByZone.slice();
     let tray = s.tray;
+    let trayFood = s.trayFood; // tepsideki tost (M3)
     let cleanCups = s.cleanCups;
     let carriedDirty = s.carriedDirty;
     const tableUpgradeFills = s.tableUpgradeFills.slice();
@@ -1098,7 +1113,8 @@ export const useGame = create<GameState>((set, get) => ({
     // Her açık zone'un ocağı kendi kuyruğuna demler (per-zone ocak, D-022); TEMİZ bardak GLOBAL havuzdan.
     for (let z = 0; z < zonesOpen; z++) {
       const queueCap = brewQueueCapacity(stationLevels[z]);
-      const cupBrewTime = brewTime(stationLevels[z], serviceSpeedMult);
+      // M3: hazırlama süresi zone'un ÜRÜNÜNDEN (çay 6sn / tost 14sn taban); kap havuzu ORTAK.
+      const cupBrewTime = brewTime(stationLevels[z], serviceSpeedMult, PRODUCTS[zoneProduct(z)].prepTime);
       if (readyCupsByZone[z] < queueCap && cleanCups > 0) {
         brewProgressByZone[z] += dt;
         while (readyCupsByZone[z] < queueCap && cleanCups > 0 && brewProgressByZone[z] >= cupBrewTime) {
@@ -1116,7 +1132,10 @@ export const useGame = create<GameState>((set, get) => ({
 
     // --- Spawn ---
     const activeCount = npcs.filter((n) => n.state !== 'leaving').length;
-    if (spawnTimer <= 0 && activeCount < C.npc.maxConcurrent) {
+    // M3 fix: sabit tavan (8), masa sayısı 8'i aşınca (zone-3+) arka salonu müşterisiz bırakıyordu
+    // (8 müşteri ön masaları dolduruyor, 9. masa hiç dolmuyordu) → tavan masalarla ölçeklenir.
+    const maxConcurrent = Math.max(C.npc.maxConcurrent, tables + 2);
+    if (spawnTimer <= 0 && activeCount < maxConcurrent) {
       const free = findFreeTable(npcs, tables, dirty);
       if (free >= 0) {
         npcs.push({
@@ -1173,11 +1192,13 @@ export const useGame = create<GameState>((set, get) => ({
         case 'drinking':
           n.timer -= dt;
           if (n.timer <= 0) {
-            // Öde: parayı masanın yanına düşür (çay fiyatı SABİT + OTURDUĞU masanın seviyesi bahşişi, Faz 2h).
+            // Öde: parayı masanın yanına düşür — ÜRÜN fiyatı (çay 5 / tost 25, M3) + masa bahşişi (Faz 2h).
             coins.push({
               id: nextId++,
               pos: [slot.table[0] + (Math.random() - 0.5), 0.3, slot.table[2] + 0.6 + (Math.random() - 0.5)],
-              value: TEA_PRICE + tableTip(tableLevels[n.tableIndex] ?? 0),
+              value:
+                PRODUCTS[zoneProduct(zoneOfTable(n.tableIndex))].price +
+                tableTip(tableLevels[n.tableIndex] ?? 0),
             });
             // İçtiği bardak masada KİRLİ kalır (Faz 2e): toplanıp yıkanmalı, yoksa temiz biter.
             // tableIndex ile masaya etiketlenir (D-019): masa-başı eşik aşılınca masa KİRLİ olur.
@@ -1189,6 +1210,7 @@ export const useGame = create<GameState>((set, get) => ({
                 id: nextId++,
                 pos: [slot.table[0] + (Math.random() - 0.5) * 0.6, 0.95, slot.table[2] + (Math.random() - 0.5) * 0.6],
                 tableIndex: n.tableIndex,
+                kind: PRODUCTS[zoneProduct(zoneOfTable(n.tableIndex))].dish, // M3: bardak/tabak görseli
               });
             } else {
               cleanCups += 1;
@@ -1269,29 +1291,36 @@ export const useGame = create<GameState>((set, get) => ({
     // Ocağa yaklaşınca hazır çaylardan tepsi dolar (herhangi bir açık ocak yeterli).
     // PAYLAŞIMLI kapasite (2026-06-09): çay + kirli aynı tepsiyi paylaşır → toplam trayCap'i aşamaz.
     // Karışık taşımaya izin verilir (eski "eli boşken" kısıtı kaldırıldı; deadlock'u engeller).
-    if (tray + carriedDirty < trayCap) {
+    if (tray + trayFood + carriedDirty < trayCap) {
       for (let z = 0; z < zonesOpen; z++) {
         if (readyCupsByZone[z] > 0 && dist2D(player, LAYOUT.stations[z]) < C.serving.pickupRadius) {
-          const take = Math.min(trayCap - tray - carriedDirty, readyCupsByZone[z]);
-          tray += take;
+          const take = Math.min(trayCap - tray - trayFood - carriedDirty, readyCupsByZone[z]);
+          // M3: istasyonun ürünü tepsinin DOĞRU bölmesine gider (çay/tost ayrı sayaç, kapasite ortak).
+          if (zoneProduct(z) === 'tost') trayFood += take;
+          else tray += take;
           readyCupsByZone[z] -= take;
-          if (take > 0) stats.teaPickups += take;
+          if (take > 0) stats.teaPickups += take; // generic "üründen al" sayacı (görevler ortak)
           break;
         }
       }
     }
-    // Bekleyen masaya yaklaşınca tepsiden çay bırak → müşteri içmeye başlar (toplu servis).
-    // Servis MASAYA yakınlıkla → masanın HER tarafından bırakılabilir (koltuk değil; arkadan da geçerli).
-    if (tray > 0) {
+    // Bekleyen masaya yaklaşınca tepsiden ÜRÜN bırak → müşteri içmeye/yemeye başlar (toplu servis).
+    // M3: müşterinin istediği ürün = masasının zone'unun ürünü; tepside O ürün yoksa servis OLMAZ
+    // (çayla tost müşterisi doyurulamaz). Servis MASAYA yakınlıkla (her taraftan).
+    if (tray > 0 || trayFood > 0) {
       for (const n of liveNpcs) {
-        if (tray <= 0) break;
+        if (tray <= 0 && trayFood <= 0) break;
         if (n.state !== 'waitingForTea') continue;
+        const sz = zoneOfTable(n.tableIndex);
+        const wantsFood = zoneProduct(sz) === 'tost';
+        if (wantsFood ? trayFood <= 0 : tray <= 0) continue;
         if (dist2D(player, LAYOUT.tables[n.tableIndex].table) < C.serving.serveRadius) {
           n.state = 'drinking';
           n.timer = C.npc.eatTime;
-          tray -= 1;
+          if (wantsFood) trayFood -= 1;
+          else tray -= 1;
           stats.teasServed += 1;
-          const sz = zoneOfTable(n.tableIndex); // v23: zone'lu serveTea görevleri o salonu sayar
+          // v23: zone'lu serveTea görevleri o salonu sayar (tost servisi de zone sayacına işler).
           stats.teasServedByZone[sz] = (stats.teasServedByZone[sz] ?? 0) + 1;
           xp += C.xp.perTeaServed;
         }
@@ -1300,10 +1329,11 @@ export const useGame = create<GameState>((set, get) => ({
 
     // --- Bardak döngüsü (Faz 2e): oyuncu masadaki kirli bardakları toplar, bulaşıkta yıkar (yakınlık) ---
     // PAYLAŞIMLI kapasite (2026-06-09): çay taşırken de kirli toplanabilir → toplam trayCap'i aşamaz.
-    if (tray + carriedDirty < trayCap && dishes.length) {
+    if (tray + trayFood + carriedDirty < trayCap && dishes.length) {
       const keep: Dish[] = [];
       for (const d of dishes) {
-        if (tray + carriedDirty < trayCap && dist2D(player, d.pos) < C.cups.collectRadius) carriedDirty += 1;
+        if (tray + trayFood + carriedDirty < trayCap && dist2D(player, d.pos) < C.cups.collectRadius)
+          carriedDirty += 1;
         else keep.push(d);
       }
       dishes = keep;
@@ -1535,7 +1565,7 @@ export const useGame = create<GameState>((set, get) => ({
     // Biriken ₺ KORUNUR (çıkınca sıfırlanmaz; D-018 dwell) → para harcanıp boşa gitmez.
     if (onFillId != null && onFillId.startsWith(FILL_TEA)) {
       const z = Number(onFillId.slice(FILL_TEA.length));
-      const cost = stationUpgradeCost(stationLevels[z]);
+      const cost = stationUpgradeCostZ(z, stationLevels[z]); // M3: tost tezgâhı kendi maliyet çarpanıyla
       if (fillReady && wallet.gt(0)) {
         const amt = Math.min(C.teaStation.upgradeFillRate * dt, wallet.toNumber(), cost - upgradeFills[z]);
         if (amt > 0) {
@@ -1550,11 +1580,12 @@ export const useGame = create<GameState>((set, get) => ({
         cleanCups += C.cups.poolPerLevel; // havuz ocak seviyesiyle büyür (Faz 2e; global depo)
       }
       const lv = stationLevels[z];
-      const nextCost = lv < stationSoftMaxLevel() ? stationUpgradeCost(lv) : cost;
-      // GÖRSEL: ocak L1'den başlar (iç seviye 0-tabanlı; etiket +1). Soft max → "Usta" (💎/video, Faz 4).
+      const nextCost = lv < stationSoftMaxLevel() ? stationUpgradeCostZ(z, lv) : cost;
+      const unitName = zoneProduct(z) === 'tost' ? 'Tost Tezgâhı' : 'Çay Ocağı';
+      // GÖRSEL: istasyon L1'den başlar (iç seviye 0-tabanlı; etiket +1). Soft max → "Usta" (💎/video, Faz 4).
       activeZone = {
         kind: 'upgrade',
-        label: `Çay Ocağı L${lv + 1}${lv < stationSoftMaxLevel() ? ` → L${lv + 2}` : ' (Usta 💎)'}`,
+        label: `${unitName} L${lv + 1}${lv < stationSoftMaxLevel() ? ` → L${lv + 2}` : ' (Usta 💎)'}`,
         fill: upgradeFills[z],
         cost: nextCost,
       };
@@ -1719,6 +1750,7 @@ export const useGame = create<GameState>((set, get) => ({
       readyCupsByZone,
       brewProgressByZone,
       tray,
+      trayFood,
       cleanCups,
       carriedDirty,
       spawnTimer,
@@ -1816,9 +1848,9 @@ export const useGame = create<GameState>((set, get) => ({
 
   emptyTray: () => {
     const s = get();
-    if (s.tray <= 0) return;
-    // Çaylar atılır, bardakları temiz havuza döner (korunum); kirliler tepside KALIR.
-    set({ tray: 0, cleanCups: s.cleanCups + s.tray });
+    if (s.tray <= 0 && s.trayFood <= 0) return;
+    // Çaylar/tostlar atılır, kapları temiz havuza döner (korunum); kirliler tepside KALIR (M3: tost dahil).
+    set({ tray: 0, trayFood: 0, cleanCups: s.cleanCups + s.tray + s.trayFood });
   },
 
   markTrayTipSeen: () => {

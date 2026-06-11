@@ -29,6 +29,9 @@ export interface Dish {
   id: number;
   pos: Vec3;
   tableIndex: number;
+  /** Kirli kabın görseli (M3 ürün hattı): çay = bardak, tost = tabak. Havuz/yıkama ORTAK;
+   *  yoksa bardak varsayılır (eski transient durumlar). */
+  kind?: 'cup' | 'plate';
 }
 
 // Garson (Faz 2d, opsiyonel). Transient: hasWaiter persist edilir ama konum/tepsi her

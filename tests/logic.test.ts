@@ -47,6 +47,7 @@ import {
   dirtyTables,
   totalCupPool,
   rowWallSegments,
+  stationUpgradeCostZ,
 } from '../src/game/store';
 import { migrate, defaultSave, defaultStats } from '../src/game/save';
 import { buildNavGrid, findNavPath } from '../src/game/nav';
@@ -2142,5 +2143,115 @@ describe('M2 — 2×2 kat ızgarası (zone-3/4 altyapısı; arka sıra + geçitl
     for (let i = 0; i < 120; i++) useGame.getState().tick(1 / 60);
     expect(useGame.getState().player[2]).toBeGreaterThan(LAYOUT.zoneAreas[0].minZ - 0.4);
     useGame.setState({ inputKeyboard: [0, 0] });
+  });
+});
+
+describe('M3 — TOST ürün hattı (zone-3): trayFood, ürün fiyatı, tabak, görev append, maliyet çarpanı', () => {
+  const Z1 = ['table2', 'table3', 'waiter', 'dishwasher', 'table4'];
+  const Z2 = ['zone2', 'z2table2', 'z2waiter', 'z2table3', 'z2dishwasher', 'z2table4'];
+  const OPEN3 = [...Z1, ...Z2, 'zone3'];
+
+  it('görev hattı: zone-2 zincirinden sonra tost görevleri APPEND edildi (questIndex migrasyonsuz geçerli)', () => {
+    const ids = economyConfig.quests.map((q) => q.id);
+    const i = ids.indexOf('q_z2table4');
+    expect(i).toBeGreaterThan(0);
+    expect(ids.slice(i + 1)).toEqual([
+      'q_zone3', 'q_z3serve', 'q_z3table2', 'q_z3waiter', 'q_z3table3', 'q_z3dish', 'q_z3table4',
+    ]);
+  });
+
+  it('tost istasyonundan alınan ürün trayFood\'a gider; tost müşterisi ÇAYLA doyurulamaz, tostla doyar', () => {
+    useGame.getState().hardReset();
+    useGame.setState({
+      padsDone: [...OPEN3],
+      questIndex: economyConfig.quests.length,
+      npcs: [],
+      spawnTimer: 1e9,
+      tray: 0, trayFood: 0, carriedDirty: 0,
+    });
+    useGame.getState().tick(0.05); // türetme otursun
+    const ready = useGame.getState().readyCupsByZone.slice();
+    ready[2] = 2;
+    const st = LAYOUT.stations[2];
+    useGame.setState({ readyCupsByZone: ready, player: [st[0], 0.6, st[2]], npcs: [], spawnTimer: 1e9 });
+    useGame.getState().tick(0.05);
+    expect(useGame.getState().trayFood).toBeGreaterThan(0); // tost trayFood'a gitti
+    expect(useGame.getState().tray).toBe(0);
+    // tost masasında bekleyen müşteri: çayla servis OLMAZ, tostla OLUR.
+    const t8 = LAYOUT.tables[8];
+    useGame.setState({
+      npcs: [{ id: 5, state: 'waitingForTea', pos: [...t8.seat] as [number, number, number], tableIndex: 8, timer: 999, color: '#fff' }],
+      tray: 1, trayFood: 0,
+      player: [t8.table[0], 0.6, t8.table[2] + 0.9],
+      spawnTimer: 1e9,
+    });
+    useGame.getState().tick(0.05);
+    expect(useGame.getState().npcs[0].state).toBe('waitingForTea'); // çay tost yerine geçmedi
+    useGame.setState({ trayFood: 1 });
+    useGame.getState().tick(0.05);
+    expect(useGame.getState().npcs[0].state).toBe('drinking');
+    expect(useGame.getState().trayFood).toBe(0);
+    expect(useGame.getState().tray).toBe(1); // çaya dokunulmadı
+    expect(useGame.getState().stats.teasServedByZone[2]).toBe(1); // zone'lu görev sayacı tost'u sayar
+  });
+
+  it('tost müşterisi ÜRÜN fiyatı öder (25 + bahşiş 0) ve kirli TABAK bırakır', () => {
+    useGame.getState().hardReset();
+    useGame.setState({
+      padsDone: [...OPEN3],
+      questIndex: economyConfig.quests.length, // q_wash geçildi → kirli bırakılır
+      npcs: [{ id: 7, state: 'drinking', pos: [...LAYOUT.tables[8].seat] as [number, number, number], tableIndex: 8, timer: 0.02, color: '#fff' }],
+      spawnTimer: 1e9,
+      player: [0, 0.6, 4.5],
+    });
+    useGame.getState().tick(0.1);
+    const s = useGame.getState();
+    expect(s.coins.length).toBe(1);
+    expect(s.coins[0].value).toBe(25); // PRODUCTS.tost.price (masa L0 → bahşiş yok)
+    expect(s.dishes.length).toBe(1);
+    expect(s.dishes[0].kind).toBe('plate');
+  });
+
+  it('stationUpgradeCostZ: tost tezgâhı çay eğrisi × upgradeCostMult; çay zone\'ları çarpansız', () => {
+    expect(stationUpgradeCostZ(2, 0)).toBe(stationUpgradeCost(0) * 20);
+    expect(stationUpgradeCostZ(0, 0)).toBe(stationUpgradeCost(0));
+    expect(stationUpgradeCostZ(3, 0)).toBe(stationUpgradeCost(0)); // z3 maç salonu = çay
+  });
+
+  it('emptyTray tostları da temiz havuza döndürür (korunum, kirliler kalır)', () => {
+    useGame.getState().hardReset();
+    const clean0 = useGame.getState().cleanCups;
+    useGame.setState({ tray: 1, trayFood: 2, carriedDirty: 1 });
+    useGame.getState().emptyTray();
+    const s = useGame.getState();
+    expect(s.tray).toBe(0);
+    expect(s.trayFood).toBe(0);
+    expect(s.carriedDirty).toBe(1); // kirli tepsiden inmez (lavaboya gidecek)
+    expect(s.cleanCups).toBe(clean0 + 3);
+  });
+});
+
+describe('M3 — müşteri tavanı masalarla ölçeklenir (arka salon açlığı fix)', () => {
+  it('9+ masada 8 müşteri tavanı aşılır: ön masalar doluyken tost salonuna müşteri DOĞAR', () => {
+    const OPEN3 = ['table2', 'table3', 'waiter', 'dishwasher', 'table4',
+      'zone2', 'z2table2', 'z2waiter', 'z2table3', 'z2dishwasher', 'z2table4', 'zone3'];
+    useGame.getState().hardReset();
+    useGame.setState({ padsDone: [...OPEN3], questIndex: economyConfig.quests.length });
+    useGame.getState().tick(0.05);
+    // Ön 8 masayı oturan müşteriyle doldur (eski tavan 8'i tüketir).
+    const sitters = Array.from({ length: 8 }, (_, i) => ({
+      id: 8000 + i,
+      state: 'waitingForTea' as const,
+      pos: [...LAYOUT.tables[i].seat] as [number, number, number],
+      tableIndex: i,
+      timer: 999,
+      color: '#fff',
+    }));
+    useGame.setState({ npcs: sitters, spawnTimer: 0, player: [0, 0.6, 4.5] });
+    useGame.getState().tick(0.1); // spawn denemesi
+    const s = useGame.getState();
+    const newcomer = s.npcs.find((n) => n.id < 8000 || n.id > 8007);
+    expect(newcomer).toBeTruthy(); // 9. müşteri doğdu (eski sabit tavanda doğmazdı)
+    expect(newcomer!.tableIndex).toBe(8); // hedefi tost salonunun ilk masası
   });
 });

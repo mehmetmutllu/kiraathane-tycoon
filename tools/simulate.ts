@@ -25,6 +25,8 @@ import {
   tableTip,
   charNextCost,
   MAX_ZONES,
+  PRODUCTS,
+  zoneProduct,
   type CharStat,
   type GateState,
   type QuestTarget,
@@ -82,10 +84,14 @@ function gateOf(s: State): GateState {
 
 function brewTimeZ(s: State, z: number): number {
   const { serviceSpeedMult } = derivedFromPads(s.padsDone);
-  return (C.npc.orderTime * serviceSpeedMult) / upgradeOutputMultiplier(C.teaStation.upgrade, s.stationLevels[z]);
+  // M3: hazırlama süresi zone'un ÜRÜNÜNDEN (çay 6 / tost 14 taban).
+  return (
+    (PRODUCTS[zoneProduct(z)].prepTime * serviceSpeedMult) /
+    upgradeOutputMultiplier(C.teaStation.upgrade, s.stationLevels[z])
+  );
 }
 
-// Zone'un gelir oranı (₺/sn): min(talep, arz) × (fiyat + bahşiş).
+// Zone'un gelir oranı (₺/sn): min(talep, arz) × (ürün fiyatı + bahşiş). M3: tost pahalı+yavaş.
 function rateZ(s: State, z: number): number {
   const d = derivedFromPads(s.padsDone);
   if (z >= d.zonesOpen) return 0;
@@ -93,7 +99,7 @@ function rateZ(s: State, z: number): number {
   const cycle = C.npc.walkTime + bt + C.npc.eatTime;
   const demand = d.tablesByZone[z] / cycle;
   const supply = 1 / bt;
-  return Math.min(demand, supply) * (TEA_PRICE + tableTip(s.tableLevel));
+  return Math.min(demand, supply) * (PRODUCTS[zoneProduct(z)].price + tableTip(s.tableLevel));
 }
 
 function rate(s: State, eff = 1): number {
@@ -149,12 +155,14 @@ function nextCharBuy(s: State): { stat: CharStat; cost: number } | null {
 // bloklar), sonra omurga pad'i, sonra açık ocak, en son masa-başı yükseltme (bahşiş).
 function trySpend(s: State): void {
   const d = derivedFromPads(s.padsDone);
-  // 1) Darboğaz ocaklar (en ucuzu önce)
+  // 1) Darboğaz ocaklar (en ucuzu önce; M3: tost tezgâhı kendi maliyet çarpanıyla)
   let bz = -1;
   let bcost = Infinity;
   for (let z = 0; z < d.zonesOpen; z++) {
     if (ocakBottleneckZ(s, z) && upgradeUnlockedZ(s, z)) {
-      const cost = upgradeCost(C.teaStation.upgrade, s.stationLevels[z] + 1);
+      const cost = Math.floor(
+        upgradeCost(C.teaStation.upgrade, s.stationLevels[z] + 1) * PRODUCTS[zoneProduct(z)].upgradeCostMult,
+      );
       if (cost < bcost) { bcost = cost; bz = z; }
     }
   }
@@ -183,10 +191,12 @@ function trySpend(s: State): void {
     }
     return;
   }
-  // 3) Açık herhangi bir ocak yükseltmesi
+  // 3) Açık herhangi bir ocak yükseltmesi (M3: ürün maliyet çarpanı)
   for (let z = 0; z < d.zonesOpen; z++) {
     if (upgradeUnlockedZ(s, z)) {
-      const cost = upgradeCost(C.teaStation.upgrade, s.stationLevels[z] + 1);
+      const cost = Math.floor(
+        upgradeCost(C.teaStation.upgrade, s.stationLevels[z] + 1) * PRODUCTS[zoneProduct(z)].upgradeCostMult,
+      );
       if (s.wallet >= cost) {
         s.wallet -= cost;
         s.stationLevels[z] += 1;

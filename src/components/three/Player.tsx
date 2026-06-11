@@ -101,8 +101,8 @@ export function OwnerBody() {
 // karışık taşımada üst üste binmez (tea + dirty aynı ızgarayı sırayla paylaşır). count 0 ise hiçbir şey çizilmez.
 // cap (v20): tepsi TABANI kapasiteyle büyür (karakter yükseltmesinin gözle görülür ödülü).
 // EXPORT: karakter paneli canlı tepsi önizlemesi aynı bileşeni kullanır.
-export function CupTray({ tea, dirty, cap = 6 }: { tea: number; dirty: number; cap?: number }) {
-  const total = tea + dirty;
+export function CupTray({ tea, dirty, food = 0, cap = 6 }: { tea: number; dirty: number; food?: number; cap?: number }) {
+  const total = tea + food + dirty;
   if (total <= 0) return null;
   const colSpacing = 0.16;
   const rowSpacing = 0.15;
@@ -119,11 +119,23 @@ export function CupTray({ tea, dirty, cap = 6 }: { tea: number; dirty: number; c
         <meshStandardMaterial color="#8d6e63" />
       </mesh>
       {Array.from({ length: total }).map((_, i) => {
-        const isDirty = i >= tea;
+        // Sıra: çaylar (kırmızı) → tostlar (kızarmış dilim, M3) → kirliler (gri); aynı ızgara paylaşılır.
+        const isFood = i >= tea && i < tea + food;
+        const isDirty = i >= tea + food;
         const col = i % 3; // 0..2 → x: -1,0,1
         const row = Math.floor(i / 3); // 0..1 → z: arka/ön
+        const px = (col - 1) * colSpacing;
+        const pz = (row - 0.5) * rowSpacing;
+        if (isFood) {
+          return (
+            <mesh key={i} castShadow position={[px, 0.06, pz]}>
+              <boxGeometry args={[0.14, 0.05, 0.11]} />
+              <meshStandardMaterial color={PALETTE.toast} roughness={0.7} />
+            </mesh>
+          );
+        }
         return (
-          <mesh key={i} castShadow position={[(col - 1) * colSpacing, 0.1, (row - 0.5) * rowSpacing]}>
+          <mesh key={i} castShadow position={[px, 0.1, pz]}>
             <cylinderGeometry args={[0.05, 0.04, 0.14, 8]} />
             <meshStandardMaterial
               color={isDirty ? '#8d8276' : '#c0392b'}
@@ -145,6 +157,7 @@ export function CupTray({ tea, dirty, cap = 6 }: { tea: number; dirty: number; c
 export function Player() {
   const p = useGame((s) => s.player);
   const tray = useGame((s) => s.tray);
+  const trayFood = useGame((s) => s.trayFood);
   const carriedDirty = useGame((s) => s.carriedDirty);
   const trayTier = useGame((s) => s.charUpgrades.tray);
   const ref = useRef<Group>(null);
@@ -153,7 +166,7 @@ export function Player() {
     <group position={[p[0], 0, p[2]]}>
       <group ref={ref}>
         <Model fallback={<OwnerBody />} />
-        <CupTray tea={tray} dirty={carriedDirty} cap={trayCapacityFor(trayTier)} />
+        <CupTray tea={tray} food={trayFood} dirty={carriedDirty} cap={trayCapacityFor(trayTier)} />
       </group>
     </group>
   );

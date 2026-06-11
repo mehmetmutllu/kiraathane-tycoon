@@ -2,6 +2,7 @@ import { useGame } from '../../game/store';
 import { LAYOUT } from '../../game/store';
 import { Model } from './Model';
 import { PALETTE } from '../../config/palette';
+import { zoneOfTable, zoneProduct } from '../../config/economy.config';
 
 // Tabure (gerçek kıraathane formu): silindir gövde + kırmızı minder. Koltuk kutusu emekli.
 function Stool({ x, z }: { x: number; z: number }) {
@@ -36,8 +37,11 @@ const CHAIR_SPOTS: [number, number][] = [
 //   L3: + LACİVERT örtü + pirinç kenar bandı + 4. tabure
 //   L4: ALTIN örtü + etek + bant (en gösterişli)
 // Collision/oturma DEĞİŞMEZ (tableHalf 0.5, seat güney sandalye; salt görsel evrim).
-function Table({ x, z, level }: { x: number; z: number; level: number }) {
-  const cloth = PALETTE.tableclothByLevel[Math.min(level, PALETTE.tableclothByLevel.length - 1)];
+function Table({ x, z, level, food = false }: { x: number; z: number; level: number; food?: boolean }) {
+  // M3: YEMEK masası (tost salonu) kendi örtü paletiyle + sofra prop'larıyla evrilir
+  // (kullanıcı: "yemek masaları farklı olabilir, seviye artınca olacak şeyler de artar").
+  const clothArr = food ? PALETTE.foodTableclothByLevel : PALETTE.tableclothByLevel;
+  const cloth = clothArr[Math.min(level, clothArr.length - 1)];
   const chairs = Math.min(CHAIR_SPOTS.length, level + 1);
   const skirt = cloth && (level === 2 || level >= 4);
   return (
@@ -83,6 +87,31 @@ function Table({ x, z, level }: { x: number; z: number; level: number }) {
                   </mesh>
                 ))
               : null}
+            {/* YEMEK masası sofra prop'ları (M3): L1+ peçetelik; L2+ ketçap-mayo; L3+ servis tabağı */}
+            {food && level >= 1 ? (
+              <mesh castShadow position={[-0.22, 0.62, -0.22]}>
+                <boxGeometry args={[0.14, 0.1, 0.07]} />
+                <meshStandardMaterial color={PALETTE.mayo} />
+              </mesh>
+            ) : null}
+            {food && level >= 2 ? (
+              <group position={[0.24, 0, -0.24]}>
+                <mesh castShadow position={[-0.045, 0.65, 0]}>
+                  <cylinderGeometry args={[0.035, 0.04, 0.16, 8]} />
+                  <meshStandardMaterial color={PALETTE.ketchup} />
+                </mesh>
+                <mesh castShadow position={[0.045, 0.65, 0]}>
+                  <cylinderGeometry args={[0.035, 0.04, 0.16, 8]} />
+                  <meshStandardMaterial color={PALETTE.mayo} />
+                </mesh>
+              </group>
+            ) : null}
+            {food && level >= 3 ? (
+              <mesh castShadow position={[0, 0.585, 0.1]}>
+                <cylinderGeometry args={[0.13, 0.11, 0.025, 10]} />
+                <meshStandardMaterial color={PALETTE.plate} />
+              </mesh>
+            ) : null}
           </group>
         }
       />
@@ -101,7 +130,13 @@ export function Tables() {
   return (
     <>
       {LAYOUT.tables.slice(0, tables).map((t, i) => (
-        <Table key={i} x={t.table[0]} z={t.table[2]} level={tableLevels[i] ?? 0} />
+        <Table
+          key={i}
+          x={t.table[0]}
+          z={t.table[2]}
+          level={tableLevels[i] ?? 0}
+          food={zoneProduct(zoneOfTable(i)) === 'tost'}
+        />
       ))}
     </>
   );

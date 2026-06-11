@@ -2,21 +2,35 @@ import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import type { Group } from 'three';
 import { useGame, LAYOUT, dirtyTables } from '../../game/store';
+import { PALETTE } from '../../config/palette';
 
-// Masalarda bekleyen kirli bardaklar (Faz 2e): lekeli ince-belli bardak. Oyuncu/bulaşıkçı
-// toplayınca kaybolur. Greybox: gri-kahve silindir (temiz çay kırmızı/sıcak renkten ayrılır).
+// Masalarda bekleyen kirli kaplar (Faz 2e + M3): çay = lekeli ince-belli bardak (gri-kahve silindir),
+// tost = kirli TABAK (yayvan disk + kırıntı). Oyuncu/bulaşıkçı toplayınca kaybolur.
 export function Dishes() {
   const dishes = useGame((s) => s.dishes);
   // Kirli masalar (D-019): eşiği aşan masaların ÜSTÜNDE alçak primitive "koku" işareti.
   const dirty = useMemo(() => [...dirtyTables(dishes)], [dishes]);
   return (
     <>
-      {dishes.map((d) => (
-        <mesh key={d.id} castShadow position={[d.pos[0], d.pos[1], d.pos[2]]}>
-          <cylinderGeometry args={[0.06, 0.05, 0.16, 8]} />
-          <meshStandardMaterial color="#8d8276" roughness={0.9} />
-        </mesh>
-      ))}
+      {dishes.map((d) =>
+        d.kind === 'plate' ? (
+          <group key={d.id} position={[d.pos[0], d.pos[1], d.pos[2]]}>
+            <mesh castShadow>
+              <cylinderGeometry args={[0.11, 0.09, 0.03, 10]} />
+              <meshStandardMaterial color={PALETTE.plateDirty} roughness={0.9} />
+            </mesh>
+            <mesh position={[0.03, 0.025, -0.02]}>
+              <boxGeometry args={[0.05, 0.02, 0.04]} />
+              <meshStandardMaterial color={PALETTE.toastDark} roughness={0.9} />
+            </mesh>
+          </group>
+        ) : (
+          <mesh key={d.id} castShadow position={[d.pos[0], d.pos[1], d.pos[2]]}>
+            <cylinderGeometry args={[0.06, 0.05, 0.16, 8]} />
+            <meshStandardMaterial color="#8d8276" roughness={0.9} />
+          </mesh>
+        ),
+      )}
       {dirty.map((i) => (
         <StinkCloud key={i} pos={LAYOUT.tables[i].table} />
       ))}

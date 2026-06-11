@@ -30,6 +30,26 @@ export function zoneOfTable(tableIndex: number): number {
   return Math.min(MAX_ZONES - 1, Math.floor(tableIndex / TABLES_PER_ZONE));
 }
 
+/**
+ * ÜRÜN HATTI (M3; D-010 alt kararı "fiyat artışı YENİ menü ürünleriyle"): her zone'un istasyonu
+ * TEK ürün üretir. Çay fiyatı sabit kalır; TOST ikinci hat — pahalı + yavaş hazırlanır (throughput
+ * matematiği aynı, sabitler farklı → zone başına gelir profili değişir).
+ *  - dish: müşterinin masada bıraktığı kirlinin görseli (bardak/tabak; havuz ORTAKTIR — korunum
+ *    değişmezi tek kalır, yıkama aynı döngü).
+ *  - upgradeCostMult: istasyon ₺ yükseltme maliyet çarpanı (çay eğrisi 20/30/45/68 erken oyun için;
+ *    tost tezgâhı geç-oyun → aynı eğri ×20 = 400/600/900/1350, sim ile kalibre).
+ */
+export type ProductId = 'tea' | 'tost';
+export const PRODUCTS = {
+  tea: { price: 5, prepTime: 6, dish: 'cup', upgradeCostMult: 1 },
+  tost: { price: 25, prepTime: 14, dish: 'plate', upgradeCostMult: 20 },
+} as const;
+/** Zone → ürün eşlemesi: z2 (arka-sol) = TOST OCAĞI; diğerleri çay (M5 maç salonu da çay servis eder). */
+export const ZONE_PRODUCTS: readonly ProductId[] = ['tea', 'tea', 'tost', 'tea'];
+export function zoneProduct(z: number): ProductId {
+  return ZONE_PRODUCTS[Math.min(Math.max(z, 0), ZONE_PRODUCTS.length - 1)];
+}
+
 export const CURRENCY = {
   soft: '₺', // Para — müşteriden kazanılır
   hard: '💎', // Elmas — sert para
@@ -114,12 +134,12 @@ export const economyConfig = {
   saveVersion: SAVE_VERSION,
   currency: CURRENCY,
 
-  /** Çay istasyonu (Faz 1 çekirdeği). */
+  /** Çay istasyonu (Faz 1 çekirdeği). Fiyat/hazırlama TEK kaynak: PRODUCTS.tea (M3 ürün hattı). */
   teaStation: {
     /** Bir bardak çay demlenme süresi (sn) — sipariş timer'ı. */
-    baseBrewTime: 6,
+    baseBrewTime: PRODUCTS.tea.prepTime,
     /** Servis edilen çay başına SABİT ₺ (yükseltme bunu DEĞİL, throughput'u büyütür). */
-    basePrice: 5,
+    basePrice: PRODUCTS.tea.price,
     upgrade: {
       costBase: 20, // garson öncesi: erken yükseltme ucuz, akış hızlansın (kullanıcı 2026-06-09)
       costGrowth: 1.5,
@@ -187,8 +207,9 @@ export const economyConfig = {
     spawnInterval: 1.6,
     /** Boş masaya yürüme/oturma payı. */
     walkTime: 2,
-    /** Bir bardak çay demleme süresi (sn) — stationLevel throughput'u bunu kısaltır. */
-    orderTime: 6,
+    /** Bir bardak çay demleme süresi (sn) — stationLevel throughput'u bunu kısaltır.
+     *  (M3: TEK kaynak PRODUCTS.tea; tost zone'unun süresi PRODUCTS.tost.prepTime.) */
+    orderTime: PRODUCTS.tea.prepTime,
     /** İçip ödeme yapma süresi. */
     eatTime: 4,
     /**
@@ -446,6 +467,16 @@ export const economyConfig = {
     { id: 'q_z2table3', title: 'Salon 2: 3. Masayı aç', target: { type: 'pad', id: 'z2table3' }, zone: 1, reward: 100 },
     { id: 'q_z2dish', title: 'Salon 2: Bulaşıkçı tut', target: { type: 'pad', id: 'z2dishwasher' }, zone: 1, reward: 120 },
     { id: 'q_z2table4', title: 'Salon 2: 4. Masayı aç', target: { type: 'pad', id: 'z2table4' }, zone: 1, reward: 200 },
+    // --- ZONE-3 TOST OCAĞI hattı (M3): ikinci ürün hattının tanıtımı. SONA EKLENDİ (append-only →
+    // eski kayıtların questIndex'i İD-eşleme gerektirmeden geçerli kalır; hattı bitirmiş kayıt
+    // kaldığı yerden yeni görevlere devam eder).
+    { id: 'q_zone3', title: 'Tost Salonunu aç', target: { type: 'pad', id: 'zone3' }, zone: 2, reward: 400 },
+    { id: 'q_z3serve', title: 'Tost salonunda 5 sipariş servis et', target: { type: 'serveTea', count: 5, zone: 2 }, zone: 2, reward: 150 },
+    { id: 'q_z3table2', title: 'Tost: 2. Masayı aç', target: { type: 'pad', id: 'z3table2' }, zone: 2, reward: 100 },
+    { id: 'q_z3waiter', title: 'Tost: Garson tut', target: { type: 'pad', id: 'z3waiter' }, zone: 2, reward: 150 },
+    { id: 'q_z3table3', title: 'Tost: 3. Masayı aç', target: { type: 'pad', id: 'z3table3' }, zone: 2, reward: 200 },
+    { id: 'q_z3dish', title: 'Tost: Bulaşıkçı tut', target: { type: 'pad', id: 'z3dishwasher' }, zone: 2, reward: 250 },
+    { id: 'q_z3table4', title: 'Tost: 4. Masayı aç', target: { type: 'pad', id: 'z3table4' }, zone: 2, reward: 350 },
   ] as readonly QuestDef[],
 
   // Oyuncu hareket hızı v20'de character.speed kademesinden türetilir (playerSpeed()).

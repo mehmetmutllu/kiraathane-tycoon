@@ -21,6 +21,22 @@ export const PALETTE = {
   stoolCushion: '#a83232', // tabure minderi (kırmızı)
   // Masa örtüsü evrimi (index = tableLevel; L0 örtüsüz)
   tableclothByLevel: ['', '#2e7d32', '#9c2b2b', '#28537a', '#b8860b'], // çuha yeşili → bordo → laci → altın
+  // YEMEK masası örtü evrimi (M3 tost salonu; çay salonundan ayrışan kimlik):
+  // kırmızı muşamba → turuncu → petrol → altın (L4 altın iki hatta ortak "zirve" dili)
+  foodTableclothByLevel: ['', '#c0473b', '#d07f2e', '#3c6e91', '#b8860b'],
+  // Tost ocağı (M3)
+  griddle: '#4a4f54', // sac/ızgara metali
+  griddleLid: '#37474f', // tost presi kapağı
+  toast: '#d9913b', // hazır tost (kızarmış)
+  toastDark: '#a8632a', // tost ızgara izi
+  bread: '#e3c388', // ekmek
+  breadCrate: '#b07b4f', // ekmek kasası
+  plate: '#ece4d4', // tabak (kirli tabak görseli bunun kirlisi)
+  plateDirty: '#b3a48c',
+  ketchup: '#c62828',
+  mayo: '#f5f0dc',
+  foodApron: '#c98f2c', // tost ustası önlüğü (hardal — çaycının bordosundan ayrışır)
+  foodCap: '#f3ecd9', // tost ustası beyaz kepi
   // Mutfak
   counterWood: '#795548',
   copper: '#b87333', // bakır (semaver tabanı, tepsi dekoru)

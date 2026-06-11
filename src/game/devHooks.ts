@@ -63,6 +63,7 @@ export function installDevHooks(): void {
       // Servis durumu (D-011) — zone-1 geri-uyum
       readyCups: s.readyCupsByZone[0],
       tray: s.tray,
+      trayFood: s.trayFood,
       trayCap: trayCapacity(),
       // Masa-başı yükseltme (Faz 2h): her masanın seviyesi + yanındaki yükseltme noktaları
       tableLevels: [...s.tableLevels],

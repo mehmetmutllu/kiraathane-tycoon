@@ -1,8 +1,8 @@
 import { Suspense, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Vector3, type Group, type MeshStandardMaterial } from 'three';
-import { useGame, LAYOUT, stationSoftMaxLevel, stationUpgradeCost, upgradeZoneUnlockedZ, tableSoftMaxLevel, tableUpgradeUnlockedZ, tableNextCost, waiterSoftMaxLevel, waiterUpgradeCost, waiterUpgradeUnlockedZ, rowWallSegments, zonePoint, zoneCol, zoneRow } from '../../game/store';
-import { zoneOfTable } from '../../config/economy.config';
+import { useGame, LAYOUT, stationSoftMaxLevel, stationUpgradeCostZ, upgradeZoneUnlockedZ, tableSoftMaxLevel, tableUpgradeUnlockedZ, tableNextCost, waiterSoftMaxLevel, waiterUpgradeCost, waiterUpgradeUnlockedZ, rowWallSegments, zonePoint, zoneCol, zoneRow } from '../../game/store';
+import { zoneOfTable, zoneProduct } from '../../config/economy.config';
 import { GroundMarker } from './GroundMarker';
 import { PALETTE, FLOOR_THEMES, WALL_THEMES } from '../../config/palette';
 import { Player } from './Player';
@@ -10,7 +10,7 @@ import { Waiter } from './Waiter';
 import { Dishwasher } from './Dishwasher';
 import { Dishes } from './Dishes';
 import { Tables } from './Tables';
-import { TeaStation } from './TeaStation';
+import { TeaStation, TostStation } from './TeaStation';
 import { Customers } from './Customers';
 import { Coins } from './Coins';
 import { Pad } from './Pad';
@@ -86,7 +86,11 @@ function Stations() {
     <>
       {LAYOUT.stations.slice(0, zonesOpen).map((p, z) => (
         <group key={z} position={[p[0], 0, p[2]]} rotation={[0, LAYOUT.stationRots[z], 0]}>
-          <TeaStation position={[0, 0, 0]} level={stationLevels[z]} readyCups={readyCupsByZone[z]} />
+          {zoneProduct(z) === 'tost' ? (
+            <TostStation position={[0, 0, 0]} level={stationLevels[z]} readyCount={readyCupsByZone[z]} />
+          ) : (
+            <TeaStation position={[0, 0, 0]} level={stationLevels[z]} readyCups={readyCupsByZone[z]} />
+          )}
         </group>
       ))}
     </>
@@ -103,6 +107,10 @@ function KitchenHand({ zone }: { zone: number }) {
   // M2: konum zone şablonundan türetilir — sağ kolon aynalı, arka sıra −z kaydırmalı (zonePoint).
   const faceIn = zoneCol(zone) ? -Math.PI / 2 : Math.PI / 2;
   const start = zonePoint(zone, [-5.0, 0, -3]);
+  // M3: tost ustası çaycıdan kıyafetle ayrışır (hardal önlük + beyaz kep).
+  const isFood = zoneProduct(zone) === 'tost';
+  const apron = isFood ? PALETTE.foodApron : PALETTE.apron;
+  const cap = isFood ? PALETTE.foodCap : PALETTE.cap;
   useFrame((st) => {
     const grp = ref.current;
     if (!grp) return;
@@ -129,7 +137,7 @@ function KitchenHand({ zone }: { zone: number }) {
       </mesh>
       <mesh position={[0, 0.6, 0.105]}>
         <boxGeometry args={[0.26, 0.4, 0.02]} />
-        <meshStandardMaterial color={PALETTE.apron} />
+        <meshStandardMaterial color={apron} />
       </mesh>
       <mesh castShadow position={[0, 0.95, 0]}>
         <sphereGeometry args={[0.13, 10, 10]} />
@@ -137,7 +145,7 @@ function KitchenHand({ zone }: { zone: number }) {
       </mesh>
       <mesh position={[0, 1.04, 0]}>
         <cylinderGeometry args={[0.135, 0.14, 0.06, 10]} />
-        <meshStandardMaterial color={PALETTE.cap} />
+        <meshStandardMaterial color={cap} />
       </mesh>
     </group>
   );
@@ -220,14 +228,15 @@ function UpgradeZone() {
       {Array.from({ length: zonesOpen }, (_, z) => {
         if (stationLevels[z] >= stationSoftMaxLevel()) return null;
         if (!upgradeZoneUnlockedZ(z, gate)) return null;
-        const cost = stationUpgradeCost(stationLevels[z]);
+        // M3: maliyet + etiket zone'un ÜRÜNÜNDEN (tost tezgâhı kendi çarpanıyla; "Çay Yükselt" yanlış olur).
+        const cost = stationUpgradeCostZ(z, stationLevels[z]);
         // KALAN tutar (2026-06-11 feedback: kısmi dolum düşülmüş hali yazsın).
         const remaining = Math.max(0, Math.ceil(cost - upgradeFills[z]));
         return (
           <GroundMarker
             key={z}
             pos={LAYOUT.upgradeZones[z]}
-            label="Çay Yükselt"
+            label={zoneProduct(z) === 'tost' ? 'Tost Yükselt' : 'Çay Yükselt'}
             sub={String(remaining)}
             coin
             tint="#ffce54"

@@ -16,7 +16,18 @@ görev para ödülleri + yemek masaları farklı/seviyeyle artan görsel". Miles
   KitchenStaff/gölge kamerası genellendi. vitest 124/124 (4 yeni: zincir türetme, geçit segmentleri,
   gerçek-dt müşteri nav'ı arka salona, union kelepçe), sim (z3 @44dk, kat dolu @1.8sa idealize),
   smoke 27/27, Playwright canlı 3-zone + 4-zone görsel (konsol 0).
-- ⏳ M3 tost hattı → M4 tuvalet+depo → M5 maç salonu + APK.
+- ✅ **M3 TOST HATTI (zone-3)**: `PRODUCTS` (tea 5₺/6sn ↔ tost 25₺/14sn; dish cup/plate;
+  upgradeCostMult ×20) + `ZONE_PRODUCTS` (z2=tost); teaStation.basePrice/npc.orderTime artık
+  PRODUCTS.tea'dan (tek kaynak). Tepside ayrı `trayFood` (kapasite paylaşımlı); tost müşterisi
+  ÇAYLA doyurulamaz; ödeme ürün fiyatından; kirli TABAK görseli; emptyTray tostu da döndürür.
+  Görsel: TostStation (sac+ısınan pres kapakları, L2+ çift pres, ekmek kasası) + tost ustası
+  (hardal önlük/beyaz kep) + YEMEK masası evrimi (kırmızı muşamba→turuncu→petrol→altın + L1
+  peçetelik/L2 ketçap-mayo/L3 servis tabağı) + garson tepsisinde tost. Görevler q_zone3..q_z3table4
+  APPEND (İD-eşleme gerekmedi; SAVE v23 kaldı — şema değişmedi). **BUG FIX: maxConcurrent 8 sabitti,
+  9+ masada arka salon müşterisiz kalıyordu → tavan masalarla ölçeklenir (tables+2).** Sim ürün-
+  farkındalı (zone-3 dolu @60dk idealize). vitest 130/130, build, smoke 27/27, Playwright canlı
+  (tost al→servis→25₺ ödeme→görev 1/5; tabak; "Tost Tezgâhı" etiketi; konsol 0).
+- ⏳ M4 tuvalet+depo → M5 maç salonu + APK.
 
 ## ŞU AN (2026-06-11 — TELEFON FEEDBACK TURU-2 ✅ UYGULANDI, SAVE v23)
 Kullanıcı v22 APK'yı CANLI test ederken 8 maddelik turu-2 feedback'i verdi; HEPSİ onaylanıp uygulandı:
