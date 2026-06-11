@@ -2158,6 +2158,7 @@ describe('M3 — TOST ürün hattı (zone-3): trayFood, ürün fiyatı, tabak, g
     expect(ids.slice(i + 1)).toEqual([
       'q_zone3', 'q_z3serve', 'q_z3table2', 'q_z3waiter', 'q_z3table3', 'q_z3dish', 'q_z3table4',
       'q_wc', 'q_paper', 'q_cleaner', // M4 hattı da append-only
+      'q_zone4', 'q_z4serve', 'q_z4table2', 'q_z4waiter', 'q_z4table3', 'q_z4dish', 'q_z4table4', // M5
     ]);
   });
 
@@ -2354,5 +2355,48 @@ describe('M4 — TUVALET + DEPO MVP: kâğıt döngüsü, ücret, kuyruk vazgeç
     expect(m.saveVersion).toBe(SAVE_VERSION);
     expect(m.stats.paperRefills).toBe(0);
     expect(m.questIndex).toBe(16); // görevler sona eklendi → index kaymadı
+  });
+});
+
+describe('M5 — MAÇ SALONU (zone-4): görev hattı + zone kimlik bahşişi', () => {
+  it('görev hattı: q_cleaner sonrası maç salonu görevleri APPEND edildi', () => {
+    const ids = economyConfig.quests.map((q) => q.id);
+    const i = ids.indexOf('q_cleaner');
+    expect(i).toBeGreaterThan(0);
+    expect(ids.slice(i + 1)).toEqual([
+      'q_zone4', 'q_z4serve', 'q_z4table2', 'q_z4waiter', 'q_z4table3', 'q_z4dish', 'q_z4table4',
+    ]);
+  });
+
+  it('zone-4 müşterisi çay fiyatı + zone bahşişi öder (5 + 2); diğer salonlarda bonus yok', () => {
+    const ALL = ['table2', 'table3', 'waiter', 'dishwasher', 'table4',
+      'zone2', 'z2table2', 'z2waiter', 'z2table3', 'z2dishwasher', 'z2table4',
+      'zone3', 'z3table2', 'z3waiter', 'z3table3', 'z3dishwasher', 'z3table4',
+      'wc', 'cleaner', 'zone4'];
+    useGame.getState().hardReset();
+    useGame.setState({
+      padsDone: [...ALL],
+      questIndex: economyConfig.quests.length,
+      // İki içen müşteri: biri zone-4 masasında (slot 12), biri zone-1'de (slot 0).
+      npcs: [
+        { id: 21, state: 'drinking', pos: [...LAYOUT.tables[12].seat] as [number, number, number], tableIndex: 12, timer: 0.02, color: '#fff' },
+        { id: 22, state: 'drinking', pos: [...LAYOUT.tables[0].seat] as [number, number, number], tableIndex: 0, timer: 0.02, color: '#fff' },
+      ],
+      spawnTimer: 1e9,
+      // Oyuncu HER İKİ paradan da uzakta (mıknatıs 2.6 çekip toplamasın — coin sayımı bozulur).
+      player: [4.5, 0.6, 4.5],
+      // tuvalete sapmasınlar (deterministik): şanstan bağımsızlık için Math.random geçici 0.99
+      // döndürür (useChance 0.28'i asla geçemez).
+    });
+    const origRandom = Math.random;
+    Math.random = () => 0.99;
+    try {
+      useGame.getState().tick(0.1);
+    } finally {
+      Math.random = origRandom;
+    }
+    const s = useGame.getState();
+    const vals = s.coins.map((c) => c.value).sort((a, b) => a - b);
+    expect(vals).toEqual([5, 7]); // z1: 5; z4: 5 + zoneTipBonus 2
   });
 });

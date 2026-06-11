@@ -532,7 +532,26 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   sim (config'ten etiketler), smoke 27/27, Playwright canlı (migrasyon enjeksiyonu dahil), konsol 0.
   - Bilinen-flaky: "ödeyen müşteri ... bahşişini bırakır" testi 1 kez tek başına kırmızı yandı,
     izole+tam tekrarında yeşil (muhtemel test-arası durum sızıntısı/rastgele spawn). Tekrarlarsa bak.
-- ⏳ **3a kalan:** zone 3-4 (tost/TV konsepti) + kat planındaki servis odaları (floorplan-master.md).
+- ✅ **GECE OTURUMU 2026-06-12 — 1. KAT TAMAMLANDI (M1-M5; onaylı plan docs/zone34-wc-floor2-design.md §5b):**
+  - **M1 Görev ödülleri** (b4d8ac7): QuestDef.reward → tamamlanınca cüzdan+lifetime; toast'ta coin+tutar,
+    kartta rozet; tüm görevlere ödül (band ~%10-20 pad maliyeti); sim quest-ödül modeli (ilk alım 60→34sn).
+  - **M2 2×2 kat ızgarası** (bb877e1): MAX_ZONES=4 (z2 arka-sol/z3 arka-sağ), zonePoint (ayna+sıra),
+    sıra-arası GEÇİTLİ duvar (rowWallSegments — collision+nav+çizim TEK liste), kilitli zone nav blokajı,
+    oyuncu açık-zone-BİRLEŞİMİ kelepçesi (L-şekil), duvarlar zone-kenarı başına + L-köşe dikmesi,
+    zone3/zone4 pad zincirleri.
+  - **M3 Tost hattı** (995807d): PRODUCTS (çay 5₺/6sn ↔ tost 25₺/14sn; kirli cup/plate; istasyon yük. ×20)
+    + ZONE_PRODUCTS (z2=tost); trayFood (paylaşımlı kapasite); ürün-eşleşmeli servis; TostStation +
+    tost ustası + YEMEK masası evrimi (muşamba→turuncu→petrol→altın + sofra prop'ları); görevler APPEND.
+    **BUG FIX:** maxConcurrent sabit 8 → 9+ masada arka salon müşterisiz kalıyordu; tavan = tables+2.
+  - **M4 Tuvalet+Depo MVP** (e494aee, SAVE v24): zone-3 arka duvarında katı oda+depo rafı (wcSolids tek
+    kaynak); omurga z3table4→wc→cleaner→zone4; müşteri %28 tuvalete (toToilet/usingToilet) → kapı önüne
+    5₺; kâğıt 0 → 10sn kuyruk → vazgeçer; oyuncu koli taşır (q_paper yalnız oyuncu); temizlikçi ikmal turu.
+  - **M5 Maç salonu**: ZONE_TIP_BONUS [0,0,0,2] (servis +2₺; RUSH event'i Faz 4 kancası), dev maç TV'si +
+    flamalar, görevler APPEND. Görev hattı toplam 40 görev (hepsi ödüllü).
+  - Doğrulama (her milestone'da): vitest 120→138/138, build, sim (zone-3 @44dk / kat dolu @1.56sa idealize;
+    normal profil ~2.9sa), smoke 27/27, Playwright canlı + screenshot'lar, konsol 0. SAVE v23→v24 (yalnız
+    stats.paperRefills; görevler hep SONA eklendi → questIndex İD-eşleme gerekmedi).
+- ⏳ **3a kalan:** —(yok; 1. kat içerik olarak tamam).
 - ⏳ **3b:** Kat geçişi: kat dolunca **merdiven** açılır → ekran kararma → üst kat; dinamik bounds/kamera; SAVE bump.
 - ⏳ **3c:** Tuvalet ODASI + DEPO (KATA özel, parayla açılır) + tuvalet kâğıdı döngüsü (depodan al→tak) + temizlikçi.
 - ⏳ **3d:** Menü çeşitliliği (kahve/tost — mutfak şeridine eklenir). Okey/tavla/nargile üst katlar.

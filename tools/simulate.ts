@@ -27,6 +27,7 @@ import {
   MAX_ZONES,
   PRODUCTS,
   zoneProduct,
+  zoneTipBonus,
   type CharStat,
   type GateState,
   type QuestTarget,
@@ -99,7 +100,7 @@ function rateZ(s: State, z: number): number {
   const cycle = C.npc.walkTime + bt + C.npc.eatTime;
   const demand = d.tablesByZone[z] / cycle;
   const supply = 1 / bt;
-  return Math.min(demand, supply) * (PRODUCTS[zoneProduct(z)].price + tableTip(s.tableLevel));
+  return Math.min(demand, supply) * (PRODUCTS[zoneProduct(z)].price + tableTip(s.tableLevel) + zoneTipBonus(z));
 }
 
 function rate(s: State, eff = 1): number {
