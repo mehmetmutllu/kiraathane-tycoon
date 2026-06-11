@@ -439,6 +439,19 @@ body,
   color: var(--gold-1);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
+/* Görev ödül rozeti (M1): başlığın yanında küçük coin + tutar */
+.quest-reward {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 6px;
+  font-family: var(--font-num);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--gold-1);
+  vertical-align: middle;
+  white-space: nowrap;
+}
 
 /* ---- Oyun-tarzı modal kart (offline, ayarlar, posta) ---- */
 .modal-backdrop {
@@ -745,6 +758,17 @@ body,
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+/* Görev ödülü (M1): toast'ta sağda coin + tutar */
+.notice-reward {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 3px;
+  font-family: var(--font-num);
+  font-size: 14px;
+  font-weight: 800;
+  color: #9a6a00;
 }
 
 @keyframes noticeUp {

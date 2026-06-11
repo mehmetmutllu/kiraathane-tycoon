@@ -111,7 +111,14 @@ export function HUD() {
             <QuestPhoto target={quest.target} size={46} />
           </span>
           <span className="quest-body">
-            <span className="quest-title">{quest.title}</span>
+            <span className="quest-title">
+              {quest.title}
+              {quest.reward != null && (
+                <span className="quest-reward" data-testid="quest-reward">
+                  <CoinIcon size={14} />+{quest.reward}
+                </span>
+              )}
+            </span>
             {questPct != null ? (
               <span className="quest-track">
                 <span className="quest-fill" style={{ width: `${questPct}%` }} />
@@ -221,6 +228,11 @@ export function HUD() {
             {notice.kind === 'quest' ? <CheckBadge size={30} /> : notice.kind === 'level' ? <StarBadge size={30} /> : <BangBadge size={30} />}
           </span>
           <span className="notice-text">{notice.text}</span>
+          {notice.reward != null && (
+            <span className="notice-reward" data-testid="notice-reward">
+              <CoinIcon size={18} />+{notice.reward}
+            </span>
+          )}
         </div>
       )}
 

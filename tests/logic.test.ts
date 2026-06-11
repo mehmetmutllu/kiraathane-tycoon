@@ -963,6 +963,25 @@ describe('ekonomi v2 — seviye throughputu artırır, fiyatı DEĞİL (D-010)',
     expect(questTargetMet(target, ctx)).toBe(false);
     expect(questTargetMet(target, { ...ctx, stats: { ...stats, teasServed: 12 } })).toBe(true);
   });
+
+  it('görev ödülü (M1): tamamlanınca reward cüzdana+lifetime\'a eklenir; toast ve görev kartı gösterir', () => {
+    useGame.getState().hardReset();
+    const reward = economyConfig.quests[0].reward ?? 0;
+    expect(reward).toBeGreaterThan(0); // ödül tanımlı olmalı (config sözleşmesi)
+    const w0 = useGame.getState().wallet.toNumber();
+    const l0 = useGame.getState().lifetime.toNumber();
+    // q_pickup sayacını karşıla → tick görev hattını ilerletir ve ödülü öder.
+    useGame.setState({ stats: { ...useGame.getState().stats, teaPickups: 1 } });
+    useGame.getState().tick(0.05);
+    const s = useGame.getState();
+    expect(s.questIndex).toBe(1);
+    expect(s.wallet.toNumber()).toBeCloseTo(w0 + reward, 5);
+    expect(s.lifetime.toNumber()).toBeCloseTo(l0 + reward, 5);
+    expect(s.notice?.kind).toBe('quest');
+    expect(s.notice?.reward).toBe(reward); // HUD toast'ı coin + tutar çizer
+    // Sıradaki görevin kartında ödül görünür (QuestView.reward).
+    expect(s.quest?.reward).toBe(economyConfig.quests[1].reward ?? null);
+  });
 });
 
 describe('mekânsal çay yükseltme noktası (zone) + gating', () => {

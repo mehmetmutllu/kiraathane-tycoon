@@ -426,6 +426,8 @@ export interface GameNotice {
   text: string;
   ttl: number;
   kind: 'quest' | 'level' | 'reveal';
+  /** Görev ödülü (₺; M1): toast'ta coin ikonu + tutar olarak gösterilir (₺ sembolü display'de yok). */
+  reward?: number;
 }
 
 /**
@@ -657,6 +659,8 @@ export interface QuestView {
   total: number | null;
   /** Pad görevlerinde maliyet (görev barında gösterilir). */
   cost: number | null;
+  /** Tamamlama ödülü (₺; M1) — görev kartında coin rozetiyle gösterilir. */
+  reward: number | null;
 }
 
 function questView(q: QuestDef, ctx: QuestCtx): QuestView {
@@ -675,6 +679,7 @@ function questView(q: QuestDef, ctx: QuestCtx): QuestView {
     cur: counter != null && count != null ? Math.max(0, Math.min(count, counter - ctx.questBase)) : null,
     total: count,
     cost: pad ? pad.cost : charCost,
+    reward: q.reward ?? null,
   };
 }
 
@@ -1532,7 +1537,13 @@ export const useGame = create<GameState>((set, get) => ({
     };
     let questAdvanced = false;
     while (questIndex < C.quests.length && questTargetMet(C.quests[questIndex].target, questCtx)) {
-      notice = { text: C.quests[questIndex].title, ttl: 3.5, kind: 'quest' };
+      // Görev ödülü (M1): tamamlanınca cüzdana ₺ — toast'ta coin + tutar gösterilir.
+      const qReward = C.quests[questIndex].reward ?? 0;
+      if (qReward > 0) {
+        wallet = wallet.add(qReward);
+        lifetime = lifetime.add(qReward);
+      }
+      notice = { text: C.quests[questIndex].title, ttl: 3.5, kind: 'quest', reward: qReward > 0 ? qReward : undefined };
       questIndex += 1;
       xp += C.xp.perQuest;
       questAdvanced = true;

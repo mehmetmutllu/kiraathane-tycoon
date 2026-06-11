@@ -40,7 +40,24 @@ NOT (canlı test tekniği): sayfanın beforeunload-otosave'i localStorage enjeks
 enjeksiyon+`Storage.prototype.setItem=noop`+reload AYNI evaluate bloğunda yapılmalı.
 **SIRADAKİ:** yeni APK (v23) kullanıcıya; oynadıkça turu-3 feedback'leri gelecek.
 
-## >>> SONRAKİ OTURUM: İÇERİK TASARIM ARAŞTIRMASI (kod YOK — önce araştır+raporla+onay) <<<
+## İÇERİK TASARIM ARAŞTIRMASI ✅ RAPOR YAZILDI — ONAY BEKLİYOR (2026-06-11)
+Rapor: **`docs/zone34-wc-floor2-design.md`** (kod yazılmadı). Öneri özeti:
+- **Seçenek A (önerilen):** Zone-3 = TOST OCAĞI (ikinci ürün hattı; tost pahalı+yavaş, D-010
+  "fiyat artışı yeni menüyle"; tost ustası NPC + kirli tabak döngüsü) + Zone-4 = MAÇ SALONU
+  (çay iskeleti + büyük TV; MVP dekor+hafif bahşiş, maç rush event'i Faz 4 anahtarıyla).
+- **Bahçe zone REDDi gerekçeli:** duvar/nav/kat ızgarası bozulur; bahçe hissi = sokak masaları
+  (görsel) + üst kat nargile balkonu.
+- **Tuvalet+Depo MVP:** arka şerit rezervlerinde (depo sol, tuvalet sağ); tek pad'le birlikte
+  açılır (zone-3↔zone-4 arası omurga); döngü = %~25-30 müşteri kullanır → 1 kâğıt + kapı önüne
+  ödeme; kâğıt bitti → depodan koli taşı; temizlikçi personeli ikmali otomatikler (kısmi).
+- **Üst kat = OYUN KATI:** okey/tavla zone'ları (4 müşteri birlikte, uzun oturum, kalkışta yüksek
+  masa ücreti + periyodik çay) + servis çay-zone'u + nargile balkonu (ön cephe) + kata özel
+  tuvalet+depo. Kumarsız/çocuk-güvenli sunum.
+- Uygulama sırası önerisi: zone-3 → tuvalet/depo → zone-4 → Faz 3b üst kat (her biri ayrı plan).
+**SIRADAKİ:** kullanıcı raporu onaylar/değiştirir → onaylanan kısım uygulama planına çevrilir.
+(Feedback turu-3 [v23 APK telefon testi] hâlâ beklemede — kullanıcı sonra verecek.)
+
+## (ÖNCEKİ HEDEF) >>> İÇERİK TASARIM ARAŞTIRMASI (kod YOK — önce araştır+raporla+onay) <<<
 Kullanıcı istedi (2026-06-11 gece): **sonraki 2 zone + lavabo/depo + üst kat** detaylı tasarlanacak.
 - **Sonraki 2 zone ne olacak?** Kullanıcının aklındakiler: yemek salonu (sıcak bakıyor) + bahçe
   ("bahçe mantıksız olur gibi" — şüpheli). Mekânı KOMPLE restorana çevirmek İSTEMİYOR (kıraathane

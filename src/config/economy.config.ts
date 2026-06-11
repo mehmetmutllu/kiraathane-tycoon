@@ -103,6 +103,9 @@ export interface QuestDef {
   target: QuestTarget;
   /** Hedefin zone'u (kamera odağı doğru salona baksın; yoksa 0). */
   zone?: number;
+  /** Tamamlanınca cüzdana eklenen ₺ ödülü (M1, kullanıcı isteği 2026-06-12). Band: sıradaki
+   *  pad maliyetinin ~%10-20'si — tempoyu pürüzsüzleştirir, satın almayı oyuncu yerine yapmaz. */
+  reward?: number;
 }
 
 export const economyConfig = {
@@ -373,35 +376,35 @@ export const economyConfig = {
     // darlığı TAM o anda yaşanır; T1=75₺ o noktada rahat); q_charTray2 q_table3→q_waiter ARASI
     // (3 masa solo dönerken kapasite 4 anlamlı — önce kendi gücü, sonra otomasyon); q_charMagnet
     // q_table4 SONRASI (4 masa + garson döneminde yere düşen para zirve yapar). T3/T4 ve hız GÖREVSİZ.
-    { id: 'q_pickup', title: 'Ocaktan çay al', target: { type: 'pickupTea', count: 1 } },
-    { id: 'q_serve1', title: 'Çayı müşteriye götür', target: { type: 'serveTea', count: 1 } },
-    { id: 'q_coin', title: 'Yere düşen parayı topla', target: { type: 'collectCoin', count: 1 } },
-    { id: 'q_table2', title: '2. Masayı aç', target: { type: 'pad', id: 'table2' } },
-    { id: 'q_charTray1', title: 'Tepsini büyüt', target: { type: 'charStat', stat: 'tray', tier: 1 } },
-    { id: 'q_serve5', title: '5 çay servis et', target: { type: 'serveTea', count: 5 } },
-    { id: 'q_station2', title: 'Çay ocağını yükselt', target: { type: 'stationLevel', level: 1 } },
-    { id: 'q_wash', title: '3 kirli bardak yıka', target: { type: 'washDish', count: 3 } },
-    { id: 'q_table3', title: '3. Masayı aç', target: { type: 'pad', id: 'table3' } },
-    { id: 'q_charTray2', title: "Tepsini 4'e çıkar", target: { type: 'charStat', stat: 'tray', tier: 2 } },
-    { id: 'q_waiter', title: 'Garson tut', target: { type: 'pad', id: 'waiter' } },
-    { id: 'q_dish', title: 'Bulaşıkçı tut', target: { type: 'pad', id: 'dishwasher' } },
-    { id: 'q_table4', title: '4. Masayı aç', target: { type: 'pad', id: 'table4' } },
-    { id: 'q_charMagnet', title: 'Para mıknatısını güçlendir', target: { type: 'charStat', stat: 'magnet', tier: 1 } },
+    { id: 'q_pickup', title: 'Ocaktan çay al', target: { type: 'pickupTea', count: 1 }, reward: 3 },
+    { id: 'q_serve1', title: 'Çayı müşteriye götür', target: { type: 'serveTea', count: 1 }, reward: 3 },
+    { id: 'q_coin', title: 'Yere düşen parayı topla', target: { type: 'collectCoin', count: 1 }, reward: 5 },
+    { id: 'q_table2', title: '2. Masayı aç', target: { type: 'pad', id: 'table2' }, reward: 10 },
+    { id: 'q_charTray1', title: 'Tepsini büyüt', target: { type: 'charStat', stat: 'tray', tier: 1 }, reward: 15 },
+    { id: 'q_serve5', title: '5 çay servis et', target: { type: 'serveTea', count: 5 }, reward: 15 },
+    { id: 'q_station2', title: 'Çay ocağını yükselt', target: { type: 'stationLevel', level: 1 }, reward: 10 },
+    { id: 'q_wash', title: '3 kirli bardak yıka', target: { type: 'washDish', count: 3 }, reward: 15 },
+    { id: 'q_table3', title: '3. Masayı aç', target: { type: 'pad', id: 'table3' }, reward: 25 },
+    { id: 'q_charTray2', title: "Tepsini 4'e çıkar", target: { type: 'charStat', stat: 'tray', tier: 2 }, reward: 30 },
+    { id: 'q_waiter', title: 'Garson tut', target: { type: 'pad', id: 'waiter' }, reward: 30 },
+    { id: 'q_dish', title: 'Bulaşıkçı tut', target: { type: 'pad', id: 'dishwasher' }, reward: 40 },
+    { id: 'q_table4', title: '4. Masayı aç', target: { type: 'pad', id: 'table4' }, reward: 60 },
+    { id: 'q_charMagnet', title: 'Para mıknatısını güçlendir', target: { type: 'charStat', stat: 'magnet', tier: 1 }, reward: 50 },
     // --- ZONE-2 görev hattı (Faz 3a + D-022): geçitteki pad → yeni salonun kendi zinciri.
     // v22 (kullanıcı 2026-06-11): q_zone2 YÜKSELTME görevlerinin (garson hız + masa) ÖNÜNE alındı —
     // "2. salon için yükseltmelerin tamamlanmasına gerek yok"; tüm zone-1 pad'leri (table4 zinciri) yeter.
     // v23 (görev senkronu, 2026-06-11 turu-2): q_z2serve q_zone2'nin HEMEN arkasına — salon açılınca
     // kamera oraya pan atarken görev oyuncuyu zone-1'e geri yollamasın; önce yeni salonu yaşa,
     // sonra zone-1 yükseltmeleri (q_waiterL2/q_tableL2). target.zone=1: yalnız salon-2 servisleri sayar.
-    { id: 'q_zone2', title: '2. Salonu aç', target: { type: 'pad', id: 'zone2' } },
-    { id: 'q_z2serve', title: 'Yeni salonda 5 çay servis et', target: { type: 'serveTea', count: 5, zone: 1 }, zone: 1 },
-    { id: 'q_waiterL2', title: 'Garsonu hızlandır', target: { type: 'waiterLevel', level: 1 } },
-    { id: 'q_tableL2', title: 'Bir masayı yükselt', target: { type: 'tableLevel', level: 1 } },
-    { id: 'q_z2table2', title: 'Salon 2: 2. Masayı aç', target: { type: 'pad', id: 'z2table2' }, zone: 1 },
-    { id: 'q_z2waiter', title: 'Salon 2: Garson tut', target: { type: 'pad', id: 'z2waiter' }, zone: 1 },
-    { id: 'q_z2table3', title: 'Salon 2: 3. Masayı aç', target: { type: 'pad', id: 'z2table3' }, zone: 1 },
-    { id: 'q_z2dish', title: 'Salon 2: Bulaşıkçı tut', target: { type: 'pad', id: 'z2dishwasher' }, zone: 1 },
-    { id: 'q_z2table4', title: 'Salon 2: 4. Masayı aç', target: { type: 'pad', id: 'z2table4' }, zone: 1 },
+    { id: 'q_zone2', title: '2. Salonu aç', target: { type: 'pad', id: 'zone2' }, reward: 150 },
+    { id: 'q_z2serve', title: 'Yeni salonda 5 çay servis et', target: { type: 'serveTea', count: 5, zone: 1 }, zone: 1, reward: 60 },
+    { id: 'q_waiterL2', title: 'Garsonu hızlandır', target: { type: 'waiterLevel', level: 1 }, reward: 50 },
+    { id: 'q_tableL2', title: 'Bir masayı yükselt', target: { type: 'tableLevel', level: 1 }, reward: 30 },
+    { id: 'q_z2table2', title: 'Salon 2: 2. Masayı aç', target: { type: 'pad', id: 'z2table2' }, zone: 1, reward: 50 },
+    { id: 'q_z2waiter', title: 'Salon 2: Garson tut', target: { type: 'pad', id: 'z2waiter' }, zone: 1, reward: 80 },
+    { id: 'q_z2table3', title: 'Salon 2: 3. Masayı aç', target: { type: 'pad', id: 'z2table3' }, zone: 1, reward: 100 },
+    { id: 'q_z2dish', title: 'Salon 2: Bulaşıkçı tut', target: { type: 'pad', id: 'z2dishwasher' }, zone: 1, reward: 120 },
+    { id: 'q_z2table4', title: 'Salon 2: 4. Masayı aç', target: { type: 'pad', id: 'z2table4' }, zone: 1, reward: 200 },
   ] as readonly QuestDef[],
 
   // Oyuncu hareket hızı v20'de character.speed kademesinden türetilir (playerSpeed()).

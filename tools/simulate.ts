@@ -27,6 +27,7 @@ import {
   MAX_ZONES,
   type CharStat,
   type GateState,
+  type QuestTarget,
 } from '../src/config/economy.config.ts';
 
 const DT = 1; // saniyelik adım
@@ -44,6 +45,30 @@ interface State {
   padsDone: string[];
   /** Karakter kademeleri (v20): quest hattındaki alımlar simüle edilir (T1/T2/M1). */
   char: { tray: number; magnet: number; speed: number };
+  /** Görev hattı index'i (M1 ödülleri): tamamlanan görev cüzdana reward ekler. */
+  questIdx: number;
+}
+
+/** Görev hedefi sim durumunda karşılandı mı? Sayaç görevleri (öğretici) + sim'de modellenmeyen
+ *  waiterLevel/tableLevel İDEALİZE tamam sayılır (oyuncu görev hattını takip eder; maliyetleri
+ *  küçük — 250/60₺ — tempo ölçümünü bozmaz). */
+function questMetSim(s: State, t: QuestTarget): boolean {
+  switch (t.type) {
+    case 'pad': return s.padsDone.includes(t.id);
+    case 'stationLevel': return s.stationLevels[0] >= t.level;
+    case 'charStat': return s.char[t.stat] >= t.tier;
+    default: return true;
+  }
+}
+
+/** Tamamlanan görevlerin ödüllerini öde (M1) — store'daki quest-advance döngüsünün sim karşılığı. */
+function advanceQuests(s: State): void {
+  while (s.questIdx < C.quests.length && questMetSim(s, C.quests[s.questIdx].target)) {
+    const r = C.quests[s.questIdx].reward ?? 0;
+    s.wallet += r;
+    s.lifetime += r;
+    s.questIdx += 1;
+  }
 }
 
 function gateOf(s: State): GateState {
@@ -215,6 +240,7 @@ function runProfile(eff: number, log = false): Map<string, number> {
     stationLevels: Array.from({ length: MAX_ZONES }, () => 0),
     tableLevel: 0, padsDone: [],
     char: { tray: 0, magnet: 0, speed: 0 },
+    questIdx: 0,
   };
   const MAX_T = 60 * 60 * 6;
   const done = new Map<string, number>();
@@ -224,6 +250,7 @@ function runProfile(eff: number, log = false): Map<string, number> {
     s.lifetime += inc;
     s.t += DT;
     trySpend(s);
+    advanceQuests(s); // M1: görev ödülleri cüzdana
     for (const m of MILESTONES) {
       if (!done.has(m.name) && m.hit(s)) {
         done.set(m.name, s.t);
@@ -243,7 +270,7 @@ function run() {
   console.log('=== Köşe Kıraathanesi — Ekonomi v2 Simülasyonu (zone\'lu bottleneck modeli) ===\n');
   const s0: State = {
     t: 0, wallet: 0, lifetime: 0, stationLevels: [0, 0], tableLevel: 0, padsDone: [],
-    char: { tray: 0, magnet: 0, speed: 0 },
+    char: { tray: 0, magnet: 0, speed: 0 }, questIdx: 0,
   };
   console.log(`Sabit çay fiyatı: ${TEA_PRICE} ₺ · Başlangıç: 1 masa, oran ${rate(s0).toFixed(2)} ₺/sn\n`);
 
