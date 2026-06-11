@@ -24,11 +24,14 @@ Onaylı planın (docs/yemek-alani-garson-plan.md §2) Y2 milestone'u uygulandı:
   canlı: L3 masada 4 kişilik grup farklı taburelerde (ekran görüntüsü), L2'de 2 karşılıklı koltuk,
   tepsiyle TEK durakta 2 müşteriye servis → 2 AYRI para, 10dk hızlı-sarma soak; konsol 0.
 
-## >>> SIRADAKİ: YENİ APK DERLE + TELEFONDA TEST (kullanıcı kararı) <<<
-`npm run apk` → `android/app/build/outputs/apk/debug/app-debug.apk` telefona. Sonra **Y3** (sekmeli
-karakter paneli Oyuncu|Çay Garsonu|Tostçu + garson tepsi yükseltmeleri çay 800/2400/6000, tost
-2000/5000 + tostçu kıyafet farklılaşması; SAVE **v27** `waiterUpgrades`) → **Y4** (2. garson
-800/1200/2000, gating: salonun 4 masası L4 + claim + görevler APPEND + sim kalibrasyonu).
+## >>> SIRADAKİ: TELEFON FEEDBACK'İ → Y3 → Y4 (kullanıcı kararı, 2026-06-11 oturum sonu) <<<
+APK DERLENDİ ✅ (`android/app/build/outputs/apk/debug/app-debug.apk`, beee864 içerikli) — kullanıcı
+telefonda KISA test yapacak. Akış: **1)** Sonraki chat: telefon feedback'i alınır, gerekirse fix.
+**2)** Sonraki chat(ler): **Y3** (sekmeli karakter paneli Oyuncu|Çay Garsonu|Tostçu + garson tepsi
+yükseltmeleri çay 800/2400/6000, tost 2000/5000 + tostçu kıyafet farklılaşması; SAVE **v27**
+`waiterUpgrades`) → **Y4** (2. garson 800/1200/2000, gating: salonun 4 masası L4 + claim + görevler
+APPEND + sim kalibrasyonu — grup/koltuk talebi sim'e burada işlenir). **3)** Y3+Y4 bitince TOPLU
+telefon testi (yeni APK).
 
 ## ŞU AN (2026-06-11 — Y1 ✅ YEMEK ALANI KİMLİK PAKETİ, SAVE v26)
 Onaylı planın (docs/yemek-alani-garson-plan.md) Y1 milestone'u uygulandı:

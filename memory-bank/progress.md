@@ -563,9 +563,10 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   canlı (L3 masada 4 kişilik grup farklı taburelerde + L2'de 2 karşılıklı koltuk + tek durakta 2 servis
   + 2 ayrı para + 10dk soak; konsol 0). **BONUS FIX:** öncesinde de var olan flaky vitest (bahşiş testi
   — "uzak" oyuncu [0,0.6,99] z=5'e kelepçelenip mıknatısa giriyordu) gerçek uzak noktayla düzeltildi.
-- 🔧 **SIRADA (onaylı plan, `docs/yemek-alani-garson-plan.md`):** YENİ APK derle + telefonda test
-  (kullanıcı kararı) → Y3 sekmeli panel+garson tepsileri (SAVE **v27** — v26'yı Y1 aldı) → Y4 ikinci
-  garson+claim+sim kalibrasyonu (grup/koltuk talebi sim'e Y4'te işlenir — plan §6).
+- 🔧 **SIRADA (onaylı plan + kullanıcı akış kararı 2026-06-11):** APK derlendi ✅ → 1) sonraki chat
+  TELEFON FEEDBACK'İ (+fix) → 2) Y3 sekmeli panel+garson tepsileri (SAVE **v27** — v26'yı Y1 aldı)
+  → Y4 ikinci garson+claim+sim kalibrasyonu (grup/koltuk talebi sim'e Y4'te işlenir — plan §6)
+  → 3) Y3+Y4 sonrası TOPLU telefon testi (yeni APK).
 - ⏳ **3a kalan:** arka-sol rezerv arsanın içeriği SONRA tasarlanacak (kullanıcıyla); üst kat
   (okey/tavla) ayrı tasarım turu.
 - ⏳ **3b:** Kat geçişi: kat dolunca **merdiven** açılır → ekran kararma → üst kat; dinamik bounds/kamera; SAVE bump.
