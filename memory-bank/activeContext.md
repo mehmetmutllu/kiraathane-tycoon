@@ -2,6 +2,25 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-06-12 — TELEFON FEEDBACK TURU-3 oturumu; M-A ✅ + M-B ✅, SAVE v27)
+Kullanıcı feedback'i (onaylı plan: M-A fixler → M-B görev redesign → M-C=Y3 → M-D=Y4; fiyat
+indirimi son teste ERTELENDİ):
+- ✅ **M-A** (commit 5727b07): pad fiyat yazısı büyüdü (GroundMarker sub 0.29/başlık 0.3);
+  garson hız noktası [-3.5,3.4]'e (duvar arkasında kayboluyordu); merdiven kaldırıldı;
+  dolum süreleri — pad fillRate = cost/hedef-dwell (öğretici 1.5-3sn, orta 3-5sn, açılış max 8sn),
+  yükseltmeler `upgradeFillRateFor(cost)` süre 1-6sn kelepçe (tost L4 22.5→6sn).
+- ✅ **M-B GÖREV REDESIGN (SAVE v27)**: q_z2serve KALDIRILDI, q_z3serve→q_tost5 ("5 tost servis et");
+  yeni çeşitler: q_z2station/q_z3station (zone'lu stationLevel), q_tableL2x2 (tablesAtLevel 2×L2),
+  q_waiterTray1/q_tostTray1 (waiterTray — Y3 panel satın alımı M-C'DE GELİYOR, o görevlere kadar
+  oyuncu ulaşamadan M-C bitmiş olmalı!). Kamera: serveTea→stations[z] (boş salon ortası bitti),
+  stationLevel zone'lu, tablesAtLevel→ilk eksik masa. QuestPhoto: tost dilimi ikonları (zone 2).
+  v27 migrasyonu: İD-eşleme (alias q_z2serve→q_z2table2, q_z3serve→q_tost5) + GENEL güvenlik ağı
+  (aktif görevin gerisinde alınmamış pad görevi → geri çek; hattı bitmiş kayda dokunma) + questBase
+  tutarlılığı (sayaç değilse 0; eşdeğer sayaçsa korunur). `waiterUpgrades {teaTray,tostTray}` persist
+  v27'de AÇILDI (default 0; Y3 UI M-C'de). vitest 156/156, build, smoke 27/27, sim z3 @1.63sa.
+- ⏳ Sıradaki: **M-C (Y3)** sekmeli panel + garson tepsi satın alma + tostçu kıyafet → **M-D (Y4)**
+  2. garson (waiter2 pad'leri, requires: zone 4 masası L4) + claim + görev APPEND + sim + APK.
+
 ## ŞU AN (2026-06-11 — Y2 ✅ KOLTUK + GRUP SİSTEMİ; kayıt şeması DEĞİŞMEDİ, v26 kaldı)
 Onaylı planın (docs/yemek-alani-garson-plan.md §2) Y2 milestone'u uygulandı:
 - **Koltuk türetme:** `tables.seatsByLevel` [1,2,2,4,4] + `tableSeats(level)` (economy.config — tek

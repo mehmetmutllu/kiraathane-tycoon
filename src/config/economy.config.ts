@@ -13,7 +13,7 @@
  *   L5 (Usta)   = masterDiamondCost 💎 VEYA 1 ödüllü video; outputMult yerine masterOutputMult
  */
 
-export const SAVE_VERSION = 26;
+export const SAVE_VERSION = 27;
 
 /**
  * ZONE modeli (Faz 3a + D-022, gece 2026-06-10): zemin kat zone'ları. Her zone kendi TEMALI
@@ -106,14 +106,26 @@ export type QuestTarget =
   | { type: 'pickupTea'; count: number } // ocaktan tepsiye çay al
   // zone verilirse YALNIZ o salondaki servisler sayılır (v23: "Yeni salonda 5 çay" gerçekten
   // salon-2'de saysın — eski global sayaç zone-1 servisini de sayıyordu).
-  | { type: 'serveTea'; count: number; zone?: number } // oyuncu eliyle masaya çay bırak
+  | { type: 'serveTea'; count: number; zone?: number } // oyuncu eliyle masaya çay/tost bırak
   | { type: 'collectCoin'; count: number } // yerden para topla
   | { type: 'washDish'; count: number } // oyuncu eliyle bulaşıkta kirli yıka
   | { type: 'pad'; id: string } // pad'i tamamla (masa aç / personel tut)
-  | { type: 'stationLevel'; level: number } // çay ocağı seviyesi
+  | { type: 'stationLevel'; level: number; zone?: number } // o salonun ocağı bu seviyeye ulaşsın (v27: zone'lu)
   | { type: 'waiterLevel'; level: number } // garson hız seviyesi
   | { type: 'tableLevel'; level: number } // HERHANGİ bir masa bu seviyeye ulaşsın
+  // v27 görev çeşitliliği (telefon feedback): zone'un (yoksa tümü) en az `count` masası `level`+ olsun.
+  | { type: 'tablesAtLevel'; level: number; count: number; zone?: number }
+  // Y3 garson tepsi yükseltmesi: ilgili garson türünün tepsi kademesi `tier`'a ulaşsın.
+  | { type: 'waiterTray'; kind: WaiterKind; tier: number }
   | { type: 'charStat'; stat: CharStat; tier: number }; // karakter özelliği bu kademeye ulaşsın (v20)
+
+/** Garson türü (Y3): çay garsonları (z0+z1 ortak eğri) | tostçu garson (z2, kendi eğrisi). */
+export type WaiterKind = 'tea' | 'tost';
+/** Garson tepsi yükseltme kademeleri (persist v27). Kademe 0 = taban tepsi 1. */
+export interface WaiterUpgrades {
+  teaTray: number;
+  tostTray: number;
+}
 
 /** Karakter özellikleri (v20): tepsi kapasitesi / para mıknatısı / hareket hızı. */
 export type CharStat = 'tray' | 'magnet' | 'speed';
@@ -280,6 +292,15 @@ export const economyConfig = {
     trayCapacity: 1,
     /** Garson L2 yükseltme maliyeti (₺). Tek seviye (L1→L2); L3+ Faz 4 (💎/video). */
     upgradeCost: 250,
+    /**
+     * Tepsi yükseltme maliyetleri (Y3, plan §3 — onaylı): kademe i+1'in ₺'si. Tepsi = 1 + kademe.
+     * Çay garsonları (z0+z1) ORTAK eğri: 1→2→3→4; tostçu kendi eğrisi: 1→2→3 (tost büyük, tavan 3).
+     * Karakter panelindeki sekmelerden satın alınır (mekânsal değil — character deseni).
+     */
+    trayUpgrades: {
+      tea: { costs: [800, 2400, 6000] },
+      tost: { costs: [2000, 5000] },
+    } satisfies Record<WaiterKind, { costs: number[] }>,
     /**
      * Yükseltme noktası önkoşulu: garson tutulmuş + en az 20 çay TAŞIMIŞ olmalı (arka-plan şartı;
      * kullanıcı 2026-06-09: tutar tutmaz hızlandırma belirmesin — önce garson işbaşında görülsün).
@@ -449,31 +470,33 @@ export const economyConfig = {
     { id: 'q_dish', title: 'Bulaşıkçı tut', target: { type: 'pad', id: 'dishwasher' }, reward: 40 },
     { id: 'q_table4', title: '4. Masayı aç', target: { type: 'pad', id: 'table4' }, reward: 60 },
     { id: 'q_charMagnet', title: 'Para mıknatısını güçlendir', target: { type: 'charStat', stat: 'magnet', tier: 1 }, reward: 50 },
-    // --- ZONE-2 görev hattı (Faz 3a + D-022): geçitteki pad → yeni salonun kendi zinciri.
-    // v22 (kullanıcı 2026-06-11): q_zone2 YÜKSELTME görevlerinin (garson hız + masa) ÖNÜNE alındı —
-    // "2. salon için yükseltmelerin tamamlanmasına gerek yok"; tüm zone-1 pad'leri (table4 zinciri) yeter.
-    // v23 (görev senkronu, 2026-06-11 turu-2): q_z2serve q_zone2'nin HEMEN arkasına — salon açılınca
-    // kamera oraya pan atarken görev oyuncuyu zone-1'e geri yollamasın; önce yeni salonu yaşa,
-    // sonra zone-1 yükseltmeleri (q_waiterL2/q_tableL2). target.zone=1: yalnız salon-2 servisleri sayar.
+    // --- ZONE-2 görev hattı — v27 YENİDEN TASARIM (2026-06-12 telefon feedback, onaylı):
+    // "yine 5 çay servis et" tekrarı KALDIRILDI (öğretici q_serve5 yeter); yerine ÇEŞİT:
+    // salonun ocağını yükselt, garsonu hızlandır, masa yükselt, garson tepsisi (Y3), 2'li masa
+    // seviyesi (koltuk/grup sistemini tanıtır). Kalan id'ler korunur (v27 İD-eşleme migrasyonu).
     { id: 'q_zone2', title: '2. Salonu aç', target: { type: 'pad', id: 'zone2' }, reward: 150 },
-    { id: 'q_z2serve', title: 'Yeni salonda 5 çay servis et', target: { type: 'serveTea', count: 5, zone: 1 }, zone: 1, reward: 60 },
+    { id: 'q_z2table2', title: 'Salon 2: 2. Masayı aç', target: { type: 'pad', id: 'z2table2' }, zone: 1, reward: 50 },
+    { id: 'q_z2station', title: "Salon 2'nin ocağını yükselt", target: { type: 'stationLevel', level: 1, zone: 1 }, zone: 1, reward: 50 },
     { id: 'q_waiterL2', title: 'Garsonu hızlandır', target: { type: 'waiterLevel', level: 1 }, reward: 50 },
     { id: 'q_tableL2', title: 'Bir masayı yükselt', target: { type: 'tableLevel', level: 1 }, reward: 30 },
-    { id: 'q_z2table2', title: 'Salon 2: 2. Masayı aç', target: { type: 'pad', id: 'z2table2' }, zone: 1, reward: 50 },
     { id: 'q_z2waiter', title: 'Salon 2: Garson tut', target: { type: 'pad', id: 'z2waiter' }, zone: 1, reward: 80 },
+    { id: 'q_waiterTray1', title: 'Çay garsonlarının tepsisini büyüt', target: { type: 'waiterTray', kind: 'tea', tier: 1 }, reward: 80 },
     { id: 'q_z2table3', title: 'Salon 2: 3. Masayı aç', target: { type: 'pad', id: 'z2table3' }, zone: 1, reward: 100 },
     { id: 'q_z2dish', title: 'Salon 2: Bulaşıkçı tut', target: { type: 'pad', id: 'z2dishwasher' }, zone: 1, reward: 120 },
     { id: 'q_z2table4', title: 'Salon 2: 4. Masayı aç', target: { type: 'pad', id: 'z2table4' }, zone: 1, reward: 200 },
-    // --- ZONE-3 TOST OCAĞI hattı (M3): ikinci ürün hattının tanıtımı. SONA EKLENDİ (append-only →
-    // eski kayıtların questIndex'i İD-eşleme gerektirmeden geçerli kalır; hattı bitirmiş kayıt
-    // kaldığı yerden yeni görevlere devam eder).
+    { id: 'q_tableL2x2', title: "2 masayı Seviye 2'ye çıkar", target: { type: 'tablesAtLevel', level: 2, count: 2 }, reward: 120 },
+    // --- ZONE-3 TOST hattı — v27 yeniden tasarım: tek tanıtım sayacı "5 tost" (yeni ürün; çay değil),
+    // ek çeşit: tost tezgâhı yükseltme + tostçu tepsisi (Y3).
     { id: 'q_zone3', title: 'Tost Salonunu aç', target: { type: 'pad', id: 'zone3' }, zone: 2, reward: 400 },
-    { id: 'q_z3serve', title: 'Tost salonunda 5 sipariş servis et', target: { type: 'serveTea', count: 5, zone: 2 }, zone: 2, reward: 150 },
     { id: 'q_z3table2', title: 'Tost: 2. Masayı aç', target: { type: 'pad', id: 'z3table2' }, zone: 2, reward: 100 },
+    { id: 'q_tost5', title: '5 tost servis et', target: { type: 'serveTea', count: 5, zone: 2 }, zone: 2, reward: 150 },
+    { id: 'q_z3station', title: 'Tost tezgâhını yükselt', target: { type: 'stationLevel', level: 1, zone: 2 }, zone: 2, reward: 150 },
     { id: 'q_z3waiter', title: 'Tost: Garson tut', target: { type: 'pad', id: 'z3waiter' }, zone: 2, reward: 150 },
+    { id: 'q_tostTray1', title: 'Tostçunun tepsisini büyüt', target: { type: 'waiterTray', kind: 'tost', tier: 1 }, reward: 150 },
     { id: 'q_z3table3', title: 'Tost: 3. Masayı aç', target: { type: 'pad', id: 'z3table3' }, zone: 2, reward: 200 },
     { id: 'q_z3dish', title: 'Tost: Bulaşıkçı tut', target: { type: 'pad', id: 'z3dishwasher' }, zone: 2, reward: 250 },
     { id: 'q_z3table4', title: 'Tost: 4. Masayı aç', target: { type: 'pad', id: 'z3table4' }, zone: 2, reward: 350 },
+    // (Y4 görevleri — "4 masayı L4 yap" + "2. garsonu tut" — M-D'de SONA eklenir; append-only.)
   ] as readonly QuestDef[],
 
   // Oyuncu hareket hızı v20'de character.speed kademesinden türetilir (playerSpeed()).
@@ -748,6 +771,24 @@ export function waiterSpeed(level: number): number {
 /** ₺ ile çıkılabilen en yüksek garson seviyesi (index; L1=0 taban → L2=1). */
 export function waiterSoftMaxLevel(): number {
   return economyConfig.waiter.moveSpeedByLevel.length - 1;
+}
+
+// ---- Garson tepsi yükseltmeleri (Y3) — kademe → değer türeticileri ----
+
+/** Garson türünün max tepsi kademesi (= satın alınabilir yükseltme sayısı). */
+export function waiterTrayMaxTier(kind: WaiterKind): number {
+  return economyConfig.waiter.trayUpgrades[kind].costs.length;
+}
+
+/** Sıradaki tepsi kademesinin ₺ maliyeti (kademe tavandaysa null). */
+export function waiterTrayNextCost(kind: WaiterKind, tier: number): number | null {
+  const costs = economyConfig.waiter.trayUpgrades[kind].costs;
+  return tier < costs.length ? costs[tier] : null;
+}
+
+/** Garson tepsi kapasitesi = taban 1 + satın alınmış kademe (Y3). */
+export function waiterTrayCapacityFor(kind: WaiterKind, tier: number): number {
+  return 1 + Math.min(Math.max(tier, 0), waiterTrayMaxTier(kind));
 }
 
 // ---- Karakter yükseltmeleri (v20) — kademe → değer türeticileri (TEK kaynak: economyConfig.character) ----

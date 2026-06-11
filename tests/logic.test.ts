@@ -22,6 +22,10 @@ import {
   trayCapacityFor,
   attractRadiusFor,
   playerSpeedFor,
+  upgradeFillRateFor,
+  waiterTrayCapacityFor,
+  waiterTrayMaxTier,
+  waiterTrayNextCost,
 } from '../src/config/economy.config';
 import { D, fmt } from '../src/game/decimal';
 import {
@@ -1933,12 +1937,15 @@ describe('zone-2 yükseltme gating (v21) — zone-1 deseni aynalanır (önce kap
 describe('görev sırası v22 — q_zone2 yükseltme görevlerinden ÖNCE + v21→v22 migrasyonu', () => {
   const qi = (id: string) => economyConfig.quests.findIndex((q) => q.id === id);
 
-  it('sıra (v23 rev.): q_charMagnet → q_zone2 → q_z2serve → q_waiterL2 → q_tableL2 (önce yeni salonu yaşa)', () => {
+  it('sıra (v27 redesign): salon-2 hattı ÇEŞİTLİ — serve tekrarı yok, ocak/garson/masa/tepsi görevleri', () => {
     expect(qi('q_zone2')).toBeGreaterThan(qi('q_charMagnet'));
-    expect(qi('q_z2serve')).toBe(qi('q_zone2') + 1); // salon açılır açılmaz görev ORADA (kamera çelişkisi yok)
-    expect(qi('q_z2serve')).toBeLessThan(qi('q_waiterL2'));
+    expect(qi('q_z2serve')).toBe(-1); // "yine 5 çay servis et" tekrarı KALDIRILDI (telefon feedback)
+    expect(qi('q_z2table2')).toBe(qi('q_zone2') + 1); // salon açılır açılmaz görev ORADA (kamera çelişkisi yok)
+    expect(qi('q_z2station')).toBe(qi('q_z2table2') + 1); // yeni çeşit: salonun ocağını yükselt
     expect(qi('q_waiterL2')).toBeLessThan(qi('q_tableL2'));
-    expect(qi('q_tableL2')).toBeLessThan(qi('q_z2table2'));
+    expect(qi('q_tableL2')).toBeLessThan(qi('q_z2waiter'));
+    expect(qi('q_waiterTray1')).toBe(qi('q_z2waiter') + 1); // Y3: garson tepsi görevi
+    expect(qi('q_tableL2x2')).toBe(qi('q_z2table4') + 1); // koltuk/grup tanıtımı: 2 masa Seviye 2
   });
 
   function v21Save(questIndex: number, padsDone: string[]) {
@@ -1998,18 +2005,19 @@ describe('görev senkronu v23 — q_z2serve öne + zone-başı servis sayacı + 
   }
   const Z1_FULL = ['table2', 'table3', 'waiter', 'dishwasher', 'table4'];
 
-  it('v22 kaydı q_waiterL2/q_tableL2 aktifken → q_z2serve aktif olur (görev sessizce atlanmaz)', () => {
-    // Eski v22 sırasında 15 = q_waiterL2, 16 = q_tableL2 (zone2 ile z2serve ARASINDA kalıyorlardı).
+  it('v22 kaydı q_waiterL2/q_tableL2 aktifken → q_z2table2 aktif olur (v27 ağı; görev sessizce atlanmaz)', () => {
+    // Eski v22 sırasında 15 = q_waiterL2, 16 = q_tableL2. v23 adımı q_z2serve'e retarget ederdi;
+    // q_z2serve v27'de KALKTI → güvenlik ağı en erken eksik pad-görevine (q_z2table2) çeker.
     const m1 = migrate(v22Save(15, [...Z1_FULL, 'zone2']));
-    expect(economyConfig.quests[m1.questIndex]?.id).toBe('q_z2serve');
+    expect(economyConfig.quests[m1.questIndex]?.id).toBe('q_z2table2');
     const m2 = migrate(v22Save(16, [...Z1_FULL, 'zone2']));
-    expect(economyConfig.quests[m2.questIndex]?.id).toBe('q_z2serve');
+    expect(economyConfig.quests[m2.questIndex]?.id).toBe('q_z2table2');
   });
 
-  it('v22 kaydı q_z2serve aktifken → İD korunur + questBase SIFIRLANIR (eski taban global sayaçtı)', () => {
+  it('v22 kaydı q_z2serve aktifken → v27 ağı q_z2table2\'ye çeker (kaldırılan görev kilitlemez)', () => {
     const m = migrate(v22Save(17, [...Z1_FULL, 'zone2'], { questBase: 35 }));
-    expect(economyConfig.quests[m.questIndex]?.id).toBe('q_z2serve');
-    expect(m.questBase).toBe(0); // yeni sayaç (z2=0) tabanı — 35 kalsa görev asla bitmezdi
+    expect(economyConfig.quests[m.questIndex]?.id).toBe('q_z2table2');
+    expect(m.questBase).toBe(0); // pad görevi sayaç değil — taban sıfırlanır (35 sızmaz)
   });
 
   it('v22→v23 stats: teasServedByZone tohumlanır (global→z1, z2=0); diğer İD-eşlemeler kayar', () => {
@@ -2176,13 +2184,15 @@ describe('M3 — TOST ürün hattı (zone-3): trayFood, ürün fiyatı, tabak, g
   const Z2 = ['zone2', 'z2table2', 'z2waiter', 'z2table3', 'z2dishwasher', 'z2table4'];
   const OPEN3 = [...Z1, ...Z2, 'zone3'];
 
-  it('görev hattı: zone-2 zincirinden sonra tost görevleri APPEND edildi (questIndex migrasyonsuz geçerli)', () => {
+  it('görev hattı (v27 redesign): tost hattı çeşitli — q_tost5 tanıtım sayacı + tezgâh/tepsi görevleri', () => {
     const ids = economyConfig.quests.map((q) => q.id);
     const i = ids.indexOf('q_z2table4');
     expect(i).toBeGreaterThan(0);
     expect(ids.slice(i + 1)).toEqual([
-      'q_zone3', 'q_z3serve', 'q_z3table2', 'q_z3waiter', 'q_z3table3', 'q_z3dish', 'q_z3table4',
+      'q_tableL2x2', 'q_zone3', 'q_z3table2', 'q_tost5', 'q_z3station', 'q_z3waiter',
+      'q_tostTray1', 'q_z3table3', 'q_z3dish', 'q_z3table4',
     ]);
+    expect(ids).not.toContain('q_z3serve'); // "5 sipariş" → q_tost5 (başlık net TOST; v27 İD-eşlenir)
   });
 
   it('tost istasyonundan alınan ürün trayFood\'a gider; tost müşterisi ÇAYLA doyurulamaz, tostla doyar', () => {
@@ -2573,5 +2583,131 @@ describe('Y2 — koltuk + grup sistemi (plan §2)', () => {
     } finally {
       rnd.mockRestore();
     }
+  });
+});
+
+describe('v27 — görev redesign + İD-eşleme migrasyonu + dolum süreleri (telefon feedback 2026-06-12)', () => {
+  const Z1 = ['table2', 'table3', 'waiter', 'dishwasher', 'table4'];
+  const Z2 = ['zone2', 'z2table2', 'z2waiter', 'z2table3', 'z2dishwasher', 'z2table4'];
+  function v26Save(questIndex: number, padsDone: string[], extra: Record<string, unknown> = {}) {
+    return {
+      saveVersion: 26, wallet: '0', diamonds: '0', lifetime: '99999',
+      stationLevels: [3, 1, 0], waiterLevels: [0, 0, 0], padFills: {}, tableLevels: [],
+      padsDone,
+      stats: { ...defaultStats(), teasServed: 40, waiterServed: 50, waiterServedByZone: [50, 0, 0], teasServedByZone: [40, 9, 3] },
+      questIndex, questBase: 0, xp: 0,
+      settings: { sound: true, music: true, notifications: true },
+      floorThemeByZone: [], wallThemeByZone: [], ownedCosmetics: [],
+      charUpgrades: { tray: 2, magnet: 0, speed: 0 }, charPanelSeen: true, trayTipSeen: true, lastSaved: Date.now(),
+      ...extra,
+    } as unknown as Record<string, unknown>;
+  }
+  const qid = (m: { questIndex: number }) => economyConfig.quests[m.questIndex]?.id;
+
+  it('v26 kaydı: değişmeyen İD korunur (q_z2waiter), waiterUpgrades default 0 eklenir', () => {
+    // Eski v26 sırasında 19 = q_z2waiter.
+    const m = migrate(v26Save(19, [...Z1, 'zone2', 'z2table2']));
+    expect(qid(m)).toBe('q_z2waiter');
+    expect(m.waiterUpgrades).toEqual({ teaTray: 0, tostTray: 0 });
+    expect(m.saveVersion).toBe(SAVE_VERSION);
+  });
+
+  it('v26 kaydı q_z3serve aktifken: z3table2 eksikse ağ oraya çeker; doluysa q_tost5 + taban korunur', () => {
+    // Eski sırada q_z3serve, q_z3table2'den ÖNCEydi → yeni sırada önce masa açılır (ağ çeker).
+    const m1 = migrate(v26Save(24, [...Z1, ...Z2, 'zone3'], { questBase: 1 }));
+    expect(qid(m1)).toBe('q_z3table2');
+    // z3table2 zaten doluysa eşdeğer sayaç görevi q_tost5'e İD-eşlenir, kısmi sayaç tabanı KORUNUR.
+    const m2 = migrate(v26Save(24, [...Z1, ...Z2, 'zone3', 'z3table2'], { questBase: 1 }));
+    expect(qid(m2)).toBe('q_tost5');
+    expect(m2.questBase).toBe(1);
+  });
+
+  it('v26 kaydı q_z2serve aktifken → q_z2table2 + questBase sıfırlanır (pad görevi)', () => {
+    // Eski v26 sırasında 15 = q_z2serve (zone2 yeni açılmış).
+    const m = migrate(v26Save(15, [...Z1, 'zone2'], { questBase: 35 }));
+    expect(qid(m)).toBe('q_z2table2');
+    expect(m.questBase).toBe(0);
+  });
+
+  it('v26 kaydı yeni sayaç görevine düşerse questBase ŞİMDİKİ değere tohumlanır (delta adil)', () => {
+    // Eski v26 sırasında 25 = q_z3table2; pad z3table2 ALINMIŞ olsun → auto-advance ileride
+    // q_tost5'e gelir. Migrasyonda index q_z3table2'de kalır (İD korunur) — tabanı bozmaz.
+    const m = migrate(v26Save(25, [...Z1, ...Z2, 'zone3', 'z3table2']));
+    expect(qid(m)).toBe('q_z3table2'); // İD eşlendi; tick auto-advance ödülle geçer
+  });
+
+  it('v26 hattı bitmiş kayıt → yeni hatta da bitmiş (yeni görevler dayatılmaz)', () => {
+    const m = migrate(v26Save(30, [...Z1, ...Z2, 'zone3', 'z3table2', 'z3waiter', 'z3table3', 'z3dishwasher', 'z3table4']));
+    expect(m.questIndex).toBe(economyConfig.quests.length);
+  });
+
+  it('güvenlik ağı: aktif görevin gerisinde alınmamış pad görevi varsa oraya çekilir', () => {
+    // Eski v26 sırasında 27 = q_z3table3 ama z3table2 alınmamış → en erken eksik pad q_z3table2.
+    const m = migrate(v26Save(27, [...Z1, ...Z2, 'zone3']));
+    expect(qid(m)).toBe('q_z3table2');
+  });
+
+  it('tablesAtLevel: N masa hedef seviyede (zone dilimli ve global)', () => {
+    const ctx = {
+      padsDone: [], stationLevels: [0, 0, 0], waiterLevel: 0,
+      tableLevels: [2, 1, 2, 0, 3, 2, 0, 0], stats: defaultStats(), questBase: 0,
+      charUpgrades: { tray: 0, magnet: 0, speed: 0 }, waiterUpgrades: { teaTray: 0, tostTray: 0 },
+    };
+    expect(questTargetMet({ type: 'tablesAtLevel', level: 2, count: 2 }, ctx)).toBe(true); // global 4 adet
+    expect(questTargetMet({ type: 'tablesAtLevel', level: 3, count: 2 }, ctx)).toBe(false); // L3+ tek masa
+    expect(questTargetMet({ type: 'tablesAtLevel', level: 2, count: 2, zone: 0 }, ctx)).toBe(true); // z0: 2 adet
+    expect(questTargetMet({ type: 'tablesAtLevel', level: 2, count: 3, zone: 0 }, ctx)).toBe(false);
+    expect(questTargetMet({ type: 'tablesAtLevel', level: 2, count: 2, zone: 1 }, ctx)).toBe(true); // z1: [3,2,..]
+  });
+
+  it('stationLevel zone\'lu: yalnız o salonun ocağına bakar', () => {
+    const ctx = {
+      padsDone: [], stationLevels: [3, 0, 1], waiterLevel: 0, tableLevels: [],
+      stats: defaultStats(), questBase: 0,
+      charUpgrades: { tray: 0, magnet: 0, speed: 0 }, waiterUpgrades: { teaTray: 0, tostTray: 0 },
+    };
+    expect(questTargetMet({ type: 'stationLevel', level: 1 }, ctx)).toBe(true); // zone'suz = z0
+    expect(questTargetMet({ type: 'stationLevel', level: 1, zone: 1 }, ctx)).toBe(false);
+    expect(questTargetMet({ type: 'stationLevel', level: 1, zone: 2 }, ctx)).toBe(true);
+  });
+
+  it('waiterTray hedefi + eğri türeticileri (Y3): kapasite 1+kademe, tavanlar 3/2 kademe', () => {
+    const ctx = {
+      padsDone: [], stationLevels: [], waiterLevel: 0, tableLevels: [],
+      stats: defaultStats(), questBase: 0,
+      charUpgrades: { tray: 0, magnet: 0, speed: 0 }, waiterUpgrades: { teaTray: 1, tostTray: 0 },
+    };
+    expect(questTargetMet({ type: 'waiterTray', kind: 'tea', tier: 1 }, ctx)).toBe(true);
+    expect(questTargetMet({ type: 'waiterTray', kind: 'tost', tier: 1 }, ctx)).toBe(false);
+    expect(waiterTrayCapacityFor('tea', 0)).toBe(1);
+    expect(waiterTrayCapacityFor('tea', 3)).toBe(4);
+    expect(waiterTrayCapacityFor('tost', 2)).toBe(3);
+    expect(waiterTrayMaxTier('tea')).toBe(3);
+    expect(waiterTrayMaxTier('tost')).toBe(2);
+    expect(waiterTrayNextCost('tea', 0)).toBe(800);
+    expect(waiterTrayNextCost('tost', 1)).toBe(5000);
+    expect(waiterTrayNextCost('tea', 3)).toBeNull();
+  });
+
+  it('kamera odağı: serveTea görevleri salon ortasına değil OCAĞA/TEZGÂHA bakar (boş yere zoom yok)', () => {
+    expect(questFocusPos({ type: 'serveTea', count: 5, zone: 1 }, [], 8, 1)).toEqual(LAYOUT.stations[1]);
+    expect(questFocusPos({ type: 'serveTea', count: 5, zone: 2 }, [], 12, 2)).toEqual(LAYOUT.stations[2]);
+    // stationLevel zone'lu görev kendi salonunun yükseltme noktasına bakar.
+    expect(questFocusPos({ type: 'stationLevel', level: 1, zone: 2 }, [], 12, 2)).toEqual(LAYOUT.upgradeZones[2]);
+    // tablesAtLevel: hedef seviyenin altındaki ilk masanın yükseltme noktası.
+    expect(questFocusPos({ type: 'tablesAtLevel', level: 2, count: 2 }, [2, 1, 0, 0], 4)).toEqual(LAYOUT.tables[1].upgradeSpot);
+    // waiterTray panel görevi: 3D hedef yok (kamera sıçramaz).
+    expect(questFocusPos({ type: 'waiterTray', kind: 'tea', tier: 1 }, [], 4)).toBeNull();
+  });
+
+  it('dolum süreleri: pad dwell ≤ 8sn, yükseltme dolumu 1-6sn kelepçeli', () => {
+    for (const p of economyConfig.pads) {
+      const t = p.cost / p.fillRate;
+      expect(t).toBeLessThanOrEqual(8.05); // en pahalı açılış (zone3) dahil
+      expect(t).toBeGreaterThanOrEqual(1.0);
+    }
+    expect(upgradeFillRateFor(20)).toBeCloseTo(20); // 20₺ → 1sn (erken: çok kısa olmaz)
+    expect(upgradeFillRateFor(120)).toBeCloseTo(60); // orta bant eski hızla aynı
+    expect(1350 / upgradeFillRateFor(1350)).toBeCloseTo(6); // tost L4: 22.5sn → 6sn tavan
   });
 });

@@ -155,6 +155,17 @@ export function TostEmptyIcon({ size = 28 }: { size?: number }) {
   );
 }
 
+/** Üçgen tost dilimi (quest fotoğrafı içi, v27 — TostEmptyIcon'daki dilimin yalın hali, kendi SVG'miz). */
+function TostSlice() {
+  return (
+    <g>
+      <path d="M14.5 35L24 16l9.5 19h-19z" fill="#e8b35c" stroke="#7a4413" strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="M19.2 30.5l4.8-9.5 4.8 9.5" stroke="#7a4413" strokeWidth="1.6" fill="none" strokeLinecap="round" />
+      <path d="M17.6 33.5l6.4-13 6.4 13" stroke="#7a4413" strokeWidth="1.6" fill="none" strokeLinecap="round" opacity="0.65" />
+    </g>
+  );
+}
+
 /** Ayarlar dişlisi (beyaz). */
 export function GearIcon({ size = 22 }: { size?: number }) {
   return (
@@ -353,9 +364,18 @@ export function QuestPhoto({ target, size = 44 }: { target: QuestTarget; size?: 
   let up = false;
   switch (target.type) {
     case 'pickupTea':
-    case 'serveTea':
       bg = '#bf6b3f';
       inner = <TeaGlass />;
+      break;
+    case 'serveTea':
+      // Tost salonu görevi (v27): bardak değil TOST dilimi — "tost görevinde çay ikonu" karmaşası bitti.
+      if (target.zone === 2) {
+        bg = '#a8682a';
+        inner = <TostSlice />;
+      } else {
+        bg = '#bf6b3f';
+        inner = <TeaGlass />;
+      }
       break;
     case 'collectCoin':
       bg = '#8a7430';
@@ -378,8 +398,13 @@ export function QuestPhoto({ target, size = 44 }: { target: QuestTarget; size?: 
       }
       break;
     case 'stationLevel':
-      bg = '#bf6b3f';
-      inner = <TeaGlass />;
+      if (target.zone === 2) {
+        bg = '#a8682a';
+        inner = <TostSlice />;
+      } else {
+        bg = '#bf6b3f';
+        inner = <TeaGlass />;
+      }
       up = true;
       break;
     case 'waiterLevel':
@@ -388,8 +413,15 @@ export function QuestPhoto({ target, size = 44 }: { target: QuestTarget; size?: 
       up = true;
       break;
     case 'tableLevel':
+    case 'tablesAtLevel':
       bg = '#6d4c41';
       inner = <TableIcon />;
+      up = true;
+      break;
+    case 'waiterTray':
+      // Garson tepsi görevi (Y3): garson rengi + tepsi; tostçu kendi sıcak tonuyla ayrışır.
+      bg = target.kind === 'tost' ? '#a8682a' : '#33691e';
+      inner = <TrayIcon />;
       up = true;
       break;
     case 'charStat':

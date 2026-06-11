@@ -5,9 +5,11 @@ import {
   economyConfig,
   requiresMet,
   charMaxTier,
+  waiterTrayMaxTier,
   defaultFloorTheme,
   zoneProduct,
   type CharUpgrades,
+  type WaiterUpgrades,
   type PadDef,
   type QuestTarget,
 } from '../config/economy.config';
@@ -93,6 +95,8 @@ export interface SaveData {
   ownedCosmetics: string[];
   /** Karakter yükseltme kademeleri (v20): tepsi/mıknatıs/hız. Karakter seviyesi türetilir. */
   charUpgrades: CharUpgrades;
+  /** Garson tepsi yükseltme kademeleri (v27/Y3): çay garsonları ortak + tostçu ayrı eğri. */
+  waiterUpgrades: WaiterUpgrades;
   /** Karakter paneli ilk-sefer spotlight'ı görüldü mü (v20; butona dokununca true, bir daha çıkmaz). */
   charPanelSeen: boolean;
   /** Tepsi-boşalt butonu ilk-sefer spotlight'ı görüldü mü (v23; charPanelSeen deseni). */
@@ -102,6 +106,10 @@ export interface SaveData {
 
 export function defaultCharUpgrades(): CharUpgrades {
   return { tray: 0, magnet: 0, speed: 0 };
+}
+
+export function defaultWaiterUpgrades(): WaiterUpgrades {
+  return { teaTray: 0, tostTray: 0 };
 }
 
 export function defaultSave(): SaveData {
@@ -124,6 +132,7 @@ export function defaultSave(): SaveData {
     wallThemeByZone: [],
     ownedCosmetics: [],
     charUpgrades: defaultCharUpgrades(),
+    waiterUpgrades: defaultWaiterUpgrades(),
     charPanelSeen: false,
     trayTipSeen: false,
     lastSaved: Date.now(),
@@ -151,9 +160,12 @@ function seedQuestIndex(d: Record<string, unknown>): number {
   const stateMet = (t: QuestTarget): boolean | null => {
     switch (t.type) {
       case 'pad': return padsDone.includes(t.id);
-      case 'stationLevel': return stationLevel >= t.level;
+      // zone'lu ocak görevi (v27): v<16 kayıtlarda tek ocak vardı — zone>0 görevleri karşılanmamış sayılır.
+      case 'stationLevel': return (t.zone ?? 0) === 0 && stationLevel >= t.level;
       case 'waiterLevel': return waiterLevel >= t.level;
       case 'tableLevel': return tableLevels.some((l) => l >= t.level);
+      case 'tablesAtLevel': return tableLevels.filter((l) => l >= t.level).length >= t.count;
+      case 'waiterTray': return false; // v<16 kayıtta tepsi yükseltmesi olamaz (v27'de geldi)
       case 'charStat': return giftChar[t.stat] >= t.tier;
       default: return null; // sayaç görevi — eski kayıttan bilinemez
     }
@@ -530,6 +542,82 @@ export function migrate(raw: Record<string, unknown>): SaveData {
     v = 26;
   }
 
+  // v26 -> v27 (GÖREV HATTI YENİDEN TASARIMI + Y3 garson tepsileri, 2026-06-12 telefon feedback):
+  // q_z2serve KALDIRILDI ("yine 5 çay" tekrarı), q_z3serve → q_tost5 (aynı hedef, yeni başlık);
+  // araya çeşit görevleri girdi (q_z2station/q_tableL2x2/q_waiterTray1/q_z3station/q_tostTray1)
+  // → questIndex İD-EŞLEMELİ taşınır. waiterUpgrades alanı eklendi (Y3; default 0).
+  if (v < 27) {
+    if (!d.waiterUpgrades || typeof d.waiterUpgrades !== 'object') {
+      d.waiterUpgrades = defaultWaiterUpgrades();
+    }
+    const quests = economyConfig.quests;
+    let oldActiveId: string | null = null;
+    // İD-eşleme: yalnız entryV >= 23 (v23-v26 sırasını ham index olarak kullanan kayıtlar);
+    // daha eski girişler önceki adımlarda güncel listeye eşlendi (kaçaklar aşağıdaki ağa düşer).
+    if (entryV >= 23) {
+      const V26_QUEST_IDS = [
+        'q_pickup', 'q_serve1', 'q_coin', 'q_table2', 'q_charTray1', 'q_serve5', 'q_station2',
+        'q_wash', 'q_table3', 'q_charTray2', 'q_waiter', 'q_dish', 'q_table4', 'q_charMagnet',
+        'q_zone2', 'q_z2serve', 'q_waiterL2', 'q_tableL2', 'q_z2table2', 'q_z2waiter',
+        'q_z2table3', 'q_z2dish', 'q_z2table4', 'q_zone3', 'q_z3serve', 'q_z3table2',
+        'q_z3waiter', 'q_z3table3', 'q_z3dish', 'q_z3table4',
+      ];
+      // Kaldırılanların en yakın eşdeğeri: q_z3serve ≈ q_tost5 (birebir aynı hedef → questBase
+      // korunur, kısmi sayaç ilerlemesi kaybolmaz); q_z2serve'in eşdeğeri yok → sıradaki pad görevi.
+      const ALIAS: Record<string, string> = { q_z2serve: 'q_z2table2', q_z3serve: 'q_tost5' };
+      const oldIdx = Math.max(0, Number(d.questIndex ?? 0) || 0);
+      if (oldIdx >= V26_QUEST_IDS.length) {
+        d.questIndex = quests.length;
+      } else {
+        oldActiveId = ALIAS[V26_QUEST_IDS[oldIdx]] ?? V26_QUEST_IDS[oldIdx];
+        const ni = quests.findIndex((q) => q.id === oldActiveId);
+        if (ni >= 0) d.questIndex = ni;
+      }
+    }
+    // GÜVENLİK AĞI (tüm girişler — v22'deki q_zone2 geri-çekmesinin GENELLENMİŞ hali): aktif görevin
+    // GERİSİNDE pad'i alınmamış pad-görevi kalamaz ("ekranda tek pad" kuralında atlanan pad görevi
+    // zinciri kilitler). En erken eksik pad-görevine çekilir; tamamlanmış aradakiler tick'teki
+    // auto-advance ile anında geçilir (ilerleme kaybolmaz).
+    {
+      const padsDone = Array.isArray(d.padsDone) ? (d.padsDone as string[]) : [];
+      const qi = Math.max(0, Number(d.questIndex ?? 0) || 0);
+      // Hattı BİTİRMİŞ kayda dokunma (yeni görevler dayatılmaz — v20 m2 davranışı; serbest oyunda
+      // pad'ler omurga fallback'iyle zaten görünür). Yalnız hat İÇİNDEKİ kayıtlarda geri çek.
+      if (qi < quests.length) {
+        for (let i = 0; i < qi; i++) {
+          const t = quests[i].target;
+          if (t.type === 'pad' && !padsDone.includes(t.id)) {
+            d.questIndex = i;
+            break;
+          }
+        }
+      }
+    }
+    // questBase tutarlılığı: aktif görev SAYAÇ değilse taban 0 (bayat değer sızmasın); sayaçsa ve
+    // görev DEĞİŞTİYSE şimdiki kümülatif değere tohumlanır (delta adil başlar); aynı/eşdeğer sayaç
+    // görevindeyse (q_z3serve≈q_tost5 alias'ı dahil) taban KORUNUR — kısmi ilerleme kaybolmaz.
+    {
+      const qi = Number(d.questIndex ?? 0) || 0;
+      const q = quests[qi];
+      if (q) {
+        const st = (d.stats && typeof d.stats === 'object' ? d.stats : {}) as Partial<SaveStats>;
+        const t = q.target as { type: string; zone?: number };
+        const counter =
+          t.type === 'pickupTea' ? Number(st.teaPickups ?? 0) || 0
+          : t.type === 'serveTea'
+            ? t.zone != null
+              ? Number((st.teasServedByZone ?? [])[t.zone] ?? 0) || 0
+              : Number(st.teasServed ?? 0) || 0
+          : t.type === 'collectCoin' ? Number(st.coinsCollected ?? 0) || 0
+          : t.type === 'washDish' ? Number(st.dishesWashed ?? 0) || 0
+          : null;
+        if (counter == null) d.questBase = 0;
+        else if (q.id !== oldActiveId) d.questBase = counter;
+      }
+    }
+    v = 27;
+  }
+
   // Sona kalan v16 şeması: türetilen alanlar (tables/stations/serviceSpeedMult/hasWaiter), eski `padFill`,
   // kaldırılan `trayLevel` ve 'samovar' referansı yazılmaz; stats/questIndex/questBase eklendi (v16).
   const rawStats = (d.stats && typeof d.stats === 'object' ? d.stats : {}) as Partial<SaveStats>;
@@ -583,6 +671,13 @@ export function migrate(raw: Record<string, unknown>): SaveData {
       const clamp = (stat: keyof CharUpgrades) =>
         Math.max(0, Math.min(Number(raw[stat] ?? 0) || 0, charMaxTier(stat)));
       return { tray: clamp('tray'), magnet: clamp('magnet'), speed: clamp('speed') };
+    })(),
+    waiterUpgrades: (() => {
+      const raw = (d.waiterUpgrades && typeof d.waiterUpgrades === 'object' ? d.waiterUpgrades : {}) as Partial<WaiterUpgrades>;
+      return {
+        teaTray: Math.max(0, Math.min(Number(raw.teaTray ?? 0) || 0, waiterTrayMaxTier('tea'))),
+        tostTray: Math.max(0, Math.min(Number(raw.tostTray ?? 0) || 0, waiterTrayMaxTier('tost'))),
+      };
     })(),
     charPanelSeen: d.charPanelSeen === true,
     trayTipSeen: d.trayTipSeen === true,

@@ -26,6 +26,9 @@ import {
   defaultFloorTheme,
   charMaxTier,
   charNextCost,
+  waiterTrayMaxTier,
+  waiterTrayNextCost,
+  type WaiterUpgrades,
   trayCapacityFor,
   attractRadiusFor,
   playerSpeedFor,
@@ -42,6 +45,7 @@ import {
   defaultStats,
   defaultSettings,
   defaultCharUpgrades,
+  defaultWaiterUpgrades,
   loadSave,
   writeSave,
   clearSave,
@@ -708,6 +712,8 @@ export interface GameState {
   ownedCosmetics: string[];
   /** Karakter yükseltme kademeleri (persist v20): tepsi/mıknatıs/hız. Karakter seviyesi türetilir. */
   charUpgrades: CharUpgrades;
+  /** Garson tepsi yükseltme kademeleri (persist v27/Y3): çay garsonları ortak + tostçu ayrı. */
+  waiterUpgrades: WaiterUpgrades;
   /** Karakter paneli ilk-sefer spotlight'ı görüldü mü (persist v20). */
   charPanelSeen: boolean;
   /** Tepsi-boşalt butonu ilk-sefer spotlight'ı görüldü mü (persist v23). */
@@ -792,13 +798,16 @@ export function upgradeZoneUnlocked(g: GateState): boolean {
 /** Quest değerlendirme bağlamı (salt-okunur anlık görüntü). */
 export interface QuestCtx {
   padsDone: string[];
-  stationLevel: number;
+  /** Zone başına ocak seviyesi (v27: zone'lu stationLevel görevleri — "Salon 2'nin ocağını yükselt"). */
+  stationLevels: number[];
   waiterLevel: number;
   tableLevels: number[];
   stats: SaveStats;
   questBase: number;
   /** Karakter yükseltme kademeleri (v20; charStat görevleri için). */
   charUpgrades: CharUpgrades;
+  /** Garson tepsi kademeleri (v27/Y3; waiterTray görevleri için). */
+  waiterUpgrades: WaiterUpgrades;
 }
 
 /** Sayaç hedefinin baktığı kümülatif sayaç değeri (durum hedefleri için null). */
@@ -823,9 +832,18 @@ export function questTargetMet(target: QuestTarget, ctx: QuestCtx): boolean {
   }
   switch (target.type) {
     case 'pad': return ctx.padsDone.includes(target.id);
-    case 'stationLevel': return ctx.stationLevel >= target.level;
+    case 'stationLevel': return (ctx.stationLevels[target.zone ?? 0] ?? 0) >= target.level;
     case 'waiterLevel': return ctx.waiterLevel >= target.level;
     case 'tableLevel': return ctx.tableLevels.some((l) => l >= target.level);
+    case 'tablesAtLevel': {
+      // zone verilirse yalnız o salonun masa slotları; verilmezse tüm masalar (v27 çeşitlilik).
+      const lvls = target.zone != null
+        ? ctx.tableLevels.slice(target.zone * TABLES_PER_ZONE, (target.zone + 1) * TABLES_PER_ZONE)
+        : ctx.tableLevels;
+      return lvls.filter((l) => (l ?? 0) >= target.level).length >= target.count;
+    }
+    case 'waiterTray':
+      return (target.kind === 'tea' ? ctx.waiterUpgrades.teaTray : ctx.waiterUpgrades.tostTray) >= target.tier;
     case 'charStat': return ctx.charUpgrades[target.stat] >= target.tier;
     default: return false;
   }
@@ -853,8 +871,13 @@ function questView(q: QuestDef, ctx: QuestCtx): QuestView {
     q.target.type === 'pad'
       ? (C.pads as readonly PadDef[]).find((p) => p.id === (q.target as { id: string }).id)
       : undefined;
-  // charStat görevinde maliyet = hedef kademeye ulaştıran satın almanın ₺'si (görev kartında gösterilir).
-  const charCost = q.target.type === 'charStat' ? charNextCost(q.target.stat, q.target.tier - 1) : null;
+  // charStat/waiterTray görevinde maliyet = hedef kademeye ulaştıran satın almanın ₺'si (görev kartında).
+  const charCost =
+    q.target.type === 'charStat'
+      ? charNextCost(q.target.stat, q.target.tier - 1)
+      : q.target.type === 'waiterTray'
+        ? waiterTrayNextCost(q.target.kind, q.target.tier - 1)
+        : null;
   return {
     id: q.id,
     title: q.title,
@@ -873,19 +896,27 @@ export function questFocusPos(target: QuestTarget, tableLevels: number[], tables
   const z = Math.min(Math.max(zone, 0), MAX_ZONES - 1);
   switch (target.type) {
     case 'charStat': return null;
+    case 'waiterTray': return null; // panel satın alımı — 3D hedef yok (charStat deseni)
     case 'pickupTea': return LAYOUT.stations[z];
     case 'washDish': return LAYOUT.dishStations[z];
     case 'pad': return LAYOUT.padPos[target.id] ?? LAYOUT.stations[z];
-    case 'stationLevel': return LAYOUT.upgradeZones[z];
+    case 'stationLevel': return LAYOUT.upgradeZones[target.zone ?? z];
     case 'waiterLevel': return LAYOUT.waiterUpgradeSpots[z];
-    case 'tableLevel': {
-      // O zone'dan başlayarak ilk yükseltilebilir (soft max altı) AÇIK masanın yükseltme noktası.
-      for (let i = z * TABLES_PER_ZONE; i < tables; i++) {
-        if ((tableLevels[i] ?? 0) < tableSoftMaxLevel()) return LAYOUT.tables[i].upgradeSpot;
+    case 'tableLevel':
+    case 'tablesAtLevel': {
+      // O zone'dan başlayarak hedef seviyenin ALTINDAKİ ilk açık masanın yükseltme noktası
+      // (tablesAtLevel v27: oyuncuyu gerçekten yükseltilecek masaya götürür).
+      const goal = target.type === 'tablesAtLevel' ? target.level : tableSoftMaxLevel();
+      const z0 = target.type === 'tablesAtLevel' && target.zone != null ? target.zone : z;
+      for (let i = z0 * TABLES_PER_ZONE; i < tables; i++) {
+        if ((tableLevels[i] ?? 0) < goal) return LAYOUT.tables[i].upgradeSpot;
       }
-      return LAYOUT.tables[Math.min(z * TABLES_PER_ZONE, tables - 1) || 0].upgradeSpot;
+      return LAYOUT.tables[Math.min(z0 * TABLES_PER_ZONE, tables - 1) || 0].upgradeSpot;
     }
-    default: { // serveTea / collectCoin → o zone'un masa bölgesinin ortası
+    // serveTea → o salonun OCAĞI/TEZGÂHI (2026-06-12 telefon feedback: salon ortası boştu —
+    // özellikle yeni açılan salonda kamera "hiçbir şeye" bakıyordu); collectCoin → masa bölgesi ortası.
+    case 'serveTea': return LAYOUT.stations[z];
+    default: {
       const za = LAYOUT.zoneAreas[z];
       return [(za.minX + za.maxX) / 2, 0, 1.5 - zoneRow(z) * ZONE_DZ]; // arka sıra kaydırılır (M2)
     }
@@ -994,6 +1025,7 @@ export const useGame = create<GameState>((set, get) => ({
   wallThemeByZone: Array.from({ length: MAX_ZONES }, () => 'krem'),
   ownedCosmetics: [],
   charUpgrades: defaultCharUpgrades(),
+  waiterUpgrades: defaultWaiterUpgrades(),
   charPanelSeen: false,
   trayTipSeen: false,
   quest: null,
@@ -1020,6 +1052,11 @@ export const useGame = create<GameState>((set, get) => ({
       tray: Math.max(0, Math.min(save.charUpgrades?.tray ?? 0, charMaxTier('tray'))),
       magnet: Math.max(0, Math.min(save.charUpgrades?.magnet ?? 0, charMaxTier('magnet'))),
       speed: Math.max(0, Math.min(save.charUpgrades?.speed ?? 0, charMaxTier('speed'))),
+    };
+    // Garson tepsi kademeleri (v27/Y3): aynı kelepçe deseni.
+    const waiterUpgrades: WaiterUpgrades = {
+      teaTray: Math.max(0, Math.min(save.waiterUpgrades?.teaTray ?? 0, waiterTrayMaxTier('tea'))),
+      tostTray: Math.max(0, Math.min(save.waiterUpgrades?.tostTray ?? 0, waiterTrayMaxTier('tost'))),
     };
     // Çevrimdışı gelir: açık zone'ların idealize oranları TOPLAMI; süre + PARA tavanlı (computeOfflineEarned).
     const elapsed = Math.max(0, (Date.now() - save.lastSaved) / 1000);
@@ -1102,18 +1139,20 @@ export const useGame = create<GameState>((set, get) => ({
       wallThemeByZone: Array.from({ length: MAX_ZONES }, (_, z) => save.wallThemeByZone[z] ?? 'krem'),
       ownedCosmetics: [...save.ownedCosmetics],
       charUpgrades,
+      waiterUpgrades,
       charPanelSeen: save.charPanelSeen,
       trayTipSeen: save.trayTipSeen,
       quest:
         save.questIndex < C.quests.length
           ? questView(C.quests[save.questIndex], {
               padsDone: save.padsDone,
-              stationLevel: stationLevels[0],
+              stationLevels,
               waiterLevel: waiterLevels[0],
               tableLevels: save.tableLevels,
               stats: save.stats,
               questBase: save.questBase,
               charUpgrades,
+              waiterUpgrades,
             })
           : null,
       // İlk oyun (taze kayıt): kamera ilk görevin hedefine kısa pan → "hareketli" onboarding girişi.
@@ -1759,12 +1798,13 @@ export const useGame = create<GameState>((set, get) => ({
     // sonrası): tamamlama toast'u + kamera YENİ hedefe pan ("orada bir şey var" hissi, kullanıcı isteği).
     const questCtx: QuestCtx = {
       padsDone,
-      stationLevel: stationLevels[0],
+      stationLevels,
       waiterLevel: waiterLevels[0],
       tableLevels,
       stats,
       questBase,
       charUpgrades: s.charUpgrades,
+      waiterUpgrades: s.waiterUpgrades,
     };
     let questAdvanced = false;
     while (questIndex < C.quests.length && questTargetMet(C.quests[questIndex].target, questCtx)) {
@@ -1984,6 +2024,7 @@ export const useGame = create<GameState>((set, get) => ({
       wallThemeByZone: [...s.wallThemeByZone],
       ownedCosmetics: [...s.ownedCosmetics],
       charUpgrades: { ...s.charUpgrades },
+      waiterUpgrades: { ...s.waiterUpgrades },
       charPanelSeen: s.charPanelSeen,
       trayTipSeen: s.trayTipSeen,
       lastSaved: Date.now(),
