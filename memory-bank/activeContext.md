@@ -29,8 +29,9 @@ Onaylı planın (docs/yemek-alani-garson-plan.md) Y1 milestone'u uygulandı:
 ## >>> SIRADAKİ: Y2 — KOLTUK + GRUP SİSTEMİ (EN RİSKLİ) <<<
 `docs/yemek-alani-garson-plan.md` §2: seatIndex (transient), grup spawn (%30/35/20/15), koltuk =
 masa seviyesi (1/2/2/4/4), müşteri tavanı koltuk+2, kirli eşik koltukla ölçeklenir; gerçek-dt
-regresyon testleri ŞART. Sonra Y3 (sekmeli panel + garson tepsi yükseltmeleri, SAVE v27) → Y4
-(2. garson + claim + gating).
+regresyon testleri ŞART. **Kullanıcı kararı (2026-06-11): Y2 sonraki oturumda; Y2 bitince YENİ APK
+derlenip telefonda test edilecek** (`npm run apk`). Sonra Y3 (sekmeli panel + garson tepsi
+yükseltmeleri, SAVE v27) → Y4 (2. garson + claim + gating).
 
 ## ŞU AN (2026-06-11 — KULLANICI KARARI: M4+M5 GERİ ALINDI, TOST SALONU ARKA-SAĞA TAŞINDI, SAVE v25)
 Kullanıcı gece oturumu çıktısını tarayıcıda gördü: "tasarımsal olarak çok kötü — geri al, zone zone
