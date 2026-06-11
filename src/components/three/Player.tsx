@@ -159,7 +159,6 @@ export function Player() {
   const tray = useGame((s) => s.tray);
   const trayFood = useGame((s) => s.trayFood);
   const carriedDirty = useGame((s) => s.carriedDirty);
-  const carriedPaper = useGame((s) => s.carriedPaper);
   const trayTier = useGame((s) => s.charUpgrades.tray);
   const ref = useRef<Group>(null);
   useFacing(ref, p[0], p[2]);
@@ -168,25 +167,6 @@ export function Player() {
       <group ref={ref}>
         <Model fallback={<OwnerBody />} />
         <CupTray tea={tray} food={trayFood} dirty={carriedDirty} cap={trayCapacityFor(trayTier)} />
-        {/* Kâğıt kolisi (M4): tepsiden BAĞIMSIZ, bel hizasında — depo→tuvalet taşıması görünür olsun */}
-        {carriedPaper > 0 && (
-          <group position={[0, 0.58, 0.36]}>
-            <mesh castShadow>
-              <boxGeometry args={[0.3, 0.16, 0.22]} />
-              <meshStandardMaterial color={PALETTE.breadCrate} />
-            </mesh>
-            {Array.from({ length: Math.min(carriedPaper, 4) }).map((_, i) => (
-              <mesh
-                key={i}
-                position={[-0.07 + (i % 2) * 0.14, 0.11, i < 2 ? -0.05 : 0.06]}
-                rotation={[0, 0, Math.PI / 2]}
-              >
-                <cylinderGeometry args={[0.05, 0.05, 0.1, 8]} />
-                <meshStandardMaterial color="#f4efe2" />
-              </mesh>
-            ))}
-          </group>
-        )}
       </group>
     </group>
   );

@@ -34,8 +34,6 @@ export interface SaveStats {
   /** ZONE-BAŞINA oyuncu el servisi (v23): zone'lu serveTea görevleri (q_z2serve) YALNIZ o salonun
    *  servisini sayar — eski global sayaç "Yeni salonda 5 çay" görevini zone-1'de de dolduruyordu. */
   teasServedByZone: number[];
-  /** OYUNCUNUN tuvalete kâğıt takma sayısı (v24, M4; q_paper görevi — temizlikçi saymaz). */
-  paperRefills: number;
 }
 
 export function defaultStats(): SaveStats {
@@ -47,7 +45,6 @@ export function defaultStats(): SaveStats {
     waiterServed: 0,
     waiterServedByZone: [],
     teasServedByZone: [],
-    paperRefills: 0,
   };
 }
 
@@ -490,12 +487,6 @@ export function migrate(raw: Record<string, unknown>): SaveData {
     v = 23;
   }
 
-  // v23 -> v24 (TUVALET+DEPO, M4): stats.paperRefills eklendi (sondaki normalizasyon default'lar;
-  // görev hattına M3/M4 görevleri SONA eklendi → questIndex İD-eşleme GEREKMEDİ — append-only).
-  if (v < 24) {
-    v = 24;
-  }
-
   // Sona kalan v16 şeması: türetilen alanlar (tables/stations/serviceSpeedMult/hasWaiter), eski `padFill`,
   // kaldırılan `trayLevel` ve 'samovar' referansı yazılmaz; stats/questIndex/questBase eklendi (v16).
   const rawStats = (d.stats && typeof d.stats === 'object' ? d.stats : {}) as Partial<SaveStats>;
@@ -528,7 +519,6 @@ export function migrate(raw: Record<string, unknown>): SaveData {
       teasServedByZone: Array.isArray(rawStats.teasServedByZone)
         ? rawStats.teasServedByZone.map((n) => Number(n) || 0)
         : [],
-      paperRefills: Number(rawStats.paperRefills ?? 0) || 0,
     },
     questIndex: Math.max(0, Math.min(Number(d.questIndex ?? 0) || 0, economyConfig.quests.length)),
     questBase: Math.max(0, Number(d.questBase ?? 0) || 0),

@@ -314,18 +314,6 @@ function UpArrowOverlay() {
   );
 }
 
-/** Tuvalet kâğıdı rulosu (M4 görev rozeti): yan duran rulo + sarkan uç. */
-function PaperRollIcon() {
-  return (
-    <g>
-      <rect x="14" y="16" width="20" height="14" rx="7" fill="#f4efe2" stroke="#d8d0bd" strokeWidth="1.5" />
-      <ellipse cx="34" cy="23" rx="4.5" ry="7" fill="#fbf8ef" stroke="#d8d0bd" strokeWidth="1.5" />
-      <ellipse cx="34" cy="23" rx="1.6" ry="2.6" fill="#bdb39c" />
-      <rect x="12" y="23" width="8" height="12" rx="1.5" fill="#fbf8ef" stroke="#d8d0bd" strokeWidth="1.5" />
-    </g>
-  );
-}
-
 /**
  * Görev hedef tipine göre "fotoğraf" (quest kartının solundaki rozet).
  * Arka plan rengi tipe göre değişir → görevler birbirinden tek bakışta ayrılır.
@@ -349,26 +337,16 @@ export function QuestPhoto({ target, size = 44 }: { target: QuestTarget; size?: 
       inner = <WashIcon />;
       break;
     case 'pad':
-      if (target.id.includes('waiter')) {
+      if (target.id === 'waiter') {
         bg = '#33691e';
         inner = <PersonIcon />;
-      } else if (target.id.includes('dishwasher')) {
+      } else if (target.id === 'dishwasher') {
         bg = '#1565c0';
         inner = <PersonIcon color="#42a5f5" dark="#1976d2" />;
-      } else if (target.id === 'cleaner') {
-        bg = '#00695c';
-        inner = <PersonIcon color="#4db6ac" dark="#00897b" />;
-      } else if (target.id === 'wc') {
-        bg = '#4a6572';
-        inner = <PaperRollIcon />;
       } else {
         bg = '#6d4c41';
         inner = <TableIcon />;
       }
-      break;
-    case 'refillPaper':
-      bg = '#4a6572';
-      inner = <PaperRollIcon />;
       break;
     case 'stationLevel':
       bg = '#bf6b3f';

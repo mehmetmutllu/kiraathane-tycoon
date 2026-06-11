@@ -27,18 +27,7 @@ görev para ödülleri + yemek masaları farklı/seviyeyle artan görsel". Miles
   9+ masada arka salon müşterisiz kalıyordu → tavan masalarla ölçeklenir (tables+2).** Sim ürün-
   farkındalı (zone-3 dolu @60dk idealize). vitest 130/130, build, smoke 27/27, Playwright canlı
   (tost al→servis→25₺ ödeme→görev 1/5; tabak; "Tost Tezgâhı" etiketi; konsol 0).
-- ✅ **M4 TUVALET+DEPO MVP (SAVE v24)**: zone-3 arka duvarında oda (KATI blok — etkileşim hep kapı
-  önünde; wcSolids collision+nav+çizim tek kaynak) + depo rafı. Omurga: z3table4 → wc(3000) →
-  cleaner(2000) → zone4. Döngü: ödeyen müşteri %28 tuvalete (toToilet/usingToilet NPC durumları) →
-  rulo başta ayrılır + kullanım sonrası kapı önüne 5₺; kâğıt 0 → 10sn kuyruk sabrı → vazgeçer.
-  Oyuncu depodan koli (4, tepsiden BAĞIMSIZ) → kapıda takar (stats.paperRefills yalnız OYUNCU).
-  Temizlikçi (teal, kat personeli): stok ≤2 → depo→kapı ikmal turu. findFreeTable tuvalet akışını
-  masa rezervinden çıkarır. Görevler q_wc/q_paper/q_cleaner APPEND; stats.paperRefills → SAVE v24
-  (İD-eşleme gerekmedi). Görsel: oda+kapı+tabela+stok ruloları (kalan kâğıt gözle okunur), depo
-  rafı, temizlikçi+koli, oyuncuda bel hizası koli; PaperRollIcon görev rozeti. vitest 136/136,
-  build, sim (zone-4 @1.32sa idealize), smoke 27/27, Playwright canlı (depo→tak, 90sn akışta stok
-  8→0 + ücret paraları, konsol 0).
-- ⏳ M5 maç salonu (zone-4) + final sim + APK.
+- ⏳ M4 tuvalet+depo → M5 maç salonu + APK.
 
 ## ŞU AN (2026-06-11 — TELEFON FEEDBACK TURU-2 ✅ UYGULANDI, SAVE v23)
 Kullanıcı v22 APK'yı CANLI test ederken 8 maddelik turu-2 feedback'i verdi; HEPSİ onaylanıp uygulandı:

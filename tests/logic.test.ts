@@ -2157,7 +2157,6 @@ describe('M3 — TOST ürün hattı (zone-3): trayFood, ürün fiyatı, tabak, g
     expect(i).toBeGreaterThan(0);
     expect(ids.slice(i + 1)).toEqual([
       'q_zone3', 'q_z3serve', 'q_z3table2', 'q_z3waiter', 'q_z3table3', 'q_z3dish', 'q_z3table4',
-      'q_wc', 'q_paper', 'q_cleaner', // M4 hattı da append-only
     ]);
   });
 
@@ -2254,105 +2253,5 @@ describe('M3 — müşteri tavanı masalarla ölçeklenir (arka salon açlığı
     const newcomer = s.npcs.find((n) => n.id < 8000 || n.id > 8007);
     expect(newcomer).toBeTruthy(); // 9. müşteri doğdu (eski sabit tavanda doğmazdı)
     expect(newcomer!.tableIndex).toBe(8); // hedefi tost salonunun ilk masası
-  });
-});
-
-describe('M4 — TUVALET + DEPO MVP: kâğıt döngüsü, ücret, kuyruk vazgeçme, temizlikçi, migrasyon', () => {
-  const Z1 = ['table2', 'table3', 'waiter', 'dishwasher', 'table4'];
-  const Z2 = ['zone2', 'z2table2', 'z2waiter', 'z2table3', 'z2dishwasher', 'z2table4'];
-  const Z3 = ['zone3', 'z3table2', 'z3waiter', 'z3table3', 'z3dishwasher', 'z3table4'];
-  const WITH_WC = [...Z1, ...Z2, ...Z3, 'wc'];
-
-  function setupWC(extra: Record<string, unknown> = {}) {
-    useGame.getState().hardReset();
-    useGame.setState({
-      padsDone: [...WITH_WC],
-      questIndex: economyConfig.quests.length,
-      npcs: [],
-      spawnTimer: 1e9,
-      player: [0, 0.6, 4.5] as [number, number, number],
-      ...extra,
-    });
-    useGame.getState().tick(0.05);
-  }
-
-  it('omurga: wc pad\'i z3table4 sonrası, temizlikçi wc sonrası, zone4 temizlikçi sonrası', () => {
-    const g3 = { padsDone: [...Z1, ...Z2, ...Z3], tables: 12, stationLevel: 4, lifetime: 1e9 };
-    expect(currentPad(g3)?.id).toBe('wc');
-    expect(currentPad({ ...g3, padsDone: [...g3.padsDone, 'wc'] })?.id).toBe('cleaner');
-    expect(currentPad({ ...g3, padsDone: [...g3.padsDone, 'wc', 'cleaner'] })?.id).toBe('zone4');
-  });
-
-  it('tuvalet açılınca raf dolu; müşteri kapıda kullanır → 1 kâğıt düşer + kapı önüne ücret', () => {
-    setupWC({
-      wcPaper: 5,
-      npcs: [{ id: 11, state: 'toToilet', pos: [...LAYOUT.wcDoor] as [number, number, number], tableIndex: 8, timer: 0, color: '#fff' }],
-    });
-    useGame.getState().tick(0.05); // kapıda → kullanmaya başlar (ruloyu başında ayırır)
-    expect(useGame.getState().wcPaper).toBe(4);
-    expect(useGame.getState().npcs[0].state).toBe('usingToilet');
-    for (let i = 0; i < 80; i++) useGame.getState().tick(0.05); // kullanım süresi (3sn) dolsun
-    const s = useGame.getState();
-    expect(s.npcs[0].state).toBe('leaving');
-    expect(s.coins.length).toBe(1);
-    expect(s.coins[0].value).toBe(economyConfig.wc.fee);
-  });
-
-  it('kâğıt YOKKEN müşteri kapıda bekler, sabrı dolunca vazgeçer (kullanım/ücret yok)', () => {
-    setupWC({
-      wcPaper: 0,
-      npcs: [{ id: 12, state: 'toToilet', pos: [...LAYOUT.wcDoor] as [number, number, number], tableIndex: 8, timer: 0, color: '#fff' }],
-    });
-    for (let i = 0; i < 40; i++) useGame.getState().tick(0.1); // 4sn < queuePatience 10 → hâlâ bekliyor
-    expect(useGame.getState().npcs[0].state).toBe('toToilet');
-    for (let i = 0; i < 80; i++) useGame.getState().tick(0.1); // sabır doldu
-    expect(useGame.getState().npcs[0].state).toBe('leaving');
-    expect(useGame.getState().coins.length).toBe(0);
-  });
-
-  it('oyuncu depodan koli alır (carryMax) → kapıda takar → stok dolar + paperRefills sayar (q_paper)', () => {
-    setupWC({ wcPaper: 1 });
-    useGame.setState({ player: [LAYOUT.depoPoint[0], 0.6, LAYOUT.depoPoint[2]] });
-    useGame.getState().tick(0.05);
-    expect(useGame.getState().carriedPaper).toBe(economyConfig.wc.carryMax);
-    useGame.setState({ player: [LAYOUT.wcDoor[0], 0.6, LAYOUT.wcDoor[2]] });
-    useGame.getState().tick(0.05);
-    const s = useGame.getState();
-    expect(s.wcPaper).toBe(1 + economyConfig.wc.carryMax);
-    expect(s.carriedPaper).toBe(0);
-    expect(s.stats.paperRefills).toBe(1); // q_paper sayacı (refillPaper hedefi)
-  });
-
-  it('temizlikçi: stok eşiğe inince depodan alır, kapıda takar (kısmi otomasyon; oyuncu sayacını ARTIRMAZ)', () => {
-    setupWC({ wcPaper: 0, padsDone: [...WITH_WC, 'cleaner'] });
-    useGame.getState().tick(0.05);
-    expect(useGame.getState().cleaner).not.toBeNull();
-    // Temizlikçinin tam turu: depoya yürü → al → kapıya yürü → tak (gerçek dt).
-    let refilled = false;
-    for (let i = 0; i < 60 * 40 && !refilled; i++) {
-      useGame.getState().tick(1 / 60);
-      if (useGame.getState().wcPaper > 0) refilled = true;
-    }
-    expect(refilled).toBe(true);
-    expect(useGame.getState().stats.paperRefills).toBe(0); // görev sayacı yalnız OYUNCU takınca
-  });
-
-  it('v23 → v24: paperRefills default 0 ile gelir; questIndex append-only korunur', () => {
-    const old = {
-      saveVersion: 23,
-      wallet: '500', lifetime: '5000', diamonds: '0',
-      stationLevels: [2, 0], waiterLevels: [0, 0], tableLevels: [0, 0, 0, 0, 0, 0, 0, 0],
-      padsDone: [...Z1, 'zone2'], padFills: {},
-      stats: { teaPickups: 50, teasServed: 40, coinsCollected: 30, dishesWashed: 20, waiterServed: 25, waiterServedByZone: [25, 0], teasServedByZone: [40, 0] },
-      questIndex: 16, questBase: 0, xp: 500,
-      settings: { sound: true, music: true, notifications: true },
-      floorThemeByZone: [], wallThemeByZone: [], ownedCosmetics: [],
-      charUpgrades: { tray: 2, magnet: 0, speed: 0 }, charPanelSeen: true, trayTipSeen: false,
-      lastSaved: Date.now(),
-    };
-    const m = migrate(old as unknown as Record<string, unknown>);
-    expect(m.saveVersion).toBe(SAVE_VERSION);
-    expect(m.stats.paperRefills).toBe(0);
-    expect(m.questIndex).toBe(16); // görevler sona eklendi → index kaymadı
   });
 });
