@@ -30,8 +30,25 @@ düzenleyelim; 3. zone sağ üstte olsun, 4. zone ve lavabo/depoyu kaldır" → 
      soft kum tonuna (#c9a87d) yumuşatıldı; Ground komşulukları zoneAt(col,row) ile ızgaradan.
   Doğrulama: vitest 131/131 (offline tavan/oran + bahşiş-oran testleri güncellendi), build,
   smoke 27/27, Playwright canlı (duvarsız sınır + halısız soft zemin + 90sn akış; konsol 0).
-- SIRADA: kullanıcı sağ-üst tost salonunu kendisi yönlendirip geliştirecek (zone zone düzenleme);
-  istek üzerine yeni APK derlenir. Arka-sol rezerv arsanın içeriği kullanıcıyla tasarlanacak.
+- **YEMEK ALANI + KOLTUK + GARSON PLANI ONAYLANDI** (aynı gün, iki compute raporu sonrası):
+  TAM PLAN → `docs/yemek-alani-garson-plan.md` (görsel kimlik, koltuk 1/2/2/4/4 + karışık gruplar,
+  2. garson L4-masa gating'li + claim, sekmeli karakter paneli + garson tepsi yükseltmeleri SAVE v26,
+  ayrı tost-bırak butonu, zemine kendi amblemimiz). Bu oturumda ayrıca KÜÇÜK FİX girdi: tepsi-boşalt
+  butonu artık tray+trayFood toplamıyla görünüyor (elde sadece tost varken de çıkar; Y1'de ikiye ayrılır).
+
+## >>> SONRAKİ OTURUM: ONAYLI PLANIN UYGULANMASI (Y1→Y4) <<<
+`docs/yemek-alani-garson-plan.md` sırasıyla; her milestone: vitest+sim+smoke+Playwright+commit+PUSH.
+1. **Y1** Yemek alanı kimliği: tost tezgâhı arka duvara paralel (önü güneye) + restoran masa düzeni
+   (dikdörtgen + 2'ye 2 arkalıklı sandalye) + farklı zemin tonu + zemine kendi çatal-bıçak/tost
+   amblemi + menü panosu + AYRI tost-bırak butonu (kendi SVG).
+2. **Y2** Koltuk+grup sistemi (EN RİSKLİ): seatIndex (transient), grup spawn (%30/35/20/15),
+   koltuk = masa seviyesi (1/2/2/4/4), tavan koltuk+2, kirli eşik ölçekleme; gerçek-dt testler.
+3. **Y3** Sekmeli karakter paneli (Oyuncu|Çay Garsonu|Tostçu) + garson tepsi yükseltmeleri
+   (çay 800/2400/6000; tost 2000/5000) + tostçu kıyafet farklılaşması; SAVE v25→v26.
+4. **Y4** 2. garson pad'leri (800/1200/2000; gating: salonun 4 masası L4) + claim sistemi +
+   görevler APPEND + sim kalibrasyonu.
+Ayrıca bekleyen: istek üzerine yeni APK; arka-sol rezerv arsa içeriği + üst kat tasarım turu
+kullanıcıyla.
 
 ## GECE OTURUMU 2026-06-12 — 1. KAT TAMAMLAMA (onaylı plan: docs/zone34-wc-floor2-design.md §5b)
 **NOT (2026-06-11): M4+M5 bu sabah kullanıcı kararıyla GERİ ALINDI (üstteki blok).**

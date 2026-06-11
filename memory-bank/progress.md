@@ -539,8 +539,13 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 - ↩️ **M4 (tuvalet+depo) + M5 (maç salonu) GERİ ALINDI (2026-06-11 kullanıcı: "tasarımsal kötü, zone
   zone düzenleyelim"):** git revert + MAX_ZONES=3; TOST salonu (z2) arka-SAĞA taşındı; arka-sol kalıcı
   REZERV arsa; SAVE v25 (kaldırılan pad'lerin ₺'si iade). vitest 131/131, smoke 27/27, Playwright canlı.
-- ⏳ **3a kalan:** sağ-üst tost salonunu kullanıcı yönlendirmesiyle zone-zone geliştirme; arka-sol
-  rezerv arsanın içeriği SONRA tasarlanacak (kullanıcıyla).
+- ✅ **Denge + görsel turu (2026-06-11, commit d29b7d9):** mıknatıs M1 200; offline 0.5 + bahşiş
+  dahil + tavan 1.2×pad; z2/z3 pad'leri −%10; z1↔z2 duvarı kaldırıldı; kilim kalktı + soft zemin.
+- ✅ **Tepsi-boşalt fix:** buton tray+trayFood toplamıyla görünür (elde sadece tost varken de).
+- 🔧 **SIRADA (onaylı plan, `docs/yemek-alani-garson-plan.md`):** Y1 yemek alanı kimliği →
+  Y2 koltuk+grup sistemi → Y3 sekmeli panel+garson tepsileri (SAVE v26) → Y4 ikinci garson+claim.
+- ⏳ **3a kalan:** arka-sol rezerv arsanın içeriği SONRA tasarlanacak (kullanıcıyla); üst kat
+  (okey/tavla) ayrı tasarım turu.
 - ⏳ **3b:** Kat geçişi: kat dolunca **merdiven** açılır → ekran kararma → üst kat; dinamik bounds/kamera; SAVE bump.
 - ⏳ **3c:** Tuvalet ODASI + DEPO (KATA özel, parayla açılır) + tuvalet kâğıdı döngüsü (depodan al→tak) + temizlikçi.
 - ⏳ **3d:** Menü çeşitliliği (kahve/tost — mutfak şeridine eklenir). Okey/tavla/nargile üst katlar.

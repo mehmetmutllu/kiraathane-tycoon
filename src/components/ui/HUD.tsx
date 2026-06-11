@@ -27,6 +27,7 @@ export function HUD() {
   const charPanelSeen = useGame((s) => s.charPanelSeen);
   const markCharPanelSeen = useGame((s) => s.markCharPanelSeen);
   const tray = useGame((s) => s.tray);
+  const trayFood = useGame((s) => s.trayFood);
   const emptyTray = useGame((s) => s.emptyTray);
   const trayTipSeen = useGame((s) => s.trayTipSeen);
   const markTrayTipSeen = useGame((s) => s.markTrayTipSeen);
@@ -200,7 +201,7 @@ export function HUD() {
       {/* TEPSİYİ BOŞALT (v23, telefon turu-2): tepside çay varken sağ-alt buton — çaylar atılır,
           bardaklar temiz rafa döner (müşteri kalkınca dolu tepsiyle kilitlenme çözücü). */}
       {traySpot && <div className="spotlight-backdrop" data-testid="tray-spotlight" onClick={markTrayTipSeen} />}
-      {tray > 0 && (
+      {tray + trayFood > 0 && (
         <div className={`tray-unit${traySpot ? ' spot' : ''}`}>
           {traySpot && (
             <div className="tray-tip">Müşteri kalmadıysa tepsini boşaltabilirsin — bardaklar temiz rafa döner.</div>
@@ -215,7 +216,7 @@ export function HUD() {
             }}
           >
             <TrayEmptyIcon />
-            <span className="tray-count" data-testid="tray-count">{tray}</span>
+            <span className="tray-count" data-testid="tray-count">{tray + trayFood}</span>
           </button>
         </div>
       )}
