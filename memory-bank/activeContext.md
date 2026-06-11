@@ -40,6 +40,23 @@ NOT (canlı test tekniği): sayfanın beforeunload-otosave'i localStorage enjeks
 enjeksiyon+`Storage.prototype.setItem=noop`+reload AYNI evaluate bloğunda yapılmalı.
 **SIRADAKİ:** yeni APK (v23) kullanıcıya; oynadıkça turu-3 feedback'leri gelecek.
 
+## >>> SONRAKİ OTURUM: İÇERİK TASARIM ARAŞTIRMASI (kod YOK — önce araştır+raporla+onay) <<<
+Kullanıcı istedi (2026-06-11 gece): **sonraki 2 zone + lavabo/depo + üst kat** detaylı tasarlanacak.
+- **Sonraki 2 zone ne olacak?** Kullanıcının aklındakiler: yemek salonu (sıcak bakıyor) + bahçe
+  ("bahçe mantıksız olur gibi" — şüpheli). Mekânı KOMPLE restorana çevirmek İSTEMİYOR (kıraathane
+  kimliği korunmalı). Kararı BANA bıraktı — tür araştırması yap (My Perfect Hotel/Idle Miner katman
+  desenleri + gerçek Türk kıraathane kültürü: tost/sahanda yumurta/gazoz tarzı atıştırmalık, okey/tavla
+  salonu, nargile, TV/maç köşesi...), 2-3 seçenekli kısa rapor + NET önerimle gel.
+- **Yemek alanı seçilirse detay:** hangi çalışan(lar) (aşçı? tost ustası?), hangi yemekler (menü =
+  yeni ürün hattı mı, çay hattına paralel ikinci kaynak mı), istasyon/teçhizat tasarımı (ocak modülü
+  deseninde mi), ekonomi kancası (fiyat/throughput D-010'a uyum).
+- **Lavabo (tuvalet) + DEPO:** ne olacak, NEREDE olacak (progress 3c taslağı: kata özel, parayla
+  açılır, tuvalet kâğıdı döngüsü depodan al→tak + temizlikçi — bu taslak detaylandırılacak/revize).
+  Zone içinde mi kat koridorunda mı, hangi döngüyle oyuncuya iş üretir, hangi personel.
+- **ÜST KAT ne olmalı?** (Faz 3b kat geçişi merdivenle) — kat konsepti + zone dağılımı önerisi.
+- Çıktı: `docs/`'a kısa tasarım raporu (seçenekler+öneri+yerleşim krokisi metni) → kullanıcı onayı →
+  ancak ondan sonra uygulama planı. (Planla-onayla-uygula kuralı; onaysız denge/yerleşim değişikliği yok.)
+
 ## (ÖNCEKİ — 2026-06-11 — TELEFON FEEDBACK TURU-1 ✅ COMMIT+PUSH (6aa7325) + YENİ APK, SAVE v22)
 Kullanıcı v21 APK telefon testinden 6 maddelik feedback verdi; HEPSİ uygulandı:
 1. **Müşteri takılma bug'ı (KÖK çözüm):** "masaya müşteri gelmiyor / müşteriler kümeleniyor" =

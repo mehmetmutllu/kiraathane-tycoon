@@ -530,6 +530,8 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   REACH_PICKUP); (7) garson boşta ÜST sırada (waiterHomes mutfak yanına); (8) Tepsiyi Boşalt butonu
   (çaylar gider, bardak temiz havuza; spotlight onboarding, trayTipSeen persist). vitest 119/119,
   sim (config'ten etiketler), smoke 27/27, Playwright canlı (migrasyon enjeksiyonu dahil), konsol 0.
+  - Bilinen-flaky: "ödeyen müşteri ... bahşişini bırakır" testi 1 kez tek başına kırmızı yandı,
+    izole+tam tekrarında yeşil (muhtemel test-arası durum sızıntısı/rastgele spawn). Tekrarlarsa bak.
 - ⏳ **3a kalan:** zone 3-4 (tost/TV konsepti) + kat planındaki servis odaları (floorplan-master.md).
 - ⏳ **3b:** Kat geçişi: kat dolunca **merdiven** açılır → ekran kararma → üst kat; dinamik bounds/kamera; SAVE bump.
 - ⏳ **3c:** Tuvalet ODASI + DEPO (KATA özel, parayla açılır) + tuvalet kâğıdı döngüsü (depodan al→tak) + temizlikçi.
