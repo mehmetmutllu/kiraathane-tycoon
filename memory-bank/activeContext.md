@@ -2,6 +2,22 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## GECE OTURUMU 2026-06-12 — 1. KAT TAMAMLAMA (onaylı plan: docs/zone34-wc-floor2-design.md §5b)
+Kullanıcı uyuyor; onay: "zone-3 tost planıyla devam + 1. kattaki her şeyi görevlerle planla-yap +
+görev para ödülleri + yemek masaları farklı/seviyeyle artan görsel". Milestone başına test+commit+push.
+- ✅ **M1 GÖREV ÖDÜLLERİ** (commit b4d8ac7): QuestDef.reward — tamamlanınca cüzdan+lifetime,
+  toast'ta coin+tutar, görev kartında rozet; tüm görevlere ödül (öğretici 3-15, z2 zinciri 50-200);
+  sim'e quest-ödül modeli (ilk alım 60→34sn idealize). vitest 120/120, smoke 27/27, Playwright canlı.
+- ✅ **M2 2×2 IZGARA**: MAX_ZONES=4 (z2 arka-sol TOST rezervi, z3 arka-sağ MAÇ rezervi); zonePoint
+  (ayna+sıra kaydırma); sıra-arası GEÇİTLİ duvar (rowWallSegments — collision+nav+çizim TEK liste);
+  kilitli zone nav'da bloke; oyuncu AÇIK-zone-birleşimi kelepçesi (L-şekil); duvarlar zone-kenarı
+  başına üretilir (L-köşe dikmesi 3-zone halinde); zone3/zone4 pad zincirleri config'te (görevler
+  M3/M5'te; zone-3 şimdilik çay olarak açılabilir — M3 tost'a çevirir); Ground/ReservedRooms/
+  KitchenStaff/gölge kamerası genellendi. vitest 124/124 (4 yeni: zincir türetme, geçit segmentleri,
+  gerçek-dt müşteri nav'ı arka salona, union kelepçe), sim (z3 @44dk, kat dolu @1.8sa idealize),
+  smoke 27/27, Playwright canlı 3-zone + 4-zone görsel (konsol 0).
+- ⏳ M3 tost hattı → M4 tuvalet+depo → M5 maç salonu + APK.
+
 ## ŞU AN (2026-06-11 — TELEFON FEEDBACK TURU-2 ✅ UYGULANDI, SAVE v23)
 Kullanıcı v22 APK'yı CANLI test ederken 8 maddelik turu-2 feedback'i verdi; HEPSİ onaylanıp uygulandı:
 1. **Bulaşıkçı pad 330→200** (kullanıcı verdi — "git gel bitmiyor").

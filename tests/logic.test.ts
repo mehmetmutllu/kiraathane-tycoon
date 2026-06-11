@@ -46,6 +46,7 @@ import {
   brewTime,
   dirtyTables,
   totalCupPool,
+  rowWallSegments,
 } from '../src/game/store';
 import { migrate, defaultSave, defaultStats } from '../src/game/save';
 import { buildNavGrid, findNavPath } from '../src/game/nav';
@@ -1525,11 +1526,11 @@ describe('ZONE-2 (Faz 3a + D-022) — per-zone ocak+bulaşık, geçit pad\'i, mi
     expect(d2.zonesOpen).toBe(2);
     expect(d2.stations).toBe(2);
     expect(d2.tables).toBe(5); // zone-2 oto 1. masa
-    expect(d2.tablesByZone).toEqual([4, 1]);
-    expect(d2.hasWaiterByZone).toEqual([true, false]); // z1 garsonu z2'ye SIZMAZ
+    expect(d2.tablesByZone).toEqual([4, 1, 0, 0]); // M2: 2×2 ızgara — z2/z3 kilitli
+    expect(d2.hasWaiterByZone).toEqual([true, false, false, false]); // z1 garsonu z2'ye SIZMAZ
     const d3 = derivedFromPads([...Z1_CHAIN, 'zone2', 'z2table2', 'z2waiter']);
     expect(d3.tables).toBe(6);
-    expect(d3.hasWaiterByZone).toEqual([true, true]);
+    expect(d3.hasWaiterByZone).toEqual([true, true, false, false]);
   });
 
   it('savunmacı: zone2 pad\'i YOKKEN z2 pad\'leri etki edemez (bozuk kayıt sızamaz)', () => {
@@ -2046,5 +2047,100 @@ describe('görev senkronu v23 — q_z2serve öne + zone-başı servis sayacı + 
     useGame.getState().tick(0.1);
     expect(useGame.getState().stats.teasServedByZone[1]).toBe(1);
     expect(useGame.getState().stats.teasServedByZone[0] ?? 0).toBe(0);
+  });
+});
+
+describe('M2 — 2×2 kat ızgarası (zone-3/4 altyapısı; arka sıra + geçitli duvar + union kelepçe)', () => {
+  const Z1 = ['table2', 'table3', 'waiter', 'dishwasher', 'table4'];
+  const Z2 = ['zone2', 'z2table2', 'z2waiter', 'z2table3', 'z2dishwasher', 'z2table4'];
+  const Z3 = ['zone3', 'z3table2', 'z3waiter', 'z3table3', 'z3dishwasher', 'z3table4'];
+
+  it('derivedFromPads: zone3/zone4 zinciri — zonesOpen artar, önceki zone\'lar DOLU kelepçesi genel', () => {
+    const d3 = derivedFromPads([...Z1, ...Z2, 'zone3']);
+    expect(d3.zonesOpen).toBe(3);
+    expect(d3.stations).toBe(3);
+    expect(d3.tablesByZone).toEqual([4, 4, 1, 0]); // z3 oto 1. masa; z1/z2 yapısal dolu
+    expect(d3.tables).toBe(9);
+    const d4 = derivedFromPads([...Z1, ...Z2, ...Z3, 'zone4']);
+    expect(d4.zonesOpen).toBe(4);
+    expect(d4.tablesByZone).toEqual([4, 4, 4, 1]);
+    expect(d4.tables).toBe(13);
+  });
+
+  it('rowWallSegments: arka zone açılınca sınır duvarı GEÇİT bırakır; ön sıra açıkken segment yok', () => {
+    expect(rowWallSegments(1)).toEqual([]);
+    expect(rowWallSegments(2)).toEqual([]);
+    const segs3 = rowWallSegments(3);
+    expect(segs3.length).toBe(2); // geçidin solu + sağı
+    const px = LAYOUT.rowPassageX[0];
+    const ph = LAYOUT.rowPassageHalf;
+    const ends = segs3.map((s) => [s.c[0] - s.h[0], s.c[0] + s.h[0]] as const);
+    expect(ends[0][1]).toBeCloseTo(px - ph, 5); // sol segment geçide dayanır
+    expect(ends[1][0]).toBeCloseTo(px + ph, 5); // sağ segment geçitten başlar
+    // 4 zone açıkken iki geçit (z2 + z3, sağ kolon aynalı)
+    expect(rowWallSegments(4).length).toBe(4);
+  });
+
+  it('STORE: zone-3 açık → müşteri sokaktan girip GEÇİTTEN geçerek arka salona oturur (gerçek dt nav)', () => {
+    useGame.getState().hardReset();
+    useGame.setState({
+      padsDone: [...Z1, ...Z2, 'zone3'],
+      questIndex: economyConfig.quests.length,
+      npcs: [],
+      spawnTimer: 1e9, // test sırasında başka müşteri belirmesin (deterministik rota)
+    });
+    useGame.getState().tick(0.05);
+    expect(useGame.getState().zonesOpen).toBe(3);
+    expect(useGame.getState().tables).toBe(9);
+    // zone-3'ün ilk masası (slot 8) için sokakta müşteri başlat.
+    useGame.setState({
+      npcs: [
+        { id: 9001, state: 'toTable', pos: [...LAYOUT.streets[2]] as [number, number, number], tableIndex: 8, timer: 0, color: '#fff' },
+      ],
+      spawnTimer: 1e9,
+    });
+    const dt = 1 / 60; // v23 dersi: nav regresyonları GERÇEK kare adımıyla test edilir
+    let seated = false;
+    for (let i = 0; i < 60 * 40 && !seated; i++) {
+      useGame.getState().tick(dt);
+      const n = useGame.getState().npcs.find((x) => x.id === 9001);
+      if (!n) break; // vazgeçti = başarısızlık (seated false kalır)
+      if (n.state === 'waitingForTea') seated = true;
+    }
+    expect(seated).toBe(true);
+  });
+
+  it('oyuncu union kelepçesi: arka sıra KAPALIYKEN girilmez; zone-3 açılınca geçitten girilir', () => {
+    useGame.getState().hardReset();
+    useGame.setState({
+      padsDone: [...Z1, ...Z2],
+      questIndex: economyConfig.quests.length,
+      npcs: [],
+      spawnTimer: 1e9,
+      player: [1.6, 0.6, -4.0] as [number, number, number],
+      inputKeyboard: [0, -1],
+    });
+    for (let i = 0; i < 120; i++) useGame.getState().tick(1 / 60);
+    expect(useGame.getState().player[2]).toBeGreaterThanOrEqual(LAYOUT.zoneAreas[0].minZ - 1e-6);
+    // zone-3 açık: geçit hizasından (x 1.6) arka salona yürünebilir.
+    useGame.setState({
+      padsDone: [...Z1, ...Z2, 'zone3'],
+      npcs: [],
+      spawnTimer: 1e9,
+      player: [1.6, 0.6, -4.0] as [number, number, number],
+      inputKeyboard: [0, -1],
+    });
+    for (let i = 0; i < 240; i++) useGame.getState().tick(1 / 60);
+    expect(useGame.getState().player[2]).toBeLessThan(-5.5);
+    // ... ama geçit DIŞINDA duvar katı: duvar hizasından (x 4.5) güneye zorlanınca sınırı geçemez.
+    useGame.setState({
+      npcs: [],
+      spawnTimer: 1e9,
+      player: [4.5, 0.6, -4.0] as [number, number, number],
+      inputKeyboard: [0, -1],
+    });
+    for (let i = 0; i < 120; i++) useGame.getState().tick(1 / 60);
+    expect(useGame.getState().player[2]).toBeGreaterThan(LAYOUT.zoneAreas[0].minZ - 0.4);
+    useGame.setState({ inputKeyboard: [0, 0] });
   });
 });

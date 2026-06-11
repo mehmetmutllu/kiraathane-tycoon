@@ -1,7 +1,7 @@
 import { Suspense, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Vector3, type Group, type MeshStandardMaterial } from 'three';
-import { useGame, LAYOUT, stationSoftMaxLevel, stationUpgradeCost, upgradeZoneUnlockedZ, tableSoftMaxLevel, tableUpgradeUnlockedZ, tableNextCost, waiterSoftMaxLevel, waiterUpgradeCost, waiterUpgradeUnlockedZ } from '../../game/store';
+import { useGame, LAYOUT, stationSoftMaxLevel, stationUpgradeCost, upgradeZoneUnlockedZ, tableSoftMaxLevel, tableUpgradeUnlockedZ, tableNextCost, waiterSoftMaxLevel, waiterUpgradeCost, waiterUpgradeUnlockedZ, rowWallSegments, zonePoint, zoneCol, zoneRow } from '../../game/store';
 import { zoneOfTable } from '../../config/economy.config';
 import { GroundMarker } from './GroundMarker';
 import { PALETTE, FLOOR_THEMES, WALL_THEMES } from '../../config/palette';
@@ -96,23 +96,28 @@ function Stations() {
 // Çaycı NPC (D-023; kullanıcı tarifi: "duvar ile tezgah arasında çalışan biri"). SALT GÖRSEL —
 // mekaniğe dokunmaz: kendi ocağının arkasındaki koridorda yürür, durup tezgâha dönüp "iş yapar".
 // D-025: her açık zone'un ocağı kendi duvarında → zone-2 açılınca onun da çaycısı belirir (aynalı).
-function KitchenHand({ x, faceIn }: { x: number; faceIn: number }) {
+function KitchenHand({ zone }: { zone: number }) {
   const ref = useRef<Group>(null);
   const zMin = -4.6;
-  const zMax = -1.4; // mutfak bloğu boyunca (bulaşık -4.9..-3.5 + ocak -3.6..-1.4)
+  const zMax = -1.4; // şablon (zone-yerel) mutfak bloğu aralığı (bulaşık -4.9..-3.5 + ocak -3.6..-1.4)
+  // M2: konum zone şablonundan türetilir — sağ kolon aynalı, arka sıra −z kaydırmalı (zonePoint).
+  const faceIn = zoneCol(zone) ? -Math.PI / 2 : Math.PI / 2;
+  const start = zonePoint(zone, [-5.0, 0, -3]);
   useFrame((st) => {
     const grp = ref.current;
     if (!grp) return;
     const t = st.clock.elapsedTime * 0.3;
     const u = (Math.sin(t) + 1) / 2;
-    grp.position.z = zMin + u * (zMax - zMin);
+    const p = zonePoint(zone, [-5.0, 0, zMin + u * (zMax - zMin)]);
+    grp.position.x = p[0];
+    grp.position.z = p[2];
     // Rota ucunda durup tezgâha dönüp "iş yapar" (eğilme); arada yürür (hafif zıplama).
     const speed = Math.abs(Math.cos(t));
     grp.rotation.y = speed < 0.25 ? faceIn : Math.cos(t) > 0 ? 0 : Math.PI;
     grp.position.y = speed < 0.25 ? -0.04 + Math.sin(st.clock.elapsedTime * 3) * 0.02 : Math.abs(Math.sin(st.clock.elapsedTime * 7)) * 0.04;
   });
   return (
-    <group ref={ref} position={[x, 0, -3]}>
+    <group ref={ref} position={[start[0], 0, start[2]]}>
       {/* bacaklar + gövde + önlük + baş (low-poly; palette = tek renk kaynağı) */}
       <mesh castShadow position={[0, 0.25, 0]}>
         <boxGeometry args={[0.26, 0.5, 0.18]} />
@@ -140,11 +145,12 @@ function KitchenHand({ x, faceIn }: { x: number; faceIn: number }) {
 
 function KitchenStaff() {
   const zonesOpen = useGame((s) => s.zonesOpen);
+  // Her açık zone'un kendi çaycısı (M2: konum/yön zonePoint şablonundan).
   return (
     <>
-      {/* z1: sol duvar arkası (tezgâha dönüş +x); z2: sağ duvar arkası (dönüş −x) */}
-      <KitchenHand x={-5.0} faceIn={Math.PI / 2} />
-      {zonesOpen > 1 ? <KitchenHand x={15.6} faceIn={-Math.PI / 2} /> : null}
+      {Array.from({ length: zonesOpen }, (_, z) => (
+        <KitchenHand key={z} zone={z} />
+      ))}
     </>
   );
 }
@@ -152,45 +158,48 @@ function KitchenStaff() {
 // Rezerve servis odaları (floorplan-master.md; D-023): DEPO sol-arka + TUVALET sağ-arka (bina arkasına
 // bitişik ek odalar) + MERDİVEN ön-sağ köşe (Faz 3b üst kat). Salt görsel greybox rezerv.
 function ReservedRooms() {
-  const a = LAYOUT.area;
-  // Tuvalet + merdiven zone-2 bölgesinde → salon kilitliyken çizilmez (kapalı taraf BOŞ arsa).
+  // M2: ek odalar ÖN sıranın arkasına bitişikti; arka sıra zone'ları (z2/z3) açılınca o bölge
+  // gerçek salon olur → ilgili ek oda ÇİZİLMEZ (gerçek tuvalet+depo M4'te zone-3 arka duvarına gelir).
+  const fz = LAYOUT.zoneAreas[0].minZ; // ön sıranın arka çizgisi
   const zonesOpen = useGame((s) => s.zonesOpen);
   return (
     <group>
-      {/* DEPO (sol-arka ek oda) */}
-      <group position={[-3.2, 0, a.minZ - 1.6]}>
-        <mesh castShadow position={[0, 0.7, 0]}>
-          <boxGeometry args={[3.0, 1.4, 2.2]} />
-          <meshStandardMaterial color={PALETTE.wainscot} />
-        </mesh>
-        <mesh position={[0, 0.55, 1.11]}>
-          <boxGeometry args={[0.9, 1.1, 0.04]} />
-          <meshStandardMaterial color={PALETTE.doorWood} />
-        </mesh>
-      </group>
-      {zonesOpen > 1 && (
-        <>
-      {/* TUVALET (sağ-arka ek oda) */}
-      <group position={[13.8, 0, a.minZ - 1.6]}>
-        <mesh castShadow position={[0, 0.7, 0]}>
-          <boxGeometry args={[2.4, 1.4, 2.2]} />
-          <meshStandardMaterial color={PALETTE.wallCream} />
-        </mesh>
-        <mesh position={[0, 0.55, 1.11]}>
-          <boxGeometry args={[0.8, 1.1, 0.04]} />
-          <meshStandardMaterial color={PALETTE.doorWood} />
-        </mesh>
-      </group>
-      {/* MERDİVEN (ön-sağ köşe; Faz 3b "üst kat" rezervi — basamak silüeti) */}
-      <group position={[14.8, 0, 3.6]} rotation={[0, Math.PI, 0]}>
-        {[0, 1, 2, 3].map((i) => (
-          <mesh key={i} castShadow position={[0, 0.12 + i * 0.24, -i * 0.34]}>
-            <boxGeometry args={[1.4, 0.24, 0.34]} />
-            <meshStandardMaterial color={PALETTE.lintel} />
+      {/* DEPO (sol-arka ek oda) — zone-3 açılınca kalkar */}
+      {zonesOpen < 3 && (
+        <group position={[-3.2, 0, fz - 1.6]}>
+          <mesh castShadow position={[0, 0.7, 0]}>
+            <boxGeometry args={[3.0, 1.4, 2.2]} />
+            <meshStandardMaterial color={PALETTE.wainscot} />
           </mesh>
-        ))}
-      </group>
-        </>
+          <mesh position={[0, 0.55, 1.11]}>
+            <boxGeometry args={[0.9, 1.1, 0.04]} />
+            <meshStandardMaterial color={PALETTE.doorWood} />
+          </mesh>
+        </group>
+      )}
+      {/* TUVALET (sağ-arka ek oda) — zone-4 açılınca kalkar */}
+      {zonesOpen > 1 && zonesOpen < 4 && (
+        <group position={[13.8, 0, fz - 1.6]}>
+          <mesh castShadow position={[0, 0.7, 0]}>
+            <boxGeometry args={[2.4, 1.4, 2.2]} />
+            <meshStandardMaterial color={PALETTE.wallCream} />
+          </mesh>
+          <mesh position={[0, 0.55, 1.11]}>
+            <boxGeometry args={[0.8, 1.1, 0.04]} />
+            <meshStandardMaterial color={PALETTE.doorWood} />
+          </mesh>
+        </group>
+      )}
+      {/* MERDİVEN (ön-sağ köşe; Faz 3b "üst kat" rezervi — basamak silüeti) */}
+      {zonesOpen > 1 && (
+        <group position={[14.8, 0, 3.6]} rotation={[0, Math.PI, 0]}>
+          {[0, 1, 2, 3].map((i) => (
+            <mesh key={i} castShadow position={[0, 0.12 + i * 0.24, -i * 0.34]}>
+              <boxGeometry args={[1.4, 0.24, 0.34]} />
+              <meshStandardMaterial color={PALETTE.lintel} />
+            </mesh>
+          ))}
+        </group>
       )}
     </group>
   );
@@ -392,20 +401,26 @@ function Ground() {
   // Kilitli zone'un zemini ÇİZİLMEZ (2026-06-11: karanlık örtü kalktı — kapalı salon "boş arsa";
   // taban ahşap düzlem dışarıda her yerde zaten görünür, kilitli bölge de onunla aynı kalır).
   const zonesOpen = useGame((s) => s.zonesOpen);
-  const last = zonesOpen - 1;
   return (
     <group>
-      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[6, 0, 0]}>
-        <planeGeometry args={[38, 18]} />
+      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[6, 0, -5.5]}>
+        <planeGeometry args={[38, 30]} />
         <meshStandardMaterial color={PALETTE.floorWood} />
       </mesh>
       {LAYOUT.zoneAreas.slice(0, zonesOpen).map((za, z) => {
-        // Overlay DUVARA KADAR uzar (dış kenarlarda +0.55) — duvar dibinde eski renk şerit kalmaz
-        // (kullanıcı bug'ı 2026-06-11). Zone'lar arası ortak kenar (x=5.3) olduğu gibi kalır.
-        const x0 = za.minX - (z === 0 ? 0.55 : 0);
-        const x1 = za.maxX + (z === last ? 0.55 : 0);
-        const z0 = za.minZ - 0.55;
-        const z1 = za.maxZ + 0.55;
+        // Overlay DUVARA KADAR uzar (DIŞ/kilitli kenarlarda +0.55) — duvar dibinde eski renk şerit
+        // kalmaz (kullanıcı bug'ı 2026-06-11). AÇIK komşuya bakan kenar tam sınırda biter (M2:
+        // üst üste binen overlay z-fighting yapardı).
+        const col = zoneCol(z);
+        const row = zoneRow(z);
+        const sideN = col === 0 ? z + 1 : z - 1; // yatay komşu
+        const vertN = row === 0 ? z + 2 : z - 2; // dikey komşu (ön↔arka)
+        const sideOpen = sideN >= 0 && sideN < zonesOpen;
+        const vertOpen = vertN >= 0 && vertN < zonesOpen;
+        const x0 = za.minX - (col === 0 || !sideOpen ? 0.55 : 0);
+        const x1 = za.maxX + (col === 1 || !sideOpen ? 0.55 : 0);
+        const z0 = za.minZ - (row === 1 || !vertOpen ? 0.55 : 0);
+        const z1 = za.maxZ + (row === 0 || !vertOpen ? 0.55 : 0);
         const theme = FLOOR_THEMES[floorThemeByZone[z] ?? 'parke'] ?? FLOOR_THEMES.parke;
         const zt = LAYOUT.tables.slice(z * 4, z * 4 + 4);
         const ccx = zt.reduce((a, t) => a + t.table[0], 0) / zt.length;
@@ -580,70 +595,106 @@ function DecorProps() {
 // TEK KAPI (zone-1 ortası; D-023 — tüm müşteriler buradan girer/çıkar). Açıkken İÇ BÖLME DUVARI YOK.
 function Walls() {
   const zonesOpen = useGame((s) => s.zonesOpen);
-  // WP6: duvar teması zone-başına (wallThemeByZone persist): arka duvar zone sınırında ikiye bölünür,
-  // sol dış duvar = zone-1, sağ dış = zone-2; ön segmentler orta noktasının zone'una boyanır.
+  // WP6: duvar teması zone-başına (wallThemeByZone persist). M2: duvarlar zone-kenarı başına üretilir →
+  // tema bölmesi kendiliğinden doğru (her parça kendi zone'unun temasını giyer).
   const wallThemeByZone = useGame((s) => s.wallThemeByZone);
   const themeOf = (z: number) => WALL_THEMES[wallThemeByZone[z] ?? 'krem'] ?? WALL_THEMES.krem;
-  const a = LAYOUT.area;
-  const m = 0.5; // alan kenarı ile duvar arası küçük pay
-  // Sağ duvar AÇIK zone'ların sonunda: kilitliyken zone-1 kenarı (5.3+m → oyuncu kelepçesi 5.3 ile
-  // dış duvarlardaki standoff'un AYNISI), zone-2 açılınca binanın gerçek sonu.
-  const openMaxX = LAYOUT.zoneAreas[Math.min(zonesOpen, LAYOUT.zoneAreas.length) - 1].maxX;
-  const open2 = zonesOpen > 1;
-  const themeAtX = (x: number) => themeOf(open2 && x >= LAYOUT.zoneBorderX ? 1 : 0);
-  const x0 = a.minX - m, x1 = openMaxX + m, z0 = a.minZ - m, z1 = a.maxZ + m;
-  const d = z1 - z0;
-  const cz = (z0 + z1) / 2;
+  const m = 0.5; // alan kenarı ile dış duvar arası pay (oyuncu kelepçe standoff'u ile birebir)
   const h = 1.2;
   const t = 0.2;
-  const bx = LAYOUT.zoneBorderX;
-  const doorHalf = 1.3; // kapı yarı-genişliği (her entrance x'i merkezli boşluk)
-  // Ön duvar parçaları: TEK kapı boşluğu (entrances artık aynı nokta — uniq) + zone sınırı kesiği.
-  const doorXs = [...new Set(LAYOUT.entrances.map((e) => e[0]))];
-  const cuts = [x0, ...doorXs.flatMap((dx) => [dx - doorHalf, dx + doorHalf]), x1];
-  const frontSegs: [number, number][] = [];
-  for (let i = 0; i < cuts.length; i += 2) {
-    const [sx, ex] = [cuts[i], cuts[i + 1]];
-    if (open2 && sx < bx && ex > bx) frontSegs.push([sx, bx], [bx, ex]); // tema sınırında böl
-    else frontSegs.push([sx, ex]);
+  const doorHalf = 1.3;
+  const doorX = LAYOUT.entrances[0][0]; // tek kapı (z0 ön duvarı)
+  const isOpen = (z: number) => z >= 0 && z < zonesOpen;
+  type Piece = { key: string; x: number; z: number; w: number; d: number; theme: { cream: string; wainscot: string } };
+  const pieces: Piece[] = [];
+  for (let z = 0; z < zonesOpen; z++) {
+    const za = LAYOUT.zoneAreas[z];
+    const col = zoneCol(z);
+    const row = zoneRow(z);
+    const th = themeOf(z);
+    const leftN = col === 0 ? -1 : z - 1; // -1 = dış dünya
+    const rightN = col === 0 ? z + 1 : -1;
+    const backN = row === 0 ? z + 2 : -1; // ön sıranın arka komşusu
+    // Yatay (ön/arka) duvarların x uzanımı: dış/kilitli yan uçlarda m taşar (köşe kapanır),
+    // açık yan komşuda tam kenarda biter (komşu kendi parçasını çizer — tema bölmesi).
+    const xExtL = leftN === -1 || !isOpen(leftN) ? m : 0;
+    const xExtR = rightN === -1 || !isOpen(rightN) ? m : 0;
+    const hx0 = za.minX - xExtL;
+    const hx1 = za.maxX + xExtR;
+    // Dikey (sol/sağ) duvarların z uzanımı: ön kenar dışsa +m; arka kenar açık komşuya bakıyorsa
+    // sınırda biter (geçitli sıra-duvarı orayı kapatır), değilse -m.
+    const vz0 = za.minZ - (row === 1 || !isOpen(backN) ? m : 0);
+    const vz1 = za.maxZ + (row === 0 ? m : 0);
+    // SOL kenar (dış ya da kilitli komşu → duvar; açık yatay komşu → duvar YOK, D-023)
+    if (leftN === -1 || !isOpen(leftN))
+      pieces.push({ key: `L${z}`, x: za.minX - m, z: (vz0 + vz1) / 2, w: t, d: vz1 - vz0, theme: th });
+    // SAĞ kenar (kilitliyken zone sınırına oturur = eski "kelepçe duvarı" davranışı)
+    if (rightN === -1 || !isOpen(rightN))
+      pieces.push({ key: `R${z}`, x: za.maxX + m, z: (vz0 + vz1) / 2, w: t, d: vz1 - vz0, theme: th });
+    // ÖN kenar: ön sıra → dış duvar (z0'da kapı boşluğu); arka sıra → geçitli sıra-duvarı (aşağıda).
+    if (row === 0) {
+      const fz = za.maxZ + m;
+      const hasDoor = doorX > za.minX && doorX < za.maxX;
+      const segs: [number, number][] = hasDoor
+        ? [
+            [hx0, doorX - doorHalf],
+            [doorX + doorHalf, hx1],
+          ]
+        : [[hx0, hx1]];
+      segs.forEach(([sx, ex], i) => {
+        if (ex - sx > 0.01)
+          pieces.push({ key: `F${z}_${i}`, x: (sx + ex) / 2, z: fz, w: ex - sx, d: t, theme: th });
+      });
+    }
+    // ARKA kenar: arka komşu açıksa sıra-duvarı (geçitli, global listeden); değilse dış duvar.
+    if (!(row === 0 && isOpen(backN)) && row === 0)
+      pieces.push({ key: `B${z}`, x: (hx0 + hx1) / 2, z: za.minZ - m, w: hx1 - hx0, d: t, theme: th });
+    if (row === 1)
+      pieces.push({ key: `B${z}`, x: (hx0 + hx1) / 2, z: za.minZ - m, w: hx1 - hx0, d: t, theme: th });
   }
+  // L-şekil iç köşe dikmesi (yalnız 3 zone açıkken): z1 arka duvarı (z −5.8) ile z2 sağ duvarı
+  // (x 5.8) çapraz buluşur — aradaki 0.5×0.5 boşluk kilitli z3 arsasına bakar; dikme kapatır
+  // (tamamen kilitli bölgede durur, açık alanlara taşmaz).
+  if (zonesOpen === 3) {
+    const bx = LAYOUT.zoneBorderX;
+    const bz = LAYOUT.zoneAreas[0].minZ;
+    pieces.push({ key: 'corner3', x: bx + m / 2, z: bz - m / 2, w: m + t, d: m + t, theme: themeOf(1) });
+  }
+  // Sıra-arası GEÇİTLİ duvarlar: collision/nav ile AYNI segment listesi (görsel = mantık).
+  const rowSegs = rowWallSegments(zonesOpen);
+  const frontEdgeZ = LAYOUT.zoneAreas[0].maxZ + m; // kapı sövesi referansı
   return (
     <group>
-      {/* arka duvar (zone-2 açıksa sınırda tema bölmesi) */}
-      {open2 ? (
-        <>
-          <WallPiece x={(x0 + bx) / 2} z={z0} w={bx - x0} dDepth={t} h={h} theme={themeOf(0)} />
-          <WallPiece x={(bx + x1) / 2} z={z0} w={x1 - bx} dDepth={t} h={h} theme={themeOf(1)} />
-        </>
-      ) : (
-        <WallPiece x={(x0 + x1) / 2} z={z0} w={x1 - x0} dDepth={t} h={h} theme={themeOf(0)} />
-      )}
-      {/* sol + sağ dış duvarlar (kilitliyken sağ duvar = zone sınırı, zone-1 temalı) */}
-      <WallPiece x={x0} z={cz} w={t} dDepth={d} h={h} theme={themeOf(0)} />
-      <WallPiece x={x1} z={cz} w={t} dDepth={d} h={h} theme={themeOf(open2 ? 1 : 0)} />
-      {/* ön duvar segmentleri (kapı boşlukları arası) */}
-      {frontSegs.map(([sx, ex], i) =>
-        ex - sx > 0.01 ? (
-          <WallPiece key={i} x={(sx + ex) / 2} z={z1} w={ex - sx} dDepth={t} h={h} theme={themeAtX((sx + ex) / 2)} />
-        ) : null,
-      )}
-      {/* kapı sövesi + çerçevesi (ön duvarın TAMAMEN önünde — z-fighting yok) */}
-      {doorXs.map((dx) => (
-        <group key={dx}>
-          <mesh position={[dx, h - 0.12, z1 + 0.22]}>
-            <boxGeometry args={[doorHalf * 2 + 0.3, 0.24, 0.12]} />
-            <meshStandardMaterial color={PALETTE.lintel} />
-          </mesh>
-          <mesh position={[dx - doorHalf, h / 2, z1 + 0.22]}>
-            <boxGeometry args={[0.12, h, 0.12]} />
-            <meshStandardMaterial color={PALETTE.doorWood} />
-          </mesh>
-          <mesh position={[dx + doorHalf, h / 2, z1 + 0.22]}>
-            <boxGeometry args={[0.12, h, 0.12]} />
-            <meshStandardMaterial color={PALETTE.doorWood} />
-          </mesh>
-        </group>
+      {pieces.map((p) => (
+        <WallPiece key={p.key} x={p.x} z={p.z} w={p.w} dDepth={p.d} h={h} theme={p.theme} />
       ))}
+      {rowSegs.map((s, i) => (
+        <WallPiece
+          key={`row${i}`}
+          x={s.c[0]}
+          z={s.c[2]}
+          w={s.h[0] * 2}
+          dDepth={0.3}
+          h={h}
+          // sıra-duvarı tema olarak ÖNDEKİ zone'a aittir (TV/saat o duvara monte — z0/z1 görünümü korunur)
+          theme={themeOf(s.c[0] >= LAYOUT.zoneBorderX ? 1 : 0)}
+        />
+      ))}
+      {/* kapı sövesi + çerçevesi (ön duvarın TAMAMEN önünde — z-fighting yok) */}
+      <group>
+        <mesh position={[doorX, h - 0.12, frontEdgeZ + 0.22]}>
+          <boxGeometry args={[doorHalf * 2 + 0.3, 0.24, 0.12]} />
+          <meshStandardMaterial color={PALETTE.lintel} />
+        </mesh>
+        <mesh position={[doorX - doorHalf, h / 2, frontEdgeZ + 0.22]}>
+          <boxGeometry args={[0.12, h, 0.12]} />
+          <meshStandardMaterial color={PALETTE.doorWood} />
+        </mesh>
+        <mesh position={[doorX + doorHalf, h / 2, frontEdgeZ + 0.22]}>
+          <boxGeometry args={[0.12, h, 0.12]} />
+          <meshStandardMaterial color={PALETTE.doorWood} />
+        </mesh>
+      </group>
     </group>
   );
 }
@@ -790,7 +841,7 @@ export function Scene() {
         shadow-camera-left={-12}
         shadow-camera-right={24}
         shadow-camera-top={12}
-        shadow-camera-bottom={-12}
+        shadow-camera-bottom={-20}
       />
       <Ground />
       <Street />
