@@ -138,10 +138,6 @@ export const LAYOUT = {
     minZ: -5.3 - zoneRow(z) * ZONE_DZ,
     maxZ: 5.0 - zoneRow(z) * ZONE_DZ,
   })),
-  // Sıra-arası duvar GEÇİDİ (M2): arka zone açılınca ön↔arka sınır duvarındaki boşluğun x merkezi
-  // (kolon şablonunda 1.6; sağ kolon aynalı) + yarı genişliği. rowWallSegments bunu kullanır.
-  rowPassageHalf: 1.3,
-  rowPassageX: [1.6, ZONE_DX - 1.6] as const, // index = kolon (0 sol / 1 sağ)
   // Zone-1 | zone-2 sınır çizgisi (görsel; DUVAR YOK — D-023). Zone'lar bitişik → sınır = ortak kenar.
   zoneBorderX: 5.3,
   // Masa slotları — GLOBAL 8 slot (0-3 zone-1, 4-7 zone-2); zone içi 2×2 düzen değişmedi (D-017 §1).
@@ -214,30 +210,9 @@ interface Solid {
   h: readonly [number, number];
 }
 
-/**
- * Sıra-arası duvar parçaları (M2): arka zone açıkken ön↔arka sınırında duvar + GEÇİT boşluğu.
- * Oyuncu collision'ı, personel/müşteri nav'ı VE Scene çizimi AYNI listeyi kullanır (görsel=mantık —
- * çizilen duvardan geçilemez, çizilmeyen yerden geçilir). Aynı-kolon dikey sınırlarda duvar YOK
- * (D-023 tek-salon deseni yatay komşular için sürer).
- */
-export function rowWallSegments(zonesOpen: number): { c: Vec3; h: readonly [number, number] }[] {
-  const segs: { c: Vec3; h: readonly [number, number] }[] = [];
-  const ht = 0.12; // yarı kalınlık
-  for (let z = 0; z < MAX_ZONES; z++) {
-    if (zoneRow(z) !== 1 || z >= zonesOpen) continue;
-    const za = LAYOUT.zoneAreas[z];
-    const bz = za.maxZ; // sınır çizgisi (arka zone'un ön kenarı = ön zone'un arka kenarı)
-    const px = LAYOUT.rowPassageX[zoneCol(z)];
-    const ph = LAYOUT.rowPassageHalf;
-    for (const [a, b] of [
-      [za.minX, px - ph],
-      [px + ph, za.maxX],
-    ] as const) {
-      if (b - a > 0.05) segs.push({ c: [(a + b) / 2, 0, bz], h: [(b - a) / 2, ht] });
-    }
-  }
-  return segs;
-}
+// Sıra-arası duvar KALDIRILDI (2026-06-11 kullanıcı: "alan 2 ile alan 3 arasında duvar olmasın") —
+// z1↔z2 sınırı artık z0↔z1 gibi tamamen açık (D-023 tek-salon deseni dikey komşuya da uygulanır).
+// Kilitli z2 blokajı lockedZoneSolids + clampToOpenZones'ta sürer.
 
 /** KİLİTLİ zone'ların alanları nav için BLOKE (M2): müşteri/personel rotası "boş arsa"dan geçemez
  *  (duvarlar yalnız açık zone'ları sardığından grid'e ayrıca anlatmak gerekir). Arka-sol REZERV
@@ -269,7 +244,6 @@ function activeSolids(tables: number, zonesOpen: number): Solid[] {
     solids.push({ c: LAYOUT.tables[i].table, h: LAYOUT.tableHalf });
     solids.push({ c: LAYOUT.tables[i].seat, h: LAYOUT.chairHalf }); // sandalye (içine girilemez)
   }
-  solids.push(...rowWallSegments(zonesOpen));
   return solids;
 }
 
@@ -332,8 +306,7 @@ function navSolids(tables: number, zonesOpen: number): NavSolid[] {
     solids.push({ c: LAYOUT.dishStations[z], h: LAYOUT.dishHalf });
   }
   for (let i = 0; i < tables; i++) solids.push({ c: LAYOUT.tables[i].table, h: LAYOUT.tableHalf });
-  // M2: sıra-arası duvarlar (geçit hariç) + kilitli zone alanları rota dışı.
-  solids.push(...rowWallSegments(zonesOpen));
+  // Kilitli zone alanları + rezerv arsa rota dışı (sıra-arası duvar 2026-06-11'de kaldırıldı).
   solids.push(...lockedZoneSolids(zonesOpen));
   return solids;
 }
@@ -495,11 +468,13 @@ export function tableUpgradeZoneUnlocked(g: GateState): boolean {
 }
 
 /** Çevrimdışı gelir oranı (₺/sn) — bottleneck idealize: oturma × ürün fiyatı / döngü.
- *  M3: zone verilirse o zone'un ÜRÜNÜ (tost pahalı+yavaş) hesaba girer. */
-function incomeRate(tables: number, level: number, serviceSpeedMult = 1, z = 0): number {
+ *  M3: zone verilirse o zone'un ÜRÜNÜ (tost pahalı+yavaş) hesaba girer.
+ *  2026-06-11 (kullanıcı): masa BAHŞİŞLERİ de orana dahil — tipTotal = o zone'un açık masalarının
+ *  Σ(tipBase × seviye); ilerleme (masa yükseltme) offline kazancı da büyütür. */
+function incomeRate(tables: number, level: number, serviceSpeedMult = 1, z = 0, tipTotal = 0): number {
   const prod = PRODUCTS[zoneProduct(z)];
   const cycle = C.npc.walkTime + brewTime(level, serviceSpeedMult, prod.prepTime) + C.npc.eatTime;
-  return (tables * prod.price) / cycle;
+  return (tables * prod.price + tipTotal) / cycle;
 }
 
 /**
@@ -957,8 +932,13 @@ export const useGame = create<GameState>((set, get) => ({
     let offlineEarned = 0;
     if (elapsed > 30) {
       let rate = 0;
-      for (let z = 0; z < derived.zonesOpen; z++)
-        rate += incomeRate(derived.tablesByZone[z], stationLevels[z], derived.serviceSpeedMult, z);
+      for (let z = 0; z < derived.zonesOpen; z++) {
+        // O zone'un AÇIK masalarının toplam bahşişi (tipBase × seviye; global slot index'i z*4..).
+        let tipTotal = 0;
+        for (let i = 0; i < derived.tablesByZone[z]; i++)
+          tipTotal += C.tables.tipBase * (save.tableLevels[z * TABLES_PER_ZONE + i] ?? 0);
+        rate += incomeRate(derived.tablesByZone[z], stationLevels[z], derived.serviceSpeedMult, z, tipTotal);
+      }
       offlineEarned = computeOfflineEarned(rate, elapsed, save.padsDone);
       wallet = wallet.add(offlineEarned);
       lifetime = lifetime.add(offlineEarned);

@@ -1,7 +1,7 @@
 import { Suspense, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Vector3, type Group, type MeshStandardMaterial } from 'three';
-import { useGame, LAYOUT, stationSoftMaxLevel, stationUpgradeCostZ, upgradeZoneUnlockedZ, tableSoftMaxLevel, tableUpgradeUnlockedZ, tableNextCost, waiterSoftMaxLevel, waiterUpgradeCost, waiterUpgradeUnlockedZ, rowWallSegments, zonePoint, zoneCol, zoneRow, zoneAt } from '../../game/store';
+import { useGame, LAYOUT, stationSoftMaxLevel, stationUpgradeCostZ, upgradeZoneUnlockedZ, tableSoftMaxLevel, tableUpgradeUnlockedZ, tableNextCost, waiterSoftMaxLevel, waiterUpgradeCost, waiterUpgradeUnlockedZ, zonePoint, zoneCol, zoneRow, zoneAt } from '../../game/store';
 import { zoneOfTable, zoneProduct } from '../../config/economy.config';
 import { GroundMarker } from './GroundMarker';
 import { PALETTE, FLOOR_THEMES, WALL_THEMES } from '../../config/palette';
@@ -402,8 +402,8 @@ function CheckerTiles({ x0, x1, z0, z1, color }: { x0: number; x1: number; z0: n
 function Ground() {
   // İki zone'u da kapsayan AHŞAP zemin (DÜZ renk — canvas-tile geri alındı, kullanıcı 2026-06-11:
   // "zemin iğrenç oldu"). WP6 kozmetik teması KORUNUR: zone overlay'i temanın DÜZ base rengi
-  // (+dama temasında quad satranç deseni). Kilim o zone'un masa bloğunun altına ortalanır
-  // (tek doğru kaynak: LAYOUT.tables — zone-2 aynalı olsa da doğru yere düşer).
+  // (+dama temasında quad satranç deseni). KİLİM KALDIRILDI (kullanıcı 2026-06-11: "ortadaki halıya
+  // gerek yok, daha soft bir zemin") — zone zemini tek yumuşak düz renk.
   const floorThemeByZone = useGame((s) => s.floorThemeByZone);
   // Kilitli zone'un zemini ÇİZİLMEZ (2026-06-11: karanlık örtü kalktı — kapalı salon "boş arsa";
   // taban ahşap düzlem dışarıda her yerde zaten görünür, kilitli bölge de onunla aynı kalır).
@@ -420,8 +420,9 @@ function Ground() {
         // üst üste binen overlay z-fighting yapardı).
         const col = zoneCol(z);
         const row = zoneRow(z);
-        const sideN = col === 0 ? z + 1 : z - 1; // yatay komşu
-        const vertN = row === 0 ? z + 2 : z - 2; // dikey komşu (ön↔arka)
+        // Komşular ızgaradan (zoneAt; -1 = dış dünya/rezerv arsa = kapalı kenar sayılır).
+        const sideN = zoneAt(col === 0 ? col + 1 : col - 1, row);
+        const vertN = zoneAt(col, row === 0 ? 1 : 0);
         const sideOpen = sideN >= 0 && sideN < zonesOpen;
         const vertOpen = vertN >= 0 && vertN < zonesOpen;
         const x0 = za.minX - (col === 0 || !sideOpen ? 0.55 : 0);
@@ -429,25 +430,14 @@ function Ground() {
         const z0 = za.minZ - (row === 1 || !vertOpen ? 0.55 : 0);
         const z1 = za.maxZ + (row === 0 || !vertOpen ? 0.55 : 0);
         const theme = FLOOR_THEMES[floorThemeByZone[z] ?? 'parke'] ?? FLOOR_THEMES.parke;
-        const zt = LAYOUT.tables.slice(z * 4, z * 4 + 4);
-        const ccx = zt.reduce((a, t) => a + t.table[0], 0) / zt.length;
-        const ccz = zt.reduce((a, t) => a + t.table[2], 0) / zt.length;
         return (
           <group key={z}>
-            {/* y: taban(0) < overlay(0.004) < dama(0.006) < kilim(0.008/0.014) < GroundMarker(0.02). */}
+            {/* y: taban(0) < overlay(0.004) < dama(0.006) < GroundMarker(0.02). */}
             <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[(x0 + x1) / 2, 0.004, (z0 + z1) / 2]}>
               <planeGeometry args={[x1 - x0, z1 - z0]} />
               <meshStandardMaterial color={theme.base} />
             </mesh>
             {theme.kind === 'checker' ? <CheckerTiles x0={x0} x1={x1} z0={z0} z1={z1} color={theme.alt} /> : null}
-            <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[ccx, 0.008, ccz]}>
-              <planeGeometry args={[7.0, 4.8]} />
-              <meshStandardMaterial color={PALETTE.carpetBorder} />
-            </mesh>
-            <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[ccx, 0.014, ccz]}>
-              <planeGeometry args={[6.4, 4.2]} />
-              <meshStandardMaterial color={PALETTE.carpet} />
-            </mesh>
           </group>
         );
       })}
@@ -655,7 +645,8 @@ function Walls() {
           pieces.push({ key: `F${z}_${i}`, x: (sx + ex) / 2, z: fz, w: ex - sx, d: t, theme: th });
       });
     }
-    // ARKA kenar: arka komşu açıksa sıra-duvarı (geçitli, global listeden); değilse dış duvar.
+    // ARKA kenar: arka komşu AÇIKSA duvar YOK (2026-06-11: z1↔z2 sınırı tamamen açık — sıra-arası
+    // geçitli duvar kaldırıldı); değilse dış duvar.
     if (!(row === 0 && isOpen(backN)) && row === 0)
       pieces.push({ key: `B${z}`, x: (hx0 + hx1) / 2, z: za.minZ - m, w: hx1 - hx0, d: t, theme: th });
     if (row === 1)
@@ -669,25 +660,11 @@ function Walls() {
     const bz = LAYOUT.zoneAreas[0].minZ;
     pieces.push({ key: 'corner3', x: bx - m / 2, z: bz - m / 2, w: m + t, d: m + t, theme: themeOf(0) });
   }
-  // Sıra-arası GEÇİTLİ duvarlar: collision/nav ile AYNI segment listesi (görsel = mantık).
-  const rowSegs = rowWallSegments(zonesOpen);
   const frontEdgeZ = LAYOUT.zoneAreas[0].maxZ + m; // kapı sövesi referansı
   return (
     <group>
       {pieces.map((p) => (
         <WallPiece key={p.key} x={p.x} z={p.z} w={p.w} dDepth={p.d} h={h} theme={p.theme} />
-      ))}
-      {rowSegs.map((s, i) => (
-        <WallPiece
-          key={`row${i}`}
-          x={s.c[0]}
-          z={s.c[2]}
-          w={s.h[0] * 2}
-          dDepth={0.3}
-          h={h}
-          // sıra-duvarı tema olarak ÖNDEKİ zone'a aittir (TV/saat o duvara monte — z0/z1 görünümü korunur)
-          theme={themeOf(s.c[0] >= LAYOUT.zoneBorderX ? 1 : 0)}
-        />
       ))}
       {/* kapı sövesi + çerçevesi (ön duvarın TAMAMEN önünde — z-fighting yok) */}
       <group>

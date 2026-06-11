@@ -44,9 +44,9 @@ import {
   waiterUpgradeUnlocked,
   TEA_PRICE,
   brewTime,
+  incomeRate,
   dirtyTables,
   totalCupPool,
-  rowWallSegments,
   stationUpgradeCostZ,
 } from '../src/game/store';
 import { migrate, defaultSave, defaultStats } from '../src/game/save';
@@ -1651,12 +1651,14 @@ describe('WP1 bug paketi (2026-06-11) — quest-pad gate, zone kamera odağı, o
     const frac = economyConfig.offline.capNextPadFrac;
     // Taze oyun: sıradaki pad table2 (25₺) → dev oran bile tavana kelepçelenir.
     expect(computeOfflineEarned(100, 3600, [])).toBe(Math.floor(25 * frac));
-    // Zone-1 bitti: sıradaki zone2 pad'i (1200₺) → ~4₺/sn × 1sa bile zone'u BİTİREMEZ.
+    // Zone-1 bitti: sıradaki zone2 pad'i → tavan = pad × frac (2026-06-11: frac 1.2 — zone AÇILIR
+    // ama salonun İÇİ bitmez: tavan < zone2 + ilk iç pad).
     const z1 = ['table2', 'table3', 'waiter', 'dishwasher', 'table4'];
     const capped = computeOfflineEarned(4, 3600, z1);
-    expect(capped).toBe(Math.floor(1200 * frac));
     const zone2Cost = economyConfig.pads.find((p) => p.id === 'zone2')!.cost;
-    expect(capped).toBeLessThan(zone2Cost);
+    const z2t2Cost = economyConfig.pads.find((p) => p.id === 'z2table2')!.cost;
+    expect(capped).toBe(Math.floor(zone2Cost * frac));
+    expect(capped).toBeLessThan(zone2Cost + z2t2Cost);
     // Düşük oran tavana takılmaz (normal formül işler).
     expect(computeOfflineEarned(0.05, 600, z1)).toBe(
       Math.floor(0.05 * economyConfig.offline.rateMult * 600),
@@ -1667,13 +1669,22 @@ describe('WP1 bug paketi (2026-06-11) — quest-pad gate, zone kamera odağı, o
     expect(computeOfflineEarned(1000, 7200, all)).toBe(Math.floor(maxCost * frac));
   });
 
-  it('offline SÜRE tavanı hâlâ işler (cap üstü süre işlemez) + rateMult nerf 0.2', () => {
-    expect(economyConfig.offline.rateMult).toBeLessThanOrEqual(0.25);
+  it('offline SÜRE tavanı hâlâ işler (cap üstü süre işlemez) + rateMult 0.5 (2026-06-11 kullanıcı)', () => {
+    expect(economyConfig.offline.rateMult).toBe(0.5);
     const z1 = ['table2', 'table3', 'waiter', 'dishwasher', 'table4'];
     const oneHour = computeOfflineEarned(0.5, 3600, z1);
     const threeHours = computeOfflineEarned(0.5, 3 * 3600, z1);
     expect(threeHours).toBe(oneHour); // 1sa tavanından sonrası işlemez
     expect(oneHour).toBe(Math.floor(0.5 * economyConfig.offline.rateMult * 3600));
+  });
+
+  it('offline oranına masa bahşişleri dahil (2026-06-11): tipTotal orana eklenir', () => {
+    const base = incomeRate(4, 0, 1, 0);
+    const withTips = incomeRate(4, 0, 1, 0, 4 * economyConfig.tables.tipBase); // 4 masa L1
+    // Döngü aynı, gelir payı masa başına +tipBase → oran tam o oranda büyür.
+    const cycle = (4 * 5) / base;
+    expect(withTips).toBeCloseTo((4 * 5 + 4 * economyConfig.tables.tipBase) / cycle, 6);
+    expect(withTips).toBeGreaterThan(base);
   });
 });
 
@@ -2088,19 +2099,7 @@ describe('M2 — 2×2 kat ızgarası (zone-3/4 altyapısı; arka sıra + geçitl
     expect(dFull.tables).toBe(12);
   });
 
-  it('rowWallSegments: arka zone açılınca sınır duvarı GEÇİT bırakır; ön sıra açıkken segment yok', () => {
-    expect(rowWallSegments(1)).toEqual([]);
-    expect(rowWallSegments(2)).toEqual([]);
-    const segs3 = rowWallSegments(3);
-    expect(segs3.length).toBe(2); // geçidin solu + sağı
-    const px = LAYOUT.rowPassageX[1]; // z2 arka-SAĞ kolonda (2026-06-11 taşıma)
-    const ph = LAYOUT.rowPassageHalf;
-    const ends = segs3.map((s) => [s.c[0] - s.h[0], s.c[0] + s.h[0]] as const);
-    expect(ends[0][1]).toBeCloseTo(px - ph, 5); // sol segment geçide dayanır
-    expect(ends[1][0]).toBeCloseTo(px + ph, 5); // sağ segment geçitten başlar
-  });
-
-  it('STORE: zone-3 açık → müşteri sokaktan girip GEÇİTTEN geçerek arka salona oturur (gerçek dt nav)', () => {
+  it('STORE: zone-3 açık → müşteri sokaktan girip arka salona oturur (gerçek dt nav; z1↔z2 sınırı duvarsız)', () => {
     useGame.getState().hardReset();
     useGame.setState({
       padsDone: [...Z1, ...Z2, 'zone3'],
@@ -2129,7 +2128,7 @@ describe('M2 — 2×2 kat ızgarası (zone-3/4 altyapısı; arka sıra + geçitl
     expect(seated).toBe(true);
   });
 
-  it('oyuncu union kelepçesi: arka sıra KAPALIYKEN girilmez; zone-3 açılınca SAĞ geçitten girilir', () => {
+  it('oyuncu union kelepçesi: arka sıra KAPALIYKEN girilmez; zone-3 açılınca sınır DUVARSIZ geçilir', () => {
     useGame.getState().hardReset();
     useGame.setState({
       padsDone: [...Z1, ...Z2],
@@ -2141,26 +2140,19 @@ describe('M2 — 2×2 kat ızgarası (zone-3/4 altyapısı; arka sıra + geçitl
     });
     for (let i = 0; i < 120; i++) useGame.getState().tick(1 / 60);
     expect(useGame.getState().player[2]).toBeGreaterThanOrEqual(LAYOUT.zoneAreas[1].minZ - 1e-6);
-    // zone-3 açık: SAĞ geçit hizasından (x 9.0, 2026-06-11 taşıma) arka salona yürünebilir.
-    useGame.setState({
-      padsDone: [...Z1, ...Z2, 'zone3'],
-      npcs: [],
-      spawnTimer: 1e9,
-      player: [9.0, 0.6, -4.0] as [number, number, number],
-      inputKeyboard: [0, -1],
-    });
-    for (let i = 0; i < 240; i++) useGame.getState().tick(1 / 60);
-    expect(useGame.getState().player[2]).toBeLessThan(-5.5);
-    // ... ama geçit DIŞINDA duvar katı: duvar hizasından (x 11.9) güneye zorlanınca sınırı geçemez.
-    useGame.setState({
-      npcs: [],
-      spawnTimer: 1e9,
-      player: [11.9, 0.6, -4.0] as [number, number, number],
-      inputKeyboard: [0, -1],
-    });
-    for (let i = 0; i < 120; i++) useGame.getState().tick(1 / 60);
-    expect(useGame.getState().player[2]).toBeGreaterThan(LAYOUT.zoneAreas[1].minZ - 0.4);
-    // ... ve REZERV arka-sol arsa zone-3 açıkken bile KAPALI (eski geçit hizası x 1.6).
+    // zone-3 açık: z1↔z2 sınırı tamamen duvarsız (2026-06-11) — her x hizasından arka salona yürünür.
+    for (const x of [7.0, 11.9]) {
+      useGame.setState({
+        padsDone: [...Z1, ...Z2, 'zone3'],
+        npcs: [],
+        spawnTimer: 1e9,
+        player: [x, 0.6, -4.0] as [number, number, number],
+        inputKeyboard: [0, -1],
+      });
+      for (let i = 0; i < 240; i++) useGame.getState().tick(1 / 60);
+      expect(useGame.getState().player[2]).toBeLessThan(-5.5);
+    }
+    // ... ve REZERV arka-sol arsa zone-3 açıkken bile KAPALI.
     useGame.setState({
       npcs: [],
       spawnTimer: 1e9,

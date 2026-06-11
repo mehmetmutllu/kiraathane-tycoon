@@ -246,8 +246,9 @@ export const economyConfig = {
     /** Tepsi kapasitesi (oyuncunun tek turda taşıdığı çay+kirli toplamı). Yeni oyun 2 başlar. */
     // T1/T2 2026-06-11 kullanıcı kararı: 150/500 → 75/150 ("tepsi o kadar olmamalı; azıcık hız katarız").
     tray: { values: [2, 3, 4, 5, 6], costs: [75, 150, 15_000, 60_000] },
-    /** Para mıknatısı yarıçapı (dünya birimi; money.attractRadius'un yerini aldı). */
-    magnet: { values: [2.6, 3.4, 4.2, 5.0], costs: [250, 900, 2_800] },
+    /** Para mıknatısı yarıçapı (dünya birimi; money.attractRadius'un yerini aldı).
+     *  M1 250→200 (kullanıcı 2026-06-11: "azıcık insin" — 4. masa dönemiyle hizalanır). */
+    magnet: { values: [2.6, 3.4, 4.2, 5.0], costs: [200, 900, 2_800] },
     /** Hareket hızı (dünya birimi/sn; player.moveSpeed'in yerini aldı). Tavan +%20 bilinçli düşük. */
     speed: { values: [4.5, 4.8, 5.1, 5.4], costs: [400, 1_400, 4_500] },
   },
@@ -381,32 +382,34 @@ export const economyConfig = {
     // --- ZONE-2 zinciri (Faz 3a + D-022, gece 2026-06-10): per-zone TEMALI ocak+bulaşık. Unlock pad'i
     // bölme duvarındaki GEÇİTTE; açılınca zone-2 OTOMATİK 1 ocak (L1) + 1 masa + 1 bulaşık köşesiyle gelir.
     // Maliyetler GECE BAŞLANGIÇ değerleri — curve raporu (madde 5) sabah onayıyla kalibre edilir.
-    { id: 'zone2', label: '2. Salon', cost: 1200, fillRate: 150, optional: false, zone: 0,
+    // −%10 ucuzlatma (kullanıcı 2026-06-11: "git gel çok, çok az ucuzlat") — z2/z3 zincirleri,
+    // yuvarlanmış; öğretici (zone-1) pad'leri ve yükseltme eğrileri AYNI kaldı.
+    { id: 'zone2', label: '2. Salon', cost: 1100, fillRate: 150, optional: false, zone: 0,
       requires: { prev: ['table4'] }, effect: { type: 'unlockZone' } },
-    { id: 'z2table2', label: '2. Masa', cost: 250, fillRate: 80, optional: false, zone: 1,
+    { id: 'z2table2', label: '2. Masa', cost: 225, fillRate: 80, optional: false, zone: 1,
       requires: { prev: ['zone2'] }, effect: { type: 'addTable' } },
-    { id: 'z2waiter', label: 'Garson Tut', cost: 400, fillRate: 80, optional: false, zone: 1,
+    { id: 'z2waiter', label: 'Garson Tut', cost: 360, fillRate: 80, optional: false, zone: 1,
       requires: { prev: ['z2table2'] }, effect: { type: 'hireWaiter' } },
-    { id: 'z2table3', label: '3. Masa', cost: 600, fillRate: 90, optional: false, zone: 1,
+    { id: 'z2table3', label: '3. Masa', cost: 540, fillRate: 90, optional: false, zone: 1,
       requires: { prev: ['z2waiter'] }, effect: { type: 'addTable' } },
-    { id: 'z2dishwasher', label: 'Bulaşıkçı Tut', cost: 800, fillRate: 100, optional: false, zone: 1,
+    { id: 'z2dishwasher', label: 'Bulaşıkçı Tut', cost: 720, fillRate: 100, optional: false, zone: 1,
       requires: { prev: ['z2table3'] }, effect: { type: 'hireDishwasher' } },
-    { id: 'z2table4', label: '4. Masa', cost: 1100, fillRate: 110, optional: false, zone: 1,
+    { id: 'z2table4', label: '4. Masa', cost: 1000, fillRate: 110, optional: false, zone: 1,
       requires: { prev: ['z2dishwasher'] }, effect: { type: 'addTable' } },
     // --- ZONE-3 zinciri (M2 altyapı + M3 tost): arka-SAĞ salon = TOST OCAĞI (2026-06-11 taşıma).
     // Unlock pad'i z1'in arka geçidi yanında (sıra-arası duvar geçidi). Maliyetler M3 sim kalibrasyonuna
     // açık başlangıç değerleri (~2× z2 zinciri; zone-2 bitiminden ~30-60dk aktif oyun hedefi).
-    { id: 'zone3', label: 'Tost Salonu', cost: 4000, fillRate: 250, optional: false, zone: 0,
+    { id: 'zone3', label: 'Tost Salonu', cost: 3600, fillRate: 250, optional: false, zone: 0,
       requires: { prev: ['z2table4'] }, effect: { type: 'unlockZone' } },
-    { id: 'z3table2', label: '2. Masa', cost: 600, fillRate: 110, optional: false, zone: 2,
+    { id: 'z3table2', label: '2. Masa', cost: 540, fillRate: 110, optional: false, zone: 2,
       requires: { prev: ['zone3'] }, effect: { type: 'addTable' } },
-    { id: 'z3waiter', label: 'Garson Tut', cost: 900, fillRate: 120, optional: false, zone: 2,
+    { id: 'z3waiter', label: 'Garson Tut', cost: 800, fillRate: 120, optional: false, zone: 2,
       requires: { prev: ['z3table2'] }, effect: { type: 'hireWaiter' } },
-    { id: 'z3table3', label: '3. Masa', cost: 1400, fillRate: 130, optional: false, zone: 2,
+    { id: 'z3table3', label: '3. Masa', cost: 1250, fillRate: 130, optional: false, zone: 2,
       requires: { prev: ['z3waiter'] }, effect: { type: 'addTable' } },
-    { id: 'z3dishwasher', label: 'Bulaşıkçı Tut', cost: 1800, fillRate: 140, optional: false, zone: 2,
+    { id: 'z3dishwasher', label: 'Bulaşıkçı Tut', cost: 1600, fillRate: 140, optional: false, zone: 2,
       requires: { prev: ['z3table3'] }, effect: { type: 'hireDishwasher' } },
-    { id: 'z3table4', label: '4. Masa', cost: 2500, fillRate: 150, optional: false, zone: 2,
+    { id: 'z3table4', label: '4. Masa', cost: 2250, fillRate: 150, optional: false, zone: 2,
       requires: { prev: ['z3dishwasher'] }, effect: { type: 'addTable' } },
   ],
 
@@ -501,16 +504,18 @@ export const economyConfig = {
   offline: {
     baseCapHours: 1,
     /**
-     * 2026-06-11 nerf (kullanıcı: kapa-aç 7k verdi — "aktif denge iyi, offline'ı kıs"): 0.5 → 0.2.
-     * Endüstri normu offline = aktifin %5-20'si (Idle Miner ~%10; MPH fiilen 0); rewarded ×2 Faz 4'te.
+     * 2026-06-11 nerf 0.5→0.2 SONRASI kullanıcı geri bildirimi (aynı gün): "yokken kazanılan para
+     * aşırı azalmış, 3-4 şey karşılamalı" → 0.2 → 0.5 (kullanıcı önerisi; para tavanı asıl kelepçe).
+     * Masa bahşişleri de orana dahil edildi (incomeRate) — ilerledikçe offline da büyür.
      */
-    rateMult: 0.2,
+    rateMult: 0.5,
     /**
      * PARA tavanı: offline kazanç, sıradaki omurga pad maliyetinin bu ORANINI aşamaz (süre tavanından
-     * BAĞIMSIZ ikinci kelepçe). Oran tavanı tek başına yetmiyordu: zone-2'de idealize oran ~4₺/sn →
-     * 1sa × 0.5 ≈ 7.2k = zone'u tek girişte bitiriyordu. Hedef: "birkaç yükseltme parası, zone asla".
+     * BAĞIMSIZ ikinci kelepçe). 0.6 → 1.2 (kullanıcı 2026-06-11): sıradaki pad + birkaç yükseltme
+     * karşılanır; zone unlock sıradaysa açılır ama salonun İÇİ bitmez ("zone'u tek girişte bitirmesin"
+     * ilkesi yumuşatılmış sürer).
      */
-    capNextPadFrac: 0.6,
+    capNextPadFrac: 1.2,
     /** Elmas ile uzatma başına eklenen saat (Faz 4). */
     diamondExtendHours: 8,
   },

@@ -16,9 +16,22 @@ düzenleyelim; 3. zone sağ üstte olsun, 4. zone ve lavabo/depoyu kaldır" → 
 - Doğrulama: vitest **131/131** (v25 iade testi + sağ-geçit/rezerv-arsa kelepçe testleri), build,
   sim (zone-3 dolu @1.25sa idealize), smoke **27/27**, Playwright canlı (v24 kayıt → v25 + iade
   10K→27.4K, tost salonu sağ üstte istasyonuyla, rezerv arka-sol duvarlı; konsol 0).
-- SIRADA: kullanıcı sağ-üst tost salonunu kendisi geliştirip yönlendirecek (zone zone düzenleme);
-  DENGE RAPORU bekliyor (mıknatıs 175-200, offline kazanç artışı, genel hafif ucuzlatma — ONAYLI
-  değil, rapor sonrası kullanıcı onayıyla uygulanacak). APK yeniden derlenmedi (denge sonrası).
+- **DENGE + GÖRSEL TURU (aynı gün, kullanıcı ONAYLI, uygulandı):**
+  1. Mıknatıs M1 250→200 (M2/M3 aynı).
+  2. Offline: rateMult 0.2→0.5 + masa BAHŞİŞLERİ orana dahil (incomeRate tipTotal parametresi;
+     ilerleme offline'ı da büyütür) + capNextPadFrac 0.6→1.2 (sıradaki pad + birkaç yükseltme;
+     zone unlock sıradaysa açılır ama İÇİ bitmez).
+  3. z2/z3 zincir pad'leri −%10 yuvarlanmış (zone2 1100, z2 zinciri 225-1000; zone3 3600,
+     z3 zinciri 540-2250). Öğretici pad'leri + yükseltme eğrileri AYNI. Sim: zone-3 dolu
+     1.81→1.67sa normal (~%8 — "çok az" bandı ✓).
+  4. **z1↔z2 (alan 2↔3) arası duvar TAMAMEN kaldırıldı** (rowWallSegments + rowPassageX/Half silindi;
+     kilitli z2 blokajı lockedZoneSolids+clampToOpenZones'ta sürer; z0 arka duvarı + corner dikme durur).
+  5. **Zemin redesign**: orta KİLİM kaldırıldı (PALETTE.carpet/carpetBorder silindi); parke teması
+     soft kum tonuna (#c9a87d) yumuşatıldı; Ground komşulukları zoneAt(col,row) ile ızgaradan.
+  Doğrulama: vitest 131/131 (offline tavan/oran + bahşiş-oran testleri güncellendi), build,
+  smoke 27/27, Playwright canlı (duvarsız sınır + halısız soft zemin + 90sn akış; konsol 0).
+- SIRADA: kullanıcı sağ-üst tost salonunu kendisi yönlendirip geliştirecek (zone zone düzenleme);
+  istek üzerine yeni APK derlenir. Arka-sol rezerv arsanın içeriği kullanıcıyla tasarlanacak.
 
 ## GECE OTURUMU 2026-06-12 — 1. KAT TAMAMLAMA (onaylı plan: docs/zone34-wc-floor2-design.md §5b)
 **NOT (2026-06-11): M4+M5 bu sabah kullanıcı kararıyla GERİ ALINDI (üstteki blok).**

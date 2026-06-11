@@ -5,10 +5,8 @@
  * Varyant denemek için SADECE bu dosya değişir (kullanıcı ilkesi: görsel işte geri dönüş kolay olsun).
  */
 export const PALETTE = {
-  // Zemin
-  floorWood: '#b98a5a', // sıcak ahşap zemin (düz renk)
-  carpet: '#84504a', // kilim — yumuşatılmış toprak-bordo (kullanıcı 2026-06-11: eski kırmızı "çok cırtlak")
-  carpetBorder: '#553630', // kilim bordürü
+  // Zemin (kilim 2026-06-11 kullanıcı isteğiyle KALDIRILDI: "halıya gerek yok, soft zemin")
+  floorWood: '#b98a5a', // dış/taban ahşap zemin (düz renk)
   // Duvar
   wallCream: '#e6d7b8', // üst duvar (krem badana)
   wainscot: '#6d4c41', // lambri kuşağı (alt ahşap şerit)
@@ -69,7 +67,8 @@ export const PALETTE = {
  *  düz renkte kayboluyordu — kullanıcı bug'ı "damalı seçtim beyaz duruyor").
  *  alt ayrıca mağaza önizleme swatch'ında kullanılır. */
 export const FLOOR_THEMES: Record<string, { kind: 'flat' | 'checker'; base: string; alt: string }> = {
-  parke: { kind: 'flat', base: '#b98a5a', alt: '#ad7e4f' },
+  // parke 2026-06-11: #b98a5a → daha açık/az doygun sıcak kum tonu (kullanıcı: "daha soft zemin").
+  parke: { kind: 'flat', base: '#c9a87d', alt: '#bd9b70' },
   fayans: { kind: 'flat', base: '#e8dcc8', alt: '#ddd0b8' },
   dama: { kind: 'checker', base: '#ece6da', alt: '#7d4a3a' },
   ceviz: { kind: 'flat', base: '#8a5a3b', alt: '#7c4f33' },
