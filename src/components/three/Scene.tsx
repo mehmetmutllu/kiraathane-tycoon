@@ -104,9 +104,16 @@ function KitchenHand({ zone }: { zone: number }) {
   const ref = useRef<Group>(null);
   const zMin = -4.6;
   const zMax = -1.4; // şablon (zone-yerel) mutfak bloğu aralığı (bulaşık -4.9..-3.5 + ocak -3.6..-1.4)
+  // Y1: ARKA-duvar tezgâhı (yemek counter'ı, stationRot 0) arkasında x-ekseni boyunca yürünür;
+  // yan-duvar mutfaklarında z-ekseni boyunca (eski şablon). Yol istasyon konumundan türetilir.
+  const backWall = LAYOUT.stationRots[zone] === 0;
+  const stPos = LAYOUT.stations[zone];
+  const span = 1.1; // tezgâh uzun-kenar yarısı (stationHalves uzun ekseni) — uçtan uca tur
   // M2: konum zone şablonundan türetilir — sağ kolon aynalı, arka sıra −z kaydırmalı (zonePoint).
-  const faceIn = zoneCol(zone) ? -Math.PI / 2 : Math.PI / 2;
-  const start = zonePoint(zone, [-5.0, 0, -3]);
+  const faceIn = backWall ? 0 : zoneCol(zone) ? -Math.PI / 2 : Math.PI / 2;
+  const start = backWall
+    ? ([stPos[0] - span, 0, stPos[2] - 0.65] as const)
+    : zonePoint(zone, [-5.0, 0, -3]);
   // M3: tost ustası çaycıdan kıyafetle ayrışır (hardal önlük + beyaz kep).
   const isFood = zoneProduct(zone) === 'tost';
   const apron = isFood ? PALETTE.foodApron : PALETTE.apron;
@@ -116,12 +123,20 @@ function KitchenHand({ zone }: { zone: number }) {
     if (!grp) return;
     const t = st.clock.elapsedTime * 0.3;
     const u = (Math.sin(t) + 1) / 2;
-    const p = zonePoint(zone, [-5.0, 0, zMin + u * (zMax - zMin)]);
-    grp.position.x = p[0];
-    grp.position.z = p[2];
+    let walkRot: number;
+    if (backWall) {
+      grp.position.x = stPos[0] - span + u * span * 2;
+      grp.position.z = stPos[2] - 0.65; // duvar ile tezgâh arasındaki koridor
+      walkRot = Math.cos(t) > 0 ? Math.PI / 2 : -Math.PI / 2;
+    } else {
+      const p = zonePoint(zone, [-5.0, 0, zMin + u * (zMax - zMin)]);
+      grp.position.x = p[0];
+      grp.position.z = p[2];
+      walkRot = Math.cos(t) > 0 ? 0 : Math.PI;
+    }
     // Rota ucunda durup tezgâha dönüp "iş yapar" (eğilme); arada yürür (hafif zıplama).
     const speed = Math.abs(Math.cos(t));
-    grp.rotation.y = speed < 0.25 ? faceIn : Math.cos(t) > 0 ? 0 : Math.PI;
+    grp.rotation.y = speed < 0.25 ? faceIn : walkRot;
     grp.position.y = speed < 0.25 ? -0.04 + Math.sin(st.clock.elapsedTime * 3) * 0.02 : Math.abs(Math.sin(st.clock.elapsedTime * 7)) * 0.04;
   });
   return (
@@ -277,7 +292,7 @@ function DishStation() {
   return (
     <>
       {LAYOUT.dishStations.slice(0, zonesOpen).map((p, z) => (
-        <DishStationUnit key={z} pos={p} rot={LAYOUT.stationRots[z]} />
+        <DishStationUnit key={z} pos={p} rot={LAYOUT.dishRots[z]} />
       ))}
     </>
   );
@@ -498,6 +513,119 @@ function TvCorner() {
           <boxGeometry args={[0.42, 0.09, 0.004]} />
           <meshStandardMaterial color="#1c2733" emissive="#3a546e" emissiveIntensity={0.4} />
         </mesh>
+      </group>
+    </group>
+  );
+}
+
+// YEMEK ALANI KİMLİK PAKETİ (Y1, docs/yemek-alani-garson-plan.md §4): tezgâh arkasındaki duvarda
+// MENÜ PANOSU (kara tahta + tebeşir satırları + tost silüeti) + salon zeminine ÇATAL-BIÇAK/TOST
+// AMBLEMİ (primitive mesh — kendi şeklimiz, hazır asset yok). Salt görsel; tost salonu açılınca belirir.
+function FoodCorner() {
+  const zonesOpen = useGame((s) => s.zonesOpen);
+  const foodZone = 2; // zoneProduct(2)==='tost' — tek yemek salonu
+  if (zonesOpen <= foodZone) return null;
+  const st = LAYOUT.stations[foodZone]; // arka-duvar counter'ı (Y1) — pano onun üstüne asılır
+  const za = LAYOUT.zoneAreas[foodZone];
+  // Amblem salonun oturma alanı ortasında (masa sütunları x 7.4/11.8, sıralar z -8.4/-11.3).
+  const ex = (za.minX + za.maxX) / 2 - 1.0;
+  const ez = -9.85;
+  const mark = PALETTE.wainscot; // koyu kahve işaretler — açık fayansta okunur
+  return (
+    <group>
+      {/* MENÜ PANOSU: duvar konsolu + çerçeve + kara tahta + tebeşir satırları (TvCorner dili) */}
+      <group position={[st[0], 0, za.minZ - 0.25]}>
+        <mesh castShadow position={[0, 1.35, 0]}>
+          <boxGeometry args={[0.1, 0.4, 0.1]} />
+          <meshStandardMaterial color={PALETTE.menuBoardFrame} />
+        </mesh>
+        <mesh castShadow position={[0, 1.78, 0.05]}>
+          <boxGeometry args={[2.5, 1.0, 0.08]} />
+          <meshStandardMaterial color={PALETTE.menuBoardFrame} />
+        </mesh>
+        <mesh position={[0, 1.78, 0.1]}>
+          <boxGeometry args={[2.3, 0.84, 0.02]} />
+          <meshStandardMaterial color={PALETTE.menuBoard} />
+        </mesh>
+        {/* başlık şeridi + altında 3 menü satırı (satır + fiyat noktası) */}
+        <mesh position={[-0.3, 2.08, 0.115]}>
+          <boxGeometry args={[1.0, 0.09, 0.01]} />
+          <meshStandardMaterial color={PALETTE.menuChalk} />
+        </mesh>
+        {[1.88, 1.7, 1.52].map((y, i) => (
+          <group key={y}>
+            <mesh position={[-0.42, y, 0.115]}>
+              <boxGeometry args={[1.2 - i * 0.15, 0.05, 0.01]} />
+              <meshStandardMaterial color={PALETTE.menuChalk} opacity={0.8} transparent />
+            </mesh>
+            <mesh position={[0.78, y, 0.115]}>
+              <boxGeometry args={[0.18, 0.05, 0.01]} />
+              <meshStandardMaterial color={PALETTE.brass} />
+            </mesh>
+          </group>
+        ))}
+        {/* panonun sağ alt köşesinde tost silüeti (ekmek + ızgara izi) */}
+        <group position={[0.82, 2.0, 0.115]}>
+          <mesh>
+            <boxGeometry args={[0.3, 0.22, 0.012]} />
+            <meshStandardMaterial color={PALETTE.toast} />
+          </mesh>
+          <mesh position={[0, 0, 0.008]} rotation={[0, 0, 0.6]}>
+            <boxGeometry args={[0.3, 0.04, 0.006]} />
+            <meshStandardMaterial color={PALETTE.toastDark} />
+          </mesh>
+        </group>
+      </group>
+      {/* ZEMİN AMBLEMİ: yuvarlak zemin plakası + çatal (sol) + tost (orta) + bıçak (sağ).
+          y katmanı: overlay 0.004 < dama 0.006 < plaka 0.009 < işaret 0.013 < GroundMarker 0.02. */}
+      <group position={[ex, 0, ez]}>
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.009, 0]}>
+          <circleGeometry args={[1.15, 28]} />
+          <meshStandardMaterial color={PALETTE.foodFloorEmblem} />
+        </mesh>
+        {/* çatal: sap + boyun + 3 diş */}
+        <group position={[-0.62, 0.013, 0]}>
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0.32]}>
+            <planeGeometry args={[0.09, 0.78]} />
+            <meshStandardMaterial color={mark} />
+          </mesh>
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, -0.13]}>
+            <planeGeometry args={[0.26, 0.14]} />
+            <meshStandardMaterial color={mark} />
+          </mesh>
+          {[-0.095, 0, 0.095].map((dx) => (
+            <mesh key={dx} rotation={[-Math.PI / 2, 0, 0]} position={[dx, 0, -0.36]}>
+              <planeGeometry args={[0.055, 0.34]} />
+              <meshStandardMaterial color={mark} />
+            </mesh>
+          ))}
+        </group>
+        {/* tost: 45° kare ekmek + çapraz ızgara izi */}
+        <group position={[0, 0.013, 0]} rotation={[0, Math.PI / 4, 0]}>
+          <mesh rotation={[-Math.PI / 2, 0, 0]}>
+            <planeGeometry args={[0.62, 0.62]} />
+            <meshStandardMaterial color={mark} />
+          </mesh>
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.002, 0]}>
+            <planeGeometry args={[0.5, 0.5]} />
+            <meshStandardMaterial color={PALETTE.foodFloorEmblem} />
+          </mesh>
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.004, 0]}>
+            <planeGeometry args={[0.66, 0.07]} />
+            <meshStandardMaterial color={mark} />
+          </mesh>
+        </group>
+        {/* bıçak: sap + genişleyen ağız */}
+        <group position={[0.62, 0.013, 0]}>
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0.36]}>
+            <planeGeometry args={[0.09, 0.7]} />
+            <meshStandardMaterial color={mark} />
+          </mesh>
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-0.03, 0, -0.3]}>
+            <planeGeometry args={[0.17, 0.62]} />
+            <meshStandardMaterial color={mark} />
+          </mesh>
+        </group>
       </group>
     </group>
   );
@@ -833,6 +961,7 @@ export function Scene() {
       <Street />
       <Walls />
       <TvCorner />
+      <FoodCorner />
       <DecorProps />
       <ReservedRooms />
       <Stations />

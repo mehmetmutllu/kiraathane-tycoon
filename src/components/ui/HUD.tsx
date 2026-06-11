@@ -3,7 +3,7 @@ import { useGame } from '../../game/store';
 import { fmt } from '../../game/decimal';
 import { levelProgress, economyConfig } from '../../config/economy.config';
 import { FLOOR_THEMES, WALL_THEMES } from '../../config/palette';
-import { CoinIcon, GemIcon, StarBadge, GearIcon, MailIcon, BrushIcon, CharIcon, TrayEmptyIcon, QuestPhoto, CheckBadge, BangBadge } from './icons';
+import { CoinIcon, GemIcon, StarBadge, GearIcon, MailIcon, BrushIcon, CharIcon, TrayEmptyIcon, TostEmptyIcon, QuestPhoto, CheckBadge, BangBadge } from './icons';
 import { CharacterPanel } from './CharacterPanel';
 
 /**
@@ -41,9 +41,9 @@ export function HUD() {
   // spotlight karartması (dokununca kapanır, persist — bir daha çıkmaz). Tasarım: char-upgrades §6.
   const charQuestActive = quest?.target.type === 'charStat';
   const spotlight = charQuestActive && !charPanelSeen && panel == null && !showOffline;
-  // Tepsi-boşalt onboarding'i (v23): buton İLK kez belirdiğinde (tepside çay varken) tek-seferlik
+  // Tepsi-boşalt onboarding'i (v23): buton İLK kez belirdiğinde (tepside çay/tost varken) tek-seferlik
   // spotlight + açıklama balonu (karakter spotlight kalıbı; aynı anda iki spotlight çıkmaz).
-  const traySpot = tray > 0 && !trayTipSeen && panel == null && !showOffline && !spotlight;
+  const traySpot = tray + trayFood > 0 && !trayTipSeen && panel == null && !showOffline && !spotlight;
 
   const openCharPanel = () => {
     markCharPanelSeen();
@@ -198,26 +198,42 @@ export function HUD() {
         </div>
       )}
 
-      {/* TEPSİYİ BOŞALT (v23, telefon turu-2): tepside çay varken sağ-alt buton — çaylar atılır,
-          bardaklar temiz rafa döner (müşteri kalkınca dolu tepsiyle kilitlenme çözücü). */}
+      {/* TEPSİYİ BOŞALT (v23 + Y1 ayrımı): tepside çay/tost varken sağ-alt butonlar — ÇAY ve TOST
+          AYRI boşaltılır (kullanıcı isteği Y1); kaplar temiz rafa döner (dolu tepsiyle kilitlenme çözücü). */}
       {traySpot && <div className="spotlight-backdrop" data-testid="tray-spotlight" onClick={markTrayTipSeen} />}
       {tray + trayFood > 0 && (
         <div className={`tray-unit${traySpot ? ' spot' : ''}`}>
           {traySpot && (
-            <div className="tray-tip">Müşteri kalmadıysa tepsini boşaltabilirsin — bardaklar temiz rafa döner.</div>
+            <div className="tray-tip">Müşteri kalmadıysa tepsini boşaltabilirsin — kaplar temiz rafa döner.</div>
           )}
-          <button
-            className="icon-btn tray-btn"
-            data-testid="empty-tray"
-            title="Tepsiyi boşalt"
-            onClick={() => {
-              markTrayTipSeen();
-              emptyTray();
-            }}
-          >
-            <TrayEmptyIcon />
-            <span className="tray-count" data-testid="tray-count">{tray + trayFood}</span>
-          </button>
+          {trayFood > 0 && (
+            <button
+              className="icon-btn tray-btn"
+              data-testid="empty-tray-food"
+              title="Tostları bırak"
+              onClick={() => {
+                markTrayTipSeen();
+                emptyTray('food');
+              }}
+            >
+              <TostEmptyIcon />
+              <span className="tray-count" data-testid="tray-count-food">{trayFood}</span>
+            </button>
+          )}
+          {tray > 0 && (
+            <button
+              className="icon-btn tray-btn"
+              data-testid="empty-tray"
+              title="Çayları bırak"
+              onClick={() => {
+                markTrayTipSeen();
+                emptyTray('tea');
+              }}
+            >
+              <TrayEmptyIcon />
+              <span className="tray-count" data-testid="tray-count">{tray}</span>
+            </button>
+          )}
         </div>
       )}
 

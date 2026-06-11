@@ -1720,7 +1720,11 @@ describe('kozmetik mağaza (WP6, v19) — zone-başına tema satın alma + migra
       xp: 100, settings: { sound: true, music: true, notifications: true }, lastSaved: Date.now(),
     });
     expect(m.saveVersion).toBe(SAVE_VERSION);
-    expect(m.floorThemeByZone).toEqual([]);
+    // v26 (Y1): tost salonu (z2) kendi varsayılan zeminiyle ('yemek') gelir; çay zone'ları boş kalır
+    // (init'te 'parke' doldurulur).
+    expect(m.floorThemeByZone[0]).toBeUndefined();
+    expect(m.floorThemeByZone[1]).toBeUndefined();
+    expect(m.floorThemeByZone[2]).toBe('yemek');
     expect(m.wallThemeByZone).toEqual([]);
     expect(m.ownedCosmetics).toEqual([]);
     expect(m.wallet).toBe('500');
@@ -2027,17 +2031,17 @@ describe('görev senkronu v23 — q_z2serve öne + zone-başı servis sayacı + 
     expect(questCounterValue({ type: 'serveTea', count: 5 }, stats)).toBe(99);
   });
 
-  it('emptyTray (v23): çaylar atılır, bardaklar TEMİZ havuza döner (korunum); kirliler tepside kalır', () => {
+  it('emptyTray (v23+Y1): çaylar atılır, bardaklar TEMİZ havuza döner (korunum); kirliler tepside kalır', () => {
     useGame.getState().hardReset();
     const before = useGame.getState().cleanCups;
     useGame.setState({ tray: 3, cleanCups: before - 3, carriedDirty: 1 });
-    useGame.getState().emptyTray();
+    useGame.getState().emptyTray('tea');
     const s = useGame.getState();
     expect(s.tray).toBe(0);
     expect(s.cleanCups).toBe(before); // bardak korunumu: 3 bardak temiz rafa döndü
     expect(s.carriedDirty).toBe(1); // kirliler etkilenmez (onlar lavaboya gidiyor)
     // Tepsi boşken no-op.
-    useGame.getState().emptyTray();
+    useGame.getState().emptyTray('tea');
     expect(useGame.getState().cleanCups).toBe(before);
   });
 
@@ -2237,16 +2241,118 @@ describe('M3 — TOST ürün hattı (zone-3): trayFood, ürün fiyatı, tabak, g
     expect(stationUpgradeCostZ(1, 0)).toBe(stationUpgradeCost(0)); // z1 çay salonu çarpansız
   });
 
-  it('emptyTray tostları da temiz havuza döndürür (korunum, kirliler kalır)', () => {
+  it('emptyTray (Y1): çay ve tost AYRI boşaltılır (kind) — kaplar ortak temiz havuza döner, kirliler kalır', () => {
     useGame.getState().hardReset();
     const clean0 = useGame.getState().cleanCups;
     useGame.setState({ tray: 1, trayFood: 2, carriedDirty: 1 });
-    useGame.getState().emptyTray();
-    const s = useGame.getState();
-    expect(s.tray).toBe(0);
+    // Önce yalnız TOSTLAR bırakılır — çay tepside kalır.
+    useGame.getState().emptyTray('food');
+    let s = useGame.getState();
     expect(s.trayFood).toBe(0);
-    expect(s.carriedDirty).toBe(1); // kirli tepsiden inmez (lavaboya gidecek)
+    expect(s.tray).toBe(1);
+    expect(s.cleanCups).toBe(clean0 + 2);
+    // Sonra çaylar — toplam korunum tamamlanır; kirli tepsiden inmez (lavaboya gidecek).
+    useGame.getState().emptyTray('tea');
+    s = useGame.getState();
+    expect(s.tray).toBe(0);
+    expect(s.carriedDirty).toBe(1);
     expect(s.cleanCups).toBe(clean0 + 3);
+  });
+});
+
+describe('Y1 — yemek alanı kimliği: arka-duvar counter + dikdörtgen masa + zemin varsayılanı', () => {
+  const FZ = 2; // tost salonu (zoneProduct(2)==='tost')
+
+  it('tost tezgâhı ARKA duvara paralel: rot 0 (önü güneye), footprint uzun kenarı x\'te', () => {
+    expect(LAYOUT.stationRots[FZ]).toBe(0);
+    expect(LAYOUT.stationHalves[FZ][0]).toBeGreaterThan(LAYOUT.stationHalves[FZ][1]);
+    // Çay zone'ları eski yan-duvar düzeninde kalır (uzun kenar z'de).
+    expect(LAYOUT.stationHalves[0][1]).toBeGreaterThan(LAYOUT.stationHalves[0][0]);
+    // Tezgâh zone alanının arka şeridinde (arka duvara yaslı), pickup ÖN yüzde (güneyinde).
+    const st = LAYOUT.stations[FZ];
+    const za = LAYOUT.zoneAreas[FZ];
+    expect(st[2] - za.minZ).toBeLessThan(1.2);
+    const pickup = LAYOUT.stationPickups[FZ];
+    expect(pickup[2]).toBeGreaterThan(st[2]);
+    expect(Math.abs(pickup[0] - st[0])).toBeLessThan(0.01);
+  });
+
+  it('z3dishwasher pad\'i counter footprint\'inin ve komşu dolum dairelerinin DIŞINDA', () => {
+    const pad = LAYOUT.padPos.z3dishwasher;
+    const st = LAYOUT.stations[FZ];
+    // Pad merkezi tezgâh AABB'sinin dışında (eski konum [10.4,-14.8] içinde kalıyordu).
+    const inside =
+      Math.abs(pad[0] - st[0]) < LAYOUT.stationHalves[FZ][0] &&
+      Math.abs(pad[2] - st[2]) < LAYOUT.stationHalves[FZ][1];
+    expect(inside).toBe(false);
+    // Yükseltme pad'iyle dolum daireleri kesişmez (2×PAD_RADIUS = 2.6 ayrımı korunur).
+    const up = LAYOUT.upgradeZones[FZ];
+    expect(Math.hypot(pad[0] - up[0], pad[2] - up[2])).toBeGreaterThanOrEqual(2.6);
+  });
+
+  it('yemek masası dikdörtgen (foodTableHalf) + oturma yeri G-BATI sandalyesiyle hizalı (x −0.35)', () => {
+    expect(LAYOUT.foodTableHalf[0]).toBeGreaterThan(LAYOUT.foodTableHalf[1]);
+    for (let i = FZ * 4; i < FZ * 4 + 4; i++) {
+      const t = LAYOUT.tables[i];
+      expect(t.seat[0] - t.table[0]).toBeCloseTo(-0.35, 5);
+      expect(t.seat[2] - t.table[2]).toBeCloseTo(0.78, 5);
+    }
+    // Çay masalarının oturma yeri masa merkezinin tam güneyinde kalır.
+    expect(LAYOUT.tables[0].seat[0]).toBeCloseTo(LAYOUT.tables[0].table[0], 5);
+  });
+
+  it('garson, evinden tost pickup\'ına nav ile ulaşır (counter taşınınca rota kopmadı)', () => {
+    useGame.getState().hardReset();
+    const OPEN3 = ['table2', 'table3', 'waiter', 'dishwasher', 'table4',
+      'zone2', 'z2table2', 'z2waiter', 'z2table3', 'z2dishwasher', 'z2table4', 'zone3',
+      'z3table2', 'z3table3', 'z3table4'];
+    useGame.setState({ padsDone: [...OPEN3], questIndex: economyConfig.quests.length });
+    useGame.getState().tick(0.05); // türetilen sayılar otursun (12 masa, 3 zone)
+    const solids = [
+      ...Array.from({ length: 3 }, (_, z) => ({ c: LAYOUT.stations[z], h: LAYOUT.stationHalves[z] })),
+      ...Array.from({ length: 3 }, (_, z) => ({ c: LAYOUT.dishStations[z], h: LAYOUT.dishHalf })),
+      ...LAYOUT.tables.map((t, i) => ({
+        c: t.table,
+        h: i >= FZ * 4 ? LAYOUT.foodTableHalf : LAYOUT.tableHalf,
+      })),
+    ];
+    const grid = buildNavGrid(LAYOUT.area, 0.3, solids, LAYOUT.actorRadius);
+    const home = LAYOUT.waiterHomes[FZ];
+    const pickup = LAYOUT.stationPickups[FZ];
+    expect(findNavPath(grid, [...home] as [number, number, number], pickup[0], pickup[2], 0.45)).not.toBeNull();
+    // Pickup'tan tost salonunun her masasına da rota var.
+    for (let i = FZ * 4; i < FZ * 4 + 4; i++) {
+      const t = LAYOUT.tables[i].table;
+      expect(findNavPath(grid, [...pickup] as [number, number, number], t[0], t[2], 1.5)).not.toBeNull();
+    }
+  });
+
+  it('kayıt v25→v26: z2 zemini eski varsayılandan (\'parke\') \'yemek\'e geçer; satın alınan tema KORUNUR', () => {
+    const base = {
+      saveVersion: 25, wallet: '100', diamonds: '0', lifetime: '5000',
+      stationLevels: [3, 0, 0], waiterLevels: [1, 0, 0], padsDone: ['table2'], padFills: {},
+      tableLevels: [1, 0, 0, 0], stats: defaultStats(), questIndex: 3, questBase: 0,
+      xp: 100, settings: { sound: true, music: true, notifications: true },
+      wallThemeByZone: [], ownedCosmetics: [], charUpgrades: { tray: 2, magnet: 0, speed: 0 },
+      charPanelSeen: false, trayTipSeen: false, lastSaved: Date.now(),
+    };
+    // Eski varsayılan ('parke') → tasarlanan kimlik kazanır.
+    const m1 = migrate({ ...base, floorThemeByZone: ['parke', 'parke', 'parke'] });
+    expect(m1.floorThemeByZone).toEqual(['parke', 'parke', 'yemek']);
+    // Oyuncunun bilinçli uyguladığı satın-alma teması korunur.
+    const m2 = migrate({ ...base, floorThemeByZone: ['dama', 'parke', 'dama'] });
+    expect(m2.floorThemeByZone).toEqual(['dama', 'parke', 'dama']);
+    // Çay zone'larının başlangıç durumu değişmez; cüzdan/ilerleme dokunulmaz.
+    expect(m1.wallet).toBe('100');
+    expect(m1.questIndex).toBe(3);
+  });
+
+  it('yeni oyun: tost salonu \'yemek\' zeminiyle doğar; \'yemek\' teması mağazada ücretsiz', () => {
+    useGame.getState().hardReset();
+    expect(useGame.getState().floorThemeByZone).toEqual(['parke', 'parke', 'yemek']);
+    const t = economyConfig.cosmetics.floorThemes.find((x) => x.id === 'yemek');
+    expect(t).toBeTruthy();
+    expect(t!.cost).toBe(0);
   });
 });
 

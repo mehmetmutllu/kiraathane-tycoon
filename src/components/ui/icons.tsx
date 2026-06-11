@@ -126,6 +126,35 @@ export function TrayEmptyIcon({ size = 28 }: { size?: number }) {
   );
 }
 
+/** Tepsi + tost + geri oku (TOST-boşalt butonu, Y1): çay butonundan AYRI — tepside üçgen tost dilimi
+ *  (ızgara izli), sol-üstte aynı geri oku dili (tabaklar temiz rafa döner). Kendi SVG'miz. */
+export function TostEmptyIcon({ size = 28 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
+      <defs>
+        <linearGradient id="ic-tray2" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#a1887f" />
+          <stop offset="1" stopColor="#5d4037" />
+        </linearGradient>
+        <linearGradient id="ic-tost" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#e8b35c" />
+          <stop offset="1" stopColor="#b06a24" />
+        </linearGradient>
+      </defs>
+      {/* tepsi */}
+      <ellipse cx="24" cy="36" rx="18" ry="6.5" fill="#3e2723" />
+      <ellipse cx="24" cy="34" rx="18" ry="6.5" fill="url(#ic-tray2)" stroke="#fff" strokeWidth="2" />
+      {/* üçgen tost dilimi (yarıya kesilmiş) + ızgara izleri */}
+      <path d="M14.5 31.5L24 13.5l9.5 18h-19z" fill="url(#ic-tost)" stroke="#fff" strokeWidth="1.8" strokeLinejoin="round" />
+      <path d="M19.2 27l4.8-9 4.8 9" stroke="#7a4413" strokeWidth="1.6" fill="none" strokeLinecap="round" />
+      <path d="M17.6 30l6.4-12 6.4 12" stroke="#7a4413" strokeWidth="1.6" fill="none" strokeLinecap="round" opacity="0.65" />
+      {/* geri oku (tabaklar rafa döner) */}
+      <path d="M11 14a8.5 8.5 0 0 1 14.5-3.5" stroke="#fff" strokeWidth="3.4" fill="none" strokeLinecap="round" />
+      <path d="M11 7.5V14h6.4" stroke="#fff" strokeWidth="3.4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 /** Ayarlar dişlisi (beyaz). */
 export function GearIcon({ size = 22 }: { size?: number }) {
   return (

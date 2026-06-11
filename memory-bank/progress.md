@@ -542,8 +542,15 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 - ✅ **Denge + görsel turu (2026-06-11, commit d29b7d9):** mıknatıs M1 200; offline 0.5 + bahşiş
   dahil + tavan 1.2×pad; z2/z3 pad'leri −%10; z1↔z2 duvarı kaldırıldı; kilim kalktı + soft zemin.
 - ✅ **Tepsi-boşalt fix:** buton tray+trayFood toplamıyla görünür (elde sadece tost varken de).
-- 🔧 **SIRADA (onaylı plan, `docs/yemek-alani-garson-plan.md`):** Y1 yemek alanı kimliği →
-  Y2 koltuk+grup sistemi → Y3 sekmeli panel+garson tepsileri (SAVE v26) → Y4 ikinci garson+claim.
+- ✅ **Y1 — YEMEK ALANI KİMLİK PAKETİ (2026-06-11, SAVE v26):** tost tezgâhı ARKA duvara paralel
+  counter (önü güneye; stationHalves/dishRots per-zone; z3dishwasher pad'i açıklığa taşındı; tost
+  ustası tezgâh arkasında x-boyu yürür) + dikdörtgen yemek masaları (foodTableHalf, collision+nav)
+  + arkalıklı sandalye 2'ye 2 (oturma yeri G-batı sandalyesiyle hizalı) + 'yemek' fayans varsayılan
+  zemini (defaultFloorTheme; mağazada ücretsiz) + zemine çatal-bıçak/tost amblemi + menü panosu +
+  AYRI tost-bırak butonu (emptyTray(kind), TostEmptyIcon). v25→v26 migrasyonu (z2 'parke'→'yemek',
+  satın alınan tema korunur). vitest 137/137, build, sim aynı, smoke 27/27, Playwright canlı (konsol 0).
+- 🔧 **SIRADA (onaylı plan, `docs/yemek-alani-garson-plan.md`):** Y2 koltuk+grup sistemi (EN RİSKLİ)
+  → Y3 sekmeli panel+garson tepsileri (SAVE **v27** — v26'yı Y1 aldı) → Y4 ikinci garson+claim.
 - ⏳ **3a kalan:** arka-sol rezerv arsanın içeriği SONRA tasarlanacak (kullanıcıyla); üst kat
   (okey/tavla) ayrı tasarım turu.
 - ⏳ **3b:** Kat geçişi: kat dolunca **merdiven** açılır → ekran kararma → üst kat; dinamik bounds/kamera; SAVE bump.

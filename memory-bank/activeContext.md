@@ -2,6 +2,36 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-06-11 — Y1 ✅ YEMEK ALANI KİMLİK PAKETİ, SAVE v26)
+Onaylı planın (docs/yemek-alani-garson-plan.md) Y1 milestone'u uygulandı:
+- **Y1a counter:** tost tezgâhı (z2) ARKA duvara paralel, önü güneye — `FOOD_ZONE/FOOD_STATION`
+  [10.6,-14.65], stationRots[2]=0, per-zone `stationHalves` (yemek [1.1,0.4]); pickup ön yüzde
+  [10.6,-13.8], garson evi [11.5,-13.8], yükseltme pad'i [8.6,-14.65] (pad↔pickup değişmezi 2.0 ✓);
+  `dishRots` ayrıldı (bulaşık yan duvarda kaldı); z3dishwasher pad'i [13.3,-14.3]'e taşındı (eski
+  nokta counter footprint'i içinde kalıyordu); KitchenHand z2'de tezgâh arkasında x-boyu yürür.
+- **Y1b masa:** yemek masaları DİKDÖRTGEN (1.35×0.85, `foodTableHalf` [0.7,0.45], collision+nav dahil)
+  + ARKALIKLI sandalye (chairWood+petrol minder) 2'ye 2 karşılıklı (FOOD_CHAIR_SPOTS); oturma yeri
+  G-BATI sandalyesi (ALL_TABLES seat dünya x −0.35); çay tarafı kare+tabure aynen.
+- **Y1c zemin:** FLOOR_THEMES `yemek` (düşük kontrast iri karo, #e3dac6/#d8cdb4) tost salonunun
+  DOĞUŞTAN teması (`defaultFloorTheme`); mağazada ücretsiz satır olarak da var; zemine primitive
+  ÇATAL-BIÇAK/TOST amblemi (FoodCorner — daire plaka + işaretler).
+- **Y1d pano:** menü panosu counter üstündeki arka duvarda (kara tahta + tebeşir satırları + fiyat
+  pirinçleri + tost silüeti).
+- **Y1e buton:** `emptyTray(kind:'tea'|'food')`; HUD'da AYRI tost-bırak butonu (kendi TostEmptyIcon
+  SVG'si, data-testid empty-tray-food) — yalnız ilgili sayaçla görünür, korunum ayrı ayrı.
+- **SAVE v25→v26:** z2 zemini eski varsayılan 'parke' ise 'yemek'e migrate; satın alınan tema korunur.
+  **NOT: Y3'ün garson-tepsi şeması artık v27 olacak** (plan dokümanı v26 diyordu, Y1 aldı).
+- Doğrulama: vitest **137/137** (6 yeni Y1 testi: counter geometrisi, pad-dışı footprint, dikdörtgen
+  masa+koltuk hizası, nav rotaları, v26 migrasyonu, yeni-oyun defaults), build, sim AYNI (z3 dolu
+  @1.67sa), smoke **27/27**, Playwright canlı: v25 kayıt → v26 'yemek' zemini; counter+pano+amblem+
+  sandalyeli masalar ekran görüntüsüyle doğrulandı; tost/çay butonları ayrı çalışıyor; konsol 0.
+
+## >>> SIRADAKİ: Y2 — KOLTUK + GRUP SİSTEMİ (EN RİSKLİ) <<<
+`docs/yemek-alani-garson-plan.md` §2: seatIndex (transient), grup spawn (%30/35/20/15), koltuk =
+masa seviyesi (1/2/2/4/4), müşteri tavanı koltuk+2, kirli eşik koltukla ölçeklenir; gerçek-dt
+regresyon testleri ŞART. Sonra Y3 (sekmeli panel + garson tepsi yükseltmeleri, SAVE v27) → Y4
+(2. garson + claim + gating).
+
 ## ŞU AN (2026-06-11 — KULLANICI KARARI: M4+M5 GERİ ALINDI, TOST SALONU ARKA-SAĞA TAŞINDI, SAVE v25)
 Kullanıcı gece oturumu çıktısını tarayıcıda gördü: "tasarımsal olarak çok kötü — geri al, zone zone
 düzenleyelim; 3. zone sağ üstte olsun, 4. zone ve lavabo/depoyu kaldır" → ONAYLI uygulandı:

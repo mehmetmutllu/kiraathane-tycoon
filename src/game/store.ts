@@ -20,6 +20,7 @@ import {
   zoneOfTable,
   PRODUCTS,
   zoneProduct,
+  defaultFloorTheme,
   charMaxTier,
   charNextCost,
   trayCapacityFor,
@@ -105,12 +106,26 @@ const BASE_TABLES = [
 ] as const;
 
 const ALL_TABLES = ZONES.flatMap((z) =>
-  BASE_TABLES.map((t) => ({
-    table: mir(z, t.table),
-    seat: mir(z, t.seat),
-    upgradeSpot: mir(z, t.upgradeSpot),
-  })),
+  BASE_TABLES.map((t) => {
+    const seat = mir(z, t.seat);
+    // Y1: YEMEK masası dikdörtgen + 2'ye 2 karşılıklı sandalye (Tables.tsx FOOD_CHAIR_SPOTS) →
+    // oturma yeri güney-BATI sandalyesiyle hizalanır (dünya x −0.35; masa merkezi güneyi değil).
+    if (zoneProduct(z) === 'tost') seat[0] -= 0.35;
+    return {
+      table: mir(z, t.table),
+      seat,
+      upgradeSpot: mir(z, t.upgradeSpot),
+    };
+  }),
 );
+
+// Y1 (yemek alanı kimliği, docs/yemek-alani-garson-plan.md §4.1): TOST salonunun (z2) tezgâhı yan
+// duvarda değil ARKA duvara paralel "counter" — önü güneye (salona) bakar. Pickup/garson-evi/yükseltme
+// noktaları tezgâhla birlikte döner (yan-duvar şablonuyla AYNI göreli geometri: pickup ön yüzde +0.85,
+// garson evi pickup'tan 0.9 duvar-boyu, yükseltme pad'i tezgâhtan 2.0 duvar-boyu kapı tarafında —
+// pad↔pickup ayrım değişmezi [≥pickupRadius+0.3] vitest'te tüm zone'lar için doğrulanır).
+const FOOD_ZONE = 2;
+const FOOD_STATION: Vec3 = [10.6, 0, -14.65];
 
 export const LAYOUT = {
   // DÜNYA v2 (2026-06-11, kullanıcı tarifi; feedback-2026-06-11.md §G + D-023): duvarsız TEK SALON,
@@ -125,9 +140,12 @@ export const LAYOUT = {
   player: [0, 0.6, 1.5] as Vec3,
   // Ocak modülleri (D-025 per-zone mutfak): sol kolon SOL duvarda, sağ kolon SAĞ duvarda (aynalı);
   // arka sıra aynı şablonun −z kopyası. Arkada çaycı koridoru (~0.55) her zone'da korunur.
-  stations: ZONES.map((z) => mir(z, [-4.35, 0, -2.5])),
+  stations: ZONES.map((z) => (z === FOOD_ZONE ? FOOD_STATION : mir(z, [-4.35, 0, -2.5]))),
   // Modül dönüşü: ön yüz salona bakar (sol kolon +x → +90°; sağ kolon −x → −90°).
-  stationRots: ZONES.map((z) => (zoneCol(z) ? -Math.PI / 2 : Math.PI / 2)),
+  // Y1: yemek zone'unun tezgâhı arka duvarda → dönüşü 0 (ön yüz +z = güney).
+  stationRots: ZONES.map((z) => (z === FOOD_ZONE ? 0 : zoneCol(z) ? -Math.PI / 2 : Math.PI / 2)),
+  // Bulaşık modülü Y1'de YERİNDE kaldı (kendi yan duvarında) → dönüşü istasyondan bağımsız.
+  dishRots: ZONES.map((z) => (zoneCol(z) ? -Math.PI / 2 : Math.PI / 2)),
   // Oynanabilir alan: 2×2 ızgaranın tamamı (tek bina). Oyuncu AÇIK zone'ların BİRLEŞİMİNE
   // kelepçelenir (tick — L-şekil destekli union kelepçesi, M2).
   area: { minX: -5.3, maxX: 5.3 + ZONE_DX, minZ: -5.3 - ZONE_DZ, maxZ: 5.0 },
@@ -168,21 +186,29 @@ export const LAYOUT = {
     z3table3: ALL_TABLES[10].table,
     z3table4: ALL_TABLES[11].table,
     z3waiter: mir(2, [-4.6, 0, 2.2]),
-    z3dishwasher: mir(2, [0.2, 0, -4.5]),
+    // Y1: tezgâh arka duvara taşınınca eski nokta ([10.4,-14.8]) counter footprint'inin içinde
+    // kalıyordu → pad bulaşık modülünün önündeki açıklığa (tezgâh kenarına 2.1, bulaşığa 1.25).
+    z3dishwasher: [13.3, 0, -14.3] as Vec3,
   } as Record<string, Vec3>,
   // Zone başına mekânsal çay yükseltme noktası: kendi duvarında, modülün ALTINDA (kapı tarafı —
   // kullanıcı 2026-06-11: "ocağın önünde değil altında, sol duvarda dursun"). PAD MERKEZİ ocağın
   // pickupRadius'unun (1.6) DIŞINDA kalır (merkez ayrımı 2.0) → pad üstünde dururken çay-alma
   // tetiklenmez; ayrıca tick'teki pickup-guard'ı pickup alanı içinde dolumu zaten kilitler (vitest).
-  upgradeZones: ZONES.map((z) => mir(z, [-4.35, 0, -0.5])),
+  upgradeZones: ZONES.map((z) =>
+    z === FOOD_ZONE ? ([FOOD_STATION[0] - 2.0, 0, FOOD_STATION[2]] as Vec3) : mir(z, [-4.35, 0, -0.5]),
+  ),
   upgradeZone: [-4.35, 0, -0.5] as Vec3, // zone-1 alias (testler/eski kod)
   // Garson çay-alma noktası: modülün ÖN yüzü (2026-06-11 feedback: bardaklar önde, garson arkadaki
   // çaycı koridorundan ALMASIN — eski merkez+yarıçap hedefi arka koridoru da kabul ediyordu). Aynalı şablon.
-  stationPickups: ZONES.map((z) => mir(z, [-3.5, 0, -2.5])),
+  stationPickups: ZONES.map((z) =>
+    z === FOOD_ZONE ? ([FOOD_STATION[0], 0, FOOD_STATION[2] + 0.85] as Vec3) : mir(z, [-3.5, 0, -2.5]),
+  ),
   // Zone başına personel köşeleri + garson hız noktası (aynalı şablon).
   // Garson boşta ÜST sırada, kendi mutfak bloğunun yanında bekler (2026-06-11 feedback: "sol altta
   // değil üst sırada dursun"). Çay pickup önünden (stationPickups z -2.5) ve bulaşıkçı köşesinden uzak.
-  waiterHomes: ZONES.map((z) => mir(z, [-3.5, 0, -3.4])),
+  waiterHomes: ZONES.map((z) =>
+    z === FOOD_ZONE ? ([FOOD_STATION[0] + 0.9, 0, FOOD_STATION[2] + 0.85] as Vec3) : mir(z, [-3.5, 0, -3.4]),
+  ),
   waiterHome: [-3.5, 0, -3.4] as Vec3,
   waiterUpgradeSpots: ZONES.map((z) => mir(z, [-3.5, 0, 4.4])),
   waiterUpgradeSpot: [-3.5, 0, 4.4] as Vec3,
@@ -198,8 +224,14 @@ export const LAYOUT = {
   playerRadius: 0.35, // oyuncu kapsül görsel yarıçapı = standoff'u görsel kenara denk getirir
   actorRadius: 0.28, // garson/bulaşıkçı engel-kaçınma yarıçapı
   stationHalf: [0.4, 1.1] as [number, number], // sol duvara paralel modül (uzun kenar z'de — D-023 şerit)
+  // Zone-başına istasyon footprint'i (Y1): yemek tezgâhı arka duvara paralel → uzun kenar x'te.
+  stationHalves: ZONES.map((z) =>
+    z === FOOD_ZONE ? ([1.1, 0.4] as [number, number]) : ([0.4, 1.1] as [number, number]),
+  ),
   dishHalf: [0.4, 0.7] as [number, number], // yan duvara paralel modül (uzun kenar z'de — ocak gibi)
   tableHalf: [0.5, 0.5] as [number, number],
+  // Y1: dikdörtgen yemek masası (görsel 1.35×0.85; uzun kenar x'te — 2'ye 2 sandalye düzeni).
+  foodTableHalf: [0.7, 0.45] as [number, number],
   chairHalf: [0.22, 0.22] as [number, number], // sandalye + oturan müşteri
   actorHalf: [0.3, 0.3] as [number, number], // yürüyen müşteri / garson / bulaşıkçı (oyuncu engeli)
 } as const;
@@ -234,14 +266,18 @@ function lockedZoneSolids(zonesOpen: number): Solid[] {
 /** O an SAHNEDE var olan SABİT katı engeller (açık zone'ların ocak+bulaşığı; açık masalar + sandalyeler
  *  + sıra-arası duvarlar). Yatay bölme duvarı YOK (D-023). Kapalı zone'un mobilyası ÇİZİLMEZ →
  *  collision da eklenmez (oyuncu zaten açık-zone birleşimine kelepçeli). */
+/** Masanın footprint yarısı (Y1): yemek masası dikdörtgen, çay masası kare. */
+const tableHalfFor = (i: number): readonly [number, number] =>
+  zoneProduct(zoneOfTable(i)) === 'tost' ? LAYOUT.foodTableHalf : LAYOUT.tableHalf;
+
 function activeSolids(tables: number, zonesOpen: number): Solid[] {
   const solids: Solid[] = [];
   for (let z = 0; z < zonesOpen; z++) {
-    solids.push({ c: LAYOUT.stations[z], h: LAYOUT.stationHalf });
+    solids.push({ c: LAYOUT.stations[z], h: LAYOUT.stationHalves[z] });
     solids.push({ c: LAYOUT.dishStations[z], h: LAYOUT.dishHalf });
   }
   for (let i = 0; i < tables; i++) {
-    solids.push({ c: LAYOUT.tables[i].table, h: LAYOUT.tableHalf });
+    solids.push({ c: LAYOUT.tables[i].table, h: tableHalfFor(i) });
     solids.push({ c: LAYOUT.tables[i].seat, h: LAYOUT.chairHalf }); // sandalye (içine girilemez)
   }
   return solids;
@@ -273,7 +309,7 @@ function clampToOpenZones(x: number, z: number, zonesOpen: number): [number, num
  *  koltuk hariç: personel onlara erişmeli). */
 function tableSolids(tables: number): Solid[] {
   const solids: Solid[] = [];
-  for (let i = 0; i < tables; i++) solids.push({ c: LAYOUT.tables[i].table, h: LAYOUT.tableHalf });
+  for (let i = 0; i < tables; i++) solids.push({ c: LAYOUT.tables[i].table, h: tableHalfFor(i) });
   return solids;
 }
 
@@ -302,10 +338,10 @@ const REACH_HOME = 0.4; // boştayken köşeye dönüş
 function navSolids(tables: number, zonesOpen: number): NavSolid[] {
   const solids: NavSolid[] = [];
   for (let z = 0; z < zonesOpen; z++) {
-    solids.push({ c: LAYOUT.stations[z], h: LAYOUT.stationHalf });
+    solids.push({ c: LAYOUT.stations[z], h: LAYOUT.stationHalves[z] });
     solids.push({ c: LAYOUT.dishStations[z], h: LAYOUT.dishHalf });
   }
-  for (let i = 0; i < tables; i++) solids.push({ c: LAYOUT.tables[i].table, h: LAYOUT.tableHalf });
+  for (let i = 0; i < tables; i++) solids.push({ c: LAYOUT.tables[i].table, h: tableHalfFor(i) });
   // Kilitli zone alanları + rezerv arsa rota dışı (sıra-arası duvar 2026-06-11'de kaldırıldı).
   solids.push(...lockedZoneSolids(zonesOpen));
   return solids;
@@ -655,7 +691,7 @@ export interface GameState {
    * (korunum bozulmaz; çay ziyan = küçük bedel, istismarı engeller). Taşınan KİRLİLER kalır —
    * onlar zaten lavaboya gidiyor. Tepsi çayla doluyken müşteriler kalkarsa kilitlenme çözücüsü.
    */
-  emptyTray: () => void;
+  emptyTray: (kind: 'tea' | 'food') => void;
   /** Tepsi-boşalt butonu ilk-sefer spotlight'ını kapat (persist — bir daha çıkmaz). */
   markTrayTipSeen: () => void;
   saveNow: () => void;
@@ -894,7 +930,7 @@ export const useGame = create<GameState>((set, get) => ({
   questBase: 0,
   xp: 0,
   settings: defaultSettings(),
-  floorThemeByZone: Array.from({ length: MAX_ZONES }, () => 'parke'),
+  floorThemeByZone: Array.from({ length: MAX_ZONES }, (_, z) => defaultFloorTheme(z)),
   wallThemeByZone: Array.from({ length: MAX_ZONES }, () => 'krem'),
   ownedCosmetics: [],
   charUpgrades: defaultCharUpgrades(),
@@ -1002,7 +1038,7 @@ export const useGame = create<GameState>((set, get) => ({
       questBase: save.questBase,
       xp: save.xp,
       settings: { ...save.settings },
-      floorThemeByZone: Array.from({ length: MAX_ZONES }, (_, z) => save.floorThemeByZone[z] ?? 'parke'),
+      floorThemeByZone: Array.from({ length: MAX_ZONES }, (_, z) => save.floorThemeByZone[z] ?? defaultFloorTheme(z)),
       wallThemeByZone: Array.from({ length: MAX_ZONES }, (_, z) => save.wallThemeByZone[z] ?? 'krem'),
       ownedCosmetics: [...save.ownedCosmetics],
       charUpgrades,
@@ -1526,7 +1562,8 @@ export const useGame = create<GameState>((set, get) => ({
         }
         // Masa pad'i oyuncunun DURDUĞU yerde belirir → oyuncu masanın içinde kalmasın, anında dışarı it.
         if (activePad.effect.type === 'addTable') {
-          const out = LAYOUT.tableHalf[0] + pr + 0.1;
+          // En geniş masa yarısı (yemek masası 0.7) — push-out hiçbir masa tipinde içeride bırakmaz.
+          const out = LAYOUT.foodTableHalf[0] + pr + 0.1;
           let ex = player[0] - padPos[0];
           let ez = player[2] - padPos[2];
           const ed = Math.hypot(ex, ez);
@@ -1827,11 +1864,17 @@ export const useGame = create<GameState>((set, get) => ({
     get().saveNow();
   },
 
-  emptyTray: () => {
+  // Y1: çay ve tost AYRI butonlardan boşaltılır (kind) — kaplar ortak temiz havuza döner (korunum);
+  // kirliler tepside KALIR.
+  emptyTray: (kind) => {
     const s = get();
-    if (s.tray <= 0 && s.trayFood <= 0) return;
-    // Çaylar/tostlar atılır, kapları temiz havuza döner (korunum); kirliler tepside KALIR (M3: tost dahil).
-    set({ tray: 0, trayFood: 0, cleanCups: s.cleanCups + s.tray + s.trayFood });
+    const n = kind === 'food' ? s.trayFood : s.tray;
+    if (n <= 0) return;
+    set(
+      kind === 'food'
+        ? { trayFood: 0, cleanCups: s.cleanCups + n }
+        : { tray: 0, cleanCups: s.cleanCups + n },
+    );
   },
 
   markTrayTipSeen: () => {

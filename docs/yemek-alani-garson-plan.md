@@ -59,7 +59,8 @@ sabır 18+2×masaL sn · istasyon: çay L0 10/dk, L4 ~33/dk (1.35^4=3.32) · tos
   - Çay garsonu tepsisi (z0+z1 ortak): 1 → 2 (800₺) → 3 (2400₺) → 4 (6000₺ lüks).
   - Tostçu tepsisi: 1 → 2 (2000₺) → 3 (5000₺) — tavan 3 (tost büyük).
   - Garson HIZ yükseltmesi mevcut mekânsal pad olarak KALIR.
-- Persist: `waiterUpgrades: { teaTray, tostTray }` → SAVE v26 (default 0; basit migrasyon).
+- Persist: `waiterUpgrades: { teaTray, tostTray }` → SAVE **v27** (default 0; basit migrasyon).
+  (NOT: v26'yı Y1 aldı — z2 zemin varsayılanı migrasyonu, 2026-06-11.)
 - Tostçu garson: farklı kıyafet (çay garsonundan ayrışır; M3 tost ustası diliyle uyumlu) + kendi eğrisi.
 
 ## 4. YEMEK ALANI KİMLİĞİ (görsel)
@@ -78,9 +79,9 @@ sabır 18+2×masaL sn · istasyon: çay L0 10/dk, L4 ~33/dk (1.35^4=3.32) · tos
   desenle (teasServedByZone). İD-eşleme gerekmez (sona ekleme).
 
 ## 6. UYGULAMA SIRASI (her milestone: vitest + sim + smoke + Playwright + commit + PUSH)
-- Y1: Yemek alanı kimliği (görsel paket) + ayrı tost butonu.
+- Y1: ✅ UYGULANDI (2026-06-11, SAVE v26) — yemek alanı kimliği (görsel paket) + ayrı tost butonu.
 - Y2: Koltuk + grup sistemi (EN RİSKLİ — NPC mekaniği; gerçek-dt regresyon testleri şart).
-- Y3: Sekmeli karakter paneli + garson tepsi yükseltmeleri + tostçu farklılaşması (SAVE v26).
+- Y3: Sekmeli karakter paneli + garson tepsi yükseltmeleri + tostçu farklılaşması (SAVE v27).
 - Y4: 2. garson (claim) + gating + görevler + sim kalibrasyonu.
 
 ## 7. PLAN TAMAMLANINCA PROJENİN SON HALİ

@@ -13,7 +13,7 @@
  *   L5 (Usta)   = masterDiamondCost 💎 VEYA 1 ödüllü video; outputMult yerine masterOutputMult
  */
 
-export const SAVE_VERSION = 25;
+export const SAVE_VERSION = 26;
 
 /**
  * ZONE modeli (Faz 3a + D-022, gece 2026-06-10): zemin kat zone'ları. Her zone kendi TEMALI
@@ -49,6 +49,11 @@ export const PRODUCTS = {
 export const ZONE_PRODUCTS: readonly ProductId[] = ['tea', 'tea', 'tost'];
 export function zoneProduct(z: number): ProductId {
   return ZONE_PRODUCTS[Math.min(Math.max(z, 0), ZONE_PRODUCTS.length - 1)];
+}
+/** Zone'un VARSAYILAN zemin teması (Y1 yemek alanı kimliği): tost salonu 'yemek' fayansıyla doğar;
+ *  kozmetik mağaza satın alımı yine üstüne yazabilir. */
+export function defaultFloorTheme(z: number): string {
+  return zoneProduct(z) === 'tost' ? 'yemek' : 'parke';
 }
 
 export const CURRENCY = {
@@ -529,6 +534,8 @@ export const economyConfig = {
   cosmetics: {
     floorThemes: [
       { id: 'parke', label: 'Klasik Parke', cost: 0 },
+      // Yemek salonunun doğuştan teması (Y1, defaultFloorTheme); ücretsiz — diğer salonlara da uygulanabilir.
+      { id: 'yemek', label: 'Restoran Fayansı', cost: 0 },
       { id: 'fayans', label: 'Krem Fayans', cost: 10_000 },
       { id: 'dama', label: 'Dama Fayans', cost: 14_000 },
       { id: 'ceviz', label: 'Ceviz Parke', cost: 18_000 },

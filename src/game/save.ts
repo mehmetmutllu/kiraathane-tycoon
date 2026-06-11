@@ -1,9 +1,12 @@
 // localStorage kayıt + saveVersion migrasyon. Backend yok: cihaz = veritabanı.
 import {
   SAVE_VERSION,
+  MAX_ZONES,
   economyConfig,
   requiresMet,
   charMaxTier,
+  defaultFloorTheme,
+  zoneProduct,
   type CharUpgrades,
   type PadDef,
   type QuestTarget,
@@ -513,6 +516,18 @@ export function migrate(raw: Record<string, unknown>): SaveData {
     }
     if (refund > 0) d.wallet = String((Number(d.wallet) || 0) + refund);
     v = 25;
+  }
+
+  // v25 -> v26 (Y1 yemek alanı kimliği): tost salonunun zemini kendi varsayılanına ('yemek' fayansı)
+  // ayrılır. Yalnız ESKİ varsayılan ('parke' ya da boş) üstüne yazılır — oyuncunun bilinçli uyguladığı
+  // satın-alma teması korunur (parke=varsayılan olduğundan ayrım yapılamaz; tasarlanan kimlik kazanır).
+  if (v < 26) {
+    const arr = Array.isArray(d.floorThemeByZone) ? [...(d.floorThemeByZone as string[])] : [];
+    for (let z = 0; z < MAX_ZONES; z++) {
+      if (zoneProduct(z) === 'tost' && (arr[z] == null || arr[z] === 'parke')) arr[z] = defaultFloorTheme(z);
+    }
+    d.floorThemeByZone = arr;
+    v = 26;
   }
 
   // Sona kalan v16 şeması: türetilen alanlar (tables/stations/serviceSpeedMult/hasWaiter), eski `padFill`,

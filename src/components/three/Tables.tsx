@@ -20,6 +20,43 @@ function Stool({ x, z }: { x: number; z: number }) {
   );
 }
 
+// ARKALIKLI restoran sandalyesi (Y1 yemek alanı kimliği): ahşap iskelet + petrol minder + arkalık.
+// Arkalık DIŞ tarafta (oturan masaya bakar): güney sandalye kuzeye, kuzey sandalye güneye döner.
+function Chair({ x, z }: { x: number; z: number }) {
+  const rotY = z > 0 ? 0 : Math.PI;
+  return (
+    <group position={[x, 0, z]} rotation={[0, rotY, 0]}>
+      <mesh castShadow position={[0, 0.42, 0]}>
+        <boxGeometry args={[0.36, 0.05, 0.36]} />
+        <meshStandardMaterial color={PALETTE.chairWood} />
+      </mesh>
+      <mesh castShadow position={[0, 0.47, 0]}>
+        <boxGeometry args={[0.3, 0.05, 0.3]} />
+        <meshStandardMaterial color={PALETTE.chairCushion} />
+      </mesh>
+      {[-0.14, 0.14].flatMap((lx) =>
+        [-0.14, 0.14].map((lz) => (
+          <mesh key={`${lx}${lz}`} castShadow position={[lx, 0.2, lz]}>
+            <boxGeometry args={[0.05, 0.4, 0.05]} />
+            <meshStandardMaterial color={PALETTE.chairWood} />
+          </mesh>
+        )),
+      )}
+      {/* arkalık: 2 dikme + sırt paneli (yerel +z = dış taraf) */}
+      {[-0.14, 0.14].map((lx) => (
+        <mesh key={lx} castShadow position={[lx, 0.64, 0.155]}>
+          <boxGeometry args={[0.05, 0.44, 0.04]} />
+          <meshStandardMaterial color={PALETTE.chairWood} />
+        </mesh>
+      ))}
+      <mesh castShadow position={[0, 0.76, 0.155]}>
+        <boxGeometry args={[0.36, 0.2, 0.04]} />
+        <meshStandardMaterial color={PALETTE.chairWood} />
+      </mesh>
+    </group>
+  );
+}
+
 // Sandalye yerleşimi: GÜNEY = gerçek oturma yeri (LAYOUT.tables[i].seat, masaya 0.78), gerisi görsel.
 // Seviye başına +1 sandalye (kullanıcı 2026-06-11: "her seviyede bir sandalye gelebilir, 4'ü bulur").
 const CHAIR_SPOTS: [number, number][] = [
@@ -29,64 +66,94 @@ const CHAIR_SPOTS: [number, number][] = [
   [-0.78, 0], // W
 ];
 
+// YEMEK masası sandalye düzeni (Y1): dikdörtgen masanın uzun kenarlarında 2'ye 2 KARŞILIKLI.
+// İlk sandalye (oturma yeri) güney-BATI — LAYOUT.tables[i].seat ile hizalı (dünya x −0.35).
+const FOOD_CHAIR_SPOTS: [number, number][] = [
+  [-0.35, 0.78], // G-batı (seat)
+  [-0.35, -0.78], // K-batı (karşılıklı çift)
+  [0.35, 0.78], // G-doğu
+  [0.35, -0.78], // K-doğu
+];
+
 // Kıraathane masası — KARE KALARAK evrilir (kullanıcı 2026-06-11: "masa en başta kare ya, O KARE
 // gelişmeli; üzerine örtü gelir"). WP4'ün yuvarlak/sekizgen formları kaldırıldı:
-//   L0: çıplak kare tabla + 4 ince ayak + 1 tabure
-//   L1: + çuha YEŞİLİ kare örtü + 2. tabure
-//   L2: + BORDO örtü + sarkan ETEK + 3. tabure
-//   L3: + LACİVERT örtü + pirinç kenar bandı + 4. tabure
+//   L0: çıplak tabla + 4 ince ayak + 1 oturak
+//   L1: + çuha YEŞİLİ örtü + 2. oturak
+//   L2: + BORDO örtü + sarkan ETEK + 3. oturak
+//   L3: + LACİVERT örtü + pirinç kenar bandı + 4. oturak
 //   L4: ALTIN örtü + etek + bant (en gösterişli)
-// Collision/oturma DEĞİŞMEZ (tableHalf 0.5, seat güney sandalye; salt görsel evrim).
+// Y1: YEMEK masası DİKDÖRTGEN (1.35×0.85, uzun kenar x) + arkalıklı sandalye (2'ye 2 karşılıklı);
+// çay masası kare + tabure kalır. Collision LAYOUT'tan (tableHalf / foodTableHalf).
 function Table({ x, z, level, food = false }: { x: number; z: number; level: number; food?: boolean }) {
   // M3: YEMEK masası (tost salonu) kendi örtü paletiyle + sofra prop'larıyla evrilir
   // (kullanıcı: "yemek masaları farklı olabilir, seviye artınca olacak şeyler de artar").
   const clothArr = food ? PALETTE.foodTableclothByLevel : PALETTE.tableclothByLevel;
   const cloth = clothArr[Math.min(level, clothArr.length - 1)];
-  const chairs = Math.min(CHAIR_SPOTS.length, level + 1);
+  const spots = food ? FOOD_CHAIR_SPOTS : CHAIR_SPOTS;
+  const chairs = Math.min(spots.length, level + 1);
   const skirt = cloth && (level === 2 || level >= 4);
+  // Tabla yarıları (x, z): kare 0.475/0.475; yemek dikdörtgeni 0.675/0.425.
+  const hw = food ? 0.675 : 0.475;
+  const hd = food ? 0.425 : 0.475;
   return (
     <group position={[x, 0, z]}>
       <Model
         fallback={
           <group>
-            {/* kare tabla + 4 ince ayak (TÜM seviyelerde aynı iskelet) */}
+            {/* tabla + 4 ince ayak (TÜM seviyelerde aynı iskelet) */}
             <mesh castShadow receiveShadow position={[0, 0.5, 0]}>
-              <boxGeometry args={[0.95, 0.07, 0.95]} />
+              <boxGeometry args={[hw * 2, 0.07, hd * 2]} />
               <meshStandardMaterial color={PALETTE.tableWood} />
             </mesh>
-            {[-0.38, 0.38].flatMap((lx) =>
-              [-0.38, 0.38].map((lz) => (
+            {[-(hw - 0.095), hw - 0.095].flatMap((lx) =>
+              [-(hd - 0.095), hd - 0.095].map((lz) => (
                 <mesh key={`${lx}${lz}`} castShadow position={[lx, 0.24, lz]}>
                   <boxGeometry args={[0.07, 0.48, 0.07]} />
                   <meshStandardMaterial color={PALETTE.tableLeg} />
                 </mesh>
               )),
             )}
-            {/* örtü (kare, tabladan hafif taşar) */}
+            {/* örtü (tabladan hafif taşar) */}
             {cloth ? (
               <mesh castShadow position={[0, 0.55, 0]}>
-                <boxGeometry args={[1.03, 0.03, 1.03]} />
+                <boxGeometry args={[hw * 2 + 0.08, 0.03, hd * 2 + 0.08]} />
                 <meshStandardMaterial color={cloth} />
               </mesh>
             ) : null}
             {/* örtü ETEĞİ (L2 ve L4: dört yana sarkan kumaş) */}
-            {skirt
-              ? CHAIR_SPOTS.map(([sx, sz], i) => (
-                  <mesh key={i} castShadow position={[sx * 0.66, 0.43, sz * 0.66]}>
-                    <boxGeometry args={sz === 0 ? [0.04, 0.22, 1.03] : [1.03, 0.22, 0.04]} />
+            {skirt ? (
+              <group>
+                {[-(hd + 0.04), hd + 0.04].map((sz) => (
+                  <mesh key={sz} castShadow position={[0, 0.43, sz]}>
+                    <boxGeometry args={[hw * 2 + 0.08, 0.22, 0.04]} />
                     <meshStandardMaterial color={cloth} />
                   </mesh>
-                ))
-              : null}
+                ))}
+                {[-(hw + 0.04), hw + 0.04].map((sx) => (
+                  <mesh key={sx} castShadow position={[sx, 0.43, 0]}>
+                    <boxGeometry args={[0.04, 0.22, hd * 2 + 0.08]} />
+                    <meshStandardMaterial color={cloth} />
+                  </mesh>
+                ))}
+              </group>
+            ) : null}
             {/* pirinç kenar bandı (L3+): tabla çevresinde ince çerçeve */}
-            {level >= 3
-              ? CHAIR_SPOTS.map(([sx, sz], i) => (
-                  <mesh key={i} position={[sx * 0.63, 0.5, sz * 0.63]}>
-                    <boxGeometry args={sz === 0 ? [0.025, 0.075, 1.0] : [1.0, 0.075, 0.025]} />
+            {level >= 3 ? (
+              <group>
+                {[-(hd + 0.015), hd + 0.015].map((sz) => (
+                  <mesh key={sz} position={[0, 0.5, sz]}>
+                    <boxGeometry args={[hw * 2 + 0.05, 0.075, 0.025]} />
                     <meshStandardMaterial color={PALETTE.brass} metalness={0.7} roughness={0.3} />
                   </mesh>
-                ))
-              : null}
+                ))}
+                {[-(hw + 0.015), hw + 0.015].map((sx) => (
+                  <mesh key={sx} position={[sx, 0.5, 0]}>
+                    <boxGeometry args={[0.025, 0.075, hd * 2 + 0.05]} />
+                    <meshStandardMaterial color={PALETTE.brass} metalness={0.7} roughness={0.3} />
+                  </mesh>
+                ))}
+              </group>
+            ) : null}
             {/* YEMEK masası sofra prop'ları (M3): L1+ peçetelik; L2+ ketçap-mayo; L3+ servis tabağı */}
             {food && level >= 1 ? (
               <mesh castShadow position={[-0.22, 0.62, -0.22]}>
@@ -115,10 +182,11 @@ function Table({ x, z, level, food = false }: { x: number; z: number; level: num
           </group>
         }
       />
-      {/* tabureler: S=oturma (collision LAYOUT'ta), N/E/W salt görsel; sayı seviyeyle artar */}
-      {CHAIR_SPOTS.slice(0, chairs).map(([sx, sz], i) => (
-        <Stool key={i} x={sx} z={sz} />
-      ))}
+      {/* oturaklar: ilk spot=oturma (collision LAYOUT'ta), gerisi salt görsel; sayı seviyeyle artar.
+          Çay masası: tabure (4 yana). Yemek masası: arkalıklı sandalye (2'ye 2 karşılıklı). */}
+      {spots.slice(0, chairs).map(([sx, sz], i) =>
+        food ? <Chair key={i} x={sx} z={sz} /> : <Stool key={i} x={sx} z={sz} />,
+      )}
     </group>
   );
 }

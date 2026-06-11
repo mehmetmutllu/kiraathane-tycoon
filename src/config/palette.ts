@@ -35,6 +35,13 @@ export const PALETTE = {
   mayo: '#f5f0dc',
   foodApron: '#c98f2c', // tost ustası önlüğü (hardal — çaycının bordosundan ayrışır)
   foodCap: '#f3ecd9', // tost ustası beyaz kepi
+  // Yemek alanı kimlik paketi (Y1)
+  chairWood: '#7a4a2e', // arkalıklı restoran sandalyesi (taburenin tonundan ayrışır)
+  chairCushion: '#3c6e91', // sandalye minderi (petrol — foodTablecloth L3 ile aynı dil)
+  foodFloorEmblem: '#b89c72', // zemine işlenen çatal-bıçak/tost amblemi (fayanstan bir ton koyu)
+  menuBoardFrame: '#4e342e', // menü panosu ahşap çerçeve
+  menuBoard: '#2f3a33', // kara tahta yüzeyi (koyu yeşilimsi)
+  menuChalk: '#f3ecd9', // tebeşir yazı şeritleri
   // Mutfak
   counterWood: '#795548',
   copper: '#b87333', // bakır (semaver tabanı, tepsi dekoru)
@@ -69,6 +76,9 @@ export const PALETTE = {
 export const FLOOR_THEMES: Record<string, { kind: 'flat' | 'checker'; base: string; alt: string }> = {
   // parke 2026-06-11: #b98a5a → daha açık/az doygun sıcak kum tonu (kullanıcı: "daha soft zemin").
   parke: { kind: 'flat', base: '#c9a87d', alt: '#bd9b70' },
+  // 'yemek' (Y1): tost salonunun DOĞUŞTAN teması — açık krem-gri "büyük fayans"; düşük kontrastlı
+  // dama deseni iri karo hissi verir (yüksek kontrastlı 'dama'dan ayrışır).
+  yemek: { kind: 'checker', base: '#e3dac6', alt: '#d8cdb4' },
   fayans: { kind: 'flat', base: '#e8dcc8', alt: '#ddd0b8' },
   dama: { kind: 'checker', base: '#ece6da', alt: '#7d4a3a' },
   ceviz: { kind: 'flat', base: '#8a5a3b', alt: '#7c4f33' },
