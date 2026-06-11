@@ -8,8 +8,10 @@ import { PALETTE } from '../../config/palette';
 // tost = kirli TABAK (yayvan disk + kırıntı). Oyuncu/bulaşıkçı toplayınca kaybolur.
 export function Dishes() {
   const dishes = useGame((s) => s.dishes);
+  const tableLevels = useGame((s) => s.tableLevels);
   // Kirli masalar (D-019): eşiği aşan masaların ÜSTÜNDE alçak primitive "koku" işareti.
-  const dirty = useMemo(() => [...dirtyTables(dishes)], [dishes]);
+  // Y2: eşik koltukla ölçeklenir → görsel işaret de mantıkla aynı imzayı kullanır.
+  const dirty = useMemo(() => [...dirtyTables(dishes, tableLevels)], [dishes, tableLevels]);
   return (
     <>
       {dishes.map((d) =>

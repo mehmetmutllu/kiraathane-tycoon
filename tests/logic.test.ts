@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import {
   economyConfig,
   upgradeCost,
@@ -9,6 +9,8 @@ import {
   tableUpgradeCost,
   tableTip,
   tablePatience,
+  tableSeats,
+  rollGroupSize,
   waiterSpeed,
   xpForLevel,
   levelProgress,
@@ -287,8 +289,8 @@ describe('garson — quest hattında zorunlu personel (2026-06-09; eski D-014 op
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
       npcs: [
-        { id: 901, state: 'waitingForTea', pos: [...nearSeat] as [number, number, number], tableIndex: nearIdx, timer: 17, color: '#27ae60' },
-        { id: 902, state: 'waitingForTea', pos: [...farSeat] as [number, number, number], tableIndex: farIdx, timer: 2, color: '#c0392b' },
+        { id: 901, state: 'waitingForTea', pos: [...nearSeat] as [number, number, number], tableIndex: nearIdx, seatIndex: 0, timer: 17, color: '#27ae60' },
+        { id: 902, state: 'waitingForTea', pos: [...farSeat] as [number, number, number], tableIndex: farIdx, seatIndex: 0, timer: 2, color: '#c0392b' },
       ],
       spawnTimer: 999, // bu testte yeni müşteri spawn olmasın
     });
@@ -624,7 +626,7 @@ describe('kirli masa mekaniği (D-019) — eşik aşılınca masa kilitlenir', (
       padsDone: ['table2', 'waiter'],
       waiters: [{ pos: [LAYOUT.tables[idx].table[0], 0.6, LAYOUT.tables[idx].table[2]] as [number, number, number], tray: 1 }, null],
       player: [0, 0.6, 6.5], inputKeyboard: [0, 0], inputJoystick: [0, 0],
-      npcs: [{ id: 880, state: 'waitingForTea', pos: [...seat] as [number, number, number], tableIndex: idx, timer: 999, color: '#27ae60' }],
+      npcs: [{ id: 880, state: 'waitingForTea', pos: [...seat] as [number, number, number], tableIndex: idx, seatIndex: 0, timer: 999, color: '#27ae60' }],
       dishes: dirtyDishes, spawnTimer: 999,
     });
     for (let i = 0; i < 50; i++) useGame.getState().tick(0.1);
@@ -1161,7 +1163,7 @@ describe('personel yol bulma (nav.ts — BFS, kilitlenme yok)', () => {
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
       npcs: [
-        { id: 950, state: 'waitingForTea', pos: [...LAYOUT.tables[backIdx].seat] as [number, number, number], tableIndex: backIdx, timer: 999, color: '#27ae60' },
+        { id: 950, state: 'waitingForTea', pos: [...LAYOUT.tables[backIdx].seat] as [number, number, number], tableIndex: backIdx, seatIndex: 0, timer: 999, color: '#27ae60' },
       ],
       spawnTimer: 999, // yeni müşteri spawn olmasın
     });
@@ -1185,7 +1187,7 @@ describe('personel yol bulma (nav.ts — BFS, kilitlenme yok)', () => {
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
       npcs: [
-        { id: 960, state: 'toTable', pos: [...LAYOUT.entrances[0]] as [number, number, number], tableIndex: backIdx, timer: 0, color: '#27ae60' },
+        { id: 960, state: 'toTable', pos: [...LAYOUT.entrances[0]] as [number, number, number], tableIndex: backIdx, seatIndex: 0, timer: 0, color: '#27ae60' },
       ],
       spawnTimer: 999,
     });
@@ -1222,7 +1224,7 @@ describe('personel yol bulma (nav.ts — BFS, kilitlenme yok)', () => {
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
       npcs: [
-        { id: 962, state: 'toTable', pos: [...LAYOUT.streets[0]] as [number, number, number], tableIndex: rightIdx, timer: 0, color: '#27ae60' },
+        { id: 962, state: 'toTable', pos: [...LAYOUT.streets[0]] as [number, number, number], tableIndex: rightIdx, seatIndex: 0, timer: 0, color: '#27ae60' },
       ],
       spawnTimer: 999,
     });
@@ -1245,7 +1247,7 @@ describe('personel yol bulma (nav.ts — BFS, kilitlenme yok)', () => {
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
       npcs: [
-        { id: 961, state: 'leaving', pos: [...LAYOUT.tables[backIdx].seat] as [number, number, number], tableIndex: backIdx, timer: 0, color: '#27ae60' },
+        { id: 961, state: 'leaving', pos: [...LAYOUT.tables[backIdx].seat] as [number, number, number], tableIndex: backIdx, seatIndex: 0, timer: 0, color: '#27ae60' },
       ],
       spawnTimer: 999,
     });
@@ -1287,11 +1289,11 @@ describe('masa yükseltme + bahşiş (Faz 2h)', () => {
     const seat = LAYOUT.tables[0].seat;
     useGame.setState({
       tableLevels: [2, 0, 0, 0], // sadece 0. masa L2 → bahşiş = tipBase×2
-      player: [0, 0.6, 99], // uzak → düşen para toplanmasın
+      player: [5.2, 0.6, -5.2], // GERÇEKTEN uzak (alan içi köşe; eski [0,0.6,99] z=5'e kelepçelenip mıknatısa giriyordu — flaky)
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
       coins: [],
-      npcs: [{ id: 970, state: 'drinking', pos: [...seat] as [number, number, number], tableIndex: 0, timer: 0.05, color: '#27ae60' }],
+      npcs: [{ id: 970, state: 'drinking', pos: [...seat] as [number, number, number], tableIndex: 0, seatIndex: 0, timer: 0.05, color: '#27ae60' }],
       spawnTimer: 999,
     });
     useGame.getState().tick(0.1); // drinking timer biter → öder
@@ -1304,11 +1306,11 @@ describe('masa yükseltme + bahşiş (Faz 2h)', () => {
     const seat = LAYOUT.tables[0].seat;
     useGame.setState({
       tableLevels: [2, 0, 0, 0],
-      player: [0, 0.6, 99],
+      player: [5.2, 0.6, -5.2],
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
       // Koltuğun üstünde 'toTable' → bu tick oturur, timer = tablePatience(2).
-      npcs: [{ id: 971, state: 'toTable', pos: [...seat] as [number, number, number], tableIndex: 0, timer: 0, color: '#2980b9' }],
+      npcs: [{ id: 971, state: 'toTable', pos: [...seat] as [number, number, number], tableIndex: 0, seatIndex: 0, timer: 0, color: '#2980b9' }],
       spawnTimer: 999,
     });
     useGame.getState().tick(0.05);
@@ -1898,7 +1900,7 @@ describe('zone-2 yükseltme gating (v21) — zone-1 deseni aynalanır (önce kap
     useGame.setState({
       padsDone: ['table2', 'table3', 'waiter'],
       waiters: [{ pos: [...LAYOUT.tables[0].table] as [number, number, number], tray: 1 }, null],
-      npcs: [{ id: 1, state: 'waitingForTea', pos: [...LAYOUT.tables[0].seat] as [number, number, number], tableIndex: 0, timer: 18, color: '#fff' }],
+      npcs: [{ id: 1, state: 'waitingForTea', pos: [...LAYOUT.tables[0].seat] as [number, number, number], tableIndex: 0, seatIndex: 0, timer: 18, color: '#fff' }],
       spawnTimer: 999, player: [0, 0.6, 4], inputKeyboard: [0, 0], inputJoystick: [0, 0],
     });
     for (let i = 0; i < 30 && useGame.getState().stats.waiterServed === 0; i++) useGame.getState().tick(0.1);
@@ -2076,7 +2078,7 @@ describe('görev senkronu v23 — q_z2serve öne + zone-başı servis sayacı + 
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
       npcs: [
-        { id: 970, state: 'waitingForTea', pos: [...LAYOUT.tables[z2Table].seat] as [number, number, number], tableIndex: z2Table, timer: 999, color: '#27ae60' },
+        { id: 970, state: 'waitingForTea', pos: [...LAYOUT.tables[z2Table].seat] as [number, number, number], tableIndex: z2Table, seatIndex: 0, timer: 999, color: '#27ae60' },
       ],
       spawnTimer: 999,
     });
@@ -2117,7 +2119,7 @@ describe('M2 — 2×2 kat ızgarası (zone-3/4 altyapısı; arka sıra + geçitl
     // zone-3'ün ilk masası (slot 8) için sokakta müşteri başlat.
     useGame.setState({
       npcs: [
-        { id: 9001, state: 'toTable', pos: [...LAYOUT.streets[2]] as [number, number, number], tableIndex: 8, timer: 0, color: '#fff' },
+        { id: 9001, state: 'toTable', pos: [...LAYOUT.streets[2]] as [number, number, number], tableIndex: 8, seatIndex: 0, timer: 0, color: '#fff' },
       ],
       spawnTimer: 1e9,
     });
@@ -2203,7 +2205,7 @@ describe('M3 — TOST ürün hattı (zone-3): trayFood, ürün fiyatı, tabak, g
     // tost masasında bekleyen müşteri: çayla servis OLMAZ, tostla OLUR.
     const t8 = LAYOUT.tables[8];
     useGame.setState({
-      npcs: [{ id: 5, state: 'waitingForTea', pos: [...t8.seat] as [number, number, number], tableIndex: 8, timer: 999, color: '#fff' }],
+      npcs: [{ id: 5, state: 'waitingForTea', pos: [...t8.seat] as [number, number, number], tableIndex: 8, seatIndex: 0, timer: 999, color: '#fff' }],
       tray: 1, trayFood: 0,
       player: [t8.table[0], 0.6, t8.table[2] + 0.9],
       spawnTimer: 1e9,
@@ -2223,7 +2225,7 @@ describe('M3 — TOST ürün hattı (zone-3): trayFood, ürün fiyatı, tabak, g
     useGame.setState({
       padsDone: [...OPEN3],
       questIndex: economyConfig.quests.length, // q_wash geçildi → kirli bırakılır
-      npcs: [{ id: 7, state: 'drinking', pos: [...LAYOUT.tables[8].seat] as [number, number, number], tableIndex: 8, timer: 0.02, color: '#fff' }],
+      npcs: [{ id: 7, state: 'drinking', pos: [...LAYOUT.tables[8].seat] as [number, number, number], tableIndex: 8, seatIndex: 0, timer: 0.02, color: '#fff' }],
       spawnTimer: 1e9,
       player: [0, 0.6, 4.5],
     });
@@ -2369,6 +2371,7 @@ describe('M3 — müşteri tavanı masalarla ölçeklenir (arka salon açlığı
       state: 'waitingForTea' as const,
       pos: [...LAYOUT.tables[i].seat] as [number, number, number],
       tableIndex: i,
+      seatIndex: 0,
       timer: 999,
       color: '#fff',
     }));
@@ -2378,5 +2381,197 @@ describe('M3 — müşteri tavanı masalarla ölçeklenir (arka salon açlığı
     const newcomer = s.npcs.find((n) => n.id < 8000 || n.id > 8007);
     expect(newcomer).toBeTruthy(); // 9. müşteri doğdu (eski sabit tavanda doğmazdı)
     expect(newcomer!.tableIndex).toBe(8); // hedefi tost salonunun ilk masası
+  });
+});
+
+describe('Y2 — koltuk + grup sistemi (plan §2)', () => {
+  it('koltuk sayısı masa seviyesinden türetilir: 1/2/2/4/4 + kelepçe', () => {
+    expect(economyConfig.tables.seatsByLevel).toEqual([1, 2, 2, 4, 4]);
+    expect([0, 1, 2, 3, 4].map(tableSeats)).toEqual([1, 2, 2, 4, 4]);
+    expect(tableSeats(9)).toBe(4); // aşırı seviye son değere kelepçelenir
+    expect(tableSeats(-1)).toBe(1);
+  });
+
+  it('grup zarı deterministik: %30→1, %35→2, %20→3, %15→4 (sınır değerleriyle)', () => {
+    expect(economyConfig.npc.groupChances).toEqual([0.3, 0.35, 0.2, 0.15]);
+    expect(rollGroupSize(0)).toBe(1);
+    expect(rollGroupSize(0.299)).toBe(1);
+    expect(rollGroupSize(0.3)).toBe(2);
+    expect(rollGroupSize(0.649)).toBe(2);
+    expect(rollGroupSize(0.65)).toBe(3);
+    expect(rollGroupSize(0.849)).toBe(3);
+    expect(rollGroupSize(0.85)).toBe(4);
+    expect(rollGroupSize(0.999)).toBe(4);
+  });
+
+  it('koltuk pozisyonları: seats[0] eski .seat ile birebir; çay masası 4 yana, yemek masası 2+2 karşılıklı', () => {
+    for (const t of LAYOUT.tables) {
+      expect(t.seats).toHaveLength(4);
+      expect(t.seats[0]).toEqual(t.seat);
+    }
+    // Çay masası 0: S/N/E/W ofsetleri. Yemek masası 8 (z2): karşılıklı çiftler (G-batı/K-batı, G-doğu/K-doğu).
+    const expectOffsets = (ti: number, want: [number, number][]) => {
+      const t = LAYOUT.tables[ti];
+      t.seats.forEach((s, k) => {
+        expect(s[0] - t.table[0]).toBeCloseTo(want[k][0], 6);
+        expect(s[2] - t.table[2]).toBeCloseTo(want[k][1], 6);
+      });
+    };
+    expectOffsets(0, [[0, 0.78], [0, -0.78], [0.78, 0], [-0.78, 0]]);
+    expectOffsets(8, [[-0.35, 0.78], [-0.35, -0.78], [0.35, 0.78], [0.35, -0.78]]);
+  });
+
+  it('grup spawn: L3 masada (4 koltuk) 4 kişilik grup AYNI masaya FARKLI koltuklarla doğar', () => {
+    useGame.getState().hardReset();
+    useGame.setState({ tableLevels: [3, 0, 0, 0], spawnTimer: 0, player: [5.2, 0.6, -5.2] });
+    const rnd = vi.spyOn(Math, 'random').mockReturnValue(0.99); // zar → 4 kişilik grup
+    try {
+      useGame.getState().tick(0.05);
+    } finally {
+      rnd.mockRestore();
+    }
+    const npcs = useGame.getState().npcs;
+    expect(npcs).toHaveLength(4);
+    expect(npcs.every((n) => n.tableIndex === 0)).toBe(true);
+    expect(new Set(npcs.map((n) => n.seatIndex))).toEqual(new Set([0, 1, 2, 3]));
+    // Sokakta hafif saçılmış (üst üste binmesin).
+    const xs = new Set(npcs.map((n) => n.pos[0].toFixed(2)));
+    expect(xs.size).toBe(4);
+  });
+
+  it("koltuk yetmezse grup KÜÇÜLÜR: L1 masada (2 koltuk) 4'lük zar 2 kişi doğurur", () => {
+    useGame.getState().hardReset();
+    useGame.setState({ tableLevels: [1, 0, 0, 0], spawnTimer: 0, player: [5.2, 0.6, -5.2] });
+    const rnd = vi.spyOn(Math, 'random').mockReturnValue(0.99);
+    try {
+      useGame.getState().tick(0.05);
+    } finally {
+      rnd.mockRestore();
+    }
+    const npcs = useGame.getState().npcs;
+    expect(npcs).toHaveLength(2);
+    expect(new Set(npcs.map((n) => n.seatIndex))).toEqual(new Set([0, 1]));
+  });
+
+  it('müşteri tavanı KOLTUK+2: 16 koltuk doluyken +2 taşma sonrası spawn durur; boş koltuk atlanarak atanır', () => {
+    useGame.getState().hardReset();
+    useGame.setState({
+      padsDone: ['table2', 'table3', 'table4'],
+      tableLevels: [4, 4, 4, 4], // 4 masa × 4 koltuk = 16; tavan = 18
+      questIndex: economyConfig.quests.length,
+      player: [5.2, 0.6, -5.2],
+      inputKeyboard: [0, 0],
+      inputJoystick: [0, 0],
+    });
+    // 15 oturan (masa 3'ün 3. koltuğu + 1 koltuk daha boş) + 2 yürüyen = 17 aktif → tavana 1 yer.
+    const sitters = [];
+    let id = 7000;
+    for (let t = 0; t < 4; t++) {
+      for (let k = 0; k < 4; k++) {
+        if (t === 3 && (k === 3 || k === 2)) continue; // masa 3'te 2 koltuk boş
+        const seat = LAYOUT.tables[t].seats[k];
+        sitters.push({
+          id: id++, state: 'waitingForTea' as const, pos: [...seat] as [number, number, number],
+          tableIndex: t, seatIndex: k, timer: 999, color: '#fff',
+        });
+      }
+    }
+    // 2 de yolda (toTable, masa 3 koltuk 2'ye atanmış + ekstra biri koltuk 3'e) → aktif 16.
+    sitters.push({
+      id: id++, state: 'toTable' as const, pos: [...LAYOUT.streets[0]] as [number, number, number],
+      tableIndex: 3, seatIndex: 2, timer: 0, color: '#fff',
+    });
+    sitters.push({
+      id: id++, state: 'toTable' as const, pos: [...LAYOUT.streets[0]] as [number, number, number],
+      tableIndex: 3, seatIndex: 3, timer: 0, color: '#fff',
+    });
+    useGame.setState({ npcs: sitters, spawnTimer: 0 });
+    expect(useGame.getState().npcs.filter((n) => n.state !== 'leaving')).toHaveLength(16);
+    // Koltuklar TAM dolu (16/16) ama tavan 18 → boş koltuk yok → spawn OLMAZ.
+    useGame.getState().tick(0.05);
+    expect(useGame.getState().npcs.filter((n) => n.state !== 'leaving')).toHaveLength(16);
+    // Bir koltuk boşalt (masa 3 koltuk 3 yolcusu gider) → 15 aktif → spawn 1 kişi, KOLTUK 3'e (atlanarak).
+    useGame.setState({
+      npcs: useGame.getState().npcs.filter((n) => !(n.tableIndex === 3 && n.seatIndex === 3)),
+      spawnTimer: 0,
+    });
+    const rnd = vi.spyOn(Math, 'random').mockReturnValue(0.99); // 4'lük zar bile 1'e kelepçelenir
+    try {
+      useGame.getState().tick(0.05);
+    } finally {
+      rnd.mockRestore();
+    }
+    const active = useGame.getState().npcs.filter((n) => n.state !== 'leaving');
+    expect(active).toHaveLength(16);
+    const newcomer = active.find((n) => n.id < 7000);
+    expect(newcomer).toBeTruthy();
+    expect(newcomer!.tableIndex).toBe(3);
+    expect(newcomer!.seatIndex).toBe(3); // dolu koltuklar atlandı
+  });
+
+  it('kirli eşik koltukla ölçeklenir: L3 masada (4 koltuk) 8 kap temiz, 9 kap kirli; L0 eski davranış (>2)', () => {
+    const T = economyConfig.cups.dirtyThreshold;
+    const dishOn = (idx: number, id: number) => ({
+      id, pos: [0, 0.95, 0] as [number, number, number], tableIndex: idx,
+    });
+    // L3 (4 koltuk): eşik = 2×4 = 8.
+    const eight = Array.from({ length: T * 4 }, (_, i) => dishOn(0, 100 + i));
+    expect(dirtyTables(eight, [3]).has(0)).toBe(false);
+    const nine = Array.from({ length: T * 4 + 1 }, (_, i) => dishOn(0, 200 + i));
+    expect(dirtyTables(nine, [3]).has(0)).toBe(true);
+    // L0 (1 koltuk): eski eşik aynen (>2). Seviye verilmezse de L0 varsayılır.
+    const three = Array.from({ length: T + 1 }, (_, i) => dishOn(0, 300 + i));
+    expect(dirtyTables(three, [0]).has(0)).toBe(true);
+    expect(dirtyTables(three).has(0)).toBe(true);
+  });
+
+  it('GERÇEK-DT (1/60): 2 kişilik grup sokaktan yürür, farklı koltuklara oturur, bireysel servis + bireysel ödeme', () => {
+    useGame.getState().hardReset();
+    useGame.setState({
+      tableLevels: [1, 0, 0, 0], // 2 koltuk
+      spawnTimer: 0,
+      player: [5.2, 0.6, -5.2],
+      inputKeyboard: [0, 0],
+      inputJoystick: [0, 0],
+    });
+    const rnd = vi.spyOn(Math, 'random').mockReturnValue(0.5); // zar → 2 kişilik grup
+    try {
+      useGame.getState().tick(1 / 60);
+      const born = useGame.getState().npcs;
+      expect(born).toHaveLength(2);
+      // Gerçek kare adımıyla yürüyüp OTURMALILAR (sabır bitmeden; nav regresyonu).
+      const dt = 1 / 60;
+      for (let i = 0; i < 20 * 60 && !useGame.getState().npcs.every((n) => n.state === 'waitingForTea'); i++) {
+        useGame.getState().tick(dt);
+      }
+      const seated = useGame.getState().npcs;
+      expect(seated).toHaveLength(2);
+      expect(seated.every((n) => n.state === 'waitingForTea')).toBe(true);
+      // Farklı koltuklarda oturuyorlar (pozisyon = atanan koltuk).
+      const t0 = LAYOUT.tables[0];
+      for (const n of seated) {
+        expect(n.pos[0]).toBeCloseTo(t0.seats[n.seatIndex][0], 5);
+        expect(n.pos[2]).toBeCloseTo(t0.seats[n.seatIndex][2], 5);
+      }
+      expect(new Set(seated.map((n) => n.seatIndex)).size).toBe(2);
+      // Oyuncu tepside 2 çayla masaya gelir → İKİSİNE de tek durakta servis.
+      useGame.setState({ tray: 2, player: [t0.table[0], 0.6, t0.table[2] + 1.2] });
+      useGame.getState().tick(dt);
+      const drinking = useGame.getState().npcs;
+      expect(drinking.every((n) => n.state === 'drinking')).toBe(true);
+      expect(useGame.getState().tray).toBe(0);
+      // İçince HER ÜYE bireysel öder (2 ayrı para; değer = çay + L1 bahşiş).
+      useGame.setState({
+        npcs: drinking.map((n) => ({ ...n, timer: 0.01 })),
+        player: [5.2, 0.6, -5.2],
+        coins: [],
+      });
+      useGame.getState().tick(dt);
+      const coins = useGame.getState().coins;
+      expect(coins).toHaveLength(2);
+      for (const c of coins) expect(c.value).toBe(TEA_PRICE + tableTip(1));
+    } finally {
+      rnd.mockRestore();
+    }
   });
 });

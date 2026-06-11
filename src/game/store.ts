@@ -11,6 +11,8 @@ import {
   tableUpgradeCost,
   tableTip,
   tablePatience,
+  tableSeats,
+  rollGroupSize,
   derivedFromPads,
   waiterSpeed,
   waiterSoftMaxLevel as waiterSoftMaxLevelCfg,
@@ -93,27 +95,46 @@ export const zonePoint = mir;
 
 
 // Masa şablonu (zone-yerel): 2×2, sağa+yukarı kaymış (kolonlar -1.2/3.2, sıralar -0.6/2.2).
-// seat = GÜNEY sandalye (masaya 0.78 — "sandalye masaya yakın olmalı"); upgradeSpot = kapı-tarafı
+// Koltuklar CHAIR_SPOTS/FOOD_CHAIR_SPOTS ofsetlerinden türetilir (Y2); upgradeSpot = kapı-tarafı
 // çapraz köşe (orta koridora bakar; ocak/bulaşık tarafına TAŞMAZ; dwell hareketsiz-dolum olduğundan
 // koridordan yürüyerek geçmek para çekmez).
 // Açılış sırası ÖN sıradan (kapıya yakın, ocağa uzak — başlangıç masası ocaktan >4 br: yürüme
 // döngüsü en baştan zorlanır, D-017 §1) → arka sıra sonra açılır.
 const BASE_TABLES = [
-  { table: [-1.2, 0, 1.9], seat: [-1.2, 0.6, 2.68], upgradeSpot: [0.0, 0, 3.1] },
-  { table: [3.2, 0, 1.9], seat: [3.2, 0.6, 2.68], upgradeSpot: [2.0, 0, 3.1] },
-  { table: [-1.2, 0, -1.0], seat: [-1.2, 0.6, -0.22], upgradeSpot: [0.0, 0, 0.2] },
-  { table: [3.2, 0, -1.0], seat: [3.2, 0.6, -0.22], upgradeSpot: [2.0, 0, 0.2] },
+  { table: [-1.2, 0, 1.9], upgradeSpot: [0.0, 0, 3.1] },
+  { table: [3.2, 0, 1.9], upgradeSpot: [2.0, 0, 3.1] },
+  { table: [-1.2, 0, -1.0], upgradeSpot: [0.0, 0, 0.2] },
+  { table: [3.2, 0, -1.0], upgradeSpot: [2.0, 0, 0.2] },
 ] as const;
+
+// Sandalye yerleşimi (masaya göre DÜNYA-ofseti; aynalanmaz — Tables.tsx aynı listeden çizer, Y2 tek kaynak).
+// İlk spot = ana oturma yeri (eski .seat); koltuk doluluğu spot sırasıyla dolar.
+// Çay masası: 4 yana tabure (S, N, E, W). Yemek masası (Y1): dikdörtgenin uzun kenarlarında
+// 2'ye 2 KARŞILIKLI sandalye (G-batı, K-batı, G-doğu, K-doğu) — 2 koltukta karşılıklı çift oturur.
+const CHAIR_SPOTS: readonly [number, number][] = [
+  [0, 0.78],
+  [0, -0.78],
+  [0.78, 0],
+  [-0.78, 0],
+];
+const FOOD_CHAIR_SPOTS: readonly [number, number][] = [
+  [-0.35, 0.78],
+  [-0.35, -0.78],
+  [0.35, 0.78],
+  [0.35, -0.78],
+];
 
 const ALL_TABLES = ZONES.flatMap((z) =>
   BASE_TABLES.map((t) => {
-    const seat = mir(z, t.seat);
-    // Y1: YEMEK masası dikdörtgen + 2'ye 2 karşılıklı sandalye (Tables.tsx FOOD_CHAIR_SPOTS) →
-    // oturma yeri güney-BATI sandalyesiyle hizalanır (dünya x −0.35; masa merkezi güneyi değil).
-    if (zoneProduct(z) === 'tost') seat[0] -= 0.35;
+    const table = mir(z, t.table);
+    // Y2: koltuk POZİSYONLARI spot listesinden türetilir; seats[0] eski .seat ile birebir aynı
+    // (çay [0,0.78]; yemek Y1'in x−0.35 G-batı sandalyesi).
+    const spots = zoneProduct(z) === 'tost' ? FOOD_CHAIR_SPOTS : CHAIR_SPOTS;
+    const seats = spots.map(([sx, sz]) => [table[0] + sx, 0.6, table[2] + sz] as Vec3);
     return {
-      table: mir(z, t.table),
-      seat,
+      table,
+      seat: seats[0],
+      seats,
       upgradeSpot: mir(z, t.upgradeSpot),
     };
   }),
@@ -234,6 +255,10 @@ export const LAYOUT = {
   foodTableHalf: [0.7, 0.45] as [number, number],
   chairHalf: [0.22, 0.22] as [number, number], // sandalye + oturan müşteri
   actorHalf: [0.3, 0.3] as [number, number], // yürüyen müşteri / garson / bulaşıkçı (oyuncu engeli)
+  // Sandalye ofsetleri (Y2 tek kaynak): Tables.tsx görsel sandalyeyi, store koltuk pozisyonunu
+  // (ALL_TABLES.seats) AYNI listeden türetir — görsel sandalye = oturulabilir koltuk.
+  chairSpots: CHAIR_SPOTS,
+  foodChairSpots: FOOD_CHAIR_SPOTS,
 } as const;
 
 /** Collision engeli: merkez (Vec3) + yarı-boyut [hx,hz]. */
@@ -514,22 +539,54 @@ function incomeRate(tables: number, level: number, serviceSpeedMult = 1, z = 0, 
 }
 
 /**
- * Kirli masaların index kümesi (D-019): bir masada `dirtyThreshold`'tan FAZLA (>) kirli bardak varsa kirli.
- * Kirli masaya yeni müşteri oturmaz + garson çay götürmez → oyuncu eşiğe inene kadar masa kilitli (temizlik baskısı).
+ * Kirli masaların index kümesi (D-019): bir masada eşikten FAZLA (>) kirli kap varsa kirli.
+ * Y2: eşik KOLTUKLA ölçeklenir (`dirtyThreshold × koltuk` — plan §2; yoksa 4 kişilik tek grup
+ * masayı anında kilitlerdi; L0'da eski davranışla birebir aynı: >2).
+ * Kirli masaya yeni müşteri oturmaz + garson çay götürmez → oyuncu eşiğe inene kadar masa kilitli.
  */
-function dirtyTables(dishes: Dish[]): Set<number> {
+function dirtyTables(dishes: Dish[], tableLevels: number[] = []): Set<number> {
   const counts = new Map<number, number>();
   for (const d of dishes) counts.set(d.tableIndex, (counts.get(d.tableIndex) ?? 0) + 1);
   const dirty = new Set<number>();
-  for (const [idx, n] of counts) if (n > C.cups.dirtyThreshold) dirty.add(idx);
+  for (const [idx, n] of counts)
+    if (n > C.cups.dirtyThreshold * tableSeats(tableLevels[idx] ?? 0)) dirty.add(idx);
   return dirty;
 }
 
-function findFreeTable(npcs: Npc[], tables: number, dirty: Set<number>): number {
-  const used = new Set(npcs.filter((n) => n.state !== 'leaving').map((n) => n.tableIndex));
-  // Kirli masa "boş" sayılmaz (D-019): müşteri temizlenene kadar oturmaz.
-  for (let i = 0; i < tables; i++) if (!used.has(i) && !dirty.has(i)) return i;
-  return -1;
+/** Masa-başı DOLU koltuk indeksleri (leaving sayılmaz — koltuk kalkar kalkmaz boşalır, Y2). */
+function occupiedSeats(npcs: Npc[]): Map<number, Set<number>> {
+  const occ = new Map<number, Set<number>>();
+  for (const n of npcs) {
+    if (n.state === 'leaving') continue;
+    let set = occ.get(n.tableIndex);
+    if (!set) {
+      set = new Set();
+      occ.set(n.tableIndex, set);
+    }
+    set.add(n.seatIndex);
+  }
+  return occ;
+}
+
+/** Grup hedefi (Y2, plan §2): en çok BOŞ koltuklu temiz masa (eşitlikte düşük index — ön sıra önce).
+ *  Hiç boş koltuk yoksa -1. */
+function findTableForGroup(
+  occ: Map<number, Set<number>>,
+  tables: number,
+  dirty: Set<number>,
+  tableLevels: number[],
+): number {
+  let best = -1;
+  let bestFree = 0;
+  for (let i = 0; i < tables; i++) {
+    if (dirty.has(i)) continue;
+    const free = tableSeats(tableLevels[i] ?? 0) - (occ.get(i)?.size ?? 0);
+    if (free > bestFree) {
+      bestFree = free;
+      best = i;
+    }
+  }
+  return best;
 }
 
 /** Oyuncunun o an üstünde durduğu/doldurduğu zone (HUD'da alttaki bar). */
@@ -1145,28 +1202,45 @@ export const useGame = create<GameState>((set, get) => ({
     }
 
     // Kirli masalar (D-019): eşiği aşan masalar müşteriye/garsona kapalı (temizlik baskısı).
-    const dirty = dirtyTables(dishes);
+    // Y2: eşik koltukla ölçeklenir → seviye gerekir.
+    const dirty = dirtyTables(dishes, tableLevels);
 
-    // --- Spawn ---
+    // --- Spawn (Y2 GRUP sistemi, plan §2) ---
     const activeCount = npcs.filter((n) => n.state !== 'leaving').length;
-    // M3 fix: sabit tavan (8), masa sayısı 8'i aşınca (zone-3+) arka salonu müşterisiz bırakıyordu
-    // (8 müşteri ön masaları dolduruyor, 9. masa hiç dolmuyordu) → tavan masalarla ölçeklenir.
-    const maxConcurrent = Math.max(C.npc.maxConcurrent, tables + 2);
+    // Müşteri tavanı KOLTUK+2 (masa değil — Y2; M3'ün masa+2 fix'inin koltuklu hali).
+    let totalSeats = 0;
+    for (let i = 0; i < tables; i++) totalSeats += tableSeats(tableLevels[i] ?? 0);
+    const maxConcurrent = Math.max(C.npc.maxConcurrent, totalSeats + 2);
     if (spawnTimer <= 0 && activeCount < maxConcurrent) {
-      const free = findFreeTable(npcs, tables, dirty);
-      if (free >= 0) {
-        npcs.push({
-          id: nextId++,
-          state: 'toTable',
-          // KENDİ zone'unun sokağında belir → o zone'un kapısından girer (dış dünya hissi).
-          pos: [...LAYOUT.streets[zoneOfTable(free)]] as Vec3,
-          tableIndex: free,
-          timer: 0,
-          color: NPC_COLORS[Math.floor(Math.random() * NPC_COLORS.length)],
-        });
+      const occ = occupiedSeats(npcs);
+      const target = findTableForGroup(occ, tables, dirty, tableLevels);
+      if (target >= 0) {
+        // Grup boyu zarla (%30/35/20/15); koltuk yetmezse KÜÇÜLÜR, tavan da aşılmaz.
+        const seats = LAYOUT.tables[target].seats;
+        const taken = occ.get(target) ?? new Set<number>();
+        const freeSeats = tableSeats(tableLevels[target] ?? 0) - taken.size;
+        const size = Math.min(rollGroupSize(Math.random()), freeSeats, maxConcurrent - activeCount);
+        // KENDİ zone'unun sokağında belir → o zone'un kapısından girer (dış dünya hissi).
+        // Üyeler sokakta hafif saçılır (üst üste binmesin); her üye FARKLI koltuğa atanır,
+        // çay/timer/ödeme/bahşiş bireysel (ekonomi korunumu bozulmaz).
+        const street = LAYOUT.streets[zoneOfTable(target)];
+        let placed = 0;
+        for (let k = 0; k < seats.length && placed < size; k++) {
+          if (taken.has(k)) continue;
+          npcs.push({
+            id: nextId++,
+            state: 'toTable',
+            pos: [street[0] + (placed - (size - 1) / 2) * 0.55, street[1], street[2] + placed * 0.35],
+            tableIndex: target,
+            seatIndex: k,
+            timer: 0,
+            color: NPC_COLORS[Math.floor(Math.random() * NPC_COLORS.length)],
+          });
+          placed += 1;
+        }
         spawnTimer += C.npc.spawnInterval;
       } else {
-        spawnTimer = 0; // masa boşalınca hemen denesin
+        spawnTimer = 0; // koltuk boşalınca hemen denesin
       }
     }
 
@@ -1184,13 +1258,15 @@ export const useGame = create<GameState>((set, get) => ({
           // (navStep): eksen-kayması (moveAvoid) ön-sıra masayı dolaşamayıp KİLİTLENİYORDU →
           // müşteri arka masaya hiç oturamıyor, masayı süresiz rezerve ediyordu (telefon bug'ı 2026-06-11).
           const goingIn = n.pos[2] > nEntrance[2] + 0.2;
+          // Y2: hedef ATANAN koltuk (grup üyeleri aynı masada farklı koltuğa oturur).
+          const seat = slot.seats[n.seatIndex];
           if (goingIn) {
             moveToward(n.pos, nEntrance, step);
-          } else if (navStep(n.pos, slot.seat, step, navGrid, 0.5)) {
+          } else if (navStep(n.pos, seat, step, navGrid, 0.5)) {
             // Oturdu (koltuğa tam otur); çay servisini bekler. Sabır timer'ı başlar (D-011);
             // OTURDUĞU masanın seviyesi sabrı uzatır (Faz 2h).
-            n.pos[0] = slot.seat[0];
-            n.pos[2] = slot.seat[2];
+            n.pos[0] = seat[0];
+            n.pos[2] = seat[2];
             n.state = 'waitingForTea';
             n.timer = tablePatience(tableLevels[n.tableIndex] ?? 0);
           } else {

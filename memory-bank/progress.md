@@ -549,8 +549,23 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   zemini (defaultFloorTheme; mağazada ücretsiz) + zemine çatal-bıçak/tost amblemi + menü panosu +
   AYRI tost-bırak butonu (emptyTray(kind), TostEmptyIcon). v25→v26 migrasyonu (z2 'parke'→'yemek',
   satın alınan tema korunur). vitest 137/137, build, sim aynı, smoke 27/27, Playwright canlı (konsol 0).
-- 🔧 **SIRADA (onaylı plan, `docs/yemek-alani-garson-plan.md`):** Y2 koltuk+grup sistemi (EN RİSKLİ)
-  → Y3 sekmeli panel+garson tepsileri (SAVE **v27** — v26'yı Y1 aldı) → Y4 ikinci garson+claim.
+- ✅ **Y2 — KOLTUK + GRUP SİSTEMİ (2026-06-11):** koltuk = masa seviyesinden TÜRETİLİR
+  (`tables.seatsByLevel` [1,2,2,4,4] + `tableSeats()`; kayıt şeması DEĞİŞMEDİ — v26 kaldı);
+  Npc'ye `seatIndex` (transient); koltuk pozisyonları ALL_TABLES.seats (CHAIR_SPOTS/FOOD_CHAIR_SPOTS
+  store'a taşındı — Tables.tsx AYNI listeden çizer, görsel sandalye = oturulabilir koltuk, L2 artık
+  3 değil 2 sandalye); GRUP spawn `npc.groupChances` %30/35/20/15 (`rollGroupSize()` saf fonksiyon),
+  hedef = en çok boş koltuklu temiz masa, koltuk yetmezse grup KÜÇÜLÜR, üyeler farklı koltuk +
+  bireysel çay/timer/ödeme/bahşiş; müşteri tavanı KOLTUK+2; kirli eşik koltukla ölçeklenir
+  (`dirtyTables(dishes, tableLevels)` — Dishes.tsx koku işareti + devHooks aynı imza). Yeni dev
+  kancası `__setTableLevel`. vitest **145/145** (8 yeni Y2 testi: türetme, zar sınırları, koltuk
+  ofsetleri, grup spawn/küçülme, koltuk-atlama+spawn-durdurma, kirli ölçek, GERÇEK-DT grup yürü+otur+
+  tek-durak-servis+bireysel ödeme), build, sim AYNI (z3 dolu @1.67sa normal), smoke 27/27, Playwright
+  canlı (L3 masada 4 kişilik grup farklı taburelerde + L2'de 2 karşılıklı koltuk + tek durakta 2 servis
+  + 2 ayrı para + 10dk soak; konsol 0). **BONUS FIX:** öncesinde de var olan flaky vitest (bahşiş testi
+  — "uzak" oyuncu [0,0.6,99] z=5'e kelepçelenip mıknatısa giriyordu) gerçek uzak noktayla düzeltildi.
+- 🔧 **SIRADA (onaylı plan, `docs/yemek-alani-garson-plan.md`):** YENİ APK derle + telefonda test
+  (kullanıcı kararı) → Y3 sekmeli panel+garson tepsileri (SAVE **v27** — v26'yı Y1 aldı) → Y4 ikinci
+  garson+claim+sim kalibrasyonu (grup/koltuk talebi sim'e Y4'te işlenir — plan §6).
 - ⏳ **3a kalan:** arka-sol rezerv arsanın içeriği SONRA tasarlanacak (kullanıcıyla); üst kat
   (okey/tavla) ayrı tasarım turu.
 - ⏳ **3b:** Kat geçişi: kat dolunca **merdiven** açılır → ekran kararma → üst kat; dinamik bounds/kamera; SAVE bump.

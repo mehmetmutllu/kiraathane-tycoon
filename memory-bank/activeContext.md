@@ -2,6 +2,34 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-06-11 — Y2 ✅ KOLTUK + GRUP SİSTEMİ; kayıt şeması DEĞİŞMEDİ, v26 kaldı)
+Onaylı planın (docs/yemek-alani-garson-plan.md §2) Y2 milestone'u uygulandı:
+- **Koltuk türetme:** `tables.seatsByLevel` [1,2,2,4,4] + `tableSeats(level)` (economy.config — tek
+  kaynak). Görsel sandalye sayısı = oturulabilir koltuk (Tables.tsx `tableSeats`; eski level+1
+  kuralında L2 3 sandalyeydi, plan gereği 2'ye indi). Koltuk POZİSYONLARI `ALL_TABLES.seats`
+  (CHAIR_SPOTS/FOOD_CHAIR_SPOTS store.ts'e taşındı; Tables.tsx LAYOUT.chairSpots/foodChairSpots'tan
+  çizer; seats[0] eski .seat ile birebir).
+- **Grup spawn:** `npc.groupChances` %30/35/20/15 (1-4 kişi; `rollGroupSize(roll)` SAF fonksiyon —
+  deterministik test); hedef = en çok BOŞ koltuklu temiz masa (eşitlikte düşük index); koltuk
+  yetmezse grup KÜÇÜLÜR; üyeler sokakta saçılıp AYNI masada FARKLI koltuklara (`Npc.seatIndex`,
+  transient — migrasyon yok); çay/timer/ödeme/bahşiş BİREYSEL (ekonomi korunumu).
+- **Tavan + kirli eşik:** müşteri tavanı = max(8, toplam KOLTUK+2); kirli eşik koltukla ölçeklenir
+  (`dirtyTables(dishes, tableLevels)` → eşik 2×koltuk; L0 eski davranış >2). Dishes.tsx koku işareti
+  + devHooks aynı imzayla tutarlı. Yeni dev kancası: `__setTableLevel(i, lvl)`.
+- **FLAKY TEST FIX (öncesinden):** bahşiş testi "uzak" oyuncuyu [0,0.6,99]'a koyuyordu → z=5'e
+  kelepçelenip ~%10 olasılıkla parayı mıknatısla topluyordu (aynı-tick attract→pickup) → gerçek
+  uzak alan-içi nokta [5.2,0.6,-5.2]. HEAD'de de reproduce edildi (bizden değildi).
+- Doğrulama: vitest **145/145** (8 yeni Y2 testi; 8 ardışık tam koşu stabil), build, sim AYNI
+  (z3 dolu @1.67sa normal — sim grup/koltuğu Y4'te öğrenecek, plan §6), smoke **27/27**, Playwright
+  canlı: L3 masada 4 kişilik grup farklı taburelerde (ekran görüntüsü), L2'de 2 karşılıklı koltuk,
+  tepsiyle TEK durakta 2 müşteriye servis → 2 AYRI para, 10dk hızlı-sarma soak; konsol 0.
+
+## >>> SIRADAKİ: YENİ APK DERLE + TELEFONDA TEST (kullanıcı kararı) <<<
+`npm run apk` → `android/app/build/outputs/apk/debug/app-debug.apk` telefona. Sonra **Y3** (sekmeli
+karakter paneli Oyuncu|Çay Garsonu|Tostçu + garson tepsi yükseltmeleri çay 800/2400/6000, tost
+2000/5000 + tostçu kıyafet farklılaşması; SAVE **v27** `waiterUpgrades`) → **Y4** (2. garson
+800/1200/2000, gating: salonun 4 masası L4 + claim + görevler APPEND + sim kalibrasyonu).
+
 ## ŞU AN (2026-06-11 — Y1 ✅ YEMEK ALANI KİMLİK PAKETİ, SAVE v26)
 Onaylı planın (docs/yemek-alani-garson-plan.md) Y1 milestone'u uygulandı:
 - **Y1a counter:** tost tezgâhı (z2) ARKA duvara paralel, önü güneye — `FOOD_ZONE/FOOD_STATION`

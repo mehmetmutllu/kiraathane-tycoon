@@ -200,6 +200,9 @@ export const economyConfig = {
     tipBase: 2,
     /** Masa seviyesi başına eklenen sabır (sn). */
     patiencePerLevel: 2,
+    /** Koltuk sayısı masa SEVİYESİNDEN türetilir (Y2, plan §2 — kayıt şeması değişmez):
+     *  L0:1 → L1:2 → L2:2 → L3:4 → L4:4. Görsel sandalye sayısı = oturulabilir koltuk (Tables.tsx). */
+    seatsByLevel: [1, 2, 2, 4, 4],
   },
 
   /** NPC (müşteri) yaşam döngüsü zamanlamaları (sn). */
@@ -221,8 +224,11 @@ export const economyConfig = {
      * edilmezse SESSİZCE kalkıp gider (ödeme yok, ceza yok → çocuk-güvenli).
      */
     patience: 18,
-    /** Aynı anda mekândaki maksimum müşteri. */
+    /** Aynı anda mekândaki maksimum müşteri (taban; gerçek tavan = toplam koltuk + 2, Y2). */
     maxConcurrent: 8,
+    /** Grup spawn olasılıkları (Y2, plan §2): 1/2/3/4 kişilik grup — %30/35/20/15 (ort. 2.2).
+     *  Hedef masada koltuk yetmezse grup KÜÇÜLÜR (ekonomi korunumu bireysel ödemeyle sürer). */
+    groupChances: [0.3, 0.35, 0.2, 0.15],
   },
 
   /**
@@ -706,6 +712,23 @@ export function tableTip(level: number): number {
 /** Müşteri sabrı (sn) — masa seviyesiyle artar (taban + perLevel × seviye). Faz 2h. */
 export function tablePatience(level: number): number {
   return economyConfig.npc.patience + economyConfig.tables.patiencePerLevel * level;
+}
+
+/** Masanın koltuk sayısı — seviyeden TÜRETİLİR (Y2; aşırı seviyede son değere kelepçelenir). */
+export function tableSeats(level: number): number {
+  const arr = economyConfig.tables.seatsByLevel;
+  return arr[Math.min(Math.max(level, 0), arr.length - 1)];
+}
+
+/** Grup boyu (1..4) — [0,1) zarından (Y2; saf fonksiyon → deterministik test edilir). */
+export function rollGroupSize(roll: number): number {
+  let acc = 0;
+  const ch = economyConfig.npc.groupChances;
+  for (let i = 0; i < ch.length; i++) {
+    acc += ch[i];
+    if (roll < acc) return i + 1;
+  }
+  return ch.length;
 }
 
 /** Garson hareket hızı (seviye index'e göre; aşırı seviyede son değere kelepçelenir). Faz 2 D-018 §7. */

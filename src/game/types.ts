@@ -10,6 +10,9 @@ export interface Npc {
   pos: Vec3;
   /** Atanan masa indeksi (0..tables-1). */
   tableIndex: number;
+  /** Atanan koltuk indeksi (0..tableSeats-1; LAYOUT.tables[i].seats). TRANSIENT —
+   *  NPC'ler kaydedilmez, migrasyon gerekmez (Y2 grup sistemi). */
+  seatIndex: number;
   /** O anki durumun geri sayım süresi (sn). */
   timer: number;
   /** Rastgele gövde rengi (greybox çeşitliliği). */

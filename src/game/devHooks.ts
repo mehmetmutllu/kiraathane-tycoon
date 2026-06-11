@@ -20,6 +20,8 @@ declare global {
     __grantStat?: (key: string, value: number) => Record<string, unknown>;
     /** Karakter özelliği satın al (v20; panel butonunun store yolu). */
     __buyChar?: (stat: CharStat) => boolean;
+    /** Masa seviyesini doğrudan ayarla (Y2 koltuk/grup testleri — koltuk = seviyeden türetilir). */
+    __setTableLevel?: (tableIndex: number, level: number) => Record<string, unknown>;
   }
 }
 
@@ -83,7 +85,7 @@ export function installDevHooks(): void {
       dishStationPos: LAYOUT.dishStation,
       firstDishPos: s.dishes[0] ? s.dishes[0].pos : null,
       // Kirli masa mekaniği (D-019): eşiği aşan masa indeksleri (müşteri oturmaz + garson götürmez).
-      dirtyTables: [...dirtyTables(s.dishes)],
+      dirtyTables: [...dirtyTables(s.dishes, s.tableLevels)],
       dishesByTable: LAYOUT.tables.map((_, i) => s.dishes.filter((d) => d.tableIndex === i).length),
       hasDishwasher: s.dishwashers[0] != null,
       dishwasherTray: s.dishwashers[0] ? s.dishwashers[0].tray : 0,
@@ -162,6 +164,13 @@ export function installDevHooks(): void {
   };
 
   window.__buyChar = (stat: CharStat) => useGame.getState().buyCharUpgrade(stat);
+
+  window.__setTableLevel = (tableIndex: number, level: number) => {
+    const levels = useGame.getState().tableLevels.slice();
+    levels[tableIndex] = level;
+    useGame.setState({ tableLevels: levels });
+    return window.__game!();
+  };
 
   window.__grantStat = (key: string, value: number) => {
     const s = useGame.getState();

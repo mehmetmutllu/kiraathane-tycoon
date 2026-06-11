@@ -2,7 +2,7 @@ import { useGame } from '../../game/store';
 import { LAYOUT } from '../../game/store';
 import { Model } from './Model';
 import { PALETTE } from '../../config/palette';
-import { zoneOfTable, zoneProduct } from '../../config/economy.config';
+import { tableSeats, zoneOfTable, zoneProduct } from '../../config/economy.config';
 
 // Tabure (gerçek kıraathane formu): silindir gövde + kırmızı minder. Koltuk kutusu emekli.
 function Stool({ x, z }: { x: number; z: number }) {
@@ -57,24 +57,6 @@ function Chair({ x, z }: { x: number; z: number }) {
   );
 }
 
-// Sandalye yerleşimi: GÜNEY = gerçek oturma yeri (LAYOUT.tables[i].seat, masaya 0.78), gerisi görsel.
-// Seviye başına +1 sandalye (kullanıcı 2026-06-11: "her seviyede bir sandalye gelebilir, 4'ü bulur").
-const CHAIR_SPOTS: [number, number][] = [
-  [0, 0.78], // S (seat)
-  [0, -0.78], // N
-  [0.78, 0], // E
-  [-0.78, 0], // W
-];
-
-// YEMEK masası sandalye düzeni (Y1): dikdörtgen masanın uzun kenarlarında 2'ye 2 KARŞILIKLI.
-// İlk sandalye (oturma yeri) güney-BATI — LAYOUT.tables[i].seat ile hizalı (dünya x −0.35).
-const FOOD_CHAIR_SPOTS: [number, number][] = [
-  [-0.35, 0.78], // G-batı (seat)
-  [-0.35, -0.78], // K-batı (karşılıklı çift)
-  [0.35, 0.78], // G-doğu
-  [0.35, -0.78], // K-doğu
-];
-
 // Kıraathane masası — KARE KALARAK evrilir (kullanıcı 2026-06-11: "masa en başta kare ya, O KARE
 // gelişmeli; üzerine örtü gelir"). WP4'ün yuvarlak/sekizgen formları kaldırıldı:
 //   L0: çıplak tabla + 4 ince ayak + 1 oturak
@@ -89,8 +71,10 @@ function Table({ x, z, level, food = false }: { x: number; z: number; level: num
   // (kullanıcı: "yemek masaları farklı olabilir, seviye artınca olacak şeyler de artar").
   const clothArr = food ? PALETTE.foodTableclothByLevel : PALETTE.tableclothByLevel;
   const cloth = clothArr[Math.min(level, clothArr.length - 1)];
-  const spots = food ? FOOD_CHAIR_SPOTS : CHAIR_SPOTS;
-  const chairs = Math.min(spots.length, level + 1);
+  // Y2 tek kaynak: sandalye ofsetleri LAYOUT'tan (store koltuk pozisyonunu aynı listeden türetir);
+  // görsel sandalye sayısı = OTURULABİLİR koltuk (seatsByLevel 1/2/2/4/4 — plan §2).
+  const spots = food ? LAYOUT.foodChairSpots : LAYOUT.chairSpots;
+  const chairs = Math.min(spots.length, tableSeats(level));
   const skirt = cloth && (level === 2 || level >= 4);
   // Tabla yarıları (x, z): kare 0.475/0.475; yemek dikdörtgeni 0.675/0.425.
   const hw = food ? 0.675 : 0.475;
@@ -182,7 +166,7 @@ function Table({ x, z, level, food = false }: { x: number; z: number; level: num
           </group>
         }
       />
-      {/* oturaklar: ilk spot=oturma (collision LAYOUT'ta), gerisi salt görsel; sayı seviyeyle artar.
+      {/* oturaklar (Y2): HER sandalye gerçek koltuk — grup üyeleri farklı koltuklara oturur.
           Çay masası: tabure (4 yana). Yemek masası: arkalıklı sandalye (2'ye 2 karşılıklı). */}
       {spots.slice(0, chairs).map(([sx, sz], i) =>
         food ? <Chair key={i} x={sx} z={sz} /> : <Stool key={i} x={sx} z={sz} />,
