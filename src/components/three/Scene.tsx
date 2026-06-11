@@ -1,7 +1,7 @@
 import { Suspense, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Vector3, type Group, type MeshStandardMaterial } from 'three';
-import { useGame, LAYOUT, stationSoftMaxLevel, stationUpgradeCostZ, upgradeZoneUnlockedZ, tableSoftMaxLevel, tableUpgradeUnlockedZ, tableNextCost, waiterSoftMaxLevel, waiterUpgradeCost, waiterUpgradeUnlockedZ, rowWallSegments, zonePoint, zoneCol, zoneRow } from '../../game/store';
+import { useGame, LAYOUT, stationSoftMaxLevel, stationUpgradeCostZ, upgradeZoneUnlockedZ, tableSoftMaxLevel, tableUpgradeUnlockedZ, tableNextCost, waiterSoftMaxLevel, waiterUpgradeCost, waiterUpgradeUnlockedZ, rowWallSegments, zonePoint, zoneCol, zoneRow, zoneAt } from '../../game/store';
 import { zoneOfTable, zoneProduct } from '../../config/economy.config';
 import { GroundMarker } from './GroundMarker';
 import { PALETTE, FLOOR_THEMES, WALL_THEMES } from '../../config/palette';
@@ -166,27 +166,25 @@ function KitchenStaff() {
 // Rezerve servis odaları (floorplan-master.md; D-023): DEPO sol-arka + TUVALET sağ-arka (bina arkasına
 // bitişik ek odalar) + MERDİVEN ön-sağ köşe (Faz 3b üst kat). Salt görsel greybox rezerv.
 function ReservedRooms() {
-  // M2: ek odalar ÖN sıranın arkasına bitişikti; arka sıra zone'ları (z2/z3) açılınca o bölge
-  // gerçek salon olur → ilgili ek oda ÇİZİLMEZ (gerçek tuvalet+depo M4'te zone-3 arka duvarına gelir).
+  // 2026-06-11 revizyon: arka-sol hücre kalıcı REZERV arsa → DEPO görseli hep durur;
+  // TUVALET (sağ-arka) zone-3 (arka-sağ TOST) açılınca o bölge gerçek salon olduğundan kalkar.
   const fz = LAYOUT.zoneAreas[0].minZ; // ön sıranın arka çizgisi
   const zonesOpen = useGame((s) => s.zonesOpen);
   return (
     <group>
-      {/* DEPO (sol-arka ek oda) — zone-3 açılınca kalkar */}
-      {zonesOpen < 3 && (
-        <group position={[-3.2, 0, fz - 1.6]}>
-          <mesh castShadow position={[0, 0.7, 0]}>
-            <boxGeometry args={[3.0, 1.4, 2.2]} />
-            <meshStandardMaterial color={PALETTE.wainscot} />
-          </mesh>
-          <mesh position={[0, 0.55, 1.11]}>
-            <boxGeometry args={[0.9, 1.1, 0.04]} />
-            <meshStandardMaterial color={PALETTE.doorWood} />
-          </mesh>
-        </group>
-      )}
-      {/* TUVALET (sağ-arka ek oda) — zone-4 açılınca kalkar */}
-      {zonesOpen > 1 && zonesOpen < 4 && (
+      {/* DEPO (sol-arka ek oda) — rezerv arsada kalıcı görsel */}
+      <group position={[-3.2, 0, fz - 1.6]}>
+        <mesh castShadow position={[0, 0.7, 0]}>
+          <boxGeometry args={[3.0, 1.4, 2.2]} />
+          <meshStandardMaterial color={PALETTE.wainscot} />
+        </mesh>
+        <mesh position={[0, 0.55, 1.11]}>
+          <boxGeometry args={[0.9, 1.1, 0.04]} />
+          <meshStandardMaterial color={PALETTE.doorWood} />
+        </mesh>
+      </group>
+      {/* TUVALET (sağ-arka ek oda) — zone-3 açılınca kalkar */}
+      {zonesOpen > 1 && zonesOpen < 3 && (
         <group position={[13.8, 0, fz - 1.6]}>
           <mesh castShadow position={[0, 0.7, 0]}>
             <boxGeometry args={[2.4, 1.4, 2.2]} />
@@ -621,9 +619,11 @@ function Walls() {
     const col = zoneCol(z);
     const row = zoneRow(z);
     const th = themeOf(z);
-    const leftN = col === 0 ? -1 : z - 1; // -1 = dış dünya
-    const rightN = col === 0 ? z + 1 : -1;
-    const backN = row === 0 ? z + 2 : -1; // ön sıranın arka komşusu
+    // Komşular ızgaradan bulunur (zoneAt): -1 = dış dünya YA DA zone'suz rezerv hücre (arka-sol) —
+    // ikisi de "kapalı kenar" sayılır, duvar çizilir.
+    const leftN = zoneAt(col - 1, row);
+    const rightN = zoneAt(col + 1, row);
+    const backN = row === 0 ? zoneAt(col, 1) : -1; // ön sıranın arka komşusu
     // Yatay (ön/arka) duvarların x uzanımı: dış/kilitli yan uçlarda m taşar (köşe kapanır),
     // açık yan komşuda tam kenarda biter (komşu kendi parçasını çizer — tema bölmesi).
     const xExtL = leftN === -1 || !isOpen(leftN) ? m : 0;
@@ -661,13 +661,13 @@ function Walls() {
     if (row === 1)
       pieces.push({ key: `B${z}`, x: (hx0 + hx1) / 2, z: za.minZ - m, w: hx1 - hx0, d: t, theme: th });
   }
-  // L-şekil iç köşe dikmesi (yalnız 3 zone açıkken): z1 arka duvarı (z −5.8) ile z2 sağ duvarı
-  // (x 5.8) çapraz buluşur — aradaki 0.5×0.5 boşluk kilitli z3 arsasına bakar; dikme kapatır
-  // (tamamen kilitli bölgede durur, açık alanlara taşmaz).
+  // L-şekil iç köşe dikmesi (yalnız 3 zone açıkken): z0 arka duvarı (z −5.8) ile z2 SOL duvarı
+  // (x 4.8) çapraz buluşur — aradaki boşluk rezerv arka-sol arsaya bakar; dikme kapatır
+  // (tamamen rezerv bölgede durur, açık alanlara taşmaz).
   if (zonesOpen === 3) {
     const bx = LAYOUT.zoneBorderX;
     const bz = LAYOUT.zoneAreas[0].minZ;
-    pieces.push({ key: 'corner3', x: bx + m / 2, z: bz - m / 2, w: m + t, d: m + t, theme: themeOf(1) });
+    pieces.push({ key: 'corner3', x: bx - m / 2, z: bz - m / 2, w: m + t, d: m + t, theme: themeOf(0) });
   }
   // Sıra-arası GEÇİTLİ duvarlar: collision/nav ile AYNI segment listesi (görsel = mantık).
   const rowSegs = rowWallSegments(zonesOpen);

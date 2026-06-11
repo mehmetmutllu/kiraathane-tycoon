@@ -67,12 +67,18 @@ import { buildNavGrid, findNavPath, type NavGrid, type NavSolid } from './nav';
 // masalar sağa+yukarı kaydı, masa pad'leri masanın kapı-tarafı ÇAPRAZINDA (ocak tarafında değil).
 // Garson/bulaşıkçı turu artık zone'dan bağımsız kısa (z2 ocak→en uzak masa ≈ 8.8 birim ≈ z1 ile aynı).
 const ZONE_DX = 10.6;
-// M2 (2026-06-12, onaylı plan): kat 2×2 IZGARA — z0 ön-sol, z1 ön-sağ, z2 arka-sol (TOST, M3),
-// z3 arka-sağ (MAÇ, M5). Arka sıra ön sıranın −z tarafına ZONE_DZ kadar kaydırılır.
+// M2 (2026-06-12, onaylı plan): kat 2×2 IZGARA. Revizyon (2026-06-11 kullanıcı): z2 (TOST)
+// arka-SAĞA taşındı; arka-sol hücre REZERV arsa (zone yok — içerik sonra tasarlanacak).
+// z0 ön-sol, z1 ön-sağ, z2 arka-sağ. Arka sıra ön sıranın −z tarafına ZONE_DZ kadar kaydırılır.
 const ZONE_DZ = 10.3; // sıra derinliği (zone alanı z: -5.3..5.0)
 /** Zone'un ızgara kolonu (0 sol / 1 sağ) ve sırası (0 ön / 1 arka). */
-export const zoneCol = (z: number) => z % 2;
+export const zoneCol = (z: number) => (z < 2 ? z : 1);
 export const zoneRow = (z: number) => (z < 2 ? 0 : 1);
+/** (col,row) hücresindeki zone index'i; zone yoksa -1 (arka-sol = rezerv arsa). */
+export const zoneAt = (col: number, row: number) => {
+  for (let z = 0; z < MAX_ZONES; z++) if (zoneCol(z) === col && zoneRow(z) === row) return z;
+  return -1;
+};
 const ZONES = Array.from({ length: MAX_ZONES }, (_, z) => z);
 // Zone z için şablon noktası: tek kolonlar zone merkezine göre x-AYNALI (mutfak kendi yan duvarında
 // kalır), arka sıra −ZONE_DZ kaydırılır (şablon yan-duvar temelli olduğundan rotasyon gerekmez).
@@ -159,22 +165,14 @@ export const LAYOUT = {
     z2table4: ALL_TABLES[7].table,
     z2waiter: mir(1, [-4.6, 0, 2.2]),
     z2dishwasher: mir(1, [0.2, 0, -4.5]),
-    // ZONE-3 (arka-sol, M2/M3): unlock pad'i z0'ın arka şeridinde, geçidin (x 1.6) yanında —
-    // dolum daireleri komşularla KESİŞMEZ (dishwasher pad [0.2,-4.5] ayrımı 2.71 > 2×PAD_RADIUS 2.6).
-    zone3: [2.9, 0, -4.3] as Vec3,
+    // ZONE-3 (arka-sağ, 2026-06-11 taşıma): unlock pad'i z1'in arka şeridinde, kendi geçidinin
+    // (x 9.0) yanında — dolum daireleri komşularla KESİŞMEZ (z2dishwasher pad [10.4,-4.5] ayrımı 2.71).
+    zone3: [7.7, 0, -4.3] as Vec3,
     z3table2: ALL_TABLES[9].table,
     z3table3: ALL_TABLES[10].table,
     z3table4: ALL_TABLES[11].table,
     z3waiter: mir(2, [-4.6, 0, 2.2]),
     z3dishwasher: mir(2, [0.2, 0, -4.5]),
-    // ZONE-4 (arka-sağ, M5): unlock pad'i z1'in arka şeridinde, kendi geçidinin (x 9.0) yanında
-    // (z2dishwasher pad [10.4,-4.5] ayrımı 2.71).
-    zone4: [7.7, 0, -4.3] as Vec3,
-    z4table2: ALL_TABLES[13].table,
-    z4table3: ALL_TABLES[14].table,
-    z4table4: ALL_TABLES[15].table,
-    z4waiter: mir(3, [-4.6, 0, 2.2]),
-    z4dishwasher: mir(3, [0.2, 0, -4.5]),
   } as Record<string, Vec3>,
   // Zone başına mekânsal çay yükseltme noktası: kendi duvarında, modülün ALTINDA (kapı tarafı —
   // kullanıcı 2026-06-11: "ocağın önünde değil altında, sol duvarda dursun"). PAD MERKEZİ ocağın
@@ -225,8 +223,8 @@ interface Solid {
 export function rowWallSegments(zonesOpen: number): { c: Vec3; h: readonly [number, number] }[] {
   const segs: { c: Vec3; h: readonly [number, number] }[] = [];
   const ht = 0.12; // yarı kalınlık
-  for (const z of [2, 3]) {
-    if (z >= zonesOpen) continue;
+  for (let z = 0; z < MAX_ZONES; z++) {
+    if (zoneRow(z) !== 1 || z >= zonesOpen) continue;
     const za = LAYOUT.zoneAreas[z];
     const bz = za.maxZ; // sınır çizgisi (arka zone'un ön kenarı = ön zone'un arka kenarı)
     const px = LAYOUT.rowPassageX[zoneCol(z)];
@@ -242,7 +240,8 @@ export function rowWallSegments(zonesOpen: number): { c: Vec3; h: readonly [numb
 }
 
 /** KİLİTLİ zone'ların alanları nav için BLOKE (M2): müşteri/personel rotası "boş arsa"dan geçemez
- *  (duvarlar yalnız açık zone'ları sardığından grid'e ayrıca anlatmak gerekir). */
+ *  (duvarlar yalnız açık zone'ları sardığından grid'e ayrıca anlatmak gerekir). Arka-sol REZERV
+ *  hücre (zone'suz arsa, 2026-06-11) DAİMA bloke — rota oradan kestirme yapamaz. */
 function lockedZoneSolids(zonesOpen: number): Solid[] {
   const solids: Solid[] = [];
   for (let z = zonesOpen; z < MAX_ZONES; z++) {
@@ -252,6 +251,8 @@ function lockedZoneSolids(zonesOpen: number): Solid[] {
       h: [(za.maxX - za.minX) / 2, (za.maxZ - za.minZ) / 2],
     });
   }
+  // BL hücre = z0 alanının −ZONE_DZ kopyası (zoneAreas formülü, col 0 / row 1).
+  solids.push({ c: [0, 0, (-5.3 - ZONE_DZ + (5.0 - ZONE_DZ)) / 2], h: [5.3, (5.0 - -5.3) / 2] });
   return solids;
 }
 
@@ -399,7 +400,7 @@ export const FILL_TEA = 'tea:'; // + zone index
 export const FILL_TABLE = 'tableUp:'; // + GLOBAL masa index
 export const FILL_WAITER = 'waiterUp:'; // + zone index (garson hız yükseltme, D-018 §6)
 
-/** Zone z'nin garson pad id'si (per-zone personel; z>0 → 'z2waiter'/'z3waiter'/'z4waiter'). */
+/** Zone z'nin garson pad id'si (per-zone personel; z>0 → 'z2waiter'/'z3waiter'). */
 export const waiterPadId = (z: number) => (z === 0 ? 'waiter' : `z${z + 1}waiter`);
 
 /** Zone z'nin çay-yükseltme noktası açık mı? (v21: her salonun KENDİ 2. masası önkoşul —

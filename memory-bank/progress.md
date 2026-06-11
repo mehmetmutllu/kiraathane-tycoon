@@ -532,7 +532,15 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   sim (config'ten etiketler), smoke 27/27, Playwright canlı (migrasyon enjeksiyonu dahil), konsol 0.
   - Bilinen-flaky: "ödeyen müşteri ... bahşişini bırakır" testi 1 kez tek başına kırmızı yandı,
     izole+tam tekrarında yeşil (muhtemel test-arası durum sızıntısı/rastgele spawn). Tekrarlarsa bak.
-- ⏳ **3a kalan:** zone 3-4 (tost/TV konsepti) + kat planındaki servis odaları (floorplan-master.md).
+- ✅ **GECE OTURUMU M1-M3 (2026-06-11, commit b4d8ac7/bb877e1/995807d):** görev para ödülleri
+  (QuestDef.reward) + 2×2 kat ızgarası altyapısı (zonePoint, geçitli sıra duvarı, union kelepçe) +
+  TOST ürün hattı (PRODUCTS/ZONE_PRODUCTS, trayFood, TostStation, yemek masası evrimi) + maxConcurrent
+  masa-ölçekli bug fix'i.
+- ↩️ **M4 (tuvalet+depo) + M5 (maç salonu) GERİ ALINDI (2026-06-11 kullanıcı: "tasarımsal kötü, zone
+  zone düzenleyelim"):** git revert + MAX_ZONES=3; TOST salonu (z2) arka-SAĞA taşındı; arka-sol kalıcı
+  REZERV arsa; SAVE v25 (kaldırılan pad'lerin ₺'si iade). vitest 131/131, smoke 27/27, Playwright canlı.
+- ⏳ **3a kalan:** sağ-üst tost salonunu kullanıcı yönlendirmesiyle zone-zone geliştirme; arka-sol
+  rezerv arsanın içeriği SONRA tasarlanacak (kullanıcıyla).
 - ⏳ **3b:** Kat geçişi: kat dolunca **merdiven** açılır → ekran kararma → üst kat; dinamik bounds/kamera; SAVE bump.
 - ⏳ **3c:** Tuvalet ODASI + DEPO (KATA özel, parayla açılır) + tuvalet kâğıdı döngüsü (depodan al→tak) + temizlikçi.
 - ⏳ **3d:** Menü çeşitliliği (kahve/tost — mutfak şeridine eklenir). Okey/tavla/nargile üst katlar.

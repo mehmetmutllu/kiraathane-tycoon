@@ -2,7 +2,26 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-06-11 — KULLANICI KARARI: M4+M5 GERİ ALINDI, TOST SALONU ARKA-SAĞA TAŞINDI, SAVE v25)
+Kullanıcı gece oturumu çıktısını tarayıcıda gördü: "tasarımsal olarak çok kötü — geri al, zone zone
+düzenleyelim; 3. zone sağ üstte olsun, 4. zone ve lavabo/depoyu kaldır" → ONAYLI uygulandı:
+- **git revert** ab6e02e (M5 maç salonu) + e494aee (M4 tuvalet+depo) — temiz geçti.
+- **MAX_ZONES=3**; z2 (TOST) arka-SAĞA taşındı (`zoneCol = z<2?z:1`), arka-SOL hücre kalıcı
+  REZERV arsa: `zoneAt(col,row)` yardımcıyla duvar komşulukları ızgaradan; rezerv hücre nav'da
+  DAİMA bloke; L-köşe dikmesi aynalandı (bx−m/2); DEPO görseli rezerv arsada kalıcı, TUVALET
+  görseli zone-3 açılınca kalkar; zone3 unlock pad'i z1 arka şeridine ([7.7,0,-4.3], sağ geçit x 9.0).
+- **SAVE v25 migrasyonu**: v24 kayıtlardaki kaldırılan pad'ler (wc/cleaner/zone4 zinciri) düşülür,
+  harcanan + yarım dolan ₺ İADE edilir; silinen görevler hep listenin SONUNDAYDI → questIndex clamp
+  yeter; tost ilerlemesi (z2 index'i değişmedi) aynen korunur.
+- Doğrulama: vitest **131/131** (v25 iade testi + sağ-geçit/rezerv-arsa kelepçe testleri), build,
+  sim (zone-3 dolu @1.25sa idealize), smoke **27/27**, Playwright canlı (v24 kayıt → v25 + iade
+  10K→27.4K, tost salonu sağ üstte istasyonuyla, rezerv arka-sol duvarlı; konsol 0).
+- SIRADA: kullanıcı sağ-üst tost salonunu kendisi geliştirip yönlendirecek (zone zone düzenleme);
+  DENGE RAPORU bekliyor (mıknatıs 175-200, offline kazanç artışı, genel hafif ucuzlatma — ONAYLI
+  değil, rapor sonrası kullanıcı onayıyla uygulanacak). APK yeniden derlenmedi (denge sonrası).
+
 ## GECE OTURUMU 2026-06-12 — 1. KAT TAMAMLAMA (onaylı plan: docs/zone34-wc-floor2-design.md §5b)
+**NOT (2026-06-11): M4+M5 bu sabah kullanıcı kararıyla GERİ ALINDI (üstteki blok).**
 Kullanıcı uyuyor; onay: "zone-3 tost planıyla devam + 1. kattaki her şeyi görevlerle planla-yap +
 görev para ödülleri + yemek masaları farklı/seviyeyle artan görsel". Milestone başına test+commit+push.
 - ✅ **M1 GÖREV ÖDÜLLERİ** (commit b4d8ac7): QuestDef.reward — tamamlanınca cüzdan+lifetime,

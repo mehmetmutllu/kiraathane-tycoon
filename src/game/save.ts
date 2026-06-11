@@ -487,6 +487,34 @@ export function migrate(raw: Record<string, unknown>): SaveData {
     v = 23;
   }
 
+  // v23/v24 -> v25 (2026-06-11 kullanıcı kararı): M4 (tuvalet+depo) ve M5 (maç salonu) GERİ ALINDI;
+  // tost salonu (z2) arka-sağa taşındı (konum kayıtta tutulmaz → taşıma migrasyon istemez).
+  // v24 kayıtlardaki kaldırılan pad'ler düşülür, harcanan/yarım dolan ₺ İADE edilir (ilerleme
+  // kaybolmaz ilkesi). v24'ün tuvalet alanları (paperStock vb.) sona kalan şemaya yazılmayarak düşer;
+  // kaldırılan görevlerin (q_wc.., q_zone4..) hepsi listenin SONUNDAYDI → questIndex clamp'i yeter.
+  if (v < 25) {
+    const removed: Record<string, number> = {
+      wc: 3000, cleaner: 2000, zone4: 9000, z4table2: 1200, z4waiter: 1800,
+      z4table3: 2600, z4dishwasher: 3400, z4table4: 4500,
+    };
+    const padsDone = Array.isArray(d.padsDone) ? (d.padsDone as string[]) : [];
+    let refund = 0;
+    for (const id of padsDone) if (id in removed) refund += removed[id];
+    d.padsDone = padsDone.filter((id) => !(id in removed));
+    if (d.padFills && typeof d.padFills === 'object') {
+      const fills = { ...(d.padFills as Record<string, number>) };
+      for (const id of Object.keys(fills)) {
+        if (id in removed) {
+          refund += Number(fills[id]) || 0;
+          delete fills[id];
+        }
+      }
+      d.padFills = fills;
+    }
+    if (refund > 0) d.wallet = String((Number(d.wallet) || 0) + refund);
+    v = 25;
+  }
+
   // Sona kalan v16 şeması: türetilen alanlar (tables/stations/serviceSpeedMult/hasWaiter), eski `padFill`,
   // kaldırılan `trayLevel` ve 'samovar' referansı yazılmaz; stats/questIndex/questBase eklendi (v16).
   const rawStats = (d.stats && typeof d.stats === 'object' ? d.stats : {}) as Partial<SaveStats>;

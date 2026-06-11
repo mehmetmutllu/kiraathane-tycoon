@@ -13,18 +13,19 @@
  *   L5 (Usta)   = masterDiamondCost 💎 VEYA 1 ödüllü video; outputMult yerine masterOutputMult
  */
 
-export const SAVE_VERSION = 23;
+export const SAVE_VERSION = 25;
 
 /**
  * ZONE modeli (Faz 3a + D-022, gece 2026-06-10): zemin kat zone'ları. Her zone kendi TEMALI
  * ocak+bulaşık köşesine sahip (per-zone servis); masa slotları GLOBAL index'lidir
  * (zone z → slotlar [z*TABLES_PER_ZONE, z*TABLES_PER_ZONE+4)). Açılış sırası gating'le katı
  * (zone2 pad'i table4 ister) → açık masa index'leri DAİMA bitişiktir (0..tables-1).
- * M2 (2026-06-12, onaylı plan): kat 2×2 IZGARA — z0 ön-sol (çay), z1 ön-sağ (çay),
- * z2 arka-sol (TOST, M3), z3 arka-sağ (MAÇ, M5). Açılış sırası: z1 → z2 → z3.
+ * M2 (2026-06-12, onaylı plan): kat 2×2 IZGARA. Revizyon (2026-06-11 kullanıcı): zone-4 (maç salonu)
+ * ve tuvalet+depo GERİ ALINDI; z2 (TOST) arka-SAĞA taşındı — z0 ön-sol (çay), z1 ön-sağ (çay),
+ * z2 arka-sağ (TOST). Arka-sol hücre REZERV arsa (içerik sonra tasarlanacak). Açılış: z1 → z2.
  */
 export const TABLES_PER_ZONE = 4;
-export const MAX_ZONES = 4;
+export const MAX_ZONES = 3;
 /** Global masa index'inin ait olduğu zone. */
 export function zoneOfTable(tableIndex: number): number {
   return Math.min(MAX_ZONES - 1, Math.floor(tableIndex / TABLES_PER_ZONE));
@@ -44,8 +45,8 @@ export const PRODUCTS = {
   tea: { price: 5, prepTime: 6, dish: 'cup', upgradeCostMult: 1 },
   tost: { price: 25, prepTime: 14, dish: 'plate', upgradeCostMult: 20 },
 } as const;
-/** Zone → ürün eşlemesi: z2 (arka-sol) = TOST OCAĞI; diğerleri çay (M5 maç salonu da çay servis eder). */
-export const ZONE_PRODUCTS: readonly ProductId[] = ['tea', 'tea', 'tost', 'tea'];
+/** Zone → ürün eşlemesi: z2 (arka-sağ) = TOST OCAĞI; diğerleri çay. */
+export const ZONE_PRODUCTS: readonly ProductId[] = ['tea', 'tea', 'tost'];
 export function zoneProduct(z: number): ProductId {
   return ZONE_PRODUCTS[Math.min(Math.max(z, 0), ZONE_PRODUCTS.length - 1)];
 }
@@ -157,7 +158,6 @@ export const economyConfig = {
       { prev: ['table2'] },
       { prev: ['z2table2'] },
       { prev: ['z3table2'] },
-      { prev: ['z4table2'] },
     ] satisfies readonly Requires[],
     /** Yükseltme noktasında saniyede cüzdandan akan ₺ (mekânsal yükseltme). */
     upgradeFillRate: 60,
@@ -190,7 +190,6 @@ export const economyConfig = {
       { prev: ['table4'] },
       { prev: ['z2table4'] },
       { prev: ['z3table4'] },
-      { prev: ['z4table4'] },
     ] satisfies readonly Requires[],
     /** Servis başına ek bahşiş = tipBase × masaSeviyesi (L0 = 0 bahşiş, sadece sabit fiyat). */
     tipBase: 2,
@@ -394,8 +393,8 @@ export const economyConfig = {
       requires: { prev: ['z2table3'] }, effect: { type: 'hireDishwasher' } },
     { id: 'z2table4', label: '4. Masa', cost: 1100, fillRate: 110, optional: false, zone: 1,
       requires: { prev: ['z2dishwasher'] }, effect: { type: 'addTable' } },
-    // --- ZONE-3 zinciri (M2 altyapı + M3 tost; onaylı plan 2026-06-12): arka-sol salon = TOST OCAĞI.
-    // Unlock pad'i z0'ın arka geçidi yanında (sıra-arası duvar geçidi). Maliyetler M3 sim kalibrasyonuna
+    // --- ZONE-3 zinciri (M2 altyapı + M3 tost): arka-SAĞ salon = TOST OCAĞI (2026-06-11 taşıma).
+    // Unlock pad'i z1'in arka geçidi yanında (sıra-arası duvar geçidi). Maliyetler M3 sim kalibrasyonuna
     // açık başlangıç değerleri (~2× z2 zinciri; zone-2 bitiminden ~30-60dk aktif oyun hedefi).
     { id: 'zone3', label: 'Tost Salonu', cost: 4000, fillRate: 250, optional: false, zone: 0,
       requires: { prev: ['z2table4'] }, effect: { type: 'unlockZone' } },
@@ -409,20 +408,6 @@ export const economyConfig = {
       requires: { prev: ['z3table3'] }, effect: { type: 'hireDishwasher' } },
     { id: 'z3table4', label: '4. Masa', cost: 2500, fillRate: 150, optional: false, zone: 2,
       requires: { prev: ['z3dishwasher'] }, effect: { type: 'addTable' } },
-    // --- ZONE-4 zinciri (M5 maç salonu): arka-sağ salon. M4'te tuvalet pad'i zone4'ün ÖNÜNE girecek
-    // (requires o zaman güncellenir). Maliyetler M5 kalibrasyonuna açık.
-    { id: 'zone4', label: 'Maç Salonu', cost: 9000, fillRate: 350, optional: false, zone: 1,
-      requires: { prev: ['z3table4'] }, effect: { type: 'unlockZone' } },
-    { id: 'z4table2', label: '2. Masa', cost: 1200, fillRate: 140, optional: false, zone: 3,
-      requires: { prev: ['zone4'] }, effect: { type: 'addTable' } },
-    { id: 'z4waiter', label: 'Garson Tut', cost: 1800, fillRate: 150, optional: false, zone: 3,
-      requires: { prev: ['z4table2'] }, effect: { type: 'hireWaiter' } },
-    { id: 'z4table3', label: '3. Masa', cost: 2600, fillRate: 160, optional: false, zone: 3,
-      requires: { prev: ['z4waiter'] }, effect: { type: 'addTable' } },
-    { id: 'z4dishwasher', label: 'Bulaşıkçı Tut', cost: 3400, fillRate: 170, optional: false, zone: 3,
-      requires: { prev: ['z4table3'] }, effect: { type: 'hireDishwasher' } },
-    { id: 'z4table4', label: '4. Masa', cost: 4500, fillRate: 180, optional: false, zone: 3,
-      requires: { prev: ['z4dishwasher'] }, effect: { type: 'addTable' } },
   ],
 
   /**

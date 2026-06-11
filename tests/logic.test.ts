@@ -1527,11 +1527,11 @@ describe('ZONE-2 (Faz 3a + D-022) — per-zone ocak+bulaşık, geçit pad\'i, mi
     expect(d2.zonesOpen).toBe(2);
     expect(d2.stations).toBe(2);
     expect(d2.tables).toBe(5); // zone-2 oto 1. masa
-    expect(d2.tablesByZone).toEqual([4, 1, 0, 0]); // M2: 2×2 ızgara — z2/z3 kilitli
-    expect(d2.hasWaiterByZone).toEqual([true, false, false, false]); // z1 garsonu z2'ye SIZMAZ
+    expect(d2.tablesByZone).toEqual([4, 1, 0]); // z2 (arka-sağ TOST) kilitli
+    expect(d2.hasWaiterByZone).toEqual([true, false, false]); // z1 garsonu z2'ye SIZMAZ
     const d3 = derivedFromPads([...Z1_CHAIN, 'zone2', 'z2table2', 'z2waiter']);
     expect(d3.tables).toBe(6);
-    expect(d3.hasWaiterByZone).toEqual([true, true, false, false]);
+    expect(d3.hasWaiterByZone).toEqual([true, true, false]);
   });
 
   it('savunmacı: zone2 pad\'i YOKKEN z2 pad\'leri etki edemez (bozuk kayıt sızamaz)', () => {
@@ -1596,6 +1596,26 @@ describe('ZONE-2 (Faz 3a + D-022) — per-zone ocak+bulaşık, geçit pad\'i, mi
     expect(m.waiterLevels).toEqual([1]);
     expect((m as Record<string, unknown>).stationLevel).toBeUndefined();
     expect((m as Record<string, unknown>).waiterLevel).toBeUndefined();
+  });
+
+  it('kayıt migrasyonu v24→v25: kaldırılan pad\'ler (wc/cleaner/zone4 zinciri) düşülür, ₺ İADE edilir', () => {
+    const Z2 = ['zone2', 'z2table2', 'z2waiter', 'z2table3', 'z2dishwasher', 'z2table4'];
+    const Z3 = ['zone3', 'z3table2', 'z3waiter', 'z3table3', 'z3dishwasher', 'z3table4'];
+    const m = migrate({
+      saveVersion: 24, wallet: '100', diamonds: '0', lifetime: '50000',
+      stationLevels: [1, 0, 0, 0], waiterLevels: [0, 0, 0, 0],
+      padsDone: [...Z1_CHAIN, ...Z2, ...Z3, 'wc', 'cleaner', 'zone4', 'z4table2'],
+      padFills: { z4waiter: 700 },
+      tableLevels: [], stats: defaultStats(), questIndex: 999, questBase: 0,
+      xp: 100, settings: { sound: true, music: true, notifications: true }, lastSaved: Date.now(),
+    });
+    expect(m.saveVersion).toBe(SAVE_VERSION);
+    // İade: wc 3000 + cleaner 2000 + zone4 9000 + z4table2 1200 + yarım z4waiter 700 = 15.900 (+100 cüzdan).
+    expect(m.wallet).toBe('16000');
+    expect(m.padsDone).toEqual([...Z1_CHAIN, ...Z2, ...Z3]);
+    expect(m.padFills).toEqual({});
+    // Silinen görevler listenin sonundaydı → questIndex hat sonuna clamp'lenir.
+    expect(m.questIndex).toBe(economyConfig.quests.length);
   });
 });
 
@@ -2056,16 +2076,16 @@ describe('M2 — 2×2 kat ızgarası (zone-3/4 altyapısı; arka sıra + geçitl
   const Z2 = ['zone2', 'z2table2', 'z2waiter', 'z2table3', 'z2dishwasher', 'z2table4'];
   const Z3 = ['zone3', 'z3table2', 'z3waiter', 'z3table3', 'z3dishwasher', 'z3table4'];
 
-  it('derivedFromPads: zone3/zone4 zinciri — zonesOpen artar, önceki zone\'lar DOLU kelepçesi genel', () => {
+  it('derivedFromPads: zone3 zinciri — zonesOpen artar, önceki zone\'lar DOLU kelepçesi genel', () => {
     const d3 = derivedFromPads([...Z1, ...Z2, 'zone3']);
     expect(d3.zonesOpen).toBe(3);
     expect(d3.stations).toBe(3);
-    expect(d3.tablesByZone).toEqual([4, 4, 1, 0]); // z3 oto 1. masa; z1/z2 yapısal dolu
+    expect(d3.tablesByZone).toEqual([4, 4, 1]); // z3 oto 1. masa; z1/z2 yapısal dolu
     expect(d3.tables).toBe(9);
-    const d4 = derivedFromPads([...Z1, ...Z2, ...Z3, 'zone4']);
-    expect(d4.zonesOpen).toBe(4);
-    expect(d4.tablesByZone).toEqual([4, 4, 4, 1]);
-    expect(d4.tables).toBe(13);
+    const dFull = derivedFromPads([...Z1, ...Z2, ...Z3]);
+    expect(dFull.zonesOpen).toBe(3);
+    expect(dFull.tablesByZone).toEqual([4, 4, 4]);
+    expect(dFull.tables).toBe(12);
   });
 
   it('rowWallSegments: arka zone açılınca sınır duvarı GEÇİT bırakır; ön sıra açıkken segment yok', () => {
@@ -2073,13 +2093,11 @@ describe('M2 — 2×2 kat ızgarası (zone-3/4 altyapısı; arka sıra + geçitl
     expect(rowWallSegments(2)).toEqual([]);
     const segs3 = rowWallSegments(3);
     expect(segs3.length).toBe(2); // geçidin solu + sağı
-    const px = LAYOUT.rowPassageX[0];
+    const px = LAYOUT.rowPassageX[1]; // z2 arka-SAĞ kolonda (2026-06-11 taşıma)
     const ph = LAYOUT.rowPassageHalf;
     const ends = segs3.map((s) => [s.c[0] - s.h[0], s.c[0] + s.h[0]] as const);
     expect(ends[0][1]).toBeCloseTo(px - ph, 5); // sol segment geçide dayanır
     expect(ends[1][0]).toBeCloseTo(px + ph, 5); // sağ segment geçitten başlar
-    // 4 zone açıkken iki geçit (z2 + z3, sağ kolon aynalı)
-    expect(rowWallSegments(4).length).toBe(4);
   });
 
   it('STORE: zone-3 açık → müşteri sokaktan girip GEÇİTTEN geçerek arka salona oturur (gerçek dt nav)', () => {
@@ -2111,11 +2129,39 @@ describe('M2 — 2×2 kat ızgarası (zone-3/4 altyapısı; arka sıra + geçitl
     expect(seated).toBe(true);
   });
 
-  it('oyuncu union kelepçesi: arka sıra KAPALIYKEN girilmez; zone-3 açılınca geçitten girilir', () => {
+  it('oyuncu union kelepçesi: arka sıra KAPALIYKEN girilmez; zone-3 açılınca SAĞ geçitten girilir', () => {
     useGame.getState().hardReset();
     useGame.setState({
       padsDone: [...Z1, ...Z2],
       questIndex: economyConfig.quests.length,
+      npcs: [],
+      spawnTimer: 1e9,
+      player: [9.0, 0.6, -4.0] as [number, number, number],
+      inputKeyboard: [0, -1],
+    });
+    for (let i = 0; i < 120; i++) useGame.getState().tick(1 / 60);
+    expect(useGame.getState().player[2]).toBeGreaterThanOrEqual(LAYOUT.zoneAreas[1].minZ - 1e-6);
+    // zone-3 açık: SAĞ geçit hizasından (x 9.0, 2026-06-11 taşıma) arka salona yürünebilir.
+    useGame.setState({
+      padsDone: [...Z1, ...Z2, 'zone3'],
+      npcs: [],
+      spawnTimer: 1e9,
+      player: [9.0, 0.6, -4.0] as [number, number, number],
+      inputKeyboard: [0, -1],
+    });
+    for (let i = 0; i < 240; i++) useGame.getState().tick(1 / 60);
+    expect(useGame.getState().player[2]).toBeLessThan(-5.5);
+    // ... ama geçit DIŞINDA duvar katı: duvar hizasından (x 11.9) güneye zorlanınca sınırı geçemez.
+    useGame.setState({
+      npcs: [],
+      spawnTimer: 1e9,
+      player: [11.9, 0.6, -4.0] as [number, number, number],
+      inputKeyboard: [0, -1],
+    });
+    for (let i = 0; i < 120; i++) useGame.getState().tick(1 / 60);
+    expect(useGame.getState().player[2]).toBeGreaterThan(LAYOUT.zoneAreas[1].minZ - 0.4);
+    // ... ve REZERV arka-sol arsa zone-3 açıkken bile KAPALI (eski geçit hizası x 1.6).
+    useGame.setState({
       npcs: [],
       spawnTimer: 1e9,
       player: [1.6, 0.6, -4.0] as [number, number, number],
@@ -2123,25 +2169,6 @@ describe('M2 — 2×2 kat ızgarası (zone-3/4 altyapısı; arka sıra + geçitl
     });
     for (let i = 0; i < 120; i++) useGame.getState().tick(1 / 60);
     expect(useGame.getState().player[2]).toBeGreaterThanOrEqual(LAYOUT.zoneAreas[0].minZ - 1e-6);
-    // zone-3 açık: geçit hizasından (x 1.6) arka salona yürünebilir.
-    useGame.setState({
-      padsDone: [...Z1, ...Z2, 'zone3'],
-      npcs: [],
-      spawnTimer: 1e9,
-      player: [1.6, 0.6, -4.0] as [number, number, number],
-      inputKeyboard: [0, -1],
-    });
-    for (let i = 0; i < 240; i++) useGame.getState().tick(1 / 60);
-    expect(useGame.getState().player[2]).toBeLessThan(-5.5);
-    // ... ama geçit DIŞINDA duvar katı: duvar hizasından (x 4.5) güneye zorlanınca sınırı geçemez.
-    useGame.setState({
-      npcs: [],
-      spawnTimer: 1e9,
-      player: [4.5, 0.6, -4.0] as [number, number, number],
-      inputKeyboard: [0, -1],
-    });
-    for (let i = 0; i < 120; i++) useGame.getState().tick(1 / 60);
-    expect(useGame.getState().player[2]).toBeGreaterThan(LAYOUT.zoneAreas[0].minZ - 0.4);
     useGame.setState({ inputKeyboard: [0, 0] });
   });
 });
@@ -2215,7 +2242,7 @@ describe('M3 — TOST ürün hattı (zone-3): trayFood, ürün fiyatı, tabak, g
   it('stationUpgradeCostZ: tost tezgâhı çay eğrisi × upgradeCostMult; çay zone\'ları çarpansız', () => {
     expect(stationUpgradeCostZ(2, 0)).toBe(stationUpgradeCost(0) * 20);
     expect(stationUpgradeCostZ(0, 0)).toBe(stationUpgradeCost(0));
-    expect(stationUpgradeCostZ(3, 0)).toBe(stationUpgradeCost(0)); // z3 maç salonu = çay
+    expect(stationUpgradeCostZ(1, 0)).toBe(stationUpgradeCost(0)); // z1 çay salonu çarpansız
   });
 
   it('emptyTray tostları da temiz havuza döndürür (korunum, kirliler kalır)', () => {
