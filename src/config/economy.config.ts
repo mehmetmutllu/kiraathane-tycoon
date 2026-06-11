@@ -164,8 +164,7 @@ export const economyConfig = {
       { prev: ['z2table2'] },
       { prev: ['z3table2'] },
     ] satisfies readonly Requires[],
-    /** Yükseltme noktasında saniyede cüzdandan akan ₺ (mekânsal yükseltme). */
-    upgradeFillRate: 60,
+    // Yükseltme dolum hızı: upgradeFillRateFor(cost) — süre 1-6sn kelepçeli (2026-06-12).
     /** Her ek çay ocağı (station) sipariş süresini bu kadar çarpar (paralel demleme). */
     extraStationSpeedFactor: 0.85,
   },
@@ -187,8 +186,6 @@ export const economyConfig = {
       masterLevel: 5, // L5 (Usta) 💎/video — Faz 4; ₺ ile soft max L4
       masterDiamondCost: 12,
     },
-    /** Yükseltme noktasında saniyede cüzdandan akan ₺ (mekânsal yükseltme). */
-    upgradeFillRate: 60,
     /** ZONE-BAŞINA önkoşul (v21): o salonun masa yükseltmeleri, O salonun 4 masası da açılınca belirir
      *  (D-019 §3 — masa yükseltmeleri geç-oyun derinliği; erken ekran sade; zone-1 deseni aynalanır). */
     upgradeRequiresByZone: [
@@ -283,8 +280,6 @@ export const economyConfig = {
     trayCapacity: 1,
     /** Garson L2 yükseltme maliyeti (₺). Tek seviye (L1→L2); L3+ Faz 4 (💎/video). */
     upgradeCost: 250,
-    /** Mekânsal garson yükseltme noktasında saniyede cüzdandan akan ₺. */
-    upgradeFillRate: 60,
     /**
      * Yükseltme noktası önkoşulu: garson tutulmuş + en az 20 çay TAŞIMIŞ olmalı (arka-plan şartı;
      * kullanıcı 2026-06-09: tutar tutmaz hızlandırma belirmesin — önce garson işbaşında görülsün).
@@ -376,16 +371,19 @@ export const economyConfig = {
     // zorunlu halkaları (My Perfect Hotel modeli; D-014 "garson opsiyonel" kararı geçersiz). Omurga sırası
     // quests[] ile birebir: table2 → table3 → waiter → dishwasher → table4. Görünürlük quest sisteminde
     // (yalnız aktif görevin pad'i çizilir → "ekranda tek pad"); requires zinciri güvenlik ağı olarak kalır.
-    { id: 'table2', label: '2. Masa', cost: 25, fillRate: 40, optional: false, zone: 0,
+    // DOLUM HIZLARI (2026-06-12 telefon feedback, onaylı): fillRate = cost / hedef-dwell-süresi.
+    // Bant: öğretici 1.5-3sn · orta zincirler 3-5sn · salon açılışları max 6-8sn (eski zone3 14.4sn,
+    // z3table4 15sn "aşırı bekleme"ydi). Yorumdaki sn değeri TASARIM kaynağı; rate ondan türetildi.
+    { id: 'table2', label: '2. Masa', cost: 25, fillRate: 17, optional: false, zone: 0, // ~1.5sn
       requires: { minLifetime: 20 }, effect: { type: 'addTable' } },
-    { id: 'table3', label: '3. Masa', cost: 130, fillRate: 55, optional: false, zone: 0,
+    { id: 'table3', label: '3. Masa', cost: 130, fillRate: 52, optional: false, zone: 0, // ~2.5sn
       requires: { prev: ['table2'] }, effect: { type: 'addTable' } },
-    { id: 'waiter', label: 'Garson Tut', cost: 150, fillRate: 50, optional: false, zone: 0,
+    { id: 'waiter', label: 'Garson Tut', cost: 150, fillRate: 60, optional: false, zone: 0, // ~2.5sn
       requires: { prev: ['table3'] }, effect: { type: 'hireWaiter' } },
     // 2026-06-11 telefon feedback turu-2: 330 "aşırı fazla, git gel bitmiyor" → 200 (kullanıcı verdi).
-    { id: 'dishwasher', label: 'Bulaşıkçı Tut', cost: 200, fillRate: 60, optional: false, zone: 0,
+    { id: 'dishwasher', label: 'Bulaşıkçı Tut', cost: 200, fillRate: 67, optional: false, zone: 0, // ~3sn
       requires: { prev: ['waiter'] }, effect: { type: 'hireDishwasher' } },
-    { id: 'table4', label: '4. Masa', cost: 420, fillRate: 75, optional: false, zone: 0,
+    { id: 'table4', label: '4. Masa', cost: 420, fillRate: 105, optional: false, zone: 0, // ~4sn
       requires: { prev: ['dishwasher'] }, effect: { type: 'addTable' } },
     // (D-018 adım 5) Ayrı "Semavere Geçiş" pad'i KALDIRILDI: semaver artık çay ocağının üst yükseltmesidir
     // (TeaStation seviyeyle büyüyen semaveri zaten çizer). Tek ocak ₺ yükseltmeleriyle (L4, throughput ×3.32)
@@ -395,32 +393,32 @@ export const economyConfig = {
     // Maliyetler GECE BAŞLANGIÇ değerleri — curve raporu (madde 5) sabah onayıyla kalibre edilir.
     // −%10 ucuzlatma (kullanıcı 2026-06-11: "git gel çok, çok az ucuzlat") — z2/z3 zincirleri,
     // yuvarlanmış; öğretici (zone-1) pad'leri ve yükseltme eğrileri AYNI kaldı.
-    { id: 'zone2', label: '2. Salon', cost: 1100, fillRate: 150, optional: false, zone: 0,
+    { id: 'zone2', label: '2. Salon', cost: 1100, fillRate: 183, optional: false, zone: 0, // ~6sn
       requires: { prev: ['table4'] }, effect: { type: 'unlockZone' } },
-    { id: 'z2table2', label: '2. Masa', cost: 225, fillRate: 80, optional: false, zone: 1,
+    { id: 'z2table2', label: '2. Masa', cost: 225, fillRate: 75, optional: false, zone: 1, // ~3sn
       requires: { prev: ['zone2'] }, effect: { type: 'addTable' } },
-    { id: 'z2waiter', label: 'Garson Tut', cost: 360, fillRate: 80, optional: false, zone: 1,
+    { id: 'z2waiter', label: 'Garson Tut', cost: 360, fillRate: 103, optional: false, zone: 1, // ~3.5sn
       requires: { prev: ['z2table2'] }, effect: { type: 'hireWaiter' } },
-    { id: 'z2table3', label: '3. Masa', cost: 540, fillRate: 90, optional: false, zone: 1,
+    { id: 'z2table3', label: '3. Masa', cost: 540, fillRate: 135, optional: false, zone: 1, // ~4sn
       requires: { prev: ['z2waiter'] }, effect: { type: 'addTable' } },
-    { id: 'z2dishwasher', label: 'Bulaşıkçı Tut', cost: 720, fillRate: 100, optional: false, zone: 1,
+    { id: 'z2dishwasher', label: 'Bulaşıkçı Tut', cost: 720, fillRate: 160, optional: false, zone: 1, // ~4.5sn
       requires: { prev: ['z2table3'] }, effect: { type: 'hireDishwasher' } },
-    { id: 'z2table4', label: '4. Masa', cost: 1000, fillRate: 110, optional: false, zone: 1,
+    { id: 'z2table4', label: '4. Masa', cost: 1000, fillRate: 200, optional: false, zone: 1, // ~5sn
       requires: { prev: ['z2dishwasher'] }, effect: { type: 'addTable' } },
     // --- ZONE-3 zinciri (M2 altyapı + M3 tost): arka-SAĞ salon = TOST OCAĞI (2026-06-11 taşıma).
     // Unlock pad'i z1'in arka geçidi yanında (sıra-arası duvar geçidi). Maliyetler M3 sim kalibrasyonuna
     // açık başlangıç değerleri (~2× z2 zinciri; zone-2 bitiminden ~30-60dk aktif oyun hedefi).
-    { id: 'zone3', label: 'Tost Salonu', cost: 3600, fillRate: 250, optional: false, zone: 0,
+    { id: 'zone3', label: 'Tost Salonu', cost: 3600, fillRate: 450, optional: false, zone: 0, // ~8sn (eski 14.4sn!)
       requires: { prev: ['z2table4'] }, effect: { type: 'unlockZone' } },
-    { id: 'z3table2', label: '2. Masa', cost: 540, fillRate: 110, optional: false, zone: 2,
+    { id: 'z3table2', label: '2. Masa', cost: 540, fillRate: 135, optional: false, zone: 2, // ~4sn
       requires: { prev: ['zone3'] }, effect: { type: 'addTable' } },
-    { id: 'z3waiter', label: 'Garson Tut', cost: 800, fillRate: 120, optional: false, zone: 2,
+    { id: 'z3waiter', label: 'Garson Tut', cost: 800, fillRate: 178, optional: false, zone: 2, // ~4.5sn
       requires: { prev: ['z3table2'] }, effect: { type: 'hireWaiter' } },
-    { id: 'z3table3', label: '3. Masa', cost: 1250, fillRate: 130, optional: false, zone: 2,
+    { id: 'z3table3', label: '3. Masa', cost: 1250, fillRate: 250, optional: false, zone: 2, // ~5sn
       requires: { prev: ['z3waiter'] }, effect: { type: 'addTable' } },
-    { id: 'z3dishwasher', label: 'Bulaşıkçı Tut', cost: 1600, fillRate: 140, optional: false, zone: 2,
+    { id: 'z3dishwasher', label: 'Bulaşıkçı Tut', cost: 1600, fillRate: 291, optional: false, zone: 2, // ~5.5sn
       requires: { prev: ['z3table3'] }, effect: { type: 'hireDishwasher' } },
-    { id: 'z3table4', label: '4. Masa', cost: 2250, fillRate: 150, optional: false, zone: 2,
+    { id: 'z3table4', label: '4. Masa', cost: 2250, fillRate: 375, optional: false, zone: 2, // ~6sn (eski 15sn!)
       requires: { prev: ['z3dishwasher'] }, effect: { type: 'addTable' } },
   ],
 
@@ -562,6 +560,16 @@ export const economyConfig = {
     incomeBonusPerRep: 0.02,
   },
 } as const;
+
+/**
+ * Mekânsal YÜKSELTME dolum hızı (₺/sn) — 2026-06-12 telefon feedback (onaylı): sabit 60₺/sn
+ * geç oyunda aşırı bekletiyordu (tost ocağı L4 1350₺ = 22.5sn). Hedef süre = clamp(cost/60, 1, 6) sn
+ * → erken yükseltmeler 1sn'nin altına düşmez, geç yükseltmeler 6sn'yi aşmaz.
+ */
+export function upgradeFillRateFor(cost: number): number {
+  const t = Math.min(6, Math.max(1, cost / 60));
+  return cost / t;
+}
 
 export type EconomyConfig = typeof economyConfig;
 export type PadDef = EconomyConfig['pads'][number];

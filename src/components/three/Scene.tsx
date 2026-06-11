@@ -211,17 +211,7 @@ function ReservedRooms() {
           </mesh>
         </group>
       )}
-      {/* MERDİVEN (ön-sağ köşe; Faz 3b "üst kat" rezervi — basamak silüeti) */}
-      {zonesOpen > 1 && (
-        <group position={[14.8, 0, 3.6]} rotation={[0, Math.PI, 0]}>
-          {[0, 1, 2, 3].map((i) => (
-            <mesh key={i} castShadow position={[0, 0.12 + i * 0.24, -i * 0.34]}>
-              <boxGeometry args={[1.4, 0.24, 0.34]} />
-              <meshStandardMaterial color={PALETTE.lintel} />
-            </mesh>
-          ))}
-        </group>
-      )}
+      {/* Merdiven kaldırıldı (telefon feedback 2026-06-12: garson pad'iyle çakışıyordu; Faz 3b'de yeniden) */}
     </group>
   );
 }

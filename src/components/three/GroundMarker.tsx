@@ -55,9 +55,9 @@ export function GroundMarker({
       <Text
         font={GAME_FONT_3D}
         fontWeight={700}
-        position={[0, 0.05, sub ? -0.12 : 0]}
+        position={[0, 0.05, sub ? -0.16 : 0]}
         rotation={[-Math.PI / 2, 0, 0]}
-        fontSize={0.26}
+        fontSize={0.3}
         color="#ffffff"
         anchorX="center"
         anchorY="middle"
@@ -71,13 +71,13 @@ export function GroundMarker({
       {sub && (
         <>
           {coin && (
-            <group position={[-0.16 - sub.length * 0.055, 0.05, 0.26]}>
+            <group position={[-0.2 - sub.length * 0.08, 0.05, 0.32]}>
               <mesh rotation={[-Math.PI / 2, 0, 0]}>
-                <circleGeometry args={[0.085, 20]} />
+                <circleGeometry args={[0.115, 20]} />
                 <meshBasicMaterial color="#ffc933" depthWrite={false} />
               </mesh>
               <mesh position={[0, 0.004, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-                <ringGeometry args={[0.062, 0.085, 20]} />
+                <ringGeometry args={[0.085, 0.115, 20]} />
                 <meshBasicMaterial color="#b87400" depthWrite={false} />
               </mesh>
             </group>
@@ -85,9 +85,9 @@ export function GroundMarker({
           <Text
             font={GAME_FONT_3D}
             fontWeight={700}
-            position={[coin ? 0.06 : 0, 0.05, 0.26]}
+            position={[coin ? 0.08 : 0, 0.05, 0.32]}
             rotation={[-Math.PI / 2, 0, 0]}
-            fontSize={0.2}
+            fontSize={0.29}
             color="#ffe082"
             anchorX="center"
             anchorY="middle"

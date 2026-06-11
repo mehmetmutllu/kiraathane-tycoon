@@ -14,6 +14,7 @@ import {
   tableSeats,
   rollGroupSize,
   derivedFromPads,
+  upgradeFillRateFor,
   waiterSpeed,
   waiterSoftMaxLevel as waiterSoftMaxLevelCfg,
   levelProgress,
@@ -231,8 +232,10 @@ export const LAYOUT = {
     z === FOOD_ZONE ? ([FOOD_STATION[0] + 0.9, 0, FOOD_STATION[2] + 0.85] as Vec3) : mir(z, [-3.5, 0, -3.4]),
   ),
   waiterHome: [-3.5, 0, -3.4] as Vec3,
-  waiterUpgradeSpots: ZONES.map((z) => mir(z, [-3.5, 0, 4.4])),
-  waiterUpgradeSpot: [-3.5, 0, 4.4] as Vec3,
+  // 2026-06-12 telefon feedback: z 4.4 alt duvara (5.0) fazla yakındı — işaret duvar arkasında
+  // kayboluyordu (salon-2'de merdivenle de çakışıyordu; merdiven kaldırıldı) → 3.4'e çekildi.
+  waiterUpgradeSpots: ZONES.map((z) => mir(z, [-3.5, 0, 3.4])),
+  waiterUpgradeSpot: [-3.5, 0, 3.4] as Vec3,
   // Bulaşık modülleri (D-025 rev. A, kullanıcı 2026-06-11: "bulaşık ocağın yanında olsun"):
   // kendi ocağının HEMEN ÜSTÜNDE, AYNI yan duvarda bitişik (ocak z -3.6..-1.4, bulaşık z -4.9..-3.5
   // → tek mutfak bloğu). Sağ kolon aynalı; arka sıra −z kopyası.
@@ -1661,7 +1664,7 @@ export const useGame = create<GameState>((set, get) => ({
       const z = Number(onFillId.slice(FILL_TEA.length));
       const cost = stationUpgradeCostZ(z, stationLevels[z]); // M3: tost tezgâhı kendi maliyet çarpanıyla
       if (fillReady && wallet.gt(0)) {
-        const amt = Math.min(C.teaStation.upgradeFillRate * dt, wallet.toNumber(), cost - upgradeFills[z]);
+        const amt = Math.min(upgradeFillRateFor(cost) * dt, wallet.toNumber(), cost - upgradeFills[z]);
         if (amt > 0) {
           upgradeFills[z] += amt;
           wallet = wallet.sub(amt);
@@ -1691,7 +1694,7 @@ export const useGame = create<GameState>((set, get) => ({
       const z = Number(onFillId.slice(FILL_WAITER.length));
       const cost = C.waiter.upgradeCost;
       if (fillReady && wallet.gt(0)) {
-        const amt = Math.min(C.waiter.upgradeFillRate * dt, wallet.toNumber(), cost - waiterUpgradeFills[z]);
+        const amt = Math.min(upgradeFillRateFor(cost) * dt, wallet.toNumber(), cost - waiterUpgradeFills[z]);
         if (amt > 0) {
           waiterUpgradeFills[z] += amt;
           wallet = wallet.sub(amt);
@@ -1719,7 +1722,7 @@ export const useGame = create<GameState>((set, get) => ({
       const cost = tableNextCost(tableLevels[i]);
       let fill = tableUpgradeFills[i] ?? 0;
       if (fillReady && wallet.gt(0)) {
-        const amt = Math.min(C.tables.upgradeFillRate * dt, wallet.toNumber(), cost - fill);
+        const amt = Math.min(upgradeFillRateFor(cost) * dt, wallet.toNumber(), cost - fill);
         if (amt > 0) {
           fill += amt;
           wallet = wallet.sub(amt);
