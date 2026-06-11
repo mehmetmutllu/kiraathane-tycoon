@@ -38,25 +38,7 @@ görev para ödülleri + yemek masaları farklı/seviyeyle artan görsel". Miles
   rafı, temizlikçi+koli, oyuncuda bel hizası koli; PaperRollIcon görev rozeti. vitest 136/136,
   build, sim (zone-4 @1.32sa idealize), smoke 27/27, Playwright canlı (depo→tak, 90sn akışta stok
   8→0 + ücret paraları, konsol 0).
-- ✅ **M5 MAÇ SALONU (zone-4)**: görevler q_zone4..q_z4table4 APPEND; `ZONE_TIP_BONUS [0,0,0,2]`
-  (zone kimlik bahşişi — maç salonunda her servis +2₺; ürün fiyatı + masa bahşişiyle TOPLANIR;
-  "maç başladı" RUSH event'i Faz 4'te bu kancaya bağlanacak); dev maç TV'si (2.8 br ekran, saha+top+
-  skor bandı + takım flamaları, zone-4 arka duvarı; zonesOpen=4'te belirir). Sim bonus-farkındalı
-  (zone-4 dolu @1.56sa idealize; normal profil kat dolu ~2.9sa). vitest 138/138, build, smoke 27/27,
-  Playwright canlı (dev TV + müşteri akışı + 7₺ ödeme [5+2] + zone'lu görev sayacı; konsol 0).
-**GECE OTURUMU SONUCU: 1. KAT TAMAM** — 4 zone (çay/çay/tost/maç) + tuvalet/depo + temizlikçi +
-tam görev hattı (40 görev, hepsi ödüllü) + yeni APK (kök, v24). Feedback turu-3 bekleniyor.
-
-## >>> SONRAKİ OTURUM: KULLANICI TELEFON TESTİ (turu-3) + ÜST KAT TASARIM TURU <<<
-1. Kullanıcı yeni APK'yı (kök `KoseKiraathanesi-debug.apk`, SAVE v24) telefonda test eder —
-   v23 kaydı migrasyonla taşınır; görev hattı kaldığı yerden YENİ görevlere devam eder (append-only).
-   Test odakları: görev ödülleri hissi; zone-3 tost açılışı (4000) ve tost temposu (25₺/14sn, yük. ×20);
-   geçitli sıra duvarı/nav (arka salona müşteri akışı); tuvalet döngüsü (kâğıt bitince koşu, ücret,
-   temizlikçi); maç salonu (dev TV + bahşiş +2); 16 masa + 18 müşteri tavanında PERFORMANS (eski cihazda
-   BFS yükü — takılma olursa nav path-cache optimizasyonu aday).
-2. Onaylı plan §4: ÜST KAT (oyun katı — okey/tavla) AYRI TASARIM TURU ister (masa ücreti/4'lü oturma/
-   periyodik çay sim kalibrasyonu) — feedback turu-3'ten sonra planla-onayla-uygula.
-3. Bilinen-flaky not sürüyor: "bahşiş" testi (1 kez görüldü, turu-2); bu oturumda hiç tekrarlamadı.
+- ⏳ M5 maç salonu (zone-4) + final sim + APK.
 
 ## ŞU AN (2026-06-11 — TELEFON FEEDBACK TURU-2 ✅ UYGULANDI, SAVE v23)
 Kullanıcı v22 APK'yı CANLI test ederken 8 maddelik turu-2 feedback'i verdi; HEPSİ onaylanıp uygulandı:

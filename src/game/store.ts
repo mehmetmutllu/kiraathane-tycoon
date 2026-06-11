@@ -20,7 +20,6 @@ import {
   zoneOfTable,
   PRODUCTS,
   zoneProduct,
-  zoneTipBonus,
   charMaxTier,
   charNextCost,
   trayCapacityFor,
@@ -1237,15 +1236,13 @@ export const useGame = create<GameState>((set, get) => ({
         case 'drinking':
           n.timer -= dt;
           if (n.timer <= 0) {
-            // Öde: parayı masanın yanına düşür — ÜRÜN fiyatı (çay 5 / tost 25, M3) + masa bahşişi
-            // (Faz 2h) + zone kimlik bahşişi (M5 maç salonu +2).
+            // Öde: parayı masanın yanına düşür — ÜRÜN fiyatı (çay 5 / tost 25, M3) + masa bahşişi (Faz 2h).
             coins.push({
               id: nextId++,
               pos: [slot.table[0] + (Math.random() - 0.5), 0.3, slot.table[2] + 0.6 + (Math.random() - 0.5)],
               value:
                 PRODUCTS[zoneProduct(zoneOfTable(n.tableIndex))].price +
-                tableTip(tableLevels[n.tableIndex] ?? 0) +
-                zoneTipBonus(zoneOfTable(n.tableIndex)),
+                tableTip(tableLevels[n.tableIndex] ?? 0),
             });
             // İçtiği bardak masada KİRLİ kalır (Faz 2e): toplanıp yıkanmalı, yoksa temiz biter.
             // tableIndex ile masaya etiketlenir (D-019): masa-başı eşik aşılınca masa KİRLİ olur.

@@ -49,15 +49,6 @@ export const ZONE_PRODUCTS: readonly ProductId[] = ['tea', 'tea', 'tost', 'tea']
 export function zoneProduct(z: number): ProductId {
   return ZONE_PRODUCTS[Math.min(Math.max(z, 0), ZONE_PRODUCTS.length - 1)];
 }
-/**
- * Zone kimlik bahşişi (M5 MAÇ SALONU MVP): o salonda HER servise eklenen sabit ₺ — maç keyfi
- * bahşişi (çay fiyatı SABİT kalır, D-010 bozulmaz; masa-seviyesi bahşişinden AYRI ve onunla
- * toplanır). "Maç başladı!" RUSH event'i (spawn+bahşiş dalgası) Faz 4'te bu kancanın üstüne gelir.
- */
-export const ZONE_TIP_BONUS: readonly number[] = [0, 0, 0, 2];
-export function zoneTipBonus(z: number): number {
-  return ZONE_TIP_BONUS[Math.min(Math.max(z, 0), ZONE_TIP_BONUS.length - 1)] ?? 0;
-}
 
 export const CURRENCY = {
   soft: '₺', // Para — müşteriden kazanılır
@@ -521,14 +512,6 @@ export const economyConfig = {
     { id: 'q_wc', title: 'Tuvaleti aç', target: { type: 'pad', id: 'wc' }, zone: 2, reward: 500 },
     { id: 'q_paper', title: 'Depodan kâğıt al, tuvalete tak', target: { type: 'refillPaper', count: 1 }, zone: 2, reward: 100 },
     { id: 'q_cleaner', title: 'Temizlikçi tut', target: { type: 'pad', id: 'cleaner' }, zone: 2, reward: 300 },
-    // --- ZONE-4 MAÇ SALONU hattı (M5): zemin katın son salonu (append-only sürer).
-    { id: 'q_zone4', title: 'Maç Salonunu aç', target: { type: 'pad', id: 'zone4' }, zone: 3, reward: 800 },
-    { id: 'q_z4serve', title: 'Maç salonunda 5 çay servis et', target: { type: 'serveTea', count: 5, zone: 3 }, zone: 3, reward: 200 },
-    { id: 'q_z4table2', title: 'Maç: 2. Masayı aç', target: { type: 'pad', id: 'z4table2' }, zone: 3, reward: 150 },
-    { id: 'q_z4waiter', title: 'Maç: Garson tut', target: { type: 'pad', id: 'z4waiter' }, zone: 3, reward: 250 },
-    { id: 'q_z4table3', title: 'Maç: 3. Masayı aç', target: { type: 'pad', id: 'z4table3' }, zone: 3, reward: 300 },
-    { id: 'q_z4dish', title: 'Maç: Bulaşıkçı tut', target: { type: 'pad', id: 'z4dishwasher' }, zone: 3, reward: 350 },
-    { id: 'q_z4table4', title: 'Maç: 4. Masayı aç', target: { type: 'pad', id: 'z4table4' }, zone: 3, reward: 500 },
   ] as readonly QuestDef[],
 
   // Oyuncu hareket hızı v20'de character.speed kademesinden türetilir (playerSpeed()).

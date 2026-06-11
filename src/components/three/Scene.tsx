@@ -599,74 +599,6 @@ function TvCorner() {
   );
 }
 
-// BÜYÜK MAÇ EKRANI (M5 — zone-4 "Maç Salonu" kimliği): arka duvarda dev TV; saha + gezen top +
-// skor bandı TvCorner'dan büyütülmüş; altında iki takım flaması. Salt dekor (MVP); "maç başladı"
-// RUSH event'i Faz 4'te buna bağlanır. Yalnız zone-4 açıkken çizilir.
-function BigMatchTv() {
-  const zonesOpen = useGame((s) => s.zonesOpen);
-  const ball = useRef<Group>(null);
-  const screen = useRef<MeshStandardMaterial>(null);
-  useFrame((st) => {
-    const t = st.clock.elapsedTime;
-    if (ball.current) {
-      ball.current.position.x = Math.sin(t * 0.8) * 0.9 + Math.sin(t * 2.1) * 0.15;
-      ball.current.position.y = Math.cos(t * 1.3) * 0.35;
-    }
-    if (screen.current) screen.current.emissiveIntensity = 0.55 + Math.sin(t * 7.3) * 0.07;
-  });
-  if (zonesOpen < 4) return null;
-  const za = LAYOUT.zoneAreas[3];
-  const cx = (za.minX + za.maxX) / 2 - 2.2; // arka duvar ortası, mutfak bloğundan uzak (sağ duvar)
-  const wz = za.minZ - 0.25;
-  return (
-    <group position={[cx, 0, wz]}>
-      {/* duvar konsolları */}
-      {[-1.0, 1.0].map((dx) => (
-        <mesh key={dx} castShadow position={[dx, 1.45, 0.05]}>
-          <boxGeometry args={[0.12, 0.4, 0.12]} />
-          <meshStandardMaterial color={PALETTE.tvStand} />
-        </mesh>
-      ))}
-      {/* dev TV çerçevesi + ekran (saha/çizgi/top/skor) — öne hafif eğimli */}
-      <group position={[0, 2.0, 0.3]} rotation={[0.16, 0, 0]}>
-        <mesh castShadow>
-          <boxGeometry args={[2.8, 1.5, 0.12]} />
-          <meshStandardMaterial color={PALETTE.tvFrame} />
-        </mesh>
-        <mesh position={[0, 0, 0.08]}>
-          <boxGeometry args={[2.56, 1.26, 0.02]} />
-          <meshStandardMaterial ref={screen} color={PALETTE.tvScreen} emissive={PALETTE.tvScreen} emissiveIntensity={0.55} />
-        </mesh>
-        <mesh position={[0, 0, 0.095]}>
-          <boxGeometry args={[0.03, 1.16, 0.004]} />
-          <meshStandardMaterial color="#e8f5ee" emissive="#e8f5ee" emissiveIntensity={0.3} />
-        </mesh>
-        <mesh position={[0, 0, 0.095]}>
-          <torusGeometry args={[0.24, 0.012, 6, 18]} />
-          <meshStandardMaterial color="#e8f5ee" emissive="#e8f5ee" emissiveIntensity={0.3} />
-        </mesh>
-        <group ref={ball} position={[0, 0, 0.1]}>
-          <mesh>
-            <sphereGeometry args={[0.06, 8, 8]} />
-            <meshStandardMaterial color="#ffffff" emissive="#ffffff" emissiveIntensity={0.5} />
-          </mesh>
-        </group>
-        <mesh position={[-0.8, 0.5, 0.095]}>
-          <boxGeometry args={[0.8, 0.16, 0.004]} />
-          <meshStandardMaterial color="#1c2733" emissive="#3a546e" emissiveIntensity={0.4} />
-        </mesh>
-      </group>
-      {/* takım flamaları (kırmızı/lacivert üçgen şeritler — maç köşesi kimliği) */}
-      {[-1.9, 1.9].map((dx, i) => (
-        <mesh key={dx} castShadow position={[dx, 2.1, 0.18]} rotation={[0, 0, Math.PI]}>
-          <coneGeometry args={[0.16, 0.5, 4]} />
-          <meshStandardMaterial color={i === 0 ? '#c62828' : '#283593'} />
-        </mesh>
-      ))}
-    </group>
-  );
-}
-
 // Dekor prop'ları (WP4, feedback §C11: "her yer boş"): detaylı çöp kovası + iç mekân saksıları +
 // duvar saati. Salt görsel (yürüme yollarının dışında, collision yok; primitive = nihai stil D-013).
 function DecorProps() {
@@ -1008,7 +940,6 @@ export function Scene() {
       <Street />
       <Walls />
       <TvCorner />
-      <BigMatchTv />
       <DecorProps />
       <ReservedRooms />
       <Stations />
