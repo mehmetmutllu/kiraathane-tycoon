@@ -213,6 +213,90 @@ function ReservedRooms() {
   );
 }
 
+// TUVALET + DEPO (M4): kat-başı tek çift, zone-3 arka duvarında. Oda KATI bloktur — tüm etkileşim
+// kapı önünde (collision/nav store'daki wcSolids ile AYNI footprint). Kâğıt stoğu kapı yanındaki
+// raf rulolarıyla GÖRSEL okunur (wcPaper adedi); depo rafı hep dolu (sonsuz kaynak).
+function WCAndDepot() {
+  const hasWC = useGame((s) => s.padsDone.includes('wc'));
+  const wcPaper = useGame((s) => s.wcPaper);
+  const cleaner = useGame((s) => s.cleaner);
+  if (!hasWC) return null;
+  const r = LAYOUT.wcRoom;
+  const d = LAYOUT.depoShelf;
+  const frontZ = LAYOUT.wcHalf[1];
+  return (
+    <group>
+      {/* tuvalet odası: gövde + kapı + tabela + kapı yanı stok rafı */}
+      <group position={[r[0], 0, r[2]]}>
+        <mesh castShadow position={[0, 0.7, 0]}>
+          <boxGeometry args={[LAYOUT.wcHalf[0] * 2, 1.4, LAYOUT.wcHalf[1] * 2]} />
+          <meshStandardMaterial color={PALETTE.wallCream} />
+        </mesh>
+        <mesh position={[0, 0.55, frontZ + 0.03]}>
+          <boxGeometry args={[0.8, 1.1, 0.06]} />
+          <meshStandardMaterial color={PALETTE.doorWood} />
+        </mesh>
+        <mesh position={[0, 1.26, frontZ + 0.03]}>
+          <boxGeometry args={[0.52, 0.22, 0.05]} />
+          <meshStandardMaterial color="#37474f" />
+        </mesh>
+        {/* stok: kapının solunda rulo dizisi (2 sıra × 4) — kalan kâğıt tek bakışta okunur */}
+        {Array.from({ length: Math.min(wcPaper, 8) }).map((_, i) => (
+          <mesh
+            key={i}
+            castShadow
+            position={[-0.93 + (i % 4) * 0.13, i < 4 ? 1.02 : 0.84, frontZ + 0.1]}
+            rotation={[0, 0, Math.PI / 2]}
+          >
+            <cylinderGeometry args={[0.055, 0.055, 0.1, 8]} />
+            <meshStandardMaterial color="#f4efe2" />
+          </mesh>
+        ))}
+      </group>
+      {/* DEPO rafı: gövde + üstünde hep dolu rulo istifi */}
+      <group position={[d[0], 0, d[2]]}>
+        <mesh castShadow position={[0, 0.6, 0]}>
+          <boxGeometry args={[LAYOUT.depoHalf[0] * 2, 1.2, LAYOUT.depoHalf[1] * 2]} />
+          <meshStandardMaterial color={PALETTE.wainscot} />
+        </mesh>
+        {[-0.6, -0.3, 0, 0.3, 0.6].map((x) => (
+          <mesh key={x} castShadow position={[x, 1.28, 0]} rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.09, 0.09, 0.18, 8]} />
+            <meshStandardMaterial color="#f4efe2" />
+          </mesh>
+        ))}
+      </group>
+      {/* TEMİZLİKÇİ (kat personeli): teal kapsül + elinde rulo kolisi */}
+      {cleaner && (
+        <group position={[cleaner.pos[0], 0, cleaner.pos[2]]}>
+          <mesh castShadow position={[0, 0.55, 0]}>
+            <capsuleGeometry args={[0.3, 0.55, 6, 12]} />
+            <meshStandardMaterial color="#00897b" />
+          </mesh>
+          {cleaner.tray > 0 && (
+            <group position={[0, 0.85, 0.35]}>
+              <mesh castShadow>
+                <boxGeometry args={[0.34, 0.18, 0.24]} />
+                <meshStandardMaterial color={PALETTE.breadCrate} />
+              </mesh>
+              {Array.from({ length: Math.min(cleaner.tray, 4) }).map((_, i) => (
+                <mesh
+                  key={i}
+                  position={[-0.08 + (i % 2) * 0.16, 0.12, i < 2 ? -0.05 : 0.06]}
+                  rotation={[0, 0, Math.PI / 2]}
+                >
+                  <cylinderGeometry args={[0.05, 0.05, 0.1, 8]} />
+                  <meshStandardMaterial color="#f4efe2" />
+                </mesh>
+              ))}
+            </group>
+          )}
+        </group>
+      )}
+    </group>
+  );
+}
+
 // Mekânsal çay yükseltme noktaları (ZONE BAŞINA; ocağın önünde). Üstünde dur → dolum yayı ilerler.
 function UpgradeZone() {
   const zonesOpen = useGame((s) => s.zonesOpen);
@@ -861,6 +945,7 @@ export function Scene() {
       <Stations />
       <KitchenStaff />
       <DishStation />
+      <WCAndDepot />
       <Tables />
       <Customers />
       <Coins />

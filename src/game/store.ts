@@ -175,6 +175,10 @@ export const LAYOUT = {
     z4table4: ALL_TABLES[15].table,
     z4waiter: mir(3, [-4.6, 0, 2.2]),
     z4dishwasher: mir(3, [0.2, 0, -4.5]),
+    // TUVALET + DEPO (M4): wc pad'i kapı önünde (oda orada inşa olur); temizlikçi pad'i depo yanında
+    // (z3dishwasher pad [0.2,-14.8] ayrımı 2.72 > 2×PAD_RADIUS 2.6).
+    wc: [3.4, 0, -13.9] as Vec3,
+    cleaner: [-1.4, 0, -12.6] as Vec3,
   } as Record<string, Vec3>,
   // Zone başına mekânsal çay yükseltme noktası: kendi duvarında, modülün ALTINDA (kapı tarafı —
   // kullanıcı 2026-06-11: "ocağın önünde değil altında, sol duvarda dursun"). PAD MERKEZİ ocağın
@@ -199,6 +203,15 @@ export const LAYOUT = {
   dishStation: [-4.35, 0, -4.2] as Vec3,
   dishwasherHomes: ZONES.map((z) => mir(z, [-3.3, 0, -4.2])),
   dishwasherHome: [-3.3, 0, -4.2] as Vec3,
+  // TUVALET + DEPO (M4; kat-başı tek çift, zone-3 arka duvarı — onaylı plan §3).
+  // Oda KATI bloktur (kimse içine girmez); kullanım/ödeme/kâğıt-takma hep KAPI ÖNÜ noktasında.
+  wcRoom: [3.4, 0, -14.95] as Vec3,
+  wcHalf: [1.05, 0.6] as [number, number],
+  wcDoor: [3.4, 0, -13.95] as Vec3,
+  depoShelf: [-2.2, 0, -15.1] as Vec3,
+  depoHalf: [0.9, 0.3] as [number, number],
+  depoPoint: [-2.2, 0, -14.35] as Vec3,
+  cleanerHome: [-3.4, 0, -13.3] as Vec3,
   // --- Collision footprint'leri (yarı-boyut [hx,hz]; D-016): GÖRSEL mesh'lere yaslı → oyuncu objeye
   // "değiyor gibi" sokulur, arada boşluk kalmaz. (ocak tezgah 2.2×0.8, bulaşık 1.4×0.8, masa r0.5, sandalye 0.42.)
   playerRadius: 0.35, // oyuncu kapsül görsel yarıçapı = standoff'u görsel kenara denk getirir
@@ -241,6 +254,14 @@ export function rowWallSegments(zonesOpen: number): { c: Vec3; h: readonly [numb
   return segs;
 }
 
+/** Tuvalet odası + depo rafı katıları (M4): oda bloktur, kimse içine girmez (kullanım kapı önünde). */
+function wcSolids(): Solid[] {
+  return [
+    { c: LAYOUT.wcRoom, h: LAYOUT.wcHalf },
+    { c: LAYOUT.depoShelf, h: LAYOUT.depoHalf },
+  ];
+}
+
 /** KİLİTLİ zone'ların alanları nav için BLOKE (M2): müşteri/personel rotası "boş arsa"dan geçemez
  *  (duvarlar yalnız açık zone'ları sardığından grid'e ayrıca anlatmak gerekir). */
 function lockedZoneSolids(zonesOpen: number): Solid[] {
@@ -258,7 +279,7 @@ function lockedZoneSolids(zonesOpen: number): Solid[] {
 /** O an SAHNEDE var olan SABİT katı engeller (açık zone'ların ocak+bulaşığı; açık masalar + sandalyeler
  *  + sıra-arası duvarlar). Yatay bölme duvarı YOK (D-023). Kapalı zone'un mobilyası ÇİZİLMEZ →
  *  collision da eklenmez (oyuncu zaten açık-zone birleşimine kelepçeli). */
-function activeSolids(tables: number, zonesOpen: number): Solid[] {
+function activeSolids(tables: number, zonesOpen: number, hasWC = false): Solid[] {
   const solids: Solid[] = [];
   for (let z = 0; z < zonesOpen; z++) {
     solids.push({ c: LAYOUT.stations[z], h: LAYOUT.stationHalf });
@@ -269,6 +290,7 @@ function activeSolids(tables: number, zonesOpen: number): Solid[] {
     solids.push({ c: LAYOUT.tables[i].seat, h: LAYOUT.chairHalf }); // sandalye (içine girilemez)
   }
   solids.push(...rowWallSegments(zonesOpen));
+  if (hasWC) solids.push(...wcSolids()); // M4: tuvalet odası + depo rafı katı
   return solids;
 }
 
@@ -324,7 +346,7 @@ const REACH_WASH = LAYOUT.dishHalf[1] + LAYOUT.actorRadius + 0.4; // bulaşıkta
 const REACH_HOME = 0.4; // boştayken köşeye dönüş
 
 /** Personelin GÖVDE engeli saydığı katılar (açık zone'ların ocak+bulaşığı + açık masalar). */
-function navSolids(tables: number, zonesOpen: number): NavSolid[] {
+function navSolids(tables: number, zonesOpen: number, hasWC = false): NavSolid[] {
   const solids: NavSolid[] = [];
   for (let z = 0; z < zonesOpen; z++) {
     solids.push({ c: LAYOUT.stations[z], h: LAYOUT.stationHalf });
@@ -334,15 +356,16 @@ function navSolids(tables: number, zonesOpen: number): NavSolid[] {
   // M2: sıra-arası duvarlar (geçit hariç) + kilitli zone alanları rota dışı.
   solids.push(...rowWallSegments(zonesOpen));
   solids.push(...lockedZoneSolids(zonesOpen));
+  if (hasWC) solids.push(...wcSolids()); // M4
   return solids;
 }
 
-// Izgara masa+zone sayısına göre cache'lenir (masa/zone açılınca yeniden kurulur; her frame değil).
+// Izgara masa+zone+wc durumuna göre cache'lenir (yapı değişince yeniden kurulur; her frame değil).
 let navCache: { key: string; grid: NavGrid } | null = null;
-function getNavGrid(tables: number, zonesOpen: number): NavGrid {
-  const key = `${tables}|${zonesOpen}`;
+function getNavGrid(tables: number, zonesOpen: number, hasWC = false): NavGrid {
+  const key = `${tables}|${zonesOpen}|${hasWC ? 1 : 0}`;
   if (navCache && navCache.key === key) return navCache.grid;
-  const grid = buildNavGrid(LAYOUT.area, NAV_CELL, navSolids(tables, zonesOpen), LAYOUT.actorRadius);
+  const grid = buildNavGrid(LAYOUT.area, NAV_CELL, navSolids(tables, zonesOpen, hasWC), LAYOUT.actorRadius);
   navCache = { key, grid };
   return grid;
 }
@@ -514,7 +537,12 @@ function dirtyTables(dishes: Dish[]): Set<number> {
 }
 
 function findFreeTable(npcs: Npc[], tables: number, dirty: Set<number>): number {
-  const used = new Set(npcs.filter((n) => n.state !== 'leaving').map((n) => n.tableIndex));
+  // M4: tuvalet akışındaki müşteri masayı ARTIK rezerve etmez (ödemesini yaptı, masadan kalktı).
+  const used = new Set(
+    npcs
+      .filter((n) => n.state === 'toTable' || n.state === 'waitingForTea' || n.state === 'drinking')
+      .map((n) => n.tableIndex),
+  );
   // Kirli masa "boş" sayılmaz (D-019): müşteri temizlenene kadar oturmaz.
   for (let i = 0; i < tables; i++) if (!used.has(i) && !dirty.has(i)) return i;
   return -1;
@@ -594,6 +622,12 @@ export interface GameState {
   waiters: (Waiter | null)[];
   /** Zone başına bulaşıkçı — konum/taşıdığı kirli transient. */
   dishwashers: (Waiter | null)[];
+  /** Temizlikçi (M4; KAT personeli, tek): tray = taşıdığı kâğıt rulosu. Transient. */
+  cleaner: Waiter | null;
+  /** Tuvaletteki kâğıt stoğu (M4; transient — tuvalet açıksa oturum dolu başlar). */
+  wcPaper: number;
+  /** Oyuncunun taşıdığı kâğıt (M4; koli ELDE — tepsi kapasitesinden BAĞIMSIZ). */
+  carriedPaper: number;
   /** Zone başına ocak hazır-kuyruğundaki demlenmiş çay sayısı. */
   readyCupsByZone: number[];
   /** Zone başına demlenmekte olan bardağın ilerleme süresi (sn). */
@@ -738,6 +772,7 @@ export function questCounterValue(target: QuestTarget, stats: SaveStats): number
       return target.zone != null ? stats.teasServedByZone[target.zone] ?? 0 : stats.teasServed;
     case 'collectCoin': return stats.coinsCollected;
     case 'washDish': return stats.dishesWashed;
+    case 'refillPaper': return stats.paperRefills; // M4: oyuncunun kâğıt takması
     default: return null;
   }
 }
@@ -803,6 +838,7 @@ export function questFocusPos(target: QuestTarget, tableLevels: number[], tables
     case 'charStat': return null;
     case 'pickupTea': return LAYOUT.stations[z];
     case 'washDish': return LAYOUT.dishStations[z];
+    case 'refillPaper': return LAYOUT.depoPoint; // M4: önce depodan al (akışın başlangıcı)
     case 'pad': return LAYOUT.padPos[target.id] ?? LAYOUT.stations[z];
     case 'stationLevel': return LAYOUT.upgradeZones[z];
     case 'waiterLevel': return LAYOUT.waiterUpgradeSpots[z];
@@ -900,6 +936,9 @@ export const useGame = create<GameState>((set, get) => ({
   npcCount: 0,
   waiters: Array.from({ length: MAX_ZONES }, () => null),
   dishwashers: Array.from({ length: MAX_ZONES }, () => null),
+  cleaner: null,
+  wcPaper: 0,
+  carriedPaper: 0,
   readyCupsByZone: Array.from({ length: MAX_ZONES }, () => 0),
   brewProgressByZone: Array.from({ length: MAX_ZONES }, () => 0),
   tray: 0,
@@ -987,6 +1026,9 @@ export const useGame = create<GameState>((set, get) => ({
       dishwashers: Array.from({ length: MAX_ZONES }, (_, z) =>
         derived.hasDishwasherByZone[z] ? { pos: [...LAYOUT.dishwasherHomes[z]] as Vec3, tray: 0 } : null,
       ),
+      cleaner: derived.hasCleaner ? { pos: [...LAYOUT.cleanerHome] as Vec3, tray: 0 } : null,
+      wcPaper: derived.hasWC ? C.wc.paperCapacity : 0, // transient: oturum dolu rafla başlar
+      carriedPaper: 0,
       readyCupsByZone: Array.from({ length: MAX_ZONES }, () => 0),
       brewProgressByZone: Array.from({ length: MAX_ZONES }, () => 0),
       tray: 0,
@@ -1074,8 +1116,8 @@ export const useGame = create<GameState>((set, get) => ({
     const serviceSpeedMult = derived.serviceSpeedMult;
     // Personelin oyuncudan kaçarken masaya itilmemesi için masa gövdeleri (navStep avoidSolids).
     const obstacles = tableSolids(tables);
-    // Personel (garson/bulaşıkçı) BFS ızgarası — masa+zone sayısına göre cache'li.
-    const navGrid = getNavGrid(tables, zonesOpen);
+    // Personel (garson/bulaşıkçı) BFS ızgarası — masa+zone+wc durumuna göre cache'li.
+    const navGrid = getNavGrid(tables, zonesOpen, derived.hasWC);
     const upgradeFills = s.upgradeFills.slice();
     let activeZone: ActiveZone | null = null;
     const stationLevels = s.stationLevels.slice(); // zone başına ocak seviyesi (bu tick'te yükselebilir)
@@ -1087,6 +1129,8 @@ export const useGame = create<GameState>((set, get) => ({
     let trayFood = s.trayFood; // tepsideki tost (M3)
     let cleanCups = s.cleanCups;
     let carriedDirty = s.carriedDirty;
+    let wcPaper = s.wcPaper; // tuvalet kâğıt stoğu (M4)
+    let carriedPaper = s.carriedPaper;
     const tableUpgradeFills = s.tableUpgradeFills.slice();
     const waiterUpgradeFills = s.waiterUpgradeFills.slice();
     let notice = s.notice;
@@ -1215,6 +1259,46 @@ export const useGame = create<GameState>((set, get) => ({
             } else {
               cleanCups += 1;
             }
+            // M4: ödedikten sonra şansla tuvalete uğrar (kapıya yürür; timer kapı-bekleme sayacı).
+            if (derived.hasWC && Math.random() < C.wc.useChance) {
+              n.state = 'toToilet';
+              n.timer = 0;
+            } else {
+              n.state = 'leaving';
+            }
+          }
+          break;
+        case 'toToilet': {
+          // Kapıya BFS rotayla; varınca kâğıt varsa kullanmaya başlar (ruloyu BAŞINDA ayırır — son
+          // ruloyu iki kişi paylaşamaz), yoksa kapıda bekler; sabır dolarsa vazgeçip gider.
+          if (navStep(n.pos, LAYOUT.wcDoor, step, navGrid, 0.5)) {
+            if (wcPaper > 0) {
+              wcPaper -= 1;
+              n.state = 'usingToilet';
+              n.timer = C.wc.useTime;
+            } else {
+              n.timer += dt;
+              if (n.timer > C.wc.queuePatience) n.state = 'leaving';
+            }
+          } else {
+            n.timer += dt;
+            if (n.timer > 30) n.state = 'leaving'; // rota sigortası (toTable'daki desen)
+          }
+          break;
+        }
+        case 'usingToilet':
+          n.timer -= dt;
+          if (n.timer <= 0) {
+            // Kullanım ücreti kapı önüne düşer (manuel toplanır — D-012; MPH'nin kanıtlı kancası).
+            coins.push({
+              id: nextId++,
+              pos: [
+                LAYOUT.wcDoor[0] + (Math.random() - 0.5) * 0.6,
+                0.3,
+                LAYOUT.wcDoor[2] + 0.55 + (Math.random() - 0.5) * 0.3,
+              ],
+              value: C.wc.fee,
+            });
             n.state = 'leaving';
           }
           break;
@@ -1250,7 +1334,7 @@ export const useGame = create<GameState>((set, get) => ({
       // MOBİLYA = KATI engel: yeni bir engele GİRİŞ bloklanır (eksen-başı kayma; kafa kafaya gelince durur).
       // AMA oyuncu zaten bir engelin İÇİNDEyse (ör. üstünde masa açıldı) kilitlenmesin → çıkışına izin ver
       // (aktör collision'ındaki desenin aynısı). Böylece "zorlasan da giremezsin" korunur ama hapsolmazsın.
-      const furn = activeSolids(tables, zonesOpen);
+      const furn = activeSolids(tables, zonesOpen, derived.hasWC);
       const stuckInFurn = hitsSolid(oldX, oldZ, furn, pr);
       if (dxIn !== 0 && hitsSolid(nx, oldZ, furn, pr) && !stuckInFurn) nx = oldX;
       if (dzIn !== 0 && hitsSolid(nx, nz, furn, pr) && !stuckInFurn) nz = oldZ;
@@ -1351,6 +1435,20 @@ export const useGame = create<GameState>((set, get) => ({
       }
     }
 
+    // --- Tuvalet kâğıdı döngüsü (M4): depodan koli al (raf sonsuz; angarya = TAŞIMA; tepsiden
+    // BAĞIMSIZ elde) → tuvalet kapısında tak. Oyuncunun takması q_paper görevini sayar. ---
+    if (derived.hasWC) {
+      if (carriedPaper < C.wc.carryMax && dist2D(player, LAYOUT.depoPoint) < 1.4) {
+        carriedPaper = C.wc.carryMax;
+      }
+      if (carriedPaper > 0 && wcPaper < C.wc.paperCapacity && dist2D(player, LAYOUT.wcDoor) < 1.4) {
+        const put = Math.min(carriedPaper, C.wc.paperCapacity - wcPaper);
+        wcPaper += put;
+        carriedPaper -= put;
+        if (put > 0) stats.paperRefills += 1;
+      }
+    }
+
     // --- Garson (D-012 kısmi assist), ZONE BAŞINA: kendi zone'unun ocağından alır, kendi zone'unun
     // bekleyen masalarına götürür (per-zone personel, D-022). Oyuncudan yavaş + tek tepsili.
     const waiters: (Waiter | null)[] = s.waiters.slice();
@@ -1448,6 +1546,30 @@ export const useGame = create<GameState>((set, get) => ({
       dishwashers[z] = dw;
     }
 
+    // --- Temizlikçi (M4, KAT personeli — kısmi assist): stok eşiğe inince depo→tuvalet ikmal turu;
+    // elinde rulo varken raf doluysa bekler/evine döner. Oyuncudan yavaş (D-014 ruhu).
+    let cleaner: Waiter | null = derived.hasCleaner
+      ? s.cleaner
+        ? { pos: [...s.cleaner.pos] as Vec3, tray: s.cleaner.tray }
+        : { pos: [...LAYOUT.cleanerHome] as Vec3, tray: 0 }
+      : null;
+    if (cleaner && derived.hasWC) {
+      const cStep = C.wc.cleanerMoveSpeed * dt;
+      if (cleaner.tray > 0 && wcPaper < C.wc.paperCapacity) {
+        if (navStep(cleaner.pos, LAYOUT.wcDoor, cStep, navGrid, 0.6, player, obstacles)) {
+          const put = Math.min(cleaner.tray, C.wc.paperCapacity - wcPaper);
+          wcPaper += put;
+          cleaner.tray -= put;
+        }
+      } else if (cleaner.tray === 0 && wcPaper <= C.wc.refillThreshold) {
+        if (navStep(cleaner.pos, LAYOUT.depoPoint, cStep, navGrid, 0.6, player, obstacles)) {
+          cleaner.tray = C.wc.carryMax;
+        }
+      } else {
+        navStep(cleaner.pos, LAYOUT.cleanerHome, cStep, navGrid, REACH_HOME, player, obstacles);
+      }
+    }
+
     // --- Mekânsal etkileşim noktaları (D-018 §2, HAREKET-TEMELLİ) ---
     // Oyuncu fiziksel olarak aynı anda TEK dolum noktasının üstünde olabilir. Para yalnız oyuncu DURUNCA akar:
     // üstünden GEÇERKEN (hareket halinde) hiç alınmaz, DURDUĞU (input bıraktığı) anda HEMEN başlar (sayaç/countdown YOK).
@@ -1542,6 +1664,11 @@ export const useGame = create<GameState>((set, get) => ({
           const zNew = Math.min(MAX_ZONES, derivedFromPads(padsDone).zonesOpen) - 1;
           const za = LAYOUT.zoneAreas[zNew];
           requestFocus([(za.minX + za.maxX) / 2, 0, (za.minZ + za.maxZ) / 2], 3); // en yüksek öncelik
+        }
+        // Tuvalet+depo inşa edildi (M4): raf dolu başlar + kamera odaya pan.
+        if (activePad.effect.type === 'buildWC') {
+          wcPaper = C.wc.paperCapacity;
+          requestFocus([LAYOUT.wcRoom[0], 0, LAYOUT.wcRoom[2] + 1.4], 3);
         }
         // Masa pad'i oyuncunun DURDUĞU yerde belirir → oyuncu masanın içinde kalmasın, anında dışarı it.
         if (activePad.effect.type === 'addTable') {
@@ -1747,6 +1874,9 @@ export const useGame = create<GameState>((set, get) => ({
       player,
       waiters,
       dishwashers,
+      cleaner,
+      wcPaper,
+      carriedPaper,
       readyCupsByZone,
       brewProgressByZone,
       tray,

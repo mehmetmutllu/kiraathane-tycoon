@@ -13,7 +13,7 @@
  *   L5 (Usta)   = masterDiamondCost 💎 VEYA 1 ödüllü video; outputMult yerine masterOutputMult
  */
 
-export const SAVE_VERSION = 23;
+export const SAVE_VERSION = 24;
 
 /**
  * ZONE modeli (Faz 3a + D-022, gece 2026-06-10): zemin kat zone'ları. Her zone kendi TEMALI
@@ -107,7 +107,8 @@ export type QuestTarget =
   | { type: 'stationLevel'; level: number } // çay ocağı seviyesi
   | { type: 'waiterLevel'; level: number } // garson hız seviyesi
   | { type: 'tableLevel'; level: number } // HERHANGİ bir masa bu seviyeye ulaşsın
-  | { type: 'charStat'; stat: CharStat; tier: number }; // karakter özelliği bu kademeye ulaşsın (v20)
+  | { type: 'charStat'; stat: CharStat; tier: number } // karakter özelliği bu kademeye ulaşsın (v20)
+  | { type: 'refillPaper'; count: number }; // OYUNCU tuvalete kâğıt taksın (M4; stats.paperRefills)
 
 /** Karakter özellikleri (v20): tepsi kapasitesi / para mıknatısı / hareket hızı. */
 export type CharStat = 'tray' | 'magnet' | 'speed';
@@ -330,6 +331,32 @@ export const economyConfig = {
     carryCapacity: 2,
   },
 
+  /**
+   * TUVALET + DEPO (M4, onaylı plan §3; My Perfect Hotel'in kanıtlı döngüsü): kata özel TEK çift,
+   * zone-3 arka duvarında. Müşteri ödedikten sonra şansla tuvalete uğrar → 1 kâğıt harcar + kapı
+   * önüne ücret düşer (manuel toplanır, D-012). Kâğıt biterse kısa süre bekler, gelmezse gider
+   * (gelir kaybı). Oyuncu depodan koli taşır (raf sonsuz; angarya = TAŞIMA); temizlikçi personeli
+   * ikmali kısmen otomatikler. Kirlilik/temizleme sayacı Faz 4+ (MVP tek yeni mekanik kuralı).
+   */
+  wc: {
+    /** Ödeyen müşterinin tuvalete uğrama olasılığı. */
+    useChance: 0.28,
+    /** Kullanım ücreti (₺; kapı önüne düşer). */
+    fee: 5,
+    /** Kullanım süresi (sn; kapıda). */
+    useTime: 3,
+    /** Kâğıt yokken kapıda bekleme sabrı (sn) — dolmadan kâğıt gelmezse vazgeçer. */
+    queuePatience: 10,
+    /** Tuvaletteki kâğıt stoğu kapasitesi. */
+    paperCapacity: 8,
+    /** Oyuncunun/temizlikçinin tek seferde taşıdığı rulo. */
+    carryMax: 4,
+    /** Temizlikçi bu stokta/altında ikmal turuna çıkar. */
+    refillThreshold: 2,
+    /** Temizlikçi hareket hızı (oyuncudan yavaş — kısmi assist, D-014). */
+    cleanerMoveSpeed: 1.8,
+  },
+
   /** Yere düşen para. */
   money: {
     /** Düşen para kaç sn sonra kaybolur (0 = asla; Faz 4 otomatik toplayıcı). */
@@ -409,10 +436,14 @@ export const economyConfig = {
       requires: { prev: ['z3table3'] }, effect: { type: 'hireDishwasher' } },
     { id: 'z3table4', label: '4. Masa', cost: 2500, fillRate: 150, optional: false, zone: 2,
       requires: { prev: ['z3dishwasher'] }, effect: { type: 'addTable' } },
-    // --- ZONE-4 zinciri (M5 maç salonu): arka-sağ salon. M4'te tuvalet pad'i zone4'ün ÖNÜNE girecek
-    // (requires o zaman güncellenir). Maliyetler M5 kalibrasyonuna açık.
+    // --- TUVALET + DEPO (M4): zone-3 ile zone-4 arasında omurga halkası (onaylı plan).
+    { id: 'wc', label: 'Tuvalet + Depo', cost: 3000, fillRate: 200, optional: false, zone: 2,
+      requires: { prev: ['z3table4'] }, effect: { type: 'buildWC' } },
+    { id: 'cleaner', label: 'Temizlikçi Tut', cost: 2000, fillRate: 180, optional: false, zone: 2,
+      requires: { prev: ['wc'] }, effect: { type: 'hireCleaner' } },
+    // --- ZONE-4 zinciri (M5 maç salonu): arka-sağ salon. Maliyetler M5 kalibrasyonuna açık.
     { id: 'zone4', label: 'Maç Salonu', cost: 9000, fillRate: 350, optional: false, zone: 1,
-      requires: { prev: ['z3table4'] }, effect: { type: 'unlockZone' } },
+      requires: { prev: ['cleaner'] }, effect: { type: 'unlockZone' } },
     { id: 'z4table2', label: '2. Masa', cost: 1200, fillRate: 140, optional: false, zone: 3,
       requires: { prev: ['zone4'] }, effect: { type: 'addTable' } },
     { id: 'z4waiter', label: 'Garson Tut', cost: 1800, fillRate: 150, optional: false, zone: 3,
@@ -477,6 +508,10 @@ export const economyConfig = {
     { id: 'q_z3table3', title: 'Tost: 3. Masayı aç', target: { type: 'pad', id: 'z3table3' }, zone: 2, reward: 200 },
     { id: 'q_z3dish', title: 'Tost: Bulaşıkçı tut', target: { type: 'pad', id: 'z3dishwasher' }, zone: 2, reward: 250 },
     { id: 'q_z3table4', title: 'Tost: 4. Masayı aç', target: { type: 'pad', id: 'z3table4' }, zone: 2, reward: 350 },
+    // --- TUVALET + DEPO hattı (M4): kâğıt döngüsü görevle öğretilir (append-only sürer).
+    { id: 'q_wc', title: 'Tuvaleti aç', target: { type: 'pad', id: 'wc' }, zone: 2, reward: 500 },
+    { id: 'q_paper', title: 'Depodan kâğıt al, tuvalete tak', target: { type: 'refillPaper', count: 1 }, zone: 2, reward: 100 },
+    { id: 'q_cleaner', title: 'Temizlikçi tut', target: { type: 'pad', id: 'cleaner' }, zone: 2, reward: 300 },
   ] as readonly QuestDef[],
 
   // Oyuncu hareket hızı v20'de character.speed kademesinden türetilir (playerSpeed()).
@@ -583,6 +618,10 @@ export interface DerivedState {
   hasWaiter: boolean;
   /** Zone-1 bulaşıkçısı (geri uyum). */
   hasDishwasher: boolean;
+  /** Tuvalet+depo açıldı mı (M4; kat-başı tek çift). */
+  hasWC: boolean;
+  /** Temizlikçi tutuldu mu (M4; kat personeli). */
+  hasCleaner: boolean;
 }
 
 /**
@@ -634,6 +673,8 @@ export function derivedFromPads(padsDone: readonly string[]): DerivedState {
     serviceSpeedMult: 1,
     hasWaiter: hasWaiterByZone[0],
     hasDishwasher: hasDishwasherByZone[0],
+    hasWC: padsDone.includes('wc'),
+    hasCleaner: padsDone.includes('wc') && padsDone.includes('cleaner'),
   };
 }
 

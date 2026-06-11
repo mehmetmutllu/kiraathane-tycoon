@@ -2,7 +2,9 @@ export type Vec3 = [number, number, number];
 
 // D-011: çay artık oto servis edilmez. Müşteri oturur → 'waitingForTea' (sabır timer'ı)
 // → oyuncu/garson tepsiyle çay bırakınca 'drinking' → 'leaving'. Sabır biterse sessizce gider.
-export type NpcState = 'toTable' | 'waitingForTea' | 'drinking' | 'leaving';
+// M4: ödeme sonrası şansla tuvalete uğrar → 'toToilet' (kapıya yürür/kâğıt bekler) →
+// 'usingToilet' (kapıda kullanım; bitince kapı önüne ücret düşer) → 'leaving'.
+export type NpcState = 'toTable' | 'waitingForTea' | 'drinking' | 'toToilet' | 'usingToilet' | 'leaving';
 
 export interface Npc {
   id: number;
