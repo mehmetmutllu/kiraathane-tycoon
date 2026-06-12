@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
-import { CylinderGeometry, MeshStandardMaterial, type Group, type Mesh } from 'three';
+import { CylinderGeometry, MeshStandardMaterial, type Group } from 'three';
 import { useGame } from '../../game/store';
 
 // FPS (turu-5 m.13): geometry + material TÜM coin'lerde PAYLAŞIMLI (modül seviyesi) — eskiden her
@@ -10,21 +10,22 @@ const COIN_GEO = new CylinderGeometry(0.22, 0.22, 0.06, 16);
 const COIN_MAT = new MeshStandardMaterial({ color: '#ffd700', metalness: 0.7, roughness: 0.25 });
 
 // Para mıknatısı/süzülmesi STORE'da gerçek hareket olarak yapılır (oyuncuya akar + yaklaşınca toplanır);
-// burada mesh yalnız o anki konumu (x,z) çizer → görsel = mantık. Doğuş pop'u + dönüş görsel tuz-biber.
-function Coin({ x, z }: { x: number; z: number }) {
+// burada mesh yalnız o anki konumu çizer → görsel = mantık. turu-5 m.6-B: coin YERDE YATIK durur
+// (kule istifi store'dan pos.y ile gelir); eski "havada dönen dik sikke" görseli kalktı —
+// kullanıcı: "havada durur gibi değil, yerde coin gibi üst üste biriksin".
+function Coin({ x, y, z, id }: { x: number; y: number; z: number; id: number }) {
   const ref = useRef<Group>(null);
-  const coin = useRef<Mesh>(null);
   const spawn = useRef(0); // doğuş pop'u (0→1 ölçek)
   useFrame((_, dt) => {
     if (ref.current) {
       spawn.current = Math.min(1, spawn.current + dt * 6);
       ref.current.scale.setScalar(spawn.current * (1 - 0.15 * Math.sin(spawn.current * Math.PI)));
     }
-    if (coin.current) coin.current.rotation.y += dt * 3; // sikke döner
   });
+  // Kuledeki her coin hafif farklı açıyla oturur (id'den deterministik) — istif "el dizimi" görünür.
   return (
-    <group ref={ref} position={[x, 0.3, z]} scale={0}>
-      <mesh ref={coin} castShadow rotation={[Math.PI / 2, 0, 0]} geometry={COIN_GEO} material={COIN_MAT} />
+    <group ref={ref} position={[x, y, z]} rotation={[0, (id % 7) * 0.31, 0]} scale={0}>
+      <mesh castShadow geometry={COIN_GEO} material={COIN_MAT} />
     </group>
   );
 }
@@ -62,19 +63,21 @@ export function Coins() {
   useEffect(() => {
     const cur = new Map(coins.map((c) => [c.id, { x: c.pos[0], z: c.pos[2], value: c.value }]));
     // Önceki karede olup şimdi olmayan = toplandı (lifetime 0 → tek kaybolma nedeni toplama).
-    const collected: { id: number; x: number; z: number; value: number }[] = [];
+    // turu-5 m.6-B: kule toplamada onlarca coin AYNI anda gelir → tek TOPLU floater (+toplam);
+    // coin başına ayrı yazı hem okunmaz hem Html maliyeti (m.13 dersi).
+    let sum = 0;
     const p = useGame.getState().player;
     for (const [id, info] of prev.current) {
-      if (!cur.has(id)) collected.push({ id: ++floaterSeq.current, x: p[0], z: p[2], value: info.value });
+      if (!cur.has(id)) sum += info.value;
     }
     prev.current = cur;
-    if (collected.length) setFloaters((f) => [...f, ...collected]);
+    if (sum > 0) setFloaters((f) => [...f, { id: ++floaterSeq.current, x: p[0], z: p[2], value: sum }]);
   }, [coins]);
 
   return (
     <>
       {coins.map((c) => (
-        <Coin key={c.id} x={c.pos[0]} z={c.pos[2]} />
+        <Coin key={c.id} x={c.pos[0]} y={c.pos[1]} z={c.pos[2]} id={c.id} />
       ))}
       {floaters.map((f) => (
         <MoneyFloater

@@ -23,6 +23,9 @@ export interface Coin {
   id: number;
   pos: Vec3;
   value: number;
+  /** Parayı ödeyen müşterinin masası (turu-5 m.6-B): coin o masanın moneySpot KULELERİNDE
+   *  istiflenir. Yoksa serbest coin (eski davranış/testler) — istiflenmez. Transient. */
+  tableIndex?: number;
 }
 
 // Kirli bardak (Faz 2e). İçen müşteri kalkınca masada bırakılır (coins gibi mekânsal nesne).

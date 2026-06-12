@@ -70,15 +70,26 @@ tempo hedefleri korunuyor. simulate.ts milestone etiketi dinamik oldu (`₺-max 
 vitest 182/182 (3 test yeni sayılara güncellendi; usta testi masterLevel'dan türetilir oldu),
 build, smoke 27/27. Rapor güncel: `docs/denge-raporu-2026-06-13.md` SONUÇ bölümü.
 
+**PARA DESTELERİ (m.6-B) + KAMERA UYGULANDI (aynı oturum devamı, kullanıcı netleştirmesiyle):**
+Kullanıcı: "paralar masa altında kalıyor; YERDE üst üste, yan yana 3-4 KULE gibi, görünür yerde
+biriksin (havada değil); kamera biraz daha yaksın." Uygulama:
+- `BASE_TABLES.moneySpot` (masanın ÖN-DIŞ çaprazı; upgradeSpot ön-İÇ'te) → `LAYOUT.tables[i].moneySpot`.
+- `Coin.tableIndex?` (transient; yoksa serbest coin — eski testler/davranış korunur).
+- Ödeme coin'i moneySpot'a `tableIndex`'le düşer; tick'te İSTİF DÖNGÜSÜ (mıknatıs bloğundan önce):
+  masa başına 4 kule z-yönlü (aralık 0.46), kat yüksekliği 0.062; mıknatıs alanındaki coin istiflenmez;
+  HER TICK yeniden derlenir → kısmi toplamada havada coin kalmaz. attractR tek yerden.
+- Çakışma doğrulandı: waiterUp [-3.5,3.4] 1.17 br, ocak yükseltme [-4.35,-0.5] 1.95 br (>1.3 pad yarıçapı).
+- Coins.tsx: coin YERDE YATIK (X-rotasyon + spin kalktı), pos.y store'dan, id-bazlı hafif açı;
+  floater'lar TEK TOPLU "+toplam" yazısına birleşti (kule toplamada spam/Html maliyeti yok).
+- Kamera d 7→**6.4** (Scene.tsx; m.12'nin kamera yarısı — masa araları HENÜZ açılmadı).
+vitest **184/184** (2 yeni: istif+yeniden derleme, ödeme→moneySpot), build, smoke 27/27, Playwright
+canlı: 392 coin'le kuleler masa yanında görünür (`night-ux5b-para-desteleri.png`), konsol 0.
+
 SONRAKİ OTURUMDA SIRADA:
-1. **Para desteleri (m.6-B, ONAYLI tasarım):** paralar masanın yanında SABİT noktada DESTE olur
-   (pad/yükseltme noktasıyla ÇAKIŞMAZ), üstünde toplam değer, üstünden geçince hepsi toplanır;
-   görsel deste ~10-12 para ile sınırlı (FPS de yapısal çözülür). Kullanıcı gerekçesi: "müşteri
-   artınca paranın nereden geldiği anlaşılmıyor; yanlarda biriksin."
-2. **Kamera+map (m.7, ONAYLI):** docs/kamera-map-plan-2026-06-13.md B+A-hafif (kolon 4.4→5.2,
-   sıra 2.9→3.5, kamera d 7→6.4).
-3. Masa rakamları: kullanıcı APK testi + feedback sonrası karar verecek.
-4. Kullanıcı yeni APK'yı (denge paketi DAHİL derlenen son APK) test edip feedback verecek.
+1. **Map ferahlama (m.12'nin kalan yarısı):** masa aralarını aç (kolon 4.4→5.2, sıra 2.9→3.5,
+   docs/kamera-map-plan-2026-06-13.md) — kamera 6.4 YAPILDI.
+2. Masa rakamları: kullanıcı APK testi + feedback sonrası karar verecek (öneri denge raporunda).
+3. Kullanıcı en yeni APK'yı (denge + desteler + kamera) test edip feedback verecek.
 
 ## >>> SIRADAKİ: FEEDBACK TURU-5 LİSTESİ (2026-06-12 akşam — UX PAKETİ ✅, kalanlar aşağıda) <<<
 Kullanıcı turu-4 APK'sını (a96a478, 15:37) test etti; 14 maddelik feedback verdi. TAM LİSTE +

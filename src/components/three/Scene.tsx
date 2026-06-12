@@ -45,10 +45,11 @@ function CameraRig() {
       st.current.w = size.width;
       st.current.h = size.height;
       const aspect = size.width / Math.max(1, size.height);
-      // Kullanıcı isteği (2026-06-09): telefonda "çok yakın" hissi → biraz geri çek. Taban d 6→7; portrait'te
-      // dar ekran için ölçülü geri çekme (clamp 1.3→1.4).
+      // Kullanıcı isteği (2026-06-09): telefonda "çok yakın" hissi → biraz geri çek. Taban d 6→7;
+      // turu-5 m.12 (2026-06-12): "kamera biraz daha yaklaşmalı" → 7→6.4 (plan B+A-hafif).
+      // Portrait'te dar ekran için ölçülü geri çekme (clamp 1.3→1.4).
       const fit = aspect < 1 ? Math.min(1.4, 1 / aspect) : 1;
-      st.current.d = 7 * fit;
+      st.current.d = 6.4 * fit;
     }
     // KAMERA ODAĞI (quest sistemi): odak varken hedefe kay + hafif zoom; girdi gelince store odağı
     // iptal eder → buradaki damping kendiliğinden oyuncuya geri süzülür (ek durum makinesi yok).
