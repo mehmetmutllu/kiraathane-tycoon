@@ -599,9 +599,16 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
     kelepçe 1-3.5sn. `apk` script `.\gradlew.bat` (PowerShell uyumu).
   - vitest **179/179**, build, smoke 27/27, sim eğri AYNI (z3 dolu @1.63sa), Playwright canlı
     (v27→v28 migrasyon, panel satın alma −600₺, yeni ikon ekran görüntüleri). APK 15:37 derlendi.
-- 🔧 **SIRADA — FEEDBACK TURU-5 (14 madde, `docs/feedback-2026-06-12-turu5.md`):** 1) hızlı UX
-  paketi (kilitli sekme gizle, spotlight çakışması, tabak görseli, kare→dikdörtgen tost masası,
-  aktör içinden geçiş) → 2) DENGE paketi — KULLANICI ŞARTI: "en ince detayına kadar hesapla":
+- ✅ **TURU-5 / 1. milestone — HIZLI UX PAKETİ (gece oturumu 2026-06-12; v28 kaldı):**
+  m.7 kilitli panel sekmeleri hiç çizilmez (dinamik sekme listesi; tek sekmede çubuk gizli);
+  m.8 spotlight çakışması — spotlightPending (charStat görevi + !charPanelSeen) iken reveal
+  kamera panı bastırılır + görev geçişinde camFocus null (table2 bitişi çift yönlendirme
+  tetikliyordu); m.11 carriedDirtyFood transient (tabak/bardak ayrımı; CupTray yayvan disk +
+  kırıntı); m.10 tost masası L0-L2 KARE / L3+ dikdörtgen (salt görsel, collision sabit);
+  m.9 oyuncu-aktör çarpışması kaldırıldı (actorHalf silindi; personel separation korunur).
+  vitest 182/182 (3 yeni), build, smoke 27/27, sim AYNI (z3 @1.63sa), Playwright canlı +
+  night-ux*.png; konsol 0.
+- 🔧 **SIRADA — FEEDBACK TURU-5 kalanı (`docs/feedback-2026-06-12-turu5.md`):** 2) DENGE paketi — KULLANICI ŞARTI: "en ince detayına kadar hesapla":
   önce sayısal rapor (sim + amortisman/tempo + tost arz/talep), ONAY, sonra uygulama (ocak +1-2
   seviye, tost darboğazı, garson tepsi erken+ucuz [quest reorder → v29 İD-eşleme], karakter
   eğrisi, genel fiyat indirimi önerisi) → 3) FPS profiling ("kapa-aç düzeltiyor" = sızıntı ipucu)

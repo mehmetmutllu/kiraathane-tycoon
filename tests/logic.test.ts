@@ -398,6 +398,8 @@ describe('yeni-özellik bildirimi (D-019 §4)', () => {
   it('yeni oyunda ikincil özellik yok → revealSeen boş; bir özellik açılınca toast + kamera pan tetiklenir', () => {
     useGame.getState().hardReset();
     expect(useGame.getState().revealSeen).toEqual([]);
+    // Spotlight görülmüş olsun (turu-5 m.8: spotlight beklerken reveal panı bastırılır — alttaki test).
+    useGame.setState({ charPanelSeen: true });
     // 2. masa aç → çay ocağı yükseltme açılır (ikincil özellik).
     useGame.getState().addMoney(50);
     expect(completePad('table2')).toBe(true);
@@ -408,6 +410,23 @@ describe('yeni-özellik bildirimi (D-019 §4)', () => {
     expect(useGame.getState().notice).not.toBeNull();
     // Yeni açılan noktaya kamera pan istendi (kullanıcı 2026-06-09: "orada bir şey var" hissi).
     expect(useGame.getState().camFocus).not.toBeNull();
+  });
+
+  it('turu-5 m.8: charStat spotlight\'ı beklerken reveal kamera panı BASTIRILIR (tek yönlendirme)', () => {
+    useGame.getState().hardReset();
+    expect(useGame.getState().charPanelSeen).toBe(false);
+    // q_table2 görevindeyken pad'i bitir → görev q_charTray1'e (charStat) ilerler.
+    useGame.getState().addMoney(50);
+    expect(completePad('table2')).toBe(true);
+    expect(useGame.getState().quest?.id).toBe('q_charTray1');
+    // Görev geçişi kamera odağı bırakmadı (charStat + spotlight bekliyor).
+    expect(useGame.getState().camFocus).toBeNull();
+    // SONRAKİ tick: 'upgrade:0' reveal'ı belirir (toast var) ama kamera panı YOK — spotlight tek yönlendirme.
+    useGame.setState({ player: [0, 0.6, 2], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+    useGame.getState().tick(0.1);
+    expect(useGame.getState().revealSeen).toContain('upgrade:0');
+    expect(useGame.getState().camFocus).toBeNull();
+    // Panel görüldükten sonra normal akış: sonraki reveal'lar pan'lı çalışır (üstteki test).
   });
 
   it("garson 20 çay taşıyınca 'waiterUp' bildirilir (arka-plan şartı reveal'ı)", () => {
@@ -569,6 +588,46 @@ describe('bardak döngüsü (Faz 2e) — demleme temiz harcar, içen kirli bıra
     useGame.getState().tick(0.1);
     expect(useGame.getState().carriedDirty).toBe(1); // temiz elindeyken kirli toplandı
     expect(useGame.getState().dishes.length).toBe(0);
+  });
+
+  it('turu-5 m.9: oyuncu NPC\'nin İÇİNDEN geçer (aktör çarpışması kaldırıldı)', () => {
+    useGame.getState().hardReset();
+    // NPC tam oyuncunun yolunda otursun (waitingForTea hareketsiz; sabır yüksek → kalkmaz).
+    useGame.setState({
+      player: [0.5, 0.6, 0.6],
+      inputKeyboard: [0, -1], inputJoystick: [0, 0],
+      spawnTimer: 999,
+      npcs: [{ id: 7001, state: 'waitingForTea', pos: [0.5, 0.6, -0.2], tableIndex: 0, seatIndex: 0, timer: 999, color: '#fff' }],
+    });
+    for (let i = 0; i < 20; i++) useGame.getState().tick(0.1);
+    // Eski aktör-engeli oyuncuyu NPC önünde (~z 0.45) durdururdu; artık içinden geçip ilerler.
+    expect(useGame.getState().player[2]).toBeLessThan(-0.5);
+  });
+
+  it('turu-5 m.11: kirli TABAK ayrı sayılır (carriedDirtyFood) + yıkamada bardakla ortak havuza döner', () => {
+    useGame.getState().hardReset();
+    const dishPos: [number, number, number] = [1, 0.95, 1];
+    // Aynı noktada bir tabak (tost bulaşığı) + bir bardak: tür doğru bölmeye gitmeli.
+    useGame.setState({
+      player: [dishPos[0], 0.6, dishPos[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0],
+      tray: 0, carriedDirty: 0, carriedDirtyFood: 0,
+      dishes: [
+        { id: 9301, pos: dishPos, tableIndex: 0, kind: 'plate' },
+        { id: 9302, pos: dishPos, tableIndex: 0, kind: 'cup' },
+      ],
+    });
+    useGame.getState().tick(0.1);
+    expect(useGame.getState().carriedDirtyFood).toBe(1); // tabak tabağa
+    expect(useGame.getState().carriedDirty).toBe(1); // bardak bardağa
+    expect(useGame.getState().dishes.length).toBe(0);
+    // Bulaşık noktasına git → ikisi de yıkanır, GLOBAL temiz havuza döner.
+    const ds = LAYOUT.dishStations[0];
+    const cleanBefore = useGame.getState().cleanCups;
+    useGame.setState({ player: [ds[0], 0.6, ds[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+    useGame.getState().tick(0.1);
+    expect(useGame.getState().carriedDirty).toBe(0);
+    expect(useGame.getState().carriedDirtyFood).toBe(0);
+    expect(useGame.getState().cleanCups).toBe(cleanBefore + 2);
   });
 
   it('DEADLOCK YOK: elinde çay + tüm masalar kirli → kirli toplanıp temizlenebilir', () => {

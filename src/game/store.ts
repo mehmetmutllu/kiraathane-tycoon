@@ -271,7 +271,6 @@ export const LAYOUT = {
   // Y1: dikdörtgen yemek masası (görsel 1.35×0.85; uzun kenar x'te — 2'ye 2 sandalye düzeni).
   foodTableHalf: [0.7, 0.45] as [number, number],
   chairHalf: [0.22, 0.22] as [number, number], // sandalye + oturan müşteri
-  actorHalf: [0.3, 0.3] as [number, number], // yürüyen müşteri / garson / bulaşıkçı (oyuncu engeli)
   // Sandalye ofsetleri (Y2 tek kaynak): Tables.tsx görsel sandalyeyi, store koltuk pozisyonunu
   // (ALL_TABLES.seats) AYNI listeden türetir — görsel sandalye = oturulabilir koltuk.
   chairSpots: CHAIR_SPOTS,
@@ -707,6 +706,9 @@ export interface GameState {
   dishes: Dish[];
   /** Oyuncunun bulaşığa götürmek için taşıdığı kirli bardak. */
   carriedDirty: number;
+  /** Oyuncunun taşıdığı kirli TABAK (tost bulaşığı; turu-5 m.11 — tepside tabak çizilir).
+   *  Transient; yıkama/havuz bardakla ORTAK, yalnız görsel için ayrı sayılır. */
+  carriedDirtyFood: number;
   /** Zone başına çay-yükseltme noktası kısmi dolumu (transient; D-018 dwell). */
   upgradeFills: number[];
   /** Masa-başı yükseltme noktalarındaki kısmi dolum (transient; index = GLOBAL masa slotu). */
@@ -1043,6 +1045,7 @@ export const useGame = create<GameState>((set, get) => ({
   cleanCups: cupPoolCapacity(0),
   dishes: [],
   carriedDirty: 0,
+  carriedDirtyFood: 0,
   upgradeFills: Array.from({ length: MAX_ZONES }, () => 0),
   tableUpgradeFills: LAYOUT.tables.map(() => 0),
   waiterUpgradeFills: Array.from({ length: MAX_ZONES }, () => 0),
@@ -1150,6 +1153,7 @@ export const useGame = create<GameState>((set, get) => ({
       cleanCups: totalCupPool(derived.zonesOpen, stationLevels),
       dishes: [],
       carriedDirty: 0,
+      carriedDirtyFood: 0,
       upgradeFills: Array.from({ length: MAX_ZONES }, () => 0),
       tableUpgradeFills: LAYOUT.tables.map(() => 0),
       waiterUpgradeFills: Array.from({ length: MAX_ZONES }, () => 0),
@@ -1244,6 +1248,7 @@ export const useGame = create<GameState>((set, get) => ({
     let trayFood = s.trayFood; // tepsideki tost (M3)
     let cleanCups = s.cleanCups;
     let carriedDirty = s.carriedDirty;
+    let carriedDirtyFood = s.carriedDirtyFood;
     const tableUpgradeFills = s.tableUpgradeFills.slice();
     const waiterUpgradeFills = s.waiterUpgradeFills.slice();
     let notice = s.notice;
@@ -1432,13 +1437,8 @@ export const useGame = create<GameState>((set, get) => ({
       const stuckInFurn = hitsSolid(oldX, oldZ, furn, pr);
       if (dxIn !== 0 && hitsSolid(nx, oldZ, furn, pr) && !stuckInFurn) nx = oldX;
       if (dzIn !== 0 && hitsSolid(nx, nz, furn, pr) && !stuckInFurn) nz = oldZ;
-      // AKTÖRLER (müşteri/garson/bulaşıkçı) = YUMUŞAK: HAPSETMEZ (biri üstüne gelirse ters yöne çıkılır).
-      const actors: Solid[] = [];
-      for (const n of liveNpcs) actors.push({ c: n.pos, h: LAYOUT.actorHalf });
-      for (const w of s.waiters) if (w) actors.push({ c: w.pos, h: LAYOUT.actorHalf });
-      for (const dw of s.dishwashers) if (dw) actors.push({ c: dw.pos, h: LAYOUT.actorHalf });
-      if (nx !== oldX && hitsSolid(nx, oldZ, actors, pr) && !hitsSolid(oldX, oldZ, actors, pr)) nx = oldX;
-      if (nz !== oldZ && hitsSolid(nx, nz, actors, pr) && !hitsSolid(nx, oldZ, actors, pr)) nz = oldZ;
+      // AKTÖR çarpışması KALDIRILDI (turu-5 m.9): oyuncu müşteri/personel kalabalığının içinden
+      // geçer (kalabalıkta yürünemiyordu). Personel zaten navStep separation'ıyla oyuncuya yol verir.
     }
     const player = [nx, s.player[1], nz] as Vec3;
 
@@ -1469,10 +1469,10 @@ export const useGame = create<GameState>((set, get) => ({
     // Ocağa yaklaşınca hazır çaylardan tepsi dolar (herhangi bir açık ocak yeterli).
     // PAYLAŞIMLI kapasite (2026-06-09): çay + kirli aynı tepsiyi paylaşır → toplam trayCap'i aşamaz.
     // Karışık taşımaya izin verilir (eski "eli boşken" kısıtı kaldırıldı; deadlock'u engeller).
-    if (tray + trayFood + carriedDirty < trayCap) {
+    if (tray + trayFood + carriedDirty + carriedDirtyFood < trayCap) {
       for (let z = 0; z < zonesOpen; z++) {
         if (readyCupsByZone[z] > 0 && dist2D(player, LAYOUT.stations[z]) < C.serving.pickupRadius) {
-          const take = Math.min(trayCap - tray - trayFood - carriedDirty, readyCupsByZone[z]);
+          const take = Math.min(trayCap - tray - trayFood - carriedDirty - carriedDirtyFood, readyCupsByZone[z]);
           // M3: istasyonun ürünü tepsinin DOĞRU bölmesine gider (çay/tost ayrı sayaç, kapasite ortak).
           if (zoneProduct(z) === 'tost') trayFood += take;
           else tray += take;
@@ -1507,23 +1507,27 @@ export const useGame = create<GameState>((set, get) => ({
 
     // --- Bardak döngüsü (Faz 2e): oyuncu masadaki kirli bardakları toplar, bulaşıkta yıkar (yakınlık) ---
     // PAYLAŞIMLI kapasite (2026-06-09): çay taşırken de kirli toplanabilir → toplam trayCap'i aşamaz.
-    if (tray + trayFood + carriedDirty < trayCap && dishes.length) {
+    if (tray + trayFood + carriedDirty + carriedDirtyFood < trayCap && dishes.length) {
       const keep: Dish[] = [];
       for (const d of dishes) {
-        if (tray + trayFood + carriedDirty < trayCap && dist2D(player, d.pos) < C.cups.collectRadius)
-          carriedDirty += 1;
-        else keep.push(d);
+        if (tray + trayFood + carriedDirty + carriedDirtyFood < trayCap && dist2D(player, d.pos) < C.cups.collectRadius) {
+          // turu-5 m.11: kirli kabın TÜRÜ tepsi görseline taşınır (tabak ≠ bardak); havuz/yıkama ortak.
+          if (d.kind === 'plate') carriedDirtyFood += 1;
+          else carriedDirty += 1;
+        } else keep.push(d);
       }
       dishes = keep;
     }
     // HERHANGİ açık zone'un bulaşık noktasına yaklaşınca taşınan kirliler yıkanır → GLOBAL temiz havuza.
-    if (carriedDirty > 0) {
+    if (carriedDirty + carriedDirtyFood > 0) {
       for (let z = 0; z < zonesOpen; z++) {
         if (dist2D(player, LAYOUT.dishStations[z]) < C.cups.washRadius) {
-          cleanCups += carriedDirty;
-          stats.dishesWashed += carriedDirty;
-          xp += C.xp.perDishWashed * carriedDirty;
+          const washed = carriedDirty + carriedDirtyFood;
+          cleanCups += washed;
+          stats.dishesWashed += washed;
+          xp += C.xp.perDishWashed * washed;
           carriedDirty = 0;
+          carriedDirtyFood = 0;
           break;
         }
       }
@@ -1668,12 +1672,19 @@ export const useGame = create<GameState>((set, get) => ({
     // --- Yeni-özellik bildirimi (D-019 §4; v21 zone-başına) ---
     // Bir ikincil özellik (yükseltme/personel) İLK kez açıldığında kısa toast + pan. revealSeen baseline
     // init'te kurulduğu için zaten açık olanlar tekrar bildirmez (yeniden-yükleme spam'ı yok; persist gerekmez).
+    // turu-5 m.8: karakter-butonu spotlight'ı bekliyorsa (charStat görevi aktif + panel hiç açılmamış)
+    // reveal kamera panı BASTIRILIR — ekranda tek yönlendirme kalır (table2 bitişi ertesi tick'te
+    // "çay yükselt" reveal'ını ateşliyordu; kamera oraya kayarken spotlight char butonunu gösteriyordu).
+    const spotlightPending =
+      questIndex < C.quests.length &&
+      C.quests[questIndex].target.type === 'charStat' &&
+      !s.charPanelSeen;
     for (const [key, text, rp] of revealKeys(padGate, zonesOpen, stationLevels, derived.hasWaiterByZone, waiterLevels)) {
       if (!revealSeen.includes(key)) {
         revealSeen = [...revealSeen, key];
         notice = { text, ttl: 4.5, kind: 'reveal' };
         // Yeni açılan noktaya anlık kamera pan ("orada bir şey var" — kullanıcı isteği 2026-06-09).
-        if (rp) requestFocus(rp, 1);
+        if (rp && !spotlightPending) requestFocus(rp, 1);
       }
     }
     if (notice) {
@@ -1894,8 +1905,15 @@ export const useGame = create<GameState>((set, get) => ({
     }
     if (questAdvanced && questIndex < C.quests.length) {
       const q = C.quests[questIndex];
-      const fp = questFocusPos(q.target, tableLevels, out.tables, q.zone ?? 0);
-      if (fp) requestFocus(fp, 2); // charStat görevinde 3D hedef yok → kamera sıçramaz (buton efekti yönlendirir)
+      if (q.target.type === 'charStat' && !s.charPanelSeen) {
+        // turu-5 m.8: charStat görevi + spotlight bekliyorsa AYNI tick'teki reveal panı da İPTAL —
+        // ekranda tek yönlendirme kalır (spotlight). (table2 bitişi hem yükseltme-noktası reveal'ını
+        // hem q_charTray1 spotlight'ını tetikliyordu; kamera "çay yükselt"e kayarken ekran kararıyordu.)
+        camFocus = null;
+      } else {
+        const fp = questFocusPos(q.target, tableLevels, out.tables, q.zone ?? 0);
+        if (fp) requestFocus(fp, 2); // charStat görevinde 3D hedef yok → kamera sıçramaz (buton efekti yönlendirir)
+      }
     }
     // Kamera odağı: joystick/klavye girdisi iptal eder (oyuncu kontrolü üstün); süre dolunca biter.
     // Deadzone 0.25 (2026-06-11 fix: 0.1 joystick titremesinde odağı yanlışlıkla bozuyordu).
@@ -1959,6 +1977,7 @@ export const useGame = create<GameState>((set, get) => ({
       trayFood,
       cleanCups,
       carriedDirty,
+      carriedDirtyFood,
       spawnTimer,
       spawnZone,
       saveTimer,

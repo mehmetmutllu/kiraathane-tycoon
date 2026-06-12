@@ -101,8 +101,21 @@ export function OwnerBody() {
 // karışık taşımada üst üste binmez (tea + dirty aynı ızgarayı sırayla paylaşır). count 0 ise hiçbir şey çizilmez.
 // cap (v20): tepsi TABANI kapasiteyle büyür (karakter yükseltmesinin gözle görülür ödülü).
 // EXPORT: karakter paneli canlı tepsi önizlemesi aynı bileşeni kullanır.
-export function CupTray({ tea, dirty, food = 0, cap = 6 }: { tea: number; dirty: number; food?: number; cap?: number }) {
-  const total = tea + food + dirty;
+export function CupTray({
+  tea,
+  dirty,
+  food = 0,
+  dirtyFood = 0,
+  cap = 6,
+}: {
+  tea: number;
+  dirty: number;
+  food?: number;
+  /** Kirli TABAK (tost bulaşığı; turu-5 m.11 — bardak değil yayvan tabak çizilir). */
+  dirtyFood?: number;
+  cap?: number;
+}) {
+  const total = tea + food + dirty + dirtyFood;
   if (total <= 0) return null;
   const colSpacing = 0.16;
   const rowSpacing = 0.15;
@@ -119,9 +132,11 @@ export function CupTray({ tea, dirty, food = 0, cap = 6 }: { tea: number; dirty:
         <meshStandardMaterial color="#8d6e63" />
       </mesh>
       {Array.from({ length: total }).map((_, i) => {
-        // Sıra: çaylar (kırmızı) → tostlar (kızarmış dilim, M3) → kirliler (gri); aynı ızgara paylaşılır.
+        // Sıra: çaylar (kırmızı) → tostlar (kızarmış dilim, M3) → kirli bardaklar (gri) →
+        // kirli tabaklar (yayvan disk); aynı ızgara paylaşılır.
         const isFood = i >= tea && i < tea + food;
-        const isDirty = i >= tea + food;
+        const isDirty = i >= tea + food && i < tea + food + dirty;
+        const isDirtyPlate = i >= tea + food + dirty;
         const col = i % 3; // 0..2 → x: -1,0,1
         const row = Math.floor(i / 3); // 0..1 → z: arka/ön
         const px = (col - 1) * colSpacing;
@@ -132,6 +147,21 @@ export function CupTray({ tea, dirty, food = 0, cap = 6 }: { tea: number; dirty:
               <boxGeometry args={[0.14, 0.05, 0.11]} />
               <meshStandardMaterial color={PALETTE.toast} roughness={0.7} />
             </mesh>
+          );
+        }
+        if (isDirtyPlate) {
+          // Kirli tabak: yayvan disk + üstünde kırıntı (bardak silüetinden net ayrışır).
+          return (
+            <group key={i} position={[px, 0.05, pz]}>
+              <mesh castShadow>
+                <cylinderGeometry args={[0.075, 0.06, 0.03, 10]} />
+                <meshStandardMaterial color="#b3a896" roughness={0.9} />
+              </mesh>
+              <mesh position={[0.015, 0.025, 0.01]}>
+                <boxGeometry args={[0.05, 0.02, 0.04]} />
+                <meshStandardMaterial color={PALETTE.toastDark} roughness={0.9} />
+              </mesh>
+            </group>
           );
         }
         return (
@@ -159,6 +189,7 @@ export function Player() {
   const tray = useGame((s) => s.tray);
   const trayFood = useGame((s) => s.trayFood);
   const carriedDirty = useGame((s) => s.carriedDirty);
+  const carriedDirtyFood = useGame((s) => s.carriedDirtyFood);
   const trayTier = useGame((s) => s.charUpgrades.tray);
   const ref = useRef<Group>(null);
   useFacing(ref, p[0], p[2]);
@@ -166,7 +197,7 @@ export function Player() {
     <group position={[p[0], 0, p[2]]}>
       <group ref={ref}>
         <Model fallback={<OwnerBody />} />
-        <CupTray tea={tray} food={trayFood} dirty={carriedDirty} cap={trayCapacityFor(trayTier)} />
+        <CupTray tea={tray} food={trayFood} dirty={carriedDirty} dirtyFood={carriedDirtyFood} cap={trayCapacityFor(trayTier)} />
       </group>
     </group>
   );

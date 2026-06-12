@@ -2,7 +2,34 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
-## >>> SIRADAKİ: FEEDBACK TURU-5 LİSTESİ (2026-06-12 akşam — 14 madde, UYGULANMADI) <<<
+## ŞU AN (2026-06-12 GECE OTURUMU — TURU-5 UX PAKETİ ✅; şema değişmedi, v28 kaldı)
+Gece protokolü: kullanıcı uyuyor, onaylı turu-5 listesi sırayla işleniyor. 1. milestone (hızlı UX
+paketi, maddeler 7/8/9/10/11) TAMAM:
+- **m.7 kilitli sekme gizle**: CharacterPanel sekmeleri dinamik liste — tutulmamış karakterin
+  sekmesi HİÇ çizilmez; tek sekme kalırsa çubuk komple gizli. WaiterTab/DishTab kilit dalları +
+  `.char-locked` CSS kaldırıldı (ulaşılamaz oldu).
+- **m.8 spotlight çakışması**: KÖK NEDEN table2 bitişi AYNI anda (a) ertesi tick 'upgrade:0'
+  reveal panı (prio 1) + (b) q_charTray1 spotlight'ı tetikliyordu → kamera "Çay Yükselt"e kayarken
+  ekran kararıp char butonunu gösteriyordu. FIX (store.tick 2 nokta): spotlightPending
+  (aktif görev charStat + !charPanelSeen) iken reveal panı BASTIRILIR + görev geçişinde camFocus
+  null. Reveal toast'ı korunur; q_station2 zaten sonra oraya pan atar. Eski reveal-pan testi
+  charPanelSeen:true ile güncellendi + yeni bastırma testi.
+- **m.11 tabak görseli**: yeni TRANSIENT `carriedDirtyFood` (persist YOK — v28 kaldı); toplama
+  `d.kind==='plate'` ayrımı, kapasite/yıkama toplamdan (havuz ortak). CupTray `dirtyFood` prop →
+  yayvan disk + kırıntı; devHooks.carriedDirtyFood. Canlı doğrulandı (tabak toplandı=1).
+- **m.10 tost masası kare→dikdörtgen**: Tables.tsx `rect = food && tableSeats(level)>2` —
+  L0-L2 KARE (0.475), L3+ dikdörtgen (0.675/0.425). SALT görsel; collision foodTableHalf SABİT
+  (nav cache + büyüme-tuzağı riski yüzünden bilinçli). Canlı: L0 kare + L3 dikdörtgen screenshot'lı.
+- **m.9 aktör çarpışması kaldırıldı**: store.tick'teki oyuncu-aktör (NPC/garson/bulaşıkçı) bloğu
+  + LAYOUT.actorHalf silindi — oyuncu kalabalığın içinden geçer. Personel navStep separation'ı
+  (oyuncuya yol verme) KORUNDU. Mobilya collision'ı aynı. Yeni vitest: NPC içinden geçiş.
+Doğrulama: vitest **182/182** (3 yeni), build, smoke **27/27**, sim eğri AYNI (z3 dolu @1.63sa),
+Playwright canlı (390×844): taze oyunda sekme çubuğu YOK, gelişmiş v28 kayıtla 4 sekme, tabak
+toplama, kare/dikdörtgen masalar; konsol 0 hata. Screenshot'lar kökte `night-ux*.png`.
+NOT: kayıt enjeksiyonunda yine "Storage.prototype.setItem no-op" hilesi gerekti (unload-autosave eziyor).
+Sıradaki (gece): denge SAYISAL RAPORU (uygulama yok) → FPS araştırması → kamera+map plan docs → GECE-RAPORU + APK.
+
+## >>> SIRADAKİ: FEEDBACK TURU-5 LİSTESİ (2026-06-12 akşam — UX PAKETİ ✅, kalanlar aşağıda) <<<
 Kullanıcı turu-4 APK'sını (a96a478, 15:37) test etti; 14 maddelik feedback verdi. TAM LİSTE +
 triyaj + önerilen sıra: `docs/feedback-2026-06-12-turu5.md`. Özet sıra: 1) hızlı UX paketi
 (kilitli panel sekmesi gizle, onboarding spotlight çakışması, tepside tost bulaşığı TABAK görseli,

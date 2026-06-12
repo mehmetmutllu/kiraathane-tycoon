@@ -597,16 +597,6 @@ body,
   color: #4a2c02;
   box-shadow: 0 2px 0 #b87400;
 }
-.char-locked {
-  margin: 14px 0;
-  padding: 18px 12px;
-  border-radius: 14px;
-  background: rgba(109, 76, 65, 0.14);
-  color: #6d4c41;
-  text-align: center;
-  font-size: 13.5px;
-  font-weight: 700;
-}
 .char-note {
   margin-top: 8px;
   color: rgba(109, 76, 65, 0.85);

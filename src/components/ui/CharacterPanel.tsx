@@ -172,10 +172,11 @@ const STAT_ROWS: { stat: CharStat; name: string; unit: string; icon: React.React
 
 type Tab = 'player' | 'tea' | 'tost' | 'dish';
 
-// Garson sekmesi içeriği: kilit (garson yok) | tepsi yükseltme satırı.
+// Garson sekmesi içeriği: tepsi yükseltme satırı. Sekme yalnız garson tutulunca ÇİZİLİR
+// (turu-5 m.7: kilitli sekme hiç görünmez), o yüzden burada kilit dalı yok.
 // NOT: kendi Canvas'ı YOK — panel TEK Canvas kullanır (sekme başına yeni WebGL context açmak
 // tarayıcı context limitine takılıp önizlemeyi karartıyordu; Playwright canlı bulgusu 2026-06-12).
-function WaiterTab({ kind, hired }: { kind: WaiterKind; hired: boolean }) {
+function WaiterTab({ kind }: { kind: WaiterKind }) {
   const wallet = useGame((s) => s.wallet);
   const waiterUpgrades = useGame((s) => s.waiterUpgrades);
   const buyWaiterTray = useGame((s) => s.buyWaiterTray);
@@ -185,13 +186,6 @@ function WaiterTab({ kind, hired }: { kind: WaiterKind; hired: boolean }) {
   const cost = waiterTrayNextCost(kind, tier);
   const food = kind === 'tost';
   const unit = food ? 'tost' : 'bardak';
-  if (!hired) {
-    return (
-      <div className="char-locked" data-testid={`waiter-locked-${kind}`}>
-        {food ? 'Tost salonuna garson tutunca açılır.' : 'Garson tutunca açılır.'}
-      </div>
-    );
-  }
   return (
     <>
       <div className="char-stat">
@@ -235,8 +229,8 @@ function WaiterTab({ kind, hired }: { kind: WaiterKind; hired: boolean }) {
   );
 }
 
-// Bulaşıkçı sekmesi (v28): kilit (bulaşıkçı yok) | leğen kapasite yükseltme satırı.
-function DishTab({ hired }: { hired: boolean }) {
+// Bulaşıkçı sekmesi (v28): leğen kapasite yükseltme satırı (sekme yalnız bulaşıkçı tutulunca çizilir).
+function DishTab() {
   const wallet = useGame((s) => s.wallet);
   const waiterUpgrades = useGame((s) => s.waiterUpgrades);
   const buyDishCarry = useGame((s) => s.buyDishCarry);
@@ -244,13 +238,6 @@ function DishTab({ hired }: { hired: boolean }) {
   const tier = waiterUpgrades.dishCarry;
   const cap = dishCarryCapacityFor(tier);
   const cost = dishCarryNextCost(tier);
-  if (!hired) {
-    return (
-      <div className="char-locked" data-testid="waiter-locked-dish">
-        Bulaşıkçı tutunca açılır.
-      </div>
-    );
-  }
   return (
     <>
       <div className="char-stat">
@@ -304,8 +291,13 @@ export function CharacterPanel({ onClose }: { onClose: () => void }) {
   const tostHired = padsDone.includes('z3waiter');
   const dishHired =
     padsDone.includes('dishwasher') || padsDone.includes('z2dishwasher') || padsDone.includes('z3dishwasher');
-  const showCanvas =
-    tab === 'player' || (tab === 'tea' ? teaHired : tab === 'tost' ? tostHired : dishHired);
+  // turu-5 m.7: tutulmamış karakterin sekmesi HİÇ çizilmez (kilitli mesaj yerine).
+  const tabs: { id: Tab; label: string }[] = [
+    { id: 'player', label: 'Oyuncu' },
+    ...(teaHired ? [{ id: 'tea' as Tab, label: 'Çay Garsonu' }] : []),
+    ...(tostHired ? [{ id: 'tost' as Tab, label: 'Tostçu' }] : []),
+    ...(dishHired ? [{ id: 'dish' as Tab, label: 'Bulaşıkçı' }] : []),
+  ];
 
   return (
     <div className="modal-backdrop" data-testid="char-panel" onClick={onClose}>
@@ -323,41 +315,25 @@ export function CharacterPanel({ onClose }: { onClose: () => void }) {
           </span>
         </div>
 
-        {/* Y3 sekmeleri: Oyuncu | Çay Garsonu | Tostçu */}
-        <div className="char-tabs" role="tablist">
-          <button
-            className={`char-tab${tab === 'player' ? ' active' : ''}`}
-            data-testid="char-tab-player"
-            onClick={() => setTab('player')}
-          >
-            Oyuncu
-          </button>
-          <button
-            className={`char-tab${tab === 'tea' ? ' active' : ''}`}
-            data-testid="char-tab-tea"
-            onClick={() => setTab('tea')}
-          >
-            Çay Garsonu
-          </button>
-          <button
-            className={`char-tab${tab === 'tost' ? ' active' : ''}`}
-            data-testid="char-tab-tost"
-            onClick={() => setTab('tost')}
-          >
-            Tostçu
-          </button>
-          <button
-            className={`char-tab${tab === 'dish' ? ' active' : ''}`}
-            data-testid="char-tab-dish"
-            onClick={() => setTab('dish')}
-          >
-            Bulaşıkçı
-          </button>
-        </div>
+        {/* Y3 sekmeleri — yalnız tutulan karakterler; tek sekme kalırsa çubuk gizli (turu-5 m.7) */}
+        {tabs.length > 1 && (
+          <div className="char-tabs" role="tablist">
+            {tabs.map(({ id, label }) => (
+              <button
+                key={id}
+                className={`char-tab${tab === id ? ' active' : ''}`}
+                data-testid={`char-tab-${id}`}
+                onClick={() => setTab(id)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* TEK Canvas (3/4 yukarı-çapraz açı): sekme MODELİ değiştirir, context'i değil —
             sekme başına yeni WebGL context tarayıcı limitine takılıp boş kalıyordu (2026-06-12). */}
-        <div className="char-canvas" style={showCanvas ? undefined : { display: 'none' }}>
+        <div className="char-canvas">
           <Canvas
             dpr={[1, 1.5]}
             camera={{ position: [0.75, 1.45, 2.05], fov: 36 }}
@@ -425,9 +401,9 @@ export function CharacterPanel({ onClose }: { onClose: () => void }) {
           </>
         )}
 
-        {tab === 'tea' && <WaiterTab kind="tea" hired={teaHired} />}
-        {tab === 'tost' && <WaiterTab kind="tost" hired={tostHired} />}
-        {tab === 'dish' && <DishTab hired={dishHired} />}
+        {tab === 'tea' && <WaiterTab kind="tea" />}
+        {tab === 'tost' && <WaiterTab kind="tost" />}
+        {tab === 'dish' && <DishTab />}
 
         <button className="modal-btn" data-testid="char-ok" onClick={onClose}>
           Tamam

@@ -83,6 +83,7 @@ export function installDevHooks(): void {
       cleanCups: s.cleanCups,
       dirtyCount: s.dishes.length,
       carriedDirty: s.carriedDirty,
+      carriedDirtyFood: s.carriedDirtyFood,
       dishStationPos: LAYOUT.dishStation,
       firstDishPos: s.dishes[0] ? s.dishes[0].pos : null,
       // Kirli masa mekaniği (D-019): eşiği aşan masa indeksleri (müşteri oturmaz + garson götürmez).

@@ -77,8 +77,11 @@ function Table({ x, z, level, food = false }: { x: number; z: number; level: num
   const chairs = Math.min(spots.length, tableSeats(level));
   const skirt = cloth && (level === 2 || level >= 4);
   // Tabla yarıları (x, z): kare 0.475/0.475; yemek dikdörtgeni 0.675/0.425.
-  const hw = food ? 0.675 : 0.475;
-  const hd = food ? 0.425 : 0.475;
+  // turu-5 m.10: tost masası 1-2 koltukta KARE görünür ("uzun masa + tek sandalye garip");
+  // 4 koltuğa çıkınca (L3+) dikdörtgene büyür. SALT görsel — collision LAYOUT.foodTableHalf sabit.
+  const rect = food && tableSeats(level) > 2;
+  const hw = rect ? 0.675 : 0.475;
+  const hd = rect ? 0.425 : 0.475;
   return (
     <group position={[x, 0, z]}>
       <Model
