@@ -110,9 +110,10 @@ export const zonePoint = mir;
 // koridordan yürüyerek geçmek para çekmez).
 // Açılış sırası ÖN sıradan (kapıya yakın, ocağa uzak — başlangıç masası ocaktan >4 br: yürüme
 // döngüsü en baştan zorlanır, D-017 §1) → arka sıra sonra açılır.
-// moneySpot (turu-5 m.6-B): masanın ÖN-DIŞ çaprazı — para kuleleri burada yerde birikir.
-// upgradeSpot ön-İÇ (koridor) çaprazında; dış çapraz boş ve kameradan görünür. Kuleler z-yönlü
-// sıralanır → garson hız noktası [-3.5,3.4] ve ocak yükseltme [-4.35,-0.5] ile çakışmaz (≥1.1 br).
+// moneySpot (turu-5 revizyonu): masanın ÖN-DIŞ çaprazı — ödenen paralar buranın çevresine saçılır
+// (±0.4; eski masa-merkezli saçılım tabla ALTINDA kalıyordu — kullanıcı: "masa içinde gibi durmasın,
+// yanında olsun"). upgradeSpot ön-İÇ (koridor) çaprazında; garson hız noktası [-3.5,3.4] ve ocak
+// yükseltme [-4.35,-0.5] ile çakışmaz (≥1.1 br).
 const BASE_TABLES = [
   { table: [-1.2, 0, 1.9], upgradeSpot: [0.0, 0, 3.1], moneySpot: [-2.4, 0, 3.1] },
   { table: [3.2, 0, 1.9], upgradeSpot: [2.0, 0, 3.1], moneySpot: [4.4, 0, 3.1] },
@@ -1379,19 +1380,19 @@ export const useGame = create<GameState>((set, get) => ({
         case 'drinking':
           n.timer -= dt;
           if (n.timer <= 0) {
-            // Öde: para masanın moneySpot KULESİNE düşer (turu-5 m.6-B — kullanıcı: "paranın nereden
-            // geldiği görünsün, yanda coin gibi üst üste biriksin"). Konum istif döngüsünde derlenir.
+            // Öde: para masanın YANINA (moneySpot çevresine) saçılarak düşer — turu-5 revizyonu:
+            // kule istifi kullanıcıya "güzel olmadı" → ESKİ dağınık görünüm geri, ama masa İÇİNE
+            // düşmez (eski masa-merkezli saçılım tabla altında kalıyordu; moneySpot ön-dış çapraz).
             coins.push({
               id: nextId++,
               pos: [
-                LAYOUT.tables[n.tableIndex].moneySpot[0],
-                0.04,
-                LAYOUT.tables[n.tableIndex].moneySpot[2],
+                LAYOUT.tables[n.tableIndex].moneySpot[0] + (Math.random() - 0.5) * 0.8,
+                0.3,
+                LAYOUT.tables[n.tableIndex].moneySpot[2] + (Math.random() - 0.5) * 0.8,
               ],
               value:
                 PRODUCTS[zoneProduct(zoneOfTable(n.tableIndex))].price +
                 tableTip(tableLevels[n.tableIndex] ?? 0),
-              tableIndex: n.tableIndex,
             });
             // İçtiği bardak masada KİRLİ kalır (Faz 2e): toplanıp yıkanmalı, yoksa temiz biter.
             // tableIndex ile masaya etiketlenir (D-019): masa-başı eşik aşılınca masa KİRLİ olur.
@@ -1452,30 +1453,12 @@ export const useGame = create<GameState>((set, get) => ({
     }
     const player = [nx, s.player[1], nz] as Vec3;
 
-    // --- PARA DESTELERİ (turu-5 m.6-B): coin'ler masalarının moneySpot'unda KULE halinde istiflenir ---
-    // 4 kule z-yönlü yan yana (aralık 0.46), kule içinde üst üste (0.062). Her tick yeniden derlenir →
-    // kısmi toplamada havada asılı coin kalmaz. Mıknatıs alanındaki coin'ler istife girmez (oyuncuya
-    // uçuyor); tableIndex'siz coin serbest (eski davranış/testler/dev).
-    const attractR = attractRadiusFor(s.charUpgrades.magnet); // mıknatıs kademesinden (v20)
-    if (coins.length) {
-      const pileCount: Record<number, number> = {};
-      for (const c of coins) {
-        if (c.tableIndex == null) continue;
-        if (dist2D(player, c.pos) < attractR) continue;
-        const slotIdx = pileCount[c.tableIndex] ?? 0;
-        pileCount[c.tableIndex] = slotIdx + 1;
-        const spot = LAYOUT.tables[c.tableIndex].moneySpot;
-        c.pos[0] = spot[0];
-        c.pos[1] = 0.04 + Math.floor(slotIdx / 4) * 0.062;
-        c.pos[2] = spot[2] + ((slotIdx % 4) - 1.5) * 0.46;
-      }
-    }
-
     // --- Para mıknatısı + toplama (Faz 2f juice) ---
     // attractRadius içine giren para oyuncuya doğru GERÇEKTEN akar (hız > oyuncu hızı → daima yetişir),
     // pickupRadius'a varınca toplanır. Mıknatıs store'da yapıldığı için görsel = mantık → "yapışıp
     // toplanmayan para" bug'ı yapısal olarak imkansız (Coins.tsx sadece c.pos'u çizer).
     if (coins.length) {
+      const attractR = attractRadiusFor(s.charUpgrades.magnet); // mıknatıs kademesinden (v20)
       const keep: Coin[] = [];
       for (const c of coins) {
         if (dist2D(player, c.pos) < attractR) {

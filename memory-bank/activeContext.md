@@ -70,6 +70,16 @@ tempo hedefleri korunuyor. simulate.ts milestone etiketi dinamik oldu (`₺-max 
 vitest 182/182 (3 test yeni sayılara güncellendi; usta testi masterLevel'dan türetilir oldu),
 build, smoke 27/27. Rapor güncel: `docs/denge-raporu-2026-06-13.md` SONUÇ bölümü.
 
+**PARA REVİZYONU-2 (KULELER GERİ ALINDI — kullanıcı: "böyle de güzel olmadı, eski haline dön ama
+masa içinde durmasın, yanında olsun"):** istif döngüsü + Coin.tableIndex + yatık coin görseli
+KALDIRILDI; eski dağınık + dönen dik sikke görünümü GERİ. Tek kalıcı değişiklik: ödeme coin'i
+masa merkezine değil **moneySpot ±0.4 saçılımına** düşer (masa footprint'ine matematiksel olarak
+giremez — vitest'te doğrulanıyor). Toplu floater + paylaşımlı COIN_GEO/COIN_MAT + kamera 6.4 KALDI.
+vitest 183/183, smoke 27/27, canlı: paralar masa yanında dağınık (night-ux6), konsol 0.
+DERS: para sunumu görsel/his konusu — büyük görsel değişiklikleri kullanıcı telefonda görmeden
+kesinleşmiş sayma.
+
+(Aşağıdaki blok TARİHÇE — kuleler geri alındı:)
 **PARA DESTELERİ (m.6-B) + KAMERA UYGULANDI (aynı oturum devamı, kullanıcı netleştirmesiyle):**
 Kullanıcı: "paralar masa altında kalıyor; YERDE üst üste, yan yana 3-4 KULE gibi, görünür yerde
 biriksin (havada değil); kamera biraz daha yaksın." Uygulama:

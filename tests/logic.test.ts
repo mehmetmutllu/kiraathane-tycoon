@@ -752,39 +752,12 @@ describe('bulaşıkçı — quest hattında zorunlu personel (Faz 2e; 2026-06-09
   });
 });
 
-describe('para desteleri (turu-5 m.6-B) — coin\'ler masanın moneySpot kulelerinde istiflenir', () => {
-  it('ödenen para moneySpot kulesine düşer: 4 kule z-yönlü, 5. coin 2. kata çıkar; kısmi toplamada yeniden derlenir', () => {
-    useGame.getState().hardReset();
-    const spot = LAYOUT.tables[0].moneySpot;
-    // 6 coin aynı masaya (oyuncu uzak köşede — mıknatıs karışmasın).
-    const mk = (id: number) => ({ id, pos: [spot[0], 0.04, spot[2]] as [number, number, number], value: 5, tableIndex: 0 });
-    useGame.setState({
-      player: [5.2, 0.6, -5.2], inputKeyboard: [0, 0], inputJoystick: [0, 0],
-      npcs: [], spawnTimer: 999,
-      coins: [mk(1), mk(2), mk(3), mk(4), mk(5), mk(6)],
-    });
-    useGame.getState().tick(0.1);
-    const cs = useGame.getState().coins;
-    expect(cs.length).toBe(6);
-    // İlk 4 coin zemin katında (y 0.04) FARKLI z'lerde (4 kule); 5-6. coin 2. katta (y ~0.102).
-    const ground = cs.filter((c) => Math.abs(c.pos[1] - 0.04) < 1e-6);
-    const upper = cs.filter((c) => c.pos[1] > 0.05);
-    expect(ground.length).toBe(4);
-    expect(upper.length).toBe(2);
-    expect(new Set(ground.map((c) => c.pos[2].toFixed(3))).size).toBe(4); // 4 ayrı kule
-    for (const c of cs) expect(c.pos[0]).toBeCloseTo(spot[0]); // kuleler z-yönlü tek sırada
-    // KISMİ TOPLAMA simülasyonu: alttaki 3 coin'i kaldır → kalanlar yeniden derlenir, boşluk/havada coin kalmaz.
-    useGame.setState({ coins: cs.filter((c) => c.id > 3) });
-    useGame.getState().tick(0.1);
-    const after = useGame.getState().coins;
-    expect(after.length).toBe(3);
-    for (const c of after) expect(c.pos[1]).toBeCloseTo(0.04); // hepsi zemin katına indi
-    expect(new Set(after.map((c) => c.pos[2].toFixed(3))).size).toBe(3);
-  });
-
-  it('müşteri ödemesi coin\'i kendi masasının moneySpot\'una, tableIndex\'le bırakır', () => {
+describe('para düşüşü (turu-5 revizyonu) — coin masanın YANINA (moneySpot çevresi) düşer, masa içine değil', () => {
+  it('müşteri ödemesi coin\'i moneySpot ±0.4 saçılımına bırakır; masa footprint\'inin DIŞINDA kalır', () => {
     useGame.getState().hardReset();
     const seat = LAYOUT.tables[0].seats[0];
+    const spot = LAYOUT.tables[0].moneySpot;
+    const table = LAYOUT.tables[0].table;
     useGame.setState({
       player: [5.2, 0.6, -5.2], inputKeyboard: [0, 0], inputJoystick: [0, 0],
       spawnTimer: 999,
@@ -793,8 +766,13 @@ describe('para desteleri (turu-5 m.6-B) — coin\'ler masanın moneySpot kuleler
     useGame.getState().tick(0.1);
     const c = useGame.getState().coins[0];
     expect(c).toBeTruthy();
-    expect(c.tableIndex).toBe(0);
-    expect(c.pos[0]).toBeCloseTo(LAYOUT.tables[0].moneySpot[0]);
+    // moneySpot çevresine saçılır (±0.4 + tolerans)...
+    expect(Math.abs(c.pos[0] - spot[0])).toBeLessThanOrEqual(0.41);
+    expect(Math.abs(c.pos[2] - spot[2])).toBeLessThanOrEqual(0.41);
+    // ...ve masa tablasının altında KALMAZ (eski bug: masa-merkezli saçılım tabla içine düşürüyordu).
+    const inTable =
+      Math.abs(c.pos[0] - table[0]) < LAYOUT.tableHalf[0] && Math.abs(c.pos[2] - table[2]) < LAYOUT.tableHalf[1];
+    expect(inTable).toBe(false);
   });
 });
 
