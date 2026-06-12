@@ -27,7 +27,23 @@ Doğrulama: vitest **182/182** (3 yeni), build, smoke **27/27**, sim eğri AYNI 
 Playwright canlı (390×844): taze oyunda sekme çubuğu YOK, gelişmiş v28 kayıtla 4 sekme, tabak
 toplama, kare/dikdörtgen masalar; konsol 0 hata. Screenshot'lar kökte `night-ux*.png`.
 NOT: kayıt enjeksiyonunda yine "Storage.prototype.setItem no-op" hilesi gerekti (unload-autosave eziyor).
-Sıradaki (gece): denge SAYISAL RAPORU (uygulama yok) → FPS araştırması → kamera+map plan docs → GECE-RAPORU + APK.
+
+**2. milestone — DENGE RAPORU ✅ (uygulama YOK):** `docs/denge-raporu-2026-06-13.md` — sim 3 profil +
+el hesabı: m.1 ocak +2 ₺ seviyesi önerisi (çay 102/153, tost 2040/3060, Usta L7'ye, şema değişmez);
+m.2 tost arz/talep 1:5-8 ÖLÇÜLDÜ → prepTime 14→11 + m.1A paketi; m.3 garson tepsi maliyet indirimi
+(800/2400/6000→400/1500/4500; quest yeri AYNI = v29 GEREKMEZ — Öneri A) vs reorder (B, v29 ister);
+m.5 karakter köprülü eğri (tepsi T3 15k→5k, T4 60k→18k...); m.4 seçenek A(dokunma)/B(garson-öncesi
+−%15, önerilen)/C(genel −%10 ÖNERMEM). 5 onay sorusu raporun sonunda.
+
+**3. milestone — FPS (m.13) ✅ kanıtlı 2 bulgu (`docs/fps-bulgulari-2026-06-13.md`):**
+1) FLOATER SIZINTISI (FIX ✅): MoneyFloater useEffect deps [onDone] → her toplamada timer reset →
+   395 floater DOM'da birikti (ölçüldü), FPS 12-16. Fix: onDoneRef + mount'ta tek timer →
+   1.5sn'de 0 floater, FPS 39. "Kapa-aç düzeltiyor"un ana açıklaması (floaters React state'i).
+2) COIN BİRİKİMİ (rapora): AFK 10dk = 377 coin → FPS 24 (masaüstü); money.lifetime 0 bilinçli.
+   Paylaşımlı COIN_GEO/COIN_MAT uygulandı (görsel sıfır fark); InstancedMesh (A, önerilen) vs
+   para-yığını merge (B) kararı sabaha. dishes/NPC/notice/navGrid temiz çıktı.
+Sıradaki (gece): kamera+map plan docs (m.12) → GECE-RAPORU + final commit/push (APK 22:35'te UX
+paketiyle derlendi; FPS fix'li YENİ APK gece raporundan önce derlenecek).
 
 ## >>> SIRADAKİ: FEEDBACK TURU-5 LİSTESİ (2026-06-12 akşam — UX PAKETİ ✅, kalanlar aşağıda) <<<
 Kullanıcı turu-4 APK'sını (a96a478, 15:37) test etti; 14 maddelik feedback verdi. TAM LİSTE +
