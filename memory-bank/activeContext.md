@@ -2,6 +2,57 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-06-12 — FEEDBACK TURU-4 başladı: TOST SALONUNA MÜŞTERİ GELMİYOR fix'i ✅)
+Kullanıcı telefon testine başladı; ilk bulgu: "tost servis et görevi var ama tost yemeye kimse
+gelmiyor". KÖK NEDEN: `findTableForGroup` GLOBAL "en çok boş koltuklu masa" seçiyordu (eşitlikte
+düşük index) — tost masaları L0=1 koltukla açılırken çay masaları L1+ (2-4 koltuk) olduğundan tost
+salonu spawn'ı neredeyse HİÇ kazanamıyordu (q_tost5 ilerlemiyor; aynı açlık z3 açılan HER yeni
+salonda yaşanacaktı). FIX: spawn ZONE ROUND-ROBIN — transient `spawnZone` imleci (persist YOK,
+şema değişmedi); her spawn imleçten başlayıp boş koltuğu olan İLK zone'u seçer, zone İÇİNDE eski
+kural (en çok boş koltuk, düşük index); başarıda imleç seçilen zone'un SONRAKİNE geçer → her açık
+salon ~eşit grup payı alır (L0 tost masası 1 kişi, L4 çay masası 4 kişi aldığından koltuk-temelli
+sim talebiyle de doğal uyumlu). `findTableForGroup` artık export (unit test edilir).
+Doğrulama: vitest **172/172** (4 yeni dağılım testi: starvation fix, zone-içi seçim, dolu/kirli
+sarma + -1, STORE tick 3-salon entegrasyonu), build, smoke **27/27**. Sıradaki: YENİ APK + kalan
+telefon feedback'i.
+
+İKİNCİ FEEDBACK: "bulaşıkçı kesinlikle yetmiyor — 2. bulaşıkçı mı yükseltme mi?" → KARAR: 2.
+bulaşıkçı DEĞİL (3 yeni pad + 4. dolaşan aktör = yer/kalabalık; kapasite 2 kalınca 2 kişi de
+yetmez), LEĞEN KAPASİTE YÜKSELTMESİ (SAVE **v28**). Kök neden: carryCapacity 2 SABİTTİ — Y2
+grupları tek L4 masada 4 kirli bırakıyor, bulaşıkçı bir masayı bile tek turda temizleyemiyordu.
+Uygulama: `waiterUpgrades.dishCarry` (v28 alanı; migrasyon default 0 + kelepçe — init() de kelepçeler,
+DERS: init() waiterUpgrades'i alan alan kurar, yeni alan oraya DA eklenmeli yoksa undefined kalır),
+`dishCarryCapacityFor(tier)=2+2×tier` (2→4→6→8), maliyet config `dishwasher.carryUpgrades.costs
+[600,2000,5000]` (tüm salonların bulaşıkçılarına ORTAK; carryCapacity config'ten KALKTI — tek
+kaynak), `buyDishCarry()` aksiyonu, CharacterPanel 4. SEKME "Bulaşıkçı" (kilit: hiç bulaşıkçı
+yoksa; DishwasherPreviewModel TEK Canvas'ta), sahnede CarriedDirty 4'lük sıralar (8'e kadar, leğen
+genişler). Doğrulama: vitest **176/176** (4 yeni v28 testi: eğri+kelepçe, buyDishCarry, FSM tek-tur
+4 kirli vs taban 2, v27→v28 migrasyon), build, smoke **27/27**, Playwright CANLI: v27 kayıt enjeksiyonu
+(setItem no-op hilesi) → v28 (teaTray 1 korundu, dishCarry 0 eklendi), Bulaşıkçı sekmesi "Leğen 2→4",
+satın alma −600₺ → "4→6"+2K buton + önizlemede 4 bardak; konsol 0. Sıradaki: YENİ APK (iki fix
+birlikte) + kalan telefon feedback'i.
+
+ÜÇÜNCÜ FEEDBACK PAKETİ (4 başlık, onaylı uygulandı):
+1) "Tostta müşteri sabırdan kaçıyor" → SABIR ÜRÜN-BAZLI: PRODUCTS.patienceMult (çay ×1, tost ×1.6
+   → L0 ~28.8sn > hazırlık 14sn + servis turu); tablePatience(level, product) — store oturma anında
+   zoneProduct'tan geçirir. (Tost talebi round-robin fix'iyle artınca arz/sabır dengesizliği açığa çıktı.)
+2) "Garsonlar/temizlik yetişmiyor, masalar hep kirli" → bulaşıkçı hızı 1.8→2.0 (leğen v28 ile birleşik;
+   oyuncudan hâlâ yavaş — kısmi assist korunur). Garson hızına DOKUNULMADI (kullanıcı 2026-06-11'de
+   yavaşlatmayı onaylamıştı); tepsi yükseltmeleri zaten Y3 panelinde.
+3) SVG TUTARLILIĞI: TrayIcon'a `food` prop (tost dilimli tepsi) → q_tostTray1 rozeti + panel Tostçu
+   sekmesi; DishTab "Leğen" satırı BasinIcon (WashIcon türevi — çay tepsisi görünmez); QuestPhoto 'pad'
+   case'i includes('waiter'/'dishwasher') ile eşleşir (z2waiter/z3waiter/waiter2... MASA ikonu alıyordu;
+   z3'lüler tostçu hardal kişi ikonu).
+4) PAD DOLUM TAVANI 3.5sn (kullanıcı önce "max 5sn" dedi, push öncesi "3-3.5sn olsun"a indirdi):
+   table4 120, zone2 315, z2table3 155, z2dishwasher 206, z2table4 286, zone3 1030 (8→3.5sn!),
+   z3table2 155, z3waiter 229, z3table3 358, z3dishwasher 458, z3table4 643, waiter2 229,
+   z2waiter2 343, z3waiter2 572; upgradeFillRateFor kelepçe 1-3.5sn (tost L4 3.5sn). Öğretici
+   pad'ler (1.5-3sn) AYNI kaldı.
+Doğrulama: vitest **179/179** (3 yeni turu-4 testi + 2 güncellenen dolum testi), build, smoke 27/27,
+sim eğri AYNI (z3 dolu @1.63sa — sabır/dolum sim'de yok), Playwright CANLI: Tostçu sekmesi tost
+dilimli tepsi ikonu, Leğen leğen ikonu, q_tostTray1 görev rozeti tost tepsisi (ekran görüntüleri);
+konsol 0. NOT: package.json `apk` script'i `.\gradlew.bat` oldu (PowerShell'de çıplak ad bulunamıyor).
+
 ## ŞU AN (2026-06-12 — TELEFON FEEDBACK TURU-3 oturumu; M-A ✅ + M-B ✅, SAVE v27)
 Kullanıcı feedback'i (onaylı plan: M-A fixler → M-B görev redesign → M-C=Y3 → M-D=Y4; fiyat
 indirimi son teste ERTELENDİ):

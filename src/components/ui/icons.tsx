@@ -279,18 +279,37 @@ function WashIcon() {
 }
 
 /** Tepsi + çay bardakları (karakter tepsi yükseltmesi — quest fotoğrafı + panel kartı). */
-export function TrayIcon({ size }: { size?: number }) {
+export function TrayIcon({ size, food = false }: { size?: number; food?: boolean }) {
+  // food (turu-4 SVG tutarlılığı): TOST tepsisi görevleri/paneli çay bardağı değil tost dilimi gösterir.
   const inner = (
     <g>
       <rect x="8" y="28" width="32" height="4.5" rx="2.2" fill="#8d6e63" stroke="#5d4037" strokeWidth="1.3" />
-      {[15, 24, 33].map((x) => (
-        <g key={x}>
-          <path d={`M${x - 3.6} 16h7.2l-1 5.5c-.2 1.2-.2 2.2 0 3.4l.6 3.1h-6.4l.6-3.1c.2-1.2.2-2.2 0-3.4l-1-5.5z`} fill="#c62828" stroke="#8e1c1c" strokeWidth="1" />
-          <ellipse cx={x} cy="16.6" rx="3.4" ry="1.1" fill="#ef5350" />
-        </g>
-      ))}
+      {[15, 24, 33].map((x) =>
+        food ? (
+          <g key={x}>
+            <path d={`M${x - 4.4} 27.5L${x} 17l4.4 10.5h-8.8z`} fill="#e0a050" stroke="#9c6420" strokeWidth="1.1" strokeLinejoin="round" />
+            <path d={`M${x - 1.6} 24.6l1.6-3.8 1.6 3.8`} fill="none" stroke="#9c6420" strokeWidth="0.9" strokeLinecap="round" />
+          </g>
+        ) : (
+          <g key={x}>
+            <path d={`M${x - 3.6} 16h7.2l-1 5.5c-.2 1.2-.2 2.2 0 3.4l.6 3.1h-6.4l.6-3.1c.2-1.2.2-2.2 0-3.4l-1-5.5z`} fill="#c62828" stroke="#8e1c1c" strokeWidth="1" />
+            <ellipse cx={x} cy="16.6" rx="3.4" ry="1.1" fill="#ef5350" />
+          </g>
+        ),
+      )}
     </g>
   );
+  if (size == null) return inner;
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
+      {inner}
+    </svg>
+  );
+}
+
+/** Leğen (bulaşıkçı sekmesi, v28): WashIcon'un boyutlu dışa açımı — çay tepsisiyle karışmasın. */
+export function BasinIcon({ size }: { size?: number }) {
+  const inner = <WashIcon />;
   if (size == null) return inner;
   return (
     <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
@@ -386,10 +405,13 @@ export function QuestPhoto({ target, size = 44 }: { target: QuestTarget; size?: 
       inner = <WashIcon />;
       break;
     case 'pad':
-      if (target.id === 'waiter') {
-        bg = '#33691e';
-        inner = <PersonIcon />;
-      } else if (target.id === 'dishwasher') {
+      // turu-4 SVG tutarlılığı: z2waiter/z3waiter/waiter2... yalnız 'waiter' İD'siyle eşleşmediği
+      // için MASA ikonu alıyordu → tüm garson/bulaşıkçı pad'leri KİŞİ ikonu (tostçu hardal tonla).
+      if (target.id.includes('waiter')) {
+        const food = target.id.startsWith('z3');
+        bg = food ? '#a8682a' : '#33691e';
+        inner = food ? <PersonIcon color="#d4a017" dark="#9c6420" /> : <PersonIcon />;
+      } else if (target.id.includes('dishwasher')) {
         bg = '#1565c0';
         inner = <PersonIcon color="#42a5f5" dark="#1976d2" />;
       } else {
@@ -419,9 +441,10 @@ export function QuestPhoto({ target, size = 44 }: { target: QuestTarget; size?: 
       up = true;
       break;
     case 'waiterTray':
-      // Garson tepsi görevi (Y3): garson rengi + tepsi; tostçu kendi sıcak tonuyla ayrışır.
+      // Garson tepsi görevi (Y3): garson rengi + tepsi; tostçu tepsisinde TOST dilimi (turu-4 —
+      // "tost tepsisi diyor ama SVG'de çay var" tutarsızlığı giderildi).
       bg = target.kind === 'tost' ? '#a8682a' : '#33691e';
-      inner = <TrayIcon />;
+      inner = <TrayIcon food={target.kind === 'tost'} />;
       up = true;
       break;
     case 'charStat':

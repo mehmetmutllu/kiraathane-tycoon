@@ -11,12 +11,14 @@ import {
   trayCapacityFor,
   waiterTrayCapacityFor,
   waiterTrayNextCost,
+  dishCarryCapacityFor,
+  dishCarryNextCost,
   type CharStat,
   type WaiterKind,
 } from '../../config/economy.config';
 import { PALETTE } from '../../config/palette';
 import { OwnerBody, CupTray } from '../three/Player';
-import { CoinIcon, TrayIcon, MagnetIcon, BootIcon } from './icons';
+import { CoinIcon, TrayIcon, BasinIcon, MagnetIcon, BootIcon } from './icons';
 
 /**
  * Karakter paneli (v20 + Y3 SEKMELER; docs/yemek-alani-garson-plan.md §3): Oyuncu | Çay Garsonu |
@@ -110,13 +112,65 @@ function WaiterPreviewModel({ cap, food }: { cap: number; food: boolean }) {
   );
 }
 
+// Bulaşıkçı önizlemesi (v28): sahnedeki DishwasherUnit greybox diliyle aynı — gri-mavi kapsül +
+// leğende kapasite kadar kirli bardak (4'lük sıralar; sahnedeki CarriedDirty ile aynı yerleşim).
+function DishwasherPreviewModel({ cap }: { cap: number }) {
+  const sway = useRef<Group>(null);
+  const trayG = useRef<Group>(null);
+  const prevCap = useRef(cap);
+  const pop = useRef(0);
+  if (cap > prevCap.current) pop.current = 1;
+  prevCap.current = cap;
+  useFrame((st, dt) => {
+    const t = st.clock.elapsedTime;
+    if (sway.current) {
+      sway.current.rotation.y = -0.38 + Math.sin(t * 0.6) * 0.1;
+      sway.current.position.y = Math.sin(t * 1.6) * 0.015;
+    }
+    if (trayG.current) {
+      pop.current = Math.max(0, pop.current - dt * 2.2);
+      trayG.current.scale.setScalar(1 + 0.3 * pop.current);
+    }
+  });
+  const perRow = Math.min(cap, 4);
+  const w = Math.max(0.3, 0.14 + perRow * 0.13);
+  const depth = cap > 4 ? 0.38 : 0.24;
+  return (
+    <group ref={sway}>
+      <mesh castShadow position={[0, 0.55, 0]}>
+        <capsuleGeometry args={[0.32, 0.6, 6, 12]} />
+        <meshStandardMaterial color="#4a6b82" />
+      </mesh>
+      <group ref={trayG} position={[0, 0.95, 0.4]}>
+        <mesh castShadow>
+          <boxGeometry args={[w, 0.04, depth]} />
+          <meshStandardMaterial color="#6d4c41" />
+        </mesh>
+        {Array.from({ length: cap }, (_, i) => {
+          const col = i % 4;
+          const row = Math.floor(i / 4);
+          const rowCount = Math.min(cap - row * 4, 4);
+          const x = (col - (rowCount - 1) / 2) * 0.13;
+          const z = cap > 4 ? (row === 0 ? -0.08 : 0.08) : 0;
+          return (
+            <mesh key={i} castShadow position={[x, 0.1, z]}>
+              <cylinderGeometry args={[0.045, 0.036, 0.13, 8]} />
+              <meshStandardMaterial color="#8d8276" roughness={0.9} />
+            </mesh>
+          );
+        })}
+      </group>
+    </group>
+  );
+}
+
 const STAT_ROWS: { stat: CharStat; name: string; unit: string; icon: React.ReactNode }[] = [
   { stat: 'tray', name: 'Tepsi', unit: 'bardak', icon: <TrayIcon size={34} /> },
   { stat: 'magnet', name: 'Para Mıknatısı', unit: 'alan', icon: <MagnetIcon size={34} /> },
   { stat: 'speed', name: 'Hareket Hızı', unit: 'hız', icon: <BootIcon size={34} /> },
 ];
 
-type Tab = 'player' | 'tea' | 'tost';
+type Tab = 'player' | 'tea' | 'tost' | 'dish';
 
 // Garson sekmesi içeriği: kilit (garson yok) | tepsi yükseltme satırı.
 // NOT: kendi Canvas'ı YOK — panel TEK Canvas kullanır (sekme başına yeni WebGL context açmak
@@ -141,7 +195,7 @@ function WaiterTab({ kind, hired }: { kind: WaiterKind; hired: boolean }) {
   return (
     <>
       <div className="char-stat">
-        <span className="char-stat-icon"><TrayIcon size={34} /></span>
+        <span className="char-stat-icon"><TrayIcon size={34} food={food} /></span>
         <span className="char-stat-info">
           <span className="char-stat-name">Tepsi</span>
           <span className="char-stat-val" data-testid={`waiter-val-${kind}`}>
@@ -181,6 +235,61 @@ function WaiterTab({ kind, hired }: { kind: WaiterKind; hired: boolean }) {
   );
 }
 
+// Bulaşıkçı sekmesi (v28): kilit (bulaşıkçı yok) | leğen kapasite yükseltme satırı.
+function DishTab({ hired }: { hired: boolean }) {
+  const wallet = useGame((s) => s.wallet);
+  const waiterUpgrades = useGame((s) => s.waiterUpgrades);
+  const buyDishCarry = useGame((s) => s.buyDishCarry);
+  const cash = wallet.toNumber();
+  const tier = waiterUpgrades.dishCarry;
+  const cap = dishCarryCapacityFor(tier);
+  const cost = dishCarryNextCost(tier);
+  if (!hired) {
+    return (
+      <div className="char-locked" data-testid="waiter-locked-dish">
+        Bulaşıkçı tutunca açılır.
+      </div>
+    );
+  }
+  return (
+    <>
+      <div className="char-stat">
+        <span className="char-stat-icon"><BasinIcon size={34} /></span>
+        <span className="char-stat-info">
+          <span className="char-stat-name">Leğen</span>
+          <span className="char-stat-val" data-testid="waiter-val-dish">
+            {cost != null ? (
+              <>
+                {cap} <i>→ {cap + 2}</i> bardak
+              </>
+            ) : (
+              <>{cap} bardak</>
+            )}
+          </span>
+        </span>
+        {cost != null ? (
+          <button
+            className="char-buy"
+            data-testid="waiter-buy-dish"
+            disabled={cash < cost}
+            onClick={() => buyDishCarry()}
+          >
+            <CoinIcon size={16} />
+            {fmt(D(cost))}
+          </button>
+        ) : (
+          <span className="char-max" data-testid="waiter-buy-dish">
+            MAX
+          </span>
+        )}
+      </div>
+      <div className="char-note">
+        Tüm salonların bulaşıkçıları için ortak leğen: tek turda daha çok kirli bardak taşınır.
+      </div>
+    </>
+  );
+}
+
 export function CharacterPanel({ onClose }: { onClose: () => void }) {
   const wallet = useGame((s) => s.wallet);
   const charUpgrades = useGame((s) => s.charUpgrades);
@@ -193,7 +302,10 @@ export function CharacterPanel({ onClose }: { onClose: () => void }) {
   const lvl = charLevel(charUpgrades);
   const teaHired = padsDone.includes('waiter') || padsDone.includes('z2waiter');
   const tostHired = padsDone.includes('z3waiter');
-  const showCanvas = tab === 'player' || (tab === 'tea' ? teaHired : tostHired);
+  const dishHired =
+    padsDone.includes('dishwasher') || padsDone.includes('z2dishwasher') || padsDone.includes('z3dishwasher');
+  const showCanvas =
+    tab === 'player' || (tab === 'tea' ? teaHired : tab === 'tost' ? tostHired : dishHired);
 
   return (
     <div className="modal-backdrop" data-testid="char-panel" onClick={onClose}>
@@ -207,7 +319,7 @@ export function CharacterPanel({ onClose }: { onClose: () => void }) {
             <i>{lvl}</i>
           </span>
           <span className="modal-title">
-            {tab === 'player' ? 'Çaycı' : tab === 'tea' ? 'Çay Garsonu' : 'Tostçu Garson'}
+            {tab === 'player' ? 'Çaycı' : tab === 'tea' ? 'Çay Garsonu' : tab === 'tost' ? 'Tostçu Garson' : 'Bulaşıkçı'}
           </span>
         </div>
 
@@ -234,6 +346,13 @@ export function CharacterPanel({ onClose }: { onClose: () => void }) {
           >
             Tostçu
           </button>
+          <button
+            className={`char-tab${tab === 'dish' ? ' active' : ''}`}
+            data-testid="char-tab-dish"
+            onClick={() => setTab('dish')}
+          >
+            Bulaşıkçı
+          </button>
         </div>
 
         {/* TEK Canvas (3/4 yukarı-çapraz açı): sekme MODELİ değiştirir, context'i değil —
@@ -252,6 +371,9 @@ export function CharacterPanel({ onClose }: { onClose: () => void }) {
             )}
             {tab === 'tost' && tostHired && (
               <WaiterPreviewModel cap={waiterTrayCapacityFor('tost', waiterUpgrades.tostTray)} food />
+            )}
+            {tab === 'dish' && dishHired && (
+              <DishwasherPreviewModel cap={dishCarryCapacityFor(waiterUpgrades.dishCarry)} />
             )}
           </Canvas>
         </div>
@@ -305,6 +427,7 @@ export function CharacterPanel({ onClose }: { onClose: () => void }) {
 
         {tab === 'tea' && <WaiterTab kind="tea" hired={teaHired} />}
         {tab === 'tost' && <WaiterTab kind="tost" hired={tostHired} />}
+        {tab === 'dish' && <DishTab hired={dishHired} />}
 
         <button className="modal-btn" data-testid="char-ok" onClick={onClose}>
           Tamam

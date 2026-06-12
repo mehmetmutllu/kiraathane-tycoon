@@ -6,6 +6,7 @@ import {
   requiresMet,
   charMaxTier,
   waiterTrayMaxTier,
+  dishCarryMaxTier,
   defaultFloorTheme,
   zoneProduct,
   type CharUpgrades,
@@ -109,7 +110,7 @@ export function defaultCharUpgrades(): CharUpgrades {
 }
 
 export function defaultWaiterUpgrades(): WaiterUpgrades {
-  return { teaTray: 0, tostTray: 0 };
+  return { teaTray: 0, tostTray: 0, dishCarry: 0 };
 }
 
 export function defaultSave(): SaveData {
@@ -618,6 +619,12 @@ export function migrate(raw: Record<string, unknown>): SaveData {
     v = 27;
   }
 
+  // v27 -> v28 (BULAŞIKÇI LEĞENİ, 2026-06-12 telefon feedback turu-4): waiterUpgrades.dishCarry
+  // alanı eklendi (default 0 — aşağıdaki normalize bloğu ekler/kelepçeler). Başka şema değişikliği yok.
+  if (v < 28) {
+    v = 28;
+  }
+
   // Sona kalan v16 şeması: türetilen alanlar (tables/stations/serviceSpeedMult/hasWaiter), eski `padFill`,
   // kaldırılan `trayLevel` ve 'samovar' referansı yazılmaz; stats/questIndex/questBase eklendi (v16).
   const rawStats = (d.stats && typeof d.stats === 'object' ? d.stats : {}) as Partial<SaveStats>;
@@ -677,6 +684,7 @@ export function migrate(raw: Record<string, unknown>): SaveData {
       return {
         teaTray: Math.max(0, Math.min(Number(raw.teaTray ?? 0) || 0, waiterTrayMaxTier('tea'))),
         tostTray: Math.max(0, Math.min(Number(raw.tostTray ?? 0) || 0, waiterTrayMaxTier('tost'))),
+        dishCarry: Math.max(0, Math.min(Number(raw.dishCarry ?? 0) || 0, dishCarryMaxTier())),
       };
     })(),
     charPanelSeen: d.charPanelSeen === true,

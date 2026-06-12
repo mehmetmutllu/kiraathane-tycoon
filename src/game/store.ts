@@ -29,6 +29,9 @@ import {
   waiterTrayMaxTier,
   waiterTrayNextCost,
   waiterTrayCapacityFor,
+  dishCarryNextCost,
+  dishCarryCapacityFor,
+  dishCarryMaxTier,
   type WaiterKind,
   type WaiterUpgrades,
   trayCapacityFor,
@@ -582,25 +585,35 @@ function occupiedSeats(npcs: Npc[]): Map<number, Set<number>> {
   return occ;
 }
 
-/** Grup hedefi (Y2, plan §2): en çok BOŞ koltuklu temiz masa (eşitlikte düşük index — ön sıra önce).
+/** Grup hedefi (Y2, plan §2 + dağılım fix'i): zone'lar ROUND-ROBIN pay alır — global "en çok
+ *  boş koltuk" araması, az koltuklu yeni salonu (tost L0=1 koltuk) çay salonlarına karşı sürekli
+ *  kaybettirip AÇ bırakıyordu (q_tost5 ilerleyemiyordu). startZone'dan başlayarak boş koltuğu
+ *  olan İLK zone seçilir; zone İÇİNDE en çok boş koltuklu temiz masa (eşitlikte düşük index).
  *  Hiç boş koltuk yoksa -1. */
-function findTableForGroup(
+export function findTableForGroup(
   occ: Map<number, Set<number>>,
   tables: number,
   dirty: Set<number>,
   tableLevels: number[],
+  zonesOpen: number,
+  startZone: number,
 ): number {
-  let best = -1;
-  let bestFree = 0;
-  for (let i = 0; i < tables; i++) {
-    if (dirty.has(i)) continue;
-    const free = tableSeats(tableLevels[i] ?? 0) - (occ.get(i)?.size ?? 0);
-    if (free > bestFree) {
-      bestFree = free;
-      best = i;
+  for (let dz = 0; dz < zonesOpen; dz++) {
+    const z = (startZone + dz) % zonesOpen;
+    let best = -1;
+    let bestFree = 0;
+    const end = Math.min((z + 1) * TABLES_PER_ZONE, tables);
+    for (let i = z * TABLES_PER_ZONE; i < end; i++) {
+      if (dirty.has(i)) continue;
+      const free = tableSeats(tableLevels[i] ?? 0) - (occ.get(i)?.size ?? 0);
+      if (free > bestFree) {
+        bestFree = free;
+        best = i;
+      }
     }
+    if (best >= 0) return best;
   }
-  return best;
+  return -1;
 }
 
 /** Oyuncunun o an üstünde durduğu/doldurduğu zone (HUD'da alttaki bar). */
@@ -734,6 +747,8 @@ export interface GameState {
   offlineEarned: number;
   // Dahili
   spawnTimer: number;
+  /** Spawn round-robin zone imleci (transient): grup dağılımı zone'lar arası adil olsun. */
+  spawnZone: number;
   saveTimer: number;
   nextId: number;
   inputKeyboard: [number, number];
@@ -761,6 +776,8 @@ export interface GameState {
   buyCharUpgrade: (stat: CharStat) => boolean;
   /** Garson tepsi kademesi satın al (Y3, garson sekmesi): tür-başı eğri (çay ortak, tostçu ayrı). */
   buyWaiterTray: (kind: WaiterKind) => boolean;
+  /** Bulaşıkçı leğen kademesi satın al (v28, Bulaşıkçı sekmesi): tüm salonların bulaşıkçılarına ortak. */
+  buyDishCarry: () => boolean;
   /** Karakter paneli ilk-sefer spotlight'ını kapat (butona dokununca; persist — bir daha çıkmaz). */
   markCharPanelSeen: () => void;
   /**
@@ -1048,6 +1065,7 @@ export const useGame = create<GameState>((set, get) => ({
   camFocus: null,
   offlineEarned: 0,
   spawnTimer: 1,
+  spawnZone: 0,
   saveTimer: SAVE_INTERVAL,
   nextId: 1,
   inputKeyboard: [0, 0],
@@ -1069,10 +1087,11 @@ export const useGame = create<GameState>((set, get) => ({
       magnet: Math.max(0, Math.min(save.charUpgrades?.magnet ?? 0, charMaxTier('magnet'))),
       speed: Math.max(0, Math.min(save.charUpgrades?.speed ?? 0, charMaxTier('speed'))),
     };
-    // Garson tepsi kademeleri (v27/Y3): aynı kelepçe deseni.
+    // Garson tepsi kademeleri (v27/Y3) + bulaşıkçı leğeni (v28): aynı kelepçe deseni.
     const waiterUpgrades: WaiterUpgrades = {
       teaTray: Math.max(0, Math.min(save.waiterUpgrades?.teaTray ?? 0, waiterTrayMaxTier('tea'))),
       tostTray: Math.max(0, Math.min(save.waiterUpgrades?.tostTray ?? 0, waiterTrayMaxTier('tost'))),
+      dishCarry: Math.max(0, Math.min(save.waiterUpgrades?.dishCarry ?? 0, dishCarryMaxTier())),
     };
     // Çevrimdışı gelir: açık zone'ların idealize oranları TOPLAMI; süre + PARA tavanlı (computeOfflineEarned).
     const elapsed = Math.max(0, (Date.now() - save.lastSaved) / 1000);
@@ -1185,6 +1204,7 @@ export const useGame = create<GameState>((set, get) => ({
             })()
           : null,
       spawnTimer: 1,
+      spawnZone: 0,
       saveTimer: SAVE_INTERVAL,
       nextId: 1,
     });
@@ -1245,6 +1265,7 @@ export const useGame = create<GameState>((set, get) => ({
     };
     let nextId = s.nextId;
     let spawnTimer = s.spawnTimer - dt;
+    let spawnZone = s.spawnZone;
 
     // --- Ocak hazır-kuyruğu (demleme) — D-011 §3 + bardak döngüsü (Faz 2e §5), ZONE BAŞINA ---
     // Her açık zone'un ocağı kendi kuyruğuna demler (per-zone ocak, D-022); TEMİZ bardak GLOBAL havuzdan.
@@ -1276,7 +1297,7 @@ export const useGame = create<GameState>((set, get) => ({
     const maxConcurrent = Math.max(C.npc.maxConcurrent, totalSeats + 2);
     if (spawnTimer <= 0 && activeCount < maxConcurrent) {
       const occ = occupiedSeats(npcs);
-      const target = findTableForGroup(occ, tables, dirty, tableLevels);
+      const target = findTableForGroup(occ, tables, dirty, tableLevels, zonesOpen, spawnZone);
       if (target >= 0) {
         // Grup boyu zarla (%30/35/20/15); koltuk yetmezse KÜÇÜLÜR, tavan da aşılmaz.
         const seats = LAYOUT.tables[target].seats;
@@ -1302,6 +1323,7 @@ export const useGame = create<GameState>((set, get) => ({
           placed += 1;
         }
         spawnTimer += C.npc.spawnInterval;
+        spawnZone = (zoneOfTable(target) + 1) % zonesOpen; // sıradaki grup bir SONRAKİ zone'dan başlasın
       } else {
         spawnTimer = 0; // koltuk boşalınca hemen denesin
       }
@@ -1331,7 +1353,7 @@ export const useGame = create<GameState>((set, get) => ({
             n.pos[0] = seat[0];
             n.pos[2] = seat[2];
             n.state = 'waitingForTea';
-            n.timer = tablePatience(tableLevels[n.tableIndex] ?? 0);
+            n.timer = tablePatience(tableLevels[n.tableIndex] ?? 0, zoneProduct(zoneOfTable(n.tableIndex)));
           } else {
             // Sigorta: rota bulunamayıp uzun süre oturamadıysa vazgeçip gider — masa SÜRESİZ
             // rezerve kalamaz (timer toTable'da yürüme-süresi sayacı olarak kullanılır).
@@ -1601,7 +1623,7 @@ export const useGame = create<GameState>((set, get) => ({
         ? { pos: [...prevDw.pos] as Vec3, tray: prevDw.tray }
         : { pos: [...LAYOUT.dishwasherHomes[z]] as Vec3, tray: 0 };
       const dStep = C.dishwasher.moveSpeed * dt;
-      const dCap = C.dishwasher.carryCapacity;
+      const dCap = dishCarryCapacityFor(s.waiterUpgrades.dishCarry);
       const zoneDishes = dishes.filter((d) => zoneOfTable(d.tableIndex) === z);
       if (dw.tray >= dCap || (dw.tray > 0 && zoneDishes.length === 0)) {
         // Dolu (ya da elinde var ama toplanacak kalmadı) → KENDİ zone'unun bulaşığında yıka.
@@ -1938,6 +1960,7 @@ export const useGame = create<GameState>((set, get) => ({
       cleanCups,
       carriedDirty,
       spawnTimer,
+      spawnZone,
       saveTimer,
       nextId,
       npcCount: liveNpcs.length,
@@ -2034,6 +2057,21 @@ export const useGame = create<GameState>((set, get) => ({
     set({
       wallet: s.wallet.sub(cost),
       waiterUpgrades: { ...s.waiterUpgrades, [key]: tier + 1 },
+      xp: s.xp + C.xp.perUpgrade,
+    });
+    get().saveNow();
+    return true;
+  },
+
+  // Bulaşıkçı leğen kademesi satın al (v28 — Bulaşıkçı sekmesi; buyWaiterTray deseni).
+  buyDishCarry: () => {
+    const s = get();
+    const tier = s.waiterUpgrades.dishCarry;
+    const cost = dishCarryNextCost(tier);
+    if (cost == null || s.wallet.lt(cost)) return false;
+    set({
+      wallet: s.wallet.sub(cost),
+      waiterUpgrades: { ...s.waiterUpgrades, dishCarry: tier + 1 },
       xp: s.xp + C.xp.perUpgrade,
     });
     get().saveNow();

@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import {
   economyConfig,
+  PRODUCTS,
   upgradeCost,
   upgradeOutputMultiplier,
   brewQueueCapacity,
@@ -26,6 +27,9 @@ import {
   waiterTrayCapacityFor,
   waiterTrayMaxTier,
   waiterTrayNextCost,
+  dishCarryCapacityFor,
+  dishCarryMaxTier,
+  dishCarryNextCost,
   requiresMet,
 } from '../src/config/economy.config';
 import { D, fmt } from '../src/game/decimal';
@@ -38,6 +42,7 @@ import {
   computeOfflineEarned,
   questTargetMet,
   questCounterValue,
+  findTableForGroup,
   stationSoftMaxLevel,
   stationUpgradeCost,
   trayCapacity,
@@ -2609,7 +2614,7 @@ describe('v27 — görev redesign + İD-eşleme migrasyonu + dolum süreleri (te
     // Eski v26 sırasında 19 = q_z2waiter.
     const m = migrate(v26Save(19, [...Z1, 'zone2', 'z2table2']));
     expect(qid(m)).toBe('q_z2waiter');
-    expect(m.waiterUpgrades).toEqual({ teaTray: 0, tostTray: 0 });
+    expect(m.waiterUpgrades).toEqual({ teaTray: 0, tostTray: 0, dishCarry: 0 });
     expect(m.saveVersion).toBe(SAVE_VERSION);
   });
 
@@ -2701,15 +2706,15 @@ describe('v27 — görev redesign + İD-eşleme migrasyonu + dolum süreleri (te
     expect(questFocusPos({ type: 'waiterTray', kind: 'tea', tier: 1 }, [], 4)).toBeNull();
   });
 
-  it('dolum süreleri: pad dwell ≤ 8sn, yükseltme dolumu 1-6sn kelepçeli', () => {
+  it('dolum süreleri: pad dwell ≤ 3.5sn, yükseltme dolumu 1-3.5sn kelepçeli (turu-4 ikinci ayar)', () => {
     for (const p of economyConfig.pads) {
       const t = p.cost / p.fillRate;
-      expect(t).toBeLessThanOrEqual(8.05); // en pahalı açılış (zone3) dahil
+      expect(t).toBeLessThanOrEqual(3.55); // turu-4 ikinci ayar: tavan 3.5sn (kullanıcı "3-3.5 olsun")
       expect(t).toBeGreaterThanOrEqual(1.0);
     }
     expect(upgradeFillRateFor(20)).toBeCloseTo(20); // 20₺ → 1sn (erken: çok kısa olmaz)
     expect(upgradeFillRateFor(120)).toBeCloseTo(60); // orta bant eski hızla aynı
-    expect(1350 / upgradeFillRateFor(1350)).toBeCloseTo(6); // tost L4: 22.5sn → 6sn tavan
+    expect(1350 / upgradeFillRateFor(1350)).toBeCloseTo(3.5); // tost L4: 22.5sn → 3.5sn tavan
   });
 });
 
@@ -2808,7 +2813,7 @@ describe('Y3 — garson tepsi yükseltmeleri (panel satın alma + FSM kapasite +
 
   it('v27 kaydında waiterUpgrades yuvarlanır/kelepçelenir (bozuk değer tavana iner)', () => {
     const m = migrate({ ...defaultSave(), saveVersion: 26, waiterUpgrades: { teaTray: 99, tostTray: -3 } } as unknown as Record<string, unknown>);
-    expect(m.waiterUpgrades).toEqual({ teaTray: waiterTrayMaxTier('tea'), tostTray: 0 });
+    expect(m.waiterUpgrades).toEqual({ teaTray: waiterTrayMaxTier('tea'), tostTray: 0, dishCarry: 0 });
   });
 });
 
@@ -2924,3 +2929,165 @@ describe('Y4 — 2. garson: gating (allZoneTablesLevel) + claim + opsiyonel pad 
     expect(useGame.getState().waiters2[0]).not.toBeNull();
   });
 });
+
+describe("Müşteri dağılımı — zone round-robin (tost salonu aç kalmasın fix'i)", () => {
+  const Z1 = ['table2', 'table3', 'waiter', 'dishwasher', 'table4'];
+  const Z2 = ['zone2', 'z2table2', 'z2waiter', 'z2table3', 'z2dishwasher', 'z2table4'];
+
+  it('startZone=2: çay masaları DAHA boş olsa da (L4=4 koltuk) tost masası (L0=1) seçilir', () => {
+    const levels = [4, 4, 4, 4, 4, 4, 4, 4, 0];
+    expect(findTableForGroup(new Map(), 9, new Set(), levels, 3, 2)).toBe(8);
+  });
+
+  it("startZone kendi zone'unda en çok boş koltuklu masayı seçer (eşitlikte düşük index)", () => {
+    const levels = [0, 4, 0, 0, 0, 0, 0, 0, 0];
+    expect(findTableForGroup(new Map(), 9, new Set(), levels, 3, 0)).toBe(1); // z0: L4 en boş
+    expect(findTableForGroup(new Map(), 9, new Set(), levels, 3, 1)).toBe(4); // z1: ilk masa
+  });
+
+  it("başlangıç zone'u dolu/kirliyse SIRADAKİ zone'a düşer; hiç yer yoksa -1", () => {
+    const levels = Array(9).fill(0); // hepsi L0 = 1 koltuk
+    const occ8 = new Map([[8, new Set([0])]]);
+    expect(findTableForGroup(occ8, 9, new Set(), levels, 3, 2)).toBe(0); // tost dolu → z0'a sar
+    expect(findTableForGroup(new Map(), 9, new Set([8]), levels, 3, 2)).toBe(0); // tost kirli → z0
+    const allFull = new Map(Array.from({ length: 9 }, (_, i) => [i, new Set([0])] as const));
+    expect(findTableForGroup(allFull, 9, new Set(), levels, 3, 0)).toBe(-1);
+  });
+
+  it('STORE tick: 3 salon açıkken çay koltukları hep boş olsa da TOST masasına müşteri gelir', () => {
+    useGame.getState().hardReset();
+    useGame.setState({
+      padsDone: [...Z1, ...Z2, 'zone3'],
+      questIndex: economyConfig.quests.length,
+      npcs: [],
+      spawnTimer: 0,
+      player: [5.2, 0.6, -5.2],
+      inputKeyboard: [0, 0],
+      inputJoystick: [0, 0],
+    });
+    // ~6 sn akış: round-robin imleciyle 3. spawn tost salonuna (masa 8) düşmeli.
+    let tostCustomer = false;
+    for (let i = 0; i < 60 && !tostCustomer; i++) {
+      useGame.getState().tick(0.1);
+      tostCustomer = useGame.getState().npcs.some((n) => n.tableIndex === 8);
+    }
+    expect(tostCustomer).toBe(true);
+    // Dağılım adil: çay salonları da pay almış (z0 ve z1'de de müşteri var).
+    const zonesHit = new Set(useGame.getState().npcs.map((n) => Math.floor(n.tableIndex / 4)));
+    expect(zonesHit.has(0)).toBe(true);
+    expect(zonesHit.has(1)).toBe(true);
+  });
+});
+
+describe('v28 — bulaşıkçı leğen yükseltmesi (telefon feedback turu-4: "bulaşıkçı yetmiyor")', () => {
+  it('eğri config\'ten: kapasite 2→4→6→8 (+ kelepçe), maliyetler 600/2000/5000, tavanda null', () => {
+    expect(economyConfig.dishwasher.carryUpgrades.costs).toEqual([600, 2000, 5000]);
+    expect([0, 1, 2, 3].map(dishCarryCapacityFor)).toEqual([2, 4, 6, 8]);
+    expect(dishCarryCapacityFor(99)).toBe(8); // aşırı kademe kelepçelenir
+    expect(dishCarryCapacityFor(-1)).toBe(2);
+    expect(dishCarryNextCost(0)).toBe(600);
+    expect(dishCarryNextCost(dishCarryMaxTier())).toBeNull();
+  });
+
+  it('buyDishCarry: yetersiz bakiye false; alımda kademe artar + cüzdan düşer; tavanda false', () => {
+    useGame.getState().hardReset();
+    useGame.setState({ wallet: D(100) });
+    expect(useGame.getState().buyDishCarry()).toBe(false); // 600 > 100
+    useGame.setState({ wallet: D(10000) });
+    expect(useGame.getState().buyDishCarry()).toBe(true);
+    expect(useGame.getState().waiterUpgrades.dishCarry).toBe(1);
+    expect(useGame.getState().wallet.toNumber()).toBe(10000 - 600);
+    expect(useGame.getState().buyDishCarry()).toBe(true); // -2000
+    expect(useGame.getState().buyDishCarry()).toBe(true); // -5000
+    expect(useGame.getState().waiterUpgrades.dishCarry).toBe(3);
+    expect(useGame.getState().buyDishCarry()).toBe(false); // MAX
+    expect(useGame.getState().wallet.toNumber()).toBe(10000 - 600 - 2000 - 5000);
+  });
+
+  it('FSM: kademe 1 (kapasite 4) bulaşıkçı 4 kirliyi TEK turda toplar; taban (2) iki tur gerektirir', () => {
+    const fourDishes = (t: { table: [number, number, number] }) =>
+      Array.from({ length: 4 }, (_, i) => ({
+        id: 9100 + i,
+        pos: [t.table[0] + (i % 2) * 0.3 - 0.15, 0.95, t.table[2] + Math.floor(i / 2) * 0.3 - 0.15] as [number, number, number],
+        tableIndex: 0,
+      }));
+    const run = (tier: number) => {
+      useGame.getState().hardReset();
+      useGame.setState({
+        padsDone: ['table2', 'dishwasher'],
+        questIndex: economyConfig.quests.length,
+        npcs: [],
+        spawnTimer: 1e9,
+        waiterUpgrades: { teaTray: 0, tostTray: 0, dishCarry: tier },
+        dishes: fourDishes(LAYOUT.tables[0]),
+        player: [5.2, 0.6, -5.2],
+      });
+      let maxTray = 0;
+      for (let i = 0; i < 600 && useGame.getState().dishes.length > 0; i++) {
+        useGame.getState().tick(0.1);
+        const dw = useGame.getState().dishwashers[0];
+        if (dw) maxTray = Math.max(maxTray, dw.tray);
+      }
+      expect(useGame.getState().dishes.length).toBe(0); // hepsi toplandı
+      return maxTray;
+    };
+    expect(run(1)).toBe(4); // leğen 4 → tek turda 4 kirli
+    expect(run(0)).toBe(2); // taban 2 → tur başına en çok 2
+  });
+
+  it('v27→v28 migrasyonu: dishCarry eksikse 0 eklenir (tepsi kademeleri korunur); bozuk değer kelepçelenir', () => {
+    const m = migrate({
+      saveVersion: 27, wallet: '0', diamonds: '0', lifetime: '0',
+      padsDone: ['table2', 'dishwasher'], padFills: {}, tableLevels: [],
+      waiterUpgrades: { teaTray: 1, tostTray: 0 },
+    } as unknown as Record<string, unknown>);
+    expect(m.saveVersion).toBe(SAVE_VERSION);
+    expect(m.waiterUpgrades).toEqual({ teaTray: 1, tostTray: 0, dishCarry: 0 });
+    const m2 = migrate({
+      saveVersion: 27, wallet: '0', diamonds: '0', lifetime: '0',
+      padsDone: [], padFills: {}, tableLevels: [],
+      waiterUpgrades: { teaTray: 0, tostTray: 0, dishCarry: 99 },
+    } as unknown as Record<string, unknown>);
+    expect(m2.waiterUpgrades.dishCarry).toBe(dishCarryMaxTier());
+  });
+});
+
+describe('Turu-4 — tost sabrı ürün-bazlı + temizlik temposu ("tostta müşteri sabırdan kaçıyor")', () => {
+  const Z1 = ['table2', 'table3', 'waiter', 'dishwasher', 'table4'];
+  const Z2 = ['zone2', 'z2table2', 'z2waiter', 'z2table3', 'z2dishwasher', 'z2table4'];
+
+  it('tablePatience ürünle çarpılır: çay aynı (×1), tost ×1.6; masa seviyesi tabana eklenir', () => {
+    expect(PRODUCTS.tea.patienceMult).toBe(1);
+    expect(PRODUCTS.tost.patienceMult).toBeCloseTo(1.6);
+    expect(tablePatience(0)).toBe(economyConfig.npc.patience); // default ürün = çay, eski davranış
+    expect(tablePatience(0, 'tea')).toBe(economyConfig.npc.patience);
+    expect(tablePatience(0, 'tost')).toBeCloseTo(economyConfig.npc.patience * 1.6); // 28.8sn > hazırlık 14sn
+    expect(tablePatience(4, 'tost')).toBeCloseTo(
+      (economyConfig.npc.patience + economyConfig.tables.patiencePerLevel * 4) * 1.6,
+    );
+  });
+
+  it('STORE: tost masasına (zone-2) oturan müşterinin sabrı tost çarpanıyla başlar', () => {
+    useGame.getState().hardReset();
+    const seat = LAYOUT.tables[8].seat;
+    useGame.setState({
+      padsDone: [...Z1, ...Z2, 'zone3'],
+      questIndex: economyConfig.quests.length,
+      player: [5.2, 0.6, -5.2],
+      inputKeyboard: [0, 0],
+      inputJoystick: [0, 0],
+      npcs: [{ id: 980, state: 'toTable', pos: [...seat] as [number, number, number], tableIndex: 8, seatIndex: 0, timer: 0, color: '#2980b9' }],
+      spawnTimer: 1e9,
+    });
+    useGame.getState().tick(0.05);
+    const n = useGame.getState().npcs.find((x) => x.id === 980);
+    expect(n?.state).toBe('waitingForTea');
+    expect(n?.timer).toBeCloseTo(tablePatience(0, 'tost'), 5);
+  });
+
+  it('bulaşıkçı hızı 2.0 (oyuncudan yavaş kalır — kısmi assist korunur)', () => {
+    expect(economyConfig.dishwasher.moveSpeed).toBe(2.0);
+    expect(economyConfig.dishwasher.moveSpeed).toBeLessThan(charValue('speed', 0) as number);
+  });
+});
+
