@@ -583,8 +583,29 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   - vitest **168/168**, build, smoke 27/27, Playwright canlı doğrulamalar (v26→v27 migrasyon gerçek
     kayıtla, panel alımı, 2. garson satın alma + çift servis). Fiyat indirimi kararı SON telefon
     testine ertelendi (kullanıcı).
-- 🔧 **SIRADA:** YENİ APK derlendi → kullanıcı Y3+Y4 TOPLU telefon testi → feedback turu-4 (+fiyat
-  indirimi kararı). Sonra: arka-sol rezerv arsa içeriği + üst kat tasarım turu (kullanıcıyla).
+- ✅ **FEEDBACK TURU-4 (2026-06-12 öğleden sonra, tek oturum — commit a96a478, SAVE v28):**
+  - **Zone round-robin spawn:** tost salonuna müşteri GELMİYORDU — `findTableForGroup` global
+    "en çok boş koltuk" seçiyordu (tost L0=1 koltuk hep kaybediyor, q_tost5 kilitleniyordu) →
+    transient `spawnZone` imleciyle salonlar sırayla pay alır; zone içinde eski kural. Şema değişmedi.
+  - **Bulaşıkçı leğeni (v28):** "bulaşıkçı kesinlikle yetmiyor" — kök neden carryCapacity=2 sabit
+    (Y2 grubu 4 kirli bırakır). 2. bulaşıkçı YERİNE panel yükseltmesi: `waiterUpgrades.dishCarry`,
+    kapasite 2→4→6→8 (600/2000/5000, tüm salonlara ortak), CharacterPanel 4. sekme, sahnede 4'lük
+    sıralı leğen görseli. DERS: init() waiterUpgrades'i alan alan kurar — yeni persist alanı oraya
+    DA eklenmeli (yoksa undefined).
+  - **Turu-4 paketi:** tost sabrı ürün-bazlı (patienceMult ×1.6 ~29sn — "sabırdan kaçıyor" fix);
+    bulaşıkçı hızı 1.8→2.0; SVG tutarlılığı (TrayIcon food prop, BasinIcon, QuestPhoto pad
+    includes() — z2/z3 personel pad'leri MASA ikonu alıyordu); PAD DOLUM TAVANI 3.5sn (zone3
+    8→3.5sn dahil 14 pad; kullanıcı 5sn dedikten sonra 3-3.5'e indirdi) + upgradeFillRateFor
+    kelepçe 1-3.5sn. `apk` script `.\gradlew.bat` (PowerShell uyumu).
+  - vitest **179/179**, build, smoke 27/27, sim eğri AYNI (z3 dolu @1.63sa), Playwright canlı
+    (v27→v28 migrasyon, panel satın alma −600₺, yeni ikon ekran görüntüleri). APK 15:37 derlendi.
+- 🔧 **SIRADA — FEEDBACK TURU-5 (14 madde, `docs/feedback-2026-06-12-turu5.md`):** 1) hızlı UX
+  paketi (kilitli sekme gizle, spotlight çakışması, tabak görseli, kare→dikdörtgen tost masası,
+  aktör içinden geçiş) → 2) DENGE paketi — KULLANICI ŞARTI: "en ince detayına kadar hesapla":
+  önce sayısal rapor (sim + amortisman/tempo + tost arz/talep), ONAY, sonra uygulama (ocak +1-2
+  seviye, tost darboğazı, garson tepsi erken+ucuz [quest reorder → v29 İD-eşleme], karakter
+  eğrisi, genel fiyat indirimi önerisi) → 3) FPS profiling ("kapa-aç düzeltiyor" = sızıntı ipucu)
+  → 4) kamera+map ferahlama tasarım turu. Sonra: rezerv arsa içeriği + üst kat tasarım turu.
 - ⏳ **3a kalan:** arka-sol rezerv arsanın içeriği SONRA tasarlanacak (kullanıcıyla); üst kat
   (okey/tavla) ayrı tasarım turu.
 - ⏳ **3b:** Kat geçişi: kat dolunca **merdiven** açılır → ekran kararma → üst kat; dinamik bounds/kamera; SAVE bump.

@@ -2,6 +2,18 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## >>> SIRADAKİ: FEEDBACK TURU-5 LİSTESİ (2026-06-12 akşam — 14 madde, UYGULANMADI) <<<
+Kullanıcı turu-4 APK'sını (a96a478, 15:37) test etti; 14 maddelik feedback verdi. TAM LİSTE +
+triyaj + önerilen sıra: `docs/feedback-2026-06-12-turu5.md`. Özet sıra: 1) hızlı UX paketi
+(kilitli panel sekmesi gizle, onboarding spotlight çakışması, tepside tost bulaşığı TABAK görseli,
+tost masası seviyeye göre kare→dikdörtgen, oyuncu-aktör çarpışması kalksın) → 2) denge paketi
+(ocak +1-2 seviye, tost arz darboğazı, garson tepsi erken+ucuz [quest reorder = v29 İD-eşleme!],
+karakter eğrisi yumuşat, GENEL FİYAT İNDİRİMİ ÖNERİSİ ONAYA — "çok az veya aynı; belki sadece
+garson öncesi dönem") → 3) FPS profiling ("kapa-aç düzeltiyor" = birikim/sızıntı ipucu) →
+4) kamera+map ferahlama tasarım turu. Sonraki oturum bu listeyle başlar.
+KULLANICI ŞARTI: denge/para maddeleri "en ince detayına kadar HESAPLANARAK" yapılacak — önce
+sayısal rapor (sim + amortisman/tempo hesabı), onay, sonra uygulama (docs dosyasındaki şart bloğu).
+
 ## ŞU AN (2026-06-12 — FEEDBACK TURU-4 başladı: TOST SALONUNA MÜŞTERİ GELMİYOR fix'i ✅)
 Kullanıcı telefon testine başladı; ilk bulgu: "tost servis et görevi var ama tost yemeye kimse
 gelmiyor". KÖK NEDEN: `findTableForGroup` GLOBAL "en çok boş koltuklu masa" seçiyordu (eşitlikte
