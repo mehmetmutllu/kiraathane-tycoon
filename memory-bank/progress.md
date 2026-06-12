@@ -608,7 +608,16 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   m.9 oyuncu-aktör çarpışması kaldırıldı (actorHalf silindi; personel separation korunur).
   vitest 182/182 (3 yeni), build, smoke 27/27, sim AYNI (z3 @1.63sa), Playwright canlı +
   night-ux*.png; konsol 0.
-- 🔧 **SIRADA — FEEDBACK TURU-5 kalanı (`docs/feedback-2026-06-12-turu5.md`):** 2) DENGE paketi — KULLANICI ŞARTI: "en ince detayına kadar hesapla":
+- ✅ **TURU-5 / DENGE PAKETİ UYGULANDI (2026-06-12 gece 2. tur, kullanıcı onaylarıyla; v28 kaldı):**
+  ocak +2 ₺ seviyesi (costsByLevel [20,30,45,67,150,300], masterLevel 7, tost ×20 → 3000/6000;
+  canlı doğrulandı); tost prepTime 14→11; garson tepsisi çay 400/1200/2500 + tost 1200/3000
+  (quest sırası aynı, v29 gerekmedi); karakter köprülü eğri (tepsi 75/130/5000/18000, mıknatıs
+  200/700/2200, hız 400/1100/3200); garson pad 150→130 (5B kısmen). MASA RAKAMLARI ERTELENDİ
+  (kullanıcı). Sim: garson 11.1dk, z3 dolu 1.69sa, ocak ₺-max L6 @1.87sa. vitest 182/182,
+  smoke 27/27. Detay+sonuç: docs/denge-raporu-2026-06-13.md.
+- 🔧 **SIRADA — TURU-5 kalanı:** para desteleri (m.6-B onaylı tasarım: masa yanında deste +
+  toplam değer + pad'le çakışmaz) → kamera+map (m.7 onaylı: B+A-hafif) → masa rakamları
+  (feedback sonrası). ESKİ DENGE NOTU (uygulandı): 2) DENGE paketi — KULLANICI ŞARTI: "en ince detayına kadar hesapla":
   önce sayısal rapor (sim + amortisman/tempo + tost arz/talep), ONAY, sonra uygulama (ocak +1-2
   seviye, tost darboğazı, garson tepsi erken+ucuz [quest reorder → v29 İD-eşleme], karakter
   eğrisi, genel fiyat indirimi önerisi) → 3) FPS profiling ("kapa-aç düzeltiyor" = sızıntı ipucu)

@@ -47,9 +47,38 @@ m.5 karakter köprülü eğri (tepsi T3 15k→5k, T4 60k→18k...); m.4 seçenek
 sıra 2.9→3.5, kamera d 7→6.4; zone alanı sabit); ×1.15 genel ölçek ÖNERİLMEDİ. 3 onay sorusu.
 
 **GECE OTURUMU KAPANIŞI:** `GECE-RAPORU-2026-06-13.md` kökte (screenshot'lı, "SABAH KARARLARI"
-bölümlü). FPS fix'li FINAL APK 22:46 (~5.3MB). SONRAKİ OTURUM: kullanıcının sabah kararları
-(denge 5 sorusu + FPS A/B + kamera-map onayı) + telefon turu-5 testi → onaylananlar uygulanır
-(denge paketi muhtemelen v28'de kalır — quest reorder seçilirse v29 İD-eşleme).
+bölümlü). FPS fix'li FINAL APK 22:46 (~5.3MB).
+
+## >>> SIRADAKİ OTURUM: para desteleri (m.6-B) + kamera/map (m.7) + APK testi feedback'i <<<
+KULLANICI KARARLARI GELDİ (2026-06-12 gece, 2. tur) ve **DENGE PAKETİ UYGULANDI** (şema v28 kaldı,
+migrasyon yok):
+- Ocak +2 ₺ seviyesi: `costsByLevel [20,30,45,67,150,300]` (L1-L4 eski floor'larla birebir;
+  L5/L6 kuyruğu kullanıcı isteğiyle DİK — saf eğri 102/153 az bulundu), masterLevel 5→**7**
+  (Usta 💎 L7'ye). Tost tezgâhı ×20 → 400/600/900/1340/**3000/6000**. Canlı doğrulandı
+  (45→67→150→300 ödendi, L6'da ₺ tavanı).
+- Tost prepTime **14→11** (arz/talep 1:5-8 darboğazı; L1 tezgâh 5.45sn/tost → max bekleme ~16sn
+  < sabır 28.8sn).
+- Garson tepsisi: çay **400/1200/2500**, tost **1200/3000** (kullanıcının rakamları; quest sırası
+  aynı → v29 GEREKMEDİ).
+- Karakter: tepsi [75,**130**,**5000**,**18000**], mıknatıs [200,**700**,**2200**], hız
+  [400,**1100**,**3200**].
+- 5B kısmen: garson pad **150→130** (fillRate 60 kaldı ~2.2sn). table3 130→110 YAPILMADI —
+  **MASA RAKAMLARI ERTELENDİ** (kullanıcı: "masa rakamlarına şimdi dokunma, sonra bakarız" —
+  açma −%10 + yükseltme 100/200/400/800 önerisi denge raporunda beklemede).
+Sim SONRASI (Normal): garson 11.1dk, z3 dolu 1.69sa, ocak ₺-max L6 @1.87sa (yeni geç-oyun hedefi);
+tempo hedefleri korunuyor. simulate.ts milestone etiketi dinamik oldu (`₺-max L${SOFT_MAX}`).
+vitest 182/182 (3 test yeni sayılara güncellendi; usta testi masterLevel'dan türetilir oldu),
+build, smoke 27/27. Rapor güncel: `docs/denge-raporu-2026-06-13.md` SONUÇ bölümü.
+
+SONRAKİ OTURUMDA SIRADA:
+1. **Para desteleri (m.6-B, ONAYLI tasarım):** paralar masanın yanında SABİT noktada DESTE olur
+   (pad/yükseltme noktasıyla ÇAKIŞMAZ), üstünde toplam değer, üstünden geçince hepsi toplanır;
+   görsel deste ~10-12 para ile sınırlı (FPS de yapısal çözülür). Kullanıcı gerekçesi: "müşteri
+   artınca paranın nereden geldiği anlaşılmıyor; yanlarda biriksin."
+2. **Kamera+map (m.7, ONAYLI):** docs/kamera-map-plan-2026-06-13.md B+A-hafif (kolon 4.4→5.2,
+   sıra 2.9→3.5, kamera d 7→6.4).
+3. Masa rakamları: kullanıcı APK testi + feedback sonrası karar verecek.
+4. Kullanıcı yeni APK'yı (denge paketi DAHİL derlenen son APK) test edip feedback verecek.
 
 ## >>> SIRADAKİ: FEEDBACK TURU-5 LİSTESİ (2026-06-12 akşam — UX PAKETİ ✅, kalanlar aşağıda) <<<
 Kullanıcı turu-4 APK'sını (a96a478, 15:37) test etti; 14 maddelik feedback verdi. TAM LİSTE +

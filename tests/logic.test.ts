@@ -106,15 +106,16 @@ describe('ekonomi yükseltme formülleri', () => {
     expect(upgradeCost(spec, 3)).toBeGreaterThan(upgradeCost(spec, 2));
   });
 
-  it('L5 usta seviyesi normalden büyük sıçrar', () => {
+  it('usta seviyesi normalden büyük sıçrar (masterLevel — turu-5 sonrası L7)', () => {
     expect(upgradeOutputMultiplier(spec, 0)).toBe(1);
-    const l4 = upgradeOutputMultiplier(spec, 4);
-    const l5 = upgradeOutputMultiplier(spec, 5);
-    expect(l5).toBeGreaterThan(l4);
-    // L4->L5 sıçraması, L3->L4 sıçramasından büyük olmalı (usta rozeti)
-    const j45 = l5 / l4;
-    const j34 = upgradeOutputMultiplier(spec, 4) / upgradeOutputMultiplier(spec, 3);
-    expect(j45).toBeGreaterThan(j34);
+    const m = spec.masterLevel; // ₺ kuyruğu uzayınca usta da kayar (turu-5: 5→7)
+    const prev = upgradeOutputMultiplier(spec, m - 1);
+    const master = upgradeOutputMultiplier(spec, m);
+    expect(master).toBeGreaterThan(prev);
+    // Usta sıçraması, önceki normal seviye sıçramasından büyük olmalı (usta rozeti)
+    const jMaster = master / prev;
+    const jPrev = prev / upgradeOutputMultiplier(spec, m - 2);
+    expect(jMaster).toBeGreaterThan(jPrev);
   });
 });
 
@@ -1805,12 +1806,13 @@ describe('kozmetik mağaza (WP6, v19) — zone-başına tema satın alma + migra
 });
 
 describe('karakter yükseltmeleri (v20) — eğri, satın alma, migrasyon, görev akışı', () => {
-  it('fiyat eğrisi: T1-T2 ucuz, T3-T4 çok pahalı; max kademede null; değerler tasarımla birebir', () => {
-    expect(economyConfig.character.tray.costs).toEqual([75, 150, 15_000, 60_000]);
+  it('fiyat eğrisi: T1-T2 ucuz, T3-T4 köprülü-pahalı; max kademede null; değerler tasarımla birebir', () => {
+    // turu-5 denge (ONAYLI): T3/T4 15k/60k → 5k/18k (köprülü eğri); T2 150→130 (5B).
+    expect(economyConfig.character.tray.costs).toEqual([75, 130, 5_000, 18_000]);
     expect(charNextCost('tray', 0)).toBe(75);
-    expect(charNextCost('tray', 3)).toBe(60_000);
+    expect(charNextCost('tray', 3)).toBe(18_000);
     expect(charNextCost('tray', 4)).toBeNull(); // MAX
-    expect(charNextCost('magnet', 2)).toBe(2_800);
+    expect(charNextCost('magnet', 2)).toBe(2_200);
     expect(charNextCost('magnet', 3)).toBeNull();
     expect(charNextCost('speed', 0)).toBe(400);
     expect(charMaxTier('tray')).toBe(4);
@@ -2749,8 +2751,9 @@ describe('v27 — görev redesign + İD-eşleme migrasyonu + dolum süreleri (te
     expect(waiterTrayCapacityFor('tost', 2)).toBe(3);
     expect(waiterTrayMaxTier('tea')).toBe(3);
     expect(waiterTrayMaxTier('tost')).toBe(2);
-    expect(waiterTrayNextCost('tea', 0)).toBe(800);
-    expect(waiterTrayNextCost('tost', 1)).toBe(5000);
+    // turu-5 denge (ONAYLI): çay 400/1200/2500, tost 1200/3000.
+    expect(waiterTrayNextCost('tea', 0)).toBe(400);
+    expect(waiterTrayNextCost('tost', 1)).toBe(3000);
     expect(waiterTrayNextCost('tea', 3)).toBeNull();
   });
 
@@ -2781,19 +2784,19 @@ describe('Y3 — garson tepsi yükseltmeleri (panel satın alma + FSM kapasite +
   it('buyWaiterTray: yetersiz bakiye false; alımda kademe artar + cüzdan düşer; tavanda false', () => {
     useGame.getState().hardReset();
     useGame.setState({ wallet: D(100) });
-    expect(useGame.getState().buyWaiterTray('tea')).toBe(false); // 800 > 100
+    expect(useGame.getState().buyWaiterTray('tea')).toBe(false); // 400 > 100
     useGame.setState({ wallet: D(10000) });
     expect(useGame.getState().buyWaiterTray('tea')).toBe(true);
     expect(useGame.getState().waiterUpgrades.teaTray).toBe(1);
-    expect(useGame.getState().wallet.toNumber()).toBe(10000 - 800);
+    expect(useGame.getState().wallet.toNumber()).toBe(10000 - 400); // turu-5: T1 800→400
     // Tavan: tea max 3 kademe.
     useGame.setState({ wallet: D(1e9), waiterUpgrades: { teaTray: 3, tostTray: 0 } });
     expect(useGame.getState().buyWaiterTray('tea')).toBe(false);
-    // Tostçu kendi eğrisi: 2000.
+    // Tostçu kendi eğrisi: 1200 (turu-5: 2000→1200).
     useGame.setState({ wallet: D(2500), waiterUpgrades: { teaTray: 0, tostTray: 0 } });
     expect(useGame.getState().buyWaiterTray('tost')).toBe(true);
     expect(useGame.getState().waiterUpgrades.tostTray).toBe(1);
-    expect(useGame.getState().wallet.toNumber()).toBe(500);
+    expect(useGame.getState().wallet.toNumber()).toBe(1300);
   });
 
   it('garson yüklemede tepsiyi KAPASİTE kadar doldurur (teaTray 2 → 3 bardak)', () => {

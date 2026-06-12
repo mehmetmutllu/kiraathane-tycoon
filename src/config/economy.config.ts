@@ -38,15 +38,17 @@ export function zoneOfTable(tableIndex: number): number {
  *  - dish: müşterinin masada bıraktığı kirlinin görseli (bardak/tabak; havuz ORTAKTIR — korunum
  *    değişmezi tek kalır, yıkama aynı döngü).
  *  - upgradeCostMult: istasyon ₺ yükseltme maliyet çarpanı (çay eğrisi 20/30/45/68 erken oyun için;
- *    tost tezgâhı geç-oyun → aynı eğri ×20 = 400/600/900/1350, sim ile kalibre).
+ *    tost tezgâhı geç-oyun → aynı eğri ×20 = 400/600/900/1340/3000/6000, sim ile kalibre).
  */
 export type ProductId = 'tea' | 'tost';
 export const PRODUCTS = {
-  // patienceMult (2026-06-12 feedback turu-4): sabır ürünle çarpılır — tost hazırlığı 14sn (çay 6sn)
+  // patienceMult (2026-06-12 feedback turu-4): sabır ürünle çarpılır — tost hazırlığı uzun (çay 6sn)
   // ama müşteri aynı 18sn bekliyordu → tost salonunda sabır kaçışları. Yemek bekleyen müşteri daha
   // sabırlıdır: tost ×1.6 (L0 ~29sn > hazırlık+servis turu).
   tea: { price: 5, prepTime: 6, dish: 'cup', upgradeCostMult: 1, patienceMult: 1 },
-  tost: { price: 25, prepTime: 14, dish: 'plate', upgradeCostMult: 20, patienceMult: 1.6 },
+  // prepTime 14→11 (turu-5 denge, ONAYLI): arz/talep 1:5-8 ölçüldü (denge-raporu-2026-06-13 §2);
+  // +%27 arz + tezgâh L5/L6 paketiyle birlikte darboğaz kapanır.
+  tost: { price: 25, prepTime: 11, dish: 'plate', upgradeCostMult: 20, patienceMult: 1.6 },
 } as const;
 /** Zone → ürün eşlemesi: z2 (arka-sağ) = TOST OCAĞI; diğerleri çay. */
 export const ZONE_PRODUCTS: readonly ProductId[] = ['tea', 'tea', 'tost'];
@@ -70,6 +72,9 @@ export interface UpgradeSpec {
   costBase: number;
   /** Maliyet geometrik büyüme oranı (r ≈ 1.07–1.15). */
   costGrowth: number;
+  /** Verilirse seviye maliyetleri BU listeden okunur (index = level−1) — formülün yerine geçer.
+   *  (turu-5 denge: L5/L6 kuyruğu saf eğriden DİK olsun istendi → açık liste tek kaynak.) */
+  costsByLevel?: readonly number[];
   /** Her ₺ seviye THROUGHPUT'u (çay/dk) bu kadar çarpar — fiyatı değil. */
   outputMult: number;
   /** Usta seviyesi (genelde 5). */
@@ -171,8 +176,12 @@ export const economyConfig = {
     upgrade: {
       costBase: 20, // garson öncesi: erken yükseltme ucuz, akış hızlansın (kullanıcı 2026-06-09)
       costGrowth: 1.5,
+      // turu-5 denge (2026-06-13 ONAYLI): +2 ₺ seviyesi. L1-L4 ESKİ değerlerle birebir
+      // (formülün floor'ları); L5/L6 kuyruğu DİK (kullanıcı: "fiyat az" → 150/300; saf eğri 101/152
+      // verirdi). Tost tezgâhı ×20 → 3000/6000. Usta (💎) L7'ye kaydı (masterLevel).
+      costsByLevel: [20, 30, 45, 67, 150, 300],
       outputMult: 1.35, // throughput (çay/dk) çarpanı — demleme süresini kısaltır
-      masterLevel: 5,
+      masterLevel: 7,
       masterDiamondCost: 15,
       masterOutputMult: 2.0,
     } satisfies UpgradeSpec,
@@ -275,12 +284,14 @@ export const economyConfig = {
   character: {
     /** Tepsi kapasitesi (oyuncunun tek turda taşıdığı çay+kirli toplamı). Yeni oyun 2 başlar. */
     // T1/T2 2026-06-11 kullanıcı kararı: 150/500 → 75/150 ("tepsi o kadar olmamalı; azıcık hız katarız").
-    tray: { values: [2, 3, 4, 5, 6], costs: [75, 150, 15_000, 60_000] },
+    // turu-5 denge (ONAYLI): KÖPRÜLÜ eğri — T3/T4 ×100 sıçraması "absürt"tü (15k/60k → 5k/18k);
+    // T2 150→130 (5B garson-öncesi −%15). Mıknatıs/hız orta kademeler yumuşadı.
+    tray: { values: [2, 3, 4, 5, 6], costs: [75, 130, 5_000, 18_000] },
     /** Para mıknatısı yarıçapı (dünya birimi; money.attractRadius'un yerini aldı).
      *  M1 250→200 (kullanıcı 2026-06-11: "azıcık insin" — 4. masa dönemiyle hizalanır). */
-    magnet: { values: [2.6, 3.4, 4.2, 5.0], costs: [200, 900, 2_800] },
+    magnet: { values: [2.6, 3.4, 4.2, 5.0], costs: [200, 700, 2_200] },
     /** Hareket hızı (dünya birimi/sn; player.moveSpeed'in yerini aldı). Tavan +%20 bilinçli düşük. */
-    speed: { values: [4.5, 4.8, 5.1, 5.4], costs: [400, 1_400, 4_500] },
+    speed: { values: [4.5, 4.8, 5.1, 5.4], costs: [400, 1_100, 3_200] },
   },
 
   /**
@@ -306,9 +317,11 @@ export const economyConfig = {
      * Çay garsonları (z0+z1) ORTAK eğri: 1→2→3→4; tostçu kendi eğrisi: 1→2→3 (tost büyük, tavan 3).
      * Karakter panelindeki sekmelerden satın alınır (mekânsal değil — character deseni).
      */
+    // turu-5 denge (ONAYLI, kullanıcının rakamları): "garson bensiz yetemiyor" — T1 amortismanı
+    // 32dk→~16dk; quest sırası AYNI kaldı (v29 migrasyonu gerekmedi).
     trayUpgrades: {
-      tea: { costs: [800, 2400, 6000] },
-      tost: { costs: [2000, 5000] },
+      tea: { costs: [400, 1200, 2500] },
+      tost: { costs: [1200, 3000] },
     } satisfies Record<WaiterKind, { costs: number[] }>,
     /**
      * Yükseltme noktası önkoşulu: garson tutulmuş + en az 20 çay TAŞIMIŞ olmalı (arka-plan şartı;
@@ -414,7 +427,7 @@ export const economyConfig = {
       requires: { minLifetime: 20 }, effect: { type: 'addTable' } },
     { id: 'table3', label: '3. Masa', cost: 130, fillRate: 52, optional: false, zone: 0, // ~2.5sn
       requires: { prev: ['table2'] }, effect: { type: 'addTable' } },
-    { id: 'waiter', label: 'Garson Tut', cost: 150, fillRate: 60, optional: false, zone: 0, // ~2.5sn
+    { id: 'waiter', label: 'Garson Tut', cost: 130, fillRate: 60, optional: false, zone: 0, // ~2.2sn (5B: 150→130)
       requires: { prev: ['table3'] }, effect: { type: 'hireWaiter' } },
     // 2026-06-11 telefon feedback turu-2: 330 "aşırı fazla, git gel bitmiyor" → 200 (kullanıcı verdi).
     { id: 'dishwasher', label: 'Bulaşıkçı Tut', cost: 200, fillRate: 67, optional: false, zone: 0, // ~3sn
@@ -738,6 +751,8 @@ export function requiresMet(req: Requires | undefined, g: GateState): boolean {
 
 /** n. ₺ yükseltme seviyesinin maliyeti (level 1..masterLevel-1). */
 export function upgradeCost(spec: UpgradeSpec, level: number): number {
+  const explicit = spec.costsByLevel?.[level - 1];
+  if (explicit != null) return explicit;
   return Math.floor(spec.costBase * Math.pow(spec.costGrowth, level - 1));
 }
 

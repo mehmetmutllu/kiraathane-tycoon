@@ -141,3 +141,34 @@ testiyle korunuyor; telefonda hâlâ pürüz görülürse zone-içi seçim kural
 
 Onay gelince: tek pakette uygulanır → vitest + sim (eğri raporu BU dosyaya işlenir) + smoke +
 Playwright + APK.
+
+---
+
+## SONUÇ — ONAY + UYGULAMA (2026-06-13 gece, 2. tur)
+
+Kullanıcı kararları:
+- **m.1 ✅ uygulandı (fiyatlar yükseltilerek):** kullanıcı "fiyat az mı?" diye sordu → kuyruk
+  dikleştirildi: çay L5 **150** / L6 **300** (saf eğri 102/153 yerine); tost ×20 → **3000/6000**.
+  Mekanizma: `UpgradeSpec.costsByLevel` [20,30,45,67,150,300] (L1-L4 birebir eski floor değerleri);
+  `masterLevel 5→7` (Usta 💎 L7'ye). Şema değişmedi; init kelepçesi softMax'ı otomatik izler.
+- **m.2 ✅ uygulandı:** `PRODUCTS.tost.prepTime` **14→11**.
+- **m.3 ✅ uygulandı (kullanıcının rakamları):** çay tepsisi **400/1200/2500**; tost **1200/3000**.
+  Quest sırası AYNI → v29 GEREKMEDİ.
+- **m.5 ✅ uygulandı:** tepsi [75, **130**, **5.000**, **18.000**] (T2 130 = 5B); mıknatıs
+  [200, **700**, **2.200**]; hız [400, **1.100**, **3.200**].
+- **m.4 ✅ Seçenek B uygulandı (KISMEN):** garson pad **150→130**, karakter tepsi T2 **150→130**.
+  table3 130→110 KAPSANMADI — kullanıcı "masa rakamlarına şimdi dokunma" dedi (aşağı bak).
+- **MASA RAKAMLARI ERTELENDİ (kullanıcı):** açma −%10 + yükseltme 100/200/400/800 önerisi
+  beklemede; "biraz daha test edip feedback toplayalım".
+
+### Uygulama SONRASI sim eğrisi (Normal profil; önceki → yeni)
+| Milestone | Önce | Sonra |
+|---|---|---|
+| Garson | 11.8 dk | **11.1 dk** (pad 130 + T2 130) |
+| Zone-2 | 36.0 dk | 35.4 dk |
+| Zone-3 | 1.21 sa | 1.20 sa |
+| Z3 dolu | 1.63 sa | **1.69 sa** (yeni para emiciler: ocak L5/L6 + ucuzlayan tepsiler alınıyor) |
+| Çay ocağı ₺-max | L4 @21dk | **L6 @1.87sa** (yeni geç-oyun hedefi — tasarım amacına uygun) |
+| Masa yükseltme L1 | 1.63 sa | 1.91 sa |
+Tempo hedefleri korunuyor (ilk alım 34sn ✓, "salon ~1sa+" ✓). Tost arzı: L1 tezgâh 5.45sn/tost
+(eski 10.4) → 4 bekleyenli L0 senaryosunda max bekleme ~16sn < sabır 28.8sn ✓ (darboğaz kapandı).

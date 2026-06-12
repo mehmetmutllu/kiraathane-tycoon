@@ -229,7 +229,7 @@ const MILESTONES: Milestone[] = [
   { name: 'Bulaşıkçı', hit: (s) => s.padsDone.includes('dishwasher') },
   { name: '4. Masa (zone-1 dolu)', hit: (s) => s.padsDone.includes('table4') },
   { name: `Karakter: Mıknatıs M1 (${charNextCost('magnet', 0)}₺)`, hit: (s) => s.char.magnet >= 1 },
-  { name: 'Çay ocağı L4 (z1 semaver)', hit: (s) => s.stationLevels[0] >= SOFT_MAX },
+  { name: `Çay ocağı ₺-max L${SOFT_MAX} (z1 semaver)`, hit: (s) => s.stationLevels[0] >= SOFT_MAX },
   { name: `ZONE-2 AÇILDI (₺${C.pads.find((p) => p.id === 'zone2')?.cost})`, hit: (s) => s.padsDone.includes('zone2') },
   { name: 'Z2: 2. Masa', hit: (s) => s.padsDone.includes('z2table2') },
   { name: 'Z2: Garson', hit: (s) => s.padsDone.includes('z2waiter') },
