@@ -70,14 +70,12 @@ tempo hedefleri korunuyor. simulate.ts milestone etiketi dinamik oldu (`₺-max 
 vitest 182/182 (3 test yeni sayılara güncellendi; usta testi masterLevel'dan türetilir oldu),
 build, smoke 27/27. Rapor güncel: `docs/denge-raporu-2026-06-13.md` SONUÇ bölümü.
 
-**PARA REVİZYONU-2 (KULELER GERİ ALINDI — kullanıcı: "böyle de güzel olmadı, eski haline dön ama
-masa içinde durmasın, yanında olsun"):** istif döngüsü + Coin.tableIndex + yatık coin görseli
-KALDIRILDI; eski dağınık + dönen dik sikke görünümü GERİ. Tek kalıcı değişiklik: ödeme coin'i
-masa merkezine değil **moneySpot ±0.4 saçılımına** düşer (masa footprint'ine matematiksel olarak
-giremez — vitest'te doğrulanıyor). Toplu floater + paylaşımlı COIN_GEO/COIN_MAT + kamera 6.4 KALDI.
-vitest 183/183, smoke 27/27, canlı: paralar masa yanında dağınık (night-ux6), konsol 0.
-DERS: para sunumu görsel/his konusu — büyük görsel değişiklikleri kullanıcı telefonda görmeden
-kesinleşmiş sayma.
+**PARA REVİZYONU-3 (TAM GERİ ALMA — kullanıcı: "böyle de çok kötü, eski haline dönder"):**
+moneySpot saçılımı DA reddedildi → coin spawn ORİJİNAL satırına döndü (masa önü ±0.5 saçılım),
+moneySpot LAYOUT'tan tamamen kalktı, ilgili test silindi. KORUNAN: toplu floater + paylaşımlı
+COIN_GEO/COIN_MAT (FPS fix'leri, görsel fark yok) + kamera 6.4. vitest 182/182, smoke 27/27.
+DERS (hafızaya da yazıldı — feedback_coin_presentation): para sunumu 2 kez geri alındı; bir daha
+dokunmadan önce telefonda mockup ONAYI şart, "kullanıcı tarif etti" yetmiyor.
 
 (Aşağıdaki blok TARİHÇE — kuleler geri alındı:)
 **PARA DESTELERİ (m.6-B) + KAMERA UYGULANDI (aynı oturum devamı, kullanıcı netleştirmesiyle):**

@@ -110,15 +110,11 @@ export const zonePoint = mir;
 // koridordan yürüyerek geçmek para çekmez).
 // Açılış sırası ÖN sıradan (kapıya yakın, ocağa uzak — başlangıç masası ocaktan >4 br: yürüme
 // döngüsü en baştan zorlanır, D-017 §1) → arka sıra sonra açılır.
-// moneySpot (turu-5 revizyonu): masanın ÖN-DIŞ çaprazı — ödenen paralar buranın çevresine saçılır
-// (±0.4; eski masa-merkezli saçılım tabla ALTINDA kalıyordu — kullanıcı: "masa içinde gibi durmasın,
-// yanında olsun"). upgradeSpot ön-İÇ (koridor) çaprazında; garson hız noktası [-3.5,3.4] ve ocak
-// yükseltme [-4.35,-0.5] ile çakışmaz (≥1.1 br).
 const BASE_TABLES = [
-  { table: [-1.2, 0, 1.9], upgradeSpot: [0.0, 0, 3.1], moneySpot: [-2.4, 0, 3.1] },
-  { table: [3.2, 0, 1.9], upgradeSpot: [2.0, 0, 3.1], moneySpot: [4.4, 0, 3.1] },
-  { table: [-1.2, 0, -1.0], upgradeSpot: [0.0, 0, 0.2], moneySpot: [-2.4, 0, 0.2] },
-  { table: [3.2, 0, -1.0], upgradeSpot: [2.0, 0, 0.2], moneySpot: [4.4, 0, 0.2] },
+  { table: [-1.2, 0, 1.9], upgradeSpot: [0.0, 0, 3.1] },
+  { table: [3.2, 0, 1.9], upgradeSpot: [2.0, 0, 3.1] },
+  { table: [-1.2, 0, -1.0], upgradeSpot: [0.0, 0, 0.2] },
+  { table: [3.2, 0, -1.0], upgradeSpot: [2.0, 0, 0.2] },
 ] as const;
 
 // Sandalye yerleşimi (masaya göre DÜNYA-ofseti; aynalanmaz — Tables.tsx aynı listeden çizer, Y2 tek kaynak).
@@ -150,7 +146,6 @@ const ALL_TABLES = ZONES.flatMap((z) =>
       seat: seats[0],
       seats,
       upgradeSpot: mir(z, t.upgradeSpot),
-      moneySpot: mir(z, t.moneySpot),
     };
   }),
 );
@@ -1380,16 +1375,12 @@ export const useGame = create<GameState>((set, get) => ({
         case 'drinking':
           n.timer -= dt;
           if (n.timer <= 0) {
-            // Öde: para masanın YANINA (moneySpot çevresine) saçılarak düşer — turu-5 revizyonu:
-            // kule istifi kullanıcıya "güzel olmadı" → ESKİ dağınık görünüm geri, ama masa İÇİNE
-            // düşmez (eski masa-merkezli saçılım tabla altında kalıyordu; moneySpot ön-dış çapraz).
+            // Öde: parayı masanın yanına düşür — ÜRÜN fiyatı (çay 5 / tost 25, M3) + masa bahşişi (Faz 2h).
+            // (turu-5'te kule istifi ve moneySpot saçılımı denendi; kullanıcı İKİSİNİ de beğenmedi →
+            // ORİJİNAL davranış geri. Para sunumuna bir daha dokunmadan önce telefonda mockup onayı al.)
             coins.push({
               id: nextId++,
-              pos: [
-                LAYOUT.tables[n.tableIndex].moneySpot[0] + (Math.random() - 0.5) * 0.8,
-                0.3,
-                LAYOUT.tables[n.tableIndex].moneySpot[2] + (Math.random() - 0.5) * 0.8,
-              ],
+              pos: [slot.table[0] + (Math.random() - 0.5), 0.3, slot.table[2] + 0.6 + (Math.random() - 0.5)],
               value:
                 PRODUCTS[zoneProduct(zoneOfTable(n.tableIndex))].price +
                 tableTip(tableLevels[n.tableIndex] ?? 0),

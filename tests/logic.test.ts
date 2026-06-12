@@ -752,30 +752,6 @@ describe('bulaşıkçı — quest hattında zorunlu personel (Faz 2e; 2026-06-09
   });
 });
 
-describe('para düşüşü (turu-5 revizyonu) — coin masanın YANINA (moneySpot çevresi) düşer, masa içine değil', () => {
-  it('müşteri ödemesi coin\'i moneySpot ±0.4 saçılımına bırakır; masa footprint\'inin DIŞINDA kalır', () => {
-    useGame.getState().hardReset();
-    const seat = LAYOUT.tables[0].seats[0];
-    const spot = LAYOUT.tables[0].moneySpot;
-    const table = LAYOUT.tables[0].table;
-    useGame.setState({
-      player: [5.2, 0.6, -5.2], inputKeyboard: [0, 0], inputJoystick: [0, 0],
-      spawnTimer: 999,
-      npcs: [{ id: 8801, state: 'drinking', pos: [seat[0], 0.6, seat[2]], tableIndex: 0, seatIndex: 0, timer: 0.05, color: '#fff' }],
-    });
-    useGame.getState().tick(0.1);
-    const c = useGame.getState().coins[0];
-    expect(c).toBeTruthy();
-    // moneySpot çevresine saçılır (±0.4 + tolerans)...
-    expect(Math.abs(c.pos[0] - spot[0])).toBeLessThanOrEqual(0.41);
-    expect(Math.abs(c.pos[2] - spot[2])).toBeLessThanOrEqual(0.41);
-    // ...ve masa tablasının altında KALMAZ (eski bug: masa-merkezli saçılım tabla içine düşürüyordu).
-    const inTable =
-      Math.abs(c.pos[0] - table[0]) < LAYOUT.tableHalf[0] && Math.abs(c.pos[2] - table[2]) < LAYOUT.tableHalf[1];
-    expect(inTable).toBe(false);
-  });
-});
-
 describe('para mıknatısı (Faz 2f) — attract yarıçapındaki para oyuncuya akar + toplanır', () => {
   it('düşme noktasının pickup yarıçapına HİÇ girilmese de para mıknatısla toplanır (bug düzeltmesi)', () => {
     useGame.getState().hardReset();

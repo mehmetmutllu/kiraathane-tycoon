@@ -11,8 +11,8 @@ const COIN_MAT = new MeshStandardMaterial({ color: '#ffd700', metalness: 0.7, ro
 
 // Para mıknatısı/süzülmesi STORE'da gerçek hareket olarak yapılır (oyuncuya akar + yaklaşınca toplanır);
 // burada mesh yalnız o anki konumu (x,z) çizer → görsel = mantık. Doğuş pop'u + dönüş görsel tuz-biber.
-// (turu-5 kule istifi denendi, kullanıcı eski görünümü istedi — tek kalıcı değişiklik: paralar
-// masa İÇİNE değil moneySpot çevresine düşer; o store'da.)
+// (turu-5'te kule istifi + moneySpot saçılımı denendi; kullanıcı ikisini de beğenmedi → ORİJİNAL
+// görünüm/konum. Para sunumuna dokunmadan önce telefonda mockup onayı şart.)
 function Coin({ x, z }: { x: number; z: number }) {
   const ref = useRef<Group>(null);
   const coin = useRef<Mesh>(null);
