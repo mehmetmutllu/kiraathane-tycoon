@@ -42,8 +42,14 @@ m.5 karakter köprülü eğri (tepsi T3 15k→5k, T4 60k→18k...); m.4 seçenek
 2) COIN BİRİKİMİ (rapora): AFK 10dk = 377 coin → FPS 24 (masaüstü); money.lifetime 0 bilinçli.
    Paylaşımlı COIN_GEO/COIN_MAT uygulandı (görsel sıfır fark); InstancedMesh (A, önerilen) vs
    para-yığını merge (B) kararı sabaha. dishes/NPC/notice/navGrid temiz çıktı.
-Sıradaki (gece): kamera+map plan docs (m.12) → GECE-RAPORU + final commit/push (APK 22:35'te UX
-paketiyle derlendi; FPS fix'li YENİ APK gece raporundan önce derlenecek).
+**4. milestone — KAMERA+MAP PLANI (m.12) ✅ (uygulama YOK):** `docs/kamera-map-plan-2026-06-13.md` —
+ölçüm: sıralar arası net koridor 0.0 br (tabureler değiyor); öneri B+A-hafif (kolon 4.4→5.2,
+sıra 2.9→3.5, kamera d 7→6.4; zone alanı sabit); ×1.15 genel ölçek ÖNERİLMEDİ. 3 onay sorusu.
+
+**GECE OTURUMU KAPANIŞI:** `GECE-RAPORU-2026-06-13.md` kökte (screenshot'lı, "SABAH KARARLARI"
+bölümlü). FPS fix'li FINAL APK 22:46 (~5.3MB). SONRAKİ OTURUM: kullanıcının sabah kararları
+(denge 5 sorusu + FPS A/B + kamera-map onayı) + telefon turu-5 testi → onaylananlar uygulanır
+(denge paketi muhtemelen v28'de kalır — quest reorder seçilirse v29 İD-eşleme).
 
 ## >>> SIRADAKİ: FEEDBACK TURU-5 LİSTESİ (2026-06-12 akşam — UX PAKETİ ✅, kalanlar aşağıda) <<<
 Kullanıcı turu-4 APK'sını (a96a478, 15:37) test etti; 14 maddelik feedback verdi. TAM LİSTE +
