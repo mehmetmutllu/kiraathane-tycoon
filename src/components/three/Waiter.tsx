@@ -65,13 +65,18 @@ function WaiterUnit({ pos, tray, food }: { pos: [number, number, number]; tray: 
   );
 }
 
-// Garsonlar (zone başına; greybox: yeşil önlüklü kapsül, tostçu hardal+kep). Faz 6'da waiter.glb takılır.
+// Garsonlar (zone başına en çok 2 — Y4; greybox: yeşil önlüklü kapsül, tostçu hardal+kep).
+// Faz 6'da waiter.glb takılır.
 export function Waiter() {
   const waiters = useGame((s) => s.waiters);
+  const waiters2 = useGame((s) => s.waiters2);
   return (
     <>
       {waiters.map((w, z) =>
         w ? <WaiterUnit key={z} pos={w.pos} tray={w.tray} food={zoneProduct(z) === 'tost'} /> : null,
+      )}
+      {waiters2.map((w, z) =>
+        w ? <WaiterUnit key={`w2-${z}`} pos={w.pos} tray={w.tray} food={zoneProduct(z) === 'tost'} /> : null,
       )}
     </>
   );

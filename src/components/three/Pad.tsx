@@ -12,8 +12,9 @@ export function Pad() {
   const wallet = useGame((s) => s.wallet);
   const questIndex = useGame((s) => s.questIndex);
   const waiterServed = useGame((s) => s.stats.waiterServed);
+  const tableLevels = useGame((s) => s.tableLevels);
   const cash = wallet.toNumber();
-  const gate = { padsDone, tables, stationLevel, lifetime: lifetime.toNumber(), waiterServed };
+  const gate = { padsDone, tables, stationLevel, lifetime: lifetime.toNumber(), waiterServed, tableLevels };
 
   const pads = visiblePads(questIndex, gate);
 

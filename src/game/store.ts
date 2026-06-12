@@ -217,6 +217,11 @@ export const LAYOUT = {
     // Y1: tezgâh arka duvara taşınınca eski nokta ([10.4,-14.8]) counter footprint'inin içinde
     // kalıyordu → pad bulaşık modülünün önündeki açıklığa (tezgâh kenarına 2.1, bulaşığa 1.25).
     z3dishwasher: [13.3, 0, -14.3] as Vec3,
+    // Y4: 2. garson pad'leri — kendi salonunun 1. garson pad'inin TAM yeri (requires prev waiter →
+    // eski pad çoktan kaybolmuş; sıfır yeni mekânsal çakışma riski, tematik "garson durağı").
+    waiter2: [-4.6, 0, 2.2] as Vec3,
+    z2waiter2: mir(1, [-4.6, 0, 2.2]),
+    z3waiter2: mir(2, [-4.6, 0, 2.2]),
   } as Record<string, Vec3>,
   // Zone başına mekânsal çay yükseltme noktası: kendi duvarında, modülün ALTINDA (kapı tarafı —
   // kullanıcı 2026-06-11: "ocağın önünde değil altında, sol duvarda dursun"). PAD MERKEZİ ocağın
@@ -670,6 +675,8 @@ export interface GameState {
   npcCount: number;
   /** Zone başına garson (o zone'da tutulduysa) — konum/tepsi transient, her oturumda kurulur. */
   waiters: (Waiter | null)[];
+  /** Zone başına 2. GARSON (Y4 waiter2 pad'leri; claim sistemiyle 1.'den farklı masaya gider). */
+  waiters2: (Waiter | null)[];
   /** Zone başına bulaşıkçı — konum/taşıdığı kirli transient. */
   dishwashers: (Waiter | null)[];
   /** Zone başına ocak hazır-kuyruğundaki demlenmiş çay sayısı. */
@@ -941,19 +948,23 @@ const CAM_FOCUS_TTL = 2.2; // sn — kayma + kısa bekleme; joystick girdisi an�
  * görsel ile mantık ayrışamaz.
  */
 export function visiblePads(questIndex: number, g: GateState): PadDef[] {
+  // Y4: gating'i karşılanan OPSİYONEL pad'ler (2. garsonlar) görev durumundan bağımsız görünür —
+  // geç-oyun serbest keşfi; "ekranda tek pad" ilkesi omurga için sürer (opsiyoneller nadir/gate'li).
+  const opt = availableOptionalPads(g);
   const q = questIndex < C.quests.length ? C.quests[questIndex] : null;
   if (q) {
-    if (q.target.type !== 'pad') return [];
+    if (q.target.type !== 'pad') return opt;
     const p = (C.pads as readonly PadDef[]).find((pd) => pd.id === (q.target as { id: string }).id);
     // AKTİF görevin hedef pad'inde TEMPO gate'leri (minLifetime vb.) ATLANIR (2026-06-11 fix:
     // "2. Masayı aç" görevi verilmişken table2 minLifetime:20 pad'i gizliyordu — görev hattı sıralı =
     // tempo kaynağı). `prev` OMURGA zinciri yapısal güvenlik ağı olarak KALIR (bozuk kayda karşı).
     const req = p ? (p.requires as Requires | undefined) : undefined;
     const prevOk = !req?.prev || req.prev.every((id) => g.padsDone.includes(id));
-    return p && !g.padsDone.includes(p.id) && prevOk ? [p] : [];
+    const rest = opt.filter((o) => o.id !== p?.id); // q_waiter2 gibi opsiyonel-hedefli görevde çiftleme olmasın
+    return p && !g.padsDone.includes(p.id) && prevOk ? [p, ...rest] : rest;
   }
   const bp = currentPad(g);
-  return bp ? [bp] : [];
+  return bp ? [bp, ...opt] : opt;
 }
 
 /**
@@ -1006,6 +1017,7 @@ export const useGame = create<GameState>((set, get) => ({
   coins: [],
   npcCount: 0,
   waiters: Array.from({ length: MAX_ZONES }, () => null),
+  waiters2: Array.from({ length: MAX_ZONES }, () => null),
   dishwashers: Array.from({ length: MAX_ZONES }, () => null),
   readyCupsByZone: Array.from({ length: MAX_ZONES }, () => 0),
   brewProgressByZone: Array.from({ length: MAX_ZONES }, () => 0),
@@ -1101,6 +1113,11 @@ export const useGame = create<GameState>((set, get) => ({
       npcCount: 0,
       waiters: Array.from({ length: MAX_ZONES }, (_, z) =>
         derived.hasWaiterByZone[z] ? { pos: [...LAYOUT.waiterHomes[z]] as Vec3, tray: 0 } : null,
+      ),
+      waiters2: Array.from({ length: MAX_ZONES }, (_, z) =>
+        derived.waiterCountByZone[z] >= 2
+          ? { pos: [LAYOUT.waiterHomes[z][0] + 0.7, 0, LAYOUT.waiterHomes[z][2]] as Vec3, tray: 0 }
+          : null,
       ),
       dishwashers: Array.from({ length: MAX_ZONES }, (_, z) =>
         derived.hasDishwasherByZone[z] ? { pos: [...LAYOUT.dishwasherHomes[z]] as Vec3, tray: 0 } : null,
@@ -1491,70 +1508,84 @@ export const useGame = create<GameState>((set, get) => ({
     }
 
     // --- Garson (D-012 kısmi assist), ZONE BAŞINA: kendi zone'unun ocağından alır, kendi zone'unun
-    // bekleyen masalarına götürür (per-zone personel, D-022). Oyuncudan yavaş + tek tepsili.
+    // bekleyen masalarına götürür (per-zone personel, D-022). Oyuncudan yavaş.
+    // Y4: zone başına 2 garsona kadar + CLAIM — 1. garson en acil masayı alır, 2. garson o masayı
+    // HARİÇ tutar (deterministik; çift-hedef kargaşası/salınım yok). Sıra sabit: önce 1., sonra 2.
     const waiters: (Waiter | null)[] = s.waiters.slice();
+    const waiters2: (Waiter | null)[] = s.waiters2.slice();
     for (let z = 0; z < MAX_ZONES; z++) {
-      if (z >= zonesOpen || !derived.hasWaiterByZone[z]) {
+      const wCount = z < zonesOpen ? derived.waiterCountByZone[z] : 0;
+      if (wCount === 0) {
         waiters[z] = null;
+        waiters2[z] = null;
         continue;
       }
-      const prev = waiters[z];
-      const w: Waiter = prev
-        ? { pos: [...prev.pos] as Vec3, tray: prev.tray }
-        : { pos: [...LAYOUT.waiterHomes[z]] as Vec3, tray: 0 };
       const wStep = waiterSpeed(waiterLevels[z]) * dt;
       // Y3: tepsi kapasitesi panel yükseltmesinden türetilir (çay garsonları ortak eğri, tostçu ayrı).
       const wTrayCap = waiterTrayCapacityFor(
         zoneProduct(z) === 'tost' ? 'tost' : 'tea',
         zoneProduct(z) === 'tost' ? s.waiterUpgrades.tostTray : s.waiterUpgrades.teaTray,
       );
-      // Garson kirli masaya çay GÖTÜRMEZ (D-019) + yalnız KENDİ zone'unun masalarına bakar.
-      const waitingNpcs = liveNpcs.filter(
-        (n) => n.state === 'waitingForTea' && !dirty.has(n.tableIndex) && zoneOfTable(n.tableIndex) === z,
-      );
-      if (w.tray > 0 && waitingNpcs.length > 0) {
-        // Teslimat: en ACİL (sabrı en az kalan) bekleyene; eşitlikte en yakın (anti-starvation).
-        let best = waitingNpcs[0];
-        let bestTimer = Infinity;
-        let bestDist = Infinity;
-        for (const n of waitingNpcs) {
-          const d = dist2D(w.pos, LAYOUT.tables[n.tableIndex].table);
-          if (n.timer < bestTimer - 1e-6 || (Math.abs(n.timer - bestTimer) <= 1e-6 && d < bestDist)) {
-            bestTimer = n.timer;
-            bestDist = d;
-            best = n;
+      const claimed = new Set<number>(); // bu tick'te hedeflenen masa index'leri (Y4 claim)
+      const runWaiter = (prev: Waiter | null, homeX: number): Waiter => {
+        const home: Vec3 = [LAYOUT.waiterHomes[z][0] + homeX, 0, LAYOUT.waiterHomes[z][2]];
+        const w: Waiter = prev
+          ? { pos: [...prev.pos] as Vec3, tray: prev.tray }
+          : { pos: [...home] as Vec3, tray: 0 };
+        // Garson kirli masaya çay GÖTÜRMEZ (D-019) + yalnız KENDİ zone'unun masalarına bakar.
+        // Her garson için YENİDEN filtrelenir (1. garsonun bu tick servis ettiği müşteri düşer).
+        const waitingNpcs = liveNpcs.filter(
+          (n) => n.state === 'waitingForTea' && !dirty.has(n.tableIndex) && zoneOfTable(n.tableIndex) === z,
+        );
+        // Claim: diğer garsonun hedeflediği masa hariç (yalnız teslimat hedefi seçiminde).
+        const claimable = waitingNpcs.filter((n) => !claimed.has(n.tableIndex));
+        if (w.tray > 0 && claimable.length > 0) {
+          // Teslimat: en ACİL (sabrı en az kalan) bekleyene; eşitlikte en yakın (anti-starvation).
+          let best = claimable[0];
+          let bestTimer = Infinity;
+          let bestDist = Infinity;
+          for (const n of claimable) {
+            const d = dist2D(w.pos, LAYOUT.tables[n.tableIndex].table);
+            if (n.timer < bestTimer - 1e-6 || (Math.abs(n.timer - bestTimer) <= 1e-6 && d < bestDist)) {
+              bestTimer = n.timer;
+              bestDist = d;
+              best = n;
+            }
           }
-        }
-        const targetTable = LAYOUT.tables[best.tableIndex].table;
-        if (navStep(w.pos, targetTable, wStep, navGrid, REACH_TABLE, player, obstacles)) {
-          // Y3 (plan §3): TEK durakta o masada bekleyen HERKESE tepsi yettiğince bırakır
-          // (grup + tepsi-3 = tek seferde; artan çayla sıradaki acil masaya devam eder).
-          for (const n of waitingNpcs) {
-            if (w.tray <= 0) break;
-            if (n.tableIndex !== best.tableIndex) continue;
-            n.state = 'drinking';
-            n.timer = C.npc.eatTime;
-            w.tray -= 1;
-            stats.waiterServed += 1;
-            stats.waiterServedByZone[z] = (stats.waiterServedByZone[z] ?? 0) + 1; // v21: zone-başı sayaç
-            xp += C.xp.perWaiterServed;
+          claimed.add(best.tableIndex);
+          const targetTable = LAYOUT.tables[best.tableIndex].table;
+          if (navStep(w.pos, targetTable, wStep, navGrid, REACH_TABLE, player, obstacles)) {
+            // Y3 (plan §3): TEK durakta o masada bekleyen HERKESE tepsi yettiğince bırakır
+            // (grup + tepsi-3 = tek seferde; artan çayla sıradaki acil masaya devam eder).
+            for (const n of waitingNpcs) {
+              if (w.tray <= 0) break;
+              if (n.tableIndex !== best.tableIndex) continue;
+              n.state = 'drinking';
+              n.timer = C.npc.eatTime;
+              w.tray -= 1;
+              stats.waiterServed += 1;
+              stats.waiterServedByZone[z] = (stats.waiterServedByZone[z] ?? 0) + 1; // v21: zone-başı sayaç
+              xp += C.xp.perWaiterServed;
+            }
           }
+        } else if (w.tray < wTrayCap && waitingNpcs.length > 0) {
+          // Yükleme: KENDİ zone'unun ocağının ÖN yüzüne git (bardaklar önde); varınca tepsiye al.
+          if (
+            navStep(w.pos, LAYOUT.stationPickups[z], wStep, navGrid, REACH_PICKUP, player, obstacles) &&
+            readyCupsByZone[z] > 0
+          ) {
+            const take = Math.min(wTrayCap - w.tray, readyCupsByZone[z]);
+            w.tray += take;
+            readyCupsByZone[z] -= take;
+          }
+        } else {
+          // Boşta: kendi köşesine dön (2. garson 1.'in 0.7 sağında bekler — üst üste binmez).
+          navStep(w.pos, home, wStep, navGrid, REACH_HOME, player, obstacles);
         }
-      } else if (w.tray < wTrayCap && waitingNpcs.length > 0) {
-        // Yükleme: KENDİ zone'unun ocağının ÖN yüzüne git (bardaklar önde); varınca tepsiye al.
-        if (
-          navStep(w.pos, LAYOUT.stationPickups[z], wStep, navGrid, REACH_PICKUP, player, obstacles) &&
-          readyCupsByZone[z] > 0
-        ) {
-          const take = Math.min(wTrayCap - w.tray, readyCupsByZone[z]);
-          w.tray += take;
-          readyCupsByZone[z] -= take;
-        }
-      } else {
-        // Boşta: kendi zone'unun personel köşesine dön.
-        navStep(w.pos, LAYOUT.waiterHomes[z], wStep, navGrid, REACH_HOME, player, obstacles);
-      }
-      waiters[z] = w;
+        return w;
+      };
+      waiters[z] = runWaiter(waiters[z], 0);
+      waiters2[z] = wCount >= 2 ? runWaiter(waiters2[z], 0.7) : null;
     }
 
     // --- Bulaşıkçı (Faz 2e kısmi assist), ZONE BAŞINA: kendi zone'unun kirlilerini toplar,
@@ -1607,6 +1638,7 @@ export const useGame = create<GameState>((set, get) => ({
       lifetime: lifetime.toNumber(),
       waiterServed: stats.waiterServed,
       waiterServedByZone: stats.waiterServedByZone,
+      tableLevels, // Y4: allZoneTablesLevel gate'i (2. garson pad'leri)
     };
     // EKRANDA TEK PAD (quest sistemi): görünürlük visiblePads'ten (Pad.tsx ile aynı kaynak).
     const activePads: PadDef[] = visiblePads(questIndex, padGate);
@@ -1897,6 +1929,7 @@ export const useGame = create<GameState>((set, get) => ({
       camFocus,
       player,
       waiters,
+      waiters2,
       dishwashers,
       readyCupsByZone,
       brewProgressByZone,

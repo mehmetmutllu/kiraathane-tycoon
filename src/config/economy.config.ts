@@ -96,6 +96,11 @@ export interface Requires {
    * üstüne yenisi yığılmaz.
    */
   minWaiterServed?: number;
+  /**
+   * Y4 gating (plan §3, kullanıcı onaylı): o salonun 4 masası da en az `level` olmadan açılmaz —
+   * 2. garson EN YOĞUN an gelsin (16 koltuk döneminde istasyon tavanını ancak 2 garson doldurur).
+   */
+  allZoneTablesLevel?: { zone: number; level: number };
 }
 
 /**
@@ -440,6 +445,16 @@ export const economyConfig = {
       requires: { prev: ['z3table3'] }, effect: { type: 'hireDishwasher' } },
     { id: 'z3table4', label: '4. Masa', cost: 2250, fillRate: 375, optional: false, zone: 2, // ~6sn (eski 15sn!)
       requires: { prev: ['z3dishwasher'] }, effect: { type: 'addTable' } },
+    // --- 2. GARSONLAR (Y4, plan §3 — onaylı): OPSİYONEL geç-oyun pad'leri; gating = o salonun
+    // 4 masası da L4 (en yoğun an; 1. garson tek başına 16 koltuğa yetişemez — compute raporu §1).
+    // Konum: kendi salonunun (artık kaybolmuş) 1. garson pad'inin TAM yeri (LAYOUT.padPos).
+    // z0'ınki görev hattının SON görevine bağlı (q_waiter2); z1/z2'ninkiler serbest oyun.
+    { id: 'waiter2', label: '2. Garson', cost: 800, fillRate: 178, optional: true, zone: 0, // ~4.5sn
+      requires: { prev: ['waiter'], allZoneTablesLevel: { zone: 0, level: 4 } }, effect: { type: 'hireWaiter' } },
+    { id: 'z2waiter2', label: '2. Garson', cost: 1200, fillRate: 240, optional: true, zone: 1, // ~5sn
+      requires: { prev: ['z2waiter'], allZoneTablesLevel: { zone: 1, level: 4 } }, effect: { type: 'hireWaiter' } },
+    { id: 'z3waiter2', label: '2. Garson', cost: 2000, fillRate: 333, optional: true, zone: 2, // ~6sn
+      requires: { prev: ['z3waiter'], allZoneTablesLevel: { zone: 2, level: 4 } }, effect: { type: 'hireWaiter' } },
   ],
 
   /**
@@ -495,7 +510,10 @@ export const economyConfig = {
     { id: 'q_z3table3', title: 'Tost: 3. Masayı aç', target: { type: 'pad', id: 'z3table3' }, zone: 2, reward: 200 },
     { id: 'q_z3dish', title: 'Tost: Bulaşıkçı tut', target: { type: 'pad', id: 'z3dishwasher' }, zone: 2, reward: 250 },
     { id: 'q_z3table4', title: 'Tost: 4. Masayı aç', target: { type: 'pad', id: 'z3table4' }, zone: 2, reward: 350 },
-    // (Y4 görevleri — "4 masayı L4 yap" + "2. garsonu tut" — M-D'de SONA eklenir; append-only.)
+    // --- Y4 geç-oyun (APPEND-only — v27 şeması DEĞİŞMEDİ): salonun masaları L4 → 2. garson.
+    // z1/z2'nin 2. garsonları görevsiz opsiyonel pad'ler (serbest oyun keşfi).
+    { id: 'q_z1allL4', title: 'Salonun 4 masasını Seviye 4 yap', target: { type: 'tablesAtLevel', level: 4, count: 4, zone: 0 }, reward: 400 },
+    { id: 'q_waiter2', title: '2. Garsonu tut', target: { type: 'pad', id: 'waiter2' }, reward: 300 },
   ] as readonly QuestDef[],
 
   // Oyuncu hareket hızı v20'de character.speed kademesinden türetilir (playerSpeed()).
@@ -605,6 +623,8 @@ export interface DerivedState {
   tablesByZone: number[];
   /** Zone başına garson tutuldu mu. */
   hasWaiterByZone: boolean[];
+  /** Zone başına garson SAYISI (Y4: 2. garson pad'leri — hasWaiterByZone = count>0). */
+  waiterCountByZone: number[];
   /** Zone başına bulaşıkçı tutuldu mu. */
   hasDishwasherByZone: boolean[];
   /** GLOBAL açık masa sayısı — index'ler BİTİŞİK (zone sırası gating'le katı; HUD/test geri-uyumu). */
@@ -633,7 +653,7 @@ export function derivedFromPads(padsDone: readonly string[]): DerivedState {
     if (pad && pad.effect.type === 'unlockZone') zonesOpen = Math.min(MAX_ZONES, zonesOpen + 1);
   }
   const tablesByZone: number[] = Array.from({ length: MAX_ZONES }, (_, z) => (z < zonesOpen ? 1 : 0));
-  const hasWaiterByZone = Array.from({ length: MAX_ZONES }, () => false);
+  const waiterCountByZone = Array.from({ length: MAX_ZONES }, () => 0);
   const hasDishwasherByZone = Array.from({ length: MAX_ZONES }, () => false);
   for (const id of padsDone) {
     const pad = byId.get(id);
@@ -645,13 +665,14 @@ export function derivedFromPads(padsDone: readonly string[]): DerivedState {
         tablesByZone[z] = Math.min(TABLES_PER_ZONE, tablesByZone[z] + 1);
         break;
       case 'hireWaiter':
-        hasWaiterByZone[z] = true;
+        waiterCountByZone[z] = Math.min(2, waiterCountByZone[z] + 1); // Y4: zone başına en çok 2 garson
         break;
       case 'hireDishwasher':
         hasDishwasherByZone[z] = true;
         break;
     }
   }
+  const hasWaiterByZone = waiterCountByZone.map((n) => n > 0);
   // Global masa index'leri BİTİŞİK kalmalı: bir zone açıksa ÖNCEKİ tüm zone'lar yapısal olarak doludur
   // (her unlock pad'i önceki zone'un table4'ünü ister); bozuk kayda karşı kelepçe (yoksa slot atlanır,
   // index kayardı). M2: 2 zone'a özel `tablesByZone[0]=...` genellendi (4 zone).
@@ -661,6 +682,7 @@ export function derivedFromPads(padsDone: readonly string[]): DerivedState {
     zonesOpen,
     tablesByZone,
     hasWaiterByZone,
+    waiterCountByZone,
     hasDishwasherByZone,
     tables,
     stations: zonesOpen,
@@ -680,6 +702,8 @@ export interface GateState {
   waiterServed?: number;
   /** ZONE-BAŞINA garson taşıma sayacı (v21 — z2 hızlandırma kendi garsonunun işini saysın). */
   waiterServedByZone?: number[];
+  /** Masa-başı seviyeler (Y4 allZoneTablesLevel gate'i için; eski çağıranlar vermeyebilir → gate kapalı). */
+  tableLevels?: number[];
 }
 
 /** Bir `requires` koşulu mevcut ilerleme durumunca karşılanıyor mu? */
@@ -690,6 +714,13 @@ export function requiresMet(req: Requires | undefined, g: GateState): boolean {
   if (req.minStationLevel != null && g.stationLevel < req.minStationLevel) return false;
   if (req.minLifetime != null && g.lifetime < req.minLifetime) return false;
   if (req.minWaiterServed != null && (g.waiterServed ?? 0) < req.minWaiterServed) return false;
+  if (req.allZoneTablesLevel) {
+    const { zone, level } = req.allZoneTablesLevel;
+    const lv = g.tableLevels ?? [];
+    for (let i = zone * TABLES_PER_ZONE; i < (zone + 1) * TABLES_PER_ZONE; i++) {
+      if ((lv[i] ?? 0) < level) return false;
+    }
+  }
   return true;
 }
 

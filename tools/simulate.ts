@@ -23,6 +23,7 @@ import {
   derivedFromPads,
   tableUpgradeCost,
   tableTip,
+  tableSeats,
   charNextCost,
   MAX_ZONES,
   PRODUCTS,
@@ -92,12 +93,15 @@ function brewTimeZ(s: State, z: number): number {
 }
 
 // Zone'un gelir oranı (₺/sn): min(talep, arz) × (ürün fiyatı + bahşiş). M3: tost pahalı+yavaş.
+// Y4 kalibrasyonu: talep KOLTUK-temelli (Y2 grupları — masa başına seviyeyle 1→4 koltuk; idealize
+// tableLevel'da L0 koltuk=1 → ölçülen erken/orta eğri AYNI kalır, geç-oyun L4 döneminde talep ×4
+// olur ve istasyon arzı tavana dayanır — 2. garson + tepsi-3 tam bu pencereyi taşır, compute §1).
 function rateZ(s: State, z: number): number {
   const d = derivedFromPads(s.padsDone);
   if (z >= d.zonesOpen) return 0;
   const bt = brewTimeZ(s, z);
   const cycle = C.npc.walkTime + bt + C.npc.eatTime;
-  const demand = d.tablesByZone[z] / cycle;
+  const demand = (d.tablesByZone[z] * tableSeats(s.tableLevel)) / cycle;
   const supply = 1 / bt;
   return Math.min(demand, supply) * (PRODUCTS[zoneProduct(z)].price + tableTip(s.tableLevel));
 }

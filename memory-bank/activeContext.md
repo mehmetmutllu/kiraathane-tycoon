@@ -28,9 +28,19 @@ indirimi son teste ERTELENDİ):
   Playwright canlı: v26 enjeksiyon → v27 (q_z3serve→q_tost5 1/5 taban korunmuş ✓), panel satın alma
   (tost 1→2, cüzdan −2000 ✓), sahnede tostçu+büyük fiyat yazısı+tost görev ikonu ekran görüntüleri;
   unload-autosave enjeksiyonu ezer → testte Storage.prototype.setItem no-op hilesi. vitest 161/161.
-- ⏳ Sıradaki: **M-D (Y4)** 2. garson (waiter2/z2waiter2/z3waiter2 pad'leri 800/1200/2000;
-  requires: o salonun 4 masası L4 — yeni requires türü) + claim (2 garson çakışmaz) + görevler
-  APPEND (q_z1allL4 + q_waiter2) + sim kalibrasyonu (grup/koltuk talebi) + YENİ APK.
+- ✅ **M-D (Y4)**: 2. garson pad'leri waiter2/z2waiter2/z3waiter2 (800/1200/2000, OPSİYONEL;
+  requires yeni türü `allZoneTablesLevel {zone,level:4}` — GateState'e opsiyonel tableLevels eklendi).
+  Pad konumları = kendi salonunun 1. garson pad'inin TAM yeri (prev:waiter → eski pad yok olmuş;
+  sıfır çakışma riski). `derivedFromPads.waiterCountByZone` (hasWaiter = count>0; max 2).
+  **visiblePads artık availableOptionalPads'ı DA döndürür** (eskiden opsiyonel pad hiç çizilmiyor/
+  doldurulamıyordu!); q_waiter2 görevinde çiftleme filtreli. FSM: `waiters2` paralel dizi + CLAIM
+  (runWaiter closure; 1. garson en acil masayı claim eder, 2. garson o masayı hariç tutar; ev ofseti
+  +0.7). Görevler APPEND: q_z1allL4 (tablesAtLevel 4×L4 z0, 400₺) + q_waiter2 (300₺). Sim: talep
+  koltuk-temelli (tablesByZone × tableSeats(tableLevel) — L0'da çarpan 1 → ölçülen eğri AYNI:
+  z3 dolu @1.63sa). vitest 168/168 (7 yeni Y4 testi), build, smoke 27/27, Playwright canlı (L4 salon
+  + waiter2 pad'de 4.5sn dur → −800₺ → 2. garson spawn + servis, waiterServed 80→88; konsol 0).
+- ⏳ Sıradaki: **YENİ APK** (`npm run apk`) → kullanıcı Y3+Y4 TOPLU telefon testi → feedback turu;
+  fiyat indirimi kararı bu testten sonra. Sonra: arka-sol rezerv arsa içeriği + üst kat tasarım turu.
 
 ## ŞU AN (2026-06-11 — Y2 ✅ KOLTUK + GRUP SİSTEMİ; kayıt şeması DEĞİŞMEDİ, v26 kaldı)
 Onaylı planın (docs/yemek-alani-garson-plan.md §2) Y2 milestone'u uygulandı:

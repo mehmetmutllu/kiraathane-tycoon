@@ -26,6 +26,7 @@ import {
   waiterTrayCapacityFor,
   waiterTrayMaxTier,
   waiterTrayNextCost,
+  requiresMet,
 } from '../src/config/economy.config';
 import { D, fmt } from '../src/game/decimal';
 import {
@@ -2190,7 +2191,7 @@ describe('M3 — TOST ürün hattı (zone-3): trayFood, ürün fiyatı, tabak, g
     expect(i).toBeGreaterThan(0);
     expect(ids.slice(i + 1)).toEqual([
       'q_tableL2x2', 'q_zone3', 'q_z3table2', 'q_tost5', 'q_z3station', 'q_z3waiter',
-      'q_tostTray1', 'q_z3table3', 'q_z3dish', 'q_z3table4',
+      'q_tostTray1', 'q_z3table3', 'q_z3dish', 'q_z3table4', 'q_z1allL4', 'q_waiter2',
     ]);
     expect(ids).not.toContain('q_z3serve'); // "5 sipariş" → q_tost5 (başlık net TOST; v27 İD-eşlenir)
   });
@@ -2808,5 +2809,118 @@ describe('Y3 — garson tepsi yükseltmeleri (panel satın alma + FSM kapasite +
   it('v27 kaydında waiterUpgrades yuvarlanır/kelepçelenir (bozuk değer tavana iner)', () => {
     const m = migrate({ ...defaultSave(), saveVersion: 26, waiterUpgrades: { teaTray: 99, tostTray: -3 } } as unknown as Record<string, unknown>);
     expect(m.waiterUpgrades).toEqual({ teaTray: waiterTrayMaxTier('tea'), tostTray: 0 });
+  });
+});
+
+describe('Y4 — 2. garson: gating (allZoneTablesLevel) + claim + opsiyonel pad görünürlüğü', () => {
+  const Z1 = ['table2', 'table3', 'waiter', 'dishwasher', 'table4'];
+
+  it('requiresMet allZoneTablesLevel: 4 masanın hepsi L4 olmadan kapalı; tableLevels yoksa kapalı', () => {
+    const req = { prev: ['waiter'], allZoneTablesLevel: { zone: 0, level: 4 } } as const;
+    const base = { padsDone: ['waiter'], tables: 4, stationLevel: 0, lifetime: 0 };
+    expect(requiresMet(req, { ...base, tableLevels: [4, 4, 4, 3] })).toBe(false);
+    expect(requiresMet(req, { ...base, tableLevels: [4, 4, 4, 4] })).toBe(true);
+    expect(requiresMet(req, base)).toBe(false); // eski çağıran tableLevels vermezse gate kapalı (savunmacı)
+    // zone dilimi: z1'in masaları global slot 4-7.
+    const reqZ1 = { allZoneTablesLevel: { zone: 1, level: 4 } } as const;
+    expect(requiresMet(reqZ1, { ...base, tableLevels: [0, 0, 0, 0, 4, 4, 4, 4] })).toBe(true);
+    expect(requiresMet(reqZ1, { ...base, tableLevels: [4, 4, 4, 4, 0, 0, 0, 0] })).toBe(false);
+  });
+
+  it('derivedFromPads.waiterCountByZone: waiter→1, +waiter2→2 (hasWaiterByZone = count>0)', () => {
+    const d1 = derivedFromPads(['table2', 'waiter']);
+    expect(d1.waiterCountByZone[0]).toBe(1);
+    expect(d1.hasWaiterByZone[0]).toBe(true);
+    const d2 = derivedFromPads(['table2', 'waiter', 'waiter2']);
+    expect(d2.waiterCountByZone[0]).toBe(2);
+    const d0 = derivedFromPads(['table2']);
+    expect(d0.waiterCountByZone[0]).toBe(0);
+    expect(d0.hasWaiterByZone[0]).toBe(false);
+  });
+
+  it('visiblePads: gating karşılanınca waiter2 OPSİYONEL pad\'i görev durumundan bağımsız görünür', () => {
+    const gate = {
+      padsDone: [...Z1], tables: 4, stationLevel: 3, lifetime: 99999,
+      waiterServed: 99, tableLevels: [4, 4, 4, 4],
+    };
+    // Görev hattı bitmiş gibi (questIndex = length): omurga boş, opsiyonel waiter2 görünür.
+    const vp = visiblePads(economyConfig.quests.length, gate);
+    expect(vp.some((p) => p.id === 'waiter2')).toBe(true);
+    // Masalar L4 değilken görünmez.
+    const vp2 = visiblePads(economyConfig.quests.length, { ...gate, tableLevels: [4, 4, 4, 1] });
+    expect(vp2.some((p) => p.id === 'waiter2')).toBe(false);
+    // Pad-dışı bir görev aktifken de opsiyonel görünür (eski davranış: hiç pad dönmezdi).
+    const tableQuestIdx = economyConfig.quests.findIndex((q) => q.id === 'q_z1allL4');
+    const vp3 = visiblePads(tableQuestIdx, gate);
+    expect(vp3.some((p) => p.id === 'waiter2')).toBe(true);
+    // q_waiter2 görevi aktifken pad ÇİFTLENMEZ (hem görev hedefi hem opsiyonel listede).
+    const wq = economyConfig.quests.findIndex((q) => q.id === 'q_waiter2');
+    const vp4 = visiblePads(wq, gate);
+    expect(vp4.filter((p) => p.id === 'waiter2').length).toBe(1);
+  });
+
+  it('görev hattı SONU (append-only): ... q_z3table4 → q_z1allL4 → q_waiter2', () => {
+    const ids = economyConfig.quests.map((q) => q.id);
+    expect(ids.slice(-3)).toEqual(['q_z3table4', 'q_z1allL4', 'q_waiter2']);
+  });
+
+  it('CLAIM: 2 garson farklı masalara gider — 2. garson 1.\'in hedeflediği masayı atlar', () => {
+    useGame.getState().hardReset();
+    const seat0 = LAYOUT.tables[0].seat;
+    const seat1 = LAYOUT.tables[1].seat;
+    useGame.setState({
+      padsDone: ['table2', 'waiter', 'waiter2'],
+      tableLevels: [4, 4, 4, 4],
+      waiters: [{ pos: [seat0[0], 0.6, seat0[2]] as [number, number, number], tray: 1 }, null, null],
+      waiters2: [{ pos: [seat1[0], 0.6, seat1[2]] as [number, number, number], tray: 1 }, null, null],
+      player: [0, 0.6, 6.5],
+      inputKeyboard: [0, 0], inputJoystick: [0, 0],
+      npcs: [
+        // Masa 0 EN ACİL (timer 2) → 1. garson onu claim eder; 2. garson masa 1'e (timer 8) düşer.
+        { id: 980, state: 'waitingForTea', pos: [...seat0] as [number, number, number], tableIndex: 0, seatIndex: 0, timer: 2, color: '#fff' },
+        { id: 981, state: 'waitingForTea', pos: [...seat1] as [number, number, number], tableIndex: 1, seatIndex: 0, timer: 8, color: '#fff' },
+      ],
+      spawnTimer: 999,
+    });
+    useGame.getState().tick(0.1);
+    const s = useGame.getState();
+    // Her iki garson da kendi masasının ÜSTÜNDE başladı → tek tick'te ikisi de teslim etti.
+    expect(s.npcs.find((n) => n.id === 980)?.state).toBe('drinking');
+    expect(s.npcs.find((n) => n.id === 981)?.state).toBe('drinking');
+    expect(s.waiters[0]?.tray).toBe(0);
+    expect(s.waiters2[0]?.tray).toBe(0);
+    expect(s.stats.waiterServed).toBe(2);
+  });
+
+  it('CLAIM: tek bekleyen masada 2. garson çifte-teslimat YAPMAZ (claim dışı kalır)', () => {
+    useGame.getState().hardReset();
+    const seat0 = LAYOUT.tables[0].seat;
+    useGame.setState({
+      padsDone: ['table2', 'waiter', 'waiter2'],
+      waiters: [{ pos: [seat0[0], 0.6, seat0[2]] as [number, number, number], tray: 1 }, null, null],
+      waiters2: [{ pos: [seat0[0] + 0.3, 0.6, seat0[2]] as [number, number, number], tray: 1 }, null, null],
+      player: [0, 0.6, 6.5],
+      inputKeyboard: [0, 0], inputJoystick: [0, 0],
+      npcs: [
+        { id: 990, state: 'waitingForTea', pos: [...seat0] as [number, number, number], tableIndex: 0, seatIndex: 0, timer: 5, color: '#fff' },
+      ],
+      spawnTimer: 999,
+    });
+    useGame.getState().tick(0.1);
+    const s = useGame.getState();
+    expect(s.npcs.find((n) => n.id === 990)?.state).toBe('drinking');
+    expect(s.stats.waiterServed).toBe(1); // tek teslim — 2. garson aynı masaya gitmedi
+    expect(s.waiters2[0]?.tray).toBe(1); // tepsisi durur (claim'lenen masa hariçti)
+  });
+
+  it('2. garson tutulunca FSM onu kurar; pad olmadan waiters2 null kalır', () => {
+    useGame.getState().hardReset();
+    useGame.setState({ padsDone: ['table2', 'waiter'], spawnTimer: 999, npcs: [] });
+    useGame.getState().tick(0.05);
+    expect(useGame.getState().waiters[0]).not.toBeNull();
+    expect(useGame.getState().waiters2[0]).toBeNull();
+    useGame.setState({ padsDone: ['table2', 'waiter', 'waiter2'] });
+    useGame.getState().tick(0.05);
+    expect(useGame.getState().waiters2[0]).not.toBeNull();
   });
 });
