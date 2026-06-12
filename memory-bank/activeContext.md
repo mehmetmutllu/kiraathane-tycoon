@@ -18,8 +18,19 @@ indirimi son teste ERTELENDİ):
   (aktif görevin gerisinde alınmamış pad görevi → geri çek; hattı bitmiş kayda dokunma) + questBase
   tutarlılığı (sayaç değilse 0; eşdeğer sayaçsa korunur). `waiterUpgrades {teaTray,tostTray}` persist
   v27'de AÇILDI (default 0; Y3 UI M-C'de). vitest 156/156, build, smoke 27/27, sim z3 @1.63sa.
-- ⏳ Sıradaki: **M-C (Y3)** sekmeli panel + garson tepsi satın alma + tostçu kıyafet → **M-D (Y4)**
-  2. garson (waiter2 pad'leri, requires: zone 4 masası L4) + claim + görev APPEND + sim + APK.
+- ✅ **M-C (Y3)**: CharacterPanel SEKMELİ (Oyuncu|Çay Garsonu|Tostçu; kilit: garson tutulmadan
+  garson sekmesi kilitli mesaj). `buyWaiterTray(kind)` store aksiyonu; garson FSM tepsiyi
+  `waiterTrayCapacityFor`'dan okur (çay=teaTray z0+z1 ortak, tost=tostTray) + TEK durakta masadaki
+  HERKESE bırakır (artan tepsiyle sıradaki masa). Waiter görseli: tepside N birim (genişleyen tepsi),
+  TOSTÇU hardal gövde + beyaz kep (y 1.24 — 1.06 kapsül içinde kalıyordu). ÖNEMLİ DERS: panelde
+  sekme başına AYRI <Canvas> WebGL context limitine takılıp önizlemeyi karartıyor → TEK Canvas,
+  sekme modeli değiştirir. config.waiter.trayCapacity KALDIRILDI (tek kaynak: waiterTrayCapacityFor).
+  Playwright canlı: v26 enjeksiyon → v27 (q_z3serve→q_tost5 1/5 taban korunmuş ✓), panel satın alma
+  (tost 1→2, cüzdan −2000 ✓), sahnede tostçu+büyük fiyat yazısı+tost görev ikonu ekran görüntüleri;
+  unload-autosave enjeksiyonu ezer → testte Storage.prototype.setItem no-op hilesi. vitest 161/161.
+- ⏳ Sıradaki: **M-D (Y4)** 2. garson (waiter2/z2waiter2/z3waiter2 pad'leri 800/1200/2000;
+  requires: o salonun 4 masası L4 — yeni requires türü) + claim (2 garson çakışmaz) + görevler
+  APPEND (q_z1allL4 + q_waiter2) + sim kalibrasyonu (grup/koltuk talebi) + YENİ APK.
 
 ## ŞU AN (2026-06-11 — Y2 ✅ KOLTUK + GRUP SİSTEMİ; kayıt şeması DEĞİŞMEDİ, v26 kaldı)
 Onaylı planın (docs/yemek-alani-garson-plan.md §2) Y2 milestone'u uygulandı:

@@ -112,6 +112,9 @@ export function installDevHooks(): void {
       charUpgrades: { ...s.charUpgrades },
       charLevel: charLevel(s.charUpgrades),
       charPanelSeen: s.charPanelSeen,
+      // Garson tepsi yükseltmeleri (v27/Y3): kademeler + zone-başı anlık tepsi yükü.
+      waiterUpgrades: { ...s.waiterUpgrades },
+      waiterTrays: s.waiters.map((w) => (w ? w.tray : null)),
       camFocus: s.camFocus ? { pos: s.camFocus.pos, ttl: +s.camFocus.ttl.toFixed(2) } : null,
       // Yeni-özellik bildirimi (D-019 §4): anlık toast metni + bu oturumda bildirilmiş reveal anahtarları.
       notice: s.notice ? s.notice.text : null,

@@ -314,7 +314,7 @@ function run() {
 
   console.log('\n--- Servis kapasitesi (bilgi) ---');
   console.log(
-    `Garson zinciri zorunlu (₺${C.pads.find((p) => p.id === 'waiter')?.cost}): hız L1 ${C.waiter.moveSpeedByLevel[0]}→L2 ${C.waiter.moveSpeedByLevel[1]} br/sn (₺${C.waiter.upgradeCost}), tepsi ${C.waiter.trayCapacity}. ` +
+    `Garson zinciri zorunlu (₺${C.pads.find((p) => p.id === 'waiter')?.cost}): hız L1 ${C.waiter.moveSpeedByLevel[0]}→L2 ${C.waiter.moveSpeedByLevel[1]} br/sn (₺${C.waiter.upgradeCost}), çay tepsisi 1+kademe (₺${C.waiter.trayUpgrades.tea.costs.join('/')}). ` +
       `Zone-2 zinciri: unlock ₺${C.pads.find((p) => p.id === 'zone2')?.cost} + içi ₺${['z2table2', 'z2waiter', 'z2table3', 'z2dishwasher', 'z2table4'].reduce((a, id) => a + (C.pads.find((p) => p.id === id)?.cost ?? 0), 0)}.`,
   );
 }

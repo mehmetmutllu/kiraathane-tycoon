@@ -28,6 +28,8 @@ import {
   charNextCost,
   waiterTrayMaxTier,
   waiterTrayNextCost,
+  waiterTrayCapacityFor,
+  type WaiterKind,
   type WaiterUpgrades,
   trayCapacityFor,
   attractRadiusFor,
@@ -750,6 +752,8 @@ export interface GameState {
    * false). Başarıda anında kaydedilir; charStat görevi varsa sonraki tick'te tamamlanır.
    */
   buyCharUpgrade: (stat: CharStat) => boolean;
+  /** Garson tepsi kademesi satın al (Y3, garson sekmesi): tür-başı eğri (çay ortak, tostçu ayrı). */
+  buyWaiterTray: (kind: WaiterKind) => boolean;
   /** Karakter paneli ilk-sefer spotlight'ını kapat (butona dokununca; persist — bir daha çıkmaz). */
   markCharPanelSeen: () => void;
   /**
@@ -1499,7 +1503,11 @@ export const useGame = create<GameState>((set, get) => ({
         ? { pos: [...prev.pos] as Vec3, tray: prev.tray }
         : { pos: [...LAYOUT.waiterHomes[z]] as Vec3, tray: 0 };
       const wStep = waiterSpeed(waiterLevels[z]) * dt;
-      const wTrayCap = C.waiter.trayCapacity;
+      // Y3: tepsi kapasitesi panel yükseltmesinden türetilir (çay garsonları ortak eğri, tostçu ayrı).
+      const wTrayCap = waiterTrayCapacityFor(
+        zoneProduct(z) === 'tost' ? 'tost' : 'tea',
+        zoneProduct(z) === 'tost' ? s.waiterUpgrades.tostTray : s.waiterUpgrades.teaTray,
+      );
       // Garson kirli masaya çay GÖTÜRMEZ (D-019) + yalnız KENDİ zone'unun masalarına bakar.
       const waitingNpcs = liveNpcs.filter(
         (n) => n.state === 'waitingForTea' && !dirty.has(n.tableIndex) && zoneOfTable(n.tableIndex) === z,
@@ -1519,12 +1527,18 @@ export const useGame = create<GameState>((set, get) => ({
         }
         const targetTable = LAYOUT.tables[best.tableIndex].table;
         if (navStep(w.pos, targetTable, wStep, navGrid, REACH_TABLE, player, obstacles)) {
-          best.state = 'drinking';
-          best.timer = C.npc.eatTime;
-          w.tray -= 1;
-          stats.waiterServed += 1;
-          stats.waiterServedByZone[z] = (stats.waiterServedByZone[z] ?? 0) + 1; // v21: zone-başı sayaç
-          xp += C.xp.perWaiterServed;
+          // Y3 (plan §3): TEK durakta o masada bekleyen HERKESE tepsi yettiğince bırakır
+          // (grup + tepsi-3 = tek seferde; artan çayla sıradaki acil masaya devam eder).
+          for (const n of waitingNpcs) {
+            if (w.tray <= 0) break;
+            if (n.tableIndex !== best.tableIndex) continue;
+            n.state = 'drinking';
+            n.timer = C.npc.eatTime;
+            w.tray -= 1;
+            stats.waiterServed += 1;
+            stats.waiterServedByZone[z] = (stats.waiterServedByZone[z] ?? 0) + 1; // v21: zone-başı sayaç
+            xp += C.xp.perWaiterServed;
+          }
         }
       } else if (w.tray < wTrayCap && waitingNpcs.length > 0) {
         // Yükleme: KENDİ zone'unun ocağının ÖN yüzüne git (bardaklar önde); varınca tepsiye al.
@@ -1971,6 +1985,22 @@ export const useGame = create<GameState>((set, get) => ({
     set({
       wallet: s.wallet.sub(cost),
       charUpgrades: { ...s.charUpgrades, [stat]: tier + 1 },
+      xp: s.xp + C.xp.perUpgrade,
+    });
+    get().saveNow();
+    return true;
+  },
+
+  // Garson tepsi kademesi satın al (Y3 — karakter panelinin garson sekmelerinden; buyCharUpgrade deseni).
+  buyWaiterTray: (kind) => {
+    const s = get();
+    const key = kind === 'tea' ? 'teaTray' : 'tostTray';
+    const tier = s.waiterUpgrades[key];
+    const cost = waiterTrayNextCost(kind, tier);
+    if (cost == null || s.wallet.lt(cost)) return false;
+    set({
+      wallet: s.wallet.sub(cost),
+      waiterUpgrades: { ...s.waiterUpgrades, [key]: tier + 1 },
       xp: s.xp + C.xp.perUpgrade,
     });
     get().saveNow();

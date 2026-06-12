@@ -288,8 +288,7 @@ export const economyConfig = {
      * tur ~12sn < sabır 18sn (güvenli pay sürer).
      */
     moveSpeedByLevel: [1.5, 2.0],
-    /** Tepsi kapasitesi (tek seferde taşıdığı çay). Oyuncununkinden küçük. */
-    trayCapacity: 1,
+    // Tepsi kapasitesi Y3'te yükseltmeden türetilir: waiterTrayCapacityFor(kind, tier) = 1 + kademe.
     /** Garson L2 yükseltme maliyeti (₺). Tek seviye (L1→L2); L3+ Faz 4 (💎/video). */
     upgradeCost: 250,
     /**

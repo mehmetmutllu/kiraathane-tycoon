@@ -2711,3 +2711,102 @@ describe('v27 — görev redesign + İD-eşleme migrasyonu + dolum süreleri (te
     expect(1350 / upgradeFillRateFor(1350)).toBeCloseTo(6); // tost L4: 22.5sn → 6sn tavan
   });
 });
+
+describe('Y3 — garson tepsi yükseltmeleri (panel satın alma + FSM kapasite + tek durakta çoklu teslim)', () => {
+  it('buyWaiterTray: yetersiz bakiye false; alımda kademe artar + cüzdan düşer; tavanda false', () => {
+    useGame.getState().hardReset();
+    useGame.setState({ wallet: D(100) });
+    expect(useGame.getState().buyWaiterTray('tea')).toBe(false); // 800 > 100
+    useGame.setState({ wallet: D(10000) });
+    expect(useGame.getState().buyWaiterTray('tea')).toBe(true);
+    expect(useGame.getState().waiterUpgrades.teaTray).toBe(1);
+    expect(useGame.getState().wallet.toNumber()).toBe(10000 - 800);
+    // Tavan: tea max 3 kademe.
+    useGame.setState({ wallet: D(1e9), waiterUpgrades: { teaTray: 3, tostTray: 0 } });
+    expect(useGame.getState().buyWaiterTray('tea')).toBe(false);
+    // Tostçu kendi eğrisi: 2000.
+    useGame.setState({ wallet: D(2500), waiterUpgrades: { teaTray: 0, tostTray: 0 } });
+    expect(useGame.getState().buyWaiterTray('tost')).toBe(true);
+    expect(useGame.getState().waiterUpgrades.tostTray).toBe(1);
+    expect(useGame.getState().wallet.toNumber()).toBe(500);
+  });
+
+  it('garson yüklemede tepsiyi KAPASİTE kadar doldurur (teaTray 2 → 3 bardak)', () => {
+    useGame.getState().hardReset();
+    const pick = LAYOUT.stationPickups[0];
+    const farSeat = LAYOUT.tables[1].seat;
+    useGame.setState({
+      padsDone: ['table2', 'waiter'],
+      waiters: [{ pos: [pick[0], 0.6, pick[2]] as [number, number, number], tray: 0 }, null, null],
+      waiterUpgrades: { teaTray: 2, tostTray: 0 },
+      player: [0, 0.6, 6.5],
+      inputKeyboard: [0, 0], inputJoystick: [0, 0],
+      npcs: [
+        { id: 950, state: 'waitingForTea', pos: [...farSeat] as [number, number, number], tableIndex: 1, seatIndex: 0, timer: 17, color: '#27ae60' },
+      ],
+      spawnTimer: 999,
+    });
+    const ready = useGame.getState().readyCupsByZone.slice();
+    ready[0] = 5;
+    useGame.setState({ readyCupsByZone: ready });
+    useGame.getState().tick(0.1);
+    expect(useGame.getState().waiters[0]?.tray).toBe(3); // 1 + kademe 2
+    expect(useGame.getState().readyCupsByZone[0]).toBe(2);
+  });
+
+  it('garson AYNI masada bekleyen herkese TEK durakta bırakır; artan çay tepside kalır', () => {
+    useGame.getState().hardReset();
+    const seat = LAYOUT.tables[0].seat;
+    useGame.setState({
+      padsDone: ['table2', 'waiter'],
+      waiters: [{ pos: [seat[0], 0.6, seat[2]] as [number, number, number], tray: 3 }, null, null],
+      waiterUpgrades: { teaTray: 2, tostTray: 0 },
+      player: [0, 0.6, 6.5],
+      inputKeyboard: [0, 0], inputJoystick: [0, 0],
+      npcs: [
+        { id: 960, state: 'waitingForTea', pos: [...seat] as [number, number, number], tableIndex: 0, seatIndex: 0, timer: 5, color: '#fff' },
+        { id: 961, state: 'waitingForTea', pos: [seat[0] + 0.4, 0.6, seat[2]] as [number, number, number], tableIndex: 0, seatIndex: 1, timer: 9, color: '#fff' },
+        { id: 962, state: 'waitingForTea', pos: [...LAYOUT.tables[1].seat] as [number, number, number], tableIndex: 1, seatIndex: 0, timer: 12, color: '#fff' },
+      ],
+      spawnTimer: 999,
+    });
+    useGame.getState().tick(0.1);
+    const s = useGame.getState();
+    expect(s.npcs.find((n) => n.id === 960)?.state).toBe('drinking');
+    expect(s.npcs.find((n) => n.id === 961)?.state).toBe('drinking'); // aynı masa → aynı durakta
+    expect(s.npcs.find((n) => n.id === 962)?.state).toBe('waitingForTea'); // başka masa → sıradaki tur
+    expect(s.waiters[0]?.tray).toBe(1); // 3 − 2 teslim
+    expect(s.stats.waiterServed).toBe(2);
+  });
+
+  it('tostçu garson tepsisi KENDİ eğrisinden okunur (tostTray 1 → 2 tost taşır)', () => {
+    useGame.getState().hardReset();
+    const Z1 = ['table2', 'table3', 'waiter', 'dishwasher', 'table4'];
+    const Z2 = ['zone2', 'z2table2', 'z2waiter', 'z2table3', 'z2dishwasher', 'z2table4'];
+    const pick = LAYOUT.stationPickups[2];
+    const seat8 = LAYOUT.tables[8].seat;
+    useGame.setState({
+      padsDone: [...Z1, ...Z2, 'zone3', 'z3waiter'],
+      questIndex: economyConfig.quests.length,
+      waiters: [null, null, { pos: [pick[0], 0.6, pick[2]] as [number, number, number], tray: 0 }],
+      waiterUpgrades: { teaTray: 0, tostTray: 1 },
+      player: [0, 0.6, 6.5],
+      inputKeyboard: [0, 0], inputJoystick: [0, 0],
+      npcs: [
+        { id: 970, state: 'waitingForTea', pos: [...seat8] as [number, number, number], tableIndex: 8, seatIndex: 0, timer: 17, color: '#fff' },
+      ],
+      spawnTimer: 999,
+    });
+    const ready = useGame.getState().readyCupsByZone.slice();
+    ready[2] = 4;
+    useGame.setState({ readyCupsByZone: ready });
+    useGame.getState().tick(0.1);
+    expect(useGame.getState().waiters[2]?.tray).toBe(2); // 1 + tostTray 1 (çay kademesi SIZMAZ)
+    expect(useGame.getState().readyCupsByZone[2]).toBe(2);
+  });
+
+  it('v27 kaydında waiterUpgrades yuvarlanır/kelepçelenir (bozuk değer tavana iner)', () => {
+    const m = migrate({ ...defaultSave(), saveVersion: 26, waiterUpgrades: { teaTray: 99, tostTray: -3 } } as unknown as Record<string, unknown>);
+    expect(m.waiterUpgrades).toEqual({ teaTray: waiterTrayMaxTier('tea'), tostTray: 0 });
+  });
+});

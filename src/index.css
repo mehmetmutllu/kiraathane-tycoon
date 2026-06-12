@@ -573,6 +573,47 @@ body,
   line-height: 12px;
   text-align: center;
 }
+/* Y3 sekmeleri: Oyuncu | Çay Garsonu | Tostçu */
+.char-tabs {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+.char-tab {
+  pointer-events: auto;
+  flex: 1;
+  padding: 7px 4px;
+  border: 2px solid rgba(150, 100, 40, 0.35);
+  border-radius: 12px;
+  background: rgba(150, 100, 40, 0.12);
+  color: #6d4c41;
+  font-family: var(--font-game);
+  font-size: 12.5px;
+  font-weight: 800;
+}
+.char-tab.active {
+  border-color: #fff;
+  background: linear-gradient(180deg, var(--gold-1), var(--gold-2));
+  color: #4a2c02;
+  box-shadow: 0 2px 0 #b87400;
+}
+.char-locked {
+  margin: 14px 0;
+  padding: 18px 12px;
+  border-radius: 14px;
+  background: rgba(109, 76, 65, 0.14);
+  color: #6d4c41;
+  text-align: center;
+  font-size: 13.5px;
+  font-weight: 700;
+}
+.char-note {
+  margin-top: 8px;
+  color: rgba(109, 76, 65, 0.85);
+  font-size: 11.5px;
+  line-height: 1.35;
+  text-align: center;
+}
 .char-canvas {
   height: 168px;
   margin: 10px 0 12px;
