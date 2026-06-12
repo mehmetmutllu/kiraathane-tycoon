@@ -563,10 +563,28 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   canlı (L3 masada 4 kişilik grup farklı taburelerde + L2'de 2 karşılıklı koltuk + tek durakta 2 servis
   + 2 ayrı para + 10dk soak; konsol 0). **BONUS FIX:** öncesinde de var olan flaky vitest (bahşiş testi
   — "uzak" oyuncu [0,0.6,99] z=5'e kelepçelenip mıknatısa giriyordu) gerçek uzak noktayla düzeltildi.
-- 🔧 **SIRADA (onaylı plan + kullanıcı akış kararı 2026-06-11):** APK derlendi ✅ → 1) sonraki chat
-  TELEFON FEEDBACK'İ (+fix) → 2) Y3 sekmeli panel+garson tepsileri (SAVE **v27** — v26'yı Y1 aldı)
-  → Y4 ikinci garson+claim+sim kalibrasyonu (grup/koltuk talebi sim'e Y4'te işlenir — plan §6)
-  → 3) Y3+Y4 sonrası TOPLU telefon testi (yeni APK).
+- ✅ **TELEFON FEEDBACK TURU-3 + Y3 + Y4 (2026-06-12, tek oturum — commit'ler 5727b07/50c70c7/1045f93/61b4300):**
+  - **M-A fixler:** pad fiyat yazısı büyüdü (GroundMarker sub 0.29/başlık 0.3 + büyük pul); garson hız
+    noktası [-3.5,3.4] (duvar arkasında kayboluyordu); merdiven kaldırıldı (Faz 3b'de yeniden);
+    dolum süreleri — pad fillRate = cost/hedef-dwell (1.5-8sn bandı; zone3 14.4→8sn), yükseltmeler
+    `upgradeFillRateFor(cost)` 1-6sn kelepçe (tost ocağı L4 22.5→6sn).
+  - **M-B GÖREV REDESIGN (SAVE v27):** q_z2serve kalktı, q_z3serve→q_tost5; yeni hedef türleri
+    zone'lu stationLevel + tablesAtLevel + waiterTray; kamera serveTea→stations[z] (boş salon ortası
+    bitti); QuestPhoto tost dilimi; v27 İD-eşleme + GENEL pad-geri-çekme güvenlik ağı + questBase
+    tutarlılığı; waiterUpgrades v27 persist alanı.
+  - **M-C / Y3:** sekmeli CharacterPanel (Oyuncu|Çay Garsonu|Tostçu) + buyWaiterTray (çay
+    800/2400/6000→tepsi 4; tost 2000/5000→3); FSM tepsi kapasitesi yükseltmeden + TEK durakta masaya
+    çoklu teslim; tostçu hardal gövde+beyaz kep. DERS: panelde sekme başına ayrı Canvas WebGL context
+    limitine takılır → TEK Canvas, model değişir.
+  - **M-D / Y4:** waiter2 pad'leri (800/1200/2000, opsiyonel; `allZoneTablesLevel` gate'i — 4 masa L4;
+    konum = eski garson pad'inin yeri); waiterCountByZone; visiblePads OPSİYONELLERİ de döndürür
+    (yapısal fix); waiters2 + CLAIM (acil-sıralı, 2. garson 1.'in masasını atlar); görevler APPEND
+    q_z1allL4+q_waiter2; sim talebi koltuk-temelli (eğri aynı: z3 dolu @1.63sa).
+  - vitest **168/168**, build, smoke 27/27, Playwright canlı doğrulamalar (v26→v27 migrasyon gerçek
+    kayıtla, panel alımı, 2. garson satın alma + çift servis). Fiyat indirimi kararı SON telefon
+    testine ertelendi (kullanıcı).
+- 🔧 **SIRADA:** YENİ APK derlendi → kullanıcı Y3+Y4 TOPLU telefon testi → feedback turu-4 (+fiyat
+  indirimi kararı). Sonra: arka-sol rezerv arsa içeriği + üst kat tasarım turu (kullanıcıyla).
 - ⏳ **3a kalan:** arka-sol rezerv arsanın içeriği SONRA tasarlanacak (kullanıcıyla); üst kat
   (okey/tavla) ayrı tasarım turu.
 - ⏳ **3b:** Kat geçişi: kat dolunca **merdiven** açılır → ekran kararma → üst kat; dinamik bounds/kamera; SAVE bump.
