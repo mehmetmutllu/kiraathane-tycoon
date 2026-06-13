@@ -13,6 +13,10 @@ import {
   waiterTrayNextCost,
   dishCarryCapacityFor,
   dishCarryNextCost,
+  waiterSpeedFor,
+  waiterSpeedNextCost,
+  dishSpeedFor,
+  dishSpeedNextCost,
   type CharStat,
   type WaiterKind,
 } from '../../config/economy.config';
@@ -180,10 +184,16 @@ function WaiterTab({ kind }: { kind: WaiterKind }) {
   const wallet = useGame((s) => s.wallet);
   const waiterUpgrades = useGame((s) => s.waiterUpgrades);
   const buyWaiterTray = useGame((s) => s.buyWaiterTray);
+  const buyWaiterSpeed = useGame((s) => s.buyWaiterSpeed);
   const cash = wallet.toNumber();
   const tier = kind === 'tea' ? waiterUpgrades.teaTray : waiterUpgrades.tostTray;
   const cap = waiterTrayCapacityFor(kind, tier);
   const cost = waiterTrayNextCost(kind, tier);
+  // v29: hız yükseltmesi mekânsal noktadan panele taşındı (kullanıcı 2026-06-13).
+  const spdTier = kind === 'tea' ? waiterUpgrades.teaSpeed : waiterUpgrades.tostSpeed;
+  const spd = waiterSpeedFor(kind, spdTier);
+  const spdNext = waiterSpeedFor(kind, spdTier + 1);
+  const spdCost = waiterSpeedNextCost(kind, spdTier);
   const food = kind === 'tost';
   const unit = food ? 'tost' : 'bardak';
   return (
@@ -220,10 +230,40 @@ function WaiterTab({ kind }: { kind: WaiterKind }) {
           </span>
         )}
       </div>
+      <div className="char-stat">
+        <span className="char-stat-icon"><BootIcon size={34} /></span>
+        <span className="char-stat-info">
+          <span className="char-stat-name">Hız</span>
+          <span className="char-stat-val" data-testid={`waiter-speed-val-${kind}`}>
+            {spdCost != null ? (
+              <>
+                {spd} <i>→ {spdNext}</i> hız
+              </>
+            ) : (
+              <>{spd} hız</>
+            )}
+          </span>
+        </span>
+        {spdCost != null ? (
+          <button
+            className="char-buy"
+            data-testid={`waiter-speed-buy-${kind}`}
+            disabled={cash < spdCost}
+            onClick={() => buyWaiterSpeed(kind)}
+          >
+            <CoinIcon size={16} />
+            {fmt(D(spdCost))}
+          </button>
+        ) : (
+          <span className="char-max" data-testid={`waiter-speed-buy-${kind}`}>
+            MAX
+          </span>
+        )}
+      </div>
       <div className="char-note">
         {food
           ? 'Tostçu garson tost salonunda çalışır; tepsisine aldığı tostları tek durakta bırakır.'
-          : 'Çay garsonlarının (tüm çay salonları) ortak tepsisi. Hız yükseltmesi salondaki noktadan.'}
+          : 'Çay garsonlarının (tüm çay salonları) ortak tepsisi ve hızı.'}
       </div>
     </>
   );
@@ -234,10 +274,16 @@ function DishTab() {
   const wallet = useGame((s) => s.wallet);
   const waiterUpgrades = useGame((s) => s.waiterUpgrades);
   const buyDishCarry = useGame((s) => s.buyDishCarry);
+  const buyDishSpeed = useGame((s) => s.buyDishSpeed);
   const cash = wallet.toNumber();
   const tier = waiterUpgrades.dishCarry;
   const cap = dishCarryCapacityFor(tier);
   const cost = dishCarryNextCost(tier);
+  // v29 (kullanıcı 2026-06-13): bulaşıkçıya hız kademesi — "yetişemez" baskısının ikinci kolu.
+  const spdTier = waiterUpgrades.dishSpeed;
+  const spd = dishSpeedFor(spdTier);
+  const spdNext = dishSpeedFor(spdTier + 1);
+  const spdCost = dishSpeedNextCost(spdTier);
   return (
     <>
       <div className="char-stat">
@@ -270,8 +316,38 @@ function DishTab() {
           </span>
         )}
       </div>
+      <div className="char-stat">
+        <span className="char-stat-icon"><BootIcon size={34} /></span>
+        <span className="char-stat-info">
+          <span className="char-stat-name">Hız</span>
+          <span className="char-stat-val" data-testid="waiter-speed-val-dish">
+            {spdCost != null ? (
+              <>
+                {spd} <i>→ {spdNext}</i> hız
+              </>
+            ) : (
+              <>{spd} hız</>
+            )}
+          </span>
+        </span>
+        {spdCost != null ? (
+          <button
+            className="char-buy"
+            data-testid="waiter-speed-buy-dish"
+            disabled={cash < spdCost}
+            onClick={() => buyDishSpeed()}
+          >
+            <CoinIcon size={16} />
+            {fmt(D(spdCost))}
+          </button>
+        ) : (
+          <span className="char-max" data-testid="waiter-speed-buy-dish">
+            MAX
+          </span>
+        )}
+      </div>
       <div className="char-note">
-        Tüm salonların bulaşıkçıları için ortak leğen: tek turda daha çok kirli bardak taşınır.
+        Tüm salonların bulaşıkçılarına ortak: leğen tek turda daha çok taşır, hız turu kısaltır.
       </div>
     </>
   );

@@ -429,8 +429,8 @@ export function QuestPhoto({ target, size = 44 }: { target: QuestTarget; size?: 
       }
       up = true;
       break;
-    case 'waiterLevel':
-      bg = '#33691e';
+    case 'waiterSpeed':
+      bg = target.kind === 'tost' ? '#a8682a' : '#33691e';
       inner = <PersonIcon />;
       up = true;
       break;
@@ -459,6 +459,36 @@ export function QuestPhoto({ target, size = 44 }: { target: QuestTarget; size?: 
       <rect x="1.5" y="1.5" width="45" height="45" rx="11" fill={bg} stroke="rgba(255,255,255,.85)" strokeWidth="3" />
       {inner}
       {up && <UpArrowOverlay />}
+    </svg>
+  );
+}
+
+/** Kamera genel-bakış toggle ikonu: out=false → dışa oklar (uzaklaş), out=true → içe oklar (geri yakınlaş). */
+export function CamZoomIcon({ size = 28, out = false }: { size?: number; out?: boolean }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
+      <defs>
+        <linearGradient id="ic-camzoom" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#64b5f6" />
+          <stop offset="1" stopColor="#1565c0" />
+        </linearGradient>
+      </defs>
+      <rect x="6" y="6" width="36" height="36" rx="9" fill="url(#ic-camzoom)" stroke="#fff" strokeWidth="2" />
+      {out ? (
+        <g stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" fill="none">
+          <path d="M19.5 19.5L13 13M19.5 19.5v-5.4M19.5 19.5h-5.4" />
+          <path d="M28.5 19.5L35 13M28.5 19.5v-5.4M28.5 19.5h5.4" />
+          <path d="M19.5 28.5L13 35M19.5 28.5v5.4M19.5 28.5h-5.4" />
+          <path d="M28.5 28.5L35 35M28.5 28.5v5.4M28.5 28.5h5.4" />
+        </g>
+      ) : (
+        <g stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" fill="none">
+          <path d="M13 13l6.7 6.7M13 13v5.4M13 13h5.4" />
+          <path d="M35 13l-6.7 6.7M35 13v5.4M35 13h-5.4" />
+          <path d="M13 35l6.7-6.7M13 35v-5.4M13 35h5.4" />
+          <path d="M35 35l-6.7-6.7M35 35v-5.4M35 35h-5.4" />
+        </g>
+      )}
     </svg>
   );
 }

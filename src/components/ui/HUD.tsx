@@ -3,7 +3,7 @@ import { useGame } from '../../game/store';
 import { fmt } from '../../game/decimal';
 import { levelProgress, economyConfig } from '../../config/economy.config';
 import { FLOOR_THEMES, WALL_THEMES } from '../../config/palette';
-import { CoinIcon, GemIcon, StarBadge, GearIcon, MailIcon, BrushIcon, CharIcon, TrayEmptyIcon, TostEmptyIcon, QuestPhoto, CheckBadge, BangBadge } from './icons';
+import { CoinIcon, GemIcon, StarBadge, GearIcon, MailIcon, BrushIcon, CharIcon, TrayEmptyIcon, TostEmptyIcon, QuestPhoto, CheckBadge, BangBadge, CamZoomIcon } from './icons';
 import { CharacterPanel } from './CharacterPanel';
 
 /**
@@ -31,15 +31,20 @@ export function HUD() {
   const emptyTray = useGame((s) => s.emptyTray);
   const trayTipSeen = useGame((s) => s.trayTipSeen);
   const markTrayTipSeen = useGame((s) => s.markTrayTipSeen);
+  const camZoomOut = useGame((s) => s.camZoomOut);
+  const toggleCamZoomOut = useGame((s) => s.toggleCamZoomOut);
   const [offlineSeen, setOfflineSeen] = useState(false);
   const [panel, setPanel] = useState<'settings' | 'mail' | 'shop' | 'char' | null>(null);
 
   const lvl = levelProgress(xp);
   const questPct = quest && quest.total != null ? Math.min(100, ((quest.cur ?? 0) / quest.total) * 100) : null;
   const showOffline = offlineEarned > 0 && !offlineSeen;
-  // Karakter görevi aktifken butonda altın nabız + "!" rozeti; İLK karakter görevinde tek-seferlik
-  // spotlight karartması (dokununca kapanır, persist — bir daha çıkmaz). Tasarım: char-upgrades §6.
-  const charQuestActive = quest?.target.type === 'charStat';
+  // Karakter-PANELİ görevi aktifken butonda altın nabız + "!" rozeti; İLK karakter görevinde
+  // tek-seferlik spotlight karartması (dokununca kapanır, persist). Tasarım: char-upgrades §6.
+  // v29: garson tepsi/hız görevleri de panelden alınır → onlar da butonu işaret eder
+  // (kullanıcı 2026-06-13: "görev de orayı göstersin").
+  const charQuestActive =
+    quest?.target.type === 'charStat' || quest?.target.type === 'waiterTray' || quest?.target.type === 'waiterSpeed';
   const spotlight = charQuestActive && !charPanelSeen && panel == null && !showOffline;
   // Tepsi-boşalt onboarding'i (v23): buton İLK kez belirdiğinde (tepside çay/tost varken) tek-seferlik
   // spotlight + açıklama balonu (karakter spotlight kalıbı; aynı anda iki spotlight çıkmaz).
@@ -236,6 +241,17 @@ export function HUD() {
           )}
         </div>
       )}
+
+      {/* KAMERA GENEL-BAKIŞ (2026-06-13): kamera yakınlaştı (taban 6) — bu TOGGLE salonu görmek
+          için uzaklaştırır (×1.45). Basılı-tut değil toggle: başparmak joystick/tepsiyle meşgul. */}
+      <button
+        className={`icon-btn cam-btn${camZoomOut ? ' on' : ''}`}
+        data-testid="cam-zoom"
+        title={camZoomOut ? 'Yakınlaş' : 'Genel bakış'}
+        onClick={toggleCamZoomOut}
+      >
+        <CamZoomIcon out={camZoomOut} />
+      </button>
 
       {/* Yeni-özellik / görev / seviye toast'u — ALT-ORTA (üstteki görev kartıyla çakışmaz);
           türe göre SVG madalyon: görev=yeşil onay, seviye=yıldız, reveal=altın ünlem */}

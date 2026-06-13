@@ -13,7 +13,9 @@
  *   L5 (Usta)   = masterDiamondCost 💎 VEYA 1 ödüllü video; outputMult yerine masterOutputMult
  */
 
-export const SAVE_VERSION = 28;
+// v29 (2026-06-13): personel hız kademeleri panele taşındı — waiterLevels kaldırıldı,
+// waiterUpgrades.teaSpeed/tostSpeed/dishSpeed eklendi (migrasyon save.ts'te).
+export const SAVE_VERSION = 29;
 
 /**
  * ZONE modeli (Faz 3a + D-022, gece 2026-06-10): zemin kat zone'ları. Her zone kendi TEMALI
@@ -124,7 +126,7 @@ export type QuestTarget =
   | { type: 'washDish'; count: number } // oyuncu eliyle bulaşıkta kirli yıka
   | { type: 'pad'; id: string } // pad'i tamamla (masa aç / personel tut)
   | { type: 'stationLevel'; level: number; zone?: number } // o salonun ocağı bu seviyeye ulaşsın (v27: zone'lu)
-  | { type: 'waiterLevel'; level: number } // garson hız seviyesi
+  | { type: 'waiterSpeed'; kind: WaiterKind; tier: number } // garson hız kademesi (v29: panel)
   | { type: 'tableLevel'; level: number } // HERHANGİ bir masa bu seviyeye ulaşsın
   // v27 görev çeşitliliği (telefon feedback): zone'un (yoksa tümü) en az `count` masası `level`+ olsun.
   | { type: 'tablesAtLevel'; level: number; count: number; zone?: number }
@@ -135,11 +137,16 @@ export type QuestTarget =
 /** Garson türü (Y3): çay garsonları (z0+z1 ortak eğri) | tostçu garson (z2, kendi eğrisi). */
 export type WaiterKind = 'tea' | 'tost';
 /** Garson tepsi yükseltme kademeleri (persist v27). Kademe 0 = taban tepsi 1.
- *  v28: dishCarry — bulaşıkçı leğen kademesi (tüm salonların bulaşıkçılarına ORTAK; taban 2, +2/kademe). */
+ *  v28: dishCarry — bulaşıkçı leğen kademesi (tüm salonların bulaşıkçılarına ORTAK; taban 2, +2/kademe).
+ *  v29: teaSpeed/tostSpeed/dishSpeed — personel HIZ kademeleri karakter paneline taşındı
+ *  (kullanıcı 2026-06-13; eski mekânsal waiterUp pad'i + per-zone waiterLevels KALDIRILDI). */
 export interface WaiterUpgrades {
   teaTray: number;
   tostTray: number;
   dishCarry: number;
+  teaSpeed: number;
+  tostSpeed: number;
+  dishSpeed: number;
 }
 
 /** Karakter özellikleri (v20): tepsi kapasitesi / para mıknatısı / hareket hızı. */
@@ -216,6 +223,10 @@ export const economyConfig = {
       costGrowth: 1.8, // garson sonrası derinlik: L1 60 / L2 108 / L3 194 / L4 350 (eski 1.6 fazla ucuzdu)
       masterLevel: 5, // L5 (Usta) 💎/video — Faz 4; ₺ ile soft max L4
       masterDiamondCost: 12,
+      /** ZONE-kademeli yükseltme çarpanı (kullanıcı 2026-06-13: "salon 1 sabit, salon 2 biraz,
+       *  salon 3 daha da artsın"). Salon 1 birebir eski eğri; 2-3 çarpan sonrası 5'e yuvarlanır:
+       *  z1 60/108/194/349 · z2 90/160/290/525 · z3 150/270/485/875. */
+      zoneCostMult: [1, 1.5, 2.5],
     },
     /** ZONE-BAŞINA önkoşul (v21): o salonun masa yükseltmeleri, O salonun 4 masası da açılınca belirir
      *  (D-019 §3 — masa yükseltmeleri geç-oyun derinliği; erken ekran sade; zone-1 deseni aynalanır). */
@@ -301,17 +312,17 @@ export const economyConfig = {
    */
   waiter: {
     /**
-     * Seviye-başı hareket hızı (dünya birimi/sn; index = waiterLevel). L1 (taban) = garson tutulunca;
-     * L2 = mekânsal yükseltme ile (D-018 §7). Oyuncudan (character.speed taban 4.5) HER seviyede yavaş =
-     * kısmi assist korunur (D-014: garson tek başına büyüyen mekânı döndüremez).
-     * 2026-06-11 (kullanıcı onaylı): per-zone mutfakla (D-025) mesafeler kısalınca garson "çok hızlı"
-     * hissettirdi → 1.8/2.3 → 1.5/2.0. Tur hesabı: ocak→en uzak masa ~8.7 br → L1 tek yön ~5.8sn,
-     * tur ~12sn < sabır 18sn (güvenli pay sürer).
+     * HIZ yükseltmesi (v29 — karakter paneline taşındı; eski mekânsal waiterUp pad'i kalktı).
+     * speeds[kademe] = hareket hızı (dünya birimi/sn); türe ORTAK kademe (çay garsonları z0+z1
+     * birlikte, tostçu ayrı). Oyuncudan (character.speed taban 4.5) HER kademede yavaş =
+     * kısmi assist korunur (D-014). Değerler/₺ eski sistemle aynı (kullanıcı: "garson hızı
+     * okey, böyle kalsın"): 1.5→2.0, 250₺. Tur hesabı: L1 tek yön ~5.8sn, tur ~12sn < sabır 18sn.
      */
-    moveSpeedByLevel: [1.5, 2.0],
+    speedUpgrades: {
+      tea: { speeds: [1.5, 2.0], costs: [250] },
+      tost: { speeds: [1.5, 2.0], costs: [250] },
+    } satisfies Record<WaiterKind, { speeds: number[]; costs: number[] }>,
     // Tepsi kapasitesi Y3'te yükseltmeden türetilir: waiterTrayCapacityFor(kind, tier) = 1 + kademe.
-    /** Garson L2 yükseltme maliyeti (₺). Tek seviye (L1→L2); L3+ Faz 4 (💎/video). */
-    upgradeCost: 250,
     /**
      * Tepsi yükseltme maliyetleri (Y3, plan §3 — onaylı): kademe i+1'in ₺'si. Tepsi = 1 + kademe.
      * Çay garsonları (z0+z1) ORTAK eğri: 1→2→3→4; tostçu kendi eğrisi: 1→2→3 (tost büyük, tavan 3).
@@ -323,11 +334,6 @@ export const economyConfig = {
       tea: { costs: [400, 1200, 2500] },
       tost: { costs: [1200, 3000] },
     } satisfies Record<WaiterKind, { costs: number[] }>,
-    /**
-     * Yükseltme noktası önkoşulu: garson tutulmuş + en az 20 çay TAŞIMIŞ olmalı (arka-plan şartı;
-     * kullanıcı 2026-06-09: tutar tutmaz hızlandırma belirmesin — önce garson işbaşında görülsün).
-     */
-    upgradeRequires: { prev: ['waiter'], minWaiterServed: 20 } satisfies Requires,
   },
 
   /**
@@ -373,8 +379,14 @@ export const economyConfig = {
    * Kirli bardakları toplar → bulaşık noktasına götürür → yıkar (temiz havuza döner).
    */
   dishwasher: {
-    /** Hareket hızı (dünya birimi/sn). Oyuncudan yavaş (1.8→2.0, turu-4: temizlik baskısı). */
-    moveSpeed: 2.0,
+    /**
+     * HIZ yükseltmesi (v29, kullanıcı 2026-06-13: "bulaşıkçı yetişemez diye çekiniyorum, ona hız
+     * eklenmeli net bir şekilde"): speeds[kademe] = hareket hızı; karakter panelinin Bulaşıkçı
+     * sekmesinden; TÜM salonların bulaşıkçılarına ortak. Taban 2.0 aynı (turu-4); +0.4/kademe
+     * (+%20/+%40) — tavan 2.8 hâlâ oyuncudan (4.5+) yavaş = kısmi assist korunur. ₺'ler leğen
+     * eğrisinin (600/2000/5000) arasına oturur: kapasite mi hız mı ikilemi anlamlı kalsın.
+     */
+    speedUpgrades: { speeds: [2.0, 2.4, 2.8], costs: [700, 2200] },
     // Taşıma kapasitesi v28'de yükseltmeden türetilir: dishCarryCapacityFor(tier) = 2 + 2×kademe.
     /**
      * Leğen yükseltme maliyetleri (v28, telefon feedback turu-4: "bulaşıkçı kesinlikle yetmiyor").
@@ -398,6 +410,16 @@ export const economyConfig = {
      * peşinden gelmez". Hız max oyuncu hızından (5.4) yüksek olmalı ki daima yetişip toplasın.
      */
     attractSpeed: 9,
+    /**
+     * OTO-TOPLAMA (2026-06-13, kullanıcı: "çok beklediği takdirde otomatik toplanabilir, mesela 3 dk
+     * — ama kullanıcı bilsin"): yerde bu süreyi (sn) aşan para kendiliğinden cüzdana girer + HUD
+     * toast'u "Bekleyen paralar otomatik toplandı +X" çıkar. Çift amaç: QoL + FPS (m.13: AFK 10dk
+     * = 377 coin → FPS 24; 180sn eşiği yerdeki coin sayısını ~115'te tavanlar). Mıknatıs alanındaki
+     * coin'lere dokunmaz (zaten oyuncuya akıyor). 0 = kapalı.
+     */
+    autoCollectAfter: 180,
+    /** Oto-toplama toast'ının en sık çıkma aralığı (sn) — sürekli akışta tek tek değil TOPLU bildirir. */
+    autoCollectToastEvery: 20,
   },
 
   /**
@@ -423,16 +445,18 @@ export const economyConfig = {
     // DOLUM HIZLARI (2026-06-12 telefon feedback turu-4, ikinci ayar): fillRate = cost / hedef-dwell.
     // Bant: öğretici 1.5-3sn · TAVAN 3.5sn (kullanıcı önce "max 5sn" dedi, sonra "3-3.5sn olsun" —
     // pad'de bekleme oyunun en sık tekrarı, kısa tutulur). Yorumdaki sn değeri TASARIM kaynağı.
-    { id: 'table2', label: '2. Masa', cost: 25, fillRate: 17, optional: false, zone: 0, // ~1.5sn
+    // MASA AÇMA −%10 + 5'in katına yuvarlama (kullanıcı 2026-06-13; turu-5 m.4'ün ertelenen yarısı).
+    // fillRate'ler aynı dwell süresini koruyacak şekilde ölçeklendi (fillRate = cost / hedef-sn).
+    { id: 'table2', label: '2. Masa', cost: 20, fillRate: 13, optional: false, zone: 0, // ~1.5sn
       requires: { minLifetime: 20 }, effect: { type: 'addTable' } },
-    { id: 'table3', label: '3. Masa', cost: 130, fillRate: 52, optional: false, zone: 0, // ~2.5sn
+    { id: 'table3', label: '3. Masa', cost: 115, fillRate: 46, optional: false, zone: 0, // ~2.5sn
       requires: { prev: ['table2'] }, effect: { type: 'addTable' } },
     { id: 'waiter', label: 'Garson Tut', cost: 130, fillRate: 60, optional: false, zone: 0, // ~2.2sn (5B: 150→130)
       requires: { prev: ['table3'] }, effect: { type: 'hireWaiter' } },
     // 2026-06-11 telefon feedback turu-2: 330 "aşırı fazla, git gel bitmiyor" → 200 (kullanıcı verdi).
     { id: 'dishwasher', label: 'Bulaşıkçı Tut', cost: 200, fillRate: 67, optional: false, zone: 0, // ~3sn
       requires: { prev: ['waiter'] }, effect: { type: 'hireDishwasher' } },
-    { id: 'table4', label: '4. Masa', cost: 420, fillRate: 120, optional: false, zone: 0, // ~3.5sn
+    { id: 'table4', label: '4. Masa', cost: 380, fillRate: 109, optional: false, zone: 0, // ~3.5sn
       requires: { prev: ['dishwasher'] }, effect: { type: 'addTable' } },
     // (D-018 adım 5) Ayrı "Semavere Geçiş" pad'i KALDIRILDI: semaver artık çay ocağının üst yükseltmesidir
     // (TeaStation seviyeyle büyüyen semaveri zaten çizer). Tek ocak ₺ yükseltmeleriyle (L4, throughput ×3.32)
@@ -444,30 +468,30 @@ export const economyConfig = {
     // yuvarlanmış; öğretici (zone-1) pad'leri ve yükseltme eğrileri AYNI kaldı.
     { id: 'zone2', label: '2. Salon', cost: 1100, fillRate: 315, optional: false, zone: 0, // ~3.5sn
       requires: { prev: ['table4'] }, effect: { type: 'unlockZone' } },
-    { id: 'z2table2', label: '2. Masa', cost: 225, fillRate: 75, optional: false, zone: 1, // ~3sn
+    { id: 'z2table2', label: '2. Masa', cost: 200, fillRate: 67, optional: false, zone: 1, // ~3sn
       requires: { prev: ['zone2'] }, effect: { type: 'addTable' } },
     { id: 'z2waiter', label: 'Garson Tut', cost: 360, fillRate: 103, optional: false, zone: 1, // ~3.5sn
       requires: { prev: ['z2table2'] }, effect: { type: 'hireWaiter' } },
-    { id: 'z2table3', label: '3. Masa', cost: 540, fillRate: 155, optional: false, zone: 1, // ~3.5sn
+    { id: 'z2table3', label: '3. Masa', cost: 485, fillRate: 139, optional: false, zone: 1, // ~3.5sn
       requires: { prev: ['z2waiter'] }, effect: { type: 'addTable' } },
     { id: 'z2dishwasher', label: 'Bulaşıkçı Tut', cost: 720, fillRate: 206, optional: false, zone: 1, // ~3.5sn
       requires: { prev: ['z2table3'] }, effect: { type: 'hireDishwasher' } },
-    { id: 'z2table4', label: '4. Masa', cost: 1000, fillRate: 286, optional: false, zone: 1, // ~3.5sn
+    { id: 'z2table4', label: '4. Masa', cost: 900, fillRate: 257, optional: false, zone: 1, // ~3.5sn
       requires: { prev: ['z2dishwasher'] }, effect: { type: 'addTable' } },
     // --- ZONE-3 zinciri (M2 altyapı + M3 tost): arka-SAĞ salon = TOST OCAĞI (2026-06-11 taşıma).
     // Unlock pad'i z1'in arka geçidi yanında (sıra-arası duvar geçidi). Maliyetler M3 sim kalibrasyonuna
     // açık başlangıç değerleri (~2× z2 zinciri; zone-2 bitiminden ~30-60dk aktif oyun hedefi).
     { id: 'zone3', label: 'Tost Salonu', cost: 3600, fillRate: 1030, optional: false, zone: 0, // ~3.5sn (eski 8sn)
       requires: { prev: ['z2table4'] }, effect: { type: 'unlockZone' } },
-    { id: 'z3table2', label: '2. Masa', cost: 540, fillRate: 155, optional: false, zone: 2, // ~3.5sn
+    { id: 'z3table2', label: '2. Masa', cost: 485, fillRate: 139, optional: false, zone: 2, // ~3.5sn
       requires: { prev: ['zone3'] }, effect: { type: 'addTable' } },
     { id: 'z3waiter', label: 'Garson Tut', cost: 800, fillRate: 229, optional: false, zone: 2, // ~3.5sn
       requires: { prev: ['z3table2'] }, effect: { type: 'hireWaiter' } },
-    { id: 'z3table3', label: '3. Masa', cost: 1250, fillRate: 358, optional: false, zone: 2, // ~3.5sn
+    { id: 'z3table3', label: '3. Masa', cost: 1125, fillRate: 321, optional: false, zone: 2, // ~3.5sn
       requires: { prev: ['z3waiter'] }, effect: { type: 'addTable' } },
     { id: 'z3dishwasher', label: 'Bulaşıkçı Tut', cost: 1600, fillRate: 458, optional: false, zone: 2, // ~3.5sn
       requires: { prev: ['z3table3'] }, effect: { type: 'hireDishwasher' } },
-    { id: 'z3table4', label: '4. Masa', cost: 2250, fillRate: 643, optional: false, zone: 2, // ~3.5sn (eski 6sn)
+    { id: 'z3table4', label: '4. Masa', cost: 2025, fillRate: 579, optional: false, zone: 2, // ~3.5sn (eski 6sn)
       requires: { prev: ['z3dishwasher'] }, effect: { type: 'addTable' } },
     // --- 2. GARSONLAR (Y4, plan §3 — onaylı): OPSİYONEL geç-oyun pad'leri; gating = o salonun
     // 4 masası da L4 (en yoğun an; 1. garson tek başına 16 koltuğa yetişemez — compute raporu §1).
@@ -515,7 +539,8 @@ export const economyConfig = {
     { id: 'q_zone2', title: '2. Salonu aç', target: { type: 'pad', id: 'zone2' }, reward: 150 },
     { id: 'q_z2table2', title: 'Salon 2: 2. Masayı aç', target: { type: 'pad', id: 'z2table2' }, zone: 1, reward: 50 },
     { id: 'q_z2station', title: "Salon 2'nin ocağını yükselt", target: { type: 'stationLevel', level: 1, zone: 1 }, zone: 1, reward: 50 },
-    { id: 'q_waiterL2', title: 'Garsonu hızlandır', target: { type: 'waiterLevel', level: 1 }, reward: 50 },
+    // v29: hedef mekânsal waiterUp pad'inden karakter paneline taşındı (id/sıra AYNI → quest migrasyonu yok).
+    { id: 'q_waiterL2', title: 'Garsonu hızlandır', target: { type: 'waiterSpeed', kind: 'tea', tier: 1 }, reward: 50 },
     { id: 'q_tableL2', title: 'Bir masayı yükselt', target: { type: 'tableLevel', level: 1 }, reward: 30 },
     { id: 'q_z2waiter', title: 'Salon 2: Garson tut', target: { type: 'pad', id: 'z2waiter' }, zone: 1, reward: 80 },
     { id: 'q_waiterTray1', title: 'Çay garsonlarının tepsisini büyüt', target: { type: 'waiterTray', kind: 'tea', tier: 1 }, reward: 80 },
@@ -588,7 +613,9 @@ export const economyConfig = {
      * karşılanır; zone unlock sıradaysa açılır ama salonun İÇİ bitmez ("zone'u tek girişte bitirmesin"
      * ilkesi yumuşatılmış sürer).
      */
-    capNextPadFrac: 1.2,
+    // 1.2→1.15 (2026-06-13): masa açma −%10 sonrası z2table2 200₺ oldu — 1.2'de tavan (1320)
+    // "zone2 + ilk iç pad" (1300) sınırını aşıyordu; "zone açılır ama içi bitmez" değişmezi korunur.
+    capNextPadFrac: 1.15,
     /** Elmas ile uzatma başına eklenen saat (Faz 4). */
     diamondExtendHours: 8,
   },
@@ -786,10 +813,14 @@ export function levelProgress(totalXp: number): { level: number; cur: number; ne
   return { level, cur: rest, need };
 }
 
-/** Mevcut masa seviyesinden bir sonraki yükseltmenin maliyeti (₺). Faz 2h. */
-export function tableUpgradeCost(level: number): number {
+/** Mevcut masa seviyesinden bir sonraki yükseltmenin maliyeti (₺). Faz 2h.
+ *  zone-kademeli (2026-06-13): salon 1 eski eğriyle BİREBİR; salon 2-3 çarpanlı + 5'e yuvarlı. */
+export function tableUpgradeCost(level: number, zone = 0): number {
   const u = economyConfig.tables.upgrade;
-  return Math.floor(u.costBase * Math.pow(u.costGrowth, level));
+  const base = u.costBase * Math.pow(u.costGrowth, level);
+  const mult = u.zoneCostMult[Math.min(zone, u.zoneCostMult.length - 1)];
+  if (mult === 1) return Math.floor(base);
+  return Math.round((base * mult) / 5) * 5;
 }
 
 /** Servis başına ek bahşiş (₺) — masa seviyesiyle artar (çay fiyatı sabit kalır). Faz 2h. */
@@ -823,15 +854,40 @@ export function rollGroupSize(roll: number): number {
   return ch.length;
 }
 
-/** Garson hareket hızı (seviye index'e göre; aşırı seviyede son değere kelepçelenir). Faz 2 D-018 §7. */
-export function waiterSpeed(level: number): number {
-  const arr = economyConfig.waiter.moveSpeedByLevel;
-  return arr[Math.min(Math.max(level, 0), arr.length - 1)];
+// ---- Personel HIZ yükseltmeleri (v29 — karakter paneli) — kademe → değer türeticileri ----
+
+/** Garson türünün max hız kademesi (= satın alınabilir yükseltme sayısı). */
+export function waiterSpeedMaxTier(kind: WaiterKind): number {
+  return economyConfig.waiter.speedUpgrades[kind].costs.length;
 }
 
-/** ₺ ile çıkılabilen en yüksek garson seviyesi (index; L1=0 taban → L2=1). */
-export function waiterSoftMaxLevel(): number {
-  return economyConfig.waiter.moveSpeedByLevel.length - 1;
+/** Sıradaki hız kademesinin ₺ maliyeti (kademe tavandaysa null). */
+export function waiterSpeedNextCost(kind: WaiterKind, tier: number): number | null {
+  const costs = economyConfig.waiter.speedUpgrades[kind].costs;
+  return tier < costs.length ? costs[tier] : null;
+}
+
+/** Garson hareket hızı (tür + kademe; aşırı kademede son değere kelepçelenir). */
+export function waiterSpeedFor(kind: WaiterKind, tier: number): number {
+  const arr = economyConfig.waiter.speedUpgrades[kind].speeds;
+  return arr[Math.min(Math.max(tier, 0), arr.length - 1)];
+}
+
+/** Bulaşıkçının max hız kademesi. */
+export function dishSpeedMaxTier(): number {
+  return economyConfig.dishwasher.speedUpgrades.costs.length;
+}
+
+/** Sıradaki bulaşıkçı hız kademesinin ₺ maliyeti (tavandaysa null). */
+export function dishSpeedNextCost(tier: number): number | null {
+  const costs = economyConfig.dishwasher.speedUpgrades.costs;
+  return tier < costs.length ? costs[tier] : null;
+}
+
+/** Bulaşıkçı hareket hızı (kademe; tüm salonlara ortak). */
+export function dishSpeedFor(tier: number): number {
+  const arr = economyConfig.dishwasher.speedUpgrades.speeds;
+  return arr[Math.min(Math.max(tier, 0), arr.length - 1)];
 }
 
 // ---- Garson tepsi yükseltmeleri (Y3) — kademe → değer türeticileri ----

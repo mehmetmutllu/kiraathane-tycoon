@@ -129,22 +129,17 @@ try {
     pass(`Garson kısmi assist çalışıyor (oyuncu uzakta, düşen para ${beforeCoins}→${assisted.coins})`);
   else fail(`Garson servis etmedi (coins ${beforeCoins}→${assisted.coins}, waiterTray=${assisted.waiterTray})`);
 
-  // Garson L2 hız yükseltme: ARKA-PLAN ŞARTI minWaiterServed=20 → garson 20 çay taşımadan işaret kilitli.
-  const preGrant = await page.evaluate(() => window.__game());
-  if ((preGrant.stats?.waiterServed ?? 0) < 20) {
-    pass(`Garson hız yükseltmesi hemen GELMEDİ (waiterServed=${preGrant.stats.waiterServed} < 20 — arka-plan şartı)`);
-  } else {
-    pass(`Garson 20+ çay taşımış (waiterServed=${preGrant.stats.waiterServed}) — şart doğal karşılandı`);
-  }
-  await page.evaluate(() => window.__grantStat('waiterServed', 20));
-  const wUp = await page.evaluate(() => window.__game());
-  const beforeWL = wUp.waiterLevel;
+  // Garson hız yükseltme (v29): karakter PANELİNDEN satın alınır (eski mekânsal waiterUp pad'i kalktı).
+  const beforeWL = (await page.evaluate(() => window.__game())).waiterUpgrades?.teaSpeed ?? 0;
   await page.evaluate(() => window.__addMoney(500));
-  await page.evaluate((pos) => window.__teleport(pos[0], pos[2]), wUp.waiterUpgradeSpotPos);
-  const wL2 = await page.evaluate(() => window.__advanceTime(6));
-  if (wL2.waiterLevel > beforeWL)
-    pass(`Garson hız yükseltme çalışıyor (L${beforeWL + 1}→L${wL2.waiterLevel + 1})`);
-  else fail(`Garson hız yükseltmedi (waiterLevel ${beforeWL}→${wL2.waiterLevel})`);
+  await page.click('[data-testid="char"]');
+  await page.click('[data-testid="char-tab-tea"]');
+  await page.click('[data-testid="waiter-speed-buy-tea"]');
+  const wL2 = await page.evaluate(() => window.__game());
+  if ((wL2.waiterUpgrades?.teaSpeed ?? 0) > beforeWL)
+    pass(`Garson hız yükseltme panelden çalışıyor (teaSpeed ${beforeWL}→${wL2.waiterUpgrades.teaSpeed})`);
+  else fail(`Garson hız yükseltmedi (teaSpeed ${beforeWL}→${wL2.waiterUpgrades?.teaSpeed})`);
+  await page.click('[data-testid="char-panel"]'); // backdrop'a tıkla → panel kapanır
 
   // Bardak döngüsü (Faz 2e): garson servis ederken kirli bardak üretilir → oyuncu toplar → bulaşıkta yıkar.
   await page.evaluate(() => window.__teleport(5.2, 4.2)); // oyuncu uzak köşede; garson servis etsin, kirli birikir
@@ -208,7 +203,7 @@ try {
   // ('opt:waiter' kalktı — personel artık quest hattının zorunlu halkası, opsiyonel pad yok.)
   const reveals = (await page.evaluate(() => window.__game())).revealSeen || [];
   // v21: reveal anahtarları zone-başına ('upgrade:0' = zone-1 ocak yükseltmesi vb.).
-  const wantReveals = ['upgrade:0', 'waiterUp:0', 'tableUp:0'];
+  const wantReveals = ['upgrade:0', 'tableUp:0']; // v29: 'waiterUp:0' kalktı (hız panelden)
   const missing = wantReveals.filter((k) => !reveals.includes(k));
   if (missing.length === 0) pass(`Yeni-özellik bildirimi çalışıyor (reveal: ${reveals.join(', ')})`);
   else fail(`Eksik reveal bildirimi: ${missing.join(', ')} (görülen: ${reveals.join(', ')})`);

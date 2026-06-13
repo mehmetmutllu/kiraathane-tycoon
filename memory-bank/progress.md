@@ -615,9 +615,20 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   200/700/2200, hız 400/1100/3200); garson pad 150→130 (5B kısmen). MASA RAKAMLARI ERTELENDİ
   (kullanıcı). Sim: garson 11.1dk, z3 dolu 1.69sa, ocak ₺-max L6 @1.87sa. vitest 182/182,
   smoke 27/27. Detay+sonuç: docs/denge-raporu-2026-06-13.md.
-- 🔧 **SIRADA — TURU-5 kalanı:** para desteleri (m.6-B onaylı tasarım: masa yanında deste +
-  toplam değer + pad'le çakışmaz) → kamera+map (m.7 onaylı: B+A-hafif) → masa rakamları
-  (feedback sonrası). ESKİ DENGE NOTU (uygulandı): 2) DENGE paketi — KULLANICI ŞARTI: "en ince detayına kadar hesapla":
+- ✅ **TURU-6 PAKETİ (2026-06-13; SAVE v28→v29):** kullanıcının 6 maddelik talimatı uygulandı —
+  detay activeContext "ŞU AN" bölümünde. Özet: (1) map ferahlama: masa kolonları −1.4/3.7 +
+  sıralar 2.55/−0.95 (sıra koridoru 0→0.6; sol kolon −1.6 yerine −1.4: ocak servis-dairesi
+  değişmezi 3.2 korunsun), zone2 pad z 0.8; (2) kamera taban 6 + clamp 1.3 ("ilk sürüm" yakınlığı)
+  + sağ-altta genel-bakış TOGGLE butonu (camZoomOut ×1.45); (3) masa açma −%10 5'in katı +
+  yükseltme zoneCostMult [1,1.5,2.5] (z1 birebir) + offline capNextPadFrac 1.15 (değişmez
+  düzeltmesi); (4) personel HIZ yükseltmeleri karakter paneline (v29: waiterLevels→teaSpeed/
+  tostSpeed katlanır, mekânsal waiterUp pad'i tamamen kalktı; bulaşıkçıya YENİ hız 2.0/2.4/2.8
+  ₺700/2200; q_waiterL2 aynı id/sıra hedef tipi değişti; HUD char nabzı waiterTray/waiterSpeed'de
+  de); (5) coin oto-toplama 180sn + toplu toast 20sn (coin tavanı ~215 → m.13 FPS kalıcı çözüm);
+  (6) tost bulaşıkçısı kirli TABAK görseli. vitest 183/183, build, smoke 26/26, canlı konsol 0;
+  v28 kayıt canlıda v29'a migrate edildi. Telefon APK feedback'i bekleniyor.
+- 🔧 **SIRADA — TURU-5/6 kalanı:** masa rakamlarının kalan sorusu kapandı (turu-6 m.3); para
+  sunumu ferahlama sonrası yeniden değerlendirilecek (mockup onayı şartı). ESKİ DENGE NOTU (uygulandı): 2) DENGE paketi — KULLANICI ŞARTI: "en ince detayına kadar hesapla":
   önce sayısal rapor (sim + amortisman/tempo + tost arz/talep), ONAY, sonra uygulama (ocak +1-2
   seviye, tost darboğazı, garson tepsi erken+ucuz [quest reorder → v29 İD-eşleme], karakter
   eğrisi, genel fiyat indirimi önerisi) → 3) FPS profiling ("kapa-aç düzeltiyor" = sızıntı ipucu)

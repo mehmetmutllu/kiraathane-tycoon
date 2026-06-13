@@ -23,6 +23,9 @@ export interface Coin {
   id: number;
   pos: Vec3;
   value: number;
+  /** Yerde geçirdiği süre (sn; transient). money.autoCollectAfter'ı aşınca otomatik toplanır
+   *  (2026-06-13 — hem QoL hem FPS: AFK'da yüzlerce coin birikmesin, m.13 bulgusu). */
+  age?: number;
 }
 
 // Kirli bardak (Faz 2e). İçen müşteri kalkınca masada bırakılır (coins gibi mekânsal nesne).

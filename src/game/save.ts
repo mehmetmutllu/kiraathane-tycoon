@@ -7,6 +7,8 @@ import {
   charMaxTier,
   waiterTrayMaxTier,
   dishCarryMaxTier,
+  waiterSpeedMaxTier,
+  dishSpeedMaxTier,
   defaultFloorTheme,
   zoneProduct,
   type CharUpgrades,
@@ -74,8 +76,6 @@ export interface SaveData {
   stationLevels: number[];
   /** Masa-başı yükseltme seviyeleri (Faz 2h; index = GLOBAL masa slotu; bahşiş+sabır). */
   tableLevels: number[];
-  /** Zone başına garson hız seviyesi (v18; 0 = taban, 1 = L2; o zone'da garson tutulduysa anlamlı). */
-  waiterLevels: number[];
   padsDone: string[];
   /** Aktif pad'lerin kısmi dolumu (pad id → ₺). Aynı anda birden çok pad doldurulabilir (v5). */
   padFills: Record<string, number>;
@@ -96,7 +96,8 @@ export interface SaveData {
   ownedCosmetics: string[];
   /** Karakter yükseltme kademeleri (v20): tepsi/mıknatıs/hız. Karakter seviyesi türetilir. */
   charUpgrades: CharUpgrades;
-  /** Garson tepsi yükseltme kademeleri (v27/Y3): çay garsonları ortak + tostçu ayrı eğri. */
+  /** Garson tepsi (v27/Y3) + bulaşıkçı leğen (v28) + personel hız (v29) kademeleri.
+   *  v29: eski per-zone `waiterLevels` buraya katlandı (teaSpeed/tostSpeed) ve kaldırıldı. */
   waiterUpgrades: WaiterUpgrades;
   /** Karakter paneli ilk-sefer spotlight'ı görüldü mü (v20; butona dokununca true, bir daha çıkmaz). */
   charPanelSeen: boolean;
@@ -110,7 +111,7 @@ export function defaultCharUpgrades(): CharUpgrades {
 }
 
 export function defaultWaiterUpgrades(): WaiterUpgrades {
-  return { teaTray: 0, tostTray: 0, dishCarry: 0 };
+  return { teaTray: 0, tostTray: 0, dishCarry: 0, teaSpeed: 0, tostSpeed: 0, dishSpeed: 0 };
 }
 
 export function defaultSave(): SaveData {
@@ -121,7 +122,6 @@ export function defaultSave(): SaveData {
     lifetime: '0',
     stationLevels: [],
     tableLevels: [],
-    waiterLevels: [],
     padsDone: [],
     padFills: {},
     stats: defaultStats(),
@@ -163,7 +163,8 @@ function seedQuestIndex(d: Record<string, unknown>): number {
       case 'pad': return padsDone.includes(t.id);
       // zone'lu ocak görevi (v27): v<16 kayıtlarda tek ocak vardı — zone>0 görevleri karşılanmamış sayılır.
       case 'stationLevel': return (t.zone ?? 0) === 0 && stationLevel >= t.level;
-      case 'waiterLevel': return waiterLevel >= t.level;
+      // v29: eski kayıttaki zone-1 garson hız seviyesi panel kademesinin karşılığıdır.
+      case 'waiterSpeed': return t.kind === 'tea' && waiterLevel >= t.tier;
       case 'tableLevel': return tableLevels.some((l) => l >= t.level);
       case 'tablesAtLevel': return tableLevels.filter((l) => l >= t.level).length >= t.count;
       case 'waiterTray': return false; // v<16 kayıtta tepsi yükseltmesi olamaz (v27'de geldi)
@@ -325,10 +326,11 @@ export function migrate(raw: Record<string, unknown>): SaveData {
   }
 
   // v14 -> v15 (D-018 adım 6): garson L2 hız yükseltmesi → yeni `waiterLevel` persist alanı (eksikse 0).
+  // (v29 notu: tarihsel kelepçe — hız merdiveni artık speedUpgrades.tea.speeds; uzunluk aynı kaldı.)
   if (v < 15) {
     d.waiterLevel = Math.min(
       Number(d.waiterLevel ?? 0) || 0,
-      economyConfig.waiter.moveSpeedByLevel.length - 1,
+      economyConfig.waiter.speedUpgrades.tea.speeds.length - 1,
     );
     v = 15;
   }
@@ -421,7 +423,8 @@ export function migrate(raw: Record<string, unknown>): SaveData {
   if (v < 21) {
     const st = (d.stats && typeof d.stats === 'object' ? d.stats : {}) as Partial<SaveStats>;
     const padsDone = Array.isArray(d.padsDone) ? (d.padsDone as string[]) : [];
-    const minServed = economyConfig.waiter.upgradeRequires.minWaiterServed ?? 0;
+    // Tarihsel sabit (v21 dönemindeki waiter.upgradeRequires.minWaiterServed; alan v29'da kalktı).
+    const minServed = 20;
     d.stats = {
       ...st,
       waiterServedByZone: [
@@ -625,6 +628,21 @@ export function migrate(raw: Record<string, unknown>): SaveData {
     v = 28;
   }
 
+  // v28 -> v29 (PERSONEL HIZI PANELE, 2026-06-13): per-zone `waiterLevels` kaldırıldı; satın alınmış
+  // hız seviyeleri waiterUpgrades.teaSpeed/tostSpeed'e KATLANIR (ödenen ₺ kaybolmaz): çay = z0/z1'in
+  // max'ı (panel kademesi iki çay garsonuna birden işler — oyuncu lehine), tost = z2. dishSpeed 0
+  // başlar (yeni özellik). Quest q_waiterL2 aynı index'te kaldı (hedef tipi değişti) → questIndex'e
+  // dokunulmaz. Normalize bloğu kelepçeler.
+  if (v < 29) {
+    const wl = Array.isArray(d.waiterLevels) ? (d.waiterLevels as number[]).map((n) => Number(n) || 0) : [];
+    const up = (d.waiterUpgrades && typeof d.waiterUpgrades === 'object' ? d.waiterUpgrades : {}) as Record<string, unknown>;
+    up.teaSpeed = Math.max(Number(up.teaSpeed ?? 0) || 0, wl[0] ?? 0, wl[1] ?? 0);
+    up.tostSpeed = Math.max(Number(up.tostSpeed ?? 0) || 0, wl[2] ?? 0);
+    d.waiterUpgrades = up;
+    delete d.waiterLevels;
+    v = 29;
+  }
+
   // Sona kalan v16 şeması: türetilen alanlar (tables/stations/serviceSpeedMult/hasWaiter), eski `padFill`,
   // kaldırılan `trayLevel` ve 'samovar' referansı yazılmaz; stats/questIndex/questBase eklendi (v16).
   const rawStats = (d.stats && typeof d.stats === 'object' ? d.stats : {}) as Partial<SaveStats>;
@@ -637,11 +655,6 @@ export function migrate(raw: Record<string, unknown>): SaveData {
       ? (d.stationLevels as number[]).map((n) => Number(n) || 0)
       : [],
     tableLevels: Array.isArray(d.tableLevels) ? (d.tableLevels as number[]).map((n) => Number(n) || 0) : [],
-    waiterLevels: Array.isArray(d.waiterLevels)
-      ? (d.waiterLevels as number[]).map((n) =>
-          Math.min(Number(n) || 0, economyConfig.waiter.moveSpeedByLevel.length - 1),
-        )
-      : [],
     padsDone: Array.isArray(d.padsDone) ? (d.padsDone as string[]) : [],
     padFills:
       d.padFills && typeof d.padFills === 'object' ? (d.padFills as Record<string, number>) : {},
@@ -685,6 +698,9 @@ export function migrate(raw: Record<string, unknown>): SaveData {
         teaTray: Math.max(0, Math.min(Number(raw.teaTray ?? 0) || 0, waiterTrayMaxTier('tea'))),
         tostTray: Math.max(0, Math.min(Number(raw.tostTray ?? 0) || 0, waiterTrayMaxTier('tost'))),
         dishCarry: Math.max(0, Math.min(Number(raw.dishCarry ?? 0) || 0, dishCarryMaxTier())),
+        teaSpeed: Math.max(0, Math.min(Number(raw.teaSpeed ?? 0) || 0, waiterSpeedMaxTier('tea'))),
+        tostSpeed: Math.max(0, Math.min(Number(raw.tostSpeed ?? 0) || 0, waiterSpeedMaxTier('tost'))),
+        dishSpeed: Math.max(0, Math.min(Number(raw.dishSpeed ?? 0) || 0, dishSpeedMaxTier())),
       };
     })(),
     charPanelSeen: d.charPanelSeen === true,

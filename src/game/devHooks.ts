@@ -54,7 +54,6 @@ export function installDevHooks(): void {
         readyCups: s.readyCupsByZone[z],
         hasWaiter: s.waiters[z] != null,
         hasDishwasher: s.dishwashers[z] != null,
-        waiterLevel: s.waiterLevels[z],
         stationPos: LAYOUT.stations[z],
         dishStationPos: LAYOUT.dishStations[z],
         upgradeZonePos: LAYOUT.upgradeZones[z],
@@ -96,12 +95,10 @@ export function installDevHooks(): void {
       currentPad: pad ? pad.id : null,
       padCost: pad ? pad.cost : 0,
       padPos: pad ? LAYOUT.padPos[pad.id] : null,
-      // Garson durumu (Faz 2d) + hız yükseltme (D-018 §6) — zone-1 geri-uyum
+      // Garson durumu (Faz 2d) — zone-1 geri-uyum (v29: hız kademesi waiterUpgrades'te)
       hasWaiter: s.waiters[0] != null,
       waiterTray: s.waiters[0] ? s.waiters[0].tray : 0,
       waiterPos: s.waiters[0] ? s.waiters[0].pos.map((n) => +n.toFixed(2)) : null,
-      waiterLevel: s.waiterLevels[0],
-      waiterUpgradeSpotPos: LAYOUT.waiterUpgradeSpot,
       // Quest sistemi (2026-06-09): aktif görev + sayaçlar + kamera odağı.
       questIndex: s.questIndex,
       quest: s.quest ? { id: s.quest.id, title: s.quest.title, cur: s.quest.cur, total: s.quest.total } : null,

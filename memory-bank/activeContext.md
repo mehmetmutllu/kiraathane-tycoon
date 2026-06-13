@@ -2,7 +2,63 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
-## ŞU AN (2026-06-12 GECE OTURUMU — TURU-5 UX PAKETİ ✅; şema değişmedi, v28 kaldı)
+## ŞU AN (2026-06-13 — TURU-6 PAKETİ ✅ UYGULANDI; SAVE v28→v29; COMMIT BEKLİYOR)
+Kullanıcının 2026-06-13 talimat paketi (6 madde) tek oturumda uygulandı; vitest **183/183**,
+build, smoke **26/26** (waiterUp adımı panele taşındı → 1 adım birleşti), Playwright canlı
+390×844 konsol 0 hata (screenshot'lar kökte `night2-*.jpeg`). Telefon APK testi bekleniyor.
+1. **Map ferahlama (m.12 kalan yarı):** BASE_TABLES kolonlar −1.4/3.7 (aralık 5.1, koridor ~2.2),
+   sıralar 2.55/−0.95 (aralık 3.5, koridor ~0.6). Plandaki −1.6 OLMADI: arka-sol masa ocağın
+   çay-al+servis birleşik dairesine giriyordu (3.00<3.2) → −1.4 + açılım öne; ayrım 3.33 ✓.
+   zone2 pad z 0.6→0.8 (yeni koridor merkezi). Zone alanı sabit.
+2. **Kamera:** taban d 6.4→**6**, portrait clamp 1.4→**1.3** (= ilk APK dönemi ~7.8; kullanıcı
+   "ilk zamandaki gibi yakın"). + **Genel-bakış TOGGLE butonu** (sağ-alt, tepsi butonlarının
+   altında, CamZoomIcon): camZoomOut transient ×1.45. Basılı-tut DEĞİL toggle (analiz: başparmak
+   joystick/tepsiyle meşgul). data-testid="cam-zoom".
+3. **Masa fiyatları:** AÇMA −%10 + 5'in katı (table2 20, table3 115, table4 380, z2: 200/485/900,
+   z3: 485/1125/2025; fillRate'ler dwell süresi korunarak ölçekli). YÜKSELTME zone-kademeli:
+   `tables.upgrade.zoneCostMult [1, 1.5, 2.5]` — z1 BİREBİR eski (60/108/194/349), z2 90/160/290/525,
+   z3 150/270/485/875 (5'e yuvarlı). tableUpgradeCost(level, zone). YAN ETKİ: offline
+   capNextPadFrac 1.2→1.15 (z2table2 200'e inince "zone açılır ama içi bitmez" değişmezi bozuluyordu).
+   Sim: garson 10.3dk, z3 dolu 1.62sa, ocak ₺-max 1.81sa — tempo korunuyor.
+4. **Personel HIZ → karakter paneli (SAVE v29):** mekânsal waiterUp pad'i/waiterLevels TAMAMEN
+   kalktı (LAYOUT.waiterUpgradeSpots, FILL_WAITER, reveal, Scene marker, devHooks dahil).
+   WaiterUpgrades += teaSpeed/tostSpeed/dishSpeed. Garson hızı AYNI değerler (1.5→2.0, 250₺;
+   kullanıcı "böyle kalsın"); BULAŞIKÇI YENİ hız merdiveni 2.0→2.4→2.8 (₺700/2200 — kullanıcı
+   "net şekilde eklenmeli"). Migrasyon v29: teaSpeed=max(wl0,wl1), tostSpeed=wl2 (₺ kaybolmaz).
+   Quest q_waiterL2 AYNI id/sıra, hedef tipi waiterLevel→waiterSpeed (quest migrasyonu GEREKMEDİ).
+   HUD char-buton nabzı artık waiterTray/waiterSpeed görevlerinde de yanar ("görev orayı göstersin").
+5. **Coin OTO-TOPLAMA:** money.autoCollectAfter **180sn** (+config'te gerekçe), mıknatıs alanı
+   muaf, stats.coinsCollected ARTMAZ (manuel sayaç). Toast TOPLU: autoCollectToastEvery 20sn —
+   "Bekleyen paralar otomatik toplandı +X" (canlı doğrulandı; coin tavanı ~215 → m.13 FPS bulgusunun
+   kalıcı çözümü, InstancedMesh kararı gereksizleşti). Para SUNUMU değişmedi (feedback_coin_presentation).
+6. **Bug fix:** TOST salonu bulaşıkçısının taşıdığı kirli artık TABAK çizilir (Dishwasher.tsx
+   CarriedDirty food prop — zone'dan türer; oyuncu m.11 kalıbı). NOT: canlıda taşıma anı kareye
+   yakalanamadı — telefon testinde göz at.
+SONRAKİ: kullanıcı onayı → commit/push (+APK derleme) → telefon feedback turu-6.
+Beklemede kalanlar: garson tepsi geç-seviye fiyat indirimi "belki ileride" (kullanıcı), para
+sunumu ferahlama sonrası yeniden değerlendirilecek (mockup onayı şartı sürüyor).
+
+## >>> SONRAKİ OTURUM: FPS Tier 2 (INSTANCING) — KULLANICI ONAYLI <<<
+2026-06-13 FPS tartışması yapıldı (canlı A/B screenshot fps-A-yuksek.png vs fps-B-dusuk.png).
+KARARLAR:
+- **Tier 2 = bu oturumda DEĞİL, sonraki taze oturumda** (bağlam doldu; kullanıcı "önce kaydet").
+  Görsel bedeli SIFIR (instancing birebir aynı üçgenleri tek draw-call'da çizer). Kapsam:
+  InstancedMesh'e geçir → sandalye/tabure (12 masa × ~4), coin'ler (Coins.tsx, m.13 "Seçenek A"),
+  kirli kaplar (Dishes), NPC gövdeleri (aynı kapsül, per-instance renk via instancedColor).
+  + statik bina geometrisini (Walls/Ground/dekor) merged BufferGeometry'ye indir. Hedef: 200-400
+  draw-call → bir avuç. ÖNCE telefonda FPS sayacı devHook'u ekle (gerçek bütçeyi gör, körlemesine
+  optimize etme). Mevcut render: Scene.tsx dpr [1,2], antialias true, shadows 1024, ~7 useFrame
+  bileşeni (her NPC'de useFacing + bob = 2/NPC), drei Html floater (batch'li) + Text marker.
+- **Tier 1 (dpr/AA/shadow düşürme) ERTELENDİ → Faz 7 (asset turu).** Gerekçe: kullanıcı haklı —
+  flat low-poly aliasing'i gizliyor (A/B'de fark ~yok) AMA gerçek dokulu .glb gelince düşük dpr
+  sırıtır. Çözüm: SABİT düşük değer GÖMME → uyarlanabilir yap (drei PerformanceMonitor/AdaptiveDpr
+  + Ayarlar'da Düşük/Orta/Yüksek). dpr runtime değer, tek satır — kalıcı taahhüt değil.
+- **Gölge uzun-vade planı:** bina STATİK → statik gölgeyi BAKE et, sadece karakterlere dinamik
+  gölge → hem ucuz hem daha kaliteli (production hissi çözünürlükten değil bundan gelir).
+- m.13 InstancedMesh kararı: oto-toplama (180sn) coin sayısını ~215'te tavanladı → acil değil,
+  ama Tier 2'de yine de yapılacak (kalıcı temizlik).
+
+## ESKİ (2026-06-12 GECE OTURUMU — TURU-5 UX PAKETİ ✅; şema değişmedi, v28 kaldı)
 Gece protokolü: kullanıcı uyuyor, onaylı turu-5 listesi sırayla işleniyor. 1. milestone (hızlı UX
 paketi, maddeler 7/8/9/10/11) TAMAM:
 - **m.7 kilitli sekme gizle**: CharacterPanel sekmeleri dinamik liste — tutulmamış karakterin

@@ -1,7 +1,7 @@
 import { Suspense, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Vector3, type Group, type MeshStandardMaterial } from 'three';
-import { useGame, LAYOUT, stationSoftMaxLevel, stationUpgradeCostZ, upgradeZoneUnlockedZ, tableSoftMaxLevel, tableUpgradeUnlockedZ, tableNextCost, waiterSoftMaxLevel, waiterUpgradeCost, waiterUpgradeUnlockedZ, zonePoint, zoneCol, zoneRow, zoneAt } from '../../game/store';
+import { useGame, LAYOUT, stationSoftMaxLevel, stationUpgradeCostZ, upgradeZoneUnlockedZ, tableSoftMaxLevel, tableUpgradeUnlockedZ, tableNextCost, zonePoint, zoneCol, zoneRow, zoneAt } from '../../game/store';
 import { zoneOfTable, zoneProduct } from '../../config/economy.config';
 import { GroundMarker } from './GroundMarker';
 import { PALETTE, FLOOR_THEMES, WALL_THEMES } from '../../config/palette';
@@ -45,16 +45,18 @@ function CameraRig() {
       st.current.w = size.width;
       st.current.h = size.height;
       const aspect = size.width / Math.max(1, size.height);
-      // Kullanıcı isteği (2026-06-09): telefonda "çok yakın" hissi → biraz geri çek. Taban d 6→7;
-      // turu-5 m.12 (2026-06-12): "kamera biraz daha yaklaşmalı" → 7→6.4 (plan B+A-hafif).
-      // Portrait'te dar ekran için ölçülü geri çekme (clamp 1.3→1.4).
-      const fit = aspect < 1 ? Math.min(1.4, 1 / aspect) : 1;
-      st.current.d = 6.4 * fit;
+      // Kamera mesafesi tarihçesi: ilk APK dönemi taban 6 × clamp 1.3 (telefonda ~7.8). 2026-06-09'da
+      // 7'ye çekildi, turu-5'te 6.4 + clamp 1.4 (~8.96) oldu. Ferahlama sonrası kullanıcı isteği
+      // (2026-06-13): "ilk zamandaki gibi yakın" → taban 6 + clamp 1.3'e DÖNÜŞ; genel bakış için
+      // HUD'da zoom-out butonu var (camZoomOut ×1.45 ≈ eski uzak görünümden biraz geniş).
+      const fit = aspect < 1 ? Math.min(1.3, 1 / aspect) : 1;
+      st.current.d = 6 * fit;
     }
     // KAMERA ODAĞI (quest sistemi): odak varken hedefe kay + hafif zoom; girdi gelince store odağı
     // iptal eder → buradaki damping kendiliğinden oyuncuya geri süzülür (ek durum makinesi yok).
     const focus = g.camFocus;
-    const d = focus ? st.current.d * 0.72 : st.current.d;
+    const zoomMul = g.camZoomOut ? 1.45 : 1;
+    const d = (focus ? st.current.d * 0.72 : st.current.d) * zoomMul;
     if (focus) {
       desired.set(focus.pos[0], d, focus.pos[2] + d);
       tmp.set(focus.pos[0], 0.6, focus.pos[2]);
@@ -308,7 +310,7 @@ function TableUpgradeMarkers() {
         if (!tableUpgradeUnlockedZ(zoneOfTable(i), gate)) return null;
         const lvl = tableLevels[i] ?? 0;
         if (lvl >= tableSoftMaxLevel()) return null; // max → işaret gizlenir
-        const cost = tableNextCost(lvl);
+        const cost = tableNextCost(lvl, zoneOfTable(i));
         const remaining = Math.max(0, Math.ceil(cost - (tableUpgradeFills[i] ?? 0)));
         return (
           <GroundMarker
@@ -328,52 +330,7 @@ function TableUpgradeMarkers() {
   );
 }
 
-// Garson hız yükseltme işaretleri (D-018 §6; ZONE BAŞINA): o zone'da garson tutulunca belirir.
-// Tek seviye (L1→L2); L2'ye çıkınca işaret kaybolur. Sade zemin işareti (D-017 §2).
-function WaiterUpgradeMarker() {
-  const waiters = useGame((s) => s.waiters);
-  const waiterLevels = useGame((s) => s.waiterLevels);
-  const waiterUpgradeFills = useGame((s) => s.waiterUpgradeFills);
-  const wallet = useGame((s) => s.wallet);
-  const padsDone = useGame((s) => s.padsDone);
-  const tables = useGame((s) => s.tables);
-  const stationLevels = useGame((s) => s.stationLevels);
-  const lifetime = useGame((s) => s.lifetime);
-  const waiterServed = useGame((s) => s.stats.waiterServed);
-  const waiterServedByZone = useGame((s) => s.stats.waiterServedByZone);
-  const gate = {
-    padsDone,
-    tables,
-    stationLevel: stationLevels[0],
-    lifetime: lifetime.toNumber(),
-    waiterServed,
-    waiterServedByZone,
-  };
-  const cost = waiterUpgradeCost();
-  return (
-    <>
-      {waiters.map((w, z) => {
-        if (!w || waiterLevels[z] >= waiterSoftMaxLevel()) return null;
-        // Arka-plan şartı (minWaiterServed): garson 20 çay taşımadan işaret hiç görünmez (store dolumu da kapalı).
-        if (!waiterUpgradeUnlockedZ(z, gate, waiterLevels[z])) return null;
-        const remaining = Math.max(0, Math.ceil(cost - waiterUpgradeFills[z]));
-        return (
-          <GroundMarker
-            key={z}
-            pos={LAYOUT.waiterUpgradeSpots[z]}
-            label="Garson Hız"
-            sub={String(remaining)}
-            coin
-            tint="#ffce54"
-            radius={0.6}
-            progress={waiterUpgradeFills[z] / cost}
-            afford={wallet.toNumber() >= remaining}
-          />
-        );
-      })}
-    </>
-  );
-}
+// (v29: WaiterUpgradeMarker kalktı — garson hızı karakter panelinden satın alınır.)
 
 // Dama temasının deseni: BÜYÜK düz-renk kare quad'lar (canvas doku DEĞİL — kullanıcı tile dokusunu
 // reddetti; low-poly satranç deseni primitive stile uyar). Yalnız alt-renk kareleri çizilir
@@ -971,7 +928,6 @@ export function Scene() {
       <Suspense fallback={null}>
         <Pad />
         <UpgradeZone />
-        <WaiterUpgradeMarker />
         <TableUpgradeMarkers />
       </Suspense>
       <CameraRig />

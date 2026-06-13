@@ -267,6 +267,24 @@ body,
   width: 32px;
   height: 32px;
 }
+
+/* ---- KAMERA GENEL-BAKIŞ toggle (2026-06-13): sağ-alt, tepsi butonlarının altında sabit;
+   açıkken mavi halka. ---- */
+.icon-btn.cam-btn {
+  position: absolute;
+  right: calc(14px + var(--sar));
+  bottom: calc(46px + env(safe-area-inset-bottom, 0px));
+  z-index: 10;
+  width: 54px;
+  height: 54px;
+}
+.icon-btn.cam-btn > svg {
+  width: 32px;
+  height: 32px;
+}
+.icon-btn.cam-btn.on {
+  box-shadow: 0 0 0 3px rgba(100, 181, 246, 0.55);
+}
 .tray-count {
   position: absolute;
   top: -5px;

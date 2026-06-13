@@ -12,7 +12,12 @@ import {
   tablePatience,
   tableSeats,
   rollGroupSize,
-  waiterSpeed,
+  waiterSpeedFor,
+  waiterSpeedNextCost,
+  waiterSpeedMaxTier,
+  dishSpeedFor,
+  dishSpeedNextCost,
+  dishSpeedMaxTier,
   xpForLevel,
   levelProgress,
   SAVE_VERSION,
@@ -50,10 +55,6 @@ import {
   tableUpgradeZoneUnlocked,
   tableUpgradeUnlockedZ,
   upgradeZoneUnlockedZ,
-  waiterUpgradeUnlockedZ,
-  waiterSoftMaxLevel,
-  waiterUpgradeCost,
-  waiterUpgradeUnlocked,
   TEA_PRICE,
   brewTime,
   incomeRate,
@@ -61,7 +62,7 @@ import {
   totalCupPool,
   stationUpgradeCostZ,
 } from '../src/game/store';
-import { migrate, defaultSave, defaultStats } from '../src/game/save';
+import { migrate, defaultSave, defaultStats, defaultWaiterUpgrades } from '../src/game/save';
 import { buildNavGrid, findNavPath } from '../src/game/nav';
 
 // Mevcut ilerleme durumundan gating (requires) için GateState üretir.
@@ -334,46 +335,28 @@ describe('garson — quest hattında zorunlu personel (2026-06-09; eski D-014 op
     expect(s.coins.length).toBeGreaterThan(0);
   });
 
-  it('garson hızı seviyeyle artar (L2 > L1); aşırı seviye son değere kelepçelenir (D-018 §6)', () => {
-    expect(waiterSpeed(1)).toBeGreaterThan(waiterSpeed(0));
-    expect(waiterSpeed(0)).toBe(economyConfig.waiter.moveSpeedByLevel[0]);
-    expect(waiterSpeed(99)).toBe(waiterSpeed(waiterSoftMaxLevel())); // clamp
+  it('garson hızı kademeyle artar (v29 panel); aşırı kademe son değere kelepçelenir', () => {
+    expect(waiterSpeedFor('tea', 1)).toBeGreaterThan(waiterSpeedFor('tea', 0));
+    expect(waiterSpeedFor('tea', 0)).toBe(economyConfig.waiter.speedUpgrades.tea.speeds[0]);
+    expect(waiterSpeedFor('tea', 99)).toBe(waiterSpeedFor('tea', waiterSpeedMaxTier('tea'))); // clamp
+    expect(waiterSpeedFor('tost', 0)).toBe(economyConfig.waiter.speedUpgrades.tost.speeds[0]);
   });
 
-  it('garson hız yükseltme: tutulmadan kilitli; tutulsa da 20 ÇAY TAŞIMADAN kilitli (arka-plan şartı); sonra açılır', () => {
+  it('buyWaiterSpeed (v29): cüzdan yetersizken false; yeterliyse kademe +1 ve ₺ düşer; max\'ta false', () => {
     useGame.getState().hardReset();
-    const g0 = { padsDone: ['table2'], tables: 2, stationLevel: 1, lifetime: 0, waiterServed: 99 };
-    expect(waiterUpgradeUnlocked(g0, 0)).toBe(false); // garson yok → kilitli
-    // Garson tutuldu ama henüz 20 çay taşımadı → İŞARET YOK (kullanıcı: "tutar tutmaz hızlandırma gelmesin").
-    const gFresh = { padsDone: ['table2', 'waiter'], tables: 2, stationLevel: 1, lifetime: 0, waiterServed: 0 };
-    expect(waiterUpgradeUnlocked(gFresh, 0)).toBe(false);
-    const g1 = { padsDone: ['table2', 'waiter'], tables: 2, stationLevel: 1, lifetime: 0, waiterServed: 20 };
-    expect(waiterUpgradeUnlocked(g1, 0)).toBe(true); // tutuldu + işbaşında görüldü → açık
-    expect(waiterUpgradeUnlocked(g1, waiterSoftMaxLevel())).toBe(false); // max → kapanır
-  });
-
-  it('garsonu tuttuğun noktada dur → ₺ akar → garson L2 olur (waiterLevel 0→1); sonra nokta kapanır', () => {
-    useGame.getState().hardReset();
-    const spot = LAYOUT.waiterUpgradeSpot;
-    useGame.setState({
-      padsDone: ['table2', 'waiter'],
-      waiters: [{ pos: [...LAYOUT.waiterHome] as [number, number, number], tray: 0 }, null],
-      player: [spot[0], 0.6, spot[2]],
-      inputKeyboard: [0, 0],
-      inputJoystick: [0, 0],
-      stats: { ...defaultStats(), waiterServed: 20 }, // arka-plan şartı karşılanmış olsun
-      spawnTimer: 999, // bu testte müşteri akışı karışmasın
-    });
-    useGame.getState().addMoney(waiterUpgradeCost() + 100);
-    expect(useGame.getState().waiterLevels[0]).toBe(0);
-    for (let i = 0; i < 300 && useGame.getState().waiterLevels[0] === 0; i++) useGame.getState().tick(0.1);
-    expect(useGame.getState().waiterLevels[0]).toBe(1);
-    // Soft max'a ulaştı → yükseltme noktası artık kilitli (işaret kaybolur).
+    const cost = waiterSpeedNextCost('tea', 0)!;
+    expect(useGame.getState().buyWaiterSpeed('tea')).toBe(false); // ₺ 0 → alınamaz
+    useGame.getState().addMoney(cost + 50);
+    expect(useGame.getState().buyWaiterSpeed('tea')).toBe(true);
     const s = useGame.getState();
-    expect(waiterUpgradeUnlocked({ padsDone: s.padsDone, tables: s.tables, stationLevel: s.stationLevels[0], lifetime: s.lifetime.toNumber(), waiterServed: s.stats.waiterServed }, s.waiterLevels[0])).toBe(false);
+    expect(s.waiterUpgrades.teaSpeed).toBe(1);
+    expect(s.wallet.toNumber()).toBeCloseTo(50, 5);
+    // Tavanda satın alma reddedilir (tek kademe: 1.5→2.0).
+    useGame.getState().addMoney(99_999);
+    expect(useGame.getState().buyWaiterSpeed('tea')).toBe(waiterSpeedNextCost('tea', 1) != null);
   });
 
-  it('waiterLevel kayıt round-trip\'inde korunur (saveNow→init persist)', () => {
+  it('waiterUpgrades.teaSpeed kayıt round-trip\'inde korunur (saveNow→init persist)', () => {
     // node test ortamında localStorage yok → geçici mock ile gerçek persistence'ı doğrula.
     const mem: Record<string, string> = {};
     const g = globalThis as Record<string, unknown>;
@@ -385,10 +368,13 @@ describe('garson — quest hattında zorunlu personel (2026-06-09; eski D-014 op
     };
     try {
       useGame.getState().hardReset();
-      useGame.setState({ padsDone: ['table2', 'waiter'], waiterLevels: [1, 0] });
+      useGame.setState({
+        padsDone: ['table2', 'waiter'],
+        waiterUpgrades: { ...defaultWaiterUpgrades(), teaSpeed: 1 },
+      });
       useGame.getState().saveNow();
       useGame.getState().init();
-      expect(useGame.getState().waiterLevels[0]).toBe(1);
+      expect(useGame.getState().waiterUpgrades.teaSpeed).toBe(1);
     } finally {
       g.localStorage = orig;
     }
@@ -428,22 +414,6 @@ describe('yeni-özellik bildirimi (D-019 §4)', () => {
     expect(useGame.getState().revealSeen).toContain('upgrade:0');
     expect(useGame.getState().camFocus).toBeNull();
     // Panel görüldükten sonra normal akış: sonraki reveal'lar pan'lı çalışır (üstteki test).
-  });
-
-  it("garson 20 çay taşıyınca 'waiterUp' bildirilir (arka-plan şartı reveal'ı)", () => {
-    useGame.getState().hardReset();
-    useGame.setState({
-      padsDone: ['table2', 'table3', 'waiter'],
-      waiters: [{ pos: [...LAYOUT.waiterHome] as [number, number, number], tray: 0 }, null],
-      player: [0, 0.6, 2], inputKeyboard: [0, 0], inputJoystick: [0, 0],
-      npcs: [], spawnTimer: 999,
-      stats: { ...defaultStats(), waiterServed: 19 },
-    });
-    useGame.getState().tick(0.1);
-    expect(useGame.getState().revealSeen).not.toContain('waiterUp:0'); // 19 < 20 → henüz yok
-    useGame.setState({ stats: { ...defaultStats(), waiterServed: 20 } });
-    useGame.getState().tick(0.1);
-    expect(useGame.getState().revealSeen).toContain('waiterUp:0'); // eşik aşıldı → bildirildi
   });
 
   it('yeniden yüklemede ZATEN açık özellikler tekrar bildirilmez (baseline; spam yok)', () => {
@@ -868,21 +838,22 @@ describe('kayıt migrasyonu v4..v15 (padFills, station2/samovar çıkışı, add
     expect(m.wallet).toBe('900'); // ₺ ilerleme kaybolmaz
   });
 
-  it('v14 → v15 (D-018 adım 6): waiterLevel eklenir (eksikse 0; varsa korunup soft max\'a clamp\'lenir)', () => {
-    // Eski v14 kaydında waiterLevel YOK → 0 gelir.
+  it('v14 → v15 → v29: eski waiterLevel hız kademesine katlanır (eksikse 0; bozuk değer kelepçeli)', () => {
+    // Eski v14 kaydında waiterLevel YOK → teaSpeed 0 gelir (v29 katlaması).
     const m = migrate({
       saveVersion: 14, wallet: '300', diamonds: '0', lifetime: '4000',
       stationLevel: 2, padsDone: ['table2', 'waiter'], padFills: {}, tableLevels: [],
     } as unknown as Record<string, unknown>);
     expect(m.saveVersion).toBe(SAVE_VERSION);
-    expect(m.waiterLevels[0]).toBe(0);
-    // Aşırı (bozuk) waiterLevel soft max'a clamp'lenir (moveSpeedByLevel uzunluğu - 1).
-    const cap = economyConfig.waiter.moveSpeedByLevel.length - 1;
+    expect(m.waiterUpgrades.teaSpeed).toBe(0);
+    expect((m as unknown as Record<string, unknown>).waiterLevels).toBeUndefined(); // v29: alan kalktı
+    // Aşırı (bozuk) waiterLevel hız merdiveninin tavanına kelepçelenir.
+    const cap = waiterSpeedMaxTier('tea');
     const m2 = migrate({
       saveVersion: 14, wallet: '0', diamonds: '0', lifetime: '0',
       stationLevel: 0, padsDone: ['table2', 'waiter'], padFills: {}, tableLevels: [], waiterLevel: 99,
     } as unknown as Record<string, unknown>);
-    expect(m2.waiterLevels[0]).toBe(cap);
+    expect(m2.waiterUpgrades.teaSpeed).toBe(cap);
   });
 
   it('v15 → v16 (QUEST): stats/questIndex/questBase eklenir; ilerleme tohumlanır (başa düşülmez)', () => {
@@ -928,7 +899,7 @@ describe('kayıt migrasyonu v4..v15 (padFills, station2/samovar çıkışı, add
     expect(d.padFills).toEqual({});
     expect((d as Record<string, unknown>).trayLevel).toBeUndefined();
     expect(d.tableLevels).toEqual([]);
-    expect(d.waiterLevels).toEqual([]); // v18: diziler boş başlar; init MAX_ZONES'a 0'la doldurur
+    expect((d as Record<string, unknown>).waiterLevels).toBeUndefined(); // v29: hız panel kademesine taşındı
     expect((d as Record<string, unknown>).tables).toBeUndefined();
     expect((d as Record<string, unknown>).hasWaiter).toBeUndefined();
   });
@@ -1338,6 +1309,20 @@ describe('masa yükseltme + bahşiş (Faz 2h)', () => {
     expect(tableUpgradeCost(3)).toBe(349);
   });
 
+  it('zone-kademeli yükseltme maliyeti (2026-06-13): z1 birebir, z2 ×1.5, z3 ×2.5 (5\'e yuvarlı)', () => {
+    // Salon 1 = varsayılan zone → eski eğriyle birebir (üstteki test).
+    expect(tableUpgradeCost(0, 1)).toBe(90);
+    expect(tableUpgradeCost(1, 1)).toBe(160);
+    expect(tableUpgradeCost(2, 1)).toBe(290);
+    expect(tableUpgradeCost(3, 1)).toBe(525);
+    expect(tableUpgradeCost(0, 2)).toBe(150);
+    expect(tableUpgradeCost(1, 2)).toBe(270);
+    expect(tableUpgradeCost(2, 2)).toBe(485);
+    expect(tableUpgradeCost(3, 2)).toBe(875);
+    // Tanımsız zone son çarpana kelepçelenir.
+    expect(tableUpgradeCost(0, 9)).toBe(tableUpgradeCost(0, 2));
+  });
+
   it('bahşiş ve sabır seviyeyle artar; L0 nötr', () => {
     expect(tableTip(0)).toBe(0);
     expect(tableTip(2)).toBe(economyConfig.tables.tipBase * 2);
@@ -1665,9 +1650,10 @@ describe('ZONE-2 (Faz 3a + D-022) — per-zone ocak+bulaşık, geçit pad\'i, mi
     });
     expect(m.saveVersion).toBe(SAVE_VERSION);
     expect(m.stationLevels).toEqual([3]);
-    expect(m.waiterLevels).toEqual([1]);
+    expect(m.waiterUpgrades.teaSpeed).toBe(1); // v18 dizisi → v29'da hız kademesine katlandı
     expect((m as Record<string, unknown>).stationLevel).toBeUndefined();
     expect((m as Record<string, unknown>).waiterLevel).toBeUndefined();
+    expect((m as Record<string, unknown>).waiterLevels).toBeUndefined();
   });
 
   it('kayıt migrasyonu v24→v25: kaldırılan pad\'ler (wc/cleaner/zone4 zinciri) düşülür, ₺ İADE edilir', () => {
@@ -1721,8 +1707,9 @@ describe('WP1 bug paketi (2026-06-11) — quest-pad gate, zone kamera odağı, o
 
   it('offline PARA tavanı: kazanç sıradaki omurga pad maliyetinin oranını aşamaz', () => {
     const frac = economyConfig.offline.capNextPadFrac;
-    // Taze oyun: sıradaki pad table2 (25₺) → dev oran bile tavana kelepçelenir.
-    expect(computeOfflineEarned(100, 3600, [])).toBe(Math.floor(25 * frac));
+    // Taze oyun: sıradaki pad table2 → dev oran bile tavana kelepçelenir.
+    const t2Cost = economyConfig.pads.find((p) => p.id === 'table2')!.cost;
+    expect(computeOfflineEarned(100, 3600, [])).toBe(Math.floor(t2Cost * frac));
     // Zone-1 bitti: sıradaki zone2 pad'i → tavan = pad × frac (2026-06-11: frac 1.2 — zone AÇILIR
     // ama salonun İÇİ bitmez: tavan < zone2 + ilk iç pad).
     const z1 = ['table2', 'table3', 'waiter', 'dishwasher', 'table4'];
@@ -1955,15 +1942,6 @@ describe('zone-2 yükseltme gating (v21) — zone-1 deseni aynalanır (önce kap
     expect(tableUpgradeUnlockedZ(1, g([...half, 'z2dishwasher', 'z2table4']))).toBe(true);
   });
 
-  it('z2 garson hızlandırma: KENDİ garsonu 20 taşımadan belirmez (global sayaç z1den dolu olsa bile)', () => {
-    const pads = [...Z1_FULL, 'zone2', 'z2table2', 'z2waiter'];
-    // Global 99 ama z2 garsonu daha 5 taşıdı → kapalı (eski bug: tutar tutmaz beliriyordu).
-    expect(waiterUpgradeUnlockedZ(1, g(pads, { waiterServed: 99, waiterServedByZone: [99, 5] }), 0)).toBe(false);
-    expect(waiterUpgradeUnlockedZ(1, g(pads, { waiterServed: 99, waiterServedByZone: [99, 20] }), 0)).toBe(true);
-    // z1 geri-uyum: global sayaç yeterli (eski kayıt/dev kancası).
-    expect(waiterUpgradeUnlockedZ(0, g(pads, { waiterServed: 20 }), 0)).toBe(true);
-  });
-
   it('tick z2 garson taşımasını KENDİ zone sayacına yazar', () => {
     useGame.getState().hardReset();
     const before = useGame.getState().stats.waiterServedByZone.slice();
@@ -1996,8 +1974,8 @@ describe('zone-2 yükseltme gating (v21) — zone-1 deseni aynalanır (önce kap
       ...base,
       padsDone: ['table2', 'table3', 'waiter', 'dishwasher', 'table4', 'zone2', 'z2table2', 'z2waiter'],
     } as unknown as Record<string, unknown>);
-    // z2 garsonu zaten tutulmuş → bugün görünür olan hızlandırma işareti yarın kaybolmasın (eşik tohumu).
-    expect(m2.stats.waiterServedByZone).toEqual([50, economyConfig.waiter.upgradeRequires.minWaiterServed]);
+    // z2 garsonu zaten tutulmuş → eşik tohumu (tarihsel sabit 20; v29'da minWaiterServed alanı kalktı).
+    expect(m2.stats.waiterServedByZone).toEqual([50, 20]);
   });
 });
 
@@ -2675,7 +2653,7 @@ describe('v27 — görev redesign + İD-eşleme migrasyonu + dolum süreleri (te
     // Eski v26 sırasında 19 = q_z2waiter.
     const m = migrate(v26Save(19, [...Z1, 'zone2', 'z2table2']));
     expect(qid(m)).toBe('q_z2waiter');
-    expect(m.waiterUpgrades).toEqual({ teaTray: 0, tostTray: 0, dishCarry: 0 });
+    expect(m.waiterUpgrades).toEqual(defaultWaiterUpgrades());
     expect(m.saveVersion).toBe(SAVE_VERSION);
   });
 
@@ -2790,10 +2768,10 @@ describe('Y3 — garson tepsi yükseltmeleri (panel satın alma + FSM kapasite +
     expect(useGame.getState().waiterUpgrades.teaTray).toBe(1);
     expect(useGame.getState().wallet.toNumber()).toBe(10000 - 400); // turu-5: T1 800→400
     // Tavan: tea max 3 kademe.
-    useGame.setState({ wallet: D(1e9), waiterUpgrades: { teaTray: 3, tostTray: 0 } });
+    useGame.setState({ wallet: D(1e9), waiterUpgrades: { ...defaultWaiterUpgrades(), teaTray: 3 } });
     expect(useGame.getState().buyWaiterTray('tea')).toBe(false);
     // Tostçu kendi eğrisi: 1200 (turu-5: 2000→1200).
-    useGame.setState({ wallet: D(2500), waiterUpgrades: { teaTray: 0, tostTray: 0 } });
+    useGame.setState({ wallet: D(2500), waiterUpgrades: defaultWaiterUpgrades() });
     expect(useGame.getState().buyWaiterTray('tost')).toBe(true);
     expect(useGame.getState().waiterUpgrades.tostTray).toBe(1);
     expect(useGame.getState().wallet.toNumber()).toBe(1300);
@@ -2806,7 +2784,7 @@ describe('Y3 — garson tepsi yükseltmeleri (panel satın alma + FSM kapasite +
     useGame.setState({
       padsDone: ['table2', 'waiter'],
       waiters: [{ pos: [pick[0], 0.6, pick[2]] as [number, number, number], tray: 0 }, null, null],
-      waiterUpgrades: { teaTray: 2, tostTray: 0 },
+      waiterUpgrades: { ...defaultWaiterUpgrades(), teaTray: 2 },
       player: [0, 0.6, 6.5],
       inputKeyboard: [0, 0], inputJoystick: [0, 0],
       npcs: [
@@ -2828,7 +2806,7 @@ describe('Y3 — garson tepsi yükseltmeleri (panel satın alma + FSM kapasite +
     useGame.setState({
       padsDone: ['table2', 'waiter'],
       waiters: [{ pos: [seat[0], 0.6, seat[2]] as [number, number, number], tray: 3 }, null, null],
-      waiterUpgrades: { teaTray: 2, tostTray: 0 },
+      waiterUpgrades: { ...defaultWaiterUpgrades(), teaTray: 2 },
       player: [0, 0.6, 6.5],
       inputKeyboard: [0, 0], inputJoystick: [0, 0],
       npcs: [
@@ -2857,7 +2835,7 @@ describe('Y3 — garson tepsi yükseltmeleri (panel satın alma + FSM kapasite +
       padsDone: [...Z1, ...Z2, 'zone3', 'z3waiter'],
       questIndex: economyConfig.quests.length,
       waiters: [null, null, { pos: [pick[0], 0.6, pick[2]] as [number, number, number], tray: 0 }],
-      waiterUpgrades: { teaTray: 0, tostTray: 1 },
+      waiterUpgrades: { ...defaultWaiterUpgrades(), tostTray: 1 },
       player: [0, 0.6, 6.5],
       inputKeyboard: [0, 0], inputJoystick: [0, 0],
       npcs: [
@@ -2875,7 +2853,7 @@ describe('Y3 — garson tepsi yükseltmeleri (panel satın alma + FSM kapasite +
 
   it('v27 kaydında waiterUpgrades yuvarlanır/kelepçelenir (bozuk değer tavana iner)', () => {
     const m = migrate({ ...defaultSave(), saveVersion: 26, waiterUpgrades: { teaTray: 99, tostTray: -3 } } as unknown as Record<string, unknown>);
-    expect(m.waiterUpgrades).toEqual({ teaTray: waiterTrayMaxTier('tea'), tostTray: 0, dishCarry: 0 });
+    expect(m.waiterUpgrades).toEqual({ ...defaultWaiterUpgrades(), teaTray: waiterTrayMaxTier('tea') });
   });
 });
 
@@ -3080,7 +3058,7 @@ describe('v28 — bulaşıkçı leğen yükseltmesi (telefon feedback turu-4: "b
         questIndex: economyConfig.quests.length,
         npcs: [],
         spawnTimer: 1e9,
-        waiterUpgrades: { teaTray: 0, tostTray: 0, dishCarry: tier },
+        waiterUpgrades: { ...defaultWaiterUpgrades(), dishCarry: tier },
         dishes: fourDishes(LAYOUT.tables[0]),
         player: [5.2, 0.6, -5.2],
       });
@@ -3104,7 +3082,7 @@ describe('v28 — bulaşıkçı leğen yükseltmesi (telefon feedback turu-4: "b
       waiterUpgrades: { teaTray: 1, tostTray: 0 },
     } as unknown as Record<string, unknown>);
     expect(m.saveVersion).toBe(SAVE_VERSION);
-    expect(m.waiterUpgrades).toEqual({ teaTray: 1, tostTray: 0, dishCarry: 0 });
+    expect(m.waiterUpgrades).toEqual({ ...defaultWaiterUpgrades(), teaTray: 1 });
     const m2 = migrate({
       saveVersion: 27, wallet: '0', diamonds: '0', lifetime: '0',
       padsDone: [], padFills: {}, tableLevels: [],
@@ -3147,9 +3125,74 @@ describe('Turu-4 — tost sabrı ürün-bazlı + temizlik temposu ("tostta müş
     expect(n?.timer).toBeCloseTo(tablePatience(0, 'tost'), 5);
   });
 
-  it('bulaşıkçı hızı 2.0 (oyuncudan yavaş kalır — kısmi assist korunur)', () => {
-    expect(economyConfig.dishwasher.moveSpeed).toBe(2.0);
-    expect(economyConfig.dishwasher.moveSpeed).toBeLessThan(charValue('speed', 0) as number);
+  it('bulaşıkçı hız merdiveni (v29): taban 2.0; TAVAN bile oyuncudan yavaş (kısmi assist korunur)', () => {
+    expect(dishSpeedFor(0)).toBe(2.0);
+    expect(dishSpeedFor(1)).toBeGreaterThan(dishSpeedFor(0));
+    expect(dishSpeedFor(dishSpeedMaxTier())).toBeLessThan(charValue('speed', 0) as number);
+    expect(dishSpeedFor(99)).toBe(dishSpeedFor(dishSpeedMaxTier())); // clamp
+  });
+
+  it('buyDishSpeed (v29): ₺ yetersizken false; alımda kademe+1; v28→v29 katlama waiterLevels→speed', () => {
+    useGame.getState().hardReset();
+    const cost = dishSpeedNextCost(0)!;
+    expect(useGame.getState().buyDishSpeed()).toBe(false);
+    useGame.getState().addMoney(cost);
+    expect(useGame.getState().buyDishSpeed()).toBe(true);
+    expect(useGame.getState().waiterUpgrades.dishSpeed).toBe(1);
+    // v28 kaydı: waiterLevels [1,0,1] → teaSpeed = max(z0,z1) = 1, tostSpeed = z2 = 1; alan silinir.
+    const m = migrate({
+      ...defaultSave(), saveVersion: 28, waiterLevels: [1, 0, 1],
+      waiterUpgrades: { teaTray: 1, tostTray: 0, dishCarry: 0 },
+    } as unknown as Record<string, unknown>);
+    expect(m.waiterUpgrades.teaSpeed).toBe(1);
+    expect(m.waiterUpgrades.tostSpeed).toBe(1);
+    expect(m.waiterUpgrades.dishSpeed).toBe(0);
+    expect(m.waiterUpgrades.teaTray).toBe(1); // tepsi kademesi korunur
+    expect((m as unknown as Record<string, unknown>).waiterLevels).toBeUndefined();
+  });
+
+  it('coin OTO-TOPLAMA (2026-06-13): eşiği aşan para cüzdana girer + toast; manuel sayaç ARTMAZ; mıknatıs alanı muaf', () => {
+    useGame.getState().hardReset();
+    const after = economyConfig.money.autoCollectAfter;
+    useGame.setState({
+      player: [0, 0.6, 4.5], inputKeyboard: [0, 0], inputJoystick: [0, 0], spawnTimer: 1e9,
+      // Coin oyuncudan UZAK (mıknatıs dışı), yaşı eşiğin hemen altında.
+      coins: [{ id: 1, pos: [4, 0.3, -4], value: 7, age: after - 0.05 }],
+      notice: null,
+    });
+    const beforeWallet = useGame.getState().wallet.toNumber();
+    const beforeCollected = useGame.getState().stats.coinsCollected;
+    useGame.getState().tick(0.1); // yaş eşiği aşar
+    const s = useGame.getState();
+    expect(s.coins.length).toBe(0);
+    expect(s.wallet.toNumber()).toBeCloseTo(beforeWallet + 7, 5);
+    expect(s.stats.coinsCollected).toBe(beforeCollected); // manuel toplama sayacı artmaz
+    expect(s.notice?.text).toContain('otomatik toplandı');
+    expect(s.notice?.reward).toBe(7);
+    // Mıknatıs alanındaki coin oto-toplanmaz (oyuncuya akar, manuel toplanır → sayaç artar).
+    useGame.setState({
+      coins: [{ id: 2, pos: [0.2, 0.3, 4.6], value: 5, age: after + 99 }],
+      notice: null,
+    });
+    useGame.getState().tick(0.1);
+    // attract+pickup aynı tick'te tamamlanabilir; coin ya toplandı (sayaç +1) ya hâlâ akıyor.
+    const s2 = useGame.getState();
+    if (s2.coins.length === 0) expect(s2.stats.coinsCollected).toBe(beforeCollected + 1);
+    else expect(s2.coins[0].id).toBe(2); // duruyorsa oto-toplama silmemiş olmalı
+  });
+
+  it('q_waiterL2 görevi (v29): hedef panel hız kademesi — teaSpeed 1 olunca karşılanır', () => {
+    const q = economyConfig.quests.find((x) => x.id === 'q_waiterL2')!;
+    expect(q.target).toEqual({ type: 'waiterSpeed', kind: 'tea', tier: 1 });
+    const ctx = {
+      padsDone: [], stationLevels: [0], tableLevels: [], stats: defaultStats(), questBase: 0,
+      charUpgrades: { tray: 0, magnet: 0, speed: 0 },
+      waiterUpgrades: defaultWaiterUpgrades(),
+    };
+    expect(questTargetMet(q.target, ctx)).toBe(false);
+    expect(questTargetMet(q.target, { ...ctx, waiterUpgrades: { ...defaultWaiterUpgrades(), teaSpeed: 1 } })).toBe(true);
+    // Panel görevi: 3D odak yok (kamera sıçramaz; HUD char butonu nabzı yönlendirir).
+    expect(questFocusPos(q.target, [], 1)).toBeNull();
   });
 });
 
