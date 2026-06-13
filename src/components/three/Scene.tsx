@@ -14,11 +14,33 @@ import { TeaStation, TostStation } from './TeaStation';
 import { Customers } from './Customers';
 import { Coins } from './Coins';
 import { Pad } from './Pad';
+import { perf } from '../../game/perf';
 
 // Simülasyonu her karede ilerlet (tek kaynak; __advanceTime aynı tick'i çağırır).
 function Simulation() {
   const tick = useGame((s) => s.tick);
   useFrame((_, dt) => tick(dt));
+  return null;
+}
+
+// FPS / render bütçesi probe'u (FPS Tier 2). gl.info.render = r3f'de kare başı otomatik resetlenir
+// (autoReset true) → calls/triangles ANLIK kare maliyeti. 0.5sn pencerede FPS ortalanır (anlık
+// dt gürültüsünü bastırır). Sonuç perf singleton + window.__perf'e yazılır; render YOK (overlay HUD'da).
+function PerfProbe() {
+  const gl = useThree((s) => s.gl);
+  const acc = useRef({ frames: 0, time: 0 });
+  useFrame((_, dt) => {
+    const a = acc.current;
+    a.frames += 1;
+    a.time += dt;
+    if (a.time >= 0.5) {
+      perf.fps = Math.round(a.frames / a.time);
+      perf.calls = gl.info.render.calls;
+      perf.tris = gl.info.render.triangles;
+      a.frames = 0;
+      a.time = 0;
+    }
+  });
   return null;
 }
 
@@ -932,6 +954,7 @@ export function Scene() {
       </Suspense>
       <CameraRig />
       <Simulation />
+      <PerfProbe />
     </Canvas>
   );
 }

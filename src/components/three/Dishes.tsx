@@ -1,38 +1,76 @@
 import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import type { Group } from 'three';
+import { CylinderGeometry, BoxGeometry, MeshStandardMaterial, Object3D, type Group, type InstancedMesh } from 'three';
 import { useGame, LAYOUT, dirtyTables } from '../../game/store';
 import { PALETTE } from '../../config/palette';
+
+// FPS Tier 2 (2026-06-13): kirli kaplar InstancedMesh'e. Statik (dönüş/animasyon yok) → matris yalnız
+// konum. Bardak 1 instanced mesh; TABAK 2 (disk + kırıntı, kırıntı d.pos'a göre sabit ofset). Görsel
+// BİREBİR (aynı geo/mat, aynı dünya konumları). "Koku bulutu" DÜŞÜK sayıda (≤kirli masa) + saydam
+// (sıralama) → olduğu gibi bırakıldı.
+const CUP_GEO = new CylinderGeometry(0.06, 0.05, 0.16, 8);
+const CUP_MAT = new MeshStandardMaterial({ color: '#8d8276', roughness: 0.9 });
+const PLATE_GEO = new CylinderGeometry(0.11, 0.09, 0.03, 10);
+const PLATE_MAT = new MeshStandardMaterial({ color: PALETTE.plateDirty, roughness: 0.9 });
+const CRUMB_GEO = new BoxGeometry(0.05, 0.02, 0.04);
+const CRUMB_MAT = new MeshStandardMaterial({ color: PALETTE.toastDark, roughness: 0.9 });
+const DISH_CAP = 256; // kirli kap birikimi masa-eşikleriyle sınırlı; bol pay.
 
 // Masalarda bekleyen kirli kaplar (Faz 2e + M3): çay = lekeli ince-belli bardak (gri-kahve silindir),
 // tost = kirli TABAK (yayvan disk + kırıntı). Oyuncu/bulaşıkçı toplayınca kaybolur.
 export function Dishes() {
   const dishes = useGame((s) => s.dishes);
   const tableLevels = useGame((s) => s.tableLevels);
+  const cupRef = useRef<InstancedMesh>(null);
+  const discRef = useRef<InstancedMesh>(null);
+  const crumbRef = useRef<InstancedMesh>(null);
+  const dummy = useMemo(() => new Object3D(), []);
   // Kirli masalar (D-019): eşiği aşan masaların ÜSTÜNDE alçak primitive "koku" işareti.
   // Y2: eşik koltukla ölçeklenir → görsel işaret de mantıkla aynı imzayı kullanır.
   const dirty = useMemo(() => [...dirtyTables(dishes, tableLevels)], [dishes, tableLevels]);
+  useFrame(() => {
+    const cup = cupRef.current;
+    const disc = discRef.current;
+    const crumb = crumbRef.current;
+    if (!cup || !disc || !crumb) return;
+    let nc = 0; // bardak sayısı
+    let np = 0; // tabak sayısı (disk + kırıntı ortak)
+    const total = Math.min(dishes.length, DISH_CAP);
+    for (let i = 0; i < total; i++) {
+      const d = dishes[i];
+      if (d.kind === 'plate') {
+        dummy.rotation.set(0, 0, 0);
+        dummy.scale.setScalar(1);
+        dummy.position.set(d.pos[0], d.pos[1], d.pos[2]);
+        dummy.updateMatrix();
+        disc.setMatrixAt(np, dummy.matrix);
+        // kırıntı: eski grup-yerel ofset [0.03, 0.025, -0.02] (dönüş yok → düz toplama)
+        dummy.position.set(d.pos[0] + 0.03, d.pos[1] + 0.025, d.pos[2] - 0.02);
+        dummy.updateMatrix();
+        crumb.setMatrixAt(np, dummy.matrix);
+        np++;
+      } else {
+        dummy.rotation.set(0, 0, 0);
+        dummy.scale.setScalar(1);
+        dummy.position.set(d.pos[0], d.pos[1], d.pos[2]);
+        dummy.updateMatrix();
+        cup.setMatrixAt(nc, dummy.matrix);
+        nc++;
+      }
+    }
+    cup.count = nc;
+    disc.count = np;
+    crumb.count = np;
+    cup.instanceMatrix.needsUpdate = true;
+    disc.instanceMatrix.needsUpdate = true;
+    crumb.instanceMatrix.needsUpdate = true;
+  });
   return (
     <>
-      {dishes.map((d) =>
-        d.kind === 'plate' ? (
-          <group key={d.id} position={[d.pos[0], d.pos[1], d.pos[2]]}>
-            <mesh castShadow>
-              <cylinderGeometry args={[0.11, 0.09, 0.03, 10]} />
-              <meshStandardMaterial color={PALETTE.plateDirty} roughness={0.9} />
-            </mesh>
-            <mesh position={[0.03, 0.025, -0.02]}>
-              <boxGeometry args={[0.05, 0.02, 0.04]} />
-              <meshStandardMaterial color={PALETTE.toastDark} roughness={0.9} />
-            </mesh>
-          </group>
-        ) : (
-          <mesh key={d.id} castShadow position={[d.pos[0], d.pos[1], d.pos[2]]}>
-            <cylinderGeometry args={[0.06, 0.05, 0.16, 8]} />
-            <meshStandardMaterial color="#8d8276" roughness={0.9} />
-          </mesh>
-        ),
-      )}
+      {/* bardak (çay) + tabak diski (tost) castShadow; kırıntı gölge atmaz (eski mesh'le birebir) */}
+      <instancedMesh ref={cupRef} args={[CUP_GEO, CUP_MAT, DISH_CAP]} castShadow frustumCulled={false} />
+      <instancedMesh ref={discRef} args={[PLATE_GEO, PLATE_MAT, DISH_CAP]} castShadow frustumCulled={false} />
+      <instancedMesh ref={crumbRef} args={[CRUMB_GEO, CRUMB_MAT, DISH_CAP]} frustumCulled={false} />
       {dirty.map((i) => (
         <StinkCloud key={i} pos={LAYOUT.tables[i].table} />
       ))}

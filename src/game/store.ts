@@ -1687,10 +1687,16 @@ export const useGame = create<GameState>((set, get) => ({
       !s.charPanelSeen;
     for (const [key, text, rp] of revealKeys(padGate, zonesOpen, stationLevels)) {
       if (!revealSeen.includes(key)) {
+        // turu-6 fix: spotlight beklerken PAN'lı reveal'ı TAMAMEN ertele (toast + tüketim dahil).
+        // Eski m.8 yalnız panı bastırıyordu → reveal toast'ı ("Çay ocağını yükseltebilirsin ☕")
+        // tepsi-spotlight'ının kararması altında pan'sız çıkıp KALICI tükeniyordu → o pad bir daha
+        // mekânsal gösterilmiyordu (kullanıcı bug'ı 2026-06-13). Şimdi ertelenir: panel açılıp
+        // kararma bitince reveal doğru anda toast + pad'e pan'la birlikte çıkar (tek yönlendirme).
+        if (spotlightPending && rp) continue;
         revealSeen = [...revealSeen, key];
         notice = { text, ttl: 4.5, kind: 'reveal' };
         // Yeni açılan noktaya anlık kamera pan ("orada bir şey var" — kullanıcı isteği 2026-06-09).
-        if (rp && !spotlightPending) requestFocus(rp, 1);
+        if (rp) requestFocus(rp, 1);
       }
     }
     if (notice) {

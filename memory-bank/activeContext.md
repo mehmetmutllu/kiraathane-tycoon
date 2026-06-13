@@ -2,7 +2,39 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
-## ŞU AN (2026-06-13 — TURU-6 PAKETİ ✅ UYGULANDI; SAVE v28→v29; COMMIT BEKLİYOR)
+## ŞU AN (2026-06-13 — FPS TIER 2 BAŞLADI: SAYAÇ + COINS/NPC INSTANCING + REVEAL BUG FIX; COMMIT BEKLİYOR)
+Turu-6 zaten commit'liydi (f07f4a6); bu oturum FPS Tier 2'ye girdi. Yapılanlar (hepsi vitest 183/183,
+build, canlı MCP 390×844 konsol 0 hata):
+1. **FPS SAYACI (dev/teşhis):** `src/game/perf.ts` singleton {fps,calls,tris}; Scene.tsx `PerfProbe`
+   (Canvas-içi useFrame, 0.5sn pencere FPS + gl.info.render kare-başı draw-call/üçgen); HUD Ayarlar →
+   "FPS Sayacı" toggle (`set-showfps`) + sol-üst canlı overlay (`fps-overlay`, rAF ~4Hz, renk FPS'e göre);
+   `settings.showFps` (save.ts additive default false, SÜRÜM ARTMADI); `window.__perf()` devHook.
+   Baz ölçüm (taze oyun): ~60 FPS / ~88 draw-call / ~5k üçgen.
+2. **COINS INSTANCING:** Coins.tsx tek InstancedMesh (COIN_CAP 1024). Eskiden her coin ayrı draw-call
+   (~215 → ~215 call); şimdi 1. Görsel BİREBİR (aynı COIN_GEO/COIN_MAT; per-instance matris: doğuş-pop
+   + dönüş; üniform ölçek dönüşle komütatif → T·S·R=T·R·S). Floater mantığı AYNEN. Canlı: altın disk
+   masada doğru (coin-instanced.jpeg). PARA SUNUMU DEĞİŞMEDİ (feedback_coin_presentation korunur).
+3. **NPC INSTANCING:** Customers.tsx 2 InstancedMesh — gövde (paylaşımlı kapsül + per-instance renk
+   instanceColor) + "çay bekliyor" baloncuğu (NPC_CAP 128). facing(useFacing math)/bob matriste birebir
+   türetildi. Greybox fallback kapsülü instance edilir (Model src'siz); Faz 6 .glb = AYRI karar (skinned
+   instancing farklı, NOT). Canlı: teal kapsül + sarı baloncuk doğru (npc-instanced2.jpeg).
+4. **BUG FIX — "Çay ocağını yükseltebilirsin" reveal'ı (kullanıcı bildirdi):** KÖK NEDEN: table2 açılınca
+   görev q_charTray1'e (charStat) geçip ekranı karartırken (spotlight) AYNI tick'te `upgrade:0` reveal
+   toast'ı çıkıp eski m.8 yalnız PANI bastırıyor ama toast'ı gösterip reveal'ı KALICI tüketiyordu →
+   "yükseltebilirsin" yazısı kararma altında pan'sız çıkıp o pad bir daha gösterilmiyordu. FIX (store.ts
+   ~1688): spotlight beklerken PAN'lı reveal TAMAMEN ertelenir (toast+tüketim dahil); panel görülünce
+   reveal doğru anda toast+pan ile gelir. m.8 testi yeni davranışa güncellendi. Canlı doğrulandı.
+5. **DISHES INSTANCING:** Dishes.tsx 3 InstancedMesh — bardak (çay), tabak diski + kırıntı (tost; kırıntı
+   d.pos'a sabit ofset). Statik → matris yalnız konum. DISH_CAP 256. Görsel birebir; "koku bulutu" düşük
+   sayı + saydam → instance edilmedi. Canlı: gri bardak masada doğru (dish-instanced.jpeg); tost tabağı
+   varyantı tost salonu gerektiğinden canlı test edilmedi (kod orijinali birebir yansıtır).
+SONRAKİ: kullanıcı kararı → commit/push (+APK) → TELEFONDA gerçek FPS ölç (sayaç hazır) → ölçüme göre
+sıradaki hedef. Hafıza notu: "telefonda gerçek bütçeyi gör, körlemesine optimize etme" — coins+NPC+dishes
+en yüksek dinamik sayımlardı, güvenli temiz kazanç.
+Beklemede (YAPILMADI): sandalye/tabure statik instancing (seviyeye göre değişken, kazanç düşük), statik
+bina merge (Walls/Street/DecorProps — farklı materyaller → sınırlı kazanç), StinkCloud (düşük sayı).
+
+## ESKİ ŞU AN (2026-06-13 — TURU-6 PAKETİ ✅ UYGULANDI; SAVE v28→v29; COMMIT BEKLİYOR)
 Kullanıcının 2026-06-13 talimat paketi (6 madde) tek oturumda uygulandı; vitest **183/183**,
 build, smoke **26/26** (waiterUp adımı panele taşındı → 1 adım birleşti), Playwright canlı
 390×844 konsol 0 hata (screenshot'lar kökte `night2-*.jpeg`). Telefon APK testi bekleniyor.

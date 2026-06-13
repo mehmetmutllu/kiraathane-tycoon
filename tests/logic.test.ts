@@ -399,7 +399,7 @@ describe('yeni-özellik bildirimi (D-019 §4)', () => {
     expect(useGame.getState().camFocus).not.toBeNull();
   });
 
-  it('turu-5 m.8: charStat spotlight\'ı beklerken reveal kamera panı BASTIRILIR (tek yönlendirme)', () => {
+  it('turu-6: charStat spotlight\'ı beklerken PAN\'lı reveal TAMAMEN ertelenir; panel açılınca toast+pan birlikte gelir', () => {
     useGame.getState().hardReset();
     expect(useGame.getState().charPanelSeen).toBe(false);
     // q_table2 görevindeyken pad'i bitir → görev q_charTray1'e (charStat) ilerler.
@@ -408,12 +408,17 @@ describe('yeni-özellik bildirimi (D-019 §4)', () => {
     expect(useGame.getState().quest?.id).toBe('q_charTray1');
     // Görev geçişi kamera odağı bırakmadı (charStat + spotlight bekliyor).
     expect(useGame.getState().camFocus).toBeNull();
-    // SONRAKİ tick: 'upgrade:0' reveal'ı belirir (toast var) ama kamera panı YOK — spotlight tek yönlendirme.
+    // SONRAKİ tick: spotlight beklerken 'upgrade:0' reveal'ı ERTELENİR — toast YOK, tüketim YOK, pan YOK
+    // (eski m.8 yakıyordu → kararma altında "yükseltebilirsin" yazısı pan'sız çıkıyordu; turu-6 bug fix).
     useGame.setState({ player: [0, 0.6, 2], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
     useGame.getState().tick(0.1);
-    expect(useGame.getState().revealSeen).toContain('upgrade:0');
+    expect(useGame.getState().revealSeen).not.toContain('upgrade:0');
     expect(useGame.getState().camFocus).toBeNull();
-    // Panel görüldükten sonra normal akış: sonraki reveal'lar pan'lı çalışır (üstteki test).
+    // Karakter paneli görülünce (kararma biter) reveal doğru anda çıkar: toast + pad'e kamera panı.
+    useGame.getState().markCharPanelSeen();
+    useGame.getState().tick(0.1);
+    expect(useGame.getState().revealSeen).toContain('upgrade:0');
+    expect(useGame.getState().camFocus).not.toBeNull();
   });
 
   it('yeniden yüklemede ZATEN açık özellikler tekrar bildirilmez (baseline; spam yok)', () => {
@@ -1531,7 +1536,7 @@ describe('Level/XP sistemi (v17, 2026-06-10) — eylem XP\'si, seviye eğrisi, m
       (2 + 1 + 2) * X.perUpgrade;
     expect(m.xp).toBe(expected);
     expect(levelProgress(m.xp).level).toBeGreaterThan(1);
-    expect(m.settings).toEqual({ sound: true, music: true, notifications: true });
+    expect(m.settings).toEqual({ sound: true, music: true, notifications: true, showFps: false });
   });
 
   it('ayarlar: setSetting persist eder; bozuk kayıt değeri default\'a normalize edilir', () => {
@@ -1541,7 +1546,7 @@ describe('Level/XP sistemi (v17, 2026-06-10) — eylem XP\'si, seviye eğrisi, m
     // (localStorage node ortamında yok — persist yolu smoke testinde doğrulanır.)
     // Bozuk settings alanı migrate'te default'lanır.
     const m = migrate({ saveVersion: 16, padsDone: [], settings: 'bozuk', lastSaved: Date.now() });
-    expect(m.settings).toEqual({ sound: true, music: true, notifications: true });
+    expect(m.settings).toEqual({ sound: true, music: true, notifications: true, showFps: false });
     // hardReset sıfırlar (yeni kayıt default ayarlarla).
     useGame.getState().hardReset();
     expect(useGame.getState().settings.sound).toBe(true);

@@ -627,6 +627,15 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   de); (5) coin oto-toplama 180sn + toplu toast 20sn (coin tavanı ~215 → m.13 FPS kalıcı çözüm);
   (6) tost bulaşıkçısı kirli TABAK görseli. vitest 183/183, build, smoke 26/26, canlı konsol 0;
   v28 kayıt canlıda v29'a migrate edildi. Telefon APK feedback'i bekleniyor.
+- 🔧 **FPS TIER 2 (instancing) — 2026-06-13, başladı:** ✅ FPS sayacı (perf.ts + PerfProbe + HUD
+  Ayarlar toggle + overlay + `__perf`; baz ~60fps/~88 draw-call/~5k tri); ✅ Coins instancing (tek
+  InstancedMesh, ~215→1); ✅ NPC gövdeleri (instancedColor + facing/bob matriste); ✅ Dishes (3 mesh:
+  bardak/tabak-disk/kırıntı). Dinamik büyüme kapatıldı. + BUG FIX: "Çay ocağını yükseltebilirsin"
+  reveal'ı spotlight kararması altında pan'sız çıkıp tükeniyordu → artık spotlight beklerken ertelenir
+  (toast+pan birlikte panel sonrası). vitest 183/183, build, canlı konsol 0. ⏳ KALAN Tier 2:
+  sandalye/tabure instancing (kazanç düşük), statik bina merge (Walls/Street/Decor — aynı-materyal
+  birleşir; ~88 sabit taban buradan). ⏳ Tier 1 (dpr/AA/gölge) + gölge bake → Faz 7. SONRAKİ: commit +
+  APK → telefonda gerçek FPS ölç → ölçüme göre statik merge gerekli mi karar.
 - 🔧 **SIRADA — TURU-5/6 kalanı:** masa rakamlarının kalan sorusu kapandı (turu-6 m.3); para
   sunumu ferahlama sonrası yeniden değerlendirilecek (mockup onayı şartı). ESKİ DENGE NOTU (uygulandı): 2) DENGE paketi — KULLANICI ŞARTI: "en ince detayına kadar hesapla":
   önce sayısal rapor (sim + amortisman/tempo + tost arz/talep), ONAY, sonra uygulama (ocak +1-2

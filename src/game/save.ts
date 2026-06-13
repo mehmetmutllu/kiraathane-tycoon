@@ -61,10 +61,12 @@ export interface SaveSettings {
   sound: boolean;
   music: boolean;
   notifications: boolean;
+  /** Dev/teşhis: ekran-üstü FPS + draw-call sayacı (default kapalı; additive — sürüm artmadı). */
+  showFps: boolean;
 }
 
 export function defaultSettings(): SaveSettings {
-  return { sound: true, music: true, notifications: true };
+  return { sound: true, music: true, notifications: true, showFps: false };
 }
 
 export interface SaveData {
@@ -681,6 +683,7 @@ export function migrate(raw: Record<string, unknown>): SaveData {
         sound: typeof raw.sound === 'boolean' ? raw.sound : def.sound,
         music: typeof raw.music === 'boolean' ? raw.music : def.music,
         notifications: typeof raw.notifications === 'boolean' ? raw.notifications : def.notifications,
+        showFps: typeof raw.showFps === 'boolean' ? raw.showFps : def.showFps,
       };
     })(),
     floorThemeByZone: Array.isArray(d.floorThemeByZone) ? (d.floorThemeByZone as string[]) : [],

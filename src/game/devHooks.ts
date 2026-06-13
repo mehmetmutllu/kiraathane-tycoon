@@ -2,6 +2,7 @@
 // window.__game  -> salt-okunur anlık görüntü
 // window.__advanceTime(sn) -> simülasyonu hızlı ileri sar
 import { useGame, visiblePads, questCounterValue, LAYOUT, trayCapacity, dirtyTables } from './store';
+import { perf, type PerfSnapshot } from './perf';
 import { economyConfig, levelProgress, charLevel, type CharStat } from '../config/economy.config';
 import type { SaveStats } from './save';
 import type { Vec3 } from './types';
@@ -22,6 +23,8 @@ declare global {
     __buyChar?: (stat: CharStat) => boolean;
     /** Masa seviyesini doğrudan ayarla (Y2 koltuk/grup testleri — koltuk = seviyeden türetilir). */
     __setTableLevel?: (tableIndex: number, level: number) => Record<string, unknown>;
+    /** Anlık render bütçesi (FPS Tier 2): { fps, calls, tris }. PerfProbe 0.5sn'de bir günceller. */
+    __perf?: () => PerfSnapshot;
   }
 }
 
@@ -174,6 +177,8 @@ export function installDevHooks(): void {
     useGame.setState({ tableLevels: levels });
     return window.__game!();
   };
+
+  window.__perf = () => ({ ...perf });
 
   window.__grantStat = (key: string, value: number) => {
     const s = useGame.getState();

@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useGame } from '../../game/store';
+import { perf } from '../../game/perf';
 import { fmt } from '../../game/decimal';
 import { levelProgress, economyConfig } from '../../config/economy.config';
 import { FLOOR_THEMES, WALL_THEMES } from '../../config/palette';
@@ -64,6 +65,8 @@ export function HUD() {
 
   return (
     <div className="hud" data-testid="hud">
+      {/* DEV/TEŞHİS: ekran-üstü FPS + draw-call sayacı (Ayarlar'dan açılır; FPS Tier 2 ölçümü) */}
+      {settings.showFps && <FpsOverlay />}
       {/* SOL-ÜST: seviye + XP barı; altında dişli + posta */}
       <div className="lvl-unit pill" data-testid="level">
         <div className="lvl-star">
@@ -156,6 +159,12 @@ export function HUD() {
               value={settings.notifications}
               onChange={(v) => setSetting('notifications', v)}
               testid="set-notifications"
+            />
+            <SettingRow
+              label="FPS Sayacı"
+              value={settings.showFps}
+              onChange={(v) => setSetting('showFps', v)}
+              testid="set-showfps"
             />
             <button className="danger-btn" data-testid="reset" onClick={onReset}>
               ↺ Oyunu Sıfırla
@@ -343,6 +352,47 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
           Tamam
         </button>
       </div>
+    </div>
+  );
+}
+
+/** FPS + draw-call + üçgen overlay'i. perf singleton'unu rAF ile ~4Hz okur (her kare setState YOK;
+ *  PerfProbe zaten 0.5sn'de bir yazar). Sol-üst altı, etkileşimsiz; renk FPS'e göre uyarır. */
+function FpsOverlay() {
+  const [snap, setSnap] = useState({ fps: 0, calls: 0, tris: 0 });
+  const raf = useRef(0);
+  useEffect(() => {
+    let last = 0;
+    const loop = (t: number) => {
+      if (t - last >= 250) {
+        last = t;
+        setSnap({ fps: perf.fps, calls: perf.calls, tris: perf.tris });
+      }
+      raf.current = requestAnimationFrame(loop);
+    };
+    raf.current = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf.current);
+  }, []);
+  const color = snap.fps >= 50 ? '#7CFC9A' : snap.fps >= 30 ? '#ffce54' : '#ff6b6b';
+  return (
+    <div
+      data-testid="fps-overlay"
+      style={{
+        position: 'absolute',
+        top: 96,
+        left: 12,
+        zIndex: 50,
+        padding: '4px 8px',
+        borderRadius: 8,
+        background: 'rgba(0,0,0,0.55)',
+        font: '700 12px/1.35 ui-monospace, Menlo, Consolas, monospace',
+        color: '#e6edf3',
+        pointerEvents: 'none',
+        whiteSpace: 'pre',
+      }}
+    >
+      <span style={{ color }}>{snap.fps} FPS</span>
+      {`\n${snap.calls} draw\n${(snap.tris / 1000).toFixed(1)}k tri`}
     </div>
   );
 }
