@@ -664,8 +664,26 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 - ⏳ RevenueCat IAP (reklam kaldır, elmas paketleri, başlangıç)
 - ⏳ Etik + çocuk-güvenli yapılandırma
 
-## Faz 6 — Sanat geçişi ⏳
-- ⏳ greybox → .glb seti, Mixamo animasyon, AI Türk objeleri
+## Faz 6 — Sanat geçişi 🔧
+- ✅ **6a — KayKit mobilya entegrasyonu (2026-06-14):** KayKit Furniture Bits (CC0) modüler
+  yapıya kondu (`public/assets/models/kaykit-furniture-bits/`; 53 gltf+bin+atlas; fbx/obj/unity/
+  lisans/ekstra png silindi, manifest güncel). `Model.tsx` scale/position/rotation desteği aldı
+  (yalnız yüklenen modele; greybox fallback dokunulmaz). `Tables.tsx` artık KayKit çiziyor:
+  - Çay masası: `table_small` (L0-2, ufak) → `table_medium` (L3+); tabure `chair_stool_wood`
+    (kahve, L0-1) → `chair_stool` (mavi minder, L2+); sayı seatsByLevel 1/2/2/4.
+  - Yemek: `table_medium_long` + `chair_A` (arkalık dışta, masaya bakar — yön düzeltildi).
+  - **TIER SİNYALİ:** tabla ÜSTÜNE örtü mesh'i (sadece üst, seviyeye göre renk: çıplak→yeşil→
+    bordo→lacivert→altın; PALETTE.tableclothByLevel). Kullanıcı şartı: "seviye atışı gözle belli
+    olmalı; tek sinyal (sandalye sayısı) yetmez" → örtü rengi + tabure tipi + sayı + L3'te masa büyür.
+  - Dev: `window.__setState(patch)` ham setState kancası (canlı görsel ayar; tables padsDone'dan
+    türediği için pad listesiyle tamamlanmış oyun zorlanır).
+  - Doğrulandı: vitest 183/183, tsc temiz, canlı MCP 390×844 konsol 0 hata. Screenshot'lar kökte
+    `kay-tiers-overview.jpeg`, `kay-food-tiers.jpeg`, `kay-t3-closeup.jpeg`.
+- ⏳ **6b SONRAKİ:** kullanıcı dev serverda (localhost) bakacak → beğenmezse eski greybox masaya
+  dönülecek (kullanıcı: "olmadı eski masa haline çevireceğiz güzel olmazsa"). Açık tweak'ler:
+  mavi minder rengini tint'leyip örtüyle uyumlu yapmak; örtü boyut/yükseklik ince ayar.
+- ⏳ KayKit dekor (cactus=bitki, pictureframe, lamp, rug); Türk objeleri (semaver, çay bardağı,
+  nargile) Meshy AI ile aynı tarzda; Mixamo/skinned karakter (KayKit Adventurers planı auto-memory).
 - ⏳ Işık / postprocessing / juice / ses
 
 ## Faz 7 — Mobil cila + performans ⏳

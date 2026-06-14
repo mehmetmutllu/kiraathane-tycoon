@@ -25,6 +25,8 @@ declare global {
     __setTableLevel?: (tableIndex: number, level: number) => Record<string, unknown>;
     /** Anlık render bütçesi (FPS Tier 2): { fps, calls, tris }. PerfProbe 0.5sn'de bir günceller. */
     __perf?: () => PerfSnapshot;
+    /** DEV-ONLY ham setState (canlı görsel ayar; masa/zone/seviye zorlama). Üretimde kullanılmaz. */
+    __setState?: (patch: Record<string, unknown>) => Record<string, unknown>;
   }
 }
 
@@ -179,6 +181,11 @@ export function installDevHooks(): void {
   };
 
   window.__perf = () => ({ ...perf });
+
+  window.__setState = (patch) => {
+    useGame.setState(patch as never);
+    return window.__game!();
+  };
 
   window.__grantStat = (key: string, value: number) => {
     const s = useGame.getState();

@@ -2,7 +2,38 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
-## ŞU AN (2026-06-14 — YENİDEN TASARIM GERİ ALINDI; ESKİ ZONE MODELİ DEVAM; SONRAKİ = ASSET)
+## ŞU AN (2026-06-14 — KAYKIT MOBİLYA ENTEGRE EDİLDİ; KULLANICI DEV-SERVER'DA BAKACAK)
+Bu oturum: KayKit Furniture Bits (CC0) asset entegrasyonu (Faz 6a). Kullanıcı paketi `public/models/`'e
+dağınık koymuştu → **modüler yapıya** taşındı: `public/assets/models/kaykit-furniture-bits/` (53 gltf+bin+
+tek atlas). fbx / fbx(unity) / obj+mtl / ekstra png / License.txt / .url SİLİNDİ (CC0 → künye manifestte).
+Manifest (`public/assets/README.md`) modüler tabloyla güncellendi.
+
+KOD:
+- `Model.tsx`: scale/position/rotation prop'ları (yalnız yüklenen modele uygulanır; greybox fallback
+  oyun-ölçeğinde kalır, dokunulmaz).
+- `Tables.tsx`: KayKit çiziyor (greybox fallback korunur, oynanış değişmedi):
+  - Çay: `table_small` (L0-2 ufak kıraathane masası) → `table_medium` (L3+). Tabure
+    `chair_stool_wood` (KAHVE, L0-1) → `chair_stool` (MAVİ minder, L2+); sayı 1/2/2/4.
+  - Yemek: `table_medium_long` + `chair_A` (arkalık dışta, masaya bakar; yön DÜZELTİLDİ).
+  - **TIER SİNYALİ (kullanıcı şartı):** tabla ÜSTÜNE ÖRTÜ mesh'i — sadece üst, seviyeye göre renk
+    (çıplak→yeşil→bordo→lacivert→altın). Kullanıcı: "seviye atışı gözle belli olmalı; sandalye
+    sayısını bilmeyen hepsini aynı sanmamalı" → çoklu sinyal (örtü+tabure tipi+sayı+L3 masa büyür).
+  - Ölçek sabitleri Tables.tsx başında (TEA_TABLE_S/M, STOOL_S, FOOD_*, *_CLOTH) — canlı ayarlandı.
+- `devHooks.ts`: `window.__setState(patch)` ham setState kancası eklendi (canlı görsel ayar; `tables`
+  padsDone'dan TÜRER → tam pad listesiyle tamamlanmış oyun zorlanır, tableLevels ile tier sergilenir).
+
+DOĞRULAMA: vitest 183/183, `tsc -b` temiz, canlı MCP 390×844 konsol 0 hata. Screenshot'lar kökte:
+`kay-tiers-overview.jpeg` (çay L0-L3 tier), `kay-food-tiers.jpeg` (yemek örtü+sandalye yön),
+`kay-t3-closeup.jpeg`, `kay-row-L0L1.jpeg`, `kay-food-v2.jpeg`.
+
+SIRADAKİ (kullanıcı sırası): **Kullanıcı dev server'da (localhost, `npm run dev`) bakacak. BEĞENMEZSE
+ESKİ GREYBOX MASAYA DÖNÜLECEK** (kullanıcı aynen: "olmadı eski masa haline çevireceğiz güzel olmazsa").
+Geri dönüş kolay: Tables.tsx Model `src`/örtü mesh'i kaldırılır, fallback greybox zaten yerinde; Model.tsx
+xform prop'ları + devHooks `__setState` kalabilir (zararsız). Beğenirse açık tweak'ler: mavi minderi
+tint'leyip örtüyle uyumlu üst renk; örtü boyut/yükseklik ince ayar; KayKit dekor (cactus/pictureframe/
+lamp/rug) ekleme; Türk objeleri (semaver/çay bardağı/nargile) Meshy AI.
+
+## ÖNCEKİ (2026-06-14 — YENİDEN TASARIM GERİ ALINDI; ESKİ ZONE MODELİ DEVAM; SONRAKİ = ASSET)
 Bu oturum: (1) FPS Tier 2 (coins/NPC/dishes instancing + FPS sayacı) + reveal bug fix bitti, commit'li
 (HEAD 8e69893), APK hazır (`android/app/build/outputs/apk/debug/app-debug.apk`). (2) Kıraathane
 "tek-mekân + alan çeşitliliği" yeniden tasarımı DENENDİ → kullanıcı REDDETTİ ("nefret ettim") → TÜM

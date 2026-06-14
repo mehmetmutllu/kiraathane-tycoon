@@ -2,6 +2,7 @@
 // Greybox aşamasında src verilmez → her zaman fallback. Faz 6'da src takılır, oynanış kodu değişmez.
 import { Suspense, Component, type ReactNode } from 'react';
 import { useGLTF } from '@react-three/drei';
+import type { Vec3 } from '../../game/types';
 
 class Boundary extends Component<{ fallback: ReactNode; children: ReactNode }, { err: boolean }> {
   state = { err: false };
@@ -13,17 +14,20 @@ class Boundary extends Component<{ fallback: ReactNode; children: ReactNode }, {
   }
 }
 
-function Glb({ src }: { src: string }) {
+// Dönüşüm yalnız YÜKLENEN modele uygulanır (fallback greybox kendi oyun-ölçeğindedir, dokunulmaz).
+type Xform = { scale?: number | Vec3; position?: Vec3; rotation?: Vec3 };
+
+function Glb({ src, scale, position, rotation }: { src: string } & Xform) {
   const { scene } = useGLTF(src);
-  return <primitive object={scene.clone()} />;
+  return <primitive object={scene.clone()} scale={scale} position={position} rotation={rotation} />;
 }
 
-export function Model({ src, fallback }: { src?: string; fallback: ReactNode }) {
+export function Model({ src, fallback, ...x }: { src?: string; fallback: ReactNode } & Xform) {
   if (!src) return <>{fallback}</>;
   return (
     <Boundary fallback={fallback}>
       <Suspense fallback={fallback}>
-        <Glb src={src} />
+        <Glb src={src} {...x} />
       </Suspense>
     </Boundary>
   );

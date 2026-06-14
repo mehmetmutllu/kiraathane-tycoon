@@ -3,6 +3,29 @@ import { LAYOUT } from '../../game/store';
 import { Model } from './Model';
 import { PALETTE } from '../../config/palette';
 import { tableSeats, zoneOfTable, zoneProduct } from '../../config/economy.config';
+import type { Vec3 } from '../../game/types';
+
+// KayKit Furniture Bits (CC0) — model yolu + canlı ayarlanan ölçekler.
+// Native boyutlar (origin tabanda, üst yüzey ~y=1.0): table_small 1×1×1, table_medium 2×1×2,
+// table_medium_long 3×1×2, chair_stool 0.75×0.5×0.75, chair_A 0.75×1.26×0.85.
+//
+// TIER GÖRSELİ (kullanıcı 2026-06-14): seviye atışı GÖZLE belli olmalı (sandalye sayısını bilmeyen
+// "hepsi aynı seviye" sanmamalı). Sinyaller: (1) tabla ÜSTÜNE örtü mesh'i — seviyeye göre renk
+// (masanın tamamı değil, sadece üst), (2) tabure TİPİ ilerler (ahşap→minderli) + sayısı, (3) L3'te
+// çay masası büyür. Çay masası UFAK (tabureyle orantılı kıraathane masası).
+const KAY = '/assets/models/kaykit-furniture-bits/';
+const TEA_TABLE_S: Vec3 = [0.66, 0.5, 0.66]; // table_small (L0-L2) — ufak kıraathane masası
+const TEA_TABLE_M: Vec3 = [0.45, 0.55, 0.45]; // table_medium (L3+, 4 tabure)
+const STOOL_S = 0.6; // chair_stool / chair_stool_wood
+const FOOD_TABLE_S: Vec3 = [0.5, 0.6, 0.46]; // table_medium_long
+const FOOD_CHAIR_S = 0.5; // chair_A
+// Örtü (tabla ÜSTÜ) yerleşimi: { y: üst yüzey, h: yarı-genişlik } — model üstüne oturur (canlı ayar).
+const TEA_CLOTH_S = { y: 0.5, h: 0.26 };
+const TEA_CLOTH_M = { y: 0.55, h: 0.4 };
+const FOOD_CLOTH = { y: 0.6, hx: 0.62, hz: 0.4 };
+// Tabure tipi: L0-L1 ahşap (kahve), L2+ minderli. (Sayı seatsByLevel'den: 1/2/2/4.)
+const teaStoolSrc = (level: number) =>
+  `${KAY}${level >= 2 ? 'chair_stool' : 'chair_stool_wood'}.gltf`;
 
 // Tabure (gerçek kıraathane formu): silindir gövde + kırmızı minder. Koltuk kutusu emekli.
 function Stool({ x, z }: { x: number; z: number }) {
@@ -82,9 +105,15 @@ function Table({ x, z, level, food = false }: { x: number; z: number; level: num
   const rect = food && tableSeats(level) > 2;
   const hw = rect ? 0.675 : 0.475;
   const hd = rect ? 0.425 : 0.475;
+  const tableSrc = food
+    ? `${KAY}table_medium_long.gltf`
+    : `${KAY}${level >= 3 ? 'table_medium' : 'table_small'}.gltf`;
+  const tableScale = food ? FOOD_TABLE_S : level >= 3 ? TEA_TABLE_M : TEA_TABLE_S;
   return (
     <group position={[x, 0, z]}>
       <Model
+        src={tableSrc}
+        scale={tableScale}
         fallback={
           <group>
             {/* tabla + 4 ince ayak (TÜM seviyelerde aynı iskelet) */}
@@ -169,10 +198,49 @@ function Table({ x, z, level, food = false }: { x: number; z: number; level: num
           </group>
         }
       />
+      {/* TIER SİNYALİ — tabla ÜSTÜ örtüsü (sadece üst, seviyeye göre renk; KayKit masasının üzerine).
+          L0 çıplak (cloth boş). Hafif taşar → "örtü" okunur. */}
+      {cloth ? (
+        food ? (
+          <mesh position={[0, FOOD_CLOTH.y, 0]} castShadow>
+            <boxGeometry args={[FOOD_CLOTH.hx * 2, 0.04, FOOD_CLOTH.hz * 2]} />
+            <meshStandardMaterial color={cloth} />
+          </mesh>
+        ) : (
+          <mesh position={[0, (level >= 3 ? TEA_CLOTH_M : TEA_CLOTH_S).y, 0]} castShadow>
+            <boxGeometry
+              args={[
+                (level >= 3 ? TEA_CLOTH_M : TEA_CLOTH_S).h * 2,
+                0.04,
+                (level >= 3 ? TEA_CLOTH_M : TEA_CLOTH_S).h * 2,
+              ]}
+            />
+            <meshStandardMaterial color={cloth} />
+          </mesh>
+        )
+      ) : null}
       {/* oturaklar (Y2): HER sandalye gerçek koltuk — grup üyeleri farklı koltuklara oturur.
-          Çay masası: tabure (4 yana). Yemek masası: arkalıklı sandalye (2'ye 2 karşılıklı). */}
+          Çay masası: KayKit tabure (L0-1 ahşap → L2+ minderli, tier sinyali). Yemek: chair_A (arkalık
+          dışa, oturan masaya bakar). Model yüklenmezse greybox Stool/Chair fallback'i. */}
       {spots.slice(0, chairs).map(([sx, sz], i) =>
-        food ? <Chair key={i} x={sx} z={sz} /> : <Stool key={i} x={sx} z={sz} />,
+        food ? (
+          <Model
+            key={i}
+            src={`${KAY}chair_A.gltf`}
+            scale={FOOD_CHAIR_S}
+            position={[sx, 0, sz]}
+            rotation={[0, sz > 0 ? Math.PI : 0, 0]}
+            fallback={<Chair x={sx} z={sz} />}
+          />
+        ) : (
+          <Model
+            key={i}
+            src={teaStoolSrc(level)}
+            scale={STOOL_S}
+            position={[sx, 0, sz]}
+            fallback={<Stool x={sx} z={sz} />}
+          />
+        ),
       )}
     </group>
   );
