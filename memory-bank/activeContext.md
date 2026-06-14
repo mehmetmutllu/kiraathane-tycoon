@@ -34,6 +34,22 @@ en yüksek dinamik sayımlardı, güvenli temiz kazanç.
 Beklemede (YAPILMADI): sandalye/tabure statik instancing (seviyeye göre değişken, kazanç düşük), statik
 bina merge (Walls/Street/DecorProps — farklı materyaller → sınırlı kazanç), StinkCloud (düşük sayı).
 
+## ASSET YÖN KARARI (2026-06-14 — karakter paketi seçimi, araştırma)
+Manifestteki "karakter paketi kullanıcıyla seçilecek" maddesi karara bağlandı:
+- **KayKit / Kay Lousberg SEÇİLDİ** (CC0, glTF native, stilce tutarlı). **Kenney REDDEDİLDİ** (kullanıcı:
+  "tam 3D hissettirmiyor, renkler/boyamalar zayıf"). Quaternius da daha önce reddedilmişti.
+- Karakter yaklaşımı (kullanıcı onaylı plan, HENÜZ UYGULANMADI): KayKit Adventurers'tan en sivil karakter
+  (Rogue kukuletasız / Ranger), fantezi ekipmanı söküp (modüler attachment), **eline tepsi/prop el-kemiği
+  slotuna takılır** (paketin doğal kullanımı). Müşteri çeşitliliği = gradient atlas renk varyasyonu.
+  Animasyon: KayKit Character Animations (150+ CC0, idle/walk/**sitting**/wave).
+- ⚠️ UYARI: KayKit karakterleri skinned/animasyonlu → coin/NPC'deki InstancedMesh ONLARA uygulanmaz;
+  mobil bütçe için ayrı optimizasyon gerekir. Bu Faz 6 işi (şu an Faz 3). Önce POC önerildi (tek karakter
+  + tepsi + FPS ölç). İndirme: itch oturum-korumalı → kullanıcı zip'i public/assets'e koyacak.
+- Furniture/Restaurant/City/Space/Forest Bits paketleri de "muazzam" bulundu → ileride prop kaynağı.
+- BÜYÜK RESİM (kullanıcı): tycoon motoru = re-skin'lenebilir; hedef çok oyun yayınlamak. Sıralama önerildi:
+  1) kıraathaneyi bitir+yayınla, 2) motoru re-skin (Ortaçağ Tavernası, Adventurers müşteri), 3) idle space
+  colony (Space+Resource+Forest; kullanıcının amiral gemi fikri). Detay auto-memory'de.
+
 ## ESKİ ŞU AN (2026-06-13 — TURU-6 PAKETİ ✅ UYGULANDI; SAVE v28→v29; COMMIT BEKLİYOR)
 Kullanıcının 2026-06-13 talimat paketi (6 madde) tek oturumda uygulandı; vitest **183/183**,
 build, smoke **26/26** (waiterUp adımı panele taşındı → 1 adım birleşti), Playwright canlı
