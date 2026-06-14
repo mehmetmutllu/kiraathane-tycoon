@@ -11,7 +11,10 @@ import '@fontsource/lilita-one/latin-400.css';
 import '@fontsource/lilita-one/latin-ext-400.css';
 import './index.css';
 import App from './App.tsx';
+import { LayoutPreview } from './preview/LayoutPreview.tsx';
 
 // StrictMode bilerek kapalı: çift mount, useFrame tick'ini ikiye katlayıp
 // simülasyonu hızlandırırdı (R3F oyunlarında yaygın tercih).
-createRoot(document.getElementById('root')!).render(<App />);
+// ?layout → gezilebilir yeniden-tasarım greybox preview'i (çalışan oyuna dokunmaz).
+const isLayoutPreview = new URLSearchParams(window.location.search).has('layout');
+createRoot(document.getElementById('root')!).render(isLayoutPreview ? <LayoutPreview /> : <App />);
