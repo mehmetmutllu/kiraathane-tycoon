@@ -2,7 +2,30 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
-## ŞU AN (2026-06-13 — FPS TIER 2 BAŞLADI: SAYAÇ + COINS/NPC INSTANCING + REVEAL BUG FIX; COMMIT BEKLİYOR)
+## ŞU AN (2026-06-14 — YENİDEN TASARIM GERİ ALINDI; ESKİ ZONE MODELİ DEVAM; SONRAKİ = ASSET)
+Bu oturum: (1) FPS Tier 2 (coins/NPC/dishes instancing + FPS sayacı) + reveal bug fix bitti, commit'li
+(HEAD 8e69893), APK hazır (`android/app/build/outputs/apk/debug/app-debug.apk`). (2) Kıraathane
+"tek-mekân + alan çeşitliliği" yeniden tasarımı DENENDİ → kullanıcı REDDETTİ ("nefret ettim") → TÜM
+artefaktlar silindi (preview, ?layout, plan doc, activeContext asset notu). **ESKİ ZONE-BAZLI MODEL
+aynen geçerli, oyun mantığı hiç değişmedi.** Çalışan oyun yedeği: git tag `checkpoint-2026-06-14-calisan-oyun`.
+
+SONRAKİ OTURUM (kullanıcı sırası): **1) ASSET entegrasyonu → 2) telefon testi.**
+- **ASSET PLANI (KayKit, kullanıcı onaylı yön):** **KayKit Furniture Bits Bundle 1** (glTF, CC0,
+  statik=ucuz, hatta instance edilebilir). ÇAY masası seviye-bazlı OTURAK: küçük masa+1 tabure → 2 → 4;
+  tier'lar = model değişimi + RENK recolor (atlas-swap: kahve→mavi-üst→altın). Masa sabit (yalnız üst
+  rengi değişebilir). YEMEK alanı: geniş masa + sandalye (çaydan SONRA). DEKOR: saksı bitki/çerçeve
+  (duvar tablosu)/lamba/halı paketten (büyük AĞAÇ YOK → Forest Nature paketinde). Mevcut
+  seatsByLevel/tableLevels/tableclothByLevel kancasına eldiven gibi oturur; glb fallback loader'a
+  (Model.tsx) kod değişmeden takılır. Recolor yolu = atlas-swap/tint (önceki konuşma). İŞ: koltuk
+  pozisyonlarına ölçek/hizalama + tier recolor varyantları. Faz 6 işi ama düşük risk.
+  KULLANICI ADIMI: paketi `public/assets/`'e koyacak → sonra model adları+atlas incelenip tier
+  eşlemesi netleşir. (Karakter paketi planı da auto-memory'de: KayKit Adventurers sivil + ele tepsi.)
+- **TELEFON TESTİ (bekliyor):** FPS sayacı+instancing (yer parayla/salon insanla dolunca FPS sabit mi?),
+  reveal fix, turu-6 tost bulaşıkçısı kirli TABAK görseli. Sonuca göre statik bina merge gerekli mi karar.
+- **4. alan = "maç salonu"** (ESKİ model içinde, ileride; tost alanı belki bahçe — kullanıcı sonra netleştirir).
+NOT: auto-memory'de asset zevki (KayKit evet/Kenney hayır) + sonraki oyun fikirleri (ortaçağ/uzay) duruyor.
+
+## ÖNCEKİ (2026-06-13 — FPS TIER 2 BAŞLADI: SAYAÇ + COINS/NPC INSTANCING + REVEAL BUG FIX; commit'li)
 Turu-6 zaten commit'liydi (f07f4a6); bu oturum FPS Tier 2'ye girdi. Yapılanlar (hepsi vitest 183/183,
 build, canlı MCP 390×844 konsol 0 hata):
 1. **FPS SAYACI (dev/teşhis):** `src/game/perf.ts` singleton {fps,calls,tris}; Scene.tsx `PerfProbe`

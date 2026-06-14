@@ -636,6 +636,10 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   sandalye/tabure instancing (kazanç düşük), statik bina merge (Walls/Street/Decor — aynı-materyal
   birleşir; ~88 sabit taban buradan). ⏳ Tier 1 (dpr/AA/gölge) + gölge bake → Faz 7. SONRAKİ: commit +
   APK → telefonda gerçek FPS ölç → ölçüme göre statik merge gerekli mi karar.
+- 🔧 **2026-06-14:** "tek-mekân" yeniden tasarımı DENENDİ + kullanıcı REDDETTİ → geri alındı (eski
+  zone modeli aynen). SONRAKİ = **KayKit Furniture Bits asset entegrasyonu** (seviye-bazlı oturak
+  tabure 1→2→4 + model/renk tier + dekor: bitki/çerçeve/lamba/halı) → SONRA telefon testi. Detay
+  activeContext. 4. alan = "maç salonu" (ileride, eski model).
 - 🔧 **SIRADA — TURU-5/6 kalanı:** masa rakamlarının kalan sorusu kapandı (turu-6 m.3); para
   sunumu ferahlama sonrası yeniden değerlendirilecek (mockup onayı şartı). ESKİ DENGE NOTU (uygulandı): 2) DENGE paketi — KULLANICI ŞARTI: "en ince detayına kadar hesapla":
   önce sayısal rapor (sim + amortisman/tempo + tost arz/talep), ONAY, sonra uygulama (ocak +1-2
