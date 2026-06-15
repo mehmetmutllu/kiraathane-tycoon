@@ -1031,35 +1031,23 @@ body,
   font-size: 11px;
   color: #7a5230;
 }
-.preview-backdrop {
-  z-index: 60;
-}
-.preview-card {
-  width: min(86vw, 340px);
+/* Sayfa-içi önizleme (modal yok): kompakt oyun-anı SS hissi, kartların üstünde */
+.shop-preview {
+  margin: 2px 0 10px;
   text-align: center;
 }
 .preview-canvas {
   position: relative;
   width: 100%;
-  height: 240px;
-  margin: 8px 0 14px;
-  border-radius: 16px;
+  height: 150px;
+  margin: 0 0 8px;
+  border-radius: 14px;
   overflow: hidden;
   background: radial-gradient(120% 100% at 50% 25%, #6b4a2c 0%, #4a2c12 70%, #341d0c 100%);
-  touch-action: none;
-}
-.preview-hint {
-  position: absolute;
-  bottom: 8px;
-  left: 0;
-  right: 0;
-  font-size: 11px;
-  color: rgba(253, 243, 227, 0.6);
-  pointer-events: none;
 }
 .preview-buy {
   width: 100%;
-  padding: 13px;
+  padding: 11px;
   border: 2px solid rgba(255, 255, 255, 0.9);
   border-radius: 14px;
   background: linear-gradient(180deg, var(--green-1, #66bb6a), var(--green-2, #388e3c));

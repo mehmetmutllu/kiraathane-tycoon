@@ -1,9 +1,9 @@
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
 import { useGame } from '../../game/store';
 import { economyConfig } from '../../config/economy.config';
 import { Model } from '../three/Model';
 import { CoinIcon } from './icons';
+import { FixedCam, SalonLights, FloorPatch, WallCornerL } from './SalonSlice';
 
 const KAY = '/assets/models/kaykit-furniture-bits/';
 // In-game çay masası ölçekleri (Tables.tsx ile aynı dil): table_medium + 4 tabure + örtü.
@@ -16,13 +16,13 @@ const SPOTS: [number, number][] = [
   [-0.78, 0],
 ];
 
-// Temalı masa sahnesi: minder + örtü `color`'a boyalı (recolor atlas). "Oyunda nasıl duracaksa öyle".
-function PreviewScene({ color }: { color: string }) {
+// Temalı masa (Sv5: örtü + minder temaya boyalı), zeminin üstünde — Tables.tsx ile aynı dil.
+function ThemedTable({ color }: { color: string }) {
   return (
-    <group position={[0, -0.4, 0]}>
+    <group position={[0, 0, 0]}>
       <Model src={`${KAY}table_medium.gltf`} scale={TABLE_SCALE} fallback={null} />
       {/* örtü plakası (tabla üstü) */}
-      <mesh position={[0, 0.55, 0]}>
+      <mesh position={[0, 0.55, 0]} castShadow>
         <boxGeometry args={[0.8, 0.04, 0.8]} />
         <meshStandardMaterial color={color} />
       </mesh>
@@ -33,8 +33,8 @@ function PreviewScene({ color }: { color: string }) {
   );
 }
 
-/** Masa teması ÖNİZLEME modalı: ortada parmakla DÖNDÜRÜLEBİLİR 3D masa + altında satın al/ücret. */
-export function TableThemePreview({ id, onClose }: { id: string; onClose: () => void }) {
+/** Masa teması SAYFA-İÇİ önizleme: oyunun kamera açısı/duruşu/uzaklığıyla salondan bir kesit + satın al. */
+export function TableThemePreview({ id }: { id: string }) {
   const tableTheme = useGame((s) => s.tableTheme);
   const ownedCosmetics = useGame((s) => s.ownedCosmetics);
   const wallet = useGame((s) => s.wallet);
@@ -46,44 +46,32 @@ export function TableThemePreview({ id, onClose }: { id: string; onClose: () => 
   const afford = owned || wallet.toNumber() >= theme.cost;
 
   return (
-    <div className="modal-backdrop preview-backdrop" onClick={onClose}>
-      <div className="modal-card preview-card" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-title">{theme.label}</div>
-        <div className="preview-canvas">
-          <Canvas camera={{ position: [1.7, 1.4, 1.9], fov: 38 }} dpr={[1, 2]}>
-            <ambientLight intensity={0.85} />
-            <directionalLight position={[3, 5, 2]} intensity={1.1} />
-            <PreviewScene color={theme.color} />
-            <OrbitControls
-              enablePan={false}
-              enableZoom={false}
-              target={[0, 0.15, 0]}
-              minPolarAngle={0.35}
-              maxPolarAngle={Math.PI / 2.15}
-            />
-          </Canvas>
-          <span className="preview-hint">Döndürmek için sürükle</span>
-        </div>
-        <button
-          className={`preview-buy${isSel ? ' sel' : ''}`}
-          data-testid={`preview-buy-${id}`}
-          disabled={isSel || !afford}
-          onClick={() => {
-            buyCosmetic('table', id, 0);
-            onClose();
-          }}
-        >
-          {isSel ? (
-            '✓ Seçili'
-          ) : owned ? (
-            'Uygula'
-          ) : (
-            <>
-              Satın Al · {theme.cost.toLocaleString('tr-TR')} <CoinIcon size={16} />
-            </>
-          )}
-        </button>
+    <div className="shop-preview" data-testid="shop-preview">
+      <div className="preview-canvas">
+        <Canvas dpr={[1, 2]}>
+          <FixedCam d={2.9} ty={0.5} />
+          <SalonLights />
+          <FloorPatch floorId="parke" half={1.8} />
+          <WallCornerL wallId="krem" half={1.8} />
+          <ThemedTable color={theme.color} />
+        </Canvas>
       </div>
+      <button
+        className={`preview-buy${isSel ? ' sel' : ''}`}
+        data-testid={`preview-buy-${id}`}
+        disabled={isSel || !afford}
+        onClick={() => buyCosmetic('table', id, 0)}
+      >
+        {isSel ? (
+          '✓ Seçili'
+        ) : owned ? (
+          'Uygula'
+        ) : (
+          <>
+            Satın Al · {theme.cost.toLocaleString('tr-TR')} <CoinIcon size={16} />
+          </>
+        )}
+      </button>
     </div>
   );
 }

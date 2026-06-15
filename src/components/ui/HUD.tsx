@@ -295,22 +295,28 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
   const tableTheme = useGame((s) => s.tableTheme);
   const ownedCosmetics = useGame((s) => s.ownedCosmetics);
   const [tab, setTab] = useState<'table' | 'floor' | 'wall'>('table');
-  const [preview, setPreview] = useState<{ kind: 'table' | 'floor' | 'wall'; id: string } | null>(null);
+  // Sekme başına ÖNİZLENEN çeşit (sayfa-içi önizleme bunu gösterir). Varsayılan = o an uygulanmış tema.
+  const [sel, setSel] = useState<{ table: string; floor: string; wall: string }>(() => ({
+    table: tableTheme,
+    floor: floorThemeByZone[0] ?? economyConfig.cosmetics.floorThemes[0].id,
+    wall: wallThemeByZone[0] ?? economyConfig.cosmetics.wallThemes[0].id,
+  }));
 
-  // MASA çeşitleri kaydırılabilir KART şeridi; karta tıkla → döndürülebilir 3D önizleme modalı (satın al orada).
+  // MASA çeşitleri kaydırılabilir KART şeridi; karta tıkla → üstteki sayfa-içi önizlemeyi günceller.
   const renderTableCards = () =>
     economyConfig.cosmetics.tableThemes.map((t) => {
-      const isSel = tableTheme === t.id;
+      const applied = tableTheme === t.id;
+      const previewing = sel.table === t.id;
       const owned = t.cost === 0 || ownedCosmetics.includes(`table:${t.id}`);
       return (
         <button
-          className={`shop-vcard${isSel ? ' sel' : ''}`}
+          className={`shop-vcard${previewing ? ' sel' : ''}`}
           key={t.id}
           data-testid={`shop-card-table-${t.id}`}
-          onClick={() => setPreview({ kind: 'table', id: t.id })}
+          onClick={() => setSel((p) => ({ ...p, table: t.id }))}
         >
           <span className="shop-vcard-swatch" style={{ background: t.color }}>
-            {isSel ? <span className="shop-vcard-badge">✓</span> : owned ? <span className="shop-vcard-badge owned" /> : null}
+            {applied ? <span className="shop-vcard-badge">✓</span> : owned ? <span className="shop-vcard-badge owned" /> : null}
           </span>
           <span className="shop-vcard-name">{t.label}</span>
           <span className="shop-vcard-cost">
@@ -326,7 +332,7 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
       );
     });
 
-  // ZEMİN/DUVAR çeşitleri: çift-renk swatch'lı kartlar; karta tıkla → diorama önizleme (per-salon satın al orada).
+  // ZEMİN/DUVAR çeşitleri: çift-renk swatch'lı kartlar; karta tıkla → üstteki diorama önizlemeyi günceller.
   const renderThemeCards = (kind: 'floor' | 'wall') => {
     const themes = kind === 'floor' ? economyConfig.cosmetics.floorThemes : economyConfig.cosmetics.wallThemes;
     const selected = kind === 'floor' ? floorThemeByZone : wallThemeByZone;
@@ -335,19 +341,20 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
         kind === 'floor'
           ? [FLOOR_THEMES[t.id]?.base ?? '#999', FLOOR_THEMES[t.id]?.alt ?? '#777']
           : [WALL_THEMES[t.id]?.cream ?? '#999', WALL_THEMES[t.id]?.wainscot ?? '#777'];
-      const anySel = selected.slice(0, zonesOpen).includes(t.id);
+      const applied = selected.slice(0, zonesOpen).includes(t.id);
+      const previewing = sel[kind] === t.id;
       return (
         <button
-          className={`shop-vcard${anySel ? ' sel' : ''}`}
+          className={`shop-vcard${previewing ? ' sel' : ''}`}
           key={t.id}
           data-testid={`shop-card-${kind}-${t.id}`}
-          onClick={() => setPreview({ kind, id: t.id })}
+          onClick={() => setSel((p) => ({ ...p, [kind]: t.id }))}
         >
           <span
             className="shop-vcard-swatch"
             style={{ background: `linear-gradient(135deg, ${cols[0]} 0 50%, ${cols[1]} 50% 100%)` }}
           >
-            {anySel ? <span className="shop-vcard-badge">✓</span> : null}
+            {applied ? <span className="shop-vcard-badge">✓</span> : null}
           </span>
           <span className="shop-vcard-name">{t.label}</span>
           <span className="shop-vcard-cost">
@@ -371,35 +378,32 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
   ];
 
   return (
-    <>
-      <div className="modal-backdrop" data-testid="shop-panel" onClick={onClose}>
-        <div className="modal-card shop-card" onClick={(e) => e.stopPropagation()}>
-          <div className="modal-title">Dekor Mağazası</div>
-          <div className="shop-tabs">
-            {TABS.map(({ k, label }) => (
-              <button
-                key={k}
-                className={`shop-tab${tab === k ? ' active' : ''}`}
-                data-testid={`shop-tab-${k}`}
-                onClick={() => setTab(k)}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-          <div className="shop-cards">{tab === 'table' ? renderTableCards() : renderThemeCards(tab)}</div>
-          <button className="modal-btn" data-testid="shop-ok" onClick={onClose}>
-            Tamam
-          </button>
+    <div className="modal-backdrop" data-testid="shop-panel" onClick={onClose}>
+      <div className="modal-card shop-card" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-title">Dekor Mağazası</div>
+        <div className="shop-tabs">
+          {TABS.map(({ k, label }) => (
+            <button
+              key={k}
+              className={`shop-tab${tab === k ? ' active' : ''}`}
+              data-testid={`shop-tab-${k}`}
+              onClick={() => setTab(k)}
+            >
+              {label}
+            </button>
+          ))}
         </div>
-      </div>
-      {preview &&
-        (preview.kind === 'table' ? (
-          <TableThemePreview id={preview.id} onClose={() => setPreview(null)} />
+        {tab === 'table' ? (
+          <TableThemePreview id={sel.table} />
         ) : (
-          <DioramaPreview kind={preview.kind} id={preview.id} onClose={() => setPreview(null)} />
-        ))}
-    </>
+          <DioramaPreview kind={tab} id={sel[tab]} />
+        )}
+        <div className="shop-cards">{tab === 'table' ? renderTableCards() : renderThemeCards(tab)}</div>
+        <button className="modal-btn" data-testid="shop-ok" onClick={onClose}>
+          Tamam
+        </button>
+      </div>
+    </div>
   );
 }
 

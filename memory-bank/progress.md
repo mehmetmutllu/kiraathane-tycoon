@@ -701,6 +701,20 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   - **FPS (talimat #5 + "sürekli perf"):** mobilya instancing (drei `Merged`, 6e241a9; ~37→8) + dama zemini
     instancing (9af6506; ~40→1). Taze oyun ölçümü: eski ~88 call/~5k tris → **56 call / 3.2k tris**. PerfProbe'a
     DEV `window.__three` teşhis kancası. Kalan perf (pad işaretçi/dekor/dpr) düşük ROI veya kalite-ödünü → onay ister.
+- ✅ **6d — Tema mağazası önizleme: SAYFA-İÇİ + "salondan kesit" + frustum-culling BUG FIX (2026-06-15):**
+  - **Modal kaldırıldı:** `TableThemePreview`/`DioramaPreview` modal sarmalayıcıdan `.shop-preview` sayfa-içi bloğa;
+    `ShopPanel` sekme başına `sel` (önizlenen çeşit). Karta tıkla → üstteki önizleme güncellenir (modal yok).
+  - **"Salondan kesit":** yeni `SalonSlice.tsx` (FixedCam = oyun izometrik açısı/fov 50, SalonLights, FloorPatch =
+    Ground ile birebir, WallCornerL = WallPiece ile birebir). Masa önizleme = temalı masa; zemin/duvar = seçili
+    zemin+duvar köşesinde gerçek `Table`. OrbitControls/soyut diorama silindi.
+  - **🐞 BUG FIX (kullanıcı bildirdi):** uzak salona (2/3) yaklaşınca masa modelleri kaybolup örtü plakaları
+    kalıyordu → instanced batch sınır küresi origin'de, kamera odağı uzaklaşınca FRUSTUM CULLED. ÇÖZÜM:
+    `frustumCulled={false}` (Tables.tsx `<Merged>` + Scene.tsx CheckerTiles `<Instances>`). MCP ile salon 2/3
+    teleport doğrulandı (önce boş → sonra dolu). vitest 183/183, tsc temiz, 0 hata.
+- 🔧 **6e (SONRAKİ OTURUM):** (1) önizleme doğallaştırma **SEÇENEK A onaylı** — kapalı L köşe "inşaat gibi";
+  ferah çerçeve (zemin canvas'ı doldursun, tek arka duvar, kamera uzak) yap. (2) **Tema mağazası gating** —
+  kullanıcı "seviyeler bitince açılsın" dedi ama koşul (a 3 salon / b masalar max / c oyuncu seviyesi / d)
+  SEÇİLMEDİ → önce SOR sonra uygula (progression gate, onaysız değişme).
 - ⏳ KayKit dekor (cactus/pictureframe/lamp/rug); Türk objeleri (semaver, çay bardağı, nargile) Meshy AI;
   Mixamo/skinned karakter. Okey/tavla masası ÜST KATTA (kullanıcı) — ileride.
 - ⏳ Işık / postprocessing / juice / ses

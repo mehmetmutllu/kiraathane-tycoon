@@ -2,7 +2,55 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
-## ŞU AN (2026-06-15 GECE — PERF + SPLASH + TEMA MAĞAZASI TAM BİTTİ; 8 commit)
+## ŞU AN (2026-06-15 — BUG FIX: uzak salonda mobilya kayboluyordu + 2 açık tasarım sorusu)
+**BUG (kullanıcı bildirdi, çözüldü):** Salon 2/3'e yaklaşınca masaların KayKit modelleri kaybolup sadece
+örtü plakaları kalıyordu. KÖK NEDEN: instanced mobilya (`<Merged>` InstancedMesh) ve dama zemini (`<Instances>`)
+sınır küresi LOCAL origin'de → kamera uzak salona odaklanınca tüm batch FRUSTUM CULLED. Örtüler ayrı mesh
+olduğundan kalıyordu. ÇÖZÜM: `frustumCulled={false}` (Tables.tsx `<Merged>` + Scene.tsx CheckerTiles `<Instances>`).
+DOĞRULANDI (MCP 390×844, padsDone tam + tableLevels=4, salon 2 ve 3'e teleport): mobilya+dama her salonda
+render. tsc temiz, vitest 183/183, 0 hata. Screenshot: `bug-salon2-now.jpeg` (önce), `fix-salon2.jpeg`/`fix-salon3.jpeg` (sonra).
+NOT: dev save `__setState` ile tam-kurulu hale geldi (kullanıcının önceki ilerlemesi üzerine yazılmış olabilir).
+
+**>>> SONRAKİ OTURUM İŞLERİ (kullanıcı 2026-06-15 erteledi) <<<**
+1. **Önizleme doğallığı — SEÇENEK A ONAYLANDI, sonraki oturumda yapılacak:** Canlı 3B kesiti daha dolu/doğal
+   yap (tema ile anında güncellenir). Şu an sorun: SalonSlice L köşe (sol+arka duvar, sağ açık) "inşaat gibi"
+   duruyor (kullanıcı). HEDEF (A): kapalı köşe kutu hissini bırak → oyundaki gibi FERAH çerçeve — zemin tüm
+   canvas'ı doldursun (kenar boşluğu/void görünmesin), tek arka duvar (veya yumuşak köşe), kamera biraz daha
+   uzak; "salondan kes-yapıştır" doğal dursun. (B reddedildi: statik SS tema-başı recolor edilemez.)
+   Dosyalar: `src/components/ui/SalonSlice.tsx` (FloorPatch/WallCornerL/FixedCam), `TableThemePreview.tsx`,
+   `DioramaPreview.tsx`.
+2. **Tema mağazası gating — HÂLÂ AÇIK SORU (kullanıcı a/b/c/d seçmedi):** "Seviyeler tamamlandıktan sonra
+   açılsın" (başta masalar renksiz). Koşul: (a) 3 salon açık · (b) tüm masalar max · (c) oyuncu seviyesi · (d) başka.
+   → Ekonomi/progression gate; ONAYSIZ uygulanmaz. Sonraki oturumda önce bunu SOR, sonra uygula.
+
+Sıralama: ÖNCE iş #1 (önizleme A), gating (#2) kullanıcı koşulu seçince.
+
+## ÖNCEKİ (2026-06-15 — TEMA MAĞAZASI ÖNİZLEME: SAYFA-İÇİ + "SALONDAN KESİT")
+Kullanıcı iki aşamada istedi: (1) "karta tıklayınca MODAL açılmasın, önizleme aynı sayfada zaten dursun,
+kompakt"; (2) "önizleme oyun-anı gibi olsun — AÇI/DURUŞ/UZAKLIK direk salonun bir parçasını kes-yapıştır gibi;
+masa/zemin/duvar HEPSİ için." Her ikisi de uygulandı.
+
+**Sayfa-içi (modal kaldırıldı):**
+- `TableThemePreview` + `DioramaPreview`: modal sarmalayıcı (modal-backdrop/preview-card + onClose) → `.shop-preview`
+  bloğu; satın al/uygula + per-salon butonları yerinde. `ShopPanel` (HUD.tsx): `preview` modal state → sekme başına
+  `sel:{table,floor,wall}` (önizlenen çeşit; varsayılan = uygulanmış tema). Önizleme sekmenin ALTINDA, kartların ÜSTÜNDE.
+  Karta tıkla → `setSel` ile üstteki önizleme güncellenir. Kart `.sel` = önizlenen; swatch ✓ = uygulanmış.
+
+**"Salondan kesit" (oyun kamerası birebir):**
+- YENİ `src/components/ui/SalonSlice.tsx`: `FixedCam` (oyun açısı = izometrik offset (0,d,+d), bakış (0,ty,0),
+  fov 50 — Scene.tsx CameraRig dili; OrbitControls KALDIRILDI, sabit duruş), `SalonLights` (ambient 0.6 + dirLight
+  [6,12,6]), `FloorPatch` (dış ahşap taban + tema base overlay + checker quad — Ground ile birebir), `WallCornerL`
+  (L köşe; WallPiece ile birebir: krem üst h-wh + lambri wh=0.5, h=1.2).
+- `TableThemePreview`: FloorPatch(parke) + WallCornerL(krem) + temalı masa (table_medium + 4 recolor tabure + örtü
+  plakası); d=2.9. `DioramaPreview`: FloorPatch(seçili zemin) + WallCornerL(seçili duvar) + **gerçek `Table`** (Tables.tsx
+  export, level 1) referans; d=4.0. Soyut diorama (DioramaScene) ve OrbitControls SİLİNDİ.
+- CSS: `.preview-backdrop`/`.preview-card`/`.preview-hint` kaldırıldı; `.shop-preview` eklendi; `.preview-canvas` 150px.
+- DOĞRULANDI (MCP 390×844): üç sekme de salon köşesi kesiti gibi render (masa→mavi temalı masa+köşe duvar;
+  zemin→dama checker+masa; duvar→yeşil tema duvar+masa), kart seçimi önizlemeyi günceller, **0 konsol hatası**.
+  tsc temiz, vitest **183/183**. Screenshot: `shop-slice-table.jpeg`, `shop-slice-floor.jpeg`, `shop-slice-wall.jpeg`.
+- NOT: testid'ler korundu (`shop-card-*`, `preview-buy-*`, `preview-<kind>-<id>-z<z>`); henüz commit YOK.
+
+## ÖNCEKİ (2026-06-15 GECE — PERF + SPLASH + TEMA MAĞAZASI TAM BİTTİ; 8 commit)
 Kullanıcı bu oturumda: "#1 doğrula → sonra FPS optimizasyonu YAPABİLDİĞİN KADAR + tema mağazası, HİÇ DURMA".
 Tamamlanan milestone'lar (hepsi test+commit+push'lu, vitest 183/183, tsc temiz, MCP 0 hata):
 1. **Mobilya instancing** (commit 6e241a9): KayKit mobilya (tek mesh+ortak atlas) `drei <Merged>` ile model

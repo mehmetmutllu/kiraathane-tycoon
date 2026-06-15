@@ -414,7 +414,11 @@ function InstancedTables({ tables, tableLevels }: { tables: number; tableLevels:
   );
   return (
     <>
-      <Merged meshes={meshes}>
+      {/* frustumCulled=false: InstancedMesh'in sınır küresi origin'de (local geometri) kaldığından kamera
+          uzak salona (örn. salon 2/3) odaklanınca TÜM batch yanlışlıkla kırpılıyordu → masalar kaybolup
+          sadece ayrı-mesh örtü plakaları kalıyordu. Per-instance dünya konumları küreye yansımıyor; kırpmayı
+          kapatmak doğru çözüm (mobilya zaten ekranda, az sayıda batch). */}
+      <Merged meshes={meshes} frustumCulled={false}>
         {(comps) => (
           <>
             {FURNITURE.map((k) => {

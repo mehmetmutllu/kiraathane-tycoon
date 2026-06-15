@@ -381,7 +381,9 @@ function CheckerTiles({ x0, x1, z0, z1, color }: { x0: number; x1: number; z0: n
   // Birim plane + per-instance scale [w,d] → kenar kırpması korunur; görsel birebir.
   if (tiles.length === 0) return null;
   return (
-    <Instances limit={tiles.length} receiveShadow>
+    // frustumCulled=false: instance batch'inin sınır küresi origin'de → uzak salona odaklanınca dama deseni
+    // toptan kırpılmasın (mobilya ile aynı sınıf bug; bkz. Tables.tsx Merged).
+    <Instances limit={tiles.length} receiveShadow frustumCulled={false}>
       <planeGeometry args={[1, 1]} />
       <meshStandardMaterial color={color} />
       {tiles.map(([cx, cz, w, d], i) => (
