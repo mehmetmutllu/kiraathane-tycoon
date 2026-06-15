@@ -688,19 +688,24 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
   - **RENK hep MAVİ** (native `#5a93cf`); renk TIER DEĞİL → ALTIN/teal **tema mağazasında** satılacak.
   - **recolor.ts + Model.recolor:** asset mavi mindeRini düz renge boyar (tema mağazası için hazır; şu an pasif).
   - Doğrulandı: vitest 183/183, tsc temiz, MCP 0 hata. Screenshot: `proto-rev10*.jpeg`.
-- 🔧 **6c SONRAKİ OTURUM (kullanıcı talimat paketi, uyumadan sıraladı):**
-  1. Mobilya tier'ını gerçek oyuna tam entegre + oyunda doğrula (Tables.tsx ortak; ileride tabure sayısı
-     oynanırsa garson/bulaşıkçı mantığı da düzenlenmeli — şimdilik gerek yok).
-  2. **ASSET YÜKLEME FIX:** açılışta greybox-flash → preload (useGLTF.preload + atlas), pop olmasın.
-  3. **SPLASH/loading ekranı:** açılışta yükleniyor ekranı + FPS sıçraması olmasın.
-  4. **TEMA MAĞAZASI** (tasarla+kur): üstte sekme (masa/duvar/zemin), altta sağa-sola kaydırılır çeşitler,
-     tıkla→modal: ortada DÖNDÜRÜLEBİLİR 3D önizleme + altta SATIN AL+ücret; duvar/zemin için mini diorama
-     (seçilen duvar/zemin önünde önizleme); çay masasına farklı önizleme yaklaşımı; ücretleri Claude belirler;
-     ALTIN burada pahalı tema. Detay: activeContext SONRAKİ OTURUM bölümü.
-  5. FPS: preload/splash ile açılış sorunsuz.
+- ✅ **6c — TALİMAT PAKETİ TAM BİTTİ (2026-06-15 gece, 8 commit, hepsi test+push'lu):**
+  1. ✅ **Mobilya tier gerçek oyunda doğrulandı** (MCP, 12 masa/3 zone zorlanarak gez): KayKit yükleniyor,
+     greybox yok, çay/yemek tier görünür, ölçek/konum doğru.
+  2. ✅ **Asset preload + 3. SPLASH ekranı** (`SplashScreen.tsx` + drei `useProgress`, commit 3e51054): asset
+     hazır olana kadar sıcak ekran sahneyi örter → greybox→model "pop"u + ilk-kare FPS sıçraması görünmez.
+  4. ✅ **TEMA MAĞAZASI TAM** (commit'ler a183c8d/5345c7c/96abcc3): `ShopPanel` sekme (Masa/Zemin/Duvar) +
+     kaydırılabilir çeşit kartları + karta tıkla → **döndürülebilir 3D önizleme modalı** (`TableThemePreview` =
+     temalı masa; `DioramaPreview` = zemin/duvar bağlamlı köşe + referans masa) + satın al/ücret. **Masa teması**
+     `tableThemes` (mavi/bordo/zümrüt/**altın 30k**); recolor ortak-atlas swap → tüm mobilya tek çağrıda boyanır
+     (instancing korunur). Masa GLOBAL, zemin/duvar PER-SALON. **saveVersion 29→30** (`tableTheme`, default mavi).
+  - **FPS (talimat #5 + "sürekli perf"):** mobilya instancing (drei `Merged`, 6e241a9; ~37→8) + dama zemini
+    instancing (9af6506; ~40→1). Taze oyun ölçümü: eski ~88 call/~5k tris → **56 call / 3.2k tris**. PerfProbe'a
+    DEV `window.__three` teşhis kancası. Kalan perf (pad işaretçi/dekor/dpr) düşük ROI veya kalite-ödünü → onay ister.
 - ⏳ KayKit dekor (cactus/pictureframe/lamp/rug); Türk objeleri (semaver, çay bardağı, nargile) Meshy AI;
   Mixamo/skinned karakter. Okey/tavla masası ÜST KATTA (kullanıcı) — ileride.
 - ⏳ Işık / postprocessing / juice / ses
+- ⏳ Sonraki fikirler: tema çeşit artışı; opsiyonel PER-ZONE masa teması (instancing'i bozmadan zone-başı atlas batch);
+  telefon/APK testi (splash + instancing gerçek cihaz FPS).
 
 ## Faz 7 — Mobil cila + performans ⏳
 - ⏳ Capacitor build, dokunmatik kontrol, 60fps (instancing/atlas/LOD)
