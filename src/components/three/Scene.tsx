@@ -1,5 +1,6 @@
 import { Suspense, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Instances, Instance } from '@react-three/drei';
 import { Vector3, type Group, type MeshStandardMaterial } from 'three';
 import { useGame, LAYOUT, stationSoftMaxLevel, stationUpgradeCostZ, upgradeZoneUnlockedZ, tableSoftMaxLevel, tableUpgradeUnlockedZ, tableNextCost, zonePoint, zoneCol, zoneRow, zoneAt } from '../../game/store';
 import { zoneOfTable, zoneProduct } from '../../config/economy.config';
@@ -376,15 +377,17 @@ function CheckerTiles({ x0, x1, z0, z1, color }: { x0: number; x1: number; z0: n
       tiles.push([(tx0 + tx1) / 2, (tz0 + tz1) / 2, tx1 - tx0, tz1 - tz0]);
     }
   }
+  // FPS: tüm dama kareleri TEK InstancedMesh (statik, tek renk/geometri → 1 draw-call; eskiden ~40).
+  // Birim plane + per-instance scale [w,d] → kenar kırpması korunur; görsel birebir.
+  if (tiles.length === 0) return null;
   return (
-    <group>
+    <Instances limit={tiles.length} receiveShadow>
+      <planeGeometry args={[1, 1]} />
+      <meshStandardMaterial color={color} />
       {tiles.map(([cx, cz, w, d], i) => (
-        <mesh key={i} receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[cx, 0.006, cz]}>
-          <planeGeometry args={[w, d]} />
-          <meshStandardMaterial color={color} />
-        </mesh>
+        <Instance key={i} rotation={[-Math.PI / 2, 0, 0]} position={[cx, 0.006, cz]} scale={[w, d, 1]} />
       ))}
-    </group>
+    </Instances>
   );
 }
 
