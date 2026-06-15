@@ -6,6 +6,7 @@ import { levelProgress, economyConfig } from '../../config/economy.config';
 import { FLOOR_THEMES, WALL_THEMES } from '../../config/palette';
 import { CoinIcon, GemIcon, StarBadge, GearIcon, MailIcon, BrushIcon, CharIcon, TrayEmptyIcon, TostEmptyIcon, QuestPhoto, CheckBadge, BangBadge, CamZoomIcon } from './icons';
 import { CharacterPanel } from './CharacterPanel';
+import { TableThemePreview } from './TableThemePreview';
 
 /**
  * HUD — gerçek tycoon yerleşimi (UI redesign 2026-06-10; referans: My Perfect Hotel HUD grameri).
@@ -295,38 +296,35 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
   const ownedCosmetics = useGame((s) => s.ownedCosmetics);
   const buyCosmetic = useGame((s) => s.buyCosmetic);
   const cash = wallet.toNumber();
+  const [tab, setTab] = useState<'table' | 'floor' | 'wall'>('table');
+  const [previewId, setPreviewId] = useState<string | null>(null);
 
-  // MASA teması GLOBAL (zone yok): tek buton (Al / Uygula / ✓ Seçili). Minder+örtü o renge boyanır.
-  const renderTableRows = () =>
+  // MASA çeşitleri kaydırılabilir KART şeridi; karta tıkla → döndürülebilir 3D önizleme modalı (satın al orada).
+  const renderTableCards = () =>
     economyConfig.cosmetics.tableThemes.map((t) => {
       const isSel = tableTheme === t.id;
       const owned = t.cost === 0 || ownedCosmetics.includes(`table:${t.id}`);
-      const afford = owned || cash >= t.cost;
       return (
-        <div className="shop-row" key={`table:${t.id}`}>
-          <span className="shop-swatch">
-            <i style={{ background: t.color }} />
-            <i style={{ background: t.color }} />
+        <button
+          className={`shop-vcard${isSel ? ' sel' : ''}`}
+          key={t.id}
+          data-testid={`shop-card-table-${t.id}`}
+          onClick={() => setPreviewId(t.id)}
+        >
+          <span className="shop-vcard-swatch" style={{ background: t.color }}>
+            {isSel ? <span className="shop-vcard-badge">✓</span> : owned ? <span className="shop-vcard-badge owned" /> : null}
           </span>
-          <span className="shop-info">
-            <span className="shop-name">{t.label}</span>
-            {t.cost > 0 && (
-              <span className="shop-cost">
-                <CoinIcon size={14} /> {t.cost.toLocaleString('tr-TR')}
-              </span>
+          <span className="shop-vcard-name">{t.label}</span>
+          <span className="shop-vcard-cost">
+            {t.cost > 0 ? (
+              <>
+                <CoinIcon size={12} /> {t.cost.toLocaleString('tr-TR')}
+              </>
+            ) : (
+              'Ücretsiz'
             )}
           </span>
-          <span className="shop-zones">
-            <button
-              className={`shop-zone-btn${isSel ? ' sel' : ''}`}
-              data-testid={`shop-table-${t.id}`}
-              disabled={isSel || !afford}
-              onClick={() => buyCosmetic('table', t.id, 0)}
-            >
-              {isSel ? '✓ Seçili' : owned ? 'Uygula' : 'Al'}
-            </button>
-          </span>
-        </div>
+        </button>
       );
     });
 
@@ -375,21 +373,41 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
     });
   };
 
+  const TABS: { k: 'table' | 'floor' | 'wall'; label: string }[] = [
+    { k: 'table', label: 'Masa' },
+    { k: 'floor', label: 'Zemin' },
+    { k: 'wall', label: 'Duvar' },
+  ];
+
   return (
-    <div className="modal-backdrop" data-testid="shop-panel" onClick={onClose}>
-      <div className="modal-card shop-card" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-title">Dekor Mağazası</div>
-        <div className="shop-section">Masa</div>
-        {renderTableRows()}
-        <div className="shop-section">Zemin</div>
-        {renderRows('floor')}
-        <div className="shop-section">Duvar</div>
-        {renderRows('wall')}
-        <button className="modal-btn" data-testid="shop-ok" onClick={onClose}>
-          Tamam
-        </button>
+    <>
+      <div className="modal-backdrop" data-testid="shop-panel" onClick={onClose}>
+        <div className="modal-card shop-card" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-title">Dekor Mağazası</div>
+          <div className="shop-tabs">
+            {TABS.map(({ k, label }) => (
+              <button
+                key={k}
+                className={`shop-tab${tab === k ? ' active' : ''}`}
+                data-testid={`shop-tab-${k}`}
+                onClick={() => setTab(k)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          {tab === 'table' ? (
+            <div className="shop-cards">{renderTableCards()}</div>
+          ) : (
+            <div className="shop-list">{renderRows(tab)}</div>
+          )}
+          <button className="modal-btn" data-testid="shop-ok" onClick={onClose}>
+            Tamam
+          </button>
+        </div>
       </div>
-    </div>
+      {previewId && <TableThemePreview id={previewId} onClose={() => setPreviewId(null)} />}
+    </>
   );
 }
 

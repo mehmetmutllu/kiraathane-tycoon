@@ -938,6 +938,151 @@ body,
   opacity: 1;
 }
 
+/* ---- Tema mağazası sekmeleri + çeşit kartları + 3D önizleme (5b) ---- */
+.shop-tabs {
+  display: flex;
+  gap: 6px;
+  margin: 10px 0 12px;
+}
+.shop-tab {
+  flex: 1;
+  padding: 9px 6px;
+  border: 2px solid rgba(78, 52, 46, 0.18);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.4);
+  color: #8a6a4a;
+  font-family: var(--font-game);
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.shop-tab.active {
+  background: linear-gradient(180deg, var(--gold-1, #ffd54f), var(--gold-2, #f9a825));
+  border-color: rgba(255, 255, 255, 0.9);
+  color: #4e342e;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.18);
+}
+.shop-list {
+  min-height: 120px;
+}
+.shop-cards {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 4px 2px 10px;
+  -webkit-overflow-scrolling: touch;
+}
+.shop-vcard {
+  flex: 0 0 auto;
+  width: 96px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 8px;
+  border: 2px solid rgba(78, 52, 46, 0.16);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+}
+.shop-vcard.sel {
+  border-color: var(--gold-2, #f9a825);
+  background: rgba(255, 213, 79, 0.25);
+}
+.shop-vcard-swatch {
+  position: relative;
+  width: 64px;
+  height: 48px;
+  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: inset 0 -6px 10px rgba(0, 0, 0, 0.18);
+}
+.shop-vcard-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--gold-2, #f9a825);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fff;
+}
+.shop-vcard-badge.owned {
+  background: #8bc34a;
+}
+.shop-vcard-name {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #4e342e;
+  text-align: center;
+  line-height: 1.1;
+}
+.shop-vcard-cost {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-family: var(--font-num);
+  font-size: 11px;
+  color: #7a5230;
+}
+.preview-backdrop {
+  z-index: 60;
+}
+.preview-card {
+  width: min(86vw, 340px);
+  text-align: center;
+}
+.preview-canvas {
+  position: relative;
+  width: 100%;
+  height: 240px;
+  margin: 8px 0 14px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: radial-gradient(120% 100% at 50% 25%, #6b4a2c 0%, #4a2c12 70%, #341d0c 100%);
+  touch-action: none;
+}
+.preview-hint {
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  right: 0;
+  font-size: 11px;
+  color: rgba(253, 243, 227, 0.6);
+  pointer-events: none;
+}
+.preview-buy {
+  width: 100%;
+  padding: 13px;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 14px;
+  background: linear-gradient(180deg, var(--green-1, #66bb6a), var(--green-2, #388e3c));
+  color: #fff;
+  font-family: var(--font-game);
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.preview-buy:disabled {
+  opacity: 0.7;
+  box-shadow: none;
+}
+.preview-buy.sel {
+  background: linear-gradient(180deg, var(--gold-1, #ffd54f), var(--gold-2, #f9a825));
+  color: #4e342e;
+}
+
 /* ---- Drag-anywhere dokunmatik kontrol ---- */
 .touch-layer {
   position: fixed;
