@@ -2,7 +2,7 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
-## ŞU AN (2026-06-15 GECE — PERF + SPLASH + MASA TEMASI; tema mağazası 5b SÜRÜYOR)
+## ŞU AN (2026-06-15 GECE — PERF + SPLASH + TEMA MAĞAZASI TAM BİTTİ; 8 commit)
 Kullanıcı bu oturumda: "#1 doğrula → sonra FPS optimizasyonu YAPABİLDİĞİN KADAR + tema mağazası, HİÇ DURMA".
 Tamamlanan milestone'lar (hepsi test+commit+push'lu, vitest 183/183, tsc temiz, MCP 0 hata):
 1. **Mobilya instancing** (commit 6e241a9): KayKit mobilya (tek mesh+ortak atlas) `drei <Merged>` ile model
@@ -26,10 +26,26 @@ zemin dama (40→1 yapıldı), pad işaretçileri (GroundMarker daire+halka+Text
 RİSKLİ, UX hassas, DOKUNULMADI), dekor (saksı/ağaç ~seyrek, el-yerleştirme → küçük kazanç, dokunulmadı).
 İki büyük temiz kazanç (mobilya+dama) alındı. Kalan perf fırsatları düşük ROI/yüksek risk.
 
-**SIRADAKİ = TEMA MAĞAZASI 5b (yarım kaldı):** kullanıcının istediği TAM redesign — üstte SEKME (masa/duvar/
-zemin) + çeşit şeridi + çeşide tıkla → MODAL: ortada parmakla DÖNDÜRÜLEBİLİR 3D önizleme ("oyunda nasıl
-duracaksa öyle") + SATIN AL + ücret. Duvar/zemin için diorama; çay masası önizlemesi farklı yaklaşım.
-Şu an mağaza hâlâ ESKİ tek-scroll liste (Masa/Zemin/Duvar bölümleri). 5b bunu sekme+modal'a çevirecek.
+5. **Tema mağazası 5b** (commit 5345c7c): Dekor Mağazası tek-scroll → SEKME (Masa/Zemin/Duvar). Masa sekmesi
+   kaydırılabilir çeşit kartları; karta tıkla → `TableThemePreview.tsx` modalı: parmakla DÖNDÜRÜLEBİLİR 3D
+   masa (drei OrbitControls; minder+örtü temaya boyalı) + Satın Al + ücret. Önizleme Canvas'ında gölge KAPALI
+   (PCFSoftShadowMap deprecation spam'i giderildi).
+6. **Tema mağazası 5c** (commit 96abcc3): Zemin/Duvar da çift-renk swatch'lı kartlara döndü → `DioramaPreview.tsx`:
+   bağlamlı KÖŞE diorama (zemin + L-duvar + referans masa, döndürülebilir) + per-salon (Salon 1/2/3) satın al +
+   ücret. Floor önizleme seçili zemini, wall önizleme seçili duvarı bağlamda gösterir. TÜM sekmeler artık tutarlı:
+   sekme → kart şeridi → 3D önizleme modalı → satın al. UÇTAN UCA doğrulandı (masa/zemin/duvar al → para düşer).
+
+**TEMA MAĞAZASI TAM BİTTİ** — kullanıcının istediği TAM redesign uygulandı (sekme + kart + döndürülebilir 3D
+önizleme + diorama + satın al). Çay masası önizlemesi ayrı (TableThemePreview), zemin/duvar diorama (DioramaPreview).
+
+**PERF SONUÇ (taze oyun ölçümü):** eski baz ~88 draw-call / ~5k üçgen → ŞİMDİ **56 call / 3.2k üçgen** (instancing
+erken oyunu da kazandırdı). Tam kuruluda mobilya 45→8, dama 40→1. **SIRADAKİ PERF FIRSATLARI (düşük ROI/risk):**
+GroundMarker pad işaretçileri (Text+dinamik tint, gerçek oyunda kademeli açıldığından worst-case değil), dekor
+(seyrek el-yerleştirme), dpr/gölge (kalite ödünü → onay ister). İki büyük temiz kazanç alındı; kalan riskli.
+
+**SIRADAKİ OTURUM FİKİRLERİ:** (a) tema mağazasına daha fazla çeşit (duvar/zemin/masa renkleri); (b) opsiyonel
+masa teması PER-ZONE'a çevirme (şu an global — instancing'i bozmadan zone-başı atlas batch gerekir); (c) telefon
+testi (APK) — açılış splash + instancing gerçek cihazda FPS; (d) kalan perf riskli kalemler ancak ölçüm gösterirse.
 
 ## ÖNCEKİ (2026-06-15 gündüz — MOBİLYA TIER PROTO'DA OTURDU (rev10))
 Bu oturum tamamen **prototip sayfasında (`?proto`) mobilya tier tasarımı** iterasyonuydu. Sonuç (rev10):
