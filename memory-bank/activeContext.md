@@ -2,7 +2,51 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
-## ŞU AN (2026-06-14 — KAYKIT MOBİLYA ENTEGRE EDİLDİ; KULLANICI DEV-SERVER'DA BAKACAK)
+## ŞU AN (2026-06-15 — MOBİLYA TIER PROTO'DA OTURDU (rev10); BÜYÜK İŞLER SONRAKİ OTURUMA)
+Bu oturum tamamen **prototip sayfasında (`?proto`) mobilya tier tasarımı** iterasyonuydu. Sonuç (rev10):
+
+**PROTO SAYFASI (`src/components/three/FurniturePrototype.tsx`, App.tsx `?proto` ile):** numaralı KATALOG
+(tüm sandalye+masa, #1-#15 isimli) + ÇAY/YEMEK ilerleme satırları + **ok tuşları/WASD serbest gezme**
+(FreeMove; Q/E yukarı-aşağı, fare döndür, tekerlek zoom). **BU SAYFAYI SİLME** — genişlete genişlete
+çalışılacak (kullanıcı emri).
+
+**KESİNLEŞEN TIER YAPISI (Tables.tsx, gerçek oyun da kullanır; seatsByLevel 1/2/2/4/4 — ekonomi değişmedi):**
+- **ÇAY (Seçenek A):** Sv1 çıplak 1 tabure · Sv2 +1 tabure (2) · **Sv3 tabureler minderli, masa ÇIPLAK** ·
+  **Sv4 +2 tabure (4) + masa büyür (table_medium), masa hâlâ çıplak** · **Sv5 ÖRTÜ gelir** (finalde).
+  Tabure HEP `chair_stool` (kullanıcı: "kıraathanede tabure kalmalı"); şekil değişmez.
+- **YEMEK:** Sv1-2 ahşap chair_A_wood (tekli masa, sandalyeler ORTALI) · Sv3 örtü+minderli chair_A ·
+  Sv4 masa büyür (table_medium_long, 4) · **Sv5 dolu `chair_C`** (premium şekil). Sv0-2 tekli küçük masa.
+- **RENK: HER ŞEY MAVİ** (asset native mavisi `defaultTone #5a93cf`). ALTIN/teal YOK → **tema mağazasında**
+  satılacak (pahalı tema). Renk artık TIER DEĞİL.
+- **recolor sistemi** (`src/components/three/recolor.ts` + Model.tsx `recolor` prop): asset'in gömülü
+  mavisini DÜZ renge boyar (overlay değil). Şu an kullanılmıyor (varsayılan native mavi) ama tema
+  mağazası için HAZIR — tema seçilince `chairRecolor` ile devreye girer.
+- Örtü = `meshStandardMaterial` düz renk plakası tabla üstünde; minder = asset native (boyanırsa recolor).
+- `window.__setState(patch)` dev kancası eklendi (devHooks.ts) — tam pad listesiyle tamamlanmış oyun zorlama.
+
+Doğrulandı: vitest 183/183, tsc temiz, canlı MCP 0 hata. Screenshot: `proto-rev10.jpeg`, `proto-rev10-right.jpeg`.
+
+## >>> SONRAKİ OTURUM — KULLANICI TALİMAT PAKETİ (uyumadan önce sıraladı) <<<
+1. **Mobilya tier'ını GERÇEK OYUNA tam entegre + doğrula** (Tables.tsx zaten ortak; oyunda gez/gör).
+   - NOT: tabure sayısı değişmedi (1/2/2/4/4) ama ileride sayı oynanırsa **garson/bulaşıkçı mantığı** da
+     düzenlenmeli (kullanıcı uyarısı). Şimdilik gerek yok.
+2. **ASSET YÜKLEME FIX:** oyun açılışında assetler yüklenene kadar ÖNCE eski/greybox hali görünüp sonra
+   "pop"luyor — bu OLMASIN. Modelleri PRELOAD et (useGLTF.preload + atlas) → hazır olunca göster.
+3. **SPLASH / YÜKLENİYOR EKRANI:** oyun başında loading ekranı (assetler + atlas preload). Açılışta
+   greybox-flash ve FPS sıçraması yaşanmasın.
+4. **TEMA MAĞAZASI (tasarla + kur):** karakter paneli gibi **üstte SEKME** (masalar / duvar / zemin / ...).
+   - Altta çeşitler (örn. mavi/sarı masa) sağa-sola **kaydırılabilir/sekmeli**.
+   - Bir çeşide tıkla → **MODAL**: ortada **ÖNİZLEME** (3D, kullanıcı eliyle **DÖNDÜREBİLİR**, hafif/ağır
+     değil; "oyunda nasıl duracaksa öyle"), altında **SATIN AL butonu + ücret**.
+   - Duvar/zemin için **küçük diorama sahne** → seçilen duvar/zemin önünde/üstünde anlık önizleme
+     (örn. duvar çeşit-3 seçiliyse masa o duvar önünde / o zemin üstünde önizlensin).
+   - **ÇAY masası önizlemesine farklı bir yaklaşım gerekir** (kullanıcı notu).
+   - **Ücretleri sen belirle** (sonra ayarlanır). ALTIN tema burada PAHALI olarak satılır.
+   - Etik monetizasyon kuralları geçerli (kozmetik, pay-to-win değil).
+5. **FPS:** preload/splash ile açılış FPS sorunu olmasın.
+ÖNCE bunlar; SONRA proto'yu genişleterek tema mağazası önizlemelerini orada deneyebiliriz.
+
+## ÖNCEKİ (2026-06-14 — KAYKIT MOBİLYA ENTEGRE EDİLDİ; KULLANICI DEV-SERVER'DA BAKACAK)
 Bu oturum: KayKit Furniture Bits (CC0) asset entegrasyonu (Faz 6a). Kullanıcı paketi `public/models/`'e
 dağınık koymuştu → **modüler yapıya** taşındı: `public/assets/models/kaykit-furniture-bits/` (53 gltf+bin+
 tek atlas). fbx / fbx(unity) / obj+mtl / ekstra png / License.txt / .url SİLİNDİ (CC0 → künye manifestte).

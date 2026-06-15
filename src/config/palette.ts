@@ -17,11 +17,18 @@ export const PALETTE = {
   tableLeg: '#5d4037',
   stool: '#7a5230', // tabure gövdesi
   stoolCushion: '#a83232', // tabure minderi (kırmızı)
-  // Masa örtüsü evrimi (index = tableLevel; L0 örtüsüz)
-  tableclothByLevel: ['', '#2e7d32', '#9c2b2b', '#28537a', '#b8860b'], // çuha yeşili → bordo → laci → altın
-  // YEMEK masası örtü evrimi (M3 tost salonu; çay salonundan ayrışan kimlik):
-  // kırmızı muşamba → turuncu → petrol → altın (L4 altın iki hatta ortak "zirve" dili)
-  foodTableclothByLevel: ['', '#c0473b', '#d07f2e', '#3c6e91', '#b8860b'],
+  // Tier RENK (kullanıcı 2026-06-15 rev5): SADECE 2 renk — ferah ARA TON ilerler, son seviyede ALTIN.
+  // İlerleme hissi maddesel kalite zincirinden gelir (ahşap→minder→örtü→altın+dolu sandalye), renk değil.
+  // İki hat AYNI. (Kullanıcı sonra ince ayar çekecek.)
+  // VARSAYILAN tema rengi = KayKit asset'inin KENDİ mavisi (kullanıcı "çok tatlı"). Örtü bu maviye
+  // boyanır, minder zaten asset'in kendi mavisi (recolor YOK → native). Renk TIER DEĞİL: diğer renkler
+  // (teal/altın) TEMA MAĞAZASINDA satın alınır (Faz 5). Seviye ilerlemesi yalnız mobilya ile.
+  defaultTone: '#5a93cf', // asset native mavisi (örtü mesh'i bununla; minder native ile eşleşsin)
+  midTone: '#4ea58f', // mağaza teması: ferah teal-yeşil
+  goldTone: '#e3b24c', // mağaza teması: altın
+  // Örtü (index=L): L0-L1 yok, Sv3'ten itibaren varsayılan mavi (sabit). Çay+yemek aynı.
+  tableclothByLevel: ['', '', '#5a93cf', '#5a93cf', '#5a93cf'],
+  foodTableclothByLevel: ['', '', '#5a93cf', '#5a93cf', '#5a93cf'],
   // Tost ocağı (M3)
   griddle: '#4a4f54', // sac/ızgara metali
   griddleLid: '#37474f', // tost presi kapağı

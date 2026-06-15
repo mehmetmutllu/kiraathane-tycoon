@@ -4,6 +4,7 @@ import { HUD } from './components/ui/HUD';
 import { Joystick } from './components/ui/Joystick';
 import { useGame } from './game/store';
 import { installDevHooks } from './game/devHooks';
+import { FurniturePrototype } from './components/three/FurniturePrototype';
 
 const KEY_MAP: Record<string, [number, number]> = {
   KeyW: [0, -1],
@@ -16,8 +17,12 @@ const KEY_MAP: Record<string, [number, number]> = {
   ArrowRight: [1, 0],
 };
 
+// Prototip mobilya sayfası: ?proto ile oyun yerine açılır (geliştirme aracı, üretim değil).
+const IS_PROTO = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('proto');
+
 export default function App() {
   useEffect(() => {
+    if (IS_PROTO) return;
     useGame.getState().init();
     installDevHooks();
 
@@ -65,6 +70,14 @@ export default function App() {
       window.removeEventListener('beforeunload', onHide);
     };
   }, []);
+
+  if (IS_PROTO) {
+    return (
+      <div className="app">
+        <FurniturePrototype />
+      </div>
+    );
+  }
 
   return (
     <div className="app">

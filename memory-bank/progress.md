@@ -679,11 +679,27 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
     türediği için pad listesiyle tamamlanmış oyun zorlanır).
   - Doğrulandı: vitest 183/183, tsc temiz, canlı MCP 390×844 konsol 0 hata. Screenshot'lar kökte
     `kay-tiers-overview.jpeg`, `kay-food-tiers.jpeg`, `kay-t3-closeup.jpeg`.
-- ⏳ **6b SONRAKİ:** kullanıcı dev serverda (localhost) bakacak → beğenmezse eski greybox masaya
-  dönülecek (kullanıcı: "olmadı eski masa haline çevireceğiz güzel olmazsa"). Açık tweak'ler:
-  mavi minder rengini tint'leyip örtüyle uyumlu yapmak; örtü boyut/yükseklik ince ayar.
-- ⏳ KayKit dekor (cactus=bitki, pictureframe, lamp, rug); Türk objeleri (semaver, çay bardağı,
-  nargile) Meshy AI ile aynı tarzda; Mixamo/skinned karakter (KayKit Adventurers planı auto-memory).
+- ✅ **6b — Mobilya tier tasarımı PROTO'da oturdu (2026-06-15, rev10):** uzun iterasyon; KESİN yapı:
+  - **PROTO sayfası** `FurniturePrototype.tsx` (`?proto`): numaralı katalog (#1-#15) + ÇAY/YEMEK ilerleme
+    + ok tuşları/WASD serbest gezme. **SİLİNMEYECEK** (genişletilerek çalışılacak).
+  - **ÇAY (Seçenek A):** Sv1 çıplak 1 tabure → Sv2 +1 → Sv3 tabure minderli/masa çıplak → Sv4 +2 tabure+
+    masa büyür (çıplak) → Sv5 örtü gelir. Tabure hep chair_stool (şekil sabit).
+  - **YEMEK:** Sv1-2 ahşap chair_A_wood (tekli, ortalı) → Sv3 örtü+chair_A → Sv4 masa büyür → Sv5 chair_C (dolu).
+  - **RENK hep MAVİ** (native `#5a93cf`); renk TIER DEĞİL → ALTIN/teal **tema mağazasında** satılacak.
+  - **recolor.ts + Model.recolor:** asset mavi mindeRini düz renge boyar (tema mağazası için hazır; şu an pasif).
+  - Doğrulandı: vitest 183/183, tsc temiz, MCP 0 hata. Screenshot: `proto-rev10*.jpeg`.
+- 🔧 **6c SONRAKİ OTURUM (kullanıcı talimat paketi, uyumadan sıraladı):**
+  1. Mobilya tier'ını gerçek oyuna tam entegre + oyunda doğrula (Tables.tsx ortak; ileride tabure sayısı
+     oynanırsa garson/bulaşıkçı mantığı da düzenlenmeli — şimdilik gerek yok).
+  2. **ASSET YÜKLEME FIX:** açılışta greybox-flash → preload (useGLTF.preload + atlas), pop olmasın.
+  3. **SPLASH/loading ekranı:** açılışta yükleniyor ekranı + FPS sıçraması olmasın.
+  4. **TEMA MAĞAZASI** (tasarla+kur): üstte sekme (masa/duvar/zemin), altta sağa-sola kaydırılır çeşitler,
+     tıkla→modal: ortada DÖNDÜRÜLEBİLİR 3D önizleme + altta SATIN AL+ücret; duvar/zemin için mini diorama
+     (seçilen duvar/zemin önünde önizleme); çay masasına farklı önizleme yaklaşımı; ücretleri Claude belirler;
+     ALTIN burada pahalı tema. Detay: activeContext SONRAKİ OTURUM bölümü.
+  5. FPS: preload/splash ile açılış sorunsuz.
+- ⏳ KayKit dekor (cactus/pictureframe/lamp/rug); Türk objeleri (semaver, çay bardağı, nargile) Meshy AI;
+  Mixamo/skinned karakter. Okey/tavla masası ÜST KATTA (kullanıcı) — ileride.
 - ⏳ Işık / postprocessing / juice / ses
 
 ## Faz 7 — Mobil cila + performans ⏳

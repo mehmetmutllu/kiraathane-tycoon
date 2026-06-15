@@ -5,27 +5,33 @@ import { PALETTE } from '../../config/palette';
 import { tableSeats, zoneOfTable, zoneProduct } from '../../config/economy.config';
 import type { Vec3 } from '../../game/types';
 
-// KayKit Furniture Bits (CC0) — model yolu + canlı ayarlanan ölçekler.
-// Native boyutlar (origin tabanda, üst yüzey ~y=1.0): table_small 1×1×1, table_medium 2×1×2,
-// table_medium_long 3×1×2, chair_stool 0.75×0.5×0.75, chair_A 0.75×1.26×0.85.
+// KayKit Furniture Bits (CC0). Native boyutlar (origin tabanda, üst ~y=1.0): table_small 1×1×1,
+// table_medium 2×1×2, table_medium_long 3×1×2, chair_stool/_wood 0.75×0.5×0.75, chair_A/_wood 0.75×1.26×0.85.
 //
-// TIER GÖRSELİ (kullanıcı 2026-06-14): seviye atışı GÖZLE belli olmalı (sandalye sayısını bilmeyen
-// "hepsi aynı seviye" sanmamalı). Sinyaller: (1) tabla ÜSTÜNE örtü mesh'i — seviyeye göre renk
-// (masanın tamamı değil, sadece üst), (2) tabure TİPİ ilerler (ahşap→minderli) + sayısı, (3) L3'te
-// çay masası büyür. Çay masası UFAK (tabureyle orantılı kıraathane masası).
+// İLERLEME (kullanıcı 2026-06-14 rev3):
+// ÇAY (önceki yaklaşım — kullanıcı "o tabureler daha iyiydi"): tabure HEP chair_stool_wood (ahşap),
+//   örtü L1'den gelir, üstüne örtüyle AYNI renk YUMUŞAK MİNDER (puf, overlay). L3'te masa büyür.
+//   Sadece renklerle oynanır.
+// YEMEK: sandalye MODELİ seviyeyle değişir (overlay yok): L0-L1 #3 chair_A_wood → L2-L3 #4 chair_A →
+//   L4 #7 chair_C. Örtü L2'den. Masa L0-L2 TEKLİ küçük (sandalyeler ORTALI), L3'te 4 kişilik uzun.
+//   Renkler (mavi asset minderleri) sonra ayarlanacak.
 const KAY = '/assets/models/kaykit-furniture-bits/';
-const TEA_TABLE_S: Vec3 = [0.66, 0.5, 0.66]; // table_small (L0-L2) — ufak kıraathane masası
-const TEA_TABLE_M: Vec3 = [0.45, 0.55, 0.45]; // table_medium (L3+, 4 tabure)
-const STOOL_S = 0.6; // chair_stool / chair_stool_wood
-const FOOD_TABLE_S: Vec3 = [0.5, 0.6, 0.46]; // table_medium_long
-const FOOD_CHAIR_S = 0.5; // chair_A
-// Örtü (tabla ÜSTÜ) yerleşimi: { y: üst yüzey, h: yarı-genişlik } — model üstüne oturur (canlı ayar).
+const TEA_TABLE_S: Vec3 = [0.66, 0.5, 0.66]; // table_small (çay L0-L2)
+const TEA_TABLE_M: Vec3 = [0.45, 0.55, 0.45]; // table_medium (çay L3+)
+const STOOL_S = 0.6; // chair_stool_wood
+const FOOD_TABLE_SM: Vec3 = [0.7, 0.55, 0.7]; // table_small (yemek L0-L2 tekli)
+const FOOD_TABLE_L: Vec3 = [0.5, 0.6, 0.46]; // table_medium_long (yemek L3+)
+const FOOD_CHAIR_S = 0.5; // chair_A* / chair_C
+// Yemek tekli masada (L0-L2) sandalyeler ORTALI (masa-hizalı): ön/arka merkez.
+const SINGLE_FOOD_SPOTS: [number, number][] = [
+  [0, 0.72],
+  [0, -0.72],
+];
+// Örtü (tabla ÜSTÜ) yerleşimi — küçük (Sv3) ve büyük (Sv4+) masa. { y: üst yüzey, h/hx/hz: yarı-genişlik }.
 const TEA_CLOTH_S = { y: 0.5, h: 0.26 };
 const TEA_CLOTH_M = { y: 0.55, h: 0.4 };
+const FOOD_CLOTH_SM = { y: 0.55, h: 0.32 };
 const FOOD_CLOTH = { y: 0.6, hx: 0.62, hz: 0.4 };
-// Tabure tipi: L0-L1 ahşap (kahve), L2+ minderli. (Sayı seatsByLevel'den: 1/2/2/4.)
-const teaStoolSrc = (level: number) =>
-  `${KAY}${level >= 2 ? 'chair_stool' : 'chair_stool_wood'}.gltf`;
 
 // Tabure (gerçek kıraathane formu): silindir gövde + kırmızı minder. Koltuk kutusu emekli.
 function Stool({ x, z }: { x: number; z: number }) {
@@ -89,26 +95,43 @@ function Chair({ x, z }: { x: number; z: number }) {
 //   L4: ALTIN örtü + etek + bant (en gösterişli)
 // Y1: YEMEK masası DİKDÖRTGEN (1.35×0.85, uzun kenar x) + arkalıklı sandalye (2'ye 2 karşılıklı);
 // çay masası kare + tabure kalır. Collision LAYOUT'tan (tableHalf / foodTableHalf).
-function Table({ x, z, level, food = false }: { x: number; z: number; level: number; food?: boolean }) {
+export function Table({ x, z, level, food = false }: { x: number; z: number; level: number; food?: boolean }) {
   // M3: YEMEK masası (tost salonu) kendi örtü paletiyle + sofra prop'larıyla evrilir
   // (kullanıcı: "yemek masaları farklı olabilir, seviye artınca olacak şeyler de artar").
-  const clothArr = food ? PALETTE.foodTableclothByLevel : PALETTE.tableclothByLevel;
-  const cloth = clothArr[Math.min(level, clothArr.length - 1)];
-  // Y2 tek kaynak: sandalye ofsetleri LAYOUT'tan (store koltuk pozisyonunu aynı listeden türetir);
-  // görsel sandalye sayısı = OTURULABİLİR koltuk (seatsByLevel 1/2/2/4/4 — plan §2).
-  const spots = food ? LAYOUT.foodChairSpots : LAYOUT.chairSpots;
+  // İLERLEME (rev6 — CoC tek-şey/seviye + tutarlı iki hat): tek kaynak seatsByLevel 1/2/2/4/4.
+  //   Sv1 (L0): çıplak ahşap, 1 koltuk · Sv2 (L1): +1 koltuk · Sv3 (L2): RENK/SÜS gelir (örtü+minder,
+  //   ara ton) · Sv4 (L3): masa BÜYÜR (4 koltuk; renk taşınır, tek değişim) · Sv5 (L4): ALTIN (sadece
+  //   renk; iki hatta da şekil değişmez → tutarlı).
+  const bigTable = level >= 3; // Sv4: masa büyür (4 koltuk)
+  // İLERLEME (rev10 — Seçenek A, ALTIN YOK; renk hep native mavi, altın TEMA MAĞAZASINDA pahalı tema):
+  //   ÇAY: Sv3 TABURELER minderli (masa ÇIPLAK) · Sv4 +2 tabure + masa büyür · Sv5 ÖRTÜ gelir (finalde).
+  //   YEMEK: Sv3 örtü+minder · Sv4 masa büyür · Sv5 dolu chair_C (şekil premium). Renk hep mavi.
+  // ÖRTÜ: ÇAY yalnız Sv5 (L4); YEMEK Sv3'ten (L2+). Hepsi varsayılan mavi.
+  const clothColor = food ? (level >= 2 ? PALETTE.defaultTone : '') : level >= 4 ? PALETTE.defaultTone : '';
+  const cloth = clothColor; // greybox fallback alias
+  // Sandalye ofsetleri: çay chairSpots; yemek büyük masada foodChairSpots (2×2), tekli masada ORTALI.
+  const spots = food ? (bigTable ? LAYOUT.foodChairSpots : SINGLE_FOOD_SPOTS) : LAYOUT.chairSpots;
   const chairs = Math.min(spots.length, tableSeats(level));
-  const skirt = cloth && (level === 2 || level >= 4);
-  // Tabla yarıları (x, z): kare 0.475/0.475; yemek dikdörtgeni 0.675/0.425.
-  // turu-5 m.10: tost masası 1-2 koltukta KARE görünür ("uzun masa + tek sandalye garip");
-  // 4 koltuğa çıkınca (L3+) dikdörtgene büyür. SALT görsel — collision LAYOUT.foodTableHalf sabit.
+  const skirt = !!clothColor && level >= 4; // greybox fallback
   const rect = food && tableSeats(level) > 2;
   const hw = rect ? 0.675 : 0.475;
   const hd = rect ? 0.425 : 0.475;
   const tableSrc = food
-    ? `${KAY}table_medium_long.gltf`
-    : `${KAY}${level >= 3 ? 'table_medium' : 'table_small'}.gltf`;
-  const tableScale = food ? FOOD_TABLE_S : level >= 3 ? TEA_TABLE_M : TEA_TABLE_S;
+    ? `${KAY}${bigTable ? 'table_medium_long' : 'table_small'}.gltf`
+    : `${KAY}${bigTable ? 'table_medium' : 'table_small'}.gltf`;
+  const tableScale = food
+    ? bigTable
+      ? FOOD_TABLE_L
+      : FOOD_TABLE_SM
+    : bigTable
+      ? TEA_TABLE_M
+      : TEA_TABLE_S;
+  // SANDALYE ŞEKLİ: YEMEK ahşap→chair_A→chair_C(Sv5 dolu); ÇAY hep tabure (chair_stool).
+  const foodChair = level < 2 ? 'chair_A_wood' : level < 4 ? 'chair_A' : 'chair_C';
+  const teaChair = level < 2 ? 'chair_stool_wood' : 'chair_stool';
+  const chairSrc = `${KAY}${food ? foodChair : teaChair}.gltf`;
+  // MİNDER rengi: hep native mavi → recolor YOK. (Altın/teal vb. tema mağazasında satın alınır.)
+  const chairRecolor = undefined;
   return (
     <group position={[x, 0, z]}>
       <Model
@@ -198,50 +221,42 @@ function Table({ x, z, level, food = false }: { x: number; z: number; level: num
           </group>
         }
       />
-      {/* TIER SİNYALİ — tabla ÜSTÜ örtüsü (sadece üst, seviyeye göre renk; KayKit masasının üzerine).
-          L0 çıplak (cloth boş). Hafif taşar → "örtü" okunur. */}
-      {cloth ? (
+      {/* TIER SİNYALİ — tabla ÜSTÜ örtüsü (Sv3'ten; küçük/büyük masaya göre; sadece üst yüzey). */}
+      {clothColor ? (
         food ? (
-          <mesh position={[0, FOOD_CLOTH.y, 0]} castShadow>
-            <boxGeometry args={[FOOD_CLOTH.hx * 2, 0.04, FOOD_CLOTH.hz * 2]} />
-            <meshStandardMaterial color={cloth} />
-          </mesh>
+          bigTable ? (
+            <mesh position={[0, FOOD_CLOTH.y, 0]} castShadow>
+              <boxGeometry args={[FOOD_CLOTH.hx * 2, 0.04, FOOD_CLOTH.hz * 2]} />
+              <meshStandardMaterial color={clothColor} />
+            </mesh>
+          ) : (
+            <mesh position={[0, FOOD_CLOTH_SM.y, 0]} castShadow>
+              <boxGeometry args={[FOOD_CLOTH_SM.h * 2, 0.04, FOOD_CLOTH_SM.h * 2]} />
+              <meshStandardMaterial color={clothColor} />
+            </mesh>
+          )
         ) : (
-          <mesh position={[0, (level >= 3 ? TEA_CLOTH_M : TEA_CLOTH_S).y, 0]} castShadow>
+          <mesh position={[0, (bigTable ? TEA_CLOTH_M : TEA_CLOTH_S).y, 0]} castShadow>
             <boxGeometry
-              args={[
-                (level >= 3 ? TEA_CLOTH_M : TEA_CLOTH_S).h * 2,
-                0.04,
-                (level >= 3 ? TEA_CLOTH_M : TEA_CLOTH_S).h * 2,
-              ]}
+              args={[(bigTable ? TEA_CLOTH_M : TEA_CLOTH_S).h * 2, 0.04, (bigTable ? TEA_CLOTH_M : TEA_CLOTH_S).h * 2]}
             />
-            <meshStandardMaterial color={cloth} />
+            <meshStandardMaterial color={clothColor} />
           </mesh>
         )
       ) : null}
-      {/* oturaklar (Y2): HER sandalye gerçek koltuk — grup üyeleri farklı koltuklara oturur.
-          Çay masası: KayKit tabure (L0-1 ahşap → L2+ minderli, tier sinyali). Yemek: chair_A (arkalık
-          dışa, oturan masaya bakar). Model yüklenmezse greybox Stool/Chair fallback'i. */}
-      {spots.slice(0, chairs).map(([sx, sz], i) =>
-        food ? (
-          <Model
-            key={i}
-            src={`${KAY}chair_A.gltf`}
-            scale={FOOD_CHAIR_S}
-            position={[sx, 0, sz]}
-            rotation={[0, sz > 0 ? Math.PI : 0, 0]}
-            fallback={<Chair x={sx} z={sz} />}
-          />
-        ) : (
-          <Model
-            key={i}
-            src={teaStoolSrc(level)}
-            scale={STOOL_S}
-            position={[sx, 0, sz]}
-            fallback={<Stool x={sx} z={sz} />}
-          />
-        ),
-      )}
+      {/* oturaklar — gerçek asset; minderi recolor ile ara ton/altına BOYALI (Sv3+). Ahşap seviyede
+          boya yok. Yemek sandalyesi arkalık dışa (masaya bakar). */}
+      {spots.slice(0, chairs).map(([sx, sz], i) => (
+        <Model
+          key={i}
+          src={chairSrc}
+          scale={food ? FOOD_CHAIR_S : STOOL_S}
+          position={[sx, 0, sz]}
+          rotation={food ? [0, sz > 0 ? Math.PI : 0, 0] : undefined}
+          recolor={chairRecolor}
+          fallback={food ? <Chair x={sx} z={sz} /> : <Stool x={sx} z={sz} />}
+        />
+      ))}
     </group>
   );
 }
