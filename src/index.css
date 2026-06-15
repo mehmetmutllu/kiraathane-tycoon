@@ -1082,6 +1082,26 @@ body,
   background: linear-gradient(180deg, var(--gold-1, #ffd54f), var(--gold-2, #f9a825));
   color: #4e342e;
 }
+/* Diorama (zemin/duvar) önizleme: per-salon satın al + fiyat */
+.preview-zones {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+.preview-zones .shop-zone-btn {
+  flex: 1;
+  min-width: 0;
+}
+.preview-price {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 10px;
+  font-family: var(--font-num);
+  font-size: 13px;
+  color: #7a5230;
+}
 
 /* ---- Drag-anywhere dokunmatik kontrol ---- */
 .touch-layer {

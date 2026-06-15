@@ -7,6 +7,7 @@ import { FLOOR_THEMES, WALL_THEMES } from '../../config/palette';
 import { CoinIcon, GemIcon, StarBadge, GearIcon, MailIcon, BrushIcon, CharIcon, TrayEmptyIcon, TostEmptyIcon, QuestPhoto, CheckBadge, BangBadge, CamZoomIcon } from './icons';
 import { CharacterPanel } from './CharacterPanel';
 import { TableThemePreview } from './TableThemePreview';
+import { DioramaPreview } from './DioramaPreview';
 
 /**
  * HUD — gerçek tycoon yerleşimi (UI redesign 2026-06-10; referans: My Perfect Hotel HUD grameri).
@@ -288,16 +289,13 @@ export function HUD() {
 /** Dekor mağazası (WP6 — feedback §D19): tema satırı = renk önizleme + ad + fiyat + zone uygula
  *  butonları (yalnız AÇIK zone'lar). İlk satın alma ₺ düşer; sahip olunan tema ücretsiz seçilir. */
 function ShopPanel({ onClose }: { onClose: () => void }) {
-  const wallet = useGame((s) => s.wallet);
   const zonesOpen = useGame((s) => s.zonesOpen);
   const floorThemeByZone = useGame((s) => s.floorThemeByZone);
   const wallThemeByZone = useGame((s) => s.wallThemeByZone);
   const tableTheme = useGame((s) => s.tableTheme);
   const ownedCosmetics = useGame((s) => s.ownedCosmetics);
-  const buyCosmetic = useGame((s) => s.buyCosmetic);
-  const cash = wallet.toNumber();
   const [tab, setTab] = useState<'table' | 'floor' | 'wall'>('table');
-  const [previewId, setPreviewId] = useState<string | null>(null);
+  const [preview, setPreview] = useState<{ kind: 'table' | 'floor' | 'wall'; id: string } | null>(null);
 
   // MASA çeşitleri kaydırılabilir KART şeridi; karta tıkla → döndürülebilir 3D önizleme modalı (satın al orada).
   const renderTableCards = () =>
@@ -309,7 +307,7 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
           className={`shop-vcard${isSel ? ' sel' : ''}`}
           key={t.id}
           data-testid={`shop-card-table-${t.id}`}
-          onClick={() => setPreviewId(t.id)}
+          onClick={() => setPreview({ kind: 'table', id: t.id })}
         >
           <span className="shop-vcard-swatch" style={{ background: t.color }}>
             {isSel ? <span className="shop-vcard-badge">✓</span> : owned ? <span className="shop-vcard-badge owned" /> : null}
@@ -328,47 +326,40 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
       );
     });
 
-  const renderRows = (kind: 'floor' | 'wall') => {
+  // ZEMİN/DUVAR çeşitleri: çift-renk swatch'lı kartlar; karta tıkla → diorama önizleme (per-salon satın al orada).
+  const renderThemeCards = (kind: 'floor' | 'wall') => {
     const themes = kind === 'floor' ? economyConfig.cosmetics.floorThemes : economyConfig.cosmetics.wallThemes;
     const selected = kind === 'floor' ? floorThemeByZone : wallThemeByZone;
     return themes.map((t) => {
-      const sw =
+      const cols =
         kind === 'floor'
           ? [FLOOR_THEMES[t.id]?.base ?? '#999', FLOOR_THEMES[t.id]?.alt ?? '#777']
           : [WALL_THEMES[t.id]?.cream ?? '#999', WALL_THEMES[t.id]?.wainscot ?? '#777'];
+      const anySel = selected.slice(0, zonesOpen).includes(t.id);
       return (
-        <div className="shop-row" key={`${kind}:${t.id}`}>
-          <span className="shop-swatch">
-            <i style={{ background: sw[0] }} />
-            <i style={{ background: sw[1] }} />
+        <button
+          className={`shop-vcard${anySel ? ' sel' : ''}`}
+          key={t.id}
+          data-testid={`shop-card-${kind}-${t.id}`}
+          onClick={() => setPreview({ kind, id: t.id })}
+        >
+          <span
+            className="shop-vcard-swatch"
+            style={{ background: `linear-gradient(135deg, ${cols[0]} 0 50%, ${cols[1]} 50% 100%)` }}
+          >
+            {anySel ? <span className="shop-vcard-badge">✓</span> : null}
           </span>
-          <span className="shop-info">
-            <span className="shop-name">{t.label}</span>
-            {t.cost > 0 && (
-              <span className="shop-cost">
-                <CoinIcon size={14} /> {t.cost.toLocaleString('tr-TR')} / salon
-              </span>
+          <span className="shop-vcard-name">{t.label}</span>
+          <span className="shop-vcard-cost">
+            {t.cost > 0 ? (
+              <>
+                <CoinIcon size={12} /> {t.cost.toLocaleString('tr-TR')}
+              </>
+            ) : (
+              'Ücretsiz'
             )}
           </span>
-          <span className="shop-zones">
-            {Array.from({ length: zonesOpen }, (_, z) => {
-              const isSel = selected[z] === t.id;
-              const owned = t.cost === 0 || ownedCosmetics.includes(`${kind}:${t.id}:z${z}`);
-              const afford = owned || cash >= t.cost;
-              return (
-                <button
-                  key={z}
-                  className={`shop-zone-btn${isSel ? ' sel' : ''}`}
-                  data-testid={`shop-${kind}-${t.id}-z${z}`}
-                  disabled={isSel || !afford}
-                  onClick={() => buyCosmetic(kind, t.id, z)}
-                >
-                  {isSel ? '✓ ' : ''}S{z + 1}
-                </button>
-              );
-            })}
-          </span>
-        </div>
+        </button>
       );
     });
   };
@@ -396,17 +387,18 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
               </button>
             ))}
           </div>
-          {tab === 'table' ? (
-            <div className="shop-cards">{renderTableCards()}</div>
-          ) : (
-            <div className="shop-list">{renderRows(tab)}</div>
-          )}
+          <div className="shop-cards">{tab === 'table' ? renderTableCards() : renderThemeCards(tab)}</div>
           <button className="modal-btn" data-testid="shop-ok" onClick={onClose}>
             Tamam
           </button>
         </div>
       </div>
-      {previewId && <TableThemePreview id={previewId} onClose={() => setPreviewId(null)} />}
+      {preview &&
+        (preview.kind === 'table' ? (
+          <TableThemePreview id={preview.id} onClose={() => setPreview(null)} />
+        ) : (
+          <DioramaPreview kind={preview.kind} id={preview.id} onClose={() => setPreview(null)} />
+        ))}
     </>
   );
 }
