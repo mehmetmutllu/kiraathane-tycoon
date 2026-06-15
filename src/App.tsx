@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Scene } from './components/three/Scene';
 import { HUD } from './components/ui/HUD';
 import { Joystick } from './components/ui/Joystick';
+import { SplashScreen } from './components/ui/SplashScreen';
 import { useGame } from './game/store';
 import { installDevHooks } from './game/devHooks';
 import { FurniturePrototype } from './components/three/FurniturePrototype';
@@ -84,6 +85,7 @@ export default function App() {
       <Scene />
       <HUD />
       <Joystick />
+      <SplashScreen />
     </div>
   );
 }

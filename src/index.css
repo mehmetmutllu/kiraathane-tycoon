@@ -1104,3 +1104,76 @@ body,
     overflow-y: auto;
   }
 }
+
+/* Açılış yükleme ekranı (SplashScreen) — asset preload bitene kadar sahneyi örter. */
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  background: radial-gradient(120% 90% at 50% 38%, #4a2c12 0%, #341d0c 55%, #201207 100%);
+  opacity: 1;
+  transition: opacity 0.45s ease;
+  padding: calc(var(--sat) + 16px) 24px;
+}
+.splash--out {
+  opacity: 0;
+  pointer-events: none;
+}
+.splash__glow {
+  position: absolute;
+  top: 30%;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 197, 79, 0.35) 0%, rgba(255, 197, 79, 0) 70%);
+  filter: blur(4px);
+  animation: splash-pulse 2.4s ease-in-out infinite;
+}
+.splash__title {
+  position: relative;
+  font-family: var(--font-game);
+  font-weight: 800;
+  font-size: clamp(28px, 8vw, 44px);
+  color: var(--cream);
+  text-shadow: 0 3px 0 rgba(0, 0, 0, 0.35);
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+.splash__bar {
+  position: relative;
+  width: min(60%, 260px);
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.35);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+.splash__fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--gold-1), var(--gold-2));
+  transition: width 0.3s ease;
+}
+.splash__hint {
+  position: relative;
+  font-family: var(--font-game);
+  font-weight: 600;
+  font-size: 15px;
+  color: rgba(253, 243, 227, 0.7);
+}
+@keyframes splash-pulse {
+  0%,
+  100% {
+    transform: scale(0.85);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
