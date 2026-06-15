@@ -28,6 +28,8 @@ function Simulation() {
 // dt gürültüsünü bastırır). Sonuç perf singleton + window.__perf'e yazılır; render YOK (overlay HUD'da).
 function PerfProbe() {
   const gl = useThree((s) => s.gl);
+  const scene = useThree((s) => s.scene);
+  const camera = useThree((s) => s.camera);
   const acc = useRef({ frames: 0, time: 0 });
   useFrame((_, dt) => {
     const a = acc.current;
@@ -39,6 +41,8 @@ function PerfProbe() {
       perf.tris = gl.info.render.triangles;
       a.frames = 0;
       a.time = 0;
+      // DEV teşhis: sahne/kamera/renderer'ı dışa aç (draw-call dağılımı analizi).
+      if (import.meta.env.DEV) (window as unknown as { __three?: unknown }).__three = { gl, scene, camera };
     }
   });
   return null;

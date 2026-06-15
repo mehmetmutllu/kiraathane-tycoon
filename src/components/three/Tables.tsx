@@ -1,3 +1,6 @@
+import { Suspense, useMemo, Component, type ReactNode } from 'react';
+import { useGLTF, Merged } from '@react-three/drei';
+import { Mesh, type Object3D } from 'three';
 import { useGame } from '../../game/store';
 import { LAYOUT } from '../../game/store';
 import { Model } from './Model';
@@ -95,7 +98,19 @@ function Chair({ x, z }: { x: number; z: number }) {
 //   L4: ALTIN örtü + etek + bant (en gösterişli)
 // Y1: YEMEK masası DİKDÖRTGEN (1.35×0.85, uzun kenar x) + arkalıklı sandalye (2'ye 2 karşılıklı);
 // çay masası kare + tabure kalır. Collision LAYOUT'tan (tableHalf / foodTableHalf).
-export function Table({ x, z, level, food = false }: { x: number; z: number; level: number; food?: boolean }) {
+export function Table({
+  x,
+  z,
+  level,
+  food = false,
+  greybox = false,
+}: {
+  x: number;
+  z: number;
+  level: number;
+  food?: boolean;
+  greybox?: boolean;
+}) {
   // M3: YEMEK masası (tost salonu) kendi örtü paletiyle + sofra prop'larıyla evrilir
   // (kullanıcı: "yemek masaları farklı olabilir, seviye artınca olacak şeyler de artar").
   // İLERLEME (rev6 — CoC tek-şey/seviye + tutarlı iki hat): tek kaynak seatsByLevel 1/2/2/4/4.
@@ -116,9 +131,11 @@ export function Table({ x, z, level, food = false }: { x: number; z: number; lev
   const rect = food && tableSeats(level) > 2;
   const hw = rect ? 0.675 : 0.475;
   const hd = rect ? 0.425 : 0.475;
-  const tableSrc = food
-    ? `${KAY}${bigTable ? 'table_medium_long' : 'table_small'}.gltf`
-    : `${KAY}${bigTable ? 'table_medium' : 'table_small'}.gltf`;
+  const tableSrc = greybox
+    ? undefined
+    : food
+      ? `${KAY}${bigTable ? 'table_medium_long' : 'table_small'}.gltf`
+      : `${KAY}${bigTable ? 'table_medium' : 'table_small'}.gltf`;
   const tableScale = food
     ? bigTable
       ? FOOD_TABLE_L
@@ -129,7 +146,7 @@ export function Table({ x, z, level, food = false }: { x: number; z: number; lev
   // SANDALYE ŞEKLİ: YEMEK ahşap→chair_A→chair_C(Sv5 dolu); ÇAY hep tabure (chair_stool).
   const foodChair = level < 2 ? 'chair_A_wood' : level < 4 ? 'chair_A' : 'chair_C';
   const teaChair = level < 2 ? 'chair_stool_wood' : 'chair_stool';
-  const chairSrc = `${KAY}${food ? foodChair : teaChair}.gltf`;
+  const chairSrc = greybox ? undefined : `${KAY}${food ? foodChair : teaChair}.gltf`;
   // MİNDER rengi: hep native mavi → recolor YOK. (Altın/teal vb. tema mağazasında satın alınır.)
   const chairRecolor = undefined;
   return (
@@ -261,10 +278,139 @@ export function Table({ x, z, level, food = false }: { x: number; z: number; lev
   );
 }
 
-// Açık masaları çiz (global bitişik indeksler; zone-2 masaları da otomatik buradan çizilir).
-export function Tables() {
-  const tables = useGame((s) => s.tables);
-  const tableLevels = useGame((s) => s.tableLevels);
+// ---- FPS: mobilya instancing ----
+// KayKit mobilya modelleri hepsi TEK mesh + ORTAK atlas materyali (furniture_texture). Model tipi başına
+// 1 InstancedMesh (drei <Merged>) → eski ~45 draw-call ~8'e iner. Görsel BİREBİR (aynı geometri+materyal;
+// gltf node transformları identity → bake gerekmez). Tema mağazası ileride ortak atlas'ı swap'leyince hepsi
+// tek çağrıda boyanır. Greybox fallback (glb yok/yüklenirken) korunur (CLAUDE: fallback loader kuralı).
+const FURNITURE = [
+  'table_small',
+  'table_medium',
+  'table_medium_long',
+  'chair_stool',
+  'chair_stool_wood',
+  'chair_A',
+  'chair_A_wood',
+  'chair_C',
+] as const;
+type FKey = (typeof FURNITURE)[number];
+FURNITURE.forEach((k) => useGLTF.preload(`${KAY}${k}.gltf`));
+
+function firstMesh(o: Object3D): Mesh | null {
+  let found: Mesh | null = null;
+  o.traverse((c) => {
+    if (!found && (c as Mesh).isMesh) found = c as Mesh;
+  });
+  return found;
+}
+
+type Placement = { pos: Vec3; rot?: Vec3; scale: number | Vec3 };
+type ClothPlate = { pos: Vec3; size: [number, number, number]; color: string };
+
+// Açık masaların mobilya parçalarını model-tipine göre grupla (instance yerleşimi) + örtü plakaları.
+// Yerleşim/ölçek/rotasyon/örtü mantığı Table ile BİRE BİR (tek kaynak: aynı sabitler + tableSeats).
+function buildFurniture(tables: number, tableLevels: number[]) {
+  const place = Object.fromEntries(FURNITURE.map((k) => [k, [] as Placement[]])) as Record<FKey, Placement[]>;
+  const cloths: ClothPlate[] = [];
+  for (let i = 0; i < tables; i++) {
+    const t = LAYOUT.tables[i];
+    if (!t) continue;
+    const [x, , z] = t.table;
+    const level = tableLevels[i] ?? 0;
+    const food = zoneProduct(zoneOfTable(i)) === 'tost';
+    const bigTable = level >= 3;
+    const tableKey: FKey = food
+      ? bigTable
+        ? 'table_medium_long'
+        : 'table_small'
+      : bigTable
+        ? 'table_medium'
+        : 'table_small';
+    const tableScale = food ? (bigTable ? FOOD_TABLE_L : FOOD_TABLE_SM) : bigTable ? TEA_TABLE_M : TEA_TABLE_S;
+    place[tableKey].push({ pos: [x, 0, z], scale: tableScale });
+
+    const chairKey: FKey = food
+      ? level < 2
+        ? 'chair_A_wood'
+        : level < 4
+          ? 'chair_A'
+          : 'chair_C'
+      : level < 2
+        ? 'chair_stool_wood'
+        : 'chair_stool';
+    const chairScale = food ? FOOD_CHAIR_S : STOOL_S;
+    const spots = food ? (bigTable ? LAYOUT.foodChairSpots : SINGLE_FOOD_SPOTS) : LAYOUT.chairSpots;
+    const nChairs = Math.min(spots.length, tableSeats(level));
+    for (const [sx, sz] of spots.slice(0, nChairs)) {
+      place[chairKey].push({
+        pos: [x + sx, 0, z + sz],
+        scale: chairScale,
+        rot: food ? [0, sz > 0 ? Math.PI : 0, 0] : undefined,
+      });
+    }
+
+    const clothColor = food ? (level >= 2 ? PALETTE.defaultTone : '') : level >= 4 ? PALETTE.defaultTone : '';
+    if (clothColor) {
+      if (food) {
+        const c = bigTable ? FOOD_CLOTH : FOOD_CLOTH_SM;
+        const hx = bigTable ? FOOD_CLOTH.hx : FOOD_CLOTH_SM.h;
+        const hz = bigTable ? FOOD_CLOTH.hz : FOOD_CLOTH_SM.h;
+        cloths.push({ pos: [x, c.y, z], size: [hx * 2, 0.04, hz * 2], color: clothColor });
+      } else {
+        const c = bigTable ? TEA_CLOTH_M : TEA_CLOTH_S;
+        cloths.push({ pos: [x, c.y, z], size: [c.h * 2, 0.04, c.h * 2], color: clothColor });
+      }
+    }
+  }
+  return { place, cloths };
+}
+
+class FurnitureBoundary extends Component<{ fallback: ReactNode; children: ReactNode }, { err: boolean }> {
+  state = { err: false };
+  static getDerivedStateFromError() {
+    return { err: true };
+  }
+  render() {
+    return this.state.err ? this.props.fallback : this.props.children;
+  }
+}
+
+function InstancedTables({ tables, tableLevels }: { tables: number; tableLevels: number[] }) {
+  const gltfs = useGLTF(FURNITURE.map((k) => `${KAY}${k}.gltf`));
+  const meshes = useMemo(() => {
+    const o: Record<string, Mesh> = {};
+    FURNITURE.forEach((k, i) => {
+      const m = firstMesh(gltfs[i].scene);
+      if (m) o[k] = m;
+    });
+    return o;
+  }, [gltfs]);
+  const { place, cloths } = useMemo(() => buildFurniture(tables, tableLevels), [tables, tableLevels]);
+  return (
+    <>
+      <Merged meshes={meshes}>
+        {(comps) => (
+          <>
+            {FURNITURE.map((k) => {
+              const C = comps[k];
+              return C
+                ? place[k].map((p, j) => <C key={`${k}-${j}`} position={p.pos} rotation={p.rot} scale={p.scale} />)
+                : null;
+            })}
+          </>
+        )}
+      </Merged>
+      {cloths.map((c, i) => (
+        <mesh key={i} position={c.pos} castShadow>
+          <boxGeometry args={c.size} />
+          <meshStandardMaterial color={c.color} />
+        </mesh>
+      ))}
+    </>
+  );
+}
+
+function GreyboxTables({ tables, tableLevels }: { tables: number; tableLevels: number[] }) {
   return (
     <>
       {LAYOUT.tables.slice(0, tables).map((t, i) => (
@@ -274,8 +420,23 @@ export function Tables() {
           z={t.table[2]}
           level={tableLevels[i] ?? 0}
           food={zoneProduct(zoneOfTable(i)) === 'tost'}
+          greybox
         />
       ))}
     </>
+  );
+}
+
+// Açık masaları çiz (instanced; glb yok/yüklenirken greybox). zone-2 masaları da otomatik buradan çizilir.
+export function Tables() {
+  const tables = useGame((s) => s.tables);
+  const tableLevels = useGame((s) => s.tableLevels);
+  const fallback = <GreyboxTables tables={tables} tableLevels={tableLevels} />;
+  return (
+    <FurnitureBoundary fallback={fallback}>
+      <Suspense fallback={fallback}>
+        <InstancedTables tables={tables} tableLevels={tableLevels} />
+      </Suspense>
+    </FurnitureBoundary>
   );
 }
