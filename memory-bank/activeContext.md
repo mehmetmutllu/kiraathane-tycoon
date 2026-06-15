@@ -2,7 +2,36 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
-## ŞU AN (2026-06-15 — MOBİLYA TIER PROTO'DA OTURDU (rev10); BÜYÜK İŞLER SONRAKİ OTURUMA)
+## ŞU AN (2026-06-15 GECE — PERF + SPLASH + MASA TEMASI; tema mağazası 5b SÜRÜYOR)
+Kullanıcı bu oturumda: "#1 doğrula → sonra FPS optimizasyonu YAPABİLDİĞİN KADAR + tema mağazası, HİÇ DURMA".
+Tamamlanan milestone'lar (hepsi test+commit+push'lu, vitest 183/183, tsc temiz, MCP 0 hata):
+1. **Mobilya instancing** (commit 6e241a9): KayKit mobilya (tek mesh+ortak atlas) `drei <Merged>` ile model
+   tipi başına 1 InstancedMesh (~37 primitive → 8). Görsel birebir. Greybox fallback korundu (`Table greybox`
+   prop + Suspense/error boundary). PerfProbe'a DEV-only `window.__three` (sahne/kamera) teşhis kancası.
+2. **Dama zemini instancing** (commit 9af6506): CheckerTiles ~40 plane → 1 InstancedMesh (birim plane +
+   per-instance scale). Düz mesh 323→288.
+3. **Açılış splash/loading** (commit 3e51054): `SplashScreen.tsx` + `useProgress`; asset hazır olana kadar
+   sıcak temalı ekran sahneyi örter → greybox→model "pop"u + ilk-kare FPS sıçraması GÖRÜNMEZ (talimat #2/#3).
+4. **Masa teması 5a** (commit a183c8d): mağazaya MASA bölümü + `tableThemes` (mavi/bordo/zümrüt/altın 30k).
+   Seçilen tema mobilya minderini (ortak atlas recolor swap) + örtü plakasını boyar → TÜM mobilya tek swap'le
+   renklenir (instancing 8 draw-call korunur). saveVersion 29→30 (`tableTheme`, default 'mavi'). `buyCosmetic('table')`
+   GLOBAL (zone'suz, key `table:id`). UÇTAN UCA doğrulandı (mağazadan altın al → 30k düştü → tüm mobilya altın).
+
+**ÖNEMLİ KEŞİF:** Zaten bir "Dekor Mağazası" var (HUD shop butonu → `ShopPanel`): zemin+duvar temaları
+ZONE-başına (`floorThemeByZone`/`wallThemeByZone`, `buyCosmetic(kind,id,zone)`, `ownedCosmetics`). 5a bunun
+üstüne MASA bölümü ekledi. Tema mağazası SIFIRDAN değil, bu panelin üstüne kuruluyor.
+
+**PERF DRAW-CALL ANALİZİ (window.__three ile, tam kurulu 12 masa/3 zone):** en büyük kaynaklar mobilya DEĞİL:
+zemin dama (40→1 yapıldı), pad işaretçileri (GroundMarker daire+halka+Text ~52; Text+dinamik tint → instancing
+RİSKLİ, UX hassas, DOKUNULMADI), dekor (saksı/ağaç ~seyrek, el-yerleştirme → küçük kazanç, dokunulmadı).
+İki büyük temiz kazanç (mobilya+dama) alındı. Kalan perf fırsatları düşük ROI/yüksek risk.
+
+**SIRADAKİ = TEMA MAĞAZASI 5b (yarım kaldı):** kullanıcının istediği TAM redesign — üstte SEKME (masa/duvar/
+zemin) + çeşit şeridi + çeşide tıkla → MODAL: ortada parmakla DÖNDÜRÜLEBİLİR 3D önizleme ("oyunda nasıl
+duracaksa öyle") + SATIN AL + ücret. Duvar/zemin için diorama; çay masası önizlemesi farklı yaklaşım.
+Şu an mağaza hâlâ ESKİ tek-scroll liste (Masa/Zemin/Duvar bölümleri). 5b bunu sekme+modal'a çevirecek.
+
+## ÖNCEKİ (2026-06-15 gündüz — MOBİLYA TIER PROTO'DA OTURDU (rev10))
 Bu oturum tamamen **prototip sayfasında (`?proto`) mobilya tier tasarımı** iterasyonuydu. Sonuç (rev10):
 
 **PROTO SAYFASI (`src/components/three/FurniturePrototype.tsx`, App.tsx `?proto` ile):** numaralı KATALOG
@@ -25,6 +54,22 @@ Bu oturum tamamen **prototip sayfasında (`?proto`) mobilya tier tasarımı** it
 - `window.__setState(patch)` dev kancası eklendi (devHooks.ts) — tam pad listesiyle tamamlanmış oyun zorlama.
 
 Doğrulandı: vitest 183/183, tsc temiz, canlı MCP 0 hata. Screenshot: `proto-rev10.jpeg`, `proto-rev10-right.jpeg`.
+
+## DOĞRULAMA (2026-06-15 — talimat #1: mobilya tier GERÇEK OYUNDA gezildi/doğrulandı ✅)
+`__setState` ile tam oyun zorlandı (padsDone = tüm pad listesi → tables=12, zonesOpen=3 kalıcı; tableLevels
+gradyanı [0,1,2,3, 4,3,2,1, 1,2,3,4]). Oyuncu zone'lara `__teleport` ile gezildi (MCP, 390×844). Bulgular:
+- **KayKit modelleri gerçek oyunda yükleniyor** (ağ: table_small/medium, chair_stool/_wood, chair_A/_wood/C,
+  table_medium_long, texture → hepsi 200). **GREYBOX FALLBACK YOK.** Tabureler/masalar/sandalyeler zeminde,
+  zone yerleşimine oturmuş; ölçek/konum doğru.
+- **Çay tier görünür:** tabure kahve→mavi (chair_stool_wood→chair_stool), sayı 1/2/2/4/4, masa büyür
+  (table_small→table_medium), Sv5'te örtü katmanı. **Yemek tier görünür:** chair_A_wood→chair_A→chair_C,
+  örtü Sv3+, checker "yemek" zemini, büyük masa table_medium_long.
+- **Perf (tam kurulu 12 masa/3 zone, masaüstü):** 56 FPS / 214 draw-call / 25.6k üçgen / **0 konsol hatası**.
+  NOT: mobilya INSTANCE EDİLMEMİŞ → 214 call tam kuruluda; talimat #2/#3 (preload/splash/FPS) için akılda tut.
+- **Küçük gözlem (bug değil, tasarım gereği):** Çay Sv5 örtüsü native maviyle aynı renk → tier sinyali olarak
+  ince kalıyor (renk bilerek hep mavi, altın tema mağazasına kaldı). Şekil katmanı yine de ekleniyor.
+- Kod DEĞİŞMEDİ (saf doğrulama). Screenshot: `verify-zone0-row.jpeg`, `verify-zone2-food.jpeg`, `verify-zone1-tea.jpeg`.
+- SONUÇ: talimat #1 ✅. Sıradaki = #2 ASSET PRELOAD FIX (açılışta greybox→model "pop"u engelle).
 
 ## >>> SONRAKİ OTURUM — KULLANICI TALİMAT PAKETİ (uyumadan önce sıraladı) <<<
 1. **Mobilya tier'ını GERÇEK OYUNA tam entegre + doğrula** (Tables.tsx zaten ortak; oyunda gez/gör).
