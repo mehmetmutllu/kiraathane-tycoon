@@ -719,6 +719,8 @@ export interface GameState {
   /** Kozmetik mağaza (persist v19, WP6): zone başına seçili tema + sahiplikler (`kind:id:zN`). */
   floorThemeByZone: string[];
   wallThemeByZone: string[];
+  /** GLOBAL masa teması (persist v30): mobilya minder+örtü rengi (recolor atlas). */
+  tableTheme: string;
   ownedCosmetics: string[];
   /** Karakter yükseltme kademeleri (persist v20): tepsi/mıknatıs/hız. Karakter seviyesi türetilir. */
   charUpgrades: CharUpgrades;
@@ -759,7 +761,7 @@ export interface GameState {
    * Kozmetik tema satın al/uygula (WP6): zone AÇIK olmalı; ilk satın alma ₺ düşer (cüzdan yetmezse
    * false), sahip olunan tema ücretsiz yeniden seçilir. Başarıda anında kaydedilir.
    */
-  buyCosmetic: (kind: 'floor' | 'wall', id: string, zone: number) => boolean;
+  buyCosmetic: (kind: 'floor' | 'wall' | 'table', id: string, zone: number) => boolean;
   /**
    * Karakter özelliği satın al (v20, karakter paneli): cüzdan yeterliyse kademe +1 (yetmezse/max'taysa
    * false). Başarıda anında kaydedilir; charStat görevi varsa sonraki tick'te tamamlanır.
@@ -1045,6 +1047,7 @@ export const useGame = create<GameState>((set, get) => ({
   settings: defaultSettings(),
   floorThemeByZone: Array.from({ length: MAX_ZONES }, (_, z) => defaultFloorTheme(z)),
   wallThemeByZone: Array.from({ length: MAX_ZONES }, () => 'krem'),
+  tableTheme: 'mavi',
   ownedCosmetics: [],
   charUpgrades: defaultCharUpgrades(),
   waiterUpgrades: defaultWaiterUpgrades(),
@@ -1166,6 +1169,7 @@ export const useGame = create<GameState>((set, get) => ({
       settings: { ...save.settings },
       floorThemeByZone: Array.from({ length: MAX_ZONES }, (_, z) => save.floorThemeByZone[z] ?? defaultFloorTheme(z)),
       wallThemeByZone: Array.from({ length: MAX_ZONES }, (_, z) => save.wallThemeByZone[z] ?? 'krem'),
+      tableTheme: save.tableTheme ?? 'mavi',
       ownedCosmetics: [...save.ownedCosmetics],
       charUpgrades,
       waiterUpgrades,
@@ -2012,6 +2016,22 @@ export const useGame = create<GameState>((set, get) => ({
   // sahip değilse cüzdandan düşer (yetmezse false), sahipse ücretsiz uygulanır.
   buyCosmetic: (kind, id, zone) => {
     const s = get();
+    // MASA teması GLOBAL (zone yok): tek tableTheme; sahiplik anahtarı `table:id` (zone'suz).
+    if (kind === 'table') {
+      const theme = C.cosmetics.tableThemes.find((t) => t.id === id);
+      if (!theme) return false;
+      const key = `table:${id}`;
+      let wallet = s.wallet;
+      let ownedCosmetics = s.ownedCosmetics;
+      if (theme.cost > 0 && !ownedCosmetics.includes(key)) {
+        if (wallet.lt(theme.cost)) return false;
+        wallet = wallet.sub(theme.cost);
+        ownedCosmetics = [...ownedCosmetics, key];
+      }
+      set({ wallet, ownedCosmetics, tableTheme: id });
+      get().saveNow();
+      return true;
+    }
     if (zone < 0 || zone >= s.zonesOpen) return false;
     const themes = kind === 'floor' ? C.cosmetics.floorThemes : C.cosmetics.wallThemes;
     const theme = themes.find((t) => t.id === id);
@@ -2153,6 +2173,7 @@ export const useGame = create<GameState>((set, get) => ({
       settings: { ...s.settings },
       floorThemeByZone: [...s.floorThemeByZone],
       wallThemeByZone: [...s.wallThemeByZone],
+      tableTheme: s.tableTheme,
       ownedCosmetics: [...s.ownedCosmetics],
       charUpgrades: { ...s.charUpgrades },
       waiterUpgrades: { ...s.waiterUpgrades },

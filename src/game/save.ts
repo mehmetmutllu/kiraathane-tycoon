@@ -95,6 +95,8 @@ export interface SaveData {
    *  (`kind:id:zN` anahtarları — tekrar seçmek ücretsiz). */
   floorThemeByZone: string[];
   wallThemeByZone: string[];
+  /** GLOBAL masa teması id'si (mobilya minder+örtü rengi). */
+  tableTheme: string;
   ownedCosmetics: string[];
   /** Karakter yükseltme kademeleri (v20): tepsi/mıknatıs/hız. Karakter seviyesi türetilir. */
   charUpgrades: CharUpgrades;
@@ -133,6 +135,7 @@ export function defaultSave(): SaveData {
     settings: defaultSettings(),
     floorThemeByZone: [],
     wallThemeByZone: [],
+    tableTheme: 'mavi',
     ownedCosmetics: [],
     charUpgrades: defaultCharUpgrades(),
     waiterUpgrades: defaultWaiterUpgrades(),
@@ -645,6 +648,12 @@ export function migrate(raw: Record<string, unknown>): SaveData {
     v = 29;
   }
 
+  // v29 -> v30 (MASA TEMASI, 2026-06-15): global tableTheme alanı eklendi (default 'mavi' = native).
+  if (v < 30) {
+    if (typeof d.tableTheme !== 'string') d.tableTheme = 'mavi';
+    v = 30;
+  }
+
   // Sona kalan v16 şeması: türetilen alanlar (tables/stations/serviceSpeedMult/hasWaiter), eski `padFill`,
   // kaldırılan `trayLevel` ve 'samovar' referansı yazılmaz; stats/questIndex/questBase eklendi (v16).
   const rawStats = (d.stats && typeof d.stats === 'object' ? d.stats : {}) as Partial<SaveStats>;
@@ -688,6 +697,7 @@ export function migrate(raw: Record<string, unknown>): SaveData {
     })(),
     floorThemeByZone: Array.isArray(d.floorThemeByZone) ? (d.floorThemeByZone as string[]) : [],
     wallThemeByZone: Array.isArray(d.wallThemeByZone) ? (d.wallThemeByZone as string[]) : [],
+    tableTheme: typeof d.tableTheme === 'string' ? d.tableTheme : 'mavi',
     ownedCosmetics: Array.isArray(d.ownedCosmetics) ? (d.ownedCosmetics as string[]) : [],
     charUpgrades: (() => {
       const raw = (d.charUpgrades && typeof d.charUpgrades === 'object' ? d.charUpgrades : {}) as Partial<CharUpgrades>;

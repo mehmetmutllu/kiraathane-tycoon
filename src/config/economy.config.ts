@@ -15,7 +15,7 @@
 
 // v29 (2026-06-13): personel hız kademeleri panele taşındı — waiterLevels kaldırıldı,
 // waiterUpgrades.teaSpeed/tostSpeed/dishSpeed eklendi (migrasyon save.ts'te).
-export const SAVE_VERSION = 29;
+export const SAVE_VERSION = 30;
 
 /**
  * ZONE modeli (Faz 3a + D-022, gece 2026-06-10): zemin kat zone'ları. Her zone kendi TEMALI
@@ -640,6 +640,15 @@ export const economyConfig = {
       { id: 'yesil', label: 'Çay Yeşili', cost: 10_000 },
       { id: 'mavi', label: 'Çini Mavisi', cost: 14_000 },
     ],
+    // MASA teması (2026-06-15): mobilya minderi + örtüsü seçilen renge boyanır (recolor atlas swap;
+    // GLOBAL — tüm salonlar; tek-atlas instancing 8 draw-call'da kalır). 'mavi' = native (ücretsiz).
+    // Altın en pahalı premium (kullanıcı: "altın tema burada PAHALI satılır"). Sadece kozmetik.
+    tableThemes: [
+      { id: 'mavi', label: 'Klasik Mavi', cost: 0, color: '#5a93cf' },
+      { id: 'bordo', label: 'Bordo Kadife', cost: 12_000, color: '#7c2230' },
+      { id: 'zumrut', label: 'Zümrüt Yeşili', cost: 16_000, color: '#1f6f50' },
+      { id: 'altin', label: 'Altın Varak', cost: 30_000, color: '#d4af37' },
+    ],
   },
 
   /** Prestige "Renovasyon" (Faz 4). */
@@ -661,6 +670,11 @@ export const economyConfig = {
 export function upgradeFillRateFor(cost: number): number {
   const t = Math.min(3.5, Math.max(1, cost / 60));
   return cost / t;
+}
+
+/** Masa temasının rengi (minder+örtü); bilinmeyen id → native mavi. */
+export function tableThemeColor(id: string): string {
+  return economyConfig.cosmetics.tableThemes.find((t) => t.id === id)?.color ?? '#5a93cf';
 }
 
 export type EconomyConfig = typeof economyConfig;

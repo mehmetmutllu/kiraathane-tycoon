@@ -1,11 +1,12 @@
-import { Suspense, useMemo, Component, type ReactNode } from 'react';
+import { Suspense, useMemo, useEffect, Component, type ReactNode } from 'react';
 import { useGLTF, Merged } from '@react-three/drei';
-import { Mesh, type Object3D } from 'three';
+import { Mesh, type Object3D, type MeshStandardMaterial } from 'three';
 import { useGame } from '../../game/store';
 import { LAYOUT } from '../../game/store';
 import { Model } from './Model';
 import { PALETTE } from '../../config/palette';
-import { tableSeats, zoneOfTable, zoneProduct } from '../../config/economy.config';
+import { tableSeats, zoneOfTable, zoneProduct, tableThemeColor } from '../../config/economy.config';
+import { recoloredAtlas, atlasReady, onAtlasReady } from './recolor';
 import type { Vec3 } from '../../game/types';
 
 // KayKit Furniture Bits (CC0). Native boyutlar (origin tabanda, üst ~y=1.0): table_small 1×1×1,
@@ -309,7 +310,8 @@ type ClothPlate = { pos: Vec3; size: [number, number, number]; color: string };
 
 // Açık masaların mobilya parçalarını model-tipine göre grupla (instance yerleşimi) + örtü plakaları.
 // Yerleşim/ölçek/rotasyon/örtü mantığı Table ile BİRE BİR (tek kaynak: aynı sabitler + tableSeats).
-function buildFurniture(tables: number, tableLevels: number[]) {
+// clothColor = aktif masa teması rengi (minder atlas recolor ile uyumlu; örtü plakası bununla boyanır).
+function buildFurniture(tables: number, tableLevels: number[], clothTone: string) {
   const place = Object.fromEntries(FURNITURE.map((k) => [k, [] as Placement[]])) as Record<FKey, Placement[]>;
   const cloths: ClothPlate[] = [];
   for (let i = 0; i < tables; i++) {
@@ -349,7 +351,7 @@ function buildFurniture(tables: number, tableLevels: number[]) {
       });
     }
 
-    const clothColor = food ? (level >= 2 ? PALETTE.defaultTone : '') : level >= 4 ? PALETTE.defaultTone : '';
+    const clothColor = food ? (level >= 2 ? clothTone : '') : level >= 4 ? clothTone : '';
     if (clothColor) {
       if (food) {
         const c = bigTable ? FOOD_CLOTH : FOOD_CLOTH_SM;
@@ -376,6 +378,8 @@ class FurnitureBoundary extends Component<{ fallback: ReactNode; children: React
 }
 
 function InstancedTables({ tables, tableLevels }: { tables: number; tableLevels: number[] }) {
+  const tableTheme = useGame((s) => s.tableTheme);
+  const themeColor = tableThemeColor(tableTheme);
   const gltfs = useGLTF(FURNITURE.map((k) => `${KAY}${k}.gltf`));
   const meshes = useMemo(() => {
     const o: Record<string, Mesh> = {};
@@ -385,7 +389,29 @@ function InstancedTables({ tables, tableLevels }: { tables: number; tableLevels:
     });
     return o;
   }, [gltfs]);
-  const { place, cloths } = useMemo(() => buildFurniture(tables, tableLevels), [tables, tableLevels]);
+  // Masa teması: ortak atlas materyalinin minder-mavisini tema rengine boyar (recolor) → TÜM mobilya
+  // tek atlas swap'iyle yeniden renklenir (instancing 8 draw-call'da kalır). 'mavi' = native (origMap).
+  useEffect(() => {
+    const native = themeColor.toLowerCase() === PALETTE.defaultTone.toLowerCase();
+    const apply = () => {
+      Object.values(meshes).forEach((m) => {
+        const mat = m.material as MeshStandardMaterial;
+        if (mat.userData.__origMap === undefined) mat.userData.__origMap = mat.map;
+        const tex = native ? (mat.userData.__origMap as MeshStandardMaterial['map']) : recoloredAtlas(themeColor);
+        if (tex) {
+          mat.map = tex;
+          mat.needsUpdate = true;
+        }
+      });
+    };
+    apply();
+    if (!native && !atlasReady()) return onAtlasReady(apply);
+    return undefined;
+  }, [meshes, themeColor]);
+  const { place, cloths } = useMemo(
+    () => buildFurniture(tables, tableLevels, themeColor),
+    [tables, tableLevels, themeColor],
+  );
   return (
     <>
       <Merged meshes={meshes}>

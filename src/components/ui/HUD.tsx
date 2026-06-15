@@ -291,9 +291,44 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
   const zonesOpen = useGame((s) => s.zonesOpen);
   const floorThemeByZone = useGame((s) => s.floorThemeByZone);
   const wallThemeByZone = useGame((s) => s.wallThemeByZone);
+  const tableTheme = useGame((s) => s.tableTheme);
   const ownedCosmetics = useGame((s) => s.ownedCosmetics);
   const buyCosmetic = useGame((s) => s.buyCosmetic);
   const cash = wallet.toNumber();
+
+  // MASA teması GLOBAL (zone yok): tek buton (Al / Uygula / ✓ Seçili). Minder+örtü o renge boyanır.
+  const renderTableRows = () =>
+    economyConfig.cosmetics.tableThemes.map((t) => {
+      const isSel = tableTheme === t.id;
+      const owned = t.cost === 0 || ownedCosmetics.includes(`table:${t.id}`);
+      const afford = owned || cash >= t.cost;
+      return (
+        <div className="shop-row" key={`table:${t.id}`}>
+          <span className="shop-swatch">
+            <i style={{ background: t.color }} />
+            <i style={{ background: t.color }} />
+          </span>
+          <span className="shop-info">
+            <span className="shop-name">{t.label}</span>
+            {t.cost > 0 && (
+              <span className="shop-cost">
+                <CoinIcon size={14} /> {t.cost.toLocaleString('tr-TR')}
+              </span>
+            )}
+          </span>
+          <span className="shop-zones">
+            <button
+              className={`shop-zone-btn${isSel ? ' sel' : ''}`}
+              data-testid={`shop-table-${t.id}`}
+              disabled={isSel || !afford}
+              onClick={() => buyCosmetic('table', t.id, 0)}
+            >
+              {isSel ? '✓ Seçili' : owned ? 'Uygula' : 'Al'}
+            </button>
+          </span>
+        </div>
+      );
+    });
 
   const renderRows = (kind: 'floor' | 'wall') => {
     const themes = kind === 'floor' ? economyConfig.cosmetics.floorThemes : economyConfig.cosmetics.wallThemes;
@@ -344,6 +379,8 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
     <div className="modal-backdrop" data-testid="shop-panel" onClick={onClose}>
       <div className="modal-card shop-card" onClick={(e) => e.stopPropagation()}>
         <div className="modal-title">Dekor Mağazası</div>
+        <div className="shop-section">Masa</div>
+        {renderTableRows()}
         <div className="shop-section">Zemin</div>
         {renderRows('floor')}
         <div className="shop-section">Duvar</div>
