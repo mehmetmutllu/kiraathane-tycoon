@@ -381,6 +381,30 @@ body,
 .quest-card:active {
   transform: scale(0.96);
 }
+/* ③ → (a): spotlight karartması (z:30) aktifken görev kartı ÜSTTE + altın halka ile okunur kalsın. */
+.quest-card.lit {
+  z-index: 35;
+  box-shadow: 0 0 0 2.5px var(--gold-1), 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+/* A paketi: görev tamamlanınca (completing/gap) kart yeşil onay flash'ı + bar %100 yeşil dolar. */
+.quest-card.done {
+  border-color: var(--green-1);
+  animation: questDoneFlash 0.5s ease-out;
+}
+.quest-card.done .quest-fill {
+  background: linear-gradient(var(--green-1), var(--green-2));
+}
+@keyframes questDoneFlash {
+  0% {
+    box-shadow: 0 0 0 0 rgba(156, 204, 101, 0), 0 5px 12px rgba(0, 0, 0, 0.4);
+  }
+  35% {
+    box-shadow: 0 0 0 5px rgba(156, 204, 101, 0.85), 0 6px 16px rgba(0, 0, 0, 0.45);
+  }
+  100% {
+    box-shadow: 0 0 0 2px rgba(156, 204, 101, 0.5), 0 5px 12px rgba(0, 0, 0, 0.4);
+  }
+}
 
 @keyframes cardPop {
   0% {

@@ -89,7 +89,9 @@ function questIndexFor(padId: string): number {
 function completePad(padId: string): boolean {
   const pad = economyConfig.pads.find((p) => p.id === padId);
   if (!pad) return false;
-  useGame.setState({ questIndex: questIndexFor(padId), questBase: 0 });
+  // Görev geçiş ritmi (A paketi): önceki tamamlamadan kalan questPhase yeni pad'in fill'ini bozmasın
+  // (visiblePads questIndex'e bağlı; faz makinesi mid-fill ilerletmesin) → fazı 'active'e sıfırla.
+  useGame.setState({ questIndex: questIndexFor(padId), questBase: 0, questPhase: 'active', questPhaseT: 0 });
   useGame.getState().addMoney(pad.cost + 50);
   const pos = LAYOUT.padPos[padId];
   useGame.setState({ player: [pos[0], 0.6, pos[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
@@ -97,6 +99,16 @@ function completePad(padId: string): boolean {
     useGame.getState().tick(0.1);
   }
   return useGame.getState().padsDone.includes(padId);
+}
+
+// Görev geçiş ritmini akıtır (A paketi: completing 0.5s + gap 0.8s). Bir eylemle görev TAMAMLANDIKTAN
+// sonra çağır → faz completing/gap'ten 'active'e dönene kadar tikler (sıradaki görev aktif olur).
+function flushQuestTransition() {
+  for (let i = 0; i < 40; i++) {
+    const before = useGame.getState().questPhase;
+    useGame.getState().tick(0.1);
+    if (before !== 'active' && useGame.getState().questPhase === 'active') return;
+  }
 }
 
 const spec = economyConfig.teaStation.upgrade;
@@ -400,26 +412,24 @@ describe('yeni-özellik bildirimi (D-019 §4)', () => {
     expect(useGame.getState().camFocus).not.toBeNull();
   });
 
-  it('turu-6: charStat spotlight\'ı beklerken PAN\'lı reveal TAMAMEN ertelenir; panel açılınca toast+pan birlikte gelir', () => {
+  it('⑤⑥ fix: ocak yükselt reveal\'ı bir görev (q_station2) tarafından kapsanır → toast/pan YOK (tek talimat = görev kartı)', () => {
     useGame.getState().hardReset();
     expect(useGame.getState().charPanelSeen).toBe(false);
-    // q_table2 görevindeyken pad'i bitir → görev q_charTray1'e (charStat) ilerler.
+    // q_table2 pad'ini bitir → bitiş ritmi akınca görev q_charTray1'e (charStat) ilerler.
     useGame.getState().addMoney(50);
     expect(completePad('table2')).toBe(true);
+    flushQuestTransition();
     expect(useGame.getState().quest?.id).toBe('q_charTray1');
-    // Görev geçişi kamera odağı bırakmadı (charStat + spotlight bekliyor).
-    expect(useGame.getState().camFocus).toBeNull();
-    // SONRAKİ tick: spotlight beklerken 'upgrade:0' reveal'ı ERTELENİR — toast YOK, tüketim YOK, pan YOK
-    // (eski m.8 yakıyordu → kararma altında "yükseltebilirsin" yazısı pan'sız çıkıyordu; turu-6 bug fix).
-    useGame.setState({ player: [0, 0.6, 2], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+    // upgrade:0 reveal'ı q_station2 (ileride "Çay ocağını yükselt" görevi) tarafından kapsanır →
+    // SESSİZCE tüketilir (revealSeen'e girer) ama toast/pan ÜRETMEZ; "yükseltebilirsin" yazısı görev sanılmaz.
+    useGame.setState({
+      player: [0, 0.6, 2], inputKeyboard: [0, 0], inputJoystick: [0, 0],
+      notice: null, noticeQueue: [], camFocus: null,
+    });
     useGame.getState().tick(0.1);
-    expect(useGame.getState().revealSeen).not.toContain('upgrade:0');
-    expect(useGame.getState().camFocus).toBeNull();
-    // Karakter paneli görülünce (kararma biter) reveal doğru anda çıkar: toast + pad'e kamera panı.
-    useGame.getState().markCharPanelSeen();
-    useGame.getState().tick(0.1);
-    expect(useGame.getState().revealSeen).toContain('upgrade:0');
-    expect(useGame.getState().camFocus).not.toBeNull();
+    expect(useGame.getState().revealSeen).toContain('upgrade:0'); // tüketildi (görünmeden)
+    expect(useGame.getState().notice).toBeNull(); // toast YOK
+    expect(useGame.getState().camFocus).toBeNull(); // pan YOK
   });
 
   it('yeniden yüklemede ZATEN açık özellikler tekrar bildirilmez (baseline; spam yok)', () => {
@@ -988,6 +998,7 @@ describe('ekonomi v2 — seviye throughputu artırır, fiyatı DEĞİL (D-010)',
     useGame.setState({ player: [st[0], 0.6, st[2]] });
     useGame.getState().tick(0.1);
     expect(useGame.getState().stats.teaPickups).toBeGreaterThan(0);
+    flushQuestTransition(); // bitiş ritmi (completing+gap) akınca sıradaki görev aktif olur
     expect(useGame.getState().quest?.id).toBe('q_serve1');
     // Görev geçişinde kamera yeni hedefe pan ister (hareketli onboarding).
     expect(useGame.getState().camFocus).not.toBeNull();
@@ -998,6 +1009,7 @@ describe('ekonomi v2 — seviye throughputu artırır, fiyatı DEĞİL (D-010)',
     useGame.setState({ player: [seat[0], 0.6, seat[2]] });
     useGame.getState().tick(0.1);
     expect(useGame.getState().stats.teasServed).toBe(1);
+    flushQuestTransition();
     expect(useGame.getState().quest?.id).toBe('q_coin');
     // 3) Müşteri öder, oyuncu koltukta → para toplanır → "2. Masayı aç".
     for (let i = 0; i < 80; i++) useGame.getState().tick(0.1);
@@ -1024,14 +1036,63 @@ describe('ekonomi v2 — seviye throughputu artırır, fiyatı DEĞİL (D-010)',
     // q_pickup sayacını karşıla → tick görev hattını ilerletir ve ödülü öder.
     useGame.setState({ stats: { ...useGame.getState().stats, teaPickups: 1 } });
     useGame.getState().tick(0.05);
-    const s = useGame.getState();
-    expect(s.questIndex).toBe(1);
+    // TAMAMLAMA ANI (A paketi): ödül cüzdana+lifetime eklenir, toast 'quest', kart 'done' (henüz ilerlemedi).
+    let s = useGame.getState();
     expect(s.wallet.toNumber()).toBeCloseTo(w0 + reward, 5);
     expect(s.lifetime.toNumber()).toBeCloseTo(l0 + reward, 5);
     expect(s.notice?.kind).toBe('quest');
     expect(s.notice?.reward).toBe(reward); // HUD toast'ı coin + tutar çizer
-    // Sıradaki görevin kartında ödül görünür (QuestView.reward).
+    expect(s.quest?.done).toBe(true); // kart %100 + yeşil onay gösterir
+    // Ritüel (completing+gap) akınca hat ilerler; sıradaki görevin kartında ödül görünür.
+    flushQuestTransition();
+    s = useGame.getState();
+    expect(s.questIndex).toBe(1);
     expect(s.quest?.reward).toBe(economyConfig.quests[1].reward ?? null);
+  });
+
+  it('A paketi: görev geçiş ritmi — completing (kart %100+done) → gap → yeni görev (instant swap YOK)', () => {
+    useGame.getState().hardReset();
+    expect(useGame.getState().questPhase).toBe('active');
+    // q_pickup'ı karşıla → bu tick'te questIndex İLERLEMEZ; faz 'completing', kart 'done' (%100).
+    useGame.setState({ stats: { ...useGame.getState().stats, teaPickups: 1 } });
+    useGame.getState().tick(0.05);
+    let s = useGame.getState();
+    expect(s.questPhase).toBe('completing');
+    expect(s.questIndex).toBe(0); // henüz ilerlemedi (anında takas yok)
+    expect(s.quest?.id).toBe('q_pickup');
+    expect(s.quest?.done).toBe(true);
+    expect(s.quest?.cur).toBe(s.quest?.total); // bar %100 dolar
+    // completing süresi (0.5s) dolunca 'gap'; gap boyunca hâlâ tamamlanmış görev gösterilir.
+    for (let i = 0; i < 7; i++) useGame.getState().tick(0.1);
+    expect(useGame.getState().questPhase).toBe('gap');
+    expect(useGame.getState().questIndex).toBe(0);
+    // gap (0.8s) dolunca yeni göreve geç: questIndex ilerler, faz 'active', kart artık done DEĞİL.
+    for (let i = 0; i < 9; i++) useGame.getState().tick(0.1);
+    s = useGame.getState();
+    expect(s.questPhase).toBe('active');
+    expect(s.questIndex).toBe(1);
+    expect(s.quest?.id).toBe('q_serve1');
+    expect(s.quest?.done).toBeFalsy();
+  });
+
+  it('B paketi: bildirim kuyruğu — aynı tick içindeki iki toast birbirini EZMEZ, sırayla gösterilir', () => {
+    useGame.getState().hardReset();
+    // İki reveal'ı aynı anda kuyruğa sok (görevle KAPSANMAYAN anahtarlar → toast üretirler).
+    useGame.setState({
+      notice: null,
+      noticeQueue: [
+        { text: 'Birinci', ttl: 0.3, kind: 'reveal' },
+        { text: 'İkinci', ttl: 4, kind: 'reveal' },
+      ],
+      player: [0, 0.6, 2],
+      inputKeyboard: [0, 0],
+      inputJoystick: [0, 0],
+    });
+    useGame.getState().tick(0.05);
+    expect(useGame.getState().notice?.text).toBe('Birinci'); // önce ilki
+    // İlk toast ttl'i (0.3s) dolunca kuyruktaki ikinci gösterilir (üst üste binmez).
+    for (let i = 0; i < 6; i++) useGame.getState().tick(0.1);
+    expect(useGame.getState().notice?.text).toBe('İkinci');
   });
 });
 
@@ -1487,13 +1548,20 @@ describe('Level/XP sistemi (v17, 2026-06-10) — eylem XP\'si, seviye eğrisi, m
     useGame.getState().hardReset();
     useGame.setState({ player: [0, 0.6, 2], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
     for (let i = 0; i < 200; i++) useGame.getState().tick(0.1);
-    const waiting = useGame.getState().npcs.find((n) => n.state === 'waitingForTea');
-    expect(waiting).toBeTruthy();
+    expect(useGame.getState().npcs.some((n) => n.state === 'waitingForTea')).toBe(true);
     const st = LAYOUT.stations[0];
     useGame.setState({ player: [st[0], 0.6, st[2]] });
-    useGame.getState().tick(0.1); // çay al (q_pickup tamamlanır → +perQuest)
+    useGame.getState().tick(0.1); // çay al (q_pickup tamamlanır → +perQuest, completing fazı başlar)
     const xpAfterPickup = useGame.getState().xp;
     expect(xpAfterPickup).toBeGreaterThanOrEqual(X.perQuest);
+    flushQuestTransition(); // bitiş ritmi akınca q_serve1 aktif olur (oyuncu istasyonda → serve YOK, xp sabit)
+    // flush sonrası bekleyen müşteri yoksa belirene kadar tikle (oyuncu istasyonda → q_serve1 serve YOK).
+    let waiting = useGame.getState().npcs.find((n) => n.state === 'waitingForTea');
+    for (let i = 0; i < 200 && !waiting; i++) {
+      useGame.getState().tick(0.1);
+      waiting = useGame.getState().npcs.find((n) => n.state === 'waitingForTea');
+    }
+    expect(waiting).toBeTruthy();
     const seat = LAYOUT.tables[waiting!.tableIndex].seat;
     useGame.setState({ player: [seat[0], 0.6, seat[2]] });
     useGame.getState().tick(0.1); // servis (+perTeaServed; q_serve1 da tamamlanır → +perQuest)
@@ -1891,7 +1959,7 @@ describe('karakter yükseltmeleri (v20) — eğri, satın alma, migrasyon, göre
     // Satın al → bir sonraki tick görevi tamamlar, hat ilerler.
     useGame.getState().addMoney(200);
     expect(useGame.getState().buyCharUpgrade('tray')).toBe(true);
-    useGame.getState().tick(0.1);
+    flushQuestTransition(); // bitiş ritmi (completing+gap) akınca hat ilerler
     expect(useGame.getState().questIndex).toBeGreaterThan(idx);
     expect(useGame.getState().quest?.id).toBe('q_serve5');
   });

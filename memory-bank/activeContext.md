@@ -2,7 +2,40 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
-## ŞU AN (2026-06-17 — ÖNİZLEME DOĞALLAŞTIRMA (A) + MASA TEMASI GATING (3 salon + tüm masalar max))
+## ŞU AN (2026-06-17 — GÖREV SENKRON & SIRALAMA DÜZELTMESİ: A) ritim + B) bildirim kuyruğu + C) suppression/okunabilirlik)
+Telefon feedback'i: görev gösterimi senkron/sıralama sorunu (üst üste binme, anlık takas, karartma altında okunmama,
+"yükseltebilirsin" reveal'ı görev sanılması). Kullanıcı onayı: boşluk 0.8sn · ③→(a) · ⑤⑥→(a). UYGULANDI.
+tsc temiz, **vitest 186/186** (2 yeni test), build temiz, MCP **0 konsol hatası**. HENÜZ COMMIT YOK (onay bekliyor).
+
+**Kök neden:** Ekranda 5 ayrı yönlendirme kanalı koordinatörsüz, aynı tick'te bağımsız ateşleniyordu (quest kartı /
+notice toast / karakter spotlight / tepsi spotlight / reveal toast); tek slot ezilme, anlık takas, karartma altında kart.
+
+**A — Görev geçiş ritmi (`store.ts`):** `questPhase` durum makinesi (active→completing 0.5s→gap 0.8s→active). Hedef
+tamamlanınca kart ANINDA takas OLMAZ: completing'de kart %100 dolar + yeşil onay flash'ı (`QuestView.done`), gap'te
+tamamlanmış görev tutulur, sonra questIndex ilerler + yeni kart `cardPop` ile girer. Ödül/toast/xp completing-start'ta
+bir kez. Zincirli tamamlamalar artık sıraya girer (instant skip yok). `QUEST_COMPLETE_DUR`/`QUEST_GAP_DUR` sabit.
+Transient (saveVersion DEĞİŞMEDİ): questPhase/questPhaseT default+load'da 'active'/0.
+
+**B — Bildirim kuyruğu (`store.ts`):** tek `notice` slotu yerine `noticeQueue` FIFO; bitiş/reveal/seviye/autoCollect
+toast'ları `enqueueNotice` ile sıraya girer, birbirini EZMEZ. Tick sonunda boşsa sıradakini gösterir.
+
+**C1 — Reveal suppression (⑤⑥, `store.ts`):** bir reveal'ın açtığı özelliği AYNI/İLERİDEKİ bir görev öğretiyorsa
+(stationLevel→upgrade:z, tableLevel/tablesAtLevel→tableUp:z, pad→opt:id) reveal toast'ı GÖSTERİLMEZ (sessizce
+revealSeen'e tüketilir). "Çay ocağını yükseltebilirsin ☕" gibi mesajlar görev cümlesiyle çakışmaz; tek talimat = görev kartı.
+
+**C2 — Spotlight okunabilirliği (③, `HUD.tsx`+`index.css`):** spotlight/traySpot aktifken görev kartına `.lit`
+(z-index 35, karartmanın ÜSTÜ + altın halka) → "Tepsini büyüt" karartma altında kalmıyor. `.done` = yeşil onay flash'ı.
+
+**Testler:** `completePad` helper'ı questPhase'i 'active'e sıfırlar (önceki tamamlamadan kalan faz yeni pad fill'ini
+bozmasın). `flushQuestTransition()` helper'ı (faz active'e dönene kadar tikler) eylem→ilerleme bekleyen testlerde.
+turu-6 reveal testi yeniden yazıldı (artık upgrade:0 q_station2 tarafından kapsanıp suppress edilir). 2 yeni test:
+A ritmi (completing→gap→advance + done) + B kuyruğu (iki toast sırayla). MCP doğrulama: q_pickup→1.3s→q_serve1;
+q_charTray1 spotlight'ında kart `lit` + okunur (`sync-spotlight-lit.jpeg`).
+
+**SIRADAKİ:** kullanıcı telefonda test (yeni APK gerek); commit+push onayı bekleniyor. Sonra: önceki fikir listesi
+(KayKit dekor / tema çeşit / per-zone masa teması / Türk objeleri Meshy).
+
+## ÖNCEKİ (2026-06-17 — ÖNİZLEME DOĞALLAŞTIRMA (A) + MASA TEMASI GATING (3 salon + tüm masalar max))
 İki ertelenmiş iş de bitti. tsc temiz, vitest **184/184** (yeni gate testi), build temiz, MCP **0 konsol hatası**.
 
 **1) Önizleme doğallaştırma — Seçenek A (ONAYLI) UYGULANDI:** `SalonSlice.tsx` yeniden yazıldı. Eski L köşe

@@ -720,6 +720,12 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
     `HUD.tsx` kilitliyken `.shop-locked` paneli (kilit + "Salon z/3" & "Max masa m/n" rozet) + sekmede 🔒.
     saveVersion değişmedi (türetilen kilit). testid `shop-table-locked`.
   - vitest **184/184** (yeni gate testi), tsc temiz, build temiz, MCP 0 hata. SS: `slice-after-*`, `gate-locked/unlocked`.
+- ✅ **6f — Görev senkron & sıralama düzeltmesi (2026-06-17, telefon feedback):** 5 yönlendirme kanalı
+  koordinatörsüzdü (üst üste binme/anlık takas/karartma-altı kart/reveal=görev karışıklığı). A) `questPhase` ritmi
+  (active→completing 0.5s→gap 0.8s→active; kart %100+yeşil onay, sonra yeni kart) — instant swap yok, zincir sıraya
+  girer. B) `noticeQueue` FIFO — toast'lar birbirini ezmez. C1) reveal suppression: bir görevin öğrettiği özelliğin
+  reveal toast'ı gösterilmez (tek talimat=görev kartı). C2) spotlight'ta görev kartı `.lit` (karartmanın üstü, okunur).
+  Transient (saveVersion DEĞİŞMEDİ). vitest **186/186** (2 yeni), tsc/build temiz, MCP 0 hata. SS: `sync-spotlight-lit.jpeg`.
 - ⏳ KayKit dekor (cactus/pictureframe/lamp/rug); Türk objeleri (semaver, çay bardağı, nargile) Meshy AI;
   Mixamo/skinned karakter. Okey/tavla masası ÜST KATTA (kullanıcı) — ileride.
 - ⏳ Işık / postprocessing / juice / ses

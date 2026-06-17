@@ -500,6 +500,12 @@ const TEA_PRICE = C.teaStation.basePrice;
 // Görev hattında yoksa -1 → gate hep açık (questIndex >= -1).
 const WASH_QUEST_INDEX = C.quests.findIndex((q) => q.target.type === 'washDish');
 
+// Görev geçiş ritmi (2026-06-17, kullanıcı onayı): hedef tamamlanınca kart ANINDA takas
+// olmaz. completing = bar %100 dolar + yeşil onay flash'ı; gap = yeni görev gelmeden boşluk.
+// Böylece "bitti → ara → yeni" net hissedilir (eski: aynı tick'te instant swap).
+const QUEST_COMPLETE_DUR = 0.5;
+const QUEST_GAP_DUR = 0.8;
+
 /** stationLevel'in demleme hız (throughput) çarpanı — çay/dk; fiyatı DEĞİL. */
 function brewThroughputMult(level: number): number {
   return upgradeOutputMultiplier(C.teaStation.upgrade, level);
@@ -714,8 +720,10 @@ export interface GameState {
   /** Masa-başı yükseltme noktalarındaki kısmi dolum (transient; index = GLOBAL masa slotu). */
   tableUpgradeFills: number[];
   activeZone: ActiveZone | null;
-  /** Yeni-özellik toast'u (D-019 §4) — transient; null ise gösterilmez. */
+  /** Yeni-özellik toast'u (D-019 §4) — transient; null ise gösterilmez. AYNI ANDA tek toast. */
   notice: GameNotice | null;
+  /** Bekleyen toast kuyruğu (transient): bitiş/reveal/seviye sırayla gösterilir, birbirini ezmez. */
+  noticeQueue: GameNotice[];
   /** Bu oturumda zaten bildirilmiş reveal anahtarları (transient; init'te açık olanlarla doldurulur). */
   revealSeen: string[];
   /** Kalıcı eylem sayaçları (quest + arka-plan reveal şartları; v16 persist). */
@@ -744,6 +752,10 @@ export interface GameState {
   trayTipSeen: boolean;
   /** Üst görev barı görünümü (transient; her tick türetilir; null = hat bitti). */
   quest: QuestView | null;
+  /** Görev geçiş fazı (transient): active=normal, completing=bitiş flash, gap=yeni görev öncesi boşluk. */
+  questPhase: 'active' | 'completing' | 'gap';
+  /** Görev geçiş fazı geri sayımı (transient, sn). */
+  questPhaseT: number;
   /** Kamera odak isteği (transient): görev barına dokununca / yeni şey açılınca hedefe pan. */
   camFocus: CamFocus | null;
   /** Genel-bakış zoom'u (transient): HUD kamera butonu AÇIKKEN kamera uzaklaşır (salonu görmek için). */
@@ -899,6 +911,8 @@ export interface QuestView {
   cost: number | null;
   /** Tamamlama ödülü (₺; M1) — görev kartında coin rozetiyle gösterilir. */
   reward: number | null;
+  /** Görev geçiş fazında (completing/gap) true → kart %100 + yeşil onay flash'ı gösterir. */
+  done?: boolean;
 }
 
 function questView(q: QuestDef, ctx: QuestCtx): QuestView {
@@ -1051,10 +1065,13 @@ export const useGame = create<GameState>((set, get) => ({
   tableUpgradeFills: LAYOUT.tables.map(() => 0),
   activeZone: null,
   notice: null,
+  noticeQueue: [],
   revealSeen: [],
   stats: defaultStats(),
   questIndex: 0,
   questBase: 0,
+  questPhase: 'active',
+  questPhaseT: 0,
   xp: 0,
   settings: defaultSettings(),
   floorThemeByZone: Array.from({ length: MAX_ZONES }, (_, z) => defaultFloorTheme(z)),
@@ -1161,6 +1178,7 @@ export const useGame = create<GameState>((set, get) => ({
       tableUpgradeFills: LAYOUT.tables.map(() => 0),
       activeZone: null,
       notice: null,
+      noticeQueue: [],
       // revealSeen baseline: yüklemede ZATEN açık olan özellikler bildirilmiş sayılır (yeniden yükleme spam'ı yok).
       revealSeen: revealKeys(
         {
@@ -1177,6 +1195,8 @@ export const useGame = create<GameState>((set, get) => ({
       stats: { ...save.stats },
       questIndex: save.questIndex,
       questBase: save.questBase,
+      questPhase: 'active',
+      questPhaseT: 0,
       xp: save.xp,
       settings: { ...save.settings },
       floorThemeByZone: Array.from({ length: MAX_ZONES }, (_, z) => save.floorThemeByZone[z] ?? defaultFloorTheme(z)),
@@ -1250,7 +1270,12 @@ export const useGame = create<GameState>((set, get) => ({
     let carriedDirtyFood = s.carriedDirtyFood;
     const tableUpgradeFills = s.tableUpgradeFills.slice();
     let notice = s.notice;
+    // Bildirim kuyruğu: bitiş/reveal/seviye toast'ları tek slotu EZMEK yerine sıraya girer (B paketi).
+    const noticeQueue: GameNotice[] = [...s.noticeQueue];
+    const enqueueNotice = (n: GameNotice) => noticeQueue.push(n);
     let revealSeen = s.revealSeen;
+    let questPhase = s.questPhase;
+    let questPhaseT = s.questPhaseT;
     let xp = s.xp; // toplam XP (bu tick'te eylem ödülleriyle artabilir; level türetilir)
     // Kalıcı eylem sayaçları (bu tick'te artabilir). waiterServedByZone dizisi de klonlanır (v21).
     const stats: SaveStats = { ...s.stats, waiterServedByZone: s.stats.waiterServedByZone.slice() };
@@ -1479,7 +1504,7 @@ export const useGame = create<GameState>((set, get) => ({
     // Oto-toplama bildirimi TOPLU çıkar (en sık autoCollectToastEvery sn'de bir) — kullanıcı
     // paranın kendiliğinden toplandığını GÖRSÜN ama toast spam'ı olmasın.
     if (autoCollectSum > 0 && autoCollectToastCooldown <= 0) {
-      notice = { text: 'Bekleyen paralar otomatik toplandı', ttl: 4, kind: 'reveal', reward: autoCollectSum };
+      enqueueNotice({ text: 'Bekleyen paralar otomatik toplandı', ttl: 4, kind: 'reveal', reward: autoCollectSum });
       autoCollectSum = 0;
       autoCollectToastCooldown = C.money.autoCollectToastEvery;
     }
@@ -1701,16 +1726,28 @@ export const useGame = create<GameState>((set, get) => ({
       questIndex < C.quests.length &&
       C.quests[questIndex].target.type === 'charStat' &&
       !s.charPanelSeen;
+    // C paketi (⑤⑥ → tek talimat kaynağı = görev kartı): bir reveal'ın açtığı özelliği AYNI/İLERİDEKİ
+    // bir görev zaten öğretiyorsa reveal toast'ı GÖSTERİLMEZ (sessizce tüketilir) — "Çay ocağını
+    // yükseltebilirsin ☕" gibi mesajlar görev cümlesiyle çakışıp görev sanılmasın.
+    const questCoveredReveals = new Set<string>();
+    for (let qi = questIndex; qi < C.quests.length; qi++) {
+      const t = C.quests[qi].target;
+      if (t.type === 'stationLevel') questCoveredReveals.add(`upgrade:${t.zone ?? 0}`);
+      else if (t.type === 'tableLevel') questCoveredReveals.add('tableUp:0');
+      else if (t.type === 'tablesAtLevel') questCoveredReveals.add(`tableUp:${t.zone ?? 0}`);
+      else if (t.type === 'pad') questCoveredReveals.add(`opt:${t.id}`);
+    }
     for (const [key, text, rp] of revealKeys(padGate, zonesOpen, stationLevels)) {
       if (!revealSeen.includes(key)) {
+        // Bir görevin kapsadığı özellik: reveal'ı sessizce tüket (toast/pan yok) → tek talimat görev kartı.
+        if (questCoveredReveals.has(key)) {
+          revealSeen = [...revealSeen, key];
+          continue;
+        }
         // turu-6 fix: spotlight beklerken PAN'lı reveal'ı TAMAMEN ertele (toast + tüketim dahil).
-        // Eski m.8 yalnız panı bastırıyordu → reveal toast'ı ("Çay ocağını yükseltebilirsin ☕")
-        // tepsi-spotlight'ının kararması altında pan'sız çıkıp KALICI tükeniyordu → o pad bir daha
-        // mekânsal gösterilmiyordu (kullanıcı bug'ı 2026-06-13). Şimdi ertelenir: panel açılıp
-        // kararma bitince reveal doğru anda toast + pad'e pan'la birlikte çıkar (tek yönlendirme).
         if (spotlightPending && rp) continue;
         revealSeen = [...revealSeen, key];
-        notice = { text, ttl: 4.5, kind: 'reveal' };
+        enqueueNotice({ text, ttl: 4.5, kind: 'reveal' });
         // Yeni açılan noktaya anlık kamera pan ("orada bir şey var" — kullanıcı isteği 2026-06-09).
         if (rp) requestFocus(rp, 1);
       }
@@ -1880,34 +1917,53 @@ export const useGame = create<GameState>((set, get) => ({
       charUpgrades: s.charUpgrades,
       waiterUpgrades: s.waiterUpgrades,
     };
-    let questAdvanced = false;
-    while (questIndex < C.quests.length && questTargetMet(C.quests[questIndex].target, questCtx)) {
-      // Görev ödülü (M1): tamamlanınca cüzdana ₺ — toast'ta coin + tutar gösterilir.
-      const qReward = C.quests[questIndex].reward ?? 0;
-      if (qReward > 0) {
-        wallet = wallet.add(qReward);
-        lifetime = lifetime.add(qReward);
+    // GÖREV GEÇİŞ RİTMİ (A paketi): aktif görev karşılanınca kart ANINDA takas olmaz. 3 vuruş:
+    //   active → (hedef tamam) → completing (kart %100 + yeşil onay, ödül+toast burada) → gap (boşluk,
+    //   kart tamamlanmış görevi %100 tutar) → active (questIndex ilerler, yeni kart cardPop ile girer).
+    // Bu sayede "bitti → ara → yeni" net hissedilir; zincirli tamamlamalar sıraya girer (instant skip yok).
+    let questDone = false; // bu tick kart "tamamlandı" (completing/gap) gösterilsin mi
+    if (questPhase === 'active') {
+      if (questIndex < C.quests.length && questTargetMet(C.quests[questIndex].target, questCtx)) {
+        // BİTİŞ ANI: ödül + tamamlama toast'u + xp (bir kez); kart HENÜZ ilerletilmez.
+        const qReward = C.quests[questIndex].reward ?? 0;
+        if (qReward > 0) {
+          wallet = wallet.add(qReward);
+          lifetime = lifetime.add(qReward);
+        }
+        enqueueNotice({ text: C.quests[questIndex].title, ttl: 3.5, kind: 'quest', reward: qReward > 0 ? qReward : undefined });
+        xp += C.xp.perQuest;
+        questPhase = 'completing';
+        questPhaseT = QUEST_COMPLETE_DUR;
+        questDone = true;
       }
-      notice = { text: C.quests[questIndex].title, ttl: 3.5, kind: 'quest', reward: qReward > 0 ? qReward : undefined };
-      questIndex += 1;
-      xp += C.xp.perQuest;
-      questAdvanced = true;
-      // Sonraki sayaç görevinin delta tabanı = sayacın ŞU ANKİ değeri.
-      const nt = questIndex < C.quests.length ? C.quests[questIndex].target : null;
-      const counterNow = nt ? questCounterValue(nt, stats) : null;
-      questBase = counterNow ?? 0;
-      questCtx.questBase = questBase;
-    }
-    if (questAdvanced && questIndex < C.quests.length) {
-      const q = C.quests[questIndex];
-      if (q.target.type === 'charStat' && !s.charPanelSeen) {
-        // turu-5 m.8: charStat görevi + spotlight bekliyorsa AYNI tick'teki reveal panı da İPTAL —
-        // ekranda tek yönlendirme kalır (spotlight). (table2 bitişi hem yükseltme-noktası reveal'ını
-        // hem q_charTray1 spotlight'ını tetikliyordu; kamera "çay yükselt"e kayarken ekran kararıyordu.)
-        camFocus = null;
-      } else {
-        const fp = questFocusPos(q.target, tableLevels, out.tables, q.zone ?? 0);
-        if (fp) requestFocus(fp, 2); // charStat görevinde 3D hedef yok → kamera sıçramaz (buton efekti yönlendirir)
+    } else if (questPhase === 'completing') {
+      questPhaseT -= dt;
+      questDone = true;
+      if (questPhaseT <= 0) {
+        questPhase = 'gap';
+        questPhaseT = QUEST_GAP_DUR;
+      }
+    } else {
+      // 'gap': boşluk dolunca YENİ göreve geç (questIndex ilerler, kamera yeni hedefe pan).
+      questPhaseT -= dt;
+      questDone = true;
+      if (questPhaseT <= 0) {
+        questIndex += 1;
+        const nt = questIndex < C.quests.length ? C.quests[questIndex].target : null;
+        questBase = nt ? questCounterValue(nt, stats) ?? 0 : 0;
+        questCtx.questBase = questBase;
+        questPhase = 'active';
+        questDone = false;
+        if (questIndex < C.quests.length) {
+          const q = C.quests[questIndex];
+          if (q.target.type === 'charStat' && !s.charPanelSeen) {
+            // charStat görevi + spotlight bekliyorsa kamera panı İPTAL — ekranda tek yönlendirme (spotlight).
+            camFocus = null;
+          } else {
+            const fp = questFocusPos(q.target, tableLevels, out.tables, q.zone ?? 0);
+            if (fp) requestFocus(fp, 2); // charStat'ta 3D hedef yok → kamera sıçramaz (buton efekti yönlendirir)
+          }
+        }
       }
     }
     // Kamera odağı: joystick/klavye girdisi iptal eder (oyuncu kontrolü üstün); süre dolunca biter.
@@ -1917,16 +1973,19 @@ export const useGame = create<GameState>((set, get) => ({
       const moving = Math.hypot(input[0], input[1]) > 0.25;
       camFocus = ttl > 0 && !moving ? { pos: camFocus.pos, ttl } : null;
     }
-    const quest =
-      questIndex < C.quests.length ? questView(C.quests[questIndex], questCtx) : null;
+    let quest = questIndex < C.quests.length ? questView(C.quests[questIndex], questCtx) : null;
+    // completing/gap: kart tamamlanmış görevi %100 + onay flash'ıyla gösterir (questIndex henüz ilerlemedi).
+    if (quest && questDone) quest = { ...quest, cur: quest.total, done: true };
 
-    // --- Level-up bildirimi: toplam XP bu tick'te seviye atlattıysa toast (görev toast'ını ezebilir;
-    // seviye daha nadir ve daha büyük haber). Level ayrı saklanmaz — levelProgress(xp) türetir. ---
+    // --- Level-up bildirimi: toplam XP bu tick'te seviye atlattıysa toast (kuyruğa girer). ---
     if (xp !== s.xp) {
       const before = levelProgress(s.xp).level;
       const after = levelProgress(xp).level;
-      if (after > before) notice = { text: `Seviye ${after}!`, ttl: 4.5, kind: 'level' };
+      if (after > before) enqueueNotice({ text: `Seviye ${after}!`, ttl: 4.5, kind: 'level' });
     }
+
+    // Bildirim kuyruğu: mevcut toast yoksa sıradakini göster (tek slot, sırayla — B paketi).
+    if (!notice && noticeQueue.length > 0) notice = noticeQueue.shift()!;
 
     // --- Periyodik kayıt ---
     let saveTimer = s.saveTimer - dt;
@@ -1955,10 +2014,13 @@ export const useGame = create<GameState>((set, get) => ({
       tableUpgradeFills,
       activeZone,
       notice,
+      noticeQueue,
       revealSeen,
       stats,
       questIndex,
       questBase,
+      questPhase,
+      questPhaseT,
       xp,
       quest,
       camFocus,

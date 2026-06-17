@@ -117,7 +117,12 @@ export function HUD() {
 
       {/* SAĞ-ÜST ALTI: görev kartı (foto + ad + ilerleme barı); dokun → kamera hedefe */}
       {quest && (
-        <button className="quest-card" data-testid="quest" key={quest.id} onClick={() => focusQuest()}>
+        <button
+          className={`quest-card${quest.done ? ' done' : ''}${spotlight || traySpot ? ' lit' : ''}`}
+          data-testid="quest"
+          key={quest.id}
+          onClick={() => focusQuest()}
+        >
           <span className="quest-photo">
             <QuestPhoto target={quest.target} size={46} />
           </span>
