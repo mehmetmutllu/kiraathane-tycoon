@@ -3,7 +3,7 @@ import { useGame } from '../../game/store';
 import { economyConfig } from '../../config/economy.config';
 import { Table } from '../three/Tables';
 import { CoinIcon } from './icons';
-import { FixedCam, SalonLights, FloorPatch, WallCornerL } from './SalonSlice';
+import { FixedCam, SalonLights, FloorPatch, WallBack } from './SalonSlice';
 
 /** Zemin/Duvar SAYFA-İÇİ önizleme: oyunun kamera açısı/duruşu/uzaklığıyla salon köşesinden bir kesit
  *  (gerçek zemin + duvar + referans masa) + per-salon satın al. "Salondan kes-yapıştır" hissi. */
@@ -26,12 +26,12 @@ export function DioramaPreview({ kind, id }: { kind: 'floor' | 'wall'; id: strin
     <div className="shop-preview" data-testid="shop-preview">
       <div className="preview-canvas">
         <Canvas dpr={[1, 2]}>
-          <FixedCam d={4.0} ty={0.5} />
+          <FixedCam d={3.8} ty={0.42} />
           <SalonLights />
-          <FloorPatch floorId={floorId} half={2.4} />
-          <WallCornerL wallId={wallId} half={2.4} />
-          {/* referans masa (ölçek/bağlam) — gerçek oyun masası, köşede */}
-          <Table x={0.5} z={0.6} level={1} />
+          <FloorPatch floorId={floorId} checkerHalf={4} />
+          <WallBack wallId={wallId} z={-2.6} />
+          {/* referans masa (ölçek/bağlam) — gerçek oyun masası, önde-merkez */}
+          <Table x={0.4} z={0.5} level={1} />
         </Canvas>
       </div>
       <div className="preview-zones">

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { useGame } from '../../game/store';
+import { useGame, tableThemeUnlocked, tableSoftMaxLevel } from '../../game/store';
 import { perf } from '../../game/perf';
 import { fmt } from '../../game/decimal';
-import { levelProgress, economyConfig } from '../../config/economy.config';
+import { levelProgress, economyConfig, MAX_ZONES } from '../../config/economy.config';
 import { FLOOR_THEMES, WALL_THEMES } from '../../config/palette';
 import { CoinIcon, GemIcon, StarBadge, GearIcon, MailIcon, BrushIcon, CharIcon, TrayEmptyIcon, TostEmptyIcon, QuestPhoto, CheckBadge, BangBadge, CamZoomIcon } from './icons';
 import { CharacterPanel } from './CharacterPanel';
@@ -290,11 +290,17 @@ export function HUD() {
  *  butonları (yalnız AÇIK zone'lar). İlk satın alma ₺ düşer; sahip olunan tema ücretsiz seçilir. */
 function ShopPanel({ onClose }: { onClose: () => void }) {
   const zonesOpen = useGame((s) => s.zonesOpen);
+  const tables = useGame((s) => s.tables);
+  const tableLevels = useGame((s) => s.tableLevels);
   const floorThemeByZone = useGame((s) => s.floorThemeByZone);
   const wallThemeByZone = useGame((s) => s.wallThemeByZone);
   const tableTheme = useGame((s) => s.tableTheme);
   const ownedCosmetics = useGame((s) => s.ownedCosmetics);
   const [tab, setTab] = useState<'table' | 'floor' | 'wall'>('table');
+  // Masa teması kilidi: 3 salon + tüm açık masalar max (kullanıcı kararı). Kilitliyse Masa sekmesi
+  // satın alma yerine koşulu açıklayan kilit panelini gösterir.
+  const tableUnlocked = tableThemeUnlocked({ zonesOpen, tables, tableLevels });
+  const maxedTables = tableLevels.slice(0, tables).filter((l) => l >= tableSoftMaxLevel()).length;
   // Sekme başına ÖNİZLENEN çeşit (sayfa-içi önizleme bunu gösterir). Varsayılan = o an uygulanmış tema.
   const [sel, setSel] = useState<{ table: string; floor: string; wall: string }>(() => ({
     table: tableTheme,
@@ -390,15 +396,34 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
               onClick={() => setTab(k)}
             >
               {label}
+              {k === 'table' && !tableUnlocked ? <span className="shop-tab-lock">🔒</span> : null}
             </button>
           ))}
         </div>
-        {tab === 'table' ? (
+        {tab === 'table' && !tableUnlocked ? (
+          <div className="shop-locked" data-testid="shop-table-locked">
+            <div className="shop-locked-icon">🔒</div>
+            <div className="shop-locked-title">Masa temaları kilitli</div>
+            <div className="shop-locked-desc">
+              Tüm salonları aç ve bütün masaları son seviyeye getir; sonra masalarını renklendirebilirsin.
+            </div>
+            <div className="shop-locked-reqs">
+              <span className={zonesOpen >= MAX_ZONES ? 'req done' : 'req'}>
+                {zonesOpen >= MAX_ZONES ? '✓' : '•'} Salon {zonesOpen}/{MAX_ZONES}
+              </span>
+              <span className={maxedTables >= tables && tables > 0 ? 'req done' : 'req'}>
+                {maxedTables >= tables && tables > 0 ? '✓' : '•'} Max masa {maxedTables}/{tables}
+              </span>
+            </div>
+          </div>
+        ) : tab === 'table' ? (
           <TableThemePreview id={sel.table} />
         ) : (
           <DioramaPreview kind={tab} id={sel[tab]} />
         )}
-        <div className="shop-cards">{tab === 'table' ? renderTableCards() : renderThemeCards(tab)}</div>
+        {tab === 'table' && !tableUnlocked ? null : (
+          <div className="shop-cards">{tab === 'table' ? renderTableCards() : renderThemeCards(tab)}</div>
+        )}
         <button className="modal-btn" data-testid="shop-ok" onClick={onClose}>
           Tamam
         </button>

@@ -2,7 +2,34 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
-## ŞU AN (2026-06-15 — BUG FIX: uzak salonda mobilya kayboluyordu + 2 açık tasarım sorusu)
+## ŞU AN (2026-06-17 — ÖNİZLEME DOĞALLAŞTIRMA (A) + MASA TEMASI GATING (3 salon + tüm masalar max))
+İki ertelenmiş iş de bitti. tsc temiz, vitest **184/184** (yeni gate testi), build temiz, MCP **0 konsol hatası**.
+
+**1) Önizleme doğallaştırma — Seçenek A (ONAYLI) UYGULANDI:** `SalonSlice.tsx` yeniden yazıldı. Eski L köşe
+(sol+arka duvar) + ahşap çerçeveli dar zemin "inşaat/kutu" görünüyordu. ŞİMDİ: `FloorPatch` tema base'i
+40×40 tam-taşan plane → kenarda void/çerçeve YOK (zemin tüm canvas'ı doldurur) + merkez checker (`checkerHalf`).
+`WallCornerL` → `WallBack` (TEK arka duvar, z/width param; L köşe yok) = ferah salon kesiti. Kameralar biraz
+uzaklaştı: TableThemePreview d 2.9→3.4 ty 0.42, WallBack z=-2.1, checkerHalf=3; DioramaPreview d 4.0→3.8 ty 0.42,
+WallBack z=-2.6, checkerHalf=4, referans masa (0.4,0.5). `PALETTE` importu kalktı (çerçeve gitti).
+DOĞRULANDI (MCP): masa/zemin(parke)/zemin(checker fayans)/duvar — hepsi salon kesiti gibi, zemin canvas'ı dolduruyor.
+Screenshot: `slice-after-table.jpeg`, `slice-after-floor.jpeg`, `slice-after-checker.jpeg` (önce: `slice-before-*`).
+
+**2) Masa teması gating — KARAR (kullanıcı 2026-06-17): 3 salon AÇIK + TÜM açık masalar MAX seviye ("seviyeler
+fullenince", açılınca değil).** Zemin/duvar temaları ETKİLENMEZ (sadece MASA sekmesi). Uygulama:
+- `store.ts`: `tableThemeUnlocked({zonesOpen,tables,tableLevels})` = zonesOpen≥MAX_ZONES(3) && tüm açık masalar
+  ≥ `tableSoftMaxLevel()`. `buyCosmetic('table')` başında guard (kilitliyken satın alma/uygula reddedilir; default
+  'mavi' kalır). saveVersion DEĞİŞMEDİ (sadece türetilen kilit; persist alan yok).
+- `HUD.tsx ShopPanel`: kilitliyken Masa sekmesi önizleme+kart yerine `.shop-locked` paneli (kilit ikonu + açıklama +
+  "✓ Salon z/3" & "• Max masa m/n" rozetleri). Masa sekme butonunda 🔒. Açılınca normal önizleme+kartlar döner.
+- `index.css`: `.shop-locked*`, `.shop-tab-lock` stilleri. testid: `shop-table-locked`.
+- Test: `tests/logic.test.ts` "masa teması KİLİTLİ" — taze/yalnız-3-salon kilitli, 3 salon+tüm masa max açılır.
+DOĞRULANDI (MCP): taze save (3 salon ama 1/10 masa max) → kilit paneli; `__setState` ile 10 masa lv4 → kilit açıldı,
+önizleme+kartlar geldi. Screenshot: `gate-locked.jpeg`, `gate-unlocked.jpeg`.
+
+**SIRADAKİ FİKİRLER:** (a) tema mağazasına daha fazla çeşit; (b) masa teması per-zone (şu an global); (c) telefon/APK
+testi (splash+instancing gerçek cihaz FPS); (d) kalan perf riskli kalemler (GroundMarker/dekor) ancak ölçüm gösterirse.
+
+## ÖNCEKİ (2026-06-15 — BUG FIX: uzak salonda mobilya kayboluyordu + 2 açık tasarım sorusu)
 **BUG (kullanıcı bildirdi, çözüldü):** Salon 2/3'e yaklaşınca masaların KayKit modelleri kaybolup sadece
 örtü plakaları kalıyordu. KÖK NEDEN: instanced mobilya (`<Merged>` InstancedMesh) ve dama zemini (`<Instances>`)
 sınır küresi LOCAL origin'de → kamera uzak salona odaklanınca tüm batch FRUSTUM CULLED. Örtüler ayrı mesh

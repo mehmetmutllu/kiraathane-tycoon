@@ -1,9 +1,9 @@
-// Önizleme = "salondan kesilip yapıştırılmış parça": oyunun KAMERA AÇISI (izometrik 45°, -Z'ye bakan,
-// offset (0,d,+d), fov 50) + IŞIK (ambient 0.6 + dirLight [6,12,6]) + ZEMİN/DUVAR geometrisi Scene.tsx
-// ile BİREBİR (düz base + checker quad; duvar h=1.2 krem üst + lambri wh=0.5). Salt görsel önizleme.
+// Önizleme = "salondan kesilip yapıştırılmış FERAH parça": oyunun KAMERA AÇISI (izometrik 45°, -Z'ye bakan,
+// offset (0,d,+d), fov 50) + IŞIK (ambient 0.6 + dirLight [6,12,6]). Zemin tüm canvas'ı doldurur (kenar void
+// yok), TEK arka duvar (L köşe/kutu hissi yok). Düz base + checker quad; duvar h=1.2 krem üst + lambri wh=0.5.
 import { useEffect } from 'react';
 import { useThree } from '@react-three/fiber';
-import { PALETTE, FLOOR_THEMES, WALL_THEMES } from '../../config/palette';
+import { FLOOR_THEMES, WALL_THEMES } from '../../config/palette';
 
 // Oyun kamerasıyla AYNI duruş: konum (0,d,+d), bakış (0,ty,0), fov 50 (Scene.tsx CameraRig dili).
 export function FixedCam({ d, ty = 0.45 }: { d: number; ty?: number }) {
@@ -28,8 +28,8 @@ export function SalonLights() {
   );
 }
 
-// Dama deseni: Scene.tsx CheckerTiles ile aynı (ts=1.3, (i+j)%2 alt-renk kareleri). Önizlemede az
-// sayıda kare → instancing gerekmez (düz mesh).
+// Dama deseni: Scene.tsx CheckerTiles ile aynı (ts=1.3, (i+j)%2 alt-renk kareleri). Merkezden +half'a kadar
+// döşer; az kare → instancing gerekmez (düz mesh).
 function CheckerPatch({ half, color }: { half: number; color: string }) {
   const ts = 1.3;
   const n = Math.ceil((half * 2) / ts);
@@ -56,20 +56,18 @@ function CheckerPatch({ half, color }: { half: number; color: string }) {
   );
 }
 
-// Zemin kesiti: dış ahşap taban + tema base overlay (+ checker), Scene.tsx Ground ile aynı katman dili.
-export function FloorPatch({ floorId, half = 2.4 }: { floorId: string; half?: number }) {
+// Zemin kesiti: tema base TÜM canvas'ı doldurur (kenar void/çerçeve YOK) + merkezde checker deseni.
+// İnce ahşap süpürgelik şeridi duvar dibinde (Scene.tsx Ground katman dilini hatırlatır, ama çerçeve değil).
+export function FloorPatch({ floorId, checkerHalf = 4 }: { floorId: string; checkerHalf?: number }) {
   const theme = FLOOR_THEMES[floorId] ?? FLOOR_THEMES.parke;
   return (
     <group>
+      {/* tam-taşan zemin: tema base — frame'i her yönde aşar, kenarda void görünmez */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
-        <planeGeometry args={[half * 2 + 2, half * 2 + 2]} />
-        <meshStandardMaterial color={PALETTE.floorWood} />
-      </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.004, 0]}>
-        <planeGeometry args={[half * 2, half * 2]} />
+        <planeGeometry args={[40, 40]} />
         <meshStandardMaterial color={theme.base} />
       </mesh>
-      {theme.kind === 'checker' ? <CheckerPatch half={half} color={theme.alt} /> : null}
+      {theme.kind === 'checker' ? <CheckerPatch half={checkerHalf} color={theme.alt} /> : null}
     </group>
   );
 }
@@ -92,14 +90,8 @@ function PreviewWall({ x, z, w, dDepth, theme }: { x: number; z: number; w: numb
   );
 }
 
-// L köşe (arka + sol duvar) — oyundaki köşe duruşu (kamera -Z'ye bakar: arka duvar uzakta, sol duvar solda).
-export function WallCornerL({ wallId, half = 2.4 }: { wallId: string; half?: number }) {
+// TEK arka duvar (L köşe/kutu YOK) — ferah salon hissi. Kamera -Z'ye baktığından duvar uzakta, geniş.
+export function WallBack({ wallId, z = -2.6, width = 14 }: { wallId: string; z?: number; width?: number }) {
   const th = WALL_THEMES[wallId] ?? WALL_THEMES.krem;
-  const t = 0.2;
-  return (
-    <group>
-      <PreviewWall x={0} z={-half} w={half * 2 + t} dDepth={t} theme={th} />
-      <PreviewWall x={-half} z={0} w={t} dDepth={half * 2} theme={th} />
-    </group>
-  );
+  return <PreviewWall x={0} z={z} w={width} dDepth={0.2} theme={th} />;
 }

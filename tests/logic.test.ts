@@ -52,6 +52,7 @@ import {
   stationUpgradeCost,
   trayCapacity,
   tableSoftMaxLevel,
+  tableThemeUnlocked,
   tableUpgradeZoneUnlocked,
   tableUpgradeUnlockedZ,
   upgradeZoneUnlockedZ,
@@ -1774,6 +1775,31 @@ describe('kozmetik mağaza (WP6, v19) — zone-başına tema satın alma + migra
     // Kapalı zone'a uygulanamaz (zonesOpen 1) + tanımsız tema reddedilir.
     expect(useGame.getState().buyCosmetic('wall', 'yesil', 1)).toBe(false);
     expect(useGame.getState().buyCosmetic('floor', 'yok-boyle-tema', 0)).toBe(false);
+  });
+
+  it('masa teması KİLİTLİ: 3 salon + tüm açık masalar max olana dek satın alınamaz (2026-06-17)', () => {
+    useGame.getState().hardReset();
+    const paid = economyConfig.cosmetics.tableThemes.find((t) => t.cost > 0)!;
+    useGame.getState().addMoney(paid.cost + 1000);
+    // Taze oyun (1 salon, masalar lv0): kilitli → tableThemeUnlocked false, satın alma reddedilir.
+    expect(tableThemeUnlocked(useGame.getState())).toBe(false);
+    expect(useGame.getState().buyCosmetic('table', paid.id, 0)).toBe(false);
+    expect(useGame.getState().tableTheme).toBe('mavi');
+    // Sadece 3 salon açık ama masalar lv0: hâlâ kilitli (koşul AND).
+    useGame.setState({ zonesOpen: 3 });
+    expect(tableThemeUnlocked(useGame.getState())).toBe(false);
+    expect(useGame.getState().buyCosmetic('table', paid.id, 0)).toBe(false);
+    // 3 salon + TÜM açık masalar soft-max: kilit açılır → satın alma çalışır + cüzdan düşer.
+    const max = tableSoftMaxLevel();
+    const tables = useGame.getState().tables;
+    const levels = useGame.getState().tableLevels.slice();
+    for (let i = 0; i < tables; i++) levels[i] = max;
+    useGame.setState({ tableLevels: levels });
+    expect(tableThemeUnlocked(useGame.getState())).toBe(true);
+    const before = useGame.getState().wallet.toNumber();
+    expect(useGame.getState().buyCosmetic('table', paid.id, 0)).toBe(true);
+    expect(useGame.getState().tableTheme).toBe(paid.id);
+    expect(useGame.getState().wallet.toNumber()).toBe(before - paid.cost);
   });
 
   it('kayıt v18→v19: kozmetik alanları default ile gelir (eski ilerleme korunur)', () => {

@@ -527,6 +527,18 @@ export function totalCupPool(zonesOpen: number, stationLevels: number[]): number
 
 /** ₺ ile çıkılabilen en yüksek masa seviyesi (L5 = Usta, 💎/video — Faz 4). */
 export const tableSoftMaxLevel = () => C.tables.upgrade.masterLevel - 1;
+
+/**
+ * Masa teması mağazası kilidi (kullanıcı kararı 2026-06-17): 3 salon AÇIK **VE** tüm açık masalar
+ * MAX seviye olunca açılır ("seviyeler fullenince"). Başta masalar renksiz (native mavi); tüm ilerleme
+ * tamamlanınca premium renk teması satın alınabilir. Zemin/duvar temaları bu kilitten etkilenmez.
+ */
+export function tableThemeUnlocked(g: { zonesOpen: number; tables: number; tableLevels: number[] }): boolean {
+  if (g.zonesOpen < MAX_ZONES || g.tables <= 0) return false;
+  const max = tableSoftMaxLevel();
+  for (let i = 0; i < g.tables; i++) if ((g.tableLevels[i] ?? 0) < max) return false;
+  return true;
+}
 /** Mevcut seviyeden bir sonraki masa yükseltmesinin maliyeti (₺). */
 export const tableNextCost = (level: number, zone = 0) => tableUpgradeCost(level, zone);
 /** Zone-1 masa yükseltme gate'i (geri uyum: testler/eski çağıranlar; per-zone için tableUpgradeUnlockedZ). */
@@ -2018,6 +2030,7 @@ export const useGame = create<GameState>((set, get) => ({
     const s = get();
     // MASA teması GLOBAL (zone yok): tek tableTheme; sahiplik anahtarı `table:id` (zone'suz).
     if (kind === 'table') {
+      if (!tableThemeUnlocked(s)) return false; // 3 salon + tüm masalar max olana dek kilitli
       const theme = C.cosmetics.tableThemes.find((t) => t.id === id);
       if (!theme) return false;
       const key = `table:${id}`;

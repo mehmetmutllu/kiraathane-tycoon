@@ -711,10 +711,15 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
     kalıyordu → instanced batch sınır küresi origin'de, kamera odağı uzaklaşınca FRUSTUM CULLED. ÇÖZÜM:
     `frustumCulled={false}` (Tables.tsx `<Merged>` + Scene.tsx CheckerTiles `<Instances>`). MCP ile salon 2/3
     teleport doğrulandı (önce boş → sonra dolu). vitest 183/183, tsc temiz, 0 hata.
-- 🔧 **6e (SONRAKİ OTURUM):** (1) önizleme doğallaştırma **SEÇENEK A onaylı** — kapalı L köşe "inşaat gibi";
-  ferah çerçeve (zemin canvas'ı doldursun, tek arka duvar, kamera uzak) yap. (2) **Tema mağazası gating** —
-  kullanıcı "seviyeler bitince açılsın" dedi ama koşul (a 3 salon / b masalar max / c oyuncu seviyesi / d)
-  SEÇİLMEDİ → önce SOR sonra uygula (progression gate, onaysız değişme).
+- ✅ **6e — Önizleme doğallaştırma (A) + masa teması gating (2026-06-17):**
+  - **(1) Önizleme A:** `SalonSlice.tsx` yeniden yazıldı. L köşe + ahşap çerçeveli dar zemin → `FloorPatch` 40×40
+    tam-taşan tema base (kenarda void/çerçeve YOK, zemin canvas'ı doldurur) + merkez checker; `WallCornerL`→`WallBack`
+    (TEK arka duvar). Kameralar uzaklaştı (table d3.4/diorama d3.8, ty0.42). Ferah salon kesiti. `PALETTE` importu kalktı.
+  - **(2) Gating (KARAR: 3 salon AÇIK + TÜM açık masalar MAX — "seviyeler fullenince"):** `store.ts`
+    `tableThemeUnlocked()` + `buyCosmetic('table')` guard'ı; sadece MASA sekmesi (zemin/duvar etkilenmez).
+    `HUD.tsx` kilitliyken `.shop-locked` paneli (kilit + "Salon z/3" & "Max masa m/n" rozet) + sekmede 🔒.
+    saveVersion değişmedi (türetilen kilit). testid `shop-table-locked`.
+  - vitest **184/184** (yeni gate testi), tsc temiz, build temiz, MCP 0 hata. SS: `slice-after-*`, `gate-locked/unlocked`.
 - ⏳ KayKit dekor (cactus/pictureframe/lamp/rug); Türk objeleri (semaver, çay bardağı, nargile) Meshy AI;
   Mixamo/skinned karakter. Okey/tavla masası ÜST KATTA (kullanıcı) — ileride.
 - ⏳ Işık / postprocessing / juice / ses

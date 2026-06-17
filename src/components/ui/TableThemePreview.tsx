@@ -3,7 +3,7 @@ import { useGame } from '../../game/store';
 import { economyConfig } from '../../config/economy.config';
 import { Model } from '../three/Model';
 import { CoinIcon } from './icons';
-import { FixedCam, SalonLights, FloorPatch, WallCornerL } from './SalonSlice';
+import { FixedCam, SalonLights, FloorPatch, WallBack } from './SalonSlice';
 
 const KAY = '/assets/models/kaykit-furniture-bits/';
 // In-game çay masası ölçekleri (Tables.tsx ile aynı dil): table_medium + 4 tabure + örtü.
@@ -49,10 +49,10 @@ export function TableThemePreview({ id }: { id: string }) {
     <div className="shop-preview" data-testid="shop-preview">
       <div className="preview-canvas">
         <Canvas dpr={[1, 2]}>
-          <FixedCam d={2.9} ty={0.5} />
+          <FixedCam d={3.4} ty={0.42} />
           <SalonLights />
-          <FloorPatch floorId="parke" half={1.8} />
-          <WallCornerL wallId="krem" half={1.8} />
+          <FloorPatch floorId="parke" checkerHalf={3} />
+          <WallBack wallId="krem" z={-2.1} />
           <ThemedTable color={theme.color} />
         </Canvas>
       </div>
