@@ -2,7 +2,62 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
-## ŞU AN (2026-06-17 — GÖREV SENKRON & SIRALAMA DÜZELTMESİ: A) ritim + B) bildirim kuyruğu + C) suppression/okunabilirlik)
+## ŞU AN (2026-09-01 — YAYINA HAZIRLIK DENETİMİ (kod yazılmadı, sadece araştırma+rapor); SAVE v30 kaldı)
+Kullanıcı sordu: "uygulama yayına hazır mı? App Store'a çıkacağız, reklam eklenecek." Kod DEĞİŞMEDİ
+(çalışma ağacı temiz). Bu bölüm denetimin sonucudur; sonraki oturum buradan devam eder.
+
+**ORTAM DÜZELTMESİ (bu makine):** `npm run test` ve `npm run build` rolldown native binding eksikliğinden
+patlıyordu (`Cannot find module './rolldown-binding.win32-x64-msvc.node'`). Çözüm:
+`npm install --no-save @rolldown/binding-win32-x64-msvc@1.0.3` (rolldown 1.0.3 ile eşleşmeli).
+Sonrasında **vitest 186/186 geçti, build temiz: 1.457 MB JS / 410 KB gzip.** node_modules gitignore'da,
+commit'e girmedi. Diğer makinede aynı hata çıkarsa aynı komut.
+
+**DENETİM SONUCU: yayına HAZIR DEĞİL.** Oynanış ~%60-65, yayın katmanı ~%0-5.
+
+**A) iOS tarafı SIFIR:** `ios/` klasörü yok, `@capacitor/ios` bağımlılığı yok. Windows'tan iOS build
+alınamaz → Mac + Xcode + Apple Developer ($99/yıl) + vergi/banka gerekli. Ayrı bir iş kalemi.
+
+**B) Monetizasyon (Faz 5) hiç başlamamış:** `src` içinde admob/rewarded/interstitial/purchase geçen TEK
+satır yok. `docs/monetization.md` yalnızca kural metni.
+
+**C) Faz 4 eksikleri doğrudan reklamı bloke ediyor:** 💎 elmas HUD'da var ama kodda hiç KAZANILMIYOR ve
+HARCANMIYOR (`store.ts`'te sadece init/save/load). Ödüllü reklamın verecek ödülü yok → **sıra Faz 4 → Faz 5
+olmak zorunda.** Prestige de yok; sim'e göre içerik ~1.7 saatte bitiyor (retention yok).
+
+**D) Yayın-engelleyici teknik borçlar (hepsi doğrulandı):**
+1. `src/App.tsx:28` — `installDevHooks()` KOŞULSUZ çağrılıyor → `__addMoney/__setState/__advanceTime`
+   üretim bundle'ında = hile kapısı. `import.meta.env.DEV` ile sarılmalı.
+2. `?proto` (FurniturePrototype) sayfası da üretim bundle'ında.
+3. **SES/MÜZİK HİÇ YOK** (public'te tek .mp3/.ogg yok) ama Ayarlar'da "Ses"/"Müzik"/"Bildirimler"
+   anahtarları duruyor → 3 ölü anahtar (Apple "çalışmayan özellik" diye reddedebilir).
+4. Kayıt YALNIZCA localStorage → iOS WKWebView 7 gün kullanılmayan uygulamanın site verisini silebilir =
+   ilerleme kaybı. Capacitor Preferences/Filesystem'e taşınmalı.
+5. Android ikonu hâlâ VARSAYILAN Capacitor/Android robot ikonu; `versionCode 1`, `minifyEnabled false`.
+6. `index.html` `lang="en"`, tek dil; gizlilik politikası yok; crash/analytics yok; mağaza görselleri yok.
+
+**E) REKLAM MİMARİSİ — kullanıcıya açıklandı (kavramsal):** App Store reklam SAĞLAMAZ; Apple'ın kendi ağı
+(iAd) 2016'da kapandı, Apple Search Ads = kendi oyununun reklamı (gider, gelir değil). Reklam üçüncü-parti
+ağlardan gelir: AdMob / AppLovin MAX / Unity LevelPlay (ironSource) / Meta Audience Network / Mintegral vb.
+**AdMob ZORUNLU DEĞİL** — ama bizim stack'te (Capacitor, Unity değil) native köprü gerekiyor ve bakımlı
+Capacitor eklentisi pratikte yalnız AdMob'da var (`@capacitor-community/admob`); diğerleri için köprüyü
+kendin yazarsın. İleride AdMob Mediation ile AppLovin/Unity talebi aynı SDK altına eklenebilir.
+Ağdan bağımsız Apple şartları: ATT izni + `NSUserTrackingUsageDescription`, SKAdNetwork ID listesi
+(Info.plist), App Privacy beyanı, AB için onay formu (UMP), IAP gelince "Satın Alımları Geri Yükle" butonu.
+Ödeme: AdMob → AdSense altyapısı, vergi+banka, 100 $ eşiği, Türkiye sorunsuz.
+
+**>>> AÇIK KARAR (kullanıcı verecek, Faz 4 VE Faz 5 tasarımını etkiliyor) <<<**
+`docs/monetization.md` "çocuğa-yönelik mod" diyor AMA App Store **Kids kategorisi üçüncü-parti reklam ağına
+izin vermiyor** (AdMob orada kullanılamaz) + kişiselleştirilmemiş reklam geliri ~yarıya düşer. Ayrıca yol
+haritasındaki **nargile (tütün göndermesi)** ve **okey/tavla (simüle kumar)** yaş derecesini yukarı çeker.
+İKİSİ AYNI ANDA OLMAZ → seçim: (a) Kids kategorisi DIŞI, 9+/12+, normal reklam geliri; (b) çocuk-güvenli
+kal, düşük gelir. Karar verilmeden Faz 5'e girilmemeli; karar `decisions.md`'ye D-0xx olarak yazılacak.
+
+**SONRAKİ OTURUM — sıra:** (0) yaş/reklam kararı → (1) Faz 4: elmas kazanma+harcama, prestige, içerik
+uzunluğu → (2) Faz 5: AdMob + RevenueCat + izin akışları → (3) D maddeleri (dev kanca kapatma, ses, kalıcı
+kayıt, ikon, minify) → (4) iOS platformu (Mac/Xcode/TestFlight) → (5) Faz 8 mağaza evrakı.
+İstenirse ilk iş: `@capacitor-community/admob` bakım durumu + Capacitor 8 uyumu doğrulaması.
+
+## ÖNCEKİ (2026-06-17 — GÖREV SENKRON & SIRALAMA DÜZELTMESİ: A) ritim + B) bildirim kuyruğu + C) suppression/okunabilirlik)
 Telefon feedback'i: görev gösterimi senkron/sıralama sorunu (üst üste binme, anlık takas, karartma altında okunmama,
 "yükseltebilirsin" reveal'ı görev sanılması). Kullanıcı onayı: boşluk 0.8sn · ③→(a) · ⑤⑥→(a). UYGULANDI.
 tsc temiz, **vitest 186/186** (2 yeni test), build temiz, MCP **0 konsol hatası**. HENÜZ COMMIT YOK (onay bekliyor).

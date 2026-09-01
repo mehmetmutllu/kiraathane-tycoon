@@ -737,3 +737,25 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 
 ## Faz 8 — Yayın ⏳
 - ⏳ Mağaza hesapları, politikalar, yaş/çocuk uyumu (COPPA/GDPR-K), derecelendirme
+
+## YAYINA HAZIRLIK DENETİMİ (2026-09-01) — kod değişmedi, durum tespiti
+Kullanıcı sorusu: "App Store'a çıkacağız, hazır mı? reklam nasıl eklenecek?" **SONUÇ: HAZIR DEĞİL.**
+Oynanış ~%60-65 (Faz 1-3 + 6'nın büyük kısmı ✅), yayın katmanı ~%0-5. Detay: `activeContext.md` ŞU AN.
+- **Doğrulandı:** vitest **186/186**, build temiz **1.457 MB JS / 410 KB gzip**, çalışma ağacı temiz.
+  (Bu makinede rolldown native binding eksikti → `npm install --no-save @rolldown/binding-win32-x64-msvc@1.0.3`.)
+- **YAYIN BLOKER LİSTESİ (sırayla yapılacak):**
+  1. ⏳ **Yaş/reklam kararı** (Kids kategorisi DIŞI 9+/12+ mı, çocuk-güvenli düşük gelir mi) — Faz 4+5'i
+     etkiler; nargile (tütün) + okey/tavla (simüle kumar) yaş derecesini yukarı çeker. → `decisions.md` D-0xx.
+  2. ⏳ **Faz 4:** 💎 elmas kodda hiç kazanılmıyor/harcanmıyor → ödüllü reklamın ödülü YOK; prestige yok,
+     içerik ~1.7sa'te bitiyor. Faz 5'ten ÖNCE bitmeli.
+  3. ⏳ **Faz 5:** AdMob (`@capacitor-community/admob`; bakım/Cap-8 uyumu doğrulanacak) + RevenueCat +
+     ATT/SKAdNetwork/App Privacy/UMP onayı + "Satın Alımları Geri Yükle".
+  4. ⏳ **Teknik borç:** `App.tsx:28` `installDevHooks()` KOŞULSUZ → hile kancaları üretimde (`import.meta.env.DEV`
+     ile sar); `?proto` sayfası üretim bundle'ında; **ses/müzik dosyası HİÇ YOK ama Ayarlar'da 3 ölü anahtar**;
+     kayıt yalnız localStorage (iOS WKWebView silebilir → Capacitor Preferences); **varsayılan Android ikonu**,
+     versionCode 1, minifyEnabled false; `index.html lang="en"`; gizlilik politikası/analytics/store görselleri yok.
+  5. ⏳ **iOS platformu SIFIR:** `ios/` ve `@capacitor/ios` yok; Mac + Xcode + Apple Developer ($99/yıl) şart.
+  6. ⏳ **Faz 8 evrakı:** gizlilik politikası URL, yaş derecelendirme anketi, App Privacy etiketleri, mağaza metinleri.
+- **NOT (kavramsal, kullanıcıya açıklandı):** App Store reklam SAĞLAMAZ (iAd 2016'da kapandı; Apple Search Ads =
+  gider). Reklam üçüncü-parti ağlardan gelir; **AdMob zorunlu değil**, alternatifleri AppLovin MAX / Unity
+  LevelPlay / Meta AN — ama Capacitor'da bakımlı eklenti pratikte yalnız AdMob'da (diğerleri native köprü ister).
