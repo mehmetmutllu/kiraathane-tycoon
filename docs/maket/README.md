@@ -22,9 +22,4 @@ cd docs/maket && python -m http.server 8899
 
 - **Plan:** https://claude.ai/code/artifact/c45e15a9-9dd1-4bd1-ae00-cd1d35ed0aa8
 - **Maket:** https://claude.ai/code/artifact/d8bbf576-e755-46b7-9608-3ebd0ab57245
-  (şu an v3 yayında — **sonraki oturumda v2 içeriğiyle yeniden yayınlanacak**, link aynı kalır)
-
-## Sonraki oturumda İLK İŞ
-
-`maket-v2-ONAYLI.html` içeriğini maket artifact'ine yeniden yayınla (aynı URL). v3'ün
-hiçbir parçası taşınmayacak — kullanıcı tümünü reddetti.
+  (**2026-09-04'te v2 içeriğiyle yeniden yayınlandı** — v3 tamamen geri alındı, link aynı kaldı)
