@@ -2,6 +2,60 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-04 — MAKET v5: MUTFAK ODASI, iki varyant; KOD DEĞİŞMEDİ, SAVE v30)
+
+Bir önceki oturum elektrik kesintisiyle kullanıcının mesajının ÜSTÜNDE kesildi (asistan hiç cevap veremedi).
+Kaldığı yer: **"mutfak şeridi bi mutfakmış gibi izlenim uyandırmıyo; mutfak dediğin 4 köşe bir yer olur.
+onu nasıl yapabilirsin bi öneride bulun bakalım."** Bu oturumda önce öneri verildi, sonra uygulandı.
+`src/` içinde HİÇBİR değişiklik yok — yalnız `docs/maket/`.
+
+### Yapılan
+- **Teşhis:** v4'te mutfak = sol duvara dizilmiş 5 ayrı tezgâh (22 birim şerit). Hacim yok, tezgâh kopuk,
+  dikey öğe (davlumbaz/dolap/raf) yok, salonla arasında eşik yok. Ayrıca batı duvarı (x=-17) bu kamerada
+  şeridin önünü ~1,6 birim **kapatıyor** — tezgâhlar yarı görünmez. Bu yüzden "mutfak" okunmuyordu.
+- **Öneri (3 seçenek sunuldu):** ① kapalı mutfak odası ② yarı açık ③ çay ocağı kabini + arkada mutfak.
+  Kullanıcı: **"iki varyasyon görsem iyi olur: kapalı ve yarı açık"** + boşalan bant için
+  **"A adasını genişlet + duvar dekoru"**. İkisi de yapıldı.
+- **`docs/maket/maket-v5-mutfak.html`** (v4'e dokunulmadı, yeni dosya). Sekmeler: *Kat 1 · Mutfak A — kapalı*,
+  *Kat 1 · Mutfak B — yarı açık*, Kat 2, Kat 3. FLOORS anahtarları sayıdan string'e ('1a','1b','2','3').
+- **Artifact aynı URL'de güncellendi:** https://claude.ai/code/artifact/d8bbf576-e755-46b7-9608-3ebd0ab57245
+
+### Mutfak odasının tasarım kuralları (docs/maket/README.md'de de yazılı)
+- Oda **6,5 × 8,6**: x∈[-16,9,-10,4] × z∈[-7,6,1,0]. C adasıyla 0,6, A adasıyla 0,5 boşluk.
+- **Kamera -x/+z köşesinden bakar** → doğu ve güney duvarları ARKA PLAN: fayans, davlumbaz, raflar
+  yalnız orada okunur; bu yüzden o iki duvar **iki varyantta da tam yükseklikte**. Fark yalnız
+  salona bakan yüzde: A = tam duvar + pencere/kapı boşluğu, B = 1,05 lambri + cam + köşe dikmeleri.
+- İçerik (ikisinde birebir aynı): gri seramik karo + gider · tezgâh üstü beyaz fayans (`tileBand`) ·
+  tost sacı + **çelik davlumbaz + tavana giren baca** (`kitchenHood`) · güney duvarında bulaşık +
+  cezve ocağı + raflar · batı duvarında boy dolabı/kasa/damacana/çöp · ortada **serbest hazırlık
+  tezgâhı** (`prepIsland`) + **asılı tencere rayı** (`hangRail`) · kuzey duvarında semaver ·
+  asma tavan kirişleri + **soğuk beyaz** floresan panel (salonun sıcak ışığından ayrışır).
+- **Sipariş çıkış penceresi** doğu duvarında z∈[-2,4, 0,4]: çelik tezgâh, **adisyon askısı**
+  (`ticketRail`), ısı lambası, bekleyen hazır tepsiler; ayrı **personel kapısı** z∈[-4,2, -2,8]
+  (aralık duran kanat). Garson mutfağa GİRMEZ (Karar 3: tek çıkış penceresi).
+- Kapalı varyantta salona bakan duvarda **menü tahtası** — mutfak salondan da kendini anlatıyor.
+- Servis koridoru (x∈[-10,4,-3,6]) doldu: pencereden tepsi alan garson + **servis arabası**
+  (`serviceCart`) + bekleme cebi (bank, sehpa, gazetelik, kilim).
+- **A adası büyüdü:** 9,8 → 12,8 (x[-16,4,-3,6]), 2×2 → **3×2 çay ünitesi**; boşalan sol duvar bandına
+  tatlı vitrini + tablolar + lamba/saksı ritmi. Alçak bölmenin batı ucu -13,4 → **-8,6** (mutfak geçidi).
+
+### Yeni yardımcı fonksiyonlar (maket dosyasında)
+`wallSeg` (delikli duvar parçası) · `tileBand` (fayans) · `kitchenHood` · `hangRail` · `tallCabinet` ·
+`prepIsland` · `ticketRail` · `serviceCart` · `glassWall` (lambri+cam) · `kitchenRoom(semi)` ·
+`buildFloor1(variant)`. `checker()` artık karo boyu parametresi alıyor. Ayrıca konsol kancası:
+**`__view(mesafe, azimut, yükseklik, hedefX, hedefZ)`** — maketi belli bir açıdan incelemek için.
+
+### AÇIK UÇ (kullanıcıya söylendi)
+Mutfak solda kaldığı için **B ve D adaları çıkış penceresine ~19-23 birim uzakta** — karar 5'teki
+"her oturma bölgesi çıkışa ≤10 birim" kısıtı bu yerleşimde sağlanmıyor. Gerçek oyunda ya ikinci bir
+servis noktası ya da mutfağın merkeze kaydırılması gerekecek. Kullanıcı henüz karar vermedi.
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+Kullanıcının A/B seçimini al. Seçilen varyant Kat 1'in tasarım referansı olur; sonra (a) Kat 2'nin servis
+köşesi de aynı "oda" diline çevrilsin mi, (b) ≤10 birim servis mesafesi kısıtı nasıl çözülecek — bu ikisi
+konuşulur. Kod tarafında sıradaki iş hâlâ **Faz A (Zemin)**: dev kancalarını DEV'e kapat, Capacitor
+Preferences kalıcı kayıt, perf paketi, kamera çerçeveleme, ses sistemi, Android paketleme.
+
 ## ŞU AN (2026-09-03 — BÜYÜK TASARIM OTURUMU: yol haritası v2 + servis mimarisi + 3B kat maketi; KOD DEĞİŞMEDİ, SAVE v30)
 
 Kullanıcı sırayla şunları istedi: (1) projeyi incele + telefonda oynanır mı + asset/texture eksikleri +
