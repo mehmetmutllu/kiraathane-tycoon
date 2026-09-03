@@ -13,13 +13,24 @@ cd docs/maket && python -m http.server 8899
 
 | Dosya | Durum | Açıklama |
 |---|---|---|
-| `maket-v2-ONAYLI.html` | ✅ **Geçerli sürüm** | Genişletilmiş yerleşim, dış çevre (cadde+komşu binalar), alt kat kütleleri, WC, terasa dönüşlü merdiven. Kullanıcı bunu onayladı. |
+| `maket-v4-duzen.html` | ✅ **Yayında olan sürüm** | v2 + **ada disiplini** düzen revizyonu (şu an yalnız **Kat 1**; Kat 2-3 hâlâ v2 yerleşimi). Her oturma bölgesi tek dikdörtgen ada: zemin yaması + kilim + mobilya aynı merkezde, kilim grubun altında, yama kilimden ~0,9 taşar. Orta aks yolluğu, mutfak şeridi eşit 4,5 ritim, Ocakbaşı gerçek U, bekleme köşeleri. |
+| `maket-v2-ONAYLI.html` | 📌 Referans (dokunulmadı) | Genişletilmiş yerleşim, dış çevre (cadde+komşu binalar), alt kat kütleleri, WC, terasa dönüşlü merdiven. v4'ün çıkış noktası; olduğu gibi saklanıyor. |
 | `maket-v3-REDDEDILDI.html` | ❌ Reddedildi | Kat 1 ızgara yeniden dizilimi (L mutfak, Ana Salon/Cam Kenarı/Sedir Köşesi), 3.6 duvar. Kullanıcı: "çok kötü oldu". **Geri dönülecek: v2.** |
 | `plan-v2.html` | Referans | Geliştirme planı (teşhis, servis modelleri, oyun akışı, arayüz, faz planı, performans bütçesi, kararlar, asset listesi). |
 | `ss/kat1-v2.png` `ss/kat2-v2.png` `ss/kat3-v2.png` | Referans | v2'nin ekran görüntüleri. |
+| `ss/kat1-v4.png` | Referans | v4 Kat 1 (ada disiplini). |
 
 ## Yayınlanmış Artifact linkleri
 
 - **Plan:** https://claude.ai/code/artifact/c45e15a9-9dd1-4bd1-ae00-cd1d35ed0aa8
 - **Maket:** https://claude.ai/code/artifact/d8bbf576-e755-46b7-9608-3ebd0ab57245
-  (**2026-09-04'te v2 içeriğiyle yeniden yayınlandı** — v3 tamamen geri alındı, link aynı kaldı)
+  (2026-09-04: önce v2'ye geri alındı, ardından **v4 düzen revizyonu** yayınlandı — link hep aynı)
+
+## Düzen kuralları (v4, Kat 1'de uygulandı; Kat 2-3 bekliyor)
+
+1. Her oturma bölgesi **tek dikdörtgen ada**: zemin yaması, kilim ve mobilya aynı merkezde; kilim grubun altını kaplar, yama kilimden ~0,9 taşıp görünür pervaz bırakır.
+2. Ada içi üniteler **eşit aralıkta**, her ünite (masa + oturanlar + para istifi) tek grup olarak **±3,5° serbest** sapar — hizalı ama CAD gibi ölü değil.
+3. **Bölge başına tek tip mobilya YASAK** (v3'ün hatası): çeşitlilik korunur, yalnız hizalama disipline edilir.
+4. Para istifi hep ünitenin **+x/+z köşesinde**.
+5. Duvar öğeleri (tezgâh, raf, tablo, aplik) **kendi duvarı içinde eşit aralıklı**.
+6. Orta koridor bir **aks**: açık tonlu yolluk + iki yanda simetrik lamba/saksı ritmi; ölü boşluk bırakılmaz.
