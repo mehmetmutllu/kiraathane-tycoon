@@ -1,0 +1,2066 @@
+<title>Kıraathane Kat Maketi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500&family=JetBrains+Mono:wght@400;600&display=swap">
+
+<style>
+  :root {
+    --paper: #efece2;
+    --surface: #f7f5ee;
+    --surface-2: #e8e4d7;
+    --ink: #22271f;
+    --ink-soft: #5b6154;
+    --ink-faint: #8b9081;
+    --line: #d7d1c0;
+    --line-soft: #e2ddcf;
+    --green: #2e6b4f;
+    --copper: #a25f26;
+    --copper-wash: #f0e3d4;
+    --bordo: #7a2230;
+    --sky-a: #e7e2d4;
+    --sky-b: #cfc7b3;
+
+    --f-display: "Baloo 2", "Trebuchet MS", sans-serif;
+    --f-body: "Newsreader", Georgia, serif;
+    --f-mono: "JetBrains Mono", Consolas, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #161a15;
+      --surface: #1d221c;
+      --surface-2: #252b23;
+      --ink: #e9e4d6;
+      --ink-soft: #a8a696;
+      --ink-faint: #7d8073;
+      --line: #343a30;
+      --line-soft: #2a3027;
+      --green: #6fb28b;
+      --copper: #d99a5c;
+      --copper-wash: #2c2419;
+      --bordo: #d4707f;
+      --sky-a: #232a26;
+      --sky-b: #151a16;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper: #161a15;
+    --surface: #1d221c;
+    --surface-2: #252b23;
+    --ink: #e9e4d6;
+    --ink-soft: #a8a696;
+    --ink-faint: #7d8073;
+    --line: #343a30;
+    --line-soft: #2a3027;
+    --green: #6fb28b;
+    --copper: #d99a5c;
+    --copper-wash: #2c2419;
+    --bordo: #d4707f;
+    --sky-a: #232a26;
+    --sky-b: #151a16;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--f-body);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 28px 20px 64px; }
+
+  header.top { border-bottom: 2px solid var(--ink); padding-bottom: 16px; margin-bottom: 18px; }
+
+  .eyebrow {
+    font-family: var(--f-display); font-weight: 700; font-size: 11px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--copper); margin-bottom: 8px;
+  }
+
+  h1 {
+    font-family: var(--f-display); font-weight: 800;
+    font-size: clamp(28px, 5vw, 44px); line-height: 1.05;
+    margin: 0 0 10px; letter-spacing: -0.015em;
+  }
+
+  .sub { color: var(--ink-soft); max-width: 68ch; margin: 0; font-size: 16.5px; }
+
+  /* tabs */
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 14px; }
+
+  .tab {
+    font-family: var(--f-display); font-weight: 700; font-size: 14px;
+    padding: 9px 16px 8px;
+    border: 1px solid var(--line);
+    border-bottom: 3px solid var(--line);
+    background: var(--surface);
+    color: var(--ink-soft);
+    cursor: pointer;
+    border-radius: 4px 4px 0 0;
+  }
+
+  .tab[aria-selected="true"] {
+    background: var(--copper-wash);
+    border-color: var(--copper);
+    border-bottom-color: var(--copper);
+    color: var(--copper);
+  }
+
+  .tab:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+
+  /* stage */
+  .stage {
+    position: relative;
+    border: 1px solid var(--line);
+    background: linear-gradient(170deg, var(--sky-a), var(--sky-b));
+    aspect-ratio: 16 / 10;
+    min-height: 340px;
+    overflow: hidden;
+    cursor: grab;
+    touch-action: none;
+  }
+
+  .stage.dragging { cursor: grabbing; }
+  .stage canvas { display: block; width: 100%; height: 100%; }
+
+  #labels { position: absolute; inset: 0; pointer-events: none; }
+
+  .lbl {
+    position: absolute; top: 0; left: 0;
+    font-family: var(--f-display); font-weight: 700; font-size: 12px;
+    letter-spacing: 0.03em;
+    color: #2b241b;
+    background: rgba(247,242,228,0.92);
+    border: 1px solid rgba(120,96,60,0.5);
+    padding: 3px 9px;
+    border-radius: 999px;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+  }
+
+  .lbl b { color: #a25f26; margin-right: 5px; }
+
+  .stage-badge {
+    position: absolute; left: 12px; top: 12px;
+    font-family: var(--f-mono); font-size: 10.5px; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: #f3ecd9; background: rgba(34,39,31,0.72);
+    padding: 5px 10px; border-radius: 3px;
+  }
+
+  .stage-hint {
+    position: absolute; right: 12px; bottom: 12px;
+    font-family: var(--f-display); font-weight: 600; font-size: 11.5px;
+    color: #2b241b; background: rgba(247,242,228,0.85);
+    padding: 5px 10px; border-radius: 999px;
+  }
+
+  .reset {
+    position: absolute; right: 12px; top: 12px;
+    font-family: var(--f-display); font-weight: 700; font-size: 12px;
+    color: #2b241b; background: rgba(247,242,228,0.9);
+    border: 1px solid rgba(120,96,60,0.45);
+    padding: 6px 12px; border-radius: 999px; cursor: pointer;
+  }
+
+  .caption {
+    font-size: 15px; color: var(--ink-soft);
+    margin: 12px 0 0; max-width: 76ch;
+  }
+
+  .caption b { font-family: var(--f-display); color: var(--ink); }
+
+  /* stats */
+  .stats {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 1px; background: var(--line);
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    margin: 26px 0 0;
+  }
+
+  .st { background: var(--paper); padding: 14px 6px 15px 0; }
+
+  .st b {
+    display: block; font-family: var(--f-display); font-weight: 700;
+    font-size: 22px; line-height: 1.1; font-variant-numeric: tabular-nums;
+  }
+
+  .st span {
+    display: block; font-family: var(--f-display); font-weight: 600;
+    font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--ink-faint); margin-top: 3px;
+  }
+
+  /* legend */
+  h2 {
+    font-family: var(--f-display); font-weight: 700; font-size: 20px;
+    margin: 34px 0 4px; padding-bottom: 8px; border-bottom: 1px solid var(--line);
+  }
+
+  .rooms { display: grid; gap: 1px; background: var(--line-soft); }
+
+  .room {
+    background: var(--paper);
+    display: grid; grid-template-columns: 30px 1fr 1.25fr; gap: 18px;
+    padding: 14px 0; align-items: start;
+  }
+
+  .room .rn {
+    font-family: var(--f-display); font-weight: 800; font-size: 20px;
+    color: var(--copper); line-height: 1.15; font-variant-numeric: tabular-nums;
+  }
+
+  .room .rname { font-family: var(--f-display); font-weight: 700; font-size: 16.5px; }
+  .room .rmeta { font-family: var(--f-display); font-weight: 600; font-size: 12.5px; color: var(--ink-faint); margin-top: 1px; }
+  .room .rdesc { font-size: 15px; color: var(--ink-soft); }
+  .room .rdesc em { color: var(--green); font-style: normal; font-family: var(--f-display); font-weight: 600; }
+
+  @media (max-width: 700px) {
+    .room { grid-template-columns: 26px 1fr; gap: 3px 12px; }
+    .room .rdesc { grid-column: 1 / -1; margin-top: 6px; }
+    .stage { aspect-ratio: 4 / 5; }
+  }
+
+  .note {
+    margin-top: 34px; padding-top: 18px; border-top: 2px solid var(--ink);
+    font-size: 14px; color: var(--ink-faint); max-width: 72ch;
+  }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+
+  <header class="top">
+    <div class="eyebrow">Köşe Kıraathanesi · Tasarım Maketi · Kat 1–3 tamamlanmış hâl</div>
+    <h1>Kıraathane Kat Maketi</h1>
+    <p class="sub">Oyun duraklatılmış gibi düşün: bütün masalar son seviyede, müşteriler oturmuş, garsonlar postalarında bekliyor, toplanmamış para istifleri masaların yanında duruyor. Sürükleyerek çevir, tekerlekle yakınlaş.</p>
+  </header>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" data-floor="1" aria-selected="true">Kat 1 · Kıraathane</button>
+    <button class="tab" role="tab" data-floor="2" aria-selected="false">Kat 2 · Oyun Salonu</button>
+    <button class="tab" role="tab" data-floor="3" aria-selected="false">Kat 3 · Teras</button>
+  </div>
+
+  <div class="stage" id="stage">
+    <div id="labels"></div>
+    <div class="stage-badge" id="badge">donmuş sahne · kat 1</div>
+    <button class="reset" id="reset">kamerayı sıfırla</button>
+    <div class="stage-hint">sürükle: çevir · tekerlek: yakınlaş</div>
+  </div>
+
+  <p class="caption" id="caption"></p>
+
+  <div class="stats" id="stats"></div>
+
+  <h2 id="roomsTitle">Bu katta ne var</h2>
+  <div class="rooms" id="rooms"></div>
+
+  <p class="note">Maket, oyunun kendi palet dosyasındaki renklerle (<span style="font-family:var(--f-mono)">palette.ts</span>) ve gerçek ölçü oranlarıyla kuruldu: masa yüksekliği 0,75 · tabure 0,45 · karakter ~1,6 birim. Amaç bitmiş görselin kendisi değil, <b>yerleşim, doluluk ve okunabilirlik kararlarını</b> önceden görmek. Para istifleri Model B′ kararına göre yerleştirildi: masa başına tek istif, sabit noktada, oyuncu üstünden geçince tamamı toplanır.</p>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function () {
+  'use strict';
+  var T = window.THREE;
+
+  /* ---------- palet (palette.ts'ten) ---------- */
+  var C = {
+    floorWood: 0xb98a5a, floorDark: 0xa8794c, floorTile: 0xd9cdb4, floorCream: 0xe0d5bd,
+    floorTeras: 0xa07f5c, checkDark: 0xc2b394,
+    wallCream: 0xe6d7b8, wain: 0x6d4c41, doorWood: 0x5d4037,
+    tableWood: 0x9c6f4a, tableLeg: 0x5d4037, stool: 0x7a5230, cloth: 0x5a93cf,
+    copper: 0xb87333, brass: 0xd4af37, gold: 0xe3b24c, note: 0x4c7a4e, band: 0xd8c27a,
+    shirt: 0xf3ecd9, pants: 0x3e3a36, skin: 0xe0ac69, cap: 0x4a3728, hair: 0x3a2a1d,
+    apronTea: 0x7a2230, apronFood: 0xc98f2c, apronDish: 0x546e7a,
+    griddle: 0x4a4f54, toast: 0xd9913b, bread: 0xe3c388, plate: 0xece4d4, cupTea: 0xd98a3a,
+    board: 0x2f3a33, boardFrame: 0x4e342e, chalk: 0xf3ecd9,
+    tvFrame: 0x263238, tvScreen: 0x7ec8a9,
+    plant: 0x3f7d44, plant2: 0x2f6b3a, planter: 0x7a5230,
+    felt: 0x2e6b4f, sedir: 0x8d5b3a, sedirCushion: 0x7a2230,
+    hookah: 0x37474f, glass: 0xbfd8e0, sink: 0x8d9499, dirty: 0x9aa0a6,
+    rug: 0x5e2c25, rug2: 0x8a4133, rug3: 0xc9ad82, city: 0x6d7480, cityFar: 0x8d95a2, rail: 0x6d4c41
+  };
+
+  var CUST = [0xc0392b, 0x2e86c1, 0x27ae60, 0x8e44ad, 0xe67e22, 0x16a085, 0xc0a02c, 0x7f8c8d,
+              0xd35400, 0x2c3e50, 0x9b59b6, 0x1abc9c];
+
+  /* ---------- geometri / materyal önbelleği ---------- */
+  var geo = {}, mats = {};
+
+  function M(c, flat) {
+    var k = c + (flat ? 'f' : 'n');
+    if (!mats[k]) mats[k] = new T.MeshLambertMaterial({ color: c, flatShading: !!flat });
+    return mats[k];
+  }
+  function GB(w, h, d) {
+    var k = 'b' + w + '_' + h + '_' + d;
+    if (!geo[k]) geo[k] = new T.BoxGeometry(w, h, d);
+    return geo[k];
+  }
+  function GC(rt, rb, h, s) {
+    var k = 'c' + rt + '_' + rb + '_' + h + '_' + s;
+    if (!geo[k]) geo[k] = new T.CylinderGeometry(rt, rb, h, s);
+    return geo[k];
+  }
+  function GS(r) {
+    var k = 's' + r;
+    if (!geo[k]) geo[k] = new T.SphereGeometry(r, 10, 8);
+    return geo[k];
+  }
+  function GT(r, t) {
+    var k = 't' + r + '_' + t;
+    if (!geo[k]) geo[k] = new T.TorusGeometry(r, t, 6, 14);
+    return geo[k];
+  }
+
+  function box(w, h, d, c, flat) { return new T.Mesh(GB(w, h, d), M(c, flat)); }
+  function cyl(rt, rb, h, s, c, flat) { return new T.Mesh(GC(rt, rb, h, s), M(c, flat)); }
+  function sph(r, c, flat) { return new T.Mesh(GS(r), M(c, flat)); }
+
+  function put(p, m, x, y, z, ry) {
+    m.position.set(x, y, z);
+    if (ry) m.rotation.y = ry;
+    p.add(m);
+    return m;
+  }
+  function grp(x, y, z, ry) {
+    var g = new T.Group();
+    g.position.set(x || 0, y || 0, z || 0);
+    if (ry) g.rotation.y = ry;
+    return g;
+  }
+  function rnd(a, b) { return a + Math.random() * (b - a); }
+  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+
+  /* ---------- yapı taşları ---------- */
+
+  function floorPatch(cx, cz, w, d, c, y) {
+    var m = box(w, 0.2, d, c);
+    m.position.set(cx, (y || 0) - 0.1, cz);
+    return m;
+  }
+
+  function checker(cx, cz, w, d, c) {
+    var g = grp(cx, 0, cz);
+    var n = Math.floor(w / 1.6), m2 = Math.floor(d / 1.6);
+    for (var i = 0; i < n; i++) for (var j = 0; j < m2; j++) {
+      if ((i + j) % 2) continue;
+      put(g, box(1.6, 0.04, 1.6, c), (i - (n - 1) / 2) * 1.6, 0.02, (j - (m2 - 1) / 2) * 1.6);
+    }
+    return g;
+  }
+
+  function wall(x1, z1, x2, z2, h) {
+    h = h || 2.7;
+    var dx = x2 - x1, dz = z2 - z1, len = Math.hypot(dx, dz);
+    var g = grp((x1 + x2) / 2, 0, (z1 + z2) / 2, Math.atan2(dx, dz));
+    put(g, box(0.18, h - 0.9, len, C.wallCream), 0, 0.9 + (h - 0.9) / 2, 0);
+    put(g, box(0.22, 0.9, len, C.wain), 0, 0.45, 0);
+    put(g, box(0.26, 0.08, len, C.doorWood), 0, 0.94, 0);
+    return g;
+  }
+
+  // alçak bölme: lambri gövde + ince ahşap başlık (korkuluk gibi; kamerayı kapatmaz)
+  function lowDivider(x1, z1, x2, z2) {
+    var dx = x2 - x1, dz = z2 - z1, len = Math.hypot(dx, dz);
+    var g = grp((x1 + x2) / 2, 0, (z1 + z2) / 2, Math.atan2(dx, dz));
+    put(g, box(0.2, 1.02, len, C.wain), 0, 0.51, 0);
+    put(g, box(0.3, 0.08, len, C.doorWood), 0, 1.06, 0);
+    return g;
+  }
+
+  // geçit portalı: bölme ucunu saran iki ahşap kolon + üstte kemer kirişi
+  function archCol() {
+    var g = new T.Group();
+    [-0.75, 0.75].forEach(function (x) {
+      put(g, box(0.34, 2.7, 0.34, C.doorWood), x, 1.35, 0);
+      put(g, box(0.46, 0.12, 0.46, C.wain), x, 0.06, 0);
+      put(g, box(0.3, 0.3, 0.34, C.wain, true), x * 0.62, 2.3, 0);
+    });
+    put(g, box(1.9, 0.5, 0.4, C.doorWood, true), 0, 2.7, 0);
+    return g;
+  }
+
+  // Kilim: koyu bordür + kiremit zemin + krem baklava motifleri (düz turuncu levha değil)
+  function rug(cx, cz, w, d) {
+    var g = grp(cx, 0, cz);
+    put(g, box(w, 0.03, d, C.rug), 0, 0.015, 0);
+    put(g, box(w - 0.42, 0.035, d - 0.42, C.rug2), 0, 0.02, 0);
+    put(g, box(w - 0.72, 0.04, d - 0.72, C.rug), 0, 0.023, 0);
+    put(g, box(w - 0.92, 0.045, d - 0.92, C.rug2), 0, 0.026, 0);
+    var lng = Math.max(w, d), shrt = Math.min(w, d);
+    var n = Math.max(2, Math.min(6, Math.floor(lng / 1.9)));
+    var s = Math.min(0.46, shrt * 0.2);
+    for (var i = 0; i < n; i++) {
+      var t = (i - (n - 1) / 2) * (lng * 0.74 / n);
+      var m = put(g, box(s, 0.05, s, C.rug3), w >= d ? t : 0, 0.029, w >= d ? 0 : t);
+      m.rotation.y = Math.PI / 4;
+    }
+    return g;
+  }
+
+  function stool() {
+    var g = new T.Group();
+    put(g, cyl(0.27, 0.25, 0.11, 10, C.stool, true), 0, 0.45, 0);
+    put(g, cyl(0.25, 0.25, 0.05, 10, C.cloth, true), 0, 0.53, 0);
+    put(g, cyl(0.07, 0.07, 0.42, 8, C.stool), 0, 0.22, 0);
+    put(g, cyl(0.23, 0.23, 0.04, 10, C.stool), 0, 0.03, 0);
+    return g;
+  }
+
+  // arkalıklı sandalye: geniş ince oturak + minder, arka dikmeler oturağı delip sırtlık olur, üç yatay çıta, ön ayaklar hafif dışa
+  function chairBack() {
+    var g = new T.Group();
+    put(g, box(0.5, 0.05, 0.48, C.stool, true), 0, 0.45, 0);
+    put(g, box(0.44, 0.035, 0.42, C.cloth, true), 0, 0.49, 0.01);
+    [-0.21, 0.21].forEach(function (x) {
+      put(g, box(0.05, 0.98, 0.05, C.stool), x, 0.49, -0.21);
+      var leg = put(g, box(0.05, 0.45, 0.05, C.stool), x, 0.225, 0.2);
+      leg.rotation.z = x * 0.4;
+      leg.rotation.x = -0.08;
+    });
+    [0.62, 0.77, 0.9].forEach(function (y, i) {
+      put(g, box(0.42, i === 2 ? 0.09 : 0.05, 0.03, C.stool, true), 0, y, -0.21);
+    });
+    return g;
+  }
+
+  // ince belli çay bardağı: tabak + bel konisi + ağız konisi + kaşık
+  function teaGlass() {
+    var g = new T.Group();
+    put(g, cyl(0.085, 0.085, 0.015, 10, C.plate), 0, 0.0075, 0);
+    put(g, cyl(0.048, 0.036, 0.065, 8, C.cupTea), 0, 0.0475, 0);
+    put(g, cyl(0.056, 0.046, 0.06, 8, C.cupTea), 0, 0.11, 0);
+    put(g, box(0.015, 0.008, 0.09, C.brass), 0.1, 0.02, 0.02, 0.5);
+    return g;
+  }
+
+  // şekerlik: bakır kâse + iki küp
+  function sugarBowl() {
+    var g = new T.Group();
+    put(g, cyl(0.09, 0.065, 0.06, 10, C.copper, true), 0, 0.03, 0);
+    put(g, box(0.04, 0.04, 0.04, 0xf7f3ea), -0.02, 0.075, 0.01);
+    put(g, box(0.04, 0.04, 0.04, 0xf7f3ea), 0.03, 0.075, -0.02, 0.6);
+    return g;
+  }
+
+  // çerez kâsesi
+  function nutBowl() {
+    var g = new T.Group();
+    put(g, cyl(0.13, 0.09, 0.07, 10, C.plate, true), 0, 0.035, 0);
+    for (var i = 0; i < 5; i++) {
+      put(g, sph(0.03, i % 2 ? C.toast : C.cap), Math.cos(i * 1.26) * 0.06, 0.085, Math.sin(i * 1.26) * 0.06);
+    }
+    return g;
+  }
+
+  var SEATS4 = [[0, 1.45], [0, -1.45], [1.45, 0], [-1.45, 0]];
+  var SEATS2 = [[0, 1.3], [0, -1.3]];
+
+  // çay masası: bardaklar yalnız dolu koltukların önünde (filled = koltuk indeksleri); noSugar: orta boş kalır (fener için)
+  function teaTable(filled, noSugar) {
+    var g = new T.Group();
+    put(g, box(1.75, 0.09, 1.75, C.tableWood, true), 0, 0.75, 0);
+    put(g, box(1.62, 0.035, 1.62, C.cloth, true), 0, 0.81, 0);
+    [[-0.72, -0.72], [0.72, -0.72], [-0.72, 0.72], [0.72, 0.72]].forEach(function (p) {
+      put(g, box(0.13, 0.72, 0.13, C.tableLeg), p[0], 0.36, p[1]);
+    });
+    SEATS4.forEach(function (s) { put(g, stool(), s[0], 0, s[1]); });
+    (filled || []).forEach(function (k) {
+      var s = SEATS4[k], d = Math.hypot(s[0], s[1]), ux = s[0] / d, uz = s[1] / d;
+      put(g, teaGlass(), ux * 0.52 + uz * 0.2, 0.83, uz * 0.52 - ux * 0.2, Math.atan2(-s[0], -s[1]));
+      if ((k + filled.length) % 2) {                    // aynı menü her masada: bardağın yanında tabakta tost
+        put(g, cyl(0.16, 0.14, 0.03, 12, C.plate), ux * 0.5 - uz * 0.22, 0.845, uz * 0.5 + ux * 0.22);
+        put(g, box(0.2, 0.05, 0.14, C.toast), ux * 0.5 - uz * 0.22, 0.885, uz * 0.5 + ux * 0.22, 0.3);
+      }
+    });
+    if (!noSugar) put(g, sugarBowl(), 0.05, 0.83, -0.05);
+    return g;
+  }
+
+  // yüksek masa: yuvarlak tabla + tek ayak + taban; üstünde çay + tabakta tost (ayakta müşteri için)
+  function highTable() {
+    var g = new T.Group();
+    put(g, cyl(0.62, 0.62, 0.08, 14, C.tableWood, true), 0, 1.02, 0);
+    put(g, cyl(0.1, 0.1, 1.0, 8, C.tableLeg), 0, 0.5, 0);
+    put(g, cyl(0.42, 0.42, 0.06, 14, C.tableLeg), 0, 0.03, 0);
+    put(g, teaGlass(), 0.22, 1.06, 0.12);
+    put(g, cyl(0.16, 0.14, 0.03, 12, C.plate), -0.2, 1.075, -0.1);
+    put(g, box(0.2, 0.05, 0.14, C.toast), -0.2, 1.11, -0.1, 0.4);
+    return g;
+  }
+
+  function person(o) {
+    o = o || {};
+    var g = new T.Group();
+    var sc = o.shirt || C.shirt;
+    if (o.seated) {
+      put(g, cyl(0.21, 0.24, 0.46, 10, sc, true), 0, 0.76, 0);
+      put(g, box(0.34, 0.15, 0.42, o.pants || C.pants), 0, 0.56, 0.24);
+      put(g, cyl(0.06, 0.06, 0.30, 6, sc), -0.25, 0.76, 0.08);
+      put(g, cyl(0.06, 0.06, 0.30, 6, sc), 0.25, 0.76, 0.08);
+      put(g, sph(0.175, C.skin), 0, 1.10, 0);
+      put(g, sph(0.18, o.hair || C.hair), 0, 1.16, 0).scale.set(1, 0.5, 1);
+    } else {
+      put(g, box(0.32, 0.5, 0.24, o.pants || C.pants), 0, 0.25, 0);
+      put(g, cyl(0.22, 0.25, 0.50, 10, sc, true), 0, 0.75, 0);
+      put(g, cyl(0.06, 0.06, 0.34, 6, sc), -0.27, 0.78, 0.03);
+      put(g, cyl(0.06, 0.06, 0.34, 6, sc), 0.27, 0.78, 0.03);
+      put(g, sph(0.18, C.skin), 0, 1.14, 0);
+      put(g, sph(0.185, o.hair || C.hair), 0, 1.20, 0).scale.set(1, 0.5, 1);
+    }
+    return g;
+  }
+
+  function staff(apron, trayN) {
+    var g = person({ seated: false, shirt: C.shirt });
+    put(g, box(0.42, 0.48, 0.28, apron, true), 0, 0.72, 0.01);
+    put(g, cyl(0.20, 0.20, 0.09, 10, C.cap), 0, 1.28, 0);
+    put(g, box(0.20, 0.05, 0.06, C.hair), 0, 1.07, 0.17);
+    if (trayN) {
+      put(g, box(0.52, 0.035, 0.38, C.copper, true), 0, 0.95, 0.36);
+      for (var i = 0; i < trayN; i++) {
+        put(g, cyl(0.055, 0.042, 0.12, 8, C.cupTea),
+          -0.16 + (i % 3) * 0.16, 1.03, 0.26 + Math.floor(i / 3) * 0.15);
+      }
+    }
+    return g;
+  }
+
+  function owner() {
+    var g = person({ seated: false, shirt: C.shirt });
+    put(g, box(0.42, 0.5, 0.28, C.apronTea, true), 0, 0.72, 0.01);
+    put(g, cyl(0.21, 0.21, 0.10, 10, C.cap), 0, 1.29, 0);
+    put(g, box(0.22, 0.055, 0.06, C.hair), 0, 1.07, 0.17);
+    put(g, box(0.56, 0.04, 0.40, C.copper, true), 0, 0.96, 0.38);
+    for (var i = 0; i < 5; i++) {
+      put(g, cyl(0.055, 0.042, 0.12, 8, C.cupTea), -0.17 + (i % 3) * 0.17, 1.04, 0.28 + Math.floor(i / 3) * 0.16);
+    }
+    return g;
+  }
+
+  /* PARA İSTİFİ — Model B′: masa başına tek, düzenli, sabit noktada */
+  function moneyStack(n) {
+    var g = new T.Group();
+    var cols = n > 9 ? 3 : n > 4 ? 2 : 1, left = n, c, i;
+    for (c = 0; c < cols; c++) {
+      var h = Math.ceil(left / (cols - c)); left -= h;
+      var ox = (c - (cols - 1) / 2) * 0.31;
+      for (i = 0; i < h; i++) {
+        var coin = put(g, cyl(0.14, 0.14, 0.045, 12, i % 3 === 0 ? C.brass : C.gold),
+          ox + rnd(-0.015, 0.015), 0.025 + i * 0.046, rnd(-0.02, 0.02));
+        coin.rotation.y = rnd(0, 1.2);
+      }
+    }
+    if (n > 6) {
+      var b = put(g, box(0.32, 0.06, 0.17, C.note), 0.34, 0.03, 0.2, 0.4);
+      put(g, box(0.33, 0.015, 0.055, C.band), 0.34, 0.07, 0.2, 0.4);
+    }
+    if (n > 11) {
+      put(g, box(0.32, 0.06, 0.17, C.note), 0.30, 0.03, -0.16, -0.25);
+    }
+    return g;
+  }
+
+  function plant(big) {
+    var g = new T.Group();
+    var r = big ? 0.34 : 0.24;
+    put(g, cyl(r, r * 0.78, big ? 0.5 : 0.36, 10, C.planter, true), 0, big ? 0.25 : 0.18, 0);
+    put(g, sph(big ? 0.46 : 0.32, C.plant, true), 0, big ? 0.85 : 0.6, 0).scale.set(1, 1.15, 1);
+    put(g, sph(big ? 0.3 : 0.2, C.plant2, true), big ? 0.28 : 0.18, big ? 1.2 : 0.85, 0.1);
+    return g;
+  }
+
+  // uzun saksı kutusu: ahşap kutu + toprak + bitki kümeleri
+  function planterBox(len) {
+    var g = new T.Group();
+    put(g, box(len, 0.45, 0.55, C.planter, true), 0, 0.225, 0);
+    put(g, box(len + 0.06, 0.06, 0.61, C.doorWood), 0, 0.45, 0);
+    put(g, box(len - 0.1, 0.04, 0.45, 0x4e342e), 0, 0.47, 0);
+    var n = Math.floor(len / 0.55);
+    for (var i = 0; i < n; i++) {
+      put(g, sph(0.22, i % 2 ? C.plant : C.plant2, true), -len / 2 + 0.35 + i * 0.55, 0.68, 0).scale.set(1, 1.2, 1);
+    }
+    return g;
+  }
+
+  function picture(w, h, c) {
+    var g = new T.Group();
+    put(g, box(w, h, 0.06, C.boardFrame), 0, 0, 0);
+    put(g, box(w - 0.14, h - 0.14, 0.08, c || 0xcbb894), 0, 0, 0.01);
+    return g;
+  }
+
+  // aplik: duvara monte bakır plaka + kol + asılı fener kafesi + sarı küre (duvar arkada, fener +z'ye sarkar)
+  function sconce() {
+    var g = new T.Group();
+    put(g, box(0.16, 0.28, 0.04, C.copper), 0, 0.06, -0.02);
+    put(g, box(0.05, 0.05, 0.3, C.copper), 0, 0.18, 0.13);
+    put(g, cyl(0.03, 0.1, 0.06, 8, C.copper, true), 0, 0.14, 0.26);
+    for (var i = 0; i < 4; i++) {
+      var a = i * Math.PI / 2 + Math.PI / 4;
+      put(g, box(0.015, 0.22, 0.015, C.copper), Math.cos(a) * 0.075, 0.0, 0.26 + Math.sin(a) * 0.075);
+    }
+    put(g, sph(0.06, 0xffe08a), 0, 0.0, 0.26);
+    put(g, cyl(0.09, 0.09, 0.025, 8, C.copper), 0, -0.12, 0.26);
+    return g;
+  }
+
+  // ayaklı lamba: taban diski + ince bakır gövde + konik kumaş abajur + içinde ampul
+  function floorLamp() {
+    var g = new T.Group();
+    put(g, cyl(0.28, 0.3, 0.05, 12, C.copper, true), 0, 0.025, 0);
+    put(g, cyl(0.035, 0.035, 1.6, 8, C.copper), 0, 0.85, 0);
+    put(g, cyl(0.18, 0.36, 0.44, 12, 0xe8c98a, true), 0, 1.78, 0);
+    put(g, sph(0.07, 0xfff0b8), 0, 1.62, 0);
+    return g;
+  }
+
+  // pencere: ahşap çerçeve + açık mavi yarı saydam cam + kayıt + denizlik (ön yüz +z, genişlik x boyunca)
+  var glassMat = null;
+  function windowFrame(w, h) {
+    var g = new T.Group();
+    if (!glassMat) glassMat = new T.MeshLambertMaterial({ color: 0xa9d6ea, transparent: true, opacity: 0.42 });
+    put(g, box(w, 0.1, 0.12, C.doorWood), 0, h / 2 - 0.05, 0);
+    put(g, box(w, 0.1, 0.12, C.doorWood), 0, -h / 2 + 0.05, 0);
+    put(g, box(0.1, h, 0.12, C.doorWood), -w / 2 + 0.05, 0, 0);
+    put(g, box(0.1, h, 0.12, C.doorWood), w / 2 - 0.05, 0, 0);
+    put(g, new T.Mesh(GB(w - 0.2, h - 0.2, 0.04), glassMat), 0, 0, 0);
+    put(g, box(0.05, h - 0.2, 0.08, C.doorWood), 0, 0, 0);
+    put(g, box(w - 0.2, 0.05, 0.08, C.doorWood), 0, 0.1, 0);
+    put(g, box(w + 0.2, 0.07, 0.34, C.wain), 0, -h / 2 - 0.035, 0.06);
+    return g;
+  }
+
+  // pencereli duvar: lambri + alt/üst bant + pencereler arası ayaklar; wins = [[duvar ortasına göre ofset, genişlik], ...]
+  function windowWall(x1, z1, x2, z2, wins) {
+    var h = 2.7, sill = 1.15, top = 2.45;
+    var dx = x2 - x1, dz = z2 - z1, len = Math.hypot(dx, dz);
+    var g = grp((x1 + x2) / 2, 0, (z1 + z2) / 2, Math.atan2(dx, dz));
+    put(g, box(0.22, 0.9, len, C.wain), 0, 0.45, 0);
+    put(g, box(0.26, 0.08, len, C.doorWood), 0, 0.94, 0);
+    put(g, box(0.18, sill - 0.9, len, C.wallCream), 0, (0.9 + sill) / 2, 0);
+    put(g, box(0.18, h - top, len, C.wallCream), 0, (top + h) / 2, 0);
+    var edges = [-len / 2];
+    wins.forEach(function (w) { edges.push(w[0] - w[1] / 2, w[0] + w[1] / 2); });
+    edges.push(len / 2);
+    for (var i = 0; i < edges.length; i += 2) {
+      var a = edges[i], b = edges[i + 1];
+      if (b - a > 0.02) put(g, box(0.18, top - sill, b - a, C.wallCream), 0, (sill + top) / 2, (a + b) / 2);
+    }
+    wins.forEach(function (w) { put(g, windowFrame(w[1], top - sill), 0, (sill + top) / 2, w[0], -Math.PI / 2); });
+    return g;
+  }
+
+  // fener: bakır kafes + içinde sarı küre
+  function lantern() {
+    var g = new T.Group();
+    put(g, cyl(0.11, 0.11, 0.03, 8, C.copper), 0, 0.015, 0);
+    for (var i = 0; i < 4; i++) {
+      var a = i * Math.PI / 2 + Math.PI / 4;
+      put(g, box(0.02, 0.3, 0.02, C.copper), Math.cos(a) * 0.085, 0.18, Math.sin(a) * 0.085);
+    }
+    put(g, sph(0.07, 0xffe08a), 0, 0.18, 0);
+    put(g, cyl(0.03, 0.11, 0.08, 8, C.copper, true), 0, 0.37, 0);
+    var ring = put(g, new T.Mesh(GT(0.04, 0.012), M(C.brass)), 0, 0.45, 0);
+    ring.rotation.x = Math.PI / 2;
+    return g;
+  }
+
+  // duvar saati: silindir kasa + açık yüz + iki ibre (yüz +z'ye bakar)
+  function wallClock() {
+    var g = new T.Group();
+    put(g, cyl(0.3, 0.3, 0.08, 16, C.doorWood), 0, 0, 0.04).rotation.x = Math.PI / 2;
+    put(g, cyl(0.25, 0.25, 0.02, 16, C.plate), 0, 0, 0.085).rotation.x = Math.PI / 2;
+    put(g, box(0.03, 0.18, 0.015, 0x2f2a24), 0, 0.08, 0.1);
+    put(g, box(0.13, 0.03, 0.015, 0x2f2a24), 0.055, 0.005, 0.1);
+    put(g, sph(0.02, C.brass), 0, 0, 0.1);
+    return g;
+  }
+
+  // duvar rafı: iki kat ahşap raf + ters duran bardak sırası (raf +z'ye doğru çıkar)
+  function wallShelf(w) {
+    var g = new T.Group();
+    [0, -0.55].forEach(function (dy) {
+      put(g, box(w, 0.06, 0.32, C.tableWood, true), 0, dy, 0.16);
+      put(g, box(0.05, 0.22, 0.26, C.doorWood), -w / 2 + 0.1, dy - 0.14, 0.13);
+      put(g, box(0.05, 0.22, 0.26, C.doorWood), w / 2 - 0.1, dy - 0.14, 0.13);
+      var n = Math.floor((w - 0.3) / 0.19);
+      for (var i = 0; i < n; i++) {
+        put(g, cyl(0.045, 0.062, 0.11, 8, dy ? C.cupTea : 0xdfe6ea), -(n - 1) * 0.095 + i * 0.19, dy + 0.085, 0.16);
+      }
+    });
+    return g;
+  }
+
+  // ahşap kasalar: üst üste / yan yana
+  function crate(w) {
+    var g = new T.Group();
+    put(g, box(w, 0.5, 0.55, C.tableWood, true), 0, 0.25, 0);
+    put(g, box(w + 0.02, 0.06, 0.57, C.doorWood), 0, 0.12, 0);
+    put(g, box(w + 0.02, 0.06, 0.57, C.doorWood), 0, 0.38, 0);
+    return g;
+  }
+  function crates() {
+    var g = new T.Group();
+    put(g, crate(0.7), -0.38, 0, 0);
+    put(g, crate(0.7), 0.4, 0, 0.05, 0.08);
+    put(g, crate(0.7), -0.3, 0.5, 0.02, -0.12);
+    put(g, crate(0.55), 0.45, 0.5, -0.02, 0.2);
+    return g;
+  }
+
+  // askılık: dikme + kollar + asılı ceket
+  function coatRack() {
+    var g = new T.Group();
+    put(g, cyl(0.26, 0.3, 0.05, 10, C.doorWood), 0, 0.025, 0);
+    put(g, cyl(0.04, 0.04, 1.85, 8, C.doorWood), 0, 0.95, 0);
+    for (var i = 0; i < 4; i++) {
+      var a = i * Math.PI / 2;
+      var arm = put(g, box(0.3, 0.04, 0.04, C.doorWood), Math.cos(a) * 0.15, 1.74, -Math.sin(a) * 0.15, a);
+      arm.rotation.z = 0.3;
+    }
+    put(g, sph(0.05, C.brass), 0, 1.9, 0);
+    put(g, box(0.38, 0.62, 0.16, 0x2c3e50, true), 0.2, 1.32, 0.04);
+    put(g, box(0.12, 0.5, 0.14, 0x2c3e50), 0.42, 1.2, 0.04).rotation.z = -0.15;
+    return g;
+  }
+
+  // gazete/dergi sehpası: iki dikme + eğik raflar + gazeteler
+  function newspaperRack() {
+    var g = new T.Group();
+    put(g, box(0.7, 0.05, 0.45, C.doorWood), 0, 0.03, 0);
+    put(g, box(0.05, 1.2, 0.05, C.doorWood), -0.3, 0.6, -0.18);
+    put(g, box(0.05, 1.2, 0.05, C.doorWood), 0.3, 0.6, -0.18);
+    for (var i = 0; i < 3; i++) {
+      put(g, box(0.62, 0.03, 0.34, C.tableWood), 0, 0.36 + i * 0.36, 0).rotation.x = 0.55;
+      put(g, box(0.5, 0.02, 0.3, 0xe9e4d6), 0, 0.39 + i * 0.36, 0.02).rotation.x = 0.55;
+      put(g, box(0.5, 0.012, 0.09, 0x2f2a24), 0, 0.41 + i * 0.36, -0.1).rotation.x = 0.55;
+    }
+    return g;
+  }
+
+  // bekleme bankı: uzun ahşap sıra + sırtlık
+  function bench(len) {
+    var g = new T.Group();
+    put(g, box(len, 0.08, 0.45, C.tableWood, true), 0, 0.45, 0);
+    put(g, box(len, 0.36, 0.07, C.tableWood, true), 0, 0.8, -0.2);
+    [[-len / 2 + 0.15, -0.15], [len / 2 - 0.15, -0.15], [-len / 2 + 0.15, 0.15], [len / 2 - 0.15, 0.15]].forEach(function (p) {
+      put(g, box(0.08, 0.42, 0.08, C.tableLeg), p[0], 0.21, p[1]);
+    });
+    return g;
+  }
+
+  // yönlendirme tabelası: dikme + levha + ok
+  function signPost() {
+    var g = new T.Group();
+    put(g, cyl(0.2, 0.22, 0.04, 8, C.doorWood), 0, 0.02, 0);
+    put(g, cyl(0.03, 0.03, 1.6, 6, C.doorWood), 0, 0.8, 0);
+    put(g, box(0.9, 0.34, 0.05, C.tableWood, true), 0, 1.5, 0);
+    put(g, box(0.4, 0.05, 0.02, C.chalk), -0.08, 1.5, 0.03);
+    put(g, box(0.12, 0.12, 0.02, C.chalk), 0.22, 1.5, 0.03, 0).rotation.z = Math.PI / 4;
+    put(g, box(0.5, 0.04, 0.02, C.chalk), -0.15, 1.36, 0.03);
+    return g;
+  }
+
+  function menuBoard() {
+    var g = new T.Group();
+    put(g, box(2.3, 1.4, 0.09, C.boardFrame), 0, 0, 0);
+    put(g, box(2.1, 1.2, 0.11, C.board), 0, 0, 0.01);
+    for (var i = 0; i < 5; i++) {
+      put(g, box(rnd(0.7, 1.5), 0.06, 0.13, C.chalk), rnd(-0.3, 0.1), 0.42 - i * 0.2, 0.02);
+      put(g, box(0.22, 0.06, 0.13, C.gold), 0.82, 0.42 - i * 0.2, 0.02);
+    }
+    return g;
+  }
+
+  function counter(len, c) {
+    var g = new T.Group();
+    put(g, box(len, 0.9, 0.85, c || C.tableWood, true), 0, 0.45, 0);
+    put(g, box(len + 0.12, 0.08, 0.95, C.doorWood), 0, 0.93, 0);
+    return g;
+  }
+
+  function samovar() {
+    var g = new T.Group();
+    g.add(counter(3.0));
+    put(g, cyl(0.30, 0.34, 0.66, 12, C.copper, true), -0.85, 1.3, 0);
+    put(g, cyl(0.15, 0.30, 0.26, 12, C.copper, true), -0.85, 1.76, 0);
+    put(g, cyl(0.13, 0.13, 0.20, 10, C.copper, true), -0.85, 1.98, 0);
+    put(g, sph(0.06, C.brass), -0.85, 2.1, 0);
+    put(g, cyl(0.04, 0.04, 0.2, 6, C.brass), -0.85, 1.1, 0.34).rotation.x = Math.PI / 2;
+    for (var i = 0; i < 8; i++) {
+      put(g, cyl(0.055, 0.042, 0.12, 8, 0xdfe6ea), 0.15 + (i % 4) * 0.22, 1.03, -0.2 + Math.floor(i / 4) * 0.24);
+    }
+    put(g, box(0.5, 0.04, 0.36, C.copper), 1.25, 1.0, 0.1);
+    return g;
+  }
+
+  function cezveStation() {
+    var g = new T.Group();
+    g.add(counter(2.6));
+    put(g, box(1.5, 0.14, 0.55, 0xd9c9a3, true), -0.4, 1.04, 0);
+    for (var i = 0; i < 4; i++) {
+      var c = put(g, cyl(0.10, 0.13, 0.17, 8, C.copper, true), -0.85 + i * 0.32, 1.15, 0);
+      put(g, cyl(0.02, 0.02, 0.3, 4, C.tableLeg), -0.85 + i * 0.32, 1.16, 0.2).rotation.x = Math.PI / 2.4;
+    }
+    for (var j = 0; j < 4; j++) {
+      put(g, cyl(0.07, 0.05, 0.1, 8, C.plate), 0.75 + (j % 2) * 0.22, 1.0, -0.18 + Math.floor(j / 2) * 0.24);
+    }
+    return g;
+  }
+
+  function griddle() {
+    var g = new T.Group();
+    g.add(counter(3.0, 0x8a6242));
+    put(g, box(2.4, 0.16, 0.62, C.griddle, true), 0, 1.0, 0);
+    for (var i = 0; i < 3; i++) {
+      put(g, box(0.6, 0.12, 0.5, C.toast, true), -0.75 + i * 0.75, 1.12, 0);
+      put(g, box(0.62, 0.1, 0.52, 0x37474f, true), -0.75 + i * 0.75, 1.28, 0);
+      put(g, cyl(0.03, 0.03, 0.16, 6, C.brass), -0.75 + i * 0.75, 1.4, 0);
+    }
+    return g;
+  }
+
+  function vitrin() {
+    var g = new T.Group();
+    g.add(counter(2.4, 0x8a6242));
+    put(g, box(2.3, 0.9, 0.8, C.glass, true), 0, 1.42, 0).material = new T.MeshLambertMaterial({ color: C.glass, transparent: true, opacity: 0.35 });
+    put(g, box(2.35, 0.05, 0.85, C.doorWood), 0, 1.9, 0);
+    for (var i = 0; i < 5; i++) {
+      var s = new T.Mesh(GT(0.15, 0.055), M(0xc08a3e, true));
+      s.rotation.x = Math.PI / 2;
+      put(g, s, -0.85 + i * 0.42, 1.08, 0.05);
+    }
+    for (var j = 0; j < 4; j++) {
+      put(g, sph(0.13, C.bread, true), -0.7 + j * 0.45, 1.55, 0).scale.set(1.2, 0.7, 1);
+    }
+    return g;
+  }
+
+  function dishSink() {
+    var g = new T.Group();
+    g.add(counter(2.2, 0x7d5b40));
+    put(g, box(1.2, 0.2, 0.62, C.sink, true), -0.3, 0.94, 0);
+    put(g, cyl(0.04, 0.04, 0.42, 6, 0xb0bec5), -0.3, 1.2, -0.24);
+    for (var i = 0; i < 6; i++) {
+      put(g, cyl(0.055, 0.045, 0.11, 8, C.dirty), 0.62 + (i % 3) * 0.16, 0.99 + Math.floor(i / 3) * 0.11, 0.05);
+    }
+    return g;
+  }
+
+  function kasa() {
+    var g = new T.Group();
+    g.add(counter(2.6, 0x7a5230));
+    put(g, box(0.6, 0.32, 0.44, 0x37474f, true), -0.5, 1.12, 0);
+    put(g, box(0.5, 0.26, 0.03, 0x9fd8c0), -0.5, 1.2, 0.23).rotation.x = -0.35;
+    put(g, box(0.34, 0.06, 0.24, C.brass), 0.55, 1.0, 0);
+    put(g, moneyStack(6), 0.6, 0.95, 0.1);
+    return g;
+  }
+
+  // teşhir vitrini: camlı tezgâh, altta tepsiler üstte baklava dilimleri (len: uzunluk)
+  function pastaneCounter(len) {
+    len = len || 5.2;
+    var g = new T.Group();
+    g.add(counter(len, 0x8a6242));
+    var gl = box(len - 0.2, 0.85, 0.78, C.glass);
+    gl.material = new T.MeshLambertMaterial({ color: C.glass, transparent: true, opacity: 0.32 });
+    put(g, gl, 0, 1.4, 0);
+    put(g, box(len - 0.1, 0.06, 0.85, C.doorWood), 0, 1.86, 0);
+    var n = Math.floor((len - 1.0) / 0.62) + 1, m = Math.floor((len - 1.6) / 0.75) + 1;
+    for (var i = 0; i < n; i++) {
+      put(g, cyl(0.19, 0.19, 0.09, 12, i % 2 ? 0xe0b06a : 0xc98f2c, true), -(n - 1) * 0.31 + i * 0.62, 1.08, 0.05);
+    }
+    for (var j = 0; j < m; j++) {
+      put(g, box(0.28, 0.14, 0.28, 0xdcb06b, true), -(m - 1) * 0.375 + j * 0.75, 1.55, 0);
+    }
+    return g;
+  }
+
+  // lavabo: tezgâh + oval kurna + musluk + üstte aynalı çerçeve (arka yüz duvara, ön +z)
+  function sink() {
+    var g = new T.Group();
+    put(g, box(1.3, 0.8, 0.6, 0xd9cdb4, true), 0, 0.4, 0);
+    put(g, box(1.36, 0.06, 0.66, 0xf1ece0), 0, 0.83, 0);
+    put(g, cyl(0.24, 0.19, 0.12, 12, 0xf7f3ea, true), 0, 0.9, 0.04).scale.set(1.35, 1, 1);
+    put(g, cyl(0.03, 0.03, 0.22, 6, 0xb0bec5), 0, 0.98, -0.2);
+    put(g, cyl(0.025, 0.025, 0.16, 6, 0xb0bec5), 0, 1.08, -0.13).rotation.x = Math.PI / 2;
+    put(g, box(0.9, 0.7, 0.04, C.boardFrame), 0, 1.75, -0.27);
+    put(g, box(0.8, 0.6, 0.05, 0xcfe3ea), 0, 1.75, -0.265);
+    return g;
+  }
+
+  // WC levhası: koyu plaka + iki beyaz figür (kapı yanına duvara; ön +z)
+  function wcSign() {
+    var g = new T.Group();
+    put(g, box(0.5, 0.34, 0.04, C.board), 0, 0, 0);
+    put(g, box(0.54, 0.38, 0.03, C.boardFrame), 0, 0, -0.005);
+    [-0.1, 0.1].forEach(function (x, i) {
+      put(g, sph(0.035, C.chalk), x, 0.09, 0.03);
+      if (i) put(g, cyl(0.03, 0.07, 0.14, 6, C.chalk, true), x, -0.03, 0.03);
+      else put(g, box(0.06, 0.14, 0.03, C.chalk), x, -0.03, 0.03);
+      put(g, box(0.02, 0.06, 0.02, C.chalk), x - 0.015, -0.13, 0.03);
+      put(g, box(0.02, 0.06, 0.02, C.chalk), x + 0.015, -0.13, 0.03);
+    });
+    return g;
+  }
+
+  // tuvalet odası: alçak ara duvarlar (kamera içeri görsün) + ön duvarda kapı boşluğu + 2 kabin + lavabo/ayna + çöp + levha
+  // x1..x2 genişlik, zBack arka (dış) duvar iç yüzü, zFront ön duvar; doorX kapı boşluğu merkezi;
+  // o.west/o.east yan duvar çizilsin mi, o.sinkEast lavabo sağ yanda mı (kabinler karşı yanda)
+  function wcRoom(x1, x2, zBack, zFront, doorX, o) {
+    o = o || {};
+    var g = new T.Group(), H = 2.2, dir = o.sinkEast === false ? -1 : 1;
+    if (o.west !== false) g.add(wall(x1, zBack, x1, zFront, H));
+    if (o.east !== false) g.add(wall(x2, zBack, x2, zFront, H));
+    g.add(wall(x1, zFront, doorX - 0.6, zFront, H));
+    g.add(wall(doorX + 0.6, zFront, x2, zFront, H));
+    put(g, box(1.4, 0.12, 0.3, C.doorWood), doorX, H - 0.06, zFront);
+    g.add(floorPatch((x1 + x2) / 2, (zBack + zFront) / 2, x2 - x1 - 0.2, zFront - zBack - 0.2, 0xcfd8dc, 0.012));
+    // kabinler: lavabonun karşı yanından başlar, arka duvar boyunca
+    var start = dir > 0 ? x1 + 0.2 : x2 - 0.2, zp = zBack + 0.8, zd = zBack + 1.6;
+    for (var i = 0; i < 3; i++) put(g, box(0.06, 2.0, 1.6, C.wain), start + dir * i * 1.5, 1.0, zp);
+    for (var k = 0; k < 2; k++) {
+      var cx = start + dir * (0.75 + k * 1.5);
+      var door = put(g, box(1.36, 1.95, 0.06, C.doorWood, true), cx, 0.975, zd);
+      put(g, sph(0.03, C.brass), cx + dir * 0.5, 0.95, zd + 0.05);
+      if (k === 1) {                                   // aralık kapı: içeride klozet görünür
+        door.rotation.y = dir * 0.55;
+        door.position.x = cx - dir * 0.2; door.position.z = zd + 0.3;
+        put(g, cyl(0.2, 0.16, 0.4, 10, 0xf7f3ea, true), cx, 0.2, zBack + 0.65);
+        put(g, box(0.4, 0.4, 0.18, 0xf7f3ea), cx, 0.6, zBack + 0.3);
+      }
+    }
+    var sx = dir > 0 ? x2 - 1.1 : x1 + 1.1;
+    put(g, sink(), sx, 0, zBack + 0.33);
+    put(g, cyl(0.14, 0.12, 0.36, 8, 0x546e7a), doorX + dir * 1.1, 0.18, zFront - 0.5);
+    put(g, wcSign(), doorX + dir * 1.0, 1.85, zFront + 0.16);
+    return g;
+  }
+
+  // soba/kuzine: dökme gövde + kapak + baca (yukarı çıkıp arkadaki duvara girer) + üstünde çaydanlık (arka yüz duvara)
+  function stove() {
+    var g = new T.Group();
+    put(g, box(0.9, 0.1, 0.7, 0x2f2a24), 0, 0.05, 0);
+    [[-0.32, -0.22], [0.32, -0.22], [-0.32, 0.22], [0.32, 0.22]].forEach(function (p) {
+      put(g, cyl(0.04, 0.04, 0.22, 6, 0x2f2a24), p[0], 0.2, p[1]);
+    });
+    put(g, box(0.8, 0.7, 0.6, 0x37474f, true), 0, 0.65, 0);
+    put(g, box(0.84, 0.06, 0.64, 0x263238), 0, 1.02, 0);
+    put(g, box(0.3, 0.3, 0.03, C.copper), 0, 0.6, 0.31);
+    put(g, sph(0.035, C.brass), 0.12, 0.6, 0.33);
+    put(g, cyl(0.07, 0.07, 1.1, 8, 0x37474f), 0.22, 1.6, -0.15);
+    put(g, cyl(0.07, 0.07, 0.76, 8, 0x37474f), 0.22, 2.15, -0.52).rotation.x = Math.PI / 2;
+    put(g, cyl(0.11, 0.11, 0.05, 8, 0x263238), 0.22, 2.15, -0.86).rotation.x = Math.PI / 2;
+    put(g, cyl(0.17, 0.14, 0.2, 10, C.copper, true), -0.2, 1.15, 0.05);
+    put(g, cyl(0.05, 0.08, 0.08, 8, C.copper, true), -0.2, 1.29, 0.05);
+    put(g, sph(0.03, C.brass), -0.2, 1.35, 0.05);
+    put(g, box(0.05, 0.05, 0.18, C.copper), -0.2, 1.24, -0.16).rotation.x = 0.6;
+    return g;
+  }
+
+  // damacana rafı: metal iskelet + iki kat + mavi damacanalar
+  function waterRack() {
+    var g = new T.Group();
+    [0.05, 0.75].forEach(function (y) { put(g, box(1.3, 0.05, 0.5, 0x546e7a), 0, y, 0); });
+    [[-0.62, -0.22], [0.62, -0.22], [-0.62, 0.22], [0.62, 0.22]].forEach(function (p) {
+      put(g, box(0.05, 1.5, 0.05, 0x546e7a), p[0], 0.75, p[1]);
+    });
+    for (var i = 0; i < 6; i++) {
+      var x = -0.4 + (i % 3) * 0.4, y = i < 3 ? 0.08 : 0.78;
+      put(g, cyl(0.16, 0.16, 0.5, 10, 0x74b9e6, true), x, y + 0.25, 0);
+      put(g, cyl(0.07, 0.12, 0.1, 8, 0x74b9e6, true), x, y + 0.55, 0);
+      put(g, cyl(0.05, 0.05, 0.05, 8, 0xf1ece0), x, y + 0.62, 0);
+    }
+    return g;
+  }
+
+  // okey masası: dört ıstaka (taşlar ıstakanın eksenine göre dizilir), açık taşlar, zar, çay
+  function okeyTable() {
+    var g = new T.Group();
+    put(g, box(1.55, 0.1, 1.55, C.tableWood, true), 0, 0.75, 0);
+    put(g, box(1.4, 0.03, 1.4, C.felt, true), 0, 0.81, 0);
+    [[-0.62, -0.62], [0.62, -0.62], [-0.62, 0.62], [0.62, 0.62]].forEach(function (p) {
+      put(g, box(0.13, 0.72, 0.13, C.tableLeg), p[0], 0.36, p[1]);
+    });
+    [[0, 0.5, 0], [0, -0.5, Math.PI], [0.5, 0, Math.PI / 2], [-0.5, 0, -Math.PI / 2]].forEach(function (r) {
+      var az = r[0] !== 0;                                   // ıstaka Z ekseni boyunca mı
+      var tx = az ? -Math.sign(r[0]) : 0, tz = az ? 0 : -Math.sign(r[1]);   // masa merkezine doğru
+      put(g, box(0.66, 0.07, 0.14, 0xd9b98c, true), r[0], 0.86, r[1], r[2]);
+      for (var row = 0; row < 2; row++) {
+        var off = row ? -0.035 : 0.045, y = row ? 0.965 : 0.935;
+        for (var i = 0; i < 6; i++) {
+          var t = -0.25 + i * 0.1;
+          put(g, box(az ? 0.05 : 0.08, 0.11, az ? 0.08 : 0.05, 0xf1ece0),
+            r[0] + (az ? tx * off : t), y, r[1] + (az ? t : tz * off));
+        }
+      }
+    });
+    // çuha ortası: açık taşlar + gösterge + zar
+    [[-0.12, 0.05, 0.1], [-0.02, 0.07, -0.2], [0.08, 0.05, 0.3], [0.02, -0.08, 0.5], [0.14, -0.06, -0.1]].forEach(function (p) {
+      put(g, box(0.08, 0.02, 0.11, 0xf1ece0), p[0], 0.835, p[1], p[2]);
+    });
+    put(g, box(0.08, 0.11, 0.02, 0xf1ece0), 0.22, 0.88, -0.16, 0.4);
+    put(g, box(0.055, 0.055, 0.055, C.plate), -0.22, 0.852, -0.14, 0.5);
+    put(g, teaGlass(), 0.55, 0.825, 0.55, -0.6);
+    SEATS4.forEach(function (s) { put(g, chairBack(), s[0] * 0.78, 0, s[1] * 0.78, Math.atan2(-s[0], -s[1])); });
+    return g;
+  }
+
+  // tavla masası: her tahtada farklı oyun anı — 0 açılış dizilimi · 1 orta oyun + atılmış zarlar · 2 toplama aşaması (kenarda toplanan pullar) · 3 kırık pul + zar kupası
+  var TAVLA_W = 0xf1ece0, TAVLA_K = 0x2f2a24;
+  var TAVLA_LAY = [
+    [[0.44, 1, 2, TAVLA_W], [-0.12, 1, 5, TAVLA_W], [-0.3, -1, 3, TAVLA_W], [-0.44, -1, 5, TAVLA_W],
+     [0.44, -1, 2, TAVLA_K], [-0.12, -1, 5, TAVLA_K], [-0.3, 1, 3, TAVLA_K], [-0.44, 1, 5, TAVLA_K]],
+    [[0.08, 1, 3, TAVLA_W], [0.2, 1, 2, TAVLA_W], [-0.08, -1, 4, TAVLA_W], [0.32, -1, 2, TAVLA_W], [-0.44, -1, 2, TAVLA_W],
+     [0.08, -1, 3, TAVLA_K], [-0.2, -1, 2, TAVLA_K], [-0.08, 1, 4, TAVLA_K], [0.38, 1, 1, TAVLA_K], [-0.32, 1, 3, TAVLA_K]],
+    [[0.44, 1, 4, TAVLA_W], [0.34, 1, 3, TAVLA_W], [0.24, 1, 2, TAVLA_W],
+     [0.44, -1, 3, TAVLA_K], [0.34, -1, 4, TAVLA_K], [0.24, -1, 1, TAVLA_K], [0.12, -1, 2, TAVLA_K]],
+    [[0.44, 1, 1, TAVLA_W], [0.14, 1, 4, TAVLA_W], [-0.2, 1, 2, TAVLA_W], [-0.38, -1, 4, TAVLA_W],
+     [0.44, -1, 1, TAVLA_K], [0.14, -1, 4, TAVLA_K], [-0.2, -1, 2, TAVLA_K], [-0.38, 1, 4, TAVLA_K]]
+  ];
+  function tavlaTable(variant) {
+    var g = new T.Group(), v = (variant || 0) % 4, i;
+    put(g, box(1.25, 0.09, 1.0, C.tableWood, true), 0, 0.75, 0);
+    [[-0.5, -0.38], [0.5, -0.38], [-0.5, 0.38], [0.5, 0.38]].forEach(function (p) {
+      put(g, box(0.11, 0.72, 0.11, C.tableLeg), p[0], 0.36, p[1]);
+    });
+    put(g, box(0.5, 0.07, 0.66, 0x8d5b3a, true), -0.26, 0.83, 0);
+    put(g, box(0.5, 0.07, 0.66, 0x5d4037, true), 0.26, 0.83, 0);
+    put(g, box(0.04, 0.09, 0.66, 0x3e2723), 0, 0.84, 0);
+    TAVLA_LAY[v].forEach(function (p) {                       // [x, kenar, adet, renk] — pullar kenardan içeri sıralanır
+      for (var k = 0; k < p[2]; k++) put(g, cyl(0.042, 0.042, 0.025, 10, p[3]), p[0], 0.88, p[1] * (0.28 - k * 0.075));
+    });
+    if (v === 1) {
+      put(g, box(0.05, 0.05, 0.05, C.plate), 0.1, 0.895, -0.04, 0.5);
+      put(g, box(0.05, 0.05, 0.05, C.plate), 0.2, 0.895, 0.06, -0.3);
+    }
+    if (v === 2) {
+      for (i = 0; i < 4; i++) put(g, cyl(0.042, 0.042, 0.025, 10, TAVLA_W), -0.58, 0.81 + i * 0.026, 0.3);
+      for (i = 0; i < 3; i++) put(g, cyl(0.042, 0.042, 0.025, 10, TAVLA_K), -0.58, 0.81 + i * 0.026, -0.3);
+    }
+    if (v === 3) {
+      put(g, cyl(0.042, 0.042, 0.025, 10, TAVLA_K), 0, 0.9, 0.02);
+      put(g, cyl(0.05, 0.06, 0.12, 8, 0x5d4037, true), 0.5, 0.855, 0.32);
+    }
+    put(g, teaGlass(), -0.5, 0.795, 0.42, Math.PI);
+    put(g, teaGlass(), 0.5, 0.795, -0.42, 0);
+    SEATS2.forEach(function (s) { put(g, stool(), s[0], 0, s[1] * 0.85); });
+    return g;
+  }
+
+  function tv(w) {
+    var g = new T.Group();
+    put(g, box(w, w * 0.58, 0.14, C.tvFrame, true), 0, 0, 0);
+    put(g, box(w - 0.16, w * 0.58 - 0.16, 0.16, C.tvScreen), 0, 0, 0.01);
+    put(g, box(w * 0.5, 0.05, 0.18, 0x5aa77f), 0, -w * 0.1, 0.03);
+    return g;
+  }
+
+  // yer minderi (sedir karşısı)
+  function floorCushion() {
+    var g = new T.Group();
+    put(g, box(0.72, 0.16, 0.72, C.sedirCushion, true), 0, 0.08, 0);
+    put(g, box(0.6, 0.05, 0.6, 0x9c3a45, true), 0, 0.18, 0);
+    return g;
+  }
+
+  function sedir(len) {
+    var g = new T.Group();
+    put(g, box(len, 0.42, 0.85, C.sedir, true), 0, 0.21, 0);
+    put(g, box(len, 0.12, 0.8, C.sedirCushion, true), 0, 0.48, 0);
+    put(g, box(len, 0.55, 0.16, C.sedirCushion, true), 0, 0.72, -0.36);
+    for (var i = 0; i < Math.floor(len / 1.1); i++) {
+      put(g, box(0.42, 0.34, 0.14, 0x9c3a45, true), -len / 2 + 0.6 + i * 1.1, 0.72, -0.24);
+    }
+    return g;
+  }
+
+  // kanepe: oturak + minder + sırtlık + iki kolçak + iki yastık (ön yüz +z)
+  function couch(len) {
+    var g = new T.Group();
+    put(g, box(len, 0.36, 0.9, C.sedir, true), 0, 0.2, 0);
+    put(g, box(len - 0.4, 0.14, 0.76, C.sedirCushion, true), 0, 0.45, 0.04);
+    put(g, box(len, 0.5, 0.2, C.sedir, true), 0, 0.68, -0.38);
+    put(g, box(0.2, 0.62, 0.9, C.sedir, true), -len / 2 + 0.1, 0.33, 0);
+    put(g, box(0.2, 0.62, 0.9, C.sedir, true), len / 2 - 0.1, 0.33, 0);
+    put(g, box(0.4, 0.34, 0.14, C.cloth, true), -len / 2 + 0.55, 0.7, -0.22, 0.12);
+    put(g, box(0.4, 0.34, 0.14, C.cloth, true), len / 2 - 0.55, 0.7, -0.22, -0.12);
+    [[-len / 2 + 0.2, -0.35], [len / 2 - 0.2, -0.35], [-len / 2 + 0.2, 0.35], [len / 2 - 0.2, 0.35]].forEach(function (p) {
+      put(g, box(0.1, 0.06, 0.1, C.tableLeg), p[0], 0.0, p[1]);
+    });
+    return g;
+  }
+  // tek kişilik koltuk (kanepeyle aynı dil, tek yastık)
+  function armchair() {
+    var g = new T.Group();
+    put(g, box(1.15, 0.36, 0.9, C.sedir, true), 0, 0.2, 0);
+    put(g, box(0.75, 0.14, 0.76, C.sedirCushion, true), 0, 0.45, 0.04);
+    put(g, box(1.15, 0.55, 0.2, C.sedir, true), 0, 0.7, -0.38);
+    put(g, box(0.2, 0.62, 0.9, C.sedir, true), -0.475, 0.33, 0);
+    put(g, box(0.2, 0.62, 0.9, C.sedir, true), 0.475, 0.33, 0);
+    put(g, box(0.4, 0.34, 0.14, C.cloth, true), 0, 0.7, -0.22, 0.08);
+    return g;
+  }
+  // alçak sehpa (üst yüzey 0.45)
+  function coffeeTable() {
+    var g = new T.Group();
+    put(g, box(1.2, 0.06, 0.62, C.tableWood, true), 0, 0.42, 0);
+    put(g, box(1.1, 0.04, 0.52, C.doorWood), 0, 0.2, 0);
+    [[-0.52, -0.24], [0.52, -0.24], [-0.52, 0.24], [0.52, 0.24]].forEach(function (p) {
+      put(g, box(0.07, 0.42, 0.07, C.tableLeg), p[0], 0.21, p[1]);
+    });
+    return g;
+  }
+
+  function hookah() {
+    var g = new T.Group();
+    put(g, cyl(0.2, 0.24, 0.34, 10, C.glass, true), 0, 0.17, 0);
+    put(g, cyl(0.05, 0.05, 0.62, 8, C.hookah), 0, 0.63, 0);
+    put(g, cyl(0.14, 0.09, 0.12, 10, C.copper, true), 0, 1.0, 0);
+    put(g, cyl(0.12, 0.13, 0.1, 10, 0x4e342e, true), 0, 1.11, 0);
+    put(g, sph(0.05, 0xb04a2a), 0, 1.17, 0);
+    for (var i = 0; i < 5; i++) {
+      put(g, sph(0.045, 0x6d5b4a), 0.16 + i * 0.09, 0.72 - i * 0.11, 0.05 + i * 0.03);
+    }
+    return g;
+  }
+
+  function railing(len) {
+    var g = new T.Group();
+    put(g, box(len, 0.1, 0.12, C.rail), 0, 1.0, 0);
+    put(g, box(len, 0.07, 0.1, C.rail), 0, 0.55, 0);
+    for (var i = 0; i <= Math.floor(len / 1.4); i++) {
+      put(g, box(0.11, 1.05, 0.11, C.rail), -len / 2 + i * 1.4, 0.52, 0);
+    }
+    return g;
+  }
+
+  // merdiven: n basamak (vars. 14), -z yönünde 2.9 yükselir; iki yanda korkuluk, üstte sahanlık. o.w genişlik, o.n basamak sayısı
+  var STEP_D = 0.46, STEP_H = 2.9 / 14, STEP_N = 14;
+  function stairs(o) {
+    o = o || {};
+    var g = new T.Group(), w = o.w || 4.6, n = o.n || STEP_N, sh = 2.9 / n, i;
+    for (i = 0; i < n; i++) {
+      put(g, box(w, sh, STEP_D, C.doorWood, true), 0, sh / 2 + i * sh, -STEP_D / 2 - i * STEP_D);
+      put(g, box(w, 0.035, STEP_D, C.tableWood, true), 0, (i + 1) * sh - 0.0175, -STEP_D / 2 - i * STEP_D);
+    }
+    var L = n * STEP_D;
+    if (o.landing !== false) {
+      put(g, box(w, 2.9, 0.6, C.doorWood, true), 0, 1.45, -L - 0.3);
+      put(g, box(w, 0.035, 0.6, C.tableWood, true), 0, 2.9 - 0.0175, -L - 0.3);
+    }
+    if (o.rails !== false) {
+      [-1, 1].forEach(function (s) {
+        var x = s * (w / 2 - 0.1);
+        for (i = 0; i < n; i += 2) {
+          put(g, box(0.08, 1.0, 0.08, C.rail), x, (i + 1) * sh + 0.5, -STEP_D / 2 - i * STEP_D);
+        }
+        var hr = put(g, box(0.1, 0.09, Math.hypot(L, 2.9) + 0.3, C.rail), x, 2.9 / 2 + 1.0, -L / 2);
+        hr.rotation.x = Math.atan2(2.9, L);
+        if (o.landing !== false) {
+          put(g, box(0.08, 1.0, 0.08, C.rail), x, 2.9 + 0.5, -L - 0.3);
+          put(g, box(0.1, 0.09, 0.6, C.rail), x, 3.95, -L - 0.3);
+        }
+      });
+    }
+    return g;
+  }
+
+  /* ---------- yerleştirme yardımcıları ---------- */
+
+  // n adet rastgele koltuk indeksi (0..total-1)
+  function pickSeats(n, total) {
+    var idx = [];
+    for (var i = 0; i < total; i++) idx.push(i);
+    idx.sort(function () { return Math.random() - 0.5; });
+    return idx.slice(0, n);
+  }
+
+  // verilen koltuk indekslerine oturan müşteriler
+  function seatCustomers(g, tx, tz, seats, idx, scale, y) {
+    scale = scale || 1;
+    idx.forEach(function (k) {
+      var s = seats[k];
+      put(g, person({ seated: true, shirt: pick(CUST) }), tx + s[0] * scale, y || 0, tz + s[1] * scale, Math.atan2(-s[0], -s[1]));
+    });
+  }
+
+  // dört çay masası: doluluk önce seçilir; müşteri ve bardak aynı koltuklara gider (sp: merkezden masa ofseti)
+  function teaCluster(g, cx, cz, coins, sp) {
+    sp = sp || 3.3;
+    var offs = [[-sp, -sp], [sp, -sp], [-sp, sp], [sp, sp]];
+    offs.forEach(function (o, i) {
+      var tx = cx + o[0], tz = cz + o[1];
+      var idx = pickSeats(2 + Math.floor(Math.random() * 3), 4);
+      put(g, teaTable(idx), tx, 0, tz);
+      seatCustomers(g, tx, tz, SEATS4, idx);
+      put(g, moneyStack(coins[i]), tx + 1.05, 0, tz + 1.05);
+    });
+  }
+
+  // dış duvar seti (34×34; girişli/girişsiz)
+  function outerWalls(g, entrance) {
+    g.add(wall(-17, -17, 17, -17));
+    g.add(wall(-17, -17, -17, 17));
+    g.add(wall(17, -17, 17, 17));
+    if (entrance) {
+      g.add(wall(-17, 17, -2.2, 17));
+      g.add(wall(2.2, 17, 17, 17));
+    } else {
+      g.add(wall(-17, 17, 17, 17));
+    }
+  }
+
+  // alçak bölmeler + geçit portalları (Kat 1 ve Kat 2 ortak; x=0 hattının arka yarısı merdivene bırakılır)
+  function dividers(g, frontEnd) {
+    g.add(lowDivider(0, 5.5, 0, frontEnd));
+    g.add(lowDivider(-16.9, 0, -5.5, 0));
+    g.add(lowDivider(5.5, 0, 16.9, 0));
+    put(g, archCol(), 0, 0, 5.5, 0);
+    put(g, archCol(), -5.5, 0, 0, Math.PI / 2);
+    put(g, archCol(), 5.5, 0, 0, Math.PI / 2);
+  }
+
+  /* ---------- DIŞ ÇEVRE: tamamen statik, gölgesiz, az ve büyük kutu ---------- */
+
+  var EX = {
+    ground: 0xc9bfa9, walk: 0xdad2c0, asphalt: 0x4f5866, line: 0xf2eee4, trunk: 0x6d4c41, crown: 0x4f8a4a,
+    facade: [0xd9b98c, 0xc9a27a, 0xb9694d, 0x9fb28f, 0xe1c9a3, 0xc98b6b, 0xd6a77a], win: 0x3f4a5a,
+    awn: [0x7a2230, 0x2e6b4f, 0xc98f2c, 0x2e86c1], shell: 0xe6d7b8, cornice: 0xa88a68
+  };
+
+  // komşu bina: gövde + parapet + istenen yüzlerde pencere ızgarası + tente (faces: 'n' +z, 's' -z, 'e' +x, 'w' -x)
+  function nbBuilding(w, h, d, c, faces, awnFace, awnC) {
+    var g = new T.Group();
+    put(g, box(w, h, d, c), 0, h / 2, 0);
+    put(g, box(w + 0.3, 0.25, d + 0.3, EX.cornice), 0, h + 0.1, 0);
+    var rows = Math.max(1, Math.round((h - 1.0) / 1.7));
+    faces.forEach(function (f) {
+      var alongX = f === 'n' || f === 's', len = alongX ? w : d, cols = Math.max(1, Math.floor(len / 2.2));
+      for (var r = 0; r < rows; r++) for (var i = 0; i < cols; i++) {
+        var t = (i - (cols - 1) / 2) * (len / cols), y = 1.2 + r * 1.7;
+        var m = box(alongX ? 0.9 : 0.06, 1.0, alongX ? 0.06 : 0.9, EX.win);
+        if (f === 'n') m.position.set(t, y, d / 2 + 0.03);
+        else if (f === 's') m.position.set(t, y, -d / 2 - 0.03);
+        else if (f === 'e') m.position.set(w / 2 + 0.03, y, t);
+        else m.position.set(-w / 2 - 0.03, y, t);
+        g.add(m);
+      }
+    });
+    if (awnFace) {
+      var along = awnFace === 'n' || awnFace === 's', aw = Math.min(w * 0.55, 4.5);
+      var a = box(along ? aw : 1.1, 0.08, along ? 1.1 : aw, awnC, true);
+      if (awnFace === 'n') { a.position.set(0, 2.2, d / 2 + 0.55); a.rotation.x = 0.25; }
+      else if (awnFace === 's') { a.position.set(0, 2.2, -d / 2 - 0.55); a.rotation.x = -0.25; }
+      else if (awnFace === 'e') { a.position.set(w / 2 + 0.55, 2.2, 0); a.rotation.z = -0.25; }
+      else { a.position.set(-w / 2 - 0.55, 2.2, 0); a.rotation.z = 0.25; }
+      g.add(a);
+    }
+    return g;
+  }
+
+  function tree(big) {
+    var g = new T.Group();
+    put(g, cyl(0.14, 0.2, 1.6, 7, EX.trunk), 0, 0.8, 0);
+    put(g, sph(big ? 1.3 : 1.0, EX.crown, true), 0, big ? 2.6 : 2.2, 0).scale.set(1, 1.15, 1);
+    put(g, sph(big ? 0.8 : 0.6, C.plant2, true), big ? 0.7 : 0.5, big ? 3.0 : 2.5, 0.2);
+    return g;
+  }
+
+  // araba: gövde + kabin + cam bandı + 4 tekerlek (x ekseni boyunca gider)
+  function car(c) {
+    var g = new T.Group();
+    put(g, box(3.6, 0.7, 1.7, c, true), 0, 0.68, 0);
+    put(g, box(2.0, 0.6, 1.5, c, true), -0.2, 1.3, 0);
+    put(g, box(1.9, 0.45, 1.56, 0x8fb8cc), -0.2, 1.32, 0);
+    [[-1.2, -0.85], [1.2, -0.85], [-1.2, 0.85], [1.2, 0.85]].forEach(function (p) {
+      put(g, cyl(0.32, 0.32, 0.25, 10, 0x2f2a24), p[0], 0.32, p[1]).rotation.x = Math.PI / 2;
+    });
+    return g;
+  }
+
+  function streetLamp() {
+    var g = new T.Group();
+    put(g, cyl(0.12, 0.16, 0.2, 8, 0x37474f), 0, 0.1, 0);
+    put(g, cyl(0.06, 0.08, 4.2, 8, 0x37474f), 0, 2.2, 0);
+    put(g, box(1.1, 0.07, 0.07, 0x37474f), 0.5, 4.3, 0);
+    put(g, box(0.5, 0.14, 0.3, 0x37474f), 1.0, 4.26, 0);
+    put(g, sph(0.1, 0xfff0b8), 1.0, 4.16, 0);
+    return g;
+  }
+
+  // dış çevre (zemin, cadde, kaldırımlar, ağaçlar, arabalar, yayalar, komşu binalar). Zemin üst yüzü y=0 → grup kat sayısına göre aşağı alınır
+  function exterior(n) {
+    var g = new T.Group();
+    g.userData.noShadow = true;
+    g.position.y = -3.2 * (n - 1);
+    put(g, box(140, 0.3, 140, EX.ground), 0, -0.21, 0);
+    put(g, box(70, 0.12, 2.6, EX.walk), 0, -0.06, 18.3);
+    put(g, box(70, 0.12, 2.6, EX.walk), 0, -0.06, 34.9);
+    put(g, box(70, 0.08, 14, EX.asphalt), 0, -0.09, 26.6);
+    var i;
+    for (i = 0; i < 10; i++) put(g, box(2.4, 0.02, 0.18, EX.line), -29 + i * 6.4, -0.04, 26.6);
+    for (i = 0; i < 10; i++) put(g, box(3.2, 0.02, 0.6, EX.line), 0, -0.04, 20.6 + i * 1.3);
+    [[-21, 34.9, 1], [-8, 34.9, 0], [7, 34.9, 1], [20, 34.9, 0], [-13.5, 18.3, 0], [13.5, 18.3, 1]].forEach(function (p) {
+      put(g, tree(p[2]), p[0], 0, p[1]);
+    });
+    put(g, streetLamp(), -7.5, 0, 18.6, -Math.PI / 2);
+    put(g, streetLamp(), 8.5, 0, 18.6, -Math.PI / 2);
+    put(g, car(0xd35400), -11, 0, 23.1);
+    put(g, car(0x2874a6), 9.5, 0, 30.1, Math.PI);
+    [[-10, 18.4, Math.PI / 2], [5.8, 18.2, -Math.PI / 2], [-3, 34.8, 0], [0.6, 24.2, Math.PI]].forEach(function (p) {
+      put(g, person({ seated: false, shirt: pick(CUST) }), p[0], 0, p[1], p[2]);
+    });
+    // komşular: yanlar (ön yüzleri bizimkiyle hizalı), karşı sıra, arka sıra — sıcak tonlar
+    put(g, nbBuilding(10, 3.0, 13, EX.facade[0], ['n'], 'n', EX.awn[0]), -31.5, 0, 9);
+    put(g, nbBuilding(10, 2.6, 13, EX.facade[3], [], null), -31.5, 0, -9.5);
+    put(g, nbBuilding(10, 4.2, 13, EX.facade[2], ['n', 'w'], 'n', EX.awn[1]), 31.5, 0, 9);
+    put(g, nbBuilding(10, 3.4, 13, EX.facade[4], ['w'], 'w', EX.awn[2]), 31.5, 0, -9.5);
+    [[-28.5, 9, 4.2, 5, null], [-17.7, 11, 6.5, 0, EX.awn[3]], [-7.4, 8, 3.6, 1, null], [3.4, 12, 5.6, 3, EX.awn[0]],
+     [15.2, 10, 4.8, 6, null], [25.5, 9, 6.0, 2, EX.awn[1]]].forEach(function (b) {
+      put(g, nbBuilding(b[1], b[2] * 0.8, 10, EX.facade[b[3]], ['s'], b[4] ? 's' : null, b[4]), b[0], 0, 47.0);
+    });
+    [[-24, 12, 4.6, 5, null], [-9, 13, 6.0, 1, EX.awn[2]], [6, 12, 3.8, 4, null], [21, 13, 5.4, 6, EX.awn[0]]].forEach(function (b) {
+      put(g, nbBuilding(b[1], b[2] * 0.85, 12, EX.facade[b[3]], ['n'], b[4] ? 'n' : null, b[4]), b[0], 0, -35);
+    });
+    return g;
+  }
+
+  // aktif katın altındaki kat kütleleri: 34×34 dış kabuk + üst döşeme + pencereler + kat kordonu; en alttakine giriş kapısı + tente
+  function buildingBelow(n) {
+    var g = new T.Group();
+    g.userData.noShadow = true;
+    for (var k = 1; k <= n; k++) {
+      var y0 = -3.2 * k, y1 = -3.2 * (k - 1), ym = (y0 + y1) / 2, i;
+      put(g, box(34.3, 3.3, 0.3, EX.shell), 0, ym - 0.05, 17.15);
+      put(g, box(34.3, 3.3, 0.3, EX.shell), 0, ym - 0.05, -17.15);
+      put(g, box(0.3, 3.3, 34.3, EX.shell), 17.15, ym - 0.05, 0);
+      put(g, box(0.3, 3.3, 34.3, EX.shell), -17.15, ym - 0.05, 0);
+      put(g, box(33.8, 0.2, 33.8, C.floorDark), 0, y1 - 0.32, 0);
+      put(g, box(34.9, 0.16, 0.45, EX.cornice), 0, y1 - 0.25, 17.2);
+      put(g, box(34.9, 0.16, 0.45, EX.cornice), 0, y1 - 0.25, -17.2);
+      put(g, box(0.45, 0.16, 34.9, EX.cornice), 17.2, y1 - 0.25, 0);
+      put(g, box(0.45, 0.16, 34.9, EX.cornice), -17.2, y1 - 0.25, 0);
+      for (i = 0; i < 6; i++) {
+        var t = (i - 2.5) * 5.0;
+        if (!(k === n && (i === 2 || i === 3))) put(g, box(1.6, 1.5, 0.08, EX.win), t, ym + 0.1, 17.34);
+        put(g, box(1.6, 1.5, 0.08, EX.win), t, ym + 0.1, -17.34);
+        put(g, box(0.08, 1.5, 1.6, EX.win), 17.34, ym + 0.1, t);
+        put(g, box(0.08, 1.5, 1.6, EX.win), -17.34, ym + 0.1, t);
+      }
+      if (k === n) {                                       // zemin kat: giriş kapısı + söve + tente
+        put(g, box(4.4, 2.9, 0.1, 0x3e2723), 0, y0 + 1.45, 17.34);
+        put(g, box(0.4, 2.9, 0.5, C.doorWood), -2.4, y0 + 1.45, 17.35);
+        put(g, box(0.4, 2.9, 0.5, C.doorWood), 2.4, y0 + 1.45, 17.35);
+        put(g, box(6.4, 0.18, 1.9, 0x2e6b4f, true), 0, y0 + 3.05, 18.2).rotation.x = 0.18;
+      }
+    }
+    return g;
+  }
+
+  /* ---------- KAT 1 ---------- */
+
+  function buildFloor1() {
+    var g = new T.Group();
+    g.add(exterior(1));
+
+    // zemin: ahşap taban; mutfak koridoru (fayans), ocakbaşı köşesi (krem), vitrin köşesi (dama), cam kenarı (koyu ahşap)
+    g.add(floorPatch(0, 0, 34, 34, C.floorWood));
+    g.add(floorPatch(-14.7, 3.2, 4.4, 27.2, C.floorTile, 0.012));
+    g.add(floorPatch(-7.65, -8.3, 9.5, 17.2, C.floorCream, 0.012));
+    g.add(floorPatch(-14.7, -13.65, 4.4, 6.5, C.floorCream, 0.012));
+    g.add(floorPatch(10.0, -6.2, 13.6, 12.8, C.floorTile, 0.012));
+    g.add(checker(10.0, -6.2, 13.6, 12.8, C.checkDark));
+    g.add(floorPatch(11.0, 8.6, 12.0, 16.6, C.floorDark, 0.012));
+
+    // dış duvarlar: sağ duvarın ön yarısı üç büyük pencereli; girişte boşluk + söve + tente
+    g.add(wall(-17, -17, 17, -17));
+    g.add(wall(-17, -17, -17, 17));
+    g.add(wall(17, -17, 17, -0.5));
+    g.add(windowWall(17, -0.5, 17, 17, [[-6.25, 3.2], [-1.25, 3.2], [3.75, 3.2]]));
+    g.add(wall(-17, 17, -2.2, 17));
+    g.add(wall(2.2, 17, 17, 17));
+    put(g, box(0.4, 2.9, 0.4, C.doorWood), -2.2, 1.45, 17);
+    put(g, box(0.4, 2.9, 0.4, C.doorWood), 2.2, 1.45, 17);
+    put(g, box(5.2, 0.35, 0.5, C.doorWood), 0, 2.9, 17);
+    put(g, box(6.4, 0.18, 1.9, 0x2e6b4f, true), 0, 3.15, 17.9).rotation.x = -0.18;
+    put(g, box(6.4, 0.2, 0.3, 0xe6d7b8), 0, 2.95, 18.8);
+
+    // alçak bölmeler: yalnız z=0.2 hattında iki kol + uçlarında portal; giriş–merdiven koridoru (x -3.4…4.6) tamamen açık
+    g.add(lowDivider(-12.6, 0.2, -3.4, 0.2));
+    g.add(lowDivider(4.6, 0.2, 16.9, 0.2));
+    put(g, archCol(), -3.4, 0, 0.2, Math.PI / 2);
+    put(g, archCol(), 4.6, 0, 0.2, Math.PI / 2);
+
+    // giriş holü: paspas, askılık, gazete sehpası, saksılar, tablolar — girişin önü boş
+    put(g, box(3.2, 0.03, 1.4, 0x4a3a2c), 0, 0.015, 15.7);
+    put(g, coatRack(), -4.4, 0, 16.0);
+    put(g, newspaperRack(), 7.2, 0, 16.3, Math.PI);
+    put(g, plant(false), -8.2, 0, 16.1);
+    put(g, plant(false), 9.4, 0, 16.1);
+    put(g, picture(1.6, 1.1), -12.0, 1.95, 16.85, Math.PI);
+    put(g, picture(1.4, 1.0, 0xa8794c), 13.0, 1.95, 16.85, Math.PI);
+
+    // KASA — girişin hemen sağında, girişe dönük; kasiyer + 3 kişilik kuyruk
+    put(g, kasa(), 4.8, 0, 13.0, Math.PI);
+    put(g, staff(C.apronTea, 0), 4.8, 0, 14.4, Math.PI);
+    put(g, wallClock(), 4.8, 2.2, 16.85, Math.PI);
+    [[4.8, 11.5], [4.95, 10.4], [4.7, 9.3]].forEach(function (p) {
+      put(g, person({ seated: false, shirt: pick(CUST) }), p[0], 0, p[1], rnd(-0.2, 0.2));
+    });
+
+    // orta dolaşım alanı: kilim + sahip
+    g.add(rug(1.2, 0.6, 3.4, 2.4));
+    put(g, owner(), 1.4, 0, 3.4, -0.6);
+
+    // --- MUTFAK & SERVİS ŞERİDİ (sol duvar, arkadan öne): bulaşık · tost sacı · cezve ocağı · semaver · vitrin ---
+    put(g, dishSink(), -16.4, 0, -5.5, Math.PI / 2);
+    put(g, griddle(), -16.4, 0, -1.0, Math.PI / 2);
+    put(g, cezveStation(), -16.4, 0, 3.5, Math.PI / 2);
+    put(g, samovar(), -16.4, 0, 8.0, Math.PI / 2);
+    put(g, vitrin(), -16.4, 0, 12.0, Math.PI / 2);
+    put(g, wallShelf(2.0), -16.85, 1.95, -5.5, Math.PI / 2);
+    put(g, menuBoard(), -16.85, 1.95, -1.0, Math.PI / 2);
+    put(g, wallShelf(2.2), -16.85, 1.95, 3.5, Math.PI / 2);
+    put(g, wallShelf(2.6), -16.85, 1.95, 8.0, Math.PI / 2);
+    put(g, wallClock(), -16.85, 2.2, 15.6, Math.PI / 2);
+    put(g, staff(C.apronDish, 0), -15.0, 0, -5.5, -Math.PI / 2);
+    put(g, staff(C.apronFood, 0), -15.0, 0, -1.0, -Math.PI / 2);
+    put(g, staff(C.apronTea, 4), -14.6, 0, 8.0, 1.5);
+    put(g, crates(), -15.8, 0, -8.0);
+    put(g, plant(true), -15.9, 0, 15.9);
+
+    // --- A. Giriş Salonu (ön-sol): 4 çay masası ---
+    teaCluster(g, -7.0, 7.5, [7, 4, 11, 6], 3.2);
+    g.add(rug(-7.0, 7.5, 3.2, 2.2));
+
+    // --- B. Cam Kenarı (sağ duvar, pencerelerin önü): 4 çay masası ---
+    teaCluster(g, 11.3, 6.5, [9, 5, 3, 13], 3.2);
+    g.add(rug(11.3, 6.5, 3.2, 2.2));
+    put(g, plant(false), 15.9, 0, 15.9);
+    put(g, newspaperRack(), 16.4, 0, 14.4, -Math.PI / 2);
+
+    // --- C. Ocakbaşı Köşesi (arka-sol): soba arka duvarda, üç sedir U düzeninde, alçak sehpalar, minderler, kilim ---
+    put(g, stove(), -8.0, 0, -16.0);
+    g.add(rug(-10.0, -11.6, 8.4, 5.6));
+    put(g, sedir(3.6), -16.3, 0, -11.0, Math.PI / 2);
+    put(g, sedir(3.6), -4.2, 0, -12.2, -Math.PI / 2);
+    put(g, sedir(3.2), -10.0, 0, -6.4, Math.PI);
+    [[-14.6, -11.0, Math.PI / 2], [-6.0, -12.2, Math.PI / 2], [-10.0, -8.3, 0]].forEach(function (t) {
+      put(g, coffeeTable(), t[0], 0, t[1], t[2]);
+      var az = t[2] !== 0;
+      put(g, teaGlass(), t[0] + (az ? 0 : -0.38), 0.45, t[1] + (az ? -0.38 : 0));
+      put(g, teaGlass(), t[0] + (az ? 0 : 0.38), 0.45, t[1] + (az ? 0.38 : 0));
+      put(g, nutBowl(), t[0], 0.45, t[1]);
+    });
+    pickSeats(3, 3).forEach(function (k) {
+      put(g, person({ seated: true, shirt: pick(CUST) }), -16.2, 0.05, -11.0 + (k - 1) * 1.15, Math.PI / 2);
+    });
+    pickSeats(2, 3).forEach(function (k) {
+      put(g, person({ seated: true, shirt: pick(CUST) }), -4.3, 0.05, -12.2 + (k - 1) * 1.15, -Math.PI / 2);
+    });
+    pickSeats(2, 3).forEach(function (k) {
+      put(g, person({ seated: true, shirt: pick(CUST) }), -10.0 + (k - 1) * 1.1, 0.05, -6.3, Math.PI);
+    });
+    // soba önü minderleri
+    [-9.2, -6.8].forEach(function (x, i) {
+      put(g, floorCushion(), x, 0, -14.3);
+      if (!i) put(g, person({ seated: true, shirt: pick(CUST) }), x, -0.28, -14.3, Math.PI);
+    });
+    // bölme tarafında yer minderli grup: sehpa etrafında karşılıklı dört minder
+    put(g, coffeeTable(), -8.0, 0, -2.8);
+    put(g, nutBowl(), -8.0, 0.45, -2.8);
+    put(g, teaGlass(), -8.5, 0.45, -3.05);
+    put(g, teaGlass(), -7.5, 0.45, -2.55, Math.PI);
+    [[-8.6, -3.8, 0], [-7.4, -3.8, 0], [-8.6, -1.8, Math.PI], [-7.4, -1.8, Math.PI]].forEach(function (c, k) {
+      put(g, floorCushion(), c[0], 0, c[1]);
+      if (k !== 1) put(g, person({ seated: true, shirt: pick(CUST) }), c[0], -0.28, c[1], c[2]);
+    });
+    put(g, moneyStack(11), -14.4, 0, -8.6);
+    put(g, moneyStack(8), -5.6, 0, -9.6);
+    put(g, moneyStack(13), -12.4, 0, -8.3);
+    put(g, moneyStack(6), -6.0, 0, -2.6);
+    put(g, newspaperRack(), -3.9, 0, -4.6, -Math.PI / 2);
+    put(g, person({ seated: false, shirt: pick(CUST) }), -12.4, 0, -3.6, 1.0);
+
+    // --- D. Vitrin Köşesi (sağ-arka): teşhir vitrini sağ duvarda, 3 çay masası + 3 yüksek masa ---
+    put(g, pastaneCounter(3.6), 15.6, 0, -6.5, -Math.PI / 2);
+    put(g, staff(C.apronFood, 0), 16.45, 0, -6.5, -Math.PI / 2);
+    put(g, wallShelf(2.4), 16.85, 1.95, -2.0, -Math.PI / 2);
+    put(g, picture(1.3, 0.9), 16.85, 2.1, -11.6, -Math.PI / 2);
+    g.add(rug(9.8, -6.0, 3.6, 2.2));
+    [[6.6, -3.2], [6.6, -9.4], [11.4, -3.4]].forEach(function (o, i) {
+      var idx = pickSeats(2 + (i % 3), 4);
+      put(g, teaTable(idx), o[0], 0, o[1]);
+      seatCustomers(g, o[0], o[1], SEATS4, idx);
+      put(g, moneyStack([8, 12, 5][i]), o[0] + 1.05, 0, o[1] + 1.05);
+    });
+    [[10.2, -8.6, 11.2, -9.55], [13.4, -8.0, 14.4, -8.95], [12.6, -11.4, 13.7, -10.3]].forEach(function (o, i) {
+      put(g, highTable(), o[0], 0, o[1]);
+      put(g, person({ seated: false, shirt: pick(CUST) }), o[0] + 0.85, 0, o[1] + 0.45, -2.1);
+      if (i !== 1) put(g, person({ seated: false, shirt: pick(CUST) }), o[0] - 0.8, 0, o[1] - 0.5, 1.0);
+      put(g, moneyStack([9, 4, 6][i]), o[2], 0, o[3]);
+    });
+
+    // --- WC (arka-sağ köşe): alçak duvarlı oda, kapısı vitrin köşesine bakar ---
+    g.add(wcRoom(9.5, 16.9, -16.87, -12.6, 15.0, { east: false }));
+    // merdiven ile WC arasındaki cep: depo kasaları, askılık, saksı
+    put(g, crates(), 6.2, 0, -15.9);
+    put(g, coatRack(), 4.0, 0, -15.6);
+    put(g, plant(false), 8.8, 0, -16.0);
+
+    // --- merdiven kovası (arka duvar ortası; -z yönünde yükselir) — mevcut hâliyle ---
+    put(g, stairs(), 0, 0, -9.8);
+    g.add(lowDivider(-2.8, -9.8, -2.8, -16.9));
+    g.add(lowDivider(2.8, -9.8, 2.8, -16.9));
+    put(g, signPost(), 3.5, 0, -9.3, 0.4);
+    put(g, person({ seated: false, shirt: pick(CUST) }), 0.8, 6 * STEP_H, -9.8 - 5.5 * STEP_D, Math.PI);
+
+    // aydınlatma: duvar aplikleri (y≈2.05) + köşelerde ayaklı lambalar
+    [[-16.85, -11.0, Math.PI / 2], [-16.85, 14.6, Math.PI / 2], [-13.0, -16.85, 0], [-4.4, -16.85, 0], [6.2, -16.85, 0],
+     [16.85, -9.4, -Math.PI / 2], [16.85, 4.5, -Math.PI / 2], [16.85, 14.6, -Math.PI / 2], [-6.0, 16.85, Math.PI], [10.0, 16.85, Math.PI]].forEach(function (p) {
+      put(g, sconce(), p[0], 2.05, p[1], p[2]);
+    });
+    put(g, floorLamp(), -13.4, 0, 16.0);
+    put(g, floorLamp(), 16.4, 0, -10.4);
+    put(g, floorLamp(), -3.6, 0, -9.0);
+
+    return g;
+  }
+
+  /* ---------- KAT 2 ---------- */
+
+  function buildFloor2() {
+    var g = new T.Group();
+    g.add(exterior(2));
+    g.add(buildingBelow(1));
+
+    // zemin: merdiven boşluğu yalnız SOL yarıda (x∈[-2.8,0], z∈[-15.6,-9.8]); sağ yarı üst kata çıkan kolun tabanı; arkada sahanlık şeridi
+    g.add(floorPatch(-9.9, 0, 14.2, 34, C.floorDark));
+    g.add(floorPatch(9.9, 0, 14.2, 34, C.floorDark));
+    g.add(floorPatch(0, 3.6, 5.6, 26.8, C.floorDark));
+    g.add(floorPatch(0, -16.25, 5.6, 1.3, C.floorDark));
+    g.add(floorPatch(1.4, -12.7, 2.8, 5.8, C.floorDark));
+    g.add(floorPatch(-8.5, 8.5, 15.6, 15.6, 0xa8794c, 0.012));
+    g.add(floorPatch(8.5, 8.5, 15.6, 15.6, C.floorWood, 0.012));
+    g.add(floorPatch(9.55, -8.5, 13.5, 15.6, 0x8f6b4c, 0.012));
+    g.add(floorPatch(-9.55, -8.5, 13.5, 15.6, C.floorTile, 0.012));
+
+    outerWalls(g, false);
+    dividers(g, 16.9);
+
+    // --- merdiven kovası (dönüşlü): sol yarı kat 1'den gelen boşluk, sağ yarı kat 3'e çıkan kol; arkada ortak sahanlık ---
+    put(g, stairs({ w: 2.6, rails: false, landing: false }), -1.4, -2.9, -9.8);
+    put(g, box(2.8, 0.2, 5.8, 0x3b3027), -1.4, -3.0, -12.7);
+    put(g, railing(2.8), -1.4, 0, -9.8);
+    put(g, railing(5.8), -2.8, 0, -12.7, Math.PI / 2);
+    put(g, stairs({ w: 2.6, n: 12 }), 1.4, 0, -15.9, Math.PI);
+    put(g, person({ seated: false, shirt: pick(CUST) }), -1.4, 0, -16.2, Math.PI / 2);
+    put(g, person({ seated: false, shirt: pick(CUST) }), 1.9, 5 * (2.9 / 12), -15.9 + 4.5 * STEP_D, 0);
+    put(g, signPost(), -3.5, 0, -9.3, -0.4);
+
+    // orta dolaşım alanı
+    g.add(rug(0, 0.6, 3.4, 2.4));
+    put(g, owner(), -1.4, 0, 2.6, 0.7);
+
+    // --- S5 Okey Salonu (ön-sol) ---
+    [[-11.8, 5.2], [-5.2, 5.2], [-11.8, 11.8], [-5.2, 11.8]].forEach(function (o, i) {
+      put(g, okeyTable(), o[0], 0, o[1]);
+      seatCustomers(g, o[0], o[1], SEATS4, [0, 1, 2, 3], 0.78);
+      put(g, moneyStack([10, 6, 14, 8][i]), o[0] + 1.35, 0, o[1] + 1.35);
+    });
+    put(g, staff(C.apronTea, 5), -14.6, 0, 8.6, 1.4);
+    put(g, picture(1.5, 1.0), -16.85, 1.9, 8.5, Math.PI / 2);
+    put(g, picture(1.1, 0.85, 0xa8794c), -16.85, 1.9, 11.4, Math.PI / 2);
+    put(g, wallClock(), -16.85, 2.15, 5.0, Math.PI / 2);
+    put(g, plant(true), -15.9, 0, 15.9);
+    put(g, plant(false), -15.9, 0, 1.8);
+    g.add(rug(-8.5, 8.5, 3.2, 2.2));
+
+    // --- S6 Tavla & Kâğıt (ön-sağ): her tahtada farklı oyun anı ---
+    [[5.4, 5.0], [11.6, 5.0], [5.4, 11.9], [11.6, 11.9]].forEach(function (o, i) {
+      var rot = i % 2 ? Math.PI / 2 : 0;
+      put(g, tavlaTable(i), o[0], 0, o[1], rot);
+      var seats = rot ? [[1.3, 0], [-1.3, 0]] : SEATS2;
+      seatCustomers(g, o[0], o[1], seats, [0, 1], 0.85);
+      put(g, moneyStack([5, 9, 4, 7][i]), o[0] + 1.15, 0, o[1] + 1.05);
+    });
+    put(g, counter(2.4), 16.35, 0, 8.4, -Math.PI / 2);
+    put(g, wallShelf(2.0), 16.85, 1.95, 8.4, -Math.PI / 2);
+    put(g, staff(C.apronTea, 3), 14.6, 0, 8.8, -2.2);
+    put(g, picture(1.4, 1.0), 16.85, 1.9, 13.2, -Math.PI / 2);
+    put(g, newspaperRack(), 16.5, 0, 2.0, -Math.PI / 2);
+    put(g, plant(false), 15.9, 0, 15.9);
+    g.add(rug(8.5, 8.5, 3.0, 2.1));
+
+    // --- S7 Maç Salonu (arka-sağ): lounge — ekrana bakan kanepeler + koltuklar + sehpalar ---
+    put(g, tv(5.0), 9.5, 2.05, -16.8);
+    put(g, box(5.6, 0.12, 0.5, C.tvFrame), 9.5, 0.9, -16.6);
+    g.add(rug(9.4, -10.4, 6.6, 4.4));
+    [[6.4, -11.0], [12.4, -11.0]].forEach(function (o, i) {
+      put(g, couch(2.6), o[0], 0, o[1], Math.PI);
+      var idx = pickSeats(i ? 3 : 2, 3);
+      idx.forEach(function (k) {
+        put(g, person({ seated: true, shirt: pick(CUST) }), o[0] - (k - 1) * 0.85, 0.03, o[1], Math.PI);
+      });
+      put(g, coffeeTable(), o[0], 0, o[1] - 2.0);
+      put(g, teaGlass(), o[0] - 0.3, 0.45, o[1] - 2.0, Math.PI);
+      put(g, teaGlass(), o[0] + 0.32, 0.45, o[1] - 2.05, Math.PI);
+      put(g, nutBowl(), o[0], 0.45, o[1] - 1.85);
+      put(g, moneyStack(i ? 15 : 11), o[0] + 1.05, 0, o[1] - 2.0);
+    });
+    [[5.8, -7.4], [9.4, -7.4], [13.0, -7.4]].forEach(function (o, i) {
+      put(g, armchair(), o[0], 0, o[1], Math.PI);
+      if (i !== 1 || Math.random() < 0.7) {
+        put(g, person({ seated: true, shirt: pick(CUST) }), o[0], 0.03, o[1], Math.PI);
+      }
+      put(g, coffeeTable(), o[0], 0, o[1] - 1.9);
+      put(g, teaGlass(), o[0] - 0.25, 0.45, o[1] - 1.9, Math.PI);
+      if (i === 1) put(g, nutBowl(), o[0] + 0.25, 0.45, o[1] - 1.85);
+      else put(g, teaGlass(), o[0] + 0.3, 0.45, o[1] - 1.95, Math.PI);
+      put(g, moneyStack([7, 12, 9][i]), o[0] + (i === 0 ? -1.0 : 1.0), 0, o[1] - 1.9);
+    });
+    // ayakta izleyen kalabalık (arkada)
+    for (var k = 0; k < 7; k++) {
+      put(g, person({ seated: false, shirt: pick(CUST) }),
+        5.2 + (k % 4) * 1.7 + (k > 3 ? 0.85 : 0), 0, -4.9 + Math.floor(k / 4) * 1.2, Math.PI + rnd(-0.25, 0.25));
+    }
+    put(g, staff(C.apronTea, 4), 15.4, 0, -12.6, -2.4);
+    put(g, picture(1.4, 1.0), 16.85, 1.9, -8.0, -Math.PI / 2);
+    put(g, plant(false), 15.9, 0, -13.6);
+    put(g, plant(false), 15.9, 0, -2.0);
+
+    // --- Servis Köşesi (arka-sol): semaver, bulaşık, raflar, damacana rafı, depo kasaları, bekleme bankı; yanında WC ---
+    put(g, samovar(), -16.4, 0, -5.8, Math.PI / 2);
+    put(g, dishSink(), -16.4, 0, -10.2, Math.PI / 2);
+    put(g, wallShelf(2.6), -16.85, 1.95, -5.8, Math.PI / 2);
+    put(g, wallShelf(2.0), -16.85, 1.95, -10.2, Math.PI / 2);
+    put(g, staff(C.apronDish, 0), -15.0, 0, -10.2, -Math.PI / 2);
+    put(g, staff(C.apronTea, 5), -13.4, 0, -6.2, 1.1);
+    put(g, staff(C.apronTea, 3), -7.4, 0, -10.6, 0.7);
+    put(g, counter(2.2), -9.6, 0, -7.4);
+    put(g, box(0.9, 0.04, 0.5, C.copper, true), -9.9, 0.99, -7.4);
+    for (var t = 0; t < 6; t++) put(g, teaGlass(), -10.2 + (t % 3) * 0.28, 1.01, -7.55 + Math.floor(t / 3) * 0.28);
+    put(g, sugarBowl(), -8.8, 0.97, -7.4);
+    put(g, waterRack(), -6.6, 0, -7.6);
+    put(g, crates(), -15.8, 0, -15.9);
+    put(g, crates(), -15.8, 0, -14.2);
+    put(g, crate(0.7), -14.3, 0, -16.3);
+    put(g, bench(3.2), -12.2, 0, -16.2);
+    put(g, person({ seated: true, shirt: pick(CUST) }), -12.9, 0, -16.1, 0);
+    put(g, person({ seated: true, shirt: pick(CUST) }), -11.5, 0, -16.1, 0);
+    put(g, menuBoard(), -12.2, 1.9, -16.85, 0);
+    put(g, wallClock(), -14.7, 2.15, -16.85, 0);
+    put(g, coatRack(), -11.3, 0, -13.3);
+    g.add(rug(-9.4, -10.4, 4.0, 2.6));
+    g.add(rug(-13.2, -13.6, 3.2, 2.2));
+    put(g, plant(true), -15.9, 0, -2.0);
+    put(g, plant(false), -4.6, 0, -11.4);
+    g.add(wcRoom(-10.6, -3.4, -16.87, -12.6, -9.2, { sinkEast: false }));
+
+    // aydınlatma: aplikler + ayaklı lambalar
+    [[-16.85, -13.2, Math.PI / 2], [-16.85, 3.0, Math.PI / 2], [-16.85, 14.0, Math.PI / 2], [5.8, -16.85, 0], [13.2, -16.85, 0],
+     [16.85, -12.6, -Math.PI / 2], [16.85, -5.0, -Math.PI / 2], [16.85, 5.0, -Math.PI / 2], [16.85, 11.0, -Math.PI / 2],
+     [-8.5, 16.85, Math.PI], [8.5, 16.85, Math.PI]].forEach(function (p) {
+      put(g, sconce(), p[0], 2.05, p[1], p[2]);
+    });
+    put(g, floorLamp(), -3.6, 0, 15.9);
+    put(g, floorLamp(), 3.6, 0, 15.9);
+    put(g, floorLamp(), 15.9, 0, -16.1);
+
+    return g;
+  }
+
+  /* ---------- KAT 3 ---------- */
+
+  function buildFloor3() {
+    var g = new T.Group();
+    g.add(exterior(3));
+    g.add(buildingBelow(2));
+
+    // çatı döşemesi (34×34, teras döşemesinden 0.2 alçak); merdiven kovası x∈[0,2.8], z∈[-15.9,-10.4] açık
+    var RF = 0xb5a68c;
+    g.add(floorPatch(-16, 0, 2, 34, RF, -0.2));
+    g.add(floorPatch(16, 0, 2, 34, RF, -0.2));
+    g.add(floorPatch(0, 14.5, 30, 5, RF, -0.2));
+    g.add(floorPatch(-7.5, -14.5, 15, 5, RF, -0.2));
+    g.add(floorPatch(8.9, -14.5, 12.2, 5, RF, -0.2));
+    g.add(floorPatch(1.4, -16.45, 2.8, 1.1, RF, -0.2));
+    // teras döşemesi (30×24) — kova için üç parça
+    g.add(floorPatch(-7.5, 0, 15, 24, C.floorTeras));
+    g.add(floorPatch(8.9, 0, 12.2, 24, C.floorTeras));
+    g.add(floorPatch(1.4, 0.8, 2.8, 22.4, C.floorTeras));
+    g.add(floorPatch(-7.5, 0, 14.6, 23.4, 0xb08a63, 0.012));
+    g.add(checker(8.9, 0, 12.2, 22, 0x8f7355));
+
+    // kapalı teras duvarları (sol + arka + ön); üstü açık görünüm
+    g.add(wall(-15, -12, -15, 12));
+    g.add(wall(-15, -12, 0, -12));
+    g.add(wall(-15, 12, 0, 12));
+    g.add(lowDivider(0, -12, 0, -3.2));
+    g.add(lowDivider(0, 3.2, 0, 12));
+    put(g, archCol(), 0, 0, -3.2, 0);
+    put(g, archCol(), 0, 0, 3.2, 0);
+
+    // açık teras korkuluğu (arka kenar kova için kısaltıldı)
+    put(g, railing(12.2), 8.9, 0, -12);
+    put(g, railing(15), 7.5, 0, 12);
+    put(g, railing(24), 15, 0, 0, Math.PI / 2);
+
+    // --- merdiven kovası: kat 2'den çıkan kol, şaft, kenar korkulukları, varış ---
+    put(g, stairs({ w: 2.6, n: 12, rails: false, landing: false }), 1.4, -2.9, -15.9, Math.PI);
+    put(g, box(2.8, 0.2, 5.5, 0x3b3027), 1.4, -3.0, -13.15);
+    put(g, railing(5.5), 2.8, -0.2, -13.15, Math.PI / 2);
+    put(g, railing(3.9), 0, -0.2, -13.95, Math.PI / 2);
+    put(g, person({ seated: false, shirt: pick(CUST) }), 1.4, 0, -9.6, 0);
+    put(g, person({ seated: false, shirt: pick(CUST) }), 1.9, -2.9 + 8 * (2.9 / 12), -15.9 + 7.5 * STEP_D, 0);
+
+    // şehir silueti — çatıdan bakıldığı için aşağıda ve uzakta; sıcak bej / mavi-gri karışık
+    var CY = -6.4, CC = [0xb8a892, 0x8d95a2, 0xa39482, 0x9aa3ad];
+    for (var i = 0; i < 22; i++) {
+      var h = rnd(2.4, 7.5);
+      put(g, box(rnd(1.6, 3.0), h, 1.8, CC[i % 4]), -26 + i * 2.4, CY + h / 2, -36 - rnd(0, 4));
+    }
+    for (var i2 = 0; i2 < 16; i2++) {
+      var h2 = rnd(3.5, 10.0);
+      put(g, box(rnd(2.0, 3.6), h2, 2.0, CC[(i2 + 1) % 4]), -28 + i2 * 3.6, CY + h2 / 2, -46 - rnd(0, 5));
+    }
+
+    // --- S8 Kapalı Teras: nargile lounge — karşılıklı ikişer sedir + arada fenerli sehpa; iki yer minderi grubu; iki çay masası ---
+    [-5.0, 4.6].forEach(function (z, i) {
+      g.add(rug(-11.0, z, 4.6, 4.8));
+      put(g, sedir(3.4), -13.3, 0, z, Math.PI / 2);
+      put(g, sedir(3.4), -8.7, 0, z, -Math.PI / 2);
+      put(g, coffeeTable(), -11.0, 0, z, Math.PI / 2);
+      put(g, teaGlass(), -11.16, 0.45, z - 0.38, Math.PI / 2);
+      put(g, teaGlass(), -10.84, 0.45, z + 0.38, -Math.PI / 2);
+      put(g, lantern(), -11.0, 0.45, z);
+      put(g, hookah(), -11.0, 0, z + 1.5);
+      pickSeats(i ? 2 : 3, 3).forEach(function (k) {
+        put(g, person({ seated: true, shirt: pick(CUST) }), -13.2, 0.05, z + (k - 1) * 1.1, Math.PI / 2);
+      });
+      pickSeats(2, 3).forEach(function (k) {
+        put(g, person({ seated: true, shirt: pick(CUST) }), -8.8, 0.05, z + (k - 1) * 1.1, -Math.PI / 2);
+      });
+      put(g, moneyStack([12, 16][i]), -11.0, 0, z - 1.9);
+    });
+    [-5.5, 5.0].forEach(function (z, i) {
+      put(g, coffeeTable(), -4.2, 0, z);
+      put(g, lantern(), -4.2, 0.45, z);
+      put(g, teaGlass(), -4.7, 0.45, z + 0.18);
+      put(g, teaGlass(), -3.7, 0.45, z - 0.18, Math.PI);
+      [[-4.75, -1.0, 0], [-3.65, -1.0, 0], [-4.75, 1.0, Math.PI], [-3.65, 1.0, Math.PI]].forEach(function (c, k) {
+        put(g, floorCushion(), c[0], 0, z + c[1]);
+        if (k !== (i ? 1 : 2)) put(g, person({ seated: true, shirt: pick(CUST) }), c[0], -0.28, z + c[1], c[2]);
+      });
+      put(g, hookah(), -2.6, 0, z + 0.3);
+      put(g, moneyStack([7, 9][i]), -5.6, 0, z + 0.2);
+    });
+    [[-11.4, 9.3], [-4.6, 9.4]].forEach(function (o, i) {
+      var idx = pickSeats(3 - i, 4);
+      put(g, teaTable(idx, true), o[0], 0, o[1]);
+      put(g, lantern(), o[0], 0.83, o[1]);
+      seatCustomers(g, o[0], o[1], SEATS4, idx);
+      put(g, moneyStack(i ? 6 : 10), o[0] + 1.15, 0, o[1] - 1.15);
+    });
+    put(g, samovar(), -7.0, 0, -11.35);
+    put(g, counter(2.4), -10.8, 0, -11.35);
+    put(g, wallShelf(2.6), -7.0, 1.95, -11.9, 0);
+    put(g, staff(C.apronTea, 4), -7.4, 0, -9.9, 0.4);
+    put(g, picture(1.6, 1.0), -14.85, 1.9, -7.2, Math.PI / 2);
+    put(g, picture(1.3, 0.9, 0xa8794c), -14.85, 1.9, 7.2, Math.PI / 2);
+    put(g, wallClock(), -14.85, 2.15, 0, Math.PI / 2);
+    put(g, planterBox(4.5), -8.4, 0, 11.55);
+    put(g, planterBox(3.0), -1.6, 0, 11.55);
+    put(g, plant(true), -14.2, 0, 10.9);
+    put(g, plant(false), -2.6, 0, -11.3);
+    put(g, crates(), -13.6, 0, -11.2);
+    [[-14.85, -3.0, Math.PI / 2], [-14.85, 3.6, Math.PI / 2], [-11.0, -11.85, 0], [-3.4, -11.85, 0], [-11.0, 11.85, Math.PI], [-4.0, 11.85, Math.PI]].forEach(function (p) {
+      put(g, sconce(), p[0], 2.05, p[1], p[2]);
+    });
+    put(g, floorLamp(), -14.2, 0, -10.6);
+
+    // --- S9 Açık Teras: beş masa; fener ortada, bardaklar oturanların önünde, nargile köşede ---
+    g.add(rug(7.8, 0, 7.4, 3.2));
+    [[4.6, -7.0], [11.0, -7.0], [4.6, 0], [11.0, 0], [7.8, 7.0]].forEach(function (o, i) {
+      var idx = pickSeats(2 + (i % 3), 4);
+      put(g, teaTable(idx, true), o[0], 0, o[1]);
+      put(g, lantern(), o[0], 0.83, o[1]);
+      seatCustomers(g, o[0], o[1], SEATS4, idx);
+      put(g, hookah(), o[0] + 1.15, 0, o[1] - 1.15);
+      put(g, moneyStack([9, 14, 5, 11, 8][i]), o[0] + 1.15, 0, o[1] + 1.15);
+    });
+    put(g, staff(C.apronTea, 5), 2.0, 0, 3.6, -1.2);
+    put(g, staff(C.apronDish, 0), 3.2, 0, -8.6, -0.8);
+    put(g, owner(), 1.6, 0, -2.2, -0.9);
+    [[14.2, -10.8], [14.2, -3.6], [14.2, 3.6], [14.2, 10.8], [4.0, -10.6], [1.2, 11.0]].forEach(function (p) {
+      put(g, plant(true), p[0], 0, p[1]);
+    });
+    put(g, planterBox(4.0), 7.8, 0, 11.4);
+
+    // asma ışık dizisi: açık teras kenarları boyunca (kovanın önünden başlar)
+    for (var L = 0; L < 16; L++) {
+      var x = 3.4 + L * 0.7, y = 2.6 + Math.sin(L * 0.6) * 0.15;
+      put(g, sph(0.09, 0xfff0b8), x, y, -11.4);
+      put(g, sph(0.09, 0xfff0b8), x, y, 11.4);
+    }
+    put(g, box(10.5, 0.02, 0.02, C.hair), 8.65, 2.66, -11.4);
+    put(g, box(10.5, 0.02, 0.02, C.hair), 8.65, 2.66, 11.4);
+    for (var P = 0; P < 3; P++) {
+      put(g, cyl(0.07, 0.07, 2.8, 6, C.rail), 3.4 + P * 5.25, 1.4, -11.4);
+      put(g, cyl(0.07, 0.07, 2.8, 6, C.rail), 3.4 + P * 5.25, 1.4, 11.4);
+    }
+    put(g, floorLamp(), 14.2, 0, 7.2);
+
+    return g;
+  }
+
+  /* ---------- veri ---------- */
+
+  var FLOORS = {
+    1: {
+      badge: 'donmuş sahne · kat 1',
+      caption: '<b>Kat 1 — Kıraathane, tamamlanmış hâl.</b> Ürün başına salon yok: sol duvar boyunca tek bir mutfak &amp; servis şeridi (bulaşık, tost sacı, cezve ocağı, semaver, vitrin), geri kalan alan karakteri farklı dört oturma bölgesi — hepsinde aynı menü, masalarda çay bardağıyla tost tabağı yan yana. Girişin hemen sağında kasa ve kısa kuyruk; girişin önü tamamen açık. Arka duvar ortasında üst kata çıkan merdiven, arka-sağ köşede küçük WC. Sağ duvarda üç büyük pencere: cadde ve komşu bina görünüyor; bina caddeye, ağaçlara ve komşulara oturuyor.',
+      dist: 66, azi: -0.62, ele: 0.76, target: [0, 0.5, 1.5],
+      build: buildFloor1,
+      stats: [['5', 'bölge'], ['14 + 3', 'masa / sedir'], ['≈64', 'koltuk'], ['6', 'personel'], ['18', 'para istifi'], ['≈1,8 sa', 'ilerleme']],
+      labels: [[-15.0, 2.5, '—', 'Mutfak Şeridi'], [-7.0, 7.6, 'A', 'Giriş Salonu'], [11.3, 6.5, 'B', 'Cam Kenarı'], [-8.5, -9.5, 'C', 'Ocakbaşı Köşesi'], [10.0, -6.0, 'D', 'Vitrin Köşesi'], [0, -13.0, '↑', 'Merdiven'], [13.2, -14.7, '', 'WC']],
+      rooms: [
+        ['—', 'Mutfak Şeridi', 'Sol duvar · 5 istasyon · 3 personel', 'Bulaşık tezgâhı, tost sacı, cezve/kum ocağı, semaver ve camlı vitrin arka arkaya; üstlerinde bardak rafları ve menü tahtası. Şeridin önü serbest servis koridoru: garson tepsiyi buradan alıp her bölgeye gider. <em>Tek üretim hattı — bütün bölgeler aynı menüden beslenir.</em>'],
+        ['A', 'Giriş Salonu', 'Merkez · 4 çay masası', 'Kapıdan girince ilk görülen klasik kıraathane masaları; yeni oyuncunun döngüyü öğrendiği bölge. Girişin önü boş bırakıldı, kasa hemen sağda, kuyruk üç kişi. <em>Temel döngü: sipariş → tepsi → servis → para.</em>'],
+        ['B', 'Cam Kenarı', 'Sağ duvar · 4 çay masası · 3 pencere', 'Üç büyük pencere caddeye bakıyor; dışarıda komşu bina ve sokak. Pencere önü koltuklar en çok tercih edilenler. <em>Manzara bahşiş çarpanı.</em>'],
+        ['C', 'Ocakbaşı Köşesi', 'Arka-sol · 3 sedir + 2 minder grubu · kuzine', 'Arka duvarda kuzine (bacası duvara), etrafında U düzeninde sedirler, alçak sehpalar, kilim, soba önünde ve bölme tarafında yer minderleri. Kıraathanenin sıcak, uzun oturulan köşesi. <em>Devir yavaş, kişi başı harcama yüksek.</em>'],
+        ['D', 'Vitrin Köşesi', 'Sağ-arka · 3 çay masası + 3 yüksek masa · teşhir vitrini', 'Baklava/tatlı vitrini sağ duvarda; ayakta hızlı çay içenler için yüksek masalar, oturanlar için üç masa. Ayrı pastane değil, kıraathanenin tatlı köşesi. <em>Yeni mekanik: stok — vitrin boşalırsa tatlı satışı durur.</em>'],
+        ['↑', 'Merdiven &amp; WC', 'Arka orta · arka-sağ köşe', 'Korkuluklu merdiven üst kata çıkar; yanındaki cepte depo kasaları ve askılık. Arka-sağ köşede alçak duvarlı WC: lavabo-ayna, iki kabin, çöp kovası; kapısı vitrin köşesine bakar, yanında levha. <em>Her katın kendi WC\'si var.</em>']
+      ]
+    },
+    2: {
+      badge: 'donmuş sahne · kat 2',
+      caption: '<b>Kat 2 — Oyun Salonu, tamamlanmış hâl.</b> Okey masaları dört kişilik ve tamamen dolu; tavla köşesinde her tahtada farklı bir oyun anı (açılış, orta oyun, toplama, atılmış zarlar). Maç salonu bir lounge: ekrana bakan kanepeler, koltuklar, çaylı sehpalar, arkada ayakta izleyenler. Arka duvar ortasında dönüşlü merdiven kovası: sol yarı alt kattan gelen boşluk, sağ yarı terasa çıkan kol, arkada ortak sahanlık. Sol arkada dolu bir servis köşesi ve yanında WC. Altta kat 1\'in dış kabuğu görünüyor.',
+      dist: 66, azi: -0.62, ele: 0.76, target: [0, 0.5, 1.5],
+      build: buildFloor2,
+      stats: [['3', 'salon'], ['13', 'masa/sehpa'], ['33', 'koltuk'], ['7', 'personel'], ['13', 'para istifi'], ['≈1,7 sa', 'ilerleme']],
+      labels: [[-8.5, 8.5, '5', 'Okey Salonu'], [8.5, 8.5, '6', 'Tavla Köşesi'], [9.4, -9.4, '7', 'Maç Salonu'], [-11.5, -8.0, '—', 'Servis Köşesi'], [0, -13.0, '↑↓', 'Merdiven'], [-7.0, -14.7, '', 'WC']],
+      rooms: [
+        [5, 'Okey Salonu', 'Kira + çay · 4 okey masası', 'Yeşil çuha kaplı masalar, dört ıstakada ikişer sıra taş, ortada açık taşlar ve gösterge; dört kişilik takımlar oturuyor. <em>Yeni mekanik: masa saat başı kira üretiyor, oturanlar sürekli çay istiyor.</em>'],
+        [6, 'Tavla &amp; Kâğıt', 'Çay + ayran · 4 masa', 'Küçük masalar, ikişerli oturum; her tahtada farklı an: biri açılış dizilimi, biri orta oyun ve atılmış zarlar, biri toplama aşaması (kenarda toplanan pullar), birinde bar\'da kırık pul ve zar kupası. <em>Yeni mekanik: hızlı devir.</em>'],
+        [7, 'Maç Salonu', 'Çay + çerez · 2 kanepe + 3 koltuk + ayakta alan', 'Duvarda büyük ekran; önünde kanepeler, koltuklar ve alçak sehpalar, arkada ayakta izleyen yedi kişi. Normalde sakin; maç akşamı kapasite iki katına çıkıyor. <em>Yeni mekanik: dalga yönetimi.</em>'],
+        ['—', 'Servis Köşesi, WC &amp; Merdiven', 'Kat 2\'nin kendi ocağı', 'Semaver, bulaşık tezgâhı, bardak rafları, damacana rafı, depo kasaları, bekleme bankı ve iki kilim; üç personel. Yanında kat 1\'dekiyle aynı tasarımda WC. Merdiven kovası dönüşlü: soldan inilir, sağdan terasa çıkılır, korkuluklar ikisini ayırır.']
+      ]
+    },
+    3: {
+      badge: 'donmuş sahne · kat 3',
+      caption: '<b>Kat 3 — Teras, tamamlanmış hâl.</b> Binanın çatısı: teras döşemesi 34×34 çatı plakasının üstünde, altında kat 1 ve 2\'nin dış kabukları, çevrede komşu çatılar ve uzakta şehir silueti. Solda kapalı teras artık bir nargile lounge: karşılıklı ikişer sedir, aralarında fenerli sehpa; yer minderli iki grup da karşılıklı. Sağda açık teras: masalarda fener ortada, bardaklar oturanların önünde, nargile köşede; korkuluk boyunca saksılar ve ışık dizisi. Kat 2\'den çıkan merdivenin varış sahanlığı arka kenarda, korkuluklu.',
+      dist: 56, azi: -0.75, ele: 0.72, target: [0, 0.6, -1.0],
+      build: buildFloor3,
+      stats: [['2', 'salon'], ['11', 'oturma'], ['≈44', 'koltuk'], ['3', 'personel'], ['11', 'para istifi'], ['≈1,4 sa', 'ilerleme']],
+      labels: [[-10.5, 0, '8', 'Kapalı Teras'], [8.5, 0.5, '9', 'Açık Teras'], [1.4, -13.0, '↓', 'Merdiven']],
+      rooms: [
+        [8, 'Kapalı Teras', 'Nargile + Türk kahvesi · 2 sedir çifti + 2 minder grubu + 2 masa', 'Karşılıklı sedirler ve aralarında fenerli alçak sehpa, kilim, nargile; bölme tarafında karşılıklı yer minderleri; önde iki çay masası; arka duvarda semaver ve bardak rafı. Kışın da açık. <em>Yeni mekanik: bakım döngüsü — kömür 8 dakikada bir tazelenmeli.</em>'],
+        [9, 'Açık Teras', 'Nargile + sahlep/ayran · 5 masa', 'Korkuluk, saksılar, asma ışık dizisi; çatıdan aşağıda komşu çatılar ve cadde, uzakta şehir silueti. Yazın talep iki katı, kışın yarısı. <em>Yeni mekanik: mevsim çarpanı.</em>'],
+        ['↓', 'Merdiven', 'Arka kenar · x∈[0,2.8]', 'Kat 2\'den çıkan kol çatı plakasını delip terasın arka kenarına varır; kova iki yandan korkuluklu, varış açık terasa açılır.']
+      ]
+    }
+  };
+
+  /* ---------- sahne ---------- */
+
+  var stage = document.getElementById('stage');
+  var labelsEl = document.getElementById('labels');
+  var renderer, scene, camera, dirLight;
+  var built = {}, current = null, activeFloor = 1;
+  var azi = -0.62, ele = 0.78, dist = 42, target = new T.Vector3(0, 0.5, 0);
+  var labelObjs = [];
+  var needs = true;
+
+  function init() {
+    renderer = new T.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = T.PCFSoftShadowMap;
+    stage.appendChild(renderer.domElement);
+
+    scene = new T.Scene();
+    window.__maketScene = scene;   // inceleme kancası (mesh sayımı)
+    camera = new T.PerspectiveCamera(34, 16 / 10, 0.5, 400);
+
+    scene.add(new T.HemisphereLight(0xfff6e2, 0x6b5a45, 0.62));
+    dirLight = new T.DirectionalLight(0xfff2d8, 0.95);
+    dirLight.position.set(14, 26, 16);
+    dirLight.castShadow = true;
+    dirLight.shadow.mapSize.set(2048, 2048);
+    dirLight.shadow.bias = -0.0004;
+    dirLight.shadow.normalBias = 0.02;
+    var s = dirLight.shadow.camera;
+    s.left = -30; s.right = 30; s.top = 30; s.bottom = -30; s.near = 1; s.far = 80;
+    scene.add(dirLight);
+    scene.add(dirLight.target);
+
+    var fill = new T.DirectionalLight(0xdfe6ff, 0.25);
+    fill.position.set(-14, 12, -10);
+    scene.add(fill);
+
+    setFloor(1);
+    resize();
+    window.addEventListener('resize', resize);
+    bindInput();
+    tick();
+  }
+
+  // gölge bayrakları; userData.noShadow işaretli gruplar (dış çevre, alt kat kütleleri) atlanır — mesh varsayılanı zaten gölgesiz
+  function applyShadows(g) {
+    if (g.userData && g.userData.noShadow) return;
+    if (g.isMesh) {
+      var isFloor = g.geometry && g.geometry.parameters && g.geometry.parameters.height <= 0.21 && g.position.y < 0.06;
+      g.castShadow = !isFloor;
+      g.receiveShadow = true;
+    }
+    for (var i = 0; i < g.children.length; i++) applyShadows(g.children[i]);
+  }
+
+  function setFloor(n) {
+    activeFloor = n;
+    var f = FLOORS[n];
+    if (current) current.visible = false;
+    if (!built[n]) {
+      var g = f.build();
+      applyShadows(g);
+      built[n] = g;
+      scene.add(g);
+    }
+    current = built[n];
+    current.visible = true;
+
+    azi = f.azi; ele = f.ele; dist = f.dist;
+    target.set(f.target[0], f.target[1], f.target[2]);
+
+    // etiketler
+    labelsEl.innerHTML = '';
+    labelObjs = f.labels.map(function (l) {
+      var el = document.createElement('div');
+      el.className = 'lbl';
+      el.innerHTML = '<b>' + l[2] + '</b>' + l[3];
+      labelsEl.appendChild(el);
+      return { el: el, pos: new T.Vector3(l[0], 2.9, l[1]) };
+    });
+
+    document.getElementById('badge').textContent = f.badge;
+    document.getElementById('caption').innerHTML = f.caption;
+
+    var st = document.getElementById('stats');
+    st.innerHTML = f.stats.map(function (x) {
+      return '<div class="st"><b>' + x[0] + '</b><span>' + x[1] + '</span></div>';
+    }).join('');
+
+    var rm = document.getElementById('rooms');
+    rm.innerHTML = f.rooms.map(function (r) {
+      return '<div class="room"><div class="rn">' + r[0] + '</div>' +
+        '<div><div class="rname">' + r[1] + '</div><div class="rmeta">' + r[2] + '</div></div>' +
+        '<div class="rdesc">' + r[3] + '</div></div>';
+    }).join('');
+
+    needs = true;
+  }
+
+  function resize() {
+    var w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    needs = true;
+  }
+
+  function updateCamera() {
+    var cx = target.x + dist * Math.cos(ele) * Math.sin(azi);
+    var cy = target.y + dist * Math.sin(ele);
+    var cz = target.z + dist * Math.cos(ele) * Math.cos(azi);
+    camera.position.set(cx, cy, cz);
+    camera.lookAt(target);
+    dirLight.position.set(target.x + 16, 28, target.z + 18);
+    dirLight.target.position.copy(target);
+    dirLight.target.updateMatrixWorld();
+  }
+
+  function updateLabels() {
+    var w = stage.clientWidth, h = stage.clientHeight;
+    labelObjs.forEach(function (l) {
+      var v = l.pos.clone().project(camera);
+      var x = (v.x * 0.5 + 0.5) * w, y = (-v.y * 0.5 + 0.5) * h;
+      l.el.style.transform = 'translate(-50%,-50%) translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px)';
+      l.el.style.opacity = (v.z < 1 && x > -40 && x < w + 40) ? '1' : '0';
+    });
+  }
+
+  function tick() {
+    requestAnimationFrame(tick);
+    if (!needs) return;
+    needs = false;
+    updateCamera();
+    renderer.render(scene, camera);
+    updateLabels();
+  }
+
+  function bindInput() {
+    var down = false, lx = 0, ly = 0, pinch = 0;
+
+    stage.addEventListener('pointerdown', function (e) {
+      if (e.target.id === 'reset') return;
+      down = true; lx = e.clientX; ly = e.clientY;
+      stage.classList.add('dragging');
+      stage.setPointerCapture(e.pointerId);
+    });
+    stage.addEventListener('pointermove', function (e) {
+      if (!down) return;
+      azi -= (e.clientX - lx) * 0.006;
+      ele = Math.max(0.22, Math.min(1.32, ele + (e.clientY - ly) * 0.005));
+      lx = e.clientX; ly = e.clientY;
+      needs = true;
+    });
+    ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (ev) {
+      stage.addEventListener(ev, function () { down = false; stage.classList.remove('dragging'); });
+    });
+    stage.addEventListener('wheel', function (e) {
+      e.preventDefault();
+      dist = Math.max(12, Math.min(120, dist + e.deltaY * 0.05));
+      needs = true;
+    }, { passive: false });
+
+    stage.addEventListener('touchmove', function (e) {
+      if (e.touches.length !== 2) return;
+      var d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+      if (pinch) { dist = Math.max(12, Math.min(120, dist - (d - pinch) * 0.1)); needs = true; }
+      pinch = d;
+    }, { passive: true });
+    stage.addEventListener('touchend', function () { pinch = 0; });
+
+    document.getElementById('reset').addEventListener('click', function () {
+      var f = FLOORS[activeFloor];
+      azi = f.azi; ele = f.ele; dist = f.dist;
+      needs = true;
+    });
+
+    Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (t) {
+      t.addEventListener('click', function () {
+        Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (o) {
+          o.setAttribute('aria-selected', o === t ? 'true' : 'false');
+        });
+        setFloor(parseInt(t.dataset.floor, 10));
+      });
+    });
+  }
+
+  if (T) init();
+})();
+</script>

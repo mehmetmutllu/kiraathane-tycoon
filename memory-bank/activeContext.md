@@ -2,6 +2,89 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-03 — BÜYÜK TASARIM OTURUMU: yol haritası v2 + servis mimarisi + 3B kat maketi; KOD DEĞİŞMEDİ, SAVE v30)
+
+Kullanıcı sırayla şunları istedi: (1) projeyi incele + telefonda oynanır mı + asset/texture eksikleri +
+ekonomi değerlendirmesi + AdMob nereye; (2) çok detaylı YENİ PLAN (artifact); (3) oyun akışı/salonlar/kat
+sırası + arayüz yeniden tasarımı + A/B/C servis modellerinin tam mekaniği; (4) tamamlanmış katların
+GÖRSEL MAKETİ. `src/` içinde HİÇBİR değişiklik yapılmadı — bu oturum tamamen araştırma/tasarım.
+
+### Üretilen kalıcı çıktılar
+- **Plan artifact:** https://claude.ai/code/artifact/c45e15a9-9dd1-4bd1-ae00-cd1d35ed0aa8
+- **Maket artifact:** https://claude.ai/code/artifact/d8bbf576-e755-46b7-9608-3ebd0ab57245
+- Repoya kopyalandı: `docs/maket/` (v2 ONAYLI + v3 REDDEDİLDİ + plan + ekran görüntüleri, README ile)
+- Mevcut oyunun denetim ekran görüntüleri: `docs/denetim-2026-09-03/`
+
+### >>> SONRAKİ OTURUMDA İLK İŞ (kullanıcının son talimatı) <<<
+**Maket artifact'ini `docs/maket/maket-v2-ONAYLI.html` içeriğiyle YENİDEN YAYINLA** (aynı URL).
+Kullanıcı v3'ü tümüyle reddetti: "hayır hepsini bir önceki sefere çevirmeni isticem çünkü çok kötü oldu".
+v3'ten HİÇBİR ŞEY taşınmayacak. Yayınlamadan önce kullanıcıya sor: v2 üstünde hangi ince ayarlar istiyor.
+
+### Bu oturumda VERİLEN KARARLAR (kod henüz yazılmadı)
+1. **Para modeli B′ (kullanıcı kararı):** Yere dağınık sikke YOK. Her masanın yanında **tek para istifi**,
+   oyuncu üstünden geçince **tamamı tek seferde** cebe. Hesabı kasaya taşıma fikri İPTAL edildi.
+   **Garson parayı ASLA toplamaz.** Kayıp yok; istifin görsel tavanı var (sayaç sürer); oto-toplama erken
+   oyunda KAPALI, geç oyunda "Muhasebeci" yükseltmesiyle açılır; offline dönüşte Kasa Raporu'nda toplanır.
+   (Eski D-012/D-016 "KASA YOK" ve eski "para sunumuna dokunma" kuralları kullanıcı tarafından kaldırıldı.)
+2. **Ürün-silosu KALKTI (global menü):** "her salona bir ürün" yapay bulundu. Artık tek mutfak şeridi,
+   her masada her ürün istenebilir. Salonlar ürün değil KARAKTER bölgeleri.
+3. **Tek sipariş çıkış penceresi (pass):** Siparişin TAMAMI hazır olunca tek noktada hazır tepsi olur;
+   servis eden tezgâh tezgâh dolaşmaz, yarım sipariş taşınmaz. İstasyonlar "gidilecek" değil
+   "yükseltilecek" yerler. Bu yol bulmayı bugünkünden UCUZLATIR (3 ocak+3 bulaşık → 1 çıkış+1 bulaşık).
+4. **Ekonomi 3 kaldıraca oturuyor:** gelir = min(kapasite, üretim, servis) × ortalama sepet.
+   `tools/simulate.ts` bu modele göre yeniden yazılacak. Hiçbir denge sayısı ONAYSIZ değişmez.
+5. **Yerleşim kısıtı:** her oturma bölgesinin merkezi sipariş çıkışına ≤ ~10 birim (tur ~12sn < sabır 18sn).
+6. **Garson bölge-başı kalıyor** (D-012 korunuyor); sadece ortak çıkıştan alıyor.
+7. **İçerik hedefi:** 3 kat / 9 salon / ilk tur ~5 sa; renovasyon + 4 şube ile 25-30 sa.
+8. **Her kat kendi servis üçgenini taşır** (ocak + bulaşık + WC + merdiven). WC her kata konulacak.
+9. **Terasa çıkış:** dönüşlü (switchback) merdiven — kat 1'in merdivenine dokunulmadan.
+10. **Cam bölme:** sadece kat 3'te kapalı/açık teras arasında; iç katlarda YOK.
+11. **Arayüz yeniden tasarımı DİREKTİF** (öneri değil): paneller "kıraathane kâğıt işleri" metaforu
+    (adisyon fişi, menü tahtası, katalog defteri, personel künyesi, tapu, kasa raporu). Emoji ikon YASAK.
+12. **Yaş kategorisi önerisi:** Kids DIŞI 12+ (Kids'te AdMob kullanılamıyor). Kullanıcı henüz onaylamadı.
+13. **AdMob:** `@capacitor-community/admob` v8.1.0 Capacitor 8'i destekliyor → mevcut kurulumla uyumlu.
+
+### AÇIK KALAN KARARLAR (kullanıcı cevaplamadı)
+- Yaş kategorisi 12+ mı çocuk-güvenli mi (Faz F'yi bloke ediyor)
+- Nargile katı planda kalsın mı (yaş derecesine bağlı)
+- Offline tavanı 1 sa → 2,5 sa gevşesin mi
+- Eşzamanlı müşteri tavanı ~50 → 28'e insin mi
+- Önce kat mı şube mi (öneri: önce kat 2)
+- Stok/hammadde katmanı ne kadar girsin (öneri: yalnız vitrin)
+
+### DENETİM BULGULARI (ölçümlü, 2026-09-03)
+vitest **186/186** ✅ · build temiz **1.457 MB / 410 KB gzip** · tam kurulu sahnede **98 draw call /
+37.092 üçgen / masaüstü 133 FPS** · içerik sim'e göre **~3,2 saat** · elmas hiç kazanılmıyor/harcanmıyor ·
+prestige kodda yok · **ses dosyası SIFIR** ama Ayarlar'da 3 ölü anahtar · müşteriler tek renkli kapsül
+(`Customers.tsx:11`) · çay bardağı KIRMIZI silindir (`Player.tsx:171`) · `App.tsx:28` `installDevHooks()`
+KOŞULSUZ (hile kapısı) · `?proto` üretim bundle'ında · kayıt yalnız localStorage · varsayılan Android ikonu ·
+`minifyEnabled false` · `index.html lang="en"` · iOS platformu YOK.
+Telefon çerçevesinde ekranın üst ~%20'si boş arka plan; taze oyunda ilk karede masa görünmüyor.
+
+### PERFORMANS RAPORU (dış çevre maliyeti — kullanıcı istedi)
+Statik + merged + GÖLGESİZ yapılırsa: sokak+komşu binalar+ağaç/araba+alt kat kütleleri ≈ **+7-9 draw call,
++7k üçgen, kare başı 0 CPU**. Makette doğrulandı: dış çevre 982 mesh, hepsi gölge geçişinin DIŞINDA.
+Gölgeli/ayrı mesh yapılırsa +60 call/+30k üçgen olurdu — o yol kapalı.
+
+### FAZ PLANI (planın tamamı artifact'te; sıra: A → B → C → D → F → G, E paralel)
+- **A Zemin (5-6 oturum, hiçbir karara bağlı değil):** dev kancalarını DEV'e kapat · Capacitor Preferences
+  kalıcı kayıt · perf paketi (dpr≤1.5, gölge 512, NPC tavanı 28, ≤60 call/≤25k üçgen) · kamera çerçeveleme ·
+  ses sistemi · Android paketleme (ikon/minify/imza/AAB/lang=tr)
+- **B Kasa pivotu (save v31):** para istifi + toplu toplama + harita revizyonu + sim kalibrasyonu
+- **C Meta (save v32):** elmas kazanma/harcama + Renovasyon(İtibar) + offline + günlük döngü
+- **D İçerik (save v33+):** menü ağacı · müşteri arketipleri · gün döngüsü/etkinlikler · kat 2-3 · şubeler
+- **E Sanat/arayüz (paralel):** E1 müşteri modeli (en yüksek etki) · E2 arayüz · E3 Türk objeleri · E4 ışık/dekor
+- **F Monetizasyon:** yaş kararı → ads.ts+UMP+AdMob → yerleşimler → RevenueCat
+- **G Yayın:** iOS · mağaza evrakı · TR soft launch
+
+### ASSET LİSTESİ
+Plan artifact'inde bölüm 10'da tam liste (P1/P2/P3 öncelikli, 6 grup). Özet: müşteri gövdesi (P1, en yüksek
+etki) · ince belli bardak/semaver/cezve/sac (P1) · KayKit'te VAR ama entegre edilmemiş halı/tablo/lamba/
+dolap/kanepe (P2, bedava) · zemin-duvar-kilim dokuları (P2) · ses seti (P1, şu an sıfır) · SVG ikon seti (P1).
+**NOT:** Maket artifact'i gerçek KayKit .gltf dosyalarını YÜKLEYEMEZ (yerel dosyalar + CSP) — makette her şey
+ilkel şekil; gerçek oyunda KayKit couch/armchair kullanılacak.
+
+
 ## ŞU AN (2026-09-01 — YAYINA HAZIRLIK DENETİMİ (kod yazılmadı, sadece araştırma+rapor); SAVE v30 kaldı)
 Kullanıcı sordu: "uygulama yayına hazır mı? App Store'a çıkacağız, reklam eklenecek." Kod DEĞİŞMEDİ
 (çalışma ağacı temiz). Bu bölüm denetimin sonucudur; sonraki oturum buradan devam eder.

@@ -1,0 +1,1402 @@
+<title>Kıraathane Genişleme Planı</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=JetBrains+Mono:wght@400;600&display=swap">
+
+<style>
+  :root {
+    --paper: #efece2;
+    --surface: #f7f5ee;
+    --surface-2: #e8e4d7;
+    --ink: #22271f;
+    --ink-soft: #5b6154;
+    --ink-faint: #8b9081;
+    --line: #d7d1c0;
+    --line-soft: #e2ddcf;
+    --green: #2e6b4f;
+    --green-wash: #e0e8df;
+    --copper: #a25f26;
+    --copper-wash: #f0e3d4;
+    --bordo: #7a2230;
+    --bordo-wash: #f2dfdf;
+    --amber: #a8762a;
+    --amber-wash: #f3e8d2;
+
+    --f-display: "Baloo 2", "Trebuchet MS", sans-serif;
+    --f-body: "Newsreader", Georgia, "Times New Roman", serif;
+    --f-mono: "JetBrains Mono", "Consolas", monospace;
+
+    --measure: 70ch;
+    --wide: 1080px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #161a15;
+      --surface: #1d221c;
+      --surface-2: #252b23;
+      --ink: #e9e4d6;
+      --ink-soft: #a8a696;
+      --ink-faint: #7d8073;
+      --line: #343a30;
+      --line-soft: #2a3027;
+      --green: #6fb28b;
+      --green-wash: #1f2c25;
+      --copper: #d99a5c;
+      --copper-wash: #2c2419;
+      --bordo: #d4707f;
+      --bordo-wash: #2e1d20;
+      --amber: #dfae63;
+      --amber-wash: #2b2418;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper: #161a15;
+    --surface: #1d221c;
+    --surface-2: #252b23;
+    --ink: #e9e4d6;
+    --ink-soft: #a8a696;
+    --ink-faint: #7d8073;
+    --line: #343a30;
+    --line-soft: #2a3027;
+    --green: #6fb28b;
+    --green-wash: #1f2c25;
+    --copper: #d99a5c;
+    --copper-wash: #2c2419;
+    --bordo: #d4707f;
+    --bordo-wash: #2e1d20;
+    --amber: #dfae63;
+    --amber-wash: #2b2418;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--f-body);
+    font-size: 17px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: var(--wide); margin: 0 auto; padding: 0 24px 96px; }
+
+  p { margin: 0 0 1em; }
+  p:last-child { margin-bottom: 0; }
+  strong { font-weight: 600; color: var(--ink); }
+
+  code, .mono {
+    font-family: var(--f-mono);
+    font-size: 0.86em;
+    background: var(--surface-2);
+    padding: 0.1em 0.36em;
+    border-radius: 3px;
+    color: var(--ink);
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead { padding: 56px 0 32px; border-bottom: 2px solid var(--ink); }
+
+  .eyebrow {
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--copper);
+    margin-bottom: 14px;
+  }
+
+  h1 {
+    font-family: var(--f-display);
+    font-weight: 800;
+    font-size: clamp(38px, 7vw, 62px);
+    line-height: 1.02;
+    letter-spacing: -0.015em;
+    margin: 0 0 18px;
+    text-wrap: balance;
+  }
+
+  .lede { font-size: 20px; line-height: 1.5; color: var(--ink-soft); max-width: 60ch; }
+  .lede em { color: var(--ink); font-style: italic; }
+
+  /* ---------- status strip ---------- */
+
+  .strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+    gap: 1px;
+    background: var(--line);
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 64px;
+  }
+
+  .stat { background: var(--paper); padding: 18px 4px 20px 0; }
+
+  .stat b {
+    display: block;
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: 25px;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+  }
+
+  .stat span {
+    display: block;
+    font-family: var(--f-display);
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-top: 4px;
+  }
+
+  .stat.warn b { color: var(--bordo); }
+  .stat.ok b { color: var(--green); }
+
+  /* ---------- sections ---------- */
+
+  section { margin-bottom: 76px; }
+
+  .sec-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 8px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .sec-num { font-family: var(--f-mono); font-size: 13px; font-weight: 600; color: var(--copper); }
+
+  h2 {
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: clamp(26px, 4vw, 34px);
+    line-height: 1.15;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .sec-sub { color: var(--ink-soft); font-size: 17px; margin: 14px 0 30px; max-width: var(--measure); }
+
+  h3 { font-family: var(--f-display); font-weight: 700; font-size: 21px; margin: 38px 0 12px; }
+  h4 { font-family: var(--f-display); font-weight: 700; font-size: 16px; margin: 26px 0 8px; }
+
+  /* ---------- diagnosis ---------- */
+
+  .diag { display: grid; gap: 1px; background: var(--line-soft); }
+
+  .diag-row {
+    background: var(--paper);
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 20px;
+    padding: 16px 0;
+    align-items: start;
+  }
+
+  .diag-row .num {
+    font-family: var(--f-mono);
+    font-size: 21px;
+    font-weight: 600;
+    color: var(--bordo);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.3;
+  }
+
+  .diag-row .num small {
+    display: block;
+    font-family: var(--f-display);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+  }
+
+  .diag-row .txt { font-size: 16px; }
+  .diag-row .txt b { font-family: var(--f-display); font-weight: 700; display: block; font-size: 17px; margin-bottom: 2px; }
+
+  @media (max-width: 620px) { .diag-row { grid-template-columns: 1fr; gap: 4px; } }
+
+  /* ---------- models ---------- */
+
+  .models {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+    margin: 26px 0;
+    align-items: start;
+  }
+
+  .model { border: 1px solid var(--line); background: var(--surface); padding: 22px; }
+  .model.pick { border-color: var(--copper); border-width: 2px; background: var(--copper-wash); }
+
+  .model-tag {
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 6px;
+  }
+
+  .model.pick .model-tag { color: var(--copper); }
+  .model h4 { margin: 0 0 10px; font-size: 19px; }
+  .model p { font-size: 15px; line-height: 1.5; color: var(--ink-soft); }
+
+  /* loop diagram */
+  .loop { display: grid; gap: 7px; margin: 14px 0 4px; }
+
+  .loop-step {
+    display: grid;
+    grid-template-columns: 22px 1fr;
+    gap: 10px;
+    font-size: 14px;
+    line-height: 1.45;
+    color: var(--ink-soft);
+    align-items: start;
+  }
+
+  .loop-step i {
+    font-family: var(--f-mono);
+    font-style: normal;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--paper);
+    background: var(--green);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    margin-top: 2px;
+  }
+
+  .model.pick .loop-step i { background: var(--copper); }
+  .loop-step b { color: var(--ink); font-family: var(--f-display); font-weight: 600; }
+
+  .pm { display: grid; gap: 5px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .pm div { font-size: 14px; line-height: 1.45; padding-left: 20px; position: relative; color: var(--ink-soft); }
+  .pm div::before { position: absolute; left: 0; top: 0; font-family: var(--f-mono); font-weight: 600; }
+  .pm .plus::before { content: "+"; color: var(--green); }
+  .pm .minus::before { content: "−"; color: var(--bordo); }
+
+  /* ---------- callout ---------- */
+
+  .callout { border-left: 4px solid var(--copper); background: var(--surface); padding: 20px 24px; margin: 26px 0; }
+  .callout.decide { border-left-color: var(--bordo); background: var(--bordo-wash); }
+
+  .callout .co-tag {
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--copper);
+    margin-bottom: 6px;
+  }
+
+  .callout.decide .co-tag { color: var(--bordo); }
+  .callout p { font-size: 16px; max-width: 66ch; }
+
+  /* ---------- floors ---------- */
+
+  .floor { margin-top: 34px; }
+
+  .floor-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px 14px;
+    padding: 10px 0 9px;
+    border-top: 3px solid var(--ink);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .floor-head .fno {
+    font-family: var(--f-mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--paper);
+    background: var(--ink);
+    padding: 3px 8px;
+    letter-spacing: 0.06em;
+  }
+
+  .floor-head h3 { margin: 0; font-size: 23px; }
+  .floor-head .fmeta { font-family: var(--f-display); font-weight: 600; font-size: 13px; color: var(--ink-faint); margin-left: auto; }
+
+  .salons { display: grid; gap: 1px; background: var(--line-soft); }
+
+  .salon {
+    background: var(--paper);
+    display: grid;
+    grid-template-columns: 40px 1.1fr 1.4fr;
+    gap: 22px;
+    padding: 18px 0;
+    align-items: start;
+  }
+
+  .salon .sn {
+    font-family: var(--f-display);
+    font-weight: 800;
+    font-size: 24px;
+    color: var(--copper);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .salon .sname { font-family: var(--f-display); font-weight: 700; font-size: 19px; margin-bottom: 3px; }
+
+  .salon .sline { font-size: 14px; color: var(--ink-faint); font-family: var(--f-display); font-weight: 600; }
+
+  .salon .sdesc { font-size: 15.5px; line-height: 1.5; color: var(--ink-soft); }
+
+  .salon .newmech {
+    display: block;
+    margin-top: 7px;
+    font-size: 14.5px;
+    color: var(--ink);
+    border-left: 3px solid var(--green);
+    padding-left: 12px;
+  }
+
+  .salon .newmech b { font-family: var(--f-display); color: var(--green); }
+
+  @media (max-width: 720px) {
+    .salon { grid-template-columns: 34px 1fr; gap: 4px 14px; }
+    .salon .sdesc { grid-column: 1 / -1; margin-top: 8px; }
+  }
+
+  .gatebar {
+    background: var(--surface-2);
+    border-left: 4px solid var(--amber);
+    padding: 13px 18px;
+    font-family: var(--f-display);
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--ink);
+    margin: 1px 0;
+  }
+
+  .gatebar span { color: var(--ink-soft); font-weight: 500; }
+
+  /* ---------- phases ---------- */
+
+  .phase { display: grid; grid-template-columns: 74px 1fr; gap: 26px; padding: 30px 0; border-top: 1px solid var(--line); }
+  .phase:last-of-type { border-bottom: 1px solid var(--line); }
+
+  .medallion {
+    width: 58px; height: 58px;
+    border: 2px solid var(--ink);
+    border-radius: 50%;
+    display: grid; place-items: center;
+    font-family: var(--f-display);
+    font-weight: 800; font-size: 26px; line-height: 1;
+    color: var(--ink); background: var(--surface);
+  }
+
+  .medallion.now { background: var(--green); border-color: var(--green); color: var(--paper); }
+
+  .ph-body { min-width: 0; }
+  .ph-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px 14px; margin-bottom: 6px; }
+  .ph-head h3 { margin: 0; font-size: 24px; }
+
+  .chip {
+    font-family: var(--f-display);
+    font-weight: 700; font-size: 11px;
+    letter-spacing: 0.07em; text-transform: uppercase;
+    padding: 3px 9px; border-radius: 999px;
+    background: var(--surface-2); color: var(--ink-soft);
+    white-space: nowrap;
+  }
+
+  .chip.save { background: var(--amber-wash); color: var(--amber); }
+  .chip.block { background: var(--bordo-wash); color: var(--bordo); }
+  .chip.time { background: var(--green-wash); color: var(--green); }
+
+  .ph-why { color: var(--ink-soft); font-size: 16px; margin-bottom: 16px; max-width: 66ch; }
+
+  /* ---------- tables ---------- */
+
+  .tw { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 540px; }
+
+  thead th {
+    font-family: var(--f-display);
+    font-weight: 700; font-size: 11px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--ink-faint); text-align: left;
+    padding: 0 14px 8px 0;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+  }
+
+  tbody td {
+    padding: 11px 14px 11px 0;
+    border-bottom: 1px solid var(--line-soft);
+    vertical-align: top;
+    color: var(--ink-soft);
+    line-height: 1.45;
+  }
+
+  tbody th {
+    font-family: var(--f-display);
+    font-weight: 700; font-size: 14px;
+    text-align: left; color: var(--ink);
+    padding: 11px 18px 11px 0;
+    border-bottom: 1px solid var(--line-soft);
+    vertical-align: top;
+    white-space: nowrap;
+  }
+
+  tbody td:first-child { font-family: var(--f-mono); font-size: 13px; font-weight: 600; color: var(--copper); white-space: nowrap; }
+  table.cmp tbody td:first-child { font-family: inherit; font-size: 15px; font-weight: 400; color: var(--ink-soft); white-space: normal; }
+  tbody td.k { color: var(--ink); font-weight: 500; }
+  td .mono, td code { background: none; padding: 0; color: var(--ink-faint); }
+
+  /* ---------- catalog ---------- */
+
+  .cat { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 26px 40px; margin-top: 26px; }
+
+  .cat-col h4 {
+    margin-top: 0; padding-bottom: 7px;
+    border-bottom: 2px solid var(--green);
+    color: var(--green); font-size: 15px;
+    letter-spacing: 0.05em; text-transform: uppercase;
+  }
+
+  .cat-col dl { margin: 0; }
+  .cat-col dt { font-family: var(--f-display); font-weight: 700; font-size: 16px; margin-top: 15px; color: var(--ink); }
+  .cat-col dd { margin: 2px 0 0; font-size: 15px; line-height: 1.48; color: var(--ink-soft); }
+  .cat-col dd .tag { font-family: var(--f-mono); font-size: 11px; color: var(--copper); text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* ---------- screens (UI) ---------- */
+
+  .screens { display: grid; gap: 1px; background: var(--line-soft); margin-top: 24px; }
+
+  .screen { background: var(--paper); display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 17px 0; align-items: start; }
+
+  .screen .snm { font-family: var(--f-display); font-weight: 700; font-size: 17px; color: var(--ink); }
+  .screen .snm em { display: block; font-style: normal; font-size: 13px; font-weight: 600; color: var(--copper); margin-top: 2px; }
+  .screen .sbody { font-size: 15.5px; line-height: 1.5; color: var(--ink-soft); }
+
+  @media (max-width: 700px) { .screen { grid-template-columns: 1fr; gap: 6px; } }
+
+  /* ---------- decisions ---------- */
+
+  .decisions { display: grid; gap: 14px; margin-top: 24px; }
+
+  .dec {
+    display: grid; grid-template-columns: 44px 1fr; gap: 18px;
+    border: 1px solid var(--line); border-left: 4px solid var(--bordo);
+    background: var(--surface); padding: 18px 20px;
+  }
+
+  .dec .dnum { font-family: var(--f-display); font-weight: 800; font-size: 24px; color: var(--bordo); line-height: 1.1; }
+  .dec b { font-family: var(--f-display); font-weight: 700; font-size: 17px; display: block; margin-bottom: 3px; }
+  .dec p { font-size: 15px; color: var(--ink-soft); margin: 0; }
+  .dec .rec { margin-top: 8px; font-size: 14px; color: var(--copper); font-family: var(--f-display); font-weight: 600; }
+
+  /* ---------- footer ---------- */
+
+  .foot {
+    margin-top: 72px; padding-top: 22px;
+    border-top: 2px solid var(--ink);
+    font-size: 14px; color: var(--ink-faint);
+    max-width: var(--measure);
+  }
+
+  @media (max-width: 640px) {
+    body { font-size: 16px; }
+    .phase { grid-template-columns: 1fr; gap: 14px; }
+    .medallion { width: 46px; height: 46px; font-size: 21px; }
+    .wrap { padding: 0 18px 72px; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="eyebrow">Köşe Kıraathanesi · Geliştirme Planı v2 · 3 Eylül 2026</div>
+    <h1>Kıraathane Genişleme Planı</h1>
+    <p class="lede">Elimizde <em>3,2 saatlik</em> teknik olarak sağlam bir prototip var. Bu plan onu 9 salonlu, 3 katlı, şubeleşen bir zincir-tycoon'a çeviriyor: para akışını kasaya topluyor, her salona <em>yeni bir mekanik</em> yüklüyor, arayüzü baştan tasarlıyor.</p>
+  </header>
+
+  <div class="strip">
+    <div class="stat ok"><b>186/186</b><span>Vitest</span></div>
+    <div class="stat ok"><b>410 KB</b><span>gzip bundle</span></div>
+    <div class="stat warn"><b>98</b><span>draw call</span></div>
+    <div class="stat warn"><b>3,2 sa</b><span>bugünkü içerik</span></div>
+    <div class="stat ok"><b>25–30 sa</b><span>hedef içerik</span></div>
+    <div class="stat"><b>v30</b><span>save sürümü</span></div>
+  </div>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">01</span><h2>Teşhis</h2></div>
+    <p class="sec-sub">Ölçülmüş, tahmin değil. Sayılar <code>npm run sim</code>, <code>vitest</code>, canlı tarayıcı <code>__perf()</code> ve 390×844 telefon viewport'undan geliyor.</p>
+
+    <div class="diag">
+      <div class="diag-row">
+        <div class="num">1,62 sa<small>Normal profil</small></div>
+        <div class="txt"><b>Oyun bitiyor ve devamı yok</b>3. salon 1,62 saatte doluyor; kalan tüm yükseltme ve kozmetikler ≈150 bin ₺ ≈ 85 dakika. Toplam ≈3,2 saat. Prestige kodda yok, <code>diamonds</code> hiç kazanılmıyor ve hiç harcanmıyor.</div>
+      </div>
+      <div class="diag-row">
+        <div class="num">3<small>salon · tek kat</small></div>
+        <div class="txt"><b>Her salon aynı oyun</b>Üç salonun üçü de "masaya çay götür, kirli topla". Sadece ürün ve renk değişiyor, <em>mekanik</em> değişmiyor. Bu yüzden dördüncü salonu eklemek de oyunu uzatmaz — tekrarı uzatır.</div>
+      </div>
+      <div class="diag-row">
+        <div class="num">≈50<small>eşzamanlı NPC</small></div>
+        <div class="txt"><b>Para yerde, kalabalık kontrolsüz</b>Müşteriler ödeyince sikke 12 ayrı noktaya dağılıyor. Oyuncu servis yapan bir esnaf değil, elektrikli süpürge oluyor. Yerdeki sikke aynı zamanda ölçülmüş bir FPS yükü.</div>
+      </div>
+      <div class="diag-row">
+        <div class="num">98 / 37k<small>call / üçgen</small></div>
+        <div class="txt"><b>Mobil render bütçesi aşılmış</b><code>dpr [1,2]</code> + antialias + 1024'lük gölge haritası + geniş gölge kamerası. Orta segment Android'de 30–40 FPS bandı bekleniyor.</div>
+      </div>
+      <div class="diag-row">
+        <div class="num">0<small>ses dosyası</small></div>
+        <div class="txt"><b>His katmanı eksik</b>Tek ses dosyası yok ama Ayarlar'da üç ölü anahtar var. Müşteriler tek renkli kapsül. Arayüz panelleri birbirinin aynı krem kart. Ekranın üst %20'si düz arka plan.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">02</span><h2>Servis Modelleri — Kim Neyi Taşıyor</h2></div>
+    <p class="sec-sub">"Müşteri kasadan kendi alırsa masaya ne taşıyacağız?" sorusunun cevabı modele göre değişiyor. Üçünün de tam akışı, oyuncunun eline ne aldığı ve darboğazın nerede olduğu aşağıda.</p>
+
+    <div class="models">
+
+      <div class="model">
+        <div class="model-tag">Model A</div>
+        <h4>Tam kasa · self-servis</h4>
+        <p>Zincir kahveci mantığı. Oyuncu masaya <strong>hiçbir şey taşımaz</strong>; ocakla teslim tezgâhı arasında çalışır.</p>
+        <div class="loop">
+          <div class="loop-step"><i>1</i><span>Müşteri girer, <b>kasa kuyruğuna</b> girer. Sabır artık kuyrukta işler.</span></div>
+          <div class="loop-step"><i>2</i><span>Kasada sipariş + ödeme (oyuncu veya kasiyer). <b>Para anında kasa çekmecesine</b> girer.</span></div>
+          <div class="loop-step"><i>3</i><span>Müşteri bekleme alanına geçer, siparişi ekranda/tezgâhta görünür.</span></div>
+          <div class="loop-step"><i>4</i><span>Oyuncu ocakta hazırlar → <b>tepsiyle teslim tezgâhına</b> dizer. Taşıdığı yön: ocak → tezgâh.</span></div>
+          <div class="loop-step"><i>5</i><span>Müşteri kendi alır, oturur, içer, kalkar — kirliyi masada veya kirli kutusunda bırakır.</span></div>
+          <div class="loop-step"><i>6</i><span>Oyuncu/bulaşıkçı kirliyi toplar → yıkar. Oyuncu ayrıca <b>kasayı boşaltır</b>.</span></div>
+        </div>
+        <div class="pm">
+          <div class="plus">Para tek noktada; kuyruk görsel talep göstergesi</div>
+          <div class="plus">Kasa hızı, kuyruk kapasitesi, teslim tezgâhı = üç yeni darboğaz</div>
+          <div class="minus">Masaya servis yok → tepsi-servis döngüsü, garson servisi, masa sabrı ve bahşiş sistemi devre dışı</div>
+          <div class="minus">Kıraathane kimliğine ters (kıraathanede kasaya sıraya girilmez)</div>
+        </div>
+      </div>
+
+      <div class="model pick">
+        <div class="model-tag">Model B′ · Omurga · kullanıcı onaylı</div>
+        <h4>Para istifi · masa servisi</h4>
+        <p>Servis aynen kalır. Para yere saçılmaz, <strong>masanın yanındaki sabit noktada istiflenir</strong>; oyuncu üstünden geçince tamamı tek seferde cebe girer. Taşınacak hesap yok.</p>
+        <div class="loop">
+          <div class="loop-step"><i>1</i><span>Müşteri girer, doğrudan boş masaya oturur, sipariş baloncuğu çıkar.</span></div>
+          <div class="loop-step"><i>2</i><span>Oyuncu/garson ocaktan <b>tepsiye çay/tost alır</b> → masaya bırakır. <em>Gidiş yükü: ürün.</em></span></div>
+          <div class="loop-step"><i>3</i><span>Müşteri içer, kalkarken parasını <b>masanın yanındaki istife</b> ekler, kirli bardağını masada bırakır. İstif büyüdükçe gözle görülür şekilde yükselir.</span></div>
+          <div class="loop-step"><i>4</i><span>Oyuncu istifin yanından geçer → <b>tamamı tek seferde toplanır</b>, tek bir büyük "+₺" uçar. Ara adım yok, taşıma yok.</span></div>
+          <div class="loop-step"><i>5</i><span>Kirli bardaklar tepsiye alınır → bulaşığa götürülür. <em>Dönüş yükü: yalnız bulaşık.</em></span></div>
+          <div class="loop-step"><i>6</i><span><b>Parayı yalnız oyuncu toplar</b> — garson asla toplamaz. Çok uzun kalan istifler için oto-toplama, geç oyunda açılan bir yükseltmedir.</span></div>
+        </div>
+        <div class="pm">
+          <div class="plus"><strong>"Toplu para toplama" hissi korunur</strong> — tycoon'un en tatmin edici anı oyuncuda kalır</div>
+          <div class="plus">Dağınıklık biter: masa başına <em>tek</em> istif, sabit noktada, düzenli</div>
+          <div class="plus">Mevcut tepsi, sabır, bahşiş, garson FSM'i aynen korunur; yeni taşıma türü yok</div>
+          <div class="plus">Mıknatıs yükseltmesi anlamını korur — istifi uzaktan çeker</div>
+          <div class="minus">Kasa artık para akışının parçası değil; kasa + kasiyer yalnız Model A salonunda yaşar</div>
+        </div>
+      </div>
+
+      <div class="model">
+        <div class="model-tag">Model C · Genişleme</div>
+        <h4>Salon başına arketip</h4>
+        <p>İkisi de oyunda. Çay salonları B ile, <strong>Pastane salonu (4. salon)</strong> A ile çalışır. Aynı oyunda iki ayrı ritim.</p>
+        <div class="loop">
+          <div class="loop-step"><i>1</i><span>Salon 1–3 (kıraathane): <b>Model B</b>. Oturursun, garson gelir. Rota ve planlama oyunu.</span></div>
+          <div class="loop-step"><i>2</i><span>Salon 4 (pastane/kahveci): <b>Model A</b>. Kuyruk, kasa, teslim tezgâhı. Hız ve kuyruk oyunu.</span></div>
+          <div class="loop-step"><i>3</i><span>Üst katlar salonun türüne göre birini kullanır; nargile terası B, büfe tipi salonlar A.</span></div>
+        </div>
+        <div class="pm">
+          <div class="plus">Yeni salon = yeni <em>oynanış</em>, sadece yeni renk değil — tekrar hissini kıran asıl şey bu</div>
+          <div class="plus">Senin istediğin kasa-kuyruk fantezisi oyuna girer, ama kayıp olarak değil ek olarak</div>
+          <div class="minus">İki modelin de ayrı dengelenmesi gerekir; Faz B iş yükü ~1,4×</div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Yan yana karşılaştırma</h3>
+    <div class="tw"><table class="cmp">
+      <thead><tr><th></th><th>Model A</th><th>Model B</th></tr></thead>
+      <tbody>
+        <tr><th>Müşteri nereye gider</th><td>Kasa kuyruğuna</td><td>Doğrudan masaya</td></tr>
+        <tr><th>Sipariş nerede alınır</th><td>Kasada, ödemeyle birlikte</td><td>Masada, baloncukla</td></tr>
+        <tr><th>Oyuncu gidişte ne taşır</th><td>Ocak → teslim tezgâhı: ürün</td><td>Ocak → masa: ürün</td></tr>
+        <tr><th>Oyuncu dönüşte ne taşır</th><td>Kirli (masadan/kutudan)</td><td><strong>Sadece kirli</strong> — para taşınmaz</td></tr>
+        <tr><th>Para nerede birikir</th><td>Kasa çekmecesinde, anında</td><td>Masa yanındaki istifte; üstünden geçince tamamı cebe</td></tr>
+        <tr><th>Garsonun işi</th><td>Tezgâh doldurma + bulaşık</td><td>Servis + bulaşık — <strong>para toplamaz</strong></td></tr>
+        <tr><th>Kasiyerin işi</th><td>Kuyruğu işler (asıl darboğaz)</td><td>Yok — kasa yalnız pastane salonunda</td></tr>
+        <tr><th>Sabır nerede işler</th><td>Kuyrukta (sıra uzarsa çıkar)</td><td>Masada (mevcut sistem)</td></tr>
+        <tr><th>Ana darboğaz zinciri</th><td>Kuyruk → kasa hızı → hazırlık → tezgâh</td><td>Temiz bardak → hazırlık → tepsi → toplama turu</td></tr>
+        <tr><th>Bahşiş / masa seviyesi</th><td>Anlamsızlaşır</td><td>Aynen korunur</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="callout">
+      <div class="co-tag">Karar önerisi</div>
+      <p><strong>B′ omurga, C genişleme.</strong> Model A'yı tek başına almak iki aydır cilalanan tepsi-servis döngüsünü söker ve oyunu bir sıra simülatörüne çevirir. B′ ise mevcut kodun üstüne oturur: dağınık <code>coins[]</code> dizisi yerini <em>masa başına tek istif</em> nesnesine bırakır — dağınıklık ve FPS yükü gider, ama oyuncunun "gidip topu topunu topladım" anı olduğu gibi kalır. Kasa-kuyruk fantezisi 4. salonda (Pastane) Model A ile oyuna girer.</p>
+    </div>
+
+    <div class="callout decide">
+      <div class="co-tag">Uygulama öncesi şart</div>
+      <p>Kod yazılmadan önce <strong>hesap tepsisi + kasa + teslim tezgâhı mockup'ı onaylanacak</strong>. Harita yeniden dizileceği için <code>LAYOUT</code>, <code>nav.ts</code> ızgarası ve tüm pad konumları etkilenir → <code>saveVersion 30 → 31</code> ve migrasyon şart.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">03</span><h2>Servis Mimarisi — Global Menü</h2></div>
+    <p class="sec-sub">Ürün-silosu kalktı: artık her masada her ürün istenebiliyor, mutfak tek. Bu bölüm servisin tam olarak nasıl işleyeceğini, neden bugünkünden <em>daha ucuz</em> olduğunu ve ekonominin hangi üç kaldıraca oturacağını tanımlar. Karar verilmiştir — açık uç kalmadı.</p>
+
+    <h3>Akış</h3>
+    <div class="loop" style="max-width:70ch">
+      <div class="loop-step"><i>1</i><span>Müşteri oturur, <b>sipariş = ürün listesi</b> olur (1–4 kalem: çay, kahve, tost, tatlı). Baloncukta hepsi görünür.</span></div>
+      <div class="loop-step"><i>2</i><span>Kalemler <b>ilgili istasyonun hazırlık kuyruğuna</b> düşer. Semaver çayı, cezve ocağı kahveyi, sac tostu hazırlar — her istasyon yalnız kendi ürününü bilir.</span></div>
+      <div class="loop-step"><i>3</i><span>Bir siparişin <b>bütün kalemleri</b> hazır olunca, mutfak şeridinin ön-ortasındaki <b>TEK sipariş çıkış penceresine</b> hazır tepsi olarak çıkar — üstünde hangi masaya ait olduğunu gösteren işaret.</span></div>
+      <div class="loop-step"><i>4</i><span>Oyuncu veya garson <b>o tek noktaya</b> gider, hazır tepsiyi (veya tepsisi yetiyorsa birkaçını) alır. Tezgâh tezgâh dolaşmak YOK, yarım sipariş taşımak YOK.</span></div>
+      <div class="loop-step"><i>5</i><span>Masaya bırakılır. Müşteri yer/içer, kalkarken parasını masa yanındaki <b>istife</b> ekler, kirlisini masada bırakır.</span></div>
+      <div class="loop-step"><i>6</i><span>Kirli → bulaşık; para istifi → üstünden geçince tek seferde cebe. Döngü kapanır.</span></div>
+    </div>
+
+    <div class="callout">
+      <div class="co-tag">Tasarımın kilit taşı</div>
+      <p><strong>Sipariş, mutfağın içinde paketlenir; dışarıda tek bir alma noktası vardır.</strong> "2 tost + 2 çay" siparişi üç ayrı tezgâhtan toplanmaz — sac tostu, semaver çayı hazırlar, ikisi de aynı siparişin kalemleri olarak biriktirilir ve <em>tamamı bitince</em> çıkış penceresinde tek bir hazır tepsi olur. Servis eden aktör için sahnede hâlâ <b>tek hedef</b> vardır, bugünkü ocakla birebir aynı. Karma sipariş için tezgâh tezgâh dolaşmak rotayı patlatır, garsonu kaotik gösterir ve dengelemeyi imkânsızlaştırırdı; gerçek mutfaklar da bu yüzden "pass" ile çalışır. İstasyonlar artık <em>gidilecek</em> yerler değil, <em>yükseltilecek</em> yerler.</p>
+    </div>
+
+    <h3>Kim ne yapar</h3>
+    <div class="tw"><table>
+      <thead><tr><th>Aktör</th><th>Görevi</th><th>Sınırı</th></tr></thead>
+      <tbody>
+        <tr><td>Oyuncu</td><td class="k">Her şeyi yapabilir: teslim hattından alır, herhangi bir bölgeye servis eder, kirli toplar, yıkar, para istifi toplar</td><td>Tepsi kapasitesi (karma yük)</td></tr>
+        <tr><td>Garson</td><td class="k">Teslim hattından alır → <strong>yalnız kendi bölgesinin</strong> masalarına servis eder → boşta bekler</td><td>Bölge-başı; oyuncudan yavaş ve küçük tepsili (kısmi assist korunur)</td></tr>
+        <tr><td>İstasyonlar</td><td class="k">Kendi ürününü hazırlar, biten ürünü önündeki teslim hattına bırakır</td><td>Hazırlık süresi + kuyruk kapasitesi (seviyeyle artar)</td></tr>
+        <tr><td>Bulaşıkçı</td><td class="k">Kirli toplar → yıkar → temiz havuza döner</td><td>Kat-başı; leğen kapasitesi</td></tr>
+        <tr><td>Kasiyer</td><td class="k">Yalnız kasalı bölgede (vitrin/self-servis) kuyruğu işler</td><td>Para akışında değil — para istifle toplanıyor</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Neden bu model daha ucuz</h3>
+    <div class="pm" style="max-width:72ch;border-top:none;padding-top:0">
+      <div class="plus"><strong>Yol bulma hedefi azalıyor:</strong> bugün 3 salonun 3 ayrı ocağı + 3 ayrı bulaşığı var. Yeni modelde tek teslim hattı + tek bulaşık; <code>nav.ts</code> ızgarası aynı kalır, hedef seçimi basitleşir.</div>
+      <div class="plus"><strong>Hedef seçimi olay-güdümlü:</strong> aktör yalnız "boşta"ya düştüğünde bir kez hesaplar, her tick'te değil. Bugünkü desen korunuyor.</div>
+      <div class="plus"><strong>Hazır siparişler tek dizide:</strong> teslim hattı bir liste; "tamamı hazır" kontrolü O(1) sayaçla yapılır, arama yok.</div>
+      <div class="plus"><strong>Mutfak şeridi statik:</strong> nav ızgarası tek seferlik cache'lenir, salon açıldıkça yeniden kurulmaz.</div>
+      <div class="minus">Tek gerçek ek maliyet: sipariş artık tek sayı değil, kısa bir ürün listesi. Saf JS, ölçülebilir bir yükü yok.</div>
+    </div>
+
+    <h3>Ekonomi: üç kaldıraç</h3>
+    <p class="sec-sub" style="margin-bottom:16px">Asıl kazanç burada. Bugün kapasite, üretim ve servis zone içinde birbirine karışıyor; oyuncu neye yatırım yapacağını göremiyor. Yeni modelde üçü net ayrışıyor ve gelir daima <strong>en düşük olanın</strong> tavanına oturuyor.</p>
+    <div class="tw"><table>
+      <thead><tr><th>Kaldıraç</th><th>Ne belirler</th><th>Oyuncu neyi satın alır</th><th>Darboğaz sinyali</th></tr></thead>
+      <tbody>
+        <tr><td>Kapasite</td><td class="k">Aynı anda kaç müşteri oturabilir</td><td>Masa açma, masa seviyesi (koltuk sayısı), yeni bölge/kat</td><td>Kapıda bekleyen müşteri, boş masa yok</td></tr>
+        <tr><td>Üretim</td><td class="k">Dakikada kaç ürün hazırlanır</td><td>İstasyon seviyeleri, ikinci istasyon, hazır-kuyruk kapasitesi</td><td>Teslim hattı hep boş, sipariş bekliyor</td></tr>
+        <tr><td>Servis</td><td class="k">Hazır ürün masaya ne hızda ulaşır</td><td>Garson sayısı/hızı, tepsi kapasitesi, oyuncu hızı, bölge yerleşimi</td><td>Teslim hattı taşıyor, sabır kaçıyor</td></tr>
+      </tbody>
+    </table></div>
+    <p style="max-width:70ch;margin-top:14px">Gelir = <span class="mono">min(kapasite, üretim, servis) × ortalama sepet</span>. <code>tools/simulate.ts</code> bu üç kısıtlı modele göre yeniden yazılacak; hedef, mevcut tempoyu korumak: ilk satın alma &lt; 90 sn, erken zincir 2–7 dakika aralıklarla. <strong>Hiçbir denge sayısı onay alınmadan değişmez</strong> — önce sayısal rapor, sonra uygulama.</p>
+
+    <div class="callout">
+      <div class="co-tag">Yerleşimin tasarım kısıtı</div>
+      <p>Mutfak tek duvarda toplanınca <strong>servis turu mesafesi</strong> kritik metrik olur. Kural: her oturma bölgesinin merkezi teslim hattına <strong>en fazla ~10 birim</strong> uzaklıkta olacak. Bugünkü garson hızıyla (1,5–2,0 br/sn) tek yön ~5–6 sn, gidiş-dönüş ~12 sn &lt; sabır 18 sn. Harita artık "güzel dursun" diye değil, <em>bu sayı tutsun</em> diye diziliyor; maketteki her yerleşim denemesi bu kısıta karşı ölçülecek.</p>
+    </div>
+
+    <div class="callout">
+      <div class="co-tag">Para kimde? — karar</div>
+      <p><strong>Parayı yalnız oyuncu toplar; garson asla toplamaz.</strong> Toplu para toplama tycoon'un en tatmin edici anı ve oyunu aktif tutan ana fiil — otomasyona devredilirse oyuncunun sahada olma sebebi azalır. Kurallar: <b>(1) kayıp yok</b> — istif hiçbir koşulda para kaybettirmez (ceza yok ilkesi); <b>(2) görsel tavan</b> — istif belli bir yükseklikten sonra büyümez, üstünde toplam ₺ rakamı belirir (aynı zamanda mesh sayısını sınırlar); <b>(3) oto-toplama erken oyunda KAPALI</b>, geç oyunda "Muhasebeci" yükseltmesiyle açılır (X saniyeden uzun bekleyen istifler cebe girer) — yani QoL, oyunun kalbi değil; <b>(4) offline dönüşte</b> bekleyen istifler Kasa Raporu ekranında topluca toplanır. Toplama baskısı cezadan değil, <em>parayı şimdi isteme</em> arzusundan gelir.</p>
+      <p style="margin-top:10px;color:var(--ink-faint);font-size:15px">Alternatif kaldıraç (oyun fazla pasif hissederse, oynanış testinden sonra): istife sert tavan + tavan doluyken o masadan gelen <em>bahşiş</em> birikmez (ana ücret birikmeye devam eder). Onaysız uygulanmaz.</p>
+    </div>
+
+    <div class="callout">
+      <div class="co-tag">Garson sayısı ve çalışma alanı</div>
+      <p><strong>Bölge-başı personel kuralı bozulmuyor.</strong> Garson yine bir oturma bölgesine bağlı ve yalnız onun masalarına bakıyor — haritanın öbür ucuna koşmuyor, kaotik görünmüyor. Değişen tek şey: artık hepsi <em>ortak</em> teslim hattından alıyor. Bölge başına 1., sonra 2. garson açılıyor; personel eğrisi ve maliyetleri bugünküyle aynı yapıda kalıyor, yalnız sayıları yeni sim'e göre kalibre edilecek.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">04</span><h2>Oyun Akışı — Baştan Sona</h2></div>
+    <p class="sec-sub">Kural: <strong>her salon yeni bir baskı türü getirir.</strong> Yeni salon sadece yeni ürün ve renk demek değil; oyuncunun öğrenmesi gereken yeni bir şey demek. Sıra, açılış şartları ve tahmini süreler aşağıda.</p>
+
+    <div class="floor">
+      <div class="floor-head">
+        <span class="fno">KAT 1</span>
+        <h3>Kıraathane — zemin kat</h3>
+        <span class="fmeta">4 salon · 16 masa · ≈1,8 saat</span>
+      </div>
+      <div class="salons">
+
+        <div class="salon">
+          <div class="sn">1</div>
+          <div>
+            <div class="sname">Çay Ocağı</div>
+            <div class="sline">Çay · Model B · 4 masa · ≈20 dk</div>
+          </div>
+          <div class="sdesc">
+            Giriş salonu ve öğretici. Semaver, bulaşık köşesi, girişte <strong>kasa</strong>. Garson ve bulaşıkçı burada tutulur. Mevcut oyunun birinci salonu, kasa eklenmiş hâli.
+            <span class="newmech"><b>Yeni mekanik:</b> temel döngü — servis, kirli toplama, hesabı kasaya yatırma.</span>
+          </div>
+        </div>
+
+        <div class="salon">
+          <div class="sn">2</div>
+          <div>
+            <div class="sname">Ocakbaşı</div>
+            <div class="sline">Türk kahvesi + çay · Model B · 4 masa · ≈25 dk</div>
+          </div>
+          <div class="sdesc">
+            Cezve ve kum ocağı. Kahve çaydan pahalı (40 ₺) ama <strong>zamanlama ister</strong>: köpük tam kıvamındayken alırsan bahşiş bonusu, geç kalırsan taşar ve fincan ziyan olur (temiz fincan havuzundan düşer).
+            <span class="newmech"><b>Yeni mekanik:</b> zamanlama penceresi — ilk kez "beklemek" değil "tam anında olmak" gerekiyor.</span>
+          </div>
+        </div>
+
+        <div class="salon">
+          <div class="sn">3</div>
+          <div>
+            <div class="sname">Tost Ocağı</div>
+            <div class="sline">Tost + simit/poğaça · Model B · 4 masa · ≈30 dk</div>
+          </div>
+          <div class="sdesc">
+            Mevcut yemek salonu, üstüne <strong>vitrin</strong> geliyor: simit ve poğaça fırından tepsiyle gelir, vitrine dizilir, biterse satış durur. Vitrini dolu tutmak yeni bir sorumluluk.
+            <span class="newmech"><b>Yeni mekanik:</b> stok — üretim sırası artık müşteriyi değil rafı besliyor.</span>
+          </div>
+        </div>
+
+        <div class="salon">
+          <div class="sn">4</div>
+          <div>
+            <div class="sname">Pastane &amp; Kahveci</div>
+            <div class="sline">Künefe + filtre kahve · <strong>Model A</strong> · kuyruk + 2 yüksek masa · ≈35 dk</div>
+          </div>
+          <div class="sdesc">
+            Arka-sol rezerv arsaya kurulur. Burada <strong>oynanış değişir</strong>: müşteri kasaya sıraya girer, öder, teslim tezgâhından kendi alır. Oyuncu masaya değil tezgâha koşar. Künefe 120 ₺, uzun hazırlık, sıcak servis penceresi.
+            <span class="newmech"><b>Yeni mekanik:</b> kuyruk yönetimi — sabır artık masada değil sırada işliyor.</span>
+          </div>
+        </div>
+
+      </div>
+      <div class="gatebar">MERDİVEN AÇILIR <span>— Kat 1'in dört salonu da açık ve tüm masaları en az L3 olunca. Ekran kararır, kamera üst kata çıkar.</span></div>
+    </div>
+
+    <div class="floor">
+      <div class="floor-head">
+        <span class="fno">KAT 2</span>
+        <h3>Oyun Salonu</h3>
+        <span class="fmeta">3 salon · ≈1,7 saat · yeni gelir türü: kira</span>
+      </div>
+      <div class="salons">
+
+        <div class="salon">
+          <div class="sn">5</div>
+          <div>
+            <div class="sname">Okey Salonu</div>
+            <div class="sline">Masa kirası + çay · Model B · 4 okey masası · ≈30 dk</div>
+          </div>
+          <div class="sdesc">
+            Okey masası ürün satmaz, <strong>saat başı kira üretir</strong> — ama oturanlar sürekli çay ister. İlk kez iki gelir kaynağı iç içe geçiyor: masa kendi başına para basıyor, sen de üstüne servis yapıyorsun. Oturanlar uzun kalır, devir yavaş, bahşiş yüksek.
+            <span class="newmech"><b>Yeni mekanik:</b> kira + eşzamanlı talep — masayı boş tutmak artık kayıp.</span>
+          </div>
+        </div>
+
+        <div class="salon">
+          <div class="sn">6</div>
+          <div>
+            <div class="sname">Tavla &amp; Kâğıt Köşesi</div>
+            <div class="sline">Çay + ayran · Model B · 4 masa · ≈30 dk</div>
+          </div>
+          <div class="sdesc">
+            Okeyin tersi: partiler kısa, devir hızlı, masa sürekli boşalıp doluyor. Bulaşık ve hesap toplama baskısı zirve yapar. Buranın ustalığı rota planlamaktır.
+            <span class="newmech"><b>Yeni mekanik:</b> hızlı devir — aynı anda üç masa birden boşalıyor.</span>
+          </div>
+        </div>
+
+        <div class="salon">
+          <div class="sn">7</div>
+          <div>
+            <div class="sname">Maç Salonu</div>
+            <div class="sline">Çay + tost + gazoz · Model B · 4 masa + ayakta alan · ≈40 dk</div>
+          </div>
+          <div class="sdesc">
+            Büyük TV. Normal zamanda sakin bir salon; <strong>maç akşamı</strong> geldiğinde kapasite %200'e çıkar, herkes aynı anda çay ister, sabırlar kısalır, gelir 3× olur. Oyunun "boss dalgası" burası. Maça hazırlanmak (bardak stoğu, personel yerleşimi) yeni bir beceri.
+            <span class="newmech"><b>Yeni mekanik:</b> dalga yönetimi — hazırlıklı olmak ödüllendirilir.</span>
+          </div>
+        </div>
+
+      </div>
+      <div class="gatebar">TERAS ÇIKIŞI AÇILIR <span>— Kat 2 tamamlanınca. Aynı zamanda ilk RENOVASYON burada cazip hale gelir.</span></div>
+    </div>
+
+    <div class="floor">
+      <div class="floor-head">
+        <span class="fno">KAT 3</span>
+        <h3>Nargile Terası</h3>
+        <span class="fmeta">2 salon · ≈1,4 saat · en yüksek birim gelir</span>
+      </div>
+      <div class="salons">
+
+        <div class="salon">
+          <div class="sn">8</div>
+          <div>
+            <div class="sname">Kapalı Teras</div>
+            <div class="sline">Nargile + Türk kahvesi · Model B · 4 sedir · ≈40 dk</div>
+          </div>
+          <div class="sdesc">
+            Nargile satılmaz, <strong>bakılır</strong>: kömür yakılır, getirilir, 8 dakikada bir tazelenir. Tazelenmezse müşteri memnuniyetsiz kalkar. Devir çok yavaş, birim gelir çok yüksek — tamamen farklı bir tempo.
+            <span class="newmech"><b>Yeni mekanik:</b> bakım döngüsü — satıştan sonra da iş bitmiyor.</span>
+          </div>
+        </div>
+
+        <div class="salon">
+          <div class="sn">9</div>
+          <div>
+            <div class="sname">Açık Teras</div>
+            <div class="sline">Nargile + sahlep/ayran · Model B · 4 sedir + manzara · ≈45 dk</div>
+          </div>
+          <div class="sdesc">
+            Açık hava, şehir manzarası, akşam ışığı. <strong>Mevsime duyarlı</strong>: yazın talep 2×, kışın yarı — ama kışın sahlep devreye girer. Gün döngüsü ve ışık sistemi burada zirve yapar; oyunun en güzel görünen yeri burası olmalı.
+            <span class="newmech"><b>Yeni mekanik:</b> mevsim çarpanı — ürün seçimi takvime bağlı.</span>
+          </div>
+        </div>
+
+      </div>
+      <div class="gatebar">RENOVASYON <span>— Kat 3 dolunca prestige açılır: mekân sıfırlanır, ⭐İtibar kalıcı gelir çarpanı verir, renovasyon-özel dekor ve ürünler açılır.</span></div>
+    </div>
+
+    <div class="floor">
+      <div class="floor-head">
+        <span class="fno">META</span>
+        <h3>Zincir — şubeler ve tekrar oynanış</h3>
+        <span class="fmeta">⭐İtibar ile açılır · her şube ≈1,5–2 saat</span>
+      </div>
+      <div class="salons">
+
+        <div class="salon">
+          <div class="sn">10</div>
+          <div>
+            <div class="sname">Sahil Çay Bahçesi</div>
+            <div class="sline">Şube 2 · açık hava · ≈1,5 sa</div>
+          </div>
+          <div class="sdesc">Mevsime aşırı duyarlı: yazın patlar, kışın düşer. Manzara doğrudan bahşiş çarpanı. Kat 3'te öğrenilen mevsim mekaniği burada tüm şubenin ekonomisi olur.</div>
+        </div>
+
+        <div class="salon">
+          <div class="sn">11</div>
+          <div>
+            <div class="sname">Üniversite Kantini</div>
+            <div class="sline">Şube 3 · <strong>Model A</strong> · ≈1,5 sa</div>
+          </div>
+          <div class="sdesc">Ucuz ürün, yüksek hacim, kısa sabır. Ders aralarında ani dalgalar. Tamamen kuyruk oyunu — Pastane'de öğrenilen ritmin ustalık seviyesi.</div>
+        </div>
+
+        <div class="salon">
+          <div class="sn">12</div>
+          <div>
+            <div class="sname">Otogar Büfesi</div>
+            <div class="sline">Şube 4 · 24 saat · ≈2 sa</div>
+          </div>
+          <div class="sdesc">Sürekli açık, dalgalı akış. Otobüs geldiğinde 20 kişilik dalga iner, sonra salon boşalır. Paket servis ağırlıklı.</div>
+        </div>
+
+        <div class="salon">
+          <div class="sn">13</div>
+          <div>
+            <div class="sname">Nostaljik Kahvehane</div>
+            <div class="sline">Şube 5 · prestij · ≈2 sa</div>
+          </div>
+          <div class="sdesc">Az müşteri, çok yüksek bahşiş, neredeyse tamamı müdavim. Oyunun son şubesi ve vitrini: her şeyin en pahalı temasıyla döşenir.</div>
+        </div>
+
+      </div>
+      <div class="gatebar">ZİNCİR KURALI <span>— Oyuncu aynı anda tek şubede aktiftir; diğerleri offline üretir. Idle katmanı hediye değil kazanılmış olur. Şube açma ⭐İtibar şartına bağlıdır, yani renovasyon döngüsüyle iç içe geçer.</span></div>
+    </div>
+
+    <div class="callout">
+      <div class="co-tag">Toplam</div>
+      <p>İlk tam tur (3 kat, 9 salon) <strong>≈5 saat</strong>. Renovasyon çarpanı + 4 şube + günlük/etkinlik katmanıyla toplam <strong>25–30 saat</strong>. Bugünkü 3,2 saatin ~8 katı; ve daha önemlisi, bu sürenin tamamı aynı oyunu tekrar oynamak değil — dokuz salonun her biri farklı bir baskı türü öğretiyor.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">05</span><h2>Arayüz Yeniden Tasarımı</h2></div>
+    <p class="sec-sub">Bu bir öneri değil, direktif: mevcut panellerin hepsi birbirinin aynı yuvarlak krem kartı ve emoji ikonlu. Yeni içerik zaten 5 yeni ekran getiriyor; hepsi tek bir tasarım diliyle baştan kurulacak.</p>
+
+    <h3>Tasarım dili</h3>
+    <div class="tw"><table>
+      <thead><tr><th>Kural</th><th>Karar</th></tr></thead>
+      <tbody>
+        <tr><td>Metafor</td><td class="k">Paneller <strong>kıraathane kâğıt işleri</strong>: adisyon fişi, duvar menü tahtası, personel künyesi, tapu/ruhsat, kasa raporu. Her ekranın kendi kâğıdı var — hepsi aynı kart değil.</td></tr>
+        <tr><td>Çerçeve</td><td class="k">Koyu ahşap çerçeve (<code>#4e342e</code>) + krem kâğıt yüzey (<code>#f3ecd9</code>) + <strong>bakır</strong> vurgu (<code>#b87333</code>). Aksiyon bordo (<code>#7a2230</code>), onay yeşil (<code>#2e6b4f</code>).</td></tr>
+        <tr><td>Tipografi</td><td class="k">Başlık Lilita One, gövde Baloo 2 (ikisi de projede yüklü). Para ve sayılar <strong>tabular-nums</strong>, hizalı.</td></tr>
+        <tr><td>İkonlar</td><td class="k"><strong>Emoji yasak.</strong> İki kaynak: SVG ikon seti (<code>icons.tsx</code> genişletilir) ve sahne objelerinin küçük <strong>ortografik 3D render'ı</strong> (çay bardağı, cezve, nargile, okey taşı). Ürün ikonu = o ürünün gerçek modeli.</td></tr>
+        <tr><td>Sekmeler</td><td class="k">Kart üstünde düğme sırası değil, <strong>dosya kulakçığı</strong>: aktif sekme kâğıdın parçası olur, pasif sekmeler arkada kalır.</td></tr>
+        <tr><td>Hareket</td><td class="k">Panel açılışı yukarıdan sarkma / kâğıt yerleşmesi (150–200 ms, damp). Modal fade yok. Satın alma onayı = bakır mühür vuruşu.</td></tr>
+        <tr><td>Sayı sunumu</td><td class="k">Para değişimi anında zıplamaz, <strong>sayarak</strong> artar. Yeni açılan satır bir kez altın parlar, sonra sakinleşir.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Ekranlar</h3>
+    <div class="screens">
+
+      <div class="screen">
+        <div class="snm">Ana HUD<em>yeniden düzenlenir</em></div>
+        <div class="sbody">Üstteki boş bant kapanır. Sol üstte seviye rozeti, ortada <strong>adisyon fişi biçiminde görev kartı</strong>, sağ üstte para ve elmas. Para göstergesi kasa fişi gibi: üstte tutar, altında ince "₺/dk" göstergesi — oyuncu gelir hızını sürekli görür. Alt sağda bakır düğme kümesi (mağaza, personel, harita, ayarlar).</div>
+      </div>
+
+      <div class="screen">
+        <div class="snm">Menü Tahtası<em>yeni · oyun içi</em></div>
+        <div class="sbody">Duvardaki kara tahta artık dekor değil, gerçek menü: açtığın her ürün tebeşirle yazılır, fiyatı yanında durur. Hem "ne kazandım" hissi verir hem salonu doldurur. Hiçbir arayüz açmadan görülür.</div>
+      </div>
+
+      <div class="screen">
+        <div class="snm">Mağaza<em>yeniden tasarlanır</em></div>
+        <div class="sbody">"Katalog defteri": kulakçıklı sekmeler (Masa / Zemin / Duvar / Dekor), sayfa çevirme hissi. Mevcut canlı 3B salon kesiti önizlemesi korunur — çalışıyor ve iyi — ama ahşap çerçeve içine alınır. Kilitli sekmede kilit sebebi net yazılır.</div>
+      </div>
+
+      <div class="screen">
+        <div class="snm">Personel &amp; Karakter<em>yeniden tasarlanır</em></div>
+        <div class="sbody">"Personel künyesi": solda 3B önizleme (mevcut, çalışıyor), sağda terfi çizelgesi. Her satırda mevcut → sonraki değer, maliyet ve <strong>ne işe yaradığının bir cümlelik açıklaması</strong> (şu an sadece rakam var). Elmasla "eğitim" satırı buraya girer.</div>
+      </div>
+
+      <div class="screen">
+        <div class="snm">Harita / Şubeler<em>yeni</em></div>
+        <div class="sbody">El çizimi mahalle-şehir haritası. Her şube bir pin: adı, geliri (₺/dk), offline birikimi, dolu/boş durumu. Kilitli şubeler silik ve ⭐ şartı yazılı. Şubeye dokunup geçilir. <em>Bu ekran, sıradaki oyunun (ortaçağ + kervansaray) harita sisteminin provası.</em></div>
+      </div>
+
+      <div class="screen">
+        <div class="snm">Renovasyon<em>yeni</em></div>
+        <div class="sbody">"Tapu/ruhsat" ekranı. Üstte kazanılacak ⭐İtibar ve yeni kalıcı çarpan; ortada neyin sıfırlanacağı ve neyin kalacağı iki sütun hâlinde açıkça; altta tek bordo düğme. Belirsizlik bırakmaz — prestige ekranlarının en sık hatası budur.</div>
+      </div>
+
+      <div class="screen">
+        <div class="snm">Kasa Raporu<em>yeni · offline dönüş</em></div>
+        <div class="sbody">Oyuna dönünce çıkan fiş: ne kadar süre kapalıydın, ne kadar birikti, hangi şubeden. Altında "video izle → 2×" düğmesi (ödüllü reklamın en doğal yeri) ve "Tamam". Fiş kâğıdı yukarıdan sarkarak gelir.</div>
+      </div>
+
+      <div class="screen">
+        <div class="snm">Günlük &amp; Başarımlar<em>yeni</em></div>
+        <div class="sbody">Duvar takvimi metaforu: giriş serisi işaretli günler, günün 3 görevi, uzun vadeli başarım listesi. Elmasın ana kaynağı ve geri dönüş sebebi burası.</div>
+      </div>
+
+      <div class="screen">
+        <div class="snm">Ödül &amp; elmas diyalogları<em>yeni</em></div>
+        <div class="sbody">Tek işlevli, küçük, net: ne verildiği ve karşılığında ne istendiği tek satırda. Geri sayım yok, sahte kıtlık yok, kapatma düğmesi her zaman görünür ve ilk anda aktif.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">06</span><h2>Faz Planı</h2></div>
+    <p class="sec-sub">Yedi faz, bağımlılık sırasına göre harflendi. Her kilometre taşı bitince: vitest + sim + gerçek cihaz duman testi yeşil, sonra commit + push. Oturum tahminleri bir gecelik çalışma birimi cinsinden.</p>
+
+    <div class="phase">
+      <div><div class="medallion now">A</div></div>
+      <div class="ph-body">
+        <div class="ph-head">
+          <h3>Zemin — hijyen, performans, his</h3>
+          <span class="chip time">5–6 oturum</span>
+          <span class="chip block">Her şeyi bloke ediyor</span>
+        </div>
+        <p class="ph-why">Bunlar bitmeden yapılan hiçbir içerik güvenilir ölçülemez: hileli build üstünde denge tutmaz, 30 FPS'te his değerlendirilemez, kaybolabilen kayıtla test edilemez. Karar beklemiyor — hemen başlanabilir.</p>
+        <div class="tw"><table>
+          <thead><tr><th>ID</th><th>İş</th><th>Kabul kriteri</th></tr></thead>
+          <tbody>
+            <tr><td>A1</td><td class="k">Dev kancalarını üretimden çıkar</td><td><code>installDevHooks</code> <code>import.meta.env.DEV</code> ile sarılı; <code>?proto</code> prod bundle'ında yok</td></tr>
+            <tr><td>A2</td><td class="k">Kalıcı kayıt</td><td>Capacitor Preferences; eski <code>localStorage</code> kaydı tek yönlü göç ediyor; kapat-aç ilerleme korunuyor</td></tr>
+            <tr><td>A3</td><td class="k">Performans paketi</td><td>Mobilde <code>dpr</code> ≤1.5, gölge 512 + dar kamera, NPC tavanı 28. Kapı: ≤60 draw call, ≤25k üçgen</td></tr>
+            <tr><td>A4</td><td class="k">Kamera ve çerçeveleme</td><td>9:19,5'te üst bant kapalı, taze oyunda ilk karede en az 2 masa + ocak görünüyor</td></tr>
+            <tr><td>A5</td><td class="k">Ses sistemi</td><td>SFX seti + ambiyans + müzik; Ayarlar'daki üç anahtar gerçekten çalışıyor</td></tr>
+            <tr><td>A6</td><td class="k">Android paketleme</td><td>Kendi ikonu, <code>versionCode</code> otomasyonu, <code>minifyEnabled true</code>, imzalı AAB, <code>lang="tr"</code></td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div><div class="medallion">B</div></div>
+      <div class="ph-body">
+        <div class="ph-head">
+          <h3>Kasa pivotu ve harita</h3>
+          <span class="chip time">6–8 oturum</span>
+          <span class="chip save">save v31</span>
+        </div>
+        <p class="ph-why">Tasarımın kökünü değiştirdiği için mümkün olan en erken anda: sonraki her salon, kat ve şube bu yerleşimin üstüne kurulacak.</p>
+        <div class="tw"><table>
+          <thead><tr><th>ID</th><th>İş</th><th>Kabul kriteri</th></tr></thead>
+          <tbody>
+            <tr><td>B0</td><td class="k">Mockup onayı</td><td>Para istifi (dolu/boş kademeleri), toplama efekti ve pastane kasası görseli onaylandı</td></tr>
+            <tr><td>B1</td><td class="k">Para istifi nesnesi</td><td>Yere saçılan sikke yok; masa başına <em>tek</em> istif, sabit noktada; yüksekliği miktarla artıyor; <code>coins[]</code> yerine <code>stacks[]</code></td></tr>
+            <tr><td>B2</td><td class="k">Toplu toplama</td><td>Tek temasta istifin tamamı toplanıyor, tek büyük "+₺"; mıknatıs istifi çekiyor; korunum testi (üretilen ₺ = toplanan ₺)</td></tr>
+            <tr><td>B3</td><td class="k">İstif tavanı + oto-toplama yükseltmesi</td><td>İstifin görsel tavanı var (kayıp yok, sayaç sürer); oto-toplama erken oyunda KAPALI, geç oyunda "Muhasebeci" yükseltmesiyle açılır</td></tr>
+            <tr><td>B4</td><td class="k">Harita revizyonu</td><td>Giriş, karşılama hattı, servis üçgeni (ocak–bulaşık–vitrin), istif noktaları ve dolaşım koridorları; <code>nav.ts</code> ızgarası güncel</td></tr>
+            <tr><td>B5</td><td class="k">Tepsi ve karakter dengesi</td><td>Tepsi iki yükü paylaşıyor (ürün/kirli); toplama yarıçapı ve mıknatıs kademeleri istife göre ayarlı</td></tr>
+            <tr><td>B6</td><td class="k">Denge kalibrasyonu</td><td><code>simulate.ts</code> kasa modeliyle güncel; ilk alım &lt;90 sn korunuyor; denge raporu onaya sunuldu</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div><div class="medallion">C</div></div>
+      <div class="ph-body">
+        <div class="ph-head">
+          <h3>Meta ekonomi — elmas, renovasyon, uzun vade</h3>
+          <span class="chip time">5–6 oturum</span>
+          <span class="chip save">save v32</span>
+          <span class="chip block">Reklamı bloke ediyor</span>
+        </div>
+        <p class="ph-why">Ödüllü reklamın verecek ödülü olmadan monetizasyona girilemez. Elmas ve renovasyon aynı zamanda oyunun "bitmeme" sebebi.</p>
+        <div class="tw"><table>
+          <thead><tr><th>ID</th><th>İş</th><th>Kabul kriteri</th></tr></thead>
+          <tbody>
+            <tr><td>C1</td><td class="k">Elmas kazanma</td><td>Görev ödülleri, günlük giriş, başarımlar, müdavim seviyeleri, altın müşteri, ödüllü video — tek <code>grantDiamonds</code> kapısı</td></tr>
+            <tr><td>C2</td><td class="k">Elmas harcama</td><td>L5 Usta seviyeleri, anlık bitirme, offline uzatma, personel eğitimi, premium dekor. <strong>Elmas ilerlemeyi satın almaz, hızlandırır</strong></td></tr>
+            <tr><td>C3</td><td class="k">Renovasyon + ⭐İtibar</td><td>Kalıcı gelir çarpanı; renovasyon-özel içerik; sim'de ilk prestige 6 saatten önce cazip</td></tr>
+            <tr><td>C4</td><td class="k">Offline yeniden dengeleme</td><td>Cap 1 sa → 2,5 sa (pad kelepçesi korunur); Kasa Raporu ekranı; "video izle → 2×" hazır</td></tr>
+            <tr><td>C5</td><td class="k">Günlük döngü</td><td>Giriş serisi, günlük 3 görev, başarım listesi</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div><div class="medallion">D</div></div>
+      <div class="ph-body">
+        <div class="ph-head">
+          <h3>İçerik — 9 salon, 3 kat, 4 şube</h3>
+          <span class="chip time">14–18 oturum</span>
+          <span class="chip save">save v33+</span>
+        </div>
+        <p class="ph-why">Planın en büyük parçası; bölüm 03'teki akışın kodlanması. Sıra önemli: her adım bir öncekinin mekaniğini varsayıyor.</p>
+        <div class="tw"><table>
+          <thead><tr><th>ID</th><th>İş</th><th>İçerik</th></tr></thead>
+          <tbody>
+            <tr><td>D1</td><td class="k">Salon 2 — Ocakbaşı</td><td>Türk kahvesi + zamanlama penceresi mekaniği</td></tr>
+            <tr><td>D2</td><td class="k">Salon 3 — vitrin</td><td>Simit/poğaça, stok mekaniği, biten raf satışı durdurur</td></tr>
+            <tr><td>D3</td><td class="k">Salon 4 — Pastane</td><td>Model A: kuyruk, kasa siparişi, teslim tezgâhı, künefe</td></tr>
+            <tr><td>D4</td><td class="k">Kat sistemi + Kat 2</td><td>Merdiven geçişi, kata özel kamera sınırları; okey (kira), tavla (hızlı devir), maç salonu (dalga)</td></tr>
+            <tr><td>D5</td><td class="k">Kat 3 — Teras</td><td>Nargile bakım döngüsü, mevsim çarpanı, gün döngüsü ışığı</td></tr>
+            <tr><td>D6</td><td class="k">Müşteri arketipleri</td><td>6 arketip + müdavim sistemi (tanışıklık seviyesi bahşişi ve hızı artırır)</td></tr>
+            <tr><td>D7</td><td class="k">Etkinlikler</td><td>Maç akşamı, iftar, mevsim geçişleri; gün içi talep profilleri</td></tr>
+            <tr><td>D8</td><td class="k">Şube sistemi + harita</td><td>Harita ekranı, şube-arası geçiş, aktif olmayan şubenin offline üretimi, ⭐ gating</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div><div class="medallion">E</div></div>
+      <div class="ph-body">
+        <div class="ph-head">
+          <h3>Sanat, arayüz ve his</h3>
+          <span class="chip time">8–10 oturum</span>
+          <span class="chip">A ve B ile paralel yürür</span>
+        </div>
+        <p class="ph-why">E1 tek başına oyunun görünen kalitesini en çok yükseltecek iş: ekrandaki en kalabalık nesne şu an tek renkli bir kapsül.</p>
+        <div class="tw"><table>
+          <thead><tr><th>ID</th><th>İş</th><th>Kabul kriteri</th></tr></thead>
+          <tbody>
+            <tr><td>E1</td><td class="k">Müşteri modeli</td><td>Gövde + kafa + kol (2–3 InstancedMesh, draw call bütçesi bozulmuyor); yürüme/oturma pozu; kıyafet varyantı per-instance</td></tr>
+            <tr><td>E2</td><td class="k">Arayüz yeniden tasarımı</td><td>Bölüm 04'teki dil ve dokuz ekran; emoji ikon sıfır</td></tr>
+            <tr><td>E3</td><td class="k">Türk objeleri</td><td>Semaver, ince belli çay bardağı (kehribar — şu an kırmızı silindir), cezve, nargile, okey takımı, bakır tepsi</td></tr>
+            <tr><td>E4</td><td class="k">Mekân dolgusu ve ışık</td><td>KayKit dekor duvarlara/köşelere; gün döngüsüne bağlı ışık ve renk sıcaklığı; backdrop</td></tr>
+            <tr><td>E5</td><td class="k">Juice paketi</td><td>Yatırma partikülü, kasa şıngırtısı, seviye atlama, kamera mikro-shake, UI hareketleri</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div><div class="medallion">F</div></div>
+      <div class="ph-body">
+        <div class="ph-head">
+          <h3>Monetizasyon</h3>
+          <span class="chip time">4–5 oturum</span>
+          <span class="chip block">C bitmeden başlamaz</span>
+        </div>
+        <p class="ph-why"><code>@capacitor-community/admob</code> v8.1.0 Capacitor 8'i destekliyor — mevcut kurulumla uyumlu.</p>
+        <div class="tw"><table>
+          <thead><tr><th>ID</th><th>İş</th><th>Kabul kriteri</th></tr></thead>
+          <tbody>
+            <tr><td>F1</td><td class="k">Yaş ve kategori kararı</td><td>Kids dışı 12+ (öneri); <code>decisions.md</code>'ye işlendi, <code>monetization.md</code> çelişkisi giderildi</td></tr>
+            <tr><td>F2</td><td class="k">Reklam altyapısı</td><td><code>src/game/ads.ts</code>; tarayıcıda mock, cihazda gerçek; UMP onay akışı; test unit ID'leri; limitler <code>economy.config.ts</code>'te</td></tr>
+            <tr><td>F3</td><td class="k">Yerleşimler</td><td><strong>Ödüllü:</strong> Kasa Raporu 2×, elmas paketi, 15 dk 2× gelir, altın müşteri, L5 açılışı, personel boost. <strong>Interstitial:</strong> kat/şube açılışı, renovasyon — ilk 10 dk hiç, ≥3 dk ara, eylem ortasında asla. <strong>Banner:</strong> yalnız tam ekran panel açıkken</td></tr>
+            <tr><td>F4</td><td class="k">IAP</td><td>RevenueCat; "Reklamları Kaldır" (ödüllüye dokunmaz), elmas paketleri, başlangıç paketi, geri yükleme butonu</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div><div class="medallion">G</div></div>
+      <div class="ph-body">
+        <div class="ph-head">
+          <h3>Yayın</h3>
+          <span class="chip time">4–6 oturum + dış bağımlılık</span>
+        </div>
+        <p class="ph-why">iOS tarafı Windows'tan yapılamaz; Mac + Xcode + Apple Developer ($99/yıl) gerekiyor. Android'i önce çıkarmak mantıklı.</p>
+        <div class="tw"><table>
+          <thead><tr><th>ID</th><th>İş</th><th>Kabul kriteri</th></tr></thead>
+          <tbody>
+            <tr><td>G1</td><td class="k">iOS platformu</td><td><code>@capacitor/ios</code>, ATT izni, SKAdNetwork listesi, TestFlight'ta çalışan build</td></tr>
+            <tr><td>G2</td><td class="k">Mağaza evrakı</td><td>Gizlilik politikası, App Privacy etiketleri, yaş anketi, metinler, ekran görüntüleri, ikon</td></tr>
+            <tr><td>G3</td><td class="k">Soft launch</td><td>Önce Türkiye; D1/D7 tutunma, oturum süresi, eCPM, çökme oranı ölçülüyor; sonra global</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">07</span><h2>Yan Katmanlar</h2></div>
+    <p class="sec-sub">Salon yapısının üstüne binen, yeni 3B varlık istemeyen ucuz derinlik. Faz D'nin içinde dağıtılır.</p>
+
+    <div class="cat">
+      <div class="cat-col">
+        <h4>Müşteri arketipleri</h4>
+        <dl>
+          <dt>Emekli amca · müdavim</dt>
+          <dd>Saatlerce oturur, masayı işgal eder, ama bahşişi yüksek ve mahalle itibarı kazandırır. Okey salonunun baskın müşterisi.</dd>
+          <dt>Aceleci esnaf</dt>
+          <dd>Sabrı yarı, ödemesi iki katı.</dd>
+          <dt>Öğrenci</dt>
+          <dd>Tek çay, uzun oturuş, düşük gelir. Masa devir hızı baskısını öğretir; kantin şubesinde baskın.</dd>
+          <dt>Turist</dt>
+          <dd>Yüksek bahşiş, fotoğraf çeker, itibar verir.</dd>
+          <dt>Zabıta / denetim</dt>
+          <dd>Salon kirliyse ceza keser — zaten var olan kirli-masa eşiğine gerçek bir sonuç bağlar.</dd>
+          <dt>Altın müşteri</dt>
+          <dd>Nadir, 5× bahşiş. Ödüllü reklamın en doğal kancası.</dd>
+          <dt>Müdavim sistemi</dt>
+          <dd>Aynı müşteri tekrar gelir; tanışıklık seviyesi arttıkça sipariş hızlanır, bahşiş artar, elmas verir.</dd>
+        </dl>
+      </div>
+
+      <div class="cat-col">
+        <h4>Zaman ve etkinlik</h4>
+        <dl>
+          <dt>Gün döngüsü</dt>
+          <dd>Sabah (simit + çay), öğle (tost zirve), akşam (kahve + nargile), gece (okey). Işık ve renk sıcaklığı da değişir — tek başına en ucuz büyük görsel kazanım.</dd>
+          <dt>Maç akşamı</dt>
+          <dd>Kat 2'nin maç salonunda patlar: kapasite %200, gelir 3×, sabırlar kısa. Oyunun boss dalgası.</dd>
+          <dt>İftar saati</dt>
+          <dd>Belirli dakikada eşzamanlı doluluk; hazırlıklı olmak ödüllendirilir.</dd>
+          <dt>Mevsimler</dt>
+          <dd>Kış sahlep, yaz ayran ve açık teras. Kat 3 ve sahil şubesinin ekonomisi buna bağlı.</dd>
+        </dl>
+      </div>
+
+      <div class="cat-col">
+        <h4>Sistem derinliği · seçmeli</h4>
+        <dl>
+          <dt>Karma sipariş</dt>
+          <dd>"2 çay 1 tost" — tepsi planlaması gerçek bir bulmacaya döner. Kat 2 ile birlikte gelmeli.</dd>
+          <dt>Tazelik</dt>
+          <dd>Bekleyen çay soğur, bahşiş düşer. Hazır-kuyruğu yönetmeye zorlar.</dd>
+          <dt>Masa birleştirme</dt>
+          <dd>4 kişilik grup için iki masayı birleştir.</dd>
+          <dt>Personel eğitimi</dt>
+          <dd>Elmasla kalıcı personel geliştirme — C2'nin ana harcama yeri.</dd>
+          <dt>Stok / hammadde</dt>
+          <dd><span class="tag">Karar 6</span> Genel sisteme girmek yerine yalnız vitrin (simit/poğaça) ile sınırlı tutulması öneriliyor.</dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">08</span><h2>Performans Bütçesi</h2></div>
+    <p class="sec-sub">Hedef cihaz: orta segment Android. Her faz sonunda gerçek cihaz APK'sında ölçülüp bu tabloya karşı doğrulanır — masaüstü FPS'i kanıt sayılmaz.</p>
+
+    <div class="tw"><table>
+      <thead><tr><th>Metrik</th><th>Bugün (12 masa dolu)</th><th>Hedef</th><th>Nasıl</th></tr></thead>
+      <tbody>
+        <tr><td>FPS</td><td class="k">masaüstü 133 · telefon ölçülmedi</td><td>≥45, ideal 60</td><td>Aşağıdakilerin toplamı</td></tr>
+        <tr><td>Draw call</td><td class="k">98</td><td>≤60</td><td>Dekor ve pad işaretçilerini instancing'e al</td></tr>
+        <tr><td>Üçgen</td><td class="k">37.092</td><td>≤25.000</td><td>NPC tavanı 28, uzak salonlarda basit geometri</td></tr>
+        <tr><td>Piksel</td><td class="k">dpr 2 → 780×1688</td><td>dpr ≤1.5</td><td>Mobilde tavan düşür, antialias kapat</td></tr>
+        <tr><td>Gölge</td><td class="k">1024 harita · geniş kamera</td><td>512 · dar kamera</td><td>Gölge alanını oyuncu çevresine daralt</td></tr>
+        <tr><td>Yerdeki nesne</td><td class="k">50+ dağınık sikke (AFK'de 377 ölçüldü)</td><td>masa başına 1 istif (≤16)</td><td>Faz B: istif tek instanced nesne, sayı değil yükseklik değişiyor</td></tr>
+        <tr><td>Eşzamanlı NPC</td><td class="k">~50 (koltuk + 2)</td><td>≤28</td><td>Talep eğrisini koltuk sayısından ayır</td></tr>
+        <tr><td>Kat başına yük</td><td class="k">—</td><td>yalnız aktif kat</td><td>Görünmeyen katın sahnesi tamamen unmount</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">09</span><h2>Karar Bekleyenler</h2></div>
+    <p class="sec-sub">Bunlar cevaplanmadan ilgili faz başlamaz. Hepsi <code>decisions.md</code>'ye D-0xx olarak işlenecek. Faz A hiçbirine bağlı değil — bugün başlayabilir.</p>
+
+    <div class="decisions">
+      <div class="dec">
+        <div class="dnum">1</div>
+        <div>
+          <b>Servis modeli <span class="chip">karara bağlandı</span></b>
+          <p>Kullanıcı kararı (3 Eylül): <strong>B′ — para masa yanında istiflenir, oyuncu tek seferde toplar.</strong> Hesabı kasaya taşıma fikri iptal. Kasa + kuyruk yalnız 4. salonda (Pastane, Model A) yaşayacak. Geriye kalan tek açık uç: pastane salonu planda kalsın mı?</p>
+          <div class="rec">Kalan soru: 4. salon Model A ile mi açılsın, yoksa o da B′ mi olsun?</div>
+        </div>
+      </div>
+      <div class="dec">
+        <div class="dnum">2</div>
+        <div>
+          <b>Yaş kategorisi: 12+ mı, çocuk-güvenli mi?</b>
+          <p>Kids kategorisi üçüncü-parti reklam ağına izin vermiyor. Nargile terası (kat 3) ve okey salonu (kat 2) bu kararı zaten zorluyor.</p>
+          <div class="rec">Öneri: Kids dışı, 12+.</div>
+        </div>
+      </div>
+      <div class="dec">
+        <div class="dnum">3</div>
+        <div>
+          <b>Nargile katı planda kalsın mı?</b>
+          <p>Kat 3'ün kimliği nargile. Tütün göndermesi yaş derecesini kesin olarak yukarı çeker. Alternatif: kat 3 = "Kış Bahçesi / Manzara Terası", nargile yerine özel kahve ve tatlı.</p>
+          <div class="rec">Öneri: 12+ seçilirse nargile kalsın; çocuk-güvenli seçilirse Manzara Terası'na çevrilsin.</div>
+        </div>
+      </div>
+      <div class="dec">
+        <div class="dnum">4</div>
+        <div>
+          <b>Offline tavanı gevşesin mi?</b>
+          <p>Şu an 1 saat × %50 × sonraki pad'in %115'i. Şube sistemi geldiğinde offline zaten merkezi bir mekanik olacak.</p>
+          <div class="rec">Öneri: cap 2,5 sa, pad kelepçesi kalsın, "video izle → 2×" eklensin.</div>
+        </div>
+      </div>
+      <div class="dec">
+        <div class="dnum">5</div>
+        <div>
+          <b>Eşzamanlı müşteri tavanı düşsün mü?</b>
+          <p>Tavan koltuk sayısına bağlı (12 masa → ~50 kişi). Salon tıkanıyor, FPS düşüyor; 9 salonda durum daha da zorlaşacak.</p>
+          <div class="rec">Öneri: talebi koltuktan ayır, tavan 28; kalabalık hissi grup boyutuyla verilsin.</div>
+        </div>
+      </div>
+      <div class="dec">
+        <div class="dnum">6</div>
+        <div>
+          <b>Stok / hammadde katmanı ne kadar girsin?</b>
+          <p>Her ürüne tedarik döngüsü koymak derinlik katar ama karmaşıklık ve iş yükü riski büyük.</p>
+          <div class="rec">Öneri: yalnız vitrin (simit/poğaça) ile sınırlı; genel hammadde sistemi yok.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">10</span><h2>Asset Listesi</h2></div>
+    <p class="sec-sub">Yeni kurgunun gerektirdiği her şey. Lisansı belirsiz hiçbir asset commit edilmez; her paket <code>public/assets/models/&lt;paket&gt;/</code> altında kendi klasöründe, künyesi manifestte. Öncelik sırası: <strong>P1</strong> oynanışı doğrudan etkiler · <strong>P2</strong> mekânı tamamlar · <strong>P3</strong> cila.</p>
+
+    <div class="cat">
+      <div class="cat-col">
+        <h4>Karakter — P1</h4>
+        <dl>
+          <dt>Müşteri gövdesi</dt>
+          <dd><span class="tag">P1 · en yüksek etki</span> Kapsül yerine gövde + kafa + kol. Ekrandaki en kalabalık nesne. Instancing'i bozmadan 2–3 mesh. Kaynak: KayKit karakter paketi veya Quaternius UAL (CC0).</dd>
+          <dt>Personel varyantları</dt>
+          <dd><span class="tag">P1</span> Çaycı, tostçu, bulaşıkçı, kasiyer, temizlikçi — aynı gövde, farklı önlük/kep rengi.</dd>
+          <dt>Elde taşınan tepsi</dt>
+          <dd><span class="tag">P2</span> Bakır tepsi + üstünde karma yük (bardak/tabak). Skinned karakter gelirse ele takılabilir olmalı.</dd>
+          <dt>Oturma pozu</dt>
+          <dd><span class="tag">P2</span> Oturan/ayakta/yürüyen üç poz. Animasyon şart değil, poz yeterli.</dd>
+        </dl>
+
+        <h4 style="margin-top:30px">Türk objeleri — P1/P2</h4>
+        <dl>
+          <dt>İnce belli çay bardağı + tabak</dt>
+          <dd><span class="tag">P1</span> Oyunun imza objesi. Şu an kırmızı silindir. Kehribar renkli çay dolu ve boş varyantı.</dd>
+          <dt>Semaver</dt>
+          <dd><span class="tag">P1</span> Bakır, musluklu, üstünde demlik. Seviyeyle büyüyen 2–3 kademe.</dd>
+          <dt>Cezve + kum ocağı</dt>
+          <dd><span class="tag">P1</span> Kahve istasyonu. Cezve, fincan, kum tepsisi.</dd>
+          <dt>Tost sacı / pres</dt>
+          <dd><span class="tag">P1</span> Kapaklı sac, tost dilimi (çiğ/kızarmış).</dd>
+          <dt>Nargile</dt>
+          <dd><span class="tag">P2 · yaş kararına bağlı</span> Şişe, gövde, başlık, hortum. Kat 3 kimliği.</dd>
+          <dt>Okey takımı + tavla</dt>
+          <dd><span class="tag">P2</span> Istaka, taşlar, açık tavla tahtası, zar, pul.</dd>
+          <dt>Simit / poğaça / künefe</dt>
+          <dd><span class="tag">P2</span> Vitrin ürünleri.</dd>
+        </dl>
+      </div>
+
+      <div class="cat-col">
+        <h4>Mekân &amp; mobilya — P2</h4>
+        <dl>
+          <dt>KayKit'te VAR, entegre değil</dt>
+          <dd><span class="tag">P2 · bedava</span> Halı (rug), duvar tablosu (pictureframe), lamba (lamp_table / lamp_standing), dolap ve raf (cabinet, shelf), kaktüs/saksı, kanepe ve koltuk (couch, armchair), yastık. Pakette duruyor, sahneye konmayı bekliyor.</dd>
+          <dt>Sedir / minderli oturma</dt>
+          <dd><span class="tag">P2</span> Ocakbaşı köşesi ve nargile terası için uzun sedir + yastıklar. KayKit couch'tan türetilebilir.</dd>
+          <dt>Tezgâh modülleri</dt>
+          <dd><span class="tag">P1</span> Mutfak şeridi tek parça değil, <em>modüler</em> olmalı: tezgâh, camlı vitrin, lavabo/bulaşık, kasa, teslim hattı. Salon büyüdükçe şerit uzuyor.</dd>
+          <dt>Soba / kuzine</dt>
+          <dd><span class="tag">P3</span> Ocakbaşı köşesinin kalbi, üstünde çaydanlık.</dd>
+          <dt>Tuvalet takımı</dt>
+          <dd><span class="tag">P2</span> Lavabo, ayna, kabin kapısı, çöp kovası, tuvalet kâğıdı (stok mekaniği için).</dd>
+          <dt>Merdiven &amp; korkuluk</dt>
+          <dd><span class="tag">P2</span> Basamak, küpeşte, sahanlık — kat sistemi için modüler.</dd>
+          <dt>Dış çevre</dt>
+          <dd><span class="tag">P3</span> Komşu bina cepheleri, tente, sokak lambası, ağaç, araba, kaldırım. Düşük detay yeter (statik, gölgesiz).</dd>
+        </dl>
+      </div>
+
+      <div class="cat-col">
+        <h4>Doku (texture) — P2</h4>
+        <dl>
+          <dt>Zemin</dt>
+          <dd><span class="tag">P2</span> Parke, karo fayans, dama fayans, ceviz parke, teras taşı. Kozmetik mağazadaki zemin temaları için — düz renk yerine hafif desenli tileable doku.</dd>
+          <dt>Duvar</dt>
+          <dd><span class="tag">P2</span> Krem badana, çini mavisi, çay yeşili, tuğla, lambri ahşabı.</dd>
+          <dt>Kilim</dt>
+          <dd><span class="tag">P2</span> Anadolu kilim deseni — mekânın en karakterli dokusu, birkaç varyant.</dd>
+          <dt>Ortak atlas</dt>
+          <dd><span class="tag">P1 · performans</span> KayKit deseni sürsün: tüm mobilya <em>tek atlas</em> paylaşsın ki instancing ve tema recolor tek çağrıda çalışsın.</dd>
+        </dl>
+
+        <h4 style="margin-top:30px">Ses — P1</h4>
+        <dl>
+          <dt>Efektler</dt>
+          <dd><span class="tag">P1 · şu an sıfır</span> Çay doldurma, bardak şıngırtısı, para toplama, pad dolumu, görev tamamlama, kapı zili, sac cızırtısı, bulaşık, kasa.</dd>
+          <dt>Ambiyans</dt>
+          <dd><span class="tag">P1</span> Salon uğultusu, uzaktan maç sesi, sokak (kat 1), kuş/rüzgâr (teras).</dd>
+          <dt>Müzik</dt>
+          <dd><span class="tag">P2</span> Sakin, döngüsel, Türk enstrümanı tınılı 2–3 parça + maç akşamı için tempolu bir varyant.</dd>
+        </dl>
+
+        <h4 style="margin-top:30px">Arayüz — P1</h4>
+        <dl>
+          <dt>SVG ikon seti</dt>
+          <dd><span class="tag">P1 · emoji yasak</span> Para, elmas, seviye, görev, mağaza, personel, harita, ayar, kilit, süre, çarpan.</dd>
+          <dt>Ürün ikonları</dt>
+          <dd><span class="tag">P1</span> Her ürünün <em>kendi 3B modelinin</em> küçük ortografik render'ı — çizim değil, gerçek obje.</dd>
+          <dt>Panel çerçeveleri</dt>
+          <dd><span class="tag">P2</span> Ahşap çerçeve, bakır plaka, kulakçık sekme, mühür (9 ekran için tek set).</dd>
+          <dt>Mağaza görselleri</dt>
+          <dd><span class="tag">P3 · yayın</span> Uygulama ikonu, splash, feature graphic, ekran görüntüleri, tanıtım videosu.</dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="co-tag">Kaynak planı</div>
+      <p><strong>KayKit (CC0)</strong> ana stil kilidi olarak sürüyor — mobilya, dekor, karakter oradan. Pakette olmayan Türk objeleri <strong>AI üretimi</strong> (Meshy/Tripo) ile, tek stil altında toplanacak şekilde üretilecek: aynı poligon yoğunluğu, aynı düz renk dili, aynı atlas. Dokular tileable ve küçük (512 px yeter). Sesler CC0 kütüphanelerinden (Freesound / Kenney audio) veya üretim. <strong>Karışık sanatçı yasak</strong> kuralı aynen geçerli: yeni her paket manifeste künyesiyle işlenir.</p>
+    </div>
+  </section>
+
+  <div class="foot">
+    Plan sırası: <strong>A → B → C → D → F → G</strong>, E her aşamada paralel yürür (E1 ve E2 mümkün olan en erken anda). Kabaca 50–60 oturumluk iş. Hiçbir denge sayısı onay alınmadan değiştirilmez; para görselini değiştiren her iş önce mockup onayı ister; her kilometre taşı vitest + sim + gerçek cihaz duman testiyle kapanır, sonra commit ve push. Ölçümler 3 Eylül 2026 denetiminden: <span class="mono">vitest 186/186</span>, <span class="mono">410 KB gzip</span>, <span class="mono">98 draw call / 37.092 üçgen</span>, <span class="mono">save v30</span>.
+  </div>
+
+</div>

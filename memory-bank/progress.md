@@ -759,3 +759,21 @@ Oynanış ~%60-65 (Faz 1-3 + 6'nın büyük kısmı ✅), yayın katmanı ~%0-5.
 - **NOT (kavramsal, kullanıcıya açıklandı):** App Store reklam SAĞLAMAZ (iAd 2016'da kapandı; Apple Search Ads =
   gider). Reklam üçüncü-parti ağlardan gelir; **AdMob zorunlu değil**, alternatifleri AppLovin MAX / Unity
   LevelPlay / Meta AN — ama Capacitor'da bakımlı eklenti pratikte yalnız AdMob'da (diğerleri native köprü ister).
+
+## TASARIM OTURUMU (2026-09-03) — yol haritası v2 + servis mimarisi + 3B kat maketi
+Kod DEĞİŞMEDİ (`src/` dokunulmadı, SAVE v30, vitest 186/186). Bu oturum tamamen araştırma + tasarım.
+Detay ve tüm kararlar: `activeContext.md` ŞU AN bölümü. Çıktılar: `docs/maket/` + `docs/denetim-2026-09-03/`.
+
+- ✅ **Yayın/oynanabilirlik denetimi (ölçümlü):** 98 draw call / 37k üçgen / 133 FPS (masaüstü, 12 masa dolu);
+  içerik ~3,2 sa; elmas ölü; prestige yok; ses sıfır; müşteri = tek kapsül; dev kancaları üretimde.
+- ✅ **Plan v2 (artifact):** teşhis · servis modelleri A/B/C · servis mimarisi · oyun akışı (3 kat/9 salon) ·
+  arayüz yeniden tasarımı (9 ekran) · faz planı A-G · performans bütçesi · kararlar · asset listesi.
+- ✅ **3B kat maketi (artifact):** gezilebilir, 3 kat, dış çevre + alt kat kütleleri. v2 ONAYLI.
+- ❌ **Maket v3 REDDEDİLDİ** (ızgara yeniden dizilim). Kullanıcı: "çok kötü oldu".
+  🔧 **SIRADAKİ İŞ:** maket artifact'ini `docs/maket/maket-v2-ONAYLI.html` ile yeniden yayınla (aynı URL).
+- ✅ **Kararlar:** para istifi modeli (B′) · garson para toplamaz · ürün-silosu kalktı (global menü) ·
+  tek sipariş çıkış penceresi · ekonomi 3 kaldıraç (kapasite/üretim/servis) · her kata WC + servis üçgeni ·
+  dönüşlü teras merdiveni · arayüz yeniden tasarımı direktifi · AdMob v8.1.0 Cap-8 uyumlu.
+- ⏳ **Açık kararlar:** yaş kategorisi (12+ önerildi) · nargile · offline tavanı · NPC tavanı · kat mı şube mi ·
+  stok katmanı.
+- ⏳ **Sonra:** Faz A (hiçbir karara bağlı değil) — dev kancaları, kalıcı kayıt, perf paketi, kamera, ses, paketleme.

@@ -498,3 +498,31 @@ orientation media query'leri; smoke testinde portrait kontrolü.
 gerçek parayla loot-box yok; reklam SDK'sı çocuğa-yönelik/sınırlı-veri modunda.
 **Gerekçe:** Bu türü çocuklar oynar; mağaza aile politikaları + COPPA/GDPR-K uyumu zorunlu.
 Detay: `docs/monetization.md`.
+
+## D-030 — Para akışı: masa yanında İSTİF, toplu toplama, garsonsuz (2026-09-03)
+**Karar (kullanıcı):** Yere dağınık sikke düşmez. Her masanın yanında sabit noktada **tek para istifi**
+birikir; oyuncu üstünden geçince **tamamı tek seferde** cüzdana girer (tek büyük "+₺").
+**Parayı YALNIZ oyuncu toplar — garson asla toplamaz.**
+- Kayıp yok (ceza yok ilkesi). İstifin **görsel tavanı** var, sayaç sürer (mesh sayısı da sınırlanır).
+- Oto-toplama erken oyunda KAPALI; geç oyunda "Muhasebeci" yükseltmesiyle açılır.
+- Offline dönüşte bekleyen istifler Kasa Raporu ekranında topluca toplanır.
+**Gerekçe:** Dağınık sikke hem görsel gürültü hem ölçülmüş FPS yükü (AFK'de 377 coin) idi; ama "gidip topu
+topunu toplama" tycoon'un en tatmin edici anı ve oyunu aktif tutan fiil — otomasyona devredilemez.
+**Geçersiz kılar:** D-012/D-016'nın "KASA YOK" maddesi (kasa artık pastane salonunda var ama para akışında
+değil) ve eski "para sunumu dağınık kalsın" kuralı. Alternatif kaldıraç (sert tavan + bahşiş durması)
+oynanış testinden sonra ONAYA sunulacak.
+
+## D-031 — Ürün-silosu kalktı: GLOBAL MENÜ + tek sipariş çıkış penceresi (2026-09-03)
+**Karar:** "Her salona bir ürün" (D-010 M3 ürün hattı) yapay bulundu — gerçek kıraathanede tost salonu/çay
+salonu ayrımı yok. Artık **tek mutfak şeridi**, her masada her ürün istenebilir. Salonlar ürün değil
+**karakter bölgeleri** (giriş salonu, cam kenarı, sedirli köşe vb.).
+**Servis mekaniği:** sipariş = ürün listesi → kalemler ilgili istasyonun kuyruğuna → **TAMAMI hazır olunca**
+mutfağın önündeki **TEK sipariş çıkış penceresinde** hazır tepsi olur → oyuncu/garson o tek noktadan alır.
+Tezgâh tezgâh dolaşmak YOK, yarım sipariş taşımak YOK. İstasyonlar "gidilecek" değil "yükseltilecek" yerler.
+**Performans:** bu model bugünkünden UCUZ — 3 ocak + 3 bulaşık yerine 1 çıkış + 1 bulaşık; nav ızgarası aynı,
+hedef seçimi basitleşir, hedefler olay-güdümlü hesaplanır.
+**Ekonomi:** gelir = **min(kapasite, üretim, servis) × ortalama sepet**. Üç kaldıraç net ayrışır ve her
+birinin kendi görsel darboğaz sinyali olur. `tools/simulate.ts` bu üç kısıtlı modele göre yeniden yazılacak;
+ilk alım <90 sn ve erken zincir temposu korunacak. **Denge sayıları ONAYSIZ değişmez.**
+**Yerleşim kısıtı:** her oturma bölgesinin merkezi sipariş çıkışına ≤ ~10 birim (tur ~12 sn < sabır 18 sn).
+**Korunan:** garson **bölge-başı** kalır (D-012); sadece ortak çıkıştan alır.
