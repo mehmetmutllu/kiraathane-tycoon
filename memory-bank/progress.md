@@ -769,8 +769,15 @@ Detay ve tüm kararlar: `activeContext.md` ŞU AN bölümü. Çıktılar: `docs/
 - ✅ **Plan v2 (artifact):** teşhis · servis modelleri A/B/C · servis mimarisi · oyun akışı (3 kat/9 salon) ·
   arayüz yeniden tasarımı (9 ekran) · faz planı A-G · performans bütçesi · kararlar · asset listesi.
 - ✅ **3B kat maketi (artifact):** gezilebilir, 3 kat, dış çevre + alt kat kütleleri. v2 ONAYLI.
-- ❌ **Maket v3 REDDEDİLDİ** (ızgara yeniden dizilim). Kullanıcı: "çok kötü oldu".
-  🔧 **SIRADAKİ İŞ:** maket artifact'ini `docs/maket/maket-v2-ONAYLI.html` ile yeniden yayınla (aynı URL).
+- ❌ **Maket v3 REDDEDİLDİ** (ızgara yeniden dizilim). Kullanıcı: "çok kötü oldu". → v2'ye dönüldü ✅
+- ✅ **Maket v4 (2026-09-04):** Kat 1 "ada disiplini" düzeni (zemin yaması + kilim + mobilya aynı merkezde,
+  orta aks yolluğu, Ocakbaşı gerçek U). Kullanıcı: "eskisine nazaran daha iyi".
+- ✅ **Maket v5 (2026-09-04):** Kullanıcı "mutfak 4 köşe bir yer olur" dedi → mutfak şeridi kaldırıldı,
+  **6,5 × 8,6 dört duvarlı mutfak odası** kuruldu (karo zemin, fayans, davlumbaz+baca, hazırlık tezgâhı,
+  sipariş çıkış penceresi + personel kapısı, soğuk beyaz ışık). **İki varyant sekmede:** A kapalı, B yarı açık.
+  Boşalan sol bant A adasına verildi (9,8→12,8, 3×2 ünite). Kurallar: `docs/maket/README.md`.
+  🔧 **SIRADAKİ İŞ (kullanıcı talimatı):** A/B seçimini + Kat 2 servis köşesi + servis mesafesi (≤10 birim)
+  sorularını **sonraki oturumda, tek tek** sor — "gayet iyi ama çok karmaşık oldu, sonraki chatte sor".
 - ✅ **Kararlar:** para istifi modeli (B′) · garson para toplamaz · ürün-silosu kalktı (global menü) ·
   tek sipariş çıkış penceresi · ekonomi 3 kaldıraç (kapasite/üretim/servis) · her kata WC + servis üçgeni ·
   dönüşlü teras merdiveni · arayüz yeniden tasarımı direktifi · AdMob v8.1.0 Cap-8 uyumlu.

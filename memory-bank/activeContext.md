@@ -50,11 +50,22 @@ Mutfak solda kaldığı için **B ve D adaları çıkış penceresine ~19-23 bir
 "her oturma bölgesi çıkışa ≤10 birim" kısıtı bu yerleşimde sağlanmıyor. Gerçek oyunda ya ikinci bir
 servis noktası ya da mutfağın merkeze kaydırılması gerekecek. Kullanıcı henüz karar vermedi.
 
-### >>> SONRAKİ OTURUMDA İLK İŞ <<<
-Kullanıcının A/B seçimini al. Seçilen varyant Kat 1'in tasarım referansı olur; sonra (a) Kat 2'nin servis
-köşesi de aynı "oda" diline çevrilsin mi, (b) ≤10 birim servis mesafesi kısıtı nasıl çözülecek — bu ikisi
-konuşulur. Kod tarafında sıradaki iş hâlâ **Faz A (Zemin)**: dev kancalarını DEV'e kapat, Capacitor
-Preferences kalıcı kayıt, perf paketi, kamera çerçeveleme, ses sistemi, Android paketleme.
+### KULLANICININ KAPANIŞ SÖZÜ (2026-09-04)
+> "gayet iyi ama çok karmaşık oldu. **sonraki chatte sor.**"
+
+Yani: v5 mutfağı BEĞENİLDİ ama oturum sonunda karar verilecek kadar çok başlık birikti; kararlar
+temiz kafayla, yeni oturumda verilecek. Bu oturumda başka bir şey uygulanmadı.
+
+### >>> SONRAKİ OTURUMDA İLK İŞ — BU ÜÇ SORUYU SOR (kullanıcının talimatı) <<<
+Önce maketi aç (`docs/maket/maket-v5-mutfak.html` veya artifact linki), sonra **tek tek, sade** sor —
+hepsini aynı anda yığma, kullanıcı "çok karmaşık oldu" dedi:
+1. **A mı B mi?** Kapalı mutfak odası mı, yarı açık (lambri + cam) mı? Seçilen, Kat 1'in referansı olur.
+2. **Kat 2'nin servis köşesi** de aynı "oda" diline çevrilsin mi (şu an v2 yerleşiminde, duvar kenarı şerit)?
+3. **Servis mesafesi:** B ve D adaları çıkış penceresine ~19-23 birim uzakta (karar 5: ≤10). İkinci servis
+   noktası mı, mutfağı merkeze mi çekelim, yoksa kısıtı mı gevşetelim?
+
+Kod tarafında sıradaki iş hâlâ **Faz A (Zemin)**: dev kancalarını DEV'e kapat, Capacitor Preferences
+kalıcı kayıt, perf paketi, kamera çerçeveleme, ses sistemi, Android paketleme.
 
 ## ŞU AN (2026-09-03 — BÜYÜK TASARIM OTURUMU: yol haritası v2 + servis mimarisi + 3B kat maketi; KOD DEĞİŞMEDİ, SAVE v30)
 
