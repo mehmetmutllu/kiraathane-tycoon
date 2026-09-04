@@ -1417,176 +1417,226 @@
   var A1 = [-17, 0.2, 3.4, 17], A2 = [3.4, 0.2, 17, 17];
   var A3 = [-17, -17, -2.8, 0.2], A4 = [-2.8, -17, 17, 0.2];
 
-  function buildFloor1(step) {
+  // tek çay ünitesi: masa + oturanlar + para istifi aynı grupta (±3° serbest sapma)
+  function teaUnit(g, tx, tz, coin, ry) {
+    var u = grp(tx, 0, tz, ry || 0);
+    var idx = pickSeats(2 + Math.floor(Math.random() * 3), 4);
+    put(u, teaTable(idx), 0, 0, 0);
+    seatCustomers(u, 0, 0, SEATS4, idx);
+    put(u, moneyStack(coin), 1.15, 0, 1.15);
+    g.add(u);
+    return u;
+  }
+
+  // delikli duvar parçası (pencere/kapı boşluğu için): yalnız [y0,y1] aralığında
+  function wallSeg(x1, z1, x2, z2, y0, y1, c) {
+    var dx = x2 - x1, dz = z2 - z1, len = Math.hypot(dx, dz);
+    var g = grp((x1 + x2) / 2, 0, (z1 + z2) / 2, Math.atan2(dx, dz));
+    put(g, box(0.18, y1 - y0, len, c || C.wallCream), 0, (y0 + y1) / 2, 0);
+    return g;
+  }
+
+  // adisyon askısı: ince ray + asılı fişler
+  function ticketRail(len) {
     var g = new T.Group();
+    put(g, cyl(0.02, 0.02, len, 6, 0x8d9499), 0, 0, 0).rotation.z = Math.PI / 2;
+    for (var i = 0; i < 4; i++) {
+      put(g, box(0.17, 0.23, 0.01, 0xf7f3ea), -len / 2 + 0.34 + i * (len - 0.68) / 3, -0.13, 0).rotation.z = rnd(-0.12, 0.12);
+    }
+    return g;
+  }
+
+  /* ---------- KAT 1: SABİT OMURGA + ÜÇ KANAT ----------
+     Kullanıcının maddelediği yedi sorun ve çözümleri (Fable 5.1 kavramsal danışma + uygulama):
+
+     1) "Kapı bu alanın ortasında olur" → OMURGA SABİT. Adım 1'de açık alan, kapının iki yanına
+        SİMETRİK 12 birimlik merkez dilim; kapı tam ortada. Sonra sağ kanat, sol kanat, arka yarı
+        açılır — kapı hiç kaymaz, kat onun etrafında kanatlanır. Açık alan her adımda dikdörtgen.
+     2) Halı tutarsızlığı → halı artık ZEMİN KAPLAMASI DEĞİL, YOL İŞARETİ: kapıdan merdivene
+        3 birimlik sabit yolluk + her salonun ortasına kısa "dal" halı. Hiçbir adımda salon kaplanmaz.
+     3) Kasa ve kuyruk KALKTI (oyunda kasada ödeme ve sipariş kuyruğu yok — Model B′).
+        Yerine KARŞILAMA TEZGÂHI: askılık, gazete-tavla rafı, temiz bardak istifi (oyuncunun ilk tepsi noktası).
+     4) Tatlı vitrini KALKTI. Yerine semaver/çay ocağı yüzü — kıraathanenin kimlik nesnesi.
+     5) "Mutfak ocakbaşının alanından çalıyor" → MUTFAK BİNANIN DIŞINA ÇIKINTI: batı duvarına
+        yapışık 8 × 8,4 ek hacim. Kat içi 34 × 34 tamamen salon kalır. Salona bağı tek servis
+        penceresi + personel kapısı; davlumbaz bacası dış cepheden yükselir.
+     6) "Ayaküstü köşesi saçma" → arka yarı TAVLA / OKEY ODASI: tek tip 4 kişilik oyun masası,
+        aralarında geniş koridor, duvarda skor tahtası. Yüksek masa yok, karışık tip yok.
+     7) "Ocakbaşı ocakbaşı gibi değil, sipariş nereye gidecek" → OCAKBAŞI ARTIK TEZGÂH:
+        servis penceresine paralel uzun tezgâh, önünde tabureler, tezgâh üstünde ısıtıcı;
+        sipariş tezgâh üstüne konur, para istifi her taburenin önünde tezgâhta birikir.
+
+     AÇIK ALAN her adımda dikdörtgen:  x[xL, xR] × z[zB, 17]
+       adım 1: x[−6, 6]    z[0,2, 17]   merkez omurga
+       adım 2: x[−6, 17]   z[0,2, 17]   + sağ kanat (Cam Kenarı)
+       adım 3: x[−17, 17]  z[0,2, 17]   + sol kanat (Ocakbaşı) + MUTFAK ÇIKINTISI
+       adım 4: x[−17, 17]  z[−17, 17]   + arka yarı (Tavla/Okey + WC + merdiven)
+  */
+
+  function buildFloor1(step) {
+    var g = new T.Group(), i;
     var a2 = step >= 2, a3 = step >= 3, a4 = step >= 4;
-    var kitBack = a3;                       // mutfak arkaya taşındı mı
+    var xL = a3 ? -17 : -6, xR = a2 ? 17 : 6, zB = a4 ? -17 : 0.2;
 
-    /* --- zemin: yalnız AÇIK alanlar --- */
-    g.add(floorPatch(-6.8, 8.6, 20.4, 16.8, C.floorWood));                 // alan 1
-    if (a2) g.add(floorPatch(10.2, 8.6, 13.6, 16.8, C.floorWood));         // alan 2
-    if (a3) g.add(floorPatch(-9.9, -8.4, 14.2, 17.2, C.floorWood));        // alan 3
-    if (a4) g.add(floorPatch(7.1, -8.4, 19.8, 17.2, C.floorWood));         // alan 4
+    /* --- zemin: yalnız açık dikdörtgen --- */
+    g.add(floorPatch((xL + xR) / 2, (zB + 17) / 2, xR - xL, 17 - zB, C.floorWood));
 
-    // mutfağın karo lekesi — ilk adımda bile var, kademeyle büyür
-    var fp = kitBack
-      ? (a4 ? [-13.2, -13.2, 7.4, 7.0] : [-13.6, -13.4, 6.8, 6.6])
-      : (a2 ? [-15.4, 11.2, 3.0, 7.6] : [-15.4, 11.6, 3.0, 6.0]);
-    g.add(floorPatch(fp[0], fp[1], fp[2], fp[3], C.floorTile, 0.012));
-    g.add(checker(fp[0], fp[1], fp[2] - 0.1, fp[3] - 0.1, 0xe2dccb));
-
-    /* --- dış duvarlar (v2 ile birebir) --- */
-    g.add(wall(-17, 17, -2.2, 17));                                        // ön duvar + kapı boşluğu
-    g.add(wall(2.2, 17, 17, 17));
-    g.add(wall(-17, a3 ? -17 : 0.2, -17, 17));                             // sol duvar
-    if (a2) { g.add(wall(17, a4 ? -17 : -0.5, 17, -0.5)); g.add(windowWall(17, -0.5, 17, 17, [[-6.25, 3.2], [-1.25, 3.2], [3.75, 3.2]])); }
-    if (a3 || a4) g.add(wall(a3 ? -17 : -2.8, -17, a4 ? 17 : -2.8, -17));  // arka duvar
+    /* --- KABUK: açık dikdörtgenin dört kenarı. Kapalı tarafta NET DUVAR. --- */
+    // ön duvar (kapı boşluğu hep ortada)
+    g.add(wall(xL, 17, -2.2, 17));
+    g.add(wall(2.2, 17, xR, 17));
     put(g, box(0.4, 2.9, 0.4, C.doorWood), -2.2, 1.45, 17);
     put(g, box(0.4, 2.9, 0.4, C.doorWood), 2.2, 1.45, 17);
     put(g, box(5.2, 0.35, 0.5, C.doorWood), 0, 2.9, 17);
     put(g, box(6.4, 0.18, 1.9, 0x2e6b4f, true), 0, 3.15, 17.9).rotation.x = -0.18;
     put(g, box(6.4, 0.2, 0.3, 0xe6d7b8), 0, 2.95, 18.8);
+    // arka kenar
+    g.add(wall(xL, zB, xR, zB));
+    // sağ kenar: dış duvara ulaşınca pencere bandı
+    if (a2) { g.add(windowWall(17, 0.2, 17, 17, [[-6.25, 3.2], [-1.25, 3.2], [3.75, 3.2]])); if (a4) g.add(wall(17, -17, 17, 0.2)); }
+    else g.add(wall(6, 0.2, 6, 17));
+    // sol kenar: dış duvara ulaşınca mutfak servis penceresi + personel kapısı
+    if (a3) {
+      g.add(wall(-17, a4 ? -17 : 0.2, -17, 3.0));
+      g.add(wallSeg(-17, 3.0, -17, 4.6, 2.1, 2.9));                    // personel kapısı lentosu
+      g.add(wall(-17, 4.6, -17, 5.4));
+      g.add(wallSeg(-17, 5.4, -17, 9.2, 0, 0.98, C.wain));             // servis penceresi denizliği
+      g.add(wallSeg(-17, 5.4, -17, 9.2, 2.1, 2.9));                    // servis penceresi lentosu
+      g.add(wall(-17, 9.2, -17, 17));
+    } else g.add(wall(-6, 0.2, -6, 17));
 
-    /* --- AÇILMAMIŞ ALANLARIN NET DUVARI (arkasında hiçbir şey çizilmez) --- */
-    if (!a2) g.add(wall(3.4, 0.2, 3.4, 17));
-    if (!a3 && !a4) g.add(wall(-17, 0.2, 3.4, 0.2));
-    else {
-      if (!a3) g.add(wall(-17, 0.2, -2.8, 0.2));
-      if (!a4) { g.add(wall(-2.8, 0.2, a2 ? 17 : 3.4, 0.2)); g.add(wall(-2.8, -17, -2.8, 0.2)); }
-    }
-    // açık alanlar arasındaki v2 bölmeleri (duvar değil, alçak bölme)
-    if (a3) { g.add(lowDivider(-16.9, 0.2, -3.4, 0.2)); put(g, archCol(), -3.4, 0, 0.2, Math.PI / 2); }
-    if (a4) { g.add(lowDivider(3.4, 0.2, 16.9, 0.2)); put(g, archCol(), 3.4, 0, 0.2, Math.PI / 2); }
+    /* --- ORTA OMURGA: kapıdan merdivene 3 birimlik sabit yolluk --- */
+    var rz0 = a4 ? -8.6 : 1.4;
+    g.add(rug(0, (rz0 + 16.4) / 2, 3.0, 16.4 - rz0, true));
 
-    /* --- ORTA AKS: girişten merdivene halı; açık alan kadar uzar --- */
-    var rz1 = 16.6, rz0 = a4 ? -8.6 : 0.4;
-    g.add(rug(0, (rz0 + rz1) / 2, 4.2, rz1 - rz0, true));
-    put(g, owner(), 0.9, 0, 6.4, -0.5);
-    put(g, floorLamp(), -4.6, 0, 11.0);
-    if (a2) put(g, floorLamp(), 4.6, 0, 11.0);
-    if (a3) put(g, floorLamp(), -4.6, 0, -4.6);
-    if (a4) put(g, floorLamp(), 4.6, 0, -4.6);
-    put(g, plant(false), -4.6, 0, 3.2);
-    if (a2) put(g, plant(false), 4.6, 0, 3.2);
-
-    /* --- giriş holü + kasa (alan 1) --- */
-    put(g, box(3.2, 0.03, 1.4, 0x4a3a2c), 0, 0.015, 15.7);
-    put(g, coatRack(), -4.4, 0, 16.0);
-    put(g, plant(false), -8.2, 0, 16.1);
-    put(g, picture(1.6, 1.1), -12.0, 1.95, 16.85, Math.PI);
-    put(g, kasa(), 2.6, 0, 13.0, Math.PI);
-    put(g, staff(C.apronTea, 0), 2.6, 0, 14.4, Math.PI);
-    put(g, wallClock(), 2.6, 2.2, 16.85, Math.PI);
-    if (a2) {
-      put(g, newspaperRack(), 7.2, 0, 16.3, Math.PI);
-      put(g, plant(false), 9.4, 0, 16.1);
-      put(g, picture(1.4, 1.0, 0xa8794c), 13.0, 1.95, 16.85, Math.PI);
-      [[2.6, 11.5], [2.75, 10.4], [2.5, 9.3]].forEach(function (p) {
-        put(g, person({ seated: false, shirt: pick(CUST) }), p[0], 0, p[1], rnd(-0.2, 0.2));
-      });
-    }
+    /* --- GİRİŞ: kasa ve kuyruk YOK. Karşılama tezgâhı + askılık + gazete/tavla rafı. --- */
+    put(g, box(3.2, 0.03, 1.4, 0x4a3a2c), 0, 0.015, 15.9);
+    put(g, coatRack(), -4.8, 0, 15.9);
+    var wc0 = grp(4.5, 0, 14.2, -Math.PI / 2);                          // karşılama tezgâhı
+    wc0.add(counter(3.4, 0x7a5230));
+    for (i = 0; i < 6; i++) put(wc0, teaGlass(), -1.2 + (i % 3) * 0.34, 0.98, -0.18 + Math.floor(i / 3) * 0.3);
+    put(wc0, box(0.7, 0.05, 0.5, C.copper), 1.0, 0.97, 0);              // temiz tepsi istifi
+    g.add(wc0);
+    put(g, wallShelf(2.2), 4.6, 1.95, 16.85, Math.PI);
+    put(g, newspaperRack(), 2.9, 0, 16.2, Math.PI);
+    put(g, plant(false), -3.4, 0, 16.2);
+    put(g, wallClock(), -1.0, 2.2, 16.85, Math.PI);
+    put(g, owner(), -0.9, 0, 12.6, 0.3);
 
     /* --- MUTFAK --- */
-    if (!kitBack) {
-      // ADIM 1-2: girişin solunda küçük ÇAY OCAĞI. Servis tezgâhı YOK.
-      put(g, cezveStation(), -16.4, 0, 13.2, Math.PI / 2);
-      put(g, samovar(), -16.4, 0, 9.6, Math.PI / 2);
-      put(g, wallShelf(2.2), -16.85, 1.95, 11.4, Math.PI / 2);
-      put(g, staff(C.apronTea, 4), -14.9, 0, 11.4, -Math.PI / 2);
-      if (a2) { put(g, dishSink(), -16.4, 0, 6.4, Math.PI / 2); put(g, staff(C.apronDish, 0), -14.9, 0, 6.4, -Math.PI / 2); }
-      put(g, crates(), -15.8, 0, 15.9);
-    } else {
-      // ADIM 3+: MUTFAK ARKA-SOL KÖŞEYE TAŞINDI ve büyüdü
-      put(g, cezveStation(), -16.4, 0, -14.6, Math.PI / 2);
-      put(g, samovar(), -16.4, 0, -11.4, Math.PI / 2);
-      put(g, griddle(), -13.6, 0, -16.4, 0);
-      put(g, dishSink(), -10.4, 0, -16.4, 0);
-      put(g, wallShelf(2.2), -16.85, 1.95, -13.0, Math.PI / 2);
-      put(g, wallShelf(2.4), -13.6, 1.95, -16.85, 0);
-      put(g, crates(), -15.6, 0, -16.0);
-      put(g, staff(C.apronTea, 4), -14.9, 0, -12.8, -Math.PI / 2);
-      put(g, staff(C.apronFood, 0), -13.6, 0, -15.0, 0);
-      // eski çay ocağının yerine TATLI VİTRİNİ
-      put(g, vitrin(), -16.4, 0, 12.4, Math.PI / 2);
-      put(g, staff(C.apronFood, 0), -15.0, 0, 12.4, -Math.PI / 2);
-      if (a4) {
-        // servis tezgâhı ancak son adımda
-        put(g, counter(6.6, 0x8a6242), -13.2, 0, -10.4, 0);
-        put(g, box(6.4, 0.05, 0.4, C.copper), -13.2, 1.0, -10.5);
-        for (var q = 0; q < 5; q++) put(g, teaGlass(), -15.6 + q * 1.2, 1.0, -10.5);
-        put(g, menuBoard(), -9.9, 0, -13.4, -Math.PI / 2);
-        put(g, staff(C.apronDish, 0), -10.4, 0, -15.0, 0);
-        put(g, plant(true), -9.8, 0, -11.0);
+    if (!a3) {
+      // ADIM 1-2: küçük ÇAY OCAĞI, omurganın dip duvarında, aksın iki yanında. Servis tezgâhı yok.
+      g.add(floorPatch(-3.0, 1.5, 5.6, 2.6, C.floorTile, 0.012));
+      put(g, samovar(), -3.0, 0, 0.95, 0);
+      put(g, wallShelf(2.4), -3.0, 1.95, 0.24, 0);
+      put(g, staff(C.apronTea, 4), -3.0, 0, 2.4, Math.PI);
+      if (a2) {
+        g.add(floorPatch(2.8, 1.5, 5.2, 2.6, C.floorTile, 0.012));
+        put(g, cezveStation(), 2.6, 0, 0.95, 0);
+        put(g, dishSink(), 5.2, 0, 2.9, -Math.PI / 2);
+        put(g, staff(C.apronDish, 0), 4.0, 0, 2.9, Math.PI / 2);
       }
+    } else {
+      // ADIM 3+: MUTFAK BİNANIN DIŞINA ÇIKINTI (kat içinden yer çalmaz)
+      var K0 = -25.0, K1 = -17.0, KZ0 = 2.6, KZ1 = 11.6;
+      g.add(floorPatch((K0 + K1) / 2, (KZ0 + KZ1) / 2, K1 - K0, KZ1 - KZ0, C.floorTile, 0.012));
+      g.add(checker((K0 + K1) / 2, (KZ0 + KZ1) / 2, K1 - K0 - 0.2, KZ1 - KZ0 - 0.2, 0xe2dccb));
+      g.add(wall(K0, KZ0, K0, KZ1));
+      g.add(wall(K0, KZ0, K1, KZ0));
+      g.add(wall(K0, KZ1, K1, KZ1));
+      // ek hacmin saçağı: yalnız çevre kirişi — ÜSTÜ AÇIK kalsın, mutfağın içi görünsün
+      put(g, box(K1 - K0 + 0.4, 0.28, 0.28, 0xd8cdb4), (K0 + K1) / 2, 3.02, KZ0 - 0.2);
+      put(g, box(K1 - K0 + 0.4, 0.28, 0.28, 0xd8cdb4), (K0 + K1) / 2, 3.02, KZ1 + 0.2);
+      put(g, box(0.28, 0.28, KZ1 - KZ0 + 0.4, 0xd8cdb4), K0 - 0.2, 3.02, (KZ0 + KZ1) / 2);
+      put(g, cezveStation(), K0 + 0.6, 0, 5.0, Math.PI / 2);
+      put(g, samovar(), K0 + 0.6, 0, 8.8, Math.PI / 2);
+      put(g, griddle(), -21.0, 0, KZ0 + 0.6, 0);
+      put(g, dishSink(), -18.4, 0, KZ0 + 0.6, 0);
+      put(g, wallShelf(2.4), -21.0, 1.95, KZ0 + 0.14, 0);
+      put(g, wallShelf(2.2), K0 + 0.14, 1.95, 7.0, Math.PI / 2);
+      put(g, crates(), -23.6, 0, 10.6);
+      put(g, box(1.7, 0.5, 1.2, 0xb6bfc2, true), -21.0, 2.1, KZ0 + 0.7);        // davlumbaz
+      put(g, box(0.8, 1.9, 0.8, 0x9aa3a6, true), -21.0, 3.3, KZ0 + 0.4);        // baca (dış cepheden)
+      put(g, staff(C.apronFood, 0), -21.0, 0, 4.2, 0);
+      put(g, staff(C.apronTea, 4), -19.6, 0, 6.6, -Math.PI / 2);
+      // SERVİS PENCERESİ: salona bakan tek bağ
+      put(g, counter(3.6, 0x8a6242), -17.5, 0, 7.3, Math.PI / 2);
+      put(g, box(0.4, 0.05, 3.2, C.copper), -17.4, 1.0, 7.3);
+      for (i = 0; i < 4; i++) put(g, teaGlass(), -17.4, 1.02, 5.9 + i * 0.9);
+      put(g, ticketRail(2.4), -16.9, 1.95, 7.3).rotation.y = Math.PI / 2;
+      put(g, menuBoard(), -16.85, 0, 11.6, Math.PI / 2);
+      if (a4) put(g, crates(), -23.4, 0, 4.4, 0.3);
     }
 
-    /* --- ALAN 1: GİRİŞ SALONU --- */
-    g.add(rug(-9.0, 7.4, 3.6, 2.6));
-    teaCluster(g, -9.0, 7.4, [7, 4, 11, 6], 3.2);
-    put(g, picture(1.5, 1.05), -16.85, 2.1, 4.0, Math.PI / 2);
-    put(g, sconce(), -16.85, 2.05, 15.4, Math.PI / 2);
-    put(g, sconce(), -8.0, 2.05, 16.85, Math.PI);
+    /* --- A1 · MERKEZ OMURGA: dört masa, aksın iki yanında simetrik --- */
+    [[-3.7, 10.6, 7], [3.7, 10.6, 4], [-3.7, 5.6, 11], [3.7, 5.6, 6]].forEach(function (u) {
+      teaUnit(g, u[0], u[1], u[2], rnd(-0.05, 0.05));
+    });
+    put(g, floorLamp(), -5.2, 0, 13.2);
+    put(g, floorLamp(), 5.2, 0, 8.0);
 
-    /* --- ALAN 2: CAM KENARI --- */
+    /* --- A2 · SAĞ KANAT: CAM KENARI --- */
     if (a2) {
-      g.add(rug(11.0, 7.4, 3.6, 2.6));
-      teaCluster(g, 11.0, 7.4, [9, 5, 3, 13], 3.2);
-      put(g, plant(false), 15.9, 0, 15.9);
-      put(g, newspaperRack(), 16.4, 0, 14.4, -Math.PI / 2);
-      put(g, sconce(), 16.85, 2.05, 15.4, -Math.PI / 2);
-      put(g, sconce(), 8.0, 2.05, 16.85, Math.PI);
+      g.add(rug(11.5, 8.6, 3.4, 2.4));
+      teaCluster(g, 11.5, 8.6, [9, 5, 3, 13], 3.0);
+      put(g, plant(true), 15.9, 0, 15.6);
+      put(g, newspaperRack(), 16.4, 0, 2.4, -Math.PI / 2);
+      put(g, floorLamp(), 7.6, 0, 15.4);
+      put(g, sconce(), 16.85, 2.05, 4.2, -Math.PI / 2);
+      put(g, sconce(), 11.0, 2.05, 16.85, Math.PI);
+      put(g, picture(1.5, 1.05, 0xa8794c), 14.0, 1.95, 16.85, Math.PI);
     }
 
-    /* --- ALAN 3: OCAKBAŞI --- */
+    /* --- A3 · SOL KANAT: OCAKBAŞI (gerçek tezgâh) --- */
     if (a3) {
-      g.add(rug(-12.6, -5.6, 7.2, 6.4));
-      put(g, stove(), -16.4, 0, -5.6, Math.PI / 2);
-      put(g, sedir(3.6), -12.6, 0, -8.6, 0);
-      put(g, sedir(3.6), -12.6, 0, -2.6, Math.PI);
-      put(g, coffeeTable(), -12.6, 0, -5.6);
-      put(g, nutBowl(), -12.6, 0.45, -5.6);
-      put(g, teaGlass(), -13.3, 0.45, -5.6);
-      put(g, teaGlass(), -11.9, 0.45, -5.6);
-      pickSeats(2, 3).forEach(function (k) {
-        put(g, person({ seated: true, shirt: pick(CUST) }), -12.6 + (k - 1) * 1.2, 0.05, -8.4, 0);
-      });
-      pickSeats(2, 3).forEach(function (k) {
-        put(g, person({ seated: true, shirt: pick(CUST) }), -12.6 + (k - 1) * 1.2, 0.05, -2.8, Math.PI);
-      });
-      [-6.4, -4.8].forEach(function (z, i) {
-        put(g, floorCushion(), -15.0, 0, z);
-        if (!i) put(g, person({ seated: true, shirt: pick(CUST) }), -15.0, -0.28, z, Math.PI / 2);
-      });
-      put(g, moneyStack(11), -9.6, 0, -8.6);
-      put(g, moneyStack(6), -9.6, 0, -2.6);
-      put(g, newspaperRack(), -8.6, 0, -5.6, -Math.PI / 2);
-      put(g, sconce(), -16.85, 2.05, -8.6, Math.PI / 2);
-      put(g, sconce(), -6.0, 2.05, -16.85, 0);
+      // uzun tezgâh: servis penceresine paralel; müşteri +x tarafında tabureye oturur
+      var BX = -14.0, BZ0 = 3.4, BZ1 = 11.8, blen = BZ1 - BZ0;
+      var bar = grp(BX, 0, (BZ0 + BZ1) / 2, Math.PI / 2);
+      bar.add(counter(blen, 0x7a5230));
+      put(bar, box(blen - 0.4, 0.1, 0.3, 0x4a4f54), 0, 1.0, -0.2);       // tezgâh üstü ısıtıcı hattı
+      for (i = 0; i < 5; i++) put(bar, cyl(0.1, 0.1, 0.04, 10, 0x2f3438), -blen / 2 + 1.0 + i * 1.6, 1.06, -0.2);
+      g.add(bar);
+      // tabureler + oturanlar + tezgâh üstünde para istifi
+      for (i = 0; i < 5; i++) {
+        var bz = BZ0 + 0.9 + i * 1.65;
+        put(g, stool(), BX + 1.15, 0, bz, 0);
+        if (i !== 2) put(g, person({ seated: true, shirt: pick(CUST) }), BX + 1.15, 0.05, bz, -Math.PI / 2);
+        put(g, teaGlass(), BX + 0.42, 0.97, bz);
+        if (i % 2 === 0) put(g, moneyStack(4 + i), BX + 0.42, 0.94, bz + 0.5);
+      }
+      put(g, staff(C.apronTea, 2), BX - 1.2, 0, 9.4, Math.PI / 2);        // tezgâh arkası servis koridoru
+      // salonun kalanı: normal masalar
+      g.add(rug(-9.6, 8.6, 3.4, 2.4));
+      teaUnit(g, -9.6, 5.6, 12, rnd(-0.05, 0.05));
+      teaUnit(g, -9.6, 11.6, 8, rnd(-0.05, 0.05));
+      put(g, plant(true), -16.2, 0, 15.6);
+      put(g, floorLamp(), -8.0, 0, 15.0);
+      put(g, sconce(), -16.85, 2.05, 13.6, Math.PI / 2);
+      put(g, sconce(), -11.0, 2.05, 16.85, Math.PI);
+      put(g, picture(1.5, 1.05), -14.0, 1.95, 16.85, Math.PI);
     }
 
-    /* --- ALAN 4: VİTRİN KÖŞESİ + WC + MERDİVEN --- */
+    /* --- A4 · ARKA YARI: TAVLA / OKEY ODASI + WC + MERDİVEN --- */
     if (a4) {
-      g.add(rug(11.0, -6.6, 3.6, 2.6));
-      teaCluster(g, 11.0, -6.6, [8, 12, 5, 10], 3.2);
-      put(g, wallShelf(2.4), 16.85, 1.95, -1.8, -Math.PI / 2);
-      put(g, picture(1.5, 1.05, 0xa8794c), 16.85, 2.1, -6.6, -Math.PI / 2);
-      put(g, plant(true), 15.9, 0, -3.2);
-      put(g, picture(1.3, 0.9), 16.85, 2.1, -11.6, -Math.PI / 2);
-      [-3.4, -6.6, -9.8].forEach(function (z, i) {
-        put(g, highTable(), 6.2, 0, z);
-        put(g, person({ seated: false, shirt: pick(CUST) }), 7.05, 0, z + 0.45, -2.1);
-        if (i !== 1) put(g, person({ seated: false, shirt: pick(CUST) }), 5.35, 0, z - 0.45, 1.0);
-        put(g, moneyStack([9, 4, 6][i]), 6.2, 0, z + 1.3);
+      [[-12.6, -4.8, 0], [-6.4, -4.8, 1], [6.4, -4.8, 0], [12.6, -4.8, 1],
+       [-12.6, -11.8, 1], [-6.4, -11.8, 0]].forEach(function (t, k) {
+        put(g, t[2] ? tavlaTable(k % 3) : okeyTable(), t[0], 0, t[1], rnd(-0.04, 0.04));
+        put(g, moneyStack([9, 5, 12, 6, 8, 11][k]), t[0] + 1.5, 0, t[1] + 1.5);
       });
-      g.add(wcRoom(9.5, 16.9, -16.87, -12.6, 15.0, { east: false }));
-      put(g, crates(), 6.2, 0, -15.9);
-      put(g, plant(false), 8.8, 0, -16.0);
+      put(g, menuBoard(), -9.4, 0, -16.85, 0);                            // skor tahtası
       put(g, stairs(), 0, 0, -9.8);
       g.add(lowDivider(-2.8, -9.8, -2.8, -16.9));
       g.add(lowDivider(2.8, -9.8, 2.8, -16.9));
       put(g, signPost(), 3.5, 0, -9.3, 0.4);
       put(g, person({ seated: false, shirt: pick(CUST) }), 0.8, 6 * STEP_H, -9.8 - 5.5 * STEP_D, Math.PI);
-      put(g, sconce(), 16.85, 2.05, -9.8, -Math.PI / 2);
+      g.add(wcRoom(9.5, 16.9, -16.87, -12.6, 15.0, { east: false }));
+      put(g, crates(), 6.2, 0, -15.9);
+      put(g, plant(false), 8.8, 0, -16.0);
+      put(g, floorLamp(), -4.4, 0, -2.2);
+      put(g, floorLamp(), 4.4, 0, -2.2);
+      put(g, sconce(), -16.85, 2.05, -8.0, Math.PI / 2);
+      put(g, sconce(), 16.85, 2.05, -8.0, -Math.PI / 2);
+      put(g, sconce(), -14.0, 2.05, -16.85, 0);
       put(g, sconce(), 6.0, 2.05, -16.85, 0);
     }
     return g;
@@ -1594,63 +1644,62 @@
 
   /* ---------- veri ---------- */
 
-  var PLAN_R = ['✛', 'Plan: dört salon, dört adım', 'v2 iskeleti · ortada kapı, ortada halı, ortada merdiven',
-    'v2\'nin planı korundu: ana kapı ön duvarın tam ortasında, merdiven arka duvarın tam ortasında, ikisi arasında kesintisiz orta halı. Kat dört salona bölündü ve <b>her adımda bir salon açılıyor</b>: ① Giriş Salonu → ② Cam Kenarı → ③ Ocakbaşı → ④ Vitrin Köşesi &amp; Merdiven. <b>Açılmamış salon tamamen kapalı:</b> sınırında net duvar, arkasında hiçbir şey çizilmiyor. Salon açıldıkça duvar kalkıyor, yerine v2\'nin alçak bölmesi ve portalı geliyor; orta halı da açık alan kadar uzuyor.'];
+  var SPINE_R = ['✛', 'Sabit omurga', 'kapı ve merdiven hiç kaymaz · yolluk 3 birim',
+    'Ana kapı ön duvarın, merdiven arka duvarın tam ortasında; ikisi arasında <b>sabit genişlikte 3 birimlik yolluk</b>. Adım 1\'de açık alan kapının iki yanına simetrik 12 birimlik merkez dilim — <b>kapı tam ortada</b>. Sonraki adımlar bu omurganın sağına, soluna ve arkasına kanat olarak açılır; açık alan her adımda dikdörtgendir, kapalı tarafta net duvar durur. <em>Halı zemin kaplaması değil YOL işaretidir: yolluk hiç değişmez, her salona ortasından kısa bir dal halı düşer.</em>'];
 
-  var KIT_R = ['1', 'Mutfağın yolculuğu', 'girişin solunda doğar → arka-sol köşeye taşınır',
-    '<b>Adım 1-2:</b> mutfak, giriş salonunun sol duvarında küçük bir <b>çay ocağı</b>: cezve ocağı, semaver, raf — <b>servis tezgâhı YOK</b>. Adım 2\'de yanına bulaşık geliyor. <b>Adım 3:</b> ocakbaşı salonu açılınca mutfak <b>arka-sol köşenin ucuna taşınıyor</b> ve büyüyor (tost sacı, bulaşık, raflar, iki personel); boşalan eski yerine <b>tatlı vitrini</b> geçiyor. <b>Adım 4:</b> salona bakan <b>servis tezgâhı</b>, menü tahtası, kiler ve üçüncü personel. Karo zemin lekesi mutfakla birlikte taşınıp büyüyor.'];
+  var KIT_R = ['1', 'Mutfağın yolculuğu', 'omurganın dibinde doğar → binanın DIŞINA çıkar',
+    '<b>Adım 1-2:</b> mutfak, omurganın dip duvarında küçük bir <b>çay ocağı</b> — semaver, raf; adım 2\'de cezve ocağı ve bulaşık. <b>Servis tezgâhı yok.</b> <b>Adım 3:</b> mutfak <b>binanın batı duvarından dışarı taşan 8 × 9 ek hacme</b> çıkar: tost sacı, bulaşık, davlumbaz ve bacası dış cepheden yükselir. Kat içi 34 × 34 tamamen salon kalır — <em>mutfak artık hiçbir salondan yer çalmıyor.</em> Salona tek bağı <b>servis penceresi</b> (adisyon askısı + hazır bardaklar) ve ayrı personel kapısıdır.'];
 
   var FLOORS = {
     '1': {
-      badge: 'adım 1 / 4 · giriş salonu açıldı',
-      caption: '<b>Adım 1 — Giriş Salonu.</b> Tek salon açık: ana kapı, giriş holü, kasa ve dört çay masası. Mutfak henüz yok denecek kadar küçük — sol duvarda <b>cezve ocağı + semaver</b>, servis tezgâhı yok. Diğer üç salonun sınırında net duvar var; arkalarında hiçbir şey çizilmiyor. Orta halı, açık alan kadar uzanıyor.',
-      dist: 42, azi: -0.46, ele: 0.72, target: [-5.0, 0.5, 8.5],
+      badge: 'adım 1 / 4 · merkez omurga',
+      caption: '<b>Adım 1 — Merkez omurga.</b> Açık alan, kapının iki yanına <b>simetrik</b> 12 × 17\'lik merkez dilim: kapı tam ortada, yolluk kapıdan dibe kadar, aksın iki yanında ikişer masa. Dipte küçük <b>çay ocağı</b> (semaver + raf) — servis tezgâhı yok. Girişte <b>kasa ve kuyruk yok</b>: askılık, gazete-tavla rafı ve temiz bardak istifiyle karşılama tezgâhı var. Sağ, sol ve arka kenarda net duvar.',
+      dist: 31, azi: -0.26, ele: 0.70, target: [0, 0.6, 8.6],
       build: function () { return buildFloor1(1); },
-      stats: [['1 / 4', 'salon'], ['çay ocağı', 'mutfak'], ['4', 'masa'], ['16', 'koltuk'], ['2', 'personel'], ['20 × 17', 'açık alan']],
-      labels: [[-15.4, 11.4, '1', 'Çay Ocağı'], [-9.0, 7.4, 'A', 'Giriş Salonu'], [0, 15.8, '↦', 'Ana Giriş']],
+      stats: [['1 / 4', 'salon'], ['çay ocağı', 'mutfak'], ['4', 'masa'], ['16', 'koltuk'], ['1', 'personel'], ['12 × 17', 'açık alan']],
+      labels: [[-3.0, 1.4, '1', 'Çay Ocağı'], [0, 8.0, 'A', 'Merkez Omurga'], [0, 16.2, '↦', 'Ana Giriş'], [4.5, 14.2, '◆', 'Karşılama']],
       rooms: [
-        ['A', 'Giriş Salonu', 'x[−17, 3,4] × z[0,2, 17] · 2×2 çay ünitesi · kasa',
-         'Kapıdan girince tüm oyun burada: dört ünite tek kilimin üstünde, girişin sağında kasa, sol duvarda çay ocağı. <em>Temel döngü burada öğrenilir: sipariş → tepsi → servis → para.</em>'],
-        KIT_R, PLAN_R]
+        ['A', 'Merkez omurga', 'x[−6, 6] × z[0,2, 17] · 4 masa · yolluk',
+         'Kapı, yolluk ve dört masa. Masalar aksın iki yanında simetrik; her ünitenin yanında tek para istifi. <em>Temel döngü burada öğrenilir: çay ocağından al → masaya bırak → para istifini topla.</em>'],
+        ['◆', 'Karşılama tezgâhı', 'girişin sağı · askılık + gazete/tavla rafı + temiz bardak',
+         '<b>Kasa ve kuyruk kaldırıldı</b> — oyunda kasada ödeme ve sipariş kuyruğu yok, o yüzden mekânda da yok. Yerine karşılama tezgâhı: müşteri paltosunu bırakır, gazete veya tavla alır; oyuncunun ilk temiz bardak/tepsi noktası da burasıdır.'],
+        KIT_R, SPINE_R]
     },
     '2': {
-      badge: 'adım 2 / 4 · cam kenarı açıldı',
-      caption: '<b>Adım 2 — Cam Kenarı.</b> Sağdaki duvar kalktı: üç büyük pencerenin önünde ikinci salon, giriş salonuyla birebir aynı kurulumda (aynı ölçü kilim, aynı 2×2 ünite, orta aksa simetrik). Çay ocağının yanına <b>bulaşık</b> geldi, kasada kuyruk oluştu. <em>Mutfak hâlâ girişin solunda ve tezgâhsız.</em>',
-      dist: 48, azi: -0.44, ele: 0.74, target: [0, 0.5, 8.5],
+      badge: 'adım 2 / 4 · sağ kanat açıldı',
+      caption: '<b>Adım 2 — Cam Kenarı (sağ kanat).</b> Sağdaki duvar kalktı: üç büyük pencerenin önünde 2×2 çay ünitesi, ortasında kısa dal halı. Çay ocağına cezve ocağı ve bulaşık eklendi. Yolluk ve kapı hiç kımıldamadı — kat onların etrafında genişledi.',
+      dist: 40, azi: -0.30, ele: 0.72, target: [4.0, 0.6, 8.6],
       build: function () { return buildFloor1(2); },
-      stats: [['2 / 4', 'salon'], ['çay ocağı + bulaşık', 'mutfak'], ['8', 'masa'], ['32', 'koltuk'], ['3', 'personel'], ['34 × 17', 'açık alan']],
-      labels: [[-15.4, 11.2, '1', 'Çay Ocağı'], [-9.0, 7.4, 'A', 'Giriş Salonu'], [11.0, 7.4, 'B', 'Cam Kenarı'], [0, 15.8, '↦', 'Ana Giriş']],
+      stats: [['2 / 4', 'salon'], ['+cezve +bulaşık', 'mutfak'], ['8', 'masa'], ['32', 'koltuk'], ['2', 'personel'], ['23 × 17', 'açık alan']],
+      labels: [[-3.0, 1.4, '1', 'Çay Ocağı'], [0, 8.0, 'A', 'Merkez Omurga'], [11.5, 8.6, 'B', 'Cam Kenarı'], [0, 16.2, '↦', 'Ana Giriş']],
       rooms: [
-        ['B', 'Cam Kenarı', 'x[3,4, 17] × z[0,2, 17] · 2×2 çay ünitesi · üç büyük pencere',
-         'A ile birebir aynı kurulum, orta aksın öbür yanında; sağ duvarda üç büyük pencere. <em>Manzara bahşiş çarpanı.</em>'],
-        KIT_R, PLAN_R]
+        ['B', 'Cam Kenarı', 'x[6, 17] × z[0,2, 17] · 2×2 çay ünitesi · üç büyük pencere',
+         'Sağ duvarda üç büyük pencere; ünitelerin altında yalnız kısa bir dal halı — salon kaplanmıyor. <em>Manzara bahşiş çarpanı.</em>'],
+        KIT_R, SPINE_R]
     },
     '3': {
-      badge: 'adım 3 / 4 · ocakbaşı açıldı · MUTFAK TAŞINDI',
-      caption: '<b>Adım 3 — Ocakbaşı ve mutfağın taşınması.</b> Arka-sol salon açıldı; bu adımın asıl olayı <b>mutfağın arka-sol köşenin ucuna taşınması</b>: tost sacı, bulaşık ve raflarla birlikte büyüyor, iki personel çalışıyor. Boşalan eski çay ocağı yerine <b>tatlı vitrini</b> geldi — vitrin artık bir işe yarıyor. Sol duvar ocakbaşına kaldı: kuzine, karşılıklı iki sedir, yer minderleri.',
-      dist: 54, azi: -0.44, ele: 0.75, target: [-4.0, 0.5, 3.0],
+      badge: 'adım 3 / 4 · sol kanat + MUTFAK DIŞARI ÇIKTI',
+      caption: '<b>Adım 3 — Ocakbaşı (sol kanat) ve mutfağın dışarı çıkması.</b> Bu adımın iki olayı var. Birincisi: <b>mutfak binanın batı duvarından dışarı taşan ek hacme çıkıyor</b> — kat içinden tek karış yer çalmıyor, salona bağı yalnız servis penceresi. İkincisi: ocakbaşı artık gerçek bir <b>tezgâh</b>: servis penceresine paralel uzun tezgâh, önünde beş tabure, tezgâh üstünde ısıtıcı hattı. Sipariş tezgâh üstüne konur, para istifi taburelerin önünde tezgâhta birikir.',
+      dist: 50, azi: -0.34, ele: 0.72, target: [-6.0, 0.6, 8.0],
       build: function () { return buildFloor1(3); },
-      stats: [['3 / 4', 'salon'], ['taşındı + büyüdü', 'mutfak'], ['8 + sedir', 'masa'], ['≈44', 'koltuk'], ['5', 'personel'], ['34 × 34 (kısmi)', 'açık alan']],
-      labels: [[-13.4, -13.4, '1', 'Mutfak (taşındı)'], [-16.0, 12.4, '◆', 'Tatlı Vitrini'], [-9.0, 7.4, 'A', 'Giriş Salonu'], [11.0, 7.4, 'B', 'Cam Kenarı'], [-12.6, -5.6, 'C', 'Ocakbaşı']],
+      stats: [['3 / 4', 'salon'], ['dışarı çıktı', 'mutfak'], ['10 + tezgâh', 'masa'], ['≈44', 'koltuk'], ['4', 'personel'], ['34 × 17', 'açık alan']],
+      labels: [[-21.0, 7.0, '1', 'Mutfak (dış hacim)'], [-14.0, 7.6, 'C', 'Ocakbaşı Tezgâhı'], [0, 8.0, 'A', 'Merkez Omurga'], [11.5, 8.6, 'B', 'Cam Kenarı'], [0, 16.2, '↦', 'Ana Giriş']],
       rooms: [
-        ['C', 'Ocakbaşı', 'x[−17, −2,8] × z[−17, 0,2] · kuzine + iki sedir + minder',
-         'Kuzine sol duvarda, karşısında iki sedir, aralarında sehpa, yanda yer minderleri. Salonun arka ucu mutfağa ayrıldı. <em>Devir yavaş, kişi başı harcama yüksek.</em>'],
-        KIT_R,
-        ['◆', 'Tatlı Vitrini', 'eski çay ocağının yerinde · giriş salonunun sol duvarı',
-         'Mutfak arkaya taşınınca boşalan yer: camlı teşhir vitrini, içinde baklava ve kek. Girişten görünür, kasanın karşısında. <em>Sorduğun &#8220;o vitrin ne işe yarıyor&#8221;ın cevabı: adım 3\'te açılan tatlı satışı. Arka-sağdaki ikinci vitrin kaldırıldı; katta TEK vitrin var, o da girişte.</em>'],
-        PLAN_R]
+        ['C', 'Ocakbaşı', 'x[−17, −6] × z[0,2, 17] · uzun tezgâh + 5 tabure + 2 masa',
+         'Ocakbaşı artık oturma grubu değil <b>tezgâh</b>: servis penceresine paralel uzanır, müşteri tabureye oturur, önünde tezgâhın kendisi masa görevi görür. Tezgâh üstünde ısıtıcı hattı, arkasında personelin yürüdüğü servis koridoru. <em>Sipariş tezgâh üstüne konur; para istifi her taburenin önünde tezgâhta birikir — &#8220;sipariş nereye gidecek&#8221; belirsizliği bitti.</em>'],
+        KIT_R, SPINE_R]
     },
     '4': {
-      badge: 'adım 4 / 4 · ayaküstü köşesi + merdiven · kat 1 tamam',
-      caption: '<b>Adım 4 — Ayaküstü Köşesi, WC ve merdiven.</b> Son salon açıldı: 2×2 ünite, tek hatta üç yüksek masa, arka-sağ köşede WC ve <b>merdiven</b> — Kat 2\'nin kilidi burada açılır. Orta halı artık kapıdan merdivene kesintisiz uzanıyor. Mutfak son kademesinde: salona bakan <b>servis tezgâhı</b>, menü tahtası, kiler, üç personel. Dört salon orta aksa simetrik.',
-      dist: 58, azi: -0.44, ele: 0.76, target: [0, 0.5, 0.5],
+      badge: 'adım 4 / 4 · arka yarı · kat 1 tamam',
+      caption: '<b>Adım 4 — Tavla / Okey Odası, WC ve merdiven.</b> Arka yarı açıldı: <b>tek tip 4 kişilik oyun masası</b> (okey ve tavla), aralarında geniş koridor, arka duvarda skor tahtası — yüksek masa yok, karışık mobilya yok, dar boşluk yok. Ortada merdiven (Kat 2\'nin kilidi), arka-sağ köşede WC. Yolluk artık kapıdan merdivene kesintisiz.',
+      dist: 60, azi: -0.38, ele: 0.76, target: [-2.0, 0.6, 1.0],
       build: function () { return buildFloor1(4); },
-      stats: [['4 / 4', 'salon'], ['tezgâh + menü', 'mutfak'], ['12 + 3', 'ünite / yüksek masa'], ['≈60', 'koltuk'], ['7', 'personel'], ['34 × 34', 'kat']],
-      labels: [[-13.2, -13.2, '1', 'Mutfak'], [-16.0, 12.4, '◆', 'Tatlı Vitrini'], [-9.0, 7.4, 'A', 'Giriş Salonu'], [11.0, 7.4, 'B', 'Cam Kenarı'], [-12.6, -5.6, 'C', 'Ocakbaşı'], [11.0, -6.6, 'D', 'Ayaküstü Köşesi'], [0, -13.4, '↑', 'Merdiven'], [13.2, -14.7, '', 'WC']],
+      stats: [['4 / 4', 'salon'], ['dış hacim', 'mutfak'], ['10 + 6 oyun', 'masa'], ['≈68', 'koltuk'], ['4', 'personel'], ['34 × 34', 'kat']],
+      labels: [[-21.0, 7.0, '1', 'Mutfak (dış hacim)'], [-14.0, 7.6, 'C', 'Ocakbaşı Tezgâhı'], [0, 8.0, 'A', 'Merkez Omurga'], [11.5, 8.6, 'B', 'Cam Kenarı'], [-9.5, -8.0, 'D', 'Tavla / Okey Odası'], [0, -13.4, '↑', 'Merdiven'], [13.2, -14.7, '', 'WC']],
       rooms: [
-        ['D', 'Ayaküstü Köşesi & Merdiven', 'x[−2,8, 17] × z[−17, 0,2] · 2×2 ünite + 3 yüksek masa + WC',
-         'Ayakta çay içenler için tek hatta üç yüksek masa, yanında 2×2 ünite; arka-sağ köşede alçak duvarlı WC, ortada merdiven. <em>Kat 1\'in son satın alması, Kat 2\'nin ilk anahtarı.</em>'],
-        KIT_R, PLAN_R]
+        ['D', 'Tavla / Okey Odası', 'x[−17, 17] × z[−17, 0,2] · 6 oyun masası · skor tahtası',
+         '<b>&#8220;Ayaküstü köşesi&#8221; iptal.</b> Kıraathanede insan ayakta durmaz, oturup oyun oynar: salonda yalnız 4 kişilik kare oyun masaları var, aralarında geniş koridor, arka duvarda skor tahtası. Tek mobilya dili → dar boşluk sorunu kalktı. <em>Yeni mekanik: oyun masası saat başı kira üretir, oturanlar sürekli çay ister.</em>'],
+        KIT_R, SPINE_R]
     }
   };
 

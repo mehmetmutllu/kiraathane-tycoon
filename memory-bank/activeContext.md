@@ -2,6 +2,91 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-04 gece — MAKET v11: SABİT OMURGA + ÜÇ KANAT; KOD DEĞİŞMEDİ, SAVE v30)
+
+Uzun bir maket iterasyonu oturumu. `src/` içinde HİÇBİR değişiklik yok — yalnız `docs/maket/`.
+**Kullanıcı v11'i onayladı** ("tamam bir sonraki sefere net anlatımlı yaparız şimdi oturumu kaydet").
+
+### Yayında olan maket
+`docs/maket/maket-v10-v2-duzen.html` (dosya adı v10 kaldı, içerik v11).
+**Artifact:** https://claude.ai/code/artifact/9d8c6d5a-5bd9-464b-a4e3-975c214236cd
+Ekran görüntüleri: `docs/maket/ss/v11-adim1..4.png`. Tüm kurallar: `docs/maket/README.md`.
+
+### v11'in kesin kararları (kullanıcının yedi şikâyetinin karşılığı)
+1. **SABİT OMURGA.** Ana kapı ön duvarın, merdiven arka duvarın tam ortasında; hiç kaymaz.
+   Adım 1'de açık alan kapının iki yanına SİMETRİK 12 birimlik merkez dilim. Kat, omurganın
+   sağına → soluna → arkasına kanat olarak açılır. Açık alan her adımda DİKDÖRTGEN.
+   Adımlar: ① merkez omurga x[−6,6] z[0,2,17] ② + sağ kanat (Cam Kenarı) ③ + sol kanat
+   (Ocakbaşı) + mutfak dışarı ④ + arka yarı (Tavla/Okey + WC + merdiven).
+2. **HALI = YOL İŞARETİ**, zemin kaplaması değil: kapıdan merdivene 3 birimlik sabit yolluk +
+   her salona kısa dal halı. Hiçbir adımda salon kaplanmaz.
+3. **KASA ve KUYRUK YOK** (oyunda kasada ödeme/sipariş kuyruğu yok — Model B′). Yerine
+   KARŞILAMA TEZGÂHI: askılık, gazete-tavla rafı, temiz bardak istifi = oyuncunun ilk tepsi noktası.
+4. **VİTRİN YOK** (tatlı vitrini tamamen kaldırıldı).
+5. **MUTFAK BİNANIN DIŞINA ÇIKINTI:** batı duvarına yapışık 8 × 9 ek hacim, ÜSTÜ AÇIK (içi görünür).
+   Kat içi 34 × 34 tamamen salon kalır. Salona tek bağ: servis penceresi (adisyon askısı + hazır
+   bardaklar) + ayrı personel kapısı; davlumbaz bacası dış cepheden yükselir.
+   Adım 1-2'de mutfak = omurganın dibinde küçük çay ocağı (semaver/cezve/bulaşık), SERVİS TEZGÂHI YOK.
+6. **ARKA YARI = TAVLA / OKEY ODASI:** tek tip 4 kişilik oyun masası, geniş koridor, skor tahtası.
+   ("Ayaküstü köşesi" iptal — yüksek masa yok, karışık mobilya yok.)
+7. **OCAKBAŞI = TEZGÂH:** servis penceresine paralel uzun tezgâh, önünde 5 tabure, tezgâh üstünde
+   ısıtıcı hattı, arkasında personel koridoru. Sipariş tezgâh üstüne konur; **para istifi her
+   taburenin önünde tezgâhta birikir.**
+
+### Fable 5.1'in genel ilkeleri (kullanıcı isteğiyle danışıldı, uygulandı)
+- Sabit omurga: kapı-yolluk-merdiven ekseni hiç değişmez, kat onun etrafında kanatlanır.
+- Her salonun TEK mobilya dili (normal masa / oyun masası / tezgâh); karışık tip yok.
+- Kapalı hacimler (mutfak, WC) salon alanından değil bina dışından/arka duvardan alınır.
+- **Oyunda olmayan hiçbir şey mekânda yok** (kasa, kuyruk, vitrin).
+- Her yüzey bir sinyal: halı = yol, tezgâh = servis noktası, istif = para.
+
+### Reddedilen ara denemeler (dosyalar duruyor, referans)
+- **v7** dört eşit çeyrek + asma tavanlı köşe mutfağı → kullanıcı yarıda kesti (asma tavan reddedildi).
+- **v8** tek uzun salon, yana doğru büyüme → *"yana doğru büyüme çok kötü"*.
+- **v9** kare plan üç alan → *"v2'deki yapı çok daha iyiydi, ona geri dön"*.
+- v8/v9'un doğru kararları v10/v11'e taşındı: tek renk zemin eğilimi, mutfak üstü açık,
+  ilk kademede küçük mutfak, iç bölme duvarlarının azaltılması, kilitli alanın görünmemesi.
+
+### Asset kararı (kullanıcı iki paketi de onayladı)
+Hepsi CC0 ve **aynı sanatçı (Kay Lousberg)** → tek stil kilidi korunuyor:
+- **KayKit Restaurant Bits** https://kaylousberg.itch.io/restaurant-bits — mutfak mimarisi/mobilyası
+  (`kitchencounter_*`, `stove_single`, `oven`, `fridge_A`, `extractorhood`, `dishrack`,
+  `wall_orderwindow`, `floor_kitchen`, `menu`, `crate_*`). **Yemek propları ALINMAYACAK**
+  (burger/ketçap/biftek Türk menüsüne uymaz; semaver, çay bardağı, cezve, tost, baklava kendi modelimiz).
+- **KayKit City Builder Bits** https://kaylousberg.itch.io/city-builder-bits — sokak/şehir
+  (`road_*`, `building_A…H`, `car_*`, `streetlight`, `trafficlight`, `bench`, `bush`, `firehydrant`).
+- Mevcut **Furniture Bits** zaten kurulu. **Hiçbiri henüz indirilmedi** — Faz 6 işi.
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+1. **Kullanıcı notu:** *"bir sonraki sefere net anlatımlı yaparız"* → maket değişikliklerini
+   uygulamadan önce ne yapılacağını KISA ve NET yaz, sonra uygula. Bu oturumda çok iterasyon oldu.
+2. Kat 2 ve Kat 3'ü aynı v11 diline çevir (omurga, halı=yol, tek mobilya dili, dış hacimler).
+3. Onaylanınca **koda entegrasyon**: v11'in dört adımını `economy.config.ts` pad zincirine ve
+   `LAYOUT` (store.ts) koordinatlarına bağla. Hangi pad hangi kanadı açıyor, mutfak dışarı
+   çıkma hangi pad — bu haritayı çıkar.
+4. Kod tarafında bekleyen **Faz A (Zemin)**: dev kancalarını DEV'e kapat, Capacitor Preferences
+   kalıcı kayıt, perf paketi, kamera çerçeveleme, ses sistemi, Android paketleme.
+
+## AÇIK DÜZELTME LİSTESİ — MAKET (2026-09-04 gecesi, kullanıcı maddeledi)
+
+Kullanıcı v10'un dört-salon sürümünü gezdi ve şunları saydı. **Hepsi çözülmeden maket onaylanmaz.**
+
+1. **Kapı ve orta halı, adım 1'de açık alanın ortasında değil.** Kullanıcı: *"kapı bu alanın
+   ortasında olur, yan taraf açılınca sola kayar vs"* → kapı/aks büyümeyle birlikte konum değiştirmeli.
+2. **Halı tutarsız:** adım 1'de alanı boydan boya kaplıyor, adım 3'te kaplamıyor.
+3. **Girişteki kasa ve kuyruk SAÇMA:** *"girişteki masa ne orada, neden para toplanıyor veya sıra var?"*
+   Oyunda kasada ödeme YOK (Model B′: para masa yanındaki istiften toplanır), sipariş kuyruğu YOK.
+4. **Tatlı vitrini istenmiyor** — kaldırılacak.
+5. **Mutfak ocakbaşı salonundan yer çalıyor.** Kullanıcı önerisi: *"duvar sınırı dışında duran bir
+   halde... duvardan dışarı doğru bir çıkıntı gibi ama o ocakbaşı alanını da etkilemesin."*
+6. **"Ayaküstü Köşesi" saçma:** yüksek masalar ile oturma alanı iç içe, *"çok fazla dar alan var"*.
+7. **Ocakbaşı ocakbaşı gibi değil:** *"insanlar oturuyor önlerinde masa yok, sipariş nereye gidecek?"*
+8. Kullanıcının genel eleştirisi: *"bunların hepsini düşünüp ona göre hareket etmen gerek ama etmiyosun."*
+   → Maket değişikliğinden ÖNCE servis akışı ve boşluk/dolaşım kontrol edilecek.
+
+**Süreç kararı (kullanıcı):** genel tablo için önce **Fable 5.1**'den ucuz fikir alınacak, sonra
+**Opus** uygulayacak, **kullanıcı onay verince** oturum kaydedilecek.
+
 ## ŞU AN (2026-09-04 — MAKET v6: KAT 1 BÜYÜME HARİTASI; KOD DEĞİŞMEDİ, SAVE v30)
 
 Oturum "devam" ile açıldı. Plan, önceki oturumun bıraktığı üç soruyu tek tek sormaktı.

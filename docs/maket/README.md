@@ -13,7 +13,8 @@ cd docs/maket && python -m http.server 8899
 
 | Dosya | Durum | Açıklama |
 |---|---|---|
-| `maket-v9-kare.html` | ✅ **Yayında olan sürüm** | **Kare plan, üç alan, tek ızgara.** 32 × 32 bina üç alan hâlinde açılır (güney-batı 16×16 → güney-doğu 16×16 → kuzey bandı 32×16). Kullanıcının v6-v8 boyunca verdiği tüm düzeltmeler burada: zemin tek renk (halı ve ada yaması yok), iç bölme duvarı yok, mutfak batı duvarında + üstü tamamen açık (asma tavan yok) + ilk kademede ufak, kapalı alanın içi hiç görünmez (net duvar + dışarıda kepenkli komşu dükkân), ana giriş ilk adımdan itibaren ana caddede. |
+| `maket-v10-v2-duzen.html` | ✅ **Yayında olan sürüm (v11 içerik)** | **Sabit omurga + üç kanat.** v2 iskeleti (ortada kapı, ortada yolluk, ortada merdiven) korunur; kat omurganın sağına → soluna → arkasına kanatlanır, açık alan her adımda dikdörtgen, kapalı tarafta net duvar. Halı = yol işareti. Kasa/kuyruk/vitrin yok. **Mutfak binanın dışına çıkıntı** (üstü açık). **Ocakbaşı = tezgâh.** Arka yarı **Tavla/Okey odası**. |
+| `maket-v9-kare.html` | ❌ Reddedildi | **Kare plan, üç alan, tek ızgara.** 32 × 32 bina üç alan hâlinde açılır (güney-batı 16×16 → güney-doğu 16×16 → kuzey bandı 32×16). Kullanıcının v6-v8 boyunca verdiği tüm düzeltmeler burada: zemin tek renk (halı ve ada yaması yok), iç bölme duvarı yok, mutfak batı duvarında + üstü tamamen açık (asma tavan yok) + ilk kademede ufak, kapalı alanın içi hiç görünmez (net duvar + dışarıda kepenkli komşu dükkân), ana giriş ilk adımdan itibaren ana caddede. |
 | `maket-v8-tek-salon.html` | ❌ Reddedildi | Yana doğru büyüyen tek uzun salon (36 × 17, dört bölme). Kullanıcı: "yana doğru büyüme çok kötü, mutfak alanı ilk seviyede çok geniş, bir önceki kare yapıya dön". Sadeleştirme kararları (tek renk zemin, duvarsız mutfak, görünmeyen kilitli alan) buradan geldi ve v9'a taşındı. |
 | `maket-v7-duzen.html` | 📌 Referans (yarım) | Dört eşit çeyrek + aks haçı + duvarsız köşe mutfağı (asma tavanlı). Kullanıcı yarıda kesti; asma tavan ve çeyrek bölmeleri reddedildi. |
 | `maket-v6-buyume.html` | 📌 Referans | **Kat 1 büyüme haritası** — altı adım. Önceki maketler bitmiş katı gösteriyordu, bu maket oraya varılan yolu gösterir: mutfak **arka-sol köşede iki tezgâh karosuyla doğar** ve beş kademede yerinde büyür (Kd.3 yarı duvar = v5'in B varyantı, Kd.4 tam duvar + sipariş penceresi = v5'in A varyantı), kat **üç bölüm** hâlinde açılır (oyunun `MAX_ZONES = 3` yapısıyla birebir), açılmamış bölüm toz örtüsü + iskele + tahta perdenin arkasında durur. |
@@ -37,7 +38,8 @@ cd docs/maket && python -m http.server 8899
   (2026-09-04: v2 → v4 düzen revizyonu → **v5 mutfak odası (A/B varyant)** — link hep aynı)
 - **Büyüme haritası (v6):** https://claude.ai/code/artifact/0c63ef60-ebb5-4b16-89e6-d0a587583f27
 - **Tek salon (v8, reddedildi):** https://claude.ai/code/artifact/41325892-3b1c-4a66-a1fc-ed190e3339b9
-- **Kare plan (v9, güncel):** https://claude.ai/code/artifact/35d2b29d-f91f-4495-b3bd-e1b8db77c81f
+- **Kare plan (v9, reddedildi):** https://claude.ai/code/artifact/35d2b29d-f91f-4495-b3bd-e1b8db77c81f
+- **YAYINDA (v11):** https://claude.ai/code/artifact/9d8c6d5a-5bd9-464b-a4e3-975c214236cd
 
 ## Düzen kuralları (v4, Kat 1'de uygulandı; Kat 2-3 bekliyor)
 
@@ -139,3 +141,33 @@ Restaurant Bits'in **mimari ve mobilya** parçaları alınır, **yemek propları
 Türk menüsüne uymaz; semaver, çay bardağı, cezve, tost, baklava kendi modellerimiz kalır).
 City Builder Bits sokak için: `road_straight/corner/junction/crossing`, `building_A…H`, `car_*`,
 `streetlight`, `trafficlight`, `bench`, `bush`, `dumpster`, `firehydrant`, `trash_A`, `watertower`.
+
+
+## v11 kuralları (2026-09-04 gece — KULLANICI ONAYLADI)
+
+Kullanıcının maddelediği yedi sorun ve karşılıkları:
+
+| Şikâyet | Karar |
+|---|---|
+| "Kapı bu alanın ortasında olur, yan taraf açılınca kayar" | **SABİT OMURGA.** Kapı ön duvarın, merdiven arka duvarın tam ortasında; hiç kaymaz. Adım 1'de açık alan kapıya simetrik 12 birimlik merkez dilim. Kat sağa → sola → arkaya kanatlanır; açık alan her adımda **dikdörtgen**, kapalı tarafta **net duvar**. |
+| "Halı adım 1'de kaplıyor, adım 3'te kaplamıyor" | Halı **zemin kaplaması değil YOL İŞARETİ**: kapıdan merdivene 3 birimlik sabit yolluk + her salona kısa dal halı. |
+| "Girişteki masa ne, neden para toplanıyor / sıra var?" | **Kasa ve kuyruk kaldırıldı** — oyunda kasada ödeme ve sipariş kuyruğu yok (Model B′), o yüzden mekânda da yok. Yerine **karşılama tezgâhı**: askılık, gazete-tavla rafı, temiz bardak istifi (oyuncunun ilk tepsi noktası). |
+| "Tatlı vitrini olmasın" | **Katta hiç vitrin yok.** |
+| "Mutfak ocakbaşının alanından çalıyor... duvardan dışarı çıkıntı gibi olsun" | **Mutfak binanın batı duvarından dışarı taşan 8 × 9 ek hacim**, **üstü açık** (içi görünür). Kat içi 34 × 34 tamamen salon. Salona tek bağ: servis penceresi (adisyon askısı + hazır bardaklar) + ayrı personel kapısı; davlumbaz bacası dış cepheden yükselir. Adım 1-2'de mutfak = omurganın dibinde küçük çay ocağı, **servis tezgâhı yok**. |
+| "Ayaküstü köşesi saçma, dar alanlar var" | **İptal.** Arka yarı **Tavla / Okey Odası**: tek tip 4 kişilik oyun masası, geniş koridor, skor tahtası. Yüksek masa ve karışık mobilya yok. |
+| "Ocakbaşı ocakbaşı gibi değil, sipariş nereye gidecek?" | **Ocakbaşı = TEZGÂH.** Servis penceresine paralel uzun tezgâh, önünde 5 tabure, tezgâh üstünde ısıtıcı hattı, arkasında personel koridoru. Sipariş tezgâh üstüne konur; **para istifi her taburenin önünde tezgâhta birikir.** |
+
+### Genel ilkeler (Fable 5.1 danışması, uygulandı)
+1. **Sabit omurga:** kapı–yolluk–merdiven ekseni hiç değişmez, kat onun etrafında kanatlanır.
+2. **Her salonun tek mobilya dili** (normal masa / oyun masası / tezgâh) — karışık tip yok.
+3. **Kapalı hacimler** (mutfak, WC) salon alanından değil bina dışından/arka duvardan alınır.
+4. **Oyunda olmayan hiçbir şey mekânda yok** (kasa, kuyruk, vitrin).
+5. **Her yüzey bir sinyal:** halı = yol, tezgâh = servis noktası, istif = para.
+
+### Adımlar
+| Adım | Açılan | Mutfak |
+|---|---|---|
+| 1 | Merkez omurga `x[−6,6] z[0,2,17]` — kapı, yolluk, 4 masa, karşılama tezgâhı | omurganın dibinde küçük çay ocağı (semaver) |
+| 2 | + Sağ kanat: **Cam Kenarı** (3 pencere, 2×2 ünite) | + cezve ocağı + bulaşık |
+| 3 | + Sol kanat: **Ocakbaşı tezgâhı** (5 tabure) | **binanın dışına çıkar** (tost sacı, bulaşık, davlumbaz, servis penceresi) |
+| 4 | + Arka yarı: **Tavla/Okey Odası**, WC, **merdiven → Kat 2** | değişmez |

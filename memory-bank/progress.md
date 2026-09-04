@@ -803,4 +803,20 @@ Detay ve tüm kararlar: `activeContext.md` ŞU AN bölümü. Çıktılar: `docs/
   - ⏳ **ONAY BEKLEYEN 3 BAŞLIK:** (1) büyüme sırası + yan sokak kapısı, (2) **servis noktası modeli**
     (Karar 3+5 revizyonu: yemek yalnız ana mutfakta pişer, uzak adaların kenarında pişirme yapmayan
     aktarma tezgâhı — 34×34 katta ≤10 kuralı başka türlü sağlanamıyor), (3) Kat 2'nin servis köşesi.
+- ✅ **Maket v11 — SABİT OMURGA + ÜÇ KANAT (2026-09-04 gece, KULLANICI ONAYLADI):** uzun iterasyon
+  (v7 çeyrekler → v8 yana büyüyen tek salon → v9 kare plan → v10 v2'ye dönüş → **v11 nihai**).
+  Dosya `docs/maket/maket-v10-v2-duzen.html`, artifact
+  https://claude.ai/code/artifact/9d8c6d5a-5bd9-464b-a4e3-975c214236cd , SS `ss/v11-adim1..4.png`.
+  Kullanıcının yedi şikâyetinin hepsi çözüldü:
+  - **Sabit omurga:** kapı ön duvarın, merdiven arka duvarın tam ortasında, hiç kaymaz; adım 1'de
+    açık alan kapıya SİMETRİK merkez dilim; kat sağa → sola → arkaya kanatlanır, her adımda dikdörtgen.
+  - **Halı = yol işareti** (sabit 3 birimlik yolluk + dal halılar), zemin kaplaması değil.
+  - **Kasa/kuyruk KALKTI** (oyunda yok, mekânda da yok) → karşılama tezgâhı; **vitrin KALKTI**.
+  - **Mutfak binanın DIŞINA çıkıntı** (8 × 9, üstü açık): kat içi tamamen salon kalır; salona tek bağ
+    servis penceresi. Adım 1-2'de mutfak = küçük çay ocağı, servis tezgâhı yok.
+  - **Ocakbaşı = tezgâh** (tabure + tezgâh üstü ısıtıcı; sipariş ve para istifi tezgâhta).
+  - **Arka yarı = Tavla/Okey odası** (tek tip oyun masası); "ayaküstü köşesi" iptal.
+  - Fable 5.1'den kavramsal danışma alındı (kullanıcı isteği), Opus uyguladı.
+  - Playwright MCP: **0 konsol hatası**, dört sekme de çizildi. `src/` DEĞİŞMEDİ, SAVE v30.
+- ⏳ **Sonra:** Kat 2-3'ü v11 diline çevir → v11'i `economy.config.ts` pad zinciri + `LAYOUT`'a entegre et.
 - ⏳ **Sonra:** Faz A (hiçbir karara bağlı değil) — dev kancaları, kalıcı kayıt, perf paketi, kamera, ses, paketleme.
