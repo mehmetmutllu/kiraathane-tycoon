@@ -2,6 +2,69 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-04 — MAKET v6: KAT 1 BÜYÜME HARİTASI; KOD DEĞİŞMEDİ, SAVE v30)
+
+Oturum "devam" ile açıldı. Plan, önceki oturumun bıraktığı üç soruyu tek tek sormaktı.
+**Kullanıcı 2. soruda yönü değiştirdi** ve oturumun asıl işi bu oldu.
+
+### Kullanıcının sözleri (aynen, kritik)
+> "ilk katta da mutfağın yeri bence çok kötü... mutfak bir köşede olmalı ve **yükseltilebilir** olmalı
+> çünkü normalde oyun ilk başladığında oyunda **1 masa ve mutfak** olmalı ki müşteriler geldiğinde
+> sipariş taşıyayım... biz **son duruma göre tasarım yaptık ama sırayla ilerleme adımlarını da
+> tasarlayıp ona göre hareket etmemiz gerek**... bir kaykit var ya onun gibi bir **mutfak asseti**
+> vardı ona benzer bir şey... **konumlandırma ve seviye tasarımı çok çok önemli**."
+
+### Soruların durumu
+1. **A mı B mi?** → Kullanıcı "ikisi de dursun, sonra karar" dedi. **Sonra v6 bu soruyu ortadan
+   kaldırdı:** B (yarı açık) = mutfak Kd.3, A (kapalı) = Kd.4. Seçim değil, kademe.
+2. **Kat 2 servis köşesi?** → Cevaplanmadı; kullanıcı yukarıdaki yön değişikliğini yaptı. AÇIK.
+3. **Servis mesafesi?** → v6'da **servis noktası** modeliyle çözüldü (aşağıda), ONAY BEKLİYOR.
+
+### Bulunan asset (kullanıcının hatırladığı paket)
+**KayKit Restaurant Bits 1.0** — CC0, 140+ low-poly model, **Furniture Bits ile aynı sanatçı**
+(Kay Lousberg) → CLAUDE.md'deki tek-stil kilidi bozulmuyor.
+https://github.com/KayKit-Game-Assets/KayKit-Restaurant-Bits-1.0
+Elle çizdiğimiz her şeyin hazır karşılığı var: `kitchencounter_straight/innercorner/outercorner/sink`
+(+`_backsplash`), `stove_single/multi`, `oven`, `fridge_A/B`, `extractorhood`, `kitchencabinet`,
+`kitchentable_*`, `dishrack`, **`wall_orderwindow`**, `wall_half`, `wall_doorway`, `floor_kitchen`,
+`menu`, `shelf_papertowel`, `crate_*`. **Tezgâhlar modüler karo** → mutfak karo karo büyütülebilir.
+Paket HENÜZ İNDİRİLMEDİ (Faz 6 işi; indirilince `public/assets/models/` + manifest).
+
+### Verilen karar
+**Mutfak = arka-sol köşe** (kullanıcı üç seçenek arasından seçti: arka-sol köşe / arka duvar ortası /
+giriş-sol köşe). Gerekçe: köşede başlama sıcaklığı + oyunun mevcut zone-açma koduyla uyum;
+bedeli, uzak adaların servise uzak kalması → **servis noktası** satın almasıyla karşılanıyor.
+
+### Üretilen: `docs/maket/maket-v6-buyume.html` (v5'e DOKUNULMADI, yeni dosya)
+**Artifact (YENİ link):** https://claude.ai/code/artifact/0c63ef60-ebb5-4b16-89e6-d0a587583f27
+Altı sekme = altı büyüme adımı. Ekran görüntüleri: `docs/maket/ss/v6-adim1..6.png`.
+Tüm kurallar yazılı: `docs/maket/README.md` → "Büyüme kuralları (v6)".
+
+- **Mutfak beş kademe, hepsi yerinde:** Kd.1 cezve ocağı + semaver (2 karo, duvar yok) → Kd.2 evye +
+  bulaşık (4 karo) → Kd.3 tost sacı + davlumbaz + buzdolabı + **yarı duvar** → Kd.4 **tam duvar +
+  sipariş çıkış penceresi** + hazırlık adası (8 karo) → Kd.5 fırın + kiler + asma tavan + menü tahtası.
+- **Kat üç bölüm** (oyunun `MAX_ZONES = 3` yapısıyla birebir): 1 arka-sol · 2 ön (cephe+hol) · 3 arka-sağ
+  (ocakbaşı + WC + **merdiven → Kat 2**).
+- **Kilitli bölüm boş zemin değil:** çıplak şap, toz örtüsü altında mobilya, iskele, **tahta perde**.
+- **Bir bölümün açılması ile dolması ayrı iki adım** (adım 4 açar, adım 5 sağ yarısını döşer).
+- **Yan sokak kapısı:** oyun batı duvarındaki küçük kapıyla başlar; ana cephe adım 4'te açılınca
+  aynı kapı mutfağın personel/malzeme girişi olur. Tek öğe, iki dönem.
+- Adım adları `economy.config.ts` pad zinciriyle hizalı (`table2 · table3 · waiter · dishwasher ·
+  table4 · zone2 · zone3`).
+- Doğrulama: Playwright MCP 1440×960, **0 konsol hatası**, altı sekme de çizildi.
+
+### >>> SONRAKİ OTURUMDA İLK İŞ — ÜÇ ONAY SORUSU <<<
+Maketi aç (artifact linki), sekmeleri sırayla gez, sonra **tek tek** sor:
+1. **Büyüme sırası onaylanıyor mu?** (bölüm 1 arka-sol → 2 ön/cephe → 3 arka-sağ/merdiven)
+   Özellikle: oyun **yan sokak kapısıyla** başlasın mı, yoksa ana kapı baştan açık mı olsun?
+2. **Servis noktası modeli** (Karar 3+5 revizyonu): yemek yalnız ana mutfakta pişer, uzak adaların
+   kenarında pişirme yapmayan aktarma tezgâhı durur. Onay? (Alternatif: katı küçültmek.)
+3. **Kat 2 servis köşesi** aynı çekirdeğin küçük hâli mi olsun (Kd.1-3'te kalan), yoksa Kat 2
+   tamamen oturma katı olup her şey Kat 1 mutfağından mı taşınsın?
+Onaylanınca sıra **koda**: bu büyüme haritası `economy.config.ts` pad zinciri + `LAYOUT` (store.ts)
+üstünde uygulanacak. Ondan önce **Faz A (Zemin)** hâlâ duruyor: dev kancalarını DEV'e kapat,
+Capacitor Preferences kalıcı kayıt, perf paketi, kamera çerçeveleme, ses sistemi, Android paketleme.
+
 ## ŞU AN (2026-09-04 — MAKET v5: MUTFAK ODASI, iki varyant; KOD DEĞİŞMEDİ, SAVE v30)
 
 Bir önceki oturum elektrik kesintisiyle kullanıcının mesajının ÜSTÜNDE kesildi (asistan hiç cevap veremedi).

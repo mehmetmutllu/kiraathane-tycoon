@@ -783,4 +783,24 @@ Detay ve tüm kararlar: `activeContext.md` ŞU AN bölümü. Çıktılar: `docs/
   dönüşlü teras merdiveni · arayüz yeniden tasarımı direktifi · AdMob v8.1.0 Cap-8 uyumlu.
 - ⏳ **Açık kararlar:** yaş kategorisi (12+ önerildi) · nargile · offline tavanı · NPC tavanı · kat mı şube mi ·
   stok katmanı.
+- ✅ **Maket v6 — KAT 1 BÜYÜME HARİTASI (2026-09-04):** kullanıcı *"son duruma göre tasarım yaptık ama
+  sırayla ilerleme adımlarını da tasarlamamız gerek; mutfak bir köşede ve yükseltilebilir olmalı"* dedi.
+  Yeni dosya `docs/maket/maket-v6-buyume.html` (v5'e dokunulmadı), artifact
+  https://claude.ai/code/artifact/0c63ef60-ebb5-4b16-89e6-d0a587583f27 , SS `ss/v6-adim1..6.png`.
+  - **Mutfak arka-sol köşede DOĞAR** (kullanıcı seçimi) ve **beş kademede yerinde büyür**: 2 karo çay
+    ocağı → evye/bulaşık → tost sacı + davlumbaz + **yarı duvar** → **tam duvar + sipariş penceresi** +
+    hazırlık adası → fırın/kiler/asma tavan/menü tahtası. **v5'in A/B varyant sorusu böylece kapandı:**
+    B = Kd.3, A = Kd.4; oyuncu ikisini de sırayla yaşar.
+  - **Kat üç bölüm hâlinde açılır** (oyunun `MAX_ZONES = 3` yapısıyla birebir); kilitli bölüm boş zemin
+    değil: çıplak şap + toz örtüsü + iskele + tahta perde. Bir bölümün açılması ile dolması ayrı iki adım.
+  - **Yan sokak kapısı:** oyun batı duvarındaki kapıyla başlar, ana cephe adım 4'te açılınca aynı kapı
+    mutfağın malzeme girişi olur.
+  - **Asset kararı:** **KayKit Restaurant Bits 1.0** (CC0, Furniture Bits ile AYNI sanatçı → stil kilidi
+    korunur) bulundu; modüler `kitchencounter_*` karoları + `wall_orderwindow` + `extractorhood` +
+    `floor_kitchen` + `oven`/`fridge`/`dishrack`/`menu` mutfak kademelerinin birebir karşılığı.
+    Paket HENÜZ indirilmedi (Faz 6 işi).
+  - Playwright MCP 1440×960: **0 konsol hatası**, altı sekme de çizildi. `src/` DEĞİŞMEDİ, SAVE v30.
+  - ⏳ **ONAY BEKLEYEN 3 BAŞLIK:** (1) büyüme sırası + yan sokak kapısı, (2) **servis noktası modeli**
+    (Karar 3+5 revizyonu: yemek yalnız ana mutfakta pişer, uzak adaların kenarında pişirme yapmayan
+    aktarma tezgâhı — 34×34 katta ≤10 kuralı başka türlü sağlanamıyor), (3) Kat 2'nin servis köşesi.
 - ⏳ **Sonra:** Faz A (hiçbir karara bağlı değil) — dev kancaları, kalıcı kayıt, perf paketi, kamera, ses, paketleme.
