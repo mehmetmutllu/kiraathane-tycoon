@@ -668,6 +668,54 @@
     return g;
   }
 
+  /* >>> CAM CEPHE (vitrin) — sokağa bakan yüz. windowWall'dan farkı: alçak kaide (0,5),
+     tavan altına kadar cam, ince ahşap dikmeler, üstte lento. Kıraathanenin dışarıdan
+     okunmasını sağlayan tek şey bu. GERİ ALINACAKSA: buildFloor1 içindeki `shopFront(...)`
+     çağrıları `wall(...)` yapılır, başka hiçbir yeri etkilemez. <<< */
+  function shopGlass(w, h) {
+    var g = new T.Group();
+    if (!glassMat) glassMat = new T.MeshLambertMaterial({ color: 0xa9d6ea, transparent: true, opacity: 0.42 });
+    put(g, box(w, 0.12, 0.16, C.doorWood), 0, h / 2 - 0.06, 0);
+    put(g, box(w, 0.12, 0.16, C.doorWood), 0, -h / 2 + 0.06, 0);
+    put(g, box(0.12, h, 0.16, C.doorWood), -w / 2 + 0.06, 0, 0);
+    put(g, box(0.12, h, 0.16, C.doorWood), w / 2 - 0.06, 0, 0);
+    put(g, new T.Mesh(GB(w - 0.24, h - 0.24, 0.04), glassMat), 0, 0, 0);
+    var n = Math.max(1, Math.round(w / 1.9)) - 1;                     // ara dikmeler
+    for (var i = 1; i <= n; i++) put(g, box(0.07, h - 0.24, 0.1, C.doorWood), -w / 2 + i * (w / (n + 1)), 0, 0);
+    put(g, box(w - 0.24, 0.06, 0.1, C.doorWood), 0, h / 2 - 0.5, 0);  // vasistas kaydı
+    put(g, box(w - 0.6, 0.03, 0.06, C.brass), 0, h / 2 - 0.86, 0.07); // camdaki isim şeridi
+    return g;
+  }
+
+  // cephe boyunca pencere bölümlemesi: uçlarda 0,9 · aralarda 1,5 ayak; gözler ~5,8'i geçmez
+  function shopWins(len) {
+    var end = 0.9, mid = 1.5;
+    var n = Math.max(1, Math.round((len - 2 * end + mid) / 6.6));
+    var w = (len - 2 * end - (n - 1) * mid) / n, wins = [], x0 = -len / 2 + end;
+    for (var i = 0; i < n; i++) wins.push([x0 + w / 2 + i * (w + mid), w]);
+    return wins;
+  }
+
+  function shopFront(x1, z1, x2, z2) {
+    var h = 2.7, sill = 0.5, top = 2.5;
+    var dx = x2 - x1, dz = z2 - z1, len = Math.hypot(dx, dz);
+    var g = grp((x1 + x2) / 2, 0, (z1 + z2) / 2, Math.atan2(dx, dz));
+    if (len < 0.4) return g;
+    put(g, box(0.24, sill, len, C.wain), 0, sill / 2, 0);                    // kaide
+    put(g, box(0.28, 0.07, len, C.doorWood), 0, sill + 0.035, 0);            // kaide başlığı
+    put(g, box(0.2, h - top, len, C.wallCream), 0, (top + h) / 2, 0);        // üst bant
+    put(g, box(0.3, 0.16, len, C.doorWood), 0, top + 0.08, 0);               // lento
+    var wins = shopWins(len), edges = [-len / 2];
+    wins.forEach(function (w) { edges.push(w[0] - w[1] / 2, w[0] + w[1] / 2); });
+    edges.push(len / 2);
+    for (var i = 0; i < edges.length; i += 2) {
+      var a = edges[i], b = edges[i + 1];
+      if (b - a > 0.02) put(g, box(0.2, top - sill, b - a, C.wallCream), 0, (sill + top) / 2, (a + b) / 2);
+    }
+    wins.forEach(function (w) { put(g, shopGlass(w[1], top - sill), 0, (sill + top) / 2, w[0], -Math.PI / 2); });
+    return g;
+  }
+
   // fener: bakır kafes + içinde sarı küre
   function lantern() {
     var g = new T.Group();
@@ -739,6 +787,43 @@
     put(g, sph(0.05, C.brass), 0, 1.9, 0);
     put(g, box(0.38, 0.62, 0.16, 0x2c3e50, true), 0.2, 1.32, 0.04);
     put(g, box(0.12, 0.5, 0.14, 0x2c3e50), 0.42, 1.2, 0.04).rotation.z = -0.15;
+    return g;
+  }
+
+  /* >>> SOL DUVAR PROGRAMI — adım 3'te ocak arkaya taşınınca boşalan 13 birimlik çıplak duvar.
+     Oturma EKLEMİYOR (masa sayısı ve ekonomi zinciri değişmesin diye): duvara asılı sığ
+     parçalar. GERİ ALINACAKSA: buildFloor1'deki `SOL DUVAR` bloğu silinir. <<< */
+  // duvar boyu askı rayı: ahşap ray + pirinç kancalar + asılı ceket/şapka
+  function askiRayi(len) {
+    var g = new T.Group();
+    put(g, box(len, 0.14, 0.09, C.doorWood), 0, 0, 0);
+    put(g, box(len, 0.05, 0.16, C.wain), 0, 0.09, 0.03);
+    var n = Math.max(2, Math.round(len / 0.7));
+    for (var i = 0; i < n; i++) {
+      var x = -len / 2 + 0.35 + i * ((len - 0.7) / (n - 1));
+      put(g, cyl(0.025, 0.025, 0.16, 6, C.brass), x, -0.1, 0.06).rotation.x = Math.PI / 2 - 0.5;
+      put(g, sph(0.035, C.brass), x, -0.17, 0.11);
+    }
+    put(g, box(0.4, 0.66, 0.17, 0x2c3e50, true), -len / 2 + 1.05, -0.5, 0.12);
+    put(g, box(0.36, 0.6, 0.16, 0x6d4c41, true), len / 2 - 1.4, -0.47, 0.12);
+    put(g, cyl(0.19, 0.19, 0.05, 12, 0x37474f), len / 2 - 0.35, -0.2, 0.14).rotation.x = 1.35;
+    return g;
+  }
+
+  // uzun konsol raf: sığ tabla + iki ahşap dirsek + üstünde bakır/saksı/kâse
+  function konsol(len) {
+    var g = new T.Group();
+    put(g, box(len, 0.08, 0.42, C.tableWood, true), 0, 0, 0.21);
+    put(g, box(len, 0.05, 0.46, C.doorWood), 0, -0.05, 0.23);
+    [-len / 2 + 0.45, len / 2 - 0.45].forEach(function (x) {
+      put(g, box(0.09, 0.34, 0.3, C.doorWood), x, -0.24, 0.16);
+      put(g, box(0.09, 0.1, 0.42, C.wain, true), x, -0.42, 0.09).rotation.x = -0.7;
+    });
+    put(g, cyl(0.15, 0.19, 0.26, 10, C.copper), -len / 2 + 1.0, 0.17, 0.2);
+    put(g, cyl(0.05, 0.05, 0.3, 8, C.copper), -len / 2 + 1.2, 0.19, 0.2).rotation.z = 1.3;
+    put(g, nutBowl(), 0, 0.04, 0.2);
+    put(g, cyl(0.16, 0.13, 0.24, 10, 0xb5651d), len / 2 - 0.9, 0.16, 0.2);
+    put(g, sph(0.24, 0x4e8f5a, true), len / 2 - 0.9, 0.4, 0.2).scale.set(1, 0.85, 1);
     return g;
   }
 
@@ -1616,8 +1701,9 @@
        2. alan açılınca cephe tamamlanır ve kapı asıl yerine, binanın tam ortasına (x = 0) geçer. */
     (function () {
       var dx = (s === 1) ? -8.5 : 0, q = ST(0);
-      q.add(wall(-17, 17, dx - 2.2, 17));
-      q.add(wall(dx + 2.2, 17, (s === 1) ? 0 : 17, 17));
+      // sokak cephesi kapının iki yanında da CAM: kıraathane dışarıdan içi görünen yerdir
+      q.add(shopFront(-17, 17, dx - 2.2, 17));
+      q.add(shopFront(dx + 2.2, 17, (s === 1) ? 0 : 17, 17));
       put(q, box(0.4, 2.9, 0.4, C.doorWood), dx - 2.2, 1.45, 17);
       put(q, box(0.4, 2.9, 0.4, C.doorWood), dx + 2.2, 1.45, 17);
       put(q, box(5.2, 0.35, 0.5, C.doorWood), dx, 2.9, 17);
@@ -1661,6 +1747,24 @@
       put(g, wallShelf(2.2), -16.85, 1.95, 3.5, Math.PI / 2);
       put(g, wallShelf(2.6), -16.85, 1.95, 8.0, Math.PI / 2);
       put(g, staff(C.apronTea, 4), -14.6, 0, 8.0, 1.5);
+    }
+
+    /* >>> SOL DUVAR (ön yarı, z 2…14) — adım 3'te ocak arkaya taşınınca boşalan 13 birim.
+       Oturma eklemiyoruz: askı rayı · konsol raf · TELEVİZYON · gazetelik. TV kıraathanenin
+       en tanımlayıcı duvar öğesi ve ileride kendi seviyesi olan bir obje olabilir.
+       GERİ ALINACAKSA: bu blok komple silinir, duvar yeniden boşalır. <<< */
+    if (s >= 3) {
+      g = ST(3);
+      put(g, askiRayi(3.2), -16.84, 1.85, 3.0, Math.PI / 2);
+      put(g, konsol(3.6), -16.84, 1.02, 7.0, Math.PI / 2);
+      put(g, picture(1.5, 1.05), -16.85, 2.15, 7.0, Math.PI / 2);
+      put(g, tv(2.2), -16.82, 2.02, 10.8, Math.PI / 2);
+      put(g, plant(true), -15.8, 0, 9.0);
+      put(g, newspaperRack(), -16.4, 0, 13.2, Math.PI / 2);
+      put(g, sconce(), -16.85, 2.05, 5.0, Math.PI / 2);
+      put(g, sconce(), -16.85, 2.05, 12.6, Math.PI / 2);
+      // TV'yi izleyen iki müşteri: duvarın karşısındaki masalar zaten var, ayakta izleyen biri
+      put(g, person({ seated: false, shirt: pick(CUST) }), -14.9, 0, 11.4, -1.5);
     }
 
     /* ARKA BANT — üç blok, hepsi z = −9,8 hizasında biter:
@@ -2204,7 +2308,7 @@
         d: 38, a: -0.48, e: 0.74, t: [-8.5, 0.5, 8.5], rooms: [0, 1],
         stats: [['1 / 6', 'adım'], ['17 × 17', 'ölçü'], ['4', 'masa'], ['16', 'koltuk'], ['çay ocağı', 'servis']],
         labels: [[-15.0, 5.8, '☕', 'Çay Ocağı'], [-8.5, 8.6, '1', '1. Alan'], [-8.5, 16.2, '↦', 'Giriş']],
-        cap: '<b>Adım 1 — İlk alan.</b> Düz, 17 × 17 kare bir alan: <b>dört masa</b> ve sol duvarda <b>çay ocağı</b> (cezve ocağı + semaver). Kapı bu alanın cephesinin tam ortasında. Kasa yok, kuyruk yok, mutfak yok, halı yok. Temel döngü burada öğreniliyor: ocaktan tepsiyi al → masaya bırak → para istifini topla.' },
+        cap: '<b>Adım 1 — İlk alan.</b> Düz, 17 × 17 kare bir alan: <b>dört masa</b> ve sol duvarda <b>çay ocağı</b> (cezve ocağı + semaver). Kapı bu alanın cephesinin tam ortasında, iki yanında <b>sokağa bakan cam cephe</b>: alçak kaide, tavan altına kadar cam, ince ahşap dikmeler, camda pirinç isim şeridi. <em>Kıraathaneyi dışarıdan tanımlayan şey bu vitrindir — içerisi caddeden görünür.</em> Kasa yok, kuyruk yok, mutfak yok, halı yok. Temel döngü burada öğreniliyor: ocaktan tepsiyi al → masaya bırak → para istifini topla.' },
       { n: '2. Alan', badge: 'kat 1 · adım 2 / 6 · ön yarı tamam',
         d: 50, a: -0.55, e: 0.75, t: [0, 0.5, 8.5], rooms: [0, 1, 2],
         stats: [['2 / 6', 'adım'], ['34 × 17', 'ölçü'], ['8', 'masa'], ['32', 'koltuk'], ['çay ocağı', 'servis']],
@@ -2214,7 +2318,7 @@
         d: 60, a: -0.58, e: 0.72, t: [-4.0, 0.5, -4.0], rooms: [8, 1, 2],
         stats: [['3 / 6', 'adım'], ['34 × 34', 'kat'], ['9,0', 'tezgâh boyu'], ['8', 'masa'], ['3', 'personel']],
         labels: [[-8.5, 8.6, '1', '1. Alan'], [8.5, 8.6, '2', '2. Alan'], [-13.0, -10.4, '☕', 'Tezgâh'], [10.8, -9.2, '⚠', 'Tadilat'], [0, -9.0, '↑', 'Yıkık Merdiven'], [-2.0, -4.0, '3', 'boş şerit']],
-        cap: '<b>Adım 3 — Arka yarı açılıyor, servis bloğu ve tezgâh kuruluyor.</b> 34 × 17 birimlik alan tek hamlede geliyor. Arka duvarın sol ucunda 12,2 × 7,0 bir servis bloğu doğuyor ve <b>salona bakan yüzü tezgâh</b>: semaver, temiz bardak istifleri ve hazır tepsiler müşterinin gördüğü yerde; hazırlık arkada — arka duvarda cezve ocağı, hazırlık tezgâhı ve menü tahtası, sol duvarda bulaşık. Tezgâhın ortasında <b>2 birimlik geçit</b>, personel ve oyuncu oradan giriyor. <em>Kafe mantığı: tezgâh mekânın yüzüdür, mutfak arkasında kalır.</em> Arka-sağ köşe (lavabo) <b>tahta perdeyle kapalı</b> — orada gerçekten bir oda inşa ediliyor. Ortadaki <b>merdiven ise açıkta duruyor, sadece yıkık</b>: basamak tahtaları yer yer eksik, korkuluk kırık, basamaklarda moloz; önünde uyarı şeridi ve dubalar. Perde çekilmedi — <em>oyuncu daha ilk günden üst kat olduğunu görsün diye.</em>' },
+        cap: '<b>Adım 3 — Arka yarı açılıyor, servis bloğu ve tezgâh kuruluyor.</b> 34 × 17 birimlik alan tek hamlede geliyor. Arka duvarın sol ucunda 12,2 × 7,0 bir servis bloğu doğuyor ve <b>salona bakan yüzü tezgâh</b>: semaver, temiz bardak istifleri ve hazır tepsiler müşterinin gördüğü yerde; hazırlık arkada — arka duvarda cezve ocağı, hazırlık tezgâhı ve menü tahtası, sol duvarda bulaşık. Tezgâhın ortasında <b>2 birimlik geçit</b>, personel ve oyuncu oradan giriyor. <em>Kafe mantığı: tezgâh mekânın yüzüdür, mutfak arkasında kalır.</em> Arka-sağ köşe (lavabo) <b>tahta perdeyle kapalı</b> — orada gerçekten bir oda inşa ediliyor. Ortadaki <b>merdiven ise açıkta duruyor, sadece yıkık</b>: basamak tahtaları yer yer eksik, korkuluk kırık, basamaklarda moloz; önünde uyarı şeridi ve dubalar. Perde çekilmedi — <em>oyuncu daha ilk günden üst kat olduğunu görsün diye.</em> Ocak arkaya taşınınca <b>sol duvarın ön yarısı</b> boşalıyor; oraya oturma eklemeden bir duvar programı kondu: askı rayı, uzun konsol raf, <b>televizyon</b> ve gazetelik. <em>TV kıraathanenin en tanımlayıcı duvar öğesi; ileride kendi seviyesi olan bir obje olabilir.</em>' },
       { n: 'Lavabo', badge: 'kat 1 · adım 4 / 6 · lavabo',
         d: 46, a: -0.50, e: 0.62, t: [7.0, 0.8, -8.0], rooms: [8, 6],
         stats: [['4 / 6', 'adım'], ['12,3 × 7,0', 'oda'], ['4', 'kabin'], ['3', 'lavabo'], ['arka-sağ', 'blok']],
@@ -2451,6 +2555,13 @@
     camera.updateProjectionMatrix();
     needs = true;
   }
+
+  // inceleme kancası: belirli bir açıdan ekran görüntüsü alabilmek için (Playwright)
+  window.__bak = function (a, e, d, tx, ty, tz) {
+    azi = a; ele = e; dist = d;
+    if (tx !== undefined) target.set(tx, ty, tz);
+    needs = true;
+  };
 
   function updateCamera() {
     var cx = target.x + dist * Math.cos(ele) * Math.sin(azi);

@@ -876,3 +876,26 @@ Commit'ler: `a5d8982` · `9d6f997` · `4bf8790` · `a52daf1`
 `economy.config.ts` pad zinciri + `LAYOUT` (store.ts) koordinatlarına bağlama.
 Önerilen zincir ve onay bekleyen üç karar (banket seviyesi = boy · lavabo erken-kalkma mekaniği ·
 açılış zinciri) `activeContext.md`'de.
+
+## MAKET OTURUMU (2026-09-05) — v14: CAM CEPHE + SOL DUVAR PROGRAMI
+Kod DEĞİŞMEDİ (`src/` dokunulmadı, SAVE v30, vitest 186/186). Detay: `activeContext.md` ŞU AN bölümü.
+Dosya `docs/maket/maket-v13.html` (adı v13 kaldı, içerik v14) · artifact https://claude.ai/code/artifact/813bdc4c-3052-46ca-ac3b-23076f425b23
+SS: `docs/maket/ss/v14-*.png`
+
+- ✅ Kullanıcı iki seçenekli soruya cevap verdi: **önce eksikleri kapat, sonra entegrasyon haritası**;
+  `src/` bu oturumda da donuk kalsın (Faz A'ya dönülmedi).
+- ✅ **EKSİK #1 KAPANDI — CAM CEPHE.** Ön duvar (z = +17) artık vitrin: alçak kaide (0,5), tavan
+  altına kadar cam (0,5→2,5), üstte lento, ~1,9'da bir ahşap dikme, vasistas kaydı, camda pirinç
+  isim şeridi. Yeni yapı taşları `shopGlass` · `shopWins` · `shopFront`. Bölümleme otomatik
+  (uçlarda 0,9 · aralarda 1,5 ayak, göz ≤ ~5,8); adım 1'de iki göz, adım 2+'de kapının iki yanında
+  ikişer göz. Kapı ve tente aynen kaldı. **Bina artık dışarıdan depo gibi durmuyor.**
+- ✅ **EKSİK #2 KAPANDI — SOL DUVAR.** Adım 3'te ocak arkaya taşınınca boşalan 13 birim, **oturma
+  eklemeden** dolduruldu (masa sayısı ve ekonomi zinciri bozulmasın): askı rayı · uzun konsol raf +
+  tablo · **TELEVİZYON** · gazetelik · iki aplik · ayakta izleyen müşteri.
+  Yeni yapı taşları `askiRayi(len)` · `konsol(len)`. TV ileride kendi seviyesi olan obje olabilir (not).
+- ✅ Yeni inceleme kancası `window.__bak(azi, ele, dist, tx, ty, tz)` — Playwright'la belirli açıdan SS.
+- ✅ Adım 1 ve adım 3 açıklama metinleri güncellendi. Playwright MCP: **0 konsol hatası**.
+- ⏳ **Kalan iki eksik:** tek tezgâh 20 masaya yetmiyor (ekonomi çözecek) · merdiven kovasının ağzı
+  çerçevesiz (`archCol()` portalı konabilir).
+- ⏳ **SIRADAKİ KİLOMETRE TAŞI (değişmedi):** adım adım oyuna entegrasyon haritası. Onay bekleyen
+  kararlar `activeContext.md`'de; yeni soru: cam cephe ve TV birer pad/seviye olacak mı?

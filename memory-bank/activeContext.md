@@ -2,6 +2,55 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-05 — v14: CAM CEPHE + SOL DUVAR; KOD DEĞİŞMEDİ, SAVE v30)
+
+`src/` DOKUNULMADI. **Çalışılan dosya: `docs/maket/maket-v13.html`** (dosya adı v13 kaldı, içerik v14).
+**Artifact (canlı, aynı link):** https://claude.ai/code/artifact/813bdc4c-3052-46ca-ac3b-23076f425b23
+SS: `docs/maket/ss/v14-adim1.png` · `v14-adim3.png` · `v14-adim6.png` · `v14-cephe-sokak.png` ·
+`v14-cephe-yakin.png` · `v14-solduvar.png`
+
+### Bu oturumda ne yapıldı
+Kullanıcı iki seçenekli soruya cevap verdi: **"önce eksikleri kapat, sonra entegrasyon haritası"**
+ve **"maket devam"** (src/ donuk kalsın). Kat 1'in dört eksiğinden **ilk ikisi kapatıldı**:
+
+1. ✅ **CAM CEPHE (eksik #1, en büyüğü).** Ön duvar (z = +17) artık düz duvar değil, **vitrin**.
+   Yeni yapı taşları: `shopGlass(w,h)` · `shopWins(len)` · `shopFront(x1,z1,x2,z2)`.
+   `windowWall`'dan farkı: kaide 0,5 (yerine 1,15 denizlik değil), cam 0,5 → 2,5, üstte lento,
+   ~1,9'da bir ince ahşap dikme, vasistas kaydı, camda pirinç isim şeridi. Bölümleme otomatik:
+   uçlarda 0,9 · aralarda 1,5 ayak, gözler ~5,8'i geçmez. Adım 1'de iki 4,5'lik göz, adım 2+'de
+   kapının iki yanında ikişer 5,75'lik göz. **Kapı ve tente aynen kaldı.**
+2. ✅ **SOL DUVAR PROGRAMI (eksik #2).** Adım 3'te ocak arkaya taşınınca boşalan z 2…14 arası
+   13 birim dolduruldu — **oturma EKLENMEDİ** (masa sayısı ve ekonomi zinciri bozulmasın diye):
+   askı rayı (z 3,0) · uzun konsol raf + üstünde tablo (z 7,0) · **TELEVİZYON** (z 10,8) ·
+   gazetelik (z 13,2) · iki aplik · ayakta TV izleyen bir müşteri.
+   Yeni yapı taşları: `askiRayi(len)` · `konsol(len)`.
+   **TV kararı:** kıraathanenin en tanımlayıcı duvar öğesi; ileride kendi seviyesi olan bir obje
+   olabilir (henüz karar değil, not).
+3. ✅ **Yeni inceleme kancası:** `window.__bak(azi, ele, dist, tx, ty, tz)` — Playwright'ın belirli
+   bir açıdan ekran görüntüsü alabilmesi için. `window.__maketScene` ile aynı amaçta.
+4. ✅ Adım 1 ve adım 3 açıklama metinleri (STEPS[1]) yeni eklemelere göre güncellendi.
+5. ✅ Playwright MCP 1440×960: adım 1/3/6 çizildi, **0 konsol hatası**. Vitest 186/186.
+
+### Geri alınabilirlik (yorum işaretli bloklar)
+- `>>> CAM CEPHE (vitrin) ... <<<` — `buildFloor1` içindeki iki `shopFront(...)` çağrısı
+  `wall(...)` yapılırsa cephe eski hâline döner; başka hiçbir yeri etkilemez.
+- `>>> SOL DUVAR PROGRAMI ... <<<` — `buildFloor1` içindeki `if (s >= 3)` bloğu silinirse duvar
+  yeniden boşalır.
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**Adım adım oyuna entegrasyon haritası** (kullanıcının ifadesi: *"bunu oyuna entegre etmek için
+her adımda sırayla ne olacak onu tasarlarız"*): hangi pad neyi açıyor, hangi seviye neyi artırıyor,
+`economy.config.ts` pad zinciri + `LAYOUT` (store.ts) koordinatlarına nasıl bağlanıyor.
+Haritadan önce **kullanıcı onayı bekleyen üç karar** (aşağıdaki "KULLANICI ONAYI BEKLEYEN"):
+banket seviyesi = boy · lavabo erken-kalkma mekaniği · 12 adımlık açılış zinciri.
+Ayrıca yeni: **cam cephe ve TV birer pad/seviye olacak mı**, olacaksa zincirin neresinde?
+
+### Kat 1'de KALAN iki eksik (2 tanesi bu oturumda kapandı)
+3. **Tek tezgâh 20 masaya yetmiyor** — garson mekaniği veya ikinci servis noktası şart olacak.
+   Tasarım hatası değil, ekonomi tasarımının çözmesi gereken gerçek.
+4. **Merdiven kovasının ağzı tanımsız** — 9,2 birimlik çerçevesiz açıklık; `archCol()` portalı
+   iki yanına konsa okunur.
+
 ## ŞU AN (2026-09-05 gece — KAT 1 PLANI KESİNLEŞTİ; KOD DEĞİŞMEDİ, SAVE v30)
 
 `src/` DOKUNULMADI. Bu oturum da tamamen maket. **Çalışılan dosya: `docs/maket/maket-v13.html`**
