@@ -540,3 +540,42 @@ kat programı kesinleşince topluca temizlenecek. Maket v2-v5 HTML dosyaları ar
 açık hava sinema, kış bahçesi/sera, canlı müzik köşesi). Seçim onay sonrası D-0xx olarak kaydedilecek.
 **Korunan:** okey/tavla KALIYOR — oyun masaları kumar değil, oyun kütüphanesi/board-game café dilinde
 kurulacak (bahis, kasa, jeton yok). Derecelendirme için okey/tavla ayağı ayrıca değerlendirilecek.
+
+## D-033 — Kilitli obje tadilat hâlinde durur (2026-09-05)
+**Karar:** Kilitli *alan* hiç çizilmez (zemin bile yok, sınırda net duvar). Ama açık alanın içindeki
+kilitli *obje* görünür ve **tadilat hâlinde** durur: tahta perde, sarı-siyah uyarı bandı, dubalar,
+arkasında iskele + moloz + kalaslar. Satın alınınca perde kalkar, bitmiş obje çıkar.
+**Gerekçe:** Kullanıcı: *"lavabo en başta harabe yıkık gibi dursun, sonradan parasını vererek açılsın."*
+Kilitli alanı göstermek "boş oda satın aldım" hissi verir; açık alandaki açıklanmamış boşluk ise mekânı
+sahte gösterir. Tadilat hâli hem sebebi anlatır hem satın alma isteğini doğurur.
+**İlk uygulama:** Kat 1 adım 3 — lavabo köşesi perdeli; adım 4'te perde kalkıyor.
+`tadilatPerde()`, `duba()`, `iskele()`, `moloz()` (docs/maket/maket-v13.html).
+**Açık uç:** aynı muamele merdiven kovasına da uygulansın mı — kullanıcıya soruldu.
+
+## D-034 — Kat 1 mobilya ızgarası (2026-09-05)
+**Karar:** Kat 1'in bütün oturma grupları tek ızgarada: sütunlar x = ∓5,3 · ∓8,5 · ∓11,7 (3,2 aralık),
+satırlar z = −1,1 · 5,3 · 11,7 (6,4 aralık); ortada x ∈ [−4,6, 4,6] kapı–merdiven geçidi.
+Yan duvarlarla mobilya arasında ~4,5 birimlik **çevre koridoru** bırakılır; duvara yalnız servis,
+tezgâh ve depo yapışır.
+**Gerekçe:** Kullanıcı banket adaları için: *"çok sağ ve sol duvarlara yakın duruyolar ... alttaki 4lü
+masa grubuna göre hizalamaları daha düzgün olsa."* Katı ızgara (v3) reddedilmişti, hizasız dağılım da
+dağınık; ortası bu.
+
+## D-035 — Servis bloğunun yüzü tezgâh (2026-09-05)
+**Karar:** Arka-sol servis bloğunun salona bakan yüzü **tezgâh**: semaver, temiz bardak istifleri ve
+hazır tepsiler müşterinin gördüğü yerde; cezve ocağı, hazırlık tezgâhı, menü tahtası ve bulaşık arkada.
+Tezgâhın ortasında 2 birimlik geçit — personel ve oyuncu tepsiyi oradan alır.
+**Gerekçe:** Kullanıcı *"bir kafe olsa bu katta ne olurdu"* diye sordu; planın en kafe-olmayan tarafı
+servis alanının dört duvarla salona kapatılmış olmasıydı. Gerçek kafede tezgâh mekânın yüzüdür.
+**Not:** Kullanıcı bunu *"her an geri aldırabilirim"* kaydıyla onayladı; kod yorum işaretleriyle
+sınırlandı (`>>> ÖN TEZGÂH ... <<<`).
+
+## D-036 — Orta şerit: banket adası + ikili masa (2026-09-05)
+**Karar:** Kat 1'in orta şeridine (34 × 9,8) sırt sırta iki yüzlü **banket adası** ve **ikili masalar**
+girer; tezgâhın ucunda **garson servis istasyonu** (sürahi, peçete, temiz bardak, kirli tepsi).
+İki segment, aralarında kapı–merdiven geçidi.
+**Gerekçe:** Katın gerçek eksiği masa sayısı değil, **masa çeşidi**ydi — 8 özdeş dörtlü masa vardı,
+hiçbir kafe böyle değil; en çok eksik olan ikili masa. Duvar olmadığı için kafelerin standart çözümü
+(banket adası) kullanıldı. Soba ve ocakbaşı tezgâhı önerileri kullanıcı tarafından reddedildi
+(*"hiç mantıklı gelmiyor"*).
+**Kat okuması:** arkada servis · ortada ikili/hızlı devir · önde dörtlü/grup.

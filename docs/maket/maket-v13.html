@@ -959,7 +959,6 @@
   // ön duvarda tek kapı boşluğu; ara duvarlar 2.2 (kamera içeri görür). Zemin fayans.
   function lavaboBlock(x1, x2, zBack, zFront, doorX) {
     var g = new T.Group(), H = 2.2, i;
-    g.add(wall(x1, zBack, x1, zFront, H));
     g.add(wall(x1, zFront, doorX - 0.7, zFront, H));
     g.add(wall(doorX + 0.7, zFront, x2, zFront, H));
     put(g, box(1.6, 0.12, 0.3, C.doorWood), doorX, H - 0.06, zFront);
@@ -1163,6 +1162,58 @@
     [[-0.52, -0.24], [0.52, -0.24], [-0.52, 0.24], [0.52, 0.24]].forEach(function (p) {
       put(g, box(0.07, 0.42, 0.07, C.tableLeg), p[0], 0.21, p[1]);
     });
+    return g;
+  }
+
+  // trafik dubasi
+  function duba() {
+    var g = new T.Group();
+    put(g, box(0.44, 0.05, 0.44, 0xc0451a), 0, 0.025, 0);
+    put(g, cyl(0.05, 0.18, 0.64, 8, 0xe0611f, true), 0, 0.34, 0);
+    put(g, cyl(0.12, 0.14, 0.1, 8, 0xf1ece0), 0, 0.37, 0);
+    return g;
+  }
+
+  // TADILAT PERDESI — kilitli OBJENIN onunde tahta perde + uyari bandi.
+  // Kural: kilitli ALAN hic cizilmez; acik alanin icindeki kilitli obje tadilat halinde durur.
+  function tadilatPerde(x1, x2, z) {
+    var g = new T.Group(), len = x2 - x1, cx = (x1 + x2) / 2, i;
+    var n = Math.round(len / 0.62), st = len / n;
+    for (i = 0; i < n; i++) {
+      put(g, box(st - 0.05, 2.4, 0.1, [0x8a6242, 0x9c6f4a, 0x7d5b40][i % 3], true), x1 + st / 2 + i * st, 1.2, z);
+    }
+    put(g, box(len, 0.13, 0.18, C.doorWood), cx, 0.55, z + 0.02);
+    put(g, box(len, 0.13, 0.18, C.doorWood), cx, 2.05, z + 0.02);
+    for (i = 0; i * 0.86 < len - 0.5; i++) {
+      put(g, box(0.5, 0.17, 0.03, i % 2 ? 0xe0b13a : 0x2f2a24), x1 + 0.35 + i * 0.86, 1.35, z + 0.07).rotation.z = 0.5;
+    }
+    return g;
+  }
+
+  // iskele: dikmeler + kusaklar + kalas platform + capraz
+  function iskele(len) {
+    var g = new T.Group(), i;
+    [-len / 2 + 0.2, len / 2 - 0.2].forEach(function (x) {
+      [-0.5, 0.5].forEach(function (z) { put(g, cyl(0.06, 0.06, 3.0, 6, 0x8d9499), x, 1.5, z); });
+    });
+    [1.0, 2.4].forEach(function (y) {
+      put(g, box(len, 0.07, 0.07, 0x8d9499), 0, y, -0.5);
+      put(g, box(len, 0.07, 0.07, 0x8d9499), 0, y, 0.5);
+    });
+    for (i = 0; i < 3; i++) put(g, box(len - 0.4, 0.06, 0.3, C.tableWood, true), 0, 1.06, -0.32 + i * 0.32);
+    put(g, box(Math.hypot(len, 1.4), 0.06, 0.06, 0x8d9499), 0, 1.7, -0.5).rotation.z = Math.atan2(1.4, len);
+    return g;
+  }
+
+  // moloz: kum yigini + kirik fayans + istiflenmis kalaslar + kova
+  function moloz() {
+    var g = new T.Group(), i;
+    put(g, cyl(0.05, 0.85, 0.55, 9, 0xbfae90, true), 0, 0.27, 0);
+    for (i = 0; i < 7; i++) {
+      put(g, box(0.24, 0.06, 0.2, i % 2 ? 0xcfd8dc : 0xb0bec5), rnd(-0.9, 0.9), 0.03, rnd(0.5, 1.2)).rotation.y = rnd(0, 3);
+    }
+    for (i = 0; i < 4; i++) put(g, box(2.2, 0.07, 0.28, C.tableWood, true), 1.9, 0.04 + i * 0.075, -0.2 + (i % 2) * 0.05);
+    put(g, cyl(0.2, 0.16, 0.32, 8, 0x546e7a, true), -1.2, 0.16, 0.5);
     return g;
   }
 
@@ -1600,6 +1651,23 @@
       put(g, signPost(), -5.6, 0, -10.4, 0.5);
       put(g, sconce(), -16.85, 2.05, -15.6, Math.PI / 2);
       put(g, sconce(), -11.6, 2.05, -16.85, 0);
+      g.add(wall(4.6, -16.9, 4.6, -9.8, 2.2));                    // lavabo bloğunun batı duvarı
+    }
+
+    /* >>> TADİLAT — lavabo satın alınana kadar arka-sağ köşe tahta perdeyle kapalı.
+       Kural: kilitli ALAN hiç çizilmez; açık alanın içindeki kilitli OBJE tadilatta durur. <<< */
+    if (s === 3) {
+      g = ST(3);
+      g.add(tadilatPerde(4.6, 16.9, -9.8));
+      put(g, duba(), 5.6, 0, -8.9);
+      put(g, duba(), 9.4, 0, -8.7);
+      put(g, duba(), 13.8, 0, -8.9);
+      put(g, box(2.6, 0.1, 0.12, 0xe0b13a), 7.5, 0.72, -8.8);
+      put(g, box(2.6, 0.1, 0.12, 0xe0b13a), 11.6, 0.72, -8.8);
+      put(g, iskele(4.4), 12.0, 0, -12.4);
+      put(g, moloz(), 7.0, 0, -13.6);
+      put(g, crates(), 15.6, 0, -15.8);
+      put(g, signPost(), 15.4, 0, -8.8, -0.5);
     }
 
     // ADIM 4 — LAVABO: arka bandın sağ ucu; dört kabin, üç lavabo, kapısı salona bakar.
@@ -1709,19 +1777,21 @@
       g = ST(6);
       put(g, servisIstasyonu(), -7.1, 0, -10.25, 0);
       put(g, staff(C.apronDish, 0), -7.1, 0, -11.3, 0);
-      [[-10.25, [7, 12, 5, 9, 4, 11]], [10.25, [6, 10, 13, 5, 8, 3]]].forEach(function (seg) {
-        put(g, banketIsland(10.5), seg[0], 0, -5.0);
+      /* Hizalama: ada merkezleri ön kümelerin merkezinde (x = ∓8,5); masalar ön masalarla
+         AYNI dikey sütunlarda (∓11,7 · ∓8,5 · ∓5,3) ve güney sırası ön satır ritminde (z = −1,1). */
+      [[-8.5, [7, 12, 5, 9, 4, 11]], [8.5, [6, 10, 13, 5, 8, 3]]].forEach(function (seg) {
+        put(g, banketIsland(7.6), seg[0], 0, -2.65);
         var k = 0;
         [-1, 1].forEach(function (dir) {
-          [-3.5, 0, 3.5].forEach(function (dx) {
-            banketUnit(g, seg[0] + dx, -5.0, dir, seg[1][k++]);
+          [-3.2, 0, 3.2].forEach(function (dx) {
+            banketUnit(g, seg[0] + dx, -2.65, dir, seg[1][k++]);
           });
         });
       });
-      put(g, plant(false), -4.2, 0, -3.0);
-      put(g, plant(false), 4.2, 0, -3.0);
-      put(g, floorLamp(), -16.0, 0, -5.0);
-      put(g, floorLamp(), 16.0, 0, -5.0);
+      put(g, plant(false), -3.4, 0, -1.2);
+      put(g, plant(false), 3.4, 0, -1.2);
+      put(g, floorLamp(), -15.4, 0, -2.65);
+      put(g, floorLamp(), 15.4, 0, -2.65);
     }
 
     // aydınlatma: duvar aplikleri (y≈2.05) + köşelerde ayaklı lambalar
@@ -2080,13 +2150,13 @@
       { n: '3. Alan', badge: 'kat 1 · adım 3 / 6 · arka yarı + tezgâh',
         d: 60, a: -0.58, e: 0.72, t: [-4.0, 0.5, -4.0], rooms: [8, 1, 2],
         stats: [['3 / 6', 'adım'], ['34 × 34', 'kat'], ['9,0', 'tezgâh boyu'], ['8', 'masa'], ['3', 'personel']],
-        labels: [[-8.5, 8.6, '1', '1. Alan'], [8.5, 8.6, '2', '2. Alan'], [-13.0, -10.4, '☕', 'Tezgâh'], [4.0, -5.0, '3', 'boş şerit']],
-        cap: '<b>Adım 3 — Arka yarı açılıyor, servis bloğu ve tezgâh kuruluyor.</b> 34 × 17 birimlik alan tek hamlede geliyor. Arka duvarın sol ucunda 12,2 × 7,0 bir servis bloğu doğuyor ve <b>salona bakan yüzü tezgâh</b>: semaver, temiz bardak istifleri ve hazır tepsiler müşterinin gördüğü yerde; hazırlık arkada — arka duvarda cezve ocağı, hazırlık tezgâhı ve menü tahtası, sol duvarda bulaşık. Tezgâhın ortasında <b>2 birimlik geçit</b>, personel ve oyuncu oradan giriyor. <em>Kafe mantığı: tezgâh mekânın yüzüdür, mutfak arkasında kalır.</em>' },
+        labels: [[-8.5, 8.6, '1', '1. Alan'], [8.5, 8.6, '2', '2. Alan'], [-13.0, -10.4, '☕', 'Tezgâh'], [10.8, -9.2, '⚠', 'Tadilat'], [-2.0, -4.0, '3', 'boş şerit']],
+        cap: '<b>Adım 3 — Arka yarı açılıyor, servis bloğu ve tezgâh kuruluyor.</b> 34 × 17 birimlik alan tek hamlede geliyor. Arka duvarın sol ucunda 12,2 × 7,0 bir servis bloğu doğuyor ve <b>salona bakan yüzü tezgâh</b>: semaver, temiz bardak istifleri ve hazır tepsiler müşterinin gördüğü yerde; hazırlık arkada — arka duvarda cezve ocağı, hazırlık tezgâhı ve menü tahtası, sol duvarda bulaşık. Tezgâhın ortasında <b>2 birimlik geçit</b>, personel ve oyuncu oradan giriyor. <em>Kafe mantığı: tezgâh mekânın yüzüdür, mutfak arkasında kalır.</em> Arka-sağ köşe <b>tahta perdeyle kapalı</b>: içeride iskele, moloz, kalaslar — orası tadilatta, sonra satın alınıp lavabo olacak.' },
       { n: 'Lavabo', badge: 'kat 1 · adım 4 / 6 · lavabo',
         d: 46, a: -0.50, e: 0.62, t: [7.0, 0.8, -8.0], rooms: [8, 6],
         stats: [['4 / 6', 'adım'], ['12,3 × 7,0', 'oda'], ['4', 'kabin'], ['3', 'lavabo'], ['arka-sağ', 'blok']],
         labels: [[10.8, -13.0, '', 'Lavabo'], [-10.8, -13.0, '☕', 'Servis Köşesi'], [0, -5.0, '3', 'boş şerit']],
-        cap: '<b>Adım 4 — Lavabo.</b> Arka bandın <b>sağ ucu</b>: kapalı bir lavabo bloğu (12,3 × 7,0). Arka duvar boyunca <b>dört kabin</b> (biri aralık), sağ duvarda <b>üç lavabo</b> aynalarıyla, ortada dolaşım, ön duvarda tek kapı ve levha. Servis köşesiyle <b>tam simetrik</b>, aynı hizada bitiyor — aradaki boşluk merdivene ayrıldı.' },
+        cap: '<b>Adım 4 — Lavabo.</b> <b>Tahta perde kalkıyor, tadilat bitiyor.</b> Arka bandın <b>sağ ucu</b>: kapalı bir lavabo bloğu (12,3 × 7,0). Arka duvar boyunca <b>dört kabin</b> (biri aralık), sağ duvarda <b>üç lavabo</b> aynalarıyla, ortada dolaşım, ön duvarda tek kapı ve levha. Servis köşesiyle <b>tam simetrik</b>, aynı hizada bitiyor — aradaki boşluk merdivene ayrıldı.' },
       { n: 'Merdiven', badge: 'kat 1 · adım 5 / 6 · merdiven',
         d: 58, a: -0.55, e: 0.70, t: [0, 0.8, -6.0], rooms: [8, 6, 7],
         stats: [['5 / 6', 'adım'], ['9,2 × 7,0', 'kova'], ['14', 'basamak'], ['Kat 2', 'açılır'], ['34 × 9,8', 'boş şerit']],
@@ -2094,9 +2164,9 @@
         cap: '<b>Adım 5 — Merdiven.</b> İki bloğun <b>tam arasındaki</b> kova açılıyor: 14 basamak, iki yanda korkuluk, üstte sahanlık — <b>Kat 2 için tek çıkış</b>. Kovanın iki yanındaki ceplerde askılık, depo kasası ve saksı. Arka bant böylece tamamlanıyor: <b>servis köşesi · merdiven · lavabo, üçü de z = −9,8 hizasında bitiyor.</b> Önlerinde 34 × 9,8 birimlik kesintisiz şerit kalıyor — <em>geniş, tek sıra masalık; sıradaki adımda onu birlikte dolduracağız.</em>' },
       { n: 'Orta Şerit', badge: 'kat 1 · adım 6 / 6 · orta şerit · kat tamam',
         d: 62, a: -0.56, e: 0.70, t: [0, 0.7, -3.0], rooms: [8, 9, 1, 2],
-        stats: [['6 / 6', 'adım'], ['12', 'ikili masa'], ['2', 'banket adası'], ['+24', 'koltuk'], ['1', 'servis istasyonu']],
-        labels: [[-13.0, -10.4, '☕', 'Tezgâh'], [-7.1, -9.4, '', 'Servis İstasyonu'], [-10.25, -5.0, '', 'Banket'], [10.25, -5.0, '', 'Banket'], [0, -12.5, '↑', 'Merdiven']],
-        cap: '<b>Adım 6 — Orta şerit doluyor.</b> Katın eksik oturma tipi geliyor: <b>ikili masa</b>. Duvar olmadığı için kafelerin standart çözümü kullanıldı — <b>sırt sırta banket adası</b>: iki yüzlü uzun oturma bankı, ortada ortak sırtlık, iki yanında altışar ikili masa ve karşılarında sandalye. İki segment, aralarında kapı–merdiven geçidi açık. Tezgâhın sağ ucunda <b>garson servis istasyonu</b>: sürahiler, peçetelik, temiz bardak istifi, kirli bardak tepsisi. Kat böyle okunuyor: <b>arkada servis · ortada ikili/hızlı · önde dörtlü/grup.</b>' }
+        stats: [['6 / 6', 'adım'], ['12', 'ikili masa'], ['2', 'banket adası'], ['+24', 'koltuk'], ['ön masalarla', 'aynı sütun']],
+        labels: [[-13.0, -10.4, '☕', 'Tezgâh'], [-7.1, -9.4, '', 'Servis İstasyonu'], [-8.5, -2.65, '', 'Banket'], [8.5, -2.65, '', 'Banket'], [0, -12.5, '↑', 'Merdiven']],
+        cap: '<b>Adım 6 — Orta şerit doluyor.</b> Katın eksik oturma tipi geliyor: <b>ikili masa</b>. Duvar olmadığı için kafelerin standart çözümü kullanıldı — <b>sırt sırta banket adası</b>: iki yüzlü uzun oturma bankı, ortada ortak sırtlık, iki yanında altışar ikili masa ve karşılarında sandalye. İki segment, aralarında kapı–merdiven geçidi açık. Tezgâhın sağ ucunda <b>garson servis istasyonu</b>: sürahiler, peçetelik, temiz bardak istifi, kirli bardak tepsisi. Adalar <b>ön kümelerle aynı dikey sütunlara</b> oturtuldu (x = ∓11,7 · ∓8,5 · ∓5,3) ve güney sırası ön masaların satır ritmini sürdürüyor — kat tek ızgarada okunuyor. Yan duvarlarla arada çevre koridoru bırakıldı. Kat böyle okunuyor: <b>arkada servis · ortada ikili/hızlı · önde dörtlü/grup.</b>' }
     ],
     2: [
       { n: 'Okey Salonu', badge: 'kat 2 · adım 1 / 4 · Okey Salonu',
