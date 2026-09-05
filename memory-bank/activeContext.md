@@ -62,7 +62,35 @@ ALT NAV     Görevler · Hedefler · Mağaza · Karakter
   takılıyor; sonrası domino. Faz A/C işi (plan zaten "testler koordinat/akış bağından koparılacak"
   diyor). ⚠ Düzeltilmeden Faz B'ye geçilmemeli.
 
+### İLERLEME PANOSU (bu oturumun son çıktısı)
+**`docs/pano/ilerleme-panosu.html`** — artifact https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
+Kullanıcı istedi: *"kaç faz ve oturum kaldı kaçı yapıldı totali ne gibi düşün"* + referans olarak
+ikravakfi'nin **Mali Takip Panosu**'nu (f467bc3f) gösterdi. O panonun iskeleti birebir alındı,
+görsel imza kıraathaneye ait (ceviz/pirinç/krem + Baloo 2 · IBM Plex Sans/Mono).
+
+**Yapısı — tek gerçek kaynak:** sayfanın tamamı dosyanın içindeki
+`<script type="application/json" id="durum">` bloğundan çizilir. **Her oturum sonunda
+SADECE o blok güncellenir**, sonra AYNI dosya yoluyla yeniden yayınlanır (bağlantı değişmez):
+1. ilgili fazın `yapilan`'ını artır · 2. üstteki `yapilan` toplamını artır ·
+3. `ozet` bloğunu bu oturumun işiyle değiştir · 4. `siradaki` bloğunu yeniden yaz ·
+5. `gunluk` listesinin EN ÜSTÜNE satır ekle · 6. `guncelleme` tarihini değiştir.
+
+**Oturum bütçesi (bu oturumda tanımlandı — 65 oturum, 35 yapıldı, %54):**
+- **Kuruluş dönemi 28/28** ✅ (F0 1 · F1 3 · F2 6 · F2Q 3 · F3 8 · F6 5 · Denetim 2).
+  Bu sayı **commit kaydından türetildi** (114 commit / 14 çalışma günü) — tahmindir, panoda
+  öyle yazıyor. Geri kalan bütün sayılar sayımdır.
+- **Yayın programı 7/37:** P 6/6 ✅ · **G 0/4 (SIRADAKİ)** · A 0/3 · B 0/5 · C 0/5 · D 0/5 ·
+  **E 1/4** (arayüz v2 öne alındı) · F 0/5.
+- Kilometre taşları: 28 oynanabilir gövde · 34 plan kesinleşti · 51 model+denge oturdu ·
+  65 v1.0 App Store.
+
+**İlk panoyu kullanıcı REDDETTİ** (statik faz kartları + karar defteri): *"böyle bir ilerleme
+panosu gibi değil"*. Ders: bu kullanıcı için pano = **sayılar** (yapılan/kalan/toplam, faz başına
+oturum), anlatı değil. Anlatı `gunluk` kartlarında kalır.
+
 ### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+0. **PANOYU GÜNCELLE** — oturum bitince `docs/pano/ilerleme-panosu.html` içindeki JSON bloğu
+   (yukarıdaki 6 adım) + aynı yolla yeniden yayınla. Panoyu güncellemeden oturum kapatma.
 1. **Kullanıcı arayüz v2'yi kontrol edecek** (`docs/ui/ss/` + `npm run dev`). Geri bildirime göre
    düzeltme. Astra ölçümü kullanıcı isterse ondan sonra (D-051).
 2. Sonra plandaki sıra: **Faz G** — G0 ışık (hemisphere + fog + ACESFilmic, ~15 satır, en yüksek

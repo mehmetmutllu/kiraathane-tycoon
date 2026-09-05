@@ -981,3 +981,35 @@ Detay: `docs/ui/README.md` · ekran görüntüleri `docs/ui/ss/` · karar **D-05
   worktree'sinde AYNI sonuç. Kök neden `q_coin` questBase yarışı → domino. Faz A/C işi;
   **Faz B'ye geçmeden onarılmalı.**
 - ⏳ **SONRAKİ:** kullanıcı arayüz kontrolü → geri bildirim → **Faz G** (G0 ışık ile başla).
+
+## İLERLEME PANOSU (2026-09-06) — oturum sayacı devrede
+`docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
+Referans: ikravakfi Mali Takip Panosu (f467bc3f) — iskelet alındı, görsel imza kıraathanenin.
+
+**Oturum bütçesi (TOPLAM 65 · YAPILAN 35 · %54):**
+
+| Dönem | Faz | Yapılan/Toplam |
+|---|---|---|
+| Kuruluş (5 Haz – 11 Ağu) | F0 planlama | 1/1 ✅ |
+| | F1 greybox dikey kesit | 3/3 ✅ |
+| | F2 mutfak/servis/personel | 6/6 ✅ |
+| | F2Q görev sistemi + HUD | 3/3 ✅ |
+| | F3 salon çoğaltma + roller | 8/8 ✅ |
+| | F6 sanat geçişi + performans | 5/5 ✅ |
+| | DN denetim + arşiv | 2/2 ✅ |
+| **Kuruluş toplam** | | **28/28 ✅** |
+| Yayın programı (1 Eyl →) | P plan ve maket | 6/6 ✅ |
+| | **G görsel taban** | **0/4 🔧 SIRADAKİ** |
+| | A temizlik | 0/3 ⏳ |
+| | B model geçişi | 0/5 ⏳ |
+| | C zincir ve denge | 0/5 ⏳ |
+| | D meta katman | 0/5 ⏳ |
+| | E arayüz ve cila | 1/4 🔧 |
+| | F paketleme ve yayın | 0/5 ⏳ |
+| **Program toplam** | | **7/37** |
+
+Kuruluş dönemi sayısı **commit kaydından türetildi** (114 commit / 14 çalışma günü); oturum-başı
+defter tutmak yayın programıyla başladı. Panoda bu açıkça yazıyor.
+
+**KURAL:** Pano tek bir JSON bloğundan üretilir (`<script id="durum">`). Her oturum sonunda
+o blok güncellenir + aynı dosya yoluyla yeniden yayınlanır. `oturum-bitir` protokolüne eklendi.

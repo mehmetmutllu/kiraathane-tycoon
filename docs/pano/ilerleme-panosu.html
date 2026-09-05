@@ -1,0 +1,556 @@
+<title>Kıraathane İlerleme Panosu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+
+<style>
+:root{
+  --ground:#f3e9d6; --surface:#fffbf2; --surface-2:#f6ecd8;
+  --ink:#33220f; --ink-2:#6d5636; --ink-3:#9c8360;
+  --line:#e2d2b2; --line-strong:#cbb488;
+
+  --brand:#9a6a1f; --brand-ink:#7d5514; --brand-soft:#f3e4c4;
+  --done:#4c7f24; --done-soft:#e4eed4;
+  --now:#c4761b; --now-soft:#fbeacf;
+  --wait:#8d7350; --wait-soft:#efe5d2;
+  --idle:#a5906d; --idle-soft:#efe6d5;
+  --stop:#a83a24; --stop-soft:#f7e0da;
+
+  --shadow:0 1px 2px rgba(70,45,12,.06), 0 10px 24px -18px rgba(70,45,12,.5);
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#17100a; --surface:#241811; --surface-2:#2e2016;
+    --ink:#f5e9d3; --ink-2:#c9b190; --ink-3:#9a8163;
+    --line:#3b2a1b; --line-strong:#54402a;
+
+    --brand:#e0b46b; --brand-ink:#f0d296; --brand-soft:#33240f;
+    --done:#8fc457; --done-soft:#1e2c12;
+    --now:#e8a24a; --now-soft:#33220d;
+    --wait:#b59a72; --wait-soft:#2a2016;
+    --idle:#8a7457; --idle-soft:#241a11;
+    --stop:#e2745a; --stop-soft:#33170f;
+
+    --shadow:0 1px 2px rgba(0,0,0,.45), 0 12px 28px -20px rgba(0,0,0,.9);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#17100a; --surface:#241811; --surface-2:#2e2016;
+  --ink:#f5e9d3; --ink-2:#c9b190; --ink-3:#9a8163;
+  --line:#3b2a1b; --line-strong:#54402a;
+
+  --brand:#e0b46b; --brand-ink:#f0d296; --brand-soft:#33240f;
+  --done:#8fc457; --done-soft:#1e2c12;
+  --now:#e8a24a; --now-soft:#33220d;
+  --wait:#b59a72; --wait-soft:#2a2016;
+  --idle:#8a7457; --idle-soft:#241a11;
+  --stop:#e2745a; --stop-soft:#33170f;
+
+  --shadow:0 1px 2px rgba(0,0,0,.45), 0 12px 28px -20px rgba(0,0,0,.9);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:"Baloo 2","Trebuchet MS",system-ui,sans-serif;font-weight:700;margin:0;line-height:1.15;text-wrap:balance}
+p{margin:0}
+b,strong{font-weight:600}
+code{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.87em;background:var(--surface-2);padding:1px 5px;border-radius:4px}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:3px}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.wrap{max-width:1020px;margin:0 auto;padding:0 20px}
+
+/* ── üst şerit ── */
+.bar-top{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.bar-top-in{display:flex;align-items:center;justify-content:space-between;gap:16px;height:50px;overflow:hidden}
+.mark{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--brand);white-space:nowrap}
+.stampline{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);white-space:nowrap}
+
+header{padding:36px 0 32px}
+h1{font-size:clamp(28px,4.4vw,40px);font-weight:800;letter-spacing:-.01em}
+.sub{color:var(--ink-2);margin-top:8px;max-width:62ch;font-size:15.5px}
+
+/* ── büyük sayaç ── */
+.meter{margin-top:28px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
+.meter-head{display:flex;align-items:center;gap:24px;padding:20px 22px;flex-wrap:wrap}
+.meter-n{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-size:38px;font-weight:500;line-height:1;letter-spacing:-.02em}
+.meter-n small{font-size:18px;color:var(--ink-3);font-weight:400}
+.meter-pct{font-family:"IBM Plex Mono",monospace;font-size:26px;font-weight:500;color:var(--done);line-height:1}
+.meter-sub{font-size:13.5px;color:var(--ink-2);line-height:1.45;flex:1;min-width:220px}
+.meter-track{height:12px;background:var(--surface-2);border-top:1px solid var(--line);position:relative}
+.meter-track i{position:absolute;inset:0 auto 0 0;background:var(--done)}
+.meter-track u{position:absolute;top:0;bottom:0;width:2px;background:var(--line-strong)}
+.meter-marks{display:flex;flex-wrap:wrap;gap:6px 20px;padding:11px 22px;font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-2);border-top:1px solid var(--line)}
+.meter-marks span b{color:var(--brand);font-weight:600}
+.meter-marks span.hit b{color:var(--done)}
+
+/* ── bölüm ── */
+section{padding:34px 0;border-top:1px solid var(--line)}
+.sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:6px;flex-wrap:wrap}
+h2{font-size:21px;font-weight:800}
+.sec-note{font-size:12px;color:var(--ink-3);font-family:"IBM Plex Mono",monospace}
+.sec-sub{color:var(--ink-2);font-size:14px;margin-top:8px;max-width:68ch}
+
+/* ── şu an / sıradaki panelleri ── */
+.panel{margin-top:20px;border-radius:12px;padding:22px 24px;border:1px solid}
+.panel.now{background:var(--now-soft);border-color:color-mix(in srgb, var(--now) 34%, transparent)}
+.panel.done{background:var(--done-soft);border-color:color-mix(in srgb, var(--done) 30%, transparent)}
+.panel-tag{font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
+.panel.now .panel-tag{color:var(--now)}
+.panel.done .panel-tag{color:var(--done)}
+.panel h3{font-size:19px;margin:10px 0 6px}
+.panel>p{font-size:14.5px;color:var(--ink-2);max-width:64ch}
+.panel-list{list-style:none;margin:16px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:9px 24px}
+.panel-list li{font-size:13.5px;color:var(--ink-2);padding-left:20px;position:relative;line-height:1.5}
+.panel-list li::before{content:attr(data-n);position:absolute;left:0;top:1px;font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:600}
+.panel.now .panel-list li::before{color:var(--now)}
+.panel.done .panel-list li::before{color:var(--done)}
+.panel-foot{margin-top:18px;padding-top:14px;border-top:1px solid;font-size:13px;color:var(--ink-2)}
+.panel.now .panel-foot{border-color:color-mix(in srgb, var(--now) 24%, transparent)}
+.panel.done .panel-foot{border-color:color-mix(in srgb, var(--done) 22%, transparent)}
+
+/* ── faz tablosu ── */
+.phases{margin-top:20px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface);box-shadow:var(--shadow)}
+.ph{display:grid;grid-template-columns:46px 1fr 74px 120px 104px;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--line)}
+.ph:last-child{border-bottom:none}
+.ph-k{font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:600;color:var(--brand)}
+.ph-t{font-size:14.5px;font-weight:600}
+.ph-d{font-size:12.5px;color:var(--ink-3);margin-top:2px}
+.ph-n{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-size:13px;color:var(--ink-2);white-space:nowrap}
+.ph-track{height:7px;border-radius:100px;background:var(--surface-2);overflow:hidden;border:1px solid var(--line)}
+.ph-track i{display:block;height:100%;background:var(--done)}
+.ph-track.is-now i{background:var(--now)}
+.chip{font-family:"IBM Plex Mono",monospace;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:100px;white-space:nowrap;display:inline-block}
+.c-done{background:var(--done-soft);color:var(--done)}
+.c-now{background:var(--now-soft);color:var(--now)}
+.c-wait{background:var(--wait-soft);color:var(--wait)}
+.c-idle{background:var(--idle-soft);color:var(--idle)}
+.ph-band{background:var(--brand-soft);padding:9px 18px;border-bottom:1px solid var(--line);font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--brand-ink);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+/* ── günlük ── */
+.log{list-style:none;margin:20px 0 0;padding:0;display:flex;flex-direction:column;gap:12px}
+.log>li{background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:16px 20px;box-shadow:var(--shadow)}
+.log-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:7px}
+.log-date{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3);white-space:nowrap}
+.log-t{font-size:15.5px;font-weight:600;font-family:"Baloo 2",system-ui,sans-serif}
+.log-b{font-size:13.5px;color:var(--ink-2);line-height:1.55}
+.log-b ul{margin:9px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:5px}
+.log-b ul li{padding-left:15px;position:relative}
+.log-b ul li::before{content:"—";position:absolute;left:0;color:var(--line-strong)}
+
+/* ── riskler ── */
+.guard{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.guard div{background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:16px 18px;box-shadow:var(--shadow)}
+.guard h3{font-size:15.5px;margin-bottom:6px}
+.guard p{font-size:13px;color:var(--ink-2)}
+.guard span{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:8px}
+
+/* ── ölçüt kutuları ── */
+.kpis{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.kpi{background:var(--surface);padding:14px 16px 15px}
+.kpi span{display:block;font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.kpi b{display:block;font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-size:24px;font-weight:500;margin:3px 0 2px}
+.kpi i{font-style:normal;font-size:12.5px;color:var(--ink-2)}
+
+.foot{padding:30px 0 60px;color:var(--ink-3);font-size:12.5px;border-top:1px solid var(--line)}
+.foot p+p{margin-top:6px}
+
+@media (max-width:760px){
+  .ph{grid-template-columns:42px 1fr;gap:8px 12px}
+  .ph-n,.ph-track,.ph-durum{grid-column:2}
+  .ph-n{text-align:right}
+  .ph-durum{justify-self:end}
+  header{padding:28px 0 24px}
+  .meter-n{font-size:32px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     TEK GERÇEK KAYNAK — yalnız aşağıdaki JSON bloğunu düzenle.
+     Sayfanın tamamı bundan üretilir; başka hiçbir yeri elle değiştirme.
+
+     Oturum sonunda sırasıyla:
+       1) ilgili fazın "yapilan" değerini artır
+       2) "yapilan" toplamını artır
+       3) "ozet" bloğunu bu oturumun işiyle değiştir
+       4) "siradaki" bloğunu yeniden yaz
+       5) "gunluk" listesinin EN ÜSTÜNE yeni satır ekle
+       6) "guncelleme" tarihini değiştir
+     Sonra AYNI dosya yoluyla yeniden yayınla — bağlantı değişmez.
+
+     Oturum tanımı: CLAUDE.md'deki çalışma birimi — küçük, test edilebilir,
+     kendi commit'i olan bir parça. Kuruluş dönemi sayısı commit kaydından
+     türetildi (114 commit / 14 çalışma günü); oturum-başı defter tutmak
+     yayın programıyla başladı.
+     ══════════════════════════════════════════════════════════════════════ -->
+<script type="application/json" id="durum">
+{
+  "guncelleme": "06.09.2026",
+  "yapilan": 35,
+  "toplam": 65,
+  "kilometre": [
+    { "at": 28, "etiket": "Oynanabilir gövde" },
+    { "at": 34, "etiket": "Kat 1 planı kesinleşti" },
+    { "at": 51, "etiket": "Model ve denge oturdu" },
+    { "at": 65, "etiket": "v1.0 App Store" }
+  ],
+  "ozet": {
+    "etiket": "Bu oturum · Faz E'den bir parça öne alındı",
+    "baslik": "Arayüz gerçek oyun ekranında yeniden kuruldu",
+    "aciklama": "Planın §14'ünde bekleyen <b>son dört karar kapandı</b> ve arayüz işi statik mockup olarak değil, <b>oynanan oyunun içinde</b> yapıldı. Yanında her şeyin seviyesini elle ayarlayan bir geliştirici paneli ve iki CC0 asset paketi geldi.",
+    "adimlar": [
+      "<b>Üst şerit</b> — İtibar madalyonu ve çubuğu, para, elmas, ayar",
+      "<b>Alt bant</b> — aktif adım tek satır; dokununca kamera hedefe kayar",
+      "<b>Alt nav</b> — Görevler · Hedefler · Mağaza · Karakter, ortak sayfa kabuğu",
+      "<b>Ekran kenarı oku</b> — hedef görüş alanı dışındayken kenarda beliriyor",
+      "<b>Hedefler ekranı</b> — beş kategori, sayaçlar gerçek istatistikten türüyor",
+      "<b>Sandbox</b> — sınırsız para, zaman ×1–25, her ocağın ve 12 masanın seviyesi",
+      "<b>KayKit</b> — Restaurant Bits (144 model) + City Builder Bits (41 model), CC0",
+      "<b>Posta paneli kaldırıldı</b>, emoji ve CSS ikon yok — 6 yeni SVG ikon çizildi"
+    ],
+    "not": "<b>Kapanan kararlar:</b> kritik yol 5–7 saat onaylandı (D-049) · Kat 2'nin ürünü Kat 1 yayınından sonraya ertelendi (D-050) · Astra ile eş zamanlı A/B yapılmayacak, önce tam güçlü tek deneme (D-051) · interstitial 120 saniye, ilk 5 dakika muaf (D-052).<br><br><b>Ölçüm:</b> mantık testleri 186/186 yeşil, üretim derlemesi temiz, tarayıcı konsolu hatasız. Sandbox üretim paketine girmiyor — doğrulandı.<br><br><b>Bir kırık bulundu ama bu oturumun değil:</b> duman testi 15 adımın 7'sinde düşüyor. Önceki commit ayrı bir çalışma kopyasında denendi, <b>birebir aynı sonuç</b> verdi. Kök neden yazıldı; Faz A/C işi."
+  },
+  "siradaki": {
+    "etiket": "Faz G · oturum 1/4",
+    "baslik": "G0 — ışık",
+    "aciklama": "Sahne bugün <b>her yeri eşit parlak</b> duruyor; ekran görüntülerindeki o düz görüntünün sebebi doku eksikliği değil, <b>ışık</b>. Doku yolu zaten denendi ve geri alındı (D-041). G0 yaklaşık on beş satır, sıfır asset, sıfır ek çizim maliyeti — plandaki en yüksek etki/çaba oranı.",
+    "adimlar": [
+      "Tek renk ortam ışığı yerine <b>sıcak gök / soğuk yer</b> ikilisi",
+      "Yönlü ışığı <b>sıcaklaştır</b>, değer aralığını aç",
+      "<b>Sis</b> ekle — derinlik kazansın",
+      "<b>ACESFilmic</b> ton eşlemesi — renkler yıkanmasın"
+    ],
+    "not": "<b>Onay isteyeceğim tek şey ekran görüntüsü olacak:</b> öncesi ve sonrası yan yana. Beğenmezsen tek commit geri alınır — bu adım hiçbir şeye bağlı değil, kimseyi bloklamıyor.<br><br><b>Sonra sırayla:</b> G1 temas gölgesi (objelerin \"yüzme\" hissi biter) → G2 zemine ölçek referansı, dokuyla değil <b>geometriyle</b> → G3 duvar bitimi (süpürgelik, çıta, kartonpiyer) → G4/G5 KayKit yerleşimi, paketler artık elde.<br><br><b>Faz A'ya geçmeden onarılacak:</b> duman testinin yedi kırık adımı. Kök neden bulundu — <code>q_coin</code> görevi aktifleşmeden para toplanıyor, sayaç 0/1'de takılıyor, gerisi domino."
+  },
+  "donemler": [
+    {
+      "ad": "Kuruluş dönemi",
+      "tarih": "5 Haziran – 11 Ağustos 2026",
+      "not": "114 commit · 14 çalışma günü",
+      "fazlar": [
+        { "k": "F0", "t": "Planlama ve iskelet", "d": "Stack kararı, data-driven ekonomi, Decimal, kayıt ve migrasyon disiplini, ekonomi simülatörü", "yapilan": 1, "toplam": 1 },
+        { "k": "F1", "t": "3B greybox dikey kesit", "d": "Sahne, kamera, oynatıcı, ilk çay istasyonu, NPC döngüsü, satın-alma noktası, offline gelir", "yapilan": 3, "toplam": 3 },
+        { "k": "F2", "t": "Mutfak, servis, personel", "d": "Tepsiyle manuel servis, bardak döngüsü, garson ve bulaşıkçı, kirli masa mekaniği, mekânsal yükseltme", "yapilan": 6, "toplam": 6 },
+        { "k": "F2Q", "t": "Görev sistemi ve HUD", "d": "36 görevlik hat, kamera odağı, seviye/XP, ayarlar, bildirim kuyruğu", "yapilan": 3, "toplam": 3 },
+        { "k": "F3", "t": "Salon çoğaltma ve roller", "d": "Zone ızgarası, üç salon, tost ürün hattı, koltuk ve grup sistemi, ikinci garson, denge turları", "yapilan": 8, "toplam": 8 },
+        { "k": "F6", "t": "Sanat geçişi ve performans", "d": "KayKit mobilya, recolor atlası, instancing, açılış ekranı, kozmetik tema mağazası", "yapilan": 5, "toplam": 5 },
+        { "k": "DN", "t": "Denetim ve arşiv", "d": "Yayına hazırlık denetimi (App Store, reklam), depo temizliği, İngilizce README", "yapilan": 2, "toplam": 2 }
+      ]
+    },
+    {
+      "ad": "Yayın programı — v1.0 Kat 1",
+      "tarih": "1 Eylül 2026 →",
+      "not": "sıra keyfî değil: her faz bir sonrakinin önünü açar",
+      "fazlar": [
+        { "k": "P", "t": "Plan ve maket", "d": "Kat 1 maketi v2 → v15, yayın planı v1 → v4, karar defteri D-030 … D-052", "yapilan": 6, "toplam": 6 },
+        { "k": "G", "t": "Görsel taban", "d": "Işık · temas gölgesi · plank ve karo geometrisi · duvar bitimi · KayKit yerleşimi", "yapilan": 0, "toplam": 4, "durum": "now", "kapi": "Ekran görüntüsü onayı + FPS ölçümü" },
+        { "k": "A", "t": "Temizlik", "d": "Ölü alanları kaldır · tick() 800 → 150 satır · testleri koordinat bağından kopar", "yapilan": 0, "toplam": 3, "kapi": "Test sayısı düşmeden yeşil" },
+        { "k": "B", "t": "Model geçişi", "d": "ALAN / SERVİS / MASA / ODA · yerleşim maket ölçeğine · kayıt v31", "yapilan": 0, "toplam": 5, "kapi": "Maketin altı adımı oyunda gezilebiliyor" },
+        { "k": "C", "t": "Zincir ve denge", "d": "Tek Odak · tezgâh merdiveni · global garson ve sipariş kuyruğu · simülatör gerçeğe yaklaşır", "yapilan": 0, "toplam": 5, "kapi": "Sim tempo tablosunu tutuyor, tempo iddiaları teste yazılı" },
+        { "k": "D", "t": "Meta katman", "d": "Görev kimlikleri · Hedefler ödülü · İtibar · günlük görev · elmas ekonomisi · Usta katmanı", "yapilan": 0, "toplam": 5, "kapi": "Elmas kazanılıp harcanabiliyor, Usta alınabiliyor" },
+        { "k": "E", "t": "Arayüz ve cila", "d": "Bilgi mimarisi ✓ · Görevler ve Hedefler ekranı ✓ · kalan: ses, hareketli onboarding, duman testinin bağlanması", "yapilan": 1, "toplam": 4, "kapi": "Duman testi package.json'a bağlı ve yeşil" },
+        { "k": "F", "t": "Paketleme ve yayın", "d": "Capacitor iOS · CI derlemesi · AdMob, ATT, SKAdNetwork · RevenueCat · gizlilik manifesti · mağaza materyali", "yapilan": 0, "toplam": 5, "kapi": "TestFlight'ta çalışan sürüm" }
+      ]
+    }
+  ],
+  "gunluk": [
+    {
+      "tarih": "06.09.2026",
+      "etiket": "Faz E · 1. oturum",
+      "baslik": "Arayüz gerçek oyunda, sandbox ve asset paketleri",
+      "govde": "Kullanıcı arayüzü statik bir mockup olarak değil, <b>oynanan oyunun içinde</b> görmek istedi — ve her şeyin seviyesini elle ayarlayabileceği bir panel istedi. İkisi de yapıldı. Bilgi mimarisi plandaki §9'a göre kuruldu: üst şerit, aktif adımı taşıyan alt bant, dört sekmeli alt nav ve bütün panellerin paylaştığı tek sayfa kabuğu. Dağınık duran dört yan buton ile sağ üstteki görev kartı kalktı, Posta paneli kaldırıldı.<br><br>Görsel dil iki katman: sahnenin üstünde duran her şey <b>ceviz ve pirinç</b> (zemin teması ne olursa olsun okunur), içerik yoğun sayfalar <b>krem kâğıt</b>. Emoji ve CSS ikon kullanılmadı; altı yeni simge elle çizildi.<br><br>Kullanıcı ilk bakışta seviye barını küçük buldu — madalyon 42'den 56 piksele, içindeki rakam 15'ten 21'e çıkarıldı ve rakam optik merkeze alındı; eskiden madalyonun alt kenarından taşıyordu.",
+      "maddeler": [
+        "Planın son dört kararı kapandı: <b>D-049 … D-052</b>",
+        "<b>Ekran kenarı oku</b> — hedef dışarıdayken kenarda beliriyor, dokununca kamera kayıyor",
+        "<b>Hedefler</b> ekranı: beş kategori, sayaçlar gerçek istatistikten türüyor",
+        "<b>Sandbox</b>: sınırsız para, zaman ×1–25, ocak ve 12 masanın seviyesi, pad zinciri, görev atlama",
+        "<b>KayKit Restaurant + City Builder</b> indirildi, CC0 lisansı doğrulandı",
+        "Mantık testleri <b>186/186</b>, üretim derlemesi temiz, konsol hatasız"
+      ],
+      "not": "<b>Bir kırık bulundu ama bu oturumun değil.</b> Duman testi 15 adımın 7'sinde düşüyor. Önceki commit ayrı bir çalışma kopyasına açılıp aynı test koşuldu: <b>birebir aynı sonuç</b>. Yani kırık daha önceden vardı ve fark edilmemişti. Kök neden yazıldı — <code>q_coin</code> görevi aktifleşmeden önce para toplanıyor, görev sayacının başlangıcı 1'e kilitleniyor, sayaç 0/1'de takılıyor ve sonrası domino. Faz A/C işi; <b>Faz B'ye geçmeden onarılmalı</b>."
+    },
+    {
+      "tarih": "06.09.2026",
+      "etiket": "Faz P · 6. oturum — P kapandı",
+      "baslik": "Servis sistemi: global garson havuzu ve sipariş",
+      "govde": "Çay garsonu / tost garsonu ayrımı kaldırıldı. Kullanıcının cümlesi netti: <i>“öyle bir masa ve alan ayrımı da kalmadı, globalleşmesi lazım.”</i> Masa artık tek bir ürün değil <b>sipariş</b> veriyor — iki tost bir çay gibi — ve garson siparişin tamamı hazır olunca alıyor.<br><br>Beş kural yazıldı: havuz global · üstlenme bağlayıcı (garson yolda başka masaya bırakmaz) · öncelik en acil masada (hiçbir masa aç kalmaz) · sabır sipariş boyuna bağlı · garson sayısı türetilir, elle ayarlanmaz.<br><br>Servis noktası da tek merdivene indirildi: çay ocağı L1–L3, dördüncü seviyede <b>tezgâha dönüşüyor</b>, beşinci seviyede <b>tost açılıyor</b>, altıncı son para seviyesi, yedinci Usta. Mevcut maliyet tablosuyla birebir örtüştüğü için kayıt şeması değişmiyor.",
+      "maddeler": [
+        "<b>D-046</b> global garson havuzu + sipariş tabanlı servis",
+        "<b>D-047</b> servis noktası tek merdiven: ocak L1–L3, tezgâh L4–L6, Usta L7",
+        "<b>D-048</b> Astra kullanımı zorunlu değil, karar arayüz denemesinden sonra"
+      ],
+      "not": "Faz C'de simülatöre sipariş kuyruğu, üstlenme ve açlık ölçümü eklenecek; <b>“hiçbir masa X saniyeden fazla beklemedi”</b> iddiası teste yazılacak. Bugün bu davranışların hiçbiri ölçülmüyor."
+    },
+    {
+      "tarih": "05.09.2026",
+      "etiket": "Faz P · 4–5. oturum",
+      "baslik": "Kat 1 yayın planı — kaynak tarandı, tempo ve meta katman tasarlandı",
+      "govde": "Kaynağın tamamı tarandı ve bulgular kodda doğrulandı. Ortaya on dört bölümlük bir plan çıktı: ilerleme modeli, tempo tablosu, meta katman, görsel yol, arayüz şartnamesi, App Store yolu, faz planı, riskler.<br><br>En önemli iki bulgu yapısaldı. <b>Tek Odak kuralı</b> ihlal ediliyordu: ekranda aynı anda birden çok hedef çiziliyor, çünkü opsiyonel noktalar ve yükseltme dolumları görev filtresinin tamamen dışında. Ve <b>doku yolu kapalı</b>: zemine doku denenmiş, moiré yapmış, geri alınmıştı — asıl teşhis dokuda değil ölçek referansında.",
+      "maddeler": [
+        "Kritik yol <b>5–7 saat</b> olarak çerçevelendi, tekrarlı yükseltmeler yolun dışına alındı",
+        "Usta katmanı: L1–L3 para, L4 reklam veya elmas — kritik yolun dışında",
+        "Asset yolu: <b>KayKit CC0</b> + beş Türk objesi elle; AI'ın ücretsiz planları yasak",
+        "Başarı ölçütü saat değil <b>geri dönüş</b>: D1 ≥ %40, D7 ≥ %10"
+      ],
+      "not": "Ücretsiz AI 3B araçlarının lisansları tek tek okundu: biri atıf zorunlu tutuyor, biri ticari kullanımı yasaklıyor, biri çıktının Avrupa'da kullanılmasını açıkça yasaklıyor. Üçü de kullanılmayacak."
+    },
+    {
+      "tarih": "05.09.2026",
+      "etiket": "Faz P · 3. oturum",
+      "baslik": "Sokak cephesi vitrin oldu, kat yüksekliği düzeldi",
+      "govde": "Kullanıcı vitrine baktı ve <i>“güzel ama düzgün durmadı sanki”</i> dedi. Dört ayrı kusur çıktı: duvar 2,7 iken kapı boşluğu 2,9'du, yani <b>kapı duvardan taşıyordu</b>; cam bandının üstünde tabelaya yer yoktu, bina alçak bir baraka gibi duruyordu; tente alınlığın üstündeydi ve <b>eğimi tersti</b>; kapı kanadı içi dolu ahşap bir kutuydu, camın arkasında tahta kalıyordu.<br><br>Dördü de düzeltildi ve kat yüksekliği tek bir sabite bağlandı. Ayrıca içerideki rafların gölgesi duvarın dış yüzüne sızıyordu — gölge sapması duvar kalınlığından küçüktü.",
+      "maddeler": [
+        "Cephe dizilimi: kaide · cam · lento · <b>alınlık (tabela)</b> · üst kordon",
+        "Kapı <b>çift kanatlı camlı</b> oldu, sağ kanat içeri açık",
+        "Kat yüksekliği <b>3,2</b> — üç kat birden düzeldi"
+      ],
+      "not": "Girişin üst çıtasında kalan renk yalpalanması kullanıcı tarafından bilerek ertelendi: <i>“oyuna geçerken hallederiz.”</i>"
+    },
+    {
+      "tarih": "04–05.09.2026",
+      "etiket": "Faz P · 1–2. oturum",
+      "baslik": "Kat 1 maketi doğdu ve altı adıma oturdu",
+      "govde": "Mekân tasarımı üç boyutlu bir maket üzerinden yürütüldü. Onaylanan düzenin üstüne <b>seviye katmanı</b> eklendi: kıraathane bitmiş hâliyle değil, adım adım büyüyerek kuruluyor. Arka bant (servis, merdiven, lavabo) yerine oturdu, tezgâh salona açıldı, orta şeride banket adası girdi.<br><br>Merdiven bilerek <b>yıkık</b> bırakıldı — Kat 2 güncellemesinin kancası olacak. Kilitli alanlar çizilmiyor ama açık alandaki kilitli objeler tahta perde ve dubayla duruyor.",
+      "maddeler": [
+        "Kat 1 <b>altı adıma</b> bölündü — her adım gezilebilir",
+        "<b>Nargile kaldırıldı</b> — yaş derecelendirmesi yükselmesin",
+        "Kilitli obje <b>tadilat hâlinde</b> durur, parasıyla açılır"
+      ],
+      "not": "Katı ızgara denemesi kullanıcı tarafından reddedildi; düzen hissi ile doluluk birlikte isteniyor."
+    },
+    {
+      "tarih": "01.09.2026",
+      "etiket": "Denetim · 2. oturum",
+      "baslik": "Yayına hazırlık denetimi",
+      "govde": "App Store ve reklam tarafının engelleri tek tek çıkarıldı: geliştirici hesabı, imzalama, izleme izni, gizlilik manifesti, yaş derecelendirme anketi, mağaza materyali. Geliştirmenin Windows'ta yapılması iOS derlemesi için bir engel — çözüm bulut derleme olarak karara bağlandı.",
+      "maddeler": [
+        "Bloker listesi çıkarıldı ve sıraya kondu",
+        "iOS derlemesi için <b>bulut CI</b> kararı"
+      ],
+      "not": "Çocuk kategorisine girilmeyecek: girilirse davranışsal reklam tamamen yasaklanır ve gelir modeli çöker."
+    },
+    {
+      "tarih": "05.06 – 17.06.2026",
+      "etiket": "Kuruluş dönemi · 28 oturum",
+      "baslik": "Oynanabilir gövde kuruldu",
+      "govde": "Stack kararıyla başlandı — Unity değil, TypeScript ve tarayıcı. Ekonominin bütün sayıları tek dosyaya alındı, para <b>büyük sayı</b> tipiyle tutuldu, kayıt ilk günden sürüm numarası ve göç yolu ile kuruldu. Bugün otuz sürümlük göç zinciri kesintisiz çalışıyor.<br><br>Üstüne sırayla: tepsiyle manuel servis ve bardak döngüsü, garson ve bulaşıkçı, üç salon, ikinci ürün hattı olarak tost, koltuk ve grup sistemi, 36 görevlik hat, kozmetik tema mağazası, KayKit mobilya ve çizim performansı. Telefon geri bildirimi beş tur döndü ve her turda denge yeniden ölçüldü.",
+      "maddeler": [
+        "<b>3 salon · 12 masa · iki ürün hattı</b> (çay ve tost)",
+        "Garson, bulaşıkçı, ikinci garson ve üstlenme sistemi",
+        "<b>Kayıt v30</b> + otuz göç adımı, hepsi testli",
+        "Ekonomi simülatörü — tempo eğrisi ölçülebiliyor"
+      ],
+      "not": "Bu dönemin oturum sayısı <b>commit kaydından türetildi</b> (114 commit, 14 çalışma günü); oturum-başı defter tutmak yayın programıyla başladı. Rakam bir tahmindir, geri kalan bütün sayılar sayımdır."
+    }
+  ],
+  "riskler": [
+    { "sev": "Engelleyici", "renk": "stop", "b": "Duman testi 15 adımın 7'sinde düşüyor", "p": "Bu oturumdan önce de kırıktı — önceki commit ayrı bir çalışma kopyasında aynı sonucu verdi. Kök neden bulundu ve yazıldı. Faz A/C işi; Faz B'ye geçmeden onarılmalı." },
+    { "sev": "Yapısal", "renk": "now", "b": "Ekranda tek hedef kuralı deliniyor", "p": "Görev filtresi satın-alma noktalarına uygulanıyor ama opsiyonel noktalar ve yükseltme dolumları filtrenin dışında çiziliyor. Oyuncu aynı anda birden çok hedef görüyor. Faz C'de kapanacak." },
+    { "sev": "Bakım", "renk": "now", "b": "Ana döngü 800 satır", "p": "Yaklaşık kırk yerel değişkenle tek fonksiyon. Her yeni sistem regresyon riski taşıyor. Faz A'da sistemlere bölünecek." },
+    { "sev": "Ölçüm", "renk": "wait", "b": "Simülatör oyunu doğrulamıyor", "p": "İdealize model, gerçekten farklı yürüme hızı. Yayın sonrası eğri tutmazsa düzeltmek güncelleme ister. Faz C'de gerçeğe yaklaştırılacak." },
+    { "sev": "Altyapı", "renk": "wait", "b": "iOS derlemesi Mac istiyor", "p": "Geliştirme Windows'ta. Karar verildi: bulut CI üzerinden derlenecek. Faz F'den önce kurulmalı, yoksa yayın gecikir." },
+    { "sev": "Görsel", "renk": "idle", "b": "Maket girişinde renk yalpalanması", "p": "Üst çıtada iki yüzey aynı düzlemde çakışıyor. Kullanıcı tarafından bilerek ertelendi: “oyuna geçerken hallederiz.” Faz G'de." }
+  ],
+  "olcut": [
+    { "k": "Kritik yol", "v": "5–7 sa", "n": "v1.0'ın “bitti” süresi" },
+    { "k": "D1 tutunma", "v": "≥ %40", "n": "ertesi gün geri dönen" },
+    { "k": "D7 tutunma", "v": "≥ %10", "n": "bir hafta sonra geri dönen" },
+    { "k": "Oturum", "v": "8–12 dk", "n": "tek oturumda geçen süre" },
+    { "k": "Reklam arası", "v": "120 sn", "n": "ilk 5 dakika muaf" }
+  ]
+}
+</script>
+
+<div class="bar-top"><div class="wrap bar-top-in">
+  <span class="mark">Köşe Kıraathanesi · 3B idle-tycoon</span>
+  <span class="stampline" id="stamp"></span>
+</div></div>
+
+<div class="wrap">
+
+  <header>
+    <h1>İlerleme Panosu</h1>
+    <p class="sub">
+      Kıraathaneyi mağazaya çıkarma yolunun tamamı: kaç oturum yapıldı, kaçı kaldı,
+      hangi faz neyi bekliyor. Kaynak depodur — bu sayfa oradan üretilir, onun yerine geçmez.
+    </p>
+
+    <div class="meter">
+      <div class="meter-head">
+        <div>
+          <div class="meter-n mono" id="mN"></div>
+          <div class="stampline" style="margin-top:4px" id="mLabel"></div>
+        </div>
+        <div class="meter-pct mono" id="mPct"></div>
+        <p class="meter-sub" id="mSub"></p>
+      </div>
+      <div class="meter-track" id="mTrack"><i id="mFill"></i></div>
+      <div class="meter-marks" id="mMarks"></div>
+    </div>
+  </header>
+
+  <section>
+    <div class="sec-head"><h2>Şu an</h2><span class="sec-note" id="ozetTag"></span></div>
+    <p class="sec-sub">En son kapanan oturumda ne yapıldı.</p>
+    <div class="panel done" id="ozet"></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Sıradaki oturum</h2><span class="sec-note" id="sirTag"></span></div>
+    <p class="sec-sub">Bir sonraki chat buradan başlar.</p>
+    <div class="panel now" id="siradaki"></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Fazlar</h2><span class="sec-note" id="fazNote"></span></div>
+    <p class="sec-sub">
+      Her fazın kaç oturum tuttuğu ve kaçının kaldığı. Yayın programında sıra keyfî değil:
+      yanlış sırada yapılan iş iki kez yazılır.
+    </p>
+    <div id="fazlar"></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Oturum günlüğü</h2><span class="sec-note">yeniden eskiye</span></div>
+    <ul class="log" id="gunluk"></ul>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Açık riskler</h2><span class="sec-note" id="riskNote"></span></div>
+    <p class="sec-sub">Hepsinin bir önlemi ve bir fazı var; sürpriz olarak kalanı yok.</p>
+    <div class="guard" id="riskler"></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Başarı ölçütü</h2><span class="sec-note">saat değil, geri dönüş</span></div>
+    <div class="kpis" id="olcut"></div>
+  </section>
+
+  <div class="foot">
+    <p>Kaynak: <code>memory-bank/progress.md</code> · <code>memory-bank/decisions.md</code> ·
+      <code>docs/plan-kat1-yayin.html</code> · <code>docs/ui/README.md</code></p>
+    <p>Pano depodan üretilir; bir çelişki olursa depo haklıdır. Sayfanın tamamı dosyanın içindeki
+      tek bir veri bloğundan çizilir — güncelleme oradan yapılır.</p>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  var D = JSON.parse(document.getElementById('durum').textContent);
+  var kalan = D.toplam - D.yapilan;
+  var pct = Math.round((D.yapilan / D.toplam) * 100);
+
+  document.getElementById('stamp').textContent =
+    D.guncelleme + ' · ' + D.yapilan + '/' + D.toplam + ' oturum · %' + pct;
+
+  document.getElementById('mN').innerHTML = D.yapilan + ' <small>/ ' + D.toplam + ' oturum</small>';
+  document.getElementById('mLabel').textContent = kalan + ' oturum kaldı';
+  document.getElementById('mPct').textContent = '%' + pct;
+
+  var fazSay = 0, fazBitti = 0;
+  D.donemler.forEach(function (d) {
+    d.fazlar.forEach(function (f) {
+      fazSay++;
+      if (f.yapilan >= f.toplam) fazBitti++;
+    });
+  });
+  document.getElementById('mSub').innerHTML =
+    '<b>' + fazBitti + '/' + fazSay + ' faz</b> tamamlandı. Kuruluş dönemi bitti, yayın programı sürüyor — ' +
+    'sıradaki iş <b>' + D.siradaki.etiket + '</b>.';
+  document.getElementById('fazNote').textContent = fazBitti + '/' + fazSay + ' faz tamam';
+
+  document.getElementById('mFill').style.width = pct + '%';
+  var track = document.getElementById('mTrack');
+  var marks = document.getElementById('mMarks');
+  D.kilometre.forEach(function (k) {
+    var u = document.createElement('u');
+    u.style.left = (k.at / D.toplam * 100) + '%';
+    track.appendChild(u);
+    var s = document.createElement('span');
+    if (D.yapilan >= k.at) s.className = 'hit';
+    s.innerHTML = '<b>' + k.at + '.</b> ' + k.etiket;
+    marks.appendChild(s);
+  });
+
+  function panel(el, o) {
+    var h = '<span class="panel-tag">' + o.etiket + '</span>' +
+            '<h3>' + o.baslik + '</h3>' +
+            '<p>' + o.aciklama + '</p>';
+    if (o.adimlar && o.adimlar.length) {
+      h += '<ul class="panel-list">';
+      o.adimlar.forEach(function (a, i) {
+        h += '<li data-n="' + String(i + 1).padStart(2, '0') + '">' + a + '</li>';
+      });
+      h += '</ul>';
+    }
+    if (o.not) h += '<div class="panel-foot">' + o.not + '</div>';
+    el.innerHTML = h;
+  }
+  panel(document.getElementById('ozet'), D.ozet);
+  panel(document.getElementById('siradaki'), D.siradaki);
+  document.getElementById('ozetTag').textContent = D.guncelleme;
+  document.getElementById('sirTag').textContent = D.siradaki.etiket;
+
+  var CH = {
+    done: ['c-done', 'Bitti'],
+    now: ['c-now', 'Sıradaki'],
+    wait: ['c-wait', 'Bekliyor'],
+    part: ['c-now', 'Sürüyor']
+  };
+  var out = '';
+  D.donemler.forEach(function (d) {
+    var y = 0, t = 0;
+    d.fazlar.forEach(function (f) { y += f.yapilan; t += f.toplam; });
+    out += '<div class="phases">';
+    out += '<div class="ph-band"><span>' + d.ad + ' · ' + d.tarih + '</span>' +
+           '<span>' + y + '/' + t + ' oturum · ' + d.not + '</span></div>';
+    d.fazlar.forEach(function (f) {
+      var st = f.durum || (f.yapilan >= f.toplam ? 'done' : (f.yapilan > 0 ? 'part' : 'wait'));
+      var c = CH[st] || CH.wait;
+      var p = Math.round(f.yapilan / f.toplam * 100);
+      out += '<div class="ph">' +
+        '<div class="ph-k">' + f.k + '</div>' +
+        '<div><div class="ph-t">' + f.t + '</div><div class="ph-d">' + f.d +
+          (f.kapi ? ' <b style="color:var(--ink-2)">· Bitti sayılır: ' + f.kapi + '</b>' : '') +
+        '</div></div>' +
+        '<div class="ph-n">' + f.yapilan + '/' + f.toplam + '</div>' +
+        '<div class="ph-track' + (st === 'now' ? ' is-now' : '') + '"><i style="width:' + p + '%"></i></div>' +
+        '<div class="ph-durum"><span class="chip ' + c[0] + '">' + c[1] + '</span></div>' +
+        '</div>';
+    });
+    out += '</div>';
+    if (d !== D.donemler[D.donemler.length - 1]) out += '<div style="height:14px"></div>';
+  });
+  document.getElementById('fazlar').innerHTML = out;
+
+  var g = '';
+  D.gunluk.forEach(function (o) {
+    g += '<li><div class="log-head"><span class="log-date">' + o.tarih + '</span>' +
+         '<span class="chip c-done">' + o.etiket + '</span>' +
+         '<span class="log-t">' + o.baslik + '</span></div>' +
+         '<div class="log-b">' + o.govde;
+    if (o.maddeler && o.maddeler.length) {
+      g += '<ul>';
+      o.maddeler.forEach(function (m) { g += '<li>' + m + '</li>'; });
+      g += '</ul>';
+    }
+    if (o.not) g += '<div class="panel-foot" style="border-color:var(--line)">' + o.not + '</div>';
+    g += '</div></li>';
+  });
+  document.getElementById('gunluk').innerHTML = g;
+
+  document.getElementById('riskNote').textContent = D.riskler.length + ' kayıt';
+  document.getElementById('riskler').innerHTML = D.riskler.map(function (r) {
+    return '<div><span style="color:var(--' + r.renk + ')">' + r.sev + '</span>' +
+           '<h3>' + r.b + '</h3><p>' + r.p + '</p></div>';
+  }).join('');
+
+  document.getElementById('olcut').innerHTML = D.olcut.map(function (o) {
+    return '<div class="kpi"><span>' + o.k + '</span><b>' + o.v + '</b><i>' + o.n + '</i></div>';
+  }).join('');
+})();
+</script>
