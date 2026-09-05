@@ -270,7 +270,10 @@
       <tr><td class="num">K10</td><td><b>Prestige v1.0'da yok.</b></td><td>Tek kat sıfırlamaya değmez. Kat 3'ten sonra gelir.</td></tr>
       <tr><td class="num">K11</td><td><b>Zemin/duvar dokusu KULLANILMAZ.</b> Çözüm geometri + ışık + temas gölgesi.</td><td>Canvas-tile zaten denendi (<span class="mono">d08c445</span>) ve reddedildi (<span class="mono">d29b7d9</span>). Sorun doku değil, ölçek referansı.</td></tr>
       <tr><td class="num">K12</td><td><b>Asset: KayKit CC0 + 5 Türk objesi.</b> AI 3B yalnız o beşi için, ücretli planla.</td><td>Meshy ücretsiz = CC BY 4.0 atıf zorunlu; Tripo ücretsiz = ticari yasak.</td></tr>
-      <tr><td class="num">K13</td><td><b>İlk yayın App Store.</b> Reklam AdMob.</td><td>Kullanıcı kararı; hesap mevcut.</td></tr>
+      <tr><td class="num">K13</td><td><b>İlk yayın App Store.</b> Reklam AdMob. Derleme <b>CI ile</b> (GitHub Actions <code>macos-latest</code>).</td><td>Kullanıcı kararı; AdMob hesabı mevcut, Mac yok.</td></tr>
+      <tr><td class="num">K14</td><td><b>Tost ürünü alanla değil TEZGÂH SEVİYESİYLE gelir</b> (L3). İlk iki alan yalnız çay.</td><td>Kullanıcı kararı. Ürün makinesi kodda zaten var; ürünü bölgeye bağlayan tek şey <code>zoneProduct(z)</code>.</td></tr>
+      <tr><td class="num">K15</td><td><b>Kritik yol 5–7 saat.</b> Tekrarlı masa/tezgâh seviyeleri kritik yolun DIŞINDA, isteğe bağlı derinlik.</td><td>Tür başarıyı saatle değil retention'la ölçüyor; prestige'siz uzun doğrusal kuyruk terk riski. §5.</td></tr>
+      <tr><td class="num">K16</td><td><b>Posta paneli ve ölü Ayarlar anahtarları v1.0'da kaldırılır.</b></td><td>Kullanıcı kararı: planlanmadıysa kaldır, gerekirse sonra eklenir.</td></tr>
     </tbody>
   </table>
   </div>
@@ -444,9 +447,50 @@ state: { <b>activeStepId</b>: string; doneSteps: string[] }
       <tr class="band"><td colspan="4">Bölüm 6 · Merdiven <span class="t">10 sa +</span></td></tr>
       <tr><td class="num">SON</td><td><b>Merdiven</b> — v1.0'da <b>görünür ama alınamaz</b>, yıkık durur</td><td><span class="tag pad">açılış</span></td><td>K4 + K5. Kat 2 fragmanı; v1.1'de onarılır.</td></tr>
 
-      <tr class="band"><td colspan="4">Kritik yol dışı · her zaman erişilebilir</td></tr>
+      <tr class="band"><td colspan="4">Kritik yol dışı · isteğe bağlı derinlik <span class="t">+6 – 10 sa</span></td></tr>
+      <tr><td class="num">—</td><td>Banket L2 → L3 · 20 masanın kalan seviyeleri · Tezgâh L4 → L6</td><td><span class="tag lvl">seviye</span></td><td>K15. "Kat tamam" tanımına <b>girmez</b> — oyuncu isterse derinleşir. Tekrarlı yükseltmeler burada yaşar.</td></tr>
+
+      <tr class="band"><td colspan="4">Kritik yol dışı · açık uçlu</td></tr>
       <tr><td class="num">—</td><td><b>Usta (L4)</b> — 20 masa · tezgâh · garson · bulaşıkçı · 3 karakter statı</td><td><span class="tag ad">reklam</span> / <span class="tag lvl">💎</span></td><td>K6 + K7. Adım listesine girmez; rozet + Hedefler paneli üzerinden.</td></tr>
       <tr><td class="num">—</td><td>Kozmetik: zemin, duvar, masa örtüsü</td><td><span class="tag lvl">₺</span></td><td>İtibar seviyesiyle açılır, parayla alınır.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Tezgâh merdiveni ve ürün zinciri</h3>
+  <div class="note ok">
+    <span class="lab">Bu makinenin çoğu zaten kurulu</span>
+    <p><code>PRODUCTS</code> tablosu (fiyat · hazırlık süresi · kap tipi · sabır çarpanı · yükseltme maliyet çarpanı), <b>tost gerçek bir ikinci ürün olarak</b> (25 ₺ · 11 sn · tabak · sabır ×1,6 · yükseltme ×20), ayrı kap döngüsü, <b>ayrı "Tostçu Garson"</b> kendi tepsi/hız hattıyla, yemek alanına özel masa yerleşimi ve zemin teması — hepsi çalışıyor.<br>
+    Ürünü bölgeye bağlayan <b>tek şey</b> <code>zoneProduct(z)</code> fonksiyonu; 12 çağrı noktasının hepsi ondan geçiyor. "Ürün bölgeden gelir"i "ürün tezgâh seviyesinden gelir"e çevirmek, tek bir fonksiyonun kaynağını değiştirmek demek.<br>
+    Ayrıca bu merdiven <b>maket v6'da zaten onaylandı</b>: <em>"mutfak beş kademede yerinde büyür"</em>.</p>
+  </div>
+
+  <div class="tw">
+  <table>
+    <thead><tr><th>Seviye</th><th>Görsel — ne belirir</th><th>Mekanik</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Ocak <span style="color:var(--ink-faint);font-weight:600">(adım 1–2)</span></td><td>Sol duvarda cezve ocağı + küçük semaver</td><td><b>ÇAY</b> · demleme 6 sn</td></tr>
+      <tr><td class="k">Tezgâh L1</td><td>Servis bloğu kurulur; salona bakan tezgâh yüzü, semaver öne geçer, temiz bardak istifleri</td><td>çay ×1,35 · kuyruk +1 · bardak havuzu +2</td></tr>
+      <tr><td class="k">Tezgâh L2</td><td>Arka duvara cezve ocağı + hazırlık tezgâhı</td><td>×1,82 · kuyruk +1</td></tr>
+      <tr><td class="k">Tezgâh L3</td><td><b>Tost sacı + davlumbaz + baca</b></td><td><b>TOST AÇILIR</b> — 25 ₺ · 11 sn · tabak</td></tr>
+      <tr><td class="k">Tezgâh L4</td><td>Hazırlık adası + menü tahtası</td><td>×3,32 · tost arzı belirgin açılır</td></tr>
+      <tr><td class="k">Tezgâh L5</td><td>İkinci semaver + iki katlı bardak rafı, bulaşık genişler</td><td>×4,48</td></tr>
+      <tr><td class="k">Tezgâh L6</td><td>Fırın + kiler + asma tavan</td><td>×6,05 — son ₺ seviyesi</td></tr>
+      <tr><td class="k">Usta <span class="tag ad">reklam</span>/<span class="tag lvl">💎</span></td><td>Mermer tezgâh, cilalı pirinç, asma fener</td><td>üstüne ×2</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p><b>Masalar 3 seviye + Usta, tezgâh 6 seviye + Usta.</b> Tezgâh tek kahraman obje, uzun merdiveni hak ediyor — ve bu zaten koddaki yapı (<code>costsByLevel</code> altı girdi, <code>masterLevel 7</code>). KayKit Restaurant Bits'te kademelerin birebir karşılığı var: <code>stove_multi</code> · <code>extractorhood</code> · <code>kitchencounter_*</code> · <code>oven</code> · <code>fridge</code> · <code>dishrack</code> · <code>menu</code>.</p>
+
+  <h4>Üst katlar aynı kalıpla</h4>
+  <div class="tw">
+  <table>
+    <thead><tr><th>Kat</th><th>Mutfak</th><th>Eklediği ürün</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Kat 1</td><td>Tezgâh</td><td>çay → <b>tost</b> (L3)</td></tr>
+      <tr><td class="k">Kat 2</td><td>Servis köşesi</td><td>üçüncü ürün — <b>Türk kahvesi</b> önerilir (cezve zaten modellenmiş, kıraathaneye oturuyor); pizza da olabilir <span style="color:var(--bordo)">— karar açık</span></td></tr>
+      <tr><td class="k">Kat 3</td><td>Teras ocağı</td><td><b>sahlep / ayran</b> — mevsimlik; Kat 3'ün mevsim çarpanına mekanik kanca olur</td></tr>
     </tbody>
   </table>
   </div>
@@ -455,35 +499,67 @@ state: { <b>activeStepId</b>: string; doneSteps: string[] }
 <!-- ============================================================ 5 -->
 <section id="s5">
   <h2><span class="no">5</span>Tempo eğrisi</h2>
-  <p class="h2-note">Normal profil (verim 0,55) — telefon oyuncusu ortalaması</p>
+  <p class="h2-note">K15 · Kritik yol 5–7 saat · Normal profil (verim 0,55)</p>
+
+  <div class="note ok">
+    <span class="lab">Hedef yeniden çerçevelendi — piyasa kıyaslamasından sonra</span>
+    <p>İlk hedef "10–12 saat içerik"ti. Kıyaslama bunu iki yönden düzeltti: <b>(1)</b> türün kendi başarı ölçütü saat değil <b>retention</b> — rakipler için geliştirici teyitli "ilk bölüm = X saat" verisi yok, olanlar dakika (ilk oturum) ya da gün (prestige döngüsü) cinsinden. <b>(2)</b> AdVenture Capitalist gibi saf idle oyunlar bile üstel maliyet eğrisini <b>1.–2. günde</b> sıfırlıyor; bizde v1.0'da prestige yok, yani 10–12 saatlik doğrusal kuyruğun sonunda düşecek bir döngü de yok.</p>
+    <p><b>Çözüm içeriği kısaltmak değil, "bitti" tanımını düzeltmek:</b> tekrarlı masa/tezgâh seviyeleri <b>kritik yolun dışına</b> alınır. Oyuncu katı 5–7 saatte "tamamlar", derinleşmek isteyen devam eder.</p>
+  </div>
 
   <div class="tw">
   <table>
-    <thead><tr><th>Kilometre taşı</th><th class="num">Bugün</th><th class="num">v1.0 hedefi</th><th>Oturum</th></tr></thead>
+    <thead><tr><th>Katman</th><th>İçerik</th><th class="num">Süre</th><th>Ne işe yarar</th></tr></thead>
     <tbody>
-      <tr><td>İlk alım (2. Masa)</td><td class="num">40 sn</td><td class="num">&lt; 60 sn</td><td rowspan="4" style="color:var(--ink-soft)">1. gün · ~50 dk</td></tr>
-      <tr><td>Garson — otomasyon açılır</td><td class="num">10,3 dk</td><td class="num">8 – 12 dk</td></tr>
-      <tr><td>2. Alan</td><td class="num">33,9 dk</td><td class="num">25 – 35 dk</td></tr>
-      <tr><td>Bulaşıkçı</td><td class="num">—</td><td class="num">45 – 60 dk</td></tr>
-      <tr><td>Arka Yarı + Tezgâh</td><td class="num">1,15 sa</td><td class="num">2 – 2,5 sa</td><td rowspan="2" style="color:var(--ink-soft)">2.–3. gün · ~30 dk</td></tr>
-      <tr><td>Lavabo</td><td class="num">—</td><td class="num">3,5 – 4 sa</td></tr>
-      <tr><td>Servis İstasyonu</td><td class="num">—</td><td class="num">5 – 5,5 sa</td><td rowspan="3" style="color:var(--ink-soft)">4. günden sonra · günde 15–20 dk + offline</td></tr>
-      <tr><td><b>Kat tamam</b> (orta şerit dolu)</td><td class="num">1,62 sa</td><td class="num"><b>10 – 12 sa</b></td></tr>
-      <tr><td>Usta katmanı %100</td><td class="num">—</td><td class="num">açık uçlu</td></tr>
+      <tr><td class="k">Kritik yol</td><td>7 mekanik yenilik + 4 alan + tezgâh L3 (tost) + lavabo + servis istasyonu + iki banket L1</td><td class="num"><b>5 – 7 sa</b></td><td>"Kat tamam" — D1/D7 retention'ı besler</td></tr>
+      <tr><td class="k">İsteğe bağlı derinlik</td><td>Banket L2/L3 · 20 masanın kalan seviyeleri · tezgâh L4–L6</td><td class="num">+6 – 10 sa</td><td>Derinleşmek isteyene iş</td></tr>
+      <tr><td class="k">Usta katmanı</td><td>26 Usta hedefi + kozmetikler</td><td class="num">açık uçlu</td><td><b>Prestige'in yerini tutan gerçek kuyruk</b></td></tr>
     </tbody>
   </table>
   </div>
 
-  <h3>6× uzatma nereden geliyor</h3>
-  <p>Uzatma <b>"her şey daha pahalı olsun"</b> ile yapılırsa grind hissi doğar ve oyuncu bırakır. Ağırlık birinci kaldıraçta olmalı.</p>
+  <h3>Kritik yol kilometre taşları</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>Kilometre taşı</th><th class="num">Bugün</th><th class="num">v1.0 hedefi</th><th>Oturum</th></tr></thead>
+    <tbody>
+      <tr><td>İlk alım (2. Masa)</td><td class="num">40 sn</td><td class="num">&lt; 60 sn</td><td rowspan="4" style="color:var(--ink-soft)">1. gün · 2–3 oturum</td></tr>
+      <tr><td>Garson — otomasyon açılır</td><td class="num">10,3 dk</td><td class="num">8 – 12 dk</td></tr>
+      <tr><td>2. Alan</td><td class="num">33,9 dk</td><td class="num">25 – 35 dk</td></tr>
+      <tr><td>Bulaşıkçı</td><td class="num">—</td><td class="num">45 – 60 dk</td></tr>
+      <tr><td>Arka Yarı + Tezgâh kurulur</td><td class="num">1,15 sa</td><td class="num">1,5 – 2 sa</td><td rowspan="2" style="color:var(--ink-soft)">2.–3. gün</td></tr>
+      <tr><td><b>Tezgâh L3 → TOST açılır</b></td><td class="num">—</td><td class="num">2 – 2,5 sa</td></tr>
+      <tr><td>Lavabo</td><td class="num">—</td><td class="num">3 – 3,5 sa</td><td rowspan="3" style="color:var(--ink-soft)">4.–7. gün · günde 15–20 dk + offline</td></tr>
+      <tr><td>Servis İstasyonu + banketler</td><td class="num">—</td><td class="num">4 – 5 sa</td></tr>
+      <tr><td><b>Kat tamam</b> (kritik yol)</td><td class="num">1,62 sa</td><td class="num"><b>5 – 7 sa</b></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>Yenilik yoğunluğu: 7 yenilik ÷ 6 saat ≈ <b>50 dakikada bir yeni mekanik</b>. 12 saate yayılsaydı 100+ dakikada bir olurdu — ilk oturumlar için fazla seyrek.</p>
+
+  <h3>Asıl başarı ölçütü — saat değil, bunlar</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>Metrik</th><th class="num">Genel mobil</th><th class="num">Arcade-idle üst 20</th><th class="num">Hedefimiz</th></tr></thead>
+    <tbody>
+      <tr><td>D1 retention</td><td class="num">%22 – 27</td><td class="num">%48 – 52</td><td class="num">≥ %40</td></tr>
+      <tr><td>D7 retention</td><td class="num">%3,4 – 3,9</td><td class="num">%7 – 13</td><td class="num">≥ %10</td></tr>
+      <tr><td>Ortalama oturum</td><td class="num">—</td><td class="num">~10 dk</td><td class="num">8 – 12 dk</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>Bu sayılar v1.0'ın gerçek sınavı. Kat 2'nin eğrisi tahminle değil <b>bu veriyle</b> ayarlanacak.</p>
+
+  <h3>Uzatma nereden geliyor</h3>
+  <p>Bugün 1,62 sa → kritik yolda 5–7 sa, yani <b>≈ ×3,5</b>. (Eski 10–12 sa hedefi ×6 istiyordu; yeni çerçevede fazlası isteğe bağlı derinliğe taşındı.) Uzatma <b>"her şey daha pahalı olsun"</b> ile yapılırsa grind hissi doğar; ağırlık birinci kaldıraçta.</p>
 
   <div class="tw">
   <table>
     <thead><tr><th class="num">#</th><th>Kaldıraç</th><th class="num">Katkı</th><th>Risk</th></tr></thead>
     <tbody>
-      <tr><td class="num">1</td><td><b>Daha çok adım.</b> 12 → 20 masa · masa yükseltmesi 48 → 80 alım · iki banket seviye hattı · lavabo 3 seviye · tezgâh tavanı L6 → L10</td><td class="num">≈ ×2,5</td><td style="color:var(--green)">düşük — oyuncu daha çok <b>şey</b> alır</td></tr>
-      <tr><td class="num">2</td><td><b>Geç bölümde dikleşen eğri.</b> <code>costGrowth</code> 1,5 → 1,7, <b>yalnız Bölüm 3'ten sonra</b>. Erken oyuna dokunulmaz.</td><td class="num">≈ ×1,6</td><td>orta — sim ile doğrulanır</td></tr>
-      <tr><td class="num">3</td><td><b>Talep tavanı.</b> Müşteri akışı bugün kapasitenin %15 önünde; geç bölümde %8'e inince gelir düzleşir.</td><td class="num">≈ ×1,5</td><td>orta — mekân "boş" hissettirmemeli</td></tr>
+      <tr><td class="num">1</td><td><b>Daha çok adım.</b> 12 → 20 masa · 2. Alanın masaları tek tek · lavabo 3 seviye · tezgâh merdiveni + tost</td><td class="num">≈ ×2,2</td><td style="color:var(--green)">düşük — oyuncu daha çok <b>şey</b> alır</td></tr>
+      <tr><td class="num">2</td><td><b>Geç bölümde dikleşen eğri.</b> <code>costGrowth</code> 1,5 → 1,65, <b>yalnız Bölüm 3'ten sonra</b>. Erken oyuna dokunulmaz.</td><td class="num">≈ ×1,3</td><td>orta — sim ile doğrulanır</td></tr>
+      <tr><td class="num">3</td><td><b>Talep tavanı.</b> Müşteri akışı kapasitenin %15 önünde; geç bölümde %10'a inince gelir düzleşir.</td><td class="num">≈ ×1,2</td><td>orta — mekân "boş" hissettirmemeli</td></tr>
     </tbody>
   </table>
   </div>
@@ -690,7 +766,7 @@ state: { <b>activeStepId</b>: string; doneSteps: string[] }
 
 <b>ALT BANT</b>    AKTİF ADIM — tek satır, Tek Odak'ın metin kanalı
 
-<b>ALT NAV</b>     Görevler · Hedefler · Mağaza · Karakter · Posta</div>
+<b>ALT NAV</b>     Görevler · Hedefler · Mağaza · Karakter</div>
 
   <div class="tw">
   <table>
@@ -700,10 +776,10 @@ state: { <b>activeStepId</b>: string; doneSteps: string[] }
       <tr><td class="k">Hedefler</td><td>5 kategori, ilerleme sayaçları, <b>Usta 7/20</b></td><td>kilitli · ilerliyor · toplanabilir · toplandı</td></tr>
       <tr><td class="k">Mağaza</td><td>Zemin · Duvar · Masa örtüsü · Elmas · Reklamları Kaldır</td><td>kilitli (İtibar) · alınabilir · sahip · kullanımda</td></tr>
       <tr><td class="k">Karakter</td><td>Tepsi · Mıknatıs · Hız — kademe kartları</td><td>alınabilir · pahalı · maks</td></tr>
-      <tr><td class="k">Posta</td><td>Ödül kutusu, duyuru</td><td>boş · okunmamış · toplanabilir <span style="color:var(--bordo)">(bugün yer tutucu — ya doldurulacak ya kaldırılacak)</span></td></tr>
+      <tr><td class="k"><s>Posta</s></td><td colspan="2" style="color:var(--bordo)"><b>v1.0'da kaldırılıyor</b> (K16). Kat 2 güncellemesiyle "duyuru + hediye" olarak geri gelebilir.</td></tr>
       <tr><td class="k">Ortak ödül modali</td><td>Başlık · ödül · [Al] · [▶ İzle, 2× al]</td><td>reklam hazır · hazır değil · izlendi</td></tr>
       <tr><td class="k">Offline ekranı</td><td>"Sen yokken" · kazanç · [Al] · [▶ ×2]</td><td>—</td></tr>
-      <tr><td class="k">Ayarlar</td><td>Ses · müzik · titreşim · bildirim · dil · gizlilik · kayıt</td><td>Bugünkü 3 anahtar hiçbir şeye bağlı değil — <b>ya bağlanacak ya kaldırılacak</b></td></tr>
+      <tr><td class="k">Ayarlar</td><td>Ses · müzik · titreşim · bildirim · dil · gizlilik · kayıt</td><td>Bugünkü 3 ölü anahtar Faz E&#39;de <b>gerçekten bağlanacak</b> (K16)</td></tr>
     </tbody>
   </table>
   </div>
@@ -720,8 +796,8 @@ state: { <b>activeStepId</b>: string; doneSteps: string[] }
   <p class="h2-note">K13 · İlk yayın iOS</p>
 
   <div class="note warn">
-    <span class="lab">Önce çözülmesi gereken engel</span>
-    <p><b>iOS derlemesi için macOS ve Xcode şart.</b> Geliştirme Windows 11'de yapılıyor. Capacitor projesi Windows'ta hazırlanır ama <b>imzalama ve App Store'a yükleme Mac ister.</b> Üç yol: (a) Mac mini almak · (b) bulut Mac kiralamak (MacinCloud, Scaleway) · (c) <b>CI üzerinden derlemek</b> — GitHub Actions <code>macos-latest</code> runner, Codemagic veya Bitrise. <b>(c) en ucuzu ve tekrarlanabilir olanı; öneri bu.</b> Bu karar verilmeden v1.0 tarihi konulamaz.</p>
+    <span class="lab">Karar verildi — CI ile derlenecek</span>
+    <p><b>iOS derlemesi için macOS ve Xcode şart.</b> Geliştirme Windows 11'de yapılıyor. Capacitor projesi Windows'ta hazırlanır ama <b>imzalama ve App Store'a yükleme Mac ister.</b> Üç yol: (a) Mac mini almak · (b) bulut Mac kiralamak (MacinCloud, Scaleway) · (c) <b>CI üzerinden derlemek</b> — GitHub Actions <code>macos-latest</code> runner, Codemagic veya Bitrise. <b>Karar: (c) — GitHub Actions</b> (K13). App Store Connect erişimi verilirse yayına gönderme de buradan yapılabilir.</p>
   </div>
 
   <div class="tw">
@@ -798,6 +874,23 @@ state: { <b>activeStepId</b>: string; doneSteps: string[] }
     </tbody>
   </table>
   </div>
+
+  <h3>GPT-6 Astra — ölçtük, disipline göre bölmüyoruz</h3>
+  <p>Kullanıcı gözlemi: <em>"görsel açıdan senden iyi yapıyor."</em> Kanıt durumu:</p>
+  <div class="tw">
+  <table>
+    <thead><tr><th>Ölçüm</th><th>Sonuç</th></tr></thead>
+    <tbody>
+      <tr><td>WebDev Arena (650K+ insan oyu, işlev + görünüm)</td><td>Astra 1797 · Claude Fable 5.1 1762 → <b>35 puan</b>, ~%51–52 kazanma oranı. Gerçek ama küçük fark</td></tr>
+      <tr><td>Design Arena (saf estetik)</td><td>Astra <b>henüz listede yok</b> — "görsel olarak daha iyi" iddiası doğrudan ölçülmemiş</td></tr>
+      <tr><td>Astra'nın ölçülmüş 3B gücü</td><td><b>Blender/geometri modelleme</b> (%95,9 · Fable %84,3). react-three-fiber'da <b>kod yazarak</b> ışık/materyal kurmada karşılaştırma yok</td></tr>
+      <tr><td>Codex CLI, çok dosyalı refactor</td><td>Zayıf yanı olarak işaretleniyor; "tek dosyalık niyet-odaklı iş"te güçlü</td></tr>
+      <tr><td>Fiyat</td><td>Astra 10 $/50 $ · Opus 5 5 $/25 $ → <b>iki katı</b></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><b>Karar: disipline göre bölme yok, tek ekranda A/B.</b> §9 şartnamesi tek ekrana indirilir (üst şerit + alt bant + alt nav + ortak ödül modali), aynı şartname iki tarafa verilir, iki ekran görüntüsü yan yana karşılaştırılır. İş bölümü arena ortalamasına değil, bu projede gözle verilmiş karara dayanır.</p>
+  <p><b>Bölünmeyecek olan:</b> <code>store.ts</code> · <code>economy.config.ts</code> · <code>save.ts</code> · testler. Birbirine bağlı, kayıt migrasyonu ve denge zinciri var; literatür de Codex'i tam bu tür çok dosyalı mimari işte zayıf gösteriyor.</p>
 </section>
 
 <!-- ============================================================ 13 -->
@@ -809,7 +902,7 @@ state: { <b>activeStepId</b>: string; doneSteps: string[] }
   <table>
     <thead><tr><th>Risk</th><th>Etki</th><th>Önlem</th></tr></thead>
     <tbody>
-      <tr><td><b>iOS derlemesi Mac ister</b>, geliştirme Windows'ta</td><td>Yayın tarihi konulamaz</td><td>Faz F'den <b>önce</b> CI derleme kurulur (GitHub Actions <code>macos-latest</code>). §10</td></tr>
+      <tr><td><b>iOS derlemesi Mac ister</b>, geliştirme Windows'ta</td><td>Yayın gecikir</td><td>Faz F'den <b>önce</b> CI derleme kurulur (GitHub Actions <code>macos-latest</code>). §10</td></tr>
       <tr><td>Testler yerleşim koordinatlarına sıkı bağlı (~130 referans)</td><td>Model geçişinde "186 test geçiyor" güvencesi anlamını yitirir</td><td>Faz A'da testler koordinattan koparılır — Faz B'den <b>önce</b></td></tr>
       <tr><td><code>tick()</code> 800 satır, ~40 yerel değişken</td><td>Her yeni sistem regresyon riski</td><td>Faz A'da sistemlere bölünür</td></tr>
       <tr><td>Simülatör oyunu doğrulamıyor (idealize model, farklı yürüme hızı)</td><td>Yayın sonrası eğri tutmaz, düzeltmek güncelleme ister</td><td>Faz C'de sim gerçeğe yaklaştırılır, tempo hedefleri <b>teste</b> yazılır</td></tr>
@@ -828,26 +921,24 @@ state: { <b>activeStepId</b>: string; doneSteps: string[] }
   <h2><span class="no">14</span>Kalan kararlar</h2>
   <p class="h2-note">Bunlar dışında her şey kesinleşti</p>
 
+  <p>Önceki turdaki beş kararın <b>tamamı verildi</b> ve K13–K16 olarak karar defterine geçti: kritik yol 5–7 sa · iOS CI ile · faz sırası G→A→B→C→D→E→F · Posta ve ölü anahtarlar kaldırılıyor · tost v1.0'da var ama <b>tezgâh L3</b> ile geliyor. Kalanlar:</p>
+
   <div class="decisions">
     <div class="dec"><div class="n">1</div><div>
-      <p class="q">Kat 1 için 10–12 saat hedefi onaylanıyor mu?</p>
-      <p class="a">Bugün 1,6 saat. <span class="rec">Zincirin bütün fiyatlarını bu sayı belirliyor</span> — en kritik açık karar. Daha kısa istenirse (6–8 sa) uzatma kaldıraçlarının ağırlığı değişir; daha uzun istenirse grind riski artar.</p>
+      <p class="q">5–7 saatlik kritik yol onaylanıyor mu?</p>
+      <p class="a">Bu belge o varsayımla yazıldı ve <span class="rec">zincirin bütün fiyatlarını bu sayı belirliyor</span>. Tekrarlı yükseltmeler kritik yolun dışına alındığı için içerik <b>kısalmıyor</b>, "bitti" tanımı değişiyor. Farklı bir sayı istenirse §5'teki kaldıraç ağırlıkları yeniden hesaplanır.</p>
     </div></div>
     <div class="dec"><div class="n">2</div><div>
-      <p class="q">iOS derlemesi nasıl yapılacak?</p>
-      <p class="a"><span class="rec">Önerim: GitHub Actions <code>macos-latest</code> runner.</span> Alternatifler Mac mini almak veya bulut Mac kiralamak. <b>Bu karar verilmeden v1.0 tarihi konulamaz.</b></p>
+      <p class="q">Kat 2'nin ürünü ne olsun?</p>
+      <p class="a"><span class="rec">Önerim: Türk kahvesi</span> — cezve zaten modellenmiş, kıraathaneye oturuyor, Kat 1'in çay/tost ikilisini doğal tamamlıyor. Pizza da mümkün ama tematik olarak kopuk durur. <b>Kat 2 işi, acil değil.</b></p>
     </div></div>
     <div class="dec"><div class="n">3</div><div>
-      <p class="q">Faz sırası: G önce mi, A önce mi?</p>
-      <p class="a"><span class="rec">Önerim: G önce.</span> Görsel taban hiçbir şeye bağlı değil, hemen sonuç veriyor, ve sonraki bütün fazlarda bakacağımız sahneyi düzeltiyor. Ama sen "önce yapıyı düzeltelim" dersen A ile de başlanabilir.</p>
+      <p class="q">Arayüz A/B testi yapılacak mı?</p>
+      <p class="a">§12'deki karar: tek ekran şartnamesi iki tarafa verilip ekran görüntüleri karşılaştırılsın. <span class="rec">Şartnameyi yazmak yarım saatlik iş</span> — Faz E'den önce, boş bir anda yapılabilir.</p>
     </div></div>
     <div class="dec"><div class="n">4</div><div>
-      <p class="q">Posta paneli ve Ayarlar'daki üç ölü anahtar: doldurulacak mı, kaldırılacak mı?</p>
-      <p class="a"><span class="rec">Önerim: Ayarlar anahtarları (ses/müzik/bildirim) Faz E'de gerçekten bağlansın; Posta paneli v1.0'da kaldırılsın</span> — Kat 2 güncellemesiyle "duyuru + hediye" olarak geri gelsin.</p>
-    </div></div>
-    <div class="dec"><div class="n">5</div><div>
-      <p class="q">Ürün yelpazesi: tost kalıyor mu?</p>
-      <p class="a">Bugün Kat 1'de çay ve tost var (bölge 3 = tost). Yeni modelde tek tezgâh olduğu için tost ayrı bir üretim hattı mı olacak, yoksa v1.0'da <b>yalnız çay</b> mı kalacak? <span class="rec">Önerim: v1.0 yalnız çay</span> — model sadeleşir, tempo hesabı netleşir; tost Kat 2 ile döner.</p>
+      <p class="q">Interstitial sıklığı yeterince agresif mi?</p>
+      <p class="a">Planda 3 dakikada bir. Kıyaslama notu: <b>My Perfect Hotel ~90 saniyede bir</b> gösteriyor. Daha agresif olmak "Reklamları Kaldır" satışını artırır ama erken terk riskini de artırır. <span class="rec">Önerim: 3 dakikayla çık, retention verisine göre ayarla</span> — bu sayı config'ten tek satırla değişir.</p>
     </div></div>
   </div>
 </section>

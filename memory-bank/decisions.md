@@ -653,3 +653,40 @@ ince belli çay bardağı, cezve, yuvarlak tepsi, okey ıstakası → Blender'da
 geçmek geriye dönük düzeltmiyor. Tripo ücretsiz plan **ticari kullanım yok**. Hunyuan3D tabanlı
 araçlar (Spline AI dahil) lisansen çıktının **AB ve İngiltere'de kullanılmasını yasaklıyor**.
 Mağaza görselleri AI ile üretilmeyecek (Play'de beyan zorunlu + "AI" etiketi).
+
+## D-043 — Tost tezgâh seviyesiyle gelir; ürün makinesi zaten kurulu (2026-09-05)
+**Karar:** Tost, ALANLA değil **tezgâh L3** ile açılır. İlk iki alan yalnız çay. Tezgâh merdiveni
+altı seviye + Usta: L1 servis bloğu/tezgâh yüzü · L2 cezve ocağı + hazırlık · **L3 tost sacı +
+davlumbaz → TOST** · L4 hazırlık adası + menü · L5 ikinci semaver + raf · L6 fırın + kiler.
+Masalar 3 seviye + Usta, tezgâh 6 seviye + Usta.
+**Üst katlar aynı kalıpla:** Kat 2 servis köşesi → üçüncü ürün (Türk kahvesi önerildi),
+Kat 3 teras ocağı → sahlep/ayran (mevsim çarpanına kanca).
+**Kod gerçeği (doğrulandı):** `PRODUCTS` tablosu, tost'un tam tanımı (25₺/11sn/tabak/sabır ×1,6/
+yükseltme ×20), ayrı kap döngüsü, ayrı "Tostçu Garson", yemek alanı masa yerleşimi ve zemin teması
+— hepsi ÇALIŞIYOR. Ürünü bölgeye bağlayan tek şey `zoneProduct(z)`; 12 çağrı noktası ondan geçiyor.
+Ayrıca bu merdiven maket v6'da zaten onaylanmıştı ("mutfak beş kademede yerinde büyür").
+
+## D-044 — Kritik yol 5-7 saat; tekrarlı yükseltmeler kritik yol DIŞI (2026-09-05)
+**Karar:** "Kat tamam" = 7 mekanik yenilik + 4 alan + tezgâh L3 (tost) + lavabo + servis istasyonu
++ iki banket L1 → **5-7 saat**. Banket L2/L3, 20 masanın kalan seviyeleri ve tezgâh L4-L6
+**isteğe bağlı derinlik** (+6-10 sa). Usta katmanı açık uçlu.
+**Gerekçe (piyasa kıyaslaması):** ① Tür başarıyı saatle değil retention'la ölçüyor — rakipler için
+geliştirici teyitli "ilk bölüm = X saat" verisi YOK; olanlar dakika (ilk oturum) veya gün (prestige)
+cinsinden. ② AdVenture Capitalist gibi saf idle oyunlar bile eğriyi 1.-2. günde sıfırlıyor; bizde
+v1.0'da prestige yok → 10-12 saatlik doğrusal kuyruğun sonunda düşecek döngü de yok.
+③ 7 yenilik ÷ 6 saat ≈ 50 dk'da bir; 12 saate yayılsa 100+ dk'da bir olurdu.
+**Sonuç:** içerik kısalmıyor, "bitti" tanımı düzeliyor. Uzatma ×6 değil **×3,5**.
+**Asıl başarı ölçütü:** D1 ≥ %40 · D7 ≥ %10 · oturum 8-12 dk (arcade-idle üst 20: D1 %48-52,
+D7 %7-13, oturum ~10 dk). Kat 2'nin eğrisi tahminle değil BU veriyle ayarlanacak.
+
+## D-045 — GPT-6 Astra: disipline göre bölme yok, tek ekranda A/B (2026-09-05)
+**Karar:** Görsel iş GPT'ye topluca devredilmez. §9 arayüz şartnamesi tek ekrana indirilir, aynı
+şartname iki tarafa verilir, ekran görüntüleri karşılaştırılır. `store.ts`/`economy.config.ts`/
+`save.ts`/testler **bölünmez** (çok dosyalı mimari + kayıt migrasyonu + denge zinciri).
+**Kanıt:** WebDev Arena Astra 1797 · Claude Fable 5.1 1762 → 35 puan (~%51-52), gerçek ama küçük.
+Design Arena'da (saf estetik) Astra henüz yok → "görsel olarak daha iyi" doğrudan ölçülmemiş.
+Astra'nın ölçülmüş 3B gücü Blender/geometri (%95,9 vs %84,3), react-three-fiber'da kod yazarak
+ışık/materyal kurmada karşılaştırma yok. Codex CLI çok dosyalı refactor'da zayıf işaretleniyor.
+Fiyat Astra 10$/50$ vs Opus 5 5$/25$ → iki katı.
+**Not:** Farkın bir kısmı model farkı olmayabilir — oyun HUD'unda `impeccable`/`frontend-design`
+yetenekleri hiç kullanılmadı.
