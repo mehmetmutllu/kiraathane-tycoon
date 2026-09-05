@@ -1,0 +1,937 @@
+/* ══════════════════════════════════════════════════════════════════════════════════════════
+   ARAYÜZ v2 — plan §9 bilgi mimarisi (docs/plan-kat1-yayin.html).
+
+   Görsel dil iki katmandan oluşur, bilinçli olarak farklı malzemeden:
+     • OVERLAY (üst şerit · alt bant · alt nav) = CEVİZ AHŞAP + PİRİNÇ kenar.
+       Sahnenin üstünde durur; sahne hangi renk olursa olsun okunur kalır.
+     • SAYFA (sheet) = ESKİ KÂĞIT / krem. İçerik yoğun ekranlar burada; kıraathanenin
+       badanalı duvarı + menü kâğıdı hissi. Mevcut mağaza/karakter içerikleri de bu
+       zeminde okunaklı kalır (koyu kahve metin).
+
+   Emoji ve CSS ikon YOK (plan §9 zorunlu kuralı) — her simge icons.tsx'te SVG.
+   ══════════════════════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Ceviz gövde */
+  --w-1: #4a3323;
+  --w-2: #2d1e14;
+  --w-edge: #1b110b;
+  /* Pirinç */
+  --br-1: #f0d391;
+  --br-2: #c69b46;
+  --br-3: #8e6520;
+  /* Krem/kâğıt */
+  --paper-1: #fdf4e2;
+  --paper-2: #f3e2c2;
+  /* Vurgu */
+  --tea: #e08b2a;
+  --leaf: #7cc043;
+  --leaf-d: #4e8c26;
+  --sab: env(safe-area-inset-bottom, 0px);
+}
+
+/* ═══════════════════════════ ÜST ŞERİT ═══════════════════════════ */
+
+.topbar {
+  position: absolute;
+  top: calc(var(--sat) + 8px);
+  left: calc(var(--sal) + 10px);
+  right: calc(var(--sar) + 10px);
+  z-index: 10;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  pointer-events: none;
+}
+.topbar > * {
+  pointer-events: auto;
+}
+
+/* İtibar: pirinç madalyon + altında ince çubuk */
+.rep {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.rep-medal {
+  position: relative;
+  display: grid;
+  place-items: center;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.45));
+}
+.rep-medal svg {
+  display: block;
+  width: 42px;
+  height: 42px;
+}
+.rep-num {
+  position: absolute;
+  top: 52%;
+  font-family: var(--font-num);
+  font-style: normal;
+  font-size: 15px;
+  color: #fff;
+  paint-order: stroke fill;
+  -webkit-text-stroke: 3.5px #7a5312;
+}
+.rep-bar {
+  position: relative;
+  width: 76px;
+  height: 15px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--w-edge), #3a271a);
+  border: 1.5px solid var(--br-3);
+  box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+.rep-bar.wide {
+  width: 100%;
+  height: 18px;
+}
+.rep-fill {
+  position: absolute;
+  inset: 1px auto 1px 1px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffe9a8, var(--br-2));
+  box-shadow: 0 0 8px rgba(255, 210, 120, 0.5);
+  transition: width 0.35s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+.rep-text {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-num);
+  font-size: 10px;
+  color: #fff;
+  paint-order: stroke fill;
+  -webkit-text-stroke: 3px rgba(40, 24, 10, 0.9);
+}
+
+/* Kese: para + elmas kapsülleri (ikon sol kenardan taşar — tycoon grameri) */
+.purse {
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+.cur {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 104px;
+  height: 32px;
+  padding: 0 12px 0 30px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--w-1), var(--w-2));
+  border: 2px solid var(--br-3);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 224, 170, 0.28),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.45),
+    0 3px 6px rgba(0, 0, 0, 0.4);
+}
+.cur > svg {
+  position: absolute;
+  left: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.45));
+}
+.cur .cur-val {
+  margin-left: auto;
+  font-size: 17px;
+  -webkit-text-stroke-width: 3.5px;
+}
+
+/* Yuvarlak buton ailesi (ayar · genel bakış · tepsi boşalt) */
+.round-btn {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 2px solid var(--br-3);
+  background: linear-gradient(180deg, var(--w-1), var(--w-2));
+  color: var(--br-1);
+  cursor: pointer;
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 224, 170, 0.25),
+    0 3px 6px rgba(0, 0, 0, 0.4);
+  pointer-events: auto;
+}
+.round-btn:active {
+  transform: translateY(1.5px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+.round-btn.on {
+  border-color: var(--br-1);
+  background: linear-gradient(180deg, #6b4a2a, #3d2817);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 224, 170, 0.4),
+    0 0 12px rgba(240, 200, 120, 0.45);
+}
+.round-btn > svg {
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.4));
+}
+.round-btn.gear {
+  width: 34px;
+  height: 34px;
+  flex: none;
+}
+
+/* Sağ kenar yığını: genel bakış + tepsi boşalt */
+.side-stack {
+  position: absolute;
+  right: calc(var(--sar) + 10px);
+  bottom: calc(var(--sab) + 148px);
+  z-index: 12;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  pointer-events: none;
+}
+.side-stack > * {
+  pointer-events: auto;
+}
+.tray-btn {
+  width: 44px;
+  height: 44px;
+}
+.tray-count {
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 4px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #ffd54f, #f59f00);
+  border: 2px solid #fff;
+  color: #4a2c02;
+  font-family: var(--font-num);
+  font-size: 12px;
+}
+.tray-tip {
+  position: absolute;
+  right: calc(var(--sar) + 62px);
+  bottom: calc(var(--sab) + 190px);
+  z-index: 36;
+  max-width: 220px;
+  padding: 9px 12px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, var(--paper-1), var(--paper-2));
+  border: 2px solid #e6c896;
+  color: #4a2c12;
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 1.35;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+}
+
+/* ═══════════════════════════ EKRAN KENARI OKU ═══════════════════════════ */
+
+.edge-arrow {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 11;
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: transform 0.12s linear;
+  animation: edgePulse 1.1s ease-in-out infinite;
+}
+.edge-arrow-glyph {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, var(--br-1), var(--br-2));
+  border: 2.5px solid #fff;
+  color: #5a3b0c;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+}
+@keyframes edgePulse {
+  0%,
+  100% {
+    opacity: 0.92;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ═══════════════════════════ ALT BANT: AKTİF ADIM ═══════════════════════════ */
+
+.band {
+  position: absolute;
+  left: calc(var(--sal) + 10px);
+  right: calc(var(--sar) + 10px);
+  bottom: calc(var(--sab) + 78px);
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 58px;
+  padding: 0 10px 0 8px;
+  border-radius: 16px;
+  border: 2px solid var(--br-3);
+  background: linear-gradient(180deg, var(--w-1), var(--w-2));
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 224, 170, 0.26),
+    inset 0 -4px 8px rgba(0, 0, 0, 0.4),
+    0 5px 14px rgba(0, 0, 0, 0.45);
+  color: var(--paper-1);
+  text-align: left;
+  cursor: pointer;
+  pointer-events: auto;
+  animation: bandIn 0.4s cubic-bezier(0.18, 0.9, 0.3, 1.2) both;
+}
+@keyframes bandIn {
+  from {
+    transform: translateY(14px);
+    opacity: 0;
+  }
+}
+.band.idle {
+  cursor: default;
+  justify-content: center;
+  text-align: center;
+}
+.band.done {
+  border-color: var(--leaf);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.25),
+    0 0 18px rgba(124, 192, 67, 0.45),
+    0 5px 14px rgba(0, 0, 0, 0.45);
+}
+.band-photo {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #6a4a2c, #3b2716);
+  border: 1.5px solid var(--br-3);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+.band-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.band-title {
+  font-size: 14.5px;
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--paper-1);
+  text-shadow: 0 1.5px 0 rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.band-sub {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-num);
+  font-size: 14px;
+  color: #ffd77a;
+}
+.band-sub.dim {
+  font-family: var(--font-game);
+  font-size: 12px;
+  font-weight: 700;
+  color: #c8ab86;
+}
+.band-track {
+  display: block;
+  position: relative;
+  height: 13px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--w-edge), #3a271a);
+  border: 1.5px solid rgba(0, 0, 0, 0.45);
+  box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.65);
+  overflow: hidden;
+}
+.band-track.big {
+  height: 18px;
+  margin-top: 4px;
+}
+.band-fill {
+  position: absolute;
+  inset: 1px auto 1px 1px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #a8e06a, var(--leaf-d));
+  box-shadow: 0 0 8px rgba(124, 192, 67, 0.45);
+  transition: width 0.3s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+.band-count {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-num);
+  font-size: 10.5px;
+  color: #fff;
+  paint-order: stroke fill;
+  -webkit-text-stroke: 3px rgba(25, 40, 10, 0.85);
+}
+.band-track.big .band-count {
+  font-size: 12.5px;
+}
+.band-reward {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px 7px 3px 4px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.32);
+  border: 1px solid rgba(240, 211, 145, 0.35);
+  font-family: var(--font-num);
+  font-size: 12px;
+  color: #ffd77a;
+}
+.band-go {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, var(--br-1), var(--br-2));
+  color: #5a3b0c;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* ═══════════════════════════ ALT NAV ═══════════════════════════ */
+
+.botnav {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 13;
+  display: flex;
+  justify-content: space-around;
+  align-items: stretch;
+  gap: 4px;
+  padding: 6px calc(var(--sal) + 8px) calc(var(--sab) + 6px) calc(var(--sar) + 8px);
+  background: linear-gradient(180deg, rgba(45, 30, 20, 0.94), rgba(20, 13, 8, 0.98));
+  border-top: 2px solid var(--br-3);
+  box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.5);
+  pointer-events: auto;
+}
+.botnav::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent, rgba(255, 226, 170, 0.55), transparent);
+}
+.navtab {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 5px 2px 4px;
+  border: 0;
+  border-radius: 13px;
+  background: none;
+  color: #bda183;
+  font-family: var(--font-game);
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, transform 0.15s;
+}
+.navtab-icon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 28px;
+  filter: saturate(0.7) brightness(0.92);
+  transition: filter 0.15s, transform 0.15s;
+}
+.navtab-label {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+.navtab.active {
+  color: #fff3dc;
+  background: linear-gradient(180deg, rgba(214, 165, 88, 0.32), rgba(120, 82, 34, 0.12));
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 226, 170, 0.45),
+    0 0 14px rgba(214, 165, 88, 0.22);
+}
+.navtab.active .navtab-icon {
+  filter: none;
+  transform: translateY(-2px) scale(1.08);
+}
+.navtab:active {
+  transform: translateY(1px);
+}
+.navtab-bang {
+  position: absolute;
+  top: -4px;
+  right: -8px;
+  min-width: 16px;
+  height: 16px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #ff8a5c, #e03b1c);
+  border: 1.5px solid #fff;
+  color: #fff;
+  font-family: var(--font-num);
+  font-size: 11px;
+  line-height: 1;
+}
+.navtab.spot {
+  z-index: 36;
+  position: relative;
+  animation: navPulse 1s ease-in-out infinite;
+}
+@keyframes navPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 214, 130, 0.55);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(255, 214, 130, 0);
+  }
+}
+
+/* ═══════════════════════════ ALT SAYFA (SHEET) ═══════════════════════════
+   Mevcut .modal-backdrop/.modal-card iskeletini yeniden giydirir — mağaza ve karakter
+   panelleri de otomatik olarak bu kabuğa girer (içerikleri değişmeden). */
+
+.modal-backdrop {
+  align-items: flex-end;
+}
+.modal-card {
+  width: min(100%, 520px);
+  max-height: min(80vh, 720px);
+  display: flex;
+  flex-direction: column;
+  padding: 0 0 calc(var(--sab) + 10px);
+  border: 0;
+  border-top: 3px solid var(--br-2);
+  border-radius: 22px 22px 0 0;
+  background: linear-gradient(180deg, var(--paper-1) 0 62%, var(--paper-2));
+  box-shadow: 0 -14px 44px rgba(0, 0, 0, 0.6);
+  animation: sheetIn 0.32s cubic-bezier(0.16, 0.9, 0.28, 1.06) both;
+  overflow: hidden;
+}
+@keyframes sheetIn {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+}
+/* Sayfa başlığı: ceviz kuşak (overlay diliyle bağ kurar) */
+.sheet-head {
+  position: relative;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  padding: 0 46px;
+  background: linear-gradient(180deg, var(--w-1), var(--w-2));
+  box-shadow: inset 0 -2px 0 var(--br-3);
+}
+.sheet-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--paper-1);
+  text-shadow: 0 1.5px 0 rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.01em;
+}
+.sheet-x {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1.5px solid var(--br-3);
+  background: rgba(0, 0, 0, 0.28);
+  color: var(--br-1);
+  font-size: 14px;
+  cursor: pointer;
+}
+.sheet-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding: 12px 14px 6px;
+  text-align: left;
+  color: var(--ink);
+}
+.sheet-pad {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.sheet-sec {
+  margin: 14px 2px 6px;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #a2825a;
+}
+.sheet-empty {
+  padding: 26px 10px;
+  text-align: center;
+  font-weight: 700;
+  color: #8a6a48;
+}
+.sheet-foot-note {
+  margin: 12px 2px 4px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #a2825a;
+  text-align: center;
+}
+.sheet-cta {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px 22px;
+  border: 2.5px solid #fff;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--gold-1), var(--gold-2));
+  color: #4a2c02;
+  font-family: var(--font-game);
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #b87400, 0 6px 10px rgba(0, 0, 0, 0.25);
+}
+.sheet-cta:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #b87400, 0 4px 8px rgba(0, 0, 0, 0.25);
+}
+.sheet-cta.ad {
+  background: linear-gradient(180deg, #5a3f26, #38251444);
+  border-color: rgba(255, 255, 255, 0.75);
+  color: var(--paper-1);
+  box-shadow: 0 4px 0 #2a1a0e, 0 6px 10px rgba(0, 0, 0, 0.25);
+}
+.sheet-cta.ad.off {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* ── GÖREVLER sayfası ── */
+.qbig {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  padding: 11px;
+  border-radius: 16px;
+  border: 2px solid #e2c795;
+  background: linear-gradient(180deg, #fffaf0, #f5e6c8);
+  box-shadow: 0 3px 0 #e0cba2, 0 6px 14px rgba(120, 80, 30, 0.16);
+  text-align: left;
+  cursor: pointer;
+}
+.qbig-photo {
+  flex: none;
+  width: 62px;
+  height: 62px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #f0dcb4, #e2c795);
+  box-shadow: inset 0 2px 4px rgba(120, 80, 30, 0.25);
+}
+.qbig-body {
+  flex: 1;
+  min-width: 0;
+}
+.qbig-kicker {
+  display: block;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: #b08a4e;
+}
+.qbig-title {
+  display: block;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.qbig-reward {
+  flex: none;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-family: var(--font-num);
+  font-size: 14px;
+  color: #9a6a00;
+}
+.qlist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.qrow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 10px;
+  border-radius: 11px;
+  background: rgba(120, 80, 30, 0.07);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #7a5c3c;
+}
+.qrow-check {
+  display: flex;
+  flex: none;
+}
+.qrow-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.qrow-reward {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-family: var(--font-num);
+  font-size: 12px;
+  color: #a5834a;
+}
+.qrow.next {
+  color: #a2825a;
+  background: rgba(120, 80, 30, 0.04);
+  border: 1px dashed rgba(160, 125, 70, 0.4);
+}
+.qrow-dot {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  margin: 0 5px;
+  border-radius: 50%;
+  border: 2px solid #c2a677;
+}
+
+/* ── HEDEFLER sayfası ── */
+.rep-hero {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, var(--w-1), var(--w-2));
+  border: 2px solid var(--br-3);
+  box-shadow: inset 0 1.5px 0 rgba(255, 224, 170, 0.25);
+  color: var(--paper-1);
+}
+.rep-hero-medal {
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+}
+.rep-hero-medal i {
+  position: absolute;
+  top: 52%;
+  font-family: var(--font-num);
+  font-style: normal;
+  font-size: 19px;
+  color: #fff;
+  paint-order: stroke fill;
+  -webkit-text-stroke: 4px #7a5312;
+}
+.rep-hero-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.rep-hero-body b {
+  font-size: 15px;
+}
+.rep-hero-body small {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #c8ab86;
+}
+.goals {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.goal {
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 2px solid #e6d2ab;
+  background: linear-gradient(180deg, #fffaf0, #f6e9d0);
+  box-shadow: 0 2px 0 #e5d3ae;
+}
+.goal.full {
+  border-color: var(--leaf-d);
+  box-shadow: 0 2px 0 #cfe3b6, 0 0 14px rgba(124, 192, 67, 0.28);
+}
+.goal-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.goal-top b {
+  font-size: 14.5px;
+  color: var(--ink);
+}
+.goal-num {
+  font-family: var(--font-num);
+  font-size: 14px;
+  color: #9a6a00;
+}
+.goal-num i {
+  font-style: normal;
+  font-size: 11.5px;
+  color: #b39a72;
+}
+.goal-track {
+  display: block;
+  position: relative;
+  height: 12px;
+  border-radius: 999px;
+  background: #e3d3b4;
+  box-shadow: inset 0 2px 3px rgba(120, 80, 30, 0.3);
+  overflow: hidden;
+}
+.goal-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #a8e06a, var(--leaf-d));
+  transition: width 0.35s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+.goal-note {
+  display: block;
+  margin-top: 5px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #9c7c52;
+}
+
+/* ── ORTAK ÖDÜL EKRANI ── */
+.reward-card {
+  position: relative;
+  align-items: center;
+  padding: 26px 20px calc(var(--sab) + 20px);
+  text-align: center;
+  border-radius: 22px 22px 0 0;
+}
+.reward-glow {
+  position: absolute;
+  top: -70px;
+  left: 50%;
+  width: 320px;
+  height: 320px;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(255, 210, 120, 0.5), transparent 62%);
+  pointer-events: none;
+}
+.reward-title {
+  position: relative;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--ink);
+}
+.reward-amount {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin: 12px 0 6px;
+  font-family: var(--font-num);
+  font-size: 32px;
+  color: #f59f00;
+  text-shadow: 0 2px 0 #fff;
+}
+.reward-card .sheet-cta {
+  width: min(100%, 300px);
+}
+
+/* Mevcut panellerin (mağaza/karakter) sayfa kabuğuna uyumu: kendi genişlik/ped kuralları
+   .modal-card'dan geliyordu — sheet'te içerik alanına çekilir. */
+.shop-card,
+.char-card {
+  padding: 14px 14px calc(var(--sab) + 14px);
+  overflow-y: auto;
+  text-align: center;
+}
+.shop-card .modal-title,
+.char-card .modal-title {
+  margin-bottom: 10px;
+}
+
+/* Alt nav + bant geldiği için eski toast konumu yukarı taşınır. */
+.notice {
+  bottom: calc(var(--sab) + 148px);
+}
+
+/* Sessiz bildirim noktası (Faz D: toplanabilir hedef/ödül belirince açılır). */
+.navtab-dot {
+  position: absolute;
+  top: -1px;
+  right: -5px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #ff6b3d;
+  border: 1.5px solid rgba(255, 255, 255, 0.85);
+}

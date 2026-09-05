@@ -2,8 +2,8 @@ import { Suspense, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Instances, Instance } from '@react-three/drei';
 import { Vector3, type Group, type MeshStandardMaterial } from 'three';
-import { useGame, LAYOUT, stationSoftMaxLevel, stationUpgradeCostZ, upgradeZoneUnlockedZ, tableSoftMaxLevel, tableUpgradeUnlockedZ, tableNextCost, zonePoint, zoneCol, zoneRow, zoneAt } from '../../game/store';
-import { zoneOfTable, zoneProduct } from '../../config/economy.config';
+import { useGame, questFocusPos, LAYOUT, stationSoftMaxLevel, stationUpgradeCostZ, upgradeZoneUnlockedZ, tableSoftMaxLevel, tableUpgradeUnlockedZ, tableNextCost, zonePoint, zoneCol, zoneRow, zoneAt } from '../../game/store';
+import { economyConfig, zoneOfTable, zoneProduct } from '../../config/economy.config';
 import { GroundMarker } from './GroundMarker';
 import { PALETTE, FLOOR_THEMES, WALL_THEMES } from '../../config/palette';
 import { Player } from './Player';
@@ -16,11 +16,67 @@ import { Customers } from './Customers';
 import { Coins } from './Coins';
 import { Pad } from './Pad';
 import { perf } from '../../game/perf';
+import { devTimeScale } from '../../game/devSandbox';
+import { screenPointer } from '../../game/screenPointer';
 
 // Simülasyonu her karede ilerlet (tek kaynak; __advanceTime aynı tick'i çağırır).
+// DEV'de sandbox hız çarpanı uygulanır; üretimde `import.meta.env.DEV` false → dal ölü kod.
 function Simulation() {
   const tick = useGame((s) => s.tick);
-  useFrame((_, dt) => tick(dt));
+  useFrame((_, dt) => tick(import.meta.env.DEV ? dt * devTimeScale() : dt));
+  return null;
+}
+
+// AKTİF ADIMIN EKRAN İZDÜŞÜMÜ (plan §9 — Tek Odak'ın görsel kanalı). Aktif görevin dünya hedefi
+// kameraya izdüşürülür; ekran dışındaysa HUD kenarda ok gösterir. Store'a YAZMAZ (her kare render
+// tetiklemesin) — `perf` gibi singleton'a yazar, HUD ~20Hz okur.
+function QuestPointer() {
+  const camera = useThree((s) => s.camera);
+  const size = useThree((s) => s.size);
+  const v = useMemo(() => new Vector3(), []);
+  useFrame(() => {
+    const g = useGame.getState();
+    const def = g.questIndex < economyConfig.quests.length ? economyConfig.quests[g.questIndex] : null;
+    const target = g.quest && def ? questFocusPos(def.target, g.tableLevels, g.tables, def.zone ?? 0) : null;
+    if (!target) {
+      screenPointer.active = false;
+      return;
+    }
+    v.set(target[0], 0.9, target[2]);
+    screenPointer.dist = Math.hypot(target[0] - g.player[0], target[2] - g.player[2]);
+    v.project(camera);
+    const behind = v.z > 1;
+    let x = (v.x * 0.5 + 0.5) * size.width;
+    let y = (-v.y * 0.5 + 0.5) * size.height;
+    if (behind) {
+      x = size.width - x;
+      y = size.height - y;
+    }
+    // Kenar payı: bant/nav'ın altında kalmasın diye üstte 90, altta 170 px korunur.
+    const m = 34;
+    const minY = 90;
+    const maxY = size.height - 170;
+    const inside = !behind && x > m && x < size.width - m && y > minY && y < maxY;
+    screenPointer.active = true;
+    screenPointer.onScreen = inside;
+    if (!inside) {
+      const cx = size.width / 2;
+      const cy = (minY + maxY) / 2;
+      const dx = x - cx;
+      const dy = y - cy;
+      const len = Math.hypot(dx, dy) || 1;
+      // Merkezden hedefe doğru ışın, güvenli dikdörtgenin kenarına kırpılır.
+      const sx = Math.abs(dx) > 0.001 ? (size.width / 2 - m) / Math.abs(dx) : Infinity;
+      const sy = Math.abs(dy) > 0.001 ? (maxY - cy) / Math.abs(dy) : Infinity;
+      const s = Math.min(sx, sy);
+      screenPointer.x = cx + dx * s;
+      screenPointer.y = cy + dy * s;
+      screenPointer.angle = (Math.atan2(dy / len, dx / len) * 180) / Math.PI;
+    } else {
+      screenPointer.x = x;
+      screenPointer.y = y;
+    }
+  });
   return null;
 }
 
@@ -963,6 +1019,7 @@ export function Scene() {
       </Suspense>
       <CameraRig />
       <Simulation />
+      <QuestPointer />
       <PerfProbe />
     </Canvas>
   );

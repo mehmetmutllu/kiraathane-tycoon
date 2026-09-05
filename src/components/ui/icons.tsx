@@ -492,3 +492,97 @@ export function CamZoomIcon({ size = 28, out = false }: { size?: number; out?: b
     </svg>
   );
 }
+
+/* ── ALT NAV İKONLARI (arayüz v2, plan §9: "Emoji ve CSS ikon yok") ─────────────────────────
+   Hepsi 48'lik viewBox, dolgu + koyu kontur + üstte açık parlama — mevcut şeker dilinin devamı. */
+
+/** Görevler: parşömen listesi + onay işaretleri. */
+export function QuestListIcon({ size = 26 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
+      <defs>
+        <linearGradient id="ic-qlist" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#fff6e0" />
+          <stop offset="1" stopColor="#e8d3a8" />
+        </linearGradient>
+      </defs>
+      <rect x="9" y="5" width="30" height="38" rx="5" fill="url(#ic-qlist)" stroke="#6d4a22" strokeWidth="2.6" />
+      <rect x="17" y="2.5" width="14" height="7" rx="3.5" fill="#c98a2e" stroke="#6d4a22" strokeWidth="2.2" />
+      <path d="M15 20l3.4 3.4 6-6.4" fill="none" stroke="#4f8f3d" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M15 31l3.4 3.4 6-6.4" fill="none" stroke="#4f8f3d" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" />
+      <rect x="27" y="19" width="8" height="2.8" rx="1.4" fill="#9a7b4e" />
+      <rect x="27" y="30" width="8" height="2.8" rx="1.4" fill="#9a7b4e" />
+    </svg>
+  );
+}
+
+/** Hedefler: hedef tahtası + saplanmış dart. */
+export function TargetIcon({ size = 26 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
+      <circle cx="22" cy="26" r="17" fill="#f4e3c4" stroke="#6d4a22" strokeWidth="2.6" />
+      <circle cx="22" cy="26" r="11" fill="#e06a4e" stroke="#6d4a22" strokeWidth="2.2" />
+      <circle cx="22" cy="26" r="5" fill="#f4e3c4" stroke="#6d4a22" strokeWidth="2" />
+      <circle cx="22" cy="26" r="1.8" fill="#e06a4e" />
+      <path d="M22 26l16-16" stroke="#6d4a22" strokeWidth="4.4" strokeLinecap="round" />
+      <path d="M22 26l16-16" stroke="#d9b45c" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M36 6h8v8z" fill="#5d97c9" stroke="#6d4a22" strokeWidth="2" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/** Mağaza: çizgili tente + vitrin (kıraathane cephesinin kendisi — maket v15 dili). */
+export function ShopAwningIcon({ size = 26 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
+      <rect x="8" y="20" width="32" height="23" rx="3" fill="#f2e2c4" stroke="#6d4a22" strokeWidth="2.6" />
+      <rect x="14" y="26" width="9" height="17" rx="1.5" fill="#8ec5e8" stroke="#6d4a22" strokeWidth="2" />
+      <rect x="27" y="26" width="7" height="9" rx="1.5" fill="#8ec5e8" stroke="#6d4a22" strokeWidth="2" />
+      <path d="M5 20l4-11h30l4 11z" fill="#c2432f" stroke="#6d4a22" strokeWidth="2.6" strokeLinejoin="round" />
+      <path d="M13.6 9l-2.7 11M22 9v11M30.4 9l2.7 11" stroke="#f7ead2" strokeWidth="3.2" />
+    </svg>
+  );
+}
+
+/** Sağ ok (alt bant → "hedefe götür"). */
+export function ChevronIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
+      <path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/** İtibar: defne çelenkli pirinç madalyon (XP/seviye barının yeni kimliği). */
+export function ReputationIcon({ size = 26 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
+      <defs>
+        <linearGradient id="ic-rep" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#ffe9a8" />
+          <stop offset="1" stopColor="#c99327" />
+        </linearGradient>
+      </defs>
+      <circle cx="24" cy="24" r="15" fill="url(#ic-rep)" stroke="#7a5312" strokeWidth="2.6" />
+      <path
+        d="M24 13l3.2 6.6 7.2 1-5.2 5.1 1.2 7.2L24 29.5l-6.4 3.4 1.2-7.2-5.2-5.1 7.2-1z"
+        fill="#fff8e2"
+        stroke="#7a5312"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+      <path d="M9 22a12 12 0 0 0 3 12" fill="none" stroke="#4f8f3d" strokeWidth="3" strokeLinecap="round" />
+      <path d="M39 22a12 12 0 0 1-3 12" fill="none" stroke="#4f8f3d" strokeWidth="3" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+/** Reklam izle (ödül modali ikinci butonu). */
+export function PlayAdIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
+      <rect x="2" y="4" width="20" height="16" rx="4" fill="#2b1a12" stroke="#f0d79a" strokeWidth="2" />
+      <path d="M10 9l6 3-6 3z" fill="#f0d79a" />
+    </svg>
+  );
+}

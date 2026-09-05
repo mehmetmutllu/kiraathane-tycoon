@@ -727,3 +727,36 @@ A/B çıktısını gördükten sonra** verecek. Önce Claude (Opus 5 / Fable 5.1
 kullanıcı: *"belki de çok uğraşmamışımdır dedin, çok uğraştığın halini de merak ediyorum"*.
 **Not:** O denemede asset'ler de elde olacak (KayKit + ikon seti), yani karşılaştırma boş
 şablonla değil gerçek malzemeyle yapılacak.
+
+## D-049 — Kritik yol 5-7 saat ONAYLANDI (2026-09-06)
+**Karar:** v1.0 Kat 1'in "bitti" suresi **5-7 saat aktif oynanis**. Tekrarli yukseltmeler kritik
+yolun DISINDA (+6-10 sa istege bagli derinlik), Usta katmani acik uclu. Uzatma x3,5 (x6 degil).
+**Gerekce:** Kullanici onayladi. Zincirin butun fiyatlari bu sayidan turer; degisirse plan §5'teki
+kaldirac agirliklari yeniden hesaplanir.
+**Basari olcutu saat degil retention:** D1 >= %40 · D7 >= %10 · oturum 8-12 dk. (D-044'un onayi.)
+
+## D-050 — Kat 2 urunu ERTELENDI (2026-09-06)
+**Karar:** Kat 2'nin urunu (Turk kahvesi / pizza) v1.0 kapsaminda karara baglanmiyor.
+Kat 2 zaten v1.2 isi. Karar Kat 1 yayinlandiktan sonra verilecek.
+**Etki:** `zoneProduct(z)` soyutlamasi (D-043) urun eklemeyi tek noktaya indirdigi icin bu
+erteleme v1.0 mimarisini bloklamiyor. Kat 1 zinciri cay + tost ikilisiyle kapali.
+
+## D-051 — Arayuz: once tam guclu tek deneme, A/B sonra (2026-09-06)
+**Karar:** Astra ile es zamanli A/B YOK. Once ben (Claude) tam gucumle, **gercek asset'lerle**
+bir arayuz tasarimi yapacagim; kullanici kontrol edecek; **gerekirse** Astra sonra olculecek.
+**Kullanici sozu:** *"once senin tum gucunle bir tasarim yapmani istiyorum ... bahsettigimiz
+assetleri de indirip cekerek hareket etmeni isticem, ardindan kontrol edicem, astrayi da
+gerekirse olcucem."*
+**Sart:** Tasarim bos sablonla degil gercek malzemeyle yapilir — KayKit paketleri indirildi
+(restaurant-bits + city-builder-bits, CC0), font zaten yerel (Baloo 2 + Lilita One, OFL).
+Emoji ve CSS ikon YASAK (plan §9 zorunlu kurali) — gercek SVG ikon seti cizilir.
+**Sira notu:** Bu is Faz E'nin tasarim adimi ama STATIK MOCKUP olarak one alindi; maket 3B icin
+ne ise, bu dosya arayuz icin odur. Faz G-D boyunca elde hedef gorsel bulunur. `src/` beklemez.
+
+## D-052 — Interstitial sikligi 2 dakika (2026-09-06)
+**Karar:** Interstitial araligi **120 sn**, ustune uc kisit: (a) ilk oturumun ilk **5 dakikasi
+muaf** (onboarding korunur), (b) yalnizca dogal aralar — adim/gorev tamamlanmasi, panel kapanisi;
+**eylem ortasinda asla**, (c) gunluk tavan. Odullu reklam bu sayacin disinda.
+**Gerekce:** Kullanici *"3 ile 2 arasindayim, 90 saniye cok erken gibi, ideali sec sen"* dedi.
+90 sn (My Perfect Hotel) erken terk riskini artiriyor; 180 sn gelirden feragat. 120 sn + muafiyet
+penceresi ikisinin ortasi. **Config'ten tek satir** — retention verisine gore ayarlanacak.

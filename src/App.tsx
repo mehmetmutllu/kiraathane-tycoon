@@ -29,6 +29,11 @@ const FurniturePrototype = import.meta.env.DEV
     )
   : null;
 
+// Geliştirici sandbox'ı (her şeyin seviyesini elle ayarla) — yalnız dev; üretimde import edilmez.
+const DevSandbox = import.meta.env.DEV
+  ? lazy(() => import('./components/ui/DevSandbox').then((m) => ({ default: m.DevSandbox })))
+  : null;
+
 export default function App() {
   useEffect(() => {
     if (IS_PROTO) return;
@@ -97,6 +102,11 @@ export default function App() {
       <HUD />
       <Joystick />
       <SplashScreen />
+      {DevSandbox && (
+        <Suspense fallback={null}>
+          <DevSandbox />
+        </Suspense>
+      )}
     </div>
   );
 }

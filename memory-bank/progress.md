@@ -959,3 +959,25 @@ Plan: `docs/plan-kat1-yayin.html` · https://claude.ai/code/artifact/62027184-91
 - ✅ Plan v3'te eklenenler de duruyor: kritik yol 5-7 sa (D-044) · tost tezgâh seviyesiyle (D-043) ·
   retention hedefleri (D1 ≥ %40, D7 ≥ %10) · K13-K18 karar defteri.
 - ⏳ **SONRAKİ OTURUM:** önce planı birlikte gözden geçir (§14'teki 4 açık karar), sonra **Faz G**.
+
+## FAZ E (öne alındı) — ARAYÜZ v2 UYGULANDI (2026-09-06)
+Kullanıcı arayüzü gerçek oyunda görmek istedi → statik mockup yerine `src/` içine uygulandı.
+Detay: `docs/ui/README.md` · ekran görüntüleri `docs/ui/ss/` · karar **D-051**.
+
+- ✅ **Planın §14'ü kapandı:** D-049 kritik yol 5-7 sa ONAYLI · D-050 Kat 2 ürünü ertelendi ·
+  D-051 Astra A/B yok (önce tam güçlü tek deneme) · D-052 interstitial 120 sn + ilk 5 dk muaf.
+- ✅ **KayKit paketleri indirildi** (CC0 doğrulandı): `kaykit-restaurant-bits` (144 model) +
+  `kaykit-city-builder-bits` (41 model). Manifest güncel. Entegrasyon Faz G4/G5'te.
+- ✅ **Geliştirici SANDBOX'ı** (DEV-only, `dist/`te YOK): sınırsız para · zaman ×1-25 ·
+  her ocağın ve 12 masanın seviyesi · karakter/personel kademeleri · pad zinciri · görev
+  atlama · kozmetik · HUD gizle. `DevSandbox.tsx` + `devSandbox.ts` + `devSandbox.css`.
+- ✅ **Arayüz v2:** üst şerit (İtibar + ₺ + 💎 + ayar) · alt bant (AKTİF ADIM, Tek Odak) ·
+  alt nav (Görevler/Hedefler/Mağaza/Karakter) · ortak `Sheet` kabuğu · ekran kenarı oku
+  (`QuestPointer` + `screenPointer` singleton) · ortak ödül modali · 6 yeni SVG ikon.
+  Posta KALDIRILDI (K16). Emoji/CSS ikon yok.
+- ✅ **Hedefler** ekranı gerçek `stats`'tan türeyen 5 kategori; ödül toplama Faz D'de (K5).
+- ✅ Doğrulama: `npm run test` 186/186 · `npm run build` temiz · Playwright 0 konsol hatası.
+- 🐞 **ÖNCEDEN VAR OLAN KIRIK (bu oturumun değil):** `tools/smoke.mjs` 8/15. `b455764`
+  worktree'sinde AYNI sonuç. Kök neden `q_coin` questBase yarışı → domino. Faz A/C işi;
+  **Faz B'ye geçmeden onarılmalı.**
+- ⏳ **SONRAKİ:** kullanıcı arayüz kontrolü → geri bildirim → **Faz G** (G0 ışık ile başla).

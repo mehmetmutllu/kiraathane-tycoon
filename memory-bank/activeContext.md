@@ -2,6 +2,80 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-06 — ARAYÜZ v2 UYGULANDI + SANDBOX + KayKit paketleri; SAVE v30 değişmedi)
+
+Plan gözden geçirildi, **§14'ün dört açık kararı da kapandı** (D-049…D-052) ve kullanıcı
+arayüz işini öne aldı: *"arayüz işini direkt oyunu oynuyormuşum gibi tam bir oyun ekranında
+yap ki anlaşılır ve gerçek senaryo gibi olsun... bir de sınırsız para vs verirsen güzel olur
+her seviyeyi göreyim veya her şeyin seviyesini ayarlamam için ayar koy."*
+Bu yüzden **statik mockup yapılmadı — arayüz gerçek oyunun içine uygulandı.**
+
+### Kapanan kararlar
+- **D-049** Kritik yol **5–7 saat ONAYLANDI** (tekrarlı yükseltmeler kritik yol dışı, ×3,5).
+- **D-050** Kat 2'nin ürünü **ertelendi** (Kat 1 yayınından sonra; `zoneProduct(z)` bloklamıyor).
+- **D-051** Astra ile eş zamanlı A/B **yok** — önce ben tam gücümle, **gerçek asset'lerle**;
+  kullanıcı kontrol edecek, **gerekirse** Astra sonra ölçülecek.
+- **D-052** Interstitial **120 sn** + ilk 5 dk muaf + yalnız doğal aralar + günlük tavan.
+
+### Bu oturumda yapılanlar
+**1. Asset temini (CC0 doğrulandı, indirildi, commit'lendi)**
+`public/assets/models/kaykit-restaurant-bits/` (144 model, 3,4 MB) ve
+`kaykit-city-builder-bits/` (41 model, 1,7 MB). Yalnız `Assets/gltf/` + doku alındı;
+manifest `public/assets/README.md` güncellendi (öncelikli 12 listesi + sokak listesi).
+
+**2. Geliştirici SANDBOX'ı** — `src/components/ui/DevSandbox.tsx` (+ `devSandbox.css`,
+`src/game/devSandbox.ts`). Sol-üstteki **DEV** düğmesi veya **`** tuşu açar. DEV-only:
+`dist/` içinde yok (doğrulandı). İçerik: para (sınırsız anahtarı) · zaman ×1…×25 ve
++1dk/+10dk/+1sa · her salonun ocak seviyesi · 12 masanın tek tek seviyesi (+"hepsi L1…L5") ·
+karakter/personel kademeleri · pad zinciri (sağ tık = o pad'e kadar aç) · görev atlama ·
+kozmetik ("hepsini aç") · HUD'ı gizle · kaydet/sıfırla. Oyun mantığına dokunmaz.
+
+**3. ARAYÜZ v2** — plan §9 bilgi mimarisi gerçek oyunda. Detay: **`docs/ui/README.md`**,
+ekran görüntüleri `docs/ui/ss/` (412×915).
+```
+ÜST ŞERİT   İtibar madalyonu + çubuğu · ₺ · 💎 · ayar
+SAHNE       yalnız aktif adımın işareti + EKRAN KENARI OKU
+ALT BANT    AKTİF ADIM — tek satır (dokun → kamera hedefe)
+ALT NAV     Görevler · Hedefler · Mağaza · Karakter
+```
+- Kaldırıldı: dağınık dört yan buton, sağ-üst görev kartı, **Posta** (K16).
+- Görsel dil iki katman: **overlay = ceviz+pirinç** (sahne üstünde kontrast), **sayfa = krem
+  kâğıt** (içerik okunaklı). Mağaza ve Karakter panelleri de ortak `Sheet` kabuğuna girdi.
+- **Emoji/CSS ikon yok:** 6 yeni elle çizilmiş SVG ikon (`QuestListIcon`, `TargetIcon`,
+  `ShopAwningIcon`, `ChevronIcon`, `ReputationIcon`, `PlayAdIcon`).
+- **Ekran kenarı oku:** `QuestPointer` (Scene) hedefi kameraya izdüşürür → `screenPointer`
+  singleton (store'a yazılsa her kare render'ı tetiklerdi; `perf` kalıbı), HUD ~20 Hz okur.
+- **Görevler** ekranı: aktif adım büyük kart + SIRADA + TAMAMLANAN listesi.
+- **Hedefler** ekranı: 5 kategori, sayaçlar **gerçek `stats`/durumdan türer** (sahte veri yok);
+  ödül TOPLAMA Faz D'de bağlanacak (sayfa bunu açıkça söylüyor). İtibar çubuğu bugün XP
+  sistemini kullanıyor, Faz D'de İtibar'a devrolur.
+- **Ortak ödül modali** (offline ekranı bunu kullanıyor): başlık · ödül · [Al] · [▶ İzle, 2× al]
+  (reklam hazır değilken buton pasif ama görünür — D-039 kalıbı).
+
+### Doğrulama
+- `npm run test` → **186/186 geçti**. `npm run build` → **temiz** (tsc -b + vite).
+- Sandbox üretim paketinde yok (`dist/` grep = 0).
+- Playwright: 0 konsol hatası; altı ekran gerçek oyun durumuyla görüntülendi.
+- **DİKKAT — ÖNCEDEN VAR OLAN KIRIK:** `tools/smoke.mjs` **8/15**. `b455764` (bu oturumdan
+  ÖNCEKİ commit) ayrı bir worktree'de aynı sonucu verdi → **bu oturumun değişikliği değil.**
+  Kök neden: `q_coin` görevi aktif olmadan önce para toplanıyor → `questBase` = 1, sayaç 0/1'de
+  takılıyor; sonrası domino. Faz A/C işi (plan zaten "testler koordinat/akış bağından koparılacak"
+  diyor). ⚠ Düzeltilmeden Faz B'ye geçilmemeli.
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+1. **Kullanıcı arayüz v2'yi kontrol edecek** (`docs/ui/ss/` + `npm run dev`). Geri bildirime göre
+   düzeltme. Astra ölçümü kullanıcı isterse ondan sonra (D-051).
+2. Sonra plandaki sıra: **Faz G** — G0 ışık (hemisphere + fog + ACESFilmic, ~15 satır, en yüksek
+   etki/çaba) → G1 temas gölgesi → G2 plank/karo geometrisi → G3 duvar bitimi → G4/G5 KayKit
+   (paketler artık elde).
+3. Faz A'ya geçmeden `tools/smoke.mjs`'in 7 kırık adımı onarılmalı.
+
+### Bilinen, ertelenmiş
+- Maket girişinin üst çıtasında z-fighting (kullanıcı: "oyuna geçerken hallederiz").
+- Bundle 1,44 MB (three.js) — Faz 7 kod bölme.
+
+---
+
 ## ŞU AN (2026-09-06 — PLANLAMA OTURUMU; KOD DEĞİŞMEDİ, SAVE v30)
 
 `src/` DOKUNULMADI. Bu oturum tamamen denetim + tasarım + planlama.

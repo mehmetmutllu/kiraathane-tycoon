@@ -15,10 +15,24 @@ servis eder → URL: `/assets/models/<paket>/<isim>.gltf`. Loader: `components/t
 | Paket klasörü | İçerik | Kaynak | Lisans | Durum |
 |---|---|---|---|---|
 | `kaykit-furniture-bits/` | 53 model (gltf+bin) + `furniturebits_texture.png` (ortak atlas) | KayKit Furniture Bits 1.0 — Kay Lousberg (kaylousberg.com) | **CC0** (kredi opsiyonel) | ✅ eklendi (entegrasyon ⏳) |
+| `kaykit-restaurant-bits/` | 144 model (gltf+bin) + `restaurantbits_texture.png` | KayKit Restaurant Bits 1.0 — Kay Lousberg | **CC0** (kredi opsiyonel) | ✅ eklendi 2026-09-06 (entegrasyon ⏳ Faz G4) |
+| `kaykit-city-builder-bits/` | 41 model (gltf+bin) + `citybits_texture.png` | KayKit City Builder Bits 1.0 — Kay Lousberg | **CC0** (kredi opsiyonel) | ✅ eklendi 2026-09-06 (entegrasyon ⏳ Faz G5) |
 
 > Not: Pakette gelen fbx / fbx(unity) / obj+mtl / ekstra png (sample, contents) ve License.txt/url
 > dosyaları silindi — yalnız glTF iş hattı tutuluyor (boyut + tekillik). CC0 olduğu için lisans
 > dosyasını saklama zorunluluğu yok; künye bu manifestte.
+
+### kaykit-restaurant-bits — öncelikli 12 (plan §8 G4)
+Maketteki servis bloğunun neredeyse tamamı hazır; aynı sanatçı → stil kilidi korunur.
+`kitchencounter_straight_A` (+ `_innercorner` / `_outercorner` / `_backsplash`) ·
+`kitchencabinet` · `stove_multi` · `extractorhood` · `fridge_A` · `dishrack_plates` ·
+`shelf_papertowel` · `table_round_A` · `menu` · `wall_orderwindow`.
+Tost hattı için ayrıca: `pan_A` / `cuttingboard` / `plate` / `food_ingredient_cheese_slice`.
+
+### kaykit-city-builder-bits — kıraathane önü sokak (plan §8 G5)
+`building_A…H` · yol parçaları · `streetlight` · `bench` · `car_taxi`. Toplam atlas 3'te kalır.
+İndirilirken yalnız `Assets/gltf/` + doku alındı (fbx/obj/unity varyantları atıldı);
+lisans CC0 olarak `LICENSE.txt`ten doğrulandı, künye bu manifestte.
 
 ### kaykit-furniture-bits — oyun eşlemesi (plan, kullanıcı onaylı yön)
 Çay masası tier-bazlı OTURAK + recolor (kahve→mavi-üst→altın, atlas-swap/tint):

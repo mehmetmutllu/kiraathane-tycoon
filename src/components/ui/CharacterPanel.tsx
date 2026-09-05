@@ -23,6 +23,7 @@ import {
 import { PALETTE } from '../../config/palette';
 import { OwnerBody, CupTray } from '../three/Player';
 import { CoinIcon, TrayIcon, BasinIcon, MagnetIcon, BootIcon } from './icons';
+import { Sheet } from './Sheet';
 
 /**
  * Karakter paneli (v20 + Y3 SEKMELER; docs/yemek-alani-garson-plan.md §3): Oyuncu | Çay Garsonu |
@@ -376,8 +377,12 @@ export function CharacterPanel({ onClose }: { onClose: () => void }) {
   ];
 
   return (
-    <div className="modal-backdrop" data-testid="char-panel" onClick={onClose}>
-      <div className="modal-card char-card" onClick={(e) => e.stopPropagation()}>
+    <Sheet
+      title={tab === 'player' ? 'Çaycı' : tab === 'tea' ? 'Çay Garsonu' : tab === 'tost' ? 'Tostçu Garson' : 'Bulaşıkçı'}
+      testid="char-panel"
+      onClose={onClose}
+    >
+      <div className="char-card">
         <div className="char-head">
           <span className="char-lvl" data-testid="char-level" title="Karakter seviyesi">
             <svg width="30" height="30" viewBox="0 0 48 48" aria-hidden>
@@ -385,9 +390,6 @@ export function CharacterPanel({ onClose }: { onClose: () => void }) {
               <TrayIcon />
             </svg>
             <i>{lvl}</i>
-          </span>
-          <span className="modal-title">
-            {tab === 'player' ? 'Çaycı' : tab === 'tea' ? 'Çay Garsonu' : tab === 'tost' ? 'Tostçu Garson' : 'Bulaşıkçı'}
           </span>
         </div>
 
@@ -481,10 +483,10 @@ export function CharacterPanel({ onClose }: { onClose: () => void }) {
         {tab === 'tost' && <WaiterTab kind="tost" />}
         {tab === 'dish' && <DishTab />}
 
-        <button className="modal-btn" data-testid="char-ok" onClick={onClose}>
+        <button className="sheet-cta" data-testid="char-ok" onClick={onClose}>
           Tamam
         </button>
       </div>
-    </div>
+    </Sheet>
   );
 }
