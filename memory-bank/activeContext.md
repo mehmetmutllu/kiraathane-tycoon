@@ -2,6 +2,89 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-06 — PLANLAMA OTURUMU; KOD DEĞİŞMEDİ, SAVE v30)
+
+`src/` DOKUNULMADI. Bu oturum tamamen denetim + tasarım + planlama.
+**Ana çıktı: `docs/plan-kat1-yayin.html`** — artifact https://claude.ai/code/artifact/62027184-9196-4da4-83ce-b7bd347d78ac
+Maket de güncellendi: `docs/maket/maket-v13.html` (içerik v15) — artifact https://claude.ai/code/artifact/813bdc4c-3052-46ca-ac3b-23076f425b23
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+Kullanıcı: *"sen oturumu kaydet, sonraki chatte planı netleştirelim ona göre hareket ederiz."*
+**Yani: önce PLANI BİRLİKTE GÖZDEN GEÇİR, sonra koda başla.** Plan artifact'ini aç, §14'teki açık
+kararları kapat, sonra **Faz G**'den (ışık → temas gölgesi → plank geometrisi → duvar bitimi) başla.
+
+### Bu oturumda ne oldu — üç bölüm
+
+**1. Maket v14–v15** (`docs/maket/maket-v13.html`, dosya adı v13 kaldı):
+Kat 1'in dört eksiğinden ikisi kapandı — sokak cephesine **cam vitrin** (`shopFront` · `shopGlass`
+· `shopWins` · `doorLeaf`) ve **sol duvar programı** (askı rayı · konsol raf · **televizyon** ·
+gazetelik). Sonra kullanıcı *"güzel ama düzgün durmadı"* dedi → dört ayrı kusur bulundu:
+- duvar 2,7 iken kapı boşluğu 2,9'du, **kapı duvardan taşıyordu** → `WALL_H = 3.2` sabiti
+- cam bandının üstünde **alınlık yoktu** → kaide 0–0,4 · cam 0,4–2,65 · lento · **alınlık
+  2,65–3,2 (tabela)** · üst kordon
+- tente alınlığın **üstündeydi** ve **eğimi tersti** (dış kenar yukarı kalkıyordu) →
+  lentonun altına indi, `rotation.x` −0,18 → **+0,18**
+- kapı kanadı içi dolu ahşap kutuydu, camın arkasında tahta kalıyordu → `doorLeaf` iki dikme +
+  üç kayıt olarak yeniden yazıldı, **çift kanatlı camlı**, sağ kanat içeri açık
+**Gölge sızması** da düzeldi: içerideki rafların gölgesi duvarın DIŞ yüzüne sızıyordu →
+`shadow.normalBias` 0,02 → **0,14** (duvar kalınlığından küçüktü), `bias` −0,0004 → −0,0012.
+Yan etki kabul edildi: Kat 2–3 duvarları da 3,2 oldu; sınır duvarları 2,9 → `WALL_H` (7 yer).
+
+**2. Denetim ve araştırmalar**
+- Fable 5.1 ile `src/` tam tarandı (9.669 satır); bulgular kodda **doğrulandı**.
+- Üç araştırma daha: asset/doku kaynakları · idle tempo kıyaslaması · GPT-6 Astra.
+
+**3. Plan** — `docs/plan-kat1-yayin.html`, 14 bölüm, karar defteri K1–K18, açık 4 karar.
+
+### Bu oturumun KALICI kararları (decisions.md D-037 … D-048)
+- **D-038 Tek Odak Kuralı** — pad + seviye + görev TEK listede; dünyadaki işaret, alt bant metni,
+  kamera odağı ve kenar oku dördü de tek `activeStepId`'den türer. **Kök sebep kodda doğrulandı:**
+  `visiblePads` pad'leri göreve göre filtreliyor ama `optional:true` pad'ler ve
+  `upgradeFills` / `tableUpgradeFills` bu filtrenin **tamamen dışında** çiziliyor.
+  Usta (L4) noktaları listeye GİRMEZ — rozet olarak görünür.
+- **D-039 L1–L3 para, L4 "Usta" reklam/💎, KRİTİK YOL DIŞI, masa başına** (20 masa = 20 hedef).
+  Reklam hazır değilse **pad yine görünür**, yalnız buton pasifleşir.
+- **D-040 "Reklamları Kaldır" IAP elmas geliri satar** (kalıcı günde 10 💎) — L4'ü parayla satmaz.
+- **D-041 Zemin/duvar DOKUSU KULLANILMAZ** — `d08c445` canvas-tile parke denendi, `d29b7d9`
+  geri alındı. Çözüm sırası: ışık → temas gölgesi → plank/karo geometrisi → duvar bitimi →
+  KayKit. **Kod Lambert değil `meshStandardMaterial` (153 yer), `flatShading` hiç yok.**
+- **D-042 KayKit CC0 + 5 Türk objesi elle.** AI ücretsiz planları **YASAK**: Meshy free =
+  CC BY 4.0 atıf zorunlu · Tripo free = ticari yok · Hunyuan3D (Spline AI dahil) = AB/UK yasak.
+  Semaver zaten makette var (`samovar()`), taşınacak.
+- **D-043 Tost tezgâh seviyesiyle gelir**, alanla değil. Ürün makinesi zaten tamamen kurulu;
+  ürünü bölgeye bağlayan tek şey `zoneProduct(z)` — 12 çağrı noktası ondan geçiyor.
+- **D-044 Kritik yol 5–7 saat**; tekrarlı yükseltmeler kritik yol DIŞI (+6–10 sa isteğe bağlı
+  derinlik), Usta katmanı açık uçlu. Uzatma ×6 değil **×3,5**.
+  Başarı ölçütü saat değil **retention: D1 ≥ %40 · D7 ≥ %10 · oturum 8–12 dk.**
+- **D-045 Astra: disipline göre bölme yok, tek ekranda A/B.** `store.ts` / `economy.config.ts` /
+  `save.ts` / testler bölünmez.
+- **D-046 Global garson havuzu + sipariş tabanlı servis** (son turda eklendi, aşağıda).
+- **D-047 Servis noktası tek merdiven:** L1–L3 Çay Ocağı · **L4 → TEZGÂH** · **L5 TOST açılır** ·
+  L6 son ₺ · Usta (L7). Mevcut `costsByLevel` altı girdiyle birebir → **şema değişmiyor**.
+- **D-048 Astra kullanımı zorunlu değil**; karar arayüz A/B çıktısından sonra verilecek.
+
+### Kullanıcının son turda eklediği şartlar (D-046'nın kaynağı)
+- **Çay garsonu / tost garsonu ayrımı KALKACAK** — *"öyle bir masa ve alan ayrımı da kalmadı,
+  globalleşmesi lazım."*
+- **Senkronizasyon çok iyi olmalı:** hiçbir masa **starvation** çekmemeli · garson yanından
+  geçtiği masaya **elindekini bırakmamalı**, kime gidecekse ona gitmeli · **garson sayısı ideal**
+  olmalı.
+- **Sipariş toplanmalı:** *"bir masa 2 tost 1 çay istiyorsa ona göre sipariş toplanıp gitmeli"* —
+  sabır, bekleme ve hazırlanma süreleri buna göre ayarlanmalı.
+- **Retention verisi tutulacak** (onaylandı).
+- **Frontend merakı:** kullanıcı benim *"çok uğraştığım"* arayüz denememi görmek istiyor;
+  o denemede **asset'ler de elde olacak**. Astra kararı ondan sonra.
+
+### Kalan açık kararlar (planın §14'ü)
+1. 5–7 saatlik kritik yol onayı — zincirin bütün fiyatlarını bu belirliyor
+2. Kat 2'nin ürünü (Türk kahvesi önerildi; pizza da mümkün)
+3. Arayüz A/B testi yapılacak mı
+4. Interstitial sıklığı (plan 3 dk; kıyas: My Perfect Hotel ~90 sn)
+
+### Bilinen, ertelenmiş bug
+Maket girişinin üst çıtasında renk yalpalanması (z-fighting) — kullanıcı *"oyuna geçerken
+hallederiz"* dedi.
+
 ## ŞU AN (2026-09-05 — v15: CEPHE ORANLARI DÜZELTİLDİ; KOD DEĞİŞMEDİ, SAVE v30)
 
 Kullanıcı v14 vitrinine baktı: *"dışarıdaki camlar güzel ama düzgün durmadı sanki, acaba duvarları

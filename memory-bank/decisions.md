@@ -690,3 +690,40 @@ Astra'nın ölçülmüş 3B gücü Blender/geometri (%95,9 vs %84,3), react-thre
 Fiyat Astra 10$/50$ vs Opus 5 5$/25$ → iki katı.
 **Not:** Farkın bir kısmı model farkı olmayabilir — oyun HUD'unda `impeccable`/`frontend-design`
 yetenekleri hiç kullanılmadı.
+
+## D-046 — Global garson havuzu + sipariş tabanlı servis (2026-09-06)
+**Karar:** Garsonlar bölgeye ve ürüne bağlı olmaktan çıkar. Tek **global havuz**; "Çay Garsonu /
+Tostçu Garson" ayrımı ve `waiters[z]`/`waiters2[z]` bölge dizileri kalkar, tepsi/hız yükseltmeleri
+tek hatta birleşir.
+**Sipariş nesnesi:** masa tek ürün değil **sipariş** verir — `{ çay:1, tost:2 }`. Tezgâh kalemleri
+ayrı ayrı üretir, garson **siparişin tamamı hazır olunca** alır; yarım servis yok.
+**Beş kural:** ① havuz global ② **üstlenme (claim) bağlayıcı** — siparişi üstlenen garson teslim
+edene kadar başka masaya servis yapmaz, yanından geçtiği masaya elindekini BIRAKMAZ ③ öncelik
+"en yakın" değil **"en acil"** — kalan sabır + bekleme yaşlandırması, böylece tezgâha uzak masalar
+**starvation** çekmez ④ **sabır sipariş boyuna bağlı** — taban + Σ(kalem hazırlık süresi) × pay
+(bugünkü ürün-başı `patienceMult` bunun kaba hâli) ⑤ **garson sayısı türetilir** — ideal ≈ talep ÷
+garson debisi; eksikse kuyruk uzar ve HUD "garsonlar yetişemiyor" der.
+**Tepsi ilişkisi:** tepsi N kalem taşıyorsa garson tek turda toplam N kalemlik sipariş paketler →
+tepsi yükseltmesi "kaç masa tek turda" sorusuna dönüşür.
+**Gerekçe:** Kullanıcı bildirdi — tek katta tek tezgâh olunca ürün/alan bazlı garson ayrımının
+karşılığı kalmadı; ayrıca "garson yakınından geçtiği masaya elindekini bırakmamalı" ve
+"hiçbir masa starvation çekmemeli" şartları var.
+**Doğrulama:** Faz C'de simülatöre sipariş kuyruğu + üstlenme + starvation ölçümü eklenir;
+**"hiçbir masa X saniyeden fazla beklemedi"** iddiası TESTE yazılır. Bugün bu davranışların
+hiçbiri test edilmiyor.
+
+## D-047 — Servis noktası tek merdiven: ocak L1-L3, tezgâh L4-L6 (2026-09-06)
+**Karar:** Çay ocağı ve tezgâh ayrı objeler değil, **aynı servis noktasının** iki kimliği.
+Seviye sıfırlanmaz: **L1-L3 Çay Ocağı** (adım 1-2 dönemi) · **L4 → TEZGÂH'a dönüşür** (servis
+bloğu kurulur, ocak yerini bırakır) · **L5 TOST AÇILIR** (tost sacı + davlumbaz) · **L6** son ₺
+seviyesi (hazırlık adası + menü + fırın/kiler) · **Usta (L7)** 💎/reklam.
+**Gerekçe:** Kullanıcı "çay ocağı kaç seviye olacak sana bıraktım" dedi. Altı ₺ seviyesi + Usta,
+mevcut `costsByLevel` [20,30,45,67,150,300] ve `masterLevel 7` ile **birebir örtüşüyor → şema
+değişmiyor**. Tost'un alanla değil seviyeyle gelmesi (D-043) bu merdivende L5'e oturuyor.
+
+## D-048 — GPT-6 Astra kullanımı: zorunlu değil, karar ertelendi (2026-09-06)
+**Karar:** Astra 6 kullanmak zorunlu değil; katkı sağlarsa kullanılır. Kullanıcı kararı **arayüz
+A/B çıktısını gördükten sonra** verecek. Önce Claude (Opus 5 / Fable 5.1) en iyi hâliyle denenecek —
+kullanıcı: *"belki de çok uğraşmamışımdır dedin, çok uğraştığın halini de merak ediyorum"*.
+**Not:** O denemede asset'ler de elde olacak (KayKit + ikon seti), yani karşılaştırma boş
+şablonla değil gerçek malzemeyle yapılacak.

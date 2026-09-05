@@ -940,3 +940,22 @@ Artifact: https://claude.ai/code/artifact/62027184-9196-4da4-83ce-b7bd347d78ac
 - ✅ **Faz sırası:** A temizlik+tick bölme · B model geçişi · C zincir+denge · D meta · E cila · F paketleme.
 - ⏳ **ONAY BEKLEYEN 8 KARAR** planın sonunda listeli. En kritik: (1) model geçişi, (5) 10-12 sa hedefi.
 - 🐞 **Bilinen, ertelendi (kullanıcı):** giriş tarafı üst çıtada renk yalpalanması (z-fighting).
+
+## PLAN OTURUMU (2026-09-06) — plan v4: servis sistemi + tezgâh merdiveni kesinleşti
+Kod DEĞİŞMEDİ (`src/` dokunulmadı, SAVE v30). Detay: `activeContext.md` ŞU AN bölümü.
+Plan: `docs/plan-kat1-yayin.html` · https://claude.ai/code/artifact/62027184-9196-4da4-83ce-b7bd347d78ac
+
+- ✅ **D-046 Global garson + sipariş tabanlı servis.** Çay/tost garsonu ayrımı kalkıyor
+  (`waiters[z]`/`waiters2[z]` bölge dizileri, ayrı sekmeler, ayrı tepsi hatları). Masa artık tek
+  ürün değil **sipariş** veriyor (`{çay:1, tost:2}`); garson siparişin TAMAMI hazır olunca alıyor.
+  Beş kural: havuz global · **üstlenme bağlayıcı** (yolda başka masaya bırakmaz) · öncelik
+  **en acil** (starvation önleme) · **sabır sipariş boyuna bağlı** · garson sayısı türetilir.
+  Faz C'de "hiçbir masa X sn'den fazla beklemedi" iddiası TESTE yazılacak.
+- ✅ **D-047 Servis noktası tek merdiven:** L1-L3 Çay Ocağı → **L4 TEZGÂH'a dönüşür** →
+  **L5 TOST açılır** → L6 son ₺ → Usta (L7). Mevcut `costsByLevel` (6 girdi) + `masterLevel 7`
+  ile birebir örtüşüyor → **şema değişmiyor**. Kullanıcı "kaç seviye olacağını sana bıraktım" dedi.
+- ✅ **D-048 Astra 6 zorunlu değil**, karar arayüz A/B çıktısından sonra. Kullanıcı önce Claude'un
+  "çok uğraştığı" hâlini görmek istiyor; o denemede asset'ler de elde olacak.
+- ✅ Plan v3'te eklenenler de duruyor: kritik yol 5-7 sa (D-044) · tost tezgâh seviyesiyle (D-043) ·
+  retention hedefleri (D1 ≥ %40, D7 ≥ %10) · K13-K18 karar defteri.
+- ⏳ **SONRAKİ OTURUM:** önce planı birlikte gözden geçir (§14'teki 4 açık karar), sonra **Faz G**.

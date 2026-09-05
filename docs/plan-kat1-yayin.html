@@ -273,6 +273,8 @@
       <tr><td class="num">K13</td><td><b>İlk yayın App Store.</b> Reklam AdMob. Derleme <b>CI ile</b> (GitHub Actions <code>macos-latest</code>).</td><td>Kullanıcı kararı; AdMob hesabı mevcut, Mac yok.</td></tr>
       <tr><td class="num">K14</td><td><b>Tost ürünü alanla değil TEZGÂH SEVİYESİYLE gelir</b> (L3). İlk iki alan yalnız çay.</td><td>Kullanıcı kararı. Ürün makinesi kodda zaten var; ürünü bölgeye bağlayan tek şey <code>zoneProduct(z)</code>.</td></tr>
       <tr><td class="num">K15</td><td><b>Kritik yol 5–7 saat.</b> Tekrarlı masa/tezgâh seviyeleri kritik yolun DIŞINDA, isteğe bağlı derinlik.</td><td>Tür başarıyı saatle değil retention'la ölçüyor; prestige'siz uzun doğrusal kuyruk terk riski. §5.</td></tr>
+      <tr><td class="num">K17</td><td><b>Garson havuzu GLOBAL, servis sipariş tabanlı.</b> Çay/tost garsonu ayrımı kalkar; üstlenme bağlayıcı; öncelik en acil; sabır sipariş boyuna bağlı.</td><td>Tek katta tek tezgâh olunca ürün/alan bazlı garson ayrımının karşılığı kalmıyor. Starvation ve "yolda bırakma" sorunları yapısal olarak çözülür. §4</td></tr>
+      <tr><td class="num">K18</td><td><b>Servis noktası tek merdiven:</b> L1-L3 Çay Ocağı · <b>L4 Tezgâh'a dönüşür</b> · <b>L5 tost açılır</b> · L6 son ₺ · Usta.</td><td>Seviye sıfırlanmaz, obje kimlik değiştirir. Mevcut <code>costsByLevel</code> altı girdiyle birebir örtüşür — şema değişmez.</td></tr>
       <tr><td class="num">K16</td><td><b>Posta paneli ve ölü Ayarlar anahtarları v1.0'da kaldırılır.</b></td><td>Kullanıcı kararı: planlanmadıysa kaldır, gerekirse sonra eklenir.</td></tr>
     </tbody>
   </table>
@@ -469,19 +471,52 @@ state: { <b>activeStepId</b>: string; doneSteps: string[] }
   <table>
     <thead><tr><th>Seviye</th><th>Görsel — ne belirir</th><th>Mekanik</th></tr></thead>
     <tbody>
-      <tr><td class="k">Ocak <span style="color:var(--ink-faint);font-weight:600">(adım 1–2)</span></td><td>Sol duvarda cezve ocağı + küçük semaver</td><td><b>ÇAY</b> · demleme 6 sn</td></tr>
-      <tr><td class="k">Tezgâh L1</td><td>Servis bloğu kurulur; salona bakan tezgâh yüzü, semaver öne geçer, temiz bardak istifleri</td><td>çay ×1,35 · kuyruk +1 · bardak havuzu +2</td></tr>
-      <tr><td class="k">Tezgâh L2</td><td>Arka duvara cezve ocağı + hazırlık tezgâhı</td><td>×1,82 · kuyruk +1</td></tr>
-      <tr><td class="k">Tezgâh L3</td><td><b>Tost sacı + davlumbaz + baca</b></td><td><b>TOST AÇILIR</b> — 25 ₺ · 11 sn · tabak</td></tr>
-      <tr><td class="k">Tezgâh L4</td><td>Hazırlık adası + menü tahtası</td><td>×3,32 · tost arzı belirgin açılır</td></tr>
-      <tr><td class="k">Tezgâh L5</td><td>İkinci semaver + iki katlı bardak rafı, bulaşık genişler</td><td>×4,48</td></tr>
-      <tr><td class="k">Tezgâh L6</td><td>Fırın + kiler + asma tavan</td><td>×6,05 — son ₺ seviyesi</td></tr>
+      <tr><td class="k">L1 <span style="color:var(--ink-faint);font-weight:600">Çay Ocağı</span></td><td>Sol duvarda cezve ocağı + küçük semaver</td><td><b>ÇAY</b> · demleme 6 sn</td></tr>
+      <tr><td class="k">L2 <span style="color:var(--ink-faint);font-weight:600">Çay Ocağı</span></td><td>Semaver büyür, bardak sırası dolar, ilk tepsi</td><td>×1,35 · kuyruk +1 · bardak havuzu +2</td></tr>
+      <tr><td class="k">L3 <span style="color:var(--ink-faint);font-weight:600">Çay Ocağı</span></td><td>İkinci ocak gözü, arkada bardak rafı</td><td>×1,82 · kuyruk +1 · bardak +2</td></tr>
+      <tr><td class="k">L4 <span style="color:var(--copper);font-weight:700">→ TEZGÂH</span></td><td><b>Servis bloğu kurulur, ocak yerini tezgâha bırakır</b> — salona bakan tezgâh yüzü, semaver öne, arkada cezve ocağı ve hazırlık</td><td>×2,46 · kuyruk +1 · bardak +2</td></tr>
+      <tr><td class="k">L5</td><td><b>Tost sacı + davlumbaz + baca</b></td><td><b>TOST AÇILIR</b> — 25 ₺ · 11 sn · tabak</td></tr>
+      <tr><td class="k">L6</td><td>Hazırlık adası + menü tahtası + fırın/kiler</td><td>×6,05 — son ₺ seviyesi; tost arzı açılır</td></tr>
       <tr><td class="k">Usta <span class="tag ad">reklam</span>/<span class="tag lvl">💎</span></td><td>Mermer tezgâh, cilalı pirinç, asma fener</td><td>üstüne ×2</td></tr>
     </tbody>
   </table>
   </div>
 
-  <p><b>Masalar 3 seviye + Usta, tezgâh 6 seviye + Usta.</b> Tezgâh tek kahraman obje, uzun merdiveni hak ediyor — ve bu zaten koddaki yapı (<code>costsByLevel</code> altı girdi, <code>masterLevel 7</code>). KayKit Restaurant Bits'te kademelerin birebir karşılığı var: <code>stove_multi</code> · <code>extractorhood</code> · <code>kitchencounter_*</code> · <code>oven</code> · <code>fridge</code> · <code>dishrack</code> · <code>menu</code>.</p>
+  <p><b>Tek merdiven, iki kimlik.</b> Çay ocağı ve tezgâh ayrı objeler değil — <b>aynı servis noktasının</b> L1-L3 ve L4-L6 hâlleri. Seviye sıfırlanmaz, obje L4'te yerini ve görünümünü değiştirir. Masalar 3 seviye + Usta, servis noktası <b>6 seviye + Usta</b> — bu zaten koddaki yapı (<code>costsByLevel</code> altı girdi, <code>masterLevel 7</code>), yani <b>şema değişmiyor</b>. KayKit Restaurant Bits'te kademelerin birebir karşılığı var: <code>stove_multi</code> · <code>extractorhood</code> · <code>kitchencounter_*</code> · <code>oven</code> · <code>fridge</code> · <code>dishrack</code> · <code>menu</code>.</p>
+
+  <h3>Servis sistemi — global garson, sipariş tabanlı</h3>
+
+  <div class="note warn">
+    <span class="lab">Bugünkü yapı yeni modelle çelişiyor</span>
+    <p>Kodda garsonlar <b>bölgeye ve ürüne bağlı</b>: <code>waiters[z]</code>, <code>waiters2[z]</code>, ayrı "Çay Garsonu" ve "Tostçu Garson" sekmeleri, her birinin ayrı tepsi ve hız hattı. Tek katta tek tezgâh olunca bu ayrımın <b>hiçbir karşılığı kalmıyor</b> — masa da alan da ürüne göre ayrılmıyor artık.</p>
+  </div>
+
+  <h4>Sipariş nesnesi</h4>
+  <p>Bugün her müşteri tek ürün bekliyor. Yeni modelde <b>masa bir sipariş verir</b>: <span class="mono">{ çay: 1, tost: 2 }</span>. Sipariş bir bütündür; tezgâh kalemleri ayrı ayrı üretir ama <b>garson siparişin tamamı hazır olunca alır</b> — yarım servis yok.</p>
+
+  <div class="mock">masa dolar → <b>SİPARİŞ</b> { çay:1, tost:2 } → sipariş kuyruğu
+   → tezgâh kalemleri üretir (her ürün kendi hazırlık süresiyle)
+   → tamamı hazır → <b>bir garson siparişi ÜSTLENİR</b> (claim)
+   → doğrudan o masaya gider — <b>yolda başka masaya bırakmaz</b>
+   → servis → ödeme → kirli kap</div>
+
+  <h4>Beş kural</h4>
+  <div class="tw">
+  <table>
+    <thead><tr><th>Kural</th><th>Neden</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Garson havuzu <b>global</b></td><td>Alana ve ürüne bağlı garson yok. Tek havuz, herkes her masaya gider. "Tostçu Garson" ayrımı kalkar; tepsi/hız yükseltmeleri tek hatta birleşir</td></tr>
+      <tr><td class="k">Üstlenme (claim) <b>bağlayıcı</b></td><td>Bir siparişi üstlenen garson onu teslim edene kadar başka masaya servis yapmaz — yanından geçtiği masaya "hazır elimdeki" bırakmaz. Kullanıcının bildirdiği sorun tam bu</td></tr>
+      <tr><td class="k">Öncelik <b>en yakın değil, en acil</b></td><td>Sıralama <b>kalan sabre</b> göre + bekleme süresiyle yaşlandırma. Tezgâha yakın masalar sürekli servis alıp uzaktakiler açlıktan ölmez (<b>starvation önleme</b>)</td></tr>
+      <tr><td class="k">Sabır <b>sipariş boyuna</b> bağlı</td><td>2 tost + 1 çay ≈ 28 sn hazırlık ister; müşteri 18 sn sabırla beklerse kaçar. Sabır = taban + Σ(kalem hazırlık süresi) × pay. Bugünkü ürün-başı <code>patienceMult</code> bunun kaba hâli, sipariş-başına genellenir</td></tr>
+      <tr><td class="k">Garson sayısı <b>türetilir</b></td><td>İdeal sayı ≈ talep ÷ garson debisi. Oyuncuya sayı dayatılmaz ama <b>eksikse görünür olur</b>: bekleyen sipariş kuyruğu uzar, HUD "garsonlar yetişemiyor" der. Yeni garson satın alması buna dayanır</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p><b>Tepsi kapasitesiyle ilişki:</b> tepsi N kalem taşıyorsa, garson tek turda ancak toplam N kalemlik siparişleri paketleyebilir. Tepsi yükseltmesi böylece "kaç masa tek turda" sorusuna dönüşür — bugünkü soyut "kapasite" sayısından çok daha okunur bir yükseltme.</p>
+
+  <p><b>Doğrulanacak:</b> Faz C'de simülatöre sipariş kuyruğu, üstlenme ve starvation ölçümü eklenir; <b>"hiçbir masa X saniyeden fazla beklemedi"</b> iddiası teste yazılır. Bugün bu davranışların hiçbiri test edilmiyor.</p>
 
   <h4>Üst katlar aynı kalıpla</h4>
   <div class="tw">
