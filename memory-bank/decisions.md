@@ -550,7 +550,16 @@ Kilitli alanı göstermek "boş oda satın aldım" hissi verir; açık alandaki 
 sahte gösterir. Tadilat hâli hem sebebi anlatır hem satın alma isteğini doğurur.
 **İlk uygulama:** Kat 1 adım 3 — lavabo köşesi perdeli; adım 4'te perde kalkıyor.
 `tadilatPerde()`, `duba()`, `iskele()`, `moloz()` (docs/maket/maket-v13.html).
-**Açık uç:** aynı muamele merdiven kovasına da uygulansın mı — kullanıcıya soruldu.
+**İki ayrı hâl var (2026-09-05 düzeltmesi):**
+- **Kapalı hacim inşa ediliyorsa** (lavabo gibi bir oda) → tahta perde + uyarı bandı + dubalar,
+  arkasında iskele ve moloz. Arkası görünmez, çünkü orada gerçekten bir oda kuruluyor.
+- **Var olan bir yapı onarılacaksa** (merdiven gibi) → **perde YOK**, obje kendisi yıkık hâlde
+  görünür durur: basamak tahtaları eksik, korkuluk kırık, üstünde moloz; önüne yalnız
+  **uyarı şeridi** (iki dikme arasında sarı-siyah bant) ve dubalar konur.
+  Kullanıcı: *"merdiven merdiven hâliyle yıkık dökük dursun ve önünde de şerit olsun,
+  bu şekilde yeni bir oda izlenimi oluyor o da hoş değil."* Ayrıca oyuncu ilk günden
+  üst kat olduğunu görmeli — perde bu bilgiyi saklıyordu.
+**Fonksiyonlar:** `tadilatPerde()` `duba()` `iskele()` `moloz()` `uyariSeridi()` `merdivenHarap()`.
 
 ## D-034 — Kat 1 mobilya ızgarası (2026-09-05)
 **Karar:** Kat 1'in bütün oturma grupları tek ızgarada: sütunlar x = ∓5,3 · ∓8,5 · ∓11,7 (3,2 aralık),

@@ -1217,6 +1217,57 @@
     return g;
   }
 
+  // uyari seridi: iki dikme arasinda gerili sari-siyah bant (tahta perde DEGIL — arkasi gorunur kalir)
+  function uyariSeridi(x1, x2, z) {
+    var g = new T.Group(), len = x2 - x1, i;
+    [x1, x2].forEach(function (x) {
+      put(g, cyl(0.22, 0.26, 0.06, 8, 0x37474f), x, 0.03, z);
+      put(g, cyl(0.05, 0.05, 1.05, 6, 0x37474f), x, 0.53, z);
+      put(g, sph(0.06, 0xe0b13a), x, 1.08, z);
+    });
+    var n = Math.round(len / 0.5), st = len / n;
+    for (i = 0; i < n; i++) {
+      put(g, box(st - 0.02, 0.13, 0.02, i % 2 ? 0xe0b13a : 0x2f2a24), x1 + st / 2 + i * st, 0.92, z);
+      put(g, box(st - 0.02, 0.13, 0.02, i % 2 ? 0x2f2a24 : 0xe0b13a), x1 + st / 2 + i * st, 0.58, z);
+    }
+    return g;
+  }
+
+  // YIKIK MERDIVEN: merdivenin kendisi duruyor ama harap — basamak tahtalari yer yer eksik,
+  // korkuluk kirik, basamaklarda moloz. Tahta perde YOK: ust kat oldugu gorunsun diye.
+  function merdivenHarap() {
+    var g = new T.Group(), w = 4.6, n = STEP_N, sh = 2.9 / n, i;
+    var eksik = [2, 5, 9, 12];
+    for (i = 0; i < n; i++) {
+      put(g, box(w, sh, STEP_D, 0x6d6155, true), 0, sh / 2 + i * sh, -STEP_D / 2 - i * STEP_D);
+      if (eksik.indexOf(i) < 0) {
+        var kirik = i % 4 === 1;
+        put(g, box(w - (kirik ? 1.4 : 0), 0.035, STEP_D, 0x8a7b68, true),
+          kirik ? 0.7 : 0, (i + 1) * sh - 0.0175, -STEP_D / 2 - i * STEP_D);
+      }
+    }
+    var L = n * STEP_D;
+    put(g, box(w, 2.9, 0.6, 0x6d6155, true), 0, 1.45, -L - 0.3);
+    put(g, box(w, 0.035, 0.6, 0x8a7b68, true), 0, 2.9 - 0.0175, -L - 0.3);
+    [-1, 1].forEach(function (sgn) {                       // kirik korkuluk: birkac dikme kalmis
+      var x = sgn * (w / 2 - 0.1);
+      [0, 4, 11].forEach(function (k) {
+        put(g, box(0.08, 1.0, 0.08, 0x6b5442), x, (k + 1) * sh + 0.5, -STEP_D / 2 - k * STEP_D);
+      });
+    });
+    var hr = put(g, box(0.1, 0.09, 3.2, 0x6b5442), -(w / 2 - 0.1), 1.35, -1.3);
+    hr.rotation.x = Math.atan2(2.9, L);
+    for (i = 0; i < 11; i++) {                             // basamaklarda moloz
+      var st = Math.floor(rnd(0, n));
+      put(g, box(rnd(0.14, 0.3), 0.06, rnd(0.12, 0.22), i % 2 ? 0xcfd8dc : 0xb0bec5),
+        rnd(-1.9, 1.9), (st + 1) * sh + 0.04, -STEP_D / 2 - st * STEP_D).rotation.y = rnd(0, 3);
+    }
+    var kalas = put(g, box(0.3, 0.07, 3.0, 0x8a7b68, true), -1.5, 0.42, -1.5);
+    kalas.rotation.x = Math.atan2(2.9, L);
+    put(g, cyl(0.2, 0.16, 0.32, 8, 0x546e7a, true), 1.7, 0.16, -0.5);
+    return g;
+  }
+
   // BANKET ADASI — kafenin duvarsiz banketi: sirt sirta iki yuzlu oturma banki,
   // ortada ortak sirtlik, iki yanda oturak + minder + yastiklar. Oturak yuzeyi y = 0,54 (tabure ile ayni).
   function banketIsland(len) {
@@ -1657,18 +1708,16 @@
 
     /* >>> TADİLAT — lavabo satın alınana kadar arka-sağ köşe tahta perdeyle kapalı.
        Kural: kilitli ALAN hiç çizilmez; açık alanın içindeki kilitli OBJE tadilatta durur. <<< */
+    /* Merdiven satın alınana kadar: merdivenin KENDİSİ duruyor ama yıkık — perde çekilmiyor,
+       çünkü perde orayı yeni bir oda gibi gösteriyor. Üst kat olduğu görünsün diye açık kalıyor. */
     if (s < 5) {
       g = ST(3);
-      // merdiven kovası: yukarı yükselen iskele + levha — "burada bir üst kat var" sinyali
-      g.add(tadilatPerde(-4.6, 4.6, -9.8));
-      put(g, iskele(4.0), -2.0, 0, -12.6);
-      put(g, iskele(4.0), 2.0, 0, -15.4);
-      put(g, moloz(), 0.4, 0, -12.0);
-      put(g, duba(), -3.6, 0, -8.9);
-      put(g, duba(), 0.2, 0, -8.7);
-      put(g, duba(), 3.6, 0, -8.9);
-      put(g, box(3.0, 0.1, 0.12, 0xe0b13a), -1.8, 0.72, -8.8);
-      put(g, signPost(), 4.0, 0, -8.6, 0.4);
+      put(g, merdivenHarap(), 0, 0, -9.8);
+      g.add(uyariSeridi(-4.2, 4.2, -9.4));
+      put(g, duba(), -3.2, 0, -8.8);
+      put(g, duba(), 0, 0, -8.6);
+      put(g, duba(), 3.2, 0, -8.8);
+      put(g, signPost(), 4.2, 0, -8.4, 0.4);
     }
     if (s === 3) {
       g = ST(3);
@@ -2164,8 +2213,8 @@
       { n: '3. Alan', badge: 'kat 1 · adım 3 / 6 · arka yarı + tezgâh',
         d: 60, a: -0.58, e: 0.72, t: [-4.0, 0.5, -4.0], rooms: [8, 1, 2],
         stats: [['3 / 6', 'adım'], ['34 × 34', 'kat'], ['9,0', 'tezgâh boyu'], ['8', 'masa'], ['3', 'personel']],
-        labels: [[-8.5, 8.6, '1', '1. Alan'], [8.5, 8.6, '2', '2. Alan'], [-13.0, -10.4, '☕', 'Tezgâh'], [10.8, -9.2, '⚠', 'Tadilat'], [0, -9.2, '⚠', 'Tadilat'], [-2.0, -4.0, '3', 'boş şerit']],
-        cap: '<b>Adım 3 — Arka yarı açılıyor, servis bloğu ve tezgâh kuruluyor.</b> 34 × 17 birimlik alan tek hamlede geliyor. Arka duvarın sol ucunda 12,2 × 7,0 bir servis bloğu doğuyor ve <b>salona bakan yüzü tezgâh</b>: semaver, temiz bardak istifleri ve hazır tepsiler müşterinin gördüğü yerde; hazırlık arkada — arka duvarda cezve ocağı, hazırlık tezgâhı ve menü tahtası, sol duvarda bulaşık. Tezgâhın ortasında <b>2 birimlik geçit</b>, personel ve oyuncu oradan giriyor. <em>Kafe mantığı: tezgâh mekânın yüzüdür, mutfak arkasında kalır.</em> Arka bandın <b>iki bölmesi tahta perdeyle kapalı</b>: sağ köşe (lavabo) ve orta kova (merdiven). İçeride iskele, moloz, kalaslar; merdiven kovasında iskele yukarı yükseliyor — <em>oyuncu daha ilk günden üst kat olduğunu görüyor.</em>' },
+        labels: [[-8.5, 8.6, '1', '1. Alan'], [8.5, 8.6, '2', '2. Alan'], [-13.0, -10.4, '☕', 'Tezgâh'], [10.8, -9.2, '⚠', 'Tadilat'], [0, -9.0, '↑', 'Yıkık Merdiven'], [-2.0, -4.0, '3', 'boş şerit']],
+        cap: '<b>Adım 3 — Arka yarı açılıyor, servis bloğu ve tezgâh kuruluyor.</b> 34 × 17 birimlik alan tek hamlede geliyor. Arka duvarın sol ucunda 12,2 × 7,0 bir servis bloğu doğuyor ve <b>salona bakan yüzü tezgâh</b>: semaver, temiz bardak istifleri ve hazır tepsiler müşterinin gördüğü yerde; hazırlık arkada — arka duvarda cezve ocağı, hazırlık tezgâhı ve menü tahtası, sol duvarda bulaşık. Tezgâhın ortasında <b>2 birimlik geçit</b>, personel ve oyuncu oradan giriyor. <em>Kafe mantığı: tezgâh mekânın yüzüdür, mutfak arkasında kalır.</em> Arka-sağ köşe (lavabo) <b>tahta perdeyle kapalı</b> — orada gerçekten bir oda inşa ediliyor. Ortadaki <b>merdiven ise açıkta duruyor, sadece yıkık</b>: basamak tahtaları yer yer eksik, korkuluk kırık, basamaklarda moloz; önünde uyarı şeridi ve dubalar. Perde çekilmedi — <em>oyuncu daha ilk günden üst kat olduğunu görsün diye.</em>' },
       { n: 'Lavabo', badge: 'kat 1 · adım 4 / 6 · lavabo',
         d: 46, a: -0.50, e: 0.62, t: [7.0, 0.8, -8.0], rooms: [8, 6],
         stats: [['4 / 6', 'adım'], ['12,3 × 7,0', 'oda'], ['4', 'kabin'], ['3', 'lavabo'], ['arka-sağ', 'blok']],
@@ -2175,7 +2224,7 @@
         d: 58, a: -0.55, e: 0.70, t: [0, 0.8, -6.0], rooms: [8, 6, 7],
         stats: [['5 / 6', 'adım'], ['9,2 × 7,0', 'kova'], ['14', 'basamak'], ['Kat 2', 'açılır'], ['34 × 9,8', 'boş şerit']],
         labels: [[-10.8, -13.0, '☕', 'Servis Köşesi'], [0, -12.5, '↑', 'Merdiven'], [10.8, -13.0, '', 'Lavabo'], [0, -4.5, '3', 'boş şerit']],
-        cap: '<b>Adım 5 — Merdiven.</b> <b>Kovadaki tahta perde kalkıyor.</b> İki bloğun <b>tam arasındaki</b> kova açılıyor: 14 basamak, iki yanda korkuluk, üstte sahanlık — <b>Kat 2 için tek çıkış</b>. Kovanın iki yanındaki ceplerde askılık, depo kasası ve saksı. Arka bant böylece tamamlanıyor: <b>servis köşesi · merdiven · lavabo, üçü de z = −9,8 hizasında bitiyor.</b> Önlerinde 34 × 9,8 birimlik kesintisiz şerit kalıyor — <em>geniş, tek sıra masalık; sıradaki adımda onu birlikte dolduracağız.</em>' },
+        cap: '<b>Adım 5 — Merdiven.</b> <b>Yıkık merdiven onarılıyor:</b> şerit ve dubalar kalkıyor, eksik basamaklar tamamlanıyor, korkuluk yenileniyor. İki bloğun <b>tam arasındaki</b> kova açılıyor: 14 basamak, iki yanda korkuluk, üstte sahanlık — <b>Kat 2 için tek çıkış</b>. Kovanın iki yanındaki ceplerde askılık, depo kasası ve saksı. Arka bant böylece tamamlanıyor: <b>servis köşesi · merdiven · lavabo, üçü de z = −9,8 hizasında bitiyor.</b> Önlerinde 34 × 9,8 birimlik kesintisiz şerit kalıyor — <em>geniş, tek sıra masalık; sıradaki adımda onu birlikte dolduracağız.</em>' },
       { n: 'Orta Şerit', badge: 'kat 1 · adım 6 / 6 · orta şerit · kat tamam',
         d: 62, a: -0.56, e: 0.70, t: [0, 0.7, -3.0], rooms: [8, 9, 1, 2],
         stats: [['6 / 6', 'adım'], ['12', 'ikili masa'], ['2', 'banket adası'], ['+24', 'koltuk'], ['ön masalarla', 'aynı sütun']],
