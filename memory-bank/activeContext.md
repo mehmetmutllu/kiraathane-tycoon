@@ -2,76 +2,123 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
-## ŞU AN (2026-09-05 — MAKET v13: v2 ÜZERİNE SEVİYE KATMANI; KOD DEĞİŞMEDİ, SAVE v30)
+## ŞU AN (2026-09-05 gece — KAT 1 PLANI KESİNLEŞTİ; KOD DEĞİŞMEDİ, SAVE v30)
 
-`src/` DOKUNULMADI. Bu oturum tamamen araştırma + maket. **Çalışılan dosya: `docs/maket/maket-v13.html`**
-(= `maket-v2-ONAYLI.html`'in kopyası + üstüne adım/seviye katmanı).
-**Artifact (canlı, aynı link kalıyor):** https://claude.ai/code/artifact/813bdc4c-3052-46ca-ac3b-23076f425b23
+`src/` DOKUNULMADI. Bu oturum da tamamen maket. **Çalışılan dosya: `docs/maket/maket-v13.html`**
+**Artifact (canlı, aynı link):** https://claude.ai/code/artifact/813bdc4c-3052-46ca-ac3b-23076f425b23
 
 ### >>> SONRAKİ OTURUMDA İLK İŞ <<<
-Kullanıcı: *"tamam çok iyi ... sonraki oturumda devam edeceğimizi not et"*. Kaldığımız yer:
-1. **Kat 1 / 3. alanın (arka yarı) içi BOŞ — birlikte doldurulacak.** Ne konacağına karar verilmedi.
-2. **Merdiven ve WC şu an hiç yok.** Arka yarı düzenlenirken ikisine de yer ayrılacak
-   (merdiven Kat 2'ye çıkışın tek yolu).
-3. **Ön iki alanın iç düzeni sistematikleştirilecek** (kullanıcı: "onların sistematik tasarımını yaparız").
-4. **Zemin dekoru / halılar en sona** (kullanıcı: "halıları da kaldır, zemin dekorunu en son yaparız").
-5. Kat 2 ve Kat 3 hâlâ 4 adımlı ve eski düzende — Kat 1 kesinleşince aynı dile çevrilecek.
-   Onlarda merdiven tam bölme ekseninin üstünde; kullanıcıya iki seçenek soruldu, cevap gelmedi.
+Kullanıcı: *"şimdi oturumu kaydet sonraki chatte devam ederiz"*. Sıradaki iş **adım adım oyuna
+entegrasyon haritası** (kullanıcının ifadesiyle: *"bunu oyuna entegre etmek için her adımda sırayla
+ne olacak onu tasarlarız"*): hangi pad neyi açıyor, hangi seviye neyi artırıyor,
+`economy.config.ts` pad zinciri ve `LAYOUT` (store.ts) koordinatlarına nasıl bağlanıyor.
+**Ama önce cevaplanmamış soru:** aşağıdaki dört eksikten ilk ikisi (cam cephe + boş sol duvar)
+haritadan ÖNCE mi yapılsın, sonra mı?
 
-### Kat 1'in ONAYLANMIŞ hâli (v13, üç adım)
-- **Dört EŞİT çeyrek mantığı**, bölme eksenleri x = 0 ve z = 0.
-- **Adım 1** — ön-sol çeyrek (17 × 17): 4 çay masası + sol duvarda ÇAY OCAĞI (cezve ocağı + semaver).
-  Kapı bu alanın cephesinin TAM ORTASINDA (x = −8,5). Kasa yok, kuyruk yok, mutfak yok, halı yok,
-  çay ocağının altında zemin kaplaması yok.
-- **Adım 2** — ön-sağ çeyrek: birincinin BİREBİR AYNISI (aynı yayılım, aynı zemin rengi, orta aksa
-  simetrik: küme merkezleri −8,5 / +8,5). Cephe tamamlanınca **ana giriş x = 0'a kayıyor**.
-  Tek fark sağ duvardaki üç büyük pencere.
-- **Adım 3** — **arka yarının TAMAMI tek hamlede** (34 × 17), **içi bilerek boş**.
-  Tek olay: **çay ocağı arka-sol köşeye taşınıp SERVİS KÖŞESİ oluyor** (sol duvarda semaver,
-  arka duvarda cezve ocağı, raflar, personel, yönlendirme levhası). Ön iki alandaki ocak kalkıyor.
-  Bundan sonraki bütün servis ve yükseltmeler bu köşe üzerinden.
-- **Kilitli alan HİÇ çizilmiyor:** zemin bile yok, dış duvarlar bile adım adım örülüyor;
-  açık alan her adımda kendi duvarlarıyla kapalı bütün bir oda.
+### Kat 1 — ONAYLANMIŞ hâl (v13, ALTI adım)
+Bina 34 × 34, bölme eksenleri x = 0 ve z = 0. Arka bant z = −17 … −9,8; üç blok **aynı hizada biter**:
+
+```
+┌──────────────────────┬──────────────┬──────────────────────┐
+│ SERVİS BLOĞU+TEZGÂH  │   MERDİVEN   │       LAVABO         │  z = −17
+│ 12,2 × 7,0 (adım 3)  │ 9,2×7 (ad.5) │  12,3 × 7,0 (adım 4) │
+├──────────────────────┴──────────────┴──────────────────────┤  z = −9,8
+│      ORTA ŞERİT 34 × 9,8 (adım 6): iki banket adası        │
+│      + 12 ikili masa + garson servis istasyonu             │  banket z = −2,95
+├────────────────────────────────────────────────────────────┤  z = 0
+│   1. ALAN (adım 1)          │        2. ALAN (adım 2)      │
+│   4 dörtlü masa             │        4 dörtlü masa         │  z = +17 cephe
+└────────────────────────────────────────────────────────────┘
+```
+
+- **Adım 1** ön-sol çeyrek: 4 masa + sol duvarda çay ocağı; kapı bu cephenin ortasında (x = −8,5).
+- **Adım 2** ön-sağ çeyrek: birebir aynısı; cephe tamamlanınca **kapı x = 0'a kayar**.
+- **Adım 3** arka yarının tamamı + **servis bloğu**; bloğun salona bakan yüzü **TEZGÂH**
+  (semaver + temiz bardak istifleri + hazır tepsiler önde; cezve ocağı, hazırlık tezgâhı, menü
+  tahtası, bulaşık arkada). Tezgâhın ortasında **2 birimlik geçit**. Ön iki alandaki ocak kalkar.
+- **Adım 4** lavabo: 4 kabin + sağ duvarda 3 lavabo, kapısı salona bakar.
+- **Adım 5** merdiven: 14 basamak, Kat 2'nin tek çıkışı.
+- **Adım 6** orta şerit: sırt sırta iki **banket adası** (boy 7,6 · derinlik 2,5) + **12 ikili masa**
+  + **garson servis istasyonu** (sürahi, peçete, temiz bardak, kirli tepsi).
+- Toplam: **20 masa · 56 koltuk · tek tezgâh.**
+
+### Bu oturumun KALICI kararları (decisions.md D-033…D-036)
+- **D-033 — Kilitli obje üç hâlde görünür.** ① Kilitli ALAN hiç çizilmez. ② Kilitli ODA (lavabo)
+  tahta perde + uyarı bandı + duba, arkasında iskele/moloz — arkası görünmez. ③ Kilitli YAPI
+  (merdiven) **perdesiz**, kendisi yıkık hâlde görünür (eksik basamak tahtaları, kırık korkuluk,
+  moloz) ve önüne yalnız **uyarı şeridi** + dubalar konur. Gerekçe: perde çekilince orası yeni bir
+  oda gibi görünüyor ve oyuncu üst kat olduğunu göremiyor.
+- **D-034 — Kat 1 ızgarası.** Sütunlar x = ∓5,3 · ∓8,5 · ∓11,7 (3,2 aralık), satırlar
+  z = −1,1 · 5,3 · 11,7 (6,4 aralık), ortada x ∈ [−4,6, 4,6] kapı–merdiven geçidi. Yan duvarlarla
+  mobilya arasında ~4,5 birimlik **çevre koridoru**; duvara yalnız servis/tezgâh/depo yapışır.
+- **D-035 — Servis bloğunun yüzü tezgâh.** Kafede tezgâh mekânın yüzüdür, mutfak arkasında kalır.
+- **D-036 — Orta şerit: banket adası + ikili masa.** Katın eksiği masa sayısı değil masa
+  **çeşidi**ydi; en çok eksik olan ikili masa. Duvar olmadığı için banket adası kullanıldı.
 
 ### Bu oturumda REDDEDİLENLER (tekrarlanmasın)
-- **maket v12 (`maket-v12-REDDEDILDI.html`)** — sıfırdan kurulan üç katlı "kıraathane × kafe" maketi,
-  WASD gezintili. Kullanıcı: *"hayır ya bu ne rezalet. v2'ye dön."* **Düzeni yeniden çizmek yasak.**
-- **maket v3** tekrar bakıldı, yine reddedildi (*"v3 de çok kötüymüş"*).
-- Kullanıcının aradığı kırmızı yolluk v2/v3'te değil **v11**'de; v11 linki verildi ama v2'de karar kılındı.
+- **Soba / kuzine köşesi** ve **ocakbaşı tezgâhı (tabureli bar)** — kullanıcı: *"soba ve ocakbaşı
+  hiç mantıklı gelmiyor ya"*.
+- **"4 masa daha koyalım"** — kullanıcı da zayıf buldu (*"masa da çok eksik gibi"*).
+- **Merdiven kovasına tahta perde** — *"yeni bir oda izlenimi oluyor o da hoş değil"*.
 
-### Bu oturumda alınan KALICI kararlar
-- **D-032 — NARGİLE KALDIRILDI** (kullanıcı: *"nargile olmasın, yaş sınırı yükselmesin"*).
-  Apple 13+, PEGI 16, Google Teen; Kids kategorisi ve çocuk-güvenli reklam moduyla uyumsuz.
-  `projectBrief.md` düzeltildi, Kat 3'teki nargileler saksıyla değiştirildi.
-  `docs/` içinde nargile geçen 6 belge kat programı kesinleşince temizlenecek.
-- **Kasa ve kuyruk kaldırıldı** (oyunda kasada ödeme yok — Model B′ ile tutarlı).
-- **Uydurma bölge adları kaldırıldı:** Ocakbaşı Köşesi → Arka Salon, Vitrin Köşesi → Yan Salon,
-  Maç Salonu → Oturma Salonu, Mutfak Şeridi → Servis Şeridi.
-  Kullanıcı kuralı: *"normalde olmayan garip yerler olmasın"*.
+### KULLANICI ONAYI BEKLEYEN
+1. **Banket seviyeleri.** Önerim: seviye = **boy**; dış uç sabit, içe doğru uzar, her seviye iki
+   masa ekler (her yüze bir). Sol ada: L1 x −12,3…−9,7 (masa −11,7) → L2 −12,3…−6,5 (+ masa −8,5)
+   → L3 −12,3…−4,7 (+ masa −5,3). Var olan masalar hiç yer değiştirmez; yükseltme noktası bankın
+   uzayan ucunda kayar. Kullanıcı: *"onu adım adım ne olacak ayarlıcaz, orada kararını veririz."*
+2. **Lavabo mekaniği.** Sert tavan YOK; lavabosuzken müşterilerin ~%20'si oturumun ~%60'ında
+   **erken kalkar** (görünür: kalkma + küçük para istifi), yaklaşınca *"lavabo olmadığı için erken
+   kalkıyorlar"* yazısı çıkar. ~%12 gelir kaybı. Kullanıcının kendi fikri, onay bekliyor.
+3. **Açılış zinciri.** Kullanıcının fikri doğrulandı: *"3. alanla birlikte bir tanesi gelsin,
+   seviyeyi biz artıralım, 2.'yi biz açalım."* Alan açılınca **çalışır hâlde** gelir (1. ve 2. alan
+   da 4 masayla geldi), gerisi kazanılır.
 
-### Fable 5.1 araştırmaları (dört rapor alındı, özetleri burada)
-Kullanıcı isteğiyle dört ayrı Fable 5.1 araştırması yapıldı. **Çıktıları kullanılabilir ama
-v2'nin düzenini değiştirmek için kullanılmayacak** — yalnız içerik/isim/kademe kararlarına dayanak.
-1. **Mekân kimliği + gerçek plan mantığı:** kıraathane / kafe / restoran karşılaştırması, melezin gerçek
-   karşılıkları (Viyana Kaffeehaus, Yunan kafeneio, board-game café, Türkiye mahalle kahve-kafesi),
-   FOH/BOH oranları, koridor ve masa ölçüleri, tezgâh anatomisi, oturma hiyerarşisi. En kritik bulgu:
-   **"mutfak hacmi" restoran sinyali; melezde pişirme yok, arka tezgâh yeter.**
-2. **Tycoon düzen + büyüme:** My Cafe / Hotel Empire Tycoon / Roblox pad grameri / Two Point;
-   gerçekçiliğin nerede bozulacağı, okunabilirlik araçları, kilitli alanın nasıl görüneceği.
-3. **Üç katın programı:** kat kimlikleri, bölge listeleri, dikey gradyan (yukarı çıktıkça devir azalır,
-   hesap ve mahremiyet artar, servis yolu uzar), isimlendirme testi.
-4. **Kat 2 ve Kat 3 derinlemesine:** board-game café'ler, oyun türü başına mekânsal gereksinim,
-   oyun kütüphanesi rafı, servis asansörü (dumbwaiter); teras tipolojileri, nargile mevzuatı ve
-   yaş derecelendirmesi, nargilesiz alternatifler (semaver-köz istasyonu, kış bahçesi, manzara).
-Raporların uygulanmış hâli reddedilen v12'de; **kavramsal kararlar yukarıda listeli.**
+### Kat 1'in TESPİT EDİLEN dört eksiği (kullanıcıya sunuldu, karar bekliyor)
+1. **Sokak cephesinde hiç cam yok** — ön duvarda sadece kapı. Kıraathanenin en tanımlayıcı özelliği
+   büyük cam cephedir; bina dışarıdan depo gibi duruyor. **En büyük eksik.**
+2. **Sol duvarın ön yarısı bomboş** — 13 birim çıplak duvar (adım 3'te ocak arkaya taşınınca
+   boşaldı). Gerçek kafede orası duvar boyu banket ya da uzun raf/askılık olur.
+3. **Tek tezgâh 20 masaya yetmiyor** — garson mekaniği veya ikinci servis noktası şart olacak.
+   Tasarım hatası değil, ekonomi tasarımının çözmesi gereken gerçek.
+4. **Merdiven kovasının ağzı tanımsız** — 9,2 birimlik çerçevesiz açıklık; `archCol()` portalı iki
+   yanına konsa okunur.
 
-### Yan çıktı (yayınlanmadı)
-`docs/maket/kat-programi.html` — üç katın ölçekli üstten planları + program tabloları (statik sayfa).
-Araştırmanın görselleştirilmiş hâli; v12 ile birlikte rafta duruyor.
+Bilinçli ertelenenler: zemin dekoru/halılar, aydınlatma ince ayarı, Kat 2-3'ün aynı dile çevrilmesi.
 
-### Çalışma kuralı (kullanıcı, bu oturumda net)
-**"Parça parça ilerleyeceğiz."** Tek seferde büyük değişiklik yok: bir şey değiştir → yayınla → baksın →
-onaylasın → sıradakine geç. v2'nin YERLEŞİMİNE dokunulmuyor, üstüne katman ekleniyor.
+### Önerilen açılış zinciri (onay bekliyor)
+| # | Tür | Ne gelir | Etki |
+|---|---|---|---|
+| — | başlangıç | 1. Alan: 4 masa + küçük çay ocağı | döngü öğrenilir |
+| 1 | seviye | Ocak L2 | çay/dk ↑ |
+| 2 | pad | 2. Alan + 4 masa | kapasite ↑ |
+| 3 | seviye | Ocak L3 | çay/dk ↑ |
+| 4 | pad | 3. Alan → arka yarı + servis bloğu + tezgâh + **1. Banket L1** (2 masa) | yeni oturma tipi |
+| 5 | seviye | 1. Banket L2 (4 masa) | kapasite ↑ |
+| 6 | pad | Lavabo | erken kalkma biter |
+| 7 | seviye | 1. Banket L3 (6 masa) | kapasite ↑ |
+| 8 | pad | Servis istasyonu | servis yolu kısalır |
+| 9 | pad | 2. Banket L1 (2 masa) | kapasite ↑ |
+| 10-11 | seviye | 2. Banket L2 → L3 | kapasite ↑ |
+| 12 | pad | Merdiven | **Kat 2 açılır** |
+
+Paralelde tezgâhın kendi seviye hattı (demleme hızı) devam eder.
+
+### Geri alınabilirlik (kullanıcı: *"her an geri aldırabilirim"*)
+`maket-v13.html` içinde yorum işaretleriyle sınırlı bloklar:
+- `>>> ÖN TEZGÂH ... <<<` (adım 3) — silinirse semaver sol duvara (−16,4 · −13,4 · PI/2) döner.
+- `>>> ADIM 6 — ORTA ŞERİT ... <<<` — silinirse şerit yeniden boşalır.
+- `>>> TADİLAT ... <<<` (adım 3) — lavabo perdesi.
+
+Commit sınırları: `a5d8982` (arka bant + tezgâh + banket) · `9d6f997` (ızgara + tadilat) ·
+`4bf8790` (kalın banket) · `a52daf1` (yıkık merdiven).
+
+### Bu oturumda eklenen yapı taşları (maket-v13.html)
+`lavaboBlock` · `banketIsland` · `cafeTable2` · `banketUnit` · `servisIstasyonu` ·
+`tadilatPerde` · `duba` · `iskele` · `moloz` · `uyariSeridi` · `merdivenHarap`
+
+### Düzeltilen bug
+1. adımda `z = 0` sınır duvarı 34 birim tam boy çiziliyordu ve açık alanın sağ köşesinin ötesine
+taşıyordu. Artık `s < 2` iken x = 0'da kesiliyor.
 
 ## ŞU AN (2026-09-04 gece — MAKET v11: SABİT OMURGA + ÜÇ KANAT; KOD DEĞİŞMEDİ, SAVE v30)
 

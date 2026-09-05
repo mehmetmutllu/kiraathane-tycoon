@@ -837,3 +837,42 @@ Kod DEĞİŞMEDİ (`src/` dokunulmadı, SAVE v30). Detay: `activeContext.md` ŞU
 - ✅ Kat 2 ve Kat 3 dörder adıma bölündü (eski düzenle), sade isimlerle. Kat 1 kesinleşince aynı dile çevrilecek.
 - ⏳ **SIRADAKİ:** Kat 1'in 3. alanının (arka yarı) içi · merdiven + WC yerleşimi · ön iki alanın sistematik
   iç düzeni · zemin dekoru/halılar (en son) · sonra Kat 2-3.
+
+## MAKET OTURUMU (2026-09-05 gece) — v13: KAT 1 PLANI KESİNLEŞTİ (altı adım)
+Kod DEĞİŞMEDİ (`src/` dokunulmadı, SAVE v30). Detay: `activeContext.md` ŞU AN bölümü.
+Dosya `docs/maket/maket-v13.html` · artifact https://claude.ai/code/artifact/813bdc4c-3052-46ca-ac3b-23076f425b23
+Commit'ler: `a5d8982` · `9d6f997` · `4bf8790` · `a52daf1`
+
+- ✅ **Arka bant tanımlandı — üç blok, üçü de z = −9,8 hizasında biter:**
+  **servis bloğu** (12,2 × 7,0 · adım 3) · **merdiven** (9,2 × 7,0 · adım 5) · **lavabo** (12,3 × 7,0 · adım 4).
+- ✅ **D-035 — Servis bloğunun salona bakan yüzü TEZGÂH.** Semaver, temiz bardak istifleri ve hazır
+  tepsiler önde; cezve ocağı, hazırlık tezgâhı, menü tahtası ve bulaşık arkada; ortada 2 birimlik geçit.
+  Gerekçe: kullanıcı *"bir kafe olsa bu katta ne olurdu"* diye sordu — planın en kafe-olmayan tarafı
+  servis alanının dört duvarla salona kapatılmasıydı.
+- ✅ **Lavabo büyüdü ve arka-SAĞ köşeye taşındı**: 4 kabin (biri aralık) + sağ duvarda 3 lavabo, kapı önde.
+- ✅ **D-036 — Orta şerit (34 × 9,8) dolduruldu:** sırt sırta iki **banket adası** (boy 7,6 · derinlik 2,5)
+  + **12 ikili masa** + **garson servis istasyonu**. Katın eksiği masa sayısı değil masa **çeşidi**ydi.
+  Reddedilen alternatifler: soba/kuzine köşesi, ocakbaşı tezgâhı, "4 masa daha".
+- ✅ **D-034 — Kat 1 ızgarası:** sütunlar x = ∓5,3 · ∓8,5 · ∓11,7 · satırlar z = −1,1 · 5,3 · 11,7 ·
+  ortada x ∈ [−4,6, 4,6] geçit · yan duvarlarla ~4,5 birim çevre koridoru.
+- ✅ **D-033 — Kilitli obje üç hâlde görünür:** kilitli ALAN çizilmez · kilitli ODA (lavabo) tahta
+  perdeli · kilitli YAPI (merdiven) **perdesiz, yıkık hâlde + uyarı şeridi**. İkincisi kullanıcı
+  düzeltmesi: *"merdiven merdiven hâliyle yıkık dökük dursun ... yeni bir oda izlenimi oluyor."*
+- 🐞→✅ **Bug:** 1. adımda `z = 0` sınır duvarı 34 birim tam boy çiziliyor, açık alanın sağ köşesinin
+  ötesine taşıyordu. `s < 2` iken x = 0'da kesiliyor.
+- ✅ Yeni yapı taşları: `lavaboBlock` `banketIsland` `cafeTable2` `banketUnit` `servisIstasyonu`
+  `tadilatPerde` `duba` `iskele` `moloz` `uyariSeridi` `merdivenHarap`.
+- ✅ Playwright MCP: altı adım da çizildi, **0 konsol hatası** (yalnız favicon 404).
+- ✅ Vitest 186/186 geçti (`src/` değişmedi, regresyon yok).
+
+### Kat 1'in bilinen dört eksiği (kullanıcıya sunuldu, karar bekliyor)
+1. Sokak cephesinde hiç cam yok (ön duvarda sadece kapı) — **en büyük eksik**.
+2. Sol duvarın ön yarısı 13 birim çıplak (adım 3'te ocak arkaya taşınınca boşaldı).
+3. Tek tezgâh 20 masa / 56 koltuğa yetmiyor — garson veya ikinci servis noktası gerekecek.
+4. Merdiven kovasının ağzı çerçevesiz (`archCol()` portalı konabilir).
+
+### ⏳ SIRADAKİ KİLOMETRE TAŞI
+**Adım adım oyuna entegrasyon haritası** — hangi pad neyi açıyor, hangi seviye neyi artırıyor;
+`economy.config.ts` pad zinciri + `LAYOUT` (store.ts) koordinatlarına bağlama.
+Önerilen zincir ve onay bekleyen üç karar (banket seviyesi = boy · lavabo erken-kalkma mekaniği ·
+açılış zinciri) `activeContext.md`'de.

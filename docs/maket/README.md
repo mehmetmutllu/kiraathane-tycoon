@@ -13,7 +13,9 @@ cd docs/maket && python -m http.server 8899
 
 | Dosya | Durum | Açıklama |
 |---|---|---|
-| `maket-v10-v2-duzen.html` | ✅ **Yayında olan sürüm (v11 içerik)** | **Sabit omurga + üç kanat.** v2 iskeleti (ortada kapı, ortada yolluk, ortada merdiven) korunur; kat omurganın sağına → soluna → arkasına kanatlanır, açık alan her adımda dikdörtgen, kapalı tarafta net duvar. Halı = yol işareti. Kasa/kuyruk/vitrin yok. **Mutfak binanın dışına çıkıntı** (üstü açık). **Ocakbaşı = tezgâh.** Arka yarı **Tavla/Okey odası**. |
+| `maket-v13.html` | ✅ **YAYINDA — Kat 1 planı kesin** | v2 iskeleti + **altı adımlı açılma katmanı**. Arka bant üç blok, üçü de z = −9,8 hizasında biter: **servis bloğu + tezgâh** (salona bakan yüz tezgâh) · **merdiven** · **lavabo** (4 kabin + 3 lavabo). Orta şerit: sırt sırta **iki banket adası + 12 ikili masa + garson servis istasyonu**. Kilitli obje üç hâlde: alan çizilmez · oda perdeli · yapı (merdiven) perdesiz yıkık + uyarı şeridi. Kararlar: D-032…D-036. |
+| `maket-v12-REDDEDILDI.html` | ❌ Reddedildi | Sıfırdan kurulan üç katlı "kıraathane × kafe" maketi, WASD gezintili. Kullanıcı: *"bu ne rezalet, v2'ye dön."* **Ders: v2'nin düzeni yeniden çizilmez, üstüne katman eklenir.** |
+| `maket-v10-v2-duzen.html` | 📌 Referans (v11 içerik) | **Sabit omurga + üç kanat.** v2 iskeleti (ortada kapı, ortada yolluk, ortada merdiven) korunur; kat omurganın sağına → soluna → arkasına kanatlanır, açık alan her adımda dikdörtgen, kapalı tarafta net duvar. Halı = yol işareti. Kasa/kuyruk/vitrin yok. **Mutfak binanın dışına çıkıntı** (üstü açık). **Ocakbaşı = tezgâh.** Arka yarı **Tavla/Okey odası**. |
 | `maket-v9-kare.html` | ❌ Reddedildi | **Kare plan, üç alan, tek ızgara.** 32 × 32 bina üç alan hâlinde açılır (güney-batı 16×16 → güney-doğu 16×16 → kuzey bandı 32×16). Kullanıcının v6-v8 boyunca verdiği tüm düzeltmeler burada: zemin tek renk (halı ve ada yaması yok), iç bölme duvarı yok, mutfak batı duvarında + üstü tamamen açık (asma tavan yok) + ilk kademede ufak, kapalı alanın içi hiç görünmez (net duvar + dışarıda kepenkli komşu dükkân), ana giriş ilk adımdan itibaren ana caddede. |
 | `maket-v8-tek-salon.html` | ❌ Reddedildi | Yana doğru büyüyen tek uzun salon (36 × 17, dört bölme). Kullanıcı: "yana doğru büyüme çok kötü, mutfak alanı ilk seviyede çok geniş, bir önceki kare yapıya dön". Sadeleştirme kararları (tek renk zemin, duvarsız mutfak, görünmeyen kilitli alan) buradan geldi ve v9'a taşındı. |
 | `maket-v7-duzen.html` | 📌 Referans (yarım) | Dört eşit çeyrek + aks haçı + duvarsız köşe mutfağı (asma tavanlı). Kullanıcı yarıda kesti; asma tavan ve çeyrek bölmeleri reddedildi. |
@@ -39,7 +41,8 @@ cd docs/maket && python -m http.server 8899
 - **Büyüme haritası (v6):** https://claude.ai/code/artifact/0c63ef60-ebb5-4b16-89e6-d0a587583f27
 - **Tek salon (v8, reddedildi):** https://claude.ai/code/artifact/41325892-3b1c-4a66-a1fc-ed190e3339b9
 - **Kare plan (v9, reddedildi):** https://claude.ai/code/artifact/35d2b29d-f91f-4495-b3bd-e1b8db77c81f
-- **YAYINDA (v11):** https://claude.ai/code/artifact/9d8c6d5a-5bd9-464b-a4e3-975c214236cd
+- **v11:** https://claude.ai/code/artifact/9d8c6d5a-5bd9-464b-a4e3-975c214236cd
+- **YAYINDA (v13, Kat 1 altı adım):** https://claude.ai/code/artifact/813bdc4c-3052-46ca-ac3b-23076f425b23
 
 ## Düzen kuralları (v4, Kat 1'de uygulandı; Kat 2-3 bekliyor)
 
