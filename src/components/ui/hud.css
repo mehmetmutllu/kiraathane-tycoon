@@ -51,7 +51,7 @@
 .rep {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   padding: 0;
   border: 0;
   background: none;
@@ -65,23 +65,25 @@
 }
 .rep-medal svg {
   display: block;
-  width: 42px;
-  height: 42px;
+  width: 56px;
+  height: 56px;
 }
 .rep-num {
   position: absolute;
-  top: 52%;
+  top: 50%;
+  transform: translateY(-47%);
   font-family: var(--font-num);
   font-style: normal;
-  font-size: 15px;
+  font-size: 21px;
+  line-height: 1;
   color: #fff;
   paint-order: stroke fill;
-  -webkit-text-stroke: 3.5px #7a5312;
+  -webkit-text-stroke: 5px #7a5312;
 }
 .rep-bar {
   position: relative;
-  width: 76px;
-  height: 15px;
+  width: 104px;
+  height: 21px;
   border-radius: 999px;
   background: linear-gradient(180deg, var(--w-edge), #3a271a);
   border: 1.5px solid var(--br-3);
@@ -90,7 +92,7 @@
 }
 .rep-bar.wide {
   width: 100%;
-  height: 18px;
+  height: 22px;
 }
 .rep-fill {
   position: absolute;
@@ -106,10 +108,10 @@
   display: grid;
   place-items: center;
   font-family: var(--font-num);
-  font-size: 10px;
+  font-size: 13.5px;
   color: #fff;
   paint-order: stroke fill;
-  -webkit-text-stroke: 3px rgba(40, 24, 10, 0.9);
+  -webkit-text-stroke: 4px rgba(40, 24, 10, 0.92);
 }
 
 /* Kese: para + elmas kapsülleri (ikon sol kenardan taşar — tycoon grameri) */
@@ -779,10 +781,11 @@
 }
 .rep-hero-medal i {
   position: absolute;
-  top: 52%;
+  top: 50%;
+  transform: translateY(-47%);
   font-family: var(--font-num);
   font-style: normal;
-  font-size: 19px;
+  font-size: 22px;
   color: #fff;
   paint-order: stroke fill;
   -webkit-text-stroke: 4px #7a5312;

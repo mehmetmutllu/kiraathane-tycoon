@@ -525,7 +525,7 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
     {
       key: 'earn',
       name: 'Kazanç',
-      cur: Math.floor(lifetime.toNumber()),
+      cur: Math.max(0, Math.floor(lifetime.toNumber())),
       total: 1_000_000,
       note: 'Toplam kazanılan ₺',
     },
