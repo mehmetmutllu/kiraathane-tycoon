@@ -2503,8 +2503,11 @@
     dirLight.position.set(14, 26, 16);
     dirLight.castShadow = true;
     dirLight.shadow.mapSize.set(2048, 2048);
-    dirLight.shadow.bias = -0.0004;
-    dirLight.shadow.normalBias = 0.02;
+    /* Duvarlar ince (0,18–0,26). Küçük normalBias ile içerideki rafların/objelerin gölgesi
+       duvarın DIŞ yüzüne sızıyordu (kullanıcı bildirdi). normalBias, gölge örneklemesini
+       yüzey normali boyunca ötelediği için duvar kalınlığından büyük olmalı. */
+    dirLight.shadow.bias = -0.0012;
+    dirLight.shadow.normalBias = 0.14;
     var s = dirLight.shadow.camera;
     s.left = -30; s.right = 30; s.top = 30; s.bottom = -30; s.near = 1; s.far = 80;
     scene.add(dirLight);
