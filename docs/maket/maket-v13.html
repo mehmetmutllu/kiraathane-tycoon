@@ -366,8 +366,13 @@
     return g;
   }
 
+  /* KAT YÜKSEKLİĞİ — kat aralığı 3,2 birim (buildingBelow bu ölçüyle çalışır), duvar da 3,2.
+     Eskiden 2,7'ydi: kapı boşluğu (2,9) duvardan taşıyordu ve cam bandının üstünde tabela
+     için alınlık kalmıyordu, bina alçak bir baraka gibi duruyordu. */
+  var WALL_H = 3.2;
+
   function wall(x1, z1, x2, z2, h) {
-    h = h || 2.7;
+    h = h || WALL_H;
     var dx = x2 - x1, dz = z2 - z1, len = Math.hypot(dx, dz);
     var g = grp((x1 + x2) / 2, 0, (z1 + z2) / 2, Math.atan2(dx, dz));
     put(g, box(0.18, h - 0.9, len, C.wallCream), 0, 0.9 + (h - 0.9) / 2, 0);
@@ -650,7 +655,7 @@
 
   // pencereli duvar: lambri + alt/üst bant + pencereler arası ayaklar; wins = [[duvar ortasına göre ofset, genişlik], ...]
   function windowWall(x1, z1, x2, z2, wins) {
-    var h = 2.7, sill = 1.15, top = 2.45;
+    var h = WALL_H, sill = 1.15, top = 2.8;      // pencere başı cephe camıyla aynı hizada
     var dx = x2 - x1, dz = z2 - z1, len = Math.hypot(dx, dz);
     var g = grp((x1 + x2) / 2, 0, (z1 + z2) / 2, Math.atan2(dx, dz));
     put(g, box(0.22, 0.9, len, C.wain), 0, 0.45, 0);
@@ -682,8 +687,26 @@
     put(g, new T.Mesh(GB(w - 0.24, h - 0.24, 0.04), glassMat), 0, 0, 0);
     var n = Math.max(1, Math.round(w / 1.9)) - 1;                     // ara dikmeler
     for (var i = 1; i <= n; i++) put(g, box(0.07, h - 0.24, 0.1, C.doorWood), -w / 2 + i * (w / (n + 1)), 0, 0);
-    put(g, box(w - 0.24, 0.06, 0.1, C.doorWood), 0, h / 2 - 0.5, 0);  // vasistas kaydı
-    put(g, box(w - 0.6, 0.03, 0.06, C.brass), 0, h / 2 - 0.86, 0.07); // camdaki isim şeridi
+    put(g, box(w - 0.24, 0.06, 0.1, C.doorWood), 0, h / 2 - 0.42, 0);  // vasistas kaydı
+    return g;
+  }
+
+  // camlı kapı kanadı: iki dikme + üç kayıt (gövde İÇİ BOŞ — cam gerçekten cam görünsün),
+  // üstte cam göz, altta ahşap etek, pirinç dikey kol. Ön yüz +z, menteşe SOL kenarda.
+  function doorLeaf(w, h) {
+    var g = new T.Group();
+    if (!glassMat) glassMat = new T.MeshLambertMaterial({ color: 0xa9d6ea, transparent: true, opacity: 0.42 });
+    var st = 0.16, mid = -h * 0.22;
+    put(g, box(w, 0.14, 0.09, C.doorWood), 0, h / 2 - 0.07, 0);            // üst kayıt
+    put(g, box(w, 0.18, 0.09, C.doorWood), 0, -h / 2 + 0.09, 0);           // alt kayıt
+    put(g, box(st, h, 0.09, C.doorWood), -w / 2 + st / 2, 0, 0);           // sol dikme
+    put(g, box(st, h, 0.09, C.doorWood), w / 2 - st / 2, 0, 0);            // sağ dikme
+    put(g, box(w - 2 * st, 0.14, 0.09, C.doorWood), 0, mid, 0);            // orta kayıt
+    var gh = (h / 2 - 0.14) - (mid + 0.07);
+    put(g, new T.Mesh(GB(w - 2 * st, gh, 0.05), glassMat), 0, mid + 0.07 + gh / 2, 0);
+    var p0 = -h / 2 + 0.18, p1 = mid - 0.07;
+    put(g, box(w - 2 * st - 0.06, p1 - p0, 0.07, C.wain, true), 0, (p0 + p1) / 2, 0);
+    put(g, cyl(0.035, 0.035, 0.44, 6, C.brass), w / 2 - 0.24, mid + 0.3, 0.07);
     return g;
   }
 
@@ -697,14 +720,28 @@
   }
 
   function shopFront(x1, z1, x2, z2) {
-    var h = 2.7, sill = 0.5, top = 2.5;
+    var h = WALL_H, sill = 0.4, top = 2.65;   // alınlık 2,65 → 3,2: tabela bandı bu kadar yer ister
     var dx = x2 - x1, dz = z2 - z1, len = Math.hypot(dx, dz);
     var g = grp((x1 + x2) / 2, 0, (z1 + z2) / 2, Math.atan2(dx, dz));
     if (len < 0.4) return g;
+    // NOT: bu grupta yerel +x binanın İÇİNE bakar, yerel −x sokağa. Tabela dışa asılır.
     put(g, box(0.24, sill, len, C.wain), 0, sill / 2, 0);                    // kaide
     put(g, box(0.28, 0.07, len, C.doorWood), 0, sill + 0.035, 0);            // kaide başlığı
-    put(g, box(0.2, h - top, len, C.wallCream), 0, (top + h) / 2, 0);        // üst bant
-    put(g, box(0.3, 0.16, len, C.doorWood), 0, top + 0.08, 0);               // lento
+    put(g, box(0.22, h - top, len, C.wallCream), 0, (top + h) / 2, 0);       // ALINLIK
+    put(g, box(0.32, 0.14, len, C.doorWood), 0, top + 0.07, 0);              // lento
+    put(g, box(0.32, 0.1, len, C.doorWood), 0, h - 0.05, 0);                 // üst kordon
+    if (len > 3.2) {                                    // alınlıkta isim tabelası (sokağa bakar)
+      var fy = (top + h) / 2, fh = (h - top) * 0.6, bw = len - 1.4;
+      put(g, box(0.1, fh + 0.1, bw + 0.18, C.doorWood), -0.14, fy, 0);        // çerçeve
+      put(g, box(0.08, fh, bw, C.board), -0.185, fy, 0);                      // koyu levha
+      // ortada pirinç harfler: küçük ve sık, aralarında bir kelime boşluğu — yazı gibi okunsun
+      var gp = 0.26, nL = Math.max(6, Math.round(bw * 0.36 / gp)), sp = Math.round(nL * 0.38);
+      for (var L = 0; L < nL; L++) {
+        if (L === sp) continue;                                               // kelime arası
+        put(g, box(0.04, fh * (L % 7 === 3 ? 0.32 : 0.46), L % 4 === 1 ? 0.1 : 0.15, C.brass),
+          -0.23, fy - (L % 7 === 3 ? fh * 0.07 : 0), -(nL - 1) * gp / 2 + L * gp);
+      }
+    }
     var wins = shopWins(len), edges = [-len / 2];
     wins.forEach(function (w) { edges.push(w[0] - w[1] / 2, w[0] + w[1] / 2); });
     edges.push(len / 2);
@@ -1700,15 +1737,22 @@
     /* ANA GİRİŞ — adım 1'de kapı, açık olan tek alanın cephesinin TAM ORTASINDA (x = −8,5).
        2. alan açılınca cephe tamamlanır ve kapı asıl yerine, binanın tam ortasına (x = 0) geçer. */
     (function () {
-      var dx = (s === 1) ? -8.5 : 0, q = ST(0);
+      var dx = (s === 1) ? -8.5 : 0, q = ST(0), DH = 2.65;  // kapı, camla AYNI hizada biter
       // sokak cephesi kapının iki yanında da CAM: kıraathane dışarıdan içi görünen yerdir
       q.add(shopFront(-17, 17, dx - 2.2, 17));
       q.add(shopFront(dx + 2.2, 17, (s === 1) ? 0 : 17, 17));
-      put(q, box(0.4, 2.9, 0.4, C.doorWood), dx - 2.2, 1.45, 17);
-      put(q, box(0.4, 2.9, 0.4, C.doorWood), dx + 2.2, 1.45, 17);
-      put(q, box(5.2, 0.35, 0.5, C.doorWood), dx, 2.9, 17);
-      put(q, box(6.4, 0.18, 1.9, 0x2e6b4f, true), dx, 3.15, 17.9).rotation.x = -0.18;
-      put(q, box(6.4, 0.2, 0.3, 0xe6d7b8), dx, 2.95, 18.8);
+      put(q, box(0.4, DH, 0.42, C.doorWood), dx - 2.2, DH / 2, 17);            // sol söve
+      put(q, box(0.4, DH, 0.42, C.doorWood), dx + 2.2, DH / 2, 17);            // sağ söve
+      put(q, box(4.8, WALL_H - DH, 0.24, C.wallCream), dx, (DH + WALL_H) / 2, 17);  // alınlık kapının üstünden geçer
+      put(q, box(5.0, 0.16, 0.34, C.doorWood), dx, DH + 0.08, 17);             // lento
+      put(q, box(5.0, 0.1, 0.34, C.doorWood), dx, WALL_H - 0.05, 17);          // üst kordon
+      // çift kanatlı CAMLI kapı: sol kanat kapalı, sağ kanat içeri açık (menteşe sağ sövede)
+      put(q, doorLeaf(2.1, DH - 0.14), dx - 1.15, (DH - 0.14) / 2 + 0.07, 17);
+      put(q, doorLeaf(2.1, DH - 0.14), dx + 1.77, (DH - 0.14) / 2 + 0.07, 16.04, -1.15);
+      // tente LENTONUN ALTINDAN çıkar (üstünden değil): alınlıktaki tabela kapanmasın.
+      // Eğim +0,18 → dış kenar aşağı iner (eskiden −0,18'di, yukarı kalkıyordu).
+      put(q, box(6.4, 0.18, 1.9, 0x2e6b4f, true), dx, DH - 0.08, 17.9).rotation.x = 0.18;
+      put(q, box(6.4, 0.22, 0.3, 0xe6d7b8), dx, DH - 0.36, 18.82);
       put(q, box(3.2, 0.03, 1.4, 0x4a3a2c), dx, 0.015, 15.7);
     })();
     g = ST(3);
@@ -1972,8 +2016,8 @@
     Object.keys(STG).forEach(function (k) { if (+k <= s) root.add(STG[k]); });
     // kilitli salonun sınırında NET DUVAR: arkasında hiçbir şey görünmez
     // açılmamış çeyreğin sınırında net duvar — arkasında hiçbir şey çizilmez
-    if (s < 2) root.add(wall(0, 0, 0, 17, 2.9));
-    if (s < 3) root.add(wall(-17, 0, (s < 2 ? 0 : 17), 0, 2.9));
+    if (s < 2) root.add(wall(0, 0, 0, 17, WALL_H));
+    if (s < 3) root.add(wall(-17, 0, (s < 2 ? 0 : 17), 0, WALL_H));
     return root;
   }
 
@@ -2131,9 +2175,9 @@
     put(ST(4), floorLamp(), 15.9, 0, -16.1);
 
     Object.keys(STG).forEach(function (k) { if (+k <= s) root.add(STG[k]); });
-    if (s < 2) root.add(wall(3.8, 0.3, 3.8, 17, 2.9));
-    if (s < 3) { root.add(wall(-3.8, -17, -3.8, 0.3, 2.9)); root.add(wall(-17, 0.3, -3.8, 0.3, 2.9)); }
-    if (s < 4) { root.add(wall(3.8, -17, 3.8, 0.3, 2.9)); if (s >= 2) root.add(wall(3.8, 0.3, 17, 0.3, 2.9)); }
+    if (s < 2) root.add(wall(3.8, 0.3, 3.8, 17, WALL_H));
+    if (s < 3) { root.add(wall(-3.8, -17, -3.8, 0.3, WALL_H)); root.add(wall(-17, 0.3, -3.8, 0.3, WALL_H)); }
+    if (s < 4) { root.add(wall(3.8, -17, 3.8, 0.3, WALL_H)); if (s >= 2) root.add(wall(3.8, 0.3, 17, 0.3, WALL_H)); }
     return root;
   }
 

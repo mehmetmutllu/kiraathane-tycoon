@@ -899,3 +899,18 @@ SS: `docs/maket/ss/v14-*.png`
   çerçevesiz (`archCol()` portalı konabilir).
 - ⏳ **SIRADAKİ KİLOMETRE TAŞI (değişmedi):** adım adım oyuna entegrasyon haritası. Onay bekleyen
   kararlar `activeContext.md`'de; yeni soru: cam cephe ve TV birer pad/seviye olacak mı?
+
+## MAKET OTURUMU (2026-09-05) — v15: CEPHE ORANLARI (kullanıcı düzeltmesi)
+Kod DEĞİŞMEDİ (`src/` dokunulmadı, SAVE v30). Karar: `decisions.md` **D-037**. SS: `docs/maket/ss/v15-*.png`
+Kullanıcı: *"dışarıdaki camlar güzel ama düzgün durmadı sanki, acaba duvarları az daha mı yükseltsek?"*
+
+- ✅ **`WALL_H = 3.2`** sabiti (eskiden her yerde 2,7). Kat aralığı zaten 3,2'ydi.
+  Sebep: kapı boşluğu 2,9 iken duvar 2,7'ydi — **kapı duvardan taşıyordu**.
+- ✅ **Cephe dizilimi:** kaide 0–0,4 · cam 0,4–2,65 · lento · **alınlık 2,65–3,2 (tabela)** · üst kordon.
+  Alınlıkta çerçeveli koyu levha + küçük pirinç harfler. Kapı boşluğu 2,65 = camla aynı hiza.
+- ✅ **Tente düzeltildi:** alınlığın üstünden lentonun altına indi (tabelayı kapatıyordu) ve
+  **eğimi ters yöndeydi** — `-0.18` → `+0.18`, dış kenar artık aşağı iniyor.
+- ✅ **`doorLeaf` yeniden yazıldı:** içi dolu ahşap kutuydu, camın arkasında tahta kalıyordu.
+  Artık iki dikme + üç kayıt, gövde içi boş; çift kanatlı, sağ kanat içeri açık.
+- ✅ **Yan etki (kabul):** Kat 2-3 duvarları da 3,2 oldu; kilitli sınır duvarları 2,9 → WALL_H (7 yer);
+  `windowWall` pencere başı 2,45 → 2,80. Üç kat kontrol edildi: 0 konsol hatası, görünürlük bozulmadı.

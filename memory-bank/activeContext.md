@@ -2,6 +2,34 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-05 — v15: CEPHE ORANLARI DÜZELTİLDİ; KOD DEĞİŞMEDİ, SAVE v30)
+
+Kullanıcı v14 vitrinine baktı: *"dışarıdaki camlar güzel ama düzgün durmadı sanki, acaba duvarları
+az daha mı yükseltsek ne diyosun? ve ön taraf cam olarak daha güzel durabilir belki o şekilde."*
+Haklıydı — dört ayrı kusur vardı, hepsi düzeltildi. **Karar: `decisions.md` D-037.**
+SS: `docs/maket/ss/v15-cephe.png` · `v15-adim1.png` · `v15-adim6.png` · `v15-kat2.png` · `v15-kat3.png`
+
+### Teşhis (dört kusur) ve çözümü
+1. **Duvar 2,7 iken kapı boşluğu 2,9'du → kapı duvardan taşıyordu.**
+   → `WALL_H = 3.2` sabiti eklendi (`wall()` varsayılanı buradan gelir); kapı boşluğu 2,65.
+2. **Cam bandının üstünde tabelaya yer yoktu**, bina alçak bir baraka gibi duruyordu.
+   → Cephe dizilimi: kaide 0–0,4 · cam 0,4–2,65 · lento · **alınlık 2,65–3,2** · üst kordon.
+   Alınlığa çerçeveli koyu levha + küçük pirinç harfler (ortada kelime boşluğu).
+3. **Tente alınlığın ÜSTÜNDEYDİ ve tabelayı kapatıyordu; üstelik eğimi tersti** (dış kenar yukarı
+   kalkıyordu; `rotation.x = -0.18`). → Tente lentonun ALTINA indi, eğim `+0.18` (dış kenar aşağı).
+   Not: `buildingBelow` zaten `+0.18` kullanıyordu, cephe tutarsızdı.
+4. **Kapı kanadı içi dolu ahşap kutuydu**, camın arkasında tahta kalıyordu → cam cam görünmüyordu.
+   → `doorLeaf(w,h)` iki dikme + üç kayıt olarak yeniden yazıldı, gövde içi boş; üstte cam göz,
+   altta ahşap etek, pirinç dikey kol. **Çift kanatlı, sağ kanat içeri açık** (menteşe sağ sövede,
+   ry = −1,15 · merkez x+1,77 · z 16,04).
+
+### Yan etki (bilinçli kabul edildi)
+`wall()` varsayılanı değiştiği için **Kat 2 ve Kat 3'ün duvarları da 3,2** oldu; kilitli alan sınır
+duvarları 2,9'dan `WALL_H`'e çekildi (7 yerde). `windowWall` (sağ duvar) da h = WALL_H, pencere başı
+2,45 → 2,80 (cephe camıyla aynı hiza). Üç kat da Playwright'la kontrol edildi: **0 konsol hatası**,
+kamera görünürlüğü bozulmadı — iç mekân aksine daha oranlı okunuyor.
+`archCol()` (2,7) artık 3,2'lik duvarda bir geçit portalı; doğru okunuyor, dokunulmadı.
+
 ## ŞU AN (2026-09-05 — v14: CAM CEPHE + SOL DUVAR; KOD DEĞİŞMEDİ, SAVE v30)
 
 `src/` DOKUNULMADI. **Çalışılan dosya: `docs/maket/maket-v13.html`** (dosya adı v13 kaldı, içerik v14).

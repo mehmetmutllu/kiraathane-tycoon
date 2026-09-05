@@ -588,3 +588,18 @@ hiçbir kafe böyle değil; en çok eksik olan ikili masa. Duvar olmadığı iç
 (banket adası) kullanıldı. Soba ve ocakbaşı tezgâhı önerileri kullanıcı tarafından reddedildi
 (*"hiç mantıklı gelmiyor"*).
 **Kat okuması:** arkada servis · ortada ikili/hızlı devir · önde dörtlü/grup.
+
+## D-037 — Sokak cephesi vitrin, kat yüksekliği 3,2 (2026-09-05)
+**Karar:** Kat 1'in sokağa bakan yüzü (z = +17) düz duvar değil **vitrin**; ve tüm duvar yüksekliği
+**2,7 → 3,2** çıkarıldı (`WALL_H` sabiti; kat aralığı zaten 3,2 — `buildingBelow` bu ölçüyle çalışıyor).
+Cephe dizilimi: kaide 0–0,4 · **cam 0,4–2,65** · lento · **alınlık 2,65–3,2 (tabela)** · üst kordon.
+Kapı boşluğu da 2,65 — cam ile aynı hizada biter. Tente lentonun **altından** çıkar ve dış kenarı
+aşağı iner; kapı **çift kanatlı camlı** (sağ kanat içeri açık).
+**Gerekçe:** Kullanıcı ilk vitrin denemesi için *"güzel ama düzgün durmadı, acaba duvarları az daha
+mı yükseltsek"* dedi. Teşhis: ① duvar 2,7 iken kapı boşluğu 2,9'du, kapı **duvardan taşıyordu**;
+② cam bandının üstünde tabelaya yer kalmıyordu, bina alçak bir baraka gibi duruyordu; ③ tente
+alınlığın üstündeydi ve tabelayı kapatıyordu, üstelik eğimi ters yöndeydi (dış kenarı yukarı
+kalkıyordu); ④ kapı kanadı içi dolu ahşap kutuydu, camın arkasında tahta kalıyordu.
+**Yan etki (kabul edildi):** `wall()` varsayılanı değiştiği için Kat 2 ve Kat 3'ün duvarları da 3,2
+oldu; kilitli alan sınır duvarları 2,9'dan `WALL_H`'e çekildi. Üç kat da kontrol edildi, kamera
+görünürlüğü bozulmadı — aksine iç mekân daha oranlı okunuyor.
