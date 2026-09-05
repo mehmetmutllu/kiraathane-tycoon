@@ -526,3 +526,17 @@ birinin kendi görsel darboğaz sinyali olur. `tools/simulate.ts` bu üç kısı
 ilk alım <90 sn ve erken zincir temposu korunacak. **Denge sayıları ONAYSIZ değişmez.**
 **Yerleşim kısıtı:** her oturma bölgesinin merkezi sipariş çıkışına ≤ ~10 birim (tur ~12 sn < sabır 18 sn).
 **Korunan:** garson **bölge-başı** kalır (D-012); sadece ortak çıkıştan alır.
+
+## D-032 — NARGİLE KALDIRILDI: yaş sınırı yükseltilmeyecek (2026-09-05)
+**Karar (kullanıcı, net):** *"nargile olmasın, yaş sınırı yükselmesin."* Nargile/tütün oyundan tamamen
+çıkarıldı. Kat 3 terası nargilesiz kurulacak.
+**Gerekçe:** tütün içeriği App Store / Google Play yaş derecelendirmesini yukarı çeker (Kids kategorisi
+kapanır), reklam ağlarında çocuk-güvenli/sınırlı-veri modunu ve envanter kalitesini kısıtlar.
+`progress.md`'deki "yaş/reklam kararı" yayın blokerinin tütün ayağı böylece **kapandı**.
+**Etkisi:** `projectBrief.md` "nargile terası" ifadesi düzeltildi. `docs/` içindeki eski nargile geçen
+belgeler (assets, economy, gameDesign, floorplan-master, zone34-wc-floor2-design, serving-and-automation)
+kat programı kesinleşince topluca temizlenecek. Maket v2-v5 HTML dosyaları arşivdir, dokunulmaz.
+**Yerine ne gelecek:** teras nargilesiz de çekici olmalı — alternatifler araştırılıyor (semaver/çay bahçesi,
+açık hava sinema, kış bahçesi/sera, canlı müzik köşesi). Seçim onay sonrası D-0xx olarak kaydedilecek.
+**Korunan:** okey/tavla KALIYOR — oyun masaları kumar değil, oyun kütüphanesi/board-game café dilinde
+kurulacak (bahis, kasa, jeton yok). Derecelendirme için okey/tavla ayağı ayrıca değerlendirilecek.

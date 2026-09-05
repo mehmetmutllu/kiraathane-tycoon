@@ -3,7 +3,7 @@
 ## Oyun nedir
 Üretim kalitesinde, mağazaya çıkacak **3D idle-tycoon** mobil oyun. Oyuncu bir Türk
 kıraathanesinin (çayhane) sahibidir; mekânı sıfırdan büyütür: çay servisi, mutfak,
-garsonlar, okey/tavla masaları, nargile terası.
+garsonlar, okey/tavla masaları, çatı terası. **Nargile yok** (D-032: yaş sınırı yükselmesin).
 
 ## Çekirdek döngü
 NPC (müşteri) gelir → boş masaya oturur → çay/ürün **sipariş** eder → garson (ya da
@@ -13,7 +13,7 @@ satın-alma **pad'inde** bekleyip mekânı **büyütür**.
 
 - **Saniyelik:** dolaş, para topla, sipariş ak.
 - **Oturum:** birkaç yükseltme + 1-2 pad açılışı + bir prestige hedefine yaklaşma.
-- **Uzun vade:** istasyon çeşitliliği, okey salonu, nargile terası, prestige (Renovasyon).
+- **Uzun vade:** istasyon çeşitliliği, oyun salonu (Kat 2), çatı terası (Kat 3), prestige (Renovasyon).
 
 ## Tür / Platform / Stil
 - **Tür:** 3D idle / tycoon / management (Roblox-tycoon + Idle Miner DNA'sı).
@@ -23,7 +23,7 @@ satın-alma **pad'inde** bekleyip mekânı **büyütür**.
 
 ## Hedef his
 Sıcak, samimi bir mahalle kıraathanesi: semaver fokurdar, ince belli bardaklarda çay,
-okey pulları takırdar, nargile fısıldar. Çocuk-güvenli, etik monetizasyon.
+okey pulları takırdar, teras akşamüstü serinler. Çocuk-güvenli, etik monetizasyon.
 
 ## Bu projenin çalışma biçimi
 Çok-oturumlu. Her oturum `/kiraathane-devam` ile başlar, `oturum-bitir` protokolüyle

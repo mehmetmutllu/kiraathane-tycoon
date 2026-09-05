@@ -2,6 +2,77 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-05 — MAKET v13: v2 ÜZERİNE SEVİYE KATMANI; KOD DEĞİŞMEDİ, SAVE v30)
+
+`src/` DOKUNULMADI. Bu oturum tamamen araştırma + maket. **Çalışılan dosya: `docs/maket/maket-v13.html`**
+(= `maket-v2-ONAYLI.html`'in kopyası + üstüne adım/seviye katmanı).
+**Artifact (canlı, aynı link kalıyor):** https://claude.ai/code/artifact/813bdc4c-3052-46ca-ac3b-23076f425b23
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+Kullanıcı: *"tamam çok iyi ... sonraki oturumda devam edeceğimizi not et"*. Kaldığımız yer:
+1. **Kat 1 / 3. alanın (arka yarı) içi BOŞ — birlikte doldurulacak.** Ne konacağına karar verilmedi.
+2. **Merdiven ve WC şu an hiç yok.** Arka yarı düzenlenirken ikisine de yer ayrılacak
+   (merdiven Kat 2'ye çıkışın tek yolu).
+3. **Ön iki alanın iç düzeni sistematikleştirilecek** (kullanıcı: "onların sistematik tasarımını yaparız").
+4. **Zemin dekoru / halılar en sona** (kullanıcı: "halıları da kaldır, zemin dekorunu en son yaparız").
+5. Kat 2 ve Kat 3 hâlâ 4 adımlı ve eski düzende — Kat 1 kesinleşince aynı dile çevrilecek.
+   Onlarda merdiven tam bölme ekseninin üstünde; kullanıcıya iki seçenek soruldu, cevap gelmedi.
+
+### Kat 1'in ONAYLANMIŞ hâli (v13, üç adım)
+- **Dört EŞİT çeyrek mantığı**, bölme eksenleri x = 0 ve z = 0.
+- **Adım 1** — ön-sol çeyrek (17 × 17): 4 çay masası + sol duvarda ÇAY OCAĞI (cezve ocağı + semaver).
+  Kapı bu alanın cephesinin TAM ORTASINDA (x = −8,5). Kasa yok, kuyruk yok, mutfak yok, halı yok,
+  çay ocağının altında zemin kaplaması yok.
+- **Adım 2** — ön-sağ çeyrek: birincinin BİREBİR AYNISI (aynı yayılım, aynı zemin rengi, orta aksa
+  simetrik: küme merkezleri −8,5 / +8,5). Cephe tamamlanınca **ana giriş x = 0'a kayıyor**.
+  Tek fark sağ duvardaki üç büyük pencere.
+- **Adım 3** — **arka yarının TAMAMI tek hamlede** (34 × 17), **içi bilerek boş**.
+  Tek olay: **çay ocağı arka-sol köşeye taşınıp SERVİS KÖŞESİ oluyor** (sol duvarda semaver,
+  arka duvarda cezve ocağı, raflar, personel, yönlendirme levhası). Ön iki alandaki ocak kalkıyor.
+  Bundan sonraki bütün servis ve yükseltmeler bu köşe üzerinden.
+- **Kilitli alan HİÇ çizilmiyor:** zemin bile yok, dış duvarlar bile adım adım örülüyor;
+  açık alan her adımda kendi duvarlarıyla kapalı bütün bir oda.
+
+### Bu oturumda REDDEDİLENLER (tekrarlanmasın)
+- **maket v12 (`maket-v12-REDDEDILDI.html`)** — sıfırdan kurulan üç katlı "kıraathane × kafe" maketi,
+  WASD gezintili. Kullanıcı: *"hayır ya bu ne rezalet. v2'ye dön."* **Düzeni yeniden çizmek yasak.**
+- **maket v3** tekrar bakıldı, yine reddedildi (*"v3 de çok kötüymüş"*).
+- Kullanıcının aradığı kırmızı yolluk v2/v3'te değil **v11**'de; v11 linki verildi ama v2'de karar kılındı.
+
+### Bu oturumda alınan KALICI kararlar
+- **D-032 — NARGİLE KALDIRILDI** (kullanıcı: *"nargile olmasın, yaş sınırı yükselmesin"*).
+  Apple 13+, PEGI 16, Google Teen; Kids kategorisi ve çocuk-güvenli reklam moduyla uyumsuz.
+  `projectBrief.md` düzeltildi, Kat 3'teki nargileler saksıyla değiştirildi.
+  `docs/` içinde nargile geçen 6 belge kat programı kesinleşince temizlenecek.
+- **Kasa ve kuyruk kaldırıldı** (oyunda kasada ödeme yok — Model B′ ile tutarlı).
+- **Uydurma bölge adları kaldırıldı:** Ocakbaşı Köşesi → Arka Salon, Vitrin Köşesi → Yan Salon,
+  Maç Salonu → Oturma Salonu, Mutfak Şeridi → Servis Şeridi.
+  Kullanıcı kuralı: *"normalde olmayan garip yerler olmasın"*.
+
+### Fable 5.1 araştırmaları (dört rapor alındı, özetleri burada)
+Kullanıcı isteğiyle dört ayrı Fable 5.1 araştırması yapıldı. **Çıktıları kullanılabilir ama
+v2'nin düzenini değiştirmek için kullanılmayacak** — yalnız içerik/isim/kademe kararlarına dayanak.
+1. **Mekân kimliği + gerçek plan mantığı:** kıraathane / kafe / restoran karşılaştırması, melezin gerçek
+   karşılıkları (Viyana Kaffeehaus, Yunan kafeneio, board-game café, Türkiye mahalle kahve-kafesi),
+   FOH/BOH oranları, koridor ve masa ölçüleri, tezgâh anatomisi, oturma hiyerarşisi. En kritik bulgu:
+   **"mutfak hacmi" restoran sinyali; melezde pişirme yok, arka tezgâh yeter.**
+2. **Tycoon düzen + büyüme:** My Cafe / Hotel Empire Tycoon / Roblox pad grameri / Two Point;
+   gerçekçiliğin nerede bozulacağı, okunabilirlik araçları, kilitli alanın nasıl görüneceği.
+3. **Üç katın programı:** kat kimlikleri, bölge listeleri, dikey gradyan (yukarı çıktıkça devir azalır,
+   hesap ve mahremiyet artar, servis yolu uzar), isimlendirme testi.
+4. **Kat 2 ve Kat 3 derinlemesine:** board-game café'ler, oyun türü başına mekânsal gereksinim,
+   oyun kütüphanesi rafı, servis asansörü (dumbwaiter); teras tipolojileri, nargile mevzuatı ve
+   yaş derecelendirmesi, nargilesiz alternatifler (semaver-köz istasyonu, kış bahçesi, manzara).
+Raporların uygulanmış hâli reddedilen v12'de; **kavramsal kararlar yukarıda listeli.**
+
+### Yan çıktı (yayınlanmadı)
+`docs/maket/kat-programi.html` — üç katın ölçekli üstten planları + program tabloları (statik sayfa).
+Araştırmanın görselleştirilmiş hâli; v12 ile birlikte rafta duruyor.
+
+### Çalışma kuralı (kullanıcı, bu oturumda net)
+**"Parça parça ilerleyeceğiz."** Tek seferde büyük değişiklik yok: bir şey değiştir → yayınla → baksın →
+onaylasın → sıradakine geç. v2'nin YERLEŞİMİNE dokunulmuyor, üstüne katman ekleniyor.
+
 ## ŞU AN (2026-09-04 gece — MAKET v11: SABİT OMURGA + ÜÇ KANAT; KOD DEĞİŞMEDİ, SAVE v30)
 
 Uzun bir maket iterasyonu oturumu. `src/` içinde HİÇBİR değişiklik yok — yalnız `docs/maket/`.

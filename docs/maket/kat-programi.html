@@ -1,0 +1,720 @@
+<title>Üç Kat Programı</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --paper:      #E9E7DF;
+    --sheet:      #F6F5F0;
+    --ink:        #201E1A;
+    --muted:      #6D685E;
+    --line:       #CAC5B6;
+    --line-soft:  #DEDACD;
+    --brass:      #9C7326;
+    --k1:         #9E2B32;
+    --k2:         #2F6B4F;
+    --k3:         #35707E;
+    --plan-fill:  #DCD8CB;
+    --plan-void:  #E3E0D6;
+    --seat:       #8E887A;
+    --shadow:     0 1px 0 rgba(32,30,26,.06), 0 8px 24px -18px rgba(32,30,26,.5);
+
+    --f-display: "Fraunces", Georgia, "Times New Roman", serif;
+    --f-body:    "Archivo", "Helvetica Neue", Arial, sans-serif;
+    --f-mono:    "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:     #17150F;
+      --sheet:     #211E17;
+      --ink:       #EBE7DB;
+      --muted:     #9B9488;
+      --line:      #3D392E;
+      --line-soft: #2E2B22;
+      --brass:     #D3A44E;
+      --k1:        #DE6B71;
+      --k2:        #62AE86;
+      --k3:        #6FB4C1;
+      --plan-fill: #2C2920;
+      --plan-void: #1F1D16;
+      --seat:      #575143;
+      --shadow:    0 1px 0 rgba(0,0,0,.4), 0 10px 28px -18px #000;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:     #17150F;
+    --sheet:     #211E17;
+    --ink:       #EBE7DB;
+    --muted:     #9B9488;
+    --line:      #3D392E;
+    --line-soft: #2E2B22;
+    --brass:     #D3A44E;
+    --k1:        #DE6B71;
+    --k2:        #62AE86;
+    --k3:        #6FB4C1;
+    --plan-fill: #2C2920;
+    --plan-void: #1F1D16;
+    --seat:      #575143;
+    --shadow:    0 1px 0 rgba(0,0,0,.4), 0 10px 28px -18px #000;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--f-body);
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 28px 20px 96px; }
+
+  /* ---------- antet bloğu ---------- */
+  .titleblock {
+    border: 1.5px solid var(--ink);
+    background: var(--sheet);
+    box-shadow: var(--shadow);
+  }
+  .tb-main { padding: 26px 26px 22px; border-bottom: 1px solid var(--line); }
+  .tb-eyebrow {
+    font-family: var(--f-mono); font-size: 11px; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--brass); margin: 0 0 12px;
+  }
+  h1 {
+    font-family: var(--f-display); font-weight: 700;
+    font-size: clamp(30px, 5.4vw, 50px); line-height: 1.04; letter-spacing: -.015em;
+    margin: 0 0 14px; text-wrap: balance;
+  }
+  .tb-lead { margin: 0; max-width: 62ch; color: var(--muted); font-size: 16px; }
+  .tb-lead b { color: var(--ink); font-weight: 600; }
+  .tb-meta {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+    font-family: var(--f-mono); font-size: 11.5px;
+  }
+  .tb-meta div { padding: 11px 26px; border-right: 1px solid var(--line); }
+  .tb-meta div:last-child { border-right: 0; }
+  .tb-meta dt { color: var(--muted); letter-spacing: .11em; text-transform: uppercase; font-size: 10px; margin: 0 0 3px; }
+  .tb-meta dd { margin: 0; font-weight: 500; }
+
+  /* ---------- bölüm başlığı ---------- */
+  h2 {
+    font-family: var(--f-display); font-weight: 600;
+    font-size: 26px; line-height: 1.15; margin: 64px 0 18px; letter-spacing: -.01em;
+  }
+  .rule { height: 1px; background: var(--line); border: 0; margin: 0 0 22px; }
+
+  /* ---------- karar şeridi ---------- */
+  .decisions { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .dec { background: var(--sheet); padding: 16px 18px; display: grid; grid-template-columns: 74px 1fr; gap: 16px; align-items: baseline; }
+  .dec-tag {
+    font-family: var(--f-mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
+    padding: 3px 0; border-top: 2px solid currentColor;
+  }
+  .dec-out { color: var(--k1); }
+  .dec-in  { color: var(--k2); }
+  .dec p { margin: 0; }
+  .dec b { font-weight: 600; }
+  .dec small { display: block; color: var(--muted); font-size: 13px; margin-top: 3px; }
+
+  /* ---------- kat sayfası ---------- */
+  .floor { margin-top: 76px; }
+  .floor-head { display: flex; align-items: flex-start; gap: 20px; margin-bottom: 6px; }
+  .floor-num {
+    font-family: var(--f-display); font-weight: 700; font-size: 62px; line-height: .82;
+    color: var(--acc); flex: none; letter-spacing: -.04em;
+  }
+  .floor-title { flex: 1; min-width: 0; }
+  .floor-title h3 {
+    font-family: var(--f-display); font-weight: 700; font-size: 30px;
+    margin: 0 0 6px; line-height: 1.05; letter-spacing: -.012em;
+  }
+  .floor-id { margin: 0; font-size: 16.5px; color: var(--ink); max-width: 58ch; }
+  .floor-id::before { content: "“"; color: var(--acc); }
+  .floor-id::after  { content: "”"; color: var(--acc); }
+
+  .floor-body { display: grid; grid-template-columns: minmax(300px, 440px) 1fr; gap: 26px; align-items: start; margin-top: 24px; }
+  @media (max-width: 860px) { .floor-body { grid-template-columns: 1fr; } }
+
+  /* ---------- plan ---------- */
+  .plan-card { border: 1.5px solid var(--ink); background: var(--sheet); box-shadow: var(--shadow); }
+  .plan-svg { display: block; width: 100%; height: auto; }
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); }
+  .step-btn {
+    appearance: none; border: 0; border-right: 1px solid var(--line);
+    background: transparent; color: var(--muted); cursor: pointer;
+    font-family: var(--f-mono); font-size: 11px; letter-spacing: .04em;
+    padding: 9px 4px 10px; line-height: 1.35; text-align: center;
+  }
+  .step-btn:last-child { border-right: 0; }
+  .step-btn strong { display: block; font-size: 15px; font-weight: 500; color: inherit; }
+  .step-btn:hover { background: var(--plan-void); color: var(--ink); }
+  .step-btn[aria-pressed="true"] { background: var(--acc); color: var(--sheet); }
+  .step-btn:focus-visible { outline: 2px solid var(--brass); outline-offset: -3px; }
+  .step-read {
+    border-top: 1px solid var(--line); padding: 13px 16px 15px;
+    display: grid; gap: 10px;
+  }
+  .step-read p { margin: 0; font-size: 14px; }
+  .step-read .verb { font-weight: 600; }
+  .step-read .verb span { color: var(--acc); }
+  .step-figs { display: flex; gap: 20px; font-family: var(--f-mono); font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .step-figs b { color: var(--ink); font-weight: 500; }
+
+  /* ---------- bölge listesi ---------- */
+  .zones { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .zone { background: var(--sheet); padding: 15px 17px; display: grid; grid-template-columns: 22px 1fr; gap: 14px; }
+  .zone-i {
+    font-family: var(--f-mono); font-size: 11px; color: var(--sheet);
+    background: var(--acc); width: 22px; height: 22px; border-radius: 50%;
+    display: grid; place-items: center; margin-top: 2px;
+  }
+  .zone h4 { margin: 0 0 2px; font-size: 16px; font-weight: 600; font-family: var(--f-body); }
+  .zone .spec { font-family: var(--f-mono); font-size: 11.5px; color: var(--muted); margin: 0 0 7px; }
+  .zone p { margin: 0; font-size: 14px; color: var(--muted); }
+  .zone p b { color: var(--ink); font-weight: 600; }
+  .zone .hero {
+    display: inline-block; margin-top: 8px; font-size: 12px;
+    font-family: var(--f-mono); letter-spacing: .04em;
+    color: var(--acc); border: 1px solid currentColor; padding: 2px 7px;
+  }
+  .char {
+    margin-top: 18px; border: 1px solid var(--line); background: var(--sheet);
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
+  .char div { padding: 12px 15px; border-right: 1px solid var(--line); }
+  .char div:last-child { border-right: 0; }
+  .char dt { font-family: var(--f-mono); font-size: 10px; letter-spacing: .11em; text-transform: uppercase; color: var(--muted); margin: 0 0 3px; }
+  .char dd { margin: 0; font-size: 14px; font-weight: 500; }
+
+  /* ---------- tablo ---------- */
+  .tw { overflow-x: auto; border: 1px solid var(--line); background: var(--sheet); }
+  table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 14px; }
+  th, td { padding: 11px 15px; text-align: left; border-bottom: 1px solid var(--line-soft); }
+  thead th { font-family: var(--f-mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 400; border-bottom: 1px solid var(--line); }
+  tbody th { font-weight: 600; font-size: 14px; }
+  tbody tr:last-child td, tbody tr:last-child th { border-bottom: 0; }
+  td.f1 { color: var(--k1); } td.f2 { color: var(--k2); } td.f3 { color: var(--k3); }
+  td, th { font-variant-numeric: tabular-nums; }
+
+  /* ---------- yasak listesi ---------- */
+  .bans { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .ban { background: var(--sheet); padding: 15px 17px; }
+  .ban h5 { margin: 0 0 4px; font-size: 14.5px; font-weight: 600; font-family: var(--f-body); text-decoration: line-through; text-decoration-color: var(--k1); text-decoration-thickness: 1.5px; }
+  .ban p { margin: 0; font-size: 13.5px; color: var(--muted); }
+
+  .next { border-left: 3px solid var(--brass); padding: 4px 0 4px 18px; margin-top: 26px; }
+  .next p { margin: 0 0 8px; max-width: 66ch; }
+  .next p:last-child { margin-bottom: 0; }
+  .foot { margin-top: 60px; padding-top: 18px; border-top: 1px solid var(--line); font-family: var(--f-mono); font-size: 11.5px; color: var(--muted); }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+
+<div class="titleblock">
+  <div class="tb-main">
+    <p class="tb-eyebrow">Köşe Kıraathanesi · Mekân Programı · Rev. A</p>
+    <h1>Üç Kat Programı</h1>
+    <p class="tb-lead">Mekân bir <b>kıraathane × kafe melezi</b>: ruhu Türk kıraathanesi (semaver, tavla, gazete, saatlerce oturan müdavim), işleyişi ve mekân dili modern kafe (açık tezgâh, espresso hattı, oturma çeşitliliği). Referans tipoloji <b>Viyana Kaffeehaus</b> ve <b>board-game café</b>. Restoran değil — pişirme yok, mutfak hacmi yok, sipariş kuyruğu yok.</p>
+  </div>
+  <dl class="tb-meta">
+    <div><dt>Kat alanı</dt><dd>34 × 34 birim</dd></div>
+    <div><dt>Kat sayısı</dt><dd>3 + çatı terası</dd></div>
+    <div><dt>Kat başı bölge</dt><dd>4 (sırayla açılır)</dd></div>
+    <div><dt>Toplam oturak</dt><dd>160</dd></div>
+    <div><dt>Ölçek</dt><dd>1 birim ≈ 1 m</dd></div>
+  </dl>
+</div>
+
+<h2>Neyi attık, neyi koyduk</h2>
+<hr class="rule">
+<div class="decisions">
+  <div class="dec"><span class="dec-tag dec-out">Çıktı</span><p><b>Mutfak hacmi, servis penceresi, adisyon askısı, hazırlık adası, personel koridoru, davlumbaz.</b><small>Hepsi restoran sinyali. Melezde pişirme yok: tezgâh + arka tezgâh yeter. Mutfak ayrı bir oda olduğu anda mekân restoran okunuyordu.</small></p></div>
+  <div class="dec"><span class="dec-tag dec-out">Çıktı</span><p><b>Nargile.</b><small>Tütün betimi Apple'da 13+, PEGI'de 16, Google Play'de Teen derecesine itiyor; Kids kategorisi ve çocuk-güvenli reklam modu kapanıyor. Terasın ateş ritüelini semaver–köz istasyonu devralıyor.</small></p></div>
+  <div class="dec"><span class="dec-tag dec-out">Çıktı</span><p><b>Uydurma bölge adları.</b><small>“Ocakbaşı Köşesi”, “Sobalı Salon”, “Ayaküstü Köşesi” gibi zorlama adlar bırakıldı. Her bölge adı şu testten geçiyor: gerçek bir kafede bu tabelayı görür müyüm?</small></p></div>
+  <div class="dec"><span class="dec-tag dec-in">Girdi</span><p><b>Tek lineer tezgâh — yerinde uzar.</b><small>Halının kenarından doğuya: teslim/tepsi ucu → semaver + bardak istifi → espresso hattı → tatlı vitrini. Arkasında buzdolabı – tost – evye – dolap. İkinci tezgâh, ikinci mutfak asla doğmaz.</small></p></div>
+  <div class="dec"><span class="dec-tag dec-in">Girdi</span><p><b>Kat başına tek kimlik, bölge başına tek kahraman obje.</b><small>Bir bölgeyi bir saniyede tanıtan tek büyük nesne: semaver, vitrin, kadife banket, oyun rafı, yeşil çuha, cam kanat. İki kahraman aynı bölgede duramaz, silüetleri benzeyemez.</small></p></div>
+  <div class="dec"><span class="dec-tag dec-in">Girdi</span><p><b>Sabit omurga, yerinde büyüme.</b><small>Kapı ön duvarın ortasında, merdiven çekirdeği arka duvarın ortasında — hiç kaymaz. Kat, omurganın etrafında kanat kanat açılır; hiçbir obje yer değiştirmez, hepsi bulunduğu yerde kademelenir.</small></p></div>
+</div>
+
+<div id="floors"></div>
+
+<h2>Dikey mantık</h2>
+<hr class="rule">
+<p style="max-width:66ch;margin:0 0 18px;color:var(--muted)">Yukarı çıktıkça devir azalır, oturma süresi ve hesap büyür, servis yolu uzar. Ekonomi bunu birebir kodlayabilir: üst kat masası az müşteri, yüksek fiyat, uzun yürüyüş.</p>
+<div class="tw">
+  <table>
+    <thead><tr><th scope="col">Ölçüt</th><th scope="col">Kat 1 · Kafe</th><th scope="col">Kat 2 · Oyun Salonu</th><th scope="col">Kat 3 · Teras</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Oturma süresi</th><td class="f1">15 – 40 dk</td><td class="f2">45 – 150 dk</td><td class="f3">60 – 120 dk</td></tr>
+      <tr><th scope="row">Devir</th><td class="f1">en yüksek</td><td class="f2">en düşük</td><td class="f3">orta</td></tr>
+      <tr><th scope="row">Oturak</th><td class="f1">74</td><td class="f2">42</td><td class="f3">44</td></tr>
+      <tr><th scope="row">Ortalama hesap</th><td class="f1">düşük</td><td class="f2">orta — uzun oturma, çok çay</td><td class="f3">en yüksek — akşam, manzara</td></tr>
+      <tr><th scope="row">Gürültü</th><td class="f1">yüksek, dağınık</td><td class="f2">orta, ritmik — zar ve taş</td><td class="f3">düşük, ambiyans</td></tr>
+      <tr><th scope="row">Işık</th><td class="f1">gün ışığı, en parlak</td><td class="f2">masa üstü odak, çevre loş</td><td class="f3">akşam, ip ışık ve fener</td></tr>
+      <tr><th scope="row">Servis yolu</th><td class="f1">kısa — tezgâh yanında</td><td class="f2">uzun — merdiven, sonra asansör</td><td class="f3">en uzun — kendi semaveri</td></tr>
+      <tr><th scope="row">Kahraman malzeme</th><td class="f1">mermer · kadife · pirinç</td><td class="f2">ahşap · yeşil çuha</td><td class="f3">cam · bitki · ip ışık</td></tr>
+      <tr><th scope="row">Müşteri</th><td class="f1">yoldan geçen, tek kişi, emekli</td><td class="f2">2–4 kişilik grup, müdavim</td><td class="f3">çift, akşam grubu</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2>Bu mekâna girmeyecekler</h2>
+<hr class="rule">
+<div class="bans">
+  <div class="ban"><h5>Kasa ve sipariş kuyruğu</h5><p>Oyunda kasada ödeme yok, kuyruk yok. Para masa yanındaki istiften toplanıyor — mekânda da olmayacak.</p></div>
+  <div class="ban"><h5>TV / maç köşesi</h5><p>Kahvehanede var ama Kaffeehaus ve oyun salonu odağını bozuyor: ses katmanı ve bakış yönü tek noktaya çakılıyor.</p></div>
+  <div class="ban"><h5>Langırt, masa tenisi</h5><p>Ayakta oynanan, bağırmalı, 5 dakikalık oyunlar. “Saatlerce oturulan kafe” kimliğinin tam zıddı.</p></div>
+  <div class="ban"><h5>Bilardo masası</h5><p>Tek masa 5,5 × 4 m boş alan ister — beş okey masası eder. Kafeyi bilardo salonuna kaydırıyor.</p></div>
+  <div class="ban"><h5>Çalışma / laptop köşesi Kat 2'de</h5><p>Zar sesiyle çelişiyor. Sessiz çalışma Kat 1'in pencere tezgâhına ait.</p></div>
+  <div class="ban"><h5>İkinci kitap kütüphanesi</h5><p>Kat 2'de zaten oyun rafı var. İki raf tipi yan yana okunmuyor, ikisi de kaybediyor.</p></div>
+  <div class="ban"><h5>Para, fiş, jeton</h5><p>İskambil ve okey oynanıyor ama kumar okunmayacak: masada bahis yok, skor tebeşirle tutuluyor.</p></div>
+  <div class="ban"><h5>Havada buton ve kart</h5><p>Yükseltme işaretleri düz zeminde duran sade noktalar. Dünya içinde uçan arayüz yok.</p></div>
+</div>
+
+<h2>Sıradaki adım</h2>
+<hr class="rule">
+<div class="next">
+  <p><b>1 · Bu program onaylanır.</b> Kat kimlikleri, bölge adları ve büyüme sırası burada kilitleniyor. Değişecek bir şey varsa maket çizilmeden söylenmeli.</p>
+  <p><b>2 · Üç katın 3B maketi kurulur.</b> Gezilebilir, adım adım açılan, mevcut palet ve gerçek ölçülerle — bu planların hacme dönmüş hâli.</p>
+  <p><b>3 · Koda bağlanır.</b> Her adım <span style="font-family:var(--f-mono);font-size:13px">economy.config.ts</span> pad zincirine, her bölge <span style="font-family:var(--f-mono);font-size:13px">store.ts</span> içindeki <span style="font-family:var(--f-mono);font-size:13px">LAYOUT</span> koordinatlarına oturur. Hangi pad hangi kanadı açıyor haritası çıkarılır.</p>
+</div>
+
+<p class="foot">Planlar 1 birim = 10 piksel ölçeğinde, kuş bakışı. Kapı her katta altta (ön duvar ortası), merdiven çekirdeği üstte (arka duvar ortası). Açık olmayan bölgeler taralı gösterilir. Ölçüler oyunun kendi birim sistemiyle; mobilya 1:1, dolaşım koridorları oynanabilirlik için yaklaşık 2,5 kat abartılı.</p>
+
+</div>
+
+<script>
+(function () {
+  var S = 10, M = 30, N = 34;                       // birim→px, kenar boşluğu, kat kenarı
+  function sx(x) { return M + (x + 17) * S; }
+  function sy(z) { return M + (z + 17) * S; }
+  var NS = 'http://www.w3.org/2000/svg';
+
+  function el(n, a) {
+    var e = document.createElementNS(NS, n);
+    for (var k in a) if (a[k] !== undefined && a[k] !== null) e.setAttribute(k, a[k]);
+    return e;
+  }
+  // birim dikdörtgeni [x1,z1,x2,z2] → svg rect nitelikleri
+  function R(r, a) {
+    a = a || {};
+    a.x = sx(Math.min(r[0], r[2])); a.y = sy(Math.min(r[1], r[3]));
+    a.width = Math.abs(r[2] - r[0]) * S; a.height = Math.abs(r[3] - r[1]) * S;
+    return el('rect', a);
+  }
+  function seat(g, x, z, r) {
+    g.appendChild(el('circle', { cx: sx(x), cy: sy(z), r: r || 3, fill: 'var(--seat)' }));
+  }
+  function txt(g, x, z, s, o) {
+    o = o || {};
+    var t = el('text', {
+      x: sx(x), y: sy(z), fill: o.fill || 'var(--muted)',
+      'font-size': o.size || 8.5, 'font-family': 'IBM Plex Mono, monospace',
+      'text-anchor': o.anchor || 'middle', 'letter-spacing': o.ls || 0.4,
+      transform: o.rot ? 'rotate(' + o.rot + ' ' + sx(x) + ' ' + sy(z) + ')' : null
+    });
+    t.textContent = s; g.appendChild(t);
+  }
+
+  var FURN = { fill: 'var(--plan-fill)', stroke: 'var(--line)', 'stroke-width': 1 };
+  function furn(extra) { var o = {}; for (var k in FURN) o[k] = FURN[k]; for (var k2 in extra) o[k2] = extra[k2]; return o; }
+
+  /* ---- mobilya çizicileri: her biri birim koordinatta ---- */
+  var DRAW = {
+    // kare masa + dört sandalye
+    t4: function (g, it) {
+      var w = it.w || 1.75;
+      g.appendChild(R([it.x - w / 2, it.z - w / 2, it.x + w / 2, it.z + w / 2], furn({ rx: 1.5 })));
+      [[0, 1.45], [0, -1.45], [1.45, 0], [-1.45, 0]].forEach(function (s) { seat(g, it.x + s[0], it.z + s[1]); });
+    },
+    // yuvarlak bistro + iki sandalye
+    t2: function (g, it) {
+      g.appendChild(el('circle', furn({ cx: sx(it.x), cy: sy(it.z), r: (it.d || 1.2) / 2 * S })));
+      seat(g, it.x, it.z - 1.25); seat(g, it.x, it.z + 1.25);
+    },
+    // banket masası: mermer kare, duvar tarafı bank, karşısı sandalye
+    marble: function (g, it) {
+      g.appendChild(R([it.x - .7, it.z - .7, it.x + .7, it.z + .7], furn({ rx: 1.5, fill: 'var(--sheet)' })));
+      seat(g, it.x + (it.dir || 1) * 1.25, it.z);
+      seat(g, it.x + (it.dir || 1) * -1.15, it.z - .45, 2.6);
+      seat(g, it.x + (it.dir || 1) * -1.15, it.z + .45, 2.6);
+    },
+    // duvar boyu banket / sedir
+    bench: function (g, it) { g.appendChild(R(it.r, furn({ fill: 'var(--acc)', opacity: .5, stroke: 'var(--acc)' }))); },
+    // tezgâh: bölümlere ayrılmış uzun kütle
+    counter: function (g, it) {
+      g.appendChild(R(it.r, furn({ fill: 'var(--acc)', opacity: .18, stroke: 'var(--acc)', 'stroke-width': 1.4 })));
+      (it.seg || []).forEach(function (s, i) {
+        if (i) g.appendChild(el('line', {
+          x1: sx(s[1]), y1: sy(it.r[1]), x2: sx(s[1]), y2: sy(it.r[3]),
+          stroke: 'var(--acc)', 'stroke-width': .8, opacity: .55
+        }));
+        txt(g, (s[1] + s[2]) / 2, (it.r[1] + it.r[3]) / 2 + .35, s[0], { size: 7, fill: 'var(--acc)' });
+      });
+    },
+    // arka tezgâh şeridi
+    back: function (g, it) {
+      g.appendChild(R(it.r, furn({ 'stroke-dasharray': '3 2' })));
+      txt(g, (it.r[0] + it.r[2]) / 2, (it.r[1] + it.r[3]) / 2 + .35, it.t, { size: 7 });
+    },
+    stools: function (g, it) { it.p.forEach(function (p) { seat(g, p[0], p[1], 3.4); }); },
+    // pencere tezgâhı / parapet tezgâhı
+    bar: function (g, it) {
+      g.appendChild(R(it.r, furn({ fill: 'var(--acc)', opacity: .25, stroke: 'var(--acc)' })));
+      (it.p || []).forEach(function (p) { seat(g, p[0], p[1], 3.4); });
+    },
+    // büyük ortak masa
+    big: function (g, it) {
+      g.appendChild(R(it.r, furn({ rx: 2, fill: 'var(--sheet)', 'stroke-width': 1.3 })));
+      var x1 = it.r[0], x2 = it.r[2], z1 = it.r[1], z2 = it.r[3], n = it.n || 4;
+      for (var i = 0; i < n; i++) {
+        var x = x1 + (x2 - x1) * (i + .5) / n;
+        seat(g, x, z1 - 1.1); seat(g, x, z2 + 1.1);
+      }
+      seat(g, x1 - 1.1, (z1 + z2) / 2); seat(g, x2 + 1.1, (z1 + z2) / 2);
+    },
+    // oyun masaları
+    tavla: function (g, it) {
+      g.appendChild(R([it.x - .85, it.z - .85, it.x + .85, it.z + .85], furn({ rx: 1.5 })));
+      g.appendChild(R([it.x - .6, it.z - .45, it.x + .6, it.z + .45], furn({ fill: 'var(--acc)', opacity: .35, stroke: 'none' })));
+      seat(g, it.x - 1.35, it.z); seat(g, it.x + 1.35, it.z);
+      seat(g, it.x, it.z - 1.5, 2.4);                       // kibitzer
+    },
+    okey: function (g, it) {
+      g.appendChild(R([it.x - 1.05, it.z - 1.05, it.x + 1.05, it.z + 1.05], furn({ rx: 1.5, fill: 'var(--acc)', opacity: .42, stroke: 'var(--acc)' })));
+      [[0, 1.7], [0, -1.7], [1.7, 0], [-1.7, 0]].forEach(function (s) { seat(g, it.x + s[0], it.z + s[1]); });
+    },
+    chess: function (g, it) {
+      g.appendChild(R([it.x - .8, it.z - .8, it.x + .8, it.z + .8], furn({ rx: 1 })));
+      for (var i = 0; i < 4; i++) for (var j = 0; j < 4; j++) if ((i + j) % 2)
+        g.appendChild(R([it.x - .6 + i * .3, it.z - .6 + j * .3, it.x - .3 + i * .3, it.z - .3 + j * .3], { fill: 'var(--acc)', opacity: .4 }));
+      seat(g, it.x, it.z - 1.4); seat(g, it.x, it.z + 1.4);
+    },
+    boxgame: function (g, it) {
+      g.appendChild(R([it.x - 1.6, it.z - .9, it.x + 1.6, it.z + .9], furn({ rx: 1.5 })));
+      [-1, 0, 1].forEach(function (k) { seat(g, it.x + k * 1.05, it.z - 1.35); seat(g, it.x + k * 1.05, it.z + 1.35); });
+    },
+    // duvar rafı / oyun kütüphanesi
+    shelf: function (g, it) {
+      g.appendChild(R(it.r, furn({ fill: 'var(--acc)', opacity: .55, stroke: 'var(--acc)' })));
+    },
+    // podyum / kilim
+    podium: function (g, it) {
+      g.appendChild(R(it.r, furn({ fill: 'var(--acc)', opacity: .14, stroke: 'var(--acc)', 'stroke-dasharray': '4 2' })));
+    },
+    pergola: function (g, it) {
+      g.appendChild(R(it.r, { fill: 'none', stroke: 'var(--acc)', 'stroke-width': 1.2, 'stroke-dasharray': '6 3' }));
+      var x1 = it.r[0], x2 = it.r[2];
+      for (var i = 1; i < 6; i++) {
+        var x = x1 + (x2 - x1) * i / 6;
+        g.appendChild(el('line', { x1: sx(x), y1: sy(it.r[1]), x2: sx(x), y2: sy(it.r[3]), stroke: 'var(--acc)', 'stroke-width': .6, opacity: .4 }));
+      }
+    },
+    tree: function (g, it) {
+      g.appendChild(el('circle', { cx: sx(it.x), cy: sy(it.z), r: (it.d || 1.4) / 2 * S, fill: 'var(--acc)', opacity: .3 }));
+      g.appendChild(el('circle', { cx: sx(it.x), cy: sy(it.z), r: 2, fill: 'var(--acc)', opacity: .8 }));
+    },
+    // merdiven çekirdeği
+    stairs: function (g, it) {
+      g.appendChild(R(it.r, furn({ fill: 'var(--plan-void)', 'stroke-width': 1.3 })));
+      var z1 = Math.min(it.r[1], it.r[3]), z2 = Math.max(it.r[1], it.r[3]);
+      for (var i = 1; i < 7; i++) {
+        var z = z1 + (z2 - z1) * i / 7;
+        g.appendChild(el('line', { x1: sx(it.r[0]), y1: sy(z), x2: sx(it.r[2]), y2: sy(z), stroke: 'var(--line)', 'stroke-width': .8 }));
+      }
+      txt(g, (it.r[0] + it.r[2]) / 2, z2 - .6, 'MERDİVEN', { size: 6.5, ls: .8 });
+    },
+    wc: function (g, it) {
+      g.appendChild(R(it.r, furn({ fill: 'var(--plan-void)' })));
+      txt(g, (it.r[0] + it.r[2]) / 2, (it.r[1] + it.r[3]) / 2 + .4, 'WC', { size: 7.5 });
+    },
+    // cam bant (duvarda pencere)
+    glass: function (g, it) {
+      g.appendChild(el('line', {
+        x1: sx(it.a[0]), y1: sy(it.a[1]), x2: sx(it.b[0]), y2: sy(it.b[1]),
+        stroke: 'var(--acc)', 'stroke-width': 3.5, 'stroke-linecap': 'butt', opacity: .75
+      }));
+    },
+    // halı / yolluk
+    rug: function (g, it) {
+      g.appendChild(R(it.r, { fill: 'var(--acc)', opacity: .1, stroke: 'var(--acc)', 'stroke-width': .8, 'stroke-dasharray': '2 3' }));
+    },
+    // kahraman obje işareti
+    hero: function (g, it) {
+      g.appendChild(el('circle', { cx: sx(it.x), cy: sy(it.z), r: 5.5, fill: 'var(--acc)' }));
+      txt(g, it.x, it.z + .32, it.k, { size: 7, fill: 'var(--sheet)' });
+    },
+    note: function (g, it) { txt(g, it.x, it.z, it.t, { size: it.size || 8, rot: it.rot, anchor: it.anchor }); }
+  };
+
+  /* ============================ KAT VERİSİ ============================ */
+  var FLOORS = [
+    {
+      no: 1, name: 'Kafe', accent: 'var(--k1)',
+      identity: 'Klasik bir Kaffeehaus: mermer masalar, duvar boyu kadife banket, gazetelik, tezgâhta espresso makinesi ile pirinç semaver yan yana.',
+      char: [['Tempo', 'Hareketli, yüksek devir'], ['Oturma', '15 – 40 dk'], ['Işık', 'Gün ışığı, en parlak kat'], ['Müşteri', 'Yoldan geçen · tek kişi · emekli']],
+      steps: [
+        { t: 'Tezgâh', verb: 'Çay taşı', area: '12 × 23', seats: 21, note: 'Kapı, yolluk ve dört masa. Tezgâhın ilk iki bölümü: teslim ucu ve semaver. Temel döngü burada öğrenilir — tepsiyi al, masaya bırak, para istifini topla.' },
+        { t: 'Pencere Kenarı', verb: 'Kahve ve tatlı', area: '23 × 23', seats: 33, note: 'Doğu duvarı camlanır. Tezgâh doğuya uzar: espresso hattı ve tatlı vitrini gelir. Yuvarlak mermer bistro masaları ve pencere tezgâhı, merkezdeki kare masalardan silüetiyle ayrılır.' },
+        { t: 'Salon', verb: 'Saatlerce oturan müdavim', area: '34 × 23', seats: 56, note: 'Batı duvarı boyunca kadife banket. Bir tarafta bank, karşısında Thonet sandalye — Kaffeehaus’un imza oturma tipi. Oturakların çoğu artık sırtını bir şeye dayıyor.' },
+        { t: 'Büyük Masa', verb: 'Kalabalık grup', area: '34 × 34', seats: 74, note: 'Arka şerit açılır: 8 × 3 masif ortak masa, arkasındaki duvarda gazetelik, merdiven çekirdeği ve WC. Yolluk artık kapıdan merdivene kesintisiz.' }
+      ],
+      zones: [
+        { n: 'Tezgâh', spec: '4,5 → 10 birim lineer · 5 tabure', hero: 'Semaver + espresso makinesi', d: 'Tek parça, <b>müşteri değil oyuncu akışına</b> göre dizili: yolluğa en yakın uçta teslim/tepsi noktası, sonra semaver ve bardak istifi, sonra espresso hattı, en uçta tatlı vitrini. Arkasında buzdolabı – tost – evye – dolap şeridi. Kasa yok, kuyruk yok.' },
+        { n: 'Pencere Kenarı', spec: '8 birim pencere tezgâhı + 2 bistro Ø 60', hero: 'Üç büyük cephe camı', d: 'Katın en aydınlık kuşağı. Pencereye bakan yüksek tabureler tek kişilik müşteri için, yuvarlak mermer masalar çiftler için. <b>Yuvarlak silüet</b> bu kanadın kimliği.' },
+        { n: 'Salon', spec: '16 birim banket + 5 mermer masa 60 × 60', hero: 'Kadife banket ve üstündeki büyük ayna', d: 'Duvar boyu tek sürekli bank, önünde küçük mermer masalar, karşısında Thonet sandalye. En uzun oturulan yer burası: sırt duvarda, salon izleniyor.' },
+        { n: 'Büyük Masa', spec: '240 × 90 ortak masa · 10 kişi', hero: 'Duvarda gazetelik', d: 'Yabancıların yan yana oturduğu tek masa. Yanında çubuklu gazete askısı — Kaffeehaus’un tek objeyle kurulan kimliği. Arka şeridin doğu ucunda üç kare masa daha.' }
+      ],
+      items: [
+        { s: 1, t: 'rug', r: [-1.5, -11, 1.5, 17] },
+        { s: 1, t: 'note', x: 0, z: 16.4, tt: 'ANA KAPI' },
+        { s: 1, t: 'counter', r: [2, -4.65, 6, -3.75], seg: [['teslim', 2, 3.5], ['semaver', 3.5, 6]] },
+        { s: 2, t: 'counter', r: [6, -4.65, 12, -3.75], seg: [['espresso', 6, 9], ['vitrin', 9, 12]] },
+        { s: 1, t: 'back', r: [3, -5.95, 6, -5.1], tx: 'evye' },
+        { s: 2, t: 'back', r: [6, -5.95, 12, -5.1], tx: 'buzdolabı · tost · dolap' },
+        { s: 1, t: 'stools', p: [[3, -2.9], [4.8, -2.9]] },
+        { s: 2, t: 'stools', p: [[6.6, -2.9], [8.4, -2.9], [10.2, -2.9]] },
+        { s: 1, t: 't4', x: -4, z: 12 }, { s: 1, t: 't4', x: 4, z: 12 },
+        { s: 1, t: 't4', x: -4, z: 6.5 }, { s: 1, t: 't4', x: 4, z: 6.5 },
+        { s: 1, t: 'note', x: 3.6, z: 16.2, tt: 'askılık' },
+        { s: 2, t: 'glass', a: [17, 2], b: [17, 14] },
+        { s: 2, t: 'bar', r: [15.4, 3, 16.4, 11], p: [[14.6, 4], [14.6, 6], [14.6, 8], [14.6, 10]] },
+        { s: 2, t: 't2', x: 10.5, z: 12.5 }, { s: 2, t: 't2', x: 10.5, z: 7.5 },
+        { s: 3, t: 'bench', r: [-17, -2, -15.9, 14] },
+        { s: 3, t: 'marble', x: -14.6, z: 12.5, dir: 1 }, { s: 3, t: 'marble', x: -14.6, z: 9, dir: 1 },
+        { s: 3, t: 'marble', x: -14.6, z: 5.5, dir: 1 }, { s: 3, t: 'marble', x: -14.6, z: 2, dir: 1 },
+        { s: 3, t: 'marble', x: -14.6, z: -1.5, dir: 1 },
+        { s: 3, t: 't4', x: -9.5, z: 11 }, { s: 3, t: 't4', x: -9.5, z: 5 },
+        { s: 4, t: 'stairs', r: [-3, -17, 3, -11] },
+        { s: 4, t: 'wc', r: [13, -17, 17, -13] },
+        { s: 4, t: 'big', r: [-12, -12.5, -4, -9.5], n: 4 },
+        { s: 4, t: 'shelf', r: [-11, -17, -5, -16.2] },
+        { s: 4, t: 't4', x: 7.5, z: -9.5 }, { s: 4, t: 't4', x: 13, z: -9.5 }, { s: 4, t: 't4', x: 10.2, z: -14.5 }
+      ]
+    },
+    {
+      no: 2, name: 'Oyun Salonu', accent: 'var(--k2)',
+      identity: 'Zar ve okey taşı sesi; yeşil çuhalı masalar, duvar boyu oyun rafı, köşede sessiz satranç.',
+      char: [['Tempo', 'Odaklı, düşük devir'], ['Oturma', '45 – 150 dk'], ['Işık', 'Masa üstü odak, çevre loş'], ['Müşteri', '2–4 kişilik grup · müdavim']],
+      steps: [
+        { t: 'Tavla Masaları', verb: 'Oyun oynayan müşteri', area: '15 × 19', seats: 12, note: 'Merdivenden çıkınca ilk görülen bölge, aynı zamanda en gürültülüsü. Dört tavla masası, her birinin yanında tek tabure — ayakta izleyen için. Batı duvarında camlı oyun dolabı.' },
+        { t: 'Okey Masaları', verb: 'Kat 2’de servis', area: '34 × 19', seats: 24, note: 'Doğu kanadı açılır: üç adet 105 × 105 yeşil çuhalı okey masası, arka duvarda tebeşirli skor tahtası. Merdiven başında <b>servis noktası</b> — küçük çay ocağı ve tepsi rafı. İkinci tezgâh değil, uydu.' },
+        { t: 'Kutu Oyunları', verb: 'Raftan oyun seç', area: '34 × 27', seats: 36, note: 'Batı duvarı boydan boya <b>oyun rafı</b> olur. Önünde iki uzun masa. Raf dolduğu ölçüde yeni oyun tipi açılır — kütüphane hem dekor hem yükseltme sayacı.' },
+        { t: 'Satranç Köşesi', verb: 'Turnuva', area: '34 × 34', seats: 42, note: 'Merdivenden en uzak, pencereli, en sessiz köşe. Üç satranç masası ve gazete standı. Servis asansörü devreye girer: tost ve tatlı aşağıdan yukarı çıkar.' }
+      ],
+      zones: [
+        { n: 'Tavla Masaları', spec: '4 × 70 cm masa · 2 oyuncu + 1 izleyici', hero: 'Açık sedef tavla tahtası', d: 'En yüksek sesli bölge, bilerek merdivenin dibinde. Her masanın yanındaki tek tabure gerçek kahvehanenin “kibitzer”i — <b>ayakta izleyen</b> için sabit nokta.' },
+        { n: 'Okey Masaları', spec: '3 × 105 cm çuhalı masa · 4 kişi', hero: 'Yeşil çuha ve ıstakalar', d: 'Batak ve iskambil de aynı masada oynanır — ayrı bölge açılmaz. Duvarda tebeşirle yazılan skor tahtası; turnuva günü eşleşme listesi de buraya çıkar. <b>Para ve fiş yok.</b>' },
+        { n: 'Kutu Oyunları', spec: '12 birim raf · 2 uzun masa 160 × 90', hero: 'Duvar boyu oyun rafı', d: 'Board-game café’nin imza öğesi: renkli kutu sırtları bir duvarı kaplar. Müşteri kalkıp raftan kutu alır — mekânı canlı tutan en ucuz animasyon.' },
+        { n: 'Satranç Köşesi', spec: '3 × 70 cm masa · saatli', hero: 'Pencere ve duvar saati', d: 'Sessizlik gradyanının ucu: gürültülü tavla ile arasında katın tüm çaprazı var. Yanında gazete standı — Kaffeehaus dili üst kata da taşınır.' }
+      ],
+      items: [
+        { s: 1, t: 'stairs', r: [-3, -17, 3, -11] },
+        { s: 1, t: 'rug', r: [-2.5, -11, 2.5, 16] },
+        { s: 1, t: 'tavla', x: -13, z: -3.5 }, { s: 1, t: 'tavla', x: -6.5, z: -3.5 },
+        { s: 1, t: 'tavla', x: -13, z: -9.5 }, { s: 1, t: 'tavla', x: -6.5, z: -9.5 },
+        { s: 1, t: 'shelf', r: [-17, -15, -16.2, -10] },
+        { s: 2, t: 'okey', x: 7.5, z: -4 }, { s: 2, t: 'okey', x: 14, z: -4 }, { s: 2, t: 'okey', x: 10.7, z: -10.5 },
+        { s: 2, t: 'shelf', r: [8, -17, 14, -16.2] },
+        { s: 2, t: 'counter', r: [3.6, -16.2, 7, -15.3], seg: [['servis noktası', 3.6, 7]] },
+        { s: 3, t: 'shelf', r: [-17, 3, -16.2, 15] },
+        { s: 3, t: 'boxgame', x: -11, z: 12 }, { s: 3, t: 'boxgame', x: -11, z: 6.5 },
+        { s: 4, t: 'glass', a: [17, 4], b: [17, 15] },
+        { s: 4, t: 'chess', x: 12.5, z: 13 }, { s: 4, t: 'chess', x: 12.5, z: 8 }, { s: 4, t: 'chess', x: 7, z: 10.5 },
+        { s: 4, t: 'note', x: 15.6, z: 16.4, tt: 'gazete standı' },
+        { s: 4, t: 'back', r: [3.6, -17, 5.4, -16.3], tx: 'asansör' },
+      ]
+    },
+    {
+      no: 3, name: 'Teras', accent: 'var(--k3)',
+      identity: 'Cam kış bahçesinden açık terasa çıkılan, ip ışıklı, manzaralı çatı katı.',
+      char: [['Tempo', 'Gevşek, akşam ağırlıklı'], ['Oturma', '60 – 120 dk'], ['Işık', 'Gün batımı, fener ve ip ışık'], ['Müşteri', 'Çift · akşam grubu']],
+      steps: [
+        { t: 'Kış Bahçesi', verb: 'Her mevsim açık kat', area: '34 × 11', seats: 12, note: 'Merdivenin çıktığı arka şerit, üç tarafı katlanır cam. Kışın çalışan tek bölüm burası. Dört yuvarlak bistro, hasır sandalye, büyük saksı ağaçlar.' },
+        { t: 'Sedir Köşesi', verb: 'Semaver çayı turu', area: '+ batı bandı', seats: 20, note: 'Kilim üstünde 20 cm minder podyumu ve alçak yuvarlak masalar. Yanında <b>semaver ve köz ocağı</b>: kestane, mısır, demlik tazeleme. Nargilenin ateş ritüelini bu istasyon devralır.' },
+        { t: 'Pergola', verb: 'Üstünü kapat', area: '+ doğu bandı', seats: 36, note: 'Ahşap pergola, sarmaşık ve ip ışık; altında dört bahçe masası. Yağmurda kapanan ilk bölge burası — tente ve kule ısıtıcı bu bölgenin yükseltmeleri.' },
+        { t: 'Manzara Kenarı', verb: 'Manzara fiyatı', area: '34 × 34', seats: 44, note: 'Parapet boyu yüksek tezgâh ve tabureler, iki şezlong, iki dürbün. Katın ve oyunun en pahalı oturağı: manzaraya bakan her tabure fiyat çarpanlı.' }
+      ],
+      zones: [
+        { n: 'Kış Bahçesi', spec: '4 × Ø 70 bistro · katlanır cam', hero: 'Cam kanat ve saksı ağaçları', d: 'Palmenhaus ve Landtmann Wintergarten tipi: yazın camlar açılır, kışın kapanır. Terasın <b>hava mekaniğine cevabı</b> — yağmur başlayınca müşteri buraya kayar, kat ölmez.' },
+        { n: 'Sedir Köşesi', spec: '7 × 7 podyum · alçak masa Ø 60', hero: 'Semaver ve köz ocağı', d: 'Kilim, minder, bağdaş kurulan podyum. Çorlulu Ali Paşa avlusunun ve Boğaz çay bahçelerinin düzeni — <b>nargilesiz</b>, ama aynı ateş ve demleme ritüeli.' },
+        { n: 'Pergola', spec: '12 × 12 örtü · 4 masa 80 × 80', hero: 'Pergola ve ip ışıklar', d: 'Yarı açık kuşak: üstü örtülü, yanları açık. Sezonu ilkbahardan geç sonbahara uzatan asıl yatırım; Türkiye’deki kafe teraslarının standart çözümü.' },
+        { n: 'Manzara Kenarı', spec: '24 birim parapet tezgâhı · 6 tabure + 2 şezlong', hero: 'Manzara ve dürbünler', d: 'Katın satış argümanı. Parapete bakan tabure hattı ve iki jetonlu dürbün; gün batımında ip ışıklar yanar. <b>Yağmurda ilk boşalan</b>, tente alınınca geri dolan bölge.' }
+      ],
+      items: [
+        { s: 1, t: 'stairs', r: [-3, -17, 3, -11] },
+        { s: 1, t: 'rug', r: [-2.5, -11, 2.5, 16] },
+        { s: 1, t: 'glass', a: [-17, -17], b: [17, -17] },
+        { s: 1, t: 'note', x: 0, z: -6.4, tt: 'katlanır cam' },
+        { s: 1, t: 't2', x: -11, z: -9, d: 1.4 }, { s: 1, t: 't2', x: -6.5, z: -13.5, d: 1.4 },
+        { s: 1, t: 't2', x: 7.5, z: -9, d: 1.4 }, { s: 1, t: 't2', x: 12.5, z: -13.5, d: 1.4 },
+        { s: 1, t: 'tree', x: -15, z: -14.5, d: 2 }, { s: 1, t: 'tree', x: 15.5, z: -8, d: 2 },
+        { s: 1, t: 'wc', r: [-17, -17, -13.2, -13.5] },
+        { s: 2, t: 'podium', r: [-16, -4.5, -9, 2.5] },
+        { s: 2, t: 't2', x: -14, z: -1.6, d: 1.2 }, { s: 2, t: 't2', x: -11, z: .4, d: 1.2 },
+        { s: 2, t: 'counter', r: [-16, -5.8, -12, -4.9], seg: [['semaver ocağı', -16, -12]] },
+        { s: 3, t: 'pergola', r: [4, -5, 16, 7] },
+        { s: 3, t: 't4', x: 7, z: -2.5 }, { s: 3, t: 't4', x: 13, z: -2.5 },
+        { s: 3, t: 't4', x: 7, z: 4 }, { s: 3, t: 't4', x: 13, z: 4 },
+        { s: 4, t: 'bar', r: [-12, 15.6, 12, 16.4], p: [[-11, 14.7], [-8, 14.7], [-5, 14.7], [5, 14.7], [8, 14.7], [11, 14.7]] },
+        { s: 4, t: 't2', x: -14.5, z: 12, d: 1.6 }, { s: 4, t: 't2', x: 14.5, z: 12, d: 1.6 },
+      ]
+    }
+  ];
+
+  /* ---- not/etiket kısayolu düzeltmesi (tt → t) ---- */
+  FLOORS.forEach(function (f) {
+    f.items.forEach(function (it) {
+      if (it.tt) { it.t = 'note'; it.text = it.tt; }
+      if (it.tx) { it.text = it.tx; }
+    });
+  });
+  DRAW.note = function (g, it) { txt(g, it.x, it.z, it.text || '', { size: it.size || 7.5, anchor: it.anchor }); };
+  DRAW.back = function (g, it) {
+    g.appendChild(R(it.r, furn({ 'stroke-dasharray': '3 2' })));
+    txt(g, (it.r[0] + it.r[2]) / 2, (it.r[1] + it.r[3]) / 2 + .24, it.text || '', { size: 6 });
+  };
+
+  /* ---- bölge dikdörtgenleri (adım sırasına göre) ---- */
+  var ZR = {
+    1: [[-6, -6, 6, 17], [6, -6, 17, 17], [-17, -6, -6, 17], [-17, -17, 17, -6]],
+    2: [[-17, -17, -3, 2], [3, -17, 17, 2], [-17, 2, -3, 17], [3, 2, 17, 17]],
+    3: [[-17, -17, 17, -6], [-17, -6, -4, 8], [4, -6, 17, 8], [-17, 8, 17, 17]]
+  };
+
+  function buildPlan(f, step) {
+    var svg = el('svg', { viewBox: '0 0 400 400', class: 'plan-svg', role: 'img' });
+    var ttl = el('title'); ttl.textContent = 'Kat ' + f.no + ' — ' + f.name + ', adım ' + step + ' planı'; svg.appendChild(ttl);
+
+    // hatch deseni (kapalı alan)
+    var defs = el('defs');
+    var pat = el('pattern', { id: 'hatch' + f.no, width: 6, height: 6, patternTransform: 'rotate(45)', patternUnits: 'userSpaceOnUse' });
+    pat.appendChild(el('line', { x1: 0, y1: 0, x2: 0, y2: 6, stroke: 'var(--line)', 'stroke-width': 1.2 }));
+    defs.appendChild(pat); svg.appendChild(defs);
+
+    // kat kabuğu
+    svg.appendChild(R([-17, -17, 17, 17], { fill: 'var(--plan-void)', stroke: 'none' }));
+
+    // bölgeler
+    var zr = ZR[f.no];
+    zr.forEach(function (r, i) {
+      var open = (i + 1) <= step;
+      svg.appendChild(R(r, {
+        fill: open ? 'var(--sheet)' : 'url(#hatch' + f.no + ')',
+        stroke: 'var(--line-soft)', 'stroke-width': 1, opacity: open ? 1 : .55
+      }));
+    });
+
+    // mobilya
+    f.items.forEach(function (it) {
+      if (it.s > step) return;
+      var fn = DRAW[it.t];
+      if (fn) fn(svg, it);
+    });
+
+    // dış duvar + kapı
+    svg.appendChild(R([-17, -17, 17, 17], { fill: 'none', stroke: 'var(--ink)', 'stroke-width': 2 }));
+    if (f.no === 1) {
+      svg.appendChild(el('line', { x1: sx(-1.5), y1: sy(17), x2: sx(1.5), y2: sy(17), stroke: 'var(--paper)', 'stroke-width': 4 }));
+      svg.appendChild(el('path', {
+        d: 'M' + sx(-1.5) + ' ' + sy(17) + ' A ' + (3 * S) + ' ' + (3 * S) + ' 0 0 0 ' + sx(-1.5) + ' ' + sy(14),
+        fill: 'none', stroke: 'var(--k1)', 'stroke-width': 1.2
+      }));
+    }
+
+    // ölçü çizgisi (alt)
+    var dy = sy(17) + 14;
+    svg.appendChild(el('line', { x1: sx(-17), y1: dy, x2: sx(17), y2: dy, stroke: 'var(--muted)', 'stroke-width': .8 }));
+    [-17, 17].forEach(function (x) {
+      svg.appendChild(el('line', { x1: sx(x), y1: dy - 3, x2: sx(x), y2: dy + 3, stroke: 'var(--muted)', 'stroke-width': .8 }));
+    });
+    var lbl = el('text', { x: sx(0), y: dy + 12, fill: 'var(--muted)', 'font-size': 9, 'font-family': 'IBM Plex Mono, monospace', 'text-anchor': 'middle' });
+    lbl.textContent = '34 birim'; svg.appendChild(lbl);
+
+    // yön: giriş / merdiven
+    var top = el('text', { x: sx(0), y: sy(-17) - 8, fill: 'var(--muted)', 'font-size': 9, 'font-family': 'IBM Plex Mono, monospace', 'text-anchor': 'middle', 'letter-spacing': 1 });
+    top.textContent = 'ARKA DUVAR — MERDİVEN ÇEKİRDEĞİ'; svg.appendChild(top);
+    return svg;
+  }
+
+  /* ---- sayfa kurulumu ---- */
+  var host = document.getElementById('floors');
+  FLOORS.forEach(function (f) {
+    var sec = document.createElement('section');
+    sec.className = 'floor';
+    sec.style.setProperty('--acc', f.accent);
+
+    var head = document.createElement('div');
+    head.className = 'floor-head';
+    head.innerHTML = '<div class="floor-num">' + f.no + '</div><div class="floor-title">' +
+      '<h3>' + f.name + '</h3><p class="floor-id">' + f.identity + '</p></div>';
+    sec.appendChild(head);
+
+    var body = document.createElement('div');
+    body.className = 'floor-body';
+
+    var card = document.createElement('div');
+    card.className = 'plan-card';
+    var planHost = document.createElement('div');
+    card.appendChild(planHost);
+
+    var steps = document.createElement('div');
+    steps.className = 'steps';
+    var read = document.createElement('div');
+    read.className = 'step-read';
+
+    function render(step) {
+      planHost.innerHTML = '';
+      planHost.appendChild(buildPlan(f, step));
+      var st = f.steps[step - 1];
+      read.innerHTML = '<p class="verb">Yeni fiil: <span>' + st.verb + '</span></p>' +
+        '<p>' + st.note + '</p>' +
+        '<div class="step-figs"><span>açık alan <b>' + st.area + '</b></span><span>oturak <b>' + st.seats + '</b></span></div>';
+      Array.prototype.forEach.call(steps.children, function (b, i) {
+        b.setAttribute('aria-pressed', String(i + 1 === step));
+      });
+    }
+
+    f.steps.forEach(function (st, i) {
+      var b = document.createElement('button');
+      b.className = 'step-btn';
+      b.type = 'button';
+      b.innerHTML = '<strong>' + (i + 1) + '</strong>' + st.t;
+      b.addEventListener('click', function () { render(i + 1); });
+      steps.appendChild(b);
+    });
+
+    card.appendChild(steps);
+    card.appendChild(read);
+    body.appendChild(card);
+
+    var side = document.createElement('div');
+    var zl = document.createElement('div');
+    zl.className = 'zones';
+    f.zones.forEach(function (z, i) {
+      var d = document.createElement('div');
+      d.className = 'zone';
+      d.innerHTML = '<span class="zone-i">' + (i + 1) + '</span><div>' +
+        '<h4>' + z.n + '</h4><p class="spec">' + z.spec + '</p><p>' + z.d + '</p>' +
+        '<span class="hero">Kahraman obje · ' + z.hero + '</span></div>';
+      zl.appendChild(d);
+    });
+    side.appendChild(zl);
+
+    var ch = document.createElement('dl');
+    ch.className = 'char';
+    f.char.forEach(function (c) {
+      var d = document.createElement('div');
+      d.innerHTML = '<dt>' + c[0] + '</dt><dd>' + c[1] + '</dd>';
+      ch.appendChild(d);
+    });
+    side.appendChild(ch);
+    body.appendChild(side);
+
+    sec.appendChild(body);
+    host.appendChild(sec);
+    render(4);
+  });
+})();
+</script>

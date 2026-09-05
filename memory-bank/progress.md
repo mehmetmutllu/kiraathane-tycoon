@@ -820,3 +820,20 @@ Detay ve tüm kararlar: `activeContext.md` ŞU AN bölümü. Çıktılar: `docs/
   - Playwright MCP: **0 konsol hatası**, dört sekme de çizildi. `src/` DEĞİŞMEDİ, SAVE v30.
 - ⏳ **Sonra:** Kat 2-3'ü v11 diline çevir → v11'i `economy.config.ts` pad zinciri + `LAYOUT`'a entegre et.
 - ⏳ **Sonra:** Faz A (hiçbir karara bağlı değil) — dev kancaları, kalıcı kayıt, perf paketi, kamera, ses, paketleme.
+
+## MAKET OTURUMU (2026-09-05) — v13: v2 üzerine seviye katmanı
+Kod DEĞİŞMEDİ (`src/` dokunulmadı, SAVE v30). Detay: `activeContext.md` ŞU AN bölümü.
+Çalışılan dosya `docs/maket/maket-v13.html` · artifact https://claude.ai/code/artifact/813bdc4c-3052-46ca-ac3b-23076f425b23
+- ✅ **Dört Fable 5.1 araştırması** (mekân kimliği · tycoon düzen/büyüme · üç katın programı · Kat 2-3 derinlemesine).
+- ❌ **Maket v12 REDDEDİLDİ** (`maket-v12-REDDEDILDI.html`): sıfırdan kurulan üç katlı kafe maketi + WASD gezinti.
+  Kullanıcı *"bu ne rezalet, v2'ye dön"* dedi. **Ders: v2'nin düzeni yeniden çizilmeyecek, üstüne katman eklenecek.**
+- ❌ **v3 tekrar bakıldı, yine reddedildi.**
+- ✅ **D-032: NARGİLE KALDIRILDI** — yaş sınırı (Apple 13+ / PEGI 16 / Google Teen) yükselmesin.
+  `projectBrief.md` güncellendi; yayın blokerinin tütün ayağı kapandı.
+- ✅ **v13 = v2 + seviye katmanı.** Kat 1 üç adım: ① ön-sol çeyrek (4 masa + çay ocağı, kapı alanın ortasında)
+  ② ön-sağ çeyrek (birebir aynısı, ana giriş ortaya kayar) ③ arka yarının tamamı, **içi boş**,
+  çay ocağı arka-sol köşeye taşınıp **servis köşesi** olur.
+- ✅ **Kilitli alan hiç çizilmiyor** (zemin ve dış duvar bile adıma bağlı). Kasa/kuyruk kaldırıldı, halılar kaldırıldı.
+- ✅ Kat 2 ve Kat 3 dörder adıma bölündü (eski düzenle), sade isimlerle. Kat 1 kesinleşince aynı dile çevrilecek.
+- ⏳ **SIRADAKİ:** Kat 1'in 3. alanının (arka yarı) içi · merdiven + WC yerleşimi · ön iki alanın sistematik
+  iç düzeni · zemin dekoru/halılar (en son) · sonra Kat 2-3.
