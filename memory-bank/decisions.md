@@ -603,3 +603,53 @@ kalkıyordu); ④ kapı kanadı içi dolu ahşap kutuydu, camın arkasında taht
 **Yan etki (kabul edildi):** `wall()` varsayılanı değiştiği için Kat 2 ve Kat 3'ün duvarları da 3,2
 oldu; kilitli alan sınır duvarları 2,9'dan `WALL_H`'e çekildi. Üç kat da kontrol edildi, kamera
 görünürlüğü bozulmadı — aksine iç mekân daha oranlı okunuyor.
+
+## D-038 — Tek Odak Kuralı: pad, seviye ve görev tek listede (2026-09-05)
+**Karar:** Pad'ler, mekânsal yükseltmeler ve işe alımlar **tek sıralı adım listesinde** birleşir
+(`Step = pad | upgrade | hire`, tek `activeStepId`). Dünyadaki işaret, alt bant metni, kamera odağı
+ve ekran kenarı oku — dördü de bu tek adımdan türer. Toast yalnız "az önce ne oldu" der, asla
+yönlendirmez. Usta (L4) noktaları adım listesine GİRMEZ; obje L3'e ulaşınca üstünde **rozet**
+belirir (işaret değil: yanıp sönmez, ok çıkarmaz, kamera çekmez).
+**Gerekçe:** Kullanıcının geçmiş deneyimindeki en büyük sorun — "görev metni altta bir şey diyor,
+ekran çay ocağına kayıyor". Kök sebep kodda doğrulandı: `visiblePads` pad'leri göreve göre
+filtreliyor ama `optional:true` pad'ler ve `upgradeFills`/`tableUpgradeFills` bu filtrenin
+TAMAMEN dışında çiziliyor. Tek liste olunca çakışma engellenmez, **mümkün olmaz**.
+
+## D-039 — L1-L3 para, L4 "Usta" reklam/elmas, kritik yol DIŞI (2026-09-05)
+**Karar:** Her yükseltilebilir objede L1-L3 parayla alınır; **L4 = "Usta"** yalnız ödüllü reklam
+veya 15 💎 ile açılır ve **kritik yolun dışındadır** — Kat 1 her şey L1-L3'teyken bitirilebilir.
+Usta **masa başına** uygulanır (20 masa = 20 hedef, `Usta masalar 7/20` sayacıyla).
+Reklam hazır değilse **pad yine görünür**, yalnız buton pasifleşir; elmas butonu hep açık.
+**Gerekçe:** Kullanıcı "4. seviye parayla alınamasın, şart olsun" dedi. Sert kapı üç riski
+taşıyordu: reklam dolum oranı %70-95 → envanter kuruyunca oyuncu KALICI tıkanır; "Reklamları
+Kaldır" alan oyuncu içerikten kilitlenir; proje kuralı "ödüllü ilerleme için zorunlu değil"
+ihlal edilir. Kritik yol dışına alınca üçü birden çözülür ve kullanıcının asıl istediği
+("para L4'e harcanamasın") korunur.
+
+## D-040 — "Reklamları Kaldır" IAP elmas geliri satar (2026-09-05)
+**Karar:** IAP interstitial'ları kaldırır **+ kalıcı günde 10 💎** verir. Ödüllü videolara
+dokunmaz (isteyen izler).
+**Gerekçe:** IAP'nin L4'ü parayla satması tasarımın mantığını yıkardı. Elmas satmak aynı yere
+varır, çelişki yaratmaz, oyuncu tek reklam izlemez. Sonuç: reklamsız ~2,5 günde 1 Usta ·
+IAP sahibi ~1,5 günde · reklam izleyen günde 3-5.
+
+## D-041 — Zemin/duvar DOKUSU kullanılmaz; çözüm geometri + ışık + temas gölgesi (2026-09-05)
+**Karar:** Tileable doku yolu kapalı. Sıra: ışık (hemisphere + fog + ACESFilmic) → instanced
+temas gölgesi → `CheckerTiles`'ın genellenmiş `plank`/`tile` geometrisi (tahta başına ±%4 renk
+sapması, derz = boşluk) → duvar bitim çıtaları → KayKit Restaurant + City Builder Bits.
+**Gerekçe:** Bu yol ZATEN DENENDİ: `d08c445` canvas-tile parke getirdi, `d29b7d9` geri aldı
+("zemin iğrenç oldu"). Başarısızlık sebebi ölçüldü: 128px doku yüksek repeat ile moiré ·
+sert yüksek kontrastlı derz · tahta başına varyasyon yok · kamera zemine yakın-tepeden bakıyor.
+**Asıl teşhis:** `dama` salonu `parke` salonundan daha bitmiş duruyor ve **ikisi de düz renk** —
+fark dokuda değil **ölçek referansında**. Ayrıca kod Lambert değil `meshStandardMaterial`
+kullanıyor (153 yer), `flatShading` hiç yok.
+
+## D-042 — Asset yolu: KayKit CC0 + 5 Türk objesi; AI ücretsiz planları YASAK (2026-09-05)
+**Karar:** Mobilya/mutfak/sokak → KayKit (Restaurant Bits + City Builder Bits, CC0, atıfsız,
+GitHub'da .gltf). KayKit'te olmayan beş Türk objesi: **semaver (makette zaten var, taşınacak)**,
+ince belli çay bardağı, cezve, yuvarlak tepsi, okey ıstakası → Blender'da elle.
+**AI 3B kullanılacaksa yalnız ücretli plan:** Meshy Pro veya Tripo Professional.
+**Gerekçe/yasak:** Meshy ücretsiz plan çıktısı **CC BY 4.0 — atıf zorunlu**, sonradan Pro'ya
+geçmek geriye dönük düzeltmiyor. Tripo ücretsiz plan **ticari kullanım yok**. Hunyuan3D tabanlı
+araçlar (Spline AI dahil) lisansen çıktının **AB ve İngiltere'de kullanılmasını yasaklıyor**.
+Mağaza görselleri AI ile üretilmeyecek (Play'de beyan zorunlu + "AI" etiketi).

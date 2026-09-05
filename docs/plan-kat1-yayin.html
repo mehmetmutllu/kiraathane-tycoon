@@ -16,10 +16,11 @@
     --line: #d7d1c0;
     --line-soft: #e2ddcf;
     --green: #2e6b4f;
+    --green-wash: #e2ece3;
     --copper: #a25f26;
     --copper-wash: #f0e3d4;
     --bordo: #7a2230;
-    --bordo-wash: #f2dfe0;
+    --bordo-wash: #f4e0e1;
 
     --f-display: "Baloo 2", "Trebuchet MS", sans-serif;
     --f-body: "Newsreader", Georgia, serif;
@@ -37,6 +38,7 @@
       --line: #343a30;
       --line-soft: #2a3027;
       --green: #6fb28b;
+      --green-wash: #1e2a22;
       --copper: #d99a5c;
       --copper-wash: #2c2419;
       --bordo: #d4707f;
@@ -54,6 +56,7 @@
     --line: #343a30;
     --line-soft: #2a3027;
     --green: #6fb28b;
+    --green-wash: #1e2a22;
     --copper: #d99a5c;
     --copper-wash: #2c2419;
     --bordo: #d4707f;
@@ -71,9 +74,8 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  .wrap { max-width: 1120px; margin: 0 auto; padding: 30px 22px 80px; }
+  .wrap { max-width: 1140px; margin: 0 auto; padding: 30px 22px 90px; }
 
-  /* --- başlık --- */
   header.top { border-bottom: 2px solid var(--ink); padding-bottom: 18px; }
 
   .eyebrow {
@@ -88,49 +90,47 @@
     margin: 0 0 12px; letter-spacing: -0.018em; text-wrap: balance;
   }
 
-  .lede { color: var(--ink-soft); max-width: 66ch; margin: 0; font-size: 17.5px; }
+  .lede { color: var(--ink-soft); max-width: 68ch; margin: 0; font-size: 17.5px; }
 
-  /* --- durum şeridi --- */
-  .facts {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1px; background: var(--line);
-    border-bottom: 1px solid var(--line);
-    margin: 0 0 40px;
+  /* içindekiler */
+  nav.toc {
+    margin: 26px 0 40px; padding: 16px 0 18px;
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 4px 24px;
   }
-  .fact { background: var(--paper); padding: 15px 14px 16px 0; }
-  .fact b {
-    display: block; font-family: var(--f-display); font-weight: 700;
-    font-size: 23px; line-height: 1.1; font-variant-numeric: tabular-nums;
+  nav.toc a {
+    font-family: var(--f-display); font-weight: 600; font-size: 13.5px;
+    color: var(--ink-soft); text-decoration: none; padding: 3px 0;
+    display: flex; gap: 10px;
   }
-  .fact b.warn { color: var(--bordo); }
-  .fact b.ok { color: var(--green); }
-  .fact span {
-    display: block; font-family: var(--f-display); font-weight: 600;
-    font-size: 10.5px; letter-spacing: 0.09em; text-transform: uppercase;
-    color: var(--ink-faint); margin-top: 4px;
-  }
+  nav.toc a:hover { color: var(--copper); }
+  nav.toc a b { color: var(--copper); font-weight: 700; font-variant-numeric: tabular-nums; min-width: 16px; }
 
-  /* --- bölümler --- */
-  section { margin: 0 0 52px; }
+  section { margin: 0 0 56px; scroll-margin-top: 16px; }
 
   h2 {
-    font-family: var(--f-display); font-weight: 700; font-size: 25px;
-    margin: 0 0 6px; letter-spacing: -0.01em; text-wrap: balance;
+    font-family: var(--f-display); font-weight: 700; font-size: 26px;
+    margin: 0 0 6px; letter-spacing: -0.012em; text-wrap: balance;
   }
+  h2 .no { color: var(--copper); margin-right: 10px; font-variant-numeric: tabular-nums; }
   .h2-note {
     font-family: var(--f-display); font-weight: 600; font-size: 12px;
     letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint);
-    margin: 0 0 16px; padding-bottom: 12px; border-bottom: 1px solid var(--line);
+    margin: 0 0 18px; padding-bottom: 12px; border-bottom: 1px solid var(--line);
   }
 
   h3 {
-    font-family: var(--f-display); font-weight: 700; font-size: 17.5px;
-    margin: 30px 0 7px;
+    font-family: var(--f-display); font-weight: 700; font-size: 18px;
+    margin: 32px 0 8px;
+  }
+  h4 {
+    font-family: var(--f-display); font-weight: 700; font-size: 14.5px;
+    margin: 22px 0 6px; letter-spacing: 0.01em;
   }
 
-  p { margin: 0 0 14px; max-width: 70ch; }
+  p { margin: 0 0 14px; max-width: 72ch; }
   p.wide { max-width: none; }
-  ul, ol { margin: 0 0 14px; padding-left: 20px; max-width: 70ch; }
+  ul, ol { margin: 0 0 14px; padding-left: 20px; max-width: 72ch; }
   li { margin-bottom: 6px; }
 
   b, strong { font-weight: 600; }
@@ -138,7 +138,6 @@
   code, .mono { font-family: var(--f-mono); font-size: 0.87em; }
   code { background: var(--surface-2); padding: 1px 5px; border-radius: 3px; }
 
-  /* --- tablolar --- */
   .tw { overflow-x: auto; margin: 0 0 16px; }
   table { border-collapse: collapse; width: 100%; font-size: 15px; }
   th {
@@ -150,9 +149,8 @@
   td { padding: 10px 14px 10px 0; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
   tbody tr:last-child td { border-bottom: none; }
   td.num, th.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
-  td.id { font-family: var(--f-mono); font-size: 12.5px; color: var(--ink-soft); white-space: nowrap; }
+  td.k { font-family: var(--f-display); font-weight: 700; font-size: 14px; white-space: nowrap; }
 
-  /* zincir tablosunda bölüm bandı */
   tr.band td {
     background: var(--surface-2);
     font-family: var(--f-display); font-weight: 700; font-size: 12.5px;
@@ -168,43 +166,28 @@
   }
   .tag.pad { background: var(--copper-wash); color: var(--copper); }
   .tag.lvl { background: var(--surface-2); color: var(--ink-soft); }
+  .tag.ad  { background: var(--bordo-wash); color: var(--bordo); }
+  .tag.ok  { background: var(--green-wash); color: var(--green); }
 
-  /* --- iki model karşılaştırması --- */
   .models { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 4px 0 18px; }
   @media (max-width: 720px) { .models { grid-template-columns: 1fr; } }
-
   .model { border: 1px solid var(--line); background: var(--surface); padding: 16px 16px 18px; }
   .model.now { border-left: 3px solid var(--bordo); }
   .model.next { border-left: 3px solid var(--green); }
-  .model h4 {
-    font-family: var(--f-display); font-weight: 700; font-size: 14px;
-    margin: 0 0 3px; letter-spacing: 0.02em;
-  }
+  .model h4 { font-family: var(--f-display); font-weight: 700; font-size: 14px; margin: 0 0 3px; }
   .model .sub {
     font-family: var(--f-display); font-weight: 600; font-size: 11px;
-    letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-faint);
-    margin: 0 0 14px;
+    letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-faint); margin: 0 0 14px;
   }
   .tree { font-family: var(--f-mono); font-size: 12.5px; line-height: 1.85; color: var(--ink-soft); white-space: pre; overflow-x: auto; }
   .tree b { color: var(--ink); font-weight: 600; }
 
-  /* --- karar kutuları --- */
-  .decisions { display: grid; gap: 1px; background: var(--line); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-  .dec { background: var(--paper); display: grid; grid-template-columns: 34px 1fr; gap: 16px; padding: 15px 0; align-items: start; }
-  .dec .n {
-    font-family: var(--f-display); font-weight: 800; font-size: 19px;
-    color: var(--copper); line-height: 1.25; font-variant-numeric: tabular-nums;
-  }
-  .dec .q { font-family: var(--f-display); font-weight: 700; font-size: 16px; margin: 0 0 4px; }
-  .dec .a { color: var(--ink-soft); font-size: 15px; margin: 0; max-width: 74ch; }
-  .dec .a .rec { color: var(--green); font-family: var(--f-display); font-weight: 600; }
-
-  /* --- uyarı / not --- */
   .note {
     border-left: 3px solid var(--copper); background: var(--surface);
-    padding: 13px 16px; margin: 0 0 16px; font-size: 15.5px; max-width: 76ch;
+    padding: 13px 16px; margin: 0 0 16px; font-size: 15.5px; max-width: 78ch;
   }
   .note.warn { border-left-color: var(--bordo); }
+  .note.ok { border-left-color: var(--green); }
   .note p:last-child { margin-bottom: 0; }
   .note .lab {
     font-family: var(--f-display); font-weight: 700; font-size: 11px;
@@ -212,77 +195,97 @@
     display: block; margin-bottom: 4px;
   }
   .note.warn .lab { color: var(--bordo); }
+  .note.ok .lab { color: var(--green); }
+
+  .decisions { display: grid; gap: 1px; background: var(--line); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .dec { background: var(--paper); display: grid; grid-template-columns: 34px 1fr; gap: 16px; padding: 15px 0; align-items: start; }
+  .dec .n {
+    font-family: var(--f-display); font-weight: 800; font-size: 19px;
+    color: var(--copper); line-height: 1.25; font-variant-numeric: tabular-nums;
+  }
+  .dec .q { font-family: var(--f-display); font-weight: 700; font-size: 16px; margin: 0 0 4px; }
+  .dec .a { color: var(--ink-soft); font-size: 15px; margin: 0; max-width: 76ch; }
+  .dec .a .rec { color: var(--green); font-family: var(--f-display); font-weight: 600; }
+
+  .mock {
+    font-family: var(--f-mono); font-size: 12.5px; line-height: 1.7;
+    background: var(--surface); border: 1px solid var(--line);
+    padding: 14px 16px; margin: 0 0 16px; white-space: pre; overflow-x: auto; color: var(--ink-soft);
+  }
+  .mock b { color: var(--ink); font-weight: 600; }
 
   footer.end {
-    margin-top: 46px; padding-top: 20px; border-top: 2px solid var(--ink);
-    font-size: 14px; color: var(--ink-faint); max-width: 74ch;
+    margin-top: 50px; padding-top: 20px; border-top: 2px solid var(--ink);
+    font-size: 14px; color: var(--ink-faint); max-width: 78ch;
   }
 
   a { color: var(--copper); }
-  a:focus-visible, .tab:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+  a:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 
 <div class="wrap">
 
 <header class="top">
-  <div class="eyebrow">Köşe Kıraathanesi · Teknik denetim + ilerleme tasarımı · 5 Eylül 2026</div>
+  <div class="eyebrow">Köşe Kıraathanesi · Kesinleşmiş uygulama planı · 5 Eylül 2026</div>
   <h1>Kat 1 Yayın Planı</h1>
-  <p class="lede">Maket v15'te Kat 1 altı adımda kesinleşti. Bu belge o maketi <b>oynanabilir bir yayın sürümüne</b> nasıl çevireceğimizi anlatıyor: yükseltmeler hangi sırayla gelir, oyuncu ne kadar sürede nereye varır, seviye ve görev katmanı nasıl kurulur, ve Kat 2–3 neden güncelleme olarak çıkar.</p>
+  <p class="lede">Maket v15'te Kat 1 altı adımda kesinleşti; kod taraması nerede durduğumuzu ölçtü; asset ve reklam kararları verildi. Bu belge <b>uygulanacak hâli</b> anlatıyor. Sonraki oturumda buradan koda geçilir — burada yazmayan hiçbir şey yapılmaz, burada yazan her şeyin gerekçesi var.</p>
 </header>
 
-<div class="facts">
-  <div class="fact"><b>9.669</b><span>satır oyun kodu</span></div>
-  <div class="fact"><b class="ok">186 / 186</b><span>test geçiyor</span></div>
-  <div class="fact"><b>SAVE v30</b><span>30 migrasyon adımı</span></div>
-  <div class="fact"><b class="warn">1,6 sa</b><span>bugünkü içerik</span></div>
-  <div class="fact"><b>10–12 sa</b><span>v1.0 hedefi</span></div>
-  <div class="fact"><b class="warn">≈ 6×</b><span>kapanacak uçurum</span></div>
-</div>
+<nav class="toc">
+  <a href="#s1"><b>1</b> Karar defteri</a>
+  <a href="#s2"><b>2</b> Hedef veri modeli</a>
+  <a href="#s3"><b>3</b> Tek Odak sistemi</a>
+  <a href="#s4"><b>4</b> İlerleme zinciri</a>
+  <a href="#s5"><b>5</b> Tempo eğrisi</a>
+  <a href="#s6"><b>6</b> Görev · Hedef · İtibar · Elmas</a>
+  <a href="#s7"><b>7</b> Reklam ve para</a>
+  <a href="#s8"><b>8</b> Görsel plan</a>
+  <a href="#s9"><b>9</b> Arayüz şartnamesi</a>
+  <a href="#s10"><b>10</b> App Store yolu</a>
+  <a href="#s11"><b>11</b> Faz planı</a>
+  <a href="#s12"><b>12</b> Araç bölüşümü</a>
+  <a href="#s13"><b>13</b> Riskler</a>
+  <a href="#s14"><b>14</b> Kalan kararlar</a>
+</nav>
 
-<!-- ============================================================ -->
-<section>
-  <h2>Nerede duruyoruz</h2>
-  <p class="h2-note">Kod taraması — her satır dosyada doğrulandı</p>
-
-  <p>Sandığımdan çok daha fazlası hazır. Ekonominin omurgası (sabit fiyat + throughput yükseltmesi), sıralı önkoşul zinciri, 36 görevlik hat, garson ve bulaşıkçı, obje-başı seviyeler, offline kazanç, kozmetik veri modeli — hepsi çalışıyor. <b>Eksik olan şey mekanik değil, hacim ve meta katman.</b></p>
+<!-- ============================================================ 1 -->
+<section id="s1">
+  <h2><span class="no">1</span>Karar defteri</h2>
+  <p class="h2-note">Bu oturumda kesinleşti — uygulama bunlara uyar</p>
 
   <div class="tw">
   <table>
-    <thead><tr><th>Sistem</th><th>Durum</th><th>Ayrıntı</th></tr></thead>
+    <thead><tr><th class="num">#</th><th>Karar</th><th>Gerekçe</th></tr></thead>
     <tbody>
-      <tr><td>Görev hattı</td><td><em>var</em></td><td>36 sıralı görev, tek aktif, ₺ + XP ödülü. Hat bitince hiçbir şey kalmıyor.</td></tr>
-      <tr><td>Pad / önkoşul zinciri</td><td><em>var</em></td><td>21 pad, <code>requires.prev</code> omurgası, pad açtığı objenin yerinde duruyor.</td></tr>
-      <tr><td>Obje-başı yükseltme</td><td><em>var</em></td><td>Ocak L0–6, masa L0–4, karakter (tepsi/mıknatıs/hız), garson tepsi/hız, bulaşıkçı.</td></tr>
-      <tr><td>Ekonomi modeli</td><td><em>var</em></td><td>Fiyat sabit; yükseltme throughput'u büyütüyor. Gelir = darboğaz. Kural tutuyor.</td></tr>
-      <tr><td>Offline kazanç</td><td><em>var</em></td><td>1 sa tavan × 0,5 oran, üstüne sıradaki pad'in %115'i sınırı.</td></tr>
-      <tr><td>Kayıt + migrasyon</td><td><em>var</em></td><td>v30'a kadar kesintisiz zincir, testli.</td></tr>
-      <tr><td>Oyuncu seviyesi (XP)</td><td style="color:var(--bordo)"><b>boş sayı</b></td><td>Kazanılıyor, HUD'da görünüyor, <b>hiçbir kapıyı açmıyor, hiçbir şeyi çarpmıyor.</b></td></tr>
-      <tr><td>Elmas 💎</td><td style="color:var(--bordo)"><b>ölü</b></td><td>Kodda 12 kullanım: tanım, kayıt, HUD. <b>Kaynağı da yok, harcaması da.</b></td></tr>
-      <tr><td>"Usta" (💎) seviyeleri</td><td style="color:var(--bordo)"><b>ulaşılamaz</b></td><td>Config'te tanımlı ama seviye kelepçesi önünü kesiyor — kod o dala hiç girmiyor.</td></tr>
-      <tr><td>Günlük görev · başarım</td><td style="color:var(--bordo)"><b>yok</b></td><td>Kodda izi bile yok.</td></tr>
-      <tr><td>Prestige</td><td style="color:var(--bordo)"><b>yok</b></td><td>Yalnız config bloğu ve simülatörde bir kilometre taşı.</td></tr>
-      <tr><td>Ses · bildirim</td><td style="color:var(--bordo)"><b>yok</b></td><td>Tek ses dosyası yok; Ayarlar'daki üç anahtar hiçbir şeye bağlı değil.</td></tr>
+      <tr><td class="num">K1</td><td><b>Kod modeli makete taşınır.</b> Bölge/ızgara eşitliği kırılır.</td><td>Ucuz yol maketin tamamını (20 masa, banket, odalar, tek tezgâh) çöpe atardı.</td></tr>
+      <tr><td class="num">K2</td><td><b>Alan açılınca mekân gelir, mobilya gelmez.</b> Zemin, duvar, ışık, kapının kayması gelir; masalar tek tek alınır.</td><td>"Vay" anı mekândan gelir. Dört satın alma anı korunur — tempo uzatmasının ana kaldıracı bu.</td></tr>
+      <tr><td class="num">K3</td><td><b>1. Alan istisnadır:</b> oyun tek masayla başlar, 2/3/4. masa alınır.</td><td>İlk alım 40 saniyede — oyunun en iyi çalışan parçası. Bozulmaz.</td></tr>
+      <tr><td class="num">K4</td><td><b>Merdiven son adımdır</b> (adım 6). Orta şerit 5'e çekildi.</td><td>Kullanıcı kararı. Kat 2'ye çıkış en sonda açılır.</td></tr>
+      <tr><td class="num">K5</td><td><b>v1.0'da merdiven yıkık kalır</b>, satın alınamaz.</td><td>Kat 2 henüz yok. Kalıcı fragman + güncelleme başlığı: <em>"Merdiven onarıldı."</em></td></tr>
+      <tr><td class="num">K6</td><td><b>L1–L3 para, L4 = "Usta" reklam veya 💎.</b> Usta <b>kritik yol dışı</b>.</td><td>Kat L1–L3 ile bitirilebilir → reklam gelmezse kimse tıkanmaz, mağaza politikası temiz kalır.</td></tr>
+      <tr><td class="num">K7</td><td><b>Usta seviyesi masa başına.</b> 20 masa = 20 ayrı hedef.</td><td>My Hotel modeli. Koleksiyon sayacıyla (<span class="mono">7/20</span>) angarya olmaktan çıkar.</td></tr>
+      <tr><td class="num">K8</td><td><b>Ekranda her an tek işaret.</b> Pad, seviye, hire — hepsi tek listenin adımı.</td><td>Kullanıcının geçmiş deneyimindeki en büyük sorun. Bölüm 3.</td></tr>
+      <tr><td class="num">K9</td><td><b>XP → İtibar.</b> Seviye başına +%2 talep, +%1 bahşiş, kozmetik açar.</td><td>Bugün XP hiçbir şeye yaramıyor. İlerlemeyi kilitlemez, hızlandırır.</td></tr>
+      <tr><td class="num">K10</td><td><b>Prestige v1.0'da yok.</b></td><td>Tek kat sıfırlamaya değmez. Kat 3'ten sonra gelir.</td></tr>
+      <tr><td class="num">K11</td><td><b>Zemin/duvar dokusu KULLANILMAZ.</b> Çözüm geometri + ışık + temas gölgesi.</td><td>Canvas-tile zaten denendi (<span class="mono">d08c445</span>) ve reddedildi (<span class="mono">d29b7d9</span>). Sorun doku değil, ölçek referansı.</td></tr>
+      <tr><td class="num">K12</td><td><b>Asset: KayKit CC0 + 5 Türk objesi.</b> AI 3B yalnız o beşi için, ücretli planla.</td><td>Meshy ücretsiz = CC BY 4.0 atıf zorunlu; Tripo ücretsiz = ticari yasak.</td></tr>
+      <tr><td class="num">K13</td><td><b>İlk yayın App Store.</b> Reklam AdMob.</td><td>Kullanıcı kararı; hesap mevcut.</td></tr>
     </tbody>
   </table>
   </div>
-
-  <div class="note warn">
-    <span class="lab">Bunu önce temizlemeliyiz</span>
-    <p>Ölü alanlar "yarım" değil "hiç" — ama <b>var gibi göründükleri için</b> yeni her özellik onların üstüne yamanacak. <code>serviceSpeedMult</code> her zaman 1 ama 18 yerde okunuyor; <code>Requires.minTables</code> ve <code>minStationLevel</code> tanımlı ama hiç değerlendirilmiyor; Posta paneli boş bir yer tutucu. Bunlar kalırsa meta katman ilk günden borçlu doğar.</p>
-  </div>
 </section>
 
-<!-- ============================================================ -->
-<section>
-  <h2>Merkezî sorun: kod ile maket aynı şeyi anlatmıyor</h2>
-  <p class="h2-note">Her şeyden önce verilmesi gereken karar</p>
+<!-- ============================================================ 2 -->
+<section id="s2">
+  <h2><span class="no">2</span>Hedef veri modeli</h2>
+  <p class="h2-note">K1 · Her şeyin üstüne oturduğu değişiklik</p>
 
-  <p>Kodda <b>bölge (zone) = ızgara hücresi = kendi ocağı = kendi ürünü = kendi personeli</b>. Bu eşitlik yaklaşık yüz noktaya kazınmış. Maket v15 ise tek katta <b>tek tezgâh</b>, <b>üç tipte 20 masa</b> ve arka bantta <b>odalar</b> anlatıyor. İkisi aynı veri modeliyle ifade edilemiyor.</p>
+  <p>Kodda <b>bölge = ızgara hücresi = kendi ocağı = kendi ürünü = kendi personeli</b> eşitliği ~100 noktaya kazınmış. Maket tek katta <b>tek tezgâh</b>, <b>üç tipte 20 masa</b> ve arka bantta <b>odalar</b> anlatıyor. İkisi aynı modelle ifade edilemiyor.</p>
 
   <div class="models">
     <div class="model now">
-      <h4>Bugünkü model</h4>
+      <h4>Bugün</h4>
       <p class="sub">3 bölge × 4 masa = 12 masa</p>
       <div class="tree"><b>BÖLGE</b> (2×2 ızgara hücresi)
  ├── kendi <b>ocağı</b>       stationLevels[z]
@@ -292,102 +295,167 @@
  └── sabit <b>4 masa</b>      TABLES_PER_ZONE</div>
     </div>
     <div class="model next">
-      <h4>Önerilen model</h4>
+      <h4>Hedef</h4>
       <p class="sub">1 kat · 4 alan · 1 tezgâh · 20 masa</p>
       <div class="tree"><b>KAT</b>
  ├── <b>ALAN</b>     masa taşır, adım adım açılır
  ├── <b>SERVİS</b>   üretim (tezgâh) | aktarma (istasyon)
  ├── <b>MASA</b>     tip · seviye · bağlı olduğu alan
- └── <b>ODA</b>      lavabo (pasif etki) · merdiven (kapı)</div>
+ └── <b>ODA</b>      lavabo (pasif etki) · merdiven (kat kapısı)</div>
     </div>
   </div>
 
-  <p class="wide">Gelir formülü <b>değişmiyor</b> — hâlâ <code>min(talep, oturma, demleme, servis)</code>. Değişen tek şey bu dört kapasitenin bölge başına değil <b>kat çapında</b> toplanması. Yeni model aslında bugünkünden daha basit; zorluk yazmakta değil, yerleşiği sökmekte.</p>
+  <p class="wide">Gelir formülü <b>değişmiyor</b> — <code>min(talep, oturma, demleme, servis)</code>. Değişen tek şey bu dört kapasitenin bölge başına değil <b>kat çapında</b> toplanması. Yeni model bugünkünden daha basit; zorluk yazmakta değil, yerleşiği sökmekte: <code>store.ts</code>'in ~%40'ı, <code>Scene.tsx</code>'in ~%30'u, 40–60 test. Kat 2 ve 3 aynı modelin üstüne oturacağı için <b>bir kez ödenir</b>.</p>
+
+  <h3>Masa tipleri</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>Tip</th><th class="num">Adet</th><th class="num">Koltuk (L0→L3)</th><th>Nerede</th><th>Karakteri</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Dörtlü</td><td class="num">8</td><td class="num">1 · 2 · 3 · 4</td><td>1. ve 2. Alan</td><td>Uzun oturum, grup, yüksek bahşiş</td></tr>
+      <tr><td class="k">İkili</td><td class="num">12</td><td class="num">1 · 2 · 2 · 2</td><td>Orta şerit, banketlerin iki yüzü</td><td>Hızlı devir, kısa oturum</td></tr>
+      <tr><td class="k">Banket</td><td class="num">2 ada</td><td class="num">boy = seviye</td><td>Orta şerit</td><td>Taşıyıcı yapı; her seviye 2 ikili masa ekler</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><b>Banket seviyesi = boy.</b> Dış uç sabit, bank içe doğru uzar, var olan masalar hiç yer değiştirmez; yükseltme noktası bankın uzayan ucunda kayar.</p>
+</section>
+
+<!-- ============================================================ 3 -->
+<section id="s3">
+  <h2><span class="no">3</span>Tek Odak sistemi</h2>
+  <p class="h2-note">K8 · Görev ↔ pad çakışmasının kalıcı çözümü</p>
+
+  <div class="note warn">
+    <span class="lab">Kök sebep — kodda doğrulandı</span>
+    <p><code>visiblePads</code> pad'leri göreve göre filtreliyor, <b>ama</b> <code>optional:true</code> pad'ler ve mekânsal yükseltme noktaları (<code>upgradeFills</code>, <code>tableUpgradeFills</code>) bu filtrenin <b>tamamen dışında</b> çiziliyor. Ekranda 2-3 işaret olabiliyor, alt bant bunlardan yalnız birini anlatıyor, kamera bir üçüncüsüne kayabiliyor.</p>
+  </div>
+
+  <h3>Kural</h3>
+  <p>Her an <b>tam olarak bir aktif adım</b> vardır ve o adım aşağıdaki dört kanalın <b>hepsine birden</b> sahiptir. Başka hiçbir şey bu kanalları talep edemez.</p>
 
   <div class="tw">
   <table>
-    <thead><tr><th>Maket adımı</th><th>Koddaki karşılığı</th><th class="num">İş türü</th></tr></thead>
+    <thead><tr><th>Kanal</th><th>Sahibi</th><th>Kural</th></tr></thead>
     <tbody>
-      <tr><td>1 · Ön-sol alan, 4 masa + çay ocağı</td><td>Bölge 0 birebir var</td><td><em>parametre</em></td></tr>
-      <tr><td>2 · Ön-sağ alan, kapı ortaya kayar</td><td>Bölge 1 var; <b>kapı tek sabit nokta</b></td><td><em>parametre</em> + kapı mekaniği</td></tr>
-      <tr><td>3 · Arka yarının tamamı + tezgâh, ön ocak kalkar</td><td>Arka yarı ikiye bölünmüş; "objeyi taşı" diye bir etki yok</td><td style="color:var(--bordo)"><b>yeniden yazım</b></td></tr>
-      <tr><td>4 · Lavabo odası</td><td>WC pad'i v25'te kaldırılmış; mekanik yok</td><td style="color:var(--bordo)"><b>yeni</b></td></tr>
-      <tr><td>5 · Merdiven → Kat 2</td><td>Kat kavramı hiç yok</td><td style="color:var(--bordo)"><b>yeni</b></td></tr>
-      <tr><td>6 · Orta şerit: banket + 12 ikili masa</td><td>Masa tipi tek; slot modeli bölge×4'e sabit</td><td style="color:var(--bordo)"><b>yeniden yazım</b></td></tr>
+      <tr><td class="k">Dünyadaki işaret</td><td>Aktif adım</td><td>Aynı anda <b>tam olarak 1</b> tane çizilir</td></tr>
+      <tr><td class="k">Alt bant metni</td><td>Aktif adım</td><td>İşaretle <b>aynı şeyi</b> söyler; işaret değişmeden metin değişmez</td></tr>
+      <tr><td class="k">Kamera odağı</td><td>Aktif adım</td><td>Yalnız adım <b>değiştiğinde bir kez</b> kayar, sonra kontrol oyuncuda</td></tr>
+      <tr><td class="k">Ekran kenarı oku</td><td>Aktif adım</td><td>İşaret ekran dışındaysa yönünü gösterir</td></tr>
+      <tr><td class="k">Toast (üst)</td><td>Olay geri bildirimi</td><td>"Az önce ne oldu" der; <b>asla yönlendirme yapmaz</b></td></tr>
+      <tr><td class="k">Ödül modali</td><td>Ödül olayı</td><td>Tek seferde tek modal, kuyruklanır</td></tr>
     </tbody>
   </table>
   </div>
 
-  <p>Ölçü olarak: <code>store.ts</code>'in yaklaşık <b>%40'ı</b>, <code>Scene.tsx</code>'in <b>%30'u</b> ve 40–60 test yeniden yazılır. Bu küçük bir iş değil — ama Kat 2 ve Kat 3 aynı modelin üstüne oturacağı için <b>bir kez ödenir</b>.</p>
+  <h3>Veri modeli</h3>
+  <p>Pad'ler ve yükseltmeler <b>tek bir sıralı listede</b> birleşir. Çakışma engellenmez — <b>mümkün olmaz</b>.</p>
+
+  <div class="mock">type Step =
+  | { kind: <b>'pad'</b>;     id: string; padId: string }        <span style="color:var(--ink-faint)">// yeni şey açar</span>
+  | { kind: <b>'upgrade'</b>; id: string; target: TargetRef }    <span style="color:var(--ink-faint)">// var olanı büyütür</span>
+  | { kind: <b>'hire'</b>;    id: string; who: 'waiter' | 'dish' }
+
+state: { <b>activeStepId</b>: string; doneSteps: string[] }
+
+<span style="color:var(--ink-faint)">// işaret, metin, kamera — ÜÇÜ DE activeStepId'den türer.
+// bağımsız çizim yok, bağımsız metin yok.</span></div>
+
+  <h3>Adım geçişi</h3>
+  <div class="mock"><b>AKTİF</b> ──(koşul sağlandı)──▶ <b>TAMAMLANDI</b>  0,5 sn kutlama, işaret yerinde
+                                    │
+                                    ▼
+                             <b>BOŞLUK</b>  0,8 sn · hiçbir işaret yok · alt bant boş
+                                    │
+                                    ▼
+                          yeni <b>AKTİF</b>  kamera 1 kez kayar → metin → işaret</div>
+
+  <p>Bu makine kodda zaten var (<code>QUEST_COMPLETE_DUR 0,5</code> · <code>QUEST_GAP_DUR 0,8</code>). Değişen şey: <b>her şey</b> buradan geçecek.</p>
+
+  <h3>Asla olmayacaklar</h3>
+  <ul>
+    <li>İki işaret aynı anda ekranda</li>
+    <li>Alt bant metninin işaret ettiğinden başka bir şeyi anlatması</li>
+    <li>Kameranın aktif adım dışında bir yere kayması</li>
+    <li>Adım geçişi sırasında (1,3 sn) yeni bir işaret belirmesi</li>
+    <li>Modal açıkken kameranın kayması</li>
+  </ul>
+
+  <h3>Usta noktaları bu sisteme nasıl girmez</h3>
+  <p>Usta (L4) kritik yol dışı olduğu için <b>adım listesine girmez</b> — girseydi tek işaret kuralını kırardı. Yerine:</p>
+  <ul>
+    <li>Obje L3'e ulaşınca üstünde <b>küçük sabit bir rozet</b> belirir — işaret değil, <b>rozet</b>: farklı görsel dil, yanıp sönmez, ok çıkarmaz, kamera çekmez</li>
+    <li>Oyuncu o objeye yaklaşınca Usta paneli açılır</li>
+    <li>Hedefler panelinden de toplu erişilir: <span class="mono">Usta masalar 7/20</span></li>
+  </ul>
+
+  <h3>Çay Molası (reklam pad'i) çakışmaz</h3>
+  <ul>
+    <li>Aktif adımın işaretinin bulunduğu yere <b>asla</b> çıkmaz</li>
+    <li>Farklı renk ve ikon — ilerleme pad'iyle karışmaz</li>
+    <li>Aynı anda en fazla 1 tane, ~15 dakika arayla</li>
+    <li>Adım geçişi sırasında (1,3 sn) belirmez</li>
+  </ul>
 </section>
 
-<!-- ============================================================ -->
-<section>
-  <h2>Yükseltme sırası</h2>
-  <p class="h2-note">Kat 1 · v1.0 zinciri · ekranda her an tek işaret</p>
-
-  <p>Zincirin uyduğu kurallar: <b>fiyat değil hacim</b> büyür · her adım bir öncekini önkoşul alır · açılış pad'i açtığı şeyin yerinde durur, seviye noktası objenin yanında · <b>aynı anda ekranda tek işaret</b> görünür.</p>
+<!-- ============================================================ 4 -->
+<section id="s4">
+  <h2><span class="no">4</span>İlerleme zinciri</h2>
+  <p class="h2-note">Kat 1 · v1.0 · altı adım · merdiven sonda</p>
 
   <div class="tw">
   <table>
     <thead><tr><th class="num">#</th><th>Ne</th><th>Tür</th><th>Neden burada</th></tr></thead>
     <tbody>
-      <tr class="band"><td colspan="4">Bölüm 1 · 1. Alan — öğretici <span class="t">hedef 0 – 10 dk</span></td></tr>
-      <tr><td class="num">1</td><td>2. Masa</td><td><span class="tag pad">açılış</span></td><td>İlk alım 60 saniyenin altında olmalı — oturumun kancası bu.</td></tr>
-      <tr><td class="num">2</td><td>Çay Ocağı L1</td><td><span class="tag lvl">seviye</span></td><td>İki masa ocağı zorlar: ilk darboğaz demleme. Oyuncu darboğazı görerek öğrenir.</td></tr>
+      <tr class="band"><td colspan="4">Bölüm 1 · 1. Alan — öğretici <span class="t">0 – 10 dk</span></td></tr>
+      <tr><td class="num">1</td><td>2. Masa</td><td><span class="tag pad">açılış</span></td><td>İlk alım 60 saniyenin altında — oturumun kancası.</td></tr>
+      <tr><td class="num">2</td><td>Çay Ocağı L1</td><td><span class="tag lvl">seviye</span></td><td>İki masa ocağı zorlar: ilk darboğaz demleme. Oyuncu darboğazı <b>görerek</b> öğrenir.</td></tr>
       <tr><td class="num">3</td><td>3. Masa</td><td><span class="tag pad">açılış</span></td><td></td></tr>
-      <tr><td class="num">4</td><td>1. Masa L1 <span style="color:var(--ink-faint)">(koltuk 1 → 2)</span></td><td><span class="tag lvl">seviye</span></td><td>Masa seviyesinin ne yaptığı ilk kez burada görülür.</td></tr>
+      <tr><td class="num">4</td><td>1. Masa L1 <span style="color:var(--ink-faint)">(koltuk 1→2)</span></td><td><span class="tag lvl">seviye</span></td><td>Masa seviyesinin ne yaptığı ilk kez burada görülür.</td></tr>
       <tr><td class="num">5</td><td>Çay Ocağı L2</td><td><span class="tag lvl">seviye</span></td><td></td></tr>
       <tr><td class="num">6</td><td>4. Masa</td><td><span class="tag pad">açılış</span></td><td>1. Alan doldu.</td></tr>
-      <tr><td class="num">7</td><td><b>Garson</b></td><td><span class="tag pad">açılış</span></td><td>Otomasyon 12 dakikadan önce gelmeli; idle hissi buradan başlar.</td></tr>
+      <tr><td class="num">7</td><td><b>Garson</b></td><td><span class="tag pad">açılış</span></td><td>Otomasyon 12 dakikadan önce — idle hissi buradan başlar.</td></tr>
 
       <tr class="band"><td colspan="4">Bölüm 2 · 2. Alan <span class="t">10 – 45 dk</span></td></tr>
-      <tr><td class="num">8</td><td><b>2. Alan</b> — 4 masa birden, kapı ortaya kayar</td><td><span class="tag pad">açılış</span></td><td>Oyunun ilk "vay" anı: mekân bir hamlede iki katına çıkar ve cephe tamamlanır.</td></tr>
-      <tr><td class="num">9</td><td>Çay Ocağı L3</td><td><span class="tag lvl">seviye</span></td><td>Sekiz masa tek ocağı yine zorlar.</td></tr>
-      <tr><td class="num">10</td><td><b>Bulaşıkçı</b></td><td><span class="tag pad">açılış</span></td><td>İkinci darboğaz: temiz bardak. Yeni bir kaynak yönetmeyi öğretir.</td></tr>
-      <tr><td class="num">11</td><td>Garson tepsisi T1</td><td><span class="tag lvl">seviye</span></td><td>Garsonun taşıma gücü, mekân büyüdükçe ayrı bir kol olur.</td></tr>
-      <tr><td class="num">12–15</td><td>Masa seviyeleri (2. alan)</td><td><span class="tag lvl">seviye</span></td><td>Koltuk sayısı ve sabır büyür; oturma kapasitesi ocağı yakalar.</td></tr>
-      <tr><td class="num">16</td><td>2. Garson</td><td><span class="tag pad">açılış</span></td><td></td></tr>
+      <tr><td class="num">8</td><td><b>2. Alan açılır</b> — zemin, duvar, ışık gelir; <b>kapı ortaya kayar</b>, cephe camı tamamlanır. Masa gelmez.</td><td><span class="tag pad">açılış</span></td><td>İlk "vay" anı mekândan gelir (K2).</td></tr>
+      <tr><td class="num">9–12</td><td>2. Alanın 4 masası, tek tek</td><td><span class="tag pad">açılış</span></td><td>Dört ayrı satın alma anı.</td></tr>
+      <tr><td class="num">13</td><td>Çay Ocağı L3</td><td><span class="tag lvl">seviye</span></td><td>Sekiz masa tek ocağı yine zorlar.</td></tr>
+      <tr><td class="num">14</td><td><b>Bulaşıkçı</b></td><td><span class="tag pad">açılış</span></td><td>İkinci darboğaz: temiz bardak. Yeni bir kaynak yönetmeyi öğretir.</td></tr>
+      <tr><td class="num">15</td><td>Garson tepsisi T1</td><td><span class="tag lvl">seviye</span></td><td>Garsonun taşıma gücü ayrı bir kol olur.</td></tr>
+      <tr><td class="num">16–19</td><td>Masa seviyeleri (1. ve 2. alan)</td><td><span class="tag lvl">seviye</span></td><td>Oturma kapasitesi ocağı yakalar.</td></tr>
+      <tr><td class="num">20</td><td>2. Garson</td><td><span class="tag pad">açılış</span></td><td></td></tr>
 
       <tr class="band"><td colspan="4">Bölüm 3 · Arka Yarı + Tezgâh <span class="t">45 dk – 2,5 sa</span></td></tr>
-      <tr><td class="num">17</td><td><b>3. Alan</b> — arka yarının tamamı + servis bloğu + <b>tezgâh</b>; ön duvardaki ocak kalkar</td><td><span class="tag pad">açılış</span></td><td>Mekânın kimliği değişir: derme çatma çay ocağı gider, kafenin yüzü olan tezgâh gelir. Kat 1'in en büyük tek adımı.</td></tr>
-      <tr><td class="num">18+</td><td>Tezgâh L1 … L6 <span style="color:var(--ink-faint)">(yeni, yüksek tavan)</span></td><td><span class="tag lvl">seviye</span></td><td>Ocaktan devraldığı için tavanı daha yüksek; geç oyunun ana para emicisi.</td></tr>
-      <tr><td class="num">—</td><td>Garson tepsi T2/T3, hız · bulaşıkçı leğen</td><td><span class="tag lvl">seviye</span></td><td>Tezgâh hızlandıkça servis darboğaza döner; oyuncu dengeyi kovalar.</td></tr>
-      <tr><td class="num">—</td><td>Sol duvar: <b>televizyon</b></td><td><span class="tag pad">açılış</span></td><td>Oturma eklemez; müşteri oturum süresini ve bahşişi artırır. Kıraathane kimliği.</td></tr>
+      <tr><td class="num">21</td><td><b>3. Alan</b> — arka yarının tamamı + servis bloğu + <b>tezgâh</b>; ön duvardaki çay ocağı kalkar</td><td><span class="tag pad">açılış</span></td><td>Mekânın kimliği değişir: derme çatma ocak gider, kafenin yüzü olan tezgâh gelir. Katın en büyük tek adımı.</td></tr>
+      <tr><td class="num">22+</td><td>Tezgâh L1 … L6</td><td><span class="tag lvl">seviye</span></td><td>Ocaktan devraldığı için tavanı yüksek; geç oyunun ana para emicisi.</td></tr>
+      <tr><td class="num">—</td><td>Garson tepsi T2/T3 · hız · bulaşıkçı leğen</td><td><span class="tag lvl">seviye</span></td><td>Tezgâh hızlandıkça servis darboğaza döner; oyuncu dengeyi kovalar.</td></tr>
+      <tr><td class="num">—</td><td>Sol duvar: <b>televizyon</b></td><td><span class="tag pad">açılış</span></td><td>Oturma eklemez; oturum süresini ve bahşişi artırır. Kıraathane kimliği.</td></tr>
 
       <tr class="band"><td colspan="4">Bölüm 4 · Lavabo <span class="t">2,5 – 4 sa</span></td></tr>
-      <tr><td class="num">—</td><td><b>Lavabo</b> — tahta perde kalkar, oda açılır</td><td><span class="tag pad">açılış</span></td><td>Açılana kadar müşterilerin bir kısmı erken kalkıyordu; kayıp burada kapanır. Tek pad'de görünür bir gelir sıçraması.</td></tr>
+      <tr><td class="num">—</td><td><b>Lavabo L1</b> — tahta perde kalkar, oda açılır</td><td><span class="tag pad">açılış</span></td><td>Açılana kadar müşterilerin ~%20'si oturumun ~%60'ında erken kalkıyordu (~%12 gelir kaybı). Tek pad'de görünür sıçrama.</td></tr>
+      <tr><td class="num">—</td><td>Lavabo L2 → L3</td><td><span class="tag lvl">seviye</span></td><td>L2 kabin sayısı ↑ (kuyruk düşer) · L3 temizlik ↑ (bahşiş çarpanı). Odanın görseli de kademelenir.</td></tr>
 
-      <tr class="band"><td colspan="4">Bölüm 5 · Orta Şerit <span class="t">4 – 11 sa</span></td></tr>
+      <tr class="band"><td colspan="4">Bölüm 5 · Orta Şerit <span class="t">4 – 10 sa</span></td></tr>
       <tr><td class="num">—</td><td><b>Servis İstasyonu</b></td><td><span class="tag pad">açılış</span></td><td>Garsonun yolunu kısaltır — kapasite değil <b>verim</b> yükseltmesi. Yeni bir yükseltme cinsi.</td></tr>
-      <tr><td class="num">—</td><td>1. Banket L1 <span style="color:var(--ink-faint)">(+2 ikili masa)</span></td><td><span class="tag pad">açılış</span></td><td>Yeni oturma tipi: iki kişilik, hızlı devir. Katın eksik olan masa çeşidi.</td></tr>
-      <tr><td class="num">—</td><td>1. Banket L2 → L3 <span style="color:var(--ink-faint)">(her seviye +2 masa)</span></td><td><span class="tag lvl">seviye</span></td><td>Bank içe doğru uzar; var olan masalar hiç yer değiştirmez.</td></tr>
+      <tr><td class="num">—</td><td>1. Banket L1 → L3 <span style="color:var(--ink-faint)">(her seviye +2 ikili masa)</span></td><td><span class="tag pad">açılış</span> + <span class="tag lvl">seviye</span></td><td>Katın eksik oturma tipi: iki kişilik, hızlı devir.</td></tr>
       <tr><td class="num">—</td><td>2. Banket L1 → L3</td><td><span class="tag pad">açılış</span> + <span class="tag lvl">seviye</span></td><td></td></tr>
-      <tr><td class="num">—</td><td>İkili masa seviyeleri</td><td><span class="tag lvl">seviye</span></td><td>12 masa × 4 seviye — v1.0'ın en uzun tek hattı.</td></tr>
+      <tr><td class="num">—</td><td>12 ikili masanın seviyeleri</td><td><span class="tag lvl">seviye</span></td><td>v1.0'ın en uzun tek hattı.</td></tr>
 
-      <tr class="band"><td colspan="4">Sonsuz kuyruk <span class="t">11 sa +</span></td></tr>
-      <tr><td class="num">—</td><td>"Usta" seviyeleri 💎 · kozmetik mağaza · kalan masa L4'leri</td><td><span class="tag lvl">seviye</span></td><td>Prestige v1.0'da yok; hattın sonu bu üçüyle kapanır.</td></tr>
+      <tr class="band"><td colspan="4">Bölüm 6 · Merdiven <span class="t">10 sa +</span></td></tr>
+      <tr><td class="num">SON</td><td><b>Merdiven</b> — v1.0'da <b>görünür ama alınamaz</b>, yıkık durur</td><td><span class="tag pad">açılış</span></td><td>K4 + K5. Kat 2 fragmanı; v1.1'de onarılır.</td></tr>
+
+      <tr class="band"><td colspan="4">Kritik yol dışı · her zaman erişilebilir</td></tr>
+      <tr><td class="num">—</td><td><b>Usta (L4)</b> — 20 masa · tezgâh · garson · bulaşıkçı · 3 karakter statı</td><td><span class="tag ad">reklam</span> / <span class="tag lvl">💎</span></td><td>K6 + K7. Adım listesine girmez; rozet + Hedefler paneli üzerinden.</td></tr>
+      <tr><td class="num">—</td><td>Kozmetik: zemin, duvar, masa örtüsü</td><td><span class="tag lvl">₺</span></td><td>İtibar seviyesiyle açılır, parayla alınır.</td></tr>
     </tbody>
   </table>
   </div>
-
-  <div class="note">
-    <span class="lab">İki kural çakışıyor — önerim</span>
-    <p>Maket kuralı: <b>alan açılınca çalışır hâlde gelir</b> (2. Alan dört masayla birden geliyor). Kodun öğreticisi ise masa masa açılıyor ve ilk alım 40 saniyede oluyor — oyunun en iyi çalışan parçası bu. <b>Önerim: 1. Alan istisna olsun</b> — tek masayla başlar, 2/3/4. masayı oyuncu alır. 2. Alandan itibaren maket kuralı geçerli. Böylece hem öğretici hem "vay" anı korunur.</p>
-  </div>
-
-  <div class="note warn">
-    <span class="lab">Merdiven v1.0'da onarılmıyor</span>
-    <p>Maketin 5. adımı merdiven ve Kat 2'yi açıyor — ama v1.0'da Kat 2 yok. Merdiveni yayına <b>yıkık hâliyle</b> koyalım: uyarı şeridi, eksik basamaklar, moloz. Oyuncu ilk günden üst katın var olduğunu <b>görür</b> ama alamaz. Kat 2 güncellemesinin adı da kendiliğinden gelir: <em>"Merdiven onarıldı."</em></p>
-  </div>
 </section>
 
-<!-- ============================================================ -->
-<section>
-  <h2>Tempo eğrisi</h2>
+<!-- ============================================================ 5 -->
+<section id="s5">
+  <h2><span class="no">5</span>Tempo eğrisi</h2>
   <p class="h2-note">Normal profil (verim 0,55) — telefon oyuncusu ortalaması</p>
-
-  <p>Bugünkü içerik Normal profilde <b>1,62 saatte</b> bitiyor. Tek başına yayınlanacak bir sürüm için bu çok kısa. Hedef <b>10–12 saat</b> aktif oyun + sonsuz kuyruk.</p>
 
   <div class="tw">
   <table>
@@ -399,197 +467,400 @@
       <tr><td>Bulaşıkçı</td><td class="num">—</td><td class="num">45 – 60 dk</td></tr>
       <tr><td>Arka Yarı + Tezgâh</td><td class="num">1,15 sa</td><td class="num">2 – 2,5 sa</td><td rowspan="2" style="color:var(--ink-soft)">2.–3. gün · ~30 dk</td></tr>
       <tr><td>Lavabo</td><td class="num">—</td><td class="num">3,5 – 4 sa</td></tr>
-      <tr><td>Servis İstasyonu</td><td class="num">—</td><td class="num">5 – 5,5 sa</td><td rowspan="2" style="color:var(--ink-soft)">4. günden sonra · günde 15–20 dk + offline</td></tr>
+      <tr><td>Servis İstasyonu</td><td class="num">—</td><td class="num">5 – 5,5 sa</td><td rowspan="3" style="color:var(--ink-soft)">4. günden sonra · günde 15–20 dk + offline</td></tr>
       <tr><td><b>Kat tamam</b> (orta şerit dolu)</td><td class="num">1,62 sa</td><td class="num"><b>10 – 12 sa</b></td></tr>
+      <tr><td>Usta katmanı %100</td><td class="num">—</td><td class="num">açık uçlu</td></tr>
     </tbody>
   </table>
   </div>
 
   <h3>6× uzatma nereden geliyor</h3>
-  <p>Kritik nokta: uzatma <b>"her şey daha pahalı olsun"</b> ile yapılırsa grind hissi doğar ve oyuncu bırakır. Üç kaldıraçtan <b>ağırlık birincide</b> olmalı.</p>
+  <p>Uzatma <b>"her şey daha pahalı olsun"</b> ile yapılırsa grind hissi doğar ve oyuncu bırakır. Ağırlık birinci kaldıraçta olmalı.</p>
 
   <div class="tw">
   <table>
-    <thead><tr><th class="num">Kaldıraç</th><th>Ne</th><th class="num">Katkı</th><th>Risk</th></tr></thead>
+    <thead><tr><th class="num">#</th><th>Kaldıraç</th><th class="num">Katkı</th><th>Risk</th></tr></thead>
     <tbody>
-      <tr><td class="num">1</td><td><b>Daha çok adım.</b> 12 → 20 masa · masa yükseltmesi 48 → 80 alım · iki banket seviye hattı · tezgâh tavanı L6 → L10</td><td class="num">≈ ×2,5</td><td style="color:var(--green)">düşük — oyuncu daha çok <b>şey</b> alır</td></tr>
-      <tr><td class="num">2</td><td><b>Geç bölümde dikleşen eğri.</b> <code>costGrowth</code> 1,5 → 1,7, <b>yalnız Bölüm 3'ten sonra</b>. Erken oyuna dokunulmaz.</td><td class="num">≈ ×1,6</td><td>orta — sim ile doğrulanmalı</td></tr>
+      <tr><td class="num">1</td><td><b>Daha çok adım.</b> 12 → 20 masa · masa yükseltmesi 48 → 80 alım · iki banket seviye hattı · lavabo 3 seviye · tezgâh tavanı L6 → L10</td><td class="num">≈ ×2,5</td><td style="color:var(--green)">düşük — oyuncu daha çok <b>şey</b> alır</td></tr>
+      <tr><td class="num">2</td><td><b>Geç bölümde dikleşen eğri.</b> <code>costGrowth</code> 1,5 → 1,7, <b>yalnız Bölüm 3'ten sonra</b>. Erken oyuna dokunulmaz.</td><td class="num">≈ ×1,6</td><td>orta — sim ile doğrulanır</td></tr>
       <tr><td class="num">3</td><td><b>Talep tavanı.</b> Müşteri akışı bugün kapasitenin %15 önünde; geç bölümde %8'e inince gelir düzleşir.</td><td class="num">≈ ×1,5</td><td>orta — mekân "boş" hissettirmemeli</td></tr>
     </tbody>
   </table>
   </div>
 
-  <p>Üçü birlikte ≈ ×6. Offline kuralı <b>aynen kalır</b> (1 saat tavan × 0,5 oran, üstüne sıradaki pad'in %115'i) — offline bir oturumu atlatmaya yeter, bir bölümü bitirmeye yetmez.</p>
+  <p>Offline kuralı <b>aynen kalır</b>: 1 saat tavan × 0,5 oran, üstüne sıradaki pad'in %115'i. Bir oturumu atlatmaya yeter, bir bölümü bitirmeye yetmez.</p>
 
   <div class="note warn">
-    <span class="lab">Bu sayılar henüz ölçülmedi</span>
-    <p>Yukarıdaki hedefler <b>tasarım hedefi</b>, simülatör çıktısı değil. Simülatör bugün manuel tepsiyi, bardak döngüsünü, sabır kaybını ve garsonu modellemiyor — yani gerçek oyundan iyimser. Faz C'de önce simülatör gerçeğe yaklaştırılacak, sonra config sayıları bu tabloyu tutturana kadar oturtulacak. <b>Hiçbir denge sayısı onayın olmadan değişmez.</b></p>
+    <span class="lab">Bu sayılar tasarım hedefi, ölçüm değil</span>
+    <p>Simülatör bugün manuel tepsiyi, bardak döngüsünü, sabır kaybını ve garsonu modellemiyor — gerçek oyundan iyimser. Ayrıca yürüme hızını <code>walkTime=2</code> sabitiyle alıyor, oyun ise <code>NPC_SPEED=2.6</code> ile mesafeden hesaplıyor. <b>Faz C'de önce simülatör gerçeğe yaklaştırılır, sonra config bu tabloyu tutturana kadar oturtulur ve tempo iddiaları teste yazılır.</b> Hiçbir denge sayısı onay olmadan değişmez.</p>
   </div>
 </section>
 
-<!-- ============================================================ -->
-<section>
-  <h2>Seviye, görev ve meta katman</h2>
-  <p class="h2-note">"Oyunlarda seviye görev falan var, onları nasıl yaparız"</p>
+<!-- ============================================================ 6 -->
+<section id="s6">
+  <h2><span class="no">6</span>Görev · Hedef · İtibar · Elmas</h2>
+  <p class="h2-note">Meta katman — bugün ya boş ya hiç yok</p>
 
-  <h3>1 · Görev hattı — omurga (var, yeniden yapılandırılacak)</h3>
-  <p>36 görevlik hat zaten çalışıyor ve ekranda tek aktif görev gösteriyor. Tek yapısal sorun: görevin kimliği <b>sıra numarası</b>. Bu yüzden hatta her ekleme veya sıra değişikliği, kayıt dosyasına elle bir kimlik eşleme listesi yazdırıyor — bugüne kadar beş tane birikmiş.</p>
-  <p><b>Değişiklik:</b> <code>questIndex: number</code> → <code>questId: string</code> + tamamlananlar listesi. Tek seferlik bir migrasyon; karşılığında görev eklemek kalıcı olarak ucuzluyor. Bu düzeltilmeden meta katmana başlamak, borcu ikiye katlar.</p>
+  <h3>Görev hattı — omurga</h3>
+  <p>36 görevlik hat çalışıyor ve tek aktif görev gösteriyor. Tek yapısal sorun: görevin kimliği <b>sıra numarası</b>. Bu yüzden hatta her ekleme veya sıra değişikliği kayıt dosyasına elle bir kimlik eşleme listesi yazdırıyor — bugüne kadar <b>beş tane</b> birikmiş.</p>
+  <p><b>Değişiklik:</b> <code>questIndex: number</code> → <code>questId: string</code> + tamamlananlar listesi. Tek seferlik migrasyon; karşılığında görev eklemek kalıcı olarak ucuzluyor. Bu düzeltilmeden meta katmana başlamak borcu ikiye katlar.</p>
 
-  <h3>2 · Oyuncu seviyesi — bugün boş bir sayı</h3>
-  <p>XP kazanılıyor, HUD'da görünüyor, "Seviye 7!" diye kutlanıyor — ve <b>hiçbir şeye yaramıyor</b>. İki dürüst seçenek var:</p>
-  <ul>
-    <li><b>Kaldır.</b> Ekran sadeleşir, yalan biter.</li>
-    <li><b>Anlam ver <span style="color:var(--green)">(önerim)</span>:</b> seviye = <b>İtibar</b>. Her seviye müşteri akışını <b>+%2</b>, bahşişi <b>+%1</b> artırır ve mağazada yeni kozmetikleri açar (parayla alınır, seviyeyle <em>görünür</em> olur).</li>
-  </ul>
-  <p>İtibarı öneriyorum çünkü talep zaten kapasiteyi takip ediyor; seviye onu hızlandırınca "büyüyorum" hissi somut bir sayıya bağlanır — ama <b>ilerlemeyi kilitlemez</b>. Oyuncu seviye bekleyerek tıkanmaz.</p>
-
-  <h3>3 · Günlük görevler — yok, gelecek</h3>
-  <p>Günde 3 görev, havuzdan döner: <span class="mono">N çay servis et · N para topla · N bulaşık yıka · 1 yükseltme al</span>. Ödül: ₺ + 💎. Ertesi gün yenilenir, biriktirilemez.</p>
-  <p>Asıl işlevi tempo değil: <b>elmasın ilk kaynağı bu.</b></p>
-
-  <h3>4 · Başarımlar — yok, gelecek</h3>
-  <p>~30 tek seferlik hedef, ödülü 💎. <span class="mono">İlk 100 çay · Tezgâh L6 · Beş masa L4 · Kat tamam · Hiç müşteri kaçırmadan 10 dakika.</span> Görev hattı bittikten sonra da devam eden tek yapı.</p>
-
-  <h3>5 · Elmas ekonomisi — bugün tamamen ölü</h3>
+  <h3>Hedefler — koleksiyon sistemi</h3>
+  <p>Görev hattı bittikten sonra da devam eden tek yapı. Beş kategori:</p>
   <div class="tw">
   <table>
-    <thead><tr><th>Kaynak</th><th>Harcama</th></tr></thead>
+    <thead><tr><th>Kategori</th><th>Örnek</th><th>Ödül</th></tr></thead>
     <tbody>
-      <tr><td>Günlük görevler</td><td><b>"Usta" seviyeleri</b> — config'te <em>zaten tanımlı</em>, sadece kelepçe açılacak</td></tr>
-      <tr><td>Başarımlar</td><td>Anında bitir (bekleme atlatma)</td></tr>
-      <tr><td>Ödüllü video <span style="color:var(--ink-faint)">(Faz F)</span></td><td>Özel kozmetikler</td></tr>
+      <tr><td class="k">Servis</td><td>100 / 1.000 / 10.000 çay servis et</td><td>💎 + ₺</td></tr>
+      <tr><td class="k">Mekân</td><td>2. Alanı aç · Tezgâhı kur · Katı tamamla</td><td>💎</td></tr>
+      <tr><td class="k">Usta</td><td><b>Usta masalar 5 / 10 / 20</b> · Tezgâhı Usta yap</td><td>💎</td></tr>
+      <tr><td class="k">Kazanç</td><td>Toplam 10.000 ₺ · Tek oturumda 5.000 ₺</td><td>₺</td></tr>
+      <tr><td class="k">Alışkanlık</td><td>3 gün üst üste gir · 10 günlük görev tamamla</td><td>💎</td></tr>
     </tbody>
   </table>
   </div>
-  <p>Usta seviyeleri işin şık tarafı: <b>zaten yazılmışlar</b>, sadece seviye kelepçesi önlerini kesiyor. Elmasa kaynak verdiğimiz an ulaşılabilir bir hedefe dönüşüyorlar. Gerçek parayla loot-box yok — proje kuralı.</p>
 
-  <h3>6 · Prestige — v1.0'da yok</h3>
-  <p>Prestige, sıfırlamaya değecek kadar içerik biriktikten sonra anlamlı. Kat 1 tek başınayken oyuncuya "her şeyi sıfırla" demek erken. <b>Kat 3'ten sonra gelir.</b> v1.0'ın sonsuz kuyruğu usta seviyeleri + kozmetik + kalan masa seviyeleri.</p>
+  <h3>Ortak ödül ekranı — dört yerde aynı bileşen</h3>
+  <div class="mock">┌──────────────────────────────────┐
+│  <b>Hedef tamam</b>                     │
+│  Usta masalar · 10/20            │
+│                                  │
+│            <b>10 💎</b>                  │
+│                                  │
+│  [ Al ]    [ ▶ İzle, 2× al ]     │
+└──────────────────────────────────┘</div>
+  <p>Kullanıldığı yerler: <b>hedef ödülü · seviye atlama ödülü · görev ödülü · offline kazanç</b>. Tek tasarım, tek kod, her yerde aynı his — ve dört ayrı ödüllü reklam yeri.</p>
+
+  <h3>İtibar (eski XP)</h3>
+  <p>Bugün XP kazanılıyor, HUD'da görünüyor, kutlanıyor — ve hiçbir şeye yaramıyor. Anlam veriyoruz:</p>
+  <ul>
+    <li>Her seviye <b>+%2 müşteri akışı</b>, <b>+%1 bahşiş</b></li>
+    <li>Mağazada yeni kozmetikleri <b>açar</b> (parayla alınır, seviyeyle görünür olur)</li>
+    <li>Her seviye atlamada <b>ödül modali</b> → ortak ekran, "2× al" seçeneğiyle</li>
+  </ul>
+  <p>İlerlemeyi <b>kilitlemez</b>, hızlandırır. Oyuncu seviye bekleyerek tıkanmaz.</p>
+
+  <h3>Elmas ekonomisi</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>Kaynak</th><th class="num">Miktar</th><th>Harcama</th><th class="num">Fiyat</th></tr></thead>
+    <tbody>
+      <tr><td>Günlük görevler (3/gün)</td><td class="num">≈ 6 💎 / gün</td><td><b>Usta seviyesi (L4)</b></td><td class="num">15 💎 <span style="color:var(--ink-faint)">veya 1 reklam</span></td></tr>
+      <tr><td>Hedefler (~30 adet)</td><td class="num">≈ 250 💎 toplam</td><td>Bekleme atlatma</td><td class="num">değişken</td></tr>
+      <tr><td>Ödüllü reklam</td><td class="num">değişken</td><td>Özel kozmetikler</td><td class="num">30–60 💎</td></tr>
+      <tr><td>"Reklamları Kaldır" sahibi</td><td class="num">+10 💎 / gün</td><td>—</td><td class="num">—</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>Sonuç: hiç reklam izlemeyen ~2,5 günde bir Usta alır · Reklamları Kaldır alan ~1,5 günde · reklam izleyen günde 3–5. <b>Reklam kısayol, kapı değil.</b></p>
+  <p>Usta seviyeleri işin şık tarafı: <b>zaten yazılmışlar</b> (<code>masterLevel</code>, <code>masterDiamondCost</code>), yalnız seviye kelepçesi önlerini kesiyor. Elmasa kaynak verdiğimiz an ulaşılabilir hedefe dönüşüyorlar.</p>
 </section>
 
-<!-- ============================================================ -->
-<section>
-  <h2>Yayın planı</h2>
-  <p class="h2-note">Kat 1 çıkar, Kat 2 ve 3 güncelleme olarak gelir</p>
+<!-- ============================================================ 7 -->
+<section id="s7">
+  <h2><span class="no">7</span>Reklam ve para</h2>
+  <p class="h2-note">AdMob · App Store · etik sınırlar</p>
 
+  <h3>Ödüllü reklam — hepsi opt-in</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>Yer</th><th>Ödül</th><th>Sıklık</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Usta seviyesi (L4)</td><td>1 obje Usta olur</td><td>Oyuncu istedikçe — ana ödüllü hacim (~26 hedef)</td></tr>
+      <tr><td class="k">Seviye atlama</td><td>Ödül ×2</td><td>Her seviye atlamada</td></tr>
+      <tr><td class="k">Offline kazanç</td><td>×2</td><td>Her oturum başında bir</td></tr>
+      <tr><td class="k">Çay Molası (pad)</td><td>~10 dakikalık gelir</td><td>~15 dk arayla, aynı anda 1 tane</td></tr>
+      <tr><td class="k">Günlük görev</td><td>Görevi yenile</td><td>Günde 1</td></tr>
+      <tr><td class="k">Hızlı servis</td><td>60 sn ×2 gelir</td><td>Oturumda 2 — yalnız oyuncu aktifken</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h4>Reklam hazır değilse ne olur</h4>
+  <p>Arka planda ön yükleme yapılır ve hazırlık durumu <b>yalnız butonu</b> sürer — <b>pad'i asla</b>:</p>
+  <div class="tw">
+  <table>
+    <thead><tr><th>Durum</th><th>Pad</th><th>Buton</th></tr></thead>
+    <tbody>
+      <tr><td>Reklam hazır</td><td>görünür</td><td><b>"İzle ve Usta yap"</b> — birincil</td></tr>
+      <tr><td>Reklam hazır değil</td><td>görünür</td><td>pasif: <em>"Reklam hazırlanıyor…"</em> (kendini yeniler)</td></tr>
+      <tr><td>Her durumda</td><td>görünür</td><td><b>"15 💎 ile aç"</b> — hep açık</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Interstitial — istenmemiş reklam</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>Nerede</th><th>Kural</th></tr></thead>
+    <tbody>
+      <tr><td>Uygulamaya dönüş — offline ekranı kapanınca</td><td rowspan="4">Arada <b>en az 3 dakika</b> · <b>ilk 5 dakika hiç yok</b> · oturum tavanı yok</td></tr>
+      <tr><td>Alan açılışından sonra, kutlama bitince</td></tr>
+      <tr><td>Seviye atlama modalı kapanınca</td></tr>
+      <tr><td>Her 3 görev tamamlamada bir</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><b>Asla:</b> eylem ortasında · tepsi elindeyken · modal açıkken · adım geçişi sırasında.<br>
+  <b>Banner yok</b> — 3B oyunda dikey alan yiyor, HUD zaten dolu.</p>
+
+  <h3>IAP</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>Ürün</th><th>Ne verir</th><th>Neden bu şekilde</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Reklamları Kaldır</td><td>Interstitial tamamen gider <b>+ kalıcı günde 10 💎</b></td><td>IAP L4'ü <b>parayla satmaz</b> — elmas geliri satar. Aynı yere varır, tasarım çelişmez, oyuncu tek reklam izlemez. Ödüllü videolar erişilebilir kalır (isterse izler).</td></tr>
+      <tr><td class="k">Elmas paketleri</td><td>💎</td><td>Doğrudan, şeffaf. <b>Gerçek parayla loot-box yok.</b></td></tr>
+      <tr><td class="k">Kozmetik paketleri</td><td>Zemin/duvar/örtü setleri</td><td>Oynanışa etkisi yok.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note">
+    <span class="lab">Neden L4 kritik yol dışı olmak zorunda</span>
+    <p>L4 kritik yolda olsaydı: reklam envanteri kuruyan, uçakta olan ya da reklamları kaldırmış bir oyuncu <b>oyunu bitiremezdi</b> — üstelik üçüncü parti bir reklam ağı yüzünden. Kritik yol dışındayken aynı oyuncu oyunu sonuna kadar oynar, sadece Usta rozetlerini toplamamış olur.</p>
+  </div>
+</section>
+
+<!-- ============================================================ 8 -->
+<section id="s8">
+  <h2><span class="no">8</span>Görsel plan</h2>
+  <p class="h2-note">K11 + K12 · "Erken erişim havası" nasıl kırılır</p>
+
+  <div class="note warn">
+    <span class="lab">Doku yolu kapalı — zaten denendi ve reddedildi</span>
+    <p><code>d08c445</code> commit'i canvas-tile parke zemini getirdi, <code>d29b7d9</code> geri aldı. Neden başarısız oldu: 128px doku 38×30 zemine yüksek <code>repeat</code> ile gerildi → moiré · derz çizgileri sert ve yüksek kontrastlıydı → mipmap'te gri bulanık şerit · tahta başına renk varyasyonu yoktu → tekrar deseni gözle sayılabiliyordu. Kamera zemine yakın-tepeden bakıyor: hatanın en görünür açısı.</p>
+    <p><b>Asıl teşhis:</b> <code>dama</code> temalı salon <code>parke</code> temalıdan daha bitmiş duruyor — <b>ve ikisi de düz renk</b>. Fark dokuda değil, <b>ölçek referansında</b>.</p>
+  </div>
+
+  <div class="tw">
+  <table>
+    <thead><tr><th class="num">#</th><th>İş</th><th class="num">Süre</th><th>Kazanç</th></tr></thead>
+    <tbody>
+      <tr><td class="num">G0</td><td><b>Işık.</b> <code>ambientLight 0.6</code> → <code>hemisphereLight</code> (sıcak gök <span class="mono">#ffe9c8</span> / soğuk yer <span class="mono">#6b5a4a</span>, 0.35) · directional sıcaklaştır (<span class="mono">#fff2d8</span>, 1.2) · <code>fog</code> ekle · ACESFilmic tone mapping · değer aralığını aç</td><td class="num">30 dk</td><td><b>Etki/çaba oranı en yüksek adım.</b> ~15 satır, 0 draw call, 0 byte asset. "Her yer eşit parlak" sorununu tek başına çözer</td></tr>
+      <tr><td class="num">G1</td><td><b>Temas gölgesi.</b> Masa/tabure/müşteri/tezgâh altına instanced blob shadow — 64px radial-gradient CanvasTexture, <code>transparent</code>, <code>depthWrite:false</code>, y=0.005</td><td class="num">yarım gün</td><td>"Yüzme" hissi biter. Tek draw call. <b>En görünür eksik bu</b></td></tr>
+      <tr><td class="num">G2</td><td><b>Zemine ölçek referansı — geometriyle.</b> <code>CheckerTiles</code>'ı genelleştir: <code>plank</code> (0,55 × 2,2 ince quad, satır başı yarım ofset, <b>her tahtaya ±%4 renk sapması</b>) ve <code>tile</code> (0,7 kare). Derz <b>çizgi değil boşluk</b> — altındaki koyu taban görünür</td><td class="num">1 gün</td><td><b>Ana çözüm.</b> Alan başına ~90 plank = 1 draw call. Moiré yapısal olarak imkânsız. Kozmetik mağazasına doğrudan bağlanır</td></tr>
+      <tr><td class="num">G3</td><td><b>Duvar bitimi.</b> Süpürgelik (0,08 · <span class="mono">#5d4037</span>) + lambri üstü çıta (0,04) + kartonpiyer şeridi — ince box'lar, instanced</td><td class="num">yarım gün</td><td>Zemin↔duvar geçişi "kutuya renk sürülmüş" olmaktan çıkar</td></tr>
+      <tr><td class="num">G4</td><td><b>KayKit Restaurant Bits.</b> CC0, atıfsız, GitHub'da <code>.gltf</code>. Öncelikli 12: <code>kitchencounter_straight_A</code> + köşeler · <code>kitchencabinet</code> · <code>stove_multi</code> · <code>extractorhood</code> · <code>fridge_A</code> · <code>dishrack_plates</code> · <code>shelf_papertowel</code> · <code>table_round_A</code> · <code>menu</code> · <code>wall_orderwindow</code></td><td class="num">1 gün</td><td>Maketteki servis bloğunun neredeyse tamamı hazır. Aynı sanatçı (Furniture Bits zaten projede) → <b>stil kilidi korunur</b></td></tr>
+      <tr><td class="num">G5</td><td><b>KayKit City Builder Bits.</b> <code>building_A…H</code> · yol parçaları · <code>streetlight</code> · <code>bench</code> · <b><code>car_taxi</code></b></td><td class="num">yarım gün</td><td>Kıraathane önü Türk sokağı kimliği kazanır. Toplam atlas 3'te kalır</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p><b>G0–G3 model geçişini beklemez</b> — birbirinden bağımsız, hemen yapılabilir ve tek tek test edilebilir.</p>
+
+  <h3>Türk objeleri — KayKit'te olmayan beş şey</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>Obje</th><th>Yol</th><th>Not</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Semaver</td><td><b>Makette zaten var</b></td><td><code>samovar()</code> — silindir + koni + küre + kutu. Oyuna taşımak yeterli. Sıfır maliyet, sıfır lisans riski</td></tr>
+      <tr><td class="k">İnce belli çay bardağı</td><td>Blender, elle</td><td>~100 üçgen, 30 dk. AI'ın en zayıf olduğu yer: ince kenar ya kaynaşıyor ya deliniyor</td></tr>
+      <tr><td class="k">Cezve</td><td>Blender, elle</td><td>~150 üçgen</td></tr>
+      <tr><td class="k">Yuvarlak çay tepsisi</td><td>Blender, elle</td><td>~60 üçgen, 10 dk</td></tr>
+      <tr><td class="k">Okey ıstakası + taş</td><td>Blender, elle</td><td>Board Game Bits'in domino'suyla kısmi; elle daha kesin. <b>Kat 2 işi</b></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note warn">
+    <span class="lab">AI 3B kullanılacaksa — lisans tuzağı</span>
+    <p><b>Meshy ücretsiz plan = CC BY 4.0, atıf zorunlu.</b> Sonradan Pro'ya geçmek önceden üretilenleri geriye dönük düzeltmez. <b>Tripo ücretsiz plan = ticari kullanım yok.</b><br>
+    Kullanılacaksa: Meshy Pro (20 $/ay) veya Tripo Professional (19,90 $/ay — <code>smart_low_poly</code> + <code>quad</code> + 800 face sınırı, bu proje için daha uygun çıktı).<br>
+    <b>Kaçınılacak:</b> Hunyuan3D tabanlı hiçbir araç — lisansı çıktının <b>AB ve İngiltere'de kullanılmasını açıkça yasaklıyor</b>; Spline AI varsayılan olarak onu kullanıyor.<br>
+    <b>Mağaza görsellerini AI ile üretme</b> — Play'de beyan zorunlu ve listelemede "AI" etiketi çıkıyor.<br>
+    <code>public/assets/README.md</code> manifestine <b>AI sütunu</b> eklenecek: araç + plan + tarih + insan müdahalesi düzeyi.</p>
+  </div>
+
+  <h3>Masa yükseltme animasyonu</h3>
+  <p>Mevcut mekânsal dwell yükseltmesi (altta dolan bar, obje yerinde büyür) <b>korunur</b> — proje kuralına uygun ve çalışıyor. Üstüne tek şey eklenir: yükseltme tamamlandığında <b>kısa bir "oturma" sıçraması</b> (0,25 sn ölçek yay eğrisi) + toz bulutu parçacığı. Ucuz, hissi belirgin artırır.</p>
+</section>
+
+<!-- ============================================================ 9 -->
+<section id="s9">
+  <h2><span class="no">9</span>Arayüz şartnamesi</h2>
+  <p class="h2-note">Codex'e verilecek işin girdisi</p>
+
+  <p>Bugünkü hâli (Ayarlar, Karakter paneli, boş Posta) prototip. Yeni sistemler geliyor — Hedefler, Mağaza, Günlük Görevler — panel panel eklenirse dağılır. Önce bilgi mimarisi, sonra piksel.</p>
+
+  <div class="mock"><b>ÜST ŞERİT</b>   para · 💎 · İtibar çubuğu · ayar
+
+<b>SAHNE</b>       (3B) — üstünde YALNIZ aktif adımın işareti
+                        + ekran kenarı oku (işaret dışarıdaysa)
+
+<b>ALT BANT</b>    AKTİF ADIM — tek satır, Tek Odak'ın metin kanalı
+
+<b>ALT NAV</b>     Görevler · Hedefler · Mağaza · Karakter · Posta</div>
+
+  <div class="tw">
+  <table>
+    <thead><tr><th>Ekran</th><th>İçerik</th><th>Durumlar</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Görevler</td><td>Aktif görev + tamamlananlar listesi</td><td>aktif · tamamlandı · hat bitti</td></tr>
+      <tr><td class="k">Hedefler</td><td>5 kategori, ilerleme sayaçları, <b>Usta 7/20</b></td><td>kilitli · ilerliyor · toplanabilir · toplandı</td></tr>
+      <tr><td class="k">Mağaza</td><td>Zemin · Duvar · Masa örtüsü · Elmas · Reklamları Kaldır</td><td>kilitli (İtibar) · alınabilir · sahip · kullanımda</td></tr>
+      <tr><td class="k">Karakter</td><td>Tepsi · Mıknatıs · Hız — kademe kartları</td><td>alınabilir · pahalı · maks</td></tr>
+      <tr><td class="k">Posta</td><td>Ödül kutusu, duyuru</td><td>boş · okunmamış · toplanabilir <span style="color:var(--bordo)">(bugün yer tutucu — ya doldurulacak ya kaldırılacak)</span></td></tr>
+      <tr><td class="k">Ortak ödül modali</td><td>Başlık · ödül · [Al] · [▶ İzle, 2× al]</td><td>reklam hazır · hazır değil · izlendi</td></tr>
+      <tr><td class="k">Offline ekranı</td><td>"Sen yokken" · kazanç · [Al] · [▶ ×2]</td><td>—</td></tr>
+      <tr><td class="k">Ayarlar</td><td>Ses · müzik · titreşim · bildirim · dil · gizlilik · kayıt</td><td>Bugünkü 3 anahtar hiçbir şeye bağlı değil — <b>ya bağlanacak ya kaldırılacak</b></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note warn">
+    <span class="lab">Zorunlu kural</span>
+    <p><b>Emoji ve CSS ikon yok.</b> Gerçek ikon asset'i ve gerçek oyun fontu. Emoji + <code>system-ui</code> kombinasyonu oyunu anında "yapay zekâ çıktısı" gösteriyor — "erken erişim havası"nın yarısı bu.</p>
+  </div>
+</section>
+
+<!-- ============================================================ 10 -->
+<section id="s10">
+  <h2><span class="no">10</span>App Store yolu</h2>
+  <p class="h2-note">K13 · İlk yayın iOS</p>
+
+  <div class="note warn">
+    <span class="lab">Önce çözülmesi gereken engel</span>
+    <p><b>iOS derlemesi için macOS ve Xcode şart.</b> Geliştirme Windows 11'de yapılıyor. Capacitor projesi Windows'ta hazırlanır ama <b>imzalama ve App Store'a yükleme Mac ister.</b> Üç yol: (a) Mac mini almak · (b) bulut Mac kiralamak (MacinCloud, Scaleway) · (c) <b>CI üzerinden derlemek</b> — GitHub Actions <code>macos-latest</code> runner, Codemagic veya Bitrise. <b>(c) en ucuzu ve tekrarlanabilir olanı; öneri bu.</b> Bu karar verilmeden v1.0 tarihi konulamaz.</p>
+  </div>
+
+  <div class="tw">
+  <table>
+    <thead><tr><th>Kalem</th><th>Ne gerekiyor</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Hesap</td><td>Apple Developer Program — 99 $/yıl</td></tr>
+      <tr><td class="k">Derleme</td><td>Capacitor iOS + Xcode. Windows'tan CI ile (yukarı bak)</td></tr>
+      <tr><td class="k">Reklam</td><td>AdMob iOS uygulaması + <code>GADApplicationIdentifier</code> (Info.plist) + <b>SKAdNetwork kimlikleri</b></td></tr>
+      <tr><td class="k">ATT</td><td>App Tracking Transparency izni. İzin yoksa kişiselleştirilmemiş reklam → düşük eCPM. <b>İzin ekranı doğal bir anda gösterilmeli</b> (ilk açılışta değil, ilk ödüllü reklamdan hemen önce)</td></tr>
+      <tr><td class="k">Gizlilik</td><td><code>PrivacyInfo.xcprivacy</code> manifesti + App Store Connect gizlilik etiketleri (AdMob veri toplama beyanı dahil)</td></tr>
+      <tr><td class="k">IAP</td><td>StoreKit 2, RevenueCat üzerinden. Ürünler: Reklamları Kaldır · elmas paketleri · kozmetik paketleri</td></tr>
+      <tr><td class="k">Yaş derecelendirmesi</td><td>Yeni Apple anketi. <b>Kumar yok</b> (okey/tavla bahissiz), <b>nargile kaldırıldı</b> (D-032), alkol yok → düşük derecelendirme hedefi. Anketteki "çalışma anında AI ile içerik üretiyor mu?" sorusunun cevabı <b>hayır</b></td></tr>
+      <tr><td class="k">Çocuk kategorisi</td><td><b>Girilmeyecek.</b> Girilirse ATT ve davranışsal reklam tamamen yasak → gelir modeli çöker</td></tr>
+      <tr><td class="k">Mağaza materyali</td><td>Ekran görüntüleri (AI ile üretilmeyecek), simge, tanıtım metni, gizlilik politikası URL'si</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Sürüm takvimi</h3>
   <div class="tw">
   <table>
     <thead><tr><th>Sürüm</th><th>İçerik</th><th class="num">Kayıt</th><th>Güncelleme kancası</th></tr></thead>
     <tbody>
-      <tr>
-        <td><b>v1.0 — Kat 1</b></td>
-        <td>Beş adım (merdiven yıkık kalır) · görev hattı · günlük görev · başarım · elmas ekonomisi · kozmetik mağaza · ses · onboarding · Capacitor paketi · reklam ve IAP</td>
-        <td class="num">v31</td>
-        <td>—</td>
-      </tr>
-      <tr>
-        <td><b>v1.1 — Kat 2</b></td>
-        <td>Oyun Salonu: okey · tavla · oturma salonu · katın kendi servis köşesi. Dört adım.</td>
-        <td class="num">v32</td>
-        <td><em>"Merdiven onarıldı"</em></td>
-      </tr>
-      <tr>
-        <td><b>v1.2 — Kat 3</b></td>
-        <td>Teras: kapalı teras · açık teras · korkuluk kenarı · ön teras. Dört adım + mevsim çarpanı.</td>
-        <td class="num">v33</td>
-        <td><em>"Çatı açıldı"</em></td>
-      </tr>
-      <tr>
-        <td><b>v1.3</b></td>
-        <td>Prestige — üç kat birikince sıfırlamak anlamlı hâle gelir.</td>
-        <td class="num">v34</td>
-        <td><em>"Yeni şube"</em></td>
-      </tr>
+      <tr><td class="k">v1.0 — Kat 1</td><td>Altı adım (merdiven yıkık) · Tek Odak · görev hattı · Hedefler · günlük görev · İtibar · elmas ekonomisi · Usta katmanı · kozmetik mağaza · ses · onboarding · AdMob · IAP</td><td class="num">v31</td><td>—</td></tr>
+      <tr><td class="k">v1.1 — Kat 2</td><td>Oyun Salonu: okey · tavla · oturma salonu · katın kendi servis köşesi. Dört adım</td><td class="num">v32</td><td><em>"Merdiven onarıldı"</em></td></tr>
+      <tr><td class="k">v1.2 — Kat 3</td><td>Teras: kapalı · açık · korkuluk kenarı · ön teras. Dört adım + mevsim çarpanı</td><td class="num">v33</td><td><em>"Çatı açıldı"</em></td></tr>
+      <tr><td class="k">v1.3</td><td>Prestige</td><td class="num">v34</td><td><em>"Yeni şube"</em></td></tr>
     </tbody>
   </table>
   </div>
-
-  <p>Kural: <b>her güncelleme eski kaydı taşır.</b> Kat 2 geldiğinde Kat 1 ilerlemesi olduğu gibi durur; oyuncu hiçbir şey kaybetmez. Migrasyon zinciri bugün v30'a kadar kesintisiz ve testli — bu alışkanlık korunacak.</p>
+  <p><b>Kural: her güncelleme eski kaydı taşır.</b> Kat 2 geldiğinde Kat 1 ilerlemesi olduğu gibi durur. Migrasyon zinciri bugün v30'a kadar kesintisiz ve testli — bu alışkanlık korunur.</p>
 </section>
 
-<!-- ============================================================ -->
-<section>
-  <h2>İş sırası</h2>
-  <p class="h2-note">Neden bu sırayla — her faz bir sonrakinin önünü açıyor</p>
+<!-- ============================================================ 11 -->
+<section id="s11">
+  <h2><span class="no">11</span>Faz planı</h2>
+  <p class="h2-note">Her faz bir sonrakinin önünü açar</p>
 
   <div class="tw">
   <table>
-    <thead><tr><th class="num">Faz</th><th>İş</th><th>Neden bu sırada</th></tr></thead>
+    <thead><tr><th class="num">Faz</th><th>İş</th><th>Neden bu sırada</th><th>Bitti sayılır</th></tr></thead>
     <tbody>
-      <tr><td class="num"><b>A</b></td><td><b>Temizlik.</b> Ölü alanları kaldır (<code>serviceSpeedMult</code>, <code>Requires.minTables</code>, prestige config, Posta yer tutucusu, ulaşılamaz usta dalı). 800 satırlık <code>tick()</code>'i sistemlere böl.</td><td>Meta katman ölü kodun üstüne yamalanmasın. Bugün her ekleme aynı kapanışa yeni bir blok demek — regresyon riski birikiyor.</td></tr>
-      <tr><td class="num"><b>B</b></td><td><b>Model geçişi.</b> ALAN / SERVİS / MASA / ODA modeli · yerleşimi maket ölçeğine taşı · kayıt v31 (masa listesi + görev kimlikleri).</td><td>Zincir de denge de meta katman da bunun üstüne oturuyor. Önce yapılmazsa hepsi iki kez yazılır.</td></tr>
-      <tr><td class="num"><b>C</b></td><td><b>Zincir ve denge.</b> Yeni pad/seviye zinciri · simülatöre tepsi, bardak, sabır ve garson eklenmesi · tempo tablosunun tutturulması · <b>tempo iddialarının teste yazılması</b>.</td><td>Sayılar ancak model oturunca anlam taşır. Bugün denge kararları konsol çıktısını gözle okumaya dayanıyor; bu yayına çıkacak bir oyun için yeterli değil.</td></tr>
-      <tr><td class="num"><b>D</b></td><td><b>Meta katman.</b> Görev kimlikleri · İtibar · günlük görevler · başarımlar · elmas kaynak ve harcamaları.</td><td>Ekonominin temposu oturmadan günlük görev ödülü ayarlanamaz.</td></tr>
-      <tr><td class="num"><b>E</b></td><td><b>Cila.</b> Ses · hareketli onboarding · HUD yeniden tasarımı · kozmetik mağaza.</td><td>Oynanış kesinleşmeden arayüz tasarlamak iki kez çizmek demek.</td></tr>
-      <tr><td class="num"><b>F</b></td><td><b>Paketleme.</b> Capacitor · reklam (çocuk-güvenli mod) · IAP · mağaza materyali · yaş derecelendirmesi.</td><td>En son, çünkü hepsi bitmiş oyunu paketliyor.</td></tr>
+      <tr><td class="num"><b>G</b></td><td><b>Görsel taban.</b> G0 ışık · G1 temas gölgesi · G2 plank/karo geometrisi · G3 duvar bitimi</td><td><b>Hiçbir şeye bağlı değil, hemen yapılabilir.</b> Ayrıca her fazda bakacağımız sahnenin görünümünü baştan düzeltir</td><td>Ekran görüntüsü onayı + FPS ölçümü</td></tr>
+      <tr><td class="num"><b>A</b></td><td><b>Temizlik.</b> Ölü alanları kaldır (<code>serviceSpeedMult</code>, <code>Requires.minTables</code>, prestige config, Posta yer tutucusu, ulaşılamaz usta dalı). 800 satırlık <code>tick()</code>'i sistemlere böl. <b>Testleri koordinat bağından kopar</b></td><td>Meta katman ölü kodun üstüne yamalanmasın; ve Faz B'de "186 test geçiyor" güvencesi anlamını korusun</td><td>Test sayısı düşmeden yeşil; <code>tick()</code> &lt; 150 satır</td></tr>
+      <tr><td class="num"><b>B</b></td><td><b>Model geçişi.</b> ALAN / SERVİS / MASA / ODA · yerleşimi maket ölçeğine taşı · kayıt v31 (masa listesi + görev kimlikleri)</td><td>Zincir, denge ve meta katman bunun üstüne oturuyor. Önce yapılmazsa hepsi iki kez yazılır</td><td>Maketin altı adımı oyunda gezilebiliyor</td></tr>
+      <tr><td class="num"><b>C</b></td><td><b>Zincir ve denge.</b> Tek Odak sistemi · yeni pad/seviye zinciri · simülatöre tepsi, bardak, sabır ve garson ekle · tempo tablosunu tuttur · <b>tempo iddialarını teste yaz</b></td><td>Sayılar ancak model oturunca anlam taşır. Bugün denge kararları konsol çıktısını gözle okumaya dayanıyor</td><td>Sim çıktısı §5 tablosunu tutuyor <b>ve</b> bu testle korunuyor</td></tr>
+      <tr><td class="num"><b>D</b></td><td><b>Meta katman.</b> Görev kimlikleri · Hedefler · ortak ödül ekranı · İtibar · günlük görevler · elmas kaynak/harcama · Usta katmanı</td><td>Ekonominin temposu oturmadan günlük görev ödülü ayarlanamaz</td><td>Elmas kazanılıp harcanabiliyor; Usta alınabiliyor</td></tr>
+      <tr><td class="num"><b>E</b></td><td><b>Arayüz ve cila.</b> §9 şartnamesine göre HUD/panel yeniden tasarımı · ikon seti · oyun fontu · ses · hareketli onboarding</td><td>Oynanış kesinleşmeden arayüz tasarlamak iki kez çizmek demek</td><td>Playwright duman testi <code>package.json</code>'a bağlı ve yeşil</td></tr>
+      <tr><td class="num"><b>F</b></td><td><b>Paketleme ve yayın.</b> Capacitor iOS · CI derleme · AdMob + ATT + SKAdNetwork · RevenueCat · gizlilik manifesti · yaş anketi · mağaza materyali</td><td>Hepsi bitmiş oyunu paketliyor</td><td>TestFlight'ta çalışan sürüm</td></tr>
     </tbody>
   </table>
   </div>
+</section>
 
-  <h3>Riskler</h3>
+<!-- ============================================================ 12 -->
+<section id="s12">
+  <h2><span class="no">12</span>Araç bölüşümü</h2>
+  <p class="h2-note">Bölme çizgisi "hangi araç iyi" değil, "hangi dosyaya kim dokunuyor"</p>
+
+  <p>İki araç aynı <code>store.ts</code>'e dokunursa entegrasyon cehennemi olur. Ayrım dosya sınırından geçer.</p>
+
+  <div class="tw">
+  <table>
+    <thead><tr><th>İş</th><th>Nerede</th><th>Neden</th></tr></thead>
+    <tbody>
+      <tr><td>HUD/panel tasarımı <b>statik mockup olarak</b> — tek HTML+CSS dosyası, gerçek veri yok</td><td class="k">Codex</td><td>İzole, net şartnameli, üslup işi. §9 şartnamesi girdi olur; entegrasyon burada yapılır</td></tr>
+      <tr><td>İkon seti (SVG) · font seçimi · renk ve aralık sistemi</td><td class="k">Codex</td><td>Aynı sebep</td></tr>
+      <tr><td>Tek başına duran görsel efektler (parçacık, geçiş animasyonu)</td><td class="k">Codex</td><td>Dosya sınırı temiz</td></tr>
+      <tr><td><code>store.ts</code> · <code>economy.config.ts</code> · <code>save.ts</code> · <code>Scene.tsx</code></td><td class="k">Burası</td><td>Ekonomi, kayıt migrasyonu, test — birbirine bağlı, bölünürse kırılır</td></tr>
+      <tr><td>Denge sayıları · simülatör · testler</td><td class="k">Burası</td><td>Ölçüm ve doğrulama zinciri tek elde kalmalı</td></tr>
+      <tr><td>3B asset</td><td class="k">KayKit + Blender</td><td>CC0 hazır paketler + 5 Türk objesi elle</td></tr>
+      <tr><td>AI 3B (yalnız gerekirse)</td><td class="k">Meshy Pro / Tripo Pro</td><td><b>Ücretsiz planlar kullanılmaz</b> — §8 lisans notu</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ============================================================ 13 -->
+<section id="s13">
+  <h2><span class="no">13</span>Riskler</h2>
+  <p class="h2-note">Bilinen ve önlemi planlanmış</p>
+
   <div class="tw">
   <table>
     <thead><tr><th>Risk</th><th>Etki</th><th>Önlem</th></tr></thead>
     <tbody>
-      <tr><td>Testler yerleşim koordinatlarına sıkı bağlı (~130 referans)</td><td>Model geçişinde "186 test geçiyor" güvencesi anlamını yitirir</td><td>Faz B'den <b>önce</b> testleri koordinattan kopar: yardımcı seçiciler üzerinden yaz</td></tr>
-      <tr><td><code>tick()</code> 800 satır, ~40 yerel değişken</td><td>Her yeni sistem regresyon riski taşır</td><td>Faz A'da böl; sonra ekle</td></tr>
-      <tr><td>Simülatör oyunu doğrulamıyor (idealize model, farklı yürüme hızı)</td><td>Yayın sonrası eğri tutmaz — düzeltmek güncelleme ister</td><td>Faz C'de simülatörü gerçeğe yaklaştır, tempo hedeflerini <b>teste</b> yaz</td></tr>
-      <tr><td>6× uzatma grind hissi yaratabilir</td><td>Terk</td><td>Uzatmanın ağırlığı "daha çok adım"da olsun, "daha pahalı"da değil</td></tr>
-      <tr><td>Bileşen testi sıfır, duman testi script dışında</td><td>Arayüz hatası ancak elle yakalanır</td><td>Faz E'de Playwright duman testini <code>package.json</code>'a bağla</td></tr>
+      <tr><td><b>iOS derlemesi Mac ister</b>, geliştirme Windows'ta</td><td>Yayın tarihi konulamaz</td><td>Faz F'den <b>önce</b> CI derleme kurulur (GitHub Actions <code>macos-latest</code>). §10</td></tr>
+      <tr><td>Testler yerleşim koordinatlarına sıkı bağlı (~130 referans)</td><td>Model geçişinde "186 test geçiyor" güvencesi anlamını yitirir</td><td>Faz A'da testler koordinattan koparılır — Faz B'den <b>önce</b></td></tr>
+      <tr><td><code>tick()</code> 800 satır, ~40 yerel değişken</td><td>Her yeni sistem regresyon riski</td><td>Faz A'da sistemlere bölünür</td></tr>
+      <tr><td>Simülatör oyunu doğrulamıyor (idealize model, farklı yürüme hızı)</td><td>Yayın sonrası eğri tutmaz, düzeltmek güncelleme ister</td><td>Faz C'de sim gerçeğe yaklaştırılır, tempo hedefleri <b>teste</b> yazılır</td></tr>
+      <tr><td>6× uzatma grind hissi yaratabilir</td><td>Terk</td><td>Uzatmanın ağırlığı "daha çok adım"da, "daha pahalı"da değil (§5)</td></tr>
+      <tr><td>Reklam envanteri kuruyabilir</td><td>Oyuncu tıkanır</td><td>L4 kritik yol dışı + 💎 ikinci anahtar (K6)</td></tr>
+      <tr><td>AI asset lisansı</td><td>Ticari yayın engeli / atıf borcu</td><td>Ücretsiz planlar yasak; manifest'e AI sütunu (§8)</td></tr>
+      <tr><td>Bileşen testi sıfır, duman testi script dışında</td><td>Arayüz hatası ancak elle yakalanır</td><td>Faz E'de Playwright duman <code>package.json</code>'a bağlanır</td></tr>
+      <tr><td>Üst çıtada z-fighting (maket)</td><td>Görsel kusur</td><td>Faz G'de çözülür — kullanıcı tarafından ertelendi</td></tr>
     </tbody>
   </table>
   </div>
 </section>
 
-<!-- ============================================================ -->
-<section>
-  <h2>Onayını bekleyen sekiz karar</h2>
-  <p class="h2-note">Bunlar netleşmeden Faz A'dan öteye geçmiyoruz</p>
+<!-- ============================================================ 14 -->
+<section id="s14">
+  <h2><span class="no">14</span>Kalan kararlar</h2>
+  <p class="h2-note">Bunlar dışında her şey kesinleşti</p>
 
   <div class="decisions">
     <div class="dec"><div class="n">1</div><div>
-      <p class="q">Model: kodu makete mi taşıyalım, maketi koda mı uyduralım?</p>
-      <p class="a"><span class="rec">Önerim: kodu makete taşımak.</span> Ucuz olan yol (maketi 3 bölge × 4 masaya sığdırmak) 20 masayı, banketi, odaları ve tek tezgâh fikrini çöpe atar — yani maketin tamamını. Pahalı yol bir kez ödenir, Kat 2 ve 3 üstüne biner.</p>
+      <p class="q">Kat 1 için 10–12 saat hedefi onaylanıyor mu?</p>
+      <p class="a">Bugün 1,6 saat. <span class="rec">Zincirin bütün fiyatlarını bu sayı belirliyor</span> — en kritik açık karar. Daha kısa istenirse (6–8 sa) uzatma kaldıraçlarının ağırlığı değişir; daha uzun istenirse grind riski artar.</p>
     </div></div>
     <div class="dec"><div class="n">2</div><div>
-      <p class="q">Oyun tek masayla mı başlasın, dört masayla mı?</p>
-      <p class="a"><span class="rec">Önerim: 1. Alan istisna olsun</span> — tek masayla başlar, oyuncu 2/3/4'ü alır (öğretici korunur, ilk alım 40 saniyede). 2. Alandan itibaren maket kuralı: alan açılınca dolu gelir.</p>
+      <p class="q">iOS derlemesi nasıl yapılacak?</p>
+      <p class="a"><span class="rec">Önerim: GitHub Actions <code>macos-latest</code> runner.</span> Alternatifler Mac mini almak veya bulut Mac kiralamak. <b>Bu karar verilmeden v1.0 tarihi konulamaz.</b></p>
     </div></div>
     <div class="dec"><div class="n">3</div><div>
-      <p class="q">Merdiven v1.0 boyunca yıkık mı kalsın?</p>
-      <p class="a"><span class="rec">Önerim: evet.</span> Kalıcı ve dürüst bir fragman; Kat 2 güncellemesine hazır bir başlık veriyor. Alternatif — Kat 2'yi de v1.0'a sokmak — yayını aylarca geciktirir.</p>
+      <p class="q">Faz sırası: G önce mi, A önce mi?</p>
+      <p class="a"><span class="rec">Önerim: G önce.</span> Görsel taban hiçbir şeye bağlı değil, hemen sonuç veriyor, ve sonraki bütün fazlarda bakacağımız sahneyi düzeltiyor. Ama sen "önce yapıyı düzeltelim" dersen A ile de başlanabilir.</p>
     </div></div>
     <div class="dec"><div class="n">4</div><div>
-      <p class="q">Oyuncu seviyesi: kaldıralım mı, İtibar'a mı çevirelim?</p>
-      <p class="a"><span class="rec">Önerim: İtibar.</span> Seviye başına +%2 müşteri akışı, +%1 bahşiş, kozmetik açılışı. İlerlemeyi kilitlemez, sadece hızlandırır.</p>
+      <p class="q">Posta paneli ve Ayarlar'daki üç ölü anahtar: doldurulacak mı, kaldırılacak mı?</p>
+      <p class="a"><span class="rec">Önerim: Ayarlar anahtarları (ses/müzik/bildirim) Faz E'de gerçekten bağlansın; Posta paneli v1.0'da kaldırılsın</span> — Kat 2 güncellemesiyle "duyuru + hediye" olarak geri gelsin.</p>
     </div></div>
     <div class="dec"><div class="n">5</div><div>
-      <p class="q">Kat 1 için 10–12 saatlik hedef uygun mu?</p>
-      <p class="a">Bugün 1,6 saat. Daha kısa istersen (örneğin 6–8 saat) uzatma kaldıraçlarının ağırlığı değişir; daha uzun istersen grind riski artar. <span class="rec">Bu sayı zincirin bütün fiyatlarını belirliyor</span> — en kritik karar bu.</p>
-    </div></div>
-    <div class="dec"><div class="n">6</div><div>
-      <p class="q">Prestige v1.0'da yok — onaylıyor musun?</p>
-      <p class="a"><span class="rec">Önerim: yok.</span> Tek kat sıfırlamaya değmez. v1.0'ın sonsuz kuyruğu usta seviyeleri, kozmetik ve kalan masa seviyeleri.</p>
-    </div></div>
-    <div class="dec"><div class="n">7</div><div>
-      <p class="q">Banket seviyesi = boy mu? <span style="color:var(--ink-faint);font-weight:600">(maketten devreden)</span></p>
-      <p class="a">Dış uç sabit, bank içe doğru uzar, her seviye iki masa ekler. Var olan masalar hiç yer değiştirmez; yükseltme noktası bankın uzayan ucunda kayar.</p>
-    </div></div>
-    <div class="dec"><div class="n">8</div><div>
-      <p class="q">Lavabo mekaniği: erken kalkma mı? <span style="color:var(--ink-faint);font-weight:600">(maketten devreden)</span></p>
-      <p class="a">Sert tavan yok. Lavabo açılmadan müşterilerin ~%20'si oturumun ~%60'ında erken kalkar — görünür bir kalkma animasyonu ve küçük para istifi. Yaklaşınca sebebi yazılır. Yaklaşık %12 gelir kaybı.</p>
+      <p class="q">Ürün yelpazesi: tost kalıyor mu?</p>
+      <p class="a">Bugün Kat 1'de çay ve tost var (bölge 3 = tost). Yeni modelde tek tezgâh olduğu için tost ayrı bir üretim hattı mı olacak, yoksa v1.0'da <b>yalnız çay</b> mı kalacak? <span class="rec">Önerim: v1.0 yalnız çay</span> — model sadeleşir, tempo hesabı netleşir; tost Kat 2 ile döner.</p>
     </div></div>
   </div>
 </section>
 
 <footer class="end">
-  Kaynaklar: <span class="mono">docs/maket/maket-v13.html</span> (Kat 1 maketi v15) ·
+  Dayandığı belgeler: <span class="mono">docs/maket/maket-v13.html</span> (Kat 1 maketi v15) ·
   <span class="mono">docs/progression-and-economy-v2.md</span> (throughput modeli, D-010) ·
-  <span class="mono">docs/curve-report.md</span> ve <span class="mono">docs/denge-raporu-2026-06-13.md</span> (mevcut eğri ölçümleri) ·
+  <span class="mono">docs/curve-report.md</span> · <span class="mono">docs/denge-raporu-2026-06-13.md</span> (eğri ölçümleri) ·
   <span class="mono">docs/fable5-progression-redesign-brief.md</span> (görev tabanlı ilerleme talebi) ·
-  kod taraması <span class="mono">src/</span> 9.669 satır, 5 Eylül 2026.
-  Bu belge <b>plandır, uygulama değil</b>: hiçbir denge sayısı onay alınmadan değiştirilmez.
+  <span class="mono">memory-bank/decisions.md</span> D-010 · D-013 · D-014 · D-032 … D-037.
+  Kod taraması <span class="mono">src/</span> 9.669 satır; asset ve doku araştırması; her ikisi de dosyada doğrulandı. 5 Eylül 2026.
+  <br><br>
+  <b>Bu belge plandır, uygulama değil.</b> Hiçbir denge sayısı onay alınmadan değiştirilmez.
 </footer>
 
 </div>
