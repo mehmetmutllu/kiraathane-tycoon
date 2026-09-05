@@ -914,3 +914,29 @@ Kullanıcı: *"dışarıdaki camlar güzel ama düzgün durmadı sanki, acaba du
   Artık iki dikme + üç kayıt, gövde içi boş; çift kanatlı, sağ kanat içeri açık.
 - ✅ **Yan etki (kabul):** Kat 2-3 duvarları da 3,2 oldu; kilitli sınır duvarları 2,9 → WALL_H (7 yer);
   `windowWall` pencere başı 2,45 → 2,80. Üç kat kontrol edildi: 0 konsol hatası, görünürlük bozulmadı.
+
+## PLAN OTURUMU (2026-09-05) — KAT 1 YAYIN PLANI (Fable kod taraması + progression tasarımı)
+Kod DEĞİŞMEDİ (`src/` dokunulmadı, SAVE v30). Yeni dosya `docs/plan-kat1-yayin.html`
+Artifact: https://claude.ai/code/artifact/62027184-9196-4da4-83ce-b7bd347d78ac
+
+- ✅ **Fable 5.1 ile tam kod taraması** (`src/` 9.669 satır + tools + testler). Bulgular Opus
+  tarafından doğrulandı (SAVE v30 · MAX_ZONES 3 · TABLES_PER_ZONE 4 · 36 görev · 21 pad ·
+  `tick()` ~800 satır · `levelProgress` yalnız HUD'da · `diamonds` 12 kullanım hepsi ölü).
+- ✅ **Merkezî tespit:** kodda `bölge = ızgara hücresi = kendi ocağı = kendi ürünü = kendi personeli`
+  (~100 nokta); maket ise tek kat / tek tezgâh / 20 masa üç tipte / arka bantta odalar diyor.
+  İkisi aynı veri modeliyle ifade edilemiyor. Önerilen hedef model: **KAT → ALAN · SERVİS · MASA · ODA**.
+  Maliyet: store ~%40, Scene ~%30, 40-60 test.
+- ✅ **Kat 1 yükseltme zinciri** beş bölüm hâlinde yazıldı (öğretici → 2. Alan → Arka Yarı+Tezgâh →
+  Lavabo → Orta Şerit → sonsuz kuyruk). Kural: ekranda tek işaret, fiyat değil hacim.
+- ✅ **Tempo hedefi:** bugün 1,62 sa → v1.0 hedefi **10-12 sa**. Uzatma üç kaldıraçla (ağırlık
+  "daha çok adım"da, "daha pahalı"da değil). Sayılar ÖLÇÜLMEDİ — Faz C'de sim gerçeğe yaklaştırılıp
+  tutturulacak.
+- ✅ **Meta katman tasarımı:** görev kimliği (index → id, save.ts'teki 5 snapshot borcunu kapatır) ·
+  XP → **İtibar** (+%2 talep, +%1 bahşiş, kozmetik açar) · günlük görev (elmasın İLK kaynağı) ·
+  başarım · elmas ekonomisi (harcama = zaten yazılmış ama ulaşılamaz "Usta" seviyeleri) ·
+  prestige v1.0'da YOK.
+- ✅ **Yayın planı:** v1.0 Kat 1 (merdiven YIKIK kalır = güncelleme kancası) → v1.1 "Merdiven
+  onarıldı" Kat 2 → v1.2 Kat 3 → v1.3 prestige.
+- ✅ **Faz sırası:** A temizlik+tick bölme · B model geçişi · C zincir+denge · D meta · E cila · F paketleme.
+- ⏳ **ONAY BEKLEYEN 8 KARAR** planın sonunda listeli. En kritik: (1) model geçişi, (5) 10-12 sa hedefi.
+- 🐞 **Bilinen, ertelendi (kullanıcı):** giriş tarafı üst çıtada renk yalpalanması (z-fighting).
