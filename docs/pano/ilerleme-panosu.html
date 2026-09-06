@@ -209,32 +209,32 @@ h2{font-size:21px;font-weight:800}
     }
   ],
   "ozet": {
-    "etiket": "Bu oturum · Faz A · 3/3 — FAZ A BİTTİ",
-    "baslik": "Kod tabanı Faz B’ye hazır: ölü alan yok, dev fonksiyon yok, testler koordinata bağlı değil",
-    "aciklama": "Yeni tasarımın (Faz B) üstüne kurulacağı zemin temizlendi. Önce <b>aylardır kırık olan duman testinin</b> kök nedeni bulundu: görev bittiğinde sayaç 1,3 saniyelik kutlama animasyonundan <b>sonra</b> ilerliyordu; o pencerede toplanan para yeni görevin başlangıcına yazılıyor ve görev 0/1’de kilitleniyordu. Sonra üç temizlik adımı yapıldı.",
+    "etiket": "Bu oturum · Faz B · 1/5 — B1 bitti",
+    "baslik": "Mekân modeli ayrıştı: tek “bölge” kavramı dörde bölündü, oyun hiç değişmedi",
+    "aciklama": "Kod bugüne kadar tek bir <b>bölge</b> kavramıyla çalışıyordu ve bu kavram aynı anda üç ayrı şey demekti: mekânın bir parçası, bir servis noktası (ocak + bulaşık + personel), ve dörtlü bir masa grubu. Maket bu birlikteliği bozuyor — planlanan ikinci alanın <b>kendi ocağı yok</b>, üçüncü alan masa değil <b>tezgâh</b> getiriyor. Bu yüzden önce model ayrıştırıldı: <b>ALAN · SERVİS · MASA · ODA</b>. Bu oturumda oyunun davranışı bilerek <b>hiç değiştirilmedi</b>; içerik hâlâ 3 alan, 12 masa, 3 servis.",
     "adimlar": [
-      "Duman testi <b>8/15 → 26/26</b>: görev artık bitiş anında ilerliyor, kutlama yalnızca görsel",
-      "<b>Beş ölü alan</b> kaldırıldı: hiç değişmeyen servis-hızı çarpanı, kullanılmayan masa önkoşulu, ileriye dönük prestij ayarları, öksüz posta ikonu, satın alma yolu olmadığı için <b>hiç çalışmayan “Usta” seviyesi</b> dalı",
-      "<b>800 satırlık tek fonksiyon 17 sisteme bölündü</b> (demleme, müşteri, garson, bulaşıkçı, görev …); geriye kalan 65 satır sadece “bağlamı kur, sistemleri çağır, sonucu yaz”",
-      "Yerleşim ve kurallar da ayrı dosyalara çıktı: <b>store 2337 → 756 satır</b>",
-      "Testler artık “oyuncuyu şu köşeye koy” demiyor: park noktası <b>yerleşimden hesaplanıyor</b> — Faz B mekânı değiştirince testler kendiliğinden doğru yere bakar",
-      "Davranışın değişmediği <b>ölçüldü</b>: tohumlu senaryo 2018 satırlık durum dökümü üretiyor, refactor öncesi ve sonrası birebir aynı; ekonomi simülasyonu da aynı",
-      "Testler <b>201 → 206</b> (5 yeni), derleme temiz, konsol hatasız"
+      "Dört kavram tek dosyada tanımlandı; <b>servis ile alan arasındaki bağ tek bir listeye</b> indi — sıradaki adımda o liste tek satır değişince servisler birleşecek ve geri kalan kod hiç değişmeyecek",
+      "Masa artık bir <b>sayı</b> değil <b>liste</b>: her masa kendi alanını ve kendi servisini ayrı ayrı taşıyor",
+      "Yerleşim dizileri neye ait olduklarını <b>söylüyor</b>: ocak/bulaşık/personel servise, zemin/duvar/kapı alana göre",
+      "Yanlış isimler düzeltildi — en yanıltıcısı “aktif bölge”ydi, oysa anlamı “oyuncunun üstünde durduğu nokta”",
+      "<b>Kayıt v31: temiz sıfırlama.</b> Eski kayıtlardaki satın alma kimliklerinin yeni zincirde karşılığı yok; artık var olmayan bir zincir için göç yazılmaz. Ayarlar korunuyor, ilerleme sıfırlanıyor — 520 satırlık göç kodu silindi, <b>kayıt dosyası 751 → 188 satır</b>",
+      "<b>Davranışın değişmediği ölçüldü:</b> 2014 satırlık durum parmak izi birebir aynı; ekonomi simülasyonunun bütün sayıları da aynı",
+      "Testler <b>206 → 207</b> (32 göç testi kalktı, 33 yeni test geldi), duman testi 26/26, derleme temiz"
     ],
-    "not": "<b>Neyi öğrendik:</b> “büyük refactor” korkusunun panzehiri ölçüdür. Bölmeden önce oyunun kendisinden bir <b>parmak izi</b> alındı (rastgelelik tohumlandı, senaryo sabitlendi, tüm durum JSON’a döküldü); bölme bittiğinde aynı parmak izi tekrar alındı ve <b>tek karakter fark çıkmadı</b>. Artık her refactor bu araca dayanabilir.<br><br><b>Sıradaki iş Faz B</b> — asıl yeni tasarım. Zemin buna hazır: sistemler koordinat bilmiyor, kurallar ayrı, testler mekân değişince kendini ayarlıyor."
+    "not": "<b>Neden önce model, sonra içerik:</b> ikisi aynı anda değişseydi bir hata diğerinin arkasına saklanırdı. Model değişirken içerik sabit tutulduğu için “oyun aynı mı kaldı?” sorusu <b>tek bir dosya farkıyla</b> cevaplanabildi.<br><br><b>Ölçüm aracının kendi hatası çıktı:</b> parmak izi aracı durum kopyasını yüzeysel çıkardığı için bir sayaç dizisi bütün karelerde <b>paylaşılıyordu</b> — dört karenin dördü de son değeri gösteriyordu, yani taban dosyası sessizce yanlıştı. Fark görülünce kod kurcalanmadı, önce <b>araç</b> denetlendi; düzeltilmiş araçla eski sürümde taban yeniden alındı ve fark sıfır çıktı."
   },
   "siradaki": {
-    "etiket": "Faz B · Model geçişi",
-    "baslik": "Sıra mekânın kendisinde",
-    "aciklama": "Temizlik bitti; bundan sonrası yeni tasarım. Faz B, maketin altı adımını oyunun içine taşıyor: ALAN / SERVİS / MASA / ODA modeli, yerleşimin maket ölçeğine geçmesi ve kayıt sürümü v31 (masa listesi + görev kimlikleri).",
+    "etiket": "Faz B · B2 — Servis tekilleşir",
+    "baslik": "Üç ocak tek servis noktasına iniyor",
+    "aciklama": "Bugün her salonun kendi ocağı, kendi bulaşığı ve kendi garsonu var. Makette öyle değil: <b>tek bir servis noktası</b> var, seviye atladıkça çay ocağından tezgâha dönüşüyor ve tost açılıyor; garsonlar da tek havuzda. B1 bunun altyapısını kurdu — servis ile alan arasındaki bağ tek bir listede duruyor, o liste kısalınca yapı kendiliğinden takip edecek.",
     "adimlar": [
-      "Maketin adımları ile <b>pad zinciri</b> arasındaki haritayı çıkar: hangi satın alma hangi kanadı açıyor",
-      "<b>Yerleşimi maket ölçeğine taşı</b> — sistemler koordinat bilmediği için bu artık tek dosyalık iş",
-      "<b>Kayıt v31</b>: masa listesi ve görev kimlikleri; eski kayıt migrasyonla taşınır",
-      "<b>G4/G5</b> (KayKit mutfak ve sokak modelleri) bu geçişle birlikte değerlendirilecek",
-      "Mağaza önizleme sahneleri hâlâ eski düz ışıkla — dünya ısındı, önizlemeler soğuk kaldı"
+      "Servis noktası <b>tek merdiven</b>: L1–L3 çay ocağı, L4 tezgâh, L5 tost, L6 son para seviyesi",
+      "Ürün artık salondan değil <b>servisin seviyesinden</b> geliyor — “Tostçu Garson” ayrımı kalkıyor",
+      "Garson havuzu <b>global</b>: garson salona değil mekâna ait",
+      "<b>Davranış burada değişiyor</b> → güvence parmak izi değil <b>tempo ölçümü</b> (simülatör + tempo tablosu)",
+      "Sonra sırayla: B3 yerleşim (önce kadraj onayı) · B4 lavabo ve merdiven odaları · B5 masa tipleri ve banket"
     ],
-    "not": "<b>Kapanan açık soru:</b> kullanıcının gördüğü “hareket edince renk değişiyor” sorunu bu oturumda sorulduğunda <i>“düzeldi, şu an yok”</i> cevabı geldi — G3 ölçümü (%0 yayılım) ile tutarlı.<br><br><b>Kırmızı çizgi duruyor:</b> “objeler yüzüyor” hissine bir daha alttaki yuvarlak önerilmeyecek."
+    "not": "<b>Verilmiş karar:</b> yerleşim adımına (B3) başlarken üç kamera kademesi <b>aynı kareden</b> çekilip sorulacak — kat 2,6 katına çıkıyor, portre ekranda ne göründüğü bir tasarım kararı. Bu, G1 ve G3'te bir tur geri alma tasarruf eden yöntem.<br><br><b>Kırmızı çizgi duruyor:</b> “objeler yüzüyor” hissine bir daha alttaki yuvarlak önerilmeyecek."
   },
   "donemler": [
     {
@@ -366,6 +366,21 @@ h2{font-size:21px;font-weight:800}
     }
   ],
   "gunluk": [
+    {
+      "tarih": "06.09.2026",
+      "etiket": "Faz B · 1. oturum (B1)",
+      "baslik": "Tek “bölge” kavramı dörde bölündü — ve oyun tek karakter bile değişmedi",
+      "govde": "Oyunun mekân modeli tek bir <b>bölge</b> kavramına dayanıyordu ve bu kavram üç ayrı şeyi birden anlatıyordu: mekânın bir parçası, bir servis noktası (ocak + bulaşık + o salonun garsonu), ve dörtlü bir masa grubu. Üçü hep birlikte açıldığı sürece bu sorun değildi. Ama onaylanan maket bu birlikteliği bozuyor: planlanan <b>ikinci alanın kendi ocağı yok</b>, üçüncü alan masa değil <b>tezgâh</b> getiriyor. Yani \"yeni alan aç\" ile \"yeni ocak aç\" artık aynı şey değil.<br><br>Bu yüzden bu oturumda içerik değil <b>model</b> değişti. Kavram dörde ayrıldı — <b>alan, servis, masa, oda</b> — ve servis ile alan arasındaki bağ tek bir listeye toplandı. Sıradaki adımda o liste bir satır kısalacak, üç ocak tek servise inecek ve geri kalan kodun hiçbir yeri değişmeyecek. B1'in bütün amacı buydu.<br><br><b>Oyunun aynı kaldığı iddiası ölçüldü.</b> Rastgelelik sabitlenip senaryo koşuluyor ve oyunun tüm durumu 2014 satırlık bir dosyaya döküldü; değişiklikten önce ve sonra alınan iki dosya <b>birebir aynı</b>. Ekonomi simülasyonunun bütün sayıları da aynı.<br><br>Bir de kayıt kararı uygulandı: eski kayıtlardaki satın alma kimliklerinin yeni zincirde karşılığı olmadığı için <b>göç yazılmadı</b>. Eski kayıt bulunursa ilerleme sıfırlanıyor, ayarlar korunuyor. Bu, 520 satırlık göç kodunu sildi. (\"İlerleme kaybolmaz\" kuralı mağazaya çıkıldığı andan itibaren bağlayıcı olacak; bugün ortada tek bir test kaydı var.)",
+      "maddeler": [
+        "Dört kavram tek dosyada; servis ↔ alan bağı <b>tek listede</b> — sıradaki adımın kaldıracı bu",
+        "Masa artık sayı değil <b>liste</b>: her masa alanını ve servisini ayrı taşıyor",
+        "Yanlış isimler düzeltildi; en yanıltıcısı “aktif bölge” idi — anlamı “üstünde durulan nokta”",
+        "<b>Kayıt v31 temiz sıfırlama</b> — kayıt dosyası <b>751 → 188 satır</b>",
+        "Davranış parmak izi <b>birebir aynı</b> (2014 satır) · simülasyon sayıları aynı",
+        "Testler <b>206 → 207</b> · duman testi 26/26 · derleme temiz"
+      ],
+      "not": "<b>Bu oturumun dersi: ölçüm aracı da yanılabilir.</b> Karşılaştırmada dört satırlık bir fark çıktı. İlk refleks kodu kurcalamak olurdu; onun yerine önce <b>aracın kendisi</b> denetlendi. Araç durumun kopyasını yüzeysel çıkarıyordu, bu yüzden bir sayaç dizisi bütün anlık görüntülerde <b>paylaşılıyordu</b> — dört karenin dördü de son değeri gösteriyordu. Yani hatalı olan kod değil, tabanı üreten araçtı. Araç düzeltilip eski sürümde taban yeniden alındı ve fark sıfıra indi. Refactor güvencesi, ölçenin de doğrulanmasını gerektiriyor."
+    },
     {
       "tarih": "06.09.2026",
       "etiket": "Faz A · 1. oturum — Faz A kapandı (3 adım tek gecede)",
