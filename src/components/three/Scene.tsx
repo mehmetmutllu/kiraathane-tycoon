@@ -5,6 +5,7 @@ import { useGame, questFocusPos, LAYOUT, stationSoftMaxLevel, stationUpgradeCost
 import { economyConfig, zoneOfTable, zoneProduct } from '../../config/economy.config';
 import { GroundMarker } from './GroundMarker';
 import { FloorPattern } from './floorPattern';
+import { WALL_H, WallPanels, type WallSlab } from './wallPanel';
 import { PALETTE, FLOOR_THEMES, WALL_THEMES, LIGHTING } from '../../config/palette';
 import { Player } from './Player';
 import { Waiter } from './Waiter';
@@ -746,12 +747,12 @@ function Walls() {
   const wallThemeByZone = useGame((s) => s.wallThemeByZone);
   const themeOf = (z: number) => WALL_THEMES[wallThemeByZone[z] ?? 'krem'] ?? WALL_THEMES.krem;
   const m = 0.5; // alan kenarı ile dış duvar arası pay (oyuncu kelepçe standoff'u ile birebir)
-  const h = 1.2;
+  const h = WALL_H; // G3: yükseklik + profiller wallPanel.tsx'te (mağaza önizlemesiyle ortak)
   const t = 0.2;
   const doorHalf = 1.3;
   const doorX = LAYOUT.entrances[0][0]; // tek kapı (z0 ön duvarı)
   const isOpen = (z: number) => z >= 0 && z < zonesOpen;
-  type Piece = { key: string; x: number; z: number; w: number; d: number; theme: { cream: string; wainscot: string } };
+  type Piece = WallSlab;
   const pieces: Piece[] = [];
   for (let z = 0; z < zonesOpen; z++) {
     const za = LAYOUT.zoneAreas[z];
@@ -775,10 +776,10 @@ function Walls() {
     const vz1 = za.maxZ + (row === 0 ? m : 0);
     // SOL kenar (dış ya da kilitli komşu → duvar; açık yatay komşu → duvar YOK, D-023)
     if (leftN === -1 || !isOpen(leftN))
-      pieces.push({ key: `L${z}`, x: za.minX - m, z: (vz0 + vz1) / 2, w: t, d: vz1 - vz0, theme: th });
+      pieces.push({ x: za.minX - m, z: (vz0 + vz1) / 2, w: t, d: vz1 - vz0, theme: th });
     // SAĞ kenar (kilitliyken zone sınırına oturur = eski "kelepçe duvarı" davranışı)
     if (rightN === -1 || !isOpen(rightN))
-      pieces.push({ key: `R${z}`, x: za.maxX + m, z: (vz0 + vz1) / 2, w: t, d: vz1 - vz0, theme: th });
+      pieces.push({ x: za.maxX + m, z: (vz0 + vz1) / 2, w: t, d: vz1 - vz0, theme: th });
     // ÖN kenar: ön sıra → dış duvar (z0'da kapı boşluğu); arka sıra → geçitli sıra-duvarı (aşağıda).
     if (row === 0) {
       const fz = za.maxZ + m;
@@ -789,17 +790,17 @@ function Walls() {
             [doorX + doorHalf, hx1],
           ]
         : [[hx0, hx1]];
-      segs.forEach(([sx, ex], i) => {
+      segs.forEach(([sx, ex]) => {
         if (ex - sx > 0.01)
-          pieces.push({ key: `F${z}_${i}`, x: (sx + ex) / 2, z: fz, w: ex - sx, d: t, theme: th });
+          pieces.push({ x: (sx + ex) / 2, z: fz, w: ex - sx, d: t, theme: th });
       });
     }
     // ARKA kenar: arka komşu AÇIKSA duvar YOK (2026-06-11: z1↔z2 sınırı tamamen açık — sıra-arası
     // geçitli duvar kaldırıldı); değilse dış duvar.
     if (!(row === 0 && isOpen(backN)) && row === 0)
-      pieces.push({ key: `B${z}`, x: (hx0 + hx1) / 2, z: za.minZ - m, w: hx1 - hx0, d: t, theme: th });
+      pieces.push({ x: (hx0 + hx1) / 2, z: za.minZ - m, w: hx1 - hx0, d: t, theme: th });
     if (row === 1)
-      pieces.push({ key: `B${z}`, x: (hx0 + hx1) / 2, z: za.minZ - m, w: hx1 - hx0, d: t, theme: th });
+      pieces.push({ x: (hx0 + hx1) / 2, z: za.minZ - m, w: hx1 - hx0, d: t, theme: th });
   }
   // L-şekil iç köşe dikmesi (yalnız 3 zone açıkken): z0 arka duvarı (z −5.8) ile z2 SOL duvarı
   // (x 4.8) çapraz buluşur — aradaki boşluk rezerv arka-sol arsaya bakar; dikme kapatır
@@ -807,14 +808,12 @@ function Walls() {
   if (zonesOpen === 3) {
     const bx = LAYOUT.zoneBorderX;
     const bz = LAYOUT.zoneAreas[0].minZ;
-    pieces.push({ key: 'corner3', x: bx - m / 2, z: bz - m / 2, w: m + t, d: m + t, theme: themeOf(0) });
+    pieces.push({ x: bx - m / 2, z: bz - m / 2, w: m + t, d: m + t, theme: themeOf(0) });
   }
   const frontEdgeZ = LAYOUT.zoneAreas[0].maxZ + m; // kapı sövesi referansı
   return (
     <group>
-      {pieces.map((p) => (
-        <WallPiece key={p.key} x={p.x} z={p.z} w={p.w} dDepth={p.d} h={h} theme={p.theme} />
-      ))}
+      <WallPanels slabs={pieces} />
       {/* kapı sövesi + çerçevesi (ön duvarın TAMAMEN önünde — z-fighting yok) */}
       <group>
         <mesh position={[doorX, h - 0.12, frontEdgeZ + 0.22]}>
@@ -830,39 +829,6 @@ function Walls() {
           <meshStandardMaterial color={PALETTE.doorWood} />
         </mesh>
       </group>
-    </group>
-  );
-}
-
-// Duvar parçası: badana üst + lambri kuşağı. Renkler tema'dan (WP6 kozmetik; default krem).
-function WallPiece({
-  x,
-  z,
-  w,
-  dDepth,
-  h,
-  theme,
-}: {
-  x: number;
-  z: number;
-  w: number;
-  dDepth: number;
-  h: number;
-  theme?: { cream: string; wainscot: string };
-}) {
-  const wh = 0.5; // lambri yüksekliği
-  const cream = theme?.cream ?? PALETTE.wallCream;
-  const wainscot = theme?.wainscot ?? PALETTE.wainscot;
-  return (
-    <group>
-      <mesh position={[x, wh + (h - wh) / 2, z]}>
-        <boxGeometry args={[w, h - wh, dDepth]} />
-        <meshStandardMaterial color={cream} />
-      </mesh>
-      <mesh position={[x, wh / 2, z]}>
-        <boxGeometry args={[w + 0.04, wh, dDepth + 0.04]} />
-        <meshStandardMaterial color={wainscot} />
-      </mesh>
     </group>
   );
 }

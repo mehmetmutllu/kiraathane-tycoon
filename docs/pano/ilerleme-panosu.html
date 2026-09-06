@@ -189,7 +189,7 @@ h2{font-size:21px;font-weight:800}
 <script type="application/json" id="durum">
 {
   "guncelleme": "06.09.2026",
-  "yapilan": 38,
+  "yapilan": 39,
   "toplam": 65,
   "kilometre": [
     {
@@ -210,31 +210,31 @@ h2{font-size:21px;font-weight:800}
     }
   ],
   "ozet": {
-    "etiket": "Bu oturum · Faz G · 3/4",
-    "baslik": "PC kasması ölçüldü ve çözüldü; zemin artık tahta ve karo",
-    "aciklama": "Tek oturumda iki iş: <b>\"PC'de tam ekran hayvan gibi kasıyo\"</b> şikâyeti tahminle değil <b>ölçümle</b> kapatıldı, ardından <b>G2</b> — salonun zemini düz renk olmaktan çıkıp gerçek tahta ve karo parçalarına döndü.",
+    "etiket": "Bu oturum · Faz G · 4/4 — FAZ G BİTTİ",
+    "baslik": "Duvarlar artık bir yerde bitiyor",
+    "aciklama": "Duvar iki düz renk kuşağıydı ve hiçbir yerde <b>bitmiyordu</b>: ne zeminle buluştuğu yerde, ne lambrinin üstünde, ne tepesinde. Üç ince profil eklendi — <b>süpürgelik</b>, <b>lambri üstü çıta</b>, <b>kartonpiyer</b>. Mekân \"kutuya renk sürülmüş\" olmaktan çıktı.",
     "adimlar": [
-      "Kök neden: oyun her karede <b>3,2 kez</b> arayüzü yeniden çiziyormuş — hiçbir şey değişmese bile",
-      "Sebep: durum güncellemesi içerik aynı kalsa da <b>yeni bir kopya</b> üretiyor, arayüz \"değişti\" sanıyordu",
-      "Konum artık arayüzden geçmiyor: oyuncu, garson, bulaşıkçı doğrudan sahneye yazılıyor",
-      "Tam ekran + Windows ekran ölçeklemesine <b>piksel tavanı</b> kondu (telefonda hiçbir şey değişmez)",
-      "Sonuç: kare başına yeniden çizim <b>3,23 → 0,23</b> · kare süresi <b>10,24 → 6,05 ms</b>",
-      "<b>G2:</b> parke ve ceviz artık tahta (2,20 × 0,55, satır başı kaydırmalı), fayans ve yemek karo",
-      "Her tahtanın kendi ton sapması var; derz çizgi değil <b>boşluk</b> — arasından koyu taban görünüyor"
+      "Süpürgelik zeminin biraz <b>altından</b> başlıyor, kartonpiyer duvarın tepesini biraz <b>aşıyor</b> — yüzeyler üst üste binmiyor, titreme yok",
+      "Profillerin duvardan taşma miktarı <b>kademeli</b>: en çok süpürgelik taşıyor, duvar zemine oturuyor",
+      "Planda süpürgelik koyu ahşaptı; denendi ve <b>ölçüldü: görünmüyordu</b> — lambriyle tek koyu kütleye karışıyordu",
+      "Üç varyant aynı kareden çekilip soruldu, açık boyalı ton seçildi: üç profil de <b>tek uyumlu renk</b>",
+      "\"Hareket edince renk değişmesin\" şartı ölçüldü: kamera yaklaşırken şeritler 9 piksel kaydı, parlaklık <b>hiç oynamadı (%0)</b>",
+      "Bütün duvarlar ve profiller artık <b>tek çizim çağrısı</b> — profiller eklendiği hâlde çizim çağrısı 49'dan 40'a düştü",
+      "Mağaza önizlemesi aynı bileşenden çiziyor: mağazada gördüğün duvar salondakiyle birebir"
     ],
-    "not": "<b>Ölçüm neyi gösterdi:</b> sorun çizim değil <b>arayüzdü</b>. Saf çizim maliyeti 1,35 ms'de sabit kaldı, kaybolan süre React'in boşuna yaptığı işti. On iki farklı veri (masa seviyeleri, görev, sayaçlar…) karelerin <b>%100'ünde</b> sadece kimlik değiştiriyordu: içerik aynı, kopya yeni.<br><br><b>Zemin neden bu kadar fark etti:</b> planın teşhisi tutmuş — mekân \"bitmemiş\" duruyorsa sebep doku eksikliği değil <b>ölçek referansı</b> eksikliği. Zeminde boyutu bilinen tekrar eden bir birim olunca salonun ne kadar büyük olduğu bir bakışta okunuyor. Doku yolu daha önce denenip reddedildiği için desen <b>geometri</b>: alan başına tek çizim çağrısı, sıfır bayt asset, moiré yapısal olarak imkânsız.<br><br>Mağaza önizlemesi de aynı bileşenden çiziyor — mağazada gördüğün tahta ölçüsü salonda göreceğinle birebir aynı."
+    "not": "<b>Neyi öğrendik:</b> plandaki sayı ölçümü geçmiyorsa plan değil ölçüm kazanır — ama <b>renk kararını kullanıcı verir</b>. Süpürgelik planda koyu ahşap yazıyordu; teknik olarak doğru uygulandı ve telefon kadrajında hiç görünmedi. Doğru hamle tek bir \"sonra\" görüntüsü göstermek değil, üç varyantı <b>aynı kareden</b> çekip sormaktı — bu sefer baştan öyle yapıldı ve bir tur geri alma tasarruf edildi.<br><br><b>Faz G tamam:</b> ışık (G0) · gölge modeli (G1, sonuç: hiç gölge yok) · zemin geometrisi (G2) · duvar bitimi (G3). Sahnenin görsel tabanı artık modellerden bağımsız olarak oturmuş durumda."
   },
   "siradaki": {
-    "etiket": "Faz G · oturum 4/4",
-    "baslik": "G3 duvar bitimi, sonra KayKit yerleşimi",
-    "aciklama": "Zemin bitti; sıra <b>zemin ile duvarın buluştuğu yerde</b>. Süpürgelik, lambri üstü çıta ve kartonpiyer şeridi eklenince mekân \"kutuya renk sürülmüş\" olmaktan çıkıyor.",
+    "etiket": "Sıradaki · Faz A",
+    "baslik": "Önce duman testi onarılacak, sonra temizlik",
+    "aciklama": "Görsel taban bitti. Faz A'ya (temizlik) geçmeden önce otomatik duman testinin <b>yedi kırık adımı</b> onarılmalı — testler yeşil olmadan yeni faza girilmiyor.",
     "adimlar": [
-      "<b>G3:</b> süpürgelik (0,08) + lambri üstü çıta (0,04) + kartonpiyer — ince parçalar, tek çizim çağrısı",
-      "<b>G4:</b> KayKit Restaurant Bits — mutfak tezgâhı, ocak, davlumbaz, dolap (indirildi, hazır)",
-      "<b>G5:</b> KayKit City Builder Bits — kıraathane önündeki sokak",
-      "Faz A'ya geçmeden: duman testinin yedi kırık adımı onarılacak"
+      "Duman testi 8/15: kök neden görev sayacının başlangıç değerini yanlış anda alması, oradan domino gidiyor",
+      "<b>Faz A:</b> ölü kod ve tekrar eden parçaların temizliği",
+      "<b>G4/G5</b> (KayKit mutfak ve sokak modelleri) Faz B'nin model geçişiyle birlikte değerlendirilecek",
+      "Mağaza önizleme sahneleri hâlâ eski düz ışıkla — dünya ısındı, önizlemeler soğuk kaldı"
     ],
-    "not": "<b>Faz A'ya geçmeden onarılacak:</b> duman testinin yedi kırık adımı — bu oturumda da aynı yerde, bozulmadı (8/15). Kök neden görev sayacının başlangıç değerini yanlış anda alması; oradan domino gidiyor.<br><br><b>Kırmızı çizgi duruyor:</b> \"objeler yüzüyor\" hissine bir daha alttaki yuvarlak önerilmeyecek."
+    "not": "<b>Açık soru:</b> kullanıcı \"hareket edince renk değişiyor\" dedi. G3 profilleri ölçümle titremiyor (%0 yayılım), yani başka bir yerde olabilir — hangi ekranda/hangi objede görüldüğü sorulup o kadrajda aynı kare-kare ölçüm uygulanacak. <b>Tahminle dokunulmayacak.</b><br><br><b>Kırmızı çizgi duruyor:</b> \"objeler yüzüyor\" hissine bir daha alttaki yuvarlak önerilmeyecek."
   },
   "donemler": [
     {
@@ -309,9 +309,8 @@ h2{font-size:21px;font-weight:800}
           "k": "G",
           "t": "Görsel taban",
           "d": "Işık · gölge kararı (gölgesiz) · plank ve karo geometrisi · duvar bitimi · KayKit yerleşimi",
-          "yapilan": 3,
+          "yapilan": 4,
           "toplam": 4,
-          "durum": "now",
           "kapi": "Ekran görüntüsü onayı + FPS ölçümü"
         },
         {
@@ -320,7 +319,8 @@ h2{font-size:21px;font-weight:800}
           "d": "Ölü alanları kaldır · tick() 800 → 150 satır · testleri koordinat bağından kopar",
           "yapilan": 0,
           "toplam": 3,
-          "kapi": "Test sayısı düşmeden yeşil"
+          "kapi": "Test sayısı düşmeden yeşil",
+          "durum": "now"
         },
         {
           "k": "B",
@@ -366,6 +366,21 @@ h2{font-size:21px;font-weight:800}
     }
   ],
   "gunluk": [
+    {
+      "tarih": "06.09.2026",
+      "etiket": "Faz G · 4. oturum — Faz G kapandı",
+      "baslik": "Duvarlar artık bir yerde bitiyor",
+      "govde": "Duvar iki düz renk kuşağıydı — krem badana ve altında koyu lambri — ve kutunun kendisi <b>hiçbir yerde bitmiyordu</b>: ne zeminle buluştuğu yerde, ne lambrinin üstünde, ne de tepesinde. Gerçek bir odada bu üç hattın hepsinde çıkıntılı bir profil vardır; göz mekânı oradan okur. Üç ince profil eklendi: <b>süpürgelik</b>, <b>lambri üstü çıta</b>, <b>kartonpiyer</b>.<br><br><b>Renk kararı ölçümle değişti.</b> Planda süpürgelik koyu ahşap yazıyordu. Aynen uygulandı — ve telefon kadrajında bakıldığında <b>hiç görünmüyordu</b>: süpürgelik de çıta da lambriyle tek bir koyu kütleye karışıyordu. Görünmeyen bir profil profil değildir. Üç varyant aynı kareden çekilip soruldu (koyu · açık boyalı · orta ahşap); kullanıcı <i>“uyumlu bir renk olsun”</i> dedi, üç profil de tek açık tona alındı. Duvar artık “koyu lambri + boyalı çerçeve” olarak okunuyor.<br><br><b>“Hareket edince renk değişmesin” şartı ölçüldü.</b> İnce şeritlerde bu gerçek bir risk — daha önce reddedilen doku denemesinin titremesi tam olarak buydu. Kamera on adımda duvara yaklaştırıldı, şeritler ekranda dokuz piksel kaydı ve her karede parlaklık ölçüldü: <b>hiç oynamadı</b>.",
+      "maddeler": [
+        "Süpürgelik zeminin biraz <b>altından</b> başlıyor, kartonpiyer duvarın tepesini biraz <b>aşıyor</b> — hiçbir yüzey aynı düzlemde çakışmıyor",
+        "Profillerin taşma miktarı <b>kademeli</b>: en çok süpürgelik taşıyor, duvar zemine oturuyor",
+        "Titreme ölçümü: parlaklık yayılımı <b>%0</b> (171,7 → 171,7), koyu lambri bandı da sabit",
+        "Bütün duvarlar ve profiller <b>tek çizim çağrısı</b>: profiller eklendiği hâlde 49 → <b>40</b> (geniş ekranda 71 → 63)",
+        "Mağaza önizlemesi aynı bileşenden çiziyor — eski kopya silindi",
+        "Testler <b>201/201</b> (8 yeni), derleme temiz, konsol hatasız"
+      ],
+      "not": "<b>Bu oturumun dersi:</b> plandaki sayı ölçümü geçmiyorsa plan değil ölçüm kazanır — ama <b>renk kararını kullanıcı verir</b>. Geçen oturumda öğrenilen şey (tek bir “sonra” görüntüsü karar için yetmez, varyantlar aynı kareden çekilip sorulur) bu sefer baştan uygulandı ve bir tur geri alma tasarruf edildi.<br><br><b>Faz G tamam:</b> ışık · gölge kararı (sonuç: hiç gölge yok) · zemin geometrisi · duvar bitimi. Sahnenin görsel tabanı artık modellerden bağımsız oturmuş durumda. Sırada duman testinin yedi kırık adımı, sonra Faz A temizliği."
+    },
     {
       "tarih": "06.09.2026",
       "etiket": "Faz G · 3. oturum",

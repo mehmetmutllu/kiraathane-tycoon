@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { useThree } from '@react-three/fiber';
 import { FLOOR_THEMES, WALL_THEMES } from '../../config/palette';
 import { FloorPattern } from '../three/floorPattern';
+import { WallPanels } from '../three/wallPanel';
 
 // Oyun kamerasıyla AYNI duruş: konum (0,d,+d), bakış (0,ty,0), fov 50 (Scene.tsx CameraRig dili).
 export function FixedCam({ d, ty = 0.45 }: { d: number; ty?: number }) {
@@ -46,26 +47,10 @@ export function FloorPatch({ floorId, checkerHalf = 4 }: { floorId: string; chec
   );
 }
 
-// Duvar parçası: Scene.tsx WallPiece ile birebir (krem üst + lambri kuşağı; h=1.2, wh=0.5).
-function PreviewWall({ x, z, w, dDepth, theme }: { x: number; z: number; w: number; dDepth: number; theme: { cream: string; wainscot: string } }) {
-  const h = 1.2;
-  const wh = 0.5;
-  return (
-    <group>
-      <mesh position={[x, wh + (h - wh) / 2, z]}>
-        <boxGeometry args={[w, h - wh, dDepth]} />
-        <meshStandardMaterial color={theme.cream} />
-      </mesh>
-      <mesh position={[x, wh / 2, z]}>
-        <boxGeometry args={[w + 0.04, wh, dDepth + 0.04]} />
-        <meshStandardMaterial color={theme.wainscot} />
-      </mesh>
-    </group>
-  );
-}
-
 // TEK arka duvar (L köşe/kutu YOK) — ferah salon hissi. Kamera -Z'ye baktığından duvar uzakta, geniş.
+// G3: duvar SAHNEYLE AYNI bileşenden (`WallPanels`) çizilir — süpürgelik/çıta/kartonpiyer profilleri
+// dahil, mağazada gördüğün duvar salondakiyle birebir. (Eski `PreviewWall` kopyası silindi.)
 export function WallBack({ wallId, z = -2.6, width = 14 }: { wallId: string; z?: number; width?: number }) {
   const th = WALL_THEMES[wallId] ?? WALL_THEMES.krem;
-  return <PreviewWall x={0} z={z} w={width} dDepth={0.2} theme={th} />;
+  return <WallPanels slabs={[{ x: 0, z, w: width, d: 0.2, theme: th }]} />;
 }

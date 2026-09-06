@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { floorQuads } from '../src/components/three/floorPattern';
-import { FLOOR_THEMES } from '../src/config/palette';
+import { wallBoxes, WALL_H, WAINSCOT_H } from '../src/components/three/wallPanel';
+import { FLOOR_THEMES, WALL_THEMES } from '../src/config/palette';
 import {
   economyConfig,
   PRODUCTS,
@@ -3353,5 +3354,75 @@ describe('G2 — zemin deseni (floorQuads)', () => {
       expect(q.w).toBeCloseTo(1.3, 6);
     }
     expect(qs.length).toBe(50); // 10x10 ızgarada satrancın yarısı
+  });
+});
+
+describe('G3 — duvar bitimi (wallBoxes: süpürgelik + lambri üstü çıta + kartonpiyer)', () => {
+  const theme = WALL_THEMES.krem;
+  const slab = { x: 2, z: -5, w: 6, d: 0.2, theme };
+  const boxes = wallBoxes(slab);
+  const bot = (b: { y: number; h: number }) => b.y - b.h / 2;
+  const top = (b: { y: number; h: number }) => b.y + b.h / 2;
+  const out = (b: { w: number }) => (b.w - slab.w) / 2; // yüz başına dışa taşma
+  const [body, wainscot, skirt, rail, cornice] = boxes;
+
+  it('parça başına 5 kutu: gövde + lambri + üç profil', () => {
+    expect(boxes.length).toBe(5);
+    // Üç profil de TEK ton: koyu ahşap denendi, lambriyle tek kütleye karıştı (ss/g3-karsilastirma.png).
+    expect(boxes.map((b) => b.color)).toEqual([theme.cream, theme.wainscot, theme.trim, theme.trim, theme.trim]);
+  });
+
+  it('kuşaklar duvarı boydan boya kaplar: lambri 0→0,5, badana 0,5→1,2', () => {
+    expect(bot(wainscot)).toBeCloseTo(0, 9);
+    expect(top(wainscot)).toBeCloseTo(WAINSCOT_H, 9);
+    expect(bot(body)).toBeCloseTo(WAINSCOT_H, 9);
+    expect(top(body)).toBeCloseTo(WALL_H, 9);
+  });
+
+  it('süpürgelik zeminin ALTINDAN başlar (y=0 eş düzlem yüz yok) ve 0,08 görünür', () => {
+    expect(bot(skirt)).toBeLessThan(0);
+    expect(top(skirt)).toBeCloseTo(0.08, 9);
+  });
+
+  it('çıta lambrinin TAM üstüne oturur (araya boşluk/örtüşme girmez)', () => {
+    expect(bot(rail)).toBeCloseTo(WAINSCOT_H, 9);
+    expect(top(rail)).toBeCloseTo(WAINSCOT_H + 0.04, 9);
+  });
+
+  it('kartonpiyer duvar tepesini AŞAR → gövdenin üst yüzü gömülür (z-fighting yok)', () => {
+    expect(bot(cornice)).toBeLessThan(WALL_H);
+    expect(top(cornice)).toBeGreaterThan(WALL_H);
+  });
+
+  it('çıkıntılar KADEMELİ: gövde < lambri < kartonpiyer < çıta < süpürgelik', () => {
+    const outs = [body, wainscot, cornice, rail, skirt].map(out);
+    for (let i = 1; i < outs.length; i++) expect(outs[i]).toBeGreaterThan(outs[i - 1]);
+    // Taşma her iki eksende AYNI (profil duvarı sarar, yalnız bir yüzde durmaz).
+    for (const b of boxes) expect((b.d - slab.d) / 2).toBeCloseTo(out(b), 9);
+  });
+
+  it('profiller duvar parçasının merkezine hizalı kalır (kapı boşluğuna taşmaz)', () => {
+    for (const b of boxes) {
+      expect(b.x).toBe(slab.x);
+      expect(b.z).toBe(slab.z);
+    }
+  });
+
+  it('profiller lambriden ve badanadan AÇIK: koyu kütleye karışmaz (D-054 — gölge yok)', () => {
+    const lum = (hex: string) => {
+      const n = parseInt(hex.slice(1), 16);
+      return 0.2126 * ((n >> 16) & 255) + 0.7152 * ((n >> 8) & 255) + 0.0722 * (n & 255);
+    };
+    for (const t of Object.values(WALL_THEMES)) {
+      expect(lum(t.trim)).toBeGreaterThan(lum(t.wainscot) + 60); // lambriden AÇIKÇA ayrışır
+      expect(lum(t.trim)).toBeGreaterThan(lum(t.cream) + 10); // badanadan da bir tık açık
+    }
+  });
+
+  it('renkler TEMADAN gelir — duvar teması değişince profiller de değişir', () => {
+    const mavi = wallBoxes({ ...slab, theme: WALL_THEMES.mavi });
+    expect(mavi.map((b) => b.color)).not.toEqual(boxes.map((b) => b.color));
+    expect(mavi[2].color).toBe(WALL_THEMES.mavi.trim);
+    expect(mavi[4].color).toBe(WALL_THEMES.mavi.trim);
   });
 });

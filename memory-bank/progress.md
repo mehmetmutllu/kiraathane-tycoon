@@ -1092,7 +1092,7 @@ sapması) + `tile` (0,7 kare); derz **çizgi değil boşluk**. Sonra G3 duvar bi
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Referans: ikravakfi Mali Takip Panosu (f467bc3f) — iskelet alındı, görsel imza kıraathanenin.
 
-**Oturum bütçesi (TOPLAM 65 · YAPILAN 38 · %58):**
+**Oturum bütçesi (TOPLAM 65 · YAPILAN 39 · %60):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -1105,14 +1105,14 @@ Referans: ikravakfi Mali Takip Panosu (f467bc3f) — iskelet alındı, görsel i
 | | DN denetim + arşiv | 2/2 ✅ |
 | **Kuruluş toplam** | | **28/28 ✅** |
 | Yayın programı (1 Eyl →) | P plan ve maket | 6/6 ✅ |
-| | **G görsel taban** | **3/4 🔧** (G0 ışık ✅ · G1 gölge modeli ✅ = gölgesiz · G2 zemin geometrisi ✅ · sıradaki G3 duvar bitimi) |
+| | **G görsel taban** | **4/4 ✅** (G0 ışık · G1 gölge modeli = gölgesiz · G2 zemin geometrisi · G3 duvar bitimi) |
 | | A temizlik | 0/3 ⏳ |
 | | B model geçişi | 0/5 ⏳ |
 | | C zincir ve denge | 0/5 ⏳ |
 | | D meta katman | 0/5 ⏳ |
 | | E arayüz ve cila | 1/4 🔧 |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **10/37** |
+| **Program toplam** | | **11/37** |
 
 Kuruluş dönemi sayısı **commit kaydından türetildi** (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. Panoda bu açıkça yazıyor.
@@ -1179,3 +1179,35 @@ lambri üstü çıta 0,04 + kartonpiyer) → **G4/G5 KayKit**. Faz A'dan önce s
 **Bu oturumun tuzağı (kayda geçti):** Vite **HMR sonrası dinamik `import()` FARKLI modül örneği**
 döndürüyor → o örnekten yapılan `useGame.setState` uygulamanın store'una yazmıyor. Tarayıcıda durum
 değiştirirken her zaman `window.__setState` kullanılmalı; yarım saat "tema değişmiyor" sanıldı.
+
+## FAZ G3 — DUVAR BİTİMİ ✅ (2026-09-06) — **FAZ G TAMAM (4/4)**
+Gerekçe + kanıt: **`docs/gorsel/README.md` §G3**; A/B `ss/g3-karsilastirma.png` (ÖNCE ↔ A ↔ B ↔ C,
+aynı kare) · `ss/g3-oncesi-genis.png` ↔ `ss/g3-sonrasi-genis.png` · `ss/g3-hareket-testi.png`.
+
+- ✅ **YENİ `src/components/three/wallPanel.tsx`:** `wallBoxes()` saf fonksiyon (**8 birim testi**)
+  + `WallPanels` bileşeni — **TÜM duvarlar ve profiller TEK InstancedMesh** (birim küp + per-instance
+  renk, matrisler mount'ta BİR KEZ). Eski `WallPiece` (parça başına 2 mesh) silindi.
+- ✅ **Üç profil:** süpürgelik 0,08 (zeminin 0,02 altından başlar → y=0'da eş düzlem yüz yok) ·
+  lambri üstü çıta 0,04 · kartonpiyer 0,05 (+0,015 duvar tepesini aşar → gövdenin üst yüzü gömülür).
+  Çıkıntılar **kademeli**: gövde 0 < lambri 0,02 < kartonpiyer 0,045 < çıta 0,05 < süpürgelik 0,06.
+- 🔄 **Renk: plandaki KOYU ahşap (#5d4037) denendi, ölçüldü, REDDEDİLDİ** — süpürgelik + çıta lambri
+  kuşağıyla tek koyu kütleye karışıyor, telefon kadrajında hiç okunmuyor. Üç varyant aynı kareden
+  çekilip kullanıcıya soruldu; kullanıcı *"uyumlu bir renk olsun"* dedi → üç profil de **TEK açık
+  ton** (`theme.trim`, tema başına bir renk). `WallTheme` = cream + wainscot + trim.
+- ✅ **Titreme testi (kullanıcı şartı: "hareket edince renk değişiyor o olmasın"):** kamera 10 adımda
+  duvara yaklaştırıldı, şeritler ekranda 9 px kaydı, tepe parlaklık her karede **171,7 — yayılım %0**.
+- ✅ **Draw call AZALDI** (profiller eklendiği hâlde): telefon **49 → 40**, geniş **71 → 63**.
+- ✅ **Tek kaynak:** mağaza önizlemesi (`SalonSlice.WallBack`) AYNI bileşeni kullanır; `PreviewWall`
+  kopyası silindi (G2'de zemin için kurulan kural).
+
+**Doğrulama:** `npm run test` **201/201** (8 yeni) · `npm run build` temiz · `npx tsc --noEmit` temiz ·
+`npx eslint src/` 15 → 16 (tek fark `wallPanel.tsx` react-refresh; `floorPattern.tsx` aynı deseni
+zaten tetikliyor) · `tools/smoke.mjs` **8/15 — öncesiyle aynı, regresyon yok** · Playwright **0 konsol
+hatası** (oyun + mağaza duvar sekmesi + krem/yeşil/mavi temalar).
+
+**⏳ SIRADAKİ:** Faz G bitti. Faz A'ya (temizlik) geçmeden `tools/smoke.mjs`'in **7 kırık adımı**
+onarılmalı (kök neden `q_coin` questBase yarışı → domino). Sonra G4/G5 KayKit yerleşimi Faz B'nin
+model geçişiyle birlikte değerlendirilecek.
+
+**Açık soru (kullanıcıya sorulacak):** *"hareket edince renk değişiyor"* — G3 profilleri ölçümle
+titremiyor (%0). Kullanıcının gördüğü başka bir yerde olabilir (hangi ekran/hangi obje?).

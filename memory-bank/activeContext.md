@@ -2,6 +2,71 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-06 — G3 KAPANDI: **FAZ G TAMAM 4/4**; SAVE v30 değişmedi)
+
+**G3 duvar bitimi bitti.** Duvar artık iki düz kuşak değil, üç profille biten bir yüzey:
+süpürgelik (0,08) + lambri üstü çıta (0,04) + kartonpiyer (0,05). Tam rapor:
+**`docs/gorsel/README.md` §G3**.
+
+### Yapılan
+- **YENİ `src/components/three/wallPanel.tsx`** — `wallBoxes()` saf fonksiyon (8 birim testi) +
+  `WallPanels`: **TÜM duvarlar + profiller TEK InstancedMesh** (birim küp + per-instance renk,
+  matrisler mount'ta bir kez). Eski `WallPiece` (parça başına 2 mesh) SİLİNDİ.
+- **Çıkıntılar kademeli:** gövde 0 < lambri 0,02 < kartonpiyer 0,045 < çıta 0,05 < süpürgelik 0,06.
+  Süpürgelik zeminin 0,02 ALTINDAN başlar, kartonpiyer duvar tepesini 0,015 AŞAR → hiçbir yüz
+  eş düzlemde kalmaz (z-fighting yok).
+- **Tek kaynak:** mağaza önizlemesi (`SalonSlice.WallBack`) aynı bileşeni kullanır; `PreviewWall`
+  kopyası silindi (G2'de zemin için kurulan kural).
+- **Draw call AZALDI:** telefon 49 → **40**, geniş 71 → **63** (profiller eklendiği hâlde).
+
+### Renk kararı — plandaki koyu ahşap ÖLÇÜLDÜ ve reddedildi
+Plan `#5d4037` diyordu; uygulandı ve telefon kadrajında **süpürgelik + çıta lambri kuşağıyla tek
+koyu kütleye karıştı** — görünmeyen profil profil değildir. Üç varyant AYNI kareden çekilip
+kullanıcıya soruldu (`ss/g3-karsilastirma.png`: ÖNCE ↔ A koyu ↔ B açık ↔ C orta ahşap).
+Kullanıcı: *"uyumlu bir renk olsun işte"* → üç profil de **TEK açık ton** (`theme.trim`).
+`WallTheme` artık cream + wainscot + trim (tema başına tek profil rengi).
+
+### Kullanıcının ikinci şartı ve ölçümü
+Kullanıcı: *"hareket edince renk değişiyor o olmasın çok çirkin duruyor öyle olunca"*.
+İnce şeritte gerçek risk (dokuda reddedilen moiré'nin geometrideki karşılığı) → **ölçüldü**:
+kamera 10 adımda duvara yaklaştırıldı, şeritler ekranda 9 px kaydı, şeridin tepe parlaklığı her
+karede **171,7 — yayılım %0**. Yatay hareket satır profilini zaten değiştirmiyor (duvar yatay
+olarak tekdüze), bu yüzden sınav DERİNLİK hareketiyle yapıldı. Kanıt `ss/g3-hareket-testi.png`.
+
+### Doğrulama
+`npm run test` **201/201** (8 yeni) · `npm run build` temiz · `npx tsc --noEmit` temiz ·
+`npx eslint src/` **15 → 16** (tek fark `wallPanel.tsx` react-refresh — `floorPattern.tsx` aynı
+deseni zaten iki kez tetikliyor) · `tools/smoke.mjs` **8/15, öncesiyle aynı** · Playwright
+**0 konsol hatası** (oyun + mağaza duvar sekmesi + krem/yeşil/mavi temalar).
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+1. **Kullanıcıya açık soru:** *"hareket edince renk değişiyor"* — G3 profilleri ölçümle titremiyor
+   (%0). Kullanıcının gördüğü şey başka bir yerde olabilir. **Nerede/hangi objede gördüğünü sor**,
+   sonra o kadrajda aynı kare-kare ölçümü uygula. Tahminle dokunma.
+2. **Faz A'ya geçmeden `tools/smoke.mjs`'in 7 kırık adımı** onarılmalı (kök neden `q_coin` questBase
+   yarışı → domino; G0'dan beri 8/15, bu oturumda da bozulmadı).
+3. G4/G5 KayKit yerleşimi Faz B model geçişiyle birlikte değerlendirilecek (paketler indirildi).
+
+### Kırmızı çizgi (duruyor)
+**"Objeler yüzüyor" hissine bir daha blob shadow ÖNERME** (D-054). G2 zemin ✅ → G3 duvar ✅ →
+sıra ışık dengesinde; gölge haritası en son çare.
+
+### Bu oturumun kalıcı dersi
+**Plandaki sayı ölçümü geçmiyorsa plan değil ölçüm kazanır — ama renk kararını kullanıcı verir.**
+G3'te plandaki `#5d4037` teknik olarak doğru uygulandı ve GÖRÜNMEDİ; doğru hamle tek bir "sonra"
+görüntüsü sunmak değil, üç varyantı aynı kareden çekip sormaktı (G1'in dersinin tekrarı, bu kez
+baştan uygulandı ve bir tur geri alma tasarruf etti).
+
+### G fazının sonunda kapatılacak artık (HÂLÂ AÇIK)
+- UI Canvas'ları (`CharacterPanel`, `SalonSlice`, `DioramaPreview`, `TableThemePreview`) hâlâ
+  eski düz `ambientLight` ile → dünya G0'da ısındı, mağaza önizlemeleri soğuk kaldı.
+
+### Bilinen, ertelenmiş
+- Maket girişinin üst çıtasında z-fighting (kullanıcı: "oyuna geçerken hallederiz").
+- Bundle 1,45 MB (three.js) — Faz F kod bölme.
+
+---
+
 ## ŞU AN (2026-09-06 — PC KASMASI ÇÖZÜLDÜ + G2 ZEMİN KAPANDI; SAVE v30 değişmedi)
 
 Bu oturumda kullanıcı **"ikisini de yap benden bir şey istemeden"** dedi → hem PC kasması hem G2

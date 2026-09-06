@@ -261,3 +261,77 @@ Playwright **0 konsol hatası** · `tools/smoke.mjs` **8/15 — öncesiyle aynı
 örneği** döndürüyor → o örnekten yapılan `useGame.setState` uygulamanın store'una yazmıyor.
 Tarayıcıda durum değiştirirken **her zaman uygulamanın kendi kancası** (`window.__setState`)
 kullanılmalı; `await import('/src/game/store.ts')` yanıltır.
+
+---
+
+# G3 — DUVAR BİTİMİ (2026-09-06) ✅
+
+**Değişen:** `src/components/three/wallPanel.tsx` (YENİ) · `src/config/palette.ts`
+(`WallTheme` tipi + `WALL_THEMES` üçlüye çıktı) · `Scene.tsx` (`WallPiece` SİLİNDİ → `WallPanels`) ·
+`SalonSlice.tsx` (`PreviewWall` kopyası SİLİNDİ, mağaza aynı bileşeni kullanıyor).
+**Kanıt:** `ss/g3-karsilastirma.png` (ÖNCE ↔ A ↔ B ↔ C, aynı kare, telefon kadrajı) ·
+`ss/g3-oncesi-genis.png` ↔ `ss/g3-sonrasi-genis.png` · `ss/g3-teshis.png` (abartma turu) ·
+`ss/g3-hareket-testi.png` (titreme testi) · `ss/g3-magaza-duvar.png` · `ss/g3-tema-yesil.png`.
+
+## Neden bu iş
+Duvar iki düz kuşaktı (krem badana + lambri) ve kutunun kendisi **hiçbir yerde bitmiyordu**:
+ne zeminle buluştuğu yerde, ne lambrinin üstünde, ne tepesinde. Gerçek bir odada bu üç hattın
+hepsinde çıkıntılı bir profil vardır; göz mekânı oradan okur. D-054 gölgeyi kapattığı için
+(G1) yatay hatları verecek başka bir araç yok.
+
+## Üç profil
+| Profil | Yükseklik | Yüz başına çıkıntı | Not |
+|---|---|---|---|
+| Süpürgelik | 0,08 (+0,02 zemin altına gömülü) | **0,06** | En çok o taşar; y=0'da eş düzlem yüz kalmasın diye zeminin altından başlar |
+| Lambri üstü çıta | 0,04 | 0,05 | Lambri kuşağını üstten kapatır |
+| Kartonpiyer / üst kapak | 0,05 (+0,015 duvar tepesini aşar) | 0,045 | Taşma sayesinde gövdenin üst yüzü gömülür → z-fighting yok |
+
+Çıkıntılar **kademeli**: gövde 0 < lambri 0,02 < kartonpiyer 0,045 < çıta 0,05 < süpürgelik 0,06.
+Hiçbir yüz eş düzlemde kalmaz.
+
+## Renk kararı — koyu ahşap DENENDİ ve ÖLÇÜLDÜ, reddedildi
+Plan süpürgeliği `#5d4037` (koyu ahşap) diyordu. Uygulandı ve telefon kadrajında ölçüldü:
+**süpürgelik + çıta, lambri kuşağıyla TEK bir koyu kütleye karışıyor** — görünmeyen profil
+profil değildir. Üç varyant AYNI kareden çekildi (`ss/g3-karsilastirma.png`):
+
+| | Süpürgelik | Sonuç |
+|---|---|---|
+| A | `#5d4037` koyu ahşap (plandaki) | Zemin hattı **okunmuyor**; lambriyle tek kütle |
+| **B** | **`#f4ead3` boyalı açık — YÜRÜRLÜKTE** | Duvar zemine parlak bir hatla oturuyor, 412 px'te de okunuyor |
+| C | `#8d6e63` orta ahşap | Ayrışıyor ama telefonda sönük |
+
+Kullanıcı kararı: *"uyumlu bir renk olsun işte"* → üç profil de **TEK ton** (`theme.trim`)
+paylaşır. Duvar "koyu lambri + boyalı çerçeve" olarak okunur ve tema başına tek renk ayarlanır.
+Gölge olmadığı için (D-054) yatay hattı ayıran **tek sinyal değer farkıdır**.
+
+## Titreme (shimmer) testi — kullanıcı şartı
+Kullanıcı: *"hareket edince renk değişiyor o olmasın çok çirkin duruyor öyle olunca"*. İnce
+şeritte gerçek bir risk (dokuda reddedilen moiré'nin geometrideki karşılığı), o yüzden **ölçüldü**:
+kamera 10 adımda duvara yaklaştırıldı, şeritler ekranda **9 piksel** kaydı, her karede şeridin
+tepe parlaklığı ölçüldü → **171,7 → 171,7, yayılım %0**. Koyu lambri bandı da sabit (29,4).
+Yatay hareket satır profilini zaten değiştirmiyor (duvar yatay olarak tekdüze) — bu yüzden
+sınav DERİNLİK hareketiyle yapıldı. Kanıt: `ss/g3-hareket-testi.png`.
+
+## Maliyet — draw call AZALDI
+Parça başına 2 mesh (3 zone'da ~26 draw call) → **hepsi TEK InstancedMesh** (birim küp + per-instance
+renk; matrisler mount'ta bir kez yazılır, floorPattern.tsx deseni). Profiller eklendiği hâlde:
+
+| Kadraj | Önce | Sonra |
+|---|---|---|
+| Telefon 412×915 | 49 draw call | **40** |
+| Geniş 1400×900 | 71 draw call | **63** |
+
+## Tek kaynak
+`wallBoxes()` **saf fonksiyon** (8 birim testi: parça başına 5 kutu · kuşakların duvarı boydan boya
+kaplaması · süpürgeliğin zemin altından başlaması · çıtanın lambri üstüne tam oturması · kartonpiyerin
+duvar tepesini aşması · çıkıntı kademesinin monoton olması · profillerin parça merkezine hizalı
+kalması (kapı boşluğuna taşmaz) · profil tonunun lambriden ve badanadan açık olması).
+Mağaza önizlemesi (`SalonSlice.WallBack`) **aynı bileşeni** kullanır — eski `PreviewWall` kopyası
+silindi (G2'de zemin için kurulan kural).
+
+## Doğrulama
+`npm run test` **201/201** (8 yeni) · `npm run build` temiz · `npx tsc --noEmit` temiz ·
+`npx eslint src/` **15 → 16** (tek fark `wallPanel.tsx`'in react-refresh uyarısı; `floorPattern.tsx`
+aynı deseni zaten iki kez tetikliyor: test edilebilir saf fonksiyon + bileşen aynı dosyada) ·
+`tools/smoke.mjs` **8/15 — öncesiyle aynı, regresyon yok** · Playwright **0 konsol hatası**
+(oyun + mağaza duvar sekmesi + krem/yeşil/mavi temalar).

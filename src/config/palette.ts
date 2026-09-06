@@ -118,11 +118,23 @@ export function floorSwatch(id: string): [string, string] {
   return [t.base, t.grout ?? t.alt];
 }
 
-/** Kozmetik duvar temaları (WP6) — üst badana + lambri kuşağı ikilisi. */
-export const WALL_THEMES: Record<string, { cream: string; wainscot: string }> = {
-  krem: { cream: '#e6d7b8', wainscot: '#6d4c41' },
-  yesil: { cream: '#cfe3cd', wainscot: '#3f6347' },
-  mavi: { cream: '#cfe0ea', wainscot: '#34557a' },
+/**
+ * Kozmetik duvar temaları (WP6). G3 (2026-09-06): ikili (badana + lambri) → ÜÇLÜ.
+ * Duvar artık düz iki kuşak değil, BİTİMİ olan bir yüzey. Üç profil (süpürgelik · lambri üstü
+ * çıta · kartonpiyer) TEK bir `trim` tonunu paylaşır: duvar "koyu lambri + boyalı çerçeve"
+ * olarak okunur ve tema başına tek renk ayarlanır (kullanıcı: "uyumlu bir renk olsun").
+ *
+ * TRIM NEDEN AÇIK: ilk denemede süpürgelik + çıta plandaki koyu ahşaptı (#5d4037) ve ekran
+ * görüntüsünde lambri kuşağıyla TEK bir koyu kütleye karıştı — görünmeyen profil profil
+ * değildir (ss/g3-karsilastirma.png, A↔B↔C). Gölge olmadığı için (D-054) yatay hattı ayıran
+ * tek sinyal DEĞER farkı. Çizim `components/three/wallPanel.tsx`.
+ * Mağaza kartı swatch'ı yalnız cream+wainscot kullanır (değişmedi).
+ */
+export type WallTheme = { cream: string; wainscot: string; trim: string };
+export const WALL_THEMES: Record<string, WallTheme> = {
+  krem: { cream: '#e6d7b8', wainscot: '#6d4c41', trim: '#f4ead3' },
+  yesil: { cream: '#cfe3cd', wainscot: '#3f6347', trim: '#e9f2e6' },
+  mavi: { cream: '#cfe0ea', wainscot: '#34557a', trim: '#eaf2f8' },
 };
 
 /**
