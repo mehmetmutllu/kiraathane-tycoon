@@ -3,51 +3,26 @@ import { Decimal, D } from './decimal';
 import type { Coin, Dish, Npc, Vec3, Waiter } from './types';
 import {
   economyConfig as C,
-  upgradeOutputMultiplier,
-  upgradeCost,
-  requiresMet,
-  brewQueueCapacity,
   cupPoolCapacity,
-  tableUpgradeCost,
-  tableTip,
-  tablePatience,
-  tableSeats,
-  rollGroupSize,
   derivedFromPads,
-  upgradeFillRateFor,
-  waiterSpeedFor,
   waiterSpeedNextCost,
   waiterSpeedMaxTier,
-  dishSpeedFor,
   dishSpeedNextCost,
   dishSpeedMaxTier,
-  levelProgress,
   MAX_ZONES,
   TABLES_PER_ZONE,
-  zoneOfTable,
-  PRODUCTS,
-  zoneProduct,
   defaultFloorTheme,
   charMaxTier,
   charNextCost,
   waiterTrayMaxTier,
   waiterTrayNextCost,
-  waiterTrayCapacityFor,
   dishCarryNextCost,
-  dishCarryCapacityFor,
   dishCarryMaxTier,
   type WaiterKind,
   type WaiterUpgrades,
   trayCapacityFor,
-  attractRadiusFor,
-  playerSpeedFor,
   type CharStat,
   type CharUpgrades,
-  type PadDef,
-  type GateState,
-  type Requires,
-  type QuestDef,
-  type QuestTarget,
 } from '../config/economy.config';
 import {
   defaultSave,
@@ -62,521 +37,70 @@ import {
   type SaveStats,
   type SaveSettings,
 } from './save';
-import { buildNavGrid, findNavPath, type NavGrid, type NavSolid } from './nav';
 
-// ---- Sahne yerleşimi (dünya birimi, zemin y=0) ----
-// Her pad/zone, açtığı/etkilediği objenin TAM yerinde durur (mekânsal tycoon).
-// FAZ 2 REDESIGN v6 (D-017 §1, kullanıcı feedback 2026-06-07: "tek noktada çay-al+servis yapılıyor, yürüme
-// döngüsü yok"): MUTFAK ARKA DUVARDA KÜME (ocak+bulaşık+semaver bitişik, AYRILMAZ); MASALAR ÖNE UZAK 2×2 →
-// her masa↔ocak mesafesi >2R=3.2 (ön sıra ~4.9, hedef ~5) → tek noktada "çay-al+servis" veya "kirli-al+yıka"
-// İMKÂNSIZ, yürüme döngüsü ZORLANIR. Orta geniş koridor (kolon ±2.4, gap 4.8). Collision: oyuncu mobilya+
-// sandalye+aktör (HAPSETMEZ); garson/bulaşıkçı masa gövdelerinden GERÇEK rota ile dolaşır (nav.ts BFS).
-// --- ZONE ŞABLONU (Faz 3a + D-022): zone-1 iç yerleşimi = bugüne kadarki mutlak koordinatlar.
-// Global düz diziler (tables 8 slot, stations[2], ...) eski kodun index mantığını korur
-// (zone z → masa slotları [z*4, z*4+4)).
-// Kullanıcı feedback (2026-06-11): bölme duvarı kalkınca iki salon arasında ölü boşluk kaldı →
-// zone'lar bitişik (zone-1 maxX = zone-2 minX = 5.3; duvar YOK, sınır zemin çizgisi).
-// --- YERLEŞİM v3 (2026-06-11 kullanıcı feedback'i, D-025): PER-ZONE MUTFAK + AYNALI ŞABLON.
-// Şikayetler: (a) çay ocağı + bulaşık tek köşede küme; (b) zone-2 servisi sol şeritten → garson turu
-// ~19sn > sabır 18sn (müşteri kalkar); (c) yükseltme pad alanı dar; (d) masa pad'leri ocağa giriyor;
-// (e) ekran alt duvara yakın, üstler boş. Çözüm: HER salonun çay ocağı KENDİ yan duvarında
-// (z1 sol / z2 sağ = şablonun zone merkezine göre AYNALISI), bulaşık ARKA duvarda (ocaktan ayrı),
-// masalar sağa+yukarı kaydı, masa pad'leri masanın kapı-tarafı ÇAPRAZINDA (ocak tarafında değil).
-// Garson/bulaşıkçı turu artık zone'dan bağımsız kısa (z2 ocak→en uzak masa ≈ 8.8 birim ≈ z1 ile aynı).
-const ZONE_DX = 10.6;
-// M2 (2026-06-12, onaylı plan): kat 2×2 IZGARA. Revizyon (2026-06-11 kullanıcı): z2 (TOST)
-// arka-SAĞA taşındı; arka-sol hücre REZERV arsa (zone yok — içerik sonra tasarlanacak).
-// z0 ön-sol, z1 ön-sağ, z2 arka-sağ. Arka sıra ön sıranın −z tarafına ZONE_DZ kadar kaydırılır.
-const ZONE_DZ = 10.3; // sıra derinliği (zone alanı z: -5.3..5.0)
-/** Zone'un ızgara kolonu (0 sol / 1 sağ) ve sırası (0 ön / 1 arka). */
-export const zoneCol = (z: number) => (z < 2 ? z : 1);
-export const zoneRow = (z: number) => (z < 2 ? 0 : 1);
-/** (col,row) hücresindeki zone index'i; zone yoksa -1 (arka-sol = rezerv arsa). */
-export const zoneAt = (col: number, row: number) => {
-  for (let z = 0; z < MAX_ZONES; z++) if (zoneCol(z) === col && zoneRow(z) === row) return z;
-  return -1;
-};
-const ZONES = Array.from({ length: MAX_ZONES }, (_, z) => z);
-// Zone z için şablon noktası: tek kolonlar zone merkezine göre x-AYNALI (mutfak kendi yan duvarında
-// kalır), arka sıra −ZONE_DZ kaydırılır (şablon yan-duvar temelli olduğundan rotasyon gerekmez).
-const mir = (z: number, v: readonly [number, number, number]): Vec3 => [
-  zoneCol(z) ? ZONE_DX - v[0] : v[0],
-  v[1],
-  v[2] - zoneRow(z) * ZONE_DZ,
-];
-/** Zone-yerel şablon noktasını dünyaya çevir (Scene görselleri için dışa açık). */
-export const zonePoint = mir;
+import {
+  LAYOUT,
+} from './layout';
+// Yerleşim/geometri Faz A2'de layout.ts'e taşındı; eski `from './store'` importları kırılmasın diye
+// buradan yeniden dışa aktarılır (tek tanım, iki kapı).
+export { LAYOUT, PAD_RADIUS, zoneCol, zoneRow, zoneAt, zonePoint } from './layout';
+export type { RVec3 } from './layout';
 
+import {
+  SAVE_INTERVAL,
+  CAM_FOCUS_TTL,
+  keepIdentity,
+  totalCupPool,
+  tableSoftMaxLevel,
+  stationSoftMaxLevel,
+  stationUpgradeCost,
+  incomeRate,
+  revealKeys,
+  questView,
+  questFocusPos,
+  computeOfflineEarned,
+  type ActiveZone,
+  type GameNotice,
+  type QuestView,
+  type CamFocus,
+  tableThemeUnlocked,
+} from './rules';
+// Kurallar Faz A2'de rules.ts'e taşındı; eski `from './store'` importları kırılmasın diye yeniden
+// dışa aktarılır (tek tanım, iki kapı).
+export {
+  FILL_TEA,
+  FILL_TABLE,
+  TEA_PRICE,
+  brewTime,
+  brewThroughputMult,
+  incomeRate,
+  dirtyTables,
+  totalCupPool,
+  occupiedSeats,
+  findTableForGroup,
+  visiblePads,
+  currentPad,
+  availableOptionalPads,
+  upgradeZoneUnlocked,
+  upgradeZoneUnlockedZ,
+  tableUpgradeZoneUnlocked,
+  tableUpgradeUnlockedZ,
+  tableSoftMaxLevel,
+  tableNextCost,
+  tableThemeUnlocked,
+  stationSoftMaxLevel,
+  stationUpgradeCost,
+  stationUpgradeCostZ,
+  computeOfflineEarned,
+  questTargetMet,
+  questCounterValue,
+  questFocusPos,
+  waiterPadId,
+} from './rules';
+export type { ActiveZone, GameNotice, QuestView, QuestCtx, CamFocus } from './rules';
 
-// Masa şablonu (zone-yerel): 2×2, sağa+yukarı kaymış (kolonlar -1.4/3.7, sıralar 2.55/-0.95).
-// Koltuklar CHAIR_SPOTS/FOOD_CHAIR_SPOTS ofsetlerinden türetilir (Y2); upgradeSpot = kapı-tarafı
-// çapraz köşe (orta koridora bakar; ocak/bulaşık tarafına TAŞMAZ; dwell hareketsiz-dolum olduğundan
-// koridordan yürüyerek geçmek para çekmez).
-// Açılış sırası ÖN sıradan (kapıya yakın, ocağa uzak — başlangıç masası ocaktan >4 br: yürüme
-// döngüsü en baştan zorlanır, D-017 §1) → arka sıra sonra açılır.
-// Ferahlama (turu-5 m.12, kamera-map-plan B): kolon aralığı 4.4→5.1 (net koridor ~1.5→2.2),
-// sıra aralığı 2.9→3.5 (net koridor 0.0→~0.6 — dikey aradan artık yürünebilir). Zone alanı SABİT.
-// Sol kolon −1.6 yerine −1.4: arka-sol masa ocağın çay-al+servis dairesi birleşiğinin DIŞINDA
-// kalmalı (>3.2 br; −1.6'da 3.00'a düşüyordu, şimdi 3.33). Açılım öne (+z) verildi.
-const BASE_TABLES = [
-  { table: [-1.4, 0, 2.55], upgradeSpot: [-0.2, 0, 3.75] },
-  { table: [3.7, 0, 2.55], upgradeSpot: [2.5, 0, 3.75] },
-  { table: [-1.4, 0, -0.95], upgradeSpot: [-0.2, 0, 0.25] },
-  { table: [3.7, 0, -0.95], upgradeSpot: [2.5, 0, 0.25] },
-] as const;
+import { createTickCtx, runTick } from './tick';
 
-// Sandalye yerleşimi (masaya göre DÜNYA-ofseti; aynalanmaz — Tables.tsx aynı listeden çizer, Y2 tek kaynak).
-// İlk spot = ana oturma yeri (eski .seat); koltuk doluluğu spot sırasıyla dolar.
-// Çay masası: 4 yana tabure (S, N, E, W). Yemek masası (Y1): dikdörtgenin uzun kenarlarında
-// 2'ye 2 KARŞILIKLI sandalye (G-batı, K-batı, G-doğu, K-doğu) — 2 koltukta karşılıklı çift oturur.
-const CHAIR_SPOTS: readonly [number, number][] = [
-  [0, 0.78],
-  [0, -0.78],
-  [0.78, 0],
-  [-0.78, 0],
-];
-const FOOD_CHAIR_SPOTS: readonly [number, number][] = [
-  [-0.35, 0.78],
-  [-0.35, -0.78],
-  [0.35, 0.78],
-  [0.35, -0.78],
-];
-
-const ALL_TABLES = ZONES.flatMap((z) =>
-  BASE_TABLES.map((t) => {
-    const table = mir(z, t.table);
-    // Y2: koltuk POZİSYONLARI spot listesinden türetilir; seats[0] eski .seat ile birebir aynı
-    // (çay [0,0.78]; yemek Y1'in x−0.35 G-batı sandalyesi).
-    const spots = zoneProduct(z) === 'tost' ? FOOD_CHAIR_SPOTS : CHAIR_SPOTS;
-    const seats = spots.map(([sx, sz]) => [table[0] + sx, 0.6, table[2] + sz] as Vec3);
-    return {
-      table,
-      seat: seats[0],
-      seats,
-      upgradeSpot: mir(z, t.upgradeSpot),
-    };
-  }),
-);
-
-// Y1 (yemek alanı kimliği, docs/yemek-alani-garson-plan.md §4.1): TOST salonunun (z2) tezgâhı yan
-// duvarda değil ARKA duvara paralel "counter" — önü güneye (salona) bakar. Pickup/garson-evi/yükseltme
-// noktaları tezgâhla birlikte döner (yan-duvar şablonuyla AYNI göreli geometri: pickup ön yüzde +0.85,
-// garson evi pickup'tan 0.9 duvar-boyu, yükseltme pad'i tezgâhtan 2.0 duvar-boyu kapı tarafında —
-// pad↔pickup ayrım değişmezi [≥pickupRadius+0.3] vitest'te tüm zone'lar için doğrulanır).
-const FOOD_ZONE = 2;
-const FOOD_STATION: Vec3 = [10.6, 0, -14.65];
-
-export const LAYOUT = {
-  // DÜNYA v2 (2026-06-11, kullanıcı tarifi; feedback-2026-06-11.md §G + D-023): duvarsız TEK SALON,
-  // TEK KAPI (ön duvar, zone-1 ortası), mutfak = SOL DUVARDA L-ŞERİDİ (ocak modülleri sol duvara paralel,
-  // zone açıldıkça şerit öne uzar; bulaşık modülleri arka duvar dibinde L'nin kısa kolu). Per-zone MEKANİK
-  // (stations[z]/dishStations[z]/personel) AYNEN korunur — yalnız FİZİKSEL konum şeride taşındı.
-  // TÜM müşteriler tek kapıdan girer/çıkar (entrances/streets aynı nokta; dizi geri-uyum için kaldı).
-  entrances: ZONES.map(() => [0, 0.6, 4.8] as Vec3),
-  streets: ZONES.map(() => [0, 0.6, 8.0] as Vec3),
-  entrance: [0, 0.6, 4.8] as Vec3, // alias (testler/eski kod)
-  street: [0, 0.6, 8.0] as Vec3,
-  player: [0, 0.6, 1.5] as Vec3,
-  // Ocak modülleri (D-025 per-zone mutfak): sol kolon SOL duvarda, sağ kolon SAĞ duvarda (aynalı);
-  // arka sıra aynı şablonun −z kopyası. Arkada çaycı koridoru (~0.55) her zone'da korunur.
-  stations: ZONES.map((z) => (z === FOOD_ZONE ? FOOD_STATION : mir(z, [-4.35, 0, -2.5]))),
-  // Modül dönüşü: ön yüz salona bakar (sol kolon +x → +90°; sağ kolon −x → −90°).
-  // Y1: yemek zone'unun tezgâhı arka duvarda → dönüşü 0 (ön yüz +z = güney).
-  stationRots: ZONES.map((z) => (z === FOOD_ZONE ? 0 : zoneCol(z) ? -Math.PI / 2 : Math.PI / 2)),
-  // Bulaşık modülü Y1'de YERİNDE kaldı (kendi yan duvarında) → dönüşü istasyondan bağımsız.
-  dishRots: ZONES.map((z) => (zoneCol(z) ? -Math.PI / 2 : Math.PI / 2)),
-  // Oynanabilir alan: 2×2 ızgaranın tamamı (tek bina). Oyuncu AÇIK zone'ların BİRLEŞİMİNE
-  // kelepçelenir (tick — L-şekil destekli union kelepçesi, M2).
-  area: { minX: -5.3, maxX: 5.3 + ZONE_DX, minZ: -5.3 - ZONE_DZ, maxZ: 5.0 },
-  // Zone başına yerel alan (zemin/duvar/kamera + kilitli "boş arsa" için).
-  zoneAreas: ZONES.map((z) => ({
-    minX: -5.3 + zoneCol(z) * ZONE_DX,
-    maxX: 5.3 + zoneCol(z) * ZONE_DX,
-    minZ: -5.3 - zoneRow(z) * ZONE_DZ,
-    maxZ: 5.0 - zoneRow(z) * ZONE_DZ,
-  })),
-  // Zone-1 | zone-2 sınır çizgisi (görsel; DUVAR YOK — D-023). Zone'lar bitişik → sınır = ortak kenar.
-  zoneBorderX: 5.3,
-  // Masa slotları — GLOBAL 8 slot (0-3 zone-1, 4-7 zone-2); zone içi 2×2 düzen değişmedi (D-017 §1).
-  tables: ALL_TABLES,
-  // Pad pozisyonları: açtıkları objenin yerinde. zone2 pad'i zone sınır çizgisinin ortasında.
-  padPos: {
-    table2: ALL_TABLES[1].table,
-    table3: ALL_TABLES[2].table,
-    table4: ALL_TABLES[3].table,
-    // Sol duvarda, çay-yükseltme noktasının altında (2026-06-11: çay pad'i ocağın altına taşındı,
-    // dolum daireleri kesişmesin diye garson pad'i güneye kaydı: ayrım 2.71 > 2×PAD_RADIUS 2.6).
-    waiter: [-4.6, 0, 2.2] as Vec3,
-    // Bulaşıkçı pad'i: mutfak bloğunun arka köşesi açıklığında (çay pad'iyle dolum daireleri
-    // KESİŞMEZ: ayrım 3.28 > 2×PAD_RADIUS 2.6 — "pad'ler sık olmasın" isteği).
-    dishwasher: [0.2, 0, -4.5] as Vec3,
-    // Zone sınırının HEMEN zone-1 tarafında (2026-06-11: kilitli salon TAM karanlık örtülü —
-    // pad halkası/etiketi karanlığa taşmasın diye eşikten ~0.75 içeri alındı).
-    // z 0.6→0.8 (ferahlama): yeni sıra koridorunun merkezi — pad halkası (1.3) iki masa köşesine de değmez.
-    zone2: [4.55, 0, 0.8] as Vec3,
-    z2table2: ALL_TABLES[5].table,
-    z2table3: ALL_TABLES[6].table,
-    z2table4: ALL_TABLES[7].table,
-    z2waiter: mir(1, [-4.6, 0, 2.2]),
-    z2dishwasher: mir(1, [0.2, 0, -4.5]),
-    // ZONE-3 (arka-sağ, 2026-06-11 taşıma): unlock pad'i z1'in arka şeridinde, kendi geçidinin
-    // (x 9.0) yanında — dolum daireleri komşularla KESİŞMEZ (z2dishwasher pad [10.4,-4.5] ayrımı 2.71).
-    zone3: [7.7, 0, -4.3] as Vec3,
-    z3table2: ALL_TABLES[9].table,
-    z3table3: ALL_TABLES[10].table,
-    z3table4: ALL_TABLES[11].table,
-    z3waiter: mir(2, [-4.6, 0, 2.2]),
-    // Y1: tezgâh arka duvara taşınınca eski nokta ([10.4,-14.8]) counter footprint'inin içinde
-    // kalıyordu → pad bulaşık modülünün önündeki açıklığa (tezgâh kenarına 2.1, bulaşığa 1.25).
-    z3dishwasher: [13.3, 0, -14.3] as Vec3,
-    // Y4: 2. garson pad'leri — kendi salonunun 1. garson pad'inin TAM yeri (requires prev waiter →
-    // eski pad çoktan kaybolmuş; sıfır yeni mekânsal çakışma riski, tematik "garson durağı").
-    waiter2: [-4.6, 0, 2.2] as Vec3,
-    z2waiter2: mir(1, [-4.6, 0, 2.2]),
-    z3waiter2: mir(2, [-4.6, 0, 2.2]),
-  } as Record<string, Vec3>,
-  // Zone başına mekânsal çay yükseltme noktası: kendi duvarında, modülün ALTINDA (kapı tarafı —
-  // kullanıcı 2026-06-11: "ocağın önünde değil altında, sol duvarda dursun"). PAD MERKEZİ ocağın
-  // pickupRadius'unun (1.6) DIŞINDA kalır (merkez ayrımı 2.0) → pad üstünde dururken çay-alma
-  // tetiklenmez; ayrıca tick'teki pickup-guard'ı pickup alanı içinde dolumu zaten kilitler (vitest).
-  upgradeZones: ZONES.map((z) =>
-    z === FOOD_ZONE ? ([FOOD_STATION[0] - 2.0, 0, FOOD_STATION[2]] as Vec3) : mir(z, [-4.35, 0, -0.5]),
-  ),
-  upgradeZone: [-4.35, 0, -0.5] as Vec3, // zone-1 alias (testler/eski kod)
-  // Garson çay-alma noktası: modülün ÖN yüzü (2026-06-11 feedback: bardaklar önde, garson arkadaki
-  // çaycı koridorundan ALMASIN — eski merkez+yarıçap hedefi arka koridoru da kabul ediyordu). Aynalı şablon.
-  stationPickups: ZONES.map((z) =>
-    z === FOOD_ZONE ? ([FOOD_STATION[0], 0, FOOD_STATION[2] + 0.85] as Vec3) : mir(z, [-3.5, 0, -2.5]),
-  ),
-  // Zone başına personel köşeleri + garson hız noktası (aynalı şablon).
-  // Garson boşta ÜST sırada, kendi mutfak bloğunun yanında bekler (2026-06-11 feedback: "sol altta
-  // değil üst sırada dursun"). Çay pickup önünden (stationPickups z -2.5) ve bulaşıkçı köşesinden uzak.
-  waiterHomes: ZONES.map((z) =>
-    z === FOOD_ZONE ? ([FOOD_STATION[0] + 0.9, 0, FOOD_STATION[2] + 0.85] as Vec3) : mir(z, [-3.5, 0, -3.4]),
-  ),
-  waiterHome: [-3.5, 0, -3.4] as Vec3,
-  // (v29: waiterUpgradeSpots kalktı — garson hızı karakter panelinden.)
-  // Bulaşık modülleri (D-025 rev. A, kullanıcı 2026-06-11: "bulaşık ocağın yanında olsun"):
-  // kendi ocağının HEMEN ÜSTÜNDE, AYNI yan duvarda bitişik (ocak z -3.6..-1.4, bulaşık z -4.9..-3.5
-  // → tek mutfak bloğu). Sağ kolon aynalı; arka sıra −z kopyası.
-  dishStations: ZONES.map((z) => mir(z, [-4.35, 0, -4.2])),
-  dishStation: [-4.35, 0, -4.2] as Vec3,
-  dishwasherHomes: ZONES.map((z) => mir(z, [-3.3, 0, -4.2])),
-  dishwasherHome: [-3.3, 0, -4.2] as Vec3,
-  // --- Collision footprint'leri (yarı-boyut [hx,hz]; D-016): GÖRSEL mesh'lere yaslı → oyuncu objeye
-  // "değiyor gibi" sokulur, arada boşluk kalmaz. (ocak tezgah 2.2×0.8, bulaşık 1.4×0.8, masa r0.5, sandalye 0.42.)
-  playerRadius: 0.35, // oyuncu kapsül görsel yarıçapı = standoff'u görsel kenara denk getirir
-  actorRadius: 0.28, // garson/bulaşıkçı engel-kaçınma yarıçapı
-  stationHalf: [0.4, 1.1] as [number, number], // sol duvara paralel modül (uzun kenar z'de — D-023 şerit)
-  // Zone-başına istasyon footprint'i (Y1): yemek tezgâhı arka duvara paralel → uzun kenar x'te.
-  stationHalves: ZONES.map((z) =>
-    z === FOOD_ZONE ? ([1.1, 0.4] as [number, number]) : ([0.4, 1.1] as [number, number]),
-  ),
-  dishHalf: [0.4, 0.7] as [number, number], // yan duvara paralel modül (uzun kenar z'de — ocak gibi)
-  tableHalf: [0.5, 0.5] as [number, number],
-  // Y1: dikdörtgen yemek masası (görsel 1.35×0.85; uzun kenar x'te — 2'ye 2 sandalye düzeni).
-  foodTableHalf: [0.7, 0.45] as [number, number],
-  chairHalf: [0.22, 0.22] as [number, number], // sandalye + oturan müşteri
-  // Sandalye ofsetleri (Y2 tek kaynak): Tables.tsx görsel sandalyeyi, store koltuk pozisyonunu
-  // (ALL_TABLES.seats) AYNI listeden türetir — görsel sandalye = oturulabilir koltuk.
-  chairSpots: CHAIR_SPOTS,
-  foodChairSpots: FOOD_CHAIR_SPOTS,
-  // SALT GÖRSEL DEKOR (collision yok). Konumlar LAYOUT'ta çünkü dünya yerleşimine ait; Scene.
-  // DecorProps buradan çizer. (G1 temas gölgesi denemesi geri alındı ama bu tek-kaynak sadeleşmesi
-  // kaldı — dekor konumu artık JSX'in içine gömülü değil.)
-  // r = zemindeki ayak izi yarıçapı (kova gövdesi / saksı ağzı).
-  decor: {
-    trashCans: [
-      { pos: [2.5, 0, 4.85] as Vec3, scale: 1, rings: true }, // kapı yanı (ön duvar dibi)
-      { pos: [-4.95, 0, -0.9] as Vec3, scale: 0.85, rings: false }, // mutfak ucu
-    ],
-    trashRadius: 0.21,
-    planters: [
-      [4.9, 0, -4.6],
-      [4.9, 0, 4.4],
-      [-5.0, 0, 2.9],
-    ] as Vec3[],
-    planterRadius: 0.18,
-  },
-} as const;
-
-/** Collision engeli: merkez (Vec3) + yarı-boyut [hx,hz]. */
-interface Solid {
-  c: RVec3;
-  h: readonly [number, number];
-}
-
-// Sıra-arası duvar KALDIRILDI (2026-06-11 kullanıcı: "alan 2 ile alan 3 arasında duvar olmasın") —
-// z1↔z2 sınırı artık z0↔z1 gibi tamamen açık (D-023 tek-salon deseni dikey komşuya da uygulanır).
-// Kilitli z2 blokajı lockedZoneSolids + clampToOpenZones'ta sürer.
-
-/** KİLİTLİ zone'ların alanları nav için BLOKE (M2): müşteri/personel rotası "boş arsa"dan geçemez
- *  (duvarlar yalnız açık zone'ları sardığından grid'e ayrıca anlatmak gerekir). Arka-sol REZERV
- *  hücre (zone'suz arsa, 2026-06-11) DAİMA bloke — rota oradan kestirme yapamaz. */
-function lockedZoneSolids(zonesOpen: number): Solid[] {
-  const solids: Solid[] = [];
-  for (let z = zonesOpen; z < MAX_ZONES; z++) {
-    const za = LAYOUT.zoneAreas[z];
-    solids.push({
-      c: [(za.minX + za.maxX) / 2, 0, (za.minZ + za.maxZ) / 2],
-      h: [(za.maxX - za.minX) / 2, (za.maxZ - za.minZ) / 2],
-    });
-  }
-  // BL hücre = z0 alanının −ZONE_DZ kopyası (zoneAreas formülü, col 0 / row 1).
-  solids.push({ c: [0, 0, (-5.3 - ZONE_DZ + (5.0 - ZONE_DZ)) / 2], h: [5.3, (5.0 - -5.3) / 2] });
-  return solids;
-}
-
-/** O an SAHNEDE var olan SABİT katı engeller (açık zone'ların ocak+bulaşığı; açık masalar + sandalyeler
- *  + sıra-arası duvarlar). Yatay bölme duvarı YOK (D-023). Kapalı zone'un mobilyası ÇİZİLMEZ →
- *  collision da eklenmez (oyuncu zaten açık-zone birleşimine kelepçeli). */
-/** Masanın footprint yarısı (Y1): yemek masası dikdörtgen, çay masası kare. */
-const tableHalfFor = (i: number): readonly [number, number] =>
-  zoneProduct(zoneOfTable(i)) === 'tost' ? LAYOUT.foodTableHalf : LAYOUT.tableHalf;
-
-function activeSolids(tables: number, zonesOpen: number): Solid[] {
-  const solids: Solid[] = [];
-  for (let z = 0; z < zonesOpen; z++) {
-    solids.push({ c: LAYOUT.stations[z], h: LAYOUT.stationHalves[z] });
-    solids.push({ c: LAYOUT.dishStations[z], h: LAYOUT.dishHalf });
-  }
-  for (let i = 0; i < tables; i++) {
-    solids.push({ c: LAYOUT.tables[i].table, h: tableHalfFor(i) });
-    solids.push({ c: LAYOUT.tables[i].seat, h: LAYOUT.chairHalf }); // sandalye (içine girilemez)
-  }
-  return solids;
-}
-
-/** Oyuncuyu AÇIK zone'ların BİRLEŞİMİNE kelepçele (M2): nokta hiçbir açık zone'da değilse en yakın
- *  açık-zone-içi noktaya çekilir. 3 zone açıkken L-şekli doğru çalışır (eski tek-eksen openMaxX
- *  kelepçesi 2×2 ızgarada yetmiyordu). */
-function clampToOpenZones(x: number, z: number, zonesOpen: number): [number, number] {
-  let bestX = x;
-  let bestZ = z;
-  let bestD = Infinity;
-  for (let i = 0; i < zonesOpen; i++) {
-    const za = LAYOUT.zoneAreas[i];
-    const cx = Math.max(za.minX, Math.min(za.maxX, x));
-    const cz = Math.max(za.minZ, Math.min(za.maxZ, z));
-    const d = (cx - x) * (cx - x) + (cz - z) * (cz - z);
-    if (d === 0) return [x, z];
-    if (d < bestD) {
-      bestD = d;
-      bestX = cx;
-      bestZ = cz;
-    }
-  }
-  return [bestX, bestZ];
-}
-
-/** Yalnız açık masa GÖVDELERİ — personel (garson/bulaşıkçı) bunların ETRAFINDAN dolaşır (ocak/bulaşık/
- *  koltuk hariç: personel onlara erişmeli). */
-function tableSolids(tables: number): Solid[] {
-  const solids: Solid[] = [];
-  for (let i = 0; i < tables; i++) solids.push({ c: LAYOUT.tables[i].table, h: tableHalfFor(i) });
-  return solids;
-}
-
-/** (x,z) noktası (yarıçap r şişirilmiş) herhangi bir katı engelin içinde mi? */
-function hitsSolid(x: number, z: number, solids: Solid[], r: number): boolean {
-  for (const s of solids) {
-    if (Math.abs(x - s.c[0]) < s.h[0] + r && Math.abs(z - s.c[2]) < s.h[1] + r) return true;
-  }
-  return false;
-}
-
-// --- Personel yol bulma (nav.ts) ---
-// Garson/bulaşıkçı GERÇEK rota izler (BFS) → eski moveAvoid eksen-kayması bir masayı dolaşamayıp
-// kilitleniyordu (ön masada takılı kalma, arka masa açlığı, salınım). Oyuncu BUNU KULLANMAZ.
-const NAV_CELL = 0.3; // ızgara hücre boyu (dünya birimi) — masalar arası koridorları açık tutar.
-// Personel "yanına varınca teslim/al" mesafeleri (GEOMETRİK: footprint yarısı + aktör yarıçapı + küçük pay).
-// Masaya BİTİŞİK teslim → "tam masaya gelmeden veriyor" hissi biter (eski serveRadius 1.6 yerine ~1.05).
-const REACH_TABLE = LAYOUT.tableHalf[0] + LAYOUT.actorRadius + 0.25; // ocaktan masaya servis
-// Tepsi yükleme: ocağın ÖN yüzündeki pickup noktasına varış (2026-06-11: merkez+geniş yarıçap
-// arka çaycı koridorunu da kabul ediyordu → garson arkadan çay alıyordu; bardaklar ÖNDE).
-const REACH_PICKUP = 0.45;
-const REACH_WASH = LAYOUT.dishHalf[1] + LAYOUT.actorRadius + 0.4; // bulaşıkta yıkama
-const REACH_HOME = 0.4; // boştayken köşeye dönüş
-
-/** Personelin GÖVDE engeli saydığı katılar (açık zone'ların ocak+bulaşığı + açık masalar). */
-function navSolids(tables: number, zonesOpen: number): NavSolid[] {
-  const solids: NavSolid[] = [];
-  for (let z = 0; z < zonesOpen; z++) {
-    solids.push({ c: LAYOUT.stations[z], h: LAYOUT.stationHalves[z] });
-    solids.push({ c: LAYOUT.dishStations[z], h: LAYOUT.dishHalf });
-  }
-  for (let i = 0; i < tables; i++) solids.push({ c: LAYOUT.tables[i].table, h: tableHalfFor(i) });
-  // Kilitli zone alanları + rezerv arsa rota dışı (sıra-arası duvar 2026-06-11'de kaldırıldı).
-  solids.push(...lockedZoneSolids(zonesOpen));
-  return solids;
-}
-
-// Izgara masa+zone sayısına göre cache'lenir (masa/zone açılınca yeniden kurulur; her frame değil).
-let navCache: { key: string; grid: NavGrid } | null = null;
-function getNavGrid(tables: number, zonesOpen: number): NavGrid {
-  const key = `${tables}|${zonesOpen}`;
-  if (navCache && navCache.key === key) return navCache.grid;
-  const grid = buildNavGrid(LAYOUT.area, NAV_CELL, navSolids(tables, zonesOpen), LAYOUT.actorRadius);
-  navCache = { key, grid };
-  return grid;
-}
-
-/** Personeli hedefe BFS rotasıyla bir adım ilerlet; merkeze `reach` mesafesine girince true. pos yerinde değişir.
- *  `avoid` verilirse (oyuncu konumu) personel onun ÜSTÜNE BİNMEZ → kenarından ayrılır (oyuncuya göre hareket eder);
- *  `avoidSolids` (masa gövdeleri) verilirse oyuncudan kaçarken masaya itilmez. */
-function navStep(
-  pos: Vec3,
-  target: RVec3,
-  step: number,
-  grid: NavGrid,
-  reach: number,
-  avoid?: RVec3,
-  avoidSolids?: Solid[],
-): boolean {
-  if (dist2D(pos, target) <= reach) return true;
-  const path = findNavPath(grid, pos, target[0], target[2], reach);
-  if (path && path.length > 0) {
-    moveToward(pos, [path[0][0], pos[1], path[0][1]], step); // bir sonraki waypoint'e
-  } else {
-    moveToward(pos, target, step); // yol yoksa (nadir) en iyi çaba: doğrudan
-  }
-  // Oyuncudan ayrış (boids separation): personel oyuncunun ÜSTÜNE binmesin → onu da hesaba katarak kenara geçsin.
-  // Oyuncu otoriter (input'la hareket); personel ona yer açar. Masaya itecekse itme (hafif örtüşmeye izin ver).
-  if (avoid) {
-    const minD = LAYOUT.actorRadius + LAYOUT.playerRadius;
-    const dx = pos[0] - avoid[0];
-    const dz = pos[2] - avoid[2];
-    const d = Math.hypot(dx, dz);
-    if (d < minD) {
-      const ux = d < 1e-4 ? 1 : dx / d;
-      const uz = d < 1e-4 ? 0 : dz / d;
-      const nx = avoid[0] + ux * minD;
-      const nz = avoid[2] + uz * minD;
-      if (!avoidSolids || !hitsSolid(nx, nz, avoidSolids, LAYOUT.actorRadius)) {
-        pos[0] = nx;
-        pos[2] = nz;
-      }
-    }
-  }
-  return dist2D(pos, target) <= reach;
-}
-
-const NPC_SPEED = 2.6;
-export const PAD_RADIUS = 1.3;
-// Masa-başı yükseltme noktasının yarıçapı (Faz 2h). Pad'lerden küçük → komşu masanın noktasını tetiklemez.
-const TABLE_UP_RADIUS = 1.0;
-// DWELL kanonik dolum-noktası id'leri (D-018 §2): pad'ler kendi id'sini kullanır; bunlar yükseltme
-// noktaları. Zone'lu öneklerdir: gerçek id = önek + index ('tea:0', 'tableUp:5').
-// (v29: 'waiterUp:' kalktı — garson hızı karakter panelinden satın alınır.)
-export const FILL_TEA = 'tea:'; // + zone index
-export const FILL_TABLE = 'tableUp:'; // + GLOBAL masa index
-
-/** Zone z'nin garson pad id'si (per-zone personel; z>0 → 'z2waiter'/'z3waiter'). */
-export const waiterPadId = (z: number) => (z === 0 ? 'waiter' : `z${z + 1}waiter`);
-
-/** Zone z'nin çay-yükseltme noktası açık mı? (v21: her salonun KENDİ 2. masası önkoşul —
- *  upgradeRequiresByZone; zone-1 deseni aynalanır, "önce kapasite sonra verim".) */
-export function upgradeZoneUnlockedZ(z: number, g: GateState): boolean {
-  return requiresMet(C.teaStation.upgradeRequiresByZone[z], g);
-}
-
-/** Zone z'nin masa yükseltmeleri açık mı? (v21: o salonun 4 masası da açılınca — per-zone D-019 §3.) */
-export function tableUpgradeUnlockedZ(z: number, g: GateState): boolean {
-  return requiresMet(C.tables.upgradeRequiresByZone[z], g);
-}
-
-// KİMLİK KORUMA (P0 perf, 2026-09-06). `tick()` her karede diziyi/nesneyi kopyalayıp tek `set()`
-// ile yazıyordu → içerik AYNI olsa bile referans değişiyor, Zustand seçicileri "değişti" sanıp
-// abone bileşeni her karede yeniden render ediyordu. Ölçüm (1920×1080, 3 salon, 14 NPC):
-// kare başına 3,2 React commit; 12 anahtar (`tableLevels`, `stationLevels`, `stats`, `quest`,
-// `dishes`, `upgradeFills`, ...) karelerin %100'ünde SADECE kimlik değiştiriyordu.
-// Çözüm: set'ten hemen önce, içeriği eskisiyle aynı olan değeri ESKİ referansa geri döndür.
-// Karşılaştırma sınırlı derinlikte (dizi → aktör nesnesi → pos dizisi → sayı) ve yalnız `tick`
-// yükünde çalışır; maliyeti tek bir gereksiz React render'ından ucuzdur.
-function sameDeep(a: unknown, b: unknown, depth = 4): boolean {
-  if (a === b) return true;
-  if (depth <= 0) return false;
-  if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) return false;
-  const aArr = Array.isArray(a);
-  if (aArr !== Array.isArray(b)) return false;
-  if (aArr) {
-    const x = a as unknown[];
-    const y = b as unknown[];
-    if (x.length !== y.length) return false;
-    for (let i = 0; i < x.length; i++) if (!sameDeep(x[i], y[i], depth - 1)) return false;
-    return true;
-  }
-  if (Object.getPrototypeOf(a) !== Object.getPrototypeOf(b)) return false;
-  const ka = Object.keys(a as object);
-  const kb = Object.keys(b as object);
-  if (ka.length !== kb.length) return false;
-  const ao = a as Record<string, unknown>;
-  const bo = b as Record<string, unknown>;
-  for (const k of ka) {
-    if (!(k in bo)) return false;
-    if (!sameDeep(ao[k], bo[k], depth - 1)) return false;
-  }
-  return true;
-}
-
-/** set() yükündeki DEĞİŞMEMİŞ değerleri eski referansa çevirir (yerinde). */
-function keepIdentity<T extends Record<string, unknown>>(prev: Record<string, unknown>, next: T): T {
-  const patch = next as Record<string, unknown>;
-  for (const k in patch) {
-    const v = patch[k];
-    if (v !== null && typeof v === 'object' && v !== prev[k] && sameDeep(v, prev[k])) patch[k] = prev[k];
-  }
-  return next;
-}
-
-const SAVE_INTERVAL = 2; // sn
-const NPC_COLORS = ['#c0392b', '#27ae60', '#2980b9', '#8e44ad', '#d35400', '#16a085'];
-
-type RVec3 = readonly [number, number, number];
-
-function dist2D(a: RVec3, b: RVec3): number {
-  const dx = a[0] - b[0];
-  const dz = a[2] - b[2];
-  return Math.hypot(dx, dz);
-}
-
-/** target'a doğru dt*speed kadar ilerlet; varışta true döner. pos yerinde değişir. */
-function moveToward(pos: Vec3, target: RVec3, step: number): boolean {
-  const dx = target[0] - pos[0];
-  const dz = target[2] - pos[2];
-  const d = Math.hypot(dx, dz);
-  if (d <= step || d < 0.001) {
-    pos[0] = target[0];
-    pos[2] = target[2];
-    return true;
-  }
-  pos[0] += (dx / d) * step;
-  pos[2] += (dz / d) * step;
-  return false;
-}
-
-// EKONOMİ v2 (D-010): çay fiyatı SABİT; seviye fiyatı değil throughput'u (çay/dk) artırır.
-const TEA_PRICE = C.teaStation.basePrice;
-// Bulaşık öğretilmeden kirli bardak çıkmaz (onboarding gate, 2026-06-10): ilk washDish görevinin index'i.
-// Görev hattında yoksa -1 → gate hep açık (questIndex >= -1).
-const WASH_QUEST_INDEX = C.quests.findIndex((q) => q.target.type === 'washDish');
-
-// Görev geçiş ritmi (2026-06-17, kullanıcı onayı): hedef tamamlanınca kart ANINDA takas
-// olmaz. completing = bar %100 dolar + yeşil onay flash'ı; gap = yeni görev gelmeden boşluk.
-// Böylece "bitti → ara → yeni" net hissedilir (eski: aynı tick'te instant swap).
-const QUEST_COMPLETE_DUR = 0.5;
-const QUEST_GAP_DUR = 0.8;
-
-/** stationLevel'in demleme hız (throughput) çarpanı — çay/dk; fiyatı DEĞİL. */
-function brewThroughputMult(level: number): number {
-  return upgradeOutputMultiplier(C.teaStation.upgrade, level);
-}
-
-/** Bir birim ürünün hazırlanma süresi (sn) — throughput arttıkça kısalır. prepTime verilmezse çay
- *  (geri uyum: eski çağıranlar/testler); tost zone'u PRODUCTS.tost.prepTime geçer (M3). */
-function brewTime(level: number, prepTime: number = C.npc.orderTime): number {
-  return prepTime / brewThroughputMult(level);
-}
 
 /** Oyuncunun tepsi kapasitesi (tek turda taşınan çay/kirli) — karakter tepsi kademesinden türetilir
  *  (v20; D-018'in "sabit" kararı karakter yükseltmeleriyle değişti). Arg'sız çağrı canlı store'dan okur
@@ -585,146 +109,6 @@ export function trayCapacity(tier?: number): number {
   return trayCapacityFor(tier ?? useGame.getState().charUpgrades.tray);
 }
 
-/** GLOBAL bardak havuzu kapasitesi: açık zone başına taban + açık ocak seviyeleri toplamı (Faz 3a). */
-export function totalCupPool(zonesOpen: number, stationLevels: number[]): number {
-  let lv = 0;
-  for (let z = 0; z < zonesOpen; z++) lv += stationLevels[z] ?? 0;
-  return zonesOpen * C.cups.poolBase + C.cups.poolPerLevel * lv;
-}
-
-/** ₺ ile çıkılabilen en yüksek masa seviyesi (💎 "Usta" katmanı Faz D'de gelecek). */
-export const tableSoftMaxLevel = () => C.tables.upgrade.maxLevel;
-
-/**
- * Masa teması mağazası kilidi (kullanıcı kararı 2026-06-17): 3 salon AÇIK **VE** tüm açık masalar
- * MAX seviye olunca açılır ("seviyeler fullenince"). Başta masalar renksiz (native mavi); tüm ilerleme
- * tamamlanınca premium renk teması satın alınabilir. Zemin/duvar temaları bu kilitten etkilenmez.
- */
-export function tableThemeUnlocked(g: { zonesOpen: number; tables: number; tableLevels: number[] }): boolean {
-  if (g.zonesOpen < MAX_ZONES || g.tables <= 0) return false;
-  const max = tableSoftMaxLevel();
-  for (let i = 0; i < g.tables; i++) if ((g.tableLevels[i] ?? 0) < max) return false;
-  return true;
-}
-/** Mevcut seviyeden bir sonraki masa yükseltmesinin maliyeti (₺). */
-export const tableNextCost = (level: number, zone = 0) => tableUpgradeCost(level, zone);
-/** Zone-1 masa yükseltme gate'i (geri uyum: testler/eski çağıranlar; per-zone için tableUpgradeUnlockedZ). */
-export function tableUpgradeZoneUnlocked(g: GateState): boolean {
-  return tableUpgradeUnlockedZ(0, g);
-}
-
-/** Çevrimdışı gelir oranı (₺/sn) — bottleneck idealize: oturma × ürün fiyatı / döngü.
- *  M3: zone verilirse o zone'un ÜRÜNÜ (tost pahalı+yavaş) hesaba girer.
- *  2026-06-11 (kullanıcı): masa BAHŞİŞLERİ de orana dahil — tipTotal = o zone'un açık masalarının
- *  Σ(tipBase × seviye); ilerleme (masa yükseltme) offline kazancı da büyütür. */
-function incomeRate(tables: number, level: number, z = 0, tipTotal = 0): number {
-  const prod = PRODUCTS[zoneProduct(z)];
-  const cycle = C.npc.walkTime + brewTime(level, prod.prepTime) + C.npc.eatTime;
-  return (tables * prod.price + tipTotal) / cycle;
-}
-
-/**
- * Kirli masaların index kümesi (D-019): bir masada eşikten FAZLA (>) kirli kap varsa kirli.
- * Y2: eşik KOLTUKLA ölçeklenir (`dirtyThreshold × koltuk` — plan §2; yoksa 4 kişilik tek grup
- * masayı anında kilitlerdi; L0'da eski davranışla birebir aynı: >2).
- * Kirli masaya yeni müşteri oturmaz + garson çay götürmez → oyuncu eşiğe inene kadar masa kilitli.
- */
-function dirtyTables(dishes: Dish[], tableLevels: number[] = []): Set<number> {
-  const counts = new Map<number, number>();
-  for (const d of dishes) counts.set(d.tableIndex, (counts.get(d.tableIndex) ?? 0) + 1);
-  const dirty = new Set<number>();
-  for (const [idx, n] of counts)
-    if (n > C.cups.dirtyThreshold * tableSeats(tableLevels[idx] ?? 0)) dirty.add(idx);
-  return dirty;
-}
-
-/** Masa-başı DOLU koltuk indeksleri (leaving sayılmaz — koltuk kalkar kalkmaz boşalır, Y2). */
-function occupiedSeats(npcs: Npc[]): Map<number, Set<number>> {
-  const occ = new Map<number, Set<number>>();
-  for (const n of npcs) {
-    if (n.state === 'leaving') continue;
-    let set = occ.get(n.tableIndex);
-    if (!set) {
-      set = new Set();
-      occ.set(n.tableIndex, set);
-    }
-    set.add(n.seatIndex);
-  }
-  return occ;
-}
-
-/** Grup hedefi (Y2, plan §2 + dağılım fix'i): zone'lar ROUND-ROBIN pay alır — global "en çok
- *  boş koltuk" araması, az koltuklu yeni salonu (tost L0=1 koltuk) çay salonlarına karşı sürekli
- *  kaybettirip AÇ bırakıyordu (q_tost5 ilerleyemiyordu). startZone'dan başlayarak boş koltuğu
- *  olan İLK zone seçilir; zone İÇİNDE en çok boş koltuklu temiz masa (eşitlikte düşük index).
- *  Hiç boş koltuk yoksa -1. */
-export function findTableForGroup(
-  occ: Map<number, Set<number>>,
-  tables: number,
-  dirty: Set<number>,
-  tableLevels: number[],
-  zonesOpen: number,
-  startZone: number,
-): number {
-  for (let dz = 0; dz < zonesOpen; dz++) {
-    const z = (startZone + dz) % zonesOpen;
-    let best = -1;
-    let bestFree = 0;
-    const end = Math.min((z + 1) * TABLES_PER_ZONE, tables);
-    for (let i = z * TABLES_PER_ZONE; i < end; i++) {
-      if (dirty.has(i)) continue;
-      const free = tableSeats(tableLevels[i] ?? 0) - (occ.get(i)?.size ?? 0);
-      if (free > bestFree) {
-        bestFree = free;
-        best = i;
-      }
-    }
-    if (best >= 0) return best;
-  }
-  return -1;
-}
-
-/** Oyuncunun o an üstünde durduğu/doldurduğu zone (HUD'da alttaki bar). */
-export interface ActiveZone {
-  kind: 'pad' | 'upgrade';
-  label: string;
-  fill: number;
-  cost: number;
-}
-
-/** Yeni-özellik bildirimi (D-019 §4): bir özellik İLK kez açılınca beliren kısa toast (ttl = kalan sn).
- *  kind → HUD'daki SVG rozeti seçer (emoji yok — UI game-feel kuralı). */
-export interface GameNotice {
-  text: string;
-  ttl: number;
-  kind: 'quest' | 'level' | 'reveal';
-  /** Görev ödülü (₺; M1): toast'ta coin ikonu + tutar olarak gösterilir (₺ sembolü display'de yok). */
-  reward?: number;
-}
-
-/**
- * Şu an açık olan "yeni-özellik" reveal anahtarları (D-019 §4) — v21'den beri ZONE-BAŞINA
- * (kullanıcı 2026-06-12: zone-2 yükseltmeleri de düzenli açılsın + bildirilsin). Bir anahtar
- * revealSeen'de YOKKEN belirirse toast + kamera panı tetiklenir. revealSeen baseline init'te
- * mevcut açık özelliklerle kurulur → yeniden yüklemede zaten açık olanlar tekrar bildirmez.
- * Dönen üçlü: [anahtar, metin, pan hedefi (null = pan yok)].
- */
-function revealKeys(
-  g: GateState,
-  zonesOpen: number,
-  stationLevels: number[],
-): [string, string, RVec3 | null][] {
-  const out: [string, string, RVec3 | null][] = [];
-  const pre = (z: number) => (z === 0 ? '' : `Salon ${z + 1}: `);
-  for (let z = 0; z < zonesOpen; z++) {
-    if (upgradeZoneUnlockedZ(z, g) && (stationLevels[z] ?? 0) < stationSoftMaxLevel())
-      out.push([`upgrade:${z}`, `Yeni: ${pre(z)}Çay ocağını yükseltebilirsin ☕`, LAYOUT.upgradeZones[z]]);
-    if (tableUpgradeUnlockedZ(z, g))
-      out.push([`tableUp:${z}`, `Yeni: ${pre(z)}Masaları yükseltebilirsin 🪑`, LAYOUT.tables[z * TABLES_PER_ZONE].upgradeSpot]);
-  }
-  for (const op of availableOptionalPads(g)) out.push([`opt:${op.id}`, `Yeni: ${op.label} 🔓`, null]);
-  return out;
-}
 
 export interface GameState {
   // Kalıcı
@@ -875,225 +259,6 @@ export interface GameState {
   saveNow: () => void;
   hardReset: () => void;
 }
-
-/**
- * Şu an aktif OMURGA pad'i: ilk açılmamış, opsiyonel OLMAYAN, `requires` koşulu karşılanan pad.
- * Opsiyonel pad'ler (ör. garson) atlanır → alınmasalar da omurga (sonraki masa/ocak) açılmaya
- * devam eder. Önkoşul zinciri (prev) sayesinde sıralıdır; sonraki gate'liyse null döner.
- */
-export function currentPad(g: GateState): PadDef | null {
-  return (C.pads as readonly PadDef[]).find(
-    (p) => !p.optional && !g.padsDone.includes(p.id) && requiresMet(p.requires, g),
-  ) ?? null;
-}
-
-/**
- * Şu an alınabilir opsiyonel pad'ler (garson vb.): açılmamış, `optional:true`, koşulu karşılanan.
- * Omurgadan bağımsız; oyuncu isterse alır. Aynı anda omurga pad'iyle birlikte aktif olabilir.
- */
-export function availableOptionalPads(g: GateState): PadDef[] {
-  return (C.pads as readonly PadDef[]).filter(
-    (p) => p.optional && !g.padsDone.includes(p.id) && requiresMet(p.requires, g),
-  );
-}
-
-/** Zone-1 istasyon yükseltme gate'i (geri uyum: testler/eski çağıranlar; per-zone için upgradeZoneUnlockedZ). */
-export function upgradeZoneUnlocked(g: GateState): boolean {
-  return upgradeZoneUnlockedZ(0, g);
-}
-
-// ============================== QUEST MOTORU (2026-06-09) ==============================
-// İlerleme sıralı TEK görevle yönlendirilir (Fable brief §1+§4; eski nextStep + onboardingHint
-// koç bandının yerini alır). Sayaç görevleri questBase'ten DELTA sayılır; durum görevleri
-// (pad/level) doğrudan oyun durumundan okunur.
-
-/** Quest değerlendirme bağlamı (salt-okunur anlık görüntü). */
-export interface QuestCtx {
-  padsDone: string[];
-  /** Zone başına ocak seviyesi (v27: zone'lu stationLevel görevleri — "Salon 2'nin ocağını yükselt"). */
-  stationLevels: number[];
-  tableLevels: number[];
-  stats: SaveStats;
-  questBase: number;
-  /** Karakter yükseltme kademeleri (v20; charStat görevleri için). */
-  charUpgrades: CharUpgrades;
-  /** Garson tepsi kademeleri (v27/Y3; waiterTray görevleri için). */
-  waiterUpgrades: WaiterUpgrades;
-}
-
-/** Sayaç hedefinin baktığı kümülatif sayaç değeri (durum hedefleri için null). */
-export function questCounterValue(target: QuestTarget, stats: SaveStats): number | null {
-  switch (target.type) {
-    case 'pickupTea': return stats.teaPickups;
-    case 'serveTea':
-      // zone'lu hedef (v23): yalnız o salonun el servisi sayılır ("Yeni salonda 5 çay" gerçek olsun).
-      return target.zone != null ? stats.teasServedByZone[target.zone] ?? 0 : stats.teasServed;
-    case 'collectCoin': return stats.coinsCollected;
-    case 'washDish': return stats.dishesWashed;
-    default: return null;
-  }
-}
-
-/** Görev hedefi karşılandı mı? */
-export function questTargetMet(target: QuestTarget, ctx: QuestCtx): boolean {
-  const counter = questCounterValue(target, ctx.stats);
-  if (counter != null) {
-    const count = (target as { count: number }).count;
-    return counter - ctx.questBase >= count;
-  }
-  switch (target.type) {
-    case 'pad': return ctx.padsDone.includes(target.id);
-    case 'stationLevel': return (ctx.stationLevels[target.zone ?? 0] ?? 0) >= target.level;
-    case 'waiterSpeed':
-      return (target.kind === 'tea' ? ctx.waiterUpgrades.teaSpeed : ctx.waiterUpgrades.tostSpeed) >= target.tier;
-    case 'tableLevel': return ctx.tableLevels.some((l) => l >= target.level);
-    case 'tablesAtLevel': {
-      // zone verilirse yalnız o salonun masa slotları; verilmezse tüm masalar (v27 çeşitlilik).
-      const lvls = target.zone != null
-        ? ctx.tableLevels.slice(target.zone * TABLES_PER_ZONE, (target.zone + 1) * TABLES_PER_ZONE)
-        : ctx.tableLevels;
-      return lvls.filter((l) => (l ?? 0) >= target.level).length >= target.count;
-    }
-    case 'waiterTray':
-      return (target.kind === 'tea' ? ctx.waiterUpgrades.teaTray : ctx.waiterUpgrades.tostTray) >= target.tier;
-    case 'charStat': return ctx.charUpgrades[target.stat] >= target.tier;
-    default: return false;
-  }
-}
-
-/** HUD görev barı görünümü (transient; her tick türetilir). */
-export interface QuestView {
-  id: string;
-  title: string;
-  /** Görev hedefi (HUD görev fotoğrafı hedef tipine göre seçilir). */
-  target: QuestTarget;
-  /** Sayaç görevlerinde ilerleme (cur/total); durum görevlerinde null. */
-  cur: number | null;
-  total: number | null;
-  /** Pad görevlerinde maliyet (görev barında gösterilir). */
-  cost: number | null;
-  /** Tamamlama ödülü (₺; M1) — görev kartında coin rozetiyle gösterilir. */
-  reward: number | null;
-  /** Görev geçiş fazında (completing/gap) true → kart %100 + yeşil onay flash'ı gösterir. */
-  done?: boolean;
-}
-
-function questView(q: QuestDef, ctx: QuestCtx): QuestView {
-  const counter = questCounterValue(q.target, ctx.stats);
-  const count = counter != null ? (q.target as { count: number }).count : null;
-  const pad =
-    q.target.type === 'pad'
-      ? (C.pads as readonly PadDef[]).find((p) => p.id === (q.target as { id: string }).id)
-      : undefined;
-  // charStat/waiterTray/waiterSpeed görevinde maliyet = hedef kademeye ulaştıran satın almanın ₺'si (görev kartında).
-  const charCost =
-    q.target.type === 'charStat'
-      ? charNextCost(q.target.stat, q.target.tier - 1)
-      : q.target.type === 'waiterTray'
-        ? waiterTrayNextCost(q.target.kind, q.target.tier - 1)
-        : q.target.type === 'waiterSpeed'
-          ? waiterSpeedNextCost(q.target.kind, q.target.tier - 1)
-          : null;
-  return {
-    id: q.id,
-    title: q.title,
-    target: q.target,
-    cur: counter != null && count != null ? Math.max(0, Math.min(count, counter - ctx.questBase)) : null,
-    total: count,
-    cost: pad ? pad.cost : charCost,
-    reward: q.reward ?? null,
-  };
-}
-
-/** Görev hedefinin DÜNYA konumu (kamera odak + işaret görünürlüğü). zone = görevin salonu
- *  (2026-06-11 fix: z2 görevlerinde kamera zone-1'e zoom atıyordu — hedefler zone-1 alias'larına sabitti).
- *  charStat görevlerinde 3D hedef YOK → null (kamera sıçramaz; yönlendirme HUD buton efektiyle). */
-export function questFocusPos(target: QuestTarget, tableLevels: number[], tables: number, zone = 0): RVec3 | null {
-  const z = Math.min(Math.max(zone, 0), MAX_ZONES - 1);
-  switch (target.type) {
-    case 'charStat': return null;
-    case 'waiterTray': return null; // panel satın alımı — 3D hedef yok (charStat deseni)
-    case 'waiterSpeed': return null; // v29: hız da panelden — 3D hedef yok
-    case 'pickupTea': return LAYOUT.stations[z];
-    case 'washDish': return LAYOUT.dishStations[z];
-    case 'pad': return LAYOUT.padPos[target.id] ?? LAYOUT.stations[z];
-    case 'stationLevel': return LAYOUT.upgradeZones[target.zone ?? z];
-    case 'tableLevel':
-    case 'tablesAtLevel': {
-      // O zone'dan başlayarak hedef seviyenin ALTINDAKİ ilk açık masanın yükseltme noktası
-      // (tablesAtLevel v27: oyuncuyu gerçekten yükseltilecek masaya götürür).
-      const goal = target.type === 'tablesAtLevel' ? target.level : tableSoftMaxLevel();
-      const z0 = target.type === 'tablesAtLevel' && target.zone != null ? target.zone : z;
-      for (let i = z0 * TABLES_PER_ZONE; i < tables; i++) {
-        if ((tableLevels[i] ?? 0) < goal) return LAYOUT.tables[i].upgradeSpot;
-      }
-      return LAYOUT.tables[Math.min(z0 * TABLES_PER_ZONE, tables - 1) || 0].upgradeSpot;
-    }
-    // serveTea → o salonun OCAĞI/TEZGÂHI (2026-06-12 telefon feedback: salon ortası boştu —
-    // özellikle yeni açılan salonda kamera "hiçbir şeye" bakıyordu); collectCoin → masa bölgesi ortası.
-    case 'serveTea': return LAYOUT.stations[z];
-    default: {
-      const za = LAYOUT.zoneAreas[z];
-      return [(za.minX + za.maxX) / 2, 0, 1.5 - zoneRow(z) * ZONE_DZ]; // arka sıra kaydırılır (M2)
-    }
-  }
-}
-
-/** Kamera odak isteği (transient): CameraRig bu hedefe kayar/zoom yapar, ttl bitince/girdiyle döner. */
-export interface CamFocus {
-  pos: [number, number, number];
-  ttl: number;
-}
-const CAM_FOCUS_TTL = 2.2; // sn — kayma + kısa bekleme; joystick girdisi anında iptal eder
-
-/**
- * EKRANDA TEK PAD (quest sistemi): görünür/doldurulabilir pad'ler. Pad görevi sırasında YALNIZ o pad;
- * pad-dışı görevde HİÇ pad; görev hattı bittiyse güvenlik ağı olarak klasik omurga sırası (normalde
- * hat tüm pad'leri kapsadığından boş kalır). Hem tick (dolum) hem Pad.tsx (çizim) BUNU kullanır →
- * görsel ile mantık ayrışamaz.
- */
-export function visiblePads(questIndex: number, g: GateState): PadDef[] {
-  // Y4: gating'i karşılanan OPSİYONEL pad'ler (2. garsonlar) görev durumundan bağımsız görünür —
-  // geç-oyun serbest keşfi; "ekranda tek pad" ilkesi omurga için sürer (opsiyoneller nadir/gate'li).
-  const opt = availableOptionalPads(g);
-  const q = questIndex < C.quests.length ? C.quests[questIndex] : null;
-  if (q) {
-    if (q.target.type !== 'pad') return opt;
-    const p = (C.pads as readonly PadDef[]).find((pd) => pd.id === (q.target as { id: string }).id);
-    // AKTİF görevin hedef pad'inde TEMPO gate'leri (minLifetime vb.) ATLANIR (2026-06-11 fix:
-    // "2. Masayı aç" görevi verilmişken table2 minLifetime:20 pad'i gizliyordu — görev hattı sıralı =
-    // tempo kaynağı). `prev` OMURGA zinciri yapısal güvenlik ağı olarak KALIR (bozuk kayda karşı).
-    const req = p ? (p.requires as Requires | undefined) : undefined;
-    const prevOk = !req?.prev || req.prev.every((id) => g.padsDone.includes(id));
-    const rest = opt.filter((o) => o.id !== p?.id); // q_waiter2 gibi opsiyonel-hedefli görevde çiftleme olmasın
-    return p && !g.padsDone.includes(p.id) && prevOk ? [p, ...rest] : rest;
-  }
-  const bp = currentPad(g);
-  return bp ? [bp, ...opt] : opt;
-}
-
-/**
- * Offline kazanç (saf — vitest edilebilir; 2026-06-11 nerf): oran × rateMult × min(süre, süre-tavanı),
- * SONRA PARA tavanı = sıradaki omurga pad maliyeti × capNextPadFrac (tüm pad'ler bittiyse en pahalı pad
- * referans alınır). İki kelepçe birlikte: kapa-aç ~7k verip zone'u tek girişte bitirme bug'ı kapanır.
- */
-export function computeOfflineEarned(rate: number, elapsedSec: number, padsDone: readonly string[]): number {
-  const capSec = C.offline.baseCapHours * 3600;
-  const raw = Math.floor(rate * C.offline.rateMult * Math.min(elapsedSec, capSec));
-  const pads = C.pads as readonly PadDef[];
-  const next = pads.find((p) => !p.optional && !padsDone.includes(p.id));
-  const refCost = next ? next.cost : Math.max(...pads.map((p) => p.cost));
-  return Math.min(raw, Math.floor(refCost * C.offline.capNextPadFrac));
-}
-
-/** ₺ ile çıkılabilen en yüksek istasyon seviyesi (L5 = Usta, 💎/video — Faz 4). */
-export const stationSoftMaxLevel = () => C.teaStation.upgrade.maxLevel;
-/** Mevcut seviyeden bir sonraki ₺ yükseltmenin maliyeti (çay eğrisi; zone-farkındalı için *Z). */
-export const stationUpgradeCost = (level: number) => upgradeCost(C.teaStation.upgrade, level + 1);
-/** Zone'un istasyon yükseltme maliyeti: çay eğrisi × ürünün upgradeCostMult'u (M3 — tost tezgâhı
- *  geç-oyun, çay eğrisi orada komik ucuz kalırdı). */
-export const stationUpgradeCostZ = (z: number, level: number) =>
-  Math.floor(upgradeCost(C.teaStation.upgrade, level + 1) * PRODUCTS[zoneProduct(z)].upgradeCostMult);
 
 export const useGame = create<GameState>((set, get) => ({
   wallet: D(0),
@@ -1297,765 +462,21 @@ export const useGame = create<GameState>((set, get) => ({
     });
   },
 
+  /**
+   * Bir simülasyon karesi. Gövde Faz A2'de `tick.ts`'e, 17 sisteme bölündü (sıra orada sabit);
+   * burada kalan üç iş: bağlamı kur, sistemleri koştur, sonucu TEK `set()` ile yaz.
+   * `keepIdentity` (rules.ts): içeriği değişmeyen alan ESKİ referansına döner → React yalnız
+   * gerçekten değişen veriyi yeniden çizer (P0 perf düzeltmesi, 2026-09-06).
+   */
   tick: (rawDt: number) => {
     const dt = Math.min(Math.max(rawDt, 0), 0.25);
     if (dt <= 0) return;
     const s = get();
 
-    const npcs: Npc[] = s.npcs.map((n) => ({ ...n, pos: [...n.pos] as Vec3 }));
-    // pos klonlanır (mıknatıs hareketinde mutasyon önceki state'i bozmasın).
-    let coins: Coin[] = s.coins.map((c) => ({ ...c, pos: [...c.pos] as Vec3 }));
-    let dishes: Dish[] = s.dishes.map((d) => ({ ...d, pos: [...d.pos] as Vec3 }));
-    let wallet = s.wallet;
-    let lifetime = s.lifetime;
-    let padsDone = s.padsDone;
-    let padFills = s.padFills;
-    // D-015: tables/stations/hasWaiter/hasDishwasher padsDone'dan TÜRETİLİR (frame anlık
-    // görüntüsü; tick içinde ayrıca mutasyona uğramaz — pad açılınca yalnız padsDone büyür, gerisi türetilir).
-    const derived = derivedFromPads(padsDone);
-    const tables = derived.tables;
-    const zonesOpen = derived.zonesOpen;
-    // Personelin oyuncudan kaçarken masaya itilmemesi için masa gövdeleri (navStep avoidSolids).
-    const obstacles = tableSolids(tables);
-    // Personel (garson/bulaşıkçı) BFS ızgarası — masa+zone sayısına göre cache'li.
-    const navGrid = getNavGrid(tables, zonesOpen);
-    const upgradeFills = s.upgradeFills.slice();
-    let activeZone: ActiveZone | null = null;
-    const stationLevels = s.stationLevels.slice(); // zone başına ocak seviyesi (bu tick'te yükselebilir)
-    const tableLevels = s.tableLevels.slice(); // masa-başı seviyeler (kopya; bu tick'te yükseltilebilir)
-    const readyCupsByZone = s.readyCupsByZone.slice();
-    const brewProgressByZone = s.brewProgressByZone.slice();
-    let tray = s.tray;
-    let trayFood = s.trayFood; // tepsideki tost (M3)
-    let cleanCups = s.cleanCups;
-    let carriedDirty = s.carriedDirty;
-    let carriedDirtyFood = s.carriedDirtyFood;
-    const tableUpgradeFills = s.tableUpgradeFills.slice();
-    let notice = s.notice;
-    // Bildirim kuyruğu: bitiş/reveal/seviye toast'ları tek slotu EZMEK yerine sıraya girer (B paketi).
-    const noticeQueue: GameNotice[] = [...s.noticeQueue];
-    const enqueueNotice = (n: GameNotice) => noticeQueue.push(n);
-    let revealSeen = s.revealSeen;
-    let questPhase = s.questPhase;
-    let questPhaseT = s.questPhaseT;
-    let xp = s.xp; // toplam XP (bu tick'te eylem ödülleriyle artabilir; level türetilir)
-    // Kalıcı eylem sayaçları (bu tick'te artabilir). waiterServedByZone dizisi de klonlanır (v21).
-    const stats: SaveStats = { ...s.stats, waiterServedByZone: s.stats.waiterServedByZone.slice() };
-    let questIndex = s.questIndex;
-    let questBase = s.questBase;
-    let camFocus = s.camFocus;
-    // Kamera odak tetikleri aynı tick'te üst üste binebilir (reveal + görev geçişi + zone açılışı) —
-    // 2026-06-11 fix: tick-içi ÖNCELİK (reveal 1 < görev 2 < zone 3); düşük öncelik yükseği EZEMEZ.
-    let camPrio = 0;
-    const requestFocus = (pos: RVec3, prio: number) => {
-      if (prio >= camPrio) {
-        camFocus = { pos: [pos[0], pos[1], pos[2]], ttl: CAM_FOCUS_TTL };
-        camPrio = prio;
-      }
-    };
-    let nextId = s.nextId;
-    let spawnTimer = s.spawnTimer - dt;
-    let spawnZone = s.spawnZone;
+    const c = createTickCtx(s, dt);
+    runTick(c);
 
-    // --- Ocak hazır-kuyruğu (demleme) — D-011 §3 + bardak döngüsü (Faz 2e §5), ZONE BAŞINA ---
-    // Her açık zone'un ocağı kendi kuyruğuna demler (per-zone ocak, D-022); TEMİZ bardak GLOBAL havuzdan.
-    for (let z = 0; z < zonesOpen; z++) {
-      const queueCap = brewQueueCapacity(stationLevels[z]);
-      // M3: hazırlama süresi zone'un ÜRÜNÜNDEN (çay 6sn / tost 14sn taban); kap havuzu ORTAK.
-      const cupBrewTime = brewTime(stationLevels[z], PRODUCTS[zoneProduct(z)].prepTime);
-      if (readyCupsByZone[z] < queueCap && cleanCups > 0) {
-        brewProgressByZone[z] += dt;
-        while (readyCupsByZone[z] < queueCap && cleanCups > 0 && brewProgressByZone[z] >= cupBrewTime) {
-          readyCupsByZone[z] += 1;
-          cleanCups -= 1;
-          brewProgressByZone[z] -= cupBrewTime;
-        }
-      }
-      if (readyCupsByZone[z] >= queueCap || cleanCups <= 0)
-        brewProgressByZone[z] = Math.min(brewProgressByZone[z], cupBrewTime);
-    }
-
-    // Kirli masalar (D-019): eşiği aşan masalar müşteriye/garsona kapalı (temizlik baskısı).
-    // Y2: eşik koltukla ölçeklenir → seviye gerekir.
-    const dirty = dirtyTables(dishes, tableLevels);
-
-    // --- Spawn (Y2 GRUP sistemi, plan §2) ---
-    const activeCount = npcs.filter((n) => n.state !== 'leaving').length;
-    // Müşteri tavanı KOLTUK+2 (masa değil — Y2; M3'ün masa+2 fix'inin koltuklu hali).
-    let totalSeats = 0;
-    for (let i = 0; i < tables; i++) totalSeats += tableSeats(tableLevels[i] ?? 0);
-    const maxConcurrent = Math.max(C.npc.maxConcurrent, totalSeats + 2);
-    if (spawnTimer <= 0 && activeCount < maxConcurrent) {
-      const occ = occupiedSeats(npcs);
-      const target = findTableForGroup(occ, tables, dirty, tableLevels, zonesOpen, spawnZone);
-      if (target >= 0) {
-        // Grup boyu zarla (%30/35/20/15); koltuk yetmezse KÜÇÜLÜR, tavan da aşılmaz.
-        const seats = LAYOUT.tables[target].seats;
-        const taken = occ.get(target) ?? new Set<number>();
-        const freeSeats = tableSeats(tableLevels[target] ?? 0) - taken.size;
-        const size = Math.min(rollGroupSize(Math.random()), freeSeats, maxConcurrent - activeCount);
-        // KENDİ zone'unun sokağında belir → o zone'un kapısından girer (dış dünya hissi).
-        // Üyeler sokakta hafif saçılır (üst üste binmesin); her üye FARKLI koltuğa atanır,
-        // çay/timer/ödeme/bahşiş bireysel (ekonomi korunumu bozulmaz).
-        const street = LAYOUT.streets[zoneOfTable(target)];
-        let placed = 0;
-        for (let k = 0; k < seats.length && placed < size; k++) {
-          if (taken.has(k)) continue;
-          npcs.push({
-            id: nextId++,
-            state: 'toTable',
-            pos: [street[0] + (placed - (size - 1) / 2) * 0.55, street[1], street[2] + placed * 0.35],
-            tableIndex: target,
-            seatIndex: k,
-            timer: 0,
-            color: NPC_COLORS[Math.floor(Math.random() * NPC_COLORS.length)],
-          });
-          placed += 1;
-        }
-        spawnTimer += C.npc.spawnInterval;
-        spawnZone = (zoneOfTable(target) + 1) % zonesOpen; // sıradaki grup bir SONRAKİ zone'dan başlasın
-      } else {
-        spawnTimer = 0; // koltuk boşalınca hemen denesin
-      }
-    }
-
-    // --- NPC durum makinesi ---
-    const step = NPC_SPEED * dt;
-    const removed: number[] = [];
-    for (const n of npcs) {
-      const slot = LAYOUT.tables[n.tableIndex];
-      // Müşteri KENDİ zone'unun kapısını/sokağını kullanır (zone-yerel hareket; bölme duvarı sorunu yok).
-      const nEntrance = LAYOUT.entrances[zoneOfTable(n.tableIndex)];
-      const nStreet = LAYOUT.streets[zoneOfTable(n.tableIndex)];
-      switch (n.state) {
-        case 'toTable': {
-          // Önce KAPIYA (sokaktaysa düz yürü — dışarıda engel yok), sonra koltuğa BFS rotayla
-          // (navStep): eksen-kayması (moveAvoid) ön-sıra masayı dolaşamayıp KİLİTLENİYORDU →
-          // müşteri arka masaya hiç oturamıyor, masayı süresiz rezerve ediyordu (telefon bug'ı 2026-06-11).
-          const goingIn = n.pos[2] > nEntrance[2] + 0.2;
-          // Y2: hedef ATANAN koltuk (grup üyeleri aynı masada farklı koltuğa oturur).
-          const seat = slot.seats[n.seatIndex];
-          if (goingIn) {
-            moveToward(n.pos, nEntrance, step);
-          } else if (navStep(n.pos, seat, step, navGrid, 0.5)) {
-            // Oturdu (koltuğa tam otur); çay servisini bekler. Sabır timer'ı başlar (D-011);
-            // OTURDUĞU masanın seviyesi sabrı uzatır (Faz 2h).
-            n.pos[0] = seat[0];
-            n.pos[2] = seat[2];
-            n.state = 'waitingForTea';
-            n.timer = tablePatience(tableLevels[n.tableIndex] ?? 0, zoneProduct(zoneOfTable(n.tableIndex)));
-          } else {
-            // Sigorta: rota bulunamayıp uzun süre oturamadıysa vazgeçip gider — masa SÜRESİZ
-            // rezerve kalamaz (timer toTable'da yürüme-süresi sayacı olarak kullanılır).
-            n.timer += dt;
-            if (n.timer > 30) n.state = 'leaving';
-          }
-          break;
-        }
-        case 'waitingForTea':
-          // Çay artık OTO gelmez — oyuncu/garson tepsiyle bırakmalı. Sabır biterse sessizce gider.
-          n.timer -= dt;
-          if (n.timer <= 0) n.state = 'leaving';
-          break;
-        case 'drinking':
-          n.timer -= dt;
-          if (n.timer <= 0) {
-            // Öde: parayı masanın yanına düşür — ÜRÜN fiyatı (çay 5 / tost 25, M3) + masa bahşişi (Faz 2h).
-            // (turu-5'te kule istifi ve moneySpot saçılımı denendi; kullanıcı İKİSİNİ de beğenmedi →
-            // ORİJİNAL davranış geri. Para sunumuna bir daha dokunmadan önce telefonda mockup onayı al.)
-            coins.push({
-              id: nextId++,
-              pos: [slot.table[0] + (Math.random() - 0.5), 0.3, slot.table[2] + 0.6 + (Math.random() - 0.5)],
-              value:
-                PRODUCTS[zoneProduct(zoneOfTable(n.tableIndex))].price +
-                tableTip(tableLevels[n.tableIndex] ?? 0),
-            });
-            // İçtiği bardak masada KİRLİ kalır (Faz 2e): toplanıp yıkanmalı, yoksa temiz biter.
-            // tableIndex ile masaya etiketlenir (D-019): masa-başı eşik aşılınca masa KİRLİ olur.
-            // ONBOARDING GATE (kullanıcı 2026-06-10): bulaşık MEKANİĞİ öğretilmeden (q_wash görevi
-            // gelmeden) kirli bardak HİÇ çıkmaz — bardak doğrudan temiz havuza döner (korunum bozulmaz,
-            // demleme durmaz). q_wash aktif olduğu andan itibaren kirli bırakılır → görevle birlikte öğrenilir.
-            if (questIndex >= WASH_QUEST_INDEX) {
-              dishes.push({
-                id: nextId++,
-                pos: [slot.table[0] + (Math.random() - 0.5) * 0.6, 0.95, slot.table[2] + (Math.random() - 0.5) * 0.6],
-                tableIndex: n.tableIndex,
-                kind: PRODUCTS[zoneProduct(zoneOfTable(n.tableIndex))].dish, // M3: bardak/tabak görseli
-              });
-            } else {
-              cleanCups += 1;
-            }
-            n.state = 'leaving';
-          }
-          break;
-        case 'leaving': {
-          // Önce KAPIYA (içerdeyse BFS rotayla — masalara takılmaz), sonra SOKAĞA düz yürü.
-          const nearDoor = n.pos[2] >= nEntrance[2] - 0.2 || dist2D(n.pos, nEntrance) <= 0.45;
-          if (nearDoor) {
-            if (moveToward(n.pos, nStreet, step)) removed.push(n.id);
-          } else {
-            navStep(n.pos, nEntrance, step, navGrid, 0.4);
-          }
-          break;
-        }
-      }
-    }
-    const liveNpcs = removed.length ? npcs.filter((n) => !removed.includes(n.id)) : npcs;
-
-    // --- Oyuncu hareketi (D-016: mobilya collision'ı) ---
-    // Collision YALNIZ input'la harekette uygulanır (eksen-başı kayma); doğrudan setState/__teleport
-    // (testler/dev kancası) input'suz konum atadığında engellenmez → birim/smoke testleri etkilenmez.
-    const jMag = Math.hypot(s.inputJoystick[0], s.inputJoystick[1]);
-    const input = jMag > 0.05 ? s.inputJoystick : s.inputKeyboard;
-    const pr = LAYOUT.playerRadius;
-    const oldX = s.player[0];
-    const oldZ = s.player[2];
-    const moveSpeed = playerSpeedFor(s.charUpgrades.speed); // hız kademesinden (v20)
-    const dxIn = input[0] * moveSpeed * dt;
-    const dzIn = input[1] * moveSpeed * dt;
-    // Oyuncu yalnız AÇIK zone'ların BİRLEŞİMİNDE gezer (M2 union kelepçesi; L-şekil destekli —
-    // kilitli salonun "boş arsa"sına girilmez).
-    let [nx, nz] = clampToOpenZones(oldX + dxIn, oldZ + dzIn, zonesOpen);
-    if (dxIn !== 0 || dzIn !== 0) {
-      // MOBİLYA = KATI engel: yeni bir engele GİRİŞ bloklanır (eksen-başı kayma; kafa kafaya gelince durur).
-      // AMA oyuncu zaten bir engelin İÇİNDEyse (ör. üstünde masa açıldı) kilitlenmesin → çıkışına izin ver
-      // (aktör collision'ındaki desenin aynısı). Böylece "zorlasan da giremezsin" korunur ama hapsolmazsın.
-      const furn = activeSolids(tables, zonesOpen);
-      const stuckInFurn = hitsSolid(oldX, oldZ, furn, pr);
-      if (dxIn !== 0 && hitsSolid(nx, oldZ, furn, pr) && !stuckInFurn) nx = oldX;
-      if (dzIn !== 0 && hitsSolid(nx, nz, furn, pr) && !stuckInFurn) nz = oldZ;
-      // AKTÖR çarpışması KALDIRILDI (turu-5 m.9): oyuncu müşteri/personel kalabalığının içinden
-      // geçer (kalabalıkta yürünemiyordu). Personel zaten navStep separation'ıyla oyuncuya yol verir.
-    }
-    const player = [nx, s.player[1], nz] as Vec3;
-
-    // --- Para mıknatısı + toplama (Faz 2f juice) ---
-    // attractRadius içine giren para oyuncuya doğru GERÇEKTEN akar (hız > oyuncu hızı → daima yetişir),
-    // pickupRadius'a varınca toplanır. Mıknatıs store'da yapıldığı için görsel = mantık → "yapışıp
-    // toplanmayan para" bug'ı yapısal olarak imkansız (Coins.tsx sadece c.pos'u çizer).
-    let autoCollectSum = s.autoCollectSum;
-    let autoCollectToastCooldown = Math.max(0, s.autoCollectToastCooldown - dt);
-    if (coins.length) {
-      const attractR = attractRadiusFor(s.charUpgrades.magnet); // mıknatıs kademesinden (v20)
-      const keep: Coin[] = [];
-      for (const c of coins) {
-        const inMagnet = dist2D(player, c.pos) < attractR;
-        if (inMagnet) {
-          moveToward(c.pos, player, C.money.attractSpeed * dt);
-        }
-        if (dist2D(player, c.pos) < C.money.pickupRadius) {
-          wallet = wallet.add(c.value);
-          lifetime = lifetime.add(c.value);
-          stats.coinsCollected += 1;
-          continue;
-        }
-        // OTO-TOPLAMA (2026-06-13): uzun süre yerde bekleyen para kendiliğinden cüzdana girer.
-        // Mıknatıs alanındaki coin'e dokunulmaz (zaten oyuncuya akıyor — manuel toplama hissi korunur).
-        // stats.coinsCollected ARTMAZ (o sayaç manuel toplamanın quest/öğretici ölçüsü).
-        c.age = (c.age ?? 0) + dt;
-        if (!inMagnet && C.money.autoCollectAfter > 0 && c.age >= C.money.autoCollectAfter) {
-          wallet = wallet.add(c.value);
-          lifetime = lifetime.add(c.value);
-          autoCollectSum += c.value;
-          continue;
-        }
-        keep.push(c);
-      }
-      coins = keep;
-    }
-    // Oto-toplama bildirimi TOPLU çıkar (en sık autoCollectToastEvery sn'de bir) — kullanıcı
-    // paranın kendiliğinden toplandığını GÖRSÜN ama toast spam'ı olmasın.
-    if (autoCollectSum > 0 && autoCollectToastCooldown <= 0) {
-      enqueueNotice({ text: 'Bekleyen paralar otomatik toplandı', ttl: 4, kind: 'reveal', reward: autoCollectSum });
-      autoCollectSum = 0;
-      autoCollectToastCooldown = C.money.autoCollectToastEvery;
-    }
-
-    // --- Servis (D-011): ocakta tepsiyi doldur, bekleyen masalara çay bırak (yakınlık) ---
-    const trayCap = trayCapacity(s.charUpgrades.tray);
-    // Ocağa yaklaşınca hazır çaylardan tepsi dolar (herhangi bir açık ocak yeterli).
-    // PAYLAŞIMLI kapasite (2026-06-09): çay + kirli aynı tepsiyi paylaşır → toplam trayCap'i aşamaz.
-    // Karışık taşımaya izin verilir (eski "eli boşken" kısıtı kaldırıldı; deadlock'u engeller).
-    if (tray + trayFood + carriedDirty + carriedDirtyFood < trayCap) {
-      for (let z = 0; z < zonesOpen; z++) {
-        if (readyCupsByZone[z] > 0 && dist2D(player, LAYOUT.stations[z]) < C.serving.pickupRadius) {
-          const take = Math.min(trayCap - tray - trayFood - carriedDirty - carriedDirtyFood, readyCupsByZone[z]);
-          // M3: istasyonun ürünü tepsinin DOĞRU bölmesine gider (çay/tost ayrı sayaç, kapasite ortak).
-          if (zoneProduct(z) === 'tost') trayFood += take;
-          else tray += take;
-          readyCupsByZone[z] -= take;
-          if (take > 0) stats.teaPickups += take; // generic "üründen al" sayacı (görevler ortak)
-          break;
-        }
-      }
-    }
-    // Bekleyen masaya yaklaşınca tepsiden ÜRÜN bırak → müşteri içmeye/yemeye başlar (toplu servis).
-    // M3: müşterinin istediği ürün = masasının zone'unun ürünü; tepside O ürün yoksa servis OLMAZ
-    // (çayla tost müşterisi doyurulamaz). Servis MASAYA yakınlıkla (her taraftan).
-    if (tray > 0 || trayFood > 0) {
-      for (const n of liveNpcs) {
-        if (tray <= 0 && trayFood <= 0) break;
-        if (n.state !== 'waitingForTea') continue;
-        const sz = zoneOfTable(n.tableIndex);
-        const wantsFood = zoneProduct(sz) === 'tost';
-        if (wantsFood ? trayFood <= 0 : tray <= 0) continue;
-        if (dist2D(player, LAYOUT.tables[n.tableIndex].table) < C.serving.serveRadius) {
-          n.state = 'drinking';
-          n.timer = C.npc.eatTime;
-          if (wantsFood) trayFood -= 1;
-          else tray -= 1;
-          stats.teasServed += 1;
-          // v23: zone'lu serveTea görevleri o salonu sayar (tost servisi de zone sayacına işler).
-          stats.teasServedByZone[sz] = (stats.teasServedByZone[sz] ?? 0) + 1;
-          xp += C.xp.perTeaServed;
-        }
-      }
-    }
-
-    // --- Bardak döngüsü (Faz 2e): oyuncu masadaki kirli bardakları toplar, bulaşıkta yıkar (yakınlık) ---
-    // PAYLAŞIMLI kapasite (2026-06-09): çay taşırken de kirli toplanabilir → toplam trayCap'i aşamaz.
-    if (tray + trayFood + carriedDirty + carriedDirtyFood < trayCap && dishes.length) {
-      const keep: Dish[] = [];
-      for (const d of dishes) {
-        if (tray + trayFood + carriedDirty + carriedDirtyFood < trayCap && dist2D(player, d.pos) < C.cups.collectRadius) {
-          // turu-5 m.11: kirli kabın TÜRÜ tepsi görseline taşınır (tabak ≠ bardak); havuz/yıkama ortak.
-          if (d.kind === 'plate') carriedDirtyFood += 1;
-          else carriedDirty += 1;
-        } else keep.push(d);
-      }
-      dishes = keep;
-    }
-    // HERHANGİ açık zone'un bulaşık noktasına yaklaşınca taşınan kirliler yıkanır → GLOBAL temiz havuza.
-    if (carriedDirty + carriedDirtyFood > 0) {
-      for (let z = 0; z < zonesOpen; z++) {
-        if (dist2D(player, LAYOUT.dishStations[z]) < C.cups.washRadius) {
-          const washed = carriedDirty + carriedDirtyFood;
-          cleanCups += washed;
-          stats.dishesWashed += washed;
-          xp += C.xp.perDishWashed * washed;
-          carriedDirty = 0;
-          carriedDirtyFood = 0;
-          break;
-        }
-      }
-    }
-
-    // --- Garson (D-012 kısmi assist), ZONE BAŞINA: kendi zone'unun ocağından alır, kendi zone'unun
-    // bekleyen masalarına götürür (per-zone personel, D-022). Oyuncudan yavaş.
-    // Y4: zone başına 2 garsona kadar + CLAIM — 1. garson en acil masayı alır, 2. garson o masayı
-    // HARİÇ tutar (deterministik; çift-hedef kargaşası/salınım yok). Sıra sabit: önce 1., sonra 2.
-    const waiters: (Waiter | null)[] = s.waiters.slice();
-    const waiters2: (Waiter | null)[] = s.waiters2.slice();
-    for (let z = 0; z < MAX_ZONES; z++) {
-      const wCount = z < zonesOpen ? derived.waiterCountByZone[z] : 0;
-      if (wCount === 0) {
-        waiters[z] = null;
-        waiters2[z] = null;
-        continue;
-      }
-      // v29: hız panel kademesinden (tür-ortak; zone-başı waiterLevels kalktı).
-      const wKind: WaiterKind = zoneProduct(z) === 'tost' ? 'tost' : 'tea';
-      const wStep = waiterSpeedFor(wKind, wKind === 'tost' ? s.waiterUpgrades.tostSpeed : s.waiterUpgrades.teaSpeed) * dt;
-      // Y3: tepsi kapasitesi panel yükseltmesinden türetilir (çay garsonları ortak eğri, tostçu ayrı).
-      const wTrayCap = waiterTrayCapacityFor(
-        zoneProduct(z) === 'tost' ? 'tost' : 'tea',
-        zoneProduct(z) === 'tost' ? s.waiterUpgrades.tostTray : s.waiterUpgrades.teaTray,
-      );
-      const claimed = new Set<number>(); // bu tick'te hedeflenen masa index'leri (Y4 claim)
-      const runWaiter = (prev: Waiter | null, homeX: number): Waiter => {
-        const home: Vec3 = [LAYOUT.waiterHomes[z][0] + homeX, 0, LAYOUT.waiterHomes[z][2]];
-        const w: Waiter = prev
-          ? { pos: [...prev.pos] as Vec3, tray: prev.tray }
-          : { pos: [...home] as Vec3, tray: 0 };
-        // Garson kirli masaya çay GÖTÜRMEZ (D-019) + yalnız KENDİ zone'unun masalarına bakar.
-        // Her garson için YENİDEN filtrelenir (1. garsonun bu tick servis ettiği müşteri düşer).
-        const waitingNpcs = liveNpcs.filter(
-          (n) => n.state === 'waitingForTea' && !dirty.has(n.tableIndex) && zoneOfTable(n.tableIndex) === z,
-        );
-        // Claim: diğer garsonun hedeflediği masa hariç (yalnız teslimat hedefi seçiminde).
-        const claimable = waitingNpcs.filter((n) => !claimed.has(n.tableIndex));
-        if (w.tray > 0 && claimable.length > 0) {
-          // Teslimat: en ACİL (sabrı en az kalan) bekleyene; eşitlikte en yakın (anti-starvation).
-          let best = claimable[0];
-          let bestTimer = Infinity;
-          let bestDist = Infinity;
-          for (const n of claimable) {
-            const d = dist2D(w.pos, LAYOUT.tables[n.tableIndex].table);
-            if (n.timer < bestTimer - 1e-6 || (Math.abs(n.timer - bestTimer) <= 1e-6 && d < bestDist)) {
-              bestTimer = n.timer;
-              bestDist = d;
-              best = n;
-            }
-          }
-          claimed.add(best.tableIndex);
-          const targetTable = LAYOUT.tables[best.tableIndex].table;
-          if (navStep(w.pos, targetTable, wStep, navGrid, REACH_TABLE, player, obstacles)) {
-            // Y3 (plan §3): TEK durakta o masada bekleyen HERKESE tepsi yettiğince bırakır
-            // (grup + tepsi-3 = tek seferde; artan çayla sıradaki acil masaya devam eder).
-            for (const n of waitingNpcs) {
-              if (w.tray <= 0) break;
-              if (n.tableIndex !== best.tableIndex) continue;
-              n.state = 'drinking';
-              n.timer = C.npc.eatTime;
-              w.tray -= 1;
-              stats.waiterServed += 1;
-              stats.waiterServedByZone[z] = (stats.waiterServedByZone[z] ?? 0) + 1; // v21: zone-başı sayaç
-              xp += C.xp.perWaiterServed;
-            }
-          }
-        } else if (w.tray < wTrayCap && waitingNpcs.length > 0) {
-          // Yükleme: KENDİ zone'unun ocağının ÖN yüzüne git (bardaklar önde); varınca tepsiye al.
-          if (
-            navStep(w.pos, LAYOUT.stationPickups[z], wStep, navGrid, REACH_PICKUP, player, obstacles) &&
-            readyCupsByZone[z] > 0
-          ) {
-            const take = Math.min(wTrayCap - w.tray, readyCupsByZone[z]);
-            w.tray += take;
-            readyCupsByZone[z] -= take;
-          }
-        } else {
-          // Boşta: kendi köşesine dön (2. garson 1.'in 0.7 sağında bekler — üst üste binmez).
-          navStep(w.pos, home, wStep, navGrid, REACH_HOME, player, obstacles);
-        }
-        return w;
-      };
-      waiters[z] = runWaiter(waiters[z], 0);
-      waiters2[z] = wCount >= 2 ? runWaiter(waiters2[z], 0.7) : null;
-    }
-
-    // --- Bulaşıkçı (Faz 2e kısmi assist), ZONE BAŞINA: kendi zone'unun kirlilerini toplar,
-    // kendi zone'unun bulaşık noktasında yıkar (per-zone bulaşık köşesi, D-022).
-    const dishwashers: (Waiter | null)[] = s.dishwashers.slice();
-    for (let z = 0; z < MAX_ZONES; z++) {
-      if (z >= zonesOpen || !derived.hasDishwasherByZone[z]) {
-        dishwashers[z] = null;
-        continue;
-      }
-      const prevDw = dishwashers[z];
-      const dw: Waiter = prevDw
-        ? { pos: [...prevDw.pos] as Vec3, tray: prevDw.tray }
-        : { pos: [...LAYOUT.dishwasherHomes[z]] as Vec3, tray: 0 };
-      const dStep = dishSpeedFor(s.waiterUpgrades.dishSpeed) * dt; // v29: hız panel kademesinden
-      const dCap = dishCarryCapacityFor(s.waiterUpgrades.dishCarry);
-      const zoneDishes = dishes.filter((d) => zoneOfTable(d.tableIndex) === z);
-      if (dw.tray >= dCap || (dw.tray > 0 && zoneDishes.length === 0)) {
-        // Dolu (ya da elinde var ama toplanacak kalmadı) → KENDİ zone'unun bulaşığında yıka.
-        if (navStep(dw.pos, LAYOUT.dishStations[z], dStep, navGrid, REACH_WASH, player, obstacles)) {
-          cleanCups += dw.tray;
-          dw.tray = 0;
-        }
-      } else if (zoneDishes.length > 0) {
-        // Topla: kendi zone'undaki en yakın kirli bardağa yaklaş; collectRadius'a girince al.
-        let target = zoneDishes[0];
-        let td = Infinity;
-        for (const d of zoneDishes) {
-          const dd = dist2D(dw.pos, d.pos);
-          if (dd < td) { td = dd; target = d; }
-        }
-        if (navStep(dw.pos, target.pos, dStep, navGrid, C.cups.collectRadius, player, obstacles)) {
-          dishes = dishes.filter((d) => d.id !== target.id);
-          dw.tray += 1;
-        }
-      } else {
-        // Boşta: kendi zone'unun köşesine dön.
-        navStep(dw.pos, LAYOUT.dishwasherHomes[z], dStep, navGrid, REACH_HOME, player, obstacles);
-      }
-      dishwashers[z] = dw;
-    }
-
-    // --- Mekânsal etkileşim noktaları (D-018 §2, HAREKET-TEMELLİ) ---
-    // Oyuncu fiziksel olarak aynı anda TEK dolum noktasının üstünde olabilir. Para yalnız oyuncu DURUNCA akar:
-    // üstünden GEÇERKEN (hareket halinde) hiç alınmaz, DURDUĞU (input bıraktığı) anda HEMEN başlar (sayaç/countdown YOK).
-    const padGate: GateState = {
-      padsDone,
-      tables,
-      stationLevel: stationLevels[0],
-      lifetime: lifetime.toNumber(),
-      waiterServed: stats.waiterServed,
-      waiterServedByZone: stats.waiterServedByZone,
-      tableLevels, // Y4: allZoneTablesLevel gate'i (2. garson pad'leri)
-    };
-    // EKRANDA TEK PAD (quest sistemi): görünürlük visiblePads'ten (Pad.tsx ile aynı kaynak).
-    const activePads: PadDef[] = visiblePads(questIndex, padGate);
-
-    // --- Yeni-özellik bildirimi (D-019 §4; v21 zone-başına) ---
-    // Bir ikincil özellik (yükseltme/personel) İLK kez açıldığında kısa toast + pan. revealSeen baseline
-    // init'te kurulduğu için zaten açık olanlar tekrar bildirmez (yeniden-yükleme spam'ı yok; persist gerekmez).
-    // turu-5 m.8: karakter-butonu spotlight'ı bekliyorsa (charStat görevi aktif + panel hiç açılmamış)
-    // reveal kamera panı BASTIRILIR — ekranda tek yönlendirme kalır (table2 bitişi ertesi tick'te
-    // "çay yükselt" reveal'ını ateşliyordu; kamera oraya kayarken spotlight char butonunu gösteriyordu).
-    const spotlightPending =
-      questIndex < C.quests.length &&
-      C.quests[questIndex].target.type === 'charStat' &&
-      !s.charPanelSeen;
-    // C paketi (⑤⑥ → tek talimat kaynağı = görev kartı): bir reveal'ın açtığı özelliği AYNI/İLERİDEKİ
-    // bir görev zaten öğretiyorsa reveal toast'ı GÖSTERİLMEZ (sessizce tüketilir) — "Çay ocağını
-    // yükseltebilirsin ☕" gibi mesajlar görev cümlesiyle çakışıp görev sanılmasın.
-    const questCoveredReveals = new Set<string>();
-    for (let qi = questIndex; qi < C.quests.length; qi++) {
-      const t = C.quests[qi].target;
-      if (t.type === 'stationLevel') questCoveredReveals.add(`upgrade:${t.zone ?? 0}`);
-      else if (t.type === 'tableLevel') questCoveredReveals.add('tableUp:0');
-      else if (t.type === 'tablesAtLevel') questCoveredReveals.add(`tableUp:${t.zone ?? 0}`);
-      else if (t.type === 'pad') questCoveredReveals.add(`opt:${t.id}`);
-    }
-    for (const [key, text, rp] of revealKeys(padGate, zonesOpen, stationLevels)) {
-      if (!revealSeen.includes(key)) {
-        // Bir görevin kapsadığı özellik: reveal'ı sessizce tüket (toast/pan yok) → tek talimat görev kartı.
-        if (questCoveredReveals.has(key)) {
-          revealSeen = [...revealSeen, key];
-          continue;
-        }
-        // turu-6 fix: spotlight beklerken PAN'lı reveal'ı TAMAMEN ertele (toast + tüketim dahil).
-        if (spotlightPending && rp) continue;
-        revealSeen = [...revealSeen, key];
-        enqueueNotice({ text, ttl: 4.5, kind: 'reveal' });
-        // Yeni açılan noktaya anlık kamera pan ("orada bir şey var" — kullanıcı isteği 2026-06-09).
-        if (rp) requestFocus(rp, 1);
-      }
-    }
-    if (notice) {
-      const ttl = notice.ttl - dt;
-      notice = ttl > 0 ? { ...notice, ttl } : null;
-    }
-
-    // Oyuncu DURUYOR mu? (input ~0). Para yalnız dururken akar → üstünden geçerken (hareket) alınmaz.
-    const fillReady = Math.hypot(input[0], input[1]) <= 0.1;
-
-    // Oyuncunun şu an üstünde durduğu dolum noktasının kanonik id'si (pad.id / 'tea:z' / 'tableUp:i').
-    let onFillId: string | null = null;
-    for (const pad of activePads) {
-      const pp = LAYOUT.padPos[pad.id];
-      if (pp && dist2D(player, pp) < PAD_RADIUS) { onFillId = pad.id; break; }
-    }
-    // GUARD (gece fix 2026-06-10): oyuncu AÇIK bir ocağın pickup yarıçapındaysa niyeti ÇAY ALMAK'tır —
-    // yükseltme dolumu kesinlikle başlamaz (mekânsal ayrımın yanında ikinci emniyet).
-    let inPickupRange = false;
-    for (let z = 0; z < zonesOpen; z++)
-      if (dist2D(player, LAYOUT.stations[z]) < C.serving.pickupRadius) { inPickupRange = true; break; }
-    if (!onFillId && !inPickupRange) {
-      for (let z = 0; z < zonesOpen; z++) {
-        if (!upgradeZoneUnlockedZ(z, padGate) || stationLevels[z] >= stationSoftMaxLevel()) continue;
-        if (dist2D(player, LAYOUT.upgradeZones[z]) < PAD_RADIUS) { onFillId = FILL_TEA + z; break; }
-      }
-    }
-    if (!onFillId) {
-      for (let i = 0; i < tables; i++) {
-        // v21: her masanın yükseltmesi KENDİ zone'unun gate'ine bağlı (o salonun 4 masası açık mı).
-        if (!tableUpgradeUnlockedZ(zoneOfTable(i), padGate)) continue;
-        if (tableLevels[i] >= tableSoftMaxLevel()) continue;
-        if (dist2D(player, LAYOUT.tables[i].upgradeSpot) < TABLE_UP_RADIUS) { onFillId = FILL_TABLE + i; break; }
-      }
-    }
-
-    // --- Pad doldurma (omurga + opsiyonel; her pad açtığı objenin yerinde) ---
-    const activePad = onFillId ? activePads.find((p) => p.id === onFillId) : undefined;
-    if (activePad) {
-      const padPos = LAYOUT.padPos[activePad.id]!;
-      let fill = padFills[activePad.id] ?? 0;
-      if (fillReady && wallet.gt(0)) {
-        const amt = Math.min(activePad.fillRate * dt, wallet.toNumber(), activePad.cost - fill);
-        if (amt > 0) {
-          fill += amt;
-          wallet = wallet.sub(amt);
-        }
-      }
-      if (fill >= activePad.cost) {
-        // Pad tamamlandı: SADECE padsDone'a ekle (etkiler türetilir, D-015), kısmi dolumu temizle.
-        padsDone = [...padsDone, activePad.id];
-        xp += C.xp.perPad;
-        const rest = { ...padFills };
-        delete rest[activePad.id];
-        padFills = rest;
-        activeZone = null;
-        // Zone açılışı (Faz 3a): yeni salon kendi bardak stoğuyla gelir + kamera yeni salona pan
-        // ("orada yeni bir dünya var" hissi — quest kamerası ayrıca sıradaki göreve döner).
-        if (activePad.effect.type === 'unlockZone') {
-          cleanCups += C.cups.poolBase;
-          // Yeni açılan zone'un merkezine pan (M2: zone index pad listesinden değil, AÇILMIŞ sayıdan).
-          const zNew = Math.min(MAX_ZONES, derivedFromPads(padsDone).zonesOpen) - 1;
-          const za = LAYOUT.zoneAreas[zNew];
-          requestFocus([(za.minX + za.maxX) / 2, 0, (za.minZ + za.maxZ) / 2], 3); // en yüksek öncelik
-        }
-        // Masa pad'i oyuncunun DURDUĞU yerde belirir → oyuncu masanın içinde kalmasın, anında dışarı it.
-        if (activePad.effect.type === 'addTable') {
-          // En geniş masa yarısı (yemek masası 0.7) — push-out hiçbir masa tipinde içeride bırakmaz.
-          const out = LAYOUT.foodTableHalf[0] + pr + 0.1;
-          let ex = player[0] - padPos[0];
-          let ez = player[2] - padPos[2];
-          const ed = Math.hypot(ex, ez);
-          if (ed < out) {
-            if (ed < 1e-4) { ex = 0; ez = 1; } else { ex /= ed; ez /= ed; }
-            player[0] = padPos[0] + ex * out;
-            player[2] = padPos[2] + ez * out;
-          }
-        }
-      } else {
-        padFills = { ...padFills, [activePad.id]: fill };
-        activeZone = { kind: 'pad', label: activePad.label, fill, cost: activePad.cost };
-      }
-    }
-
-    // --- Mekânsal çay yükseltme noktası (ZONE BAŞINA; ocağın önünde dur → altta bar dolar) ---
-    // Biriken ₺ KORUNUR (çıkınca sıfırlanmaz; D-018 dwell) → para harcanıp boşa gitmez.
-    if (onFillId != null && onFillId.startsWith(FILL_TEA)) {
-      const z = Number(onFillId.slice(FILL_TEA.length));
-      const cost = stationUpgradeCostZ(z, stationLevels[z]); // M3: tost tezgâhı kendi maliyet çarpanıyla
-      if (fillReady && wallet.gt(0)) {
-        const amt = Math.min(upgradeFillRateFor(cost) * dt, wallet.toNumber(), cost - upgradeFills[z]);
-        if (amt > 0) {
-          upgradeFills[z] += amt;
-          wallet = wallet.sub(amt);
-        }
-      }
-      if (upgradeFills[z] >= cost) {
-        stationLevels[z] += 1;
-        xp += C.xp.perUpgrade;
-        upgradeFills[z] = 0;
-        cleanCups += C.cups.poolPerLevel; // havuz ocak seviyesiyle büyür (Faz 2e; global depo)
-      }
-      const lv = stationLevels[z];
-      const nextCost = lv < stationSoftMaxLevel() ? stationUpgradeCostZ(z, lv) : cost;
-      const unitName = zoneProduct(z) === 'tost' ? 'Tost Tezgâhı' : 'Çay Ocağı';
-      // GÖRSEL: istasyon L1'den başlar (iç seviye 0-tabanlı; etiket +1). Soft max → "Usta" (💎/video, Faz 4).
-      activeZone = {
-        kind: 'upgrade',
-        label: `${unitName} L${lv + 1}${lv < stationSoftMaxLevel() ? ` → L${lv + 2}` : ' (Usta 💎)'}`,
-        fill: upgradeFills[z],
-        cost: nextCost,
-      };
-    }
-
-    // (v29: mekânsal garson hız yükseltmesi kalktı — hız karakter panelinden satın alınır.)
-
-    // --- Mekânsal masa yükseltme (Faz 2h, MASA-BAŞI / My Hotel): açık masanın KENARINDAKİ noktada dur → o masanın
-    // bahşişi + sabrı artar. Gating: 2. masa açılınca belirir (D-018 §1: işaretler kenara taşındı). ---
-    if (onFillId != null && onFillId.startsWith(FILL_TABLE)) {
-      const i = Number(onFillId.slice(FILL_TABLE.length));
-      const cost = tableNextCost(tableLevels[i], zoneOfTable(i));
-      let fill = tableUpgradeFills[i] ?? 0;
-      if (fillReady && wallet.gt(0)) {
-        const amt = Math.min(upgradeFillRateFor(cost) * dt, wallet.toNumber(), cost - fill);
-        if (amt > 0) {
-          fill += amt;
-          wallet = wallet.sub(amt);
-        }
-      }
-      if (fill >= cost) {
-        tableLevels[i] += 1;
-        xp += C.xp.perUpgrade;
-        fill = 0;
-      }
-      tableUpgradeFills[i] = fill;
-      const nextCost = tableLevels[i] < tableSoftMaxLevel() ? tableNextCost(tableLevels[i], zoneOfTable(i)) : cost;
-      // GÖRSEL: masa L1'den başlar (iç tableLevels 0-tabanlı; etiket +1). Soft max → "Usta" (💎/video, Faz 4).
-      activeZone = {
-        kind: 'upgrade',
-        label: `Masa ${i + 1}: L${tableLevels[i] + 1}${tableLevels[i] < tableSoftMaxLevel() ? ` → L${tableLevels[i] + 2} (+${C.tables.tipBase} bahşiş)` : ' (Usta 💎)'}`,
-        fill,
-        cost: nextCost,
-      };
-    }
-
-    // --- D-015: padsDone değiştiyse türetilen alanlar yeniden hesaplanır (tek yazım noktası) ---
-    const out = derivedFromPads(padsDone);
-    // Personel pad'i bu frame tamamlandıysa varlığını KENDİ zone'unda kur (türetilir).
-    for (let z = 0; z < out.zonesOpen; z++) {
-      if (out.hasWaiterByZone[z] && !waiters[z])
-        waiters[z] = { pos: [...LAYOUT.waiterHomes[z]] as Vec3, tray: 0 };
-      if (out.hasDishwasherByZone[z] && !dishwashers[z])
-        dishwashers[z] = { pos: [...LAYOUT.dishwasherHomes[z]] as Vec3, tray: 0 };
-    }
-
-    // --- GÖREV İLERLEMESİ ---
-    // Aktif görev karşılandıysa sıradakine geç (aynı tick'te birden çok karşılanabilir — ör. migrasyon
-    // sonrası): tamamlama toast'u + kamera YENİ hedefe pan ("orada bir şey var" hissi, kullanıcı isteği).
-    const questCtx: QuestCtx = {
-      padsDone,
-      stationLevels,
-      tableLevels,
-      stats,
-      questBase,
-      charUpgrades: s.charUpgrades,
-      waiterUpgrades: s.waiterUpgrades,
-    };
-    // GÖREV GEÇİŞ RİTMİ (A paketi): aktif görev karşılanınca kart ANINDA takas olmaz. 3 vuruş:
-    //   active → (hedef tamam) → completing (kart %100 + yeşil onay, ödül+toast burada) → gap (boşluk,
-    //   kart tamamlanmış görevi %100 tutar) → active (questIndex ilerler, yeni kart cardPop ile girer).
-    // Bu sayede "bitti → ara → yeni" net hissedilir; zincirli tamamlamalar sıraya girer (instant skip yok).
-    let questDone = false; // bu tick kart "tamamlandı" (completing/gap) gösterilsin mi
-    let questDoneIndex = s.questDoneIndex;
-    if (questPhase === 'active') {
-      if (questIndex < C.quests.length && questTargetMet(C.quests[questIndex].target, questCtx)) {
-        // BİTİŞ ANI: ödül + tamamlama toast'u + xp (bir kez).
-        const qReward = C.quests[questIndex].reward ?? 0;
-        if (qReward > 0) {
-          wallet = wallet.add(qReward);
-          lifetime = lifetime.add(qReward);
-        }
-        enqueueNotice({ text: C.quests[questIndex].title, ttl: 3.5, kind: 'quest', reward: qReward > 0 ? qReward : undefined });
-        xp += C.xp.perQuest;
-        // GÖREV BU ANDA İLERLER (kutlama yalnız görsel). Yoksa 1,3 sn'lik kutlama penceresinde
-        // yapılan eylem yeni görevin TABANINA yazılır ve sayaç 0/1'de kilitlenirdi (q_coin domino'su).
-        questDoneIndex = questIndex;
-        questIndex += 1;
-        const nt = questIndex < C.quests.length ? C.quests[questIndex].target : null;
-        questBase = nt ? questCounterValue(nt, stats) ?? 0 : 0;
-        questCtx.questBase = questBase;
-        questPhase = 'completing';
-        questPhaseT = QUEST_COMPLETE_DUR;
-        questDone = true;
-      }
-    } else if (questPhase === 'completing') {
-      questPhaseT -= dt;
-      questDone = true;
-      if (questPhaseT <= 0) {
-        questPhase = 'gap';
-        questPhaseT = QUEST_GAP_DUR;
-      }
-    } else {
-      // 'gap': boşluk dolunca kutlama kartı iner, YENİ görevin kartı görünür (kamera hedefe pan).
-      questPhaseT -= dt;
-      questDone = true;
-      if (questPhaseT <= 0) {
-        questPhase = 'active';
-        questDone = false;
-        questDoneIndex = -1;
-        if (questIndex < C.quests.length) {
-          const q = C.quests[questIndex];
-          if (q.target.type === 'charStat' && !s.charPanelSeen) {
-            // charStat görevi + spotlight bekliyorsa kamera panı İPTAL — ekranda tek yönlendirme (spotlight).
-            camFocus = null;
-          } else {
-            const fp = questFocusPos(q.target, tableLevels, out.tables, q.zone ?? 0);
-            if (fp) requestFocus(fp, 2); // charStat'ta 3D hedef yok → kamera sıçramaz (buton efekti yönlendirir)
-          }
-        }
-      }
-    }
-    // Kamera odağı: joystick/klavye girdisi iptal eder (oyuncu kontrolü üstün); süre dolunca biter.
-    // Deadzone 0.25 (2026-06-11 fix: 0.1 joystick titremesinde odağı yanlışlıkla bozuyordu).
-    if (camFocus) {
-      const ttl = camFocus.ttl - dt;
-      const moving = Math.hypot(input[0], input[1]) > 0.25;
-      camFocus = ttl > 0 && !moving ? { pos: camFocus.pos, ttl } : null;
-    }
-    // completing/gap: kart BİTEN görevi %100 + onay flash'ıyla gösterir (questIndex çoktan ilerledi).
-    const viewIndex = questDone && questDoneIndex >= 0 ? questDoneIndex : questIndex;
-    let quest = viewIndex < C.quests.length ? questView(C.quests[viewIndex], questCtx) : null;
-    if (quest && questDone) quest = { ...quest, cur: quest.total, done: true };
-
-    // --- Level-up bildirimi: toplam XP bu tick'te seviye atlattıysa toast (kuyruğa girer). ---
-    if (xp !== s.xp) {
-      const before = levelProgress(s.xp).level;
-      const after = levelProgress(xp).level;
-      if (after > before) enqueueNotice({ text: `Seviye ${after}!`, ttl: 4.5, kind: 'level' });
-    }
-
-    // Bildirim kuyruğu: mevcut toast yoksa sıradakini göster (tek slot, sırayla — B paketi).
-    if (!notice && noticeQueue.length > 0) notice = noticeQueue.shift()!;
-
-    // --- Periyodik kayıt ---
+    // Periyodik kayıt (sistemlerin dışında: store'un işi).
     let saveTimer = s.saveTimer - dt;
     if (saveTimer <= 0) {
       saveTimer = SAVE_INTERVAL;
@@ -2064,51 +485,51 @@ export const useGame = create<GameState>((set, get) => ({
 
     set(
       keepIdentity(get() as unknown as Record<string, unknown>, {
-      npcs: liveNpcs,
-      coins,
-      autoCollectSum,
-      autoCollectToastCooldown,
-      dishes,
-      wallet,
-      lifetime,
-      tables: out.tables,
-      stations: out.stations,
-      zonesOpen: out.zonesOpen,
-      stationLevels,
-      tableLevels,
-      padsDone,
-      padFills,
-      upgradeFills,
-      tableUpgradeFills,
-      activeZone,
-      notice,
-      noticeQueue,
-      revealSeen,
-      stats,
-      questIndex,
-      questBase,
-      questPhase,
-      questPhaseT,
-      questDoneIndex,
-      xp,
-      quest,
-      camFocus,
-      player,
-      waiters,
-      waiters2,
-      dishwashers,
-      readyCupsByZone,
-      brewProgressByZone,
-      tray,
-      trayFood,
-      cleanCups,
-      carriedDirty,
-      carriedDirtyFood,
-      spawnTimer,
-      spawnZone,
-      saveTimer,
-      nextId,
-      npcCount: liveNpcs.length,
+        npcs: c.liveNpcs,
+        coins: c.coins,
+        autoCollectSum: c.autoCollectSum,
+        autoCollectToastCooldown: c.autoCollectToastCooldown,
+        dishes: c.dishes,
+        wallet: c.wallet,
+        lifetime: c.lifetime,
+        tables: c.out.tables,
+        stations: c.out.stations,
+        zonesOpen: c.out.zonesOpen,
+        stationLevels: c.stationLevels,
+        tableLevels: c.tableLevels,
+        padsDone: c.padsDone,
+        padFills: c.padFills,
+        upgradeFills: c.upgradeFills,
+        tableUpgradeFills: c.tableUpgradeFills,
+        activeZone: c.activeZone,
+        notice: c.notice,
+        noticeQueue: c.noticeQueue,
+        revealSeen: c.revealSeen,
+        stats: c.stats,
+        questIndex: c.questIndex,
+        questBase: c.questBase,
+        questPhase: c.questPhase,
+        questPhaseT: c.questPhaseT,
+        questDoneIndex: c.questDoneIndex,
+        xp: c.xp,
+        quest: c.quest,
+        camFocus: c.camFocus,
+        player: c.player,
+        waiters: c.waiters,
+        waiters2: c.waiters2,
+        dishwashers: c.dishwashers,
+        readyCupsByZone: c.readyCupsByZone,
+        brewProgressByZone: c.brewProgressByZone,
+        tray: c.tray,
+        trayFood: c.trayFood,
+        cleanCups: c.cleanCups,
+        carriedDirty: c.carriedDirty,
+        carriedDirtyFood: c.carriedDirtyFood,
+        spawnTimer: c.spawnTimer,
+        spawnZone: c.spawnZone,
+        saveTimer,
+        nextId: c.nextId,
+        npcCount: c.liveNpcs.length,
       }),
     );
   },
@@ -2333,5 +754,3 @@ export const useGame = create<GameState>((set, get) => ({
     get().init();
   },
 }));
-
-export { TEA_PRICE, brewThroughputMult, brewTime, incomeRate, dirtyTables };
