@@ -68,11 +68,28 @@ Büyük adım **en fazla İKİYE** bölünür ve yalnız gerekiyorsa; oturum say
 Kesme çizgisi keyfî değil: **mantık işi ile görsel iş aynı parçada olmaz**, her parça kendi başına
 yeşil biter. B3 bu yüzden B3-1 (mantık) + B3-2 (görsel) oldu.
 
+### ⚠ OTURUM SONUNDA ÇIKAN PLAN DÜZELTMESİ (D-063)
+Kullanıcı ekrana bakıp sordu: *"bu direk maketteki hâl değil ki... geçici tasarım mı yoksa tüm
+maketi geçirdin mi?"* Cevap: **maketin yalnız İSKELETİ geçti** — ölçü, alan sınırları, bant hizası,
+masa küme merkezleri, servisin taşınması. **Sanat katmanının hiçbiri geçmedi**
+(maket v13'te 107 obje/yardımcı, oyunda 16 dosya).
+
+Kayıtta bu iş VARDI: plandaki **G4/G5** (KayKit Restaurant + City Builder yerleşimi) "yerleşime
+bağlı" diye Faz B'ye ertelenmişti — ama **D-058'in B1…B5 haritasına yazılmamış**, üstelik pano
+Faz G'yi *"KayKit yerleşimi dahil 4/4 bitti"* diye gösteriyordu. Bitmemişti.
+
+**Kullanıcının kararı: "önce yapı, sonra sanat."** Yeni sıra ve gerekçesi:
+`B3-2 (şerit+banket) → B5 (12→20 masa) → B4 (odalar) → B6a/B6b (sanat katmanı, alan alan)`
+Propleri bugünkü 4 masanın etrafına dizersek B5 masaları taşıyınca hepsi yeniden dizilir.
+Ayrıca boşluk hissi prop sorunu DEĞİL doluluk sorunu: 1. alan 109 → 289 birim², hâlâ 4 masa
+(**birim başına 2,6× seyrek**). Kat ölçüsü (34 × 34) kullanıcı kararıyla KALIYOR.
+Bütçe: Faz B 6 → **8 oturum**, toplam 66 → **68** (yeni iş değil, düzeltilen defter).
+
 ### >>> SONRAKİ OTURUMDA İLK İŞ <<<
-**B3-2 — orta şerit + görsel geçiş.** Maket v13'ün 6. adımı: sırt sırta **iki banket adası**
+**B3-2 — orta şerit + banket adaları.** Maket v13'ün 6. adımı: sırt sırta **iki banket adası**
 (x = ∓8,5, z ≈ −2,95, boy 7,6) + 12 ikili masa + **garson servis istasyonu** (−7,1 civarı, uzak
-masaların yolunu kısaltan aktarma tezgâhı). Yanında: bandın içi henüz kütle (lavabo/merdiven
-geometrisi **B4**), kapının ortaya kayması (v13 adım 2 cephesi), dolgu/propler.
+masaların yolunu kısaltan aktarma tezgâhı — B3-1'de ölçülen %66 yürüme artışının maketteki cevabı).
+Cephe/prop/dolgu **B6'ya** ait; bu adım yapı adımıdır.
 ⚠ Şerit z ≈ −2,95'e oturacak; a2 masa sırası z = −5,6'da — sandalyeler −4,82'ye kadar geliyor,
 şerit adasının alt kenarı −4,55. **0,27 br pay var**, şerit yerleşirken bu kontrol edilmeli.
 

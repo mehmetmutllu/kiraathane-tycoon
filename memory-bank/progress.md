@@ -1286,8 +1286,21 @@ yerleşim taşınırken de kullanılacak. Kullanım dosya başında.
 maket ölçeğine taşı (artık tek dosya: `layout.ts`), (3) kayıt v31 + migrasyon, (4) G4/G5 KayKit.
 Faz G artığı: UI Canvas'ları hâlâ eski düz ışıkla.
 
-## Faz B — Model geçişi 🔧 (4/7 · B0 harita + B1 model + B2 servis + B3-1 yerleşim bitti)
-> Adımlar: B0 · B1 · B2 · **B3-1** · **B3-2** · B4 · B5. (B3 2026-09-06'da ikiye bölündü.)
+## Faz B — Model geçişi 🔧 (4/9 · B0 + B1 + B2 + B3-1 bitti)
+> **Adım sırası (2026-09-07'de düzeltildi — D-063):**
+> B0 · B1 · B2 · **B3-1** → **B3-2** → **B5** → **B4** → **B6a** → **B6b**
+>
+> İki düzeltme yapıldı:
+> 1. **B5 öne alındı.** Kullanıcı 34 × 34'ü "aşırı büyük" buldu; boşluğun sebebi prop eksikliği
+>    değil DOLULUK: 1. alan 109 → 289 birim²'ye çıktı ama hâlâ 4 masa var (birim başına 2,6× seyrek).
+>    Boşluğu kapatan şey yapıdır (şerit + banket + 20 masa), prop değil.
+> 2. **B6 eklendi — maketin SANAT KATMANI.** Bu iş plana yazılıydı (`plan-kat1-yayin.html` G4/G5)
+>    ve "yerleşime bağlı" olduğu için Faz B'ye ertelenmişti, ama **D-058'in B1…B5 haritasına
+>    girmemiş**; pano da Faz G'yi "KayKit yerleşimi dahil 4/4 bitti" diye gösteriyordu — yanlış.
+>
+> **Sıra gerekçesi:** sanat katmanı yapıdan SONRA gelir. Propleri/kilimleri bugünkü 4 masanın
+> etrafına dizersek B5 masaları taşıyınca hepsi yeniden dizilir ("yanlış sırada yapılan iş iki kez
+> yazılır" — planın kendi cümlesi).
 
 ### B0 — Adım haritası + dört karar ✅ (2026-09-06)
 - ✅ **Maket v13'ün altı adımı ↔ bugünkü pad zinciri eşleştirildi.** Rapor `docs/faz-b-harita.html`
@@ -1390,13 +1403,25 @@ oturum sayısı bütçesi de gerçek bir kısıt.
 - **B3-2 — Orta şerit + görsel geçiş ⏳** (görsel)
   Orta şerit, propler, dolgu, WYSIWYG geçişi; maket v13'e benzeme.
 
-### B4 — Odalar ⏳
-Lavabo (oturma eklemez, pasif çarpan, kendi seviyeleri) + yıkık merdiven ("Kat 2 çok yakında").
-
-### B5 — Masa tipleri ve banket ⏳
+### B5 — Masa tipleri ve banket ⏳ (SIRA: B3-2'den sonra)
 Dörtlü (8) · ikili (12) · banket (2 ada; **seviyesi boyudur**, her seviye iki ikili masa ekler,
-dış uç sabit, var olan masalar yer değiştirmez).
+dış uç sabit, var olan masalar yer değiştirmez). Masa 12 → **20**. Boşluk hissini asıl kapatan adım.
 
-**Bitti sayılır:** maketin gezilebilir beş adımı sırayla açılıyor + merdiven konuşuyor ·
-`npm run test` yeşil, test sayısı düşmeden (bugün 206) · smoke 26/26 · build temiz ·
-v31 sıfırlaması testli · B1 sonunda tick parmak izi birebir aynı.
+### B4 — Odalar ⏳ (SIRA: B5'ten sonra)
+Lavabo (oturma eklemez, pasif çarpan, kendi seviyeleri) + yıkık merdiven ("Kat 2 çok yakında").
+Arka bandın içi burada açılır — B3-1'de bant kütle olarak duruyor.
+
+### B6 — Maketin SANAT KATMANI ⏳ (iki oturum, alan alan)
+Eski adıyla **G4/G5** + maket v13'ün prop/donanım yerleşimi. Bugün oyunda 16 dosya var,
+maket v13'te **107 obje/yardımcı**; aradaki fark bu adımda kapanır.
+- **B6a — ön çeyrekler (a0 + a1):** giriş holü (paspas · askılık · gazetelik · saksı · tablo ·
+  duvar saati), sol duvar donanımı (askı rayı · konsol · TV · aplik), cam kenarı, kilim/zemin
+  yamaları, ayaklı lamba.
+- **B6b — arka yarı + bant:** sedir köşesi (üç sedir U + alçak sehpa + minder + soba), yan salon
+  (pastane vitrini · yüksek masalar), servis bloğunun içi, bandın okunur hâli.
+- **Asset:** `kaykit-restaurant-bits` (144 model) + `kaykit-city-builder-bits` (41 model) İNDİRİLDİ
+  ve CC0 doğrulandı (Faz E oturumu); entegrasyon hiç yapılmadı. Tek stil kilidi: KayKit (D-013).
+
+**Bitti sayılır:** maketin gezilebilir altı adımı sırayla açılıyor + merdiven konuşuyor ·
+**salon maket v13'e bakınca tanınıyor** (B6'nın kapısı) · `npm run test` yeşil, test sayısı
+düşmeden · smoke 26/26 · build temiz · v31 sıfırlaması testli · B1 sonunda tick parmak izi aynı.

@@ -1182,3 +1182,45 @@ BARDAK oluyordu. B1: aracın çıktısı yanılabilir · B2: aracın varsayımı
 **Doğrulama:** vitest **222/222** (209 + yeni `tests/layout-b31.test.ts` 13), smoke **26/26**,
 build temiz, `tsc -b` temiz, eslint 15 (B2 ile aynı), `simulate.ts` birebir aynı.
 
+## D-063 — PLAN DÜZELTMESİ: MAKETİN SANAT KATMANI TAHTADAN DÜŞMÜŞ (2026-09-07)
+
+**Nasıl çıktı:** B3-1 bitince kullanıcı ekrana bakıp sordu — *"bu direk maketteki hal değil ki
+zemini duvarları yerleşimi tasarımı falan direk ora gibi yapsana... bu geçici tasarım mı yoksa
+tüm maketi geçirdin mi?"* Cevap: **maketin yalnız İSKELETİ geçmişti** (ölçü, alan sınırları, bant
+hizası, masa küme merkezleri, servisin taşınması). Sanat katmanının hiçbiri geçmedi.
+Sayıyla: maket v13'te **107 obje/yardımcı fonksiyon**, oyunda **16 dosya**.
+
+**Kayıtta bulunan:** bu iş plansız değildi — `plan-kat1-yayin.html`'de Faz G altı adımdı
+(G0 ışık · G1 gölge · G2 zemin · G3 duvar bitimi · **G4 KayKit Restaurant Bits** ·
+**G5 KayKit City Builder Bits**) ve `progress.md` şunu yazmıştı: *"Yerleşime BAĞLI olan G4/G5
+zaten Faz B'ye ertelendi"*. Faz A kapanışı da Faz B'nin işlerini sayarken 4. madde olarak
+"G4/G5 KayKit" yazmıştı.
+
+**Hata iki yerdeydi:**
+1. **D-058'in B haritası (B1…B5) G4/G5'i içermiyor** — harita çıkarılırken düştü, sonraki hiçbir
+   adım onu geri koymadı (B3'ü ikiye bölerken de fark edilmedi).
+2. **Pano yalan söylüyordu:** Faz G satırı `4/4 bitti` ve açıklaması *"…duvar bitimi · KayKit
+   yerleşimi"*. KayKit yerleşimi HİÇ yapılmadı; paketler indirildi (144 + 41 model, CC0 doğrulandı),
+   entegrasyon yok.
+
+**Kullanıcının kararı: "önce yapı, sonra sanat."** Yeni sıra:
+**B3-2** (orta şerit + banket adaları) → **B5** (masa tipleri, 12 → 20 masa) → **B4** (odalar)
+→ **B6a/B6b** (sanat katmanı, alan alan).
+
+**Sıra gerekçesi:** propleri/kilimleri bugünkü 4 masanın etrafına dizersek B5 masaları taşıyınca
+hepsi yeniden dizilir — planın kendi cümlesi: *"yanlış sırada yapılan iş iki kez yazılır."*
+Ayrıca kullanıcının asıl şikâyeti olan **boşluk bir prop sorunu değil DOLULUK sorunu**: 1. alan
+109 → 289 birim²'ye çıktı ama hâlâ 4 masa var (birim başına **2,6× seyrek**). Onu kapatan şey
+şerit + banket + 20 masa, yani yapı.
+
+**Kat ölçüsü:** kullanıcı 34 × 34'ü "aşırı büyük" buldu ama **kalsın** dedi — boşluk dolulukla
+çözülecek (maket v13'ün onaylı ölçüsü; 20 masa + banket + propler onun için tasarlandı).
+
+**Bütçe etkisi:** Faz B 6 → **8 oturum** (B6 iki oturum), toplam 66 → **68**. Bu iş zaten vardı,
+tahtada görünmüyordu; sayıyı şişiren şey yeni iş değil, düzeltilen defter.
+
+**Ders:** *tahtanın "bitti" dediği şey gerçekten bitmemiş olabilir.* Faz G kapanırken G4/G5
+bilerek ertelenmişti ama pano satırı buna göre güncellenmedi; erteleme bir sonraki fazın
+haritasına da yazılmayınca iş iki belge arasındaki boşluğa düştü. **Bir adım ertelenirken
+nereye ertelendiği hedef fazın adım listesine YAZILMALI** — "sonra yaparız" bir yer değildir.
+
