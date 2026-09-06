@@ -2,6 +2,89 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-06 — PC KASMASI ÇÖZÜLDÜ + G2 ZEMİN KAPANDI; SAVE v30 değişmedi)
+
+Bu oturumda kullanıcı **"ikisini de yap benden bir şey istemeden"** dedi → hem PC kasması hem G2
+tek oturumda bitti. Faz G artık **3/4**.
+
+### 1) PC'de tam ekran kasması — ÖLÇÜLDÜ ve ÇÖZÜLDÜ
+Tam rapor: **`docs/fps-bulgulari-2026-09-06.md`**.
+
+**Kök neden çizim değil ARAYÜZDÜ.** `tick()` her karede diziyi/nesneyi kopyalayıp tek `set()` ile
+yazıyordu → içerik aynı olsa bile referans değişiyor, Zustand seçicisi "değişti" sanıyor, abone
+bileşen her kare render oluyordu. Ölçüm: **kare başına 3,23 React commit**; 12 anahtar
+(`tableLevels` `stationLevels` `stats` `quest` `dishes` `upgradeFills` …) karelerin **%100'ünde
+SADECE kimlik** değiştiriyordu.
+
+| | Önce | Sonra |
+|---|---|---|
+| React commit / kare | 3,23 | **0,23** |
+| rAF kare süresi (ort. / p95) | 10,24 / 16,30 ms | **6,05 / 6,80 ms** (ekran tavanı) |
+| `tick()` | 0,268 ms | **0,058 ms** |
+| `gl.render` gönderme · draw call | 1,35 ms · 190 | 1,40 ms · 196 (beklendiği gibi değişmedi) |
+
+Üç düzeltme:
+1. **`keepIdentity()`** (`store.ts`) — `set()` öncesi içeriği aynı kalan değer eski referansa çevrilir.
+2. **Her-kare-değişen veri React'ten çıktı.** `Coins`/`Customers`/`Dishes` listeyi artık
+   `getState()` ile useFrame'de okuyor. `Player`/`Waiter`/`Dishwasher` konumu **prop değil**: yeni
+   ortak kanca **`useActorTransform`** (`components/three/actorTransform.ts`, eski `useFacing`'in
+   yerini aldı) konumu ve yönü doğrudan three nesnesine yazar; React yalnız ayrık değişimde çalışır.
+3. **`AdaptiveResolution`** (`Scene.tsx`) — piksel bütçesi 2,3 M. Tam ekran + Windows ölçeklemesi
+   (%125-150) tamponu 2,25 kata çıkarıyordu. Telefonda hiçbir şey değişmez, **dpr 1'in altına inmez**.
+
+> **Ölçüm uyarısı (kalıcı):** `gl.render` döngüsü GPU'yu ÖLÇMEZ (JS, GPU bitmeden döner) — dpr'yi
+> 4 katına çıkarınca bu sayı kıpırdamıyor. GPU tarafı ancak gerçek makinede görülür; bu yüzden
+> fill-rate'e ölçümle değil ÜST SINIR koyarak yaklaşıldı.
+
+### 2) G2 — zemine ölçek referansı, geometriyle ✅
+Tam rapor: **`docs/gorsel/README.md` §G2**, A/B görüntü `docs/gorsel/ss/g2-oncesi.png` ↔ `g2-sonrasi.png`.
+
+- **YENİ `src/components/three/floorPattern.tsx`** — `floorQuads()` saf fonksiyon (6 birim testi) +
+  `FloorPattern` bileşeni (alan başına TEK InstancedMesh, matrisler mount'ta BİR KEZ yazılır).
+- `parke`/`ceviz` → **plank** (2,20 × 0,55, satır başı yarım tahta kaydırma, tahta başına ±%4 ton
+  sapması) · `fayans`/`yemek` → **tile** (0,70 / iri karo 1,05) · `dama` **bilerek değişmedi**.
+- **Derz çizgi değil BOŞLUK** — quad hücresinden küçük, aradan alttaki koyu `theme.grout` görünür.
+- **Tek kaynak:** mağaza önizlemesi (`SalonSlice.FloorPatch`) AYNI bileşeni kullanır; `CheckerPatch`
+  kopyası silindi. Mağaza kartı swatch'ı `floorSwatch()` (tahta yüzü + derz).
+- drei `<Instances>` KULLANILMADI: kaynakta doğrulandı ki matrisleri HER KARE yeniden hesaplıyor.
+
+### Doğrulama (ikisi birden)
+`npm run test` **192/192** (6 yeni) · `npm run build` temiz · `npx tsc --noEmit` temiz ·
+`npx eslint src/` **13 hata — öncesiyle BİREBİR aynı** (hepsi bu oturumdan önce vardı) ·
+`tools/smoke.mjs` **8/15 — öncesiyle aynı, regresyon yok** · Playwright **0 konsol hatası**,
+klavye hareketi + aktörlerin sahnedeki gerçek konumu (store ile ±0,005) + para toplama doğrulandı.
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+1. **Kullanıcı onayı:** `docs/gorsel/ss/g2-oncesi.png` ↔ `g2-sonrasi.png` yan yana gösterilecek.
+   Tahta ölçüsü (2,20 × 0,55) plandan geldi; kullanıcı "daha ince/kalın" derse tek sabit değişir.
+2. **G3 — duvar bitimi:** süpürgelik (0,08 · `#5d4037`) + lambri üstü çıta (0,04) + kartonpiyer
+   şeridi; ince box'lar, instanced. Zemin↔duvar geçişi "kutuya renk sürülmüş" olmaktan çıkar.
+3. Sonra **G4/G5 KayKit** (paketler indirildi, `public/assets/` manifestte).
+4. **Faz A'ya geçmeden** `tools/smoke.mjs`'in 7 kırık adımı onarılmalı (kök neden `q_coin`
+   questBase yarışı → domino; bu oturumda da 8/15, bozulmadı).
+
+### Bu oturumun kalıcı iki dersi
+1. **Vite HMR'den sonra dinamik `import()` FARKLI bir modül örneği döndürür** → o örnekten yapılan
+   `useGame.setState` uygulamanın store'una yazmaz. Tarayıcıda durum değiştirirken her zaman
+   uygulamanın kendi kancası (`window.__setState`) kullanılmalı. Bu, G2'de yarım saat "tema
+   değişmiyor" sanılmasına yol açtı.
+2. **Performans şikâyetinde önce hangi katman olduğunu ölç.** Burada üç ayrı metrik gerekti
+   (render gönderme · tick · React commit) ve suçlu üçüncüsüydü; ilk ikisi hiç kıpırdamadı.
+
+### Kırmızı çizgi (duruyor)
+**"Objeler yüzüyor" hissine bir daha blob shadow ÖNERME** (D-054). Sıra artık: G2 zemin ✅ →
+G3 duvar bitimi → ışık dengesi → en son çare gölge haritası.
+
+### G fazının sonunda kapatılacak artık
+- UI Canvas'ları (`CharacterPanel`, `SalonSlice`, `DioramaPreview`, `TableThemePreview`) hâlâ
+  eski düz `ambientLight` ile → dünya G0'da ısındı, mağaza önizlemeleri soğuk kaldı.
+
+### Bilinen, ertelenmiş
+- Maket girişinin üst çıtasında z-fighting (kullanıcı: "oyuna geçerken hallederiz").
+- Bundle 1,45 MB (three.js) — Faz F kod bölme.
+
+---
+
 ## ŞU AN (2026-09-06 — G1 KAPANDI: SAHNEDE GÖLGE YOK; SAVE v30 değişmedi)
 
 **Karar D-054: kıraathanede hiçbir gölge çizilmez** — ne yönlü gölge haritası, ne zemine yatık

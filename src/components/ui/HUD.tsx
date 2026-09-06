@@ -4,7 +4,7 @@ import { perf } from '../../game/perf';
 import { screenPointer } from '../../game/screenPointer';
 import { fmt } from '../../game/decimal';
 import { levelProgress, economyConfig, MAX_ZONES } from '../../config/economy.config';
-import { FLOOR_THEMES, WALL_THEMES } from '../../config/palette';
+import { floorSwatch, WALL_THEMES } from '../../config/palette';
 import {
   CoinIcon,
   GemIcon,
@@ -673,7 +673,7 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
     return themes.map((t) => {
       const cols =
         kind === 'floor'
-          ? [FLOOR_THEMES[t.id]?.base ?? '#999', FLOOR_THEMES[t.id]?.alt ?? '#777']
+          ? floorSwatch(t.id)
           : [WALL_THEMES[t.id]?.cream ?? '#999', WALL_THEMES[t.id]?.wainscot ?? '#777'];
       const applied = selected.slice(0, zonesOpen).includes(t.id);
       const previewing = sel[kind] === t.id;

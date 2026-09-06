@@ -847,3 +847,80 @@ AYNI kareden cekip yan yana koymak ve sormak — tek bir "sonra" goruntusu karar
 (Gorunmeyen bir seyi teshis etmek icin abartma numarasi ayrica gecerli: `ss/g1-teshis-kirmizi.png`.)
 
 **Detay + arsiv:** `docs/gorsel/README.md` §G1.
+
+---
+
+## D-055 — PERFORMANS: HER-KARE-DEGISEN DURUM REACT'E GIRMEZ (2026-09-06)
+
+**Karar:** Oyun durumunun her karede degisen kismi (konum, NPC/coin/kap listeleri) **React'e
+girmez**; useFrame icinde `getState()` ile okunur ve dogrudan three nesnesine yazilir. Ayrica
+`tick()`'in `set()` yuku, icerigi degismemis degerleri **eski referansina** cevirerek yazilir
+(`keepIdentity`).
+
+**Neden.** Kullanici *"PC'de tam ekran hayvan gibi kasiyo"* dedi. Uc ayri metrikle olculdu
+(render gonderme · tick · React commit) ve suclu ucuncusuydu: **kare basina 3,23 React commit**.
+`tick()` her karede diziyi/nesneyi kopyalayip tek `set()` ile yaziyordu → icerik ayni olsa bile
+referans degisiyor, Zustand secicisi "degisti" saniyor, abone bilesen her kare render oluyordu.
+12 anahtar (`tableLevels` `stationLevels` `stats` `quest` `dishes` `upgradeFills` …) karelerin
+**%100'unde SADECE kimlik** degistiriyordu — masa seviyeleri hic degismedigi halde 12 masa her
+kare yeniden render ediliyordu.
+
+**Sonuc:** commit/kare **3,23 → 0,23** · rAF kare suresi **10,24 → 6,05 ms** · `tick()`
+**0,268 → 0,058 ms**. Saf cizim maliyeti (1,35 ms) ve draw call (190) DEGISMEDI — sorun orada degildi.
+
+**Ortak kanca:** `components/three/actorTransform.ts` → `useActorTransform(outerRef, ref, read)`.
+Eski `useFacing` bunun icine girdi (yalniz yon donduruyordu, konum hala prop'tu).
+
+**Cozunurluk tavani (ayni kararin ikinci yarisi):** `AdaptiveResolution` piksel butcesi **2,3 M**.
+`dpr={[1,2]}` telefonda dogru ama PC'de tam ekran + Windows ekran olceklemesi (%125-150) arka
+tamponu 2,25 kata cikariyordu. Kucuk tuvalde (telefon, UI onizlemeleri) hicbir sey degismez;
+**dpr 1'in ALTINA inmez** — bulaniklik gorsel bir karardir, olcum karari degil.
+
+**Olcum uyarisi (kalici):** `gl.render` dongusu **GPU'yu olcmez** (JS, GPU isi bitmeden doner) —
+dpr'yi 4 katina cikarinca bu sayi kipirdamiyor. GPU tarafi ancak gercek makinede gorulur.
+
+**Detay:** `docs/fps-bulgulari-2026-09-06.md`.
+
+---
+
+## D-056 — ZEMIN DESENI DOKU DEGIL GEOMETRI (G2, 2026-09-06)
+
+**Karar:** Zemin deseni (parke tahtasi, fayans karosu) **geometriyle** cizilir: her tahta/karo
+ayri bir quad, alan basina tek InstancedMesh. Doku (texture) yolu **kapali** (D-041).
+
+**Neden.** Planin teshisi: *"dama temali salon parke temalidan daha bitmis duruyor — ve ikisi de
+duz renk. Fark dokuda degil, OLCEK REFERANSINDA."* D-054 ile golge de kalktigi icin olcek
+referansinin tek kaynagi zemin geometrisi kaldi. Doku denemesi (d08c445 → d29b7d9) moire, sert
+derz cizgileri ve tahta basina varyasyon olmamasi yuzunden geri alinmisti.
+
+**Iki kural:**
+1. **Derz cizgi DEGIL bosluk** — quad hucresinden `gap` kadar kucuk cizilir, aradan alttaki koyu
+   `theme.grout` gorunur. Cizgi ince geometride aliasing yapar, bosluk yapmaz.
+2. **Tahta basina ±%4 ton sapmasi** (karoda ±%2), konuma bagli ve KARARLI. Tekrar deseninin gozle
+   sayilabilmesini engeller — doku denemesinin basarisizlik sebeplerinden biri buydu.
+
+**Olculer:** plank 2,20 × 0,55 (uzun kenar X'te, satir basi yarim tahta kaydirma) · tile 0,70
+(`yemek` iri karo 1,05) · `dama` 1,30 satranc **bilerek degismedi** (zaten olcek veriyordu).
+
+**Tek kaynak:** `floorQuads()` saf fonksiyon (6 birim testi); sahne ve **magaza onizlemesi** ayni
+bileseni cizer — magazada gordugun tahta olcusu salonda gorecegin. `CheckerPatch` kopyasi silindi.
+
+**drei `<Instances>` KULLANILMADI:** kaynakta dogrulandi ki matrisleri HER KARE yeniden hesaplayip
+buffer'i yeniden yukluyor (`frames = Infinity`); zemin ise hic kipirdamiyor → matrisler mount'ta
+bir kez yazilan ham `instancedMesh`.
+
+**Detay + A/B goruntu:** `docs/gorsel/README.md` §G2 · `ss/g2-oncesi.png` ↔ `ss/g2-sonrasi.png`.
+
+---
+
+## D-057 — TARAYICIDA DURUM DEGISTIRIRKEN `window.__setState` KULLAN (2026-09-06)
+
+**Karar:** Playwright/konsoldan oyun durumu degistirilecekse **uygulamanin kendi kancasi**
+(`window.__setState`, `__advanceTime`, `__teleport`…) kullanilir. `await import('/src/game/store.ts')`
+ile alinan `useGame` **yanilticidir**.
+
+**Neden.** Vite HMR bir modulu guncelleyince uygulama artik `/src/game/store.ts?t=1788…` ornegini
+kullaniyor; parametresiz dinamik import ESKI ornegi getiriyor → farkli bir Zustand store'u.
+Ondan yapilan `setState` calisiyormus gibi gorunuyor (`getState()` yeni degeri donduruyor) ama
+sahne hic degismiyor. G2'de "tema degismiyor" sanilarak yarim saat kaybedildi; sahnedeki instance
+sayilari sayilinca ortaya cikti.

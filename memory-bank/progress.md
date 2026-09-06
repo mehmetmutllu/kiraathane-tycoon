@@ -1092,7 +1092,7 @@ sapması) + `tile` (0,7 kare); derz **çizgi değil boşluk**. Sonra G3 duvar bi
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Referans: ikravakfi Mali Takip Panosu (f467bc3f) — iskelet alındı, görsel imza kıraathanenin.
 
-**Oturum bütçesi (TOPLAM 65 · YAPILAN 36 · %55):**
+**Oturum bütçesi (TOPLAM 65 · YAPILAN 38 · %58):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -1105,17 +1105,77 @@ Referans: ikravakfi Mali Takip Panosu (f467bc3f) — iskelet alındı, görsel i
 | | DN denetim + arşiv | 2/2 ✅ |
 | **Kuruluş toplam** | | **28/28 ✅** |
 | Yayın programı (1 Eyl →) | P plan ve maket | 6/6 ✅ |
-| | **G görsel taban** | **2/4 🔧** (G0 ışık ✅ · G1 gölge modeli ✅ = gölgesiz · sıradaki G2 zemin geometrisi) |
+| | **G görsel taban** | **3/4 🔧** (G0 ışık ✅ · G1 gölge modeli ✅ = gölgesiz · G2 zemin geometrisi ✅ · sıradaki G3 duvar bitimi) |
 | | A temizlik | 0/3 ⏳ |
 | | B model geçişi | 0/5 ⏳ |
 | | C zincir ve denge | 0/5 ⏳ |
 | | D meta katman | 0/5 ⏳ |
 | | E arayüz ve cila | 1/4 🔧 |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **9/37** |
+| **Program toplam** | | **10/37** |
 
 Kuruluş dönemi sayısı **commit kaydından türetildi** (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. Panoda bu açıkça yazıyor.
 
 **KURAL:** Pano tek bir JSON bloğundan üretilir (`<script id="durum">`). Her oturum sonunda
 o blok güncellenir + aynı dosya yoluyla yeniden yayınlanır. `oturum-bitir` protokolüne eklendi.
+
+## FAZ G — G2 ZEMİN GEOMETRİSİ ✅ + P0 PERF (PC KASMASI) ✅ (2026-09-06)
+Kullanıcı **"ikisini de yap benden bir şey istemeden"** dedi → tek oturumda iki iş. Faz G **3/4**.
+
+### P0 — "PC'de tam ekran hayvan gibi kasıyo" ölçüldü ve çözüldü
+Tam rapor: **`docs/fps-bulgulari-2026-09-06.md`**.
+- ✅ **Kök neden çizim değil ARAYÜZ:** `tick()` her karede kopya üretip tek `set()` ile yazıyordu →
+  içerik aynı olsa da referans değişiyor, Zustand seçicisi "değişti" sanıyor, bileşen her kare
+  render oluyordu. **Kare başına 3,23 React commit.** 12 anahtar (`tableLevels` `stationLevels`
+  `stats` `quest` `dishes` `upgradeFills` …) karelerin **%100'ünde SADECE kimlik** değiştiriyordu.
+- ✅ **`keepIdentity()`** (`store.ts`): `set()` öncesi içeriği aynı kalan değer eski referansa döner.
+- ✅ **Her-kare-değişen veri React'ten çıktı:** `Coins`/`Customers`/`Dishes` listeyi `getState()` ile
+  useFrame'de okur. `Player`/`Waiter`/`Dishwasher` konumu **prop değil** — yeni ortak kanca
+  **`useActorTransform`** (`components/three/actorTransform.ts`, `useFacing`'in yerini aldı) konumu
+  ve yönü doğrudan three nesnesine yazar; React yalnız ayrık değişimde (tepsi adedi, personel
+  var/yok) çalışır, bunun için string imzalı seçici kullanılır.
+- ✅ **`AdaptiveResolution`** (`Scene.tsx`): piksel bütçesi **2,3 M**. `dpr={[1,2]}` telefonda doğru
+  ama tam ekran + Windows ölçeklemesi (%125-150) tamponu 2,25 kata çıkarıyordu. Telefonda hiçbir şey
+  değişmez; **dpr 1'in altına inmez** (bulanıklık görsel karardır, ölçüm kararı değil).
+
+| | Önce | Sonra |
+|---|---|---|
+| React commit / kare | 3,23 | **0,23** (14 kat az) |
+| rAF kare süresi ort. / p95 | 10,24 / 16,30 ms | **6,05 / 6,80 ms** (ekran tavanına dayandı) |
+| `tick()` | 0,268 ms | **0,058 ms** |
+| `gl.render` gönderme · draw call | 1,35 ms · 190 | 1,40 ms · 196 (beklendiği gibi değişmedi) |
+
+> **Ölçüm uyarısı (kalıcı):** `gl.render` döngüsü GPU'yu ÖLÇMEZ — JS, GPU işi bitmeden döner; dpr'yi
+> 4 katına çıkarınca sayı kıpırdamıyor. GPU tarafı ancak gerçek makinede görülür, bu yüzden
+> fill-rate'e ölçümle değil ÜST SINIR koyarak yaklaşıldı.
+
+### G2 — zemine ölçek referansı, GEOMETRİYLE
+Gerekçe + kanıt: **`docs/gorsel/README.md` §G2**; A/B `ss/g2-oncesi.png` ↔ `ss/g2-sonrasi.png`
+(aynı kare, tek fark zemin) · `ss/g2-karo.png` · `ss/g2-magaza.png` · `ss/g2-yakin.png`.
+- ✅ **YENİ `src/components/three/floorPattern.tsx`:** `floorQuads()` saf fonksiyon (**6 birim testi**)
+  + `FloorPattern` bileşeni — alan başına **TEK InstancedMesh (1 draw call)**, matrisler ve renkler
+  mount'ta **BİR KEZ** yazılır. drei `<Instances>` KULLANILMADI (kaynakta doğrulandı: matrisleri
+  HER KARE yeniden hesaplayıp buffer'ı yeniden yüklüyor) — eski `CheckerTiles` onu kullanıyordu,
+  bu adım aynı zamanda küçük bir CPU kazancı.
+- ✅ `parke`/`ceviz` → **plank** (2,20 × 0,55, uzun kenar X'te, satır başı **yarım tahta** kaydırma,
+  tahta başına **±%4** ton sapması — konuma bağlı ve KARARLI) · `fayans`/`yemek` → **tile**
+  (0,70 / iri karo 1,05, ±%2) · `dama` **bilerek DEĞİŞMEDİ** (yüksek kontrastlı satranç zaten
+  ölçek veriyordu; yalnız çizim yolu ortaklaştı).
+- ✅ **Derz çizgi DEĞİL BOŞLUK:** quad hücresinden `gap` kadar küçük, aradan alttaki koyu
+  `theme.grout` görünür. Çizgi ince geometride aliasing yapar, boşluk yapmaz.
+- ✅ **Tek kaynak:** mağaza önizlemesi (`SalonSlice.FloorPatch`) AYNI bileşeni kullanır;
+  `CheckerPatch` kopyası silindi. Kart swatch'ı `floorSwatch()` → tahta yüzü + derz.
+- ✅ `palette.ts`: `FloorTheme` tipi (`kind` 'flat'|'checker'|'plank'|'tile' + `grout` + `cell`).
+
+**Doğrulama (ikisi birden):** `npm run test` **192/192** (6 yeni) · `npm run build` temiz ·
+`npx tsc --noEmit` temiz · `npx eslint src/` **13 hata — öncesiyle BİREBİR aynı** ·
+`tools/smoke.mjs` **8/15 — öncesiyle aynı, regresyon yok** · Playwright **0 konsol hatası**
+(klavye hareketi + aktörlerin sahnedeki gerçek konumu store ile ±0,005 + para toplama doğrulandı).
+
+**⏳ SIRADAKİ:** kullanıcı G2 ekran görüntüsü onayı → **G3 duvar bitimi** (süpürgelik 0,08 +
+lambri üstü çıta 0,04 + kartonpiyer) → **G4/G5 KayKit**. Faz A'dan önce smoke'un 7 kırık adımı.
+
+**Bu oturumun tuzağı (kayda geçti):** Vite **HMR sonrası dinamik `import()` FARKLI modül örneği**
+döndürüyor → o örnekten yapılan `useGame.setState` uygulamanın store'una yazmıyor. Tarayıcıda durum
+değiştirirken her zaman `window.__setState` kullanılmalı; yarım saat "tema değişmiyor" sanıldı.

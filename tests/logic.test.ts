@@ -1,4 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
+import { floorQuads } from '../src/components/three/floorPattern';
+import { FLOOR_THEMES } from '../src/config/palette';
 import {
   economyConfig,
   PRODUCTS,
@@ -3295,3 +3297,61 @@ describe('Turu-4 — tost sabrı ürün-bazlı + temizlik temposu ("tostta müş
   });
 });
 
+describe('G2 — zemin deseni (floorQuads)', () => {
+  const parke = FLOOR_THEMES.parke;
+  const fayans = FLOOR_THEMES.fayans;
+
+  it('düz temada quad üretilmez (tek renk düzlem yeter)', () => {
+    expect(floorQuads({ kind: 'flat', base: '#fff', alt: '#eee' }, 0, 10, 0, 10)).toEqual([]);
+  });
+
+  it('parke = plank: tahtalar alan içinde kalır ve derz BOŞLUK bırakır', () => {
+    const qs = floorQuads(parke, 0, 11, 0, 11);
+    expect(qs.length).toBeGreaterThan(60); // alan başına ~100 tahta, tek draw call
+    for (const q of qs) {
+      // Hiçbir tahta alanın dışına taşmaz (duvarın altına girmez).
+      expect(q.x - q.w / 2).toBeGreaterThanOrEqual(-1e-9);
+      expect(q.x + q.w / 2).toBeLessThanOrEqual(11 + 1e-9);
+      expect(q.z - q.d / 2).toBeGreaterThanOrEqual(-1e-9);
+      expect(q.z + q.d / 2).toBeLessThanOrEqual(11 + 1e-9);
+      // Derz çizgi değil boşluk: tahta hücresinden dar → aradan alt taban görünür.
+      expect(q.d).toBeLessThan(0.55);
+    }
+  });
+
+  it('plank satırları yarım tahta kaydırılır (hizalı derz ızgara gibi durur)', () => {
+    const qs = floorQuads(parke, 0, 11, 0, 11);
+    const rowZ = [...new Set(qs.map((q) => +q.z.toFixed(3)))].sort((a, b) => a - b);
+    const inRow = (z: number) => qs.filter((q) => Math.abs(q.z - z) < 1e-6).sort((a, b) => a.x - b.x);
+    // 1. satırın 2. tahtası ile 2. satırın 2. tahtası aynı X'te BAŞLAMAZ.
+    const a = inRow(rowZ[0])[1];
+    const b = inRow(rowZ[1])[1];
+    expect(Math.abs(a.x - b.x)).toBeGreaterThan(0.3);
+  });
+
+  it('her tahta kendi ton sapmasını alır ama sapma KARARLI (her yüklemede aynı)', () => {
+    const a = floorQuads(parke, 0, 11, 0, 11);
+    const b = floorQuads(parke, 0, 11, 0, 11);
+    expect(a.map((q) => q.tint)).toEqual(b.map((q) => q.tint));
+    expect(new Set(a.map((q) => q.tint)).size).toBeGreaterThan(10); // gerçekten çeşitleniyor
+    for (const q of a) expect(Math.abs(q.tint - 1)).toBeLessThanOrEqual(0.04 + 1e-9); // ±%4
+  });
+
+  it('fayans = tile: kareler kare (en-boy 1) ve karo ölçüsü temadan gelir', () => {
+    const qs = floorQuads(fayans, 0, 7, 0, 7);
+    const full = qs.filter((q) => q.w > 0.6 && q.d > 0.6);
+    expect(full.length).toBeGreaterThan(50);
+    for (const q of full) expect(Math.abs(q.w - q.d)).toBeLessThan(1e-9);
+    // 'yemek' teması IRI karo: aynı alanda belirgin daha AZ parça çıkar.
+    expect(floorQuads(FLOOR_THEMES.yemek, 0, 7, 0, 7).length).toBeLessThan(qs.length);
+  });
+
+  it('dama teması G2 öncesiyle aynı: 1,3 m satranç, derzsiz, ton sapmasız', () => {
+    const qs = floorQuads(FLOOR_THEMES.dama, 0, 13, 0, 13);
+    for (const q of qs) {
+      expect(q.tint).toBe(1);
+      expect(q.w).toBeCloseTo(1.3, 6);
+    }
+    expect(qs.length).toBe(50); // 10x10 ızgarada satrancın yarısı
+  });
+});

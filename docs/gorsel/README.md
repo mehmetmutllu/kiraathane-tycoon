@@ -198,3 +198,66 @@ olarak kırmızı/opak yapılıp lekelerin konumu ve yumuşaklığı doğruland�
 - Leke elips; dikdörtgen tezgâhın köşeleri tam kapanmaz. İkinci bir doku ikinci draw-call demek
   olduğundan tezgâhlarda daha DAR yayılım (`counterSpread` 1,18) seçildi — köşe boşluğu görünmüyor.
 - Kaldırım geçişinde leke 0,008 → 0,075'e "zıplar"; bu kamera açısında algılanmıyor.
+
+---
+
+# G2 — ZEMİNE ÖLÇEK REFERANSI, GEOMETRİYLE (2026-09-06) ✅
+
+**Değişen:** `src/components/three/floorPattern.tsx` (YENİ) · `src/config/palette.ts`
+(`FloorTheme` tipi + `FLOOR_THEMES` + `floorSwatch`) · `Scene.tsx` (`CheckerTiles` → `FloorPattern`) ·
+`SalonSlice.tsx` (`CheckerPatch` silindi, mağaza önizlemesi aynı bileşeni kullanıyor) · `HUD.tsx` (swatch).
+**Kanıt:** `ss/g2-oncesi.png` ↔ `ss/g2-sonrasi.png` (AYNI kare: `__teleport(0, 1.0)`, zoom-out,
+NPC/coin temizlenmiş — tek fark zemin) · `ss/g2-karo.png` (fayans) · `ss/g2-magaza.png` (mağaza
+önizlemesi) · `ss/g2-yakin.png` (oyun kadrajı).
+
+## Neden bu iş
+Planın teşhisi: *"dama temalı salon parke temalıdan daha bitmiş duruyor — ve ikisi de düz renk.
+Fark dokuda değil, ÖLÇEK REFERANSINDA."* Zeminde tekrar eden, boyutu bilinen bir birim yoksa göz
+mekânın büyüklüğünü okuyamıyor; D-054 ile gölge yolu da kapandığı için ölçek referansının **tek**
+kaynağı zemin geometrisi kaldı.
+
+Doku yolu D-041 ile kapalı (denendi, geri alındı: 128px doku 38×30 zemine gerildi → moiré, sert
+derz çizgileri, mipmap'te gri bulanık şerit, tahta başına varyasyon yok). Bu yüzden desen **geometri**.
+
+## İki kural
+1. **Derz çizgi DEĞİL boşluk.** Quad'lar hücrelerinden `gap` kadar küçük çizilir; aradan ALTTAKİ
+   koyu taban (`theme.grout`) görünür. Çizgi çizmek ince geometride aliasing yapar, boşluk yapmaz.
+2. **Tahta başına ±%4 ton sapması** (karoda ±%2). Sapma konuma bağlı ve KARARLI (`plankNoise`) —
+   her yüklemede aynı tahta aynı tonu alır. Tekrar deseninin gözle sayılabilmesini engeller.
+
+## Ölçüler
+| Desen | Hücre | Derz | Sapma | Temalar |
+|---|---|---|---|---|
+| `plank` | 2,20 × 0,55 (uzun kenar X'te, satır başı **yarım tahta** kaydırma) | 0,045 | ±%4 | parke · ceviz |
+| `tile` | 0,70 kare (`yemek` 1,05 — iri karo) | 0,06 | ±%2 | fayans · yemek |
+| `checker` | 1,30 kare, derzsiz | — | yok | dama (**bilerek DEĞİŞMEDİ**) |
+
+`dama` yüksek kontrastlı satrancıyla zaten ölçek veriyordu; ona dokunulmadı, yalnız çizim yolu
+ortaklaştı.
+
+## Tek kaynak
+`floorQuads()` **saf fonksiyon** (6 birim testi: alan dışına taşmama · derzin boşluk olması ·
+satır kaydırması · ton sapmasının kararlılığı · karo kareliği · damanın G2 öncesiyle aynı kalması).
+Hem sahne (`Scene.tsx`) hem **mağaza önizlemesi** (`SalonSlice.FloorPatch`) aynı bileşenden çizer —
+mağazada gördüğün tahta ölçüsü salonda göreceğinle birebir aynı, ayrı bir önizleme kopyası yok.
+Mağaza kartının swatch'ı da `floorSwatch()` ile tahtanın yüzü + derz rengini gösterir.
+
+## Maliyet
+Alan başına **TEK InstancedMesh = 1 draw call** (parke ~126, fayans ~272, iri karo ~120 parça).
+Matrisler ve renkler mount'ta **BİR KEZ** yazılır: drei `<Instances>` KULLANILMADI — kaynakta
+doğrulandı ki o, matrisleri HER KARE yeniden hesaplayıp buffer'ı yeniden yüklüyor
+(`frames = Infinity` dalı), zemin ise hiç kıpırdamıyor. Eski `CheckerTiles` drei kullandığından
+bu adım aynı zamanda küçük bir CPU kazancı.
+
+Ölçüm (1920×1080, 3 salon, zoom-out): draw call **234 → 239** · üçgen 16,6k → 23,8k ·
+kare süresi ekranın 165 Hz tavanında kaldı (P0 perf işinden sonra ölçülebilir fark yok).
+
+## Doğrulama
+`npm run test` **192/192** (6 yeni) · `npm run build` temiz · `npx tsc --noEmit` temiz ·
+Playwright **0 konsol hatası** · `tools/smoke.mjs` **8/15 — öncesiyle aynı, regresyon yok**.
+
+## Bir tuzak (kayda geçsin)
+Ölçüm sırasında "tema değişmiyor" sanıldı: Vite **HMR sonrası dinamik `import()` FARKLI bir modül
+örneği** döndürüyor → o örnekten yapılan `useGame.setState` uygulamanın store'una yazmıyor.
+Tarayıcıda durum değiştirirken **her zaman uygulamanın kendi kancası** (`window.__setState`)
+kullanılmalı; `await import('/src/game/store.ts')` yanıltır.

@@ -189,7 +189,7 @@ h2{font-size:21px;font-weight:800}
 <script type="application/json" id="durum">
 {
   "guncelleme": "06.09.2026",
-  "yapilan": 37,
+  "yapilan": 38,
   "toplam": 65,
   "kilometre": [
     {
@@ -210,31 +210,31 @@ h2{font-size:21px;font-weight:800}
     }
   ],
   "ozet": {
-    "etiket": "Bu oturum · Faz G · 2/4",
-    "baslik": "Gölge kararı: artık hiç gölge yok",
-    "aciklama": "Oturum \"objelerin altına gölge ekle\" diye başladı, <b>\"hiç gölge olmasın\"</b> diye bitti. Üç tur sürdü ve sonunda dört seçenek aynı kareden çekilip yan yana kondu. Seçilen: <b>My Hotel'in düz görünümü</b> — ne yönlü gölge, ne alttaki yuvarlak.",
+    "etiket": "Bu oturum · Faz G · 3/4",
+    "baslik": "PC kasması ölçüldü ve çözüldü; zemin artık tahta ve karo",
+    "aciklama": "Tek oturumda iki iş: <b>\"PC'de tam ekran hayvan gibi kasıyo\"</b> şikâyeti tahminle değil <b>ölçümle</b> kapatıldı, ardından <b>G2</b> — salonun zemini düz renk olmaktan çıkıp gerçek tahta ve karo parçalarına döndü.",
     "adimlar": [
-      "1. tur: obje başına yuvarlak leke → <b>reddedildi</b> (\"her şeyin altında bi yuvarlak var\")",
-      "2. tur: asıl şikâyet netleşti — ikisi <b>aynı anda</b> + gölgenin \"zınk\" diye keskin kenarı",
-      "3. tur: <b>dört varyant</b> aynı kareden çekildi ve ölçüldü",
-      "Seçim: <b>hiç gölge yok</b> — hem en sade hem en hızlı",
-      "Gölge haritası kapatıldı, ışık yerinde kaldı (hacim hissi ondan geliyor)",
-      "Kalan sadeleşme: dekor konumları koddan tek listeye çıktı"
+      "Kök neden: oyun her karede <b>3,2 kez</b> arayüzü yeniden çiziyormuş — hiçbir şey değişmese bile",
+      "Sebep: durum güncellemesi içerik aynı kalsa da <b>yeni bir kopya</b> üretiyor, arayüz \"değişti\" sanıyordu",
+      "Konum artık arayüzden geçmiyor: oyuncu, garson, bulaşıkçı doğrudan sahneye yazılıyor",
+      "Tam ekran + Windows ekran ölçeklemesine <b>piksel tavanı</b> kondu (telefonda hiçbir şey değişmez)",
+      "Sonuç: kare başına yeniden çizim <b>3,23 → 0,23</b> · kare süresi <b>10,24 → 6,05 ms</b>",
+      "<b>G2:</b> parke ve ceviz artık tahta (2,20 × 0,55, satır başı kaydırmalı), fayans ve yemek karo",
+      "Her tahtanın kendi ton sapması var; derz çizgi değil <b>boşluk</b> — arasından koyu taban görünüyor"
     ],
-    "not": "<b>Beklenmedik kazanç: performans.</b> Gölge haritası tek başına kare süresinin <b>yarısını</b> yiyormuş. Telefon kadrajında 1,31 → 0,56 ms (%57 hızlı), PC'de 2,02 → 1,44 ms (%29). Bu, kullanıcının aynı oturumda bildirdiği <b>\"PC'de tam ekran hayvan gibi kasıyo\"</b> sorununun en büyük tek parçasıydı.<br><br><b>Sert kenarın sebebi de ölçüldü:</b> gölge haritası otuz birimlik alana yayılıyordu; o yoğunlukta kenar merdiven merdiven çıkıyor. Çözünürlüğü artırmak çözebilirdi ama denenen yumuşak varyant hem ışık sızdırdı hem de en pahalısı oldu.<br><br><b>Kalıcı ders:</b> ölçümün \"hedefini tuttu\" demesi, beğenileceği anlamına gelmiyor. İlk tur ölçümde başarılıydı ve reddedildi. Görsel adımda doğru yöntem birden çok varyantı aynı kareden çekip <b>sormak</b>; tek bir \"sonra\" görüntüsü karar için yetmiyor."
+    "not": "<b>Ölçüm neyi gösterdi:</b> sorun çizim değil <b>arayüzdü</b>. Saf çizim maliyeti 1,35 ms'de sabit kaldı, kaybolan süre React'in boşuna yaptığı işti. On iki farklı veri (masa seviyeleri, görev, sayaçlar…) karelerin <b>%100'ünde</b> sadece kimlik değiştiriyordu: içerik aynı, kopya yeni.<br><br><b>Zemin neden bu kadar fark etti:</b> planın teşhisi tutmuş — mekân \"bitmemiş\" duruyorsa sebep doku eksikliği değil <b>ölçek referansı</b> eksikliği. Zeminde boyutu bilinen tekrar eden bir birim olunca salonun ne kadar büyük olduğu bir bakışta okunuyor. Doku yolu daha önce denenip reddedildiği için desen <b>geometri</b>: alan başına tek çizim çağrısı, sıfır bayt asset, moiré yapısal olarak imkânsız.<br><br>Mağaza önizlemesi de aynı bileşenden çiziyor — mağazada gördüğün tahta ölçüsü salonda göreceğinle birebir aynı."
   },
   "siradaki": {
-    "etiket": "Faz G · oturum 3/4",
-    "baslik": "Önce PC kasması, sonra G2 zemin",
-    "aciklama": "Gölgenin kalkması kasmanın en büyük parçasını çözdü ama bitmedi: <b>geniş ekranda çizim çağrısı 91'den 245'e çıkıyor</b> — en-boy oranı değişince bütün dükkân görünür oluyor ve kırpma kurtarmıyor. Önce o, sonra zemin.",
+    "etiket": "Faz G · oturum 4/4",
+    "baslik": "G3 duvar bitimi, sonra KayKit yerleşimi",
+    "aciklama": "Zemin bitti; sıra <b>zemin ile duvarın buluştuğu yerde</b>. Süpürgelik, lambri üstü çıta ve kartonpiyer şeridi eklenince mekân \"kutuya renk sürülmüş\" olmaktan çıkıyor.",
     "adimlar": [
-      "<b>Ölçüm kullanıcının makinesinde</b> yapılacak — tarayıcı testi bu sayıyı veremiyor",
-      "Şüpheli 1: çizim çağrısı sayısı ve geniş oranda kırpmanın devre dışı kaldığı yerler",
-      "Şüpheli 2: yüksek çözünürlüklü ekranda çözünürlüğün iki katına render + kenar yumuşatma",
-      "Şüpheli 3: her karede dönen ana döngü",
-      "Ardından <b>G2</b>: zemin tahtası ve karo gerçek parçalar olarak döşenir"
+      "<b>G3:</b> süpürgelik (0,08) + lambri üstü çıta (0,04) + kartonpiyer — ince parçalar, tek çizim çağrısı",
+      "<b>G4:</b> KayKit Restaurant Bits — mutfak tezgâhı, ocak, davlumbaz, dolap (indirildi, hazır)",
+      "<b>G5:</b> KayKit City Builder Bits — kıraathane önündeki sokak",
+      "Faz A'ya geçmeden: duman testinin yedi kırık adımı onarılacak"
     ],
-    "not": "<b>Kırmızı çizgi:</b> \"objeler yüzüyor\" hissine bir daha alttaki yuvarlak önerilmeyecek — üç turda reddedildi. Sıra: önce zemin geometrisi (ölçek referansı gelince his zaten kapanır), sonra ışık dengesi, en son çare gölge.<br><br><b>Faz A'ya geçmeden onarılacak:</b> duman testinin yedi kırık adımı — bu oturumda da aynı yerde, bozulmadı."
+    "not": "<b>Faz A'ya geçmeden onarılacak:</b> duman testinin yedi kırık adımı — bu oturumda da aynı yerde, bozulmadı (8/15). Kök neden görev sayacının başlangıç değerini yanlış anda alması; oradan domino gidiyor.<br><br><b>Kırmızı çizgi duruyor:</b> \"objeler yüzüyor\" hissine bir daha alttaki yuvarlak önerilmeyecek."
   },
   "donemler": [
     {
@@ -309,7 +309,7 @@ h2{font-size:21px;font-weight:800}
           "k": "G",
           "t": "Görsel taban",
           "d": "Işık · gölge kararı (gölgesiz) · plank ve karo geometrisi · duvar bitimi · KayKit yerleşimi",
-          "yapilan": 2,
+          "yapilan": 3,
           "toplam": 4,
           "durum": "now",
           "kapi": "Ekran görüntüsü onayı + FPS ölçümü"

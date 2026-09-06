@@ -4,6 +4,7 @@
 import { useEffect } from 'react';
 import { useThree } from '@react-three/fiber';
 import { FLOOR_THEMES, WALL_THEMES } from '../../config/palette';
+import { FloorPattern } from '../three/floorPattern';
 
 // Oyun kamerasıyla AYNI duruş: konum (0,d,+d), bakış (0,ty,0), fov 50 (Scene.tsx CameraRig dili).
 export function FixedCam({ d, ty = 0.45 }: { d: number; ty?: number }) {
@@ -28,46 +29,19 @@ export function SalonLights() {
   );
 }
 
-// Dama deseni: Scene.tsx CheckerTiles ile aynı (ts=1.3, (i+j)%2 alt-renk kareleri). Merkezden +half'a kadar
-// döşer; az kare → instancing gerekmez (düz mesh).
-function CheckerPatch({ half, color }: { half: number; color: string }) {
-  const ts = 1.3;
-  const n = Math.ceil((half * 2) / ts);
-  const tiles: [number, number, number, number][] = [];
-  for (let i = 0; i < n; i++) {
-    for (let j = 0; j < n; j++) {
-      if ((i + j) % 2 === 0) continue;
-      const tx0 = -half + i * ts;
-      const tz0 = -half + j * ts;
-      const tx1 = Math.min(tx0 + ts, half);
-      const tz1 = Math.min(tz0 + ts, half);
-      tiles.push([(tx0 + tx1) / 2, (tz0 + tz1) / 2, tx1 - tx0, tz1 - tz0]);
-    }
-  }
-  return (
-    <>
-      {tiles.map(([cx, cz, w, dd], i) => (
-        <mesh key={i} rotation={[-Math.PI / 2, 0, 0]} position={[cx, 0.006, cz]}>
-          <planeGeometry args={[w, dd]} />
-          <meshStandardMaterial color={color} />
-        </mesh>
-      ))}
-    </>
-  );
-}
-
-// Zemin kesiti: tema base TÜM canvas'ı doldurur (kenar void/çerçeve YOK) + merkezde checker deseni.
-// İnce ahşap süpürgelik şeridi duvar dibinde (Scene.tsx Ground katman dilini hatırlatır, ama çerçeve değil).
+// Zemin kesiti: tema tabanı TÜM canvas'ı doldurur (kenar void/çerçeve YOK) + üstünde temanın deseni.
+// G2: desen SAHNEYLE AYNI bileşenden (`FloorPattern`) çizilir — mağazada gördüğün tahta/karo ölçüsü
+// salonda göreceğinle birebir aynı, ayrı bir önizleme kopyası yok.
 export function FloorPatch({ floorId, checkerHalf = 4 }: { floorId: string; checkerHalf?: number }) {
   const theme = FLOOR_THEMES[floorId] ?? FLOOR_THEMES.parke;
   return (
     <group>
-      {/* tam-taşan zemin: tema base — frame'i her yönde aşar, kenarda void görünmez */}
+      {/* tam-taşan taban: plank/tile'da DERZ rengi (desen boşluklarından bu görünür) */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
         <planeGeometry args={[40, 40]} />
-        <meshStandardMaterial color={theme.base} />
+        <meshStandardMaterial color={theme.grout ?? theme.base} />
       </mesh>
-      {theme.kind === 'checker' ? <CheckerPatch half={checkerHalf} color={theme.alt} /> : null}
+      <FloorPattern theme={theme} x0={-checkerHalf} x1={checkerHalf} z0={-checkerHalf} z1={checkerHalf} />
     </group>
   );
 }

@@ -80,16 +80,43 @@ export const PALETTE = {
  *  kind 'checker': base taban + alt renkte BÜYÜK kare quad'larla satranç deseni (dama kimliği
  *  düz renkte kayboluyordu — kullanıcı bug'ı "damalı seçtim beyaz duruyor").
  *  alt ayrıca mağaza önizleme swatch'ında kullanılır. */
-export const FLOOR_THEMES: Record<string, { kind: 'flat' | 'checker'; base: string; alt: string }> = {
-  // parke 2026-06-11: #b98a5a → daha açık/az doygun sıcak kum tonu (kullanıcı: "daha soft zemin").
-  parke: { kind: 'flat', base: '#c9a87d', alt: '#bd9b70' },
-  // 'yemek' (Y1): tost salonunun DOĞUŞTAN teması — açık krem-gri "büyük fayans"; düşük kontrastlı
-  // dama deseni iri karo hissi verir (yüksek kontrastlı 'dama'dan ayrışır).
-  yemek: { kind: 'checker', base: '#e3dac6', alt: '#d8cdb4' },
-  fayans: { kind: 'flat', base: '#e8dcc8', alt: '#ddd0b8' },
-  dama: { kind: 'checker', base: '#ece6da', alt: '#7d4a3a' },
-  ceviz: { kind: 'flat', base: '#8a5a3b', alt: '#7c4f33' },
+export type FloorTheme = {
+  /** Desen türü — çizimi `components/three/floorPattern.tsx` yapar. */
+  kind: 'flat' | 'checker' | 'plank' | 'tile';
+  /** plank/tile: tahtanın/karonun YÜZÜ · checker: taban rengi · flat: tek renk. */
+  base: string;
+  /** checker: satranç karelerinin alt rengi · diğerlerinde yalnız mağaza swatch'ı için. */
+  alt: string;
+  /** plank/tile: derz boşluğundan görünen ALT taban. Yoksa `base` kullanılır. */
+  grout?: string;
+  /** tile: karo kenarı (varsayılan 0,7). */
+  cell?: number;
 };
+
+/**
+ * G2 (2026-09-06): 'parke'/'ceviz' → **plank**, 'fayans'/'yemek' → **tile**. Eskiden hepsi düz
+ * renkti; zeminde ölçek referansı olmadığı için mekân "bitmemiş" duruyordu (plan §8 teşhisi).
+ * Desen doku DEĞİL geometri (D-041 doku yolunu kapattı) — gerekçe floorPattern.tsx başında.
+ * 'dama' bilerek DEĞİŞMEDİ: yüksek kontrastlı satranç zaten ölçek veriyor.
+ */
+export const FLOOR_THEMES: Record<string, FloorTheme> = {
+  // parke 2026-06-11: #b98a5a → daha açık/az doygun sıcak kum tonu (kullanıcı: "daha soft zemin").
+  // G2: aynı ton artık tahta yüzü; derz onun koyu-sıcak hâli (yeni renk ailesi GİRMEDİ).
+  parke: { kind: 'plank', base: '#c9a87d', alt: '#bd9b70', grout: '#a3814f' },
+  // 'yemek' (Y1): tost salonunun DOĞUŞTAN teması — açık krem-gri IRI KARO (1,05 m), düşük
+  // kontrastlı derzle; yüksek kontrastlı 'dama'dan ayrışması korunur.
+  yemek: { kind: 'tile', base: '#e3dac6', alt: '#d8cdb4', grout: '#bdb096', cell: 1.05 },
+  fayans: { kind: 'tile', base: '#e8dcc8', alt: '#ddd0b8', grout: '#c2b195' },
+  dama: { kind: 'checker', base: '#ece6da', alt: '#7d4a3a' },
+  ceviz: { kind: 'plank', base: '#8a5a3b', alt: '#7c4f33', grout: '#5d3c26' },
+};
+
+/** Mağaza kartının çift-renk swatch'ı: desenli temada tahta yüzü + derz, düzde base + alt. */
+export function floorSwatch(id: string): [string, string] {
+  const t = FLOOR_THEMES[id];
+  if (!t) return ['#999', '#777'];
+  return [t.base, t.grout ?? t.alt];
+}
 
 /** Kozmetik duvar temaları (WP6) — üst badana + lambri kuşağı ikilisi. */
 export const WALL_THEMES: Record<string, { cream: string; wainscot: string }> = {

@@ -1,10 +1,10 @@
 import { Suspense, useEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Instances, Instance } from '@react-three/drei';
 import { Vector3, type Group, type MeshStandardMaterial } from 'three';
 import { useGame, questFocusPos, LAYOUT, stationSoftMaxLevel, stationUpgradeCostZ, upgradeZoneUnlockedZ, tableSoftMaxLevel, tableUpgradeUnlockedZ, tableNextCost, zonePoint, zoneCol, zoneRow, zoneAt } from '../../game/store';
 import { economyConfig, zoneOfTable, zoneProduct } from '../../config/economy.config';
 import { GroundMarker } from './GroundMarker';
+import { FloorPattern } from './floorPattern';
 import { PALETTE, FLOOR_THEMES, WALL_THEMES, LIGHTING } from '../../config/palette';
 import { Player } from './Player';
 import { Waiter } from './Waiter';
@@ -440,40 +440,6 @@ function TableUpgradeMarkers() {
 
 // (v29: WaiterUpgradeMarker kalktı — garson hızı karakter panelinden satın alınır.)
 
-// Dama temasının deseni: BÜYÜK düz-renk kare quad'lar (canvas doku DEĞİL — kullanıcı tile dokusunu
-// reddetti; low-poly satranç deseni primitive stile uyar). Yalnız alt-renk kareleri çizilir
-// (taban zaten base renk); kenarlarda kareler alana kırpılır.
-function CheckerTiles({ x0, x1, z0, z1, color }: { x0: number; x1: number; z0: number; z1: number; color: string }) {
-  const ts = 1.3;
-  const nx = Math.ceil((x1 - x0) / ts);
-  const nz = Math.ceil((z1 - z0) / ts);
-  const tiles: [number, number, number, number][] = [];
-  for (let i = 0; i < nx; i++) {
-    for (let j = 0; j < nz; j++) {
-      if ((i + j) % 2 === 0) continue;
-      const tx0 = x0 + i * ts;
-      const tz0 = z0 + j * ts;
-      const tx1 = Math.min(tx0 + ts, x1);
-      const tz1 = Math.min(tz0 + ts, z1);
-      tiles.push([(tx0 + tx1) / 2, (tz0 + tz1) / 2, tx1 - tx0, tz1 - tz0]);
-    }
-  }
-  // FPS: tüm dama kareleri TEK InstancedMesh (statik, tek renk/geometri → 1 draw-call; eskiden ~40).
-  // Birim plane + per-instance scale [w,d] → kenar kırpması korunur; görsel birebir.
-  if (tiles.length === 0) return null;
-  return (
-    // frustumCulled=false: instance batch'inin sınır küresi origin'de → uzak salona odaklanınca dama deseni
-    // toptan kırpılmasın (mobilya ile aynı sınıf bug; bkz. Tables.tsx Merged).
-    <Instances limit={tiles.length} receiveShadow frustumCulled={false}>
-      <planeGeometry args={[1, 1]} />
-      <meshStandardMaterial color={color} />
-      {tiles.map(([cx, cz, w, d], i) => (
-        <Instance key={i} rotation={[-Math.PI / 2, 0, 0]} position={[cx, 0.006, cz]} scale={[w, d, 1]} />
-      ))}
-    </Instances>
-  );
-}
-
 function Ground() {
   // İki zone'u da kapsayan AHŞAP zemin (DÜZ renk — canvas-tile geri alındı, kullanıcı 2026-06-11:
   // "zemin iğrenç oldu"). WP6 kozmetik teması KORUNUR: zone overlay'i temanın DÜZ base rengi
@@ -507,12 +473,14 @@ function Ground() {
         const theme = FLOOR_THEMES[floorThemeByZone[z] ?? 'parke'] ?? FLOOR_THEMES.parke;
         return (
           <group key={z}>
-            {/* y: taban(0) < overlay(0.004) < dama(0.006) < GroundMarker(0.02). */}
+            {/* y: taban(0) < tema tabanı(0.004) < desen(0.006) < GroundMarker(0.02).
+                G2: plank/tile temada bu düzlem DERZ'dir — tahtaların arasından görünen koyu alt
+                katman. Düz/dama temada eskisi gibi zeminin kendi rengi. */}
             <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[(x0 + x1) / 2, 0.004, (z0 + z1) / 2]}>
               <planeGeometry args={[x1 - x0, z1 - z0]} />
-              <meshStandardMaterial color={theme.base} />
+              <meshStandardMaterial color={theme.grout ?? theme.base} />
             </mesh>
-            {theme.kind === 'checker' ? <CheckerTiles x0={x0} x1={x1} z0={z0} z1={z1} color={theme.alt} /> : null}
+            <FloorPattern theme={theme} x0={x0} x1={x1} z0={z0} z1={z1} />
           </group>
         );
       })}
