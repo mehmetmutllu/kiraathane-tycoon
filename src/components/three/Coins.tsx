@@ -35,16 +35,45 @@ function MoneyFloater({ x, z, value, onDone }: { x: number; z: number; value: nu
 }
 
 // Yere düşen ₺ paralar — sahip üstünden geçince toplanır (store), toplanınca "+₺" floater belirir.
+// P0 perf (2026-09-06): `coins` ARTIK abonelikle okunmuyor. Coin listesi her karede değişir
+// (lifetime sayacı) → `useGame((s) => s.coins)` bu bileşeni HER KARE render ediyordu, oysa JSX'in
+// coin listesiyle işi yok (matrisler useFrame'de yazılıyor). Liste `getState()` ile okunur; toplama
+// tespiti de aynı useFrame'de yapılır (eski useEffect[coins] aboneliğin tek sebebiydi).
 export function Coins() {
-  const coins = useGame((s) => s.coins);
   const meshRef = useRef<InstancedMesh>(null);
   const dummy = useMemo(() => new Object3D(), []);
   // Coin başına doğuş-pop ilerleyişi + dönüş fazı (id ile; eski Coin bileşeninin useRef'lerinin yerini
   // tutar — coin mount'ta spawn 0 / spin 0'dan başlar, faz farkı doğal olarak doğuş zamanından gelir).
   const anim = useRef<Map<number, { spawn: number; spin: number }>>(new Map());
+  const prev = useRef<Map<number, number>>(new Map()); // id -> deger (onceki kare)
+  // Floater key'i coin id'sinden BAGIMSIZ monoton sayac: oyun sifirlaninca store nextId basa doner,
+  // coin id'leri tekrar eder -> id'yle key'lemek "duplicate key" hatasi uretirdi (kok neden).
+  const floaterSeq = useRef(0);
+  const [floaters, setFloaters] = useState<{ id: number; x: number; z: number; value: number }[]>([]);
+
+  // Toplama tespiti (eski useEffect[coins]'in aynisi, artik useFrame icinde): onceki karede olup
+  // simdi olmayan coin = toplandi (lifetime 0 -> tek kaybolma nedeni toplama). turu-5 m.6-B: kule
+  // toplamada onlarca coin AYNI anda gelir -> tek TOPLU floater; coin basina yazi hem okunmaz hem
+  // Html maliyeti (m.13 dersi).
+  const collect = (coins: { id: number; pos: readonly number[]; value: number }[]) => {
+    const p = prev.current;
+    let sum = 0;
+    const seen = new Set<number>();
+    for (const c of coins) seen.add(c.id);
+    for (const [id, value] of p) if (!seen.has(id)) sum += value;
+    p.clear();
+    for (const c of coins) p.set(c.id, c.value);
+    if (sum > 0) {
+      const pl = useGame.getState().player;
+      setFloaters((f) => [...f, { id: ++floaterSeq.current, x: pl[0], z: pl[2], value: sum }]);
+    }
+  };
+
   useFrame((_, dt) => {
     const mesh = meshRef.current;
     if (!mesh) return;
+    const coins = useGame.getState().coins;
+    collect(coins);
     const m = anim.current;
     const n = Math.min(coins.length, COIN_CAP);
     for (let i = 0; i < n; i++) {
@@ -71,25 +100,6 @@ export function Coins() {
     mesh.count = n;
     mesh.instanceMatrix.needsUpdate = true;
   });
-  const prev = useRef<Map<number, { x: number; z: number; value: number }>>(new Map());
-  // Floater key'i coin id'sinden BAĞIMSIZ monoton sayaç: oyun sıfırlanınca store nextId başa döner,
-  // coin id'leri tekrar eder → id'yle key'lemek "duplicate key" hatası üretirdi (kök neden).
-  const floaterSeq = useRef(0);
-  const [floaters, setFloaters] = useState<{ id: number; x: number; z: number; value: number }[]>([]);
-
-  useEffect(() => {
-    const cur = new Map(coins.map((c) => [c.id, { x: c.pos[0], z: c.pos[2], value: c.value }]));
-    // Önceki karede olup şimdi olmayan = toplandı (lifetime 0 → tek kaybolma nedeni toplama).
-    // turu-5 m.6-B: kule toplamada onlarca coin AYNI anda gelir → tek TOPLU floater (+toplam);
-    // coin başına ayrı yazı hem okunmaz hem Html maliyeti (m.13 dersi).
-    let sum = 0;
-    const p = useGame.getState().player;
-    for (const [id, info] of prev.current) {
-      if (!cur.has(id)) sum += info.value;
-    }
-    prev.current = cur;
-    if (sum > 0) setFloaters((f) => [...f, { id: ++floaterSeq.current, x: p[0], z: p[2], value: sum }]);
-  }, [coins]);
 
   return (
     <>

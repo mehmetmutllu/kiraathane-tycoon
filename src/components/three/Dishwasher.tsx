@@ -1,8 +1,8 @@
-import { useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import type { Group } from 'three';
 import { useGame } from '../../game/store';
 import { Model } from './Model';
-import { useFacing } from './useFacing';
+import { useActorTransform } from './actorTransform';
 import { PALETTE } from '../../config/palette';
 import { zoneProduct } from '../../config/economy.config';
 
@@ -54,11 +54,16 @@ function CarriedDirty({ count, food }: { count: number; food: boolean }) {
 }
 
 // Tek bulaşıkçı gövdesi (hook'lar per-unit kalsın diye ayrı bileşen).
-function DishwasherUnit({ pos, tray, food }: { pos: [number, number, number]; tray: number; food: boolean }) {
+function DishwasherUnit({ zone, tray, food }: { zone: number; tray: number; food: boolean }) {
+  const outerRef = useRef<Group>(null);
   const ref = useRef<Group>(null);
-  useFacing(ref, pos[0], pos[2]);
+  const read = useCallback(() => {
+    const dw = useGame.getState().dishwashers[zone];
+    return dw ? ([dw.pos[0], dw.pos[2]] as const) : null;
+  }, [zone]);
+  useActorTransform(outerRef, ref, read);
   return (
-    <group position={[pos[0], 0, pos[2]]}>
+    <group ref={outerRef}>
       <group ref={ref}>
         <Model
           fallback={
@@ -76,11 +81,13 @@ function DishwasherUnit({ pos, tray, food }: { pos: [number, number, number]; tr
 
 // Bulaşıkçılar (zone başına; greybox: gri-mavi önlüklü kapsül). Faz 6'da .glb takılır.
 export function Dishwasher() {
-  const dishwashers = useGame((s) => s.dishwashers);
+  // P0 perf: konum React'e girmez (Waiter ile aynı gerekçe); seçici yalnız var/yok + leğen adedi.
+  const key = useGame((s) => s.dishwashers.map((dw) => (dw ? dw.tray : -1)).join(','));
+  const trays = key ? key.split(',').map(Number) : [];
   return (
     <>
-      {dishwashers.map((dw, z) =>
-        dw ? <DishwasherUnit key={z} pos={dw.pos} tray={dw.tray} food={zoneProduct(z) === 'tost'} /> : null,
+      {trays.map((tray, z) =>
+        tray >= 0 ? <DishwasherUnit key={z} zone={z} tray={tray} food={zoneProduct(z) === 'tost'} /> : null,
       )}
     </>
   );

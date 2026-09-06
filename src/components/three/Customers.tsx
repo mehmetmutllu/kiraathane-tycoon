@@ -14,11 +14,13 @@ const BUBBLE_GEO = new SphereGeometry(0.14, 10, 10);
 const BUBBLE_MAT = new MeshStandardMaterial({ color: '#ffd54f', emissive: '#ffb300', emissiveIntensity: 0.4 });
 const NPC_CAP = 128; // bol pay (npcCount tipik ~10-30); ucuz.
 
-// useFacing replikası — per-instance durum (son konum + hedef açı + mevcut açı).
+// actorTransform replikası — per-instance durum (son konum + hedef açı + mevcut açı).
 type Facing = { lastX: number; lastZ: number; target: number; angle: number };
 
+// P0 perf (2026-09-06): `npcs` abonelikle DEGIL `getState()` ile okunur. NPC dizisi her karede
+// yeniden uretiliyor (konum) -> abonelik bu bileseni her kare render ediyordu; oysa JSX iki sabit
+// instancedMesh'ten ibaret, liste yalniz useFrame'de matris yazmak icin gerekli.
 export function Customers() {
-  const npcs = useGame((s) => s.npcs);
   const bodyRef = useRef<InstancedMesh>(null);
   const bubbleRef = useRef<InstancedMesh>(null);
   const dummy = useMemo(() => new Object3D(), []);
@@ -28,6 +30,7 @@ export function Customers() {
     const body = bodyRef.current;
     const bubble = bubbleRef.current;
     if (!body || !bubble) return;
+    const npcs = useGame.getState().npcs;
     const fmap = facing.current;
     const n = Math.min(npcs.length, NPC_CAP);
     const t = st.clock.elapsedTime;
@@ -36,7 +39,7 @@ export function Customers() {
       const npc = npcs[i];
       const x = npc.pos[0];
       const z = npc.pos[2];
-      // --- facing (useFacing math, per npc): hareket yönüne yumuşak dön; durunca son yönü koru ---
+      // --- facing (actorTransform math, per npc): hareket yönüne yumuşak dön; durunca son yönü koru ---
       let f = fmap.get(npc.id);
       if (!f) {
         f = { lastX: x, lastZ: z, target: 0, angle: 0 };

@@ -18,21 +18,26 @@ const DISH_CAP = 256; // kirli kap birikimi masa-eşikleriyle sınırlı; bol pa
 
 // Masalarda bekleyen kirli kaplar (Faz 2e + M3): çay = lekeli ince-belli bardak (gri-kahve silindir),
 // tost = kirli TABAK (yayvan disk + kırıntı). Oyuncu/bulaşıkçı toplayınca kaybolur.
+// P0 perf (2026-09-06): kap listesi useFrame'de `getState()` ile okunur (her kare yeni referans ->
+// abonelik her kare render ederdi). JSX'in ihtiyaci olan tek turev "kirli masa" isareti; o da
+// `dishes`in KIMLIGI degil ICERIGI degisince guncellenmeli -> ayri, kucuk bir secici kullanilir.
 export function Dishes() {
-  const dishes = useGame((s) => s.dishes);
-  const tableLevels = useGame((s) => s.tableLevels);
+  // Kirli masa esigini gecen masalarin imzasi (nadiren degisir) — secici ciktisi string oldugundan
+  // referans degil DEGER karsilastirilir, ayni imzada render tetiklenmez.
+  const dirtyKey = useGame((s) => [...dirtyTables(s.dishes, s.tableLevels)].join(','));
   const cupRef = useRef<InstancedMesh>(null);
   const discRef = useRef<InstancedMesh>(null);
   const crumbRef = useRef<InstancedMesh>(null);
   const dummy = useMemo(() => new Object3D(), []);
   // Kirli masalar (D-019): eşiği aşan masaların ÜSTÜNDE alçak primitive "koku" işareti.
   // Y2: eşik koltukla ölçeklenir → görsel işaret de mantıkla aynı imzayı kullanır.
-  const dirty = useMemo(() => [...dirtyTables(dishes, tableLevels)], [dishes, tableLevels]);
+  const dirty = useMemo(() => (dirtyKey ? dirtyKey.split(',').map(Number) : []), [dirtyKey]);
   useFrame(() => {
     const cup = cupRef.current;
     const disc = discRef.current;
     const crumb = crumbRef.current;
     if (!cup || !disc || !crumb) return;
+    const dishes = useGame.getState().dishes;
     let nc = 0; // bardak sayısı
     let np = 0; // tabak sayısı (disk + kırıntı ortak)
     const total = Math.min(dishes.length, DISH_CAP);

@@ -1,8 +1,8 @@
-import { useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import type { Group } from 'three';
 import { useGame } from '../../game/store';
 import { Model } from './Model';
-import { useFacing } from './useFacing';
+import { useActorTransform } from './actorTransform';
 import { PALETTE } from '../../config/palette';
 import { zoneProduct } from '../../config/economy.config';
 
@@ -37,11 +37,18 @@ function WaiterTray({ count, food }: { count: number; food: boolean }) {
 // Tek garson gövdesi (hook'lar per-unit kalsın diye ayrı bileşen).
 // Y3: TOSTÇU garson kıyafetle ayrışır — hardal gövde + beyaz kep (M3 tost ustası diliyle uyumlu);
 // çay garsonu yeşil kalır.
-function WaiterUnit({ pos, tray, food }: { pos: [number, number, number]; tray: number; food: boolean }) {
+function WaiterUnit({ kind, zone, tray, food }: { kind: 'a' | 'b'; zone: number; tray: number; food: boolean }) {
+  const outerRef = useRef<Group>(null);
   const ref = useRef<Group>(null);
-  useFacing(ref, pos[0], pos[2]);
+  // Konum store'dan HER KARE okunur ve doğrudan three'ye yazılır (React prop'u değil) — bkz.
+  // useActorTransform açıklaması.
+  const read = useCallback(() => {
+    const w = (kind === 'a' ? useGame.getState().waiters : useGame.getState().waiters2)[zone];
+    return w ? ([w.pos[0], w.pos[2]] as const) : null;
+  }, [kind, zone]);
+  useActorTransform(outerRef, ref, read);
   return (
-    <group position={[pos[0], 0, pos[2]]}>
+    <group ref={outerRef}>
       <group ref={ref}>
         <Model
           fallback={
@@ -68,15 +75,25 @@ function WaiterUnit({ pos, tray, food }: { pos: [number, number, number]; tray: 
 // Garsonlar (zone başına en çok 2 — Y4; greybox: yeşil önlüklü kapsül, tostçu hardal+kep).
 // Faz 6'da waiter.glb takılır.
 export function Waiter() {
-  const waiters = useGame((s) => s.waiters);
-  const waiters2 = useGame((s) => s.waiters2);
+  // P0 perf: garson KONUMU artık React'e girmiyor (her kare değişir). Bu seçici yalnız AYRIK
+  // durumu okur — hangi zone'da garson var + tepsisinde kaç birim (-1 = garson yok). Çıktı string
+  // olduğundan Zustand referansı değil DEĞERİ karşılaştırır; tepsi değişmedikçe render yok.
+  const key = useGame(
+    (s) =>
+      s.waiters.map((w) => (w ? w.tray : -1)).join(',') + '|' + s.waiters2.map((w) => (w ? w.tray : -1)).join(','),
+  );
+  const [a, b] = key.split('|');
+  const traysA = a ? a.split(',').map(Number) : [];
+  const traysB = b ? b.split(',').map(Number) : [];
   return (
     <>
-      {waiters.map((w, z) =>
-        w ? <WaiterUnit key={z} pos={w.pos} tray={w.tray} food={zoneProduct(z) === 'tost'} /> : null,
+      {traysA.map((tray, z) =>
+        tray >= 0 ? <WaiterUnit key={z} kind="a" zone={z} tray={tray} food={zoneProduct(z) === 'tost'} /> : null,
       )}
-      {waiters2.map((w, z) =>
-        w ? <WaiterUnit key={`w2-${z}`} pos={w.pos} tray={w.tray} food={zoneProduct(z) === 'tost'} /> : null,
+      {traysB.map((tray, z) =>
+        tray >= 0 ? (
+          <WaiterUnit key={`w2-${z}`} kind="b" zone={z} tray={tray} food={zoneProduct(z) === 'tost'} />
+        ) : null,
       )}
     </>
   );

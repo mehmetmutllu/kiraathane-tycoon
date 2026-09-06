@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import type { Group } from 'three';
 import { useGame } from '../../game/store';
 import { Model } from './Model';
-import { useFacing } from './useFacing';
+import { useActorTransform } from './actorTransform';
 import { PALETTE } from '../../config/palette';
 import { trayCapacityFor } from '../../config/economy.config';
 
@@ -180,21 +180,29 @@ export function CupTray({
   );
 }
 
+// Oyuncunun anlık x/z'si (modül seviyesinde sabit fonksiyon → useActorTransform'un bağımlılığı değişmez).
+function readPlayerXZ(): readonly [number, number] {
+  const p = useGame.getState().player;
+  return [p[0], p[2]] as const;
+}
+
 // (WP5: baş üstü radial KALDIRILDI — tek dolum göstergesi = dünya-içi pad halkası; feedback §D18.)
 
 // Sahip karakteri (primitive çaycı = nihai stil, D-013). Taşıma tek ön tepside
 // (karışık taşıma → çakışmaz).
 export function Player() {
-  const p = useGame((s) => s.player);
   const tray = useGame((s) => s.tray);
   const trayFood = useGame((s) => s.trayFood);
   const carriedDirty = useGame((s) => s.carriedDirty);
   const carriedDirtyFood = useGame((s) => s.carriedDirtyFood);
   const trayTier = useGame((s) => s.charUpgrades.tray);
+  const outerRef = useRef<Group>(null);
   const ref = useRef<Group>(null);
-  useFacing(ref, p[0], p[2]);
+  // P0 perf: oyuncu konumu store'dan her karede OKUNUR, React'e prop olarak girmez — eskiden
+  // `useGame((s) => s.player)` yürürken her kare Player alt ağacını yeniden render ediyordu.
+  useActorTransform(outerRef, ref, readPlayerXZ);
   return (
-    <group position={[p[0], 0, p[2]]}>
+    <group ref={outerRef}>
       <group ref={ref}>
         <Model fallback={<OwnerBody />} />
         <CupTray tea={tray} food={trayFood} dirty={carriedDirty} dirtyFood={carriedDirtyFood} cap={trayCapacityFor(trayTier)} />

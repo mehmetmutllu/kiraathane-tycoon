@@ -485,6 +485,50 @@ export function tableUpgradeUnlockedZ(z: number, g: GateState): boolean {
   return requiresMet(C.tables.upgradeRequiresByZone[z], g);
 }
 
+// KİMLİK KORUMA (P0 perf, 2026-09-06). `tick()` her karede diziyi/nesneyi kopyalayıp tek `set()`
+// ile yazıyordu → içerik AYNI olsa bile referans değişiyor, Zustand seçicileri "değişti" sanıp
+// abone bileşeni her karede yeniden render ediyordu. Ölçüm (1920×1080, 3 salon, 14 NPC):
+// kare başına 3,2 React commit; 12 anahtar (`tableLevels`, `stationLevels`, `stats`, `quest`,
+// `dishes`, `upgradeFills`, ...) karelerin %100'ünde SADECE kimlik değiştiriyordu.
+// Çözüm: set'ten hemen önce, içeriği eskisiyle aynı olan değeri ESKİ referansa geri döndür.
+// Karşılaştırma sınırlı derinlikte (dizi → aktör nesnesi → pos dizisi → sayı) ve yalnız `tick`
+// yükünde çalışır; maliyeti tek bir gereksiz React render'ından ucuzdur.
+function sameDeep(a: unknown, b: unknown, depth = 4): boolean {
+  if (a === b) return true;
+  if (depth <= 0) return false;
+  if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) return false;
+  const aArr = Array.isArray(a);
+  if (aArr !== Array.isArray(b)) return false;
+  if (aArr) {
+    const x = a as unknown[];
+    const y = b as unknown[];
+    if (x.length !== y.length) return false;
+    for (let i = 0; i < x.length; i++) if (!sameDeep(x[i], y[i], depth - 1)) return false;
+    return true;
+  }
+  if (Object.getPrototypeOf(a) !== Object.getPrototypeOf(b)) return false;
+  const ka = Object.keys(a as object);
+  const kb = Object.keys(b as object);
+  if (ka.length !== kb.length) return false;
+  const ao = a as Record<string, unknown>;
+  const bo = b as Record<string, unknown>;
+  for (const k of ka) {
+    if (!(k in bo)) return false;
+    if (!sameDeep(ao[k], bo[k], depth - 1)) return false;
+  }
+  return true;
+}
+
+/** set() yükündeki DEĞİŞMEMİŞ değerleri eski referansa çevirir (yerinde). */
+function keepIdentity<T extends Record<string, unknown>>(prev: Record<string, unknown>, next: T): T {
+  const patch = next as Record<string, unknown>;
+  for (const k in patch) {
+    const v = patch[k];
+    if (v !== null && typeof v === 'object' && v !== prev[k] && sameDeep(v, prev[k])) patch[k] = prev[k];
+  }
+  return next;
+}
+
 const SAVE_INTERVAL = 2; // sn
 const NPC_COLORS = ['#c0392b', '#27ae60', '#2980b9', '#8e44ad', '#d35400', '#16a085'];
 
@@ -2011,7 +2055,8 @@ export const useGame = create<GameState>((set, get) => ({
       get().saveNow();
     }
 
-    set({
+    set(
+      keepIdentity(get() as unknown as Record<string, unknown>, {
       npcs: liveNpcs,
       coins,
       autoCollectSum,
@@ -2057,7 +2102,8 @@ export const useGame = create<GameState>((set, get) => ({
       saveTimer,
       nextId,
       npcCount: liveNpcs.length,
-    });
+      }),
+    );
   },
 
   setKeyboardInput: (x, z) => set({ inputKeyboard: [x, z] }),

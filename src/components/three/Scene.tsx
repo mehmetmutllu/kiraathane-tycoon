@@ -1,4 +1,4 @@
-import { Suspense, useMemo, useRef } from 'react';
+import { Suspense, useEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Instances, Instance } from '@react-three/drei';
 import { Vector3, type Group, type MeshStandardMaterial } from 'three';
@@ -102,6 +102,26 @@ function PerfProbe() {
       if (import.meta.env.DEV) (window as unknown as { __three?: unknown }).__three = { gl, scene, camera };
     }
   });
+  return null;
+}
+
+// ÇÖZÜNÜRLÜK BÜTÇESİ (P0 perf, 2026-09-06). Fragment (piksel) maliyeti doğrudan arka tamponun
+// piksel sayısıyla ölçeklenir. `dpr={[1,2]}` telefonda doğru ama PC'de TAM EKRAN + Windows ekran
+// ölçeklemesi (%125-150 çok yaygın) tamponu 1920×1080 yerine 2400×1350 / 2880×1620 yapıyordu —
+// aynı sahne için 1,6-2,25 kat piksel. Burada toplam piksel sayısına tavan konur: küçük tuvalde
+// (telefon, UI önizlemeleri) hiçbir şey değişmez, büyük tuvalde dpr 1'e kadar iner. 1'in ALTINA
+// İNMEZ — bulanıklık görsel bir karardır, ölçüm kararı değil.
+const PIXEL_BUDGET = 2_300_000; // ~1920×1200
+
+function AdaptiveResolution() {
+  const width = useThree((s) => s.size.width);
+  const height = useThree((s) => s.size.height);
+  const setDpr = useThree((s) => s.setDpr);
+  useEffect(() => {
+    const area = Math.max(1, width * height);
+    const budgetDpr = Math.sqrt(PIXEL_BUDGET / area);
+    setDpr(Math.min(window.devicePixelRatio || 1, 2, Math.max(1, budgetDpr)));
+  }, [width, height, setDpr]);
   return null;
 }
 
@@ -985,6 +1005,7 @@ export function Scene() {
       {/* IŞIK (G0) — renkler palette.ts LIGHTING'te, gerekçe orada yazılı.
           NOT: tone mapping ZATEN ACESFilmic (r3f varsayılanı, `flat` verilmedi) — bu yüzden
           burada yeniden atanmıyor, yalnız exposure ile değer aralığı açılıyor. */}
+      <AdaptiveResolution />
       <color attach="background" args={[LIGHTING.background]} />
       <fog attach="fog" args={[LIGHTING.background, LIGHTING.fogNear, LIGHTING.fogFar]} />
       <hemisphereLight
