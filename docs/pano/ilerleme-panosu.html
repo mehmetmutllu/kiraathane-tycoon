@@ -368,6 +368,22 @@ h2{font-size:21px;font-weight:800}
   "gunluk": [
     {
       "tarih": "06.09.2026",
+      "etiket": "Faz G · 3. oturum",
+      "baslik": "Kasmanın sebebi çizim değil arayüzmüş; zemin tahta ve karo oldu",
+      "govde": "Kullanıcı <i>\"ikisini de yap benden bir şey istemeden\"</i> dedi: hem tam ekran kasması hem zemin. İkisi de bitti.<br><br><b>Kasma tahminle değil ölçümle kapatıldı.</b> Üç ayrı şey ölçüldü — çizimin gönderilmesi, oyun döngüsü, ve arayüzün yeniden çizilmesi. İlk ikisi temizdi. Suçlu üçüncüsüydü: oyun <b>kare başına 3,2 kez</b> arayüzü yeniden çiziyordu.<br><br>Sebep basit ve yapısaldı. Oyun her karede durumunun kopyasını çıkarıp topluca yazıyor; içerik hiç değişmese bile <b>kopya yeni</b> olduğu için arayüz \"değişti\" sanıyor. On iki farklı veri — masa seviyeleri, aktif görev, sayaçlar, kirli kaplar — karelerin <b>%100'ünde</b> böyleydi. Masaların seviyesi hiç değişmediği hâlde on iki masa her kare baştan çiziliyordu.<br><br>İkinci iş <b>zemin</b>. Planın teşhisi tutmuştu: mekân \"bitmemiş\" duruyorsa sebep doku eksikliği değil, <b>ölçek referansı</b> eksikliği. Salonun zemini artık tek renk bir alan değil; parke gerçek tahtalardan, fayans gerçek karolardan oluşuyor. Her tahtanın kendi hafif ton farkı var, aralarındaki derz bir çizgi değil <b>boşluk</b> — arasından koyu taban görünüyor.",
+      "maddeler": [
+        "Kare başına yeniden çizim <b>3,23 → 0,23</b> · kare süresi <b>10,24 → 6,05 ms</b>",
+        "Konum artık arayüzden geçmiyor: oyuncu, garson, bulaşıkçı doğrudan sahneye yazılıyor",
+        "Tam ekran + Windows ekran ölçeklemesine <b>piksel tavanı</b> — telefonda hiçbir şey değişmez",
+        "<b>Parke ve ceviz tahta</b> (2,20 × 0,55, satır başı kaydırmalı), <b>fayans ve yemek karo</b>",
+        "Dama teması bilerek değişmedi — yüksek kontrastlı satrancı zaten ölçek veriyordu",
+        "Mağaza önizlemesi aynı bileşenden çiziyor: mağazada gördüğün ölçü salonda göreceğin",
+        "Testler <b>192/192</b> (6 yeni), derleme temiz, konsol hatasız"
+      ],
+      "not": "<b>Zemin neden bu kadar fark etti:</b> zeminde boyutu bilinen, tekrar eden bir birim olunca salonun ne kadar büyük olduğu bir bakışta okunuyor. Doku yolu daha önce denenip geri alındığı için (moiré, sert derz çizgileri) desen bu kez <b>geometri</b>: alan başına tek çizim çağrısı, sıfır bayt asset, moiré yapısal olarak imkânsız.<br><br><b>Bir tuzak kayda geçti:</b> tarayıcıda \"tema değişmiyor\" sanılarak zaman kaybedildi. Sebep, geliştirme sunucusunun kod güncellemesinden sonra aynı dosyanın <b>iki ayrı kopyasını</b> tutması; test konsolundan yapılan değişiklik oyunun kullandığı kopyaya değil diğerine yazıyordu. Bundan sonra durum yalnız oyunun kendi test kancasından değiştirilecek."
+    },
+    {
+      "tarih": "06.09.2026",
       "etiket": "Faz G · 2. oturum",
       "baslik": "Gölge: eklendi, reddedildi, ölçüldü, komple kaldırıldı",
       "govde": "Plandaki adım \"objelerin altına yumuşak leke koy, yüzme hissi bitsin\" idi. Yapıldı — tek çizim çağrısında, dosya olarak hiçbir şey eklemeden. Sonra ekrana bakıldı: <i>\"bu kötü duruyo, her şeyin altında bi yuvarlak var.\"</i> Geri alındı.<br><br>İkinci turda asıl şikâyet netleşti: sorun sadece yuvarlak değildi, <b>gölge ile yuvarlağın aynı anda olmasıydı</b> — üstelik mevcut gölgenin kenarı <i>\"zınk diye keskin çizgi gibi\"</i> duruyordu. Referans olarak My Hotel gösterildi: orada hiç gölge yok.<br><br>Üçüncü turda tahmin yürütmek yerine dört seçenek aynı kareden çekildi ve tek tek ölçüldü: sert gölge, hiç gölge, yumuşak gölge, gölgesiz artı tek havuz. Yumuşak varyant hem ışık sızdırdı hem de en pahalısı çıktı. Sonuç: <b>hiç gölge yok</b>.<br><br>Sert kenarın sebebi de ortaya çıktı: gölge haritası otuz birimlik bir alana yayılıyordu, o yoğunlukta kenar zorunlu olarak merdiven merdiven çıkar.",
@@ -495,9 +511,9 @@ h2{font-size:21px;font-weight:800}
     },
     {
       "sev": "Performans",
-      "renk": "stop",
-      "b": "PC'de tam ekran ağır kasıyor",
-      "p": "Kullanıcı bildirdi, ilk kez ölçüldü. Gölge haritası kare süresinin yarısıydı ve kaldırıldı (%29–57 kazanç) — ama bitmedi: geniş ekranda çizim çağrısı 91'den 245'e çıkıyor. Kalan ölçüm kullanıcının makinesinde yapılacak."
+      "renk": "done",
+      "b": "PC'de tam ekran kasması — ÇÖZÜLDÜ",
+      "p": "Kök neden ölçümle bulundu: sorun çizimde değil arayüzdeydi — oyun kare başına 3,2 kez arayüzü yeniden çiziyordu. Kare başına yeniden çizim 3,23 → 0,23, kare süresi 10,24 → 6,05 ms. Ayrıca tam ekranda piksel tavanı kondu. Kullanıcının makinesinde tekrar bakılacak."
     },
     {
       "sev": "Yapısal",
