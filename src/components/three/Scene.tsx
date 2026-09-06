@@ -1,8 +1,9 @@
 import { Suspense, useEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Vector3, type Group, type MeshStandardMaterial } from 'three';
-import { useGame, questFocusPos, LAYOUT, stationSoftMaxLevel, stationUpgradeCostZ, upgradeZoneUnlockedZ, tableSoftMaxLevel, tableUpgradeUnlockedZ, tableNextCost, zonePoint, zoneCol, zoneRow, zoneAt } from '../../game/store';
-import { economyConfig, zoneOfTable, zoneProduct } from '../../config/economy.config';
+import { useGame, questFocusPos, LAYOUT, stationSoftMaxLevel, stationUpgradeCostAt, stationUpgradeUnlocked, tableSoftMaxLevel, tableUpgradeUnlockedIn, tableNextCost, areaPoint, areaCol, areaRow, areaAt, openServices } from '../../game/store';
+import { economyConfig } from '../../config/economy.config';
+import { areaOfTable, serviceProduct, SERVICE_AREAS } from '../../game/world';
 import { GroundMarker } from './GroundMarker';
 import { FloorPattern } from './floorPattern';
 import { WALL_H, WallPanels, type WallSlab } from './wallPanel';
@@ -38,7 +39,7 @@ function QuestPointer() {
   useFrame(() => {
     const g = useGame.getState();
     const def = g.questIndex < economyConfig.quests.length ? economyConfig.quests[g.questIndex] : null;
-    const target = g.quest && def ? questFocusPos(def.target, g.tableLevels, g.tables, def.zone ?? 0) : null;
+    const target = g.quest && def ? questFocusPos(def.target, g.tableLevels, g.tables, def.area ?? 0) : null;
     if (!target) {
       screenPointer.active = false;
       return;
@@ -183,20 +184,20 @@ function CameraRig() {
   return null;
 }
 
-// Açık zone'ların çay ocağı MODÜLLERİ (per-zone mutfak, D-025): z1 sol duvar, z2 sağ duvar (aynalı).
+// Açık SERVİSLERİN çay ocağı MODÜLLERİ (alan-başı mutfak, D-025): a0 sol duvar, a1 sağ duvar (aynalı).
 // Modül kendi duvarına paralel; ön yüz salona bakar (rotasyon LAYOUT.stationRots'tan).
 function Stations() {
-  const zonesOpen = useGame((s) => s.zonesOpen);
+  const areasOpen = useGame((s) => s.areasOpen);
   const stationLevels = useGame((s) => s.stationLevels);
-  const readyCupsByZone = useGame((s) => s.readyCupsByZone);
+  const readyCupsByService = useGame((s) => s.readyCupsByService);
   return (
     <>
-      {LAYOUT.stations.slice(0, zonesOpen).map((p, z) => (
+      {LAYOUT.stations.slice(0, areasOpen).map((p, z) => (
         <group key={z} position={[p[0], 0, p[2]]} rotation={[0, LAYOUT.stationRots[z], 0]}>
-          {zoneProduct(z) === 'tost' ? (
-            <TostStation position={[0, 0, 0]} level={stationLevels[z]} readyCount={readyCupsByZone[z]} />
+          {serviceProduct(z) === 'tost' ? (
+            <TostStation position={[0, 0, 0]} level={stationLevels[z]} readyCount={readyCupsByService[z]} />
           ) : (
-            <TeaStation position={[0, 0, 0]} level={stationLevels[z]} readyCups={readyCupsByZone[z]} />
+            <TeaStation position={[0, 0, 0]} level={stationLevels[z]} readyCups={readyCupsByService[z]} />
           )}
         </group>
       ))}
@@ -206,28 +207,29 @@ function Stations() {
 
 // Çaycı NPC (D-023; kullanıcı tarifi: "duvar ile tezgah arasında çalışan biri"). SALT GÖRSEL —
 // mekaniğe dokunmaz: kendi ocağının arkasındaki koridorda yürür, durup tezgâha dönüp "iş yapar".
-// D-025: her açık zone'un ocağı kendi duvarında → zone-2 açılınca onun da çaycısı belirir (aynalı).
-function KitchenHand({ zone }: { zone: number }) {
+// D-025: her açık SERVİSİN ocağı kendi duvarında → yeni alan açılınca onun da çaycısı belirir (aynalı).
+function KitchenHand({ service }: { service: number }) {
   const ref = useRef<Group>(null);
   const zMin = -4.6;
-  const zMax = -1.4; // şablon (zone-yerel) mutfak bloğu aralığı (bulaşık -4.9..-3.5 + ocak -3.6..-1.4)
+  const zMax = -1.4; // şablon (alan-yerel) mutfak bloğu aralığı (bulaşık -4.9..-3.5 + ocak -3.6..-1.4)
   // Y1: ARKA-duvar tezgâhı (yemek counter'ı, stationRot 0) arkasında x-ekseni boyunca yürünür;
   // yan-duvar mutfaklarında z-ekseni boyunca (eski şablon). Yol istasyon konumundan türetilir.
-  const backWall = LAYOUT.stationRots[zone] === 0;
-  const stPos = LAYOUT.stations[zone];
+  const area = SERVICE_AREAS[service] ?? 0;
+  const backWall = LAYOUT.stationRots[service] === 0;
+  const stPos = LAYOUT.stations[service];
   const span = 1.1; // tezgâh uzun-kenar yarısı (stationHalves uzun ekseni) — uçtan uca tur
-  // M2: konum zone şablonundan türetilir — sağ kolon aynalı, arka sıra −z kaydırmalı (zonePoint).
-  const faceIn = backWall ? 0 : zoneCol(zone) ? -Math.PI / 2 : Math.PI / 2;
+  // M2: konum ALAN şablonundan türetilir — sağ kolon aynalı, arka sıra −z kaydırmalı (areaPoint).
+  const faceIn = backWall ? 0 : areaCol(area) ? -Math.PI / 2 : Math.PI / 2;
   // useMemo: her render yeni dizi üretirse aşağıdaki kayıt effect'i boşuna yeniden koşar.
   const start = useMemo(
     () =>
       backWall
         ? ([stPos[0] - span, 0, stPos[2] - 0.65] as const)
-        : zonePoint(zone, [-5.0, 0, -3]),
-    [backWall, stPos, span, zone],
+        : areaPoint(area, [-5.0, 0, -3]),
+    [area, backWall, stPos, span],
   );
   // M3: tost ustası çaycıdan kıyafetle ayrışır (hardal önlük + beyaz kep).
-  const isFood = zoneProduct(zone) === 'tost';
+  const isFood = serviceProduct(service) === 'tost';
   const apron = isFood ? PALETTE.foodApron : PALETTE.apron;
   const cap = isFood ? PALETTE.foodCap : PALETTE.cap;
   useFrame((st) => {
@@ -241,7 +243,7 @@ function KitchenHand({ zone }: { zone: number }) {
       grp.position.z = stPos[2] - 0.65; // duvar ile tezgâh arasındaki koridor
       walkRot = Math.cos(t) > 0 ? Math.PI / 2 : -Math.PI / 2;
     } else {
-      const p = zonePoint(zone, [-5.0, 0, zMin + u * (zMax - zMin)]);
+      const p = areaPoint(area, [-5.0, 0, zMin + u * (zMax - zMin)]);
       grp.position.x = p[0];
       grp.position.z = p[2];
       walkRot = Math.cos(t) > 0 ? 0 : Math.PI;
@@ -279,12 +281,12 @@ function KitchenHand({ zone }: { zone: number }) {
 }
 
 function KitchenStaff() {
-  const zonesOpen = useGame((s) => s.zonesOpen);
-  // Her açık zone'un kendi çaycısı (M2: konum/yön zonePoint şablonundan).
+  const areasOpen = useGame((s) => s.areasOpen);
+  // Her açık SERVİSİN kendi çaycısı (M2: konum/yön areaPoint şablonundan).
   return (
     <>
-      {Array.from({ length: zonesOpen }, (_, z) => (
-        <KitchenHand key={z} zone={z} />
+      {openServices(areasOpen).map((sv) => (
+        <KitchenHand key={sv} service={sv} />
       ))}
     </>
   );
@@ -294,9 +296,9 @@ function KitchenStaff() {
 // bitişik ek odalar) + MERDİVEN ön-sağ köşe (Faz 3b üst kat). Salt görsel greybox rezerv.
 function ReservedRooms() {
   // 2026-06-11 revizyon: arka-sol hücre kalıcı REZERV arsa → DEPO görseli hep durur;
-  // TUVALET (sağ-arka) zone-3 (arka-sağ TOST) açılınca o bölge gerçek salon olduğundan kalkar.
-  const fz = LAYOUT.zoneAreas[0].minZ; // ön sıranın arka çizgisi
-  const zonesOpen = useGame((s) => s.zonesOpen);
+  // TUVALET (sağ-arka) 3. alan (arka-sağ TOST) açılınca o bölge gerçek salon olduğundan kalkar.
+  const fz = LAYOUT.areaBounds[0].minZ; // ön sıranın arka çizgisi
+  const areasOpen = useGame((s) => s.areasOpen);
   return (
     <group>
       {/* DEPO (sol-arka ek oda) — rezerv arsada kalıcı görsel */}
@@ -310,8 +312,8 @@ function ReservedRooms() {
           <meshStandardMaterial color={PALETTE.doorWood} />
         </mesh>
       </group>
-      {/* TUVALET (sağ-arka ek oda) — zone-3 açılınca kalkar */}
-      {zonesOpen > 1 && zonesOpen < 3 && (
+      {/* TUVALET (sağ-arka ek oda) — 3. alan açılınca kalkar */}
+      {areasOpen > 1 && areasOpen < 3 && (
         <group position={[13.8, 0, fz - 1.6]}>
           <mesh castShadow position={[0, 0.7, 0]}>
             <boxGeometry args={[2.4, 1.4, 2.2]} />
@@ -328,9 +330,9 @@ function ReservedRooms() {
   );
 }
 
-// Mekânsal çay yükseltme noktaları (ZONE BAŞINA; ocağın önünde). Üstünde dur → dolum yayı ilerler.
-function UpgradeZone() {
-  const zonesOpen = useGame((s) => s.zonesOpen);
+// Mekânsal ocak-yükseltme noktaları (SERVİS BAŞINA; ocağın önünde). Üstünde dur → dolum yayı ilerler.
+function StationUpgradeSpots() {
+  const areasOpen = useGame((s) => s.areasOpen);
   const stationLevels = useGame((s) => s.stationLevels);
   const upgradeFills = useGame((s) => s.upgradeFills);
   const wallet = useGame((s) => s.wallet);
@@ -340,18 +342,18 @@ function UpgradeZone() {
   const gate = { padsDone, tables, stationLevel: stationLevels[0], lifetime: lifetime.toNumber() };
   return (
     <>
-      {Array.from({ length: zonesOpen }, (_, z) => {
+      {openServices(areasOpen).map((z: number) => {
         if (stationLevels[z] >= stationSoftMaxLevel()) return null;
-        if (!upgradeZoneUnlockedZ(z, gate)) return null;
-        // M3: maliyet + etiket zone'un ÜRÜNÜNDEN (tost tezgâhı kendi çarpanıyla; "Çay Yükselt" yanlış olur).
-        const cost = stationUpgradeCostZ(z, stationLevels[z]);
+        if (!stationUpgradeUnlocked(z, gate)) return null;
+        // M3: maliyet + etiket SERVİSİN ÜRÜNÜNDEN (tost tezgâhı kendi çarpanıyla; "Çay Yükselt" yanlış olur).
+        const cost = stationUpgradeCostAt(z, stationLevels[z]);
         // KALAN tutar (2026-06-11 feedback: kısmi dolum düşülmüş hali yazsın).
         const remaining = Math.max(0, Math.ceil(cost - upgradeFills[z]));
         return (
           <GroundMarker
             key={z}
-            pos={LAYOUT.upgradeZones[z]}
-            label={zoneProduct(z) === 'tost' ? 'Tost Yükselt' : 'Çay Yükselt'}
+            pos={LAYOUT.stationUpgradeSpots[z]}
+            label={serviceProduct(z) === 'tost' ? 'Tost Yükselt' : 'Çay Yükselt'}
             sub={String(remaining)}
             coin
             tint="#ffce54"
@@ -364,7 +366,7 @@ function UpgradeZone() {
   );
 }
 
-// Bulaşık noktaları (Faz 2e; ZONE BAŞINA, D-022): kirli bardaklar burada yıkanır.
+// Bulaşık noktaları (Faz 2e; SERVİS BAŞINA, D-022): kirli bardaklar burada yıkanır.
 // (Havadaki etiket KALDIRILDI — lavabo görseli zaten ne olduğunu anlatır; D-017 §2 sadelik.)
 // D-025 rev. A: modül kendi ocağının bitişiğinde, yan duvara paralel (rotasyon ocakla aynı).
 function DishStationUnit({ pos, rot }: { pos: readonly [number, number, number]; rot: number }) {
@@ -390,10 +392,10 @@ function DishStationUnit({ pos, rot }: { pos: readonly [number, number, number];
 }
 
 function DishStation() {
-  const zonesOpen = useGame((s) => s.zonesOpen);
+  const areasOpen = useGame((s) => s.areasOpen);
   return (
     <>
-      {LAYOUT.dishStations.slice(0, zonesOpen).map((p, z) => (
+      {LAYOUT.dishStations.slice(0, areasOpen).map((p, z) => (
         <DishStationUnit key={z} pos={p} rot={LAYOUT.dishRots[z]} />
       ))}
     </>
@@ -415,11 +417,11 @@ function TableUpgradeMarkers() {
   return (
     <>
       {LAYOUT.tables.slice(0, tables).map((t, i) => {
-        // v21: her masanın işareti KENDİ zone'unun gate'ine bağlı (o salonun 4 masası açık mı).
-        if (!tableUpgradeUnlockedZ(zoneOfTable(i), gate)) return null;
+        // v21: her masanın işareti KENDİ ALANININ gate'ine bağlı (o alanın 4 masası açık mı).
+        if (!tableUpgradeUnlockedIn(areaOfTable(i), gate)) return null;
         const lvl = tableLevels[i] ?? 0;
         if (lvl >= tableSoftMaxLevel()) return null; // max → işaret gizlenir
-        const cost = tableNextCost(lvl, zoneOfTable(i));
+        const cost = tableNextCost(lvl, areaOfTable(i));
         const remaining = Math.max(0, Math.ceil(cost - (tableUpgradeFills[i] ?? 0)));
         return (
           <GroundMarker
@@ -442,36 +444,36 @@ function TableUpgradeMarkers() {
 // (v29: WaiterUpgradeMarker kalktı — garson hızı karakter panelinden satın alınır.)
 
 function Ground() {
-  // İki zone'u da kapsayan AHŞAP zemin (DÜZ renk — canvas-tile geri alındı, kullanıcı 2026-06-11:
-  // "zemin iğrenç oldu"). WP6 kozmetik teması KORUNUR: zone overlay'i temanın DÜZ base rengi
+  // Tüm alanları kapsayan AHŞAP zemin (DÜZ renk — canvas-tile geri alındı, kullanıcı 2026-06-11:
+  // "zemin iğrenç oldu"). WP6 kozmetik teması KORUNUR: alan overlay'i temanın DÜZ base rengi
   // (+dama temasında quad satranç deseni). KİLİM KALDIRILDI (kullanıcı 2026-06-11: "ortadaki halıya
-  // gerek yok, daha soft bir zemin") — zone zemini tek yumuşak düz renk.
-  const floorThemeByZone = useGame((s) => s.floorThemeByZone);
-  // Kilitli zone'un zemini ÇİZİLMEZ (2026-06-11: karanlık örtü kalktı — kapalı salon "boş arsa";
+  // gerek yok, daha soft bir zemin") — alan zemini tek yumuşak düz renk.
+  const floorThemeByArea = useGame((s) => s.floorThemeByArea);
+  // Kilitli ALANIN zemini ÇİZİLMEZ (2026-06-11: karanlık örtü kalktı — kapalı salon "boş arsa";
   // taban ahşap düzlem dışarıda her yerde zaten görünür, kilitli bölge de onunla aynı kalır).
-  const zonesOpen = useGame((s) => s.zonesOpen);
+  const areasOpen = useGame((s) => s.areasOpen);
   return (
     <group>
       <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[6, 0, -5.5]}>
         <planeGeometry args={[38, 30]} />
         <meshStandardMaterial color={PALETTE.floorWood} />
       </mesh>
-      {LAYOUT.zoneAreas.slice(0, zonesOpen).map((za, z) => {
+      {LAYOUT.areaBounds.slice(0, areasOpen).map((za, z) => {
         // Overlay DUVARA KADAR uzar (DIŞ/kilitli kenarlarda +0.55) — duvar dibinde eski renk şerit
         // kalmaz (kullanıcı bug'ı 2026-06-11). AÇIK komşuya bakan kenar tam sınırda biter (M2:
         // üst üste binen overlay z-fighting yapardı).
-        const col = zoneCol(z);
-        const row = zoneRow(z);
-        // Komşular ızgaradan (zoneAt; -1 = dış dünya/rezerv arsa = kapalı kenar sayılır).
-        const sideN = zoneAt(col === 0 ? col + 1 : col - 1, row);
-        const vertN = zoneAt(col, row === 0 ? 1 : 0);
-        const sideOpen = sideN >= 0 && sideN < zonesOpen;
-        const vertOpen = vertN >= 0 && vertN < zonesOpen;
+        const col = areaCol(z);
+        const row = areaRow(z);
+        // Komşular ızgaradan (areaAt; -1 = dış dünya/rezerv arsa = kapalı kenar sayılır).
+        const sideN = areaAt(col === 0 ? col + 1 : col - 1, row);
+        const vertN = areaAt(col, row === 0 ? 1 : 0);
+        const sideOpen = sideN >= 0 && sideN < areasOpen;
+        const vertOpen = vertN >= 0 && vertN < areasOpen;
         const x0 = za.minX - (col === 0 || !sideOpen ? 0.55 : 0);
         const x1 = za.maxX + (col === 1 || !sideOpen ? 0.55 : 0);
         const z0 = za.minZ - (row === 1 || !vertOpen ? 0.55 : 0);
         const z1 = za.maxZ + (row === 0 || !vertOpen ? 0.55 : 0);
-        const theme = FLOOR_THEMES[floorThemeByZone[z] ?? 'parke'] ?? FLOOR_THEMES.parke;
+        const theme = FLOOR_THEMES[floorThemeByArea[z] ?? 'parke'] ?? FLOOR_THEMES.parke;
         return (
           <group key={z}>
             {/* y: taban(0) < tema tabanı(0.004) < desen(0.006) < GroundMarker(0.02).
@@ -489,7 +491,7 @@ function Ground() {
   );
 }
 
-// TV köşesi (zone-1 arka duvar): askılı TV + EKRANDA MAÇ OYNAR (WP4, feedback §C16):
+// TV köşesi (1. alanın arka duvarı): askılı TV + EKRANDA MAÇ OYNAR (WP4, feedback §C16):
 // yeşil saha + orta çizgi + gezen top + üst skor bandı; ekran parlaklığı hafif titrer (canlı yayın hissi).
 function TvCorner() {
   const ball = useRef<Group>(null);
@@ -551,11 +553,11 @@ function TvCorner() {
 // MENÜ PANOSU (kara tahta + tebeşir satırları + tost silüeti) + salon zeminine ÇATAL-BIÇAK/TOST
 // AMBLEMİ (primitive mesh — kendi şeklimiz, hazır asset yok). Salt görsel; tost salonu açılınca belirir.
 function FoodCorner() {
-  const zonesOpen = useGame((s) => s.zonesOpen);
-  const foodZone = 2; // zoneProduct(2)==='tost' — tek yemek salonu
-  if (zonesOpen <= foodZone) return null;
-  const st = LAYOUT.stations[foodZone]; // arka-duvar counter'ı (Y1) — pano onun üstüne asılır
-  const za = LAYOUT.zoneAreas[foodZone];
+  const areasOpen = useGame((s) => s.areasOpen);
+  const foodService = 2; // serviceProduct(2)==='tost' — tek yemek servisi
+  if (openServices(areasOpen).indexOf(foodService) < 0) return null;
+  const st = LAYOUT.stations[foodService]; // arka-duvar counter'ı (Y1) — pano onun üstüne asılır
+  const za = LAYOUT.areaBounds[SERVICE_AREAS[foodService]];
   // Amblem salonun oturma alanı ortasında (masa sütunları x 7.4/11.8, sıralar z -8.4/-11.3).
   const ex = (za.minX + za.maxX) / 2 - 1.0;
   const ez = -9.85;
@@ -735,35 +737,35 @@ function DecorProps() {
   );
 }
 
-// Duvarlar yalnız AÇIK zone'ları sarar (2026-06-11 telefon feedback'i: karanlık örtü hacmi mobilde
-// AYDINLIK göründü + zone sınırındaki kelepçe "görünmez engel" hissi verdi → örtü KALDIRILDI, bina
-// kilitliyken zone-1'i 4 GERÇEK duvarla biter; sağ duvar zone sınırına oturur = kelepçe duvar olur).
-// Zone-2 kilitliyken HİÇ ÇİZİLMEZ (yanı düz "boş arsa"); pad açılınca bina sağa uzar (kamera panı var).
-// TEK KAPI (zone-1 ortası; D-023 — tüm müşteriler buradan girer/çıkar). Açıkken İÇ BÖLME DUVARI YOK.
+// Duvarlar yalnız AÇIK ALANLARI sarar (2026-06-11 telefon feedback'i: karanlık örtü hacmi mobilde
+// AYDINLIK göründü + alan sınırındaki kelepçe "görünmez engel" hissi verdi → örtü KALDIRILDI, bina
+// kilitliyken 1. alanı 4 GERÇEK duvarla biter; sağ duvar alan sınırına oturur = kelepçe duvar olur).
+// 2. alan kilitliyken HİÇ ÇİZİLMEZ (yanı düz "boş arsa"); pad açılınca bina sağa uzar (kamera panı var).
+// TEK KAPI (1. alanın ortası; D-023 — tüm müşteriler buradan girer/çıkar). Açıkken İÇ BÖLME DUVARI YOK.
 function Walls() {
-  const zonesOpen = useGame((s) => s.zonesOpen);
-  // WP6: duvar teması zone-başına (wallThemeByZone persist). M2: duvarlar zone-kenarı başına üretilir →
-  // tema bölmesi kendiliğinden doğru (her parça kendi zone'unun temasını giyer).
-  const wallThemeByZone = useGame((s) => s.wallThemeByZone);
-  const themeOf = (z: number) => WALL_THEMES[wallThemeByZone[z] ?? 'krem'] ?? WALL_THEMES.krem;
+  const areasOpen = useGame((s) => s.areasOpen);
+  // WP6: duvar teması ALAN başına (wallThemeByArea persist). M2: duvarlar alan-kenarı başına üretilir →
+  // tema bölmesi kendiliğinden doğru (her parça kendi ALANININ temasını giyer).
+  const wallThemeByArea = useGame((s) => s.wallThemeByArea);
+  const themeOf = (z: number) => WALL_THEMES[wallThemeByArea[z] ?? 'krem'] ?? WALL_THEMES.krem;
   const m = 0.5; // alan kenarı ile dış duvar arası pay (oyuncu kelepçe standoff'u ile birebir)
   const h = WALL_H; // G3: yükseklik + profiller wallPanel.tsx'te (mağaza önizlemesiyle ortak)
   const t = 0.2;
   const doorHalf = 1.3;
   const doorX = LAYOUT.entrances[0][0]; // tek kapı (z0 ön duvarı)
-  const isOpen = (z: number) => z >= 0 && z < zonesOpen;
+  const isOpen = (z: number) => z >= 0 && z < areasOpen;
   type Piece = WallSlab;
   const pieces: Piece[] = [];
-  for (let z = 0; z < zonesOpen; z++) {
-    const za = LAYOUT.zoneAreas[z];
-    const col = zoneCol(z);
-    const row = zoneRow(z);
+  for (let z = 0; z < areasOpen; z++) {
+    const za = LAYOUT.areaBounds[z];
+    const col = areaCol(z);
+    const row = areaRow(z);
     const th = themeOf(z);
-    // Komşular ızgaradan bulunur (zoneAt): -1 = dış dünya YA DA zone'suz rezerv hücre (arka-sol) —
+    // Komşular ızgaradan bulunur (areaAt): -1 = dış dünya YA DA alansız rezerv hücre (arka-sol) —
     // ikisi de "kapalı kenar" sayılır, duvar çizilir.
-    const leftN = zoneAt(col - 1, row);
-    const rightN = zoneAt(col + 1, row);
-    const backN = row === 0 ? zoneAt(col, 1) : -1; // ön sıranın arka komşusu
+    const leftN = areaAt(col - 1, row);
+    const rightN = areaAt(col + 1, row);
+    const backN = row === 0 ? areaAt(col, 1) : -1; // ön sıranın arka komşusu
     // Yatay (ön/arka) duvarların x uzanımı: dış/kilitli yan uçlarda m taşar (köşe kapanır),
     // açık yan komşuda tam kenarda biter (komşu kendi parçasını çizer — tema bölmesi).
     const xExtL = leftN === -1 || !isOpen(leftN) ? m : 0;
@@ -777,7 +779,7 @@ function Walls() {
     // SOL kenar (dış ya da kilitli komşu → duvar; açık yatay komşu → duvar YOK, D-023)
     if (leftN === -1 || !isOpen(leftN))
       pieces.push({ x: za.minX - m, z: (vz0 + vz1) / 2, w: t, d: vz1 - vz0, theme: th });
-    // SAĞ kenar (kilitliyken zone sınırına oturur = eski "kelepçe duvarı" davranışı)
+    // SAĞ kenar (kilitliyken alan sınırına oturur = eski "kelepçe duvarı" davranışı)
     if (rightN === -1 || !isOpen(rightN))
       pieces.push({ x: za.maxX + m, z: (vz0 + vz1) / 2, w: t, d: vz1 - vz0, theme: th });
     // ÖN kenar: ön sıra → dış duvar (z0'da kapı boşluğu); arka sıra → geçitli sıra-duvarı (aşağıda).
@@ -802,15 +804,15 @@ function Walls() {
     if (row === 1)
       pieces.push({ x: (hx0 + hx1) / 2, z: za.minZ - m, w: hx1 - hx0, d: t, theme: th });
   }
-  // L-şekil iç köşe dikmesi (yalnız 3 zone açıkken): z0 arka duvarı (z −5.8) ile z2 SOL duvarı
+  // L-şekil iç köşe dikmesi (yalnız 3 alan açıkken): a0 arka duvarı (z −5.8) ile a2 SOL duvarı
   // (x 4.8) çapraz buluşur — aradaki boşluk rezerv arka-sol arsaya bakar; dikme kapatır
   // (tamamen rezerv bölgede durur, açık alanlara taşmaz).
-  if (zonesOpen === 3) {
-    const bx = LAYOUT.zoneBorderX;
-    const bz = LAYOUT.zoneAreas[0].minZ;
+  if (areasOpen === 3) {
+    const bx = LAYOUT.areaBorderX;
+    const bz = LAYOUT.areaBounds[0].minZ;
     pieces.push({ x: bx - m / 2, z: bz - m / 2, w: m + t, d: m + t, theme: themeOf(0) });
   }
-  const frontEdgeZ = LAYOUT.zoneAreas[0].maxZ + m; // kapı sövesi referansı
+  const frontEdgeZ = LAYOUT.areaBounds[0].maxZ + m; // kapı sövesi referansı
   return (
     <group>
       <WallPanels slabs={pieces} />
@@ -844,7 +846,7 @@ function Street() {
   // kamera hareket ederken titreme biter. Sokak düzlemleri opak → altındaki zemini kapatır (boşluk görünmez).
   return (
     <group>
-      {/* kaldırım şeridi (TÜM cephe boyu — iki zone'un kapıları da buraya açılır) */}
+      {/* kaldırım şeridi (TÜM cephe boyu — alanların kapıları da buraya açılır) */}
       <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[6, 0.04, z1 + 1.2]}>
         <planeGeometry args={[40, 2.4]} />
         <meshStandardMaterial color="#9e9e9e" polygonOffset polygonOffsetFactor={-2} polygonOffsetUnits={-2} />
@@ -973,7 +975,7 @@ export function Scene() {
           DÜNYA (masa/oyuncu/mutfak) hiç kararmaz (kullanıcı bug'ı: "table2 açılınca sahne kararıyor"). */}
       <Suspense fallback={null}>
         <Pad />
-        <UpgradeZone />
+        <StationUpgradeSpots />
         <TableUpgradeMarkers />
       </Suspense>
       <CameraRig />

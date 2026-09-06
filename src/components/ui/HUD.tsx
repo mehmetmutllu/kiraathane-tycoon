@@ -3,7 +3,7 @@ import { useGame, tableThemeUnlocked, tableSoftMaxLevel } from '../../game/store
 import { perf } from '../../game/perf';
 import { screenPointer } from '../../game/screenPointer';
 import { fmt } from '../../game/decimal';
-import { levelProgress, economyConfig, MAX_ZONES } from '../../config/economy.config';
+import { levelProgress, economyConfig, MAX_AREAS } from '../../config/economy.config';
 import { floorSwatch, WALL_THEMES } from '../../config/palette';
 import {
   CoinIcon,
@@ -504,13 +504,13 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
   const stats = useGame((s) => s.stats);
   const lifetime = useGame((s) => s.lifetime);
   const tables = useGame((s) => s.tables);
-  const zonesOpen = useGame((s) => s.zonesOpen);
+  const areasOpen = useGame((s) => s.areasOpen);
   const tableLevels = useGame((s) => s.tableLevels);
   const xp = useGame((s) => s.xp);
   const lvl = levelProgress(xp);
 
   const masterTables = tableLevels.slice(0, tables).filter((l) => l >= tableSoftMaxLevel()).length;
-  const totalSlots = MAX_ZONES * 4;
+  const totalSlots = MAX_AREAS * 4;
 
   const goals: { key: string; name: string; cur: number; total: number; note: string }[] = [
     {
@@ -521,7 +521,7 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
       note: 'Elden ve garsonla yapılan toplam servis',
     },
     { key: 'clean', name: 'Temizlik', cur: stats.dishesWashed, total: 200, note: 'Yıkanan kirli bardak' },
-    { key: 'grow', name: 'Büyüme', cur: tables, total: totalSlots, note: `Açılan masa · salon ${zonesOpen}/${MAX_ZONES}` },
+    { key: 'grow', name: 'Büyüme', cur: tables, total: totalSlots, note: `Açılan masa · salon ${areasOpen}/${MAX_AREAS}` },
     {
       key: 'earn',
       name: 'Kazanç',
@@ -614,26 +614,26 @@ function RewardModal({
   );
 }
 
-/** Dekor mağazası (WP6 — feedback §D19): tema satırı = renk önizleme + ad + fiyat + zone uygula
- *  butonları (yalnız AÇIK zone'lar). İlk satın alma ₺ düşer; sahip olunan tema ücretsiz seçilir. */
+/** Dekor mağazası (WP6 — feedback §D19): tema satırı = renk önizleme + ad + fiyat + alan uygula
+ *  butonları (yalnız AÇIK alanlar). İlk satın alma ₺ düşer; sahip olunan tema ücretsiz seçilir. */
 function ShopPanel({ onClose }: { onClose: () => void }) {
-  const zonesOpen = useGame((s) => s.zonesOpen);
+  const areasOpen = useGame((s) => s.areasOpen);
   const tables = useGame((s) => s.tables);
   const tableLevels = useGame((s) => s.tableLevels);
-  const floorThemeByZone = useGame((s) => s.floorThemeByZone);
-  const wallThemeByZone = useGame((s) => s.wallThemeByZone);
+  const floorThemeByArea = useGame((s) => s.floorThemeByArea);
+  const wallThemeByArea = useGame((s) => s.wallThemeByArea);
   const tableTheme = useGame((s) => s.tableTheme);
   const ownedCosmetics = useGame((s) => s.ownedCosmetics);
   const [tab, setTab] = useState<'table' | 'floor' | 'wall'>('table');
   // Masa teması kilidi: 3 salon + tüm açık masalar max (kullanıcı kararı). Kilitliyse Masa sekmesi
   // satın alma yerine koşulu açıklayan kilit panelini gösterir.
-  const tableUnlocked = tableThemeUnlocked({ zonesOpen, tables, tableLevels });
+  const tableUnlocked = tableThemeUnlocked({ areasOpen, tables, tableLevels });
   const maxedTables = tableLevels.slice(0, tables).filter((l) => l >= tableSoftMaxLevel()).length;
   // Sekme başına ÖNİZLENEN çeşit (sayfa-içi önizleme bunu gösterir). Varsayılan = o an uygulanmış tema.
   const [sel, setSel] = useState<{ table: string; floor: string; wall: string }>(() => ({
     table: tableTheme,
-    floor: floorThemeByZone[0] ?? economyConfig.cosmetics.floorThemes[0].id,
-    wall: wallThemeByZone[0] ?? economyConfig.cosmetics.wallThemes[0].id,
+    floor: floorThemeByArea[0] ?? economyConfig.cosmetics.floorThemes[0].id,
+    wall: wallThemeByArea[0] ?? economyConfig.cosmetics.wallThemes[0].id,
   }));
 
   // MASA çeşitleri kaydırılabilir KART şeridi; karta tıkla → üstteki sayfa-içi önizlemeyi günceller.
@@ -669,13 +669,13 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
   // ZEMİN/DUVAR çeşitleri: çift-renk swatch'lı kartlar; karta tıkla → üstteki diorama önizlemeyi günceller.
   const renderThemeCards = (kind: 'floor' | 'wall') => {
     const themes = kind === 'floor' ? economyConfig.cosmetics.floorThemes : economyConfig.cosmetics.wallThemes;
-    const selected = kind === 'floor' ? floorThemeByZone : wallThemeByZone;
+    const selected = kind === 'floor' ? floorThemeByArea : wallThemeByArea;
     return themes.map((t) => {
       const cols =
         kind === 'floor'
           ? floorSwatch(t.id)
           : [WALL_THEMES[t.id]?.cream ?? '#999', WALL_THEMES[t.id]?.wainscot ?? '#777'];
-      const applied = selected.slice(0, zonesOpen).includes(t.id);
+      const applied = selected.slice(0, areasOpen).includes(t.id);
       const previewing = sel[kind] === t.id;
       return (
         <button
@@ -735,8 +735,8 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
               Tüm salonları aç ve bütün masaları son seviyeye getir; sonra masalarını renklendirebilirsin.
             </div>
             <div className="shop-locked-reqs">
-              <span className={zonesOpen >= MAX_ZONES ? 'req done' : 'req'}>
-                {zonesOpen >= MAX_ZONES ? '✓' : '•'} Salon {zonesOpen}/{MAX_ZONES}
+              <span className={areasOpen >= MAX_AREAS ? 'req done' : 'req'}>
+                {areasOpen >= MAX_AREAS ? '✓' : '•'} Salon {areasOpen}/{MAX_AREAS}
               </span>
               <span className={maxedTables >= tables && tables > 0 ? 'req done' : 'req'}>
                 {maxedTables >= tables && tables > 0 ? '✓' : '•'} Max masa {maxedTables}/{tables}

@@ -91,7 +91,7 @@ export function TeaStation({
 }
 
 /**
- * TOST TEZGÂHI (M3 — zone-3 ürün hattı istasyonu). Çay ocağıyla AYNI footprint/etkileşim
+ * TOST TEZGÂHI (M3 — tost servisinin istasyonu). Çay ocağıyla AYNI footprint/etkileşim
  * (collision/pickup/nav değişmez); görsel kimlik farklı: sac/ızgara + tost presi + ekmek kasası.
  * Seviye görseli: pres kapağı seviyeyle "ısınır" (renk) + L2'den itibaren ikinci pres.
  */

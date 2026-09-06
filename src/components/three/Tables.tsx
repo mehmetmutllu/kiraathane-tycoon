@@ -5,7 +5,8 @@ import { useGame } from '../../game/store';
 import { LAYOUT } from '../../game/store';
 import { Model } from './Model';
 import { PALETTE } from '../../config/palette';
-import { tableSeats, zoneOfTable, zoneProduct, tableThemeColor } from '../../config/economy.config';
+import { tableSeats, tableThemeColor } from '../../config/economy.config';
+import { serviceOfTable, serviceProduct } from '../../game/world';
 import { recoloredAtlas, atlasReady, onAtlasReady } from './recolor';
 import type { Vec3 } from '../../game/types';
 
@@ -319,7 +320,7 @@ function buildFurniture(tables: number, tableLevels: number[], clothTone: string
     if (!t) continue;
     const [x, , z] = t.table;
     const level = tableLevels[i] ?? 0;
-    const food = zoneProduct(zoneOfTable(i)) === 'tost';
+    const food = serviceProduct(serviceOfTable(i)) === 'tost';
     const bigTable = level >= 3;
     const tableKey: FKey = food
       ? bigTable
@@ -449,7 +450,7 @@ function GreyboxTables({ tables, tableLevels }: { tables: number; tableLevels: n
           x={t.table[0]}
           z={t.table[2]}
           level={tableLevels[i] ?? 0}
-          food={zoneProduct(zoneOfTable(i)) === 'tost'}
+          food={serviceProduct(serviceOfTable(i)) === 'tost'}
           greybox
         />
       ))}
@@ -457,7 +458,7 @@ function GreyboxTables({ tables, tableLevels }: { tables: number; tableLevels: n
   );
 }
 
-// Açık masaları çiz (instanced; glb yok/yüklenirken greybox). zone-2 masaları da otomatik buradan çizilir.
+// Açık masaları çiz (instanced; glb yok/yüklenirken greybox). diğer alanların masaları da otomatik buradan çizilir.
 export function Tables() {
   const tables = useGame((s) => s.tables);
   const tableLevels = useGame((s) => s.tableLevels);

@@ -377,8 +377,8 @@ export function QuestPhoto({ target, size = 44 }: { target: QuestTarget; size?: 
       inner = <TeaGlass />;
       break;
     case 'serveTea':
-      // Tost salonu görevi (v27): bardak değil TOST dilimi — "tost görevinde çay ikonu" karmaşası bitti.
-      if (target.zone === 2) {
+      // Tost alanı görevi (v27): bardak değil TOST dilimi — "tost görevinde çay ikonu" karmaşası bitti.
+      if (target.area === 2) {
         bg = '#a8682a';
         inner = <TostSlice />;
       } else {
@@ -410,7 +410,7 @@ export function QuestPhoto({ target, size = 44 }: { target: QuestTarget; size?: 
       }
       break;
     case 'stationLevel':
-      if (target.zone === 2) {
+      if (target.service === 2) {
         bg = '#a8682a';
         inner = <TostSlice />;
       } else {

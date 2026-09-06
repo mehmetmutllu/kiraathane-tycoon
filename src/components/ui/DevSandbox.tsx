@@ -17,8 +17,8 @@ import { useSandbox } from '../../game/devSandbox';
 import { D } from '../../game/decimal';
 import {
   economyConfig as C,
-  MAX_ZONES,
-  TABLES_PER_ZONE,
+  MAX_AREAS,
+  TABLES_PER_AREA,
   waiterTrayMaxTier,
   waiterSpeedMaxTier,
   dishCarryMaxTier,
@@ -98,11 +98,11 @@ export function DevSandbox() {
   const charUpgrades = useGame((s) => s.charUpgrades);
   const waiterUpgrades = useGame((s) => s.waiterUpgrades);
   const questIndex = useGame((s) => s.questIndex);
-  const zonesOpen = useGame((s) => s.zonesOpen);
+  const areasOpen = useGame((s) => s.areasOpen);
   const tables = useGame((s) => s.tables);
   const ownedCosmetics = useGame((s) => s.ownedCosmetics);
-  const floorThemeByZone = useGame((s) => s.floorThemeByZone);
-  const wallThemeByZone = useGame((s) => s.wallThemeByZone);
+  const floorThemeByArea = useGame((s) => s.floorThemeByArea);
+  const wallThemeByArea = useGame((s) => s.wallThemeByArea);
   const tableTheme = useGame((s) => s.tableTheme);
 
   // Sınırsız para: saniyede bir cüzdanı tepeye çeker (yükseltme fiyatı ne olursa olsun yeter).
@@ -172,7 +172,7 @@ export function DevSandbox() {
 
   const unlockAllCosmetics = () => {
     const ids: string[] = [];
-    for (let z = 0; z < MAX_ZONES; z++) {
+    for (let z = 0; z < MAX_AREAS; z++) {
       for (const t of C.cosmetics.floorThemes) ids.push(`floor:${t.id}:z${z}`);
       for (const t of C.cosmetics.wallThemes) ids.push(`wall:${t.id}:z${z}`);
     }
@@ -181,14 +181,14 @@ export function DevSandbox() {
   };
 
   const applyFloor = (z: number, id: string) => {
-    const arr = useGame.getState().floorThemeByZone.slice();
+    const arr = useGame.getState().floorThemeByArea.slice();
     arr[z] = id;
-    useGame.setState({ floorThemeByZone: arr });
+    useGame.setState({ floorThemeByArea: arr });
   };
   const applyWall = (z: number, id: string) => {
-    const arr = useGame.getState().wallThemeByZone.slice();
+    const arr = useGame.getState().wallThemeByArea.slice();
     arr[z] = id;
-    useGame.setState({ wallThemeByZone: arr });
+    useGame.setState({ wallThemeByArea: arr });
   };
 
   if (!open) {
@@ -199,14 +199,14 @@ export function DevSandbox() {
     );
   }
 
-  const padsByZone = [0, 1, 2].map((z) => C.pads.filter((p) => (p.zone ?? 0) === z));
+  const padsByArea = [0, 1, 2].map((a) => C.pads.filter((p) => (p.area ?? 0) === a));
 
   return (
     <div className="dsb">
       <header className="dsb-head">
         <span className="dsb-title">SANDBOX</span>
         <span className="dsb-meta">
-          salon {zonesOpen}/{MAX_ZONES} · masa {tables} · görev {questIndex}/{C.quests.length}
+          salon {areasOpen}/{MAX_AREAS} · masa {tables} · görev {questIndex}/{C.quests.length}
         </span>
         <button className="dsb-x" onClick={() => setSb({ open: false })}>
           ✕
@@ -252,7 +252,7 @@ export function DevSandbox() {
         </Row>
 
         <Row title="Çay ocağı / tezgâh seviyesi">
-          {Array.from({ length: MAX_ZONES }, (_, z) => (
+          {Array.from({ length: MAX_AREAS }, (_, z) => (
             <Stepper
               key={z}
               label={`Salon ${z + 1}`}
@@ -274,7 +274,7 @@ export function DevSandbox() {
             ))}
           </div>
           <div className="dsb-grid">
-            {Array.from({ length: MAX_ZONES * TABLES_PER_ZONE }, (_, i) => (
+            {Array.from({ length: MAX_AREAS * TABLES_PER_AREA }, (_, i) => (
               <Stepper
                 key={i}
                 label={`M${i + 1}`}
@@ -346,10 +346,10 @@ export function DevSandbox() {
             </button>
             <button onClick={() => setPads(C.pads.map((p) => p.id))}>hepsi</button>
           </div>
-          {padsByZone.map((list, z) =>
+          {padsByArea.map((list, a) =>
             list.length === 0 ? null : (
-              <div key={z} className="dsb-pads">
-                <span className="dsb-pads-z">S{z + 1}</span>
+              <div key={a} className="dsb-pads">
+                <span className="dsb-pads-z">S{a + 1}</span>
                 {list.map((p) => (
                   <button
                     key={p.id}
@@ -402,17 +402,17 @@ export function DevSandbox() {
           <div className="dsb-chips">
             <button onClick={unlockAllCosmetics}>hepsini aç</button>
           </div>
-          {Array.from({ length: MAX_ZONES }, (_, z) => (
+          {Array.from({ length: MAX_AREAS }, (_, z) => (
             <div key={z} className="dsb-cos">
               <span className="dsb-pads-z">S{z + 1}</span>
-              <select value={floorThemeByZone[z] ?? 'parke'} onChange={(e) => applyFloor(z, e.target.value)}>
+              <select value={floorThemeByArea[z] ?? 'parke'} onChange={(e) => applyFloor(z, e.target.value)}>
                 {C.cosmetics.floorThemes.map((t) => (
                   <option key={t.id} value={t.id}>
                     zemin: {t.label}
                   </option>
                 ))}
               </select>
-              <select value={wallThemeByZone[z] ?? 'krem'} onChange={(e) => applyWall(z, e.target.value)}>
+              <select value={wallThemeByArea[z] ?? 'krem'} onChange={(e) => applyWall(z, e.target.value)}>
                 {C.cosmetics.wallThemes.map((t) => (
                   <option key={t.id} value={t.id}>
                     duvar: {t.label}

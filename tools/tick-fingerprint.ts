@@ -10,6 +10,9 @@
  *   ...refactor...
  *   npx tsx tools/tick-fingerprint.ts > after.json
  *   diff before.json after.json
+ *
+ * ÖNEMLİ: çıktının ANAHTAR ADLARI ölçüm aracının SÖZLEŞMESİDİR — kod içindeki alan adı değişse de
+ * (Faz B1: zone → alan/servis) anahtar sabit kalır, böylece diff literal olarak boş çıkar.
  */
 import { useGame, LAYOUT } from '../src/game/store';
 import { economyConfig } from '../src/config/economy.config';
@@ -50,7 +53,7 @@ function snapshot(label: string) {
     xp: s.xp,
     tables: s.tables,
     stations: s.stations,
-    zonesOpen: s.zonesOpen,
+    zonesOpen: s.areasOpen,
     stationLevels: [...s.stationLevels],
     tableLevels: [...s.tableLevels],
     padsDone: [...s.padsDone],
@@ -62,8 +65,8 @@ function snapshot(label: string) {
     cleanCups: s.cleanCups,
     carriedDirty: s.carriedDirty,
     carriedDirtyFood: s.carriedDirtyFood,
-    readyCupsByZone: [...s.readyCupsByZone],
-    brewProgressByZone: s.brewProgressByZone.map((n) => round(n, 3)),
+    readyCupsByZone: [...s.readyCupsByService],
+    brewProgressByZone: s.brewProgressByService.map((n) => round(n, 3)),
     npcs: s.npcs.map((n) => ({
       id: n.id, state: n.state, tableIndex: n.tableIndex, seatIndex: n.seatIndex,
       timer: round(n.timer, 3), pos: n.pos.map((v) => round(v, 3)),
@@ -74,7 +77,16 @@ function snapshot(label: string) {
     waiters2: s.waiters2.map((w) => (w ? { tray: w.tray, state: w.state, pos: w.pos.map((v) => round(v, 3)) } : null)),
     dishwashers: s.dishwashers.map((w) => (w ? { tray: w.tray, state: w.state, pos: w.pos.map((v) => round(v, 3)) } : null)),
     player: s.player.map((v) => round(v, 3)),
-    stats: { ...s.stats, waiterServedByZone: [...s.stats.waiterServedByZone] },
+    // Anahtar adları SÖZLEŞME (bkz. dosya başlığı): iç alan adları değişse de çıktı sabit kalır.
+    stats: {
+      teaPickups: s.stats.teaPickups,
+      teasServed: s.stats.teasServed,
+      coinsCollected: s.stats.coinsCollected,
+      dishesWashed: s.stats.dishesWashed,
+      waiterServed: s.stats.waiterServed,
+      waiterServedByZone: [...s.stats.waiterServedByService],
+      teasServedByZone: [...s.stats.teasServedByArea],
+    },
     questIndex: s.questIndex,
     questBase: s.questBase,
     questPhase: s.questPhase,
@@ -83,11 +95,11 @@ function snapshot(label: string) {
     revealSeen: [...s.revealSeen],
     notice: s.notice ? { text: s.notice.text, kind: s.notice.kind } : null,
     noticeQueue: s.noticeQueue.map((n) => n.text),
-    activeZone: s.activeZone ? { kind: s.activeZone.kind, label: s.activeZone.label } : null,
+    activeZone: s.activeSpot ? { kind: s.activeSpot.kind, label: s.activeSpot.label } : null,
     camFocus: s.camFocus ? { pos: s.camFocus.pos.map((v) => round(v, 3)), ttl: round(s.camFocus.ttl, 3) } : null,
     nextId: s.nextId,
     spawnTimer: round(s.spawnTimer, 3),
-    spawnZone: s.spawnZone,
+    spawnZone: s.spawnArea,
   };
 }
 
@@ -139,7 +151,7 @@ out.push(snapshot('omurga-padleri'));
 
 // 4) Ocak + masa yükseltme noktaları (masa yükseltmesi table4 sonrası açılır).
 useGame.getState().addMoney(20000);
-at(LAYOUT.upgradeZones[0]); run(12);
+at(LAYOUT.stationUpgradeSpots[0]); run(12);
 at(LAYOUT.tables[0].upgradeSpot); run(12);
 at(LAYOUT.tables[2].upgradeSpot); run(12);
 out.push(snapshot('yukseltmeler'));

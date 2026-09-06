@@ -927,6 +927,52 @@ sayilari sayilinca ortaya cikti.
 
 ---
 
+## D-059 — B1 UYGULAMA KARARLARI: dort kavramin kodda nasil durdugu (2026-09-06)
+
+B1'de `ZONE` tek index'i ALAN / SERVIS / MASA / ODA olarak ayrildi (D-058'in 1. adimi).
+Uygulama sirasinda verilen kararlar:
+
+1. **Dort kavram TEK dosyada: `src/game/world.ts`.** `economy.config.ts` yalniz SAYI tutar
+   (data), `layout.ts` yalniz KOORDINAT, `world.ts` MODEL. `derivedFromPads` config'ten cikip
+   `deriveWorld` olarak buraya tasindi. Bagimlilik yonu: config → world → layout → tick/store.
+
+2. **Servis ↔ alan bagi tek sabit liste: `SERVICE_AREAS = [0, 1, 2]`.** "Servis index'i = alan
+   index'i" varsayimi koda dagilmasin diye. B2 bu listeyi `[0]` yapacak; `serviceInArea()` her
+   alan icin 0 dondurecek ve **cagiranlarin hicbiri degismeyecek**. B1'in asil kazanci budur.
+
+3. **Pad efekti ALANDA durur, personel etkisi o alanin SERVISINE gider.** `PadDef.zone → .area`
+   (pad'in fiziksel yeri); `hireWaiter`/`hireDishwasher` efektleri `serviceInArea(pad.area)` ile
+   servise cevrilir. Ayri bir `PadDef.service` alani ACILMADI — pad mekansal bir nesnedir,
+   hangi servise dokundugu alanindan turetilir.
+
+4. **Masa artik SAYAC degil LISTE.** `world.tables[i] = {index, areaIndex, serviceIndex}`.
+   `areaOfTable(i)` ile `serviceOfTable(i)` iki AYRI sorudur (bugun ayni cevap, B2'de ayrisir).
+   Bitisik-index degismezi yorumda degil, turetmenin kendisinde duruyor.
+
+5. **Pad ve gorev KIMLIKLERI B1'de DEGISMEDI** (`zone2`, `z2table2`, `q_zone2` …). Gerekce:
+   parmak izi `padsDone`'u dokumluyor; kimlik degisirse birebir karsilastirma imkansizlasirdi.
+   Zincir zaten B2/B3'te yeniden yazilacak — iki degisikligi ayni ada koymanin faydasi yok.
+
+6. **Fingerprint'in CIKTI ANAHTARLARI sozlesme sayildi.** Ic alan adi degisse de
+   (`zonesOpen → areasOpen`) cikti anahtari sabit kaldi → `diff` literal olarak bos cikabiliyor.
+   Olcum araci ile olculen sey ayri tutuldu.
+
+7. **Yalan adlar duzeltildi**, en onemlisi `activeZone → activeSpot`: bu alan bolge DEGIL,
+   "oyuncunun uzerinde durup doldurdugu nokta" demekti — kavram karisikligini buyuten adlardan biriydi.
+   Ayrica `upgradeZones → stationUpgradeSpots`, `teasServedByZone → teasServedByArea`,
+   `waiterServedByZone → waiterServedByService`, `floor/wallThemeByZone → *ByArea`,
+   quest hedefinde `stationLevel.zone → .service` ve `serveTea/tablesAtLevel .zone → .area`.
+
+**Olculdu:** tick parmak izi (2014 satir) BIREBIR ayni — taban, HEAD'in worktree'sinde ayni
+(duzeltilmis) araccla yeniden alindi. `simulate.ts` denge sayilari da birebir ayni.
+`save.ts` 751 → 188 satir (migrasyon silindi). Test 206 → 207. smoke 26/26.
+
+**Olcum aracinin kendi hatasi (kayda gecti):** fingerprint `{...s.stats}` sig kopya yaptigi icin
+`teasServedBy*` dizisi TUM anlik goruntulerde paylasilmisti; dort karenin dordu de son degeri
+gosteriyordu. Yani ilk alinan taban dosyasi sessizce yanlisti. Ders: refactor guvencesi,
+olcum aracinin da dogrulanmasini gerektirir.
+
+
 ## D-058 — FAZ B GECIS HARITASI: DORT KARAR (2026-09-06)
 
 Faz A kapandiktan sonra, Faz B'nin ilk isi olarak **maket v13'un alti adimi ile bugunku pad

@@ -13,10 +13,7 @@ import {
   requiresMet,
   tableUpgradeCost,
   tableSeats,
-  MAX_ZONES,
-  TABLES_PER_ZONE,
   PRODUCTS,
-  zoneProduct,
   charNextCost,
   waiterTrayNextCost,
   waiterSpeedNextCost,
@@ -29,26 +26,27 @@ import {
   type WaiterUpgrades,
 } from '../config/economy.config';
 import type { SaveStats } from './save';
-import { LAYOUT, ZONE_DZ, zoneRow, type RVec3 } from './layout';
+import { LAYOUT, AREA_DZ, areaRow, type RVec3 } from './layout';
+import { MAX_AREAS, TABLES_PER_AREA, serviceInArea, serviceProduct } from './world';
 
 // DWELL kanonik dolum-noktası id'leri (D-018 §2): pad'ler kendi id'sini kullanır; bunlar yükseltme
-// noktaları. Zone'lu öneklerdir: gerçek id = önek + index ('tea:0', 'tableUp:5').
+// noktaları. Önek + index biçimindedir ('tea:0' = SERVİS index'i, 'tableUp:5' = GLOBAL masa index'i).
 // (v29: 'waiterUp:' kalktı — garson hızı karakter panelinden satın alınır.)
-export const FILL_TEA = 'tea:'; // + zone index
+export const FILL_TEA = 'tea:'; // + SERVİS index
 export const FILL_TABLE = 'tableUp:'; // + GLOBAL masa index
 
-/** Zone z'nin garson pad id'si (per-zone personel; z>0 → 'z2waiter'/'z3waiter'). */
-export const waiterPadId = (z: number) => (z === 0 ? 'waiter' : `z${z + 1}waiter`);
+/** Alanın garson pad id'si (alan-başı personel; a>0 → 'z2waiter'/'z3waiter'). */
+export const waiterPadId = (area: number) => (area === 0 ? 'waiter' : `z${area + 1}waiter`);
 
-/** Zone z'nin çay-yükseltme noktası açık mı? (v21: her salonun KENDİ 2. masası önkoşul —
- *  upgradeRequiresByZone; zone-1 deseni aynalanır, "önce kapasite sonra verim".) */
-export function upgradeZoneUnlockedZ(z: number, g: GateState): boolean {
-  return requiresMet(C.teaStation.upgradeRequiresByZone[z], g);
+/** Servis noktasının ocak-yükseltmesi açık mı? (v21: o alanın KENDİ 2. masası önkoşul —
+ *  upgradeRequiresByArea; "önce kapasite sonra verim".) */
+export function stationUpgradeUnlocked(service: number, g: GateState): boolean {
+  return requiresMet(C.teaStation.upgradeRequiresByArea[service], g);
 }
 
-/** Zone z'nin masa yükseltmeleri açık mı? (v21: o salonun 4 masası da açılınca — per-zone D-019 §3.) */
-export function tableUpgradeUnlockedZ(z: number, g: GateState): boolean {
-  return requiresMet(C.tables.upgradeRequiresByZone[z], g);
+/** Alanın masa yükseltmeleri açık mı? (v21: o alanın 4 masası da açılınca — D-019 §3.) */
+export function tableUpgradeUnlockedIn(area: number, g: GateState): boolean {
+  return requiresMet(C.tables.upgradeRequiresByArea[area], g);
 }
 
 // KİMLİK KORUMA (P0 perf, 2026-09-06). `tick()` her karede diziyi/nesneyi kopyalayıp tek `set()`
@@ -117,16 +115,16 @@ export function brewThroughputMult(level: number): number {
 }
 
 /** Bir birim ürünün hazırlanma süresi (sn) — throughput arttıkça kısalır. prepTime verilmezse çay
- *  (geri uyum: eski çağıranlar/testler); tost zone'u PRODUCTS.tost.prepTime geçer (M3). */
+ *  (geri uyum: eski çağıranlar/testler); tost servisi PRODUCTS.tost.prepTime geçer (M3). */
 export function brewTime(level: number, prepTime: number = C.npc.orderTime): number {
   return prepTime / brewThroughputMult(level);
 }
 
-/** GLOBAL bardak havuzu kapasitesi: açık zone başına taban + açık ocak seviyeleri toplamı (Faz 3a). */
-export function totalCupPool(zonesOpen: number, stationLevels: number[]): number {
+/** GLOBAL bardak havuzu kapasitesi: açık SERVİS başına taban + açık ocak seviyeleri toplamı (Faz 3a). */
+export function totalCupPool(openServices: number, stationLevels: number[]): number {
   let lv = 0;
-  for (let z = 0; z < zonesOpen; z++) lv += stationLevels[z] ?? 0;
-  return zonesOpen * C.cups.poolBase + C.cups.poolPerLevel * lv;
+  for (let sv = 0; sv < openServices; sv++) lv += stationLevels[sv] ?? 0;
+  return openServices * C.cups.poolBase + C.cups.poolPerLevel * lv;
 }
 
 /** ₺ ile çıkılabilen en yüksek masa seviyesi (💎 "Usta" katmanı Faz D'de gelecek). */
@@ -137,25 +135,25 @@ export const tableSoftMaxLevel = () => C.tables.upgrade.maxLevel;
  * MAX seviye olunca açılır ("seviyeler fullenince"). Başta masalar renksiz (native mavi); tüm ilerleme
  * tamamlanınca premium renk teması satın alınabilir. Zemin/duvar temaları bu kilitten etkilenmez.
  */
-export function tableThemeUnlocked(g: { zonesOpen: number; tables: number; tableLevels: number[] }): boolean {
-  if (g.zonesOpen < MAX_ZONES || g.tables <= 0) return false;
+export function tableThemeUnlocked(g: { areasOpen: number; tables: number; tableLevels: number[] }): boolean {
+  if (g.areasOpen < MAX_AREAS || g.tables <= 0) return false;
   const max = tableSoftMaxLevel();
   for (let i = 0; i < g.tables; i++) if ((g.tableLevels[i] ?? 0) < max) return false;
   return true;
 }
 /** Mevcut seviyeden bir sonraki masa yükseltmesinin maliyeti (₺). */
-export const tableNextCost = (level: number, zone = 0) => tableUpgradeCost(level, zone);
-/** Zone-1 masa yükseltme gate'i (geri uyum: testler/eski çağıranlar; per-zone için tableUpgradeUnlockedZ). */
-export function tableUpgradeZoneUnlocked(g: GateState): boolean {
-  return tableUpgradeUnlockedZ(0, g);
+export const tableNextCost = (level: number, area = 0) => tableUpgradeCost(level, area);
+/** 1. alanın masa yükseltme gate'i (geri uyum: testler/eski çağıranlar). */
+export function tableUpgradeUnlocked(g: GateState): boolean {
+  return tableUpgradeUnlockedIn(0, g);
 }
 
 /** Çevrimdışı gelir oranı (₺/sn) — bottleneck idealize: oturma × ürün fiyatı / döngü.
- *  M3: zone verilirse o zone'un ÜRÜNÜ (tost pahalı+yavaş) hesaba girer.
- *  2026-06-11 (kullanıcı): masa BAHŞİŞLERİ de orana dahil — tipTotal = o zone'un açık masalarının
+ *  M3: servis verilirse o servisin ÜRÜNÜ (tost pahalı+yavaş) hesaba girer.
+ *  2026-06-11 (kullanıcı): masa BAHŞİŞLERİ de orana dahil — tipTotal = o servise bağlı açık masaların
  *  Σ(tipBase × seviye); ilerleme (masa yükseltme) offline kazancı da büyütür. */
-export function incomeRate(tables: number, level: number, z = 0, tipTotal = 0): number {
-  const prod = PRODUCTS[zoneProduct(z)];
+export function incomeRate(tables: number, level: number, service = 0, tipTotal = 0): number {
+  const prod = PRODUCTS[serviceProduct(service)];
   const cycle = C.npc.walkTime + brewTime(level, prod.prepTime) + C.npc.eatTime;
   return (tables * prod.price + tipTotal) / cycle;
 }
@@ -190,25 +188,25 @@ export function occupiedSeats(npcs: Npc[]): Map<number, Set<number>> {
   return occ;
 }
 
-/** Grup hedefi (Y2, plan §2 + dağılım fix'i): zone'lar ROUND-ROBIN pay alır — global "en çok
- *  boş koltuk" araması, az koltuklu yeni salonu (tost L0=1 koltuk) çay salonlarına karşı sürekli
- *  kaybettirip AÇ bırakıyordu (q_tost5 ilerleyemiyordu). startZone'dan başlayarak boş koltuğu
- *  olan İLK zone seçilir; zone İÇİNDE en çok boş koltuklu temiz masa (eşitlikte düşük index).
+/** Grup hedefi (Y2, plan §2 + dağılım fix'i): ALANLAR ROUND-ROBIN pay alır — global "en çok
+ *  boş koltuk" araması, az koltuklu yeni alanı (tost L0=1 koltuk) çay alanlarına karşı sürekli
+ *  kaybettirip AÇ bırakıyordu (q_tost5 ilerleyemiyordu). startArea'dan başlayarak boş koltuğu
+ *  olan İLK alan seçilir; alan İÇİNDE en çok boş koltuklu temiz masa (eşitlikte düşük index).
  *  Hiç boş koltuk yoksa -1. */
 export function findTableForGroup(
   occ: Map<number, Set<number>>,
   tables: number,
   dirty: Set<number>,
   tableLevels: number[],
-  zonesOpen: number,
-  startZone: number,
+  areasOpen: number,
+  startArea: number,
 ): number {
-  for (let dz = 0; dz < zonesOpen; dz++) {
-    const z = (startZone + dz) % zonesOpen;
+  for (let da = 0; da < areasOpen; da++) {
+    const a = (startArea + da) % areasOpen;
     let best = -1;
     let bestFree = 0;
-    const end = Math.min((z + 1) * TABLES_PER_ZONE, tables);
-    for (let i = z * TABLES_PER_ZONE; i < end; i++) {
+    const end = Math.min((a + 1) * TABLES_PER_AREA, tables);
+    for (let i = a * TABLES_PER_AREA; i < end; i++) {
       if (dirty.has(i)) continue;
       const free = tableSeats(tableLevels[i] ?? 0) - (occ.get(i)?.size ?? 0);
       if (free > bestFree) {
@@ -221,8 +219,8 @@ export function findTableForGroup(
   return -1;
 }
 
-/** Oyuncunun o an üstünde durduğu/doldurduğu zone (HUD'da alttaki bar). */
-export interface ActiveZone {
+/** Oyuncunun o an üstünde durduğu/doldurduğu NOKTA (HUD'da alttaki bar). */
+export interface ActiveSpot {
   kind: 'pad' | 'upgrade';
   label: string;
   fill: number;
@@ -240,24 +238,25 @@ export interface GameNotice {
 }
 
 /**
- * Şu an açık olan "yeni-özellik" reveal anahtarları (D-019 §4) — v21'den beri ZONE-BAŞINA
- * (kullanıcı 2026-06-12: zone-2 yükseltmeleri de düzenli açılsın + bildirilsin). Bir anahtar
+ * Şu an açık olan "yeni-özellik" reveal anahtarları (D-019 §4) — v21'den beri ALAN/SERVİS BAŞINA
+ * (kullanıcı 2026-06-12: 2. alanın yükseltmeleri de düzenli açılsın + bildirilsin). Bir anahtar
  * revealSeen'de YOKKEN belirirse toast + kamera panı tetiklenir. revealSeen baseline init'te
  * mevcut açık özelliklerle kurulur → yeniden yüklemede zaten açık olanlar tekrar bildirmez.
  * Dönen üçlü: [anahtar, metin, pan hedefi (null = pan yok)].
  */
 export function revealKeys(
   g: GateState,
-  zonesOpen: number,
+  areasOpen: number,
   stationLevels: number[],
 ): [string, string, RVec3 | null][] {
   const out: [string, string, RVec3 | null][] = [];
-  const pre = (z: number) => (z === 0 ? '' : `Salon ${z + 1}: `);
-  for (let z = 0; z < zonesOpen; z++) {
-    if (upgradeZoneUnlockedZ(z, g) && (stationLevels[z] ?? 0) < stationSoftMaxLevel())
-      out.push([`upgrade:${z}`, `Yeni: ${pre(z)}Çay ocağını yükseltebilirsin ☕`, LAYOUT.upgradeZones[z]]);
-    if (tableUpgradeUnlockedZ(z, g))
-      out.push([`tableUp:${z}`, `Yeni: ${pre(z)}Masaları yükseltebilirsin 🪑`, LAYOUT.tables[z * TABLES_PER_ZONE].upgradeSpot]);
+  const pre = (a: number) => (a === 0 ? '' : `Salon ${a + 1}: `);
+  for (let a = 0; a < areasOpen; a++) {
+    const sv = serviceInArea(a);
+    if (sv >= 0 && stationUpgradeUnlocked(sv, g) && (stationLevels[sv] ?? 0) < stationSoftMaxLevel())
+      out.push([`upgrade:${sv}`, `Yeni: ${pre(a)}Çay ocağını yükseltebilirsin ☕`, LAYOUT.stationUpgradeSpots[sv]]);
+    if (tableUpgradeUnlockedIn(a, g))
+      out.push([`tableUp:${a}`, `Yeni: ${pre(a)}Masaları yükseltebilirsin 🪑`, LAYOUT.tables[a * TABLES_PER_AREA].upgradeSpot]);
   }
   for (const op of availableOptionalPads(g)) out.push([`opt:${op.id}`, `Yeni: ${op.label} 🔓`, null]);
   return out;
@@ -284,9 +283,9 @@ export function availableOptionalPads(g: GateState): PadDef[] {
   );
 }
 
-/** Zone-1 istasyon yükseltme gate'i (geri uyum: testler/eski çağıranlar; per-zone için upgradeZoneUnlockedZ). */
-export function upgradeZoneUnlocked(g: GateState): boolean {
-  return upgradeZoneUnlockedZ(0, g);
+/** İlk servisin ocak-yükseltme gate'i (geri uyum: testler/eski çağıranlar). */
+export function stationUpgradeUnlocked0(g: GateState): boolean {
+  return stationUpgradeUnlocked(0, g);
 }
 
 // ============================== QUEST MOTORU (2026-06-09) ==============================
@@ -297,7 +296,7 @@ export function upgradeZoneUnlocked(g: GateState): boolean {
 /** Quest değerlendirme bağlamı (salt-okunur anlık görüntü). */
 export interface QuestCtx {
   padsDone: string[];
-  /** Zone başına ocak seviyesi (v27: zone'lu stationLevel görevleri — "Salon 2'nin ocağını yükselt"). */
+  /** SERVİS başına ocak seviyesi (v27: servisli stationLevel görevleri — "Salon 2'nin ocağını yükselt"). */
   stationLevels: number[];
   tableLevels: number[];
   stats: SaveStats;
@@ -313,8 +312,8 @@ export function questCounterValue(target: QuestTarget, stats: SaveStats): number
   switch (target.type) {
     case 'pickupTea': return stats.teaPickups;
     case 'serveTea':
-      // zone'lu hedef (v23): yalnız o salonun el servisi sayılır ("Yeni salonda 5 çay" gerçek olsun).
-      return target.zone != null ? stats.teasServedByZone[target.zone] ?? 0 : stats.teasServed;
+      // ALAN'lı hedef (v23): yalnız o alandaki el servisi sayılır ("Yeni salonda 5 çay" gerçek olsun).
+      return target.area != null ? stats.teasServedByArea[target.area] ?? 0 : stats.teasServed;
     case 'collectCoin': return stats.coinsCollected;
     case 'washDish': return stats.dishesWashed;
     default: return null;
@@ -330,14 +329,14 @@ export function questTargetMet(target: QuestTarget, ctx: QuestCtx): boolean {
   }
   switch (target.type) {
     case 'pad': return ctx.padsDone.includes(target.id);
-    case 'stationLevel': return (ctx.stationLevels[target.zone ?? 0] ?? 0) >= target.level;
+    case 'stationLevel': return (ctx.stationLevels[target.service ?? 0] ?? 0) >= target.level;
     case 'waiterSpeed':
       return (target.kind === 'tea' ? ctx.waiterUpgrades.teaSpeed : ctx.waiterUpgrades.tostSpeed) >= target.tier;
     case 'tableLevel': return ctx.tableLevels.some((l) => l >= target.level);
     case 'tablesAtLevel': {
-      // zone verilirse yalnız o salonun masa slotları; verilmezse tüm masalar (v27 çeşitlilik).
-      const lvls = target.zone != null
-        ? ctx.tableLevels.slice(target.zone * TABLES_PER_ZONE, (target.zone + 1) * TABLES_PER_ZONE)
+      // area verilirse yalnız o alanın masa slotları; verilmezse tüm masalar (v27 çeşitlilik).
+      const lvls = target.area != null
+        ? ctx.tableLevels.slice(target.area * TABLES_PER_AREA, (target.area + 1) * TABLES_PER_AREA)
         : ctx.tableLevels;
       return lvls.filter((l) => (l ?? 0) >= target.level).length >= target.count;
     }
@@ -392,36 +391,37 @@ export function questView(q: QuestDef, ctx: QuestCtx): QuestView {
   };
 }
 
-/** Görev hedefinin DÜNYA konumu (kamera odak + işaret görünürlüğü). zone = görevin salonu
- *  (2026-06-11 fix: z2 görevlerinde kamera zone-1'e zoom atıyordu — hedefler zone-1 alias'larına sabitti).
+/** Görev hedefinin DÜNYA konumu (kamera odak + işaret görünürlüğü). area = görevin ALANI
+ *  (2026-06-11 fix: 3. alanın görevlerinde kamera 1. alana zoom atıyordu — hedefler alias'lara sabitti).
  *  charStat görevlerinde 3D hedef YOK → null (kamera sıçramaz; yönlendirme HUD buton efektiyle). */
-export function questFocusPos(target: QuestTarget, tableLevels: number[], tables: number, zone = 0): RVec3 | null {
-  const z = Math.min(Math.max(zone, 0), MAX_ZONES - 1);
+export function questFocusPos(target: QuestTarget, tableLevels: number[], tables: number, area = 0): RVec3 | null {
+  const a = Math.min(Math.max(area, 0), MAX_AREAS - 1);
+  const sv = Math.max(0, serviceInArea(a)); // alanın servis noktası (B2'de hep 0 olacak)
   switch (target.type) {
     case 'charStat': return null;
     case 'waiterTray': return null; // panel satın alımı — 3D hedef yok (charStat deseni)
     case 'waiterSpeed': return null; // v29: hız da panelden — 3D hedef yok
-    case 'pickupTea': return LAYOUT.stations[z];
-    case 'washDish': return LAYOUT.dishStations[z];
-    case 'pad': return LAYOUT.padPos[target.id] ?? LAYOUT.stations[z];
-    case 'stationLevel': return LAYOUT.upgradeZones[target.zone ?? z];
+    case 'pickupTea': return LAYOUT.stations[sv];
+    case 'washDish': return LAYOUT.dishStations[sv];
+    case 'pad': return LAYOUT.padPos[target.id] ?? LAYOUT.stations[sv];
+    case 'stationLevel': return LAYOUT.stationUpgradeSpots[target.service ?? sv];
     case 'tableLevel':
     case 'tablesAtLevel': {
-      // O zone'dan başlayarak hedef seviyenin ALTINDAKİ ilk açık masanın yükseltme noktası
+      // O alandan başlayarak hedef seviyenin ALTINDAKİ ilk açık masanın yükseltme noktası
       // (tablesAtLevel v27: oyuncuyu gerçekten yükseltilecek masaya götürür).
       const goal = target.type === 'tablesAtLevel' ? target.level : tableSoftMaxLevel();
-      const z0 = target.type === 'tablesAtLevel' && target.zone != null ? target.zone : z;
-      for (let i = z0 * TABLES_PER_ZONE; i < tables; i++) {
+      const a0 = target.type === 'tablesAtLevel' && target.area != null ? target.area : a;
+      for (let i = a0 * TABLES_PER_AREA; i < tables; i++) {
         if ((tableLevels[i] ?? 0) < goal) return LAYOUT.tables[i].upgradeSpot;
       }
-      return LAYOUT.tables[Math.min(z0 * TABLES_PER_ZONE, tables - 1) || 0].upgradeSpot;
+      return LAYOUT.tables[Math.min(a0 * TABLES_PER_AREA, tables - 1) || 0].upgradeSpot;
     }
-    // serveTea → o salonun OCAĞI/TEZGÂHI (2026-06-12 telefon feedback: salon ortası boştu —
+    // serveTea → o alanın OCAĞI/TEZGÂHI (2026-06-12 telefon feedback: salon ortası boştu —
     // özellikle yeni açılan salonda kamera "hiçbir şeye" bakıyordu); collectCoin → masa bölgesi ortası.
-    case 'serveTea': return LAYOUT.stations[z];
+    case 'serveTea': return LAYOUT.stations[sv];
     default: {
-      const za = LAYOUT.zoneAreas[z];
-      return [(za.minX + za.maxX) / 2, 0, 1.5 - zoneRow(z) * ZONE_DZ]; // arka sıra kaydırılır (M2)
+      const ab = LAYOUT.areaBounds[a];
+      return [(ab.minX + ab.maxX) / 2, 0, 1.5 - areaRow(a) * AREA_DZ]; // arka sıra kaydırılır (M2)
     }
   }
 }
@@ -475,9 +475,9 @@ export function computeOfflineEarned(rate: number, elapsedSec: number, padsDone:
 
 /** ₺ ile çıkılabilen en yüksek istasyon seviyesi (L5 = Usta, 💎/video — Faz 4). */
 export const stationSoftMaxLevel = () => C.teaStation.upgrade.maxLevel;
-/** Mevcut seviyeden bir sonraki ₺ yükseltmenin maliyeti (çay eğrisi; zone-farkındalı için *Z). */
+/** Mevcut seviyeden bir sonraki ₺ yükseltmenin maliyeti (çay eğrisi; servis-farkındalı için *At). */
 export const stationUpgradeCost = (level: number) => upgradeCost(C.teaStation.upgrade, level + 1);
-/** Zone'un istasyon yükseltme maliyeti: çay eğrisi × ürünün upgradeCostMult'u (M3 — tost tezgâhı
+/** Servisin istasyon yükseltme maliyeti: çay eğrisi × ürünün upgradeCostMult'u (M3 — tost tezgâhı
  *  geç-oyun, çay eğrisi orada komik ucuz kalırdı). */
-export const stationUpgradeCostZ = (z: number, level: number) =>
-  Math.floor(upgradeCost(C.teaStation.upgrade, level + 1) * PRODUCTS[zoneProduct(z)].upgradeCostMult);
+export const stationUpgradeCostAt = (service: number, level: number) =>
+  Math.floor(upgradeCost(C.teaStation.upgrade, level + 1) * PRODUCTS[serviceProduct(service)].upgradeCostMult);

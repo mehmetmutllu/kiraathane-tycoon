@@ -1092,7 +1092,7 @@ sapması) + `tile` (0,7 kare); derz **çizgi değil boşluk**. Sonra G3 duvar bi
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Referans: ikravakfi Mali Takip Panosu (f467bc3f) — iskelet alındı, görsel imza kıraathanenin.
 
-**Oturum bütçesi (TOPLAM 65 · YAPILAN 39 · %60):**
+**Oturum bütçesi (TOPLAM 65 · YAPILAN 43 · %66):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -1106,13 +1106,13 @@ Referans: ikravakfi Mali Takip Panosu (f467bc3f) — iskelet alındı, görsel i
 | **Kuruluş toplam** | | **28/28 ✅** |
 | Yayın programı (1 Eyl →) | P plan ve maket | 6/6 ✅ |
 | | **G görsel taban** | **4/4 ✅** (G0 ışık · G1 gölge modeli = gölgesiz · G2 zemin geometrisi · G3 duvar bitimi) |
-| | A temizlik | 0/3 ⏳ |
-| | B model geçişi | 0/5 ⏳ |
+| | A temizlik | 3/3 ✅ |
+| | **B model geçişi** | **1/5 🔧** (B1 model dönüşümü — parmak izi birebir aynı) |
 | | C zincir ve denge | 0/5 ⏳ |
 | | D meta katman | 0/5 ⏳ |
 | | E arayüz ve cila | 1/4 🔧 |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **11/37** |
+| **Program toplam** | | **15/37** |
 
 Kuruluş dönemi sayısı **commit kaydından türetildi** (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. Panoda bu açıkça yazıyor.
@@ -1286,7 +1286,7 @@ yerleşim taşınırken de kullanılacak. Kullanım dosya başında.
 maket ölçeğine taşı (artık tek dosya: `layout.ts`), (3) kayıt v31 + migrasyon, (4) G4/G5 KayKit.
 Faz G artığı: UI Canvas'ları hâlâ eski düz ışıkla.
 
-## Faz B — Model geçişi 🔧 (1/6 · harita çıktı, kod yazılmadı)
+## Faz B — Model geçişi 🔧 (2/6 · B0 harita + B1 model dönüşümü bitti)
 
 ### B0 — Adım haritası + dört karar ✅ (2026-09-06)
 - ✅ **Maket v13'ün altı adımı ↔ bugünkü pad zinciri eşleştirildi.** Rapor `docs/faz-b-harita.html`
@@ -1304,10 +1304,32 @@ Faz G artığı: UI Canvas'ları hâlâ eski düz ışıkla.
   **temiz sıfırlama, migrasyon YOK** (ayarlar korunur; "ilerleme kaybolmaz" kuralı v1.0'dan itibaren
   bağlayıcı) · (4) **B3'ün yerleşimi kadraj onayı alınmadan yazılmaz**.
 
-### B1 — Model dönüşümü, içerik SABİT ⏳
-`ZONE` → `ALAN / SERVİS / MASA / ODA`; masa listesi türetilir; servis noktası alandan ayrılır.
-İçerik hâlâ 3 alan × 4 masa, 3 servis noktası → **kabul kriteri: tick parmak izi birebir aynı.**
-Kayıt v31 (temiz sıfırlama + test) bu adımda.
+### B1 — Model dönüşümü, içerik SABİT ✅ (2026-09-06 gece)
+`ZONE` → **`ALAN / SERVİS / MASA / ODA`**. İçerik değişmedi (3 alan × 4 masa, 3 servis).
+- **YENİ `src/game/world.ts` (217 satır)** — dört kavramın tek tanımı + `deriveWorld(padsDone)`.
+  `Area{index,open}` · `Service{index,areaIndex,open,product,waiters,hasDishwasher}` ·
+  `Table{index,areaIndex,serviceIndex}` · `Room{id,kind,areaIndex,open}` (B4'e kadar boş).
+  **Servis↔alan bağı TEK yerde:** `SERVICE_AREAS=[0,1,2]`; B2 bunu `[0]` yapınca alan açmak
+  artık servis açmaz ve çağıranlar değişmez.
+- **Masa artık SAYAÇ değil LİSTE:** `world.tables` her masanın alanını ve servisini AYRI taşır.
+  `areaOfTable(i)` ile `serviceOfTable(i)` iki ayrı soru (bugün aynı cevap, B2'de ayrışacak).
+- **`layout.ts` dizileri hangi kavrama ait olduğunu SÖYLER:** `stations/dishStations/waiterHomes/
+  stationPickups/stationUpgradeSpots/stationHalves` SERVİSE, `areaBounds/entrances/tables` ALANA
+  göre index'li. `openServices(areasOpen)` tek geçit; `zoneCol/zoneAt/zonePoint → areaCol/areaAt/areaPoint`.
+- **Yalan adlar düzeltildi:** `activeZone → activeSpot` (aslında "üstünde durulan nokta", bölge değil) ·
+  `upgradeZones → stationUpgradeSpots` · `teasServedByZone → teasServedByArea` ·
+  `waiterServedByZone → waiterServedByService` · `floor/wallThemeByZone → *ByArea` ·
+  quest hedefi `stationLevel.zone → .service`, `serveTea/tablesAtLevel .zone → .area`.
+- **Kayıt v31 (D-058 karar 3): MİGRASYON YOK.** `migrate()` (520 satır) silindi, yerine
+  `resetKeepingSettings()` (ilerleme sıfır, ayarlar korunur). **`save.ts` 751 → 188 satır.**
+- **KABUL KRİTERİ KARŞILANDI:** `tools/tick-fingerprint.ts` çıktısı (2014 satır) **birebir aynı** —
+  HEAD worktree'sinde aynı ölçüm aracıyla yeniden alınıp karşılaştırıldı, tek karakter fark yok.
+  `npx tsx tools/simulate.ts` **denge sayıları da birebir aynı** (tek fark başlık metni).
+- **Ölçüm aracı düzeltmesi:** fingerprint `{...s.stats}` sığ kopya olduğundan `teasServedBy*` dizisi
+  TÜM anlık görüntülerde paylaşılıyordu (hepsi son değeri gösteriyordu). Artık her alan açıkça
+  kopyalanıyor; çıktı ANAHTAR ADLARI ise sözleşme sayılıp sabit tutuluyor (iç ad değişse de diff literal).
+- **Testler:** 206 → **207** (32 migrasyon testi kalktı, 33 yeni test geldi: dünya modeli ayrışması
+  20 + v31 sıfırlama 9 + gating/reveal/gelir ayrımı 3). smoke 26/26, build temiz, eslint 16 → 15.
 
 ### B2 — Servis tekilleşir ⏳
 3 ocak → 1 servis noktası (L1-L3 çay ocağı · L4 tezgâh · L5 tost · L6 son ₺); ürün seviyeden gelir;

@@ -6,7 +6,13 @@
  * yerleşimi kullanabilir; store.ts bu modülü yeniden dışa aktarır (eski importlar çalışır).
  */
 import type { Vec3 } from './types';
-import { MAX_ZONES, zoneOfTable, zoneProduct } from '../config/economy.config';
+import {
+  MAX_AREAS,
+  MAX_SERVICES,
+  SERVICE_AREAS,
+  serviceOfTable,
+  serviceProduct,
+} from './world';
 import { buildNavGrid, findNavPath, type NavGrid, type NavSolid } from './nav';
 
 export type RVec3 = readonly [number, number, number];
@@ -38,57 +44,62 @@ export const PAD_RADIUS = 1.3;
 export const TABLE_UP_RADIUS = 1.0;
 
 // ---- Sahne yerleşimi (dünya birimi, zemin y=0) ----
-// Her pad/zone, açtığı/etkilediği objenin TAM yerinde durur (mekânsal tycoon).
+// Her pad, açtığı/etkilediği objenin TAM yerinde durur (mekânsal tycoon).
 // FAZ 2 REDESIGN v6 (D-017 §1, kullanıcı feedback 2026-06-07: "tek noktada çay-al+servis yapılıyor, yürüme
 // döngüsü yok"): MUTFAK ARKA DUVARDA KÜME (ocak+bulaşık+semaver bitişik, AYRILMAZ); MASALAR ÖNE UZAK 2×2 →
 // her masa↔ocak mesafesi >2R=3.2 (ön sıra ~4.9, hedef ~5) → tek noktada "çay-al+servis" veya "kirli-al+yıka"
 // İMKÂNSIZ, yürüme döngüsü ZORLANIR. Orta geniş koridor (kolon ±2.4, gap 4.8). Collision: oyuncu mobilya+
 // sandalye+aktör (HAPSETMEZ); garson/bulaşıkçı masa gövdelerinden GERÇEK rota ile dolaşır (nav.ts BFS).
-// --- ZONE ŞABLONU (Faz 3a + D-022): zone-1 iç yerleşimi = bugüne kadarki mutlak koordinatlar.
-// Global düz diziler (tables 8 slot, stations[2], ...) eski kodun index mantığını korur
-// (zone z → masa slotları [z*4, z*4+4)).
+// --- ALAN ŞABLONU (Faz 3a + D-022): 1. alanın iç yerleşimi = bugüne kadarki mutlak koordinatlar.
+// Faz B1: düz diziler artık hangi kavrama ait olduğunu SÖYLER — ALANA göre index'lenenler
+// (areaBounds, entrances, tables) ile SERVİSE göre index'lenenler (stations, dishStations,
+// stationPickups, waiterHomes, stationUpgradeSpots) ayrıdır. Bugün ikisi 1:1; B2'de servis
+// tekilleşince yalnız SERVICE_AREAS listesi değişir, buradaki diziler kendiliğinden takip eder.
 // Kullanıcı feedback (2026-06-11): bölme duvarı kalkınca iki salon arasında ölü boşluk kaldı →
-// zone'lar bitişik (zone-1 maxX = zone-2 minX = 5.3; duvar YOK, sınır zemin çizgisi).
-// --- YERLEŞİM v3 (2026-06-11 kullanıcı feedback'i, D-025): PER-ZONE MUTFAK + AYNALI ŞABLON.
-// Şikayetler: (a) çay ocağı + bulaşık tek köşede küme; (b) zone-2 servisi sol şeritten → garson turu
-// ~19sn > sabır 18sn (müşteri kalkar); (c) yükseltme pad alanı dar; (d) masa pad'leri ocağa giriyor;
-// (e) ekran alt duvara yakın, üstler boş. Çözüm: HER salonun çay ocağı KENDİ yan duvarında
-// (z1 sol / z2 sağ = şablonun zone merkezine göre AYNALISI), bulaşık ARKA duvarda (ocaktan ayrı),
+// alanlar bitişik (1. alanın maxX'i = 2. alanın minX'i = 5.3; duvar YOK, sınır zemin çizgisi).
+// --- YERLEŞİM v3 (2026-06-11 kullanıcı feedback'i, D-025): ALAN-BAŞI MUTFAK + AYNALI ŞABLON.
+// Şikayetler: (a) çay ocağı + bulaşık tek köşede küme; (b) 2. alanın servisi sol şeritten → garson
+// turu ~19sn > sabır 18sn (müşteri kalkar); (c) yükseltme pad alanı dar; (d) masa pad'leri ocağa
+// giriyor; (e) ekran alt duvara yakın, üstler boş. Çözüm: HER alanın çay ocağı KENDİ yan duvarında
+// (a0 sol / a1 sağ = şablonun alan merkezine göre AYNALISI), bulaşık ARKA duvarda (ocaktan ayrı),
 // masalar sağa+yukarı kaydı, masa pad'leri masanın kapı-tarafı ÇAPRAZINDA (ocak tarafında değil).
-// Garson/bulaşıkçı turu artık zone'dan bağımsız kısa (z2 ocak→en uzak masa ≈ 8.8 birim ≈ z1 ile aynı).
-const ZONE_DX = 10.6;
+// Garson/bulaşıkçı turu artık alandan bağımsız kısa (a1 ocak→en uzak masa ≈ 8.8 br ≈ a0 ile aynı).
+const AREA_DX = 10.6;
 // M2 (2026-06-12, onaylı plan): kat 2×2 IZGARA. Revizyon (2026-06-11 kullanıcı): z2 (TOST)
-// arka-SAĞA taşındı; arka-sol hücre REZERV arsa (zone yok — içerik sonra tasarlanacak).
-// z0 ön-sol, z1 ön-sağ, z2 arka-sağ. Arka sıra ön sıranın −z tarafına ZONE_DZ kadar kaydırılır.
-export const ZONE_DZ = 10.3; // sıra derinliği (zone alanı z: -5.3..5.0)
-/** Zone'un ızgara kolonu (0 sol / 1 sağ) ve sırası (0 ön / 1 arka). */
-export const zoneCol = (z: number) => (z < 2 ? z : 1);
-export const zoneRow = (z: number) => (z < 2 ? 0 : 1);
-/** (col,row) hücresindeki zone index'i; zone yoksa -1 (arka-sol = rezerv arsa). */
-export const zoneAt = (col: number, row: number) => {
-  for (let z = 0; z < MAX_ZONES; z++) if (zoneCol(z) === col && zoneRow(z) === row) return z;
+// arka-SAĞA taşındı; arka-sol hücre REZERV arsa (alan yok — içerik sonra tasarlanacak).
+// a0 ön-sol, a1 ön-sağ, a2 arka-sağ. Arka sıra ön sıranın −z tarafına AREA_DZ kadar kaydırılır.
+export const AREA_DZ = 10.3; // sıra derinliği (alan z: -5.3..5.0)
+/** Alanın ızgara kolonu (0 sol / 1 sağ) ve sırası (0 ön / 1 arka). */
+export const areaCol = (z: number) => (z < 2 ? z : 1);
+export const areaRow = (z: number) => (z < 2 ? 0 : 1);
+/** (col,row) hücresindeki alan index'i; alan yoksa -1 (arka-sol = rezerv arsa). */
+export const areaAt = (col: number, row: number) => {
+  for (let z = 0; z < MAX_AREAS; z++) if (areaCol(z) === col && areaRow(z) === row) return z;
   return -1;
 };
-const ZONES = Array.from({ length: MAX_ZONES }, (_, z) => z);
-// Zone z için şablon noktası: tek kolonlar zone merkezine göre x-AYNALI (mutfak kendi yan duvarında
-// kalır), arka sıra −ZONE_DZ kaydırılır (şablon yan-duvar temelli olduğundan rotasyon gerekmez).
+const AREAS = Array.from({ length: MAX_AREAS }, (_, a) => a);
+const SERVICES = Array.from({ length: MAX_SERVICES }, (_, s) => s);
+/** Servisin durduğu alan — servis dizilerini alan şablonuna bağlayan TEK yer (B1 ayrışması). */
+const svcArea = (s: number) => SERVICE_AREAS[s] ?? 0;
+// Alan a için şablon noktası: tek kolonlar alan merkezine göre x-AYNALI (mutfak kendi yan duvarında
+// kalır), arka sıra −AREA_DZ kaydırılır (şablon yan-duvar temelli olduğundan rotasyon gerekmez).
 const mir = (z: number, v: readonly [number, number, number]): Vec3 => [
-  zoneCol(z) ? ZONE_DX - v[0] : v[0],
+  areaCol(z) ? AREA_DX - v[0] : v[0],
   v[1],
-  v[2] - zoneRow(z) * ZONE_DZ,
+  v[2] - areaRow(z) * AREA_DZ,
 ];
-/** Zone-yerel şablon noktasını dünyaya çevir (Scene görselleri için dışa açık). */
-export const zonePoint = mir;
+/** Alan-yerel şablon noktasını dünyaya çevir (Scene görselleri için dışa açık). */
+export const areaPoint = mir;
 
 
-// Masa şablonu (zone-yerel): 2×2, sağa+yukarı kaymış (kolonlar -1.4/3.7, sıralar 2.55/-0.95).
+// Masa şablonu (alan-yerel): 2×2, sağa+yukarı kaymış (kolonlar -1.4/3.7, sıralar 2.55/-0.95).
 // Koltuklar CHAIR_SPOTS/FOOD_CHAIR_SPOTS ofsetlerinden türetilir (Y2); upgradeSpot = kapı-tarafı
 // çapraz köşe (orta koridora bakar; ocak/bulaşık tarafına TAŞMAZ; dwell hareketsiz-dolum olduğundan
 // koridordan yürüyerek geçmek para çekmez).
 // Açılış sırası ÖN sıradan (kapıya yakın, ocağa uzak — başlangıç masası ocaktan >4 br: yürüme
 // döngüsü en baştan zorlanır, D-017 §1) → arka sıra sonra açılır.
 // Ferahlama (turu-5 m.12, kamera-map-plan B): kolon aralığı 4.4→5.1 (net koridor ~1.5→2.2),
-// sıra aralığı 2.9→3.5 (net koridor 0.0→~0.6 — dikey aradan artık yürünebilir). Zone alanı SABİT.
+// sıra aralığı 2.9→3.5 (net koridor 0.0→~0.6 — dikey aradan artık yürünebilir). Alan SABİT.
 // Sol kolon −1.6 yerine −1.4: arka-sol masa ocağın çay-al+servis dairesi birleşiğinin DIŞINDA
 // kalmalı (>3.2 br; −1.6'da 3.00'a düşüyordu, şimdi 3.33). Açılım öne (+z) verildi.
 const BASE_TABLES = [
@@ -115,64 +126,68 @@ const FOOD_CHAIR_SPOTS: readonly [number, number][] = [
   [0.35, -0.78],
 ];
 
-const ALL_TABLES = ZONES.flatMap((z) =>
-  BASE_TABLES.map((t) => {
-    const table = mir(z, t.table);
+const ALL_TABLES = AREAS.flatMap((a) =>
+  BASE_TABLES.map((t, k) => {
+    const table = mir(a, t.table);
     // Y2: koltuk POZİSYONLARI spot listesinden türetilir; seats[0] eski .seat ile birebir aynı
-    // (çay [0,0.78]; yemek Y1'in x−0.35 G-batı sandalyesi).
-    const spots = zoneProduct(z) === 'tost' ? FOOD_CHAIR_SPOTS : CHAIR_SPOTS;
+    // (çay [0,0.78]; yemek Y1'in x−0.35 G-batı sandalyesi). Masanın TİPİ, ona servis veren
+    // noktanın ürününden gelir (B5'te masa tipi masanın kendi özelliği olur).
+    const spots =
+      serviceProduct(serviceOfTable(a * BASE_TABLES.length + k)) === 'tost' ? FOOD_CHAIR_SPOTS : CHAIR_SPOTS;
     const seats = spots.map(([sx, sz]) => [table[0] + sx, 0.6, table[2] + sz] as Vec3);
     return {
       table,
       seat: seats[0],
       seats,
-      upgradeSpot: mir(z, t.upgradeSpot),
+      upgradeSpot: mir(a, t.upgradeSpot),
     };
   }),
 );
 
-// Y1 (yemek alanı kimliği, docs/yemek-alani-garson-plan.md §4.1): TOST salonunun (z2) tezgâhı yan
-// duvarda değil ARKA duvara paralel "counter" — önü güneye (salona) bakar. Pickup/garson-evi/yükseltme
-// noktaları tezgâhla birlikte döner (yan-duvar şablonuyla AYNI göreli geometri: pickup ön yüzde +0.85,
-// garson evi pickup'tan 0.9 duvar-boyu, yükseltme pad'i tezgâhtan 2.0 duvar-boyu kapı tarafında —
-// pad↔pickup ayrım değişmezi [≥pickupRadius+0.3] vitest'te tüm zone'lar için doğrulanır).
-const FOOD_ZONE = 2;
+// Y1 (yemek alanı kimliği, docs/yemek-alani-garson-plan.md §4.1): TOST servisinin (servis 2) tezgâhı
+// yan duvarda değil ARKA duvara paralel "counter" — önü güneye (salona) bakar. Pickup/garson-evi/
+// yükseltme noktaları tezgâhla birlikte döner (yan-duvar şablonuyla AYNI göreli geometri: pickup ön
+// yüzde +0.85, garson evi pickup'tan 0.9 duvar-boyu, yükseltme pad'i tezgâhtan 2.0 duvar-boyu kapı
+// tarafında — pad↔pickup ayrımı [≥pickupRadius+0.3] vitest'te tüm servisler için doğrulanır).
+const FOOD_SERVICE = 2;
 const FOOD_STATION: Vec3 = [10.6, 0, -14.65];
 
 export const LAYOUT = {
   // DÜNYA v2 (2026-06-11, kullanıcı tarifi; feedback-2026-06-11.md §G + D-023): duvarsız TEK SALON,
-  // TEK KAPI (ön duvar, zone-1 ortası), mutfak = SOL DUVARDA L-ŞERİDİ (ocak modülleri sol duvara paralel,
-  // zone açıldıkça şerit öne uzar; bulaşık modülleri arka duvar dibinde L'nin kısa kolu). Per-zone MEKANİK
-  // (stations[z]/dishStations[z]/personel) AYNEN korunur — yalnız FİZİKSEL konum şeride taşındı.
-  // TÜM müşteriler tek kapıdan girer/çıkar (entrances/streets aynı nokta; dizi geri-uyum için kaldı).
-  entrances: ZONES.map(() => [0, 0.6, 4.8] as Vec3),
-  streets: ZONES.map(() => [0, 0.6, 8.0] as Vec3),
+  // TEK KAPI (ön duvar, 1. alanın ortası), mutfak = SOL DUVARDA L-ŞERİDİ (ocak modülleri sol duvara
+  // paralel, alan açıldıkça şerit öne uzar; bulaşık modülleri arka duvar dibinde L'nin kısa kolu).
+  // SERVİS mekaniği (stations[s]/dishStations[s]/personel) AYNEN korunur — yalnız FİZİKSEL konum
+  // şeride taşındı. TÜM müşteriler tek kapıdan girer/çıkar (entrances/streets ALANA göre index'li).
+  entrances: AREAS.map(() => [0, 0.6, 4.8] as Vec3),
+  streets: AREAS.map(() => [0, 0.6, 8.0] as Vec3),
   entrance: [0, 0.6, 4.8] as Vec3, // alias (testler/eski kod)
   street: [0, 0.6, 8.0] as Vec3,
   player: [0, 0.6, 1.5] as Vec3,
-  // Ocak modülleri (D-025 per-zone mutfak): sol kolon SOL duvarda, sağ kolon SAĞ duvarda (aynalı);
-  // arka sıra aynı şablonun −z kopyası. Arkada çaycı koridoru (~0.55) her zone'da korunur.
-  stations: ZONES.map((z) => (z === FOOD_ZONE ? FOOD_STATION : mir(z, [-4.35, 0, -2.5]))),
+  // --- SERVİSE göre index'li diziler (ocak/bulaşık/personel/pickup/yükseltme) ---
+  // Ocak modülleri (D-025 alan-başı mutfak): sol kolon SOL duvarda, sağ kolon SAĞ duvarda (aynalı);
+  // arka sıra aynı şablonun −z kopyası. Arkada çaycı koridoru (~0.55) her alanda korunur.
+  stations: SERVICES.map((s) => (s === FOOD_SERVICE ? FOOD_STATION : mir(svcArea(s), [-4.35, 0, -2.5]))),
   // Modül dönüşü: ön yüz salona bakar (sol kolon +x → +90°; sağ kolon −x → −90°).
-  // Y1: yemek zone'unun tezgâhı arka duvarda → dönüşü 0 (ön yüz +z = güney).
-  stationRots: ZONES.map((z) => (z === FOOD_ZONE ? 0 : zoneCol(z) ? -Math.PI / 2 : Math.PI / 2)),
+  // Y1: tost tezgâhı arka duvarda → dönüşü 0 (ön yüz +z = güney).
+  stationRots: SERVICES.map((s) => (s === FOOD_SERVICE ? 0 : areaCol(svcArea(s)) ? -Math.PI / 2 : Math.PI / 2)),
   // Bulaşık modülü Y1'de YERİNDE kaldı (kendi yan duvarında) → dönüşü istasyondan bağımsız.
-  dishRots: ZONES.map((z) => (zoneCol(z) ? -Math.PI / 2 : Math.PI / 2)),
-  // Oynanabilir alan: 2×2 ızgaranın tamamı (tek bina). Oyuncu AÇIK zone'ların BİRLEŞİMİNE
+  dishRots: SERVICES.map((s) => (areaCol(svcArea(s)) ? -Math.PI / 2 : Math.PI / 2)),
+  // Oynanabilir alanın tamamı: 2×2 ızgara (tek bina). Oyuncu AÇIK alanların BİRLEŞİMİNE
   // kelepçelenir (tick — L-şekil destekli union kelepçesi, M2).
-  area: { minX: -5.3, maxX: 5.3 + ZONE_DX, minZ: -5.3 - ZONE_DZ, maxZ: 5.0 },
-  // Zone başına yerel alan (zemin/duvar/kamera + kilitli "boş arsa" için).
-  zoneAreas: ZONES.map((z) => ({
-    minX: -5.3 + zoneCol(z) * ZONE_DX,
-    maxX: 5.3 + zoneCol(z) * ZONE_DX,
-    minZ: -5.3 - zoneRow(z) * ZONE_DZ,
-    maxZ: 5.0 - zoneRow(z) * ZONE_DZ,
+  area: { minX: -5.3, maxX: 5.3 + AREA_DX, minZ: -5.3 - AREA_DZ, maxZ: 5.0 },
+  // --- ALANA göre index'li diziler ---
+  // Alan başına sınırlar (zemin/duvar/kamera + kilitli "boş arsa" için).
+  areaBounds: AREAS.map((a) => ({
+    minX: -5.3 + areaCol(a) * AREA_DX,
+    maxX: 5.3 + areaCol(a) * AREA_DX,
+    minZ: -5.3 - areaRow(a) * AREA_DZ,
+    maxZ: 5.0 - areaRow(a) * AREA_DZ,
   })),
-  // Zone-1 | zone-2 sınır çizgisi (görsel; DUVAR YOK — D-023). Zone'lar bitişik → sınır = ortak kenar.
-  zoneBorderX: 5.3,
-  // Masa slotları — GLOBAL 8 slot (0-3 zone-1, 4-7 zone-2); zone içi 2×2 düzen değişmedi (D-017 §1).
+  // 1. | 2. alan sınır çizgisi (görsel; DUVAR YOK — D-023). Alanlar bitişik → sınır = ortak kenar.
+  areaBorderX: 5.3,
+  // Masa slotları — GLOBAL 12 slot (alan a → [a*4, a*4+4)); alan içi 2×2 düzen değişmedi (D-017 §1).
   tables: ALL_TABLES,
-  // Pad pozisyonları: açtıkları objenin yerinde. zone2 pad'i zone sınır çizgisinin ortasında.
+  // Pad pozisyonları: açtıkları objenin yerinde. Alan pad'i alan sınır çizgisinin ortasında.
   padPos: {
     table2: ALL_TABLES[1].table,
     table3: ALL_TABLES[2].table,
@@ -183,7 +198,7 @@ export const LAYOUT = {
     // Bulaşıkçı pad'i: mutfak bloğunun arka köşesi açıklığında (çay pad'iyle dolum daireleri
     // KESİŞMEZ: ayrım 3.28 > 2×PAD_RADIUS 2.6 — "pad'ler sık olmasın" isteği).
     dishwasher: [0.2, 0, -4.5] as Vec3,
-    // Zone sınırının HEMEN zone-1 tarafında (2026-06-11: kilitli salon TAM karanlık örtülü —
+    // Alan sınırının HEMEN 1. alan tarafında (2026-06-11: kilitli salon TAM karanlık örtülü —
     // pad halkası/etiketi karanlığa taşmasın diye eşikten ~0.75 içeri alındı).
     // z 0.6→0.8 (ferahlama): yeni sıra koridorunun merkezi — pad halkası (1.3) iki masa köşesine de değmez.
     zone2: [4.55, 0, 0.8] as Vec3,
@@ -192,7 +207,7 @@ export const LAYOUT = {
     z2table4: ALL_TABLES[7].table,
     z2waiter: mir(1, [-4.6, 0, 2.2]),
     z2dishwasher: mir(1, [0.2, 0, -4.5]),
-    // ZONE-3 (arka-sağ, 2026-06-11 taşıma): unlock pad'i z1'in arka şeridinde, kendi geçidinin
+    // 3. ALAN (arka-sağ, 2026-06-11 taşıma): unlock pad'i a1'in arka şeridinde, kendi geçidinin
     // (x 9.0) yanında — dolum daireleri komşularla KESİŞMEZ (z2dishwasher pad [10.4,-4.5] ayrımı 2.71).
     zone3: [7.7, 0, -4.3] as Vec3,
     z3table2: ALL_TABLES[9].table,
@@ -208,42 +223,44 @@ export const LAYOUT = {
     z2waiter2: mir(1, [-4.6, 0, 2.2]),
     z3waiter2: mir(2, [-4.6, 0, 2.2]),
   } as Record<string, Vec3>,
-  // Zone başına mekânsal çay yükseltme noktası: kendi duvarında, modülün ALTINDA (kapı tarafı —
+  // Servis başına mekânsal ocak-yükseltme noktası: kendi duvarında, modülün ALTINDA (kapı tarafı —
   // kullanıcı 2026-06-11: "ocağın önünde değil altında, sol duvarda dursun"). PAD MERKEZİ ocağın
   // pickupRadius'unun (1.6) DIŞINDA kalır (merkez ayrımı 2.0) → pad üstünde dururken çay-alma
   // tetiklenmez; ayrıca tick'teki pickup-guard'ı pickup alanı içinde dolumu zaten kilitler (vitest).
-  upgradeZones: ZONES.map((z) =>
-    z === FOOD_ZONE ? ([FOOD_STATION[0] - 2.0, 0, FOOD_STATION[2]] as Vec3) : mir(z, [-4.35, 0, -0.5]),
+  stationUpgradeSpots: SERVICES.map((s) =>
+    s === FOOD_SERVICE ? ([FOOD_STATION[0] - 2.0, 0, FOOD_STATION[2]] as Vec3) : mir(svcArea(s), [-4.35, 0, -0.5]),
   ),
-  upgradeZone: [-4.35, 0, -0.5] as Vec3, // zone-1 alias (testler/eski kod)
+  stationUpgradeSpot: [-4.35, 0, -0.5] as Vec3, // servis-0 alias (testler/eski kod)
   // Garson çay-alma noktası: modülün ÖN yüzü (2026-06-11 feedback: bardaklar önde, garson arkadaki
   // çaycı koridorundan ALMASIN — eski merkez+yarıçap hedefi arka koridoru da kabul ediyordu). Aynalı şablon.
-  stationPickups: ZONES.map((z) =>
-    z === FOOD_ZONE ? ([FOOD_STATION[0], 0, FOOD_STATION[2] + 0.85] as Vec3) : mir(z, [-3.5, 0, -2.5]),
+  stationPickups: SERVICES.map((s) =>
+    s === FOOD_SERVICE ? ([FOOD_STATION[0], 0, FOOD_STATION[2] + 0.85] as Vec3) : mir(svcArea(s), [-3.5, 0, -2.5]),
   ),
-  // Zone başına personel köşeleri + garson hız noktası (aynalı şablon).
+  // Servis başına personel köşeleri (aynalı şablon).
   // Garson boşta ÜST sırada, kendi mutfak bloğunun yanında bekler (2026-06-11 feedback: "sol altta
   // değil üst sırada dursun"). Çay pickup önünden (stationPickups z -2.5) ve bulaşıkçı köşesinden uzak.
-  waiterHomes: ZONES.map((z) =>
-    z === FOOD_ZONE ? ([FOOD_STATION[0] + 0.9, 0, FOOD_STATION[2] + 0.85] as Vec3) : mir(z, [-3.5, 0, -3.4]),
+  waiterHomes: SERVICES.map((s) =>
+    s === FOOD_SERVICE
+      ? ([FOOD_STATION[0] + 0.9, 0, FOOD_STATION[2] + 0.85] as Vec3)
+      : mir(svcArea(s), [-3.5, 0, -3.4]),
   ),
   waiterHome: [-3.5, 0, -3.4] as Vec3,
   // (v29: waiterUpgradeSpots kalktı — garson hızı karakter panelinden.)
   // Bulaşık modülleri (D-025 rev. A, kullanıcı 2026-06-11: "bulaşık ocağın yanında olsun"):
   // kendi ocağının HEMEN ÜSTÜNDE, AYNI yan duvarda bitişik (ocak z -3.6..-1.4, bulaşık z -4.9..-3.5
   // → tek mutfak bloğu). Sağ kolon aynalı; arka sıra −z kopyası.
-  dishStations: ZONES.map((z) => mir(z, [-4.35, 0, -4.2])),
+  dishStations: SERVICES.map((s) => mir(svcArea(s), [-4.35, 0, -4.2])),
   dishStation: [-4.35, 0, -4.2] as Vec3,
-  dishwasherHomes: ZONES.map((z) => mir(z, [-3.3, 0, -4.2])),
+  dishwasherHomes: SERVICES.map((s) => mir(svcArea(s), [-3.3, 0, -4.2])),
   dishwasherHome: [-3.3, 0, -4.2] as Vec3,
   // --- Collision footprint'leri (yarı-boyut [hx,hz]; D-016): GÖRSEL mesh'lere yaslı → oyuncu objeye
   // "değiyor gibi" sokulur, arada boşluk kalmaz. (ocak tezgah 2.2×0.8, bulaşık 1.4×0.8, masa r0.5, sandalye 0.42.)
   playerRadius: 0.35, // oyuncu kapsül görsel yarıçapı = standoff'u görsel kenara denk getirir
   actorRadius: 0.28, // garson/bulaşıkçı engel-kaçınma yarıçapı
   stationHalf: [0.4, 1.1] as [number, number], // sol duvara paralel modül (uzun kenar z'de — D-023 şerit)
-  // Zone-başına istasyon footprint'i (Y1): yemek tezgâhı arka duvara paralel → uzun kenar x'te.
-  stationHalves: ZONES.map((z) =>
-    z === FOOD_ZONE ? ([1.1, 0.4] as [number, number]) : ([0.4, 1.1] as [number, number]),
+  // Servis başına istasyon footprint'i (Y1): tost tezgâhı arka duvara paralel → uzun kenar x'te.
+  stationHalves: SERVICES.map((s) =>
+    s === FOOD_SERVICE ? ([1.1, 0.4] as [number, number]) : ([0.4, 1.1] as [number, number]),
   ),
   dishHalf: [0.4, 0.7] as [number, number], // yan duvara paralel modül (uzun kenar z'de — ocak gibi)
   tableHalf: [0.5, 0.5] as [number, number],
@@ -280,38 +297,42 @@ export interface Solid {
 }
 
 // Sıra-arası duvar KALDIRILDI (2026-06-11 kullanıcı: "alan 2 ile alan 3 arasında duvar olmasın") —
-// z1↔z2 sınırı artık z0↔z1 gibi tamamen açık (D-023 tek-salon deseni dikey komşuya da uygulanır).
-// Kilitli z2 blokajı lockedZoneSolids + clampToOpenZones'ta sürer.
+// a1↔a2 sınırı artık a0↔a1 gibi tamamen açık (D-023 tek-salon deseni dikey komşuya da uygulanır).
+// Kilitli a2 blokajı lockedAreaSolids + clampToOpenAreas'ta sürer.
 
-/** KİLİTLİ zone'ların alanları nav için BLOKE (M2): müşteri/personel rotası "boş arsa"dan geçemez
- *  (duvarlar yalnız açık zone'ları sardığından grid'e ayrıca anlatmak gerekir). Arka-sol REZERV
- *  hücre (zone'suz arsa, 2026-06-11) DAİMA bloke — rota oradan kestirme yapamaz. */
-export function lockedZoneSolids(zonesOpen: number): Solid[] {
+/** AÇIK alan index'leri kadar servis açıktır: servisin durduğu alan açıksa servis de açıktır.
+ *  B2'de tek servis kalınca bu fonksiyon her zaman [0] döner — çağıranlar değişmez. */
+export const openServices = (areasOpen: number): number[] => SERVICES.filter((s) => svcArea(s) < areasOpen);
+
+/** KİLİTLİ alanlar nav için BLOKE (M2): müşteri/personel rotası "boş arsa"dan geçemez
+ *  (duvarlar yalnız açık alanları sardığından grid'e ayrıca anlatmak gerekir). Arka-sol REZERV
+ *  hücre (alansız arsa, 2026-06-11) DAİMA bloke — rota oradan kestirme yapamaz. */
+export function lockedAreaSolids(areasOpen: number): Solid[] {
   const solids: Solid[] = [];
-  for (let z = zonesOpen; z < MAX_ZONES; z++) {
-    const za = LAYOUT.zoneAreas[z];
+  for (let a = areasOpen; a < MAX_AREAS; a++) {
+    const ab = LAYOUT.areaBounds[a];
     solids.push({
-      c: [(za.minX + za.maxX) / 2, 0, (za.minZ + za.maxZ) / 2],
-      h: [(za.maxX - za.minX) / 2, (za.maxZ - za.minZ) / 2],
+      c: [(ab.minX + ab.maxX) / 2, 0, (ab.minZ + ab.maxZ) / 2],
+      h: [(ab.maxX - ab.minX) / 2, (ab.maxZ - ab.minZ) / 2],
     });
   }
-  // BL hücre = z0 alanının −ZONE_DZ kopyası (zoneAreas formülü, col 0 / row 1).
-  solids.push({ c: [0, 0, (-5.3 - ZONE_DZ + (5.0 - ZONE_DZ)) / 2], h: [5.3, (5.0 - -5.3) / 2] });
+  // BL hücre = a0 alanının −AREA_DZ kopyası (areaBounds formülü, col 0 / row 1).
+  solids.push({ c: [0, 0, (-5.3 - AREA_DZ + (5.0 - AREA_DZ)) / 2], h: [5.3, (5.0 - -5.3) / 2] });
   return solids;
 }
 
-/** O an SAHNEDE var olan SABİT katı engeller (açık zone'ların ocak+bulaşığı; açık masalar + sandalyeler
- *  + sıra-arası duvarlar). Yatay bölme duvarı YOK (D-023). Kapalı zone'un mobilyası ÇİZİLMEZ →
- *  collision da eklenmez (oyuncu zaten açık-zone birleşimine kelepçeli). */
 /** Masanın footprint yarısı (Y1): yemek masası dikdörtgen, çay masası kare. */
 const tableHalfFor = (i: number): readonly [number, number] =>
-  zoneProduct(zoneOfTable(i)) === 'tost' ? LAYOUT.foodTableHalf : LAYOUT.tableHalf;
+  serviceProduct(serviceOfTable(i)) === 'tost' ? LAYOUT.foodTableHalf : LAYOUT.tableHalf;
 
-export function activeSolids(tables: number, zonesOpen: number): Solid[] {
+/** O an SAHNEDE var olan SABİT katı engeller (açık servislerin ocak+bulaşığı; açık masalar +
+ *  sandalyeler). Yatay bölme duvarı YOK (D-023). Kapalı alanın mobilyası ÇİZİLMEZ → collision da
+ *  eklenmez (oyuncu zaten açık alanların birleşimine kelepçeli). */
+export function activeSolids(tables: number, areasOpen: number): Solid[] {
   const solids: Solid[] = [];
-  for (let z = 0; z < zonesOpen; z++) {
-    solids.push({ c: LAYOUT.stations[z], h: LAYOUT.stationHalves[z] });
-    solids.push({ c: LAYOUT.dishStations[z], h: LAYOUT.dishHalf });
+  for (const sv of openServices(areasOpen)) {
+    solids.push({ c: LAYOUT.stations[sv], h: LAYOUT.stationHalves[sv] });
+    solids.push({ c: LAYOUT.dishStations[sv], h: LAYOUT.dishHalf });
   }
   for (let i = 0; i < tables; i++) {
     solids.push({ c: LAYOUT.tables[i].table, h: tableHalfFor(i) });
@@ -320,17 +341,17 @@ export function activeSolids(tables: number, zonesOpen: number): Solid[] {
   return solids;
 }
 
-/** Oyuncuyu AÇIK zone'ların BİRLEŞİMİNE kelepçele (M2): nokta hiçbir açık zone'da değilse en yakın
- *  açık-zone-içi noktaya çekilir. 3 zone açıkken L-şekli doğru çalışır (eski tek-eksen openMaxX
+/** Oyuncuyu AÇIK alanların BİRLEŞİMİNE kelepçele (M2): nokta hiçbir açık alanda değilse en yakın
+ *  açık-alan-içi noktaya çekilir. 3 alan açıkken L-şekli doğru çalışır (eski tek-eksen openMaxX
  *  kelepçesi 2×2 ızgarada yetmiyordu). */
-export function clampToOpenZones(x: number, z: number, zonesOpen: number): [number, number] {
+export function clampToOpenAreas(x: number, z: number, areasOpen: number): [number, number] {
   let bestX = x;
   let bestZ = z;
   let bestD = Infinity;
-  for (let i = 0; i < zonesOpen; i++) {
-    const za = LAYOUT.zoneAreas[i];
-    const cx = Math.max(za.minX, Math.min(za.maxX, x));
-    const cz = Math.max(za.minZ, Math.min(za.maxZ, z));
+  for (let a = 0; a < areasOpen; a++) {
+    const ab = LAYOUT.areaBounds[a];
+    const cx = Math.max(ab.minX, Math.min(ab.maxX, x));
+    const cz = Math.max(ab.minZ, Math.min(ab.maxZ, z));
     const d = (cx - x) * (cx - x) + (cz - z) * (cz - z);
     if (d === 0) return [x, z];
     if (d < bestD) {
@@ -371,25 +392,25 @@ export const REACH_PICKUP = 0.45;
 export const REACH_WASH = LAYOUT.dishHalf[1] + LAYOUT.actorRadius + 0.4; // bulaşıkta yıkama
 export const REACH_HOME = 0.4; // boştayken köşeye dönüş
 
-/** Personelin GÖVDE engeli saydığı katılar (açık zone'ların ocak+bulaşığı + açık masalar). */
-export function navSolids(tables: number, zonesOpen: number): NavSolid[] {
+/** Personelin GÖVDE engeli saydığı katılar (açık servislerin ocak+bulaşığı + açık masalar). */
+export function navSolids(tables: number, areasOpen: number): NavSolid[] {
   const solids: NavSolid[] = [];
-  for (let z = 0; z < zonesOpen; z++) {
-    solids.push({ c: LAYOUT.stations[z], h: LAYOUT.stationHalves[z] });
-    solids.push({ c: LAYOUT.dishStations[z], h: LAYOUT.dishHalf });
+  for (const sv of openServices(areasOpen)) {
+    solids.push({ c: LAYOUT.stations[sv], h: LAYOUT.stationHalves[sv] });
+    solids.push({ c: LAYOUT.dishStations[sv], h: LAYOUT.dishHalf });
   }
   for (let i = 0; i < tables; i++) solids.push({ c: LAYOUT.tables[i].table, h: tableHalfFor(i) });
-  // Kilitli zone alanları + rezerv arsa rota dışı (sıra-arası duvar 2026-06-11'de kaldırıldı).
-  solids.push(...lockedZoneSolids(zonesOpen));
+  // Kilitli alanlar + rezerv arsa rota dışı (sıra-arası duvar 2026-06-11'de kaldırıldı).
+  solids.push(...lockedAreaSolids(areasOpen));
   return solids;
 }
 
-// Izgara masa+zone sayısına göre cache'lenir (masa/zone açılınca yeniden kurulur; her frame değil).
+// Izgara masa+alan sayısına göre cache'lenir (masa/alan açılınca yeniden kurulur; her frame değil).
 let navCache: { key: string; grid: NavGrid } | null = null;
-export function getNavGrid(tables: number, zonesOpen: number): NavGrid {
-  const key = `${tables}|${zonesOpen}`;
+export function getNavGrid(tables: number, areasOpen: number): NavGrid {
+  const key = `${tables}|${areasOpen}`;
   if (navCache && navCache.key === key) return navCache.grid;
-  const grid = buildNavGrid(LAYOUT.area, NAV_CELL, navSolids(tables, zonesOpen), LAYOUT.actorRadius);
+  const grid = buildNavGrid(LAYOUT.area, NAV_CELL, navSolids(tables, areasOpen), LAYOUT.actorRadius);
   navCache = { key, grid };
   return grid;
 }
@@ -440,16 +461,16 @@ export function navStep(
  * Faz A3: testler ve duman testi eskiden `[0, 0.6, 6.5]` gibi ELLE yazılmış köşelere park ediyordu;
  * yerleşim değişince (Faz B) bu noktalar sessizce bir masanın/pad'in üstüne düşer ve testler
  * "kimse servis etmiyor" derken aslında servis ediyor olurdu. Burada nokta hesaplanır: açık
- * zone'ların alanı taranır, KATI engellere girmeyen ve tüm etkileşim noktalarına (ocak, bulaşık,
+ * açık alanlar taranır, KATI engellere girmeyen ve tüm etkileşim noktalarına (ocak, bulaşık,
  * masa+koltuk, pad, yükseltme noktası, kapı) uzaklığı EN BÜYÜK olan hücre seçilir.
  *
- * `minClearance(zonesOpen)` seçilen noktanın en yakın etkileşime uzaklığını verir → test bunun
+ * `minClearance(areasOpen)` seçilen noktanın en yakın etkileşime uzaklığını verir → test bunun
  * yeterli olduğunu doğrular; yerleşim daralırsa test SESSİZCE değil, GÜRÜLTÜYLE düşer.
  */
-function interactionPoints(zonesOpen: number, tables: number): RVec3[] {
+function interactionPoints(areasOpen: number, tables: number): RVec3[] {
   const pts: RVec3[] = [LAYOUT.entrance];
-  for (let z = 0; z < zonesOpen; z++) {
-    pts.push(LAYOUT.stations[z], LAYOUT.stationPickups[z], LAYOUT.dishStations[z], LAYOUT.upgradeZones[z]);
+  for (const sv of openServices(areasOpen)) {
+    pts.push(LAYOUT.stations[sv], LAYOUT.stationPickups[sv], LAYOUT.dishStations[sv], LAYOUT.stationUpgradeSpots[sv]);
   }
   for (let i = 0; i < tables; i++) {
     pts.push(LAYOUT.tables[i].table, LAYOUT.tables[i].seat, LAYOUT.tables[i].upgradeSpot);
@@ -458,17 +479,17 @@ function interactionPoints(zonesOpen: number, tables: number): RVec3[] {
   return pts;
 }
 
-function scanParkSpot(zonesOpen: number, tables: number, onlyZone?: number): { pos: Vec3; clearance: number } {
-  const pts = interactionPoints(zonesOpen, tables);
-  const solids = activeSolids(tables, zonesOpen);
+function scanParkSpot(areasOpen: number, tables: number, onlyArea?: number): { pos: Vec3; clearance: number } {
+  const pts = interactionPoints(areasOpen, tables);
+  const solids = activeSolids(tables, areasOpen);
   const step = 0.25;
   let best: Vec3 = [0, 0.6, 0];
   let bestD = -1;
-  for (let z = 0; z < zonesOpen; z++) {
-    if (onlyZone != null && z !== onlyZone) continue;
-    const za = LAYOUT.zoneAreas[z];
-    for (let x = za.minX + step; x < za.maxX; x += step) {
-      for (let zz = za.minZ + step; zz < za.maxZ; zz += step) {
+  for (let a = 0; a < areasOpen; a++) {
+    if (onlyArea != null && a !== onlyArea) continue;
+    const ab = LAYOUT.areaBounds[a];
+    for (let x = ab.minX + step; x < ab.maxX; x += step) {
+      for (let zz = ab.minZ + step; zz < ab.maxZ; zz += step) {
         if (hitsSolid(x, zz, solids, LAYOUT.playerRadius)) continue;
         let d = Infinity;
         for (const p of pts) d = Math.min(d, Math.hypot(x - p[0], zz - p[2]));
@@ -483,23 +504,23 @@ function scanParkSpot(zonesOpen: number, tables: number, onlyZone?: number): { p
 }
 
 const parkCache = new Map<string, { pos: Vec3; clearance: number }>();
-function parkScan(zonesOpen: number, tables: number, onlyZone?: number) {
-  const key = `${zonesOpen}|${tables}|${onlyZone ?? '*'}`;
+function parkScan(areasOpen: number, tables: number, onlyArea?: number) {
+  const key = `${areasOpen}|${tables}|${onlyArea ?? '*'}`;
   let hit = parkCache.get(key);
   if (!hit) {
-    hit = scanParkSpot(zonesOpen, tables, onlyZone);
+    hit = scanParkSpot(areasOpen, tables, onlyArea);
     parkCache.set(key, hit);
   }
   return hit;
 }
 
-/** Açık salonlarda hiçbir mekanizmayı tetiklemeyen park noktası (test/duman kancası).
- *  `onlyZone` verilirse yalnız o salonun içinde aranır (salon sınırı testleri). */
-export function parkSpot(zonesOpen = 1, tables = 4, onlyZone?: number): Vec3 {
-  return [...parkScan(zonesOpen, tables, onlyZone).pos] as Vec3;
+/** Açık alanlarda hiçbir mekanizmayı tetiklemeyen park noktası (test/duman kancası).
+ *  `onlyArea` verilirse yalnız o alanın içinde aranır (alan sınırı testleri). */
+export function parkSpot(areasOpen = 1, tables = 4, onlyArea?: number): Vec3 {
+  return [...parkScan(areasOpen, tables, onlyArea).pos] as Vec3;
 }
 
 /** Park noktasının en yakın etkileşim noktasına uzaklığı (yerleşim daralırsa test bunu yakalar). */
-export function parkClearance(zonesOpen = 1, tables = 4, onlyZone?: number): number {
-  return parkScan(zonesOpen, tables, onlyZone).clearance;
+export function parkClearance(areasOpen = 1, tables = 4, onlyArea?: number): number {
+  return parkScan(areasOpen, tables, onlyArea).clearance;
 }

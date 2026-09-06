@@ -13,30 +13,25 @@
  *   maxLevel    = ₺ tavanı. 💎 "Usta" katmanı Faz D'de kendi tasarımıyla gelecek (bugün YOK).
  */
 
-// v29 (2026-06-13): personel hız kademeleri panele taşındı — waiterLevels kaldırıldı,
-// waiterUpgrades.teaSpeed/tostSpeed/dishSpeed eklendi (migrasyon save.ts'te).
-export const SAVE_VERSION = 30;
+// v31 (Faz B1, D-058): ALAN/SERVİS/MASA/ODA modeline geçiş. Eski kayıtlardaki pad kimliklerinin
+// yeni zincirde karşılığı olmadığı için MİGRASYON YAZILMAZ — eski kayıt bulunursa ilerleme
+// sıfırlanır, yalnız ayarlar korunur (save.ts resetKeepingSettings). "İlerleme kaybolmaz" kuralı
+// v1.0 mağazaya çıktığı andan itibaren bağlayıcıdır.
+export const SAVE_VERSION = 31;
 
 /**
- * ZONE modeli (Faz 3a + D-022, gece 2026-06-10): zemin kat zone'ları. Her zone kendi TEMALI
- * ocak+bulaşık köşesine sahip (per-zone servis); masa slotları GLOBAL index'lidir
- * (zone z → slotlar [z*TABLES_PER_ZONE, z*TABLES_PER_ZONE+4)). Açılış sırası gating'le katı
- * (zone2 pad'i table4 ister) → açık masa index'leri DAİMA bitişiktir (0..tables-1).
- * M2 (2026-06-12, onaylı plan): kat 2×2 IZGARA. Revizyon (2026-06-11 kullanıcı): zone-4 (maç salonu)
- * ve tuvalet+depo GERİ ALINDI; z2 (TOST) arka-SAĞA taşındı — z0 ön-sol (çay), z1 ön-sağ (çay),
- * z2 arka-sağ (TOST). Arka-sol hücre REZERV arsa (içerik sonra tasarlanacak). Açılış: z1 → z2.
+ * ALAN (eski "zone") — mekânsal bölge sayısı ve alan başına masa slotu. Dört kavramın
+ * (ALAN · SERVİS · MASA · ODA) türetmesi `src/game/world.ts`'tedir; burada yalnız SAYILAR durur.
+ * Masa slotları GLOBAL index'lidir (alan a → slotlar [a*TABLES_PER_AREA, a*TABLES_PER_AREA+4));
+ * açılış sırası gating'le katı olduğundan açık index'ler DAİMA bitişiktir.
+ * Yerleşim (2×2 ızgara, arka-sol rezerv arsa) `layout.ts`'te.
  */
-export const TABLES_PER_ZONE = 4;
-export const MAX_ZONES = 3;
-/** Global masa index'inin ait olduğu zone. */
-export function zoneOfTable(tableIndex: number): number {
-  return Math.min(MAX_ZONES - 1, Math.floor(tableIndex / TABLES_PER_ZONE));
-}
-
+export const TABLES_PER_AREA = 4;
+export const MAX_AREAS = 3;
 /**
- * ÜRÜN HATTI (M3; D-010 alt kararı "fiyat artışı YENİ menü ürünleriyle"): her zone'un istasyonu
+ * ÜRÜN HATTI (M3; D-010 alt kararı "fiyat artışı YENİ menü ürünleriyle"): her servis noktası
  * TEK ürün üretir. Çay fiyatı sabit kalır; TOST ikinci hat — pahalı + yavaş hazırlanır (throughput
- * matematiği aynı, sabitler farklı → zone başına gelir profili değişir).
+ * matematiği aynı, sabitler farklı → servis başına gelir profili değişir).
  *  - dish: müşterinin masada bıraktığı kirlinin görseli (bardak/tabak; havuz ORTAKTIR — korunum
  *    değişmezi tek kalır, yıkama aynı döngü).
  *  - upgradeCostMult: istasyon ₺ yükseltme maliyet çarpanı (çay eğrisi 20/30/45/68 erken oyun için;
@@ -52,16 +47,6 @@ export const PRODUCTS = {
   // +%27 arz + tezgâh L5/L6 paketiyle birlikte darboğaz kapanır.
   tost: { price: 25, prepTime: 11, dish: 'plate', upgradeCostMult: 20, patienceMult: 1.6 },
 } as const;
-/** Zone → ürün eşlemesi: z2 (arka-sağ) = TOST OCAĞI; diğerleri çay. */
-export const ZONE_PRODUCTS: readonly ProductId[] = ['tea', 'tea', 'tost'];
-export function zoneProduct(z: number): ProductId {
-  return ZONE_PRODUCTS[Math.min(Math.max(z, 0), ZONE_PRODUCTS.length - 1)];
-}
-/** Zone'un VARSAYILAN zemin teması (Y1 yemek alanı kimliği): tost salonu 'yemek' fayansıyla doğar;
- *  kozmetik mağaza satın alımı yine üstüne yazabilir. */
-export function defaultFloorTheme(z: number): string {
-  return zoneProduct(z) === 'tost' ? 'yemek' : 'parke';
-}
 
 export const CURRENCY = {
   soft: '₺', // Para — müşteriden kazanılır
@@ -102,10 +87,10 @@ export interface Requires {
    */
   minWaiterServed?: number;
   /**
-   * Y4 gating (plan §3, kullanıcı onaylı): o salonun 4 masası da en az `level` olmadan açılmaz —
+   * Y4 gating (plan §3, kullanıcı onaylı): o ALANIN 4 masası da en az `level` olmadan açılmaz —
    * 2. garson EN YOĞUN an gelsin (16 koltuk döneminde istasyon tavanını ancak 2 garson doldurur).
    */
-  allZoneTablesLevel?: { zone: number; level: number };
+  allAreaTablesLevel?: { area: number; level: number };
 }
 
 /**
@@ -114,27 +99,27 @@ export interface Requires {
  */
 export type QuestTarget =
   | { type: 'pickupTea'; count: number } // ocaktan tepsiye çay al
-  // zone verilirse YALNIZ o salondaki servisler sayılır (v23: "Yeni salonda 5 çay" gerçekten
-  // salon-2'de saysın — eski global sayaç zone-1 servisini de sayıyordu).
-  | { type: 'serveTea'; count: number; zone?: number } // oyuncu eliyle masaya çay/tost bırak
+  // area verilirse YALNIZ o alandaki servisler sayılır (v23: "Yeni salonda 5 çay" gerçekten
+  // 2. alanda saysın — eski global sayaç 1. alanın servisini de sayıyordu).
+  | { type: 'serveTea'; count: number; area?: number } // oyuncu eliyle masaya çay/tost bırak
   | { type: 'collectCoin'; count: number } // yerden para topla
   | { type: 'washDish'; count: number } // oyuncu eliyle bulaşıkta kirli yıka
   | { type: 'pad'; id: string } // pad'i tamamla (masa aç / personel tut)
-  | { type: 'stationLevel'; level: number; zone?: number } // o salonun ocağı bu seviyeye ulaşsın (v27: zone'lu)
+  | { type: 'stationLevel'; level: number; service?: number } // o servis noktası bu seviyeye ulaşsın
   | { type: 'waiterSpeed'; kind: WaiterKind; tier: number } // garson hız kademesi (v29: panel)
   | { type: 'tableLevel'; level: number } // HERHANGİ bir masa bu seviyeye ulaşsın
-  // v27 görev çeşitliliği (telefon feedback): zone'un (yoksa tümü) en az `count` masası `level`+ olsun.
-  | { type: 'tablesAtLevel'; level: number; count: number; zone?: number }
+  // v27 görev çeşitliliği (telefon feedback): alanın (yoksa tümü) en az `count` masası `level`+ olsun.
+  | { type: 'tablesAtLevel'; level: number; count: number; area?: number }
   // Y3 garson tepsi yükseltmesi: ilgili garson türünün tepsi kademesi `tier`'a ulaşsın.
   | { type: 'waiterTray'; kind: WaiterKind; tier: number }
   | { type: 'charStat'; stat: CharStat; tier: number }; // karakter özelliği bu kademeye ulaşsın (v20)
 
-/** Garson türü (Y3): çay garsonları (z0+z1 ortak eğri) | tostçu garson (z2, kendi eğrisi). */
+/** Garson türü (Y3): çay garsonları (servis 0+1 ortak eğri) | tostçu garson (servis 2, kendi eğrisi). */
 export type WaiterKind = 'tea' | 'tost';
 /** Garson tepsi yükseltme kademeleri (persist v27). Kademe 0 = taban tepsi 1.
  *  v28: dishCarry — bulaşıkçı leğen kademesi (tüm salonların bulaşıkçılarına ORTAK; taban 2, +2/kademe).
  *  v29: teaSpeed/tostSpeed/dishSpeed — personel HIZ kademeleri karakter paneline taşındı
- *  (kullanıcı 2026-06-13; eski mekânsal waiterUp pad'i + per-zone waiterLevels KALDIRILDI). */
+ *  (kullanıcı 2026-06-13; eski mekânsal waiterUp pad'i + servis-başı waiterLevels KALDIRILDI). */
 export interface WaiterUpgrades {
   teaTray: number;
   tostTray: number;
@@ -158,8 +143,8 @@ export interface QuestDef {
   id: string;
   title: string;
   target: QuestTarget;
-  /** Hedefin zone'u (kamera odağı doğru salona baksın; yoksa 0). */
-  zone?: number;
+  /** Hedefin ALANI (kamera odağı doğru salona baksın; yoksa 0). */
+  area?: number;
   /** Tamamlanınca cüzdana eklenen ₺ ödülü (M1, kullanıcı isteği 2026-06-12). Band: sıradaki
    *  pad maliyetinin ~%10-20'si — tempoyu pürüzsüzleştirir, satın almayı oyuncu yerine yapmaz. */
   reward?: number;
@@ -186,11 +171,11 @@ export const economyConfig = {
       maxLevel: 6,
     } satisfies UpgradeSpec,
     /**
-     * Yükseltme noktasının ZONE-BAŞINA önkoşulu (v21 — kullanıcı 2026-06-12: "zone-2'de de düzen
-     * olmalı"): her salonun ocak yükseltmesi O salonun 2. masası açılınca belirir (tür konvansiyonu:
-     * önce kapasite, sonra verim — zone-1 deseni aynalanır). index = zone.
+     * Yükseltme noktasının SERVİS-BAŞINA önkoşulu (v21 — kullanıcı 2026-06-12: "2. salonda da düzen
+     * olmalı"): her servisin ocak yükseltmesi o alanın 2. masası açılınca belirir (tür konvansiyonu:
+     * önce kapasite, sonra verim). index = servis.
      */
-    upgradeRequiresByZone: [
+    upgradeRequiresByArea: [
       { prev: ['table2'] },
       { prev: ['z2table2'] },
       { prev: ['z3table2'] },
@@ -201,7 +186,7 @@ export const economyConfig = {
   },
 
   /**
-   * Masa yükseltme (Faz 2h — MASA-BAŞI / My Hotel oda yükseltme mantığı; D-016 §5 "zone-başı" kullanıcı
+   * Masa yükseltme (Faz 2h — MASA-BAŞI / My Hotel oda yükseltme mantığı; D-016 §5 "alan-başı" kullanıcı
    * isteğiyle DEĞİŞTİRİLDİ 2026-06-07): HER masanın KENDİ seviyesi var (`tableLevels[i]`), her masanın
    * YANINDA ayrı yükseltme noktası (LAYOUT.tables[i].upgradeSpot). Çay fiyatı SABİT kalır (D-010 bozulmaz).
    * O masanın seviyesi iki şeyi artırır (yalnız o masaya oturan müşteri için):
@@ -215,14 +200,14 @@ export const economyConfig = {
       costBase: 60,
       costGrowth: 1.8, // garson sonrası derinlik: L1 60 / L2 108 / L3 194 / L4 350 (eski 1.6 fazla ucuzdu)
       maxLevel: 4, // ₺ tavanı L4 (💎 "Usta" katmanı Faz D)
-      /** ZONE-kademeli yükseltme çarpanı (kullanıcı 2026-06-13: "salon 1 sabit, salon 2 biraz,
-       *  salon 3 daha da artsın"). Salon 1 birebir eski eğri; 2-3 çarpan sonrası 5'e yuvarlanır:
-       *  z1 60/108/194/349 · z2 90/160/290/525 · z3 150/270/485/875. */
-      zoneCostMult: [1, 1.5, 2.5],
+      /** ALAN-kademeli yükseltme çarpanı (kullanıcı 2026-06-13: "salon 1 sabit, salon 2 biraz,
+       *  salon 3 daha da artsın"). 1. alan birebir eski eğri; 2-3 çarpan sonrası 5'e yuvarlanır:
+       *  a0 60/108/194/349 · a1 90/160/290/525 · a2 150/270/485/875. */
+      areaCostMult: [1, 1.5, 2.5],
     },
-    /** ZONE-BAŞINA önkoşul (v21): o salonun masa yükseltmeleri, O salonun 4 masası da açılınca belirir
-     *  (D-019 §3 — masa yükseltmeleri geç-oyun derinliği; erken ekran sade; zone-1 deseni aynalanır). */
-    upgradeRequiresByZone: [
+    /** ALAN-BAŞINA önkoşul (v21): o alanın masa yükseltmeleri, o alanın 4 masası da açılınca belirir
+     *  (D-019 §3 — masa yükseltmeleri geç-oyun derinliği; erken ekran sade). */
+    upgradeRequiresByArea: [
       { prev: ['table4'] },
       { prev: ['z2table4'] },
       { prev: ['z3table4'] },
@@ -246,7 +231,7 @@ export const economyConfig = {
     /** Boş masaya yürüme/oturma payı. */
     walkTime: 2,
     /** Bir bardak çay demleme süresi (sn) — stationLevel throughput'u bunu kısaltır.
-     *  (M3: TEK kaynak PRODUCTS.tea; tost zone'unun süresi PRODUCTS.tost.prepTime.) */
+     *  (M3: TEK kaynak PRODUCTS.tea; tost servisinin süresi PRODUCTS.tost.prepTime.) */
     orderTime: PRODUCTS.tea.prepTime,
     /** İçip ödeme yapma süresi. */
     eatTime: 4,
@@ -421,13 +406,13 @@ export const economyConfig = {
    *   addTable        → +1 masa (oturma kapasitesi; o masanın yerinde inşa olur)
    *   hireWaiter      → garson tut (kısmi servis yardımı; bkz. `waiter`)
    *   hireDishwasher  → bulaşıkçı tut (kirli bardak döngüsünü kapatır)
-   *   unlockZone      → yeni salon aç (o salonun ocağı+ilk masası birlikte gelir)
+   *   unlockArea      → yeni salon aç (o salonun ocağı+ilk masası birlikte gelir)
    * `optional:true` pad'ler OMURGA zincirini KİLİTLEMEZ: alınmasa da sonraki masalar/ocaklar açılır
    * (oyuncu isterse alır, istemezse kendi gezerek servis eder). `currentPad` opsiyonelleri atlar.
    * Maliyetler tempo hedefine göre ayarlı (ilk alım <90sn; simulate.ts doğrular).
-   * BAŞLANGIÇ SALONU = 1 ocak : 4 masa (D-012). Omurga: 2.Masa → (ocak L≥1) → 3.Masa → Garson →
-   * Bulaşıkçı → 4.Masa → 2. Salon. Tek ana ocak 4 masaya throughput'la (ocak seviyesi) yetişir;
-   * her yeni salon KENDİ ocağıyla `unlockZone` ile gelir.
+   * BAŞLANGIÇ ALANI = 1 servis : 4 masa (D-012). Omurga: 2.Masa → (ocak L≥1) → 3.Masa → Garson →
+   * Bulaşıkçı → 4.Masa → 2. Alan. Tek ana ocak 4 masaya throughput'la (ocak seviyesi) yetişir;
+   * B1'de her yeni alan KENDİ servisiyle `unlockArea` ile gelir (B2'de servis TEKİLLEŞİR).
    */
   pads: [
     // QUEST HATTI (2026-06-09, kullanıcı onayı): personel pad'leri OPSİYONEL DEĞİL — sıralı görev hattının
@@ -439,62 +424,62 @@ export const economyConfig = {
     // pad'de bekleme oyunun en sık tekrarı, kısa tutulur). Yorumdaki sn değeri TASARIM kaynağı.
     // MASA AÇMA −%10 + 5'in katına yuvarlama (kullanıcı 2026-06-13; turu-5 m.4'ün ertelenen yarısı).
     // fillRate'ler aynı dwell süresini koruyacak şekilde ölçeklendi (fillRate = cost / hedef-sn).
-    { id: 'table2', label: '2. Masa', cost: 20, fillRate: 13, optional: false, zone: 0, // ~1.5sn
+    { id: 'table2', label: '2. Masa', cost: 20, fillRate: 13, optional: false, area: 0, // ~1.5sn
       requires: { minLifetime: 20 }, effect: { type: 'addTable' } },
-    { id: 'table3', label: '3. Masa', cost: 115, fillRate: 46, optional: false, zone: 0, // ~2.5sn
+    { id: 'table3', label: '3. Masa', cost: 115, fillRate: 46, optional: false, area: 0, // ~2.5sn
       requires: { prev: ['table2'] }, effect: { type: 'addTable' } },
-    { id: 'waiter', label: 'Garson Tut', cost: 130, fillRate: 60, optional: false, zone: 0, // ~2.2sn (5B: 150→130)
+    { id: 'waiter', label: 'Garson Tut', cost: 130, fillRate: 60, optional: false, area: 0, // ~2.2sn (5B: 150→130)
       requires: { prev: ['table3'] }, effect: { type: 'hireWaiter' } },
     // 2026-06-11 telefon feedback turu-2: 330 "aşırı fazla, git gel bitmiyor" → 200 (kullanıcı verdi).
-    { id: 'dishwasher', label: 'Bulaşıkçı Tut', cost: 200, fillRate: 67, optional: false, zone: 0, // ~3sn
+    { id: 'dishwasher', label: 'Bulaşıkçı Tut', cost: 200, fillRate: 67, optional: false, area: 0, // ~3sn
       requires: { prev: ['waiter'] }, effect: { type: 'hireDishwasher' } },
-    { id: 'table4', label: '4. Masa', cost: 380, fillRate: 109, optional: false, zone: 0, // ~3.5sn
+    { id: 'table4', label: '4. Masa', cost: 380, fillRate: 109, optional: false, area: 0, // ~3.5sn
       requires: { prev: ['dishwasher'] }, effect: { type: 'addTable' } },
     // (D-018 adım 5) Ayrı "Semavere Geçiş" pad'i KALDIRILDI: semaver artık çay ocağının üst yükseltmesidir
     // (TeaStation seviyeyle büyüyen semaveri zaten çizer). Tek ocak ₺ yükseltmeleriyle (L4, throughput ×3.32)
-    // 4 masaya yetişir; "Usta" master tier (💎/video) Faz 4. Zone-1 omurgası table4'te biter.
-    // --- ZONE-2 zinciri (Faz 3a + D-022, gece 2026-06-10): per-zone TEMALI ocak+bulaşık. Unlock pad'i
-    // bölme duvarındaki GEÇİTTE; açılınca zone-2 OTOMATİK 1 ocak (L1) + 1 masa + 1 bulaşık köşesiyle gelir.
+    // 4 masaya yetişir; "Usta" master tier (💎/video) Faz 4. 1. alanın omurgası table4'te biter.
+    // --- 2. ALAN zinciri (Faz 3a + D-022, gece 2026-06-10): alanın KENDİ temalı ocak+bulaşığı. Unlock pad'i
+    // bölme duvarındaki GEÇİTTE; açılınca 2. alan OTOMATİK 1 ocak (L1) + 1 masa + 1 bulaşık köşesiyle gelir.
     // Maliyetler GECE BAŞLANGIÇ değerleri — curve raporu (madde 5) sabah onayıyla kalibre edilir.
     // −%10 ucuzlatma (kullanıcı 2026-06-11: "git gel çok, çok az ucuzlat") — z2/z3 zincirleri,
-    // yuvarlanmış; öğretici (zone-1) pad'leri ve yükseltme eğrileri AYNI kaldı.
-    { id: 'zone2', label: '2. Salon', cost: 1100, fillRate: 315, optional: false, zone: 0, // ~3.5sn
-      requires: { prev: ['table4'] }, effect: { type: 'unlockZone' } },
-    { id: 'z2table2', label: '2. Masa', cost: 200, fillRate: 67, optional: false, zone: 1, // ~3sn
+    // yuvarlanmış; öğretici (1. alan) pad'leri ve yükseltme eğrileri AYNI kaldı.
+    { id: 'zone2', label: '2. Salon', cost: 1100, fillRate: 315, optional: false, area: 0, // ~3.5sn
+      requires: { prev: ['table4'] }, effect: { type: 'unlockArea' } },
+    { id: 'z2table2', label: '2. Masa', cost: 200, fillRate: 67, optional: false, area: 1, // ~3sn
       requires: { prev: ['zone2'] }, effect: { type: 'addTable' } },
-    { id: 'z2waiter', label: 'Garson Tut', cost: 360, fillRate: 103, optional: false, zone: 1, // ~3.5sn
+    { id: 'z2waiter', label: 'Garson Tut', cost: 360, fillRate: 103, optional: false, area: 1, // ~3.5sn
       requires: { prev: ['z2table2'] }, effect: { type: 'hireWaiter' } },
-    { id: 'z2table3', label: '3. Masa', cost: 485, fillRate: 139, optional: false, zone: 1, // ~3.5sn
+    { id: 'z2table3', label: '3. Masa', cost: 485, fillRate: 139, optional: false, area: 1, // ~3.5sn
       requires: { prev: ['z2waiter'] }, effect: { type: 'addTable' } },
-    { id: 'z2dishwasher', label: 'Bulaşıkçı Tut', cost: 720, fillRate: 206, optional: false, zone: 1, // ~3.5sn
+    { id: 'z2dishwasher', label: 'Bulaşıkçı Tut', cost: 720, fillRate: 206, optional: false, area: 1, // ~3.5sn
       requires: { prev: ['z2table3'] }, effect: { type: 'hireDishwasher' } },
-    { id: 'z2table4', label: '4. Masa', cost: 900, fillRate: 257, optional: false, zone: 1, // ~3.5sn
+    { id: 'z2table4', label: '4. Masa', cost: 900, fillRate: 257, optional: false, area: 1, // ~3.5sn
       requires: { prev: ['z2dishwasher'] }, effect: { type: 'addTable' } },
-    // --- ZONE-3 zinciri (M2 altyapı + M3 tost): arka-SAĞ salon = TOST OCAĞI (2026-06-11 taşıma).
+    // --- 3. ALAN zinciri (M2 altyapı + M3 tost): arka-SAĞ alan = TOST OCAĞI (2026-06-11 taşıma).
     // Unlock pad'i z1'in arka geçidi yanında (sıra-arası duvar geçidi). Maliyetler M3 sim kalibrasyonuna
-    // açık başlangıç değerleri (~2× z2 zinciri; zone-2 bitiminden ~30-60dk aktif oyun hedefi).
-    { id: 'zone3', label: 'Tost Salonu', cost: 3600, fillRate: 1030, optional: false, zone: 0, // ~3.5sn (eski 8sn)
-      requires: { prev: ['z2table4'] }, effect: { type: 'unlockZone' } },
-    { id: 'z3table2', label: '2. Masa', cost: 485, fillRate: 139, optional: false, zone: 2, // ~3.5sn
+    // açık başlangıç değerleri (~2× 2. alan zinciri; 2. alan bitiminden ~30-60dk aktif oyun hedefi).
+    { id: 'zone3', label: 'Tost Salonu', cost: 3600, fillRate: 1030, optional: false, area: 0, // ~3.5sn (eski 8sn)
+      requires: { prev: ['z2table4'] }, effect: { type: 'unlockArea' } },
+    { id: 'z3table2', label: '2. Masa', cost: 485, fillRate: 139, optional: false, area: 2, // ~3.5sn
       requires: { prev: ['zone3'] }, effect: { type: 'addTable' } },
-    { id: 'z3waiter', label: 'Garson Tut', cost: 800, fillRate: 229, optional: false, zone: 2, // ~3.5sn
+    { id: 'z3waiter', label: 'Garson Tut', cost: 800, fillRate: 229, optional: false, area: 2, // ~3.5sn
       requires: { prev: ['z3table2'] }, effect: { type: 'hireWaiter' } },
-    { id: 'z3table3', label: '3. Masa', cost: 1125, fillRate: 321, optional: false, zone: 2, // ~3.5sn
+    { id: 'z3table3', label: '3. Masa', cost: 1125, fillRate: 321, optional: false, area: 2, // ~3.5sn
       requires: { prev: ['z3waiter'] }, effect: { type: 'addTable' } },
-    { id: 'z3dishwasher', label: 'Bulaşıkçı Tut', cost: 1600, fillRate: 458, optional: false, zone: 2, // ~3.5sn
+    { id: 'z3dishwasher', label: 'Bulaşıkçı Tut', cost: 1600, fillRate: 458, optional: false, area: 2, // ~3.5sn
       requires: { prev: ['z3table3'] }, effect: { type: 'hireDishwasher' } },
-    { id: 'z3table4', label: '4. Masa', cost: 2025, fillRate: 579, optional: false, zone: 2, // ~3.5sn (eski 6sn)
+    { id: 'z3table4', label: '4. Masa', cost: 2025, fillRate: 579, optional: false, area: 2, // ~3.5sn (eski 6sn)
       requires: { prev: ['z3dishwasher'] }, effect: { type: 'addTable' } },
     // --- 2. GARSONLAR (Y4, plan §3 — onaylı): OPSİYONEL geç-oyun pad'leri; gating = o salonun
     // 4 masası da L4 (en yoğun an; 1. garson tek başına 16 koltuğa yetişemez — compute raporu §1).
     // Konum: kendi salonunun (artık kaybolmuş) 1. garson pad'inin TAM yeri (LAYOUT.padPos).
     // z0'ınki görev hattının SON görevine bağlı (q_waiter2); z1/z2'ninkiler serbest oyun.
-    { id: 'waiter2', label: '2. Garson', cost: 800, fillRate: 229, optional: true, zone: 0, // ~3.5sn
-      requires: { prev: ['waiter'], allZoneTablesLevel: { zone: 0, level: 4 } }, effect: { type: 'hireWaiter' } },
-    { id: 'z2waiter2', label: '2. Garson', cost: 1200, fillRate: 343, optional: true, zone: 1, // ~3.5sn
-      requires: { prev: ['z2waiter'], allZoneTablesLevel: { zone: 1, level: 4 } }, effect: { type: 'hireWaiter' } },
-    { id: 'z3waiter2', label: '2. Garson', cost: 2000, fillRate: 572, optional: true, zone: 2, // ~3.5sn (eski 6sn)
-      requires: { prev: ['z3waiter'], allZoneTablesLevel: { zone: 2, level: 4 } }, effect: { type: 'hireWaiter' } },
+    { id: 'waiter2', label: '2. Garson', cost: 800, fillRate: 229, optional: true, area: 0, // ~3.5sn
+      requires: { prev: ['waiter'], allAreaTablesLevel: { area: 0, level: 4 } }, effect: { type: 'hireWaiter' } },
+    { id: 'z2waiter2', label: '2. Garson', cost: 1200, fillRate: 343, optional: true, area: 1, // ~3.5sn
+      requires: { prev: ['z2waiter'], allAreaTablesLevel: { area: 1, level: 4 } }, effect: { type: 'hireWaiter' } },
+    { id: 'z3waiter2', label: '2. Garson', cost: 2000, fillRate: 572, optional: true, area: 2, // ~3.5sn (eski 6sn)
+      requires: { prev: ['z3waiter'], allAreaTablesLevel: { area: 2, level: 4 } }, effect: { type: 'hireWaiter' } },
   ],
 
   /**
@@ -529,31 +514,31 @@ export const economyConfig = {
     // salonun ocağını yükselt, garsonu hızlandır, masa yükselt, garson tepsisi (Y3), 2'li masa
     // seviyesi (koltuk/grup sistemini tanıtır). Kalan id'ler korunur (v27 İD-eşleme migrasyonu).
     { id: 'q_zone2', title: '2. Salonu aç', target: { type: 'pad', id: 'zone2' }, reward: 150 },
-    { id: 'q_z2table2', title: 'Salon 2: 2. Masayı aç', target: { type: 'pad', id: 'z2table2' }, zone: 1, reward: 50 },
-    { id: 'q_z2station', title: "Salon 2'nin ocağını yükselt", target: { type: 'stationLevel', level: 1, zone: 1 }, zone: 1, reward: 50 },
+    { id: 'q_z2table2', title: 'Salon 2: 2. Masayı aç', target: { type: 'pad', id: 'z2table2' }, area: 1, reward: 50 },
+    { id: 'q_z2station', title: "Salon 2'nin ocağını yükselt", target: { type: 'stationLevel', level: 1, service: 1 }, area: 1, reward: 50 },
     // v29: hedef mekânsal waiterUp pad'inden karakter paneline taşındı (id/sıra AYNI → quest migrasyonu yok).
     { id: 'q_waiterL2', title: 'Garsonu hızlandır', target: { type: 'waiterSpeed', kind: 'tea', tier: 1 }, reward: 50 },
     { id: 'q_tableL2', title: 'Bir masayı yükselt', target: { type: 'tableLevel', level: 1 }, reward: 30 },
-    { id: 'q_z2waiter', title: 'Salon 2: Garson tut', target: { type: 'pad', id: 'z2waiter' }, zone: 1, reward: 80 },
+    { id: 'q_z2waiter', title: 'Salon 2: Garson tut', target: { type: 'pad', id: 'z2waiter' }, area: 1, reward: 80 },
     { id: 'q_waiterTray1', title: 'Çay garsonlarının tepsisini büyüt', target: { type: 'waiterTray', kind: 'tea', tier: 1 }, reward: 80 },
-    { id: 'q_z2table3', title: 'Salon 2: 3. Masayı aç', target: { type: 'pad', id: 'z2table3' }, zone: 1, reward: 100 },
-    { id: 'q_z2dish', title: 'Salon 2: Bulaşıkçı tut', target: { type: 'pad', id: 'z2dishwasher' }, zone: 1, reward: 120 },
-    { id: 'q_z2table4', title: 'Salon 2: 4. Masayı aç', target: { type: 'pad', id: 'z2table4' }, zone: 1, reward: 200 },
+    { id: 'q_z2table3', title: 'Salon 2: 3. Masayı aç', target: { type: 'pad', id: 'z2table3' }, area: 1, reward: 100 },
+    { id: 'q_z2dish', title: 'Salon 2: Bulaşıkçı tut', target: { type: 'pad', id: 'z2dishwasher' }, area: 1, reward: 120 },
+    { id: 'q_z2table4', title: 'Salon 2: 4. Masayı aç', target: { type: 'pad', id: 'z2table4' }, area: 1, reward: 200 },
     { id: 'q_tableL2x2', title: "2 masayı Seviye 2'ye çıkar", target: { type: 'tablesAtLevel', level: 2, count: 2 }, reward: 120 },
     // --- ZONE-3 TOST hattı — v27 yeniden tasarım: tek tanıtım sayacı "5 tost" (yeni ürün; çay değil),
     // ek çeşit: tost tezgâhı yükseltme + tostçu tepsisi (Y3).
-    { id: 'q_zone3', title: 'Tost Salonunu aç', target: { type: 'pad', id: 'zone3' }, zone: 2, reward: 400 },
-    { id: 'q_z3table2', title: 'Tost: 2. Masayı aç', target: { type: 'pad', id: 'z3table2' }, zone: 2, reward: 100 },
-    { id: 'q_tost5', title: '5 tost servis et', target: { type: 'serveTea', count: 5, zone: 2 }, zone: 2, reward: 150 },
-    { id: 'q_z3station', title: 'Tost tezgâhını yükselt', target: { type: 'stationLevel', level: 1, zone: 2 }, zone: 2, reward: 150 },
-    { id: 'q_z3waiter', title: 'Tost: Garson tut', target: { type: 'pad', id: 'z3waiter' }, zone: 2, reward: 150 },
+    { id: 'q_zone3', title: 'Tost Salonunu aç', target: { type: 'pad', id: 'zone3' }, area: 2, reward: 400 },
+    { id: 'q_z3table2', title: 'Tost: 2. Masayı aç', target: { type: 'pad', id: 'z3table2' }, area: 2, reward: 100 },
+    { id: 'q_tost5', title: '5 tost servis et', target: { type: 'serveTea', count: 5, area: 2 }, area: 2, reward: 150 },
+    { id: 'q_z3station', title: 'Tost tezgâhını yükselt', target: { type: 'stationLevel', level: 1, service: 2 }, area: 2, reward: 150 },
+    { id: 'q_z3waiter', title: 'Tost: Garson tut', target: { type: 'pad', id: 'z3waiter' }, area: 2, reward: 150 },
     { id: 'q_tostTray1', title: 'Tostçunun tepsisini büyüt', target: { type: 'waiterTray', kind: 'tost', tier: 1 }, reward: 150 },
-    { id: 'q_z3table3', title: 'Tost: 3. Masayı aç', target: { type: 'pad', id: 'z3table3' }, zone: 2, reward: 200 },
-    { id: 'q_z3dish', title: 'Tost: Bulaşıkçı tut', target: { type: 'pad', id: 'z3dishwasher' }, zone: 2, reward: 250 },
-    { id: 'q_z3table4', title: 'Tost: 4. Masayı aç', target: { type: 'pad', id: 'z3table4' }, zone: 2, reward: 350 },
+    { id: 'q_z3table3', title: 'Tost: 3. Masayı aç', target: { type: 'pad', id: 'z3table3' }, area: 2, reward: 200 },
+    { id: 'q_z3dish', title: 'Tost: Bulaşıkçı tut', target: { type: 'pad', id: 'z3dishwasher' }, area: 2, reward: 250 },
+    { id: 'q_z3table4', title: 'Tost: 4. Masayı aç', target: { type: 'pad', id: 'z3table4' }, area: 2, reward: 350 },
     // --- Y4 geç-oyun (APPEND-only — v27 şeması DEĞİŞMEDİ): salonun masaları L4 → 2. garson.
     // z1/z2'nin 2. garsonları görevsiz opsiyonel pad'ler (serbest oyun keşfi).
-    { id: 'q_z1allL4', title: 'Salonun 4 masasını Seviye 4 yap', target: { type: 'tablesAtLevel', level: 4, count: 4, zone: 0 }, reward: 400 },
+    { id: 'q_z1allL4', title: 'Salonun 4 masasını Seviye 4 yap', target: { type: 'tablesAtLevel', level: 4, count: 4, area: 0 }, reward: 400 },
     { id: 'q_waiter2', title: '2. Garsonu tut', target: { type: 'pad', id: 'waiter2' }, reward: 300 },
   ] as readonly QuestDef[],
 
@@ -563,7 +548,7 @@ export const economyConfig = {
    * LEVEL/XP sistemi (2026-06-10, kullanıcı onayı): oyuncu seviyesi — ileride kat açma (Faz 3b)
    * ve kozmetik mağaza (tema/zemin/duvar) seviye kapısı olacak. XP kaynakları eylem-temelli
    * (para-temelli değil → ekonomi dengesinden bağımsız, gelir enflasyonundan etkilenmez).
-   * Eğri: needFor(L→L+1) = levelBase × levelGrowth^(L-1). Zone-1 sonu ≈ L5-6.
+   * Eğri: needFor(L→L+1) = levelBase × levelGrowth^(L-1). 1. alanın sonu ≈ L5-6.
    */
   xp: {
     /** Oyuncunun ELİYLE servis ettiği çay başına XP. */
@@ -586,7 +571,7 @@ export const economyConfig = {
 
   /**
    * Çevrimdışı (offline) gelir (kullanıcı isteği 2026-06-09: sert kıs → "birkaç yükseltme parası, oyuncu
-   * nefes alsın; zone'u tek seferde bitirmesin"). İki kol birlikte kısar:
+   * nefes alsın; alanı tek seferde bitirmesin"). İki kol birlikte kısar:
    *   - rateMult: offline oranı, idealize aktif oranın bu kadarı (1 = %100; 0.5 = yarı). Gerçek oyuncu
    *     idealize oranı tutturamadığından <1 olması "offline aktiften fazla ödüyor" sorununu da giderir.
    *   - baseCapHours: offline'da SAYILAN en fazla süre (cap). Bundan uzun kalınsa fazlası işlemez.
@@ -602,11 +587,11 @@ export const economyConfig = {
     /**
      * PARA tavanı: offline kazanç, sıradaki omurga pad maliyetinin bu ORANINI aşamaz (süre tavanından
      * BAĞIMSIZ ikinci kelepçe). 0.6 → 1.2 (kullanıcı 2026-06-11): sıradaki pad + birkaç yükseltme
-     * karşılanır; zone unlock sıradaysa açılır ama salonun İÇİ bitmez ("zone'u tek girişte bitirmesin"
+     * karşılanır; alan unlock sıradaysa açılır ama alanın İÇİ bitmez ("alanı tek girişte bitirmesin"
      * ilkesi yumuşatılmış sürer).
      */
     // 1.2→1.15 (2026-06-13): masa açma −%10 sonrası z2table2 200₺ oldu — 1.2'de tavan (1320)
-    // "zone2 + ilk iç pad" (1300) sınırını aşıyordu; "zone açılır ama içi bitmez" değişmezi korunur.
+    // "zone2 + ilk iç pad" (1300) sınırını aşıyordu; "alan açılır ama içi bitmez" değişmezi korunur.
     capNextPadFrac: 1.15,
     /** Elmas ile uzatma başına eklenen saat (Faz 4). */
     diamondExtendHours: 8,
@@ -614,9 +599,9 @@ export const economyConfig = {
 
   /**
    * KOZMETİK MAĞAZA (WP6, 2026-06-11; feedback §D19): zemin + duvar temaları ZONE-BAŞINA ₺ ile
-   * satın alınır — PAHALI (geç oyun para biriktirme hedefi; "tek zone için 10k+"). Satın alınan
-   * tema o zone için kalıcı sahipliktir (ownedCosmetics); tekrar seçmek ücretsiz. Görsel karşılıklar
-   * palette.ts FLOOR_THEMES/WALL_THEMES'te (zone zemini temanın DÜZ base rengiyle boyanır).
+   * satın alınır — PAHALI (geç oyun para biriktirme hedefi; "tek alan için 10k+"). Satın alınan
+   * tema o ALAN için kalıcı sahipliktir (ownedCosmetics); tekrar seçmek ücretsiz. Görsel karşılıklar
+   * palette.ts FLOOR_THEMES/WALL_THEMES'te (alan zemini temanın DÜZ base rengiyle boyanır).
    */
   cosmetics: {
     floorThemes: [
@@ -665,80 +650,10 @@ export type EconomyConfig = typeof economyConfig;
 export type PadDef = EconomyConfig['pads'][number];
 export type PadEffect = PadDef['effect'];
 
-/** Pad listesinden TÜRETİLEN durum (D-015). Bu alanlar AYRI saklanmaz. */
-export interface DerivedState {
-  /** Açık zone sayısı (1 = yalnız zone-1). */
-  zonesOpen: number;
-  /** Zone başına açık masa sayısı (kapalı zone = 0; açık zone min 1 — Faz 3a oto-masa). */
-  tablesByZone: number[];
-  /** Zone başına garson tutuldu mu. */
-  hasWaiterByZone: boolean[];
-  /** Zone başına garson SAYISI (Y4: 2. garson pad'leri — hasWaiterByZone = count>0). */
-  waiterCountByZone: number[];
-  /** Zone başına bulaşıkçı tutuldu mu. */
-  hasDishwasherByZone: boolean[];
-  /** GLOBAL açık masa sayısı — index'ler BİTİŞİK (zone sırası gating'le katı; HUD/test geri-uyumu). */
-  tables: number;
-  /** Açık ocak sayısı = zonesOpen (per-zone 1 ocak, D-022). */
-  stations: number;
-  /** Zone-1 garsonu (geri uyum: gate/reveal/testler). */
-  hasWaiter: boolean;
-  /** Zone-1 bulaşıkçısı (geri uyum). */
-  hasDishwasher: boolean;
-}
-
 /**
- * D-015: `padsDone` TEK doğru kaynak. `tables/stations/hasWaiter`
- * buradan türetilir → masa sayacı ile pad listesi gibi alanlar yapısal olarak
- * DESENKRONİZE OLAMAZ (eski v6/v7 senkron-yamaları gereksizleşir).
- * `stations` şu an tek salon = tek ocak (D-012); Faz 3a addStation pad'leriyle artacak.
+ * Pad listesinden TÜRETİLEN dünya (D-015) `src/game/world.ts`'e taşındı (Faz B1): `deriveWorld()`
+ * artık tek bir `zone` sayacı değil, ALAN · SERVİS · MASA · ODA listelerini üretir.
  */
-export function derivedFromPads(padsDone: readonly string[]): DerivedState {
-  const byId = new Map<string, PadDef>((economyConfig.pads as readonly PadDef[]).map((p) => [p.id, p]));
-  // 1. geçiş: zone açılışları (zone-2 pad etkileri ancak zone açıkken sayılır — savunmacı).
-  let zonesOpen = 1;
-  for (const id of padsDone) {
-    const pad = byId.get(id);
-    if (pad && pad.effect.type === 'unlockZone') zonesOpen = Math.min(MAX_ZONES, zonesOpen + 1);
-  }
-  const tablesByZone: number[] = Array.from({ length: MAX_ZONES }, (_, z) => (z < zonesOpen ? 1 : 0));
-  const waiterCountByZone = Array.from({ length: MAX_ZONES }, () => 0);
-  const hasDishwasherByZone = Array.from({ length: MAX_ZONES }, () => false);
-  for (const id of padsDone) {
-    const pad = byId.get(id);
-    if (!pad) continue;
-    const z = (pad as { zone?: number }).zone ?? 0;
-    if (z >= zonesOpen) continue; // kapalı zone'un pad'i etki edemez (bozuk kayda karşı)
-    switch (pad.effect.type) {
-      case 'addTable':
-        tablesByZone[z] = Math.min(TABLES_PER_ZONE, tablesByZone[z] + 1);
-        break;
-      case 'hireWaiter':
-        waiterCountByZone[z] = Math.min(2, waiterCountByZone[z] + 1); // Y4: zone başına en çok 2 garson
-        break;
-      case 'hireDishwasher':
-        hasDishwasherByZone[z] = true;
-        break;
-    }
-  }
-  const hasWaiterByZone = waiterCountByZone.map((n) => n > 0);
-  // Global masa index'leri BİTİŞİK kalmalı: bir zone açıksa ÖNCEKİ tüm zone'lar yapısal olarak doludur
-  // (her unlock pad'i önceki zone'un table4'ünü ister); bozuk kayda karşı kelepçe (yoksa slot atlanır,
-  // index kayardı). M2: 2 zone'a özel `tablesByZone[0]=...` genellendi (4 zone).
-  for (let z = 0; z < zonesOpen - 1; z++) tablesByZone[z] = TABLES_PER_ZONE;
-  const tables = tablesByZone.reduce((a, n) => a + n, 0);
-  return {
-    zonesOpen,
-    tablesByZone,
-    hasWaiterByZone,
-    waiterCountByZone,
-    hasDishwasherByZone,
-    tables,
-    stations: zonesOpen,
-    hasWaiter: hasWaiterByZone[0],
-    hasDishwasher: hasDishwasherByZone[0],
-  };
-}
 
 /** Gating değerlendirmesi için gereken (salt-okunur) ilerleme durumu. */
 export interface GateState {
@@ -748,9 +663,9 @@ export interface GateState {
   lifetime: number;
   /** Garsonun bugüne dek taşıdığı çay (arka-plan şartları için; eski çağıranlar vermeyebilir → 0). */
   waiterServed?: number;
-  /** ZONE-BAŞINA garson taşıma sayacı (v21 — z2 hızlandırma kendi garsonunun işini saysın). */
-  waiterServedByZone?: number[];
-  /** Masa-başı seviyeler (Y4 allZoneTablesLevel gate'i için; eski çağıranlar vermeyebilir → gate kapalı). */
+  /** SERVİS-BAŞINA garson taşıma sayacı (v21 — her servis kendi garsonunun işini saysın). */
+  waiterServedByService?: number[];
+  /** Masa-başı seviyeler (Y4 allAreaTablesLevel gate'i için; eski çağıranlar vermeyebilir → gate kapalı). */
   tableLevels?: number[];
 }
 
@@ -761,10 +676,10 @@ export function requiresMet(req: Requires | undefined, g: GateState): boolean {
   if (req.minStationLevel != null && g.stationLevel < req.minStationLevel) return false;
   if (req.minLifetime != null && g.lifetime < req.minLifetime) return false;
   if (req.minWaiterServed != null && (g.waiterServed ?? 0) < req.minWaiterServed) return false;
-  if (req.allZoneTablesLevel) {
-    const { zone, level } = req.allZoneTablesLevel;
+  if (req.allAreaTablesLevel) {
+    const { area, level } = req.allAreaTablesLevel;
     const lv = g.tableLevels ?? [];
-    for (let i = zone * TABLES_PER_ZONE; i < (zone + 1) * TABLES_PER_ZONE; i++) {
+    for (let i = area * TABLES_PER_AREA; i < (area + 1) * TABLES_PER_AREA; i++) {
       if ((lv[i] ?? 0) < level) return false;
     }
   }
@@ -809,11 +724,11 @@ export function levelProgress(totalXp: number): { level: number; cur: number; ne
 }
 
 /** Mevcut masa seviyesinden bir sonraki yükseltmenin maliyeti (₺). Faz 2h.
- *  zone-kademeli (2026-06-13): salon 1 eski eğriyle BİREBİR; salon 2-3 çarpanlı + 5'e yuvarlı. */
-export function tableUpgradeCost(level: number, zone = 0): number {
+ *  ALAN-kademeli (2026-06-13): 1. alan eski eğriyle BİREBİR; 2-3 çarpanlı + 5'e yuvarlı. */
+export function tableUpgradeCost(level: number, area = 0): number {
   const u = economyConfig.tables.upgrade;
   const base = u.costBase * Math.pow(u.costGrowth, level);
-  const mult = u.zoneCostMult[Math.min(zone, u.zoneCostMult.length - 1)];
+  const mult = u.areaCostMult[Math.min(area, u.areaCostMult.length - 1)];
   if (mult === 1) return Math.floor(base);
   return Math.round((base * mult) / 5) * 5;
 }

@@ -107,7 +107,7 @@ const QUAD_GEO = new PlaneGeometry(1, 1);
 QUAD_GEO.rotateX(-Math.PI / 2); // yatır: matris yalnız öteleme + ölçek taşısın
 
 /**
- * Bir zone zemininin desenini tek InstancedMesh olarak çizer.
+ * Bir ALANIN zemin desenini tek InstancedMesh olarak çizer.
  * `y` katman sırası: taban(0) < tema tabanı/derz(0.004) < desen(0.006) < GroundMarker(0.02).
  */
 export function FloorPattern({

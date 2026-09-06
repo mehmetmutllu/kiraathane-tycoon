@@ -25,7 +25,7 @@ import type { WallTheme } from '../../config/palette';
  * süpürgelik 0,06. Kademeli olduğu için hiçbir yüz eş düzlemde kalmaz.
  *
  * Maliyet: TÜM duvarlar + profiller **TEK InstancedMesh** (1 draw call). Öncesinde parça
- * başına 2 mesh vardı (3 zone'da ~26 draw call) ve profillerle 5 kata çıkacaktı. Matrisler
+ * başına 2 mesh vardı (3 alanda ~26 draw call) ve profillerle 5 kata çıkacaktı. Matrisler
  * ve renkler mount'ta BİR KEZ yazılır (floorPattern.tsx ile aynı desen; drei `<Instances>`
  * her kare yeniden hesapladığı için kullanılmıyor).
  *

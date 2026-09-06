@@ -44,7 +44,7 @@ export function installDevHooks(): void {
       stationLevel: s.stationLevels[0],
       lifetime: s.lifetime.toNumber(),
       waiterServed: s.stats.waiterServed,
-      waiterServedByZone: s.stats.waiterServedByZone,
+      waiterServedByService: s.stats.waiterServedByService,
       tableLevels: s.tableLevels,
     };
     // Quest sistemi: görünür pad = aktif görevin pad'i (ekranda tek pad).
@@ -56,21 +56,21 @@ export function installDevHooks(): void {
       tables: s.tables,
       stations: s.stations,
       // Zone modeli (Faz 3a): geri-uyum anahtarları zone-1'i gösterir; per-zone detay `zones`'ta.
-      zonesOpen: s.zonesOpen,
-      zones: Array.from({ length: s.zonesOpen }, (_, z) => ({
+      areasOpen: s.areasOpen,
+      zones: Array.from({ length: s.areasOpen }, (_, z) => ({
         stationLevel: s.stationLevels[z],
-        readyCups: s.readyCupsByZone[z],
+        readyCups: s.readyCupsByService[z],
         hasWaiter: s.waiters[z] != null,
         hasDishwasher: s.dishwashers[z] != null,
         stationPos: LAYOUT.stations[z],
         dishStationPos: LAYOUT.dishStations[z],
-        upgradeZonePos: LAYOUT.upgradeZones[z],
+        upgradeZonePos: LAYOUT.stationUpgradeSpots[z],
       })),
       stationLevel: s.stationLevels[0],
       padsDone: [...s.padsDone],
       npcCount: s.npcCount,
       // Servis durumu (D-011) — zone-1 geri-uyum
-      readyCups: s.readyCupsByZone[0],
+      readyCups: s.readyCupsByService[0],
       tray: s.tray,
       trayFood: s.trayFood,
       trayCap: trayCapacity(),
@@ -127,8 +127,8 @@ export function installDevHooks(): void {
       notice: s.notice ? s.notice.text : null,
       revealSeen: [...s.revealSeen],
       upgradeFill: Math.floor(s.upgradeFills[0]),
-      upgradeZonePos: LAYOUT.upgradeZone,
-      activeZone: s.activeZone ? { kind: s.activeZone.kind, label: s.activeZone.label } : null,
+      upgradeZonePos: LAYOUT.stationUpgradeSpot,
+      activeSpot: s.activeSpot ? { kind: s.activeSpot.kind, label: s.activeSpot.label } : null,
       player: s.player.map((n) => +n.toFixed(2)),
       offlineEarned: s.offlineEarned,
     };
@@ -164,7 +164,7 @@ export function installDevHooks(): void {
 
   window.__park = () => {
     const s = useGame.getState();
-    useGame.setState({ player: parkSpot(s.zonesOpen, s.tables), inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+    useGame.setState({ player: parkSpot(s.areasOpen, s.tables), inputKeyboard: [0, 0], inputJoystick: [0, 0] });
     return window.__game!();
   };
 

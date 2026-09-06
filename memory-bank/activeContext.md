@@ -2,6 +2,67 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-06 gece — **B1 TAMAM: model dönüştü, davranış BİREBİR aynı**)
+
+Faz B'nin ikinci adımı bitti. `ZONE` tek index'i **ALAN · SERVİS · MASA · ODA** olarak ayrıştı;
+içerik hiç değişmedi (3 alan × 4 masa, 3 servis). Kayıt **v31 = temiz sıfırlama** (D-058 karar 3).
+
+### Kabul kriteri — ÖLÇÜLDÜ
+`tools/tick-fingerprint.ts` çıktısı (2014 satır) **birebir aynı**. HEAD'in git worktree'sinde AYNI
+(düzeltilmiş) ölçüm aracıyla taban yeniden alındı → `diff` boş. `simulate.ts` denge sayıları da
+birebir aynı (tek fark: başlık metni). Yani model değişti, oyun değişmedi.
+
+### Yapılan
+- **YENİ `src/game/world.ts` (217 satır)** — dört kavramın TEK tanımı + `deriveWorld(padsDone)`:
+  `Area` · `Service{index, areaIndex, product, waiters, hasDishwasher}` ·
+  `Table{index, areaIndex, serviceIndex}` · `Room` (B4'e kadar boş).
+- **Servis ↔ alan bağı tek yerde:** `SERVICE_AREAS = [0,1,2]`. **B2 bunu `[0]` yapacak** →
+  alan açmak artık servis açmayacak, çağıranların hiçbiri değişmeyecek. B1'in asıl kazancı bu.
+- **Masa artık sayaç değil LİSTE:** `world.tables[i]` alanını ve servisini AYRI taşır;
+  `areaOfTable(i)` ≠ `serviceOfTable(i)` iki ayrı soru (bugün aynı cevap).
+- **`layout.ts` dizileri kavramını söylüyor:** servis dizileri (`stations`, `dishStations`,
+  `waiterHomes`, `stationPickups`, `stationUpgradeSpots`, `stationHalves`) ↔ alan dizileri
+  (`areaBounds`, `entrances`, `tables`). Tek geçit: `openServices(areasOpen)`.
+- **Yalan adlar düzeltildi:** `activeZone → activeSpot` (bölge değil, "üstünde durulan nokta"),
+  `upgradeZones → stationUpgradeSpots`, `teasServedByZone → teasServedByArea`,
+  `waiterServedByZone → waiterServedByService`, `floor/wallThemeByZone → *ByArea`.
+- **`save.ts` 751 → 188 satır:** `migrate()` silindi, yerine `resetKeepingSettings()`.
+- **Testler 206 → 207**: 32 migrasyon testi kalktı, 33 yeni test geldi (dünya ayrışması 20 +
+  v31 sıfırlama 9 + gating/reveal/gelir ayrımı 3). smoke 26/26 · build temiz · eslint 16 → 15.
+
+### Bilinçli olarak DEĞİŞMEYENLER (B1 "içerik sabit" demek)
+- **Pad ve görev kimlikleri aynı** (`zone2`, `z2table2`, `q_zone2` …) — parmak izi `padsDone`'u
+  dökümlediği için birebir karşılaştırma ancak böyle mümkün. Zincir zaten **B2/B3'te yeniden yazılacak.**
+- CSS sınıf adları (`preview-zones`, `shop-zone-btn`) — model değil stil.
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**B2 — servis TEKİLLEŞİR.** 3 ocak → 1 servis noktası: `SERVICE_AREAS = [0]`, ürün seviyeden gelir
+(L1-L3 çay ocağı · L4 tezgâh · L5 tost · L6 son ₺ seviyesi), garson havuzu global ("Tostçu Garson"
+ayrımı kalkar). **Davranış BURADA değişir** → güvence parmak izi DEĞİL, tempo ölçümü
+(`simulate.ts` + tempo tablosu). Sonra: B3 yerleşim (ÖNCE KADRAJ ONAYI — D-058 karar 4) →
+B4 odalar → B5 masa tipleri.
+
+### Faz G'den kalan artık (hâlâ açık)
+UI Canvas'ları (`CharacterPanel`, `SalonSlice`, `DioramaPreview`, `TableThemePreview`) hâlâ eski düz
+`ambientLight` ile — dünya ısındı, mağaza önizlemeleri soğuk kaldı.
+
+### Bu adımın kalıcı dersi
+**Ölçüm aracı da yanılabilir.** Parmak izinin `{...s.stats}` sığ kopyası yüzünden `teasServedBy*`
+dizisi tüm anlık görüntülerde PAYLAŞILIYORDU — dört karenin dördü de son değeri gösteriyordu, yani
+taban dosyası sessizce yanlıştı. Fark çıkınca "davranış bozuldu" diye kodu kurcalamak yerine önce
+ARACIN kendisi denetlendi; düzeltilmiş araçla HEAD'de taban yeniden alındı ve diff boş çıktı.
+Refactor güvencesi, aracın da doğrulanmasını gerektirir.
+
+### Kırmızı çizgi (duruyor)
+**"Objeler yüzüyor" hissine bir daha blob shadow ÖNERME** (D-054).
+
+### Bilinen, ertelenmiş
+- Maket girişinin üst çıtasında z-fighting ("oyuna geçerken hallederiz").
+- Bundle ~1,45 MB (three.js) — Faz F kod bölme.
+- `eslint` 15 hatası (hepsi eski; B1'de bir tanesi silinen `migrate` ile birlikte kalktı) — Faz E/F işi.
+
+---
+
 ## ŞU AN (2026-09-06 — **FAZ B HARİTASI ÇIKTI + DÖRT KARAR ALINDI**; kod yazılmadı)
 
 Faz A kapandıktan sonra Faz B'nin **1. adımı** yapıldı: maket v13'ün altı adımı ile bugünkü pad

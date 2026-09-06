@@ -4,11 +4,11 @@ import { useGame } from '../../game/store';
 import { Model } from './Model';
 import { useActorTransform } from './actorTransform';
 import { PALETTE } from '../../config/palette';
-import { zoneProduct } from '../../config/economy.config';
+import { serviceProduct } from '../../game/world';
 
 // Bulaşıkçının taşıdığı kirliler. Çay salonu = gri bardak; TOST salonu = yayvan kirli TABAK
 // (turu-5 kullanıcı bug'ı 2026-06-13: "tost garsonu boşları alınca tepsisinde bardak duruyor" —
-// bulaşıkçı yalnız KENDİ zone'unun kirlisini topladığından zone ürünü kabın türünü belirler;
+// bulaşıkçı yalnız KENDİ SERVİSİNİN kirlisini topladığından servisin ürünü kabın türünü belirler;
 // tabak görseli oyuncu tepsisindeki m.11 kalıbıyla aynı: disk + kırıntı).
 // v28: leğen yükseltmesiyle 8'e kadar çıkar → 4'lük sıralar; leğen taşınan adetle genişler.
 function CarriedDirty({ count, food }: { count: number; food: boolean }) {
@@ -54,13 +54,13 @@ function CarriedDirty({ count, food }: { count: number; food: boolean }) {
 }
 
 // Tek bulaşıkçı gövdesi (hook'lar per-unit kalsın diye ayrı bileşen).
-function DishwasherUnit({ zone, tray, food }: { zone: number; tray: number; food: boolean }) {
+function DishwasherUnit({ service, tray, food }: { service: number; tray: number; food: boolean }) {
   const outerRef = useRef<Group>(null);
   const ref = useRef<Group>(null);
   const read = useCallback(() => {
-    const dw = useGame.getState().dishwashers[zone];
+    const dw = useGame.getState().dishwashers[service];
     return dw ? ([dw.pos[0], dw.pos[2]] as const) : null;
-  }, [zone]);
+  }, [service]);
   useActorTransform(outerRef, ref, read);
   return (
     <group ref={outerRef}>
@@ -79,15 +79,15 @@ function DishwasherUnit({ zone, tray, food }: { zone: number; tray: number; food
   );
 }
 
-// Bulaşıkçılar (zone başına; greybox: gri-mavi önlüklü kapsül). Faz 6'da .glb takılır.
+// Bulaşıkçılar (SERVİS başına; greybox: gri-mavi önlüklü kapsül). Faz 6'da .glb takılır.
 export function Dishwasher() {
   // P0 perf: konum React'e girmez (Waiter ile aynı gerekçe); seçici yalnız var/yok + leğen adedi.
   const key = useGame((s) => s.dishwashers.map((dw) => (dw ? dw.tray : -1)).join(','));
   const trays = key ? key.split(',').map(Number) : [];
   return (
     <>
-      {trays.map((tray, z) =>
-        tray >= 0 ? <DishwasherUnit key={z} zone={z} tray={tray} food={zoneProduct(z) === 'tost'} /> : null,
+      {trays.map((tray, sv) =>
+        tray >= 0 ? <DishwasherUnit key={sv} service={sv} tray={tray} food={serviceProduct(sv) === 'tost'} /> : null,
       )}
     </>
   );

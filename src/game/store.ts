@@ -4,14 +4,10 @@ import type { Coin, Dish, Npc, Vec3, Waiter } from './types';
 import {
   economyConfig as C,
   cupPoolCapacity,
-  derivedFromPads,
   waiterSpeedNextCost,
   waiterSpeedMaxTier,
   dishSpeedNextCost,
   dishSpeedMaxTier,
-  MAX_ZONES,
-  TABLES_PER_ZONE,
-  defaultFloorTheme,
   charMaxTier,
   charNextCost,
   waiterTrayMaxTier,
@@ -40,10 +36,28 @@ import {
 
 import {
   LAYOUT,
+  openServices,
 } from './layout';
+import { deriveWorld, defaultFloorTheme, MAX_AREAS, MAX_SERVICES, type World } from './world';
+// Dünya modeli (ALAN · SERVİS · MASA · ODA) Faz B1'de world.ts'e ayrıldı; store aynı kapıdan sunar.
+export {
+  deriveWorld,
+  defaultFloorTheme,
+  serviceProduct,
+  serviceInArea,
+  serviceOfTable,
+  areaOfTable,
+  tablesInArea,
+  SERVICE_AREAS,
+  SERVICE_PRODUCTS,
+  MAX_AREAS,
+  MAX_SERVICES,
+  TABLES_PER_AREA,
+} from './world';
+export type { World, Area, Service, Table, Room } from './world';
 // Yerleşim/geometri Faz A2'de layout.ts'e taşındı; eski `from './store'` importları kırılmasın diye
 // buradan yeniden dışa aktarılır (tek tanım, iki kapı).
-export { LAYOUT, PAD_RADIUS, zoneCol, zoneRow, zoneAt, zonePoint, parkSpot, parkClearance } from './layout';
+export { LAYOUT, PAD_RADIUS, areaCol, areaRow, areaAt, areaPoint, openServices, parkSpot, parkClearance } from './layout';
 export type { RVec3 } from './layout';
 
 import {
@@ -59,7 +73,7 @@ import {
   questView,
   questFocusPos,
   computeOfflineEarned,
-  type ActiveZone,
+  type ActiveSpot,
   type GameNotice,
   type QuestView,
   type CamFocus,
@@ -81,23 +95,24 @@ export {
   visiblePads,
   currentPad,
   availableOptionalPads,
-  upgradeZoneUnlocked,
-  upgradeZoneUnlockedZ,
-  tableUpgradeZoneUnlocked,
-  tableUpgradeUnlockedZ,
+  revealKeys,
+  stationUpgradeUnlocked0,
+  stationUpgradeUnlocked,
+  tableUpgradeUnlocked,
+  tableUpgradeUnlockedIn,
   tableSoftMaxLevel,
   tableNextCost,
   tableThemeUnlocked,
   stationSoftMaxLevel,
   stationUpgradeCost,
-  stationUpgradeCostZ,
+  stationUpgradeCostAt,
   computeOfflineEarned,
   questTargetMet,
   questCounterValue,
   questFocusPos,
   waiterPadId,
 } from './rules';
-export type { ActiveZone, GameNotice, QuestView, QuestCtx, CamFocus } from './rules';
+export type { ActiveSpot, GameNotice, QuestView, QuestCtx, CamFocus } from './rules';
 
 import { createTickCtx, runTick } from './tick';
 
@@ -117,9 +132,9 @@ export interface GameState {
   lifetime: Decimal;
   tables: number;
   stations: number;
-  /** Açık zone sayısı (derivedFromPads anlık görüntüsü; 1 = yalnız zone-1). */
-  zonesOpen: number;
-  /** Zone başına çay ocağı seviyesi (persist v18; per-zone ocak, D-022). */
+  /** Açık ALAN sayısı (deriveWorld anlık görüntüsü; 1 = yalnız 1. alan). */
+  areasOpen: number;
+  /** SERVİS başına ocak seviyesi (persist v18; D-022). */
   stationLevels: number[];
   /** Masa-başı yükseltme seviyeleri (Faz 2h; persist; index = GLOBAL masa slotu; bahşiş + sabır). */
   tableLevels: number[];
@@ -135,22 +150,22 @@ export interface GameState {
   /** Oto-toplama toast'ının yeniden çıkabilmesine kalan sn (transient; spam önleme). */
   autoCollectToastCooldown: number;
   npcCount: number;
-  /** Zone başına garson (o zone'da tutulduysa) — konum/tepsi transient, her oturumda kurulur. */
+  /** SERVİS başına garson (o serviste tutulduysa) — konum/tepsi transient, her oturumda kurulur. */
   waiters: (Waiter | null)[];
-  /** Zone başına 2. GARSON (Y4 waiter2 pad'leri; claim sistemiyle 1.'den farklı masaya gider). */
+  /** SERVİS başına 2. GARSON (Y4 waiter2 pad'leri; claim sistemiyle 1.'den farklı masaya gider). */
   waiters2: (Waiter | null)[];
-  /** Zone başına bulaşıkçı — konum/taşıdığı kirli transient. */
+  /** SERVİS başına bulaşıkçı — konum/taşıdığı kirli transient. */
   dishwashers: (Waiter | null)[];
-  /** Zone başına ocak hazır-kuyruğundaki demlenmiş çay sayısı. */
-  readyCupsByZone: number[];
-  /** Zone başına demlenmekte olan bardağın ilerleme süresi (sn). */
-  brewProgressByZone: number[];
+  /** SERVİS başına ocak hazır-kuyruğundaki demlenmiş çay sayısı. */
+  readyCupsByService: number[];
+  /** SERVİS başına demlenmekte olan bardağın ilerleme süresi (sn). */
+  brewProgressByService: number[];
   /** Oyuncunun tepsisinde taşıdığı çay sayısı. */
   tray: number;
   /** Oyuncunun tepsisinde taşıdığı TOST sayısı (M3 ikinci ürün hattı; kapasite tray+trayFood+
    *  carriedDirty toplamı üzerinden PAYLAŞIMLIDIR). */
   trayFood: number;
-  /** Temiz bardak havuzu — GLOBAL tek depo (zone'lar ortak; korunum değişmezi global kalır). Faz 2e. */
+  /** Temiz bardak havuzu — GLOBAL tek depo (servisler ortak; korunum değişmezi global kalır). Faz 2e. */
   cleanCups: number;
   /** Masalarda bekleyen kirli bardaklar (mekânsal nesneler). */
   dishes: Dish[];
@@ -159,11 +174,11 @@ export interface GameState {
   /** Oyuncunun taşıdığı kirli TABAK (tost bulaşığı; turu-5 m.11 — tepside tabak çizilir).
    *  Transient; yıkama/havuz bardakla ORTAK, yalnız görsel için ayrı sayılır. */
   carriedDirtyFood: number;
-  /** Zone başına çay-yükseltme noktası kısmi dolumu (transient; D-018 dwell). */
+  /** SERVİS başına ocak-yükseltme noktası kısmi dolumu (transient; D-018 dwell). */
   upgradeFills: number[];
   /** Masa-başı yükseltme noktalarındaki kısmi dolum (transient; index = GLOBAL masa slotu). */
   tableUpgradeFills: number[];
-  activeZone: ActiveZone | null;
+  activeSpot: ActiveSpot | null;
   /** Yeni-özellik toast'u (D-019 §4) — transient; null ise gösterilmez. AYNI ANDA tek toast. */
   notice: GameNotice | null;
   /** Bekleyen toast kuyruğu (transient): bitiş/reveal/seviye sırayla gösterilir, birbirini ezmez. */
@@ -180,9 +195,9 @@ export interface GameState {
   xp: number;
   /** Oyuncu ayarları (persist v17): ses/müzik/bildirim. */
   settings: SaveSettings;
-  /** Kozmetik mağaza (persist v19, WP6): zone başına seçili tema + sahiplikler (`kind:id:zN`). */
-  floorThemeByZone: string[];
-  wallThemeByZone: string[];
+  /** Kozmetik mağaza (persist v19, WP6): ALAN başına seçili tema + sahiplikler (`kind:id:zN`). */
+  floorThemeByArea: string[];
+  wallThemeByArea: string[];
   /** GLOBAL masa teması (persist v30): mobilya minder+örtü rengi (recolor atlas). */
   tableTheme: string;
   ownedCosmetics: string[];
@@ -210,8 +225,8 @@ export interface GameState {
   offlineEarned: number;
   // Dahili
   spawnTimer: number;
-  /** Spawn round-robin zone imleci (transient): grup dağılımı zone'lar arası adil olsun. */
-  spawnZone: number;
+  /** Spawn round-robin ALAN imleci (transient): grup dağılımı alanlar arası adil olsun. */
+  spawnArea: number;
   saveTimer: number;
   nextId: number;
   inputKeyboard: [number, number];
@@ -229,10 +244,10 @@ export interface GameState {
   /** Ayar değiştir (ayarlar modalı) — anında kaydedilir. */
   setSetting: (key: keyof SaveSettings, value: boolean) => void;
   /**
-   * Kozmetik tema satın al/uygula (WP6): zone AÇIK olmalı; ilk satın alma ₺ düşer (cüzdan yetmezse
+   * Kozmetik tema satın al/uygula (WP6): ALAN AÇIK olmalı; ilk satın alma ₺ düşer (cüzdan yetmezse
    * false), sahip olunan tema ücretsiz yeniden seçilir. Başarıda anında kaydedilir.
    */
-  buyCosmetic: (kind: 'floor' | 'wall' | 'table', id: string, zone: number) => boolean;
+  buyCosmetic: (kind: 'floor' | 'wall' | 'table', id: string, area: number) => boolean;
   /**
    * Karakter özelliği satın al (v20, karakter paneli): cüzdan yeterliyse kademe +1 (yetmezse/max'taysa
    * false). Başarıda anında kaydedilir; charStat görevi varsa sonraki tick'te tamamlanır.
@@ -266,8 +281,8 @@ export const useGame = create<GameState>((set, get) => ({
   lifetime: D(0),
   tables: 1,
   stations: 1,
-  zonesOpen: 1,
-  stationLevels: Array.from({ length: MAX_ZONES }, () => 0),
+  areasOpen: 1,
+  stationLevels: Array.from({ length: MAX_AREAS }, () => 0),
   tableLevels: LAYOUT.tables.map(() => 0),
   padsDone: [],
   padFills: {},
@@ -277,20 +292,20 @@ export const useGame = create<GameState>((set, get) => ({
   autoCollectSum: 0,
   autoCollectToastCooldown: 0,
   npcCount: 0,
-  waiters: Array.from({ length: MAX_ZONES }, () => null),
-  waiters2: Array.from({ length: MAX_ZONES }, () => null),
-  dishwashers: Array.from({ length: MAX_ZONES }, () => null),
-  readyCupsByZone: Array.from({ length: MAX_ZONES }, () => 0),
-  brewProgressByZone: Array.from({ length: MAX_ZONES }, () => 0),
+  waiters: Array.from({ length: MAX_AREAS }, () => null),
+  waiters2: Array.from({ length: MAX_AREAS }, () => null),
+  dishwashers: Array.from({ length: MAX_AREAS }, () => null),
+  readyCupsByService: Array.from({ length: MAX_AREAS }, () => 0),
+  brewProgressByService: Array.from({ length: MAX_AREAS }, () => 0),
   tray: 0,
   trayFood: 0,
   cleanCups: cupPoolCapacity(0),
   dishes: [],
   carriedDirty: 0,
   carriedDirtyFood: 0,
-  upgradeFills: Array.from({ length: MAX_ZONES }, () => 0),
+  upgradeFills: Array.from({ length: MAX_AREAS }, () => 0),
   tableUpgradeFills: LAYOUT.tables.map(() => 0),
-  activeZone: null,
+  activeSpot: null,
   notice: null,
   noticeQueue: [],
   revealSeen: [],
@@ -302,8 +317,8 @@ export const useGame = create<GameState>((set, get) => ({
   questDoneIndex: -1,
   xp: 0,
   settings: defaultSettings(),
-  floorThemeByZone: Array.from({ length: MAX_ZONES }, (_, z) => defaultFloorTheme(z)),
-  wallThemeByZone: Array.from({ length: MAX_ZONES }, () => 'krem'),
+  floorThemeByArea: Array.from({ length: MAX_AREAS }, (_, z) => defaultFloorTheme(z)),
+  wallThemeByArea: Array.from({ length: MAX_AREAS }, () => 'krem'),
   tableTheme: 'mavi',
   ownedCosmetics: [],
   charUpgrades: defaultCharUpgrades(),
@@ -315,7 +330,7 @@ export const useGame = create<GameState>((set, get) => ({
   camZoomOut: false,
   offlineEarned: 0,
   spawnTimer: 1,
-  spawnZone: 0,
+  spawnArea: 0,
   saveTimer: SAVE_INTERVAL,
   nextId: 1,
   inputKeyboard: [0, 0],
@@ -323,10 +338,11 @@ export const useGame = create<GameState>((set, get) => ({
 
   init: () => {
     const save: SaveData = loadSave();
-    // D-015: tables/stations/zonesOpen/personel padsDone'dan TÜRETİLİR (ayrı saklanmaz).
-    const derived = derivedFromPads(save.padsDone);
-    const stationLevels = Array.from({ length: MAX_ZONES }, (_, z) =>
-      Math.min(save.stationLevels[z] ?? 0, stationSoftMaxLevel()),
+    // D-015: masa/servis/personel padsDone'dan TÜRETİLİR (ayrı saklanmaz).
+    const world: World = deriveWorld(save.padsDone);
+    const openSvc = openServices(world.areasOpen);
+    const stationLevels = Array.from({ length: MAX_SERVICES }, (_, sv) =>
+      Math.min(save.stationLevels[sv] ?? 0, stationSoftMaxLevel()),
     );
     // Karakter kademeleri (v20): bozuk/aşırı değer max kademeye kelepçelenir (stationLevels deseni).
     const charUpgrades: CharUpgrades = {
@@ -343,19 +359,19 @@ export const useGame = create<GameState>((set, get) => ({
       tostSpeed: Math.max(0, Math.min(save.waiterUpgrades?.tostSpeed ?? 0, waiterSpeedMaxTier('tost'))),
       dishSpeed: Math.max(0, Math.min(save.waiterUpgrades?.dishSpeed ?? 0, dishSpeedMaxTier())),
     };
-    // Çevrimdışı gelir: açık zone'ların idealize oranları TOPLAMI; süre + PARA tavanlı (computeOfflineEarned).
+    // Çevrimdışı gelir: açık SERVİSLERİN idealize oranları TOPLAMI; süre + PARA tavanlı (computeOfflineEarned).
     const elapsed = Math.max(0, (Date.now() - save.lastSaved) / 1000);
     let wallet = D(save.wallet);
     let lifetime = D(save.lifetime);
     let offlineEarned = 0;
     if (elapsed > 30) {
       let rate = 0;
-      for (let z = 0; z < derived.zonesOpen; z++) {
-        // O zone'un AÇIK masalarının toplam bahşişi (tipBase × seviye; global slot index'i z*4..).
+      for (const sv of openSvc) {
+        // O servise bağlı AÇIK masaların toplam bahşişi (tipBase × seviye).
+        const served = world.tables.filter((t) => t.serviceIndex === sv);
         let tipTotal = 0;
-        for (let i = 0; i < derived.tablesByZone[z]; i++)
-          tipTotal += C.tables.tipBase * (save.tableLevels[z * TABLES_PER_ZONE + i] ?? 0);
-        rate += incomeRate(derived.tablesByZone[z], stationLevels[z], z, tipTotal);
+        for (const t of served) tipTotal += C.tables.tipBase * (save.tableLevels[t.index] ?? 0);
+        rate += incomeRate(served.length, stationLevels[sv], sv, tipTotal);
       }
       offlineEarned = computeOfflineEarned(rate, elapsed, save.padsDone);
       wallet = wallet.add(offlineEarned);
@@ -365,9 +381,9 @@ export const useGame = create<GameState>((set, get) => ({
       wallet,
       lifetime,
       diamonds: D(save.diamonds),
-      tables: derived.tables,
-      stations: derived.stations,
-      zonesOpen: derived.zonesOpen,
+      tables: world.tables.length,
+      stations: openSvc.length,
+      areasOpen: world.areasOpen,
       stationLevels,
       // Masa-başı seviyeleri: slot sayısına normalize et + her birini soft max'a clamp'le.
       tableLevels: LAYOUT.tables.map((_, i) => Math.min(save.tableLevels[i] ?? 0, tableSoftMaxLevel())),
@@ -380,43 +396,43 @@ export const useGame = create<GameState>((set, get) => ({
       autoCollectSum: 0,
       autoCollectToastCooldown: 0,
       npcCount: 0,
-      waiters: Array.from({ length: MAX_ZONES }, (_, z) =>
-        derived.hasWaiterByZone[z] ? { pos: [...LAYOUT.waiterHomes[z]] as Vec3, tray: 0 } : null,
+      waiters: world.services.map((sv) =>
+        sv.open && sv.waiters >= 1 ? { pos: [...LAYOUT.waiterHomes[sv.index]] as Vec3, tray: 0 } : null,
       ),
-      waiters2: Array.from({ length: MAX_ZONES }, (_, z) =>
-        derived.waiterCountByZone[z] >= 2
-          ? { pos: [LAYOUT.waiterHomes[z][0] + 0.7, 0, LAYOUT.waiterHomes[z][2]] as Vec3, tray: 0 }
+      waiters2: world.services.map((sv) =>
+        sv.open && sv.waiters >= 2
+          ? { pos: [LAYOUT.waiterHomes[sv.index][0] + 0.7, 0, LAYOUT.waiterHomes[sv.index][2]] as Vec3, tray: 0 }
           : null,
       ),
-      dishwashers: Array.from({ length: MAX_ZONES }, (_, z) =>
-        derived.hasDishwasherByZone[z] ? { pos: [...LAYOUT.dishwasherHomes[z]] as Vec3, tray: 0 } : null,
+      dishwashers: world.services.map((sv) =>
+        sv.open && sv.hasDishwasher ? { pos: [...LAYOUT.dishwasherHomes[sv.index]] as Vec3, tray: 0 } : null,
       ),
-      readyCupsByZone: Array.from({ length: MAX_ZONES }, () => 0),
-      brewProgressByZone: Array.from({ length: MAX_ZONES }, () => 0),
+      readyCupsByService: Array.from({ length: MAX_SERVICES }, () => 0),
+      brewProgressByService: Array.from({ length: MAX_SERVICES }, () => 0),
       tray: 0,
       trayFood: 0,
       // Bardak havuzu her oturumda dolu-temiz başlar (transient). GLOBAL tek depo:
-      // zone başına taban + açık zone ocak seviyelerinin toplamı.
-      cleanCups: totalCupPool(derived.zonesOpen, stationLevels),
+      // açık servis başına taban + o servislerin ocak seviyelerinin toplamı.
+      cleanCups: totalCupPool(openSvc.length, stationLevels),
       dishes: [],
       carriedDirty: 0,
       carriedDirtyFood: 0,
-      upgradeFills: Array.from({ length: MAX_ZONES }, () => 0),
+      upgradeFills: Array.from({ length: MAX_SERVICES }, () => 0),
       tableUpgradeFills: LAYOUT.tables.map(() => 0),
-      activeZone: null,
+      activeSpot: null,
       notice: null,
       noticeQueue: [],
       // revealSeen baseline: yüklemede ZATEN açık olan özellikler bildirilmiş sayılır (yeniden yükleme spam'ı yok).
       revealSeen: revealKeys(
         {
           padsDone: save.padsDone,
-          tables: derived.tables,
+          tables: world.tables.length,
           stationLevel: stationLevels[0],
           lifetime: lifetime.toNumber(),
           waiterServed: save.stats.waiterServed,
-          waiterServedByZone: save.stats.waiterServedByZone,
+          waiterServedByService: save.stats.waiterServedByService,
         },
-        derived.zonesOpen,
+        world.areasOpen,
         stationLevels,
       ).map(([k]) => k),
       stats: { ...save.stats },
@@ -427,8 +443,8 @@ export const useGame = create<GameState>((set, get) => ({
       questDoneIndex: -1,
       xp: save.xp,
       settings: { ...save.settings },
-      floorThemeByZone: Array.from({ length: MAX_ZONES }, (_, z) => save.floorThemeByZone[z] ?? defaultFloorTheme(z)),
-      wallThemeByZone: Array.from({ length: MAX_ZONES }, (_, z) => save.wallThemeByZone[z] ?? 'krem'),
+      floorThemeByArea: Array.from({ length: MAX_AREAS }, (_, a) => save.floorThemeByArea[a] ?? defaultFloorTheme(a)),
+      wallThemeByArea: Array.from({ length: MAX_AREAS }, (_, a) => save.wallThemeByArea[a] ?? 'krem'),
       tableTheme: save.tableTheme ?? 'mavi',
       ownedCosmetics: [...save.ownedCosmetics],
       charUpgrades,
@@ -451,12 +467,12 @@ export const useGame = create<GameState>((set, get) => ({
       camFocus:
         save.questIndex === 0 && lifetime.lte(0)
           ? (() => {
-              const p0 = questFocusPos(C.quests[0].target, save.tableLevels, derived.tables);
+              const p0 = questFocusPos(C.quests[0].target, save.tableLevels, world.tables.length);
               return p0 ? { pos: [p0[0], p0[1], p0[2]] as [number, number, number], ttl: 3 } : null;
             })()
           : null,
       spawnTimer: 1,
-      spawnZone: 0,
+      spawnArea: 0,
       saveTimer: SAVE_INTERVAL,
       nextId: 1,
     });
@@ -492,16 +508,16 @@ export const useGame = create<GameState>((set, get) => ({
         dishes: c.dishes,
         wallet: c.wallet,
         lifetime: c.lifetime,
-        tables: c.out.tables,
-        stations: c.out.stations,
-        zonesOpen: c.out.zonesOpen,
+        tables: c.out.tables.length,
+        stations: openServices(c.out.areasOpen).length,
+        areasOpen: c.out.areasOpen,
         stationLevels: c.stationLevels,
         tableLevels: c.tableLevels,
         padsDone: c.padsDone,
         padFills: c.padFills,
         upgradeFills: c.upgradeFills,
         tableUpgradeFills: c.tableUpgradeFills,
-        activeZone: c.activeZone,
+        activeSpot: c.activeSpot,
         notice: c.notice,
         noticeQueue: c.noticeQueue,
         revealSeen: c.revealSeen,
@@ -518,15 +534,15 @@ export const useGame = create<GameState>((set, get) => ({
         waiters: c.waiters,
         waiters2: c.waiters2,
         dishwashers: c.dishwashers,
-        readyCupsByZone: c.readyCupsByZone,
-        brewProgressByZone: c.brewProgressByZone,
+        readyCupsByService: c.readyCupsByService,
+        brewProgressByService: c.brewProgressByService,
         tray: c.tray,
         trayFood: c.trayFood,
         cleanCups: c.cleanCups,
         carriedDirty: c.carriedDirty,
         carriedDirtyFood: c.carriedDirtyFood,
         spawnTimer: c.spawnTimer,
-        spawnZone: c.spawnZone,
+        spawnArea: c.spawnArea,
         saveTimer,
         nextId: c.nextId,
         npcCount: c.liveNpcs.length,
@@ -566,7 +582,7 @@ export const useGame = create<GameState>((set, get) => ({
     const s = get();
     if (s.questIndex >= C.quests.length) return;
     const q = C.quests[s.questIndex];
-    const p = questFocusPos(q.target, s.tableLevels, s.tables, q.zone ?? 0);
+    const p = questFocusPos(q.target, s.tableLevels, s.tables, q.area ?? 0);
     if (p) set({ camFocus: { pos: [p[0], p[1], p[2]], ttl: CAM_FOCUS_TTL } });
   },
 
@@ -577,11 +593,11 @@ export const useGame = create<GameState>((set, get) => ({
     get().saveNow();
   },
 
-  // Kozmetik tema satın al/uygula (WP6 — feedback §D19). Zone açık + tema tanımlı olmalı;
+  // Kozmetik tema satın al/uygula (WP6 — feedback §D19). ALAN açık + tema tanımlı olmalı;
   // sahip değilse cüzdandan düşer (yetmezse false), sahipse ücretsiz uygulanır.
-  buyCosmetic: (kind, id, zone) => {
+  buyCosmetic: (kind, id, area) => {
     const s = get();
-    // MASA teması GLOBAL (zone yok): tek tableTheme; sahiplik anahtarı `table:id` (zone'suz).
+    // MASA teması GLOBAL (alansız): tek tableTheme; sahiplik anahtarı `table:id`.
     if (kind === 'table') {
       if (!tableThemeUnlocked(s)) return false; // 3 salon + tüm masalar max olana dek kilitli
       const theme = C.cosmetics.tableThemes.find((t) => t.id === id);
@@ -598,11 +614,11 @@ export const useGame = create<GameState>((set, get) => ({
       get().saveNow();
       return true;
     }
-    if (zone < 0 || zone >= s.zonesOpen) return false;
+    if (area < 0 || area >= s.areasOpen) return false;
     const themes = kind === 'floor' ? C.cosmetics.floorThemes : C.cosmetics.wallThemes;
     const theme = themes.find((t) => t.id === id);
     if (!theme) return false;
-    const key = `${kind}:${id}:z${zone}`;
+    const key = `${kind}:${id}:z${area}`;
     let wallet = s.wallet;
     let ownedCosmetics = s.ownedCosmetics;
     if (theme.cost > 0 && !ownedCosmetics.includes(key)) {
@@ -610,9 +626,9 @@ export const useGame = create<GameState>((set, get) => ({
       wallet = wallet.sub(theme.cost);
       ownedCosmetics = [...ownedCosmetics, key];
     }
-    const arrKey = kind === 'floor' ? 'floorThemeByZone' : 'wallThemeByZone';
-    const arr = (kind === 'floor' ? s.floorThemeByZone : s.wallThemeByZone).slice();
-    arr[zone] = id;
+    const arrKey = kind === 'floor' ? 'floorThemeByArea' : 'wallThemeByArea';
+    const arr = (kind === 'floor' ? s.floorThemeByArea : s.wallThemeByArea).slice();
+    arr[area] = id;
     set({ wallet, ownedCosmetics, [arrKey]: arr });
     get().saveNow();
     return true;
@@ -737,8 +753,8 @@ export const useGame = create<GameState>((set, get) => ({
       questBase: s.questBase,
       xp: s.xp,
       settings: { ...s.settings },
-      floorThemeByZone: [...s.floorThemeByZone],
-      wallThemeByZone: [...s.wallThemeByZone],
+      floorThemeByArea: [...s.floorThemeByArea],
+      wallThemeByArea: [...s.wallThemeByArea],
       tableTheme: s.tableTheme,
       ownedCosmetics: [...s.ownedCosmetics],
       charUpgrades: { ...s.charUpgrades },

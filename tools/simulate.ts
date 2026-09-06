@@ -5,9 +5,9 @@
  *
  * Çalıştır:  npx tsx tools/simulate.ts   (veya)  node --import tsx tools/simulate.ts
  *
- * Model (ZONE'lu, gece 5/7): gelir = Σ_zone min(talep_z, arz_z) × (sabit fiyat + bahşiş) × VERİM.
- *   - talep_z = zone'un masaları / döngü_z   (her masa döngü başına 1 çay tüketir)
- *   - arz_z   = 1 / demlemeSüresi_z          (per-zone ocak, D-022; kendi seviyesi)
+ * Model (SERVİS başına, gece 5/7): gelir = Σ_servis min(talep_s, arz_s) × (sabit fiyat + bahşiş) × VERİM.
+ *   - talep_s = servise bağlı masalar / döngü_s   (her masa döngü başına 1 ürün tüketir)
+ *   - arz_s   = 1 / hazırlamaSüresi_s            (servis başına ocak, D-022; kendi seviyesi)
  *   - VERİM (profil): idealize tavanın oyuncu tarafından gerçeklenen oranı.
  *     Sim eski sürümde hep 1.0 (idealize) idi; 3-profil raporu için parametre oldu.
  *     VARSAYILAN ÇIKTI yine 1.0 → "ilk-alım 60sn" denetimi DEĞİŞMEDİ.
@@ -20,31 +20,35 @@ import {
   upgradeCost,
   upgradeOutputMultiplier,
   requiresMet,
-  derivedFromPads,
   tableUpgradeCost,
   tableTip,
   tableSeats,
   charNextCost,
-  MAX_ZONES,
   PRODUCTS,
-  zoneProduct,
-  zoneOfTable,
   type CharStat,
   type GateState,
   type QuestTarget,
 } from '../src/config/economy.config.ts';
+import {
+  deriveWorld,
+  serviceProduct,
+  serviceInArea,
+  areaOfTable,
+  tablesInArea,
+  MAX_SERVICES,
+} from '../src/game/world.ts';
 
 const DT = 1; // saniyelik adım
 const TEA_PRICE = C.teaStation.basePrice;
 const SOFT_MAX = C.teaStation.upgrade.maxLevel; // ₺ ile çıkılabilen en yüksek seviye
 const TABLE_SOFT_MAX = C.tables.upgrade.maxLevel;
 
-// D-015: tables/zonesOpen ayrı tutulmaz; padsDone'dan türetilir (store ile aynı kaynak).
+// D-015: masa/servis ayrı tutulmaz; padsDone'dan türetilir (store ile aynı kaynak — world.ts).
 interface State {
   t: number;
   wallet: number;
   lifetime: number;
-  stationLevels: number[]; // zone başına ocak seviyesi (v18 modeli)
+  stationLevels: number[]; // SERVİS başına ocak seviyesi (v18 modeli)
   tableLevel: number; // idealize: tüm masalar eşit yükseltilir
   padsDone: string[];
   /** Karakter kademeleri (v20): quest hattındaki alımlar simüle edilir (T1/T2/M1). */
@@ -78,59 +82,61 @@ function advanceQuests(s: State): void {
 function gateOf(s: State): GateState {
   return {
     padsDone: s.padsDone,
-    tables: derivedFromPads(s.padsDone).tables,
+    tables: deriveWorld(s.padsDone).tables.length,
     stationLevel: s.stationLevels[0],
     lifetime: s.lifetime,
   };
 }
 
 function brewTimeZ(s: State, z: number): number {
-  // M3: hazırlama süresi zone'un ÜRÜNÜNDEN (çay 6 / tost 14 taban).
+  // M3: hazırlama süresi SERVİSİN ÜRÜNÜNDEN (çay 6 / tost 11 taban).
   return (
-    PRODUCTS[zoneProduct(z)].prepTime /
+    PRODUCTS[serviceProduct(z)].prepTime /
     upgradeOutputMultiplier(C.teaStation.upgrade, s.stationLevels[z])
   );
 }
 
-// Zone'un gelir oranı (₺/sn): min(talep, arz) × (ürün fiyatı + bahşiş). M3: tost pahalı+yavaş.
+// SERVİSİN gelir oranı (₺/sn): min(talep, arz) × (ürün fiyatı + bahşiş). M3: tost pahalı+yavaş.
 // Y4 kalibrasyonu: talep KOLTUK-temelli (Y2 grupları — masa başına seviyeyle 1→4 koltuk; idealize
 // tableLevel'da L0 koltuk=1 → ölçülen erken/orta eğri AYNI kalır, geç-oyun L4 döneminde talep ×4
 // olur ve istasyon arzı tavana dayanır — 2. garson + tepsi-3 tam bu pencereyi taşır, compute §1).
 function rateZ(s: State, z: number): number {
-  const d = derivedFromPads(s.padsDone);
-  if (z >= d.zonesOpen) return 0;
+  const w = deriveWorld(s.padsDone);
+  if (!w.services[z]?.open) return 0;
   const bt = brewTimeZ(s, z);
   const cycle = C.npc.walkTime + bt + C.npc.eatTime;
-  const demand = (d.tablesByZone[z] * tableSeats(s.tableLevel)) / cycle;
+  const served = w.tables.filter((t) => t.serviceIndex === z).length;
+  const demand = (served * tableSeats(s.tableLevel)) / cycle;
   const supply = 1 / bt;
-  return Math.min(demand, supply) * (PRODUCTS[zoneProduct(z)].price + tableTip(s.tableLevel));
+  return Math.min(demand, supply) * (PRODUCTS[serviceProduct(z)].price + tableTip(s.tableLevel));
 }
 
 function rate(s: State, eff = 1): number {
-  const d = derivedFromPads(s.padsDone);
+  const w = deriveWorld(s.padsDone);
   let r = 0;
-  for (let z = 0; z < d.zonesOpen; z++) r += rateZ(s, z);
+  for (const sv of w.services) if (sv.open) r += rateZ(s, sv.index);
   return r * eff;
 }
 
-// Zone'un ocağı darboğaz mı (talep ≥ arz)? Akıllı oyuncu önce darboğaz ocağı yükseltir.
+// Servisin ocağı darboğaz mı (talep ≥ arz)? Akıllı oyuncu önce darboğaz ocağı yükseltir.
 function ocakBottleneckZ(s: State, z: number): boolean {
-  const d = derivedFromPads(s.padsDone);
-  if (z >= d.zonesOpen) return false;
+  const w = deriveWorld(s.padsDone);
+  if (!w.services[z]?.open) return false;
   const bt = brewTimeZ(s, z);
   const cycle = C.npc.walkTime + bt + C.npc.eatTime;
-  return d.tablesByZone[z] / cycle > (1 / bt) * 0.95;
+  const served = w.tables.filter((t) => t.serviceIndex === z).length;
+  return served / cycle > (1 / bt) * 0.95;
 }
 
 // Zone'un ocak yükseltmesi açık mı? (v21: her salonun KENDİ 2. masası önkoşul — store ile aynı.)
 function upgradeUnlockedZ(s: State, z: number): boolean {
   if (s.stationLevels[z] >= SOFT_MAX) return false;
-  return requiresMet(C.teaStation.upgradeRequiresByZone[z], gateOf(s));
+  return requiresMet(C.teaStation.upgradeRequiresByArea[z], gateOf(s));
 }
 
-// İdealize tek tableLevel: zone-1 gate'i referans (v21 per-zone; sim masa seviyesini tekilleştirir).
+// İdealize tek tableLevel: 1. alanın gate'i referans (v21 alan-başı; sim masa seviyesini tekilleştirir).
 function tableUpgradeUnlocked(s: State): boolean {
-  return requiresMet(C.tables.upgradeRequiresByZone[0], gateOf(s)) && s.tableLevel < TABLE_SOFT_MAX;
+  return requiresMet(C.tables.upgradeRequiresByArea[0], gateOf(s)) && s.tableLevel < TABLE_SOFT_MAX;
 }
 
 function currentPad(s: State) {
@@ -158,14 +164,15 @@ function nextCharBuy(s: State): { stat: CharStat; cost: number } | null {
 // Otomatik (akıllı) oyuncu: önce DARBOĞAZ ocak (en ucuz), sonra KARAKTER görevi alımı (quest hattı
 // bloklar), sonra omurga pad'i, sonra açık ocak, en son masa-başı yükseltme (bahşiş).
 function trySpend(s: State): void {
-  const d = derivedFromPads(s.padsDone);
+  const d = deriveWorld(s.padsDone);
+  const openSvc = d.services.filter((sv) => sv.open).map((sv) => sv.index);
   // 1) Darboğaz ocaklar (en ucuzu önce; M3: tost tezgâhı kendi maliyet çarpanıyla)
   let bz = -1;
   let bcost = Infinity;
-  for (let z = 0; z < d.zonesOpen; z++) {
+  for (const z of openSvc) {
     if (ocakBottleneckZ(s, z) && upgradeUnlockedZ(s, z)) {
       const cost = Math.floor(
-        upgradeCost(C.teaStation.upgrade, s.stationLevels[z] + 1) * PRODUCTS[zoneProduct(z)].upgradeCostMult,
+        upgradeCost(C.teaStation.upgrade, s.stationLevels[z] + 1) * PRODUCTS[serviceProduct(z)].upgradeCostMult,
       );
       if (cost < bcost) { bcost = cost; bz = z; }
     }
@@ -196,10 +203,10 @@ function trySpend(s: State): void {
     return;
   }
   // 3) Açık herhangi bir ocak yükseltmesi (M3: ürün maliyet çarpanı)
-  for (let z = 0; z < d.zonesOpen; z++) {
+  for (let z = 0; z < d.areasOpen; z++) {
     if (upgradeUnlockedZ(s, z)) {
       const cost = Math.floor(
-        upgradeCost(C.teaStation.upgrade, s.stationLevels[z] + 1) * PRODUCTS[zoneProduct(z)].upgradeCostMult,
+        upgradeCost(C.teaStation.upgrade, s.stationLevels[z] + 1) * PRODUCTS[serviceProduct(z)].upgradeCostMult,
       );
       if (s.wallet >= cost) {
         s.wallet -= cost;
@@ -209,10 +216,10 @@ function trySpend(s: State): void {
     }
   }
   // 4) Masa yükseltme (idealize: tüm açık masalar eşit → bir seviye = masa sayısı × maliyet;
-  //    zone-kademeli maliyet: her açık masanın kendi zone çarpanı toplanır — açılış zone-sıralı)
+  //    ALAN-kademeli maliyet: her açık masanın kendi alan çarpanı toplanır — açılış alan-sıralı)
   if (tableUpgradeUnlocked(s)) {
     let cost = 0;
-    for (let i = 0; i < d.tables; i++) cost += tableUpgradeCost(s.tableLevel, zoneOfTable(i));
+    for (const t of d.tables) cost += tableUpgradeCost(s.tableLevel, t.areaIndex);
     if (s.wallet >= cost) {
       s.wallet -= cost;
       s.tableLevel += 1;
@@ -254,7 +261,7 @@ function fmtTime(sec: number): string {
 function runProfile(eff: number, log = false): Map<string, number> {
   const s: State = {
     t: 0, wallet: 0, lifetime: 0,
-    stationLevels: Array.from({ length: MAX_ZONES }, () => 0),
+    stationLevels: Array.from({ length: MAX_SERVICES }, () => 0),
     tableLevel: 0, padsDone: [],
     char: { tray: 0, magnet: 0, speed: 0 },
     questIdx: 0,
@@ -273,7 +280,7 @@ function runProfile(eff: number, log = false): Map<string, number> {
         done.set(m.name, s.t);
         if (log) {
           console.log(
-            `  ✓ ${m.name.padEnd(34)} @ ${fmtTime(s.t).padStart(7)}  (oran ${rate(s, eff).toFixed(2)} ₺/sn, z1L${s.stationLevels[0]}/z2L${s.stationLevels[1]}, ${derivedFromPads(s.padsDone).tables} masa)`,
+            `  ✓ ${m.name.padEnd(34)} @ ${fmtTime(s.t).padStart(7)}  (oran ${rate(s, eff).toFixed(2)} ₺/sn, z1L${s.stationLevels[0]}/z2L${s.stationLevels[1]}, ${deriveWorld(s.padsDone).tables.length} masa)`,
           );
         }
       }
@@ -284,7 +291,7 @@ function runProfile(eff: number, log = false): Map<string, number> {
 }
 
 function run() {
-  console.log('=== Köşe Kıraathanesi — Ekonomi v2 Simülasyonu (zone\'lu bottleneck modeli) ===\n');
+  console.log('=== Köşe Kıraathanesi — Ekonomi v2 Simülasyonu (servis-başı bottleneck modeli) ===\n');
   const s0: State = {
     t: 0, wallet: 0, lifetime: 0, stationLevels: [0, 0], tableLevel: 0, padsDone: [],
     char: { tray: 0, magnet: 0, speed: 0 }, questIdx: 0,

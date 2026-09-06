@@ -8,18 +8,18 @@ import { FixedCam, SalonLights, FloorPatch, WallBack } from './SalonSlice';
 /** Zemin/Duvar SAYFA-İÇİ önizleme: oyunun kamera açısı/duruşu/uzaklığıyla salon köşesinden bir kesit
  *  (gerçek zemin + duvar + referans masa) + per-salon satın al. "Salondan kes-yapıştır" hissi. */
 export function DioramaPreview({ kind, id }: { kind: 'floor' | 'wall'; id: string }) {
-  const zonesOpen = useGame((s) => s.zonesOpen);
-  const floorThemeByZone = useGame((s) => s.floorThemeByZone);
-  const wallThemeByZone = useGame((s) => s.wallThemeByZone);
+  const areasOpen = useGame((s) => s.areasOpen);
+  const floorThemeByArea = useGame((s) => s.floorThemeByArea);
+  const wallThemeByArea = useGame((s) => s.wallThemeByArea);
   const wallet = useGame((s) => s.wallet);
   const ownedCosmetics = useGame((s) => s.ownedCosmetics);
   const buyCosmetic = useGame((s) => s.buyCosmetic);
   const themes = kind === 'floor' ? economyConfig.cosmetics.floorThemes : economyConfig.cosmetics.wallThemes;
   const theme = themes.find((t) => t.id === id);
   if (!theme) return null;
-  const selected = kind === 'floor' ? floorThemeByZone : wallThemeByZone;
-  const floorId = kind === 'floor' ? id : (floorThemeByZone[0] ?? 'parke');
-  const wallId = kind === 'wall' ? id : (wallThemeByZone[0] ?? 'krem');
+  const selected = kind === 'floor' ? floorThemeByArea : wallThemeByArea;
+  const floorId = kind === 'floor' ? id : (floorThemeByArea[0] ?? 'parke');
+  const wallId = kind === 'wall' ? id : (wallThemeByArea[0] ?? 'krem');
   const cash = wallet.toNumber();
 
   return (
@@ -35,7 +35,7 @@ export function DioramaPreview({ kind, id }: { kind: 'floor' | 'wall'; id: strin
         </Canvas>
       </div>
       <div className="preview-zones">
-        {Array.from({ length: zonesOpen }, (_, z) => {
+        {Array.from({ length: areasOpen }, (_, z) => {
           const isSel = selected[z] === id;
           const owned = theme.cost === 0 || ownedCosmetics.includes(`${kind}:${id}:z${z}`);
           const afford = owned || cash >= theme.cost;
