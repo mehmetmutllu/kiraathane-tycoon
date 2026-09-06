@@ -1,7 +1,7 @@
 // Test/dev kancaları. 3D sahne görsel doğrulanamaz; durum buradan okunur.
 // window.__game  -> salt-okunur anlık görüntü
 // window.__advanceTime(sn) -> simülasyonu hızlı ileri sar
-import { useGame, visiblePads, questCounterValue, LAYOUT, trayCapacity, dirtyTables } from './store';
+import { useGame, visiblePads, questCounterValue, LAYOUT, trayCapacity, dirtyTables, parkSpot } from './store';
 import { perf, type PerfSnapshot } from './perf';
 import { economyConfig, levelProgress, charLevel, type CharStat } from '../config/economy.config';
 import type { SaveStats } from './save';
@@ -27,6 +27,9 @@ declare global {
     __perf?: () => PerfSnapshot;
     /** DEV-ONLY ham setState (canlı görsel ayar; masa/zone/seviye zorlama). Üretimde kullanılmaz. */
     __setState?: (patch: Record<string, unknown>) => Record<string, unknown>;
+    /** Oyuncuyu hiçbir mekanizmayı tetiklemeyen noktaya park eder (Faz A3: duman testi elle
+     *  yazılmış köşe koordinatı kullanmasın — nokta YERLEŞİMDEN türetilir). */
+    __park?: () => Record<string, unknown>;
   }
 }
 
@@ -156,6 +159,12 @@ export function installDevHooks(): void {
 
   window.__teleport = (x: number, z: number) => {
     useGame.setState({ player: [x, 0.6, z] as Vec3 });
+    return window.__game!();
+  };
+
+  window.__park = () => {
+    const s = useGame.getState();
+    useGame.setState({ player: parkSpot(s.zonesOpen, s.tables), inputKeyboard: [0, 0], inputJoystick: [0, 0] });
     return window.__game!();
   };
 

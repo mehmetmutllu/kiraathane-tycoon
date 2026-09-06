@@ -433,3 +433,73 @@ export function navStep(
   }
   return dist2D(pos, target) <= reach;
 }
+
+/**
+ * Bir karede oyuncunun HİÇBİR mekanizmayı tetiklemediği "park noktası" — YERLEŞİMDEN TÜRETİLİR.
+ *
+ * Faz A3: testler ve duman testi eskiden `[0, 0.6, 6.5]` gibi ELLE yazılmış köşelere park ediyordu;
+ * yerleşim değişince (Faz B) bu noktalar sessizce bir masanın/pad'in üstüne düşer ve testler
+ * "kimse servis etmiyor" derken aslında servis ediyor olurdu. Burada nokta hesaplanır: açık
+ * zone'ların alanı taranır, KATI engellere girmeyen ve tüm etkileşim noktalarına (ocak, bulaşık,
+ * masa+koltuk, pad, yükseltme noktası, kapı) uzaklığı EN BÜYÜK olan hücre seçilir.
+ *
+ * `minClearance(zonesOpen)` seçilen noktanın en yakın etkileşime uzaklığını verir → test bunun
+ * yeterli olduğunu doğrular; yerleşim daralırsa test SESSİZCE değil, GÜRÜLTÜYLE düşer.
+ */
+function interactionPoints(zonesOpen: number, tables: number): RVec3[] {
+  const pts: RVec3[] = [LAYOUT.entrance];
+  for (let z = 0; z < zonesOpen; z++) {
+    pts.push(LAYOUT.stations[z], LAYOUT.stationPickups[z], LAYOUT.dishStations[z], LAYOUT.upgradeZones[z]);
+  }
+  for (let i = 0; i < tables; i++) {
+    pts.push(LAYOUT.tables[i].table, LAYOUT.tables[i].seat, LAYOUT.tables[i].upgradeSpot);
+  }
+  for (const p of Object.values(LAYOUT.padPos)) pts.push(p);
+  return pts;
+}
+
+function scanParkSpot(zonesOpen: number, tables: number, onlyZone?: number): { pos: Vec3; clearance: number } {
+  const pts = interactionPoints(zonesOpen, tables);
+  const solids = activeSolids(tables, zonesOpen);
+  const step = 0.25;
+  let best: Vec3 = [0, 0.6, 0];
+  let bestD = -1;
+  for (let z = 0; z < zonesOpen; z++) {
+    if (onlyZone != null && z !== onlyZone) continue;
+    const za = LAYOUT.zoneAreas[z];
+    for (let x = za.minX + step; x < za.maxX; x += step) {
+      for (let zz = za.minZ + step; zz < za.maxZ; zz += step) {
+        if (hitsSolid(x, zz, solids, LAYOUT.playerRadius)) continue;
+        let d = Infinity;
+        for (const p of pts) d = Math.min(d, Math.hypot(x - p[0], zz - p[2]));
+        if (d > bestD) {
+          bestD = d;
+          best = [+x.toFixed(3), 0.6, +zz.toFixed(3)];
+        }
+      }
+    }
+  }
+  return { pos: best, clearance: bestD };
+}
+
+const parkCache = new Map<string, { pos: Vec3; clearance: number }>();
+function parkScan(zonesOpen: number, tables: number, onlyZone?: number) {
+  const key = `${zonesOpen}|${tables}|${onlyZone ?? '*'}`;
+  let hit = parkCache.get(key);
+  if (!hit) {
+    hit = scanParkSpot(zonesOpen, tables, onlyZone);
+    parkCache.set(key, hit);
+  }
+  return hit;
+}
+
+/** Açık salonlarda hiçbir mekanizmayı tetiklemeyen park noktası (test/duman kancası).
+ *  `onlyZone` verilirse yalnız o salonun içinde aranır (salon sınırı testleri). */
+export function parkSpot(zonesOpen = 1, tables = 4, onlyZone?: number): Vec3 {
+  return [...parkScan(zonesOpen, tables, onlyZone).pos] as Vec3;
+}
+
+/** Park noktasının en yakın etkileşim noktasına uzaklığı (yerleşim daralırsa test bunu yakalar). */
+export function parkClearance(zonesOpen = 1, tables = 4, onlyZone?: number): number {
+  return parkScan(zonesOpen, tables, onlyZone).clearance;
+}

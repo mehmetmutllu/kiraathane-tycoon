@@ -122,7 +122,7 @@ try {
   }
 
   // Kısmi assist: oyuncuyu kimseyi servis edemeyeceği uzak köşeye park et → garson tek başına servis edip para düşürmeli.
-  await page.evaluate(() => window.__teleport(5.2, 4.2));
+  await page.evaluate(() => window.__park());
   const beforeCoins = (await page.evaluate(() => window.__game())).coins;
   const assisted = await page.evaluate(() => window.__advanceTime(40));
   if (assisted.coins > beforeCoins)
@@ -142,7 +142,7 @@ try {
   await page.click('[data-testid="char-panel"]'); // backdrop'a tıkla → panel kapanır
 
   // Bardak döngüsü (Faz 2e): garson servis ederken kirli bardak üretilir → oyuncu toplar → bulaşıkta yıkar.
-  await page.evaluate(() => window.__teleport(5.2, 4.2)); // oyuncu uzak köşede; garson servis etsin, kirli birikir
+  await page.evaluate(() => window.__park()); // oyuncu uzak köşede; garson servis etsin, kirli birikir
   const cupRun = await page.evaluate(() => window.__advanceTime(30));
   if (cupRun.dirtyCount > 0 || cupRun.carriedDirty > 0) {
     pass(`Kirli bardak üretiliyor (içen müşteri masada bırakıyor, dirty=${cupRun.dirtyCount})`);

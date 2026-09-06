@@ -43,7 +43,7 @@ import {
 } from './layout';
 // Yerleşim/geometri Faz A2'de layout.ts'e taşındı; eski `from './store'` importları kırılmasın diye
 // buradan yeniden dışa aktarılır (tek tanım, iki kapı).
-export { LAYOUT, PAD_RADIUS, zoneCol, zoneRow, zoneAt, zonePoint } from './layout';
+export { LAYOUT, PAD_RADIUS, zoneCol, zoneRow, zoneAt, zonePoint, parkSpot, parkClearance } from './layout';
 export type { RVec3 } from './layout';
 
 import {

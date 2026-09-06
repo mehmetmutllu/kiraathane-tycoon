@@ -65,6 +65,9 @@ import {
   dirtyTables,
   totalCupPool,
   stationUpgradeCostZ,
+  parkSpot,
+  parkClearance,
+  PAD_RADIUS,
 } from '../src/game/store';
 import { migrate, defaultSave, defaultStats, defaultWaiterUpgrades } from '../src/game/save';
 import { buildNavGrid, findNavPath } from '../src/game/nav';
@@ -88,6 +91,25 @@ function questIndexFor(padId: string): number {
   );
 }
 
+// --- Sahne yardımcıları (Faz A3: testler koordinat bağından KOPARILDI) ---
+// Eskiden "oyuncuyu uzağa park et" niyeti [0, 0.6, 6.5] gibi ELLE yazılmış noktalarla ifade
+// ediliyordu; yerleşim değişince (Faz B) bu noktalar sessizce bir masanın/pad'in üstüne düşer,
+// test "kimse servis etmedi" derken aslında servis ediliyor olurdu. Artık nokta yerleşimden
+// TÜRETİLİR (layout.parkSpot: açık alanı tarar, tüm etkileşim noktalarına uzaklığı en büyük
+// engelsiz hücreyi seçer) ve altta bir bekçi test bu boşluğun yeterli olduğunu doğrular.
+const PARK = parkSpot();
+
+/** Oyuncuyu hiçbir mekanizmayı tetiklemeyen noktaya park eder (girdi de sıfırlanır). */
+function park(zonesOpen = 1, tables = 4): void {
+  useGame.setState({ player: parkSpot(zonesOpen, tables), inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+}
+
+/** Oyuncuyu yerleşimden gelen bir noktaya taşır (ocak, koltuk, pad, yükseltme noktası...);
+ *  girdiyi de sıfırlar → o noktada BEKLER (mekânsal dolum hareket-temelli: durunca akar). */
+function stand(pos: readonly number[]): void {
+  useGame.setState({ player: [pos[0], 0.6, pos[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+}
+
 // Pad'i quest hattında aktif yapıp (görünürlük), oyuncuyu üstüne koyup parayla tamamlar.
 function completePad(padId: string): boolean {
   const pad = economyConfig.pads.find((p) => p.id === padId);
@@ -97,7 +119,7 @@ function completePad(padId: string): boolean {
   useGame.setState({ questIndex: questIndexFor(padId), questBase: 0, questPhase: 'active', questPhaseT: 0 });
   useGame.getState().addMoney(pad.cost + 50);
   const pos = LAYOUT.padPos[padId];
-  useGame.setState({ player: [pos[0], 0.6, pos[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+  stand(pos);
   for (let i = 0; i < 400 && !useGame.getState().padsDone.includes(padId); i++) {
     useGame.getState().tick(0.1);
   }
@@ -147,7 +169,7 @@ describe('sayı biçimlendirme', () => {
 describe('servis döngüsü (D-011 / Faz 2c)', () => {
   // Oyuncuyu kimseyi servis edemeyeceği, pad doldurmayacağı uzak bir köşeye park eder.
   function parkPlayerAway() {
-    useGame.setState({ player: [0, 0.6, 2], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+    useGame.setState({ player: PARK, inputKeyboard: [0, 0], inputJoystick: [0, 0] });
   }
 
   it('ocak hazır-kuyruğa demler; kapasiteyi (ocak seviyesine bağlı) AŞMAZ', () => {
@@ -182,7 +204,7 @@ describe('servis döngüsü (D-011 / Faz 2c)', () => {
 
     // 1) Ocağa git → tepsi dolar.
     const st = LAYOUT.stations[0];
-    useGame.setState({ player: [st[0], 0.6, st[2]] });
+    stand(st);
     useGame.getState().tick(0.1);
     const trayLoaded = useGame.getState().tray;
     expect(trayLoaded).toBeGreaterThan(0);
@@ -190,7 +212,7 @@ describe('servis döngüsü (D-011 / Faz 2c)', () => {
 
     // 2) Bekleyen müşterinin koltuğuna git → çay bırak.
     const seat = LAYOUT.tables[waiting!.tableIndex].seat;
-    useGame.setState({ player: [seat[0], 0.6, seat[2]] });
+    stand(seat);
     useGame.getState().tick(0.1);
     const served = useGame.getState().npcs.find((n) => n.id === waiting!.id);
     expect(served?.state).toBe('drinking'); // servis edildi
@@ -312,7 +334,7 @@ describe('garson — quest hattında zorunlu personel (2026-06-09; eski D-014 op
     useGame.setState({
       padsDone: ['table2', 'table3', 'table4', 'waiter'],
       waiters: [{ pos: [nearSeat[0], 0.6, nearSeat[2]] as [number, number, number], tray: 1 }, null],
-      player: [0, 0.6, 6.5],
+      player: PARK,
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
       npcs: [
@@ -339,7 +361,7 @@ describe('garson — quest hattında zorunlu personel (2026-06-09; eski D-014 op
     useGame.setState({
       padsDone: ['table2', 'waiter'],
       waiters: [{ pos: [...LAYOUT.waiterHome] as [number, number, number], tray: 0 }, null],
-      player: [0, 0.6, 2],
+      player: PARK,
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
     });
@@ -396,6 +418,42 @@ describe('garson — quest hattında zorunlu personel (2026-06-09; eski D-014 op
   });
 });
 
+describe('park noktası (Faz A3) — testlerin "uzağa park et" niyeti YERLEŞİMDEN türetilir', () => {
+  it('park noktası her mekanizmanın tetikleme yarıçapının DIŞINDA (yerleşim daralırsa bu test düşer)', () => {
+    const clear = parkClearance(1, 4);
+    // Tetikleme yarıçapları: çay alma / servis, pad dolumu, masa yükseltme noktası, para mıknatısı.
+    expect(clear).toBeGreaterThan(economyConfig.serving.pickupRadius);
+    expect(clear).toBeGreaterThan(economyConfig.serving.serveRadius);
+    expect(clear).toBeGreaterThan(PAD_RADIUS);
+    expect(clear).toBeGreaterThan(attractRadiusFor(0));
+    // Nokta oynanabilir alanın içinde ve mobilyaya girmiyor (oyuncu kelepçesi onu kaydırmamalı).
+    const p = parkSpot(1, 4);
+    expect(p[0]).toBeGreaterThan(LAYOUT.zoneAreas[0].minX);
+    expect(p[0]).toBeLessThan(LAYOUT.zoneAreas[0].maxX);
+    useGame.getState().hardReset();
+    park();
+    useGame.getState().tick(0.1);
+    const moved = useGame.getState().player;
+    expect(Math.hypot(moved[0] - p[0], moved[2] - p[2])).toBeLessThan(0.01);
+  });
+
+  it('park edilen oyuncu HİÇBİR mekanizmayı tetiklemez (para/servis/pad/yükseltme durur)', () => {
+    useGame.getState().hardReset();
+    useGame.getState().addMoney(5000);
+    park();
+    const before = useGame.getState();
+    const w0 = before.wallet.toNumber();
+    const tray0 = before.tray;
+    for (let i = 0; i < 30; i++) useGame.getState().tick(0.1);
+    const s = useGame.getState();
+    expect(s.tray).toBe(tray0); // ocaktan çay ALMADI
+    expect(s.padsDone).toEqual(before.padsDone); // pad DOLMADI
+    expect(s.stationLevels[0]).toBe(before.stationLevels[0]); // yükseltme noktası ÇEKMEDİ
+    expect(s.wallet.toNumber()).toBeLessThanOrEqual(w0 + 0.001 + 3 * 5); // yalnız görev ödülü olabilir
+    expect(s.stats.teasServed).toBe(before.stats.teasServed); // servis YOK
+  });
+});
+
 describe('görev geçişi — kutlama penceresi yarışı (smoke 7 kırık adımın kök nedeni)', () => {
   const qIdx = (id: string) => economyConfig.quests.findIndex((q) => q.id === id);
 
@@ -403,7 +461,7 @@ describe('görev geçişi — kutlama penceresi yarışı (smoke 7 kırık adım
     useGame.getState().hardReset();
     useGame.setState({
       questIndex: qIdx('q_serve1'), questBase: 0, questPhase: 'active', questPhaseT: 0,
-      player: [0, 0.6, 4], inputKeyboard: [0, 0], inputJoystick: [0, 0],
+      player: PARK, inputKeyboard: [0, 0], inputJoystick: [0, 0],
       stats: { ...useGame.getState().stats, teasServed: 1 },
     });
     useGame.getState().tick(0.1);
@@ -419,7 +477,7 @@ describe('görev geçişi — kutlama penceresi yarışı (smoke 7 kırık adım
     useGame.getState().hardReset();
     useGame.setState({
       questIndex: qIdx('q_serve1'), questBase: 0, questPhase: 'active', questPhaseT: 0,
-      player: [0, 0.6, 4], inputKeyboard: [0, 0], inputJoystick: [0, 0],
+      player: PARK, inputKeyboard: [0, 0], inputJoystick: [0, 0],
       stats: { ...useGame.getState().stats, teasServed: 1 },
     });
     useGame.getState().tick(0.1); // q_serve1 biter → kutlama başlar, q_coin aktif taban 0
@@ -444,7 +502,7 @@ describe('görev geçişi — kutlama penceresi yarışı (smoke 7 kırık adım
       useGame.getState().hardReset();
       useGame.setState({
         questIndex: qIdx('q_serve1'), questBase: 0, questPhase: 'active', questPhaseT: 0,
-        player: [0, 0.6, 4], inputKeyboard: [0, 0], inputJoystick: [0, 0],
+        player: PARK, inputKeyboard: [0, 0], inputJoystick: [0, 0],
         stats: { ...useGame.getState().stats, teasServed: 1 },
       });
       useGame.getState().tick(0.1); // kutlama başladı
@@ -469,7 +527,7 @@ describe('yeni-özellik bildirimi (D-019 §4)', () => {
     useGame.getState().addMoney(50);
     expect(completePad('table2')).toBe(true);
     // table2 tamamlandıktan SONRAKİ tick'te 'upgrade' reveal'ı belirir (oyuncuyu uzak köşeye park et).
-    useGame.setState({ player: [0, 0.6, 2], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+    useGame.setState({ player: PARK, inputKeyboard: [0, 0], inputJoystick: [0, 0] });
     useGame.getState().tick(0.1);
     expect(useGame.getState().revealSeen).toContain('upgrade:0'); // v21: anahtarlar zone-başına
     expect(useGame.getState().notice).not.toBeNull();
@@ -488,7 +546,7 @@ describe('yeni-özellik bildirimi (D-019 §4)', () => {
     // upgrade:0 reveal'ı q_station2 (ileride "Çay ocağını yükselt" görevi) tarafından kapsanır →
     // SESSİZCE tüketilir (revealSeen'e girer) ama toast/pan ÜRETMEZ; "yükseltebilirsin" yazısı görev sanılmaz.
     useGame.setState({
-      player: [0, 0.6, 2], inputKeyboard: [0, 0], inputJoystick: [0, 0],
+      player: PARK, inputKeyboard: [0, 0], inputJoystick: [0, 0],
       notice: null, noticeQueue: [], camFocus: null,
     });
     useGame.getState().tick(0.1);
@@ -517,7 +575,7 @@ describe('yeni-özellik bildirimi (D-019 §4)', () => {
       expect(s.revealSeen).toContain('upgrade:0');
       expect(s.notice).toBeNull();
       // Park + tick → zaten açık olanlar yeniden bildirilmez.
-      useGame.setState({ player: [0, 0.6, 2], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+      useGame.setState({ player: PARK, inputKeyboard: [0, 0], inputJoystick: [0, 0] });
       useGame.getState().tick(0.1);
       expect(useGame.getState().notice).toBeNull();
     } finally {
@@ -539,7 +597,7 @@ describe('bardak döngüsü (Faz 2e) — demleme temiz harcar, içen kirli bıra
 
   it('başlangıçta temiz havuz dolu; demleme temiz harcar (toplam bardak KORUNUR)', () => {
     useGame.getState().hardReset();
-    useGame.setState({ player: [0, 0.6, 2], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+    useGame.setState({ player: PARK, inputKeyboard: [0, 0], inputJoystick: [0, 0] });
     const pool = cupPoolCapacity(0);
     expect(useGame.getState().cleanCups).toBe(pool);
     // Servis yok → ocak hazır-kuyruğu temizden demler; clean azalır, ready artar, TOPLAM sabit.
@@ -552,7 +610,7 @@ describe('bardak döngüsü (Faz 2e) — demleme temiz harcar, içen kirli bıra
 
   it('temiz bardak biterse demleme DURUR (yeni darboğaz)', () => {
     useGame.getState().hardReset();
-    useGame.setState({ player: [0, 0.6, 2], inputKeyboard: [0, 0], inputJoystick: [0, 0], cleanCups: 0, readyCupsByZone: [0, 0], brewProgressByZone: [0, 0] });
+    useGame.setState({ player: PARK, inputKeyboard: [0, 0], inputJoystick: [0, 0], cleanCups: 0, readyCupsByZone: [0, 0], brewProgressByZone: [0, 0] });
     for (let i = 0; i < 200; i++) useGame.getState().tick(0.1);
     // Temiz yokken hiç çay demlenemez.
     expect(useGame.getState().readyCupsByZone[0]).toBe(0);
@@ -563,7 +621,7 @@ describe('bardak döngüsü (Faz 2e) — demleme temiz harcar, içen kirli bıra
     // Onboarding gate (2026-06-10): kirli bardak ancak q_wash göreviyle çıkmaya başlar.
     const washIdx = economyConfig.quests.findIndex((q) => q.target.type === 'washDish');
     useGame.setState({ questIndex: washIdx, questBase: 0 });
-    useGame.setState({ player: [0, 0.6, 2], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+    useGame.setState({ player: PARK, inputKeyboard: [0, 0], inputJoystick: [0, 0] });
     const pool = cupPoolCapacity(0);
     // Müşteri otursun + çay demlensin.
     for (let i = 0; i < 200; i++) useGame.getState().tick(0.1);
@@ -572,15 +630,15 @@ describe('bardak döngüsü (Faz 2e) — demleme temiz harcar, içen kirli bıra
 
     // Ocaktan tepsiye al → bekleyen masaya götür → servis.
     const st = LAYOUT.stations[0];
-    useGame.setState({ player: [st[0], 0.6, st[2]] });
+    stand(st);
     useGame.getState().tick(0.1);
     const seat = LAYOUT.tables[waiting!.tableIndex].seat;
-    useGame.setState({ player: [seat[0], 0.6, seat[2]] });
+    stand(seat);
     useGame.getState().tick(0.1);
     expect(useGame.getState().npcs.find((n) => n.id === waiting!.id)?.state).toBe('drinking');
 
     // İçme bitince masada kirli bardak belirir (oyuncuyu uzağa park et ki otomatik toplamasın).
-    useGame.setState({ player: [0, 0.6, 6.5] });
+    useGame.setState({ player: PARK });
     const before = useGame.getState().dishes.length;
     for (let i = 0; i < 80; i++) useGame.getState().tick(0.1);
     expect(useGame.getState().dishes.length).toBeGreaterThan(before);
@@ -588,7 +646,7 @@ describe('bardak döngüsü (Faz 2e) — demleme temiz harcar, içen kirli bıra
 
     // Kirli bardağa git → topla (carriedDirty artar, dishes azalır).
     const dish = useGame.getState().dishes[0];
-    useGame.setState({ player: [dish.pos[0], 0.6, dish.pos[2]] });
+    stand(dish.pos);
     const dishesBefore = useGame.getState().dishes.length;
     useGame.getState().tick(0.1);
     expect(useGame.getState().carriedDirty).toBeGreaterThan(0);
@@ -598,7 +656,7 @@ describe('bardak döngüsü (Faz 2e) — demleme temiz harcar, içen kirli bıra
     const cleanBefore = useGame.getState().cleanCups;
     const carried = useGame.getState().carriedDirty;
     const ds = LAYOUT.dishStation;
-    useGame.setState({ player: [ds[0], 0.6, ds[2]] });
+    stand(ds);
     useGame.getState().tick(0.1);
     expect(useGame.getState().carriedDirty).toBe(0);
     expect(useGame.getState().cleanCups).toBe(cleanBefore + carried);
@@ -645,15 +703,17 @@ describe('bardak döngüsü (Faz 2e) — demleme temiz harcar, içen kirli bıra
   it('turu-5 m.9: oyuncu NPC\'nin İÇİNDEN geçer (aktör çarpışması kaldırıldı)', () => {
     useGame.getState().hardReset();
     // NPC tam oyuncunun yolunda otursun (waitingForTea hareketsiz; sabır yüksek → kalkmaz).
+    const START = LAYOUT.player; // oyuncunun doğduğu nokta: tanım gereği yürünebilir
     useGame.setState({
-      player: [0.5, 0.6, 0.6],
+      player: [START[0], 0.6, START[2]],
       inputKeyboard: [0, -1], inputJoystick: [0, 0],
       spawnTimer: 999,
-      npcs: [{ id: 7001, state: 'waitingForTea', pos: [0.5, 0.6, -0.2], tableIndex: 0, seatIndex: 0, timer: 999, color: '#fff' }],
+      // NPC oyuncunun 0.8 ÖNÜNDE (yerleşimden bağımsız: oyuncuya göre konumlanır).
+      npcs: [{ id: 7001, state: 'waitingForTea', pos: [START[0], 0.6, START[2] - 0.8], tableIndex: 0, seatIndex: 0, timer: 999, color: '#fff' }],
     });
     for (let i = 0; i < 20; i++) useGame.getState().tick(0.1);
-    // Eski aktör-engeli oyuncuyu NPC önünde (~z 0.45) durdururdu; artık içinden geçip ilerler.
-    expect(useGame.getState().player[2]).toBeLessThan(-0.5);
+    // Eski aktör-engeli oyuncuyu NPC'nin önünde durdururdu; artık içinden geçip ilerler.
+    expect(useGame.getState().player[2]).toBeLessThan(START[2] - 1.1);
   });
 
   it('turu-5 m.11: kirli TABAK ayrı sayılır (carriedDirtyFood) + yıkamada bardakla ortak havuza döner', () => {
@@ -675,7 +735,7 @@ describe('bardak döngüsü (Faz 2e) — demleme temiz harcar, içen kirli bıra
     // Bulaşık noktasına git → ikisi de yıkanır, GLOBAL temiz havuza döner.
     const ds = LAYOUT.dishStations[0];
     const cleanBefore = useGame.getState().cleanCups;
-    useGame.setState({ player: [ds[0], 0.6, ds[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+    stand(ds);
     useGame.getState().tick(0.1);
     expect(useGame.getState().carriedDirty).toBe(0);
     expect(useGame.getState().carriedDirtyFood).toBe(0);
@@ -721,7 +781,7 @@ describe('kirli masa mekaniği (D-019) — eşik aşılınca masa kilitlenir', (
     expect(completePad('table2')).toBe(true);
     const dirtyDishes = Array.from({ length: T + 1 }, (_, i) => dishOn(0, 3000 + i));
     useGame.setState({
-      player: [0, 0.6, 6.5], inputKeyboard: [0, 0], inputJoystick: [0, 0],
+      player: PARK, inputKeyboard: [0, 0], inputJoystick: [0, 0],
       npcs: [], dishes: dirtyDishes, spawnTimer: 0,
     });
     // Müşteriler gelir → yalnız temiz masaya (1) oturur, kirli masaya (0) ASLA.
@@ -746,7 +806,7 @@ describe('kirli masa mekaniği (D-019) — eşik aşılınca masa kilitlenir', (
     useGame.setState({
       padsDone: ['table2', 'waiter'],
       waiters: [{ pos: [LAYOUT.tables[idx].table[0], 0.6, LAYOUT.tables[idx].table[2]] as [number, number, number], tray: 1 }, null],
-      player: [0, 0.6, 6.5], inputKeyboard: [0, 0], inputJoystick: [0, 0],
+      player: PARK, inputKeyboard: [0, 0], inputJoystick: [0, 0],
       npcs: [{ id: 880, state: 'waitingForTea', pos: [...seat] as [number, number, number], tableIndex: idx, seatIndex: 0, timer: 999, color: '#27ae60' }],
       dishes: dirtyDishes, spawnTimer: 999,
     });
@@ -778,7 +838,7 @@ describe('bulaşıkçı — quest hattında zorunlu personel (Faz 2e; 2026-06-09
     useGame.setState({
       padsDone: ['table2', 'table3', 'dishwasher'],
       dishwashers: [{ pos: [...LAYOUT.dishwasherHome] as [number, number, number], tray: 0 }, null],
-      player: [0, 0.6, 6.5], // oyuncu uzakta; yalnız bulaşıkçı çalışsın
+      player: PARK, // oyuncu uzakta; yalnız bulaşıkçı çalışsın
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
       npcs: [], // yeni müşteri/yeni kirli karışmasın
@@ -824,12 +884,12 @@ describe('para mıknatısı (Faz 2f) — attract yarıçapındaki para oyuncuya 
     useGame.getState().hardReset();
     const far = attractRadiusFor(0) + 2; // attract dışında (taban kademe)
     useGame.setState({
-      player: [0, 0.6, 0], inputKeyboard: [0, 0], inputJoystick: [0, 0],
-      coins: [{ id: 5556, pos: [far, 0.3, 0], value: 5 }],
+      player: PARK, inputKeyboard: [0, 0], inputJoystick: [0, 0],
+      coins: [{ id: 5556, pos: [PARK[0] + far, 0.3, PARK[2]], value: 5 }],
     });
     for (let i = 0; i < 10; i++) useGame.getState().tick(0.1);
     expect(useGame.getState().coins.length).toBe(1); // toplanmadı
-    expect(useGame.getState().coins[0].pos[0]).toBeCloseTo(far, 5); // hareket etmedi
+    expect(useGame.getState().coins[0].pos[0]).toBeCloseTo(PARK[0] + far, 5); // hareket etmedi
   });
 });
 
@@ -1056,11 +1116,11 @@ describe('ekonomi v2 — seviye throughputu artırır, fiyatı DEĞİL (D-010)',
     expect(useGame.getState().questIndex).toBe(0);
     expect(useGame.getState().quest?.id).toBe('q_pickup');
     // Çay demlensin (oyuncu uzakta).
-    useGame.setState({ player: [0, 0.6, 2], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+    useGame.setState({ player: PARK, inputKeyboard: [0, 0], inputJoystick: [0, 0] });
     for (let i = 0; i < 200 && useGame.getState().readyCupsByZone[0] === 0; i++) useGame.getState().tick(0.1);
     // 1) Ocağa git → tepsiye al → görev 1 tamam, sıradaki "müşteriye götür".
     const st = LAYOUT.stations[0];
-    useGame.setState({ player: [st[0], 0.6, st[2]] });
+    stand(st);
     useGame.getState().tick(0.1);
     expect(useGame.getState().stats.teaPickups).toBeGreaterThan(0);
     flushQuestTransition(); // bitiş ritmi (completing+gap) akınca sıradaki görev aktif olur
@@ -1071,7 +1131,7 @@ describe('ekonomi v2 — seviye throughputu artırır, fiyatı DEĞİL (D-010)',
     const waiting = useGame.getState().npcs.find((n) => n.state === 'waitingForTea');
     expect(waiting).toBeTruthy();
     const seat = LAYOUT.tables[waiting!.tableIndex].seat;
-    useGame.setState({ player: [seat[0], 0.6, seat[2]] });
+    stand(seat);
     useGame.getState().tick(0.1);
     expect(useGame.getState().stats.teasServed).toBe(1);
     flushQuestTransition();
@@ -1152,7 +1212,7 @@ describe('ekonomi v2 — seviye throughputu artırır, fiyatı DEĞİL (D-010)',
         { text: 'Birinci', ttl: 0.3, kind: 'reveal' },
         { text: 'İkinci', ttl: 4, kind: 'reveal' },
       ],
-      player: [0, 0.6, 2],
+      player: PARK,
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
     });
@@ -1169,7 +1229,7 @@ describe('mekânsal çay yükseltme noktası (zone) + gating', () => {
     useGame.getState().hardReset();
     useGame.getState().addMoney(1000);
     const z = LAYOUT.upgradeZone;
-    useGame.setState({ player: [z[0], 0.6, z[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+    stand(z);
     for (let i = 0; i < 50; i++) useGame.getState().tick(0.1);
     // table2 açılmadığı için yükseltme noktası çalışmaz.
     expect(useGame.getState().stationLevels[0]).toBe(0);
@@ -1182,7 +1242,7 @@ describe('mekânsal çay yükseltme noktası (zone) + gating', () => {
 
     useGame.getState().addMoney(30); // L1 (25₺) yeter; max'a varmaz
     const z = LAYOUT.upgradeZone;
-    useGame.setState({ player: [z[0], 0.6, z[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+    stand(z);
     const before = useGame.getState().stationLevels[0];
 
     for (let i = 0; i < 50; i++) useGame.getState().tick(0.1);
@@ -1335,7 +1395,7 @@ describe('personel yol bulma (nav.ts — BFS, kilitlenme yok)', () => {
       padsDone: ['table2', 'table3', 'table4', 'waiter'],
       // Garsonu ocakta tepsi DOLU başlat → doğruca teslimata yönelir.
       waiters: [{ pos: [...LAYOUT.stations[0]] as [number, number, number], tray: 1 }, null],
-      player: [0, 0.6, 4.2], // oyuncu uzakta (servis etmesin)
+      player: PARK, // oyuncu uzakta (servis etmesin)
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
       npcs: [
@@ -1359,7 +1419,7 @@ describe('personel yol bulma (nav.ts — BFS, kilitlenme yok)', () => {
     const backIdx = 2; // arka-sol masa: kapı ile koltuk arasında table0 TAM kolonda
     useGame.setState({
       padsDone: ['table2', 'table3'],
-      player: [4.5, 0.6, 4.2], // oyuncu uzakta
+      player: PARK, // oyuncu uzakta
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
       npcs: [
@@ -1396,7 +1456,7 @@ describe('personel yol bulma (nav.ts — BFS, kilitlenme yok)', () => {
     const rightIdx = 1; // ön-SAĞ masa: kapıdan sonra rota sağa kırar (telefon bug senaryosu)
     useGame.setState({
       padsDone: ['table2'],
-      player: [-4.5, 0.6, 4.2], // oyuncu uzakta
+      player: PARK, // oyuncu uzakta
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
       npcs: [
@@ -1419,7 +1479,7 @@ describe('personel yol bulma (nav.ts — BFS, kilitlenme yok)', () => {
     const backIdx = 2;
     useGame.setState({
       padsDone: ['table2', 'table3'],
-      player: [4.5, 0.6, 4.2],
+      player: PARK,
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
       npcs: [
@@ -1479,7 +1539,7 @@ describe('masa yükseltme + bahşiş (Faz 2h)', () => {
     const seat = LAYOUT.tables[0].seat;
     useGame.setState({
       tableLevels: [2, 0, 0, 0], // sadece 0. masa L2 → bahşiş = tipBase×2
-      player: [5.2, 0.6, -5.2], // GERÇEKTEN uzak (alan içi köşe; eski [0,0.6,99] z=5'e kelepçelenip mıknatısa giriyordu — flaky)
+      player: PARK, // GERÇEKTEN uzak (alan içi köşe; eski [0,0.6,99] z=5'e kelepçelenip mıknatısa giriyordu — flaky)
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
       coins: [],
@@ -1496,7 +1556,7 @@ describe('masa yükseltme + bahşiş (Faz 2h)', () => {
     const seat = LAYOUT.tables[0].seat;
     useGame.setState({
       tableLevels: [2, 0, 0, 0],
-      player: [5.2, 0.6, -5.2],
+      player: PARK,
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
       // Koltuğun üstünde 'toTable' → bu tick oturur, timer = tablePatience(2).
@@ -1574,7 +1634,7 @@ describe('Etkileşim HAREKET-temelli (D-018 §2): üstünden geçerken alma, dur
 
   it('DURUNCA (input ~0) para HEMEN akmaya başlar (sayaç/countdown yok)', () => {
     const { pos } = placeOnPad();
-    useGame.setState({ player: [pos[0], 0.6, pos[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+    stand(pos);
     useGame.getState().tick(0.1); // TEK tick yeter → para hemen akar
     expect(useGame.getState().wallet.toNumber()).toBeLessThan(1000);
   });
@@ -1583,7 +1643,7 @@ describe('Etkileşim HAREKET-temelli (D-018 §2): üstünden geçerken alma, dur
     const { pad, pos } = placeOnPad();
     useGame.setState({ wallet: D(20) }); // cost(25)'ten AZ → tamamlanmaz, kısmi kalır
     for (let i = 0; i < 6; i++) {
-      useGame.setState({ player: [pos[0], 0.6, pos[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+      stand(pos);
       useGame.getState().tick(0.1);
     }
     const accrued = useGame.getState().padFills[pad.id] ?? 0;
@@ -1614,11 +1674,11 @@ describe('Level/XP sistemi (v17, 2026-06-10) — eylem XP\'si, seviye eğrisi, m
 
   it('oyuncu eliyle servis XP verir; görev tamamlanınca görev XP\'si eklenir', () => {
     useGame.getState().hardReset();
-    useGame.setState({ player: [0, 0.6, 2], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+    useGame.setState({ player: PARK, inputKeyboard: [0, 0], inputJoystick: [0, 0] });
     for (let i = 0; i < 200; i++) useGame.getState().tick(0.1);
     expect(useGame.getState().npcs.some((n) => n.state === 'waitingForTea')).toBe(true);
     const st = LAYOUT.stations[0];
-    useGame.setState({ player: [st[0], 0.6, st[2]] });
+    stand(st);
     useGame.getState().tick(0.1); // çay al (q_pickup tamamlanır → +perQuest, completing fazı başlar)
     const xpAfterPickup = useGame.getState().xp;
     expect(xpAfterPickup).toBeGreaterThanOrEqual(X.perQuest);
@@ -1631,7 +1691,7 @@ describe('Level/XP sistemi (v17, 2026-06-10) — eylem XP\'si, seviye eğrisi, m
     }
     expect(waiting).toBeTruthy();
     const seat = LAYOUT.tables[waiting!.tableIndex].seat;
-    useGame.setState({ player: [seat[0], 0.6, seat[2]] });
+    stand(seat);
     useGame.getState().tick(0.1); // servis (+perTeaServed; q_serve1 da tamamlanır → +perQuest)
     expect(useGame.getState().xp).toBeGreaterThanOrEqual(xpAfterPickup + X.perTeaServed + X.perQuest);
   });
@@ -1693,18 +1753,18 @@ describe('Level/XP sistemi (v17, 2026-06-10) — eylem XP\'si, seviye eğrisi, m
 describe('bulaşık onboarding gate (2026-06-10) — q_wash gelmeden kirli bardak çıkmaz', () => {
   it('görev öncesi: içen müşteri kirli BIRAKMAZ, bardak temiz havuza döner (korunum bozulmaz)', () => {
     useGame.getState().hardReset(); // questIndex 0 < q_wash
-    useGame.setState({ player: [0, 0.6, 2], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+    useGame.setState({ player: PARK, inputKeyboard: [0, 0], inputJoystick: [0, 0] });
     for (let i = 0; i < 200; i++) useGame.getState().tick(0.1);
     const waiting = useGame.getState().npcs.find((n) => n.state === 'waitingForTea');
     expect(waiting).toBeTruthy();
     const st = LAYOUT.stations[0];
-    useGame.setState({ player: [st[0], 0.6, st[2]] });
+    stand(st);
     useGame.getState().tick(0.1);
     const seat = LAYOUT.tables[waiting!.tableIndex].seat;
-    useGame.setState({ player: [seat[0], 0.6, seat[2]] });
+    stand(seat);
     useGame.getState().tick(0.1);
     // İçme bitsin (oyuncu uzakta).
-    useGame.setState({ player: [0, 0.6, 6.5] });
+    useGame.setState({ player: PARK });
     for (let i = 0; i < 100; i++) useGame.getState().tick(0.1);
     const s = useGame.getState();
     expect(s.dishes.length).toBe(0); // kirli YOK (öğretilmedi)
@@ -1749,12 +1809,12 @@ describe('ZONE-2 (Faz 3a + D-022) — per-zone ocak+bulaşık, geçit pad\'i, mi
     expect(s0.zonesOpen).toBe(2);
     expect(s0.tables).toBe(5);
     // 2. ocak kendi kuyruğuna demler (oyuncu uzakta).
-    useGame.setState({ player: [0, 0.6, 4.5], inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+    useGame.setState({ player: PARK, inputKeyboard: [0, 0], inputJoystick: [0, 0] });
     for (let i = 0; i < 300 && useGame.getState().readyCupsByZone[1] === 0; i++) useGame.getState().tick(0.1);
     expect(useGame.getState().readyCupsByZone[1]).toBeGreaterThan(0);
     // Oyuncu zone-2 ocağından tepsiye alır.
     const st2 = LAYOUT.stations[1];
-    useGame.setState({ player: [st2[0], 0.6, st2[2]] });
+    stand(st2);
     useGame.getState().tick(0.1);
     expect(useGame.getState().tray).toBeGreaterThan(0);
     // Zone-2 masasına (global slot >= 4) müşteri oturur (kendi kapısından gelir).
@@ -2117,7 +2177,7 @@ describe('zone-2 yükseltme gating (v21) — zone-1 deseni aynalanır (önce kap
       padsDone: ['table2', 'table3', 'waiter'],
       waiters: [{ pos: [...LAYOUT.tables[0].table] as [number, number, number], tray: 1 }, null],
       npcs: [{ id: 1, state: 'waitingForTea', pos: [...LAYOUT.tables[0].seat] as [number, number, number], tableIndex: 0, seatIndex: 0, timer: 18, color: '#fff' }],
-      spawnTimer: 999, player: [0, 0.6, 4], inputKeyboard: [0, 0], inputJoystick: [0, 0],
+      spawnTimer: 999, player: PARK, inputKeyboard: [0, 0], inputJoystick: [0, 0],
     });
     for (let i = 0; i < 30 && useGame.getState().stats.waiterServed === 0; i++) useGame.getState().tick(0.1);
     const st = useGame.getState().stats;
@@ -2361,7 +2421,7 @@ describe('M2 — 2×2 kat ızgarası (zone-3/4 altyapısı; arka sıra + geçitl
       questIndex: economyConfig.quests.length,
       npcs: [],
       spawnTimer: 1e9,
-      player: [9.0, 0.6, -4.0] as [number, number, number],
+      player: parkSpot(2, 8, 1) as [number, number, number], // zone-2 içinde, mobilyadan uzak
       inputKeyboard: [0, -1],
     });
     for (let i = 0; i < 120; i++) useGame.getState().tick(1 / 60);
@@ -2382,7 +2442,7 @@ describe('M2 — 2×2 kat ızgarası (zone-3/4 altyapısı; arka sıra + geçitl
     useGame.setState({
       npcs: [],
       spawnTimer: 1e9,
-      player: [1.6, 0.6, -4.0] as [number, number, number],
+      player: parkSpot(1, 4, 0) as [number, number, number], // zone-1 içinde, mobilyadan uzak
       inputKeyboard: [0, -1],
     });
     for (let i = 0; i < 120; i++) useGame.getState().tick(1 / 60);
@@ -2449,7 +2509,7 @@ describe('M3 — TOST ürün hattı (zone-3): trayFood, ürün fiyatı, tabak, g
       questIndex: economyConfig.quests.length, // q_wash geçildi → kirli bırakılır
       npcs: [{ id: 7, state: 'drinking', pos: [...LAYOUT.tables[8].seat] as [number, number, number], tableIndex: 8, seatIndex: 0, timer: 0.02, color: '#fff' }],
       spawnTimer: 1e9,
-      player: [0, 0.6, 4.5],
+      player: PARK,
     });
     useGame.getState().tick(0.1);
     const s = useGame.getState();
@@ -2597,7 +2657,7 @@ describe('M3 — müşteri tavanı masalarla ölçeklenir (arka salon açlığı
       timer: 999,
       color: '#fff',
     }));
-    useGame.setState({ npcs: sitters, spawnTimer: 0, player: [0, 0.6, 4.5] });
+    useGame.setState({ npcs: sitters, spawnTimer: 0, player: PARK });
     useGame.getState().tick(0.1); // spawn denemesi
     const s = useGame.getState();
     const newcomer = s.npcs.find((n) => n.id < 8000 || n.id > 8007);
@@ -2645,7 +2705,7 @@ describe('Y2 — koltuk + grup sistemi (plan §2)', () => {
 
   it('grup spawn: L3 masada (4 koltuk) 4 kişilik grup AYNI masaya FARKLI koltuklarla doğar', () => {
     useGame.getState().hardReset();
-    useGame.setState({ tableLevels: [3, 0, 0, 0], spawnTimer: 0, player: [5.2, 0.6, -5.2] });
+    useGame.setState({ tableLevels: [3, 0, 0, 0], spawnTimer: 0, player: PARK });
     const rnd = vi.spyOn(Math, 'random').mockReturnValue(0.99); // zar → 4 kişilik grup
     try {
       useGame.getState().tick(0.05);
@@ -2663,7 +2723,7 @@ describe('Y2 — koltuk + grup sistemi (plan §2)', () => {
 
   it("koltuk yetmezse grup KÜÇÜLÜR: L1 masada (2 koltuk) 4'lük zar 2 kişi doğurur", () => {
     useGame.getState().hardReset();
-    useGame.setState({ tableLevels: [1, 0, 0, 0], spawnTimer: 0, player: [5.2, 0.6, -5.2] });
+    useGame.setState({ tableLevels: [1, 0, 0, 0], spawnTimer: 0, player: PARK });
     const rnd = vi.spyOn(Math, 'random').mockReturnValue(0.99);
     try {
       useGame.getState().tick(0.05);
@@ -2681,7 +2741,7 @@ describe('Y2 — koltuk + grup sistemi (plan §2)', () => {
       padsDone: ['table2', 'table3', 'table4'],
       tableLevels: [4, 4, 4, 4], // 4 masa × 4 koltuk = 16; tavan = 18
       questIndex: economyConfig.quests.length,
-      player: [5.2, 0.6, -5.2],
+      player: PARK,
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
     });
@@ -2752,7 +2812,7 @@ describe('Y2 — koltuk + grup sistemi (plan §2)', () => {
     useGame.setState({
       tableLevels: [1, 0, 0, 0], // 2 koltuk
       spawnTimer: 0,
-      player: [5.2, 0.6, -5.2],
+      player: PARK,
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
     });
@@ -2785,7 +2845,7 @@ describe('Y2 — koltuk + grup sistemi (plan §2)', () => {
       // İçince HER ÜYE bireysel öder (2 ayrı para; değer = çay + L1 bahşiş).
       useGame.setState({
         npcs: drinking.map((n) => ({ ...n, timer: 0.01 })),
-        player: [5.2, 0.6, -5.2],
+        player: PARK,
         coins: [],
       });
       useGame.getState().tick(dt);
@@ -2952,7 +3012,7 @@ describe('Y3 — garson tepsi yükseltmeleri (panel satın alma + FSM kapasite +
       padsDone: ['table2', 'waiter'],
       waiters: [{ pos: [pick[0], 0.6, pick[2]] as [number, number, number], tray: 0 }, null, null],
       waiterUpgrades: { ...defaultWaiterUpgrades(), teaTray: 2 },
-      player: [0, 0.6, 6.5],
+      player: PARK,
       inputKeyboard: [0, 0], inputJoystick: [0, 0],
       npcs: [
         { id: 950, state: 'waitingForTea', pos: [...farSeat] as [number, number, number], tableIndex: 1, seatIndex: 0, timer: 17, color: '#27ae60' },
@@ -2974,7 +3034,7 @@ describe('Y3 — garson tepsi yükseltmeleri (panel satın alma + FSM kapasite +
       padsDone: ['table2', 'waiter'],
       waiters: [{ pos: [seat[0], 0.6, seat[2]] as [number, number, number], tray: 3 }, null, null],
       waiterUpgrades: { ...defaultWaiterUpgrades(), teaTray: 2 },
-      player: [0, 0.6, 6.5],
+      player: PARK,
       inputKeyboard: [0, 0], inputJoystick: [0, 0],
       npcs: [
         { id: 960, state: 'waitingForTea', pos: [...seat] as [number, number, number], tableIndex: 0, seatIndex: 0, timer: 5, color: '#fff' },
@@ -3003,7 +3063,7 @@ describe('Y3 — garson tepsi yükseltmeleri (panel satın alma + FSM kapasite +
       questIndex: economyConfig.quests.length,
       waiters: [null, null, { pos: [pick[0], 0.6, pick[2]] as [number, number, number], tray: 0 }],
       waiterUpgrades: { ...defaultWaiterUpgrades(), tostTray: 1 },
-      player: [0, 0.6, 6.5],
+      player: PARK,
       inputKeyboard: [0, 0], inputJoystick: [0, 0],
       npcs: [
         { id: 970, state: 'waitingForTea', pos: [...seat8] as [number, number, number], tableIndex: 8, seatIndex: 0, timer: 17, color: '#fff' },
@@ -3085,7 +3145,7 @@ describe('Y4 — 2. garson: gating (allZoneTablesLevel) + claim + opsiyonel pad 
       tableLevels: [4, 4, 4, 4],
       waiters: [{ pos: [seat0[0], 0.6, seat0[2]] as [number, number, number], tray: 1 }, null, null],
       waiters2: [{ pos: [seat1[0], 0.6, seat1[2]] as [number, number, number], tray: 1 }, null, null],
-      player: [0, 0.6, 6.5],
+      player: PARK,
       inputKeyboard: [0, 0], inputJoystick: [0, 0],
       npcs: [
         // Masa 0 EN ACİL (timer 2) → 1. garson onu claim eder; 2. garson masa 1'e (timer 8) düşer.
@@ -3111,7 +3171,7 @@ describe('Y4 — 2. garson: gating (allZoneTablesLevel) + claim + opsiyonel pad 
       padsDone: ['table2', 'waiter', 'waiter2'],
       waiters: [{ pos: [seat0[0], 0.6, seat0[2]] as [number, number, number], tray: 1 }, null, null],
       waiters2: [{ pos: [seat0[0] + 0.3, 0.6, seat0[2]] as [number, number, number], tray: 1 }, null, null],
-      player: [0, 0.6, 6.5],
+      player: PARK,
       inputKeyboard: [0, 0], inputJoystick: [0, 0],
       npcs: [
         { id: 990, state: 'waitingForTea', pos: [...seat0] as [number, number, number], tableIndex: 0, seatIndex: 0, timer: 5, color: '#fff' },
@@ -3168,7 +3228,7 @@ describe("Müşteri dağılımı — zone round-robin (tost salonu aç kalmasın
       questIndex: economyConfig.quests.length,
       npcs: [],
       spawnTimer: 0,
-      player: [5.2, 0.6, -5.2],
+      player: PARK,
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
     });
@@ -3227,7 +3287,7 @@ describe('v28 — bulaşıkçı leğen yükseltmesi (telefon feedback turu-4: "b
         spawnTimer: 1e9,
         waiterUpgrades: { ...defaultWaiterUpgrades(), dishCarry: tier },
         dishes: fourDishes(LAYOUT.tables[0]),
-        player: [5.2, 0.6, -5.2],
+        player: PARK,
       });
       let maxTray = 0;
       for (let i = 0; i < 600 && useGame.getState().dishes.length > 0; i++) {
@@ -3280,7 +3340,7 @@ describe('Turu-4 — tost sabrı ürün-bazlı + temizlik temposu ("tostta müş
     useGame.setState({
       padsDone: [...Z1, ...Z2, 'zone3'],
       questIndex: economyConfig.quests.length,
-      player: [5.2, 0.6, -5.2],
+      player: PARK,
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
       npcs: [{ id: 980, state: 'toTable', pos: [...seat] as [number, number, number], tableIndex: 8, seatIndex: 0, timer: 0, color: '#2980b9' }],
@@ -3322,9 +3382,9 @@ describe('Turu-4 — tost sabrı ürün-bazlı + temizlik temposu ("tostta müş
     useGame.getState().hardReset();
     const after = economyConfig.money.autoCollectAfter;
     useGame.setState({
-      player: [0, 0.6, 4.5], inputKeyboard: [0, 0], inputJoystick: [0, 0], spawnTimer: 1e9,
-      // Coin oyuncudan UZAK (mıknatıs dışı), yaşı eşiğin hemen altında.
-      coins: [{ id: 1, pos: [4, 0.3, -4], value: 7, age: after - 0.05 }],
+      player: PARK, inputKeyboard: [0, 0], inputJoystick: [0, 0], spawnTimer: 1e9,
+      // Coin oyuncudan UZAK (mıknatıs dışı — konum oyuncuya GÖRE), yaşı eşiğin hemen altında.
+      coins: [{ id: 1, pos: [PARK[0], 0.3, PARK[2] + attractRadiusFor(0) + 2], value: 7, age: after - 0.05 }],
       notice: null,
     });
     const beforeWallet = useGame.getState().wallet.toNumber();
@@ -3338,7 +3398,8 @@ describe('Turu-4 — tost sabrı ürün-bazlı + temizlik temposu ("tostta müş
     expect(s.notice?.reward).toBe(7);
     // Mıknatıs alanındaki coin oto-toplanmaz (oyuncuya akar, manuel toplanır → sayaç artar).
     useGame.setState({
-      coins: [{ id: 2, pos: [0.2, 0.3, 4.6], value: 5, age: after + 99 }],
+      // Coin oyuncunun mıknatıs alanının İÇİNDE (konum yine oyuncuya göre).
+      coins: [{ id: 2, pos: [PARK[0], 0.3, PARK[2] + attractRadiusFor(0) - 0.4], value: 5, age: after + 99 }],
       notice: null,
     });
     useGame.getState().tick(0.1);
