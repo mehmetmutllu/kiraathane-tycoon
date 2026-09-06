@@ -760,3 +760,37 @@ muaf** (onboarding korunur), (b) yalnizca dogal aralar — adim/gorev tamamlanma
 **Gerekce:** Kullanici *"3 ile 2 arasindayim, 90 saniye cok erken gibi, ideali sec sen"* dedi.
 90 sn (My Perfect Hotel) erken terk riskini artiriyor; 180 sn gelirden feragat. 120 sn + muafiyet
 penceresi ikisinin ortasi. **Config'ten tek satir** — retention verisine gore ayarlanacak.
+
+## D-053 — Sahnenin "duzlugunu" cozen sey isik RENGI degil GUNES ACISI (2026-09-06, Faz G0)
+**Karar:** Yonlu isik `[6,12,6]` (~55 derece) yerine **`[9,9,7]` (~40 derece)**. Dolgu isigi
+`ambientLight 0.6` yerine `hemisphereLight` (gok `#ffe9c8` / yer `#6b5a4a`) **0.35**; yonlu isik
+krem `#fff2d8` **1.6**; sis `#1f2933` 34->72; `toneMappingExposure` 1.05. Butun sayilar
+`src/config/palette.ts` icindeki **`LIGHTING`** blogunda (renk koda gomulmez kurali).
+
+**Gerekce (olcumle bulundu, plandan gelmedi):** Plan G0'i "hemisphere + fog + ACESFilmic" diye
+tarif ediyordu. Uygulaninca iki sey cikti:
+1. **ACESFilmic zaten acikti** — @react-three/fiber v9 `gl.toneMapping`'i varsayilan olarak
+   ACESFilmic yapiyor (`flat` prop'u verilmedigi surece; kutuphane kaynaginda dogrulandi).
+   O maddede yapilacak tek is `toneMappingExposure` idi.
+2. **Yalniz hemi/sun siddetini oynatmak sahneyi HIC degistirmedi.** Uc ayar turu (0.42/1.25 ·
+   0.58/1.25 · 0.40/1.45) ayni kameradan cekilip yan yana konunca hicbiri "once"den ayirt
+   edilemiyordu. Sahneye gecici 3x3 test kutusu eklenince sebep gorundu: **golge haritasi
+   calisiyordu**, ama gunes ~55 derece dik oldugu icin golge objenin ALTINDA kaliyor ve tepeden
+   bakan kamera onu hic gormuyordu. Aci 40 dereceye inince her masa, tabure ve musteri zemine
+   **oturdu** — G1'in (temas golgesi) cozecegi "yuzme" hissinin yarisi bedelsiz kapandi.
+
+**Reddedilen:** `[9,8,7]` (~35 derece) — golgeler dramatiklesiyor ama telefonda oynanisi orten
+uzun lekeler yapiyor. `[9,9,7]` bilincli orta yol.
+
+**Yan etki:** Alcalan gunes golgeleri uzattigi icin eski golge kamerasi (-12/24/12/-20) sag-ust
+kosede kirpiyordu -> **-13/28/15/-15**. 1024 haritada ~25 teksel/birim (eskisi 28).
+
+**Maliyet:** draw-call 91->91, sis ~0,04 ms/kare (olculdu). Isik bedava; bu yuzden G0 plandaki
+en yuksek etki/caba orani.
+
+**Kalici ders:** Bu sahnede gorsel bir iddia **ayni kameradan A/B ekran goruntusuyle** olculur
+(oyuncuyu `__teleport` ile sabitle, `camZoomOut` ac, `git stash` ile once/sonra cek). "Daha iyi
+oldu" demeden once iki kareyi yan yana koy. Ayrica headless tarayicida `__perf().fps` arka plan
+rAF kisitlamasi yuzunden anlamsiz (1 gosterir) — kare suresi dogrudan `gl.render` dongusuyle olculur.
+
+**Detay:** `docs/gorsel/README.md` · kanit `docs/gorsel/ss/g0-*.png`.

@@ -982,11 +982,50 @@ Detay: `docs/ui/README.md` · ekran görüntüleri `docs/ui/ss/` · karar **D-05
   **Faz B'ye geçmeden onarılmalı.**
 - ⏳ **SONRAKİ:** kullanıcı arayüz kontrolü → geri bildirim → **Faz G** (G0 ışık ile başla).
 
+## FAZ G — GÖRSEL TABAN · G0 IŞIK ✅ (2026-09-06)
+Değişen: `src/config/palette.ts` (yeni `LIGHTING` bloğu) · `src/components/three/Scene.tsx`.
+Gerekçe + kanıt: **`docs/gorsel/README.md`**, ekran görüntüleri `docs/gorsel/ss/g0-*.png`.
+
+- ✅ **Dolgu ışığı:** `ambientLight 0.6` → `hemisphereLight` (gök `#ffe9c8` / yer `#6b5a4a`) @ **0.35**.
+- ✅ **Yönlü ışık:** beyaz `1.1` → krem `#fff2d8` **`1.6`**.
+- ✅ **GÜNEŞ AÇISI `[6,12,6]` (~55°) → `[9,9,7]` (~40°)** — oturumun asıl kazancı (aşağıda).
+- ✅ **Gölge kamerası** −12/24/12/−20 → **−13/28/15/−15** (alçalan güneş sağ-üst köşede kırpıyordu).
+- ✅ **Sis** `#1f2933` 34→72 — harita kenarı sert kesilmiyor, oyun alanına GİRMİYOR (kamera ~14 birimden bakar).
+- ✅ `toneMappingExposure` **1.05**.
+
+**PLANIN G0 TARİFİ İKİ NOKTADA EKSİKTİ (ölçümle bulundu):**
+1. **ACESFilmic ZATEN AÇIKTI** — r3f v9 `gl.toneMapping`'i varsayılan ACESFilmic yapıyor (`flat`
+   verilmediği sürece; `node_modules/@react-three/fiber` kaynağında doğrulandı). O maddede
+   yapılacak tek iş exposure'du.
+2. **Yalnız hemi/sun şiddetini oynatmak sahneyi değiştirmedi.** Üç ayar turu (0.42/1.25 ·
+   0.58/1.25 · 0.40/1.45) yan yana konunca hepsi "önce"den ayırt edilemiyordu. Sahneye geçici
+   3×3 test kutusu eklenince sebep çıktı: **gölge haritası çalışıyordu** ama güneş ~55° dikti →
+   gölge objenin ALTINDA kalıyor, tepeden bakan kamera onu hiç görmüyordu. Açı 40°'ye inince
+   her masa/tabure/müşteri zemine **oturdu** → G1'in çözeceği "yüzme" hissinin yarısı bedelsiz kapandı.
+   Daha alçak (`[9,8,7]`, ~35°) denendi: dramatik ama telefonda oynanışı örten uzun lekeler → reddedildi.
+
+**Maliyet (ölçüldü):** draw-call **91 → 91** · sis ~**0,04 ms/kare** (200 karelik `gl.render`
+döngüsü) · kare süresi 1,1–1,3 ms (masaüstü, 3 salon açık, 40k üçgen).
+NOT: headless tarayıcıda `window.__perf().fps` arka plan kısıtlaması yüzünden anlamsız (1 gösterir).
+
+**Doğrulama:** `npm run test` **186/186** · `npm run build` temiz · Playwright **0 konsol hatası**.
+**Kullanıcı onayı:** *"tamam şu an sorun yok zaten genel tasarım değişecek."* → G0 kapandı.
+
+**Bu adımdan artakalan (G fazının ilerisi):**
+- UI içindeki küçük Canvas'lar (`CharacterPanel`, `SalonSlice`, `DioramaPreview`,
+  `TableThemePreview`) hâlâ eski düz `ambientLight` ile — dünya ısınınca mağaza önizlemeleri
+  soğuk kaldı. G fazının sonunda ortak ışık kurulumuna alınmalı.
+- `shadow.bias`/`normalBias` **0'da bırakıldı**: bu açıda akne yok; normalBias eklemek ince
+  çıtalarda (0,04–0,08) ışık sızdırma riski taşıyor. Açı değişirse tekrar bakılmalı.
+
+**⏳ SIRADAKİ:** **G1 — temas gölgesi** (instanced blob shadow, 64px radial-gradient
+CanvasTexture, `transparent` + `depthWrite:false`, y=0.005, tek draw call).
+
 ## İLERLEME PANOSU (2026-09-06) — oturum sayacı devrede
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Referans: ikravakfi Mali Takip Panosu (f467bc3f) — iskelet alındı, görsel imza kıraathanenin.
 
-**Oturum bütçesi (TOPLAM 65 · YAPILAN 35 · %54):**
+**Oturum bütçesi (TOPLAM 65 · YAPILAN 36 · %55):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -999,14 +1038,14 @@ Referans: ikravakfi Mali Takip Panosu (f467bc3f) — iskelet alındı, görsel i
 | | DN denetim + arşiv | 2/2 ✅ |
 | **Kuruluş toplam** | | **28/28 ✅** |
 | Yayın programı (1 Eyl →) | P plan ve maket | 6/6 ✅ |
-| | **G görsel taban** | **0/4 🔧 SIRADAKİ** |
+| | **G görsel taban** | **1/4 🔧** (G0 ışık ✅ · sıradaki G1 temas gölgesi) |
 | | A temizlik | 0/3 ⏳ |
 | | B model geçişi | 0/5 ⏳ |
 | | C zincir ve denge | 0/5 ⏳ |
 | | D meta katman | 0/5 ⏳ |
 | | E arayüz ve cila | 1/4 🔧 |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **7/37** |
+| **Program toplam** | | **8/37** |
 
 Kuruluş dönemi sayısı **commit kaydından türetildi** (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. Panoda bu açıkça yazıyor.

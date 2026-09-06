@@ -2,6 +2,81 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-06 — FAZ G BAŞLADI: G0 IŞIK BİTTİ; SAVE v30 değişmedi)
+
+Kullanıcı arayüz v2'yi ayrıca gözden geçirmedi, doğrudan **Faz G0'ı seçti**. G0 uygulandı,
+ölçüldü, onaylandı ve push'landı (`d1b238a`). Kullanıcı onayı: *"tamam şu an sorun yok zaten
+genel tasarım değişecek."* — yani G0 kalıcı bir cila değil, **sonraki fazlarda bakılacak
+sahnenin tabanını** düzeltti.
+
+Kullanıcının bu oturumda verdiği ikinci talimat: **"oturum kaydederken push da yap"** (zaten
+protokolde vardı, `oturum-bitir` adım 5) + **"ilerleme panosu artifact'ini de aç"** → pano her
+oturum sonunda güncellenip AYNI yolla yeniden yayınlanıyor, link paylaşılıyor.
+
+### G0 — ne yapıldı (detay: `docs/gorsel/README.md`)
+`src/config/palette.ts`'e **`LIGHTING`** bloğu (tek renk/sayı kaynağı kuralı), `Scene.tsx` yalnız okuyor.
+
+| | Önce | Sonra |
+|---|---|---|
+| Dolgu | `ambientLight 0.6` | `hemisphereLight` gök `#ffe9c8` / yer `#6b5a4a` @ **0.35** |
+| Yönlü | beyaz `1.1` | krem `#fff2d8` **`1.6`** |
+| **Güneş konumu** | **`[6,12,6]` (~55°)** | **`[9,9,7]` (~40°)** |
+| Gölge kamerası | −12/24/12/−20 | −13/28/15/−15 (1024) |
+| Sis | yok | `#1f2933`, 34 → 72 |
+| Tone mapping | ACESFilmic (r3f varsayılanı) | aynı + `toneMappingExposure 1.05` |
+
+### >>> BU OTURUMUN ASIL BULGUSU (sonraki oturum bunu bilsin) <<<
+**Planın G0 tarifi eksikti.** İki şey ölçümle çıktı:
+1. **ACESFilmic zaten açıktı** — r3f v9 varsayılanı (`node_modules/@react-three/fiber` kaynağında
+   doğrulandı). O madde bir iş değildi; yapılacak tek şey exposure'du.
+2. **Yalnız ışık ŞİDDETİNİ oynatmak sahneyi hiç değiştirmedi.** Üç ayar turunun ekran görüntüleri
+   "önce"den ayırt edilemiyordu. Sahneye geçici 3×3 test kutusu konunca sebep göründü:
+   **gölge haritası çalışıyordu**, ama güneş ~55° dik olduğu için gölge objenin ALTINDA kalıyor
+   ve tepeden bakan kamera onu hiç görmüyordu. **Açı = asıl kaldıraç.** 40°'ye inince her masa,
+   tabure ve müşteri zemine oturdu.
+   → Ders: bu sahnede görsel bir iddiayı ölçmenin yolu **aynı kameradan A/B ekran görüntüsü**
+   (oyuncuyu `__teleport` ile sabitle, `camZoomOut` aç, `git stash` ile önce/sonra çek).
+
+### Ölçüm (plan "FPS ölçümü" istiyordu)
+- Draw-call **91 → 91** (ışık geometri eklemez). Sis ~**0,04 ms/kare**.
+- Kare süresi **1,1–1,3 ms** (masaüstü, 3 salon açık, 40k üçgen).
+- **DİKKAT:** headless tarayıcıda `window.__perf().fps` arka plan rAF kısıtlaması yüzünden
+  **anlamsız** (1 gösterir). Ölçüm doğrudan `gl.render` döngüsüyle yapıldı:
+  `for (let i=0;i<200;i++) gl.render(scene,camera); gl.getContext().finish();`
+  (`window.__three` DEV kancasından `gl/scene/camera` alınır.)
+
+### Sahneyi hızlı doldurma reçetesi (ekran görüntüsü için)
+```js
+window.__setState({ padsDone: ['table2','table3','waiter','dishwasher','table4','zone2',
+  'z2table2','z2waiter','z2table3','z2dishwasher','z2table4','zone3','z3table2','z3waiter',
+  'z3table3','z3dishwasher','z3table4','waiter2','z2waiter2','z3waiter2'],
+  padFills: {}, stationLevels: [4,4,4], tableLevels: new Array(12).fill(4), camZoomOut: true });
+window.__addMoney(1e6); window.__advanceTime(120); window.__teleport(2, 1);
+```
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+1. **G1 — temas gölgesi.** Instanced blob shadow: 64px radial-gradient `CanvasTexture`,
+   `transparent`, `depthWrite:false`, y=0.005, masa/tabure/müşteri/tezgâh altına. Tek draw call.
+   G0'dan sonra "yüzme" hissinin yarısı zaten geçti — G1 kalanını kapatır.
+2. Sonra **G2** zemine ölçek referansı (**dokuyla değil geometriyle**; doku yolu D-041 ile kapalı):
+   `CheckerTiles` genelleştir → `plank` (0,55×2,2, satır başı yarım ofset, tahta başına ±%4 renk
+   sapması) ve `tile` (0,7 kare); derz **çizgi değil boşluk**. → **G3** duvar bitimi (süpürgelik
+   0,08 · lambri çıtası 0,04 · kartonpiyer) → **G4/G5** KayKit yerleşimi (paketler elde).
+3. **Faz A'ya geçmeden** `tools/smoke.mjs`'in 7 kırık adımı onarılmalı (kök neden `q_coin`
+   questBase yarışı → domino; bu oturumdan ÖNCE de kırıktı).
+
+### G fazının sonunda kapatılacak iki artık
+- UI Canvas'ları (`CharacterPanel`, `SalonSlice`, `DioramaPreview`, `TableThemePreview`) hâlâ
+  eski düz `ambientLight` ile → dünya ısındı, mağaza önizlemeleri soğuk kaldı. Ortak ışığa alınmalı.
+- `shadow.bias`/`normalBias` **0'da**: bu açıda akne yok; eklemek ince çıtalarda (0,04–0,08)
+  ışık sızdırır. Güneş açısı değişirse tekrar bakılmalı.
+
+### Bilinen, ertelenmiş
+- Maket girişinin üst çıtasında z-fighting (kullanıcı: "oyuna geçerken hallederiz").
+- Bundle 1,44 MB (three.js) — Faz F kod bölme.
+
+---
+
 ## ŞU AN (2026-09-06 — ARAYÜZ v2 UYGULANDI + SANDBOX + KayKit paketleri; SAVE v30 değişmedi)
 
 Plan gözden geçirildi, **§14'ün dört açık kararı da kapandı** (D-049…D-052) ve kullanıcı
