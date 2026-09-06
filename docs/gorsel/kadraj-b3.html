@@ -1,0 +1,545 @@
+<title>34×34 Kadraj Kademeleri</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  :root{
+    --bg:#e9edf1; --panel:#fbfcfd; --panel-2:#f1f4f7; --line:#cfd8e0; --line-soft:#e0e7ed;
+    --ink:#161c23; --ink-2:#3d4b58; --muted:#66757f;
+    --brass:#a8760f; --brass-ink:#7d5709;
+    --tA:#a8760f; --tB:#2e6f7d; --tC:#96482f;
+    --frame:#0e1216;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#12161b; --panel:#191f26; --panel-2:#1f262e; --line:#2e3841; --line-soft:#242c34;
+      --ink:#e7edf3; --ink-2:#b6c3ce; --muted:#8b9aa6;
+      --brass:#e0b13a; --brass-ink:#f0c968;
+      --tA:#e0b13a; --tB:#5fb6c4; --tC:#d97f5c;
+      --frame:#05070a;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#12161b; --panel:#191f26; --panel-2:#1f262e; --line:#2e3841; --line-soft:#242c34;
+    --ink:#e7edf3; --ink-2:#b6c3ce; --muted:#8b9aa6;
+    --brass:#e0b13a; --brass-ink:#f0c968;
+    --tA:#e0b13a; --tB:#5fb6c4; --tC:#d97f5c;
+    --frame:#05070a;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+    font-size:15px; line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1120px; margin:0 auto; padding:28px 20px 64px; display:flex; flex-direction:column; gap:28px}
+
+  h1,h2,h3{font-family:Archivo,"Archivo",system-ui,sans-serif; margin:0; text-wrap:balance; letter-spacing:-0.02em}
+  h1{font-size:clamp(26px,4vw,38px); font-weight:700; line-height:1.12}
+  h2{font-size:19px; font-weight:600}
+  h3{font-size:15px; font-weight:600; letter-spacing:0}
+  p{margin:0}
+  .lede{color:var(--ink-2); max-width:66ch}
+
+  .eyebrow{
+    font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11.5px; font-weight:500;
+    letter-spacing:.14em; text-transform:uppercase; color:var(--brass);
+  }
+
+  /* ---- ölçü şeridi ---- */
+  .facts{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(132px,1fr));
+    border:1px solid var(--line); border-radius:3px; background:var(--panel); overflow:hidden;
+  }
+  .fact{padding:11px 14px; border-right:1px solid var(--line-soft)}
+  .fact:last-child{border-right:0}
+  .fact dt{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.09em;
+    text-transform:uppercase; color:var(--muted); margin:0 0 3px}
+  .fact dd{margin:0; font-family:"IBM Plex Mono",monospace; font-size:15px; font-weight:500;
+    font-variant-numeric:tabular-nums; color:var(--ink)}
+
+  /* ---- üç kademe ---- */
+  .tiers{display:grid; grid-template-columns:repeat(3,1fr); gap:18px}
+  @media (max-width:760px){ .tiers{grid-template-columns:1fr} }
+  .tier{display:flex; flex-direction:column; gap:10px}
+  .tier-head{display:flex; align-items:baseline; gap:8px}
+  .chip{
+    font-family:"IBM Plex Mono",monospace; font-size:11px; font-weight:600; letter-spacing:.08em;
+    padding:2px 7px; border-radius:2px; color:#fff;
+  }
+  .tier[data-t="A"] .chip{background:var(--tA)} .tier[data-t="B"] .chip{background:var(--tB)}
+  .tier[data-t="C"] .chip{background:var(--tC)}
+  :root[data-theme="dark"] .chip, :root:not([data-theme="light"]) .chip{color:#0d1116}
+  @media (prefers-color-scheme: light){ :root:not([data-theme="dark"]) .chip{color:#fff} }
+  .tier-name{font-family:Archivo,sans-serif; font-weight:600; font-size:15px}
+  .tier-base{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--muted); margin-left:auto}
+
+  .shot{
+    position:relative; background:var(--frame); border:1px solid var(--line); border-radius:2px;
+    aspect-ratio:9/19.5; overflow:hidden;
+  }
+  .shot canvas{display:block; width:100%; height:100%}
+  .shot::after{
+    content:attr(data-badge); position:absolute; left:8px; bottom:8px;
+    font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:#e9eef3;
+    background:rgba(8,11,15,.72); padding:3px 7px; border-radius:2px; letter-spacing:.04em;
+  }
+  .measures{display:grid; grid-template-columns:1fr auto; gap:3px 10px;
+    font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--muted);
+    font-variant-numeric:tabular-nums; align-items:baseline}
+  .measures b{color:var(--ink); font-weight:600; font-size:13px; text-align:right; white-space:nowrap}
+  .verdict{font-size:13px; color:var(--muted); line-height:1.5}
+
+  /* ---- plan ---- */
+  .planwrap{
+    display:grid; grid-template-columns:minmax(0,1fr) 260px; gap:20px;
+    border:1px solid var(--line); border-radius:3px; background:var(--panel); padding:18px;
+  }
+  @media (max-width:760px){ .planwrap{grid-template-columns:1fr} }
+  #plan{width:100%; height:auto; display:block; cursor:crosshair; border-radius:2px; touch-action:none}
+  .side{display:flex; flex-direction:column; gap:14px}
+  .side h3{margin-bottom:2px}
+  .presets{display:flex; flex-wrap:wrap; gap:6px}
+  button{
+    font-family:"IBM Plex Sans",sans-serif; font-size:12.5px; color:var(--ink-2);
+    background:var(--panel-2); border:1px solid var(--line); border-radius:2px;
+    padding:5px 10px; cursor:pointer;
+  }
+  button:hover{border-color:var(--brass); color:var(--ink)}
+  button[aria-pressed="true"]{background:var(--brass); border-color:var(--brass); color:#fff; font-weight:600}
+  :root[data-theme="dark"] button[aria-pressed="true"], :root:not([data-theme="light"]) button[aria-pressed="true"]{color:#0d1116}
+  @media (prefers-color-scheme: light){ :root:not([data-theme="dark"]) button[aria-pressed="true"]{color:#fff} }
+  button:focus-visible{outline:2px solid var(--brass); outline-offset:2px}
+  .legend{display:flex; flex-direction:column; gap:5px; font-size:12.5px; color:var(--ink-2)}
+  .legend span{display:flex; align-items:center; gap:7px}
+  .swatch{width:13px; height:3px; border-radius:1px; flex:none}
+  .hint{font-size:12px; color:var(--muted); line-height:1.5}
+
+  /* ---- bulgu ---- */
+  .finding{
+    border:1px solid var(--line); border-left:3px solid var(--brass); border-radius:3px;
+    background:var(--panel); padding:18px 20px; display:flex; flex-direction:column; gap:10px;
+  }
+  .finding p{max-width:72ch; color:var(--ink-2)}
+  .finding b{color:var(--ink)}
+  code{font-family:"IBM Plex Mono",monospace; font-size:.9em; background:var(--panel-2);
+    padding:1px 5px; border-radius:2px; border:1px solid var(--line-soft)}
+
+  table{width:100%; border-collapse:collapse; font-size:13.5px}
+  .tablescroll{overflow-x:auto}
+  th,td{text-align:left; padding:9px 12px; border-bottom:1px solid var(--line-soft); vertical-align:top}
+  th{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.09em;
+    text-transform:uppercase; color:var(--muted); font-weight:500}
+  td:first-child{white-space:nowrap; font-weight:600}
+  tr:last-child td{border-bottom:0}
+
+  .ask{display:flex; flex-direction:column; gap:8px; border-top:1px solid var(--line); padding-top:20px}
+  .ask ol{margin:0; padding-left:20px; color:var(--ink-2); display:flex; flex-direction:column; gap:5px}
+  footer{font-size:12px; color:var(--muted); font-family:"IBM Plex Mono",monospace}
+</style>
+
+<div class="wrap">
+
+  <header style="display:flex;flex-direction:column;gap:10px">
+    <span class="eyebrow">Faz B · B3-1 · kadraj kararı · D-058 madde 4</span>
+    <h1>Kat 34×34'e çıkıyor. Portrede ne görünüyor?</h1>
+    <p class="lede">
+      Yerleşim dosyasına dokunmadan önce cevaplanması gereken tek soru bu. Aşağıdaki üç çerçeve
+      <b>aynı andan, aynı yerden</b> çekilmiş üç kamera kademesi — geometri maket v13'ün kütlesi,
+      kamera ise oyunun kendi formülü (<code>Scene.tsx</code>: fov 50°, 45° eğim,
+      <code>taban × min(1,3, 1/en-boy)</code>). Plandaki noktayı sürükleyerek oyuncuyu taşı;
+      üç çerçeve de birlikte güncellenir.
+    </p>
+  </header>
+
+  <dl class="facts">
+    <div class="fact"><dt>Bugünkü kat</dt><dd>21,2 × 20,6</dd></div>
+    <div class="fact"><dt>Hedef kat</dt><dd>34 × 34</dd></div>
+    <div class="fact"><dt>Alan farkı</dt><dd>× 2,6</dd></div>
+    <div class="fact"><dt>Masa</dt><dd>12 → 20</dd></div>
+    <div class="fact"><dt>Ekran</dt><dd>9 : 19,5</dd></div>
+    <div class="fact"><dt>Kamera</dt><dd>fov 50° · 45°</dd></div>
+  </dl>
+
+  <section style="display:flex;flex-direction:column;gap:14px">
+    <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap">
+      <h2>Üç kademe, aynı kare</h2>
+      <button id="zoomBtn" aria-pressed="false" style="margin-left:auto">Genel bakış düğmesi (×1,45)</button>
+    </div>
+    <div class="tiers" id="tiers"></div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:14px">
+    <h2>Aynı üç kadraj, kat planı üstünde</h2>
+    <div class="planwrap">
+      <canvas id="plan" width="1000" height="1000"></canvas>
+      <div class="side">
+        <div>
+          <h3>Oyuncuyu taşı</h3>
+          <div class="presets" id="presets"></div>
+        </div>
+        <div>
+          <h3>Görüş alanı</h3>
+          <div class="legend">
+            <span><i class="swatch" style="background:var(--tA)"></i> A · bugünkü (taban 6)</span>
+            <span><i class="swatch" style="background:var(--tB)"></i> B · ada (taban 8,5)</span>
+            <span><i class="swatch" style="background:var(--tC)"></i> C · yarım alan (taban 11,5)</span>
+          </div>
+        </div>
+        <p class="hint">
+          Plan oyunun kamerasıyla aynı yöne bakar: <b>arka bant</b> (servis · merdiven · lavabo)
+          yukarıda, <b>ana giriş</b> aşağıda. Kadrajlar yamuktur çünkü kamera 45° eğimlidir —
+          yakın kenar dar, uzak kenar geniştir.
+        </p>
+        <p class="hint">Plana tıkla ya da sürükle.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="finding">
+    <span class="eyebrow">Ölçümün söylediği</span>
+    <p>
+      Portre çerçevede kadraj <b>derin ama dar</b>. Dikey görüş açısı 50°, yatayı ise en-boy oranı
+      yüzünden yalnız <b>24°</b>: kamera geri çekildikçe kazanılan şey ağırlıkla <b>derinlik</b>,
+      genişlik ise çok yavaş büyüyor. Bir 17 × 17'lik alanı tek karede göstermek için tabanın
+      <b>22 civarına</b> çıkması gerekir — o mesafede oyuncu ekranda birkaç piksel kalır.
+    </p>
+    <p>
+      Yani karar “katın tamamı görünsün mü” değil: <b>katın tamamı hiçbir kademede görünmüyor.</b>
+      Karar, oyuncunun çevresinde kaç birimlik bir <b>komşuluk</b> okunacağı — ve genel bakış işini
+      zaten HUD'daki <b>×1,45 düğmesi</b> üstleniyor (üstteki düğmeyle üç kademede de dene).
+    </p>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:12px">
+    <h2>Kademeler ne veriyor, ne alıyor</h2>
+    <div class="tablescroll"><table>
+      <thead><tr><th>Kademe</th><th>Kazanç</th><th>Bedel</th><th>Riski</th></tr></thead>
+      <tbody>
+        <tr>
+          <td style="color:var(--tA)">A · taban 6</td>
+          <td>Bugünkü his birebir korunur; karakter ve masa detayı en büyük, tepsi/bardak okunur.</td>
+          <td>34 × 34'te oyuncu sürekli “koridorda” hisseder; komşu ada kadraja hiç girmez.</td>
+          <td>Yön kaybı — hangi alanda olduğunu HUD'dan öğrenmek gerekir.</td>
+        </tr>
+        <tr>
+          <td style="color:var(--tB)">B · taban 8,5</td>
+          <td>Bir banket adası (7,6 birim) ve iki masa sütunu aynı karede; grup okunur.</td>
+          <td>Karakter ekranda ~%25 küçülür; yüz/tepsi detayı zayıflar.</td>
+          <td>Orta yol — hiçbir tarafı tam çözmeyebilir.</td>
+        </tr>
+        <tr>
+          <td style="color:var(--tC)">C · taban 11,5</td>
+          <td>Alanın yarısı + arka bandın bir bloğu birlikte; nereye gittiğin belli.</td>
+          <td>Karakter belirgin küçülür; para/tepsi geri bildirimi uzaktan zayıflar, dokunma hedefi küçülür.</td>
+          <td>Tycoon yakınlığı kaybolup “masaüstü strateji” hissine kayabilir.</td>
+        </tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section class="ask">
+    <span class="eyebrow">Onay gelince ne olacak</span>
+    <ol>
+      <li>Seçilen taban <code>Scene.tsx</code> içindeki <code>st.current.d = 6 * fit</code> satırına yazılır — tek sayı, tek yer.</li>
+      <li>Ardından <code>layout.ts</code> 34 × 34'e taşınır: dört alan, arka bant (servis · merdiven · lavabo, üçü de z = −9,8), mevcut 12 masa ve servis bloğu yeni koordinatlara.</li>
+      <li>Yürüme, çarpışma ve testlerin kullandığı boş alan hesabı yeni ölçeğe uyar. Kapı: testler düşmeden yeşil.</li>
+      <li>Orta şerit, propler ve dolgu <b>B3-2</b>'ye kalır — oda bu adımda seyrek görünecek, normal.</li>
+    </ol>
+  </section>
+
+  <footer>Köşe Kıraathanesi · geometri: maket v13 kütlesi · kamera: oyunun kendi rig'i · gölge yok (D-054)</footer>
+</div>
+
+<script>
+(function () {
+  const T = window.THREE;
+  const TIERS = [
+    { k:'A', name:'Bugünkü', base:6,    color:'#a8760f', dark:'#e0b13a', note:'Tek masa grubu ve oyuncu.' },
+    { k:'B', name:'Ada',     base:8.5,  color:'#2e6f7d', dark:'#5fb6c4', note:'Bir banket adası tam sığar.' },
+    { k:'C', name:'Yarım alan', base:11.5, color:'#96482f', dark:'#d97f5c', note:'Alanın yarısı + arka bant.' }
+  ];
+  const PRESETS = [
+    { id:'onsol',   ad:'Masa kümesi',    p:[-8.5, 8.5] },
+    { id:'giris',   ad:'Ana giriş',      p:[0, 13.5] },
+    { id:'banket',  ad:'Banket adası',   p:[-8.5, -1.2] },
+    { id:'tezgah',  ad:'Servis tezgâhı', p:[-11.9, -8.6] },
+    { id:'merdiven',ad:'Merdiven önü',   p:[0, -7.8] }
+  ];
+  let player = PRESETS[0].p.slice();
+  let zoomOut = false;
+
+  // ---------- kütle maketi (maket v13 koordinatları) ----------
+  const C = {
+    wood:0xb98a5a, dark:0xa8794c, tile:0xd9cdb4, wall:0xe3d8c1, wallBack:0xd6c8ac,
+    furn:0x8a5f3c, seat:0x2e6b4f, seat2:0x7a4a3a, counter:0x6d4a30, brass:0xe0b13a,
+    glass:0x9fc6cf, stair:0x7d6248, player:0xf0c045, npc:0xcf7f5e, npc2:0x6f8fae
+  };
+  const scene = new T.Scene();
+  scene.background = new T.Color(0x2b333c);
+  scene.add(new T.HemisphereLight(0xffeedd, 0x40342a, 0.95));
+  const sun = new T.DirectionalLight(0xffe9c8, 0.75); sun.position.set(-8, 14, 10); scene.add(sun);
+
+  const mats = {};
+  function mat(c){ return mats[c] || (mats[c] = new T.MeshLambertMaterial({ color:c })); }
+  function box(w,h,d,c,x,y,z,ry){
+    const m = new T.Mesh(new T.BoxGeometry(w,h,d), mat(c));
+    m.position.set(x, y + h/2, z); if (ry) m.rotation.y = ry; scene.add(m); return m;
+  }
+  function plate(w,d,c,x,z,y){ const m = new T.Mesh(new T.BoxGeometry(w,0.04,d), mat(c)); m.position.set(x,(y||0)+0.02,z); scene.add(m); return m; }
+  function wall(x1,z1,x2,z2,h){
+    const dx=x2-x1, dz=z2-z1, len=Math.hypot(dx,dz);
+    const m = new T.Mesh(new T.BoxGeometry(len,h||3.2,0.26), mat(h?C.wallBack:C.wall));
+    m.position.set((x1+x2)/2,(h||3.2)/2,(z1+z2)/2); m.rotation.y = -Math.atan2(dz,dx); scene.add(m);
+  }
+  function teaTable(x,z){
+    box(1.15,0.72,1.15,C.furn,x,0,z);
+    [[-0.95,0],[0.95,0],[0,-0.95],[0,0.95]].forEach(o=>box(0.46,0.46,0.46,C.seat2,x+o[0],0,z+o[1]));
+  }
+  function person(x,z,c){ box(0.42,1.05,0.34,c,x,0,z); box(0.3,0.28,0.28,0xd8a97e,x,1.05,z); }
+
+  // zemin + dış duvarlar
+  plate(34,34,C.wood,0,0);
+  plate(12.2,7.0,C.tile,-10.8,-13.35,0.01);          // servis bloğu zemini
+  plate(12.4,7.0,C.tile,10.8,-13.35,0.01);           // lavabo zemini
+  plate(7.6,3.2,C.dark,-8.5,-2.95,0.01);             // banket adası yaması
+  plate(7.6,3.2,C.dark,8.5,-2.95,0.01);
+  wall(-17,-17,17,-17); wall(-17,-17,-17,17); wall(17,-17,17,17);
+  // cephe: kapı boşluğu x ∈ [−2,2]
+  wall(-17,17,-2.2,17); wall(2.2,17,17,17);
+  box(4.6,0.55,0.3,C.furn,0,2.65,17);                 // kapı lentosu
+  box(6.4,0.18,1.9,0x2e6b4f,0,2.5,17.9);              // tente
+  [-12,-7.5,7.5,12].forEach(x=>box(3.4,1.5,0.1,C.glass,x,1.1,16.86));
+  [-6.5,-1.5,3.5].forEach(z=>box(0.1,1.5,3.4,C.glass,16.86,1.1,z+8.5));
+
+  // alçak bölmeler (z = 0,2)
+  box(9.2,1.0,0.22,C.furn,-8.0,0,0.2); box(12.3,1.0,0.22,C.furn,10.75,0,0.2);
+
+  // ARKA BANT — servis bloğu x ∈ [−17, −4,6]
+  wall(-4.6,-16.9,-4.6,-9.8,2.2);
+  box(3.0,1.05,0.7,C.counter,-11.9,0,-10.25);         // ön tezgâh
+  box(0.9,1.5,0.9,0xb08d5a,-14.9,0,-10.25);           // semaver
+  box(2.6,1.0,0.7,C.counter,-13.6,0,-16.4);           // hazırlık
+  box(2.4,1.0,0.7,C.counter,-9.6,0,-16.4);
+  box(0.7,1.0,2.2,C.counter,-16.4,0,-13.6);           // bulaşık
+  box(1.6,0.9,1.2,C.furn,-5.5,0,-16.0);               // depo
+  box(1.4,1.05,0.6,C.counter,-7.1,0,-10.25);          // garson servis istasyonu
+
+  // ARKA BANT — merdiven x ∈ [−4,6, 4,6]
+  for (let i=0;i<10;i++) box(2.8,0.21,0.34,C.stair,0,i*0.21,-9.8-i*0.34);
+  box(0.16,1.0,3.6,C.furn,-1.5,1.0,-11.5); box(0.16,1.0,3.6,C.furn,1.5,1.0,-11.5);
+
+  // ARKA BANT — lavabo x ∈ [4,6, 17]
+  wall(4.6,-16.9,4.6,-9.8,2.2);
+  box(12.3,2.2,0.24,C.wallBack,10.75,0,-9.8);          // ön duvar (kapı boşluğu sağda)
+  box(2.0,2.2,0.24,C.wood,13.2,0,-9.8);                // kapı boşluğunu kapatmayan söve rengi
+  [6.2,8.4,10.6,12.8].forEach(x=>{ box(0.14,1.9,3.4,C.wallBack,x,0,-14.6); });
+  box(0.7,0.95,3.2,C.tile,16.3,0,-13.0);
+
+  // ön-sol ve ön-sağ masa kümeleri (4'er masa, aralık 3,2)
+  [[-8.5,8.5],[8.5,8.5]].forEach(c=>{
+    [-1.6,1.6].forEach(dx=>[-1.6,1.6].forEach(dz=>teaTable(c[0]+dx,c[1]+dz)));
+  });
+  // arka-sol: sedir U + alçak sehpalar
+  box(0.7,0.85,3.6,C.seat,-16.3,0,-11.0); box(0.7,0.85,3.6,C.seat,-4.5,0,-12.2);
+  box(3.2,0.85,0.7,C.seat,-10.0,0,-6.4);
+  [[-14.6,-11.0],[-6.0,-12.2],[-10.0,-8.3]].forEach(t=>box(1.0,0.45,1.0,C.furn,t[0],0,t[1]));
+  box(1.0,0.45,1.0,C.furn,-8.0,0,-2.8);
+  box(1.1,1.7,0.9,0x4a4a4f,-8.0,0,-16.2);              // soba
+  // arka-sağ: 3 çay masası + 3 yüksek masa
+  [[6.6,-3.2],[6.6,-9.4],[11.4,-3.4]].forEach(t=>teaTable(t[0],t[1]));
+  [[10.2,-8.6],[13.4,-8.0],[12.6,-11.4]].forEach(t=>{ box(0.8,1.05,0.8,C.furn,t[0],0,t[1]); });
+  box(0.8,1.15,3.6,C.counter,15.9,0,-6.5);             // teşhir vitrini
+
+  // ORTA ŞERİT — iki banket adası + ikili masalar
+  [-8.5,8.5].forEach(cx=>{
+    box(7.6,1.25,0.8,C.seat,cx,0,-2.95);
+    [-1,1].forEach(dir=>[-3.2,0,3.2].forEach(dx=>{
+      box(0.95,0.72,0.8,C.furn,cx+dx,0,-2.95+dir*1.35);
+      box(0.5,0.5,0.5,C.seat2,cx+dx,0,-2.95+dir*2.35);
+    }));
+  });
+
+  // birkaç müşteri (ölçek hissi)
+  [[-8.5,10.1,C.npc],[-6.9,6.9,C.npc2],[9.6,7.4,C.npc],[7.0,-1.9,C.npc2],
+   [-11.6,-4.0,C.npc],[5.4,-4.2,C.npc2],[-13.0,-11.6,C.npc],[11.6,-3.0,C.npc2]]
+    .forEach(p=>person(p[0],p[1],p[2]));
+
+  // dış dünya: kadrajın duvar üstünden gördüğü boşluk siyah kalmasın
+  plate(120,120,0x4a4f56,0,0,-0.06);
+  [[-30,10,9,7],[-30,-10,9,8],[30,8,9,6],[30,-12,9,9],[0,32,26,7],[-16,-32,14,8],[14,-32,14,6]]
+    .forEach(b => box(b[2],b[3],b[2]*0.8,0x5b5049,b[0],-0.05,b[1]));
+
+  const playerMesh = new T.Mesh(new T.CylinderGeometry(0.34,0.34,1.15,10), mat(C.player));
+  const playerHead = new T.Mesh(new T.SphereGeometry(0.24,10,8), mat(C.player));
+  scene.add(playerMesh); scene.add(playerHead);
+  const trayMesh = new T.Mesh(new T.BoxGeometry(0.55,0.06,0.4), mat(C.brass)); scene.add(trayMesh);
+
+  // ---------- üç portre çerçeve ----------
+  const views = TIERS.map(t => {
+    const el = document.createElement('div');
+    el.className = 'tier'; el.dataset.t = t.k;
+    el.innerHTML =
+      '<div class="tier-head"><span class="chip">' + t.k + '</span>' +
+      '<span class="tier-name">' + t.name + '</span>' +
+      '<span class="tier-base">taban ' + String(t.base).replace('.', ',') + '</span></div>' +
+      '<div class="shot"><canvas></canvas></div>' +
+      '<div class="measures"></div>' +
+      '<p class="verdict">' + t.note + '</p>';
+    document.getElementById('tiers').appendChild(el);
+    const canvas = el.querySelector('canvas');
+    const renderer = new T.WebGLRenderer({ canvas, antialias:true });
+    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+    const cam = new T.PerspectiveCamera(50, 9/19.5, 0.1, 200);
+    return { t, el, canvas, renderer, cam, shot: el.querySelector('.shot'), meas: el.querySelector('.measures') };
+  });
+
+  function camDistance(base){
+    const aspect = 9/19.5;                       // portre
+    const fit = Math.min(1.3, 1/aspect);         // Scene.tsx ile aynı
+    return base * fit * (zoomOut ? 1.45 : 1);
+  }
+
+  // kadrajın zemindeki ayak izi: NDC köşelerini y=0 düzlemine düşür
+  function footprint(cam){
+    const pts = [];
+    [[-1,-1],[1,-1],[1,1],[-1,1]].forEach(c => {
+      const v = new T.Vector3(c[0], c[1], 1).unproject(cam);
+      const dir = v.sub(cam.position).normalize();
+      const tt = -cam.position.y / dir.y;                 // y = 0 kesişimi
+      pts.push(tt > 0 && tt < 400
+        ? [cam.position.x + dir.x*tt, cam.position.z + dir.z*tt]
+        : [cam.position.x + dir.x*400, cam.position.z + dir.z*400]);
+    });
+    return pts;   // [sol-yakın, sağ-yakın, sağ-uzak, sol-uzak]
+  }
+  const fmt = n => n.toFixed(1).replace('.', ',');
+
+  function draw(){
+    playerMesh.position.set(player[0], 0.575, player[1]);
+    playerHead.position.set(player[0], 1.32, player[1]);
+    trayMesh.position.set(player[0] + 0.45, 1.0, player[1] + 0.2);
+
+    views.forEach(v => {
+      const w = v.shot.clientWidth, h = v.shot.clientHeight;
+      if (w && h) v.renderer.setSize(w, h, false);
+      const d = camDistance(v.t.base);
+      v.cam.aspect = 9/19.5; v.cam.updateProjectionMatrix();
+      v.cam.position.set(player[0], d, player[1] + d);
+      v.cam.lookAt(player[0], 0.6, player[1]);
+      v.cam.updateMatrixWorld();
+      v.renderer.render(scene, v.cam);
+
+      const fp = footprint(v.cam);
+      const nearW = Math.hypot(fp[1][0]-fp[0][0], fp[1][1]-fp[0][1]);
+      const farW  = Math.hypot(fp[2][0]-fp[3][0], fp[2][1]-fp[3][1]);
+      const depth = Math.hypot((fp[3][0]+fp[2][0])/2-(fp[0][0]+fp[1][0])/2,
+                               (fp[3][1]+fp[2][1])/2-(fp[0][1]+fp[1][1])/2);
+      // oyuncu hizasındaki genişlik (ilgilendiğimiz sayı)
+      const at = 2 * Math.hypot(v.cam.position.x-player[0], v.cam.position.y-0.6, v.cam.position.z-player[1])
+                   * Math.tan(Math.atan((9/19.5) * Math.tan(50*Math.PI/360)));
+      v.shot.dataset.badge = 'kamera ' + fmt(d) + ' birim';
+      v.meas.innerHTML =
+        '<span>oyuncu hizasında en</span><b>' + fmt(at) + '</b>' +
+        '<span>ayak izi (yakın→uzak)</span><b>' + fmt(nearW) + '→' + fmt(farW) + '</b>' +
+        '<span>görüş derinliği</span><b>' + fmt(depth) + '</b>';
+    });
+    drawPlan();
+  }
+
+  // ---------- plan görünümü ----------
+  const plan = document.getElementById('plan'), px = plan.getContext('2d');
+  const S = 1000, PAD = 26, SC = (S - PAD*2) / 36;      // 36 birimlik pencere (dış duvar payı)
+  const wx = x => S/2 + x*SC, wz = z => S/2 + z*SC;     // oyunla aynı yön: −z (arka bant) YUKARIDA
+  function css(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+  function rect(x1,z1,x2,z2,fill,stroke){
+    px.beginPath(); px.rect(wx(x1), wz(z1), (x2-x1)*SC, (z2-z1)*SC);
+    if (fill){ px.fillStyle = fill; px.fill(); }
+    if (stroke){ px.strokeStyle = stroke; px.lineWidth = 2; px.stroke(); }
+  }
+  function drawPlan(){
+    const ink = css('--ink'), line = css('--line'), muted = css('--muted'), panel2 = css('--panel-2');
+    px.clearRect(0,0,S,S);
+    rect(-17,-17,17,17, panel2, line);
+    // arka bant üç blok
+    rect(-17,-16.9,-4.6,-9.8, 'rgba(128,128,128,0.14)', line);
+    rect(-4.6,-16.9,4.6,-9.8, 'rgba(128,128,128,0.09)', line);
+    rect(4.6,-16.9,17,-9.8, 'rgba(128,128,128,0.14)', line);
+    // dört alan sınırı (çeyrek eksenleri)
+    px.setLineDash([7,7]); px.strokeStyle = line; px.lineWidth = 2;
+    px.beginPath(); px.moveTo(wx(0),wz(17)); px.lineTo(wx(0),wz(-9.8));
+    px.moveTo(wx(-17),wz(0)); px.lineTo(wx(17),wz(0)); px.stroke(); px.setLineDash([]);
+
+    // mobilya kütleleri
+    px.fillStyle = 'rgba(140,105,60,0.55)';
+    [[-8.5,8.5],[8.5,8.5]].forEach(c=>[-1.6,1.6].forEach(dx=>[-1.6,1.6].forEach(dz=>{
+      px.fillRect(wx(c[0]+dx-0.6), wz(c[1]+dz-0.6), 1.2*SC, 1.2*SC);
+    })));
+    [[6.6,-3.2],[6.6,-9.4],[11.4,-3.4]].forEach(t=>px.fillRect(wx(t[0]-0.6),wz(t[1]-0.6),1.2*SC,1.2*SC));
+    [-8.5,8.5].forEach(cx=>px.fillRect(wx(cx-3.8), wz(-2.95-1.6), 7.6*SC, 3.2*SC));
+    px.fillRect(wx(-13.4), wz(-10.6), 3.0*SC, 0.7*SC);   // ön tezgâh
+    px.fillRect(wx(-16.65), wz(-14.7), 0.7*SC, 2.2*SC);  // bulaşık
+
+    // etiketler
+    px.fillStyle = muted; px.font = '500 20px "IBM Plex Mono", monospace'; px.textAlign = 'center';
+    px.fillText('SERVİS', wx(-10.8), wz(-13.0));
+    px.fillText('MERDİVEN', wx(0), wz(-13.0));
+    px.fillText('LAVABO', wx(10.8), wz(-13.0));
+    px.fillText('ORTA ŞERİT', wx(0), wz(-5.6));
+    px.fillText('ANA GİRİŞ', wx(0), wz(15.6));
+
+    // üç kadraj ayak izi
+    views.forEach((v,i) => {
+      const fp = footprint(v.cam), col = TIERS[i].k;
+      const c = css(col === 'A' ? '--tA' : col === 'B' ? '--tB' : '--tC');
+      px.beginPath(); px.moveTo(wx(fp[0][0]), wz(fp[0][1]));
+      for (let k=1;k<4;k++) px.lineTo(wx(fp[k][0]), wz(fp[k][1]));
+      px.closePath();
+      px.fillStyle = c + '1f'; px.fill();
+      px.strokeStyle = c; px.lineWidth = 3.5; px.stroke();
+    });
+
+    // oyuncu
+    px.beginPath(); px.arc(wx(player[0]), wz(player[1]), 9, 0, Math.PI*2);
+    px.fillStyle = css('--brass'); px.fill();
+    px.strokeStyle = ink; px.lineWidth = 2.5; px.stroke();
+  }
+
+  // ---------- etkileşim ----------
+  const presetHost = document.getElementById('presets');
+  PRESETS.forEach((p,i) => {
+    const b = document.createElement('button');
+    b.textContent = p.ad; b.setAttribute('aria-pressed', String(i === 0));
+    b.onclick = () => {
+      player = p.p.slice();
+      [...presetHost.children].forEach(c => c.setAttribute('aria-pressed','false'));
+      b.setAttribute('aria-pressed','true');
+      draw();
+    };
+    presetHost.appendChild(b);
+  });
+  function clearPresets(){ [...presetHost.children].forEach(c => c.setAttribute('aria-pressed','false')); }
+
+  let dragging = false;
+  function moveTo(ev){
+    const r = plan.getBoundingClientRect();
+    const cx = (ev.clientX - r.left) / r.width * S, cy = (ev.clientY - r.top) / r.height * S;
+    player = [
+      Math.max(-16.2, Math.min(16.2, (cx - S/2) / SC)),
+      Math.max(-16.2, Math.min(16.2, (S/2 - cy) / SC))
+    ];
+    clearPresets(); draw();
+  }
+  plan.addEventListener('pointerdown', e => { dragging = true; plan.setPointerCapture(e.pointerId); moveTo(e); });
+  plan.addEventListener('pointermove', e => { if (dragging) moveTo(e); });
+  plan.addEventListener('pointerup', e => { dragging = false; plan.releasePointerCapture(e.pointerId); });
+
+  const zb = document.getElementById('zoomBtn');
+  zb.onclick = () => { zoomOut = !zoomOut; zb.setAttribute('aria-pressed', String(zoomOut)); draw(); };
+
+  addEventListener('resize', draw);
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+  draw();
+})();
+</script>

@@ -1286,7 +1286,8 @@ yerleşim taşınırken de kullanılacak. Kullanım dosya başında.
 maket ölçeğine taşı (artık tek dosya: `layout.ts`), (3) kayıt v31 + migrasyon, (4) G4/G5 KayKit.
 Faz G artığı: UI Canvas'ları hâlâ eski düz ışıkla.
 
-## Faz B — Model geçişi 🔧 (3/6 · B0 harita + B1 model + B2 servis tekilleşmesi bitti)
+## Faz B — Model geçişi 🔧 (3/7 · B0 harita + B1 model + B2 servis tekilleşmesi bitti)
+> Adımlar: B0 · B1 · B2 · **B3-1** · **B3-2** · B4 · B5. (B3 2026-09-06'da ikiye bölündü.)
 
 ### B0 — Adım haritası + dört karar ✅ (2026-09-06)
 - ✅ **Maket v13'ün altı adımı ↔ bugünkü pad zinciri eşleştirildi.** Rapor `docs/faz-b-harita.html`
@@ -1363,9 +1364,22 @@ Karar kaydı: **D-060**.
   (2. Alan · TOST seviyeden · servis noktası · gating · görev hattı · garson havuzu).
   smoke 26/26 · build temiz · eslint 15 (B1 ile aynı).
 
-### B3 — Yerleşim maket ölçeğine ⏳
-`layout.ts` tek dosya: 34×34, dört alan, arka bant (servis bloğu · merdiven · lavabo, üçü de
-z = −9,8 hizasında), orta şerit. **ÖNCE kadraj: üç kamera kademesi aynı kareden çekilip onaylanır.**
+### B3 — Yerleşim maket ölçeğine ⏳ (İKİYE BÖLÜNDÜ — 2026-09-06 kullanıcı kararı)
+B3 tek oturumda yapılmıyor: `LAYOUT.` 250 yerde geçiyor, 7 dosya bağlı, `layout.ts` 495 satır.
+Kesme çizgisi keyfî değil — **mantık işi ile görsel iş ayrı parçada** (B2'nin dersi: `ServicePoint`
+birleştirmesi denge ölçümüyle aynı context'i paylaştı, gereksizdi). Daha fazla bölünmüyor:
+oturum sayısı bütçesi de gerçek bir kısıt.
+
+- **B3-1 — Kadraj + koordinatlar ⏳** (mantık)
+  **ÖNCE kadraj** (D-058 karar 4): üç kamera kademesi AYNI kareden çekilip onaylanır; onay
+  gelmeden `layout.ts` yazılmaz. Sonra `layout.ts` 34×34: dört alan, arka bant (servis bloğu ·
+  merdiven · lavabo, üçü de z = −9,8), mevcut içerik (12 masa · servis bloğu · pad'ler ·
+  yükseltme noktaları · garson evleri · bulaşık) yeni koordinatlara; nav/collision/`parkSpot`
+  yeni ölçeğe uyar.
+  **Biter dediğimiz an:** oda 34×34 ve gezilebilir · vitest 209 (düşmeden) · smoke 26/26 ·
+  build temiz. Seyrek/boş görünmesi normal — dolgu B3-2'nin işi.
+- **B3-2 — Orta şerit + görsel geçiş ⏳** (görsel)
+  Orta şerit, propler, dolgu, WYSIWYG geçişi; maket v13'e benzeme.
 
 ### B4 — Odalar ⏳
 Lavabo (oturma eklemez, pasif çarpan, kendi seviyeleri) + yıkık merdiven ("Kat 2 çok yakında").
