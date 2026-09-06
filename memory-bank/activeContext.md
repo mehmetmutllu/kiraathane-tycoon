@@ -2,7 +2,7 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
-## ŞU AN (2026-09-06 — G3 KAPANDI: **FAZ G TAMAM 4/4**; SAVE v30 değişmedi)
+## ŞU AN (2026-09-06 — G3 KAPANDI: **FAZ G TAMAM 4/4** + pano rengi; SAVE v30 değişmedi)
 
 **G3 duvar bitimi bitti.** Duvar artık iki düz kuşak değil, üç profille biten bir yüzey:
 süpürgelik (0,08) + lambri üstü çıta (0,04) + kartonpiyer (0,05). Tam rapor:
@@ -38,6 +38,29 @@ olarak tekdüze), bu yüzden sınav DERİNLİK hareketiyle yapıldı. Kanıt `ss
 `npx eslint src/` **15 → 16** (tek fark `wallPanel.tsx` react-refresh — `floorPattern.tsx` aynı
 deseni zaten iki kez tetikliyor) · `tools/smoke.mjs` **8/15, öncesiyle aynı** · Playwright
 **0 konsol hatası** (oyun + mağaza duvar sekmesi + krem/yeşil/mavi temalar).
+
+### Pano (bu oturumun ikinci işi)
+`docs/pano/ilerleme-panosu.html` — **renk paleti nötrlendi.** Kullanıcı: *"sarı filtre var gibi
+durmasın"*. Zemin `#f3e9d6` → `#f4f2ed`, mürekkep `#33220f` → `#23211d`, çizgiler tan → nötr-sıcak
+gri; koyu tema de kahverengiden nötre çekildi. **Vurgular (yeşil/bakır/bordo) DEĞİŞMEDİ** — renk
+işini artık yalnız onlar yapıyor. Tasarımın kendisi (düzen, tipografi) aynı kaldı.
+
+> **Kullanıcı bir tur maket tasarımına çevirmemi istedi, sonra vazgeçti** (*"gerçi tamam ya böyle
+> kalsın sadece rengi düzelt... şu an yayında olan var ya o güzel"*). Maket dilinde yeniden yazılmış
+> kabuk ATILDI, yayındaki tasarım korundu. Bir daha panonun tasarımını kendiliğinden değiştirme;
+> istenen tek şey renk baskısıydı.
+
+### Kullanıcının stratejik sorusu ve cevabı (kayda geçti)
+Kullanıcı sordu: *"biz bunları neden yaptık, zaten tasarımı baştan sona değiştirmeyecek miydik?"*
+Cevap: **Faz G yeni tasarım değildi, malzeme katmanıydı** — ışık, gölge kararı, bir zeminin neye
+benzediği, bir duvarın kenarının nasıl bittiği. **Nerede** duvar/masa olduğuna hiç dokunmadı.
+G'den çıkan üç dosya koordinat bilmiyor (`palette.ts` · `floorPattern.tsx` · `wallPanel.tsx`),
+Faz B yerleşimi değiştirince aynen çalışırlar. Yerleşime BAĞLI olan G4/G5 zaten Faz B'ye ertelendi.
+Planın G'yi öne alma gerekçesi: bundan sonraki her fazda **bu sahneye bakıp onay vereceğiz**.
+
+**Yeni tasarım = Faz B · Görevler/meta = Faz D.** Panoda ikisi de yazılı.
+**Kullanıcıya sorulan, cevaplanmamış soru:** Faz A planlandığı gibi tam mı yapılsın, yoksa sadece
+"testleri koordinattan kopar" kısmı alınıp gerisi sonraya mı bırakılsın?
 
 ### >>> SONRAKİ OTURUMDA İLK İŞ <<<
 1. **Kullanıcıya açık soru:** *"hareket edince renk değişiyor"* — G3 profilleri ölçümle titremiyor

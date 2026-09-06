@@ -1211,3 +1211,27 @@ model geçişiyle birlikte değerlendirilecek.
 
 **Açık soru (kullanıcıya sorulacak):** *"hareket edince renk değişiyor"* — G3 profilleri ölçümle
 titremiyor (%0). Kullanıcının gördüğü başka bir yerde olabilir (hangi ekran/hangi obje?).
+
+## PANO — renk paleti nötrlendi (2026-09-06)
+Kullanıcı: *"sarı filtre var gibi durmasın"*. `docs/pano/ilerleme-panosu.html` token seti:
+zemin `#f3e9d6` → `#f4f2ed`, mürekkep `#33220f` → `#23211d`, çizgiler tan → nötr-sıcak gri;
+koyu tema kahverengiden nötre. **Vurgular (yeşil/bakır/bordo) değişmedi** — renk işini artık
+yalnız onlar yapıyor. Düzen ve tipografi AYNI kaldı.
+
+> Kullanıcı önce panoyu maket tasarımına çevirmemi istedi, sonra vazgeçti: *"böyle kalsın sadece
+> rengi düzelt, şu an yayında olan güzel"*. Maket dilinde yazılmış kabuk atıldı. **Panonun
+> tasarımını kendiliğinden değiştirme.**
+
+## KULLANICININ STRATEJİK SORUSU (2026-09-06) — cevabı kayda geçti
+*"Biz bunları neden yaptık, zaten tasarımı baştan sona değiştirmeyecek miydik?"*
+- **Faz G yeni tasarım değildi, malzeme katmanıydı**: ışık, gölge kararı, zeminin dokusu, duvarın
+  bitimi. **Nerede** duvar/masa olduğuna dokunmadı.
+- G'den çıkan üç dosya **koordinat bilmiyor** (`palette.ts` · `floorPattern.tsx` · `wallPanel.tsx`)
+  → Faz B yerleşimi değiştirince aynen çalışırlar; draw-call kazancı da taşınır.
+- Yerleşime BAĞLI olan G4/G5 (KayKit yerleşimi) zaten **Faz B'ye ertelendi** — G 6 adım değil
+  4 adımda kesildi.
+- Planın gerekçesi: bundan sonraki her fazda **bu sahneye bakıp onay verilecek**.
+- **Yeni tasarım = Faz B · Görevler/meta = Faz D.**
+
+**⏳ CEVAPLANMAMIŞ SORU:** Faz A planlandığı gibi tam mı yapılsın (3 oturum), yoksa sadece
+"testleri koordinat bağından kopar" kısmı alınıp gerisi Faz B sonrasına mı bırakılsın?

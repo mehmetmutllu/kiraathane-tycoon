@@ -5,48 +5,48 @@
 
 <style>
 :root{
-  --ground:#f3e9d6; --surface:#fffbf2; --surface-2:#f6ecd8;
-  --ink:#33220f; --ink-2:#6d5636; --ink-3:#9c8360;
-  --line:#e2d2b2; --line-strong:#cbb488;
+  --ground:#f4f2ed; --surface:#fdfcfa; --surface-2:#edeae3;
+  --ink:#23211d; --ink-2:#5c584f; --ink-3:#8c887e;
+  --line:#e2ded5; --line-strong:#c9c4b9;
 
-  --brand:#9a6a1f; --brand-ink:#7d5514; --brand-soft:#f3e4c4;
-  --done:#4c7f24; --done-soft:#e4eed4;
-  --now:#c4761b; --now-soft:#fbeacf;
-  --wait:#8d7350; --wait-soft:#efe5d2;
-  --idle:#a5906d; --idle-soft:#efe6d5;
-  --stop:#a83a24; --stop-soft:#f7e0da;
+  --brand:#96651f; --brand-ink:#7a5314; --brand-soft:#eeeadf;
+  --done:#4c7f24; --done-soft:#e6eedc;
+  --now:#bf6f1a; --now-soft:#f7ead9;
+  --wait:#7c7669; --wait-soft:#eae7e0;
+  --idle:#97928a; --idle-soft:#eceae4;
+  --stop:#a83a24; --stop-soft:#f4e2dc;
 
-  --shadow:0 1px 2px rgba(70,45,12,.06), 0 10px 24px -18px rgba(70,45,12,.5);
+  --shadow:0 1px 2px rgba(35,33,29,.05), 0 10px 24px -18px rgba(35,33,29,.45);
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --ground:#17100a; --surface:#241811; --surface-2:#2e2016;
-    --ink:#f5e9d3; --ink-2:#c9b190; --ink-3:#9a8163;
-    --line:#3b2a1b; --line-strong:#54402a;
+    --ground:#1a1917; --surface:#232220; --surface-2:#2c2b27;
+    --ink:#eceae4; --ink-2:#b3b0a8; --ink-3:#89867e;
+    --line:#35342f; --line-strong:#4a4842;
 
-    --brand:#e0b46b; --brand-ink:#f0d296; --brand-soft:#33240f;
-    --done:#8fc457; --done-soft:#1e2c12;
-    --now:#e8a24a; --now-soft:#33220d;
-    --wait:#b59a72; --wait-soft:#2a2016;
-    --idle:#8a7457; --idle-soft:#241a11;
-    --stop:#e2745a; --stop-soft:#33170f;
+    --brand:#d8ab63; --brand-ink:#ebcb92; --brand-soft:#2b2820;
+    --done:#8fc457; --done-soft:#1f2718;
+    --now:#e09a45; --now-soft:#2e2619;
+    --wait:#a8a294; --wait-soft:#2a2926;
+    --idle:#847f75; --idle-soft:#232220;
+    --stop:#e2745a; --stop-soft:#2e1f1a;
 
     --shadow:0 1px 2px rgba(0,0,0,.45), 0 12px 28px -20px rgba(0,0,0,.9);
     color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
-  --ground:#17100a; --surface:#241811; --surface-2:#2e2016;
-  --ink:#f5e9d3; --ink-2:#c9b190; --ink-3:#9a8163;
-  --line:#3b2a1b; --line-strong:#54402a;
+  --ground:#1a1917; --surface:#232220; --surface-2:#2c2b27;
+  --ink:#eceae4; --ink-2:#b3b0a8; --ink-3:#89867e;
+  --line:#35342f; --line-strong:#4a4842;
 
-  --brand:#e0b46b; --brand-ink:#f0d296; --brand-soft:#33240f;
-  --done:#8fc457; --done-soft:#1e2c12;
-  --now:#e8a24a; --now-soft:#33220d;
-  --wait:#b59a72; --wait-soft:#2a2016;
-  --idle:#8a7457; --idle-soft:#241a11;
-  --stop:#e2745a; --stop-soft:#33170f;
+  --brand:#d8ab63; --brand-ink:#ebcb92; --brand-soft:#2b2820;
+  --done:#8fc457; --done-soft:#1f2718;
+  --now:#e09a45; --now-soft:#2e2619;
+  --wait:#a8a294; --wait-soft:#2a2926;
+  --idle:#847f75; --idle-soft:#232220;
+  --stop:#e2745a; --stop-soft:#2e1f1a;
 
   --shadow:0 1px 2px rgba(0,0,0,.45), 0 12px 28px -20px rgba(0,0,0,.9);
   color-scheme:dark;
@@ -225,7 +225,7 @@ h2{font-size:21px;font-weight:800}
     "not": "<b>Neyi öğrendik:</b> plandaki sayı ölçümü geçmiyorsa plan değil ölçüm kazanır — ama <b>renk kararını kullanıcı verir</b>. Süpürgelik planda koyu ahşap yazıyordu; teknik olarak doğru uygulandı ve telefon kadrajında hiç görünmedi. Doğru hamle tek bir \"sonra\" görüntüsü göstermek değil, üç varyantı <b>aynı kareden</b> çekip sormaktı — bu sefer baştan öyle yapıldı ve bir tur geri alma tasarruf edildi.<br><br><b>Faz G tamam:</b> ışık (G0) · gölge modeli (G1, sonuç: hiç gölge yok) · zemin geometrisi (G2) · duvar bitimi (G3). Sahnenin görsel tabanı artık modellerden bağımsız olarak oturmuş durumda."
   },
   "siradaki": {
-    "etiket": "Sıradaki · Faz A",
+    "etiket": "Faz A · Temizlik",
     "baslik": "Önce duman testi onarılacak, sonra temizlik",
     "aciklama": "Görsel taban bitti. Faz A'ya (temizlik) geçmeden önce otomatik duman testinin <b>yedi kırık adımı</b> onarılmalı — testler yeşil olmadan yeni faza girilmiyor.",
     "adimlar": [
