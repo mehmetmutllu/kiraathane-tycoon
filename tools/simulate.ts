@@ -36,8 +36,8 @@ import {
 
 const DT = 1; // saniyelik adım
 const TEA_PRICE = C.teaStation.basePrice;
-const SOFT_MAX = C.teaStation.upgrade.masterLevel - 1; // ₺ ile çıkılabilen en yüksek seviye
-const TABLE_SOFT_MAX = C.tables.upgrade.masterLevel - 1;
+const SOFT_MAX = C.teaStation.upgrade.maxLevel; // ₺ ile çıkılabilen en yüksek seviye
+const TABLE_SOFT_MAX = C.tables.upgrade.maxLevel;
 
 // D-015: tables/zonesOpen ayrı tutulmaz; padsDone'dan türetilir (store ile aynı kaynak).
 interface State {
@@ -85,10 +85,9 @@ function gateOf(s: State): GateState {
 }
 
 function brewTimeZ(s: State, z: number): number {
-  const { serviceSpeedMult } = derivedFromPads(s.padsDone);
   // M3: hazırlama süresi zone'un ÜRÜNÜNDEN (çay 6 / tost 14 taban).
   return (
-    (PRODUCTS[zoneProduct(z)].prepTime * serviceSpeedMult) /
+    PRODUCTS[zoneProduct(z)].prepTime /
     upgradeOutputMultiplier(C.teaStation.upgrade, s.stationLevels[z])
   );
 }
@@ -243,7 +242,6 @@ const MILESTONES: Milestone[] = [
   { name: 'Masa yükseltme L1 (bahşiş)', hit: (s) => s.tableLevel >= 1 },
   { name: 'lifetime 1.000 ₺', hit: (s) => s.lifetime >= 1_000 },
   { name: 'lifetime 10.000 ₺', hit: (s) => s.lifetime >= 10_000 },
-  { name: 'İlk prestige cazip (İtibar ≥ 1)', hit: (s) => s.lifetime >= C.prestige.repScale },
 ];
 
 function fmtTime(sec: number): string {

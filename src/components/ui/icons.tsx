@@ -212,16 +212,6 @@ export function CharIcon({ size = 22 }: { size?: number }) {
   );
 }
 
-/** Posta/zarf (gelecekte gelen kutusu — MPH deseni). */
-export function MailIcon({ size = 22 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
-      <rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="#fff" />
-      <path d="M3.5 6.5L12 13l8.5-6.5" stroke="#b07a2a" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
 /* ---------- Görev "fotoğrafı" ikonları (quest kartı solunda; hedef tipine göre) ---------- */
 
 function TeaGlass() {

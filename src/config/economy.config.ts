@@ -7,10 +7,10 @@
  *   - Çay fiyatı sabit taban (basePrice); yükseltme fiyatı DEĞİL HACMİ (çay/dk) büyütür.
  *   - Yükseltmeler/açılışlar sıralı önkoşullarla (`requires`) kilitli.
  *
- * Evrensel 5-seviye yükseltme deseni:
- *   cost_n      = costBase * costGrowth^(n-1)         (n = 1..4, ₺ ile)
+ * Evrensel yükseltme deseni:
+ *   cost_n      = costBase * costGrowth^(n-1)         (n = 1..maxLevel, ₺ ile)
  *   output_mult = outputMult^(level)   → THROUGHPUT çarpanı (çay/dk), FİYAT DEĞİL
- *   L5 (Usta)   = masterDiamondCost 💎 VEYA 1 ödüllü video; outputMult yerine masterOutputMult
+ *   maxLevel    = ₺ tavanı. 💎 "Usta" katmanı Faz D'de kendi tasarımıyla gelecek (bugün YOK).
  */
 
 // v29 (2026-06-13): personel hız kademeleri panele taşındı — waiterLevels kaldırıldı,
@@ -79,12 +79,9 @@ export interface UpgradeSpec {
   costsByLevel?: readonly number[];
   /** Her ₺ seviye THROUGHPUT'u (çay/dk) bu kadar çarpar — fiyatı değil. */
   outputMult: number;
-  /** Usta seviyesi (genelde 5). */
-  masterLevel: number;
-  /** L5'i açmak için Elmas maliyeti (ödüllü video alternatifi). */
-  masterDiamondCost: number;
-  /** L5'in throughput çarpanı (normalden büyük sıçrama). */
-  masterOutputMult: number;
+  /** ₺ ile çıkılabilen EN YÜKSEK seviye (tavan). 💎 "Usta" katmanı Faz D'de kendi
+   *  tasarımıyla gelecek — o gelene kadar bu tavanın üstünde seviye YOK. */
+  maxLevel: number;
 }
 
 /**
@@ -94,8 +91,6 @@ export interface UpgradeSpec {
 export interface Requires {
   /** OMURGA: bu pad id'leri tamamlanmadan açılmaz. */
   prev?: readonly string[];
-  /** En az N masa. */
-  minTables?: number;
   /** En az N çay ocağı seviyesi. */
   minStationLevel?: number;
   /** DESTEK: toplam kazanılan ₺ yumuşak eşiği (tempo). */
@@ -185,12 +180,10 @@ export const economyConfig = {
       costGrowth: 1.5,
       // turu-5 denge (2026-06-13 ONAYLI): +2 ₺ seviyesi. L1-L4 ESKİ değerlerle birebir
       // (formülün floor'ları); L5/L6 kuyruğu DİK (kullanıcı: "fiyat az" → 150/300; saf eğri 101/152
-      // verirdi). Tost tezgâhı ×20 → 3000/6000. Usta (💎) L7'ye kaydı (masterLevel).
+      // verirdi). Tost tezgâhı ×20 → 3000/6000.
       costsByLevel: [20, 30, 45, 67, 150, 300],
       outputMult: 1.35, // throughput (çay/dk) çarpanı — demleme süresini kısaltır
-      masterLevel: 7,
-      masterDiamondCost: 15,
-      masterOutputMult: 2.0,
+      maxLevel: 6,
     } satisfies UpgradeSpec,
     /**
      * Yükseltme noktasının ZONE-BAŞINA önkoşulu (v21 — kullanıcı 2026-06-12: "zone-2'de de düzen
@@ -221,8 +214,7 @@ export const economyConfig = {
     upgrade: {
       costBase: 60,
       costGrowth: 1.8, // garson sonrası derinlik: L1 60 / L2 108 / L3 194 / L4 350 (eski 1.6 fazla ucuzdu)
-      masterLevel: 5, // L5 (Usta) 💎/video — Faz 4; ₺ ile soft max L4
-      masterDiamondCost: 12,
+      maxLevel: 4, // ₺ tavanı L4 (💎 "Usta" katmanı Faz D)
       /** ZONE-kademeli yükseltme çarpanı (kullanıcı 2026-06-13: "salon 1 sabit, salon 2 biraz,
        *  salon 3 daha da artsın"). Salon 1 birebir eski eğri; 2-3 çarpan sonrası 5'e yuvarlanır:
        *  z1 60/108/194/349 · z2 90/160/290/525 · z3 150/270/485/875. */
@@ -426,16 +418,16 @@ export const economyConfig = {
    * Satın-alma pad'leri (Roblox-tycoon mantığı; cüzdandan pad'e ₺ akar). SIRALI gating
    * (D-010 §3.4): bir pad `requires` karşılanmadan görünmez/aktif olmaz. Her pad, açtığı
    * objenin TAM yerinde durur (pozisyonlar LAYOUT.padPos). effect:
-   *   addTable     → +1 masa (oturma kapasitesi; o masanın yerinde inşa olur)
-   *   addStation   → +1 çay ocağı (pişirme kapasitesi; extraStationSpeedFactor ile hızlanır)
-   *   serviceSpeed → demleme süresi ×factor (semaver = daha hızlı throughput)
-   *   hireWaiter   → garson tut (opsiyonel kısmi servis yardımı; bkz. `waiter`)
+   *   addTable        → +1 masa (oturma kapasitesi; o masanın yerinde inşa olur)
+   *   hireWaiter      → garson tut (kısmi servis yardımı; bkz. `waiter`)
+   *   hireDishwasher  → bulaşıkçı tut (kirli bardak döngüsünü kapatır)
+   *   unlockZone      → yeni salon aç (o salonun ocağı+ilk masası birlikte gelir)
    * `optional:true` pad'ler OMURGA zincirini KİLİTLEMEZ: alınmasa da sonraki masalar/ocaklar açılır
    * (oyuncu isterse alır, istemezse kendi gezerek servis eder). `currentPad` opsiyonelleri atlar.
    * Maliyetler tempo hedefine göre ayarlı (ilk alım <90sn; simulate.ts doğrular).
-   * BAŞLANGIÇ SALONU = 1 ocak : 4 masa (D-012). Omurga: 2.Masa → (ocak L≥1) → 3.Masa → 4.Masa → Semaver.
-   * Tek ana ocak 4 masaya throughput'la yetişir (ocak seviyesi + semaver). 2. ocak Faz 3a'da YENİ salonla
-   * otomatik gelir (addStation effect tipi orada kullanılır). Opsiyonel: Garson (2.Masa sonrası).
+   * BAŞLANGIÇ SALONU = 1 ocak : 4 masa (D-012). Omurga: 2.Masa → (ocak L≥1) → 3.Masa → Garson →
+   * Bulaşıkçı → 4.Masa → 2. Salon. Tek ana ocak 4 masaya throughput'la (ocak seviyesi) yetişir;
+   * her yeni salon KENDİ ocağıyla `unlockZone` ile gelir.
    */
   pads: [
     // QUEST HATTI (2026-06-09, kullanıcı onayı): personel pad'leri OPSİYONEL DEĞİL — sıralı görev hattının
@@ -651,14 +643,6 @@ export const economyConfig = {
     ],
   },
 
-  /** Prestige "Renovasyon" (Faz 4). */
-  prestige: {
-    /** İtibar = floor(repK * sqrt(lifetime₺ / repScale)). */
-    repK: 1,
-    repScale: 1_000_000,
-    /** Kalıcı gelir çarpanı = 1 + İtibar * incomeBonusPerRep. */
-    incomeBonusPerRep: 0.02,
-  },
 } as const;
 
 /**
@@ -697,7 +681,6 @@ export interface DerivedState {
   tables: number;
   /** Açık ocak sayısı = zonesOpen (per-zone 1 ocak, D-022). */
   stations: number;
-  serviceSpeedMult: number;
   /** Zone-1 garsonu (geri uyum: gate/reveal/testler). */
   hasWaiter: boolean;
   /** Zone-1 bulaşıkçısı (geri uyum). */
@@ -705,7 +688,7 @@ export interface DerivedState {
 }
 
 /**
- * D-015: `padsDone` TEK doğru kaynak. `tables/stations/serviceSpeedMult/hasWaiter`
+ * D-015: `padsDone` TEK doğru kaynak. `tables/stations/hasWaiter`
  * buradan türetilir → masa sayacı ile pad listesi gibi alanlar yapısal olarak
  * DESENKRONİZE OLAMAZ (eski v6/v7 senkron-yamaları gereksizleşir).
  * `stations` şu an tek salon = tek ocak (D-012); Faz 3a addStation pad'leriyle artacak.
@@ -752,7 +735,6 @@ export function derivedFromPads(padsDone: readonly string[]): DerivedState {
     hasDishwasherByZone,
     tables,
     stations: zonesOpen,
-    serviceSpeedMult: 1,
     hasWaiter: hasWaiterByZone[0],
     hasDishwasher: hasDishwasherByZone[0],
   };
@@ -776,7 +758,6 @@ export interface GateState {
 export function requiresMet(req: Requires | undefined, g: GateState): boolean {
   if (!req) return true;
   if (req.prev && !req.prev.every((id) => g.padsDone.includes(id))) return false;
-  if (req.minTables != null && g.tables < req.minTables) return false;
   if (req.minStationLevel != null && g.stationLevel < req.minStationLevel) return false;
   if (req.minLifetime != null && g.lifetime < req.minLifetime) return false;
   if (req.minWaiterServed != null && (g.waiterServed ?? 0) < req.minWaiterServed) return false;
@@ -790,7 +771,7 @@ export function requiresMet(req: Requires | undefined, g: GateState): boolean {
   return true;
 }
 
-/** n. ₺ yükseltme seviyesinin maliyeti (level 1..masterLevel-1). */
+/** n. ₺ yükseltme seviyesinin maliyeti (level 1..maxLevel). */
 export function upgradeCost(spec: UpgradeSpec, level: number): number {
   const explicit = spec.costsByLevel?.[level - 1];
   if (explicit != null) return explicit;
@@ -979,11 +960,7 @@ export function playerSpeedFor(tier: number): number {
   return charValue('speed', tier);
 }
 
-/** Verilen seviyedeki toplam çıktı çarpanı (L5 usta sıçramasını da içerir). */
+/** Verilen seviyedeki toplam çıktı çarpanı (₺ tavanının üstü kırpılır). */
 export function upgradeOutputMultiplier(spec: UpgradeSpec, level: number): number {
-  const masterReached = level >= spec.masterLevel;
-  const softLevels = masterReached ? spec.masterLevel - 1 : level;
-  let mult = Math.pow(spec.outputMult, softLevels);
-  if (masterReached) mult *= spec.masterOutputMult;
-  return mult;
+  return Math.pow(spec.outputMult, Math.min(level, spec.maxLevel));
 }

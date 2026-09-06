@@ -123,16 +123,16 @@ describe('ekonomi yükseltme formülleri', () => {
     expect(upgradeCost(spec, 3)).toBeGreaterThan(upgradeCost(spec, 2));
   });
 
-  it('usta seviyesi normalden büyük sıçrar (masterLevel — turu-5 sonrası L7)', () => {
+  it('throughput her seviyede aynı oranda büyür ve ₺ tavanının üstünde artmaz', () => {
     expect(upgradeOutputMultiplier(spec, 0)).toBe(1);
-    const m = spec.masterLevel; // ₺ kuyruğu uzayınca usta da kayar (turu-5: 5→7)
-    const prev = upgradeOutputMultiplier(spec, m - 1);
-    const master = upgradeOutputMultiplier(spec, m);
-    expect(master).toBeGreaterThan(prev);
-    // Usta sıçraması, önceki normal seviye sıçramasından büyük olmalı (usta rozeti)
-    const jMaster = master / prev;
-    const jPrev = prev / upgradeOutputMultiplier(spec, m - 2);
-    expect(jMaster).toBeGreaterThan(jPrev);
+    const m = spec.maxLevel;
+    // Her seviye SABİT oran (outputMult) — sıçrama yok; tavana kadar.
+    for (let l = 1; l <= m; l++) {
+      const jump = upgradeOutputMultiplier(spec, l) / upgradeOutputMultiplier(spec, l - 1);
+      expect(jump).toBeCloseTo(spec.outputMult, 10);
+    }
+    // Tavanın üstü kırpılır: 💎 "Usta" katmanı Faz D'de gelene kadar seviye artışı ETKİSİZ.
+    expect(upgradeOutputMultiplier(spec, m + 1)).toBe(upgradeOutputMultiplier(spec, m));
   });
 });
 
@@ -268,7 +268,6 @@ describe('generic pad sistemi + gating (quest hattı omurgası, 2026-06-09)', ()
     expect(useGame.getState().padsDone.length).toBe(5);
     // Zone-1 omurgası bitti → sıradaki omurga halkası ZONE-2 açılışı (Faz 3a).
     expect(currentPad(gate())?.id).toBe('zone2');
-    expect(useGame.getState().serviceSpeedMult).toBe(1); // serviceSpeed pad yok → hep 1
   });
 
   it('EKRANDA TEK PAD: pad-dışı görev sırasında hiç pad görünmez; pad görevinde YALNIZ o pad', () => {
@@ -856,7 +855,7 @@ describe('kayıt migrasyonu v4..v15 (padFills, station2/samovar çıkışı, add
     const m = migrate({
       saveVersion: 4,
       wallet: '100', diamonds: '0', lifetime: '50',
-      tables: 1, stations: 1, stationLevel: 0, serviceSpeedMult: 1,
+      tables: 1, stations: 1, stationLevel: 0,
       padsDone: [], padFill: 20,
     });
     // lifetime 50 ≥ 30 → table2 aktif omurga pad'i → padFill ona atanır.
@@ -873,7 +872,7 @@ describe('kayıt migrasyonu v4..v15 (padFills, station2/samovar çıkışı, add
     const m = migrate({
       saveVersion: 5,
       wallet: '500', diamonds: '0', lifetime: '2000',
-      tables: 3, stations: 2, stationLevel: 1, serviceSpeedMult: 0.85,
+      tables: 3, stations: 2, stationLevel: 1,
       padsDone: ['table2', 'table3', 'station2'], padFills: { station2: 100, samovar: 40 }, hasWaiter: true,
     });
     expect(m.saveVersion).toBe(SAVE_VERSION);
@@ -890,7 +889,7 @@ describe('kayıt migrasyonu v4..v15 (padFills, station2/samovar çıkışı, add
     // Kullanıcının gerçek durumu: önceki migration v6'ya yükseltmiş ama addTable senkronu yoktu.
     const m = migrate({
       saveVersion: 6, wallet: '0', diamonds: '0', lifetime: '9000',
-      tables: 4, stations: 1, stationLevel: 2, serviceSpeedMult: 1,
+      tables: 4, stations: 1, stationLevel: 2,
       padsDone: ['table2', 'table3'], padFills: {}, hasWaiter: false,
     });
     expect(m.saveVersion).toBe(SAVE_VERSION);
@@ -995,8 +994,8 @@ describe('D-015 — tek doğru kaynak: türetilen alanlar padsDone\'dan, kayıtt
     expect(derivedFromPads([]).hasWaiter).toBe(false);
     expect(derivedFromPads(['dishwasher']).hasDishwasher).toBe(true);
     expect(derivedFromPads([]).hasDishwasher).toBe(false);
-    // samovar pad'i kaldırıldı (D-018 adım 5) → artık bilinmeyen id, etki yok (serviceSpeedMult hep 1).
-    expect(derivedFromPads(['samovar']).serviceSpeedMult).toBe(1);
+    // samovar pad'i kaldırıldı (D-018 adım 5) → artık bilinmeyen id, etki yok (masa/ocak sayısı değişmez).
+    expect(derivedFromPads(['samovar']).tables).toBe(1);
     expect(derivedFromPads([]).stations).toBe(1);
     // Bilinmeyen pad id'leri yok sayılır (ileri/geri uyum).
     expect(derivedFromPads(['table2', 'station2', 'bogus']).tables).toBe(2);
@@ -1007,7 +1006,7 @@ describe('D-015 — tek doğru kaynak: türetilen alanlar padsDone\'dan, kayıtt
     const m = migrate({
       saveVersion: 8, wallet: '0', diamonds: '0', lifetime: '0',
       stationLevel: 0, padsDone: ['table2'], padFills: {},
-      tables: 99, stations: 7, serviceSpeedMult: 0.1, hasWaiter: true, // ÇELİŞKİ: padsDone'da yok
+      tables: 99, stations: 7, hasWaiter: true, // ÇELİŞKİ: padsDone'da yok
     } as unknown as Record<string, unknown>);
     expect((m as Record<string, unknown>).tables).toBeUndefined();
     expect((m as Record<string, unknown>).hasWaiter).toBeUndefined();
@@ -1015,7 +1014,7 @@ describe('D-015 — tek doğru kaynak: türetilen alanlar padsDone\'dan, kayıtt
     const d = derivedFromPads(m.padsDone);
     expect(d.tables).toBe(2); // 1 + table2
     expect(d.hasWaiter).toBe(false); // 'waiter' padsDone'da değil
-    expect(d.serviceSpeedMult).toBe(1);
+    expect(d.stations).toBe(1);
   });
 
   it('store: pad açıldıkça tables/hasWaiter padsDone ile DAİMA tutarlı (desenkronizasyon üretilemez)', () => {
@@ -1881,8 +1880,8 @@ describe('WP1 bug paketi (2026-06-11) — quest-pad gate, zone kamera odağı, o
   });
 
   it('offline oranına masa bahşişleri dahil (2026-06-11): tipTotal orana eklenir', () => {
-    const base = incomeRate(4, 0, 1, 0);
-    const withTips = incomeRate(4, 0, 1, 0, 4 * economyConfig.tables.tipBase); // 4 masa L1
+    const base = incomeRate(4, 0, 0);
+    const withTips = incomeRate(4, 0, 0, 4 * economyConfig.tables.tipBase); // 4 masa L1
     // Döngü aynı, gelir payı masa başına +tipBase → oran tam o oranda büyür.
     const cycle = (4 * 5) / base;
     expect(withTips).toBeCloseTo((4 * 5 + 4 * economyConfig.tables.tipBase) / cycle, 6);

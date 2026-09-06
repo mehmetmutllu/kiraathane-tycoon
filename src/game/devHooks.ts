@@ -64,7 +64,6 @@ export function installDevHooks(): void {
         upgradeZonePos: LAYOUT.upgradeZones[z],
       })),
       stationLevel: s.stationLevels[0],
-      serviceSpeedMult: +s.serviceSpeedMult.toFixed(3),
       padsDone: [...s.padsDone],
       npcCount: s.npcCount,
       // Servis durumu (D-011) — zone-1 geri-uyum

@@ -26,9 +26,9 @@ import {
 } from '../../config/economy.config';
 import './devSandbox.css';
 
-// Dahili seviyeler 0-tabanlı, ekranda +1 gösterilir. Tavan = masterLevel-1 (o da 'Usta').
-const STATION_MAX = C.teaStation.upgrade.masterLevel - 1; // 0..6 → L1..L7 (L7 = Usta)
-const TABLE_MAX = C.tables.upgrade.masterLevel - 1; // 0..4 → L1..L5 (L5 = Usta)
+// Dahili seviyeler 0-tabanlı, ekranda +1 gösterilir. Tavan = ₺ ile çıkılabilen en yüksek seviye.
+const STATION_MAX = C.teaStation.upgrade.maxLevel; // 0..6 → L1..L7
+const TABLE_MAX = C.tables.upgrade.maxLevel; // 0..4 → L1..L5
 const CHAR_MAX = {
   tray: C.character.tray.values.length - 1,
   magnet: C.character.magnet.values.length - 1,

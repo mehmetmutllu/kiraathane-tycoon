@@ -574,8 +574,8 @@ function brewThroughputMult(level: number): number {
 
 /** Bir birim ürünün hazırlanma süresi (sn) — throughput arttıkça kısalır. prepTime verilmezse çay
  *  (geri uyum: eski çağıranlar/testler); tost zone'u PRODUCTS.tost.prepTime geçer (M3). */
-function brewTime(level: number, serviceSpeedMult: number, prepTime: number = C.npc.orderTime): number {
-  return (prepTime * serviceSpeedMult) / brewThroughputMult(level);
+function brewTime(level: number, prepTime: number = C.npc.orderTime): number {
+  return prepTime / brewThroughputMult(level);
 }
 
 /** Oyuncunun tepsi kapasitesi (tek turda taşınan çay/kirli) — karakter tepsi kademesinden türetilir
@@ -592,8 +592,8 @@ export function totalCupPool(zonesOpen: number, stationLevels: number[]): number
   return zonesOpen * C.cups.poolBase + C.cups.poolPerLevel * lv;
 }
 
-/** ₺ ile çıkılabilen en yüksek masa seviyesi (L5 = Usta, 💎/video — Faz 4). */
-export const tableSoftMaxLevel = () => C.tables.upgrade.masterLevel - 1;
+/** ₺ ile çıkılabilen en yüksek masa seviyesi (💎 "Usta" katmanı Faz D'de gelecek). */
+export const tableSoftMaxLevel = () => C.tables.upgrade.maxLevel;
 
 /**
  * Masa teması mağazası kilidi (kullanıcı kararı 2026-06-17): 3 salon AÇIK **VE** tüm açık masalar
@@ -617,9 +617,9 @@ export function tableUpgradeZoneUnlocked(g: GateState): boolean {
  *  M3: zone verilirse o zone'un ÜRÜNÜ (tost pahalı+yavaş) hesaba girer.
  *  2026-06-11 (kullanıcı): masa BAHŞİŞLERİ de orana dahil — tipTotal = o zone'un açık masalarının
  *  Σ(tipBase × seviye); ilerleme (masa yükseltme) offline kazancı da büyütür. */
-function incomeRate(tables: number, level: number, serviceSpeedMult = 1, z = 0, tipTotal = 0): number {
+function incomeRate(tables: number, level: number, z = 0, tipTotal = 0): number {
   const prod = PRODUCTS[zoneProduct(z)];
-  const cycle = C.npc.walkTime + brewTime(level, serviceSpeedMult, prod.prepTime) + C.npc.eatTime;
+  const cycle = C.npc.walkTime + brewTime(level, prod.prepTime) + C.npc.eatTime;
   return (tables * prod.price + tipTotal) / cycle;
 }
 
@@ -739,7 +739,6 @@ export interface GameState {
   stationLevels: number[];
   /** Masa-başı yükseltme seviyeleri (Faz 2h; persist; index = GLOBAL masa slotu; bahşiş + sabır). */
   tableLevels: number[];
-  serviceSpeedMult: number;
   padsDone: string[];
   /** Aktif pad'lerin kısmi dolumu (pad id → ₺). Eş zamanlı omurga + opsiyonel için kayıt (v5). */
   padFills: Record<string, number>;
@@ -1088,7 +1087,7 @@ export function computeOfflineEarned(rate: number, elapsedSec: number, padsDone:
 }
 
 /** ₺ ile çıkılabilen en yüksek istasyon seviyesi (L5 = Usta, 💎/video — Faz 4). */
-export const stationSoftMaxLevel = () => C.teaStation.upgrade.masterLevel - 1;
+export const stationSoftMaxLevel = () => C.teaStation.upgrade.maxLevel;
 /** Mevcut seviyeden bir sonraki ₺ yükseltmenin maliyeti (çay eğrisi; zone-farkındalı için *Z). */
 export const stationUpgradeCost = (level: number) => upgradeCost(C.teaStation.upgrade, level + 1);
 /** Zone'un istasyon yükseltme maliyeti: çay eğrisi × ürünün upgradeCostMult'u (M3 — tost tezgâhı
@@ -1105,7 +1104,6 @@ export const useGame = create<GameState>((set, get) => ({
   zonesOpen: 1,
   stationLevels: Array.from({ length: MAX_ZONES }, () => 0),
   tableLevels: LAYOUT.tables.map(() => 0),
-  serviceSpeedMult: 1,
   padsDone: [],
   padFills: {},
   player: [...LAYOUT.player] as Vec3,
@@ -1192,7 +1190,7 @@ export const useGame = create<GameState>((set, get) => ({
         let tipTotal = 0;
         for (let i = 0; i < derived.tablesByZone[z]; i++)
           tipTotal += C.tables.tipBase * (save.tableLevels[z * TABLES_PER_ZONE + i] ?? 0);
-        rate += incomeRate(derived.tablesByZone[z], stationLevels[z], derived.serviceSpeedMult, z, tipTotal);
+        rate += incomeRate(derived.tablesByZone[z], stationLevels[z], z, tipTotal);
       }
       offlineEarned = computeOfflineEarned(rate, elapsed, save.padsDone);
       wallet = wallet.add(offlineEarned);
@@ -1208,7 +1206,6 @@ export const useGame = create<GameState>((set, get) => ({
       stationLevels,
       // Masa-başı seviyeleri: slot sayısına normalize et + her birini soft max'a clamp'le.
       tableLevels: LAYOUT.tables.map((_, i) => Math.min(save.tableLevels[i] ?? 0, tableSoftMaxLevel())),
-      serviceSpeedMult: derived.serviceSpeedMult,
       padsDone: [...save.padsDone],
       padFills: { ...save.padFills },
       offlineEarned,
@@ -1313,12 +1310,11 @@ export const useGame = create<GameState>((set, get) => ({
     let lifetime = s.lifetime;
     let padsDone = s.padsDone;
     let padFills = s.padFills;
-    // D-015: tables/stations/serviceSpeedMult/hasWaiter/hasDishwasher padsDone'dan TÜRETİLİR (frame anlık
+    // D-015: tables/stations/hasWaiter/hasDishwasher padsDone'dan TÜRETİLİR (frame anlık
     // görüntüsü; tick içinde ayrıca mutasyona uğramaz — pad açılınca yalnız padsDone büyür, gerisi türetilir).
     const derived = derivedFromPads(padsDone);
     const tables = derived.tables;
     const zonesOpen = derived.zonesOpen;
-    const serviceSpeedMult = derived.serviceSpeedMult;
     // Personelin oyuncudan kaçarken masaya itilmemesi için masa gövdeleri (navStep avoidSolids).
     const obstacles = tableSolids(tables);
     // Personel (garson/bulaşıkçı) BFS ızgarası — masa+zone sayısına göre cache'li.
@@ -1366,7 +1362,7 @@ export const useGame = create<GameState>((set, get) => ({
     for (let z = 0; z < zonesOpen; z++) {
       const queueCap = brewQueueCapacity(stationLevels[z]);
       // M3: hazırlama süresi zone'un ÜRÜNÜNDEN (çay 6sn / tost 14sn taban); kap havuzu ORTAK.
-      const cupBrewTime = brewTime(stationLevels[z], serviceSpeedMult, PRODUCTS[zoneProduct(z)].prepTime);
+      const cupBrewTime = brewTime(stationLevels[z], PRODUCTS[zoneProduct(z)].prepTime);
       if (readyCupsByZone[z] < queueCap && cleanCups > 0) {
         brewProgressByZone[z] += dt;
         while (readyCupsByZone[z] < queueCap && cleanCups > 0 && brewProgressByZone[z] >= cupBrewTime) {
@@ -2080,7 +2076,6 @@ export const useGame = create<GameState>((set, get) => ({
       zonesOpen: out.zonesOpen,
       stationLevels,
       tableLevels,
-      serviceSpeedMult: out.serviceSpeedMult,
       padsDone,
       padFills,
       upgradeFills,
@@ -2306,7 +2301,7 @@ export const useGame = create<GameState>((set, get) => ({
 
   saveNow: () => {
     const s = get();
-    // D-015: tables/stations/serviceSpeedMult/hasWaiter KAYDEDİLMEZ — yüklemede padsDone'dan türetilir.
+    // D-015: tables/stations/hasWaiter KAYDEDİLMEZ — yüklemede padsDone'dan türetilir.
     writeSave({
       ...defaultSave(),
       wallet: s.wallet.toString(),

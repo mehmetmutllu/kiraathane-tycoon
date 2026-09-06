@@ -21,7 +21,7 @@ const KEY = 'kiraathane.save';
 
 /**
  * Kalıcı (transient NPC/coin hariç) oyun durumu. Sayılar string Decimal serisi.
- * D-015: tables/stations/serviceSpeedMult/hasWaiter SAKLANMAZ — `padsDone`'dan türetilir
+ * D-015: tables/stations/hasWaiter SAKLANMAZ — `padsDone`'dan türetilir
  * (derivedFromPads). Böylece sayaç ile pad listesi yapısal olarak desenkronize olamaz.
  */
 /** Kalıcı oyun sayaçları (quest sistemi v16): oyuncu eylemleri + garson taşıması. */
@@ -201,7 +201,7 @@ function backbonePadId(g: { padsDone: string[]; tables: number; stationLevel: nu
 }
 
 /** Eski sürüm kayıtları güncel şemaya taşır (ilerleme kaybolmaz). D-015 sonrası eski tables/stations/
- * serviceSpeedMult/hasWaiter alanları SADECE `padsDone`'u doğru kurmak için okunur, kayda yazılmaz. */
+ * hasWaiter alanı SADECE `padsDone`'u doğru kurmak için okunur, kayda yazılmaz. */
 export function migrate(raw: Record<string, unknown>): SaveData {
   // Gevşek çalışma kaydı: eski (artık saklanmayan) alanlar burada okunur, sona kalan v8 şemasına yazılmaz.
   const d: Record<string, unknown> = { ...raw };
@@ -274,7 +274,7 @@ export function migrate(raw: Record<string, unknown>): SaveData {
     v = 7;
   }
 
-  // v7 -> v8 (D-015): tables/stations/serviceSpeedMult/hasWaiter ARTIK saklanmaz; padsDone'dan türetilir.
+  // v7 -> v8 (D-015): tables/stations/hasWaiter ARTIK saklanmaz; padsDone'dan türetilir.
   // Eski 'hasWaiter' true ise 'waiter' pad'ini padsDone'a taşı ki türetme onu yakalasın (garson korunur).
   // (table sayacı v7 adımında zaten padsDone'a senkronlandı; serviceSpeed/samovar pad olarak zaten padsDone'da.)
   if (v < 8) {
@@ -294,7 +294,7 @@ export function migrate(raw: Record<string, unknown>): SaveData {
   if (v < 11) {
     d.tableLevel = Math.min(
       Number(d.tableLevel ?? 0) || 0,
-      economyConfig.tables.upgrade.masterLevel - 1,
+      economyConfig.tables.upgrade.maxLevel,
     );
     v = 11;
   }
@@ -303,7 +303,7 @@ export function migrate(raw: Record<string, unknown>): SaveData {
   // Eski tek `tableLevel` her masa slotuna uygulanır (ilerleme korunur); artık `tableLevels` dizisi.
   if (v < 12) {
     const slots = economyConfig.pads.filter((p) => p.effect.type === 'addTable').length + 1; // 1 başlangıç + addTable'lar
-    const cap = economyConfig.tables.upgrade.masterLevel - 1;
+    const cap = economyConfig.tables.upgrade.maxLevel;
     const old = Math.min(Number(d.tableLevel ?? 0) || 0, cap);
     d.tableLevels = Array.isArray(d.tableLevels)
       ? (d.tableLevels as number[]).map((n) => Math.min(Number(n) || 0, cap))
@@ -654,7 +654,7 @@ export function migrate(raw: Record<string, unknown>): SaveData {
     v = 30;
   }
 
-  // Sona kalan v16 şeması: türetilen alanlar (tables/stations/serviceSpeedMult/hasWaiter), eski `padFill`,
+  // Sona kalan v16 şeması: türetilen alanlar (tables/stations/hasWaiter), eski `padFill`,
   // kaldırılan `trayLevel` ve 'samovar' referansı yazılmaz; stats/questIndex/questBase eklendi (v16).
   const rawStats = (d.stats && typeof d.stats === 'object' ? d.stats : {}) as Partial<SaveStats>;
   return {
