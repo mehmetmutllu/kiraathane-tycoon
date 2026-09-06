@@ -166,7 +166,7 @@ export function installDevHooks(): void {
       const s = useGame.getState();
       // Sayaç görevi ise delta tabanı ŞU ANKİ sayaç (görev şimdi başlamış gibi).
       const base = questCounterValue(economyConfig.quests[idx].target, s.stats) ?? 0;
-      useGame.setState({ questIndex: idx, questBase: base });
+      useGame.setState({ questIndex: idx, questBase: base, questPhase: 'active', questPhaseT: 0, questDoneIndex: -1 });
     }
     return window.__game!();
   };

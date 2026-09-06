@@ -397,6 +397,69 @@ describe('garson — quest hattında zorunlu personel (2026-06-09; eski D-014 op
   });
 });
 
+describe('görev geçişi — kutlama penceresi yarışı (smoke 7 kırık adımın kök nedeni)', () => {
+  const qIdx = (id: string) => economyConfig.quests.findIndex((q) => q.id === id);
+
+  it('görev BİTİŞ ANINDA ilerler: kutlama sürerken questIndex + taban zaten yeni görevin', () => {
+    useGame.getState().hardReset();
+    useGame.setState({
+      questIndex: qIdx('q_serve1'), questBase: 0, questPhase: 'active', questPhaseT: 0,
+      player: [0, 0.6, 4], inputKeyboard: [0, 0], inputJoystick: [0, 0],
+      stats: { ...useGame.getState().stats, teasServed: 1 },
+    });
+    useGame.getState().tick(0.1);
+    // Kart hâlâ biten görevi gösterir (%100 + onay), ama motor çoktan q_coin'e geçti.
+    expect(useGame.getState().questPhase).not.toBe('active');
+    expect(useGame.getState().quest?.id).toBe('q_serve1');
+    expect(useGame.getState().quest?.done).toBe(true);
+    expect(useGame.getState().questIndex).toBe(qIdx('q_coin'));
+    expect(useGame.getState().questBase).toBe(0); // q_coin tabanı = o andaki coinsCollected
+  });
+
+  it("kutlama penceresinde toplanan para SAYILIR (görev 0/1'de kilitlenmez)", () => {
+    useGame.getState().hardReset();
+    useGame.setState({
+      questIndex: qIdx('q_serve1'), questBase: 0, questPhase: 'active', questPhaseT: 0,
+      player: [0, 0.6, 4], inputKeyboard: [0, 0], inputJoystick: [0, 0],
+      stats: { ...useGame.getState().stats, teasServed: 1 },
+    });
+    useGame.getState().tick(0.1); // q_serve1 biter → kutlama başlar, q_coin aktif taban 0
+    // Oyuncu kutlama animasyonu sürerken yerdeki parayı topluyor (doğal akış: servis → ödeme → topla).
+    useGame.setState({ stats: { ...useGame.getState().stats, coinsCollected: 1 } });
+    flushQuestTransition();
+    // Eski davranışta taban 1 olurdu → q_coin 0/1'de takılır, sonrası domino kırılırdı.
+    flushQuestTransition();
+    expect(useGame.getState().questIndex).toBe(qIdx('q_table2'));
+  });
+
+  it('kutlama ortasında yeniden yükleme kilitlemez: kayda ilerlemiş görev yazılır', () => {
+    const mem: Record<string, string> = {};
+    const g = globalThis as Record<string, unknown>;
+    const orig = g.localStorage;
+    g.localStorage = {
+      getItem: (k: string) => (k in mem ? mem[k] : null),
+      setItem: (k: string, v: string) => { mem[k] = v; },
+      removeItem: (k: string) => { delete mem[k]; },
+    };
+    try {
+      useGame.getState().hardReset();
+      useGame.setState({
+        questIndex: qIdx('q_serve1'), questBase: 0, questPhase: 'active', questPhaseT: 0,
+        player: [0, 0.6, 4], inputKeyboard: [0, 0], inputJoystick: [0, 0],
+        stats: { ...useGame.getState().stats, teasServed: 1 },
+      });
+      useGame.getState().tick(0.1); // kutlama başladı
+      useGame.getState().saveNow();
+      useGame.getState().init(); // kutlama ortasında uygulama kapanıp açıldı
+      expect(useGame.getState().questIndex).toBe(qIdx('q_coin'));
+      expect(useGame.getState().questPhase).toBe('active');
+      expect(useGame.getState().quest?.id).toBe('q_coin');
+    } finally {
+      if (orig === undefined) delete g.localStorage; else g.localStorage = orig;
+    }
+  });
+});
+
 describe('yeni-özellik bildirimi (D-019 §4)', () => {
   it('yeni oyunda ikincil özellik yok → revealSeen boş; bir özellik açılınca toast + kamera pan tetiklenir', () => {
     useGame.getState().hardReset();
@@ -1061,15 +1124,18 @@ describe('ekonomi v2 — seviye throughputu artırır, fiyatı DEĞİL (D-010)',
     useGame.getState().tick(0.05);
     let s = useGame.getState();
     expect(s.questPhase).toBe('completing');
-    expect(s.questIndex).toBe(0); // henüz ilerlemedi (anında takas yok)
+    // KART henüz takas edilmez (anında takas yok) — ama MOTOR bitiş anında ilerledi (taban yarışı fix'i):
+    // kutlama penceresinde yapılan eylem yeni görevin tabanına yazılmasın diye.
     expect(s.quest?.id).toBe('q_pickup');
     expect(s.quest?.done).toBe(true);
     expect(s.quest?.cur).toBe(s.quest?.total); // bar %100 dolar
-    // completing süresi (0.5s) dolunca 'gap'; gap boyunca hâlâ tamamlanmış görev gösterilir.
+    expect(s.questIndex).toBe(1);
+    expect(s.questDoneIndex).toBe(0);
+    // completing süresi (0.5s) dolunca 'gap'; gap boyunca hâlâ tamamlanmış görev KARTI gösterilir.
     for (let i = 0; i < 7; i++) useGame.getState().tick(0.1);
     expect(useGame.getState().questPhase).toBe('gap');
-    expect(useGame.getState().questIndex).toBe(0);
-    // gap (0.8s) dolunca yeni göreve geç: questIndex ilerler, faz 'active', kart artık done DEĞİL.
+    expect(useGame.getState().quest?.id).toBe('q_pickup');
+    // gap (0.8s) dolunca yeni görevin kartı görünür, faz 'active', kart artık done DEĞİL.
     for (let i = 0; i < 9; i++) useGame.getState().tick(0.1);
     s = useGame.getState();
     expect(s.questPhase).toBe('active');

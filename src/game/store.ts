@@ -817,6 +817,9 @@ export interface GameState {
   questPhase: 'active' | 'completing' | 'gap';
   /** Görev geçiş fazı geri sayımı (transient, sn). */
   questPhaseT: number;
+  /** Kutlama fazında EKRANDA gösterilen (biten) görevin index'i; -1 = yok (transient).
+   *  questIndex bitiş ANINDA ilerler (taban yarışı yok), kart 1,3 sn daha bunu gösterir. */
+  questDoneIndex: number;
   /** Kamera odak isteği (transient): görev barına dokununca / yeni şey açılınca hedefe pan. */
   camFocus: CamFocus | null;
   /** Genel-bakış zoom'u (transient): HUD kamera butonu AÇIKKEN kamera uzaklaşır (salonu görmek için). */
@@ -1133,6 +1136,7 @@ export const useGame = create<GameState>((set, get) => ({
   questBase: 0,
   questPhase: 'active',
   questPhaseT: 0,
+  questDoneIndex: -1,
   xp: 0,
   settings: defaultSettings(),
   floorThemeByZone: Array.from({ length: MAX_ZONES }, (_, z) => defaultFloorTheme(z)),
@@ -1258,6 +1262,7 @@ export const useGame = create<GameState>((set, get) => ({
       questBase: save.questBase,
       questPhase: 'active',
       questPhaseT: 0,
+      questDoneIndex: -1,
       xp: save.xp,
       settings: { ...save.settings },
       floorThemeByZone: Array.from({ length: MAX_ZONES }, (_, z) => save.floorThemeByZone[z] ?? defaultFloorTheme(z)),
@@ -1983,9 +1988,10 @@ export const useGame = create<GameState>((set, get) => ({
     //   kart tamamlanmış görevi %100 tutar) → active (questIndex ilerler, yeni kart cardPop ile girer).
     // Bu sayede "bitti → ara → yeni" net hissedilir; zincirli tamamlamalar sıraya girer (instant skip yok).
     let questDone = false; // bu tick kart "tamamlandı" (completing/gap) gösterilsin mi
+    let questDoneIndex = s.questDoneIndex;
     if (questPhase === 'active') {
       if (questIndex < C.quests.length && questTargetMet(C.quests[questIndex].target, questCtx)) {
-        // BİTİŞ ANI: ödül + tamamlama toast'u + xp (bir kez); kart HENÜZ ilerletilmez.
+        // BİTİŞ ANI: ödül + tamamlama toast'u + xp (bir kez).
         const qReward = C.quests[questIndex].reward ?? 0;
         if (qReward > 0) {
           wallet = wallet.add(qReward);
@@ -1993,6 +1999,13 @@ export const useGame = create<GameState>((set, get) => ({
         }
         enqueueNotice({ text: C.quests[questIndex].title, ttl: 3.5, kind: 'quest', reward: qReward > 0 ? qReward : undefined });
         xp += C.xp.perQuest;
+        // GÖREV BU ANDA İLERLER (kutlama yalnız görsel). Yoksa 1,3 sn'lik kutlama penceresinde
+        // yapılan eylem yeni görevin TABANINA yazılır ve sayaç 0/1'de kilitlenirdi (q_coin domino'su).
+        questDoneIndex = questIndex;
+        questIndex += 1;
+        const nt = questIndex < C.quests.length ? C.quests[questIndex].target : null;
+        questBase = nt ? questCounterValue(nt, stats) ?? 0 : 0;
+        questCtx.questBase = questBase;
         questPhase = 'completing';
         questPhaseT = QUEST_COMPLETE_DUR;
         questDone = true;
@@ -2005,16 +2018,13 @@ export const useGame = create<GameState>((set, get) => ({
         questPhaseT = QUEST_GAP_DUR;
       }
     } else {
-      // 'gap': boşluk dolunca YENİ göreve geç (questIndex ilerler, kamera yeni hedefe pan).
+      // 'gap': boşluk dolunca kutlama kartı iner, YENİ görevin kartı görünür (kamera hedefe pan).
       questPhaseT -= dt;
       questDone = true;
       if (questPhaseT <= 0) {
-        questIndex += 1;
-        const nt = questIndex < C.quests.length ? C.quests[questIndex].target : null;
-        questBase = nt ? questCounterValue(nt, stats) ?? 0 : 0;
-        questCtx.questBase = questBase;
         questPhase = 'active';
         questDone = false;
+        questDoneIndex = -1;
         if (questIndex < C.quests.length) {
           const q = C.quests[questIndex];
           if (q.target.type === 'charStat' && !s.charPanelSeen) {
@@ -2034,8 +2044,9 @@ export const useGame = create<GameState>((set, get) => ({
       const moving = Math.hypot(input[0], input[1]) > 0.25;
       camFocus = ttl > 0 && !moving ? { pos: camFocus.pos, ttl } : null;
     }
-    let quest = questIndex < C.quests.length ? questView(C.quests[questIndex], questCtx) : null;
-    // completing/gap: kart tamamlanmış görevi %100 + onay flash'ıyla gösterir (questIndex henüz ilerlemedi).
+    // completing/gap: kart BİTEN görevi %100 + onay flash'ıyla gösterir (questIndex çoktan ilerledi).
+    const viewIndex = questDone && questDoneIndex >= 0 ? questDoneIndex : questIndex;
+    let quest = viewIndex < C.quests.length ? questView(C.quests[viewIndex], questCtx) : null;
     if (quest && questDone) quest = { ...quest, cur: quest.total, done: true };
 
     // --- Level-up bildirimi: toplam XP bu tick'te seviye atlattıysa toast (kuyruğa girer). ---
@@ -2083,6 +2094,7 @@ export const useGame = create<GameState>((set, get) => ({
       questBase,
       questPhase,
       questPhaseT,
+      questDoneIndex,
       xp,
       quest,
       camFocus,
