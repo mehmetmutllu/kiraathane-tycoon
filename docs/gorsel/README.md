@@ -66,14 +66,34 @@ tek fark ışık. `ss/g0-genis.png` üç salon açıkken, `ss/g0-baslangic.png` 
 
 ---
 
-## G1 — Temas gölgesi ✅ (2026-09-06)
+## G1 — Temas gölgesi ❌ DENENDİ, GERİ ALINDI (2026-09-06)
+
+> **KARAR (D-054): temas gölgesi bu projede KULLANILMAYACAK.** Uygulandı, ölçüldü, kullanıcıya
+> gösterildi ve reddedildi: *"bu kötü duruyo, her şeyin altında bi yuvarlak var"*.
+>
+> **Gerekçe — teknik olarak da doğru olan itiraz:** blob shadow gerçek bir tekniktir ve yaygındır,
+> ama neredeyse hep **gerçek gölgenin YERİNE** kullanılır (ucuz olduğu için). Bu sahnede G0'dan
+> beri **çalışan bir yönlü gölge haritası var**; blob onun ÜSTÜNE ikinci bir katman koyuyor.
+> Katkısı yalnız kontak noktasındaki yumuşama, bedeli ise her objenin altında ayrı bir daire —
+> bir masa + 4 tabure = 5 ayrı yuvarlak, küme hâlinde puanlı kumaş gibi okunuyor.
+>
+> **Bir dahaki sefere:** "objeler yüzüyor" hissi tekrar gündeme gelirse çözüm blob DEĞİL; sırayla
+> (1) güneş açısı/gölge yumuşaklığı, (2) G2'nin zemin geometrisi (ölçek referansı gelince yüzme
+> hissi büyük ölçüde psikolojik olarak da kapanır), (3) gerekirse gölge haritası çözünürlüğü.
+>
+> Kod geri alındı (`ContactShadows.tsx`, `visualActors.ts`, `CONTACT_SHADOW`, `Footprint`,
+> `tableFootprints` silindi). **`LAYOUT.decor` kaldı** — dekor konumlarının JSX'ten tek listeye
+> çıkması bağımsız bir sadeleşme.
+>
+> Aşağıdaki kayıt, işin nasıl yapıldığını ve nelerin ölçüldüğünü belgelemek için duruyor.
+
+### (arşiv) Ne yapılmıştı
 
 Yeni dosyalar: `src/components/three/ContactShadows.tsx` · `src/game/visualActors.ts`.
 Değişenler: `src/config/palette.ts` (`CONTACT_SHADOW` bloğu) · `src/game/types.ts` (`Footprint`) ·
 `src/game/store.ts` (`LAYOUT.decor`) · `src/components/three/Tables.tsx` (`tableFootprints`) ·
 `src/components/three/Scene.tsx` (bileşen + çaycı kaydı + `DecorProps` veri-güdümlü oldu).
 
-### Ne yapıldı
 Her objenin tabanına zemine yatık **yumuşak elips** konur. Hepsi **tek InstancedMesh** —
 geometri önceden yatırıldığı için per-instance matris yalnız öteleme + ölçek taşır (rotasyon yok).
 Doku çalışma anında çizilen 64px radyal degrade (`alphaMap`; renk materyalden gelir) → **0 byte asset**.

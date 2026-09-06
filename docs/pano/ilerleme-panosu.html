@@ -211,30 +211,30 @@ h2{font-size:21px;font-weight:800}
   ],
   "ozet": {
     "etiket": "Bu oturum · Faz G · 2/4",
-    "baslik": "Temas gölgesi: objeler zemine yapıştı",
-    "aciklama": "Geçen oturumda güneş açısı düzeltilince \"yüzme\" hissinin yarısı geçmişti. Kalanı bu adım kapattı: her masanın, taburenin, tezgâhın, müşterinin ve personelin tabanına zemine yatık <b>yumuşak bir leke</b> konuyor — <b>tek çizim çağrısı, sıfır asset</b> (doku kodun içinde çiziliyor).",
+    "baslik": "Temas gölgesi denendi — ve reddedildi",
+    "aciklama": "Objelerin altına zemine yatık yumuşak leke koyma fikri uygulandı, ölçüldü, ekranda görüldü ve <b>geri alındı</b>. Sahne bir önceki (ışık) hâline döndü. Bu bir başarısızlık değil, <b>kapanan bir soru</b>: artık \"objeler yüzüyor\" denince ne yapılmayacağı yazılı.",
     "adimlar": [
-      "64 piksellik yumuşak daire dokusu <b>çalışma anında</b> üretilir",
-      "Bütün lekeler <b>tek çizim çağrısında</b> toplanır (+1)",
-      "Masa ve tabure lekeleri mobilyanın <b>kendi yerleşim listesinden</b> türer — kayamaz",
-      "Dekor konumları tek listeye taşındı: hem obje hem gölgesi oradan okuyor",
-      "Koyuluk öncesi/sonrası karşılaştırmayla seçildi (0,40 az · 0,58 ağır · <b>0,50</b>)",
-      "Maliyet aynı kameradan açık/kapalı ölçüldü"
+      "Teknik uygulandı: tek çizim çağrısı, sıfır asset, ölçüldü",
+      "Ekranda görüldü: <b>her objenin altında ayrı bir daire</b>",
+      "Bir masa + dört tabure = beş yuvarlak — küme hâlinde puanlı kumaş gibi",
+      "Ara çözümler sunuldu (tek havuz · çok soluk) — gerek kalmadı",
+      "Kod geri alındı, testler ve derleme temiz",
+      "Karar deftere yazıldı: <b>bir daha denenmeyecek</b>"
     ],
-    "not": "<b>İki şey ölçümle çıktı.</b> Birincisi: <b>oturan müşteriye leke konmuyor</b> — konunca altındaki taburenin lekesiyle üst üste binip o koltuk komşularından belirgin koyu çıkıyordu. Yalnız ayakta olan müşteri leke alıyor.<br><br>İkincisi: <b>kaldırıma çıkan müşteri gölgesini kaybediyordu.</b> Sokak zeminleri, eskiden yaşanan bir titreme sorunu yüzünden salon zemininden biraz yukarıya alınmıştı ve ışık geçirmiyor; salon yüksekliğindeki leke onların altında kalıp eleniyordu. Kapı hattının dışındaki lekeler yukarı çıkarıldı.<br><br><b>Yöntem notu:</b> ilk turda leke hiç görünmedi. \"Göremiyorum\" tek başına kanıt sayılmadı — materyal geçici olarak kırmızı ve tam opak yapıldı, lekelerin doğru yerde ve doğru yumuşaklıkta olduğu görüldü; sorun yalnız koyuluktu. Geçen oturumun test kutusu numarasının aynısı.<br><br><b>Maliyet:</b> çizim çağrısı 107→108, kare süresi 1,06→1,20 ms. Testler 186/186, derleme temiz, konsol hatasız."
+    "not": "<b>İtiraz teknik olarak da haklıydı.</b> Bu leke gerçek ve yaygın bir tekniktir — eski konsol kuşağının standardıydı, bugün de mobil oyunların çoğunda var. Ama neredeyse hep <b>gerçek gölgenin yerine</b> kullanılır, ucuz olduğu için. Bu sahnede geçen oturumdan beri <b>çalışan bir gerçek gölge var</b>; leke onun üstüne ikinci bir katman koyuyordu. Kazancı küçük, bedeli görünür.<br><br><b>Bir daha yüzme hissi gündeme gelirse sıra şu:</b> önce güneş açısı ve gölge yumuşaklığı, sonra <b>zemin geometrisi</b> — zeminde ölçek referansı olunca bu his zaten büyük ölçüde kapanır. Leke değil.<br><br><b>Kalan tek kazanım:</b> dekor konumları koddan tek bir listeye çıktı — bağımsız bir sadeleşme, kaldı."
   },
   "siradaki": {
     "etiket": "Faz G · oturum 3/4",
-    "baslik": "G2 — zemine ölçek referansı",
-    "aciklama": "Zemin hâlâ tek parça düz renk: göz mesafeyi ölçecek bir şey bulamıyor, mekân olduğundan küçük duruyor. Çözüm <b>doku değil geometri</b> — zemin tahtası ve karo gerçek parçalar olarak döşenir (doku yolu daha önce denendi ve reddedildi, D-041).",
+    "baslik": "Önce kasma sorunu, sonra G2 zemin",
+    "aciklama": "Kullanıcı <b>PC'de tam ekranda oyunun ağır kastığını</b> bildirdi. Ölçüldü: sebep bu oturumdaki leke değil (bedeli kare başına 0,09 ms) — sorun daha önceden vardı ve hiç ölçülmemişti. Önce o, sonra zemin.",
     "adimlar": [
-      "Parke tahtası 0,55 × 2,2 · her satır yarım tahta kaydırılır",
-      "Her tahtaya <b>±%4 renk sapması</b> — tekrar hissi kırılır",
-      "Karo seçeneği 0,7'lik kare",
-      "Derz <b>çizgi değil boşluk</b>: altındaki koyu taban görünür",
-      "Alan başına ~90 tahta = <b>tek çizim çağrısı</b>"
+      "<b>İlk şüpheli:</b> yüksek çözünürlüklü ekranda çözünürlüğün iki katına render + kenar yumuşatma",
+      "Sonra gölge haritası, sonra her karede dönen ana döngü",
+      "Ölçüm <b>kullanıcının makinesinde</b> yapılacak — tarayıcı testi bu sayıyı veremiyor",
+      "Ardından <b>G2</b>: zemin tahtası ve karo gerçek parçalar olarak döşenir",
+      "Derz çizgi değil <b>boşluk</b>; alan başına ~90 tahta = tek çizim çağrısı"
     ],
-    "not": "<b>Sonra sırayla:</b> G3 duvar bitimi (süpürgelik, lambri çıtası, kartonpiyer) → G4/G5 KayKit yerleşimi (paketler elde, indirildi).<br><br><b>G fazının sonunda kapatılacak artıklar:</b> mağazadaki küçük önizleme pencereleri hâlâ eski düz ışıkla — dünya ısınınca onlar soğuk kaldı. Temas gölgesi elips olduğundan dikdörtgen tezgâhın köşeleri tam kapanmıyor; ikinci bir doku ikinci çizim çağrısı demek olacağından tezgâhlarda daha dar yayılım seçildi.<br><br><b>Faz A'ya geçmeden onarılacak:</b> duman testinin yedi kırık adımı (bu oturumda da aynı yerde — bozulmadı)."
+    "not": "<b>Neden zemin?</b> Zemin hâlâ tek parça düz renk: göz mesafeyi ölçecek bir şey bulamıyor, mekân olduğundan küçük duruyor. Doku yolu daha önce denenip reddedildiği için çözüm geometri.<br><br><b>Faz A'ya geçmeden onarılacak:</b> duman testinin yedi kırık adımı — bu oturumda da aynı yerde, bozulmadı."
   },
   "donemler": [
     {
@@ -308,7 +308,7 @@ h2{font-size:21px;font-weight:800}
         {
           "k": "G",
           "t": "Görsel taban",
-          "d": "Işık · temas gölgesi · plank ve karo geometrisi · duvar bitimi · KayKit yerleşimi",
+          "d": "Işık · (temas gölgesi denendi, reddedildi) · plank ve karo geometrisi · duvar bitimi · KayKit yerleşimi",
           "yapilan": 2,
           "toplam": 4,
           "durum": "now",
@@ -369,17 +369,16 @@ h2{font-size:21px;font-weight:800}
     {
       "tarih": "06.09.2026",
       "etiket": "Faz G · 2. oturum",
-      "baslik": "Temas gölgesi — ve \"göremiyorum\" neden kanıt değil",
-      "govde": "Objeler zemine değmiyor gibi duruyordu. Güneş gölgesi bunu tek başına çözmüyor: gölge haritası objenin tam altındaki kontak noktasında yumuşamıyor, masa ayağının dibinden ışık sızıyor. Bu adımda her objenin tabanına zemine yatık yumuşak bir leke kondu — masalar, tabureler, tezgâhlar, bulaşık modülleri, çöp kovaları, saksılar, oyuncu, garsonlar, bulaşıkçılar, çaycı ve ayakta duran müşteriler.<br><br>Hepsi <b>tek çizim çağrısı</b>: lekeler tek bir toplu nesnede toplanıyor, dokusu kodun içinde çizilen 64 piksellik yumuşak daire — dosya olarak hiçbir şey eklenmedi.<br><br>Uygulama bitince ekran görüntüsünde <b>hiçbir şey görünmedi.</b> Burada \"olmamış\" deyip ayarlarla oynamak yerine, geçen oturumun yöntemi tekrarlandı: leke materyali geçici olarak <b>kırmızı ve tam opak</b> yapıldı. Lekeler oradaydı, doğru yerde ve doğru yumuşaklıktaydı — sorun yalnız koyuluğun ahşap zeminde yeterince ayrışmamasıydı. Koyuluk üç değerle karşılaştırıldı ve ortası seçildi.",
+      "baslik": "Temas gölgesi: yapıldı, ölçüldü, reddedildi",
+      "govde": "Plandaki adım şuydu: objelerin altına zemine yatık yumuşak bir leke koy, \"yüzme\" hissi bitsin. Yapıldı — masalar, tabureler, tezgâhlar, personel ve müşteriler için tek çizim çağrısında, dosya olarak hiçbir şey eklemeden. Ölçüldü, belgelendi, ekran görüntüleri alındı.<br><br>Sonra kullanıcı ekrana baktı: <i>\"bu kötü duruyo, her şeyin altında bi yuvarlak var... temas gölgesi şart mı? bence böyle bir şey yok hiçbir oyunda.\"</i><br><br>İtiraz teknik olarak da haklıydı. Bu leke gerçek ve yaygın bir tekniktir — ama neredeyse hep <b>gerçek gölgenin yerine</b> kullanılır, çünkü ucuzdur. Bu sahnede geçen oturumdan beri çalışan bir gerçek gölge var; leke onun üstüne ikinci bir katman koyuyordu. Kazancı sadece objenin değdiği noktadaki yumuşama; bedeli her objenin altında ayrı bir daire — bir masa artı dört tabure beş yuvarlak demek, küme hâlinde puanlı kumaş gibi okunuyor.<br><br>Ara çözümler sunuldu (beş daire yerine tek havuz, ya da çok soluklaştırma) ama gerek kalmadı: doğru cevap <b>bu adımı tamamen çıkarmaktı</b>. Kod geri alındı, sahne bir önceki hâline döndü.",
       "maddeler": [
-        "Masa/tabure lekeleri <b>mobilyanın kendi yerleşim listesinden</b> türer — masa büyüyünce gölge de büyür",
-        "Dekor konumları tek listeye taşındı: obje ve gölgesi aynı yerden okuyor",
-        "<b>Oturan müşteriye leke yok</b> — taburenin lekesiyle çakışıp koltuğu koyulaştırıyordu",
-        "Kaldırıma çıkan müşteri gölgesini kaybediyordu — sokak zemini daha yüksekte, leke altında eleniyordu; düzeltildi",
-        "Çizim çağrısı <b>107→108</b>, kare süresi 1,06→1,20 ms — ölçüldü",
-        "Testler <b>186/186</b>, derleme temiz, konsol hatasız"
+        "Teknik hedefini tuttu — <b>ürün kararı olarak reddedildi</b>",
+        "Karar deftere yazıldı: bir daha denenmeyecek, alternatif sıra da yazılı",
+        "Kalan tek kazanım: dekor konumları koddan tek listeye çıktı",
+        "Testler <b>186/186</b>, derleme temiz, sahne ışık adımının hâlinde",
+        "<b>Yeni açık sorun:</b> PC'de tam ekran kasması — ölçüldü, sebebi bu adım değil"
       ],
-      "not": "<b>Yöntem:</b> bu sahnede görsel bir iddiayı ölçmenin yolu, aynı kameradan öncesi/sonrası ekran görüntüsü ve gerektiğinde objeyi <b>abartıp</b> görünür kılmak. İki oturum üst üste asıl bulgu buradan çıktı: geçen sefer test kutusu, bu sefer kırmızı leke.<br><br><b>Duman testi</b> bu oturumda da 8/15 — bozulmadı, zaten önceden kırıktı."
+      "not": "<b>İki oturumdur işe yarayan numara:</b> görsel bir iddiayı \"göremiyorum\" ile kapatma, <b>abartıp görünür kıl</b>. Geçen sefer sahneye test kutusu kondu; bu sefer leke geçici olarak kırmızı ve tam opak yapıldı — lekelerin doğru yerde olduğu görüldü, sorunun yalnız koyulukta olmadığı anlaşıldı.<br><br>Ama bu oturumun asıl dersi başka: <b>ölçümün \"çalışıyor\" demesi, beğenileceği anlamına gelmiyor.</b> Öncesi/sonrası karşılaştırması adımın hedefini tutturduğunu gösterdi; ürün kararı yine de hayır çıktı."
     },
     {
       "tarih": "06.09.2026",
@@ -492,6 +491,12 @@ h2{font-size:21px;font-weight:800}
       "renk": "stop",
       "b": "Duman testi 15 adımın 7'sinde düşüyor",
       "p": "Bu oturumdan önce de kırıktı — önceki commit ayrı bir çalışma kopyasında aynı sonucu verdi. Kök neden bulundu ve yazıldı. Faz A/C işi; Faz B'ye geçmeden onarılmalı."
+    },
+    {
+      "sev": "Performans",
+      "renk": "stop",
+      "b": "PC'de tam ekran ağır kasıyor",
+      "p": "Kullanıcı bildirdi. Ölçüldü: sebep bu oturumun eklediği leke değil (kare başına 0,09 ms) — sorun önceden vardı ve hiç ölçülmemişti. İlk şüpheli yüksek çözünürlüklü ekranda çözünürlüğün iki katına render. Ölçüm kullanıcının makinesinde yapılacak."
     },
     {
       "sev": "Yapısal",

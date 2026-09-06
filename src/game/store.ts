@@ -281,8 +281,9 @@ export const LAYOUT = {
   // (ALL_TABLES.seats) AYNI listeden türetir — görsel sandalye = oturulabilir koltuk.
   chairSpots: CHAIR_SPOTS,
   foodChairSpots: FOOD_CHAIR_SPOTS,
-  // SALT GÖRSEL DEKOR (collision yok). Konumlar burada çünkü İKİ yer okuyor: Scene.DecorProps
-  // objeyi çizer, ContactShadows (G1) altına temas gölgesini koyar — konum tek kaynakta kalsın.
+  // SALT GÖRSEL DEKOR (collision yok). Konumlar LAYOUT'ta çünkü dünya yerleşimine ait; Scene.
+  // DecorProps buradan çizer. (G1 temas gölgesi denemesi geri alındı ama bu tek-kaynak sadeleşmesi
+  // kaldı — dekor konumu artık JSX'in içine gömülü değil.)
   // r = zemindeki ayak izi yarıçapı (kova gövdesi / saksı ağzı).
   decor: {
     trashCans: [

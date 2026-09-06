@@ -1018,7 +1018,30 @@ NOT: headless tarayıcıda `window.__perf().fps` arka plan kısıtlaması yüzü
 - `shadow.bias`/`normalBias` **0'da bırakıldı**: bu açıda akne yok; normalBias eklemek ince
   çıtalarda (0,04–0,08) ışık sızdırma riski taşıyor. Açı değişirse tekrar bakılmalı.
 
-## FAZ G — G1 TEMAS GÖLGESİ ✅ (2026-09-06)
+## FAZ G — G1 TEMAS GÖLGESİ ❌ DENENDİ ve GERİ ALINDI (2026-09-06)
+**KARAR D-054: temas gölgesi (blob shadow) bu projede KULLANILMAYACAK.** Uygulandı, ölçüldü,
+kullanıcıya gösterildi, reddedildi: *"bu kötü duruyo, her şeyin altında bi yuvarlak var...
+temas gölgesi şart mı? bence böyle bir şey yok hiçbir oyunda"*.
+
+Gerekçe (itiraz teknik olarak da haklı): blob shadow yaygın bir tekniktir ama neredeyse hep
+**gerçek gölgenin YERİNE** kullanılır. Bu sahnede G0'dan beri çalışan bir gölge haritası var;
+blob onun ÜSTÜNE ikinci katman koyuyordu. Katkısı yalnız kontak yumuşaması, bedeli her objenin
+altında ayrı bir daire (masa + 4 tabure = 5 yuvarlak → küme hâlinde puanlı kumaş).
+
+**Bir daha "objeler yüzüyor" denirse çözüm blob DEĞİL:** (1) güneş açısı/gölge yumuşaklığı,
+(2) G2 zemin geometrisi (ölçek referansı), (3) gerekirse gölge haritası çözünürlüğü.
+
+Kod geri alındı: `ContactShadows.tsx` · `visualActors.ts` · `CONTACT_SHADOW` · `Footprint` ·
+`tableFootprints` silindi. **`LAYOUT.decor` KALDI** (dekor konumlarının JSX'ten tek listeye
+çıkması bağımsız bir sadeleşme). Test 186/186 · build temiz · sahne G0 hâlinde.
+
+**🔴 AÇIK BULGU — PC'de tam ekran takılıyor (kullanıcı, 2026-09-06).** G1 DEĞİL: 1920×1080'de
+temas gölgesinin bedeli 0,09 ms ölçüldü (2,02 ↔ 1,93 ms açık/kapalı). Yani sorun önceden vardı.
+İlk şüpheliler sırayla: `dpr={[1,2]}` + `antialias` (yüksek DPI ekranda çözünürlüğün 2 katına
+render) · gölge haritası · her karede dönen 800 satırlık `tick()`. **Kullanıcının makinesinde
+gerçek sayıyla ölçülmeli** — tahminle dokunulmayacak.
+
+### (arşiv) G1'de ne yapılmıştı
 Yeni: `src/components/three/ContactShadows.tsx` · `src/game/visualActors.ts`.
 Değişen: `palette.ts` (`CONTACT_SHADOW`) · `types.ts` (`Footprint`) · `store.ts` (`LAYOUT.decor`) ·
 `Tables.tsx` (`tableFootprints`) · `Scene.tsx` (bileşen + çaycı kaydı + `DecorProps` veri-güdümlü).
@@ -1069,7 +1092,7 @@ Referans: ikravakfi Mali Takip Panosu (f467bc3f) — iskelet alındı, görsel i
 | | DN denetim + arşiv | 2/2 ✅ |
 | **Kuruluş toplam** | | **28/28 ✅** |
 | Yayın programı (1 Eyl →) | P plan ve maket | 6/6 ✅ |
-| | **G görsel taban** | **2/4 🔧** (G0 ışık ✅ · G1 temas gölgesi ✅ · sıradaki G2 zemin geometrisi) |
+| | **G görsel taban** | **2/4 🔧** (G0 ışık ✅ · G1 temas gölgesi ❌ reddedildi · sıradaki G2 zemin geometrisi) |
 | | A temizlik | 0/3 ⏳ |
 | | B model geçişi | 0/5 ⏳ |
 | | C zincir ve denge | 0/5 ⏳ |

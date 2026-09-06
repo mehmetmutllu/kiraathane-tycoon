@@ -2,6 +2,65 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-06 — G1 DENENDİ ve REDDEDİLDİ; sahne G0 hâlinde; SAVE v30 değişmedi)
+
+**G1 (temas gölgesi) uygulandı, ölçüldü, kullanıcıya gösterildi ve GERİ ALINDI → D-054.**
+Kullanıcı: *"bu kötü duruyo her şeyin altında bi yuvarlak var"* ve *"temas gölgesi şart mı?
+bence böyle bir şey yok hiçbir oyunda"*.
+
+İtiraz teknik olarak da haklıydı: blob shadow yaygın bir tekniktir ama neredeyse hep **gerçek
+gölgenin YERİNE** kullanılır. Bu sahnede G0'dan beri çalışan bir gölge haritası var; blob onun
+ÜSTÜNE ikinci katman koyuyordu — katkısı küçük, bedeli her objenin altında ayrı bir daire
+(masa + 4 tabure = 5 yuvarlak, küme hâlinde puanlı kumaş).
+
+**Sahne şu an G0 hâlinde.** Silinen: `ContactShadows.tsx` · `visualActors.ts` · `CONTACT_SHADOW` ·
+`Footprint` · `tableFootprints`. **Kalan:** `LAYOUT.decor` (dekor konumları artık JSX'te değil,
+tek listede — bağımsız sadeleşme). `npm run test` 186/186 · `npm run build` temiz.
+
+### >>> AÇIK SORUN — PC'DE TAM EKRAN TAKILIYOR <<<
+Kullanıcı bildirdi: *"pcde tam ekran oynarken hayvan gibi kasıyo"*. **G1 DEĞİL** — 1920×1080'de
+temas gölgesinin bedeli 0,09 ms ölçüldü (2,02 ↔ 1,93 ms, `blob.visible` açık/kapalı). Yani sorun
+G1'den önce de vardı ve şimdiye kadar hiç ölçülmedi.
+
+**İlk şüpheliler (sırayla ölçülecek):**
+1. `Scene.tsx` → `<Canvas dpr={[1, 2]} gl={{ antialias: true }}>` — yüksek DPI ekranda
+   çözünürlüğün **2 katına** render + MSAA. Tam ekranda piksel sayısı patlar; pencerede sorun
+   çıkmaması bu şüpheyi güçlendiriyor (fill-rate bağlı).
+2. Gölge haritası: 1024, ortografik kamera −13/28/15/−15 (G0'da genişledi).
+3. CPU: her karede dönen ~800 satırlık `tick()` + Zustand güncellemelerinin tetiklediği React
+   render'ları.
+
+**Yöntem:** kullanıcının makinesinde gerçek sayı gerekiyor — `window.__perf()` (fps/calls/tris)
+HUD'da açılabilir; headless tarayıcıdaki fps ANLAMSIZ (arka plan rAF kısıtlaması, 1 gösterir).
+Kare süresi doğrudan `gl.render` döngüsüyle ölçülür. **Tahminle dokunma.**
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+1. **PC kasma sorununu ölç ve çöz** (yukarıdaki üç şüpheli, bu sırayla). Kullanıcıdan ekran
+   çözünürlüğü + `window.__perf()` çıktısı iste.
+2. Sonra **G2 — zemine ölçek referansı, GEOMETRİYLE** (doku yolu D-041 ile kapalı):
+   `CheckerTiles` genelleştir → `plank` (0,55×2,2, satır başı yarım ofset, tahta başına ±%4 renk
+   sapması) ve `tile` (0,7 kare); derz **çizgi değil boşluk**. Alan başına ~90 plank = 1 draw call.
+   → **G3** duvar bitimi → **G4/G5** KayKit yerleşimi.
+3. **Faz A'ya geçmeden** `tools/smoke.mjs`'in 7 kırık adımı onarılmalı (kök neden `q_coin`
+   questBase yarışı → domino; G0'dan önce de kırıktı, hâlâ 8/15).
+
+### G fazının sonunda kapatılacak artıklar
+- UI Canvas'ları (`CharacterPanel`, `SalonSlice`, `DioramaPreview`, `TableThemePreview`) hâlâ
+  eski düz `ambientLight` ile → dünya ısındı, mağaza önizlemeleri soğuk kaldı.
+- `shadow.bias`/`normalBias` **0'da**: bu açıda akne yok; eklemek ince çıtalarda ışık sızdırır.
+
+### Bu oturumun kalıcı dersi (D-053'ün tekrarı)
+Görsel bir iddia **aynı kameradan A/B** ile ölçülür; görünmüyorsa **abartıp görünür kıl**
+(G0'da test kutusu, G1'de kırmızı+opak materyal — `ss/g1-teshis-kirmizi.png`). Ama A/B'nin
+"çalışıyor" demesi **kullanıcının beğeneceği anlamına gelmiyor**: G1 teknik olarak hedefini
+tutturdu, ürün kararı olarak reddedildi.
+
+### Bilinen, ertelenmiş
+- Maket girişinin üst çıtasında z-fighting (kullanıcı: "oyuna geçerken hallederiz").
+- Bundle 1,45 MB (three.js) — Faz F kod bölme.
+
+---
+
 ## ŞU AN (2026-09-06 — FAZ G: G1 TEMAS GÖLGESİ BİTTİ; SAVE v30 değişmedi)
 
 G0 (ışık) geçen oturumda kapanmıştı; bu oturumda **G1 — temas gölgesi** uygulandı, ölçüldü,

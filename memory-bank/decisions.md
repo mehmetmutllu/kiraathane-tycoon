@@ -794,3 +794,37 @@ oldu" demeden once iki kareyi yan yana koy. Ayrica headless tarayicida `__perf()
 rAF kisitlamasi yuzunden anlamsiz (1 gosterir) — kare suresi dogrudan `gl.render` dongusuyle olculur.
 
 **Detay:** `docs/gorsel/README.md` · kanit `docs/gorsel/ss/g0-*.png`.
+
+## D-054 — Temas golgesi (blob shadow) KULLANILMAYACAK (2026-09-06, Faz G1)
+
+**Karar:** Objelerin altina zemine yatik yumusak leke koyma fikri **uygulandi, olculdu ve
+GERI ALINDI**. Bu projede bir daha denenmeyecek.
+
+**Kullanicinin sozu:** *"bu kotu duruyo her seyin altinda bi yuvarlak var"* ve
+*"temas golgesi sart mi? bence boyle bir sey yok hicbir oyunda"*.
+
+**Itiraz teknik olarak da hakli.** Blob shadow gercek ve yaygin bir tekniktir — PS1/PS2
+kusaginin standardiydi, bugun de mobil oyunlarin cogunda var. Ama neredeyse hep **gercek
+golgenin YERINE** kullanilir, ucuz oldugu icin. Bu sahnede G0'dan beri **calisan bir yonlu
+golge haritasi var**; blob onun USTUNE ikinci bir katman koyuyordu:
+- Katkisi yalniz kontak noktasindaki yumusama (kucuk).
+- Bedeli her objenin altinda AYRI bir daire: masa + 4 tabure = 5 yuvarlak; kume halinde
+  puanli kumas gibi okunuyor. Perspektifsiz daire, low-poly duz yuzeylerde ozellikle sirit.
+
+**Reddedilen ara cozumler (kullaniciya sunuldu, gerek kalmadi):** tek havuz (masa+taburelerin
+altina 5 daire yerine 1 genis leke) · yalnizca cok soluklastirma (0,50 -> 0,22).
+
+**Bir daha "objeler yuzuyor" denirse cozum sirasi:** (1) gunes acisi / golge yumusakligi
+(D-053), (2) **G2 zemin geometrisi** — zeminde olcek referansi olusunca yuzme hissi buyuk
+olcude kapanir, (3) gerekirse golge haritasi cozunurlugu. Blob DEGIL.
+
+**Geri alinan kod:** `ContactShadows.tsx` · `visualActors.ts` · `CONTACT_SHADOW` (palette) ·
+`Footprint` (types) · `tableFootprints` (Tables).
+**Kalan:** `LAYOUT.decor` — dekor konumlarinin JSX'ten tek listeye cikmasi bagimsiz sadelesme.
+
+**Yontem notu (D-053'un dersinin tekrari):** ilk turda leke hic gorunmedi. "Goremiyorum" tek
+basina kanit sayilmadi; materyal gecici olarak KIRMIZI + tam opak yapilinca lekelerin dogru
+yerde ve dogru yumusaklikta oldugu goruldu (`docs/gorsel/ss/g1-teshis-kirmizi.png`), sorun
+yalnizca koyuluktu. Abartip gorunur kilma numarasi iki oturum ust uste ise yaradi.
+
+**Detay + arsiv:** `docs/gorsel/README.md` §G1.

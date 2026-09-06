@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useMemo, useRef } from 'react';
+import { Suspense, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Instances, Instance } from '@react-three/drei';
 import { Vector3, type Group, type MeshStandardMaterial } from 'three';
@@ -15,11 +15,9 @@ import { TeaStation, TostStation } from './TeaStation';
 import { Customers } from './Customers';
 import { Coins } from './Coins';
 import { Pad } from './Pad';
-import { ContactShadows } from './ContactShadows';
 import { perf } from '../../game/perf';
 import { devTimeScale } from '../../game/devSandbox';
 import { screenPointer } from '../../game/screenPointer';
-import { visualActors } from '../../game/visualActors';
 
 // Simülasyonu her karede ilerlet (tek kaynak; __advanceTime aynı tick'i çağırır).
 // DEV'de sandbox hız çarpanı uygulanır; üretimde `import.meta.env.DEV` false → dal ölü kod.
@@ -209,7 +207,6 @@ function KitchenHand({ zone }: { zone: number }) {
   );
   // M3: tost ustası çaycıdan kıyafetle ayrışır (hardal önlük + beyaz kep).
   const isFood = zoneProduct(zone) === 'tost';
-  const actorKey = `kitchen-${zone}`;
   const apron = isFood ? PALETTE.foodApron : PALETTE.apron;
   const cap = isFood ? PALETTE.foodCap : PALETTE.cap;
   useFrame((st) => {
@@ -232,19 +229,7 @@ function KitchenHand({ zone }: { zone: number }) {
     const speed = Math.abs(Math.cos(t));
     grp.rotation.y = speed < 0.25 ? faceIn : walkRot;
     grp.position.y = speed < 0.25 ? -0.04 + Math.sin(st.clock.elapsedTime * 3) * 0.02 : Math.abs(Math.sin(st.clock.elapsedTime * 7)) * 0.04;
-    // G1: bu NPC store'da yok (salt görsel) → temas gölgesi konumu kayıttan okur.
-    const slot = visualActors.get(actorKey);
-    if (slot) {
-      slot.x = grp.position.x;
-      slot.z = grp.position.z;
-    }
   });
-  useEffect(() => {
-    visualActors.set(actorKey, { x: start[0], z: start[2] });
-    return () => {
-      visualActors.delete(actorKey);
-    };
-  }, [actorKey, start]);
   return (
     <group ref={ref} position={[start[0], 0, start[2]]}>
       {/* bacaklar + gövde + önlük + baş (low-poly; palette = tek renk kaynağı) */}
@@ -1013,8 +998,6 @@ export function Scene() {
         shadow-camera-bottom={LIGHTING.shadow.bottom}
       />
       <Ground />
-      {/* G1: temas gölgeleri zeminin HEMEN üstünde, dünya objelerinden önce. */}
-      <ContactShadows />
       <Street />
       <Walls />
       <TvCorner />
