@@ -4,6 +4,7 @@ import { Vector3, type Group, type MeshStandardMaterial } from 'three';
 import { useGame, questFocusPos, LAYOUT, stationSoftMaxLevel, stationUpgradeCostAt, stationUpgradeUnlocked, tableSoftMaxLevel, tableUpgradeUnlockedIn, tableNextCost, areaPoint, areaCol, areaRow, areaAt, openServices } from '../../game/store';
 import { economyConfig } from '../../config/economy.config';
 import { areaOfTable, serviceProduct, SERVICE_AREAS } from '../../game/world';
+import { SceneLights } from './lights';
 import { GroundMarker } from './GroundMarker';
 import { FloorPattern } from './floorPattern';
 import { WALL_H, WallPanels, type WallSlab } from './wallPanel';
@@ -944,15 +945,10 @@ export function Scene() {
       <AdaptiveResolution />
       <color attach="background" args={[LIGHTING.background]} />
       <fog attach="fog" args={[LIGHTING.background, LIGHTING.fogNear, LIGHTING.fogFar]} />
-      <hemisphereLight
-        args={[LIGHTING.skyColor, LIGHTING.groundColor, LIGHTING.hemiIntensity]}
-      />
-      {/* Yönlü ışık gölge DÖKMEZ; yalnız yüzey yönüne göre aydınlatma (hacim hissi) verir. */}
-      <directionalLight
-        position={LIGHTING.sunPos}
-        color={LIGHTING.sunColor}
-        intensity={LIGHTING.sunIntensity}
-      />
+      {/* Işık takımı `three/lights.tsx`te TEK tanım — mağaza önizlemeleri de aynı bileşeni
+          kullanır, böylece kartta gördüğün renk salondakiyle birebir aynı olur.
+          Yönlü ışık gölge DÖKMEZ; yalnız yüzey yönüne göre aydınlatma (hacim hissi) verir. */}
+      <SceneLights />
       <Ground />
       <Street />
       <Walls />

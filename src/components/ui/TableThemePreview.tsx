@@ -2,6 +2,7 @@ import { Canvas } from '@react-three/fiber';
 import { useGame } from '../../game/store';
 import { economyConfig } from '../../config/economy.config';
 import { Model } from '../three/Model';
+import { PREVIEW_GL } from '../three/lights';
 import { CoinIcon } from './icons';
 import { FixedCam, SalonLights, FloorPatch, WallBack } from './SalonSlice';
 
@@ -48,7 +49,7 @@ export function TableThemePreview({ id }: { id: string }) {
   return (
     <div className="shop-preview" data-testid="shop-preview">
       <div className="preview-canvas">
-        <Canvas dpr={[1, 2]}>
+        <Canvas dpr={[1, 2]} gl={PREVIEW_GL}>
           <FixedCam d={3.4} ty={0.42} />
           <SalonLights />
           <FloorPatch floorId="parke" checkerHalf={3} />

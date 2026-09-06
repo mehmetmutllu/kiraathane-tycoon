@@ -22,6 +22,7 @@ import {
 } from '../../config/economy.config';
 import { PALETTE } from '../../config/palette';
 import { OwnerBody, CupTray } from '../three/Player';
+import { SceneLights, PREVIEW_GL } from '../three/lights';
 import { CoinIcon, TrayIcon, BasinIcon, MagnetIcon, BootIcon } from './icons';
 import { Sheet } from './Sheet';
 
@@ -414,11 +415,13 @@ export function CharacterPanel({ onClose }: { onClose: () => void }) {
         <div className="char-canvas">
           <Canvas
             dpr={[1, 1.5]}
+            gl={PREVIEW_GL}
             camera={{ position: [0.75, 1.45, 2.05], fov: 36 }}
             onCreated={({ camera }) => camera.lookAt(0, 0.78, 0.1)}
           >
-            <ambientLight intensity={0.85} />
-            <directionalLight position={[2, 4, 3]} intensity={1.2} />
+            {/* Işık SAHNEYLE aynı (tek tanım `three/lights.tsx`): panelde gördüğün kıyafet rengi
+                salonda göreceğinle birebir. Eskiden burada ayrı beyaz ambient 0.85 vardı. */}
+            <SceneLights />
             {tab === 'player' && <PreviewModel cap={cap} />}
             {tab === 'tea' && teaHired && (
               <WaiterPreviewModel cap={waiterTrayCapacityFor('tea', waiterUpgrades.teaTray)} food={false} />

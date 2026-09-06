@@ -1,6 +1,9 @@
 // Önizleme = "salondan kesilip yapıştırılmış FERAH parça": oyunun KAMERA AÇISI (izometrik 45°, -Z'ye bakan,
-// offset (0,d,+d), fov 50) + IŞIK (ambient 0.6 + dirLight [6,12,6]). Zemin tüm canvas'ı doldurur (kenar void
-// yok), TEK arka duvar (L köşe/kutu hissi yok). Düz base + checker quad; duvar h=1.2 krem üst + lambri wh=0.5.
+// offset (0,d,+d), fov 50) + oyunun IŞIĞI (`three/lights.tsx` SceneLights — dünyayla AYNI bileşen; kartta
+// gördüğün renk salondakiyle birebir aynı olsun diye. Eskiden burada ayrı bir ambient 0.6 + dirLight [6,12,6]
+// takımı vardı ve G0'da dünya ısınınca mağaza soğuk kalmıştı = satın alınan renk yanlış görünüyordu).
+// Zemin tüm canvas'ı doldurur (kenar void yok), TEK arka duvar (L köşe/kutu hissi yok).
+// Düz base + checker quad; duvar h=1.2 krem üst + lambri wh=0.5.
 import { useEffect } from 'react';
 import { useThree } from '@react-three/fiber';
 import { FLOOR_THEMES, WALL_THEMES } from '../../config/palette';
@@ -21,14 +24,8 @@ export function FixedCam({ d, ty = 0.45 }: { d: number; ty?: number }) {
   return null;
 }
 
-export function SalonLights() {
-  return (
-    <>
-      <ambientLight intensity={0.6} />
-      <directionalLight position={[6, 12, 6]} intensity={1.1} />
-    </>
-  );
-}
+/** Önizleme ışığı = SAHNENİN ışığı (tek tanım `three/lights.tsx`te). Ayrı bir "mağaza ışığı" YOK. */
+export { SceneLights as SalonLights } from '../three/lights';
 
 // Zemin kesiti: tema tabanı TÜM canvas'ı doldurur (kenar void/çerçeve YOK) + üstünde temanın deseni.
 // G2: desen SAHNEYLE AYNI bileşenden (`FloorPattern`) çizilir — mağazada gördüğün tahta/karo ölçüsü
