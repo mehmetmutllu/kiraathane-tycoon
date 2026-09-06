@@ -14,7 +14,10 @@
  * ÖNEMLİ: çıktının ANAHTAR ADLARI ölçüm aracının SÖZLEŞMESİDİR — kod içindeki alan adı değişse de
  * (Faz B1: zone → alan/servis) anahtar sabit kalır, böylece diff literal olarak boş çıkar.
  */
-import { useGame, LAYOUT } from '../src/game/store';
+import { useGame, LAYOUT, servicePlace } from '../src/game/store';
+
+/** Servis kümesinin O ANKİ yeri (B3-1/D-062: 3. Alan açılınca arka banda taşınır). */
+const SP = () => servicePlace(useGame.getState().areasOpen);
 import { economyConfig } from '../src/config/economy.config';
 
 // --- Tohumlu rastgelelik (mulberry32): NPC spawn/renk/kirli konumu deterministik olsun.
@@ -117,22 +120,22 @@ const out: unknown[] = [];
 out.push(snapshot('acilis'));
 
 // 1) Ocakta bekle → tepsi dolsun; sonra ilk bekleyen müşteriye servis.
-at(LAYOUT.stations[0]);
+at(SP().station);
 run(20);
 out.push(snapshot('ocakta-20sn'));
 
 for (let i = 0; i < 4; i++) {
   const w = useGame.getState().npcs.find((n) => n.state === 'waitingForTea');
-  at(w ? LAYOUT.tables[w.tableIndex].seat : LAYOUT.stations[0]);
+  at(w ? LAYOUT.tables[w.tableIndex].seat : SP().station);
   run(6);
-  at(LAYOUT.stations[0]);
+  at(SP().station);
   run(6);
 }
 out.push(snapshot('dort-servis-turu'));
 
 // 2) Para topla (masaların çevresinde dolaş) + kirli bardak döngüsü.
 for (let i = 0; i < 4; i++) { at(LAYOUT.tables[i].seat); run(3); }
-at(LAYOUT.dishStation); run(4);
+at(SP().dish); run(4);
 out.push(snapshot('toplama-ve-bulasik'));
 
 // 3) Pad zinciri: pad YALNIZ kendi görevi aktifken görünür (ekranda tek pad) → göreve atlayıp üstünde bekle.
@@ -152,7 +155,7 @@ out.push(snapshot('omurga-padleri'));
 
 // 4) Ocak + masa yükseltme noktaları (masa yükseltmesi table4 sonrası açılır).
 useGame.getState().addMoney(20000);
-at(LAYOUT.stationUpgradeSpots[0]); run(12);
+at(SP().upgradeSpot); run(12);
 at(LAYOUT.tables[0].upgradeSpot); run(12);
 at(LAYOUT.tables[2].upgradeSpot); run(12);
 out.push(snapshot('yukseltmeler'));

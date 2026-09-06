@@ -27,15 +27,16 @@ export { MAX_AREAS, TABLES_PER_AREA };
 // ============================== SERVİS: TEK NOKTA ==============================
 // B2 (D-060): üç ocak TEK servis noktasına indi. Maket v13'te kat boyunca bir tane servis vardır;
 // 2. Alan'ın ocağı YOKTUR ve 3. Alan yeni ocak değil, var olanın TEZGÂHA dönüşmesidir.
-// B1 bu ayrımın zeminini kurmuştu: "servis hangi alanda duruyor" (serviceInArea) ile "masaya kim
-// servis veriyor" (serviceOfTable) B1'de iki ayrı soru oldu — bugün cevapları ayrışıyor:
-//   serviceInArea(a) → yalnız 1. alanda bir servis DURUYOR (yerleşim sorusu)
-//   serviceOfTable(t) → katın TEK servisi hepsine bakar (üretim sorusu)
+// B1 bu ayrımın zeminini kurmuştu: "servis hangi alanda duruyor" ile "masaya kim servis veriyor"
+// B1'de iki ayrı soru oldu — bugün cevapları ayrışıyor:
+//   serviceOfTable(t) → katın TEK servisi hepsine bakar (ÜRETİM sorusu — burada, world'de)
+//   serviceInArea(a, areasOpen) → servisin o an DURDUĞU alan (YERLEŞİM sorusu — layout.ts'te)
+// B3-1 (D-062): yerleşim sorusunun cevabı ARTIK SABİT DEĞİL (3. Alan açılınca servis arka banda
+// taşınır), yani bir koordinat sorusudur → `SERVICE_AREAS` listesi world'den kalktı, cevabı
+// `layout.servicePlace(areasOpen)` veriyor. World "ne", layout "nerede" sorusuna bakar.
 
-/** Servis noktası s hangi alanda duruyor. Tek servis, 1. alanda (B3'te arka banda taşınacak). */
-export const SERVICE_AREAS: readonly number[] = [0];
-
-export const MAX_SERVICES = SERVICE_AREAS.length;
+/** Katın servis noktası sayısı: BİR (B2). */
+export const MAX_SERVICES = 1;
 
 /** GLOBAL garson havuzunun tavanı (B2: alan başına değil, kat çapında). */
 export const MAX_WAITERS = economyConfig.waiter.maxWaiters;
@@ -80,11 +81,6 @@ export function defaultFloorTheme(_area: number): string {
   return 'parke';
 }
 
-/** Alanda DURAN servis noktasının index'i; o alanda servis yoksa −1 (YERLEŞİM sorusu). */
-export function serviceInArea(area: number): number {
-  return SERVICE_AREAS.indexOf(area);
-}
-
 /**
  * Masa slotunun alanı. Masa slotları GLOBAL index'lidir (alan a → slotlar
  * [a*TABLES_PER_AREA, a*TABLES_PER_AREA+4)); açılış sırası gating'le katı olduğundan açık
@@ -108,11 +104,11 @@ export interface Area {
   open: boolean;
 }
 
-/** SERVİS — katın tek servis noktası: ocak/tezgâh + bulaşık köşesi + GLOBAL personel havuzu. */
+/** SERVİS — katın tek servis noktası: ocak/tezgâh + bulaşık köşesi + GLOBAL personel havuzu.
+ *  B3-1: `areaIndex` KALKTI — servisin hangi alanda durduğu artık sabit değil (3. Alan açılınca
+ *  arka banda taşınır) ve bir KOORDİNAT sorusudur: `layout.servicePlace(areasOpen).areaIndex`. */
 export interface Service {
   index: number;
-  /** Hangi alanda DURUYOR (yerleşim). Kime servis verdiğiyle ilgisi yok: tüm kata bakar. */
-  areaIndex: number;
   open: boolean;
   /** Bu seviyede satılan ürünler (B2: seviyeden türer — L5'te tost eklenir). */
   menu: ProductId[];
@@ -172,9 +168,8 @@ export function deriveWorld(padsDone: readonly string[]): World {
   const areas: Area[] = Array.from({ length: MAX_AREAS }, (_, i) => ({ index: i, open: i < areasOpen }));
   // Servis noktası kattaki TEK üretim yeri; menüsü seviyeden gelir (seviye türetmenin girdisi
   // değil — `stationLevels` ayrı bir durum; menü okunurken `serviceMenu(level)` çağrılır).
-  const services: Service[] = SERVICE_AREAS.map((areaIndex, index) => ({
+  const services: Service[] = Array.from({ length: MAX_SERVICES }, (_, index) => ({
     index,
-    areaIndex,
     open: true, // 1. alan hep açık → servis de hep açık (kat servissiz başlamaz)
     menu: ['tea'],
     waiters: 0,

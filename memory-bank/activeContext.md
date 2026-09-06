@@ -2,6 +2,92 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-07 gece — **B3-1 TAMAM: kat 34 × 34, servis arka banda taşınıyor**)
+
+Kadraj onaylandı (**D-061**) ve yerleşim maket v13 ölçeğine taşındı (**D-062**). İÇERİK büyümedi
+(12 masa · tek servis · aynı zincir); büyüyen **katın kendisi**: 21,2 × 20,6 → **34 × 34** (×2,6).
+
+### Kadraj kararı (D-061)
+Araç: `docs/gorsel/kadraj-b3.html` → https://claude.ai/code/artifact/6a9edb37-cb90-4312-968b-f8d9e63ad814
+Bulgu kararın çerçevesini değiştirdi: portrede kadraj **derin ama dar** (dikey 50°, yatay yalnız
+**24°**) → 17 × 17'lik bir alanı tek kareye sığdırmak taban ~22 ister, o mesafede karakter birkaç
+piksel. Yani **katın tamamı hiçbir kademede görünmüyor**; karar "kaç birimlik KOMŞULUK okunacak".
+
+| Kademe | taban | oyuncu hizasında en |
+|---|---|---|
+| A | 6 | 4,6 br — **elendi** ("en yakını çok kötü") |
+| **B** | **8,5** | **6,5 br — varsayılan** |
+| **C** | **11,5** | **8,9 br — HUD düğmesi buraya geçer** |
+
+HUD'daki genel-bakış düğmesi artık "genel bakış" değil **kademe değiştirici**: çarpan ×1,45 → **×1,35**
+(8,5 × 1,35 = 11,5). Uygulama iki sayı: `Scene.tsx` `st.current.d = 8.5 * fit` + `zoomMul = 1.35`.
+
+### Yerleşim (D-062)
+- Zemin x, z ∈ [−17, 17]. **Arka bant** z ∈ [−16,9, −9,8]: servis bloğu · merdiven · lavabo.
+  Bant **yürünmez kütle** (alanlar z = −9,8'de biter); içi B4'te açılır.
+- Alanlar artık **EŞ DEĞİL** → şablon (`AREA_DX/AREA_DZ/mir/areaCol/areaRow/areaAt`) kalktı,
+  yerine açık dikdörtgen listesi: a0 ön-sol 17×17 · a1 ön-sağ 17×17 · a2 arka yarı 34 × 9,8.
+- **Duvarlar geometriden türüyor:** `wallSpans(alan, kenar, açık)` kenardan açık komşuların
+  kapattığı parçaları düşer. Bir kenarı BİRDEN ÇOK komşu kapatabilir (arka yarının ön kenarını iki
+  ön çeyrek birlikte) — eski `areaAt(col±1,row)` ızgara sorgusu bunu anlatamıyordu.
+- **Servis 3. Alan açılınca ARKA BANDA TAŞINIR** (kullanıcı kararı, maket v13 adım 3'e sadık):
+  koordinatlar sabit dizi değil **`servicePlace(areasOpen)`**. Seviye korunur. Sonucu: `SERVICE_AREAS`
+  world'den kalkıp layout'a geçti (`serviceInArea(area, areasOpen)`), `Service.areaIndex` silindi —
+  "servis nerede duruyor" bir KOORDİNAT sorusuymuş.
+- Kapı x = −8,5'te sabit (v13'ün kapıyı ortaya kaydırması cephe işi → B3-2).
+
+### Bulunan GERÇEK kusur (eski koddan geliyordu)
+`REACH_TABLE` nav ızgarasının hücre boyuna **gizliden bağlıymış**. Masa koordinatı ızgara merkezine
+denk gelirse en yakın boş hücre 1,1 br'ye kayıyor, BFS "yol yok" diyor ve `navStep` **düz-çizgi
+yedeğine** düşüyordu → garson masaya varıyor ama **engelden kaçmadan**. Eski yerleşimde de vardı,
+masa koordinatları şans eseri denk düşmediği için görünmüyordu. `REACH_TABLE = tableHalf +
+actorRadius + NAV_CELL + 0,05` (1,03 → 1,13). ROTA testi kalıcı bekçi.
+
+### Ölçümler
+- **Denge DEĞİŞMEDİ:** simulate.ts altı kilometre taşı da B2 ile birebir aynı.
+- **Yürüme maliyeti arttı:** pickup → masa ortalaması +16% (1 alan) · +57% (2) · **+66%** (3);
+  en uzak masa 17,8 → 29,1 br.
+- **Ama servis sonucu değişmedi:** tohumlu sonda eski/yeni yerleşimde BİREBİR aynı
+  (1 alan 79,6 servis / 24,0 kaçış · 3 alan 105,6 / 144,0) → darboğaz yürüme değil.
+  Gerçek tempo doğrulaması Faz C'nin; uzak masaların yolunu kısaltan **garson servis istasyonu**
+  zaten maket v13'te var (B3-2).
+
+### Doğrulama
+vitest **222/222** (209 + yeni `tests/layout-b31.test.ts` 13) · smoke **26/26** · build temiz ·
+`tsc -b` temiz · eslint 15 (B2 ile aynı) · tarayıcıda 34 × 34 gezildi, tezgâh arka bantta, konsol temiz.
+
+### Bu adımın kalıcı dersi
+**Ölçüm gürültüsü bulguyu TERS ÇEVİREBİLİR.** Tohumsuz sonda aynı kodla 54 ve 105 servis verdi;
+ilk sayı "34 × 34 servisi kırdı (%77 kaçış)" diye okunuyordu. Tohumlanınca sonuç eski yerleşimle
+birebir aynı çıktı. Üstelik sondanın ilk sürümü **yanlış şeyi** ölçüyordu (oyuncu parkta yıkamadığı
+için bardak havuzu bitiyordu → ölçülen yürüme değil BARDAK'tı).
+B1 aracın ÇIKTISI · B2 aracın VARSAYIMI · **B3-1 aracın GÜRÜLTÜSÜ ve neyi ölçtüğü.**
+
+### Çalışma biçimi değişti (kullanıcı kararı)
+Büyük adım **en fazla İKİYE** bölünür ve yalnız gerekiyorsa; oturum sayısı da bir bütçe.
+Kesme çizgisi keyfî değil: **mantık işi ile görsel iş aynı parçada olmaz**, her parça kendi başına
+yeşil biter. B3 bu yüzden B3-1 (mantık) + B3-2 (görsel) oldu.
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**B3-2 — orta şerit + görsel geçiş.** Maket v13'ün 6. adımı: sırt sırta **iki banket adası**
+(x = ∓8,5, z ≈ −2,95, boy 7,6) + 12 ikili masa + **garson servis istasyonu** (−7,1 civarı, uzak
+masaların yolunu kısaltan aktarma tezgâhı). Yanında: bandın içi henüz kütle (lavabo/merdiven
+geometrisi **B4**), kapının ortaya kayması (v13 adım 2 cephesi), dolgu/propler.
+⚠ Şerit z ≈ −2,95'e oturacak; a2 masa sırası z = −5,6'da — sandalyeler −4,82'ye kadar geliyor,
+şerit adasının alt kenarı −4,55. **0,27 br pay var**, şerit yerleşirken bu kontrol edilmeli.
+
+### Kırmızı çizgi (duruyor)
+**"Objeler yüzüyor" hissine bir daha blob shadow ÖNERME** (D-054).
+
+### Bilinen, ertelenmiş
+- Arka bandın içi boş kütle (lavabo kabinleri, yıkık merdiven) — **B4**.
+- Kapı x = −8,5'te sabit; v13 2. adımda ortaya kaydırıyor — **B3-2** cephe işi.
+- Maket girişinin üst çıtasında z-fighting.
+- Bundle ~1,45 MB (three.js) — Faz F kod bölme.
+- `eslint` 15 hatası (hepsi eski) — Faz E/F işi.
+
+---
+
 ## ŞU AN (2026-09-06 gece — **B2 TAMAM: servis tekilleşti, tempo altı bandın altısını tutuyor**)
 
 Faz B'nin üçüncü adımı bitti. Üç ocak **tek servis noktasına** indi; ürün bölgeden değil

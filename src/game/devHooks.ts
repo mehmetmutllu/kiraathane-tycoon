@@ -1,7 +1,7 @@
 // Test/dev kancaları. 3D sahne görsel doğrulanamaz; durum buradan okunur.
 // window.__game  -> salt-okunur anlık görüntü
 // window.__advanceTime(sn) -> simülasyonu hızlı ileri sar
-import { useGame, visiblePads, questCounterValue, LAYOUT, trayCapacity, dirtyTables, parkSpot } from './store';
+import { useGame, visiblePads, questCounterValue, LAYOUT, servicePlace, trayCapacity, dirtyTables, parkSpot } from './store';
 import { THE_SERVICE, sellsTost } from './world';
 import { perf, type PerfSnapshot } from './perf';
 import { economyConfig, levelProgress, charLevel, type CharStat } from '../config/economy.config';
@@ -39,6 +39,7 @@ export function installDevHooks(): void {
 
   window.__game = () => {
     const s = useGame.getState();
+    const place = servicePlace(s.areasOpen);
     const gate = {
       padsDone: s.padsDone,
       tables: s.tables,
@@ -66,9 +67,11 @@ export function installDevHooks(): void {
         sellsTost: sellsTost(s.stationLevels[THE_SERVICE]),
         waiters: s.waiters.length,
         hasDishwasher: s.dishwasher != null,
-        stationPos: LAYOUT.stations[THE_SERVICE],
-        dishStationPos: LAYOUT.dishStations[THE_SERVICE],
-        upgradeSpotPos: LAYOUT.stationUpgradeSpots[THE_SERVICE],
+        // B3-1: servisin YERİ açık alan sayısına bağlı (3. Alan açılınca arka banda taşınır).
+        stationPos: place.station,
+        dishStationPos: place.dish,
+        upgradeSpotPos: place.upgradeSpot,
+        movedToBand: place.areaIndex !== 0,
       },
       stationLevel: s.stationLevels[THE_SERVICE],
       padsDone: [...s.padsDone],
@@ -82,7 +85,7 @@ export function installDevHooks(): void {
       tableLevels: [...s.tableLevels],
       tableUpgradeSpots: LAYOUT.tables.map((t) => t.upgradeSpot),
       waitingCount: s.npcs.filter((n) => n.state === 'waitingForTea').length,
-      stationPos: LAYOUT.stations[0],
+      stationPos: place.station,
       // Servis edilmeyi bekleyen ilk müşterinin koltuğu (smoke servis testi için) — yoksa null.
       firstWaitingSeat: (() => {
         const w = s.npcs.find((n) => n.state === 'waitingForTea');
@@ -94,7 +97,7 @@ export function installDevHooks(): void {
       dirtyCount: s.dishes.length,
       carriedDirty: s.carriedDirty,
       carriedDirtyFood: s.carriedDirtyFood,
-      dishStationPos: LAYOUT.dishStation,
+      dishStationPos: place.dish,
       firstDishPos: s.dishes[0] ? s.dishes[0].pos : null,
       // Kirli masa mekaniği (D-019): eşiği aşan masa indeksleri (müşteri oturmaz + garson götürmez).
       dirtyTables: [...dirtyTables(s.dishes, s.tableLevels)],
@@ -130,7 +133,7 @@ export function installDevHooks(): void {
       notice: s.notice ? s.notice.text : null,
       revealSeen: [...s.revealSeen],
       upgradeFill: Math.floor(s.upgradeFills[0]),
-      upgradeZonePos: LAYOUT.stationUpgradeSpot,
+      upgradeZonePos: place.upgradeSpot,
       activeSpot: s.activeSpot ? { kind: s.activeSpot.kind, label: s.activeSpot.label } : null,
       player: s.player.map((n) => +n.toFixed(2)),
       offlineEarned: s.offlineEarned,

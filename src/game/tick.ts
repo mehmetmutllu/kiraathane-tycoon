@@ -51,7 +51,7 @@ import {
   TABLE_UP_RADIUS,
   REACH_TABLE,
   REACH_PICKUP,
-  REACH_WASH,
+  reachWash,
   REACH_HOME,
   dist2D,
   moveToward,
@@ -62,8 +62,10 @@ import {
   hitsSolid,
   getNavGrid,
   navStep,
+  servicePlace,
   type RVec3,
   type Solid,
+  type ServicePlace,
 } from './layout';
 import {
   FILL_TEA,
@@ -120,6 +122,9 @@ export interface TickCtx {
   readonly areasOpen: number;
   /** Bu karede AÇIK servis index'leri (ocak/bulaşık/personel döngüleri bunun üstünde döner). */
   readonly openSvc: number[];
+  /** Servis kümesinin BU KAREDEKİ yeri (B3-1/D-062: 3. Alan açılınca arka banda taşınır).
+   *  Kare başına bir kez çözülür — sistemler koordinatı buradan okur, LAYOUT'tan değil. */
+  readonly place: ServicePlace;
   readonly obstacles: Solid[];
   readonly navGrid: NavGrid;
   upgradeFills: number[];
@@ -196,6 +201,7 @@ export function createTickCtx(s: GameState, dt: number): TickCtx {
     tables: tableCount,
     areasOpen: world.areasOpen,
     openSvc: openServices(world.areasOpen),
+    place: servicePlace(world.areasOpen),
     // Personelin oyuncudan kaçarken masaya itilmemesi için masa gövdeleri (navStep avoidSolids).
     obstacles: tableSolids(tableCount),
     // Personel (garson/bulaşıkçı) BFS ızgarası — masa+alan sayısına göre cache'li.
@@ -560,7 +566,7 @@ function serveSystem(c: TickCtx): void {
   // B2: tek noktadan iki ürün alınabilir — çay tepsinin bardak bölmesine, tost tabak bölmesine.
   if (
     tray + trayFood + carriedDirty + carriedDirtyFood < trayCap &&
-    dist2D(player, LAYOUT.stations[THE_SERVICE]) < C.serving.pickupRadius
+    dist2D(player, c.place.station) < C.serving.pickupRadius
   ) {
     for (const prod of ['tea', 'tost'] as const) {
       const free = trayCap - tray - trayFood - carriedDirty - carriedDirtyFood;
@@ -607,7 +613,7 @@ function serveSystem(c: TickCtx): void {
  * PAYLAŞIMLI kapasite (2026-06-09): çay taşırken de kirli toplanabilir → toplam trayCap'i aşamaz.
  */
 function dishCycleSystem(c: TickCtx): void {
-  const { tray, trayFood, stats, trayCap, player } = c;
+  const { tray, trayFood, stats, trayCap, player, place } = c;
   let dishes = c.dishes;
   let cleanCups = c.cleanCups;
   let carriedDirty = c.carriedDirty;
@@ -625,7 +631,7 @@ function dishCycleSystem(c: TickCtx): void {
     dishes = keep;
   }
   // Bulaşık noktasına yaklaşınca taşınan kirliler yıkanır → GLOBAL temiz havuza (B2: tek nokta).
-  if (carriedDirty + carriedDirtyFood > 0 && dist2D(player, LAYOUT.dishStations[THE_SERVICE]) < C.cups.washRadius) {
+  if (carriedDirty + carriedDirtyFood > 0 && dist2D(player, place.dish) < C.cups.washRadius) {
     const washed = carriedDirty + carriedDirtyFood;
     cleanCups += washed;
     stats.dishesWashed += washed;
@@ -650,7 +656,7 @@ function dishCycleSystem(c: TickCtx): void {
  * Tepsi B2'de İKİ BÖLMELİ (çay/tost): garson en acil bekleyenin ürününü yükler.
  */
 function waiterSystem(c: TickCtx): void {
-  const { dt, s, world, obstacles, navGrid, ready, stats, dirty, liveNpcs, player } = c;
+  const { dt, s, world, obstacles, navGrid, ready, stats, dirty, liveNpcs, player, place } = c;
   let xp = c.xp;
   const svc = world.services[THE_SERVICE];
   const wCount = svc?.open ? Math.min(svc.waiters, MAX_WAITERS) : 0;
@@ -665,7 +671,7 @@ function waiterSystem(c: TickCtx): void {
   const out: Waiter[] = [];
 
   for (let i = 0; i < wCount; i++) {
-    const home: Vec3 = [LAYOUT.waiterHomes[THE_SERVICE][0] + i * 0.7, 0, LAYOUT.waiterHomes[THE_SERVICE][2]];
+    const home: Vec3 = [place.waiterHome[0] + i * 0.7, 0, place.waiterHome[2]];
     const p = prev[i];
     const w: Waiter = p
       ? { pos: [...p.pos] as Vec3, tray: p.tray, trayFood: p.trayFood ?? 0 }
@@ -707,7 +713,7 @@ function waiterSystem(c: TickCtx): void {
       }
     } else if (w.tray + w.trayFood < wTrayCap && waiting.length > 0) {
       // Yükleme: servisin ÖN yüzüne git (ürünler önde); varınca EN ACİL bekleyenin ürününden yükle.
-      if (navStep(w.pos, LAYOUT.stationPickups[THE_SERVICE], wStep, navGrid, REACH_PICKUP, player, obstacles)) {
+      if (navStep(w.pos, place.pickup, wStep, navGrid, REACH_PICKUP, player, obstacles)) {
         // Talep sırası: en acil bekleyenin ürünü önce; kalan yere diğer üründen doldurur.
         const order = [...waiting].sort((a, b) => a.timer - b.timer).map((n) => n.product);
         for (const prod of [...order, 'tea' as const, 'tost' as const]) {
@@ -736,7 +742,7 @@ function waiterSystem(c: TickCtx): void {
  * yalnız kendi bölgesinin kirlilerine bakardı.)
  */
 function dishwasherSystem(c: TickCtx): void {
-  const { dt, s, world, obstacles, navGrid, player } = c;
+  const { dt, s, world, obstacles, navGrid, player, place } = c;
   let dishes = c.dishes;
   let cleanCups = c.cleanCups;
   const svc = world.services[THE_SERVICE];
@@ -747,14 +753,14 @@ function dishwasherSystem(c: TickCtx): void {
   const prevDw = s.dishwasher;
   const dw: Waiter = prevDw
     ? { pos: [...prevDw.pos] as Vec3, tray: prevDw.tray, trayFood: prevDw.trayFood }
-    : { pos: [...LAYOUT.dishwasherHomes[THE_SERVICE]] as Vec3, tray: 0, trayFood: 0 };
+    : { pos: [...place.dishwasherHome] as Vec3, tray: 0, trayFood: 0 };
   const dStep = dishSpeedFor(s.waiterUpgrades.dishSpeed) * dt; // v29: hız panel kademesinden
   const dCap = dishCarryCapacityFor(s.waiterUpgrades.dishCarry);
   const carried = dw.tray + dw.trayFood;
   if (carried >= dCap || (carried > 0 && dishes.length === 0)) {
     // Dolu (ya da elinde var ama toplanacak kalmadı) → bulaşıkta yıka. Bardak da tabak da AYNI
     // havuza döner (korunum değişmezi tek).
-    if (navStep(dw.pos, LAYOUT.dishStations[THE_SERVICE], dStep, navGrid, REACH_WASH, player, obstacles)) {
+    if (navStep(dw.pos, place.dish, dStep, navGrid, reachWash(c.areasOpen), player, obstacles)) {
       cleanCups += dw.tray + dw.trayFood;
       dw.tray = 0;
       dw.trayFood = 0;
@@ -776,7 +782,7 @@ function dishwasherSystem(c: TickCtx): void {
     }
   } else {
     // Boşta: bulaşık köşesine dön.
-    navStep(dw.pos, LAYOUT.dishwasherHomes[THE_SERVICE], dStep, navGrid, REACH_HOME, player, obstacles);
+    navStep(dw.pos, place.dishwasherHome, dStep, navGrid, REACH_HOME, player, obstacles);
   }
   c.dishes = dishes;
   c.cleanCups = cleanCups;
@@ -863,13 +869,13 @@ function revealSystem(c: TickCtx): void {
   }
   // GUARD (gece fix 2026-06-10): oyuncu AÇIK bir ocağın pickup yarıçapındaysa niyeti ÇAY ALMAK'tır —
   // yükseltme dolumu kesinlikle başlamaz (mekânsal ayrımın yanında ikinci emniyet).
-  const inPickupRange = dist2D(player, LAYOUT.stations[THE_SERVICE]) < C.serving.pickupRadius;
+  const inPickupRange = dist2D(player, c.place.station) < C.serving.pickupRadius;
   if (
     !onFillId &&
     !inPickupRange &&
     stationUpgradeUnlocked(padGate) &&
     stationLevels[THE_SERVICE] < stationSoftMaxLevel() &&
-    dist2D(player, LAYOUT.stationUpgradeSpots[THE_SERVICE]) < PAD_RADIUS
+    dist2D(player, c.place.upgradeSpot) < PAD_RADIUS
   ) {
     onFillId = FILL_TEA + THE_SERVICE;
   }
@@ -1042,16 +1048,16 @@ function tableUpgradeSystem(c: TickCtx): void {
  * D-015: padsDone değiştiyse türetilen alanlar yeniden hesaplanır (tek yazım noktası)
  */
 function deriveSystem(c: TickCtx): void {
-  const { padsDone, waiters } = c;
+  const { padsDone, waiters, place } = c;
   const out = deriveWorld(padsDone);
   // Personel pad'i bu karede tamamlandıysa aktörü HEMEN var et (GLOBAL havuz — B2).
   const svc = out.services[THE_SERVICE];
-  const home = LAYOUT.waiterHomes[THE_SERVICE];
+  const home = place.waiterHome;
   while (waiters.length < svc.waiters)
     waiters.push({ pos: [home[0] + waiters.length * 0.7, 0, home[2]] as Vec3, tray: 0, trayFood: 0 });
   if (waiters.length > svc.waiters) waiters.length = svc.waiters;
   if (svc.hasDishwasher && !c.dishwasher)
-    c.dishwasher = { pos: [...LAYOUT.dishwasherHomes[THE_SERVICE]] as Vec3, tray: 0, trayFood: 0 };
+    c.dishwasher = { pos: [...place.dishwasherHome] as Vec3, tray: 0, trayFood: 0 };
   c.out = out;
 }
 
@@ -1126,7 +1132,7 @@ function questSystem(c: TickCtx): void {
           // charStat görevi + spotlight bekliyorsa kamera panı İPTAL — ekranda tek yönlendirme (spotlight).
           c.camFocus = null;
         } else {
-          const fp = questFocusPos(q.target, tableLevels, out.tables.length, q.area ?? 0);
+          const fp = questFocusPos(q.target, tableLevels, out.tables.length, out.areasOpen, q.area ?? 0);
           if (fp) requestFocus(fp, 2); // charStat'ta 3D hedef yok → kamera sıçramaz (buton efekti yönlendirir)
         }
       }

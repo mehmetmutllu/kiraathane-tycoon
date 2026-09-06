@@ -187,8 +187,8 @@ h2{font-size:21px;font-weight:800}
      yayın programıyla başladı.
      ══════════════════════════════════════════════════════════════════════ -->
 <script type="application/json" id="durum">{
-  "guncelleme": "06.09.2026",
-  "yapilan": 44,
+  "guncelleme": "07.09.2026",
+  "yapilan": 45,
   "toplam": 66,
   "kilometre": [
     {
@@ -209,32 +209,31 @@ h2{font-size:21px;font-weight:800}
     }
   ],
   "ozet": {
-    "etiket": "Bu oturum · Faz B · 2/5 — B2 bitti",
-    "baslik": "Üç ocak tek tezgâha indi: ürün artık salondan değil seviyeden geliyor",
-    "aciklama": "Bugüne kadar her salonun kendi ocağı, kendi bulaşığı ve kendi garsonu vardı; tost da üçüncü salonun ürünüydü. Onaylı makette öyle değil: kat boyunca <b>tek bir servis noktası</b> var, seviye atladıkça çay ocağından <b>tezgâha</b> dönüşüyor ve <b>tost o merdivenin bir basamağı</b> olarak açılıyor. Bu oturumda o geçiş yapıldı — ve bu sefer oyunun davranışı bilerek <b>değişti</b>, o yüzden güvence “hiçbir şey değişmedi” değil <b>tempo ölçümü</b>.",
+    "etiket": "Bu oturum · Faz B · 3/6 — B3-1 bitti",
+    "baslik": "Kıraathane 2,6 katına büyüdü — ve kamera ne kadar göstereceğine karar verildi",
+    "aciklama": "Onaylı maket katı 34 × 34 istiyor; oyun 21 × 21'de duruyordu. Bu oturumda kat o ölçeğe taşındı. Ama önce bir tasarım sorusu vardı: <b>telefon ekranında ne görünecek?</b> Ölçüm soruyu değiştirdi — portre ekranda kamera açısı yatayda yalnız 24 derece, yani <b>katın tamamı hiçbir mesafede kadraja sığmıyor</b>. Karar “her şey görünsün mü” değil, “oyuncunun çevresinde kaç metrelik bir <b>komşuluk</b> okunacak” oldu.",
     "adimlar": [
-      "Servis ile alan arasındaki bağ <b>tek satır kısaldı</b> ve üç ocak tek noktaya indi — B1'in bütün amacı buydu, çağıran kodun hiçbir yeri değişmedi",
-      "<b>Tek merdiven, iki kimlik:</b> L1–L3 derme çatma çay ocağı · <b>L4 tezgâh</b> (obje yerinde kalır, yalnız kimlik değişir) · <b>L5 tost açılır</b> · L6 son para basamağı",
-      "Müşteri artık <b>kendi ürününü seçiyor</b>: tost isteme oranı tezgâhın seviyesinden geliyor, oturduğu salondan değil",
-      "Garson ve bulaşıkçı <b>tek havuzda</b> (3 garson + 1 bulaşıkçı): “Tostçu Garson” ayrımı, ayrı tepsi ve ayrı hız hattı kalktı; bir garsonun tepsisinde artık çay ve tost birlikte durabiliyor",
-      "Bulaşıkçı <b>ikinci bölüme</b> taşındı (planın 14. adımı) → ilk bölüm dört adımda bitiyor, otomasyon 12 dakikadan önce geliyor",
-      "<b>Tempo yeniden ayarlandı ve ölçüldü:</b> ilk alım 40 sn · garson 11 dk · 2. salon 35 dk · bulaşıkçı 60 dk · tezgâh 2 sa · tost 2,5 sa — <b>planın altı hedef bandının altısı da tutuyor</b>",
-      "Testler <b>207 → 209</b> (bölge modeline dayanan paketler yeni modele yeniden yazıldı) · duman testi 26/26 · derleme temiz"
+      "Üç kamera kademesi aynı kareden canlı olarak karşılaştırıldı; <b>en yakın kademe elendi</b> (34 × 34'te sürekli koridor hissi veriyordu)",
+      "Alttaki genel-bakış düğmesi artık “uzaklaş” değil <b>iki kademe arasında geçiş</b> yapıyor",
+      "Kat maket ölçeğine taşındı: iki ön salon + arka yarı, arkada <b>servis · merdiven · lavabo</b> bandı (içleri henüz kütle, sonraki adımların işi)",
+      "<b>Servis noktası artık yerinde sabit değil:</b> üçüncü salon açılınca sol duvardan arka bandın tezgâhına taşınıyor — makette olduğu gibi. Seviyesi korunuyor",
+      "Duvarlar artık “ızgarada komşum var mı” diye sormuyor, <b>geometriden</b> çıkıyor — arka yarının ön kenarını iki salon birlikte kapatabiliyor",
+      "<b>Eskiden beri duran bir kusur bulundu:</b> garsonun masaya teslim mesafesi yol bulma ızgarasına gizliden bağlıymış; masa ızgaraya denk düşerse garson <b>engelden kaçmadan</b> düz gidiyordu. Düzeltildi ve kalıcı teste bağlandı",
+      "Testler <b>209 → 222</b> (yerleşim için ayrı dosya) · duman testi 26/26 · denge sayıları birebir aynı"
     ],
-    "not": "<b>Bu oturumun dersi: ölçüm aracının oyuncu modeli de yanılabilir.</b> Simülatör “her an en ucuz darboğazı al” diyen bir oyuncu varsayıyordu; oyun ise ekranda tek görev gösterip oyuncuyu ona yönlendiriyor. Ocak ucuzken bu fark önemsizdi — tezgâh ve tost pahalılaşınca <b>hangi sırayla alındığı temponun kendisi</b> oldu. Simülatör görev hattını takip edecek şekilde yeniden yazıldı ve personel yükseltmeleri de artık gerçekten satın alınıyor (eskiden bedava sayılıyorlardı). B1'in dersi “aracın çıktısı yanılabilir”di; bunun dersi <b>“aracın varsayımı yanılabilir”</b>.<br><br><b>“Kat tamam” hâlâ 2,7 saat</b>, hedef 5–7. Kalan süre yerleşim (20 masa) ve banketlerle gelecek; olmayan içeriği pahalılıkla taklit etmek oyunu yalnızca yavaşlatırdı."
+    "not": "<b>Bu oturumun dersi: ölçümün gürültüsü bulguyu ters çevirebilir.</b> Yürüme mesafesi %66 arttığı için “servis kırıldı mı” diye bir sonda yazıldı ve ilk sonuç <b>%77 müşteri kaçışı</b> dedi — alarm. Aynı sonda ikinci kez koşunca aynı kodla bambaşka sayı verdi: rastgelelik sabitlenmemişti. Üstelik sondanın ilk hâli yanlış şeyi ölçüyordu (oyuncu beklerken bardaklar bitiyordu, ölçülen yürüme değil <b>bardak</b>tı). Tohumlanıp düzeltilince sonuç net: <b>eski ve yeni yerleşim birebir aynı servisi veriyor</b> — darboğaz yürüme değil.<br><br>Önceki iki oturumun dersi “aracın çıktısı yanılabilir” ve “aracın varsayımı yanılabilir”di; bunun dersi <b>“aracın gürültüsü ve neyi ölçtüğü yanılabilir”</b>."
   },
   "siradaki": {
-    "etiket": "Faz B · B3-1 — Kadraj + koordinatlar",
-    "baslik": "Önce kadraj sorusu: kat 2,6 katına çıkıyor, telefonda ne görünecek?",
-    "aciklama": "Sıradaki adım katı maket ölçeğine taşımak: bugünkü zemin 21×21, hedef <b>34×34</b>; masa 12 → 20; arka bantta servis bloğu, lavabo ve yıkık merdiven. Ama bu adıma <b>kod yazarak başlanmayacak</b>: portre ekranda aynı kare 2,6 kat alan göstermek zorunda kalacak ve bunun nasıl çözüleceği (kamera geri mi çekilsin, oyuncuyu daha yakın mı takip etsin) mühendislik değil <b>tasarım</b> kararı.<br><br><b>Bu adım ikiye bölündü.</b> Yerleşim dosyası oyunun 7 dosyasına 250 yerden bağlı; koordinat işiyle görsel dolgu işi tek oturumda üst üste binerse ikisi de baskı altında kalıyor. <b>B3-1 koordinatları taşır</b> (oda doğru boyutta ve gezilebilir olur, seyrek görünmesi normaldir), <b>B3-2 orta şeridi ve dolguyu getirir</b>. Daha fazla bölünmedi: oturum sayısı da bir bütçe.",
+    "etiket": "Faz B · B3-2 — Orta şerit ve dolgu",
+    "baslik": "Salonun ortası hâlâ boş: banket adaları ve garsonun aktarma tezgâhı geliyor",
+    "aciklama": "Kat büyüdü ama içi henüz seyrek — bu bilinçliydi: koordinat işiyle görsel dolgu işi aynı oturumda üst üste binmesin diye adım ikiye bölünmüştü. Sıradaki yarı makete benzemeyi getiriyor: salonun ortasına <b>sırt sırta iki banket adası</b> ve etraflarına ikili masalar, arka banda ise <b>garsonun aktarma tezgâhı</b> — uzak masalara yürüyüşü kısaltan, pişirme yapmayan bir servis noktası.",
     "adimlar": [
-      "<b>Üç kamera kademesi aynı kareden çekilip karşılaştırma olarak sunulacak</b> — onay gelmeden yerleşim dosyasına dokunulmayacak (verilmiş karar)",
-      "Sonra koordinatlar: 34 × 34, dört alan, arka bant (servis bloğu · merdiven · lavabo aynı hizada)",
-      "Servis noktası bugün hâlâ birinci salonun sol duvarında duruyor; makette arka banda taşınıyor",
-      "Yürüme, çarpışma ve testlerin kullandığı boş alan hesabı yeni ölçeğe uyacak — kapı: testler düşmeden yeşil",
-      "Ardından: B3-2 orta şerit ve dolgu · B4 lavabo ve yıkık merdiven odaları · B5 masa tipleri ve banket"
+      "Orta şerit: iki banket adası + ikili masalar + garsonun aktarma tezgâhı",
+      "Cephe: kapı makette ikinci salon açılınca binanın ortasına kayıyor",
+      "Dolgu ve propler; arka bandın kütlesi maketteki gibi okunur hâle gelsin",
+      "Ardından: B4 lavabo ve yıkık merdiven odaları · B5 masa tipleri ve banket boyu"
     ],
-    "not": "<b>Neden önce kadraj:</b> G1 ve G3'te aynı yöntem birer tur geri alma tasarruf etti — görünüm kararı önce gösterilip onaylanınca, arkasından yazılan kod bir daha sökülmüyor.<br><br><b>Neden ikiye bölündü:</b> bir önceki oturum tek parçada hem model, hem denge ölçümü, hem de görsel birleştirme taşıdı. Kesme çizgisi bundan sonra keyfî değil: <b>mantık işi ile görsel iş aynı parçaya konmuyor</b>, ve her parça kendi başına yeşil bitiyor.<br><br><b>Kırmızı çizgi duruyor:</b> “objeler yüzüyor” hissine bir daha alttaki yuvarlak önerilmeyecek."
+    "not": "<b>Ölçülen ve not düşülen:</b> kat 2,6 katına çıkınca garsonun ortalama yürüyüşü <b>%66</b> uzadı, en uzak masa 18 → 29 birime çıktı. Servis sonucu bugün değişmedi (darboğaz yürüme değil) ama makette bunun cevabı zaten var: <b>aktarma tezgâhı</b>. Sıradaki adım onu getiriyor.<br><br><b>Kırmızı çizgi duruyor:</b> “objeler yüzüyor” hissine bir daha alttaki yuvarlak önerilmeyecek."
   },
   "donemler": [
     {
@@ -324,8 +323,8 @@ h2{font-size:21px;font-weight:800}
         {
           "k": "B",
           "t": "Model geçişi",
-          "d": "ALAN / SERVİS / MASA / ODA ayrıştı · masa artık liste · kayıt v31 temiz sıfırlama · servis TEKİLLEŞTİ (tek tezgâh, ürün seviyeden, personel havuzu) · tempo altı hedef bandını tutuyor. Sırada yerleşim, ikiye bölündü: B3-1 kadraj + koordinatlar, B3-2 orta şerit + dolgu",
-          "yapilan": 2,
+          "d": "ALAN / SERVİS / MASA / ODA ayrıştı · servis TEKİLLEŞTİ (tek tezgâh, ürün seviyeden, personel havuzu) · kat 21×21 → <b>34×34</b> taşındı, kamera kademesi seçildi, servis 3. salonda arka banda taşınıyor. Sırada: orta şerit ve dolgu (B3-2)",
+          "yapilan": 3,
           "toplam": 6,
           "kapi": "Maketin altı adımı oyunda gezilebiliyor",
           "durum": "now"
@@ -366,6 +365,21 @@ h2{font-size:21px;font-weight:800}
     }
   ],
   "gunluk": [
+    {
+      "tarih": "07.09.2026",
+      "etiket": "Faz B · 3. oturum (B3-1)",
+      "baslik": "Kıraathane 2,6 katına büyüdü — önce kameranın ne göstereceği kararlaştırıldı",
+      "govde": "Onaylanan maket katı 34 × 34 istiyordu; oyun 21 × 21'de duruyordu. Bu oturumda kat o ölçeğe taşındı — ama önce bir tasarım sorusu vardı, ve o soru koda dokunmadan cevaplandı: <b>telefon ekranında ne görünecek?</b><br><br>Üç kamera mesafesi aynı kareden canlı olarak karşılaştırıldı ve ölçüm sorunun kendisini değiştirdi: portre ekranda kamera yatayda yalnız <b>24 derece</b> görüyor, yani kat ne kadar geri çekilirse çekilsin <b>tamamı kadraja sığmıyor</b>. Bir salonu tek karede göstermek için karakterin birkaç piksele düşmesi gerekiyordu. Böylece karar “her şey görünsün mü” olmaktan çıkıp “oyuncunun çevresinde kaç metrelik bir <b>komşuluk</b> okunacak” hâline geldi. En yakın kademe elendi, orta kademe varsayılan oldu ve alttaki genel-bakış düğmesi artık “uzaklaş” değil <b>iki kademe arasında geçiş</b> yapıyor.<br><br>Sonra kat taşındı: iki ön salon, arka yarı, ve arkalarında <b>servis · merdiven · lavabo</b> bandı. Bu adımda içerik büyümedi — masa sayısı, servis, satın alma zinciri aynı kaldı; büyüyen katın kendisi. <b>Servis noktası ise artık yerinde sabit değil:</b> üçüncü salon açılınca sol duvardan arka bandın tezgâhına taşınıyor, tıpkı makette olduğu gibi; seviyesi korunuyor. Salon hâlâ seyrek görünüyor, çünkü ortasını dolduracak banket adaları bilerek sonraki adıma bırakıldı.",
+      "maddeler": [
+        "<b>Kamera kademesi seçildi:</b> en yakın kademe elendi; alttaki düğme artık iki kademe arasında geçiş yapıyor",
+        "Kat <b>21 × 21 → 34 × 34</b>; arkada servis · merdiven · lavabo bandı (içleri sonraki adımların işi)",
+        "<b>Servis üçüncü salonda arka banda taşınıyor</b> — makete sadık; seviye korunuyor",
+        "Salonlar artık birbirinin kopyası değil; <b>duvarlar geometriden</b> çıkıyor, ızgara sorgusundan değil",
+        "<b>Eski bir kusur bulundu:</b> garsonun teslim mesafesi yol bulma ızgarasına gizliden bağlıymış — masa ızgaraya denk gelirse garson engelden kaçmadan düz gidiyordu. Düzeltildi, teste bağlandı",
+        "Testler <b>209 → 222</b> · duman testi 26/26 · <b>denge sayıları birebir aynı</b>"
+      ],
+      "not": "<b>Bu oturumun dersi: ölçümün gürültüsü bulguyu ters çevirebilir.</b> Kat büyüyünce garsonun yürüyüşü <b>%66</b> uzadı, en uzak masa 18 → 29 birime çıktı; “servis kırıldı mı” diye bir sonda yazıldı ve ilk sonuç <b>%77 müşteri kaçışı</b> dedi — alarm. Aynı sonda ikinci kez koşunca aynı kodla bambaşka bir sayı verdi: rastgelelik sabitlenmemişti. Üstelik sondanın ilk hâli <b>yanlış şeyi ölçüyordu</b>: oyuncu beklerken kimse bulaşık yıkamadığı için bardaklar bitiyor, ölçülen yürüme değil bardak oluyordu. Tohumlanıp düzeltilince sonuç net çıktı: <b>eski ve yeni yerleşim birebir aynı servisi veriyor</b> — darboğaz yürüme değil.<br><br>Önceki iki oturumun dersi “aracın çıktısı yanılabilir” ve “aracın varsayımı yanılabilir”di. Bunun dersi: <b>aracın gürültüsü ve neyi ölçtüğü de yanılabilir.</b>"
+    },
     {
       "tarih": "06.09.2026",
       "etiket": "Faz B · 2. oturum (B2)",

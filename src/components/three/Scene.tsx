@@ -1,9 +1,10 @@
 import { Suspense, useEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Vector3, type Group, type MeshStandardMaterial } from 'three';
-import { useGame, questFocusPos, LAYOUT, stationSoftMaxLevel, stationUpgradeCostAt, stationUpgradeUnlocked, tableSoftMaxLevel, tableUpgradeUnlockedIn, tableNextCost, areaPoint, areaCol, areaRow, areaAt, openServices } from '../../game/store';
+import type { AreaSide } from '../../game/store';
+import { useGame, questFocusPos, LAYOUT, BAND, FLOOR_HALF, wallSpans, servicePlace, stationSoftMaxLevel, stationUpgradeCostAt, stationUpgradeUnlocked, tableSoftMaxLevel, tableUpgradeUnlockedIn, tableNextCost, openServices } from '../../game/store';
 import { economyConfig } from '../../config/economy.config';
-import { areaOfTable, isCounter, THE_SERVICE, SERVICE_AREAS } from '../../game/world';
+import { areaOfTable, isCounter, THE_SERVICE } from '../../game/world';
 import { SceneLights } from './lights';
 import { GroundMarker } from './GroundMarker';
 import { FloorPattern } from './floorPattern';
@@ -40,7 +41,7 @@ function QuestPointer() {
   useFrame(() => {
     const g = useGame.getState();
     const def = g.questIndex < economyConfig.quests.length ? economyConfig.quests[g.questIndex] : null;
-    const target = g.quest && def ? questFocusPos(def.target, g.tableLevels, g.tables, def.area ?? 0) : null;
+    const target = g.quest && def ? questFocusPos(def.target, g.tableLevels, g.tables, g.areasOpen, def.area ?? 0) : null;
     if (!target) {
       screenPointer.active = false;
       return;
@@ -152,16 +153,18 @@ function CameraRig() {
       st.current.h = size.height;
       const aspect = size.width / Math.max(1, size.height);
       // Kamera mesafesi tarihçesi: ilk APK dönemi taban 6 × clamp 1.3 (telefonda ~7.8). 2026-06-09'da
-      // 7'ye çekildi, turu-5'te 6.4 + clamp 1.4 (~8.96) oldu. Ferahlama sonrası kullanıcı isteği
-      // (2026-06-13): "ilk zamandaki gibi yakın" → taban 6 + clamp 1.3'e DÖNÜŞ; genel bakış için
-      // HUD'da zoom-out butonu var (camZoomOut ×1.45 ≈ eski uzak görünümden biraz geniş).
+      // 7'ye çekildi, turu-5'te 6.4 + clamp 1.4 (~8.96) oldu, 2026-06-13'te "ilk zamandaki gibi
+      // yakın" isteğiyle taban 6'ya döndü. **B3-1 (D-061):** kat 21×21 → 34×34 büyüdüğü için taban
+      // 6 elendi (portrede oyuncu hizasında yalnız 4,6 birim = sürekli koridor hissi). Yeni taban
+      // 8,5 (~6,5 birim: bir banket adası tam sığar), HUD düğmesi ×1.35 ile 11,5'e çıkar
+      // (~8,9 birim: alanın yarısı + arka bandın bir bloğu). Ölçüm: docs/gorsel/kadraj-b3.html.
       const fit = aspect < 1 ? Math.min(1.3, 1 / aspect) : 1;
-      st.current.d = 6 * fit;
+      st.current.d = 8.5 * fit;
     }
     // KAMERA ODAĞI (quest sistemi): odak varken hedefe kay + hafif zoom; girdi gelince store odağı
     // iptal eder → buradaki damping kendiliğinden oyuncuya geri süzülür (ek durum makinesi yok).
     const focus = g.camFocus;
-    const zoomMul = g.camZoomOut ? 1.45 : 1;
+    const zoomMul = g.camZoomOut ? 1.35 : 1; // B ↔ C kademesi (8,5 ↔ 11,5) — D-061
     const d = (focus ? st.current.d * 0.72 : st.current.d) * zoomMul;
     if (focus) {
       desired.set(focus.pos[0], d, focus.pos[2] + d);
@@ -185,15 +188,18 @@ function CameraRig() {
   return null;
 }
 
-// SERVİS NOKTASI (B2: kat çapında TEK obje). Kendi duvarına paralel; ön yüz salona bakar
-// (rotasyon LAYOUT.stationRots'tan). B3'te maket ölçeğinde arka banda taşınacak.
+// SERVİS NOKTASI (B2: kat çapında TEK obje). Ön yüz salona bakar.
+// B3-1 (D-062): 1-2. Alan'da ilk salonun sol duvarında, 3. Alan açılınca ARKA BANDIN servis
+// bloğunda — aynı obje, aynı seviye, farklı yer (maket v13 adım 3).
 function Stations() {
   const level = useGame((s) => s.stationLevels[THE_SERVICE]);
   const readyTea = useGame((s) => s.ready.tea);
   const readyTost = useGame((s) => s.ready.tost);
-  const p = LAYOUT.stations[THE_SERVICE];
+  const areasOpen = useGame((s) => s.areasOpen);
+  const place = servicePlace(areasOpen);
+  const p = place.station;
   return (
-    <group position={[p[0], 0, p[2]]} rotation={[0, LAYOUT.stationRots[THE_SERVICE], 0]}>
+    <group position={[p[0], 0, p[2]]} rotation={[0, place.rot, 0]}>
       <ServicePoint position={[0, 0, 0]} level={level} readyTea={readyTea} readyTost={readyTost} />
     </group>
   );
@@ -204,24 +210,17 @@ function Stations() {
 // D-025: her açık SERVİSİN ocağı kendi duvarında → yeni alan açılınca onun da çaycısı belirir (aynalı).
 function KitchenHand({ service }: { service: number }) {
   const ref = useRef<Group>(null);
-  const zMin = -4.6;
-  const zMax = -1.4; // şablon (alan-yerel) mutfak bloğu aralığı (bulaşık -4.9..-3.5 + ocak -3.6..-1.4)
-  // Y1: ARKA-duvar tezgâhı (yemek counter'ı, stationRot 0) arkasında x-ekseni boyunca yürünür;
-  // yan-duvar mutfaklarında z-ekseni boyunca (eski şablon). Yol istasyon konumundan türetilir.
-  const area = SERVICE_AREAS[service] ?? 0;
-  const backWall = LAYOUT.stationRots[service] === 0;
-  const stPos = LAYOUT.stations[service];
-  const span = 1.1; // tezgâh uzun-kenar yarısı (stationHalves uzun ekseni) — uçtan uca tur
-  // M2: konum ALAN şablonundan türetilir — sağ kolon aynalı, arka sıra −z kaydırmalı (areaPoint).
-  const faceIn = backWall ? 0 : areaCol(area) ? -Math.PI / 2 : Math.PI / 2;
+  // B3-1: çaycının yolu artık ŞABLONDAN değil servisin KENDİ yerinden gelir (`staffWalk`) —
+  // sol duvar döneminde tezgâhın arkasındaki koridor, arka bant döneminde bloğun içi.
+  const areasOpen = useGame((s) => s.areasOpen);
+  const place = servicePlace(areasOpen);
+  void service;
+  const backWall = place.rot === 0;
+  const faceIn = place.staffWalk.face;
+  const wa = place.staffWalk.a;
+  const wb = place.staffWalk.b;
   // useMemo: her render yeni dizi üretirse aşağıdaki kayıt effect'i boşuna yeniden koşar.
-  const start = useMemo(
-    () =>
-      backWall
-        ? ([stPos[0] - span, 0, stPos[2] - 0.65] as const)
-        : areaPoint(area, [-5.0, 0, -3]),
-    [area, backWall, stPos, span],
-  );
+  const start = useMemo(() => [wa[0], 0, wa[2]] as const, [wa]);
   // B2: "tost ustası" ayrı bir kişi değil — kat tek servisten döndüğü için tek çaycı var.
   const apron = PALETTE.apron;
   const cap = PALETTE.cap;
@@ -230,17 +229,12 @@ function KitchenHand({ service }: { service: number }) {
     if (!grp) return;
     const t = st.clock.elapsedTime * 0.3;
     const u = (Math.sin(t) + 1) / 2;
-    let walkRot: number;
-    if (backWall) {
-      grp.position.x = stPos[0] - span + u * span * 2;
-      grp.position.z = stPos[2] - 0.65; // duvar ile tezgâh arasındaki koridor
-      walkRot = Math.cos(t) > 0 ? Math.PI / 2 : -Math.PI / 2;
-    } else {
-      const p = areaPoint(area, [-5.0, 0, zMin + u * (zMax - zMin)]);
-      grp.position.x = p[0];
-      grp.position.z = p[2];
-      walkRot = Math.cos(t) > 0 ? 0 : Math.PI;
-    }
+    // Yol = staffWalk doğru parçası; yürüme yönü parçanın kendi ekseninden okunur.
+    grp.position.x = wa[0] + u * (wb[0] - wa[0]);
+    grp.position.z = wa[2] + u * (wb[2] - wa[2]);
+    const walkRot = backWall
+      ? (Math.cos(t) > 0 ? Math.PI / 2 : -Math.PI / 2)
+      : (Math.cos(t) > 0 ? 0 : Math.PI);
     // Rota ucunda durup tezgâha dönüp "iş yapar" (eğilme); arada yürür (hafif zıplama).
     const speed = Math.abs(Math.cos(t));
     grp.rotation.y = speed < 0.25 ? faceIn : walkRot;
@@ -327,12 +321,14 @@ function ReservedRooms() {
 function StationUpgradeSpots() {
   const stationLevels = useGame((s) => s.stationLevels);
   const upgradeFills = useGame((s) => s.upgradeFills);
+  const areasOpen = useGame((s) => s.areasOpen);
   const wallet = useGame((s) => s.wallet);
   const padsDone = useGame((s) => s.padsDone);
   const tables = useGame((s) => s.tables);
   const lifetime = useGame((s) => s.lifetime);
   const gate = { padsDone, tables, stationLevel: stationLevels[THE_SERVICE], lifetime: lifetime.toNumber() };
   const level = stationLevels[THE_SERVICE];
+  const upPos = servicePlace(areasOpen).upgradeSpot;
   if (level >= stationSoftMaxLevel()) return null;
   if (!stationUpgradeUnlocked(gate)) return null;
   const cost = stationUpgradeCostAt(THE_SERVICE, level);
@@ -340,7 +336,7 @@ function StationUpgradeSpots() {
   const remaining = Math.max(0, Math.ceil(cost - upgradeFills[THE_SERVICE]));
   return (
     <GroundMarker
-      pos={LAYOUT.stationUpgradeSpots[THE_SERVICE]}
+      pos={upPos}
       // Etiket seviyenin kimliğini söyler: L4'e kadar ocak, sonrası tezgâh (tek merdiven iki kimlik).
       label={isCounter(level) ? 'Tezgâhı Yükselt' : 'Çay Yükselt'}
       sub={String(remaining)}
@@ -379,13 +375,8 @@ function DishStationUnit({ pos, rot }: { pos: readonly [number, number, number];
 
 function DishStation() {
   const areasOpen = useGame((s) => s.areasOpen);
-  return (
-    <>
-      {LAYOUT.dishStations.slice(0, areasOpen).map((p, z) => (
-        <DishStationUnit key={z} pos={p} rot={LAYOUT.dishRots[z]} />
-      ))}
-    </>
-  );
+  const place = servicePlace(areasOpen);
+  return <DishStationUnit pos={place.dish} rot={place.dishRot} />;
 }
 
 // Masa-başı yükseltme işaretleri (Faz 2h + D-018 §1 KENAR-YERLEŞİM): her AÇIK masanın DUVAR-KENARI tarafında
@@ -440,25 +431,24 @@ function Ground() {
   const areasOpen = useGame((s) => s.areasOpen);
   return (
     <group>
-      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[6, 0, -5.5]}>
-        <planeGeometry args={[38, 30]} />
+      {/* B3-1: taban düzlemi katın tamamını (34 × 34) + arka bandı kaplar. */}
+      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
+        <planeGeometry args={[FLOOR_HALF * 2 + 1.2, FLOOR_HALF * 2 + 1.2]} />
         <meshStandardMaterial color={PALETTE.floorWood} />
       </mesh>
       {LAYOUT.areaBounds.slice(0, areasOpen).map((za, z) => {
         // Overlay DUVARA KADAR uzar (DIŞ/kilitli kenarlarda +0.55) — duvar dibinde eski renk şerit
         // kalmaz (kullanıcı bug'ı 2026-06-11). AÇIK komşuya bakan kenar tam sınırda biter (M2:
         // üst üste binen overlay z-fighting yapardı).
-        const col = areaCol(z);
-        const row = areaRow(z);
-        // Komşular ızgaradan (areaAt; -1 = dış dünya/rezerv arsa = kapalı kenar sayılır).
-        const sideN = areaAt(col === 0 ? col + 1 : col - 1, row);
-        const vertN = areaAt(col, row === 0 ? 1 : 0);
-        const sideOpen = sideN >= 0 && sideN < areasOpen;
-        const vertOpen = vertN >= 0 && vertN < areasOpen;
-        const x0 = za.minX - (col === 0 || !sideOpen ? 0.55 : 0);
-        const x1 = za.maxX + (col === 1 || !sideOpen ? 0.55 : 0);
-        const z0 = za.minZ - (row === 1 || !vertOpen ? 0.55 : 0);
-        const z1 = za.maxZ + (row === 0 || !vertOpen ? 0.55 : 0);
+        // B3-1: kenarın duvara mı yoksa AÇIK komşuya mı baktığı ızgara sorgusuyla değil
+        // geometriyle bulunur — o kenarda duvar parçası varsa (wallSpans boş değilse) overlay
+        // duvarın dibine kadar uzar, yoksa tam sınırda biter (üst üste binen overlay z-fighting yapar).
+        const ext = (side: 'left' | 'right' | 'front' | 'back') =>
+          wallSpans(z, side, areasOpen).length > 0 ? 0.55 : 0;
+        const x0 = za.minX - ext('left');
+        const x1 = za.maxX + ext('right');
+        const z0 = za.minZ - ext('back');
+        const z1 = za.maxZ + ext('front');
         const theme = FLOOR_THEMES[floorThemeByArea[z] ?? 'parke'] ?? FLOOR_THEMES.parke;
         return (
           <group key={z}>
@@ -545,11 +535,16 @@ function TvCorner() {
  */
 function MenuBoard() {
   const level = useGame((s) => s.stationLevels[THE_SERVICE]);
+  const areasOpen = useGame((s) => s.areasOpen);
   if (level < stationSoftMaxLevel()) return null;
-  const st = LAYOUT.stations[THE_SERVICE];
-  const za = LAYOUT.areaBounds[SERVICE_AREAS[THE_SERVICE]];
+  // B3-1: pano servisin ARKASINDAKİ duvara asılır — sol duvar döneminde katın sol kenarına,
+  // arka bant döneminde bandın ön yüzünün üstüne (servis nerede ise pano da orada).
+  const place = servicePlace(areasOpen);
+  const st = place.station;
+  const backWall = place.rot === 0;
+  const pos: [number, number, number] = backWall ? [st[0], 0, BAND.front - 0.15] : [-FLOOR_HALF + 0.3, 0, st[2]];
   return (
-    <group position={[za.minX + 0.3, 0, st[2]]} rotation={[0, Math.PI / 2, 0]}>
+    <group position={pos} rotation={[0, place.rot, 0]}>
       <mesh castShadow position={[0, 1.35, 0]}>
         <boxGeometry args={[0.1, 0.4, 0.1]} />
         <meshStandardMaterial color={PALETTE.menuBoardFrame} />
@@ -683,69 +678,47 @@ function Walls() {
   const t = 0.2;
   const doorHalf = 1.3;
   const doorX = LAYOUT.entrances[0][0]; // tek kapı (z0 ön duvarı)
-  const isOpen = (z: number) => z >= 0 && z < areasOpen;
   type Piece = WallSlab;
   const pieces: Piece[] = [];
+  // B3-1: duvarlar ızgara komşuluğundan değil GEOMETRİDEN gelir. `wallSpans(alan, kenar, açık)`
+  // o kenarın AÇIK komşularca kapatılmayan parçalarını verir — bir kenarı birden çok komşu
+  // paylaşabildiği için (arka yarının ön kenarını iki ön çeyrek BİRLİKTE kapatır) eski
+  // `areaAt(col±1, row)` ızgara sorgusu yetmiyordu. Kapı boşluğu yalnız kapıyı içeren parçada açılır.
+  const SIDES: AreaSide[] = ['left', 'right', 'front', 'back'];
   for (let z = 0; z < areasOpen; z++) {
     const za = LAYOUT.areaBounds[z];
-    const col = areaCol(z);
-    const row = areaRow(z);
     const th = themeOf(z);
-    // Komşular ızgaradan bulunur (areaAt): -1 = dış dünya YA DA alansız rezerv hücre (arka-sol) —
-    // ikisi de "kapalı kenar" sayılır, duvar çizilir.
-    const leftN = areaAt(col - 1, row);
-    const rightN = areaAt(col + 1, row);
-    const backN = row === 0 ? areaAt(col, 1) : -1; // ön sıranın arka komşusu
-    // Yatay (ön/arka) duvarların x uzanımı: dış/kilitli yan uçlarda m taşar (köşe kapanır),
-    // açık yan komşuda tam kenarda biter (komşu kendi parçasını çizer — tema bölmesi).
-    const xExtL = leftN === -1 || !isOpen(leftN) ? m : 0;
-    const xExtR = rightN === -1 || !isOpen(rightN) ? m : 0;
-    const hx0 = za.minX - xExtL;
-    const hx1 = za.maxX + xExtR;
-    // Dikey (sol/sağ) duvarların z uzanımı: ön kenar dışsa +m; arka kenar açık komşuya bakıyorsa
-    // sınırda biter (geçitli sıra-duvarı orayı kapatır), değilse -m.
-    const vz0 = za.minZ - (row === 1 || !isOpen(backN) ? m : 0);
-    const vz1 = za.maxZ + (row === 0 ? m : 0);
-    // SOL kenar (dış ya da kilitli komşu → duvar; açık yatay komşu → duvar YOK, D-023)
-    if (leftN === -1 || !isOpen(leftN))
-      pieces.push({ x: za.minX - m, z: (vz0 + vz1) / 2, w: t, d: vz1 - vz0, theme: th });
-    // SAĞ kenar (kilitliyken alan sınırına oturur = eski "kelepçe duvarı" davranışı)
-    if (rightN === -1 || !isOpen(rightN))
-      pieces.push({ x: za.maxX + m, z: (vz0 + vz1) / 2, w: t, d: vz1 - vz0, theme: th });
-    // ÖN kenar: ön sıra → dış duvar (z0'da kapı boşluğu); arka sıra → geçitli sıra-duvarı (aşağıda).
-    if (row === 0) {
-      const fz = za.maxZ + m;
-      const hasDoor = doorX > za.minX && doorX < za.maxX;
-      const segs: [number, number][] = hasDoor
-        ? [
-            [hx0, doorX - doorHalf],
-            [doorX + doorHalf, hx1],
-          ]
-        : [[hx0, hx1]];
-      segs.forEach(([sx, ex]) => {
-        if (ex - sx > 0.01)
-          pieces.push({ x: (sx + ex) / 2, z: fz, w: ex - sx, d: t, theme: th });
-      });
+    for (const side of SIDES) {
+      const vertical = side === 'left' || side === 'right';
+      // Duvar hattı alan kenarından m kadar dışarıda (oyuncu kelepçe standoff'u ile birebir).
+      const line =
+        side === 'left' ? za.minX - m : side === 'right' ? za.maxX + m : side === 'front' ? za.maxZ + m : za.minZ - m;
+      for (const [s0, s1] of wallSpans(z, side, areasOpen)) {
+        const a0 = s0 - m; // uçlar m taşar → köşeler kapanır
+        const a1 = s1 + m;
+        const hasDoor = side === 'front' && doorX > a0 + doorHalf && doorX < a1 - doorHalf;
+        const segs: [number, number][] = hasDoor
+          ? [
+              [a0, doorX - doorHalf],
+              [doorX + doorHalf, a1],
+            ]
+          : [[a0, a1]];
+        for (const [p0, p1] of segs) {
+          if (p1 - p0 <= 0.01) continue;
+          pieces.push(
+            vertical
+              ? { x: line, z: (p0 + p1) / 2, w: t, d: p1 - p0, theme: th }
+              : { x: (p0 + p1) / 2, z: line, w: p1 - p0, d: t, theme: th },
+          );
+        }
+      }
     }
-    // ARKA kenar: arka komşu AÇIKSA duvar YOK (2026-06-11: z1↔z2 sınırı tamamen açık — sıra-arası
-    // geçitli duvar kaldırıldı); değilse dış duvar.
-    if (!(row === 0 && isOpen(backN)) && row === 0)
-      pieces.push({ x: (hx0 + hx1) / 2, z: za.minZ - m, w: hx1 - hx0, d: t, theme: th });
-    if (row === 1)
-      pieces.push({ x: (hx0 + hx1) / 2, z: za.minZ - m, w: hx1 - hx0, d: t, theme: th });
-  }
-  // L-şekil iç köşe dikmesi (yalnız 3 alan açıkken): a0 arka duvarı (z −5.8) ile a2 SOL duvarı
-  // (x 4.8) çapraz buluşur — aradaki boşluk rezerv arka-sol arsaya bakar; dikme kapatır
-  // (tamamen rezerv bölgede durur, açık alanlara taşmaz).
-  if (areasOpen === 3) {
-    const bx = LAYOUT.areaBorderX;
-    const bz = LAYOUT.areaBounds[0].minZ;
-    pieces.push({ x: bx - m / 2, z: bz - m / 2, w: m + t, d: m + t, theme: themeOf(0) });
   }
   const frontEdgeZ = LAYOUT.areaBounds[0].maxZ + m; // kapı sövesi referansı
   return (
     <group>
       <WallPanels slabs={pieces} />
+      <BackBand areasOpen={areasOpen} />
       {/* kapı sövesi + çerçevesi (ön duvarın TAMAMEN önünde — z-fighting yok) */}
       <group>
         <mesh position={[doorX, h - 0.12, frontEdgeZ + 0.22]}>
@@ -761,6 +734,32 @@ function Walls() {
           <meshStandardMaterial color={PALETTE.doorWood} />
         </mesh>
       </group>
+    </group>
+  );
+}
+
+/**
+ * ARKA BANT — servis bloğu · merdiven · lavabo (maket v13; üçü de z = −9,8 hizasında biter).
+ * B3-1'de KÜTLE olarak durur: arka yarının duvarının ötesindeki hacim, kamera 45°'den tepesini
+ * gördüğü için boş zemin bırakılamaz. İçini açmak (lavabo odası + yıkık merdiven) B4'ün işi;
+ * bloklar o zaman kapı boşluğu ve iç geometri kazanır. Bant YÜRÜNMEZ — alanlar z = −9,8'de biter.
+ */
+function BackBand({ areasOpen }: { areasOpen: number }) {
+  if (areasOpen < 3) return null; // arka yarı açılmadan bant görünmez (kilitli alan çizilmez, D-057)
+  const d = BAND.front - BAND.back;
+  const blocks: [string, { minX: number; maxX: number }, string][] = [
+    ['servis', BAND.service, PALETTE.wallCream ?? '#e3d8c1'],
+    ['merdiven', BAND.stairs, PALETTE.wallCream ?? '#e3d8c1'],
+    ['lavabo', BAND.wc, PALETTE.wallCream ?? '#e3d8c1'],
+  ];
+  return (
+    <group>
+      {blocks.map(([id, blk, color]) => (
+        <mesh key={id} position={[(blk.minX + blk.maxX) / 2, WALL_H / 2, (BAND.front + BAND.back) / 2]}>
+          <boxGeometry args={[blk.maxX - blk.minX - 0.12, WALL_H, d]} />
+          <meshStandardMaterial color={color} />
+        </mesh>
+      ))}
     </group>
   );
 }

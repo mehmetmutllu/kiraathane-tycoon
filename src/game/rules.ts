@@ -26,8 +26,8 @@ import {
   type WaiterUpgrades,
 } from '../config/economy.config';
 import type { SaveStats } from './save';
-import { LAYOUT, AREA_DZ, areaRow, type RVec3 } from './layout';
-import { MAX_AREAS, TABLES_PER_AREA, THE_SERVICE, serviceInArea, tostShare, isCounter } from './world';
+import { LAYOUT, servicePlace, type RVec3 } from './layout';
+import { MAX_AREAS, TABLES_PER_AREA, THE_SERVICE, tostShare, isCounter } from './world';
 
 // DWELL kanonik dolum-noktası id'leri (D-018 §2): pad'ler kendi id'sini kullanır; bunlar yükseltme
 // noktaları. Önek + index biçimindedir ('tea:0' = SERVİS index'i, 'tableUp:5' = GLOBAL masa index'i).
@@ -269,7 +269,7 @@ export function revealKeys(
     out.push([
       `upgrade:${THE_SERVICE}`,
       isCounter(lv) ? 'Yeni: Tezgâhı yükseltebilirsin 🍞' : 'Yeni: Çay ocağını yükseltebilirsin ☕',
-      LAYOUT.stationUpgradeSpots[THE_SERVICE],
+      servicePlace(areasOpen).upgradeSpot,
     ]);
   for (const op of availableOptionalPads(g)) out.push([`opt:${op.id}`, `Yeni: ${op.label} 🔓`, null]);
   return out;
@@ -403,17 +403,25 @@ export function questView(q: QuestDef, ctx: QuestCtx): QuestView {
 /** Görev hedefinin DÜNYA konumu (kamera odak + işaret görünürlüğü). area = görevin ALANI
  *  (2026-06-11 fix: 3. alanın görevlerinde kamera 1. alana zoom atıyordu — hedefler alias'lara sabitti).
  *  charStat görevlerinde 3D hedef YOK → null (kamera sıçramaz; yönlendirme HUD buton efektiyle). */
-export function questFocusPos(target: QuestTarget, tableLevels: number[], tables: number, area = 0): RVec3 | null {
+export function questFocusPos(
+  target: QuestTarget,
+  tableLevels: number[],
+  tables: number,
+  areasOpen: number,
+  area = 0,
+): RVec3 | null {
   const a = Math.min(Math.max(area, 0), MAX_AREAS - 1);
-  const sv = Math.max(0, serviceInArea(a)); // alanın servis noktası (B2'de hep 0 olacak)
+  // B3-1: servisin YERİ areasOpen'a bağlı (3. Alan açılınca arka banda taşınır) → hedef noktalar
+  // sabit diziden değil `servicePlace`ten okunur. Alan index'i (a) artık servisi seçmez: tek servis var.
+  const sp = servicePlace(areasOpen);
   switch (target.type) {
     case 'charStat': return null;
     case 'waiterTray': return null; // panel satın alımı — 3D hedef yok (charStat deseni)
     case 'waiterSpeed': return null; // v29: hız da panelden — 3D hedef yok
-    case 'pickupTea': return LAYOUT.stations[sv];
-    case 'washDish': return LAYOUT.dishStations[sv];
-    case 'pad': return LAYOUT.padPos[target.id] ?? LAYOUT.stations[sv];
-    case 'stationLevel': return LAYOUT.stationUpgradeSpots[THE_SERVICE];
+    case 'pickupTea': return sp.station;
+    case 'washDish': return sp.dish;
+    case 'pad': return LAYOUT.padPos[target.id] ?? sp.station;
+    case 'stationLevel': return sp.upgradeSpot;
     case 'tableLevel':
     case 'tablesAtLevel': {
       // O alandan başlayarak hedef seviyenin ALTINDAKİ ilk açık masanın yükseltme noktası
@@ -427,10 +435,11 @@ export function questFocusPos(target: QuestTarget, tableLevels: number[], tables
     }
     // serveTea → o alanın OCAĞI/TEZGÂHI (2026-06-12 telefon feedback: salon ortası boştu —
     // özellikle yeni açılan salonda kamera "hiçbir şeye" bakıyordu); collectCoin → masa bölgesi ortası.
-    case 'serveTea': return LAYOUT.stations[sv];
+    case 'serveTea': return sp.station;
     default: {
+      // B3-1: alanlar eş olmadığından "şablon + sıra kaydırması" kalktı — alanın KENDİ merkezi.
       const ab = LAYOUT.areaBounds[a];
-      return [(ab.minX + ab.maxX) / 2, 0, 1.5 - areaRow(a) * AREA_DZ]; // arka sıra kaydırılır (M2)
+      return [(ab.minX + ab.maxX) / 2, 0, (ab.minZ + ab.maxZ) / 2];
     }
   }
 }

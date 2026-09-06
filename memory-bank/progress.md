@@ -1286,7 +1286,7 @@ yerleşim taşınırken de kullanılacak. Kullanım dosya başında.
 maket ölçeğine taşı (artık tek dosya: `layout.ts`), (3) kayıt v31 + migrasyon, (4) G4/G5 KayKit.
 Faz G artığı: UI Canvas'ları hâlâ eski düz ışıkla.
 
-## Faz B — Model geçişi 🔧 (3/7 · B0 harita + B1 model + B2 servis tekilleşmesi bitti)
+## Faz B — Model geçişi 🔧 (4/7 · B0 harita + B1 model + B2 servis + B3-1 yerleşim bitti)
 > Adımlar: B0 · B1 · B2 · **B3-1** · **B3-2** · B4 · B5. (B3 2026-09-06'da ikiye bölündü.)
 
 ### B0 — Adım haritası + dört karar ✅ (2026-09-06)
@@ -1370,14 +1370,23 @@ Kesme çizgisi keyfî değil — **mantık işi ile görsel iş ayrı parçada**
 birleştirmesi denge ölçümüyle aynı context'i paylaştı, gereksizdi). Daha fazla bölünmüyor:
 oturum sayısı bütçesi de gerçek bir kısıt.
 
-- **B3-1 — Kadraj + koordinatlar ⏳** (mantık)
-  **ÖNCE kadraj** (D-058 karar 4): üç kamera kademesi AYNI kareden çekilip onaylanır; onay
-  gelmeden `layout.ts` yazılmaz. Sonra `layout.ts` 34×34: dört alan, arka bant (servis bloğu ·
-  merdiven · lavabo, üçü de z = −9,8), mevcut içerik (12 masa · servis bloğu · pad'ler ·
-  yükseltme noktaları · garson evleri · bulaşık) yeni koordinatlara; nav/collision/`parkSpot`
-  yeni ölçeğe uyar.
-  **Biter dediğimiz an:** oda 34×34 ve gezilebilir · vitest 209 (düşmeden) · smoke 26/26 ·
-  build temiz. Seyrek/boş görünmesi normal — dolgu B3-2'nin işi.
+- **B3-1 — Kadraj + koordinatlar ✅** (2026-09-07)
+  **KADRAJ (D-061):** üç kamera kademesi aynı kareden ölçüldü (`docs/gorsel/kadraj-b3.html`).
+  Bulgu: portrede kadraj DERİN ama DAR (yatay açı yalnız 24°) → katın tamamı hiçbir kademede
+  görünmüyor; soru "kaç birimlik komşuluk okunacak". **Taban 6 (A) elendi**, varsayılan **8,5 (B)**,
+  HUD düğmesi artık genel bakış değil **B ↔ C kademe değiştirici** (çarpan ×1,45 → **×1,35**).
+  **YERLEŞİM (D-062):** `layout.ts` 34 × 34 — a0/a1 ön çeyrekler 17×17, a2 arka yarı 34×9,8,
+  arka bant (servis · merdiven · lavabo, z ∈ [−16,9, −9,8]) YÜRÜNMEZ kütle. Alan şablonu
+  (`AREA_DX/mir/areaCol/areaAt`) kalktı → açık dikdörtgen listesi; duvarlar **`wallSpans`** ile
+  geometriden türer. **Servis 3. Alan açılınca arka banda TAŞINIR** (`servicePlace(areasOpen)`,
+  kullanıcı kararı) → `SERVICE_AREAS` world'den layout'a geçti, `Service.areaIndex` kalktı.
+  **Bulunan gerçek kusur:** `REACH_TABLE` nav ızgarasının hücre boyuna gizliden bağlıymış —
+  masa koordinatı ızgaraya denk gelince BFS "yol yok" deyip garsonu düz-çizgi yedeğine
+  (engelden kaçmadan) düşürüyordu. Eski yerleşimde de vardı, şans eseri görünmüyordu. 1,03 → 1,13.
+  **Ölçüldü:** denge birebir aynı (simulate.ts altı kilometre taşı) · yürüme +16%/+57%/+66% ·
+  ama tohumlu sondada servis SONUCU eski yerleşimle birebir aynı (darboğaz yürüme değil).
+  **Doğrulama:** vitest **222/222** (209 + yeni `tests/layout-b31.test.ts` 13) · smoke 26/26 ·
+  build temiz · eslint 15. Oda seyrek görünüyor — dolgu B3-2'nin işi.
 - **B3-2 — Orta şerit + görsel geçiş ⏳** (görsel)
   Orta şerit, propler, dolgu, WYSIWYG geçişi; maket v13'e benzeme.
 

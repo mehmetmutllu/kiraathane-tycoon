@@ -6,7 +6,7 @@
  * yerleşimi kullanabilir; store.ts bu modülü yeniden dışa aktarır (eski importlar çalışır).
  */
 import type { Vec3 } from './types';
-import { MAX_AREAS, MAX_SERVICES, SERVICE_AREAS } from './world';
+import { MAX_AREAS, MAX_SERVICES, THE_SERVICE } from './world';
 import { buildNavGrid, findNavPath, type NavGrid, type NavSolid } from './nav';
 
 export type RVec3 = readonly [number, number, number];
@@ -38,75 +38,100 @@ export const PAD_RADIUS = 1.3;
 export const TABLE_UP_RADIUS = 1.0;
 
 // ---- Sahne yerleşimi (dünya birimi, zemin y=0) ----
-// Her pad, açtığı/etkilediği objenin TAM yerinde durur (mekânsal tycoon).
-// FAZ 2 REDESIGN v6 (D-017 §1, kullanıcı feedback 2026-06-07: "tek noktada çay-al+servis yapılıyor, yürüme
-// döngüsü yok"): MUTFAK ARKA DUVARDA KÜME (ocak+bulaşık+semaver bitişik, AYRILMAZ); MASALAR ÖNE UZAK 2×2 →
-// her masa↔ocak mesafesi >2R=3.2 (ön sıra ~4.9, hedef ~5) → tek noktada "çay-al+servis" veya "kirli-al+yıka"
-// İMKÂNSIZ, yürüme döngüsü ZORLANIR. Orta geniş koridor (kolon ±2.4, gap 4.8). Collision: oyuncu mobilya+
-// sandalye+aktör (HAPSETMEZ); garson/bulaşıkçı masa gövdelerinden GERÇEK rota ile dolaşır (nav.ts BFS).
-// --- ALAN ŞABLONU (Faz 3a + D-022): 1. alanın iç yerleşimi = bugüne kadarki mutlak koordinatlar.
-// Faz B1: düz diziler artık hangi kavrama ait olduğunu SÖYLER — ALANA göre index'lenenler
-// (areaBounds, entrances, tables) ile SERVİSE göre index'lenenler (stations, dishStations,
-// stationPickups, waiterHomes, stationUpgradeSpots) ayrıdır. Bugün ikisi 1:1; B2'de servis
-// tekilleşince yalnız SERVICE_AREAS listesi değişir, buradaki diziler kendiliğinden takip eder.
-// Kullanıcı feedback (2026-06-11): bölme duvarı kalkınca iki salon arasında ölü boşluk kaldı →
-// alanlar bitişik (1. alanın maxX'i = 2. alanın minX'i = 5.3; duvar YOK, sınır zemin çizgisi).
-// --- YERLEŞİM v3 (2026-06-11 kullanıcı feedback'i, D-025): ALAN-BAŞI MUTFAK + AYNALI ŞABLON.
-// Şikayetler: (a) çay ocağı + bulaşık tek köşede küme; (b) 2. alanın servisi sol şeritten → garson
-// turu ~19sn > sabır 18sn (müşteri kalkar); (c) yükseltme pad alanı dar; (d) masa pad'leri ocağa
-// giriyor; (e) ekran alt duvara yakın, üstler boş. Çözüm: HER alanın çay ocağı KENDİ yan duvarında
-// (a0 sol / a1 sağ = şablonun alan merkezine göre AYNALISI), bulaşık ARKA duvarda (ocaktan ayrı),
-// masalar sağa+yukarı kaydı, masa pad'leri masanın kapı-tarafı ÇAPRAZINDA (ocak tarafında değil).
-// Garson/bulaşıkçı turu artık alandan bağımsız kısa (a1 ocak→en uzak masa ≈ 8.8 br ≈ a0 ile aynı).
-const AREA_DX = 10.6;
-// M2 (2026-06-12, onaylı plan): kat 2×2 IZGARA. Revizyon (2026-06-11 kullanıcı): z2 (TOST)
-// arka-SAĞA taşındı; arka-sol hücre REZERV arsa (alan yok — içerik sonra tasarlanacak).
-// a0 ön-sol, a1 ön-sağ, a2 arka-sağ. Arka sıra ön sıranın −z tarafına AREA_DZ kadar kaydırılır.
-export const AREA_DZ = 10.3; // sıra derinliği (alan z: -5.3..5.0)
-/** Alanın ızgara kolonu (0 sol / 1 sağ) ve sırası (0 ön / 1 arka). */
-export const areaCol = (z: number) => (z < 2 ? z : 1);
-export const areaRow = (z: number) => (z < 2 ? 0 : 1);
-/** (col,row) hücresindeki alan index'i; alan yoksa -1 (arka-sol = rezerv arsa). */
-export const areaAt = (col: number, row: number) => {
-  for (let z = 0; z < MAX_AREAS; z++) if (areaCol(z) === col && areaRow(z) === row) return z;
-  return -1;
-};
-const AREAS = Array.from({ length: MAX_AREAS }, (_, a) => a);
-const SERVICES = Array.from({ length: MAX_SERVICES }, (_, s) => s);
-/** Servisin durduğu alan — servis dizilerini alan şablonuna bağlayan TEK yer (B1 ayrışması). */
-const svcArea = (s: number) => SERVICE_AREAS[s] ?? 0;
-// Alan a için şablon noktası: tek kolonlar alan merkezine göre x-AYNALI (mutfak kendi yan duvarında
-// kalır), arka sıra −AREA_DZ kaydırılır (şablon yan-duvar temelli olduğundan rotasyon gerekmez).
-const mir = (z: number, v: readonly [number, number, number]): Vec3 => [
-  areaCol(z) ? AREA_DX - v[0] : v[0],
-  v[1],
-  v[2] - areaRow(z) * AREA_DZ,
-];
-/** Alan-yerel şablon noktasını dünyaya çevir (Scene görselleri için dışa açık). */
-export const areaPoint = mir;
+// B3-1 (D-061 + D-062): kat MAKET v13 ÖLÇEĞİNE taşındı — 21,2 × 20,6 → **34 × 34** (alan ×2,6).
+// Bu adımda İÇERİK büyümedi (12 masa · tek servis · aynı pad zinciri); büyüyen KATIN KENDİSİ.
+// Orta şerit + banket adaları ve dolgu B3-2'nin; odalar (lavabo · merdiven) B4'ün; masa tipleri B5'in.
+//
+// ESKİ MODELİN İKİ VARSAYIMI BURADA KALKTI:
+//  1) **Alanlar artık EŞ DEĞİL.** Eskiden tek alan şablonu (10,6 × 10,3) 2×2 ızgarada aynalanıp
+//     kaydırılıyordu (`AREA_DX/AREA_DZ/mir/areaCol/areaRow/areaAt`). Maket v13'te iki ön çeyrek
+//     17 × 17, arka yarı ise 34 × 9,8 — tek şablon bunu anlatamaz. Alanlar artık AÇIK DİKDÖRTGEN
+//     LİSTESİ (`AREA_RECTS`); duvarlar da ızgara sorgusundan değil GEOMETRİDEN türer (`wallSpans`).
+//  2) **Servisin yeri sabit değil.** Maket v13'ün 3. adımı ocağı sol duvardan ARKA BANDA taşır
+//     ("bütün servis buradan verilir") — D-058 de bunu yazıyordu. Servis koordinatları artık
+//     `servicePlace(areasOpen)` ile gelir: seviye korunur, YER değişir.
+//
+// Değişmeyen ilkeler: her pad açtığı objenin TAM yerinde durur (mekânsal tycoon); masa ile servis
+// arası tek noktada "çay-al + servis" yapmayı imkânsız kılacak kadar uzaktır (yürüme döngüsü);
+// personel masaları GERÇEK rotayla dolaşır (nav.ts BFS).
 
+/** Katın yarı-boyu: zemin x, z ∈ [−17, 17] = 34 × 34. */
+export const FLOOR_HALF = 17;
 
-// Masa şablonu (alan-yerel): 2×2, sağa+yukarı kaymış (kolonlar -1.4/3.7, sıralar 2.55/-0.95).
-// Koltuklar CHAIR_SPOTS ofsetlerinden türetilir (Y2); upgradeSpot = kapı-tarafı
-// çapraz köşe (orta koridora bakar; ocak/bulaşık tarafına TAŞMAZ; dwell hareketsiz-dolum olduğundan
-// koridordan yürüyerek geçmek para çekmez).
-// Açılış sırası ÖN sıradan (kapıya yakın, ocağa uzak — başlangıç masası ocaktan >4 br: yürüme
-// döngüsü en baştan zorlanır, D-017 §1) → arka sıra sonra açılır.
-// Ferahlama (turu-5 m.12, kamera-map-plan B): kolon aralığı 4.4→5.1 (net koridor ~1.5→2.2),
-// sıra aralığı 2.9→3.5 (net koridor 0.0→~0.6 — dikey aradan artık yürünebilir). Alan SABİT.
-// Sol kolon −1.6 yerine −1.4: arka-sol masa ocağın çay-al+servis dairesi birleşiğinin DIŞINDA
-// kalmalı (>3.2 br; −1.6'da 3.00'a düşüyordu, şimdi 3.33). Açılım öne (+z) verildi.
-const BASE_TABLES = [
-  { table: [-1.4, 0, 2.55], upgradeSpot: [-0.2, 0, 3.75] },
-  { table: [3.7, 0, 2.55], upgradeSpot: [2.5, 0, 3.75] },
-  { table: [-1.4, 0, -0.95], upgradeSpot: [-0.2, 0, 0.25] },
-  { table: [3.7, 0, -0.95], upgradeSpot: [2.5, 0, 0.25] },
+/**
+ * ARKA BANT — üç blok, üçü de z = −9,8 hizasında biter (maket v13): **servis bloğu · merdiven ·
+ * lavabo**. Bant YÜRÜNEBİLİR ALAN DEĞİLDİR; alanlar z ≥ −9,8'de biter, bant onların arkasındaki
+ * kütledir. Servis noktası ile bulaşık bandın ÖN yüzüne gömülüdür (tezgâh gibi: önünden çalışılır,
+ * arkasına geçilmez). Bandın içini açmak (lavabo odası + yıkık merdiven) **B4**'ün işi.
+ */
+export const BAND = {
+  front: -9.8,
+  back: -16.9,
+  service: { minX: -FLOOR_HALF, maxX: -4.6 },
+  stairs: { minX: -4.6, maxX: 4.6 },
+  wc: { minX: 4.6, maxX: FLOOR_HALF },
+} as const;
+
+/**
+ * ALAN DİKDÖRTGENLERİ — şablon değil AÇIK LİSTE (maket v13'ün açılma sırası):
+ * a0 ön-sol çeyrek · a1 ön-sağ çeyrek · a2 arka yarının tamamı (bandın önü).
+ * Ön çeyrekler eş (17 × 17), arka yarı değil (34 × 9,8) — eş olmadıkları için şablon kalktı.
+ */
+const AREA_RECTS = [
+  { minX: -FLOOR_HALF, maxX: 0, minZ: 0, maxZ: FLOOR_HALF },
+  { minX: 0, maxX: FLOOR_HALF, minZ: 0, maxZ: FLOOR_HALF },
+  { minX: -FLOOR_HALF, maxX: FLOOR_HALF, minZ: BAND.front, maxZ: 0 },
 ] as const;
 
-// Sandalye yerleşimi (masaya göre DÜNYA-ofseti; aynalanmaz — Tables.tsx aynı listeden çizer, Y2 tek kaynak).
-// İlk spot = ana oturma yeri (eski .seat); koltuk doluluğu spot sırasıyla dolar.
-// Çay masası: 4 yana tabure (S, N, E, W). Yemek masası (Y1): dikdörtgenin uzun kenarlarında
-// 2'ye 2 KARŞILIKLI sandalye (G-batı, K-batı, G-doğu, K-doğu) — 2 koltukta karşılıklı çift oturur.
+const AREAS = Array.from({ length: MAX_AREAS }, (_, a) => a);
+const SERVICES = Array.from({ length: MAX_SERVICES }, (_, s) => s);
+
+// ---- Alan kenarları ve duvarlar (ızgara varsayımı YOK) ----
+export type AreaSide = 'left' | 'right' | 'front' | 'back';
+type Rect = (typeof AREA_RECTS)[number];
+
+const OPPOSITE: Record<AreaSide, AreaSide> = { left: 'right', right: 'left', front: 'back', back: 'front' };
+/** Kenarın sabit koordinatı (sol/sağ → x, ön/arka → z). "Ön" = +z (kapı tarafı). */
+const sideCoord = (r: Rect, side: AreaSide): number =>
+  side === 'left' ? r.minX : side === 'right' ? r.maxX : side === 'front' ? r.maxZ : r.minZ;
+/** Kenarın uzandığı aralık (sol/sağ kenar z ekseninde, ön/arka kenar x ekseninde). */
+const sideSpan = (r: Rect, side: AreaSide): [number, number] =>
+  side === 'left' || side === 'right' ? [r.minZ, r.maxZ] : [r.minX, r.maxX];
+
+/**
+ * Alan `a`'nın `side` kenarında DUVAR gereken aralıklar: kenarın tamamından, aynı hat üzerindeki
+ * AÇIK komşuların kapattığı parçalar düşülür. Bir kenarı birden çok komşu paylaşabilir (arka
+ * yarının ön kenarını iki ön çeyrek BİRLİKTE kapatır) — eski `areaAt(col±1, row)` ızgara sorgusu
+ * bunu anlatamıyordu, bu yüzden kalktı. Kilitli komşu "kapalı kenar" sayılır: duvar çizilir.
+ */
+export function wallSpans(a: number, side: AreaSide, areasOpen: number): [number, number][] {
+  const r = AREA_RECTS[a];
+  const c = sideCoord(r, side);
+  let spans: [number, number][] = [sideSpan(r, side)];
+  for (let b = 0; b < areasOpen; b++) {
+    if (b === a) continue;
+    const o = AREA_RECTS[b];
+    if (Math.abs(sideCoord(o, OPPOSITE[side]) - c) > 1e-6) continue; // aynı hatta değil → komşu değil
+    const [s0, s1] = sideSpan(o, side);
+    spans = spans.flatMap(([x0, x1]): [number, number][] => {
+      const rest: [number, number][] = [];
+      if (s0 > x0) rest.push([x0, Math.min(s0, x1)]);
+      if (s1 < x1) rest.push([Math.max(s1, x0), x1]);
+      return rest.filter(([p, q]) => q - p > 0.01);
+    });
+  }
+  return spans;
+}
+
+/** Alan `a`'nın `side` kenarında (açık ya da kilitli) bir komşu alan var mı? */
+export function hasAreaNeighbor(a: number, side: AreaSide): boolean {
+  const c = sideCoord(AREA_RECTS[a], side);
+  return AREAS.some((b) => b !== a && Math.abs(sideCoord(AREA_RECTS[b], OPPOSITE[side]) - c) < 1e-6);
+}
+
+// ---- Masalar ----
+// Sandalye ofsetleri (masaya göre DÜNYA-ofseti; Tables.tsx aynı listeden çizer → görsel sandalye =
+// oturulabilir koltuk, Y2 tek kaynak). İlk spot = ana oturma yeri (eski .seat).
 const CHAIR_SPOTS: readonly [number, number][] = [
   [0, 0.78],
   [0, -0.78],
@@ -114,127 +139,161 @@ const CHAIR_SPOTS: readonly [number, number][] = [
   [-0.78, 0],
 ];
 
-const ALL_TABLES = AREAS.flatMap((a) =>
-  BASE_TABLES.map((t) => {
-    const table = mir(a, t.table);
-    // Y2: koltuk POZİSYONLARI spot listesinden türetilir; seats[0] eski .seat ile birebir aynı.
-    // B2: masanın tipi ARTIK ürüne bağlı DEĞİL (ürün servis seviyesinden geliyor, masadan değil) →
-    // bütün masalar aynı kare çay masası. Üç masa tipi (dörtlü · ikili · banket) B5'te masanın
-    // KENDİ özelliği olarak gelecek — yerleşimden değil, tipten.
-    const seats = CHAIR_SPOTS.map(([sx, sz]) => [table[0] + sx, 0.6, table[2] + sz] as Vec3);
-    return {
-      table,
-      seat: seats[0],
-      seats,
-      upgradeSpot: mir(a, t.upgradeSpot),
-    };
-  }),
-);
+// Masa konumları — maket v13'ün küme merkezleri (ön çeyreklerde 2×2, aralık 3,2; arka yarıda tek
+// sıra). Alan başına 4 slot, GLOBAL index (alan a → [a*4, a*4+4)). Açılış sırası KAPIYA yakından
+// başlar: ilk masa servise ~7,6 birim uzakta → yürüme döngüsü ilk andan zorlanır (D-017 §1).
+// `up` = yükseltme noktasının masaya göre ofseti: kapı tarafına (+z) ve salonun ortasından DIŞA
+// bakan çapraz köşe — komşu masanın noktasına da orta koridora da taşmaz.
+const TABLE_SPOTS: readonly { at: readonly [number, number]; up: readonly [number, number] }[] = [
+  // a0 — ön-sol çeyrek (küme merkezi −8,5 / 8,5)
+  { at: [-10.1, 10.1], up: [1.25, 1.25] },
+  { at: [-6.9, 10.1], up: [1.25, 1.25] },
+  { at: [-10.1, 6.9], up: [1.25, -1.25] },
+  { at: [-6.9, 6.9], up: [1.25, -1.25] },
+  // a1 — ön-sağ çeyrek (küme merkezi 8,5 / 8,5); yükseltme noktaları aynalı
+  { at: [6.9, 10.1], up: [-1.25, 1.25] },
+  { at: [10.1, 10.1], up: [-1.25, 1.25] },
+  { at: [6.9, 6.9], up: [-1.25, -1.25] },
+  { at: [10.1, 6.9], up: [-1.25, -1.25] },
+  // a2 — arka yarı: tek sıra (z = −5,6). İki boşluk BİLEREK bırakıldı: tezgâhın önündeki servis
+  // koridoru (sandalye −6,38 ↔ tezgâh yüzü −8,1 → 1,72 br; garson buradan geçmezse arka masalara
+  // rota kapanıyordu — testle yakalandı) ve orta şerit hattı (z ≈ −2,95, B3-2'nin işi).
+  { at: [-12.5, -5.6], up: [-1.25, 1.25] },
+  { at: [-6.5, -5.6], up: [-1.25, 1.25] },
+  { at: [6.5, -5.6], up: [1.25, 1.25] },
+  { at: [12.5, -5.6], up: [1.25, 1.25] },
+];
 
-// B2: "yemek alanı" (Y1'in servis-2 tezgâhı, arka duvarda ayrı geometri) KALKTI — tost artık üçüncü
-// alanın değil, tek servis noktasının L5 seviyesinin ürünü. Tek servis 1. alanın sol duvarındaki
-// şablon noktasında durur; B3 onu maket v13'ün arka bandına taşıyacak.
+const ALL_TABLES = TABLE_SPOTS.map((t) => {
+  const table: Vec3 = [t.at[0], 0, t.at[1]];
+  const seats = CHAIR_SPOTS.map(([sx, sz]) => [table[0] + sx, 0.6, table[2] + sz] as Vec3);
+  return {
+    table,
+    seat: seats[0],
+    seats,
+    upgradeSpot: [table[0] + t.up[0], 0, table[2] + t.up[1]] as Vec3,
+  };
+});
+
+// ---- SERVİS KÜMESİNİN YERİ (D-062: 3. Alan açılınca ARKA BANDA taşınır) ----
+/**
+ * Maket v13'ün 1-2. adımında çay ocağı ilk salonun SOL DUVARINDA durur; 3. adımda arka bandın
+ * servis bloğuna taşınır ve "bütün servis buradan verilir". Servis AYNI objedir, SEVİYESİ KORUNUR:
+ * D-060'ın "obje yer değiştirmez" kuralı seviye merdiveni içindir (L4 tezgâh dönüşümü yerinde olur);
+ * buradaki taşınma bir yükseltme değil, ALAN AÇILIŞININ kendisidir.
+ *
+ * Bu yüzden servis koordinatları sabit dizi değil: `servicePlace(areasOpen)`. Çağıranların elinde
+ * `areasOpen` zaten var (tick ctx · store · Scene) — ripple bu yüzden küçük kaldı.
+ */
+export interface ServicePlace {
+  /** Servisin DURDUĞU alan (yerleşim sorusu; `serviceOfTable` ÜRETİM sorusudur ve hep 0 döner). */
+  areaIndex: number;
+  station: Vec3;
+  /** Ön yüzün baktığı yön: 0 = +z (bant tezgâhı), +π/2 = +x (sol duvar modülü). */
+  rot: number;
+  half: readonly [number, number];
+  /** Garsonun tepsi doldurduğu nokta: modülün ÖN yüzü (arkadaki çaycı koridorundan çay ALINMAZ). */
+  pickup: Vec3;
+  /** Oyuncunun üstünde durup servisi yükselttiği nokta — çay-alma dairesinin DIŞINDA. */
+  upgradeSpot: Vec3;
+  dish: Vec3;
+  dishRot: number;
+  dishHalf: readonly [number, number];
+  waiterHome: Vec3;
+  dishwasherHome: Vec3;
+  /** Çaycının tezgâh boyunca gidip geldiği doğru parçası + iş yaparken baktığı yön (Scene). */
+  staffWalk: { a: Vec3; b: Vec3; face: number };
+}
+
+/** Servis kaç alan açıkken arka banda taşınır (maket v13 adım 3). */
+export const SERVICE_MOVES_AT = 3;
+export const serviceMoved = (areasOpen: number): boolean => areasOpen >= SERVICE_MOVES_AT;
+
+/** ADIM 1-2 — ilk salonun SOL DUVARI. Bulaşık ocağın hemen yanında (D-025: "bulaşık ocağın yanında"). */
+const PLACE_LEFT_WALL: ServicePlace = {
+  areaIndex: 0,
+  station: [-16.2, 0, 6.4],
+  rot: Math.PI / 2,
+  half: [0.5, 1.6],
+  pickup: [-15.0, 0, 6.4],
+  upgradeSpot: [-15.2, 0, 2.6],
+  dish: [-16.2, 0, 10.6],
+  dishRot: Math.PI / 2,
+  dishHalf: [0.5, 1.0],
+  waiterHome: [-14.4, 0, 8.6],
+  dishwasherHome: [-14.4, 0, 12.6],
+  staffWalk: { a: [-15.1, 0, 4.9], b: [-15.1, 0, 11.4], face: Math.PI / 2 },
+};
+
+/**
+ * ADIM 3+ — ARKA BANDIN servis bloğu. Tezgâh bandın ÖNÜNDE, salona bakar; arkasında çaycının
+ * çalıştığı koridor kalır (maket v13: "hazırlık arkada, semaver ve bardaklar müşterinin gördüğü
+ * yerde"). Bandın kendisi (z < −9,8) yürünmez kütledir; arka duvar hattı z = −10,3'te.
+ */
+const PLACE_BACK_BAND: ServicePlace = {
+  areaIndex: 2,
+  station: [-13.0, 0, -8.6],
+  rot: 0,
+  half: [1.6, 0.5],
+  pickup: [-13.0, 0, -7.6],
+  upgradeSpot: [-15.8, 0, -8.0],
+  dish: [-7.4, 0, -8.6],
+  dishRot: 0,
+  dishHalf: [1.0, 0.5],
+  waiterHome: [-11.0, 0, -7.2],
+  dishwasherHome: [-5.6, 0, -7.2],
+  staffWalk: { a: [-14.6, 0, -9.6], b: [-11.4, 0, -9.6], face: 0 },
+};
+
+/** Servis kümesinin O ANKİ yeri. Kat tek servisten döndüğü için index almaz (world.THE_SERVICE). */
+export function servicePlace(areasOpen: number): ServicePlace {
+  return serviceMoved(areasOpen) ? PLACE_BACK_BAND : PLACE_LEFT_WALL;
+}
+
+/** Servisin durduğu alan — o alan AÇIK olmak zorunda (yerleşim değişmezi; testli). */
+export const servicePlaceArea = (areasOpen: number): number => servicePlace(areasOpen).areaIndex;
 
 export const LAYOUT = {
-  // DÜNYA v2 (2026-06-11, kullanıcı tarifi; feedback-2026-06-11.md §G + D-023): duvarsız TEK SALON,
-  // TEK KAPI (ön duvar, 1. alanın ortası), mutfak = SOL DUVARDA L-ŞERİDİ (ocak modülleri sol duvara
-  // paralel, alan açıldıkça şerit öne uzar; bulaşık modülleri arka duvar dibinde L'nin kısa kolu).
-  // SERVİS mekaniği (stations[s]/dishStations[s]/personel) AYNEN korunur — yalnız FİZİKSEL konum
-  // şeride taşındı. TÜM müşteriler tek kapıdan girer/çıkar (entrances/streets ALANA göre index'li).
-  entrances: AREAS.map(() => [0, 0.6, 4.8] as Vec3),
-  streets: AREAS.map(() => [0, 0.6, 8.0] as Vec3),
-  entrance: [0, 0.6, 4.8] as Vec3, // alias (testler/eski kod)
-  street: [0, 0.6, 8.0] as Vec3,
-  player: [0, 0.6, 1.5] as Vec3,
-  // --- SERVİSE göre index'li diziler (ocak/bulaşık/personel/pickup/yükseltme) ---
-  // Ocak modülleri (D-025 alan-başı mutfak): sol kolon SOL duvarda, sağ kolon SAĞ duvarda (aynalı);
-  // arka sıra aynı şablonun −z kopyası. Arkada çaycı koridoru (~0.55) her alanda korunur.
-  stations: SERVICES.map((s) => mir(svcArea(s), [-4.35, 0, -2.5])),
-  // Modül dönüşü: ön yüz salona bakar (sol kolon +x → +90°; sağ kolon −x → −90°).
-  stationRots: SERVICES.map((s) => (areaCol(svcArea(s)) ? -Math.PI / 2 : Math.PI / 2)),
-  // Bulaşık modülü Y1'de YERİNDE kaldı (kendi yan duvarında) → dönüşü istasyondan bağımsız.
-  dishRots: SERVICES.map((s) => (areaCol(svcArea(s)) ? -Math.PI / 2 : Math.PI / 2)),
-  // Oynanabilir alanın tamamı: 2×2 ızgara (tek bina). Oyuncu AÇIK alanların BİRLEŞİMİNE
-  // kelepçelenir (tick — L-şekil destekli union kelepçesi, M2).
-  area: { minX: -5.3, maxX: 5.3 + AREA_DX, minZ: -5.3 - AREA_DZ, maxZ: 5.0 },
-  // --- ALANA göre index'li diziler ---
-  // Alan başına sınırlar (zemin/duvar/kamera + kilitli "boş arsa" için).
-  areaBounds: AREAS.map((a) => ({
-    minX: -5.3 + areaCol(a) * AREA_DX,
-    maxX: 5.3 + areaCol(a) * AREA_DX,
-    minZ: -5.3 - areaRow(a) * AREA_DZ,
-    maxZ: 5.0 - areaRow(a) * AREA_DZ,
-  })),
-  // 1. | 2. alan sınır çizgisi (görsel; DUVAR YOK — D-023). Alanlar bitişik → sınır = ortak kenar.
-  areaBorderX: 5.3,
-  // Masa slotları — GLOBAL 12 slot (alan a → [a*4, a*4+4)); alan içi 2×2 düzen değişmedi (D-017 §1).
+  // TEK KAPI: ilk salonun cephesinin ortasında (x = −8,5) — maket v13 adım 1. Kat büyüse de kapı
+  // yerinde kalır; kapının binanın tam ortasına kayması (v13 adım 2) cephe işi, B3-2'ye ait.
+  entrances: AREAS.map(() => [-8.5, 0.6, 16.6] as Vec3),
+  streets: AREAS.map(() => [-8.5, 0.6, 20.5] as Vec3),
+  entrance: [-8.5, 0.6, 16.6] as Vec3,
+  street: [-8.5, 0.6, 20.5] as Vec3,
+  player: [-8.5, 0.6, 13.4] as Vec3,
+  // Oynanabilir alanın BİRLEŞİM kutusu (nav ızgarası bunun üstüne kurulur). Arka bant DIŞARIDA:
+  // alanlar z = −9,8'de biter, bant yürünmez kütledir.
+  area: { minX: -FLOOR_HALF, maxX: FLOOR_HALF, minZ: BAND.front, maxZ: FLOOR_HALF },
+  areaBounds: AREA_RECTS.map((r) => ({ minX: r.minX, maxX: r.maxX, minZ: r.minZ, maxZ: r.maxZ })),
+  // Masa slotları — GLOBAL 12 slot (alan a → [a*4, a*4+4)).
   tables: ALL_TABLES,
-  // Pad pozisyonları: açtıkları objenin yerinde. Alan pad'i alan sınır çizgisinin ortasında.
+  // Pad pozisyonları: açtıkları objenin TAM yerinde. Alan pad'i o alanın eşiğinde, AÇIK tarafta.
+  // Personel pad'leri servisin O ANKİ yerinin yanında durur: `waiter`/`dishwasher` sol-duvar
+  // döneminde (1-2 alan), `waiter2`/`waiter3` arka-bant döneminde (3 alan) açılır — zincir sırası
+  // bunu garanti eder (economy.config pad listesi), yerleşim ayrıca dallanmaz.
   padPos: {
     table2: ALL_TABLES[1].table,
     table3: ALL_TABLES[2].table,
     table4: ALL_TABLES[3].table,
-    // Sol duvarda, çay-yükseltme noktasının altında (2026-06-11: çay pad'i ocağın altına taşındı,
-    // dolum daireleri kesişmesin diye garson pad'i güneye kaydı: ayrım 2.71 > 2×PAD_RADIUS 2.6).
-    waiter: [-4.6, 0, 2.2] as Vec3,
-    // Bulaşıkçı pad'i: mutfak bloğunun arka köşesi açıklığında (çay pad'iyle dolum daireleri
-    // KESİŞMEZ: ayrım 3.28 > 2×PAD_RADIUS 2.6 — "pad'ler sık olmasın" isteği).
-    dishwasher: [0.2, 0, -4.5] as Vec3,
-    // Alan sınırının HEMEN 1. alan tarafında (2026-06-11: kilitli salon TAM karanlık örtülü —
-    // pad halkası/etiketi karanlığa taşmasın diye eşikten ~0.75 içeri alındı).
-    // z 0.6→0.8 (ferahlama): yeni sıra koridorunun merkezi — pad halkası (1.3) iki masa köşesine de değmez.
-    zone2: [4.55, 0, 0.8] as Vec3,
+    waiter: [-12.4, 0, 2.0] as Vec3,
+    dishwasher: [-13.4, 0, 10.6] as Vec3,
+    zone2: [-1.6, 0, 8.5] as Vec3,
     z2table2: ALL_TABLES[5].table,
     z2table3: ALL_TABLES[6].table,
     z2table4: ALL_TABLES[7].table,
-    z2waiter: mir(1, [-4.6, 0, 2.2]),
-    z2dishwasher: mir(1, [0.2, 0, -4.5]),
-    // 3. ALAN (arka-sağ, 2026-06-11 taşıma): unlock pad'i a1'in arka şeridinde, kendi geçidinin
-    // (x 9.0) yanında — dolum daireleri komşularla KESİŞMEZ (z2dishwasher pad [10.4,-4.5] ayrımı 2.71).
-    zone3: [7.7, 0, -4.3] as Vec3,
+    zone3: [2.0, 0, 1.8] as Vec3,
     z3table2: ALL_TABLES[9].table,
     z3table3: ALL_TABLES[10].table,
     z3table4: ALL_TABLES[11].table,
-    z3waiter: mir(2, [-4.6, 0, 2.2]),
-    // Y1: tezgâh arka duvara taşınınca eski nokta ([10.4,-14.8]) counter footprint'inin içinde
-    // kalıyordu → pad bulaşık modülünün önündeki açıklığa (tezgâh kenarına 2.1, bulaşığa 1.25).
-    z3dishwasher: [13.3, 0, -14.3] as Vec3,
-    // Y4: 2. garson pad'leri — kendi salonunun 1. garson pad'inin TAM yeri (requires prev waiter →
-    // eski pad çoktan kaybolmuş; sıfır yeni mekânsal çakışma riski, tematik "garson durağı").
-    waiter2: [-4.6, 0, 2.2] as Vec3,
-    z2waiter2: mir(1, [-4.6, 0, 2.2]),
-    z3waiter2: mir(2, [-4.6, 0, 2.2]),
+    waiter2: [-10.0, 0, -6.4] as Vec3,
+    waiter3: [-3.6, 0, -7.8] as Vec3,
   } as Record<string, Vec3>,
-  // Servis başına mekânsal ocak-yükseltme noktası: kendi duvarında, modülün ALTINDA (kapı tarafı —
-  // kullanıcı 2026-06-11: "ocağın önünde değil altında, sol duvarda dursun"). PAD MERKEZİ ocağın
-  // pickupRadius'unun (1.6) DIŞINDA kalır (merkez ayrımı 2.0) → pad üstünde dururken çay-alma
-  // tetiklenmez; ayrıca tick'teki pickup-guard'ı pickup alanı içinde dolumu zaten kilitler (vitest).
-  stationUpgradeSpots: SERVICES.map((s) => mir(svcArea(s), [-4.35, 0, -0.5])),
-  stationUpgradeSpot: [-4.35, 0, -0.5] as Vec3, // servis-0 alias (testler/eski kod)
-  // Garson çay-alma noktası: modülün ÖN yüzü (2026-06-11 feedback: bardaklar önde, garson arkadaki
-  // çaycı koridorundan ALMASIN — eski merkez+yarıçap hedefi arka koridoru da kabul ediyordu). Aynalı şablon.
-  stationPickups: SERVICES.map((s) => mir(svcArea(s), [-3.5, 0, -2.5])),
-  // Servis başına personel köşeleri (aynalı şablon).
-  // Garson boşta ÜST sırada, kendi mutfak bloğunun yanında bekler (2026-06-11 feedback: "sol altta
-  // değil üst sırada dursun"). Çay pickup önünden (stationPickups z -2.5) ve bulaşıkçı köşesinden uzak.
-  waiterHomes: SERVICES.map((s) => mir(svcArea(s), [-3.5, 0, -3.4])),
-  waiterHome: [-3.5, 0, -3.4] as Vec3,
-  // (v29: waiterUpgradeSpots kalktı — garson hızı karakter panelinden.)
-  // Bulaşık modülleri (D-025 rev. A, kullanıcı 2026-06-11: "bulaşık ocağın yanında olsun"):
-  // kendi ocağının HEMEN ÜSTÜNDE, AYNI yan duvarda bitişik (ocak z -3.6..-1.4, bulaşık z -4.9..-3.5
-  // → tek mutfak bloğu). Sağ kolon aynalı; arka sıra −z kopyası.
-  dishStations: SERVICES.map((s) => mir(svcArea(s), [-4.35, 0, -4.2])),
-  dishStation: [-4.35, 0, -4.2] as Vec3,
-  dishwasherHomes: SERVICES.map((s) => mir(svcArea(s), [-3.3, 0, -4.2])),
-  dishwasherHome: [-3.3, 0, -4.2] as Vec3,
   // --- Collision footprint'leri (yarı-boyut [hx,hz]; D-016): GÖRSEL mesh'lere yaslı → oyuncu objeye
   // "değiyor gibi" sokulur, arada boşluk kalmaz. (ocak tezgah 2.2×0.8, bulaşık 1.4×0.8, masa r0.5, sandalye 0.42.)
   playerRadius: 0.35, // oyuncu kapsül görsel yarıçapı = standoff'u görsel kenara denk getirir
   actorRadius: 0.28, // garson/bulaşıkçı engel-kaçınma yarıçapı
-  stationHalf: [0.4, 1.1] as [number, number], // sol duvara paralel modül (uzun kenar z'de — D-023 şerit)
-  /** Servis başına istasyon footprint'i (bugün tek servis; B3'te tezgâh arka banda taşınınca değişir). */
-  stationHalves: SERVICES.map(() => [0.4, 1.1] as [number, number]),
-  dishHalf: [0.4, 0.7] as [number, number], // yan duvara paralel modül (uzun kenar z'de — ocak gibi)
+  // (B3-1: `stationHalf`/`stationHalves`/`dishHalf` KALKTI — servis footprint'i artık yerine
+  //  bağlı: sol duvarda uzun kenar z'de, arka bantta x'te. `servicePlace(areasOpen).half`.)
   tableHalf: [0.5, 0.5] as [number, number],
   chairHalf: [0.22, 0.22] as [number, number], // sandalye + oturan müşteri
   // Sandalye ofsetleri (Y2 tek kaynak): Tables.tsx görsel sandalyeyi, store koltuk pozisyonunu
@@ -267,11 +326,16 @@ export interface Solid {
 
 // Sıra-arası duvar KALDIRILDI (2026-06-11 kullanıcı: "alan 2 ile alan 3 arasında duvar olmasın") —
 // a1↔a2 sınırı artık a0↔a1 gibi tamamen açık (D-023 tek-salon deseni dikey komşuya da uygulanır).
-// Kilitli a2 blokajı lockedAreaSolids + clampToOpenAreas'ta sürer.
+// Kilitli alan blokajı lockedAreaSolids + clampToOpenAreas'ta sürer.
 
-/** AÇIK alan index'leri kadar servis açıktır: servisin durduğu alan açıksa servis de açıktır.
- *  B2'de tek servis kalınca bu fonksiyon her zaman [0] döner — çağıranlar değişmez. */
-export const openServices = (areasOpen: number): number[] => SERVICES.filter((s) => svcArea(s) < areasOpen);
+/** Servisin durduğu alan açıksa servis de açıktır. Servis kat açıldığı andan itibaren vardır ve
+ *  taşındığı alan (a2) ancak areasOpen ≥ 3 iken hedeflenir → koşul "en az bir alan açık"a iner. */
+export const openServices = (areasOpen: number): number[] => (areasOpen > 0 ? [...SERVICES] : []);
+
+/** Servis o an bu alanda mı DURUYOR? (YERLEŞİM sorusu — world.serviceOfTable ÜRETİM sorusudur.)
+ *  Durmuyorsa −1. B3-1'de cevap `areasOpen`'a bağlı: 3. Alan açılınca servis arka banda taşınır. */
+export const serviceInArea = (area: number, areasOpen: number): number =>
+  servicePlace(areasOpen).areaIndex === area ? THE_SERVICE : -1;
 
 /** KİLİTLİ alanlar nav için BLOKE (M2): müşteri/personel rotası "boş arsa"dan geçemez
  *  (duvarlar yalnız açık alanları sardığından grid'e ayrıca anlatmak gerekir). Arka-sol REZERV
@@ -285,8 +349,8 @@ export function lockedAreaSolids(areasOpen: number): Solid[] {
       h: [(ab.maxX - ab.minX) / 2, (ab.maxZ - ab.minZ) / 2],
     });
   }
-  // BL hücre = a0 alanının −AREA_DZ kopyası (areaBounds formülü, col 0 / row 1).
-  solids.push({ c: [0, 0, (-5.3 - AREA_DZ + (5.0 - AREA_DZ)) / 2], h: [5.3, (5.0 - -5.3) / 2] });
+  // B3-1: eski 2×2 ızgaranın "rezerv arka-sol arsa"sı KALKTI — arka yarı tek alandır (a2), boş
+  // hücre yok. Bandın kendisi zaten LAYOUT.area'nın dışında, ayrıca bloke edilmesi gerekmez.
   return solids;
 }
 
@@ -299,9 +363,10 @@ const tableHalfFor = (): readonly [number, number] => LAYOUT.tableHalf;
  *  eklenmez (oyuncu zaten açık alanların birleşimine kelepçeli). */
 export function activeSolids(tables: number, areasOpen: number): Solid[] {
   const solids: Solid[] = [];
-  for (const sv of openServices(areasOpen)) {
-    solids.push({ c: LAYOUT.stations[sv], h: LAYOUT.stationHalves[sv] });
-    solids.push({ c: LAYOUT.dishStations[sv], h: LAYOUT.dishHalf });
+  if (openServices(areasOpen).length > 0) {
+    const sp = servicePlace(areasOpen);
+    solids.push({ c: sp.station, h: sp.half });
+    solids.push({ c: sp.dish, h: sp.dishHalf });
   }
   for (let i = 0; i < tables; i++) {
     solids.push({ c: LAYOUT.tables[i].table, h: tableHalfFor() });
@@ -351,22 +416,43 @@ export function hitsSolid(x: number, z: number, solids: Solid[], r: number): boo
 // --- Personel yol bulma (nav.ts) ---
 // Garson/bulaşıkçı GERÇEK rota izler (BFS) → eski moveAvoid eksen-kayması bir masayı dolaşamayıp
 // kilitleniyordu (ön masada takılı kalma, arka masa açlığı, salınım). Oyuncu BUNU KULLANMAZ.
-const NAV_CELL = 0.3; // ızgara hücre boyu (dünya birimi) — masalar arası koridorları açık tutar.
 // Personel "yanına varınca teslim/al" mesafeleri (GEOMETRİK: footprint yarısı + aktör yarıçapı + küçük pay).
 // Masaya BİTİŞİK teslim → "tam masaya gelmeden veriyor" hissi biter (eski serveRadius 1.6 yerine ~1.05).
-export const REACH_TABLE = LAYOUT.tableHalf[0] + LAYOUT.actorRadius + 0.25; // ocaktan masaya servis
+// Izgara hücre boyu (dünya birimi) — masalar arası koridorları açık tutar. REACH_TABLE bununla
+// BAĞLIDIR: aşağıya bak.
+const NAV_CELL = 0.3;
+
+/**
+ * Masaya teslim mesafesi. **Izgara hücre boyuna BAĞLIDIR** ve bu bağ B3-1'de bulundu:
+ * BFS ızgarası masanın footprint'ini `tableHalf + actorRadius` kadar şişirir, üstüne bir de hücre
+ * yuvarlaması biner. Eski değer (0,5 + 0,28 + 0,25 = 1,03) bu yuvarlamayı hesaba katmıyordu; masa
+ * koordinatları ızgaraya denk düştüğünde en yakın BOŞ hücre 1,1 br'ye kayıyor ve BFS "yol yok"
+ * diyordu. Oyun o zaman `navStep`'in düz-çizgi yedeğine düşüyordu — yani garson masaya varıyordu
+ * ama ENGELDEN KAÇMADAN. Kusur eski yerleşimde de vardı, yalnızca masa koordinatları şans eseri
+ * ızgaraya denk düşmediği için görünmüyordu (34 × 34'e taşınınca a2 sırası tam hücre merkezine
+ * oturdu ve ortaya çıktı — `layout-b31.test.ts` "ROTA" testi bunu kalıcı olarak bekçiliyor).
+ * Bedeli: garson masanın kenarına 0,53 yerine 0,63 br kalıyor (10 cm) — düz-çizgi yedeğine
+ * düşmemenin karşılığında kabul edildi.
+ */
+export const REACH_TABLE = LAYOUT.tableHalf[0] + LAYOUT.actorRadius + NAV_CELL + 0.05;
 // Tepsi yükleme: ocağın ÖN yüzündeki pickup noktasına varış (2026-06-11: merkez+geniş yarıçap
 // arka çaycı koridorunu da kabul ediyordu → garson arkadan çay alıyordu; bardaklar ÖNDE).
 export const REACH_PICKUP = 0.45;
-export const REACH_WASH = LAYOUT.dishHalf[1] + LAYOUT.actorRadius + 0.4; // bulaşıkta yıkama
+/** Bulaşıkta yıkama mesafesi — leğenin O ANKİ footprint'inden türer (sol duvarda uzun kenar z'de,
+ *  arka bantta x'te; ikisinde de "leğenin önüne varınca" demek). */
+export const reachWash = (areasOpen: number): number => {
+  const h = servicePlace(areasOpen).dishHalf;
+  return Math.max(h[0], h[1]) + LAYOUT.actorRadius + 0.4;
+};
 export const REACH_HOME = 0.4; // boştayken köşeye dönüş
 
 /** Personelin GÖVDE engeli saydığı katılar (açık servislerin ocak+bulaşığı + açık masalar). */
 export function navSolids(tables: number, areasOpen: number): NavSolid[] {
   const solids: NavSolid[] = [];
-  for (const sv of openServices(areasOpen)) {
-    solids.push({ c: LAYOUT.stations[sv], h: LAYOUT.stationHalves[sv] });
-    solids.push({ c: LAYOUT.dishStations[sv], h: LAYOUT.dishHalf });
+  if (openServices(areasOpen).length > 0) {
+    const sp = servicePlace(areasOpen);
+    solids.push({ c: sp.station, h: sp.half });
+    solids.push({ c: sp.dish, h: sp.dishHalf });
   }
   for (let i = 0; i < tables; i++) solids.push({ c: LAYOUT.tables[i].table, h: tableHalfFor() });
   // Kilitli alanlar + rezerv arsa rota dışı (sıra-arası duvar 2026-06-11'de kaldırıldı).
@@ -438,8 +524,9 @@ export function navStep(
  */
 function interactionPoints(areasOpen: number, tables: number): RVec3[] {
   const pts: RVec3[] = [LAYOUT.entrance];
-  for (const sv of openServices(areasOpen)) {
-    pts.push(LAYOUT.stations[sv], LAYOUT.stationPickups[sv], LAYOUT.dishStations[sv], LAYOUT.stationUpgradeSpots[sv]);
+  if (openServices(areasOpen).length > 0) {
+    const sp = servicePlace(areasOpen);
+    pts.push(sp.station, sp.pickup, sp.dish, sp.upgradeSpot);
   }
   for (let i = 0; i < tables; i++) {
     pts.push(LAYOUT.tables[i].table, LAYOUT.tables[i].seat, LAYOUT.tables[i].upgradeSpot);

@@ -37,13 +37,13 @@ import {
 import {
   LAYOUT,
   openServices,
+  servicePlace,
 } from './layout';
 import { deriveWorld, defaultFloorTheme, MAX_AREAS, MAX_SERVICES, THE_SERVICE, type World } from './world';
 // Dünya modeli (ALAN · SERVİS · MASA · ODA) Faz B1'de world.ts'e ayrıldı; store aynı kapıdan sunar.
 export {
   deriveWorld,
   defaultFloorTheme,
-  serviceInArea,
   serviceOfTable,
   serviceMenu,
   sellsTost,
@@ -51,7 +51,6 @@ export {
   tostShare,
   areaOfTable,
   tablesInArea,
-  SERVICE_AREAS,
   THE_SERVICE,
   MAX_AREAS,
   MAX_SERVICES,
@@ -61,7 +60,21 @@ export {
 export type { World, Area, Service, Table, Room } from './world';
 // Yerleşim/geometri Faz A2'de layout.ts'e taşındı; eski `from './store'` importları kırılmasın diye
 // buradan yeniden dışa aktarılır (tek tanım, iki kapı).
-export { LAYOUT, PAD_RADIUS, areaCol, areaRow, areaAt, areaPoint, openServices, parkSpot, parkClearance } from './layout';
+export {
+  LAYOUT,
+  PAD_RADIUS,
+  BAND,
+  FLOOR_HALF,
+  wallSpans,
+  hasAreaNeighbor,
+  servicePlace,
+  serviceInArea,
+  serviceMoved,
+  openServices,
+  parkSpot,
+  parkClearance,
+} from './layout';
+export type { ServicePlace, AreaSide } from './layout';
 export type { RVec3 } from './layout';
 
 import {
@@ -342,6 +355,8 @@ export const useGame = create<GameState>((set, get) => ({
     // D-015: masa/servis/personel padsDone'dan TÜRETİLİR (ayrı saklanmaz).
     const world: World = deriveWorld(save.padsDone);
     const openSvc = openServices(world.areasOpen);
+    // B3-1 (D-062): servis kümesinin YERİ açık alan sayısına bağlı (3. Alan açılınca arka banda taşınır).
+    const initPlace = servicePlace(world.areasOpen);
     const stationLevels = Array.from({ length: MAX_SERVICES }, (_, sv) =>
       Math.min(save.stationLevels[sv] ?? 0, stationSoftMaxLevel()),
     );
@@ -393,12 +408,12 @@ export const useGame = create<GameState>((set, get) => ({
       npcCount: 0,
       // GLOBAL havuz: tutulmuş garson sayısı kadar aktör, bekleme noktaları 0.7 br arayla.
       waiters: Array.from({ length: world.services[THE_SERVICE].waiters }, (_, i) => ({
-        pos: [LAYOUT.waiterHomes[THE_SERVICE][0] + i * 0.7, 0, LAYOUT.waiterHomes[THE_SERVICE][2]] as Vec3,
+        pos: [initPlace.waiterHome[0] + i * 0.7, 0, initPlace.waiterHome[2]] as Vec3,
         tray: 0,
         trayFood: 0,
       })),
       dishwasher: world.services[THE_SERVICE].hasDishwasher
-        ? { pos: [...LAYOUT.dishwasherHomes[THE_SERVICE]] as Vec3, tray: 0, trayFood: 0 }
+        ? { pos: [...initPlace.dishwasherHome] as Vec3, tray: 0, trayFood: 0 }
         : null,
       ready: { tea: 0, tost: 0 },
       brewProgress: { tea: 0, tost: 0 },
@@ -460,7 +475,7 @@ export const useGame = create<GameState>((set, get) => ({
       camFocus:
         save.questIndex === 0 && lifetime.lte(0)
           ? (() => {
-              const p0 = questFocusPos(C.quests[0].target, save.tableLevels, world.tables.length);
+              const p0 = questFocusPos(C.quests[0].target, save.tableLevels, world.tables.length, world.areasOpen);
               return p0 ? { pos: [p0[0], p0[1], p0[2]] as [number, number, number], ttl: 3 } : null;
             })()
           : null,
@@ -574,7 +589,7 @@ export const useGame = create<GameState>((set, get) => ({
     const s = get();
     if (s.questIndex >= C.quests.length) return;
     const q = C.quests[s.questIndex];
-    const p = questFocusPos(q.target, s.tableLevels, s.tables, q.area ?? 0);
+    const p = questFocusPos(q.target, s.tableLevels, s.tables, s.areasOpen, q.area ?? 0);
     if (p) set({ camFocus: { pos: [p[0], p[1], p[2]], ttl: CAM_FOCUS_TTL } });
   },
 

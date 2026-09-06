@@ -72,7 +72,6 @@ import {
   defaultFloorTheme,
   MAX_AREAS,
   MAX_SERVICES,
-  SERVICE_AREAS,
   tablesInArea,
   serviceOfTable,
   serviceInArea,
@@ -83,9 +82,18 @@ import {
   THE_SERVICE,
   MAX_WAITERS,
   areaOfTable,
+  servicePlace,
+  serviceMoved,
+  wallSpans,
+  BAND,
+  FLOOR_HALF,
 } from '../src/game/store';
 import { resetKeepingSettings, loadSave, defaultSave, defaultStats, defaultSettings, defaultWaiterUpgrades } from '../src/game/save';
 import { buildNavGrid, findNavPath } from '../src/game/nav';
+
+/** Servis kümesinin YERİ (B3-1/D-062): 3. Alan açılınca arka banda taşınır. Testlerin çoğu tek
+ *  alanla koştuğu için varsayılan 1 = sol duvar dönemi; 3 alanlı testler SP(3) ister. */
+const SP = (areasOpen = 1) => servicePlace(areasOpen);
 
 // Mevcut ilerleme durumundan gating (requires) için GateState üretir.
 function gate() {
@@ -218,7 +226,7 @@ describe('servis döngüsü (D-011 / Faz 2c)', () => {
     expect(waiting).toBeTruthy();
 
     // 1) Ocağa git → tepsi dolar.
-    const st = LAYOUT.stations[0];
+    const st = SP().station;
     stand(st);
     useGame.getState().tick(0.1);
     const trayLoaded = useGame.getState().tray;
@@ -373,7 +381,7 @@ describe('garson — quest hattında zorunlu personel (2026-06-09; eski D-014 op
     // Oyuncuyu kimseyi servis edemeyeceği köşeye park et.
     useGame.setState({
       padsDone: ['table2', 'waiter'],
-      waiters: [{ pos: [...LAYOUT.waiterHome] as [number, number, number], tray: 0, trayFood: 0 }],
+      waiters: [{ pos: [...SP().waiterHome] as [number, number, number], tray: 0, trayFood: 0 }],
       player: PARK,
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
@@ -641,7 +649,7 @@ describe('bardak döngüsü (Faz 2e) — demleme temiz harcar, içen kirli bıra
     expect(waiting).toBeTruthy();
 
     // Ocaktan tepsiye al → bekleyen masaya götür → servis.
-    const st = LAYOUT.stations[0];
+    const st = SP().station;
     stand(st);
     useGame.getState().tick(0.1);
     const seat = LAYOUT.tables[waiting!.tableIndex].seat;
@@ -667,7 +675,7 @@ describe('bardak döngüsü (Faz 2e) — demleme temiz harcar, içen kirli bıra
     // Bulaşığa git → yıka (carriedDirty 0, cleanCups artar).
     const cleanBefore = useGame.getState().cleanCups;
     const carried = useGame.getState().carriedDirty;
-    const ds = LAYOUT.dishStation;
+    const ds = SP().dish;
     stand(ds);
     useGame.getState().tick(0.1);
     expect(useGame.getState().carriedDirty).toBe(0);
@@ -687,7 +695,7 @@ describe('bardak döngüsü (Faz 2e) — demleme temiz harcar, içen kirli bıra
   // PAYLAŞIMLI kapasite (2026-06-09): çay + kirli aynı tepsiyi paylaşır; karışık taşıma serbest, deadlock yok.
   it('kirli taşırken ocaktan temiz çay ALINIR (karışık taşıma; toplam trayCap sınırı)', () => {
     useGame.getState().hardReset();
-    const st = LAYOUT.stations[0];
+    const st = SP().station;
     // Elinde kirli varken ocağa gidince temizi de alabilmeli (toplam trayCap'i aşmadan).
     useGame.setState({
       player: [st[0], 0.6, st[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0],
@@ -745,7 +753,7 @@ describe('bardak döngüsü (Faz 2e) — demleme temiz harcar, içen kirli bıra
     expect(useGame.getState().carriedDirty).toBe(1); // bardak bardağa
     expect(useGame.getState().dishes.length).toBe(0);
     // Bulaşık noktasına git → ikisi de yıkanır, GLOBAL temiz havuza döner.
-    const ds = LAYOUT.dishStations[0];
+    const ds = SP().dish;
     const cleanBefore = useGame.getState().cleanCups;
     stand(ds);
     useGame.getState().tick(0.1);
@@ -853,10 +861,10 @@ describe('bulaşıkçı — omurga halkası (B2: Bölüm 2, plan §4 adım 14)',
   it('bulaşıkçı tutulunca hasDishwasher=true; kirlileri toplayıp yıkar (oyuncu uzakta → kısmi assist)', () => {
     useGame.getState().hardReset();
     // D-015: hasDishwasher padsDone'dan türetilir → padsDone üzerinden kur. NPC'siz izole sahne.
-    const ds = LAYOUT.dishStation;
+    const ds = SP().dish;
     useGame.setState({
       padsDone: ['table2', 'table3', 'zone2', 'dishwasher'],
-      dishwasher: { pos: [...LAYOUT.dishwasherHome] as [number, number, number], tray: 0, trayFood: 0 },
+      dishwasher: { pos: [...SP().dishwasherHome] as [number, number, number], tray: 0, trayFood: 0 },
       player: PARK, // oyuncu uzakta; yalnız bulaşıkçı çalışsın
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
@@ -1008,7 +1016,7 @@ describe('ekonomi v2 — seviye throughputu artırır, fiyatı DEĞİL (D-010)',
     useGame.setState({ player: PARK, inputKeyboard: [0, 0], inputJoystick: [0, 0] });
     for (let i = 0; i < 200 && useGame.getState().ready.tea === 0; i++) useGame.getState().tick(0.1);
     // 1) Ocağa git → tepsiye al → görev 1 tamam, sıradaki "müşteriye götür".
-    const st = LAYOUT.stations[0];
+    const st = SP().station;
     stand(st);
     useGame.getState().tick(0.1);
     expect(useGame.getState().stats.teaPickups).toBeGreaterThan(0);
@@ -1117,7 +1125,7 @@ describe('mekânsal çay yükseltme noktası (zone) + gating', () => {
   it('önkoşul (2. masa) karşılanmadan zone pasiftir', () => {
     useGame.getState().hardReset();
     useGame.getState().addMoney(1000);
-    const z = LAYOUT.stationUpgradeSpot;
+    const z = SP().upgradeSpot;
     stand(z);
     for (let i = 0; i < 50; i++) useGame.getState().tick(0.1);
     // table2 açılmadığı için yükseltme noktası çalışmaz.
@@ -1130,7 +1138,7 @@ describe('mekânsal çay yükseltme noktası (zone) + gating', () => {
     expect(completePad('table2')).toBe(true); // önkoşulu karşıla
 
     useGame.getState().addMoney(30); // L1 (25₺) yeter; max'a varmaz
-    const z = LAYOUT.stationUpgradeSpot;
+    const z = SP().upgradeSpot;
     stand(z);
     const before = useGame.getState().stationLevels[0];
 
@@ -1144,9 +1152,10 @@ describe('mekânsal çay yükseltme noktası (zone) + gating', () => {
     // Pad ocağa bitişik durur (My Hotel obje-başı desen) ama MERKEZİ pickup yarıçapının dışında
     // kalmalı (+0.3 marj) → pad merkezinde duran oyuncu çay-alma alanına girmez; pickup alanı
     // içindeyken dolum zaten tick'teki pickup-guard'ıyla kilitli (alttaki test).
-    for (let z = 0; z < LAYOUT.stations.length; z++) {
-      const st = LAYOUT.stations[z];
-      const up = LAYOUT.stationUpgradeSpots[z];
+    // B3-1: servisin İKİ yeri var (sol duvar · arka bant) — değişmez İKİSİNDE DE geçerli olmalı.
+    for (const areasOpen of [1, 2, 3]) {
+      const st = SP(areasOpen).station;
+      const up = SP(areasOpen).upgradeSpot;
       const dist = Math.hypot(st[0] - up[0], st[2] - up[2]);
       expect(dist).toBeGreaterThanOrEqual(economyConfig.serving.pickupRadius + 0.3);
     }
@@ -1157,9 +1166,13 @@ describe('mekânsal çay yükseltme noktası (zone) + gating', () => {
     expect(completePad('table2')).toBe(true); // yükseltme noktası açık
     useGame.getState().addMoney(100);
 
-    // Oyuncu tezgâhın TAM önünde (collision standoff ≈ z=-4.0): pickup yarıçapının İÇİNDE.
-    const st = LAYOUT.stations[0];
-    const front: [number, number, number] = [st[0], 0.6, st[2] + LAYOUT.stationHalf[1] + LAYOUT.playerRadius + 0.05];
+    // Oyuncu tezgâhın TAM ÖN YÜZÜNDE (collision standoff kadar): pickup yarıçapının İÇİNDE.
+    // B3-1: ön yüzün yönü `rot`tan gelir (sol duvarda +x, arka bantta +z) — sabit eksen varsayımı kalktı.
+    const sp = SP();
+    const st = sp.station;
+    const d = (sp.rot === 0 ? sp.half[1] : sp.half[0]) + LAYOUT.playerRadius + 0.05;
+    const front: [number, number, number] =
+      sp.rot === 0 ? [st[0], 0.6, st[2] + d] : [st[0] + d, 0.6, st[2]];
     expect(Math.hypot(front[0] - st[0], front[2] - st[2])).toBeLessThan(economyConfig.serving.pickupRadius);
     useGame.setState({ player: front, inputKeyboard: [0, 0], inputJoystick: [0, 0], npcs: [], spawnTimer: 999 });
 
@@ -1178,14 +1191,14 @@ describe('mekânsal çay yükseltme noktası (zone) + gating', () => {
 describe('mobilya collision (D-016) — oyuncu ocağın/masanın içine giremez', () => {
   it('input ile ocağa yürürken İÇİNE GİRMEZ (kenarından kayar) + hareket eder', () => {
     useGame.getState().hardReset();
-    const ocak = LAYOUT.stations[0];
+    const ocak = SP().station;
     const startX = ocak[0] - 0.6; // ocağın solu (masa kutusundan uzak, ocak x-menzilinde) → -z'ye yürü
     const startZ = -1.4;
     useGame.setState({ player: [startX, 0.6, startZ], inputKeyboard: [0, -1], inputJoystick: [0, 0], npcs: [], spawnTimer: 999 });
     for (let i = 0; i < 60; i++) useGame.getState().tick(0.1);
     const p = useGame.getState().player;
     // Oyuncu merkezi ocak AABB'sinin İÇİNDE OLMAMALI (içine girmedi; kenardan kaydı/durdu).
-    const insideOcak = Math.abs(p[0] - ocak[0]) < LAYOUT.stationHalf[0] && Math.abs(p[2] - ocak[2]) < LAYOUT.stationHalf[1];
+    const insideOcak = Math.abs(p[0] - ocak[0]) < SP().half[0] && Math.abs(p[2] - ocak[2]) < SP().half[1];
     expect(insideOcak).toBe(false);
     // Dead-lock değil: bir yere hareket etti (kenara kaydı veya ocağa yaklaştı).
     expect(p[0] !== startX || p[2] !== startZ).toBe(true);
@@ -1205,7 +1218,7 @@ describe('mobilya collision (D-016) — oyuncu ocağın/masanın içine giremez'
 
   it('input olmadan (teleport/setState) collision uygulanmaz → testler/dev kancası etkilenmez', () => {
     useGame.getState().hardReset();
-    const ocak = LAYOUT.stations[0];
+    const ocak = SP().station;
     // Doğrudan ocağın merkezine ışınla (kutu içi), input yok → konum AYNEN korunur (push-out yok).
     useGame.setState({ player: [ocak[0], 0.6, ocak[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0], npcs: [], spawnTimer: 999 });
     useGame.getState().tick(0.1);
@@ -1220,21 +1233,21 @@ describe('yerleşim — yürüme döngüsü zorlanır (D-017 §1, çakışma yok
     return Math.hypot(a[0] - b[0], a[2] - b[2]);
   }
   it('hiçbir masa ocağın çay-alma + servis dairelerinin BİRLEŞİĞİNDE değil (tek noktada çay-al+servis imkânsız)', () => {
-    const stove = LAYOUT.stations[0];
+    const stove = SP().station;
     const minSep = economyConfig.serving.pickupRadius + economyConfig.serving.serveRadius; // 1.6+1.6 = 3.2 (=2R)
     for (const t of LAYOUT.tables) {
       expect(dist2D(stove, t.table)).toBeGreaterThan(minSep);
     }
   });
   it('hiçbir masa bulaşığın yıkama + kirli-toplama dairelerinin BİRLEŞİĞİNDE değil (tek noktada kirli-al+yıka imkânsız)', () => {
-    const dish = LAYOUT.dishStation;
+    const dish = SP().dish;
     const minSep = economyConfig.cups.washRadius + economyConfig.cups.collectRadius; // 1.6+1.4 = 3.0
     for (const t of LAYOUT.tables) {
       expect(dist2D(dish, t.table)).toBeGreaterThan(minSep);
     }
   });
   it('başlangıç masası (table0) ocaktan hedef ~5 br uzak (yürüme döngüsü en baştan zorlanır)', () => {
-    expect(dist2D(LAYOUT.stations[0], LAYOUT.tables[0].table)).toBeGreaterThan(4);
+    expect(dist2D(SP().station, LAYOUT.tables[0].table)).toBeGreaterThan(4);
   });
 });
 
@@ -1242,8 +1255,8 @@ describe('personel yol bulma (nav.ts — BFS, kilitlenme yok)', () => {
   // Oyundaki ile aynı engeller: ocak + bulaşık + 4 masa (koltuk/semaver hariç).
   function navSolids() {
     const solids = [
-      { c: LAYOUT.stations[0], h: LAYOUT.stationHalf },
-      { c: LAYOUT.dishStation, h: LAYOUT.dishHalf },
+      { c: SP().station, h: SP().half },
+      { c: SP().dish, h: SP().dishHalf },
     ];
     for (const t of LAYOUT.tables) solids.push({ c: t.table, h: LAYOUT.tableHalf });
     return solids;
@@ -1253,7 +1266,7 @@ describe('personel yol bulma (nav.ts — BFS, kilitlenme yok)', () => {
 
   it('ocaktan HER masaya yol bulunur (kolon-bloklu arka masalar dahil)', () => {
     const g = grid();
-    const station = LAYOUT.stations[0];
+    const station = SP().station;
     for (const t of LAYOUT.tables) {
       const path = findNavPath(g, station, t.table[0], t.table[2], REACH);
       expect(path).not.toBeNull(); // ulaşılamayan masa YOK
@@ -1283,7 +1296,7 @@ describe('personel yol bulma (nav.ts — BFS, kilitlenme yok)', () => {
     useGame.setState({
       padsDone: ['table2', 'table3', 'table4', 'waiter'],
       // Garsonu ocakta tepsi DOLU başlat → doğruca teslimata yönelir.
-      waiters: [{ pos: [...LAYOUT.stations[0]] as [number, number, number], tray: 1, trayFood: 0 }],
+      waiters: [{ pos: [...SP().station] as [number, number, number], tray: 1, trayFood: 0 }],
       player: PARK, // oyuncu uzakta (servis etmesin)
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
@@ -1550,7 +1563,7 @@ describe('Level/XP sistemi (v17, 2026-06-10) — eylem XP\'si, seviye eğrisi, m
     useGame.setState({ player: PARK, inputKeyboard: [0, 0], inputJoystick: [0, 0] });
     for (let i = 0; i < 200; i++) useGame.getState().tick(0.1);
     expect(useGame.getState().npcs.some((n) => n.state === 'waitingForTea')).toBe(true);
-    const st = LAYOUT.stations[0];
+    const st = SP().station;
     stand(st);
     useGame.getState().tick(0.1); // çay al (q_pickup tamamlanır → +perQuest, completing fazı başlar)
     const xpAfterPickup = useGame.getState().xp;
@@ -1591,7 +1604,7 @@ describe('bulaşık onboarding gate (2026-06-10) — q_wash gelmeden kirli barda
     for (let i = 0; i < 200; i++) useGame.getState().tick(0.1);
     const waiting = useGame.getState().npcs.find((n) => n.state === 'waitingForTea');
     expect(waiting).toBeTruthy();
-    const st = LAYOUT.stations[0];
+    const st = SP().station;
     stand(st);
     useGame.getState().tick(0.1);
     const seat = LAYOUT.tables[waiting!.tableIndex].seat;
@@ -1648,7 +1661,7 @@ describe('2. ALAN (B2) — alan mekân getirir, SERVİS getirmez', () => {
     for (let i = 0; i < 300 && useGame.getState().ready.tea === 0; i++) useGame.getState().tick(0.1);
     expect(useGame.getState().ready.tea).toBeGreaterThan(0);
     // Oyuncu KATIN TEK noktasından alır.
-    stand(LAYOUT.stations[THE_SERVICE]);
+    stand(SP().station);
     useGame.getState().tick(0.1);
     expect(useGame.getState().tray).toBeGreaterThan(0);
     // 2. alan masasına (global slot >= 4) müşteri oturur.
@@ -1693,9 +1706,9 @@ describe('WP1 bug paketi (2026-06-11) — quest-pad gate, zone kamera odağı, o
   it('questFocusPos: SERVİS hedefleri TEK noktaya bakar, MASA hedefleri alana (B2)', () => {
     // B2: servisle ilgili her hedef katın tek noktasını gösterir — görevin `area`sı ne olursa olsun.
     for (const a of [0, 1, 2]) {
-      expect(questFocusPos({ type: 'stationLevel', level: 1 }, [], 8, a)).toEqual(LAYOUT.stationUpgradeSpots[THE_SERVICE]);
-      expect(questFocusPos({ type: 'washDish', count: 3 }, [], 8, a)).toEqual(LAYOUT.dishStations[THE_SERVICE]);
-      expect(questFocusPos({ type: 'pickupTea', count: 1 }, [], 8, a)).toEqual(LAYOUT.stations[THE_SERVICE]);
+      expect(questFocusPos({ type: 'stationLevel', level: 1 }, [], 8, a)).toEqual(SP().upgradeSpot);
+      expect(questFocusPos({ type: 'washDish', count: 3 }, [], 8, a)).toEqual(SP().dish);
+      expect(questFocusPos({ type: 'pickupTea', count: 1 }, [], 8, a)).toEqual(SP().station);
     }
     // Masa hedefi hâlâ ALANA bakar: 2. alanın masası 1. alanın dışında.
     const t = questFocusPos({ type: 'tablesAtLevel', level: 1, count: 1, area: 1 }, [0, 0, 0, 0, 0, 0], 8, 1)!;
@@ -1842,7 +1855,7 @@ describe('karakter yükseltmeleri (v20) — eğri, satın alma, migrasyon, göre
   it('tepsi kapasitesi oyunda kademeden türetilir: yeni oyun 2 bardakla sınırlı, T1 sonrası 3', () => {
     useGame.getState().hardReset();
     // Ocakta 5 hazır çay olsun; oyuncu ocağa yaklaşsın → tepsiye EN FAZLA kapasite kadar alır.
-    const st = LAYOUT.stations[0];
+    const st = SP().station;
     useGame.setState({
       ready: { tea: 5, tost: 0 }, cleanCups: 10,
       player: [st[0] + 1.0, 0.6, st[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0],
@@ -2192,7 +2205,7 @@ describe('TOST (B2) — ürün SERVİS SEVİYESİNDEN gelir, bölgeden değil', 
       tray: 0, trayFood: 0, carriedDirty: 0,
     });
     useGame.getState().tick(0.05); // türetme otursun
-    const st = LAYOUT.stations[THE_SERVICE];
+    const st = SP(3).station; // OPEN3 → üç alan açık: servis ARKA BANTTA (B3-1/D-062)
     useGame.setState({
       ready: { tea: 0, tost: 2 },
       player: [st[0], 0.6, st[2]], npcs: [], spawnTimer: 1e9,
@@ -2271,17 +2284,22 @@ describe('TOST (B2) — ürün SERVİS SEVİYESİNDEN gelir, bölgeden değil', 
 });
 
 describe('SERVİS NOKTASI (B2) — tek nokta, tek yerleşim, tek rota', () => {
-  it('yerleşim: TEK servis 1. alanda durur, yan duvara paralel (uzun kenar z)', () => {
-    expect(LAYOUT.stations.length).toBe(1);
-    expect(LAYOUT.stationHalves[THE_SERVICE][1]).toBeGreaterThan(LAYOUT.stationHalves[THE_SERVICE][0]);
-    const st = LAYOUT.stations[THE_SERVICE];
-    const za = LAYOUT.areaBounds[0];
-    expect(st[0]).toBeGreaterThanOrEqual(za.minX);
-    expect(st[0]).toBeLessThanOrEqual(za.maxX);
-    // Pickup ön yüzde (salona bakan taraf), yükseltme noktası ondan ayrı.
-    const pickup = LAYOUT.stationPickups[THE_SERVICE];
-    const up = LAYOUT.stationUpgradeSpots[THE_SERVICE];
-    expect(Math.hypot(pickup[0] - up[0], pickup[2] - up[2])).toBeGreaterThan(economyConfig.serving.pickupRadius);
+  it("yerleşim: TEK servis, 1-2. Alan'da sol duvarda (uzun kenar z), 3. Alan'da arka bantta (uzun kenar x)", () => {
+    // B3-1 (D-062): maket v13 adım 3 ocağı arka banda taşır → yerleşim areasOpen'a bağlı.
+    expect(SP(1).areaIndex).toBe(0);
+    expect(SP(2).areaIndex).toBe(0);
+    expect(SP(3).areaIndex).toBe(2);
+    // Sol duvar dönemi: modül duvara paralel → uzun kenar z'de.
+    expect(SP(1).half[1]).toBeGreaterThan(SP(1).half[0]);
+    // Arka bant dönemi: tezgâh salona bakar → uzun kenar x'te, ön yüz +z.
+    expect(SP(3).half[0]).toBeGreaterThan(SP(3).half[1]);
+    expect(SP(3).rot).toBe(0);
+    // Her iki yerde de: pickup ön yüzde, yükseltme noktası çay-alma dairesinin dışında.
+    for (const areasOpen of [1, 3]) {
+      const pickup = SP(areasOpen).pickup;
+      const up = SP(areasOpen).upgradeSpot;
+      expect(Math.hypot(pickup[0] - up[0], pickup[2] - up[2])).toBeGreaterThan(economyConfig.serving.pickupRadius);
+    }
   });
 
   it('rota: garson evinden pickupa VE oradan KATIN HER MASASINA gidebilir (tek servis 12 masaya bakar)', () => {
@@ -2292,13 +2310,13 @@ describe('SERVİS NOKTASI (B2) — tek nokta, tek yerleşim, tek rota', () => {
     useGame.setState({ padsDone: [...OPEN3], questIndex: economyConfig.quests.length });
     useGame.getState().tick(0.05); // türetilen sayılar otursun (12 masa)
     const solids = [
-      { c: LAYOUT.stations[THE_SERVICE], h: LAYOUT.stationHalves[THE_SERVICE] },
-      { c: LAYOUT.dishStations[THE_SERVICE], h: LAYOUT.dishHalf },
+      { c: SP().station, h: SP().half },
+      { c: SP().dish, h: SP().dishHalf },
       ...LAYOUT.tables.map((t) => ({ c: t.table, h: LAYOUT.tableHalf })),
     ];
     const grid = buildNavGrid(LAYOUT.area, 0.3, solids, LAYOUT.actorRadius);
-    const home = LAYOUT.waiterHomes[THE_SERVICE];
-    const pickup = LAYOUT.stationPickups[THE_SERVICE];
+    const home = SP().waiterHome;
+    const pickup = SP().pickup;
     expect(findNavPath(grid, [...home] as [number, number, number], pickup[0], pickup[2], 0.45)).not.toBeNull();
     for (const t of LAYOUT.tables) {
       expect(findNavPath(grid, [...pickup] as [number, number, number], t.table[0], t.table[2], 1.5)).not.toBeNull();
@@ -2584,9 +2602,9 @@ describe('v27 — görev hedefleri + dolum süreleri (telefon feedback 2026-06-1
 
   it('kamera odağı: servis görevleri TEK noktaya, masa görevleri masaya bakar', () => {
     // B2: hangi salonun görevi olursa olsun servis hedefi katın tek noktasını gösterir.
-    expect(questFocusPos({ type: 'serveTea', count: 5, area: 1 }, [], 8, 1)).toEqual(LAYOUT.stations[THE_SERVICE]);
-    expect(questFocusPos({ type: 'serveTea', count: 5, area: 2 }, [], 12, 2)).toEqual(LAYOUT.stations[THE_SERVICE]);
-    expect(questFocusPos({ type: 'stationLevel', level: 4 }, [], 12, 2)).toEqual(LAYOUT.stationUpgradeSpots[THE_SERVICE]);
+    expect(questFocusPos({ type: 'serveTea', count: 5, area: 1 }, [], 8, 1)).toEqual(SP().station);
+    expect(questFocusPos({ type: 'serveTea', count: 5, area: 2 }, [], 12, 2)).toEqual(SP().station);
+    expect(questFocusPos({ type: 'stationLevel', level: 4 }, [], 12, 2)).toEqual(SP().upgradeSpot);
     // tablesAtLevel: hedef seviyenin altındaki ilk masanın yükseltme noktası.
     expect(questFocusPos({ type: 'tablesAtLevel', level: 2, count: 2 }, [2, 1, 0, 0], 4)).toEqual(LAYOUT.tables[1].upgradeSpot);
     // waiterTray panel görevi: 3D hedef yok (kamera sıçramaz).
@@ -2621,7 +2639,7 @@ describe('Y3 — garson tepsi yükseltmeleri (panel satın alma + FSM kapasite +
 
   it('garson yüklemede tepsiyi KAPASİTE kadar doldurur (teaTray 2 → 3 bardak)', () => {
     useGame.getState().hardReset();
-    const pick = LAYOUT.stationPickups[0];
+    const pick = SP().pickup;
     const farSeat = LAYOUT.tables[1].seat;
     useGame.setState({
       padsDone: ['table2', 'waiter'],
@@ -2668,7 +2686,7 @@ describe('Y3 — garson tepsi yükseltmeleri (panel satın alma + FSM kapasite +
   it('KARIŞIK tepsi (B2): tek garson hem çay hem tost taşır, kapasite ORTAK', () => {
     useGame.getState().hardReset();
     const Z1 = ['table2', 'table3', 'waiter', 'table4'];
-    const pick = LAYOUT.stationPickups[THE_SERVICE];
+    const pick = SP().pickup;
     const seat1 = LAYOUT.tables[1].seat;
     useGame.setState({
       padsDone: [...Z1],
@@ -3157,10 +3175,12 @@ describe('Faz B1 — dünya modeli: ALAN · SERVİS · MASA · ODA ayrışması'
 
   it('SERVİS: kat TEK servis noktasından döner (B2) ve o nokta hep açıktır', () => {
     expect(MAX_SERVICES).toBe(1);
-    expect(SERVICE_AREAS).toEqual([0]);
+    expect(MAX_SERVICES).toBe(1);
     const w = deriveWorld([...B1_Z1, ...B1_Z2, 'zone3']);
     expect(w.services.length).toBe(1);
-    expect(w.services[THE_SERVICE].areaIndex).toBe(0);
+    // Servisin hangi alanda DURDUĞU artık world'ün değil layout'un sorusu (B3-1) ve zamana bağlı.
+    expect(servicePlace(1).areaIndex).toBe(0);
+    expect(servicePlace(3).areaIndex).toBe(2);
     // Kat servissiz başlamaz: 1. alan hep açık → servis hep açık.
     expect(deriveWorld([]).services.map((sv) => sv.open)).toEqual([true]);
   });
@@ -3249,11 +3269,14 @@ describe('Faz B1 — dünya modeli: ALAN · SERVİS · MASA · ODA ayrışması'
     expect(serviceOfTable(8)).toBe(THE_SERVICE);
   });
 
-  it('serviceInArea YERLEŞİM sorusudur: yalnız 1. alanda servis DURUR', () => {
-    expect(serviceInArea(0)).toBe(0);
-    expect(serviceInArea(1)).toBe(-1); // 2. alanda servis noktası yok (maket v13)
-    expect(serviceInArea(2)).toBe(-1);
-    expect(serviceInArea(99)).toBe(-1);
+  it('serviceInArea YERLEŞİM sorusudur ve cevabı ZAMANA bağlıdır (B3-1/D-062)', () => {
+    // 1-2. Alan: servis ilk salonda. 3. Alan: maket v13 adım 3 onu arka banda taşır.
+    expect(serviceInArea(0, 1)).toBe(0);
+    expect(serviceInArea(1, 1)).toBe(-1);
+    expect(serviceInArea(0, 2)).toBe(0);
+    expect(serviceInArea(0, 3)).toBe(-1); // artık 1. alanda DEĞİL
+    expect(serviceInArea(2, 3)).toBe(0); // arka yarıda
+    expect(serviceInArea(99, 3)).toBe(-1);
   });
 
   it('openServices: alan sayısı kaç olursa olsun TEK servis açıktır', () => {
@@ -3262,23 +3285,25 @@ describe('Faz B1 — dünya modeli: ALAN · SERVİS · MASA · ODA ayrışması'
     expect(openServices(3)).toEqual([0]);
   });
 
-  it('LAYOUT: servis dizileri SERVİS, alan dizileri ALAN sayısında (karışmaz)', () => {
-    expect(LAYOUT.stations.length).toBe(MAX_SERVICES);
-    expect(LAYOUT.stationPickups.length).toBe(MAX_SERVICES);
-    expect(LAYOUT.dishStations.length).toBe(MAX_SERVICES);
-    expect(LAYOUT.waiterHomes.length).toBe(MAX_SERVICES);
-    expect(LAYOUT.dishwasherHomes.length).toBe(MAX_SERVICES);
-    expect(LAYOUT.stationUpgradeSpots.length).toBe(MAX_SERVICES);
-    expect(LAYOUT.stationHalves.length).toBe(MAX_SERVICES);
+  it('LAYOUT: alan dizileri ALAN sayısında; servis KOORDİNATLARI ise diziden değil yerden gelir', () => {
+    // B3-1: servis dizileri (stations/stationPickups/…) KALKTI — servisin yeri artık zamana bağlı
+    // olduğundan sabit dizi yalan söylerdi. Yerine `servicePlace(areasOpen)` tek kapı.
+    expect(MAX_SERVICES).toBe(1);
     expect(LAYOUT.areaBounds.length).toBe(MAX_AREAS);
     expect(LAYOUT.entrances.length).toBe(MAX_AREAS);
     expect(LAYOUT.tables.length).toBe(MAX_AREAS * 4);
+    for (const key of ['stations', 'stationPickups', 'dishStations', 'waiterHomes', 'stationUpgradeSpots']) {
+      expect((LAYOUT as unknown as Record<string, unknown>)[key]).toBeUndefined();
+    }
   });
 
-  it('LAYOUT: her servisin ocağı ve bulaşığı KENDİ alanının sınırları içinde', () => {
-    for (let sv = 0; sv < MAX_SERVICES; sv++) {
-      const ab = LAYOUT.areaBounds[SERVICE_AREAS[sv]];
-      for (const pt of [LAYOUT.stations[sv], LAYOUT.dishStations[sv]]) {
+  it('YERLEŞİM DEĞİŞMEZİ: servis kümesi HER dönemde kendi alanının AÇIK sınırları içinde', () => {
+    for (const areasOpen of [1, 2, 3]) {
+      const sp = SP(areasOpen);
+      // Servisin durduğu alan o an AÇIK olmak zorunda (yoksa erişilemez bir tezgâh olurdu).
+      expect(sp.areaIndex).toBeLessThan(areasOpen);
+      const ab = LAYOUT.areaBounds[sp.areaIndex];
+      for (const pt of [sp.station, sp.dish, sp.pickup, sp.upgradeSpot, sp.waiterHome, sp.dishwasherHome]) {
         expect(pt[0]).toBeGreaterThanOrEqual(ab.minX);
         expect(pt[0]).toBeLessThanOrEqual(ab.maxX);
         expect(pt[2]).toBeGreaterThanOrEqual(ab.minZ);

@@ -1083,3 +1083,102 @@ Olmayan içeriği pahalılıkla taklit etmek grind üretirdi; yapılmadı.
 eslint 15 (B1 ile aynı). Tarayıcı: 12 masa + 2 garson + bulaşıkçı + L5 tezgâh canlı, konsol temiz.
 
 ---
+## D-061 — B3-1 KADRAJ: TABAN 8,5 · HUD DUGMESI B ↔ C (2026-09-06 gece)
+
+**Baglam:** D-058 karar 4 baglayiciydi — kat 21,2×20,6 → 34×34 (alan ×2,6) buyurken portre
+ekranda ne gorunecegi muhendislik degil TASARIM karari; uc kamera kademesi AYNI kareden
+cekilip onaylanmadan `layout.ts` yazilmayacakti.
+
+**Arac:** `docs/gorsel/kadraj-b3.html` — maket v13'un kutlesi uzerinde oyunun KENDI kamera
+formulu (`Scene.tsx`: fov 50°, 45° egim, `taban × min(1,3, 1/en-boy)`), uc canli portre cerceve
++ kat plani ustunde olculmus gorus alanlari + surukle-birak oyuncu.
+Artifact: https://claude.ai/code/artifact/6a9edb37-cb90-4312-968b-f8d9e63ad814
+
+**Olcumun bulgusu (kararin cercevesini degistirdi):** portrede kadraj DERIN ama DAR — dikey
+gorus acisi 50°, yatay ise en-boy orani yuzunden yalniz **24°**. Kamera geri cekildikce
+kazanilan sey agirlikla derinlik; genislik cok yavas buyur. Bir 17×17'lik alani tek kareye
+sigdirmak icin tabanin **~22** olmasi gerekir, o mesafede karakter birkac piksel kalir.
+Yani soru "katin tamami gorunsun mu" degil — **katin tamami hicbir kademede gorunmuyor**;
+karar oyuncunun cevresinde kac birimlik KOMSULUK okunacagi.
+
+| Kademe | taban | oyuncu hizasinda en | ayak izi (yakin→uzak) | derinlik |
+|---|---|---|---|---|
+| A (eski) | 6 | 4,6 birim | 3,3 → 10,0 | 21,2 |
+| **B** | **8,5** | **6,5 birim** | 4,6 → 13,7 | 28,8 |
+| **C** | **11,5** | **8,9 birim** | 6,3 → 18,1 | 38,1 |
+
+**Kullanicinin karari:** *"hani sagda altta bir buton vardi ya kucuk buyuk moda gecen orada b ve
+c olsun en yakini cok kotu. default b veya c basinca da b c arasi gecis yapilir"*
+- **Taban 6 (A) ELENDI.** 34×34'te surekli koridor hissi veriyor, komsu ada kadraja hic girmiyor.
+- **Varsayilan B (8,5)**; HUD'daki genel-bakis dugmesi artik "genel bakis" degil **kademe
+  degistirici**: `camZoomOut` carpani **×1.45 → ×1.35** (8,5 × 1,35 ≈ 11,5 = C kademesi).
+- Uygulama iki sayi: `Scene.tsx` `st.current.d = 8.5 * fit` ve `zoomMul = 1.35`.
+  `fit` clamp'i (1,3) ve odak zoom'u (×0,72) degismedi.
+
+**Not:** taban buyudugu icin BUGUNKU 21×21 katta oyun gecici olarak fazla uzak gorunur —
+kadraj 34×34 icin secildi, ayni alt adimda (B3-1) yerlesim de o olcege tasiniyor.
+
+## D-062 — B3-1: KAT 34 × 34 · SERVİS 3. ALAN'DA ARKA BANDA TAŞINIR (2026-09-07)
+
+**Bağlam:** D-061'de kadraj onaylandıktan sonra yerleşim maket v13 ölçeğine taşındı:
+**21,2 × 20,6 → 34 × 34** (alan ×2,6). İÇERİK büyümedi (12 masa · tek servis · aynı pad zinciri) —
+büyüyen katın kendisi. Orta şerit + dolgu B3-2'nin, odalar B4'ün, masa tipleri B5'in işi.
+
+### Kullanıcının kararı: servis TAŞINIR (v13'e sadık)
+Maket v13'ün 1-2. adımında çay ocağı ilk salonun SOL DUVARINDA durur; 3. adımda arka bandın servis
+bloğuna taşınır ("bütün servis buradan verilir"). Üç seçenek sunuldu (taşınır · baştan bantta ·
+hiç taşınmaz); kullanıcı **taşınır**'ı seçti. Sonucu: servis koordinatları artık SABİT DEĞİL,
+`servicePlace(areasOpen)` ile gelir. Seviye korunur — D-060'ın "obje yer değiştirmez" kuralı
+SEVİYE merdiveni içindir (L4 tezgâh dönüşümü yerinde olur); buradaki taşınma alan açılışının kendisidir.
+
+### Modelde kalkan iki varsayım
+1. **Alanlar artık EŞ DEĞİL.** Tek alan şablonunun (10,6 × 10,3) 2×2 ızgarada aynalanması
+   (`AREA_DX/AREA_DZ/mir/areaCol/areaRow/areaAt`) kalktı: iki ön çeyrek 17 × 17, arka yarı 34 × 9,8.
+   Alanlar açık dikdörtgen listesi (`AREA_RECTS`); duvarlar ızgara sorgusundan değil geometriden
+   türer (**`wallSpans(alan, kenar, açık)`**) — bir kenarı BİRDEN ÇOK komşu kapatabilir (arka yarının
+   ön kenarını iki ön çeyrek birlikte kapatır), eski `areaAt(col±1,row)` bunu anlatamıyordu.
+2. **`SERVICE_AREAS` world'den kalktı.** "Servis hangi alanda duruyor" bir KOORDİNAT sorusu olduğu
+   ortaya çıktı → layout'a taşındı (`serviceInArea(area, areasOpen)`); world yalnız ÜRETİM sorusuna
+   bakar (`serviceOfTable` hep 0). `Service.areaIndex` alanı da kalktı.
+
+### Yerleşim (maket v13)
+- Zemin x, z ∈ [−17, 17]. **Arka bant** z ∈ [−16,9, −9,8]: servis bloğu (x −17…−4,6) · merdiven
+  (−4,6…4,6) · lavabo (4,6…17). Bant YÜRÜNMEZ kütledir; içi B4'te açılır.
+- Alanlar: a0 ön-sol 17×17 · a1 ön-sağ 17×17 · a2 arka yarı 34 × 9,8 (bandın önü).
+- Masalar: ön çeyreklerde 2×2 küme (merkez ∓8,5 / 8,5, aralık 3,2); arka yarıda tek sıra z = −5,6.
+- Kapı x = −8,5'te SABİT kalır (v13'ün kapıyı ortaya kaydırması cephe işi → B3-2).
+
+### Ölçümler
+- **Denge DEĞİŞMEDİ:** `simulate.ts` altı kilometre taşının altısı da B2 ile birebir aynı
+  (ilk alım 40 sn · garson 11,1 dk · 2. Alan 34,6 dk · bulaşıkçı 60 dk · 3. Alan 1,83 sa ·
+  tezgâh 1,99 sa · tost 2,55 sa).
+- **Yürüme maliyeti ARTTI (geometrik gerçek):** garsonun pickup → masa düz-çizgi ortalaması
+  1 alan 6,06 → 7,02 (**+16%**) · 2 alan 9,77 → 15,33 (**+57%**) · 3 alan 11,47 → 19,00 (**+66%**);
+  en uzak masa 17,8 → 29,1 br.
+- **Ama servis SONUCU değişmedi:** tohumlu 5 koşuluk sonda (oyuncu parkta, yalnız garsonlar,
+  bardak havuzu nötr) eski ve yeni yerleşim BİREBİR aynı çıktı verdi — 1 alan 79,6 servis / 24,0
+  kaçış, 3 alan 105,6 / 144,0. Yani darboğaz yürüme DEĞİL. Gerçek tempo doğrulaması oyuncu
+  döngüdeyken Faz C'nin işi; uzak masaların yolunu kısaltan **garson servis istasyonu** zaten
+  maket v13'te var (B3-2).
+
+### Bu adımın bulduğu GERÇEK kusur (eski koddan geliyordu)
+`REACH_TABLE` (garsonun masaya teslim mesafesi) nav ızgarasının hücre boyuna **gizliden bağlıydı**:
+BFS masanın footprint'ini `tableHalf + actorRadius` kadar şişirir, üstüne hücre yuvarlaması biner.
+Eski 1,03 bu payı taşımıyordu; masa koordinatı ızgara merkezine denk gelirse en yakın BOŞ hücre
+1,1 br'ye kayıyor, BFS "yol yok" diyor ve `navStep` düz-çizgi yedeğine düşüyordu — **garson masaya
+varıyor ama engelden kaçmadan.** Kusur eski yerleşimde de vardı, masa koordinatları şans eseri
+ızgaraya denk düşmediği için görünmüyordu. 34 × 34'te arka sıra tam hücre merkezine oturunca ortaya
+çıktı. Çözüm: `REACH_TABLE = tableHalf + actorRadius + NAV_CELL + 0,05` (1,03 → 1,13; garson masa
+kenarına 0,53 yerine 0,63 br kalıyor). `tests/layout-b31.test.ts`'teki ROTA testi kalıcı bekçi.
+
+### Bu adımın kalıcı dersi
+**Ölçüm gürültüsü bulguyu TERS ÇEVİREBİLİR.** Tohumsuz koşulan ilk sonda aynı kod iki kez
+54 ve 105 servis verdi; ilk sayı "34 × 34 servisi kırdı (%77 kaçış)" gibi okunuyordu. Tohumlanınca
+sonuç eski yerleşimle birebir aynı çıktı. Üstelik sondanın İLK sürümü yanlış şeyi ölçüyordu:
+oyuncu parkta hiç bulaşık yıkamadığı için bardak havuzu bitiyor ve ölçülen şey yürüme değil
+BARDAK oluyordu. B1: aracın çıktısı yanılabilir · B2: aracın varsayımı yanılabilir ·
+**B3-1: aracın gürültüsü ve neyi ölçtüğü yanılabilir.**
+
+**Doğrulama:** vitest **222/222** (209 + yeni `tests/layout-b31.test.ts` 13), smoke **26/26**,
+build temiz, `tsc -b` temiz, eslint 15 (B2 ile aynı), `simulate.ts` birebir aynı.
+

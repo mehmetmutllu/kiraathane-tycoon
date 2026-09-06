@@ -134,12 +134,28 @@
   td:first-child{white-space:nowrap; font-weight:600}
   tr:last-child td{border-bottom:0}
 
+  .decided{
+    border:1px solid var(--brass); border-left:3px solid var(--brass); border-radius:3px;
+    background:var(--panel); padding:14px 18px; display:flex; flex-direction:column; gap:6px;
+    color:var(--brass-ink);
+  }
+  .decided p{color:var(--ink-2); max-width:74ch; font-size:14px}
+  .decided b{color:var(--ink)}
+  .tier[data-t="A"] .shot{opacity:.62}
   .ask{display:flex; flex-direction:column; gap:8px; border-top:1px solid var(--line); padding-top:20px}
   .ask ol{margin:0; padding-left:20px; color:var(--ink-2); display:flex; flex-direction:column; gap:5px}
   footer{font-size:12px; color:var(--muted); font-family:"IBM Plex Mono",monospace}
 </style>
 
 <div class="wrap">
+
+  <div class="decided">
+    <span class="eyebrow" style="color:inherit">Karar verildi · D-061</span>
+    <p><b>Taban 8,5 (B)</b> varsayılan oldu; sağ alttaki HUD düğmesi artık “genel bakış” değil
+    <b>kademe değiştirici</b> — basınca <b>C (11,5)</b>'e geçer. <b>Taban 6 (A) elendi:</b>
+    34 × 34'te oyuncu hizasında yalnız 4,6 birim görüyor, sürekli koridor hissi veriyor.
+    Sayfa kararın nasıl ölçüldüğünü gösterir; A karşılaştırma için duruyor.</p>
+  </div>
 
   <header style="display:flex;flex-direction:column;gap:10px">
     <span class="eyebrow">Faz B · B3-1 · kadraj kararı · D-058 madde 4</span>
@@ -165,7 +181,7 @@
   <section style="display:flex;flex-direction:column;gap:14px">
     <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap">
       <h2>Üç kademe, aynı kare</h2>
-      <button id="zoomBtn" aria-pressed="false" style="margin-left:auto">Genel bakış düğmesi (×1,45)</button>
+      <button id="zoomBtn" aria-pressed="false" style="margin-left:auto">Eski ×1,45 çarpanını dene</button>
     </div>
     <div class="tiers" id="tiers"></div>
   </section>
@@ -182,9 +198,9 @@
         <div>
           <h3>Görüş alanı</h3>
           <div class="legend">
-            <span><i class="swatch" style="background:var(--tA)"></i> A · bugünkü (taban 6)</span>
-            <span><i class="swatch" style="background:var(--tB)"></i> B · ada (taban 8,5)</span>
-            <span><i class="swatch" style="background:var(--tC)"></i> C · yarım alan (taban 11,5)</span>
+            <span style="opacity:.6"><i class="swatch" style="background:var(--tA)"></i> A · elendi (taban 6)</span>
+            <span><i class="swatch" style="background:var(--tB)"></i> B · varsayılan (taban 8,5)</span>
+            <span><i class="swatch" style="background:var(--tC)"></i> C · düğme (taban 11,5)</span>
           </div>
         </div>
         <p class="hint">
@@ -207,8 +223,9 @@
     </p>
     <p>
       Yani karar “katın tamamı görünsün mü” değil: <b>katın tamamı hiçbir kademede görünmüyor.</b>
-      Karar, oyuncunun çevresinde kaç birimlik bir <b>komşuluk</b> okunacağı — ve genel bakış işini
-      zaten HUD'daki <b>×1,45 düğmesi</b> üstleniyor (üstteki düğmeyle üç kademede de dene).
+      Karar, oyuncunun çevresinde kaç birimlik bir <b>komşuluk</b> okunacağı oldu — ve HUD'daki
+      düğme rolünü değiştirdi: artık “genel bakış” değil, <b>B ile C arasında kademe değiştirici</b>
+      (çarpan ×1,45'ten <b>×1,35</b>'e indi, çünkü 8,5 × 1,35 tam 11,5 eder).
     </p>
   </section>
 
@@ -217,8 +234,8 @@
     <div class="tablescroll"><table>
       <thead><tr><th>Kademe</th><th>Kazanç</th><th>Bedel</th><th>Riski</th></tr></thead>
       <tbody>
-        <tr>
-          <td style="color:var(--tA)">A · taban 6</td>
+        <tr style="opacity:.6">
+          <td style="color:var(--tA)">A · taban 6 <span style="font-weight:400">(elendi)</span></td>
           <td>Bugünkü his birebir korunur; karakter ve masa detayı en büyük, tepsi/bardak okunur.</td>
           <td>34 × 34'te oyuncu sürekli “koridorda” hisseder; komşu ada kadraja hiç girmez.</td>
           <td>Yön kaybı — hangi alanda olduğunu HUD'dan öğrenmek gerekir.</td>
@@ -240,10 +257,10 @@
   </section>
 
   <section class="ask">
-    <span class="eyebrow">Onay gelince ne olacak</span>
+    <span class="eyebrow">Karar verildi — sırada ne var</span>
     <ol>
-      <li>Seçilen taban <code>Scene.tsx</code> içindeki <code>st.current.d = 6 * fit</code> satırına yazılır — tek sayı, tek yer.</li>
-      <li>Ardından <code>layout.ts</code> 34 × 34'e taşınır: dört alan, arka bant (servis · merdiven · lavabo, üçü de z = −9,8), mevcut 12 masa ve servis bloğu yeni koordinatlara.</li>
+      <li><b>Yapıldı:</b> <code>Scene.tsx</code> içinde <code>st.current.d = 8.5 * fit</code> ve düğme çarpanı <code>1.35</code>.</li>
+      <li><b>Sırada:</b> <code>layout.ts</code> 34 × 34'e taşınır: dört alan, arka bant (servis · merdiven · lavabo, üçü de z = −9,8), mevcut 12 masa ve servis bloğu yeni koordinatlara.</li>
       <li>Yürüme, çarpışma ve testlerin kullandığı boş alan hesabı yeni ölçeğe uyar. Kapı: testler düşmeden yeşil.</li>
       <li>Orta şerit, propler ve dolgu <b>B3-2</b>'ye kalır — oda bu adımda seyrek görünecek, normal.</li>
     </ol>
@@ -256,9 +273,9 @@
 (function () {
   const T = window.THREE;
   const TIERS = [
-    { k:'A', name:'Bugünkü', base:6,    color:'#a8760f', dark:'#e0b13a', note:'Tek masa grubu ve oyuncu.' },
-    { k:'B', name:'Ada',     base:8.5,  color:'#2e6f7d', dark:'#5fb6c4', note:'Bir banket adası tam sığar.' },
-    { k:'C', name:'Yarım alan', base:11.5, color:'#96482f', dark:'#d97f5c', note:'Alanın yarısı + arka bant.' }
+    { k:'A', name:'Elendi', base:6,    color:'#a8760f', dark:'#e0b13a', note:'Tek masa grubu ve oyuncu — 34 × 34 için fazla dar.' },
+    { k:'B', name:'Varsayılan', base:8.5,  color:'#2e6f7d', dark:'#5fb6c4', note:'Bir banket adası tam sığar. Oyun buradan başlar.' },
+    { k:'C', name:'Düğme', base:11.5, color:'#96482f', dark:'#d97f5c', note:'Alanın yarısı + arka bant. HUD düğmesi buraya geçer.' }
   ];
   const PRESETS = [
     { id:'onsol',   ad:'Masa kümesi',    p:[-8.5, 8.5] },
