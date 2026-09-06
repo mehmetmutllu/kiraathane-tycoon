@@ -97,3 +97,40 @@ export const WALL_THEMES: Record<string, { cream: string; wainscot: string }> = 
   yesil: { cream: '#cfe3cd', wainscot: '#3f6347' },
   mavi: { cream: '#cfe0ea', wainscot: '#34557a' },
 };
+
+/**
+ * IŞIK (Faz G0, 2026-09-06) — "her yer eşit parlak" sorununun tek-satır kaynağı.
+ * Eski kurulum: ambientLight 0.6 (yönsüz, düz) + directional 1.1 beyaz. Sonuç: her yüzey aynı
+ * değerde, hacim yok, iç mekân dışarısıyla aynı sıcaklıkta. Yeni kurulum ÜÇ ayrımı geri getirir:
+ *  1) GÖK/YER ayrımı — hemisphere: yukarı bakan yüzey sıcak gün ışığı, aşağı bakan yüzey
+ *     yerden dönen koyu-sıcak ahşap yansıması alır. Ambient'in yaptığı düzleştirmenin panzehiri.
+ *  2) YÖN — directional sıcaklaştırıldı ve güçlendi; gölge/ışık arası fark (değer aralığı) açıldı.
+ *  3) DERİNLİK — fog: uzak kenarlar arka plana karışır, harita sert kesilmez.
+ * Renk sayıları burada; Scene.tsx yalnız okur. Doku YOK (D-041) — bu yüzden ışık tek kaldıraç.
+ */
+export const LIGHTING = {
+  skyColor: '#ffe9c8', // gök yarısı: öğleden sonra sıcak gün ışığı
+  groundColor: '#6b5a4a', // yer yarısı: ahşap zeminden dönen koyu-sıcak bounce
+  hemiIntensity: 0.35, // ambient 0.6'dan DÜŞÜK: ışık ile gölge arasındaki fark bu sayede açılıyor
+  sunColor: '#fff2d8', // yönlü ışık: beyaz değil krem (semaver/bakır bu tonda canlanır)
+  sunIntensity: 1.6,
+  /**
+   * GÜNEŞ AÇISI — G0'ın en büyük kazancı burası. Eski konum [6,12,6] ~55° yükseklikteydi:
+   * gölgeler objenin ALTINDA kalıyor, tepeden bakan kamera onları hiç görmüyordu. Ölçüm: aynı
+   * sahnede yalnız hemi/sun şiddetini oynatmak neredeyse hiçbir şeyi değiştirmedi; konumu
+   * [9,9,7]'ye (~40°) indirmek ise her masayı ve müşteriyi zemine OTURTTU (bu iş "yüzme"
+   * hissinin yarısını G1'i beklemeden kapatıyor).
+   * Daha da alçaltmak ([9,8,7]) gölgeleri uzatıyor ama telefonda oynanışı örten uzun lekeler yapıyor.
+   */
+  sunPos: [9, 9, 7] as [number, number, number],
+  /**
+   * Gölge kamerası (ortografik, ışık uzayında). Güneş alçalınca gölgeler uzadı ve ESKİ sınırlar
+   * (-12/24/12/-20) sağ-üst köşede kırpıyordu. Yeni sınırlar salonu + hemen önündeki sokağı
+   * kapsar; 1024 haritada ~25 teksel/birim (eskisi 28) — kırpma yok, keskinlik kaybı ihmal edilebilir.
+   */
+  shadow: { left: -13, right: 28, top: 15, bottom: -15, mapSize: 1024 },
+  background: '#1f2933',
+  fogNear: 34, // oyun alanının DIŞINDA başlar (kamera ~14 birimden bakar) → oynanışı örtmez
+  fogFar: 72,
+  exposure: 1.05,
+} as const;

@@ -5,7 +5,7 @@ import { Vector3, type Group, type MeshStandardMaterial } from 'three';
 import { useGame, questFocusPos, LAYOUT, stationSoftMaxLevel, stationUpgradeCostZ, upgradeZoneUnlockedZ, tableSoftMaxLevel, tableUpgradeUnlockedZ, tableNextCost, zonePoint, zoneCol, zoneRow, zoneAt } from '../../game/store';
 import { economyConfig, zoneOfTable, zoneProduct } from '../../config/economy.config';
 import { GroundMarker } from './GroundMarker';
-import { PALETTE, FLOOR_THEMES, WALL_THEMES } from '../../config/palette';
+import { PALETTE, FLOOR_THEMES, WALL_THEMES, LIGHTING } from '../../config/palette';
 import { Player } from './Player';
 import { Waiter } from './Waiter';
 import { Dishwasher } from './Dishwasher';
@@ -976,21 +976,28 @@ export function Scene() {
     <Canvas
       shadows
       camera={{ position: [0, 9, 11], fov: 50 }}
-      gl={{ antialias: true }}
+      gl={{ antialias: true, toneMappingExposure: LIGHTING.exposure }}
       dpr={[1, 2]}
     >
-      <color attach="background" args={['#1f2933']} />
-      <ambientLight intensity={0.6} />
+      {/* IŞIK (G0) — renkler palette.ts LIGHTING'te, gerekçe orada yazılı.
+          NOT: tone mapping ZATEN ACESFilmic (r3f varsayılanı, `flat` verilmedi) — bu yüzden
+          burada yeniden atanmıyor, yalnız exposure ile değer aralığı açılıyor. */}
+      <color attach="background" args={[LIGHTING.background]} />
+      <fog attach="fog" args={[LIGHTING.background, LIGHTING.fogNear, LIGHTING.fogFar]} />
+      <hemisphereLight
+        args={[LIGHTING.skyColor, LIGHTING.groundColor, LIGHTING.hemiIntensity]}
+      />
       <directionalLight
-        position={[6, 12, 6]}
-        intensity={1.1}
+        position={LIGHTING.sunPos}
+        color={LIGHTING.sunColor}
+        intensity={LIGHTING.sunIntensity}
         castShadow
-        shadow-mapSize-width={1024}
-        shadow-mapSize-height={1024}
-        shadow-camera-left={-12}
-        shadow-camera-right={24}
-        shadow-camera-top={12}
-        shadow-camera-bottom={-20}
+        shadow-mapSize-width={LIGHTING.shadow.mapSize}
+        shadow-mapSize-height={LIGHTING.shadow.mapSize}
+        shadow-camera-left={LIGHTING.shadow.left}
+        shadow-camera-right={LIGHTING.shadow.right}
+        shadow-camera-top={LIGHTING.shadow.top}
+        shadow-camera-bottom={LIGHTING.shadow.bottom}
       />
       <Ground />
       <Street />
