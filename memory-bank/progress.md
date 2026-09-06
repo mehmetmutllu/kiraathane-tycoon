@@ -1235,3 +1235,53 @@ yalnız onlar yapıyor. Düzen ve tipografi AYNI kaldı.
 
 **⏳ CEVAPLANMAMIŞ SORU:** Faz A planlandığı gibi tam mı yapılsın (3 oturum), yoksa sadece
 "testleri koordinat bağından kopar" kısmı alınıp gerisi Faz B sonrasına mı bırakılsın?
+
+## FAZ A — TEMİZLİK ✅ (2026-09-06 gece) — **3/3, FAZ A TAMAM**
+Plan: `docs/plan-kat1-yayin.html` §11. Kabul kriteri: *test sayısı düşmeden yeşil; tick() < 150 satır.*
+Sonuç: testler **201 → 206**, `tick()` **65 satır**. Dört commit: c0393f1 · 73e023a · 3726e04 · aa09ca6.
+
+### A0 — duman testi 8/15 → 26/26 (Faz A'nın önkoşuluydu) ✅
+- ✅ **Kök neden:** görev bitince `questIndex` 1,3 sn'lik kutlamadan SONRA ilerliyordu; o pencerede
+  toplanan para yeni görevin TABANINA yazılıyor, `q_coin` 0/1'de kilitleniyor, sonrası domino.
+- ✅ **Yapısal düzeltme:** `questIndex` + `questBase` **bitiş anında** ilerler; kutlama yalnız görsel,
+  ekrandaki biten görev transient `questDoneIndex` ile tutulur → **SAVE_VERSION 30 değişmedi**.
+- ✅ 3 yeni test (bitiş anında ilerleme · kutlama penceresinde toplanan para sayılır · kutlama
+  ortasında yeniden yükleme kilitlemez); eski "instant swap yok" testi KART davranışını doğrular hâle geldi.
+
+### A1 — ölü alanlar kaldırıldı ✅
+- ✅ `serviceSpeedMult` (türetme hep 1 döndürüyordu) · `Requires.minTables` (hiçbir pad kullanmıyordu)
+  · `prestige` config (Faz D'de İtibar kendi tasarımıyla gelir) · `MailIcon` (öksüz) ·
+  **ulaşılamaz "Usta" dalı** → `UpgradeSpec` tek tavan alanı: `maxLevel` (= eski masterLevel − 1).
+- ✅ Bayat yorumlar gerçek `effect` union'ına eşitlendi.
+- ✅ **Denge değişmedi, ölçüldü:** `simulate.ts` çıktısı birebir aynı (tek fark silinen prestige satırı).
+
+### A2 — `tick()` 800 → 65 satır, 17 sistem ✅
+- ✅ **`layout.ts` (435)** — LAYOUT + collision + nav (durum yok, koordinat var).
+- ✅ **`rules.ts` (483)** — gating, görev motoru, yükseltme/ekonomi türetmeleri, `keepIdentity` (saf).
+- ✅ **`tick.ts` (1121)** — 17 sistem, sırası eskisiyle birebir; hepsi yalnız `TickCtx` üstünde çalışır.
+  Sistemler arası ara değerler (dirty/liveNpcs/input/player/out/quest…) artık ctx'te açık sözleşme.
+- ✅ `tick.ts` → store'a **yalnız tip** bağı (`import type`) → runtime döngüsel import yok.
+  store.ts taşınan isimleri yeniden dışa aktarır; hiçbir çağıran (component/test/tool) değişmedi.
+- ✅ **`store.ts` 2337 → 756 satır.**
+
+### A3 — testler koordinat bağından koptu ✅
+- ✅ **`layout.parkSpot(zonesOpen, tables, zone?)` + `parkClearance(...)`** — açık alanı 0,25'lik
+  ızgarayla tarar, katı engele girmeyen ve tüm etkileşim noktalarına (ocak, pickup, bulaşık,
+  masa+koltuk+yükseltme noktası, tüm pad'ler, kapı) uzaklığı en büyük hücreyi seçer. Bugün **3,79**.
+- ✅ Testlerde `PARK`/`park()`/`stand()`; **45 elle yazılmış koordinat** kalktı. Salon sınırı testleri
+  `parkSpot(zone)`, NPC-içinden-geçme testi `LAYOUT.player`, mıknatıs testleri parayı oyuncuya GÖRE kurar.
+- ✅ **İki bekçi test**: boşluk pickup/serve/pad/mıknatıs yarıçaplarının hepsinden büyük mü +
+  park edilen oyuncu gerçekten hiçbir mekanizmayı tetiklemiyor mu.
+- ✅ `window.__park()` dev kancası; `tools/smoke.mjs`'teki `__teleport(5.2, 4.2)` çağrıları kalktı.
+
+### YENİ KALICI ARAÇ — `tools/tick-fingerprint.ts`
+Tohumlu `Math.random` + 8 kontrol noktalı senaryo → **2018 satırlık tam durum dökümü**. A2/A3'ün
+her adımında öncesi/sonrası **birebir aynı** çıktı alındı (davranış değişmedi kanıtı). Faz B'de
+yerleşim taşınırken de kullanılacak. Kullanım dosya başında.
+
+**Doğrulama:** `npm run test` **206/206** · `npm run build` temiz · `npx eslint src/` **16 (değişmedi)** ·
+`tools/smoke.mjs` **26/26** · `simulate.ts` çıktısı aynı · tick parmak izi aynı.
+
+**⏳ SIRADAKİ: FAZ B — model geçişi.** (1) maket adımları ↔ pad zinciri haritası, (2) yerleşimi
+maket ölçeğine taşı (artık tek dosya: `layout.ts`), (3) kayıt v31 + migrasyon, (4) G4/G5 KayKit.
+Faz G artığı: UI Canvas'ları hâlâ eski düz ışıkla.

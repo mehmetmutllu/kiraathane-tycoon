@@ -2,6 +2,87 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-06 gece — **FAZ A TAMAM 3/3** + duman testi onarıldı; SAVE v30 değişmedi)
+
+Kullanıcı iki şeyi onayladı: *"tamam renk değişimi düzeldi şu an yok. faz a da yapılsın sorun yok"*
+→ (1) G3'ün açık sorusu KAPANDI, (2) Faz A **tam** yapıldı. Oturumda dört commit, hepsi push'landı.
+
+### 0) Duman testi 8/15 → **26/26** (Faz A'nın önkoşuluydu) — commit c0393f1
+**Kök neden (G0'dan beri açık):** görev tamamlanınca `questIndex` 1,3 sn'lik kutlama
+(`completing` 0,5 + `gap` 0,8) BİTTİKTEN sonra ilerliyordu. Oyuncu o pencerede doğal akışta
+(servis → ödeme → topla) parayı topluyor, `coinsCollected` artıyor; görev aktifleşince taban
+o değere kuruluyor ve `q_coin` **0/1'de kilitleniyordu** → sonrası domino.
+**Düzeltme yapısal:** `questIndex` + `questBase` **bitiş ANINDA** ilerler; kutlama yalnız görsel.
+Ekranda gösterilen biten görev yeni transient `questDoneIndex` ile tutulur → **kayıt şeması
+değişmedi (SAVE_VERSION 30)**; kutlama ortasında yeniden yüklemede de kilitlenme yok (test var).
+
+### 1) Faz A1 — beş ölü alan kaldırıldı — commit 73e023a
+`serviceSpeedMult` (hep 1'di) · `Requires.minTables` (hiç kullanılmıyordu) · `prestige` config
+(Faz D'de İtibar kendi tasarımıyla gelecek) · `MailIcon` (öksüz) · **ulaşılamaz "Usta" dalı**
+(satın alma yolu yok → `level >= masterLevel` HİÇ gerçekleşmiyordu). `UpgradeSpec` artık tek
+tavan alanı taşıyor: **`maxLevel` (= eski masterLevel − 1)**.
+**DENGE DEĞİŞMEDİ, ölçüldü:** `simulate.ts` çıktısı öncesi/sonrası birebir aynı (tek fark silinen,
+zaten hiçbir profilde ulaşılmayan prestige satırı).
+
+### 2) Faz A2 — 800 satırlık `tick()` **17 sisteme** bölündü — commit 3726e04
+Kabul kriteri "tick() < 150 satır" → **65**. `store.ts` **2337 → 756 satır**. Üç yeni modül:
+- **`layout.ts`** (435) — LAYOUT, collision katıları, nav ızgarası/adımı. Durum yok, koordinat var.
+- **`rules.ts`** (483) — gating, görev motoru, yükseltme/ekonomi türetmeleri, `keepIdentity`. Saf.
+- **`tick.ts`** (1121) — brew · spawn · npc · playerMove · coin · serve · dishCycle · waiter ·
+  dishwasher · interactionZone · reveal · padFill · stationUpgrade · tableUpgrade · derive ·
+  quest · levelNotice. **Sıra eskisiyle birebir.**
+Sistemler yalnız `TickCtx` üstünde çalışır (Zustand/React/DOM yok). Sistemden sisteme geçen ara
+değerler (dirty, liveNpcs, input, player, out, quest …) artık ctx'te AÇIKÇA görünür.
+`tick.ts` store'a **yalnız tip** olarak bağlı (`import type`) → çalışma zamanında döngü yok.
+store.ts taşınan isimleri yeniden dışa aktarır; hiçbir çağıran değişmedi.
+
+### 3) Faz A3 — testler koordinat bağından koparıldı — commit aa09ca6
+45 elle yazılmış `player: [0, 0.6, 6.5]` tipi koordinat kalktı. **`layout.parkSpot()`** açık alanı
+0,25'lik ızgarayla tarar, katı engele girmeyen ve TÜM etkileşim noktalarına uzaklığı en büyük
+hücreyi seçer (bugün boşluk **3,79**). Testlerde `PARK` / `park()` / `stand()`; duman testinde yeni
+`window.__park()` kancası. **İki bekçi test**: boşluk pickup/serve/pad/mıknatıs yarıçaplarının
+hepsinden büyük mü + park edilen oyuncu gerçekten hiçbir şeyi tetiklemiyor mu → Faz B yerleşimi
+daraltırsa testler SESSİZCE değil GÜRÜLTÜYLE düşer.
+
+### Refactor güvencesi: `tools/tick-fingerprint.ts` (YENİ, kalıcı araç)
+`Math.random` tohumlanır, 8 kontrol noktalı senaryo koşar (servis turları, para, bulaşık, omurga
+pad'leri, yükseltmeler, zone-2, personel yalnız 90 sn) ve **2018 satırlık tam durum dökümü** üretir.
+A2/A3 boyunca her adımda öncesi/sonrası **birebir aynı** çıktı alındı. Faz B'de yerleşim değişirken
+de aynı işi görecek. Kullanım dosyanın başında yazılı.
+
+### Doğrulama (oturum sonu)
+`npm run test` **206/206** (5 yeni) · `npm run build` temiz · `npx eslint src/` **16 — değişmedi**
+(hepsi bu oturumdan önce vardı; yeni 4 modül temiz) · `tools/smoke.mjs` **26/26** ·
+`npx tsx tools/simulate.ts` çıktısı değişmedi · tick parmak izi birebir aynı.
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**Faz B — model geçişi** (plan `docs/plan-kat1-yayin.html` §11; pano "sıradaki"):
+1. Maketin (v11/v13) adımları ile `economy.config.ts` **pad zinciri** arasındaki haritayı çıkar:
+   hangi satın alma hangi kanadı açıyor, mutfak dışarı çıkma hangi pad.
+2. **Yerleşimi maket ölçeğine taşı** — artık tek dosyalık iş (`layout.ts`); sistemler koordinat bilmiyor.
+3. **Kayıt v31** (masa listesi + görev kimlikleri) + migrasyon.
+4. G4/G5 (KayKit mutfak/sokak modelleri) bu geçişle birlikte değerlendirilecek.
+5. Faz G'den kalan artık: UI Canvas'ları (`CharacterPanel`, `SalonSlice`, `DioramaPreview`,
+   `TableThemePreview`) hâlâ eski düz `ambientLight` ile — dünya ısındı, önizlemeler soğuk kaldı.
+
+### Bu oturumun kalıcı dersi
+**Büyük refactor'ın güvencesi test SAYISI değil, DAVRANIŞIN ÖLÇÜLMESİDİR.** Bölmeden önce oyundan
+tohumlu bir parmak izi alındı; bölme bitince aynı parmak izi tekrar alındı ve tek karakter fark
+çıkmadı. Ayrıca: bir test eski (hatalı) davranışı koruyor olabilir — `questIndex` kutlama boyunca
+ilerlemesin diyen test tam olarak buydu; testin KORUDUĞU KULLANICI SÖZÜNÜ (kart takas edilmesin)
+ayırıp motoru serbest bırakmak gerekti.
+
+### Kırmızı çizgi (duruyor)
+**"Objeler yüzüyor" hissine bir daha blob shadow ÖNERME** (D-054).
+
+### Bilinen, ertelenmiş
+- Maket girişinin üst çıtasında z-fighting (kullanıcı: "oyuna geçerken hallederiz").
+- Bundle 1,45 MB (three.js) — Faz F kod bölme.
+- `eslint` 16 hatası (Coins/CharacterPanel ref-during-render, floorPattern/wallPanel react-refresh,
+  save.ts no-useless-assignment) — hepsi eski, Faz E/F işi.
+
+---
+
 ## ŞU AN (2026-09-06 — G3 KAPANDI: **FAZ G TAMAM 4/4** + pano rengi; SAVE v30 değişmedi)
 
 **G3 duvar bitimi bitti.** Duvar artık iki düz kuşak değil, üç profille biten bir yüzey:

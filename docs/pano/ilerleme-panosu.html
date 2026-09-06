@@ -186,10 +186,9 @@ h2{font-size:21px;font-weight:800}
      türetildi (114 commit / 14 çalışma günü); oturum-başı defter tutmak
      yayın programıyla başladı.
      ══════════════════════════════════════════════════════════════════════ -->
-<script type="application/json" id="durum">
-{
+<script type="application/json" id="durum">{
   "guncelleme": "06.09.2026",
-  "yapilan": 39,
+  "yapilan": 42,
   "toplam": 65,
   "kilometre": [
     {
@@ -210,31 +209,32 @@ h2{font-size:21px;font-weight:800}
     }
   ],
   "ozet": {
-    "etiket": "Bu oturum · Faz G · 4/4 — FAZ G BİTTİ",
-    "baslik": "Duvarlar artık bir yerde bitiyor",
-    "aciklama": "Duvar iki düz renk kuşağıydı ve hiçbir yerde <b>bitmiyordu</b>: ne zeminle buluştuğu yerde, ne lambrinin üstünde, ne tepesinde. Üç ince profil eklendi — <b>süpürgelik</b>, <b>lambri üstü çıta</b>, <b>kartonpiyer</b>. Mekân \"kutuya renk sürülmüş\" olmaktan çıktı.",
+    "etiket": "Bu oturum · Faz A · 3/3 — FAZ A BİTTİ",
+    "baslik": "Kod tabanı Faz B’ye hazır: ölü alan yok, dev fonksiyon yok, testler koordinata bağlı değil",
+    "aciklama": "Yeni tasarımın (Faz B) üstüne kurulacağı zemin temizlendi. Önce <b>aylardır kırık olan duman testinin</b> kök nedeni bulundu: görev bittiğinde sayaç 1,3 saniyelik kutlama animasyonundan <b>sonra</b> ilerliyordu; o pencerede toplanan para yeni görevin başlangıcına yazılıyor ve görev 0/1’de kilitleniyordu. Sonra üç temizlik adımı yapıldı.",
     "adimlar": [
-      "Süpürgelik zeminin biraz <b>altından</b> başlıyor, kartonpiyer duvarın tepesini biraz <b>aşıyor</b> — yüzeyler üst üste binmiyor, titreme yok",
-      "Profillerin duvardan taşma miktarı <b>kademeli</b>: en çok süpürgelik taşıyor, duvar zemine oturuyor",
-      "Planda süpürgelik koyu ahşaptı; denendi ve <b>ölçüldü: görünmüyordu</b> — lambriyle tek koyu kütleye karışıyordu",
-      "Üç varyant aynı kareden çekilip soruldu, açık boyalı ton seçildi: üç profil de <b>tek uyumlu renk</b>",
-      "\"Hareket edince renk değişmesin\" şartı ölçüldü: kamera yaklaşırken şeritler 9 piksel kaydı, parlaklık <b>hiç oynamadı (%0)</b>",
-      "Bütün duvarlar ve profiller artık <b>tek çizim çağrısı</b> — profiller eklendiği hâlde çizim çağrısı 49'dan 40'a düştü",
-      "Mağaza önizlemesi aynı bileşenden çiziyor: mağazada gördüğün duvar salondakiyle birebir"
+      "Duman testi <b>8/15 → 26/26</b>: görev artık bitiş anında ilerliyor, kutlama yalnızca görsel",
+      "<b>Beş ölü alan</b> kaldırıldı: hiç değişmeyen servis-hızı çarpanı, kullanılmayan masa önkoşulu, ileriye dönük prestij ayarları, öksüz posta ikonu, satın alma yolu olmadığı için <b>hiç çalışmayan “Usta” seviyesi</b> dalı",
+      "<b>800 satırlık tek fonksiyon 17 sisteme bölündü</b> (demleme, müşteri, garson, bulaşıkçı, görev …); geriye kalan 65 satır sadece “bağlamı kur, sistemleri çağır, sonucu yaz”",
+      "Yerleşim ve kurallar da ayrı dosyalara çıktı: <b>store 2337 → 756 satır</b>",
+      "Testler artık “oyuncuyu şu köşeye koy” demiyor: park noktası <b>yerleşimden hesaplanıyor</b> — Faz B mekânı değiştirince testler kendiliğinden doğru yere bakar",
+      "Davranışın değişmediği <b>ölçüldü</b>: tohumlu senaryo 2018 satırlık durum dökümü üretiyor, refactor öncesi ve sonrası birebir aynı; ekonomi simülasyonu da aynı",
+      "Testler <b>201 → 206</b> (5 yeni), derleme temiz, konsol hatasız"
     ],
-    "not": "<b>Neyi öğrendik:</b> plandaki sayı ölçümü geçmiyorsa plan değil ölçüm kazanır — ama <b>renk kararını kullanıcı verir</b>. Süpürgelik planda koyu ahşap yazıyordu; teknik olarak doğru uygulandı ve telefon kadrajında hiç görünmedi. Doğru hamle tek bir \"sonra\" görüntüsü göstermek değil, üç varyantı <b>aynı kareden</b> çekip sormaktı — bu sefer baştan öyle yapıldı ve bir tur geri alma tasarruf edildi.<br><br><b>Faz G tamam:</b> ışık (G0) · gölge modeli (G1, sonuç: hiç gölge yok) · zemin geometrisi (G2) · duvar bitimi (G3). Sahnenin görsel tabanı artık modellerden bağımsız olarak oturmuş durumda."
+    "not": "<b>Neyi öğrendik:</b> “büyük refactor” korkusunun panzehiri ölçüdür. Bölmeden önce oyunun kendisinden bir <b>parmak izi</b> alındı (rastgelelik tohumlandı, senaryo sabitlendi, tüm durum JSON’a döküldü); bölme bittiğinde aynı parmak izi tekrar alındı ve <b>tek karakter fark çıkmadı</b>. Artık her refactor bu araca dayanabilir.<br><br><b>Sıradaki iş Faz B</b> — asıl yeni tasarım. Zemin buna hazır: sistemler koordinat bilmiyor, kurallar ayrı, testler mekân değişince kendini ayarlıyor."
   },
   "siradaki": {
-    "etiket": "Faz A · Temizlik",
-    "baslik": "Önce duman testi onarılacak, sonra temizlik",
-    "aciklama": "Görsel taban bitti. Faz A'ya (temizlik) geçmeden önce otomatik duman testinin <b>yedi kırık adımı</b> onarılmalı — testler yeşil olmadan yeni faza girilmiyor.",
+    "etiket": "Faz B · Model geçişi",
+    "baslik": "Sıra mekânın kendisinde",
+    "aciklama": "Temizlik bitti; bundan sonrası yeni tasarım. Faz B, maketin altı adımını oyunun içine taşıyor: ALAN / SERVİS / MASA / ODA modeli, yerleşimin maket ölçeğine geçmesi ve kayıt sürümü v31 (masa listesi + görev kimlikleri).",
     "adimlar": [
-      "Duman testi 8/15: kök neden görev sayacının başlangıç değerini yanlış anda alması, oradan domino gidiyor",
-      "<b>Faz A:</b> ölü kod ve tekrar eden parçaların temizliği",
-      "<b>G4/G5</b> (KayKit mutfak ve sokak modelleri) Faz B'nin model geçişiyle birlikte değerlendirilecek",
+      "Maketin adımları ile <b>pad zinciri</b> arasındaki haritayı çıkar: hangi satın alma hangi kanadı açıyor",
+      "<b>Yerleşimi maket ölçeğine taşı</b> — sistemler koordinat bilmediği için bu artık tek dosyalık iş",
+      "<b>Kayıt v31</b>: masa listesi ve görev kimlikleri; eski kayıt migrasyonla taşınır",
+      "<b>G4/G5</b> (KayKit mutfak ve sokak modelleri) bu geçişle birlikte değerlendirilecek",
       "Mağaza önizleme sahneleri hâlâ eski düz ışıkla — dünya ısındı, önizlemeler soğuk kaldı"
     ],
-    "not": "<b>Açık soru:</b> kullanıcı \"hareket edince renk değişiyor\" dedi. G3 profilleri ölçümle titremiyor (%0 yayılım), yani başka bir yerde olabilir — hangi ekranda/hangi objede görüldüğü sorulup o kadrajda aynı kare-kare ölçüm uygulanacak. <b>Tahminle dokunulmayacak.</b><br><br><b>Kırmızı çizgi duruyor:</b> \"objeler yüzüyor\" hissine bir daha alttaki yuvarlak önerilmeyecek."
+    "not": "<b>Kapanan açık soru:</b> kullanıcının gördüğü “hareket edince renk değişiyor” sorunu bu oturumda sorulduğunda <i>“düzeldi, şu an yok”</i> cevabı geldi — G3 ölçümü (%0 yayılım) ile tutarlı.<br><br><b>Kırmızı çizgi duruyor:</b> “objeler yüzüyor” hissine bir daha alttaki yuvarlak önerilmeyecek."
   },
   "donemler": [
     {
@@ -316,8 +316,8 @@ h2{font-size:21px;font-weight:800}
         {
           "k": "A",
           "t": "Temizlik",
-          "d": "Ölü alanları kaldır · tick() 800 → 150 satır · testleri koordinat bağından kopar",
-          "yapilan": 0,
+          "d": "Ölü alanlar kaldırıldı · tick() 800 → 65 satır, 17 sistem · testler koordinat bağından koptu · duman testi 8/15 → 26/26",
+          "yapilan": 3,
           "toplam": 3,
           "kapi": "Test sayısı düşmeden yeşil",
           "durum": "now"
@@ -366,6 +366,21 @@ h2{font-size:21px;font-weight:800}
     }
   ],
   "gunluk": [
+    {
+      "tarih": "06.09.2026",
+      "etiket": "Faz A · 1. oturum — Faz A kapandı (3 adım tek gecede)",
+      "baslik": "Zemin temizliği: kırık test onarıldı, dev fonksiyon bölündü, testler mekândan koptu",
+      "govde": "<b>Önce kırık test.</b> Otomatik duman testi Ağustos’tan beri on beş adımın yedisinde düşüyordu ve sebebi bilinmiyordu. Kök neden göründüğünden ince çıktı: bir görev tamamlanınca kart 1,3 saniye “tamamlandı” gösteriyor, oyun ise görevi ancak o animasyon bitince ilerletiyordu. Oyuncu bu arada doğal olarak yerdeki parayı topluyor — ve o para, henüz başlamamış “parayı topla” görevinin <b>başlangıç sayısına</b> yazılıyordu. Görev 0/1’de kilitleniyor, arkasındaki her adım domino gibi düşüyordu. Düzeltme yapısal: görev artık <b>bitiş anında</b> ilerliyor, kutlama sadece görsel bir gecikme. Test <b>8/15 → 26/26</b>.<br><br><b>Sonra temizlik.</b> Beş ölü alan kaldırıldı — bunların en sinsisi, elmasla açılacak “Usta” seviyesiydi: kod onu hesaplıyordu ama oyunda ona ulaşacak bir satın alma yolu hiç yoktu. Ardından oyunun kalbi olan 800 satırlık tek fonksiyon <b>17 sisteme</b> bölündü; yerleşim ve kurallar ayrı dosyalara çıktı. Son olarak testler mekândan koparıldı: “oyuncuyu şu köşeye koy” diyen 45 elle yazılmış koordinat gitti, yerine <b>yerleşimden hesaplanan</b> bir park noktası geldi.",
+      "maddeler": [
+        "Duman testi <b>8/15 → 26/26</b>; görev sayacı yarışı yapısal olarak kapandı",
+        "Ölü alanlar: servis-hızı çarpanı, masa önkoşulu, prestij ayarları, posta ikonu, ulaşılamaz “Usta” dalı",
+        "Ana döngü <b>800 → 65 satır</b>; 17 sistem ayrı ayrı okunabiliyor · store <b>2337 → 756 satır</b>",
+        "Testler yerleşimden bağımsız; iki <b>bekçi test</b> park noktasının gerçekten boş olduğunu doğruluyor",
+        "Davranış değişmedi, <b>ölçüldü</b>: 2018 satırlık durum parmak izi öncesi/sonrası birebir aynı",
+        "Testler <b>206/206</b> (5 yeni), derleme temiz, ekonomi simülasyonu aynı"
+      ],
+      "not": "<b>Bu oturumun dersi:</b> refactor’ın güvenliği testlerin sayısından değil, <b>davranışın ölçülmesinden</b> gelir. Bölmeye başlamadan önce oyundan tohumlu bir senaryoyla tam durum dökümü alındı; bölme bitince aynı döküm yeniden alındı ve fark çıkmadı. Bu araç (<code>tick-fingerprint</code>) artık depoda — Faz B’de yerleşim değişirken de aynı işi görecek."
+    },
     {
       "tarih": "06.09.2026",
       "etiket": "Faz G · 4. oturum — Faz G kapandı",
@@ -519,10 +534,10 @@ h2{font-size:21px;font-weight:800}
   ],
   "riskler": [
     {
-      "sev": "Engelleyici",
-      "renk": "stop",
-      "b": "Duman testi 15 adımın 7'sinde düşüyor",
-      "p": "Bu oturumdan önce de kırıktı — önceki commit ayrı bir çalışma kopyasında aynı sonucu verdi. Kök neden bulundu ve yazıldı. Faz A/C işi; Faz B'ye geçmeden onarılmalı."
+      "sev": "Çözüldü",
+      "renk": "done",
+      "b": "Duman testi 15 adımın 7'sinde düşüyordu — ÇÖZÜLDÜ",
+      "p": "Kök neden: görev bittiğinde sayaç 1,3 saniyelik kutlama animasyonundan sonra ilerliyordu; o pencerede toplanan para yeni görevin başlangıcına yazılıyor ve görev 0/1'de kilitleniyordu. Görev artık bitiş anında ilerliyor, kutlama yalnızca görsel. Test <b>8/15 → 26/26</b>."
     },
     {
       "sev": "Performans",
@@ -537,10 +552,10 @@ h2{font-size:21px;font-weight:800}
       "p": "Görev filtresi satın-alma noktalarına uygulanıyor ama opsiyonel noktalar ve yükseltme dolumları filtrenin dışında çiziliyor. Oyuncu aynı anda birden çok hedef görüyor. Faz C'de kapanacak."
     },
     {
-      "sev": "Bakım",
-      "renk": "now",
-      "b": "Ana döngü 800 satır",
-      "p": "Yaklaşık kırk yerel değişkenle tek fonksiyon. Her yeni sistem regresyon riski taşıyor. Faz A'da sistemlere bölünecek."
+      "sev": "Çözüldü",
+      "renk": "done",
+      "b": "Ana döngü 800 satırdı — ÇÖZÜLDÜ",
+      "p": "Faz A2'de 17 sisteme bölündü; geriye kalan 65 satır sadece bağlamı kurup sistemleri çağırıyor. Yerleşim ve kurallar ayrı dosyalara çıktı (store 2337 → 756 satır). Davranışın değişmediği tohumlu parmak iziyle ölçüldü."
     },
     {
       "sev": "Ölçüm",
@@ -588,8 +603,7 @@ h2{font-size:21px;font-weight:800}
       "n": "ilk 5 dakika muaf"
     }
   ]
-}
-</script>
+}</script>
 
 <div class="bar-top"><div class="wrap bar-top-in">
   <span class="mark">Köşe Kıraathanesi · 3B idle-tycoon</span>
