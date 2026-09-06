@@ -1285,3 +1285,45 @@ yerleşim taşınırken de kullanılacak. Kullanım dosya başında.
 **⏳ SIRADAKİ: FAZ B — model geçişi.** (1) maket adımları ↔ pad zinciri haritası, (2) yerleşimi
 maket ölçeğine taşı (artık tek dosya: `layout.ts`), (3) kayıt v31 + migrasyon, (4) G4/G5 KayKit.
 Faz G artığı: UI Canvas'ları hâlâ eski düz ışıkla.
+
+## Faz B — Model geçişi 🔧 (1/6 · harita çıktı, kod yazılmadı)
+
+### B0 — Adım haritası + dört karar ✅ (2026-09-06)
+- ✅ **Maket v13'ün altı adımı ↔ bugünkü pad zinciri eşleştirildi.** Rapor `docs/faz-b-harita.html`
+  (artifact: https://claude.ai/code/artifact/114662f8-0d0e-4a4d-ba03-1e84cd17e81c). Karar: **D-058**.
+- **Bulgu:** ilk üç maket adımı bugünkü zincirin ÜZERİNDE duruyor; son üçü (lavabo · merdiven ·
+  orta şerit) kodda karşılığı olmayan iki kavram istiyor: **ODA** ve **banket**. Çelişki pad'lerde
+  değil MODELDE — `zone2` bugün yeni OCAK da getiriyor (makette 2. Alan'ın ocağı yok);
+  `zone3` masa getirmiyor, **servis noktasını tezgâha çeviriyor** (tost L5'ten gelir).
+- **Ölçüm:** `zone` geçen **1090 satır** (248'i `tests/logic.test.ts`); zemin 21,2×20,6 → **34×34**
+  (alan ×2,6); masa 12 → 20; servis noktası 3 → 1 + 1 aktarma.
+- ⚠ **Düzeltme:** "mutfak dışarı çıkma hangi pad" sorusu GEÇERSİZ — dışarı çıkıntı **v11**'in
+  kararıydı, **v13 iptal etti**. Karşılığı olan adım **3. Alan**'dır.
+- **Dört karar (kullanıcı):** (1) sipariş nesnesi **Faz C'de**, Faz B yalnız yapıyı kurar ·
+  (2) merdiven **alınamaz**, üstüne basınca **"Kat 2 çok yakında"** der · (3) kayıt v31 =
+  **temiz sıfırlama, migrasyon YOK** (ayarlar korunur; "ilerleme kaybolmaz" kuralı v1.0'dan itibaren
+  bağlayıcı) · (4) **B3'ün yerleşimi kadraj onayı alınmadan yazılmaz**.
+
+### B1 — Model dönüşümü, içerik SABİT ⏳
+`ZONE` → `ALAN / SERVİS / MASA / ODA`; masa listesi türetilir; servis noktası alandan ayrılır.
+İçerik hâlâ 3 alan × 4 masa, 3 servis noktası → **kabul kriteri: tick parmak izi birebir aynı.**
+Kayıt v31 (temiz sıfırlama + test) bu adımda.
+
+### B2 — Servis tekilleşir ⏳
+3 ocak → 1 servis noktası (L1-L3 çay ocağı · L4 tezgâh · L5 tost · L6 son ₺); ürün seviyeden gelir;
+garson havuzu global. **Davranış burada değişir** → güvence parmak izi değil tempo ölçümü.
+
+### B3 — Yerleşim maket ölçeğine ⏳
+`layout.ts` tek dosya: 34×34, dört alan, arka bant (servis bloğu · merdiven · lavabo, üçü de
+z = −9,8 hizasında), orta şerit. **ÖNCE kadraj: üç kamera kademesi aynı kareden çekilip onaylanır.**
+
+### B4 — Odalar ⏳
+Lavabo (oturma eklemez, pasif çarpan, kendi seviyeleri) + yıkık merdiven ("Kat 2 çok yakında").
+
+### B5 — Masa tipleri ve banket ⏳
+Dörtlü (8) · ikili (12) · banket (2 ada; **seviyesi boyudur**, her seviye iki ikili masa ekler,
+dış uç sabit, var olan masalar yer değiştirmez).
+
+**Bitti sayılır:** maketin gezilebilir beş adımı sırayla açılıyor + merdiven konuşuyor ·
+`npm run test` yeşil, test sayısı düşmeden (bugün 206) · smoke 26/26 · build temiz ·
+v31 sıfırlaması testli · B1 sonunda tick parmak izi birebir aynı.

@@ -1,0 +1,613 @@
+<meta charset="utf-8">
+<title>Faz B Geçiş Haritası</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  /* Palet ve tipografi: maket dosyalarıyla AYNI kimlik (docs/maket/maket-v13.html). */
+  :root {
+    --paper: #efece2;
+    --surface: #f7f5ee;
+    --surface-2: #e8e4d7;
+    --ink: #22271f;
+    --ink-soft: #5b6154;
+    --ink-faint: #8b9081;
+    --line: #d7d1c0;
+    --line-soft: #e2ddcf;
+    --green: #2e6b4f;
+    --green-wash: #e2ece3;
+    --copper: #a25f26;
+    --copper-wash: #f0e3d4;
+    --bordo: #7a2230;
+    --bordo-wash: #f4e0e1;
+
+    --f-display: "Baloo 2", "Trebuchet MS", sans-serif;
+    --f-body: "Newsreader", Georgia, serif;
+    --f-mono: "JetBrains Mono", Consolas, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #161a15;
+      --surface: #1d221c;
+      --surface-2: #252b23;
+      --ink: #e9e4d6;
+      --ink-soft: #a8a696;
+      --ink-faint: #7d8073;
+      --line: #343a30;
+      --line-soft: #2a3027;
+      --green: #6fb28b;
+      --green-wash: #1e2a22;
+      --copper: #d99a5c;
+      --copper-wash: #2c2419;
+      --bordo: #d4707f;
+      --bordo-wash: #2e1c1e;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper: #161a15;
+    --surface: #1d221c;
+    --surface-2: #252b23;
+    --ink: #e9e4d6;
+    --ink-soft: #a8a696;
+    --ink-faint: #7d8073;
+    --line: #343a30;
+    --line-soft: #2a3027;
+    --green: #6fb28b;
+    --green-wash: #1e2a22;
+    --copper: #d99a5c;
+    --copper-wash: #2c2419;
+    --bordo: #d4707f;
+    --bordo-wash: #2e1c1e;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--f-body);
+    font-size: 16.5px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 1140px; margin: 0 auto; padding: 30px 22px 90px; }
+
+  header.top { border-bottom: 2px solid var(--ink); padding-bottom: 18px; }
+
+  .eyebrow {
+    font-family: var(--f-display); font-weight: 700; font-size: 11px;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--copper); margin-bottom: 9px;
+  }
+
+  h1 {
+    font-family: var(--f-display); font-weight: 800;
+    font-size: clamp(30px, 5.2vw, 46px); line-height: 1.03;
+    margin: 0 0 12px; letter-spacing: -0.018em; text-wrap: balance;
+  }
+
+  .lede { color: var(--ink-soft); max-width: 68ch; margin: 0; font-size: 17.5px; }
+
+  /* içindekiler */
+  nav.toc {
+    margin: 26px 0 40px; padding: 16px 0 18px;
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 4px 24px;
+  }
+  nav.toc a {
+    font-family: var(--f-display); font-weight: 600; font-size: 13.5px;
+    color: var(--ink-soft); text-decoration: none; padding: 3px 0;
+    display: flex; gap: 10px;
+  }
+  nav.toc a:hover { color: var(--copper); }
+  nav.toc a b { color: var(--copper); font-weight: 700; font-variant-numeric: tabular-nums; min-width: 16px; }
+
+  section { margin: 0 0 56px; scroll-margin-top: 16px; }
+
+  h2 {
+    font-family: var(--f-display); font-weight: 700; font-size: 26px;
+    margin: 0 0 6px; letter-spacing: -0.012em; text-wrap: balance;
+  }
+  h2 .no { color: var(--copper); margin-right: 10px; font-variant-numeric: tabular-nums; }
+  .h2-note {
+    font-family: var(--f-display); font-weight: 600; font-size: 12px;
+    letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint);
+    margin: 0 0 18px; padding-bottom: 12px; border-bottom: 1px solid var(--line);
+  }
+
+  h3 {
+    font-family: var(--f-display); font-weight: 700; font-size: 18px;
+    margin: 32px 0 8px;
+  }
+  h4 {
+    font-family: var(--f-display); font-weight: 700; font-size: 14.5px;
+    margin: 22px 0 6px; letter-spacing: 0.01em;
+  }
+
+  p { margin: 0 0 14px; max-width: 72ch; }
+  p.wide { max-width: none; }
+  ul, ol { margin: 0 0 14px; padding-left: 20px; max-width: 72ch; }
+  li { margin-bottom: 6px; }
+
+  b, strong { font-weight: 600; }
+  em { font-style: normal; font-family: var(--f-display); font-weight: 600; color: var(--green); }
+  code, .mono { font-family: var(--f-mono); font-size: 0.87em; }
+  code { background: var(--surface-2); padding: 1px 5px; border-radius: 3px; }
+
+  .tw { overflow-x: auto; margin: 0 0 16px; }
+  table { border-collapse: collapse; width: 100%; font-size: 15px; }
+  th {
+    font-family: var(--f-display); font-weight: 700; font-size: 11px;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint);
+    text-align: left; padding: 0 14px 8px 0; border-bottom: 1.5px solid var(--line);
+    white-space: nowrap;
+  }
+  td { padding: 10px 14px 10px 0; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+  td.num, th.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  td.k { font-family: var(--f-display); font-weight: 700; font-size: 14px; white-space: nowrap; }
+
+  tr.band td {
+    background: var(--surface-2);
+    font-family: var(--f-display); font-weight: 700; font-size: 12.5px;
+    letter-spacing: 0.05em; text-transform: uppercase; color: var(--copper);
+    padding: 9px 14px 8px 10px; border-bottom: 1px solid var(--line);
+  }
+  tr.band td .t { float: right; text-transform: none; letter-spacing: 0; color: var(--ink-faint); font-weight: 600; }
+
+  .tag {
+    display: inline-block; font-family: var(--f-display); font-weight: 700;
+    font-size: 10px; letter-spacing: 0.07em; text-transform: uppercase;
+    padding: 2px 7px 1px; border-radius: 3px; white-space: nowrap;
+  }
+  .tag.pad { background: var(--copper-wash); color: var(--copper); }
+  .tag.lvl { background: var(--surface-2); color: var(--ink-soft); }
+  .tag.ad  { background: var(--bordo-wash); color: var(--bordo); }
+  .tag.ok  { background: var(--green-wash); color: var(--green); }
+
+  .models { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 4px 0 18px; }
+  @media (max-width: 720px) { .models { grid-template-columns: 1fr; } }
+  .model { border: 1px solid var(--line); background: var(--surface); padding: 16px 16px 18px; }
+  .model.now { border-left: 3px solid var(--bordo); }
+  .model.next { border-left: 3px solid var(--green); }
+  .model h4 { font-family: var(--f-display); font-weight: 700; font-size: 14px; margin: 0 0 3px; }
+  .model .sub {
+    font-family: var(--f-display); font-weight: 600; font-size: 11px;
+    letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-faint); margin: 0 0 14px;
+  }
+  .tree { font-family: var(--f-mono); font-size: 12.5px; line-height: 1.85; color: var(--ink-soft); white-space: pre; overflow-x: auto; }
+  .tree b { color: var(--ink); font-weight: 600; }
+
+  .note {
+    border-left: 3px solid var(--copper); background: var(--surface);
+    padding: 13px 16px; margin: 0 0 16px; font-size: 15.5px; max-width: 78ch;
+  }
+  .note.warn { border-left-color: var(--bordo); }
+  .note.ok { border-left-color: var(--green); }
+  .note p:last-child { margin-bottom: 0; }
+  .note .lab {
+    font-family: var(--f-display); font-weight: 700; font-size: 11px;
+    letter-spacing: 0.09em; text-transform: uppercase; color: var(--copper);
+    display: block; margin-bottom: 4px;
+  }
+  .note.warn .lab { color: var(--bordo); }
+  .note.ok .lab { color: var(--green); }
+
+  .decisions { display: grid; gap: 1px; background: var(--line); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .dec { background: var(--paper); display: grid; grid-template-columns: 34px 1fr; gap: 16px; padding: 15px 0; align-items: start; }
+  .dec .n {
+    font-family: var(--f-display); font-weight: 800; font-size: 19px;
+    color: var(--copper); line-height: 1.25; font-variant-numeric: tabular-nums;
+  }
+  .dec .q { font-family: var(--f-display); font-weight: 700; font-size: 16px; margin: 0 0 4px; }
+  .dec .a { color: var(--ink-soft); font-size: 15px; margin: 0; max-width: 76ch; }
+  .dec .a .rec { color: var(--green); font-family: var(--f-display); font-weight: 600; }
+
+  .mock {
+    font-family: var(--f-mono); font-size: 12.5px; line-height: 1.7;
+    background: var(--surface); border: 1px solid var(--line);
+    padding: 14px 16px; margin: 0 0 16px; white-space: pre; overflow-x: auto; color: var(--ink-soft);
+  }
+  .mock b { color: var(--ink); font-weight: 600; }
+
+  footer.end {
+    margin-top: 50px; padding-top: 20px; border-top: 2px solid var(--ink);
+    font-size: 14px; color: var(--ink-faint); max-width: 78ch;
+  }
+
+  a { color: var(--copper); }
+  a:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<style>
+  /* Faz B haritasına özel: ölçek karşılaştırması ve çelişki blokları. */
+  .scale { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line);
+           border: 1px solid var(--line); margin: 0 0 18px; }
+  @media (max-width: 640px) { .scale { grid-template-columns: 1fr; } }
+  .scale > div { background: var(--surface); padding: 14px 16px 16px; }
+  .scale .who { font-family: var(--f-display); font-weight: 700; font-size: 11px;
+                letter-spacing: 0.09em; text-transform: uppercase; margin: 0 0 10px; }
+  .scale .now .who { color: var(--bordo); }
+  .scale .next .who { color: var(--green); }
+  .scale dl { display: grid; grid-template-columns: auto 1fr; gap: 5px 14px; margin: 0; font-size: 14.5px; }
+  .scale dt { color: var(--ink-faint); font-family: var(--f-display); font-weight: 600; font-size: 12.5px; }
+  .scale dd { margin: 0; font-variant-numeric: tabular-nums; font-weight: 600; }
+  .conflict { border-top: 1px solid var(--line); padding: 16px 0 4px; }
+  .conflict:last-of-type { border-bottom: 1px solid var(--line); margin-bottom: 18px; }
+  .conflict h4 { margin: 0 0 6px; display: flex; gap: 10px; align-items: baseline; }
+  .conflict h4 .cno { color: var(--bordo); font-weight: 800; font-variant-numeric: tabular-nums; }
+  .conflict p { margin: 0 0 8px; font-size: 15.5px; color: var(--ink-soft); max-width: 76ch; }
+  .conflict p b { color: var(--ink); }
+</style>
+
+<div class="wrap">
+
+<header class="top">
+  <p class="eyebrow">Köşe Kıraathanesi · 6 Eylül 2026 · Faz A kapandı</p>
+  <h1>Faz B Geçiş Haritası</h1>
+  <p class="lede">Maket v13’ün altı adımı ile bugünkü pad zinciri yan yana. Nerede birebir taşıma
+  var, nerede modelin kendisi çelişiyor, ve Faz B hangi beş adımda yapılırsa her adım sonunda oyun
+  oynanabilir kalır.</p>
+</header>
+
+<nav class="toc">
+  <a href="#s1"><b>1</b>Bir sayfada karar</a>
+  <a href="#s2"><b>2</b>Adım haritası</a>
+  <a href="#s3"><b>3</b>Dört yapısal çelişki</a>
+  <a href="#s4"><b>4</b>Ölçek</a>
+  <a href="#s5"><b>5</b>Faz B’nin beş adımı</a>
+  <a href="#s6"><b>6</b>Verilen dört karar</a>
+</nav>
+
+<!-- ================================================== 1 -->
+<section id="s1">
+  <h2><span class="no">1</span>Bir sayfada karar</h2>
+  <p class="h2-note">Haritanın söylediği tek cümle</p>
+
+  <p class="wide"><b>Maketin altı adımı bugünkü pad zincirine tek tek eşlenmiyor — çünkü çelişki
+  pad’lerde değil, modelin kendisinde.</b> Bugün kodda <em>bölge = ızgara hücresi = kendi ocağı =
+  kendi ürünü = kendi personeli</em> eşitliği var; maket tek katta <b>tek servis noktası</b>
+  anlatıyor. Pad’leri yeniden adlandırmak bu farkı kapatmaz.</p>
+
+  <p class="wide">İyi haber: ilk üç maket adımı bugünkü zincirin <b>üzerinde duruyor</b> — masa aç,
+  ocak yükselt, personel tut; hepsi çalışıyor. Kalan üçü (<b>lavabo · merdiven · orta şerit</b>)
+  bugün kodda hiç karşılığı olmayan iki yeni kavram istiyor: <b>ODA</b> ve <b>banket</b>.</p>
+
+  <div class="note">
+    <span class="lab">Ölçüm</span>
+    <p>Kod tabanında <code>zone</code> geçen <b>1090 satır</b> var; en yoğunu
+    <code>tests/logic.test.ts</code> (248), sonra <code>economy.config.ts</code> (147),
+    <code>tick.ts</code> (137), <code>layout.ts</code> (120), <code>Scene.tsx</code> (92).
+    Planın “<code>store.ts</code>’in %40’ı, 40–60 test” tahmini <b>doğru büyüklükte</b>. Faz A2/A3
+    bu işi kolaylaştırdı: koordinatlar artık tek dosyada (<code>layout.ts</code>) ve testler
+    koordinat değil <code>parkSpot()</code> kullanıyor.</p>
+  </div>
+</section>
+
+<!-- ================================================== 2 -->
+<section id="s2">
+  <h2><span class="no">2</span>Adım haritası</h2>
+  <p class="h2-note">Maket v13 · Kat 1 ↔ bugünkü omurga zinciri</p>
+
+  <div class="tw">
+  <table>
+    <thead><tr><th>Maket adımı</th><th>Ne getiriyor</th><th>Bugünkü karşılığı</th><th>Durum</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="k">1 · 1. Alan</td>
+        <td>17 × 17, dört masa, <b>sol duvarda çay ocağı</b>. Kasa yok, mutfak yok</td>
+        <td><span class="tag pad">table2</span> <span class="tag pad">table3</span>
+            <span class="tag pad">table4</span> <span class="tag pad">waiter</span> + ocak L1–L2</td>
+        <td><span class="tag ok">taşınır</span> Tek fark: <code>dishwasher</code> bu bölümden
+            <b>çıkar</b> — plan §4’te bulaşıkçı 14. adım, yani 2. Alan’da</td>
+      </tr>
+      <tr>
+        <td class="k">2 · 2. Alan</td>
+        <td>Ön-sağ çeyrek, <b>birincinin birebir aynısı</b>, +4 masa. Cephe tamamlanır, kapı ortaya
+            kayar. <b>Servis hâlâ tek ocaktan</b></td>
+        <td><span class="tag pad">zone2</span> <span class="tag pad">z2table2</span>
+            <span class="tag pad">z2table3</span> <span class="tag pad">z2table4</span>
+            <span class="tag pad">z2waiter</span> <span class="tag pad">z2dishwasher</span></td>
+        <td><span class="tag ad">çelişki</span> <code>zone2</code> bugün <b>yeni ocak + yeni bulaşık
+            + yeni garson</b> getiriyor. Makette 2. Alan’ın ocağı <b>yok</b></td>
+      </tr>
+      <tr>
+        <td class="k">3 · 3. Alan</td>
+        <td>Arka yarı (34 × 17) tek hamlede + arka-sol <b>servis bloğu</b>; salona bakan yüzü
+            <b>tezgâh</b>. Ön duvardaki çay ocağı <b>kalkar</b>. Sol duvara TV programı</td>
+        <td><span class="tag pad">zone3</span> “Tost Salonu” +
+            <span class="tag pad">z3table2…4</span> <span class="tag pad">z3waiter</span>
+            <span class="tag pad">z3dishwasher</span></td>
+        <td><span class="tag ad">anlam değişiyor</span> Bu adım <b>masa getirmez</b>, servis
+            noktasını dönüştürür (ocak → tezgâh = L4). Tost buradan değil <b>L5’ten</b> gelir</td>
+      </tr>
+      <tr>
+        <td class="k">4 · Lavabo</td>
+        <td>Tahta perde kalkar; 12,3 × 7,0 kapalı oda, dört kabin, üç lavabo</td>
+        <td>—</td>
+        <td><span class="tag ad">yeni kavram</span> <b>ODA</b>: oturma eklemez, <b>pasif etki</b>
+            verir (erken kalkma ↓). Bugün kodda karşılığı yok</td>
+      </tr>
+      <tr>
+        <td class="k">5 · Merdiven</td>
+        <td>Yıkık merdiven onarılır, kova açılır, Kat 2’ye tek çıkış</td>
+        <td>—</td>
+        <td><span class="tag ad">v1.0’da alınamaz</span> Yıkık durur; üstüne basınca <b>“Kat 2 çok
+            yakında”</b> der. v1.1’de onarılır</td>
+      </tr>
+      <tr>
+        <td class="k">6 · Orta Şerit</td>
+        <td>İki <b>banket adası</b> + 12 <b>ikili masa</b> + <b>garson servis istasyonu</b></td>
+        <td>—</td>
+        <td><span class="tag ad">yeni kavram</span> Üçüncü masa tipi, <b>seviyesi boy olan</b>
+            banket, ve üretim yapmayan <b>aktarma</b> servis noktası</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note warn">
+    <span class="lab">Sıra farkı — atlanmamalı</span>
+    <p>Maket <b>5 = merdiven</b>, <b>6 = orta şerit</b> diyor; plan §4’ün oyun zinciri ise
+    <b>Bölüm 5 = Orta Şerit</b> (4–10 sa), <b>Bölüm 6 = Merdiven</b> (10 sa +, alınamaz). Maket
+    bitmiş katı görselleştirdiği için arka bandı önce tamamlıyor; oyunda ise merdiven <b>en sonda
+    ve satın alınamaz</b>. Yani “maketin altı adımı oyunda gezilebiliyor” kabul kriteri pratikte
+    <b>beş gezilebilir adım + yıkık merdiven</b> demek.</p>
+  </div>
+
+  <div class="note ok">
+    <span class="lab">Eski notun düzeltmesi</span>
+    <p><code>activeContext.md</code>’de Faz B’nin ilk işi “<em>mutfak dışarı çıkma hangi pad</em>”
+    diye yazılmıştı. <b>Bu soru artık geçersiz:</b> “mutfak binanın dışına taşan ek hacim” v11’in
+    kararıydı, <b>v13 onu iptal etti</b>. v13’te servis bloğu <b>arka bandın sol ucunda</b>, kat
+    içinde, salona bakan yüzü tezgâh. Karşılığı olan adım <b>3. Alan</b>’dır ve o adım aynı anda hem
+    arka yarıyı açar hem ocağı tezgâha çevirir.</p>
+  </div>
+</section>
+
+<!-- ================================================== 3 -->
+<section id="s3">
+  <h2><span class="no">3</span>Dört yapısal çelişki</h2>
+  <p class="h2-note">Pad’leri yeniden adlandırmanın neden yetmediği</p>
+
+  <div class="conflict">
+    <h4><span class="cno">Ç1</span> Bölge, ocağıyla birlikte doğuyor</h4>
+    <p><code>derivedFromPads()</code> içinde <code>unlockZone</code> etkisi bir bölge açtığında o
+    bölge <b>otomatik olarak bir ocak, bir masa ve bir bulaşık köşesiyle</b> geliyor;
+    <code>stations</code> sayısı doğrudan <code>zonesOpen</code>’a eşit. Makette ikinci alanın ocağı
+    yok — <b>servis tek noktadan, ve o nokta 3. adımda yer değiştiriyor</b>. Bu, <code>zone2</code>
+    pad’inin etkisini değil <b>tanımını</b> değiştirir.</p>
+  </div>
+
+  <div class="conflict">
+    <h4><span class="cno">Ç2</span> Ürün bölgeden geliyor, seviyeden gelmeli</h4>
+    <p>Bugün tost = üçüncü bölgenin ürünü (<code>ZONE_PRODUCTS = ['tea','tea','tost']</code>,
+    <code>zoneProduct(z)</code>). Planda tost = <b>servis noktası L5</b>. İyi haber: ürünü bölgeye
+    bağlayan <b>tek fonksiyon</b> var ve 12 çağrı noktasının hepsi ondan geçiyor — kaynağını
+    değiştirmek mekanik olarak küçük. Ama zincirdeki anlamı büyük: <code>zone3</code> “Tost Salonu”
+    olmaktan çıkıp <b>“3. Alan + tezgâh dönüşümü”</b> oluyor.</p>
+  </div>
+
+  <div class="conflict">
+    <h4><span class="cno">Ç3</span> Masa listesi sabit uzunlukta</h4>
+    <p><code>TABLES_PER_ZONE = 4</code> × <code>MAX_ZONES = 3</code> = <b>12 masa</b>, global
+    index’ler bitişik. Hedef <b>20 masa, üç tip</b> (8 dörtlü · 12 ikili · 2 banket adası) ve
+    <b>banketin seviyesi boyudur</b> — her seviye iki ikili masa doğurur. Masa listesi artık sabit
+    değil <b>türetilen</b> bir liste. <b>Kayıt v31’in asıl sebebi budur</b>, kozmetik bir alan
+    eklemesi değil.</p>
+  </div>
+
+  <div class="conflict">
+    <h4><span class="cno">Ç4</span> ODA diye bir şey yok</h4>
+    <p>Lavabo oturma eklemez, <b>pasif çarpan</b> verir; merdiven <b>kat kapısıdır</b> ve v1.0’da
+    kilitli kalır. Bugünkü tek açılış cinsi “bölge / masa / personel” — ikisi de bu üçüne girmiyor.
+    Sahnede bir tuvalet <b>çizimi</b> var ama üçüncü bölge açılınca kalkıyor: dekor, mekanik değil.</p>
+  </div>
+
+  <p class="wide">Dördü de tek bir kök nedenin dalları: <b>bölge, oyunun taşıyıcı birimi olmaktan
+  çıkmalı.</b> Plan §2’nin hedef modeli tam olarak bunu söylüyor.</p>
+
+  <div class="models">
+    <div class="model now">
+      <h4>Bugün</h4>
+      <p class="sub">3 bölge × 4 masa = 12 masa</p>
+      <div class="tree"><b>BÖLGE</b>
+ ├── kendi <b>ocağı</b>       stationLevels[z]
+ ├── kendi <b>ürünü</b>       çay · çay · tost
+ ├── kendi <b>garsonu</b>     waiters[z]
+ ├── kendi <b>bulaşıkçısı</b> dishwashers[z]
+ └── sabit <b>4 masa</b>      TABLES_PER_ZONE</div>
+    </div>
+    <div class="model next">
+      <h4>Hedef</h4>
+      <p class="sub">1 kat · 4 alan · 1 tezgâh · 20 masa</p>
+      <div class="tree"><b>KAT</b>
+ ├── <b>ALAN</b>     masa taşır, adım adım açılır
+ ├── <b>SERVİS</b>   üretim (tezgâh) | aktarma (istasyon)
+ ├── <b>MASA</b>     tip · seviye · bağlı olduğu alan
+ └── <b>ODA</b>      lavabo (pasif) · merdiven (kat kapısı)</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================== 4 -->
+<section id="s4">
+  <h2><span class="no">4</span>Ölçek</h2>
+  <p class="h2-note">Kat iki buçuk katına çıkıyor — kadraj bunu kaldırmalı</p>
+
+  <div class="scale">
+    <div class="now">
+      <p class="who">Bugünkü kat</p>
+      <dl>
+        <dt>Zemin</dt><dd>21,2 × 20,6</dd>
+        <dt>Alan</dt><dd>437 birim²</dd>
+        <dt>Masa</dt><dd>12</dd>
+        <dt>Servis noktası</dt><dd>3</dd>
+        <dt>Oda</dt><dd>0</dd>
+      </dl>
+    </div>
+    <div class="next">
+      <p class="who">Maket v13</p>
+      <dl>
+        <dt>Zemin</dt><dd>34 × 34</dd>
+        <dt>Alan</dt><dd>1156 birim² <span style="color:var(--ink-faint); font-weight:400;">(×2,6)</span></dd>
+        <dt>Masa</dt><dd>20</dd>
+        <dt>Servis noktası</dt><dd>1 + 1 aktarma</dd>
+        <dt>Oda</dt><dd>2</dd>
+      </dl>
+    </div>
+  </div>
+
+  <p class="wide">Bugünkü kat <code>layout.ts</code>’te <code>x ∈ [−5,3 · 15,9]</code> ×
+  <code>z ∈ [−15,6 · 5,0]</code>. Maket ölçeğine geçince <b>portre kadrajda aynı kare 2,6 kat alan
+  göstermek zorunda</b>: ya kamera geri çekilir (objeler küçülür, Faz G’nin malzeme işi görünmez
+  olur) ya da oyuncuyu daha yakın takip eder (kat bir bakışta okunmaz). Bu, Faz B’nin
+  <b>ölçülmesi gereken tek görsel riski</b> — tahminle geçilmez.</p>
+
+  <div class="note">
+    <span class="lab">Güvence hazır</span>
+    <p>Faz A3’ün iki bekçi testi tam bu an için yazıldı: park noktasının boşluğu (bugün <b>3,79</b>)
+    toplama / servis / pad yarıçaplarının hepsinden büyük kalmalı. Yerleşim daralırsa testler
+    <b>sessizce değil gürültüyle</b> düşer. <code>tools/tick-fingerprint.ts</code> de davranışın
+    değişip değişmediğini karakter karakter söyler.</p>
+  </div>
+</section>
+
+<!-- ================================================== 5 -->
+<section id="s5">
+  <h2><span class="no">5</span>Faz B’nin beş adımı</h2>
+  <p class="h2-note">Her adım sonunda oyun oynanabilir ve testler yeşil</p>
+
+  <p class="wide">Sıra rastgele değil: <b>önce model değişir ama içerik sabit kalır</b> — o yüzden
+  davranış birebir ölçülebilir; <b>sonra içerik değişir</b> — o yüzden artık parmak izi değil tempo
+  ölçülür. Tersi yapılırsa iki değişiklik birbirinin arkasına saklanır.</p>
+
+  <div class="decisions">
+    <div class="dec">
+      <div class="n">B1</div>
+      <div>
+        <p class="q">Model dönüşümü — içerik <b>sabit</b></p>
+        <p class="a"><code>ZONE</code> yerine <code>ALAN / SERVİS / MASA / ODA</code>. Masa listesi
+        türetilir, servis noktası alandan ayrılır. İçerik hâlâ 3 alan × 4 masa, 3 servis noktası →
+        <span class="rec">tick parmak izi birebir aynı olmalı</span>. <b>Kayıt v31 burada:</b>
+        migrasyon değil, <b>temiz sıfırlama</b> (ayarlar korunur). Bu adım oyunda hiçbir şeyi
+        değiştirmez; sadece kod başka bir dille konuşur.</p>
+      </div>
+    </div>
+    <div class="dec">
+      <div class="n">B2</div>
+      <div>
+        <p class="q">Servis tekilleşir</p>
+        <p class="a">Üç ocak → <b>bir servis noktası</b>: L1–L3 çay ocağı, L4’te tezgâha dönüşür,
+        L5 tost açar, L6 son ₺ seviyesi. Ürün bölgeden değil <b>seviyeden</b> gelir; garson havuzu
+        <b>global</b> olur (“Tostçu Garson” ayrımı kalkar). <span class="rec">Davranış burada
+        değişir</span> — güvence parmak izi değil, tempo ölçümü.</p>
+      </div>
+    </div>
+    <div class="dec">
+      <div class="n">B3</div>
+      <div>
+        <p class="q">Yerleşim maket ölçeğine</p>
+        <p class="a">Tek dosyalık iş (<code>layout.ts</code>): 34 × 34, dört alan, arka bant
+        (servis bloğu · merdiven · lavabo — üçü de <code>z = −9,8</code> hizasında bitiyor), orta
+        şerit. <span class="rec">Kadraj ölçümü burada</span>: portre ekranda üç kamera kademesi aynı
+        kareden çekilip karşılaştırılır — G1/G3’te işe yarayan yöntem.</p>
+      </div>
+    </div>
+    <div class="dec">
+      <div class="n">B4</div>
+      <div>
+        <p class="q">Odalar</p>
+        <p class="a"><b>Lavabo</b> yeni bir açılış cinsi: oturma eklemez, pasif çarpan verir (erken
+        kalkma ↓ → gelir ↑) ve kendi seviyeleri olur. <b>Merdiven</b> yıkık hâliyle çizilir, uyarı
+        şeridi ve dubalarla; satın alınamaz, ama üstüne basınca <b>“Kat 2 çok yakında”</b> der —
+        Kat 2’nin fragmanı böyle konuşur.</p>
+      </div>
+    </div>
+    <div class="dec">
+      <div class="n">B5</div>
+      <div>
+        <p class="q">Masa tipleri ve banket</p>
+        <p class="a">Dörtlü (8) · ikili (12) · banket (2 ada). <b>Banketin seviyesi boyudur</b>: dış
+        uç sabit, bank içe uzar, var olan masalar yer değiştirmez, yükseltme noktası uzayan uçta
+        kayar. Kat böyle tamamlanır: <em>arkada servis · ortada ikili · önde dörtlü</em>.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>Bitti sayılır</h3>
+  <ul>
+    <li>Maketin gezilebilir beş adımı oyunda sırayla açılıyor; altıncısı (merdiven) yıkık duruyor ve
+        üstüne basınca “Kat 2 çok yakında” diyor</li>
+    <li><code>npm run test</code> yeşil — <b>test sayısı düşmeden</b> (bugün 206)</li>
+    <li><code>tools/smoke.mjs</code> 26/26 · <code>npm run build</code> temiz</li>
+    <li>v30 kaydı v31’de <b>temiz sıfırlanıyor</b>, ayarlar korunuyor; sıfırlama testli</li>
+    <li>B1 sonunda tick parmak izi <b>birebir aynı</b> — içeriğin değişmediğinin kanıtı</li>
+  </ul>
+</section>
+
+<!-- ================================================== 6 -->
+<section id="s6">
+  <h2><span class="no">6</span>Verilen dört karar</h2>
+  <p class="h2-note">6 Eylül 2026 · kullanıcı onayı alındı · Faz B bunların üstüne yazılır</p>
+
+  <div class="decisions">
+    <div class="dec">
+      <div class="n">1</div>
+      <div>
+        <p class="q">Sipariş nesnesi Faz B’de mi, Faz C’de mi?</p>
+        <p class="a"><span class="rec">Karar: yapı B2’de, davranış Faz C’de.</span> Faz B yalnız
+        <b>tek servis noktası + global garson havuzu</b> kurar. Masa <code>{çay:1, tost:2}</code>
+        siparişi, garsonun siparişi üstlenmesi (claim) ve “en acil önce” önceliği Faz C’ye kalır —
+        çünkü bunlar simülatör ve tempo tablosuyla birlikte doğrulanır, tek başlarına ölçülemez.</p>
+      </div>
+    </div>
+    <div class="dec">
+      <div class="n">2</div>
+      <div>
+        <p class="q">Merdiven: yıkık kalır, ama sessiz durmaz</p>
+        <p class="a"><span class="rec">Karar: satın alınamaz — üstüne basınca “Kat 2 çok yakında”
+        der.</span> Yıkık merdiven v1.0’da bir <b>pad değil</b>, ama ölü dekor da değil: oyuncu
+        üstüne çıkınca kısa bir bilgi mesajı verir. Böylece üst kat ilk günden görünür ve
+        <em>yakında</em> sözü mekânın kendisinden gelir. Kabul kriteri buna göre <b>beş gezilebilir
+        adım + fragman</b> olarak yazıldı.</p>
+      </div>
+    </div>
+    <div class="dec">
+      <div class="n">3</div>
+      <div>
+        <p class="q">Kayıt v31: temiz sıfırlama, migrasyon yok</p>
+        <p class="a"><span class="rec">Karar: v31 eski kaydı atar; yalnız ayarlar (ses · müzik ·
+        FPS) korunur.</span> Eski kayıt <code>padsDone: ['table2','zone2','z3table4'…]</code> gibi
+        yeni zincirde <b>karşılığı olmayan</b> kimlikler taşıyor; artık var olmayan bir zincir için
+        migrasyon yazmıyoruz. <b>CLAUDE.md’nin “ilerleme kaybolmaz” kuralı v1.0 mağazaya çıktığı
+        andan itibaren bağlayıcı olur</b> — bugün ortada tek bir test kaydı var. Faz B bu kararla
+        belirgin ölçüde kısaldı.</p>
+      </div>
+    </div>
+    <div class="dec">
+      <div class="n">4</div>
+      <div>
+        <p class="q">Kadraj B3’ten önce gösterilir</p>
+        <p class="a"><span class="rec">Karar: yerleşim yazılmadan önce kadraj onaylanır.</span>
+        Kat 2,6 katına çıkıyor; portre ekranda ne göründüğü <b>tasarım kararı</b>, mühendislik
+        kararı değil. B3’e başlarken üç kamera kademesi aynı kareden çekilip karşılaştırma olarak
+        sunulur — G1 ve G3’te bir tur geri alma tasarruf eden yöntem.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="end">
+  <p><b>Bu belge kod değil, karar zeminidir.</b> Faz A 6 Eylül 2026’da kapandı: 206 test · duman
+  26/26 · tick parmak izi artık kalıcı araç. Aynı gün §6’daki dört karar alındı; Faz B bu haritanın
+  üstüne yazılıyor ve <b>B3’ün yerleşimi kadraj onayı alınmadan yazılmayacak</b>. Kaynaklar:
+  <code>docs/plan-kat1-yayin.html</code> §2 · §4 · §11 · <code>docs/maket/maket-v13.html</code> ·
+  <code>docs/maket/README.md</code>.</p>
+</footer>
+
+</div>

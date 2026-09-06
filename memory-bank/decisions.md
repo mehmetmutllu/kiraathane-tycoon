@@ -924,3 +924,65 @@ kullaniyor; parametresiz dinamik import ESKI ornegi getiriyor → farkli bir Zus
 Ondan yapilan `setState` calisiyormus gibi gorunuyor (`getState()` yeni degeri donduruyor) ama
 sahne hic degismiyor. G2'de "tema degismiyor" sanilarak yarim saat kaybedildi; sahnedeki instance
 sayilari sayilinca ortaya cikti.
+
+---
+
+## D-058 — FAZ B GECIS HARITASI: DORT KARAR (2026-09-06)
+
+Faz A kapandiktan sonra, Faz B'nin ilk isi olarak **maket v13'un alti adimi ile bugunku pad
+zinciri esleştirildi**. Rapor: `docs/faz-b-harita.html` (artifact:
+https://claude.ai/code/artifact/114662f8-0d0e-4a4d-ba03-1e84cd17e81c).
+
+**Haritanin bulgusu:** ilk uc maket adimi bugunku zincirin uzerinde duruyor; son uc adim
+(lavabo · merdiven · orta serit) kodda hic karsiligi olmayan iki yeni kavram istiyor: **ODA** ve
+**banket**. Celiski pad'lerde degil modelde — `zone2` bugun "yeni salon + YENI OCAK + yeni bulasik"
+demek, makette 2. Alan'in ocagi YOK; `zone3` ise masa getirmiyor, **servis noktasini tezgaha
+donusturuyor** (tost bolgeden degil L5'ten gelir).
+
+**Olcum:** kod tabaninda `zone` gecen **1090 satir** (248'i `tests/logic.test.ts`'te).
+Bugunku zemin 21,2 × 20,6 (437 birim²) → maket 34 × 34 (1156 birim², **×2,6**); masa 12 → 20;
+servis noktasi 3 → 1 + 1 aktarma.
+
+**ESKI NOTUN DUZELTMESI:** `activeContext`'te Faz B'nin ilk isi "mutfak disari cikma hangi pad"
+diye yaziliydi — **bu soru gecersiz**. "Mutfak binanin disina tasan ek hacim" **v11'in** karariydi,
+**v13 iptal etti**; servis blogu arka bandin sol ucunda, kat icinde. Karsiligi olan adim
+**3. Alan**'dir ve o adim ayni anda hem arka yariyi acar hem ocagi tezgaha cevirir.
+
+### Kullanicinin verdigi dort karar
+
+1. **Siparis nesnesi Faz C'de.** Faz B yalniz YAPIYI kurar: tek servis noktasi + global garson
+   havuzu. Masa `{cay:1, tost:2}` siparisi, garsonun siparisi ustlenmesi (claim) ve "en acil once"
+   onceligi Faz C'ye kalir — bunlar simulator ve tempo tablosuyla birlikte dogrulanir.
+2. **Merdiven satin alinamaz, ama sessiz durmaz.** Yikik kalir; oyuncu ustune basinca
+   **"Kat 2 cok yakinda"** der. (Kullanicinin kendi ifadesi: *"su anlik sadece kat 2 cok yakinda
+   desin oraya basinca"*.) Pad degil, ama olu dekor da degil.
+3. **Kayit v31 = TEMIZ SIFIRLAMA, migrasyon YOK.** Yalniz ayarlar (ses · muzik · FPS) korunur.
+   Eski kayit `padsDone: ['table2','zone2','z3table4'…]` gibi yeni zincirde karsiligi olmayan
+   kimlikler tasiyor; artik var olmayan bir zincir icin migrasyon yazilmaz.
+   **CLAUDE.md'nin "ilerleme kaybolmaz" kurali v1.0 magazaya ciktigi andan itibaren baglayici
+   olur** — bugun ortada tek bir test kaydi var. Bu karar Faz B'yi belirgin olcude kisaltti.
+4. **B3'un yerlesimi kadraj onayi alinmadan yazilmaz.** Kat 2,6 katina cikiyor; portre ekranda ne
+   gorundugu tasarim karari. B3'e baslarken uc kamera kademesi AYNI KAREDEN cekilip kullaniciya
+   sunulur (G1/G3'te bir tur geri alma tasarruf eden yontem).
+
+### Faz B'nin bes adimi (sira gerekcesiyle)
+
+**Once model degisir ama icerik sabit kalir** (davranis birebir olculebilir), **sonra icerik
+degisir** (artik parmak izi degil tempo olculur). Tersi yapilirsa iki degisiklik birbirinin
+arkasina saklanir.
+
+- **B1** Model donusumu, icerik SABIT: `ZONE` → `ALAN / SERVIS / MASA / ODA`; masa listesi turetilir;
+  servis noktasi alandan ayrilir. Icerik hala 3 alan × 4 masa → **tick parmak izi birebir ayni
+  olmali**. Kayit v31 (temiz sifirlama) burada.
+- **B2** Servis tekilleşir: 3 ocak → 1 servis noktasi (L1-L3 cay ocagi, L4 tezgah, L5 tost, L6 son
+  ₺ seviyesi); urun seviyeden gelir; garson havuzu global ("Tostcu Garson" ayrimi kalkar).
+  **Davranis burada degisir** — guvence parmak izi degil tempo olcumu.
+- **B3** Yerlesim maket olcegine (`layout.ts` tek dosya): 34 × 34, dort alan, arka bant
+  (servis blogu · merdiven · lavabo, ucu de z = −9,8 hizasinda), orta serit. **Kadraj olcumu burada.**
+- **B4** Odalar: lavabo (pasif carpan, kendi seviyeleri) + yikik merdiven ("Kat 2 cok yakinda").
+- **B5** Masa tipleri: dortlu (8) · ikili (12) · banket (2 ada; **seviyesi boyudur**, her seviye
+  iki ikili masa dogurur, dis uc sabit, var olan masalar yer degistirmez).
+
+**Bitti sayilir:** maketin gezilebilir bes adimi sirayla aciliyor + yikik merdiven konusuyor ·
+`npm run test` yesil, test sayisi dusmeden (bugun 206) · smoke 26/26 · build temiz ·
+v31 sifirlamasi testli · **B1 sonunda tick parmak izi birebir ayni**.

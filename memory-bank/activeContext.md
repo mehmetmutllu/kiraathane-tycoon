@@ -2,6 +2,59 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-06 — **FAZ B HARİTASI ÇIKTI + DÖRT KARAR ALINDI**; kod yazılmadı)
+
+Faz A kapandıktan sonra Faz B'nin **1. adımı** yapıldı: maket v13'ün altı adımı ile bugünkü pad
+zinciri eşleştirildi. Rapor **`docs/faz-b-harita.html`** →
+https://claude.ai/code/artifact/114662f8-0d0e-4a4d-ba03-1e84cd17e81c
+(Maket v13 referansı: https://claude.ai/code/artifact/813bdc4c-3052-46ca-ac3b-23076f425b23)
+Kararların tamamı **D-058**'de. **Bu oturumda hiç kod değişmedi** — `src/` dokunulmadı.
+
+### Haritanın bulgusu
+İlk üç maket adımı bugünkü zincirin ÜZERİNDE duruyor (masa aç · ocak yükselt · personel tut).
+Son üç adım (lavabo · merdiven · orta şerit) kodda hiç karşılığı olmayan iki kavram istiyor:
+**ODA** ve **banket**. Çelişki pad'lerde değil MODELDE:
+- `zone2` bugün "yeni salon + **YENİ OCAK** + yeni bulaşık" demek; makette 2. Alan'ın ocağı YOK.
+- `zone3` masa getirmiyor — **servis noktasını tezgâha dönüştürüyor**; tost bölgeden değil **L5**'ten.
+- Ölçüm: `zone` geçen **1090 satır** (248'i `tests/logic.test.ts`). Zemin 21,2×20,6 → **34×34**
+  (alan ×2,6), masa 12 → 20, servis noktası 3 → 1 + 1 aktarma.
+
+### ⚠ Eski notun düzeltmesi
+Önceki activeContext "Faz B ilk iş: **mutfak dışarı çıkma hangi pad**" diyordu — **bu soru
+GEÇERSİZ**. Mutfağın binadan dışarı taşması **v11'in** kararıydı, **v13 iptal etti**; servis bloğu
+arka bandın sol ucunda, kat içinde. Karşılığı olan adım **3. Alan**'dır (aynı anda hem arka yarıyı
+açar hem ocağı tezgâha çevirir).
+
+### Kullanıcının verdiği dört karar (D-058)
+1. **Sipariş nesnesi Faz C'de.** Faz B yalnız YAPIYI kurar: tek servis noktası + global garson havuzu.
+2. **Merdiven satın alınamaz** ama üstüne basınca **"Kat 2 çok yakında"** der (kullanıcının ifadesi).
+3. **Kayıt v31 = TEMİZ SIFIRLAMA, migrasyon YOK** (yalnız ayarlar korunur). "İlerleme kaybolmaz"
+   kuralı **v1.0 mağazaya çıkınca** bağlayıcı olur. → Faz B belirgin ölçüde kısaldı.
+4. **B3'ün yerleşimi kadraj onayı alınmadan YAZILMAZ** — üç kamera kademesi aynı kareden çekilip
+   kullanıcıya sunulur.
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**B1 — model dönüşümü, içerik SABİT.** `ZONE` → `ALAN / SERVİS / MASA / ODA`; masa listesi türetilir;
+servis noktası alandan ayrılır. İçerik hâlâ 3 alan × 4 masa, 3 servis noktası kalır →
+**`tools/tick-fingerprint.ts` çıktısı birebir aynı olmalı** (B1'in tek kabul kriteri budur).
+Kayıt v31 (temiz sıfırlama + test) bu adımda. **Önce parmak izini al, sonra kod değiştir.**
+Sonra sırayla: B2 servis tekilleşir → B3 yerleşim (ÖNCE KADRAJ) → B4 odalar → B5 masa tipleri.
+
+### Faz G'den kalan artık (hâlâ açık)
+UI Canvas'ları (`CharacterPanel`, `SalonSlice`, `DioramaPreview`, `TableThemePreview`) hâlâ eski düz
+`ambientLight` ile — dünya ısındı, mağaza önizlemeleri soğuk kaldı.
+
+### Kırmızı çizgi (duruyor)
+**"Objeler yüzüyor" hissine bir daha blob shadow ÖNERME** (D-054).
+
+### Bilinen, ertelenmiş
+- Maket girişinin üst çıtasında z-fighting ("oyuna geçerken hallederiz").
+- Bundle 1,45 MB (three.js) — Faz F kod bölme.
+- `eslint` 16 hatası (hepsi eski) — Faz E/F işi.
+
+---
+
+
 ## ŞU AN (2026-09-06 gece — **FAZ A TAMAM 3/3** + duman testi onarıldı; SAVE v30 değişmedi)
 
 Kullanıcı iki şeyi onayladı: *"tamam renk değişimi düzeldi şu an yok. faz a da yapılsın sorun yok"*
