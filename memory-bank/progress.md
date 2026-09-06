@@ -1018,30 +1018,43 @@ NOT: headless tarayıcıda `window.__perf().fps` arka plan kısıtlaması yüzü
 - `shadow.bias`/`normalBias` **0'da bırakıldı**: bu açıda akne yok; normalBias eklemek ince
   çıtalarda (0,04–0,08) ışık sızdırma riski taşıyor. Açı değişirse tekrar bakılmalı.
 
-## FAZ G — G1 TEMAS GÖLGESİ ❌ DENENDİ ve GERİ ALINDI (2026-09-06)
-**KARAR D-054: temas gölgesi (blob shadow) bu projede KULLANILMAYACAK.** Uygulandı, ölçüldü,
-kullanıcıya gösterildi, reddedildi: *"bu kötü duruyo, her şeyin altında bi yuvarlak var...
-temas gölgesi şart mı? bence böyle bir şey yok hiçbir oyunda"*.
+## FAZ G — G1 GÖLGE MODELİ ✅ (2026-09-06): **SAHNEDE GÖLGE YOK**
+**KARAR D-054.** Kıraathanede hiçbir gölge çizilmez — ne yönlü gölge haritası, ne temas lekesi.
+My Hotel'in düz görünümü. Gerekçe + dört varyantın ekran görüntüsü: `docs/gorsel/README.md` §G1.
 
-Gerekçe (itiraz teknik olarak da haklı): blob shadow yaygın bir tekniktir ama neredeyse hep
-**gerçek gölgenin YERİNE** kullanılır. Bu sahnede G0'dan beri çalışan bir gölge haritası var;
-blob onun ÜSTÜNE ikinci katman koyuyordu. Katkısı yalnız kontak yumuşaması, bedeli her objenin
-altında ayrı bir daire (masa + 4 tabure = 5 yuvarlak → küme hâlinde puanlı kumaş).
+**Üç turda netleşti:** (1) obje başına temas lekesi + sert gölge → *"her şeyin altında bi yuvarlak
+var"* → geri alındı. (2) Kullanıcı asıl şikâyeti söyledi: *"hem gölge hem de alttaki yuvarlak
+kötü duruyo AYNI ANDA... zınk diye keskin çizgi gibi... myhotelde hiç gölge yok"*. (3) Dört
+varyant aynı kareden çekilip gösterildi → *"vazgeçtim hiç gölge olmasın komple kaldır"*.
 
-**Bir daha "objeler yüzüyor" denirse çözüm blob DEĞİL:** (1) güneş açısı/gölge yumuşaklığı,
-(2) G2 zemin geometrisi (ölçek referansı), (3) gerekirse gölge haritası çözünürlüğü.
+| | Varyant | Kare süresi (412×915) | Sonuç |
+|---|---|---|---|
+| A | Sert yönlü gölge (eski hâl) | 1,31 ms | kenar merdiveni |
+| **B** | **Hiç gölge yok** | **0,67 ms** | **SEÇİLDİ** |
+| C | Yumuşak (VSM) | ~1,5 ms | ışık sızıyor, en pahalı |
+| D | Gölge yok + masa başına havuz | 0,74 ms | önce seçildi, vazgeçildi |
 
-Kod geri alındı: `ContactShadows.tsx` · `visualActors.ts` · `CONTACT_SHADOW` · `Footprint` ·
-`tableFootprints` silindi. **`LAYOUT.decor` KALDI** (dekor konumlarının JSX'ten tek listeye
-çıkması bağımsız bir sadeleşme). Test 186/186 · build temiz · sahne G0 hâlinde.
+- ✅ `<Canvas shadows>` + directional `castShadow`/`shadow-*` **kaldırıldı**; `LIGHTING.shadow`
+  bloğu gitti (geri açma değerleri yorumda). Mesh'lerdeki `castShadow`/`receiveShadow` bayrakları
+  DURUYOR — bedelsiz, geri açmak iki satır. Yönlü ışık duruyor (yüzey aydınlatması ondan).
+- ✅ **Performans yan kazancı:** gölge haritası kare süresinin YARISIYDI.
+  Telefon **1,31 → 0,56 ms** (%57) · PC 1080p **2,02 → 1,44 ms** (%29).
+- ✅ **Kalan sadeleşme:** `LAYOUT.decor` — dekor konumları JSX'ten tek listeye çıktı.
+- ❌ Silinen: `ContactShadows.tsx` · `visualActors.ts` · `CONTACT_SHADOW` · `Footprint` ·
+  `tableFootprints`/`tableShadowPools`.
+- 📌 **Bir daha "objeler yüzüyor" denirse blob ÖNERME.** Sıra: G2 zemin geometrisi → ışık dengesi
+  → en son çare gölge haritası.
 
-**🔴 AÇIK BULGU — PC'de tam ekran takılıyor (kullanıcı, 2026-09-06).** G1 DEĞİL: 1920×1080'de
-temas gölgesinin bedeli 0,09 ms ölçüldü (2,02 ↔ 1,93 ms açık/kapalı). Yani sorun önceden vardı.
-İlk şüpheliler sırayla: `dpr={[1,2]}` + `antialias` (yüksek DPI ekranda çözünürlüğün 2 katına
-render) · gölge haritası · her karede dönen 800 satırlık `tick()`. **Kullanıcının makinesinde
-gerçek sayıyla ölçülmeli** — tahminle dokunulmayacak.
+**Doğrulama:** `npm run test` **186/186** · `npm run build` temiz · Playwright **0 konsol hatası** ·
+`tools/smoke.mjs` **8/15 — bu oturumdan ÖNCE de 8/15, değişmedi**.
 
-### (arşiv) G1'de ne yapılmıştı
+**🔴 AÇIK — PC'de tam ekran takılıyor.** Gölgenin kalkması en büyük parçayı çözdü (%29) ama
+**1920×1080'de hâlâ 245 draw call** (telefonda 91): geniş oranda bütün dükkân görünür oluyor.
+Sonraki şüpheliler: (1) draw-call sayısı / geniş oranda frustum, (2) `dpr={[1,2]}` + `antialias`
+(yüksek DPI ekranda 2 kat çözünürlük), (3) her karede dönen 800 satırlık `tick()`.
+**Kullanıcının makinesinde gerçek sayıyla ölçülmeli.**
+
+### (arşiv) G1 rev1'de ne yapılmıştı
 Yeni: `src/components/three/ContactShadows.tsx` · `src/game/visualActors.ts`.
 Değişen: `palette.ts` (`CONTACT_SHADOW`) · `types.ts` (`Footprint`) · `store.ts` (`LAYOUT.decor`) ·
 `Tables.tsx` (`tableFootprints`) · `Scene.tsx` (bileşen + çaycı kaydı + `DecorProps` veri-güdümlü).
@@ -1092,7 +1105,7 @@ Referans: ikravakfi Mali Takip Panosu (f467bc3f) — iskelet alındı, görsel i
 | | DN denetim + arşiv | 2/2 ✅ |
 | **Kuruluş toplam** | | **28/28 ✅** |
 | Yayın programı (1 Eyl →) | P plan ve maket | 6/6 ✅ |
-| | **G görsel taban** | **2/4 🔧** (G0 ışık ✅ · G1 temas gölgesi ❌ reddedildi · sıradaki G2 zemin geometrisi) |
+| | **G görsel taban** | **2/4 🔧** (G0 ışık ✅ · G1 gölge modeli ✅ = gölgesiz · sıradaki G2 zemin geometrisi) |
 | | A temizlik | 0/3 ⏳ |
 | | B model geçişi | 0/5 ⏳ |
 | | C zincir ve denge | 0/5 ⏳ |

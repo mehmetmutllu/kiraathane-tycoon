@@ -795,36 +795,55 @@ rAF kisitlamasi yuzunden anlamsiz (1 gosterir) — kare suresi dogrudan `gl.rend
 
 **Detay:** `docs/gorsel/README.md` · kanit `docs/gorsel/ss/g0-*.png`.
 
-## D-054 — Temas golgesi (blob shadow) KULLANILMAYACAK (2026-09-06, Faz G1)
+## D-054 — SAHNEDE GOLGE YOK (2026-09-06, Faz G1)
 
-**Karar:** Objelerin altina zemine yatik yumusak leke koyma fikri **uygulandi, olculdu ve
-GERI ALINDI**. Bu projede bir daha denenmeyecek.
+**Karar:** Kiraathanede **hicbir golge cizilmez** — ne yonlu golge haritasi, ne zemine yatik
+temas lekesi. My Hotel'in duz gorunumu. `<Canvas shadows>` ve directional `castShadow`
+KALDIRILDI; mesh'lerdeki `castShadow`/`receiveShadow` bayraklari duruyor (bedelsiz, geri
+acmak iki satir).
 
-**Kullanicinin sozu:** *"bu kotu duruyo her seyin altinda bi yuvarlak var"* ve
-*"temas golgesi sart mi? bence boyle bir sey yok hicbir oyunda"*.
+### Kullanicinin sozleri (uc turda netlesti)
+1. rev1 (obje basina temas lekesi + o anki sert golge): *"bu kotu duruyo her seyin altinda bi
+   yuvarlak var"*.
+2. *"hem golge hem de alttaki yuvarlak kotu duruyo AYNI ANDA... zink diye keskin cizgi gibi
+   duruyo... bak mesela myhotelde hic golge yok bu da dusunulebilir benlik sorun yok"*.
+3. Dort varyant gosterildikten sonra: *"vazgectim hic golge olmasin kotu duruyor komple kaldir"*.
 
-**Itiraz teknik olarak da hakli.** Blob shadow gercek ve yaygin bir tekniktir — PS1/PS2
-kusaginin standardiydi, bugun de mobil oyunlarin cogunda var. Ama neredeyse hep **gercek
-golgenin YERINE** kullanilir, ucuz oldugu icin. Bu sahnede G0'dan beri **calisan bir yonlu
-golge haritasi var**; blob onun USTUNE ikinci bir katman koyuyordu:
-- Katkisi yalniz kontak noktasindaki yumusama (kucuk).
-- Bedeli her objenin altinda AYRI bir daire: masa + 4 tabure = 5 yuvarlak; kume halinde
-  puanli kumas gibi okunuyor. Perspektifsiz daire, low-poly duz yuzeylerde ozellikle sirit.
+### Olculen dort varyant (AYNI kare, 412x915)
 
-**Reddedilen ara cozumler (kullaniciya sunuldu, gerek kalmadi):** tek havuz (masa+taburelerin
-altina 5 daire yerine 1 genis leke) · yalnizca cok soluklastirma (0,50 -> 0,22).
+| | Varyant | Kare suresi | Sonuc |
+|---|---|---|---|
+| A | Sert yonlu golge (eski hal) | 1,31 ms | kenar merdiveni ("zink") |
+| **B** | **Hic golge yok** | **0,67 ms** | **SECILDI** |
+| C | Yumusak yonlu golge (VSM, radius 7) | ~1,5 ms | kenar yumusak ama isik siziyor, lekeli, EN PAHALI |
+| D | Golge yok + masa basina tek soluk havuz | 0,74 ms | once secildi, sonra vazgecildi |
 
-**Bir daha "objeler yuzuyor" denirse cozum sirasi:** (1) gunes acisi / golge yumusakligi
-(D-053), (2) **G2 zemin geometrisi** — zeminde olcek referansi olusunca yuzme hissi buyuk
-olcude kapanir, (3) gerekirse golge haritasi cozunurlugu. Blob DEGIL.
+Ekran goruntuleri: `docs/gorsel/ss/g1-var-A..D-*.png`, son hal `g1-son-golgesiz.png`.
 
-**Geri alinan kod:** `ContactShadows.tsx` · `visualActors.ts` · `CONTACT_SHADOW` (palette) ·
-`Footprint` (types) · `tableFootprints` (Tables).
-**Kalan:** `LAYOUT.decor` — dekor konumlarinin JSX'ten tek listeye cikmasi bagimsiz sadelesme.
+### Yan kazanc — performans
+Golge haritasi tek basina kare suresinin **yarisini** yiyordu.
+- Telefon kadraji (412x915, 3 salon dolu): **1,31 -> 0,56 ms** (%57 hizli).
+- PC (1920x1080): **2,02 -> 1,44 ms** (%29 hizli).
+Bu, kullanicinin bildirdigi *"PC'de tam ekran hayvan gibi kasiyo"* sorununun en buyuk tek parcasi.
 
-**Yontem notu (D-053'un dersinin tekrari):** ilk turda leke hic gorunmedi. "Goremiyorum" tek
-basina kanit sayilmadi; materyal gecici olarak KIRMIZI + tam opak yapilinca lekelerin dogru
-yerde ve dogru yumusaklikta oldugu goruldu (`docs/gorsel/ss/g1-teshis-kirmizi.png`), sorun
-yalnizca koyuluktu. Abartip gorunur kilma numarasi iki oturum ust uste ise yaradi.
+### Sert kenarin sebebi (olculdu)
+1024'luk golge haritasi ~30 birimlik alana (ortografik −13/28/15/−15) yayiliyordu, ~25
+teksel/birim. Bu cozunurlukte kenar merdiven merdiven cikiyor. Cozum cozunurluk artirmak
+olabilirdi ama zaten en pahali gecti (C) ve gorsel olarak da istenmedi.
+
+### Bir daha "objeler yuzuyor" denirse
+Blob shadow ONERME (uc turda reddedildi). Sirayla: (1) **G2 zemin geometrisi** — zeminde olcek
+referansi olunca bu his buyuk olcude kapanir, (2) hemisphere/directional dengesiyle yuzey
+ayrimi, (3) en son care olarak golge haritasi (bedeli yukarida yazili).
+
+### Kalan sadelesme
+`LAYOUT.decor` — dekor konumlari (cop kovalari, saksilar) JSX'ten tek listeye cikti; golge
+denemesi icin yapilmisti ama bagimsiz bir iyilestirme oldugundan kaldi.
+
+### Kalici ders
+**Olcumun "hedefini tutturdu" demesi, kullanicinin begenecegi anlamina gelmiyor.** rev1 A/B
+olcumunde hedefini tutturmustu ve reddedildi. Gorsel adimda dogru yontem: birden fazla varyanti
+AYNI kareden cekip yan yana koymak ve sormak — tek bir "sonra" goruntusu karar icin yetmez.
+(Gorunmeyen bir seyi teshis etmek icin abartma numarasi ayrica gecerli: `ss/g1-teshis-kirmizi.png`.)
 
 **Detay + arsiv:** `docs/gorsel/README.md` §G1.

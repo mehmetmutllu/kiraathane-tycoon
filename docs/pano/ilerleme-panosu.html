@@ -211,30 +211,30 @@ h2{font-size:21px;font-weight:800}
   ],
   "ozet": {
     "etiket": "Bu oturum · Faz G · 2/4",
-    "baslik": "Temas gölgesi denendi — ve reddedildi",
-    "aciklama": "Objelerin altına zemine yatık yumuşak leke koyma fikri uygulandı, ölçüldü, ekranda görüldü ve <b>geri alındı</b>. Sahne bir önceki (ışık) hâline döndü. Bu bir başarısızlık değil, <b>kapanan bir soru</b>: artık \"objeler yüzüyor\" denince ne yapılmayacağı yazılı.",
+    "baslik": "Gölge kararı: artık hiç gölge yok",
+    "aciklama": "Oturum \"objelerin altına gölge ekle\" diye başladı, <b>\"hiç gölge olmasın\"</b> diye bitti. Üç tur sürdü ve sonunda dört seçenek aynı kareden çekilip yan yana kondu. Seçilen: <b>My Hotel'in düz görünümü</b> — ne yönlü gölge, ne alttaki yuvarlak.",
     "adimlar": [
-      "Teknik uygulandı: tek çizim çağrısı, sıfır asset, ölçüldü",
-      "Ekranda görüldü: <b>her objenin altında ayrı bir daire</b>",
-      "Bir masa + dört tabure = beş yuvarlak — küme hâlinde puanlı kumaş gibi",
-      "Ara çözümler sunuldu (tek havuz · çok soluk) — gerek kalmadı",
-      "Kod geri alındı, testler ve derleme temiz",
-      "Karar deftere yazıldı: <b>bir daha denenmeyecek</b>"
+      "1. tur: obje başına yuvarlak leke → <b>reddedildi</b> (\"her şeyin altında bi yuvarlak var\")",
+      "2. tur: asıl şikâyet netleşti — ikisi <b>aynı anda</b> + gölgenin \"zınk\" diye keskin kenarı",
+      "3. tur: <b>dört varyant</b> aynı kareden çekildi ve ölçüldü",
+      "Seçim: <b>hiç gölge yok</b> — hem en sade hem en hızlı",
+      "Gölge haritası kapatıldı, ışık yerinde kaldı (hacim hissi ondan geliyor)",
+      "Kalan sadeleşme: dekor konumları koddan tek listeye çıktı"
     ],
-    "not": "<b>İtiraz teknik olarak da haklıydı.</b> Bu leke gerçek ve yaygın bir tekniktir — eski konsol kuşağının standardıydı, bugün de mobil oyunların çoğunda var. Ama neredeyse hep <b>gerçek gölgenin yerine</b> kullanılır, ucuz olduğu için. Bu sahnede geçen oturumdan beri <b>çalışan bir gerçek gölge var</b>; leke onun üstüne ikinci bir katman koyuyordu. Kazancı küçük, bedeli görünür.<br><br><b>Bir daha yüzme hissi gündeme gelirse sıra şu:</b> önce güneş açısı ve gölge yumuşaklığı, sonra <b>zemin geometrisi</b> — zeminde ölçek referansı olunca bu his zaten büyük ölçüde kapanır. Leke değil.<br><br><b>Kalan tek kazanım:</b> dekor konumları koddan tek bir listeye çıktı — bağımsız bir sadeleşme, kaldı."
+    "not": "<b>Beklenmedik kazanç: performans.</b> Gölge haritası tek başına kare süresinin <b>yarısını</b> yiyormuş. Telefon kadrajında 1,31 → 0,56 ms (%57 hızlı), PC'de 2,02 → 1,44 ms (%29). Bu, kullanıcının aynı oturumda bildirdiği <b>\"PC'de tam ekran hayvan gibi kasıyo\"</b> sorununun en büyük tek parçasıydı.<br><br><b>Sert kenarın sebebi de ölçüldü:</b> gölge haritası otuz birimlik alana yayılıyordu; o yoğunlukta kenar merdiven merdiven çıkıyor. Çözünürlüğü artırmak çözebilirdi ama denenen yumuşak varyant hem ışık sızdırdı hem de en pahalısı oldu.<br><br><b>Kalıcı ders:</b> ölçümün \"hedefini tuttu\" demesi, beğenileceği anlamına gelmiyor. İlk tur ölçümde başarılıydı ve reddedildi. Görsel adımda doğru yöntem birden çok varyantı aynı kareden çekip <b>sormak</b>; tek bir \"sonra\" görüntüsü karar için yetmiyor."
   },
   "siradaki": {
     "etiket": "Faz G · oturum 3/4",
-    "baslik": "Önce kasma sorunu, sonra G2 zemin",
-    "aciklama": "Kullanıcı <b>PC'de tam ekranda oyunun ağır kastığını</b> bildirdi. Ölçüldü: sebep bu oturumdaki leke değil (bedeli kare başına 0,09 ms) — sorun daha önceden vardı ve hiç ölçülmemişti. Önce o, sonra zemin.",
+    "baslik": "Önce PC kasması, sonra G2 zemin",
+    "aciklama": "Gölgenin kalkması kasmanın en büyük parçasını çözdü ama bitmedi: <b>geniş ekranda çizim çağrısı 91'den 245'e çıkıyor</b> — en-boy oranı değişince bütün dükkân görünür oluyor ve kırpma kurtarmıyor. Önce o, sonra zemin.",
     "adimlar": [
-      "<b>İlk şüpheli:</b> yüksek çözünürlüklü ekranda çözünürlüğün iki katına render + kenar yumuşatma",
-      "Sonra gölge haritası, sonra her karede dönen ana döngü",
-      "Ölçüm <b>kullanıcının makinesinde</b> yapılacak — tarayıcı testi bu sayıyı veremiyor",
-      "Ardından <b>G2</b>: zemin tahtası ve karo gerçek parçalar olarak döşenir",
-      "Derz çizgi değil <b>boşluk</b>; alan başına ~90 tahta = tek çizim çağrısı"
+      "<b>Ölçüm kullanıcının makinesinde</b> yapılacak — tarayıcı testi bu sayıyı veremiyor",
+      "Şüpheli 1: çizim çağrısı sayısı ve geniş oranda kırpmanın devre dışı kaldığı yerler",
+      "Şüpheli 2: yüksek çözünürlüklü ekranda çözünürlüğün iki katına render + kenar yumuşatma",
+      "Şüpheli 3: her karede dönen ana döngü",
+      "Ardından <b>G2</b>: zemin tahtası ve karo gerçek parçalar olarak döşenir"
     ],
-    "not": "<b>Neden zemin?</b> Zemin hâlâ tek parça düz renk: göz mesafeyi ölçecek bir şey bulamıyor, mekân olduğundan küçük duruyor. Doku yolu daha önce denenip reddedildiği için çözüm geometri.<br><br><b>Faz A'ya geçmeden onarılacak:</b> duman testinin yedi kırık adımı — bu oturumda da aynı yerde, bozulmadı."
+    "not": "<b>Kırmızı çizgi:</b> \"objeler yüzüyor\" hissine bir daha alttaki yuvarlak önerilmeyecek — üç turda reddedildi. Sıra: önce zemin geometrisi (ölçek referansı gelince his zaten kapanır), sonra ışık dengesi, en son çare gölge.<br><br><b>Faz A'ya geçmeden onarılacak:</b> duman testinin yedi kırık adımı — bu oturumda da aynı yerde, bozulmadı."
   },
   "donemler": [
     {
@@ -308,7 +308,7 @@ h2{font-size:21px;font-weight:800}
         {
           "k": "G",
           "t": "Görsel taban",
-          "d": "Işık · (temas gölgesi denendi, reddedildi) · plank ve karo geometrisi · duvar bitimi · KayKit yerleşimi",
+          "d": "Işık · gölge kararı (gölgesiz) · plank ve karo geometrisi · duvar bitimi · KayKit yerleşimi",
           "yapilan": 2,
           "toplam": 4,
           "durum": "now",
@@ -369,16 +369,17 @@ h2{font-size:21px;font-weight:800}
     {
       "tarih": "06.09.2026",
       "etiket": "Faz G · 2. oturum",
-      "baslik": "Temas gölgesi: yapıldı, ölçüldü, reddedildi",
-      "govde": "Plandaki adım şuydu: objelerin altına zemine yatık yumuşak bir leke koy, \"yüzme\" hissi bitsin. Yapıldı — masalar, tabureler, tezgâhlar, personel ve müşteriler için tek çizim çağrısında, dosya olarak hiçbir şey eklemeden. Ölçüldü, belgelendi, ekran görüntüleri alındı.<br><br>Sonra kullanıcı ekrana baktı: <i>\"bu kötü duruyo, her şeyin altında bi yuvarlak var... temas gölgesi şart mı? bence böyle bir şey yok hiçbir oyunda.\"</i><br><br>İtiraz teknik olarak da haklıydı. Bu leke gerçek ve yaygın bir tekniktir — ama neredeyse hep <b>gerçek gölgenin yerine</b> kullanılır, çünkü ucuzdur. Bu sahnede geçen oturumdan beri çalışan bir gerçek gölge var; leke onun üstüne ikinci bir katman koyuyordu. Kazancı sadece objenin değdiği noktadaki yumuşama; bedeli her objenin altında ayrı bir daire — bir masa artı dört tabure beş yuvarlak demek, küme hâlinde puanlı kumaş gibi okunuyor.<br><br>Ara çözümler sunuldu (beş daire yerine tek havuz, ya da çok soluklaştırma) ama gerek kalmadı: doğru cevap <b>bu adımı tamamen çıkarmaktı</b>. Kod geri alındı, sahne bir önceki hâline döndü.",
+      "baslik": "Gölge: eklendi, reddedildi, ölçüldü, komple kaldırıldı",
+      "govde": "Plandaki adım \"objelerin altına yumuşak leke koy, yüzme hissi bitsin\" idi. Yapıldı — tek çizim çağrısında, dosya olarak hiçbir şey eklemeden. Sonra ekrana bakıldı: <i>\"bu kötü duruyo, her şeyin altında bi yuvarlak var.\"</i> Geri alındı.<br><br>İkinci turda asıl şikâyet netleşti: sorun sadece yuvarlak değildi, <b>gölge ile yuvarlağın aynı anda olmasıydı</b> — üstelik mevcut gölgenin kenarı <i>\"zınk diye keskin çizgi gibi\"</i> duruyordu. Referans olarak My Hotel gösterildi: orada hiç gölge yok.<br><br>Üçüncü turda tahmin yürütmek yerine dört seçenek aynı kareden çekildi ve tek tek ölçüldü: sert gölge, hiç gölge, yumuşak gölge, gölgesiz artı tek havuz. Yumuşak varyant hem ışık sızdırdı hem de en pahalısı çıktı. Sonuç: <b>hiç gölge yok</b>.<br><br>Sert kenarın sebebi de ortaya çıktı: gölge haritası otuz birimlik bir alana yayılıyordu, o yoğunlukta kenar zorunlu olarak merdiven merdiven çıkar.",
       "maddeler": [
-        "Teknik hedefini tuttu — <b>ürün kararı olarak reddedildi</b>",
-        "Karar deftere yazıldı: bir daha denenmeyecek, alternatif sıra da yazılı",
-        "Kalan tek kazanım: dekor konumları koddan tek listeye çıktı",
-        "Testler <b>186/186</b>, derleme temiz, sahne ışık adımının hâlinde",
-        "<b>Yeni açık sorun:</b> PC'de tam ekran kasması — ölçüldü, sebebi bu adım değil"
+        "<b>Karar: sahnede hiçbir gölge çizilmez</b> — ne yönlü gölge, ne alttaki leke",
+        "Işık yerinde kaldı: yüzey aydınlatması ve hacim hissi ondan geliyor",
+        "<b>Telefon kadrajında 1,31 → 0,56 ms</b> (%57 hızlı), PC'de 2,02 → 1,44 ms",
+        "Gölge haritası tek başına kare süresinin <b>yarısıydı</b>",
+        "Kalan sadeleşme: dekor konumları koddan tek listeye çıktı",
+        "Testler <b>186/186</b>, derleme temiz, konsol hatasız"
       ],
-      "not": "<b>İki oturumdur işe yarayan numara:</b> görsel bir iddiayı \"göremiyorum\" ile kapatma, <b>abartıp görünür kıl</b>. Geçen sefer sahneye test kutusu kondu; bu sefer leke geçici olarak kırmızı ve tam opak yapıldı — lekelerin doğru yerde olduğu görüldü, sorunun yalnız koyulukta olmadığı anlaşıldı.<br><br>Ama bu oturumun asıl dersi başka: <b>ölçümün \"çalışıyor\" demesi, beğenileceği anlamına gelmiyor.</b> Öncesi/sonrası karşılaştırması adımın hedefini tutturduğunu gösterdi; ürün kararı yine de hayır çıktı."
+      "not": "<b>Bu oturumun asıl dersi yöntemle ilgili:</b> ölçümün \"hedefini tuttu\" demesi, beğenileceği anlamına gelmiyor. İlk tur öncesi/sonrası karşılaştırmasında başarılıydı ve yine de reddedildi. Görsel bir adımda doğru yol, birden çok varyantı aynı kareden çekip <b>sormak</b> — tek bir \"sonra\" görüntüsü karar için yetmiyor.<br><br><b>Yan çıktı:</b> kullanıcının bildirdiği tam ekran kasması ilk kez ölçüldü. Gölge en büyük parçaydı; kalanı için ilk şüpheli, geniş ekranda çizim çağrısının 91'den 245'e çıkması."
     },
     {
       "tarih": "06.09.2026",
@@ -496,7 +497,7 @@ h2{font-size:21px;font-weight:800}
       "sev": "Performans",
       "renk": "stop",
       "b": "PC'de tam ekran ağır kasıyor",
-      "p": "Kullanıcı bildirdi. Ölçüldü: sebep bu oturumun eklediği leke değil (kare başına 0,09 ms) — sorun önceden vardı ve hiç ölçülmemişti. İlk şüpheli yüksek çözünürlüklü ekranda çözünürlüğün iki katına render. Ölçüm kullanıcının makinesinde yapılacak."
+      "p": "Kullanıcı bildirdi, ilk kez ölçüldü. Gölge haritası kare süresinin yarısıydı ve kaldırıldı (%29–57 kazanç) — ama bitmedi: geniş ekranda çizim çağrısı 91'den 245'e çıkıyor. Kalan ölçüm kullanıcının makinesinde yapılacak."
     },
     {
       "sev": "Yapısal",

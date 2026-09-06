@@ -66,10 +66,68 @@ tek fark ışık. `ss/g0-genis.png` üç salon açıkken, `ss/g0-baslangic.png` 
 
 ---
 
-## G1 — Temas gölgesi ❌ DENENDİ, GERİ ALINDI (2026-09-06)
+## G1 — Gölge modeli ✅ (2026-09-06) — **SAHNEDE GÖLGE YOK**
 
-> **KARAR (D-054): temas gölgesi bu projede KULLANILMAYACAK.** Uygulandı, ölçüldü, kullanıcıya
-> gösterildi ve reddedildi: *"bu kötü duruyo, her şeyin altında bi yuvarlak var"*.
+**Karar: D-054.** Kıraathanede hiçbir gölge çizilmez — ne yönlü gölge haritası, ne zemine yatık
+temas lekesi. My Hotel'in düz görünümü. Son hâl: `ss/g1-son-golgesiz.png`.
+
+### Nasıl bu noktaya gelindi — üç tur
+1. **rev1 reddedildi.** Obje başına ayrı temas lekesi + o anki sert yönlü gölge. Kullanıcı:
+   *"bu kötü duruyo her şeyin altında bi yuvarlak var"*. Masa + 4 tabure = 5 yuvarlak (puanlı
+   kumaş), üstelik gerçek gölgenin ÜSTÜNE biniyordu.
+2. Kullanıcı asıl şikâyeti netleştirdi: *"hem gölge hem de alttaki yuvarlak kötü duruyo AYNI
+   ANDA... zınk diye keskin çizgi gibi duruyo... bak mesela myhotelde hiç gölge yok"*.
+3. **Dört varyant aynı kareden çekilip gösterildi.** Önce D seçildi, sonra kullanıcı vazgeçti:
+   *"vazgeçtim hiç gölge olmasın kötü duruyor komple kaldır"* → **B**.
+
+| | Varyant | Kare süresi (412×915) | Sonuç |
+|---|---|---|---|
+| A | Sert yönlü gölge (eski hâl) | 1,31 ms | kenar merdiveni — `ss/g1-var-A-sert-golge.png` |
+| **B** | **Hiç gölge yok** | **0,67 ms** | **SEÇİLDİ** — `ss/g1-var-B-golgesiz.png` |
+| C | Yumuşak yönlü gölge (VSM, radius 7) | ~1,5 ms | ışık sızıyor, lekeli, en pahalı — `ss/g1-var-C-yumusak.png` |
+| D | Gölge yok + masa başına tek soluk havuz | 0,74 ms | önce seçildi, sonra vazgeçildi — `ss/g1-var-D-havuz.png` |
+
+### Yan kazanç — performans
+Gölge haritası tek başına kare süresinin **yarısını** yiyordu:
+- Telefon kadrajı (412×915, üç salon dolu): **1,31 → 0,56 ms** (%57 hızlı), 91 draw call, 37k üçgen.
+- PC (1920×1080): **2,02 → 1,44 ms** (%29 hızlı) — **ama 245 draw call**, geniş oranda bütün
+  dükkân görünür oluyor. Kullanıcının bildirdiği *"PC'de tam ekran hayvan gibi kasıyo"*
+  sorununun kalanı için ilk bakılacak yer burası.
+
+### Sert kenarın sebebi (ölçüldü)
+1024'lük gölge haritası ~30 birimlik alana yayılıyordu (ortografik −13/28/15/−15, ~25
+teksel/birim). Bu yoğunlukta kenar merdiven merdiven çıkar. Çözünürlüğü artırmak çözebilirdi
+ama C zaten en pahalı çıktı ve görsel olarak da istenmedi.
+
+### Uygulama
+- `<Canvas>`'tan `shadows`, directional'dan `castShadow` + `shadow-*` kaldırıldı.
+  `LIGHTING.shadow` bloğu kaldırıldı; geri açılırsa kullanılacak değerler yorumda duruyor.
+- Mesh'lerdeki `castShadow`/`receiveShadow` bayrakları **duruyor** (bedelsiz; geri açmak iki satır).
+- Yönlü ışık gölge dökmüyor ama **duruyor** — yüzey yönüne göre aydınlatma (hacim hissi) ondan geliyor.
+- `LAYOUT.decor` kaldı: dekor konumları (çöp kovaları, saksılar) JSX'ten tek listeye çıktı —
+  gölge denemesi için yapılmıştı, bağımsız bir sadeleşme olduğu için tutuldu.
+
+### Doğrulama
+`npm run test` 186/186 · `npm run build` temiz · Playwright 0 konsol hatası ·
+`tools/smoke.mjs` 8/15 (bu oturumdan ÖNCE de 8/15 — değişmedi).
+
+### Bir daha "objeler yüzüyor" denirse
+Blob shadow **önerme** (üç turda reddedildi). Sırayla: (1) **G2 zemin geometrisi** — zeminde
+ölçek referansı olunca bu his büyük ölçüde kapanır, (2) hemisphere/directional dengesiyle yüzey
+ayrımı, (3) en son çare gölge haritası (bedeli yukarıda).
+
+### Kalıcı ders
+**Ölçümün "hedefini tutturdu" demesi, beğenileceği anlamına gelmiyor.** rev1 A/B'de hedefini
+tutturmuştu ve reddedildi. Doğru yöntem: birden çok varyantı **aynı kareden** çekip yan yana
+koymak ve sormak; tek bir "sonra" görüntüsü karar için yetmez. (Görünmeyen bir şeyi teşhis etmek
+için abartma numarası ayrıca geçerli — `ss/g1-teshis-kirmizi.png`.)
+
+---
+
+## (arşiv) G1 rev1 — obje başına temas gölgesi, REDDEDİLDİ
+
+> rev1 uygulandı, ölçüldü, gösterildi ve reddedildi: *"bu kötü duruyo, her şeyin altında bi
+> yuvarlak var"*. Aşağısı o turun kaydıdır; **yürürlükteki karar yukarıdaki D varyantıdır.**
 >
 > **Gerekçe — teknik olarak da doğru olan itiraz:** blob shadow gerçek bir tekniktir ve yaygındır,
 > ama neredeyse hep **gerçek gölgenin YERİNE** kullanılır (ucuz olduğu için). Bu sahnede G0'dan

@@ -971,8 +971,13 @@ function Street() {
 
 export function Scene() {
   return (
+    // SAHNEDE GÖLGE YOK (D-054). `shadows` prop'u bilerek verilmiyor ve yönlü ışık gölge
+    // dökmüyor. Dört varyant aynı kareden çekilip karşılaştırıldı (sert gölge · gölgesiz ·
+    // yumuşak/VSM · gölgesiz+temas havuzu); kullanıcı GÖLGESİZ olanı seçti — My Hotel'in düz
+    // görünümü. Yan kazanç: gölge haritası tek başına kare süresinin yarısını yiyordu
+    // (1,31 → 0,67 ms). Mesh'lerdeki castShadow/receiveShadow bayrakları duruyor (bedelsiz;
+    // gölge geri istenirse `shadows` + `castShadow` iki satır). Gerekçe: decisions.md D-054.
     <Canvas
-      shadows
       camera={{ position: [0, 9, 11], fov: 50 }}
       gl={{ antialias: true, toneMappingExposure: LIGHTING.exposure }}
       dpr={[1, 2]}
@@ -985,17 +990,11 @@ export function Scene() {
       <hemisphereLight
         args={[LIGHTING.skyColor, LIGHTING.groundColor, LIGHTING.hemiIntensity]}
       />
+      {/* Yönlü ışık gölge DÖKMEZ; yalnız yüzey yönüne göre aydınlatma (hacim hissi) verir. */}
       <directionalLight
         position={LIGHTING.sunPos}
         color={LIGHTING.sunColor}
         intensity={LIGHTING.sunIntensity}
-        castShadow
-        shadow-mapSize-width={LIGHTING.shadow.mapSize}
-        shadow-mapSize-height={LIGHTING.shadow.mapSize}
-        shadow-camera-left={LIGHTING.shadow.left}
-        shadow-camera-right={LIGHTING.shadow.right}
-        shadow-camera-top={LIGHTING.shadow.top}
-        shadow-camera-bottom={LIGHTING.shadow.bottom}
       />
       <Ground />
       <Street />

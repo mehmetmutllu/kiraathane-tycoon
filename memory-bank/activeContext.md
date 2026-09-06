@@ -2,6 +2,85 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-06 — G1 KAPANDI: SAHNEDE GÖLGE YOK; SAVE v30 değişmedi)
+
+**Karar D-054: kıraathanede hiçbir gölge çizilmez** — ne yönlü gölge haritası, ne zemine yatık
+temas lekesi. My Hotel'in düz görünümü. Detay + dört varyantın görüntüsü: `docs/gorsel/README.md` §G1.
+
+### Üç turda nasıl buraya gelindi (sonraki oturum bunu bilsin)
+1. Obje başına temas lekesi + o anki sert gölge → *"bu kötü duruyo her şeyin altında bi yuvarlak
+   var"* → geri alındı.
+2. Kullanıcı asıl şikâyeti netleştirdi: *"hem gölge hem de alttaki yuvarlak kötü duruyo AYNI
+   ANDA... zınk diye keskin çizgi gibi duruyo... bak mesela myhotelde hiç gölge yok, benlik
+   sorun yok"*.
+3. Dört varyant AYNI kareden çekilip gösterildi (A sert · B gölgesiz · C yumuşak/VSM · D
+   gölgesiz+havuz). Önce D seçildi, sonra: *"vazgeçtim hiç gölge olmasın komple kaldır"* → **B**.
+
+| | Varyant | Kare süresi (412×915) |
+|---|---|---|
+| A | Sert yönlü gölge (eski) | 1,31 ms |
+| **B** | **Hiç gölge yok — YÜRÜRLÜKTE** | **0,67 ms** |
+| C | Yumuşak (VSM) — ışık sızıyor | ~1,5 ms |
+| D | Gölge yok + masa başına havuz | 0,74 ms |
+
+### Kodda ne var / ne yok
+- `<Canvas>`'ta `shadows` YOK; directional'da `castShadow`/`shadow-*` YOK; `LIGHTING.shadow`
+  bloğu kaldırıldı (geri açma değerleri yorumda: −13/28/15/−15, mapSize 1024).
+- Mesh'lerdeki `castShadow`/`receiveShadow` bayrakları **duruyor** — bedelsiz, geri açmak iki satır.
+- Yönlü ışık **duruyor** (gölge dökmüyor ama yüzey aydınlatması/hacim hissi ondan geliyor).
+- Silinen: `ContactShadows.tsx` · `visualActors.ts` · `CONTACT_SHADOW` · `Footprint` ·
+  `tableFootprints`/`tableShadowPools`.
+- **Kalan sadeleşme:** `LAYOUT.decor` — dekor konumları (çöp kovaları, saksılar) JSX'ten tek
+  listeye çıktı; `DecorProps` oradan çiziyor.
+
+### >>> AÇIK SORUN — PC'DE TAM EKRAN TAKILIYOR <<<
+Kullanıcı: *"pcde tam ekran oynarken hayvan gibi kasıyo"*. Gölgenin kalkması **en büyük parçayı**
+çözdü ama bitmedi:
+- Telefon kadrajı (412×915): **1,31 → 0,56 ms**, 91 draw call, 37k üçgen.
+- PC (1920×1080): **2,02 → 1,44 ms**, **ama 245 draw call** — geniş oranda bütün dükkân görünür
+  oluyor, frustum culling kurtarmıyor.
+
+**Sonraki şüpheliler, bu sırayla:**
+1. **Draw-call sayısı** (91 → 245 sadece en-boy oranı değişince). Instancing zaten var; bakılacak
+   yer uzak salonların/duvarların kırpılmaması (`frustumCulled={false}` verilen batch'ler).
+2. `<Canvas dpr={[1, 2]} gl={{ antialias: true }}>` — yüksek DPI ekranda çözünürlüğün 2 katı + MSAA.
+3. CPU: her karede dönen ~800 satırlık `tick()` + Zustand'ın tetiklediği React render'ları.
+
+**Yöntem:** kullanıcının makinesinde gerçek sayı gerekiyor (`window.__perf()` → fps/calls/tris).
+Headless tarayıcıda fps ANLAMSIZ (arka plan rAF kısıtlaması, 1 gösterir); kare süresi doğrudan
+`gl.render` döngüsüyle ölçülür. **Tahminle dokunma.**
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+1. **PC kasmasını ölç ve çöz** (yukarıdaki üç şüpheli). Kullanıcıdan ekran çözünürlüğü +
+   tam ekranda `window.__perf()` çıktısı iste.
+2. Sonra **G2 — zemine ölçek referansı, GEOMETRİYLE** (doku yolu D-041 ile kapalı): `CheckerTiles`
+   genelleştir → `plank` (0,55×2,2, satır başı yarım ofset, tahta başına ±%4 renk sapması) ve
+   `tile` (0,7 kare); derz **çizgi değil boşluk**. Alan başına ~90 plank = 1 draw call.
+   → **G3** duvar bitimi → **G4/G5** KayKit yerleşimi.
+3. **Faz A'ya geçmeden** `tools/smoke.mjs`'in 7 kırık adımı onarılmalı (kök neden `q_coin`
+   questBase yarışı → domino; G0'dan önce de kırıktı, hâlâ 8/15).
+
+### Kırmızı çizgi
+**"Objeler yüzüyor" hissine bir daha blob shadow ÖNERME** — üç turda reddedildi. Sıra: G2 zemin
+geometrisi → hemisphere/directional dengesi → en son çare gölge haritası (bedeli D-054'te yazılı).
+
+### Bu oturumun kalıcı dersi
+**Ölçümün "hedefini tutturdu" demesi, kullanıcının beğeneceği anlamına gelmiyor.** rev1 A/B
+ölçümünde hedefini tutturmuştu ve reddedildi. Görsel adımda doğru yöntem: birden çok varyantı
+**aynı kareden** çekip yan yana koymak ve sormak — tek bir "sonra" görüntüsü karar için yetmez.
+(Görünmeyeni teşhis için abartma numarası ayrıca geçerli: G0'da test kutusu, G1'de kırmızı+opak
+materyal — `ss/g1-teshis-kirmizi.png`.)
+
+### G fazının sonunda kapatılacak artık
+- UI Canvas'ları (`CharacterPanel`, `SalonSlice`, `DioramaPreview`, `TableThemePreview`) hâlâ
+  eski düz `ambientLight` ile → dünya G0'da ısındı, mağaza önizlemeleri soğuk kaldı.
+
+### Bilinen, ertelenmiş
+- Maket girişinin üst çıtasında z-fighting (kullanıcı: "oyuna geçerken hallederiz").
+- Bundle 1,44 MB (three.js) — Faz F kod bölme.
+
+---
+
 ## ŞU AN (2026-09-06 — G1 DENENDİ ve REDDEDİLDİ; sahne G0 hâlinde; SAVE v30 değişmedi)
 
 **G1 (temas gölgesi) uygulandı, ölçüldü, kullanıcıya gösterildi ve GERİ ALINDI → D-054.**

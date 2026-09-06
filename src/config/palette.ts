@@ -124,11 +124,14 @@ export const LIGHTING = {
    */
   sunPos: [9, 9, 7] as [number, number, number],
   /**
-   * Gölge kamerası (ortografik, ışık uzayında). Güneş alçalınca gölgeler uzadı ve ESKİ sınırlar
-   * (-12/24/12/-20) sağ-üst köşede kırpıyordu. Yeni sınırlar salonu + hemen önündeki sokağı
-   * kapsar; 1024 haritada ~25 teksel/birim (eskisi 28) — kırpma yok, keskinlik kaybı ihmal edilebilir.
+   * SAHNEDE GÖLGE YOK (D-054). Dört varyant aynı kareden çekilip karşılaştırıldı — sert yönlü
+   * gölge (1,31 ms) · gölgesiz (0,67 ms) · yumuşak/VSM (~1,5 ms, ışık sızdırıyor) · gölgesiz +
+   * temas havuzu (0,74 ms) — ve **gölgesiz** seçildi (My Hotel'in düz görünümü).
+   * Sert gölgenin sorunu ölçümle de açıklandı: 1024'lük harita ~30 birimlik alana yayılınca
+   * kenar merdiven merdiven çıkıyordu ("zınk diye keskin çizgi gibi").
+   * Geri açmak gerekirse: `<Canvas shadows>` + directional'a `castShadow` + ortografik sınırlar
+   * −13/28/15/−15, mapSize 1024 (bu değerler ölçülmüştü: ~25 teksel/birim, kırpma yok).
    */
-  shadow: { left: -13, right: 28, top: 15, bottom: -15, mapSize: 1024 },
   background: '#1f2933',
   fogNear: 34, // oyun alanının DIŞINDA başlar (kamera ~14 birimden bakar) → oynanışı örtmez
   fogFar: 72,
