@@ -2,6 +2,76 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-06 gece — **B2 TAMAM: servis tekilleşti, tempo altı bandın altısını tutuyor**)
+
+Faz B'nin üçüncü adımı bitti. Üç ocak **tek servis noktasına** indi; ürün bölgeden değil
+**seviyeden** geliyor (L4 tezgâh · L5 tost); personel **global havuz** (3 garson + 1 bulaşıkçı).
+Karar kaydı **D-060**. Bu adımda oyun DAVRANIŞI değişti — güvence parmak izi değil **tempo ölçümü**.
+
+### Kabul kriteri — ÖLÇÜLDÜ (simulate.ts, Normal profil 0,55)
+| Kilometre taşı | plan §5 hedefi | Ölçülen |
+|---|---|---|
+| İlk alım | ≤ 60 sn | **40 sn** |
+| Garson (otomasyon) | 8-12 dk | **11,1 dk** |
+| 2. Alan | 25-35 dk | **34,6 dk** |
+| Bulaşıkçı | 45-60 dk | **60 dk** |
+| 3. Alan + Tezgâh | 1,5-2 sa | **1,83 / 1,99 sa** |
+| Tost (L5) | 2-2,5 sa | **2,55 sa** |
+
+"Kat tamam" 2,69 sa. Plan §5'in **5-7 saati B3'ün 20 masası + B5 banketleri + Faz C eğrisiyle**
+gelir; olmayan içeriği pahalılıkla taklit etmek grind üretirdi, yapılmadı.
+
+### Yapılan
+- **`SERVICE_AREAS = [0]`** — B1'in ayırdığı iki soru burada ayrı cevap verdi: `serviceInArea()`
+  yerleşim (yalnız 1. alanda servis DURUR), `serviceOfTable()` üretim (hep tek nokta).
+  **Alan açmak artık ocak açmıyor** ve çağıranların hiçbiri değişmedi — B1'in ödediği bedelin karşılığı.
+- **Tek merdiven, iki kimlik:** `TeaStation` + `TostStation` → tek **`ServicePoint.tsx`**;
+  L4'te gövde tezgâha döner (pirinç bant + arka cezve ocağı), L5'te sac + pres gelir, tostlar
+  sacın üstünde bekler. Yer değişmez, seviye sıfırlanmaz.
+- **Talep müşteride:** `Npc.product` — müşteri gelirken ürününü seçer (`tostShare(level)`).
+  Tezgâh iki kuyruğa üretir; hangi ürünün AÇIĞI büyükse onu hazırlar, diğerinin yarım ilerlemesi bekler.
+- **Global havuz:** `waiters[]` düz liste + tek `dishwasher`. "Tostçu Garson" sekmesi/eğrisi kalktı;
+  garson tepsisi artık KARIŞIK (çay+tost, kapasite ortak), bulaşıkçı kabın türünü leğende korur.
+- **Zincir asgari cerrahi:** alan-başı personel pad'leri çıktı, bulaşıkçı **Bölüm 2'ye** taşındı
+  (plan §4 adım 14); `waiter3` opsiyonel geç-oyun pad'i geldi; görev hattı yeniden dizildi
+  (**q_counter L4** ve **q_tost L5** artık hattın omurgasında).
+- **Denge:** servis eğrisi **20/30/45/800/2400/9000** (L1-L3 dokunulmadı); zone2 750, zone3 3400,
+  dishwasher 900.
+- **Yan temizlik:** "yemek alanı" kimliği (dikdörtgen masa, arkalıklı sandalye, sofra propları,
+  zemin amblemi, ayrı tost tezgâhı geometrisi) ürünle birlikte kalktı; menü panosu tezgâhın L6
+  basamağına bağlandı. Bardak havuzu ALANLA ölçekleniyor.
+- **Mağaza önizlemeleri sahnenin ışığına bağlandı** (ayrı iş, aynı oturum): `three/lights.tsx`
+  tek tanım; kartta gördüğün renk artık salondakiyle birebir (ölçüm: ton oranı sapması 0,109 → 0,018).
+
+### Bu adımın kalıcı dersi
+**Ölçüm aracının OYUNCU MODELİ de yanılabilir.** Simülatör "her an en ucuz darboğaz ocağı al"
+diyordu; oyun ise ekranda tek görev gösterip oyuncuyu ona yönlendiriyor. Ocak ucuzken fark küçüktü;
+tezgâh/tost pahalılaşınca **sıralama tempoyu belirleyen şeyin kendisi** oldu. Sim görev hattını
+takip edecek şekilde yeniden yazıldı ve personel/masa yükseltmeleri de gerçekten satın alınır oldu
+(eskiden bedava sayılıyorlardı). B1'in dersi "aracın çıktısı yanılabilir"di; B2'ninki
+**"aracın varsayımı yanılabilir"**.
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**B3 — yerleşim maket ölçeğine.** AMA önce **KADRAJ ONAYI** (D-058 karar 4, bağlayıcı):
+kat 21,2×20,6 → **34×34** (alan ×2,6) büyüyor; portre ekranda ne görüneceği mühendislik değil
+**tasarım** kararı. Üç kamera kademesi AYNI kareden çekilip kullanıcıya sunulacak, onay gelmeden
+`layout.ts` YAZILMAYACAK. Sonra: B4 odalar (lavabo + yıkık merdiven) → B5 masa tipleri + banket.
+
+### Faz G'den kalan artık
+UI Canvas'ları ışık işi **kapandı** (bu oturum). Geriye kalan: yok.
+
+### Kırmızı çizgi (duruyor)
+**"Objeler yüzüyor" hissine bir daha blob shadow ÖNERME** (D-054).
+
+### Bilinen, ertelenmiş
+- Maket girişinin üst çıtasında z-fighting ("oyuna geçerken hallederiz").
+- Bundle ~1,45 MB (three.js) — Faz F kod bölme.
+- `eslint` 15 hatası (hepsi eski; B1 ile aynı sayı) — Faz E/F işi.
+- Servis noktası hâlâ 1. alanın sol duvarında (B1'deki yerinde); maket v13'ün arka bandına
+  **B3'te** taşınacak.
+
+---
+
 ## ŞU AN (2026-09-06 gece — **B1 TAMAM: model dönüştü, davranış BİREBİR aynı**)
 
 Faz B'nin ikinci adımı bitti. `ZONE` tek index'i **ALAN · SERVİS · MASA · ODA** olarak ayrıştı;

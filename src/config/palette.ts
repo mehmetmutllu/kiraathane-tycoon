@@ -177,3 +177,8 @@ export const LIGHTING = {
   exposure: 1.05,
 } as const;
 
+/**
+ * Mağaza önizleme `<Canvas gl={...}>` ayarı: dünyayla AYNI pozlama. Ton eşlemesi zaten ACESFilmic
+ * (r3f varsayılanı) — yalnız exposure eşitlenir. (Işık takımı `components/three/lights.tsx`te.)
+ */
+export const PREVIEW_GL = { antialias: true, toneMappingExposure: LIGHTING.exposure } as const;

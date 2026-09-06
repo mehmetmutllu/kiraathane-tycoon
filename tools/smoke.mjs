@@ -130,15 +130,15 @@ try {
   else fail(`Garson servis etmedi (coins ${beforeCoins}→${assisted.coins}, waiterTray=${assisted.waiterTray})`);
 
   // Garson hız yükseltme (v29): karakter PANELİNDEN satın alınır (eski mekânsal waiterUp pad'i kalktı).
-  const beforeWL = (await page.evaluate(() => window.__game())).waiterUpgrades?.teaSpeed ?? 0;
+  const beforeWL = (await page.evaluate(() => window.__game())).waiterUpgrades?.speed ?? 0;
   await page.evaluate(() => window.__addMoney(500));
   await page.click('[data-testid="char"]');
-  await page.click('[data-testid="char-tab-tea"]');
-  await page.click('[data-testid="waiter-speed-buy-tea"]');
+  await page.click('[data-testid="char-tab-waiter"]'); // B2: tek "Garson" sekmesi (çay/tostçu birleşti)
+  await page.click('[data-testid="waiter-speed-buy"]');
   const wL2 = await page.evaluate(() => window.__game());
-  if ((wL2.waiterUpgrades?.teaSpeed ?? 0) > beforeWL)
-    pass(`Garson hız yükseltme panelden çalışıyor (teaSpeed ${beforeWL}→${wL2.waiterUpgrades.teaSpeed})`);
-  else fail(`Garson hız yükseltmedi (teaSpeed ${beforeWL}→${wL2.waiterUpgrades?.teaSpeed})`);
+  if ((wL2.waiterUpgrades?.speed ?? 0) > beforeWL)
+    pass(`Garson hız yükseltme panelden çalışıyor (speed ${beforeWL}→${wL2.waiterUpgrades.speed})`);
+  else fail(`Garson hız yükseltmedi (speed ${beforeWL}→${wL2.waiterUpgrades?.speed})`);
   await page.click('[data-testid="char-panel"]'); // backdrop'a tıkla → panel kapanır
 
   // Bardak döngüsü (Faz 2e): garson servis ederken kirli bardak üretilir → oyuncu toplar → bulaşıkta yıkar.
@@ -166,8 +166,11 @@ try {
     fail(`Kirli bardak üretilmedi (dirty=${cupRun.dirtyCount}, carried=${cupRun.carriedDirty})`);
   }
 
-  // Omurga sonu: bulaşıkçı (table4 önkoşulu) + 4. masa (quest hattıyla).
-  for (const [qid, pid] of [['q_dish', 'dishwasher'], ['q_table4', 'table4']]) {
+  // Omurga sonu (B2): 4. masa → 2. Salon → salonun masaları → BULAŞIKÇI (plan §4 adım 14).
+  for (const [qid, pid] of [
+    ['q_table4', 'table4'], ['q_zone2', 'zone2'], ['q_z2table2', 'z2table2'],
+    ['q_z2table3', 'z2table3'], ['q_dish', 'dishwasher'],
+  ]) {
     await page.evaluate((q) => window.__setQuest(q), qid);
     await page.evaluate(() => window.__addMoney(2000));
     const g = await page.evaluate(() => window.__game());
@@ -178,8 +181,8 @@ try {
   }
   const opened = await page.evaluate(() => window.__game());
   if ((opened.padsDone || []).includes('dishwasher') && (opened.padsDone || []).includes('table4'))
-    pass(`Omurga tamam (bulaşıkçı + 4. masa, padsDone=${opened.padsDone.length})`);
-  else fail(`Bulaşıkçı/4. masa açılmadı (padsDone=${JSON.stringify(opened.padsDone)})`);
+    pass(`Omurga tamam (4. masa + 2. salon + bulaşıkçı, padsDone=${opened.padsDone.length})`);
+  else fail(`Omurga açılmadı (padsDone=${JSON.stringify(opened.padsDone)})`);
 
   // Masa yükseltme (Faz 2h, MASA-BAŞI): TÜM masalar açılınca her masanın YANINDAKİ nokta aktif. 0. masanın
   // noktasına git → SADECE o masa yükselir (bahşiş+sabır); komşu masa etkilenmez.

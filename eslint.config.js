@@ -18,5 +18,10 @@ export default defineConfig([
     languageOptions: {
       globals: globals.browser,
     },
+    rules: {
+      // Bilerek kullanılmayan parametreler `_` ile işaretlenir (imza sözleşme gereği durur:
+      // ör. `defaultFloorTheme(_area)` — B2'de cevap alandan bağımsız, B3'te yine alana bakacak).
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+    },
   },
 ])

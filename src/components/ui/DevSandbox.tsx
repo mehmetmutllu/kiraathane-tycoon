@@ -27,7 +27,7 @@ import {
 import './devSandbox.css';
 
 // Dahili seviyeler 0-tabanlı, ekranda +1 gösterilir. Tavan = ₺ ile çıkılabilen en yüksek seviye.
-const STATION_MAX = C.teaStation.upgrade.maxLevel; // 0..6 → L1..L7
+const STATION_MAX = C.service.upgrade.maxLevel; // 0..6 → L1..L7
 const TABLE_MAX = C.tables.upgrade.maxLevel; // 0..4 → L1..L5
 const CHAR_MAX = {
   tray: C.character.tray.values.length - 1,
@@ -301,28 +301,16 @@ export function DevSandbox() {
 
         <Row title="Personel">
           <Stepper
-            label="Çay garsonu tepsi"
-            value={waiterUpgrades.teaTray}
-            max={waiterTrayMaxTier('tea')}
-            onChange={(v) => useGame.setState({ waiterUpgrades: { ...waiterUpgrades, teaTray: v } })}
+            label="Garson tepsi"
+            value={waiterUpgrades.tray}
+            max={waiterTrayMaxTier()}
+            onChange={(v) => useGame.setState({ waiterUpgrades: { ...waiterUpgrades, tray: v } })}
           />
           <Stepper
-            label="Çay garsonu hız"
-            value={waiterUpgrades.teaSpeed}
-            max={waiterSpeedMaxTier('tea')}
-            onChange={(v) => useGame.setState({ waiterUpgrades: { ...waiterUpgrades, teaSpeed: v } })}
-          />
-          <Stepper
-            label="Tostçu tepsi"
-            value={waiterUpgrades.tostTray}
-            max={waiterTrayMaxTier('tost')}
-            onChange={(v) => useGame.setState({ waiterUpgrades: { ...waiterUpgrades, tostTray: v } })}
-          />
-          <Stepper
-            label="Tostçu hız"
-            value={waiterUpgrades.tostSpeed}
-            max={waiterSpeedMaxTier('tost')}
-            onChange={(v) => useGame.setState({ waiterUpgrades: { ...waiterUpgrades, tostSpeed: v } })}
+            label="Garson hız"
+            value={waiterUpgrades.speed}
+            max={waiterSpeedMaxTier()}
+            onChange={(v) => useGame.setState({ waiterUpgrades: { ...waiterUpgrades, speed: v } })}
           />
           <Stepper
             label="Bulaşıkçı leğen"

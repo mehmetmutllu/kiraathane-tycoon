@@ -27,7 +27,7 @@ import {
 } from '../config/economy.config';
 import type { SaveStats } from './save';
 import { LAYOUT, AREA_DZ, areaRow, type RVec3 } from './layout';
-import { MAX_AREAS, TABLES_PER_AREA, serviceInArea, serviceProduct } from './world';
+import { MAX_AREAS, TABLES_PER_AREA, THE_SERVICE, serviceInArea, tostShare, isCounter } from './world';
 
 // DWELL kanonik dolum-noktası id'leri (D-018 §2): pad'ler kendi id'sini kullanır; bunlar yükseltme
 // noktaları. Önek + index biçimindedir ('tea:0' = SERVİS index'i, 'tableUp:5' = GLOBAL masa index'i).
@@ -35,13 +35,10 @@ import { MAX_AREAS, TABLES_PER_AREA, serviceInArea, serviceProduct } from './wor
 export const FILL_TEA = 'tea:'; // + SERVİS index
 export const FILL_TABLE = 'tableUp:'; // + GLOBAL masa index
 
-/** Alanın garson pad id'si (alan-başı personel; a>0 → 'z2waiter'/'z3waiter'). */
-export const waiterPadId = (area: number) => (area === 0 ? 'waiter' : `z${area + 1}waiter`);
-
-/** Servis noktasının ocak-yükseltmesi açık mı? (v21: o alanın KENDİ 2. masası önkoşul —
- *  upgradeRequiresByArea; "önce kapasite sonra verim".) */
-export function stationUpgradeUnlocked(service: number, g: GateState): boolean {
-  return requiresMet(C.teaStation.upgradeRequiresByArea[service], g);
+/** Servis noktasının yükseltmesi açık mı? (2. masa önkoşul — "önce kapasite sonra verim".)
+ *  B2: servis TEK olduğu için parametresiz; alan-başı `upgradeRequiresByArea` dizisi kalktı. */
+export function stationUpgradeUnlocked(g: GateState): boolean {
+  return requiresMet(C.service.upgradeRequires, g);
 }
 
 /** Alanın masa yükseltmeleri açık mı? (v21: o alanın 4 masası da açılınca — D-019 §3.) */
@@ -98,7 +95,7 @@ export const NPC_COLORS = ['#c0392b', '#27ae60', '#2980b9', '#8e44ad', '#d35400'
 
 
 // EKONOMİ v2 (D-010): çay fiyatı SABİT; seviye fiyatı değil throughput'u (çay/dk) artırır.
-export const TEA_PRICE = C.teaStation.basePrice;
+export const TEA_PRICE = C.service.basePrice;
 // Bulaşık öğretilmeden kirli bardak çıkmaz (onboarding gate, 2026-06-10): ilk washDish görevinin index'i.
 // Görev hattında yoksa -1 → gate hep açık (questIndex >= -1).
 export const WASH_QUEST_INDEX = C.quests.findIndex((q) => q.target.type === 'washDish');
@@ -111,7 +108,7 @@ export const QUEST_GAP_DUR = 0.8;
 
 /** stationLevel'in demleme hız (throughput) çarpanı — çay/dk; fiyatı DEĞİL. */
 export function brewThroughputMult(level: number): number {
-  return upgradeOutputMultiplier(C.teaStation.upgrade, level);
+  return upgradeOutputMultiplier(C.service.upgrade, level);
 }
 
 /** Bir birim ürünün hazırlanma süresi (sn) — throughput arttıkça kısalır. prepTime verilmezse çay
@@ -120,11 +117,16 @@ export function brewTime(level: number, prepTime: number = C.npc.orderTime): num
   return prepTime / brewThroughputMult(level);
 }
 
-/** GLOBAL bardak havuzu kapasitesi: açık SERVİS başına taban + açık ocak seviyeleri toplamı (Faz 3a). */
-export function totalCupPool(openServices: number, stationLevels: number[]): number {
+/**
+ * GLOBAL bardak havuzu kapasitesi: açık ALAN başına taban + servis seviyesi başına ek.
+ * B2: taban ALANLA ölçeklenir (servisle DEĞİL) — mekân büyüdükçe daha çok bardak döner ve
+ * `unlockArea` etkisinin havuza eklediği `poolBase` ile aynı kaynağı kullanır. Servis tekilleşince
+ * "açık servis başına taban" okuması havuzu alan açılışlarında sessizce tutarsız bırakıyordu.
+ */
+export function totalCupPool(areasOpen: number, stationLevels: number[]): number {
   let lv = 0;
-  for (let sv = 0; sv < openServices; sv++) lv += stationLevels[sv] ?? 0;
-  return openServices * C.cups.poolBase + C.cups.poolPerLevel * lv;
+  for (const l of stationLevels) lv += l ?? 0;
+  return areasOpen * C.cups.poolBase + C.cups.poolPerLevel * lv;
 }
 
 /** ₺ ile çıkılabilen en yüksek masa seviyesi (💎 "Usta" katmanı Faz D'de gelecek). */
@@ -148,14 +150,19 @@ export function tableUpgradeUnlocked(g: GateState): boolean {
   return tableUpgradeUnlockedIn(0, g);
 }
 
-/** Çevrimdışı gelir oranı (₺/sn) — bottleneck idealize: oturma × ürün fiyatı / döngü.
- *  M3: servis verilirse o servisin ÜRÜNÜ (tost pahalı+yavaş) hesaba girer.
- *  2026-06-11 (kullanıcı): masa BAHŞİŞLERİ de orana dahil — tipTotal = o servise bağlı açık masaların
- *  Σ(tipBase × seviye); ilerleme (masa yükseltme) offline kazancı da büyütür. */
-export function incomeRate(tables: number, level: number, service = 0, tipTotal = 0): number {
-  const prod = PRODUCTS[serviceProduct(service)];
-  const cycle = C.npc.walkTime + brewTime(level, prod.prepTime) + C.npc.eatTime;
-  return (tables * prod.price + tipTotal) / cycle;
+/**
+ * Çevrimdışı gelir oranı (₺/sn) — bottleneck idealize: oturma × ürün fiyatı / döngü.
+ * B2: menü artık SEVİYEDEN geldiği için ürün "servisin ürünü" değil, seviyedeki tost payına göre
+ * KARIŞIM: L5'te müşterilerin %25'i tost (pahalı + yavaş) ister → hem fiyat hem hazırlık süresi
+ * ağırlıklı ortalamayla girer. L0-L4'te pay 0 → formül eski çay-hâliyle birebir aynı sonucu verir.
+ * Masa BAHŞİŞLERİ de orana dahil (kullanıcı 2026-06-11): tipTotal = açık masaların Σ(tipBase × seviye).
+ */
+export function incomeRate(tables: number, level: number, tipTotal = 0): number {
+  const p = tostShare(level);
+  const price = (1 - p) * PRODUCTS.tea.price + p * PRODUCTS.tost.price;
+  const prepTime = (1 - p) * PRODUCTS.tea.prepTime + p * PRODUCTS.tost.prepTime;
+  const cycle = C.npc.walkTime + brewTime(level, prepTime) + C.npc.eatTime;
+  return (tables * price + tipTotal) / cycle;
 }
 
 /**
@@ -252,12 +259,18 @@ export function revealKeys(
   const out: [string, string, RVec3 | null][] = [];
   const pre = (a: number) => (a === 0 ? '' : `Salon ${a + 1}: `);
   for (let a = 0; a < areasOpen; a++) {
-    const sv = serviceInArea(a);
-    if (sv >= 0 && stationUpgradeUnlocked(sv, g) && (stationLevels[sv] ?? 0) < stationSoftMaxLevel())
-      out.push([`upgrade:${sv}`, `Yeni: ${pre(a)}Çay ocağını yükseltebilirsin ☕`, LAYOUT.stationUpgradeSpots[sv]]);
     if (tableUpgradeUnlockedIn(a, g))
       out.push([`tableUp:${a}`, `Yeni: ${pre(a)}Masaları yükseltebilirsin 🪑`, LAYOUT.tables[a * TABLES_PER_AREA].upgradeSpot]);
   }
+  // Servis noktası TEK (B2) → tek reveal anahtarı, alan döngüsünün dışında. Metin seviyeye göre
+  // konuşur: L4'e kadar "çay ocağı", sonrası "tezgâh" (tek merdiven, iki kimlik).
+  const lv = stationLevels[THE_SERVICE] ?? 0;
+  if (stationUpgradeUnlocked(g) && lv < stationSoftMaxLevel())
+    out.push([
+      `upgrade:${THE_SERVICE}`,
+      isCounter(lv) ? 'Yeni: Tezgâhı yükseltebilirsin 🍞' : 'Yeni: Çay ocağını yükseltebilirsin ☕',
+      LAYOUT.stationUpgradeSpots[THE_SERVICE],
+    ]);
   for (const op of availableOptionalPads(g)) out.push([`opt:${op.id}`, `Yeni: ${op.label} 🔓`, null]);
   return out;
 }
@@ -283,10 +296,8 @@ export function availableOptionalPads(g: GateState): PadDef[] {
   );
 }
 
-/** İlk servisin ocak-yükseltme gate'i (geri uyum: testler/eski çağıranlar). */
-export function stationUpgradeUnlocked0(g: GateState): boolean {
-  return stationUpgradeUnlocked(0, g);
-}
+/** Servis yükseltme gate'i — eski adıyla (geri uyum: testler/eski çağıranlar). */
+export const stationUpgradeUnlocked0 = stationUpgradeUnlocked;
 
 // ============================== QUEST MOTORU (2026-06-09) ==============================
 // İlerleme sıralı TEK görevle yönlendirilir (Fable brief §1+§4; eski nextStep + onboardingHint
@@ -329,9 +340,8 @@ export function questTargetMet(target: QuestTarget, ctx: QuestCtx): boolean {
   }
   switch (target.type) {
     case 'pad': return ctx.padsDone.includes(target.id);
-    case 'stationLevel': return (ctx.stationLevels[target.service ?? 0] ?? 0) >= target.level;
-    case 'waiterSpeed':
-      return (target.kind === 'tea' ? ctx.waiterUpgrades.teaSpeed : ctx.waiterUpgrades.tostSpeed) >= target.tier;
+    case 'stationLevel': return (ctx.stationLevels[THE_SERVICE] ?? 0) >= target.level;
+    case 'waiterSpeed': return ctx.waiterUpgrades.speed >= target.tier;
     case 'tableLevel': return ctx.tableLevels.some((l) => l >= target.level);
     case 'tablesAtLevel': {
       // area verilirse yalnız o alanın masa slotları; verilmezse tüm masalar (v27 çeşitlilik).
@@ -340,8 +350,7 @@ export function questTargetMet(target: QuestTarget, ctx: QuestCtx): boolean {
         : ctx.tableLevels;
       return lvls.filter((l) => (l ?? 0) >= target.level).length >= target.count;
     }
-    case 'waiterTray':
-      return (target.kind === 'tea' ? ctx.waiterUpgrades.teaTray : ctx.waiterUpgrades.tostTray) >= target.tier;
+    case 'waiterTray': return ctx.waiterUpgrades.tray >= target.tier;
     case 'charStat': return ctx.charUpgrades[target.stat] >= target.tier;
     default: return false;
   }
@@ -376,9 +385,9 @@ export function questView(q: QuestDef, ctx: QuestCtx): QuestView {
     q.target.type === 'charStat'
       ? charNextCost(q.target.stat, q.target.tier - 1)
       : q.target.type === 'waiterTray'
-        ? waiterTrayNextCost(q.target.kind, q.target.tier - 1)
+        ? waiterTrayNextCost(q.target.tier - 1)
         : q.target.type === 'waiterSpeed'
-          ? waiterSpeedNextCost(q.target.kind, q.target.tier - 1)
+          ? waiterSpeedNextCost(q.target.tier - 1)
           : null;
   return {
     id: q.id,
@@ -404,7 +413,7 @@ export function questFocusPos(target: QuestTarget, tableLevels: number[], tables
     case 'pickupTea': return LAYOUT.stations[sv];
     case 'washDish': return LAYOUT.dishStations[sv];
     case 'pad': return LAYOUT.padPos[target.id] ?? LAYOUT.stations[sv];
-    case 'stationLevel': return LAYOUT.stationUpgradeSpots[target.service ?? sv];
+    case 'stationLevel': return LAYOUT.stationUpgradeSpots[THE_SERVICE];
     case 'tableLevel':
     case 'tablesAtLevel': {
       // O alandan başlayarak hedef seviyenin ALTINDAKİ ilk açık masanın yükseltme noktası
@@ -474,10 +483,12 @@ export function computeOfflineEarned(rate: number, elapsedSec: number, padsDone:
 }
 
 /** ₺ ile çıkılabilen en yüksek istasyon seviyesi (L5 = Usta, 💎/video — Faz 4). */
-export const stationSoftMaxLevel = () => C.teaStation.upgrade.maxLevel;
-/** Mevcut seviyeden bir sonraki ₺ yükseltmenin maliyeti (çay eğrisi; servis-farkındalı için *At). */
-export const stationUpgradeCost = (level: number) => upgradeCost(C.teaStation.upgrade, level + 1);
-/** Servisin istasyon yükseltme maliyeti: çay eğrisi × ürünün upgradeCostMult'u (M3 — tost tezgâhı
- *  geç-oyun, çay eğrisi orada komik ucuz kalırdı). */
-export const stationUpgradeCostAt = (service: number, level: number) =>
-  Math.floor(upgradeCost(C.teaStation.upgrade, level + 1) * PRODUCTS[serviceProduct(service)].upgradeCostMult);
+export const stationSoftMaxLevel = () => C.service.upgrade.maxLevel;
+/**
+ * Servis noktasının bir sonraki seviyesinin ₺ maliyeti. B2: TEK eğri — eski "ürünün
+ * upgradeCostMult'u ile çarp" (tost tezgâhı ×20) kuralı kalktı, çünkü ürün artık ayrı bir servisin
+ * değil AYNI merdivenin üst basamağı; L4-L6'nın pahalı olması eğrinin kendi işi (costsByLevel).
+ */
+export const stationUpgradeCost = (level: number) => upgradeCost(C.service.upgrade, level + 1);
+/** Eski adıyla (servis parametresi kalktı; çağıranlar tek servisi soruyor). */
+export const stationUpgradeCostAt = (_service: number, level: number) => stationUpgradeCost(level);

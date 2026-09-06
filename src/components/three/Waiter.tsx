@@ -4,10 +4,14 @@ import { useGame } from '../../game/store';
 import { Model } from './Model';
 import { useActorTransform } from './actorTransform';
 import { PALETTE } from '../../config/palette';
-import { serviceProduct } from '../../game/world';
 
-// Garson tepsisi (Y3: kapasite yükseltilebilir → taşınan HER birim çizilir; baş üstü değil elde).
-function WaiterTray({ count, food }: { count: number; food: boolean }) {
+/**
+ * Garson tepsisi (Y3: kapasite yükseltilebilir → taşınan HER birim çizilir; baş üstü değil elde).
+ * B2: tepsi KARIŞIK olabilir — tek servis noktası hem çay hem tost verdiği için bir garson ikisini
+ * birden taşıyabilir (çaylar solda, tostlar sağda; genişlik toplam adetle büyür).
+ */
+function WaiterTray({ tea, food }: { tea: number; food: number }) {
+  const count = tea + food;
   if (count <= 0) return null;
   const w = Math.max(0.3, 0.14 + count * 0.13); // tepsi taşınan adetle genişler
   return (
@@ -18,15 +22,15 @@ function WaiterTray({ count, food }: { count: number; food: boolean }) {
       </mesh>
       {Array.from({ length: count }, (_, i) => {
         const x = (i - (count - 1) / 2) * 0.13;
-        return food ? (
-          <mesh key={i} castShadow position={[x, 0.06, 0]}>
-            <boxGeometry args={[0.11, 0.05, 0.12]} />
-            <meshStandardMaterial color={PALETTE.toast} roughness={0.7} />
-          </mesh>
-        ) : (
+        return i < tea ? (
           <mesh key={i} castShadow position={[x, 0.1, 0]}>
             <cylinderGeometry args={[0.045, 0.036, 0.13, 8]} />
             <meshStandardMaterial color="#c0392b" emissive="#7a1f17" emissiveIntensity={0.25} />
+          </mesh>
+        ) : (
+          <mesh key={i} castShadow position={[x, 0.06, 0]}>
+            <boxGeometry args={[0.11, 0.05, 0.12]} />
+            <meshStandardMaterial color={PALETTE.toast} roughness={0.7} />
           </mesh>
         );
       })}
@@ -35,68 +39,49 @@ function WaiterTray({ count, food }: { count: number; food: boolean }) {
 }
 
 // Tek garson gövdesi (hook'lar per-unit kalsın diye ayrı bileşen).
-// Y3: TOSTÇU garson kıyafetle ayrışır — hardal gövde + beyaz kep (M3 tost ustası diliyle uyumlu);
-// çay garsonu yeşil kalır.
-function WaiterUnit({ kind, service, tray, food }: { kind: 'a' | 'b'; service: number; tray: number; food: boolean }) {
+// B2: "Tostçu Garson" kıyafeti (hardal önlük + beyaz kep) KALKTI — tek havuzda tür yok, hepsi
+// aynı yeşil önlüklü çaycı. Ne taşıdığı tepsisinden okunur, üstünden değil.
+function WaiterUnit({ index, tea, food }: { index: number; tea: number; food: number }) {
   const outerRef = useRef<Group>(null);
   const ref = useRef<Group>(null);
   // Konum store'dan HER KARE okunur ve doğrudan three'ye yazılır (React prop'u değil) — bkz.
   // useActorTransform açıklaması.
   const read = useCallback(() => {
-    const w = (kind === 'a' ? useGame.getState().waiters : useGame.getState().waiters2)[service];
+    const w = useGame.getState().waiters[index];
     return w ? ([w.pos[0], w.pos[2]] as const) : null;
-  }, [kind, service]);
+  }, [index]);
   useActorTransform(outerRef, ref, read);
   return (
     <group ref={outerRef}>
       <group ref={ref}>
         <Model
           fallback={
-            <group>
-              <mesh castShadow position={[0, 0.55, 0]}>
-                <capsuleGeometry args={[0.32, 0.6, 6, 12]} />
-                <meshStandardMaterial color={food ? PALETTE.foodApron : '#2e8b57'} />
-              </mesh>
-              {food && (
-                <mesh castShadow position={[0, 1.24, 0]}>
-                  <cylinderGeometry args={[0.16, 0.18, 0.14, 10]} />
-                  <meshStandardMaterial color={PALETTE.foodCap} />
-                </mesh>
-              )}
-            </group>
+            <mesh castShadow position={[0, 0.55, 0]}>
+              <capsuleGeometry args={[0.32, 0.6, 6, 12]} />
+              <meshStandardMaterial color="#2e8b57" />
+            </mesh>
           }
         />
-        <WaiterTray count={tray} food={food} />
+        <WaiterTray tea={tea} food={food} />
       </group>
     </group>
   );
 }
 
-// Garsonlar (SERVİS başına en çok 2 — Y4; greybox: yeşil önlüklü kapsül, tostçu hardal+kep).
+// GARSON HAVUZU (B2: kat çapında, en çok MAX_WAITERS kişi). Greybox: yeşil önlüklü kapsül.
 // Faz 6'da waiter.glb takılır.
 export function Waiter() {
-  // P0 perf: garson KONUMU artık React'e girmiyor (her kare değişir). Bu seçici yalnız AYRIK
-  // durumu okur — hangi SERVİSTE garson var + tepsisinde kaç birim (-1 = garson yok). Çıktı string
-  // olduğundan Zustand referansı değil DEĞERİ karşılaştırır; tepsi değişmedikçe render yok.
-  const key = useGame(
-    (s) =>
-      s.waiters.map((w) => (w ? w.tray : -1)).join(',') + '|' + s.waiters2.map((w) => (w ? w.tray : -1)).join(','),
-  );
-  const [a, b] = key.split('|');
-  const traysA = a ? a.split(',').map(Number) : [];
-  const traysB = b ? b.split(',').map(Number) : [];
+  // P0 perf: garson KONUMU React'e girmez (her kare değişir). Bu seçici yalnız AYRIK durumu okur:
+  // kaç garson var + her birinin tepsisinde kaç çay/tost. Çıktı string → Zustand referansı değil
+  // DEĞERİ karşılaştırır; tepsi değişmedikçe render yok.
+  const key = useGame((s) => s.waiters.map((w) => `${w.tray}.${w.trayFood}`).join(','));
+  const trays = key ? key.split(',') : [];
   return (
     <>
-      {traysA.map((tray, sv) =>
-        tray >= 0 ? (
-          <WaiterUnit key={sv} kind="a" service={sv} tray={tray} food={serviceProduct(sv) === 'tost'} />
-        ) : null,
-      )}
-      {traysB.map((tray, sv) =>
-        tray >= 0 ? (
-          <WaiterUnit key={`w2-${sv}`} kind="b" service={sv} tray={tray} food={serviceProduct(sv) === 'tost'} />
-        ) : null,
-      )}
+      {trays.map((t, i) => {
+        const [tea, food] = t.split('.').map(Number);
+        return <WaiterUnit key={i} index={i} tea={tea} food={food} />;
+      })}
     </>
   );
 }

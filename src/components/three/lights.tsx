@@ -24,9 +24,3 @@ export function SceneLights() {
     </>
   );
 }
-
-/**
- * Önizleme `<Canvas gl={...}>` ayarı: dünya ile AYNI pozlama. Ton eşlemesi zaten ACESFilmic
- * (r3f varsayılanı, `flat` verilmiyor) — yalnız exposure eşitlenir.
- */
-export const PREVIEW_GL = { antialias: true, toneMappingExposure: LIGHTING.exposure } as const;

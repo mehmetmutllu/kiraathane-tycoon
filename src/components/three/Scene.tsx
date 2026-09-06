@@ -3,7 +3,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Vector3, type Group, type MeshStandardMaterial } from 'three';
 import { useGame, questFocusPos, LAYOUT, stationSoftMaxLevel, stationUpgradeCostAt, stationUpgradeUnlocked, tableSoftMaxLevel, tableUpgradeUnlockedIn, tableNextCost, areaPoint, areaCol, areaRow, areaAt, openServices } from '../../game/store';
 import { economyConfig } from '../../config/economy.config';
-import { areaOfTable, serviceProduct, SERVICE_AREAS } from '../../game/world';
+import { areaOfTable, isCounter, THE_SERVICE, SERVICE_AREAS } from '../../game/world';
 import { SceneLights } from './lights';
 import { GroundMarker } from './GroundMarker';
 import { FloorPattern } from './floorPattern';
@@ -14,7 +14,7 @@ import { Waiter } from './Waiter';
 import { Dishwasher } from './Dishwasher';
 import { Dishes } from './Dishes';
 import { Tables } from './Tables';
-import { TeaStation, TostStation } from './TeaStation';
+import { ServicePoint } from './ServicePoint';
 import { Customers } from './Customers';
 import { Coins } from './Coins';
 import { Pad } from './Pad';
@@ -185,24 +185,17 @@ function CameraRig() {
   return null;
 }
 
-// Açık SERVİSLERİN çay ocağı MODÜLLERİ (alan-başı mutfak, D-025): a0 sol duvar, a1 sağ duvar (aynalı).
-// Modül kendi duvarına paralel; ön yüz salona bakar (rotasyon LAYOUT.stationRots'tan).
+// SERVİS NOKTASI (B2: kat çapında TEK obje). Kendi duvarına paralel; ön yüz salona bakar
+// (rotasyon LAYOUT.stationRots'tan). B3'te maket ölçeğinde arka banda taşınacak.
 function Stations() {
-  const areasOpen = useGame((s) => s.areasOpen);
-  const stationLevels = useGame((s) => s.stationLevels);
-  const readyCupsByService = useGame((s) => s.readyCupsByService);
+  const level = useGame((s) => s.stationLevels[THE_SERVICE]);
+  const readyTea = useGame((s) => s.ready.tea);
+  const readyTost = useGame((s) => s.ready.tost);
+  const p = LAYOUT.stations[THE_SERVICE];
   return (
-    <>
-      {LAYOUT.stations.slice(0, areasOpen).map((p, z) => (
-        <group key={z} position={[p[0], 0, p[2]]} rotation={[0, LAYOUT.stationRots[z], 0]}>
-          {serviceProduct(z) === 'tost' ? (
-            <TostStation position={[0, 0, 0]} level={stationLevels[z]} readyCount={readyCupsByService[z]} />
-          ) : (
-            <TeaStation position={[0, 0, 0]} level={stationLevels[z]} readyCups={readyCupsByService[z]} />
-          )}
-        </group>
-      ))}
-    </>
+    <group position={[p[0], 0, p[2]]} rotation={[0, LAYOUT.stationRots[THE_SERVICE], 0]}>
+      <ServicePoint position={[0, 0, 0]} level={level} readyTea={readyTea} readyTost={readyTost} />
+    </group>
   );
 }
 
@@ -229,10 +222,9 @@ function KitchenHand({ service }: { service: number }) {
         : areaPoint(area, [-5.0, 0, -3]),
     [area, backWall, stPos, span],
   );
-  // M3: tost ustası çaycıdan kıyafetle ayrışır (hardal önlük + beyaz kep).
-  const isFood = serviceProduct(service) === 'tost';
-  const apron = isFood ? PALETTE.foodApron : PALETTE.apron;
-  const cap = isFood ? PALETTE.foodCap : PALETTE.cap;
+  // B2: "tost ustası" ayrı bir kişi değil — kat tek servisten döndüğü için tek çaycı var.
+  const apron = PALETTE.apron;
+  const cap = PALETTE.cap;
   useFrame((st) => {
     const grp = ref.current;
     if (!grp) return;
@@ -333,37 +325,30 @@ function ReservedRooms() {
 
 // Mekânsal ocak-yükseltme noktaları (SERVİS BAŞINA; ocağın önünde). Üstünde dur → dolum yayı ilerler.
 function StationUpgradeSpots() {
-  const areasOpen = useGame((s) => s.areasOpen);
   const stationLevels = useGame((s) => s.stationLevels);
   const upgradeFills = useGame((s) => s.upgradeFills);
   const wallet = useGame((s) => s.wallet);
   const padsDone = useGame((s) => s.padsDone);
   const tables = useGame((s) => s.tables);
   const lifetime = useGame((s) => s.lifetime);
-  const gate = { padsDone, tables, stationLevel: stationLevels[0], lifetime: lifetime.toNumber() };
+  const gate = { padsDone, tables, stationLevel: stationLevels[THE_SERVICE], lifetime: lifetime.toNumber() };
+  const level = stationLevels[THE_SERVICE];
+  if (level >= stationSoftMaxLevel()) return null;
+  if (!stationUpgradeUnlocked(gate)) return null;
+  const cost = stationUpgradeCostAt(THE_SERVICE, level);
+  // KALAN tutar (2026-06-11 feedback: kısmi dolum düşülmüş hali yazsın).
+  const remaining = Math.max(0, Math.ceil(cost - upgradeFills[THE_SERVICE]));
   return (
-    <>
-      {openServices(areasOpen).map((z: number) => {
-        if (stationLevels[z] >= stationSoftMaxLevel()) return null;
-        if (!stationUpgradeUnlocked(z, gate)) return null;
-        // M3: maliyet + etiket SERVİSİN ÜRÜNÜNDEN (tost tezgâhı kendi çarpanıyla; "Çay Yükselt" yanlış olur).
-        const cost = stationUpgradeCostAt(z, stationLevels[z]);
-        // KALAN tutar (2026-06-11 feedback: kısmi dolum düşülmüş hali yazsın).
-        const remaining = Math.max(0, Math.ceil(cost - upgradeFills[z]));
-        return (
-          <GroundMarker
-            key={z}
-            pos={LAYOUT.stationUpgradeSpots[z]}
-            label={serviceProduct(z) === 'tost' ? 'Tost Yükselt' : 'Çay Yükselt'}
-            sub={String(remaining)}
-            coin
-            tint="#ffce54"
-            progress={upgradeFills[z] / cost}
-            afford={wallet.toNumber() >= remaining}
-          />
-        );
-      })}
-    </>
+    <GroundMarker
+      pos={LAYOUT.stationUpgradeSpots[THE_SERVICE]}
+      // Etiket seviyenin kimliğini söyler: L4'e kadar ocak, sonrası tezgâh (tek merdiven iki kimlik).
+      label={isCounter(level) ? 'Tezgâhı Yükselt' : 'Çay Yükselt'}
+      sub={String(remaining)}
+      coin
+      tint="#ffce54"
+      progress={upgradeFills[THE_SERVICE] / cost}
+      afford={wallet.toNumber() >= remaining}
+    />
   );
 }
 
@@ -550,121 +535,65 @@ function TvCorner() {
   );
 }
 
-// YEMEK ALANI KİMLİK PAKETİ (Y1, docs/yemek-alani-garson-plan.md §4): tezgâh arkasındaki duvarda
-// MENÜ PANOSU (kara tahta + tebeşir satırları + tost silüeti) + salon zeminine ÇATAL-BIÇAK/TOST
-// AMBLEMİ (primitive mesh — kendi şeklimiz, hazır asset yok). Salt görsel; tost salonu açılınca belirir.
-function FoodCorner() {
-  const areasOpen = useGame((s) => s.areasOpen);
-  const foodService = 2; // serviceProduct(2)==='tost' — tek yemek servisi
-  if (openServices(areasOpen).indexOf(foodService) < 0) return null;
-  const st = LAYOUT.stations[foodService]; // arka-duvar counter'ı (Y1) — pano onun üstüne asılır
-  const za = LAYOUT.areaBounds[SERVICE_AREAS[foodService]];
-  // Amblem salonun oturma alanı ortasında (masa sütunları x 7.4/11.8, sıralar z -8.4/-11.3).
-  const ex = (za.minX + za.maxX) / 2 - 1.0;
-  const ez = -9.85;
-  const mark = PALETTE.wainscot; // koyu kahve işaretler — açık fayansta okunur
+/**
+ * MENÜ PANOSU — servis noktasının arkasındaki duvarda. Plan §4'te tezgâhın **L6** basamağının
+ * görsel karşılığı ("hazırlık adası + menü tahtası"): menü ancak menüyü hak edecek kadar
+ * büyümüş bir tezgâhın arkasında asılır.
+ * B2 öncesi bu blok "YEMEK ALANI kimlik paketi"ydi (3. bölge açılınca beliren pano + zemine
+ * çatal-bıçak amblemi). Bölge kimliği ürünle birlikte kalktığı için amblem gitti, pano
+ * seviyeye bağlandı.
+ */
+function MenuBoard() {
+  const level = useGame((s) => s.stationLevels[THE_SERVICE]);
+  if (level < stationSoftMaxLevel()) return null;
+  const st = LAYOUT.stations[THE_SERVICE];
+  const za = LAYOUT.areaBounds[SERVICE_AREAS[THE_SERVICE]];
   return (
-    <group>
-      {/* MENÜ PANOSU: duvar konsolu + çerçeve + kara tahta + tebeşir satırları (TvCorner dili) */}
-      <group position={[st[0], 0, za.minZ - 0.25]}>
-        <mesh castShadow position={[0, 1.35, 0]}>
-          <boxGeometry args={[0.1, 0.4, 0.1]} />
-          <meshStandardMaterial color={PALETTE.menuBoardFrame} />
-        </mesh>
-        <mesh castShadow position={[0, 1.78, 0.05]}>
-          <boxGeometry args={[2.5, 1.0, 0.08]} />
-          <meshStandardMaterial color={PALETTE.menuBoardFrame} />
-        </mesh>
-        <mesh position={[0, 1.78, 0.1]}>
-          <boxGeometry args={[2.3, 0.84, 0.02]} />
-          <meshStandardMaterial color={PALETTE.menuBoard} />
-        </mesh>
-        {/* başlık şeridi + altında 3 menü satırı (satır + fiyat noktası) */}
-        <mesh position={[-0.3, 2.08, 0.115]}>
-          <boxGeometry args={[1.0, 0.09, 0.01]} />
-          <meshStandardMaterial color={PALETTE.menuChalk} />
-        </mesh>
-        {[1.88, 1.7, 1.52].map((y, i) => (
-          <group key={y}>
-            <mesh position={[-0.42, y, 0.115]}>
-              <boxGeometry args={[1.2 - i * 0.15, 0.05, 0.01]} />
-              <meshStandardMaterial color={PALETTE.menuChalk} opacity={0.8} transparent />
-            </mesh>
-            <mesh position={[0.78, y, 0.115]}>
-              <boxGeometry args={[0.18, 0.05, 0.01]} />
-              <meshStandardMaterial color={PALETTE.brass} />
-            </mesh>
-          </group>
-        ))}
-        {/* panonun sağ alt köşesinde tost silüeti (ekmek + ızgara izi) */}
-        <group position={[0.82, 2.0, 0.115]}>
-          <mesh>
-            <boxGeometry args={[0.3, 0.22, 0.012]} />
-            <meshStandardMaterial color={PALETTE.toast} />
+    <group position={[za.minX + 0.3, 0, st[2]]} rotation={[0, Math.PI / 2, 0]}>
+      <mesh castShadow position={[0, 1.35, 0]}>
+        <boxGeometry args={[0.1, 0.4, 0.1]} />
+        <meshStandardMaterial color={PALETTE.menuBoardFrame} />
+      </mesh>
+      <mesh castShadow position={[0, 1.78, 0.05]}>
+        <boxGeometry args={[2.5, 1.0, 0.08]} />
+        <meshStandardMaterial color={PALETTE.menuBoardFrame} />
+      </mesh>
+      <mesh position={[0, 1.78, 0.1]}>
+        <boxGeometry args={[2.3, 0.84, 0.02]} />
+        <meshStandardMaterial color={PALETTE.menuBoard} />
+      </mesh>
+      {/* başlık şeridi + altında 3 menü satırı (satır + fiyat noktası) */}
+      <mesh position={[-0.3, 2.08, 0.115]}>
+        <boxGeometry args={[1.0, 0.09, 0.01]} />
+        <meshStandardMaterial color={PALETTE.menuChalk} />
+      </mesh>
+      {[1.88, 1.7, 1.52].map((y, i) => (
+        <group key={y}>
+          <mesh position={[-0.42, y, 0.115]}>
+            <boxGeometry args={[1.2 - i * 0.15, 0.05, 0.01]} />
+            <meshStandardMaterial color={PALETTE.menuChalk} opacity={0.8} transparent />
           </mesh>
-          <mesh position={[0, 0, 0.008]} rotation={[0, 0, 0.6]}>
-            <boxGeometry args={[0.3, 0.04, 0.006]} />
-            <meshStandardMaterial color={PALETTE.toastDark} />
+          <mesh position={[0.78, y, 0.115]}>
+            <boxGeometry args={[0.18, 0.05, 0.01]} />
+            <meshStandardMaterial color={PALETTE.brass} />
           </mesh>
         </group>
-      </group>
-      {/* ZEMİN AMBLEMİ: yuvarlak zemin plakası + çatal (sol) + tost (orta) + bıçak (sağ).
-          y katmanı: overlay 0.004 < dama 0.006 < plaka 0.009 < işaret 0.013 < GroundMarker 0.02. */}
-      <group position={[ex, 0, ez]}>
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.009, 0]}>
-          <circleGeometry args={[1.15, 28]} />
-          <meshStandardMaterial color={PALETTE.foodFloorEmblem} />
+      ))}
+      {/* panonun sağ alt köşesinde tost silüeti (ekmek + ızgara izi) */}
+      <group position={[0.82, 2.0, 0.115]}>
+        <mesh>
+          <boxGeometry args={[0.3, 0.22, 0.012]} />
+          <meshStandardMaterial color={PALETTE.toast} />
         </mesh>
-        {/* çatal: sap + boyun + 3 diş */}
-        <group position={[-0.62, 0.013, 0]}>
-          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0.32]}>
-            <planeGeometry args={[0.09, 0.78]} />
-            <meshStandardMaterial color={mark} />
-          </mesh>
-          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, -0.13]}>
-            <planeGeometry args={[0.26, 0.14]} />
-            <meshStandardMaterial color={mark} />
-          </mesh>
-          {[-0.095, 0, 0.095].map((dx) => (
-            <mesh key={dx} rotation={[-Math.PI / 2, 0, 0]} position={[dx, 0, -0.36]}>
-              <planeGeometry args={[0.055, 0.34]} />
-              <meshStandardMaterial color={mark} />
-            </mesh>
-          ))}
-        </group>
-        {/* tost: 45° kare ekmek + çapraz ızgara izi */}
-        <group position={[0, 0.013, 0]} rotation={[0, Math.PI / 4, 0]}>
-          <mesh rotation={[-Math.PI / 2, 0, 0]}>
-            <planeGeometry args={[0.62, 0.62]} />
-            <meshStandardMaterial color={mark} />
-          </mesh>
-          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.002, 0]}>
-            <planeGeometry args={[0.5, 0.5]} />
-            <meshStandardMaterial color={PALETTE.foodFloorEmblem} />
-          </mesh>
-          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.004, 0]}>
-            <planeGeometry args={[0.66, 0.07]} />
-            <meshStandardMaterial color={mark} />
-          </mesh>
-        </group>
-        {/* bıçak: sap + genişleyen ağız */}
-        <group position={[0.62, 0.013, 0]}>
-          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0.36]}>
-            <planeGeometry args={[0.09, 0.7]} />
-            <meshStandardMaterial color={mark} />
-          </mesh>
-          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-0.03, 0, -0.3]}>
-            <planeGeometry args={[0.17, 0.62]} />
-            <meshStandardMaterial color={mark} />
-          </mesh>
-        </group>
+        <mesh position={[0, 0, 0.008]} rotation={[0, 0, 0.6]}>
+          <boxGeometry args={[0.3, 0.04, 0.006]} />
+          <meshStandardMaterial color={PALETTE.toastDark} />
+        </mesh>
       </group>
     </group>
   );
 }
 
-// Dekor prop'ları (WP4, feedback §C11: "her yer boş"): detaylı çöp kovası + iç mekân saksıları +
-// duvar saati. Salt görsel (yürüme yollarının dışında, collision yok; primitive = nihai stil D-013).
 function DecorProps() {
   return (
     <group>
@@ -953,7 +882,7 @@ export function Scene() {
       <Street />
       <Walls />
       <TvCorner />
-      <FoodCorner />
+      <MenuBoard />
       <DecorProps />
       <ReservedRooms />
       <Stations />

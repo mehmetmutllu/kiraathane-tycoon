@@ -1,7 +1,7 @@
 import { Canvas } from '@react-three/fiber';
 import { useGame } from '../../game/store';
 import { economyConfig } from '../../config/economy.config';
-import { PREVIEW_GL } from '../three/lights';
+import { PREVIEW_GL } from '../../config/palette';
 import { Table } from '../three/Tables';
 import { CoinIcon } from './icons';
 import { FixedCam, SalonLights, FloorPatch, WallBack } from './SalonSlice';

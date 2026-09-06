@@ -24,38 +24,65 @@ import {
 
 export { MAX_AREAS, TABLES_PER_AREA };
 
-// ============================== SERVİS ↔ ALAN BAĞI ==============================
-// B1'de her alanın kendi servis noktası var (bugünkü içerik: 3 alan = 3 servis, 1:1).
-// B2 bu listeyi TEK servise indirir ([0] olur) — o zaman `serviceInArea` her alan için 0 döner
-// ve alan açmak artık servis açmaz. Bağı sabit bir liste olarak yazmak, "servis index'i = alan
-// index'i" varsayımının koda dağılmasını engeller.
+// ============================== SERVİS: TEK NOKTA ==============================
+// B2 (D-060): üç ocak TEK servis noktasına indi. Maket v13'te kat boyunca bir tane servis vardır;
+// 2. Alan'ın ocağı YOKTUR ve 3. Alan yeni ocak değil, var olanın TEZGÂHA dönüşmesidir.
+// B1 bu ayrımın zeminini kurmuştu: "servis hangi alanda duruyor" (serviceInArea) ile "masaya kim
+// servis veriyor" (serviceOfTable) B1'de iki ayrı soru oldu — bugün cevapları ayrışıyor:
+//   serviceInArea(a) → yalnız 1. alanda bir servis DURUYOR (yerleşim sorusu)
+//   serviceOfTable(t) → katın TEK servisi hepsine bakar (üretim sorusu)
 
-/** Servis noktası s hangi alanda duruyor. */
-export const SERVICE_AREAS: readonly number[] = [0, 1, 2];
-
-/**
- * Servis noktasının ÜRÜNÜ (M3 ürün hattı): tek ürün üretir. Çay fiyatı sabit kalır; tost ikinci
- * hat — pahalı + yavaş (throughput matematiği aynı, sabitler farklı).
- * B2'de bu liste kalkar: ürün servisin SEVİYESİNDEN gelir (L5 = tost).
- */
-export const SERVICE_PRODUCTS: readonly ProductId[] = ['tea', 'tea', 'tost'];
+/** Servis noktası s hangi alanda duruyor. Tek servis, 1. alanda (B3'te arka banda taşınacak). */
+export const SERVICE_AREAS: readonly number[] = [0];
 
 export const MAX_SERVICES = SERVICE_AREAS.length;
 
-/** Servis noktasının ürünü (sınır dışı index → son servisin ürünü; savunmacı). */
-export function serviceProduct(s: number): ProductId {
-  return SERVICE_PRODUCTS[Math.min(Math.max(s, 0), SERVICE_PRODUCTS.length - 1)];
+/** GLOBAL garson havuzunun tavanı (B2: alan başına değil, kat çapında). */
+export const MAX_WAITERS = economyConfig.waiter.maxWaiters;
+
+/** Katın tek servis noktası. "0" sabitini koda dağıtmamak için adı var. */
+export const THE_SERVICE = 0;
+
+/**
+ * ÜRÜN ARTIK SEVİYEDEN GELİR (B2 — eski `SERVICE_PRODUCTS` listesi kalktı).
+ * Tek merdiven, iki kimlik (plan §4): L1-L3 çay ocağı · **L4 TEZGÂH** (obje yerini ve görünümünü
+ * değiştirir, seviye sıfırlanmaz) · **L5 TOST AÇILIR** · L6 son ₺ seviyesi.
+ * Eskiden tost ÜÇÜNCÜ BÖLGENİN ürünüydü (`SERVICE_PRODUCTS = ['tea','tea','tost']`) — yani alanı
+ * açmak ürünü açıyordu. Artık alan ile ürünün hiçbir ilgisi yok.
+ */
+export const COUNTER_LEVEL = economyConfig.service.counterLevel; // L4: ocak → tezgâh
+export const TOST_LEVEL = economyConfig.service.tostLevel; // L5: tost açılır
+
+/** Servis noktası TEZGÂH mı (L4+), yoksa hâlâ derme çatma çay ocağı mı? */
+export const isCounter = (level: number): boolean => level >= COUNTER_LEVEL;
+
+/** Bu seviyede tost satılıyor mu (L5+)? */
+export const sellsTost = (level: number): boolean => level >= TOST_LEVEL;
+
+/** Servis noktasının MENÜSÜ: seviye ne kadar ürün açtıysa o. */
+export function serviceMenu(level: number): ProductId[] {
+  return sellsTost(level) ? ['tea', 'tost'] : ['tea'];
 }
 
-/** Alandaki servis noktasının index'i; alanda servis yoksa −1. */
+/**
+ * Gelen müşterinin TOST isteme olasılığı (0..1). Sipariş nesnesi `{çay:1, tost:2}` Faz C'de
+ * (D-058 karar 1) — B2 yalnız talebin doğduğu yeri kurar: müşteri otururken ürününü SEÇER,
+ * oran tezgâh seviyesinden gelir. L5 tost açar (%25), L6 tost arzını genişletir (%35).
+ */
+export function tostShare(level: number): number {
+  const t = economyConfig.service.tostShareByLevel;
+  return t[Math.min(Math.max(level, 0), t.length - 1)] ?? 0;
+}
+
+/** Alanın VARSAYILAN zemin teması. B2: tost artık alana ait değil → her alan parke doğar
+ *  (yemek fayansı mağazada duruyor; servis bloğunun zemini B3 yerleşiminin işi). */
+export function defaultFloorTheme(_area: number): string {
+  return 'parke';
+}
+
+/** Alanda DURAN servis noktasının index'i; o alanda servis yoksa −1 (YERLEŞİM sorusu). */
 export function serviceInArea(area: number): number {
   return SERVICE_AREAS.indexOf(area);
-}
-
-/** Alanın VARSAYILAN zemin teması (Y1 yemek alanı kimliği): tost alanı 'yemek' fayansıyla doğar. */
-export function defaultFloorTheme(area: number): string {
-  const s = serviceInArea(area);
-  return s >= 0 && serviceProduct(s) === 'tost' ? 'yemek' : 'parke';
 }
 
 /**
@@ -68,9 +95,9 @@ export function areaOfTable(tableIndex: number): number {
   return Math.min(MAX_AREAS - 1, Math.floor(tableIndex / TABLES_PER_AREA));
 }
 
-/** Masa slotuna servis veren noktanın index'i. */
-export function serviceOfTable(tableIndex: number): number {
-  return Math.max(0, serviceInArea(areaOfTable(tableIndex)));
+/** Masaya kim servis veriyor: katın TEK servisi (ÜRETİM sorusu — alanla ilgisi yok). */
+export function serviceOfTable(_tableIndex: number): number {
+  return THE_SERVICE;
 }
 
 // ============================== DÖRT KAVRAM ==============================
@@ -81,14 +108,15 @@ export interface Area {
   open: boolean;
 }
 
-/** SERVİS — servis noktası: ocak/tezgâh + bulaşık köşesi + o noktanın personeli. */
+/** SERVİS — katın tek servis noktası: ocak/tezgâh + bulaşık köşesi + GLOBAL personel havuzu. */
 export interface Service {
   index: number;
-  /** Hangi alanda duruyor (B1: alanla 1:1; B2'de tek servis tüm alanlara bakar). */
+  /** Hangi alanda DURUYOR (yerleşim). Kime servis verdiğiyle ilgisi yok: tüm kata bakar. */
   areaIndex: number;
   open: boolean;
-  product: ProductId;
-  /** Tutulmuş garson sayısı (0..2). */
+  /** Bu seviyede satılan ürünler (B2: seviyeden türer — L5'te tost eklenir). */
+  menu: ProductId[];
+  /** Tutulmuş garson sayısı — GLOBAL havuz (0..MAX_WAITERS). */
   waiters: number;
   hasDishwasher: boolean;
 }
@@ -142,34 +170,37 @@ export function deriveWorld(padsDone: readonly string[]): World {
   }
 
   const areas: Area[] = Array.from({ length: MAX_AREAS }, (_, i) => ({ index: i, open: i < areasOpen }));
+  // Servis noktası kattaki TEK üretim yeri; menüsü seviyeden gelir (seviye türetmenin girdisi
+  // değil — `stationLevels` ayrı bir durum; menü okunurken `serviceMenu(level)` çağrılır).
   const services: Service[] = SERVICE_AREAS.map((areaIndex, index) => ({
     index,
     areaIndex,
-    open: areaIndex < areasOpen,
-    product: serviceProduct(index),
+    open: true, // 1. alan hep açık → servis de hep açık (kat servissiz başlamaz)
+    menu: ['tea'],
     waiters: 0,
     hasDishwasher: false,
   }));
   // Açık alan en az 1 masayla doğar (alan açılışı otomatik masa getirir).
   const tablesByArea: number[] = areas.map((a) => (a.open ? 1 : 0));
 
-  // 2. geçiş: pad etkileri. Pad MEKÂNSAL olarak bir alanda durur; personel etkisi o alanın
-  // servis noktasına gider (B2'de tek servise akacak yol budur).
+  // 2. geçiş: pad etkileri. Pad MEKÂNSAL olarak bir alanda durur ama PERSONEL GLOBAL havuza gider
+  // (B2): garsonu nerede tuttuğunun, kime servis vereceğiyle ilgisi yok. B1'de bu satır
+  // `services[serviceInArea(area)]` idi — pad'in alanı personelin sahibini belirliyordu.
+  const svc = services[THE_SERVICE];
   for (const id of padsDone) {
     const pad = byId.get(id);
     if (!pad) continue;
     const area = pad.area ?? 0;
     if (area >= areasOpen) continue;
-    const svc = services[serviceInArea(area)];
     switch (pad.effect.type) {
       case 'addTable':
         tablesByArea[area] = Math.min(TABLES_PER_AREA, tablesByArea[area] + 1);
         break;
       case 'hireWaiter':
-        if (svc) svc.waiters = Math.min(2, svc.waiters + 1); // Y4: servis başına en çok 2 garson
+        svc.waiters = Math.min(MAX_WAITERS, svc.waiters + 1);
         break;
       case 'hireDishwasher':
-        if (svc) svc.hasDishwasher = true;
+        svc.hasDishwasher = true;
         break;
     }
   }
@@ -183,7 +214,7 @@ export function deriveWorld(padsDone: readonly string[]): World {
   for (let a = 0; a < MAX_AREAS; a++) {
     for (let k = 0; k < tablesByArea[a]; k++) {
       const index = a * TABLES_PER_AREA + k;
-      tables.push({ index, areaIndex: a, serviceIndex: Math.max(0, serviceInArea(a)) });
+      tables.push({ index, areaIndex: a, serviceIndex: THE_SERVICE });
     }
   }
 

@@ -14,8 +14,8 @@ import {
   waiterTrayNextCost,
   dishCarryNextCost,
   dishCarryMaxTier,
-  type WaiterKind,
   type WaiterUpgrades,
+  type ProductId,
   trayCapacityFor,
   type CharStat,
   type CharUpgrades,
@@ -38,20 +38,24 @@ import {
   LAYOUT,
   openServices,
 } from './layout';
-import { deriveWorld, defaultFloorTheme, MAX_AREAS, MAX_SERVICES, type World } from './world';
+import { deriveWorld, defaultFloorTheme, MAX_AREAS, MAX_SERVICES, THE_SERVICE, type World } from './world';
 // Dünya modeli (ALAN · SERVİS · MASA · ODA) Faz B1'de world.ts'e ayrıldı; store aynı kapıdan sunar.
 export {
   deriveWorld,
   defaultFloorTheme,
-  serviceProduct,
   serviceInArea,
   serviceOfTable,
+  serviceMenu,
+  sellsTost,
+  isCounter,
+  tostShare,
   areaOfTable,
   tablesInArea,
   SERVICE_AREAS,
-  SERVICE_PRODUCTS,
+  THE_SERVICE,
   MAX_AREAS,
   MAX_SERVICES,
+  MAX_WAITERS,
   TABLES_PER_AREA,
 } from './world';
 export type { World, Area, Service, Table, Room } from './world';
@@ -110,7 +114,6 @@ export {
   questTargetMet,
   questCounterValue,
   questFocusPos,
-  waiterPadId,
 } from './rules';
 export type { ActiveSpot, GameNotice, QuestView, QuestCtx, CamFocus } from './rules';
 
@@ -150,16 +153,15 @@ export interface GameState {
   /** Oto-toplama toast'ının yeniden çıkabilmesine kalan sn (transient; spam önleme). */
   autoCollectToastCooldown: number;
   npcCount: number;
-  /** SERVİS başına garson (o serviste tutulduysa) — konum/tepsi transient, her oturumda kurulur. */
-  waiters: (Waiter | null)[];
-  /** SERVİS başına 2. GARSON (Y4 waiter2 pad'leri; claim sistemiyle 1.'den farklı masaya gider). */
-  waiters2: (Waiter | null)[];
-  /** SERVİS başına bulaşıkçı — konum/taşıdığı kirli transient. */
-  dishwashers: (Waiter | null)[];
-  /** SERVİS başına ocak hazır-kuyruğundaki demlenmiş çay sayısı. */
-  readyCupsByService: number[];
-  /** SERVİS başına demlenmekte olan bardağın ilerleme süresi (sn). */
-  brewProgressByService: number[];
+  /** GLOBAL garson havuzu (B2): düz liste, uzunluk = tutulmuş garson sayısı (0..MAX_WAITERS).
+   *  Konum/tepsi transient, her oturumda kurulur. Eskiden servis başına `waiters`+`waiters2` idi. */
+  waiters: Waiter[];
+  /** Katın TEK bulaşıkçısı (yoksa null) — konum/taşıdığı kirli transient. */
+  dishwasher: Waiter | null;
+  /** Servisin HAZIR ürünleri — ÜRÜN başına (B2: tek nokta, seviyeye göre iki ürün). */
+  ready: Record<ProductId, number>;
+  /** Ürün başına birikmiş hazırlama süresi (sn); tezgâh aynı anda tek kalem hazırlar. */
+  brewProgress: Record<ProductId, number>;
   /** Oyuncunun tepsisinde taşıdığı çay sayısı. */
   tray: number;
   /** Oyuncunun tepsisinde taşıdığı TOST sayısı (M3 ikinci ürün hattı; kapasite tray+trayFood+
@@ -253,12 +255,12 @@ export interface GameState {
    * false). Başarıda anında kaydedilir; charStat görevi varsa sonraki tick'te tamamlanır.
    */
   buyCharUpgrade: (stat: CharStat) => boolean;
-  /** Garson tepsi kademesi satın al (Y3, garson sekmesi): tür-başı eğri (çay ortak, tostçu ayrı). */
-  buyWaiterTray: (kind: WaiterKind) => boolean;
+  /** Garson tepsi kademesi satın al (Y3, garson sekmesi): B2'de tek havuz → tek eğri. */
+  buyWaiterTray: () => boolean;
   /** Bulaşıkçı leğen kademesi satın al (v28, Bulaşıkçı sekmesi): tüm salonların bulaşıkçılarına ortak. */
   buyDishCarry: () => boolean;
-  /** Garson hız kademesi satın al (v29, garson sekmesi): tür-ortak (çay z0+z1 birlikte, tostçu ayrı). */
-  buyWaiterSpeed: (kind: WaiterKind) => boolean;
+  /** Garson hız kademesi satın al (v29, garson sekmesi): havuza ortak. */
+  buyWaiterSpeed: () => boolean;
   /** Bulaşıkçı hız kademesi satın al (v29, Bulaşıkçı sekmesi): tüm salonlara ortak. */
   buyDishSpeed: () => boolean;
   /** Karakter paneli ilk-sefer spotlight'ını kapat (butona dokununca; persist — bir daha çıkmaz). */
@@ -282,7 +284,7 @@ export const useGame = create<GameState>((set, get) => ({
   tables: 1,
   stations: 1,
   areasOpen: 1,
-  stationLevels: Array.from({ length: MAX_AREAS }, () => 0),
+  stationLevels: Array.from({ length: MAX_SERVICES }, () => 0),
   tableLevels: LAYOUT.tables.map(() => 0),
   padsDone: [],
   padFills: {},
@@ -292,11 +294,10 @@ export const useGame = create<GameState>((set, get) => ({
   autoCollectSum: 0,
   autoCollectToastCooldown: 0,
   npcCount: 0,
-  waiters: Array.from({ length: MAX_AREAS }, () => null),
-  waiters2: Array.from({ length: MAX_AREAS }, () => null),
-  dishwashers: Array.from({ length: MAX_AREAS }, () => null),
-  readyCupsByService: Array.from({ length: MAX_AREAS }, () => 0),
-  brewProgressByService: Array.from({ length: MAX_AREAS }, () => 0),
+  waiters: [],
+  dishwasher: null,
+  ready: { tea: 0, tost: 0 },
+  brewProgress: { tea: 0, tost: 0 },
   tray: 0,
   trayFood: 0,
   cleanCups: cupPoolCapacity(0),
@@ -352,11 +353,9 @@ export const useGame = create<GameState>((set, get) => ({
     };
     // Garson tepsi kademeleri (v27/Y3) + bulaşıkçı leğeni (v28) + hız kademeleri (v29): aynı kelepçe deseni.
     const waiterUpgrades: WaiterUpgrades = {
-      teaTray: Math.max(0, Math.min(save.waiterUpgrades?.teaTray ?? 0, waiterTrayMaxTier('tea'))),
-      tostTray: Math.max(0, Math.min(save.waiterUpgrades?.tostTray ?? 0, waiterTrayMaxTier('tost'))),
+      tray: Math.max(0, Math.min(save.waiterUpgrades?.tray ?? 0, waiterTrayMaxTier())),
+      speed: Math.max(0, Math.min(save.waiterUpgrades?.speed ?? 0, waiterSpeedMaxTier())),
       dishCarry: Math.max(0, Math.min(save.waiterUpgrades?.dishCarry ?? 0, dishCarryMaxTier())),
-      teaSpeed: Math.max(0, Math.min(save.waiterUpgrades?.teaSpeed ?? 0, waiterSpeedMaxTier('tea'))),
-      tostSpeed: Math.max(0, Math.min(save.waiterUpgrades?.tostSpeed ?? 0, waiterSpeedMaxTier('tost'))),
       dishSpeed: Math.max(0, Math.min(save.waiterUpgrades?.dishSpeed ?? 0, dishSpeedMaxTier())),
     };
     // Çevrimdışı gelir: açık SERVİSLERİN idealize oranları TOPLAMI; süre + PARA tavanlı (computeOfflineEarned).
@@ -365,14 +364,10 @@ export const useGame = create<GameState>((set, get) => ({
     let lifetime = D(save.lifetime);
     let offlineEarned = 0;
     if (elapsed > 30) {
-      let rate = 0;
-      for (const sv of openSvc) {
-        // O servise bağlı AÇIK masaların toplam bahşişi (tipBase × seviye).
-        const served = world.tables.filter((t) => t.serviceIndex === sv);
-        let tipTotal = 0;
-        for (const t of served) tipTotal += C.tables.tipBase * (save.tableLevels[t.index] ?? 0);
-        rate += incomeRate(served.length, stationLevels[sv], sv, tipTotal);
-      }
+      // B2: tek servis tüm masaları besler → tek oran (eski "açık servislerin toplamı" döngüsü kalktı).
+      let tipTotal = 0;
+      for (const t of world.tables) tipTotal += C.tables.tipBase * (save.tableLevels[t.index] ?? 0);
+      const rate = incomeRate(world.tables.length, stationLevels[THE_SERVICE], tipTotal);
       offlineEarned = computeOfflineEarned(rate, elapsed, save.padsDone);
       wallet = wallet.add(offlineEarned);
       lifetime = lifetime.add(offlineEarned);
@@ -396,24 +391,22 @@ export const useGame = create<GameState>((set, get) => ({
       autoCollectSum: 0,
       autoCollectToastCooldown: 0,
       npcCount: 0,
-      waiters: world.services.map((sv) =>
-        sv.open && sv.waiters >= 1 ? { pos: [...LAYOUT.waiterHomes[sv.index]] as Vec3, tray: 0 } : null,
-      ),
-      waiters2: world.services.map((sv) =>
-        sv.open && sv.waiters >= 2
-          ? { pos: [LAYOUT.waiterHomes[sv.index][0] + 0.7, 0, LAYOUT.waiterHomes[sv.index][2]] as Vec3, tray: 0 }
-          : null,
-      ),
-      dishwashers: world.services.map((sv) =>
-        sv.open && sv.hasDishwasher ? { pos: [...LAYOUT.dishwasherHomes[sv.index]] as Vec3, tray: 0 } : null,
-      ),
-      readyCupsByService: Array.from({ length: MAX_SERVICES }, () => 0),
-      brewProgressByService: Array.from({ length: MAX_SERVICES }, () => 0),
+      // GLOBAL havuz: tutulmuş garson sayısı kadar aktör, bekleme noktaları 0.7 br arayla.
+      waiters: Array.from({ length: world.services[THE_SERVICE].waiters }, (_, i) => ({
+        pos: [LAYOUT.waiterHomes[THE_SERVICE][0] + i * 0.7, 0, LAYOUT.waiterHomes[THE_SERVICE][2]] as Vec3,
+        tray: 0,
+        trayFood: 0,
+      })),
+      dishwasher: world.services[THE_SERVICE].hasDishwasher
+        ? { pos: [...LAYOUT.dishwasherHomes[THE_SERVICE]] as Vec3, tray: 0, trayFood: 0 }
+        : null,
+      ready: { tea: 0, tost: 0 },
+      brewProgress: { tea: 0, tost: 0 },
       tray: 0,
       trayFood: 0,
       // Bardak havuzu her oturumda dolu-temiz başlar (transient). GLOBAL tek depo:
       // açık servis başına taban + o servislerin ocak seviyelerinin toplamı.
-      cleanCups: totalCupPool(openSvc.length, stationLevels),
+      cleanCups: totalCupPool(world.areasOpen, stationLevels),
       dishes: [],
       carriedDirty: 0,
       carriedDirtyFood: 0,
@@ -532,10 +525,9 @@ export const useGame = create<GameState>((set, get) => ({
         camFocus: c.camFocus,
         player: c.player,
         waiters: c.waiters,
-        waiters2: c.waiters2,
-        dishwashers: c.dishwashers,
-        readyCupsByService: c.readyCupsByService,
-        brewProgressByService: c.brewProgressByService,
+        dishwasher: c.dishwasher,
+        ready: c.ready,
+        brewProgress: c.brewProgress,
         tray: c.tray,
         trayFood: c.trayFood,
         cleanCups: c.cleanCups,
@@ -650,15 +642,14 @@ export const useGame = create<GameState>((set, get) => ({
   },
 
   // Garson tepsi kademesi satın al (Y3 — karakter panelinin garson sekmelerinden; buyCharUpgrade deseni).
-  buyWaiterTray: (kind) => {
+  buyWaiterTray: () => {
     const s = get();
-    const key = kind === 'tea' ? 'teaTray' : 'tostTray';
-    const tier = s.waiterUpgrades[key];
-    const cost = waiterTrayNextCost(kind, tier);
+    const tier = s.waiterUpgrades.tray;
+    const cost = waiterTrayNextCost(tier);
     if (cost == null || s.wallet.lt(cost)) return false;
     set({
       wallet: s.wallet.sub(cost),
-      waiterUpgrades: { ...s.waiterUpgrades, [key]: tier + 1 },
+      waiterUpgrades: { ...s.waiterUpgrades, tray: tier + 1 },
       xp: s.xp + C.xp.perUpgrade,
     });
     get().saveNow();
@@ -681,15 +672,14 @@ export const useGame = create<GameState>((set, get) => ({
   },
 
   // Garson hız kademesi satın al (v29 — eski mekânsal waiterUp pad'inin panel karşılığı).
-  buyWaiterSpeed: (kind) => {
+  buyWaiterSpeed: () => {
     const s = get();
-    const key = kind === 'tea' ? 'teaSpeed' : 'tostSpeed';
-    const tier = s.waiterUpgrades[key];
-    const cost = waiterSpeedNextCost(kind, tier);
+    const tier = s.waiterUpgrades.speed;
+    const cost = waiterSpeedNextCost(tier);
     if (cost == null || s.wallet.lt(cost)) return false;
     set({
       wallet: s.wallet.sub(cost),
-      waiterUpgrades: { ...s.waiterUpgrades, [key]: tier + 1 },
+      waiterUpgrades: { ...s.waiterUpgrades, speed: tier + 1 },
       xp: s.xp + C.xp.perUpgrade,
     });
     get().saveNow();

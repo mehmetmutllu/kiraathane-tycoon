@@ -6,7 +6,6 @@ import { LAYOUT } from '../../game/store';
 import { Model } from './Model';
 import { PALETTE } from '../../config/palette';
 import { tableSeats, tableThemeColor } from '../../config/economy.config';
-import { serviceOfTable, serviceProduct } from '../../game/world';
 import { recoloredAtlas, atlasReady, onAtlasReady } from './recolor';
 import type { Vec3 } from '../../game/types';
 
@@ -24,19 +23,9 @@ const KAY = '/assets/models/kaykit-furniture-bits/';
 const TEA_TABLE_S: Vec3 = [0.66, 0.5, 0.66]; // table_small (çay L0-L2)
 const TEA_TABLE_M: Vec3 = [0.45, 0.55, 0.45]; // table_medium (çay L3+)
 const STOOL_S = 0.6; // chair_stool_wood
-const FOOD_TABLE_SM: Vec3 = [0.7, 0.55, 0.7]; // table_small (yemek L0-L2 tekli)
-const FOOD_TABLE_L: Vec3 = [0.5, 0.6, 0.46]; // table_medium_long (yemek L3+)
-const FOOD_CHAIR_S = 0.5; // chair_A* / chair_C
-// Yemek tekli masada (L0-L2) sandalyeler ORTALI (masa-hizalı): ön/arka merkez.
-const SINGLE_FOOD_SPOTS: [number, number][] = [
-  [0, 0.72],
-  [0, -0.72],
-];
 // Örtü (tabla ÜSTÜ) yerleşimi — küçük (Sv3) ve büyük (Sv4+) masa. { y: üst yüzey, h/hx/hz: yarı-genişlik }.
 const TEA_CLOTH_S = { y: 0.5, h: 0.26 };
 const TEA_CLOTH_M = { y: 0.55, h: 0.4 };
-const FOOD_CLOTH_SM = { y: 0.55, h: 0.32 };
-const FOOD_CLOTH = { y: 0.6, hx: 0.62, hz: 0.4 };
 
 // Tabure (gerçek kıraathane formu): silindir gövde + kırmızı minder. Koltuk kutusu emekli.
 function Stool({ x, z }: { x: number; z: number }) {
@@ -54,101 +43,37 @@ function Stool({ x, z }: { x: number; z: number }) {
   );
 }
 
-// ARKALIKLI restoran sandalyesi (Y1 yemek alanı kimliği): ahşap iskelet + petrol minder + arkalık.
-// Arkalık DIŞ tarafta (oturan masaya bakar): güney sandalye kuzeye, kuzey sandalye güneye döner.
-function Chair({ x, z }: { x: number; z: number }) {
-  const rotY = z > 0 ? 0 : Math.PI;
-  return (
-    <group position={[x, 0, z]} rotation={[0, rotY, 0]}>
-      <mesh castShadow position={[0, 0.42, 0]}>
-        <boxGeometry args={[0.36, 0.05, 0.36]} />
-        <meshStandardMaterial color={PALETTE.chairWood} />
-      </mesh>
-      <mesh castShadow position={[0, 0.47, 0]}>
-        <boxGeometry args={[0.3, 0.05, 0.3]} />
-        <meshStandardMaterial color={PALETTE.chairCushion} />
-      </mesh>
-      {[-0.14, 0.14].flatMap((lx) =>
-        [-0.14, 0.14].map((lz) => (
-          <mesh key={`${lx}${lz}`} castShadow position={[lx, 0.2, lz]}>
-            <boxGeometry args={[0.05, 0.4, 0.05]} />
-            <meshStandardMaterial color={PALETTE.chairWood} />
-          </mesh>
-        )),
-      )}
-      {/* arkalık: 2 dikme + sırt paneli (yerel +z = dış taraf) */}
-      {[-0.14, 0.14].map((lx) => (
-        <mesh key={lx} castShadow position={[lx, 0.64, 0.155]}>
-          <boxGeometry args={[0.05, 0.44, 0.04]} />
-          <meshStandardMaterial color={PALETTE.chairWood} />
-        </mesh>
-      ))}
-      <mesh castShadow position={[0, 0.76, 0.155]}>
-        <boxGeometry args={[0.36, 0.2, 0.04]} />
-        <meshStandardMaterial color={PALETTE.chairWood} />
-      </mesh>
-    </group>
-  );
-}
-
-// Kıraathane masası — KARE KALARAK evrilir (kullanıcı 2026-06-11: "masa en başta kare ya, O KARE
-// gelişmeli; üzerine örtü gelir"). WP4'ün yuvarlak/sekizgen formları kaldırıldı:
-//   L0: çıplak tabla + 4 ince ayak + 1 oturak
-//   L1: + çuha YEŞİLİ örtü + 2. oturak
-//   L2: + BORDO örtü + sarkan ETEK + 3. oturak
-//   L3: + LACİVERT örtü + pirinç kenar bandı + 4. oturak
-//   L4: ALTIN örtü + etek + bant (en gösterişli)
-// Y1: YEMEK masası DİKDÖRTGEN (1.35×0.85, uzun kenar x) + arkalıklı sandalye (2'ye 2 karşılıklı);
-// çay masası kare + tabure kalır. Collision LAYOUT'tan (tableHalf / foodTableHalf).
 export function Table({
   x,
   z,
   level,
-  food = false,
   greybox = false,
 }: {
   x: number;
   z: number;
   level: number;
-  food?: boolean;
   greybox?: boolean;
 }) {
-  // M3: YEMEK masası (tost salonu) kendi örtü paletiyle + sofra prop'larıyla evrilir
-  // (kullanıcı: "yemek masaları farklı olabilir, seviye artınca olacak şeyler de artar").
   // İLERLEME (rev6 — CoC tek-şey/seviye + tutarlı iki hat): tek kaynak seatsByLevel 1/2/2/4/4.
   //   Sv1 (L0): çıplak ahşap, 1 koltuk · Sv2 (L1): +1 koltuk · Sv3 (L2): RENK/SÜS gelir (örtü+minder,
   //   ara ton) · Sv4 (L3): masa BÜYÜR (4 koltuk; renk taşınır, tek değişim) · Sv5 (L4): ALTIN (sadece
   //   renk; iki hatta da şekil değişmez → tutarlı).
   const bigTable = level >= 3; // Sv4: masa büyür (4 koltuk)
   // İLERLEME (rev10 — Seçenek A, ALTIN YOK; renk hep native mavi, altın TEMA MAĞAZASINDA pahalı tema):
-  //   ÇAY: Sv3 TABURELER minderli (masa ÇIPLAK) · Sv4 +2 tabure + masa büyür · Sv5 ÖRTÜ gelir (finalde).
-  //   YEMEK: Sv3 örtü+minder · Sv4 masa büyür · Sv5 dolu chair_C (şekil premium). Renk hep mavi.
-  // ÖRTÜ: ÇAY yalnız Sv5 (L4); YEMEK Sv3'ten (L2+). Hepsi varsayılan mavi.
-  const clothColor = food ? (level >= 2 ? PALETTE.defaultTone : '') : level >= 4 ? PALETTE.defaultTone : '';
+  //   Sv3 TABURELER minderli (masa ÇIPLAK) · Sv4 +2 tabure + masa büyür · Sv5 ÖRTÜ gelir (finalde).
+  // B2: "YEMEK masası" hattı (dikdörtgen masa + arkalıklı sandalye + sofra prop'ları) KALKTI —
+  // masanın tipini belirleyen şey bölgenin ürünüydü, ürün artık bölgeden gelmiyor. Üç gerçek masa
+  // tipi (dörtlü · ikili · banket) B5'te masanın KENDİ özelliği olarak gelecek.
+  const clothColor = level >= 4 ? PALETTE.defaultTone : '';
   const cloth = clothColor; // greybox fallback alias
-  // Sandalye ofsetleri: çay chairSpots; yemek büyük masada foodChairSpots (2×2), tekli masada ORTALI.
-  const spots = food ? (bigTable ? LAYOUT.foodChairSpots : SINGLE_FOOD_SPOTS) : LAYOUT.chairSpots;
+  const spots = LAYOUT.chairSpots;
   const chairs = Math.min(spots.length, tableSeats(level));
   const skirt = !!clothColor && level >= 4; // greybox fallback
-  const rect = food && tableSeats(level) > 2;
-  const hw = rect ? 0.675 : 0.475;
-  const hd = rect ? 0.425 : 0.475;
-  const tableSrc = greybox
-    ? undefined
-    : food
-      ? `${KAY}${bigTable ? 'table_medium_long' : 'table_small'}.gltf`
-      : `${KAY}${bigTable ? 'table_medium' : 'table_small'}.gltf`;
-  const tableScale = food
-    ? bigTable
-      ? FOOD_TABLE_L
-      : FOOD_TABLE_SM
-    : bigTable
-      ? TEA_TABLE_M
-      : TEA_TABLE_S;
-  // SANDALYE ŞEKLİ: YEMEK ahşap→chair_A→chair_C(Sv5 dolu); ÇAY hep tabure (chair_stool).
-  const foodChair = level < 2 ? 'chair_A_wood' : level < 4 ? 'chair_A' : 'chair_C';
-  const teaChair = level < 2 ? 'chair_stool_wood' : 'chair_stool';
-  const chairSrc = greybox ? undefined : `${KAY}${food ? foodChair : teaChair}.gltf`;
+  const hw = 0.475;
+  const hd = 0.475;
+  const tableSrc = greybox ? undefined : `${KAY}${bigTable ? 'table_medium' : 'table_small'}.gltf`;
+  const tableScale = bigTable ? TEA_TABLE_M : TEA_TABLE_S;
+  const chairSrc = greybox ? undefined : `${KAY}${level < 2 ? 'chair_stool_wood' : 'chair_stool'}.gltf`;
   // MİNDER rengi: hep native mavi → recolor YOK. (Altın/teal vb. tema mağazasında satın alınır.)
   const chairRecolor = undefined;
   return (
@@ -212,56 +137,17 @@ export function Table({
                 ))}
               </group>
             ) : null}
-            {/* YEMEK masası sofra prop'ları (M3): L1+ peçetelik; L2+ ketçap-mayo; L3+ servis tabağı */}
-            {food && level >= 1 ? (
-              <mesh castShadow position={[-0.22, 0.62, -0.22]}>
-                <boxGeometry args={[0.14, 0.1, 0.07]} />
-                <meshStandardMaterial color={PALETTE.mayo} />
-              </mesh>
-            ) : null}
-            {food && level >= 2 ? (
-              <group position={[0.24, 0, -0.24]}>
-                <mesh castShadow position={[-0.045, 0.65, 0]}>
-                  <cylinderGeometry args={[0.035, 0.04, 0.16, 8]} />
-                  <meshStandardMaterial color={PALETTE.ketchup} />
-                </mesh>
-                <mesh castShadow position={[0.045, 0.65, 0]}>
-                  <cylinderGeometry args={[0.035, 0.04, 0.16, 8]} />
-                  <meshStandardMaterial color={PALETTE.mayo} />
-                </mesh>
-              </group>
-            ) : null}
-            {food && level >= 3 ? (
-              <mesh castShadow position={[0, 0.585, 0.1]}>
-                <cylinderGeometry args={[0.13, 0.11, 0.025, 10]} />
-                <meshStandardMaterial color={PALETTE.plate} />
-              </mesh>
-            ) : null}
           </group>
         }
       />
       {/* TIER SİNYALİ — tabla ÜSTÜ örtüsü (Sv3'ten; küçük/büyük masaya göre; sadece üst yüzey). */}
       {clothColor ? (
-        food ? (
-          bigTable ? (
-            <mesh position={[0, FOOD_CLOTH.y, 0]} castShadow>
-              <boxGeometry args={[FOOD_CLOTH.hx * 2, 0.04, FOOD_CLOTH.hz * 2]} />
-              <meshStandardMaterial color={clothColor} />
-            </mesh>
-          ) : (
-            <mesh position={[0, FOOD_CLOTH_SM.y, 0]} castShadow>
-              <boxGeometry args={[FOOD_CLOTH_SM.h * 2, 0.04, FOOD_CLOTH_SM.h * 2]} />
-              <meshStandardMaterial color={clothColor} />
-            </mesh>
-          )
-        ) : (
-          <mesh position={[0, (bigTable ? TEA_CLOTH_M : TEA_CLOTH_S).y, 0]} castShadow>
-            <boxGeometry
-              args={[(bigTable ? TEA_CLOTH_M : TEA_CLOTH_S).h * 2, 0.04, (bigTable ? TEA_CLOTH_M : TEA_CLOTH_S).h * 2]}
-            />
-            <meshStandardMaterial color={clothColor} />
-          </mesh>
-        )
+        <mesh position={[0, (bigTable ? TEA_CLOTH_M : TEA_CLOTH_S).y, 0]} castShadow>
+          <boxGeometry
+            args={[(bigTable ? TEA_CLOTH_M : TEA_CLOTH_S).h * 2, 0.04, (bigTable ? TEA_CLOTH_M : TEA_CLOTH_S).h * 2]}
+          />
+          <meshStandardMaterial color={clothColor} />
+        </mesh>
       ) : null}
       {/* oturaklar — gerçek asset; minderi recolor ile ara ton/altına BOYALI (Sv3+). Ahşap seviyede
           boya yok. Yemek sandalyesi arkalık dışa (masaya bakar). */}
@@ -269,11 +155,10 @@ export function Table({
         <Model
           key={i}
           src={chairSrc}
-          scale={food ? FOOD_CHAIR_S : STOOL_S}
+          scale={STOOL_S}
           position={[sx, 0, sz]}
-          rotation={food ? [0, sz > 0 ? Math.PI : 0, 0] : undefined}
           recolor={chairRecolor}
-          fallback={food ? <Chair x={sx} z={sz} /> : <Stool x={sx} z={sz} />}
+          fallback={<Stool x={sx} z={sz} />}
         />
       ))}
     </group>
@@ -320,49 +205,22 @@ function buildFurniture(tables: number, tableLevels: number[], clothTone: string
     if (!t) continue;
     const [x, , z] = t.table;
     const level = tableLevels[i] ?? 0;
-    const food = serviceProduct(serviceOfTable(i)) === 'tost';
     const bigTable = level >= 3;
-    const tableKey: FKey = food
-      ? bigTable
-        ? 'table_medium_long'
-        : 'table_small'
-      : bigTable
-        ? 'table_medium'
-        : 'table_small';
-    const tableScale = food ? (bigTable ? FOOD_TABLE_L : FOOD_TABLE_SM) : bigTable ? TEA_TABLE_M : TEA_TABLE_S;
+    const tableKey: FKey = bigTable ? 'table_medium' : 'table_small';
+    const tableScale = bigTable ? TEA_TABLE_M : TEA_TABLE_S;
     place[tableKey].push({ pos: [x, 0, z], scale: tableScale });
 
-    const chairKey: FKey = food
-      ? level < 2
-        ? 'chair_A_wood'
-        : level < 4
-          ? 'chair_A'
-          : 'chair_C'
-      : level < 2
-        ? 'chair_stool_wood'
-        : 'chair_stool';
-    const chairScale = food ? FOOD_CHAIR_S : STOOL_S;
-    const spots = food ? (bigTable ? LAYOUT.foodChairSpots : SINGLE_FOOD_SPOTS) : LAYOUT.chairSpots;
+    const chairKey: FKey = level < 2 ? 'chair_stool_wood' : 'chair_stool';
+    const chairScale = STOOL_S;
+    const spots = LAYOUT.chairSpots;
     const nChairs = Math.min(spots.length, tableSeats(level));
     for (const [sx, sz] of spots.slice(0, nChairs)) {
-      place[chairKey].push({
-        pos: [x + sx, 0, z + sz],
-        scale: chairScale,
-        rot: food ? [0, sz > 0 ? Math.PI : 0, 0] : undefined,
-      });
+      place[chairKey].push({ pos: [x + sx, 0, z + sz], scale: chairScale });
     }
 
-    const clothColor = food ? (level >= 2 ? clothTone : '') : level >= 4 ? clothTone : '';
-    if (clothColor) {
-      if (food) {
-        const c = bigTable ? FOOD_CLOTH : FOOD_CLOTH_SM;
-        const hx = bigTable ? FOOD_CLOTH.hx : FOOD_CLOTH_SM.h;
-        const hz = bigTable ? FOOD_CLOTH.hz : FOOD_CLOTH_SM.h;
-        cloths.push({ pos: [x, c.y, z], size: [hx * 2, 0.04, hz * 2], color: clothColor });
-      } else {
-        const c = bigTable ? TEA_CLOTH_M : TEA_CLOTH_S;
-        cloths.push({ pos: [x, c.y, z], size: [c.h * 2, 0.04, c.h * 2], color: clothColor });
-      }
+    if (level >= 4) {
+      const c = bigTable ? TEA_CLOTH_M : TEA_CLOTH_S;
+      cloths.push({ pos: [x, c.y, z], size: [c.h * 2, 0.04, c.h * 2], color: clothTone });
     }
   }
   return { place, cloths };
@@ -450,7 +308,6 @@ function GreyboxTables({ tables, tableLevels }: { tables: number; tableLevels: n
           x={t.table[0]}
           z={t.table[2]}
           level={tableLevels[i] ?? 0}
-          food={serviceProduct(serviceOfTable(i)) === 'tost'}
           greybox
         />
       ))}

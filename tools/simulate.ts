@@ -5,9 +5,11 @@
  *
  * Çalıştır:  npx tsx tools/simulate.ts   (veya)  node --import tsx tools/simulate.ts
  *
- * Model (SERVİS başına, gece 5/7): gelir = Σ_servis min(talep_s, arz_s) × (sabit fiyat + bahşiş) × VERİM.
- *   - talep_s = servise bağlı masalar / döngü_s   (her masa döngü başına 1 ürün tüketir)
- *   - arz_s   = 1 / hazırlamaSüresi_s            (servis başına ocak, D-022; kendi seviyesi)
+ * Model (B2 — TEK SERVİS): gelir = min(talep, arz) × (ortalama fiyat + bahşiş) × VERİM.
+ *   - talep = tüm açık masaların koltukları / döngü   (kat tek noktadan beslenir)
+ *   - arz   = 1 / hazırlamaSüresi                    (tek servis noktası, kendi seviyesi)
+ *   - ÜRÜN KARIŞIMI: L5'ten sonra müşterilerin `tostShare(level)` kadarı tost ister → hem fiyat
+ *     hem hazırlama süresi ağırlıklı ortalamayla girer (rules.ts incomeRate ile AYNI formül).
  *   - VERİM (profil): idealize tavanın oyuncu tarafından gerçeklenen oranı.
  *     Sim eski sürümde hep 1.0 (idealize) idi; 3-profil raporu için parametre oldu.
  *     VARSAYILAN ÇIKTI yine 1.0 → "ilk-alım 60sn" denetimi DEĞİŞMEDİ.
@@ -24,23 +26,17 @@ import {
   tableTip,
   tableSeats,
   charNextCost,
+  waiterTrayNextCost,
+  waiterSpeedNextCost,
   PRODUCTS,
-  type CharStat,
   type GateState,
   type QuestTarget,
 } from '../src/config/economy.config.ts';
-import {
-  deriveWorld,
-  serviceProduct,
-  serviceInArea,
-  areaOfTable,
-  tablesInArea,
-  MAX_SERVICES,
-} from '../src/game/world.ts';
+import { deriveWorld, tostShare, THE_SERVICE, MAX_SERVICES } from '../src/game/world.ts';
 
 const DT = 1; // saniyelik adım
-const TEA_PRICE = C.teaStation.basePrice;
-const SOFT_MAX = C.teaStation.upgrade.maxLevel; // ₺ ile çıkılabilen en yüksek seviye
+const TEA_PRICE = C.service.basePrice;
+const SOFT_MAX = C.service.upgrade.maxLevel; // ₺ ile çıkılabilen en yüksek seviye
 const TABLE_SOFT_MAX = C.tables.upgrade.maxLevel;
 
 // D-015: masa/servis ayrı tutulmaz; padsDone'dan türetilir (store ile aynı kaynak — world.ts).
@@ -48,11 +44,14 @@ interface State {
   t: number;
   wallet: number;
   lifetime: number;
-  stationLevels: number[]; // SERVİS başına ocak seviyesi (v18 modeli)
+  stationLevels: number[]; // servis noktasının seviyesi (B2: tek eleman)
   tableLevel: number; // idealize: tüm masalar eşit yükseltilir
   padsDone: string[];
   /** Karakter kademeleri (v20): quest hattındaki alımlar simüle edilir (T1/T2/M1). */
   char: { tray: number; magnet: number; speed: number };
+  /** Personel kademeleri — B2'de gerçekten SATIN ALINIR (eski sim bunları bedava sayıyordu). */
+  waiterTray: number;
+  waiterSpeed: number;
   /** Görev hattı index'i (M1 ödülleri): tamamlanan görev cüzdana reward ekler. */
   questIdx: number;
 }
@@ -63,8 +62,14 @@ interface State {
 function questMetSim(s: State, t: QuestTarget): boolean {
   switch (t.type) {
     case 'pad': return s.padsDone.includes(t.id);
-    case 'stationLevel': return s.stationLevels[0] >= t.level;
+    case 'stationLevel': return s.stationLevels[THE_SERVICE] >= t.level;
     case 'charStat': return s.char[t.stat] >= t.tier;
+    case 'waiterTray': return s.waiterTray >= t.tier;
+    case 'waiterSpeed': return s.waiterSpeed >= t.tier;
+    case 'tableLevel': return s.tableLevel >= t.level;
+    case 'tablesAtLevel': return s.tableLevel >= t.level; // idealize: tüm masalar eşit seviyede
+    // Sayaç görevleri (çay al / servis et / para topla / bulaşık yıka) oynanışla dolar — para
+    // harcamaz, tempoyu geciktirmez; idealize modelde ANINDA tamam sayılır.
     default: return true;
   }
 }
@@ -88,51 +93,49 @@ function gateOf(s: State): GateState {
   };
 }
 
-function brewTimeZ(s: State, z: number): number {
-  // M3: hazırlama süresi SERVİSİN ÜRÜNÜNDEN (çay 6 / tost 11 taban).
-  return (
-    PRODUCTS[serviceProduct(z)].prepTime /
-    upgradeOutputMultiplier(C.teaStation.upgrade, s.stationLevels[z])
-  );
+/** Seviyedeki ORTALAMA ürün (tost payına göre ağırlıklı fiyat + hazırlık süresi). */
+function mixAt(level: number): { price: number; prepTime: number } {
+  const p = tostShare(level);
+  return {
+    price: (1 - p) * PRODUCTS.tea.price + p * PRODUCTS.tost.price,
+    prepTime: (1 - p) * PRODUCTS.tea.prepTime + p * PRODUCTS.tost.prepTime,
+  };
+}
+
+function brewTimeOf(s: State): number {
+  const lv = s.stationLevels[THE_SERVICE];
+  return mixAt(lv).prepTime / upgradeOutputMultiplier(C.service.upgrade, lv);
 }
 
 // SERVİSİN gelir oranı (₺/sn): min(talep, arz) × (ürün fiyatı + bahşiş). M3: tost pahalı+yavaş.
 // Y4 kalibrasyonu: talep KOLTUK-temelli (Y2 grupları — masa başına seviyeyle 1→4 koltuk; idealize
 // tableLevel'da L0 koltuk=1 → ölçülen erken/orta eğri AYNI kalır, geç-oyun L4 döneminde talep ×4
 // olur ve istasyon arzı tavana dayanır — 2. garson + tepsi-3 tam bu pencereyi taşır, compute §1).
-function rateZ(s: State, z: number): number {
-  const w = deriveWorld(s.padsDone);
-  if (!w.services[z]?.open) return 0;
-  const bt = brewTimeZ(s, z);
-  const cycle = C.npc.walkTime + bt + C.npc.eatTime;
-  const served = w.tables.filter((t) => t.serviceIndex === z).length;
-  const demand = (served * tableSeats(s.tableLevel)) / cycle;
-  const supply = 1 / bt;
-  return Math.min(demand, supply) * (PRODUCTS[serviceProduct(z)].price + tableTip(s.tableLevel));
-}
-
 function rate(s: State, eff = 1): number {
   const w = deriveWorld(s.padsDone);
-  let r = 0;
-  for (const sv of w.services) if (sv.open) r += rateZ(s, sv.index);
-  return r * eff;
-}
-
-// Servisin ocağı darboğaz mı (talep ≥ arz)? Akıllı oyuncu önce darboğaz ocağı yükseltir.
-function ocakBottleneckZ(s: State, z: number): boolean {
-  const w = deriveWorld(s.padsDone);
-  if (!w.services[z]?.open) return false;
-  const bt = brewTimeZ(s, z);
+  const bt = brewTimeOf(s);
   const cycle = C.npc.walkTime + bt + C.npc.eatTime;
-  const served = w.tables.filter((t) => t.serviceIndex === z).length;
-  return served / cycle > (1 / bt) * 0.95;
+  const demand = (w.tables.length * tableSeats(s.tableLevel)) / cycle;
+  const supply = 1 / bt;
+  const price = mixAt(s.stationLevels[THE_SERVICE]).price;
+  return Math.min(demand, supply) * (price + tableTip(s.tableLevel)) * eff;
 }
 
-// Zone'un ocak yükseltmesi açık mı? (v21: her salonun KENDİ 2. masası önkoşul — store ile aynı.)
-function upgradeUnlockedZ(s: State, z: number): boolean {
-  if (s.stationLevels[z] >= SOFT_MAX) return false;
-  return requiresMet(C.teaStation.upgradeRequiresByArea[z], gateOf(s));
+// Servis noktası darboğaz mı (talep ≥ arz)? Akıllı oyuncu önce onu yükseltir.
+// B2'de bu neredeyse HEP doğru: kat büyürken tek nokta besliyor — ilerlemenin ana kolu bu.
+function stationBottleneck(s: State): boolean {
+  const w = deriveWorld(s.padsDone);
+  const bt = brewTimeOf(s);
+  const cycle = C.npc.walkTime + bt + C.npc.eatTime;
+  return (w.tables.length * tableSeats(s.tableLevel)) / cycle > (1 / bt) * 0.95;
 }
+
+function upgradeUnlocked(s: State): boolean {
+  if (s.stationLevels[THE_SERVICE] >= SOFT_MAX) return false;
+  return requiresMet(C.service.upgradeRequires, gateOf(s));
+}
+
+const stationCost = (s: State) => upgradeCost(C.service.upgrade, s.stationLevels[THE_SERVICE] + 1);
 
 // İdealize tek tableLevel: 1. alanın gate'i referans (v21 alan-başı; sim masa seviyesini tekilleştirir).
 function tableUpgradeUnlocked(s: State): boolean {
@@ -144,56 +147,107 @@ function currentPad(s: State) {
   return C.pads.find((p) => !p.optional && !s.padsDone.includes(p.id) && requiresMet(p.requires, g)) ?? null;
 }
 
-/** Quest hattındaki sıradaki karakter alımı (v20): q_charTray1 table2 sonrası, q_charTray2 table3
- *  sonrası, q_charMagnet table4 sonrası. Görev hattı ilerlemeyi bloklar → sim'de de öncelikli. */
-function nextCharBuy(s: State): { stat: CharStat; cost: number } | null {
-  const steps: { stat: CharStat; tier: number; after: string }[] = [
-    { stat: 'tray', tier: 1, after: 'table2' },
-    { stat: 'tray', tier: 2, after: 'table3' },
-    { stat: 'magnet', tier: 1, after: 'table4' },
-  ];
-  for (const st of steps) {
-    if (s.padsDone.includes(st.after) && s.char[st.stat] < st.tier) {
-      const cost = charNextCost(st.stat, s.char[st.stat]);
-      if (cost != null) return { stat: st.stat, cost };
-    }
-  }
-  return null;
-}
-
-// Otomatik (akıllı) oyuncu: önce DARBOĞAZ ocak (en ucuz), sonra KARAKTER görevi alımı (quest hattı
-// bloklar), sonra omurga pad'i, sonra açık ocak, en son masa-başı yükseltme (bahşiş).
+/**
+ * OYUNCU DAVRANIŞI — GÖREV HATTI GÜDÜMLÜ (B2'de düzeltildi).
+ *
+ * Eski sim "her an en ucuz darboğaz ocağı al" diyordu; oyun ise ekranda TEK aktif görev
+ * gösteriyor ve oyuncu onu takip ediyor (Tek Odak). Servis merdiveni ucuzken fark küçüktü, ama
+ * B2'de tezgâh/tost basamakları pahalı olduğu için "hangi sırayla alınıyor" tempoyu belirleyen
+ * şeyin ta kendisi oldu. Bu yüzden sim artık aktif görevin istediğini biriktirip alıyor;
+ * hat bitince serbest oyuna (servis merdiveni → masa seviyeleri) düşüyor.
+ */
 function trySpend(s: State): void {
   const d = deriveWorld(s.padsDone);
-  const openSvc = d.services.filter((sv) => sv.open).map((sv) => sv.index);
-  // 1) Darboğaz ocaklar (en ucuzu önce; M3: tost tezgâhı kendi maliyet çarpanıyla)
-  let bz = -1;
-  let bcost = Infinity;
-  for (const z of openSvc) {
-    if (ocakBottleneckZ(s, z) && upgradeUnlockedZ(s, z)) {
-      const cost = Math.floor(
-        upgradeCost(C.teaStation.upgrade, s.stationLevels[z] + 1) * PRODUCTS[serviceProduct(z)].upgradeCostMult,
-      );
-      if (cost < bcost) { bcost = cost; bz = z; }
+  const q = s.questIdx < C.quests.length ? C.quests[s.questIdx] : null;
+  const t = q?.target;
+
+  if (t) {
+    switch (t.type) {
+      case 'pad': {
+        const pad = C.pads.find((p) => p.id === t.id);
+        // Görevin pad'i henüz gate'liyse (önkoşul eksik) hattın tıkanmaması için serbest oyuna düş.
+        if (pad && requiresMet(pad.requires, gateOf(s))) {
+          if (s.wallet >= pad.cost) {
+            s.wallet -= pad.cost;
+            s.padsDone.push(pad.id);
+          }
+          return; // biriktiriyor
+        }
+        break;
+      }
+      case 'stationLevel': {
+        if (upgradeUnlocked(s)) {
+          const cost = stationCost(s);
+          if (s.wallet >= cost) {
+            s.wallet -= cost;
+            s.stationLevels[THE_SERVICE] += 1;
+          }
+          return;
+        }
+        break;
+      }
+      case 'charStat': {
+        const cost = charNextCost(t.stat, s.char[t.stat]);
+        if (cost != null) {
+          if (s.wallet >= cost) {
+            s.wallet -= cost;
+            s.char[t.stat] += 1;
+          }
+          return;
+        }
+        break;
+      }
+      case 'waiterTray': {
+        const cost = waiterTrayNextCost(s.waiterTray);
+        if (cost != null) {
+          if (s.wallet >= cost) {
+            s.wallet -= cost;
+            s.waiterTray += 1;
+          }
+          return;
+        }
+        break;
+      }
+      case 'waiterSpeed': {
+        const cost = waiterSpeedNextCost(s.waiterSpeed);
+        if (cost != null) {
+          if (s.wallet >= cost) {
+            s.wallet -= cost;
+            s.waiterSpeed += 1;
+          }
+          return;
+        }
+        break;
+      }
+      case 'tableLevel':
+      case 'tablesAtLevel': {
+        if (tableUpgradeUnlocked(s)) {
+          // İdealize: tüm açık masalar birlikte yükselir (alan çarpanları toplanır).
+          let cost = 0;
+          for (const tb of d.tables) cost += tableUpgradeCost(s.tableLevel, tb.areaIndex);
+          if (s.wallet >= cost) {
+            s.wallet -= cost;
+            s.tableLevel += 1;
+          }
+          return;
+        }
+        break;
+      }
+      default:
+        break; // sayaç görevi: para harcamaz, altta serbest oyun sürsün
     }
   }
-  if (bz >= 0) {
-    if (s.wallet >= bcost) {
-      s.wallet -= bcost;
-      s.stationLevels[bz] += 1;
+
+  // SERBEST OYUN (hat bitti ya da aktif görev para istemiyor): önce servis merdiveni
+  // (darboğaz olduğu sürece), sonra omurga pad'i, en son masa seviyeleri.
+  if (stationBottleneck(s) && upgradeUnlocked(s)) {
+    const cost = stationCost(s);
+    if (s.wallet >= cost) {
+      s.wallet -= cost;
+      s.stationLevels[THE_SERVICE] += 1;
     }
     return;
   }
-  // 1.5) Karakter görevi alımı (v20 — quest hattı sıradaki pad'den önce bunu ister)
-  const cb = nextCharBuy(s);
-  if (cb) {
-    if (s.wallet >= cb.cost) {
-      s.wallet -= cb.cost;
-      s.char[cb.stat] += 1;
-    }
-    return;
-  }
-  // 2) Omurga pad'i
   const pad = currentPad(s);
   if (pad) {
     if (s.wallet >= pad.cost) {
@@ -202,24 +256,17 @@ function trySpend(s: State): void {
     }
     return;
   }
-  // 3) Açık herhangi bir ocak yükseltmesi (M3: ürün maliyet çarpanı)
-  for (let z = 0; z < d.areasOpen; z++) {
-    if (upgradeUnlockedZ(s, z)) {
-      const cost = Math.floor(
-        upgradeCost(C.teaStation.upgrade, s.stationLevels[z] + 1) * PRODUCTS[serviceProduct(z)].upgradeCostMult,
-      );
-      if (s.wallet >= cost) {
-        s.wallet -= cost;
-        s.stationLevels[z] += 1;
-      }
-      return;
+  if (upgradeUnlocked(s)) {
+    const cost = stationCost(s);
+    if (s.wallet >= cost) {
+      s.wallet -= cost;
+      s.stationLevels[THE_SERVICE] += 1;
     }
+    return;
   }
-  // 4) Masa yükseltme (idealize: tüm açık masalar eşit → bir seviye = masa sayısı × maliyet;
-  //    ALAN-kademeli maliyet: her açık masanın kendi alan çarpanı toplanır — açılış alan-sıralı)
   if (tableUpgradeUnlocked(s)) {
     let cost = 0;
-    for (const t of d.tables) cost += tableUpgradeCost(s.tableLevel, t.areaIndex);
+    for (const tb of d.tables) cost += tableUpgradeCost(s.tableLevel, tb.areaIndex);
     if (s.wallet >= cost) {
       s.wallet -= cost;
       s.tableLevel += 1;
@@ -238,11 +285,12 @@ const MILESTONES: Milestone[] = [
   { name: 'Bulaşıkçı', hit: (s) => s.padsDone.includes('dishwasher') },
   { name: '4. Masa (zone-1 dolu)', hit: (s) => s.padsDone.includes('table4') },
   { name: `Karakter: Mıknatıs M1 (${charNextCost('magnet', 0)}₺)`, hit: (s) => s.char.magnet >= 1 },
-  { name: `Çay ocağı ₺-max L${SOFT_MAX} (z1 semaver)`, hit: (s) => s.stationLevels[0] >= SOFT_MAX },
+  { name: 'TEZGÂH kuruldu (L4)', hit: (s) => s.stationLevels[0] >= C.service.counterLevel },
+  { name: 'TOST açıldı (L5)', hit: (s) => s.stationLevels[0] >= C.service.tostLevel },
+  { name: `Servis ₺-max L${SOFT_MAX}`, hit: (s) => s.stationLevels[0] >= SOFT_MAX },
   { name: `ZONE-2 AÇILDI (₺${C.pads.find((p) => p.id === 'zone2')?.cost})`, hit: (s) => s.padsDone.includes('zone2') },
   { name: 'Z2: 2. Masa', hit: (s) => s.padsDone.includes('z2table2') },
-  { name: 'Z2: Garson', hit: (s) => s.padsDone.includes('z2waiter') },
-  { name: 'Z2: Bulaşıkçı', hit: (s) => s.padsDone.includes('z2dishwasher') },
+  { name: '2. Garson', hit: (s) => s.padsDone.includes('waiter2') },
   { name: 'Z2: 4. Masa (zone-2 dolu)', hit: (s) => s.padsDone.includes('z2table4') },
   { name: `ZONE-3 AÇILDI (₺${C.pads.find((p) => p.id === 'zone3')?.cost})`, hit: (s) => s.padsDone.includes('zone3') },
   { name: 'Z3: 4. Masa (zone-3 dolu)', hit: (s) => s.padsDone.includes('z3table4') },
@@ -264,6 +312,7 @@ function runProfile(eff: number, log = false): Map<string, number> {
     stationLevels: Array.from({ length: MAX_SERVICES }, () => 0),
     tableLevel: 0, padsDone: [],
     char: { tray: 0, magnet: 0, speed: 0 },
+    waiterTray: 0, waiterSpeed: 0,
     questIdx: 0,
   };
   const MAX_T = 60 * 60 * 6;
@@ -280,7 +329,7 @@ function runProfile(eff: number, log = false): Map<string, number> {
         done.set(m.name, s.t);
         if (log) {
           console.log(
-            `  ✓ ${m.name.padEnd(34)} @ ${fmtTime(s.t).padStart(7)}  (oran ${rate(s, eff).toFixed(2)} ₺/sn, z1L${s.stationLevels[0]}/z2L${s.stationLevels[1]}, ${deriveWorld(s.padsDone).tables.length} masa)`,
+            `  ✓ ${m.name.padEnd(34)} @ ${fmtTime(s.t).padStart(7)}  (oran ${rate(s, eff).toFixed(2)} ₺/sn, servis L${s.stationLevels[0]}, ${deriveWorld(s.padsDone).tables.length} masa)`,
           );
         }
       }
@@ -291,10 +340,10 @@ function runProfile(eff: number, log = false): Map<string, number> {
 }
 
 function run() {
-  console.log('=== Köşe Kıraathanesi — Ekonomi v2 Simülasyonu (servis-başı bottleneck modeli) ===\n');
+  console.log('=== Köşe Kıraathanesi — Ekonomi Simülasyonu (B2: TEK servis, bottleneck) ===\n');
   const s0: State = {
-    t: 0, wallet: 0, lifetime: 0, stationLevels: [0, 0], tableLevel: 0, padsDone: [],
-    char: { tray: 0, magnet: 0, speed: 0 }, questIdx: 0,
+    t: 0, wallet: 0, lifetime: 0, stationLevels: [0], tableLevel: 0, padsDone: [],
+    char: { tray: 0, magnet: 0, speed: 0 }, waiterTray: 0, waiterSpeed: 0, questIdx: 0,
   };
   console.log(`Sabit çay fiyatı: ${TEA_PRICE} ₺ · Başlangıç: 1 masa, oran ${rate(s0).toFixed(2)} ₺/sn\n`);
 
@@ -326,8 +375,8 @@ function run() {
 
   console.log('\n--- Servis kapasitesi (bilgi) ---');
   console.log(
-    `Garson zinciri zorunlu (₺${C.pads.find((p) => p.id === 'waiter')?.cost}): hız ${C.waiter.speedUpgrades.tea.speeds.join('→')} br/sn (₺${C.waiter.speedUpgrades.tea.costs.join('/')}; panel), çay tepsisi 1+kademe (₺${C.waiter.trayUpgrades.tea.costs.join('/')}). ` +
-      `Zone-2 zinciri: unlock ₺${C.pads.find((p) => p.id === 'zone2')?.cost} + içi ₺${['z2table2', 'z2waiter', 'z2table3', 'z2dishwasher', 'z2table4'].reduce((a, id) => a + (C.pads.find((p) => p.id === id)?.cost ?? 0), 0)}.`,
+    `Garson havuzu (ilk ₺${C.pads.find((p) => p.id === 'waiter')?.cost}): hız ${C.waiter.speedUpgrades.speeds.join('→')} br/sn (₺${C.waiter.speedUpgrades.costs.join('/')}; panel), tepsi 1+kademe (₺${C.waiter.trayUpgrades.costs.join('/')}). ` +
+      `Servis merdiveni: ₺${(C.service.upgrade.costsByLevel ?? []).join('/')} (L4 tezgâh, L5 tost).`,
   );
 }
 

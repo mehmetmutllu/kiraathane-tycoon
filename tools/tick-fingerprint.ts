@@ -65,17 +65,18 @@ function snapshot(label: string) {
     cleanCups: s.cleanCups,
     carriedDirty: s.carriedDirty,
     carriedDirtyFood: s.carriedDirtyFood,
-    readyCupsByZone: [...s.readyCupsByService],
-    brewProgressByZone: s.brewProgressByService.map((n) => round(n, 3)),
+    ready: { tea: s.ready.tea, tost: s.ready.tost },
+    brewProgress: { tea: round(s.brewProgress.tea, 3), tost: round(s.brewProgress.tost, 3) },
     npcs: s.npcs.map((n) => ({
       id: n.id, state: n.state, tableIndex: n.tableIndex, seatIndex: n.seatIndex,
-      timer: round(n.timer, 3), pos: n.pos.map((v) => round(v, 3)),
+      product: n.product, timer: round(n.timer, 3), pos: n.pos.map((v) => round(v, 3)),
     })),
     coins: s.coins.map((c) => ({ id: c.id, value: round(c.value, 3), pos: c.pos.map((v) => round(v, 3)) })),
     dishes: s.dishes.map((d) => ({ id: d.id, tableIndex: d.tableIndex, kind: d.kind, pos: d.pos.map((v) => round(v, 3)) })),
-    waiters: s.waiters.map((w) => (w ? { tray: w.tray, state: w.state, pos: w.pos.map((v) => round(v, 3)) } : null)),
-    waiters2: s.waiters2.map((w) => (w ? { tray: w.tray, state: w.state, pos: w.pos.map((v) => round(v, 3)) } : null)),
-    dishwashers: s.dishwashers.map((w) => (w ? { tray: w.tray, state: w.state, pos: w.pos.map((v) => round(v, 3)) } : null)),
+    waiters: s.waiters.map((w) => ({ tray: w.tray, trayFood: w.trayFood, pos: w.pos.map((v) => round(v, 3)) })),
+    dishwasher: s.dishwasher
+      ? { tray: s.dishwasher.tray, trayFood: s.dishwasher.trayFood, pos: s.dishwasher.pos.map((v) => round(v, 3)) }
+      : null,
     player: s.player.map((v) => round(v, 3)),
     // Anahtar adları SÖZLEŞME (bkz. dosya başlığı): iç alan adları değişse de çıktı sabit kalır.
     stats: {

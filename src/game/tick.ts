@@ -31,14 +31,16 @@ import {
   playerSpeedFor,
   type PadDef,
   type GateState,
-  type WaiterKind,
+  type ProductId,
 } from '../config/economy.config';
 import {
   deriveWorld,
   areaOfTable,
-  serviceOfTable,
-  serviceProduct,
-  MAX_SERVICES,
+  THE_SERVICE,
+  MAX_WAITERS,
+  isCounter,
+  serviceMenu,
+  tostShare,
   type World,
 } from './world';
 import type { SaveStats } from './save';
@@ -124,8 +126,11 @@ export interface TickCtx {
   activeSpot: ActiveSpot | null;
   stationLevels: number[];
   tableLevels: number[];
-  readyCupsByService: number[];
-  brewProgressByService: number[];
+  /** Servisin HAZIR ürünleri — B2: servis başına değil ÜRÜN başına (tek nokta, iki ürün). */
+  ready: Record<ProductId, number>;
+  /** Ürün başına birikmiş demleme süresi (sn). Tezgâh aynı anda TEK kalem hazırlar: hangi ürünün
+   *  açığı büyükse onun sayacı ilerler, diğerinin yarım ilerlemesi KAYBOLMAZ (bekler). */
+  brewProgress: Record<ProductId, number>;
   tray: number;
   trayFood: number;
   cleanCups: number;
@@ -157,9 +162,10 @@ export interface TickCtx {
   autoCollectSum: number;
   autoCollectToastCooldown: number;
   trayCap: number;
-  waiters: (Waiter | null)[];
-  waiters2: (Waiter | null)[];
-  dishwashers: (Waiter | null)[];
+  /** GLOBAL garson havuzu (B2): düz liste, uzunluk = tutulmuş garson sayısı. */
+  waiters: Waiter[];
+  /** Katın TEK bulaşıkçısı (yoksa null). */
+  dishwasher: Waiter | null;
   padGate: GateState;
   activePads: PadDef[];
   fillReady: boolean;
@@ -198,8 +204,8 @@ export function createTickCtx(s: GameState, dt: number): TickCtx {
     activeSpot: null,
     stationLevels: s.stationLevels.slice(), // SERVİS başına ocak seviyesi (bu karede yükselebilir)
     tableLevels: s.tableLevels.slice(), // masa-başı seviyeler (kopya; bu karede yükseltilebilir)
-    readyCupsByService: s.readyCupsByService.slice(),
-    brewProgressByService: s.brewProgressByService.slice(),
+    ready: { ...s.ready },
+    brewProgress: { ...s.brewProgress },
     tray: s.tray,
     trayFood: s.trayFood,
     cleanCups: s.cleanCups,
@@ -241,8 +247,7 @@ export function createTickCtx(s: GameState, dt: number): TickCtx {
     autoCollectToastCooldown: s.autoCollectToastCooldown,
     trayCap: 0,
     waiters: s.waiters,
-    waiters2: s.waiters2,
-    dishwashers: s.dishwashers,
+    dishwasher: s.dishwasher,
     padGate: { padsDone: s.padsDone, tables: tableCount, stationLevel: s.stationLevels[0], lifetime: 0 },
     activePads: [],
     fillReady: false,
@@ -255,26 +260,47 @@ export function createTickCtx(s: GameState, dt: number): TickCtx {
 }
 
 /**
- * Ocak hazır-kuyruğu (demleme) — D-011 §3 + bardak döngüsü (Faz 2e §5), SERVİS BAŞINA.
- * Her açık servis kendi kuyruğuna demler (D-022); TEMİZ bardak GLOBAL havuzdan.
+ * SERVİS NOKTASI — hazır ürün kuyruğu (D-011 §3 + bardak döngüsü Faz 2e §5).
+ *
+ * B2: kat TEK noktadan üretir ve o nokta seviyesine göre BİRDEN ÇOK ürün yapabilir (L5'ten sonra
+ * çay + tost). Eskiden her servis kendi tek ürününü kendi kuyruğuna demliyordu; şimdi tek tezgâh
+ * aynı anda TEK kalem hazırlar ve hangi kalemi hazırlayacağını TALEP söyler:
+ *   açık = (o ürünü bekleyen müşteri) − (o üründen hazır olan)
+ * En büyük açığı olan ürün ilerler; eşitlikte çay (ucuz+hızlı olan akışı tıkamaz). Seçilmeyen
+ * ürünün yarım ilerlemesi KAYBOLMAZ, olduğu yerde bekler — ürün değiştirmek ceza değildir.
+ * Kuyruk kapasitesi ve temiz bardak havuzu ORTAKTIR (korunum değişmezi tek kalır).
  */
 function brewSystem(c: TickCtx): void {
-  const { dt, dishes, openSvc, stationLevels, tableLevels, readyCupsByService, brewProgressByService } = c;
+  // NOT: talep `npcs` üstünden okunur, `liveNpcs` üstünden DEĞİL — brewSystem sıranın BAŞINDA
+  // çalışır, `liveNpcs`i npcSystem sonra doldurur. `npcs` kare başındaki listedir (doğru girdi).
+  const { dt, dishes, stationLevels, tableLevels, ready, brewProgress, npcs } = c;
   let cleanCups = c.cleanCups;
-  for (const z of openSvc) {
-    const queueCap = brewQueueCapacity(stationLevels[z]);
-    // M3: hazırlama süresi SERVİSİN ÜRÜNÜNDEN (çay 6sn / tost 11sn taban); kap havuzu ORTAK.
-    const cupBrewTime = brewTime(stationLevels[z], PRODUCTS[serviceProduct(z)].prepTime);
-    if (readyCupsByService[z] < queueCap && cleanCups > 0) {
-      brewProgressByService[z] += dt;
-      while (readyCupsByService[z] < queueCap && cleanCups > 0 && brewProgressByService[z] >= cupBrewTime) {
-        readyCupsByService[z] += 1;
-        cleanCups -= 1;
-        brewProgressByService[z] -= cupBrewTime;
-      }
+  const level = stationLevels[THE_SERVICE] ?? 0;
+  const menu = serviceMenu(level);
+  const queueCap = brewQueueCapacity(level);
+  const readyTotal = menu.reduce((n, p) => n + ready[p], 0);
+
+  if (readyTotal < queueCap && cleanCups > 0) {
+    // Bekleyen talep (kuyruğa girmiş müşteriler) ürün başına.
+    const want: Record<ProductId, number> = { tea: 0, tost: 0 };
+    for (const n of npcs) if (n.state === 'waitingForTea') want[n.product] += 1;
+    // En büyük açığı olan ürünü seç; hiçbir ürünün açığı yoksa yine de stok yap (menünün ilki).
+    let pick: ProductId = menu[0];
+    let bestGap = -Infinity;
+    for (const p of menu) {
+      const gap = want[p] - ready[p];
+      if (gap > bestGap + 1e-9) { bestGap = gap; pick = p; }
     }
-    if (readyCupsByService[z] >= queueCap || cleanCups <= 0)
-      brewProgressByService[z] = Math.min(brewProgressByService[z], cupBrewTime);
+    const cupBrewTime = brewTime(level, PRODUCTS[pick].prepTime);
+    brewProgress[pick] += dt;
+    let total = readyTotal;
+    while (total < queueCap && cleanCups > 0 && brewProgress[pick] >= cupBrewTime) {
+      ready[pick] += 1;
+      total += 1;
+      cleanCups -= 1;
+      brewProgress[pick] -= cupBrewTime;
+    }
+    if (total >= queueCap || cleanCups <= 0) brewProgress[pick] = Math.min(brewProgress[pick], cupBrewTime);
   }
 
   // Kirli masalar (D-019): eşiği aşan masalar müşteriye/garsona kapalı (temizlik baskısı).
@@ -288,7 +314,10 @@ function brewSystem(c: TickCtx): void {
  * Spawn (Y2 GRUP sistemi, plan §2)
  */
 function spawnSystem(c: TickCtx): void {
-  const { npcs, tables, areasOpen, tableLevels, dirty } = c;
+  const { npcs, tables, areasOpen, tableLevels, dirty, stationLevels } = c;
+  // B2: müşteri ÜRÜNÜNÜ gelirken seçer; tost payı servis SEVİYESİNDEN gelir (L5 öncesi 0 → herkes
+  // çay ister, eski davranışla birebir). Sipariş nesnesi `{çay:1, tost:2}` Faz C'de.
+  const pTost = tostShare(stationLevels[THE_SERVICE] ?? 0);
   let nextId = c.nextId;
   let spawnTimer = c.spawnTimer;
   let spawnArea = c.spawnArea;
@@ -320,6 +349,7 @@ function spawnSystem(c: TickCtx): void {
           tableIndex: target,
           seatIndex: k,
           timer: 0,
+          product: Math.random() < pTost ? 'tost' : 'tea',
           color: NPC_COLORS[Math.floor(Math.random() * NPC_COLORS.length)],
         });
         placed += 1;
@@ -365,7 +395,7 @@ function npcSystem(c: TickCtx): void {
           n.pos[0] = seat[0];
           n.pos[2] = seat[2];
           n.state = 'waitingForTea';
-          n.timer = tablePatience(tableLevels[n.tableIndex] ?? 0, serviceProduct(serviceOfTable(n.tableIndex)));
+          n.timer = tablePatience(tableLevels[n.tableIndex] ?? 0, n.product);
         } else {
           // Sigorta: rota bulunamayıp uzun süre oturamadıysa vazgeçip gider — masa SÜRESİZ
           // rezerve kalamaz (timer toTable'da yürüme-süresi sayacı olarak kullanılır).
@@ -388,9 +418,7 @@ function npcSystem(c: TickCtx): void {
           coins.push({
             id: nextId++,
             pos: [slot.table[0] + (Math.random() - 0.5), 0.3, slot.table[2] + 0.6 + (Math.random() - 0.5)],
-            value:
-              PRODUCTS[serviceProduct(serviceOfTable(n.tableIndex))].price +
-              tableTip(tableLevels[n.tableIndex] ?? 0),
+            value: PRODUCTS[n.product].price + tableTip(tableLevels[n.tableIndex] ?? 0),
           });
           // İçtiği bardak masada KİRLİ kalır (Faz 2e): toplanıp yıkanmalı, yoksa temiz biter.
           // tableIndex ile masaya etiketlenir (D-019): masa-başı eşik aşılınca masa KİRLİ olur.
@@ -402,7 +430,7 @@ function npcSystem(c: TickCtx): void {
               id: nextId++,
               pos: [slot.table[0] + (Math.random() - 0.5) * 0.6, 0.95, slot.table[2] + (Math.random() - 0.5) * 0.6],
               tableIndex: n.tableIndex,
-              kind: PRODUCTS[serviceProduct(serviceOfTable(n.tableIndex))].dish, // M3: bardak/tabak görseli
+              kind: PRODUCTS[n.product].dish, // M3: bardak/tabak görseli
             });
           } else {
             cleanCups += 1;
@@ -522,36 +550,37 @@ function coinSystem(c: TickCtx): void {
  * Servis (D-011): ocakta tepsiyi doldur, bekleyen masalara çay bırak (yakınlık)
  */
 function serveSystem(c: TickCtx): void {
-  const { s, areasOpen, readyCupsByService, carriedDirty, carriedDirtyFood, stats, liveNpcs, player } = c;
+  const { s, ready, carriedDirty, carriedDirtyFood, stats, liveNpcs, player } = c;
   let tray = c.tray;
   let trayFood = c.trayFood;
   let xp = c.xp;
   const trayCap = trayCapacityFor(s.charUpgrades.tray);
-  // Ocağa yaklaşınca hazır çaylardan tepsi dolar (herhangi bir açık ocak yeterli).
-  // PAYLAŞIMLI kapasite (2026-06-09): çay + kirli aynı tepsiyi paylaşır → toplam trayCap'i aşamaz.
-  // Karışık taşımaya izin verilir (eski "eli boşken" kısıtı kaldırıldı; deadlock'u engeller).
-  if (tray + trayFood + carriedDirty + carriedDirtyFood < trayCap) {
-    for (let z = 0; z < areasOpen; z++) {
-      if (readyCupsByService[z] > 0 && dist2D(player, LAYOUT.stations[z]) < C.serving.pickupRadius) {
-        const take = Math.min(trayCap - tray - trayFood - carriedDirty - carriedDirtyFood, readyCupsByService[z]);
-        // M3: istasyonun ürünü tepsinin DOĞRU bölmesine gider (çay/tost ayrı sayaç, kapasite ortak).
-        if (serviceProduct(z) === 'tost') trayFood += take;
-        else tray += take;
-        readyCupsByService[z] -= take;
-        if (take > 0) stats.teaPickups += take; // generic "üründen al" sayacı (görevler ortak)
-        break;
-      }
+  // Servise yaklaşınca HAZIR üründen tepsi dolar. PAYLAŞIMLI kapasite (2026-06-09): ürün + kirli
+  // aynı tepsiyi paylaşır → toplam trayCap'i aşamaz. Karışık taşıma serbest (deadlock'u engeller).
+  // B2: tek noktadan iki ürün alınabilir — çay tepsinin bardak bölmesine, tost tabak bölmesine.
+  if (
+    tray + trayFood + carriedDirty + carriedDirtyFood < trayCap &&
+    dist2D(player, LAYOUT.stations[THE_SERVICE]) < C.serving.pickupRadius
+  ) {
+    for (const prod of ['tea', 'tost'] as const) {
+      const free = trayCap - tray - trayFood - carriedDirty - carriedDirtyFood;
+      if (free <= 0) break;
+      const take = Math.min(free, ready[prod]);
+      if (take <= 0) continue;
+      if (prod === 'tost') trayFood += take;
+      else tray += take;
+      ready[prod] -= take;
+      stats.teaPickups += take; // generic "üründen al" sayacı (görevler ortak)
     }
   }
   // Bekleyen masaya yaklaşınca tepsiden ÜRÜN bırak → müşteri içmeye/yemeye başlar (toplu servis).
-  // M3: müşterinin istediği ürün = masasının zone'unun ürünü; tepside O ürün yoksa servis OLMAZ
-  // (çayla tost müşterisi doyurulamaz). Servis MASAYA yakınlıkla (her taraftan).
+  // B2: müşterinin istediği ürün ARTIK MÜŞTERİNİN KENDİSİNDE (n.product) — eskiden masasının
+  // bölgesinden okunuyordu. Tepside O ürün yoksa servis OLMAZ (çayla tost müşterisi doyurulamaz).
   if (tray > 0 || trayFood > 0) {
     for (const n of liveNpcs) {
       if (tray <= 0 && trayFood <= 0) break;
       if (n.state !== 'waitingForTea') continue;
-      const sz = serviceOfTable(n.tableIndex);
-      const wantsFood = serviceProduct(sz) === 'tost';
+      const wantsFood = n.product === 'tost';
       if (wantsFood ? trayFood <= 0 : tray <= 0) continue;
       if (dist2D(player, LAYOUT.tables[n.tableIndex].table) < C.serving.serveRadius) {
         n.state = 'drinking';
@@ -559,8 +588,10 @@ function serveSystem(c: TickCtx): void {
         if (wantsFood) trayFood -= 1;
         else tray -= 1;
         stats.teasServed += 1;
-        // v23: zone'lu serveTea görevleri o salonu sayar (tost servisi de zone sayacına işler).
-        stats.teasServedByArea[sz] = (stats.teasServedByArea[sz] ?? 0) + 1;
+        if (wantsFood) stats.tostServed += 1; // "5 tost servis et" görevi (B2: alan sayacı değil)
+        // Alan sayacı: hangi ALANDA servis verdiği (alanlı serveTea görevleri için) — ürünle ilgisi yok.
+        const a = areaOfTable(n.tableIndex);
+        stats.teasServedByArea[a] = (stats.teasServedByArea[a] ?? 0) + 1;
         xp += C.xp.perTeaServed;
       }
     }
@@ -576,7 +607,7 @@ function serveSystem(c: TickCtx): void {
  * PAYLAŞIMLI kapasite (2026-06-09): çay taşırken de kirli toplanabilir → toplam trayCap'i aşamaz.
  */
 function dishCycleSystem(c: TickCtx): void {
-  const { areasOpen, tray, trayFood, stats, trayCap, player } = c;
+  const { tray, trayFood, stats, trayCap, player } = c;
   let dishes = c.dishes;
   let cleanCups = c.cleanCups;
   let carriedDirty = c.carriedDirty;
@@ -593,19 +624,14 @@ function dishCycleSystem(c: TickCtx): void {
     }
     dishes = keep;
   }
-  // HERHANGİ açık zone'un bulaşık noktasına yaklaşınca taşınan kirliler yıkanır → GLOBAL temiz havuza.
-  if (carriedDirty + carriedDirtyFood > 0) {
-    for (let z = 0; z < areasOpen; z++) {
-      if (dist2D(player, LAYOUT.dishStations[z]) < C.cups.washRadius) {
-        const washed = carriedDirty + carriedDirtyFood;
-        cleanCups += washed;
-        stats.dishesWashed += washed;
-        xp += C.xp.perDishWashed * washed;
-        carriedDirty = 0;
-        carriedDirtyFood = 0;
-        break;
-      }
-    }
+  // Bulaşık noktasına yaklaşınca taşınan kirliler yıkanır → GLOBAL temiz havuza (B2: tek nokta).
+  if (carriedDirty + carriedDirtyFood > 0 && dist2D(player, LAYOUT.dishStations[THE_SERVICE]) < C.cups.washRadius) {
+    const washed = carriedDirty + carriedDirtyFood;
+    cleanCups += washed;
+    stats.dishesWashed += washed;
+    xp += C.xp.perDishWashed * washed;
+    carriedDirty = 0;
+    carriedDirtyFood = 0;
   }
   c.dishes = dishes;
   c.cleanCups = cleanCups;
@@ -615,147 +641,146 @@ function dishCycleSystem(c: TickCtx): void {
 }
 
 /**
- * Garson (D-012 kısmi assist), ZONE BAŞINA: kendi zone'unun ocağından alır, kendi zone'unun
- * bekleyen masalarına götürür (per-zone personel, D-022). Oyuncudan yavaş.
- * Y4: SERVİS başına 2 garsona kadar + CLAIM — 1. garson en acil masayı alır, 2. garson o masayı
- * HARİÇ tutar (deterministik; çift-hedef kargaşası/salınım yok). Sıra sabit: önce 1., sonra 2.
+ * GARSON HAVUZU (B2 — D-060). Eskiden garson bölgeye aitti: kendi bölgesinin ocağından alır, YALNIZ
+ * kendi bölgesinin masalarına götürürdü (D-012/D-022). Kat tek servisten döndüğü için o ayrım
+ * anlamını yitirdi — havuz GLOBAL: hepsi aynı noktadan alır, hepsi her masaya gider.
+ * Kısmi assist korunur (D-014): oyuncudan yavaş ve küçük tepsili.
+ * CLAIM: sıra sabit (1., 2., 3. garson); bir garsonun bu tick'te hedeflediği masayı diğeri HARİÇ
+ * tutar → çift-hedef salınımı yok. Boşta bekleme noktaları 0.7 br arayla yan yana.
+ * Tepsi B2'de İKİ BÖLMELİ (çay/tost): garson en acil bekleyenin ürününü yükler.
  */
 function waiterSystem(c: TickCtx): void {
-  const { dt, s, world, obstacles, navGrid, readyCupsByService, stats, dirty, liveNpcs, player } = c;
+  const { dt, s, world, obstacles, navGrid, ready, stats, dirty, liveNpcs, player } = c;
   let xp = c.xp;
-  const waiters: (Waiter | null)[] = s.waiters.slice();
-  const waiters2: (Waiter | null)[] = s.waiters2.slice();
-  for (let z = 0; z < MAX_SERVICES; z++) {
-    const svc = world.services[z];
-    const wCount = svc?.open ? svc.waiters : 0;
-    if (wCount === 0) {
-      waiters[z] = null;
-      waiters2[z] = null;
-      continue;
-    }
-    // v29: hız panel kademesinden (tür-ortak; servis-başı waiterLevels kalktı).
-    const wKind: WaiterKind = serviceProduct(z) === 'tost' ? 'tost' : 'tea';
-    const wStep = waiterSpeedFor(wKind, wKind === 'tost' ? s.waiterUpgrades.tostSpeed : s.waiterUpgrades.teaSpeed) * dt;
-    // Y3: tepsi kapasitesi panel yükseltmesinden türetilir (çay garsonları ortak eğri, tostçu ayrı).
-    const wTrayCap = waiterTrayCapacityFor(
-      serviceProduct(z) === 'tost' ? 'tost' : 'tea',
-      serviceProduct(z) === 'tost' ? s.waiterUpgrades.tostTray : s.waiterUpgrades.teaTray,
-    );
-    const claimed = new Set<number>(); // bu tick'te hedeflenen masa index'leri (Y4 claim)
-    const runWaiter = (prev: Waiter | null, homeX: number): Waiter => {
-      const home: Vec3 = [LAYOUT.waiterHomes[z][0] + homeX, 0, LAYOUT.waiterHomes[z][2]];
-      const w: Waiter = prev
-        ? { pos: [...prev.pos] as Vec3, tray: prev.tray }
-        : { pos: [...home] as Vec3, tray: 0 };
-      // Garson kirli masaya çay GÖTÜRMEZ (D-019) + yalnız KENDİ zone'unun masalarına bakar.
-      // Her garson için YENİDEN filtrelenir (1. garsonun bu tick servis ettiği müşteri düşer).
-      const waitingNpcs = liveNpcs.filter(
-        (n) => n.state === 'waitingForTea' && !dirty.has(n.tableIndex) && serviceOfTable(n.tableIndex) === z,
-      );
-      // Claim: diğer garsonun hedeflediği masa hariç (yalnız teslimat hedefi seçiminde).
-      const claimable = waitingNpcs.filter((n) => !claimed.has(n.tableIndex));
-      if (w.tray > 0 && claimable.length > 0) {
-        // Teslimat: en ACİL (sabrı en az kalan) bekleyene; eşitlikte en yakın (anti-starvation).
-        let best = claimable[0];
-        let bestTimer = Infinity;
-        let bestDist = Infinity;
-        for (const n of claimable) {
-          const d = dist2D(w.pos, LAYOUT.tables[n.tableIndex].table);
-          if (n.timer < bestTimer - 1e-6 || (Math.abs(n.timer - bestTimer) <= 1e-6 && d < bestDist)) {
-            bestTimer = n.timer;
-            bestDist = d;
-            best = n;
-          }
+  const svc = world.services[THE_SERVICE];
+  const wCount = svc?.open ? Math.min(svc.waiters, MAX_WAITERS) : 0;
+  if (wCount === 0) {
+    c.waiters = [];
+    return;
+  }
+  const wStep = waiterSpeedFor(s.waiterUpgrades.speed) * dt;
+  const wTrayCap = waiterTrayCapacityFor(s.waiterUpgrades.tray);
+  const claimed = new Set<number>(); // bu tick'te hedeflenen masa index'leri (claim)
+  const prev = s.waiters;
+  const out: Waiter[] = [];
+
+  for (let i = 0; i < wCount; i++) {
+    const home: Vec3 = [LAYOUT.waiterHomes[THE_SERVICE][0] + i * 0.7, 0, LAYOUT.waiterHomes[THE_SERVICE][2]];
+    const p = prev[i];
+    const w: Waiter = p
+      ? { pos: [...p.pos] as Vec3, tray: p.tray, trayFood: p.trayFood ?? 0 }
+      : { pos: [...home] as Vec3, tray: 0, trayFood: 0 };
+    // Garson kirli masaya ürün GÖTÜRMEZ (D-019). Her garson için YENİDEN filtrelenir (öncekinin
+    // bu tick servis ettiği müşteri listeden düşer).
+    const waiting = liveNpcs.filter((n) => n.state === 'waitingForTea' && !dirty.has(n.tableIndex));
+    // Elindeki ürünle DOYURULABİLİR bekleyenler (tepsisinde çay varsa çay isteyenler…).
+    const canServe = (n: (typeof waiting)[number]) => (n.product === 'tost' ? w.trayFood > 0 : w.tray > 0);
+    const claimable = waiting.filter((n) => !claimed.has(n.tableIndex) && canServe(n));
+
+    if (w.tray + w.trayFood > 0 && claimable.length > 0) {
+      // Teslimat: en ACİL (sabrı en az kalan) bekleyene; eşitlikte en yakın (anti-starvation).
+      let best = claimable[0];
+      let bestTimer = Infinity;
+      let bestDist = Infinity;
+      for (const n of claimable) {
+        const d = dist2D(w.pos, LAYOUT.tables[n.tableIndex].table);
+        if (n.timer < bestTimer - 1e-6 || (Math.abs(n.timer - bestTimer) <= 1e-6 && d < bestDist)) {
+          bestTimer = n.timer;
+          bestDist = d;
+          best = n;
         }
-        claimed.add(best.tableIndex);
-        const targetTable = LAYOUT.tables[best.tableIndex].table;
-        if (navStep(w.pos, targetTable, wStep, navGrid, REACH_TABLE, player, obstacles)) {
-          // Y3 (plan §3): TEK durakta o masada bekleyen HERKESE tepsi yettiğince bırakır
-          // (grup + tepsi-3 = tek seferde; artan çayla sıradaki acil masaya devam eder).
-          for (const n of waitingNpcs) {
-            if (w.tray <= 0) break;
-            if (n.tableIndex !== best.tableIndex) continue;
-            n.state = 'drinking';
-            n.timer = C.npc.eatTime;
-            w.tray -= 1;
-            stats.waiterServed += 1;
-            stats.waiterServedByService[z] = (stats.waiterServedByService[z] ?? 0) + 1; // v21: zone-başı sayaç
-            xp += C.xp.perWaiterServed;
-          }
-        }
-      } else if (w.tray < wTrayCap && waitingNpcs.length > 0) {
-        // Yükleme: KENDİ zone'unun ocağının ÖN yüzüne git (bardaklar önde); varınca tepsiye al.
-        if (
-          navStep(w.pos, LAYOUT.stationPickups[z], wStep, navGrid, REACH_PICKUP, player, obstacles) &&
-          readyCupsByService[z] > 0
-        ) {
-          const take = Math.min(wTrayCap - w.tray, readyCupsByService[z]);
-          w.tray += take;
-          readyCupsByService[z] -= take;
-        }
-      } else {
-        // Boşta: kendi köşesine dön (2. garson 1.'in 0.7 sağında bekler — üst üste binmez).
-        navStep(w.pos, home, wStep, navGrid, REACH_HOME, player, obstacles);
       }
-      return w;
-    };
-    waiters[z] = runWaiter(waiters[z], 0);
-    waiters2[z] = wCount >= 2 ? runWaiter(waiters2[z], 0.7) : null;
+      claimed.add(best.tableIndex);
+      if (navStep(w.pos, LAYOUT.tables[best.tableIndex].table, wStep, navGrid, REACH_TABLE, player, obstacles)) {
+        // TEK durakta o masada bekleyen HERKESE tepsi yettiğince bırakır (grup + tepsi-3 = tek seferde).
+        for (const n of waiting) {
+          if (w.tray + w.trayFood <= 0) break;
+          if (n.tableIndex !== best.tableIndex || !canServe(n)) continue;
+          n.state = 'drinking';
+          n.timer = C.npc.eatTime;
+          if (n.product === 'tost') w.trayFood -= 1;
+          else w.tray -= 1;
+          stats.waiterServed += 1;
+          stats.waiterServedByService[THE_SERVICE] = (stats.waiterServedByService[THE_SERVICE] ?? 0) + 1;
+          xp += C.xp.perWaiterServed;
+        }
+      }
+    } else if (w.tray + w.trayFood < wTrayCap && waiting.length > 0) {
+      // Yükleme: servisin ÖN yüzüne git (ürünler önde); varınca EN ACİL bekleyenin ürününden yükle.
+      if (navStep(w.pos, LAYOUT.stationPickups[THE_SERVICE], wStep, navGrid, REACH_PICKUP, player, obstacles)) {
+        // Talep sırası: en acil bekleyenin ürünü önce; kalan yere diğer üründen doldurur.
+        const order = [...waiting].sort((a, b) => a.timer - b.timer).map((n) => n.product);
+        for (const prod of [...order, 'tea' as const, 'tost' as const]) {
+          const free = wTrayCap - w.tray - w.trayFood;
+          if (free <= 0) break;
+          const take = Math.min(free, ready[prod]);
+          if (take <= 0) continue;
+          if (prod === 'tost') w.trayFood += take;
+          else w.tray += take;
+          ready[prod] -= take;
+        }
+      }
+    } else {
+      // Boşta: kendi bekleme noktasına dön (garsonlar 0.7 br arayla — üst üste binmez).
+      navStep(w.pos, home, wStep, navGrid, REACH_HOME, player, obstacles);
+    }
+    out.push(w);
   }
   c.xp = xp;
-  c.waiters = waiters;
-  c.waiters2 = waiters2;
+  c.waiters = out;
 }
 
 /**
- * Bulaşıkçı (Faz 2e kısmi assist), SERVİS BAŞINA: kendi servisine bağlı masaların kirlilerini
- * toplar, kendi servisinin bulaşık noktasında yıkar (D-022).
+ * BULAŞIKÇI (Faz 2e kısmi assist) — B2'de kat çapında TEK kişi: kirlileri nerede olursa olsun
+ * toplar, katın tek bulaşık noktasında yıkar. (Eskiden her servisin kendi bulaşıkçısı vardı ve
+ * yalnız kendi bölgesinin kirlilerine bakardı.)
  */
 function dishwasherSystem(c: TickCtx): void {
   const { dt, s, world, obstacles, navGrid, player } = c;
   let dishes = c.dishes;
   let cleanCups = c.cleanCups;
-  const dishwashers: (Waiter | null)[] = s.dishwashers.slice();
-  for (let z = 0; z < MAX_SERVICES; z++) {
-    const svc = world.services[z];
-    if (!svc?.open || !svc.hasDishwasher) {
-      dishwashers[z] = null;
-      continue;
+  const svc = world.services[THE_SERVICE];
+  if (!svc?.open || !svc.hasDishwasher) {
+    c.dishwasher = null;
+    return;
+  }
+  const prevDw = s.dishwasher;
+  const dw: Waiter = prevDw
+    ? { pos: [...prevDw.pos] as Vec3, tray: prevDw.tray, trayFood: prevDw.trayFood }
+    : { pos: [...LAYOUT.dishwasherHomes[THE_SERVICE]] as Vec3, tray: 0, trayFood: 0 };
+  const dStep = dishSpeedFor(s.waiterUpgrades.dishSpeed) * dt; // v29: hız panel kademesinden
+  const dCap = dishCarryCapacityFor(s.waiterUpgrades.dishCarry);
+  const carried = dw.tray + dw.trayFood;
+  if (carried >= dCap || (carried > 0 && dishes.length === 0)) {
+    // Dolu (ya da elinde var ama toplanacak kalmadı) → bulaşıkta yıka. Bardak da tabak da AYNI
+    // havuza döner (korunum değişmezi tek).
+    if (navStep(dw.pos, LAYOUT.dishStations[THE_SERVICE], dStep, navGrid, REACH_WASH, player, obstacles)) {
+      cleanCups += dw.tray + dw.trayFood;
+      dw.tray = 0;
+      dw.trayFood = 0;
     }
-    const prevDw = dishwashers[z];
-    const dw: Waiter = prevDw
-      ? { pos: [...prevDw.pos] as Vec3, tray: prevDw.tray }
-      : { pos: [...LAYOUT.dishwasherHomes[z]] as Vec3, tray: 0 };
-    const dStep = dishSpeedFor(s.waiterUpgrades.dishSpeed) * dt; // v29: hız panel kademesinden
-    const dCap = dishCarryCapacityFor(s.waiterUpgrades.dishCarry);
-    const zoneDishes = dishes.filter((d) => serviceOfTable(d.tableIndex) === z);
-    if (dw.tray >= dCap || (dw.tray > 0 && zoneDishes.length === 0)) {
-      // Dolu (ya da elinde var ama toplanacak kalmadı) → KENDİ zone'unun bulaşığında yıka.
-      if (navStep(dw.pos, LAYOUT.dishStations[z], dStep, navGrid, REACH_WASH, player, obstacles)) {
-        cleanCups += dw.tray;
-        dw.tray = 0;
-      }
-    } else if (zoneDishes.length > 0) {
-      // Topla: kendi zone'undaki en yakın kirli bardağa yaklaş; collectRadius'a girince al.
-      let target = zoneDishes[0];
-      let td = Infinity;
-      for (const d of zoneDishes) {
-        const dd = dist2D(dw.pos, d.pos);
-        if (dd < td) { td = dd; target = d; }
-      }
-      if (navStep(dw.pos, target.pos, dStep, navGrid, C.cups.collectRadius, player, obstacles)) {
-        dishes = dishes.filter((d) => d.id !== target.id);
-        dw.tray += 1;
-      }
-    } else {
-      // Boşta: kendi zone'unun köşesine dön.
-      navStep(dw.pos, LAYOUT.dishwasherHomes[z], dStep, navGrid, REACH_HOME, player, obstacles);
+  } else if (dishes.length > 0) {
+    // Topla: KATTAKİ en yakın kirli kaba yaklaş; collectRadius'a girince al.
+    let target = dishes[0];
+    let td = Infinity;
+    for (const d of dishes) {
+      const dd = dist2D(dw.pos, d.pos);
+      if (dd < td) { td = dd; target = d; }
     }
-    dishwashers[z] = dw;
+    if (navStep(dw.pos, target.pos, dStep, navGrid, C.cups.collectRadius, player, obstacles)) {
+      dishes = dishes.filter((d) => d.id !== target.id);
+      // Kabın TÜRÜ leğende korunur (B2: tek bulaşıkçı iki tür de toplar → tabak taşırken elinde
+      // bardak görünmez; oyuncu tepsisindeki carriedDirty/carriedDirtyFood ayrımının aynısı).
+      if (target.kind === 'plate') dw.trayFood += 1;
+      else dw.tray += 1;
+    }
+  } else {
+    // Boşta: bulaşık köşesine dön.
+    navStep(dw.pos, LAYOUT.dishwasherHomes[THE_SERVICE], dStep, navGrid, REACH_HOME, player, obstacles);
   }
   c.dishes = dishes;
   c.cleanCups = cleanCups;
-  c.dishwashers = dishwashers;
+  c.dishwasher = dw;
 }
 
 /**
@@ -802,7 +827,7 @@ function revealSystem(c: TickCtx): void {
   const questCoveredReveals = new Set<string>();
   for (let qi = questIndex; qi < C.quests.length; qi++) {
     const t = C.quests[qi].target;
-    if (t.type === 'stationLevel') questCoveredReveals.add(`upgrade:${t.service ?? 0}`);
+    if (t.type === 'stationLevel') questCoveredReveals.add(`upgrade:${THE_SERVICE}`);
     else if (t.type === 'tableLevel') questCoveredReveals.add('tableUp:0');
     else if (t.type === 'tablesAtLevel') questCoveredReveals.add(`tableUp:${t.area ?? 0}`);
     else if (t.type === 'pad') questCoveredReveals.add(`opt:${t.id}`);
@@ -838,14 +863,15 @@ function revealSystem(c: TickCtx): void {
   }
   // GUARD (gece fix 2026-06-10): oyuncu AÇIK bir ocağın pickup yarıçapındaysa niyeti ÇAY ALMAK'tır —
   // yükseltme dolumu kesinlikle başlamaz (mekânsal ayrımın yanında ikinci emniyet).
-  let inPickupRange = false;
-  for (let z = 0; z < areasOpen; z++)
-    if (dist2D(player, LAYOUT.stations[z]) < C.serving.pickupRadius) { inPickupRange = true; break; }
-  if (!onFillId && !inPickupRange) {
-    for (let z = 0; z < areasOpen; z++) {
-      if (!stationUpgradeUnlocked(z, padGate) || stationLevels[z] >= stationSoftMaxLevel()) continue;
-      if (dist2D(player, LAYOUT.stationUpgradeSpots[z]) < PAD_RADIUS) { onFillId = FILL_TEA + z; break; }
-    }
+  const inPickupRange = dist2D(player, LAYOUT.stations[THE_SERVICE]) < C.serving.pickupRadius;
+  if (
+    !onFillId &&
+    !inPickupRange &&
+    stationUpgradeUnlocked(padGate) &&
+    stationLevels[THE_SERVICE] < stationSoftMaxLevel() &&
+    dist2D(player, LAYOUT.stationUpgradeSpots[THE_SERVICE]) < PAD_RADIUS
+  ) {
+    onFillId = FILL_TEA + THE_SERVICE;
   }
   if (!onFillId) {
     for (let i = 0; i < tables; i++) {
@@ -902,8 +928,8 @@ function padFillSystem(c: TickCtx): void {
       }
       // Masa pad'i oyuncunun DURDUĞU yerde belirir → oyuncu masanın içinde kalmasın, anında dışarı it.
       if (activePad.effect.type === 'addTable') {
-        // En geniş masa yarısı (yemek masası 0.7) — push-out hiçbir masa tipinde içeride bırakmaz.
-        const out = LAYOUT.foodTableHalf[0] + pr + 0.1;
+        // Masa yarısı + oyuncu yarıçapı — push-out oyuncuyu masanın içinde bırakmaz.
+        const out = LAYOUT.tableHalf[0] + pr + 0.1;
         let ex = player[0] - padPos[0];
         let ez = player[2] - padPos[2];
         const ed = Math.hypot(ex, ez);
@@ -954,7 +980,8 @@ function stationUpgradeSystem(c: TickCtx): void {
     }
     const lv = stationLevels[z];
     const nextCost = lv < stationSoftMaxLevel() ? stationUpgradeCostAt(z, lv) : cost;
-    const unitName = serviceProduct(z) === 'tost' ? 'Tost Tezgâhı' : 'Çay Ocağı';
+    // Etiket seviyenin KİMLİĞİNİ söyler (tek merdiven, iki kimlik): L4'ten önce ocak, sonra tezgâh.
+    const unitName = isCounter(lv) ? 'Tezgâh' : 'Çay Ocağı';
     // GÖRSEL: istasyon L1'den başlar (iç seviye 0-tabanlı; etiket +1). Soft max → "Usta" (💎/video, Faz 4).
     activeSpot = {
       kind: 'upgrade',
@@ -1015,16 +1042,16 @@ function tableUpgradeSystem(c: TickCtx): void {
  * D-015: padsDone değiştiyse türetilen alanlar yeniden hesaplanır (tek yazım noktası)
  */
 function deriveSystem(c: TickCtx): void {
-  const { padsDone, waiters, dishwashers } = c;
+  const { padsDone, waiters } = c;
   const out = deriveWorld(padsDone);
-  // Personel pad'i bu frame tamamlandıysa varlığını KENDİ SERVİSİNDE kur (türetilir).
-  for (const sv of out.services) {
-    if (!sv.open) continue;
-    if (sv.waiters >= 1 && !waiters[sv.index])
-      waiters[sv.index] = { pos: [...LAYOUT.waiterHomes[sv.index]] as Vec3, tray: 0 };
-    if (sv.hasDishwasher && !dishwashers[sv.index])
-      dishwashers[sv.index] = { pos: [...LAYOUT.dishwasherHomes[sv.index]] as Vec3, tray: 0 };
-  }
+  // Personel pad'i bu karede tamamlandıysa aktörü HEMEN var et (GLOBAL havuz — B2).
+  const svc = out.services[THE_SERVICE];
+  const home = LAYOUT.waiterHomes[THE_SERVICE];
+  while (waiters.length < svc.waiters)
+    waiters.push({ pos: [home[0] + waiters.length * 0.7, 0, home[2]] as Vec3, tray: 0, trayFood: 0 });
+  if (waiters.length > svc.waiters) waiters.length = svc.waiters;
+  if (svc.hasDishwasher && !c.dishwasher)
+    c.dishwasher = { pos: [...LAYOUT.dishwasherHomes[THE_SERVICE]] as Vec3, tray: 0, trayFood: 0 };
   c.out = out;
 }
 

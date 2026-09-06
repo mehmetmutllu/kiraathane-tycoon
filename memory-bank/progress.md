@@ -1286,7 +1286,7 @@ yerleşim taşınırken de kullanılacak. Kullanım dosya başında.
 maket ölçeğine taşı (artık tek dosya: `layout.ts`), (3) kayıt v31 + migrasyon, (4) G4/G5 KayKit.
 Faz G artığı: UI Canvas'ları hâlâ eski düz ışıkla.
 
-## Faz B — Model geçişi 🔧 (2/6 · B0 harita + B1 model dönüşümü bitti)
+## Faz B — Model geçişi 🔧 (3/6 · B0 harita + B1 model + B2 servis tekilleşmesi bitti)
 
 ### B0 — Adım haritası + dört karar ✅ (2026-09-06)
 - ✅ **Maket v13'ün altı adımı ↔ bugünkü pad zinciri eşleştirildi.** Rapor `docs/faz-b-harita.html`
@@ -1331,9 +1331,37 @@ Faz G artığı: UI Canvas'ları hâlâ eski düz ışıkla.
 - **Testler:** 206 → **207** (32 migrasyon testi kalktı, 33 yeni test geldi: dünya modeli ayrışması
   20 + v31 sıfırlama 9 + gating/reveal/gelir ayrımı 3). smoke 26/26, build temiz, eslint 16 → 15.
 
-### B2 — Servis tekilleşir ⏳
-3 ocak → 1 servis noktası (L1-L3 çay ocağı · L4 tezgâh · L5 tost · L6 son ₺); ürün seviyeden gelir;
-garson havuzu global. **Davranış burada değişir** → güvence parmak izi değil tempo ölçümü.
+### B2 — Servis tekilleşir ✅ (2026-09-06 gece)
+3 ocak → **1 servis noktası**; ürün bölgeden değil **seviyeden** gelir; personel havuzu **global**.
+Karar kaydı: **D-060**.
+- **`SERVICE_AREAS = [0]`** — B1'in ayırdığı iki soru burada ayrı cevap verdi: `serviceInArea()`
+  (yerleşim: yalnız 1. alanda servis durur) vs `serviceOfTable()` (üretim: hep tek nokta).
+  Alan açmak artık ocak açmaz; çağıranların hiçbiri değişmedi (B1'in asıl kazancı).
+- **Tek merdiven, iki kimlik:** L1-L3 çay ocağı · **L4 TEZGÂH** (gövde kaplanır, pirinç bant + arka
+  cezve ocağı; obje yer değiştirmez, seviye sıfırlanmaz) · **L5 TOST** (sac + pres, tostlar sacda
+  bekler) · L6 (ikinci pres + menü panosu). `TeaStation.tsx`+`TostStation` → tek **`ServicePoint.tsx`**.
+- **Talep müşteride:** `Npc.product` — müşteri otururken ürününü seçer, tost payı seviyeden
+  (`tostShareByLevel` L5 %25 · L6 %35). Tezgâh iki kuyruğa üretir, hangi ürünün AÇIĞI büyükse onu
+  hazırlar; seçilmeyen ürünün yarım ilerlemesi kaybolmaz.
+- **Global havuz: 3 garson + 1 bulaşıkçı** (kullanıcı seçimi). `waiters[]` düz liste + tek
+  `dishwasher`; "Tostçu Garson" sekmesi/eğrisi kalktı (tek "Garson" sekmesi, tek tepsi/hız hattı).
+  Garson tepsisi KARIŞIK (çay+tost, kapasite ortak); bulaşıkçı kabın TÜRÜNÜ leğende korur.
+- **Zincir asgari cerrahi:** alan-başı personel pad'leri çıktı, **bulaşıkçı Bölüm 2'ye** taşındı
+  (plan §4 adım 14) → Bölüm 1 dört adımda biter. `waiter3` opsiyonel geç-oyun pad'i geldi.
+  Görev hattı yeniden dizildi: ocak L1/L2/L3 · **q_counter (L4)** · **q_tost (L5)** hattın omurgasında.
+- **DENGE (ölçüldü, D-060):** servis eğrisi **20/30/45/800/2400/9000** (L1-L3 erken oyun dokunulmadı);
+  `zone2` 1100→750, `zone3` 4200→3400, `dishwasher` 200→900 (Bölüm 2'ye taşındı).
+  Normal profil: ilk alım 40sn · garson 11,1dk · 2. Alan 34,6dk · bulaşıkçı 60dk · 3. Alan 1,83sa ·
+  tezgâh 1,99sa · tost 2,55sa — **plan §5'in altı bandının altısı da tutuyor.**
+- **Simülatör düzeltildi:** "en ucuz darboğazı al" yerine **görev hattını takip eder** ve personel/masa
+  yükseltmelerini gerçekten satın alır (eskiden bedavaydılar). Tezgâh pahalılaşınca sıralama tempoyu
+  belirleyen şeyin kendisi oldu — tempo iddiası ancak bu düzeltmeden sonra anlamlı.
+- **Yan temizlik:** "yemek alanı" kimliği (dikdörtgen masa + arkalıklı sandalye + sofra propları +
+  zemin amblemi + tost tezgâhının ayrı geometrisi) ürünle birlikte kalktı; menü panosu tezgâhın
+  L6 basamağına bağlandı. Bardak havuzu ALANLA ölçekleniyor (`totalCupPool(areasOpen, …)`).
+- **Testler 207 → 209** (düşmedi): zone-tabanlı paketler B2 modeline yeniden yazıldı
+  (2. Alan · TOST seviyeden · servis noktası · gating · görev hattı · garson havuzu).
+  smoke 26/26 · build temiz · eslint 15 (B1 ile aynı).
 
 ### B3 — Yerleşim maket ölçeğine ⏳
 `layout.ts` tek dosya: 34×34, dört alan, arka bant (servis bloğu · merdiven · lavabo, üçü de

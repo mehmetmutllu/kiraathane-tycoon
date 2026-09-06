@@ -4,6 +4,7 @@
  * (referans: My Perfect Hotel / Burger Please ikon dili). Hepsi vektör → her DPI'da net.
  */
 import type { QuestTarget } from '../../config/economy.config';
+import { TOST_LEVEL } from '../../game/world';
 
 /** Altın para destesi (yumuşak para birimi — ₺ sembolü kullanılmaz, jenerik pul). */
 export function CoinIcon({ size = 28 }: { size?: number }) {
@@ -410,7 +411,8 @@ export function QuestPhoto({ target, size = 44 }: { target: QuestTarget; size?: 
       }
       break;
     case 'stationLevel':
-      if (target.service === 2) {
+      // B2: tek servis merdiveni — L5 (tost) hedefi tost dilimiyle, altı çay bardağıyla anlatılır.
+      if (target.level >= TOST_LEVEL) {
         bg = '#a8682a';
         inner = <TostSlice />;
       } else {
@@ -420,7 +422,7 @@ export function QuestPhoto({ target, size = 44 }: { target: QuestTarget; size?: 
       up = true;
       break;
     case 'waiterSpeed':
-      bg = target.kind === 'tost' ? '#a8682a' : '#33691e';
+      bg = '#33691e';
       inner = <PersonIcon />;
       up = true;
       break;
@@ -431,10 +433,9 @@ export function QuestPhoto({ target, size = 44 }: { target: QuestTarget; size?: 
       up = true;
       break;
     case 'waiterTray':
-      // Garson tepsi görevi (Y3): garson rengi + tepsi; tostçu tepsisinde TOST dilimi (turu-4 —
-      // "tost tepsisi diyor ama SVG'de çay var" tutarsızlığı giderildi).
-      bg = target.kind === 'tost' ? '#a8682a' : '#33691e';
-      inner = <TrayIcon food={target.kind === 'tost'} />;
+      // Garson tepsi görevi (Y3). B2: tek havuz → tek görsel.
+      bg = '#33691e';
+      inner = <TrayIcon />;
       up = true;
       break;
     case 'charStat':

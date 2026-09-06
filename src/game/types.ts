@@ -1,3 +1,5 @@
+import type { ProductId } from '../config/economy.config';
+
 export type Vec3 = [number, number, number];
 
 // D-011: çay artık oto servis edilmez. Müşteri oturur → 'waitingForTea' (sabır timer'ı)
@@ -15,6 +17,13 @@ export interface Npc {
   seatIndex: number;
   /** O anki durumun geri sayım süresi (sn). */
   timer: number;
+  /**
+   * İSTEDİĞİ ÜRÜN (B2). Eskiden ürün müşterinin değil MASASININ bölgesinin özelliğiydi
+   * ("3. salonda oturan tost ister"); artık müşteri gelirken kendi seçer, tost payı servis
+   * noktasının seviyesinden gelir (`tostShare`). Sipariş nesnesi `{çay:1, tost:2}` Faz C'de.
+   * TRANSIENT — NPC'ler kaydedilmez.
+   */
+  product: ProductId;
   /** Rastgele gövde rengi (greybox çeşitliliği). */
   color: string;
 }
@@ -45,7 +54,10 @@ export interface Dish {
 // (Bulaşıkçı da aynı yapıyı kullanır: `tray` = taşınan kirli bardak sayısı.)
 export interface Waiter {
   pos: Vec3;
-  /** Taşıdığı bardak (garson: çay; bulaşıkçı: kirli). 0..ilgili kapasite. */
+  /** Taşıdığı ÇAY (garson) / kirli kap (bulaşıkçı). 0..ilgili kapasite. */
   tray: number;
+  /** Taşıdığı TOST (yalnız garson; B2'de tek servis iki ürün verdiği için tepsi iki bölmeli —
+   *  oyuncunun tray/trayFood ikilisiyle aynı desen). Kapasite ORTAK: tray + trayFood ≤ tepsi. */
+  trayFood: number;
 }
 

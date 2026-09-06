@@ -188,7 +188,7 @@ h2{font-size:21px;font-weight:800}
      ══════════════════════════════════════════════════════════════════════ -->
 <script type="application/json" id="durum">{
   "guncelleme": "06.09.2026",
-  "yapilan": 43,
+  "yapilan": 44,
   "toplam": 65,
   "kilometre": [
     {
@@ -209,32 +209,31 @@ h2{font-size:21px;font-weight:800}
     }
   ],
   "ozet": {
-    "etiket": "Bu oturum · Faz B · 1/5 — B1 bitti",
-    "baslik": "Mekân modeli ayrıştı: tek “bölge” kavramı dörde bölündü, oyun hiç değişmedi",
-    "aciklama": "Kod bugüne kadar tek bir <b>bölge</b> kavramıyla çalışıyordu ve bu kavram aynı anda üç ayrı şey demekti: mekânın bir parçası, bir servis noktası (ocak + bulaşık + personel), ve dörtlü bir masa grubu. Maket bu birlikteliği bozuyor — planlanan ikinci alanın <b>kendi ocağı yok</b>, üçüncü alan masa değil <b>tezgâh</b> getiriyor. Bu yüzden önce model ayrıştırıldı: <b>ALAN · SERVİS · MASA · ODA</b>. Bu oturumda oyunun davranışı bilerek <b>hiç değiştirilmedi</b>; içerik hâlâ 3 alan, 12 masa, 3 servis.",
+    "etiket": "Bu oturum · Faz B · 2/5 — B2 bitti",
+    "baslik": "Üç ocak tek tezgâha indi: ürün artık salondan değil seviyeden geliyor",
+    "aciklama": "Bugüne kadar her salonun kendi ocağı, kendi bulaşığı ve kendi garsonu vardı; tost da üçüncü salonun ürünüydü. Onaylı makette öyle değil: kat boyunca <b>tek bir servis noktası</b> var, seviye atladıkça çay ocağından <b>tezgâha</b> dönüşüyor ve <b>tost o merdivenin bir basamağı</b> olarak açılıyor. Bu oturumda o geçiş yapıldı — ve bu sefer oyunun davranışı bilerek <b>değişti</b>, o yüzden güvence “hiçbir şey değişmedi” değil <b>tempo ölçümü</b>.",
     "adimlar": [
-      "Dört kavram tek dosyada tanımlandı; <b>servis ile alan arasındaki bağ tek bir listeye</b> indi — sıradaki adımda o liste tek satır değişince servisler birleşecek ve geri kalan kod hiç değişmeyecek",
-      "Masa artık bir <b>sayı</b> değil <b>liste</b>: her masa kendi alanını ve kendi servisini ayrı ayrı taşıyor",
-      "Yerleşim dizileri neye ait olduklarını <b>söylüyor</b>: ocak/bulaşık/personel servise, zemin/duvar/kapı alana göre",
-      "Yanlış isimler düzeltildi — en yanıltıcısı “aktif bölge”ydi, oysa anlamı “oyuncunun üstünde durduğu nokta”",
-      "<b>Kayıt v31: temiz sıfırlama.</b> Eski kayıtlardaki satın alma kimliklerinin yeni zincirde karşılığı yok; artık var olmayan bir zincir için göç yazılmaz. Ayarlar korunuyor, ilerleme sıfırlanıyor — 520 satırlık göç kodu silindi, <b>kayıt dosyası 751 → 188 satır</b>",
-      "<b>Davranışın değişmediği ölçüldü:</b> 2014 satırlık durum parmak izi birebir aynı; ekonomi simülasyonunun bütün sayıları da aynı",
-      "Testler <b>206 → 207</b> (32 göç testi kalktı, 33 yeni test geldi), duman testi 26/26, derleme temiz"
+      "Servis ile alan arasındaki bağ <b>tek satır kısaldı</b> ve üç ocak tek noktaya indi — B1'in bütün amacı buydu, çağıran kodun hiçbir yeri değişmedi",
+      "<b>Tek merdiven, iki kimlik:</b> L1–L3 derme çatma çay ocağı · <b>L4 tezgâh</b> (obje yerinde kalır, yalnız kimlik değişir) · <b>L5 tost açılır</b> · L6 son para basamağı",
+      "Müşteri artık <b>kendi ürününü seçiyor</b>: tost isteme oranı tezgâhın seviyesinden geliyor, oturduğu salondan değil",
+      "Garson ve bulaşıkçı <b>tek havuzda</b> (3 garson + 1 bulaşıkçı): “Tostçu Garson” ayrımı, ayrı tepsi ve ayrı hız hattı kalktı; bir garsonun tepsisinde artık çay ve tost birlikte durabiliyor",
+      "Bulaşıkçı <b>ikinci bölüme</b> taşındı (planın 14. adımı) → ilk bölüm dört adımda bitiyor, otomasyon 12 dakikadan önce geliyor",
+      "<b>Tempo yeniden ayarlandı ve ölçüldü:</b> ilk alım 40 sn · garson 11 dk · 2. salon 35 dk · bulaşıkçı 60 dk · tezgâh 2 sa · tost 2,5 sa — <b>planın altı hedef bandının altısı da tutuyor</b>",
+      "Testler <b>207 → 209</b> (bölge modeline dayanan paketler yeni modele yeniden yazıldı) · duman testi 26/26 · derleme temiz"
     ],
-    "not": "<b>Neden önce model, sonra içerik:</b> ikisi aynı anda değişseydi bir hata diğerinin arkasına saklanırdı. Model değişirken içerik sabit tutulduğu için “oyun aynı mı kaldı?” sorusu <b>tek bir dosya farkıyla</b> cevaplanabildi.<br><br><b>Ölçüm aracının kendi hatası çıktı:</b> parmak izi aracı durum kopyasını yüzeysel çıkardığı için bir sayaç dizisi bütün karelerde <b>paylaşılıyordu</b> — dört karenin dördü de son değeri gösteriyordu, yani taban dosyası sessizce yanlıştı. Fark görülünce kod kurcalanmadı, önce <b>araç</b> denetlendi; düzeltilmiş araçla eski sürümde taban yeniden alındı ve fark sıfır çıktı."
+    "not": "<b>Bu oturumun dersi: ölçüm aracının oyuncu modeli de yanılabilir.</b> Simülatör “her an en ucuz darboğazı al” diyen bir oyuncu varsayıyordu; oyun ise ekranda tek görev gösterip oyuncuyu ona yönlendiriyor. Ocak ucuzken bu fark önemsizdi — tezgâh ve tost pahalılaşınca <b>hangi sırayla alındığı temponun kendisi</b> oldu. Simülatör görev hattını takip edecek şekilde yeniden yazıldı ve personel yükseltmeleri de artık gerçekten satın alınıyor (eskiden bedava sayılıyorlardı). B1'in dersi “aracın çıktısı yanılabilir”di; bunun dersi <b>“aracın varsayımı yanılabilir”</b>.<br><br><b>“Kat tamam” hâlâ 2,7 saat</b>, hedef 5–7. Kalan süre yerleşim (20 masa) ve banketlerle gelecek; olmayan içeriği pahalılıkla taklit etmek oyunu yalnızca yavaşlatırdı."
   },
   "siradaki": {
-    "etiket": "Faz B · B2 — Servis tekilleşir",
-    "baslik": "Üç ocak tek servis noktasına iniyor",
-    "aciklama": "Bugün her salonun kendi ocağı, kendi bulaşığı ve kendi garsonu var. Makette öyle değil: <b>tek bir servis noktası</b> var, seviye atladıkça çay ocağından tezgâha dönüşüyor ve tost açılıyor; garsonlar da tek havuzda. B1 bunun altyapısını kurdu — servis ile alan arasındaki bağ tek bir listede duruyor, o liste kısalınca yapı kendiliğinden takip edecek.",
+    "etiket": "Faz B · B3 — Yerleşim maket ölçeğine",
+    "baslik": "Önce kadraj sorusu: kat 2,6 katına çıkıyor, telefonda ne görünecek?",
+    "aciklama": "Sıradaki adım katı maket ölçeğine taşımak: bugünkü zemin 21×21, hedef <b>34×34</b>; masa 12 → 20; arka bantta servis bloğu, lavabo ve yıkık merdiven. Ama bu adıma <b>kod yazarak başlanmayacak</b>: portre ekranda aynı kare 2,6 kat alan göstermek zorunda kalacak ve bunun nasıl çözüleceği (kamera geri mi çekilsin, oyuncuyu daha yakın mı takip etsin) mühendislik değil <b>tasarım</b> kararı.",
     "adimlar": [
-      "Servis noktası <b>tek merdiven</b>: L1–L3 çay ocağı, L4 tezgâh, L5 tost, L6 son para seviyesi",
-      "Ürün artık salondan değil <b>servisin seviyesinden</b> geliyor — “Tostçu Garson” ayrımı kalkıyor",
-      "Garson havuzu <b>global</b>: garson salona değil mekâna ait",
-      "<b>Davranış burada değişiyor</b> → güvence parmak izi değil <b>tempo ölçümü</b> (simülatör + tempo tablosu)",
-      "Sonra sırayla: B3 yerleşim (önce kadraj onayı) · B4 lavabo ve merdiven odaları · B5 masa tipleri ve banket"
+      "<b>Üç kamera kademesi aynı kareden çekilip karşılaştırma olarak sunulacak</b> — onay gelmeden yerleşim dosyasına dokunulmayacak (verilmiş karar)",
+      "Sonra yerleşim: 34 × 34, dört alan, arka bant (servis bloğu · merdiven · lavabo aynı hizada), orta şerit",
+      "Servis noktası bugün hâlâ birinci salonun sol duvarında duruyor; makette arka banda taşınıyor",
+      "Ardından: B4 lavabo ve yıkık merdiven odaları · B5 masa tipleri ve banket"
     ],
-    "not": "<b>Verilmiş karar:</b> yerleşim adımına (B3) başlarken üç kamera kademesi <b>aynı kareden</b> çekilip sorulacak — kat 2,6 katına çıkıyor, portre ekranda ne göründüğü bir tasarım kararı. Bu, G1 ve G3'te bir tur geri alma tasarruf eden yöntem.<br><br><b>Kırmızı çizgi duruyor:</b> “objeler yüzüyor” hissine bir daha alttaki yuvarlak önerilmeyecek."
+    "not": "<b>Neden önce kadraj:</b> G1 ve G3'te aynı yöntem birer tur geri alma tasarruf etti — görünüm kararı önce gösterilip onaylanınca, arkasından yazılan kod bir daha sökülmüyor.<br><br><b>Kırmızı çizgi duruyor:</b> “objeler yüzüyor” hissine bir daha alttaki yuvarlak önerilmeyecek."
   },
   "donemler": [
     {
@@ -324,8 +323,8 @@ h2{font-size:21px;font-weight:800}
         {
           "k": "B",
           "t": "Model geçişi",
-          "d": "ALAN / SERVİS / MASA / ODA ayrıştı (world.ts) · masa artık liste · kayıt v31 temiz sıfırlama (save.ts 751 → 188) · davranış parmak izi birebir aynı. Sırada: servis tekilleşir",
-          "yapilan": 1,
+          "d": "ALAN / SERVİS / MASA / ODA ayrıştı · masa artık liste · kayıt v31 temiz sıfırlama · servis TEKİLLEŞTİ (tek tezgâh, ürün seviyeden, personel havuzu) · tempo altı hedef bandını tutuyor. Sırada: yerleşim (önce kadraj onayı)",
+          "yapilan": 2,
           "toplam": 5,
           "kapi": "Maketin altı adımı oyunda gezilebiliyor",
           "durum": "now"
@@ -366,6 +365,22 @@ h2{font-size:21px;font-weight:800}
     }
   ],
   "gunluk": [
+    {
+      "tarih": "06.09.2026",
+      "etiket": "Faz B · 2. oturum (B2)",
+      "baslik": "Üç ocak tek tezgâha indi — ve tost bir salonun değil, bir seviyenin ürünü oldu",
+      "govde": "Oyun bugüne kadar şöyle çalışıyordu: her salonun kendi çay ocağı, kendi bulaşığı, kendi garsonu vardı; üçüncü salon açılınca da <b>tost</b> geliyordu, çünkü tost o salonun ürünüydü. Onaylanmış maket bunu tersine çeviriyor: kat boyunca <b>tek bir servis noktası</b> var. O nokta seviye atladıkça derme çatma bir çay ocağından <b>kafenin yüzü olan tezgâha</b> dönüşüyor, ve tost yeni bir salondan değil <b>o merdivenin beşinci basamağından</b> açılıyor.<br><br>Bir önceki oturum bu geçişin altyapısını kurmuştu: servis ile alan arasındaki bağ tek bir listeye toplanmıştı. Bu oturumda o liste <b>tek satır kısaldı</b> ve üç ocak tek noktaya indi — çağıran kodun hiçbir yeri değişmedi. Bunun yanında “Tostçu Garson” diye ayrı bir personel türü, ona ait ayrı tepsi ve ayrı hız hattı kalktı; garsonlar tek havuza girdi ve bir garsonun tepsisinde artık çay ile tost birlikte durabiliyor.<br><br><b>Bu sefer oyun bilerek değişti</b>, o yüzden güvence de değişti: “hiçbir şey değişmedi” diyen parmak izi yerine <b>tempo ölçümü</b>. Ölçüm bir denge açığı ortaya çıkardı — tost eskiden ayrı bir servisin pahalı eğrisinden geliyordu; aynı merdivene binince <b>300 liraya açılan bir tost</b> ortaya çıktı, yani oyun tostu yirminci dakikada veriyordu. Merdivenin üst yarısı yeniden fiyatlandı (erken oyuna dokunulmadan) ve altı hedef bandın altısı da tuttu.",
+      "maddeler": [
+        "Üç servis <b>tek servis noktasına</b> indi; alan açmak artık ocak açmıyor",
+        "<b>L4 tezgâh · L5 tost</b> — obje yer değiştirmiyor, seviye sıfırlanmıyor; yalnız kimlik değişiyor",
+        "Müşteri <b>kendi ürününü seçiyor</b>; tost oranı tezgâhın seviyesinden geliyor",
+        "Personel tek havuz: <b>3 garson + 1 bulaşıkçı</b>; bulaşıkçı ikinci bölüme taşındı",
+        "Tempo yeniden ayarlandı: ilk alım 40 sn · garson 11 dk · 2. salon 35 dk · tezgâh 2 sa · tost 2,5 sa",
+        "Testler <b>207 → 209</b> · duman testi 26/26 · derleme temiz",
+        "Ayrıca: <b>mağaza önizlemeleri</b> artık salonun ışığıyla çiziliyor — kartta gördüğün renk salondakiyle birebir"
+      ],
+      "not": "<b>Bu oturumun dersi: ölçüm aracının oyuncu modeli de yanılabilir.</b> Simülatör “her an en ucuz darboğazı al” diyen bir oyuncu varsayıyordu; oyun ise ekranda tek görev gösterip oyuncuyu ona yönlendiriyor. Ocak ucuzken bu varsayımın zararı yoktu. Tezgâh ve tost pahalılaşınca <b>hangi sırayla satın alındığı temponun kendisi</b> hâline geldi ve aynı config iki farklı cevap verdi: eski varsayımla tost 17 dakikada, gerçek oyuncu davranışıyla 2,5 saatte. Simülatör görev hattını takip edecek şekilde yeniden yazıldı; personel ve masa yükseltmeleri de artık gerçekten satın alınıyor (eskiden bedava sayılıyorlardı). Denge sayıları ancak bundan sonra ayarlandı."
+    },
     {
       "tarih": "06.09.2026",
       "etiket": "Faz B · 1. oturum (B1)",

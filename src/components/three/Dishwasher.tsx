@@ -4,14 +4,13 @@ import { useGame } from '../../game/store';
 import { Model } from './Model';
 import { useActorTransform } from './actorTransform';
 import { PALETTE } from '../../config/palette';
-import { serviceProduct } from '../../game/world';
 
-// Bulaşıkçının taşıdığı kirliler. Çay salonu = gri bardak; TOST salonu = yayvan kirli TABAK
-// (turu-5 kullanıcı bug'ı 2026-06-13: "tost garsonu boşları alınca tepsisinde bardak duruyor" —
-// bulaşıkçı yalnız KENDİ SERVİSİNİN kirlisini topladığından servisin ürünü kabın türünü belirler;
-// tabak görseli oyuncu tepsisindeki m.11 kalıbıyla aynı: disk + kırıntı).
-// v28: leğen yükseltmesiyle 8'e kadar çıkar → 4'lük sıralar; leğen taşınan adetle genişler.
-function CarriedDirty({ count, food }: { count: number; food: boolean }) {
+// Bulaşıkçının taşıdığı kirliler: gri bardak + yayvan kirli TABAK, KARIŞIK.
+// B2: tek bulaşıkçı katın her kabını toplar, o yüzden kabın türü artık "servisin ürünü"nden değil
+// KABIN KENDİSİNDEN gelir (leğende ayrı sayılır) — turu-5'teki "tepside yanlış kap" hatası bu
+// yüzden geri gelmez. v28: leğen yükseltmesiyle 8'e kadar → 4'lük sıralar.
+function CarriedDirty({ cups, plates }: { cups: number; plates: number }) {
+  const count = cups + plates;
   if (count <= 0) return null;
   const perRow = Math.min(count, 4);
   const w = Math.max(0.3, 0.14 + perRow * 0.13);
@@ -28,7 +27,7 @@ function CarriedDirty({ count, food }: { count: number; food: boolean }) {
         const rowCount = Math.min(count - row * 4, 4);
         const x = (col - (rowCount - 1) / 2) * 0.14;
         const z = count > 4 ? (row === 0 ? -0.08 : 0.08) : 0;
-        if (food) {
+        if (i >= cups) {
           return (
             <group key={i} position={[x, 0.05, z]}>
               <mesh castShadow>
@@ -54,13 +53,13 @@ function CarriedDirty({ count, food }: { count: number; food: boolean }) {
 }
 
 // Tek bulaşıkçı gövdesi (hook'lar per-unit kalsın diye ayrı bileşen).
-function DishwasherUnit({ service, tray, food }: { service: number; tray: number; food: boolean }) {
+function DishwasherUnit({ cups, plates }: { cups: number; plates: number }) {
   const outerRef = useRef<Group>(null);
   const ref = useRef<Group>(null);
   const read = useCallback(() => {
-    const dw = useGame.getState().dishwashers[service];
+    const dw = useGame.getState().dishwasher;
     return dw ? ([dw.pos[0], dw.pos[2]] as const) : null;
-  }, [service]);
+  }, []);
   useActorTransform(outerRef, ref, read);
   return (
     <group ref={outerRef}>
@@ -73,22 +72,17 @@ function DishwasherUnit({ service, tray, food }: { service: number; tray: number
             </mesh>
           }
         />
-        <CarriedDirty count={tray} food={food} />
+        <CarriedDirty cups={cups} plates={plates} />
       </group>
     </group>
   );
 }
 
-// Bulaşıkçılar (SERVİS başına; greybox: gri-mavi önlüklü kapsül). Faz 6'da .glb takılır.
+// BULAŞIKÇI (B2: kat çapında TEK kişi; greybox: gri-mavi önlüklü kapsül). Faz 6'da .glb takılır.
 export function Dishwasher() {
-  // P0 perf: konum React'e girmez (Waiter ile aynı gerekçe); seçici yalnız var/yok + leğen adedi.
-  const key = useGame((s) => s.dishwashers.map((dw) => (dw ? dw.tray : -1)).join(','));
-  const trays = key ? key.split(',').map(Number) : [];
-  return (
-    <>
-      {trays.map((tray, sv) =>
-        tray >= 0 ? <DishwasherUnit key={sv} service={sv} tray={tray} food={serviceProduct(sv) === 'tost'} /> : null,
-      )}
-    </>
-  );
+  // P0 perf: konum React'e girmez (Waiter ile aynı gerekçe); seçici yalnız var/yok + leğen içeriği.
+  const key = useGame((s) => (s.dishwasher ? `${s.dishwasher.tray}.${s.dishwasher.trayFood}` : ''));
+  if (!key) return null;
+  const [cups, plates] = key.split('.').map(Number);
+  return <DishwasherUnit cups={cups} plates={plates} />;
 }

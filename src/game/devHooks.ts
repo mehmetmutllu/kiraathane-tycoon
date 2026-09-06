@@ -2,6 +2,7 @@
 // window.__game  -> salt-okunur anlık görüntü
 // window.__advanceTime(sn) -> simülasyonu hızlı ileri sar
 import { useGame, visiblePads, questCounterValue, LAYOUT, trayCapacity, dirtyTables, parkSpot } from './store';
+import { THE_SERVICE, sellsTost } from './world';
 import { perf, type PerfSnapshot } from './perf';
 import { economyConfig, levelProgress, charLevel, type CharStat } from '../config/economy.config';
 import type { SaveStats } from './save';
@@ -55,22 +56,25 @@ export function installDevHooks(): void {
       lifetime: s.lifetime.toNumber(),
       tables: s.tables,
       stations: s.stations,
-      // Zone modeli (Faz 3a): geri-uyum anahtarları zone-1'i gösterir; per-zone detay `zones`'ta.
       areasOpen: s.areasOpen,
-      zones: Array.from({ length: s.areasOpen }, (_, z) => ({
-        stationLevel: s.stationLevels[z],
-        readyCups: s.readyCupsByService[z],
-        hasWaiter: s.waiters[z] != null,
-        hasDishwasher: s.dishwashers[z] != null,
-        stationPos: LAYOUT.stations[z],
-        dishStationPos: LAYOUT.dishStations[z],
-        upgradeZonePos: LAYOUT.stationUpgradeSpots[z],
-      })),
-      stationLevel: s.stationLevels[0],
+      // B2: kat TEK servis noktasından döner → "zone başına ocak/personel" anlık görüntüsü kalktı,
+      // yerine tek `service` nesnesi geldi (testler ve duman testi buradan okur).
+      service: {
+        level: s.stationLevels[THE_SERVICE],
+        readyTea: s.ready.tea,
+        readyTost: s.ready.tost,
+        sellsTost: sellsTost(s.stationLevels[THE_SERVICE]),
+        waiters: s.waiters.length,
+        hasDishwasher: s.dishwasher != null,
+        stationPos: LAYOUT.stations[THE_SERVICE],
+        dishStationPos: LAYOUT.dishStations[THE_SERVICE],
+        upgradeSpotPos: LAYOUT.stationUpgradeSpots[THE_SERVICE],
+      },
+      stationLevel: s.stationLevels[THE_SERVICE],
       padsDone: [...s.padsDone],
       npcCount: s.npcCount,
-      // Servis durumu (D-011) — zone-1 geri-uyum
-      readyCups: s.readyCupsByService[0],
+      // Servis durumu (D-011): hazır ÇAY (geri-uyum adı; tost ayrı — service.readyTost).
+      readyCups: s.ready.tea,
       tray: s.tray,
       trayFood: s.trayFood,
       trayCap: trayCapacity(),
@@ -95,9 +99,9 @@ export function installDevHooks(): void {
       // Kirli masa mekaniği (D-019): eşiği aşan masa indeksleri (müşteri oturmaz + garson götürmez).
       dirtyTables: [...dirtyTables(s.dishes, s.tableLevels)],
       dishesByTable: LAYOUT.tables.map((_, i) => s.dishes.filter((d) => d.tableIndex === i).length),
-      hasDishwasher: s.dishwashers[0] != null,
-      dishwasherTray: s.dishwashers[0] ? s.dishwashers[0].tray : 0,
-      dishwasherPos: s.dishwashers[0] ? s.dishwashers[0].pos.map((n) => +n.toFixed(2)) : null,
+      hasDishwasher: s.dishwasher != null,
+      dishwasherTray: s.dishwasher ? s.dishwasher.tray + s.dishwasher.trayFood : 0,
+      dishwasherPos: s.dishwasher ? s.dishwasher.pos.map((n: number) => +n.toFixed(2)) : null,
       padFill: Math.floor(pad ? s.padFills[pad.id] ?? 0 : 0),
       currentPad: pad ? pad.id : null,
       padCost: pad ? pad.cost : 0,
@@ -118,10 +122,9 @@ export function installDevHooks(): void {
       charUpgrades: { ...s.charUpgrades },
       charLevel: charLevel(s.charUpgrades),
       charPanelSeen: s.charPanelSeen,
-      // Garson tepsi yükseltmeleri (v27/Y3): kademeler + zone-başı anlık tepsi yükü; Y4: 2. garsonlar.
+      // Garson yükseltmeleri (v27/Y3) + havuzdaki her garsonun anlık tepsi yükü (çay/tost).
       waiterUpgrades: { ...s.waiterUpgrades },
-      waiterTrays: s.waiters.map((w) => (w ? w.tray : null)),
-      waiter2Trays: s.waiters2.map((w) => (w ? w.tray : null)),
+      waiterTrays: s.waiters.map((w) => w.tray + w.trayFood),
       camFocus: s.camFocus ? { pos: s.camFocus.pos, ttl: +s.camFocus.ttl.toFixed(2) } : null,
       // Yeni-özellik bildirimi (D-019 §4): anlık toast metni + bu oturumda bildirilmiş reveal anahtarları.
       notice: s.notice ? s.notice.text : null,

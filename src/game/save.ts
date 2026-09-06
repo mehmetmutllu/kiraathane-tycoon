@@ -17,8 +17,11 @@ const KEY = 'kiraathane.save';
 export interface SaveStats {
   /** Oyuncunun ocaktan tepsiye aldığı toplam çay. */
   teaPickups: number;
-  /** Oyuncunun ELİYLE masaya bıraktığı toplam çay (garson hariç). */
+  /** Oyuncunun ELİYLE masaya bıraktığı toplam ÜRÜN — çay + tost (garson hariç). */
   teasServed: number;
+  /** Oyuncunun ELİYLE masaya bıraktığı toplam TOST (B2: tost artık salona değil tezgâh L5'e bağlı,
+   *  bu yüzden "tost servis et" görevi alan sayacıyla değil kendi sayacıyla ölçülür). */
+  tostServed: number;
   /** Yerden toplanan toplam para adedi. */
   coinsCollected: number;
   /** Oyuncunun ELİYLE bulaşıkta yıkadığı toplam kirli bardak (bulaşıkçı hariç). */
@@ -37,6 +40,7 @@ export function defaultStats(): SaveStats {
   return {
     teaPickups: 0,
     teasServed: 0,
+    tostServed: 0,
     coinsCollected: 0,
     dishesWashed: 0,
     waiterServed: 0,
@@ -104,7 +108,7 @@ export function defaultCharUpgrades(): CharUpgrades {
 }
 
 export function defaultWaiterUpgrades(): WaiterUpgrades {
-  return { teaTray: 0, tostTray: 0, dishCarry: 0, teaSpeed: 0, tostSpeed: 0, dishSpeed: 0 };
+  return { tray: 0, speed: 0, dishCarry: 0, dishSpeed: 0 };
 }
 
 export function defaultSave(): SaveData {

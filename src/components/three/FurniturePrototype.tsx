@@ -93,7 +93,7 @@ function Catalog() {
 }
 
 // ŞU ANKİ ilerleme denemesi (L0-L4) — referans için arkada.
-function ProgressionRow({ food, z, title }: { food: boolean; z: number; title: string }) {
+function ProgressionRow({ z, title }: { z: number; title: string }) {
   // Renk Sv3'ten varsayılan ara ton (tier değil; altın tema mağazasında). Sv5 yemek = premium sandalye.
   const tierColor = (lvl: number) => (lvl >= 2 ? PALETTE.defaultTone : '');
   const GAP = 3.0; // tabureler iç içe girmesin diye masalar arası boşluk artırıldı
@@ -107,7 +107,7 @@ function ProgressionRow({ food, z, title }: { food: boolean; z: number; title: s
       </Html>
       {[0, 1, 2, 3, 4].map((lvl, i) => (
         <group key={lvl} position={[(i - MID) * GAP, 0, 0]}>
-          <Table x={0} z={0} level={lvl} food={food} />
+          <Table x={0} z={0} level={lvl} />
           <Tag y={1.35} top={`Sv ${lvl + 1}`} sub={tierColor(lvl) || 'çıplak'} subColor={tierColor(lvl) || '#cbd5e1'} />
         </group>
       ))}
@@ -185,8 +185,9 @@ export function FurniturePrototype() {
         </mesh>
         <Suspense fallback={null}>
           <Catalog />
-          <ProgressionRow food={false} z={6} title="ÇAY (deneme)" />
-          <ProgressionRow food z={8.5} title="YEMEK (deneme)" />
+          {/* B2: "YEMEK" masa hattı kalktı (ürün bölgeden değil servis seviyesinden geliyor) —
+              üç gerçek masa tipi B5'te gelince bu maket satırı yeniden çoğalacak. */}
+          <ProgressionRow z={6} title="MASA SEVİYELERİ (deneme)" />
         </Suspense>
         <OrbitControls ref={controls} target={[0, 0.5, 7.3]} maxPolarAngle={Math.PI / 2.05} />
         <FreeMove controls={controls} />

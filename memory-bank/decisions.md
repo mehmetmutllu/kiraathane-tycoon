@@ -1032,3 +1032,54 @@ arkasina saklanir.
 **Bitti sayilir:** maketin gezilebilir bes adimi sirayla aciliyor + yikik merdiven konusuyor ·
 `npm run test` yesil, test sayisi dusmeden (bugun 206) · smoke 26/26 · build temiz ·
 v31 sifirlamasi testli · **B1 sonunda tick parmak izi birebir ayni**.
+
+## D-060 — B2: SERVİS TEKİLLEŞTİ (üç ocak → bir tezgâh; ürün seviyeden; personel havuzu) (2026-09-06)
+
+**Bağlam:** B1 modeli ayırmıştı (ALAN · SERVİS · MASA · ODA) ama içerik sabitti: 3 alan = 3 servis,
+ürün bölgenin özelliğiydi (`SERVICE_PRODUCTS = ['tea','tea','tost']`), personel alan başınaydı.
+Maket v13 tek katta TEK servis anlatıyor; 2. Alan'ın ocağı yok, 3. Alan yeni ocak değil var olanın
+**tezgâha dönüşmesi**, tost ise bir salonun değil **L5'in** ürünü.
+
+**Kararlar (kullanıcı onaylı, 2026-09-06):**
+1. **`SERVICE_AREAS = [0]`** — kat tek noktadan döner. `serviceInArea()` yerleşim sorusu olarak kaldı
+   (yalnız 1. alanda servis DURUR); `serviceOfTable()` üretim sorusu olarak sabit 0 döner. B1'in bu
+   iki soruyu ayırması B2'yi tek satırlık bir bağ değişikliğine indirdi.
+2. **Ürün seviyeden gelir:** L1-L3 çay ocağı · **L4 TEZGÂH** (obje yer değiştirmez, seviye
+   sıfırlanmaz — yalnız kimlik değişir) · **L5 TOST açılır** · L6 son ₺ basamağı.
+   Talep: müşteri otururken ürününü SEÇER, tost payı `tostShareByLevel` (L5 %25, L6 %35).
+   Sipariş nesnesi `{çay:1, tost:2}` **Faz C'de** (D-058 karar 1) — B2 yalnız talebin doğduğu yeri kurar.
+3. **Personel havuzu GLOBAL: 3 garson + 1 bulaşıkçı** (kullanıcı seçimi). Alan-başı personel pad'leri
+   (`z2waiter` `z2dishwasher` `z3waiter` `z3dishwasher` `z2waiter2` `z3waiter2`) zincirden çıktı;
+   "Tostçu Garson" ayrımı ve ayrı tepsi/hız eğrileri tek hatta birleşti. Bulaşıkçı plan §4'ün
+   14. adımına (Bölüm 2) taşındı → Bölüm 1 dört adımda biter, otomasyon 12 dakikadan önce gelir.
+4. **Tezgâh merdiveni kendi ağırlığını taşır.** Eski `costsByLevel` üst basamakları 150/300'dü çünkü
+   tost AYRI bir servisin ×20 çarpanıyla geliyordu; aynı merdivene binince 300₺'lik bir tost
+   ortaya çıktı. Yeni eğri **20/30/45/800/2400/9000** — L1-L3 erken oyun DOKUNULMADI (plan §5
+   kaldıraç 2: "erken oyuna dokunulmaz"), üst yarı geç oyunun ana para emicisi oldu.
+5. **Bardak havuzu ALANLA ölçeklenir** (servisle değil): `unlockArea` etkisi zaten `poolBase`
+   ekliyordu; servis tekilleşince "açık servis başına taban" okuması havuzu sessizce tutarsız
+   bırakıyordu. `totalCupPool(areasOpen, …)`.
+
+**Simülatörün düzeltilmesi (bu adımın ikinci bulgusu):** eski `trySpend` "her an en ucuz darboğaz
+ocağı al" diyordu; oyun ise ekranda TEK aktif görev gösterip oyuncuyu ona yönlendiriyor. Ocak ucuzken
+fark küçüktü, tezgâh/tost pahalılaşınca **hangi sırayla alındığı tempoyu belirleyen şeyin kendisi**
+oldu. Sim artık görev hattını takip ediyor ve personel/masa yükseltmelerini de GERÇEKTEN satın alıyor
+(eskiden bedava sayılıyorlardı). Tempo iddiası ancak bu düzeltmeden sonra anlam taşıyor.
+
+**Ölçüm (simulate.ts, Normal profil 0,55 — plan §5 hedef bantları):**
+| Kilometre taşı | Hedef | Ölçülen |
+|---|---|---|
+| İlk alım | ≤ 60 sn | 40 sn ✓ |
+| Garson | 8-12 dk | 11,1 dk ✓ |
+| 2. Alan | 25-35 dk | 34,6 dk ✓ |
+| Bulaşıkçı | 45-60 dk | 60 dk ✓ |
+| 3. Alan + Tezgâh | 1,5-2 sa | 1,83 / 1,99 sa ✓ |
+| Tost (L5) | 2-2,5 sa | 2,55 sa ≈ |
+
+"Kat tamam" 2,69 sa — plan §5'in 5-7 saati B3'ün 20 masası + B5 banketleri + Faz C eğrisiyle gelecek.
+Olmayan içeriği pahalılıkla taklit etmek grind üretirdi; yapılmadı.
+
+**Doğrulama:** vitest **209/209** (B1: 207 — düşmedi), smoke **26/26**, build temiz, `tsc -b` temiz,
+eslint 15 (B1 ile aynı). Tarayıcı: 12 masa + 2 garson + bulaşıkçı + L5 tezgâh canlı, konsol temiz.
+
+---

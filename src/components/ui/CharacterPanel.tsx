@@ -18,11 +18,11 @@ import {
   dishSpeedFor,
   dishSpeedNextCost,
   type CharStat,
-  type WaiterKind,
 } from '../../config/economy.config';
 import { PALETTE } from '../../config/palette';
 import { OwnerBody, CupTray } from '../three/Player';
-import { SceneLights, PREVIEW_GL } from '../three/lights';
+import { SceneLights } from '../three/lights';
+import { PREVIEW_GL } from '../../config/palette';
 import { CoinIcon, TrayIcon, BasinIcon, MagnetIcon, BootIcon } from './icons';
 import { Sheet } from './Sheet';
 
@@ -176,35 +176,35 @@ const STAT_ROWS: { stat: CharStat; name: string; unit: string; icon: React.React
   { stat: 'speed', name: 'Hareket Hızı', unit: 'hız', icon: <BootIcon size={34} /> },
 ];
 
-type Tab = 'player' | 'tea' | 'tost' | 'dish';
+type Tab = 'player' | 'waiter' | 'dish';
 
 // Garson sekmesi içeriği: tepsi yükseltme satırı. Sekme yalnız garson tutulunca ÇİZİLİR
 // (turu-5 m.7: kilitli sekme hiç görünmez), o yüzden burada kilit dalı yok.
 // NOT: kendi Canvas'ı YOK — panel TEK Canvas kullanır (sekme başına yeni WebGL context açmak
 // tarayıcı context limitine takılıp önizlemeyi karartıyordu; Playwright canlı bulgusu 2026-06-12).
-function WaiterTab({ kind }: { kind: WaiterKind }) {
+function WaiterTab() {
   const wallet = useGame((s) => s.wallet);
   const waiterUpgrades = useGame((s) => s.waiterUpgrades);
   const buyWaiterTray = useGame((s) => s.buyWaiterTray);
   const buyWaiterSpeed = useGame((s) => s.buyWaiterSpeed);
   const cash = wallet.toNumber();
-  const tier = kind === 'tea' ? waiterUpgrades.teaTray : waiterUpgrades.tostTray;
-  const cap = waiterTrayCapacityFor(kind, tier);
-  const cost = waiterTrayNextCost(kind, tier);
+  // B2: tek garson havuzu → tek tepsi/hız hattı ("Çay Garsonu" + "Tostçu" sekmeleri birleşti).
+  const tier = waiterUpgrades.tray;
+  const cap = waiterTrayCapacityFor(tier);
+  const cost = waiterTrayNextCost(tier);
   // v29: hız yükseltmesi mekânsal noktadan panele taşındı (kullanıcı 2026-06-13).
-  const spdTier = kind === 'tea' ? waiterUpgrades.teaSpeed : waiterUpgrades.tostSpeed;
-  const spd = waiterSpeedFor(kind, spdTier);
-  const spdNext = waiterSpeedFor(kind, spdTier + 1);
-  const spdCost = waiterSpeedNextCost(kind, spdTier);
-  const food = kind === 'tost';
-  const unit = food ? 'tost' : 'bardak';
+  const spdTier = waiterUpgrades.speed;
+  const spd = waiterSpeedFor(spdTier);
+  const spdNext = waiterSpeedFor(spdTier + 1);
+  const spdCost = waiterSpeedNextCost(spdTier);
+  const unit = 'ürün';
   return (
     <>
       <div className="char-stat">
-        <span className="char-stat-icon"><TrayIcon size={34} food={food} /></span>
+        <span className="char-stat-icon"><TrayIcon size={34} food={false} /></span>
         <span className="char-stat-info">
           <span className="char-stat-name">Tepsi</span>
-          <span className="char-stat-val" data-testid={`waiter-val-${kind}`}>
+          <span className="char-stat-val" data-testid="waiter-val">
             {cost != null ? (
               <>
                 {cap} <i>→ {cap + 1}</i> {unit}
@@ -219,15 +219,15 @@ function WaiterTab({ kind }: { kind: WaiterKind }) {
         {cost != null ? (
           <button
             className="char-buy"
-            data-testid={`waiter-buy-${kind}`}
+            data-testid="waiter-buy"
             disabled={cash < cost}
-            onClick={() => buyWaiterTray(kind)}
+            onClick={() => buyWaiterTray()}
           >
             <CoinIcon size={16} />
             {fmt(D(cost))}
           </button>
         ) : (
-          <span className="char-max" data-testid={`waiter-buy-${kind}`}>
+          <span className="char-max" data-testid="waiter-buy">
             MAX
           </span>
         )}
@@ -236,7 +236,7 @@ function WaiterTab({ kind }: { kind: WaiterKind }) {
         <span className="char-stat-icon"><BootIcon size={34} /></span>
         <span className="char-stat-info">
           <span className="char-stat-name">Hız</span>
-          <span className="char-stat-val" data-testid={`waiter-speed-val-${kind}`}>
+          <span className="char-stat-val" data-testid="waiter-speed-val">
             {spdCost != null ? (
               <>
                 {spd} <i>→ {spdNext}</i> hız
@@ -249,24 +249,20 @@ function WaiterTab({ kind }: { kind: WaiterKind }) {
         {spdCost != null ? (
           <button
             className="char-buy"
-            data-testid={`waiter-speed-buy-${kind}`}
+            data-testid="waiter-speed-buy"
             disabled={cash < spdCost}
-            onClick={() => buyWaiterSpeed(kind)}
+            onClick={() => buyWaiterSpeed()}
           >
             <CoinIcon size={16} />
             {fmt(D(spdCost))}
           </button>
         ) : (
-          <span className="char-max" data-testid={`waiter-speed-buy-${kind}`}>
+          <span className="char-max" data-testid="waiter-speed-buy">
             MAX
           </span>
         )}
       </div>
-      <div className="char-note">
-        {food
-          ? 'Tostçu garson tost salonunda çalışır; tepsisine aldığı tostları tek durakta bırakır.'
-          : 'Çay garsonlarının (tüm çay salonları) ortak tepsisi ve hızı.'}
-      </div>
+      <div className="char-note">Garsonların ortak tepsisi ve hızı — hepsi tek havuzdan, her masaya.</div>
     </>
   );
 }
@@ -365,21 +361,19 @@ export function CharacterPanel({ onClose }: { onClose: () => void }) {
   const cash = wallet.toNumber();
   const cap = trayCapacityFor(charUpgrades.tray);
   const lvl = charLevel(charUpgrades);
-  const teaHired = padsDone.includes('waiter') || padsDone.includes('z2waiter');
-  const tostHired = padsDone.includes('z3waiter');
+  const waiterHired = padsDone.includes('waiter');
   const dishHired =
     padsDone.includes('dishwasher') || padsDone.includes('z2dishwasher') || padsDone.includes('z3dishwasher');
   // turu-5 m.7: tutulmamış karakterin sekmesi HİÇ çizilmez (kilitli mesaj yerine).
   const tabs: { id: Tab; label: string }[] = [
     { id: 'player', label: 'Oyuncu' },
-    ...(teaHired ? [{ id: 'tea' as Tab, label: 'Çay Garsonu' }] : []),
-    ...(tostHired ? [{ id: 'tost' as Tab, label: 'Tostçu' }] : []),
+    ...(waiterHired ? [{ id: 'waiter' as Tab, label: 'Garson' }] : []),
     ...(dishHired ? [{ id: 'dish' as Tab, label: 'Bulaşıkçı' }] : []),
   ];
 
   return (
     <Sheet
-      title={tab === 'player' ? 'Çaycı' : tab === 'tea' ? 'Çay Garsonu' : tab === 'tost' ? 'Tostçu Garson' : 'Bulaşıkçı'}
+      title={tab === 'player' ? 'Çaycı' : tab === 'waiter' ? 'Garson' : 'Bulaşıkçı'}
       testid="char-panel"
       onClose={onClose}
     >
@@ -423,11 +417,8 @@ export function CharacterPanel({ onClose }: { onClose: () => void }) {
                 salonda göreceğinle birebir. Eskiden burada ayrı beyaz ambient 0.85 vardı. */}
             <SceneLights />
             {tab === 'player' && <PreviewModel cap={cap} />}
-            {tab === 'tea' && teaHired && (
-              <WaiterPreviewModel cap={waiterTrayCapacityFor('tea', waiterUpgrades.teaTray)} food={false} />
-            )}
-            {tab === 'tost' && tostHired && (
-              <WaiterPreviewModel cap={waiterTrayCapacityFor('tost', waiterUpgrades.tostTray)} food />
+            {tab === 'waiter' && waiterHired && (
+              <WaiterPreviewModel cap={waiterTrayCapacityFor(waiterUpgrades.tray)} food={false} />
             )}
             {tab === 'dish' && dishHired && (
               <DishwasherPreviewModel cap={dishCarryCapacityFor(waiterUpgrades.dishCarry)} />
@@ -482,8 +473,7 @@ export function CharacterPanel({ onClose }: { onClose: () => void }) {
           </>
         )}
 
-        {tab === 'tea' && <WaiterTab kind="tea" />}
-        {tab === 'tost' && <WaiterTab kind="tost" />}
+        {tab === 'waiter' && <WaiterTab />}
         {tab === 'dish' && <DishTab />}
 
         <button className="sheet-cta" data-testid="char-ok" onClick={onClose}>
