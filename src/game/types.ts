@@ -48,3 +48,12 @@ export interface Waiter {
   /** Taşıdığı bardak (garson: çay; bulaşıkçı: kirli). 0..ilgili kapasite. */
   tray: number;
 }
+
+// Zemindeki bir objenin AYAK İZİ (Faz G1 temas gölgesi). Merkez (x,z) + dünya yarı-boyutları.
+// Kare değil elips olarak okunur (rx≠rz → dikdörtgen tezgâhın altına yayvan leke).
+export interface Footprint {
+  x: number;
+  z: number;
+  rx: number;
+  rz: number;
+}

@@ -2,6 +2,79 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-06 — FAZ G: G1 TEMAS GÖLGESİ BİTTİ; SAVE v30 değişmedi)
+
+G0 (ışık) geçen oturumda kapanmıştı; bu oturumda **G1 — temas gölgesi** uygulandı, ölçüldü,
+belgelendi. Detay + öncesi/sonrası kanıt: **`docs/gorsel/README.md` §G1**, görüntüler
+`docs/gorsel/ss/g1-*.png`.
+
+### G1 — ne yapıldı
+Her objenin tabanına zemine yatık yumuşak elips. **Tek InstancedMesh** (`ContactShadows.tsx`),
+geometri önceden yatırıldı → matris yalnız öteleme+ölçek. Doku çalışma anında çizilen 64px
+radyal degrade (`alphaMap`) → **0 byte asset**, **+1 draw call**.
+
+| | Kapsam |
+|---|---|
+| Statik (memo) | masa + oturak (her seviye) · ocak/tezgâh · bulaşık modülü · çöp kovaları · saksılar |
+| Dinamik (her kare) | oyuncu · garsonlar · bulaşıkçılar · **AYAKTA** müşteriler · çaycı/tost ustası |
+
+**Tek kaynak:** masa/oturak ayak izi yerleşimi YENİDEN HESAPLAMAZ — `buildFurniture`'ın instance
+listesini okur (`tableFootprints`, Tables.tsx). Tezgâh/bulaşık `LAYOUT.stationHalves`/`dishHalf`'ten.
+Dekor konumları `LAYOUT.decor`'a taşındı; `DecorProps` artık o listeden çizer (ikisi ortak okur).
+Çaycı store'da olmadığı için `src/game/visualActors.ts` kaydı eklendi (`perf`/`screenPointer` kalıbı).
+
+### >>> BU OTURUMUN ÜÇ BULGUSU <<<
+1. **Oturan müşteriye leke KONMAZ.** Konunca altındaki oturağın lekesiyle üst üste binip o
+   koltuk komşularından belirgin koyu çıkıyor. Yalnız `toTable`/`leaving` leke alır.
+2. **Kaldırımda leke gömülüyordu.** Sokak düzlemleri z-fighting için y 0,02–0,06'ya yükseltilmiş
+   ve OPAK → 0,008'deki leke derinlik testinde eleniyor; kapıdan çıkan müşteri gölgesini
+   kaybediyordu. Ön duvar hattının DIŞI `CONTACT_SHADOW.streetY` = 0,075'e çıkarıldı.
+3. **"Göremiyorum" tek başına kanıt değil.** İlk turda leke görünmedi; materyal geçici olarak
+   **kırmızı + opaklık 1** yapılınca lekelerin doğru yerde ve doğru yumuşaklıkta olduğu görüldü
+   (`ss/g1-teshis-kirmizi.png`), sorun yalnız koyuluk/kontrasttı. G0'daki "test kutusu"nun aynısı.
+
+### Ölçüm (aynı kameradan `blob.visible` açık/kapalı — güvenilir yöntem)
+- Draw-call **107 → 108** (+1, salon başına değil TOPLAM).
+- Uzak kamera 91 leke **~0,03 ms/kare** · yakın kamera 28 BÜYÜK leke **~0,13 ms/kare** (fill-rate
+  bağlı: lekeler ekranda büyüdükçe artar; ~16 ms bütçenin %1'i).
+- Kare süresi 1,06 → 1,20 ms · üçgen +56.
+- Koyuluk A/B: 0,40 ahşap zeminde ancak fark ediliyor · 0,58 güneş gölgesiyle ağırlaşıyor →
+  **0,50** seçildi. Sayı `palette.ts` → `CONTACT_SHADOW.opacity`, gerekçesi orada yazılı.
+
+### Sahneyi hızlı doldurma reçetesi (ekran görüntüsü için — hâlâ geçerli)
+```js
+window.__setState({ padsDone: ['table2','table3','waiter','dishwasher','table4','zone2',
+  'z2table2','z2waiter','z2table3','z2dishwasher','z2table4','zone3','z3table2','z3waiter',
+  'z3table3','z3dishwasher','z3table4','waiter2','z2waiter2','z3waiter2'],
+  padFills: {}, stationLevels: [4,4,4], tableLevels: new Array(12).fill(4), camZoomOut: true });
+window.__addMoney(1e6); window.__advanceTime(120); window.__teleport(2, 1);
+```
+G1 A/B'sinde kullanılan daha sade kadraj: 4 masa L1–L4, `__advanceTime(45)`, `__teleport(0, 0.2)`.
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+1. **G2 — zemine ölçek referansı, GEOMETRİYLE** (doku yolu D-041 ile kapalı): `CheckerTiles`
+   genelleştir → `plank` (0,55×2,2 ince quad, satır başı yarım ofset, tahta başına ±%4 renk
+   sapması) ve `tile` (0,7 kare); derz **çizgi değil boşluk** (altındaki koyu taban görünür).
+   Alan başına ~90 plank = 1 draw call. Kozmetik mağazasına doğrudan bağlanır.
+2. Sonra **G3** duvar bitimi (süpürgelik 0,08 · lambri çıtası 0,04 · kartonpiyer) →
+   **G4/G5** KayKit yerleşimi (paketler elde).
+3. **Faz A'ya geçmeden** `tools/smoke.mjs`'in 7 kırık adımı onarılmalı (kök neden `q_coin`
+   questBase yarışı → domino; G0'dan da ÖNCE kırıktı, bu oturumda da 8/15 — DEĞİŞMEDİ).
+
+### G fazının sonunda kapatılacak artıklar
+- UI Canvas'ları (`CharacterPanel`, `SalonSlice`, `DioramaPreview`, `TableThemePreview`) hâlâ
+  eski düz `ambientLight` ile → dünya ısındı, mağaza önizlemeleri soğuk kaldı. Ortak ışığa alınmalı.
+- `shadow.bias`/`normalBias` **0'da**: bu açıda akne yok; eklemek ince çıtalarda ışık sızdırır.
+- Temas gölgesi ELİPS → dikdörtgen tezgâhın köşeleri tam kapanmıyor (2. doku = 2. draw call
+  olacağından tezgâhlarda daha DAR yayılım seçildi, `counterSpread` 1,18 — köşe boşluğu görünmüyor).
+- Kaldırım geçişinde leke 0,008 → 0,075'e "zıplar"; bu kamera açısında algılanmıyor.
+
+### Bilinen, ertelenmiş
+- Maket girişinin üst çıtasında z-fighting (kullanıcı: "oyuna geçerken hallederiz").
+- Bundle 1,45 MB (three.js) — Faz F kod bölme.
+
+---
+
 ## ŞU AN (2026-09-06 — FAZ G BAŞLADI: G0 IŞIK BİTTİ; SAVE v30 değişmedi)
 
 Kullanıcı arayüz v2'yi ayrıca gözden geçirmedi, doğrudan **Faz G0'ı seçti**. G0 uygulandı,

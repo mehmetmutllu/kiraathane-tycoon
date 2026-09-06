@@ -63,3 +63,60 @@ tek fark ışık. `ss/g0-genis.png` üç salon açıkken, `ss/g0-baslangic.png` 
   mağaza önizlemeleri soğuk kalıyor — G fazının sonunda ortak bir ışık kurulumuna alınmalı.
 - `shadow.bias`/`normalBias` **0'da bırakıldı**: bu açıda akne görülmedi, normalBias eklemek
   ince çıtalarda (0,04–0,08) ışık sızdırma riski taşıyor. Yeni açı denenirse tekrar bakılmalı.
+
+---
+
+## G1 — Temas gölgesi ✅ (2026-09-06)
+
+Yeni dosyalar: `src/components/three/ContactShadows.tsx` · `src/game/visualActors.ts`.
+Değişenler: `src/config/palette.ts` (`CONTACT_SHADOW` bloğu) · `src/game/types.ts` (`Footprint`) ·
+`src/game/store.ts` (`LAYOUT.decor`) · `src/components/three/Tables.tsx` (`tableFootprints`) ·
+`src/components/three/Scene.tsx` (bileşen + çaycı kaydı + `DecorProps` veri-güdümlü oldu).
+
+### Ne yapıldı
+Her objenin tabanına zemine yatık **yumuşak elips** konur. Hepsi **tek InstancedMesh** —
+geometri önceden yatırıldığı için per-instance matris yalnız öteleme + ölçek taşır (rotasyon yok).
+Doku çalışma anında çizilen 64px radyal degrade (`alphaMap`; renk materyalden gelir) → **0 byte asset**.
+
+| | Kapsam |
+|---|---|
+| Statik | masa + oturak (her seviyede, büyüyen masa dâhil) · ocak/tezgâh · bulaşık modülü · çöp kovaları · saksılar |
+| Dinamik (her kare) | oyuncu · garsonlar (2/salon) · bulaşıkçılar · **ayakta** müşteriler · çaycı/tost ustası |
+
+**Tek kaynak kuralı:** masa/oturak ayak izleri yerleşimi yeniden hesaplamaz — `buildFurniture`'ın
+ürettiği instance listesini okur (`tableFootprints`), yani masa nereye/hangi ölçekle konuyorsa gölge
+de oraya düşer. Tezgâh/bulaşık `LAYOUT.stationHalves`/`dishHalf`'ten (zaten dünya eksenli yarı-boyut,
+aynalı salonlarda da doğru). Dekor konumları `LAYOUT.decor`'a taşındı; `DecorProps` ve gölge aynı
+listeyi okur.
+
+### Ölçümle çıkan üç şey
+1. **Oturan müşteriye gölge konmaz.** Konunca altındaki oturağın lekesiyle üst üste binip o koltuk
+   komşularından belirgin koyu çıkıyordu. Ayakta olan (`toTable` / `leaving`) müşteri leke alır.
+2. **Kaldırımda leke gömülüyordu.** Sokak düzlemleri z-fighting yüzünden y 0,02–0,06'ya
+   yükseltilmiş ve OPAK — salon yüksekliğindeki (0,008) leke derinlik testinde eleniyor, kapıdan
+   çıkan müşteri gölgesini kaybediyordu. Çözüm: ön duvar hattının DIŞINDAKİ lekeler
+   `CONTACT_SHADOW.streetY` = 0,075'e çıkar (tek karşılaştırma, `put()` içinde).
+3. **Koyuluk A/B ile seçildi.** 0,40 açık zeminde (kaldırım) yetiyor ama ahşap salon zemininde
+   ancak fark ediliyor; 0,58 okunaklı fakat güneş gölgesiyle çakışınca ağırlaşıyor → **0,50**.
+
+### Maliyet (aynı kameradan, `blob.visible` açık/kapalı ölçümü)
+- Draw-call **+1** (107 → 108; salon başına değil, TOPLAM bir çağrı).
+- Uzak kamera, 91 leke: **~0,03 ms/kare**. Yakın kamera, 28 büyük leke: **~0,13 ms/kare**
+  (fill-rate bağlı — lekeler ekranda büyüdükçe artar, ~16 ms bütçenin %1'i).
+- Kare süresi 1,06 → 1,20 ms (masaüstü). Üçgen sayısı +56.
+
+### Kanıt
+`ss/g1-once.png` ↔ `ss/g1-sonra.png` — AYNI kamera/durum (`__teleport(0, 0.2)`, 4 masa L1–L4),
+tek fark temas gölgesi. `ss/g1-kaldirim.png` sokağa çıkan müşterinin lekesi (madde 2),
+`ss/g1-mutfak.png` tezgâh/bulaşık lekesi. `ss/g1-teshis-kirmizi.png` teşhis turu: materyal geçici
+olarak kırmızı/opak yapılıp lekelerin konumu ve yumuşaklığı doğrulandı — **görsel bir iddiayı
+"göremiyorum"a dayandırmama** yöntemi (G0'ın test kutusu kalıbının aynısı).
+
+### Doğrulama
+`npm run test` 186/186 · `npm run build` temiz · Playwright 0 konsol hatası ·
+`tools/smoke.mjs` **8/15 (bu oturumdan ÖNCE de 8/15 — değişmedi**, kök neden `q_coin` yarışı).
+
+### Bilinen sınır
+- Leke elips; dikdörtgen tezgâhın köşeleri tam kapanmaz. İkinci bir doku ikinci draw-call demek
+  olduğundan tezgâhlarda daha DAR yayılım (`counterSpread` 1,18) seçildi — köşe boşluğu görünmüyor.
+- Kaldırım geçişinde leke 0,008 → 0,075'e "zıplar"; bu kamera açısında algılanmıyor.

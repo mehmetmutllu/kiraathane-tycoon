@@ -7,7 +7,7 @@ import { Model } from './Model';
 import { PALETTE } from '../../config/palette';
 import { tableSeats, zoneOfTable, zoneProduct, tableThemeColor } from '../../config/economy.config';
 import { recoloredAtlas, atlasReady, onAtlasReady } from './recolor';
-import type { Vec3 } from '../../game/types';
+import type { Footprint, Vec3 } from '../../game/types';
 
 // KayKit Furniture Bits (CC0). Native boyutlar (origin tabanda, üst ~y=1.0): table_small 1×1×1,
 // table_medium 2×1×2, table_medium_long 3×1×2, chair_stool/_wood 0.75×0.5×0.75, chair_A/_wood 0.75×1.26×0.85.
@@ -365,6 +365,36 @@ function buildFurniture(tables: number, tableLevels: number[], clothTone: string
     }
   }
   return { place, cloths };
+}
+
+// KayKit modellerinin NATIVE xz ayak izi (dosya başındaki ölçü notuyla aynı kaynak; y kullanılmaz).
+const NATIVE_XZ: Record<FKey, [number, number]> = {
+  table_small: [1, 1],
+  table_medium: [2, 2],
+  table_medium_long: [3, 2],
+  chair_stool: [0.75, 0.75],
+  chair_stool_wood: [0.75, 0.75],
+  chair_A: [0.75, 0.85],
+  chair_A_wood: [0.75, 0.85],
+  chair_C: [0.75, 0.85],
+};
+
+/** Temas gölgesi (Faz G1) için açık masaların ve oturakların ayak izleri.
+ *  Yerleşimi YENİDEN HESAPLAMAZ — `buildFurniture`'ın ürettiği instance listesini okur; böylece
+ *  masa/sandalye nereye, hangi ölçekle konuyorsa gölge de oraya düşer (seviye büyüdüğünde de).
+ *  Sandalye rotasyonu yalnız 0/π olduğundan x-z ekseni takas olmaz. */
+export function tableFootprints(tables: number, tableLevels: number[]): Footprint[] {
+  const { place } = buildFurniture(tables, tableLevels, '');
+  const out: Footprint[] = [];
+  for (const k of FURNITURE) {
+    const [nx, nz] = NATIVE_XZ[k];
+    for (const p of place[k]) {
+      const sx = typeof p.scale === 'number' ? p.scale : p.scale[0];
+      const sz = typeof p.scale === 'number' ? p.scale : p.scale[2];
+      out.push({ x: p.pos[0], z: p.pos[2], rx: (nx / 2) * sx, rz: (nz / 2) * sz });
+    }
+  }
+  return out;
 }
 
 class FurnitureBoundary extends Component<{ fallback: ReactNode; children: ReactNode }, { err: boolean }> {

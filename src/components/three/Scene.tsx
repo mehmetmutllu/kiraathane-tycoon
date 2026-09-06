@@ -1,4 +1,4 @@
-import { Suspense, useMemo, useRef } from 'react';
+import { Suspense, useEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Instances, Instance } from '@react-three/drei';
 import { Vector3, type Group, type MeshStandardMaterial } from 'three';
@@ -15,9 +15,11 @@ import { TeaStation, TostStation } from './TeaStation';
 import { Customers } from './Customers';
 import { Coins } from './Coins';
 import { Pad } from './Pad';
+import { ContactShadows } from './ContactShadows';
 import { perf } from '../../game/perf';
 import { devTimeScale } from '../../game/devSandbox';
 import { screenPointer } from '../../game/screenPointer';
+import { visualActors } from '../../game/visualActors';
 
 // Simülasyonu her karede ilerlet (tek kaynak; __advanceTime aynı tick'i çağırır).
 // DEV'de sandbox hız çarpanı uygulanır; üretimde `import.meta.env.DEV` false → dal ölü kod.
@@ -197,11 +199,17 @@ function KitchenHand({ zone }: { zone: number }) {
   const span = 1.1; // tezgâh uzun-kenar yarısı (stationHalves uzun ekseni) — uçtan uca tur
   // M2: konum zone şablonundan türetilir — sağ kolon aynalı, arka sıra −z kaydırmalı (zonePoint).
   const faceIn = backWall ? 0 : zoneCol(zone) ? -Math.PI / 2 : Math.PI / 2;
-  const start = backWall
-    ? ([stPos[0] - span, 0, stPos[2] - 0.65] as const)
-    : zonePoint(zone, [-5.0, 0, -3]);
+  // useMemo: her render yeni dizi üretirse aşağıdaki kayıt effect'i boşuna yeniden koşar.
+  const start = useMemo(
+    () =>
+      backWall
+        ? ([stPos[0] - span, 0, stPos[2] - 0.65] as const)
+        : zonePoint(zone, [-5.0, 0, -3]),
+    [backWall, stPos, span, zone],
+  );
   // M3: tost ustası çaycıdan kıyafetle ayrışır (hardal önlük + beyaz kep).
   const isFood = zoneProduct(zone) === 'tost';
+  const actorKey = `kitchen-${zone}`;
   const apron = isFood ? PALETTE.foodApron : PALETTE.apron;
   const cap = isFood ? PALETTE.foodCap : PALETTE.cap;
   useFrame((st) => {
@@ -224,7 +232,19 @@ function KitchenHand({ zone }: { zone: number }) {
     const speed = Math.abs(Math.cos(t));
     grp.rotation.y = speed < 0.25 ? faceIn : walkRot;
     grp.position.y = speed < 0.25 ? -0.04 + Math.sin(st.clock.elapsedTime * 3) * 0.02 : Math.abs(Math.sin(st.clock.elapsedTime * 7)) * 0.04;
+    // G1: bu NPC store'da yok (salt görsel) → temas gölgesi konumu kayıttan okur.
+    const slot = visualActors.get(actorKey);
+    if (slot) {
+      slot.x = grp.position.x;
+      slot.z = grp.position.z;
+    }
   });
+  useEffect(() => {
+    visualActors.set(actorKey, { x: start[0], z: start[2] });
+    return () => {
+      visualActors.delete(actorKey);
+    };
+  }, [actorKey, start]);
   return (
     <group ref={ref} position={[start[0], 0, start[2]]}>
       {/* bacaklar + gövde + önlük + baş (low-poly; palette = tek renk kaynağı) */}
@@ -671,45 +691,38 @@ function FoodCorner() {
 function DecorProps() {
   return (
     <group>
-      {/* çöp kovası (kapı yanı, ÖN DUVAR DİBİ — 2026-06-11: yürüme şeridinin ortasındaydı,
-          takılan müşteri onun üstünde titreyince "kova engelliyor" hissi verdi) */}
-      <group position={[2.5, 0, 4.85]}>
-        <mesh castShadow position={[0, 0.3, 0]}>
-          <cylinderGeometry args={[0.2, 0.16, 0.6, 12]} />
-          <meshStandardMaterial color={PALETTE.trashBody} metalness={0.3} roughness={0.6} />
-        </mesh>
-        {[0.14, 0.32, 0.5].map((h) => (
-          <mesh key={h} position={[0, h, 0]} rotation={[Math.PI / 2, 0, 0]}>
-            <torusGeometry args={[0.187, 0.008, 6, 14]} />
-            <meshStandardMaterial color={PALETTE.trashLid} />
+      {/* çöp kovaları — konumlar LAYOUT.decor'da (temas gölgesi de oradan okur).
+          1) kapı yanı, ÖN DUVAR DİBİ (2026-06-11: yürüme şeridinin ortasındaydı, takılan müşteri
+             onun üstünde titreyince "kova engelliyor" hissi verdi) — kuşaklı, tam detay.
+          2) mutfak ucu (ocak ile garson pad'i arasında, ikisine de girmez) — küçük, kuşaksız. */}
+      {LAYOUT.decor.trashCans.map((t) => (
+        <group key={`${t.pos[0]}${t.pos[2]}`} position={[t.pos[0], 0, t.pos[2]]} scale={t.scale}>
+          <mesh castShadow position={[0, 0.3, 0]}>
+            <cylinderGeometry args={[0.2, 0.16, 0.6, 12]} />
+            <meshStandardMaterial color={PALETTE.trashBody} metalness={0.3} roughness={0.6} />
           </mesh>
-        ))}
-        <mesh castShadow position={[0, 0.63, 0]}>
-          <cylinderGeometry args={[0.21, 0.21, 0.06, 12]} />
-          <meshStandardMaterial color={PALETTE.trashLid} metalness={0.3} roughness={0.5} />
-        </mesh>
-        <mesh castShadow position={[0, 0.69, 0]}>
-          <cylinderGeometry args={[0.03, 0.03, 0.05, 8]} />
-          <meshStandardMaterial color={PALETTE.trashLid} />
-        </mesh>
-      </group>
-      {/* mutfak ucu çöp kovası (ocak ile garson pad'i arasında, ikisine de girmez) */}
-      <group position={[-4.95, 0, -0.9]} scale={0.85}>
-        <mesh castShadow position={[0, 0.3, 0]}>
-          <cylinderGeometry args={[0.2, 0.16, 0.6, 12]} />
-          <meshStandardMaterial color={PALETTE.trashBody} metalness={0.3} roughness={0.6} />
-        </mesh>
-        <mesh castShadow position={[0, 0.63, 0]}>
-          <cylinderGeometry args={[0.21, 0.21, 0.06, 12]} />
-          <meshStandardMaterial color={PALETTE.trashLid} metalness={0.3} roughness={0.5} />
-        </mesh>
-      </group>
+          {t.rings
+            ? [0.14, 0.32, 0.5].map((h) => (
+                <mesh key={h} position={[0, h, 0]} rotation={[Math.PI / 2, 0, 0]}>
+                  <torusGeometry args={[0.187, 0.008, 6, 14]} />
+                  <meshStandardMaterial color={PALETTE.trashLid} />
+                </mesh>
+              ))
+            : null}
+          <mesh castShadow position={[0, 0.63, 0]}>
+            <cylinderGeometry args={[0.21, 0.21, 0.06, 12]} />
+            <meshStandardMaterial color={PALETTE.trashLid} metalness={0.3} roughness={0.5} />
+          </mesh>
+          {t.rings ? (
+            <mesh castShadow position={[0, 0.69, 0]}>
+              <cylinderGeometry args={[0.03, 0.03, 0.05, 8]} />
+              <meshStandardMaterial color={PALETTE.trashLid} />
+            </mesh>
+          ) : null}
+        </group>
+      ))}
       {/* iç mekân saksıları (köşeler; sokak saksısının iç versiyonu) */}
-      {[
-        [4.9, -4.6],
-        [4.9, 4.4],
-        [-5.0, 2.9],
-      ].map(([px, pz]) => (
+      {LAYOUT.decor.planters.map(([px, , pz]) => (
         <group key={`${px}${pz}`} position={[px, 0, pz]}>
           <mesh castShadow position={[0, 0.22, 0]}>
             <cylinderGeometry args={[0.18, 0.14, 0.44, 8]} />
@@ -1000,6 +1013,8 @@ export function Scene() {
         shadow-camera-bottom={LIGHTING.shadow.bottom}
       />
       <Ground />
+      {/* G1: temas gölgeleri zeminin HEMEN üstünde, dünya objelerinden önce. */}
+      <ContactShadows />
       <Street />
       <Walls />
       <TvCorner />

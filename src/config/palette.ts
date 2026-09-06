@@ -134,3 +134,55 @@ export const LIGHTING = {
   fogFar: 72,
   exposure: 1.05,
 } as const;
+
+/**
+ * TEMAS GÖLGESİ (Faz G1, 2026-09-06) — objeyi zemine "yapıştıran" yumuşak leke.
+ * G0'daki güneş açısı düzeltmesi yönlü gölgeyi görünür kıldı ama gölge haritası objenin ALTINI
+ * (kontak noktasını) yumuşatmıyor: masa ayağının dibinde ışık sızıyor, obje hâlâ hafif "yüzüyor".
+ * Bu blok o boşluğu doldurur: her objenin tabanına, zemine yatık tek bir yumuşak elips.
+ *
+ * Neden gölge haritasını iyileştirmek yerine ayrı leke:
+ *  - Kontak yumuşaması alan-ışığı/PCSS ister; mobil bütçede yok.
+ *  - Leke, güneş yönünden BAĞIMSIZ olarak zemine ait bir ambient-occlusion havuzu okur —
+ *    kamera açısı ne olursa olsun aynı işi görür (yönlü gölge kaybolduğunda bile).
+ *  - Tek InstancedMesh = tek draw call, sıfır asset (doku çalışma anında çizilir).
+ *
+ * Şekil: yarıçapla alfa düşen radyal degrade. `core`'a kadar neredeyse tam koyu, sonra 0'a iner.
+ * `spread` quad'ı objenin ayak izinden BÜYÜK yapar (kenar yumuşaması ayak izinin dışına taşsın);
+ * `core × spread ≈ 0,7` → koyu çekirdek objenin ayak izinin biraz içinde biter, tam kenarda
+ * yumuşayarak biter. Sayılar burada; ContactShadows.tsx yalnız okur.
+ */
+export const CONTACT_SHADOW = {
+  /** Saf siyah low-poly paletinde "delik" gibi durur; zeminin sıcak ahşabıyla aynı ailede koyu ton. */
+  color: '#2a1d13',
+  /**
+   * Yönlü gölgenin ÜSTÜNE biner. Ölçüldü (aynı kameradan A/B): 0,40 ahşap zeminde ancak fark
+   * ediliyordu (kaldırım gibi açık zeminde yetiyor, salonda yetmiyordu); 0,58 okunaklı ama güneş
+   * gölgesiyle üst üste gelince ağırlaşıyor. 0,50 ikisinin arasında.
+   */
+  opacity: 0.5,
+  /** Zemin katmanı: taban(0) < zone overlay(0.004) < dama(0.006) < GÖLGE(0.008) < GroundMarker(0.02). */
+  y: 0.008,
+  /**
+   * SOKAK katmanı. Kaldırım/asfalt düzlemleri z-fighting yüzünden yükseltilmişti (y 0.02–0.06,
+   * Scene.Street) ve OPAK — salon yüksekliğindeki leke oraya girince derinlik testinde eleniyor,
+   * kapıdan giren müşteri kaldırıma basar basmaz gölgesini kaybediyordu. Ön duvar hattının
+   * dışındaki lekeler bu yüksekliğe çıkar (yaya geçidi şeritlerinin de üstü). Salon içindeki
+   * zemin işaretleriyle çakışmaz: onların hepsi duvarın İÇİNDE.
+   */
+  streetY: 0.075,
+  /** Doku çözünürlüğü (px). Degrade yumuşak olduğundan 64 yeterli; büyütünce fark yok. */
+  texSize: 64,
+  /** Alfanın düşmeye başladığı yarıçap (quad yarı-boyutunun oranı). */
+  core: 0.5,
+  /** Çekirdekteki koyuluk (0-1; kenarda 0'a iner). */
+  coreAlpha: 0.92,
+  /** Quad yarı-boyutu = ayak izi yarı-boyutu × bu. */
+  spread: 1.45,
+  /** Aktör (oyuncu/garson/bulaşıkçı/çaycı/müşteri) gövde yarıçapı — kapsül yarıçaplarıyla eşleşir. */
+  actorRadius: 0.3,
+  /** Tezgâh/bulaşık gibi büyük kütlelerde leke daha DAR yayılır (koca yumuşak havuz ağır durur). */
+  counterSpread: 1.18,
+  /** Aynı anda çizilebilecek en çok leke (masa+sandalye+tezgâh+aktör; bol pay). */
+  cap: 320,
+} as const;

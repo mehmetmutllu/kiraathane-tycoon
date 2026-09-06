@@ -1018,8 +1018,39 @@ NOT: headless tarayıcıda `window.__perf().fps` arka plan kısıtlaması yüzü
 - `shadow.bias`/`normalBias` **0'da bırakıldı**: bu açıda akne yok; normalBias eklemek ince
   çıtalarda (0,04–0,08) ışık sızdırma riski taşıyor. Açı değişirse tekrar bakılmalı.
 
-**⏳ SIRADAKİ:** **G1 — temas gölgesi** (instanced blob shadow, 64px radial-gradient
-CanvasTexture, `transparent` + `depthWrite:false`, y=0.005, tek draw call).
+## FAZ G — G1 TEMAS GÖLGESİ ✅ (2026-09-06)
+Yeni: `src/components/three/ContactShadows.tsx` · `src/game/visualActors.ts`.
+Değişen: `palette.ts` (`CONTACT_SHADOW`) · `types.ts` (`Footprint`) · `store.ts` (`LAYOUT.decor`) ·
+`Tables.tsx` (`tableFootprints`) · `Scene.tsx` (bileşen + çaycı kaydı + `DecorProps` veri-güdümlü).
+Gerekçe + kanıt: **`docs/gorsel/README.md` §G1**, ekran görüntüleri `docs/gorsel/ss/g1-*.png`.
+
+- ✅ **Tek InstancedMesh** — geometri önceden yatırıldı → matris yalnız öteleme+ölçek. Doku
+  çalışma anında çizilen 64px radyal degrade (`alphaMap`) → **0 byte asset**, **+1 draw call**.
+- ✅ **Statik leke:** masa + oturak (her seviye) · ocak/tezgâh · bulaşık modülü · çöp kovası · saksı.
+  **Dinamik (her kare):** oyuncu · garsonlar · bulaşıkçılar · AYAKTA müşteriler · çaycı/tost ustası.
+- ✅ **Tek kaynak:** masa/oturak ayak izi `buildFurniture`'ın instance listesinden türer
+  (`tableFootprints`) → masa nereye/hangi ölçekle konuyorsa gölge de oraya düşer. Tezgâh
+  `LAYOUT.stationHalves`/`dishHalf`'ten. Dekor konumları `LAYOUT.decor`'a taşındı (Scene + gölge ortak).
+- ✅ **Salt-görsel aktör kaydı** (`visualActors`): çaycı store'da yok, konumunu `perf`/`screenPointer`
+  kalıbıyla paylaşır — store'a yazmak her karede React render'ı tetiklerdi.
+- 🔎 **Oturan müşteriye leke KONMAZ** — oturağın lekesiyle üst üste binip o koltuğu belirgin
+  koyu yapıyordu. Ayakta olan (`toTable`/`leaving`) leke alır.
+- 🔎 **Kaldırım bug'ı ölçümle bulundu:** sokak düzlemleri z-fighting için y 0,02–0,06'ya
+  yükseltilmiş ve OPAK → 0,008'deki leke derinlik testinde eleniyor, kapıdan çıkan müşteri
+  gölgesini kaybediyordu. Ön duvar hattının dışı `streetY` = 0,075'e çıkarıldı.
+- 🔎 **Koyuluk A/B ile seçildi:** 0,40 ahşap zeminde ancak fark ediliyor · 0,58 güneş gölgesiyle
+  çakışınca ağır · **0,50** seçildi.
+
+**Maliyet (aynı kameradan `blob.visible` açık/kapalı):** draw-call **107 → 108** ·
+uzak kamera 91 leke **~0,03 ms/kare** · yakın kamera 28 büyük leke **~0,13 ms/kare** (fill-rate) ·
+kare süresi 1,06 → 1,20 ms · üçgen +56.
+
+**Doğrulama:** `npm run test` **186/186** · `npm run build` temiz · Playwright **0 konsol hatası** ·
+`tools/smoke.mjs` **8/15 — bu oturumdan ÖNCE de 8/15, değişmedi**.
+
+**⏳ SIRADAKİ:** **G2 — zemine ölçek referansı, GEOMETRİYLE** (doku yolu D-041 ile kapalı):
+`CheckerTiles` genelleştir → `plank` (0,55×2,2, satır başı yarım ofset, tahta başına ±%4 renk
+sapması) + `tile` (0,7 kare); derz **çizgi değil boşluk**. Sonra G3 duvar bitimi, G4/G5 KayKit.
 
 ## İLERLEME PANOSU (2026-09-06) — oturum sayacı devrede
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
@@ -1038,14 +1069,14 @@ Referans: ikravakfi Mali Takip Panosu (f467bc3f) — iskelet alındı, görsel i
 | | DN denetim + arşiv | 2/2 ✅ |
 | **Kuruluş toplam** | | **28/28 ✅** |
 | Yayın programı (1 Eyl →) | P plan ve maket | 6/6 ✅ |
-| | **G görsel taban** | **1/4 🔧** (G0 ışık ✅ · sıradaki G1 temas gölgesi) |
+| | **G görsel taban** | **2/4 🔧** (G0 ışık ✅ · G1 temas gölgesi ✅ · sıradaki G2 zemin geometrisi) |
 | | A temizlik | 0/3 ⏳ |
 | | B model geçişi | 0/5 ⏳ |
 | | C zincir ve denge | 0/5 ⏳ |
 | | D meta katman | 0/5 ⏳ |
 | | E arayüz ve cila | 1/4 🔧 |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **8/37** |
+| **Program toplam** | | **9/37** |
 
 Kuruluş dönemi sayısı **commit kaydından türetildi** (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. Panoda bu açıkça yazıyor.

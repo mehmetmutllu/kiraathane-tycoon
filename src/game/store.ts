@@ -281,6 +281,22 @@ export const LAYOUT = {
   // (ALL_TABLES.seats) AYNI listeden türetir — görsel sandalye = oturulabilir koltuk.
   chairSpots: CHAIR_SPOTS,
   foodChairSpots: FOOD_CHAIR_SPOTS,
+  // SALT GÖRSEL DEKOR (collision yok). Konumlar burada çünkü İKİ yer okuyor: Scene.DecorProps
+  // objeyi çizer, ContactShadows (G1) altına temas gölgesini koyar — konum tek kaynakta kalsın.
+  // r = zemindeki ayak izi yarıçapı (kova gövdesi / saksı ağzı).
+  decor: {
+    trashCans: [
+      { pos: [2.5, 0, 4.85] as Vec3, scale: 1, rings: true }, // kapı yanı (ön duvar dibi)
+      { pos: [-4.95, 0, -0.9] as Vec3, scale: 0.85, rings: false }, // mutfak ucu
+    ],
+    trashRadius: 0.21,
+    planters: [
+      [4.9, 0, -4.6],
+      [4.9, 0, 4.4],
+      [-5.0, 0, 2.9],
+    ] as Vec3[],
+    planterRadius: 0.18,
+  },
 } as const;
 
 /** Collision engeli: merkez (Vec3) + yarı-boyut [hx,hz]. */
