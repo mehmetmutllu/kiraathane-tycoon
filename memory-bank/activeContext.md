@@ -4,6 +4,13 @@
 
 ## ŞU AN (2026-09-07 gece — **PLAN DEĞİŞTİ: B6b iptal, MAKET TAŞIMASI (BM) başlıyor**)
 
+> ⚠️ **İŞ BU DALDA DEĞİL.** BM ayrı bir dalda ilerliyor: **`worktree-maket-tasima`**
+> (yerel worktree: `.claude/worktrees/maket-tasima`, uzakta da var). Main'de yalnız bu kontrol
+> noktası var. **BM adım 1 (duvar) O DALDA BİTTİ** — güncel durum, ölçümler ve sıradaki adım için
+> o daldaki `memory-bank/activeContext.md`'ye bak. Rapor:
+> https://claude.ai/code/artifact/e898c8ea-e518-40e4-927d-5a203eeb148d
+> Dal onaylanınca main'e merge edilecek.
+
 Karar: **D-070**. Raporlar: `docs/b6b-arka-bant.html` (ölçüm) · `docs/b6b-maket-fark.html`
 (maket↔oyun yan yana + ışık ölçümü) · `docs/b6b-lavabo-varyant.html` (A/B).
 
