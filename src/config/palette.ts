@@ -49,6 +49,11 @@ export const PALETTE = {
   menuBoardFrame: '#4e342e', // menü panosu ahşap çerçeve
   menuBoard: '#2f3a33', // kara tahta yüzeyi (koyu yeşilimsi)
   menuChalk: '#f3ecd9', // tebeşir yazı şeritleri
+  // Banket adası (B3-2, orta şerit — maket v13 sedir paleti)
+  banketBase: '#5d4037', // kaide (kapı ahşabıyla aynı ton)
+  banketBody: '#8d5b3a', // gövde + ortak sırtlık (sedir)
+  banketCushion: '#7a2230', // oturak ve sırtlık minderi (bordo — çaycı önlüğünün dili)
+  banketPillow: '#9c3a45', // sırtlıktaki yastıklar (minderin bir ton açığı)
   // Mutfak
   counterWood: '#795548',
   copper: '#b87333', // bakır (semaver tabanı, tepsi dekoru)

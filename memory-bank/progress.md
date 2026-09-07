@@ -1286,9 +1286,9 @@ yerleşim taşınırken de kullanılacak. Kullanım dosya başında.
 maket ölçeğine taşı (artık tek dosya: `layout.ts`), (3) kayıt v31 + migrasyon, (4) G4/G5 KayKit.
 Faz G artığı: UI Canvas'ları hâlâ eski düz ışıkla.
 
-## Faz B — Model geçişi 🔧 (4/9 · B0 + B1 + B2 + B3-1 bitti)
+## Faz B — Model geçişi 🔧 (5/9 · B0 + B1 + B2 + B3-1 + B3-2 bitti)
 > **Adım sırası (2026-09-07'de düzeltildi — D-063):**
-> B0 · B1 · B2 · **B3-1** → **B3-2** → **B5** → **B4** → **B6a** → **B6b**
+> B0 · B1 · B2 · B3-1 · **B3-2** → **B5** → **B4** → **B6a** → **B6b**
 >
 > İki düzeltme yapıldı:
 > 1. **B5 öne alındı.** Kullanıcı 34 × 34'ü "aşırı büyük" buldu; boşluğun sebebi prop eksikliği
@@ -1400,12 +1400,49 @@ oturum sayısı bütçesi de gerçek bir kısıt.
   ama tohumlu sondada servis SONUCU eski yerleşimle birebir aynı (darboğaz yürüme değil).
   **Doğrulama:** vitest **222/222** (209 + yeni `tests/layout-b31.test.ts` 13) · smoke 26/26 ·
   build temiz · eslint 15. Oda seyrek görünüyor — dolgu B3-2'nin işi.
-- **B3-2 — Orta şerit + görsel geçiş ⏳** (görsel)
-  Orta şerit, propler, dolgu, WYSIWYG geçişi; maket v13'e benzeme.
+- **B3-2 — Orta şerit: banket adaları + kapı ✅** (2026-09-07 gece · **D-064**)
+  Maket v13'ün 6. adımı YAPI olarak geçti. İçerik büyümedi (masa 12'de kaldı, denge dokunulmadı);
+  arka yarının önü artık mobilyalı. Propler/cephe süsü B6'nın, masa 12 → 20 B5'in.
+  - **Banket adaları:** iki ada, **tam boy 7,6 · merkez x = ∓8,5 · z = −3,8**; a2'nin dört masa
+    slotu banket birimine döndü (sol güney · sol kuzey · sağ güney · sağ kuzey, x = ∓11,7).
+    Birim geometrisi maketle birebir (bank 0,74 · masa 1,85 · sandalye 2,95).
+    **B5'in stub'ı düzeltildi:** seviye adanın BOYUNU değil üstündeki BİRİM SAYISINI artırır —
+    tek sütunluk ada (1,2 × 2,5) ekranda banka değil dolaba benziyordu (ekran görüntüsüyle görüldü).
+    "Var olan masalar yer değiştirmez" sözü duruyor (`banketUnit(u)` yalnız yeni birim üretir).
+  - **Ada collision'ı görselin üçte biri** (`coreHalf` 0,4 ↔ görsel 2,5): tam derinlik bank
+    koltuğunu YOL BULMAYA kapatıyor (masa+ada şişirilmiş ayak izleri birleşince aradaki koltuğa
+    boş hücre kalmıyor → `navStep` düz-çizgi yedeğine düşüyor; B3-1'in kusurunun aynısı).
+    Adanın İÇİNDEN geçilemez, asıl kural o. Teste bağlandı (rota + canlı oturma).
+  - **Şerit maketten 0,85 br geri** (−2,95 → −3,8): maket ne nav ızgarası ne de yükseltme noktası
+    taşıyor; −2,95'te güney sandalyesi tam alan dikişine, yükseltme noktası alan dışına düşüyordu.
+  - **Masa artık kendi koltuklarını taşır** (`seatOffsets`/`seatKinds`; `bench` koltuk için tabure
+    çizilmez) — B5'in masa tipleri için tohum. Yanında gerçek açık kapandı:
+    **`seatsAtTable(i, level)`** = min(seviyeden gelen, masanın gerçek koltuk sayısı); kelepçesiz
+    spawn iki koltuklu bir baketi "4 koltuklu, 2'si boş" sanıp hedefler, kimseyi yerleştiremezdi.
+  - **Garson servis istasyonu** (x = −9,9, ana tezgâh ile bulaşığın arasındaki 3,0 br açıklık):
+    **yalnız obje + collision** (kullanıcı seçimi). Aktarma mekaniği davranış değiştirir → kendi adımı.
+  - **Kapı 2. Alan'da cephenin ortasına kayıyor** (maket adım 2): `LAYOUT.entrances/streets`
+    dizileri kalktı, yerine `doorX/entranceAt/streetAt(areasOpen)` — servisle aynı desen.
+    **Test kusur yakaladı:** duvar kapı boşluğunu "parçanın içinde mi" diye kesiyordu; x = 0 tam iki
+    ön duvar parçasının dikişine düşünce ikisi de hayır diyor ve **kapının önüne duvar örülüyordu**.
+    Artık çıkarma ile kesiliyor.
+  - **Hayalet objeler temizlendi:** DEPO + TUVALET kutuları (eski 2×2 ızgaranın rezerv arsasına
+    aitti, KİLİTLİ a2'nin ortasına düşüyorlardı — D-057'ye aykırı) kaldırıldı; havada asılı kalan
+    **TV** ve **duvar saati** maketin dediği yere, sol duvara taşındı.
+  - **Ölçüldü:** `simulate.ts` altı kilometre taşı B2/B3-1 ile **birebir aynı** (denge dokunulmadı).
+    Yürüme: ortalama BFS yolu 19,6 br · en uzak 30,4 br (B3-1: 29,1) — sol ada tezgâhın dibinde
+    (5,1 / 1,3), sağ ada uzakta (25,9 / 24,4).
+  - **Doğrulama:** vitest **242/242** (222 + `tests/layout-b32.test.ts` 20) · smoke 26/26 ·
+    build + `tsc -b` temiz · eslint 19 (HEAD ile aynı) · tarayıcıda beş kare (`docs/gorsel/ss/b32-*.png`),
+    konsol temiz.
 
-### B5 — Masa tipleri ve banket ⏳ (SIRA: B3-2'den sonra)
-Dörtlü (8) · ikili (12) · banket (2 ada; **seviyesi boyudur**, her seviye iki ikili masa ekler,
-dış uç sabit, var olan masalar yer değiştirmez). Masa 12 → **20**. Boşluk hissini asıl kapatan adım.
+### B5 — Masa tipleri ve banket ⏳ (SIRA: ŞİMDİ)
+Dörtlü (8) · ikili (12). Masa 12 → **20**. Boşluk hissini asıl kapatan adım.
+**B3-2 düzeltmesi (D-064):** banketin seviyesi adanın BOYU değil, ada üstündeki **birim sayısıdır**
+— adalar zaten tam boyda (7,6) duruyor, sütunlar ∓11,7 · ∓8,5 · ∓5,3'te hazır ve `banketUnit(u)`
+u = 4…11 için doğru koordinatı zaten üretiyor. B5'in işi bu birimleri AÇAN model + pad zinciri
+(a2 bugün `TABLES_PER_AREA = 4` ile kelepçeli) ve masa tipi (ikili masa 2 koltukta tavanlanır;
+`seatsAtTable` kelepçesi B3-2'de kuruldu). "Var olan masalar yer değiştirmez" garantisi duruyor.
 
 ### B4 — Odalar ⏳ (SIRA: B5'ten sonra)
 Lavabo (oturma eklemez, pasif çarpan, kendi seviyeleri) + yıkık merdiven ("Kat 2 çok yakında").

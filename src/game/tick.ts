@@ -17,7 +17,6 @@ import {
   brewQueueCapacity,
   tableTip,
   tablePatience,
-  tableSeats,
   rollGroupSize,
   upgradeFillRateFor,
   waiterSpeedFor,
@@ -63,6 +62,8 @@ import {
   getNavGrid,
   navStep,
   servicePlace,
+  entranceAt,
+  streetAt,
   type RVec3,
   type Solid,
   type ServicePlace,
@@ -83,6 +84,7 @@ import {
   dirtyTables,
   occupiedSeats,
   findTableForGroup,
+  seatsAtTable,
   revealKeys,
   visiblePads,
   stationUpgradeUnlocked,
@@ -330,7 +332,7 @@ function spawnSystem(c: TickCtx): void {
   const activeCount = npcs.filter((n) => n.state !== 'leaving').length;
   // Müşteri tavanı KOLTUK+2 (masa değil — Y2; M3'ün masa+2 fix'inin koltuklu hali).
   let totalSeats = 0;
-  for (let i = 0; i < tables; i++) totalSeats += tableSeats(tableLevels[i] ?? 0);
+  for (let i = 0; i < tables; i++) totalSeats += seatsAtTable(i, tableLevels[i] ?? 0);
   const maxConcurrent = Math.max(C.npc.maxConcurrent, totalSeats + 2);
   if (spawnTimer <= 0 && activeCount < maxConcurrent) {
     const occ = occupiedSeats(npcs);
@@ -339,12 +341,12 @@ function spawnSystem(c: TickCtx): void {
       // Grup boyu zarla (%30/35/20/15); koltuk yetmezse KÜÇÜLÜR, tavan da aşılmaz.
       const seats = LAYOUT.tables[target].seats;
       const taken = occ.get(target) ?? new Set<number>();
-      const freeSeats = tableSeats(tableLevels[target] ?? 0) - taken.size;
+      const freeSeats = seatsAtTable(target, tableLevels[target] ?? 0) - taken.size;
       const size = Math.min(rollGroupSize(Math.random()), freeSeats, maxConcurrent - activeCount);
       // KENDİ zone'unun sokağında belir → o zone'un kapısından girer (dış dünya hissi).
       // Üyeler sokakta hafif saçılır (üst üste binmesin); her üye FARKLI koltuğa atanır,
       // çay/timer/ödeme/bahşiş bireysel (ekonomi korunumu bozulmaz).
-      const street = LAYOUT.streets[areaOfTable(target)];
+      const street = streetAt(areasOpen);
       let placed = 0;
       for (let k = 0; k < seats.length && placed < size; k++) {
         if (taken.has(k)) continue;
@@ -375,16 +377,17 @@ function spawnSystem(c: TickCtx): void {
  * NPC durum makinesi
  */
 function npcSystem(c: TickCtx): void {
-  const { dt, npcs, coins, dishes, navGrid, tableLevels, questIndex } = c;
+  const { dt, npcs, coins, dishes, navGrid, tableLevels, questIndex, areasOpen } = c;
   let cleanCups = c.cleanCups;
   let nextId = c.nextId;
   const step = NPC_SPEED * dt;
   const removed: number[] = [];
   for (const n of npcs) {
     const slot = LAYOUT.tables[n.tableIndex];
-    // Müşteri KENDİ zone'unun kapısını/sokağını kullanır (zone-yerel hareket; bölme duvarı sorunu yok).
-    const nEntrance = LAYOUT.entrances[areaOfTable(n.tableIndex)];
-    const nStreet = LAYOUT.streets[areaOfTable(n.tableIndex)];
+    // TEK KAPI (D-023): tüm müşteriler binanın kapısından girer/çıkar. B3-2: kapı 2. Alan
+    // açılınca cephenin ortasına kayar (maket v13 adım 2) → koordinat `areasOpen`'a bağlı.
+    const nEntrance = entranceAt(areasOpen);
+    const nStreet = streetAt(areasOpen);
     switch (n.state) {
       case 'toTable': {
         // Önce KAPIYA (sokaktaysa düz yürü — dışarıda engel yok), sonra koltuğa BFS rotayla

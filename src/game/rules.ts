@@ -200,6 +200,17 @@ export function occupiedSeats(npcs: Npc[]): Map<number, Set<number>> {
  *  kaybettirip AÇ bırakıyordu (q_tost5 ilerleyemiyordu). startArea'dan başlayarak boş koltuğu
  *  olan İLK alan seçilir; alan İÇİNDE en çok boş koltuklu temiz masa (eşitlikte düşük index).
  *  Hiç boş koltuk yoksa -1. */
+/**
+ * Masanın O ANKİ koltuk sayısı: seviyeden gelen sayı, masanın GERÇEKTEN sahip olduğu koltuk
+ * konumlarıyla kelepçelenir. B3-2'ye kadar her masanın dört yeri vardı ve iki sayı hep aynıydı;
+ * banket birimlerinin İKİ yeri var (bank + karşı sandalye). Kelepçe olmasa seviye 3'teki bir banket
+ * "4 koltuklu ama 2'si dolu" görünür, spawn onu boş sanıp hedefler ve hiç müşteri yerleştiremeden
+ * sayacı harcardı — masa tipleri (B5) gelmeden de doğru olması gereken sınır.
+ */
+export function seatsAtTable(tableIndex: number, level: number): number {
+  return Math.min(tableSeats(level), LAYOUT.tables[tableIndex]?.seats.length ?? 0);
+}
+
 export function findTableForGroup(
   occ: Map<number, Set<number>>,
   tables: number,
@@ -215,7 +226,7 @@ export function findTableForGroup(
     const end = Math.min((a + 1) * TABLES_PER_AREA, tables);
     for (let i = a * TABLES_PER_AREA; i < end; i++) {
       if (dirty.has(i)) continue;
-      const free = tableSeats(tableLevels[i] ?? 0) - (occ.get(i)?.size ?? 0);
+      const free = seatsAtTable(i, tableLevels[i] ?? 0) - (occ.get(i)?.size ?? 0);
       if (free > bestFree) {
         bestFree = free;
         best = i;

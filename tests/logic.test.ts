@@ -87,6 +87,9 @@ import {
   wallSpans,
   BAND,
   FLOOR_HALF,
+  BANKET,
+  entranceAt,
+  streetAt,
 } from '../src/game/store';
 import { resetKeepingSettings, loadSave, defaultSave, defaultStats, defaultSettings, defaultWaiterUpgrades } from '../src/game/save';
 import { buildNavGrid, findNavPath } from '../src/game/nav';
@@ -1325,7 +1328,7 @@ describe('personel yol bulma (nav.ts — BFS, kilitlenme yok)', () => {
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
       npcs: [
-        { id: 960, state: 'toTable', pos: [...LAYOUT.entrances[0]] as [number, number, number], tableIndex: backIdx, seatIndex: 0, timer: 0, product: 'tea', color: '#27ae60' },
+        { id: 960, state: 'toTable', pos: [...entranceAt(2)] as [number, number, number], tableIndex: backIdx, seatIndex: 0, timer: 0, product: 'tea', color: '#27ae60' },
       ],
       spawnTimer: 999,
     });
@@ -1362,7 +1365,7 @@ describe('personel yol bulma (nav.ts — BFS, kilitlenme yok)', () => {
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
       npcs: [
-        { id: 962, state: 'toTable', pos: [...LAYOUT.streets[0]] as [number, number, number], tableIndex: rightIdx, seatIndex: 0, timer: 0, product: 'tea', color: '#27ae60' },
+        { id: 962, state: 'toTable', pos: [...streetAt(2)] as [number, number, number], tableIndex: rightIdx, seatIndex: 0, timer: 0, product: 'tea', color: '#27ae60' },
       ],
       spawnTimer: 999,
     });
@@ -2101,7 +2104,7 @@ describe('M2 — 2×2 kat ızgarası (zone-3/4 altyapısı; arka sıra + geçitl
     // zone-3'ün ilk masası (slot 8) için sokakta müşteri başlat.
     useGame.setState({
       npcs: [
-        { id: 9001, state: 'toTable', pos: [...LAYOUT.streets[2]] as [number, number, number], tableIndex: 8, seatIndex: 0, timer: 0, product: 'tea', color: '#fff' },
+        { id: 9001, state: 'toTable', pos: [...streetAt(3)] as [number, number, number], tableIndex: 8, seatIndex: 0, timer: 0, product: 'tea', color: '#fff' },
       ],
       spawnTimer: 1e9,
     });
@@ -2379,23 +2382,31 @@ describe('Y2 — koltuk + grup sistemi (plan §2)', () => {
     expect(rollGroupSize(0.999)).toBe(4);
   });
 
-  it('koltuk pozisyonları: seats[0] eski .seat ile birebir; çay masası 4 yana, yemek masası 2+2 karşılıklı', () => {
+  it('koltuk pozisyonları: seats[0] eski .seat ile birebir; ön çeyrek kare, orta şerit banket birimi', () => {
     for (const t of LAYOUT.tables) {
-      expect(t.seats).toHaveLength(4);
+      expect(t.seats.length).toBeGreaterThanOrEqual(2);
       expect(t.seats[0]).toEqual(t.seat);
+      // Y2 tek kaynak: koltuk sayısı = ofset sayısı = görsel tip sayısı (Tables.tsx aynı listeden çizer).
+      expect(t.seatOffsets).toHaveLength(t.seats.length);
+      expect(t.seatKinds).toHaveLength(t.seats.length);
     }
-    // B2: TEK masa tipi — "yemek masası" (2+2 karşılıklı) ürünle birlikte kalktı; her masa
-    // S/N/E/W ofsetli kare çay masası. Üç gerçek tip B5'te gelecek.
     const expectOffsets = (ti: number, want: [number, number][]) => {
       const t = LAYOUT.tables[ti];
+      expect(t.seats).toHaveLength(want.length);
       t.seats.forEach((s, k) => {
         expect(s[0] - t.table[0]).toBeCloseTo(want[k][0], 6);
         expect(s[2] - t.table[2]).toBeCloseTo(want[k][1], 6);
       });
     };
+    // Ön çeyrekler: dört yanı tabure olan kare masa (dört koltuk da 'stool').
     const KARE: [number, number][] = [[0, 0.78], [0, -0.78], [0.78, 0], [-0.78, 0]];
     expectOffsets(0, KARE);
-    expectOffsets(8, KARE);
+    expect(LAYOUT.tables[0].seatKinds).toEqual(['stool', 'stool', 'stool', 'stool']);
+    // B3-2 orta şerit: banket birimi İKİ koltuk — 0 bank (ada oturağı, ayrı tabure çizilmez),
+    // 1 karşı sandalye. Ofsetler maket v13'ün birim geometrisi (bank 0,74 · masa 1,85 · sandalye 2,95).
+    expectOffsets(8, [[0, -(BANKET.tableDz - BANKET.benchDz)], [0, BANKET.chairDz - BANKET.tableDz]]);
+    expect(LAYOUT.tables[8].seatKinds).toEqual(['bench', 'stool']);
+    expect(LAYOUT.tables[9].seatKinds).toEqual(['bench', 'stool']);
   });
 
   it('grup spawn: L3 masada (4 koltuk) 4 kişilik grup AYNI masaya FARKLI koltuklarla doğar', () => {
@@ -2455,11 +2466,11 @@ describe('Y2 — koltuk + grup sistemi (plan §2)', () => {
     }
     // 2 de yolda (toTable, masa 3 koltuk 2'ye atanmış + ekstra biri koltuk 3'e) → aktif 16.
     sitters.push({
-      id: id++, state: 'toTable' as const, pos: [...LAYOUT.streets[0]] as [number, number, number],
+      id: id++, state: 'toTable' as const, pos: [...streetAt(1)] as [number, number, number],
       tableIndex: 3, seatIndex: 2, timer: 0, product: 'tea', color: '#fff',
     });
     sitters.push({
-      id: id + 1, state: 'toTable' as const, pos: [...LAYOUT.streets[0]] as [number, number, number],
+      id: id + 1, state: 'toTable' as const, pos: [...streetAt(1)] as [number, number, number],
       tableIndex: 3, seatIndex: 3, timer: 0, product: 'tea', color: '#fff',
     });
     useGame.setState({ npcs: sitters, spawnTimer: 0 });
@@ -3290,9 +3301,10 @@ describe('Faz B1 — dünya modeli: ALAN · SERVİS · MASA · ODA ayrışması'
     // olduğundan sabit dizi yalan söylerdi. Yerine `servicePlace(areasOpen)` tek kapı.
     expect(MAX_SERVICES).toBe(1);
     expect(LAYOUT.areaBounds.length).toBe(MAX_AREAS);
-    expect(LAYOUT.entrances.length).toBe(MAX_AREAS);
     expect(LAYOUT.tables.length).toBe(MAX_AREAS * 4);
-    for (const key of ['stations', 'stationPickups', 'dishStations', 'waiterHomes', 'stationUpgradeSpots']) {
+    // B3-2: kapı dizileri de KALKTI — kapı 2. Alan açılınca cephenin ortasına kayıyor (maket v13
+    // adım 2), yani servis gibi o da `areasOpen` fonksiyonu. Alan başına ayrı kapı zaten yoktu.
+    for (const key of ['entrances', 'streets', 'stations', 'stationPickups', 'dishStations', 'waiterHomes', 'stationUpgradeSpots']) {
       expect((LAYOUT as unknown as Record<string, unknown>)[key]).toBeUndefined();
     }
   });

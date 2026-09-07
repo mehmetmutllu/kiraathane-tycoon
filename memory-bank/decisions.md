@@ -1224,3 +1224,95 @@ bilerek ertelenmişti ama pano satırı buna göre güncellenmedi; erteleme bir 
 haritasına da yazılmayınca iş iki belge arasındaki boşluğa düştü. **Bir adım ertelenirken
 nereye ertelendiği hedef fazın adım listesine YAZILMALI** — "sonra yaparız" bir yer değildir.
 
+---
+
+## D-064 — B3-2: ORTA ŞERİT · BANKET ADALARI · KAPI ORTAYA (2026-09-07 gece)
+
+**Bağlam:** B3-1 katı 34 × 34 yaptı ama arka yarının önü (34 × 9,8) boş kaldı — maket v13'ün 6.
+adımı orayı **sırt sırta banket adalarıyla** dolduruyor. Bu adım o yapıyı kurar; propler/cephe
+süsü B6'nın.
+
+### 1. Kesme çizgisi: yapı bu adımda, masa sayısı B5'te
+Kayıtta iki satır çelişiyordu — `activeContext` handoff'u "B3-2 = iki ada + **12 ikili masa** +
+servis istasyonu", D-063 sıra satırı ise "B3-2 (şerit+banket) → **B5 (12 → 20 masa)**". İkisi aynı
+anda doğru olamaz: maketteki 12 ikili masa, masayı 8 + 12 = 20'ye çıkaran şeyin ta kendisi.
+Kullanıcıya soruldu, cevap: *"makette 2 banket 8 masa var, oradaki gibi olsun… ilk açılıştan
+bahsediyorsan mantıklı olan ne ise o olsun."*
+**Karar:** BİTMİŞ HÂL maket (2 ada · 12 ikili masa); bu adımda **masa 12'de kalır** (a2'nin dört
+slotu banket birimi olur), denge dokunulmaz, B5'in 12 → 20 defteri aynen durur.
+
+### 2. Ada TAM BOY doğar; büyüyen şey MASA sayısıdır (B5'in stub'ına düzeltme)
+B5'in taslağı "ada seviyesi BOYUDUR, dış uç sabit, ada içeri uzar" diyordu. Önce öyle yapıldı:
+tek sütunluk ada = 1,2 × 2,5. **Ekranda bank gibi değil DOLAP gibi duruyor** (derinliği boyundan
+büyük, üstelik sırtlık + başlıkla 1,38 yüksek). Ekran görüntüsüyle görüldü ve karar değişti:
+adalar maketin ölçüsünde (**boy 7,6 · merkez x = ∓8,5**) doğar, seviye adanın üstündeki **birim
+sayısını** artırır. Gerekçe mekânsal: bank mekânın sabit donanımıdır, kafede uzayan şey bank değil
+bankın önüne dizilen masa sayısıdır. B5'in asıl sözü (**var olan masalar yer değiştirmez**) aynen
+duruyor — `banketUnit(u)` u büyüdükçe yalnız YENİ birim üretir, eskiler sabit sütunlarında kalır.
+Yan kazanç: şerit AÇILDIĞI ANDA mobilyalı görünür (kullanıcının boşluk şikâyetine doğrudan cevap).
+
+### 3. Adanın COLLISION derinliği görselin üçte biri (0,8 · görsel 2,5) — zorunluluk, tercih değil
+Adayı görsel derinliğiyle katı yapmak **bank koltuğunu yol bulmaya kapatıyor**: masanın şişirilmiş
+ayak izi (±0,78) ile adanın şişirilmiş kenarı üst üste biniyor, aradaki koltuğa BFS'in girebileceği
+tek bir boş hücre kalmıyor → `navStep` sessizce **düz-çizgi yedeğine** düşüyor. Bu B3-1'in bulduğu
+`REACH_TABLE` kusurunun birebir aynısı, bu yüzden hemen tanındı. `BANKET.coreHalf = 0,4` (sırtlık
+çekirdeği) masa ile ada arasında bir hücrelik servis boşluğu bırakır; garson banket masasına oradan
+yanaşır. Bedeli: oyuncu oturak minderinin dış yarısına basabilir — sandalyelerin zaten collision'ı
+yok (D-016 deseni), **adanın içinden geçilememesi** asıl kural ve o duruyor. Karar teste bağlandı:
+`layout-b32.test.ts` her koltuğa GERÇEK rota arar + canlı oyunda müşteriyi banka oturtur.
+
+### 4. Şerit maketten 0,85 br geri (BANKET.z = −3,8; makette −2,95)
+Maket kâğıt üstünde doğru ama iki oyun nesnesini taşımıyor: şeridin **iki yüzü** ve her yüzün
+**yükseltme noktası**. −2,95'te güney sandalyesi tam z = 0'a, yani a2 ile ön çeyreklerin dikişine
+düşüyor; güney yükseltme noktası alanın dışına taşıyordu. −3,8 iki yüzü de kendi alanının içinde
+tutar ve kuzey koridoruna tezgâh yüzünden 0,45 br pay bırakır. **Birim geometrisi maketle birebir**
+(bank 0,74 · masa 1,85 · sandalye 2,95); değişen yalnız şeridin ekseni ve oyuna özgü koridor ofseti.
+
+### 5. Masa artık kendi koltuklarını taşır (B5'in tohumu)
+`seats` global `CHAIR_SPOTS`ten türüyordu (her masa dört yanı tabure). Banket birimi **iki** koltuk
+taşır ve biri **banktır** (ayrı tabure çizilmez, ada zaten orada). `TableSpot.seats/kinds` +
+`seatOffsets/seatKinds` geldi; `Tables.tsx` (hem instancing hem greybox) tabureleri masanın kendi
+listesinden çizer → "görsel sandalye = oturulabilir koltuk" (Y2) korunur.
+Yanında **gerçek bir açık kapandı**: `tableSeats(level)` seviyeden 4'e kadar çıkıyor ama banketin
+iki yeri var — kelepçesiz kalsa spawn "boş koltuğu var" deyip hedefler, kimseyi yerleştiremez ve
+sayacı harcardı. `seatsAtTable(i, level) = min(tableSeats(level), koltuk sayısı)` iki çağıranda da
+kullanılıyor.
+
+### 6. Garson servis istasyonu: YALNIZ obje + collision (kullanıcı seçimi)
+Maket "tezgâhın sağ ucunda" bir aktarma tezgâhı koyuyor (sürahi · peçetelik · temiz bardak · kirli
+tepsi). Oyunda ana tezgâh x ∈ [−14,6, −11,4], bulaşık x ∈ [−8,4, −6,4]; aradaki 3,0 br açıklığa
+2,6 br'lik istasyon oturdu (x = −9,9). **Garson tepsisini hâlâ ana tezgâhtan alır** — aktarma
+mekaniği oyun davranışını değiştirir ve kendi tempo ölçümünü ister, bu adım yapı adımıdır.
+
+### 7. Kapı 2. Alan açılınca cephenin ortasına kayar (maket v13 adım 2)
+`LAYOUT.entrances/streets` dizileri kalktı (alan başına ayrı kapı zaten yoktu, üç girdi de aynıydı);
+yerine `doorX/entranceAt/streetAt(areasOpen)` — servisin taşınmasıyla aynı desen: **kapı da bir
+koordinat sorusu**. `doorX(1) = −8,5 · doorX(2+) = 0`.
+**Test gerçek bir kusur yakaladı:** duvar kapı boşluğunu "kapı bu parçanın İÇİNDE mi" diye kesiyordu;
+x = 0'a kayınca kapı tam iki ön duvar parçasının DİKİŞİNE düşüyor, ikisi de "hayır" diyor ve
+**kapının önüne duvar örülüyordu**. Kesme artık çıkarma ile yapılıyor (parça ∖ kapı aralığı).
+
+### 8. Yerleşimden kopmuş hayalet objeler temizlendi
+B3-1 kat ölçüsünü değiştirince bunlar sahipsiz kalmıştı ve tam B3-2'nin şeridinin üstünde
+duruyorlardı: **DEPO + TUVALET kutuları** (eski 2×2 ızgaranın "rezerv arsa"sına aitti; z ≈ −1,6'ya,
+yani KİLİTLİ a2'nin ortasına düşüyorlardı — D-057'ye de aykırı) → `ReservedRooms` kaldırıldı,
+gerçek karşılıkları B4'te bandın içinde gelecek. **TV** (3,6 / −5,1) ve **duvar saati** (−1,6 / −5,18)
+havada asılıydı (dayandıkları arka duvar kalkmıştı) → maketin dediği yere, **sol duvara** taşındı.
+Duvar programının gerisi (askı rayı · konsol · gazetelik) B6a'nın.
+
+**Ölçüldü:** `simulate.ts` altı kilometre taşı da B2/B3-1 ile **birebir aynı** (ilk alım 40 sn ·
+garson 11,1 dk · 2. Alan 34,6 dk · bulaşıkçı 1,00 sa · 3. Alan 1,83 sa · tezgâh 1,99 sa ·
+tost 2,55 sa) — denge dokunulmadı. Yürüme: tezgâhtan masaya ortalama BFS yolu **19,6 br**, en uzak
+**30,4 br** (B3-1'de 29,1); şeridin sol adası tezgâha çok yakın (5,1 ve 1,3 br), sağ adası uzak
+(25,9 / 24,4) — şerit yürüme yükünü hem artırıyor hem hafifletiyor.
+
+**Doğrulama:** vitest **242/242** (222 + `layout-b32.test.ts` 20) · smoke 26/26 · build temiz ·
+`tsc -b` temiz · eslint 19 (HEAD ile aynı — B3-1 notundaki "15" yanlışmış, gerçek taban 19) ·
+tarayıcıda beş kare çekildi (`docs/gorsel/ss/b32-*.png`), konsol temiz.
+
+**Ders:** *bir ölçünün doğruluğu, onu doğuran maketin taşımadığı nesneyle sınanır.* Maket v13
+banket birimini kâğıtta doğru kuruyor ama maket ne **yol bulma ızgarası** ne de **yükseltme noktası**
+taşıyor. Şerit maketin koordinatına birebir konsa iki şey sessizce kırılacaktı: bank koltuğu
+erişilemez olacak (BFS değil düz çizgi) ve güney yükseltme noktası alan dışına düşecekti. İkisi de
+ekranda GÖRÜNMEZ — biri test, biri ekran görüntüsü yakaladı. **Makete sadakat koordinat kopyalamak
+değil, maketin ANLATTIĞI şeyi oyunun kendi kısıtlarıyla kurmaktır.**

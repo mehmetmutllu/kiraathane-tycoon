@@ -8,6 +8,7 @@ import { PALETTE } from '../../config/palette';
 import { tableSeats, tableThemeColor } from '../../config/economy.config';
 import { recoloredAtlas, atlasReady, onAtlasReady } from './recolor';
 import type { Vec3 } from '../../game/types';
+import type { SeatKind } from '../../game/store';
 
 // KayKit Furniture Bits (CC0). Native boyutlar (origin tabanda, üst ~y=1.0): table_small 1×1×1,
 // table_medium 2×1×2, table_medium_long 3×1×2, chair_stool/_wood 0.75×0.5×0.75, chair_A/_wood 0.75×1.26×0.85.
@@ -47,11 +48,17 @@ export function Table({
   x,
   z,
   level,
+  spots = LAYOUT.chairSpots,
+  kinds,
   greybox = false,
 }: {
   x: number;
   z: number;
   level: number;
+  /** Koltuk ofsetleri (masaya göre). Varsayılan dörtlü masanın dört yanı. */
+  spots?: readonly (readonly [number, number])[];
+  /** Koltukların görsel karşılığı; `bench` olan koltuk için tabure ÇİZİLMEZ (banket adası oradadır). */
+  kinds?: readonly SeatKind[];
   greybox?: boolean;
 }) {
   // İLERLEME (rev6 — CoC tek-şey/seviye + tutarlı iki hat): tek kaynak seatsByLevel 1/2/2/4/4.
@@ -66,7 +73,6 @@ export function Table({
   // tipi (dörtlü · ikili · banket) B5'te masanın KENDİ özelliği olarak gelecek.
   const clothColor = level >= 4 ? PALETTE.defaultTone : '';
   const cloth = clothColor; // greybox fallback alias
-  const spots = LAYOUT.chairSpots;
   const chairs = Math.min(spots.length, tableSeats(level));
   const skirt = !!clothColor && level >= 4; // greybox fallback
   const hw = 0.475;
@@ -151,16 +157,18 @@ export function Table({
       ) : null}
       {/* oturaklar — gerçek asset; minderi recolor ile ara ton/altına BOYALI (Sv3+). Ahşap seviyede
           boya yok. Yemek sandalyesi arkalık dışa (masaya bakar). */}
-      {spots.slice(0, chairs).map(([sx, sz], i) => (
-        <Model
-          key={i}
-          src={chairSrc}
-          scale={STOOL_S}
-          position={[sx, 0, sz]}
-          recolor={chairRecolor}
-          fallback={<Stool x={sx} z={sz} />}
-        />
-      ))}
+      {spots.slice(0, chairs).map(([sx, sz], i) =>
+        kinds?.[i] === 'bench' ? null : (
+          <Model
+            key={i}
+            src={chairSrc}
+            scale={STOOL_S}
+            position={[sx, 0, sz]}
+            recolor={chairRecolor}
+            fallback={<Stool x={sx} z={sz} />}
+          />
+        ),
+      )}
     </group>
   );
 }
@@ -212,9 +220,13 @@ function buildFurniture(tables: number, tableLevels: number[], clothTone: string
 
     const chairKey: FKey = level < 2 ? 'chair_stool_wood' : 'chair_stool';
     const chairScale = STOOL_S;
-    const spots = LAYOUT.chairSpots;
+    // Koltuk ofsetleri MASA BAŞINA (B3-2): banket biriminin bir koltuğu adanın oturağıdır —
+    // `bench` koltuk için ayrı tabure çizilmez, yoksa bank minderinin içinde tabure belirirdi.
+    const spots = t.seatOffsets;
     const nChairs = Math.min(spots.length, tableSeats(level));
-    for (const [sx, sz] of spots.slice(0, nChairs)) {
+    for (let k = 0; k < nChairs; k++) {
+      if (t.seatKinds[k] === 'bench') continue;
+      const [sx, sz] = spots[k];
       place[chairKey].push({ pos: [x + sx, 0, z + sz], scale: chairScale });
     }
 
@@ -308,6 +320,8 @@ function GreyboxTables({ tables, tableLevels }: { tables: number; tableLevels: n
           x={t.table[0]}
           z={t.table[2]}
           level={tableLevels[i] ?? 0}
+          spots={t.seatOffsets}
+          kinds={t.seatKinds}
           greybox
         />
       ))}

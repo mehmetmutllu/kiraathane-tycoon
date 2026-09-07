@@ -6,7 +6,7 @@
  * yerleşimi kullanabilir; store.ts bu modülü yeniden dışa aktarır (eski importlar çalışır).
  */
 import type { Vec3 } from './types';
-import { MAX_AREAS, MAX_SERVICES, THE_SERVICE } from './world';
+import { MAX_AREAS, MAX_SERVICES, TABLES_PER_AREA, THE_SERVICE } from './world';
 import { buildNavGrid, findNavPath, type NavGrid, type NavSolid } from './nav';
 
 export type RVec3 = readonly [number, number, number];
@@ -129,6 +129,93 @@ export function hasAreaNeighbor(a: number, side: AreaSide): boolean {
   return AREAS.some((b) => b !== a && Math.abs(sideCoord(AREA_RECTS[b], OPPOSITE[side]) - c) < 1e-6);
 }
 
+// ---- ORTA SERIT: BANKET ADALARI (B3-2 — maket v13 adım 6) ----
+/**
+ * Arka yarının önü (z ∈ [−9,8, 0]) maket v13'te "geniş, tek sıra masalık şerit" olarak bekliyordu.
+ * Duvar olmadığı için kafelerin standart çözümü geldi: **SIRT SIRTA BANKET ADASI** — iki yüzlü uzun
+ * oturma bankı, ortada ortak sırtlık; her yüzünde ikili masa ve karşısında sandalye. İki ada,
+ * ön kümelerle AYNI dikey sütunlarda (x = ∓11,7 · ∓8,5 · ∓5,3).
+ *
+ * **Adalar TAM BOY doğar (7,6 · maketin ölçüsü), büyüyen şey üstlerindeki MASA sayısıdır.** Önce
+ * adaları tek sütunluk (1,2 br) kurup seviyeyle uzatmayı denedim — ekranda 1,2 × 2,5'lik bir kütle
+ * banka değil DOLABA benziyor (derinliği boyundan büyük). Bank zaten mekânın sabit donanımıdır;
+ * kafede uzayan şey bank değil, bankın önüne dizilen masa sayısıdır. B5'in "var olan masalar yer
+ * değiştirmez" sözü aynen duruyor: `banketUnit(u)` u büyüdükçe yalnız YENİ birim üretir, eskiler
+ * sabit sütunlarında kalır. (`banketLen` duruyor — B4/B5 farklı boyda bir ada isterse tek kaynak.)
+ */
+export const BANKET = {
+  /**
+   * Adaların ortak ekseni. Maket v13 bunu z = −2,95'e koyar; oyunda **−3,8**. Fark 0,85 br ve
+   * sebebi maketle çelişmek değil, maketin taşımadığı iki oyun nesnesi: şeridin z ekseninde
+   * bank + masa + sandalye + **yükseltme noktası** (koridor) sığmak zorunda ve bunun İKİ yüzü var.
+   * −2,95'te güney sandalyesi tam z = 0'a, yani a2 ile ön çeyreklerin dikişine düşüyordu; güney
+   * yükseltme noktası ise alanın dışına taşıyordu. −3,8 şeridi 0,85 geri alır: iki yüz de kendi
+   * alanının içinde kalır ve kuzey koridoru tezgâh yüzüne (z = −8,1) 0,45 br pay bırakır.
+   * Birim geometrisi (bank 0,74 · masa 1,85 · sandalye 2,95) maketle BİREBİR aynı.
+   */
+  z: -3.8,
+  /** GÖRSEL derinlik (kaide + iki oturak); Scene bu ölçüyle çizer. */
+  depth: 2.5,
+  /**
+   * COLLISION derinliği yalnız **sırtlık çekirdeği** (0,8 br). Görsel 2,5'in tamamını katı yapmak
+   * bank koltuğunu YOL BULMA AÇISINDAN KAPATIYOR: masanın şişirilmiş ayak izi (±0,78) ile adanın
+   * şişirilmiş kenarı üst üste biniyor, aradaki koltuğa BFS'in girebileceği tek bir boş hücre
+   * kalmıyor ve `navStep` sessizce düz-çizgi yedeğine düşüyordu (B3-1'in `REACH_TABLE` kusurunun
+   * aynısı). 0,8'le masa ile ada arasında bir hücrelik servis boşluğu kalır (z ≈ ∓2,15) — garson
+   * banket masasına oradan yanaşır. Bedeli: oyuncu oturak minderinin dış yarısına basabilir
+   * (sandalyelerin zaten collision'ı yok — D-016 deseni). Adanın İÇİNDEN GEÇİLEMEZ, asıl kural bu.
+   */
+  coreHalf: 0.4,
+  /** Sütun aralığı (ön kümelerin ritmi). */
+  colGap: 3.2,
+  /** Uçtaki sütunun ada ucuna uzaklığı. */
+  endPad: 0.6,
+  /** Adanın DIŞ ucu (∓) — ada boyu değişse de sabit kalan uç. */
+  outerX: 12.3,
+  /** Adanın taşıdığı sütun sayısı (maket: 3 → boy 7,6, merkez x = ∓8,5). */
+  cols: 3,
+  /** Ada merkezinden: bank oturağı · masa · karşı sandalye · koridordaki yükseltme noktası. */
+  benchDz: 0.74,
+  tableDz: 1.85,
+  chairDz: 2.95,
+  aisleDz: 3.5,
+} as const;
+
+/** `cols` sütunluk adanın boyu (dış uç sabit, içeri uzar): 1 → 1,2 · 2 → 4,4 · 3 → 7,6 (maket). */
+export const banketLen = (cols: number): number => 2 * BANKET.endPad + (cols - 1) * BANKET.colGap;
+
+/**
+ * Banket birimi `u` (a2'nin masa slotu sırası) → hangi ada / sütun / yüz.
+ * Sıra: sol adanın iki yüzü → sağ adanın iki yüzü → bir sonraki sütun. Böylece bugünkü dört birim
+ * iki adayı da kurar (simetri) ve B5 sütun eklerken ESKİ birimler yerinde kalır.
+ */
+export function banketUnit(u: number): { side: -1 | 1; col: number; face: -1 | 1 } {
+  return {
+    side: Math.floor(u / 2) % 2 === 0 ? -1 : 1,
+    col: Math.floor(u / 4),
+    face: u % 2 === 0 ? 1 : -1,
+  };
+}
+
+/** Banket biriminin masa merkezi + koltukları + yükseltme noktası (masaya göre ofsetler). */
+function banketSpot(u: number): TableSpot {
+  const { side, col, face } = banketUnit(u);
+  const x = side * (BANKET.outerX - BANKET.endPad - col * BANKET.colGap);
+  return {
+    at: [x, BANKET.z + face * BANKET.tableDz],
+    // Koltuk 0 = BANK (adanın oturağı; ayrı tabure ÇİZİLMEZ), koltuk 1 = karşı sandalye.
+    // Masa L0'da tek koltuk açık olduğundan ilk müşteri BANKETE oturur — ikili masanın doğru okuması.
+    seats: [
+      [0, -face * (BANKET.tableDz - BANKET.benchDz)],
+      [0, face * (BANKET.chairDz - BANKET.tableDz)],
+    ],
+    kinds: ['bench', 'stool'],
+    // Yükseltme noktası KORİDORDA (sandalyenin arkası): sütun eklendikçe komşu birimlerinki
+    // 3,2 br ayrı kalır (TABLE_UP_RADIUS 1,0) → B5 büyümesinde çakışmaz.
+    up: [0, face * (BANKET.aisleDz - BANKET.tableDz)],
+  };
+}
+
 // ---- Masalar ----
 // Sandalye ofsetleri (masaya göre DÜNYA-ofseti; Tables.tsx aynı listeden çizer → görsel sandalye =
 // oturulabilir koltuk, Y2 tek kaynak). İlk spot = ana oturma yeri (eski .seat).
@@ -139,12 +226,24 @@ const CHAIR_SPOTS: readonly [number, number][] = [
   [-0.78, 0],
 ];
 
-// Masa konumları — maket v13'ün küme merkezleri (ön çeyreklerde 2×2, aralık 3,2; arka yarıda tek
-// sıra). Alan başına 4 slot, GLOBAL index (alan a → [a*4, a*4+4)). Açılış sırası KAPIYA yakından
+/** Koltuğun GÖRSEL karşılığı: `stool` = ayrı tabure çizilir · `bench` = banket adasının oturağı. */
+export type SeatKind = 'stool' | 'bench';
+
+interface TableSpot {
+  at: readonly [number, number];
+  up: readonly [number, number];
+  /** Koltuk ofsetleri (verilmezse dört yanı tabure: CHAIR_SPOTS). */
+  seats?: readonly (readonly [number, number])[];
+  kinds?: readonly SeatKind[];
+}
+
+// Masa konumları — maket v13'ün küme merkezleri. Ön çeyreklerde 2×2 dörtlü masa (aralık 3,2);
+// arka yarıda (a2) ORTA ŞERİT: masalar banket adalarının yüzlerine oturur (B3-2).
+// Alan başına 4 slot, GLOBAL index (alan a → [a*4, a*4+4)). Açılış sırası KAPIYA yakından
 // başlar: ilk masa servise ~7,6 birim uzakta → yürüme döngüsü ilk andan zorlanır (D-017 §1).
 // `up` = yükseltme noktasının masaya göre ofseti: kapı tarafına (+z) ve salonun ortasından DIŞA
 // bakan çapraz köşe — komşu masanın noktasına da orta koridora da taşmaz.
-const TABLE_SPOTS: readonly { at: readonly [number, number]; up: readonly [number, number] }[] = [
+const TABLE_SPOTS: readonly TableSpot[] = [
   // a0 — ön-sol çeyrek (küme merkezi −8,5 / 8,5)
   { at: [-10.1, 10.1], up: [1.25, 1.25] },
   { at: [-6.9, 10.1], up: [1.25, 1.25] },
@@ -155,22 +254,58 @@ const TABLE_SPOTS: readonly { at: readonly [number, number]; up: readonly [numbe
   { at: [10.1, 10.1], up: [-1.25, 1.25] },
   { at: [6.9, 6.9], up: [-1.25, -1.25] },
   { at: [10.1, 6.9], up: [-1.25, -1.25] },
-  // a2 — arka yarı: tek sıra (z = −5,6). İki boşluk BİLEREK bırakıldı: tezgâhın önündeki servis
-  // koridoru (sandalye −6,38 ↔ tezgâh yüzü −8,1 → 1,72 br; garson buradan geçmezse arka masalara
-  // rota kapanıyordu — testle yakalandı) ve orta şerit hattı (z ≈ −2,95, B3-2'nin işi).
-  { at: [-12.5, -5.6], up: [-1.25, 1.25] },
-  { at: [-6.5, -5.6], up: [-1.25, 1.25] },
-  { at: [6.5, -5.6], up: [1.25, 1.25] },
-  { at: [12.5, -5.6], up: [1.25, 1.25] },
+  // a2 — ORTA ŞERİT: dört birim iki adaya dağılır (sol güney · sol kuzey · sağ güney · sağ kuzey).
+  // Eski tek sıra (z = −5,6) kalktı; şeridin doluluğunu artık banket taşıyor.
+  banketSpot(0),
+  banketSpot(1),
+  banketSpot(2),
+  banketSpot(3),
 ];
+
+/** Kaç banket birimi AÇIK (a2'de kaç masa açıldıysa o kadar). */
+export const banketUnitsOpen = (tables: number): number =>
+  Math.max(0, Math.min(TABLES_PER_AREA, tables - 2 * TABLES_PER_AREA));
+
+export interface BanketIsland {
+  side: -1 | 1;
+  cols: number;
+  len: number;
+  /** Görsel merkez (uzun kenar x'te). */
+  center: Vec3;
+  /** COLLISION yarı-boyu: uzunlukta tam, derinlikte yalnız sırtlık çekirdeği (BANKET.coreHalf). */
+  half: readonly [number, number];
+}
+
+/**
+ * O an SAHNEDE olan banket adaları. Şerit açılınca (a2'nin ilk masası) **iki ada birden** tam boyda
+ * kurulur: adalar şeridin DONANIMI, masalar ise sonradan gelen içeriktir — bir kafede bank duvarla
+ * birlikte vardır, masası olmayan bank boş bir banktır, eksik bir obje değil. Kullanıcının asıl
+ * şikâyeti olan boşluğu da bu kapatır: şerit ilk açıldığı anda mobilyalıdır.
+ */
+export function banketIslands(tables: number): BanketIsland[] {
+  if (banketUnitsOpen(tables) === 0) return [];
+  const len = banketLen(BANKET.cols);
+  return ([-1, 1] as const).map((side) => ({
+    side,
+    cols: BANKET.cols,
+    len,
+    center: [side * (BANKET.outerX - len / 2), 0, BANKET.z] as Vec3,
+    half: [len / 2, BANKET.coreHalf] as readonly [number, number],
+  }));
+}
 
 const ALL_TABLES = TABLE_SPOTS.map((t) => {
   const table: Vec3 = [t.at[0], 0, t.at[1]];
-  const seats = CHAIR_SPOTS.map(([sx, sz]) => [table[0] + sx, 0.6, table[2] + sz] as Vec3);
+  const offs = t.seats ?? CHAIR_SPOTS;
+  const seats = offs.map(([sx, sz]) => [table[0] + sx, 0.6, table[2] + sz] as Vec3);
   return {
     table,
     seat: seats[0],
     seats,
+    /** Koltuk ofsetleri (masaya göre) — Tables.tsx tabureleri BURADAN çizer (Y2 tek kaynak). */
+    seatOffsets: offs,
+    /** Her koltuğun görsel karşılığı; `bench` olanlar için ayrı tabure ÇİZİLMEZ (banket adası). */
+    seatKinds: (t.kinds ?? offs.map(() => 'stool' as SeatKind)) as readonly SeatKind[],
     upgradeSpot: [table[0] + t.up[0], 0, table[2] + t.up[1]] as Vec3,
   };
 });
@@ -245,6 +380,26 @@ const PLACE_BACK_BAND: ServicePlace = {
   staffWalk: { a: [-14.6, 0, -9.6], b: [-11.4, 0, -9.6], face: 0 },
 };
 
+/**
+ * GARSON SERVİS İSTASYONU (B3-2 — maket v13 adım 6: "tezgâhın sağ ucunda"). Sürahi, peçetelik,
+ * temiz bardak istifi, uçta kirli bardak tepsisi. Servis bloğunun ön yüzünde, ana tezgâh ile
+ * bulaşığın ARASINDAKİ boşluğa oturur (tezgâh x ∈ [−14,6, −11,4] · bulaşık x ∈ [−8,4, −6,4] →
+ * aradaki 3,0 br'lik açıklığa 2,6 br'lik istasyon).
+ *
+ * B3-2'de **yalnız obje + collision**: garson tepsisini hâlâ ana tezgâhtan alır (kullanıcı kararı).
+ * Uzak masaların yolunu kısaltan AKTARMA mekaniği oyun davranışını değiştirir ve kendi tempo
+ * ölçümünü ister — o yüzden kendi adımında gelir, burada yalnız yeri tutuluyor.
+ * Arka bant açılmadan (areasOpen < 3) ortada durmaz.
+ */
+export const WAITER_STATION = {
+  pos: [-9.9, 0, -8.6] as Vec3,
+  half: [1.3, 0.5] as readonly [number, number],
+  rot: 0,
+} as const;
+
+/** Garson servis istasyonu sahnede mi (servis arka banda taşındıktan sonra). */
+export const waiterStationOpen = (areasOpen: number): boolean => serviceMoved(areasOpen);
+
 /** Servis kümesinin O ANKİ yeri. Kat tek servisten döndüğü için index almaz (world.THE_SERVICE). */
 export function servicePlace(areasOpen: number): ServicePlace {
   return serviceMoved(areasOpen) ? PLACE_BACK_BAND : PLACE_LEFT_WALL;
@@ -253,13 +408,24 @@ export function servicePlace(areasOpen: number): ServicePlace {
 /** Servisin durduğu alan — o alan AÇIK olmak zorunda (yerleşim değişmezi; testli). */
 export const servicePlaceArea = (areasOpen: number): number => servicePlace(areasOpen).areaIndex;
 
+/**
+ * TEK KAPI — maket v13: adım 1'de ilk salonun cephesinin ortasında (x = −8,5); **adım 2'de 2. Alan
+ * açılınca binanın tam ortasına kayar** (x = 0), çünkü cephe artık 34 birim ve kapı bir çeyreğin
+ * değil BİNANIN kapısıdır. Servis gibi bu da bir koordinat sorusu: sabit dizi değil `areasOpen`
+ * fonksiyonu (`servicePlace` ile aynı desen).
+ */
+export const DOOR_MOVES_AT = 2;
+export const doorX = (areasOpen: number): number => (areasOpen >= DOOR_MOVES_AT ? 0 : -8.5);
+/** Kapının iç eşiği (müşteri önce buraya yürür). */
+export const entranceAt = (areasOpen: number): Vec3 => [doorX(areasOpen), 0.6, 16.6];
+/** Kapının dışı — müşterinin belirdiği kaldırım noktası. */
+export const streetAt = (areasOpen: number): Vec3 => [doorX(areasOpen), 0.6, 20.5];
+
 export const LAYOUT = {
-  // TEK KAPI: ilk salonun cephesinin ortasında (x = −8,5) — maket v13 adım 1. Kat büyüse de kapı
-  // yerinde kalır; kapının binanın tam ortasına kayması (v13 adım 2) cephe işi, B3-2'ye ait.
-  entrances: AREAS.map(() => [-8.5, 0.6, 16.6] as Vec3),
-  streets: AREAS.map(() => [-8.5, 0.6, 20.5] as Vec3),
-  entrance: [-8.5, 0.6, 16.6] as Vec3,
-  street: [-8.5, 0.6, 20.5] as Vec3,
+  // Kapı KOORDİNATLARI `entranceAt/streetAt(areasOpen)`ten gelir; buradaki alanlar 1 alan açıkken
+  // geçerli BAŞLANGIÇ değerleridir (oyuncunun doğduğu yer + park/test referansı).
+  entrance: entranceAt(1),
+  street: streetAt(1),
   player: [-8.5, 0.6, 13.4] as Vec3,
   // Oynanabilir alanın BİRLEŞİM kutusu (nav ızgarası bunun üstüne kurulur). Arka bant DIŞARIDA:
   // alanlar z = −9,8'de biter, bant yürünmez kütledir.
@@ -285,7 +451,9 @@ export const LAYOUT = {
     z3table2: ALL_TABLES[9].table,
     z3table3: ALL_TABLES[10].table,
     z3table4: ALL_TABLES[11].table,
-    waiter2: [-10.0, 0, -6.4] as Vec3,
+    // waiter2 arka bant döneminde açılır: servis istasyonunun ÖNÜNDE, banket koridorunun
+    // yükseltme noktasından (−11,7 / −6,85) PAD_RADIUS + TABLE_UP_RADIUS'tan uzakta.
+    waiter2: [-9.0, 0, -7.3] as Vec3,
     waiter3: [-3.6, 0, -7.8] as Vec3,
   } as Record<string, Vec3>,
   // --- Collision footprint'leri (yarı-boyut [hx,hz]; D-016): GÖRSEL mesh'lere yaslı → oyuncu objeye
@@ -368,6 +536,8 @@ export function activeSolids(tables: number, areasOpen: number): Solid[] {
     solids.push({ c: sp.station, h: sp.half });
     solids.push({ c: sp.dish, h: sp.dishHalf });
   }
+  if (waiterStationOpen(areasOpen)) solids.push({ c: WAITER_STATION.pos, h: WAITER_STATION.half });
+  for (const b of banketIslands(tables)) solids.push({ c: b.center, h: b.half });
   for (let i = 0; i < tables; i++) {
     solids.push({ c: LAYOUT.tables[i].table, h: tableHalfFor() });
     solids.push({ c: LAYOUT.tables[i].seat, h: LAYOUT.chairHalf }); // sandalye (içine girilemez)
@@ -402,6 +572,7 @@ export function clampToOpenAreas(x: number, z: number, areasOpen: number): [numb
 export function tableSolids(tables: number): Solid[] {
   const solids: Solid[] = [];
   for (let i = 0; i < tables; i++) solids.push({ c: LAYOUT.tables[i].table, h: tableHalfFor() });
+  for (const b of banketIslands(tables)) solids.push({ c: b.center, h: b.half });
   return solids;
 }
 
@@ -454,6 +625,8 @@ export function navSolids(tables: number, areasOpen: number): NavSolid[] {
     solids.push({ c: sp.station, h: sp.half });
     solids.push({ c: sp.dish, h: sp.dishHalf });
   }
+  if (waiterStationOpen(areasOpen)) solids.push({ c: WAITER_STATION.pos, h: WAITER_STATION.half });
+  for (const b of banketIslands(tables)) solids.push({ c: b.center, h: b.half });
   for (let i = 0; i < tables; i++) solids.push({ c: LAYOUT.tables[i].table, h: tableHalfFor() });
   // Kilitli alanlar + rezerv arsa rota dışı (sıra-arası duvar 2026-06-11'de kaldırıldı).
   solids.push(...lockedAreaSolids(areasOpen));
@@ -523,7 +696,7 @@ export function navStep(
  * yeterli olduğunu doğrular; yerleşim daralırsa test SESSİZCE değil, GÜRÜLTÜYLE düşer.
  */
 function interactionPoints(areasOpen: number, tables: number): RVec3[] {
-  const pts: RVec3[] = [LAYOUT.entrance];
+  const pts: RVec3[] = [entranceAt(areasOpen)];
   if (openServices(areasOpen).length > 0) {
     const sp = servicePlace(areasOpen);
     pts.push(sp.station, sp.pickup, sp.dish, sp.upgradeSpot);

@@ -2,7 +2,7 @@ import { Suspense, useEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Vector3, type Group, type MeshStandardMaterial } from 'three';
 import type { AreaSide } from '../../game/store';
-import { useGame, questFocusPos, LAYOUT, BAND, FLOOR_HALF, wallSpans, servicePlace, stationSoftMaxLevel, stationUpgradeCostAt, stationUpgradeUnlocked, tableSoftMaxLevel, tableUpgradeUnlockedIn, tableNextCost, openServices } from '../../game/store';
+import { useGame, questFocusPos, LAYOUT, BAND, FLOOR_HALF, wallSpans, servicePlace, stationSoftMaxLevel, stationUpgradeCostAt, stationUpgradeUnlocked, tableSoftMaxLevel, tableUpgradeUnlockedIn, tableNextCost, openServices, doorX as doorAt, entranceAt, banketIslands, BANKET, WAITER_STATION, waiterStationOpen } from '../../game/store';
 import { economyConfig } from '../../config/economy.config';
 import { areaOfTable, isCounter, THE_SERVICE } from '../../game/world';
 import { SceneLights } from './lights';
@@ -281,38 +281,138 @@ function KitchenStaff() {
 
 // Rezerve servis odaları (floorplan-master.md; D-023): DEPO sol-arka + TUVALET sağ-arka (bina arkasına
 // bitişik ek odalar) + MERDİVEN ön-sağ köşe (Faz 3b üst kat). Salt görsel greybox rezerv.
-function ReservedRooms() {
-  // 2026-06-11 revizyon: arka-sol hücre kalıcı REZERV arsa → DEPO görseli hep durur;
-  // TUVALET (sağ-arka) 3. alan (arka-sağ TOST) açılınca o bölge gerçek salon olduğundan kalkar.
-  const fz = LAYOUT.areaBounds[0].minZ; // ön sıranın arka çizgisi
-  const areasOpen = useGame((s) => s.areasOpen);
+// (ReservedRooms KALDIRILDI — B3-2.) Eski 2×2 ızgaranın "rezerv arka-sol arsa"sındaki DEPO ve
+// TUVALET kutuları B3-1'de arsa kalkınca sahipsiz kaldı: ikisi de z ≈ −1,6'ya, yani arka yarının
+// (a2) tam ortasına düşüyordu — hem KİLİTLİ alanın içinde çiziliyorlardı (D-057'ye aykırı), hem de
+// B3-2'nin orta şeridinin üstünde duruyorlardı. Gerçek karşılıkları arka bantta: lavabo ve depo
+// B4'te bandın içi açılınca gelecek.
+
+/**
+ * BANKET ADALARI (B3-2 — maket v13 adım 6): orta şeridin sırt sırta oturma bankları. İki yüzlü:
+ * kaide + gövde, iki yanda oturak minderi, ortada ortak sırtlık ve üstünde ahşap başlık.
+ * Ada BOYU birim sayısıyla büyür (`banketIslands`); dış uç sabit kalır, ada içeri doğru uzar —
+ * B5 sütun eklediğinde var olan masalar yerinde kalsın diye.
+ */
+function BanketIslands() {
+  const tables = useGame((s) => s.tables);
+  const islands = banketIslands(tables);
+  if (islands.length === 0) return null;
+  const D = BANKET.depth;
   return (
     <group>
-      {/* DEPO (sol-arka ek oda) — rezerv arsada kalıcı görsel */}
-      <group position={[-3.2, 0, fz - 1.6]}>
-        <mesh castShadow position={[0, 0.7, 0]}>
-          <boxGeometry args={[3.0, 1.4, 2.2]} />
-          <meshStandardMaterial color={PALETTE.wainscot} />
-        </mesh>
-        <mesh position={[0, 0.55, 1.11]}>
-          <boxGeometry args={[0.9, 1.1, 0.04]} />
-          <meshStandardMaterial color={PALETTE.doorWood} />
-        </mesh>
-      </group>
-      {/* TUVALET (sağ-arka ek oda) — 3. alan açılınca kalkar */}
-      {areasOpen > 1 && areasOpen < 3 && (
-        <group position={[13.8, 0, fz - 1.6]}>
-          <mesh castShadow position={[0, 0.7, 0]}>
-            <boxGeometry args={[2.4, 1.4, 2.2]} />
-            <meshStandardMaterial color={PALETTE.wallCream} />
+      {islands.map((b) => {
+        const L = b.len;
+        // Sırtlık yastıkları: adanın boyuna göre sığdığı kadar, iki yüze şaşırtmalı.
+        const pillows: [number, number][] = [];
+        for (let i = 0; i < Math.max(1, Math.floor(L / 3.0)); i++) {
+          const px = -L / 2 + 1.4 + i * 3.0;
+          if (px > -L / 2 + 0.3 && px < L / 2 - 0.3) pillows.push([px, 0.28]);
+          if (px + 1.5 < L / 2 - 0.4) pillows.push([px + 1.5, -0.28]);
+        }
+        return (
+          <group key={b.side} position={b.center}>
+            {/* kaide */}
+            <mesh castShadow position={[0, 0.1, 0]}>
+              <boxGeometry args={[L, 0.2, D]} />
+              <meshStandardMaterial color={PALETTE.banketBase} />
+            </mesh>
+            {/* gövde */}
+            <mesh castShadow position={[0, 0.34, 0]}>
+              <boxGeometry args={[L - 0.16, 0.3, D - 0.16]} />
+              <meshStandardMaterial color={PALETTE.banketBody} />
+            </mesh>
+            {/* iki yüzün oturak minderleri (y = 0,53 → tabure oturağıyla aynı yükseklik) */}
+            {[0.72, -0.72].map((cz) => (
+              <mesh key={cz} castShadow position={[0, 0.53, cz]}>
+                <boxGeometry args={[L - 0.1, 0.14, 1.02]} />
+                <meshStandardMaterial color={PALETTE.banketCushion} />
+              </mesh>
+            ))}
+            {/* ortak sırtlık + iki yüzünün minderi */}
+            <mesh castShadow position={[0, 0.85, 0]}>
+              <boxGeometry args={[L, 0.78, 0.38]} />
+              <meshStandardMaterial color={PALETTE.banketBody} />
+            </mesh>
+            {[0.21, -0.21].map((cz) => (
+              <mesh key={cz} castShadow position={[0, 0.88, cz]}>
+                <boxGeometry args={[L - 0.12, 0.62, 0.12]} />
+                <meshStandardMaterial color={PALETTE.banketCushion} />
+              </mesh>
+            ))}
+            {/* üst ahşap başlık (adayı bir hacim gibi bitirir) */}
+            <mesh castShadow position={[0, 1.28, 0]}>
+              <boxGeometry args={[L + 0.12, 0.1, 0.5]} />
+              <meshStandardMaterial color={PALETTE.banketBase} />
+            </mesh>
+            {pillows.map(([px, pz]) => (
+              <mesh key={`${px}${pz}`} castShadow position={[px, 0.86, pz]}>
+                <boxGeometry args={[0.46, 0.38, 0.16]} />
+                <meshStandardMaterial color={PALETTE.banketPillow} />
+              </mesh>
+            ))}
+          </group>
+        );
+      })}
+    </group>
+  );
+}
+
+/**
+ * GARSON SERVİS İSTASYONU (B3-2): tezgâhın sağ ucunda, servis bloğunun ön yüzünde duran aktarma
+ * tezgâhı — sürahiler, peçetelik, temiz bardak istifi, uçta kirli bardak tepsisi.
+ * Bugün YALNIZ obje + collision: garson tepsisini hâlâ ana tezgâhtan alır (kullanıcı kararı).
+ */
+function WaiterStation() {
+  const areasOpen = useGame((s) => s.areasOpen);
+  if (!waiterStationOpen(areasOpen)) return null;
+  const [hx, hz] = WAITER_STATION.half;
+  return (
+    <group position={WAITER_STATION.pos}>
+      <mesh castShadow position={[0, 0.45, 0]}>
+        <boxGeometry args={[hx * 2, 0.9, hz * 2]} />
+        <meshStandardMaterial color={PALETTE.counterWood} />
+      </mesh>
+      {/* tezgâh tablası (pirinç bantlı üst yüzey — ana tezgâhla aynı dil) */}
+      <mesh castShadow position={[0, 0.94, 0]}>
+        <boxGeometry args={[hx * 2 + 0.1, 0.08, hz * 2 + 0.08]} />
+        <meshStandardMaterial color={PALETTE.copper} metalness={0.4} roughness={0.5} />
+      </mesh>
+      {/* sürahiler */}
+      {[-0.95, -0.62].map((x) => (
+        <group key={x} position={[x, 0, 0.05]}>
+          <mesh castShadow position={[0, 1.15, 0]}>
+            <cylinderGeometry args={[0.13, 0.15, 0.34, 10]} />
+            <meshStandardMaterial color={PALETTE.plate} />
           </mesh>
-          <mesh position={[0, 0.55, 1.11]}>
-            <boxGeometry args={[0.8, 1.1, 0.04]} />
-            <meshStandardMaterial color={PALETTE.doorWood} />
+          <mesh position={[0, 1.35, 0]}>
+            <cylinderGeometry args={[0.06, 0.1, 0.06, 8]} />
+            <meshStandardMaterial color={PALETTE.brass} metalness={0.6} roughness={0.4} />
           </mesh>
         </group>
-      )}
-      {/* Merdiven kaldırıldı (telefon feedback 2026-06-12: garson pad'iyle çakışıyordu; Faz 3b'de yeniden) */}
+      ))}
+      {/* peçetelik */}
+      <mesh castShadow position={[-0.26, 1.08, 0.14]}>
+        <boxGeometry args={[0.26, 0.2, 0.2]} />
+        <meshStandardMaterial color={PALETTE.brass} metalness={0.6} roughness={0.4} />
+      </mesh>
+      {/* temiz bardak istifi (2 sıra × 4) */}
+      {Array.from({ length: 8 }, (_, i) => (
+        <mesh key={i} castShadow position={[0.12 + (i % 4) * 0.19, 1.03, -0.14 + Math.floor(i / 4) * 0.22]}>
+          <cylinderGeometry args={[0.05, 0.062, 0.1, 8]} />
+          <meshStandardMaterial color={PALETTE.plate} />
+        </mesh>
+      ))}
+      {/* uçta kirli bardak tepsisi */}
+      <mesh castShadow position={[1.0, 1.0, 0.02]}>
+        <boxGeometry args={[0.52, 0.035, 0.38]} />
+        <meshStandardMaterial color={PALETTE.copper} metalness={0.4} roughness={0.5} />
+      </mesh>
+      {Array.from({ length: 5 }, (_, i) => (
+        <mesh key={i} castShadow position={[0.86 + (i % 3) * 0.16, 1.07, -0.08 + Math.floor(i / 3) * 0.2]}>
+          <cylinderGeometry args={[0.055, 0.045, 0.11, 8]} />
+          <meshStandardMaterial color={PALETTE.plateDirty} />
+        </mesh>
+      ))}
     </group>
   );
 }
@@ -482,7 +582,11 @@ function TvCorner() {
     if (screen.current) screen.current.emissiveIntensity = 0.5 + Math.sin(t * 7.3) * 0.06;
   });
   return (
-    <group position={[3.6, 0, -5.1]}>
+    // B3-2: eski yerleşimde TV arka duvardaydı; 34 × 34'te o duvar kalkınca boşlukta asılı kaldı
+    // (üstelik tam orta şeridin üstünde). Maket v13 onu SOL DUVARIN ön yarısına koyuyor
+    // ("ocak arkaya taşınınca boşalan duvar programı: askı rayı, konsol, televizyon, gazetelik").
+    // Duvar donanımının gerisi (ray · konsol · gazetelik) B6a'nın işi.
+    <group position={[-FLOOR_HALF - 0.35, 0, 3.5]} rotation={[0, Math.PI / 2, 0]}>
       {/* duvar konsolu */}
       <mesh castShadow position={[0, 1.55, 0]}>
         <boxGeometry args={[0.12, 0.5, 0.12]} />
@@ -639,8 +743,9 @@ function DecorProps() {
           </mesh>
         </group>
       ))}
-      {/* duvar saati (arka duvar — bulaşık tezgâhının solunda boş duvar) */}
-      <group position={[-1.6, 2.1, -5.18]}>
+      {/* duvar saati — B3-2: eski arka duvar kalktığı için havada asılı kalmıştı; sol duvara,
+          bulaşık modülünün ilerisindeki boş yüzeye taşındı (TV'nin karşı ucu). */}
+      <group position={[-FLOOR_HALF - 0.35, 2.1, 13.0]} rotation={[0, Math.PI / 2, 0]}>
         <mesh rotation={[Math.PI / 2, 0, 0]}>
           <cylinderGeometry args={[0.18, 0.18, 0.05, 16]} />
           <meshStandardMaterial color={PALETTE.wainscot} />
@@ -677,7 +782,8 @@ function Walls() {
   const h = WALL_H; // G3: yükseklik + profiller wallPanel.tsx'te (mağaza önizlemesiyle ortak)
   const t = 0.2;
   const doorHalf = 1.3;
-  const doorX = LAYOUT.entrances[0][0]; // tek kapı (z0 ön duvarı)
+  // TEK KAPI. B3-2: 2. Alan açılınca cephenin ortasına kayar (maket v13 adım 2) → `doorAt`.
+  const dx0 = doorAt(areasOpen);
   type Piece = WallSlab;
   const pieces: Piece[] = [];
   // B3-1: duvarlar ızgara komşuluğundan değil GEOMETRİDEN gelir. `wallSpans(alan, kenar, açık)`
@@ -696,13 +802,17 @@ function Walls() {
       for (const [s0, s1] of wallSpans(z, side, areasOpen)) {
         const a0 = s0 - m; // uçlar m taşar → köşeler kapanır
         const a1 = s1 + m;
-        const hasDoor = side === 'front' && doorX > a0 + doorHalf && doorX < a1 - doorHalf;
-        const segs: [number, number][] = hasDoor
-          ? [
-              [a0, doorX - doorHalf],
-              [doorX + doorHalf, a1],
-            ]
-          : [[a0, a1]];
+        // Kapı boşluğu parçadan ÇIKARILIR (içinde olmasını beklemek yetmiyor): kapı 2. Alan'da
+        // x = 0'a kayınca tam iki ön duvar parçasının DİKİŞİNE düşüyor ve "parçanın içinde mi"
+        // sorusuna ikisi de hayır diyordu → kapının önüne duvar örülüyordu (B3-2 testi yakaladı).
+        const cut: [number, number] = [dx0 - doorHalf, dx0 + doorHalf];
+        const segs: [number, number][] =
+          side === 'front'
+            ? ([
+                [a0, Math.min(a1, cut[0])],
+                [Math.max(a0, cut[1]), a1],
+              ] as [number, number][])
+            : [[a0, a1]];
         for (const [p0, p1] of segs) {
           if (p1 - p0 <= 0.01) continue;
           pieces.push(
@@ -721,15 +831,15 @@ function Walls() {
       <BackBand areasOpen={areasOpen} />
       {/* kapı sövesi + çerçevesi (ön duvarın TAMAMEN önünde — z-fighting yok) */}
       <group>
-        <mesh position={[doorX, h - 0.12, frontEdgeZ + 0.22]}>
+        <mesh position={[dx0, h - 0.12, frontEdgeZ + 0.22]}>
           <boxGeometry args={[doorHalf * 2 + 0.3, 0.24, 0.12]} />
           <meshStandardMaterial color={PALETTE.lintel} />
         </mesh>
-        <mesh position={[doorX - doorHalf, h / 2, frontEdgeZ + 0.22]}>
+        <mesh position={[dx0 - doorHalf, h / 2, frontEdgeZ + 0.22]}>
           <boxGeometry args={[0.12, h, 0.12]} />
           <meshStandardMaterial color={PALETTE.doorWood} />
         </mesh>
-        <mesh position={[doorX + doorHalf, h / 2, frontEdgeZ + 0.22]}>
+        <mesh position={[dx0 + doorHalf, h / 2, frontEdgeZ + 0.22]}>
           <boxGeometry args={[0.12, h, 0.12]} />
           <meshStandardMaterial color={PALETTE.doorWood} />
         </mesh>
@@ -767,6 +877,8 @@ function BackBand({ areasOpen }: { areasOpen: number }) {
 // Dış dünya (D-017 kullanıcı isteği): ön duvarın DIŞINDA sokak + kaldırım + karşı binalar → müşterilerin
 // kapıdan girip çıktığı "dış dünya" hissi. Salt görsel (collision yok); low-poly stilize (D-013).
 function Street() {
+  const areasOpen = useGame((s) => s.areasOpen);
+  const e = entranceAt(areasOpen);
   const a = LAYOUT.area;
   const z1 = a.maxZ + 0.5; // ön duvar hattı
   const buildingColors = ['#7e6b8f', '#6b8f7e', '#8f7e6b', '#6b7d8f', '#8f6b7d'];
@@ -804,7 +916,7 @@ function Street() {
       })}
       {/* KAPI ÖNÜ (görsel kimlik): TEK kapıda yeşil TENTE + kaldırımda bahçe masaları + saksılar.
           Salt görsel (collision yok); müşteri yolu (kapı hizası) boş bırakıldı. */}
-      {LAYOUT.entrances.slice(0, 1).map((e) => (
+      {(
         <group key={e[0]}>
           {/* TABELA şeridi (dikey — eğimli tente kamera +z'den bakınca ekranı kapatıyordu; dikey yüzey
               üstten bakışta incecik kalır, kimliği taşır) */}
@@ -849,7 +961,7 @@ function Street() {
             </group>
           ))}
         </group>
-      ))}
+      )}
     </group>
   );
 }
@@ -883,7 +995,8 @@ export function Scene() {
       <TvCorner />
       <MenuBoard />
       <DecorProps />
-      <ReservedRooms />
+      <BanketIslands />
+      <WaiterStation />
       <Stations />
       <KitchenStaff />
       <DishStation />

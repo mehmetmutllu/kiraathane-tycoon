@@ -73,8 +73,18 @@ export {
   openServices,
   parkSpot,
   parkClearance,
+  BANKET,
+  banketLen,
+  banketUnit,
+  banketUnitsOpen,
+  banketIslands,
+  WAITER_STATION,
+  waiterStationOpen,
+  doorX,
+  entranceAt,
+  streetAt,
 } from './layout';
-export type { ServicePlace, AreaSide } from './layout';
+export type { ServicePlace, AreaSide, BanketIsland, SeatKind } from './layout';
 export type { RVec3 } from './layout';
 
 import {
