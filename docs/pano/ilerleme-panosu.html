@@ -189,7 +189,7 @@ h2{font-size:21px;font-weight:800}
 <script type="application/json" id="durum">{
   "guncelleme": "07.09.2026",
   "yapilan": 49,
-  "toplam": 70,
+  "toplam": 69,
   "kilometre": [
     {
       "at": 28,
@@ -209,7 +209,7 @@ h2{font-size:21px;font-weight:800}
     }
   ],
   "ozet": {
-    "etiket": "Bu oturum · Faz B · 7/10 — B4a bitti",
+    "etiket": "Bu oturum · Faz B · 7/9 — B4a bitti",
     "baslik": "Geliri büyüten son kol bulundu: para artık lavabonun önünde birikiyor",
     "aciklama": "Geçen oturum bir <b>plato</b> bırakmıştı: oyuncu 3,7 saatte tezgâhın ve masaların son seviyesine ulaşıyor, sonra <b>1,5 saat boyunca gelir hiç büyümüyordu</b>. Bu oturum önce nedenini ölçtü: <b>çay/dk kolu bu katta tükenmiş</b>. Mutfak son seviyede saniyede 0,78 bardak çıkarıyor, tam kadro taşıma tavanı 1,25 — arada kalan tüm alan ×1,6 ve arkası kapalı. Yani bu katta geliri büyütebilecek tek yön <b>müşteri başına para</b>; yeni hız ancak 2. kat ile gelir.<br><br>Kolu taşıyan parça <b>lavabo</b> oldu, ama bir çarpan olarak değil: müşteri çayını içip ödedikten sonra çıkmadan lavaboya uğruyor, girip çıkıyor ve parasını <b>odanın önündeki istife</b> bırakıyor. Oyuncu gidip topluyor. Sayı büyümüyor — <b>mekân</b> kazandırıyor.",
     "adimlar": [
@@ -224,14 +224,17 @@ h2{font-size:21px;font-weight:800}
     "not": "<b>Bu oturumun dersi: bir mekaniğin yanlış olması ile yanlış zamanda olması ayrı şeylerdir — ve ikincisi ölçülebilir.</b> Kâğıt taşıma döngüsü tasarım olarak sağlamdı; onu bu adımdan çıkaran şey zevk değil, oyuncunun o penceredeki <b>zaman bütçesiydi</b>. Aynı şekilde platoyu kıran şey de “daha büyük sayı” değil, kolun zincire <b>hangi aralıkla serpiştirildiği</b> oldu: aynı çarpan, dik bir fiyat eğrisiyle 41 dakikalık ölü aralık üretiyor, düz bir eğriyle 13 dakikalık."
   },
   "siradaki": {
-    "etiket": "Faz B · B4b — merdiven ve odanın içi",
-    "baslik": "Oda dışarıdan açıldı; şimdi içeri girilebilir görünmesi gerekiyor",
-    "aciklama": "Lavabo artık çalışıyor ve para kazandırıyor, ama <b>dışarıdan</b> okunuyor: kapının arkası düz bir karanlık. Kullanıcının kuralı net — mekân bir yüzey değil <b>hacim</b> olmalı: zemin, fayans, tavan ışığı, dört köşe. Sıradaki adım odanın içini kurar ve bandın son parçasını konuşturur: <b>yıkık merdiven</b>. Merdiven satın alınamıyor; üstüne basınca “Kat 2 çok yakında” diyor — 2. kat henüz yok ama yeri görünüyor.",
+    "etiket": "Faz B · B6a — maketin sanat katmanı (ön çeyrekler)",
+    "baslik": "Maket görselliğine geçiş burada başlıyor — ve bir adım plandan silindi",
+    "aciklama": "Planda sıradaki iş <b>B4b</b> idi: lavabonun içi, yıkık merdiven, arka bandın içi. Bu adım <b>kaldırıldı</b>, çünkü kapsamı B6b'nin (“arka yarı + bant”) kapsamıyla birebir aynıydı — greybox'la şimdi yapıp KayKit'le orada yeniden yapmak, planın kendi cümlesiyle <i>“yanlış sırada yapılan iş iki kez yazılır”</i> demekti. Merdivenin “Kat 2 çok yakında” demesi de bir oturumu hak etmeyecek kadar küçük; B6b'nin ilk maddesi olarak giriyor.<br><br>Böylece sıra doğrudan <b>maketin sanat katmanına</b> geliyor. Bugün oyunda <b>16 dosya</b> var, maket v13'te <b>107 obje</b>; aradaki fark iki oturumda kapanacak. Asset hazır: KayKit paketleri (185 model, CC0) indirildi ama <b>entegrasyon hiç yapılmadı</b> — bu iş sıfırdan başlıyor.",
     "adimlar": [
-      "<b>B4b · şimdi:</b> lavabonun içi (kabinler · ayna · fayans · tavan ışığı) ve yıkık merdiven — arka bandın içinin okunur hâli",
-      "<b>B6 (iki oturum):</b> maketin sanat katmanı, salon salon — giriş holü, sedir köşesi, vitrin, duvar donanımı, kilimler, KayKit mobilyası"
+      "<b>B6a · şimdi:</b> ön çeyrekler — giriş holü (paspas · askılık · gazetelik · saksı · tablo · duvar saati), sol duvar donanımı (askı rayı · konsol · TV · aplik), cam kenarı, kilimler, ayaklı lamba",
+      "<b>B6b:</b> arka yarı + bant — sedir köşesi, yan salon, servis bloğunun içi <b>+ lavabonun içi</b> (kabin · ayna · fayans · tavan ışığı) <b>+ yıkık merdiven</b>",
+      "<b>Çalışma biçimi:</b> önce Claude tam gücüyle dener; <b>Astra sonra, gerekirse</b> ölçülür",
+      "<b>Tasarım turunda Fable 5.1 desteği</b> alınacak — kararı ve kodu Claude yazar, Fable görsel yön için ikinci göz",
+      "<b>A/B'ye hazır kurulur:</b> dekor katmanı salt görsel olduğu için yol bulma ve çarpışmadan ayrılıp tek veri dosyasına iner; aynı şartname iki tarafa verilebilir"
     ],
-    "not": "<b>Açık kalem:</b> ölçüm bu oturumda yan bir sorun daha buldu — 3. salonun açılışı (3.400 ₺) ortalama oyuncuyu <b>27 dakika</b> bekletiyor ve bu, “20 dakikayı aşan alım kalmasın” ölçütünü aşan tek nokta. B4’ten önce de vardı, B4 değiştirmedi; defterde duruyor.<br><br><b>Yerleşim hâlâ listede:</b> kullanıcı “kesinlikle düzenlenmeli” dedi ama sonraya bıraktı — ön salonlar 17 × 17 birim ve hâlâ dört masa taşıyor. O iş sanat katmanının (B6) kapsamında."
+    "not": "<b>Astra neden “sonra”:</b> Astra'nın ölçülmüş 3B üstünlüğü <b>Blender/geometri</b> işinde (%95,9 vs %84,3). Bizim iş ise react-three-fiber'da <b>kod yazarak</b> sahne kurmak ve o eksende karşılaştırma <b>yok</b> — yani “daha iyi olur” bugün bir varsayım. Faz B'nin kendi dersi bunu zaten söylüyor: ölçülmeden yazılan her cümle bir varsayımdır. Önce ölçülebilir bir çıktı üretilecek, sonra karşılaştırılacak.<br><br><b>Yerleşim hâlâ listede:</b> kullanıcı “kesinlikle düzenlenmeli” dedi ama sonraya bıraktı — ön salonlar 17 × 17 birim ve hâlâ dört masa taşıyor. O iş bu adımın kapsamında."
   },
   "donemler": [
     {
@@ -321,9 +324,9 @@ h2{font-size:21px;font-weight:800}
         {
           "k": "B",
           "t": "Model geçişi",
-          "d": "ZONE → alan/servis/masa/oda ayrıştı · üç ocak tek tezgâha indi · kat 34 × 34 · orta şerit ve banket adaları · masa 12 → 20 ve masa tipleri · gelirin üç tavanı ölçüldü · lavabo odası ve son gelir kolu. Kalan: <b>B4b</b> merdiven ve odanın içi, <b>B6</b> maketin sanat katmanı (iki oturum)",
+          "d": "ZONE → alan/servis/masa/oda ayrıştı · üç ocak tek tezgâha indi · kat 34 × 34 · orta şerit ve banket adaları · masa 12 → 20 ve masa tipleri · gelirin üç tavanı ölçüldü · lavabo odası ve son gelir kolu. Kalan: <b>B6 — maketin sanat katmanı</b>, iki oturum (lavabonun içi ve yıkık merdiven de buraya katıldı)",
           "yapilan": 7,
-          "toplam": 10,
+          "toplam": 9,
           "kapi": "Maketin altı adımı geziliyor VE salon makete bakınca tanınıyor",
           "durum": "now"
         },

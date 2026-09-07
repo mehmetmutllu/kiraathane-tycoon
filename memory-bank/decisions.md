@@ -1510,3 +1510,38 @@ imkânsız. "Her obje kendi yerinde yükselir" kuralının en sade hâli.
 zevk değil, oyuncunun o penceredeki zaman bütçesiydi (%5 boşluğa %31'lik angarya). Aynı şekilde
 platoyu kıran şey de "daha büyük sayı" değil, **kolun zincire hangi aralıkla serpiştirildiğiydi**.
 B5b sayının ARKASINDAKİ CÜMLE idi · **B4 mekaniğin ZAMANI.**
+
+---
+
+## D-068 — B4b KALDIRILDI (kapsamı B6b'ye katıldı) · B6'nın çalışma biçimi: önce Claude, Fable 5.1 destekli, Astra sonra
+**Tarih:** 2026-09-07 · **Durum:** PLAN KARARI (kod değişmedi) · **Bağlam:** B4a bitti, sıra B6'da
+
+**Karar 1 — B4b ayrı bir adım olmaktan çıktı.** B4b'nin kapsamı (lavabonun içi · yıkık merdiven ·
+arka bandın içi) ile B6b'nin kapsamı ("arka yarı + bant … servis bloğunun içi, bandın okunur hâli")
+**aynı işti**. B4b'yi greybox'la şimdi yapmak, aynı yüzeyleri KayKit'le B6b'de yeniden yapmak
+demekti — planın kendi cümlesi: *"yanlış sırada yapılan iş iki kez yazılır."* B4b'nin tek mantık
+parçası merdivenin *"Kat 2 çok yakında"* demesiydi; o bir oturumu hak etmeyecek kadar küçük ve
+B6b'nin ilk maddesi olarak giriyor. **Faz B 8/10 oldu** (eski 8/11), sıra: **B6a → B6b**.
+Kullanıcı onayı: *"şimdi önerine göre hareket edelim."*
+
+**Karar 2 — Astra: önce Claude, sonra gerekirse ölçüm.** D-051 arayüz için "önce ben tam gücümle,
+A/B sonra" demişti; kullanıcı aynı kuralı 3B sanat katmanına da uyguladı: *"önce sen dene ona göre
+astraya geçeriz."* **Gerekçe kanıt tarafında da duruyor:** Astra'nın ölçülmüş 3B üstünlüğü
+Blender/geometri işinde (%95,9 vs %84,3), bizim iş ise react-three-fiber'da **kod yazarak** sahne
+kurmak — o eksende karşılaştırma YOK, yani "daha iyi olur" bir varsayım (bkz. B5b'nin dersi:
+ölçülmeden yazılan her cümle bir varsayımdır).
+
+**Karar 3 — tasarım turunda Fable 5.1 desteği.** Kullanıcı: *"tasarım aşamasında fable 5.1'den
+destek alman faydalı olabilir."* Uygulama: dekor/kompozisyon turu için `model: "fable"` alt ajanı
+çağrılır; **kararı ve kodu Claude yazar**, Fable görsel yön için ikinci göz olur. Bu, D-045'in
+"görsel iş topluca devredilmez" kuralını bozmaz — devir değil, danışma.
+
+**Karar 4 — B6 A/B'ye HAZIR kurulur.** Dekor katmanı salt görsel (collision yok) olduğu için
+`layout.ts`'in nav/collision kısmından ayrılıp **tek bir veri dosyasına** iner. Böylece aynı
+şartname iki tarafa verilebilir, aynı kadrajdan ekran görüntüsü karşılaştırılır (D-045'in "tek
+ekranda A/B" kuralı). `store.ts` / `economy.config.ts` / `save.ts` / testler **bölünmez**.
+
+**Bu kararın kalıcı dersi.** *İki adım aynı yüzeye dokunuyorsa, aralarındaki sınır plan hatasıdır.*
+B4b ile B6b'yi ayıran şey iş değil, planın yazıldığı sıraydı: B4 "odalar" başlığı altında
+doğduğu için mekân işi ekonomiden ayrılmıştı, oysa lavabonun İÇİ bir ekonomi işi değil bant
+işiydi. Adımı silmek kapsam kaybı değil, **iki kez yazılacak işin bir kez yazılması**.

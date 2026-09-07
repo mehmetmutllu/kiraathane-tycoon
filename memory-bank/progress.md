@@ -1286,9 +1286,10 @@ yerleşim taşınırken de kullanılacak. Kullanım dosya başında.
 maket ölçeğine taşı (artık tek dosya: `layout.ts`), (3) kayıt v31 + migrasyon, (4) G4/G5 KayKit.
 Faz G artığı: UI Canvas'ları hâlâ eski düz ışıkla.
 
-## Faz B — Model geçişi 🔧 (8/11 · B0 + B1 + B2 + B3-1 + B3-2 + B5a + B5b + B4a bitti)
+## Faz B — Model geçişi 🔧 (8/10 · B0 + B1 + B2 + B3-1 + B3-2 + B5a + B5b + B4a bitti)
 > **Adım sırası (2026-09-07'de düzeltildi — D-063):**
-> B0 · B1 · B2 · B3-1 · B3-2 · **B5a** · **B5b** · **B4a** → **B4b** → **B6a** → **B6b**
+> B0 · B1 · B2 · B3-1 · B3-2 · **B5a** · **B5b** · **B4a** → **B6a** → **B6b**
+> (D-068: B4b ayrı adım olmaktan çıktı, kapsamı B6b'ye katıldı.)
 > (D-066: B4 platoyu kıran gelir kolunu taşıdığı için şeridin SON fiyatı B4'ten sonra ölçülür.)
 >
 > İki düzeltme yapıldı:
@@ -1522,9 +1523,12 @@ Kesme çizgisi: **B5a = model + pad zinciri + masa tipleri (denge SABİT tutulur
     `allAreaTablesLevel` gate'inin ÜYESİ KALMADI. Mekanizmalar duruyor; Faz D'nin meta katmanı
     opsiyonel pad getirmezse ikisi de silinmeli. Boşluk teste yazıldı (kaza değil karar).
 
-### B4 — Odalar 🔧 (B4a BİTTİ · B4b sırada)
-Kullanıcı kuralı gereği ikiye bölündü (mantık ile görsel ayrı parçada):
-**B4a = gelir kolu + oda modeli + NPC uğrağı (mantık)** · **B4b = merdiven + odanın içi (mekân)**.
+### B4 — Odalar ✅ (B4a bitti; **B4b KALDIRILDI → B6b'ye katıldı**, D-068)
+Kullanıcı kuralı gereği ikiye bölünmüştü (mantık ile görsel ayrı parçada). Mantık parçası (B4a)
+bitti; **görsel parçası ayrı bir adım olarak DURMUYOR**: kapsamı (lavabonun içi · yıkık merdiven ·
+arka bandın içi) B6b'nin "arka yarı + bant" kapsamıyla **birebir aynı işti**. Greybox'la şimdi
+yapmak, KayKit'le B6b'de yeniden yapmak demekti — planın kendi cümlesiyle "yanlış sırada yapılan
+iş iki kez yazılır". Kullanıcı onayladı (2026-09-07).
 
 - ✅ **B4a — LAVABO: Kat 1'in son gelir kolu (D-067, `docs/denge-raporu-b4.md`)**
   - **Ölçüm 1 — throughput kolu Kat 1'de TÜKENMİŞ:** arz servis L6'da 0,78 fincan/sn'de tavan,
@@ -1554,21 +1558,41 @@ Kullanıcı kuralı gereği ikiye bölündü (mantık ile görsel ayrı parçada
   - **Yan bulgu (B4'ün suçu değil, açık kalem):** Normal profilde en uzun "hiçbir şey alınamayan"
     bekleme 26,9 dk ve tabanda da var → `zone3` pad'i (3.400 ₺). 20 dk ölçütünü aşan tek nokta.
 
-- ⏳ **B4b — merdiven + odanın İÇİ (mekân/görsel).** Yıkık merdiven ("Kat 2 çok yakında",
-  alınamaz — D-058 karar 2) · lavabonun içi hacim kazanır (kabinler · ayna · fayans · tavan
-  ışığı; "mekân hacim olmalı" kuralı) · arka bandın içinin okunur hâli. B4a'da oda dışarıdan
-  okunuyor ama içi düz karanlık bir düzlem.
+- ➡️ **B4b'nin kapsamı B6b'ye devredildi (D-068).** Bugünkü durum: `LavaboFront` **6 düz düzlem,
+  0 hacim** — bandın ön yüzüne yapıştırılmış kapı çerçevesi, koyu kapı boşluğu, çini bordür ve
+  seviye noktaları. Kapının ARKASINDA oda yok; bant hâlâ dolu kütle, müşteri kapı noktasında
+  ölçeği 0'a düşüp kayboluyor. Devredilen üç iş: lavabonun içi hacim kazanır (kabin · ayna ·
+  fayans · tavan ışığı — "mekân hacim olmalı" kuralı) · **yıkık merdiven** ("Kat 2 çok yakında",
+  alınamaz — D-058 karar 2) · arka bandın içinin okunur hâli.
 
-### B6 — Maketin SANAT KATMANI ⏳ (iki oturum, alan alan)
+### B6 — Maketin SANAT KATMANI ⏳ (SIRA: ŞİMDİ — iki oturum, alan alan)
 Eski adıyla **G4/G5** + maket v13'ün prop/donanım yerleşimi. Bugün oyunda 16 dosya var,
-maket v13'te **107 obje/yardımcı**; aradaki fark bu adımda kapanır.
+maket v13'te **107 obje/yardımcı**; aradaki fark bu adımda kapanır. **Maket görselliğine geçiş
+BURADA oluyor** — B6 bitince "salon maket v13'e bakınca tanınıyor" ölçütü karşılanmış olacak.
 - **B6a — ön çeyrekler (a0 + a1):** giriş holü (paspas · askılık · gazetelik · saksı · tablo ·
   duvar saati), sol duvar donanımı (askı rayı · konsol · TV · aplik), cam kenarı, kilim/zemin
   yamaları, ayaklı lamba.
-- **B6b — arka yarı + bant:** sedir köşesi (üç sedir U + alçak sehpa + minder + soba), yan salon
-  (pastane vitrini · yüksek masalar), servis bloğunun içi, bandın okunur hâli.
+- **B6b — arka yarı + bant (+ B4b'den devralınan üç iş):** sedir köşesi (üç sedir U + alçak sehpa +
+  minder + soba), yan salon (pastane vitrini · yüksek masalar), servis bloğunun içi, bandın okunur
+  hâli · **lavabonun İÇİ** (kabin · ayna · fayans · tavan ışığı) · **yıkık merdiven** ("Kat 2 çok
+  yakında", alınamaz).
 - **Asset:** `kaykit-restaurant-bits` (144 model) + `kaykit-city-builder-bits` (41 model) İNDİRİLDİ
   ve CC0 doğrulandı (Faz E oturumu); entegrasyon hiç yapılmadı. Tek stil kilidi: KayKit (D-013).
+
+**ÇALIŞMA BİÇİMİ (kullanıcı kararı 2026-09-07 — D-068):**
+1. **Önce ben (Claude) tam gücümle denerim; Astra SONRA, gerekirse.** D-051'in arayüz için verdiği
+   karar 3B'ye de aynen uygulanıyor. Astra'nın ölçülmüş 3B üstünlüğü Blender/geometri tarafında
+   (%95,9 vs %84,3); bizim iş react-three-fiber'da **kod yazarak** sahne kurmak ve orada
+   karşılaştırma YOK — yani "daha iyi olur" kanıtlı değil, önce ölçülmeli.
+2. **Tasarım turunda Fable 5.1 desteği alınır** (kullanıcı: *"tasarım aşamasında fable 5.1'den
+   destek alman faydalı olabilir"*). Uygulama: dekor/kompozisyon turu için `model: "fable"` alt
+   ajanı; kararı ve kodu ben yazarım, Fable görsel yön için ikinci göz olur.
+3. **A/B'ye HAZIR kurulur (D-045 kuralı):** dekor katmanı salt görsel (collision yok) olduğu için
+   `layout.ts`'in nav/collision kısmından ayrı, **tek veri dosyasına** iner. Böylece aynı şartname
+   iki tarafa verilebilir ve aynı kadrajdan ekran görüntüsü karşılaştırılır.
+   `store.ts` / `economy.config.ts` / `save.ts` / testler **bölünmez** (D-045).
+4. **Görsel kararlar tek "sonra" görüntüsüyle verilmez** (Faz G dersi): varyantlar aynı kadrajdan
+   çekilip kullanıcıya sorulur.
 
 **Bitti sayılır:** maketin gezilebilir altı adımı sırayla açılıyor + merdiven konuşuyor ·
 **salon maket v13'e bakınca tanınıyor** (B6'nın kapısı) · `npm run test` yeşil, test sayısı

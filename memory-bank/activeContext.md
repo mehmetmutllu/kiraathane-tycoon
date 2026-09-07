@@ -58,12 +58,31 @@ vitest **270/270** (yeni `tests/room-b4.test.ts` 12) · build + `tsc -b` temiz �
 istifte birikiyor — 3 ödeme 72₺ ölçüldü).
 
 ### >>> SONRAKİ OTURUMDA İLK İŞ <<<
-**B4b — merdiven + odanın İÇİ (mekân/görsel).**
-- Yıkık merdiven: alınamaz, üstüne basınca **"Kat 2 çok yakında"** (D-058 karar 2).
-- Lavabonun içi hacim kazanır: kabinler · ayna · fayans · tavan ışığı ("mekân hacim olmalı"
-  kuralı — bugün kapının arkası düz karanlık bir düzlem).
-- Arka bandın içinin okunur hâli.
-Not: B4a'nın görselinde kapı/bordür/seviye noktaları çalışıyor ama oda DIŞARIDAN okunuyor.
+**B6a — maketin SANAT KATMANI, ön çeyrekler (a0 + a1).** Maket görselliğine geçiş burada başlıyor.
+(**B4b KALDIRILDI** — kapsamı B6b'ye katıldı, D-068. Sebebi: lavabonun içi + merdiven + bandın içi
+zaten B6b'nin "arka yarı + bant" işiydi; greybox'la şimdi yapıp KayKit'le orada yeniden yapmak
+aynı işi iki kez yazmak olurdu. Kullanıcı onayladı.)
+
+**B6a kapsamı:** giriş holü (paspas · askılık · gazetelik · saksı · tablo · duvar saati), sol duvar
+donanımı (askı rayı · konsol · TV · aplik), cam kenarı, kilim/zemin yamaları, ayaklı lamba.
+Ölçü: bugün oyunda **16 dosya**, maket v13'te **107 obje/yardımcı**.
+
+**ÇALIŞMA BİÇİMİ (kullanıcı kararı — D-068), dört madde:**
+1. **Önce ben tam gücümle denerim; Astra SONRA, gerekirse.** (*"önce sen dene ona göre astraya
+   geçeriz"*) — Astra'nın ölçülmüş 3B üstünlüğü Blender/geometride, react-three-fiber'da kod
+   yazarak sahne kurmada karşılaştırma YOK.
+2. **Tasarım turunda Fable 5.1 desteği al** (*"tasarım aşamasında fable 5.1'den destek alman
+   faydalı olabilir"*): dekor/kompozisyon turu için `model: "fable"` alt ajanı — kararı ve kodu
+   BEN yazarım, Fable görsel yön için ikinci göz. Devir değil danışma (D-045 bozulmaz).
+3. **A/B'ye hazır kur:** dekor salt görsel (collision yok) → `layout.ts`'in nav/collision kısmından
+   ayrı, TEK veri dosyasına insin. `store.ts`/`economy.config.ts`/`save.ts`/testler bölünmez.
+4. **Görsel karar tek "sonra" görüntüsüyle verilmez** (Faz G dersi): varyantlar aynı kadrajdan
+   çekilip sorulur.
+
+**Not — LAVABONUN BUGÜNKÜ HÂLİ:** `LavaboFront` **6 düz düzlem, 0 hacim**. Bandın ön yüzüne
+yapıştırılmış kapı çerçevesi + koyu kapı boşluğu + çini bordür + seviye noktaları. Kapının arkasında
+oda YOK; müşteri kapı noktasında ölçeği 0'a düşüp kayboluyor, 2,5 sn sonra beliriyor. Bu bilinçli
+bir ara durum — hacmi B6b verecek.
 
 ### Bilinen, ertelenmiş
 - **`zone3` pad'i (3.400₺) Normal profilde 26,9 dk bekletiyor** — B4 öncesinde duruyor, tabanda
