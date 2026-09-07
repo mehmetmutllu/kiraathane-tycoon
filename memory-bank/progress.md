@@ -1713,7 +1713,31 @@ tek yönlü sıra. Ölçü hedefi kullanıcı kararıyla **A**: kat 34 × 34, du
     gerekçeleri geçersiz işaretlendi (bu ikisi B6b'de üç turluk yanlış yönlendirmenin kaynağıydı).
   - **vitest 279/279 · smoke 28/28 · tsc temiz · build temiz.** Kareler: `docs/gorsel/ss/bmm-*.png`
     (`node tools/shot-kadraj.mjs` — plan · salon · kapı · arka bant, dev sunucusu açıkken).
-- ⏳ BM adım 3 arka bant + odalar · adım 4 kamera · **DONDURMA + maket arşiv damgası**.
+- ✅ **BM adım 3 — ARKA BANT + ODALAR:** bant KÜTLE olmaktan çıktı, maketin odaları oldu.
+  Duvar 3,2'ye çıkınca üç düz krem kutu kadrajın beşte birini kaplayan bomboş bir yüzeye dönüşmüştü
+  (`docs/b6b-arka-bant.html` bulgu 3); maketin çözümü zaten hazırdı.
+  - **Bina kabuğu** (`BAND_SHELL`): arka duvar + iki yan duvarın bandı saran parçaları, salonun
+    duvarıyla AYNI bileşen (`WallPanels`, 3,2, alanın teması). Hatlar kat kenarından 0,5 dışarıda
+    (oyunun her yerindeki kural), iç yüz 0,09 içeride — oda mobilyası bu iç yüzlerden türetilir,
+    maketin sabitlerinden kopyalanmaz (oyunun odası maketinkinden 0,5 geniş).
+  - **Ara duvarlar 2,2** (x = ∓4,6, `MaketWall`) — maketin gerekçesi: *"kamera içeri görsün"*.
+  - **Arka yarının ARKA duvarı artık çizilmiyor:** o kenar tek düz duvar değil bir PROGRAM
+    (servis açık · merdiven kovası açık · lavabo kapılı/tadilatta). Zemin `ext('back')` de 0'a
+    indi (iki düzlem üst üste binmesin). Duvarlar collision DEĞİL → nav/denge etkilenmedi.
+  - **Servis köşesi:** fayans zemin + arka duvarda hazırlık hattı (cezve ocağı · tezgâh · iki raf),
+    sol duvarda bulaşık + raf, doğu ucunda depo (kasalar · damacana rafı). Yeni transkripsiyonlar:
+    `MaketCounter · MaketWallShelf · MaketCrates · MaketWaterRack · MaketCezveStation · MaketDishSink`.
+  - **Merdiven kovası:** `MaketMerdivenHarap` (14 basamak · 2,90 · eksik tahtalar 2/5/9/12 · kırık
+    korkuluk · moloz) + `MaketUyariSeridi` + üç `MaketDuba`. Perde YOK (maketin kararı: perde orayı
+    yeni bir oda gibi gösterir). Hepsi bandın İÇİNDE — salona taşan parça yok (oyuncu z = −9,8'de durur).
+    Merdiven 1,2'lik bantta sığmıyordu; 3,2'de sığdı (`MERDIVEN_DERINLIK + 0,4 < 7,6` teste yazıldı).
+  - **Lavabo kapalıyken:** maketin `tadilatPerde`'si (2,40) + arkasında `MaketIskele` + `MaketMoloz`
+    + kasalar. `LavaboFront`'un eski üç düz düzlemi (1,2 ölçeğinde, perdeyle çakışıyordu) kalktı.
+  - **`MaketLavaboBlock` sadeleşti:** kabuk duvarları ve merdiven kovasıyla ortak batı duvarı
+    bandın işi oldu; `localStorage.maketShellH` A/B kancası kalktı (bina duvarı D-073'te dondu).
+  - **vitest 281/281 · smoke 28/28 · tsc + eslint + build temiz.** Kareler: `tools/shot-kadraj.mjs`
+    (`bmm-plan|salon|kapi|arka`) + `tools/shot-tadilat.mjs` (`bmm-tadilat`).
+- ⏳ BM adım 4 kamera (fov 50 ↔ maket 34) · **DONDURMA + maket arşiv damgası**.
 - ⏳ Sonra: `simulate.ts` TEK KEZ yeniden ölçülür (masa aralığı 3,20 → 6,40 oldu, eski denge
   ölçümleri geçersiz), ardından Faz 4 → 5 → 7 → 8.
 

@@ -39,10 +39,28 @@ Faz F'de; ayar kolları harita 1024 ve gölge kamerasını oyuncu çevresine dar
 dönmek çözüm değil** (D-073 kullanıcı kararı).
 
 ### >>> SONRAKİ OTURUMDA İLK İŞ <<<
-**BM adım 3 — ARKA BANT + ODALAR.** (Adım 1 duvar ✅ main'de.) Sonra adım 4 kamera (fov 50 ↔
-maket 34) → **DONDURMA + maket arşiv damgası** → `simulate.ts` tek kez yeniden ölçülür → Faz 4/5/7/8.
+**BM adım 4 — KAMERA** (oyun fov 50 ↔ maket 34; maketin kadrajı mesafeyle mi fov'la mı yakalanacak)
+→ **ÖLÇÜ DONDURMA + maket arşiv damgası** → `simulate.ts` TEK KEZ yeniden ölçülür → Faz 4 → 5 → 7 → 8.
+(Adım 1 duvar ✅ · adım 3 arka bant + odalar ✅ — ikisi de main'de.)
+
+**Adım 4'e girmeden kullanıcıya sorulacak:** arka bant artık AÇIK (servis köşesi ve merdiven kovası
+salondan görünüyor, eskiden düz krem kütleydi). Bu maketin kendi kurgusu ama oyunda ilk kez böyle;
+onaylanmazsa geri dönüş noktası `Scene.Walls` içindeki `side === 'back'` atlaması.
+
+### BM adım 3 ✅ (arka bant + odalar)
+Bant kütle değil **maketin odaları**: bina kabuğu (`BAND_SHELL`, 3,2, salonun duvarıyla aynı bileşen)
++ ara duvarlar 2,2 (x ∓4,6) + servis köşesi (fayans zemin · cezve ocağı · tezgâh · raflar · bulaşık ·
+kasalar · damacana rafı) + merdiven kovası (yıkık merdiven · uyarı şeridi · dubalar) + lavabo
+(açıkken oda, kapalıyken tadilat perdesi + iskele + moloz).
+**Arka yarının ARKA duvarı artık çizilmiyor** — o kenar bir program, tek düz duvar değil.
+Duvarlar collision değil → **nav/denge/kayıt hiç etkilenmedi**; değişen yalnız görüntü.
+Yeni transkripsiyonlar `maketParts.tsx`'te: `MaketCounter · MaketWallShelf · MaketCrates ·
+MaketWaterRack · MaketCezveStation · MaketDishSink · MaketMerdivenHarap · MaketUyariSeridi ·
+MaketDuba · MaketTadilatPerde · MaketIskele · MaketMoloz`.
+**vitest 281/281 · smoke 28/28 · tsc + eslint + build temiz.**
 
 ### BM adım 1 ✅ (merge edildi)
+
 `worktree-maket-tasima` main'e alındı. **Korkulan çakışma çıkmadı:** dalın hunk'ları
 `MOUNT`/`LEFT_WALL`/`RIGHT_WALL`/`ENTRY` + `WallTheme`, main'inkiler `CORRIDOR`/`FLOOR_THEMES`/
 `LIGHTING` idi — kesişmediler. Yalnız `activeContext.md` çakıştı, main'in güncel bölümü tutuldu

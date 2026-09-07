@@ -1,0 +1,16 @@
+import { chromium } from 'playwright';
+const PADS = 'table2 table3 waiter table4 zone2 z2table2 z2table3 dishwasher z2table4 zone3 z3table2 waiter2 z3table3 z3table4 waiter3'.split(' ');
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 1000, height: 1000 }, deviceScaleFactor: 2 });
+const errs = [];
+page.on('console', (m) => { if (m.type() === 'error') errs.push(m.text()); });
+page.on('pageerror', (e) => errs.push('PAGEERROR ' + e.message));
+await page.goto('http://localhost:5173/', { waitUntil: 'networkidle' });
+await page.waitForTimeout(3000);
+await page.evaluate((pads) => { window.__setState({ padsDone: pads, padFills: {} }); }, PADS);
+await page.waitForTimeout(1200);
+await page.evaluate(() => { document.body.classList.add('dsb-hide-hud'); window.__teleport(9, -5); });
+await page.waitForTimeout(2800);
+await page.screenshot({ path: 'docs/gorsel/ss/bmm-tadilat.png' });
+console.log(errs.length ? 'ERR ' + errs.join('|') : 'konsol temiz');
+await browser.close();

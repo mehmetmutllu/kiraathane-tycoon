@@ -17,7 +17,7 @@
  * `flatShading` birebir; materyal sınıfı oyunun ışık kurulumuyla (SceneLights) uyumlu kalsın diye
  * oyununki. Geometri segment sayıları maketin kendi önbelleğinden alındı (küre 10 × 8).
  */
-import { BAND, LAVABO } from '../../game/store';
+import { BAND, BAND_SHELL, LAVABO } from '../../game/store';
 
 /** Maketin `C` paleti — yalnız bu dosyanın kullandığı girdiler, maketteki hex değerleriyle. */
 const MC = {
@@ -38,22 +38,18 @@ const MC = {
   steel: '#b0bec5',
   mirror: '#cfe3ea',
   bin: '#546e7a',
+  tableWood: '#9c6f4a',
+  copper: '#b87333',
+  cupTea: '#d98a3a',
 } as const;
 
 /**
- * A/B KABUK YÜKSEKLİĞİ (geçici — kullanıcı iki varyantı da görüp seçecek).
- * A = 2,2: maketin ODA duvarı ("ara duvarlar 2.2 — kamera içeri görsün", maketin kendi yorumu).
- * B = 3,2: maketin BİNA duvarı (`WALL_H`).
- * DEV'de `localStorage.maketShellH` ile değiştirilir; karar verilince sabitlenip bu blok silinir.
+ * ODA DUVARI = 2,2 (maketin `lavaboBlock` sabiti; kendi yorumu: *"ara duvarlar 2.2 — kamera içeri
+ * görsün"*). BİNA duvarı 3,2 ve o artık bandın KABUĞU olarak `Scene.BackBand`'de çiziliyor —
+ * bu dosyadaki odalar yalnız kendi ara duvarlarını çizer. (Eski `localStorage.maketShellH` A/B
+ * kancası kalktı: bina duvarı D-073'le 3,2'de dondu, seçilecek bir şey kalmadı.)
  */
-const SHELL_H = (() => {
-  try {
-    const v = Number(localStorage.getItem('maketShellH'));
-    return Number.isFinite(v) && v > 0 ? v : 2.2;
-  } catch {
-    return 2.2;
-  }
-})();
+const ROOM_H = 2.2;
 
 /** Maketin `wall(x1,z1,x2,z2,h)` fonksiyonu — gövde + lambri kuşağı + üst çıta, birebir. */
 export function MaketWall({
@@ -74,15 +70,15 @@ export function MaketWall({
   const len = Math.hypot(dx, dz);
   return (
     <group position={[(x1 + x2) / 2, 0, (z1 + z2) / 2]} rotation={[0, Math.atan2(dx, dz), 0]}>
-      <mesh position={[0, 0.9 + (h - 0.9) / 2, 0]}>
+      <mesh position={[0, 0.9 + (h - 0.9) / 2, 0]} receiveShadow>
         <boxGeometry args={[0.18, h - 0.9, len]} />
         <meshStandardMaterial color={MC.wallCream} />
       </mesh>
-      <mesh position={[0, 0.45, 0]}>
+      <mesh position={[0, 0.45, 0]} receiveShadow>
         <boxGeometry args={[0.22, 0.9, len]} />
         <meshStandardMaterial color={MC.wain} />
       </mesh>
-      <mesh position={[0, 0.94, 0]}>
+      <mesh position={[0, 0.94, 0]} receiveShadow>
         <boxGeometry args={[0.26, 0.08, len]} />
         <meshStandardMaterial color={MC.doorWood} />
       </mesh>
@@ -199,15 +195,20 @@ export function MaketPlant({ pos, big = false }: { pos: [number, number, number]
  * noktasının ve müşterinin hedefi (`LAVABO.spot`) ve o x, masa 12'nin yükseltme noktasına 2,55 br
  * kalsın diye B4a'da ölçülerek seçilmişti. Geri kalan her sayı maketin.
  *
- * `shellH`: binanın arka/yan duvarının yüksekliği (A = 2,2 · B = 3,2). Maket bu duvarları
- * `buildFloor1` içinde ayrı çiziyor (`wall(-17,-17,17,-17)` → `WALL_H` = 3,2); oyunda o duvarlar
- * bandın kütlesiydi, o yüzden burada parametre.
+ * BM adım 3: **binanın kabuğu (arka + doğu duvarı, 3,2) ve merdiven kovasıyla ortak batı duvarı
+ * artık burada çizilmiyor** — ikisi de bandın tamamına ait olduğu için `Scene.BackBand`'e taşındı
+ * (lavabo kapalıyken de duruyorlar; eskiden kapalıyken kütle vardı, şimdi bina var). Bu fonksiyona
+ * ODANIN KENDİSİ kaldı: ön duvar + kapı + kabinler + lavabolar + zemin.
+ *
+ * Odanın dikdörtgeni maketin sabitlerinden değil `BAND_SHELL`'in İÇ YÜZLERİNDEN türetilir: oyunun
+ * dış duvarı kat kenarından 0,5 dışarıda durduğu için oda maketinkinden ~0,5 daha geniş/derin;
+ * mobilya duvara yaslı kalsın diye ölçü duvardan okunur, maketten kopyalanmaz.
  */
-export function MaketLavaboBlock({ shellH = SHELL_H }: { shellH?: number }) {
-  const H = 2.2; // maketin lavaboBlock'undaki sabit
+export function MaketLavaboBlock() {
+  const H = ROOM_H; // maketin lavaboBlock'undaki sabit (2,2)
   const x1 = BAND.wc.minX; // 4,6 — maketle aynı
-  const x2 = 16.9; // maketin çağrısındaki değer (duvarın İÇ yüzü; oyunun FLOOR_HALF'ı 17 = eksen)
-  const zBack = -16.87; // maketin çağrısındaki değer
+  const x2 = BAND_SHELL.innerRight; // doğu duvarının İÇ yüzü (maketin 16,9'unun oyundaki karşılığı)
+  const zBack = BAND_SHELL.innerBack; // arka duvarın İÇ yüzü (maket −16,87)
   const zFront = BAND.front; // −9,8 — maketle aynı
   const doorX = LAVABO.door[0]; // 13,4 (oynanışa bağlı; maket 13,2)
 
@@ -217,12 +218,6 @@ export function MaketLavaboBlock({ shellH = SHELL_H }: { shellH?: number }) {
 
   return (
     <group>
-      {/* binanın kabuğu: arka duvar + doğu duvarı (maket bunları buildFloor1'de çiziyor) */}
-      <MaketWall x1={x1} z1={zBack} x2={x2} z2={zBack} h={shellH} />
-      <MaketWall x1={x2} z1={zBack} x2={x2} z2={zFront} h={shellH} />
-      {/* batı duvarı: merdiven kovasıyla ortak (maket: wall(4.6,-16.9,4.6,-9.8, 2.2)) */}
-      <MaketWall x1={x1} z1={-16.9} x2={x1} z2={zFront} h={H} />
-
       {/* ön duvar, kapı boşluğunun iki yanı + lento */}
       <MaketWall x1={x1} z1={zFront} x2={doorX - 0.7} z2={zFront} h={H} />
       <MaketWall x1={doorX + 0.7} z1={zFront} x2={x2} z2={zFront} h={H} />
@@ -300,6 +295,463 @@ export function MaketLavaboBlock({ shellH = SHELL_H }: { shellH?: number }) {
       </mesh>
       <MaketWcSign pos={[doorX - 1.3, 1.85, zFront + 0.16]} />
       <MaketPlant pos={[doorX + 1.5, 0, zFront - 0.7]} />
+    </group>
+  );
+}
+
+/**
+ * Maketin `rnd()` yerine SABİT sözde-rastgele: React her render'da yeniden çağırdığı için
+ * `Math.random()` moloz taşlarını her karede zıplatırdı. Aynı index hep aynı sayıyı verir.
+ */
+function prnd(i: number, lo: number, hi: number) {
+  const x = Math.sin(i * 127.1 + 311.7) * 43758.5453;
+  return lo + (x - Math.floor(x)) * (hi - lo);
+}
+
+/** Maketin merdiven sabitleri: `STEP_D = 0.46 · STEP_N = 14`; 14 basamakta 2,90 yükselir. */
+const STEP_D = 0.46;
+const STEP_N = 14;
+const STEP_H = 2.9 / STEP_N;
+/**
+ * Yıkık merdivenin toplam derinliği: 14 basamak + sahanlık (0,3 boşluk + 0,6 derinlik, merkezi
+ * `-L - 0.3` olduğu için arka yüzü `L + 0,6`). Bandın derinliğine sığdığı `logic.test` ile bekçili.
+ */
+export const MERDIVEN_DERINLIK = STEP_N * STEP_D + 0.6;
+
+/**
+ * Maketin `merdivenHarap()` — YIKIK MERDİVEN, birebir.
+ *
+ * Kullanıcı kuralı (D-057'nin obje hâli): kilitli ALAN çizilmez ama açık alandaki kilitli OBJE
+ * **yıkık durur**. Maket burada bilerek tahta perde ÇEKMİYOR — kendi yorumu: *"perde orayı yeni
+ * bir oda gibi gösteriyor; üst kat olduğu görünsün diye açık kalıyor."* Basamak tahtaları yer yer
+ * eksik (2 · 5 · 9 · 12), her dördüncüsü kırık, korkuluktan üç dikme kalmış, basamaklarda moloz.
+ *
+ * Merdiven 2,90 yükselir; 1,2'lik eski bant bunu taşımıyordu (B6b raporunun 4. bulgusu) — duvar
+ * 3,2'ye çıkınca bandın kabuğunun İÇİNDE kaldı.
+ */
+export function MaketMerdivenHarap({ pos }: { pos: [number, number, number] }) {
+  const w = 4.6;
+  const eksik = [2, 5, 9, 12];
+  const L = STEP_N * STEP_D;
+  return (
+    <group position={pos}>
+      {Array.from({ length: STEP_N }, (_, i) => {
+        const kirik = i % 4 === 1;
+        return (
+          <group key={i}>
+            <mesh position={[0, STEP_H / 2 + i * STEP_H, -STEP_D / 2 - i * STEP_D]} castShadow receiveShadow>
+              <boxGeometry args={[w, STEP_H, STEP_D]} />
+              <meshStandardMaterial color="#6d6155" flatShading />
+            </mesh>
+            {!eksik.includes(i) && (
+              <mesh position={[kirik ? 0.7 : 0, (i + 1) * STEP_H - 0.0175, -STEP_D / 2 - i * STEP_D]} castShadow>
+                <boxGeometry args={[w - (kirik ? 1.4 : 0), 0.035, STEP_D]} />
+                <meshStandardMaterial color="#8a7b68" flatShading />
+              </mesh>
+            )}
+          </group>
+        );
+      })}
+      {/* sahanlık */}
+      <mesh position={[0, 1.45, -L - 0.3]} castShadow receiveShadow>
+        <boxGeometry args={[w, 2.9, 0.6]} />
+        <meshStandardMaterial color="#6d6155" flatShading />
+      </mesh>
+      <mesh position={[0, 2.9 - 0.0175, -L - 0.3]} castShadow>
+        <boxGeometry args={[w, 0.035, 0.6]} />
+        <meshStandardMaterial color="#8a7b68" flatShading />
+      </mesh>
+      {/* kırık korkuluk: iki yanda üçer dikme kalmış */}
+      {([-1, 1] as const).map((sgn) =>
+        [0, 4, 11].map((k) => (
+          <mesh
+            key={`${sgn}-${k}`}
+            position={[sgn * (w / 2 - 0.1), (k + 1) * STEP_H + 0.5, -STEP_D / 2 - k * STEP_D]}
+            castShadow
+          >
+            <boxGeometry args={[0.08, 1.0, 0.08]} />
+            <meshStandardMaterial color="#6b5442" />
+          </mesh>
+        )),
+      )}
+      {/* tek kalan küpeşte parçası (eğimi merdivenin eğimi) */}
+      <mesh position={[-(w / 2 - 0.1), 1.35, -1.3]} rotation={[Math.atan2(2.9, L), 0, 0]} castShadow>
+        <boxGeometry args={[0.1, 0.09, 3.2]} />
+        <meshStandardMaterial color="#6b5442" />
+      </mesh>
+      {/* basamaklarda moloz */}
+      {Array.from({ length: 11 }, (_, i) => {
+        const st = Math.floor(prnd(i * 3 + 1, 0, STEP_N));
+        return (
+          <mesh
+            key={`m${i}`}
+            position={[prnd(i * 3 + 2, -1.9, 1.9), (st + 1) * STEP_H + 0.04, -STEP_D / 2 - st * STEP_D]}
+            rotation={[0, prnd(i * 3 + 3, 0, 3), 0]}
+            castShadow
+          >
+            <boxGeometry args={[prnd(i * 5 + 1, 0.14, 0.3), 0.06, prnd(i * 5 + 2, 0.12, 0.22)]} />
+            <meshStandardMaterial color={i % 2 ? '#cfd8dc' : '#b0bec5'} />
+          </mesh>
+        );
+      })}
+      {/* dayalı kalas + kova */}
+      <mesh position={[-1.5, 0.42, -1.5]} rotation={[Math.atan2(2.9, L), 0, 0]} castShadow>
+        <boxGeometry args={[0.3, 0.07, 3.0]} />
+        <meshStandardMaterial color="#8a7b68" flatShading />
+      </mesh>
+      <mesh position={[1.7, 0.16, -0.5]} castShadow>
+        <cylinderGeometry args={[0.2, 0.16, 0.32, 8]} />
+        <meshStandardMaterial color="#546e7a" flatShading />
+      </mesh>
+    </group>
+  );
+}
+
+/** Maketin `duba()` — turuncu trafik dubası (taban + koni + beyaz bant). */
+export function MaketDuba({ pos }: { pos: [number, number, number] }) {
+  return (
+    <group position={pos}>
+      <mesh position={[0, 0.025, 0]} receiveShadow>
+        <boxGeometry args={[0.44, 0.05, 0.44]} />
+        <meshStandardMaterial color="#c0451a" />
+      </mesh>
+      <mesh position={[0, 0.34, 0]} castShadow>
+        <cylinderGeometry args={[0.05, 0.18, 0.64, 8]} />
+        <meshStandardMaterial color="#e0611f" flatShading />
+      </mesh>
+      <mesh position={[0, 0.37, 0]}>
+        <cylinderGeometry args={[0.12, 0.14, 0.1, 8]} />
+        <meshStandardMaterial color="#f1ece0" />
+      </mesh>
+    </group>
+  );
+}
+
+/**
+ * Maketin `uyariSeridi(x1, x2, z)` — iki dikme arasına gerili sarı-siyah bant.
+ * Tahta perde DEĞİL: arkası görünür kalır (merdivenin yıkık olduğu okunsun).
+ */
+export function MaketUyariSeridi({ x1, x2, z }: { x1: number; x2: number; z: number }) {
+  const len = x2 - x1;
+  const n = Math.max(1, Math.round(len / 0.5));
+  const st = len / n;
+  return (
+    <group>
+      {[x1, x2].map((x, i) => (
+        <group key={i} position={[x, 0, z]}>
+          <mesh position={[0, 0.03, 0]} receiveShadow>
+            <cylinderGeometry args={[0.22, 0.26, 0.06, 8]} />
+            <meshStandardMaterial color="#37474f" />
+          </mesh>
+          <mesh position={[0, 0.53, 0]} castShadow>
+            <cylinderGeometry args={[0.05, 0.05, 1.05, 6]} />
+            <meshStandardMaterial color="#37474f" />
+          </mesh>
+          <mesh position={[0, 1.08, 0]}>
+            <sphereGeometry args={[0.06, 10, 8]} />
+            <meshStandardMaterial color="#e0b13a" />
+          </mesh>
+        </group>
+      ))}
+      {Array.from({ length: n }, (_, i) => (
+        <group key={`b${i}`} position={[x1 + st / 2 + i * st, 0, z]}>
+          <mesh position={[0, 0.92, 0]}>
+            <boxGeometry args={[st - 0.02, 0.13, 0.02]} />
+            <meshStandardMaterial color={i % 2 ? '#e0b13a' : '#2f2a24'} />
+          </mesh>
+          <mesh position={[0, 0.58, 0]}>
+            <boxGeometry args={[st - 0.02, 0.13, 0.02]} />
+            <meshStandardMaterial color={i % 2 ? '#2f2a24' : '#e0b13a'} />
+          </mesh>
+        </group>
+      ))}
+    </group>
+  );
+}
+
+/**
+ * Maketin `tadilatPerde(x1, x2, z)` — kilitli OBJENİN önünde tahta perde + uyarı bandı.
+ * Kural (maketin kendi yorumu): *"kilitli ALAN hiç çizilmez; açık alanın içindeki kilitli obje
+ * tadilat hâlinde durur."* Perde 2,40 — eski 1,2'lik bandın düz düzlemlerinin yerini alır.
+ */
+export function MaketTadilatPerde({ x1, x2, z }: { x1: number; x2: number; z: number }) {
+  const len = x2 - x1;
+  const cx = (x1 + x2) / 2;
+  const n = Math.max(1, Math.round(len / 0.62));
+  const st = len / n;
+  const bantSayisi = Math.max(1, Math.ceil((len - 0.5) / 0.86));
+  return (
+    <group>
+      {Array.from({ length: n }, (_, i) => (
+        <mesh key={i} position={[x1 + st / 2 + i * st, 1.2, z]} castShadow receiveShadow>
+          <boxGeometry args={[st - 0.05, 2.4, 0.1]} />
+          <meshStandardMaterial color={['#8a6242', '#9c6f4a', '#7d5b40'][i % 3]} flatShading />
+        </mesh>
+      ))}
+      {[0.55, 2.05].map((y) => (
+        <mesh key={y} position={[cx, y, z + 0.02]}>
+          <boxGeometry args={[len, 0.13, 0.18]} />
+          <meshStandardMaterial color={MC.doorWood} />
+        </mesh>
+      ))}
+      {Array.from({ length: bantSayisi }, (_, i) => (
+        <mesh key={`s${i}`} position={[x1 + 0.35 + i * 0.86, 1.35, z + 0.07]} rotation={[0, 0, 0.5]}>
+          <boxGeometry args={[0.5, 0.17, 0.03]} />
+          <meshStandardMaterial color={i % 2 ? '#e0b13a' : '#2f2a24'} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+/** Maketin `counter(len, c)` — gövde + tezgâh başlığı. Servis köşesinin hazırlık hattının temeli. */
+export function MaketCounter({
+  len,
+  pos,
+  rot = 0,
+  color = MC.tableWood,
+}: {
+  len: number;
+  pos: [number, number, number];
+  rot?: number;
+  color?: string;
+}) {
+  return (
+    <group position={pos} rotation={[0, rot, 0]}>
+      <mesh position={[0, 0.45, 0]} castShadow receiveShadow>
+        <boxGeometry args={[len, 0.9, 0.85]} />
+        <meshStandardMaterial color={color} flatShading />
+      </mesh>
+      <mesh position={[0, 0.93, 0]} castShadow>
+        <boxGeometry args={[len + 0.12, 0.08, 0.95]} />
+        <meshStandardMaterial color={MC.doorWood} />
+      </mesh>
+    </group>
+  );
+}
+
+/** Maketin `wallShelf(w)` — iki raf, uçlarında konsol, üstünde bardak dizisi. */
+export function MaketWallShelf({
+  w,
+  pos,
+  rot = 0,
+}: {
+  w: number;
+  pos: [number, number, number];
+  rot?: number;
+}) {
+  const n = Math.max(1, Math.floor((w - 0.3) / 0.19));
+  return (
+    <group position={pos} rotation={[0, rot, 0]}>
+      {[0, -0.55].map((dy) => (
+        <group key={dy}>
+          <mesh position={[0, dy, 0.16]} castShadow receiveShadow>
+            <boxGeometry args={[w, 0.06, 0.32]} />
+            <meshStandardMaterial color={MC.tableWood} flatShading />
+          </mesh>
+          {[-w / 2 + 0.1, w / 2 - 0.1].map((x) => (
+            <mesh key={x} position={[x, dy - 0.14, 0.13]}>
+              <boxGeometry args={[0.05, 0.22, 0.26]} />
+              <meshStandardMaterial color={MC.doorWood} />
+            </mesh>
+          ))}
+          {Array.from({ length: n }, (_, i) => (
+            <mesh key={i} position={[-(n - 1) * 0.095 + i * 0.19, dy + 0.085, 0.16]} castShadow>
+              <cylinderGeometry args={[0.045, 0.062, 0.11, 8]} />
+              <meshStandardMaterial color={dy ? MC.cupTea : '#dfe6ea'} />
+            </mesh>
+          ))}
+        </group>
+      ))}
+    </group>
+  );
+}
+
+/** Maketin `crates()` — dört ahşap kasa, ikisi üstte; deponun okunan işareti. */
+export function MaketCrates({ pos, rot = 0 }: { pos: [number, number, number]; rot?: number }) {
+  const boxes: [number, number, number, number][] = [
+    [0.7, -0.38, 0, 0],
+    [0.7, 0.4, 0.05, 0.08],
+    [0.7, -0.3, 0.02, -0.12],
+    [0.55, 0.45, -0.02, 0.2],
+  ];
+  const y = [0, 0, 0.5, 0.5];
+  return (
+    <group position={pos} rotation={[0, rot, 0]}>
+      {boxes.map(([w, x, , z], i) => (
+        <group key={i} position={[x, y[i], z]}>
+          <mesh position={[0, 0.25, 0]} castShadow receiveShadow>
+            <boxGeometry args={[w, 0.5, 0.55]} />
+            <meshStandardMaterial color={MC.tableWood} flatShading />
+          </mesh>
+          {[0.12, 0.38].map((dy) => (
+            <mesh key={dy} position={[0, dy, 0]}>
+              <boxGeometry args={[w + 0.02, 0.06, 0.57]} />
+              <meshStandardMaterial color={MC.doorWood} />
+            </mesh>
+          ))}
+        </group>
+      ))}
+    </group>
+  );
+}
+
+/** Maketin `waterRack()` — iki katlı çelik raf, altı damacana. */
+export function MaketWaterRack({ pos, rot = 0 }: { pos: [number, number, number]; rot?: number }) {
+  return (
+    <group position={pos} rotation={[0, rot, 0]}>
+      {[0.05, 0.75].map((y) => (
+        <mesh key={y} position={[0, y, 0]} receiveShadow>
+          <boxGeometry args={[1.3, 0.05, 0.5]} />
+          <meshStandardMaterial color="#546e7a" />
+        </mesh>
+      ))}
+      {([[-0.62, -0.22], [0.62, -0.22], [-0.62, 0.22], [0.62, 0.22]] as const).map(([x, z], i) => (
+        <mesh key={i} position={[x, 0.75, z]}>
+          <boxGeometry args={[0.05, 1.5, 0.05]} />
+          <meshStandardMaterial color="#546e7a" />
+        </mesh>
+      ))}
+      {Array.from({ length: 6 }, (_, i) => {
+        const x = -0.4 + (i % 3) * 0.4;
+        const y = i < 3 ? 0.08 : 0.78;
+        return (
+          <group key={`d${i}`}>
+            <mesh position={[x, y + 0.25, 0]} castShadow>
+              <cylinderGeometry args={[0.16, 0.16, 0.5, 10]} />
+              <meshStandardMaterial color="#74b9e6" flatShading />
+            </mesh>
+            <mesh position={[x, y + 0.55, 0]}>
+              <cylinderGeometry args={[0.07, 0.12, 0.1, 8]} />
+              <meshStandardMaterial color="#74b9e6" flatShading />
+            </mesh>
+            <mesh position={[x, y + 0.62, 0]}>
+              <cylinderGeometry args={[0.05, 0.05, 0.05, 8]} />
+              <meshStandardMaterial color="#f1ece0" />
+            </mesh>
+          </group>
+        );
+      })}
+    </group>
+  );
+}
+
+/** Maketin `cezveStation()` — tezgâh + kum ocağı + dört cezve + fincanlar (hazırlık hattı). */
+export function MaketCezveStation({ pos, rot = 0 }: { pos: [number, number, number]; rot?: number }) {
+  return (
+    <group position={pos} rotation={[0, rot, 0]}>
+      <MaketCounter len={2.6} pos={[0, 0, 0]} />
+      <mesh position={[-0.4, 1.04, 0]} castShadow>
+        <boxGeometry args={[1.5, 0.14, 0.55]} />
+        <meshStandardMaterial color="#d9c9a3" flatShading />
+      </mesh>
+      {Array.from({ length: 4 }, (_, i) => (
+        <group key={i}>
+          <mesh position={[-0.85 + i * 0.32, 1.15, 0]} castShadow>
+            <cylinderGeometry args={[0.1, 0.13, 0.17, 8]} />
+            <meshStandardMaterial color={MC.copper} flatShading />
+          </mesh>
+          <mesh position={[-0.85 + i * 0.32, 1.16, 0.2]} rotation={[Math.PI / 2.4, 0, 0]}>
+            <cylinderGeometry args={[0.02, 0.02, 0.3, 4]} />
+            <meshStandardMaterial color={MC.doorWood} />
+          </mesh>
+        </group>
+      ))}
+      {Array.from({ length: 4 }, (_, j) => (
+        <mesh key={`p${j}`} position={[0.75 + (j % 2) * 0.22, 1.0, -0.18 + Math.floor(j / 2) * 0.24]}>
+          <cylinderGeometry args={[0.07, 0.05, 0.1, 8]} />
+          <meshStandardMaterial color="#ece4d4" />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+/** Maketin `dishSink()` — bulaşık tezgâhı, çelik çanak, musluk, kirli bardaklar. */
+export function MaketDishSink({ pos, rot = 0 }: { pos: [number, number, number]; rot?: number }) {
+  return (
+    <group position={pos} rotation={[0, rot, 0]}>
+      <MaketCounter len={2.2} pos={[0, 0, 0]} color="#7d5b40" />
+      <mesh position={[-0.3, 0.94, 0]} castShadow>
+        <boxGeometry args={[1.2, 0.2, 0.62]} />
+        <meshStandardMaterial color={MC.sink} flatShading />
+      </mesh>
+      <mesh position={[-0.3, 1.2, -0.24]}>
+        <cylinderGeometry args={[0.04, 0.04, 0.42, 6]} />
+        <meshStandardMaterial color={MC.steel} />
+      </mesh>
+      {Array.from({ length: 6 }, (_, i) => (
+        <mesh key={i} position={[0.62 + (i % 3) * 0.16, 0.99 + Math.floor(i / 3) * 0.11, 0.05]}>
+          <cylinderGeometry args={[0.055, 0.045, 0.11, 8]} />
+          <meshStandardMaterial color="#9aa0a6" />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+/** Maketin `iskele(len)` — dikmeler + kuşaklar + kalas platform + çapraz. Tadilatın iskelesi. */
+export function MaketIskele({ len, pos, rot = 0 }: { len: number; pos: [number, number, number]; rot?: number }) {
+  return (
+    <group position={pos} rotation={[0, rot, 0]}>
+      {[-len / 2 + 0.2, len / 2 - 0.2].map((x) =>
+        [-0.5, 0.5].map((z) => (
+          <mesh key={`${x}-${z}`} position={[x, 1.5, z]} castShadow>
+            <cylinderGeometry args={[0.06, 0.06, 3.0, 6]} />
+            <meshStandardMaterial color="#8d9499" />
+          </mesh>
+        )),
+      )}
+      {[1.0, 2.4].map((y) =>
+        [-0.5, 0.5].map((z) => (
+          <mesh key={`${y}-${z}`} position={[0, y, z]}>
+            <boxGeometry args={[len, 0.07, 0.07]} />
+            <meshStandardMaterial color="#8d9499" />
+          </mesh>
+        )),
+      )}
+      {[0, 1, 2].map((i) => (
+        <mesh key={i} position={[0, 1.06, -0.32 + i * 0.32]} castShadow receiveShadow>
+          <boxGeometry args={[len - 0.4, 0.06, 0.3]} />
+          <meshStandardMaterial color={MC.tableWood} flatShading />
+        </mesh>
+      ))}
+      <mesh position={[0, 1.7, -0.5]} rotation={[0, 0, Math.atan2(1.4, len)]}>
+        <boxGeometry args={[Math.hypot(len, 1.4), 0.06, 0.06]} />
+        <meshStandardMaterial color="#8d9499" />
+      </mesh>
+    </group>
+  );
+}
+
+/** Maketin `moloz()` — kum yığını + kırık fayans + istiflenmiş kalaslar + kova. */
+export function MaketMoloz({ pos, rot = 0 }: { pos: [number, number, number]; rot?: number }) {
+  return (
+    <group position={pos} rotation={[0, rot, 0]}>
+      <mesh position={[0, 0.27, 0]} castShadow>
+        <cylinderGeometry args={[0.05, 0.85, 0.55, 9]} />
+        <meshStandardMaterial color="#bfae90" flatShading />
+      </mesh>
+      {Array.from({ length: 7 }, (_, i) => (
+        <mesh
+          key={i}
+          position={[prnd(i * 7 + 1, -0.9, 0.9), 0.03, prnd(i * 7 + 2, 0.5, 1.2)]}
+          rotation={[0, prnd(i * 7 + 3, 0, 3), 0]}
+        >
+          <boxGeometry args={[0.24, 0.06, 0.2]} />
+          <meshStandardMaterial color={i % 2 ? '#cfd8dc' : '#b0bec5'} />
+        </mesh>
+      ))}
+      {[0, 1, 2, 3].map((i) => (
+        <mesh key={`k${i}`} position={[1.9, 0.04 + i * 0.075, -0.2 + (i % 2) * 0.05]} castShadow>
+          <boxGeometry args={[2.2, 0.07, 0.28]} />
+          <meshStandardMaterial color={MC.tableWood} flatShading />
+        </mesh>
+      ))}
+      <mesh position={[-1.2, 0.16, 0.5]} castShadow>
+        <cylinderGeometry args={[0.2, 0.16, 0.32, 8]} />
+        <meshStandardMaterial color="#546e7a" flatShading />
+      </mesh>
     </group>
   );
 }

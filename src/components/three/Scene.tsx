@@ -2,7 +2,7 @@ import { Suspense, useEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Vector3, BufferGeometry, Float32BufferAttribute, DoubleSide, type Group, type PerspectiveCamera } from 'three';
 import type { AreaSide } from '../../game/store';
-import { useGame, questFocusPos, LAYOUT, LAVABO, BAND, FLOOR_HALF, wallSpans, servicePlace, stationSoftMaxLevel, stationUpgradeCostAt, stationUpgradeUnlocked, tableSoftMaxLevel, tableUpgradeUnlockedIn, tableNextCost, openServices, doorX as doorAt, entranceAt, banketIslands, BANKET, WAITER_STATION, waiterStationOpen } from '../../game/store';
+import { useGame, questFocusPos, LAYOUT, LAVABO, BAND, BAND_SHELL, FLOOR_HALF, wallSpans, servicePlace, stationSoftMaxLevel, stationUpgradeCostAt, stationUpgradeUnlocked, tableSoftMaxLevel, tableUpgradeUnlockedIn, tableNextCost, openServices, doorX as doorAt, entranceAt, banketIslands, BANKET, WAITER_STATION, waiterStationOpen } from '../../game/store';
 import { economyConfig, lavaboUpgradeCost } from '../../config/economy.config';
 import { areaOfTable, isCounter, THE_SERVICE } from '../../game/world';
 import { SceneLights } from './lights';
@@ -20,7 +20,22 @@ import { Customers } from './Customers';
 import { Coins } from './Coins';
 import { Pad } from './Pad';
 import { Decor } from './Decor';
-import { MaketLavaboBlock } from './maketParts';
+import {
+  MaketCezveStation,
+  MaketCounter,
+  MaketCrates,
+  MaketDishSink,
+  MaketDuba,
+  MaketIskele,
+  MaketLavaboBlock,
+  MaketMerdivenHarap,
+  MaketMoloz,
+  MaketTadilatPerde,
+  MaketUyariSeridi,
+  MaketWall,
+  MaketWallShelf,
+  MaketWaterRack,
+} from './maketParts';
 import { perf } from '../../game/perf';
 import { devTimeScale, devTopDown, useSandbox } from '../../game/devSandbox';
 import { screenPointer } from '../../game/screenPointer';
@@ -565,7 +580,13 @@ function Ground() {
         // geometriyle bulunur — o kenarda duvar parçası varsa (wallSpans boş değilse) overlay
         // duvarın dibine kadar uzar, yoksa tam sınırda biter (üst üste binen overlay z-fighting yapar).
         const ext = (side: 'left' | 'right' | 'front' | 'back') =>
-          wallSpans(z, side, areasOpen).length > 0 ? 0.55 : 0;
+          // Arka yarının ARKA kenarında duvar yok (bant kendi zeminini çiziyor, BM adım 3) →
+          // 0,55 uzatılırsa iki zemin düzlemi üst üste biner ve z-fighting yapar.
+          side === 'back' && za.minZ === BAND.front
+            ? 0
+            : wallSpans(z, side, areasOpen).length > 0
+              ? 0.55
+              : 0;
         const x0 = za.minX - ext('left');
         const x1 = za.maxX + ext('right');
         const z0 = za.minZ - ext('back');
@@ -680,6 +701,11 @@ function Walls() {
     const za = LAYOUT.areaBounds[z];
     const th = themeOf(z);
     for (const side of SIDES) {
+      // BM adım 3: arka yarının ARKA kenarı artık bandın işi. Bant kütle değil oda olunca o kenar
+      // tek bir düz duvar değil bir PROGRAM: servis köşesi açık, merdiven kovası açık, lavabo
+      // kapılı/tadilatta. `BackBand` her bloğun kendi yüzünü çiziyor; burada çizilirse önüne
+      // kesintisiz bir duvar örülür ve odalar görünmez olur.
+      if (side === 'back' && za.minZ === BAND.front) continue;
       const vertical = side === 'left' || side === 'right';
       // Duvar hattı alan kenarından m kadar dışarıda (oyuncu kelepçe standoff'u ile birebir).
       const line =
@@ -747,31 +773,111 @@ function Walls() {
 }
 
 /**
- * ARKA BANT — servis bloğu · merdiven · lavabo (maket v13; üçü de z = −9,8 hizasında biter).
- * B3-1'de KÜTLE olarak durur: arka yarının duvarının ötesindeki hacim, kamera 45°'den tepesini
- * gördüğü için boş zemin bırakılamaz. İçini açmak (lavabo odası + yıkık merdiven) B4'ün işi;
- * bloklar o zaman kapı boşluğu ve iç geometri kazanır. Bant YÜRÜNMEZ — alanlar z = −9,8'de biter.
+ * ARKA BANT — servis köşesi · merdiven kovası · lavabo (maket v13; üçü de z = −9,8'de biter).
+ *
+ * **BM adım 3 (D-070/D-072): bant KÜTLE olmaktan çıktı, maketin ODALARI oldu.**
+ * B3-1'de bant üç düz krem kutuydu; gerekçesi "kamera 45°'den tepesini görüyor, boş zemin
+ * bırakılamaz"dı ve duvar 1,2 iken makul bir kesitti. Duvar 3,2'ye çıkınca o üç kutu kadrajın
+ * beşte birini kaplayan bomboş bir krem yüzeye dönüştü (`docs/b6b-arka-bant.html` bulgu 3).
+ * Maketin çözümü zaten hazırdı: bant bir kütle değil, **binanın arka odaları**.
+ *
+ * Kuruluş (maketin `buildFloor1`'i):
+ *  - **Bina kabuğu** — arka duvar + iki yan duvarın bandı saran parçaları, salonun duvarıyla
+ *    aynı dilde (3,2 · `WallPanels` · alanın duvar teması). Bandı KAPATAN şey artık bu.
+ *  - **Ara duvarlar 2,2** (`MaketWall`, x = ∓4,6) — maketin kendi gerekçesi: *"kamera içeri
+ *    görsün"*. Üç blok üstten de birbirinden ayrılır.
+ *  - **Servis köşesi** (x −17…−4,6): fayans zemin + arka duvarda hazırlık hattı (cezve ocağı ·
+ *    tezgâh · raflar), sol duvarda bulaşık, doğu ucunda depo (kasalar · damacana rafı). Salona
+ *    bakan yüzü AÇIK — oyunun servis tezgâhı zaten bandın önünde (`PLACE_BACK_BAND`), maket de
+ *    ön tezgâhı bandın ağzına koyuyor.
+ *  - **Merdiven kovası** (x ∓4,6): maketin `merdivenHarap`'ı + uyarı şeridi + dubalar. Perde YOK
+ *    (maketin kendi notu: perde orayı yeni bir oda gibi gösterir; üst kat olduğu görünsün).
+ *  - **Lavabo** (x 4,6…17): açıkken `MaketLavaboBlock`, kapalıyken maketin `tadilatPerde`'si.
+ *
+ * BANT HÂLÂ YÜRÜNMEZ: alanlar z = −9,8'de biter (`clampToOpenAreas`), burada değişen tek şey
+ * GÖRÜNTÜ. Duvarlar zaten collision değil (`activeSolids`), o yüzden nav/denge etkilenmez.
  */
 function BackBand({ areasOpen }: { areasOpen: number }) {
-  // B6b: lavabo ALINDIYSA `wc` bloğu artık katı kütle değil, maket v13'ün odasının BİREBİR
-  // transkripsiyonu (`maketParts.MaketLavaboBlock`). Diğer iki blok bu turda değişmedi.
   const lavaboOpen = useGame((s) => s.padsDone.includes('lavabo'));
+  const wallThemeByArea = useGame((s) => s.wallThemeByArea);
+  const floorThemeByArea = useGame((s) => s.floorThemeByArea);
   if (areasOpen < 3) return null; // arka yarı açılmadan bant görünmez (kilitli alan çizilmez, D-057)
-  const d = BAND.front - BAND.back;
-  const blocks: [string, { minX: number; maxX: number }, string][] = [
-    ['servis', BAND.service, PALETTE.wallCream ?? '#e3d8c1'],
-    ['merdiven', BAND.stairs, PALETTE.wallCream ?? '#e3d8c1'],
-    ...(lavaboOpen ? [] : ([['lavabo', BAND.wc, PALETTE.wallCream ?? '#e3d8c1']] as [string, { minX: number; maxX: number }, string][])),
+
+  const theme = WALL_THEMES[wallThemeByArea[2] ?? 'krem'] ?? WALL_THEMES.krem;
+  const floor = FLOOR_THEMES[floorThemeByArea[2] ?? 'parke'] ?? FLOOR_THEMES.parke;
+  const zf = BAND.front; // −9,8
+  const zb = BAND_SHELL.back; // −17,4 (duvar hattı)
+  const xl = BAND_SHELL.left;
+  const xr = BAND_SHELL.right;
+  const t = 0.2;
+  // Bina kabuğu — salonun duvarıyla AYNI bileşen, yani aynı üç katman ve aynı tema.
+  const shell: WallSlab[] = [
+    { x: (xl + xr) / 2, z: zb, w: xr - xl, d: t, theme },
+    { x: xl, z: (zb + zf) / 2, w: t, d: zf - zb, theme },
+    { x: xr, z: (zb + zf) / 2, w: t, d: zf - zb, theme },
   ];
+  // Servis köşesinin fayans zemini (maket: floorPatch(−10,8 · −13,35 · 12,2 × 7,0 · floorTile)) —
+  // oyunda oda 0,5 daha geniş olduğu için ölçü duvarın İÇ YÜZLERİNDEN türetilir.
+  const sx0 = BAND_SHELL.innerLeft;
+  const sx1 = BAND.service.maxX - 0.1;
+  const sz0 = BAND_SHELL.innerBack;
+  const sz1 = zf - 0.05;
+  // Yıkık merdiven bandın 0,4 içinden başlar: sahanlığı arka duvarın iç yüzüne değmesin
+  // (14 × 0,46 + 0,3 + 0,3 = 7,04 derinlik, bandın derinliği 7,6).
+  const stairZ = zf - 0.4;
+
   return (
     <group>
-      {blocks.map(([id, blk, color]) => (
-        <mesh key={id} position={[(blk.minX + blk.maxX) / 2, WALL_H / 2, (BAND.front + BAND.back) / 2]}>
-          <boxGeometry args={[blk.maxX - blk.minX - 0.12, WALL_H, d]} />
-          <meshStandardMaterial color={color} />
-        </mesh>
+      <WallPanels slabs={shell} />
+      {/* bandın zemini: salonunkiyle aynı tema (maket de arka yarının tamamını tek ahşapla döşer) */}
+      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[(xl + xr) / 2, 0.004, (zb + zf) / 2]}>
+        <planeGeometry args={[xr - xl, zf - zb]} />
+        <meshStandardMaterial color={floor.grout ?? floor.base} />
+      </mesh>
+      <FloorPattern theme={floor} x0={xl} x1={xr} z0={zb} z1={zf} />
+      {/* servis köşesinin fayansı (mutfak zemini — ahşabın üstünde ince bir kat) */}
+      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[(sx0 + sx1) / 2, 0.012, (sz0 + sz1) / 2]}>
+        <planeGeometry args={[sx1 - sx0, sz1 - sz0]} />
+        <meshStandardMaterial color="#d9cdb4" />
+      </mesh>
+
+      {/* ara duvarlar (2,2): servisin doğusu · lavabonun batısı — ikisi de merdiven kovasının yüzü */}
+      <MaketWall x1={BAND.service.maxX} z1={zb} x2={BAND.service.maxX} z2={zf} h={BAND_SHELL.roomH} />
+      <MaketWall x1={BAND.wc.minX} z1={zb} x2={BAND.wc.minX} z2={zf} h={BAND_SHELL.roomH} />
+
+      {/* SERVİS KÖŞESİ — arka duvarda hazırlık, sol duvarda bulaşık, doğu ucunda depo */}
+      <MaketCezveStation pos={[-13.6, 0, sz0 + 0.47]} />
+      <MaketWallShelf w={2.2} pos={[-13.6, 1.95, sz0 + 0.02]} />
+      <MaketCounter len={2.6} pos={[-9.6, 0, sz0 + 0.47]} />
+      <MaketWallShelf w={2.0} pos={[-9.6, 1.95, sz0 + 0.02]} />
+      <MaketDishSink pos={[sx0 + 0.51, 0, -13.6]} rot={Math.PI / 2} />
+      <MaketWallShelf w={2.0} pos={[sx0 + 0.06, 1.95, -13.6]} rot={Math.PI / 2} />
+      <MaketCrates pos={[-5.5, 0, sz0 + 0.87]} />
+      <MaketWaterRack pos={[-5.4, 0, -13.4]} rot={-Math.PI / 2} />
+
+      {/* MERDİVEN KOVASI — yıkık merdiven + uyarı şeridi + dubalar (hepsi bandın İÇİNDE:
+          oyuncu z = −9,8'de duruyor, salona taşan hiçbir parça olmasın diye maketin
+          salon tarafındaki dubaları kovanın içine alındı). */}
+      <MaketMerdivenHarap pos={[0, 0, stairZ]} />
+      <MaketUyariSeridi x1={-4.2} x2={4.2} z={zf - 0.1} />
+      {[-3.6, 0, 3.6].map((x) => (
+        <MaketDuba key={x} pos={[x, 0, zf - 0.25]} />
       ))}
-      {lavaboOpen && <MaketLavaboBlock />}
+
+      {/* LAVABO — açıkken oda, kapalıyken TADİLAT (kilitli obje çizilmez değil, yıkık durur) */}
+      {lavaboOpen ? (
+        <MaketLavaboBlock />
+      ) : (
+        <group>
+          {/* Maketin `s === 3` bloğu: perdenin ARKASI boş kalmaz — tadilat sürüyor.
+              Perde 2,4, kabuk 3,2 → kamera perdenin üstünden içeriyi görüyor; iskele ve moloz
+              olmasaydı "kapalı oda" değil "boş oda" okunurdu. */}
+          <MaketTadilatPerde x1={BAND.wc.minX} x2={BAND_SHELL.innerRight} z={zf} />
+          <MaketIskele len={4.4} pos={[12.0, 0, -12.4]} />
+          <MaketMoloz pos={[7.0, 0, -13.6]} />
+          <MaketCrates pos={[BAND_SHELL.innerRight - 1.27, 0, sz0 + 1.07]} />
+        </group>
+      )}
     </group>
   );
 }
@@ -803,26 +909,9 @@ function LavaboFront() {
   const zw = BAND.front + 0.16; // duvar yüzünün önü
   return (
     <group>
-      {!open && (
-        <group>
-          {/* KAPALIYKEN oda yok: blok katı kütle, kapı yeri TADİLAT hâlinde durur
-              (kilitli obje çizilmez DEĞİL, kilitli obje yıkık durur — D-057'nin obje hâli). */}
-          <mesh position={[x, 0.6, BAND.front + 0.02]}>
-            <planeGeometry args={[1.5, 1.2]} />
-            <meshStandardMaterial color="#4a3b2a" />
-          </mesh>
-          {([-0.5, 0.5] as const).map((sgn, i) => (
-            <mesh key={i} position={[x, 0.6, BAND.front + 0.04]} rotation={[0, 0, sgn * 0.55]}>
-              <planeGeometry args={[2.4, 0.3]} />
-              <meshStandardMaterial color="#a1887f" />
-            </mesh>
-          ))}
-          <mesh position={[x, 0.3, BAND.front + 0.05]}>
-            <planeGeometry args={[2.0, 0.16]} />
-            <meshStandardMaterial color="#f9a825" />
-          </mesh>
-        </group>
-      )}
+      {/* KAPALIYKEN buraya hiçbir şey çizilmez: tadilat hâlini (tahta perde + iskele + moloz)
+          artık `BackBand` maketin `tadilatPerde`'siyle kuruyor. Buradaki eski üç düzlem 1,2'lik
+          bandın ölçüsündeydi; 3,2'lik bandın önünde oyuncak gibi kalıyordu ve perdeyle ÇAKIŞIYORDU. */}
       {open && (
         <group>
           {/* ÇİNİ BORDÜR KALDIRILDI (2026-09-07). Seviye sinyali olsun diye kapının iki yanına

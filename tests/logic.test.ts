@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { floorQuads } from '../src/components/three/floorPattern';
 import { DOOR, wallBoxes, WALL_H, WAINSCOT_H } from '../src/components/three/wallPanel';
+import { MERDIVEN_DERINLIK } from '../src/components/three/maketParts';
 import { FLOOR_THEMES, WALL_THEMES } from '../src/config/palette';
 import {
   economyConfig,
@@ -87,6 +88,7 @@ import {
   serviceMoved,
   wallSpans,
   BAND,
+  BAND_SHELL,
   FLOOR_HALF,
   BANKET,
   entranceAt,
@@ -3205,6 +3207,29 @@ describe('BM — duvar maketin transkripsiyonu (wallBoxes: gövde + lambri + KOY
     const alcak = wallBoxes({ ...slab, h: 2.2 });
     expect(top(alcak[0])).toBeCloseTo(2.2, 6);
     expect(top(alcak[1])).toBeCloseTo(0.9, 6); // lambri sabit
+  });
+
+  // BM adım 3 — BANDIN KABUĞU. Bant katı kütle olmaktan çıkıp odalara döndü; kabuk salonun
+  // duvarıyla aynı kuralda (kat kenarından m = 0,5 dışarıda) ve maketin ara duvarı 2,2.
+  it('bandın kabuğu: hatlar kat kenarından 0,5 dışarıda · iç yüz 0,09 içeride · oda duvarı 2,2', () => {
+    expect(BAND_SHELL.back).toBeCloseTo(BAND.back - 0.5, 6);
+    expect(BAND_SHELL.left).toBeCloseTo(-FLOOR_HALF - 0.5, 6);
+    expect(BAND_SHELL.right).toBeCloseTo(FLOOR_HALF + 0.5, 6);
+    // iç yüz = hat + gövde kalınlığının yarısı (maketin duvar gövdesi 0,18)
+    expect(BAND_SHELL.innerBack - BAND_SHELL.back).toBeCloseTo(0.09, 6);
+    expect(BAND_SHELL.right - BAND_SHELL.innerRight).toBeCloseTo(0.09, 6);
+    expect(BAND_SHELL.innerLeft - BAND_SHELL.left).toBeCloseTo(0.09, 6);
+    expect(BAND_SHELL.roomH).toBeCloseTo(2.2, 6); // maketin "kamera içeri görsün" duvarı
+    expect(BAND_SHELL.roomH).toBeLessThan(WALL_H); // ara duvar bina duvarını AŞMAZ
+  });
+
+  it('yıkık merdiven bandın DERİNLİĞİNE sığar (1,2’lik bantta sığmıyordu)', () => {
+    const bandDepth = BAND.front - BAND_SHELL.back; // 7,6
+    expect(bandDepth).toBeCloseTo(7.6, 6);
+    // Merdiven bandın 0,4 içinden başlar (Scene.BackBand `stairZ`), sahanlık arka duvara değmez.
+    expect(MERDIVEN_DERINLIK + 0.4).toBeLessThan(bandDepth);
+    // ve 2,90 yükseldiği için ancak 3,2'lik kabuğun altında durabilir.
+    expect(2.9).toBeLessThan(WALL_H);
   });
 
   // Duvar 1,2 → 3,2 olunca kapı boşluğu da onunla uzamıştı; makette kapı camla aynı hizada (2,65)

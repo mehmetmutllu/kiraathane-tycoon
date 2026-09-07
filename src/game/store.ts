@@ -70,6 +70,7 @@ export {
   LAVABO,
   PAD_RADIUS,
   BAND,
+  BAND_SHELL,
   FLOOR_HALF,
   wallSpans,
   hasAreaNeighbor,

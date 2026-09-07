@@ -74,6 +74,28 @@ export const BAND = {
 } as const;
 
 /**
+ * BANDIN BİNA KABUĞU (BM adım 3). Bant artık katı kütle değil, **maketin odaları**: arkasında
+ * binanın kendi duvarı, içinde 2,2'lik ara duvarlar var (maket: *"kamera içeri görsün"*).
+ *
+ * Hat konumu oyunun her yerinde geçerli kuralla aynı: dış duvar kat kenarından **m = 0,5** dışarıda
+ * (`Scene.Walls` da aynı payı kullanır) — maket duvarı kat kenarına ORTALAR, oyun dışına koyar; bu
+ * fark bandın öncesinde de vardı, bant onu miras alıyor. İÇ YÜZ hattın 0,09 içidir (maketin duvar
+ * gövdesi 0,18). Oda mobilyası (lavabolar, kabinler) bu iç yüzlere yaslanır.
+ */
+export const BAND_SHELL = {
+  /** duvar hatları */
+  back: BAND.back - 0.5,
+  left: -FLOOR_HALF - 0.5,
+  right: FLOOR_HALF + 0.5,
+  /** iç yüzler — mobilya bunlara yaslanır */
+  innerBack: BAND.back - 0.5 + 0.09,
+  innerRight: FLOOR_HALF + 0.5 - 0.09,
+  innerLeft: -FLOOR_HALF - 0.5 + 0.09,
+  /** maketin ODA duvarı (ara bölme) yüksekliği */
+  roomH: 2.2,
+} as const;
+
+/**
  * LAVABO ODASI (B4) — bandın `wc` bloğunun içi. Oda YÜRÜNMEZ (bant kütlesi); müşteri kapıda
  * kaybolur, `visitTime` sonra aynı yerde belirir ve çıkışta parasını `coinSpot`'a bırakır.
  *
