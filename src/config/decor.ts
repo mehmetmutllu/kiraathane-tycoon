@@ -51,10 +51,19 @@ export const WALL_FACE = FLOOR_HALF + 0.32;
 export const WALL_BACK = FLOOR_HALF + 0.15;
 
 /**
- * KESİK DUVARIN ASMA BANDI. Altında lambri kuşağı (0…0,50) + üstü çıtası (0,54), üstünde
- * kartonpiyer (1,15…1,20) var; asılan hiçbir şey bu iki profilin üstüne binmemeli.
+ * DUVARIN ASMA BANDI — **BM (D-070) ile maketin değerlerine çekildi.**
+ *
+ * B6a'da duvar 1,2 birimlik KESİK bir duvardı ve asma bandı 0,86…1,00 idi; maketin y = 1,85…2,20
+ * arasındaki programı oraya sığmıyordu, bu yüzden ağır öğeler duvardan indirilmişti. BM duvarı
+ * maketin 3,2'sine taşıyınca o kısıt KALKTI: maketin kendi asma yükseklikleri kullanılabilir.
+ *
+ * MAKETİN DEĞERLERİ (`maket-v13.html`): aplik 2,05 · tablo 1,95–2,15 · duvar saati 2,20 ·
+ * askı rayı 1,85 · TV 2,02 · pencere denizliği 1,15, pencere başı 2,80.
+ * Lambri kuşağı 0…0,90 ve üstündeki çıta 0,90…0,98 — asılan hiçbir şey oraya binmemeli.
  */
-export const MOUNT = { mid: 0.86, high: 1.0 } as const;
+export const MOUNT = { mid: 1.95, high: 2.05, clock: 2.2, rail: 1.85 } as const;
+/** Maketin pencere bandı (`windowWall`): denizlik 1,15 · pencere başı 2,80. */
+export const WINDOW = { sill: 1.15, top: 2.8 } as const;
 
 export type DecorKind =
   | 'saksi' // küçük saksı (zemin)
@@ -102,7 +111,7 @@ export interface DecorItem {
 const LEFT_WALL: DecorItem[] = [
   { kind: 'aplik', pos: [-WALL_FACE, MOUNT.high, 3.2], rot: Math.PI / 2, from: 3 },
   { kind: 'konsol', pos: [-WALL_BACK, 0, 6.0], rot: Math.PI / 2, from: 3, len: 3.0 },
-  { kind: 'tablo', pos: [-WALL_FACE, 0.95, 6.0], rot: Math.PI / 2, from: 3, len: 1.2, h: 0.42 },
+  { kind: 'tablo', pos: [-WALL_FACE, MOUNT.mid, 6.0], rot: Math.PI / 2, from: 3, len: 1.2, h: 0.42 },
   { kind: 'buyukSaksi', pos: [-16.0, 0, 8.3], rot: 0, from: 3 },
   // TV maketteki yerinde (z = 10,8) ama artık DUVARDA DEĞİL, kendi ünitesinin üstünde.
   { kind: 'tvUnitesi', pos: [-WALL_BACK, 0, 10.9], rot: Math.PI / 2, from: 3, len: 1.9 },
@@ -117,14 +126,14 @@ const LEFT_WALL: DecorItem[] = [
  * Aynalı olsalardı iki çeyrek "aynı odanın kopyası" okunur ve düzensizlik hissi sürerdi.
  */
 const RIGHT_WALL: DecorItem[] = [
-  { kind: 'pencere', pos: [WALL_FACE, 0.92, 2.6], rot: -Math.PI / 2, from: 2, len: 3.0, h: 0.48 },
-  { kind: 'denizlikSaksi', pos: [WALL_FACE - 0.15, 0.71, 2.6], rot: -Math.PI / 2, from: 2 },
+  { kind: 'pencere', pos: [WALL_FACE, (WINDOW.sill + WINDOW.top) / 2, 2.6], rot: -Math.PI / 2, from: 2, len: 3.2, h: WINDOW.top - WINDOW.sill },
+  { kind: 'denizlikSaksi', pos: [WALL_FACE - 0.15, WINDOW.sill, 2.6], rot: -Math.PI / 2, from: 2 },
   { kind: 'aplik', pos: [WALL_FACE, MOUNT.high, 5.0], rot: -Math.PI / 2, from: 2 },
-  { kind: 'pencere', pos: [WALL_FACE, 0.92, 7.4], rot: -Math.PI / 2, from: 2, len: 3.0, h: 0.48 },
+  { kind: 'pencere', pos: [WALL_FACE, (WINDOW.sill + WINDOW.top) / 2, 7.4], rot: -Math.PI / 2, from: 2, len: 3.2, h: WINDOW.top - WINDOW.sill },
   { kind: 'petek', pos: [WALL_BACK, 0, 7.4], rot: -Math.PI / 2, from: 2, len: 1.6 },
   { kind: 'aplik', pos: [WALL_FACE, MOUNT.high, 9.8], rot: -Math.PI / 2, from: 2 },
-  { kind: 'pencere', pos: [WALL_FACE, 0.92, 12.2], rot: -Math.PI / 2, from: 2, len: 3.0, h: 0.48 },
-  { kind: 'denizlikSaksi', pos: [WALL_FACE - 0.15, 0.71, 12.2], rot: -Math.PI / 2, from: 2 },
+  { kind: 'pencere', pos: [WALL_FACE, (WINDOW.sill + WINDOW.top) / 2, 12.2], rot: -Math.PI / 2, from: 2, len: 3.2, h: WINDOW.top - WINDOW.sill },
+  { kind: 'denizlikSaksi', pos: [WALL_FACE - 0.15, WINDOW.sill, 12.2], rot: -Math.PI / 2, from: 2 },
   { kind: 'gazetelik', pos: [16.4, 0, 14.4], rot: -Math.PI / 2, from: 2 },
 ];
 
@@ -134,8 +143,8 @@ const RIGHT_WALL: DecorItem[] = [
  * tarafındaki SOL duvarda, yani ilk andan itibaren görünür bandın içinde.
  */
 const ENTRY: DecorItem[] = [
-  { kind: 'askiRayi', pos: [-WALL_FACE, MOUNT.high, 15.2], rot: Math.PI / 2, from: 1, len: 2.2 },
-  { kind: 'duvarSaati', pos: [-WALL_FACE, MOUNT.high, 13.0], rot: Math.PI / 2, from: 1 },
+  { kind: 'askiRayi', pos: [-WALL_FACE, MOUNT.rail, 15.2], rot: Math.PI / 2, from: 1, len: 2.2 },
+  { kind: 'duvarSaati', pos: [-WALL_FACE, MOUNT.clock, 13.0], rot: Math.PI / 2, from: 1 },
   { kind: 'ayakliLamba', pos: [-13.6, 0, 15.9], rot: 0, from: 1 },
   { kind: 'buyukSaksi', pos: [-16.0, 0, 16.0], rot: 0, from: 1 },
   { kind: 'copKovasi', pos: [-3.2, 0, 16.2], rot: 0, from: 1, len: 1 },
