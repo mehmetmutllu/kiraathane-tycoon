@@ -1286,9 +1286,10 @@ yerleşim taşınırken de kullanılacak. Kullanım dosya başında.
 maket ölçeğine taşı (artık tek dosya: `layout.ts`), (3) kayıt v31 + migrasyon, (4) G4/G5 KayKit.
 Faz G artığı: UI Canvas'ları hâlâ eski düz ışıkla.
 
-## Faz B — Model geçişi 🔧 (6/10 · B0 + B1 + B2 + B3-1 + B3-2 + B5a bitti)
+## Faz B — Model geçişi 🔧 (7/10 · B0 + B1 + B2 + B3-1 + B3-2 + B5a + B5b bitti)
 > **Adım sırası (2026-09-07'de düzeltildi — D-063):**
-> B0 · B1 · B2 · B3-1 · B3-2 · **B5a** → **B5b** → **B4** → **B6a** → **B6b**
+> B0 · B1 · B2 · B3-1 · B3-2 · **B5a** · **B5b** → **B4** → **B6a** → **B6b**
+> (D-066: B4 platoyu kıran gelir kolunu taşıdığı için şeridin SON fiyatı B4'ten sonra ölçülür.)
 >
 > İki düzeltme yapıldı:
 > 1. **B5 öne alındı.** Kullanıcı 34 × 34'ü "aşırı büyük" buldu; boşluğun sebebi prop eksikliği
@@ -1479,16 +1480,39 @@ Kesme çizgisi: **B5a = model + pad zinciri + masa tipleri (denge SABİT tutulur
     build + `tsc -b` temiz · eslint **16** (taban 19'du; 3 azaldı) · tarayıcıda dört kare
     (`docs/gorsel/ss/b5a-*.png`), konsol temiz.
 
-- **B5b — Denge ⏳ (SIRA: ŞİMDİ · kullanıcı onayı bekliyor)**
-  Ölçüm masada: şeridin son sekiz masası 194.300₺ ve gelir orada SABİT (servis L6 tavanı 15,62 ₺/sn,
-  başka throughput kolu yok) → kuyruk düz bir grind. Karar verilecekler: (1) eğri ×1,4545 kalsın mı,
-  (2) L6 sonrası bir throughput kolu mu gerek (3. garson zorunlu / tepsi kademesi / lavabo çarpanı),
-  (3) a2'nin masa yükseltme eşiği `z3table4`'te mi kalsın, (4) `waiter3`'ün `count: 4`'ü büyüsün mü.
-  **Kullanıcı girdisi (oturum sonu):** saf bekleme bugün 13. masada 5 dk → **20. masada 68 dk**;
-  2. soru için *"destek gelebilir ama reklam ile mi olsa"* → **ödüllü video** (geçici hız artışı)
-  değerlendirilecek, etik kurala uyuyor. Yönerge: dört soruya gerekçeli öneri getir, sonra onay al.
+- **B5b — Denge ✅** (2026-09-07 · **D-066**)
+  B5b'nin sorusu "eğri dik mi kalsın" idi; ölçüm sorunun eğri OLMADIĞINI gösterdi.
+  Tam rapor: `docs/denge-raporu-b5b.md`.
+  - **Masa açmak bu ekonomide hiçbir zaman gelir kolu olmamış.** `gelir = min(talep, arz, taşıma) ×
+    (fiyat + bahşiş)`; bir servis noktası en fazla **5,69 koltuk** doyuruyor (L6), kat ise 56
+    koltuk → `table3`'ten (≈3. dk) itibaren talep hep en büyük terim. 16 masa pad'i, ~350.000₺,
+    gelir katkısı sıfır. B5a'nın "denge değişmedi" ölçümünün sebebi de buymuş.
+  - **Asıl sorun PLATO:** servis L6 (3,72 sa) ve masa L4 bahşişi (43 dk) şerit başlamadan
+    tavanlarına ulaşıyor → oran donuyor, ~6,6 saatlik sabit hızlı band.
+  - **Gelirin ÜÇÜNCÜ tavanı ölçüldü: TAŞIMA** (Ö5). `simulate.ts`'e gerçek BFS yollarıyla eklendi
+    (`avgServeDist` · `carryRateOf` · `bindingArm`). Tezgâhtan (L4) sonra darboğaz taşıma;
+    L6'da oran sanılan 15,62 değil **13,13 ₺/sn**. **3. garson +%19 gelir alıyor** (~40 dk
+    amortisman) — eski "hiçbir şey satın almıyor" tahmini ölçümle ÇÜRÜDÜ.
+  - **Şerit eğrisi ×1,4545 → ×1,15** (194.300 → **51.100₺**): 3700·4250·4900·5650·6500·7500·
+    8650·9950. Şerit dolumu Normal 10,31 → **5,28 sa**; Rahat profil ilk kez bitiriyor (8,30 sa).
+    Servis L6'ya kadarki her satır birebir aynı (erken oyuna dokunulmadı).
+  - **Arzı şişirmek reddedildi:** taşıma (1,25) + geliş (1,38 kişi/sn) + 58 NPC tavanları,
+    "elle servis / aşırı otomasyon yok" kuralı (D-014). Oyunun throughput tavanı ~1 bardak/sn
+    ve bu bilinçli — uyumsuz olan masa sayısının ekonomik iddiasıydı.
+  - **Ödüllü video kararı:** geçici DEMLEME çarpanı ("Semaver kaynadı" ×2 / 60 sn, Faz 5).
+    "Para eksik kalırsa reklamla pad'i tamamla" reddedildi (gereksiz: ~20 dk'yı aşan alım kalmadı).
+  - **Doğrulama:** vitest **255/255** · `table-b5a` eğri bekçisi yeni kurala göre yeniden yazıldı.
 
-### B4 — Odalar ⏳ (SIRA: B5b'den sonra)
+- **B5b-artık ⏳ (kalan iki iş)**
+  - **Ö3 — bahşiş seyrelmesi:** servis edilen bardak sayısı sabit olduğu için yeni açılan L0 masa
+    ORTALAMA bahşişi düşürüyor → 13. masayı açmak geliri kısa vadede azaltıyor. Müşteri boş
+    masalar arasında **en yüksek seviyeliyi** seçsin (`findTableForGroup`). Davranış değişikliği,
+    kendi adımı. **ONAYLI.**
+  - **Ö6 — `waiter3` görünürlüğü:** o andaki en iyi alım (+%19) ama `optional` ve görev hattında
+    yok → güdülen oyuncu onu hiç tutmuyor. Öneri (b): omurgaya alınmasın ama görev hattı bir kez
+    işaret etsin. **ONAY BEKLİYOR.**
+
+### B4 — Odalar ⏳ (SIRA: ŞİMDİ — D-066 plan düzeltmesi: platoyu kıran kol burada)
 Lavabo (oturma eklemez, pasif çarpan, kendi seviyeleri) + yıkık merdiven ("Kat 2 çok yakında").
 Arka bandın içi burada açılır — B3-1'de bant kütle olarak duruyor.
 

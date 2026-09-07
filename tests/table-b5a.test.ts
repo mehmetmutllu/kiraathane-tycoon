@@ -154,12 +154,22 @@ describe('B5a — şeridin pad zinciri', () => {
     }
   });
 
-  it('maliyet a2’nin KENDİ oranını sürdürür (yeni eğri uydurulmadı)', () => {
-    const costs = [3200, ...stripPads.slice(3).map((p) => p.cost)]; // z3table4 → z3table12
-    expect(costs.length).toBe(9);
-    for (let i = 1; i < costs.length; i++) {
-      expect(costs[i] / costs[i - 1], `${i}. adım`).toBeCloseTo(3200 / 2200, 1);
+  it('şeridin eğrisi ×1,15 ve a2’den girişte SIÇRAMA yok (B5b · D-066)', () => {
+    // B5a bu sekiz masayı a2'nin kendi son oranıyla (3200/2200 = ×1,4545) fiyatlamıştı ve o oran
+    // bir VARSAYIMA dayanıyordu: "masa açmak geliri büyütür, öyleyse pahalı olabilir". B5b ölçtü,
+    // varsayım yanlış (`docs/denge-raporu-b5b.md` §1): gelir min(talep, arz, taşıma) ile kelepçeli
+    // ve talep `table3`'ten beri hep en büyük terim — masa sayısı geliri HİÇ değiştirmiyor.
+    // Bu bekçi eğrinin sessizce yeniden dikleşmesine karşıdır: masa ALAN satar, gelir satmaz.
+    const strip = stripPads.slice(3); // z3table5 … z3table12
+    expect(strip.map((p) => p.id)).toEqual([5, 6, 7, 8, 9, 10, 11, 12].map((n) => `z3table${n}`));
+    for (let i = 1; i < strip.length; i++) {
+      expect(strip[i].cost / strip[i - 1].cost, `${i}. adım`).toBeCloseTo(1.15, 1);
     }
+    // a2'nin son masasından şeride geçiş eğrinin DEVAMI, yeni bir basamak değil.
+    expect(strip[0].cost / 3200).toBeLessThanOrEqual(1.2);
+    // Şeridin tamamı, servis merdiveninin son basamağının (L6 = 9000₺) altı katını geçmez:
+    // bir masa gelir çarpanı değilse fiyatı da gelir çarpanı fiyatı olamaz.
+    expect(strip.reduce((a, p) => a + p.cost, 0)).toBeLessThan(6 * 9000);
   });
 
   it('banketUnitsOpen ve birim sırası: her sütun dört birim taşır, eskiler yer değiştirmez', () => {

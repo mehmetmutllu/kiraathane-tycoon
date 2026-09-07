@@ -1358,3 +1358,69 @@ başlıyordu. Elle yazılmış index dizisi bir varsayımdır ve varsayımlar da
 B1 aracın ÇIKTISI · B2 aracın VARSAYIMI · B3-1 aracın GÜRÜLTÜSÜ · B3-2 kaynağın KAPSAMI ·
 **B5a bekçinin KÖR NOKTASI.**
 
+
+---
+
+## D-066 — B5b: MASA ALAN SATAR, GELİR SATMAZ (gelirin üçüncü tavanı ölçüldü) (2026-09-07)
+
+**Bağlam.** B5a şeridin sekiz masasını a2'nin kendi son oranıyla (×1,4545 → toplam 194.300₺)
+fiyatlamış ve kararı B5b'ye bırakmıştı: "eğri dik mi kalsın, yoksa kuyruk yassılaşsın mı?"
+B5b modeli söktü ve sorunun eğri OLMADIĞINI buldu. Tam rapor: `docs/denge-raporu-b5b.md`.
+
+**Bulgu 1 — masa açmak bu ekonomide hiçbir zaman gelir kolu olmadı.**
+`gelir = min(talep, arz, taşıma) × (fiyat + bahşiş)`. Arz = tek servis noktasının demleme hızı ve
+sadeleşince **bir servis noktası en fazla `(yürüme+içme)/demleme + 1` koltuğu doyuruyor** — L6'da
+**5,69 koltuk**. Kat ise masa L4'te **56 koltuk**. Yani `table3`'ten (≈3. dakikadan) itibaren
+talep hep en büyük terim: açılan HİÇBİR masa geliri artırmıyor. 16 masa pad'i, ~350.000₺,
+ölçülebilir gelir katkısı sıfır. Simülasyonun "B5a dengeyi hiç değiştirmedi" demesinin sebebi de
+buydu — masa sayısı bu modelde geliri zaten değiştiremiyor.
+
+**Bulgu 2 — asıl sorun eğri değil, PLATO.** Gelirin iki ₺ kolu da şerit başlamadan tükeniyor:
+servis L6 (₺ tavanı) Normal profilde 3,72 sa'de, masa L4 bahşişi 43 dk'da. Sonra oran donuyor ve
+şeridin sekiz masası tam o donmuş bandın içinde duruyor → **~6,6 saatlik sabit hızlı plato**
+(onaylı tempo kuralı "zone ~1 sa+" iken 3. Alan ~8,5 saat sürüyordu).
+
+**Bulgu 3 — gelirin ÜÇÜNCÜ tavanı vardı ve sim onu hiç görmüyordu: TAŞIMA.** Çayı biri taşımalı;
+oyuncu + garson havuzu saniyede taşıyabildiğinden fazlasını satamaz. Bu tavan verim çarpanının
+(0,80/0,55/0,35) içinde saklıydı, yani garson/tepsi/karakter fiyatları ÖLÇÜLEMİYORDU.
+`simulate.ts`'e gerçek BFS yollarıyla eklendi (`avgServeDist` · `carryRateOf` · `bindingArm`) ve
+formüle üçüncü bir `min` terimi olarak girdi. Ölçüm: **tezgâhtan (L4) sonra darboğaz TAŞIMA**;
+L6'da oran sanılan 15,62 değil **13,13 ₺/sn**, 3. garson alınınca 15,62 (**+%19**, 6000₺ ~40 dk'da
+amorti). Kol tükendiğinde (3 garson + tam karakter, taşıma 1,25) darboğaz yine arza dönüyor —
+**taşıma platoyu ~45 dk geciktiriyor, kaldırmıyor.**
+
+**Karar 1 — şerit eğrisi ×1,4545 → ×1,15** (194.300 → **51.100₺**):
+3700 · 4250 · 4900 · 5650 · 6500 · 7500 · 8650 · 9950 (fillRate = maliyet / 3,5 sn).
+Bir masa gelir çarpanı değilse fiyatı da gelir çarpanı fiyatı olamaz; eğri masanın gerçekte
+sattığı şeye (alan + atmosfer + yükseltilecek yüzey) göre yassıltıldı. Ölçüldü: şerit dolumu
+Normal 10,31 → **5,28 sa**, Rahat profil ilk kez bitirebiliyor (**8,30 sa**). Servis L6'ya kadarki
+her satır birebir aynı — erken oyuna dokunulmadı. ×1,08'in getirisi ~0,5 sa olduğu için elendi.
+
+**Karar 2 — arzı ŞİŞİRMEK reddedildi.** Masaların gelir getirmesi için arzın ~10 katına çıkması
+gerekirdi; o zaman taşıma tavanı (1,25) ve müşteri geliş tavanı (`spawnInterval` 1,6 sn/grup ≈
+1,38 kişi/sn) yolu keser, ekranda aynı anda 58 NPC olur. Üçünü birden açmak "elle servis, aşırı
+otomasyon yok" kuralını (D-014) iptal etmek demek. **Bu oyunun throughput tavanı ~1 bardak/sn'dir
+ve bu bilinçli bir tasarım sonucudur** — uyumsuz olan arz değil, masa sayısının ekonomik iddiası.
+
+**Karar 3 — plato kolu B4'ün lavabosudur; PLAN SIRASI DÜZELTİLDİ.** B4 zaten "lavabo: oturma
+eklemez, pasif çarpan, kendi seviyeleri" diye planlıydı; yani platoyu kıracak kol defterde vardı
+ama şeridin ARKASINA konmuştu. Sıra: **B4 → şeridin son fiyatı yeniden ölçülür.** (D-063 gibi bir
+plan düzeltmesi; kullanıcı onayı 2026-09-07.)
+
+**Karar 4 — a2'nin masa yükseltme eşiği `z3table4`'te KALIR.** Bahşiş kolu servis L6'dan da önce
+tavanına ulaştığı için eşiği ileri atmak yeni derinlik açmaz, yalnız platoyu uzatır.
+
+**Karar 5 — ödüllü video = geçici DEMLEME çarpanı** ("Semaver kaynadı", ×2 / 60 sn; uygulama
+Faz 5). Ödül tam bağlayıcı tavanın (arz) üstüne biner → oyuncuya oyunun kendi darboğazını
+öğretir. Kullanıcının "para eksik kalırsa reklamla pad'i tamamla" fikri **reddedildi**: kural
+ihlali değil ama gereksiz — Karar 1'den sonra oyunda ~20 dk'yı aşan tek bir alım kalmadı, ve bir
+tempo sorununu eğriyi düzeltmek varken reklamla geçiştirmek türün bilinen tuzağıdır.
+
+**Bu adımın kalıcı dersi.** *Bir sayının arkasındaki VARSAYIM, sayının kendisinden daha uzun
+yaşar.* 194.300₺'lik eğri aritmetik olarak kusursuzdu — a2'nin kendi oranının dürüst devamıydı;
+yanlış olan tek şey, o oranın sessizce dayandığı "masa açmak geliri büyütür" cümlesiydi ve o cümle
+hiç yazılmamış, hiç sınanmamıştı. Aynı oturumda aynı hatayı bir kez daha yaptım: raporun ilk hâli
+taşıma tavanını elle tahmin edip "3. garson hiçbir şey satın almıyor" dedi; ölçünce tam tersi
+çıktı (+%19). **Ölçülmeden yazılan her cümle bir varsayımdır — elle yazılmış bir test dizisi kadar
+da bayatlar.** B1 aracın ÇIKTISI · B2 aracın VARSAYIMI · B3-1 aracın GÜRÜLTÜSÜ · B3-2 kaynağın
+KAPSAMI · B5a bekçinin KÖR NOKTASI · **B5b sayının ARKASINDAKİ CÜMLE.**

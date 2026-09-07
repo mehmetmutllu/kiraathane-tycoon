@@ -273,8 +273,10 @@ export const economyConfig = {
      *  (D-019 §3 — masa yükseltmeleri geç-oyun derinliği; erken ekran sade).
      *  B5a: a2'nin eşiği bilerek `z3table4`'te BIRAKILDI (12. masada değil). Kural "alan dolunca"
      *  değil "o alan artık boş görünmüyor" — ve asıl sebep tempoyu sabit tutmak: z3table12'ye
-     *  bağlamak şeridin masa yükseltmelerini 64.000₺'nin arkasına atardı. Eşiğin nereye ait olduğu
-     *  B5b'nin denge sorusu. */
+     *  bağlamak şeridin masa yükseltmelerini şeridin SONUNA atardı. B5b bu eşiği ölçtü ve
+     *  `z3table4`'te BIRAKMAYA karar verdi (D-066): bahşiş kolu servis L6'dan da önce tavanına
+     *  ulaşıyor (masa L4 ~43 dk'da), yani eşiği ileri atmak yeni derinlik açmaz, yalnız platoyu
+     *  uzatır (`docs/denge-raporu-b5b.md` §2). */
     upgradeRequiresByArea: [
       { prev: ['table4'] },
       { prev: ['z2table4'] },
@@ -547,26 +549,32 @@ export const economyConfig = {
     // kuruldu, bu sekiz pad üstlerindeki masaları açar. Adaların boyu DEĞİŞMEZ (D-064) ve açık
     // masalar YER DEĞİŞTİRMEZ — `banketUnit(u)` yalnız yeni birim üretir.
     //
-    // MALİYET: yeni bir eğri UYDURULMADI. a2'nin kendi son adımının oranı (3200/2200 = **×1,4545**)
-    // aynen sürdürülüp 50'ye yuvarlandı. Zincirde TOST'un (L5) ARKASINA düşerler: bu noktada
-    // darboğaz çoktan tezgâhın arzı olduğu için yeni masa geliri hızlandırmaz, PARA HARCATIR —
-    // altı tempo bandı (plan §5) bu yüzden bu adımda dokunulmadan kalır (ölçüldü, B5a).
-    // Eğrinin kendisi B5b'nin (denge) konusu.
-    { id: 'z3table5', label: '5. Masa', cost: 4650, fillRate: 1329, optional: false, area: 2,
+    // MALİYET (B5b · D-066): eğri **×1,15** — 3700'den 9950'ye, toplam 51.100₺.
+    // B5a bu sekiz masayı a2'nin kendi son oranıyla (3200/2200 = ×1,4545) fiyatlamıştı; toplam
+    // 194.300₺ ediyordu ve o fiyat bir VARSAYIMA dayanıyordu: "masa açmak geliri büyütür".
+    // B5b bunu ölçtü, varsayım YANLIŞ (`docs/denge-raporu-b5b.md` §1): gelir
+    // `min(talep, arz, taşıma)` ile kelepçeli ve `table3`'ten (≈3. dk) itibaren talep hep en
+    // büyük terim — yani AÇILAN HİÇBİR MASA geliri artırmıyor, yalnız oturma/mekân satıyor.
+    // Bir masa gelir çarpanı değilse fiyatı da gelir çarpanı gibi olamaz: eğri masanın gerçekte
+    // sattığı şeye (alan + atmosfer + yükseltilecek yüzey) göre yassıltıldı.
+    // Ölçüldü: şerit dolumu Normal profilde 10,31 sa → **5,28 sa**; Rahat profil ilk kez
+    // bitirebiliyor (8,30 sa; eskiden 12 saatte bitmiyordu). ×1,08'e inmenin getirisi 0,5 sa
+    // olduğu için gereksiz görüldü. fillRate = maliyet / 3,5 sn (hattın geri kalanıyla aynı).
+    { id: 'z3table5', label: '5. Masa', cost: 3700, fillRate: 1057, optional: false, area: 2,
       requires: { prev: ['z3table4'] }, effect: { type: 'addTable' } },
-    { id: 'z3table6', label: '6. Masa', cost: 6750, fillRate: 1929, optional: false, area: 2,
+    { id: 'z3table6', label: '6. Masa', cost: 4250, fillRate: 1214, optional: false, area: 2,
       requires: { prev: ['z3table5'] }, effect: { type: 'addTable' } },
-    { id: 'z3table7', label: '7. Masa', cost: 9800, fillRate: 2800, optional: false, area: 2,
+    { id: 'z3table7', label: '7. Masa', cost: 4900, fillRate: 1400, optional: false, area: 2,
       requires: { prev: ['z3table6'] }, effect: { type: 'addTable' } },
-    { id: 'z3table8', label: '8. Masa', cost: 14250, fillRate: 4071, optional: false, area: 2,
+    { id: 'z3table8', label: '8. Masa', cost: 5650, fillRate: 1614, optional: false, area: 2,
       requires: { prev: ['z3table7'] }, effect: { type: 'addTable' } },
-    { id: 'z3table9', label: '9. Masa', cost: 20750, fillRate: 5929, optional: false, area: 2,
+    { id: 'z3table9', label: '9. Masa', cost: 6500, fillRate: 1857, optional: false, area: 2,
       requires: { prev: ['z3table8'] }, effect: { type: 'addTable' } },
-    { id: 'z3table10', label: '10. Masa', cost: 30200, fillRate: 8629, optional: false, area: 2,
+    { id: 'z3table10', label: '10. Masa', cost: 7500, fillRate: 2143, optional: false, area: 2,
       requires: { prev: ['z3table9'] }, effect: { type: 'addTable' } },
-    { id: 'z3table11', label: '11. Masa', cost: 43950, fillRate: 12557, optional: false, area: 2,
+    { id: 'z3table11', label: '11. Masa', cost: 8650, fillRate: 2471, optional: false, area: 2,
       requires: { prev: ['z3table10'] }, effect: { type: 'addTable' } },
-    { id: 'z3table12', label: '12. Masa', cost: 63950, fillRate: 18271, optional: false, area: 2,
+    { id: 'z3table12', label: '12. Masa', cost: 9950, fillRate: 2843, optional: false, area: 2,
       requires: { prev: ['z3table11'] }, effect: { type: 'addTable' } },
 
     // --- Kritik yol dışı: 3. GARSON (opsiyonel derinlik) ---

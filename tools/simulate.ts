@@ -35,6 +35,8 @@ import {
   type QuestTarget,
 } from '../src/config/economy.config.ts';
 import { deriveWorld, tostShare, THE_SERVICE, MAX_SERVICES } from '../src/game/world.ts';
+import { getNavGrid, servicePlace, LAYOUT, REACH_TABLE } from '../src/game/layout.ts';
+import { findNavPath } from '../src/game/nav.ts';
 
 const DT = 1; // saniyelik adım
 const TEA_PRICE = C.service.basePrice;
@@ -116,6 +118,58 @@ function brewTimeOf(s: State): number {
   return mixAt(lv).prepTime / upgradeOutputMultiplier(C.service.upgrade, lv);
 }
 
+/* ─────────────── TAŞIMA KOLU (Ö5, denge-raporu-b5b §5) ───────────────
+ * Eski sim gelirin ÜÇÜNCÜ tavanını hiç görmüyordu: çayı biri TAŞIMALI. Demleme ne kadar hızlı
+ * olursa olsun, oyuncu + garsonlar saniyede taşıyabildiklerinden fazlasını satamaz. Bu tavan
+ * verim çarpanının (0,80/0,55/0,35) içinde SAKLIYDI — yani garson/tepsi/karakter fiyatları
+ * ölçülemiyordu ve "3. garson ne satın alıyor" sorusunun sim'de cevabı yoktu.
+ *
+ * BEKÇİ olarak eklenir, yeniden denge olarak değil: formüle yalnız üçüncü bir `min` terimi girer.
+ * Tavan BİLEREK İYİMSER (üst sınır) — masalar arası ara mesafeyi, kirli dönüşünü, bekleme/hedef
+ * seçimini saymaz. Yani susuyorsa gerçek oyunda da darboğaz değildir; KONUŞUYORSA gerçek oyun
+ * kesinlikle daha kötüdür. Bir bekçinin yanlış alarm vermemesi, geç alarm vermesinden önemlidir.
+ */
+const CARRY_HANDLE = 0.5; // bardak başına alma+bırakma payı (sn)
+
+/** Servis noktasından açık masalara ORTALAMA gerçek (BFS) yol — ızgara gibi cache'lenir. */
+const distCache = new Map<string, number>();
+function avgServeDist(tables: number, areasOpen: number): number {
+  const key = `${tables}|${areasOpen}`;
+  const hit = distCache.get(key);
+  if (hit != null) return hit;
+  const sp = servicePlace(areasOpen);
+  const grid = getNavGrid(tables, areasOpen);
+  let total = 0;
+  let n = 0;
+  for (let i = 0; i < tables; i++) {
+    const t = LAYOUT.tables[i].table;
+    const path = findNavPath(grid, [sp.pickup[0], 0, sp.pickup[2]], t[0], t[2], REACH_TABLE);
+    if (!path || path.length === 0) continue;
+    let d = Math.hypot(path[0][0] - sp.pickup[0], path[0][1] - sp.pickup[2]);
+    for (let k = 1; k < path.length; k++) d += Math.hypot(path[k][0] - path[k - 1][0], path[k][1] - path[k - 1][1]);
+    total += d;
+    n += 1;
+  }
+  const avg = n > 0 ? total / n : 0;
+  distCache.set(key, avg);
+  return avg;
+}
+
+/** Bir taşıyıcının bardak/sn'si: tepsi dolusu götür, boş dön. */
+const carrierRate = (tray: number, speed: number, dist: number): number =>
+  tray / ((2 * dist) / speed + tray * CARRY_HANDLE);
+
+/** TAŞIMA tavanı (bardak/sn) = oyuncu + garson havuzu. */
+function carryRateOf(s: State): number {
+  const w = deriveWorld(s.padsDone);
+  const dist = avgServeDist(w.tables.length, w.areasOpen);
+  if (dist <= 0) return Infinity; // masa yokken tavan yok
+  const player = carrierRate(C.character.tray.values[s.char.tray], C.character.speed.values[s.char.speed], dist);
+  const wSpeed = C.waiter.speedUpgrades.speeds[s.waiterSpeed];
+  const waiters = w.services[THE_SERVICE]?.waiters ?? 0;
+  return player + waiters * carrierRate(1 + s.waiterTray, wSpeed, dist);
+}
+
 // SERVİSİN gelir oranı (₺/sn): min(talep, arz) × (ürün fiyatı + bahşiş). M3: tost pahalı+yavaş.
 // Y4 kalibrasyonu: talep KOLTUK-temelli (Y2 grupları — masa başına seviyeyle 1→4 koltuk; idealize
 // tableLevel'da L0 koltuk=1 → ölçülen erken/orta eğri AYNI kalır, geç-oyun L4 döneminde talep ×4
@@ -127,7 +181,17 @@ function rate(s: State, eff = 1): number {
   const demand = openSeats(w, s.tableLevel) / cycle;
   const supply = 1 / bt;
   const price = mixAt(s.stationLevels[THE_SERVICE]).price;
-  return Math.min(demand, supply) * (price + tableTip(s.tableLevel)) * eff;
+  return Math.min(demand, supply, carryRateOf(s)) * (price + tableTip(s.tableLevel)) * eff;
+}
+
+/** Geliri o an KİM kelepçeliyor — üç kolun hangisi (rapor/teşhis için). */
+function bindingArm(s: State): 'talep' | 'arz' | 'taşıma' {
+  const w = deriveWorld(s.padsDone);
+  const bt = brewTimeOf(s);
+  const demand = openSeats(w, s.tableLevel) / (C.npc.walkTime + bt + C.npc.eatTime);
+  const arms: [string, number][] = [['talep', demand], ['arz', 1 / bt], ['taşıma', carryRateOf(s)]];
+  arms.sort((a, b) => a[1] - b[1]);
+  return arms[0][0] as 'talep' | 'arz' | 'taşıma';
 }
 
 // Servis noktası darboğaz mı (talep ≥ arz)? Akıllı oyuncu önce onu yükseltir.
@@ -341,7 +405,7 @@ function runProfile(eff: number, log = false): Map<string, number> {
         done.set(m.name, s.t);
         if (log) {
           console.log(
-            `  ✓ ${m.name.padEnd(34)} @ ${fmtTime(s.t).padStart(7)}  (oran ${rate(s, eff).toFixed(2)} ₺/sn, servis L${s.stationLevels[0]}, ${deriveWorld(s.padsDone).tables.length} masa)`,
+            `  ✓ ${m.name.padEnd(34)} @ ${fmtTime(s.t).padStart(7)}  (oran ${rate(s, eff).toFixed(2)} ₺/sn, servis L${s.stationLevels[0]}, ${deriveWorld(s.padsDone).tables.length} masa, darboğaz: ${bindingArm(s)})`,
           );
         }
       }
@@ -383,6 +447,28 @@ function run() {
     const row = m.name.padEnd(34) + ' | ' +
       results.map((r) => (r.res.has(m.name) ? fmtTime(r.res.get(m.name)!) : '—').padStart(8)).join(' | ');
     console.log(row);
+  }
+
+  // ÜÇ KOL tablosu (Ö5): geliri hangi tavan kelepçeliyor, ve garson/tepsi ne satın alıyor.
+  console.log('\n--- ÜÇ KOL (talep / arz / TAŞIMA) — bardak/sn ---');
+  const scenes: [string, Partial<State>][] = [
+    ['4 masa · L2 · garson 1', { padsDone: ['table2', 'table3', 'waiter', 'table4'], stationLevels: [2], tableLevel: 0, char: { tray: 1, magnet: 0, speed: 0 }, waiterTray: 0, waiterSpeed: 0 }],
+    ['8 masa · L3 · garson 1', { padsDone: ['table2','table3','waiter','table4','zone2','z2table2','z2table3','dishwasher','z2table4'], stationLevels: [3], tableLevel: 1, char: { tray: 2, magnet: 1, speed: 0 }, waiterTray: 1, waiterSpeed: 1 }],
+    ['12 masa · L6 · garson 2', { padsDone: ['table2','table3','waiter','table4','zone2','z2table2','z2table3','dishwasher','z2table4','zone3','z3table2','waiter2','z3table3','z3table4'], stationLevels: [6], tableLevel: 4, char: { tray: 2, magnet: 1, speed: 0 }, waiterTray: 2, waiterSpeed: 1 }],
+    ['12 masa · L6 · garson 3', { padsDone: ['table2','table3','waiter','table4','zone2','z2table2','z2table3','dishwasher','z2table4','zone3','z3table2','waiter2','z3table3','z3table4','waiter3'], stationLevels: [6], tableLevel: 4, char: { tray: 2, magnet: 1, speed: 0 }, waiterTray: 2, waiterSpeed: 1 }],
+    ['20 masa · L6 · garson 3', { padsDone: ['table2','table3','waiter','table4','zone2','z2table2','z2table3','dishwasher','z2table4','zone3','z3table2','waiter2','z3table3','z3table4','waiter3','z3table5','z3table6','z3table7','z3table8','z3table9','z3table10','z3table11','z3table12'], stationLevels: [6], tableLevel: 4, char: { tray: 4, magnet: 3, speed: 3 }, waiterTray: 3, waiterSpeed: 1 }],
+  ];
+  for (const [name, patch] of scenes) {
+    const st: State = { t: 0, wallet: 0, lifetime: 0, stationLevels: [0], tableLevel: 0, padsDone: [],
+      char: { tray: 0, magnet: 0, speed: 0 }, waiterTray: 0, waiterSpeed: 0, questIdx: 0, ...patch } as State;
+    const w = deriveWorld(st.padsDone);
+    const b = brewTimeOf(st);
+    const demand = openSeats(w, st.tableLevel) / (C.npc.walkTime + b + C.npc.eatTime);
+    console.log(
+      `  ${name.padEnd(24)} yol ${avgServeDist(w.tables.length, w.areasOpen).toFixed(1).padStart(5)} br · ` +
+        `talep ${demand.toFixed(2)} · arz ${(1 / b).toFixed(2)} · taşıma ${carryRateOf(st).toFixed(2)} → ` +
+        `darboğaz ${bindingArm(st).toUpperCase()} · gelir ${rate(st).toFixed(2)} ₺/sn`,
+    );
   }
 
   console.log('\n--- Servis kapasitesi (bilgi) ---');

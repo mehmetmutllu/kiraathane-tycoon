@@ -2,6 +2,102 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-07 gece — **B5b TAMAM: masa ALAN satar, gelir satmaz**)
+
+B5b'nin sorusu "şeridin eğrisi dik mi kalsın" idi. Model sökülünce sorunun **yanlış soru**
+olduğu çıktı (**D-066**). Tam rapor: `docs/denge-raporu-b5b.md`.
+
+### Bulgu 1 — masa açmak bu ekonomide HİÇ gelir kolu olmamış
+`gelir = min(talep, arz, taşıma) × (fiyat + bahşiş)`. Arz tek servis noktasının demleme hızı ve
+sadeleşince **bir servis noktası en fazla `(yürüme+içme)/demleme + 1` koltuk** doyuruyor — L6'da
+**5,69 koltuk**. Kat ise masa L4'te **56 koltuk**. Yani `table3`'ten (≈3. dk) itibaren talep hep
+en büyük terim: açılan HİÇBİR masa geliri artırmıyor. 16 masa pad'i, ~350.000₺, katkı **sıfır**.
+B5a'nın "denge birebir aynı çıktı" ölçümünün sebebi de buymuş — masa sayısı geliri değiştiremiyor.
+
+### Bulgu 2 — asıl sorun eğri değil, PLATO
+Servis L6 (₺ tavanı) Normal profilde 3,72 sa'de, masa L4 bahşişi 43 dk'da tavana ulaşıyor. Sonra
+oran donuyor ve şeridin sekiz masası tam o donmuş bandın içinde duruyor → **~6,6 saatlik sabit
+hızlı plato** (onaylı tempo kuralı "zone ~1 sa+" iken 3. Alan ~8,5 saat sürüyordu).
+
+### Bulgu 3 — gelirin ÜÇÜNCÜ tavanı vardı: TAŞIMA (sim onu hiç görmüyordu)
+Verim çarpanının (0,80/0,55/0,35) içinde saklıydı → garson/tepsi/karakter fiyatları ÖLÇÜLEMİYORDU.
+`simulate.ts`'e gerçek BFS yollarıyla eklendi: `avgServeDist` · `carrierRate` · `carryRateOf` ·
+`bindingArm`; formüle üçüncü `min` terimi olarak girdi (tavan bilerek İYİMSER = üst sınır, yanlış
+alarm vermesin diye). Ölçüm:
+
+| durum | ort. yol | talep | arz | **taşıma** | darboğaz | gelir |
+|---|---|---|---|---|---|---|
+| 4 masa · L2 · 1 garson | 6,3 | 0,43 | 0,30 | 0,81 | arz | 1,52 |
+| 8 masa · L3 · 1 garson | 15,0 | 1,90 | 0,41 | 0,59 | arz | 2,87 |
+| **12 masa · L6 · 2 garson** | 19,6 | 5,49 | 0,78 | **0,66** | **TAŞIMA** | **13,13** |
+| 12 masa · L6 · **3 garson** | 19,6 | 5,49 | 0,78 | 0,80 | arz | **15,62** |
+| 20 masa · L6 · 3 garson (tam karakter) | 17,5 | 7,69 | 0,78 | 1,25 | arz | 15,62 |
+
+→ Tezgâhtan (L4) sonra darboğaz TAŞIMA; L6'da oran sanılan 15,62 değil **13,13 ₺/sn** (yani şerit
+dolumu 9,74 değil **10,31 sa** imiş). **3. garson +%19 gelir** alıyor, 6000₺ ~40 dk'da amorti.
+Taşıma kolu tükendiğinde darboğaz yine arza dönüyor: **plato ~45 dk gecikiyor, kalkmıyor.**
+
+### Yapılan
+- **Ö5 · taşıma kolu** `simulate.ts`'e eklendi + `bindingArm` teşhisi + "ÜÇ KOL" tablosu.
+- **Ö1 · şerit eğrisi ×1,4545 → ×1,15** (194.300 → **51.100₺**):
+  3700 · 4250 · 4900 · 5650 · 6500 · 7500 · 8650 · 9950 (fillRate = maliyet / 3,5 sn).
+  Ölçüldü: şerit dolumu Normal **10,31 → 5,28 sa**; Rahat profil ilk kez bitiriyor (**8,30 sa**).
+  Servis L6'ya kadarki HER satır birebir aynı — erken oyuna dokunulmadı.
+- **Ö4 · ödüllü video kararı** `docs/monetization.md`'ye yazıldı: ödül = geçici DEMLEME çarpanı
+  ("Semaver kaynadı" ×2 / 60 sn) — bağlayıcı tavanın (arz) tam üstüne biner. Uygulama Faz 5.
+- **Ö2 · plan sırası düzeltildi:** B4 (lavabo = pasif çarpan) platoyu kıran kolu taşıyor →
+  **B4 önce, şeridin SON fiyatı B4'ten sonra ölçülür.**
+- **Eğri bekçisi yeniden yazıldı** (`tests/table-b5a.test.ts`): eski test ×1,4545 oranını
+  koruyordu — o oran artık bir yalan. Yeni bekçi ×1,15'i, a2'den şeride girişte sıçrama
+  olmamasını ve şeridin toplamının 6 × 9000₺'yi geçmemesini bekliyor.
+
+### Reddedilenler (gerekçeleriyle)
+- **Arzı şişirmek:** masaların gelir getirmesi için arz ~10 katına çıkmalı; taşıma (1,25), geliş
+  (`spawnInterval` 1,6 sn/grup ≈ 1,38 kişi/sn) ve 58 NPC tavanı (`maxConcurrent = koltuk + 2`)
+  yolu keser. Üçünü açmak "elle servis, aşırı otomasyon yok" kuralını (D-014) iptal eder.
+  **Oyunun throughput tavanı ~1 bardak/sn ve bu bilinçli** — uyumsuz olan masa sayısının iddiası.
+- **"Para eksik kalırsa reklamla pad'i tamamla"** (kullanıcı fikri): kural ihlali değil ama
+  gereksiz — Ö1'den sonra ~20 dk'yı aşan tek bir alım kalmadı (en pahalı masa 9.950₺ ≈ 10,6 dk;
+  en büyük tek harcama karakter tepsisi T4, 18.000₺ ≈ 19,2 dk). Tempo sorununu eğriyi düzeltmek
+  varken reklamla geçiştirmek türün tuzağı. B4'ten sonra 20 dk'yı aşan alım kalırsa yeniden açılır.
+
+### Doğrulama
+vitest **255/255** · build + `tsc -b` temiz · smoke 26/26 · `simulate.ts`'in servis L6'ya kadarki
+tüm satırları taban ile birebir.
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**B4 — Odalar** (D-066 plan düzeltmesi: platoyu kıran gelir kolu burada).
+Lavabo = oturma EKLEMEZ, **pasif gelir çarpanı**, kendi seviyeleri · yıkık merdiven ("Kat 2 çok
+yakında") · arka bandın içi açılır. Lavabonun çarpan eğrisi tasarlanırken hedef: L6'dan sonra
+oranın donması BİTSİN (bugün 15,62'de duruyor). Ölçüm aracı artık üç kolu da görüyor.
+
+### Onay bekleyen / kalan iki iş
+- **Ö6 — `waiter3` görünürlüğü (ONAY BEKLİYOR).** 3. garson o andaki en iyi alım (+%19) ama
+  `optional: true` ve görev hattında yok → sim'in güttüğü oyuncu onu HİÇ tutmuyor, L6 dönemini
+  %19 eksik gelirle geçiyor. Seçenekler: (a) omurgaya al, (b) opsiyonel kalsın ama görev hattı
+  bir kez işaret etsin **(öneri)**, (c) `count: 4` eşiği düşsün.
+- **Ö3 — bahşiş seyrelmesi (ONAYLI, kendi adımı).** Servis edilen bardak sayısı sabit olduğu için
+  yeni açılan L0 masa ORTALAMA bahşişi düşürüyor → 13. masayı açmak geliri kısa vadede AZALTIYOR.
+  Çözüm: müşteri boş masalar arasında **en yüksek seviyeliyi** seçsin (`findTableForGroup`).
+  Yan kazanç: masa yükseltmesi gözle görülür olur (iyi masalar hep dolu).
+
+### Kırmızı çizgi (duruyor)
+**"Objeler yüzüyor" hissine bir daha blob shadow ÖNERME** (D-054).
+
+### Bilinen, ertelenmiş
+- Yerleşim düzenlemesi ("kesinlikle düzenlenmeli" — kullanıcı, sonraya bıraktı) → B6a/B6b.
+- Arka bandın içi boş kütle (lavabo kabinleri, yıkık merdiven) — **B4**.
+- Şeridin ORTASI (x ≈ 0) bilerek boş (kapı–merdiven geçidi) — **B6b**.
+- Sol duvar programının gerisi (askı rayı · konsol · gazetelik) — **B6a**.
+- `LAYOUT.decor` hâlâ eski 21 × 21 koordinatlarında — **B6** (yeni masalarla çakışmıyor).
+- Arka bandın `waiterHome`'u masa 12'nin yükseltme noktasına 0,7 br — **B6a**.
+- `spawnInterval` sabit: config yorumu "talep kapasiteyi takip eder" diyor ama timer küresel ve
+  katla büyümüyor → 56 koltuğun ~yarısı hiçbir zaman dolmuyor. Bilinçli bırakıldı (arz zaten
+  darboğaz), ama **B4'ten sonra yeniden bakılmalı**.
+- Maket girişinin üst çıtasında z-fighting · bundle ~1,44 MB · eslint 16 hatası (hepsi eski).
+
+---
+
 ## ŞU AN (2026-09-07 gece — **B5a TAMAM: kat 20 masa, masa tipleri ayrıldı**)
 
 B5 kullanıcı kararıyla ikiye bölündü: **B5a = model + pad zinciri + masa tipleri (denge SABİT

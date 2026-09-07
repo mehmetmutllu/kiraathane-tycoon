@@ -188,7 +188,7 @@ h2{font-size:21px;font-weight:800}
      ══════════════════════════════════════════════════════════════════════ -->
 <script type="application/json" id="durum">{
   "guncelleme": "07.09.2026",
-  "yapilan": 47,
+  "yapilan": 48,
   "toplam": 69,
   "kilometre": [
     {
@@ -209,28 +209,30 @@ h2{font-size:21px;font-weight:800}
     }
   ],
   "ozet": {
-    "etiket": "Bu oturum · Faz B · 5/9 — B5a bitti",
-    "baslik": "Salonun masası 12'den 20'ye çıktı — ve iki masa tipi ayrıldı",
-    "aciklama": "Kullanıcı bu adımı ikiye böldü: <b>bugün yapı</b>, <b>denge sonraki oturumda</b> (sayılar aşağıda, karar kullanıcının). Şeridin banket adaları geçen oturumda tam boyda kurulmuştu; bugün üzerlerindeki <b>on iki masa yerinin hepsi açıldı</b> ve katın masası <b>12 → 20</b> oldu. Yanında yeni bir kavram geldi: <b>masa tipi</b>. Ön salonlardaki <b>dörtlü</b> masalar dört kişilik kalır; şeritteki <b>ikili</b> masalar iki kişide tavanlanır — çünkü sırtlarında bank, karşılarında tek sandalye var.",
+    "etiket": "Bu oturum · Faz B · 6/9 — B5b bitti",
+    "baslik": "Masa açmanın parayı hiç artırmadığı ortaya çıktı — ve fiyatı buna göre düzeldi",
+    "aciklama": "Bu oturumun sorusu şuydu: “şeridin son sekiz masası çok mu pahalı?” Ölçüm sorunun kendisini değiştirdi. Oyunda para, üç tavanın en düşüğü kadar akıyor: <b>müşteri talebi</b>, <b>mutfağın demleme hızı</b> ve <b>çayı taşıma hızı</b>. Talep daha <b>üçüncü masada</b> diğer ikisini geçiyor — yani o andan sonra açılan hiçbir masa geliri artırmıyor. Yirmi masalı salon, tek tezgâhın besleyebileceğinin <b>on katı</b> koltuk taşıyor. Masa gelir satmıyorsa fiyatı da gelir fiyatı olamaz: şeridin toplam bedeli <b>194.300 ₺’den 51.100 ₺’ye</b> indi.",
     "adimlar": [
-      "Şeridin <b>kalan 8 masası</b> açıldı — kat 20 masa, 56 koltuk (8 dörtlü + 12 ikili)",
-      "<b>Masa tipi</b> kavramı: dörtlü masa 4. seviyede büyüyüp dört kişilik olur; ikili masa aynı basamakta <b>bistro masasına</b> döner (banka paralel uzar) ve iki kişide kalır — ekranda dört sandalyelik bir masa gibi görünmez",
-      "“Her salon aynı sayıda masa alır” varsayımı kaldırıldı: salon başına masa sayısı artık bir <b>tablo</b> (4 · 4 · 12), koda gömülü bir bölme işlemi değil",
-      "<b>Denge bilerek DEĞİŞTİRİLMEDİ ve ölçüldü:</b> simülatörün var olan yirmi bir satırının hepsi birebir aynı çıktı (ilk alım 40 sn · garson 11 dk · tost 2,5 sa …)",
-      "Testler <b>242 → 255</b> · duman testi 26/26 · tarayıcıda dört kare, konsolda hata yok"
+      "<b>Gelirin üçüncü tavanı bulundu ve ölçüldü: TAŞIMA.</b> Simülatör çayı kimin taşıdığını hiç hesaba katmıyordu; şimdi gerçek yürüme yollarıyla hesaplıyor",
+      "Bu ölçüm bir tahmini çürüttü: <b>3. garson boşuna değilmiş</b> — geliri <b>%19</b> artırıyor ve kendini ~40 dakikada amorti ediyor (oyun bunu oyuncuya hiç söylemiyor, sıradaki iş)",
+      "<b>Şeridin fiyat eğrisi ×1,45 → ×1,15:</b> 194.300 → 51.100 ₺. Şeridin dolması ortalama oyuncuda 10,3 → <b>5,3 saat</b>; rahat tempoda oynayan bir oyuncu bunu <b>ilk kez bitirebiliyor</b>",
+      "<b>“Arzı büyütelim” seçeneği reddedildi:</b> mutfağı on katına çıkarmak taşıma, müşteri gelişi ve ekrandaki 58 müşteri duvarına toslar — ve “çayı elle taşırsın” kuralını iptal ederdi",
+      "<b>Ödüllü video kararı:</b> reklam ödülü “geçici demleme hızı” olacak (Semaver kaynadı, ×2 / 60 sn) — tam darboğazın üstüne biner. “Para eksik kalınca reklamla masayı aç” fikri reddedildi: artık 20 dakikayı aşan tek bir alım kalmadı",
+      "Erken oyuna dokunulmadı — simülatörün ilk on iki satırı birebir aynı · testler <b>255/255</b>"
     ],
-    "not": "<b>Bu oturumun dersi: bir sabit yalana dönüştüğünde en tehlikeli yeri kod değil TESTTİR.</b> İki test, şeridin masalarını elle yazılmış bir liste (“8, 9, 10, 11”) üzerinden kontrol ediyordu; yazıldıkları gün doğruydu. Şerit on iki masaya çıkınca ikisi de sessizce <b>körleşti</b> — bekçilik ettikleri kurallar yeni sekiz masada hiç sınanmayacaktı. Listeler yerleşimden hesaplanır hâle getirilince test hemen <b>gerçek bir kusur</b> yakaladı: iki garson satın-alma noktası, yeni masaların yükseltme noktalarının yarım metre yakınına düşüyordu — oyuncu garsonu almak için orada beklerken <b>farkında olmadan masayı da yükseltmeye başlıyordu</b>. İkisi de şeridin uçlarına taşındı.<br><br>Elle yazılmış bir index listesi aslında bir <b>varsayımdır</b>; ve varsayımlar da tıpkı kod gibi bayatlar."
+    "not": "<b>Bu oturumun dersi: bir sayının arkasındaki VARSAYIM, sayının kendisinden daha uzun yaşar.</b> 194.300 ₺’lik eğri aritmetik olarak kusursuzdu — salonun kendi fiyat oranının dürüst devamıydı. Yanlış olan tek şey, o oranın sessizce dayandığı cümleydi: “masa açmak geliri büyütür.” O cümle hiç yazılmamış, dolayısıyla hiç sınanmamıştı.<br><br>Aynı hatayı bu oturumda bir kez daha yaptım: raporun ilk hâli taşıma hızını <b>elle tahmin edip</b> “3. garson hiçbir şey satın almıyor” dedi. Ölçünce tam tersi çıktı — %19. <b>Ölçülmeden yazılan her cümle bir varsayımdır</b>, ve varsayımlar tıpkı kod gibi bayatlar."
   },
   "siradaki": {
-    "etiket": "Faz B · B5b — Denge (karar kullanıcının)",
-    "baslik": "Yirmi masanın bedeli ölçüldü: son sekiz masa düz bir tırmanış",
-    "aciklama": "Yeni sekiz masanın toplam bedeli <b>194.300 ₺</b> ve oyuncunun geliri o noktada <b>sabit</b>: tezgâh son seviyesine çıkmış oluyor ve arkasında hızı artıracak başka bir kol kalmıyor. Ölçüm bunu net söylüyor — şeridin yarısı ortalama oyuncuda <b>4,8 saat</b>, tamamı <b>9,7 saat</b>; rahat tempoda oynayan bir oyuncu on iki saatte bile bitiremiyor.<br><br>Bu bir hata değil, <b>bilinçli olarak dokunulmamış</b> bir kuyruk: bugünün işi yapıyı kurmaktı ve tempo ölçülebilsin diye eski eğri aynen sürdürüldü. Sıradaki oturum bu kuyruğu birlikte kararlaştıracak.",
+    "etiket": "Faz B · B4 — Odalar (sıra değişti)",
+    "baslik": "Platoyu kıracak parça zaten defterdeydi, ama yanlış sıraya konmuştu",
+    "aciklama": "Ölçümün ikinci bulgusu şu: oyuncu <b>3,7 saatte</b> tezgâhın son seviyesine ve masaların son seviyesine ulaşıyor — ve ondan sonra <b>geliri artıracak hiçbir şey kalmıyor</b>. Saat aynı hızda akıyor, sayı büyümüyor. Bu, fiyat sorunundan daha büyük bir sorun.<br><br>Onu kıracak parça planda vardı: <b>B4’ün lavabosu</b> — oturma eklemeyen, kendi seviyeleri olan <b>pasif bir çarpan</b>. Ama şeridin arkasına konmuştu. Sıra değişti: önce lavabo kurulur, gelir yeniden büyümeye başlar, <b>sonra</b> şeridin son fiyatı canlı ekonomiyle ölçülür.",
     "adimlar": [
-      "<b>B5b · şimdi:</b> şeridin fiyat eğrisi · tezgâh sonrası bir hız kolu gerekiyor mu (3. garson / tepsi kademesi / lavabo çarpanı / <b>ödüllü video</b>) · masa yükseltme eşikleri",
-      "<b>B4:</b> lavabo ve yıkık merdiven odaları — arka bandın içi açılır",
+      "<b>B4 · şimdi:</b> lavabo (pasif gelir çarpanı, kendi seviyeleri) ve yıkık merdiven — arka bandın içi açılır",
+      "<b>Ö3:</b> müşteri boş masalar arasında <b>en iyisini</b> seçsin — bugün yeni açılan boş bir masa ortalama bahşişi düşürüyor, yani masa açmak geliri kısa vadede <b>azaltıyor</b>",
+      "<b>Ö6:</b> 3. garson oyuncuya görünsün — oyunun o andaki en iyi alımı ama görev hattında hiç geçmiyor",
       "<b>B6 (iki oturum):</b> maketin sanat katmanı, salon salon — giriş holü, sedir köşesi, vitrin, duvar donanımı, kilimler, KayKit mobilyası"
     ],
-    "not": "<b>Eğrinin bugünkü hâli somut olarak şu:</b> her masa bir öncekinin ~1,45 katı, gelir ise sabit — saf bekleme 13. masada <b>5 dakika</b>, 16'da 15, 18'de 32, <b>20. masada 68 dakika</b>. Yani son masa ilkinin on üç katı bekletiyor. Karar bu: dik mi kalsın, yoksa artış oranı mı düşsün. Kullanıcı desteğin <b>ödüllü videodan</b> gelebileceğini düşünüyor — kuralımıza uygun, çünkü ödüllü hiçbir zaman zorunlu değil, yalnız hızlandırır.<br><br><b>Yerleşim de kullanıcının listesinde:</b> “kesinlikle düzenlenmeli” dedi ama sonraya bıraktı. Ön salonlar 17 × 17 birim ve hâlâ dört masa taşıyor — bugünkü adım boşluğu <b>şeritte</b> kapattı, ön çeyreklerde değil. O iş sanat katmanının (B6) kapsamında."
+    "not": "<b>Yerleşim hâlâ kullanıcının listesinde:</b> “kesinlikle düzenlenmeli” dedi ama sonraya bıraktı — ön salonlar 17 × 17 birim ve hâlâ dört masa taşıyor. Bu oturum boşluğu <b>şeritte</b> kapattı, ön çeyreklerde değil; o iş sanat katmanının (B6) kapsamında."
   },
   "donemler": [
     {
@@ -320,8 +322,8 @@ h2{font-size:21px;font-weight:800}
         {
           "k": "B",
           "t": "Model geçişi",
-          "d": "ZONE → alan/servis/masa/oda ayrıştı · üç ocak tek tezgâha indi · kat 34 × 34 · orta şerit ve banket adaları · masa 12 → 20 ve masa tipleri. Kalan: <b>B5b</b> denge, <b>B4</b> odalar, <b>B6</b> maketin sanat katmanı (iki oturum)",
-          "yapilan": 5,
+          "d": "ZONE → alan/servis/masa/oda ayrıştı · üç ocak tek tezgâha indi · kat 34 × 34 · orta şerit ve banket adaları · masa 12 → 20 ve masa tipleri · gelirin üç tavanı ölçüldü. Kalan: <b>B4</b> odalar, <b>B6</b> maketin sanat katmanı (iki oturum)",
+          "yapilan": 6,
           "toplam": 9,
           "kapi": "Maketin altı adımı geziliyor VE salon makete bakınca tanınıyor",
           "durum": "now"
@@ -362,6 +364,20 @@ h2{font-size:21px;font-weight:800}
     }
   ],
   "gunluk": [
+    {
+      "tarih": "07.09.2026",
+      "etiket": "Faz B · 6. oturum (B5b)",
+      "baslik": "Yirmi masanın parası: ölçüm soruyu değiştirdi",
+      "govde": "Oturuma tek bir soruyla girildi: <b>şeridin son sekiz masası çok mu pahalı?</b> Cevabı verebilmek için ekonominin modeli söküldü ve sorunun yanlış soru olduğu görüldü.<br><br>Oyunda para, üç tavanın <b>en düşüğü</b> kadar akıyor: kaç müşteri geliyor (<b>talep</b>), mutfak saniyede kaç çay çıkarıyor (<b>arz</b>), ve o çayı kim taşıyor (<b>taşıma</b>). Hesap sadeleştirilince tek bir tezgâhın besleyebileceği koltuk sayısı çıkıyor: son seviyede <b>yaklaşık altı koltuk</b>. Salonda ise <b>elli altı</b> koltuk var. Yani talep, daha <b>üçüncü masada</b> diğer iki tavanı geçmiş — o andan itibaren açılan hiçbir masa geliri artırmamış. On altı masa açılışı, toplam 350 bin lira, gelire katkısı <b>sıfır</b>. Geçen oturumun “denge hiç değişmedi” ölçümünün sebebi de buymuş: masa sayısı bu modelde geliri zaten değiştiremiyor.<br><br>Bir masa gelir çarpanı değilse, fiyatı da gelir çarpanı fiyatı olamaz. Şeridin eğrisi masanın <b>gerçekte sattığı şeye</b> göre yassıltıldı — alan, atmosfer, yükseltilecek yüzey: <b>194.300 ₺ → 51.100 ₺</b>. Şeridin dolması ortalama oyuncuda 10,3 saatten <b>5,3 saate</b> indi; rahat tempoda oynayan bir oyuncu bunu ilk kez bitirebiliyor. Erken oyuna hiç dokunulmadı.<br><br>Peki mutfağı büyütüp masaları anlamlı kılmak? Hesaplandı ve <b>reddedildi</b>: mutfağı on katına çıkarmak taşıma tavanına, müşteri geliş hızına ve ekrandaki elli sekiz müşteriye toslar — ve “çayı sen taşırsın, her şey otomatikleşmez” kuralını iptal ederdi. Bu oyunun tavanı saniyede ~1 bardak ve bu <b>bilinçli</b>. Uyumsuz olan mutfak değil, masa sayısının para iddiasıydı.",
+      "adimlar": [
+        "Gelirin <b>üçüncü tavanı</b> (taşıma) simülatöre gerçek yürüme yollarıyla eklendi — daha önce hiç hesaba katılmıyordu",
+        "Bu ölçüm bir tahmini çürüttü: <b>3. garson geliri %19 artırıyor</b>, ~40 dakikada kendini amorti ediyor",
+        "Şeridin fiyat eğrisi <b>×1,45 → ×1,15</b> (194.300 → 51.100 ₺); dolum 10,3 → 5,3 saat",
+        "Ödüllü video kararı: ödül <b>geçici demleme hızı</b> olacak — tam darboğazın üstüne biner",
+        "Testler 255/255; erken oyunun her satırı birebir aynı"
+      ],
+      "not": "<b>Bu oturumun dersi: bir sayının arkasındaki varsayım, sayının kendisinden daha uzun yaşar.</b> 194.300 ₺’lik eğri aritmetik olarak kusursuzdu; yanlış olan tek şey, sessizce dayandığı “masa açmak geliri büyütür” cümlesiydi — ve o cümle hiç yazılmadığı için hiç sınanmamıştı.<br><br>Aynı hata oturum içinde <b>bir kez daha</b> yapıldı: raporun ilk hâli taşıma hızını elle tahmin edip “3. garson boşuna” dedi; ölçünce tam tersi çıktı. Ölçülmeden yazılan her cümle bir varsayımdır."
+    },
     {
       "tarih": "07.09.2026",
       "etiket": "Faz B · 5. oturum (B5a)",
