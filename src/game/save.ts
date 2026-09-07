@@ -71,6 +71,9 @@ export interface SaveData {
   stationLevels: number[];
   /** Masa-başı yükseltme seviyeleri (Faz 2h; index = GLOBAL masa slotu; bahşiş+sabır). */
   tableLevels: number[];
+  /** ODA: lavabo seviyesi (B4; 0 = oda kapalı). ADDITIVE alan → sürüm ARTMADI: `defaultSave()`
+   *  yayılımı eksik alanı 0 ile doldurur, eski v31 kaydı lavabosuz ama sağlam açılır (showFps deseni). */
+  lavaboLevel: number;
   padsDone: string[];
   /** Aktif pad'lerin kısmi dolumu (pad id → ₺). Aynı anda birden çok pad doldurulabilir (v5). */
   padFills: Record<string, number>;
@@ -119,6 +122,7 @@ export function defaultSave(): SaveData {
     lifetime: '0',
     stationLevels: [],
     tableLevels: [],
+    lavaboLevel: 0,
     padsDone: [],
     padFills: {},
     stats: defaultStats(),

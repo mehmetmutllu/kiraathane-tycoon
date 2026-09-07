@@ -145,7 +145,7 @@ export interface Table {
 /** ODA türleri (B4): lavabo pasif çarpan, merdiven bugün yalnız konuşur ("Kat 2 çok yakında"). */
 export type RoomKind = 'lavabo' | 'merdiven';
 
-/** ODA — oturma eklemeyen, kendi başına duran hacim. B4'e kadar liste boştur. */
+/** ODA — oturma eklemeyen, kendi başına duran hacim (B4). `id` = onu açan pad'in id'si. */
 export interface Room {
   id: string;
   kind: RoomKind;
@@ -162,7 +162,7 @@ export interface World {
   services: Service[];
   /** Yalnız AÇIK masalar, global index sırasında (bitişik). */
   tables: Table[];
-  /** Odalar (B4'e kadar boş). */
+  /** Açık ODALAR (B4). Kapalı oda listeye GİRMEZ — `roomOpen()` ile sorulur. */
   rooms: Room[];
 }
 
@@ -199,6 +199,7 @@ export function deriveWorld(padsDone: readonly string[]): World {
   // (B2): garsonu nerede tuttuğunun, kime servis vereceğiyle ilgisi yok. B1'de bu satır
   // `services[serviceInArea(area)]` idi — pad'in alanı personelin sahibini belirliyordu.
   const svc = services[THE_SERVICE];
+  const openRooms: Room[] = [];
   for (const id of padsDone) {
     const pad = byId.get(id);
     if (!pad) continue;
@@ -213,6 +214,10 @@ export function deriveWorld(padsDone: readonly string[]): World {
         break;
       case 'hireDishwasher':
         svc.hasDishwasher = true;
+        break;
+      case 'openRoom':
+        // B4: oda oturma EKLEMEZ (masa/koltuk sayısına dokunmaz) — kendi gelir kolunu getirir.
+        openRooms.push({ id: pad.id, kind: pad.effect.room as RoomKind, areaIndex: area, open: true });
         break;
     }
   }
@@ -230,7 +235,7 @@ export function deriveWorld(padsDone: readonly string[]): World {
     }
   }
 
-  return { areasOpen, areas, services, tables, rooms: [] };
+  return { areasOpen, areas, services, tables, rooms: openRooms };
 }
 
 // ============================== OKUMA YARDIMCILARI ==============================
@@ -255,6 +260,9 @@ export function openServiceCount(w: World): number {
 
 /** Servis noktasında kaç garson var (kapalıysa 0). */
 export const waitersAt = (w: World, service: number): number => (w.services[service]?.open ? w.services[service].waiters : 0);
+
+/** Bu türden bir oda açık mı (B4 — lavabo geliri ve odanın çizimi bunu sorar). */
+export const roomOpen = (w: World, kind: RoomKind): boolean => w.rooms.some((r) => r.kind === kind);
 
 /** Servis noktasında bulaşıkçı var mı. */
 export const hasDishwasherAt = (w: World, service: number): boolean => !!w.services[service]?.open && w.services[service].hasDishwasher;

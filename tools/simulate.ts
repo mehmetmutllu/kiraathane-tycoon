@@ -28,6 +28,9 @@ import {
   tableTip,
   tableSeats,
   charNextCost,
+  lavaboIncomePerCustomer,
+  lavaboUpgradeCost,
+  lavaboMaxLevel,
   waiterTrayNextCost,
   waiterSpeedNextCost,
   PRODUCTS,
@@ -58,6 +61,8 @@ interface State {
   waiterSpeed: number;
   /** Görev hattı index'i (M1 ödülleri): tamamlanan görev cüzdana reward ekler. */
   questIdx: number;
+  /** ODA: lavabo seviyesi (B4; 0 = kapalı). Pad açılışı 1, kalanı yükseltme noktasından. */
+  lavabo: number;
 }
 
 /** Görev hedefi sim durumunda karşılandı mı? Sayaç görevleri (öğretici) + sim'de modellenmeyen
@@ -71,6 +76,7 @@ function questMetSim(s: State, t: QuestTarget): boolean {
     case 'waiterTray': return s.waiterTray >= t.tier;
     case 'waiterSpeed': return s.waiterSpeed >= t.tier;
     case 'tableLevel': return s.tableLevel >= t.level;
+    case 'lavaboLevel': return s.lavabo >= t.level;
     case 'tablesAtLevel': return s.tableLevel >= t.level; // idealize: tüm masalar eşit seviyede
     // Sayaç görevleri (çay al / servis et / para topla / bulaşık yıka) oynanışla dolar — para
     // harcamaz, tempoyu geciktirmez; idealize modelde ANINDA tamam sayılır.
@@ -181,7 +187,12 @@ function rate(s: State, eff = 1): number {
   const demand = openSeats(w, s.tableLevel) / cycle;
   const supply = 1 / bt;
   const price = mixAt(s.stationLevels[THE_SERVICE]).price;
-  return Math.min(demand, supply, carryRateOf(s)) * (price + tableTip(s.tableLevel)) * eff;
+  // B4 ODA KOLU: servis edilen her müşteri çıkarken lavaboya uğrayabilir ve parasını odanın
+  // önüne bırakır → gelir MÜŞTERİ BAŞINA büyür. Üç tavanın (talep/arz/taşıma) HİÇBİRİNİ
+  // gevşetmez, yalnız aynı akışın ₺'sini artırır — Kat 1'de throughput kolu tükendiği için
+  // (arz L6'da 0,78 fincan/sn, taşıma tavanı 1,25) geriye kalan tek büyüme yönü budur.
+  const perCustomer = price + tableTip(s.tableLevel) + lavaboIncomePerCustomer(s.lavabo);
+  return Math.min(demand, supply, carryRateOf(s)) * perCustomer * eff;
 }
 
 /** Geliri o an KİM kelepçeliyor — üç kolun hangisi (rapor/teşhis için). */
@@ -243,6 +254,7 @@ function trySpend(s: State): void {
           if (s.wallet >= pad.cost) {
             s.wallet -= pad.cost;
             s.padsDone.push(pad.id);
+            if (pad.effect.type === 'openRoom') s.lavabo = Math.max(s.lavabo, 1);
           }
           return; // biriktiriyor
         }
@@ -292,6 +304,17 @@ function trySpend(s: State): void {
         }
         break;
       }
+      case 'lavaboLevel': {
+        const cost = lavaboUpgradeCost(s.lavabo);
+        if (cost != null) {
+          if (s.wallet >= cost) {
+            s.wallet -= cost;
+            s.lavabo += 1;
+          }
+          return;
+        }
+        break;
+      }
       case 'tableLevel':
       case 'tablesAtLevel': {
         if (tableUpgradeUnlocked(s)) {
@@ -326,6 +349,7 @@ function trySpend(s: State): void {
     if (s.wallet >= pad.cost) {
       s.wallet -= pad.cost;
       s.padsDone.push(pad.id);
+      if (pad.effect.type === 'openRoom') s.lavabo = Math.max(s.lavabo, 1);
     }
     return;
   }
@@ -334,6 +358,14 @@ function trySpend(s: State): void {
     if (s.wallet >= cost) {
       s.wallet -= cost;
       s.stationLevels[THE_SERVICE] += 1;
+    }
+    return;
+  }
+  const lavCost = lavaboUpgradeCost(s.lavabo);
+  if (lavCost != null) {
+    if (s.wallet >= lavCost) {
+      s.wallet -= lavCost;
+      s.lavabo += 1;
     }
     return;
   }
@@ -368,6 +400,8 @@ const MILESTONES: Milestone[] = [
   { name: `ZONE-3 AÇILDI (₺${C.pads.find((p) => p.id === 'zone3')?.cost})`, hit: (s) => s.padsDone.includes('zone3') },
   { name: 'Z3: 4. Masa', hit: (s) => s.padsDone.includes('z3table4') },
   // B5a: orta şerit 12 banket birimine açıldı — kat 20 masa. Zincirin son iki uğrağı.
+  { name: 'LAVABO açıldı', hit: (s) => s.padsDone.includes('lavabo') },
+  { name: `Lavabo L${lavaboMaxLevel()} (oda tavanı)`, hit: (s) => s.lavabo >= lavaboMaxLevel() },
   { name: 'Şerit yarısı (16. masa)', hit: (s) => s.padsDone.includes('z3table8') },
   { name: 'ŞERİT DOLDU (20. masa)', hit: (s) => s.padsDone.includes('z3table12') },
   { name: 'Masa yükseltme L1 (bahşiş)', hit: (s) => s.tableLevel >= 1 },
@@ -389,7 +423,7 @@ function runProfile(eff: number, log = false): Map<string, number> {
     tableLevel: 0, padsDone: [],
     char: { tray: 0, magnet: 0, speed: 0 },
     waiterTray: 0, waiterSpeed: 0,
-    questIdx: 0,
+    questIdx: 0, lavabo: 0,
   };
   const MAX_T = 60 * 60 * 12; // B5a: şeridin 12 birimi 6 saatin ötesine taşıyor — ölçüm penceresi büyüdü
   const done = new Map<string, number>();
@@ -419,7 +453,7 @@ function run() {
   console.log('=== Köşe Kıraathanesi — Ekonomi Simülasyonu (B2: TEK servis, bottleneck) ===\n');
   const s0: State = {
     t: 0, wallet: 0, lifetime: 0, stationLevels: [0], tableLevel: 0, padsDone: [],
-    char: { tray: 0, magnet: 0, speed: 0 }, waiterTray: 0, waiterSpeed: 0, questIdx: 0,
+    char: { tray: 0, magnet: 0, speed: 0 }, waiterTray: 0, waiterSpeed: 0, questIdx: 0, lavabo: 0,
   };
   console.log(`Sabit çay fiyatı: ${TEA_PRICE} ₺ · Başlangıç: 1 masa, oran ${rate(s0).toFixed(2)} ₺/sn\n`);
 
@@ -460,7 +494,7 @@ function run() {
   ];
   for (const [name, patch] of scenes) {
     const st: State = { t: 0, wallet: 0, lifetime: 0, stationLevels: [0], tableLevel: 0, padsDone: [],
-      char: { tray: 0, magnet: 0, speed: 0 }, waiterTray: 0, waiterSpeed: 0, questIdx: 0, ...patch } as State;
+      char: { tray: 0, magnet: 0, speed: 0 }, waiterTray: 0, waiterSpeed: 0, questIdx: 0, lavabo: 0, ...patch } as State;
     const w = deriveWorld(st.padsDone);
     const b = brewTimeOf(st);
     const demand = openSeats(w, st.tableLevel) / (C.npc.walkTime + b + C.npc.eatTime);

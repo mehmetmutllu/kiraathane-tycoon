@@ -19,6 +19,7 @@ import {
   trayCapacityFor,
   type CharStat,
   type CharUpgrades,
+  lavaboMaxLevel,
 } from '../config/economy.config';
 import {
   defaultSave,
@@ -39,7 +40,7 @@ import {
   openServices,
   servicePlace,
 } from './layout';
-import { deriveWorld, defaultFloorTheme, MAX_AREAS, MAX_SERVICES, THE_SERVICE, type World } from './world';
+import { deriveWorld, defaultFloorTheme, MAX_AREAS, MAX_SERVICES, roomOpen, THE_SERVICE, type World } from './world';
 // Dünya modeli (ALAN · SERVİS · MASA · ODA) Faz B1'de world.ts'e ayrıldı; store aynı kapıdan sunar.
 export {
   deriveWorld,
@@ -65,6 +66,7 @@ export type { World, Area, Service, Table, Room } from './world';
 // buradan yeniden dışa aktarılır (tek tanım, iki kapı).
 export {
   LAYOUT,
+  LAVABO,
   PAD_RADIUS,
   BAND,
   FLOOR_HALF,
@@ -167,6 +169,8 @@ export interface GameState {
   stationLevels: number[];
   /** Masa-başı yükseltme seviyeleri (Faz 2h; persist; index = GLOBAL masa slotu; bahşiş + sabır). */
   tableLevels: number[];
+  /** ODA: lavabo seviyesi (persist; 0 = oda kapalı, pad açılınca 1). B4 — gelir kolu buradan okunur. */
+  lavaboLevel: number;
   padsDone: string[];
   /** Aktif pad'lerin kısmi dolumu (pad id → ₺). Eş zamanlı omurga + opsiyonel için kayıt (v5). */
   padFills: Record<string, number>;
@@ -206,6 +210,8 @@ export interface GameState {
   upgradeFills: number[];
   /** Masa-başı yükseltme noktalarındaki kısmi dolum (transient; index = GLOBAL masa slotu). */
   tableUpgradeFills: number[];
+  /** Lavabo yükseltme noktasının kısmi dolumu (transient; D-018 dwell — çıkınca sıfırlanmaz). */
+  lavaboFill: number;
   activeSpot: ActiveSpot | null;
   /** Yeni-özellik toast'u (D-019 §4) — transient; null ise gösterilmez. AYNI ANDA tek toast. */
   notice: GameNotice | null;
@@ -312,6 +318,7 @@ export const useGame = create<GameState>((set, get) => ({
   areasOpen: 1,
   stationLevels: Array.from({ length: MAX_SERVICES }, () => 0),
   tableLevels: LAYOUT.tables.map(() => 0),
+  lavaboLevel: 0,
   padsDone: [],
   padFills: {},
   player: [...LAYOUT.player] as Vec3,
@@ -332,6 +339,7 @@ export const useGame = create<GameState>((set, get) => ({
   carriedDirtyFood: 0,
   upgradeFills: Array.from({ length: MAX_AREAS }, () => 0),
   tableUpgradeFills: LAYOUT.tables.map(() => 0),
+  lavaboFill: 0,
   activeSpot: null,
   notice: null,
   noticeQueue: [],
@@ -395,7 +403,10 @@ export const useGame = create<GameState>((set, get) => ({
       // B2: tek servis tüm masaları besler → tek oran (eski "açık servislerin toplamı" döngüsü kalktı).
       let tipTotal = 0;
       for (const t of world.tables) tipTotal += C.tables.tipBase * (save.tableLevels[t.index] ?? 0);
-      const rate = incomeRate(world.tables.length, stationLevels[THE_SERVICE], tipTotal);
+      // B4: offline oran lavabo kolunu da sayar (oyuncu yokken de istif kabarır). Offline'ın iki
+      // kelepçesi (rateMult + sıradaki pad'in oranı) değişmedi → "yokken zone bitmez" kuralı durur.
+      const lavLevel = roomOpen(world, 'lavabo') ? Math.min(Math.max(save.lavaboLevel ?? 1, 1), lavaboMaxLevel()) : 0;
+      const rate = incomeRate(world.tables.length, stationLevels[THE_SERVICE], tipTotal, lavLevel);
       offlineEarned = computeOfflineEarned(rate, elapsed, save.padsDone);
       wallet = wallet.add(offlineEarned);
       lifetime = lifetime.add(offlineEarned);
@@ -410,6 +421,12 @@ export const useGame = create<GameState>((set, get) => ({
       stationLevels,
       // Masa-başı seviyeleri: slot sayısına normalize et + her birini soft max'a clamp'le.
       tableLevels: LAYOUT.tables.map((_, i) => Math.min(save.tableLevels[i] ?? 0, tableSoftMaxLevel())),
+      // ODA (B4): odanın kendisi padsDone'dan TÜRETİLİR (D-015); burada saklanan yalnız SEVİYE.
+      // Savunmacı: oda kapalıysa seviye 0'a, açıksa en az 1'e ve tavana kelepçelenir → bozuk kayıt
+      // "kapalı ama L4" gibi bir hâl üretemez.
+      lavaboLevel: roomOpen(world, 'lavabo')
+        ? Math.min(Math.max(save.lavaboLevel ?? 1, 1), lavaboMaxLevel())
+        : 0,
       padsDone: [...save.padsDone],
       padFills: { ...save.padFills },
       offlineEarned,
@@ -440,6 +457,7 @@ export const useGame = create<GameState>((set, get) => ({
       carriedDirtyFood: 0,
       upgradeFills: Array.from({ length: MAX_SERVICES }, () => 0),
       tableUpgradeFills: LAYOUT.tables.map(() => 0),
+      lavaboFill: 0,
       activeSpot: null,
       notice: null,
       noticeQueue: [],
@@ -534,10 +552,12 @@ export const useGame = create<GameState>((set, get) => ({
         areasOpen: c.out.areasOpen,
         stationLevels: c.stationLevels,
         tableLevels: c.tableLevels,
+        lavaboLevel: c.lavaboLevel,
         padsDone: c.padsDone,
         padFills: c.padFills,
         upgradeFills: c.upgradeFills,
         tableUpgradeFills: c.tableUpgradeFills,
+        lavaboFill: c.lavaboFill,
         activeSpot: c.activeSpot,
         notice: c.notice,
         noticeQueue: c.noticeQueue,
@@ -764,6 +784,7 @@ export const useGame = create<GameState>((set, get) => ({
       lifetime: s.lifetime.toString(),
       stationLevels: [...s.stationLevels],
       tableLevels: [...s.tableLevels],
+      lavaboLevel: s.lavaboLevel,
       padsDone: [...s.padsDone],
       padFills: { ...s.padFills },
       stats: { ...s.stats },

@@ -2773,19 +2773,25 @@ describe('GARSON HAVUZU (Y4→B2) — gating (allAreaTablesLevel) + claim + opsi
     expect(visiblePads(economyConfig.quests.length, { ...gate, padsDone: hepsi })).toEqual([]);
   });
 
-  it('görev hattı SONU (B5a): ... q_z1allL4 → q_stationMax → şeridin sekiz birimi', () => {
+  it('görev hattı SONU (B4): ... q_stationMax → q_waiter3 → LAVABO ile şerit DÖNÜŞÜMLÜ', () => {
     const ids = economyConfig.quests.map((q) => q.id);
-    // B5a'nın sekiz masa görevi hattın SONUNA eklendi, araya değil: önlerindeki sıra (dolayısıyla
-    // ölçülen tempo) B5a öncesiyle birebir aynı kalır.
-    expect(ids.slice(-13, -10)).toEqual(['q_z3table4', 'q_waiterTray2', 'q_z1allL4']);
-    // Kuyruğun önündeki İKİ basamak, B5b'nin ölçtüğü iki darboğazın sırası (D-066):
-    // önce ARZ tavana çıkar (`q_stationMax`), o an darboğaz TAŞIMAYA geçer ve hemen ardından
-    // üçüncü garson gelir (`q_waiter3`, +%19). Şerit ancak ondan sonra başlar — sekiz masalık
-    // kuyruk 13,13 ₺/sn'de değil 15,62 ₺/sn'de akar.
-    expect(ids.slice(-10)).toEqual([
-      'q_stationMax', 'q_waiter3',
-      'q_z3table5', 'q_z3table6', 'q_z3table7', 'q_z3table8',
-      'q_z3table9', 'q_z3table10', 'q_z3table11', 'q_z3table12',
+    // Kuyruğun önündeki basamakların sırası B5b'nin ölçtüğü darboğaz sırası (D-066): önce ARZ
+    // tavana çıkar (`q_stationMax`), o an darboğaz TAŞIMAYA geçer, üçüncü garson onu açar
+    // (`q_waiter3`, +%19). Buraya kadar hattın önü B5a öncesiyle birebir aynı.
+    expect(ids.slice(-18, -15)).toEqual(['q_waiterTray2', 'q_z1allL4', 'q_stationMax']);
+    // B4: bu noktadan sonra Kat 1'de throughput kolu TÜKENMİŞTİR (arz 0,78 fincan/sn tavanda,
+    // taşıma tavanı 1,25). Geriye kalan tek büyüme yönü müşteri başına ₺ ve onu LAVABO taşıyor.
+    // Bu yüzden odanın seviyeleri şeridin masalarıyla DÖNÜŞÜMLÜ: bir masa → bir seviye → bir masa.
+    // Dönüşümlü olmazsa gelir yine donuyor ve şeridin kuyruğu sabit hızda akıyor (plato 1,42 sa;
+    // dönüşümlü hâlde en uzun düz aralık ~13 dk — B4 ölçümü).
+    expect(ids.slice(-15)).toEqual([
+      'q_waiter3', 'q_lavabo',
+      'q_z3table5', 'q_lavabo2',
+      'q_z3table6', 'q_lavabo3',
+      'q_z3table7', 'q_lavabo4',
+      'q_z3table8', 'q_lavabo5',
+      'q_z3table9', 'q_lavabo6',
+      'q_z3table10', 'q_z3table11', 'q_z3table12',
     ]);
   });
 

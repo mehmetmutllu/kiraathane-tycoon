@@ -356,6 +356,24 @@ export function BootIcon({ size }: { size?: number }) {
   );
 }
 
+/** ODA: lavabo kapısı (B4) — görev fotoğrafı. Kapı kanadı + kol + üstünde fayans şeridi. */
+export function DoorIcon({ size }: { size?: number }) {
+  const inner = (
+    <g>
+      <rect x="11" y="7" width="26" height="34" rx="2.5" fill="#8d6e63" stroke="#5d4037" strokeWidth="1.8" />
+      <rect x="15" y="11" width="18" height="19" rx="1.6" fill="#a1887f" />
+      <rect x="15" y="32" width="18" height="5" rx="1.4" fill="#cfd8dc" />
+      <circle cx="31.5" cy="24" r="1.9" fill="#ffce54" />
+    </g>
+  );
+  if (size == null) return inner;
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
+      {inner}
+    </svg>
+  );
+}
+
 function UpArrowOverlay() {
   return (
     <g>
@@ -424,6 +442,12 @@ export function QuestPhoto({ target, size = 44 }: { target: QuestTarget; size?: 
     case 'waiterSpeed':
       bg = '#33691e';
       inner = <PersonIcon />;
+      up = true;
+      break;
+    case 'lavaboLevel':
+      // ODA (B4): lavabo yükseltmesi — fayans mavisi + kapı fotoğrafı.
+      bg = '#37718e';
+      inner = <DoorIcon />;
       up = true;
       break;
     case 'tableLevel':

@@ -2,6 +2,88 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-07 gece — **B4a TAMAM: plato kırıldı, lavabo kendi istifiyle geliyor**)
+
+B4'ün sorusu "lavabonun çarpan eğrisi ne olsun" idi. Ölçüm iki şeyi düzeltti, kullanıcı üçüncüyü.
+Tam rapor: `docs/denge-raporu-b4.md` · karar: **D-067**.
+
+### Bulgu 1 — Kat 1'de THROUGHPUT kolu tükenmiş (kolun yeri artık tercih değil)
+Servis merdiveni ₺ ile L6'da bittiği için arz **0,78 fincan/sn**'de tavan; taşıma tavanı tam
+kadroda **1,25**. Çay/dk'da kalan tüm baş boşluğu **×1,6** ve arkası ölü (garson havuzu 3'te,
+karakter kademeleri bitiyor). Yani "ekonomi = throughput" kuralı iptal olmadı — **Kat 1 için
+tükendi**, yeni throughput Kat 2 ile gelir. Kalan tek büyüme yönü: **müşteri başına ₺**.
+
+### Bulgu 2 — aktif kâğıt döngüsü YANLIŞ DEĞİL, YANLIŞ ZAMANDA (çıkarıldı)
+Eski tasarım kâğıt ikmalini aktif angarya olarak kurmuştu. Platonun tam penceresinde
+(L6 · 12 masa · 3 garson) oyuncunun taşıma kolundaki **boş zaman payı %5**, kâğıt turu ise
+zamanının **%31**'i → tam orada geliri KESER. Şerit dolduktan sonra boşluk %74, aynı döngü
+bedava sığıyor → **Faz C/D'ye ertelendi.**
+
+### Kullanıcı düzeltmesi — çarpan DEĞİL, odanın KENDİ İSTİFİ
+> *"lavabo geliri lavabo önünde istif olarak birikir... müşteriler çıkmadan lavaboya girip
+> çıkabilir, girip çıkınca da ekstra orada da para birikir"*
+
+Müşteri ödeyip kalkar → lavaboya uğrar (içeride görünmez) → çıkışta parasını **odanın önündeki
+istife** bırakır → oyuncu gidip toplar. Aynı `Coin`, aynı Model B′ istifi: **para sunumu
+değişmedi**, yalnız ikinci bir düşme noktası doğdu. Fiyat/bahşiş sabit → **D-010 delinmedi**.
+
+### Sayılar (onaylı ivme ×1,38/adım)
+| lavabo | uğrama | ücret | müşteri başına | idealize gelir |
+|---|---|---|---|---|
+| L0 | — | — | 0 | 15,62 ₺/sn |
+| L1 (pad 3.000₺) | %30 | 18₺ | 5,4 | 19,84 |
+| L3 (5.000₺) | %40 | 32₺ | 12,8 | ~26 |
+| L6 (11.500₺) | %55 | 86₺ | 47,3 | **52,57** |
+
+Seviyeler 4.000/5.000/7.000/9.000/11.500; görev hattı **DÖNÜŞÜMLÜ** (bir şerit masası → bir
+lavabo seviyesi). **Plato 1,42 sa → 13,4 dk · zincir 5,35 → 5,21 sa (tempo bedeli YOK) · servis
+L6'ya kadarki her satır taban ile birebir.** Öğrenilen: **seviye maliyet eğrisinin dikliği
+çarpanın kendisinden daha belirleyici** (dik eğri düz aralığı 41 dk'ya çıkarıyor).
+
+### Yapılan (kod)
+- `world.ts` odaları türetir (`openRoom` etkisi + `roomOpen`) — oda oturma EKLEMEZ.
+- `layout.ts` `LAVABO`: pad = yükseltme noktası = müşterinin kapı hedefi **aynı nokta**
+  ([13,4 · −9,3]; x tesadüf değil, masa 12'nin yükseltme noktasına 2,55 br kalsın diye).
+- `types.ts` NPC durumları `toWc`/`inWc` · `Customers` içerdekini çizmez (ölçek 0).
+- `tick.ts` uğrama + istif + `lavaboUpgradeSystem` · `rules.ts` `hasLeftTable` (lavabodaki
+  müşteri KOLTUĞU tutmaz) + `incomeRate`'in dördüncü parametresi.
+- `store/save` `lavaboLevel` **additive** → **SAVE_VERSION 31'de KALDI**; oda kapalıysa seviye
+  0'a, açıksa en az 1'e kelepçelenir (çelişki sızamaz).
+- `Scene.LavaboFront`: kapalıyken **tadilat hâli** (tahta perde + uyarı bandı), açıkken kapı +
+  çini bordür + kapı üstünde seviye noktaları. `simulate.ts`'e kol kalıcı girdi.
+
+### Doğrulama
+vitest **270/270** (yeni `tests/room-b4.test.ts` 12) · build + `tsc -b` temiz · eslint 16
+(değişmedi) · smoke **28/28** (yeni iki adım: pad gerçek yerinde açılıyor · ücret odanın önündeki
+istifte birikiyor — 3 ödeme 72₺ ölçüldü).
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**B4b — merdiven + odanın İÇİ (mekân/görsel).**
+- Yıkık merdiven: alınamaz, üstüne basınca **"Kat 2 çok yakında"** (D-058 karar 2).
+- Lavabonun içi hacim kazanır: kabinler · ayna · fayans · tavan ışığı ("mekân hacim olmalı"
+  kuralı — bugün kapının arkası düz karanlık bir düzlem).
+- Arka bandın içinin okunur hâli.
+Not: B4a'nın görselinde kapı/bordür/seviye noktaları çalışıyor ama oda DIŞARIDAN okunuyor.
+
+### Bilinen, ertelenmiş
+- **`zone3` pad'i (3.400₺) Normal profilde 26,9 dk bekletiyor** — B4 öncesinde duruyor, tabanda
+  da vardı; "20 dk'yı aşan alım kalmasın" ölçütünü aşan tek nokta. Açık kalem.
+- Aktif WC kâğıt döngüsü + temizlikçi personeli → Faz C/D (taşıma kolunda boşluk %74 olunca).
+- Yerleşim düzenlemesi ("kesinlikle düzenlenmeli" — kullanıcı) → B6a/B6b.
+- Şeridin ORTASI (x ≈ 0) bilerek boş (kapı–merdiven geçidi) — B6b.
+- Sol duvar programının gerisi (askı rayı · konsol · gazetelik) — B6a.
+- `LAYOUT.decor` hâlâ eski 21 × 21 koordinatlarında — B6.
+- Arka bandın `waiterHome`'u masa 12'nin yükseltme noktasına 0,7 br — B6a.
+- `spawnInterval` sabit: timer küresel, katla büyümüyor → 56 koltuğun ~yarısı hiç dolmuyor.
+  Bilinçli (arz zaten darboğaz) ama Kat 2'den önce yeniden bakılmalı.
+- `optional` pad kategorisi ve `allAreaTablesLevel` gate'i hâlâ ÜYESİZ (B5b/Ö6'dan beri).
+- Maket girişinin üst çıtasında z-fighting · bundle ~1,44 MB · eslint 16 hatası (hepsi eski).
+
+### Kırmızı çizgi (duruyor)
+**"Objeler yüzüyor" hissine bir daha blob shadow ÖNERME** (D-054).
+
+---
+
 ## ŞU AN (2026-09-07 gece — **B5b TAMAM: masa ALAN satar, gelir satmaz**)
 
 B5b'nin sorusu "şeridin eğrisi dik mi kalsın" idi. Model sökülünce sorunun **yanlış soru**

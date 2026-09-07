@@ -17,6 +17,10 @@ import {
   brewQueueCapacity,
   tableTip,
   tablePatience,
+  lavaboVisitChance,
+  lavaboFee,
+  lavaboUpgradeCost,
+  lavaboMaxLevel,
   rollGroupSize,
   upgradeFillRateFor,
   waiterSpeedFor,
@@ -45,6 +49,7 @@ import {
 import type { SaveStats } from './save';
 import {
   LAYOUT,
+  LAVABO,
   PAD_RADIUS,
   NPC_SPEED,
   TABLE_UP_RADIUS,
@@ -71,6 +76,7 @@ import {
 import {
   FILL_TEA,
   FILL_TABLE,
+  FILL_LAVABO,
   NPC_COLORS,
   WASH_QUEST_INDEX,
   QUEST_COMPLETE_DUR,
@@ -82,6 +88,7 @@ import {
   stationSoftMaxLevel,
   stationUpgradeCostAt,
   dirtyTables,
+  hasLeftTable,
   occupiedSeats,
   findTableForGroup,
   seatsAtTable,
@@ -133,6 +140,8 @@ export interface TickCtx {
   activeSpot: ActiveSpot | null;
   stationLevels: number[];
   tableLevels: number[];
+  /** ODA: lavabo seviyesi (B4; 0 = kapalı). Bu karede yükseltilebilir. */
+  lavaboLevel: number;
   /** Servisin HAZIR ürünleri — B2: servis başına değil ÜRÜN başına (tek nokta, iki ürün). */
   ready: Record<ProductId, number>;
   /** Ürün başına birikmiş demleme süresi (sn). Tezgâh aynı anda TEK kalem hazırlar: hangi ürünün
@@ -144,6 +153,8 @@ export interface TickCtx {
   carriedDirty: number;
   carriedDirtyFood: number;
   tableUpgradeFills: number[];
+  /** Lavabo yükseltme noktasının kısmi dolumu (D-018 dwell). */
+  lavaboFill: number;
   notice: GameNotice | null;
   noticeQueue: GameNotice[];
   readonly enqueueNotice: (n: GameNotice) => void;
@@ -212,6 +223,7 @@ export function createTickCtx(s: GameState, dt: number): TickCtx {
     activeSpot: null,
     stationLevels: s.stationLevels.slice(), // SERVİS başına ocak seviyesi (bu karede yükselebilir)
     tableLevels: s.tableLevels.slice(), // masa-başı seviyeler (kopya; bu karede yükseltilebilir)
+    lavaboLevel: s.lavaboLevel,
     ready: { ...s.ready },
     brewProgress: { ...s.brewProgress },
     tray: s.tray,
@@ -220,6 +232,7 @@ export function createTickCtx(s: GameState, dt: number): TickCtx {
     carriedDirty: s.carriedDirty,
     carriedDirtyFood: s.carriedDirtyFood,
     tableUpgradeFills: s.tableUpgradeFills.slice(),
+    lavaboFill: s.lavaboFill,
     notice: s.notice,
     // Bildirim kuyruğu: bitiş/reveal/seviye toast'ları tek slotu EZMEK yerine sıraya girer (B paketi).
     noticeQueue: [...s.noticeQueue],
@@ -329,7 +342,7 @@ function spawnSystem(c: TickCtx): void {
   let nextId = c.nextId;
   let spawnTimer = c.spawnTimer;
   let spawnArea = c.spawnArea;
-  const activeCount = npcs.filter((n) => n.state !== 'leaving').length;
+  const activeCount = npcs.filter((n) => !hasLeftTable(n.state)).length;
   // Müşteri tavanı KOLTUK+2 (masa değil — Y2; M3'ün masa+2 fix'inin koltuklu hali).
   let totalSeats = 0;
   for (let i = 0; i < tables; i++) totalSeats += seatsAtTable(i, tableLevels[i] ?? 0);
@@ -377,7 +390,7 @@ function spawnSystem(c: TickCtx): void {
  * NPC durum makinesi
  */
 function npcSystem(c: TickCtx): void {
-  const { dt, npcs, coins, dishes, navGrid, tableLevels, questIndex, areasOpen } = c;
+  const { dt, npcs, coins, dishes, navGrid, tableLevels, questIndex, areasOpen, lavaboLevel } = c;
   let cleanCups = c.cleanCups;
   let nextId = c.nextId;
   const step = NPC_SPEED * dt;
@@ -444,6 +457,36 @@ function npcSystem(c: TickCtx): void {
           } else {
             cleanCups += 1;
           }
+          // ODA (B4): ödeyip kalkan müşteri, çıkmadan LAVABOYA uğrayabilir. Olasılık odanın
+          // seviyesinden gelir (%30 → %55) — lavabo iyileştikçe daha çok kullanılır ve bu GÖZLE
+          // görülür. Sabrı biten müşteri buraya hiç gelmez (ödemeden gider) — kol ancak GERÇEK
+          // servisle akar, yani lavabo servisi ikame etmez.
+          n.state = Math.random() < lavaboVisitChance(lavaboLevel) ? 'toWc' : 'leaving';
+        }
+        break;
+      case 'toWc':
+        // Lavabonun kapısına yürü (bant kütlesinin ön yüzü). Varınca içeri girer = görünmez olur.
+        if (navStep(n.pos, LAVABO.spot, step, navGrid, 0.45)) {
+          n.pos[0] = LAVABO.door[0];
+          n.pos[2] = LAVABO.door[2];
+          n.state = 'inWc';
+          n.timer = C.rooms.lavabo.visitTime;
+        }
+        break;
+      case 'inWc':
+        n.timer -= dt;
+        if (n.timer <= 0) {
+          // Çıkarken parasını lavabonun ÖNÜNDEKİ istife bırakır (masa istifiyle aynı desen ve
+          // aynı saçılım — para SUNUMU değişmedi, yalnız ikinci bir düşme noktası doğdu).
+          coins.push({
+            id: nextId++,
+            pos: [
+              LAVABO.coinSpot[0] + (Math.random() - 0.5),
+              LAVABO.coinSpot[1],
+              LAVABO.coinSpot[2] + (Math.random() - 0.5),
+            ],
+            value: lavaboFee(lavaboLevel),
+          });
           n.state = 'leaving';
         }
         break;
@@ -890,6 +933,11 @@ function revealSystem(c: TickCtx): void {
       if (dist2D(player, LAYOUT.tables[i].upgradeSpot) < TABLE_UP_RADIUS) { onFillId = FILL_TABLE + i; break; }
     }
   }
+  // ODA (B4): lavabonun yükseltme noktası pad'iyle AYNI yerde durur — oda açılınca pad listeden
+  // düşer, nokta onun yerini alır. İkisi aynı anda etkin olamaz, o yüzden çakışma da olamaz.
+  if (!onFillId && c.lavaboLevel >= 1 && c.lavaboLevel < lavaboMaxLevel() && dist2D(player, LAVABO.spot) < PAD_RADIUS) {
+    onFillId = FILL_LAVABO;
+  }
   c.notice = notice;
   c.revealSeen = revealSeen;
   c.fillReady = fillReady;
@@ -928,6 +976,13 @@ function padFillSystem(c: TickCtx): void {
       activeSpot = null;
       // ALAN açılışı (Faz 3a): yeni alan kendi bardak stoğuyla gelir + kamera oraya pan
       // ("orada yeni bir dünya var" hissi — quest kamerası ayrıca sıradaki göreve döner).
+      // ODA (B4): oda açılır açılmaz L1'dir — yani ilk günden gelir kolu akar (pad "boş bir kabuk"
+      // açmaz). Seviyenin kendisi padsDone'dan TÜRETİLEMEZ (yükseltme noktasından büyür), o yüzden
+      // ayrı saklanır; store init'i ikisini kelepçeyle tutarlı tutar.
+      if (activePad.effect.type === 'openRoom' && activePad.effect.room === 'lavabo') {
+        c.lavaboLevel = Math.max(c.lavaboLevel, 1);
+        c.lavaboFill = 0;
+      }
       if (activePad.effect.type === 'unlockArea') {
         cleanCups += C.cups.poolBase;
         // Yeni açılan ALANIN merkezine pan (M2: index pad listesinden değil, AÇILMIŞ sayıdan).
@@ -1048,6 +1103,49 @@ function tableUpgradeSystem(c: TickCtx): void {
 }
 
 /**
+ * ODA: lavabo yükseltme noktası (B4) — kapının önünde dur, alt-orta bar dolar.
+ *
+ * Ocak/masa yükseltmesiyle AYNI desen (D-018 dwell: biriken ₺ çıkınca sıfırlanmaz). Farkı şu:
+ * yükselttiği şey throughput ya da bahşiş DEĞİL, odanın kendi gelir kolu — uğrama olasılığı ve
+ * bırakılan ₺ birlikte büyür (economy.config `rooms.lavabo`).
+ */
+function lavaboUpgradeSystem(c: TickCtx): void {
+  const { dt, fillReady, onFillId } = c;
+  let wallet = c.wallet;
+  let activeSpot = c.activeSpot;
+  let xp = c.xp;
+  if (onFillId === FILL_LAVABO) {
+    const cost = lavaboUpgradeCost(c.lavaboLevel);
+    if (cost != null) {
+      let fill = c.lavaboFill;
+      if (fillReady && wallet.gt(0)) {
+        const amt = Math.min(upgradeFillRateFor(cost) * dt, wallet.toNumber(), cost - fill);
+        if (amt > 0) {
+          fill += amt;
+          wallet = wallet.sub(amt);
+        }
+      }
+      if (fill >= cost) {
+        c.lavaboLevel += 1;
+        xp += C.xp.perUpgrade;
+        fill = 0;
+      }
+      c.lavaboFill = fill;
+      const nextCost = lavaboUpgradeCost(c.lavaboLevel) ?? cost;
+      activeSpot = {
+        kind: 'upgrade',
+        label: `Lavabo L${c.lavaboLevel}${c.lavaboLevel < lavaboMaxLevel() ? ` → L${c.lavaboLevel + 1}` : ''}`,
+        fill,
+        cost: nextCost,
+      };
+    }
+  }
+  c.wallet = wallet;
+  c.activeSpot = activeSpot;
+  c.xp = xp;
+}
+
+/**
  * D-015: padsDone değiştiyse türetilen alanlar yeniden hesaplanır (tek yazım noktası)
  */
 function deriveSystem(c: TickCtx): void {
@@ -1086,6 +1184,7 @@ function questSystem(c: TickCtx): void {
     questBase,
     charUpgrades: s.charUpgrades,
     waiterUpgrades: s.waiterUpgrades,
+    lavaboLevel: c.lavaboLevel,
   };
   // GÖREV GEÇİŞ RİTMİ (A paketi): aktif görev karşılanınca kart ANINDA takas olmaz. 3 vuruş:
   //   active → (hedef tamam) → completing (kart %100 + yeşil onay, ödül+toast burada) → gap (boşluk,
@@ -1196,6 +1295,7 @@ export function runTick(c: TickCtx): void {
   padFillSystem(c);
   stationUpgradeSystem(c);
   tableUpgradeSystem(c);
+  lavaboUpgradeSystem(c);
   deriveSystem(c);
   questSystem(c);
   levelNoticeSystem(c);

@@ -2,8 +2,8 @@ import { Suspense, useEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Vector3, type Group, type MeshStandardMaterial } from 'three';
 import type { AreaSide } from '../../game/store';
-import { useGame, questFocusPos, LAYOUT, BAND, FLOOR_HALF, wallSpans, servicePlace, stationSoftMaxLevel, stationUpgradeCostAt, stationUpgradeUnlocked, tableSoftMaxLevel, tableUpgradeUnlockedIn, tableNextCost, openServices, doorX as doorAt, entranceAt, banketIslands, BANKET, WAITER_STATION, waiterStationOpen } from '../../game/store';
-import { economyConfig } from '../../config/economy.config';
+import { useGame, questFocusPos, LAYOUT, LAVABO, BAND, FLOOR_HALF, wallSpans, servicePlace, stationSoftMaxLevel, stationUpgradeCostAt, stationUpgradeUnlocked, tableSoftMaxLevel, tableUpgradeUnlockedIn, tableNextCost, openServices, doorX as doorAt, entranceAt, banketIslands, BANKET, WAITER_STATION, waiterStationOpen } from '../../game/store';
+import { economyConfig, lavaboUpgradeCost } from '../../config/economy.config';
 import { areaOfTable, isCounter, THE_SERVICE } from '../../game/world';
 import { SceneLights } from './lights';
 import { GroundMarker } from './GroundMarker';
@@ -829,6 +829,7 @@ function Walls() {
     <group>
       <WallPanels slabs={pieces} />
       <BackBand areasOpen={areasOpen} />
+      <LavaboFront />
       {/* kapı sövesi + çerçevesi (ön duvarın TAMAMEN önünde — z-fighting yok) */}
       <group>
         <mesh position={[dx0, h - 0.12, frontEdgeZ + 0.22]}>
@@ -870,6 +871,97 @@ function BackBand({ areasOpen }: { areasOpen: number }) {
           <meshStandardMaterial color={color} />
         </mesh>
       ))}
+    </group>
+  );
+}
+
+
+/**
+ * LAVABO'nun ön yüzü (B4) — bandın `wc` bloğunun salona bakan yüzünde kapı.
+ *
+ * İki hâli var ve ikisi de KARAR: kapalıyken **tadilat hâli** (tahta perde + uyarı bandı —
+ * "kilitli obje çizilmez" DEĞİL, "kilitli obje yıkık durur"), açıldıktan sonra gerçek kapı.
+ * Seviye ÜÇ ayrı sinyalle okunur (tek sinyal yetmez): kapı üstündeki nokta sayısı · fayans
+ * şeridinin genişlemesi · kapı kanadının açılıp koyulaşan iç boşluğu.
+ * Odanın İÇİ (kabinler, ayna, tavan ışığı) ve yıkık merdiven **B4b**'nin işi.
+ */
+function LavaboFront() {
+  const areasOpen = useGame((s) => s.areasOpen);
+  const padsDone = useGame((s) => s.padsDone);
+  const level = useGame((s) => s.lavaboLevel);
+  const fill = useGame((s) => s.lavaboFill);
+  const wallet = useGame((s) => s.wallet);
+  if (areasOpen < 3) return null; // bant görünmüyorsa kapısı da yok
+  const x = LAVABO.door[0];
+  const zf = BAND.front + 0.02; // ön yüzün 2 cm önü (z-fighting yok)
+  const open = padsDone.includes('lavabo');
+  const cost = lavaboUpgradeCost(level);
+  const remaining = cost != null ? Math.max(0, Math.ceil(cost - fill)) : 0;
+  return (
+    <group>
+      {/* kapı boşluğu (koyu) — açıldıkça derinleşir, kapalıyken tahtanın arkası */}
+      <mesh position={[x, 1.15, zf]}>
+        <planeGeometry args={[1.5, 2.3]} />
+        <meshStandardMaterial color={open ? '#2b2f33' : '#4a3b2a'} />
+      </mesh>
+      {/* kapı çerçevesi */}
+      {([[-0.87, 1.15, 0.24, 2.5], [0.87, 1.15, 0.24, 2.5], [0, 2.42, 1.98, 0.26]] as const).map(
+        ([ox, oy, w, h], i) => (
+          <mesh key={i} position={[x + ox, oy, zf + 0.01]}>
+            <planeGeometry args={[w, h]} />
+            <meshStandardMaterial color={open ? '#8d6e63' : '#6d5a48'} />
+          </mesh>
+        ),
+      )}
+      {!open && (
+        <group>
+          {/* TADİLAT HÂLİ: çapraz tahtalar + uyarı bandı (parasıyla açılır) */}
+          {([-0.5, 0.5] as const).map((sgn, i) => (
+            <mesh key={i} position={[x, 1.15, zf + 0.02]} rotation={[0, 0, sgn * 0.55]}>
+              <planeGeometry args={[2.9, 0.34]} />
+              <meshStandardMaterial color="#a1887f" />
+            </mesh>
+          ))}
+          <mesh position={[x, 0.42, zf + 0.03]}>
+            <planeGeometry args={[2.1, 0.16]} />
+            <meshStandardMaterial color="#f9a825" />
+          </mesh>
+        </group>
+      )}
+      {open && (
+        <group>
+          {/* SİNYAL 1 — ÇİNİ fayans şeridi kapının iki yanında seviyeyle genişler. Düz gri bir
+              lekeye dönmesin diye üstünde koyu bir çıta var: şerit "duvarın kirlenmiş yeri" değil
+              KAPLAMA olarak okunuyor (kıraathane lavabosunun çini bordürü). */}
+          <mesh position={[x, 0.48, zf + 0.004]}>
+            <planeGeometry args={[2.3 + level * 0.42, 0.96]} />
+            <meshStandardMaterial color="#8fb6cc" />
+          </mesh>
+          <mesh position={[x, 0.98, zf + 0.006]}>
+            <planeGeometry args={[2.3 + level * 0.42, 0.1]} />
+            <meshStandardMaterial color="#4d6a7d" />
+          </mesh>
+          {/* SİNYAL 2 — kapı üstünde seviye kadar nokta */}
+          {Array.from({ length: level }, (_, i) => (
+            <mesh key={i} position={[x - (level - 1) * 0.16 + i * 0.32, 2.42, zf + 0.03]}>
+              <circleGeometry args={[0.09, 10]} />
+              <meshStandardMaterial color="#ffce54" />
+            </mesh>
+          ))}
+        </group>
+      )}
+      {/* Yükseltme noktası: pad bitince AYNI yerde belirir (obje-başı yükseltme). */}
+      {open && cost != null && (
+        <GroundMarker
+          pos={LAVABO.spot}
+          label="Lavaboyu Büyüt"
+          sub={String(remaining)}
+          coin
+          tint="#ffce54"
+          progress={fill / cost}
+          afford={wallet.toNumber() >= remaining}
+        />
+      )}
     </group>
   );
 }

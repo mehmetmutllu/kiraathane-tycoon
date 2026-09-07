@@ -211,6 +211,29 @@ try {
   if (missing.length === 0) pass(`Yeni-özellik bildirimi çalışıyor (reveal: ${reveals.join(', ')})`);
   else fail(`Eksik reveal bildirimi: ${missing.join(', ')} (görülen: ${reveals.join(', ')})`);
 
+  // ODA — LAVABO (B4): Kat 1'in son gelir kolu. 3D sahne görsel doğrulanamadığı için burada
+  // ölçülen üç şey: (1) pad GERÇEK yerinde ve gerçek tarayıcıda doluyor, (2) müşteriler odaya
+  // uğrayıp parayı ODANIN ÖNÜNE bırakıyor, (3) odanın çizimi konsola hata düşürmüyor.
+  const chainNoLavabo = ['table2', 'table3', 'waiter', 'table4', 'zone2', 'z2table2', 'z2table3',
+    'dishwasher', 'z2table4', 'zone3', 'z3table2', 'waiter2', 'z3table3', 'z3table4', 'waiter3'];
+  await page.evaluate((pads) => window.__setState({ padsDone: pads, lavaboLevel: 0 }), chainNoLavabo);
+  await page.evaluate(() => window.__setQuest('q_lavabo'));
+  await page.evaluate(() => window.__addMoney(20000));
+  const lavPre = await page.evaluate(() => window.__game());
+  await page.evaluate((pos) => window.__teleport(pos[0], pos[2]), lavPre.lavabo.spot);
+  const lavAfter = await page.evaluate(() => window.__advanceTime(8));
+  if (lavAfter.lavabo.open && lavAfter.lavabo.level >= 1)
+    pass(`Lavabo pad'i gerçek yerinde açıldı (seviye ${lavAfter.lavabo.level}, ücret ${lavAfter.lavabo.fee}₺)`);
+  else fail(`Lavabo açılmadı (open=${lavAfter.lavabo.open}, level=${lavAfter.lavabo.level})`);
+
+  // Müşteri akışı dönsün: uğrayanların parası lavabonun önündeki istifte birikmeli. Oyuncu
+  // UZAĞA park edilir — para mıknatısla toplanmasın, istif gerçekten yerde görünsün.
+  await page.evaluate(() => window.__park());
+  const flow = await page.evaluate(() => window.__advanceTime(120));
+  if (flow.lavabo.pileCount > 0)
+    pass(`Lavabo ücreti odanın ÖNÜNDEKİ istifte birikiyor (${flow.lavabo.pileCount} ödeme, ${Math.round(flow.lavabo.pileValue)}₺)`);
+  else fail(`Lavabo önünde para birikmedi (seviye ${flow.lavabo.level}, uğrama %${Math.round(flow.lavabo.visitChance * 100)})`);
+
   // GÖREV BARI DOM'da (HUD redesign): üst-orta quest chip'i + para chip'i var; eski sayaç chip'leri YOK.
   const questBar = await page.$('[data-testid="quest"]');
   const walletChip = await page.$('[data-testid="wallet"]');

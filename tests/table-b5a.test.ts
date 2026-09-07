@@ -198,9 +198,13 @@ describe('B5a — gating: alanın büyümesi eşiği sessizce kaydırmaz', () =>
     const upToZ3t4 = ALL_PADS.slice(0, ALL_PADS.indexOf('z3table4') + 1);
     expect(requiresMet(w3.requires, gate(5, upToZ3t4))).toBe(false); // tezgâh L6 değil → yok
     expect(requiresMet(w3.requires, gate(6, upToZ3t4))).toBe(true);
-    // Şeridin ilk masası ondan SONRA gelir: kuyruk 13,13 ₺/sn'de değil 15,62'de başlasın.
+    // B4: waiter3 ile şerit arasına LAVABO girdi (D-066'nın plato kolu). Zincir hâlâ waiter3'ten
+    // sonra devam ediyor ama sıradaki halka artık odadır — şerit ancak gelir yeniden BÜYÜMEYE
+    // başladıktan sonra akar (waiter3 arzı tavana taşır, lavabo müşteri başına ₺'yi büyütür).
+    const lav = economyConfig.pads.find((p) => p.id === 'lavabo') as PadDef;
+    expect((lav.requires as { prev?: string[] }).prev).toEqual(['waiter3']);
     const t5 = economyConfig.pads.find((p) => p.id === 'z3table5') as PadDef;
-    expect((t5.requires as { prev?: string[] }).prev).toEqual(['waiter3']);
+    expect((t5.requires as { prev?: string[] }).prev).toEqual(['lavabo']);
     // Masa SEVİYESİ artık waiter3'ün koşulu değil (eski vekil gate tamamen kalktı).
     expect(JSON.stringify(w3.requires)).not.toContain('allAreaTablesLevel');
   });

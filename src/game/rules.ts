@@ -5,7 +5,7 @@
  * (girdi: anlık görüntü, çıktı: değer). Böylece tick sistemleri (tick.ts) ve store aynı kuralları
  * tek yerden okur. store.ts bu modülü yeniden dışa aktarır (eski `from './store'` importları çalışır).
  */
-import type { Dish, Npc } from './types';
+import type { Dish, Npc, NpcState } from './types';
 import {
   economyConfig as C,
   upgradeOutputMultiplier,
@@ -13,6 +13,7 @@ import {
   requiresMet,
   tableUpgradeCost,
   tableSeats,
+  lavaboIncomePerCustomer,
   PRODUCTS,
   charNextCost,
   waiterTrayNextCost,
@@ -26,7 +27,7 @@ import {
   type WaiterUpgrades,
 } from '../config/economy.config';
 import type { SaveStats } from './save';
-import { LAYOUT, servicePlace, type RVec3 } from './layout';
+import { LAYOUT, LAVABO, servicePlace, type RVec3 } from './layout';
 import { MAX_AREAS, THE_SERVICE, areaTableStart, tostShare, isCounter } from './world';
 
 // DWELL kanonik dolum-noktası id'leri (D-018 §2): pad'ler kendi id'sini kullanır; bunlar yükseltme
@@ -34,6 +35,7 @@ import { MAX_AREAS, THE_SERVICE, areaTableStart, tostShare, isCounter } from './
 // (v29: 'waiterUp:' kalktı — garson hızı karakter panelinden satın alınır.)
 export const FILL_TEA = 'tea:'; // + SERVİS index
 export const FILL_TABLE = 'tableUp:'; // + GLOBAL masa index
+export const FILL_LAVABO = 'lavaboUp'; // ODA: lavabo yükseltme noktası (tek nokta, index yok) — B4
 
 /** Servis noktasının yükseltmesi açık mı? (2. masa önkoşul — "önce kapasite sonra verim".)
  *  B2: servis TEK olduğu için parametresiz; alan-başı `upgradeRequiresByArea` dizisi kalktı. */
@@ -156,13 +158,15 @@ export function tableUpgradeUnlocked(g: GateState): boolean {
  * KARIŞIM: L5'te müşterilerin %25'i tost (pahalı + yavaş) ister → hem fiyat hem hazırlık süresi
  * ağırlıklı ortalamayla girer. L0-L4'te pay 0 → formül eski çay-hâliyle birebir aynı sonucu verir.
  * Masa BAHŞİŞLERİ de orana dahil (kullanıcı 2026-06-11): tipTotal = açık masaların Σ(tipBase × seviye).
+ * B4: LAVABO kolu da dahil — uğrayan müşteri lavabonun önüne para bırakır, yani gelir müşteri
+ * BAŞINA büyür (fiyata/bahşişe dokunmadan). Oda kapalıyken (L0) terim 0 → formül birebir eski.
  */
-export function incomeRate(tables: number, level: number, tipTotal = 0): number {
+export function incomeRate(tables: number, level: number, tipTotal = 0, lavaboLevel = 0): number {
   const p = tostShare(level);
   const price = (1 - p) * PRODUCTS.tea.price + p * PRODUCTS.tost.price;
   const prepTime = (1 - p) * PRODUCTS.tea.prepTime + p * PRODUCTS.tost.prepTime;
   const cycle = C.npc.walkTime + brewTime(level, prepTime) + C.npc.eatTime;
-  return (tables * price + tipTotal) / cycle;
+  return (tables * (price + lavaboIncomePerCustomer(lavaboLevel)) + tipTotal) / cycle;
 }
 
 /**
@@ -181,10 +185,14 @@ export function dirtyTables(dishes: Dish[], tableLevels: number[] = []): Set<num
 }
 
 /** Masa-başı DOLU koltuk indeksleri (leaving sayılmaz — koltuk kalkar kalkmaz boşalır, Y2). */
+/** Müşteri masasından KALKTI mı (B4: lavabo uğrağı da kalkmış sayılır — koltuğu boşalmıştır). */
+export const hasLeftTable = (state: NpcState): boolean =>
+  state === 'leaving' || state === 'toWc' || state === 'inWc';
+
 export function occupiedSeats(npcs: Npc[]): Map<number, Set<number>> {
   const occ = new Map<number, Set<number>>();
   for (const n of npcs) {
-    if (n.state === 'leaving') continue;
+    if (hasLeftTable(n.state)) continue;
     let set = occ.get(n.tableIndex);
     if (!set) {
       set = new Set();
@@ -342,6 +350,8 @@ export interface QuestCtx {
   charUpgrades: CharUpgrades;
   /** Garson tepsi kademeleri (v27/Y3; waiterTray görevleri için). */
   waiterUpgrades: WaiterUpgrades;
+  /** ODA: lavabo seviyesi (B4; lavaboLevel görevleri için — eski çağıranlar vermeyebilir → 0). */
+  lavaboLevel?: number;
 }
 
 /** Sayaç hedefinin baktığı kümülatif sayaç değeri (durum hedefleri için null). */
@@ -378,6 +388,7 @@ export function questTargetMet(target: QuestTarget, ctx: QuestCtx): boolean {
     }
     case 'waiterTray': return ctx.waiterUpgrades.tray >= target.tier;
     case 'charStat': return ctx.charUpgrades[target.stat] >= target.tier;
+    case 'lavaboLevel': return (ctx.lavaboLevel ?? 0) >= target.level;
     default: return false;
   }
 }
@@ -448,6 +459,7 @@ export function questFocusPos(
     case 'washDish': return sp.dish;
     case 'pad': return LAYOUT.padPos[target.id] ?? sp.station;
     case 'stationLevel': return sp.upgradeSpot;
+    case 'lavaboLevel': return LAVABO.spot; // oda açılınca pad'in yerini yükseltme noktası alır
     case 'tableLevel':
     case 'tablesAtLevel': {
       // O alandan başlayarak hedef seviyenin ALTINDAKİ ilk açık masanın yükseltme noktası

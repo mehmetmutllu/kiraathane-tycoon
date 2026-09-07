@@ -1454,3 +1454,59 @@ taşıma tavanını elle tahmin edip "3. garson hiçbir şey satın almıyor" de
 çıktı (+%19). **Ölçülmeden yazılan her cümle bir varsayımdır — elle yazılmış bir test dizisi kadar
 da bayatlar.** B1 aracın ÇIKTISI · B2 aracın VARSAYIMI · B3-1 aracın GÜRÜLTÜSÜ · B3-2 kaynağın
 KAPSAMI · B5a bekçinin KÖR NOKTASI · **B5b sayının ARKASINDAKİ CÜMLE.**
+
+---
+
+## D-067 — B4a: ODA (lavabo) = Kat 1'in SON gelir kolu; kol MÜŞTERİ BAŞINA biner ve MEKÂNDA toplanır
+**Tarih:** 2026-09-07 · **Durum:** UYGULANDI · **Rapor:** `docs/denge-raporu-b4.md`
+
+D-066 platoyu bulmuştu ama kolu "lavabo = pasif gelir çarpanı" diye tarif etmişti. B4 önce kolun
+NEREYE binmesi gerektiğini ölçtü, sonra kullanıcı biçimini düzeltti.
+
+**Karar 1 — Kat 1'de throughput kolu TÜKENDİ; kalan tek yön müşteri başına ₺ (ÖLÇÜLDÜ).**
+Servis merdiveni ₺ ile L6'da bittiği için arz **0,78 fincan/sn**'de tavan; taşıma tavanı tam
+kadroda **1,25**. Çay/dk'da kalan tüm baş boşluğu ×1,6 ve arkası ölü (garson havuzu 3'te sabit,
+karakter kademeleri bitiyor). Yani "ekonomi = throughput" kuralı iptal olmadı — **Kat 1 için
+tükendi**; yeni throughput Kat 2 ile gelir. Bu ölçüm olmadan B4'ün kolu keyfî bir tercih gibi
+görünüyordu; ölçümle birlikte tek seçenek hâline geldi.
+
+**Karar 2 — Aktif kâğıt döngüsü B4'ten ÇIKARILDI (yanlış değil, yanlış zamanda).**
+Eski tasarım (`zone34-wc-floor2-design.md`) kâğıt ikmalini aktif angarya olarak kurmuştu. Ölçüm:
+platonun tam olduğu pencerede (L6 · 12 masa · 3 garson) oyuncunun taşıma kolundaki **boş zaman
+payı yalnız %5**, kâğıt turu ise zamanının **%31**'i → döngü tam orada geliri KESER. Şerit
+dolduktan sonra boş pay %74'e çıkıyor ve aynı döngü bedava sığıyor. → Faz C/D'ye ertelendi.
+
+**Karar 3 — Kolun biçimi: çarpan DEĞİL, odanın KENDİ İSTİFİ (kullanıcı düzeltmesi).**
+Önerilen "bahşiş çarpanı" reddedildi. Doğrusu: müşteri masasında ödeyip kalkar, çıkmadan
+lavaboya uğrar (girer–çıkar, içeride görünmez), çıkışta parasını **odanın önündeki istife**
+bırakır; oyuncu gidip toplar. Üç kazancı var: (a) para SUNUMU değişmiyor — aynı `Coin`, aynı
+Model B′ istifi, yalnız ikinci bir düşme noktası; (b) gelir "sayının büyümesi" değil MEKÂNSAL
+bir kazanç (aktif oynanış, D-012 ruhu); (c) fiyat ve bahşiş kollarına hiç dokunulmuyor →
+**D-010 delinmiyor**, çay 5 ₺ sabit kalıyor.
+
+**Karar 4 — Sayılar (onaylı ivme ×1,38/adım).** Kol `uğrama olasılığı × bırakılan ₺` olarak
+müşteri başına biner ve İKİ okunur sinyalle taşınır (tek sinyal yetmez kuralı): uğrama %30 → %55
+(gözle daha çok müşteri girer) ve ücret 18 → 86 ₺. Oda pad'le L1 doğar (3.000 ₺), L2..L6
+yükseltme noktasından gelir (4.000/5.000/7.000/9.000/11.500). Ölçülen sonuç: en uzun DÜZ aralık
+**1,42 sa → 13,4 dk**, zincir süresi **5,35 → 5,21 sa** (tempo bedeli yok), servis L6'ya kadarki
+her satır taban ile birebir. **Seviye maliyet eğrisinin DİKLİĞİ çarpanın kendisinden daha
+belirleyici çıktı:** dik eğri düz aralığı 41 dk'ya çıkarıyor, düz eğri 13 dk'da tutuyor.
+
+**Karar 5 — Görev hattı DÖNÜŞÜMLÜ.** Bir şerit masası → bir lavabo seviyesi → bir masa...
+Seviyeler şeridin ARASINA girmezse gelir yine donuyor ve kuyruk sabit hızda akıyor. Zincirde
+lavabo `waiter3`'ten sonra, `z3table5`'ten önce.
+
+**Karar 6 — Oda ile SEVİYE farklı kaynaklardan gelir.** Odanın kendisi `padsDone`'dan TÜRETİLİR
+(D-015; `world.rooms`), seviye ayrı persist edilir (yükseltme noktasından büyüdüğü için
+türetilemez). İkisinin çelişmesi store init'inde kelepçelendi: oda kapalıysa seviye 0, açıksa en
+az 1. `lavaboLevel` **additive** bir kayıt alanı → SAVE_VERSION 31'de kaldı (showFps deseni).
+
+**Karar 7 — Pad ile yükseltme noktası AYNI yerde.** Oda açılınca pad listeden düşer ve aynı
+nokta odanın yükseltme noktası olur; ikisi asla aynı anda etkin olmadığı için çakışma da
+imkânsız. "Her obje kendi yerinde yükselir" kuralının en sade hâli.
+
+**Bu adımın kalıcı dersi.** *Bir mekaniğin YANLIŞ olması ile YANLIŞ ZAMANDA olması ayrı
+şeylerdir ve ikincisi ölçülebilir.* Kâğıt döngüsü tasarım olarak sağlamdı; onu B4'ten çıkaran şey
+zevk değil, oyuncunun o penceredeki zaman bütçesiydi (%5 boşluğa %31'lik angarya). Aynı şekilde
+platoyu kıran şey de "daha büyük sayı" değil, **kolun zincire hangi aralıkla serpiştirildiğiydi**.
+B5b sayının ARKASINDAKİ CÜMLE idi · **B4 mekaniğin ZAMANI.**

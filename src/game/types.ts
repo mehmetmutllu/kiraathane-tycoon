@@ -3,8 +3,11 @@ import type { ProductId } from '../config/economy.config';
 export type Vec3 = [number, number, number];
 
 // D-011: çay artık oto servis edilmez. Müşteri oturur → 'waitingForTea' (sabır timer'ı)
-// → oyuncu/garson tepsiyle çay bırakınca 'drinking' → 'leaving'. Sabır biterse sessizce gider.
-export type NpcState = 'toTable' | 'waitingForTea' | 'drinking' | 'leaving';
+// → oyuncu/garson tepsiyle çay bırakınca 'drinking' → (lavabo açıksa 'toWc'/'inWc') → 'leaving'.
+// Sabır biterse sessizce gider (lavaboya da uğramaz — parasını ödememiştir).
+// B4: ödeyip kalktıktan sonra müşteri LAVABOYA uğrayabilir — 'toWc' kapıya yürür, 'inWc' içeride
+// (görünmez) bekler, çıkışta parasını lavabonun önündeki istife bırakıp 'leaving'e geçer.
+export type NpcState = 'toTable' | 'waitingForTea' | 'drinking' | 'toWc' | 'inWc' | 'leaving';
 
 export interface Npc {
   id: number;

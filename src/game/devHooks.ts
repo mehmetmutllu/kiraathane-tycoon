@@ -1,10 +1,10 @@
 // Test/dev kancaları. 3D sahne görsel doğrulanamaz; durum buradan okunur.
 // window.__game  -> salt-okunur anlık görüntü
 // window.__advanceTime(sn) -> simülasyonu hızlı ileri sar
-import { useGame, visiblePads, questCounterValue, LAYOUT, servicePlace, trayCapacity, dirtyTables, parkSpot } from './store';
+import { useGame, visiblePads, questCounterValue, LAYOUT, LAVABO, servicePlace, trayCapacity, dirtyTables, parkSpot } from './store';
 import { THE_SERVICE, sellsTost } from './world';
 import { perf, type PerfSnapshot } from './perf';
-import { economyConfig, levelProgress, charLevel, type CharStat } from '../config/economy.config';
+import { economyConfig, levelProgress, charLevel, lavaboVisitChance, lavaboFee, lavaboIncomePerCustomer, type CharStat } from '../config/economy.config';
 import type { SaveStats } from './save';
 import type { Vec3 } from './types';
 
@@ -81,6 +81,24 @@ export function installDevHooks(): void {
       tray: s.tray,
       trayFood: s.trayFood,
       trayCap: trayCapacity(),
+      // ODA: lavabo (B4) — seviye, gelir kolu ve noktaları. Testler kolun AKTİF olduğunu
+      // buradan doğrular (3D sahne görsel doğrulanamaz).
+      lavabo: {
+        level: s.lavaboLevel,
+        open: s.padsDone.includes('lavabo'),
+        visitChance: lavaboVisitChance(s.lavaboLevel),
+        fee: lavaboFee(s.lavaboLevel),
+        perCustomer: lavaboIncomePerCustomer(s.lavaboLevel),
+        spot: LAVABO.spot,
+        coinSpot: LAVABO.coinSpot,
+        inWc: s.npcs.filter((n) => n.state === 'inWc' || n.state === 'toWc').length,
+        // Odanın ÖNÜNDEKİ istif: kolun mekânsal karşılığı. Testler "gelir arttı" demez, parayı
+        // gerçekten lavabonun önünde bulur (masa istifiyle karışmasın diye yarıçap dar).
+        pileCount: s.coins.filter((c) => Math.hypot(c.pos[0] - LAVABO.coinSpot[0], c.pos[2] - LAVABO.coinSpot[2]) < 1.5).length,
+        pileValue: s.coins
+          .filter((c) => Math.hypot(c.pos[0] - LAVABO.coinSpot[0], c.pos[2] - LAVABO.coinSpot[2]) < 1.5)
+          .reduce((n, c) => n + c.value, 0),
+      },
       // Masa-başı yükseltme (Faz 2h): her masanın seviyesi + yanındaki yükseltme noktaları
       tableLevels: [...s.tableLevels],
       tableUpgradeSpots: LAYOUT.tables.map((t) => t.upgradeSpot),

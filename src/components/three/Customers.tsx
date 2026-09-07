@@ -61,7 +61,9 @@ export function Customers() {
       // etkilemediğinden = position(x,bobY,z) + RotY(facing). Tek dummy ile birebir.
       dummy.position.set(x, bobY, z);
       dummy.rotation.set(0, f.angle, 0);
-      dummy.scale.setScalar(1);
+      // B4: lavaboya giren müşteri İÇERİDEDİR — çizilmez (instancing'de ölçek 0). Kapıda
+      // kaybolur, `visitTime` sonra aynı yerde belirir: "girdi, çıktı" okunur.
+      dummy.scale.setScalar(npc.state === 'inWc' ? 0 : 1);
       dummy.updateMatrix();
       body.setMatrixAt(i, dummy.matrix);
       col.set(npc.color);

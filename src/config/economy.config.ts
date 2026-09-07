@@ -162,7 +162,8 @@ export type QuestTarget =
   | { type: 'tablesAtLevel'; level: number; count: number; area?: number }
   // Y3 garson tepsi yükseltmesi: garson havuzunun tepsi kademesi `tier`'a ulaşsın.
   | { type: 'waiterTray'; tier: number }
-  | { type: 'charStat'; stat: CharStat; tier: number }; // karakter özelliği bu kademeye ulaşsın (v20)
+  | { type: 'charStat'; stat: CharStat; tier: number } // karakter özelliği bu kademeye ulaşsın (v20)
+  | { type: 'lavaboLevel'; level: number }; // ODA: lavabo bu seviyeye ulaşsın (B4)
 
 /**
  * Personel yükseltme kademeleri. Kademe 0 = taban (garson tepsisi 1, leğen 2).
@@ -578,8 +579,15 @@ export const economyConfig = {
     { id: 'waiter3', label: '3. Garson', cost: 6000, fillRate: 1714, optional: false, area: 0, // ~3.5sn
       requires: { prev: ['z3table4'], minStationLevel: 6 }, effect: { type: 'hireWaiter' } },
 
+    // ODA (B4): şeridin masaları ancak lavabodan SONRA başlar. Sıra tesadüf değil — D-066'nın
+    // ölçümü platonun tam burada (servis L6 + masa L4 tavanda) başladığını söylüyor; şeridin sekiz
+    // masası bugün o donmuş bandın içinde duruyor. Lavabo geliri büyüten TEK kol olduğu için önce
+    // o kurulur, seviyeleri sonra şeridin masalarıyla DÖNÜŞÜMLÜ alınır (görev hattı sırası).
+    { id: 'lavabo', label: 'Lavabo', cost: 3000, fillRate: 857, optional: false, area: 2, // ~3.5sn
+      requires: { prev: ['waiter3'] }, effect: { type: 'openRoom', room: 'lavabo' } },
+
     { id: 'z3table5', label: '5. Masa', cost: 3700, fillRate: 1057, optional: false, area: 2,
-      requires: { prev: ['waiter3'] }, effect: { type: 'addTable' } },
+      requires: { prev: ['lavabo'] }, effect: { type: 'addTable' } },
     { id: 'z3table6', label: '6. Masa', cost: 4250, fillRate: 1214, optional: false, area: 2,
       requires: { prev: ['z3table5'] }, effect: { type: 'addTable' } },
     { id: 'z3table7', label: '7. Masa', cost: 4900, fillRate: 1400, optional: false, area: 2,
@@ -660,11 +668,20 @@ export const economyConfig = {
     // Hattın SONUNA eklendiler, araya değil: önlerindeki her görev B5a öncesiyle birebir aynı sırada
     // kalsın (ölçülen altı tempo bandı bu sıraya bağlı). Her zorunlu pad'in bir görevi olması
     // değişmez kural — pad'i görevsiz bırakmak HUD'da "görev bitti ama ekranda pad var" hâli olurdu.
+    // ODA + ŞERİT DÖNÜŞÜMLÜ (B4): bir masa → bir lavabo seviyesi → bir masa ... Ölçüm bu sırayı
+    // seçti: lavabo seviyeleri şeridin masalarının ARASINA girmezse gelir yine donuyor ve şeridin
+    // kuyruğu sabit hızda akıyor (plato 1,42 sa). Dönüşümlü alınınca en uzun düz aralık ~13 dk.
+    { id: 'q_lavabo', title: 'Lavaboyu aç', target: { type: 'pad', id: 'lavabo' }, area: 2, reward: 400 },
     { id: 'q_z3table5', title: 'Şerit: 5. Masayı aç', target: { type: 'pad', id: 'z3table5' }, area: 2, reward: 450 },
+    { id: 'q_lavabo2', title: 'Lavaboyu büyüt (L2)', target: { type: 'lavaboLevel', level: 2 }, area: 2, reward: 450 },
     { id: 'q_z3table6', title: 'Şerit: 6. Masayı aç', target: { type: 'pad', id: 'z3table6' }, area: 2, reward: 550 },
+    { id: 'q_lavabo3', title: 'Lavaboyu büyüt (L3)', target: { type: 'lavaboLevel', level: 3 }, area: 2, reward: 550 },
     { id: 'q_z3table7', title: 'Şerit: 7. Masayı aç', target: { type: 'pad', id: 'z3table7' }, area: 2, reward: 700 },
+    { id: 'q_lavabo4', title: 'Lavaboyu büyüt (L4)', target: { type: 'lavaboLevel', level: 4 }, area: 2, reward: 700 },
     { id: 'q_z3table8', title: 'Şerit: 8. Masayı aç', target: { type: 'pad', id: 'z3table8' }, area: 2, reward: 850 },
+    { id: 'q_lavabo5', title: 'Lavaboyu büyüt (L5)', target: { type: 'lavaboLevel', level: 5 }, area: 2, reward: 850 },
     { id: 'q_z3table9', title: 'Şerit: 9. Masayı aç', target: { type: 'pad', id: 'z3table9' }, area: 2, reward: 1050 },
+    { id: 'q_lavabo6', title: 'Lavaboyu büyüt (L6)', target: { type: 'lavaboLevel', level: 6 }, area: 2, reward: 1050 },
     { id: 'q_z3table10', title: 'Şerit: 10. Masayı aç', target: { type: 'pad', id: 'z3table10' }, area: 2, reward: 1300 },
     { id: 'q_z3table11', title: 'Şerit: 11. Masayı aç', target: { type: 'pad', id: 'z3table11' }, area: 2, reward: 1600 },
     { id: 'q_z3table12', title: 'Şerit: 12. Masayı aç', target: { type: 'pad', id: 'z3table12' }, area: 2, reward: 2000 },
@@ -678,6 +695,42 @@ export const economyConfig = {
    * (para-temelli değil → ekonomi dengesinden bağımsız, gelir enflasyonundan etkilenmez).
    * Eğri: needFor(L→L+1) = levelBase × levelGrowth^(L-1). 1. alanın sonu ≈ L5-6.
    */
+  /**
+   * ODALAR (B4 — D-066'nın plato kolu). Oda oturma EKLEMEZ; kendi gelir kolunu getirir.
+   *
+   * **LAVABO — neden ayrı bir gelir KALEMİ, çarpan değil (kullanıcı kararı 2026-09-07):**
+   * müşteri masasında ödeyip kalkar, çıkmadan önce lavaboya uğrar, çıkışta lavabonun ÖNÜNDEKİ
+   * noktaya para bırakır (Model B′ istifi — masalarınkiyle aynı `Coin`, yalnız düşme noktası
+   * farklı; para SUNUMU değişmez). Oyuncu üstünden geçince toplar.
+   *
+   * **Neden gelirin bu kolu var (ölçüm, B4 raporu):** Kat 1'de throughput kolu TÜKENDİ — arz
+   * servis L6'da 0,78 fincan/sn'de tavan yapıyor, taşıma tavanı tam kadroda 1,25. Çay/dk'da kalan
+   * tüm baş boşluğu ×1,6 ve sonra ölü (garson tavanı 3, karakter kademeleri bitiyor). Yeni
+   * throughput ancak KAT 2 ile gelir. Bu yüzden Kat 1'in son büyüme kolu MÜŞTERİ BAŞINA ₺'dir.
+   *
+   * **Sayılar (onaylı ivme ×1,38/seviye — B4 ölçümü):** müşteri başına lavabo geliri seviyede
+   * ×~1,55 büyür; iki okunur sinyalle taşınır (D: çoklu redundant sinyal):
+   *   - `visitChanceByLevel` %30 → %55: lavabo iyileştikçe GÖZLE daha çok müşteri uğrar,
+   *   - `feeByLevel` 18 → 86 ₺: bırakılan para büyür (istif daha hızlı kabarır).
+   * Çarpımları (5,4 → 47,3 ₺/müşteri) ölçülen hedef eğriyi birebir verir: plato 1,42 sa → ~13 dk,
+   * zincir süresi DEĞİŞMEZ (5,35 → 5,27 sa). Fiyat/bahşiş kolları tamamen SABİT kalır → D-010
+   * ("çay fiyatı sabit") delinmez.
+   */
+  rooms: {
+    lavabo: {
+      /** Oda kaç seviyeye çıkar (pad açılışı = L1; kalan basamaklar yükseltme noktasından). */
+      maxLevel: 6,
+      /** L1 pad'le gelir; L2..L6 bu maliyetlerle alınır (index = hedef seviye - 2). */
+      upgradeCosts: [4_000, 5_000, 7_000, 9_000, 11_500],
+      /** Müşterinin çıkarken lavaboya uğrama olasılığı (index = seviye - 1). */
+      visitChanceByLevel: [0.30, 0.35, 0.40, 0.45, 0.50, 0.55],
+      /** Uğrayan müşterinin lavabonun önüne bıraktığı ₺ (index = seviye - 1). */
+      feeByLevel: [18, 24, 32, 44, 60, 86],
+      /** Müşteri lavaboda kaç saniye kalır (girer-çıkar). */
+      visitTime: 2.5,
+    },
+  },
+
   xp: {
     /** Oyuncunun ELİYLE servis ettiği çay başına XP. */
     perTeaServed: 2,
@@ -862,6 +915,39 @@ export function tableUpgradeCost(level: number, area = 0): number {
   if (mult === 1) return Math.floor(base);
   return Math.round((base * mult) / 5) * 5;
 }
+
+/* ─────────────────────────── ODA: LAVABO (B4) ───────────────────────────
+ * Üç sayı da SEVİYEDEN okunur (index = seviye − 1; L0 = oda kapalı, kol yok). Kol gelire
+ * müşteri BAŞINA girer: uğrama olasılığı × bırakılan ₺. Throughput'tan bağımsızdır ama onunla
+ * ölçeklenir (servis hızlandıkça daha çok müşteri çıkar → istif daha hızlı kabarır). */
+
+/** Lavabonun ₺ ile çıkılabilen en yüksek seviyesi. */
+export const lavaboMaxLevel = (): number => economyConfig.rooms.lavabo.maxLevel;
+
+/** Mevcut seviyeden bir sonrakinin maliyeti (₺). L0 (kapalı) ve tavanda `null`. */
+export function lavaboUpgradeCost(level: number): number | null {
+  const r = economyConfig.rooms.lavabo;
+  if (level < 1 || level >= r.maxLevel) return null;
+  return r.upgradeCosts[level - 1] ?? null;
+}
+
+/** Çıkan müşterinin lavaboya uğrama olasılığı (0 = oda kapalı). */
+export function lavaboVisitChance(level: number): number {
+  const r = economyConfig.rooms.lavabo;
+  if (level < 1) return 0;
+  return r.visitChanceByLevel[Math.min(level, r.maxLevel) - 1];
+}
+
+/** Uğrayan müşterinin lavabonun önüne bıraktığı ₺ (0 = oda kapalı). */
+export function lavaboFee(level: number): number {
+  const r = economyConfig.rooms.lavabo;
+  if (level < 1) return 0;
+  return r.feeByLevel[Math.min(level, r.maxLevel) - 1];
+}
+
+/** Servis edilen MÜŞTERİ başına lavabo geliri (₺) — gelir modelinin okuduğu tek sayı. */
+export const lavaboIncomePerCustomer = (level: number): number =>
+  lavaboVisitChance(level) * lavaboFee(level);
 
 /** Servis başına ek bahşiş (₺) — masa seviyesiyle artar (çay fiyatı sabit kalır). Faz 2h. */
 export function tableTip(level: number): number {

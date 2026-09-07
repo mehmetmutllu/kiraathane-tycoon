@@ -1286,9 +1286,9 @@ yerleşim taşınırken de kullanılacak. Kullanım dosya başında.
 maket ölçeğine taşı (artık tek dosya: `layout.ts`), (3) kayıt v31 + migrasyon, (4) G4/G5 KayKit.
 Faz G artığı: UI Canvas'ları hâlâ eski düz ışıkla.
 
-## Faz B — Model geçişi 🔧 (7/10 · B0 + B1 + B2 + B3-1 + B3-2 + B5a + B5b bitti)
+## Faz B — Model geçişi 🔧 (8/11 · B0 + B1 + B2 + B3-1 + B3-2 + B5a + B5b + B4a bitti)
 > **Adım sırası (2026-09-07'de düzeltildi — D-063):**
-> B0 · B1 · B2 · B3-1 · B3-2 · **B5a** · **B5b** → **B4** → **B6a** → **B6b**
+> B0 · B1 · B2 · B3-1 · B3-2 · **B5a** · **B5b** · **B4a** → **B4b** → **B6a** → **B6b**
 > (D-066: B4 platoyu kıran gelir kolunu taşıdığı için şeridin SON fiyatı B4'ten sonra ölçülür.)
 >
 > İki düzeltme yapıldı:
@@ -1522,9 +1522,42 @@ Kesme çizgisi: **B5a = model + pad zinciri + masa tipleri (denge SABİT tutulur
     `allAreaTablesLevel` gate'inin ÜYESİ KALMADI. Mekanizmalar duruyor; Faz D'nin meta katmanı
     opsiyonel pad getirmezse ikisi de silinmeli. Boşluk teste yazıldı (kaza değil karar).
 
-### B4 — Odalar ⏳ (SIRA: ŞİMDİ — D-066 plan düzeltmesi: platoyu kıran kol burada)
-Lavabo (oturma eklemez, pasif çarpan, kendi seviyeleri) + yıkık merdiven ("Kat 2 çok yakında").
-Arka bandın içi burada açılır — B3-1'de bant kütle olarak duruyor.
+### B4 — Odalar 🔧 (B4a BİTTİ · B4b sırada)
+Kullanıcı kuralı gereği ikiye bölündü (mantık ile görsel ayrı parçada):
+**B4a = gelir kolu + oda modeli + NPC uğrağı (mantık)** · **B4b = merdiven + odanın içi (mekân)**.
+
+- ✅ **B4a — LAVABO: Kat 1'in son gelir kolu (D-067, `docs/denge-raporu-b4.md`)**
+  - **Ölçüm 1 — throughput kolu Kat 1'de TÜKENMİŞ:** arz servis L6'da 0,78 fincan/sn'de tavan,
+    taşıma tavanı tam kadroda 1,25 → çay/dk'da kalan tüm baş boşluğu ×1,6 ve arkası ölü. Kalan
+    tek büyüme yönü MÜŞTERİ BAŞINA ₺; yeni throughput ancak Kat 2 ile gelir.
+  - **Ölçüm 2 — aktif kâğıt döngüsü ÇIKARILDI:** platonun tam penceresinde (L6 · 12 masa ·
+    3 garson) oyuncunun taşıma boşluğu %5, kâğıt turu ise zamanının %31'i → orada geliri KESER.
+    Şerit dolduktan sonra boşluk %74 → Faz C/D'ye ertelendi.
+  - **Kolun biçimi (kullanıcı düzeltmesi): çarpan değil ODANIN KENDİ İSTİFİ.** Müşteri ödeyip
+    kalkar → lavaboya uğrar (içeride görünmez) → çıkışta parasını odanın ÖNÜNE bırakır → oyuncu
+    toplar. Aynı `Coin`, aynı Model B′ istifi — para sunumu DEĞİŞMEDİ, ikinci bir düşme noktası
+    doğdu. Fiyat/bahşiş sabit → D-010 delinmedi.
+  - **Sayılar (onaylı ivme ×1,38/adım):** uğrama %30→%55 · ücret 18→86 ₺ (iki okunur sinyal);
+    pad 3.000 ₺ (L1), seviyeler 4.000/5.000/7.000/9.000/11.500. Görev hattı DÖNÜŞÜMLÜ
+    (bir şerit masası → bir lavabo seviyesi). **Plato 1,42 sa → 13,4 dk; zincir 5,35 → 5,21 sa
+    (tempo bedeli YOK); servis L6'ya kadarki her satır taban ile birebir.**
+  - **Kod:** `world.ts` odaları türetir (`openRoom` etkisi + `roomOpen`) · `layout.ts` `LAVABO`
+    (pad = yükseltme noktası = müşteri kapı hedefi AYNI nokta) · `types.ts` NPC durumları
+    `toWc`/`inWc` · `tick.ts` uğrama + istif + `lavaboUpgradeSystem` · `rules.ts` `hasLeftTable`
+    (lavabodaki müşteri KOLTUĞU tutmaz) + `incomeRate`'in dördüncü parametresi · `store/save`
+    `lavaboLevel` **additive** (SAVE_VERSION 31'de KALDI) · `Scene.LavaboFront` (kapalıyken
+    tadilat hâli: tahta perde + uyarı bandı; açıkken kapı + çini bordür + seviye noktaları) ·
+    `Customers` içeridekini çizmez · `simulate.ts`'e kol kalıcı olarak girdi.
+  - **Doğrulama:** vitest **270/270** (yeni `tests/room-b4.test.ts` 12) · build + `tsc -b` temiz ·
+    eslint 16 (değişmedi) · smoke **28/28** (yeni: pad gerçek yerinde açılıyor + ücret odanın
+    önündeki istifte birikiyor) · `simulate.ts` L6 öncesi tüm satırlar taban ile birebir.
+  - **Yan bulgu (B4'ün suçu değil, açık kalem):** Normal profilde en uzun "hiçbir şey alınamayan"
+    bekleme 26,9 dk ve tabanda da var → `zone3` pad'i (3.400 ₺). 20 dk ölçütünü aşan tek nokta.
+
+- ⏳ **B4b — merdiven + odanın İÇİ (mekân/görsel).** Yıkık merdiven ("Kat 2 çok yakında",
+  alınamaz — D-058 karar 2) · lavabonun içi hacim kazanır (kabinler · ayna · fayans · tavan
+  ışığı; "mekân hacim olmalı" kuralı) · arka bandın içinin okunur hâli. B4a'da oda dışarıdan
+  okunuyor ama içi düz karanlık bir düzlem.
 
 ### B6 — Maketin SANAT KATMANI ⏳ (iki oturum, alan alan)
 Eski adıyla **G4/G5** + maket v13'ün prop/donanım yerleşimi. Bugün oyunda 16 dosya var,

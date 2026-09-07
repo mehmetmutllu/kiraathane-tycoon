@@ -74,6 +74,23 @@ export const BAND = {
 } as const;
 
 /**
+ * LAVABO ODASI (B4) — bandın `wc` bloğunun içi. Oda YÜRÜNMEZ (bant kütlesi); müşteri kapıda
+ * kaybolur, `visitTime` sonra aynı yerde belirir ve çıkışta parasını `coinSpot`'a bırakır.
+ *
+ * `spot` ÜÇ işi birden görür ve bu bilinçli: (1) odayı açan pad, (2) oda açıldıktan sonra onun
+ * yükseltme noktası, (3) müşterinin kapı hedefi. Pad bitince listeden düştüğü için ikisi asla
+ * aynı anda etkin olmaz — "her obje kendi yerinde yükselir" kuralının en sade hâli.
+ */
+export const LAVABO = {
+  /** Kapının x'i (bandın ön yüzünde) — pad, yükseltme noktası ve müşteri hedefi aynı nokta. */
+  spot: [13.4, 0, -9.3] as Vec3,
+  /** Kapı eşiği: müşteri buraya varınca içeri girer (görünmez olur). */
+  door: [13.4, 0, -9.55] as Vec3,
+  /** Çıkarken parasının bırakıldığı yer — lavabonun ÖNÜNDEKİ istif (masalarınkiyle aynı desen). */
+  coinSpot: [13.4, 0.3, -8.4] as Vec3,
+} as const;
+
+/**
  * ALAN DİKDÖRTGENLERİ — şablon değil AÇIK LİSTE (maket v13'ün açılma sırası):
  * a0 ön-sol çeyrek · a1 ön-sağ çeyrek · a2 arka yarının tamamı (bandın önü).
  * Ön çeyrekler eş (17 × 17), arka yarı değil (34 × 9,8) — eş olmadıkları için şablon kalktı.
@@ -471,6 +488,11 @@ export const LAYOUT = {
     // batıda servis bloğunun önündeki personel şeridi, doğuda onun aynası.
     waiter2: [-14.7, 0, -5.0] as Vec3,
     waiter3: [14.7, 0, -5.0] as Vec3,
+    // ODA (B4): lavabonun KAPISININ önünde. x = 13,4 tesadüf değil — şeridin dış sütununun
+    // yükseltme noktası [11,7 · −7,3] ile arada 2,55 br kalsın diye (PAD_RADIUS + TABLE_UP_RADIUS
+    // = 2,3): oyuncu lavaboyu doldururken masa 12'yi yükseltmeye başlamamalı. Oda açılınca bu pad
+    // biter ve AYNI nokta lavabonun yükseltme noktası olur (LAVABO.spot) — obje-başı yükseltme.
+    lavabo: LAVABO.spot,
   } as Record<string, Vec3>,
   // --- Collision footprint'leri (yarı-boyut [hx,hz]; D-016): GÖRSEL mesh'lere yaslı → oyuncu objeye
   // "değiyor gibi" sokulur, arada boşluk kalmaz. (ocak tezgah 2.2×0.8, bulaşık 1.4×0.8, masa r0.5, sandalye 0.42.)
