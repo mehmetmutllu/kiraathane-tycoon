@@ -1693,3 +1693,11 @@ tek yönlü sıra. Ölçü hedefi kullanıcı kararıyla **A**: kat 34 × 34, du
 - ⏳ BM adım 3 arka bant + odalar · adım 4 kamera · **DONDURMA + maket arşiv damgası**.
 - ⏳ Sonra: `simulate.ts` TEK KEZ yeniden ölçülür (masa aralığı 3,20 → 6,40 oldu, eski denge
   ölçümleri geçersiz), ardından Faz 4 → 5 → 7 → 8.
+
+### v1.0 bütçe denetimi (2026-09-07)
+Pano `docs/pano/ilerleme-panosu.html` güncellendi: **51/72** (Faz B 9 → 12, toplam 69 → 72,
+v1.0 kilometre taşı 68 → 71). Gerekçe: maket taşıması tek oturuma sığmıyor ve **ölçü donmadan
+denge ölçülemez** — bütçe düzeltilmeseydi BM işi Faz C'nin ölçüm turlarına sızar, ölçümler iki kez
+yapılırdı. **v1 kapsam çizgisi:** prestij · Kat 2 · sipariş nesnesi · aktif WC döngüsü · dekor
+instancing **v1.1'e**; v1 = Kat 1 + elmas/Usta + offline tavan + reklam/IAP + mağaza.
+**Açık risk:** gölgenin telefondaki maliyeti ölçülmedi (Faz F).

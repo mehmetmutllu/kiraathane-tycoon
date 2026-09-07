@@ -19,6 +19,25 @@ tartışması yerine **bağımlılık yönü** çözüldü: yalnız GEOMETRİ ba
 32 × 32 + KayKit duvarı (4,00) ölçüldü ve **reddedildi** (onaylı maket yeniden açılırdı, kayan kapı
 çatışırdı). KayKit yalnız mobilya tarafında.
 
+### v1.0 YAYIN PLANI — DENETLENDİ (2026-09-07 gece, kullanıcı isteği)
+Plan bu hâliyle v1'i çıkarır, ama **bütçe yanlıştı**: pano Faz B'ye 1 oturum bırakmıştı, maket
+taşıması ise 3 oturum. Bırakılsaydı iş kaybolmaz, **Faz C'nin denge ölçümlerinin arasına sızardı**
+ve ölçü sonradan değiştiği için o ölçümler ikinci kez yapılırdı. Pano düzeltildi: **B 9 → 12**,
+toplam **69 → 72**, v1.0 kilometre taşı 68 → **71. oturum**.
+
+**Kalan yol (pano ile birebir):** B 3 oturum (duvar · arka bant+odalar · kamera+DONDURMA) →
+C zincir/denge 5 (ölçü donduktan sonra TEK ölçüm turu) → D meta 5 → E arayüz/cila 3 → F paketleme
+ve yayın 5. **21 oturum.**
+
+**v1 KAPSAM ÇİZGİSİ (bu oturumda çekildi) — v1.1'e bırakılanlar:** Prestij "Renovasyon" · Kat 2
+(D-050 zaten ertelemişti) · sipariş NESNESİ (D-058 karar 1) · aktif WC kâğıt döngüsü + temizlikçi ·
+dekorun tek InstancedMesh'e toplanması (yalnız FPS ölçümü zorlarsa v1'e alınır).
+**v1 = Kat 1 + elmas/Usta + offline tavan + reklam/IAP + mağaza.**
+
+**Açık risk:** gölgenin telefondaki maliyeti ölçülmedi (masaüstünde D-054'te ~+0,6 ms). Ölçüm
+Faz F'de; ayar kolları harita 1024 ve gölge kamerasını oyuncu çevresine daraltmak. **Gölgesizliğe
+dönmek çözüm değil** (D-073 kullanıcı kararı).
+
 ### >>> SONRAKİ OTURUMDA İLK İŞ <<<
 **BM adım 1 — DUVAR.** `worktree-maket-tasima` dalı (uzakta `6e61e4c`) main'e alınır: duvar 3,20 ·
 lambri 0,90 · üç katman · koyu çıta; dekorun asma bandı maketin değerlerinde. Dal main'den geride

@@ -188,8 +188,8 @@ h2{font-size:21px;font-weight:800}
      ══════════════════════════════════════════════════════════════════════ -->
 <script type="application/json" id="durum">{
   "guncelleme": "07.09.2026",
-  "yapilan": 50,
-  "toplam": 69,
+  "yapilan": 51,
+  "toplam": 72,
   "kilometre": [
     {
       "at": 28,
@@ -200,41 +200,39 @@ h2{font-size:21px;font-weight:800}
       "etiket": "Kat 1 planı kesinleşti"
     },
     {
-      "at": 54,
+      "at": 57,
       "etiket": "Model ve denge oturdu"
     },
     {
-      "at": 68,
+      "at": 71,
       "etiket": "v1.0 App Store"
     }
   ],
   "ozet": {
-    "etiket": "Bu oturum · Faz B · 8/9 — B6a bitti",
-    "baslik": "Duvar programı makette 3,2 metre yüksekti, oyunda 1,2 — televizyon havada duruyormuş",
-    "aciklama": "Bu oturum maketin ön iki çeyreğindeki <b>dekoru</b> oyuna taşıdı. Program birebir kopyalanamadı, çünkü iki şey ölçüldü. Birincisi: oyunun duvarları <b>kesit duvarı</b>, yani kamera tepeden baktığı için tavana kadar çıkmıyorlar (1,2 birim; makette 3,2). Maketin duvara astığı her şey bu duvarın <b>üstüne</b> düşüyordu — nitekim <b>televizyon bugüne kadar duvarın üstünde havada duruyordu</b> ve kimse fark etmemişti.<br><br>İkincisi: kamera hep aynı yöne baktığı için yan duvarlar neredeyse <b>profilden</b> görünüyor. Maketin penceresi birebir küçültülünce ekranda <b>koyu kahve dikey çubuklara</b> dönüştü. Çözüm ikisinde de aynı oldu: <b>ağır parçalar duvardan indi, zemine oturdu</b>; duvarda kalanlar ise odaya doğru <b>taşacak</b> şekilde yeniden kuruldu.",
+    "etiket": "Bu oturum · Faz B · 9/12 — ölçü kararı, gölge ve maketin masası",
+    "baslik": "Tasarımla sistem birbirini geçersiz kılıyordu; sebep sıra değil, bağımlılığın yönüymüş",
+    "aciklama": "Oturum bir düzen sorusuyla açıldı: <b>“önce tasarım mı kusursuzlaşsın, yoksa sistem mi”</b>. Sıra iki gecede iki kez dönmüştü, çünkü soru yanlış soruluyordu. Ölçüm sebebi verdi: <b>bağımlılık tek yönlü</b> — geometri değişince bütün denge ölçümleri (yürüme süresi = çay/dk) çöpe gidiyor, tersi olmuyor. Yani öncelik “hangisi daha önemli” değil, <b>hangisi diğerini geçersiz kılıyor</b>.<br><br>Bunun üstüne üç katman kuruldu: <b>1) ölçü/ankraj → 2) sistem → 3) sanat cilası</b>. Ankrajlar (masa merkezleri, servis yüzü, pad noktaları, yol bulma katıları) bir kez donar; sanat cilası onlara <b>dokunamaz</b>, böylece kaç tur dönerse dönsün denge bozulmaz. İkinci kök sebep de kayda geçti: maket ile oyun <b>iki ayrı program</b> (r128 + renk yönetimsiz ↔ three 0.184 + ACES), o yüzden “yan yana koy, aynı mı” kabul kriteri hiçbir zaman kapanamıyordu. Kriter artık <b>sayı listesi</b>.",
     "adimlar": [
-      "<b>Televizyon yere indi:</b> artık kendi ünitesinin üstünde duruyor — hem havada durma kusuru kapandı hem kameranın gerçekten gördüğü bir <b>üst yüzey</b> doğdu; aynı şey konsol/büfe için de yapıldı",
-      "<b>Pencereler yeniden kuruldu:</b> derin denizlik (odaya taşar) + açık renk doğrama + <b>duvarın tepesine basılan cam bandı</b> — mimari kesitte camın taranması gibi, profilden bakışta bile “burada açıklık var” okunuyor",
-      "<b>Giriş holü kapıdan doğuyor:</b> paspas, askılık ve şemsiyelik kapının iki yanında ve <b>kapıyla birlikte taşınıyorlar</b> (kapı 2. salon açılınca cephenin ortasına kayıyor)",
-      "<b>İki çeyrek artık birbirinin kopyası değil:</b> sol yarı “ocak duvarı” (televizyon, büfe, paltolar, ahşap), sağ yarı “cam kenarı” (üç pencere, petek, saksılar, aydınlık)",
-      "<b>Boşluk bölgelere ayrıldı:</b> kapıdan salona giden aksın iki yanına saksı — düzensizlik hissini kıran şey obje sayısı değil, boşluğun <b>hol · salon · duvar dibi</b> diye okunması",
-      "<b>İki eski açık kalem kapandı:</b> boşta bekleyen garson ve bulaşıkçı, oyuncunun yükseltme işaretinin <b>üstünde</b> duruyordu (bulaşıkçı 32 santim) — ikisi de taşındı; ve <b>3. Salon</b> 26,9 dakikalık bir bekleme yaratıyordu, 3.400 → 2.500 ₺'ye indi (<b>19,6 dakika</b>), zincirin geri kalanı birebir aynı kaldı",
-      "Testler <b>279/279</b>, duman testi <b>28/28</b>; dekorun kendi bekçi testi de yazıldı (hiçbir parça bir işaretin ya da satın-alma noktasının üstünde duramaz)"
+      "<b>Ölçü hedefi seçildi:</b> kat 34 × 34, duvar 3,20 — maket v13 aynen. 32 × 32 + KayKit duvarı (4,00) ölçüldü ve reddedildi: onaylı maketi yeniden açardı, kayan kapıyla çatışırdı",
+      "<b>Dev'e üstten plan geldi:</b> katın tamamını tepeden gösteren kamera + zemine 3,20 / 4,00 adımlı <b>ölçü ızgarası</b> — maket ve oyun artık aynı kadrajdan karşılaştırılıyor",
+      "<b>Gölgeler geri açıldı</b> (eski “gölge yok” kararı kullanıcı tarafından geri alındı); takım maketin kendi değerleri — yumuşak gölge, 2048 harita, güneş 14/26/16",
+      "<b>Zemin parkeden çıktı:</b> maketin düz ahşabı (#b98a5a); tahta çizgileri kalktı, ölçek referansını artık gölge veriyor",
+      "<b>Masa dili maketin ölçüsüne çıktı:</b> ön çeyreğin çay masası 0,90 → <b>1,75</b>, küme aralığı 3,20 → <b>6,40</b>, koltuklar ∓0,78 → <b>∓1,45</b>; şeridin ikili masası (1,00) olduğu gibi kaldı — maketteki <b>iki mobilya dili</b> arasındaki fark geri geldi"
     ],
-    "not": "<b>Bu oturumun dersi: bir tasarımı taşırken kopyalanan şey program değil, programın DAYANDIĞI koşullardır.</b> Maketin duvar programı doğruydu — ama maketin kamerası dönebiliyor ve duvarı tavana kadar çıkıyor. Oyunda ikisi de yok. Aynı öğeleri aynı yerlere koymak “makete sadık” olmak değil, maketi <b>yanlış okumak</b> olurdu. Nitekim havada duran televizyon, tam da bu sadakatin bir kalıntısıymış.<br><br>İkinci not: görsel kararlar bu oturumda <b>tek bir “sonra” görüntüsüyle</b> verilmedi. Pencere üç kez kuruldu, üçü de aynı kadrajdan çekilip karşılaştırıldı; ilk ikisi ekranda okunmadığı için elendi."
+    "not": "Ölçü değişimi beş testi düşürdü ve beşi de <b>ölçüye bağlanarak</b> düzeltildi (teslim mesafesi artık masanın ayak izinden türüyor, sabit sayı değil). <b>280/280 yeşil.</b> Karşılaştırma raporu: <code>docs/olcu-plan-karar.html</code>"
   },
   "siradaki": {
-    "etiket": "Faz B · B6b — arka yarı ve bant (Faz B'nin son adımı)",
-    "baslik": "Katın arkası hâlâ dolu bir kütle: kapının arkasında oda yok",
-    "aciklama": "Salonun arkasındaki bant bugün <b>içi olmayan bir blok</b>. Lavabonun kapısı bandın ön yüzüne yapıştırılmış altı düz düzlemden ibaret; müşteri kapıya varınca <b>görünmez oluyor</b>, 2,5 saniye sonra aynı yerde beliriyor. Merdiven de öyle: “Kat 2 çok yakında” demesi gereken yıkık merdiven henüz yok.<br><br>B6b bu üç işi birden yapıyor ve Faz B'yi kapatıyor. Bitince ölçüt şu: <b>salona bakınca maket tanınıyor</b>.",
+    "etiket": "Faz B · BM adım 1 — duvar (3,20) main'e alınıyor",
+    "baslik": "Duvar hâlâ 1,20: salon bir oda değil, bir kesit",
+    "aciklama": "Bugünkü duvar <b>bir insanın omzunun altında</b> bitiyor (1,20; insan 1,60). Maketin duvarı <b>3,20</b> ve asılan her şeyin yeri ona göre: tablo 1,95 · aplik 2,05 · saat 2,20. Duvar yükselmeden dekorun yarısı ya havada duruyor ya duvarın üstüne taşıyor.<br><br>İş <b>zaten yazılmış</b> durumda: <code>worktree-maket-tasima</code> dalında duvar maketin profiliyle kurulu (3,20 · lambri 0,90 · üç katman · koyu çıta). Dal bu gecenin ışık/masa/zemin değişikliklerinin gerisinde kaldığı için birleştirmede çakışma bekleniyor.",
     "adimlar": [
-      "<b>Sedir köşesi:</b> üç sedir U düzeninde, alçak sehpalar, minderler, soba",
-      "<b>Servis bloğunun içi + bandın okunur hâli</b> — bugün tek renk bir kütle",
-      "<b>Lavabonun içi:</b> kabin, ayna, fayans, tavan ışığı (“mekân hacim olmalı” kuralı)",
-      "<b>Yıkık merdiven:</b> perdesiz, uyarı şeridiyle — alınamaz ama <b>görünür</b>; güncellemenin kancası",
-      "<b>Üç görsel soru kullanıcıya sorulacak:</b> masaların üstüne sarkıt lamba mı · pencerelerin önüne zemine düşen gündüz ışığı mı · şeridin ortası (kapı–merdiven geçidi) hangi objeyle dolacak"
+      "<b>Duvar dalı main'e:</b> çakışmalar duvar paneli · dekor · palet dosyalarında çözülür, ölçü listesi testiyle doğrulanır",
+      "<b>Arka bant ve odalar:</b> servis köşesi, lavabo, merdiven — maketin koordinatlarıyla",
+      "<b>Kamera:</b> oyunun 50°'lik açısı ile maketin 34°'si karşılaştırılır, kadraj kararı verilir",
+      "<b>ÖLÇÜ DONAR</b> + maket arşiv damgasını alır: bundan sonra tek yetkili oyunun kendisi",
+      "<b>Denge tek seferde yeniden ölçülür</b> (masa aralığı 6,40 oldu; eski tempo tablosu geçersiz)"
     ],
-    "not": "<b>Sonraki oturuma devreden ölçüm:</b> dekor katmanı şu an her parçayı ayrı çiziyor ve en yoğun kadrajda çizim çağrısını 104'ten 167'ye çıkarıyor. Duvarlar ve zemin deseni bu işi çoktan <b>tek çizime</b> topluyor; dekor da aynı yola girecek ama bu bir <b>paketleme</b> işi, sanat işi değil — Faz F'ye yazıldı.<br><br>Ayrıca zincirde <b>20 dakikayı aşan iki bekleme daha</b> var ve ikisi bilerek duruyor: tezgâhın son basamağı (dikliği kasıtlı — düzleştirmek platoyu geri getirir) ve simülatörün masaları tek kalemde yükseltmesinden doğan bir <b>model kusuru</b> (oyunda masalar tek tek alınıyor)."
+    "not": "<b>v1 kapsam çizgisi (bu oturumda çekildi):</b> yayına <b>Kat 1</b> çıkar. Prestij “Renovasyon”, Kat 2, sipariş nesnesi ve aktif tuvalet döngüsü <b>v1.1'e</b> bırakıldı; meta katmanı elmas + Usta seviyesi + offline tavanla sınırlı. Faz B'nin bütçesi 9 → 12 oturuma çıkarıldı: maket taşıması tek oturuma sığmıyor ve <b>ölçü donmadan denge ölçülemez</b>."
   },
   "donemler": [
     {
@@ -324,10 +322,10 @@ h2{font-size:21px;font-weight:800}
         {
           "k": "B",
           "t": "Model geçişi",
-          "d": "ZONE → alan/servis/masa/oda ayrıştı · üç ocak tek tezgâha indi · kat 34 × 34 · orta şerit ve banket adaları · masa 12 → 20 ve masa tipleri · gelirin üç tavanı ölçüldü · lavabo odası ve son gelir kolu · ön çeyreklerin sanat katmanı. Kalan: <b>B6b — arka yarı ve bant</b> (sedir köşesi, servis bloğunun içi, lavabonun içi, yıkık merdiven)",
-          "yapilan": 8,
-          "toplam": 9,
-          "kapi": "Maketin altı adımı geziliyor VE salon makete bakınca tanınıyor",
+          "d": "Maketin altı adımının oyuna taşınması. <b>Bütçe düzeltmesi (D-072):</b> 9 → 12. Kalan üç oturum <b>maket taşımasının</b> kendisi: duvar (3,20) · arka bant ve odalar · kamera + <b>ölçü dondurma</b>. Ölçü donmadan denge ölçülemez — masa aralığı bu oturumda 3,20'den 6,40'a çıktı ve eski tempo ölçümlerini geçersiz kıldı.",
+          "yapilan": 9,
+          "toplam": 12,
+          "kapi": "Ölçü listesi tutuyor (sayıyla) + salon makete bakınca tanınıyor",
           "durum": "now"
         },
         {
@@ -366,6 +364,20 @@ h2{font-size:21px;font-weight:800}
     }
   ],
   "gunluk": [
+    {
+      "tarih": "07.09.2026",
+      "etiket": "Faz B · 9. oturum (ölçü kararı · BM adım 2)",
+      "baslik": "Karışıklığın sebebi bulundu: ölçü, hem sanatın hem ekonominin ortak değişkeni",
+      "govde": "Oturuma tek cümlelik bir şikâyetle girildi: <b>“bu tasarım ve geliştirme meselesi aşırı karıştı”</b>. Cevap vermeden önce günlük okundu ve karışıklığın <b>dört kök sebebi</b> ölçüldü.<br><br>Birincisi ve en pahalısı: <b>maket ile oyun iki ayrı program.</b> Maket eski bir three sürümünü renk yönetimi olmadan kullanıyor, oyun renk-doğru çalışıyor. Aynı geometriden aynı görüntü <b>hiçbir zaman</b> çıkmayacak — ölçüldü: aynı zemin makette 201, oyunda 118 parlaklıkta. Kabul kriteri “yan yana koy, aynı mı” olduğu sürece hiçbir tasarım turu kapanamıyordu; nitekim üç tur üst üste reddedilmişti.<br><br>İkincisi: <b>geometri aynı anda hem sanat hem oynanış.</b> Masa aralığı yürüme süresidir, yürüme süresi çay/dakikadır, o da ekonominin kendisi. Yani tasarım her oynadığında denge ölçümleri geçersizleşiyor — <b>ama tersi olmuyor.</b> Bağımlılık tek yönlü olduğu için sıra sorusunun cevabı da tekti: önce ölçü donar.<br><br>Üçüncüsü: “tasarım” tek kelime ama iki ayrı iş — <b>açık uçlu sanat arayışı</b> ile <b>onaylı maketi port etme</b>. Maket zaten onaylıydı; kalan iş ikincisi, yani kapalı uçlu ve ölçülebilir. Dördüncüsü: asıl darboğaz ikisi de değil, hiç el değmemiş <b>yayın katmanı</b>.<br><br>Karar verildikten sonra oturumun kalanı uygulamaya gitti. Önce istenen alet yapıldı: <b>oyunun planını maketteki gibi üstten gösteren kamera</b> ve zemine ölçü ızgarası çizen anahtar. İkisi yan yana konunca fark sayıya döküldü: kat planı birebir tutuyordu ama <b>mobilya yarım boydaydı</b> — kümenin ayak izi maketin dörtte biri. Sebep de çıktı: oyun, <b>orta şeridin küçük kafe masasını ön çeyreklere de uygulamış</b>; makette ise iki ayrı mobilya dili var.",
+      "maddeler": [
+        "<b>Üç katman kuruldu:</b> ölçü/ankraj → sistem → sanat cilası; sanat katmanı ankrajlara dokunamaz, böylece cila turları dengeyi bozamaz",
+        "<b>Ölçü hedefi seçildi (34 × 34 · duvar 3,20):</b> alternatif 32 × 32 + KayKit modülü ölçüldü — ızgaraya üçe birden bölünüyordu ama onaylı maketi yeniden açmayı ve kayan kapıyı çözmeyi gerektiriyordu",
+        "<b>Gölge geri geldi:</b> maketin ışık takımı birebir alındı; “objeler yüzüyor” hissini kapatan şeyin güneş açısı değil gölgenin kendisi olduğu görüldü",
+        "<b>Zemin düz ahşap oldu</b> ve masa ölçüleri maketin değerlerine çıktı (1,75 · 6,40 · ∓1,45); çarpışma kutuları artık masanın <b>tipinden</b> türüyor",
+        "<b>Testler ölçüye bağlandı:</b> düşen beş test sabit sayı yerine ayak izinden türeyen değerlerle yeniden yazıldı — 280/280"
+      ],
+      "not": "Bilerek kabul edilen bedel: masa aralığı 3,20 → 6,40 olduğu için <b>bugünkü denge ölçümleri geçersiz</b>. Yeniden ölçüm ölçü donduktan sonra <b>tek seferde</b> yapılacak; şimdi ölçmek ikinci kez ölçmek demek."
+    },
     {
       "tarih": "07.09.2026",
       "etiket": "Faz B · 7. oturum (B4a)",
@@ -639,6 +651,18 @@ h2{font-size:21px;font-weight:800}
     }
   ],
   "riskler": [
+    {
+      "sev": "Açık",
+      "renk": "now",
+      "b": "Gölge geri açıldı — telefondaki maliyeti <b>ölçülmedi</b>",
+      "p": "Gölge, masaüstünde ölçülüp kapatılmıştı: kare süresi 1,31 → 0,67 ms, yani <b>karenin yarısı</b>. Kullanıcı maketin gölgelerini görüp geri isteyince takım maketin değerleriyle açıldı (yumuşak gölge, 2048 harita, ±30 ortografik). Telefonda ne kadara mal olduğu <b>bilinmiyor</b>. Ölçüm Faz F'de yapılacak; ayar kolları hazır: harita 1024'e inebilir, gölge kamerası oyuncunun etrafına daraltılabilir. <b>Karar gölgesizliğe dönmek değil</b>, önce ölçmek."
+    },
+    {
+      "sev": "Plan",
+      "renk": "now",
+      "b": "Faz B'nin bütçesi 9 → 12 oturuma çıktı",
+      "p": "Maket taşıması tek oturumluk bir iş değil: duvar · arka bant ve odalar · kamera + ölçü dondurma. Bütçe olduğu gibi bırakılsaydı iş kaybolmaz, <b>Faz C'nin denge ölçümlerinin arasına sızardı</b> — ve ölçü sonradan değiştiği için o ölçümler ikinci kez yapılırdı. v1.0 hedefi bu yüzden 68'den <b>71. oturuma</b> kaydı. Karşılığında Kat 1'in ölçüsü bir kez donuyor ve denge bir kez ölçülüyor."
+    },
     {
       "sev": "Çözüldü",
       "renk": "done",
