@@ -88,6 +88,9 @@ export function DevSandbox() {
   const timeScale = useSandbox((s) => s.timeScale);
   const infiniteMoney = useSandbox((s) => s.infiniteMoney);
   const hideHud = useSandbox((s) => s.hideHud);
+  const topDown = useSandbox((s) => s.topDown);
+  const topDownZoom = useSandbox((s) => s.topDownZoom);
+  const gridStep = useSandbox((s) => s.gridStep);
   const setSb = useSandbox((s) => s.set);
 
   const wallet = useGame((s) => s.wallet);
@@ -416,6 +419,30 @@ export function DevSandbox() {
               </option>
             ))}
           </select>
+        </Row>
+
+        {/* PLAN GÖRÜNÜMÜ (2026-09-07): maketi üstten çevirmenin oyun içi karşılığı. Ölçü ızgarası
+            maket duvarı (3,20) ile KayKit modülünü (4,00) zeminde yan yana göstermek için. */}
+        <Row title="Plan (üstten)">
+          <div className="dsb-chips">
+            <label className="dsb-toggle">
+              <input type="checkbox" checked={topDown} onChange={(e) => setSb({ topDown: e.target.checked })} />
+              üstten bak
+            </label>
+            {[1, 1.4, 2].map((z) => (
+              <button key={z} className={topDown && topDownZoom === z ? 'on' : ''} onClick={() => setSb({ topDown: true, topDownZoom: z })}>
+                {z === 1 ? 'tam kat' : `×${z}`}
+              </button>
+            ))}
+          </div>
+          <div className="dsb-chips">
+            <span className="dsb-step-label">ölçü ızgarası</span>
+            {[0, 3.2, 4].map((g) => (
+              <button key={g} className={gridStep === g ? 'on' : ''} onClick={() => setSb({ gridStep: g })}>
+                {g === 0 ? 'kapalı' : g === 3.2 ? '3,20 maket' : '4,00 KayKit'}
+              </button>
+            ))}
+          </div>
         </Row>
 
         <Row title="Ekran / kayıt">

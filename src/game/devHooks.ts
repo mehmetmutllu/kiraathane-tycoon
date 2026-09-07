@@ -1,6 +1,7 @@
 // Test/dev kancaları. 3D sahne görsel doğrulanamaz; durum buradan okunur.
 // window.__game  -> salt-okunur anlık görüntü
 // window.__advanceTime(sn) -> simülasyonu hızlı ileri sar
+import { useSandbox } from './devSandbox';
 import { useGame, visiblePads, questCounterValue, LAYOUT, LAVABO, servicePlace, trayCapacity, dirtyTables, parkSpot } from './store';
 import { THE_SERVICE, sellsTost } from './world';
 import { perf, type PerfSnapshot } from './perf';
@@ -31,6 +32,9 @@ declare global {
     /** Oyuncuyu hiçbir mekanizmayı tetiklemeyen noktaya park eder (Faz A3: duman testi elle
      *  yazılmış köşe koordinatı kullanmasın — nokta YERLEŞİMDEN türetilir). */
     __park?: () => Record<string, unknown>;
+    /** ÜSTTEN PLAN görünümü + ölçü ızgarası (ölçüm kareleri betikten çekilebilsin).
+     *  gridStep 0 = ızgara kapalı; topDown false = normal takip kamerası. */
+    __devPlan?: (opts: { topDown?: boolean; zoom?: number; gridStep?: number }) => void;
   }
 }
 
@@ -213,6 +217,10 @@ export function installDevHooks(): void {
   };
 
   window.__perf = () => ({ ...perf });
+
+  window.__devPlan = ({ topDown = true, zoom = 1, gridStep = 0 }) => {
+    useSandbox.getState().set({ topDown, topDownZoom: zoom, gridStep });
+  };
 
   window.__setState = (patch) => {
     useGame.setState(patch as never);

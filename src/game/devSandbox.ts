@@ -15,6 +15,15 @@ interface SandboxState {
   infiniteMoney: boolean;
   /** Panel görünürken oyun HUD'ını gizle (temiz ekran görüntüsü için). */
   hideHud: boolean;
+  /**
+   * ÜSTTEN PLAN GÖRÜNÜMÜ (kullanıcı isteği 2026-09-07: "maketteki gibi üstten de görebileyim").
+   * Açıkken kamera oyuncuyu bırakır, katın merkezine dik tepeden bakar — yerleşimi ölçmek için.
+   */
+  topDown: boolean;
+  /** Plan görünümünde yakınlık: 1 = kat tam sığar; büyüdükçe yakınlaşır. */
+  topDownZoom: number;
+  /** Zemine çizilen ölçü ızgarasının adımı (dünya birimi). 0 = ızgara kapalı. */
+  gridStep: number;
   set: (patch: Partial<SandboxState>) => void;
 }
 
@@ -23,10 +32,22 @@ export const useSandbox = create<SandboxState>((set) => ({
   timeScale: 1,
   infiniteMoney: false,
   hideHud: false,
+  topDown: false,
+  topDownZoom: 1,
+  gridStep: 0,
   set: (patch) => set(patch),
 }));
 
 /** Simülasyon hız çarpanı — Scene'deki tick sürücüsü okur (DEV dışında hep 1). */
 export function devTimeScale(): number {
   return useSandbox.getState().timeScale;
+}
+
+/**
+ * Plan görünümü açıksa yakınlığı döner, kapalıysa null (kamera normal takip moduna kalır).
+ * `devTimeScale` deseni: kamera her kare bunu getState ile okur, abone olmaz.
+ */
+export function devTopDown(): { zoom: number } | null {
+  const s = useSandbox.getState();
+  return s.topDown ? { zoom: s.topDownZoom } : null;
 }

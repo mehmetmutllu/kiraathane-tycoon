@@ -1,6 +1,6 @@
 import { Suspense, useEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Vector3, type Group } from 'three';
+import { Vector3, BufferGeometry, Float32BufferAttribute, DoubleSide, type Group, type PerspectiveCamera } from 'three';
 import type { AreaSide } from '../../game/store';
 import { useGame, questFocusPos, LAYOUT, LAVABO, BAND, FLOOR_HALF, wallSpans, servicePlace, stationSoftMaxLevel, stationUpgradeCostAt, stationUpgradeUnlocked, tableSoftMaxLevel, tableUpgradeUnlockedIn, tableNextCost, openServices, doorX as doorAt, entranceAt, banketIslands, BANKET, WAITER_STATION, waiterStationOpen } from '../../game/store';
 import { economyConfig, lavaboUpgradeCost } from '../../config/economy.config';
@@ -22,7 +22,7 @@ import { Pad } from './Pad';
 import { Decor } from './Decor';
 import { MaketLavaboBlock } from './maketParts';
 import { perf } from '../../game/perf';
-import { devTimeScale } from '../../game/devSandbox';
+import { devTimeScale, devTopDown, useSandbox } from '../../game/devSandbox';
 import { screenPointer } from '../../game/screenPointer';
 
 /** GEÇİCİ (2026-09-07 ölçümü): maketle aynı ton eşlemesi (kapalı) — bkz. Canvas'taki not. */
@@ -150,6 +150,24 @@ function CameraRig() {
     const dt = Math.min(Math.max(rawDt, 0), 0.05); // clamp: kare atlamasında kamera sıçramasın
     const g = useGame.getState();
     const p = g.player;
+    // DEV — ÜSTTEN PLAN: kamera oyuncuyu bırakır, katın merkezine dik tepeden bakar (maketi
+    // üstten çevirmenin oyun içi karşılığı). Mesafe fov + en-boy oranından hesaplanır, yani
+    // portrede de landscape'te de 34 × 34'ün TAMAMI kadraja sığar. Üretimde bu dal ölü kod.
+    if (import.meta.env.DEV) {
+      const td = devTopDown();
+      if (td) {
+        const cam = camera as PerspectiveCamera;
+        const aspect = size.width / Math.max(1, size.height);
+        const vt = Math.tan((cam.fov * Math.PI) / 360); // dikey yarım-açının tanjantı
+        const pad = 1.04; // kenarda ince pay: duvarın dış yüzü de görünsün
+        const h = (pad * Math.max(FLOOR_HALF / vt, FLOOR_HALF / (vt * aspect))) / td.zoom;
+        camera.position.set(0, h, 0.001); // z'de kıl payı: tam dikeyde lookAt yönü belirsiz kalır
+        look.set(0, 0, 0);
+        camera.lookAt(look);
+        st.current.ready = false; // plandan çıkınca takip kamerası sıçramadan yeniden yerleşir
+        return;
+      }
+    }
     // fit/d YALNIZ ekran boyutu gerçekten değişince (resize/orientation) hesaplanır.
     if (size.width !== st.current.w || size.height !== st.current.h) {
       st.current.w = size.width;
@@ -918,15 +936,49 @@ function Street() {
   );
 }
 
+/**
+ * DEV — ÖLÇÜ IZGARASI. Zemine seçilen adımda (örn. maket duvarı 3,20 ↔ KayKit modülü 4,00)
+ * kırmızı çizgi ağı çizer; katın kenarı ızgaraya oturmuyorsa artan şerit gözle görülür
+ * (34 ÷ 4 = 8,5 modül → sağda/önde yarım modül kalır). Yalnız `import.meta.env.DEV`'de
+ * render edilir, üretim ağacına hiç girmez.
+ */
+function MeasureGrid() {
+  const step = useSandbox((s) => s.gridStep);
+  const geo = useMemo(() => {
+    if (!step) return null;
+    const H = FLOOR_HALF;
+    const W = 0.07; // çizgi kalınlığı (WebGL'de lineWidth çalışmaz → ince şeritler çizilir)
+    const pos: number[] = [];
+    const quad = (x0: number, z0: number, x1: number, z1: number) => {
+      pos.push(x0, 0, z0, x1, 0, z0, x1, 0, z1, x0, 0, z0, x1, 0, z1, x0, 0, z1);
+    };
+    for (let x = -H; x <= H + 1e-6; x += step) quad(x - W, -H, x + W, H);
+    for (let z = -H; z <= H + 1e-6; z += step) quad(-H, z - W, H, z + W);
+    // katın kendi kenarları: ızgaranın son çizgisi kenara denk gelmiyorsa artan şerit gözükür
+    quad(H - W * 2, -H, H, H);
+    quad(-H, H - W * 2, H, H);
+    const g = new BufferGeometry();
+    g.setAttribute('position', new Float32BufferAttribute(pos, 3));
+    return g;
+  }, [step]);
+  useEffect(() => () => geo?.dispose(), [geo]);
+  if (!geo) return null;
+  return (
+    <mesh position={[0, 0.05, 0]} geometry={geo} renderOrder={999}>
+      <meshBasicMaterial color="#ff1744" transparent opacity={0.9} side={DoubleSide} depthTest={false} depthWrite={false} />
+    </mesh>
+  );
+}
+
 export function Scene() {
   return (
-    // SAHNEDE GÖLGE YOK (D-054). `shadows` prop'u bilerek verilmiyor ve yönlü ışık gölge
-    // dökmüyor. Dört varyant aynı kareden çekilip karşılaştırıldı (sert gölge · gölgesiz ·
-    // yumuşak/VSM · gölgesiz+temas havuzu); kullanıcı GÖLGESİZ olanı seçti — My Hotel'in düz
-    // görünümü. Yan kazanç: gölge haritası tek başına kare süresinin yarısını yiyordu
-    // (1,31 → 0,67 ms). Mesh'lerdeki castShadow/receiveShadow bayrakları duruyor (bedelsiz;
-    // gölge geri istenirse `shadows` + `castShadow` iki satır). Gerekçe: decisions.md D-054.
+    // GÖLGE AÇIK (D-073 — D-054 kullanıcı tarafından geri alındı, 2026-09-07): maket üstten
+    // görüldü ve *"maketteki ışık ve gölgeler baya iyiymiş, gölgeleri tekrar istiyorum"* dendi.
+    // Gölge takımı maket v13'ün değerleri (palette.ts LIGHTING): PCFSoft (`shadows="soft"`) ·
+    // 2048 harita · bias/normalBias duvar kalınlığına göre · ortografik ±30. Bedeli ölçülmüştü
+    // (kare süresi ~+0,6 ms); Faz 7'de telefonda yeniden ölçülecek.
     <Canvas
+      shadows="soft"
       camera={{ position: [0, 9, 11], fov: 50 }}
       gl={{ antialias: true, toneMappingExposure: LIGHTING.exposure }}
       dpr={[1, 2]}
@@ -940,7 +992,7 @@ export function Scene() {
       {/* Işık takımı `three/lights.tsx`te TEK tanım — mağaza önizlemeleri de aynı bileşeni
           kullanır, böylece kartta gördüğün renk salondakiyle birebir aynı olur.
           Yönlü ışık gölge DÖKMEZ; yalnız yüzey yönüne göre aydınlatma (hacim hissi) verir. */}
-      <SceneLights />
+      <SceneLights shadows />
       <Ground />
       <Street />
       <Walls />
@@ -966,6 +1018,7 @@ export function Scene() {
         <StationUpgradeSpots />
         <TableUpgradeMarkers />
       </Suspense>
+      {import.meta.env.DEV && <MeasureGrid />}
       <CameraRig />
       <Simulation />
       <QuestPointer />

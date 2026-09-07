@@ -1693,3 +1693,116 @@ halı taşımıyor).
 kaburgaları kırpıldıktan sonra; kırpma öncesi 177). Üçgen 10.502 → 12.310. Sol duvar ve giriş
 kadrajlarında fark +1 ve +18. Dekorun tek InstancedMesh'e toplanması (duvar/zemin deseninde olduğu
 gibi) Faz F'ye açık kalem olarak yazıldı.
+
+---
+
+## D-072 — TASARIM ↔ SİSTEM KARIŞIKLIĞININ ÇÖZÜMÜ: ÜÇ KATMAN + ÖLÇÜ DONDURMA (2026-09-07 gece)
+
+**Bağlam.** Kullanıcı: *"bu tasarım ve geliştirme meselesi aşırı karıştı, buna bir çözüm bulmak
+şart… önce tasarım mı kusursuzlaştırılmalı yoksa sistem mi"*. Sıra iki gecede iki kez döndü
+(D-070 tasarım-önce → D-071 tasarım-sona). Karışıklığın dört kök nedeni ölçüldü:
+
+1. **İki doğru kaynak, ikisi de ayrı PROGRAM.** `docs/maket/maket-v13.html` three r128 + varsayılan
+   renderer (LinearEncoding, ton eşlemesi yok); oyun three 0.184 (sRGB + ACESFilmic). Aynı görüntüyü
+   **hiçbir zaman** veremezler (ölçüm: zemin L201↔L118 · fayans L255↔L151). "Yan yana koy, aynı mı"
+   kabul kriteri bu yüzden **yapısal olarak kapanamaz** → B6b'nin üç turu, maket v3/v12, blob
+   shadow'un üç turu.
+2. **Geometri hem sanat hem oynanış.** `layout.ts`'te masa aralığı = yürüme süresi = çay/dk = ekonomi.
+   Tasarım her oynadığında denge ölçümü (simulate.ts, taşıma süreleri) geçersizleşiyor. Ters yön
+   geçerli değil. **Bağımlılık TEK YÖNLÜ** — karışıklığın motoru bu.
+3. **"Tasarım" tek kelime, iki ayrı iş:** (a) sanat arayışı — açık uçlu, öznel, yüksek ret;
+   (b) onaylı maketi port etme — kapalı, ölçülebilir. Maket v13 zaten onaylı → kalan iş (b).
+4. **Asıl darboğaz ikisi de değil:** yayın katmanı (Faz 5/7/8) %0-5 ve geometriden bağımsız.
+
+**KARAR — üç katman, aralarında tek yönlü sıra:**
+
+| Katman | İçerik | Ne zaman | Kural |
+|---|---|---|---|
+| **1 · ÖLÇÜ/ANKRAJ** | kat, duvar yüksekliği+profili, masa tablası/yükseklik/aralık, koltuk, kamera fov, servis yüzü, pad noktaları, nav katıları | **İLK**, tek geçiş, sonra **DONAR** | Kabul kriteri **sayı listesi** (ölçü testi), "aynı görünüyor mu" DEĞİL |
+| **2 · SİSTEM** | denge TEK KEZ yeniden ölçülür → Faz 4 → 5 → 7 → 8 | Katman 1 donduktan sonra | Ankrajlara dokunmaz |
+| **3 · SANAT CİLASI** | dekor, materyal, renk, ışık, animasyon | EN SON, sınırsız tur | Ankrajlara **dokunamaz** → tur sayısı dengeyi bozmaz |
+
+**Üç yapısal kilit (bir daha karışmasın):**
+- Maketin ölçüleri `src/config/maket.ts`'te isimli sabit olur; `layout.ts` onlardan türer.
+- Ankraj mesafeleri **snapshot testine** bağlanır — sanat turu dengeyi sessizce bozamaz.
+- Transkripsiyon bitince **maket ARŞİVLENİR**; tek yetkili oyunun kendisi olur. Yeni tasarım fikri
+  artık maketde değil oyunun içinde denenir (iki-program sorunu geri gelmesin).
+
+**Ölçü hedefi — KULLANICI KARARI: A.** Kat **34 × 34**, duvar **3,20** (maket v13 aynen).
+Rapor: `docs/olcu-plan-karar.html` · https://claude.ai/code/artifact/a17055c1-de75-4017-9036-54a893c1992b
+- **Reddedilen B:** maketi 32 × 32 + KayKit duvarı (4,00) olacak şekilde güncellemek. Ölçüm 32'nin
+  üç ritme birden bölündüğünü gösteriyordu (3,20→10 · 4,00→8 · 6,40→5; 34'te sırasıyla 10,625 · 8,5 ·
+  5,3125). Gerekçe: onaylanmış maketi yeniden açmak estetik arayışı yeniden başlatır, kayan kapı
+  (x −8,5 → 0) KayKit'in sabit kapı modülüyle çatışır, taban %11 küçülür.
+- **KayKit yalnız mobilya/obje tarafında kalır.** Mobilyada çatışma yok: KayKit `table_medium`
+  2 × 2, maketin 1,75'ine ~0,875 ölçekle oturuyor (oyun bugün `table_small`'ı küçük ölçekte
+  kullandığı için yarım boy kalmış).
+
+**Ölçülen fark (bu gecenin kareleri, `docs/gorsel/ss/olcu-plan-*.png`):**
+- Ön çeyrek masası: maket **1,75 tabla · 6,40 küme ızgarası · ∓1,45 koltuk** ↔ oyun **~0,90 · 3,20 ·
+  ∓0,78**; kümenin ayak izi maketin **dörtte biri**. Orta şerit birebir eşleşiyor (3,20 · 1,85 · 1,00).
+- Duvar: oyun **1,20** (insan 1,60'ın omzunun altında; tablo 1,95 · saat 2,20 · aplik 2,05 havada
+  kalıyor) ↔ maket **3,20** ↔ KayKit **4,00**.
+
+**Yeni araç (kullanıcı isteği, aynı oturum): dev panelinde ÜSTTEN PLAN.** `Plan (üstten)` satırı:
+kamera oyuncuyu bırakır, katın merkezine dik tepeden bakar (34 × 34 kadraja sığar); yanında **ölçü
+ızgarası** (3,20 / 4,00) zemine kırmızı ağ çizer. Betikten: `window.__devPlan({ topDown, zoom, gridStep })`.
+Kareler `tools/shot-plan.mjs` (oyun) ve `tools/shot-maket.mjs` (maket, oyunla aynı kadraj) ile çekilir.
+
+**SIRA (bundan sonra):** BM adım 1 (duvar — `worktree-maket-tasima` dalı) main'e alınır → adım 2
+ön çeyrek mobilya dili (1,75 · 6,40 · ∓1,45; şeride dokunulmaz) → adım 3 arka bant + odalar →
+adım 4 kamera → **DONDURMA + arşiv damgası** → denge tek kez yeniden ölçülür → Faz 4/5/7/8.
+
+---
+
+## D-073 — GÖLGE GERİ AÇILDI · ZEMİN MAKETİN DÜZ AHŞABI · MASA ÖLÇÜLERİ MAKETTEN (2026-09-07 gece)
+
+**Kullanıcı (maketi üstten gördükten sonra):** *"maketteki ışık ve gölgeler baya iyiymiş, ben
+gölgeleri tekrar istiyorum, zemin duvar renkleri vs de aynı olsun. ek olarak masaların boyutları
+arasında çok ciddi fark var, o boyut oranları da uygulansın, aralardaki mesafe vs de aynı şekilde.
+zemin kesinlikle parke değil maketteki gibi olmalı, bunları da araya kat planı ona göre yap."*
+
+### 1. GÖLGE AÇIK — **D-054 GERİ ALINDI**
+Takım maket v13'ün `init()`'inden birebir: `shadows="soft"` (PCFSoftShadowMap) · mapSize **2048** ·
+bias **−0,0012** · normalBias **0,14** (duvarlar 0,18–0,26 kalınlığında; gölge dış yüze sızmasın) ·
+ortografik **±30** · near 1 / far 80. Güneş konumu da maketin: **[14, 26, 16]** (~52°); eski
+[9, 9, 7] (~40°) gölge KAPALIYKEN objeyi zemine oturtmak için seçilmişti (D-053) ve gölge açılınca
+telefonda oynanışı örten uzun lekeler bırakıyor. Işık ŞİDDETLERİ oyunun ölçülmüş değerlerinde kaldı
+(hemi 0,72 · güneş 1,45 · dolgu 0,28 · pozlama 1,60) — maketin ham değerleri farklı bir renk boru
+hattına ait (r128 + LinearEncoding, ton eşlemesi yok). Bedeli D-054'te ölçülmüştü (~+0,6 ms/kare);
+Faz 7'de telefonda yeniden ölçülecek. **Mağaza önizlemeleri gölgesiz** (`SceneLights` `shadows`
+prop'u; 34 × 34'lük gölge kamerası küçük diorama'ya uymaz).
+
+### 2. ZEMİN DÜZ AHŞAP — G2'nin plank deseni kalktı
+Maketin salonu `floorPatch(..., C.floorWood)` yani TEK DÜZ renk. `FLOOR_THEMES.parke` artık
+`kind: 'flat'`, base **#b98a5a** (id korundu: kayıt + mağaza uyumu). Plank mekanizması ölmedi,
+'ceviz' temasında sürüyor ve testleri oraya taşındı. G2'nin gerekçesi "zeminde ölçek referansı yok"
+idi; referansı artık **gölge** veriyor. Duvar (#e6d7b8) ve lambri (#6d4c41) renkleri zaten maketle
+BİREBİR aynıydı — ölçüldü, değişmedi.
+
+### 3. MASA ÖLÇÜLERİ VE ARALIKLAR MAKETTEN (BM adım 2)
+Makette **iki mobilya dili** var ve aralarındaki fark büyük; oyun ikisini de ~0,90'a indirmişti:
+
+| | maket v13 | oyun (önce) | oyun (şimdi) |
+|---|---|---|---|
+| ön çeyrek çay masası | 1,75 × 1,75 @ 0,75 | ~0,90 @ 0,50 | **1,75 @ 0,75** |
+| küme ızgarası (masa aralığı) | 6,40 | 3,20 | **6,40** |
+| koltuk ofseti | ∓1,45 | ∓0,78 | **∓1,45** |
+| şeridin ikili masası | 1,00 | ~0,99 | 0,99 (değişmedi) |
+
+Uygulama: `tableLook.ts` ölçekleri (`table_small` ×1,10 → L0-L2 · `table_medium` ×0,875 → **1,75**
+L3+; y hep 0,75), `CHAIR_SPOTS` = maketin `SEATS4`'ü, `TABLE_SPOTS` ön çeyrekleri küme merkezinden
+∓3,2, yükseltme noktası ∓1,25 → **∓2,15** (koltuğun dışında kalmalı). Collision artık **tipe bağlı**:
+`tableHalf` 0,875 (dörtlü) · `deuceHalf` 0,50 (ikili); `tableHalfFor(i)` masanın tipinden türetir.
+`REACH_TABLE` bundan türediği için 1,10 → **1,505** (personel büyük masanın kenarına aynı mesafede
+durur). `chairHalf` 0,22 → 0,30 (maket taburesi r 0,27).
+
+**Yan etki (kapatıldı):** koridor saksıları ∓4,6'da artık oturma alanının içinde kalıyordu ve
+yükseltme noktalarıyla çakışıyordu → koridorun gerçek genişliğine ve masa sıralarının arasına
+çekildi (∓3,0 · z 6,6 / 10,4).
+
+**Testler:** ölçü değişiminin sızdığı 5 test güncellendi (koltuk ofseti · nav REACH artık
+footprint'ten türer · banket-masa çakışması ikili footprint'le ölçülür · zemin plank testleri
+'ceviz'e taşındı) + "salon zemini DÜZ" testi eklendi. **280/280 yeşil, tsc temiz.**
+
+**Rapor:** `docs/olcu-plan-karar.html` — https://claude.ai/code/artifact/a17055c1-de75-4017-9036-54a893c1992b

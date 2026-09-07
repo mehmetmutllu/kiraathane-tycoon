@@ -1,0 +1,10 @@
+import { chromium } from 'playwright';
+import { pathToFileURL } from 'node:url';
+const [file, out, h] = process.argv.slice(2);
+const b = await chromium.launch();
+const p = await b.newPage({ viewport: { width: 1100, height: +(h || 1400) }, deviceScaleFactor: 1 });
+await p.goto(pathToFileURL(file).href, { waitUntil: 'networkidle' });
+await p.waitForTimeout(1200);
+await p.screenshot({ path: out, fullPage: true });
+console.log('ok');
+await b.close();

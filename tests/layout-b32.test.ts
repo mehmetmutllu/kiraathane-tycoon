@@ -118,8 +118,9 @@ describe('B3-2 — banket adaları maket v13 birim geometrisini taşır', () => 
       for (const i of STRIP) {
         const t = LAYOUT.tables[i].table;
         const overlap =
-          Math.abs(t[0] - b.center[0]) < b.len / 2 + LAYOUT.tableHalf[0] &&
-          Math.abs(t[2] - b.center[2]) < BANKET.depth / 2 + LAYOUT.tableHalf[1];
+          // Şerit masaları İKİLİ tip (maket `cafeTable2` 1,00) → deuceHalf (D-073).
+          Math.abs(t[0] - b.center[0]) < b.len / 2 + LAYOUT.deuceHalf[0] &&
+          Math.abs(t[2] - b.center[2]) < BANKET.depth / 2 + LAYOUT.deuceHalf[1];
         expect(overlap, `ada ${b.side} ↔ masa ${i}`).toBe(false);
       }
     }

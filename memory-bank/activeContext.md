@@ -2,6 +2,59 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-07 gece — **KARIŞIKLIK ÇÖZÜLDÜ: ÜÇ KATMAN · ÖLÇÜ DONDURULUYOR**)
+
+**Kararlar: D-072 (üç katman + ölçü dondurma) · D-073 (gölge geri · zemin düz ahşap · masa
+ölçüleri maketten).** Kullanıcı: *"bu tasarım ve geliştirme meselesi aşırı karıştı"* → sıra
+tartışması yerine **bağımlılık yönü** çözüldü: yalnız GEOMETRİ başka işi geçersiz kılıyor, o yüzden
+önce o donar; sanat cilası en sona kalır ve ankrajlara dokunamaz.
+
+| Katman | İçerik | Kural |
+|---|---|---|
+| **1 · ÖLÇÜ/ANKRAJ** | kat · duvar · masa ölçüsü/aralığı · koltuk · kamera · servis yüzü · pad noktaları · nav katıları | Kabul kriteri SAYI LİSTESİ, "aynı görünüyor mu" değil. Bitince **DONAR** |
+| **2 · SİSTEM** | denge TEK KEZ ölçülür → Faz 4 → 5 → 7 → 8 | ankrajlara dokunmaz |
+| **3 · SANAT CİLASI** | dekor · materyal · renk · ışık · animasyon | ankrajlara **dokunamaz** (sınırsız tur) |
+
+**Ölçü hedefi (kullanıcı kararı A):** kat **34 × 34**, duvar **3,20** — maket v13 aynen.
+32 × 32 + KayKit duvarı (4,00) ölçüldü ve **reddedildi** (onaylı maket yeniden açılırdı, kayan kapı
+çatışırdı). KayKit yalnız mobilya tarafında.
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**BM adım 1 — DUVAR.** `worktree-maket-tasima` dalı (uzakta `6e61e4c`) main'e alınır: duvar 3,20 ·
+lambri 0,90 · üç katman · koyu çıta; dekorun asma bandı maketin değerlerinde. Dal main'den geride
+olduğu için (bu gecenin ışık/masa/zemin değişiklikleri main'de) **rebase/merge çakışması beklenir**;
+çakışma `wallPanel.tsx` + `Decor.tsx` + `palette.ts` çevresinde olacak.
+Sonra: adım 3 arka bant + odalar → adım 4 kamera (fov 50 ↔ maket 34) → **DONDURMA + maket arşiv
+damgası** → `simulate.ts` tek kez yeniden ölçülür → Faz 4/5/7/8.
+
+### BU OTURUMDA YAPILANLAR
+1. **Dev panelinde ÜSTTEN PLAN** (kullanıcı isteği): `Plan (üstten)` satırı — üstten bak · tam kat /
+   ×1,4 / ×2 · **ölçü ızgarası** (kapalı / 3,20 maket / 4,00 KayKit). Betikten:
+   `window.__devPlan({ topDown, zoom, gridStep })`. Kamera `CameraRig`'te dallanır (DEV'de ölü kod).
+2. **Ölçüm + karar raporu:** `docs/olcu-plan-karar.html` →
+   https://claude.ai/code/artifact/a17055c1-de75-4017-9036-54a893c1992b
+3. **D-073 uygulandı:** gölge geri (maketin takımı) · zemin düz ahşap #b98a5a (plank kalktı) ·
+   ön çeyrek masası 1,75 @ 0,75 · küme aralığı 6,40 · koltuk ∓1,45 · yükseltme noktası ∓2,15 ·
+   collision tipe bağlı (dörtlü 0,875 / ikili 0,50) · REACH_TABLE 1,505 · koridor saksıları taşındı.
+   **vitest 280/280 · tsc temiz.**
+
+### ÖLÇÜM ARAÇLARI (tekrar aranmasın)
+- Oyun kareleri: `node tools/shot-plan.mjs` (dev sunucusu 5173'te açıkken) → `docs/gorsel/ss/olcu-*.png`.
+- Maket kareleri: `cd docs/maket && python -m http.server 8899` + `node tools/shot-maket.mjs`
+  (oyunla AYNI kadraj; maketin fov'u 34, oyunun 50 → mesafe formülü betiğin içinde).
+- Belge kareleri: `node tools/shot-doc.mjs <html> <png>`.
+
+### AÇIK KALEMLER
+- Gölgenin kare maliyeti telefonda ölçülmedi (Faz 7; masaüstünde D-054'te ~+0,6 ms ölçülmüştü).
+- `servis L6` 23,4 dk · `masa seviyesi L4` 21,4 dk bekleme (ikincisi model kusuru).
+- Lavabo seviyesi TEK sinyalle okunuyor. · Dekor tek InstancedMesh'e toplanmadı (Faz F).
+- `optional` pad kategorisi ve `allAreaTablesLevel` gate'i ÜYESİZ. · `spawnInterval` sabit.
+- bundle ~1,46 MB · eslint 16 (hepsi eski dosyalarda).
+- **Denge ölçümleri şimdilik GEÇERSİZ:** masa aralığı 3,20 → 6,40 oldu, yürüme süreleri değişti.
+  Yeniden ölçüm ölçü DONDUKTAN sonra, tek seferde yapılacak (D-072).
+
+---
+
 ## ŞU AN (2026-09-07 gece — **TASARIM EN SONA ALINDI, sıra oynanışta**)
 
 **Karar: D-071.** Kullanıcı sırayı geri aldı: *"tasarıma en son döneriz artık yapacak bir şey yok"*.

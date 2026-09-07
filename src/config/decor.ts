@@ -150,11 +150,15 @@ const ENTRY: DecorItem[] = [
  * salon · duvar dibi** diye üçe ayrılması. Saksılar masa kümelerinin ve yükseltme noktalarının
  * DIŞINDA (en yakın nokta 2,5 br'den uzak — `tests/decor-b6a.test.ts` bunu bekçiliyor).
  */
+// D-073 (BM adım 2): masa kümesi maketin ölçüsüne büyüyünce (aralık 6,40 · koltuk ∓1,45)
+// koridor daraldı ve eski ∓4,6'lık saksılar oturma alanının İÇİNDE kaldı; yükseltme noktaları da
+// ∓2,15'e taşındığı için z 3,4 / 13,4 hizası onlarla çakışıyordu. Saksılar koridorun gerçek
+// genişliğine (∓3,85 koltuk kenarı) ve iki masa SIRASININ ARASINA çekildi.
 const CORRIDOR: DecorItem[] = [
-  { kind: 'buyukSaksi', pos: [-4.6, 0, 13.4], rot: 0, from: 1 },
-  { kind: 'saksi', pos: [-4.6, 0, 3.4], rot: 0, from: 1 },
-  { kind: 'buyukSaksi', pos: [4.6, 0, 13.4], rot: 0, from: 2 },
-  { kind: 'saksi', pos: [4.6, 0, 3.4], rot: 0, from: 2 },
+  { kind: 'buyukSaksi', pos: [-3.0, 0, 10.4], rot: 0, from: 1 },
+  { kind: 'saksi', pos: [-3.0, 0, 6.6], rot: 0, from: 1 },
+  { kind: 'buyukSaksi', pos: [3.0, 0, 10.4], rot: 0, from: 2 },
+  { kind: 'saksi', pos: [3.0, 0, 6.6], rot: 0, from: 2 },
 ];
 
 /**

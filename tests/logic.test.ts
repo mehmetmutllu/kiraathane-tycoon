@@ -1262,11 +1262,15 @@ describe('personel yol bulma (nav.ts — BFS, kilitlenme yok)', () => {
       { c: SP().station, h: SP().half },
       { c: SP().dish, h: SP().dishHalf },
     ];
-    for (const t of LAYOUT.tables) solids.push({ c: t.table, h: LAYOUT.tableHalf });
+    // D-073: iki masa tipi iki footprint (dörtlü 1,75 · ikili 1,00).
+    for (const t of LAYOUT.tables)
+      solids.push({ c: t.table, h: t.kind === 'deuce' ? LAYOUT.deuceHalf : LAYOUT.tableHalf });
     return solids;
   }
   const grid = () => buildNavGrid(LAYOUT.area, 0.3, navSolids(), LAYOUT.actorRadius);
-  const REACH = 1.1;
+  // Teslim mesafesi masanın footprint'inden türer (oyunun `REACH_TABLE`'ıyla aynı formül) —
+  // masa büyüyünce sabit 1,1 footprint'in içinde kalıyordu.
+  const REACH = LAYOUT.tableHalf[0] + LAYOUT.actorRadius + 0.35;
 
   it('ocaktan HER masaya yol bulunur (kolon-bloklu arka masalar dahil)', () => {
     const g = grid();
@@ -2404,7 +2408,8 @@ describe('Y2 — koltuk + grup sistemi (plan §2)', () => {
       });
     };
     // Ön çeyrekler: dört yanı tabure olan kare masa (dört koltuk da 'stool').
-    const KARE: [number, number][] = [[0, 0.78], [0, -0.78], [0.78, 0], [-0.78, 0]];
+    // D-073: maketin SEATS4'ü — koltuk merkezden ∓1,45 (masa 1,75 olunca ∓0,78 tablanın içinde kalıyordu).
+    const KARE: [number, number][] = [[0, 1.45], [0, -1.45], [1.45, 0], [-1.45, 0]];
     expectOffsets(0, KARE);
     expect(LAYOUT.tables[0].seatKinds).toEqual(['stool', 'stool', 'stool', 'stool']);
     // B3-2 orta şerit: banket birimi İKİ koltuk — 0 bank (ada oturağı, ayrı tabure çizilmez),
@@ -3073,15 +3078,22 @@ describe('Turu-4 — tost sabrı ürün-bazlı + temizlik temposu ("tostta müş
 });
 
 describe('G2 — zemin deseni (floorQuads)', () => {
+  // D-073: salon zemini 'parke' artık DÜZ (maketin `floorWood`'u); plank deseni 'ceviz'te sürüyor.
   const parke = FLOOR_THEMES.parke;
+  const plank = FLOOR_THEMES.ceviz;
   const fayans = FLOOR_THEMES.fayans;
+
+  it('D-073 — salon zemini DÜZ: parke teması tahta çizgisi üretmez', () => {
+    expect(parke.kind).toBe('flat');
+    expect(floorQuads(parke, 0, 11, 0, 11)).toEqual([]);
+  });
 
   it('düz temada quad üretilmez (tek renk düzlem yeter)', () => {
     expect(floorQuads({ kind: 'flat', base: '#fff', alt: '#eee' }, 0, 10, 0, 10)).toEqual([]);
   });
 
-  it('parke = plank: tahtalar alan içinde kalır ve derz BOŞLUK bırakır', () => {
-    const qs = floorQuads(parke, 0, 11, 0, 11);
+  it('plank teması: tahtalar alan içinde kalır ve derz BOŞLUK bırakır', () => {
+    const qs = floorQuads(plank, 0, 11, 0, 11);
     expect(qs.length).toBeGreaterThan(60); // alan başına ~100 tahta, tek draw call
     for (const q of qs) {
       // Hiçbir tahta alanın dışına taşmaz (duvarın altına girmez).
@@ -3095,7 +3107,7 @@ describe('G2 — zemin deseni (floorQuads)', () => {
   });
 
   it('plank satırları yarım tahta kaydırılır (hizalı derz ızgara gibi durur)', () => {
-    const qs = floorQuads(parke, 0, 11, 0, 11);
+    const qs = floorQuads(plank, 0, 11, 0, 11);
     const rowZ = [...new Set(qs.map((q) => +q.z.toFixed(3)))].sort((a, b) => a - b);
     const inRow = (z: number) => qs.filter((q) => Math.abs(q.z - z) < 1e-6).sort((a, b) => a.x - b.x);
     // 1. satırın 2. tahtası ile 2. satırın 2. tahtası aynı X'te BAŞLAMAZ.
@@ -3105,8 +3117,8 @@ describe('G2 — zemin deseni (floorQuads)', () => {
   });
 
   it('her tahta kendi ton sapmasını alır ama sapma KARARLI (her yüklemede aynı)', () => {
-    const a = floorQuads(parke, 0, 11, 0, 11);
-    const b = floorQuads(parke, 0, 11, 0, 11);
+    const a = floorQuads(plank, 0, 11, 0, 11);
+    const b = floorQuads(plank, 0, 11, 0, 11);
     expect(a.map((q) => q.tint)).toEqual(b.map((q) => q.tint));
     expect(new Set(a.map((q) => q.tint)).size).toBeGreaterThan(10); // gerçekten çeşitleniyor
     for (const q of a) expect(Math.abs(q.tint - 1)).toBeLessThanOrEqual(0.04 + 1e-9); // ±%4

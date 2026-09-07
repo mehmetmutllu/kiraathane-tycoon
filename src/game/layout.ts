@@ -237,11 +237,13 @@ function banketSpot(u: number): TableSpot {
 // ---- Masalar ----
 // Sandalye ofsetleri (masaya göre DÜNYA-ofseti; Tables.tsx aynı listeden çizer → görsel sandalye =
 // oturulabilir koltuk, Y2 tek kaynak). İlk spot = ana oturma yeri (eski .seat).
+// BM adım 2 (D-073): maketin `SEATS4`'ü birebir — dörtlü çay masasının koltukları merkezden
+// ∓1,45'te durur (eskiden ∓0,78'di: masa yarım boy olduğu için koltuklar da içeri toplanmıştı).
 const CHAIR_SPOTS: readonly [number, number][] = [
-  [0, 0.78],
-  [0, -0.78],
-  [0.78, 0],
-  [-0.78, 0],
+  [0, 1.45],
+  [0, -1.45],
+  [1.45, 0],
+  [-1.45, 0],
 ];
 
 /** Koltuğun GÖRSEL karşılığı: `stool` = ayrı tabure çizilir · `bench` = banket adasının oturağı. */
@@ -262,16 +264,20 @@ interface TableSpot {
 // `up` = yükseltme noktasının masaya göre ofseti: kapı tarafına (+z) ve salonun ortasından DIŞA
 // bakan çapraz köşe — komşu masanın noktasına da orta koridora da taşmaz.
 const TABLE_SPOTS: readonly TableSpot[] = [
+  // BM adım 2 (D-073): küme ofseti maketin `teaCluster(..., 3.2)`'sine çıktı — masa aralığı
+  // 3,20 → **6,40**. Eski 1,6'lık ofset ŞERİDİN ızgarasıydı ve yanlışlıkla ön çeyreklere de
+  // uygulanmıştı (ölçüm: docs/olcu-plan-karar.html). Yükseltme noktası ∓1,25 → ∓2,15: masa 1,75
+  // olunca koltuk ∓1,45'e gitti, nokta koltuğun dışında kalmalı.
   // a0 — ön-sol çeyrek (küme merkezi −8,5 / 8,5)
-  { at: [-10.1, 10.1], up: [1.25, 1.25] },
-  { at: [-6.9, 10.1], up: [1.25, 1.25] },
-  { at: [-10.1, 6.9], up: [1.25, -1.25] },
-  { at: [-6.9, 6.9], up: [1.25, -1.25] },
+  { at: [-11.7, 11.7], up: [2.15, 2.15] },
+  { at: [-5.3, 11.7], up: [2.15, 2.15] },
+  { at: [-11.7, 5.3], up: [2.15, -2.15] },
+  { at: [-5.3, 5.3], up: [2.15, -2.15] },
   // a1 — ön-sağ çeyrek (küme merkezi 8,5 / 8,5); yükseltme noktaları aynalı
-  { at: [6.9, 10.1], up: [-1.25, 1.25] },
-  { at: [10.1, 10.1], up: [-1.25, 1.25] },
-  { at: [6.9, 6.9], up: [-1.25, -1.25] },
-  { at: [10.1, 6.9], up: [-1.25, -1.25] },
+  { at: [5.3, 11.7], up: [-2.15, 2.15] },
+  { at: [11.7, 11.7], up: [-2.15, 2.15] },
+  { at: [5.3, 5.3], up: [-2.15, -2.15] },
+  { at: [11.7, 5.3], up: [-2.15, -2.15] },
   // a2 — ORTA ŞERİT: on iki birim iki adaya dağılır. B3-2'de dördü çizilebiliyordu (a2 dört slotla
   // kelepçeliydi); B5a kelepçeyi kaldırdı → adaların ALTI sütunu (∓11,7 · ∓8,5 · ∓5,3) iki yüzden
   // dolar: 6 × 2 = 12. Adaların BOYU değişmez (D-064), sıra da değişmez — `banketUnit(u)` u
@@ -533,8 +539,11 @@ export const LAYOUT = {
   actorRadius: 0.28, // garson/bulaşıkçı engel-kaçınma yarıçapı
   // (B3-1: `stationHalf`/`stationHalves`/`dishHalf` KALKTI — servis footprint'i artık yerine
   //  bağlı: sol duvarda uzun kenar z'de, arka bantta x'te. `servicePlace(areasOpen).half`.)
-  tableHalf: [0.5, 0.5] as [number, number],
-  chairHalf: [0.22, 0.22] as [number, number], // sandalye + oturan müşteri
+  // BM adım 2 (D-073): iki mobilya dili, iki footprint. Dörtlü ÇAY masası maketin `teaTable`'ı
+  // (1,75 → yarı 0,875); şeridin İKİLİ kafe masası `cafeTable2` (1,00 → yarı 0,50).
+  tableHalf: [0.875, 0.875] as [number, number], // dörtlü (four) — REACH_TABLE bundan türer
+  deuceHalf: [0.5, 0.5] as [number, number], // ikili (deuce) — banket adasının masası
+  chairHalf: [0.3, 0.3] as [number, number], // tabure (maket yarıçapı 0,27) + oturan müşteri
   // Sandalye ofsetleri (Y2 tek kaynak): Tables.tsx görsel sandalyeyi, store koltuk pozisyonunu
   // (ALL_TABLES.seats) AYNI listeden türetir — görsel sandalye = oturulabilir koltuk.
   chairSpots: CHAIR_SPOTS,
@@ -581,9 +590,10 @@ export function lockedAreaSolids(areasOpen: number): Solid[] {
   return solids;
 }
 
-/** Masanın footprint yarısı. B2: tek masa tipi (kare) — dikdörtgen "yemek masası" ürünle birlikte
- *  alandan koptu; üç gerçek masa tipi B5'te gelecek. */
-const tableHalfFor = (): readonly [number, number] => LAYOUT.tableHalf;
+/** Masanın footprint yarısı — TİPE bağlı (D-073): dörtlü çay masası 1,75, ikili kafe masası 1,00.
+ *  Tip masanın global indeksinden (alanın planından) türer, ayrı bir alan tutulmaz. */
+const tableHalfFor = (i: number): readonly [number, number] =>
+  LAYOUT.tables[i].kind === 'deuce' ? LAYOUT.deuceHalf : LAYOUT.tableHalf;
 
 /** O an SAHNEDE var olan SABİT katı engeller (açık servislerin ocak+bulaşığı; açık masalar +
  *  sandalyeler). Yatay bölme duvarı YOK (D-023). Kapalı alanın mobilyası ÇİZİLMEZ → collision da
@@ -598,7 +608,7 @@ export function activeSolids(tables: number, areasOpen: number): Solid[] {
   if (waiterStationOpen(areasOpen)) solids.push({ c: WAITER_STATION.pos, h: WAITER_STATION.half });
   for (const b of banketIslands(tables)) solids.push({ c: b.center, h: b.half });
   for (let i = 0; i < tables; i++) {
-    solids.push({ c: LAYOUT.tables[i].table, h: tableHalfFor() });
+    solids.push({ c: LAYOUT.tables[i].table, h: tableHalfFor(i) });
     solids.push({ c: LAYOUT.tables[i].seat, h: LAYOUT.chairHalf }); // sandalye (içine girilemez)
   }
   return solids;
@@ -630,7 +640,7 @@ export function clampToOpenAreas(x: number, z: number, areasOpen: number): [numb
  *  koltuk hariç: personel onlara erişmeli). */
 export function tableSolids(tables: number): Solid[] {
   const solids: Solid[] = [];
-  for (let i = 0; i < tables; i++) solids.push({ c: LAYOUT.tables[i].table, h: tableHalfFor() });
+  for (let i = 0; i < tables; i++) solids.push({ c: LAYOUT.tables[i].table, h: tableHalfFor(i) });
   for (const b of banketIslands(tables)) solids.push({ c: b.center, h: b.half });
   return solids;
 }
@@ -686,7 +696,7 @@ export function navSolids(tables: number, areasOpen: number): NavSolid[] {
   }
   if (waiterStationOpen(areasOpen)) solids.push({ c: WAITER_STATION.pos, h: WAITER_STATION.half });
   for (const b of banketIslands(tables)) solids.push({ c: b.center, h: b.half });
-  for (let i = 0; i < tables; i++) solids.push({ c: LAYOUT.tables[i].table, h: tableHalfFor() });
+  for (let i = 0; i < tables; i++) solids.push({ c: LAYOUT.tables[i].table, h: tableHalfFor(i) });
   // Kilitli alanlar + rezerv arsa rota dışı (sıra-arası duvar 2026-06-11'de kaldırıldı).
   solids.push(...lockedAreaSolids(areasOpen));
   return solids;

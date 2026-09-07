@@ -127,7 +127,11 @@ export const FLOOR_THEMES: Record<string, FloorTheme> = {
   // B6b: maketin zemini (#b98a5a) doygun bir orta ahşap; oyunun parkesi (#c9a87d) ondan hem açık
   // hem soluktu. Yalnız pozlamayı açınca soluk renk kum rengine patlıyordu (ölçüldü) → tema
   // maketin ahşabına çekildi, tahta deseni korunuyor.
-  parke: { kind: 'plank', base: '#b98a5a', alt: '#ad7d4d', grout: '#8f6338' },
+  // D-073 (kullanıcı 2026-09-07): *"zemin kesinlikle parke değil maketteki gibi olmalı"*.
+  // Maketin salon zemini `floorPatch(..., C.floorWood)` — TEK DÜZ AHŞAP, tahta çizgisi yok.
+  // G2'nin plank deseni (ölçek referansı gerekçesiyle eklenmişti) bu yüzden kaldırıldı; ölçek
+  // referansını artık gölge veriyor. Id 'parke' KALIYOR (kayıt/mağaza uyumu), deseni düz.
+  parke: { kind: 'flat', base: '#b98a5a', alt: '#a8794c' },
   // 'yemek' (Y1): tost salonunun DOĞUŞTAN teması — açık krem-gri IRI KARO (1,05 m), düşük
   // kontrastlı derzle; yüksek kontrastlı 'dama'dan ayrışması korunur.
   yemek: { kind: 'tile', base: '#e3dac6', alt: '#d8cdb4', grout: '#bdb096', cell: 1.05 },
@@ -194,16 +198,29 @@ export const LIGHTING = {
    * hissinin yarısını G1'i beklemeden kapatıyor).
    * Daha da alçaltmak ([9,8,7]) gölgeleri uzatıyor ama telefonda oynanışı örten uzun lekeler yapıyor.
    */
-  sunPos: [9, 9, 7] as [number, number, number],
   /**
-   * SAHNEDE GÖLGE YOK (D-054). Dört varyant aynı kareden çekilip karşılaştırıldı — sert yönlü
-   * gölge (1,31 ms) · gölgesiz (0,67 ms) · yumuşak/VSM (~1,5 ms, ışık sızdırıyor) · gölgesiz +
-   * temas havuzu (0,74 ms) — ve **gölgesiz** seçildi (My Hotel'in düz görünümü).
-   * Sert gölgenin sorunu ölçümle de açıklandı: 1024'lük harita ~30 birimlik alana yayılınca
-   * kenar merdiven merdiven çıkıyordu ("zınk diye keskin çizgi gibi").
-   * Geri açmak gerekirse: `<Canvas shadows>` + directional'a `castShadow` + ortografik sınırlar
-   * −13/28/15/−15, mapSize 1024 (bu değerler ölçülmüştü: ~25 teksel/birim, kırpma yok).
+   * GÜNEŞ KONUMU — 2026-09-07 gece, D-073: **maketin konumu alındı** ([14, 26, 16], ~52°).
+   * Kullanıcı maketi üstten görünce *"maketteki ışık ve gölgeler baya iyiymiş, gölgeleri tekrar
+   * istiyorum"* dedi; beğenilen gölge boyu/açısı bu konumdan geliyor. Eski [9, 9, 7] (~40°) gölge
+   * KAPALIYKEN objeyi zemine oturtmak için seçilmişti (D-053); gölge geri gelince o işi gölgenin
+   * kendisi yapıyor ve 40° telefonda oynanışı örten uzun lekeler bırakıyordu.
    */
+  sunPos: [14, 26, 16] as [number, number, number],
+  /**
+   * GÖLGE **AÇIK** (D-073, 2026-09-07 — D-054 kullanıcı tarafından geri alındı).
+   * D-054'te gölgesiz seçilmişti (kare süresi 1,31 → 0,67 ms); maket üstten görülünce kullanıcı
+   * gölgeleri geri istedi. Değerler maket v13'ün `init()`'inden BİREBİR alındı: PCFSoft ·
+   * 2048 harita · bias −0,0012 · normalBias 0,14 (duvarlar 0,18–0,26 kalınlığında, gölge dış
+   * yüze sızmasın) · ortografik ±30 · near 1 / far 80. Maketin haritası 34 × 34'ün tamamını
+   * kapsıyor; D-054'ün "merdiven merdiven kenar" şikâyeti 1024'lük haritadandı, 2048 o sorunu
+   * ~50 teksel/birime çıkararak kapatıyor.
+   */
+  shadowMapSize: 2048,
+  shadowBias: -0.0012,
+  shadowNormalBias: 0.14,
+  shadowExtent: 30,
+  shadowNear: 1,
+  shadowFar: 80,
   background: '#1f2933',
   fogNear: 34, // oyun alanının DIŞINDA başlar (kamera ~14 birimden bakar) → oynanışı örtmez
   fogFar: 72,

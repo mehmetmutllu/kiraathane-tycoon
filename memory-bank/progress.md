@@ -1670,3 +1670,26 @@ Maket v13/v14'ün a0 + a1 programı oyuna girdi. Ekran görüntüleri: `docs/gor
 **Bitti sayılır:** maketin gezilebilir altı adımı sırayla açılıyor + merdiven konuşuyor ·
 **salon maket v13'e bakınca tanınıyor** (B6'nın kapısı) · `npm run test` yeşil, test sayısı
 düşmeden · smoke 26/26 · build temiz · v31 sıfırlaması testli · B1 sonunda tick parmak izi aynı.
+
+## Faz BM — MAKET TAŞIMASI (D-070 · D-072 · D-073) 🔧
+Karışıklığın çözümü D-072: **üç katman** (1 ölçü/ankraj → 2 sistem → 3 sanat cilası), aralarında
+tek yönlü sıra. Ölçü hedefi kullanıcı kararıyla **A**: kat 34 × 34, duvar 3,20 (maket v13 aynen);
+32 × 32 + KayKit duvarı ölçüldü ve reddedildi. Rapor: `docs/olcu-plan-karar.html`.
+- ✅ **Dev aracı — ÜSTTEN PLAN:** dev panelinde `Plan (üstten)` (tam kat / ×1,4 / ×2) + **ölçü
+  ızgarası** (3,20 maket · 4,00 KayKit); `window.__devPlan({topDown, zoom, gridStep})`.
+  Kare betikleri: `tools/shot-plan.mjs` (oyun) · `tools/shot-maket.mjs` (maket, aynı kadraj) ·
+  `tools/shot-doc.mjs` (belge).
+- ✅ **BM adım 2 — ÖN ÇEYREK MOBİLYA DİLİ (D-073):** çay masası **1,75 @ y 0,75** (KayKit
+  `table_medium` ×0,875), küme aralığı **6,40**, koltuk **∓1,45**, yükseltme noktası ∓2,15.
+  Şeridin ikili masası (1,00) değişmedi — maketteki iki mobilya dilinin farkı geri geldi.
+  Collision tipe bağlı (`tableHalf` 0,875 / `deuceHalf` 0,50), `REACH_TABLE` 1,10 → 1,505,
+  `chairHalf` 0,30, koridor saksıları taşındı. **vitest 280/280, tsc temiz.**
+- ✅ **Işık/zemin (D-073):** **gölge geri açıldı** (D-054 geri alındı) — maketin takımı birebir
+  (PCFSoft · 2048 · bias −0,0012 · normalBias 0,14 · ortografik ±30 · güneş [14,26,16]); mağaza
+  önizlemeleri gölgesiz. Zemin **düz ahşap #b98a5a** (G2 plank deseni kalktı; plank 'ceviz'de sürüyor).
+  Duvar/lambri renkleri zaten maketle aynıydı.
+- ⏳ **BM adım 1 — DUVAR:** `worktree-maket-tasima` dalında hazır (3,20 · lambri 0,90 · üç katman),
+  main'e ALINACAK. Dal main'in gerisinde → çakışma beklenir (`wallPanel` · `Decor` · `palette`).
+- ⏳ BM adım 3 arka bant + odalar · adım 4 kamera · **DONDURMA + maket arşiv damgası**.
+- ⏳ Sonra: `simulate.ts` TEK KEZ yeniden ölçülür (masa aralığı 3,20 → 6,40 oldu, eski denge
+  ölçümleri geçersiz), ardından Faz 4 → 5 → 7 → 8.
