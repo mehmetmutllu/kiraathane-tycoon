@@ -1546,6 +1546,41 @@ B4b ile B6b'yi ayıran şey iş değil, planın yazıldığı sıraydı: B4 "oda
 doğduğu için mekân işi ekonomiden ayrılmıştı, oysa lavabonun İÇİ bir ekonomi işi değil bant
 işiydi. Adımı silmek kapsam kaybı değil, **iki kez yazılacak işin bir kez yazılması**.
 
+## D-071 — SIRA GERİ ALINDI: tasarım EN SONA, önce oynanış (2026-09-07 gece)
+
+**Karar:** D-070'in *"önce tasarım komple geçsin"* SIRASI geri alındı. Kullanıcı:
+*"tasarıma en son döneriz artık yapacak bir şey yok"*. Bundan sonra **önce oynanış/mantık tarafı
+eksiksiz tamamlanır**, maket taşıması (BM) **en sona** bırakılır.
+
+**D-070'in geri kalanı AYNEN DURUYOR** — yalnız sıra değişti:
+- **Maket v13 tek doğru kaynaktır**; tasarım sırası geldiğinde oyunun statik dünyası onun
+  transkripsiyonu olur.
+- **Kural:** maketten transkripsiyon yapılır, esinlenilmez. Sapma varsa yanında gerekçesi yazar;
+  gerekçe ancak (a) oynanışa bağlı koordinat ya da (b) maketin kendi parametresi olabilir.
+- **Maket BİTMİŞ HÂLDİR:** en üst kademe maketin ölçüsüne eşitlenir, ara kademeler geriye türetilir.
+
+**BM adım 1 (duvar) PARK EDİLDİ, SİLİNMEDİ.** `worktree-maket-tasima` dalı uzakta duruyor
+(`6e61e4c`): duvar maketin `wall()`'ı oldu (3,20 · lambri 0,90 · üç katman · koyu çıta), dekorun
+asma bandı maketin değerlerinde, vitest 277/277 · smoke 28/28. Tasarım sırası gelince oradan
+devam edilir ya da o dal referans alınarak yeniden yazılır. **Silinmemeli.**
+
+**BEDELİ — bilerek kabul edildi (sonra sürpriz olmasın):** tasarım en sonda taşınınca
+(1) o ana kadar yapılan her görsel/yerleşim işi bir kez daha yazılır, (2) mesafeler değişeceği için
+o güne kadarki tüm denge ölçümleri (taşıma süreleri, `simulate.ts` çıktısı) geçersizleşir ve
+yeniden ölçülür. D-070'te bu risk yazılıydı; kullanıcı bilerek bu sırayı seçti.
+
+**Ayrıca kayda geçen ölçüm (`docs/olcum-kaykit-ve-yerlesim.md`):**
+- **KayKit duvarları 4 × 4 × 0,5 modül** (yarım 2), 144 modelin hepsi tek materyal + tek atlas
+  paylaşıyor. Ama kat 34 × 34 dörde bölünmüyor (→ 32 ya da 36 gerekir), duvar 4,0 (maket 3,2) ve
+  kapı modülün içinde sabit (oyunun kapısı kayıyor). **Öneri: KayKit duvarı istenirse ÖNCE MAKET
+  güncellenir, sonra transkribe edilir** — yoksa iki ayrı doğru kaynak sorunu geri gelir.
+- **Ön çeyrek kümeleri maketle eşleşmiyor:** masa aralığı 6,40 → 3,20 · tabla 1,75 → ~0,90 ·
+  koltuk 1,45 → 0,78 · kümenin ayak izi maketin **dörtte biri**. **Orta şerit ise eşleşiyor**
+  (3,20 · 1,85 · 1,00 birebir). Teşhis: oyun ŞERİDİN masasını ve ızgarasını ön çeyreklere de
+  uygulamış; makette iki ayrı mobilya dili var.
+
+---
+
 ## D-070 — MAKET = TEK DOĞRU KAYNAK. Kat komple tek geçişte taşınıyor (2026-09-07 gece)
 
 **Karar:** Faz B'nin "adım adım maket görselliğine geçiş" planı DURDURULDU. Yerine tek bir adım

@@ -2,6 +2,76 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-07 gece — **TASARIM EN SONA ALINDI, sıra oynanışta**)
+
+**Karar: D-071.** Kullanıcı sırayı geri aldı: *"tasarıma en son döneriz artık yapacak bir şey yok"*.
+Faz B (maket taşıması) **PARK**; önce oynanış/mantık tarafı **eksiksiz** tamamlanacak.
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**Kalan oynanış işlerinin sırasını kullanıcıyla netleştir, sonra başla.** Panoda bekleyenler:
+
+| Faz | İçerik | Durum |
+|---|---|---|
+| **Faz 4 — Ekonomi/meta** | Evrensel L5 (💎/video) · elmas ekonomisi · Prestige "Renovasyon" + İtibar · offline tavan | ⏳ hiç başlanmadı |
+| **Faz 5 — Monetizasyon** | AdMob (banner · sıklık-sınırlı interstitial · rewarded) · RevenueCat IAP · çocuk-güvenli yapılandırma | ⏳ ~%0 |
+| **Faz 7 — Mobil cila** | Capacitor build (APK zaten derleniyor) · dokunmatik · 60 fps (instancing/atlas/LOD) · bundle 1,46 MB | ⏳ |
+| **Faz 8 — Yayın** | Mağaza hesapları · COPPA/GDPR-K · derecelendirme | ⏳ |
+| Faz C/D artıkları | Sipariş NESNESİ (D-058 karar 1) · Kat 2 · aktif WC kâğıt döngüsü + temizlikçi | ⏳ |
+
+**Not:** 2026-09-01 yayına hazırlık denetiminin sonucu hâlâ geçerli — oynanış ~%60-65, **yayın
+katmanı ~%0-5**. Faz 5 + 7 + 8 hiç el değmemiş; mağazaya çıkmak için asıl darboğaz orası.
+
+### PARK EDİLEN İŞ — KAYBOLMASIN
+**`worktree-maket-tasima` dalı (uzakta, `6e61e4c`) SİLİNMEMELİ.** İçinde BM adım 1 var: duvar
+maket v13'ün `wall()`'ı oldu (3,20 · lambri 0,90 · üç katman 0,18/0,22/0,26 · KOYU çıta =
+`WallTheme.rail`), dekorun asma bandı maketin değerlerinde (aplik 2,05 · tablo 1,95 · saat 2,20 ·
+askı rayı 1,85 · pencere 1,15…2,80). vitest 277/277 · smoke 28/28 · tsc temiz.
+Yerel worktree: `.claude/worktrees/maket-tasima` (gitignore'a alındı).
+
+### BU GECENİN ÖLÇÜMLERİ (tasarım sırası gelince buradan devam)
+1. **Oyun maketin küçültülmüşü değil, BAŞKA BİR BİNA** — duvar 1,2↔3,2 · masa 0,9↔1,75 ·
+   masa yüksekliği 0,5↔0,75 · seviyeye göre üç masa boyu makette yok · fov 50↔34.
+2. **Ön çeyrek kümeleri eşleşmiyor, orta şerit eşleşiyor** (`docs/olcum-kaykit-ve-yerlesim.md`):
+   küme merkezi aynı ama masa aralığı 6,40→3,20 · tabla 1,75→~0,90 · koltuk 1,45→0,78 ·
+   kümenin ayak izi maketin **dörtte biri**. Şerit birebir (3,20 · 1,85 · 1,00).
+   **Teşhis: oyun ŞERİDİN masasını ve ızgarasını ön çeyreklere de uygulamış.**
+3. **`WALL_H = 1.2`'nin gerekçesi (kamera) DOĞRULANMADI** — maketin kamerası da 44°, tek fark
+   mesafe; 3,2'lik duvar hiçbir kadrajı kapatmadı. B6a'nın "ağır öğe duvardan iner" kuralı
+   gereksizleşti (TV duvara geri dönebilir).
+4. **Işık/renk boru hattı farkı** (main'de UYGULANDI): maket three r128 + varsayılan renderer →
+   `LinearEncoding`, ton eşlemesi yok = renk yönetimi yapmıyor, yüzeyleri patlatıyor. Oyun
+   three 0.184 ile renk-doğru. Yakınsama: pozlama 1,05→1,60 · yarımküre 0,35→0,72 · güneş
+   1,6→1,45 · soğuk dolgu ışığı eklendi · `parke` teması maketin ahşabına (#b98a5a) çekildi.
+   Ton eşlemesini kapatmak (`flat`) DENENDİ, daha da karartıyor → elendi.
+5. **KayKit duvarları 4 × 4 × 0,5 modül**, 144 model tek materyal + tek atlas. Kat 34 × 34 dörde
+   bölünmüyor (→ 32 ya da 36), duvar 4,0, kapı modül içinde sabit. **KayKit istenirse ÖNCE MAKET
+   güncellenmeli**, sonra transkribe edilmeli (yoksa iki doğru kaynak sorunu geri gelir).
+
+### Maketi oyunun kamerasıyla render etme kancası (tekrar aranmasın)
+`cd docs/maket && python -m http.server 8899` → sayfada `window.__bak(azi, ele, dist, tx, ty, tz)`.
+Oyunun kamerası: oyuncunun (px, pz) noktasından `d = 8,5 × fit × 1,35` yukarı ve güneye, 45°;
+412×915'te d = 14,92 → gerçek mesafe **21,1**. Aynı GÖRÜNEN boyut için maketin dar fov'u yüzünden
+`dist = 21,1 × tan17°/tan25° = 13,83`. Oyun tarafında: `.hud/.touch-layer/.dsb-fab` gizle +
+`__setState` ile tüm pad'leri aç + `camZoomOut: true` + teleport + ~2 sn bekle (kamera lerp'i).
+
+### Raporlar
+`docs/olcum-kaykit-ve-yerlesim.md` · `docs/b6b-arka-bant.html` · `docs/b6b-maket-fark.html` ·
+`docs/b6b-lavabo-varyant.html` · (dalda) `docs/bm-adim1-duvar.html`.
+Ekran görüntüleri `docs/gorsel/ss/b6b-*.png` ve `bm-*.png`.
+
+### Açık kalemler
+- `servis L6` 23,4 dk · `masa seviyesi L4` 21,4 dk bekleme (ikincisi model kusuru: sim masaları
+  tek kalemde yükseltiyor, oyunda masa-başı alınıyor).
+- Lavabo seviyesi TEK sinyalle okunuyor (çini bordür kalktı) — ikinci sinyal lazım.
+- Dekor tek InstancedMesh'e toplanmadı (Faz F). · `optional` pad kategorisi ve
+  `allAreaTablesLevel` gate'i ÜYESİZ. · `spawnInterval` sabit, Kat 2'den önce bakılmalı.
+- bundle ~1,46 MB · eslint 16 (hepsi eski dosyalarda).
+
+### Kırmızı çizgi (duruyor)
+**"Objeler yüzüyor" hissine bir daha blob shadow ÖNERME** (D-054).
+
+---
+
 ## ŞU AN (2026-09-07 gece — **PLAN DEĞİŞTİ: B6b iptal, MAKET TAŞIMASI (BM) başlıyor**)
 
 > ⚠️ **İŞ BU DALDA DEĞİL.** BM ayrı bir dalda ilerliyor: **`worktree-maket-tasima`**

@@ -1286,7 +1286,19 @@ yerleşim taşınırken de kullanılacak. Kullanım dosya başında.
 maket ölçeğine taşı (artık tek dosya: `layout.ts`), (3) kayıt v31 + migrasyon, (4) G4/G5 KayKit.
 Faz G artığı: UI Canvas'ları hâlâ eski düz ışıkla.
 
-## Faz B — Model geçişi 🔧 (B0…B6a bitti · **B6b DURDU, yerine BM geldi — D-070**)
+## Faz B — Model geçişi ⏸️ PARK (B0…B6a bitti · BM adım 1 ayrı dalda · **SIRA EN SONA ALINDI — D-071**)
+
+> ⏸️ **BU FAZ BEKLEMEDE (D-071, 2026-09-07).** Kullanıcı sırayı geri aldı: *"tasarıma en son
+> döneriz"*. Önce oynanış/mantık tarafı eksiksiz tamamlanacak (Faz 4 · 5 · 7 · 8 + Kat 2 +
+> sipariş nesnesi), maket taşıması EN SONA bırakıldı.
+>
+> **Kaybolmasın:** BM adım 1 (duvar maketin `wall()`'ı oldu) **`worktree-maket-tasima` dalında**,
+> uzakta, `6e61e4c`. vitest 277/277 · smoke 28/28. **Bu dal silinmemeli.**
+> Ölçümler: `docs/olcum-kaykit-ve-yerlesim.md` · `docs/b6b-arka-bant.html` ·
+> `docs/b6b-maket-fark.html` · `docs/bm-adim1-duvar.html`.
+>
+> D-070'in KURALLARI duruyor (maket tek doğru kaynak · transkripsiyon yapılır esinlenilmez ·
+> maket bitmiş hâldir), yalnız SIRASI değişti — gerekçe ve bedeli D-071'de.
 
 > **PLAN DEĞİŞTİ (2026-09-07 gece, D-070).** B6b "arka yarı + bant" adımı üç denemede de reddedildi
 > ve ölçüm sebebi gösterdi: oyun maketin küçültülmüş hâli değil, BAŞKA BİR BİNA (duvar 1,2 ↔ 3,2 ·
