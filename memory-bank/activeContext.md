@@ -32,6 +32,12 @@ kapsüller blob'a döndü (yarıçap 0,44 = 88 cm omuz; oturunca tabureyi yutuyo
 **vitest 300/300 · smoke 28/28 · tsc + build temiz · eslint'te yeni hata yok.**
 Kareler: `docs/gorsel/ss/oran-once-*.png` ↔ `oran-sonra-*.png` (`node tools/shot-oran.mjs`).
 
+### Oturum notu (2026-09-08 akşam — KOD DEĞİŞMEDİ)
+Kısa oturum: hafıza okundu, plan doğrulandı, kod/denge/ölçü **hiç değişmedi**. `vitest 300/300`
+yeşil; smoke tekrar çalıştırılmadı (son commit'ten beri değişiklik yok, orada 28/28 doğrulanmıştı).
+Pano sayacı bilerek **artırılmadı** — bu oturumda iş yapılmadı, 54/72 yerinde.
+Aşağıdaki "SONRAKİ OTURUMDA İLK İŞ" **aynen geçerli.**
+
 ### >>> SONRAKİ OTURUMDA İLK İŞ <<<
 **ÖLÇÜ DONDURMA + maket arşiv damgası**, sonra `simulate.ts` **TEK KEZ** yeniden ölçülür
 (masa aralığı 3,20 → 6,40 oldu → eski denge ölçümleri geçersiz). Ardından Faz 4 → 5 → 7 → 8.
