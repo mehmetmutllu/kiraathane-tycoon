@@ -1303,6 +1303,16 @@ Faz G artığı: UI Canvas'ları hâlâ eski düz ışıkla.
 > **Sonra:** `simulate.ts` bir kez yeniden ölçülür, ara seviyeler maketin bitmiş hâline göre
 > geriye dönük ayarlanır (masa boyu dahil — D-070), sonra kalan işler EKSİKSİZ tamamlanır.
 >
+> **BM adım 1 ✅ (2026-09-07) — DUVAR.** `wallPanel.tsx` maketin `wall()`'ı oldu: 3,20 yükseklik ·
+> 0,90 lambri · üç katman (0,18 / 0,22 / 0,26) · KOYU çıta (`WallTheme.rail` eklendi). G3'ün
+> süpürgelik+kartonpiyeri kalktı (1,2'lik kesik duvarın çözümüydü). `decor.ts` asma bandı maketin
+> değerlerine çekildi (aplik 2,05 · tablo 1,95 · saat 2,20 · ray 1,85 · pencere 1,15…2,80).
+> **Bulgu: `WALL_H = 1.2`'nin gerekçesi (kamera) doğrulanmadı** — maketin kamerası da 44°, tek fark
+> mesafe; 3,2 duvar hiçbir kadrajı kapatmadı. B6a'nın "ağır öğe duvardan iner" kuralı gereksizleşti.
+> vitest 277/277 · smoke 28/28 · tsc temiz. Rapor: `docs/bm-adim1-duvar.html`.
+> **BM adım 2 (sırada): MASA ÖLÇÜLERİ** — maket 1,75 × 1,75 @ 0,75; oyunda ~0,9 × 0,9 @ 0,50 ve
+> seviyeye göre üç boy. Maket bitmiş hâl → en üst kademe maketin ölçüsü, ara kademeler geriye türer.
+>
 > Eski B0-B6a kayıtları aşağıda duruyor (yapılan iş silinmiyor); BM onlarla çelişirse maket kazanır.
 > **Adım sırası (2026-09-07'de düzeltildi — D-063):**
 > B0 · B1 · B2 · B3-1 · B3-2 · **B5a** · **B5b** · **B4a** → **B6a** → **B6b**

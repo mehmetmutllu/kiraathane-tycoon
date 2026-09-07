@@ -2,6 +2,71 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-07 gece — **BM adım 1 TAMAM: duvar maketin transkripsiyonu**)
+
+> **BU DAL AYRI:** `worktree-maket-tasima` (worktree: `.claude/worktrees/maket-tasima`).
+> Main'de yalnız kontrol noktası var (`f36d107`). Karar: **D-070**.
+> Rapor: `docs/bm-adim1-duvar.html` — artifact
+> https://claude.ai/code/artifact/e898c8ea-e518-40e4-927d-5a203eeb148d
+
+### Yapılan
+`wallPanel.tsx` artık maket v13'ün `wall()` fonksiyonunun **transkripsiyonu**:
+
+| | maket | oyun (G3) | oyun (şimdi) |
+|---|---|---|---|
+| yükseklik | 3,20 | 1,20 | **3,20** |
+| lambri | 0,90 | 0,50 | **0,90** |
+| katman | 3 | 5 | **3** |
+| kalınlık | 0,18 / 0,22 / 0,26 | 0,20 / 0,24 / 0,30 | **maketin** |
+| çıta rengi | KOYU (`doorWood`) | açık (`trim`) | **KOYU** (`WallTheme.rail`) |
+
+G3'ün süpürgelik + kartonpiyeri KALKTI: o iki profil 1,2'lik **kesik** duvarın "kutu hiçbir yerde
+bitmiyor" teşhisi içindi; maketin 3,2'lik duvarında duvarı bitiren şey lambri kuşağı + koyu çıta.
+`WallTheme`'e `rail` eklendi (üç temada da), `trim` duruyor (mağaza kartları kullanıyor).
+`WallSlab.h` opsiyonel — bandın blokları farklı yükseklikte olabilsin diye.
+
+`decor.ts` asma bandı maketin değerlerine çekildi: **aplik 2,05 · tablo 1,95 · saat 2,20 ·
+askı rayı 1,85 · pencere bandı 1,15…2,80** (maketin `windowWall`'ı). `MOUNT` artık
+`{ mid, high, clock, rail }`, yeni `WINDOW = { sill, top }`.
+
+### ASIL BULGU — `WALL_H = 1.2`'nin gerekçesi DOĞRULANMADI
+Kayıttaki sebep *"kamera tepeden baktığı için tavana kadar çıkmaz"*dı. Ölçüldü: **maketin kamerası
+oyununkiyle AYNI AÇIDA** (maket `ele` 0,76–0,78 rad ≈ 44°, oyun 45°); tek fark mesafe (maket 42–66,
+oyun 21,1). 3,2'ye çıkarıldığında ne salon kapandı ne kapı önü — oyuncunun güneyindeki duvar zaten
+kadrajın dışında. **Sonuç: B6a'nın "ağır öğe duvardan iner, ayaklı üniteye oturur" kuralı artık
+GEREKSİZ** — maketin asma yükseklikleri doğrudan kullanılabiliyor (TV de duvara geri dönebilir).
+
+### Doğrulama
+vitest **277/277** (G3 duvar testi BM testine çevrildi: 9 `it` → 7) · smoke **28/28**
+(`SMOKE_URL=http://localhost:5174/ node tools/smoke.mjs`) · `tsc -b` temiz.
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**BM adım 2 — MASA ÖLÇÜLERİ.** Maket `teaTable`: tabla **1,75 × 1,75 × 0,09 @ y 0,75** · örtü
+1,62 × 1,62 × 0,035 @ 0,81 · dört ayak 0,13 × 0,72 × 0,13 @ ∓0,72. Oyun bugün ~0,9 × 0,9 @ 0,50 ve
+**seviyeye göre ÜÇ ayrı boy** (`tableLook.ts`: `TEA_TABLE_S/M/L`) — makette tek tip masa var.
+**Kullanıcı kararı (D-070): maket BİTMİŞ HÂLDİR** → en üst kademe maketin ölçüsüne eşitlenir, ara
+kademeler ondan geriye türetilir. Masa büyüyünce `layout.ts`'teki koltuk noktaları, çarpışma
+yarı-boyları ve masa aralıkları da maketin ızgarasına göre yeniden türetilir.
+
+**BM'de kalan sıra:** masa ölçüleri → TV duvara geri (maket 2,02) → arka bant (servis · merdiven ·
+lavabo, maketin `buildFloor1`'inden) → orta şerit → ön çeyrek dekorunun tamamı → **`simulate.ts`
+BİR KEZ yeniden ölçülür** (mesafeler değişti → taşıma süreleri değişti) → ara seviyeler maketin
+bitmiş hâline göre geriye dönük ayarlanır → kalan işler EKSİKSİZ tamamlanır.
+
+**Kabul:** 4-5 kadrajdan maket ↔ oyun yan yana + kullanıcı onayı, sonra main'e merge.
+
+### Maketi oyunun kamerasıyla render etme kancası (tekrar aranmasın)
+`cd docs/maket && python -m http.server 8899` → sayfada `window.__bak(azi, ele, dist, tx, ty, tz)`.
+Oyunun kamerası: oyuncunun (px, pz) noktasından `d = 8,5 × fit × 1,35` yukarı ve güneye, 45°;
+412×915'te d = 14,92 → gerçek mesafe **21,1**. Aynı GÖRÜNEN boyut için maketin dar fov'u yüzünden
+`dist = 21,1 × tan17°/tan25° = 13,83`. Oyun tarafında ekran görüntüsü için:
+`.hud/.touch-layer/.dsb-fab` gizle + `__setState` ile tüm pad'leri aç + `camZoomOut: true`.
+
+### Kırmızı çizgi (duruyor)
+**"Objeler yüzüyor" hissine bir daha blob shadow ÖNERME** (D-054).
+
+---
+
 ## ŞU AN (2026-09-07 gece — **PLAN DEĞİŞTİ: B6b iptal, MAKET TAŞIMASI (BM) başlıyor**)
 
 Karar: **D-070**. Raporlar: `docs/b6b-arka-bant.html` (ölçüm) · `docs/b6b-maket-fark.html`
