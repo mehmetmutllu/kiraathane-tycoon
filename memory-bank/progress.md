@@ -1484,6 +1484,9 @@ Kesme çizgisi: **B5a = model + pad zinciri + masa tipleri (denge SABİT tutulur
   başka throughput kolu yok) → kuyruk düz bir grind. Karar verilecekler: (1) eğri ×1,4545 kalsın mı,
   (2) L6 sonrası bir throughput kolu mu gerek (3. garson zorunlu / tepsi kademesi / lavabo çarpanı),
   (3) a2'nin masa yükseltme eşiği `z3table4`'te mi kalsın, (4) `waiter3`'ün `count: 4`'ü büyüsün mü.
+  **Kullanıcı girdisi (oturum sonu):** saf bekleme bugün 13. masada 5 dk → **20. masada 68 dk**;
+  2. soru için *"destek gelebilir ama reklam ile mi olsa"* → **ödüllü video** (geçici hız artışı)
+  değerlendirilecek, etik kurala uyuyor. Yönerge: dört soruya gerekçeli öneri getir, sonra onay al.
 
 ### B4 — Odalar ⏳ (SIRA: B5b'den sonra)
 Lavabo (oturma eklemez, pasif çarpan, kendi seviyeleri) + yıkık merdiven ("Kat 2 çok yakında").

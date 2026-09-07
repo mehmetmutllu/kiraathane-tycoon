@@ -74,6 +74,17 @@ kolu yok) → kuyruk düz bir grind, Rahat profil şeridi 12 saatte bitiremiyor.
    B4'ün lavabo çarpanı) — yoksa 20 masanın koltukları hiçbir zaman dolmaz.
 3. a2'nin masa yükseltme eşiği `z3table4`'te mi kalsın (bugün öyle, tempo sabit kalsın diye)?
 4. `waiter3`'ün `count: 4`'ü büyüsün mü?
+
+**KULLANICININ B5b İÇİN VERDİĞİ GİRDİ (2026-09-07 oturum sonu):**
+- Soru 1 açıklandı ve somutlandı: bugünkü ×1,4545 eğride saf bekleme 13. masada 5 dk, 16'da 15 dk,
+  18'de 32 dk, **20. masada 68 dk** (gelir L6'da sabit 15,62 ₺/sn). Yani son masa ilkinin 13 katı
+  bekletiyor. Soru "dik mi kalsın, yoksa artış oranı mı düşsün".
+- Soru 2 için kullanıcı: *"destek gelebilir ama reklam ile mi olsa acaba bilemedim"* → **ödüllü
+  video** (geçici hız artışı) bu kuyruğun içine oturabilir; monetizasyon kuralına da uyuyor
+  (zorunlu değil, yalnız hızlandırır — `docs/monetization.md`). Karar verilmedi.
+- Kullanıcı yönergesi: *"bu sorularını en mantıklı şekilde çözeriz"* → B5b'de dört soruya
+  GEREKÇELİ birer öneri getir, sonra onay al (denge değişikliği onaysız uygulanmaz kuralı sürer).
+
 ⚠ Kullanıcı ayrıca **yerleşimin düzenlenmesi gerektiğini** söyledi ("kesinlikle düzenlenmeli") ama
 onu SONRAYA bıraktı — B6a/B6b'nin konusu, B5b'den önce açılmaz.
 
