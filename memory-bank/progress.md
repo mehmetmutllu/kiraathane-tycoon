@@ -1503,15 +1503,24 @@ Kesme çizgisi: **B5a = model + pad zinciri + masa tipleri (denge SABİT tutulur
     "Para eksik kalırsa reklamla pad'i tamamla" reddedildi (gereksiz: ~20 dk'yı aşan alım kalmadı).
   - **Doğrulama:** vitest **255/255** · `table-b5a` eğri bekçisi yeni kurala göre yeniden yazıldı.
 
-- **B5b-artık 🔧 (Ö3 bitti · Ö6 onay bekliyor)**
+- **B5b-artık ✅ (Ö3 · Ö6 · Ö7 bitti)**
   - **Ö3 — bahşiş seyrelmesi ✅** (aynı oturum, ayrı commit). Müşteri artık boş masalar arasında
     **en yüksek seviyeliyi** seçiyor (`findTableForGroup`: önce seviye, sonra boş koltuk; alan
     round-robin'i korundu). Yeni masa yalnız TAŞMA alıyor → masa açmak geliri artık düşürmüyor,
     ve masa yükseltmesi ekranda okunuyor (iyi masalar hep dolu). Eski test adı ("en çok boş
     koltuklu masayı seçer") artık yalan olduğu için kuralla birlikte yeniden yazıldı.
-  - **Ö6 — `waiter3` görünürlüğü:** o andaki en iyi alım (+%19) ama `optional` ve görev hattında
-    yok → güdülen oyuncu onu hiç tutmuyor. Öneri (b): omurgaya alınmasın ama görev hattı bir kez
-    işaret etsin. **ONAY BEKLİYOR.**
+  - **Ö6 — `waiter3` OMURGAYA girdi ✅.** Her oyuncu için her zaman doğru olan bir alım (+%19,
+    ~40 dk amortisman) gerçek bir tercih değil, EKSİK BİR ZİNCİR ADIMIDIR. `optional: true` kalktı;
+    gate `allAreaTablesLevel {a2,L2,count 4}` → **`minStationLevel: 6`** (ölçümün söylediği gerçek
+    koşul). Görevi `q_stationMax`'in hemen ardında, şerit ondan sonra başlıyor → kuyruk 13,13
+    değil **15,62 ₺/sn**'de akıyor. Tempo bedeli yok denecek kadar az (5,28 → 5,35 sa).
+  - **Ö7 — görev hattı ↔ pad zinciri bekçisi ✅** (`tests/chain-b5b.test.ts`, 3 test).
+    Karışmanın yapısal sebebi: `visiblePads` AKTİF görevin hedef pad'inde tempo gate'lerini
+    bilerek atlıyor → hattın gösterdiği pad, zincir "sırası gelmedi" dese de beliriyor ve gate
+    süse dönüşüyor. Üç değişmez de config'den TÜRER, elle yazılmış sıra listesi yok.
+  - **Temizlik adayı (kayda geçti):** waiter3 omurgaya girince `optional` pad kategorisinin ve
+    `allAreaTablesLevel` gate'inin ÜYESİ KALMADI. Mekanizmalar duruyor; Faz D'nin meta katmanı
+    opsiyonel pad getirmezse ikisi de silinmeli. Boşluk teste yazıldı (kaza değil karar).
 
 ### B4 — Odalar ⏳ (SIRA: ŞİMDİ — D-066 plan düzeltmesi: platoyu kıran kol burada)
 Lavabo (oturma eklemez, pasif çarpan, kendi seviyeleri) + yıkık merdiven ("Kat 2 çok yakında").

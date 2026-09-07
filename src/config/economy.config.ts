@@ -560,8 +560,26 @@ export const economyConfig = {
     // Ölçüldü: şerit dolumu Normal profilde 10,31 sa → **5,28 sa**; Rahat profil ilk kez
     // bitirebiliyor (8,30 sa; eskiden 12 saatte bitmiyordu). ×1,08'e inmenin getirisi 0,5 sa
     // olduğu için gereksiz görüldü. fillRate = maliyet / 3,5 sn (hattın geri kalanıyla aynı).
+    // 3. GARSON — B5b'de opsiyonel olmaktan çıkıp OMURGAYA girdi (D-066).
+    // Ö5'in ölçümü: tezgâhtan (L4) sonra geliri kelepçeleyen kol arz değil TAŞIMA. 12 masa · L6 ·
+    // iki garsonda taşıma 0,66 < arz 0,78 → gelir 13,13 ₺/sn; üçüncü garson taşımayı 0,80'e çıkarıp
+    // darboğazı arza geri veriyor → **15,62 ₺/sn (+%19)**, 6000₺ ~40 dk'da amorti. Yani hattın o
+    // andaki EN İYİ alımı, ve şeridin sekiz masasının hemen ÖNÜNDE durması gerekiyor: kuyruk sabit
+    // hızda beklenmesin diye.
+    //
+    // Eski hâli `optional: true` + `allAreaTablesLevel` idi ve iki sorun doğuruyordu:
+    // (1) görev hattı ona hiç işaret etmiyordu → güdülen oyuncu L6 dönemini %19 eksik gelirle
+    //     geçiyordu (sim de öyle yapıyordu — ölçüm bunu gösterdi);
+    // (2) `allAreaTablesLevel` bir VEKİLDİ ("şerit kalabalıklaştı" demenin dolaylı yolu) ve masa
+    //     yükseltmeleri serbest sırayla alındığı için görev hattının sırasıyla hizalanamıyordu —
+    //     zincirin iki ucu (görev sırası ↔ pad gate'i) birbirine karışıyordu. Artık gate ölçümün
+    //     söylediği gerçek koşul: **tezgâh son seviyede** (`minStationLevel` = servis ₺-max), ve
+    //     onun hemen önündeki görev zaten `q_stationMax`. İki sıra artık AYNI şeyi söylüyor.
+    { id: 'waiter3', label: '3. Garson', cost: 6000, fillRate: 1714, optional: false, area: 0, // ~3.5sn
+      requires: { prev: ['z3table4'], minStationLevel: 6 }, effect: { type: 'hireWaiter' } },
+
     { id: 'z3table5', label: '5. Masa', cost: 3700, fillRate: 1057, optional: false, area: 2,
-      requires: { prev: ['z3table4'] }, effect: { type: 'addTable' } },
+      requires: { prev: ['waiter3'] }, effect: { type: 'addTable' } },
     { id: 'z3table6', label: '6. Masa', cost: 4250, fillRate: 1214, optional: false, area: 2,
       requires: { prev: ['z3table5'] }, effect: { type: 'addTable' } },
     { id: 'z3table7', label: '7. Masa', cost: 4900, fillRate: 1400, optional: false, area: 2,
@@ -577,13 +595,6 @@ export const economyConfig = {
     { id: 'z3table12', label: '12. Masa', cost: 9950, fillRate: 2843, optional: false, area: 2,
       requires: { prev: ['z3table11'] }, effect: { type: 'addTable' } },
 
-    // --- Kritik yol dışı: 3. GARSON (opsiyonel derinlik) ---
-    // Gating EN YOĞUN an: şeritte DÖRT masa L2+ (o noktada iki garson tezgâhın arzını taşıyamaz).
-    // B5a: `count: 4` AÇIKÇA yazıldı — koşul B5a öncesiyle BİREBİR aynı kalsın diye. Kelimesiz hâli
-    // "a2'nin tüm masaları" demekti ve a2 dört slottan 12'ye çıkınca eşik üç katına fırlıyordu;
-    // bu bir denge kararıdır, B5a'nın değil B5b'nin işi.
-    { id: 'waiter3', label: '3. Garson', cost: 6000, fillRate: 1714, optional: true, area: 0, // ~3.5sn
-      requires: { prev: ['waiter2'], allAreaTablesLevel: { area: 2, level: 2, count: 4 } }, effect: { type: 'hireWaiter' } },
   ],
 
   /**
@@ -644,6 +655,8 @@ export const economyConfig = {
     // yüzden L6 masalardan ÖNCE gelir. Hat bittiğinde simülatör zaten bu sırayı seçiyordu (serbest
     // oyun "darboğaz varsa önce servis" der); görev hattı onu görünür kılıyor, değiştirmiyor.
     { id: 'q_stationMax', title: 'Tezgâhı son seviyeye çıkar', target: { type: 'stationLevel', level: 6 }, reward: 800 },
+    // ARZ tavana dayandığı anda darboğaz TAŞIMAYA geçer (Ö5 ölçümü) — bu görev tam o anda gelir.
+    { id: 'q_waiter3', title: '3. Garsonu tut', target: { type: 'pad', id: 'waiter3' }, area: 0, reward: 600 },
     // Hattın SONUNA eklendiler, araya değil: önlerindeki her görev B5a öncesiyle birebir aynı sırada
     // kalsın (ölçülen altı tempo bandı bu sıraya bağlı). Her zorunlu pad'in bir görevi olması
     // değişmez kural — pad'i görevsiz bırakmak HUD'da "görev bitti ama ekranda pad var" hâli olurdu.

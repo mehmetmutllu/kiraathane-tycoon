@@ -2746,32 +2746,44 @@ describe('GARSON HAVUZU (Y4→B2) — gating (allAreaTablesLevel) + claim + opsi
     expect(deriveWorld(['table2']).services[THE_SERVICE].waiters).toBe(0);
   });
 
-  it("visiblePads: 3. GARSON opsiyonel pad'i gating karşılanınca görev durumundan bağımsız görünür", () => {
+  it('OPSİYONEL PAD KATEGORİSİ BUGÜN BOŞ — waiter3 B5b’de omurgaya girdi (D-066)', () => {
+    // Bu test eskiden waiter3'ün opsiyonel görünürlüğünü koruyordu. B5b ölçtü: 3. garson her
+    // oyuncu için, her zaman doğru olan bir alım (+%19 gelir, ~40 dk amortisman) — yani gerçek bir
+    // tercih değil, eksik bir zincir adımıydı. Omurgaya alınınca `optional` kategorisinin ÜYESİ
+    // KALMADI. Bu boşluk kayda geçiyor ki kaza eseri değil KARAR olduğu görünsün: mekanizma
+    // (`availableOptionalPads` · `visiblePads`) yerinde duruyor ama bugün kullanıcısı yok →
+    // Faz D'nin meta katmanı bir opsiyonel pad getirmezse temizlik adayıdır.
+    const optional = economyConfig.pads.filter((p) => p.optional);
+    expect(optional.map((p) => p.id)).toEqual([]);
     const ALL = ['table2', 'table3', 'waiter', 'table4', 'zone2', 'z2table2', 'z2table3',
       'dishwasher', 'z2table4', 'zone3', 'z3table2', 'waiter2', 'z3table3', 'z3table4'];
     const gate = {
-      padsDone: ALL, tables: 12, stationLevel: 4, lifetime: 999999,
+      padsDone: ALL, tables: 12, stationLevel: 6, lifetime: 999999,
       waiterServed: 99, tableLevels: Array(12).fill(2),
     };
-    // Görev hattı bitmiş gibi: omurga boş, opsiyonel waiter3 görünür.
-    const vp = visiblePads(economyConfig.quests.length, gate);
-    expect(vp.some((p) => p.id === 'waiter3')).toBe(true);
-    // 3. alanın masaları L2 değilken görünmez (en yoğun an gatei).
-    const vp2 = visiblePads(economyConfig.quests.length, { ...gate, tableLevels: Array(12).fill(1) });
-    expect(vp2.some((p) => p.id === 'waiter3')).toBe(false);
-    // Pad-dışı bir görev aktifken de opsiyonel görünür.
-    const tableQuestIdx = economyConfig.quests.findIndex((q) => q.id === 'q_z1allL4');
-    expect(visiblePads(tableQuestIdx, gate).some((p) => p.id === 'waiter3')).toBe(true);
+    // waiter3 artık OMURGADA: görev sırası gelince TEK hedef olarak çizilir...
+    const w3q = economyConfig.quests.findIndex((q) => q.id === 'q_waiter3');
+    expect(w3q).toBeGreaterThanOrEqual(0);
+    expect(visiblePads(w3q, gate).map((p) => p.id)).toEqual(['waiter3']);
+    // ...ve görev hattı bittiğinde bile omurga pad'i olarak çizilir (eskiden opsiyonel olduğu
+    // için hattan bağımsız görünüyordu; şimdi zincirin kendi sırasından görünüyor).
+    expect(visiblePads(economyConfig.quests.length, gate).map((p) => p.id)).toEqual(['waiter3']);
+    // Üyesi olmayan kategori hiçbir şey EKLEMEZ: her şey alınmışken ekran tamamen temiz.
+    const hepsi = economyConfig.pads.map((p) => p.id);
+    expect(visiblePads(economyConfig.quests.length, { ...gate, padsDone: hepsi })).toEqual([]);
   });
 
   it('görev hattı SONU (B5a): ... q_z1allL4 → q_stationMax → şeridin sekiz birimi', () => {
     const ids = economyConfig.quests.map((q) => q.id);
     // B5a'nın sekiz masa görevi hattın SONUNA eklendi, araya değil: önlerindeki sıra (dolayısıyla
     // ölçülen tempo) B5a öncesiyle birebir aynı kalır.
-    expect(ids.slice(-12, -9)).toEqual(['q_z3table4', 'q_waiterTray2', 'q_z1allL4']);
-    // Tezgâhın son basamağı masalardan ÖNCE: arz tavandayken yeni masa hiçbir şeyi hızlandırmaz.
-    expect(ids.slice(-9)).toEqual([
-      'q_stationMax',
+    expect(ids.slice(-13, -10)).toEqual(['q_z3table4', 'q_waiterTray2', 'q_z1allL4']);
+    // Kuyruğun önündeki İKİ basamak, B5b'nin ölçtüğü iki darboğazın sırası (D-066):
+    // önce ARZ tavana çıkar (`q_stationMax`), o an darboğaz TAŞIMAYA geçer ve hemen ardından
+    // üçüncü garson gelir (`q_waiter3`, +%19). Şerit ancak ondan sonra başlar — sekiz masalık
+    // kuyruk 13,13 ₺/sn'de değil 15,62 ₺/sn'de akar.
+    expect(ids.slice(-10)).toEqual([
+      'q_stationMax', 'q_waiter3',
       'q_z3table5', 'q_z3table6', 'q_z3table7', 'q_z3table8',
       'q_z3table9', 'q_z3table10', 'q_z3table11', 'q_z3table12',
     ]);

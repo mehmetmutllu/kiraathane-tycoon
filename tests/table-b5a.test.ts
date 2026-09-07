@@ -183,24 +183,26 @@ describe('B5a — şeridin pad zinciri', () => {
 });
 
 describe('B5a — gating: alanın büyümesi eşiği sessizce kaydırmaz', () => {
-  it('waiter3 hâlâ ŞERİTTE DÖRT masa L2 istiyor (12 değil)', () => {
+  it('waiter3 ŞERİDİN ÖNÜNDE ve gate’i TEZGÂHIN SON SEVİYESİ (B5b · D-066)', () => {
+    // B5a'da waiter3 opsiyoneldi ve gate'i `allAreaTablesLevel {a2, L2, count 4}` idi — "şerit
+    // kalabalıklaştı" demenin DOLAYLI yolu. B5b ölçtü: kalabalık değil TAŞIMA belirleyiciymiş
+    // (12 masa · L6 · iki garson → taşıma 0,66 < arz 0,78; üçüncü garson +%19). Gate artık ölçümün
+    // söylediği gerçek koşul, ve o koşulun görev hattındaki karşılığı (`q_stationMax`) hemen
+    // önünde duruyor → görev sırası ile zincir gate'i AYNI şeyi söylüyor.
     const w3 = economyConfig.pads.find((p) => p.id === 'waiter3') as PadDef;
-    const lvls = (n: number) => {
-      const a = Array(MAX_TABLES).fill(0);
-      for (let k = 0; k < n; k++) a[areaTableStart(2) + k] = 2;
-      return a;
-    };
-    const gate = (n: number) => ({
-      padsDone: [...ALL_PADS, 'waiter2'],
-      tables: MAX_TABLES,
-      stationLevel: 6,
-      lifetime: 1e6,
-      tableLevels: lvls(n),
+    expect(w3.optional ?? false).toBe(false); // artık omurgada
+    const gate = (stationLevel: number, done: string[]) => ({
+      padsDone: done, tables: MAX_TABLES, stationLevel, lifetime: 1e6,
+      tableLevels: Array(MAX_TABLES).fill(0) as number[],
     });
-    expect(requiresMet(w3.requires, gate(3))).toBe(false);
-    expect(requiresMet(w3.requires, gate(4))).toBe(true);
-    // `count` yazılmasaydı 12 masa istenirdi — B5a öncesiyle aynı koşul korunuyor.
-    expect(requiresMet({ allAreaTablesLevel: { area: 2, level: 2 } }, gate(4))).toBe(false);
+    const upToZ3t4 = ALL_PADS.slice(0, ALL_PADS.indexOf('z3table4') + 1);
+    expect(requiresMet(w3.requires, gate(5, upToZ3t4))).toBe(false); // tezgâh L6 değil → yok
+    expect(requiresMet(w3.requires, gate(6, upToZ3t4))).toBe(true);
+    // Şeridin ilk masası ondan SONRA gelir: kuyruk 13,13 ₺/sn'de değil 15,62'de başlasın.
+    const t5 = economyConfig.pads.find((p) => p.id === 'z3table5') as PadDef;
+    expect((t5.requires as { prev?: string[] }).prev).toEqual(['waiter3']);
+    // Masa SEVİYESİ artık waiter3'ün koşulu değil (eski vekil gate tamamen kalktı).
+    expect(JSON.stringify(w3.requires)).not.toContain('allAreaTablesLevel');
   });
 });
 

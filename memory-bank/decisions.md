@@ -1418,7 +1418,29 @@ geliri kısa vadede DÜŞÜRÜYORDU.** Oyuncunun 13. masayı açtığı için ce
 olmaz. Yeni masa artık yalnız TAŞMA alıyor (iyi masa dolduğunda), böylece seyrelme kapanıyor ve
 masa yükseltmesi ekranda okunur hâle geliyor: iyi masalar hep dolu.
 
-**Karar 6 — ödüllü video = geçici DEMLEME çarpanı** ("Semaver kaynadı", ×2 / 60 sn; uygulama
+**Karar 6 — `waiter3` OMURGAYA girdi; `optional` kategorisi boşaldı.** Ö5'in ölçümü 3. garsonu
+her oyuncu için her zaman doğru bir alım yaptı (+%19 gelir, ~40 dk amortisman) — böyle bir alım
+gerçek bir tercih değil, **eksik bir zincir adımıdır**. `optional: true` kalktı; gate
+`allAreaTablesLevel {a2, L2, count 4}` → **`minStationLevel: 6`** oldu (ölçümün söylediği gerçek
+koşul: arz tavana çıktığı anda darboğaz taşımaya geçer). Görevi `q_waiter3`, tam karşılığı olan
+`q_stationMax`'in hemen ardına kondu ve şerit ondan sonra başlıyor → sekiz masalık kuyruk 13,13
+değil **15,62 ₺/sn**'de akıyor. Tempo bedeli yok denecek kadar az (şerit dolumu 5,28 → 5,35 sa,
+Normal); kazanç hızda değil histe: L6'ya varan oyuncu düz bir platoya değil görünür bir sıçramaya
+giriyor. **Yan sonuç:** waiter3 oyundaki tek `optional` pad ve `allAreaTablesLevel`'ın tek
+kullanıcısıydı → iki mekanizmanın da bugün üyesi yok. Silinmediler (Faz D'nin meta katmanı
+opsiyonel pad getirebilir) ama boşluk teste yazıldı ki kaza değil KARAR olduğu görünsün.
+
+**Karar 7 — görev hattı ile pad zincirinin hizası artık BEKÇİLİ** (`tests/chain-b5b.test.ts`).
+İlerlemeyi iki ayrı sıra anlatıyor — `pads[].requires` (yapısal zincir) ve `quests[]` (oyuncunun
+gördüğü tek-odak sırası) — ve ayrıştıklarında hiçbir şey bağırmıyordu, çünkü `visiblePads` AKTİF
+görevin hedef pad'inde tempo gate'lerini **bilerek atlar** (2026-06-11 fix). Yani hattın işaret
+ettiği bir pad, zincir "sırası gelmedi" dese bile ekranda belirir ve gate bir süse dönüşür.
+waiter3'ün eski gate'i tam olarak buydu. Üç değişmez yazıldı, üçü de config'den TÜRER (elle
+yazılmış sıra listesi yok — B5a'nın dersi): (1) görev hedefi olan pad yalnız hattın
+sıralayabildiği gate'leri taşır, (2) hat yürütülünce her pad görevi gate'i karşılanmışken gelir,
+(3) omurganın pad sırası ile hattaki pad sırası birebir aynıdır.
+
+**Karar 8 — ödüllü video = geçici DEMLEME çarpanı ("Semaver kaynadı", ×2 / 60 sn; uygulama
 Faz 5). Ödül tam bağlayıcı tavanın (arz) üstüne biner → oyuncuya oyunun kendi darboğazını
 öğretir. Kullanıcının "para eksik kalırsa reklamla pad'i tamamla" fikri **reddedildi**: kural
 ihlali değil ama gereksiz — Karar 1'den sonra oyunda ~20 dk'yı aşan tek bir alım kalmadı, ve bir

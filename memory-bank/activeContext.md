@@ -62,7 +62,7 @@ Taşıma kolu tükendiğinde darboğaz yine arza dönüyor: **plato ~45 dk gecik
   varken reklamla geçiştirmek türün tuzağı. B4'ten sonra 20 dk'yı aşan alım kalırsa yeniden açılır.
 
 ### Doğrulama
-vitest **255/255** · build + `tsc -b` temiz · smoke 26/26 · `simulate.ts`'in servis L6'ya kadarki
+vitest **258/258** (yeni `tests/chain-b5b.test.ts` 3) · build + `tsc -b` temiz · smoke 26/26 · `simulate.ts`'in servis L6'ya kadarki
 tüm satırları taban ile birebir.
 
 ### >>> SONRAKİ OTURUMDA İLK İŞ <<<
@@ -71,11 +71,26 @@ Lavabo = oturma EKLEMEZ, **pasif gelir çarpanı**, kendi seviyeleri · yıkık 
 yakında") · arka bandın içi açılır. Lavabonun çarpan eğrisi tasarlanırken hedef: L6'dan sonra
 oranın donması BİTSİN (bugün 15,62'de duruyor). Ölçüm aracı artık üç kolu da görüyor.
 
+### Ö6 + Ö7 — `waiter3` omurgaya girdi, hiza BEKÇİLENDİ ✅ (ayrı commit)
+Kullanıcı: *"en kalitelisi ne ise o olsun ama görev ve geliştirme zincirinde bunu da mutlaka
+hesaba kat çünkü onlar birbirine karışıyordu."* Sökünce çıkan: `waiter3` oyundaki **tek**
+`optional` pad ve `allAreaTablesLevel`'ın **tek** kullanıcısıydı — tek üyeli bir kategori, ve o
+gate masa yükseltmeleri serbest sırayla alındığı için görev hattının sırasıyla hizalanamıyordu.
+- **Ö6:** `optional: true` kalktı, gate **`minStationLevel: 6`** oldu, görevi (`q_waiter3`)
+  `q_stationMax`'in hemen ardına kondu, `z3table5.prev = ['waiter3']`. Şerit artık 13,13 değil
+  **15,62 ₺/sn**'de akıyor; tempo bedeli 5,28 → **5,35 sa** (Normal) — kazanç hızda değil histe.
+- **Ö7:** `tests/chain-b5b.test.ts` — üç değişmez, hepsi config'den türer:
+  (1) görev hedefi olan pad yalnız hattın SIRALAYABİLDİĞİ gate'leri taşır (`prev` ·
+  `minStationLevel` · `minTables`; `minLifetime` yazılı istisna), (2) hat yürütülünce her pad
+  görevi gate'i karşılanmışken gelir, (3) omurga pad sırası == hattaki pad sırası.
+  **Karışmanın yapısal sebebi:** `visiblePads` aktif görevin hedef pad'inde tempo gate'lerini
+  BİLEREK atlıyor (2026-06-11 fix) → hattın gösterdiği pad, zincir "sırası gelmedi" dese bile
+  beliriyor ve gate bir SÜSE dönüşüyor. waiter3'ün eski gate'i tam olarak buydu.
+- **Temizlik adayı:** `optional` pad kategorisi ve `allAreaTablesLevel` artık ÜYESİZ. Silinmediler
+  (Faz D meta katmanı opsiyonel pad getirebilir) ama boşluk teste yazıldı — kaza değil karar.
+
 ### Onay bekleyen
-- **Ö6 — `waiter3` görünürlüğü (ONAY BEKLİYOR).** 3. garson o andaki en iyi alım (+%19) ama
-  `optional: true` ve görev hattında yok → sim'in güttüğü oyuncu onu HİÇ tutmuyor, L6 dönemini
-  %19 eksik gelirle geçiyor. Seçenekler: (a) omurgaya al, (b) opsiyonel kalsın ama görev hattı
-  bir kez işaret etsin **(öneri)**, (c) `count: 4` eşiği düşsün.
+(yok — B5b'nin tüm kalemleri kapandı)
 - **Ö3 — bahşiş seyrelmesi ✅ YAPILDI** (ayrı commit). `findTableForGroup` alan içinde artık
   **önce SEVİYE, sonra boş koltuk** sıralıyor (alan round-robin'i korundu). Kusur şuydu: servis
   edilen bardak sayısı arz tavanıyla SABİT olduğu için yeni açılan L0 masa o sabit bardakların bir

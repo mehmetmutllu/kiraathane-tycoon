@@ -175,12 +175,36 @@ kıracak kol defterde VAR, ama şeridin ARKASINA konmuş. Öneri: **B4 önce, so
 yeniden ölçülür.** (D-063 gibi bir plan düzeltmesi.) Ö1 bu arada beklemeyi yarıya indirir.
 - Taşıma kolu (garson/tepsi) platoyu ~45 dk geciktiriyor ama kaldırmıyor (§5) — B4 hâlâ gerekli.
 
-### Ö6 · `waiter3` kritik yol dışında kalmasın (YENİ — §5'in bulgusu, onay bekliyor)
-3. garson o andaki en iyi alım (+%19, ~40 dk amortisman) ama `optional: true` ve görev hattında
-yok → güdülen oyuncu onu hiç tutmuyor ve L6 dönemini %19 eksik gelirle geçiyor.
-Seçenekler: (a) görev hattına eklensin (kritik yol olur), (b) opsiyonel kalsın ama görev
-hattı ona bir kez işaret etsin, (c) `count: 4` eşiği düşsün de daha erken görünsün.
-**Öneri: (b)** — omurga şişmez, oyuncu körlüğü kalkar, "opsiyonel derinlik" kararı korunur.
+### Ö6 · `waiter3` OMURGAYA girdi — ✅ UYGULANDI
+Kullanıcı "en kalitelisi ne ise o olsun, ama görev ve geliştirme zincirinde hesaba kat, onlar
+birbirine karışıyordu" dedi. Sökünce görülen: `waiter3` oyundaki **tek** `optional` pad ve
+`allAreaTablesLevel` gate'ini kullanan **tek** yerdi — yani tek üyeli bir kategori, ve o gate
+masa yükseltmeleri SERBEST sırayla alındığı için görev hattının sırasıyla hizalanması imkânsız
+bir koşuldu. Karışmanın kaynağı buydu.
+
+Her oyuncu için, her zaman doğru olan bir alım (+%19, ~40 dk amortisman) gerçek bir tercih
+değil, **eksik bir zincir adımıdır**. Bu yüzden (b) değil, en temizi yapıldı:
+- `optional: true` → **omurga**; gate `allAreaTablesLevel` → **`minStationLevel: 6`** (ölçümün
+  söylediği gerçek koşul: arz tavana çıktığı anda darboğaz taşımaya geçiyor).
+- Görev `q_waiter3`, tam karşılığı olan `q_stationMax`'in **hemen ardına** kondu; şeridin sekiz
+  masası ondan sonra başlıyor → kuyruk 13,13 değil **15,62 ₺/sn**'de akıyor.
+- Ölçüldü: şerit dolumu 5,28 → **5,35 sa** (Normal). Yani tempo neredeyse aynı; kazanç hızda
+  değil **histe**: L6'ya varan oyuncu artık düz bir platoya değil, görünür bir **+%19 sıçramaya**
+  giriyor.
+
+**Yan bulgu (kayda geçti, temizlik adayı):** waiter3 omurgaya girince `optional` kategorisinin
+üyesi kalmadı ve `allAreaTablesLevel` gate'inin kullanıcısı kalmadı. Mekanizmalar yerinde
+duruyor; Faz D'nin meta katmanı bir opsiyonel pad getirmezse ikisi de silinmeli.
+
+### Ö7 · Bekçi: görev hattı ↔ pad zinciri hizası (`tests/chain-b5b.test.ts`) — ✅ UYGULANDI
+Asıl kalıcı çözüm bu. İlerlemeyi iki ayrı sıra anlatıyor (`pads[].requires` ve `quests[]`) ve
+ayrıştıklarında kimse bağırmıyordu, çünkü `visiblePads` **aktif görevin hedef pad'inde tempo
+gate'lerini bilerek atlar** — hattın işaret ettiği pad, zincir "sırası gelmedi" dese de ekranda
+belirir ve gate bir SÜSE dönüşür. Üç bekçi eklendi, hiçbiri elle yazılmış sıra listesi kullanmıyor:
+1. Görev hedefi olan bir pad **yalnız hattın sıralayabildiği** gate'leri taşır (`prev` ·
+   `minStationLevel` · `minTables`; `minLifetime` yazılı istisna).
+2. Hat baştan sona yürütülünce her pad görevi, pad'in gate'i **karşılanmışken** geliyor.
+3. Omurganın pad sırası ile hattaki pad sırası **birebir aynı**.
 
 ### Ö3 · Bahşiş seyrelmesi kapatılsın
 Bugün servis edilen bardak sayısı sabit olduğu için **yeni açılan L0 masa ortalama bahşişi
@@ -206,7 +230,7 @@ ve her ölçüm §5'teki kör noktayı tekrarlar.
 | 1 | Eğri ×1,4545 kalsın mı? | **Hayır → ×1,15** | Masa gelir üretmiyor; fiyatı alan fiyatı olmalı (§1, §3) |
 | 2 | L6 sonrası throughput kolu? | **Evet, şart — ama B4'ün lavabosu** | Garson/tepsi kol değil (§5); arzı şişirmek kuralları bozar (§6) |
 | 3 | a2 eşiği `z3table4`'te kalsın mı? | **Evet, kalsın** | Bahşiş kolu L6'dan önce zaten tükeniyor; ileri atmak platoyu uzatır (§2) |
-| 4 | `waiter3`'ün `count: 4`'ü büyüsün mü? | **Hayır — eşik değil, GÖRÜNÜRLÜK sorunu** | Ö5 ölçtü: 3. garson +%19 gelir alıyor ama oyuncuya hiç söylenmiyor → Ö6 |
+| 4 | `waiter3`'ün `count: 4`'ü büyüsün mü? | **Eşik kalktı — pad omurgaya girdi** | Ö5 ölçtü: +%19 alıyor; `allAreaTablesLevel` hattın sıralayamadığı bir vekildi → Ö6/Ö7 |
 
 > Soru 4'ün ilk cevabı ("3. garson hiçbir şey satın almıyor, dokunma") elle yapılmış bir
 > tahmine dayanıyordu ve Ö5'in ölçümü onu çürüttü. Kayda geçen cevap yukarıdakidir.
@@ -222,7 +246,8 @@ ve her ölçüm §5'teki kör noktayı tekrarlar.
 | **Ö4** | ödüllü video kararı `docs/monetization.md`'ye | ✅ yazıldı (uygulama Faz 5) |
 | **Ö2** | plan sırası: **B4 → şeridin son fiyatı** | ✅ `progress.md` + D-066 |
 | **Ö3** | müşteri en yüksek seviyeli boş masayı seçsin | ✅ uygulandı · vitest 255/255 · smoke 26/26 |
-| **Ö6** | `waiter3` görünürlüğü | ⏳ **onay bekliyor** (a/b/c) |
+| **Ö6** | `waiter3` omurgaya girdi + gate `minStationLevel: 6` | ✅ uygulandı |
+| **Ö7** | görev hattı ↔ zincir hizası bekçisi (3 test) | ✅ uygulandı · vitest 258/258 |
 
 ### Reddedilen: "eksik kalırsa reklamla masayı aç"
 Kullanıcının fikri; `monetization.md` bu ödülü zaten meşru sayıyor ("anında pad"), yani kural
