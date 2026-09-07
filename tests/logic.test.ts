@@ -3399,11 +3399,28 @@ describe('Faz B1 — dünya modeli: ALAN · SERVİS · MASA · ODA ayrışması'
       // Servisin durduğu alan o an AÇIK olmak zorunda (yoksa erişilemez bir tezgâh olurdu).
       expect(sp.areaIndex).toBeLessThan(areasOpen);
       const ab = LAYOUT.areaBounds[sp.areaIndex];
-      for (const pt of [sp.station, sp.dish, sp.pickup, sp.upgradeSpot, sp.waiterHome, sp.dishwasherHome]) {
+      // AKTÖRÜN BASTIĞI noktalar alanın İÇİNDE olmak zorunda (yürünemeyen yerde beklenemez).
+      for (const pt of [sp.pickup, sp.upgradeSpot, sp.waiterHome, sp.dishwasherHome]) {
         expect(pt[0]).toBeGreaterThanOrEqual(ab.minX);
         expect(pt[0]).toBeLessThanOrEqual(ab.maxX);
         expect(pt[2]).toBeGreaterThanOrEqual(ab.minZ);
         expect(pt[2]).toBeLessThanOrEqual(ab.maxZ);
+      }
+      // OBJE GÖVDELERİ (tezgâh · bulaşık) alana DEĞMEK zorunda, içinde durmak zorunda değil:
+      // BM adım 3'te küme mutfağın içine geçti, ön yüzü bandın hattında kaldı — bir tezgâhın
+      // gövdesinin duvarın içinde olması normaldir, ERİŞİLEMEZ olması değil. Asıl kural bu:
+      // alanın tezgâha en yakın noktasından tezgâh `serving.pickupRadius` içinde kalmalı.
+      for (const [c, h] of [
+        [sp.station, sp.half],
+        [sp.dish, sp.dishHalf],
+      ] as const) {
+        expect(c[0] + h[0]).toBeGreaterThanOrEqual(ab.minX);
+        expect(c[0] - h[0]).toBeLessThanOrEqual(ab.maxX);
+        expect(c[2] + h[1]).toBeGreaterThanOrEqual(ab.minZ);
+        expect(c[2] - h[1]).toBeLessThanOrEqual(ab.maxZ);
+        const nx = Math.max(ab.minX, Math.min(ab.maxX, c[0]));
+        const nz = Math.max(ab.minZ, Math.min(ab.maxZ, c[2]));
+        expect(Math.hypot(nx - c[0], nz - c[2])).toBeLessThan(economyConfig.serving.pickupRadius);
       }
     }
   });

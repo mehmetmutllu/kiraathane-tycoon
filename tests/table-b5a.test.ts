@@ -111,20 +111,35 @@ describe('B5a — MASA TİPİ: dörtlü küme ↔ banket ikilisi', () => {
     expect(seats).toBe(56);
   });
 
-  it('GÖRÜNÜŞ: L3’te dörtlü BÜYÜR (kare), ikili BİSTROYA döner (uzun) — aynı basamak, farklı geometri', () => {
+  it('GÖRÜNÜŞ: L3’te iki tip de BÜYÜR ve ikisi de KARE kalır — fark tablanın ORANINDA değil BOYUNDA', () => {
+    // Kullanıcı 2026-09-07: *"banketlerin masaları ideal boyda olsun ama KARE olsun; küçük
+    // dememin sebebi dikdörtgen olmasıydı, diğer tek masalar kadar büyük olmasın"*.
+    // Eski kurgu ikiliyi L3'te bistroya (0,99 × 0,70) çeviriyordu; dikdörtgen tabla 1,75'lik
+    // dörtlünün yanında hem küçük hem çarpık okundu.
     for (const k of ['four', 'deuce'] as const) {
       expect(tableLook(k, 0).key).toBe('table_small');
       expect(tableLook(k, 2).key).toBe('table_small');
+      // HER seviyede kare: örtü yarı-ölçüleri eşit, tabla ölçeği x = z.
+      for (const l of [0, 2, 3, 4]) {
+        const look = tableLook(k, l);
+        expect(look.cloth.hx, `${k} L${l} örtü`).toBeCloseTo(look.cloth.hz, 6);
+        expect(look.scale[0], `${k} L${l} tabla`).toBeCloseTo(look.scale[2], 6);
+      }
     }
     expect(tableLook('four', 3).key).toBe('table_medium');
-    expect(tableLook('deuce', 3).key).toBe('table_medium_long');
-    // İkili masa hiçbir seviyede kare-büyük tablayı (dört kişilik okuması) almaz.
+    // İkili masa hiçbir seviyede dörtlünün tablasını (1,75 = dört kişilik okuması) almaz.
     for (const l of [0, 1, 2, 3, 4]) expect(tableLook('deuce', l).key).not.toBe('table_medium');
-    // Bistro tablası banka PARALEL uzar: eni derinliğinden büyük.
-    const long = tableLook('deuce', 3);
-    expect(long.cloth.hx).toBeGreaterThan(long.cloth.hz);
-    // ...ve `LAYOUT.tableHalf` collision kutusunun dışına taşmaz (native table_medium_long eni 3).
-    expect(long.scale[0] * 3).toBeLessThanOrEqual(LAYOUT.tableHalf[0] * 2);
+    // Kademeler: ikili 1,00 → 1,20 · dörtlü 1,10 → 1,75. İkili her seviyede dörtlüden KÜÇÜK,
+    // ama L3'te kendi L0'ından büyük (basamak gözle görülür).
+    const side = (k: 'four' | 'deuce', l: number) => tableLook(k, l).scale[0] * (tableLook(k, l).key === 'table_medium' ? 2 : 1);
+    expect(side('deuce', 0)).toBeCloseTo(1.0, 6);
+    expect(side('deuce', 3)).toBeCloseTo(1.2, 6);
+    expect(side('four', 0)).toBeCloseTo(1.1, 6);
+    expect(side('four', 3)).toBeCloseTo(1.75, 6);
+    for (const l of [0, 3]) expect(side('deuce', l)).toBeLessThan(side('four', l));
+    expect(side('deuce', 3)).toBeGreaterThan(side('deuce', 0));
+    // İkilinin tablası BANKET adasının oturağının üstüne binmez (collision yarısı = tabla yarısı).
+    expect(LAYOUT.deuceHalf[0]).toBeCloseTo(side('deuce', 3) / 2, 6);
   });
 });
 

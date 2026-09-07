@@ -1748,6 +1748,17 @@ tek yönlü sıra. Ölçü hedefi kullanıcı kararıyla **A**: kat 34 × 34, du
     yeniden ölçülmeli. Gölge kamerası (ortografik ±30) etkilenmiyor.
   - **Önerilen: fov 50 KALSIN** (maketin 34'ü bir gözlem aracının tercihi; D-072'nin kuralı ölçüyü
     dondurmak, ölçülmemiş bir kazanç için değiştirmek değil). Karar kullanıcının.
+- ✅ **BM adım 3 düzeltmeleri (D-074, kullanıcı geri bildirimi):**
+  - **İkili (banket) masa KARE oldu:** bistro `table_medium_long` (0,99 × 0,70) elendi; kademe
+    1,00 → **1,20** (üst sınırı banket adasının oturak kenarı verir). Tip farkı artık tablanın
+    oranında değil BOYUNDA: ikili 1,00/1,20 ↔ dörtlü 1,10/1,75. `deuceHalf` 0,50 → 0,60.
+  - **Tabure oranı maketin `stool()`'una kilitlendi:** ölçek 0,6 → **1,11** (oturak üstü 0,30 →
+    **0,555**, maketin sayısı). Greybox yedeği de maketin dört parçasına çevrildi.
+  - **Servis kümesi mutfağın İÇİNE:** z −8,6 → **−10,3**, tezgâhın ön yüzü tam bandın hattında;
+    çaycının yürüme hattı tezgâhın arkasına (−11,3). Erişim değişmedi (0,85 br sabit).
+  - **Değişmez yeniden yazıldı:** "servis kümesi alanın içinde" iki rolü karıştırıyordu →
+    aktörün bastığı noktalar alanın İÇİNDE · obje gövdeleri alana DEĞER + `pickupRadius` içinde.
+  - **vitest 281/281 · smoke 28/28 · tsc + eslint + build temiz.**
 - ⏳ İki karar (bandın açılması · fov) onaylanınca **DONDURMA + maket arşiv damgası**, sonra
   `simulate.ts` TEK KEZ yeniden ölçülür.
 - **Rapor:** `docs/bm-adim3-4-bant-kamera.html` →

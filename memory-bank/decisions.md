@@ -1806,3 +1806,51 @@ footprint'ten türer · banket-masa çakışması ikili footprint'le ölçülür
 'ceviz'e taşındı) + "salon zemini DÜZ" testi eklendi. **280/280 yeşil, tsc temiz.**
 
 **Rapor:** `docs/olcu-plan-karar.html` — https://claude.ai/code/artifact/a17055c1-de75-4017-9036-54a893c1992b
+
+---
+
+## D-074 — İKİLİ MASA KARE · TABURE ORANI MAKETTEN · MUTFAK EŞYALARI MUTFAĞIN İÇİNDE (2026-09-08 gece)
+
+**Kullanıcı (BM adım 3 kareleri geldikten sonra):** *"banketlerin masaları küçük… o diğer masaların
+tabureleri orantı olarak çok küçük geldi gözüme. ek olarak mutfak eşyaları şu an mutfak dışında,
+onları da koy… banketlerin masaları ideal boyda olsun ama KARE olsun; küçük dememin sebebi
+dikdörtgen olmasıydı, diğer tek masalar kadar büyük olmasın."*
+
+### 1 · İkili (banket) masa KARE
+`table_medium_long` (0,99 × 0,70 bistro) elendi. B5a'nın gerekçesi doğruydu — ikili masa dört
+kişilik okunmamalı — ama çözümü yanlış kanaldan veriyordu: farkı tablanın ORANIYLA anlatıyordu ve
+dikdörtgen tabla 1,75'lik dörtlünün yanında hem küçük hem çarpık okunuyordu. Fark artık BOYDA:
+
+| | L0-L2 | L3+ |
+|---|---|---|
+| dörtlü | 1,10 | **1,75** (maketin `teaTable`'ı) |
+| ikili | **1,00** (maketin `cafeTable2`'si) | **1,20** |
+
+1,20'nin üst sınırı geometriden: banket adasının görsel yarı-derinliği 1,25, masa merkezi ondan
+1,85'te → tabla yarısı 0,60'ı geçerse tabla adanın oturağının ÜSTÜNE biner (`layout-b32` bekçisi).
+`deuceHalf` 0,50 → **0,60**.
+
+### 2 · Tabure oranı maketin `stool()`'undan
+KayKit `chair_stool` native 0,75 × **0,50**; ölçek 0,6'da oturak yüksekliği **0,30** kalıyordu.
+Masa D-073'te 0,75'e çıkıp tablanın üstü 0,795'e gelince tabure masanın yarısı kadar alçak kaldı.
+Maketin `stool()`'u: oturak üstü **0,555**, çap 0,54. Ölçek buradan kilitlendi: 0,555 / 0,50 =
+**1,11**. Greybox yedeği de maketin dört parçasına (taban diski · ince ayak · geniş oturak · minder)
+çevrildi — asset yoksa silüet aynı kalsın.
+
+### 3 · Servis kümesi mutfağın İÇİNE
+Bant katı kütleyken servis kümesi onun 1,2 br önünde, salonun zemininde duruyordu (z = −8,6).
+BM adım 3 bandı odalara çevirince küme mutfağın DIŞINDA kaldı. Küme 1,70 geri alındı
+(z = −10,3): tezgâhın ön yüzü tam bandın hattında (−9,8) — maketin kurgusu, *"semaver ve bardaklar
+müşterinin gördüğü yerde, hazırlık arkada"*. Çaycının yürüme hattı tezgâhın arkasına geçti
+(−9,6 → −11,3). `WAITER_STATION` tezgâhla aynı hizada kaldı.
+**ERİŞİM DEĞİŞMEDİ:** hem tezgâh hem oyuncunun durabildiği en yakın nokta aynı miktarda kaydı,
+aradaki 0,85 br sabit (`serving.pickupRadius` 1,6).
+
+**Bunun açtığı test sorusu:** "servis kümesi AÇIK bir alanın İÇİNDE" değişmezi iki farklı rolü tek
+kurala bağlıyordu. Ayrıldı: **aktörün bastığı noktalar** (pickup · yükseltme · personel köşeleri)
+alanın içinde olmak zorunda; **obje gövdeleri** (tezgâh · bulaşık) alana DEĞMEK zorunda ve alanın
+en yakın noktasından `pickupRadius` içinde kalmak zorunda. Bir tezgâhın gövdesinin duvarın içinde
+olması normaldir, ERİŞİLEMEZ olması değil.
+
+**Testler:** 281/281 yeşil (3'ü yeniden yazıldı, biri "ikili her seviyede KARE" iddiasıyla
+güçlendirildi). tsc + eslint + build temiz, smoke 28/28.

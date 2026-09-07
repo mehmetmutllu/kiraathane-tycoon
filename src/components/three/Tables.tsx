@@ -24,17 +24,33 @@ export { tableLook } from './tableLook';
 //   L4 #7 chair_C. Örtü L2'den. Masa L0-L2 TEKLİ küçük (sandalyeler ORTALI), L3'te 4 kişilik uzun.
 //   Renkler (mavi asset minderleri) sonra ayarlanacak.
 const KAY = '/assets/models/kaykit-furniture-bits/';
-const STOOL_S = 0.6; // chair_stool_wood
+// TABURE ÖLÇEĞİ — kullanıcı 2026-09-07: *"diğer masaların tabureleri orantı olarak çok küçük"*.
+// Sebep ölçüldü: KayKit `chair_stool` native 0,75 × **0,50** (en × yükseklik); 0,6 ölçekte
+// oturak yüksekliği **0,30** kalıyordu. Masa D-073'te 1,75 × 0,75'e büyümüş, tablanın üstü
+// **0,795**'e çıkmıştı → oturakla tabla arası 0,50, yani tabure masanın yarısı kadar alçak.
+// Referans maketin `stool()`'u: oturak üstü **0,555**, çapı 0,54. Ölçek buradan türer:
+// 0,555 / 0,50 = **1,11** → tabure 0,83 × 0,555; tabla üstüyle arası 0,24 (gerçek tabure oranı).
+const STOOL_S = 1.11; // chair_stool / chair_stool_wood — maketin oturak yüksekliğine (0,555) kilitli
 // Tabure (gerçek kıraathane formu): silindir gövde + kırmızı minder. Koltuk kutusu emekli.
 function Stool({ x, z }: { x: number; z: number }) {
   return (
     <group position={[x, 0, z]}>
-      <mesh castShadow position={[0, 0.21, 0]}>
-        <cylinderGeometry args={[0.17, 0.2, 0.42, 10]} />
+      {/* Maketin `stool()`'u birebir: taban diski · ince ayak · geniş oturak · minder.
+          Oturak üstü 0,555 (tabla üstü 0,795 ile arası 0,24), çap 0,54. */}
+      <mesh castShadow position={[0, 0.03, 0]}>
+        <cylinderGeometry args={[0.23, 0.23, 0.04, 10]} />
+        <meshStandardMaterial color={PALETTE.stool} />
+      </mesh>
+      <mesh castShadow position={[0, 0.22, 0]}>
+        <cylinderGeometry args={[0.07, 0.07, 0.42, 8]} />
         <meshStandardMaterial color={PALETTE.stool} />
       </mesh>
       <mesh castShadow position={[0, 0.45, 0]}>
-        <cylinderGeometry args={[0.19, 0.19, 0.07, 10]} />
+        <cylinderGeometry args={[0.27, 0.25, 0.11, 10]} />
+        <meshStandardMaterial color={PALETTE.stool} />
+      </mesh>
+      <mesh castShadow position={[0, 0.53, 0]}>
+        <cylinderGeometry args={[0.25, 0.25, 0.05, 10]} />
         <meshStandardMaterial color={PALETTE.stoolCushion} />
       </mesh>
     </group>

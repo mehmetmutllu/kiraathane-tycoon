@@ -418,12 +418,23 @@ const PLACE_LEFT_WALL: ServicePlace = {
  */
 const PLACE_BACK_BAND: ServicePlace = {
   areaIndex: 2,
-  station: [-13.0, 0, -8.6],
+  /*
+   * MUTFAK EŞYALARI MUTFAĞIN İÇİNDE (kullanıcı 2026-09-07: *"mutfak eşyaları şu an mutfak
+   * dışında, onları da koy"*). BM adım 3'e kadar bant katı bir kütleydi, servis kümesi de
+   * onun 1,2 br ÖNÜNDE salonun zemininde duruyordu (z = −8,6). Bant maketin odalarına dönünce
+   * o küme mutfağın dışında kalmış oldu.
+   * Küme 1,70 geri alındı: tezgâhın ÖN YÜZÜ artık tam bandın hattında (z = −9,8 = −10,3 + 0,5),
+   * yani maketin kurgusu — *"semaver ve bardaklar müşterinin gördüğü yerde, hazırlık arkada"*.
+   * ERİŞİM DEĞİŞMEDİ: hem tezgâh hem oyuncunun durabildiği en yakın nokta aynı miktarda kaydı,
+   * aradaki 0,85 br sabit (`serving.pickupRadius` 1,6). Çaycının yürüme hattı da tezgâhın
+   * ARKASINA, mutfağın içine geçti.
+   */
+  station: [-13.0, 0, -10.3],
   rot: 0,
   half: [1.6, 0.5],
-  pickup: [-13.0, 0, -7.6],
+  pickup: [-13.0, 0, -9.3],
   upgradeSpot: [-15.8, 0, -8.0],
-  dish: [-7.4, 0, -8.6],
+  dish: [-7.4, 0, -10.3],
   dishRot: 0,
   dishHalf: [1.0, 0.5],
   /* BOŞTA BEKLEME NOKTALARI (B6a'da taşındı). Eski değerler (−11,0 / −7,2) ve (−5,6 / −7,2)
@@ -441,7 +452,7 @@ const PLACE_BACK_BAND: ServicePlace = {
      yükseltme noktasına 1,4 br'den yakın olamaz. */
   waiterHome: [-14.6, 0, -6.6],
   dishwasherHome: [-6.9, 0, -7.75],
-  staffWalk: { a: [-14.6, 0, -9.6], b: [-11.4, 0, -9.6], face: 0 },
+  staffWalk: { a: [-14.6, 0, -11.3], b: [-11.4, 0, -11.3], face: 0 },
 };
 
 /**
@@ -456,7 +467,7 @@ const PLACE_BACK_BAND: ServicePlace = {
  * Arka bant açılmadan (areasOpen < 3) ortada durmaz.
  */
 export const WAITER_STATION = {
-  pos: [-9.9, 0, -8.6] as Vec3,
+  pos: [-9.9, 0, -10.3] as Vec3, // tezgâhla AYNI hizada (BM adım 3: küme mutfağın içine geçti)
   half: [1.3, 0.5] as readonly [number, number],
   rot: 0,
 } as const;
@@ -564,7 +575,7 @@ export const LAYOUT = {
   // BM adım 2 (D-073): iki mobilya dili, iki footprint. Dörtlü ÇAY masası maketin `teaTable`'ı
   // (1,75 → yarı 0,875); şeridin İKİLİ kafe masası `cafeTable2` (1,00 → yarı 0,50).
   tableHalf: [0.875, 0.875] as [number, number], // dörtlü (four) — REACH_TABLE bundan türer
-  deuceHalf: [0.5, 0.5] as [number, number], // ikili (deuce) — banket adasının masası
+  deuceHalf: [0.6, 0.6] as [number, number], // ikili (deuce) — kare 1,20 (L3+); banket adasının masası
   chairHalf: [0.3, 0.3] as [number, number], // tabure (maket yarıçapı 0,27) + oturan müşteri
   // Sandalye ofsetleri (Y2 tek kaynak): Tables.tsx görsel sandalyeyi, store koltuk pozisyonunu
   // (ALL_TABLES.seats) AYNI listeden türetir — görsel sandalye = oturulabilir koltuk.

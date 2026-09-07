@@ -59,6 +59,20 @@ DEV kolu: `window.__devCam({ fov, distMul })` · kareler `node tools/shot-fov.mj
 - Önerim: **50 kalsın** — maketin 34'ü bir gözlem aracının tercihi; D-072'nin kuralı ölçüyü
   DONDURMAK, ölçülmemiş bir kazanç için değiştirmek değil.
 
+### Kullanıcı geri bildirimi ✅ (D-074 — aynı gece uygulandı)
+*"banketlerin masaları küçük… tabureler orantı olarak çok küçük… mutfak eşyaları mutfak dışında…
+banket masaları ideal boyda ama KARE olsun"*
+1. **İkili masa kare:** bistro (0,99 × 0,70) elendi → 1,00 (L0-L2) / **1,20** (L3+). Üst sınır
+   geometriden: banket adasının görsel yarı-derinliği 1,25, masa merkezi 1,85 → tabla yarısı
+   0,60'ı geçerse tabla oturağın üstüne biner. `deuceHalf` 0,60.
+2. **Tabure ölçeği 0,6 → 1,11:** maketin `stool()`'u referans (oturak üstü 0,555, çap 0,54);
+   eskiden oturak 0,30'daydı, tabla üstü 0,795 → tabure masanın yarısı kadar alçaktı.
+3. **Servis kümesi mutfağın içine:** z −8,6 → −10,3 (tezgâhın ön yüzü bandın hattında),
+   çaycı hattı −11,3. Erişim sabit (0,85 br). `WAITER_STATION` da aynı hizada.
+4. **Değişmez ayrıldı:** aktörün bastığı noktalar alanın İÇİNDE · obje gövdeleri alana DEĞER
+   ve alanın en yakın noktasından `serving.pickupRadius` içinde kalır.
+**281/281 · smoke 28/28 · tsc + eslint + build temiz.** Kareler yenilendi (`bmm-*`).
+
 ### BM adım 3 ✅ (arka bant + odalar)
 Bant kütle değil **maketin odaları**: bina kabuğu (`BAND_SHELL`, 3,2, salonun duvarıyla aynı bileşen)
 + ara duvarlar 2,2 (x ∓4,6) + servis köşesi (fayans zemin · cezve ocağı · tezgâh · raflar · bulaşık ·
