@@ -101,10 +101,11 @@
     <h1>Bant ve Kamera Kararı</h1>
     <p class="standfirst">
       Arka bant üç düz krem kutu olmaktan çıkıp maketin odalarına döndü. Geriye ölçü katmanının
-      son maddesi kaldı: kamera. İkisi de senin onayını bekliyor.
+      son maddeleri kaldı — ve mobilyayı iki kez küçültünce üçüncü bir soru çıktı: mobilya mı
+      büyük, karakter mi küçük? Üçü de senin onayını bekliyor.
     </p>
     <p class="meta">
-      <span>2026-09-07 gece</span><span>ölçüm: gerçek oyun · 900 × 1000</span>
+      <span>2026-09-08 gece</span><span>ölçüm: gerçek oyun · 900 × 1000</span>
       <span>kaynak: maket v13 · Scene.tsx · layout.ts</span><span>vitest 281/281 · smoke 28/28</span>
     </p>
   </header>
@@ -345,6 +346,46 @@
     </p>
   </div>
 
+  <h2><span class="num">KARAR 3</span>Mobilya mı büyük, karakter mi küçük?</h2>
+  <p>
+    Mobilyayı iki turda küçülttük (tabure 1,11 → 0,90 · ikili masa 1,20 → 1,05 · dörtlü 1,75 →
+    1,68 · banket masası adadan 2,00'ye uzaklaştı) ve her turda aynı cümle geldi:
+    <em>"karaktere göre çok büyük durdu"</em>. Sebep ölçüldü ve kısılan yerde değil:
+  </p>
+  <div class="tblwrap">
+    <table>
+      <thead><tr><th></th><th>Maket</th><th>Oyun (bugün)</th><th>Maketin oranı 1,30'a uygulansa</th></tr></thead>
+      <tbody>
+        <tr><td>insan / karakter boyu</td><td class="num">1,80</td><td class="num">1,30</td><td class="num">—</td></tr>
+        <tr><td>masa yüksekliği</td><td class="num">0,75 &nbsp;<small>(%42)</small></td><td class="was">0,75 &nbsp;(%58)</td><td class="num">0,54</td></tr>
+        <tr><td>tabla üstü</td><td class="num">0,795 &nbsp;<small>(%44)</small></td><td class="was">0,795 &nbsp;(%61)</td><td class="num">0,57</td></tr>
+        <tr><td>tabure oturağı</td><td class="num">0,555 &nbsp;<small>(%31)</small></td><td class="num">0,45 &nbsp;(%35)</td><td class="num">0,40</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    D-070 <em>"maket bitmiş hâldir, ölçüler ondan alınır"</em> diyordu ve doğruydu — ama maketin
+    mobilyası <strong>maketin insanına</strong> göre çizilmiş. Oyunun karakteri 1,30 olduğu için
+    aynı mobilya karakterin yanında <strong>%38 büyük</strong> kalıyor. İki turdur kıstığımız şey
+    tablanın <em>plan</em> ölçüsü; oranı bozan ise <strong>yükseklik</strong>, ve ona
+    <strong>dokunmadım</strong>: masa yüksekliği 0,75 D-073'te senin kararınla maketten alındı ve
+    dondurulacak listede duruyor.
+  </p>
+  <div class="note ask">
+    <div class="h">Karar 3 — iki çıkış var, ikisi de senin</div>
+    <p>
+      <strong>(a) Mobilya karaktere insin:</strong> masa yüksekliği 0,75 → ~0,60, tabure oturağı
+      ~0,40. Oran anında düzelir; maketin düşey ölçülerinden bilerek sapılır (D-070'e istisna
+      yazılır).<br>
+      <strong>(b) Karakter mobilyaya çıksın:</strong> karakter 1,30 → ~1,75. Maket aynen kalır —
+      ama koltuk ofsetleri, pad yarıçapları, nav yarıçapı ve kamera mesafesi yeniden ölçülür.
+    </p>
+    <p>
+      <strong>Bu karar verilmeden ölçü DONDURULMAMALI</strong> — yoksa donan liste yanlış oranı
+      dondurur ve üstüne kurulacak denge ölçümleri ikinci kez yapılır.
+    </p>
+  </div>
+
   <h2><span class="num">SONRAKİ</span>Dondurulacak sayılar</h2>
   <p>
     İki karar verilince ölçü katmanı kapanır ve bir daha açılmaz: sanat cilası (dekor · materyal ·
@@ -358,7 +399,9 @@
     <li><span class="k">Ana kapı (boşluk · söve · alınlık)</span><span class="v">2,65 · ∓2,20 · 2,65…3,20</span></li>
     <li><span class="k">Bant · kabuk hattı · iç yüz</span><span class="v">−9,8 … −17,4 · 0,09</span></li>
     <li><span class="k">Bandın ara duvarı</span><span class="v">2,20 @ x ∓4,60</span></li>
-    <li><span class="k">Çay masası (tabla @ yükseklik)</span><span class="v">1,75 @ 0,75</span></li>
+    <li><span class="k">Çay masası (tabla @ yükseklik)</span><span class="v">1,68 @ karar bekliyor</span></li>
+    <li><span class="k">İkili masa · tabure oturağı</span><span class="v">1,05 · karar bekliyor</span></li>
+    <li><span class="k">Banket: ada → masa → sandalye → koridor</span><span class="v">0,74 · 2,00 · 3,02 · 3,50</span></li>
     <li><span class="k">Küme aralığı · koltuk · yükseltme noktası</span><span class="v">6,40 · ∓1,45 · ∓2,15</span></li>
     <li><span class="k">Kamera açısı · taban mesafesi</span><span class="v">45° · 8,50 (×1,35 uzak)</span></li>
     <li><span class="k">Kamera fov</span><span class="v">karar bekliyor</span></li>
