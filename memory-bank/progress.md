@@ -1503,11 +1503,12 @@ Kesme çizgisi: **B5a = model + pad zinciri + masa tipleri (denge SABİT tutulur
     "Para eksik kalırsa reklamla pad'i tamamla" reddedildi (gereksiz: ~20 dk'yı aşan alım kalmadı).
   - **Doğrulama:** vitest **255/255** · `table-b5a` eğri bekçisi yeni kurala göre yeniden yazıldı.
 
-- **B5b-artık ⏳ (kalan iki iş)**
-  - **Ö3 — bahşiş seyrelmesi:** servis edilen bardak sayısı sabit olduğu için yeni açılan L0 masa
-    ORTALAMA bahşişi düşürüyor → 13. masayı açmak geliri kısa vadede azaltıyor. Müşteri boş
-    masalar arasında **en yüksek seviyeliyi** seçsin (`findTableForGroup`). Davranış değişikliği,
-    kendi adımı. **ONAYLI.**
+- **B5b-artık 🔧 (Ö3 bitti · Ö6 onay bekliyor)**
+  - **Ö3 — bahşiş seyrelmesi ✅** (aynı oturum, ayrı commit). Müşteri artık boş masalar arasında
+    **en yüksek seviyeliyi** seçiyor (`findTableForGroup`: önce seviye, sonra boş koltuk; alan
+    round-robin'i korundu). Yeni masa yalnız TAŞMA alıyor → masa açmak geliri artık düşürmüyor,
+    ve masa yükseltmesi ekranda okunuyor (iyi masalar hep dolu). Eski test adı ("en çok boş
+    koltuklu masayı seçer") artık yalan olduğu için kuralla birlikte yeniden yazıldı.
   - **Ö6 — `waiter3` görünürlüğü:** o andaki en iyi alım (+%19) ama `optional` ve görev hattında
     yok → güdülen oyuncu onu hiç tutmuyor. Öneri (b): omurgaya alınmasın ama görev hattı bir kez
     işaret etsin. **ONAY BEKLİYOR.**

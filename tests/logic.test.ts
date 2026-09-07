@@ -2853,10 +2853,20 @@ describe("Müşteri dağılımı — zone round-robin (tost salonu aç kalmasın
     expect(findTableForGroup(new Map(), 9, new Set(), levels, 3, 2)).toBe(8);
   });
 
-  it("startZone kendi zone'unda en çok boş koltuklu masayı seçer (eşitlikte düşük index)", () => {
+  it('alan içinde önce SEVİYE, sonra boş koltuk (D-066 · Ö3 — bahşiş seyrelmesi)', () => {
     const levels = [0, 4, 0, 0, 0, 0, 0, 0, 0];
-    expect(findTableForGroup(new Map(), 9, new Set(), levels, 3, 0)).toBe(1); // z0: L4 en boş
-    expect(findTableForGroup(new Map(), 9, new Set(), levels, 3, 1)).toBe(4); // z1: ilk masa
+    expect(findTableForGroup(new Map(), 9, new Set(), levels, 3, 0)).toBe(1); // a0: tek L4 masa
+    expect(findTableForGroup(new Map(), 9, new Set(), levels, 3, 1)).toBe(4); // a1: hepsi eşit → düşük index
+
+    // ASIL KURAL: konfor koltuk sayısını YENER. Yeni açılan L0 masanın dört boş koltuğu var,
+    // L4 masanın yalnız bir koltuğu boş — müşteri yine de iyi masayı seçer. Eski kural
+    // ("en çok boş koltuk") burada L0 masayı seçerdi ve servis edilen bardak sayısı sabit
+    // olduğu için ortalama bahşişi düşürürdü: masa AÇMAK geliri azaltırdı.
+    const iyiMasaDolu = new Map([[1, new Set([0, 1, 2])]]); // L4 masada 3/4 koltuk dolu
+    expect(findTableForGroup(iyiMasaDolu, 9, new Set(), levels, 3, 0)).toBe(1);
+    // Ama TAMAMEN dolduğunda taşma yeni masaya gider (yoksa alan aç kalırdı).
+    const iyiMasaTamDolu = new Map([[1, new Set([0, 1, 2, 3])]]);
+    expect(findTableForGroup(iyiMasaTamDolu, 9, new Set(), levels, 3, 0)).toBe(0);
   });
 
   it("başlangıç zone'u dolu/kirliyse SIRADAKİ zone'a düşer; hiç yer yoksa -1", () => {

@@ -221,7 +221,7 @@ ve her ölçüm §5'teki kör noktayı tekrarlar.
 | **Ö1** | şerit eğrisi ×1,15 (51.100₺) | ✅ uygulandı · vitest 255/255 |
 | **Ö4** | ödüllü video kararı `docs/monetization.md`'ye | ✅ yazıldı (uygulama Faz 5) |
 | **Ö2** | plan sırası: **B4 → şeridin son fiyatı** | ✅ `progress.md` + D-066 |
-| **Ö3** | müşteri en yüksek seviyeli boş masayı seçsin | ⏳ kendi adımı (davranış) |
+| **Ö3** | müşteri en yüksek seviyeli boş masayı seçsin | ✅ uygulandı · vitest 255/255 · smoke 26/26 |
 | **Ö6** | `waiter3` görünürlüğü | ⏳ **onay bekliyor** (a/b/c) |
 
 ### Reddedilen: "eksik kalırsa reklamla masayı aç"

@@ -1410,7 +1410,15 @@ plan düzeltmesi; kullanıcı onayı 2026-09-07.)
 **Karar 4 — a2'nin masa yükseltme eşiği `z3table4`'te KALIR.** Bahşiş kolu servis L6'dan da önce
 tavanına ulaştığı için eşiği ileri atmak yeni derinlik açmaz, yalnız platoyu uzatır.
 
-**Karar 5 — ödüllü video = geçici DEMLEME çarpanı** ("Semaver kaynadı", ×2 / 60 sn; uygulama
+**Karar 5 — müşteri boş masalar arasında EN YÜKSEK SEVİYELİYİ seçer** (`findTableForGroup`, alan
+round-robin'i korunarak: önce seviye, sonra boş koltuk, eşitlikte düşük index). Sebep gerçek bir
+kusurdu: servis edilen bardak sayısı arz tavanıyla SABİT, yani yeni açılan bir L0 masa o sabit
+bardakların bir kısmını üstüne çekip bahşişsiz ödüyordu → **masa AÇMAK ortalama bahşişi, yani
+geliri kısa vadede DÜŞÜRÜYORDU.** Oyuncunun 13. masayı açtığı için cezalandırıldığı bir tycoon
+olmaz. Yeni masa artık yalnız TAŞMA alıyor (iyi masa dolduğunda), böylece seyrelme kapanıyor ve
+masa yükseltmesi ekranda okunur hâle geliyor: iyi masalar hep dolu.
+
+**Karar 6 — ödüllü video = geçici DEMLEME çarpanı** ("Semaver kaynadı", ×2 / 60 sn; uygulama
 Faz 5). Ödül tam bağlayıcı tavanın (arz) üstüne biner → oyuncuya oyunun kendi darboğazını
 öğretir. Kullanıcının "para eksik kalırsa reklamla pad'i tamamla" fikri **reddedildi**: kural
 ihlali değil ama gereksiz — Karar 1'den sonra oyunda ~20 dk'yı aşan tek bir alım kalmadı, ve bir

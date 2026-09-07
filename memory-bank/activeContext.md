@@ -71,15 +71,16 @@ Lavabo = oturma EKLEMEZ, **pasif gelir çarpanı**, kendi seviyeleri · yıkık 
 yakında") · arka bandın içi açılır. Lavabonun çarpan eğrisi tasarlanırken hedef: L6'dan sonra
 oranın donması BİTSİN (bugün 15,62'de duruyor). Ölçüm aracı artık üç kolu da görüyor.
 
-### Onay bekleyen / kalan iki iş
+### Onay bekleyen
 - **Ö6 — `waiter3` görünürlüğü (ONAY BEKLİYOR).** 3. garson o andaki en iyi alım (+%19) ama
   `optional: true` ve görev hattında yok → sim'in güttüğü oyuncu onu HİÇ tutmuyor, L6 dönemini
   %19 eksik gelirle geçiyor. Seçenekler: (a) omurgaya al, (b) opsiyonel kalsın ama görev hattı
   bir kez işaret etsin **(öneri)**, (c) `count: 4` eşiği düşsün.
-- **Ö3 — bahşiş seyrelmesi (ONAYLI, kendi adımı).** Servis edilen bardak sayısı sabit olduğu için
-  yeni açılan L0 masa ORTALAMA bahşişi düşürüyor → 13. masayı açmak geliri kısa vadede AZALTIYOR.
-  Çözüm: müşteri boş masalar arasında **en yüksek seviyeliyi** seçsin (`findTableForGroup`).
-  Yan kazanç: masa yükseltmesi gözle görülür olur (iyi masalar hep dolu).
+- **Ö3 — bahşiş seyrelmesi ✅ YAPILDI** (ayrı commit). `findTableForGroup` alan içinde artık
+  **önce SEVİYE, sonra boş koltuk** sıralıyor (alan round-robin'i korundu). Kusur şuydu: servis
+  edilen bardak sayısı arz tavanıyla SABİT olduğu için yeni açılan L0 masa o sabit bardakların bir
+  kısmını çekip bahşişsiz ödüyordu → masa AÇMAK geliri kısa vadede DÜŞÜRÜYORDU. Artık yeni masa
+  yalnız TAŞMA alıyor; yan kazanç: iyi masalar hep dolu, yani yükseltme ekranda okunuyor.
 
 ### Kırmızı çizgi (duruyor)
 **"Objeler yüzüyor" hissine bir daha blob shadow ÖNERME** (D-054).

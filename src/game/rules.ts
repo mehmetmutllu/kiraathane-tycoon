@@ -198,8 +198,17 @@ export function occupiedSeats(npcs: Npc[]): Map<number, Set<number>> {
 /** Grup hedefi (Y2, plan §2 + dağılım fix'i): ALANLAR ROUND-ROBIN pay alır — global "en çok
  *  boş koltuk" araması, az koltuklu yeni alanı (tost L0=1 koltuk) çay alanlarına karşı sürekli
  *  kaybettirip AÇ bırakıyordu (q_tost5 ilerleyemiyordu). startArea'dan başlayarak boş koltuğu
- *  olan İLK alan seçilir; alan İÇİNDE en çok boş koltuklu temiz masa (eşitlikte düşük index).
- *  Hiç boş koltuk yoksa -1. */
+ *  olan İLK alan seçilir; hiç boş koltuk yoksa -1.
+ *
+ *  **Alan İÇİNDE sıralama B5b'de değişti (D-066 · Ö3): önce SEVİYE, sonra boş koltuk.**
+ *  Eski kural "en çok boş koltuklu masa" idi ve gerçek bir kusur doğuruyordu: servis edilen bardak
+ *  sayısı arz tavanıyla SABİT olduğu için (`docs/denge-raporu-b5b.md` §1) yeni açılan bir L0 masa
+ *  o sabit bardakların bir kısmını üstüne çekiyor ve bahşişsiz ödüyordu → **masa açmak ortalama
+ *  bahşişi, yani geliri KISA VADEDE DÜŞÜRÜYORDU.** Oyuncunun 13. masayı açtığı için cezalandırıldığı
+ *  bir tycoon olmaz. Müşteri artık boş masalar arasında **en konforlusunu** seçiyor: yeni masa
+ *  yalnız TAŞMA aldığı için geliri seyreltmez, ve masa yükseltmesi gözle görülür hale gelir
+ *  (iyi masalar hep dolu). Eşit seviyede eski kural sürer (çok boş koltuk → grup bölünmez),
+ *  eşitlikte düşük index. */
 /**
  * Masanın O ANKİ koltuk sayısı: masanın TİPİNE ait seviye merdiveninden okunur, sonra masanın
  * gerçekten sahip olduğu koltuk konumlarıyla kelepçelenir. B3-2'de kelepçe TEK başınaydı ve doğru
@@ -225,11 +234,15 @@ export function findTableForGroup(
     const a = (startArea + da) % areasOpen;
     let best = -1;
     let bestFree = 0;
+    let bestLevel = -1;
     const end = Math.min(areaTableStart(a + 1), tables);
     for (let i = areaTableStart(a); i < end; i++) {
       if (dirty.has(i)) continue;
-      const free = seatsAtTable(i, tableLevels[i] ?? 0) - (occ.get(i)?.size ?? 0);
-      if (free > bestFree) {
+      const level = tableLevels[i] ?? 0;
+      const free = seatsAtTable(i, level) - (occ.get(i)?.size ?? 0);
+      if (free <= 0) continue;
+      if (level > bestLevel || (level === bestLevel && free > bestFree)) {
+        bestLevel = level;
         bestFree = free;
         best = i;
       }
