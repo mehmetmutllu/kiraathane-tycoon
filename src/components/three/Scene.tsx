@@ -20,10 +20,12 @@ import { Customers } from './Customers';
 import { Coins } from './Coins';
 import { Pad } from './Pad';
 import { Decor } from './Decor';
+import { MaketLavaboBlock } from './maketParts';
 import { perf } from '../../game/perf';
 import { devTimeScale } from '../../game/devSandbox';
 import { screenPointer } from '../../game/screenPointer';
 
+/** GEÇİCİ (2026-09-07 ölçümü): maketle aynı ton eşlemesi (kapalı) — bkz. Canvas'taki not. */
 // Simülasyonu her karede ilerlet (tek kaynak; __advanceTime aynı tick'i çağırır).
 // DEV'de sandbox hız çarpanı uygulanır; üretimde `import.meta.env.DEV` false → dal ölü kod.
 function Simulation() {
@@ -721,12 +723,15 @@ function Walls() {
  * bloklar o zaman kapı boşluğu ve iç geometri kazanır. Bant YÜRÜNMEZ — alanlar z = −9,8'de biter.
  */
 function BackBand({ areasOpen }: { areasOpen: number }) {
+  // B6b: lavabo ALINDIYSA `wc` bloğu artık katı kütle değil, maket v13'ün odasının BİREBİR
+  // transkripsiyonu (`maketParts.MaketLavaboBlock`). Diğer iki blok bu turda değişmedi.
+  const lavaboOpen = useGame((s) => s.padsDone.includes('lavabo'));
   if (areasOpen < 3) return null; // arka yarı açılmadan bant görünmez (kilitli alan çizilmez, D-057)
   const d = BAND.front - BAND.back;
   const blocks: [string, { minX: number; maxX: number }, string][] = [
     ['servis', BAND.service, PALETTE.wallCream ?? '#e3d8c1'],
     ['merdiven', BAND.stairs, PALETTE.wallCream ?? '#e3d8c1'],
-    ['lavabo', BAND.wc, PALETTE.wallCream ?? '#e3d8c1'],
+    ...(lavaboOpen ? [] : ([['lavabo', BAND.wc, PALETTE.wallCream ?? '#e3d8c1']] as [string, { minX: number; maxX: number }, string][])),
   ];
   return (
     <group>
@@ -736,6 +741,7 @@ function BackBand({ areasOpen }: { areasOpen: number }) {
           <meshStandardMaterial color={color} />
         </mesh>
       ))}
+      {lavaboOpen && <MaketLavaboBlock />}
     </group>
   );
 }
@@ -758,58 +764,47 @@ function LavaboFront() {
   const wallet = useGame((s) => s.wallet);
   if (areasOpen < 3) return null; // bant görünmüyorsa kapısı da yok
   const x = LAVABO.door[0];
-  const zf = BAND.front + 0.02; // ön yüzün 2 cm önü (z-fighting yok)
   const open = padsDone.includes('lavabo');
   const cost = lavaboUpgradeCost(level);
   const remaining = cost != null ? Math.max(0, Math.ceil(cost - fill)) : 0;
+  // AÇIKKEN kapının kendisini `MaketLavaboBlock` çiziyor (gerçek boşluk + lento + WC levhası);
+  // burada yalnız SEVİYE sinyalleri kalır. Yüzeyler maketin ön duvarının güney yüzüne göre:
+  // duvar z = −9,8'de 0,26 kalınlığında → yüz ≈ −9,67; lento tepesi y = 2,14 (H − 0,06).
+  const zw = BAND.front + 0.16; // duvar yüzünün önü
   return (
     <group>
-      {/* kapı boşluğu (koyu) — açıldıkça derinleşir, kapalıyken tahtanın arkası */}
-      <mesh position={[x, 1.15, zf]}>
-        <planeGeometry args={[1.5, 2.3]} />
-        <meshStandardMaterial color={open ? '#2b2f33' : '#4a3b2a'} />
-      </mesh>
-      {/* kapı çerçevesi */}
-      {([[-0.87, 1.15, 0.24, 2.5], [0.87, 1.15, 0.24, 2.5], [0, 2.42, 1.98, 0.26]] as const).map(
-        ([ox, oy, w, h], i) => (
-          <mesh key={i} position={[x + ox, oy, zf + 0.01]}>
-            <planeGeometry args={[w, h]} />
-            <meshStandardMaterial color={open ? '#8d6e63' : '#6d5a48'} />
-          </mesh>
-        ),
-      )}
       {!open && (
         <group>
-          {/* TADİLAT HÂLİ: çapraz tahtalar + uyarı bandı (parasıyla açılır) */}
+          {/* KAPALIYKEN oda yok: blok katı kütle, kapı yeri TADİLAT hâlinde durur
+              (kilitli obje çizilmez DEĞİL, kilitli obje yıkık durur — D-057'nin obje hâli). */}
+          <mesh position={[x, 0.6, BAND.front + 0.02]}>
+            <planeGeometry args={[1.5, 1.2]} />
+            <meshStandardMaterial color="#4a3b2a" />
+          </mesh>
           {([-0.5, 0.5] as const).map((sgn, i) => (
-            <mesh key={i} position={[x, 1.15, zf + 0.02]} rotation={[0, 0, sgn * 0.55]}>
-              <planeGeometry args={[2.9, 0.34]} />
+            <mesh key={i} position={[x, 0.6, BAND.front + 0.04]} rotation={[0, 0, sgn * 0.55]}>
+              <planeGeometry args={[2.4, 0.3]} />
               <meshStandardMaterial color="#a1887f" />
             </mesh>
           ))}
-          <mesh position={[x, 0.42, zf + 0.03]}>
-            <planeGeometry args={[2.1, 0.16]} />
+          <mesh position={[x, 0.3, BAND.front + 0.05]}>
+            <planeGeometry args={[2.0, 0.16]} />
             <meshStandardMaterial color="#f9a825" />
           </mesh>
         </group>
       )}
       {open && (
         <group>
-          {/* SİNYAL 1 — ÇİNİ fayans şeridi kapının iki yanında seviyeyle genişler. Düz gri bir
-              lekeye dönmesin diye üstünde koyu bir çıta var: şerit "duvarın kirlenmiş yeri" değil
-              KAPLAMA olarak okunuyor (kıraathane lavabosunun çini bordürü). */}
-          <mesh position={[x, 0.48, zf + 0.004]}>
-            <planeGeometry args={[2.3 + level * 0.42, 0.96]} />
-            <meshStandardMaterial color="#8fb6cc" />
-          </mesh>
-          <mesh position={[x, 0.98, zf + 0.006]}>
-            <planeGeometry args={[2.3 + level * 0.42, 0.1]} />
-            <meshStandardMaterial color="#4d6a7d" />
-          </mesh>
-          {/* SİNYAL 2 — kapı üstünde seviye kadar nokta */}
+          {/* ÇİNİ BORDÜR KALDIRILDI (2026-09-07). Seviye sinyali olsun diye kapının iki yanına
+              açık mavi şerit koymuştum; maketle yan yana konunca görüldü ki maketin ön duvarındaki
+              kesintisiz 0,9 birimlik KOYU LAMBRİ kuşağı kadrajın en güçlü yatay çizgisi ve şeritler
+              onu tam ortadan bölüyordu. Maketin duvarında böyle bir kaplama yok.
+              AÇIK KALEM: seviye şu an tek sinyalle (lentodaki noktalar) okunuyor; "tek sinyal
+              yetmez" kuralı için ikinci sinyal maketi bozmadan bulunmalı. */}
+          {/* SİNYAL 2 — lentonun üstünde seviye kadar nokta (maketin lentosu y = 2,14) */}
           {Array.from({ length: level }, (_, i) => (
-            <mesh key={i} position={[x - (level - 1) * 0.16 + i * 0.32, 2.42, zf + 0.03]}>
-              <circleGeometry args={[0.09, 10]} />
+            <mesh key={i} position={[x - (level - 1) * 0.16 + i * 0.32, 2.14, zw]}>
+              <circleGeometry args={[0.08, 10]} />
               <meshStandardMaterial color="#ffce54" />
             </mesh>
           ))}

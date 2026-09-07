@@ -1546,6 +1546,68 @@ B4b ile B6b'yi ayıran şey iş değil, planın yazıldığı sıraydı: B4 "oda
 doğduğu için mekân işi ekonomiden ayrılmıştı, oysa lavabonun İÇİ bir ekonomi işi değil bant
 işiydi. Adımı silmek kapsam kaybı değil, **iki kez yazılacak işin bir kez yazılması**.
 
+## D-070 — MAKET = TEK DOĞRU KAYNAK. Kat komple tek geçişte taşınıyor (2026-09-07 gece)
+
+**Karar:** Faz B'nin "adım adım maket görselliğine geçiş" planı DURDURULDU. Yerine tek bir adım
+geldi: **oyunun statik dünyası `docs/maket/maket-v13.html`'in `buildFloor1`'inden TRANSKRİPSİYONdur.**
+Duvarlar (yükseklik + profil + birleşim), zemin, mobilya ölçüleri, aralıklar, kamera — hepsi. Oda oda
+değil, **kat komple, tek geçişte**. İş ayrı bir worktree'de yapılır, 4-5 kadrajdan maket↔oyun yan yana
+konur, kullanıcı onaylayınca birleşir.
+
+**Neden (bu gece üç kez başarısız olundu):**
+Lavabo odası üç kez denendi. (1) Maketin programı alınıp ×0,72 ile küçültüldü ve 1,15'lik banda
+kırpıldı → kabin 2,00 yerine 1,00 oldu, "kabin değil kanat" diye reddedildi. (2) Maketin sayılarıyla
+birebir transkribe edildi (`maketParts.tsx`) → geometri düzeldi ama yine "maketle alakası yok" denildi.
+(3) Işık ve renk ölçülerek maketin ailesine çekildi → yine yetmedi.
+
+Üçüncü denemeden sonra ÖLÇÜLDÜ ve asıl sebep çıktı — **oyun maketin küçültülmüş hâli değil, BAŞKA
+BİR BİNA:**
+
+| | maket v13 | oyun (bugün) |
+|---|---|---|
+| duvar yüksekliği | 3,20 | **1,20** |
+| duvar profili | gövde 0,18 + lambri 0,90 + çıta 0,08 | gövde + lambri 0,50 + süpürgelik + çıta + kartonpiyer |
+| masa tablası | 1,75 × 1,75 | **~0,90 × 0,90** |
+| masa yüksekliği | 0,75 | **0,50** |
+| masa tipi | tek tip | **seviyeye göre üç ayrı boy** (makette yok) |
+| kamera | fov 34 | fov 50 |
+
+Farklar YEREL DEĞİL SİSTEMİK. Bir odayı taşırken her parçayı bu eski geometriyle uzlaştırmak
+gerekiyor ve **o uzlaştırmanın kendisi tasarım kararı** — kullanıcının reddettiği şey tam olarak o.
+Kabuk tek seferde maketin olursa uzlaştıracak bir şey kalmaz.
+
+**Sıra gerekçesi (kullanıcı "önce tasarım" dedi, gerekçe kayda geçiyor):**
+1. Parça parça taşıma bu gece kanıtlanmış biçimde çalışmıyor.
+2. Aradaki her görsel iş, sonra yer değiştirecek bir geometrinin üstünde durur → iki kez yazılır
+   (planın kendi cümlesi: *"yanlış sırada yapılan iş iki kez yazılır"*).
+3. Mantık katmanı koordinata AZ bağlı: ekonomi/görev/kayıt `LAYOUT.tables[i]` · `LAVABO.spot` gibi
+   İSİMLERE bakıyor. Geometriyi altlarından değiştirmek ucuz — yeter ki tek geçişte olsun ve
+   isimler korunsun.
+
+**Bedeli (bilerek kabul edildi):** nav/collision yarı-boyları · pad konumları · personel bekleme
+noktaları · yükseltme işaretleri yeniden türetilir; `simulate.ts` bir kez yeniden ölçülür (mesafeler
+değişince taşıma süreleri değişir). B4/B5/B6a'nın denge sayıları bu ölçümde tazelenir.
+
+**MASA ÇELİŞKİSİ — kullanıcı kararı:** oyun masa BOYUTUNU seviye sinyali olarak kullanıyor, makette
+tek tip masa var. Karar: ***"makette durum SON DURUMDA o şekilde olacak; biz ona göre oyunu yaparken
+geçmişe dönük seviyeleri tamamlarken ayar vereceğiz."*** Yani **maket bitmiş hâldir**: en üst kademe
+maketin ölçüsüne eşitlenir, ara kademeler ondan geriye doğru türetilir. Aynı kural masa dışındaki
+her kademeli obje için de geçerli.
+
+**ASTRA:** kullanıcı "bu senin en iyi halinse Astra 6 ile deneyeceğim" dedi. Kayda geçen değerlendirme:
+bu geceki hatalar 3B kodu hatası değil, **transkripsiyon yapılması gereken yerde tasarım yapılması**
+hatasıydı; transkripsiyon işi farklı bir model değil, maket dosyasını açık tutmak ister. Bu yüzden
+sıra: **önce sadık transkripsiyon, yargı ondan sonra.** Kat taşındıktan sonra hâlâ beğenilmezse sorun
+gerçekten tasarımdır ve ikinci model anlamlıdır. Bu yüzden iş A/B'ye hazır kurulur: aynı şartname +
+aynı kadrajlar Astra'ya olduğu gibi verilebilsin (D-045/D-068 §3 deseni).
+
+**KURAL (dosya başına yazılıyor):** *maketten TRANSKRİPSİYON yapılır, maketten ESİNLENİLMEZ.* Bir sayı
+maketten farklıysa hemen yanında gerekçesi yazar ve gerekçe ancak şu ikisinden biri olabilir:
+(a) oynanışa bağlı bir koordinat (pad/işaret/hedef noktası), (b) maketin kendi dosyasında zaten
+parametre olan bir değer.
+
+---
+
 ## D-069 — B6a: DEKOR KENDİ DOSYASINDA; KESİK DUVARDA AĞIR ÖĞE ASILMAZ, ZEMİNE OTURUR (2026-09-07 gece)
 
 **Bağlam.** B6a maket v13/v14'ün ön çeyrek (a0 + a1) sanat katmanını oyuna taşıyacaktı. Maketin

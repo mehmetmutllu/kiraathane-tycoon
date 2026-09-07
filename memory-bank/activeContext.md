@@ -2,6 +2,88 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-07 gece — **PLAN DEĞİŞTİ: B6b iptal, MAKET TAŞIMASI (BM) başlıyor**)
+
+Karar: **D-070**. Raporlar: `docs/b6b-arka-bant.html` (ölçüm) · `docs/b6b-maket-fark.html`
+(maket↔oyun yan yana + ışık ölçümü) · `docs/b6b-lavabo-varyant.html` (A/B).
+
+### Ne oldu
+B6b "arka yarı + bant" üç kez denendi, üçü de kullanıcı tarafından reddedildi:
+1. **Maketin programı ×0,72 ile küçültülüp 1,15'lik banda kırpıldı** (kabin 2,00 → 1,00).
+   *"kabin değil kanat"* — reddedildi, geri alındı.
+2. **`maketParts.tsx` — maketin sayılarıyla birebir transkripsiyon.** Geometri düzeldi,
+   yine *"maketle zerre alakası yok"*.
+3. **Işık/renk ölçülerek maketin ailesine çekildi.** Yine yetmedi.
+
+Üçüncüden sonra ölçüm asıl sebebi verdi: **oyun maketin küçültülmüş hâli değil, BAŞKA BİR BİNA.**
+
+| | maket v13 | oyun |
+|---|---|---|
+| duvar yüksekliği | 3,20 | 1,20 |
+| duvar profili | gövde 0,18 + lambri 0,90 + çıta 0,08 | gövde + lambri 0,50 + süpürgelik + çıta + kartonpiyer |
+| masa tablası | 1,75 × 1,75 | ~0,90 × 0,90 |
+| masa yüksekliği | 0,75 | 0,50 |
+| masa tipi | tek tip | seviyeye göre ÜÇ ayrı boy (makette yok) |
+| kamera | fov 34 | fov 50 |
+
+### Kullanıcının yeni planı (D-070)
+**Önce tasarım komple geçirilecek, sonra kalan işler EKSİKSİZ tamamlanacak.** Kat oda oda değil,
+**tek geçişte** taşınır. Masa çelişkisinin cevabı: ***maket BİTMİŞ HÂLDİR*** — en üst kademe maketin
+ölçüsüne eşitlenir, ara kademeler ondan geriye doğru türetilir ("geçmişe dönük seviyeleri
+tamamlarken ayar vereceğiz").
+
+### Bu gecenin ÖLÇÜLMÜŞ kazancı (main'e kaydedildi, BM bunun üstüne gelir)
+- **Işık/renk boru hattı farkı bulundu ve sayısallaştırıldı.** Maket **three r128**'i varsayılan
+  `WebGLRenderer` ile kullanıyor → `LinearEncoding` çıkış + ton eşlemesi yok, yani renk yönetimi
+  YAPMIYOR ve yüzeyleri patlatıyor (WC fayansı ekrana saf beyaz 255,255,255 düşüyor). Oyun
+  **three 0.184** ile renk-doğru çalışıyor (sRGB + ACESFilmic) ve doğal olarak çok daha koyu iniyor.
+  Ölçüm: salon zemini maket L201 ↔ oyun L118 · WC fayansı L255 ↔ L151 · duvar kremi L185 ↔ L135.
+- Yakınsama: pozlama 1,05 → **1,60** · yarımküre 0,35 → **0,72** · güneş 1,6 → **1,45** ·
+  maketteki **soğuk dolgu ışığı** (#dfe6ff @ 0,28) eklendi. **Güneşin açısı DEĞİŞMEDİ** ([9,9,7],
+  ~40°) — gölge olmadığı için (D-054) hacmi tek başına o taşıyor.
+- **İkinci sebep doygunluk çıktı:** yalnız pozlamayı açmak zemini kum rengine patlattı; oyunun
+  `parke` teması (#c9a87d) maketin ahşabından (#b98a5a) hem açık hem soluktu → tema maketin
+  ahşabına çekildi, pozlama 2,05'ten 1,60'a indi. Sonuç: salon zemini L118 → **L147**,
+  WC fayansı L151 → **L201**. Maketin patlamış değerleri BİLEREK hedeflenmedi.
+- **Ton eşlemesini kapatmak (`flat`) denendi ve sahneyi DAHA da kararttı → elendi.**
+- `maketParts.tsx` doğdu: maketin `wall` · `sink` · `wcSign` · `plant` · `lavaboBlock`
+  fonksiyonlarının birebir transkripsiyonu. **BM'nin çekirdeği bu dosya olacak.**
+- Yol boyunca kapanan gerçek kusurlar: lavabo kapısının **%53'ü** 1,2'lik bandın üstünde havada
+  duruyordu (B4a'dan beri) · menü panosu y 1,28–2,28'de, yani hem duvarın hem bandın üstündeydi ·
+  kendi eklediğim çini bordür maketin kesintisiz lambri kuşağını ikiye bölüyordu (kaldırıldı).
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**BM — MAKET TAŞIMASI.** Ayrı worktree'de, kat komple, tek geçiş.
+`docs/maket/maket-v13.html` · `buildFloor1` TEK DOĞRU KAYNAK.
+Kural: **transkripsiyon yapılır, esinlenilmez**; sapma varsa yanında gerekçesi yazar ve gerekçe
+ancak (a) oynanışa bağlı koordinat ya da (b) maketin kendi parametresi olabilir.
+Kapsam: duvarlar (yükseklik + profil + birleşim) · zemin · mobilya ölçüleri/aralıkları · arka bant ·
+orta şerit · ön çeyreklerin dekoru · kamera. Kabul: 4-5 kadrajdan maket↔oyun yan yana + kullanıcı onayı.
+Sonra: `simulate.ts` bir kez yeniden ölçülür, ara seviyeler maketin bitmiş hâline göre geriye dönük
+ayarlanır, sonra kalan işler eksiksiz tamamlanır.
+
+**Maketi oyunun kamerasıyla render etme kancası (kayda geçiyor, tekrar aranmasın):**
+`docs/maket` klasörünü `python -m http.server 8899` ile servis et, sayfada
+`window.__bak(azi, ele, dist, tx, ty, tz)` çağır. Oyunun kamerası: oyuncunun (px, pz) noktasından
+`d = 8,5 × fit × 1,35` kadar yukarı ve güneye, 45°; 412×915'te d = 14,92 → gerçek mesafe **21,1**.
+Aynı GÖRÜNEN boyut için maketin fov'u dar olduğundan `dist = 21,1 × tan17°/tan25° = 13,83`.
+
+### Açık kalemler (BM'den sonra)
+- `servis L6` 23,4 dk · `masa seviyesi L4` 21,4 dk bekleme (ikincisi model kusuru — sim masaları
+  tek kalemde yükseltiyor). BM sonrası yeniden ölçülecek.
+- Dekor tek InstancedMesh'e toplanmadı (Faz F).
+- Aktif WC kâğıt döngüsü + temizlikçi → Faz C/D.
+- `optional` pad kategorisi ve `allAreaTablesLevel` gate'i ÜYESİZ.
+- `spawnInterval` sabit; Kat 2'den önce yeniden bakılmalı.
+- Lavabo seviyesi şu an TEK sinyalle (lentodaki noktalar) okunuyor — çini bordür kalkınca ikinci
+  sinyal açıkta kaldı, maketi bozmayan bir karşılığı bulunmalı.
+- bundle ~1,46 MB · eslint 16 (hepsi eski dosyalarda).
+
+### Kırmızı çizgi (duruyor)
+**"Objeler yüzüyor" hissine bir daha blob shadow ÖNERME** (D-054).
+
+---
+
 ## ŞU AN (2026-09-07 gece — **B6a TAMAM: ön çeyrekler sanat katmanını aldı**)
 
 B6a'nın sorusu "maketin duvar programı oyuna nasıl iner" idi. Cevap iki ölçümden çıktı ve program

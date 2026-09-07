@@ -1286,7 +1286,24 @@ yerleşim taşınırken de kullanılacak. Kullanım dosya başında.
 maket ölçeğine taşı (artık tek dosya: `layout.ts`), (3) kayıt v31 + migrasyon, (4) G4/G5 KayKit.
 Faz G artığı: UI Canvas'ları hâlâ eski düz ışıkla.
 
-## Faz B — Model geçişi 🔧 (9/10 · B0 + B1 + B2 + B3-1 + B3-2 + B5a + B5b + B4a + B6a bitti)
+## Faz B — Model geçişi 🔧 (B0…B6a bitti · **B6b DURDU, yerine BM geldi — D-070**)
+
+> **PLAN DEĞİŞTİ (2026-09-07 gece, D-070).** B6b "arka yarı + bant" adımı üç denemede de reddedildi
+> ve ölçüm sebebi gösterdi: oyun maketin küçültülmüş hâli değil, BAŞKA BİR BİNA (duvar 1,2 ↔ 3,2 ·
+> masa 0,9 ↔ 1,75 · masa yüksekliği 0,5 ↔ 0,75 · seviyeye göre üç masa boyu makette yok · fov 50 ↔ 34).
+> Parça parça taşımak her parçayı eski geometriyle uzlaştırmayı gerektiriyor ve o uzlaştırma bizzat
+> reddedilen tasarım kararı. **B6b iptal; yerine BM adımı:**
+>
+> ### BM — MAKET TAŞIMASI (kat komple, tek geçiş) ⏳ SIRA: ŞİMDİ
+> Oyunun statik dünyası `docs/maket/maket-v13.html` · `buildFloor1`'in TRANSKRİPSİYONU olur.
+> Kapsam: duvarlar (yükseklik + profil + birleşim) · zemin · mobilya ölçüleri ve aralıkları ·
+> arka bant (servis · merdiven · lavabo) · orta şerit · ön çeyreklerin dekoru · kamera.
+> **Kural:** maketten transkripsiyon yapılır, esinlenilmez; sapma varsa yanında gerekçesi yazar.
+> **Yer:** ayrı worktree. **Kabul:** 4-5 kadrajdan maket↔oyun yan yana, kullanıcı onayı.
+> **Sonra:** `simulate.ts` bir kez yeniden ölçülür, ara seviyeler maketin bitmiş hâline göre
+> geriye dönük ayarlanır (masa boyu dahil — D-070), sonra kalan işler EKSİKSİZ tamamlanır.
+>
+> Eski B0-B6a kayıtları aşağıda duruyor (yapılan iş silinmiyor); BM onlarla çelişirse maket kazanır.
 > **Adım sırası (2026-09-07'de düzeltildi — D-063):**
 > B0 · B1 · B2 · B3-1 · B3-2 · **B5a** · **B5b** · **B4a** → **B6a** → **B6b**
 > (D-068: B4b ayrı adım olmaktan çıktı, kapsamı B6b'ye katıldı.)

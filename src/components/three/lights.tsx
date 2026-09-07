@@ -21,6 +21,12 @@ export function SceneLights() {
         color={LIGHTING.sunColor}
         intensity={LIGHTING.sunIntensity}
       />
+      {/* Soğuk dolgu ışığı (B6b) — güneşin görmediği yüzler sarıya boğulmasın diye. Gerekçe palette.ts. */}
+      <directionalLight
+        position={LIGHTING.fillPos}
+        color={LIGHTING.fillColor}
+        intensity={LIGHTING.fillIntensity}
+      />
     </>
   );
 }

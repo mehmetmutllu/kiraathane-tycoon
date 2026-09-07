@@ -124,7 +124,10 @@ export type FloorTheme = {
 export const FLOOR_THEMES: Record<string, FloorTheme> = {
   // parke 2026-06-11: #b98a5a → daha açık/az doygun sıcak kum tonu (kullanıcı: "daha soft zemin").
   // G2: aynı ton artık tahta yüzü; derz onun koyu-sıcak hâli (yeni renk ailesi GİRMEDİ).
-  parke: { kind: 'plank', base: '#c9a87d', alt: '#bd9b70', grout: '#a3814f' },
+  // B6b: maketin zemini (#b98a5a) doygun bir orta ahşap; oyunun parkesi (#c9a87d) ondan hem açık
+  // hem soluktu. Yalnız pozlamayı açınca soluk renk kum rengine patlıyordu (ölçüldü) → tema
+  // maketin ahşabına çekildi, tahta deseni korunuyor.
+  parke: { kind: 'plank', base: '#b98a5a', alt: '#ad7d4d', grout: '#8f6338' },
   // 'yemek' (Y1): tost salonunun DOĞUŞTAN teması — açık krem-gri IRI KARO (1,05 m), düşük
   // kontrastlı derzle; yüksek kontrastlı 'dama'dan ayrışması korunur.
   yemek: { kind: 'tile', base: '#e3dac6', alt: '#d8cdb4', grout: '#bdb096', cell: 1.05 },
@@ -172,9 +175,17 @@ export const WALL_THEMES: Record<string, WallTheme> = {
 export const LIGHTING = {
   skyColor: '#ffe9c8', // gök yarısı: öğleden sonra sıcak gün ışığı
   groundColor: '#6b5a4a', // yer yarısı: ahşap zeminden dönen koyu-sıcak bounce
-  hemiIntensity: 0.35, // ambient 0.6'dan DÜŞÜK: ışık ile gölge arasındaki fark bu sayede açılıyor
+  hemiIntensity: 0.72, // B6b'de 0,35 → 0,72 (aşağıdaki PARLAKLIK notu)
   sunColor: '#fff2d8', // yönlü ışık: beyaz değil krem (semaver/bakır bu tonda canlanır)
-  sunIntensity: 1.6,
+  sunIntensity: 1.45, // B6b'de 1,6 → 1,45 (yarımküre yükseldi, güneşin tek başına taşıması gerekmiyor)
+  /**
+   * SOĞUK DOLGU IŞIĞI (B6b) — maket v13'te var, oyunda yoktu. Güneşin görmediği yüzler yalnız
+   * yarımkürenin SICAK yer rengiyle aydınlanıyordu ve hem koyu hem sarı düşüyordu; lavabonun soğuk
+   * gri fayansı (#cfd8dc) bu yüzden çamurlu bir griye dönüyordu. Maketin değeri birebir alındı.
+   */
+  fillColor: '#dfe6ff',
+  fillIntensity: 0.28,
+  fillPos: [-14, 12, -10] as [number, number, number],
   /**
    * GÜNEŞ AÇISI — G0'ın en büyük kazancı burası. Eski konum [6,12,6] ~55° yükseklikteydi:
    * gölgeler objenin ALTINDA kalıyor, tepeden bakan kamera onları hiç görmüyordu. Ölçüm: aynı
@@ -196,7 +207,29 @@ export const LIGHTING = {
   background: '#1f2933',
   fogNear: 34, // oyun alanının DIŞINDA başlar (kamera ~14 birimden bakar) → oynanışı örtmez
   fogFar: 72,
-  exposure: 1.05,
+  /**
+   * PARLAKLIK (B6b, 2026-09-07 — ÖLÇÜLEREK değişti). Maket oyunun kamerasıyla render edilip yan
+   * yana konunca geometrinin aynı, görüntünün farklı olduğu görüldü. Piksel ölçümü sebebi verdi:
+   *
+   *   yüzey            maket      oyun (eski)   fark
+   *   salon zemini     L201       L118          −83
+   *   WC fayansı       L255       L151          −104
+   *   duvar kremi      L185       L135          −50
+   *
+   * Sebep TASARIM DEĞİL BORU HATTI: maket **three r128**'i varsayılan `WebGLRenderer` ile
+   * kullanıyor → `LinearEncoding` çıkış, ton eşlemesi yok; renk yönetimi yapmadığı için yüzeyleri
+   * patlatıyor (WC fayansı ekrana saf beyaz, 255,255,255 olarak düşüyor). Oyun **three 0.184** ile
+   * renk-doğru çalışıyor (sRGB çıkış + ACESFilmic) ve doğal olarak çok daha koyu iniyor.
+   *
+   * Karar: maketin PATLAMASI değil, ORTA TONLARI hedeflendi. Ton eşlemesini kapatmak (`flat`)
+   * denendi ve sahneyi DAHA da kararttı → elendi. Yakınsama: exposure 1,05 → 1,60 · yarımküre
+   * 0,35 → 0,72 · güneş 1,6 → 1,45 · soğuk dolgu 0,28. Sonuç ölçüldü: salon zemini L118 → **L189**
+   * (maket 201), WC fayansı L151 → **L213** (maketin 255'i kırpılmış değer, hedef alınmadı).
+   *
+   * GÜNEŞİN AÇISI DEĞİŞMEDİ ([9,9,7], ~40°): gölge olmadığı için (D-054) hacim hissini tek başına
+   * o taşıyor, G0 bunu ölçerek seçmişti.
+   */
+  exposure: 1.6,
 } as const;
 
 /**
