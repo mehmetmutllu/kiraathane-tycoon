@@ -17,12 +17,27 @@
 import {
   economyConfig,
   MAX_AREAS,
-  TABLES_PER_AREA,
+  MAX_TABLES,
+  areaOfTableIndex,
+  areaTableSlots,
+  areaTableStart,
+  tableKindOf,
+  tableKindOfArea,
   type PadDef,
   type ProductId,
+  type TableKind,
 } from '../config/economy.config';
 
-export { MAX_AREAS, TABLES_PER_AREA };
+export {
+  MAX_AREAS,
+  MAX_TABLES,
+  areaOfTableIndex,
+  areaTableSlots,
+  areaTableStart,
+  tableKindOf,
+  tableKindOfArea,
+};
+export type { TableKind };
 
 // ============================== SERVİS: TEK NOKTA ==============================
 // B2 (D-060): üç ocak TEK servis noktasına indi. Maket v13'te kat boyunca bir tane servis vardır;
@@ -82,13 +97,13 @@ export function defaultFloorTheme(_area: number): string {
 }
 
 /**
- * Masa slotunun alanı. Masa slotları GLOBAL index'lidir (alan a → slotlar
- * [a*TABLES_PER_AREA, a*TABLES_PER_AREA+4)); açılış sırası gating'le katı olduğundan açık
- * index'ler DAİMA bitişiktir. B5'te masa tipleri gelince bu formül yerini `world.tables`
- * listesine bırakır — bugün zaten türetmenin kendisi listeyi üretiyor.
+ * Masa slotunun alanı. Masa slotları GLOBAL index'lidir (alan a → `[areaTableStart(a),
+ * areaTableStart(a+1))`); açılış sırası gating'le katı olduğundan açık index'ler DAİMA bitişiktir.
+ * **B5a: bölme aritmetiği kalktı** — alanlar eşit sayıda masa taşımıyor (4 · 4 · 12), `i / 4`
+ * artık yanlış cevap verirdi. Sınırlar tek yerde (`AREA_TABLE_START` prefix toplamı).
  */
 export function areaOfTable(tableIndex: number): number {
-  return Math.min(MAX_AREAS - 1, Math.floor(tableIndex / TABLES_PER_AREA));
+  return areaOfTableIndex(tableIndex);
 }
 
 /** Masaya kim servis veriyor: katın TEK servisi (ÜRETİM sorusu — alanla ilgisi yok). */
@@ -123,6 +138,8 @@ export interface Table {
   index: number;
   areaIndex: number;
   serviceIndex: number;
+  /** Masa TİPİ (B5a): kaç kişilik olduğunu belirler — `four` dörtlü küme · `deuce` banket ikilisi. */
+  kind: TableKind;
 }
 
 /** ODA türleri (B4): lavabo pasif çarpan, merdiven bugün yalnız konuşur ("Kat 2 çok yakında"). */
@@ -189,7 +206,7 @@ export function deriveWorld(padsDone: readonly string[]): World {
     if (area >= areasOpen) continue;
     switch (pad.effect.type) {
       case 'addTable':
-        tablesByArea[area] = Math.min(TABLES_PER_AREA, tablesByArea[area] + 1);
+        tablesByArea[area] = Math.min(areaTableSlots(area), tablesByArea[area] + 1);
         break;
       case 'hireWaiter':
         svc.waiters = Math.min(MAX_WAITERS, svc.waiters + 1);
@@ -203,13 +220,13 @@ export function deriveWorld(padsDone: readonly string[]): World {
   // Global masa index'leri BİTİŞİK kalmalı: bir alan açıksa ÖNCEKİ alanlar yapısal olarak doludur
   // (her alan pad'i öncekinin 4. masasını ister). Bozuk kayda karşı kelepçe — yoksa slot atlanır,
   // index kayardı.
-  for (let a = 0; a < areasOpen - 1; a++) tablesByArea[a] = TABLES_PER_AREA;
+  for (let a = 0; a < areasOpen - 1; a++) tablesByArea[a] = areaTableSlots(a);
 
   const tables: Table[] = [];
   for (let a = 0; a < MAX_AREAS; a++) {
     for (let k = 0; k < tablesByArea[a]; k++) {
-      const index = a * TABLES_PER_AREA + k;
-      tables.push({ index, areaIndex: a, serviceIndex: THE_SERVICE });
+      const index = areaTableStart(a) + k;
+      tables.push({ index, areaIndex: a, serviceIndex: THE_SERVICE, kind: tableKindOfArea(a) });
     }
   }
 

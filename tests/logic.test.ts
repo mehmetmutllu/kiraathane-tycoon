@@ -72,6 +72,7 @@ import {
   defaultFloorTheme,
   MAX_AREAS,
   MAX_SERVICES,
+  MAX_TABLES,
   tablesInArea,
   serviceOfTable,
   serviceInArea,
@@ -2364,9 +2365,13 @@ describe('M3 — müşteri tavanı masalarla ölçeklenir (arka salon açlığı
 
 describe('Y2 — koltuk + grup sistemi (plan §2)', () => {
   it('koltuk sayısı masa seviyesinden türetilir: 1/2/2/4/4 + kelepçe', () => {
-    expect(economyConfig.tables.seatsByLevel).toEqual([1, 2, 2, 4, 4]);
-    expect([0, 1, 2, 3, 4].map(tableSeats)).toEqual([1, 2, 2, 4, 4]);
+    // B5a: merdiven masa TİPİNE ait — dörtlü L3'te dörde çıkar, banket ikilisi 2'de TAVANLANIR.
+    expect(economyConfig.tables.seatsByLevel.four).toEqual([1, 2, 2, 4, 4]);
+    expect(economyConfig.tables.seatsByLevel.deuce).toEqual([1, 2, 2, 2, 2]);
+    expect([0, 1, 2, 3, 4].map((l) => tableSeats(l))).toEqual([1, 2, 2, 4, 4]);
+    expect([0, 1, 2, 3, 4].map((l) => tableSeats(l, 'deuce'))).toEqual([1, 2, 2, 2, 2]);
     expect(tableSeats(9)).toBe(4); // aşırı seviye son değere kelepçelenir
+    expect(tableSeats(9, 'deuce')).toBe(2);
     expect(tableSeats(-1)).toBe(1);
   });
 
@@ -2759,9 +2764,17 @@ describe('GARSON HAVUZU (Y4→B2) — gating (allAreaTablesLevel) + claim + opsi
     expect(visiblePads(tableQuestIdx, gate).some((p) => p.id === 'waiter3')).toBe(true);
   });
 
-  it('görev hattı SONU: ... q_z3table4 → q_waiterTray2 → q_z1allL4', () => {
+  it('görev hattı SONU (B5a): ... q_z1allL4 → q_stationMax → şeridin sekiz birimi', () => {
     const ids = economyConfig.quests.map((q) => q.id);
-    expect(ids.slice(-3)).toEqual(['q_z3table4', 'q_waiterTray2', 'q_z1allL4']);
+    // B5a'nın sekiz masa görevi hattın SONUNA eklendi, araya değil: önlerindeki sıra (dolayısıyla
+    // ölçülen tempo) B5a öncesiyle birebir aynı kalır.
+    expect(ids.slice(-12, -9)).toEqual(['q_z3table4', 'q_waiterTray2', 'q_z1allL4']);
+    // Tezgâhın son basamağı masalardan ÖNCE: arz tavandayken yeni masa hiçbir şeyi hızlandırmaz.
+    expect(ids.slice(-9)).toEqual([
+      'q_stationMax',
+      'q_z3table5', 'q_z3table6', 'q_z3table7', 'q_z3table8',
+      'q_z3table9', 'q_z3table10', 'q_z3table11', 'q_z3table12',
+    ]);
   });
 
   it('CLAIM: 2 garson farklı masalara gider — 2. garson 1.\'in hedeflediği masayı atlar', () => {
@@ -3301,7 +3314,9 @@ describe('Faz B1 — dünya modeli: ALAN · SERVİS · MASA · ODA ayrışması'
     // olduğundan sabit dizi yalan söylerdi. Yerine `servicePlace(areasOpen)` tek kapı.
     expect(MAX_SERVICES).toBe(1);
     expect(LAYOUT.areaBounds.length).toBe(MAX_AREAS);
-    expect(LAYOUT.tables.length).toBe(MAX_AREAS * 4);
+    // B5a: alan başına masa sayısı EŞİT DEĞİL (4 · 4 · 12) — çarpım artık yanlış cevap verirdi.
+    expect(LAYOUT.tables.length).toBe(MAX_TABLES);
+    expect(MAX_TABLES).toBe(20);
     // B3-2: kapı dizileri de KALKTI — kapı 2. Alan açılınca cephenin ortasına kayıyor (maket v13
     // adım 2), yani servis gibi o da `areasOpen` fonksiyonu. Alan başına ayrı kapı zaten yoktu.
     for (const key of ['entrances', 'streets', 'stations', 'stationPickups', 'dishStations', 'waiterHomes', 'stationUpgradeSpots']) {

@@ -1286,9 +1286,9 @@ yerleşim taşınırken de kullanılacak. Kullanım dosya başında.
 maket ölçeğine taşı (artık tek dosya: `layout.ts`), (3) kayıt v31 + migrasyon, (4) G4/G5 KayKit.
 Faz G artığı: UI Canvas'ları hâlâ eski düz ışıkla.
 
-## Faz B — Model geçişi 🔧 (5/9 · B0 + B1 + B2 + B3-1 + B3-2 bitti)
+## Faz B — Model geçişi 🔧 (6/10 · B0 + B1 + B2 + B3-1 + B3-2 + B5a bitti)
 > **Adım sırası (2026-09-07'de düzeltildi — D-063):**
-> B0 · B1 · B2 · B3-1 · **B3-2** → **B5** → **B4** → **B6a** → **B6b**
+> B0 · B1 · B2 · B3-1 · B3-2 · **B5a** → **B5b** → **B4** → **B6a** → **B6b**
 >
 > İki düzeltme yapıldı:
 > 1. **B5 öne alındı.** Kullanıcı 34 × 34'ü "aşırı büyük" buldu; boşluğun sebebi prop eksikliği
@@ -1436,15 +1436,56 @@ oturum sayısı bütçesi de gerçek bir kısıt.
     build + `tsc -b` temiz · eslint 19 (HEAD ile aynı) · tarayıcıda beş kare (`docs/gorsel/ss/b32-*.png`),
     konsol temiz.
 
-### B5 — Masa tipleri ve banket ⏳ (SIRA: ŞİMDİ)
-Dörtlü (8) · ikili (12). Masa 12 → **20**. Boşluk hissini asıl kapatan adım.
-**B3-2 düzeltmesi (D-064):** banketin seviyesi adanın BOYU değil, ada üstündeki **birim sayısıdır**
-— adalar zaten tam boyda (7,6) duruyor, sütunlar ∓11,7 · ∓8,5 · ∓5,3'te hazır ve `banketUnit(u)`
-u = 4…11 için doğru koordinatı zaten üretiyor. B5'in işi bu birimleri AÇAN model + pad zinciri
-(a2 bugün `TABLES_PER_AREA = 4` ile kelepçeli) ve masa tipi (ikili masa 2 koltukta tavanlanır;
-`seatsAtTable` kelepçesi B3-2'de kuruldu). "Var olan masalar yer değiştirmez" garantisi duruyor.
+### B5 — Masa tipleri ve banket 🔧 (İKİYE BÖLÜNDÜ — 2026-09-07 kullanıcı kararı)
+Kesme çizgisi: **B5a = model + pad zinciri + masa tipleri (denge SABİT tutulur ve ölçülür)** ·
+**B5b = denge ayarı** (kullanıcı: "dengeyi ölçüp bana getir").
 
-### B4 — Odalar ⏳ (SIRA: B5'ten sonra)
+- **B5a — Masa tipleri ve şeridin 12 birimi ✅** (2026-09-07 gece · **D-065**)
+  Kat **12 → 20 masa** (8 dörtlü + 12 ikili). İki kelepçe birden kalktı:
+  - **`TABLES_PER_AREA = 4` → `TABLE_SLOTS_PER_AREA = [4, 4, 12]`.** B3-1'de alanların KENDİSİ eş
+    olmaktan çıkmıştı; masa sayısı hâlâ tek sabite bağlıydı, yani `i / 4` aritmetiği bir yalandı.
+    Sınırlar tek prefix toplamında (`AREA_TABLE_START = [0,4,8,20]`); `areaOfTable` bölme değil
+    sınır sorgusu. a2'nin 12 slotu `banketUnit(u)`'nun ürettiği altı sütunun iki yüzü.
+  - **`seatsByLevel` masa TİPİNE ayrıldı:** `four` 1/2/2/**4**/4 · `deuce` 1/2/2/**2**/2. Tip alanın
+    planından gelir (`TABLE_KIND_PER_AREA`), koltuğun YERİ layout'tan; test ikisini bağlar
+    (`seats.length === SEATS_OF_KIND[kind]`). B3-2'nin `seatsAtTable` kelepçesi doğru cevabı
+    TESADÜFEN veriyordu (min(4,2)=2); artık cevabı merdiven veriyor, kelepçe savunma.
+  - **Görsel:** L3 basamağı iki tipte de tek gözle görülür değişim ama farklı geometri — dörtlü
+    kare BÜYÜR (`table_medium`), ikili BİSTROYA döner (`table_medium_long`, banka paralel uzar).
+    İkili masa hiçbir seviyede dört sandalyelik tabla taşımaz. Eşleme `tableLook()` tek kaynağında
+    (React'siz ayrı dosya → vitest'te doğrudan sınanır; `Tables.tsx` `Image`'a bağlı).
+  - **Zincir:** 8 yeni pad (`z3table5…12`). Maliyet YENİ EĞRİ DEĞİL, a2'nin kendi son oranının
+    (3200/2200 = ×1,4545) sürdürülmesi: 4650 · 6750 · 9800 · 14250 · 20750 · 30200 · 43950 · 63950.
+    Görevleri hattın SONUNA eklendi (araya değil) + önlerine **`q_stationMax`** (tezgâh L6): arz
+    tavandayken yeni masa hiçbir şeyi hızlandırmaz, para harcatır.
+  - **`allAreaTablesLevel` `count` aldı.** `waiter3`'ün "a2'nin tüm masaları L2" koşulu a2 dörtten
+    12'ye çıkınca SESSİZCE üç katına fırlıyordu; `count: 4` yazılarak B5a öncesiyle birebir aynı
+    eşik korundu (kaydırmak B5b'nin denge kararı).
+  - **TESTİN YAKALADIĞI GERÇEK KUSUR:** `waiter2`/`waiter3` pad'leri bandın önündeki koridordaydı
+    ve B3-2'de doğruydu (şerit yalnız DIŞ sütunu taşıyordu). Orta/iç sütunlar açılınca güney
+    yüzlerinin yükseltme noktaları o koridoru doldurdu: waiter2 masa 13'ün noktasına **0,50 br**,
+    waiter3 masa 17'ninkine 1,77 br (eşik 2,3) — oyuncu garson pad'ini doldururken masayı da
+    yükseltmeye başlıyordu. İkisi şeridin uçlarına çekildi (∓14,7 / −5,0).
+  - **İKİ KÖR TEST düzeltildi:** `layout-b32`'nin `STRIP = [8,9,10,11]` elle yazılmış dizisi ve
+    `layout-b31`'in rota kademesi `[3, 12]` — ikisi de yeni sekiz birimi hiç sınamayacaktı.
+    Artık yerleşimden türüyorlar; kusuru yakalayan da bu oldu.
+  - **DENGE DEĞİŞMEDİ (ölçüldü):** `simulate.ts` çıktısı taban ile **birebir aynı** — üç profilin
+    yirmi bir satırının hepsi (ilk alım 40 sn · garson 11,1 dk · 2. Alan 34,6 dk · bulaşıkçı 1,00 sa ·
+    3. Alan 1,83 sa · tezgâh 1,99 sa · tost 2,55 sa · servis L6 3,69 sa). Tek fark: iki YENİ satır +
+    artık yanlış olan "(zone-3 dolu)" etiketinin kalkması.
+    **Yeni ölçüm (B5b'nin girdisi):** şeridin yarısı (16. masa) 3,27 / **4,84** / 7,48 sa ·
+    şerit dolu (20. masa) 6,70 / **9,74** / — (Rahat profil 12 saatte bitiremiyor).
+  - **Doğrulama:** vitest **255/255** (242 + yeni `tests/table-b5a.test.ts` 13) · smoke **26/26** ·
+    build + `tsc -b` temiz · eslint **16** (taban 19'du; 3 azaldı) · tarayıcıda dört kare
+    (`docs/gorsel/ss/b5a-*.png`), konsol temiz.
+
+- **B5b — Denge ⏳ (SIRA: ŞİMDİ · kullanıcı onayı bekliyor)**
+  Ölçüm masada: şeridin son sekiz masası 194.300₺ ve gelir orada SABİT (servis L6 tavanı 15,62 ₺/sn,
+  başka throughput kolu yok) → kuyruk düz bir grind. Karar verilecekler: (1) eğri ×1,4545 kalsın mı,
+  (2) L6 sonrası bir throughput kolu mu gerek (3. garson zorunlu / tepsi kademesi / lavabo çarpanı),
+  (3) a2'nin masa yükseltme eşiği `z3table4`'te mi kalsın, (4) `waiter3`'ün `count: 4`'ü büyüsün mü.
+
+### B4 — Odalar ⏳ (SIRA: B5b'den sonra)
 Lavabo (oturma eklemez, pasif çarpan, kendi seviyeleri) + yıkık merdiven ("Kat 2 çok yakında").
 Arka bandın içi burada açılır — B3-1'de bant kütle olarak duruyor.
 

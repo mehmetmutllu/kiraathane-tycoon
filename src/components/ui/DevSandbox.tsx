@@ -18,7 +18,7 @@ import { D } from '../../game/decimal';
 import {
   economyConfig as C,
   MAX_AREAS,
-  TABLES_PER_AREA,
+  MAX_TABLES,
   waiterTrayMaxTier,
   waiterSpeedMaxTier,
   dishCarryMaxTier,
@@ -274,7 +274,7 @@ export function DevSandbox() {
             ))}
           </div>
           <div className="dsb-grid">
-            {Array.from({ length: MAX_AREAS * TABLES_PER_AREA }, (_, i) => (
+            {Array.from({ length: MAX_TABLES }, (_, i) => (
               <Stepper
                 key={i}
                 label={`M${i + 1}`}

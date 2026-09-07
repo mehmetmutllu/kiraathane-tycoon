@@ -20,14 +20,59 @@
 export const SAVE_VERSION = 31;
 
 /**
- * ALAN (eski "zone") — mekânsal bölge sayısı ve alan başına masa slotu. Dört kavramın
- * (ALAN · SERVİS · MASA · ODA) türetmesi `src/game/world.ts`'tedir; burada yalnız SAYILAR durur.
- * Masa slotları GLOBAL index'lidir (alan a → slotlar [a*TABLES_PER_AREA, a*TABLES_PER_AREA+4));
- * açılış sırası gating'le katı olduğundan açık index'ler DAİMA bitişiktir.
- * Yerleşim (2×2 ızgara, arka-sol rezerv arsa) `layout.ts`'te.
+ * ALAN (eski "zone") — mekânsal bölge sayısı, alan başına masa slotu ve o slotların MASA TİPİ.
+ * Dört kavramın (ALAN · SERVİS · MASA · ODA) türetmesi `src/game/world.ts`'tedir; burada yalnız
+ * SAYILAR durur. Yerleşim (koordinatlar) `layout.ts`'te.
+ *
+ * **B5a: alan başına masa sayısı ARTIK EŞ DEĞİL.** B3-1'de alanların kendisi eş olmaktan çıkmıştı
+ * (ön çeyrekler 17 × 17, arka yarı 34 × 9,8); masa sayısı ise hâlâ tek bir `TABLES_PER_AREA = 4`
+ * sabitine kelepçeliydi — yani "arka yarı ön çeyrek kadar masa alır" diyordu. Maket v13'ün orta
+ * şeridi iki banket adasının altı sütununa (∓11,7 · ∓8,5 · ∓5,3) İKİ YÜZDEN masa asar: 6 × 2 = 12.
+ * Kat toplamı 12 → **20 masa** (8 dörtlü + 12 ikili).
+ *
+ * Masa slotları GLOBAL index'lidir (alan a → `[areaTableStart(a), areaTableStart(a+1))`);
+ * açılış sırası gating'le katı olduğundan açık index'ler DAİMA bitişiktir. Prefix toplamı tek
+ * yerde tutulur (`AREA_TABLE_START`) — "a * 4" aritmetiği artık bir YALAN olurdu.
  */
-export const TABLES_PER_AREA = 4;
-export const MAX_AREAS = 3;
+export const TABLE_SLOTS_PER_AREA = [4, 4, 12] as const;
+export const MAX_AREAS = TABLE_SLOTS_PER_AREA.length;
+
+/**
+ * MASA TİPİ — slotun kaç kişilik olduğunu söyleyen TEK kaynak. Tip alanın PLANINDAN gelir:
+ * ön çeyrekler dörtlü kümeler, orta şerit banket ikilileri. `layout.ts` bu tipe göre koltuk
+ * YERLERİNİ üretir (o "nerede" sorusudur); koltuk SAYISI burada tanımlıdır.
+ *   four  — dört yanı tabure, dörtlü masa (a0 · a1)
+ *   deuce — banket ikilisi: koltuk 0 adanın bankı, koltuk 1 karşı sandalye (a2)
+ */
+export const TABLE_KIND_PER_AREA = ['four', 'four', 'deuce'] as const;
+export type TableKind = (typeof TABLE_KIND_PER_AREA)[number];
+
+/** Tipin TAM koltuk sayısı (masa L-max'ta bu kadar kişi oturur). */
+export const SEATS_OF_KIND: Record<TableKind, number> = { four: 4, deuce: 2 };
+
+/** Alan `a`'nın ilk global masa index'i (a = MAX_AREAS → toplam masa sayısı). */
+export const AREA_TABLE_START: readonly number[] = TABLE_SLOTS_PER_AREA.reduce<number[]>(
+  (acc, n) => [...acc, acc[acc.length - 1] + n],
+  [0],
+);
+
+/** Kattaki TOPLAM masa slotu (bugün 20). */
+export const MAX_TABLES = AREA_TABLE_START[MAX_AREAS];
+
+/** Alanın ilk global masa index'i. */
+export const areaTableStart = (a: number): number => AREA_TABLE_START[Math.min(Math.max(a, 0), MAX_AREAS)];
+/** Alanın masa slotu sayısı. */
+export const areaTableSlots = (a: number): number => TABLE_SLOTS_PER_AREA[Math.min(Math.max(a, 0), MAX_AREAS - 1)];
+/** Global masa index'i → alan. */
+export function areaOfTableIndex(index: number): number {
+  for (let a = MAX_AREAS - 1; a > 0; a--) if (index >= AREA_TABLE_START[a]) return a;
+  return 0;
+}
+/** Alanın masa tipi. */
+export const tableKindOfArea = (a: number): TableKind =>
+  TABLE_KIND_PER_AREA[Math.min(Math.max(a, 0), MAX_AREAS - 1)];
+/** Global masa index'inin tipi. */
+export const tableKindOf = (index: number): TableKind => tableKindOfArea(areaOfTableIndex(index));
 /**
  * ÜRÜN HATTI (M3; D-010 alt kararı "fiyat artışı YENİ menü ürünleriyle"). B2'de ürünün KAYNAĞI
  * değişti: eskiden üçüncü BÖLGENİN ürünüydü, artık tek servis noktasının SEVİYESİNDEN gelir
@@ -88,10 +133,13 @@ export interface Requires {
    */
   minWaiterServed?: number;
   /**
-   * Y4 gating (plan §3, kullanıcı onaylı): o ALANIN 4 masası da en az `level` olmadan açılmaz —
+   * Y4 gating (plan §3, kullanıcı onaylı): o ALANIN masaları en az `level` olmadan açılmaz —
    * 2. garson EN YOĞUN an gelsin (16 koltuk döneminde istasyon tavanını ancak 2 garson doldurur).
+   * `count` verilirse "o alanın EN AZ `count` masası" (verilmezse: hepsi). B5a'da eklendi: a2 dört
+   * slottan **12'ye** çıkınca "hepsi" sessizce başka bir koşula dönüşüyordu; sayı yazılınca kastedilen
+   * eşik alanın büyümesinden bağımsız kalır.
    */
-  allAreaTablesLevel?: { area: number; level: number };
+  allAreaTablesLevel?: { area: number; level: number; count?: number };
 }
 
 /**
@@ -221,8 +269,12 @@ export const economyConfig = {
        *  a0 60/108/194/349 · a1 90/160/290/525 · a2 150/270/485/875. */
       areaCostMult: [1, 1.5, 2.5],
     },
-    /** ALAN-BAŞINA önkoşul (v21): o alanın masa yükseltmeleri, o alanın 4 masası da açılınca belirir
-     *  (D-019 §3 — masa yükseltmeleri geç-oyun derinliği; erken ekran sade). */
+    /** ALAN-BAŞINA önkoşul (v21): o alanın masa yükseltmeleri, o alanın masaları açılınca belirir
+     *  (D-019 §3 — masa yükseltmeleri geç-oyun derinliği; erken ekran sade).
+     *  B5a: a2'nin eşiği bilerek `z3table4`'te BIRAKILDI (12. masada değil). Kural "alan dolunca"
+     *  değil "o alan artık boş görünmüyor" — ve asıl sebep tempoyu sabit tutmak: z3table12'ye
+     *  bağlamak şeridin masa yükseltmelerini 64.000₺'nin arkasına atardı. Eşiğin nereye ait olduğu
+     *  B5b'nin denge sorusu. */
     upgradeRequiresByArea: [
       { prev: ['table4'] },
       { prev: ['z2table4'] },
@@ -232,9 +284,19 @@ export const economyConfig = {
     tipBase: 2,
     /** Masa seviyesi başına eklenen sabır (sn). */
     patiencePerLevel: 2,
-    /** Koltuk sayısı masa SEVİYESİNDEN türetilir (Y2, plan §2 — kayıt şeması değişmez):
-     *  L0:1 → L1:2 → L2:2 → L3:4 → L4:4. Görsel sandalye sayısı = oturulabilir koltuk (Tables.tsx). */
-    seatsByLevel: [1, 2, 2, 4, 4],
+    /**
+     * Koltuk sayısı masa SEVİYESİNDEN türetilir (Y2, plan §2 — kayıt şeması değişmez).
+     * **B5a: merdiven artık masa TİPİNE ait.** Dörtlü masa L3'te büyüyüp dört kişilik olur;
+     * banket ikilisinin dört kişilik hâli YOKTUR (karşısında tek sandalye, sırtında ada var) —
+     * o L1'de tam kapasitesine ulaşır ve üst basamakları KONFORU büyütür (bahşiş + sabır),
+     * kapasiteyi değil. B3-2'deki `seatsAtTable` kelepçesi bu tabloyu zaten TAKLİT ediyordu
+     * (min(seviye, gerçek koltuk)); artık taklit değil tanım — kelepçe savunma olarak kalır.
+     * Görsel sandalye sayısı = oturulabilir koltuk (Tables.tsx aynı sayıdan çizer).
+     */
+    seatsByLevel: {
+      four: [1, 2, 2, 4, 4],
+      deuce: [1, 2, 2, 2, 2],
+    } as Record<TableKind, readonly number[]>,
   },
 
   /** NPC (müşteri) yaşam döngüsü zamanlamaları (sn). */
@@ -480,10 +542,40 @@ export const economyConfig = {
     { id: 'z3table4', label: '4. Masa', cost: 3200, fillRate: 914, optional: false, area: 2, // ~3.5sn
       requires: { prev: ['z3table3'] }, effect: { type: 'addTable' } },
 
+    // --- BÖLÜM 3b · ORTA ŞERİDİN DOLMASI: banket 5-12 (B5a) ---
+    // Maket v13'ün altı banket sütunu iki yüzden masa asar (6 × 2 = 12); B3-2'de adalar TAM BOYDA
+    // kuruldu, bu sekiz pad üstlerindeki masaları açar. Adaların boyu DEĞİŞMEZ (D-064) ve açık
+    // masalar YER DEĞİŞTİRMEZ — `banketUnit(u)` yalnız yeni birim üretir.
+    //
+    // MALİYET: yeni bir eğri UYDURULMADI. a2'nin kendi son adımının oranı (3200/2200 = **×1,4545**)
+    // aynen sürdürülüp 50'ye yuvarlandı. Zincirde TOST'un (L5) ARKASINA düşerler: bu noktada
+    // darboğaz çoktan tezgâhın arzı olduğu için yeni masa geliri hızlandırmaz, PARA HARCATIR —
+    // altı tempo bandı (plan §5) bu yüzden bu adımda dokunulmadan kalır (ölçüldü, B5a).
+    // Eğrinin kendisi B5b'nin (denge) konusu.
+    { id: 'z3table5', label: '5. Masa', cost: 4650, fillRate: 1329, optional: false, area: 2,
+      requires: { prev: ['z3table4'] }, effect: { type: 'addTable' } },
+    { id: 'z3table6', label: '6. Masa', cost: 6750, fillRate: 1929, optional: false, area: 2,
+      requires: { prev: ['z3table5'] }, effect: { type: 'addTable' } },
+    { id: 'z3table7', label: '7. Masa', cost: 9800, fillRate: 2800, optional: false, area: 2,
+      requires: { prev: ['z3table6'] }, effect: { type: 'addTable' } },
+    { id: 'z3table8', label: '8. Masa', cost: 14250, fillRate: 4071, optional: false, area: 2,
+      requires: { prev: ['z3table7'] }, effect: { type: 'addTable' } },
+    { id: 'z3table9', label: '9. Masa', cost: 20750, fillRate: 5929, optional: false, area: 2,
+      requires: { prev: ['z3table8'] }, effect: { type: 'addTable' } },
+    { id: 'z3table10', label: '10. Masa', cost: 30200, fillRate: 8629, optional: false, area: 2,
+      requires: { prev: ['z3table9'] }, effect: { type: 'addTable' } },
+    { id: 'z3table11', label: '11. Masa', cost: 43950, fillRate: 12557, optional: false, area: 2,
+      requires: { prev: ['z3table10'] }, effect: { type: 'addTable' } },
+    { id: 'z3table12', label: '12. Masa', cost: 63950, fillRate: 18271, optional: false, area: 2,
+      requires: { prev: ['z3table11'] }, effect: { type: 'addTable' } },
+
     // --- Kritik yol dışı: 3. GARSON (opsiyonel derinlik) ---
-    // Gating EN YOĞUN an: 12 masa da L2+ (o noktada iki garson tezgâhın arzını taşıyamaz).
+    // Gating EN YOĞUN an: şeritte DÖRT masa L2+ (o noktada iki garson tezgâhın arzını taşıyamaz).
+    // B5a: `count: 4` AÇIKÇA yazıldı — koşul B5a öncesiyle BİREBİR aynı kalsın diye. Kelimesiz hâli
+    // "a2'nin tüm masaları" demekti ve a2 dört slottan 12'ye çıkınca eşik üç katına fırlıyordu;
+    // bu bir denge kararıdır, B5a'nın değil B5b'nin işi.
     { id: 'waiter3', label: '3. Garson', cost: 6000, fillRate: 1714, optional: true, area: 0, // ~3.5sn
-      requires: { prev: ['waiter2'], allAreaTablesLevel: { area: 2, level: 2 } }, effect: { type: 'hireWaiter' } },
+      requires: { prev: ['waiter2'], allAreaTablesLevel: { area: 2, level: 2, count: 4 } }, effect: { type: 'hireWaiter' } },
   ],
 
   /**
@@ -538,6 +630,23 @@ export const economyConfig = {
     { id: 'q_z3table4', title: 'Salon 3: 4. Masayı aç', target: { type: 'pad', id: 'z3table4' }, area: 2, reward: 350 },
     { id: 'q_waiterTray2', title: "Garsonun tepsisini 3'e çıkar", target: { type: 'waiterTray', tier: 2 }, reward: 300 },
     { id: 'q_z1allL4', title: 'Salonun 4 masasını Seviye 4 yap', target: { type: 'tablesAtLevel', level: 4, count: 4, area: 0 }, reward: 400 },
+    // --- BÖLÜM 3b · ŞERİDİ DOLDUR (B5a): banketlerin kalan sekiz birimi ---
+    // ÖNCE TEZGÂHIN SON BASAMAĞI. Bu görev B5a'da eklendi ve sırası tesadüf değil: şeridin masaları
+    // ARZ tavana dayalıyken hiçbir şey hızlandırmaz (B2'nin dersi — kat tek noktadan beslenir), o
+    // yüzden L6 masalardan ÖNCE gelir. Hat bittiğinde simülatör zaten bu sırayı seçiyordu (serbest
+    // oyun "darboğaz varsa önce servis" der); görev hattı onu görünür kılıyor, değiştirmiyor.
+    { id: 'q_stationMax', title: 'Tezgâhı son seviyeye çıkar', target: { type: 'stationLevel', level: 6 }, reward: 800 },
+    // Hattın SONUNA eklendiler, araya değil: önlerindeki her görev B5a öncesiyle birebir aynı sırada
+    // kalsın (ölçülen altı tempo bandı bu sıraya bağlı). Her zorunlu pad'in bir görevi olması
+    // değişmez kural — pad'i görevsiz bırakmak HUD'da "görev bitti ama ekranda pad var" hâli olurdu.
+    { id: 'q_z3table5', title: 'Şerit: 5. Masayı aç', target: { type: 'pad', id: 'z3table5' }, area: 2, reward: 450 },
+    { id: 'q_z3table6', title: 'Şerit: 6. Masayı aç', target: { type: 'pad', id: 'z3table6' }, area: 2, reward: 550 },
+    { id: 'q_z3table7', title: 'Şerit: 7. Masayı aç', target: { type: 'pad', id: 'z3table7' }, area: 2, reward: 700 },
+    { id: 'q_z3table8', title: 'Şerit: 8. Masayı aç', target: { type: 'pad', id: 'z3table8' }, area: 2, reward: 850 },
+    { id: 'q_z3table9', title: 'Şerit: 9. Masayı aç', target: { type: 'pad', id: 'z3table9' }, area: 2, reward: 1050 },
+    { id: 'q_z3table10', title: 'Şerit: 10. Masayı aç', target: { type: 'pad', id: 'z3table10' }, area: 2, reward: 1300 },
+    { id: 'q_z3table11', title: 'Şerit: 11. Masayı aç', target: { type: 'pad', id: 'z3table11' }, area: 2, reward: 1600 },
+    { id: 'q_z3table12', title: 'Şerit: 12. Masayı aç', target: { type: 'pad', id: 'z3table12' }, area: 2, reward: 2000 },
   ] as readonly QuestDef[],
 
   // Oyuncu hareket hızı v20'de character.speed kademesinden türetilir (playerSpeed()).
@@ -675,11 +784,13 @@ export function requiresMet(req: Requires | undefined, g: GateState): boolean {
   if (req.minLifetime != null && g.lifetime < req.minLifetime) return false;
   if (req.minWaiterServed != null && (g.waiterServed ?? 0) < req.minWaiterServed) return false;
   if (req.allAreaTablesLevel) {
-    const { area, level } = req.allAreaTablesLevel;
+    const { area, level, count } = req.allAreaTablesLevel;
     const lv = g.tableLevels ?? [];
-    for (let i = area * TABLES_PER_AREA; i < (area + 1) * TABLES_PER_AREA; i++) {
-      if ((lv[i] ?? 0) < level) return false;
+    let n = 0;
+    for (let i = areaTableStart(area); i < areaTableStart(area + 1); i++) {
+      if ((lv[i] ?? 0) >= level) n++;
     }
+    if (n < (count ?? areaTableSlots(area))) return false;
   }
   return true;
 }
@@ -745,9 +856,9 @@ export function tablePatience(level: number, product: ProductId = 'tea'): number
   );
 }
 
-/** Masanın koltuk sayısı — seviyeden TÜRETİLİR (Y2; aşırı seviyede son değere kelepçelenir). */
-export function tableSeats(level: number): number {
-  const arr = economyConfig.tables.seatsByLevel;
+/** Masanın koltuk sayısı — TİP + seviyeden TÜRETİLİR (Y2; aşırı seviyede son değere kelepçelenir). */
+export function tableSeats(level: number, kind: TableKind = 'four'): number {
+  const arr = economyConfig.tables.seatsByLevel[kind];
   return arr[Math.min(Math.max(level, 0), arr.length - 1)];
 }
 

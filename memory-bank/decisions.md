@@ -1316,3 +1316,45 @@ taşıyor. Şerit maketin koordinatına birebir konsa iki şey sessizce kırıla
 erişilemez olacak (BFS değil düz çizgi) ve güney yükseltme noktası alan dışına düşecekti. İkisi de
 ekranda GÖRÜNMEZ — biri test, biri ekran görüntüsü yakaladı. **Makete sadakat koordinat kopyalamak
 değil, maketin ANLATTIĞI şeyi oyunun kendi kısıtlarıyla kurmaktır.**
+
+## D-065 — B5a: masa TİPİ bir alan özelliği, koltuk sayısı tipin merdiveni (2026-09-07)
+
+**Bağlam.** B5 kat masasını 12 → 20'ye çıkarıyor ama alanlar eşit büyümüyor: ön çeyrekler 4'er
+dörtlü masada kalıyor, orta şerit 12 banket ikilisi alıyor. İki eski varsayım aynı anda kırıldı.
+
+**Karar 1 — alan başına masa slotu bir TABLO, sabit değil.** `TABLES_PER_AREA = 4` kalktı;
+`TABLE_SLOTS_PER_AREA = [4, 4, 12]` ve prefix toplamı `AREA_TABLE_START = [0, 4, 8, 20]` geldi.
+`i / 4` aritmetiği (world · rules · config · DevSandbox) sınır sorgusuna döndü. Gerekçe: B3-1'de
+alanların KENDİSİ eş olmaktan çıkmıştı, masa sayısı ise hâlâ tek sabite bağlıydı — formül artık
+yanlış cevap veriyordu (12. masa a2'nin 5. slotu, "3. alan" değil).
+
+**Karar 2 — koltuk merdiveni masanın TİPİNE ait.** `seatsByLevel` tek listeden ikiye ayrıldı:
+`four` 1/2/2/**4**/4 · `deuce` 1/2/2/**2**/2. Banket ikilisinin dört kişilik hâli YOKTUR (sırtında
+ada, karşısında tek sandalye). Tip alanın PLANINDAN gelir (`TABLE_KIND_PER_AREA`), koltukların YERİ
+layout'tan; bir test ikisini bağlar (`seats.length === SEATS_OF_KIND[kind]`). B3-2'nin `seatsAtTable`
+kelepçesi doğru cevabı tesadüfen veriyordu (min(4, 2) = 2); artık cevabı merdiven verir, kelepçe
+yerleşim ile config'in ayrışmasına karşı savunma olarak kalır.
+
+**Karar 3 — L3 basamağı iki tipte de TEK değişim, ama farklı geometri.** Dörtlü masa kare büyür
+(`table_medium`), ikili bistroya döner (`table_medium_long`: banka paralel uzar, derinliği azalır).
+Alternatif "ikili L3'te de büyüsün" reddedildi: dört sandalyelik tabla taşıyan iki kişilik masa
+oyuncuya yalan söyler. Eşleme `tableLook()` tek kaynağında; greybox ve instancing hatları ikisi de
+oradan okur (ayrı ayrı `level >= 3` demeleri B5a'da yalana dönüşmüştü).
+
+**Karar 4 — denge B5a'da DEĞİŞMEZ, ölçülür (kullanıcı).** Yeni sekiz pad'in maliyeti uydurulmadı:
+a2'nin kendi son adımının oranı (3200/2200 = ×1,4545) sürdürüldü. Görevleri hattın SONUNA eklendi
+ve önlerine `q_stationMax` (tezgâh L6) kondu — arz tavandayken yeni masa hiçbir şeyi hızlandırmaz.
+Sonuç ölçüldü: `simulate.ts`'in var olan yirmi bir satırı **birebir aynı**. `allAreaTablesLevel`
+`count` alanı da bu yüzden geldi (`waiter3`'ün eşiği alanın büyümesiyle sessizce üç katına
+fırlamasın). Eğrinin kendisi B5b'nin konusu.
+
+**Bu adımın kalıcı dersi.** *Bir sabit yalana dönüştüğünde en tehlikeli yeri kod değil TESTTİR.*
+`layout-b32`'nin `STRIP = [8,9,10,11]` dizisi ve `layout-b31`'in `[3, 12]` kademesi yazıldıkları gün
+doğruydu; şerit 12 birime çıkınca ikisi de sessizce KÖRLEŞTİ — bekçilik ettikleri iki kural yeni
+sekiz birimde hiç sınanmayacaktı. Aralıkları yerleşimden türetince test hemen gerçek bir kusur
+yakaladı: `waiter2`/`waiter3` pad'leri yeni sütunların yükseltme noktalarının 0,50 ve 1,77 br
+yakınına düşüyordu (eşik 2,3) — oyuncu garson pad'ini doldurmak için durunca masayı da yükseltmeye
+başlıyordu. Elle yazılmış index dizisi bir varsayımdır ve varsayımlar da tıpkı kod gibi bayatlar.
+B1 aracın ÇIKTISI · B2 aracın VARSAYIMI · B3-1 aracın GÜRÜLTÜSÜ · B3-2 kaynağın KAPSAMI ·
+**B5a bekçinin KÖR NOKTASI.**
+

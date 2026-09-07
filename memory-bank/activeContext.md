@@ -2,6 +2,98 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-07 gece — **B5a TAMAM: kat 20 masa, masa tipleri ayrıldı**)
+
+B5 kullanıcı kararıyla ikiye bölündü: **B5a = model + pad zinciri + masa tipleri (denge SABİT
+tutulur ve ölçülür)** · **B5b = denge ayarı**. B5a bitti (**D-065**). Kat **12 → 20 masa**
+(8 dörtlü + 12 banket ikilisi). Denge DEĞİŞMEDİ — ölçüldü, aşağıda.
+
+### İki kelepçe birden kalktı
+1. **`TABLES_PER_AREA = 4` → `TABLE_SLOTS_PER_AREA = [4, 4, 12]`.** B3-1'de alanların KENDİSİ eş
+   olmaktan çıkmıştı; masa sayısı hâlâ tek sabite bağlıydı, yani `i / 4` aritmetiği artık YANLIŞ
+   cevap veriyordu (12. masa a2'nin 5. slotu, "3. alan" değil). Sınırlar tek prefix toplamında
+   (`AREA_TABLE_START = [0,4,8,20]`); `areaOfTable` bölme değil sınır sorgusu.
+2. **`seatsByLevel` masa TİPİNE ayrıldı:** `four` 1/2/2/**4**/4 · `deuce` 1/2/2/**2**/2. Tip alanın
+   PLANINDAN gelir (`TABLE_KIND_PER_AREA = ['four','four','deuce']`), koltuğun YERİ layout'tan; test
+   ikisini bağlar (`seats.length === SEATS_OF_KIND[kind]`). B3-2'nin `seatsAtTable` kelepçesi doğru
+   cevabı TESADÜFEN veriyordu (min(4,2)=2) — artık cevabı merdiven veriyor, kelepçe savunma.
+
+### Görsel: L3 iki tipte de tek değişim, farklı geometri
+Dörtlü masa kare BÜYÜR (`table_medium`), ikili BİSTROYA döner (`table_medium_long` — banka paralel
+uzar, derinliği azalır). İkili masa hiçbir seviyede dört sandalyelik tabla taşımaz (oyuncuya yalan
+söylemez). Eşleme `tableLook()` tek kaynağında: React'siz ayrı dosyada (`tableLook.ts`) çünkü
+`Tables.tsx` `recolor` üzerinden `Image`'a bağlı ve vitest'te import edilemiyor.
+
+### Zincir + gating
+8 yeni pad (`z3table5…12`). Maliyet yeni eğri DEĞİL, a2'nin kendi son oranının (3200/2200 = ×1,4545)
+sürdürülmesi: 4650 · 6750 · 9800 · 14250 · 20750 · 30200 · 43950 · 63950 (toplam 194.300₺).
+Görevleri hattın SONUNA eklendi (araya değil) + önlerine **`q_stationMax`** (tezgâh L6): arz
+tavandayken yeni masa hiçbir şeyi hızlandırmaz. `allAreaTablesLevel` **`count`** alanı aldı —
+`waiter3`'ün "a2'nin tüm masaları L2" koşulu a2 dörtten 12'ye çıkınca sessizce üç katına
+fırlıyordu; `count: 4` ile eşik B5a öncesiyle birebir aynı kaldı (kaydırmak B5b'nin kararı).
+
+### Testin yakaladığı GERÇEK kusur
+`waiter2`/`waiter3` pad'leri bandın önündeki koridordaydı ve B3-2'de doğruydu (şerit yalnız DIŞ
+sütunu taşıyordu). Orta/iç sütunlar (∓8,5 · ∓5,3) açılınca güney yüzlerinin yükseltme noktaları o
+koridoru doldurdu: waiter2 masa 13'ün noktasına **0,50 br**, waiter3 masa 17'ninkine 1,77 br
+(eşik `PAD_RADIUS + TABLE_UP_RADIUS` = 2,3) → oyuncu garson pad'ini doldurmak için durunca masayı da
+yükseltmeye başlıyordu. İkisi şeridin uçlarına çekildi (∓14,7 / −5,0; adaların dış ucundan sonrası
+duvara kadar 4,7 br boş).
+
+### Ölçüm — DENGE BİREBİR AYNI
+`simulate.ts`'in var olan **yirmi bir satırının hepsi** taban ile birebir: ilk alım 40 sn · garson
+11,1 dk · 2. Alan 34,6 dk · bulaşıkçı 1,00 sa · 3. Alan 1,83 sa · tezgâh 1,99 sa · tost 2,55 sa ·
+servis L6 3,69 sa (Normal profil). Tek fark: iki YENİ satır + artık yanlış olan "(zone-3 dolu)"
+etiketinin kalkması.
+
+| Yeni ölçüm (B5b'nin girdisi) | Yoğun | **Normal** | Rahat |
+|---|---|---|---|
+| Şerit yarısı (16. masa) | 3,27 sa | **4,84 sa** | 7,48 sa |
+| ŞERİT DOLDU (20. masa) | 6,70 sa | **9,74 sa** | — (12 sa'de bitmiyor) |
+
+### Doğrulama
+vitest **255/255** (242 + yeni `tests/table-b5a.test.ts` 13) · smoke **26/26** · build + `tsc -b`
+temiz · eslint **16** (taban 19'du, 3 azaldı) · tarayıcıda dört kare
+(`docs/gorsel/ss/b5a-serit-sol|genis|L4|dortlu-vs-ikili.png`), konsol **0 hata**.
+
+### Bu adımın kalıcı dersi
+**Bir sabit yalana dönüştüğünde en tehlikeli yeri kod değil TESTTİR.** `layout-b32`'nin
+`STRIP = [8,9,10,11]` dizisi ve `layout-b31`'in rota kademesi `[3, 12]` yazıldıkları gün doğruydu;
+şerit 12 birime çıkınca ikisi de sessizce KÖRLEŞTİ — bekçilik ettikleri kurallar yeni sekiz birimde
+hiç sınanmayacaktı. Aralıkları yerleşimden türetince test hemen gerçek kusuru yakaladı. Elle yazılmış
+index dizisi bir VARSAYIMDIR ve varsayımlar da tıpkı kod gibi bayatlar.
+B1 aracın ÇIKTISI · B2 aracın VARSAYIMI · B3-1 aracın GÜRÜLTÜSÜ · B3-2 kaynağın KAPSAMI ·
+**B5a bekçinin KÖR NOKTASI.**
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**B5b — denge (kullanıcı onayı GEREKİR, sayılar masada).** Ölçümün söylediği: şeridin son sekiz
+masası 194.300₺ ve gelir orada SABİT (servis L6 tavanı 15,62 ₺/sn; L6'dan sonra başka throughput
+kolu yok) → kuyruk düz bir grind, Rahat profil şeridi 12 saatte bitiremiyor. Karar verilecek dört şey:
+1. Eğri ×1,4545 kalsın mı, yoksa şeridin kuyruğu yassılaşsın mı?
+2. L6 sonrası bir **throughput kolu** gerekiyor mu (3. garson zorunlu / garson tepsi kademesi /
+   B4'ün lavabo çarpanı) — yoksa 20 masanın koltukları hiçbir zaman dolmaz.
+3. a2'nin masa yükseltme eşiği `z3table4`'te mi kalsın (bugün öyle, tempo sabit kalsın diye)?
+4. `waiter3`'ün `count: 4`'ü büyüsün mü?
+⚠ Kullanıcı ayrıca **yerleşimin düzenlenmesi gerektiğini** söyledi ("kesinlikle düzenlenmeli") ama
+onu SONRAYA bıraktı — B6a/B6b'nin konusu, B5b'den önce açılmaz.
+
+### Kırmızı çizgi (duruyor)
+**"Objeler yüzüyor" hissine bir daha blob shadow ÖNERME** (D-054).
+
+### Bilinen, ertelenmiş
+- Arka bandın içi boş kütle (lavabo kabinleri, yıkık merdiven) — **B4**.
+- Şeridin ORTASI (x ≈ 0) bilerek boş: maket orayı kapı–merdiven geçidi yapıyor. Dolgusu **B6b**.
+- Sol duvar programının gerisi (askı rayı · konsol · gazetelik) — **B6a**.
+- `LAYOUT.decor` (çöp kovaları, saksılar) hâlâ eski 21 × 21 koordinatlarında — **B6**.
+  (B5a'da ölçüldü: yeni 20 masanın hiçbiriyle ÇAKIŞMIYOR, acil değil.)
+- Arka bandın `waiterHome`'u (−11,0 / −7,2) masa 12'nin yükseltme noktasına 0,7 br — garson orada
+  boşta beklerken oyuncunun noktasının üstünde duruyor (collision yok, yalnız görsel). **B6a**.
+- Maket girişinin üst çıtasında z-fighting.
+- Bundle ~1,44 MB (three.js) — Faz F kod bölme.
+- `eslint` 16 hatası (hepsi eski) — Faz E/F işi.
+
+---
+
 ## ŞU AN (2026-09-07 gece — **B3-2 TAMAM: orta şerit kuruldu, kapı ortaya kaydı**)
 
 Maket v13'ün 6. adımı YAPI olarak geçti (**D-064**). Arka yarının önündeki 34 × 9,8'lik boş şerit

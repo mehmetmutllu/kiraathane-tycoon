@@ -176,7 +176,9 @@ describe('B3-1 — masalar, pad’ler ve rotalar yeni ölçekte tutarlı', () =>
   // merkezlerine denk düşünce BFS "yol yok" diyordu ve garson `navStep`'in düz-çizgi yedeğine
   // düşüyordu (masaya varıyor ama ENGELDEN KAÇMADAN). Çözüm: REACH_TABLE artık NAV_CELL'e bağlı.
   it('ROTA: servis noktasından KATIN HER MASASINA GERÇEK rota var (düz-çizgi yedeğine düşmeden)', () => {
-    for (const [areasOpen, tables] of [[1, 4], [2, 8], [3, 12]] as const) {
+    // B5a: son kademe 12 → 20 (şeridin tamamı). Elle yazılmış "12" bir kör nokta olurdu:
+    // yeni sekiz banket birimine rota hiç sınanmazdı.
+    for (const [areasOpen, tables] of [[1, 4], [2, 8], [3, 20]] as const) {
       const sp = SP(areasOpen);
       const grid = getNavGrid(tables, areasOpen);
       for (let i = 0; i < tables; i++) {

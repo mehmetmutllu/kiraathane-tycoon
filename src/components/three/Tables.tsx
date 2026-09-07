@@ -5,10 +5,13 @@ import { useGame } from '../../game/store';
 import { LAYOUT } from '../../game/store';
 import { Model } from './Model';
 import { PALETTE } from '../../config/palette';
-import { tableSeats, tableThemeColor } from '../../config/economy.config';
+import { tableSeats, tableThemeColor, type TableKind } from '../../config/economy.config';
 import { recoloredAtlas, atlasReady, onAtlasReady } from './recolor';
 import type { Vec3 } from '../../game/types';
 import type { SeatKind } from '../../game/store';
+// Seviye → asset/ölçek/örtü eşlemesi ayrı dosyada (React'siz → vitest'te doğrudan sınanır).
+import { tableLook } from './tableLook';
+export { tableLook } from './tableLook';
 
 // KayKit Furniture Bits (CC0). Native boyutlar (origin tabanda, üst ~y=1.0): table_small 1×1×1,
 // table_medium 2×1×2, table_medium_long 3×1×2, chair_stool/_wood 0.75×0.5×0.75, chair_A/_wood 0.75×1.26×0.85.
@@ -21,13 +24,7 @@ import type { SeatKind } from '../../game/store';
 //   L4 #7 chair_C. Örtü L2'den. Masa L0-L2 TEKLİ küçük (sandalyeler ORTALI), L3'te 4 kişilik uzun.
 //   Renkler (mavi asset minderleri) sonra ayarlanacak.
 const KAY = '/assets/models/kaykit-furniture-bits/';
-const TEA_TABLE_S: Vec3 = [0.66, 0.5, 0.66]; // table_small (çay L0-L2)
-const TEA_TABLE_M: Vec3 = [0.45, 0.55, 0.45]; // table_medium (çay L3+)
 const STOOL_S = 0.6; // chair_stool_wood
-// Örtü (tabla ÜSTÜ) yerleşimi — küçük (Sv3) ve büyük (Sv4+) masa. { y: üst yüzey, h/hx/hz: yarı-genişlik }.
-const TEA_CLOTH_S = { y: 0.5, h: 0.26 };
-const TEA_CLOTH_M = { y: 0.55, h: 0.4 };
-
 // Tabure (gerçek kıraathane formu): silindir gövde + kırmızı minder. Koltuk kutusu emekli.
 function Stool({ x, z }: { x: number; z: number }) {
   return (
@@ -48,6 +45,7 @@ export function Table({
   x,
   z,
   level,
+  kind = 'four',
   spots = LAYOUT.chairSpots,
   kinds,
   greybox = false,
@@ -55,6 +53,8 @@ export function Table({
   x: number;
   z: number;
   level: number;
+  /** Masa TİPİ (B5a): seviye merdiveninin koltuk sayısını ve L3 tablasını belirler. */
+  kind?: TableKind;
   /** Koltuk ofsetleri (masaya göre). Varsayılan dörtlü masanın dört yanı. */
   spots?: readonly (readonly [number, number])[];
   /** Koltukların görsel karşılığı; `bench` olan koltuk için tabure ÇİZİLMEZ (banket adası oradadır). */
@@ -65,7 +65,7 @@ export function Table({
   //   Sv1 (L0): çıplak ahşap, 1 koltuk · Sv2 (L1): +1 koltuk · Sv3 (L2): RENK/SÜS gelir (örtü+minder,
   //   ara ton) · Sv4 (L3): masa BÜYÜR (4 koltuk; renk taşınır, tek değişim) · Sv5 (L4): ALTIN (sadece
   //   renk; iki hatta da şekil değişmez → tutarlı).
-  const bigTable = level >= 3; // Sv4: masa büyür (4 koltuk)
+  const look = tableLook(kind, level); // Sv4 (L3): dörtlü BÜYÜR, ikili BİSTROYA döner
   // İLERLEME (rev10 — Seçenek A, ALTIN YOK; renk hep native mavi, altın TEMA MAĞAZASINDA pahalı tema):
   //   Sv3 TABURELER minderli (masa ÇIPLAK) · Sv4 +2 tabure + masa büyür · Sv5 ÖRTÜ gelir (finalde).
   // B2: "YEMEK masası" hattı (dikdörtgen masa + arkalıklı sandalye + sofra prop'ları) KALKTI —
@@ -73,12 +73,13 @@ export function Table({
   // tipi (dörtlü · ikili · banket) B5'te masanın KENDİ özelliği olarak gelecek.
   const clothColor = level >= 4 ? PALETTE.defaultTone : '';
   const cloth = clothColor; // greybox fallback alias
-  const chairs = Math.min(spots.length, tableSeats(level));
+  const chairs = Math.min(spots.length, tableSeats(level, kind));
   const skirt = !!clothColor && level >= 4; // greybox fallback
-  const hw = 0.475;
-  const hd = 0.475;
-  const tableSrc = greybox ? undefined : `${KAY}${bigTable ? 'table_medium' : 'table_small'}.gltf`;
-  const tableScale = bigTable ? TEA_TABLE_M : TEA_TABLE_S;
+  // Greybox tabla yarı-boyu görünüşü İZLER: ikili masa L3'te uzayıp incelir, kare kalmaz.
+  const hw = look.cloth.hx + 0.075;
+  const hd = look.cloth.hz + 0.075;
+  const tableSrc = greybox ? undefined : `${KAY}${look.key}.gltf`;
+  const tableScale = look.scale;
   const chairSrc = greybox ? undefined : `${KAY}${level < 2 ? 'chair_stool_wood' : 'chair_stool'}.gltf`;
   // MİNDER rengi: hep native mavi → recolor YOK. (Altın/teal vb. tema mağazasında satın alınır.)
   const chairRecolor = undefined;
@@ -148,10 +149,8 @@ export function Table({
       />
       {/* TIER SİNYALİ — tabla ÜSTÜ örtüsü (Sv3'ten; küçük/büyük masaya göre; sadece üst yüzey). */}
       {clothColor ? (
-        <mesh position={[0, (bigTable ? TEA_CLOTH_M : TEA_CLOTH_S).y, 0]} castShadow>
-          <boxGeometry
-            args={[(bigTable ? TEA_CLOTH_M : TEA_CLOTH_S).h * 2, 0.04, (bigTable ? TEA_CLOTH_M : TEA_CLOTH_S).h * 2]}
-          />
+        <mesh position={[0, look.cloth.y, 0]} castShadow>
+          <boxGeometry args={[look.cloth.hx * 2, 0.04, look.cloth.hz * 2]} />
           <meshStandardMaterial color={clothColor} />
         </mesh>
       ) : null}
@@ -213,17 +212,15 @@ function buildFurniture(tables: number, tableLevels: number[], clothTone: string
     if (!t) continue;
     const [x, , z] = t.table;
     const level = tableLevels[i] ?? 0;
-    const bigTable = level >= 3;
-    const tableKey: FKey = bigTable ? 'table_medium' : 'table_small';
-    const tableScale = bigTable ? TEA_TABLE_M : TEA_TABLE_S;
-    place[tableKey].push({ pos: [x, 0, z], scale: tableScale });
+    const look = tableLook(t.kind, level);
+    place[look.key].push({ pos: [x, 0, z], scale: look.scale });
 
     const chairKey: FKey = level < 2 ? 'chair_stool_wood' : 'chair_stool';
     const chairScale = STOOL_S;
     // Koltuk ofsetleri MASA BAŞINA (B3-2): banket biriminin bir koltuğu adanın oturağıdır —
     // `bench` koltuk için ayrı tabure çizilmez, yoksa bank minderinin içinde tabure belirirdi.
     const spots = t.seatOffsets;
-    const nChairs = Math.min(spots.length, tableSeats(level));
+    const nChairs = Math.min(spots.length, tableSeats(level, t.kind));
     for (let k = 0; k < nChairs; k++) {
       if (t.seatKinds[k] === 'bench') continue;
       const [sx, sz] = spots[k];
@@ -231,8 +228,8 @@ function buildFurniture(tables: number, tableLevels: number[], clothTone: string
     }
 
     if (level >= 4) {
-      const c = bigTable ? TEA_CLOTH_M : TEA_CLOTH_S;
-      cloths.push({ pos: [x, c.y, z], size: [c.h * 2, 0.04, c.h * 2], color: clothTone });
+      const c = look.cloth;
+      cloths.push({ pos: [x, c.y, z], size: [c.hx * 2, 0.04, c.hz * 2], color: clothTone });
     }
   }
   return { place, cloths };
@@ -320,6 +317,7 @@ function GreyboxTables({ tables, tableLevels }: { tables: number; tableLevels: n
           x={t.table[0]}
           z={t.table[2]}
           level={tableLevels[i] ?? 0}
+          kind={t.kind}
           spots={t.seatOffsets}
           kinds={t.seatKinds}
           greybox

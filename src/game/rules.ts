@@ -27,7 +27,7 @@ import {
 } from '../config/economy.config';
 import type { SaveStats } from './save';
 import { LAYOUT, servicePlace, type RVec3 } from './layout';
-import { MAX_AREAS, TABLES_PER_AREA, THE_SERVICE, tostShare, isCounter } from './world';
+import { MAX_AREAS, THE_SERVICE, areaTableStart, tostShare, isCounter } from './world';
 
 // DWELL kanonik dolum-noktası id'leri (D-018 §2): pad'ler kendi id'sini kullanır; bunlar yükseltme
 // noktaları. Önek + index biçimindedir ('tea:0' = SERVİS index'i, 'tableUp:5' = GLOBAL masa index'i).
@@ -201,14 +201,16 @@ export function occupiedSeats(npcs: Npc[]): Map<number, Set<number>> {
  *  olan İLK alan seçilir; alan İÇİNDE en çok boş koltuklu temiz masa (eşitlikte düşük index).
  *  Hiç boş koltuk yoksa -1. */
 /**
- * Masanın O ANKİ koltuk sayısı: seviyeden gelen sayı, masanın GERÇEKTEN sahip olduğu koltuk
- * konumlarıyla kelepçelenir. B3-2'ye kadar her masanın dört yeri vardı ve iki sayı hep aynıydı;
- * banket birimlerinin İKİ yeri var (bank + karşı sandalye). Kelepçe olmasa seviye 3'teki bir banket
- * "4 koltuklu ama 2'si dolu" görünür, spawn onu boş sanıp hedefler ve hiç müşteri yerleştiremeden
- * sayacı harcardı — masa tipleri (B5) gelmeden de doğru olması gereken sınır.
+ * Masanın O ANKİ koltuk sayısı: masanın TİPİNE ait seviye merdiveninden okunur, sonra masanın
+ * gerçekten sahip olduğu koltuk konumlarıyla kelepçelenir. B3-2'de kelepçe TEK başınaydı ve doğru
+ * cevabı tesadüfen veriyordu (min(4, 2) = 2); B5a'da `seatsByLevel` masa tipine ayrıldığı için
+ * asıl cevabı merdiven veriyor, kelepçe yerleşim ile config'in çelişmesine karşı savunma olarak
+ * duruyor (banketin iki yeri var, dörtlü masanın dört).
  */
 export function seatsAtTable(tableIndex: number, level: number): number {
-  return Math.min(tableSeats(level), LAYOUT.tables[tableIndex]?.seats.length ?? 0);
+  const t = LAYOUT.tables[tableIndex];
+  if (!t) return 0;
+  return Math.min(tableSeats(level, t.kind), t.seats.length);
 }
 
 export function findTableForGroup(
@@ -223,8 +225,8 @@ export function findTableForGroup(
     const a = (startArea + da) % areasOpen;
     let best = -1;
     let bestFree = 0;
-    const end = Math.min((a + 1) * TABLES_PER_AREA, tables);
-    for (let i = a * TABLES_PER_AREA; i < end; i++) {
+    const end = Math.min(areaTableStart(a + 1), tables);
+    for (let i = areaTableStart(a); i < end; i++) {
       if (dirty.has(i)) continue;
       const free = seatsAtTable(i, tableLevels[i] ?? 0) - (occ.get(i)?.size ?? 0);
       if (free > bestFree) {
@@ -271,7 +273,7 @@ export function revealKeys(
   const pre = (a: number) => (a === 0 ? '' : `Salon ${a + 1}: `);
   for (let a = 0; a < areasOpen; a++) {
     if (tableUpgradeUnlockedIn(a, g))
-      out.push([`tableUp:${a}`, `Yeni: ${pre(a)}Masaları yükseltebilirsin 🪑`, LAYOUT.tables[a * TABLES_PER_AREA].upgradeSpot]);
+      out.push([`tableUp:${a}`, `Yeni: ${pre(a)}Masaları yükseltebilirsin 🪑`, LAYOUT.tables[areaTableStart(a)].upgradeSpot]);
   }
   // Servis noktası TEK (B2) → tek reveal anahtarı, alan döngüsünün dışında. Metin seviyeye göre
   // konuşur: L4'e kadar "çay ocağı", sonrası "tezgâh" (tek merdiven, iki kimlik).
@@ -357,7 +359,7 @@ export function questTargetMet(target: QuestTarget, ctx: QuestCtx): boolean {
     case 'tablesAtLevel': {
       // area verilirse yalnız o alanın masa slotları; verilmezse tüm masalar (v27 çeşitlilik).
       const lvls = target.area != null
-        ? ctx.tableLevels.slice(target.area * TABLES_PER_AREA, (target.area + 1) * TABLES_PER_AREA)
+        ? ctx.tableLevels.slice(areaTableStart(target.area), areaTableStart(target.area + 1))
         : ctx.tableLevels;
       return lvls.filter((l) => (l ?? 0) >= target.level).length >= target.count;
     }
@@ -439,10 +441,10 @@ export function questFocusPos(
       // (tablesAtLevel v27: oyuncuyu gerçekten yükseltilecek masaya götürür).
       const goal = target.type === 'tablesAtLevel' ? target.level : tableSoftMaxLevel();
       const a0 = target.type === 'tablesAtLevel' && target.area != null ? target.area : a;
-      for (let i = a0 * TABLES_PER_AREA; i < tables; i++) {
+      for (let i = areaTableStart(a0); i < tables; i++) {
         if ((tableLevels[i] ?? 0) < goal) return LAYOUT.tables[i].upgradeSpot;
       }
-      return LAYOUT.tables[Math.min(a0 * TABLES_PER_AREA, tables - 1) || 0].upgradeSpot;
+      return LAYOUT.tables[Math.min(areaTableStart(a0), tables - 1) || 0].upgradeSpot;
     }
     // serveTea → o alanın OCAĞI/TEZGÂHI (2026-06-12 telefon feedback: salon ortası boştu —
     // özellikle yeni açılan salonda kamera "hiçbir şeye" bakıyordu); collectCoin → masa bölgesi ortası.

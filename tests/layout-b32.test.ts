@@ -26,6 +26,8 @@ import {
   streetAt,
   servicePlace,
   areaOfTable,
+  areaTableSlots,
+  areaTableStart,
   PAD_RADIUS,
   wallSpans,
   useGame,
@@ -34,8 +36,12 @@ import {
 import { activeSolids, getNavGrid, hitsSolid, navSolids, REACH_TABLE, TABLE_UP_RADIUS } from '../src/game/layout';
 import { findNavPath } from '../src/game/nav';
 
-/** a2'nin masa slotları (orta şerit) — global index 8..11. */
-const STRIP = [8, 9, 10, 11];
+// ŞERİDİN TÜM BİRİMLERİ. B3-2'de bu dizi elle yazılmış dört index'ti ve o gün doğruydu (a2 dört
+// slotla kelepçeliydi); B5a şeridi 12'ye açınca elle yazılmış dizi testin KÖRLÜĞÜNE dönüştü —
+// bu paketin bekçilik ettiği iki kural (yükseltme noktaları birbirini tetiklemez, pad daireleri
+// yükseltme noktasını yutmaz) yeni sekiz birimde hiç sınanmayacaktı. Aralık artık yerleşimden gelir
+// ve gerçekten iki kusur yakaladı (waiter2/waiter3 pad'leri; bkz. layout.ts padPos notu).
+const STRIP = Array.from({ length: areaTableSlots(2) }, (_, k) => areaTableStart(2) + k);
 
 describe('B3-2 — banket adaları maket v13 birim geometrisini taşır', () => {
   it('BİRİM SIRASI: sol adanın iki yüzü → sağ adanın iki yüzü → sonraki sütun', () => {
@@ -67,8 +73,13 @@ describe('B3-2 — banket adaları maket v13 birim geometrisini taşır', () => 
     expect(colX(0)).toBeCloseTo(11.7, 6);
     expect(colX(1)).toBeCloseTo(8.5, 6);
     expect(colX(2)).toBeCloseTo(5.3, 6);
-    // Bugün açık olan dört birim iki adanın da DIŞ sütununu kullanır.
-    for (const i of STRIP) expect(Math.abs(LAYOUT.tables[i].table[0])).toBeCloseTo(11.7, 6);
+    // B5a: şeridin 12 birimi ÜÇ sütunu da kullanır ve sıra korunur — her sütun DÖRT birim taşır
+    // (iki ada × iki yüz), sütun `banketUnit(u).col` ile ilerler. Dışarıdan içeri: 11,7 → 8,5 → 5,3.
+    for (const i of STRIP) {
+      const u = i - areaTableStart(2);
+      expect(Math.abs(LAYOUT.tables[i].table[0]), `birim ${u}`).toBeCloseTo(colX(banketUnit(u).col), 6);
+    }
+    expect(STRIP.length).toBe(12);
   });
 
   it('BİRİM GEOMETRİSİ maketle birebir: bank 0,74 · masa 1,85 · sandalye 2,95', () => {

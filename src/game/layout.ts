@@ -6,7 +6,8 @@
  * yerleşimi kullanabilir; store.ts bu modülü yeniden dışa aktarır (eski importlar çalışır).
  */
 import type { Vec3 } from './types';
-import { MAX_AREAS, MAX_SERVICES, TABLES_PER_AREA, THE_SERVICE } from './world';
+import { MAX_AREAS, MAX_SERVICES, THE_SERVICE, areaTableSlots, areaTableStart, tableKindOfArea } from './world';
+import { SEATS_OF_KIND, areaOfTableIndex } from '../config/economy.config';
 import { buildNavGrid, findNavPath, type NavGrid, type NavSolid } from './nav';
 
 export type RVec3 = readonly [number, number, number];
@@ -254,17 +255,16 @@ const TABLE_SPOTS: readonly TableSpot[] = [
   { at: [10.1, 10.1], up: [-1.25, 1.25] },
   { at: [6.9, 6.9], up: [-1.25, -1.25] },
   { at: [10.1, 6.9], up: [-1.25, -1.25] },
-  // a2 — ORTA ŞERİT: dört birim iki adaya dağılır (sol güney · sol kuzey · sağ güney · sağ kuzey).
-  // Eski tek sıra (z = −5,6) kalktı; şeridin doluluğunu artık banket taşıyor.
-  banketSpot(0),
-  banketSpot(1),
-  banketSpot(2),
-  banketSpot(3),
+  // a2 — ORTA ŞERİT: on iki birim iki adaya dağılır. B3-2'de dördü çizilebiliyordu (a2 dört slotla
+  // kelepçeliydi); B5a kelepçeyi kaldırdı → adaların ALTI sütunu (∓11,7 · ∓8,5 · ∓5,3) iki yüzden
+  // dolar: 6 × 2 = 12. Adaların BOYU değişmez (D-064), sıra da değişmez — `banketUnit(u)` u
+  // büyüdükçe yalnız YENİ birim üretir, açılmış masalar sütunlarında kalır.
+  ...Array.from({ length: areaTableSlots(2) }, (_, u) => banketSpot(u)),
 ];
 
 /** Kaç banket birimi AÇIK (a2'de kaç masa açıldıysa o kadar). */
 export const banketUnitsOpen = (tables: number): number =>
-  Math.max(0, Math.min(TABLES_PER_AREA, tables - 2 * TABLES_PER_AREA));
+  Math.max(0, Math.min(areaTableSlots(2), tables - areaTableStart(2)));
 
 export interface BanketIsland {
   side: -1 | 1;
@@ -294,12 +294,18 @@ export function banketIslands(tables: number): BanketIsland[] {
   }));
 }
 
-const ALL_TABLES = TABLE_SPOTS.map((t) => {
+const ALL_TABLES = TABLE_SPOTS.map((t, i) => {
   const table: Vec3 = [t.at[0], 0, t.at[1]];
-  const offs = t.seats ?? CHAIR_SPOTS;
+  // MASA TİPİ alanın planından gelir (economy.config: `TABLE_KIND_PER_AREA`); burada yalnız o tipin
+  // koltuklarının NEREDE olduğu tarif edilir. Dörtlü masa CHAIR_SPOTS'un ilk `SEATS_OF_KIND` yerini
+  // kullanır; banket kendi iki yerini verir (bank + karşı sandalye). İki kaynak çakışamaz: dilim
+  // sayıyı config'ten okur, banketin kendi listesi ise testle tipe bağlanır.
+  const kind = tableKindOfArea(areaOfTableIndex(i));
+  const offs = t.seats ?? CHAIR_SPOTS.slice(0, SEATS_OF_KIND[kind]);
   const seats = offs.map(([sx, sz]) => [table[0] + sx, 0.6, table[2] + sz] as Vec3);
   return {
     table,
+    kind,
     seat: seats[0],
     seats,
     /** Koltuk ofsetleri (masaya göre) — Tables.tsx tabureleri BURADAN çizer (Y2 tek kaynak). */
@@ -448,13 +454,23 @@ export const LAYOUT = {
     z2table3: ALL_TABLES[6].table,
     z2table4: ALL_TABLES[7].table,
     zone3: [2.0, 0, 1.8] as Vec3,
-    z3table2: ALL_TABLES[9].table,
-    z3table3: ALL_TABLES[10].table,
-    z3table4: ALL_TABLES[11].table,
-    // waiter2 arka bant döneminde açılır: servis istasyonunun ÖNÜNDE, banket koridorunun
-    // yükseltme noktasından (−11,7 / −6,85) PAD_RADIUS + TABLE_UP_RADIUS'tan uzakta.
-    waiter2: [-9.0, 0, -7.3] as Vec3,
-    waiter3: [-3.6, 0, -7.8] as Vec3,
+    // a2'nin masa pad'leri: alanın ilk slotu açılışla gelir, kalan 11'i pad'lerle (B5a).
+    ...Object.fromEntries(
+      Array.from({ length: areaTableSlots(2) - 1 }, (_, k) => [
+        `z3table${k + 2}`,
+        ALL_TABLES[areaTableStart(2) + k + 1].table,
+      ]),
+    ),
+    // GARSON PAD'LERİ ŞERİDİN İKİ UCUNDA (B5a'da taşındı). B3-2'de bunlar bandın önündeki
+    // koridora konmuştu ve o zaman doğruydu: şerit yalnız DIŞ sütunu (x = ∓11,7) taşıyordu, aradaki
+    // 3,2 br'lik ritim boştu. B5a orta ve iç sütunları (∓8,5 · ∓5,3) açınca güney yüzlerinin
+    // yükseltme noktaları tam o koridoru dolduruyor — waiter2 masa 13'ün noktasına **0,50 br**,
+    // waiter3 masa 17'ninkine 1,77 br kalıyordu (ikisi de PAD_RADIUS + TABLE_UP_RADIUS = 2,3'ün
+    // altında: oyuncu garson pad'ini doldurmak için durunca masayı da yükseltmeye başlıyordu).
+    // Adaların DIŞ uçlarından (∓12,3) sonrası duvara kadar 4,7 br boş kalır; iki pad oraya çekildi:
+    // batıda servis bloğunun önündeki personel şeridi, doğuda onun aynası.
+    waiter2: [-14.7, 0, -5.0] as Vec3,
+    waiter3: [14.7, 0, -5.0] as Vec3,
   } as Record<string, Vec3>,
   // --- Collision footprint'leri (yarı-boyut [hx,hz]; D-016): GÖRSEL mesh'lere yaslı → oyuncu objeye
   // "değiyor gibi" sokulur, arada boşluk kalmaz. (ocak tezgah 2.2×0.8, bulaşık 1.4×0.8, masa r0.5, sandalye 0.42.)

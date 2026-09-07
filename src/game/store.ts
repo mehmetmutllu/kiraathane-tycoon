@@ -55,7 +55,10 @@ export {
   MAX_AREAS,
   MAX_SERVICES,
   MAX_WAITERS,
-  TABLES_PER_AREA,
+  MAX_TABLES,
+  areaTableStart,
+  areaTableSlots,
+  tableKindOf,
 } from './world';
 export type { World, Area, Service, Table, Room } from './world';
 // Yerleşim/geometri Faz A2'de layout.ts'e taşındı; eski `from './store'` importları kırılmasın diye

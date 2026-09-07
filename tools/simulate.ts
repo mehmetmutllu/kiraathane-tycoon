@@ -7,6 +7,8 @@
  *
  * Model (B2 — TEK SERVİS): gelir = min(talep, arz) × (ortalama fiyat + bahşiş) × VERİM.
  *   - talep = tüm açık masaların koltukları / döngü   (kat tek noktadan beslenir)
+ *     B5a: koltuk sayısı masa TİPİNDEN okunur (dörtlü 1/2/2/4/4 · banket ikilisi 1/2/2/2/2) —
+ *     `masa × tableSeats(lvl)` çarpımı orta şerit 12 ikiliye çıkınca talebi ~2 kat abartırdı.
  *   - arz   = 1 / hazırlamaSüresi                    (tek servis noktası, kendi seviyesi)
  *   - ÜRÜN KARIŞIMI: L5'ten sonra müşterilerin `tostShare(level)` kadarı tost ister → hem fiyat
  *     hem hazırlama süresi ağırlıklı ortalamayla girer (rules.ts incomeRate ile AYNI formül).
@@ -102,6 +104,13 @@ function mixAt(level: number): { price: number; prepTime: number } {
   };
 }
 
+/** Açık masaların TOPLAM koltuğu — her masa kendi tipinin merdivenini okur (B5a). */
+function openSeats(w: ReturnType<typeof deriveWorld>, tableLevel: number): number {
+  let n = 0;
+  for (const t of w.tables) n += tableSeats(tableLevel, t.kind);
+  return n;
+}
+
 function brewTimeOf(s: State): number {
   const lv = s.stationLevels[THE_SERVICE];
   return mixAt(lv).prepTime / upgradeOutputMultiplier(C.service.upgrade, lv);
@@ -115,7 +124,7 @@ function rate(s: State, eff = 1): number {
   const w = deriveWorld(s.padsDone);
   const bt = brewTimeOf(s);
   const cycle = C.npc.walkTime + bt + C.npc.eatTime;
-  const demand = (w.tables.length * tableSeats(s.tableLevel)) / cycle;
+  const demand = openSeats(w, s.tableLevel) / cycle;
   const supply = 1 / bt;
   const price = mixAt(s.stationLevels[THE_SERVICE]).price;
   return Math.min(demand, supply) * (price + tableTip(s.tableLevel)) * eff;
@@ -127,7 +136,7 @@ function stationBottleneck(s: State): boolean {
   const w = deriveWorld(s.padsDone);
   const bt = brewTimeOf(s);
   const cycle = C.npc.walkTime + bt + C.npc.eatTime;
-  return (w.tables.length * tableSeats(s.tableLevel)) / cycle > (1 / bt) * 0.95;
+  return openSeats(w, s.tableLevel) / cycle > (1 / bt) * 0.95;
 }
 
 function upgradeUnlocked(s: State): boolean {
@@ -293,7 +302,10 @@ const MILESTONES: Milestone[] = [
   { name: '2. Garson', hit: (s) => s.padsDone.includes('waiter2') },
   { name: 'Z2: 4. Masa (zone-2 dolu)', hit: (s) => s.padsDone.includes('z2table4') },
   { name: `ZONE-3 AÇILDI (₺${C.pads.find((p) => p.id === 'zone3')?.cost})`, hit: (s) => s.padsDone.includes('zone3') },
-  { name: 'Z3: 4. Masa (zone-3 dolu)', hit: (s) => s.padsDone.includes('z3table4') },
+  { name: 'Z3: 4. Masa', hit: (s) => s.padsDone.includes('z3table4') },
+  // B5a: orta şerit 12 banket birimine açıldı — kat 20 masa. Zincirin son iki uğrağı.
+  { name: 'Şerit yarısı (16. masa)', hit: (s) => s.padsDone.includes('z3table8') },
+  { name: 'ŞERİT DOLDU (20. masa)', hit: (s) => s.padsDone.includes('z3table12') },
   { name: 'Masa yükseltme L1 (bahşiş)', hit: (s) => s.tableLevel >= 1 },
   { name: 'lifetime 1.000 ₺', hit: (s) => s.lifetime >= 1_000 },
   { name: 'lifetime 10.000 ₺', hit: (s) => s.lifetime >= 10_000 },
@@ -315,7 +327,7 @@ function runProfile(eff: number, log = false): Map<string, number> {
     waiterTray: 0, waiterSpeed: 0,
     questIdx: 0,
   };
-  const MAX_T = 60 * 60 * 6;
+  const MAX_T = 60 * 60 * 12; // B5a: şeridin 12 birimi 6 saatin ötesine taşıyor — ölçüm penceresi büyüdü
   const done = new Map<string, number>();
   while (s.t < MAX_T) {
     const inc = rate(s, eff) * DT;

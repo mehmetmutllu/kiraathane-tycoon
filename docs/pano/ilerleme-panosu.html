@@ -188,8 +188,8 @@ h2{font-size:21px;font-weight:800}
      ══════════════════════════════════════════════════════════════════════ -->
 <script type="application/json" id="durum">{
   "guncelleme": "07.09.2026",
-  "yapilan": 46,
-  "toplam": 68,
+  "yapilan": 47,
+  "toplam": 69,
   "kilometre": [
     {
       "at": 28,
@@ -209,29 +209,28 @@ h2{font-size:21px;font-weight:800}
     }
   ],
   "ozet": {
-    "etiket": "Bu oturum · Faz B · 4/8 — B3-2 bitti",
-    "baslik": "Salonun ortası doldu: sırt sırta banket adaları ve ortaya kayan kapı",
-    "aciklama": "Geçen oturumda kat 34 × 34'e büyümüş ama arka yarının önü <b>bomboş bir şerit</b> olarak kalmıştı. Maket orayı kafelerin standart çözümüyle dolduruyor: duvar olmadığı için <b>sırt sırta oturma bankı</b> — iki yüzlü uzun bir ada, her yüzünde ikili masa ve karşısında sandalye. Bu oturumda o yapı kuruldu. <b>İçerik büyümedi</b> (masa sayısı ve denge aynı); büyüyen, salonun mobilyalı görünmesi.",
+    "etiket": "Bu oturum · Faz B · 5/9 — B5a bitti",
+    "baslik": "Salonun masası 12'den 20'ye çıktı — ve iki masa tipi ayrıldı",
+    "aciklama": "Kullanıcı bu adımı ikiye böldü: <b>bugün yapı</b>, <b>denge sonraki oturumda</b> (sayılar aşağıda, karar kullanıcının). Şeridin banket adaları geçen oturumda tam boyda kurulmuştu; bugün üzerlerindeki <b>on iki masa yerinin hepsi açıldı</b> ve katın masası <b>12 → 20</b> oldu. Yanında yeni bir kavram geldi: <b>masa tipi</b>. Ön salonlardaki <b>dörtlü</b> masalar dört kişilik kalır; şeritteki <b>ikili</b> masalar iki kişide tavanlanır — çünkü sırtlarında bank, karşılarında tek sandalye var.",
     "adimlar": [
-      "İki <b>banket adası</b> kuruldu — maketin ölçüsünde, ön masalarla aynı dikey hatta",
-      "<b>Bir tasarım kararı ekranda düzeltildi:</b> ada önce “seviyeyle uzasın” diye kısa kurulmuştu; ekran görüntüsünde banka değil <b>dolaba</b> benziyordu. Adalar tam boyda doğuyor, seviye artık adanın <b>üstündeki masa sayısını</b> artıracak",
-      "<b>Kapı binanın ortasına kaydı</b> — makette olduğu gibi, ikinci salon açılınca cephe artık bir çeyreğin değil binanın cephesi",
-      "Garsonun <b>aktarma tezgâhı</b> yerine kondu (bugün yalnız mobilya; taşıma mekaniği kendi adımında ölçülecek)",
-      "Yerleşimden kopmuş <b>hayalet objeler</b> temizlendi: eski depo ve tuvalet kutuları kilitli salonun ortasında duruyordu, TV ile duvar saati boşlukta asılıydı — hepsi yerine oturdu",
-      "Testler <b>222 → 242</b> · duman testi 26/26 · <b>denge sayıları yine birebir aynı</b>"
+      "Şeridin <b>kalan 8 masası</b> açıldı — kat 20 masa, 56 koltuk (8 dörtlü + 12 ikili)",
+      "<b>Masa tipi</b> kavramı: dörtlü masa 4. seviyede büyüyüp dört kişilik olur; ikili masa aynı basamakta <b>bistro masasına</b> döner (banka paralel uzar) ve iki kişide kalır — ekranda dört sandalyelik bir masa gibi görünmez",
+      "“Her salon aynı sayıda masa alır” varsayımı kaldırıldı: salon başına masa sayısı artık bir <b>tablo</b> (4 · 4 · 12), koda gömülü bir bölme işlemi değil",
+      "<b>Denge bilerek DEĞİŞTİRİLMEDİ ve ölçüldü:</b> simülatörün var olan yirmi bir satırının hepsi birebir aynı çıktı (ilk alım 40 sn · garson 11 dk · tost 2,5 sa …)",
+      "Testler <b>242 → 255</b> · duman testi 26/26 · tarayıcıda dört kare, konsolda hata yok"
     ],
-    "not": "<b>Testin yakaladığı gerçek kusur:</b> duvar, kapı boşluğunu “kapı bu duvar parçasının içinde mi” diye soruyordu. Kapı ortaya kayınca tam <b>iki duvar parçasının dikişine</b> düştü, ikisi de “hayır” dedi ve <b>kapının önüne duvar örüldü</b>. Kod yazılırken görünmeyen, oyunu açınca duvara toslatan bir hata; test yazılmasa fark edilmezdi.<br><br><b>Bu oturumun dersi: bir ölçünün doğruluğu, maketin taşımadığı nesneyle sınanır.</b> Maket kâğıtta doğru, ama maket ne <b>yol bulma ızgarası</b> ne de <b>yükseltme noktası</b> taşıyor. Şerit maketin koordinatına birebir konsaydı iki şey sessizce kırılacaktı: bank koltuğuna yol bulunamayacak (garson engelden kaçmadan düz gidecek) ve bir yükseltme noktası salonun dışına düşecekti. Makete sadakat koordinat kopyalamak değil, <b>maketin anlattığı şeyi oyunun kendi kısıtlarıyla kurmak.</b>"
+    "not": "<b>Bu oturumun dersi: bir sabit yalana dönüştüğünde en tehlikeli yeri kod değil TESTTİR.</b> İki test, şeridin masalarını elle yazılmış bir liste (“8, 9, 10, 11”) üzerinden kontrol ediyordu; yazıldıkları gün doğruydu. Şerit on iki masaya çıkınca ikisi de sessizce <b>körleşti</b> — bekçilik ettikleri kurallar yeni sekiz masada hiç sınanmayacaktı. Listeler yerleşimden hesaplanır hâle getirilince test hemen <b>gerçek bir kusur</b> yakaladı: iki garson satın-alma noktası, yeni masaların yükseltme noktalarının yarım metre yakınına düşüyordu — oyuncu garsonu almak için orada beklerken <b>farkında olmadan masayı da yükseltmeye başlıyordu</b>. İkisi de şeridin uçlarına taşındı.<br><br>Elle yazılmış bir index listesi aslında bir <b>varsayımdır</b>; ve varsayımlar da tıpkı kod gibi bayatlar."
   },
   "siradaki": {
-    "etiket": "Faz B · B5 — Masa tipleri ve 12 → 20 masa",
-    "baslik": "Sıra boşluğu asıl kapatan adımda: masa sayısı neredeyse iki katına çıkıyor",
-    "aciklama": "Şeridin <b>donanımı</b> hazır: iki ada tam boyda duruyor ve üzerlerinde <b>12 masa yeri</b> önceden hesaplanmış hâlde bekliyor — bugün bunların yalnız dördü açık. B5 kalan sekizi açar ve katın masası <b>12 → 20</b> olur.<br><br>Bununla birlikte <b>masa tipi</b> kavramı geliyor: ön salonlardaki <b>dörtlü</b> masalar dört kişilik kalır, şeritteki <b>ikili</b> masalar iki kişide tavanlanır. Bu, Faz B'de <b>dengeye ilk gerçek dokunuş</b> olacak — bugüne kadar masa sayısı hiç değişmedi, kapasite %40 büyüyünce tempo yeniden ölçülmeli.",
+    "etiket": "Faz B · B5b — Denge (karar kullanıcının)",
+    "baslik": "Yirmi masanın bedeli ölçüldü: son sekiz masa düz bir tırmanış",
+    "aciklama": "Yeni sekiz masanın toplam bedeli <b>194.300 ₺</b> ve oyuncunun geliri o noktada <b>sabit</b>: tezgâh son seviyesine çıkmış oluyor ve arkasında hızı artıracak başka bir kol kalmıyor. Ölçüm bunu net söylüyor — şeridin yarısı ortalama oyuncuda <b>4,8 saat</b>, tamamı <b>9,7 saat</b>; rahat tempoda oynayan bir oyuncu on iki saatte bile bitiremiyor.<br><br>Bu bir hata değil, <b>bilinçli olarak dokunulmamış</b> bir kuyruk: bugünün işi yapıyı kurmaktı ve tempo ölçülebilsin diye eski eğri aynen sürdürüldü. Sıradaki oturum bu kuyruğu birlikte kararlaştıracak.",
     "adimlar": [
-      "<b>B5 · şimdi:</b> masa tipleri (dörtlü / ikili) + şeridin kalan 8 masası · masa <b>12 → 20</b> · tempo yeniden ölçülür",
+      "<b>B5b · şimdi:</b> şeridin fiyat eğrisi · tezgâh sonrası bir hız kolu gerekiyor mu (3. garson / tepsi kademesi / lavabo çarpanı) · masa yükseltme eşikleri",
       "<b>B4:</b> lavabo ve yıkık merdiven odaları — arka bandın içi açılır",
       "<b>B6 (iki oturum):</b> maketin sanat katmanı, salon salon — giriş holü, sedir köşesi, vitrin, duvar donanımı, kilimler, KayKit mobilyası"
     ],
-    "not": "<b>Bir taslak cümlesi düzeltildi.</b> B5'in ilk taslağı “banketin seviyesi <b>boyudur</b>, ada uzar” diyordu. Bu oturumda ada kısa hâliyle ekrana konunca karar değişti: <b>ada tam boyda durur, seviye üstündeki masa sayısını artırır.</b> Bank mekânın sabit donanımıdır; bir kafede uzayan şey bank değil, bankın önüne dizilen masa sayısıdır. B5'in asıl garantisi (<i>var olan masalar yer değiştirmez</i>) aynen duruyor."
+    "not": "<b>Yerleşim de kullanıcının listesinde:</b> “kesinlikle düzenlenmeli” dedi ama sonraya bıraktı. Ön salonlar 17 × 17 birim ve hâlâ dört masa taşıyor — bugünkü adım boşluğu <b>şeritte</b> kapattı, ön çeyreklerde değil. O iş sanat katmanının (B6) kapsamında."
   },
   "donemler": [
     {
@@ -321,9 +320,9 @@ h2{font-size:21px;font-weight:800}
         {
           "k": "B",
           "t": "Model geçişi",
-          "d": "ZONE → alan/servis/masa/oda ayrıştı · üç ocak tek tezgâha indi · kat 34 × 34 · orta şerit ve banket adaları. Kalan: <b>B5</b> masa tipleri (12 → 20), <b>B4</b> odalar, <b>B6</b> maketin sanat katmanı (iki oturum)",
-          "yapilan": 4,
-          "toplam": 8,
+          "d": "ZONE → alan/servis/masa/oda ayrıştı · üç ocak tek tezgâha indi · kat 34 × 34 · orta şerit ve banket adaları · masa 12 → 20 ve masa tipleri. Kalan: <b>B5b</b> denge, <b>B4</b> odalar, <b>B6</b> maketin sanat katmanı (iki oturum)",
+          "yapilan": 5,
+          "toplam": 9,
           "kapi": "Maketin altı adımı geziliyor VE salon makete bakınca tanınıyor",
           "durum": "now"
         },
@@ -363,6 +362,21 @@ h2{font-size:21px;font-weight:800}
     }
   ],
   "gunluk": [
+    {
+      "tarih": "07.09.2026",
+      "etiket": "Faz B · 5. oturum (B5a)",
+      "baslik": "Masa 12'den 20'ye çıktı — ve en tehlikeli kör nokta testin kendisinden çıktı",
+      "govde": "Bu adım baştan ikiye bölündü: <b>bugün yapı, denge sonraki oturumda</b>. Sebebi basit — masa sayısını neredeyse iki katına çıkarmak oyunun temposunu değiştirebilir ve tempo değişikliği kullanıcının kararıdır, geliştiricinin değil. Bu yüzden gün boyunca tek bir denge sayısına dokunulmadı; sonunda simülatör koşuldu ve <b>var olan yirmi bir satırın hepsi birebir aynı</b> çıktı. Ölçülen yeni sayılar bir sonraki oturumun masasında duruyor.<br><br>Yapı tarafında iki eski varsayım kırıldı. Birincisi: kodda “her salon dört masa alır” diyen tek bir sabit vardı ve masanın hangi salona ait olduğu <b>bir bölme işlemiyle</b> hesaplanıyordu. Salonlar iki oturum önce eşit olmaktan çıkmıştı; bugün masa sayıları da çıktı (4 · 4 · 12) ve o bölme işlemi artık <b>yanlış cevap veriyordu</b>. İkincisi: koltuk sayısı masa seviyesinden tek bir listeyle geliyordu — “dördüncü seviyede masa dört kişilik olur”. Şeritteki banket masasının dört kişilik hâli yok: sırtında bank, karşısında tek sandalye var. Artık merdiven <b>masanın tipine</b> ait, ve ikili masa aynı basamakta dört sandalye çıkarmak yerine <b>bistro masasına</b> dönüyor: banka paralel uzuyor, derinliği azalıyor. Aynı adımda görünür bir değişim, ama yalan söylemeyen bir değişim.<br><br>Günün asıl hikâyesi ise testlerde geçti. İki test, şeridin masalarını <b>elle yazılmış bir listeyle</b> (“8, 9, 10, 11”) kontrol ediyordu — yazıldıkları gün doğruydu. Şerit on iki masaya çıkınca ikisi de sessizce körleşti: bekçilik ettikleri kurallar yeni sekiz masada hiç sınanmayacaktı. Listeler yerleşimden hesaplanır hâle getirilince test hemen gerçek bir kusur yakaladı — iki garson satın-alma noktası, yeni masaların yükseltme noktalarının <b>yarım metre</b> yakınına düşüyordu. Oyunda karşılığı şu olurdu: oyuncu garsonu almak için orada bekler, farkında olmadan masayı da yükseltmeye başlar.",
+      "maddeler": [
+        "Şeridin kalan <b>8 masası</b> açıldı — kat 20 masa, 56 koltuk",
+        "<b>Masa tipi</b> kavramı: dörtlü (ön salonlar) ve ikili (şerit); ikili iki kişide tavanlanır",
+        "Salon başına masa sayısı artık bir <b>tablo</b> (4 · 4 · 12), koda gömülü bölme değil",
+        "İki garson noktası şeridin uçlarına taşındı — test yakaladı",
+        "Denge <b>dokunulmadı</b> ve ölçüldü: yirmi bir satır birebir aynı",
+        "Testler 242 → <b>255</b> · duman 26/26 · konsol temiz"
+      ],
+      "not": "<b>Bu oturumun dersi: bir sabit yalana dönüştüğünde en tehlikeli yeri kod değil TESTTİR.</b> Kod bozulduğunda gürültü çıkarır; bayat bir test <b>sessizce</b> onaylamaya devam eder. Elle yazılmış bir index listesi aslında bir varsayımdır — ve varsayımlar da tıpkı kod gibi bayatlar. Bekçinin kendisi de düzenli olarak yoklanmalı."
+    },
     {
       "tarih": "07.09.2026",
       "etiket": "Faz B · 4. oturum (B3-2)",
