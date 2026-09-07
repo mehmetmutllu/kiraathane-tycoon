@@ -2,6 +2,81 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-07 gece — **B6a TAMAM: ön çeyrekler sanat katmanını aldı**)
+
+B6a'nın sorusu "maketin duvar programı oyuna nasıl iner" idi. Cevap iki ölçümden çıktı ve program
+değil, **programın nereye asıldığı** değişti. Karar: **D-069**. Ekran görüntüleri `docs/gorsel/ss/b6a-*.png`
+(aynı kadrajın önce/sonrası: `b6a-once-soldivar.png` ↔ `b6a-sonra-soldivar-eskadraj.png`).
+
+### Bulgu 1 — kesik duvar (1,2 br) maketin programını TAŞIYAMAZ
+Maketin duvarı 3,2, oyununki 1,2 (`wallPanel.WALL_H` — kamera tepeden baktığı için tavana çıkmıyor).
+Maketin y = 1,85…2,20'deki öğeleri bu duvara sığmıyor; nitekim **TV bugüne kadar y = 1,85'te, yani
+duvarın ÜSTÜNDE havada duruyordu**. Kural: **ağır öğe (TV · konsol) duvardan iner, kendi ayaklı
+ünitesine oturur** — hem "havada obje" kusuru kapanıyor hem 45°'lik kameraya bir ÜST YÜZEY doğuyor.
+Duvarda yalnız ince öğeler kalıyor (tablo · aplik · saat · askı rayı · pencere), hepsi 0,54–1,15 bandında.
+
+### Bulgu 2 — yan duvarda DÜZ ASILAN hiçbir şey okunmuyor
+Kamera yatayda tam −z'ye baktığı için z ekseninde uzanan yan duvarlar neredeyse PROFİLDEN görünüyor.
+İlk denemede maketin penceresi birebir küçültülmüştü (koyu doğrama + yarı saydam cam) ve ekranda
+**koyu kahve dikey çubuklara** dönüştü (`b6a-pencere-yakin.png`). Pencere üç sinyale bölündü: derin
+denizlik (odaya 0,30 taşar → ÜST yüzeyi görünür) · AÇIK doğrama · **duvarın TEPESİNE basılan cam bandı**
+(mimari kesitte camın taranması gibi). Aynı sebeple aplik kolu 0,18 → 0,30. **ÖN duvarın iç yüzü ise
+hiçbir kadrajda görünmüyor** → giriş hissi duvarla değil kapının iki yanındaki düşey siluetlerle
+kuruldu (askılık · şemsiyelik · lamba · saksı), üçü kapıyla birlikte taşınıyor.
+
+### Tasarım turu (D-068 §2 uygulandı)
+Kompozisyon için **Fable 5.1** danışıldı; "ağır öğe zemine insin", "yan duvar profilden görünüyor" ve
+"a0/a1 aynalı değil ayrı kimlik" onun ikinci gözünden çıktı. **Alınmayan üç öneri:** soba (maket onu
+arka salona koyuyor — B6b) · ayaklı kül tablası (D-032 yaş sınırı) · sarkıt lamba (Fable'ın kendisi de
+"önce mockup onayı" dedi → B6b'de sorulacak).
+
+### Yapılan (kod)
+- **`src/config/decor.ts` (YENİ)** — dekorun tek veri kaynağı, 17 tür, `from` ile adım katmanı.
+  `LAYOUT.decor` **KALKTI** (eski 21 × 21 koordinatları taşınarak kapandı). Çizim `Decor.tsx`te.
+- a0 **"ocak duvarı"**: aplik · konsol/büfe (radyo + tepsi + saksı) · tablo · saksı · TV ünitesi · aplik.
+- a1 **"cam kenarı"**: üç pencere · petek · denizlik çiçekleri · iki aplik · gazetelik.
+- Giriş: paspas + askılık + şemsiyelik (kapıya göreli) · lamba · saksı · askı rayı · saat · kovalar.
+- Koridor çerçevesi: ∓4,6 · z 13,4 ve 3,4 — boşluğu **hol · salon · duvar dibi** diye üçe ayırıyor.
+- **Personel bekleme noktaları taşındı** (açık kalem): garsonlar (−11,0/−7,2) → **(−14,6/−6,6)**,
+  bulaşıkçı (−5,6/−7,2) → **(−6,9/−7,75)**. İkincisi kayıtlarda yoktu, ölçümde çıktı: masa 12'nin
+  yükseltme noktasına **0,32 br** kalıyordu. Ritim tek kaynakta: `waiterHomeAt` · `staffIdleSpots`.
+- **`zone3` 3400 → 2500₺** (açık kalem). `simulate.ts`'e kalıcı **"EN UZUN BEKLEME"** bekçisi eklendi
+  (iki ardışık ALIM arası boşluk). Ölçülen: **26,9 → 19,6 dk**; zincir Normal 5,21 → 5,08 sa; `zone3`
+  öncesindeki her satır birebir aynı. Gerekçe fiyat kırmak değil D-066'nın alan pad'ine uygulanması:
+  **alan MEKÂN satar, gelir satmaz** — oranı büyüten şey arkasından gelen TEZGÂH.
+
+### Doğrulama
+vitest **279/279** (yeni `tests/layout-b6a.test.ts` 9) · smoke **28/28** · build + `tsc -b` temiz ·
+eslint 20 (tabanla birebir aynı). Perf (NPC kapalı, aynı kadrajlar): sol duvar 119 → 120 çağrı ·
+**cam kenarı 104 → 167** · giriş 162 → 180.
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**B6b — arka yarı + bant** (Faz B'nin son adımı): sedir köşesi (üç sedir U + alçak sehpa + minder +
+soba) · yan salon · servis bloğunun içi · bandın okunur hâli · **lavabonun İÇİ** (kabin · ayna ·
+fayans · tavan ışığı) · **yıkık merdiven** (D-058 karar 2). Çalışma biçimi D-068 ile aynı.
+**B6a'dan devreden üç görsel soru B6b'de kullanıcıya sorulacak:** (1) masa kümelerinin üstüne sarkıt
+lamba mı, (2) pencerelerin önüne zemine düşen gündüz ışığı lekesi mi (gölge değil, ışık — D-054'ün
+kapsamında değil ama onay ister), (3) şeridin ORTASI (x ≈ 0) hangi objeyle dolacak.
+
+### Bilinen, ertelenmiş
+- **`servis L6` 23,4 dk bekletiyor** (Normal) — merdivenin son basamağı; B4 "eğrinin dikliği
+  çarpandan belirleyici" dediği için yassıltılmadı, yassıltmak platoyu geri getirir. Açık kalem.
+- **`masa seviyesi L4` 21,4 dk — MODEL KUSURU**, denge kusuru değil: `simulate.ts` tüm masaları TEK
+  kalemde yükseltiyor, oyunda masa-başı alınıyor. Simülatör masa-başı alıma çevrilirse kapanır.
+- Dekor **tek InstancedMesh'e toplanmadı** (duvar/zemin deseninde olduğu gibi) — cam kenarı kadrajı
+  +63 çizim çağrısı. Faz F kalemi.
+- Aktif WC kâğıt döngüsü + temizlikçi personeli → Faz C/D (taşıma kolunda boşluk %74 olunca).
+- Şeridin ORTASI (x ≈ 0) bilerek boş (kapı–merdiven geçidi) — B6b.
+- `spawnInterval` sabit: timer küresel, katla büyümüyor → 56 koltuğun ~yarısı hiç dolmuyor.
+  Bilinçli (arz zaten darboğaz) ama Kat 2'den önce yeniden bakılmalı.
+- `optional` pad kategorisi ve `allAreaTablesLevel` gate'i hâlâ ÜYESİZ (B5b/Ö6'dan beri).
+- Maket girişinin üst çıtasında z-fighting · bundle ~1,46 MB · eslint 20 hatası (hepsi eski).
+
+### Kırmızı çizgi (duruyor)
+**"Objeler yüzüyor" hissine bir daha blob shadow ÖNERME** (D-054).
+
+---
+
 ## ŞU AN (2026-09-07 gece — **B4a TAMAM: plato kırıldı, lavabo kendi istifiyle geliyor**)
 
 B4'ün sorusu "lavabonun çarpan eğrisi ne olsun" idi. Ölçüm iki şeyi düzeltti, kullanıcı üçüncüyü.

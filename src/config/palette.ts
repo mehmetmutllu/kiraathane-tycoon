@@ -78,6 +78,23 @@ export const PALETTE = {
   planter: '#7a5230',
   plant: '#3f7d44',
   outdoorTable: '#8d6e63',
+  // Dekor katmanı (B6a) — salt görsel; kesik duvarın asma bandına ve zemine giren parçalar.
+  // Hepsi mevcut ahşap/bakır/krem ailesinden türetildi: yeni bir renk dili AÇILMADI.
+  plantAlt: '#5a9a55', // ikinci yaprak kümesi (tek küre "yeşil top" duruyordu)
+  glass: '#a9d6ea', // pencere camı (yarı saydam)
+  glassFrame: '#5d4037', // vitrin doğraması (koyu)
+  sill: '#efe7d6', // pencere denizliğinin ÜST yüzü (mermer) — kamera bu yüzü görüyor
+  windowSash: '#f0e6cf', // PENCERE doğraması: AÇIK — yan duvar profilden görünüyor, koyu doğrama camı yutuyordu
+  pictureArt: '#c0a37a', // tablo tuvali (krem badanadan bir ton koyu → çerçeve okunur)
+  lampShade: '#e8c98a', // ayaklı lamba abajuru
+  lampGlow: '#fff0b8', // ampul/aplik küresi
+  // Kapı paspası: ilk deneme (#6b4a2f / #4a3423) parkenin üstünde KOYU BİR DELİK gibi
+  // duruyordu; hasır tonuna çekildi — zeminden ayrışıyor ama leke olmuyor.
+  doormat: '#8a6a45',
+  doormatEdge: '#5d4430',
+  paper: '#e9e4d6', // gazete/dergi
+  coat: '#3a5570', // askıdaki ceket (koyu lacivert — #2c3e50 tepeden siyah lekeye dönüyordu)
+  coatAlt: '#6d4c41',
 } as const;
 
 /** Kozmetik zemin temaları (WP6) — economy.config.cosmetics.floorThemes id'leriyle eşleşir.

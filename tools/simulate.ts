@@ -409,14 +409,51 @@ const MILESTONES: Milestone[] = [
   { name: 'lifetime 10.000 ₺', hit: (s) => s.lifetime >= 10_000 },
 ];
 
+const NL = String.fromCharCode(10);
+
 function fmtTime(sec: number): string {
   if (sec < 60) return `${sec.toFixed(0)} sn`;
   if (sec < 3600) return `${(sec / 60).toFixed(1)} dk`;
   return `${(sec / 3600).toFixed(2)} sa`;
 }
 
-/** Bir profili koştur; milestone → saniye haritası döner. */
-function runProfile(eff: number, log = false): Map<string, number> {
+/**
+ * SATIN ALMA OLAYI — tempo denetiminin ikinci ölçütü için (D-010 §3.6: "20 dk'yı aşan tek alım
+ * kalmasın"). Milestone listesi zincirin TAMAMINI taşımaz (karakter kademeleri, masa seviyeleri,
+ * ara pad'ler dışarıda kalır); oysa oyuncunun hissettiği bekleme iki ARDIŞIK ALIM arasındaki
+ * boşluktur. Bu yüzden ölçüm milestone'lardan değil, harcamanın kendisinden türer.
+ */
+interface Buy { t: number; label: string }
+
+/** Harcama sayaçlarının anlık görüntüsü — trySpend'in NE aldığını fark ile okuruz. */
+function spendSnap(s: State) {
+  return {
+    pads: s.padsDone.length,
+    lastPad: s.padsDone[s.padsDone.length - 1] ?? '',
+    st: s.stationLevels[THE_SERVICE],
+    tl: s.tableLevel,
+    tray: s.char.tray, magnet: s.char.magnet, speed: s.char.speed,
+    wt: s.waiterTray, ws: s.waiterSpeed, lav: s.lavabo,
+  };
+}
+type Snap = ReturnType<typeof spendSnap>;
+
+/** İki anlık görüntü arasındaki fark bir alımsa etiketi, değilse null. */
+function boughtLabel(a: Snap, b: Snap): string | null {
+  if (b.pads > a.pads) return `pad: ${b.lastPad}`;
+  if (b.st > a.st) return `servis L${b.st}`;
+  if (b.tl > a.tl) return `masa seviyesi L${b.tl}`;
+  if (b.lav > a.lav) return `lavabo L${b.lav}`;
+  if (b.tray > a.tray) return `karakter: tepsi ${b.tray}`;
+  if (b.magnet > a.magnet) return `karakter: mıknatıs ${b.magnet}`;
+  if (b.speed > a.speed) return `karakter: hız ${b.speed}`;
+  if (b.wt > a.wt) return `garson tepsi ${b.wt}`;
+  if (b.ws > a.ws) return `garson hız ${b.ws}`;
+  return null;
+}
+
+/** Bir profili koştur; milestone → saniye haritası döner. `buys` verilirse alım hattı da dolar. */
+function runProfile(eff: number, log = false, buys?: Buy[]): Map<string, number> {
   const s: State = {
     t: 0, wallet: 0, lifetime: 0,
     stationLevels: Array.from({ length: MAX_SERVICES }, () => 0),
@@ -432,7 +469,12 @@ function runProfile(eff: number, log = false): Map<string, number> {
     s.wallet += inc;
     s.lifetime += inc;
     s.t += DT;
+    const before = buys ? spendSnap(s) : null;
     trySpend(s);
+    if (before) {
+      const label = boughtLabel(before, spendSnap(s));
+      if (label) buys!.push({ t: s.t, label });
+    }
     advanceQuests(s); // M1: görev ödülleri cüzdana
     for (const m of MILESTONES) {
       if (!done.has(m.name) && m.hit(s)) {
@@ -474,13 +516,34 @@ function run() {
     ['Rahat (seyrek, verim 0.35)', 0.35],
   ];
   console.log('\n--- 3 PROFİL (milestone → süre) ---');
-  const results = profiles.map(([name, eff]) => ({ name, res: runProfile(eff) }));
+  const results = profiles.map(([name, eff]) => {
+    const buys: Buy[] = [];
+    return { name, res: runProfile(eff, false, buys), buys };
+  });
   const header = 'Milestone'.padEnd(34) + ' | ' + results.map((r) => r.name.split(' ')[0].padStart(8)).join(' | ');
   console.log(header);
   for (const m of MILESTONES) {
     const row = m.name.padEnd(34) + ' | ' +
       results.map((r) => (r.res.has(m.name) ? fmtTime(r.res.get(m.name)!) : '—').padStart(8)).join(' | ');
     console.log(row);
+  }
+
+  /* --- EN UZUN BEKLEME (D-010 §3.6'nın ikinci ölçütü) ---
+     "20 dk'yı aşan tek alım kalmasın." Bekleme = iki ARDIŞIK alım arasındaki boşluk; etiketi
+     boşluğu BİTİREN alımdır (oyuncu o süre boyunca ONUN için biriktiriyordu). B4 raporunun
+     §7'sinde elle ölçülen bu sayı burada kalıcı bir bekçi oldu. */
+  console.log(NL + '--- EN UZUN BEKLEME (ardışık iki alım arası) ---');
+  const WAIT_LIMIT = 20 * 60;
+  for (const r of results) {
+    const gaps = r.buys.map((b, i) => ({ ...b, gap: b.t - (i === 0 ? 0 : r.buys[i - 1].t) }));
+    gaps.sort((a, b) => b.gap - a.gap);
+    const worst = gaps.slice(0, 3);
+    const over = gaps.filter((g) => g.gap > WAIT_LIMIT).length;
+    console.log(
+      `  ${r.name.split(' ')[0].padEnd(7)} en uzun ${fmtTime(worst[0]?.gap ?? 0).padStart(7)} → ${worst[0]?.label ?? '—'}` +
+        `   (20 dk'yı aşan: ${over})`,
+    );
+    for (const g of worst.slice(1)) console.log(`          ardından ${fmtTime(g.gap).padStart(7)} → ${g.label}`);
   }
 
   // ÜÇ KOL tablosu (Ö5): geliri hangi tavan kelepçeliyor, ve garson/tepsi ne satın alıyor.

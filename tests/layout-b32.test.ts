@@ -236,7 +236,10 @@ describe('B3-2 — ROTA: banket koltukları BFS ile gerçekten erişilebilir', (
       expect(npc.pos[0]).toBeCloseTo(LAYOUT.tables[i].seats[k][0], 5);
       expect(npc.pos[2]).toBeCloseTo(LAYOUT.tables[i].seats[k][2], 5);
     }
-  });
+    // Dört müşteri × 2400 kare × kare-başı BFS: duvar saati 3-6 sn. Vitest'in 5 sn varsayılanı
+    // makine yüküne göre bazen yetiyor bazen yetmiyordu (iddia değil SÜRE kırılıyordu) — açık
+    // bütçe verildi. İddialar aynı; yavaşlarsa yine kırılır.
+  }, 30_000);
 
   it('ada İÇİNDEN geçilemez: sırtlık hattı gerçekten katı', () => {
     const solids = navSolids(12, 3);

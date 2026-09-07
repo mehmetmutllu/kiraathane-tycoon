@@ -1545,3 +1545,54 @@ ekranda A/B" kuralı). `store.ts` / `economy.config.ts` / `save.ts` / testler **
 B4b ile B6b'yi ayıran şey iş değil, planın yazıldığı sıraydı: B4 "odalar" başlığı altında
 doğduğu için mekân işi ekonomiden ayrılmıştı, oysa lavabonun İÇİ bir ekonomi işi değil bant
 işiydi. Adımı silmek kapsam kaybı değil, **iki kez yazılacak işin bir kez yazılması**.
+
+## D-069 — B6a: DEKOR KENDİ DOSYASINDA; KESİK DUVARDA AĞIR ÖĞE ASILMAZ, ZEMİNE OTURUR (2026-09-07 gece)
+
+**Bağlam.** B6a maket v13/v14'ün ön çeyrek (a0 + a1) sanat katmanını oyuna taşıyacaktı. Maketin
+programı olduğu gibi kopyalanamadı, çünkü maket ile oyunun iki sert farkı ölçüldü.
+
+**Karar 1 — Dekor `src/config/decor.ts`'e taşındı; `LAYOUT.decor` KALKTI.**
+Dekorun geometriyle tek ortak yanı koordinat sistemi: collision'ı, nav'ı, kaydı yok. `layout.ts`
+artık yalnız YÜRÜNEN dünyayı anlatıyor, `decor.ts` BAKILAN dünyayı. Yan kazanç: D-068 §3'ün
+istediği A/B kurulumu bedava geldi (tek veri dosyası) ve "LAYOUT.decor hâlâ eski 21 × 21
+koordinatlarında" açık kalemi patch'le değil taşımayla kapandı.
+
+**Karar 2 — KESİK DUVARA AĞIR ÖĞE ASILMAZ.** Oyunun duvarı 1,2 birim (`wallPanel.WALL_H`);
+maketinki 3,2. Maketin y = 1,85…2,20'deki programı (TV · konsol · tablo · aplik · saat) bu duvara
+sığmıyor — nitekim TV bugüne kadar **y = 1,85'te, duvarın ÜSTÜNDE havada** duruyordu. Kural:
+- **Ağır öğe (TV · konsol) duvardan iner, kendi ayaklı ünitesine oturur.** Bedava gelen iki şey:
+  "havada obje" kusuru kökten kapanır, ve 45°'lik kameraya bir ÜST YÜZEY doğar.
+- Duvarda yalnız İNCE öğeler kalır (tablo · aplik · saat · askı rayı · pencere) ve hepsi lambri
+  çıtası (0,54) ile kartonpiyer (1,15) arasındaki banda sığar. Bekçi: `tests/layout-b6a.test.ts`.
+
+**Karar 3 — YAN DUVARDA "DÜZ ASILAN" HİÇBİR ŞEY OKUNMUYOR; sinyal ODAYA TAŞMALI.** Kamera yatayda
+tam −z'ye baktığı için z ekseninde uzanan yan duvarlar neredeyse PROFİLDEN görünüyor. İlk denemede
+maketin penceresi birebir küçültülmüştü (koyu doğrama + yarı saydam cam) ve ekranda **koyu kahve
+dikey çubuklara** dönüştü (`docs/gorsel/ss/b6a-pencere-yakin.png`). Pencere üç sinyale bölündü:
+derin denizlik (odaya 0,30 taşar, ÜST yüzeyi görünür) · AÇIK doğrama (koyu olan camı yutuyordu) ·
+**duvarın TEPESİNE basılan cam bandı** (mimari kesitte camın taranması gibi; profilden bakışta bile
+"burada açıklık var" okunuyor). Aplik kolu da 0,18 → 0,30'a uzadı.
+
+**Karar 4 — ÖN DUVARIN İÇ YÜZÜ HİÇBİR KADRAJDA GÖRÜNMEZ.** Kamera hep onun iç tarafında ve sırtı
+ona dönük. Maketin "giriş holü" duvar öğeleri (tablo · saat) oraya asılırsa hiç okunmaz → giriş
+hissi duvarla değil **kapının iki yanındaki düşey siluetlerle** kuruluyor (askılık · şemsiyelik ·
+lamba · saksı), hepsi arkadan da okunan hacimler; kapıyla birlikte taşınıyorlar (`entryAtDoor`).
+
+**Karar 5 — a0 ile a1 AYNALI DEĞİL, AYRI KİMLİK.** Masa kümeleri aynalı kalır (ekonomi + ızgara
+ritmi), dekor ayrışır: **a0 "ocak duvarı"** (TV ünitesi · konsol · palto · ahşap) ↔ **a1 "cam
+kenarı"** (üç pencere · petek · denizlik çiçeği · aydınlık). Aynalı olsalardı iki çeyrek "aynı
+odanın kopyası" okunur ve kullanıcının şikâyet ettiği düzensizlik hissi sürerdi.
+
+**Tasarım turu.** D-068 §2 uygulandı: kompozisyon için Fable 5.1 danışıldı; kararlar 2, 3, 5 onun
+ikinci gözünden çıktı. **Alınmayan üç öneri:** soba + kömür kovası (maket sobayı arka salona
+koyuyor — B6b'nin işi, katta iki soba olurdu) · ayaklı kül tablası (D-032 nargileyi yaş sınırı için
+kaldırmıştı, küllük aynı sinyali geri getirir) · kümelerin üstüne sarkıt lamba (Fable'ın kendisi de
+"önce mockup onayı" dedi; B6b'de sorulacak).
+
+**HALI YOK kuralı korundu:** zemindeki tek dokuma parça kapı paspası (maket v13 de ön çeyreklerde
+halı taşımıyor).
+
+**Ölçüm.** Çizim çağrısı en yoğun kadrajda (cam kenarı) 104 → **167** (pencere dilimleri ve petek
+kaburgaları kırpıldıktan sonra; kırpma öncesi 177). Üçgen 10.502 → 12.310. Sol duvar ve giriş
+kadrajlarında fark +1 ve +18. Dekorun tek InstancedMesh'e toplanması (duvar/zemin deseninde olduğu
+gibi) Faz F'ye açık kalem olarak yazıldı.

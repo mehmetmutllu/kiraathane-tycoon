@@ -1,6 +1,6 @@
 import { Suspense, useEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Vector3, type Group, type MeshStandardMaterial } from 'three';
+import { Vector3, type Group } from 'three';
 import type { AreaSide } from '../../game/store';
 import { useGame, questFocusPos, LAYOUT, LAVABO, BAND, FLOOR_HALF, wallSpans, servicePlace, stationSoftMaxLevel, stationUpgradeCostAt, stationUpgradeUnlocked, tableSoftMaxLevel, tableUpgradeUnlockedIn, tableNextCost, openServices, doorX as doorAt, entranceAt, banketIslands, BANKET, WAITER_STATION, waiterStationOpen } from '../../game/store';
 import { economyConfig, lavaboUpgradeCost } from '../../config/economy.config';
@@ -19,6 +19,7 @@ import { ServicePoint } from './ServicePoint';
 import { Customers } from './Customers';
 import { Coins } from './Coins';
 import { Pad } from './Pad';
+import { Decor } from './Decor';
 import { perf } from '../../game/perf';
 import { devTimeScale } from '../../game/devSandbox';
 import { screenPointer } from '../../game/screenPointer';
@@ -567,68 +568,6 @@ function Ground() {
   );
 }
 
-// TV köşesi (1. alanın arka duvarı): askılı TV + EKRANDA MAÇ OYNAR (WP4, feedback §C16):
-// yeşil saha + orta çizgi + gezen top + üst skor bandı; ekran parlaklığı hafif titrer (canlı yayın hissi).
-function TvCorner() {
-  const ball = useRef<Group>(null);
-  const screen = useRef<MeshStandardMaterial>(null);
-  useFrame((st) => {
-    const t = st.clock.elapsedTime;
-    if (ball.current) {
-      // Top sahada elips çizer + ara sıra yön değişimi hissi (iki frekansın bileşimi).
-      ball.current.position.x = Math.sin(t * 0.9) * 0.5 + Math.sin(t * 2.3) * 0.08;
-      ball.current.position.y = Math.cos(t * 1.4) * 0.2;
-    }
-    if (screen.current) screen.current.emissiveIntensity = 0.5 + Math.sin(t * 7.3) * 0.06;
-  });
-  return (
-    // B3-2: eski yerleşimde TV arka duvardaydı; 34 × 34'te o duvar kalkınca boşlukta asılı kaldı
-    // (üstelik tam orta şeridin üstünde). Maket v13 onu SOL DUVARIN ön yarısına koyuyor
-    // ("ocak arkaya taşınınca boşalan duvar programı: askı rayı, konsol, televizyon, gazetelik").
-    // Duvar donanımının gerisi (ray · konsol · gazetelik) B6a'nın işi.
-    <group position={[-FLOOR_HALF - 0.35, 0, 3.5]} rotation={[0, Math.PI / 2, 0]}>
-      {/* duvar konsolu */}
-      <mesh castShadow position={[0, 1.55, 0]}>
-        <boxGeometry args={[0.12, 0.5, 0.12]} />
-        <meshStandardMaterial color={PALETTE.tvStand} />
-      </mesh>
-      {/* TV çerçevesi */}
-      <mesh castShadow position={[0, 1.85, 0.12]} rotation={[0.18, 0, 0]}>
-        <boxGeometry args={[1.5, 0.85, 0.1]} />
-        <meshStandardMaterial color={PALETTE.tvFrame} />
-      </mesh>
-      {/* ekran içeriği (saha + çizgi + top + skor bandı) — çerçeveye paralel grup */}
-      <group position={[0, 1.85, 0.18]} rotation={[0.18, 0, 0]}>
-        <mesh>
-          <boxGeometry args={[1.32, 0.68, 0.02]} />
-          <meshStandardMaterial ref={screen} color={PALETTE.tvScreen} emissive={PALETTE.tvScreen} emissiveIntensity={0.5} />
-        </mesh>
-        {/* orta çizgi + orta yuvarlak */}
-        <mesh position={[0, 0, 0.012]}>
-          <boxGeometry args={[0.02, 0.62, 0.004]} />
-          <meshStandardMaterial color="#e8f5ee" emissive="#e8f5ee" emissiveIntensity={0.3} />
-        </mesh>
-        <mesh position={[0, 0, 0.012]} rotation={[0, 0, 0]}>
-          <torusGeometry args={[0.12, 0.008, 6, 16]} />
-          <meshStandardMaterial color="#e8f5ee" emissive="#e8f5ee" emissiveIntensity={0.3} />
-        </mesh>
-        {/* gezen top */}
-        <group ref={ball} position={[0, 0, 0.016]}>
-          <mesh>
-            <sphereGeometry args={[0.035, 8, 8]} />
-            <meshStandardMaterial color="#ffffff" emissive="#ffffff" emissiveIntensity={0.5} />
-          </mesh>
-        </group>
-        {/* skor bandı (üst) */}
-        <mesh position={[-0.42, 0.27, 0.012]}>
-          <boxGeometry args={[0.42, 0.09, 0.004]} />
-          <meshStandardMaterial color="#1c2733" emissive="#3a546e" emissiveIntensity={0.4} />
-        </mesh>
-      </group>
-    </group>
-  );
-}
-
 /**
  * MENÜ PANOSU — servis noktasının arkasındaki duvarda. Plan §4'te tezgâhın **L6** basamağının
  * görsel karşılığı ("hazırlık adası + menü tahtası"): menü ancak menüyü hak edecek kadar
@@ -687,80 +626,6 @@ function MenuBoard() {
         <mesh position={[0, 0, 0.008]} rotation={[0, 0, 0.6]}>
           <boxGeometry args={[0.3, 0.04, 0.006]} />
           <meshStandardMaterial color={PALETTE.toastDark} />
-        </mesh>
-      </group>
-    </group>
-  );
-}
-
-function DecorProps() {
-  return (
-    <group>
-      {/* çöp kovaları — konumlar LAYOUT.decor'da (temas gölgesi de oradan okur).
-          1) kapı yanı, ÖN DUVAR DİBİ (2026-06-11: yürüme şeridinin ortasındaydı, takılan müşteri
-             onun üstünde titreyince "kova engelliyor" hissi verdi) — kuşaklı, tam detay.
-          2) mutfak ucu (ocak ile garson pad'i arasında, ikisine de girmez) — küçük, kuşaksız. */}
-      {LAYOUT.decor.trashCans.map((t) => (
-        <group key={`${t.pos[0]}${t.pos[2]}`} position={[t.pos[0], 0, t.pos[2]]} scale={t.scale}>
-          <mesh castShadow position={[0, 0.3, 0]}>
-            <cylinderGeometry args={[0.2, 0.16, 0.6, 12]} />
-            <meshStandardMaterial color={PALETTE.trashBody} metalness={0.3} roughness={0.6} />
-          </mesh>
-          {t.rings
-            ? [0.14, 0.32, 0.5].map((h) => (
-                <mesh key={h} position={[0, h, 0]} rotation={[Math.PI / 2, 0, 0]}>
-                  <torusGeometry args={[0.187, 0.008, 6, 14]} />
-                  <meshStandardMaterial color={PALETTE.trashLid} />
-                </mesh>
-              ))
-            : null}
-          <mesh castShadow position={[0, 0.63, 0]}>
-            <cylinderGeometry args={[0.21, 0.21, 0.06, 12]} />
-            <meshStandardMaterial color={PALETTE.trashLid} metalness={0.3} roughness={0.5} />
-          </mesh>
-          {t.rings ? (
-            <mesh castShadow position={[0, 0.69, 0]}>
-              <cylinderGeometry args={[0.03, 0.03, 0.05, 8]} />
-              <meshStandardMaterial color={PALETTE.trashLid} />
-            </mesh>
-          ) : null}
-        </group>
-      ))}
-      {/* iç mekân saksıları (köşeler; sokak saksısının iç versiyonu) */}
-      {LAYOUT.decor.planters.map(([px, , pz]) => (
-        <group key={`${px}${pz}`} position={[px, 0, pz]}>
-          <mesh castShadow position={[0, 0.22, 0]}>
-            <cylinderGeometry args={[0.18, 0.14, 0.44, 8]} />
-            <meshStandardMaterial color={PALETTE.planter} />
-          </mesh>
-          <mesh castShadow position={[0, 0.58, 0]}>
-            <sphereGeometry args={[0.24, 8, 8]} />
-            <meshStandardMaterial color={PALETTE.plant} />
-          </mesh>
-          <mesh castShadow position={[0, 0.78, 0]}>
-            <sphereGeometry args={[0.16, 8, 8]} />
-            <meshStandardMaterial color={PALETTE.plant} />
-          </mesh>
-        </group>
-      ))}
-      {/* duvar saati — B3-2: eski arka duvar kalktığı için havada asılı kalmıştı; sol duvara,
-          bulaşık modülünün ilerisindeki boş yüzeye taşındı (TV'nin karşı ucu). */}
-      <group position={[-FLOOR_HALF - 0.35, 2.1, 13.0]} rotation={[0, Math.PI / 2, 0]}>
-        <mesh rotation={[Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[0.18, 0.18, 0.05, 16]} />
-          <meshStandardMaterial color={PALETTE.wainscot} />
-        </mesh>
-        <mesh position={[0, 0, 0.03]} rotation={[Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[0.14, 0.14, 0.02, 16]} />
-          <meshStandardMaterial color="#f4efe2" />
-        </mesh>
-        <mesh position={[0, 0.04, 0.045]}>
-          <boxGeometry args={[0.015, 0.09, 0.01]} />
-          <meshStandardMaterial color="#2b2b2b" />
-        </mesh>
-        <mesh position={[0.03, 0, 0.045]} rotation={[0, 0, -Math.PI / 3]}>
-          <boxGeometry args={[0.012, 0.07, 0.01]} />
-          <meshStandardMaterial color="#2b2b2b" />
         </mesh>
       </group>
     </group>
@@ -1084,9 +949,8 @@ export function Scene() {
       <Ground />
       <Street />
       <Walls />
-      <TvCorner />
       <MenuBoard />
-      <DecorProps />
+      <Decor />
       <BanketIslands />
       <WaiterStation />
       <Stations />

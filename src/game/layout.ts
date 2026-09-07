@@ -6,7 +6,7 @@
  * yerleşimi kullanabilir; store.ts bu modülü yeniden dışa aktarır (eski importlar çalışır).
  */
 import type { Vec3 } from './types';
-import { MAX_AREAS, MAX_SERVICES, THE_SERVICE, areaTableSlots, areaTableStart, tableKindOfArea } from './world';
+import { MAX_AREAS, MAX_SERVICES, MAX_WAITERS, THE_SERVICE, areaTableSlots, areaTableStart, tableKindOfArea } from './world';
 import { SEATS_OF_KIND, areaOfTableIndex } from '../config/economy.config';
 import { buildNavGrid, findNavPath, type NavGrid, type NavSolid } from './nav';
 
@@ -398,8 +398,21 @@ const PLACE_BACK_BAND: ServicePlace = {
   dish: [-7.4, 0, -8.6],
   dishRot: 0,
   dishHalf: [1.0, 0.5],
-  waiterHome: [-11.0, 0, -7.2],
-  dishwasherHome: [-5.6, 0, -7.2],
+  /* BOŞTA BEKLEME NOKTALARI (B6a'da taşındı). Eski değerler (−11,0 / −7,2) ve (−5,6 / −7,2)
+     şeridin KUZEY yüzünün yükseltme noktası sırasının (z = −7,3 · x = ∓11,7 · ∓8,5 · ∓5,3)
+     üstüne düşüyordu: 1. garson masa 12'nin noktasına 0,71 br, bulaşıkçı ise x = −5,3'ünkine
+     **0,32 br** kalıyordu — boşta bekleyen personel oyuncunun yükseltme işaretinin üstünde
+     duruyordu (collision yok, tamamen görsel). Kuzey koridoru dar (stol sırası −6,75 ↔ tezgâh
+     yüzü −8,1) ve işaret sırası tam ortasında; üç garson o koridora yan yana SIĞMIYOR.
+     - Garsonlar adanın DIŞ ucundan (−12,3) sonraki batı cebine çekildi: tezgâhın batı ucunun
+       yanı, hiçbir masası/sandalyesi olmayan 4,7 br'lik boşluk. Üçü de (∓0,7 ritmiyle) hem
+       `waiter2` pad'inden hem servis yükseltme noktasından uzakta kalır.
+     - Bulaşıkçı işinin (bulaşık modülü) önünde kaldı ama İKİ işaret sütununun ARASINA
+       (x = −6,9) ve modülün ayak izinin dışına (z = −7,75) alındı.
+     Bekçi: `tests/layout-b6a.test.ts` — personel bekleme noktaları AÇIK hiçbir masanın
+     yükseltme noktasına 1,4 br'den yakın olamaz. */
+  waiterHome: [-14.6, 0, -6.6],
+  dishwasherHome: [-6.9, 0, -7.75],
   staffWalk: { a: [-14.6, 0, -9.6], b: [-11.4, 0, -9.6], face: 0 },
 };
 
@@ -430,6 +443,26 @@ export function servicePlace(areasOpen: number): ServicePlace {
 
 /** Servisin durduğu alan — o alan AÇIK olmak zorunda (yerleşim değişmezi; testli). */
 export const servicePlaceArea = (areasOpen: number): number => servicePlace(areasOpen).areaIndex;
+
+/**
+ * PERSONELİN BOŞTA BEKLEME NOKTALARI — tek kaynak. `waiterHome` bir NOKTA değil bir SIRANIN
+ * başıdır: i. garson ondan `WAITER_HOME_GAP` kadar doğuya durur. Bu ritim eskiden üç ayrı yerde
+ * (tick'in garson döngüsü, tick'in türetme sistemi, store'un ilk kurulumu) elle yazılıydı; test
+ * de aynı aritmetiği dördüncü kez yazmak zorunda kalıyordu. Yerleşim sorusunun cevabı burada
+ * durur, çağıranlar okur.
+ */
+export const WAITER_HOME_GAP = 0.7;
+export const waiterHomeAt = (place: ServicePlace, i: number): Vec3 => [
+  place.waiterHome[0] + i * WAITER_HOME_GAP,
+  0,
+  place.waiterHome[2],
+];
+
+/** Havuz tamamen doluyken sahnede olabilecek TÜM personel bekleme noktaları (bekçi testi bunu tarar). */
+export const staffIdleSpots = (place: ServicePlace): Vec3[] => [
+  ...Array.from({ length: MAX_WAITERS }, (_, i) => waiterHomeAt(place, i)),
+  [...place.dishwasherHome] as Vec3,
+];
 
 /**
  * TEK KAPI — maket v13: adım 1'de ilk salonun cephesinin ortasında (x = −8,5); **adım 2'de 2. Alan
@@ -505,23 +538,11 @@ export const LAYOUT = {
   // Sandalye ofsetleri (Y2 tek kaynak): Tables.tsx görsel sandalyeyi, store koltuk pozisyonunu
   // (ALL_TABLES.seats) AYNI listeden türetir — görsel sandalye = oturulabilir koltuk.
   chairSpots: CHAIR_SPOTS,
-  // SALT GÖRSEL DEKOR (collision yok). Konumlar LAYOUT'ta çünkü dünya yerleşimine ait; Scene.
-  // DecorProps buradan çizer. (G1 temas gölgesi denemesi geri alındı ama bu tek-kaynak sadeleşmesi
-  // kaldı — dekor konumu artık JSX'in içine gömülü değil.)
-  // r = zemindeki ayak izi yarıçapı (kova gövdesi / saksı ağzı).
-  decor: {
-    trashCans: [
-      { pos: [2.5, 0, 4.85] as Vec3, scale: 1, rings: true }, // kapı yanı (ön duvar dibi)
-      { pos: [-4.95, 0, -0.9] as Vec3, scale: 0.85, rings: false }, // mutfak ucu
-    ],
-    trashRadius: 0.21,
-    planters: [
-      [4.9, 0, -4.6],
-      [4.9, 0, 4.4],
-      [-5.0, 0, 2.9],
-    ] as Vec3[],
-    planterRadius: 0.18,
-  },
+  // (B6a) `LAYOUT.decor` KALKTI. Çöp kovaları ve saksılar burada, eski 21 × 21 katın
+  // koordinatlarıyla duruyordu ve kat 34 × 34'e büyüyünce kimse taşımamıştı. Yeni yeri
+  // **`src/config/decor.ts`** — dekorun geometriyle tek ortak yanı koordinat sistemi olması;
+  // collision'ı, nav'ı, kaydı yok. Ayrıldığı için artık A/B'de tek dosya değiştirilebiliyor
+  // (D-068 §3) ve `layout.ts` yalnız YÜRÜNEN dünyayı anlatıyor.
 } as const;
 
 /** Collision engeli: merkez (Vec3) + yarı-boyut [hx,hz]. */

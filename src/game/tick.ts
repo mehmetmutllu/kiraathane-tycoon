@@ -67,6 +67,7 @@ import {
   getNavGrid,
   navStep,
   servicePlace,
+  waiterHomeAt,
   entranceAt,
   streetAt,
   type RVec3,
@@ -717,7 +718,7 @@ function waiterSystem(c: TickCtx): void {
   const out: Waiter[] = [];
 
   for (let i = 0; i < wCount; i++) {
-    const home: Vec3 = [place.waiterHome[0] + i * 0.7, 0, place.waiterHome[2]];
+    const home: Vec3 = waiterHomeAt(place, i);
     const p = prev[i];
     const w: Waiter = p
       ? { pos: [...p.pos] as Vec3, tray: p.tray, trayFood: p.trayFood ?? 0 }
@@ -1153,9 +1154,8 @@ function deriveSystem(c: TickCtx): void {
   const out = deriveWorld(padsDone);
   // Personel pad'i bu karede tamamlandıysa aktörü HEMEN var et (GLOBAL havuz — B2).
   const svc = out.services[THE_SERVICE];
-  const home = place.waiterHome;
   while (waiters.length < svc.waiters)
-    waiters.push({ pos: [home[0] + waiters.length * 0.7, 0, home[2]] as Vec3, tray: 0, trayFood: 0 });
+    waiters.push({ pos: waiterHomeAt(place, waiters.length), tray: 0, trayFood: 0 });
   if (waiters.length > svc.waiters) waiters.length = svc.waiters;
   if (svc.hasDishwasher && !c.dishwasher)
     c.dishwasher = { pos: [...place.dishwasherHome] as Vec3, tray: 0, trayFood: 0 };

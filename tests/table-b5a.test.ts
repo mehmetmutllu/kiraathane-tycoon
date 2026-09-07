@@ -251,5 +251,6 @@ describe('B5a — CANLI: şeridin son birimine gerçekten oturuluyor', () => {
       expect(npc.pos[0]).toBeCloseTo(LAYOUT.tables[i].seats[k][0], 5);
       expect(npc.pos[2]).toBeCloseTo(LAYOUT.tables[i].seats[k][2], 5);
     }
-  });
+    // (bkz. layout-b32'nin aynı testi) kare-başı BFS'li canlı koşu 5 sn varsayılanına sığmıyor.
+  }, 30_000);
 });

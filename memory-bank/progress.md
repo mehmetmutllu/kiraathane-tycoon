@@ -1286,7 +1286,7 @@ yerleşim taşınırken de kullanılacak. Kullanım dosya başında.
 maket ölçeğine taşı (artık tek dosya: `layout.ts`), (3) kayıt v31 + migrasyon, (4) G4/G5 KayKit.
 Faz G artığı: UI Canvas'ları hâlâ eski düz ışıkla.
 
-## Faz B — Model geçişi 🔧 (8/10 · B0 + B1 + B2 + B3-1 + B3-2 + B5a + B5b + B4a bitti)
+## Faz B — Model geçişi 🔧 (9/10 · B0 + B1 + B2 + B3-1 + B3-2 + B5a + B5b + B4a + B6a bitti)
 > **Adım sırası (2026-09-07'de düzeltildi — D-063):**
 > B0 · B1 · B2 · B3-1 · B3-2 · **B5a** · **B5b** · **B4a** → **B6a** → **B6b**
 > (D-068: B4b ayrı adım olmaktan çıktı, kapsamı B6b'ye katıldı.)
@@ -1593,6 +1593,50 @@ BURADA oluyor** — B6 bitince "salon maket v13'e bakınca tanınıyor" ölçüt
    `store.ts` / `economy.config.ts` / `save.ts` / testler **bölünmez** (D-045).
 4. **Görsel kararlar tek "sonra" görüntüsüyle verilmez** (Faz G dersi): varyantlar aynı kadrajdan
    çekilip kullanıcıya sorulur.
+
+### B6a — ÖN ÇEYREKLERİN SANAT KATMANI ✅ (2026-09-07 gece) — karar **D-069**
+Maket v13/v14'ün a0 + a1 programı oyuna girdi. Ekran görüntüleri: `docs/gorsel/ss/b6a-*.png`
+(aynı kadrajın önce/sonrası: `b6a-once-soldivar.png` ↔ `b6a-sonra-soldivar-eskadraj.png`).
+
+- ✅ **Yeni dosya `src/config/decor.ts`** — dekorun TEK veri kaynağı (17 tür, `from` ile adım
+  katmanı). `LAYOUT.decor` KALKTI; "eski 21 × 21 koordinatları" açık kalemi taşımayla kapandı.
+  Çizim `src/components/three/Decor.tsx`'te; ikisi bilerek ayrı (D-068 §3 · A/B'ye hazır).
+- ✅ **Havada duran TV düzeltildi.** `TvCorner` y = 1,85'te, yani 1,2'lik kesik duvarın ÜSTÜNDE
+  duruyordu. Artık kendi **ayaklı ünitesinin** üstünde, maketin yerinde (sol duvar z = 10,8) ve
+  ancak ocak arka banda taşınınca (areasOpen ≥ 3) beliriyor.
+- ✅ **Sol duvar programı (a0 "ocak duvarı"):** aplik · konsol/büfe (radyo + bardak tepsisi +
+  saksı) · tablo · büyük saksı · TV ünitesi · aplik. Maket v14'ün "boşalan 13 birim"i doldu.
+- ✅ **Sağ duvar (a1 "cam kenarı"):** üç pencere (derin denizlik + açık doğrama + duvar tepesine
+  basılan cam bandı) · petek · denizlik çiçekleri · iki aplik · gazetelik.
+- ✅ **Giriş:** paspas + askılık + şemsiyelik **kapıyla birlikte taşınıyor** (`entryAtDoor`) ·
+  ayaklı lamba · büyük saksı · askı rayı · duvar saati · çöp kovaları.
+- ✅ **Koridor çerçevesi:** kapıdan kuzeye giden aksın iki yanında saksı (∓4,6 · z 13,4 ve 3,4).
+  "Boş ve düzensiz" hissini kıran şey obje sayısı değil, boşluğun hol · salon · duvar dibi diye
+  bölünmesi.
+- ✅ **Açık kalem kapandı — personel bekleme noktaları.** Arka bandın `waiterHome`'u (−11,0/−7,2)
+  masa 12'nin yükseltme noktasına **0,71 br**, `dishwasherHome` ise x = −5,3'ünkine **0,32 br**
+  kalıyordu (ikincisi kayıtlarda yoktu, ölçümde çıktı). Garsonlar adanın dış ucundan sonraki batı
+  cebine (−14,6/−6,6), bulaşıkçı iki işaret sütununun arasına (−6,9/−7,75) çekildi. Ritim artık
+  tek kaynakta: `waiterHomeAt` / `staffIdleSpots` (tick · store · test aynı yerden okuyor).
+- ✅ **Açık kalem kapandı — `zone3` bekletmesi.** `simulate.ts`'e **kalıcı "EN UZUN BEKLEME"
+  bekçisi** eklendi (iki ardışık ALIM arası boşluk; milestone listesi zincirin tamamını taşımıyor).
+  Ölçüm 26,9 dk'yı birebir üretti. `zone3` 3400 → **2500₺** (fillRate 971 → 714): gerekçe fiyat
+  kırmak değil, D-066'nın bulgusunun alan pad'ine de uygulanması — **alan MEKÂN satar, gelir
+  satmaz**; oranı büyüten şey arkasından gelen TEZGÂH (L4). Ölçülen: boşluk **26,9 → 19,6 dk**,
+  zincir toplamı Normal 5,21 → 5,08 sa, `zone3` öncesindeki HER satır birebir aynı.
+- ⚠️ **Kalan iki bekleme ölçütü aşıyor ve BİLEREK bırakıldı:** `servis L6` 23,4 dk (merdivenin son
+  basamağı — B4 "eğrinin dikliği çarpandan belirleyici" dedi, yassıltmak platoyu geri getirir) ve
+  `masa seviyesi L4` 21,4 dk (**model kusuru**: sim tüm masaları TEK kalemde yükseltiyor, oyunda
+  masa-başı alınıyor). İkisi de simülasyon çıktısında görünür durumda.
+- ✅ **Bekçi testleri** `tests/layout-b6a.test.ts` (9): personel bekleme noktası ↔ yükseltme
+  işareti/pad mesafesi · dekor kilitli alana sızmıyor · dekor işaretin üstünde durmuyor · sol duvar
+  programı ancak servis taşınınca beliriyor · duvara asılan her şey `WALL_H`'ın altında.
+- 🐞→✅ İki CANLI nav testi (b32 · b5a) 5 sn varsayılanını aşıyordu (tabanda da: 5,4 ve 4,6 sn);
+  iddialar değişmeden açık zaman bütçesi verildi.
+- **Doğrulama:** vitest **279/279** · smoke **28/28** · build + `tsc -b` temiz · eslint 20
+  (tabanla birebir aynı, hepsi eski).
+- **Perf (NPC/para kapalı, aynı kadrajlar):** sol duvar 119 → 120 çağrı · **cam kenarı 104 → 167**
+  · giriş 162 → 180. Üçgen en fazla +1.808. Dekorun tek InstancedMesh'e toplanması Faz F'ye kalem.
 
 **Bitti sayılır:** maketin gezilebilir altı adımı sırayla açılıyor + merdiven konuşuyor ·
 **salon maket v13'e bakınca tanınıyor** (B6'nın kapısı) · `npm run test` yeşil, test sayısı

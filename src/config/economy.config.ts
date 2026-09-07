@@ -534,7 +534,14 @@ export const economyConfig = {
 
     // --- BÖLÜM 3 · 3. Alan + TEZGÂH (45 dk - 2,5 sa) ---
     // Adı artık "Tost Salonu" DEĞİL: tost bir salondan değil tezgâhın L5'inden gelir.
-    { id: 'zone3', label: '3. Salon', cost: 3400, fillRate: 971, optional: false, area: 0, // ~3.5sn
+    // FİYAT (B6a): 3400 → **2500**. Ölçüm (`simulate.ts` "EN UZUN BEKLEME"): 3400₺ Normal profilde
+    // **26,9 dk** hiçbir şeyin alınamadığı boşluk açıyordu — "20 dk'yı aşan tek alım kalmasın"
+    // ölçütünü aşan tek GERÇEK nokta (B4 raporu §7'de kayda geçmişti). Gerekçe fiyat kırmak değil,
+    // B5b'nin bulgusunun alan pad'ine de uygulanması: **alan MEKÂN satar, gelir satmaz** — 3. Alan
+    // açıldığında oran değişmez (gelir `min(talep, arz, taşıma)` ile kelepçeli, açılan masa arzı
+    // büyütmez); oranı büyüten şey hemen arkasından gelen TEZGÂH'tır (L4). 3400 bu pad'i bir gelir
+    // çarpanı gibi fiyatlıyordu; 2500 onu sattığı şeye göre fiyatlar. Ölçülen: boşluk 26,9 → 19,8 dk.
+    { id: 'zone3', label: '3. Salon', cost: 2500, fillRate: 714, optional: false, area: 0, // ~3.5sn
       requires: { prev: ['z2table4'] }, effect: { type: 'unlockArea' } },
     { id: 'z3table2', label: '2. Masa', cost: 900, fillRate: 257, optional: false, area: 2, // ~3.5sn
       requires: { prev: ['zone3'] }, effect: { type: 'addTable' } },

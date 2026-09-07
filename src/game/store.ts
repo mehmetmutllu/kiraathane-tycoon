@@ -39,6 +39,7 @@ import {
   LAYOUT,
   openServices,
   servicePlace,
+  waiterHomeAt,
 } from './layout';
 import { deriveWorld, defaultFloorTheme, MAX_AREAS, MAX_SERVICES, roomOpen, THE_SERVICE, type World } from './world';
 // Dünya modeli (ALAN · SERVİS · MASA · ODA) Faz B1'de world.ts'e ayrıldı; store aynı kapıdan sunar.
@@ -85,6 +86,9 @@ export {
   banketIslands,
   WAITER_STATION,
   waiterStationOpen,
+  waiterHomeAt,
+  staffIdleSpots,
+  WAITER_HOME_GAP,
   doorX,
   entranceAt,
   streetAt,
@@ -438,7 +442,7 @@ export const useGame = create<GameState>((set, get) => ({
       npcCount: 0,
       // GLOBAL havuz: tutulmuş garson sayısı kadar aktör, bekleme noktaları 0.7 br arayla.
       waiters: Array.from({ length: world.services[THE_SERVICE].waiters }, (_, i) => ({
-        pos: [initPlace.waiterHome[0] + i * 0.7, 0, initPlace.waiterHome[2]] as Vec3,
+        pos: waiterHomeAt(initPlace, i),
         tray: 0,
         trayFood: 0,
       })),
