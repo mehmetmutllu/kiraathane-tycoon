@@ -3,79 +3,91 @@ import { BoxGeometry, Color, MeshStandardMaterial, Object3D, type InstancedMesh 
 import type { WallTheme } from '../../config/palette';
 
 /**
- * FAZ G3 — DUVAR BİTİMİ (plan §G3).
+ * wallPanel.tsx — DUVAR, **maket v13'ün `wall()` fonksiyonunun transkripsiyonu** (BM · D-070).
  *
- * Teşhis: duvar iki düz kuşaktı (krem badana + lambri) ve kutunun kendisi hiçbir yerde
- * BİTMİYORDU — ne zeminle buluştuğu yerde, ne lambrinin üstünde, ne de tepesinde. Sonuç:
- * "kutuya renk sürülmüş" görüntüsü. Gerçek bir odada bu üç hattın hepsinde çıkıntılı bir
- * profil vardır ve göz mekânı oradan okur.
+ * Kullanıcı 2026-09-07: *"duvarlar maketteki gibi değil … duvar birleşimleri hiçbir şey ora gibi
+ * değil"*. Ölçüm doğruladı — oyunun duvarı maketin küçültülmüşü değil, BAŞKA bir duvardı:
  *
- * G3 üç ince profil ekler:
- *  1. **Süpürgelik** (0,08) — zemin↔duvar birleşimi. Zeminin ALTINDAN başlar (y=0'da eş düzlem
- *     yüz kalmasın → z-fighting yok) ve duvardan en çok o taşar.
- *  2. **Lambri üstü çıta** (0,04) — kuşağı üstten kapatır.
- *  3. **Kartonpiyer/üst kapak** (0,05 + 0,015 taşma) — duvar tepesi; gövdenin üst yüzünü gömer.
+ * | | maket v13 | oyun (G3) |
+ * |---|---|---|
+ * | yükseklik | **3,20** | 1,20 |
+ * | lambri | **0,90** | 0,50 |
+ * | katman | gövde 0,18 · lambri 0,22 · çıta 0,26 | gövde + lambri + süpürgelik + çıta + kartonpiyer |
+ * | çıtanın rengi | **KOYU** (doorWood) | AÇIK (trim) |
  *
- * ÜÇÜ DE TEK TON (`theme.trim`, badanadan AÇIK). İlk denemede süpürgelik ve çıta plandaki koyu
- * ahşaptı (#5d4037) ve ölçüldü: lambri kuşağıyla TEK bir koyu kütleye karışıyorlar, telefon
- * kadrajında hiç okunmuyorlar (`docs/gorsel/ss/g3-karsilastirma.png`, A↔B↔C). Gölge olmadığı
- * için (D-054) yatay hattı ayıran tek sinyal DEĞER farkı.
+ * G3 (2026-09-06) duvara süpürgelik + kartonpiyer eklemişti; gerekçesi "kutu hiçbir yerde
+ * bitmiyor"du ve o teşhis 1,2'lik KESİK duvar için doğruydu. Maketin 3,2'lik duvarı bu profillere
+ * ihtiyaç duymuyor: orada duvarı bitiren şey lambri kuşağının kendisi ve üstündeki KOYU çıta.
+ * D-070 gereği maket kazanır; G3'ün beş katmanı maketin üç katmanına indi.
  *
- * ÇIKINTI SIRASI (yüz başına): gövde 0 < lambri 0,02 < kartonpiyer 0,045 < çıta 0,05 <
- * süpürgelik 0,06. Kademeli olduğu için hiçbir yüz eş düzlemde kalmaz.
+ * MAKETİN KODU (docs/maket/maket-v13.html · `wall`):
+ *   box(0.18, h - 0.9, len, C.wallCream)  @ y = 0.9 + (h - 0.9) / 2   → badana gövdesi
+ *   box(0.22, 0.9,     len, C.wain)       @ y = 0.45                  → lambri kuşağı
+ *   box(0.26, 0.08,    len, C.doorWood)   @ y = 0.94                  → lambri üstü çıta
+ * Lambri ve çıta gövdeden KALIN (0,22 · 0,26 ↔ 0,18) — yani gövdeden iki yüzde de taşarlar;
+ * duvarın okunan üç şeridi bu kalınlık farkından doğuyor.
  *
- * Maliyet: TÜM duvarlar + profiller **TEK InstancedMesh** (1 draw call). Öncesinde parça
- * başına 2 mesh vardı (3 alanda ~26 draw call) ve profillerle 5 kata çıkacaktı. Matrisler
- * ve renkler mount'ta BİR KEZ yazılır (floorPattern.tsx ile aynı desen; drei `<Instances>`
- * her kare yeniden hesapladığı için kullanılmıyor).
- *
- * TEK KAYNAK: mağaza önizlemesi (`SalonSlice.WallBack`) de bu bileşeni kullanır — mağazada
- * gördüğün duvar salondakiyle birebir aynı (G2'de zemin için kurulan kural).
+ * TEMA: maketin tek duvarı var, oyunun üç teması (mağazadan alınıyor). Eşleme: badana → `cream`,
+ * lambri → `wainscot`, çıta → yeni `rail` (maketin `doorWood`'u; lambriden bir tık KOYU).
  */
 
-/** Duvar yüksekliği. Kesit duvarı: kamera tepeden baktığı için tavana kadar çıkmaz. */
-export const WALL_H = 1.2;
-/** Lambri kuşağının yüksekliği (duvarın alt bandı). */
-export const WAINSCOT_H = 0.5;
+/** Duvar yüksekliği — maket v13 `WALL_H`. */
+export const WALL_H = 3.2;
+/** Lambri kuşağının yüksekliği — maket v13 `wall()` içindeki 0,9. */
+export const WAINSCOT_H = 0.9;
 
-const SKIRT_H = 0.08; // süpürgeliğin zemin üstünde GÖRÜNEN yüksekliği
-const SKIRT_SINK = 0.02; // zeminin altına gömülen pay (eş düzlem yüz olmasın)
-const RAIL_H = 0.04; // lambri üstü çıta
-const CORNICE_H = 0.05; // üst kapak şeridinin duvara oturan payı
-const CORNICE_LIP = 0.015; // duvar tepesini aşan pay (gövdenin üst yüzü gömülsün → z-fighting yok)
+/** Katman kalınlıkları (maketin kendi sayıları). Gövde en ince, çıta en kalın. */
+const T_BODY = 0.18;
+const T_WAINSCOT = 0.22;
+const T_RAIL = 0.26;
+/** Çıtanın yüksekliği ve merkez y'si — maket: box(...,0.08,...) @ y = 0.94. */
+const RAIL_H = 0.08;
+const RAIL_Y = 0.94;
 
-const OUT_WAINSCOT = 0.02;
-const OUT_CORNICE = 0.045;
-const OUT_RAIL = 0.05;
-const OUT_SKIRT = 0.06;
+/**
+ * ANA KAPI BOŞLUĞU — maket v13'ün ana giriş bloğu (`DH = 2.65`, söveler dx ∓2,2).
+ *
+ * Duvar 1,2'den 3,2'ye çıkınca kapı boşluğu duvarla birlikte 3,2'ye uzamıştı: lento duvarın
+ * tepesine yapışıyor, kapının üstünde maketteki **alınlık** hiç doğmuyordu. Makette kapı camla
+ * aynı hizada (2,65) biter ve üstündeki 0,55'lik badana şeridi cepheyi tamamlar.
+ *
+ * `half` yalnız GÖRSEL kesme genişliğidir (nav ve NPC girişi `entranceAt`'tan gelir), ama tek
+ * yerde durur: `Scene.Walls` da `tests/layout-b32` de buradan okur (D-015 — sayıyı iki yere yazma).
+ */
+export const DOOR = { half: 2.2, height: 2.65 } as const;
 
-/** Bir duvar parçasının taban dikdörtgeni (merkez + ölçüler) ve teması. */
-export type WallSlab = { x: number; z: number; w: number; d: number; theme: WallTheme };
+/**
+ * Bir duvar parçasının taban dikdörtgeni (merkez + ölçüler) ve teması.
+ * `h` verilmezse `WALL_H`. İnce eksen (w ya da d, hangisi küçükse) KALINLIKTIR; katmanlar o
+ * ekseni kendi kalınlıklarıyla değiştirir, uzun eksen olduğu gibi kalır.
+ */
+export type WallSlab = { x: number; z: number; w: number; d: number; theme: WallTheme; h?: number };
 
 /** Çizilecek renkli kutu — merkez (x,y,z) + kenar uzunlukları. */
 export type WallBox = { x: number; y: number; z: number; w: number; h: number; d: number; color: string };
 
 /**
- * Bir duvar parçasını 5 renkli kutuya çevirir: gövde · lambri · süpürgelik · çıta · kartonpiyer.
+ * Bir duvar parçasını maketin ÜÇ kutusuna çevirir: gövde · lambri · çıta.
  * SAF fonksiyon (birim testi var); çizim `WallPanels`'da.
  */
-export function wallBoxes({ x, z, w, d, theme }: WallSlab): WallBox[] {
-  // out: her YÜZDEN dışa taşma; yTop/yBot: kutunun dikey aralığı.
-  const box = (out: number, yBot: number, yTop: number, color: string): WallBox => ({
+export function wallBoxes({ x, z, w, d, theme, h: slabH }: WallSlab): WallBox[] {
+  const H = slabH ?? WALL_H;
+  const alongX = w >= d; // uzun eksen x mi? (yatay duvar) — değilse z (düşey duvar)
+  const len = alongX ? w : d;
+  // Katman: kalınlığı ince eksene yaz, uzunluğu koru.
+  const layer = (t: number, yBot: number, yTop: number, color: string): WallBox => ({
     x,
     y: (yBot + yTop) / 2,
     z,
-    w: w + 2 * out,
+    w: alongX ? len : t,
     h: yTop - yBot,
-    d: d + 2 * out,
+    d: alongX ? t : len,
     color,
   });
   return [
-    box(0, WAINSCOT_H, WALL_H, theme.cream), // badana gövdesi
-    box(OUT_WAINSCOT, 0, WAINSCOT_H, theme.wainscot), // lambri kuşağı
-    box(OUT_SKIRT, -SKIRT_SINK, SKIRT_H, theme.trim), // süpürgelik
-    box(OUT_RAIL, WAINSCOT_H, WAINSCOT_H + RAIL_H, theme.trim), // lambri üstü çıta
-    box(OUT_CORNICE, WALL_H - CORNICE_H, WALL_H + CORNICE_LIP, theme.trim), // kartonpiyer
+    layer(T_BODY, WAINSCOT_H, H, theme.cream), // badana gövdesi
+    layer(T_WAINSCOT, 0, WAINSCOT_H, theme.wainscot), // lambri kuşağı
+    layer(T_RAIL, RAIL_Y - RAIL_H / 2, RAIL_Y + RAIL_H / 2, theme.rail), // lambri üstü çıta (KOYU)
   ];
 }
 
@@ -83,7 +95,7 @@ export function wallBoxes({ x, z, w, d, theme }: WallSlab): WallBox[] {
 // materyal beyaz olduğundan sonuç doğrudan instance rengidir). Modül seviyesinde paylaşılır.
 const UNIT_BOX = new BoxGeometry(1, 1, 1);
 
-/** Verilen duvar parçalarını (gövde + üç profil) tek InstancedMesh olarak çizer. */
+/** Verilen duvar parçalarını (gövde + lambri + çıta) tek InstancedMesh olarak çizer. */
 export function WallPanels({ slabs }: { slabs: WallSlab[] }) {
   const boxes = useMemo(() => slabs.flatMap(wallBoxes), [slabs]);
   const material = useMemo(() => new MeshStandardMaterial({ color: '#ffffff' }), []);

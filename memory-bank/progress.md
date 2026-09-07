@@ -1315,6 +1315,16 @@ Faz G artığı: UI Canvas'ları hâlâ eski düz ışıkla.
 > **Sonra:** `simulate.ts` bir kez yeniden ölçülür, ara seviyeler maketin bitmiş hâline göre
 > geriye dönük ayarlanır (masa boyu dahil — D-070), sonra kalan işler EKSİKSİZ tamamlanır.
 >
+> **BM adım 1 ✅ (2026-09-07) — DUVAR.** `wallPanel.tsx` maketin `wall()`'ı oldu: 3,20 yükseklik ·
+> 0,90 lambri · üç katman (0,18 / 0,22 / 0,26) · KOYU çıta (`WallTheme.rail` eklendi). G3'ün
+> süpürgelik+kartonpiyeri kalktı (1,2'lik kesik duvarın çözümüydü). `decor.ts` asma bandı maketin
+> değerlerine çekildi (aplik 2,05 · tablo 1,95 · saat 2,20 · ray 1,85 · pencere 1,15…2,80).
+> **Bulgu: `WALL_H = 1.2`'nin gerekçesi (kamera) doğrulanmadı** — maketin kamerası da 44°, tek fark
+> mesafe; 3,2 duvar hiçbir kadrajı kapatmadı. B6a'nın "ağır öğe duvardan iner" kuralı gereksizleşti.
+> vitest 277/277 · smoke 28/28 · tsc temiz. Rapor: `docs/bm-adim1-duvar.html`.
+> **BM adım 2 (sırada): MASA ÖLÇÜLERİ** — maket 1,75 × 1,75 @ 0,75; oyunda ~0,9 × 0,9 @ 0,50 ve
+> seviyeye göre üç boy. Maket bitmiş hâl → en üst kademe maketin ölçüsü, ara kademeler geriye türer.
+>
 > Eski B0-B6a kayıtları aşağıda duruyor (yapılan iş silinmiyor); BM onlarla çelişirse maket kazanır.
 > **Adım sırası (2026-09-07'de düzeltildi — D-063):**
 > B0 · B1 · B2 · B3-1 · B3-2 · **B5a** · **B5b** · **B4a** → **B6a** → **B6b**
@@ -1688,8 +1698,21 @@ tek yönlü sıra. Ölçü hedefi kullanıcı kararıyla **A**: kat 34 × 34, du
   (PCFSoft · 2048 · bias −0,0012 · normalBias 0,14 · ortografik ±30 · güneş [14,26,16]); mağaza
   önizlemeleri gölgesiz. Zemin **düz ahşap #b98a5a** (G2 plank deseni kalktı; plank 'ceviz'de sürüyor).
   Duvar/lambri renkleri zaten maketle aynıydı.
-- ⏳ **BM adım 1 — DUVAR:** `worktree-maket-tasima` dalında hazır (3,20 · lambri 0,90 · üç katman),
-  main'e ALINACAK. Dal main'in gerisinde → çakışma beklenir (`wallPanel` · `Decor` · `palette`).
+- ✅ **BM adım 1 — DUVAR (main'e ALINDI):** `worktree-maket-tasima` merge edildi. Beklenen çakışma
+  ÇIKMADI (dalın hunk'ları `MOUNT`/`LEFT_WALL`/`RIGHT_WALL`/`ENTRY` + `WallTheme`, main'inkiler
+  `CORRIDOR` + `FLOOR_THEMES` + `LIGHTING` — hiç kesişmediler); yalnız `activeContext.md` çakıştı,
+  main'in güncel bölümü tutuldu. Duvar: 3,20 · lambri 0,90 · üç katman 0,18/0,22/0,26 · KOYU çıta.
+  Dekorun asma bandı maketin değerlerinde (aplik 2,05 · tablo 1,95 · saat 2,20 · ray 1,85 ·
+  pencere 1,15…2,80).
+  - **Merge'ün AÇTIĞI kusur kapatıldı:** duvar 1,2 → 3,2 olunca kapı boşluğu da 3,2'ye uzamış,
+    lento duvarın tepesine yapışmıştı. Maketin giriş bloğu transkribe edildi: kapı **2,65** ·
+    söveler ∓**2,2** (0,4 × 0,42) · lento 2,73 · **ALINLIK 2,65…3,20** (badana, duvar hattında,
+    gövde kalınlığı 0,18) · üst kordon 3,15. `DOOR = { half, height }` `wallPanel.tsx`'te TEK
+    kaynak — `Scene.Walls` da `tests/layout-b32` de oradan okur (eskiden 1,3 iki yere yazılıydı).
+  - **Bayat kayıt temizlendi:** `decor.ts` başlığındaki "DUVAR 1,2 BİRİM" ve "düşey ölçek ×0,72"
+    gerekçeleri geçersiz işaretlendi (bu ikisi B6b'de üç turluk yanlış yönlendirmenin kaynağıydı).
+  - **vitest 279/279 · smoke 28/28 · tsc temiz · build temiz.** Kareler: `docs/gorsel/ss/bmm-*.png`
+    (`node tools/shot-kadraj.mjs` — plan · salon · kapı · arka bant, dev sunucusu açıkken).
 - ⏳ BM adım 3 arka bant + odalar · adım 4 kamera · **DONDURMA + maket arşiv damgası**.
 - ⏳ Sonra: `simulate.ts` TEK KEZ yeniden ölçülür (masa aralığı 3,20 → 6,40 oldu, eski denge
   ölçümleri geçersiz), ardından Faz 4 → 5 → 7 → 8.

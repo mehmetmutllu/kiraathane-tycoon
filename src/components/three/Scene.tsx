@@ -8,7 +8,7 @@ import { areaOfTable, isCounter, THE_SERVICE } from '../../game/world';
 import { SceneLights } from './lights';
 import { GroundMarker } from './GroundMarker';
 import { FloorPattern } from './floorPattern';
-import { WALL_H, WallPanels, type WallSlab } from './wallPanel';
+import { DOOR, WALL_H, WallPanels, type WallSlab } from './wallPanel';
 import { PALETTE, FLOOR_THEMES, WALL_THEMES, LIGHTING } from '../../config/palette';
 import { Player } from './Player';
 import { Waiter } from './Waiter';
@@ -664,9 +664,9 @@ function Walls() {
   const wallThemeByArea = useGame((s) => s.wallThemeByArea);
   const themeOf = (z: number) => WALL_THEMES[wallThemeByArea[z] ?? 'krem'] ?? WALL_THEMES.krem;
   const m = 0.5; // alan kenarı ile dış duvar arası pay (oyuncu kelepçe standoff'u ile birebir)
-  const h = WALL_H; // G3: yükseklik + profiller wallPanel.tsx'te (mağaza önizlemesiyle ortak)
+  const h = WALL_H; // BM: yükseklik + katmanlar wallPanel.tsx'te (mağaza önizlemesiyle ortak)
   const t = 0.2;
-  const doorHalf = 1.3;
+  const doorHalf = DOOR.half;
   // TEK KAPI. B3-2: 2. Alan açılınca cephenin ortasına kayar (maket v13 adım 2) → `doorAt`.
   const dx0 = doorAt(areasOpen);
   type Piece = WallSlab;
@@ -715,18 +715,30 @@ function Walls() {
       <WallPanels slabs={pieces} />
       <BackBand areasOpen={areasOpen} />
       <LavaboFront />
-      {/* kapı sövesi + çerçevesi (ön duvarın TAMAMEN önünde — z-fighting yok) */}
+      {/* ANA GİRİŞ — maket v13'ün giriş bloğunun transkripsiyonu (BM adım 1).
+          Sıra aşağıdan yukarı: iki söve (0…2,65) · lento (2,65) · ALINLIK (2,65…3,20) · üst kordon.
+          Alınlık olmadan kapı boşluğu duvarla birlikte 3,2'ye uzuyor ve cephe tepesinden "kesik"
+          okunuyordu. Söve/lento/kordon duvarın önünde (z + 0,22) → z-fighting yok; alınlık ise
+          duvar HATTINDA ve gövde kalınlığında, çünkü o duvarın kendi devamı. */}
       <group>
-        <mesh position={[dx0, h - 0.12, frontEdgeZ + 0.22]}>
-          <boxGeometry args={[doorHalf * 2 + 0.3, 0.24, 0.12]} />
+        <mesh position={[dx0, (DOOR.height + h) / 2, frontEdgeZ]} castShadow receiveShadow>
+          <boxGeometry args={[doorHalf * 2 + 0.4, h - DOOR.height, 0.18]} />
+          <meshStandardMaterial color={themeOf(0).cream} />
+        </mesh>
+        <mesh position={[dx0, DOOR.height + 0.08, frontEdgeZ + 0.22]}>
+          <boxGeometry args={[doorHalf * 2 + 0.6, 0.16, 0.34]} />
           <meshStandardMaterial color={PALETTE.lintel} />
         </mesh>
-        <mesh position={[dx0 - doorHalf, h / 2, frontEdgeZ + 0.22]}>
-          <boxGeometry args={[0.12, h, 0.12]} />
+        <mesh position={[dx0, h - 0.05, frontEdgeZ + 0.22]}>
+          <boxGeometry args={[doorHalf * 2 + 0.6, 0.1, 0.34]} />
           <meshStandardMaterial color={PALETTE.doorWood} />
         </mesh>
-        <mesh position={[dx0 + doorHalf, h / 2, frontEdgeZ + 0.22]}>
-          <boxGeometry args={[0.12, h, 0.12]} />
+        <mesh position={[dx0 - doorHalf, DOOR.height / 2, frontEdgeZ + 0.22]}>
+          <boxGeometry args={[0.4, DOOR.height, 0.42]} />
+          <meshStandardMaterial color={PALETTE.doorWood} />
+        </mesh>
+        <mesh position={[dx0 + doorHalf, DOOR.height / 2, frontEdgeZ + 0.22]}>
+          <boxGeometry args={[0.4, DOOR.height, 0.42]} />
           <meshStandardMaterial color={PALETTE.doorWood} />
         </mesh>
       </group>

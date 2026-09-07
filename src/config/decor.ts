@@ -11,13 +11,14 @@
  * Fable 5.1 ikinci görüşü (D-068 §2). Program birebir kopyalanmadı; maket ile oyunun İKİ SERT
  * FARKI var ve ikisi de dekoru doğrudan bağlıyor:
  *
- *  1. **DUVAR 1,2 BİRİM** (`wallPanel.WALL_H`), makette 3,2. Oyunun duvarı bir KESİT duvarıdır;
- *     kamera tepeden baktığı için tavana çıkmaz. Maketin y = 1,85…2,20'deki duvar programı bu
- *     duvara SIĞMAZ. Buradan çıkan asıl karar: **ağır öğeler duvardan indi, zemine oturdu.**
- *     TV ve konsol artık asılı değil AYAKLI — 45°'lik kamera bir dolabın ÜST YÜZEYİNİ, dar bir
- *     duvar şeridinden çok daha iyi okuyor, ve "havada obje" kusuru kökten kapanıyor. (Oyunda TV
- *     bugüne kadar y = 1,85'te, yani 1,2'lik duvarın ÜSTÜNDE havada duruyordu.)
- *     Duvarda kalanlar yalnız İNCE öğeler: askı rayı · tablo · aplik · saat · pencere.
+ *  1. ~~**DUVAR 1,2 BİRİM**~~ → **BM/D-070 ile GEÇERSİZ.** Duvar artık maketin 3,20'si
+ *     (`wallPanel.WALL_H`) ve asma bandı da maketin bandı (`MOUNT` · `WINDOW` aşağıda).
+ *     B6a'nın "1,2'lik kesik duvara maketin y = 1,85…2,20 programı sığmaz → ağır öğeler
+ *     duvardan insin" kuralının GEREKÇESİ ÖLÇÜLDÜ ve doğrulanmadı: maketin kamerası da 44°,
+ *     tek fark mesafe; 3,2'lik duvar hiçbir kadrajı kapatmıyor. Ağır öğeler (TV · konsol)
+ *     şimdilik AYAKLI kalıyor — bu artık bir kısıt değil, bir tercih; BM arka bant adımında
+ *     maketin duvar programına dönmek serbest.
+ *     Duvarda duranlar: askı rayı · tablo · aplik · saat · pencere.
  *  2. **KAMERA −z'ye BAKAR** (oyuncunun 8,5 arkasından, 45°). Üç sonucu var:
  *     - ÖN duvarın (z = +17,5) İÇ yüzü hiçbir kadrajda görünmez; kamera hep onun iç tarafındadır.
  *       Maketin "giriş holü" duvar öğeleri (tablo · saat) oraya asılırsa hiç okunmaz → giriş
@@ -27,8 +28,9 @@
  *     - Kapıdan kuzeye giden koridoru iki yandan saksıyla çerçevelemek, "hol ↔ salon" ayrımını
  *       tek hamlede kuruyor: boşluğu kıran şey obje SAYISI değil, boşluğun BÖLGELERE ayrılması.
  *
- * DÜŞEY ÖLÇEK: maketin düşey ölçüleri ~**0,72** ile çarpılır (maket insanı ~1,8 · oyun karakteri
- * 1,3 · maket masası 0,72 · oyun masası 0,52). PLAN (x, z) ölçüleri **1:1** — kat ikisinde de 34 × 34.
+ * DÜŞEY ÖLÇEK: ~~×0,72~~ **KALKTI (D-070/D-072/D-073).** Maket BİTMİŞ HÂLDİR ve ölçü katmanı
+ * onun sayılarıyla donar: duvar 3,20 · lambri 0,90 · masa 1,75 @ 0,75. Düşey de yatay da **1:1**
+ * — kat ikisinde de 34 × 34. Yeni dekor ölçüsü maketten OKUNUR, çarpanla türetilmez.
  *
  * HALI YOK: kullanıcı üç kez reddetti ("zemini tek renk ayarla yeter"); maket v13 de ön
  * çeyreklerde halı taşımaz. Zemindeki tek dokuma parça **kapı paspasıdır** ve o da kapıyla
@@ -51,10 +53,19 @@ export const WALL_FACE = FLOOR_HALF + 0.32;
 export const WALL_BACK = FLOOR_HALF + 0.15;
 
 /**
- * KESİK DUVARIN ASMA BANDI. Altında lambri kuşağı (0…0,50) + üstü çıtası (0,54), üstünde
- * kartonpiyer (1,15…1,20) var; asılan hiçbir şey bu iki profilin üstüne binmemeli.
+ * DUVARIN ASMA BANDI — **BM (D-070) ile maketin değerlerine çekildi.**
+ *
+ * B6a'da duvar 1,2 birimlik KESİK bir duvardı ve asma bandı 0,86…1,00 idi; maketin y = 1,85…2,20
+ * arasındaki programı oraya sığmıyordu, bu yüzden ağır öğeler duvardan indirilmişti. BM duvarı
+ * maketin 3,2'sine taşıyınca o kısıt KALKTI: maketin kendi asma yükseklikleri kullanılabilir.
+ *
+ * MAKETİN DEĞERLERİ (`maket-v13.html`): aplik 2,05 · tablo 1,95–2,15 · duvar saati 2,20 ·
+ * askı rayı 1,85 · TV 2,02 · pencere denizliği 1,15, pencere başı 2,80.
+ * Lambri kuşağı 0…0,90 ve üstündeki çıta 0,90…0,98 — asılan hiçbir şey oraya binmemeli.
  */
-export const MOUNT = { mid: 0.86, high: 1.0 } as const;
+export const MOUNT = { mid: 1.95, high: 2.05, clock: 2.2, rail: 1.85 } as const;
+/** Maketin pencere bandı (`windowWall`): denizlik 1,15 · pencere başı 2,80. */
+export const WINDOW = { sill: 1.15, top: 2.8 } as const;
 
 export type DecorKind =
   | 'saksi' // küçük saksı (zemin)
@@ -102,7 +113,7 @@ export interface DecorItem {
 const LEFT_WALL: DecorItem[] = [
   { kind: 'aplik', pos: [-WALL_FACE, MOUNT.high, 3.2], rot: Math.PI / 2, from: 3 },
   { kind: 'konsol', pos: [-WALL_BACK, 0, 6.0], rot: Math.PI / 2, from: 3, len: 3.0 },
-  { kind: 'tablo', pos: [-WALL_FACE, 0.95, 6.0], rot: Math.PI / 2, from: 3, len: 1.2, h: 0.42 },
+  { kind: 'tablo', pos: [-WALL_FACE, MOUNT.mid, 6.0], rot: Math.PI / 2, from: 3, len: 1.2, h: 0.42 },
   { kind: 'buyukSaksi', pos: [-16.0, 0, 8.3], rot: 0, from: 3 },
   // TV maketteki yerinde (z = 10,8) ama artık DUVARDA DEĞİL, kendi ünitesinin üstünde.
   { kind: 'tvUnitesi', pos: [-WALL_BACK, 0, 10.9], rot: Math.PI / 2, from: 3, len: 1.9 },
@@ -117,14 +128,14 @@ const LEFT_WALL: DecorItem[] = [
  * Aynalı olsalardı iki çeyrek "aynı odanın kopyası" okunur ve düzensizlik hissi sürerdi.
  */
 const RIGHT_WALL: DecorItem[] = [
-  { kind: 'pencere', pos: [WALL_FACE, 0.92, 2.6], rot: -Math.PI / 2, from: 2, len: 3.0, h: 0.48 },
-  { kind: 'denizlikSaksi', pos: [WALL_FACE - 0.15, 0.71, 2.6], rot: -Math.PI / 2, from: 2 },
+  { kind: 'pencere', pos: [WALL_FACE, (WINDOW.sill + WINDOW.top) / 2, 2.6], rot: -Math.PI / 2, from: 2, len: 3.2, h: WINDOW.top - WINDOW.sill },
+  { kind: 'denizlikSaksi', pos: [WALL_FACE - 0.15, WINDOW.sill, 2.6], rot: -Math.PI / 2, from: 2 },
   { kind: 'aplik', pos: [WALL_FACE, MOUNT.high, 5.0], rot: -Math.PI / 2, from: 2 },
-  { kind: 'pencere', pos: [WALL_FACE, 0.92, 7.4], rot: -Math.PI / 2, from: 2, len: 3.0, h: 0.48 },
+  { kind: 'pencere', pos: [WALL_FACE, (WINDOW.sill + WINDOW.top) / 2, 7.4], rot: -Math.PI / 2, from: 2, len: 3.2, h: WINDOW.top - WINDOW.sill },
   { kind: 'petek', pos: [WALL_BACK, 0, 7.4], rot: -Math.PI / 2, from: 2, len: 1.6 },
   { kind: 'aplik', pos: [WALL_FACE, MOUNT.high, 9.8], rot: -Math.PI / 2, from: 2 },
-  { kind: 'pencere', pos: [WALL_FACE, 0.92, 12.2], rot: -Math.PI / 2, from: 2, len: 3.0, h: 0.48 },
-  { kind: 'denizlikSaksi', pos: [WALL_FACE - 0.15, 0.71, 12.2], rot: -Math.PI / 2, from: 2 },
+  { kind: 'pencere', pos: [WALL_FACE, (WINDOW.sill + WINDOW.top) / 2, 12.2], rot: -Math.PI / 2, from: 2, len: 3.2, h: WINDOW.top - WINDOW.sill },
+  { kind: 'denizlikSaksi', pos: [WALL_FACE - 0.15, WINDOW.sill, 12.2], rot: -Math.PI / 2, from: 2 },
   { kind: 'gazetelik', pos: [16.4, 0, 14.4], rot: -Math.PI / 2, from: 2 },
 ];
 
@@ -134,8 +145,8 @@ const RIGHT_WALL: DecorItem[] = [
  * tarafındaki SOL duvarda, yani ilk andan itibaren görünür bandın içinde.
  */
 const ENTRY: DecorItem[] = [
-  { kind: 'askiRayi', pos: [-WALL_FACE, MOUNT.high, 15.2], rot: Math.PI / 2, from: 1, len: 2.2 },
-  { kind: 'duvarSaati', pos: [-WALL_FACE, MOUNT.high, 13.0], rot: Math.PI / 2, from: 1 },
+  { kind: 'askiRayi', pos: [-WALL_FACE, MOUNT.rail, 15.2], rot: Math.PI / 2, from: 1, len: 2.2 },
+  { kind: 'duvarSaati', pos: [-WALL_FACE, MOUNT.clock, 13.0], rot: Math.PI / 2, from: 1 },
   { kind: 'ayakliLamba', pos: [-13.6, 0, 15.9], rot: 0, from: 1 },
   { kind: 'buyukSaksi', pos: [-16.0, 0, 16.0], rot: 0, from: 1 },
   { kind: 'copKovasi', pos: [-3.2, 0, 16.2], rot: 0, from: 1, len: 1 },

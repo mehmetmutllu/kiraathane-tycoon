@@ -159,11 +159,15 @@ export function floorSwatch(id: string): [string, string] {
  * tek sinyal DEĞER farkı. Çizim `components/three/wallPanel.tsx`.
  * Mağaza kartı swatch'ı yalnız cream+wainscot kullanır (değişmedi).
  */
-export type WallTheme = { cream: string; wainscot: string; trim: string };
+/**
+ * BM (D-070): maketin duvarında lambri üstü çıta KOYUDUR (maket `C.doorWood`), G3'ün açık
+ * `trim`'i değil. `rail` bu yüzden eklendi. `trim` duruyor — mağaza kartları ve UI hâlâ kullanıyor.
+ */
+export type WallTheme = { cream: string; wainscot: string; trim: string; rail: string };
 export const WALL_THEMES: Record<string, WallTheme> = {
-  krem: { cream: '#e6d7b8', wainscot: '#6d4c41', trim: '#f4ead3' },
-  yesil: { cream: '#cfe3cd', wainscot: '#3f6347', trim: '#e9f2e6' },
-  mavi: { cream: '#cfe0ea', wainscot: '#34557a', trim: '#eaf2f8' },
+  krem: { cream: '#e6d7b8', wainscot: '#6d4c41', trim: '#f4ead3', rail: '#5d4037' },
+  yesil: { cream: '#cfe3cd', wainscot: '#3f6347', trim: '#e9f2e6', rail: '#2f4a35' },
+  mavi: { cream: '#cfe0ea', wainscot: '#34557a', trim: '#eaf2f8', rail: '#26405e' },
 };
 
 /**

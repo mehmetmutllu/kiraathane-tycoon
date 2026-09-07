@@ -39,12 +39,22 @@ Faz F'de; ayar kolları harita 1024 ve gölge kamerasını oyuncu çevresine dar
 dönmek çözüm değil** (D-073 kullanıcı kararı).
 
 ### >>> SONRAKİ OTURUMDA İLK İŞ <<<
-**BM adım 1 — DUVAR.** `worktree-maket-tasima` dalı (uzakta `6e61e4c`) main'e alınır: duvar 3,20 ·
-lambri 0,90 · üç katman · koyu çıta; dekorun asma bandı maketin değerlerinde. Dal main'den geride
-olduğu için (bu gecenin ışık/masa/zemin değişiklikleri main'de) **rebase/merge çakışması beklenir**;
-çakışma `wallPanel.tsx` + `Decor.tsx` + `palette.ts` çevresinde olacak.
-Sonra: adım 3 arka bant + odalar → adım 4 kamera (fov 50 ↔ maket 34) → **DONDURMA + maket arşiv
-damgası** → `simulate.ts` tek kez yeniden ölçülür → Faz 4/5/7/8.
+**BM adım 3 — ARKA BANT + ODALAR.** (Adım 1 duvar ✅ main'de.) Sonra adım 4 kamera (fov 50 ↔
+maket 34) → **DONDURMA + maket arşiv damgası** → `simulate.ts` tek kez yeniden ölçülür → Faz 4/5/7/8.
+
+### BM adım 1 ✅ (merge edildi)
+`worktree-maket-tasima` main'e alındı. **Korkulan çakışma çıkmadı:** dalın hunk'ları
+`MOUNT`/`LEFT_WALL`/`RIGHT_WALL`/`ENTRY` + `WallTheme`, main'inkiler `CORRIDOR`/`FLOOR_THEMES`/
+`LIGHTING` idi — kesişmediler. Yalnız `activeContext.md` çakıştı, main'in güncel bölümü tutuldu
+(dalın oturum günlüğü git geçmişinde ve `docs/bm-adim1-duvar.html`'de duruyor).
+
+**Merge'ün açtığı kusur aynı adımda kapatıldı:** duvar 1,2 → 3,2 olunca kapı boşluğu da 3,2'ye
+uzamıştı (lento duvarın tepesine yapışıyor, maketteki alınlık hiç doğmuyordu). Maketin giriş bloğu
+transkribe edildi — kapı **2,65** · söveler ∓**2,2** · lento 2,73 · **alınlık 2,65…3,20** · üst
+kordon 3,15. `DOOR = { half, height }` `wallPanel.tsx`'te tek kaynak (Scene + test oradan okur).
+`decor.ts` başlığındaki bayat "duvar 1,2" ve "düşey ölçek ×0,72" gerekçeleri geçersiz işaretlendi.
+**vitest 279/279 · smoke 28/28 · tsc + build temiz.** Kareler: `node tools/shot-kadraj.mjs` →
+`docs/gorsel/ss/bmm-plan|salon|kapi|arka.png`.
 
 ### BU OTURUMDA YAPILANLAR
 1. **Dev panelinde ÜSTTEN PLAN** (kullanıcı isteği): `Plan (üstten)` satırı — üstten bak · tam kat /

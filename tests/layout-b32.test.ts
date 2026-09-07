@@ -35,6 +35,7 @@ import {
 } from '../src/game/store';
 import { activeSolids, getNavGrid, hitsSolid, navSolids, REACH_TABLE, TABLE_UP_RADIUS } from '../src/game/layout';
 import { findNavPath } from '../src/game/nav';
+import { DOOR } from '../src/components/three/wallPanel';
 
 // ŞERİDİN TÜM BİRİMLERİ. B3-2'de bu dizi elle yazılmış dört index'ti ve o gün doğruydu (a2 dört
 // slotla kelepçeliydi); B5a şeridi 12'ye açınca elle yazılmış dizi testin KÖRLÜĞÜNE dönüştü —
@@ -306,7 +307,7 @@ describe('B3-2 — kapı 2. Alan açılınca cephenin ortasına kayar (maket v13
     // iki ön parçanın tam dikişine oturur. Doğru değişmez, kapı aralığının cephenin BİRLEŞİMİ
     // tarafından örtülmesi (yani orada gerçekten duvar olması) ve her parçadan payına düşenin
     // kesilmesi — Scene bu yüzden "içinde mi" sormak yerine ÇIKARMA yapıyor.
-    const doorHalf = 1.3;
+    const doorHalf = DOOR.half;
     const m = 0.5;
     for (const areasOpen of [1, 2, 3]) {
       const x = doorX(areasOpen);

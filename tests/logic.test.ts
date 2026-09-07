@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { floorQuads } from '../src/components/three/floorPattern';
-import { wallBoxes, WALL_H, WAINSCOT_H } from '../src/components/three/wallPanel';
+import { DOOR, wallBoxes, WALL_H, WAINSCOT_H } from '../src/components/three/wallPanel';
 import { FLOOR_THEMES, WALL_THEMES } from '../src/config/palette';
 import {
   economyConfig,
@@ -3143,73 +3143,77 @@ describe('G2 — zemin deseni (floorQuads)', () => {
   });
 });
 
-describe('G3 — duvar bitimi (wallBoxes: süpürgelik + lambri üstü çıta + kartonpiyer)', () => {
+describe('BM — duvar maketin transkripsiyonu (wallBoxes: gövde + lambri + KOYU çıta)', () => {
   const theme = WALL_THEMES.krem;
   const slab = { x: 2, z: -5, w: 6, d: 0.2, theme };
   const boxes = wallBoxes(slab);
   const bot = (b: { y: number; h: number }) => b.y - b.h / 2;
   const top = (b: { y: number; h: number }) => b.y + b.h / 2;
-  const out = (b: { w: number }) => (b.w - slab.w) / 2; // yüz başına dışa taşma
-  const [body, wainscot, skirt, rail, cornice] = boxes;
+  const [body, wainscot, rail] = boxes;
 
-  it('parça başına 5 kutu: gövde + lambri + üç profil', () => {
-    expect(boxes.length).toBe(5);
-    // Üç profil de TEK ton: koyu ahşap denendi, lambriyle tek kütleye karıştı (ss/g3-karsilastirma.png).
-    expect(boxes.map((b) => b.color)).toEqual([theme.cream, theme.wainscot, theme.trim, theme.trim, theme.trim]);
+  it('maketin ÜÇ kutusu: gövde + lambri + çıta (G3’ün beş katmanı D-070 ile indi)', () => {
+    expect(boxes.length).toBe(3);
+    expect(boxes.map((b) => b.color)).toEqual([theme.cream, theme.wainscot, theme.rail]);
   });
 
-  it('kuşaklar duvarı boydan boya kaplar: lambri 0→0,5, badana 0,5→1,2', () => {
-    expect(bot(wainscot)).toBeCloseTo(0, 9);
-    expect(top(wainscot)).toBeCloseTo(WAINSCOT_H, 9);
-    expect(bot(body)).toBeCloseTo(WAINSCOT_H, 9);
-    expect(top(body)).toBeCloseTo(WALL_H, 9);
+  it('maketin yükseklikleri: duvar 3,2 · lambri 0,9 · çıta 0,08 @ y 0,94', () => {
+    expect(WALL_H).toBeCloseTo(3.2, 6);
+    expect(WAINSCOT_H).toBeCloseTo(0.9, 6);
+    expect(bot(wainscot)).toBeCloseTo(0, 6);
+    expect(top(wainscot)).toBeCloseTo(0.9, 6);
+    expect(bot(body)).toBeCloseTo(0.9, 6);
+    expect(top(body)).toBeCloseTo(3.2, 6);
+    expect(rail.h).toBeCloseTo(0.08, 6);
+    expect(rail.y).toBeCloseTo(0.94, 6);
   });
 
-  it('süpürgelik zeminin ALTINDAN başlar (y=0 eş düzlem yüz yok) ve 0,08 görünür', () => {
-    expect(bot(skirt)).toBeLessThan(0);
-    expect(top(skirt)).toBeCloseTo(0.08, 9);
+  it('kalınlıklar maketin: gövde 0,18 < lambri 0,22 < çıta 0,26 (üçü de ince eksende)', () => {
+    // slab yatay (w 6 > d 0,2) → ince eksen d
+    expect(body.d).toBeCloseTo(0.18, 6);
+    expect(wainscot.d).toBeCloseTo(0.22, 6);
+    expect(rail.d).toBeCloseTo(0.26, 6);
+    // uzun eksen HİÇ değişmez: katmanlar parçanın boyunu uzatmaz
+    for (const b of boxes) expect(b.w).toBeCloseTo(slab.w, 6);
   });
 
-  it('çıta lambrinin TAM üstüne oturur (araya boşluk/örtüşme girmez)', () => {
-    expect(bot(rail)).toBeCloseTo(WAINSCOT_H, 9);
-    expect(top(rail)).toBeCloseTo(WAINSCOT_H + 0.04, 9);
+  it('düşey duvarda ince eksen x olur (uzun/ince eksen otomatik seçilir)', () => {
+    const dik = wallBoxes({ x: -17, z: 3, w: 0.2, d: 9, theme });
+    expect(dik[0].w).toBeCloseTo(0.18, 6);
+    expect(dik[1].w).toBeCloseTo(0.22, 6);
+    expect(dik[2].w).toBeCloseTo(0.26, 6);
+    for (const b of dik) expect(b.d).toBeCloseTo(9, 6);
   });
 
-  it('kartonpiyer duvar tepesini AŞAR → gövdenin üst yüzü gömülür (z-fighting yok)', () => {
-    expect(bot(cornice)).toBeLessThan(WALL_H);
-    expect(top(cornice)).toBeGreaterThan(WALL_H);
-  });
-
-  it('çıkıntılar KADEMELİ: gövde < lambri < kartonpiyer < çıta < süpürgelik', () => {
-    const outs = [body, wainscot, cornice, rail, skirt].map(out);
-    for (let i = 1; i < outs.length; i++) expect(outs[i]).toBeGreaterThan(outs[i - 1]);
-    // Taşma her iki eksende AYNI (profil duvarı sarar, yalnız bir yüzde durmaz).
-    for (const b of boxes) expect((b.d - slab.d) / 2).toBeCloseTo(out(b), 9);
-  });
-
-  it('profiller duvar parçasının merkezine hizalı kalır (kapı boşluğuna taşmaz)', () => {
-    for (const b of boxes) {
-      expect(b.x).toBe(slab.x);
-      expect(b.z).toBe(slab.z);
-    }
-  });
-
-  it('profiller lambriden ve badanadan AÇIK: koyu kütleye karışmaz (D-054 — gölge yok)', () => {
+  it('çıta maketteki gibi KOYU: lambriden koyu, badanadan açıkça koyu', () => {
     const lum = (hex: string) => {
       const n = parseInt(hex.slice(1), 16);
       return 0.2126 * ((n >> 16) & 255) + 0.7152 * ((n >> 8) & 255) + 0.0722 * (n & 255);
     };
     for (const t of Object.values(WALL_THEMES)) {
-      expect(lum(t.trim)).toBeGreaterThan(lum(t.wainscot) + 60); // lambriden AÇIKÇA ayrışır
-      expect(lum(t.trim)).toBeGreaterThan(lum(t.cream) + 10); // badanadan da bir tık açık
+      expect(lum(t.rail)).toBeLessThan(lum(t.wainscot)); // maket: doorWood, wain'den koyu
+      expect(lum(t.rail)).toBeLessThan(lum(t.cream) - 60); // badanadan AÇIKÇA ayrışır
     }
   });
 
-  it('renkler TEMADAN gelir — duvar teması değişince profiller de değişir', () => {
+  it('renkler TEMADAN gelir — duvar teması değişince üç katman da değişir', () => {
     const mavi = wallBoxes({ ...slab, theme: WALL_THEMES.mavi });
     expect(mavi.map((b) => b.color)).not.toEqual(boxes.map((b) => b.color));
-    expect(mavi[2].color).toBe(WALL_THEMES.mavi.trim);
-    expect(mavi[4].color).toBe(WALL_THEMES.mavi.trim);
+    expect(mavi[2].color).toBe(WALL_THEMES.mavi.rail);
+  });
+
+  it('h verilirse o yükseklik kullanılır (bandın blokları farklı yükseklikte olabilsin)', () => {
+    const alcak = wallBoxes({ ...slab, h: 2.2 });
+    expect(top(alcak[0])).toBeCloseTo(2.2, 6);
+    expect(top(alcak[1])).toBeCloseTo(0.9, 6); // lambri sabit
+  });
+
+  // Duvar 1,2 → 3,2 olunca kapı boşluğu da onunla uzamıştı; makette kapı camla aynı hizada (2,65)
+  // biter ve üstünde 0,55'lik ALINLIK vardır. Ölçü katmanının kabul kriteri sayı listesidir (D-072).
+  it('ana kapı maketin ölçüsünde: boşluk 2,65 yüksek · 4,4 geniş · üstünde alınlık kalır', () => {
+    expect(DOOR.height).toBeCloseTo(2.65, 6); // maket `DH`
+    expect(DOOR.half).toBeCloseTo(2.2, 6); // maket söveleri dx ∓2,2
+    expect(WALL_H - DOOR.height).toBeCloseTo(0.55, 6); // alınlık şeridi gerçekten doğuyor
+    expect(DOOR.height).toBeGreaterThan(WAINSCOT_H); // kapı lambri kuşağını AŞAR
   });
 });
 
