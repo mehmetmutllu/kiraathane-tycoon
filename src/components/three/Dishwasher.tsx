@@ -4,6 +4,10 @@ import { useGame } from '../../game/store';
 import { Model } from './Model';
 import { useActorTransform } from './actorTransform';
 import { PALETTE } from '../../config/palette';
+import { actorScale, AUTHORED_HEIGHT, authoredRadius } from '../../config/actor';
+
+const DW_R = authoredRadius('dishwasher');
+const DW_CAP: [number, number, number, number] = [DW_R, AUTHORED_HEIGHT.dishwasher - 2 * DW_R, 6, 12];
 
 // Bulaşıkçının taşıdığı kirliler: gri bardak + yayvan kirli TABAK, KARIŞIK.
 // B2: tek bulaşıkçı katın her kabını toplar, o yüzden kabın türü artık "servisin ürünü"nden değil
@@ -63,11 +67,12 @@ function DishwasherUnit({ cups, plates }: { cups: number; plates: number }) {
   useActorTransform(outerRef, ref, read);
   return (
     <group ref={outerRef}>
-      <group ref={ref}>
+      {/* D-076: garsonunkiyle aynı kapsül, aynı düzeltme (taban 0,07 gömülüydü) + aynı ölçek. */}
+      <group ref={ref} scale={actorScale('dishwasher')}>
         <Model
           fallback={
-            <mesh castShadow position={[0, 0.55, 0]}>
-              <capsuleGeometry args={[0.32, 0.6, 6, 12]} />
+            <mesh castShadow position={[0, AUTHORED_HEIGHT.dishwasher / 2, 0]}>
+              <capsuleGeometry args={DW_CAP} />
               <meshStandardMaterial color="#4a6b82" />
             </mesh>
           }

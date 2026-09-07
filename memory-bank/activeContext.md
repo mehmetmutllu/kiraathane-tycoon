@@ -2,6 +2,45 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-08 — **ÜÇ KARAR ALINDI · AKTÖR ÖLÇÜSÜ TEK KAYNAKTA (D-076)**)
+
+Kullanıcı üç kararı da verdi:
+1. **Arka bant AÇIK kalsın** (servis köşesi + merdiven kovası salondan görünür) — *kod değişmedi.*
+2. **Kamera fov 50 kalsın** — *kod değişmedi.*
+3. **Karakter 1,29 → 1,75** (mobilya KISILMADI; D-073/074/075'in mobilya sayıları yerinde).
+
+### Yapıldı — BM adım 5: `src/config/actor.ts` (yeni TEK KAYNAK)
+Ölçüm şunu buldu: "karakter boyu" diye tek bir sayı hiç yokmuş. Beş gövde, beş boy, **ikisi
+zemine gömülü** — müşteri kapsülü y=0'da MERKEZLİYDİ, görünen boyu **0,60** (yarısı yerin
+altında). Yürüyen müşteri de gömülüydü, yani oturuş numarası değil kusurdu.
+
+**İki gövde ailesi, iki kural:** PARÇALI gövde (sahip · çaycı) düzgün ölçeklenir · KAPSÜL gövde
+(garson · bulaşıkçı · müşteri) **boyuna uzar, enine şişmez**. İlk tur hepsini düzgün ölçekledi ve
+kapsüller blob'a döndü (yarıçap 0,44 = 88 cm omuz; oturunca tabureyi yutuyordu) — kareden görülüp
+`CAPSULE_RADIUS = 0,30` ile düzeltildi.
+
+| türeyen sayı | eski | yeni |
+|---|---:|---:|
+| `playerRadius` | 0,35 | **0,47** (sahibin parçalı gövdesi enine de büyüdü) |
+| `actorRadius` | 0,28 | **0,28** (kapsüller enine büyümedi) |
+| kamera bakış y | 0,60 | **0,80** |
+| kamera mesafesi | 8,5 | **8,5** (odanın kadrajı — oda büyümedi) |
+| `SEATED_DROP` | — | **−0,45** (oturan müşteri iner, baş tepesi 1,30) |
+
+**Kabul kriteri (D-072: sayı listesi) → `tests/actor-scale.test.ts`:** tabla üstü boyun %62 →
+**%45**'i (gerçek hayat %43) · tabure oturağı %35 → **%26** (gerçek %26) · kapsül yarıçap/boy %17.
+**vitest 300/300 · smoke 28/28 · tsc + build temiz · eslint'te yeni hata yok.**
+Kareler: `docs/gorsel/ss/oran-once-*.png` ↔ `oran-sonra-*.png` (`node tools/shot-oran.mjs`).
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**ÖLÇÜ DONDURMA + maket arşiv damgası**, sonra `simulate.ts` **TEK KEZ** yeniden ölçülür
+(masa aralığı 3,20 → 6,40 oldu → eski denge ölçümleri geçersiz). Ardından Faz 4 → 5 → 7 → 8.
+Dondurulacak liste: kat 34 × 34 · duvar 3,20 · kapı 2,65 · masa ölçüleri/aralığı (D-073/074/075) ·
+koltuk ofsetleri · **aktör boyu 1,75 + türeyen yarıçaplar (D-076)** · kamera fov 50 / mesafe 8,5 /
+bakış 0,80 · pad noktaları · nav katıları.
+
+---
+
 ## ŞU AN (2026-09-07 gece — **KARIŞIKLIK ÇÖZÜLDÜ: ÜÇ KATMAN · ÖLÇÜ DONDURULUYOR**)
 
 **Kararlar: D-072 (üç katman + ölçü dondurma) · D-073 (gölge geri · zemin düz ahşap · masa

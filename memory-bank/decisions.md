@@ -1902,3 +1902,68 @@ yeniden ölçülür). Karar verilmeden ölçü DONDURULMAMALI.
 **Testler:** 281/281 yeşil. "banket birim geometrisi maketle birebir" testi yeniden yazıldı:
 artık sabit sayıları değil **sırayı ve boşlukları** bekçiliyor (ada → masa → sandalye → koridor,
 her aralık > 0,10). tsc + eslint + build temiz, smoke 28/28.
+
+---
+
+## D-076 — KARAKTER 1,29 → 1,75 (aktör ölçüsünün tek kaynağı)
+**Tarih:** 2026-09-08 · **Karar:** kullanıcı, D-075'in (b) seçeneği.
+
+### Verilen üç karar (BM adım 3-4'ün önündeki tıkaç)
+| # | soru | karar | kod etkisi |
+|---|---|---|---|
+| 1 | arka bant AÇIK mı kalsın (servis köşesi + merdiven kovası salondan görünüyor) | **açık kalsın** | yok — mevcut hâl |
+| 2 | kamera fov 50 · 42 · 34 | **50 kalsın** | yok — mevcut hâl |
+| 3 | mobilya/karakter oranı: mobilyayı kıs ↔ karakteri büyüt | **karakteri büyüt (1,75)** | bu bölüm |
+
+Karar 3'ün gerekçesi kullanıcının kendi kuralı: *oranı mobilyayı kısarak kovalama.* Böylece
+D-073/D-074/D-075'te dondurulan mobilya sayıları (masa 0,75 · tabla üstü 0,795 · tabure oturağı
+0,45 · aralık 6,40) **hiç değişmedi**; değişen yalnız aktör tarafı.
+
+### ÖLÇÜM — "karakter boyu" diye tek bir sayı hiç yokmuş
+Beş gövde, beş farklı boy, **ikisi zemine gömülü** (koddan okundu, `tools/shot-oran.mjs` doğruladı):
+
+| aktör | author boy | zeminden GÖRÜNEN | kusur |
+|---|---:|---:|---|
+| sahip | 1,29 | 1,29 | — |
+| garson | 1,24 | 1,17 | kapsül 0,07 zeminin altında |
+| bulaşıkçı | 1,24 | 1,17 | aynı kapsül |
+| müşteri | 1,20 | **0,60** | kapsül y=0'da MERKEZLİ → yarısı gömülü |
+| çaycı | 1,08 | 1,08 | belirgin kısa |
+
+Müşterinin gömülmesi instancing'den (ff417dc) ÖNCE de vardı; küçükken "oturuyor" gibi
+okunduğu için aylarca görünmemiş. Yürüyen müşteri de aynı miktarda gömülüydü — numara değil kusur.
+
+### ÇÖZÜM — `src/config/actor.ts` (yeni, TEK KAYNAK)
+`ACTOR_HEIGHT = 1,75`; gövdeler yazıldıkları ham boyda kalır, **mount noktasında** `actorScale()`
+ile hedefe çekilir. Gövdeyi düzenleyen `AUTHORED_HEIGHT`'ı da günceller, test bunu bekçiler.
+
+**İki gövde ailesi, iki kural** (ilk turda hepsi düzgün ölçeklendi ve kapsüller **blob**'a döndü —
+yarıçap 0,30 → 0,44 = 88 cm omuz, oturunca tabureyi yutuyorlardı; kare `oran-sonra-masa.png`):
+- **PARÇALI gövde** (sahip · çaycı): omuz/kol/baş kendi tasarımı → **düzgün ölçeklenir**.
+- **KAPSÜL gövde** (garson · bulaşıkçı · müşteri): **boyuna uzar, enine ŞİŞMEZ**.
+  `CAPSULE_RADIUS = 0,30` (60 cm genişlik = gerçek omuz + low-poly payı); `authoredRadius(kind)`
+  gövdenin içine yazılacak ham yarıçapı verir, mount ölçeği uygulanınca tam 0,30'a gelir —
+  böylece tepsi gibi aksesuarlar gövdeyle ölçeklenip elde kalmaya devam eder.
+
+### TÜREYEN SAYILAR
+| sayı | eski | yeni | gerekçe |
+|---|---:|---:|---|
+| `playerRadius` | 0,35 | **0,47** | sahibin PARÇALI gövdesi enine de büyüdü (omuz 0,29 → 0,39) |
+| `actorRadius` | 0,28 | **0,28** | kapsüller enine büyümedi → nav'ın gördüğü kesit aynı |
+| `REACH_TABLE` | türetik | türetik | formül değişmedi (`tableHalf + actorRadius + NAV_CELL + 0,05`) |
+| `chairHalf` | 0,30 | **0,30** | footprint TABURENİN; aktör collision katısı DEĞİL (yorum düzeltildi) |
+| kamera bakış y | 0,60 | **0,80** | gövdenin aynı oranı (%46) |
+| kamera mesafesi | 8,5 | **8,5** | o sayı ODANIN kadrajı (D-061); oda büyümedi — karakterin kadrajda %36 büyümesi işin AMACI |
+| `SEATED_DROP` | (yok) | **−0,45** | kapsül oturamaz: oturan müşteri iner, baş tepesi ≈ 1,30 (tabure 0,45 + oturma 0,85) |
+| baloncuk y | 1,10 | **1,90** (+drop) | baştan türer |
+
+### KABUL KRİTERİ (sayı listesi — D-072'nin kuralı) → `tests/actor-scale.test.ts`
+| oran | 1,29'da | 1,75'te | gerçek hayat |
+|---|---:|---:|---|
+| tabla üstü / boy | %62 | **%45** | %43 |
+| tabure oturağı / boy | %35 | **%26** | %26 |
+| kapsül yarıçapı / boy | (ölçeklenseydi %25) | **%17** | insan siluetinde |
+
+**Testler:** vitest **300/300** (281 → +19: yeni bekçi dosyası) · smoke **28/28** ·
+tsc + build temiz · eslint'te yeni hata yok (kalan 19'un hepsi dokunulmayan eski dosyalarda).
+**Kareler:** `docs/gorsel/ss/oran-once-*.png` ↔ `oran-sonra-*.png` (`node tools/shot-oran.mjs`).

@@ -1767,8 +1767,28 @@ tek yönlü sıra. Ölçü hedefi kullanıcı kararıyla **A**: kat 34 × 34, du
   alınınca %38 büyük kalıyor. Her turda kısılan PLAN ölçüsü, oranı bozan ise **YÜKSEKLİK** (0,75).
   **Masa yüksekliği bilerek değiştirilmedi** (D-073 kullanıcı kararı) — çıkış yolu kullanıcıya
   soruldu: (a) masa 0,60'a insin (maketten sapılır) · (b) karakter ~1,75'e çıksın (maket kalır).
-- ⏳ ÜÇ karar (bandın açılması · fov · mobilya-karakter oranı) onaylanınca **DONDURMA + maket arşiv damgası**, sonra
-  `simulate.ts` TEK KEZ yeniden ölçülür.
+- ✅ **ÜÇ KARAR ALINDI (2026-09-08, D-076):** (1) arka bant **AÇIK kalsın** · (2) kamera **fov 50
+  kalsın** · (3) **karakter 1,29 → 1,75** (mobilya kısılmadı). İlk ikisi kod değişikliği
+  gerektirmedi — mevcut hâl zaten öyleydi.
+- ✅ **BM adım 5 — AKTÖR ÖLÇÜSÜ (D-076):** `src/config/actor.ts` TEK KAYNAK oldu.
+  - **Ölçüm:** "karakter boyu" diye tek sayı yokmuş — beş gövde, beş boy (1,29 · 1,24 · 1,20 ·
+    1,08), **ikisi zemine gömülü**. Müşteri kapsülü y=0'da MERKEZLİYDİ → görünen boy **0,60**
+    (yarısı yerin altında; instancing'den önce de vardı, küçükken "oturuyor" gibi okunduğu için
+    görünmemiş). Garson/bulaşıkçı 0,07 gömülü.
+  - **İki gövde ailesi, iki kural:** PARÇALI gövde (sahip · çaycı) düzgün ölçeklenir; KAPSÜL gövde
+    (garson · bulaşıkçı · müşteri) **boyuna uzar, enine şişmez** (`CAPSULE_RADIUS` 0,30). İlk turda
+    hepsi düzgün ölçeklenmişti ve kapsüller blob'a döndü (yarıçap 0,44 = 88 cm omuz, oturunca
+    tabureyi yutuyordu) — kareden görülüp düzeltildi.
+  - **Türeyen:** `playerRadius` 0,35 → **0,47** (sahip enine de büyüdü) · `actorRadius` **0,28'de
+    kaldı** (kapsüller enine büyümedi) · kamera bakış y 0,60 → **0,80** · kamera MESAFESİ 8,5
+    **değişmedi** (o sayı odanın kadrajı, oda büyümedi) · `SEATED_DROP` −0,45 (kapsül oturamaz:
+    oturan müşteri iner, baş tepesi 1,30) · baloncuk baştan türer.
+  - **Kabul kriteri sayı listesi** `tests/actor-scale.test.ts`'e yazıldı: tabla üstü boyun %62 →
+    **%45**'i (gerçek %43), tabure oturağı %35 → **%26** (gerçek %26), kapsül yarıçap/boy %17.
+  - **vitest 300/300 · smoke 28/28 · tsc + build temiz · eslint'te yeni hata yok.**
+    Kareler: `docs/gorsel/ss/oran-once-*.png` ↔ `oran-sonra-*.png` (`node tools/shot-oran.mjs`).
+- ⏳ **SIRADAKİ:** **ÖLÇÜ DONDURMA + maket arşiv damgası**, sonra `simulate.ts` TEK KEZ yeniden
+  ölçülür (masa aralığı 3,20 → 6,40 oldu, eski denge ölçümleri geçersiz).
 - **Rapor:** `docs/bm-adim3-4-bant-kamera.html` →
   https://claude.ai/code/artifact/e49330bc-c918-41ec-a1b4-5c879cae146c
   (`tools/embed-rapor.mjs` kareleri data URI olarak gömüp `*.artifact.html` üretir — artifact'ın

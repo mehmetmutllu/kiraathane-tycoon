@@ -4,6 +4,11 @@ import { useGame } from '../../game/store';
 import { Model } from './Model';
 import { useActorTransform } from './actorTransform';
 import { PALETTE } from '../../config/palette';
+import { actorScale, AUTHORED_HEIGHT, authoredRadius } from '../../config/actor';
+
+// Kapsül gövde: BOYU `AUTHORED_HEIGHT.waiter`, yarıçapı mount ölçeğinden SONRA `CAPSULE_RADIUS`.
+const R = authoredRadius('waiter');
+const CAP: [number, number, number, number] = [R, AUTHORED_HEIGHT.waiter - 2 * R, 6, 12];
 
 /**
  * Garson tepsisi (Y3: kapasite yükseltilebilir → taşınan HER birim çizilir; baş üstü değil elde).
@@ -53,11 +58,14 @@ function WaiterUnit({ index, tea, food }: { index: number; tea: number; food: nu
   useActorTransform(outerRef, ref, read);
   return (
     <group ref={outerRef}>
-      <group ref={ref}>
+      {/* D-076: kapsül 0,55'teydi ve yarı-boyu 0,62'ydi → tabanı 0,07 zeminin ALTINDA kalıyordu.
+          Artık merkez boyun tam yarısında: taban 0, tepe `AUTHORED_HEIGHT.waiter`. Mount ölçeği
+          bunu 1,75'e taşır; yarıçap ölçekten SONRA 0,30 (kapsül enine şişmez, bkz. actor.ts). */}
+      <group ref={ref} scale={actorScale('waiter')}>
         <Model
           fallback={
-            <mesh castShadow position={[0, 0.55, 0]}>
-              <capsuleGeometry args={[0.32, 0.6, 6, 12]} />
+            <mesh castShadow position={[0, AUTHORED_HEIGHT.waiter / 2, 0]}>
+              <capsuleGeometry args={CAP} />
               <meshStandardMaterial color="#2e8b57" />
             </mesh>
           }

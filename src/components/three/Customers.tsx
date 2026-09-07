@@ -2,13 +2,20 @@ import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { CapsuleGeometry, SphereGeometry, MeshStandardMaterial, Object3D, Color, MathUtils, type InstancedMesh } from 'three';
 import { useGame } from '../../game/store';
+import { ACTOR_HEIGHT, BUBBLE_Y, CAPSULE_RADIUS, SEATED_DROP } from '../../config/actor';
 
 // FPS Tier 2 (2026-06-13): tüm müşteri gövdeleri TEK InstancedMesh — eskiden her NPC ayrı kapsül
 // draw-call'ı (+facing/bob useFrame'i); kalabalık salonda onlarca draw-call. Görsel BİREBİR AYNI:
 // aynı kapsül geometrisi + per-instance renk (instanceColor) + facing/bob matriste türetilir.
 // NOT: greybox fallback kapsülü instance edilir (Model src'siz → hep fallback); Faz 6'da .glb gelince
 // o ayrı bir karar (skinned mesh instancing farklı). "Çay bekliyor" baloncuğu 2. InstancedMesh.
-const BODY_GEO = new CapsuleGeometry(0.3, 0.6, 6, 10);
+// D-076 — İKİ KUSUR BİRDEN: kapsül hem y=0'da MERKEZLİ üretiliyordu (span −0,6 … +0,6) hem de
+// instance matrisi y=0'daydı → müşterilerin YARISI zeminin altında kalıyordu (görünen boy 0,60;
+// ölçüm `tools/shot-oran.mjs`), üstelik boyu 1,2 idi (aktör boyu 1,75).
+// Artık NİHAİ ölçüde üretilir — instance ölçeği 1 kalsın diye: taban 0, tepe ACTOR_HEIGHT,
+// yarıçap CAPSULE_RADIUS (boyuna uzar, enine şişmez).
+const BODY_GEO = new CapsuleGeometry(CAPSULE_RADIUS, ACTOR_HEIGHT - 2 * CAPSULE_RADIUS, 6, 10)
+  .translate(0, ACTOR_HEIGHT / 2, 0);
 const BODY_MAT = new MeshStandardMaterial({ color: '#ffffff' }); // gerçek renk per-instance (instanceColor çarpar)
 const BUBBLE_GEO = new SphereGeometry(0.14, 10, 10);
 const BUBBLE_MAT = new MeshStandardMaterial({ color: '#ffd54f', emissive: '#ffb300', emissiveIntensity: 0.4 });
@@ -55,8 +62,11 @@ export function Customers() {
       while (tg - f.angle < -Math.PI) tg += Math.PI * 2;
       f.angle = MathUtils.damp(f.angle, tg, 9, dt);
       // --- bob: otururken (bekleme/içme) hafif nefes; yürürken sabit (eski Customer'la birebir) ---
+      // D-076: OTURAN müşteri `SEATED_DROP` kadar iner (kapsül oturamaz → taburenin üstünde
+      // yalnız üst gövde kalır, baş tepesi ≈ 1,30). YÜRÜYEN müşteri artık zemine tam basar;
+      // eskiden ikisi de aynı miktarda gömülüydü, o bir kusurdu (oturuş numarası değil).
       const seated = npc.state === 'waitingForTea' || npc.state === 'drinking';
-      const bobY = seated ? Math.sin(t * 2 + npc.id) * 0.04 : 0;
+      const bobY = (seated ? SEATED_DROP + Math.sin(t * 2 + npc.id) * 0.04 : 0);
       // Eski transform zinciri Translate(pos)·RotY(facing)·Translate(0,bobY,0); RotY y-ötelemeyi
       // etkilemediğinden = position(x,bobY,z) + RotY(facing). Tek dummy ile birebir.
       dummy.position.set(x, bobY, z);
@@ -70,7 +80,8 @@ export function Customers() {
       body.setColorAt(i, col);
       // "çay bekliyor" baloncuğu (pos grubunda, facing/bob DIŞINDA → sabit y=1.1, dönmez)
       if (npc.state === 'waitingForTea') {
-        dummy.position.set(x, 1.1, z);
+        // Baloncuk baş üstünde: oturan müşteri indiği için baloncuk da onunla iner.
+        dummy.position.set(x, BUBBLE_Y + SEATED_DROP, z);
         dummy.rotation.set(0, 0, 0);
         dummy.updateMatrix();
         bubble.setMatrixAt(bubbleCount, dummy.matrix);

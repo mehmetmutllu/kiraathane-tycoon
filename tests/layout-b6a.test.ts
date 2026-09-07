@@ -27,7 +27,9 @@ const maxTablesFor = (areasOpen: number): number => areaTableStart(areasOpen - 1
  * arkasında kaybolur. B6a öncesi arka bantta tam bu oluyordu (garson 0,71 br · bulaşıkçı 0,32 br).
  */
 describe('B6a — personelin bekleme noktası yükseltme işaretini kapatmaz', () => {
-  const CLEAR = 1.4; // işaret yarıçapı (1,0) + aktör yarıçapı + göz payı
+  // D-076: pay artık AKTÖR YARIÇAPINDAN türer (elle yazılı 1,4 değil) — gövde büyüyünce işareti
+  // kapatma mesafesi de büyür; sabit kalsaydı bu bekçi gövdeyle birlikte gevşerdi.
+  const CLEAR = TABLE_UP_RADIUS + LAYOUT.actorRadius + 0.15; // 1,55
 
   it('her dönemde: hiçbir bekleme noktası açık bir masanın yükseltme noktasına yakın değil', () => {
     for (const areasOpen of [1, 2, 3]) {

@@ -5,6 +5,7 @@ import { Model } from './Model';
 import { useActorTransform } from './actorTransform';
 import { PALETTE } from '../../config/palette';
 import { trayCapacityFor } from '../../config/economy.config';
+import { actorScale } from '../../config/actor';
 
 // Çaycı karakter v2 (2026-06-11 kullanıcı isteği: "kollar bacaklar falan güzel olsun"): PARÇALI
 // gövde (Faz 6 animasyon iskeletine hazırlık — her uzuv ayrı mesh). AYRI bacaklar + ayakkabılar,
@@ -203,7 +204,10 @@ export function Player() {
   useActorTransform(outerRef, ref, readPlayerXZ);
   return (
     <group ref={outerRef}>
-      <group ref={ref}>
+      {/* D-076: gövde 1,29 yazılı, mount'ta 1,75'e ölçeklenir. Ölçek BURADA (OwnerBody'nin
+          içinde değil) çünkü karakter paneli aynı gövdeyi kendi kadrajında kullanır. Tepsi de
+          bu grubun içinde → ellerde kalır, ayrıca hizalamak gerekmez. */}
+      <group ref={ref} scale={actorScale('owner')}>
         <Model fallback={<OwnerBody />} />
         <CupTray tea={tray} food={trayFood} dirty={carriedDirty} dirtyFood={carriedDirtyFood} cap={trayCapacityFor(trayTier)} />
       </group>

@@ -39,6 +39,7 @@ import {
 import { perf } from '../../game/perf';
 import { devCam, devTimeScale, devTopDown, useSandbox } from '../../game/devSandbox';
 import { screenPointer } from '../../game/screenPointer';
+import { actorScale, CAMERA_LOOK_Y } from '../../config/actor';
 
 /** GEÇİCİ (2026-09-07 ölçümü): maketle aynı ton eşlemesi (kapalı) — bkz. Canvas'taki not. */
 // Simülasyonu her karede ilerlet (tek kaynak; __advanceTime aynı tick'i çağırır).
@@ -221,10 +222,10 @@ function CameraRig() {
     const d = (focus ? st.current.d * 0.72 : st.current.d) * zoomMul * measureMul;
     if (focus) {
       desired.set(focus.pos[0], d, focus.pos[2] + d);
-      tmp.set(focus.pos[0], 0.6, focus.pos[2]);
+      tmp.set(focus.pos[0], CAMERA_LOOK_Y, focus.pos[2]);
     } else {
       desired.set(p[0], d, p[2] + d);
-      tmp.set(p[0], 0.6, p[2]);
+      tmp.set(p[0], CAMERA_LOOK_Y, p[2]);
     }
     if (!st.current.ready) {
       camera.position.copy(desired); // ilk kare: anında yerleş (başlangıç lerp sıçraması olmasın)
@@ -294,8 +295,9 @@ function KitchenHand({ service }: { service: number }) {
     grp.position.y = speed < 0.25 ? -0.04 + Math.sin(st.clock.elapsedTime * 3) * 0.02 : Math.abs(Math.sin(st.clock.elapsedTime * 7)) * 0.04;
   });
   return (
-    <group ref={ref} position={[start[0], 0, start[2]]}>
-      {/* bacaklar + gövde + önlük + baş (low-poly; palette = tek renk kaynağı) */}
+    <group ref={ref} position={[start[0], 0, start[2]]} scale={actorScale('kitchenHand')}>
+      {/* bacaklar + gövde + önlük + baş (low-poly; palette = tek renk kaynağı).
+          D-076: gövde 1,08 yazılı (beş aktörün en kısasıydı), mount'ta 1,75'e ölçeklenir. */}
       <mesh castShadow position={[0, 0.25, 0]}>
         <boxGeometry args={[0.26, 0.5, 0.18]} />
         <meshStandardMaterial color={PALETTE.pants} />

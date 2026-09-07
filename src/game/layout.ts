@@ -8,6 +8,7 @@
 import type { Vec3 } from './types';
 import { MAX_AREAS, MAX_SERVICES, MAX_WAITERS, THE_SERVICE, areaTableSlots, areaTableStart, tableKindOfArea } from './world';
 import { SEATS_OF_KIND, areaOfTableIndex } from '../config/economy.config';
+import { ACTOR_RADIUS, PLAYER_RADIUS } from '../config/actor';
 import { buildNavGrid, findNavPath, type NavGrid, type NavSolid } from './nav';
 
 export type RVec3 = readonly [number, number, number];
@@ -496,6 +497,8 @@ export const servicePlaceArea = (areasOpen: number): number => servicePlace(area
  * de aynı aritmetiği dördüncü kez yazmak zorunda kalıyordu. Yerleşim sorusunun cevabı burada
  * durur, çağıranlar okur.
  */
+// D-076 notu: bu ritim `actorRadius`'a bağlı (testi öyle bekçiliyor). Kapsül gövdeler boyuna
+// uzayıp enine şişmediği için yarıçap 0,28'de kaldı ve 0,7 yerinde durdu.
 export const WAITER_HOME_GAP = 0.7;
 export const waiterHomeAt = (place: ServicePlace, i: number): Vec3 => [
   place.waiterHome[0] + i * WAITER_HOME_GAP,
@@ -574,15 +577,22 @@ export const LAYOUT = {
   } as Record<string, Vec3>,
   // --- Collision footprint'leri (yarı-boyut [hx,hz]; D-016): GÖRSEL mesh'lere yaslı → oyuncu objeye
   // "değiyor gibi" sokulur, arada boşluk kalmaz. (ocak tezgah 2.2×0.8, bulaşık 1.4×0.8, masa r0.5, sandalye 0.42.)
-  playerRadius: 0.35, // oyuncu kapsül görsel yarıçapı = standoff'u görsel kenara denk getirir
-  actorRadius: 0.28, // garson/bulaşıkçı engel-kaçınma yarıçapı
+  // BM adım 5 (D-076): iki yarıçap da AKTÖR BOYUNDAN türer (`src/config/actor.ts`) — gövde
+  // 1,29 → 1,75'e çıkınca omuz genişliği de büyüdü, standoff eski gövdeye göre kalamazdı.
+  playerRadius: PLAYER_RADIUS, // oyuncu gövde yarıçapı = standoff'u görsel kenara denk getirir (0,47)
+  actorRadius: ACTOR_RADIUS, // garson/bulaşıkçı engel-kaçınma yarıçapı (0,40)
   // (B3-1: `stationHalf`/`stationHalves`/`dishHalf` KALKTI — servis footprint'i artık yerine
   //  bağlı: sol duvarda uzun kenar z'de, arka bantta x'te. `servicePlace(areasOpen).half`.)
   // BM adım 2 (D-073): iki mobilya dili, iki footprint. Dörtlü ÇAY masası maketin `teaTable`'ı
   // (1,75 → yarı 0,875); şeridin İKİLİ kafe masası `cafeTable2` (1,00 → yarı 0,50).
   tableHalf: [0.84, 0.84] as [number, number], // dörtlü (four) — kare 1,68; REACH_TABLE bundan türer
   deuceHalf: [0.525, 0.525] as [number, number], // ikili (deuce) — kare 1,05 (L3+); banket adasının masası
-  chairHalf: [0.3, 0.3] as [number, number], // tabure (maket yarıçapı 0,27) + oturan müşteri
+  // D-076: bu footprint TABURENİN kendisidir, oturan kişinin DEĞİL. (Eski yorum "+ oturan müşteri"
+  // diyordu ve gövde büyüyünce buranın da büyümesi gerekirmiş gibi okunuyordu.) Oyunda hiçbir
+  // AKTÖR collision katısı değil — NPC'ler birbirinden de geçer; katı olan MOBİLYADIR. Oturan
+  // müşterinin üst gövdesi taburenin dışına taşar, yanından geçen garson ona değmiş görünür:
+  // greybox'ta kabul (gerçek oturuş pozu Faz 6'da skinned modelle gelir).
+  chairHalf: [0.3, 0.3] as [number, number], // tabure gövdesi (maket yarıçapı 0,27 + pay)
   // Sandalye ofsetleri (Y2 tek kaynak): Tables.tsx görsel sandalyeyi, store koltuk pozisyonunu
   // (ALL_TABLES.seats) AYNI listeden türetir — görsel sandalye = oturulabilir koltuk.
   chairSpots: CHAIR_SPOTS,
