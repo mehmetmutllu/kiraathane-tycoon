@@ -186,578 +186,611 @@ h2{font-size:21px;font-weight:800}
      türetildi (114 commit / 14 çalışma günü); oturum-başı defter tutmak
      yayın programıyla başladı.
      ══════════════════════════════════════════════════════════════════════ -->
-<script type="application/json" id="durum">{
-  "guncelleme": "08.09.2026",
-  "yapilan": 53,
-  "toplam": 72,
-  "kilometre": [
-    {
-      "at": 28,
-      "etiket": "Oynanabilir gövde"
-    },
-    {
-      "at": 34,
-      "etiket": "Kat 1 planı kesinleşti"
-    },
-    {
-      "at": 57,
-      "etiket": "Model ve denge oturdu"
-    },
-    {
-      "at": 71,
-      "etiket": "v1.0 App Store"
-    }
-  ],
-  "ozet": {
-    "etiket": "Bu oturum · Faz B · 11/12 — duvar main'e alındı, arka bant odalara döndü",
-    "baslik": "Bant üç düz krem kutuydu; maketin kendi kurgusunda orası zaten üç odaydı",
-    "aciklama": "Duvar dalı main'e alındı ve <b>korkulan çakışma çıkmadı</b> — dalın dokunduğu satırlarla gecenin ışık/masa değişiklikleri hiç kesişmemiş. Ama duvar 1,20'den <b>3,20</b>'ye çıkınca iki kusur açığa çıktı: kapı boşluğu duvarla birlikte uzayıp lentoyu tavana yapıştırdı, ve arka bandın üç krem kutusu kadrajın beşte birini kaplayan bomboş bir yüzeye dönüştü.<br><br>İkisinin de cevabı maketin kendi dosyasındaydı. Kapıya <b>alınlık</b> geldi (kapı 2,65'te biter, üstündeki 0,55'lik badana şeridi cepheyi tamamlar). Bant ise kütle olmaktan çıkıp <b>maketin odalarına</b> döndü: solda mutfak, ortada yıkık merdiven kovası, sağda lavabo. Bandı kapatan şey artık kutunun kendisi değil <b>binanın arka duvarı</b>.",
-    "adimlar": [
-      "<b>Duvar main'de:</b> 3,20 · lambri 0,90 · üç katman · koyu çıta; dekorun asma bandı maketin yüksekliklerinde (tablo 1,95 · aplik 2,05 · saat 2,20)",
-      "<b>Ana giriş maketin bloğu oldu:</b> kapı 2,65 · söveler ∓2,20 · <b>alınlık</b> 2,65–3,20 · üst kordon 3,15",
-      "<b>Arka bant odalara döndü:</b> mutfak (fayans zemin, cezve ocağı, tezgâh, raflar, bulaşık, depo) · merdiven kovası (yıkık merdiven, uyarı şeridi, dubalar) · lavabo (açıkken oda, kilitliyken tahta perde + iskele + moloz)",
-      "<b>Kamera ölçüldü:</b> fov 50 ↔ 34 aynı kadrajdan çekildi; maketin dar açısı sahneyi %16 düzleştiriyor ama sisin yeniden ayarlanmasını gerektiriyor — <b>karar kullanıcıda</b>",
-      "<b>Geri bildirim aynı gece kapandı:</b> banket masası kare oldu (1,00 → 1,20), tabure oranı maketin ölçüsüne kilitlendi (oturak 0,30 → 0,555), mutfak eşyaları mutfağın içine girdi"
-    ],
-    "not": "Bandın açılması <b>oynanışa dokunmadı</b>: alanlar hâlâ z = −9,8'de bitiyor ve duvarlar zaten katı engel değil — nav, denge, kayıt ve testlerin hiçbiri etkilenmedi. <b>281/281 yeşil.</b> Rapor: <code>docs/bm-adim3-4-bant-kamera.html</code>"
+<script type="application/json" id="durum">
+{
+ "guncelleme": "08.09.2026",
+ "yapilan": 54,
+ "toplam": 72,
+ "kilometre": [
+  {
+   "at": 28,
+   "etiket": "Oynanabilir gövde"
   },
-  "siradaki": {
-    "etiket": "Faz B · iki karar bekliyor, sonra ÖLÇÜ DONAR",
-    "baslik": "Ölçü katmanı kapanmadan denge ölçülemez",
-    "aciklama": "Faz B'nin son adımı iki soruya bağlı ve ikisi de senin: <b>(1)</b> arka bant artık açık — mutfak ve merdiven kovası salondan görünüyor; bu maketin kurgusu ama oyunda ilk kez böyle. <b>(2)</b> kamera açısı 50'de mi kalsın, maketin 34'üne mi insin.<br><br>Karar verilir verilmez ölçü listesi <b>donar</b> ve bir daha açılmaz: sanat cilası ona dokunamaz, sistem işi onun üstüne kurulur. Denge tam o noktada, <b>tek seferde</b> yeniden ölçülür — çünkü masa aralığı 3,20'den 6,40'a çıktı ve eski tempo tablosunun tamamı geçersiz.",
-    "adimlar": [
-      "<b>Bandın açılması onaylanır</b> (ya da tek satırla geri alınır)",
-      "<b>Kamera kararı:</b> fov 50 · 42 · 34",
-      "<b>ÖLÇÜ DONAR</b> + maket arşiv damgasını alır: bundan sonra tek yetkili oyunun kendisi",
-      "<b>Denge tek seferde yeniden ölçülür</b> (yürüme süreleri = çay/dk; eski tempo tablosu geçersiz)",
-      "<b>Faz C açılır:</b> zincir ve denge — oradan sonrası meta, arayüz, paketleme"
-    ],
-    "not": "<b>v1 kapsam çizgisi:</b> yayına <b>Kat 1</b> çıkar. Prestij “Renovasyon”, Kat 2, sipariş nesnesi ve aktif tuvalet döngüsü <b>v1.1'e</b> bırakıldı; meta katmanı elmas + Usta seviyesi + offline tavanla sınırlı."
+  {
+   "at": 34,
+   "etiket": "Kat 1 planı kesinleşti"
   },
-  "donemler": [
-    {
-      "ad": "Kuruluş dönemi",
-      "tarih": "5 Haziran – 11 Ağustos 2026",
-      "not": "114 commit · 14 çalışma günü",
-      "fazlar": [
-        {
-          "k": "F0",
-          "t": "Planlama ve iskelet",
-          "d": "Stack kararı, data-driven ekonomi, Decimal, kayıt ve migrasyon disiplini, ekonomi simülatörü",
-          "yapilan": 1,
-          "toplam": 1
-        },
-        {
-          "k": "F1",
-          "t": "3B greybox dikey kesit",
-          "d": "Sahne, kamera, oynatıcı, ilk çay istasyonu, NPC döngüsü, satın-alma noktası, offline gelir",
-          "yapilan": 3,
-          "toplam": 3
-        },
-        {
-          "k": "F2",
-          "t": "Mutfak, servis, personel",
-          "d": "Tepsiyle manuel servis, bardak döngüsü, garson ve bulaşıkçı, kirli masa mekaniği, mekânsal yükseltme",
-          "yapilan": 6,
-          "toplam": 6
-        },
-        {
-          "k": "F2Q",
-          "t": "Görev sistemi ve HUD",
-          "d": "36 görevlik hat, kamera odağı, seviye/XP, ayarlar, bildirim kuyruğu",
-          "yapilan": 3,
-          "toplam": 3
-        },
-        {
-          "k": "F3",
-          "t": "Salon çoğaltma ve roller",
-          "d": "Zone ızgarası, üç salon, tost ürün hattı, koltuk ve grup sistemi, ikinci garson, denge turları",
-          "yapilan": 8,
-          "toplam": 8
-        },
-        {
-          "k": "F6",
-          "t": "Sanat geçişi ve performans",
-          "d": "KayKit mobilya, recolor atlası, instancing, açılış ekranı, kozmetik tema mağazası",
-          "yapilan": 5,
-          "toplam": 5
-        },
-        {
-          "k": "DN",
-          "t": "Denetim ve arşiv",
-          "d": "Yayına hazırlık denetimi (App Store, reklam), depo temizliği, İngilizce README",
-          "yapilan": 2,
-          "toplam": 2
-        }
-      ]
-    },
-    {
-      "ad": "Yayın programı — v1.0 Kat 1",
-      "tarih": "1 Eylül 2026 →",
-      "not": "sıra keyfî değil: her faz bir sonrakinin önünü açar",
-      "fazlar": [
-        {
-          "k": "P",
-          "t": "Plan ve maket",
-          "d": "Kat 1 maketi v2 → v15, yayın planı v1 → v4, karar defteri D-030 … D-052",
-          "yapilan": 6,
-          "toplam": 6
-        },
-        {
-          "k": "G",
-          "t": "Görsel taban",
-          "d": "Işık · gölge kararı (gölgesiz) · plank ve karo geometrisi · duvar bitimi. <b>Düzeltme:</b> KayKit yerleşimi (G4/G5) burada YAPILMADI — yerleşime bağlı olduğu için Faz B'ye ertelendi ve orada B6 olarak duruyor",
-          "yapilan": 4,
-          "toplam": 4,
-          "kapi": "Ekran görüntüsü onayı + FPS ölçümü"
-        },
-        {
-          "k": "A",
-          "t": "Temizlik",
-          "d": "Ölü alanlar kaldırıldı · tick() 800 → 65 satır, 17 sistem · testler koordinat bağından koptu · duman testi 8/15 → 26/26",
-          "yapilan": 3,
-          "toplam": 3,
-          "kapi": "Test sayısı düşmeden yeşil"
-        },
-        {
-          "k": "B",
-          "t": "Model geçişi",
-          "d": "Maketin altı adımının oyuna taşınması. <b>Bütçe düzeltmesi (D-072):</b> 9 → 12. Duvar (3,20) ve arka bant/odalar <b>bitti</b>; kalan tek oturum kamera kararı + <b>ölçü dondurma</b>. Ölçü donmadan denge ölçülemez — masa aralığı 3,20'den 6,40'a çıktı ve eski tempo ölçümlerini geçersiz kıldı.",
-          "yapilan": 11,
-          "toplam": 12,
-          "kapi": "Ölçü listesi tutuyor (sayıyla) + salon makete bakınca tanınıyor",
-          "durum": "now"
-        },
-        {
-          "k": "C",
-          "t": "Zincir ve denge",
-          "d": "Tek Odak · tezgâh merdiveni · global garson ve sipariş kuyruğu · simülatör gerçeğe yaklaşır",
-          "yapilan": 0,
-          "toplam": 5,
-          "kapi": "Sim tempo tablosunu tutuyor, tempo iddiaları teste yazılı"
-        },
-        {
-          "k": "D",
-          "t": "Meta katman",
-          "d": "Görev kimlikleri · Hedefler ödülü · İtibar · günlük görev · elmas ekonomisi · Usta katmanı",
-          "yapilan": 0,
-          "toplam": 5,
-          "kapi": "Elmas kazanılıp harcanabiliyor, Usta alınabiliyor"
-        },
-        {
-          "k": "E",
-          "t": "Arayüz ve cila",
-          "d": "Bilgi mimarisi ✓ · Görevler ve Hedefler ekranı ✓ · kalan: ses, hareketli onboarding, duman testinin bağlanması",
-          "yapilan": 1,
-          "toplam": 4,
-          "kapi": "Duman testi package.json'a bağlı ve yeşil"
-        },
-        {
-          "k": "F",
-          "t": "Paketleme ve yayın",
-          "d": "Capacitor iOS · CI derlemesi · AdMob, ATT, SKAdNetwork · RevenueCat · gizlilik manifesti · mağaza materyali",
-          "yapilan": 0,
-          "toplam": 5,
-          "kapi": "TestFlight'ta çalışan sürüm"
-        }
-      ]
-    }
+  {
+   "at": 57,
+   "etiket": "Model ve denge oturdu"
+  },
+  {
+   "at": 71,
+   "etiket": "v1.0 App Store"
+  }
+ ],
+ "ozet": {
+  "etiket": "Bu oturum · Faz B · 12/12 — üç karar alındı, karakter büyüdü",
+  "baslik": "Mobilya karaktere göre büyük değildi; karakter mobilyaya göre küçüktü",
+  "aciklama": "Üç karar bekliyordu, üçü de verildi: arka bant <b>açık kalıyor</b>, kamera açısı <b>50'de kalıyor</b>, ve mobilya/karakter oranı için <b>mobilya kısılmıyor, karakter büyüyor</b>. İlk iki karar tek satır kod bile değiştirmedi — istenen hâl zaten oyundaydı.<br><br>Üçüncüsü işin şeklini değiştirdi. Ölçmeye gidilince şu çıktı: oyunda <b>“karakter boyu” diye tek bir sayı hiç yokmuş.</b> Beş gövde vardı, beş ayrı boy — ve <b>ikisi zemine gömülüydü</b>. Müşteri kapsülü tam ortasından yere batıyordu: görünen boyu 1,20 değil <b>0,60</b>. Kusur aylardır oradaydı; küçükken “oturuyor” gibi okunduğu için kimse fark etmemişti.<br><br>Beş gövde tek sayıya bağlandı. İlk denemede hepsi düzgün büyütüldü ve kapsüller <b>blob'a döndü</b> — 88 santim omuz, oturunca tabureyi yutuyorlardı. Kareye bakılıp kural ikiye ayrıldı: <b>parçalı gövde düzgün büyür, kapsül gövde boyuna uzar enine şişmez.</b>",
+  "adimlar": [
+   "<b>Ölçüm:</b> sahip 1,29 · garson 1,24 (0,07 gömülü) · müşteri 1,20 (<b>yarısı gömülü</b>) · çaycı 1,08 → hepsi <b>1,75</b>",
+   "<b>Tek kaynak:</b> <code>src/config/actor.ts</code> — gövde ham boyunda kalır, mount noktasında hedefe çekilir",
+   "<b>Türeyen sayılar:</b> oyuncu yarıçapı 0,35 → 0,47 · kamera bakışı 0,60 → 0,80 · oturan müşteri 0,45 iner",
+   "<b>Kamera mesafesi 8,5'te bırakıldı:</b> o sayı odanın kadrajı, oda büyümedi — karakterin kadrajda büyümesi işin amacı",
+   "<b>Mobilyaya hiç dokunulmadı:</b> masa 0,75 · tabla üstü 0,795 · tabure 0,45 aynen duruyor"
   ],
-  "gunluk": [
-    {
-      "tarih": "07.09.2026",
-      "etiket": "Faz B · 9. oturum (ölçü kararı · BM adım 2)",
-      "baslik": "Karışıklığın sebebi bulundu: ölçü, hem sanatın hem ekonominin ortak değişkeni",
-      "govde": "Oturuma tek cümlelik bir şikâyetle girildi: <b>“bu tasarım ve geliştirme meselesi aşırı karıştı”</b>. Cevap vermeden önce günlük okundu ve karışıklığın <b>dört kök sebebi</b> ölçüldü.<br><br>Birincisi ve en pahalısı: <b>maket ile oyun iki ayrı program.</b> Maket eski bir three sürümünü renk yönetimi olmadan kullanıyor, oyun renk-doğru çalışıyor. Aynı geometriden aynı görüntü <b>hiçbir zaman</b> çıkmayacak — ölçüldü: aynı zemin makette 201, oyunda 118 parlaklıkta. Kabul kriteri “yan yana koy, aynı mı” olduğu sürece hiçbir tasarım turu kapanamıyordu; nitekim üç tur üst üste reddedilmişti.<br><br>İkincisi: <b>geometri aynı anda hem sanat hem oynanış.</b> Masa aralığı yürüme süresidir, yürüme süresi çay/dakikadır, o da ekonominin kendisi. Yani tasarım her oynadığında denge ölçümleri geçersizleşiyor — <b>ama tersi olmuyor.</b> Bağımlılık tek yönlü olduğu için sıra sorusunun cevabı da tekti: önce ölçü donar.<br><br>Üçüncüsü: “tasarım” tek kelime ama iki ayrı iş — <b>açık uçlu sanat arayışı</b> ile <b>onaylı maketi port etme</b>. Maket zaten onaylıydı; kalan iş ikincisi, yani kapalı uçlu ve ölçülebilir. Dördüncüsü: asıl darboğaz ikisi de değil, hiç el değmemiş <b>yayın katmanı</b>.<br><br>Karar verildikten sonra oturumun kalanı uygulamaya gitti. Önce istenen alet yapıldı: <b>oyunun planını maketteki gibi üstten gösteren kamera</b> ve zemine ölçü ızgarası çizen anahtar. İkisi yan yana konunca fark sayıya döküldü: kat planı birebir tutuyordu ama <b>mobilya yarım boydaydı</b> — kümenin ayak izi maketin dörtte biri. Sebep de çıktı: oyun, <b>orta şeridin küçük kafe masasını ön çeyreklere de uygulamış</b>; makette ise iki ayrı mobilya dili var.",
-      "maddeler": [
-        "<b>Üç katman kuruldu:</b> ölçü/ankraj → sistem → sanat cilası; sanat katmanı ankrajlara dokunamaz, böylece cila turları dengeyi bozamaz",
-        "<b>Ölçü hedefi seçildi (34 × 34 · duvar 3,20):</b> alternatif 32 × 32 + KayKit modülü ölçüldü — ızgaraya üçe birden bölünüyordu ama onaylı maketi yeniden açmayı ve kayan kapıyı çözmeyi gerektiriyordu",
-        "<b>Gölge geri geldi:</b> maketin ışık takımı birebir alındı; “objeler yüzüyor” hissini kapatan şeyin güneş açısı değil gölgenin kendisi olduğu görüldü",
-        "<b>Zemin düz ahşap oldu</b> ve masa ölçüleri maketin değerlerine çıktı (1,75 · 6,40 · ∓1,45); çarpışma kutuları artık masanın <b>tipinden</b> türüyor",
-        "<b>Testler ölçüye bağlandı:</b> düşen beş test sabit sayı yerine ayak izinden türeyen değerlerle yeniden yazıldı — 280/280"
-      ],
-      "not": "Bilerek kabul edilen bedel: masa aralığı 3,20 → 6,40 olduğu için <b>bugünkü denge ölçümleri geçersiz</b>. Yeniden ölçüm ölçü donduktan sonra <b>tek seferde</b> yapılacak; şimdi ölçmek ikinci kez ölçmek demek."
-    },
-    {
-      "tarih": "07.09.2026",
-      "etiket": "Faz B · 7. oturum (B4a)",
-      "baslik": "Platonun sonu: para artık lavabonun önünde birikiyor",
-      "govde": "Oturuma bir tasarım sorusuyla girildi — <b>lavabonun çarpan eğrisi ne olsun?</b> — ve soru iki kez düzeltildi: bir kez ölçümle, bir kez kullanıcı tarafından.<br><br>Önce ölçüm. Geçen oturum bir plato bırakmıştı: oyuncu 3,7 saatte tezgâhın ve masaların son seviyesine varıyor, sonra <b>1,5 saat boyunca gelir hiç büyümüyor</b>. Bunu kırmak için “neyi büyütelim” diye sormak yerine <b>neyin büyüyebileceği</b> ölçüldü. Cevap kapatıcıydı: mutfağın son seviyedeki hızı saniyede <b>0,78 bardak</b>, tam kadro taşıma tavanı <b>1,25</b>. Yani çay/dk yönünde kalan tüm alan <b>×1,6</b> ve arkası kapalı — garson sayısı üçte sabit, karakter kademeleri bitiyor. Bu katta geliri büyütebilecek tek yön <b>müşteri başına para</b>. Yeni hız ancak 2. kat ile gelir.<br><br>İkinci ölçüm bir tasarımı zamanından ayırdı. Planda “tuvalet kâğıdı biter, oyuncu depodan taşır” diye aktif bir döngü vardı. Hesaplandı: platonun tam olduğu dönemde oyuncunun taşıma işinde <b>boş zamanı yalnız %5</b>; bir kâğıt turu ise zamanının <b>%31</b>’ini yerdi. Yani o döngü tam orada geliri <b>artırmaz, keser</b>. Şerit dolduktan sonra boşluk %74’e çıkıyor ve aynı döngü bedavaya sığıyor — oraya ertelendi. Mekanik yanlış değildi, <b>zamanı</b> yanlıştı.<br><br>Sonra kullanıcı kolu düzeltti: <i>“lavabo geliri lavabo önünde istif olarak birikir; müşteriler çıkmadan lavaboya girip çıkabilir, girip çıkınca da orada para birikir.”</i> Bu, önerilen “bahşiş çarpanı”ndan daha iyi bir karardı ve üç sebeple: para görseli <b>hiç değişmiyor</b> (aynı istif, yalnız ikinci bir düşme noktası), gelir bir sayı büyümesi değil <b>mekânsal bir kazanç</b> oluyor (oyuncu gidip topluyor), ve çay fiyatına da bahşişe de <b>hiç dokunulmuyor</b> — “çay 5 lira, sabit” kuralı yerinde duruyor.<br><br>Sayılar onaylı ivmeye (adım başına ×1,38) göre kuruldu ve iki ayrı sinyalle taşındı: lavabo iyileştikçe hem <b>daha çok müşteri uğruyor</b> (%30 → %55) hem <b>daha çok bırakıyor</b> (18 → 86 ₺). Sonuç ölçüldü: gelirin hiç değişmediği en uzun aralık <b>1,5 saatten 13 dakikaya</b> indi ve zincirin toplam süresi <b>uzamadı</b> (5,35 → 5,21 saat). Erken ve orta oyunun her satırı birebir aynı kaldı.<br><br>Bir de beklenmedik bir bulgu: kolun büyüklüğünden çok <b>fiyat eğrisinin dikliği</b> belirleyici çıktı. Aynı çarpan, dik bir eğriyle 41 dakikalık ölü aralık üretiyor; düz bir eğriyle 13 dakikalık. Yani “ne kadar” sorusunun cevabı, “ne aralıkla” sorusunun cevabı kadar önemli değildi.",
-      "maddeler": [
-        "<b>Plato kırıldı:</b> gelirin donduğu en uzun aralık 1,5 saatten <b>13 dakikaya</b>; zincirin süresi uzamadı",
-        "<b>Bu katta çay/dk kolunun tükendiği ölçüldü</b> — kalan tek büyüme yönü müşteri başına para, yenisi 2. kat ile gelir",
-        "<b>Kâğıt taşıma döngüsü ertelendi:</b> platonun tam yerinde oyuncunun boş zamanı %5, o döngü ise %31 — geliri keserdi",
-        "<b>Lavabo kendi para istifiyle geliyor:</b> müşteri girip çıkıyor, parasını odanın önüne bırakıyor, oyuncu topluyor",
-        "Oda parasıyla açılıyor ve <b>kendi seviyeleri</b> var; kapalıyken tadilat hâlinde (tahta perde) duruyor",
-        "Testler <b>270/270</b>, duman testi <b>28/28</b>, erken oyun birebir aynı"
-      ],
-      "not": "<b>Bu oturumun dersi: bir mekaniğin yanlış olması ile yanlış zamanda olması ayrı şeylerdir — ve ikincisi ölçülebilir.</b> Kâğıt döngüsünü plandan çıkaran şey bir zevk tercihi değil, oyuncunun o penceredeki zaman bütçesiydi: %5 boşluğa %31’lik angarya sığmaz.<br><br>İkinci ders sayının kendisiyle ilgili: platoyu kıran şey “daha büyük çarpan” değil, kolun zincire <b>hangi aralıkla serpiştirildiği</b> oldu."
-    },
-    {
-      "tarih": "07.09.2026",
-      "etiket": "Faz B · 6. oturum (B5b)",
-      "baslik": "Yirmi masanın parası: ölçüm soruyu değiştirdi",
-      "govde": "Oturuma tek bir soruyla girildi: <b>şeridin son sekiz masası çok mu pahalı?</b> Cevabı verebilmek için ekonominin modeli söküldü ve sorunun yanlış soru olduğu görüldü.<br><br>Oyunda para, üç tavanın <b>en düşüğü</b> kadar akıyor: kaç müşteri geliyor (<b>talep</b>), mutfak saniyede kaç çay çıkarıyor (<b>arz</b>), ve o çayı kim taşıyor (<b>taşıma</b>). Hesap sadeleştirilince tek bir tezgâhın besleyebileceği koltuk sayısı çıkıyor: son seviyede <b>yaklaşık altı koltuk</b>. Salonda ise <b>elli altı</b> koltuk var. Yani talep, daha <b>üçüncü masada</b> diğer iki tavanı geçmiş — o andan itibaren açılan hiçbir masa geliri artırmamış. On altı masa açılışı, toplam 350 bin lira, gelire katkısı <b>sıfır</b>. Geçen oturumun “denge hiç değişmedi” ölçümünün sebebi de buymuş: masa sayısı bu modelde geliri zaten değiştiremiyor.<br><br>Bir masa gelir çarpanı değilse, fiyatı da gelir çarpanı fiyatı olamaz. Şeridin eğrisi masanın <b>gerçekte sattığı şeye</b> göre yassıltıldı — alan, atmosfer, yükseltilecek yüzey: <b>194.300 ₺ → 51.100 ₺</b>. Şeridin dolması ortalama oyuncuda 10,3 saatten <b>5,3 saate</b> indi; rahat tempoda oynayan bir oyuncu bunu ilk kez bitirebiliyor. Erken oyuna hiç dokunulmadı.<br><br>Peki mutfağı büyütüp masaları anlamlı kılmak? Hesaplandı ve <b>reddedildi</b>: mutfağı on katına çıkarmak taşıma tavanına, müşteri geliş hızına ve ekrandaki elli sekiz müşteriye toslar — ve “çayı sen taşırsın, her şey otomatikleşmez” kuralını iptal ederdi. Bu oyunun tavanı saniyede ~1 bardak ve bu <b>bilinçli</b>. Uyumsuz olan mutfak değil, masa sayısının para iddiasıydı.<br><br>Günün son işi kullanıcının uyarısından çıktı: <i>“görev ve geliştirme zincirinde bunu da hesaba kat, onlar birbirine karışıyordu.”</i> Karışmanın sebebi bulundu ve yapısaldı. Oyunda ilerlemeyi <b>iki ayrı sıra</b> anlatıyor: satın alma zinciri (“şu açılmadan bu açılmaz”) ve görev hattı (ekranda gösterilen tek hedef). Görev hattı, hedef gösterdiği şeyin kilidini <b>bilerek atlıyor</b> — çünkü sıralı hat zaten tempo kaynağı. Ama bu şu demek: iki sıra ayrışırsa kilit <b>bir süse dönüşür</b> ve hiçbir şey bağırmaz. Tam olarak 3. garsonda olan buydu; kilidi “şeritteki dört masa ikinci seviyede olsun” gibi, oyuncunun serbest sırayla aldığı bir şeye bağlıydı ve görev sırasıyla hizalanması <b>imkânsızdı</b>. Kilit ölçümün söylediği gerçek koşulla değiştirildi ve iki sıra artık aynı şeyi söylüyor — <b>üç test</b> de bunu bekçiliyor.",
-      "maddeler": [
-        "Gelirin <b>üçüncü tavanı</b> (taşıma) simülatöre gerçek yürüme yollarıyla eklendi — daha önce hiç hesaba katılmıyordu",
-        "Bu ölçüm bir tahmini çürüttü: <b>3. garson geliri %19 artırıyor</b>, ~40 dakikada kendini amorti ediyor",
-        "Şeridin fiyat eğrisi <b>×1,45 → ×1,15</b> (194.300 → 51.100 ₺); dolum 10,3 → 5,3 saat",
-        "Ödüllü video kararı: ödül <b>geçici demleme hızı</b> olacak — tam darboğazın üstüne biner",
-        "<b>3. garson zincire alındı</b> ve görev hattı ile satın-alma zincirinin hizası artık <b>üç testle</b> bekçileniyor",
-        "Testler 255/255; erken oyunun her satırı birebir aynı"
-      ],
-      "not": "<b>Bu oturumun dersi: bir sayının arkasındaki varsayım, sayının kendisinden daha uzun yaşar.</b> 194.300 ₺’lik eğri aritmetik olarak kusursuzdu; yanlış olan tek şey, sessizce dayandığı “masa açmak geliri büyütür” cümlesiydi — ve o cümle hiç yazılmadığı için hiç sınanmamıştı.<br><br>Aynı hata oturum içinde <b>bir kez daha</b> yapıldı: raporun ilk hâli taşıma hızını elle tahmin edip “3. garson boşuna” dedi; ölçünce tam tersi çıktı. Ölçülmeden yazılan her cümle bir varsayımdır."
-    },
-    {
-      "tarih": "07.09.2026",
-      "etiket": "Faz B · 5. oturum (B5a)",
-      "baslik": "Masa 12'den 20'ye çıktı — ve en tehlikeli kör nokta testin kendisinden çıktı",
-      "govde": "Bu adım baştan ikiye bölündü: <b>bugün yapı, denge sonraki oturumda</b>. Sebebi basit — masa sayısını neredeyse iki katına çıkarmak oyunun temposunu değiştirebilir ve tempo değişikliği kullanıcının kararıdır, geliştiricinin değil. Bu yüzden gün boyunca tek bir denge sayısına dokunulmadı; sonunda simülatör koşuldu ve <b>var olan yirmi bir satırın hepsi birebir aynı</b> çıktı. Ölçülen yeni sayılar bir sonraki oturumun masasında duruyor.<br><br>Yapı tarafında iki eski varsayım kırıldı. Birincisi: kodda “her salon dört masa alır” diyen tek bir sabit vardı ve masanın hangi salona ait olduğu <b>bir bölme işlemiyle</b> hesaplanıyordu. Salonlar iki oturum önce eşit olmaktan çıkmıştı; bugün masa sayıları da çıktı (4 · 4 · 12) ve o bölme işlemi artık <b>yanlış cevap veriyordu</b>. İkincisi: koltuk sayısı masa seviyesinden tek bir listeyle geliyordu — “dördüncü seviyede masa dört kişilik olur”. Şeritteki banket masasının dört kişilik hâli yok: sırtında bank, karşısında tek sandalye var. Artık merdiven <b>masanın tipine</b> ait, ve ikili masa aynı basamakta dört sandalye çıkarmak yerine <b>bistro masasına</b> dönüyor: banka paralel uzuyor, derinliği azalıyor. Aynı adımda görünür bir değişim, ama yalan söylemeyen bir değişim.<br><br>Günün asıl hikâyesi ise testlerde geçti. İki test, şeridin masalarını <b>elle yazılmış bir listeyle</b> (“8, 9, 10, 11”) kontrol ediyordu — yazıldıkları gün doğruydu. Şerit on iki masaya çıkınca ikisi de sessizce körleşti: bekçilik ettikleri kurallar yeni sekiz masada hiç sınanmayacaktı. Listeler yerleşimden hesaplanır hâle getirilince test hemen gerçek bir kusur yakaladı — iki garson satın-alma noktası, yeni masaların yükseltme noktalarının <b>yarım metre</b> yakınına düşüyordu. Oyunda karşılığı şu olurdu: oyuncu garsonu almak için orada bekler, farkında olmadan masayı da yükseltmeye başlar.",
-      "maddeler": [
-        "Şeridin kalan <b>8 masası</b> açıldı — kat 20 masa, 56 koltuk",
-        "<b>Masa tipi</b> kavramı: dörtlü (ön salonlar) ve ikili (şerit); ikili iki kişide tavanlanır",
-        "Salon başına masa sayısı artık bir <b>tablo</b> (4 · 4 · 12), koda gömülü bölme değil",
-        "İki garson noktası şeridin uçlarına taşındı — test yakaladı",
-        "Denge <b>dokunulmadı</b> ve ölçüldü: yirmi bir satır birebir aynı",
-        "Testler 242 → <b>255</b> · duman 26/26 · konsol temiz"
-      ],
-      "not": "<b>Bu oturumun dersi: bir sabit yalana dönüştüğünde en tehlikeli yeri kod değil TESTTİR.</b> Kod bozulduğunda gürültü çıkarır; bayat bir test <b>sessizce</b> onaylamaya devam eder. Elle yazılmış bir index listesi aslında bir varsayımdır — ve varsayımlar da tıpkı kod gibi bayatlar. Bekçinin kendisi de düzenli olarak yoklanmalı."
-    },
-    {
-      "tarih": "07.09.2026",
-      "etiket": "Faz B · 4. oturum (B3-2)",
-      "baslik": "Salonun ortası doldu — ve bir tasarım kararı ekrana bakınca değişti",
-      "govde": "Kat geçen oturumda 34 × 34'e büyümüştü ama arka yarının önü <b>bomboş bir şerit</b> olarak duruyordu. Maket orayı kafelerin standart çözümüyle dolduruyor: ortada duvar olmadığı için <b>sırt sırta oturma bankı</b> — iki yüzlü uzun bir ada, her yüzünde ikili masa ve karşısında sandalye. Bu oturumda o yapı kuruldu; propler ve süs bilerek sonraki adımlara bırakıldı.<br><br>Bir tasarım kararı yol ortasında değişti. Plan “ada seviyeyle <b>uzasın</b>” diyordu, ben de adaları tek masalık kısa hâlleriyle kurdum. Ekran görüntüsüne bakınca karar kendini bozdu: <b>1,2 × 2,5'lik bir kütle banka değil dolaba benziyor</b> — derinliği boyundan büyük. Doğrusu şuydu: bank mekânın <b>sabit donanımıdır</b>; bir kafede uzayan şey bank değil, bankın önüne dizilen masa sayısıdır. Adalar tam boyda doğuyor, seviye üstlerindeki masa sayısını artıracak. Yan kazancı da var: şerit açıldığı <b>anda</b> mobilyalı görünüyor.<br><br>Kapı da makete uydu: ikinci salon açılınca <b>binanın tam ortasına</b> kayıyor, çünkü cephe artık bir çeyreğin değil binanın cephesi. Son olarak yerleşimden kopmuş <b>hayalet objeler</b> temizlendi — eski depo ve tuvalet kutuları kilitli salonun ortasında duruyordu, televizyon ile duvar saati ise dayandıkları duvar kalkınca boşlukta asılı kalmıştı.",
-      "maddeler": [
-        "İki <b>banket adası</b> — maketin ölçüsünde, ön masalarla aynı dikey hatta",
-        "<b>Karar ekranda değişti:</b> ada tam boyda doğuyor; seviye artık adanın üstündeki <b>masa sayısını</b> artıracak",
-        "<b>Kapı binanın ortasına kaydı</b> (makette olduğu gibi, ikinci salonla birlikte)",
-        "Garsonun <b>aktarma tezgâhı</b> yerine kondu — bugün yalnız mobilya",
-        "<b>Hayalet objeler temizlendi:</b> kilitli salonun ortasındaki kutular kaldırıldı, TV ve saat duvara oturdu",
-        "Testler <b>222 → 242</b> · duman testi 26/26 · <b>denge birebir aynı</b>"
-      ],
-      "not": "<b>Testin yakaladığı gerçek kusur:</b> duvar, kapı boşluğunu “kapı bu duvar parçasının içinde mi” diye soruyordu. Kapı ortaya kayınca tam <b>iki duvar parçasının dikişine</b> düştü, ikisi de “hayır” dedi ve <b>kapının önüne duvar örüldü</b>. Aynı sınıftan ikinci bir kusur da yakalandı: adayı göründüğü kalınlıkta katı yapmak <b>bank koltuğunu yol bulmaya kapatıyor</b> — masa ile ada arasında garsonun basabileceği tek bir kare kalmıyor ve garson sessizce “engelden kaçmadan düz git” moduna düşüyor. Geçen oturumun kusuruyla aynı aile olduğu için hemen tanındı.<br><br><b>Dersi:</b> bir ölçünün doğruluğu, onu doğuran maketin <b>taşımadığı</b> nesneyle sınanır. Maket ne yol bulma ızgarası ne de yükseltme noktası taşıyor; koordinatları birebir kopyalasaydım ikisi de <b>sessizce</b> kırılacaktı. Makete sadakat kopyalamak değil, <b>maketin anlattığı şeyi oyunun kendi kısıtlarıyla kurmak.</b>"
-    },
-    {
-      "tarih": "07.09.2026",
-      "etiket": "Faz B · 3. oturum (B3-1)",
-      "baslik": "Kıraathane 2,6 katına büyüdü — önce kameranın ne göstereceği kararlaştırıldı",
-      "govde": "Onaylanan maket katı 34 × 34 istiyordu; oyun 21 × 21'de duruyordu. Bu oturumda kat o ölçeğe taşındı — ama önce bir tasarım sorusu vardı, ve o soru koda dokunmadan cevaplandı: <b>telefon ekranında ne görünecek?</b><br><br>Üç kamera mesafesi aynı kareden canlı olarak karşılaştırıldı ve ölçüm sorunun kendisini değiştirdi: portre ekranda kamera yatayda yalnız <b>24 derece</b> görüyor, yani kat ne kadar geri çekilirse çekilsin <b>tamamı kadraja sığmıyor</b>. Bir salonu tek karede göstermek için karakterin birkaç piksele düşmesi gerekiyordu. Böylece karar “her şey görünsün mü” olmaktan çıkıp “oyuncunun çevresinde kaç metrelik bir <b>komşuluk</b> okunacak” hâline geldi. En yakın kademe elendi, orta kademe varsayılan oldu ve alttaki genel-bakış düğmesi artık “uzaklaş” değil <b>iki kademe arasında geçiş</b> yapıyor.<br><br>Sonra kat taşındı: iki ön salon, arka yarı, ve arkalarında <b>servis · merdiven · lavabo</b> bandı. Bu adımda içerik büyümedi — masa sayısı, servis, satın alma zinciri aynı kaldı; büyüyen katın kendisi. <b>Servis noktası ise artık yerinde sabit değil:</b> üçüncü salon açılınca sol duvardan arka bandın tezgâhına taşınıyor, tıpkı makette olduğu gibi; seviyesi korunuyor. Salon hâlâ seyrek görünüyor, çünkü ortasını dolduracak banket adaları bilerek sonraki adıma bırakıldı.",
-      "maddeler": [
-        "<b>Kamera kademesi seçildi:</b> en yakın kademe elendi; alttaki düğme artık iki kademe arasında geçiş yapıyor",
-        "Kat <b>21 × 21 → 34 × 34</b>; arkada servis · merdiven · lavabo bandı (içleri sonraki adımların işi)",
-        "<b>Servis üçüncü salonda arka banda taşınıyor</b> — makete sadık; seviye korunuyor",
-        "Salonlar artık birbirinin kopyası değil; <b>duvarlar geometriden</b> çıkıyor, ızgara sorgusundan değil",
-        "<b>Eski bir kusur bulundu:</b> garsonun teslim mesafesi yol bulma ızgarasına gizliden bağlıymış — masa ızgaraya denk gelirse garson engelden kaçmadan düz gidiyordu. Düzeltildi, teste bağlandı",
-        "Testler <b>209 → 222</b> · duman testi 26/26 · <b>denge sayıları birebir aynı</b>"
-      ],
-      "not": "<b>Bu oturumun dersi: ölçümün gürültüsü bulguyu ters çevirebilir.</b> Kat büyüyünce garsonun yürüyüşü <b>%66</b> uzadı, en uzak masa 18 → 29 birime çıktı; “servis kırıldı mı” diye bir sonda yazıldı ve ilk sonuç <b>%77 müşteri kaçışı</b> dedi — alarm. Aynı sonda ikinci kez koşunca aynı kodla bambaşka bir sayı verdi: rastgelelik sabitlenmemişti. Üstelik sondanın ilk hâli <b>yanlış şeyi ölçüyordu</b>: oyuncu beklerken kimse bulaşık yıkamadığı için bardaklar bitiyor, ölçülen yürüme değil bardak oluyordu. Tohumlanıp düzeltilince sonuç net çıktı: <b>eski ve yeni yerleşim birebir aynı servisi veriyor</b> — darboğaz yürüme değil.<br><br>Önceki iki oturumun dersi “aracın çıktısı yanılabilir” ve “aracın varsayımı yanılabilir”di. Bunun dersi: <b>aracın gürültüsü ve neyi ölçtüğü de yanılabilir.</b>"
-    },
-    {
-      "tarih": "06.09.2026",
-      "etiket": "Faz B · 2. oturum (B2)",
-      "baslik": "Üç ocak tek tezgâha indi — ve tost bir salonun değil, bir seviyenin ürünü oldu",
-      "govde": "Oyun bugüne kadar şöyle çalışıyordu: her salonun kendi çay ocağı, kendi bulaşığı, kendi garsonu vardı; üçüncü salon açılınca da <b>tost</b> geliyordu, çünkü tost o salonun ürünüydü. Onaylanmış maket bunu tersine çeviriyor: kat boyunca <b>tek bir servis noktası</b> var. O nokta seviye atladıkça derme çatma bir çay ocağından <b>kafenin yüzü olan tezgâha</b> dönüşüyor, ve tost yeni bir salondan değil <b>o merdivenin beşinci basamağından</b> açılıyor.<br><br>Bir önceki oturum bu geçişin altyapısını kurmuştu: servis ile alan arasındaki bağ tek bir listeye toplanmıştı. Bu oturumda o liste <b>tek satır kısaldı</b> ve üç ocak tek noktaya indi — çağıran kodun hiçbir yeri değişmedi. Bunun yanında “Tostçu Garson” diye ayrı bir personel türü, ona ait ayrı tepsi ve ayrı hız hattı kalktı; garsonlar tek havuza girdi ve bir garsonun tepsisinde artık çay ile tost birlikte durabiliyor.<br><br><b>Bu sefer oyun bilerek değişti</b>, o yüzden güvence de değişti: “hiçbir şey değişmedi” diyen parmak izi yerine <b>tempo ölçümü</b>. Ölçüm bir denge açığı ortaya çıkardı — tost eskiden ayrı bir servisin pahalı eğrisinden geliyordu; aynı merdivene binince <b>300 liraya açılan bir tost</b> ortaya çıktı, yani oyun tostu yirminci dakikada veriyordu. Merdivenin üst yarısı yeniden fiyatlandı (erken oyuna dokunulmadan) ve altı hedef bandın altısı da tuttu.",
-      "maddeler": [
-        "Üç servis <b>tek servis noktasına</b> indi; alan açmak artık ocak açmıyor",
-        "<b>L4 tezgâh · L5 tost</b> — obje yer değiştirmiyor, seviye sıfırlanmıyor; yalnız kimlik değişiyor",
-        "Müşteri <b>kendi ürününü seçiyor</b>; tost oranı tezgâhın seviyesinden geliyor",
-        "Personel tek havuz: <b>3 garson + 1 bulaşıkçı</b>; bulaşıkçı ikinci bölüme taşındı",
-        "Tempo yeniden ayarlandı: ilk alım 40 sn · garson 11 dk · 2. salon 35 dk · tezgâh 2 sa · tost 2,5 sa",
-        "Testler <b>207 → 209</b> · duman testi 26/26 · derleme temiz",
-        "Ayrıca: <b>mağaza önizlemeleri</b> artık salonun ışığıyla çiziliyor — kartta gördüğün renk salondakiyle birebir"
-      ],
-      "not": "<b>Bu oturumun dersi: ölçüm aracının oyuncu modeli de yanılabilir.</b> Simülatör “her an en ucuz darboğazı al” diyen bir oyuncu varsayıyordu; oyun ise ekranda tek görev gösterip oyuncuyu ona yönlendiriyor. Ocak ucuzken bu varsayımın zararı yoktu. Tezgâh ve tost pahalılaşınca <b>hangi sırayla satın alındığı temponun kendisi</b> hâline geldi ve aynı config iki farklı cevap verdi: eski varsayımla tost 17 dakikada, gerçek oyuncu davranışıyla 2,5 saatte. Simülatör görev hattını takip edecek şekilde yeniden yazıldı; personel ve masa yükseltmeleri de artık gerçekten satın alınıyor (eskiden bedava sayılıyorlardı). Denge sayıları ancak bundan sonra ayarlandı."
-    },
-    {
-      "tarih": "06.09.2026",
-      "etiket": "Faz B · 1. oturum (B1)",
-      "baslik": "Tek “bölge” kavramı dörde bölündü — ve oyun tek karakter bile değişmedi",
-      "govde": "Oyunun mekân modeli tek bir <b>bölge</b> kavramına dayanıyordu ve bu kavram üç ayrı şeyi birden anlatıyordu: mekânın bir parçası, bir servis noktası (ocak + bulaşık + o salonun garsonu), ve dörtlü bir masa grubu. Üçü hep birlikte açıldığı sürece bu sorun değildi. Ama onaylanan maket bu birlikteliği bozuyor: planlanan <b>ikinci alanın kendi ocağı yok</b>, üçüncü alan masa değil <b>tezgâh</b> getiriyor. Yani \"yeni alan aç\" ile \"yeni ocak aç\" artık aynı şey değil.<br><br>Bu yüzden bu oturumda içerik değil <b>model</b> değişti. Kavram dörde ayrıldı — <b>alan, servis, masa, oda</b> — ve servis ile alan arasındaki bağ tek bir listeye toplandı. Sıradaki adımda o liste bir satır kısalacak, üç ocak tek servise inecek ve geri kalan kodun hiçbir yeri değişmeyecek. B1'in bütün amacı buydu.<br><br><b>Oyunun aynı kaldığı iddiası ölçüldü.</b> Rastgelelik sabitlenip senaryo koşuluyor ve oyunun tüm durumu 2014 satırlık bir dosyaya döküldü; değişiklikten önce ve sonra alınan iki dosya <b>birebir aynı</b>. Ekonomi simülasyonunun bütün sayıları da aynı.<br><br>Bir de kayıt kararı uygulandı: eski kayıtlardaki satın alma kimliklerinin yeni zincirde karşılığı olmadığı için <b>göç yazılmadı</b>. Eski kayıt bulunursa ilerleme sıfırlanıyor, ayarlar korunuyor. Bu, 520 satırlık göç kodunu sildi. (\"İlerleme kaybolmaz\" kuralı mağazaya çıkıldığı andan itibaren bağlayıcı olacak; bugün ortada tek bir test kaydı var.)",
-      "maddeler": [
-        "Dört kavram tek dosyada; servis ↔ alan bağı <b>tek listede</b> — sıradaki adımın kaldıracı bu",
-        "Masa artık sayı değil <b>liste</b>: her masa alanını ve servisini ayrı taşıyor",
-        "Yanlış isimler düzeltildi; en yanıltıcısı “aktif bölge” idi — anlamı “üstünde durulan nokta”",
-        "<b>Kayıt v31 temiz sıfırlama</b> — kayıt dosyası <b>751 → 188 satır</b>",
-        "Davranış parmak izi <b>birebir aynı</b> (2014 satır) · simülasyon sayıları aynı",
-        "Testler <b>206 → 207</b> · duman testi 26/26 · derleme temiz"
-      ],
-      "not": "<b>Bu oturumun dersi: ölçüm aracı da yanılabilir.</b> Karşılaştırmada dört satırlık bir fark çıktı. İlk refleks kodu kurcalamak olurdu; onun yerine önce <b>aracın kendisi</b> denetlendi. Araç durumun kopyasını yüzeysel çıkarıyordu, bu yüzden bir sayaç dizisi bütün anlık görüntülerde <b>paylaşılıyordu</b> — dört karenin dördü de son değeri gösteriyordu. Yani hatalı olan kod değil, tabanı üreten araçtı. Araç düzeltilip eski sürümde taban yeniden alındı ve fark sıfıra indi. Refactor güvencesi, ölçenin de doğrulanmasını gerektiriyor."
-    },
-    {
-      "tarih": "06.09.2026",
-      "etiket": "Faz A · 1. oturum — Faz A kapandı (3 adım tek gecede)",
-      "baslik": "Zemin temizliği: kırık test onarıldı, dev fonksiyon bölündü, testler mekândan koptu",
-      "govde": "<b>Önce kırık test.</b> Otomatik duman testi Ağustos’tan beri on beş adımın yedisinde düşüyordu ve sebebi bilinmiyordu. Kök neden göründüğünden ince çıktı: bir görev tamamlanınca kart 1,3 saniye “tamamlandı” gösteriyor, oyun ise görevi ancak o animasyon bitince ilerletiyordu. Oyuncu bu arada doğal olarak yerdeki parayı topluyor — ve o para, henüz başlamamış “parayı topla” görevinin <b>başlangıç sayısına</b> yazılıyordu. Görev 0/1’de kilitleniyor, arkasındaki her adım domino gibi düşüyordu. Düzeltme yapısal: görev artık <b>bitiş anında</b> ilerliyor, kutlama sadece görsel bir gecikme. Test <b>8/15 → 26/26</b>.<br><br><b>Sonra temizlik.</b> Beş ölü alan kaldırıldı — bunların en sinsisi, elmasla açılacak “Usta” seviyesiydi: kod onu hesaplıyordu ama oyunda ona ulaşacak bir satın alma yolu hiç yoktu. Ardından oyunun kalbi olan 800 satırlık tek fonksiyon <b>17 sisteme</b> bölündü; yerleşim ve kurallar ayrı dosyalara çıktı. Son olarak testler mekândan koparıldı: “oyuncuyu şu köşeye koy” diyen 45 elle yazılmış koordinat gitti, yerine <b>yerleşimden hesaplanan</b> bir park noktası geldi.",
-      "maddeler": [
-        "Duman testi <b>8/15 → 26/26</b>; görev sayacı yarışı yapısal olarak kapandı",
-        "Ölü alanlar: servis-hızı çarpanı, masa önkoşulu, prestij ayarları, posta ikonu, ulaşılamaz “Usta” dalı",
-        "Ana döngü <b>800 → 65 satır</b>; 17 sistem ayrı ayrı okunabiliyor · store <b>2337 → 756 satır</b>",
-        "Testler yerleşimden bağımsız; iki <b>bekçi test</b> park noktasının gerçekten boş olduğunu doğruluyor",
-        "Davranış değişmedi, <b>ölçüldü</b>: 2018 satırlık durum parmak izi öncesi/sonrası birebir aynı",
-        "Testler <b>206/206</b> (5 yeni), derleme temiz, ekonomi simülasyonu aynı"
-      ],
-      "not": "<b>Bu oturumun dersi:</b> refactor’ın güvenliği testlerin sayısından değil, <b>davranışın ölçülmesinden</b> gelir. Bölmeye başlamadan önce oyundan tohumlu bir senaryoyla tam durum dökümü alındı; bölme bitince aynı döküm yeniden alındı ve fark çıkmadı. Bu araç (<code>tick-fingerprint</code>) artık depoda — Faz B’de yerleşim değişirken de aynı işi görecek."
-    },
-    {
-      "tarih": "06.09.2026",
-      "etiket": "Faz G · 4. oturum — Faz G kapandı",
-      "baslik": "Duvarlar artık bir yerde bitiyor",
-      "govde": "Duvar iki düz renk kuşağıydı — krem badana ve altında koyu lambri — ve kutunun kendisi <b>hiçbir yerde bitmiyordu</b>: ne zeminle buluştuğu yerde, ne lambrinin üstünde, ne de tepesinde. Gerçek bir odada bu üç hattın hepsinde çıkıntılı bir profil vardır; göz mekânı oradan okur. Üç ince profil eklendi: <b>süpürgelik</b>, <b>lambri üstü çıta</b>, <b>kartonpiyer</b>.<br><br><b>Renk kararı ölçümle değişti.</b> Planda süpürgelik koyu ahşap yazıyordu. Aynen uygulandı — ve telefon kadrajında bakıldığında <b>hiç görünmüyordu</b>: süpürgelik de çıta da lambriyle tek bir koyu kütleye karışıyordu. Görünmeyen bir profil profil değildir. Üç varyant aynı kareden çekilip soruldu (koyu · açık boyalı · orta ahşap); kullanıcı <i>“uyumlu bir renk olsun”</i> dedi, üç profil de tek açık tona alındı. Duvar artık “koyu lambri + boyalı çerçeve” olarak okunuyor.<br><br><b>“Hareket edince renk değişmesin” şartı ölçüldü.</b> İnce şeritlerde bu gerçek bir risk — daha önce reddedilen doku denemesinin titremesi tam olarak buydu. Kamera on adımda duvara yaklaştırıldı, şeritler ekranda dokuz piksel kaydı ve her karede parlaklık ölçüldü: <b>hiç oynamadı</b>.",
-      "maddeler": [
-        "Süpürgelik zeminin biraz <b>altından</b> başlıyor, kartonpiyer duvarın tepesini biraz <b>aşıyor</b> — hiçbir yüzey aynı düzlemde çakışmıyor",
-        "Profillerin taşma miktarı <b>kademeli</b>: en çok süpürgelik taşıyor, duvar zemine oturuyor",
-        "Titreme ölçümü: parlaklık yayılımı <b>%0</b> (171,7 → 171,7), koyu lambri bandı da sabit",
-        "Bütün duvarlar ve profiller <b>tek çizim çağrısı</b>: profiller eklendiği hâlde 49 → <b>40</b> (geniş ekranda 71 → 63)",
-        "Mağaza önizlemesi aynı bileşenden çiziyor — eski kopya silindi",
-        "Testler <b>201/201</b> (8 yeni), derleme temiz, konsol hatasız"
-      ],
-      "not": "<b>Bu oturumun dersi:</b> plandaki sayı ölçümü geçmiyorsa plan değil ölçüm kazanır — ama <b>renk kararını kullanıcı verir</b>. Geçen oturumda öğrenilen şey (tek bir “sonra” görüntüsü karar için yetmez, varyantlar aynı kareden çekilip sorulur) bu sefer baştan uygulandı ve bir tur geri alma tasarruf edildi.<br><br><b>Faz G tamam:</b> ışık · gölge kararı (sonuç: hiç gölge yok) · zemin geometrisi · duvar bitimi. Sahnenin görsel tabanı artık modellerden bağımsız oturmuş durumda. Sırada duman testinin yedi kırık adımı, sonra Faz A temizliği."
-    },
-    {
-      "tarih": "06.09.2026",
-      "etiket": "Faz G · 3. oturum",
-      "baslik": "Kasmanın sebebi çizim değil arayüzmüş; zemin tahta ve karo oldu",
-      "govde": "Kullanıcı <i>\"ikisini de yap benden bir şey istemeden\"</i> dedi: hem tam ekran kasması hem zemin. İkisi de bitti.<br><br><b>Kasma tahminle değil ölçümle kapatıldı.</b> Üç ayrı şey ölçüldü — çizimin gönderilmesi, oyun döngüsü, ve arayüzün yeniden çizilmesi. İlk ikisi temizdi. Suçlu üçüncüsüydü: oyun <b>kare başına 3,2 kez</b> arayüzü yeniden çiziyordu.<br><br>Sebep basit ve yapısaldı. Oyun her karede durumunun kopyasını çıkarıp topluca yazıyor; içerik hiç değişmese bile <b>kopya yeni</b> olduğu için arayüz \"değişti\" sanıyor. On iki farklı veri — masa seviyeleri, aktif görev, sayaçlar, kirli kaplar — karelerin <b>%100'ünde</b> böyleydi. Masaların seviyesi hiç değişmediği hâlde on iki masa her kare baştan çiziliyordu.<br><br>İkinci iş <b>zemin</b>. Planın teşhisi tutmuştu: mekân \"bitmemiş\" duruyorsa sebep doku eksikliği değil, <b>ölçek referansı</b> eksikliği. Salonun zemini artık tek renk bir alan değil; parke gerçek tahtalardan, fayans gerçek karolardan oluşuyor. Her tahtanın kendi hafif ton farkı var, aralarındaki derz bir çizgi değil <b>boşluk</b> — arasından koyu taban görünüyor.",
-      "maddeler": [
-        "Kare başına yeniden çizim <b>3,23 → 0,23</b> · kare süresi <b>10,24 → 6,05 ms</b>",
-        "Konum artık arayüzden geçmiyor: oyuncu, garson, bulaşıkçı doğrudan sahneye yazılıyor",
-        "Tam ekran + Windows ekran ölçeklemesine <b>piksel tavanı</b> — telefonda hiçbir şey değişmez",
-        "<b>Parke ve ceviz tahta</b> (2,20 × 0,55, satır başı kaydırmalı), <b>fayans ve yemek karo</b>",
-        "Dama teması bilerek değişmedi — yüksek kontrastlı satrancı zaten ölçek veriyordu",
-        "Mağaza önizlemesi aynı bileşenden çiziyor: mağazada gördüğün ölçü salonda göreceğin",
-        "Testler <b>192/192</b> (6 yeni), derleme temiz, konsol hatasız"
-      ],
-      "not": "<b>Zemin neden bu kadar fark etti:</b> zeminde boyutu bilinen, tekrar eden bir birim olunca salonun ne kadar büyük olduğu bir bakışta okunuyor. Doku yolu daha önce denenip geri alındığı için (moiré, sert derz çizgileri) desen bu kez <b>geometri</b>: alan başına tek çizim çağrısı, sıfır bayt asset, moiré yapısal olarak imkânsız.<br><br><b>Bir tuzak kayda geçti:</b> tarayıcıda \"tema değişmiyor\" sanılarak zaman kaybedildi. Sebep, geliştirme sunucusunun kod güncellemesinden sonra aynı dosyanın <b>iki ayrı kopyasını</b> tutması; test konsolundan yapılan değişiklik oyunun kullandığı kopyaya değil diğerine yazıyordu. Bundan sonra durum yalnız oyunun kendi test kancasından değiştirilecek."
-    },
-    {
-      "tarih": "06.09.2026",
-      "etiket": "Faz G · 2. oturum",
-      "baslik": "Gölge: eklendi, reddedildi, ölçüldü, komple kaldırıldı",
-      "govde": "Plandaki adım \"objelerin altına yumuşak leke koy, yüzme hissi bitsin\" idi. Yapıldı — tek çizim çağrısında, dosya olarak hiçbir şey eklemeden. Sonra ekrana bakıldı: <i>\"bu kötü duruyo, her şeyin altında bi yuvarlak var.\"</i> Geri alındı.<br><br>İkinci turda asıl şikâyet netleşti: sorun sadece yuvarlak değildi, <b>gölge ile yuvarlağın aynı anda olmasıydı</b> — üstelik mevcut gölgenin kenarı <i>\"zınk diye keskin çizgi gibi\"</i> duruyordu. Referans olarak My Hotel gösterildi: orada hiç gölge yok.<br><br>Üçüncü turda tahmin yürütmek yerine dört seçenek aynı kareden çekildi ve tek tek ölçüldü: sert gölge, hiç gölge, yumuşak gölge, gölgesiz artı tek havuz. Yumuşak varyant hem ışık sızdırdı hem de en pahalısı çıktı. Sonuç: <b>hiç gölge yok</b>.<br><br>Sert kenarın sebebi de ortaya çıktı: gölge haritası otuz birimlik bir alana yayılıyordu, o yoğunlukta kenar zorunlu olarak merdiven merdiven çıkar.",
-      "maddeler": [
-        "<b>Karar: sahnede hiçbir gölge çizilmez</b> — ne yönlü gölge, ne alttaki leke",
-        "Işık yerinde kaldı: yüzey aydınlatması ve hacim hissi ondan geliyor",
-        "<b>Telefon kadrajında 1,31 → 0,56 ms</b> (%57 hızlı), PC'de 2,02 → 1,44 ms",
-        "Gölge haritası tek başına kare süresinin <b>yarısıydı</b>",
-        "Kalan sadeleşme: dekor konumları koddan tek listeye çıktı",
-        "Testler <b>186/186</b>, derleme temiz, konsol hatasız"
-      ],
-      "not": "<b>Bu oturumun asıl dersi yöntemle ilgili:</b> ölçümün \"hedefini tuttu\" demesi, beğenileceği anlamına gelmiyor. İlk tur öncesi/sonrası karşılaştırmasında başarılıydı ve yine de reddedildi. Görsel bir adımda doğru yol, birden çok varyantı aynı kareden çekip <b>sormak</b> — tek bir \"sonra\" görüntüsü karar için yetmiyor.<br><br><b>Yan çıktı:</b> kullanıcının bildirdiği tam ekran kasması ilk kez ölçüldü. Gölge en büyük parçaydı; kalanı için ilk şüpheli, geniş ekranda çizim çağrısının 91'den 245'e çıkması."
-    },
-    {
-      "tarih": "06.09.2026",
-      "etiket": "Faz G · 1. oturum",
-      "baslik": "Işık — asıl sorun renk değil açıymış",
-      "govde": "Sahne aylardır \"her yeri eşit parlak\" duruyordu. Plan bunun çözümünü ışık renklerinde arıyordu: tek renk ortam ışığını sıcak gök / koyu yer ikilisiyle değiştir, yönlü ışığı sıcaklaştır, sis ekle. Üçü de yapıldı — ve sahne neredeyse hiç değişmedi. Üç ayrı ayar turunun ekran görüntüleri yan yana konulduğunda öncesinden ayırt edilemiyorlardı.<br><br>Sahneye geçici bir test kutusu eklenince sebep ortaya çıktı: <b>gölgeler zaten çalışıyordu.</b> Güneş yaklaşık 55 derece yukarıdaydı, yani neredeyse tepeden vuruyordu; gölge objenin <b>altında</b> kalıyor ve yine tepeden bakan kamera onu hiç görmüyordu. Güneş 40 dereceye indirildiğinde her masa, tabure ve müşteri zemine oturdu.<br><br>Alçalan güneş gölgeleri uzatınca eski gölge kamerası sağ üst köşede kırpmaya başladı; sınırlar salonu ve hemen önündeki sokağı kapsayacak şekilde genişletildi. Daha da alçak bir açı (35 derece) denendi: dramatik duruyor ama telefonda oynanışı örten uzun lekeler yapıyor — 40 derece bilinçli orta yol.",
-      "maddeler": [
-        "<b>Güneş açısı 55° → 40°</b> — oturumun asıl kazancı",
-        "Dolgu ışığı sıcak gök / koyu yer ikilisine geçti, şiddet 0,6 → 0,35",
-        "Yönlü ışık beyazdan kreme, 1,1 → 1,6",
-        "Gölge kamerası genişletildi — kırpma bitti",
-        "Sis eklendi — harita kenarı artık sert kesilmiyor",
-        "Çizim çağrısı <b>91→91</b>, sisin bedeli ~0,04 ms/kare — ölçüldü",
-        "Testler <b>186/186</b>, derleme temiz, konsol hatasız"
-      ],
-      "not": "<b>Plandaki bir madde boş çıktı:</b> \"ACESFilmic ton eşlemesi ekle\" deniyordu, oysa kullanılan 3B kitaplığı bunu <b>zaten varsayılan olarak açıyor</b>. Kitaplığın kaynağı açılıp doğrulandı; o maddede yapılacak tek şey pozlama değerini bir tık açmaktı.<br><br>Kullanıcı sonucu onayladı: <i>“tamam şu an sorun yok, zaten genel tasarım değişecek.”</i> Yani bu adım kalıcı bir cila değil, sonraki fazlarda bakılacak sahnenin <b>tabanını</b> düzeltti."
-    },
-    {
-      "tarih": "06.09.2026",
-      "etiket": "Faz E · 1. oturum",
-      "baslik": "Arayüz gerçek oyunda, sandbox ve asset paketleri",
-      "govde": "Kullanıcı arayüzü statik bir mockup olarak değil, <b>oynanan oyunun içinde</b> görmek istedi — ve her şeyin seviyesini elle ayarlayabileceği bir panel istedi. İkisi de yapıldı. Bilgi mimarisi plandaki §9'a göre kuruldu: üst şerit, aktif adımı taşıyan alt bant, dört sekmeli alt nav ve bütün panellerin paylaştığı tek sayfa kabuğu. Dağınık duran dört yan buton ile sağ üstteki görev kartı kalktı, Posta paneli kaldırıldı.<br><br>Görsel dil iki katman: sahnenin üstünde duran her şey <b>ceviz ve pirinç</b> (zemin teması ne olursa olsun okunur), içerik yoğun sayfalar <b>krem kâğıt</b>. Emoji ve CSS ikon kullanılmadı; altı yeni simge elle çizildi.<br><br>Kullanıcı ilk bakışta seviye barını küçük buldu — madalyon 42'den 56 piksele, içindeki rakam 15'ten 21'e çıkarıldı ve rakam optik merkeze alındı; eskiden madalyonun alt kenarından taşıyordu.",
-      "maddeler": [
-        "Planın son dört kararı kapandı: <b>D-049 … D-052</b>",
-        "<b>Ekran kenarı oku</b> — hedef dışarıdayken kenarda beliriyor, dokununca kamera kayıyor",
-        "<b>Hedefler</b> ekranı: beş kategori, sayaçlar gerçek istatistikten türüyor",
-        "<b>Sandbox</b>: sınırsız para, zaman ×1–25, ocak ve 12 masanın seviyesi, pad zinciri, görev atlama",
-        "<b>KayKit Restaurant + City Builder</b> indirildi, CC0 lisansı doğrulandı",
-        "Mantık testleri <b>186/186</b>, üretim derlemesi temiz, konsol hatasız"
-      ],
-      "not": "<b>Bir kırık bulundu ama bu oturumun değil.</b> Duman testi 15 adımın 7'sinde düşüyor. Önceki commit ayrı bir çalışma kopyasına açılıp aynı test koşuldu: <b>birebir aynı sonuç</b>. Yani kırık daha önceden vardı ve fark edilmemişti. Kök neden yazıldı — <code>q_coin</code> görevi aktifleşmeden önce para toplanıyor, görev sayacının başlangıcı 1'e kilitleniyor, sayaç 0/1'de takılıyor ve sonrası domino. Faz A/C işi; <b>Faz B'ye geçmeden onarılmalı</b>."
-    },
-    {
-      "tarih": "06.09.2026",
-      "etiket": "Faz P · 6. oturum — P kapandı",
-      "baslik": "Servis sistemi: global garson havuzu ve sipariş",
-      "govde": "Çay garsonu / tost garsonu ayrımı kaldırıldı. Kullanıcının cümlesi netti: <i>“öyle bir masa ve alan ayrımı da kalmadı, globalleşmesi lazım.”</i> Masa artık tek bir ürün değil <b>sipariş</b> veriyor — iki tost bir çay gibi — ve garson siparişin tamamı hazır olunca alıyor.<br><br>Beş kural yazıldı: havuz global · üstlenme bağlayıcı (garson yolda başka masaya bırakmaz) · öncelik en acil masada (hiçbir masa aç kalmaz) · sabır sipariş boyuna bağlı · garson sayısı türetilir, elle ayarlanmaz.<br><br>Servis noktası da tek merdivene indirildi: çay ocağı L1–L3, dördüncü seviyede <b>tezgâha dönüşüyor</b>, beşinci seviyede <b>tost açılıyor</b>, altıncı son para seviyesi, yedinci Usta. Mevcut maliyet tablosuyla birebir örtüştüğü için kayıt şeması değişmiyor.",
-      "maddeler": [
-        "<b>D-046</b> global garson havuzu + sipariş tabanlı servis",
-        "<b>D-047</b> servis noktası tek merdiven: ocak L1–L3, tezgâh L4–L6, Usta L7",
-        "<b>D-048</b> Astra kullanımı zorunlu değil, karar arayüz denemesinden sonra"
-      ],
-      "not": "Faz C'de simülatöre sipariş kuyruğu, üstlenme ve açlık ölçümü eklenecek; <b>“hiçbir masa X saniyeden fazla beklemedi”</b> iddiası teste yazılacak. Bugün bu davranışların hiçbiri ölçülmüyor."
-    },
-    {
-      "tarih": "05.09.2026",
-      "etiket": "Faz P · 4–5. oturum",
-      "baslik": "Kat 1 yayın planı — kaynak tarandı, tempo ve meta katman tasarlandı",
-      "govde": "Kaynağın tamamı tarandı ve bulgular kodda doğrulandı. Ortaya on dört bölümlük bir plan çıktı: ilerleme modeli, tempo tablosu, meta katman, görsel yol, arayüz şartnamesi, App Store yolu, faz planı, riskler.<br><br>En önemli iki bulgu yapısaldı. <b>Tek Odak kuralı</b> ihlal ediliyordu: ekranda aynı anda birden çok hedef çiziliyor, çünkü opsiyonel noktalar ve yükseltme dolumları görev filtresinin tamamen dışında. Ve <b>doku yolu kapalı</b>: zemine doku denenmiş, moiré yapmış, geri alınmıştı — asıl teşhis dokuda değil ölçek referansında.",
-      "maddeler": [
-        "Kritik yol <b>5–7 saat</b> olarak çerçevelendi, tekrarlı yükseltmeler yolun dışına alındı",
-        "Usta katmanı: L1–L3 para, L4 reklam veya elmas — kritik yolun dışında",
-        "Asset yolu: <b>KayKit CC0</b> + beş Türk objesi elle; AI'ın ücretsiz planları yasak",
-        "Başarı ölçütü saat değil <b>geri dönüş</b>: D1 ≥ %40, D7 ≥ %10"
-      ],
-      "not": "Ücretsiz AI 3B araçlarının lisansları tek tek okundu: biri atıf zorunlu tutuyor, biri ticari kullanımı yasaklıyor, biri çıktının Avrupa'da kullanılmasını açıkça yasaklıyor. Üçü de kullanılmayacak."
-    },
-    {
-      "tarih": "05.09.2026",
-      "etiket": "Faz P · 3. oturum",
-      "baslik": "Sokak cephesi vitrin oldu, kat yüksekliği düzeldi",
-      "govde": "Kullanıcı vitrine baktı ve <i>“güzel ama düzgün durmadı sanki”</i> dedi. Dört ayrı kusur çıktı: duvar 2,7 iken kapı boşluğu 2,9'du, yani <b>kapı duvardan taşıyordu</b>; cam bandının üstünde tabelaya yer yoktu, bina alçak bir baraka gibi duruyordu; tente alınlığın üstündeydi ve <b>eğimi tersti</b>; kapı kanadı içi dolu ahşap bir kutuydu, camın arkasında tahta kalıyordu.<br><br>Dördü de düzeltildi ve kat yüksekliği tek bir sabite bağlandı. Ayrıca içerideki rafların gölgesi duvarın dış yüzüne sızıyordu — gölge sapması duvar kalınlığından küçüktü.",
-      "maddeler": [
-        "Cephe dizilimi: kaide · cam · lento · <b>alınlık (tabela)</b> · üst kordon",
-        "Kapı <b>çift kanatlı camlı</b> oldu, sağ kanat içeri açık",
-        "Kat yüksekliği <b>3,2</b> — üç kat birden düzeldi"
-      ],
-      "not": "Girişin üst çıtasında kalan renk yalpalanması kullanıcı tarafından bilerek ertelendi: <i>“oyuna geçerken hallederiz.”</i>"
-    },
-    {
-      "tarih": "04–05.09.2026",
-      "etiket": "Faz P · 1–2. oturum",
-      "baslik": "Kat 1 maketi doğdu ve altı adıma oturdu",
-      "govde": "Mekân tasarımı üç boyutlu bir maket üzerinden yürütüldü. Onaylanan düzenin üstüne <b>seviye katmanı</b> eklendi: kıraathane bitmiş hâliyle değil, adım adım büyüyerek kuruluyor. Arka bant (servis, merdiven, lavabo) yerine oturdu, tezgâh salona açıldı, orta şeride banket adası girdi.<br><br>Merdiven bilerek <b>yıkık</b> bırakıldı — Kat 2 güncellemesinin kancası olacak. Kilitli alanlar çizilmiyor ama açık alandaki kilitli objeler tahta perde ve dubayla duruyor.",
-      "maddeler": [
-        "Kat 1 <b>altı adıma</b> bölündü — her adım gezilebilir",
-        "<b>Nargile kaldırıldı</b> — yaş derecelendirmesi yükselmesin",
-        "Kilitli obje <b>tadilat hâlinde</b> durur, parasıyla açılır"
-      ],
-      "not": "Katı ızgara denemesi kullanıcı tarafından reddedildi; düzen hissi ile doluluk birlikte isteniyor."
-    },
-    {
-      "tarih": "01.09.2026",
-      "etiket": "Denetim · 2. oturum",
-      "baslik": "Yayına hazırlık denetimi",
-      "govde": "App Store ve reklam tarafının engelleri tek tek çıkarıldı: geliştirici hesabı, imzalama, izleme izni, gizlilik manifesti, yaş derecelendirme anketi, mağaza materyali. Geliştirmenin Windows'ta yapılması iOS derlemesi için bir engel — çözüm bulut derleme olarak karara bağlandı.",
-      "maddeler": [
-        "Bloker listesi çıkarıldı ve sıraya kondu",
-        "iOS derlemesi için <b>bulut CI</b> kararı"
-      ],
-      "not": "Çocuk kategorisine girilmeyecek: girilirse davranışsal reklam tamamen yasaklanır ve gelir modeli çöker."
-    },
-    {
-      "tarih": "05.06 – 17.06.2026",
-      "etiket": "Kuruluş dönemi · 28 oturum",
-      "baslik": "Oynanabilir gövde kuruldu",
-      "govde": "Stack kararıyla başlandı — Unity değil, TypeScript ve tarayıcı. Ekonominin bütün sayıları tek dosyaya alındı, para <b>büyük sayı</b> tipiyle tutuldu, kayıt ilk günden sürüm numarası ve göç yolu ile kuruldu. Bugün otuz sürümlük göç zinciri kesintisiz çalışıyor.<br><br>Üstüne sırayla: tepsiyle manuel servis ve bardak döngüsü, garson ve bulaşıkçı, üç salon, ikinci ürün hattı olarak tost, koltuk ve grup sistemi, 36 görevlik hat, kozmetik tema mağazası, KayKit mobilya ve çizim performansı. Telefon geri bildirimi beş tur döndü ve her turda denge yeniden ölçüldü.",
-      "maddeler": [
-        "<b>3 salon · 12 masa · iki ürün hattı</b> (çay ve tost)",
-        "Garson, bulaşıkçı, ikinci garson ve üstlenme sistemi",
-        "<b>Kayıt v30</b> + otuz göç adımı, hepsi testli",
-        "Ekonomi simülatörü — tempo eğrisi ölçülebiliyor"
-      ],
-      "not": "Bu dönemin oturum sayısı <b>commit kaydından türetildi</b> (114 commit, 14 çalışma günü); oturum-başı defter tutmak yayın programıyla başladı. Rakam bir tahmindir, geri kalan bütün sayılar sayımdır."
-    }
+  "not": "<b>Kabul kriteri artık sayı:</b> tabla üstü karakterin boyunun %62'siydi, şimdi <b>%45</b>'i (gerçek hayatta %43). Tabure %35'ti, şimdi <b>%26</b> (gerçek %26). Bu oranlar teste yazıldı — bir daha gözle tartışılmayacak."
+ },
+ "siradaki": {
+  "etiket": "Faz C · ölçü donar, sonra denge TEK KEZ ölçülür",
+  "baslik": "Ölçü katmanı kapanıyor; sıra oynanışın kendisinde",
+  "aciklama": "Ölçü listesinin son eksiği kapandı: kat, duvar, kapı, masa, koltuk, kamera ve <b>artık karakter</b>. Sıradaki oturum bu listeyi <b>dondurur</b> ve makete arşiv damgasını vurur — bundan sonra tek yetkili oyunun kendisi, sanat cilası ölçüye dokunamaz.<br><br>Hemen ardından denge <b>tek seferde</b> yeniden ölçülür. Bu şart: masa aralığı 3,20'den 6,40'a çıktı, yani her yürüme süresi değişti — ve yürüme süresi doğrudan çay/dakika demek. Eski tempo tablosunun tamamı geçersiz.",
+  "adimlar": [
+   "<b>ÖLÇÜ DONAR</b> + maket arşiv damgasını alır",
+   "<b>Denge tek seferde yeniden ölçülür</b> (<code>simulate.ts</code>) — yürüme süreleri = çay/dakika",
+   "<b>Faz C:</b> zincir ve denge oturur",
+   "<b>Faz D:</b> meta katman — elmas, Usta seviyesi, offline tavanı",
+   "<b>Faz E–F:</b> arayüz cilası, paketleme ve mağaza"
   ],
-  "riskler": [
+  "not": "<b>v1 kapsam çizgisi değişmedi:</b> yayına <b>Kat 1</b> çıkar. Prestij “Renovasyon”, Kat 2, sipariş nesnesi ve aktif tuvalet döngüsü <b>v1.1'e</b> bırakıldı."
+ },
+ "donemler": [
+  {
+   "ad": "Kuruluş dönemi",
+   "tarih": "5 Haziran – 11 Ağustos 2026",
+   "not": "114 commit · 14 çalışma günü",
+   "fazlar": [
     {
-      "sev": "Açık",
-      "renk": "now",
-      "b": "Gölge geri açıldı — telefondaki maliyeti <b>ölçülmedi</b>",
-      "p": "Gölge, masaüstünde ölçülüp kapatılmıştı: kare süresi 1,31 → 0,67 ms, yani <b>karenin yarısı</b>. Kullanıcı maketin gölgelerini görüp geri isteyince takım maketin değerleriyle açıldı (yumuşak gölge, 2048 harita, ±30 ortografik). Telefonda ne kadara mal olduğu <b>bilinmiyor</b>. Ölçüm Faz F'de yapılacak; ayar kolları hazır: harita 1024'e inebilir, gölge kamerası oyuncunun etrafına daraltılabilir. <b>Karar gölgesizliğe dönmek değil</b>, önce ölçmek."
+     "k": "F0",
+     "t": "Planlama ve iskelet",
+     "d": "Stack kararı, data-driven ekonomi, Decimal, kayıt ve migrasyon disiplini, ekonomi simülatörü",
+     "yapilan": 1,
+     "toplam": 1
     },
     {
-      "sev": "Plan",
-      "renk": "now",
-      "b": "Faz B'nin bütçesi 9 → 12 oturuma çıktı",
-      "p": "Maket taşıması tek oturumluk bir iş değil: duvar · arka bant ve odalar · kamera + ölçü dondurma. Bütçe olduğu gibi bırakılsaydı iş kaybolmaz, <b>Faz C'nin denge ölçümlerinin arasına sızardı</b> — ve ölçü sonradan değiştiği için o ölçümler ikinci kez yapılırdı. v1.0 hedefi bu yüzden 68'den <b>71. oturuma</b> kaydı. Karşılığında Kat 1'in ölçüsü bir kez donuyor ve denge bir kez ölçülüyor."
+     "k": "F1",
+     "t": "3B greybox dikey kesit",
+     "d": "Sahne, kamera, oynatıcı, ilk çay istasyonu, NPC döngüsü, satın-alma noktası, offline gelir",
+     "yapilan": 3,
+     "toplam": 3
     },
     {
-      "sev": "Çözüldü",
-      "renk": "done",
-      "b": "Geç oyunda gelir donuyordu — ÇÖZÜLDÜ (B4a)",
-      "p": "B5b'de ölçülmüştü: oyuncu 3,7 saatte hem tezgâhın hem masaların son para seviyesine ulaşıyor ve ondan sonra oran <b>15,62 ₺/sn'de donuyordu</b>. B4a kolu kurdu: müşteri çıkarken lavaboya uğruyor ve parasını <b>odanın önündeki istife</b> bırakıyor — gelir müşteri başına büyüyor, çay fiyatına dokunulmadan. Ölçüldü: gelirin hiç değişmediği en uzun aralık <b>1,42 saatten 13,4 dakikaya</b> indi, zincirin toplam süresi <b>uzamadı</b> (5,35 → 5,21 sa). Ayrıca ölçüm bu katta <b>çay/dk kolunun tükendiğini</b> gösterdi (arz 0,78 fincan/sn tavan, taşıma 1,25) — yeni hız ancak Kat 2 ile gelir."
+     "k": "F2",
+     "t": "Mutfak, servis, personel",
+     "d": "Tepsiyle manuel servis, bardak döngüsü, garson ve bulaşıkçı, kirli masa mekaniği, mekânsal yükseltme",
+     "yapilan": 6,
+     "toplam": 6
     },
     {
-      "sev": "Tempo",
-      "renk": "now",
-      "b": "3. salonun açılışı ortalama oyuncuyu <b>27 dakika</b> bekletiyor",
-      "p": "B4a ölçümünün yan bulgusu: 3.400 ₺'lik <code>zone3</code> pad'i, Normal profilde “hiçbir şey satın alınamayan” <b>26,9 dakikalık</b> bir aralık üretiyor ve bu, “20 dakikayı aşan alım kalmasın” ölçütünü aşan <b>tek</b> nokta. B4'ten önce de vardı, B4 değiştirmedi. Kolun kendisi sağlam (alan açılışı gerçekten pahalı olmalı), sorun onun <b>öncesindeki gelirin</b> düşüklüğü — Faz C'nin denge turunda bakılacak."
+     "k": "F2Q",
+     "t": "Görev sistemi ve HUD",
+     "d": "36 görevlik hat, kamera odağı, seviye/XP, ayarlar, bildirim kuyruğu",
+     "yapilan": 3,
+     "toplam": 3
     },
     {
-      "sev": "Tasarım",
-      "renk": "wait",
-      "b": "Tuvalet kâğıdı döngüsü ertelendi — <b>ölçülerek</b>",
-      "p": "Planda “kâğıt biter, oyuncu depodan taşır” diye aktif bir döngü vardı. Ölçüldü: platonun tam olduğu dönemde oyuncunun taşıma işinde <b>boş zamanı yalnız %5</b>, bir kâğıt turu ise zamanının <b>%31</b>'i olurdu — yani o döngü tam orada geliri artırmaz, <b>keser</b>. Şerit dolduktan sonra boşluk %74'e çıkıyor ve aynı döngü bedavaya sığıyor. Faz C/D'ye taşındı; mekanik iptal değil, <b>zamanı</b> değişti."
+     "k": "F3",
+     "t": "Salon çoğaltma ve roller",
+     "d": "Zone ızgarası, üç salon, tost ürün hattı, koltuk ve grup sistemi, ikinci garson, denge turları",
+     "yapilan": 8,
+     "toplam": 8
     },
     {
-      "sev": "Çözüldü",
-      "renk": "done",
-      "b": "Duman testi 15 adımın 7'sinde düşüyordu — ÇÖZÜLDÜ",
-      "p": "Kök neden: görev bittiğinde sayaç 1,3 saniyelik kutlama animasyonundan sonra ilerliyordu; o pencerede toplanan para yeni görevin başlangıcına yazılıyor ve görev 0/1'de kilitleniyordu. Görev artık bitiş anında ilerliyor, kutlama yalnızca görsel. Test <b>8/15 → 26/26</b>."
+     "k": "F6",
+     "t": "Sanat geçişi ve performans",
+     "d": "KayKit mobilya, recolor atlası, instancing, açılış ekranı, kozmetik tema mağazası",
+     "yapilan": 5,
+     "toplam": 5
     },
     {
-      "sev": "Performans",
-      "renk": "done",
-      "b": "PC'de tam ekran kasması — ÇÖZÜLDÜ",
-      "p": "Kök neden ölçümle bulundu: sorun çizimde değil arayüzdeydi — oyun kare başına 3,2 kez arayüzü yeniden çiziyordu. Kare başına yeniden çizim 3,23 → 0,23, kare süresi 10,24 → 6,05 ms. Ayrıca tam ekranda piksel tavanı kondu. Kullanıcının makinesinde tekrar bakılacak."
-    },
-    {
-      "sev": "Yapısal",
-      "renk": "now",
-      "b": "Ekranda tek hedef kuralı deliniyor",
-      "p": "Görev filtresi satın-alma noktalarına uygulanıyor ama opsiyonel noktalar ve yükseltme dolumları filtrenin dışında çiziliyor. Oyuncu aynı anda birden çok hedef görüyor. Faz C'de kapanacak."
-    },
-    {
-      "sev": "Çözüldü",
-      "renk": "done",
-      "b": "Ana döngü 800 satırdı — ÇÖZÜLDÜ",
-      "p": "Faz A2'de 17 sisteme bölündü; geriye kalan 65 satır sadece bağlamı kurup sistemleri çağırıyor. Yerleşim ve kurallar ayrı dosyalara çıktı (store 2337 → 756 satır). Davranışın değişmediği tohumlu parmak iziyle ölçüldü."
-    },
-    {
-      "sev": "Ölçüm",
-      "renk": "wait",
-      "b": "Simülatör oyunu doğrulamıyor",
-      "p": "İki parçası kapandı. B2: simülatörün <b>oyuncu modeli</b> düzeltildi — artık görev hattını takip ediyor ve personel yükseltmelerini gerçekten satın alıyor. B5b: <b>yürüme/taşıma açığı kapandı</b> — gelir artık üç tavanın en düşüğü (talep · arz · <b>taşıma</b>) ve taşıma gerçek yol bulma mesafeleriyle hesaplanıyor. Bu ölçüm hemen bir şey buldu: geliri tezgâhtan sonra <b>taşıma</b> kelepçeliyor ve 3. garson %19 gelir getiriyor — daha önce “boşuna” sanılıyordu. Kalan: bardak döngüsü ve sabır hâlâ modellenmiyor; Faz C'de gerçeğe yaklaştırılacak."
-    },
-    {
-      "sev": "Tempo",
-      "renk": "wait",
-      "b": "Kat büyüdü, garsonun yürüyüşü %66 uzadı",
-      "p": "B3-1'de ölçüldü: kat 2,6 katına çıkınca garsonun servis noktasından masaya ortalama yolu <b>%66</b> uzadı (en uzak masa 18 → 29 birim). Servis <b>sonucu</b> bugün değişmedi — tohumlu sondada eski ve yeni yerleşim birebir aynı sayıyı verdi, yani darboğaz yürüme değil. Ama Faz C otomasyonu hızlandırınca yürüme bağlayıcı hâle gelebilir. Makette cevabı zaten var: <b>garsonun aktarma tezgâhı</b> (B3-2). Gerçek tempo doğrulaması oyuncu döngüdeyken Faz C'de yapılacak."
-    },
-    {
-      "sev": "Altyapı",
-      "renk": "wait",
-      "b": "iOS derlemesi Mac istiyor",
-      "p": "Geliştirme Windows'ta. Karar verildi: bulut CI üzerinden derlenecek. Faz F'den önce kurulmalı, yoksa yayın gecikir."
-    },
-    {
-      "sev": "Görsel",
-      "renk": "idle",
-      "b": "Maket girişinde renk yalpalanması",
-      "p": "Üst çıtada iki yüzey aynı düzlemde çakışıyor. Kullanıcı tarafından bilerek ertelendi: “oyuna geçerken hallederiz.” Faz G'de."
+     "k": "DN",
+     "t": "Denetim ve arşiv",
+     "d": "Yayına hazırlık denetimi (App Store, reklam), depo temizliği, İngilizce README",
+     "yapilan": 2,
+     "toplam": 2
     }
-  ],
-  "olcut": [
+   ]
+  },
+  {
+   "ad": "Yayın programı — v1.0 Kat 1",
+   "tarih": "1 Eylül 2026 →",
+   "not": "sıra keyfî değil: her faz bir sonrakinin önünü açar",
+   "fazlar": [
     {
-      "k": "Kritik yol",
-      "v": "5–7 sa",
-      "n": "v1.0'ın “bitti” süresi"
+     "k": "P",
+     "t": "Plan ve maket",
+     "d": "Kat 1 maketi v2 → v15, yayın planı v1 → v4, karar defteri D-030 … D-052",
+     "yapilan": 6,
+     "toplam": 6
     },
     {
-      "k": "D1 tutunma",
-      "v": "≥ %40",
-      "n": "ertesi gün geri dönen"
+     "k": "G",
+     "t": "Görsel taban",
+     "d": "Işık · gölge kararı (gölgesiz) · plank ve karo geometrisi · duvar bitimi. <b>Düzeltme:</b> KayKit yerleşimi (G4/G5) burada YAPILMADI — yerleşime bağlı olduğu için Faz B'ye ertelendi ve orada B6 olarak duruyor",
+     "yapilan": 4,
+     "toplam": 4,
+     "kapi": "Ekran görüntüsü onayı + FPS ölçümü"
     },
     {
-      "k": "D7 tutunma",
-      "v": "≥ %10",
-      "n": "bir hafta sonra geri dönen"
+     "k": "A",
+     "t": "Temizlik",
+     "d": "Ölü alanlar kaldırıldı · tick() 800 → 65 satır, 17 sistem · testler koordinat bağından koptu · duman testi 8/15 → 26/26",
+     "yapilan": 3,
+     "toplam": 3,
+     "kapi": "Test sayısı düşmeden yeşil"
     },
     {
-      "k": "Oturum",
-      "v": "8–12 dk",
-      "n": "tek oturumda geçen süre"
+     "k": "B",
+     "t": "Model geçişi",
+     "d": "Maketin altı adımının oyuna taşınması. <b>Bütçe düzeltmesi (D-072):</b> 9 → 12. Duvar (3,20) ve arka bant/odalar <b>bitti</b>; kalan tek oturum kamera kararı + <b>ölçü dondurma</b>. Ölçü donmadan denge ölçülemez — masa aralığı 3,20'den 6,40'a çıktı ve eski tempo ölçümlerini geçersiz kıldı.",
+     "yapilan": 12,
+     "toplam": 12,
+     "kapi": "Ölçü listesi tutuyor (sayıyla) + salon makete bakınca tanınıyor",
+     "durum": "now"
     },
     {
-      "k": "Reklam arası",
-      "v": "120 sn",
-      "n": "ilk 5 dakika muaf"
+     "k": "C",
+     "t": "Zincir ve denge",
+     "d": "Tek Odak · tezgâh merdiveni · global garson ve sipariş kuyruğu · simülatör gerçeğe yaklaşır",
+     "yapilan": 0,
+     "toplam": 5,
+     "kapi": "Sim tempo tablosunu tutuyor, tempo iddiaları teste yazılı"
+    },
+    {
+     "k": "D",
+     "t": "Meta katman",
+     "d": "Görev kimlikleri · Hedefler ödülü · İtibar · günlük görev · elmas ekonomisi · Usta katmanı",
+     "yapilan": 0,
+     "toplam": 5,
+     "kapi": "Elmas kazanılıp harcanabiliyor, Usta alınabiliyor"
+    },
+    {
+     "k": "E",
+     "t": "Arayüz ve cila",
+     "d": "Bilgi mimarisi ✓ · Görevler ve Hedefler ekranı ✓ · kalan: ses, hareketli onboarding, duman testinin bağlanması",
+     "yapilan": 1,
+     "toplam": 4,
+     "kapi": "Duman testi package.json'a bağlı ve yeşil"
+    },
+    {
+     "k": "F",
+     "t": "Paketleme ve yayın",
+     "d": "Capacitor iOS · CI derlemesi · AdMob, ATT, SKAdNetwork · RevenueCat · gizlilik manifesti · mağaza materyali",
+     "yapilan": 0,
+     "toplam": 5,
+     "kapi": "TestFlight'ta çalışan sürüm"
     }
-  ]
-}</script>
+   ]
+  }
+ ],
+ "gunluk": [
+  {
+   "tarih": "08.09.2026",
+   "etiket": "Faz B · 12. oturum (üç karar · aktör ölçüsü)",
+   "baslik": "“Karakter boyu” diye bir sayı yoktu — beş gövde, beş boy, ikisi yerin altında",
+   "govde": "Oturum üç karara kilitliydi ve üçü de aynı anda verildi. İkisi kolaydı: <b>arka bant açık kalsın</b> (mutfak ve merdiven kovası salondan görünüyor — maketin kendi kurgusu) ve <b>kamera 50'de kalsın</b> (34'e inmenin kazancı kadrajda zar zor okunuyordu, bedeli uzak kenarda sisin %29'dan %84'e çıkmasıydı). İkisi de tek satır kod değiştirmedi; istenen hâl zaten oyundaydı.<br><br>Üçüncü karar şuydu: mobilya karaktere göre büyük duruyordu, ve iki çıkış vardı — mobilyayı kıs ya da karakteri büyüt. Kullanıcı kendi kuralını uyguladı: <b>oranı mobilyayı kısarak kovalama.</b> Karakter 1,29'dan 1,75'e çıktı, mobilyanın tek sayısına dokunulmadı.<br><br>Ölçmeye gidilince asıl bulgu çıktı: oyunda tek bir “karakter boyu” hiç yokmuş. <b>Beş gövde, beş ayrı boy</b> — sahip 1,29, garson ve bulaşıkçı 1,24, müşteri 1,20, çaycı 1,08. Üstelik <b>ikisi zemine gömülüydü</b>: garson 7 santim, müşteri ise <b>tam yarısı</b>. Müşteri kapsülü ortasından yere batıyordu, görünen boyu 0,60'tı. Kusur aylardır oradaydı; gövde küçükken masada “oturuyor” gibi okunduğu için gözden kaçmıştı — ama yürüyen müşteri de aynı şekilde gömülüydü, yani numara değil kusurdu.<br><br>Beş gövde tek sayıya bağlandı. İlk denemede hepsi düzgün büyütüldü ve kare hatayı gösterdi: <b>kapsüller blob'a döndü.</b> Yarıçap 0,30'dan 0,44'e çıkmıştı — 88 santim omuz, bir insanın iki katı; oturan müşteri tabureyi tamamen yutuyordu. Kural ikiye ayrıldı: <b>parçalı gövde</b> (sahip, çaycı) düzgün büyür çünkü omuz-kol-baş oranı gövdenin kendi tasarımıdır; <b>kapsül gövde</b> (garson, bulaşıkçı, müşteri) yalnız boyuna uzar.",
+   "maddeler": [
+    "<b>Tek kaynak kuruldu:</b> <code>src/config/actor.ts</code> — gövdeler yazıldıkları ham boyda kalır, mount noktasında hedef boya çekilir; gövdeyi düzenleyen kişi boy sayısını da güncellemek zorunda, test bunu bekçiliyor",
+    "<b>İki gövde ailesi, iki kural:</b> parçalı gövde düzgün ölçeklenir · kapsül gövde boyuna uzar, enine şişmez",
+    "<b>Zemine basma kusurları kapandı:</b> müşterinin yarısı, garson ve bulaşıkçının 7 santimi yerin altındaydı",
+    "<b>Oturuş ayrıldı:</b> oturan müşteri 0,45 iner (baş tepesi 1,30 = tabure + oturma yüksekliği), yürüyen müşteri artık tam zemine basar",
+    "<b>Türeyen sayılar:</b> oyuncu yarıçapı 0,47 · personel yarıçapı 0,28'de kaldı (kapsüller enine büyümedi) · kamera bakışı 0,80 · kamera mesafesi 8,5'te bırakıldı",
+    "<b>Kabul kriteri teste yazıldı:</b> tabla üstü boyun %45'i (gerçek %43) · tabure %26 (gerçek %26) · kapsül yarıçap/boy %17",
+    "<b>300/300 mantık testi · 28/28 duman testi · derleme temiz</b> (281 → 300: 19 yeni ölçü bekçisi)"
+   ],
+   "not": "Ölçü listesinin son eksiği buydu. Sıradaki oturum listeyi <b>dondurur</b>, makete arşiv damgasını vurur ve dengeyi <b>tek seferde</b> yeniden ölçer."
+  },
+  {
+   "tarih": "07.09.2026",
+   "etiket": "Faz B · 10–11. oturum (BM adım 1 ve 3)",
+   "baslik": "Duvar 3,20'ye çıktı — ve arka bandın üç krem kutusu maketin odalarına döndü",
+   "govde": "İki oturum, tek konu: maketin geometrisini oyuna taşımak.<br><br><b>Önce duvar.</b> Ayrı bir dalda bekleyen 3,20'lik duvar main'e alındı ve <b>korkulan çakışma çıkmadı</b> — dalın dokunduğu satırlarla ana dalın ışık/masa/zemin değişiklikleri hiç kesişmemişti. Ama duvarın yükselmesi bir kusuru açığa çıkardı: kapı boşluğu duvarla birlikte uzamış, lento tavana yapışmıştı. Cevap yine maketin kendi dosyasındaydı — kapı 2,65'te biter, üstündeki badana şeridi (<b>alınlık</b>) cepheyi tamamlar. Kapı ölçüsü artık <b>tek bir yerde</b> yazılı; hem sahne hem test oradan okuyor (eskiden iki ayrı yere kopyalanmıştı).<br><br><b>Sonra arka bant.</b> Duvar 1,20'den 3,20'ye çıkınca bandın üç krem kutusu kadrajın beşte birini kaplayan <b>bomboş bir yüzeye</b> dönüştü. Maketin çözümü hazırdı: orası kütle değil, üç oda — solda servis köşesi (cezve ocağı, tezgâh, raflar, bulaşık, damacana), ortada <b>yıkık merdiven kovası</b> (Kat 2'nin kancası; uyarı şeridi ve dubalarla), sağda lavabo. Arka yarının arka duvarı artık <b>çizilmiyor</b>, çünkü o kenar tek düz bir duvar değil bir <b>program</b>. Duvarlar çarpışma katısı olmadığı için yol bulma, denge ve kayıt hiç etkilenmedi — değişen yalnız görüntü.<br><br>Sonra kullanıcı geri bildirimi geldi ve mobilya iki tur döndü: <i>“banketlerin masaları küçük… tabureler orantı olarak çok küçük… mutfak eşyaları mutfağın dışında… banket masaları KARE olsun.”</i> İkili masa kare oldu, tabure ölçeği maketin kendi taburesine kilitlendi, servis kümesi mutfağın içine çekildi. İkinci turda tabure fazla büyük bulunup kısıldı.<br><br>Bu turlarda mobilya küçültülüp büyütülürken asıl sebep <b>ölçülmedi</b> — o, sıradaki oturumun işi oldu.",
+   "maddeler": [
+    "<b>Duvar main'de:</b> 3,20 · lambri 0,90 · üç katman · koyu çıta; dekorun asma bandı maketin yüksekliklerinde (tablo 1,95 · aplik 2,05 · saat 2,20)",
+    "<b>Ana giriş maketin bloğu oldu:</b> kapı 2,65 · söveler ∓2,20 · <b>alınlık</b> 2,65–3,20 · üst kordon 3,15 — kapı ölçüsü artık tek kaynakta",
+    "<b>Arka bant odalara döndü:</b> bina kabuğu + 2,2'lik ara duvarlar + servis köşesi + yıkık merdiven kovası + lavabo (kapalıyken tadilat perdesi, iskele, moloz)",
+    "<b>Merdiven 1,2'lik bantta sığmıyordu, 3,2'de sığdı</b> — ve bu artık teste yazılı",
+    "<b>Kullanıcı geri bildirimi, iki tur:</b> ikili masa kare (0,90/1,05) · tabure ölçeği maketten (0,90) · dörtlü masa 1,05/1,68 · servis kümesi mutfağın içine",
+    "Testler <b>279 → 281</b> · duman testi 28/28 · derleme temiz"
+   ],
+   "not": "<b>Bir bekçi iş başında yakaladı:</b> koridordaki yükseltme noktasını 3,50'den 3,65'e taşımak istedim; test, o noktanın garson satın-alma dairesine girdiğini söyledi (2,26 < 2,30) ve değişiklik geri alındı.<br><br>İki tur mobilya kısıldığı hâlde oran bir türlü oturmadı — sebebi sonraki oturumda ölçüldü ve mobilyada değil <b>karakterin boyunda</b> çıktı."
+  },
+  {
+   "tarih": "07.09.2026",
+   "etiket": "Faz B · 9. oturum (ölçü kararı · BM adım 2)",
+   "baslik": "Karışıklığın sebebi bulundu: ölçü, hem sanatın hem ekonominin ortak değişkeni",
+   "govde": "Oturuma tek cümlelik bir şikâyetle girildi: <b>“bu tasarım ve geliştirme meselesi aşırı karıştı”</b>. Cevap vermeden önce günlük okundu ve karışıklığın <b>dört kök sebebi</b> ölçüldü.<br><br>Birincisi ve en pahalısı: <b>maket ile oyun iki ayrı program.</b> Maket eski bir three sürümünü renk yönetimi olmadan kullanıyor, oyun renk-doğru çalışıyor. Aynı geometriden aynı görüntü <b>hiçbir zaman</b> çıkmayacak — ölçüldü: aynı zemin makette 201, oyunda 118 parlaklıkta. Kabul kriteri “yan yana koy, aynı mı” olduğu sürece hiçbir tasarım turu kapanamıyordu; nitekim üç tur üst üste reddedilmişti.<br><br>İkincisi: <b>geometri aynı anda hem sanat hem oynanış.</b> Masa aralığı yürüme süresidir, yürüme süresi çay/dakikadır, o da ekonominin kendisi. Yani tasarım her oynadığında denge ölçümleri geçersizleşiyor — <b>ama tersi olmuyor.</b> Bağımlılık tek yönlü olduğu için sıra sorusunun cevabı da tekti: önce ölçü donar.<br><br>Üçüncüsü: “tasarım” tek kelime ama iki ayrı iş — <b>açık uçlu sanat arayışı</b> ile <b>onaylı maketi port etme</b>. Maket zaten onaylıydı; kalan iş ikincisi, yani kapalı uçlu ve ölçülebilir. Dördüncüsü: asıl darboğaz ikisi de değil, hiç el değmemiş <b>yayın katmanı</b>.<br><br>Karar verildikten sonra oturumun kalanı uygulamaya gitti. Önce istenen alet yapıldı: <b>oyunun planını maketteki gibi üstten gösteren kamera</b> ve zemine ölçü ızgarası çizen anahtar. İkisi yan yana konunca fark sayıya döküldü: kat planı birebir tutuyordu ama <b>mobilya yarım boydaydı</b> — kümenin ayak izi maketin dörtte biri. Sebep de çıktı: oyun, <b>orta şeridin küçük kafe masasını ön çeyreklere de uygulamış</b>; makette ise iki ayrı mobilya dili var.",
+   "maddeler": [
+    "<b>Üç katman kuruldu:</b> ölçü/ankraj → sistem → sanat cilası; sanat katmanı ankrajlara dokunamaz, böylece cila turları dengeyi bozamaz",
+    "<b>Ölçü hedefi seçildi (34 × 34 · duvar 3,20):</b> alternatif 32 × 32 + KayKit modülü ölçüldü — ızgaraya üçe birden bölünüyordu ama onaylı maketi yeniden açmayı ve kayan kapıyı çözmeyi gerektiriyordu",
+    "<b>Gölge geri geldi:</b> maketin ışık takımı birebir alındı; “objeler yüzüyor” hissini kapatan şeyin güneş açısı değil gölgenin kendisi olduğu görüldü",
+    "<b>Zemin düz ahşap oldu</b> ve masa ölçüleri maketin değerlerine çıktı (1,75 · 6,40 · ∓1,45); çarpışma kutuları artık masanın <b>tipinden</b> türüyor",
+    "<b>Testler ölçüye bağlandı:</b> düşen beş test sabit sayı yerine ayak izinden türeyen değerlerle yeniden yazıldı — 280/280"
+   ],
+   "not": "Bilerek kabul edilen bedel: masa aralığı 3,20 → 6,40 olduğu için <b>bugünkü denge ölçümleri geçersiz</b>. Yeniden ölçüm ölçü donduktan sonra <b>tek seferde</b> yapılacak; şimdi ölçmek ikinci kez ölçmek demek."
+  },
+  {
+   "tarih": "07.09.2026",
+   "etiket": "Faz B · 7. oturum (B4a)",
+   "baslik": "Platonun sonu: para artık lavabonun önünde birikiyor",
+   "govde": "Oturuma bir tasarım sorusuyla girildi — <b>lavabonun çarpan eğrisi ne olsun?</b> — ve soru iki kez düzeltildi: bir kez ölçümle, bir kez kullanıcı tarafından.<br><br>Önce ölçüm. Geçen oturum bir plato bırakmıştı: oyuncu 3,7 saatte tezgâhın ve masaların son seviyesine varıyor, sonra <b>1,5 saat boyunca gelir hiç büyümüyor</b>. Bunu kırmak için “neyi büyütelim” diye sormak yerine <b>neyin büyüyebileceği</b> ölçüldü. Cevap kapatıcıydı: mutfağın son seviyedeki hızı saniyede <b>0,78 bardak</b>, tam kadro taşıma tavanı <b>1,25</b>. Yani çay/dk yönünde kalan tüm alan <b>×1,6</b> ve arkası kapalı — garson sayısı üçte sabit, karakter kademeleri bitiyor. Bu katta geliri büyütebilecek tek yön <b>müşteri başına para</b>. Yeni hız ancak 2. kat ile gelir.<br><br>İkinci ölçüm bir tasarımı zamanından ayırdı. Planda “tuvalet kâğıdı biter, oyuncu depodan taşır” diye aktif bir döngü vardı. Hesaplandı: platonun tam olduğu dönemde oyuncunun taşıma işinde <b>boş zamanı yalnız %5</b>; bir kâğıt turu ise zamanının <b>%31</b>’ini yerdi. Yani o döngü tam orada geliri <b>artırmaz, keser</b>. Şerit dolduktan sonra boşluk %74’e çıkıyor ve aynı döngü bedavaya sığıyor — oraya ertelendi. Mekanik yanlış değildi, <b>zamanı</b> yanlıştı.<br><br>Sonra kullanıcı kolu düzeltti: <i>“lavabo geliri lavabo önünde istif olarak birikir; müşteriler çıkmadan lavaboya girip çıkabilir, girip çıkınca da orada para birikir.”</i> Bu, önerilen “bahşiş çarpanı”ndan daha iyi bir karardı ve üç sebeple: para görseli <b>hiç değişmiyor</b> (aynı istif, yalnız ikinci bir düşme noktası), gelir bir sayı büyümesi değil <b>mekânsal bir kazanç</b> oluyor (oyuncu gidip topluyor), ve çay fiyatına da bahşişe de <b>hiç dokunulmuyor</b> — “çay 5 lira, sabit” kuralı yerinde duruyor.<br><br>Sayılar onaylı ivmeye (adım başına ×1,38) göre kuruldu ve iki ayrı sinyalle taşındı: lavabo iyileştikçe hem <b>daha çok müşteri uğruyor</b> (%30 → %55) hem <b>daha çok bırakıyor</b> (18 → 86 ₺). Sonuç ölçüldü: gelirin hiç değişmediği en uzun aralık <b>1,5 saatten 13 dakikaya</b> indi ve zincirin toplam süresi <b>uzamadı</b> (5,35 → 5,21 saat). Erken ve orta oyunun her satırı birebir aynı kaldı.<br><br>Bir de beklenmedik bir bulgu: kolun büyüklüğünden çok <b>fiyat eğrisinin dikliği</b> belirleyici çıktı. Aynı çarpan, dik bir eğriyle 41 dakikalık ölü aralık üretiyor; düz bir eğriyle 13 dakikalık. Yani “ne kadar” sorusunun cevabı, “ne aralıkla” sorusunun cevabı kadar önemli değildi.",
+   "maddeler": [
+    "<b>Plato kırıldı:</b> gelirin donduğu en uzun aralık 1,5 saatten <b>13 dakikaya</b>; zincirin süresi uzamadı",
+    "<b>Bu katta çay/dk kolunun tükendiği ölçüldü</b> — kalan tek büyüme yönü müşteri başına para, yenisi 2. kat ile gelir",
+    "<b>Kâğıt taşıma döngüsü ertelendi:</b> platonun tam yerinde oyuncunun boş zamanı %5, o döngü ise %31 — geliri keserdi",
+    "<b>Lavabo kendi para istifiyle geliyor:</b> müşteri girip çıkıyor, parasını odanın önüne bırakıyor, oyuncu topluyor",
+    "Oda parasıyla açılıyor ve <b>kendi seviyeleri</b> var; kapalıyken tadilat hâlinde (tahta perde) duruyor",
+    "Testler <b>270/270</b>, duman testi <b>28/28</b>, erken oyun birebir aynı"
+   ],
+   "not": "<b>Bu oturumun dersi: bir mekaniğin yanlış olması ile yanlış zamanda olması ayrı şeylerdir — ve ikincisi ölçülebilir.</b> Kâğıt döngüsünü plandan çıkaran şey bir zevk tercihi değil, oyuncunun o penceredeki zaman bütçesiydi: %5 boşluğa %31’lik angarya sığmaz.<br><br>İkinci ders sayının kendisiyle ilgili: platoyu kıran şey “daha büyük çarpan” değil, kolun zincire <b>hangi aralıkla serpiştirildiği</b> oldu."
+  },
+  {
+   "tarih": "07.09.2026",
+   "etiket": "Faz B · 6. oturum (B5b)",
+   "baslik": "Yirmi masanın parası: ölçüm soruyu değiştirdi",
+   "govde": "Oturuma tek bir soruyla girildi: <b>şeridin son sekiz masası çok mu pahalı?</b> Cevabı verebilmek için ekonominin modeli söküldü ve sorunun yanlış soru olduğu görüldü.<br><br>Oyunda para, üç tavanın <b>en düşüğü</b> kadar akıyor: kaç müşteri geliyor (<b>talep</b>), mutfak saniyede kaç çay çıkarıyor (<b>arz</b>), ve o çayı kim taşıyor (<b>taşıma</b>). Hesap sadeleştirilince tek bir tezgâhın besleyebileceği koltuk sayısı çıkıyor: son seviyede <b>yaklaşık altı koltuk</b>. Salonda ise <b>elli altı</b> koltuk var. Yani talep, daha <b>üçüncü masada</b> diğer iki tavanı geçmiş — o andan itibaren açılan hiçbir masa geliri artırmamış. On altı masa açılışı, toplam 350 bin lira, gelire katkısı <b>sıfır</b>. Geçen oturumun “denge hiç değişmedi” ölçümünün sebebi de buymuş: masa sayısı bu modelde geliri zaten değiştiremiyor.<br><br>Bir masa gelir çarpanı değilse, fiyatı da gelir çarpanı fiyatı olamaz. Şeridin eğrisi masanın <b>gerçekte sattığı şeye</b> göre yassıltıldı — alan, atmosfer, yükseltilecek yüzey: <b>194.300 ₺ → 51.100 ₺</b>. Şeridin dolması ortalama oyuncuda 10,3 saatten <b>5,3 saate</b> indi; rahat tempoda oynayan bir oyuncu bunu ilk kez bitirebiliyor. Erken oyuna hiç dokunulmadı.<br><br>Peki mutfağı büyütüp masaları anlamlı kılmak? Hesaplandı ve <b>reddedildi</b>: mutfağı on katına çıkarmak taşıma tavanına, müşteri geliş hızına ve ekrandaki elli sekiz müşteriye toslar — ve “çayı sen taşırsın, her şey otomatikleşmez” kuralını iptal ederdi. Bu oyunun tavanı saniyede ~1 bardak ve bu <b>bilinçli</b>. Uyumsuz olan mutfak değil, masa sayısının para iddiasıydı.<br><br>Günün son işi kullanıcının uyarısından çıktı: <i>“görev ve geliştirme zincirinde bunu da hesaba kat, onlar birbirine karışıyordu.”</i> Karışmanın sebebi bulundu ve yapısaldı. Oyunda ilerlemeyi <b>iki ayrı sıra</b> anlatıyor: satın alma zinciri (“şu açılmadan bu açılmaz”) ve görev hattı (ekranda gösterilen tek hedef). Görev hattı, hedef gösterdiği şeyin kilidini <b>bilerek atlıyor</b> — çünkü sıralı hat zaten tempo kaynağı. Ama bu şu demek: iki sıra ayrışırsa kilit <b>bir süse dönüşür</b> ve hiçbir şey bağırmaz. Tam olarak 3. garsonda olan buydu; kilidi “şeritteki dört masa ikinci seviyede olsun” gibi, oyuncunun serbest sırayla aldığı bir şeye bağlıydı ve görev sırasıyla hizalanması <b>imkânsızdı</b>. Kilit ölçümün söylediği gerçek koşulla değiştirildi ve iki sıra artık aynı şeyi söylüyor — <b>üç test</b> de bunu bekçiliyor.",
+   "maddeler": [
+    "Gelirin <b>üçüncü tavanı</b> (taşıma) simülatöre gerçek yürüme yollarıyla eklendi — daha önce hiç hesaba katılmıyordu",
+    "Bu ölçüm bir tahmini çürüttü: <b>3. garson geliri %19 artırıyor</b>, ~40 dakikada kendini amorti ediyor",
+    "Şeridin fiyat eğrisi <b>×1,45 → ×1,15</b> (194.300 → 51.100 ₺); dolum 10,3 → 5,3 saat",
+    "Ödüllü video kararı: ödül <b>geçici demleme hızı</b> olacak — tam darboğazın üstüne biner",
+    "<b>3. garson zincire alındı</b> ve görev hattı ile satın-alma zincirinin hizası artık <b>üç testle</b> bekçileniyor",
+    "Testler 255/255; erken oyunun her satırı birebir aynı"
+   ],
+   "not": "<b>Bu oturumun dersi: bir sayının arkasındaki varsayım, sayının kendisinden daha uzun yaşar.</b> 194.300 ₺’lik eğri aritmetik olarak kusursuzdu; yanlış olan tek şey, sessizce dayandığı “masa açmak geliri büyütür” cümlesiydi — ve o cümle hiç yazılmadığı için hiç sınanmamıştı.<br><br>Aynı hata oturum içinde <b>bir kez daha</b> yapıldı: raporun ilk hâli taşıma hızını elle tahmin edip “3. garson boşuna” dedi; ölçünce tam tersi çıktı. Ölçülmeden yazılan her cümle bir varsayımdır."
+  },
+  {
+   "tarih": "07.09.2026",
+   "etiket": "Faz B · 5. oturum (B5a)",
+   "baslik": "Masa 12'den 20'ye çıktı — ve en tehlikeli kör nokta testin kendisinden çıktı",
+   "govde": "Bu adım baştan ikiye bölündü: <b>bugün yapı, denge sonraki oturumda</b>. Sebebi basit — masa sayısını neredeyse iki katına çıkarmak oyunun temposunu değiştirebilir ve tempo değişikliği kullanıcının kararıdır, geliştiricinin değil. Bu yüzden gün boyunca tek bir denge sayısına dokunulmadı; sonunda simülatör koşuldu ve <b>var olan yirmi bir satırın hepsi birebir aynı</b> çıktı. Ölçülen yeni sayılar bir sonraki oturumun masasında duruyor.<br><br>Yapı tarafında iki eski varsayım kırıldı. Birincisi: kodda “her salon dört masa alır” diyen tek bir sabit vardı ve masanın hangi salona ait olduğu <b>bir bölme işlemiyle</b> hesaplanıyordu. Salonlar iki oturum önce eşit olmaktan çıkmıştı; bugün masa sayıları da çıktı (4 · 4 · 12) ve o bölme işlemi artık <b>yanlış cevap veriyordu</b>. İkincisi: koltuk sayısı masa seviyesinden tek bir listeyle geliyordu — “dördüncü seviyede masa dört kişilik olur”. Şeritteki banket masasının dört kişilik hâli yok: sırtında bank, karşısında tek sandalye var. Artık merdiven <b>masanın tipine</b> ait, ve ikili masa aynı basamakta dört sandalye çıkarmak yerine <b>bistro masasına</b> dönüyor: banka paralel uzuyor, derinliği azalıyor. Aynı adımda görünür bir değişim, ama yalan söylemeyen bir değişim.<br><br>Günün asıl hikâyesi ise testlerde geçti. İki test, şeridin masalarını <b>elle yazılmış bir listeyle</b> (“8, 9, 10, 11”) kontrol ediyordu — yazıldıkları gün doğruydu. Şerit on iki masaya çıkınca ikisi de sessizce körleşti: bekçilik ettikleri kurallar yeni sekiz masada hiç sınanmayacaktı. Listeler yerleşimden hesaplanır hâle getirilince test hemen gerçek bir kusur yakaladı — iki garson satın-alma noktası, yeni masaların yükseltme noktalarının <b>yarım metre</b> yakınına düşüyordu. Oyunda karşılığı şu olurdu: oyuncu garsonu almak için orada bekler, farkında olmadan masayı da yükseltmeye başlar.",
+   "maddeler": [
+    "Şeridin kalan <b>8 masası</b> açıldı — kat 20 masa, 56 koltuk",
+    "<b>Masa tipi</b> kavramı: dörtlü (ön salonlar) ve ikili (şerit); ikili iki kişide tavanlanır",
+    "Salon başına masa sayısı artık bir <b>tablo</b> (4 · 4 · 12), koda gömülü bölme değil",
+    "İki garson noktası şeridin uçlarına taşındı — test yakaladı",
+    "Denge <b>dokunulmadı</b> ve ölçüldü: yirmi bir satır birebir aynı",
+    "Testler 242 → <b>255</b> · duman 26/26 · konsol temiz"
+   ],
+   "not": "<b>Bu oturumun dersi: bir sabit yalana dönüştüğünde en tehlikeli yeri kod değil TESTTİR.</b> Kod bozulduğunda gürültü çıkarır; bayat bir test <b>sessizce</b> onaylamaya devam eder. Elle yazılmış bir index listesi aslında bir varsayımdır — ve varsayımlar da tıpkı kod gibi bayatlar. Bekçinin kendisi de düzenli olarak yoklanmalı."
+  },
+  {
+   "tarih": "07.09.2026",
+   "etiket": "Faz B · 4. oturum (B3-2)",
+   "baslik": "Salonun ortası doldu — ve bir tasarım kararı ekrana bakınca değişti",
+   "govde": "Kat geçen oturumda 34 × 34'e büyümüştü ama arka yarının önü <b>bomboş bir şerit</b> olarak duruyordu. Maket orayı kafelerin standart çözümüyle dolduruyor: ortada duvar olmadığı için <b>sırt sırta oturma bankı</b> — iki yüzlü uzun bir ada, her yüzünde ikili masa ve karşısında sandalye. Bu oturumda o yapı kuruldu; propler ve süs bilerek sonraki adımlara bırakıldı.<br><br>Bir tasarım kararı yol ortasında değişti. Plan “ada seviyeyle <b>uzasın</b>” diyordu, ben de adaları tek masalık kısa hâlleriyle kurdum. Ekran görüntüsüne bakınca karar kendini bozdu: <b>1,2 × 2,5'lik bir kütle banka değil dolaba benziyor</b> — derinliği boyundan büyük. Doğrusu şuydu: bank mekânın <b>sabit donanımıdır</b>; bir kafede uzayan şey bank değil, bankın önüne dizilen masa sayısıdır. Adalar tam boyda doğuyor, seviye üstlerindeki masa sayısını artıracak. Yan kazancı da var: şerit açıldığı <b>anda</b> mobilyalı görünüyor.<br><br>Kapı da makete uydu: ikinci salon açılınca <b>binanın tam ortasına</b> kayıyor, çünkü cephe artık bir çeyreğin değil binanın cephesi. Son olarak yerleşimden kopmuş <b>hayalet objeler</b> temizlendi — eski depo ve tuvalet kutuları kilitli salonun ortasında duruyordu, televizyon ile duvar saati ise dayandıkları duvar kalkınca boşlukta asılı kalmıştı.",
+   "maddeler": [
+    "İki <b>banket adası</b> — maketin ölçüsünde, ön masalarla aynı dikey hatta",
+    "<b>Karar ekranda değişti:</b> ada tam boyda doğuyor; seviye artık adanın üstündeki <b>masa sayısını</b> artıracak",
+    "<b>Kapı binanın ortasına kaydı</b> (makette olduğu gibi, ikinci salonla birlikte)",
+    "Garsonun <b>aktarma tezgâhı</b> yerine kondu — bugün yalnız mobilya",
+    "<b>Hayalet objeler temizlendi:</b> kilitli salonun ortasındaki kutular kaldırıldı, TV ve saat duvara oturdu",
+    "Testler <b>222 → 242</b> · duman testi 26/26 · <b>denge birebir aynı</b>"
+   ],
+   "not": "<b>Testin yakaladığı gerçek kusur:</b> duvar, kapı boşluğunu “kapı bu duvar parçasının içinde mi” diye soruyordu. Kapı ortaya kayınca tam <b>iki duvar parçasının dikişine</b> düştü, ikisi de “hayır” dedi ve <b>kapının önüne duvar örüldü</b>. Aynı sınıftan ikinci bir kusur da yakalandı: adayı göründüğü kalınlıkta katı yapmak <b>bank koltuğunu yol bulmaya kapatıyor</b> — masa ile ada arasında garsonun basabileceği tek bir kare kalmıyor ve garson sessizce “engelden kaçmadan düz git” moduna düşüyor. Geçen oturumun kusuruyla aynı aile olduğu için hemen tanındı.<br><br><b>Dersi:</b> bir ölçünün doğruluğu, onu doğuran maketin <b>taşımadığı</b> nesneyle sınanır. Maket ne yol bulma ızgarası ne de yükseltme noktası taşıyor; koordinatları birebir kopyalasaydım ikisi de <b>sessizce</b> kırılacaktı. Makete sadakat kopyalamak değil, <b>maketin anlattığı şeyi oyunun kendi kısıtlarıyla kurmak.</b>"
+  },
+  {
+   "tarih": "07.09.2026",
+   "etiket": "Faz B · 3. oturum (B3-1)",
+   "baslik": "Kıraathane 2,6 katına büyüdü — önce kameranın ne göstereceği kararlaştırıldı",
+   "govde": "Onaylanan maket katı 34 × 34 istiyordu; oyun 21 × 21'de duruyordu. Bu oturumda kat o ölçeğe taşındı — ama önce bir tasarım sorusu vardı, ve o soru koda dokunmadan cevaplandı: <b>telefon ekranında ne görünecek?</b><br><br>Üç kamera mesafesi aynı kareden canlı olarak karşılaştırıldı ve ölçüm sorunun kendisini değiştirdi: portre ekranda kamera yatayda yalnız <b>24 derece</b> görüyor, yani kat ne kadar geri çekilirse çekilsin <b>tamamı kadraja sığmıyor</b>. Bir salonu tek karede göstermek için karakterin birkaç piksele düşmesi gerekiyordu. Böylece karar “her şey görünsün mü” olmaktan çıkıp “oyuncunun çevresinde kaç metrelik bir <b>komşuluk</b> okunacak” hâline geldi. En yakın kademe elendi, orta kademe varsayılan oldu ve alttaki genel-bakış düğmesi artık “uzaklaş” değil <b>iki kademe arasında geçiş</b> yapıyor.<br><br>Sonra kat taşındı: iki ön salon, arka yarı, ve arkalarında <b>servis · merdiven · lavabo</b> bandı. Bu adımda içerik büyümedi — masa sayısı, servis, satın alma zinciri aynı kaldı; büyüyen katın kendisi. <b>Servis noktası ise artık yerinde sabit değil:</b> üçüncü salon açılınca sol duvardan arka bandın tezgâhına taşınıyor, tıpkı makette olduğu gibi; seviyesi korunuyor. Salon hâlâ seyrek görünüyor, çünkü ortasını dolduracak banket adaları bilerek sonraki adıma bırakıldı.",
+   "maddeler": [
+    "<b>Kamera kademesi seçildi:</b> en yakın kademe elendi; alttaki düğme artık iki kademe arasında geçiş yapıyor",
+    "Kat <b>21 × 21 → 34 × 34</b>; arkada servis · merdiven · lavabo bandı (içleri sonraki adımların işi)",
+    "<b>Servis üçüncü salonda arka banda taşınıyor</b> — makete sadık; seviye korunuyor",
+    "Salonlar artık birbirinin kopyası değil; <b>duvarlar geometriden</b> çıkıyor, ızgara sorgusundan değil",
+    "<b>Eski bir kusur bulundu:</b> garsonun teslim mesafesi yol bulma ızgarasına gizliden bağlıymış — masa ızgaraya denk gelirse garson engelden kaçmadan düz gidiyordu. Düzeltildi, teste bağlandı",
+    "Testler <b>209 → 222</b> · duman testi 26/26 · <b>denge sayıları birebir aynı</b>"
+   ],
+   "not": "<b>Bu oturumun dersi: ölçümün gürültüsü bulguyu ters çevirebilir.</b> Kat büyüyünce garsonun yürüyüşü <b>%66</b> uzadı, en uzak masa 18 → 29 birime çıktı; “servis kırıldı mı” diye bir sonda yazıldı ve ilk sonuç <b>%77 müşteri kaçışı</b> dedi — alarm. Aynı sonda ikinci kez koşunca aynı kodla bambaşka bir sayı verdi: rastgelelik sabitlenmemişti. Üstelik sondanın ilk hâli <b>yanlış şeyi ölçüyordu</b>: oyuncu beklerken kimse bulaşık yıkamadığı için bardaklar bitiyor, ölçülen yürüme değil bardak oluyordu. Tohumlanıp düzeltilince sonuç net çıktı: <b>eski ve yeni yerleşim birebir aynı servisi veriyor</b> — darboğaz yürüme değil.<br><br>Önceki iki oturumun dersi “aracın çıktısı yanılabilir” ve “aracın varsayımı yanılabilir”di. Bunun dersi: <b>aracın gürültüsü ve neyi ölçtüğü de yanılabilir.</b>"
+  },
+  {
+   "tarih": "06.09.2026",
+   "etiket": "Faz B · 2. oturum (B2)",
+   "baslik": "Üç ocak tek tezgâha indi — ve tost bir salonun değil, bir seviyenin ürünü oldu",
+   "govde": "Oyun bugüne kadar şöyle çalışıyordu: her salonun kendi çay ocağı, kendi bulaşığı, kendi garsonu vardı; üçüncü salon açılınca da <b>tost</b> geliyordu, çünkü tost o salonun ürünüydü. Onaylanmış maket bunu tersine çeviriyor: kat boyunca <b>tek bir servis noktası</b> var. O nokta seviye atladıkça derme çatma bir çay ocağından <b>kafenin yüzü olan tezgâha</b> dönüşüyor, ve tost yeni bir salondan değil <b>o merdivenin beşinci basamağından</b> açılıyor.<br><br>Bir önceki oturum bu geçişin altyapısını kurmuştu: servis ile alan arasındaki bağ tek bir listeye toplanmıştı. Bu oturumda o liste <b>tek satır kısaldı</b> ve üç ocak tek noktaya indi — çağıran kodun hiçbir yeri değişmedi. Bunun yanında “Tostçu Garson” diye ayrı bir personel türü, ona ait ayrı tepsi ve ayrı hız hattı kalktı; garsonlar tek havuza girdi ve bir garsonun tepsisinde artık çay ile tost birlikte durabiliyor.<br><br><b>Bu sefer oyun bilerek değişti</b>, o yüzden güvence de değişti: “hiçbir şey değişmedi” diyen parmak izi yerine <b>tempo ölçümü</b>. Ölçüm bir denge açığı ortaya çıkardı — tost eskiden ayrı bir servisin pahalı eğrisinden geliyordu; aynı merdivene binince <b>300 liraya açılan bir tost</b> ortaya çıktı, yani oyun tostu yirminci dakikada veriyordu. Merdivenin üst yarısı yeniden fiyatlandı (erken oyuna dokunulmadan) ve altı hedef bandın altısı da tuttu.",
+   "maddeler": [
+    "Üç servis <b>tek servis noktasına</b> indi; alan açmak artık ocak açmıyor",
+    "<b>L4 tezgâh · L5 tost</b> — obje yer değiştirmiyor, seviye sıfırlanmıyor; yalnız kimlik değişiyor",
+    "Müşteri <b>kendi ürününü seçiyor</b>; tost oranı tezgâhın seviyesinden geliyor",
+    "Personel tek havuz: <b>3 garson + 1 bulaşıkçı</b>; bulaşıkçı ikinci bölüme taşındı",
+    "Tempo yeniden ayarlandı: ilk alım 40 sn · garson 11 dk · 2. salon 35 dk · tezgâh 2 sa · tost 2,5 sa",
+    "Testler <b>207 → 209</b> · duman testi 26/26 · derleme temiz",
+    "Ayrıca: <b>mağaza önizlemeleri</b> artık salonun ışığıyla çiziliyor — kartta gördüğün renk salondakiyle birebir"
+   ],
+   "not": "<b>Bu oturumun dersi: ölçüm aracının oyuncu modeli de yanılabilir.</b> Simülatör “her an en ucuz darboğazı al” diyen bir oyuncu varsayıyordu; oyun ise ekranda tek görev gösterip oyuncuyu ona yönlendiriyor. Ocak ucuzken bu varsayımın zararı yoktu. Tezgâh ve tost pahalılaşınca <b>hangi sırayla satın alındığı temponun kendisi</b> hâline geldi ve aynı config iki farklı cevap verdi: eski varsayımla tost 17 dakikada, gerçek oyuncu davranışıyla 2,5 saatte. Simülatör görev hattını takip edecek şekilde yeniden yazıldı; personel ve masa yükseltmeleri de artık gerçekten satın alınıyor (eskiden bedava sayılıyorlardı). Denge sayıları ancak bundan sonra ayarlandı."
+  },
+  {
+   "tarih": "06.09.2026",
+   "etiket": "Faz B · 1. oturum (B1)",
+   "baslik": "Tek “bölge” kavramı dörde bölündü — ve oyun tek karakter bile değişmedi",
+   "govde": "Oyunun mekân modeli tek bir <b>bölge</b> kavramına dayanıyordu ve bu kavram üç ayrı şeyi birden anlatıyordu: mekânın bir parçası, bir servis noktası (ocak + bulaşık + o salonun garsonu), ve dörtlü bir masa grubu. Üçü hep birlikte açıldığı sürece bu sorun değildi. Ama onaylanan maket bu birlikteliği bozuyor: planlanan <b>ikinci alanın kendi ocağı yok</b>, üçüncü alan masa değil <b>tezgâh</b> getiriyor. Yani \"yeni alan aç\" ile \"yeni ocak aç\" artık aynı şey değil.<br><br>Bu yüzden bu oturumda içerik değil <b>model</b> değişti. Kavram dörde ayrıldı — <b>alan, servis, masa, oda</b> — ve servis ile alan arasındaki bağ tek bir listeye toplandı. Sıradaki adımda o liste bir satır kısalacak, üç ocak tek servise inecek ve geri kalan kodun hiçbir yeri değişmeyecek. B1'in bütün amacı buydu.<br><br><b>Oyunun aynı kaldığı iddiası ölçüldü.</b> Rastgelelik sabitlenip senaryo koşuluyor ve oyunun tüm durumu 2014 satırlık bir dosyaya döküldü; değişiklikten önce ve sonra alınan iki dosya <b>birebir aynı</b>. Ekonomi simülasyonunun bütün sayıları da aynı.<br><br>Bir de kayıt kararı uygulandı: eski kayıtlardaki satın alma kimliklerinin yeni zincirde karşılığı olmadığı için <b>göç yazılmadı</b>. Eski kayıt bulunursa ilerleme sıfırlanıyor, ayarlar korunuyor. Bu, 520 satırlık göç kodunu sildi. (\"İlerleme kaybolmaz\" kuralı mağazaya çıkıldığı andan itibaren bağlayıcı olacak; bugün ortada tek bir test kaydı var.)",
+   "maddeler": [
+    "Dört kavram tek dosyada; servis ↔ alan bağı <b>tek listede</b> — sıradaki adımın kaldıracı bu",
+    "Masa artık sayı değil <b>liste</b>: her masa alanını ve servisini ayrı taşıyor",
+    "Yanlış isimler düzeltildi; en yanıltıcısı “aktif bölge” idi — anlamı “üstünde durulan nokta”",
+    "<b>Kayıt v31 temiz sıfırlama</b> — kayıt dosyası <b>751 → 188 satır</b>",
+    "Davranış parmak izi <b>birebir aynı</b> (2014 satır) · simülasyon sayıları aynı",
+    "Testler <b>206 → 207</b> · duman testi 26/26 · derleme temiz"
+   ],
+   "not": "<b>Bu oturumun dersi: ölçüm aracı da yanılabilir.</b> Karşılaştırmada dört satırlık bir fark çıktı. İlk refleks kodu kurcalamak olurdu; onun yerine önce <b>aracın kendisi</b> denetlendi. Araç durumun kopyasını yüzeysel çıkarıyordu, bu yüzden bir sayaç dizisi bütün anlık görüntülerde <b>paylaşılıyordu</b> — dört karenin dördü de son değeri gösteriyordu. Yani hatalı olan kod değil, tabanı üreten araçtı. Araç düzeltilip eski sürümde taban yeniden alındı ve fark sıfıra indi. Refactor güvencesi, ölçenin de doğrulanmasını gerektiriyor."
+  },
+  {
+   "tarih": "06.09.2026",
+   "etiket": "Faz A · 1. oturum — Faz A kapandı (3 adım tek gecede)",
+   "baslik": "Zemin temizliği: kırık test onarıldı, dev fonksiyon bölündü, testler mekândan koptu",
+   "govde": "<b>Önce kırık test.</b> Otomatik duman testi Ağustos’tan beri on beş adımın yedisinde düşüyordu ve sebebi bilinmiyordu. Kök neden göründüğünden ince çıktı: bir görev tamamlanınca kart 1,3 saniye “tamamlandı” gösteriyor, oyun ise görevi ancak o animasyon bitince ilerletiyordu. Oyuncu bu arada doğal olarak yerdeki parayı topluyor — ve o para, henüz başlamamış “parayı topla” görevinin <b>başlangıç sayısına</b> yazılıyordu. Görev 0/1’de kilitleniyor, arkasındaki her adım domino gibi düşüyordu. Düzeltme yapısal: görev artık <b>bitiş anında</b> ilerliyor, kutlama sadece görsel bir gecikme. Test <b>8/15 → 26/26</b>.<br><br><b>Sonra temizlik.</b> Beş ölü alan kaldırıldı — bunların en sinsisi, elmasla açılacak “Usta” seviyesiydi: kod onu hesaplıyordu ama oyunda ona ulaşacak bir satın alma yolu hiç yoktu. Ardından oyunun kalbi olan 800 satırlık tek fonksiyon <b>17 sisteme</b> bölündü; yerleşim ve kurallar ayrı dosyalara çıktı. Son olarak testler mekândan koparıldı: “oyuncuyu şu köşeye koy” diyen 45 elle yazılmış koordinat gitti, yerine <b>yerleşimden hesaplanan</b> bir park noktası geldi.",
+   "maddeler": [
+    "Duman testi <b>8/15 → 26/26</b>; görev sayacı yarışı yapısal olarak kapandı",
+    "Ölü alanlar: servis-hızı çarpanı, masa önkoşulu, prestij ayarları, posta ikonu, ulaşılamaz “Usta” dalı",
+    "Ana döngü <b>800 → 65 satır</b>; 17 sistem ayrı ayrı okunabiliyor · store <b>2337 → 756 satır</b>",
+    "Testler yerleşimden bağımsız; iki <b>bekçi test</b> park noktasının gerçekten boş olduğunu doğruluyor",
+    "Davranış değişmedi, <b>ölçüldü</b>: 2018 satırlık durum parmak izi öncesi/sonrası birebir aynı",
+    "Testler <b>206/206</b> (5 yeni), derleme temiz, ekonomi simülasyonu aynı"
+   ],
+   "not": "<b>Bu oturumun dersi:</b> refactor’ın güvenliği testlerin sayısından değil, <b>davranışın ölçülmesinden</b> gelir. Bölmeye başlamadan önce oyundan tohumlu bir senaryoyla tam durum dökümü alındı; bölme bitince aynı döküm yeniden alındı ve fark çıkmadı. Bu araç (<code>tick-fingerprint</code>) artık depoda — Faz B’de yerleşim değişirken de aynı işi görecek."
+  },
+  {
+   "tarih": "06.09.2026",
+   "etiket": "Faz G · 4. oturum — Faz G kapandı",
+   "baslik": "Duvarlar artık bir yerde bitiyor",
+   "govde": "Duvar iki düz renk kuşağıydı — krem badana ve altında koyu lambri — ve kutunun kendisi <b>hiçbir yerde bitmiyordu</b>: ne zeminle buluştuğu yerde, ne lambrinin üstünde, ne de tepesinde. Gerçek bir odada bu üç hattın hepsinde çıkıntılı bir profil vardır; göz mekânı oradan okur. Üç ince profil eklendi: <b>süpürgelik</b>, <b>lambri üstü çıta</b>, <b>kartonpiyer</b>.<br><br><b>Renk kararı ölçümle değişti.</b> Planda süpürgelik koyu ahşap yazıyordu. Aynen uygulandı — ve telefon kadrajında bakıldığında <b>hiç görünmüyordu</b>: süpürgelik de çıta da lambriyle tek bir koyu kütleye karışıyordu. Görünmeyen bir profil profil değildir. Üç varyant aynı kareden çekilip soruldu (koyu · açık boyalı · orta ahşap); kullanıcı <i>“uyumlu bir renk olsun”</i> dedi, üç profil de tek açık tona alındı. Duvar artık “koyu lambri + boyalı çerçeve” olarak okunuyor.<br><br><b>“Hareket edince renk değişmesin” şartı ölçüldü.</b> İnce şeritlerde bu gerçek bir risk — daha önce reddedilen doku denemesinin titremesi tam olarak buydu. Kamera on adımda duvara yaklaştırıldı, şeritler ekranda dokuz piksel kaydı ve her karede parlaklık ölçüldü: <b>hiç oynamadı</b>.",
+   "maddeler": [
+    "Süpürgelik zeminin biraz <b>altından</b> başlıyor, kartonpiyer duvarın tepesini biraz <b>aşıyor</b> — hiçbir yüzey aynı düzlemde çakışmıyor",
+    "Profillerin taşma miktarı <b>kademeli</b>: en çok süpürgelik taşıyor, duvar zemine oturuyor",
+    "Titreme ölçümü: parlaklık yayılımı <b>%0</b> (171,7 → 171,7), koyu lambri bandı da sabit",
+    "Bütün duvarlar ve profiller <b>tek çizim çağrısı</b>: profiller eklendiği hâlde 49 → <b>40</b> (geniş ekranda 71 → 63)",
+    "Mağaza önizlemesi aynı bileşenden çiziyor — eski kopya silindi",
+    "Testler <b>201/201</b> (8 yeni), derleme temiz, konsol hatasız"
+   ],
+   "not": "<b>Bu oturumun dersi:</b> plandaki sayı ölçümü geçmiyorsa plan değil ölçüm kazanır — ama <b>renk kararını kullanıcı verir</b>. Geçen oturumda öğrenilen şey (tek bir “sonra” görüntüsü karar için yetmez, varyantlar aynı kareden çekilip sorulur) bu sefer baştan uygulandı ve bir tur geri alma tasarruf edildi.<br><br><b>Faz G tamam:</b> ışık · gölge kararı (sonuç: hiç gölge yok) · zemin geometrisi · duvar bitimi. Sahnenin görsel tabanı artık modellerden bağımsız oturmuş durumda. Sırada duman testinin yedi kırık adımı, sonra Faz A temizliği."
+  },
+  {
+   "tarih": "06.09.2026",
+   "etiket": "Faz G · 3. oturum",
+   "baslik": "Kasmanın sebebi çizim değil arayüzmüş; zemin tahta ve karo oldu",
+   "govde": "Kullanıcı <i>\"ikisini de yap benden bir şey istemeden\"</i> dedi: hem tam ekran kasması hem zemin. İkisi de bitti.<br><br><b>Kasma tahminle değil ölçümle kapatıldı.</b> Üç ayrı şey ölçüldü — çizimin gönderilmesi, oyun döngüsü, ve arayüzün yeniden çizilmesi. İlk ikisi temizdi. Suçlu üçüncüsüydü: oyun <b>kare başına 3,2 kez</b> arayüzü yeniden çiziyordu.<br><br>Sebep basit ve yapısaldı. Oyun her karede durumunun kopyasını çıkarıp topluca yazıyor; içerik hiç değişmese bile <b>kopya yeni</b> olduğu için arayüz \"değişti\" sanıyor. On iki farklı veri — masa seviyeleri, aktif görev, sayaçlar, kirli kaplar — karelerin <b>%100'ünde</b> böyleydi. Masaların seviyesi hiç değişmediği hâlde on iki masa her kare baştan çiziliyordu.<br><br>İkinci iş <b>zemin</b>. Planın teşhisi tutmuştu: mekân \"bitmemiş\" duruyorsa sebep doku eksikliği değil, <b>ölçek referansı</b> eksikliği. Salonun zemini artık tek renk bir alan değil; parke gerçek tahtalardan, fayans gerçek karolardan oluşuyor. Her tahtanın kendi hafif ton farkı var, aralarındaki derz bir çizgi değil <b>boşluk</b> — arasından koyu taban görünüyor.",
+   "maddeler": [
+    "Kare başına yeniden çizim <b>3,23 → 0,23</b> · kare süresi <b>10,24 → 6,05 ms</b>",
+    "Konum artık arayüzden geçmiyor: oyuncu, garson, bulaşıkçı doğrudan sahneye yazılıyor",
+    "Tam ekran + Windows ekran ölçeklemesine <b>piksel tavanı</b> — telefonda hiçbir şey değişmez",
+    "<b>Parke ve ceviz tahta</b> (2,20 × 0,55, satır başı kaydırmalı), <b>fayans ve yemek karo</b>",
+    "Dama teması bilerek değişmedi — yüksek kontrastlı satrancı zaten ölçek veriyordu",
+    "Mağaza önizlemesi aynı bileşenden çiziyor: mağazada gördüğün ölçü salonda göreceğin",
+    "Testler <b>192/192</b> (6 yeni), derleme temiz, konsol hatasız"
+   ],
+   "not": "<b>Zemin neden bu kadar fark etti:</b> zeminde boyutu bilinen, tekrar eden bir birim olunca salonun ne kadar büyük olduğu bir bakışta okunuyor. Doku yolu daha önce denenip geri alındığı için (moiré, sert derz çizgileri) desen bu kez <b>geometri</b>: alan başına tek çizim çağrısı, sıfır bayt asset, moiré yapısal olarak imkânsız.<br><br><b>Bir tuzak kayda geçti:</b> tarayıcıda \"tema değişmiyor\" sanılarak zaman kaybedildi. Sebep, geliştirme sunucusunun kod güncellemesinden sonra aynı dosyanın <b>iki ayrı kopyasını</b> tutması; test konsolundan yapılan değişiklik oyunun kullandığı kopyaya değil diğerine yazıyordu. Bundan sonra durum yalnız oyunun kendi test kancasından değiştirilecek."
+  },
+  {
+   "tarih": "06.09.2026",
+   "etiket": "Faz G · 2. oturum",
+   "baslik": "Gölge: eklendi, reddedildi, ölçüldü, komple kaldırıldı",
+   "govde": "Plandaki adım \"objelerin altına yumuşak leke koy, yüzme hissi bitsin\" idi. Yapıldı — tek çizim çağrısında, dosya olarak hiçbir şey eklemeden. Sonra ekrana bakıldı: <i>\"bu kötü duruyo, her şeyin altında bi yuvarlak var.\"</i> Geri alındı.<br><br>İkinci turda asıl şikâyet netleşti: sorun sadece yuvarlak değildi, <b>gölge ile yuvarlağın aynı anda olmasıydı</b> — üstelik mevcut gölgenin kenarı <i>\"zınk diye keskin çizgi gibi\"</i> duruyordu. Referans olarak My Hotel gösterildi: orada hiç gölge yok.<br><br>Üçüncü turda tahmin yürütmek yerine dört seçenek aynı kareden çekildi ve tek tek ölçüldü: sert gölge, hiç gölge, yumuşak gölge, gölgesiz artı tek havuz. Yumuşak varyant hem ışık sızdırdı hem de en pahalısı çıktı. Sonuç: <b>hiç gölge yok</b>.<br><br>Sert kenarın sebebi de ortaya çıktı: gölge haritası otuz birimlik bir alana yayılıyordu, o yoğunlukta kenar zorunlu olarak merdiven merdiven çıkar.",
+   "maddeler": [
+    "<b>Karar: sahnede hiçbir gölge çizilmez</b> — ne yönlü gölge, ne alttaki leke",
+    "Işık yerinde kaldı: yüzey aydınlatması ve hacim hissi ondan geliyor",
+    "<b>Telefon kadrajında 1,31 → 0,56 ms</b> (%57 hızlı), PC'de 2,02 → 1,44 ms",
+    "Gölge haritası tek başına kare süresinin <b>yarısıydı</b>",
+    "Kalan sadeleşme: dekor konumları koddan tek listeye çıktı",
+    "Testler <b>186/186</b>, derleme temiz, konsol hatasız"
+   ],
+   "not": "<b>Bu oturumun asıl dersi yöntemle ilgili:</b> ölçümün \"hedefini tuttu\" demesi, beğenileceği anlamına gelmiyor. İlk tur öncesi/sonrası karşılaştırmasında başarılıydı ve yine de reddedildi. Görsel bir adımda doğru yol, birden çok varyantı aynı kareden çekip <b>sormak</b> — tek bir \"sonra\" görüntüsü karar için yetmiyor.<br><br><b>Yan çıktı:</b> kullanıcının bildirdiği tam ekran kasması ilk kez ölçüldü. Gölge en büyük parçaydı; kalanı için ilk şüpheli, geniş ekranda çizim çağrısının 91'den 245'e çıkması."
+  },
+  {
+   "tarih": "06.09.2026",
+   "etiket": "Faz G · 1. oturum",
+   "baslik": "Işık — asıl sorun renk değil açıymış",
+   "govde": "Sahne aylardır \"her yeri eşit parlak\" duruyordu. Plan bunun çözümünü ışık renklerinde arıyordu: tek renk ortam ışığını sıcak gök / koyu yer ikilisiyle değiştir, yönlü ışığı sıcaklaştır, sis ekle. Üçü de yapıldı — ve sahne neredeyse hiç değişmedi. Üç ayrı ayar turunun ekran görüntüleri yan yana konulduğunda öncesinden ayırt edilemiyorlardı.<br><br>Sahneye geçici bir test kutusu eklenince sebep ortaya çıktı: <b>gölgeler zaten çalışıyordu.</b> Güneş yaklaşık 55 derece yukarıdaydı, yani neredeyse tepeden vuruyordu; gölge objenin <b>altında</b> kalıyor ve yine tepeden bakan kamera onu hiç görmüyordu. Güneş 40 dereceye indirildiğinde her masa, tabure ve müşteri zemine oturdu.<br><br>Alçalan güneş gölgeleri uzatınca eski gölge kamerası sağ üst köşede kırpmaya başladı; sınırlar salonu ve hemen önündeki sokağı kapsayacak şekilde genişletildi. Daha da alçak bir açı (35 derece) denendi: dramatik duruyor ama telefonda oynanışı örten uzun lekeler yapıyor — 40 derece bilinçli orta yol.",
+   "maddeler": [
+    "<b>Güneş açısı 55° → 40°</b> — oturumun asıl kazancı",
+    "Dolgu ışığı sıcak gök / koyu yer ikilisine geçti, şiddet 0,6 → 0,35",
+    "Yönlü ışık beyazdan kreme, 1,1 → 1,6",
+    "Gölge kamerası genişletildi — kırpma bitti",
+    "Sis eklendi — harita kenarı artık sert kesilmiyor",
+    "Çizim çağrısı <b>91→91</b>, sisin bedeli ~0,04 ms/kare — ölçüldü",
+    "Testler <b>186/186</b>, derleme temiz, konsol hatasız"
+   ],
+   "not": "<b>Plandaki bir madde boş çıktı:</b> \"ACESFilmic ton eşlemesi ekle\" deniyordu, oysa kullanılan 3B kitaplığı bunu <b>zaten varsayılan olarak açıyor</b>. Kitaplığın kaynağı açılıp doğrulandı; o maddede yapılacak tek şey pozlama değerini bir tık açmaktı.<br><br>Kullanıcı sonucu onayladı: <i>“tamam şu an sorun yok, zaten genel tasarım değişecek.”</i> Yani bu adım kalıcı bir cila değil, sonraki fazlarda bakılacak sahnenin <b>tabanını</b> düzeltti."
+  },
+  {
+   "tarih": "06.09.2026",
+   "etiket": "Faz E · 1. oturum",
+   "baslik": "Arayüz gerçek oyunda, sandbox ve asset paketleri",
+   "govde": "Kullanıcı arayüzü statik bir mockup olarak değil, <b>oynanan oyunun içinde</b> görmek istedi — ve her şeyin seviyesini elle ayarlayabileceği bir panel istedi. İkisi de yapıldı. Bilgi mimarisi plandaki §9'a göre kuruldu: üst şerit, aktif adımı taşıyan alt bant, dört sekmeli alt nav ve bütün panellerin paylaştığı tek sayfa kabuğu. Dağınık duran dört yan buton ile sağ üstteki görev kartı kalktı, Posta paneli kaldırıldı.<br><br>Görsel dil iki katman: sahnenin üstünde duran her şey <b>ceviz ve pirinç</b> (zemin teması ne olursa olsun okunur), içerik yoğun sayfalar <b>krem kâğıt</b>. Emoji ve CSS ikon kullanılmadı; altı yeni simge elle çizildi.<br><br>Kullanıcı ilk bakışta seviye barını küçük buldu — madalyon 42'den 56 piksele, içindeki rakam 15'ten 21'e çıkarıldı ve rakam optik merkeze alındı; eskiden madalyonun alt kenarından taşıyordu.",
+   "maddeler": [
+    "Planın son dört kararı kapandı: <b>D-049 … D-052</b>",
+    "<b>Ekran kenarı oku</b> — hedef dışarıdayken kenarda beliriyor, dokununca kamera kayıyor",
+    "<b>Hedefler</b> ekranı: beş kategori, sayaçlar gerçek istatistikten türüyor",
+    "<b>Sandbox</b>: sınırsız para, zaman ×1–25, ocak ve 12 masanın seviyesi, pad zinciri, görev atlama",
+    "<b>KayKit Restaurant + City Builder</b> indirildi, CC0 lisansı doğrulandı",
+    "Mantık testleri <b>186/186</b>, üretim derlemesi temiz, konsol hatasız"
+   ],
+   "not": "<b>Bir kırık bulundu ama bu oturumun değil.</b> Duman testi 15 adımın 7'sinde düşüyor. Önceki commit ayrı bir çalışma kopyasına açılıp aynı test koşuldu: <b>birebir aynı sonuç</b>. Yani kırık daha önceden vardı ve fark edilmemişti. Kök neden yazıldı — <code>q_coin</code> görevi aktifleşmeden önce para toplanıyor, görev sayacının başlangıcı 1'e kilitleniyor, sayaç 0/1'de takılıyor ve sonrası domino. Faz A/C işi; <b>Faz B'ye geçmeden onarılmalı</b>."
+  },
+  {
+   "tarih": "06.09.2026",
+   "etiket": "Faz P · 6. oturum — P kapandı",
+   "baslik": "Servis sistemi: global garson havuzu ve sipariş",
+   "govde": "Çay garsonu / tost garsonu ayrımı kaldırıldı. Kullanıcının cümlesi netti: <i>“öyle bir masa ve alan ayrımı da kalmadı, globalleşmesi lazım.”</i> Masa artık tek bir ürün değil <b>sipariş</b> veriyor — iki tost bir çay gibi — ve garson siparişin tamamı hazır olunca alıyor.<br><br>Beş kural yazıldı: havuz global · üstlenme bağlayıcı (garson yolda başka masaya bırakmaz) · öncelik en acil masada (hiçbir masa aç kalmaz) · sabır sipariş boyuna bağlı · garson sayısı türetilir, elle ayarlanmaz.<br><br>Servis noktası da tek merdivene indirildi: çay ocağı L1–L3, dördüncü seviyede <b>tezgâha dönüşüyor</b>, beşinci seviyede <b>tost açılıyor</b>, altıncı son para seviyesi, yedinci Usta. Mevcut maliyet tablosuyla birebir örtüştüğü için kayıt şeması değişmiyor.",
+   "maddeler": [
+    "<b>D-046</b> global garson havuzu + sipariş tabanlı servis",
+    "<b>D-047</b> servis noktası tek merdiven: ocak L1–L3, tezgâh L4–L6, Usta L7",
+    "<b>D-048</b> Astra kullanımı zorunlu değil, karar arayüz denemesinden sonra"
+   ],
+   "not": "Faz C'de simülatöre sipariş kuyruğu, üstlenme ve açlık ölçümü eklenecek; <b>“hiçbir masa X saniyeden fazla beklemedi”</b> iddiası teste yazılacak. Bugün bu davranışların hiçbiri ölçülmüyor."
+  },
+  {
+   "tarih": "05.09.2026",
+   "etiket": "Faz P · 4–5. oturum",
+   "baslik": "Kat 1 yayın planı — kaynak tarandı, tempo ve meta katman tasarlandı",
+   "govde": "Kaynağın tamamı tarandı ve bulgular kodda doğrulandı. Ortaya on dört bölümlük bir plan çıktı: ilerleme modeli, tempo tablosu, meta katman, görsel yol, arayüz şartnamesi, App Store yolu, faz planı, riskler.<br><br>En önemli iki bulgu yapısaldı. <b>Tek Odak kuralı</b> ihlal ediliyordu: ekranda aynı anda birden çok hedef çiziliyor, çünkü opsiyonel noktalar ve yükseltme dolumları görev filtresinin tamamen dışında. Ve <b>doku yolu kapalı</b>: zemine doku denenmiş, moiré yapmış, geri alınmıştı — asıl teşhis dokuda değil ölçek referansında.",
+   "maddeler": [
+    "Kritik yol <b>5–7 saat</b> olarak çerçevelendi, tekrarlı yükseltmeler yolun dışına alındı",
+    "Usta katmanı: L1–L3 para, L4 reklam veya elmas — kritik yolun dışında",
+    "Asset yolu: <b>KayKit CC0</b> + beş Türk objesi elle; AI'ın ücretsiz planları yasak",
+    "Başarı ölçütü saat değil <b>geri dönüş</b>: D1 ≥ %40, D7 ≥ %10"
+   ],
+   "not": "Ücretsiz AI 3B araçlarının lisansları tek tek okundu: biri atıf zorunlu tutuyor, biri ticari kullanımı yasaklıyor, biri çıktının Avrupa'da kullanılmasını açıkça yasaklıyor. Üçü de kullanılmayacak."
+  },
+  {
+   "tarih": "05.09.2026",
+   "etiket": "Faz P · 3. oturum",
+   "baslik": "Sokak cephesi vitrin oldu, kat yüksekliği düzeldi",
+   "govde": "Kullanıcı vitrine baktı ve <i>“güzel ama düzgün durmadı sanki”</i> dedi. Dört ayrı kusur çıktı: duvar 2,7 iken kapı boşluğu 2,9'du, yani <b>kapı duvardan taşıyordu</b>; cam bandının üstünde tabelaya yer yoktu, bina alçak bir baraka gibi duruyordu; tente alınlığın üstündeydi ve <b>eğimi tersti</b>; kapı kanadı içi dolu ahşap bir kutuydu, camın arkasında tahta kalıyordu.<br><br>Dördü de düzeltildi ve kat yüksekliği tek bir sabite bağlandı. Ayrıca içerideki rafların gölgesi duvarın dış yüzüne sızıyordu — gölge sapması duvar kalınlığından küçüktü.",
+   "maddeler": [
+    "Cephe dizilimi: kaide · cam · lento · <b>alınlık (tabela)</b> · üst kordon",
+    "Kapı <b>çift kanatlı camlı</b> oldu, sağ kanat içeri açık",
+    "Kat yüksekliği <b>3,2</b> — üç kat birden düzeldi"
+   ],
+   "not": "Girişin üst çıtasında kalan renk yalpalanması kullanıcı tarafından bilerek ertelendi: <i>“oyuna geçerken hallederiz.”</i>"
+  },
+  {
+   "tarih": "04–05.09.2026",
+   "etiket": "Faz P · 1–2. oturum",
+   "baslik": "Kat 1 maketi doğdu ve altı adıma oturdu",
+   "govde": "Mekân tasarımı üç boyutlu bir maket üzerinden yürütüldü. Onaylanan düzenin üstüne <b>seviye katmanı</b> eklendi: kıraathane bitmiş hâliyle değil, adım adım büyüyerek kuruluyor. Arka bant (servis, merdiven, lavabo) yerine oturdu, tezgâh salona açıldı, orta şeride banket adası girdi.<br><br>Merdiven bilerek <b>yıkık</b> bırakıldı — Kat 2 güncellemesinin kancası olacak. Kilitli alanlar çizilmiyor ama açık alandaki kilitli objeler tahta perde ve dubayla duruyor.",
+   "maddeler": [
+    "Kat 1 <b>altı adıma</b> bölündü — her adım gezilebilir",
+    "<b>Nargile kaldırıldı</b> — yaş derecelendirmesi yükselmesin",
+    "Kilitli obje <b>tadilat hâlinde</b> durur, parasıyla açılır"
+   ],
+   "not": "Katı ızgara denemesi kullanıcı tarafından reddedildi; düzen hissi ile doluluk birlikte isteniyor."
+  },
+  {
+   "tarih": "01.09.2026",
+   "etiket": "Denetim · 2. oturum",
+   "baslik": "Yayına hazırlık denetimi",
+   "govde": "App Store ve reklam tarafının engelleri tek tek çıkarıldı: geliştirici hesabı, imzalama, izleme izni, gizlilik manifesti, yaş derecelendirme anketi, mağaza materyali. Geliştirmenin Windows'ta yapılması iOS derlemesi için bir engel — çözüm bulut derleme olarak karara bağlandı.",
+   "maddeler": [
+    "Bloker listesi çıkarıldı ve sıraya kondu",
+    "iOS derlemesi için <b>bulut CI</b> kararı"
+   ],
+   "not": "Çocuk kategorisine girilmeyecek: girilirse davranışsal reklam tamamen yasaklanır ve gelir modeli çöker."
+  },
+  {
+   "tarih": "05.06 – 17.06.2026",
+   "etiket": "Kuruluş dönemi · 28 oturum",
+   "baslik": "Oynanabilir gövde kuruldu",
+   "govde": "Stack kararıyla başlandı — Unity değil, TypeScript ve tarayıcı. Ekonominin bütün sayıları tek dosyaya alındı, para <b>büyük sayı</b> tipiyle tutuldu, kayıt ilk günden sürüm numarası ve göç yolu ile kuruldu. Bugün otuz sürümlük göç zinciri kesintisiz çalışıyor.<br><br>Üstüne sırayla: tepsiyle manuel servis ve bardak döngüsü, garson ve bulaşıkçı, üç salon, ikinci ürün hattı olarak tost, koltuk ve grup sistemi, 36 görevlik hat, kozmetik tema mağazası, KayKit mobilya ve çizim performansı. Telefon geri bildirimi beş tur döndü ve her turda denge yeniden ölçüldü.",
+   "maddeler": [
+    "<b>3 salon · 12 masa · iki ürün hattı</b> (çay ve tost)",
+    "Garson, bulaşıkçı, ikinci garson ve üstlenme sistemi",
+    "<b>Kayıt v30</b> + otuz göç adımı, hepsi testli",
+    "Ekonomi simülatörü — tempo eğrisi ölçülebiliyor"
+   ],
+   "not": "Bu dönemin oturum sayısı <b>commit kaydından türetildi</b> (114 commit, 14 çalışma günü); oturum-başı defter tutmak yayın programıyla başladı. Rakam bir tahmindir, geri kalan bütün sayılar sayımdır."
+  }
+ ],
+ "riskler": [
+  {
+   "sev": "Açık",
+   "renk": "now",
+   "b": "Gölge geri açıldı — telefondaki maliyeti <b>ölçülmedi</b>",
+   "p": "Gölge, masaüstünde ölçülüp kapatılmıştı: kare süresi 1,31 → 0,67 ms, yani <b>karenin yarısı</b>. Kullanıcı maketin gölgelerini görüp geri isteyince takım maketin değerleriyle açıldı (yumuşak gölge, 2048 harita, ±30 ortografik). Telefonda ne kadara mal olduğu <b>bilinmiyor</b>. Ölçüm Faz F'de yapılacak; ayar kolları hazır: harita 1024'e inebilir, gölge kamerası oyuncunun etrafına daraltılabilir. <b>Karar gölgesizliğe dönmek değil</b>, önce ölçmek."
+  },
+  {
+   "sev": "Plan",
+   "renk": "now",
+   "b": "Faz B'nin bütçesi 9 → 12 oturuma çıktı",
+   "p": "Maket taşıması tek oturumluk bir iş değil: duvar · arka bant ve odalar · kamera + ölçü dondurma. Bütçe olduğu gibi bırakılsaydı iş kaybolmaz, <b>Faz C'nin denge ölçümlerinin arasına sızardı</b> — ve ölçü sonradan değiştiği için o ölçümler ikinci kez yapılırdı. v1.0 hedefi bu yüzden 68'den <b>71. oturuma</b> kaydı. Karşılığında Kat 1'in ölçüsü bir kez donuyor ve denge bir kez ölçülüyor."
+  },
+  {
+   "sev": "Çözüldü",
+   "renk": "done",
+   "b": "Geç oyunda gelir donuyordu — ÇÖZÜLDÜ (B4a)",
+   "p": "B5b'de ölçülmüştü: oyuncu 3,7 saatte hem tezgâhın hem masaların son para seviyesine ulaşıyor ve ondan sonra oran <b>15,62 ₺/sn'de donuyordu</b>. B4a kolu kurdu: müşteri çıkarken lavaboya uğruyor ve parasını <b>odanın önündeki istife</b> bırakıyor — gelir müşteri başına büyüyor, çay fiyatına dokunulmadan. Ölçüldü: gelirin hiç değişmediği en uzun aralık <b>1,42 saatten 13,4 dakikaya</b> indi, zincirin toplam süresi <b>uzamadı</b> (5,35 → 5,21 sa). Ayrıca ölçüm bu katta <b>çay/dk kolunun tükendiğini</b> gösterdi (arz 0,78 fincan/sn tavan, taşıma 1,25) — yeni hız ancak Kat 2 ile gelir."
+  },
+  {
+   "sev": "Tempo",
+   "renk": "now",
+   "b": "3. salonun açılışı ortalama oyuncuyu <b>27 dakika</b> bekletiyor",
+   "p": "B4a ölçümünün yan bulgusu: 3.400 ₺'lik <code>zone3</code> pad'i, Normal profilde “hiçbir şey satın alınamayan” <b>26,9 dakikalık</b> bir aralık üretiyor ve bu, “20 dakikayı aşan alım kalmasın” ölçütünü aşan <b>tek</b> nokta. B4'ten önce de vardı, B4 değiştirmedi. Kolun kendisi sağlam (alan açılışı gerçekten pahalı olmalı), sorun onun <b>öncesindeki gelirin</b> düşüklüğü — Faz C'nin denge turunda bakılacak."
+  },
+  {
+   "sev": "Tasarım",
+   "renk": "wait",
+   "b": "Tuvalet kâğıdı döngüsü ertelendi — <b>ölçülerek</b>",
+   "p": "Planda “kâğıt biter, oyuncu depodan taşır” diye aktif bir döngü vardı. Ölçüldü: platonun tam olduğu dönemde oyuncunun taşıma işinde <b>boş zamanı yalnız %5</b>, bir kâğıt turu ise zamanının <b>%31</b>'i olurdu — yani o döngü tam orada geliri artırmaz, <b>keser</b>. Şerit dolduktan sonra boşluk %74'e çıkıyor ve aynı döngü bedavaya sığıyor. Faz C/D'ye taşındı; mekanik iptal değil, <b>zamanı</b> değişti."
+  },
+  {
+   "sev": "Çözüldü",
+   "renk": "done",
+   "b": "Duman testi 15 adımın 7'sinde düşüyordu — ÇÖZÜLDÜ",
+   "p": "Kök neden: görev bittiğinde sayaç 1,3 saniyelik kutlama animasyonundan sonra ilerliyordu; o pencerede toplanan para yeni görevin başlangıcına yazılıyor ve görev 0/1'de kilitleniyordu. Görev artık bitiş anında ilerliyor, kutlama yalnızca görsel. Test <b>8/15 → 26/26</b>."
+  },
+  {
+   "sev": "Performans",
+   "renk": "done",
+   "b": "PC'de tam ekran kasması — ÇÖZÜLDÜ",
+   "p": "Kök neden ölçümle bulundu: sorun çizimde değil arayüzdeydi — oyun kare başına 3,2 kez arayüzü yeniden çiziyordu. Kare başına yeniden çizim 3,23 → 0,23, kare süresi 10,24 → 6,05 ms. Ayrıca tam ekranda piksel tavanı kondu. Kullanıcının makinesinde tekrar bakılacak."
+  },
+  {
+   "sev": "Yapısal",
+   "renk": "now",
+   "b": "Ekranda tek hedef kuralı deliniyor",
+   "p": "Görev filtresi satın-alma noktalarına uygulanıyor ama opsiyonel noktalar ve yükseltme dolumları filtrenin dışında çiziliyor. Oyuncu aynı anda birden çok hedef görüyor. Faz C'de kapanacak."
+  },
+  {
+   "sev": "Çözüldü",
+   "renk": "done",
+   "b": "Ana döngü 800 satırdı — ÇÖZÜLDÜ",
+   "p": "Faz A2'de 17 sisteme bölündü; geriye kalan 65 satır sadece bağlamı kurup sistemleri çağırıyor. Yerleşim ve kurallar ayrı dosyalara çıktı (store 2337 → 756 satır). Davranışın değişmediği tohumlu parmak iziyle ölçüldü."
+  },
+  {
+   "sev": "Ölçüm",
+   "renk": "wait",
+   "b": "Simülatör oyunu doğrulamıyor",
+   "p": "İki parçası kapandı. B2: simülatörün <b>oyuncu modeli</b> düzeltildi — artık görev hattını takip ediyor ve personel yükseltmelerini gerçekten satın alıyor. B5b: <b>yürüme/taşıma açığı kapandı</b> — gelir artık üç tavanın en düşüğü (talep · arz · <b>taşıma</b>) ve taşıma gerçek yol bulma mesafeleriyle hesaplanıyor. Bu ölçüm hemen bir şey buldu: geliri tezgâhtan sonra <b>taşıma</b> kelepçeliyor ve 3. garson %19 gelir getiriyor — daha önce “boşuna” sanılıyordu. Kalan: bardak döngüsü ve sabır hâlâ modellenmiyor; Faz C'de gerçeğe yaklaştırılacak."
+  },
+  {
+   "sev": "Tempo",
+   "renk": "wait",
+   "b": "Kat büyüdü, garsonun yürüyüşü %66 uzadı",
+   "p": "B3-1'de ölçüldü: kat 2,6 katına çıkınca garsonun servis noktasından masaya ortalama yolu <b>%66</b> uzadı (en uzak masa 18 → 29 birim). Servis <b>sonucu</b> bugün değişmedi — tohumlu sondada eski ve yeni yerleşim birebir aynı sayıyı verdi, yani darboğaz yürüme değil. Ama Faz C otomasyonu hızlandırınca yürüme bağlayıcı hâle gelebilir. Makette cevabı zaten var: <b>garsonun aktarma tezgâhı</b> (B3-2). Gerçek tempo doğrulaması oyuncu döngüdeyken Faz C'de yapılacak."
+  },
+  {
+   "sev": "Altyapı",
+   "renk": "wait",
+   "b": "iOS derlemesi Mac istiyor",
+   "p": "Geliştirme Windows'ta. Karar verildi: bulut CI üzerinden derlenecek. Faz F'den önce kurulmalı, yoksa yayın gecikir."
+  },
+  {
+   "sev": "Görsel",
+   "renk": "idle",
+   "b": "Maket girişinde renk yalpalanması",
+   "p": "Üst çıtada iki yüzey aynı düzlemde çakışıyor. Kullanıcı tarafından bilerek ertelendi: “oyuna geçerken hallederiz.” Faz G'de."
+  }
+ ],
+ "olcut": [
+  {
+   "k": "Kritik yol",
+   "v": "5–7 sa",
+   "n": "v1.0'ın “bitti” süresi"
+  },
+  {
+   "k": "D1 tutunma",
+   "v": "≥ %40",
+   "n": "ertesi gün geri dönen"
+  },
+  {
+   "k": "D7 tutunma",
+   "v": "≥ %10",
+   "n": "bir hafta sonra geri dönen"
+  },
+  {
+   "k": "Oturum",
+   "v": "8–12 dk",
+   "n": "tek oturumda geçen süre"
+  },
+  {
+   "k": "Reklam arası",
+   "v": "120 sn",
+   "n": "ilk 5 dakika muaf"
+  }
+ ]
+}
+  </script>
 
 <div class="bar-top"><div class="wrap bar-top-in">
   <span class="mark">Köşe Kıraathanesi · 3B idle-tycoon</span>
