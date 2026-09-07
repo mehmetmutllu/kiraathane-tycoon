@@ -1,0 +1,336 @@
+<title>Bant ve Kamera Kararı</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  /* Kıraathane rapor kimliği — docs/bm-adim1-duvar.html ile AYNI token seti (ev stili). */
+  :root {
+    --paper: #efece2; --surface: #f7f5ee; --surface-2: #e8e4d7;
+    --ink: #22271f; --ink-soft: #5b6154; --ink-faint: #8b9081;
+    --line: #d7d1c0; --line-soft: #e2ddcf;
+    --green: #2e6b4f; --green-wash: #e2ece3;
+    --copper: #a25f26; --copper-wash: #f2e6d8;
+    --bordo: #7a2230; --bordo-wash: #f3e0e2;
+    --f-display: "Baloo 2", "Trebuchet MS", sans-serif;
+    --f-body: "Newsreader", Georgia, serif;
+    --f-mono: "JetBrains Mono", Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #161a15; --surface: #1d221c; --surface-2: #252b23;
+      --ink: #e9e4d6; --ink-soft: #a8a696; --ink-faint: #7d8073;
+      --line: #343a30; --line-soft: #2a3027;
+      --green: #6fb28b; --green-wash: #1e2a22;
+      --copper: #d99a5c; --copper-wash: #2c2419;
+      --bordo: #d4707f; --bordo-wash: #2e1c1f;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #161a15; --surface: #1d221c; --surface-2: #252b23;
+    --ink: #e9e4d6; --ink-soft: #a8a696; --ink-faint: #7d8073;
+    --line: #343a30; --line-soft: #2a3027;
+    --green: #6fb28b; --green-wash: #1e2a22;
+    --copper: #d99a5c; --copper-wash: #2c2419;
+    --bordo: #d4707f; --bordo-wash: #2e1c1f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--paper); color: var(--ink);
+    font-family: var(--f-body); font-size: 17px; line-height: 1.62;
+    margin: 0; padding: 0 20px 90px;
+  }
+  .wrap { max-width: 950px; margin: 0 auto; }
+  header.top { padding: 46px 0 24px; border-bottom: 2px solid var(--line); }
+  .eyebrow {
+    font-family: var(--f-display); font-weight: 700; font-size: 11.5px;
+    letter-spacing: .13em; text-transform: uppercase; color: var(--copper); margin: 0 0 10px;
+  }
+  h1 { font-family: var(--f-display); font-weight: 800; font-size: 38px; line-height: 1.06; margin: 0 0 13px; text-wrap: balance; }
+  .standfirst { font-size: 18.5px; color: var(--ink-soft); margin: 0; max-width: 64ch; }
+  .meta { font-family: var(--f-mono); font-size: 12px; color: var(--ink-faint); margin-top: 20px; display: flex; flex-wrap: wrap; gap: 6px 20px; }
+  h2 { font-family: var(--f-display); font-weight: 700; font-size: 24px; margin: 50px 0 4px; text-wrap: balance; }
+  h2 .num { font-family: var(--f-mono); font-size: 12.5px; font-weight: 600; color: var(--copper); display: block; margin-bottom: 4px; letter-spacing: .06em; }
+  h3 { font-family: var(--f-display); font-weight: 600; font-size: 17.5px; margin: 30px 0 2px; }
+  p { margin: 12px 0; max-width: 70ch; }
+  code { font-family: var(--f-mono); font-size: .87em; background: var(--surface-2); padding: 1px 5px; border-radius: 3px; }
+
+  .measures { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 0; margin: 28px 0 8px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .measures > div { padding: 17px 18px 16px; border-left: 1px solid var(--line-soft); }
+  .measures > div:first-child { border-left: 0; padding-left: 0; }
+  .measures .n { font-family: var(--f-display); font-weight: 800; font-size: 29px; line-height: 1; color: var(--bordo); font-variant-numeric: tabular-nums; }
+  .measures .n small { font-size: 15px; font-weight: 600; color: var(--ink-soft); }
+  .measures .l { font-size: 14px; color: var(--ink-soft); margin-top: 7px; line-height: 1.42; }
+
+  figure { margin: 26px 0; }
+  .shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(215px, 1fr)); gap: 14px; }
+  .shots img { width: 100%; display: block; border: 1px solid var(--line); background: #1f2933; }
+  .shots .tag { font-family: var(--f-display); font-weight: 700; font-size: 12.5px; letter-spacing: .06em; text-transform: uppercase; padding: 9px 0 3px; }
+  .shots .tag.a { color: var(--bordo); } .shots .tag.b { color: var(--green); } .shots .tag.c { color: var(--copper); }
+  .shots .cap { font-family: var(--f-mono); font-size: 11.5px; color: var(--ink-faint); line-height: 1.55; }
+  figcaption { font-family: var(--f-mono); font-size: 12px; color: var(--ink-faint); margin-top: 10px; line-height: 1.55; }
+
+  .tblwrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; margin: 20px 0; font-size: 15.5px; }
+  th, td { text-align: left; padding: 9px 14px 9px 0; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  th { font-family: var(--f-display); font-weight: 700; font-size: 12px; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-faint); border-bottom: 1px solid var(--line); }
+  td.num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  td.was { font-family: var(--f-mono); color: var(--bordo); white-space: nowrap; }
+  td.now { font-family: var(--f-mono); color: var(--green); white-space: nowrap; font-weight: 600; }
+
+  .note { background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--green); padding: 15px 18px; margin: 24px 0; font-size: 16px; }
+  .note .h { font-family: var(--f-display); font-weight: 700; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--green); margin-bottom: 5px; }
+  .note.ask { border-left-color: var(--copper); }
+  .note.ask .h { color: var(--copper); }
+  .note p:first-of-type { margin-top: 0; } .note p:last-child { margin-bottom: 0; }
+
+  blockquote { margin: 20px 0; padding: 2px 0 2px 20px; border-left: 3px solid var(--copper); color: var(--ink-soft); font-size: 16.5px; }
+  blockquote .src { display: block; font-family: var(--f-mono); font-size: 11.5px; color: var(--ink-faint); margin-top: 7px; }
+
+  ul { padding-left: 20px; max-width: 70ch; } li { margin: 7px 0; }
+  .freeze { list-style: none; padding: 0; margin: 18px 0; display: grid; gap: 0; border-top: 1px solid var(--line-soft); }
+  .freeze li { display: flex; justify-content: space-between; gap: 18px; align-items: baseline; margin: 0; padding: 9px 0; border-bottom: 1px solid var(--line-soft); }
+  .freeze .k { font-size: 15.5px; }
+  .freeze .v { font-family: var(--f-mono); font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink-soft); }
+
+  footer { margin-top: 54px; padding-top: 20px; border-top: 2px solid var(--line); font-family: var(--f-mono); font-size: 12px; color: var(--ink-faint); line-height: 1.7; }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <p class="eyebrow">BM · maket taşıması · adım 3 ve 4</p>
+    <h1>Bant ve Kamera Kararı</h1>
+    <p class="standfirst">
+      Arka bant üç düz krem kutu olmaktan çıkıp maketin odalarına döndü. Geriye ölçü katmanının
+      son maddesi kaldı: kamera. İkisi de senin onayını bekliyor.
+    </p>
+    <p class="meta">
+      <span>2026-09-07 gece</span><span>ölçüm: gerçek oyun · 900 × 1000</span>
+      <span>kaynak: maket v13 · Scene.tsx · layout.ts</span><span>vitest 281/281 · smoke 28/28</span>
+    </p>
+  </header>
+
+  <h2><span class="num">ÖZET</span>Üç sayı</h2>
+  <div class="measures">
+    <div>
+      <div class="n">241 <small>br²</small></div>
+      <div class="l">Bandın üst yüzeyi. Dün tek parça boş krem düzlemdi; bugün üç oda.</div>
+    </div>
+    <div>
+      <div class="n">2,90</div>
+      <div class="l">Yıkık merdivenin yüksekliği. 1,2'lik bantta sığmıyordu, 3,2'lik kabuğun altında sığdı.</div>
+    </div>
+    <div>
+      <div class="n">%16</div>
+      <div class="l">fov 50 → 34 geçilirse uzak nesnelerin yakınlara göre büyümesi. Derinlik bu kadar düzleşir.</div>
+    </div>
+  </div>
+
+  <h2><span class="num">ADIM 3</span>Bant kütle değil, maketin odaları</h2>
+  <p>
+    Duvar 3,2'ye çıkınca bandın üç düz krem kutusu kadrajın beşte birini kaplayan bomboş bir yüzeye
+    dönüştü — <code>b6b-arka-bant.html</code>'in üçüncü bulgusu, o zaman 1,2'lik bant için yazılmıştı ve
+    duvar yükselince ağırlaştı. Çözümü aramaya gerek yoktu, maketin kendi kurgusu buydu:
+  </p>
+  <blockquote>
+    ADIM 3 SERVİS KÖŞESİ x∈[−17, −4,6] · ADIM 5 MERDİVEN x∈[−4,6, 4,6] · ADIM 4 LAVABO x∈[4,6, 17].
+    Bandın önü (z −9,8 … 0) bilerek boş: geniş tek sıra masalık şerit.
+    <span class="src">docs/maket/maket-v13.html · buildFloor1</span>
+  </blockquote>
+
+  <div class="tblwrap">
+    <table>
+      <thead><tr><th>Blok</th><th>Dün</th><th>Bugün</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Servis köşesi</td>
+          <td class="was">düz krem kütle</td>
+          <td class="now">fayans zemin · cezve ocağı · tezgâh · iki raf · bulaşık · kasa istifi · damacana rafı</td>
+        </tr>
+        <tr>
+          <td>Merdiven kovası</td>
+          <td class="was">düz krem kütle</td>
+          <td class="now">yıkık merdiven (14 basamak) · uyarı şeridi · üç duba</td>
+        </tr>
+        <tr>
+          <td>Lavabo — açık</td>
+          <td class="was">maketin odası (B6b)</td>
+          <td class="now">değişmedi; kabuğu artık bandın</td>
+        </tr>
+        <tr>
+          <td>Lavabo — kilitli</td>
+          <td class="was">üç düz düzlem (1,2 ölçeğinde)</td>
+          <td class="now">tahta perde 2,40 · arkasında iskele · moloz · kasalar</td>
+        </tr>
+        <tr>
+          <td>Bandı kapatan şey</td>
+          <td class="was">kutunun kendisi</td>
+          <td class="now">binanın arka duvarı (3,2, salonun duvarıyla aynı bileşen)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <figure>
+    <div class="shots">
+      <div>
+        <img src="gorsel/ss/b6b-once-bant-genis.png" alt="Eski bant: tek parça krem yüzey">
+        <div class="tag a">Dün · 1,2'lik bant</div>
+        <div class="cap">Üç blok, tek renk. Kadrajın ~%21'i boş krem.</div>
+      </div>
+      <div>
+        <img src="gorsel/ss/bmm-arka.png" alt="Yeni bant: merdiven kovası ve lavabo odası">
+        <div class="tag b">Bugün · odalar</div>
+        <div class="cap">Merdiven kovası ve lavabo odası salondan okunuyor.</div>
+      </div>
+      <div>
+        <img src="gorsel/ss/bmm-tadilat.png" alt="Lavabo kilitliyken tadilat hâli">
+        <div class="tag c">Lavabo kilitliyken</div>
+        <div class="cap">Perde 2,40; arkasında iskele ve moloz — "kilitli obje yıkık durur".</div>
+      </div>
+    </div>
+    <figcaption>node tools/shot-kadraj.mjs · node tools/shot-tadilat.mjs (dev sunucusu 5173'te açıkken)</figcaption>
+  </figure>
+
+  <figure>
+    <div class="shots" style="grid-template-columns: 1fr;">
+      <div>
+        <img src="gorsel/ss/bmm-plan.png" alt="Katın üstten planı: üç arka oda">
+        <div class="cap">Üstten plan: solda servis köşesi (fayans), ortada merdiven kovası, sağda lavabo.</div>
+      </div>
+    </div>
+  </figure>
+
+  <div class="note">
+    <div class="h">Oynanışa dokunmadı</div>
+    <p>
+      Bant hâlâ yürünmez — alanlar <code>z = −9,8</code>'de bitiyor (<code>clampToOpenAreas</code>).
+      Duvarlar zaten collision değil (<code>activeSolids</code> yalnız masa · sandalye · ocak ·
+      bulaşık taşır), o yüzden nav, denge, kayıt ve testlerin hiçbiri etkilenmedi. Merdivenin
+      dubaları bile maketin salon tarafındaki yerlerinden kovanın içine alındı: oyuncunun
+      yürüdüğü hiçbir yerde içinden geçilen obje yok.
+    </p>
+  </div>
+
+  <div class="note ask">
+    <div class="h">Karar 1 — bandın açılması</div>
+    <p>
+      Servis köşesi ve merdiven kovası artık salondan görünüyor; arka yarının arka duvarı
+      çizilmiyor, çünkü o kenar tek düz duvar değil bir program (servis açık · kova açık ·
+      lavabo kapılı). Bu maketin kendi kurgusu ama oyunda ilk kez böyle.
+      <strong>Onaylamazsan geri dönüş noktası tek satır:</strong> <code>Scene.Walls</code> içindeki
+      <code>side === 'back'</code> atlaması.
+    </p>
+  </div>
+
+  <h2><span class="num">ADIM 4</span>Kamera: fov 50 mi, maketin 34'ü mü?</h2>
+  <p>
+    Ölçü katmanının son maddesi. Oyunun kamerası <strong>fov 50</strong>, maketinki
+    <strong>fov 34</strong>; açı ikisinde de aynı (44° ↔ 45°), fark yalnız fov ve mesafe.
+    Aşağıdaki üç kare <em>aynı noktadan</em> ve <em>aynı kapsamla</em> alındı: fov daralınca mesafe
+    <code>tan25° / tan(fov/2)</code> ile telafi edildi, yani oyuncunun çevresi üç karede de aynı boyutta.
+    Değişen tek şey <strong>derinlik</strong>.
+  </p>
+
+  <figure>
+    <div class="shots">
+      <div>
+        <img src="gorsel/ss/bm4-fov50.png" alt="Oyun, fov 50">
+        <div class="tag a">fov 50 · bugün</div>
+        <div class="cap">mesafe ×1,000 · uzak/yakın oran 0,60</div>
+      </div>
+      <div>
+        <img src="gorsel/ss/bm4-fov42.png" alt="Oyun, fov 42">
+        <div class="tag c">fov 42 · ara değer</div>
+        <div class="cap">mesafe ×1,215 · uzak/yakın oran 0,66</div>
+      </div>
+      <div>
+        <img src="gorsel/ss/bm4-fov34.png" alt="Oyun, maketin fov'u 34">
+        <div class="tag b">fov 34 · maketin</div>
+        <div class="cap">mesafe ×1,525 · uzak/yakın oran 0,70</div>
+      </div>
+    </div>
+    <figcaption>node tools/shot-fov.mjs · <code>window.__devCam({ fov, distMul })</code> (DEV ölçüm kolu, üretimde ölü kod)</figcaption>
+  </figure>
+
+  <p>
+    "Uzak/yakın oran" şu: kameradan 14 birim daha uzaktaki bir masa, oyuncunun yanındaki masaya göre
+    ne kadar büyük görünüyor. fov 50'de 0,60 (belirgin küçülme = derinlik), fov 34'te 0,70. Yani
+    maketin fov'u sahneyi <strong>%16 düzleştiriyor</strong> — duvarlar daha az yakınsıyor, kat daha çok
+    "maket" gibi okunuyor. Bu bir kusur değil, bir tercih.
+  </p>
+
+  <h3>fov 34'ün bedeli — ölçüldü</h3>
+  <div class="tblwrap">
+    <table>
+      <thead><tr><th>Kalem</th><th>fov 50</th><th>fov 34</th><th>Sonuç</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Kameranın oyuncuya uzaklığı</td>
+          <td class="num">12,0 – 21,1</td>
+          <td class="num">18,3 – 32,2</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>Katın uzak köşesine uzaklık</td>
+          <td class="num">~45</td>
+          <td class="num">~66</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>Sis (<code>fogNear 34 · fogFar 72</code>)</td>
+          <td class="num">%29 uzak kenarda</td>
+          <td class="num">%84 uzak kenarda</td>
+          <td class="was">sis yeniden ayarlanmalı</td>
+        </tr>
+        <tr>
+          <td>Gölge kamerası (ortografik ±30)</td>
+          <td class="num">kat sığıyor</td>
+          <td class="num">kat sığıyor</td>
+          <td class="now">değişmez</td>
+        </tr>
+        <tr>
+          <td>Telefon portresi (fit ×1,3)</td>
+          <td class="num">d 11,05</td>
+          <td class="num">d 16,85</td>
+          <td>ölçülmedi (Faz F)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note ask">
+    <div class="h">Karar 2 — fov</div>
+    <p>
+      <strong>Önerim: fov 50 KALSIN.</strong> Üç sebep: (1) maketin 34'ü bir <em>gözlem aracının</em>
+      tercihi, oyunun değil — maket katı incelemek için var, oyun içinde yaşamak için;
+      (2) düzleşme kazancı %16 ve kadrajda zar zor okunuyor, buna karşılık sisin yeniden
+      ayarlanması ve telefonda yeniden ölçüm gerekiyor; (3) D-072'nin kuralı ölçüyü
+      <em>dondurmak</em> — bugün çalışan bir sayıyı ölçülmemiş bir kazanç için değiştirmek o kuralın tersi.
+      Ama bu senin kararın: <strong>50 · 42 · 34</strong>. Hangisini seçersen ölçü listesine o yazılır.
+    </p>
+  </div>
+
+  <h2><span class="num">SONRAKİ</span>Dondurulacak sayılar</h2>
+  <p>
+    İki karar verilince ölçü katmanı kapanır ve bir daha açılmaz: sanat cilası (dekor · materyal ·
+    renk · ışık · animasyon) bu listeye dokunamaz, sistem işi (denge · Faz 4/5/7/8) bu listenin
+    üstüne kurulur. <code>simulate.ts</code> tam bu noktada, tek seferde yeniden ölçülür.
+  </p>
+  <ul class="freeze">
+    <li><span class="k">Kat</span><span class="v">34 × 34</span></li>
+    <li><span class="k">Duvar · lambri · çıta</span><span class="v">3,20 · 0,90 · 0,08 @ 0,94</span></li>
+    <li><span class="k">Duvar katman kalınlıkları</span><span class="v">0,18 · 0,22 · 0,26</span></li>
+    <li><span class="k">Ana kapı (boşluk · söve · alınlık)</span><span class="v">2,65 · ∓2,20 · 2,65…3,20</span></li>
+    <li><span class="k">Bant · kabuk hattı · iç yüz</span><span class="v">−9,8 … −17,4 · 0,09</span></li>
+    <li><span class="k">Bandın ara duvarı</span><span class="v">2,20 @ x ∓4,60</span></li>
+    <li><span class="k">Çay masası (tabla @ yükseklik)</span><span class="v">1,75 @ 0,75</span></li>
+    <li><span class="k">Küme aralığı · koltuk · yükseltme noktası</span><span class="v">6,40 · ∓1,45 · ∓2,15</span></li>
+    <li><span class="k">Kamera açısı · taban mesafesi</span><span class="v">45° · 8,50 (×1,35 uzak)</span></li>
+    <li><span class="k">Kamera fov</span><span class="v">karar bekliyor</span></li>
+  </ul>
+
+  <footer>
+    Köşe Kıraathanesi · BM adım 3–4 · vitest 281/281 · smoke 28/28 · tsc + eslint + build temiz<br>
+    Kareler: docs/gorsel/ss/bmm-*.png · bm4-fov*.png &nbsp;·&nbsp; Betikler: tools/shot-kadraj.mjs · shot-tadilat.mjs · shot-fov.mjs
+  </footer>
+</div>

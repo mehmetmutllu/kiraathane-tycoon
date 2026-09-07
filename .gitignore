@@ -35,3 +35,6 @@ coverage
 
 # git worktree klasörleri (EnterWorktree) — repoya girmez
 .claude/worktrees/
+
+# Rapor artifact kopyalari (tools/embed-rapor.mjs uretir; kareler data URI olarak gomulu)
+*.artifact.html

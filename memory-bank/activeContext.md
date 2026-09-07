@@ -39,13 +39,25 @@ Faz F'de; ayar kolları harita 1024 ve gölge kamerasını oyuncu çevresine dar
 dönmek çözüm değil** (D-073 kullanıcı kararı).
 
 ### >>> SONRAKİ OTURUMDA İLK İŞ <<<
-**BM adım 4 — KAMERA** (oyun fov 50 ↔ maket 34; maketin kadrajı mesafeyle mi fov'la mı yakalanacak)
-→ **ÖLÇÜ DONDURMA + maket arşiv damgası** → `simulate.ts` TEK KEZ yeniden ölçülür → Faz 4 → 5 → 7 → 8.
-(Adım 1 duvar ✅ · adım 3 arka bant + odalar ✅ — ikisi de main'de.)
+**İKİ KARARI AL, SONRA ÖLÇÜYÜ DONDUR.** Rapor hazır ve yayında:
+https://claude.ai/code/artifact/e49330bc-c918-41ec-a1b4-5c879cae146c
 
-**Adım 4'e girmeden kullanıcıya sorulacak:** arka bant artık AÇIK (servis köşesi ve merdiven kovası
-salondan görünüyor, eskiden düz krem kütleydi). Bu maketin kendi kurgusu ama oyunda ilk kez böyle;
-onaylanmazsa geri dönüş noktası `Scene.Walls` içindeki `side === 'back'` atlaması.
+1. **Bandın açılması onaylanıyor mu?** Arka bant artık düz krem kütle değil, maketin odaları —
+   servis köşesi ve merdiven kovası salondan GÖRÜNÜYOR. Maketin kendi kurgusu ama oyunda ilk kez
+   böyle. Geri dönüş noktası tek satır: `Scene.Walls` içindeki `side === 'back'` atlaması.
+2. **Kamera fov: 50 · 42 · 34?** Ölçüldü (aşağıda). Önerim **50 kalsın**.
+
+Karar verilince: **ÖLÇÜ DONDURMA + maket arşiv damgası** → `simulate.ts` TEK KEZ yeniden ölçülür
+→ Faz 4 → 5 → 7 → 8. (Adım 1 duvar ✅ · adım 3 bant ✅ · adım 4 ölçüm ✅ — hepsi main'de.)
+
+### BM adım 4 ölçümü (kod DEĞİŞMEDİ — fov hâlâ 50)
+DEV kolu: `window.__devCam({ fov, distMul })` · kareler `node tools/shot-fov.mjs` →
+`docs/gorsel/ss/bm4-fov50|42|34.png` (aynı nokta, aynı kapsam; mesafe `tan25°/tan(fov/2)` telafili).
+- fov 50 → 34: uzak/yakın görünen boyut oranı **0,60 → 0,70** = sahne **%16 düzleşiyor**.
+- Bedeli: uzak köşeye uzaklık 45 → 66 · `fogNear 34/fogFar 72` ile uzak kenarda sis **%29 → %84**
+  → **fov 34 seçilirse sis yeniden ayarlanmalı** + telefonda yeniden ölçüm. Gölge kamerası etkilenmiyor.
+- Önerim: **50 kalsın** — maketin 34'ü bir gözlem aracının tercihi; D-072'nin kuralı ölçüyü
+  DONDURMAK, ölçülmemiş bir kazanç için değiştirmek değil.
 
 ### BM adım 3 ✅ (arka bant + odalar)
 Bant kütle değil **maketin odaları**: bina kabuğu (`BAND_SHELL`, 3,2, salonun duvarıyla aynı bileşen)

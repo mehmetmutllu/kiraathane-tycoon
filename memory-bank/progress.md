@@ -1737,7 +1737,23 @@ tek yönlü sıra. Ölçü hedefi kullanıcı kararıyla **A**: kat 34 × 34, du
     bandın işi oldu; `localStorage.maketShellH` A/B kancası kalktı (bina duvarı D-073'te dondu).
   - **vitest 281/281 · smoke 28/28 · tsc + eslint + build temiz.** Kareler: `tools/shot-kadraj.mjs`
     (`bmm-plan|salon|kapi|arka`) + `tools/shot-tadilat.mjs` (`bmm-tadilat`).
-- ⏳ BM adım 4 kamera (fov 50 ↔ maket 34) · **DONDURMA + maket arşiv damgası**.
+- 🔧 **BM adım 4 — KAMERA: ölçüldü, KARAR KULLANICIDA.** Kod değişmedi; oyunun fov'u hâlâ 50.
+  DEV ölçüm kolu eklendi: `window.__devCam({ fov, distMul })` (`devSandbox.camFov/camDistMul`,
+  `CameraRig` DEV dalı — üretimde ölü kod). `tools/shot-fov.mjs` aynı noktadan aynı kapsamla üç
+  kare alıyor (mesafe `tan25° / tan(fov/2)` ile telafi ediliyor: ×1,000 · ×1,215 · ×1,525).
+  - **Bulgu:** fov 50 → 34'te uzak/yakın görünen boyut oranı 0,60 → 0,70, yani sahne **%16
+    düzleşiyor**. Kazanç kadrajda zar zor okunuyor.
+  - **Bedeli ölçüldü:** kameranın katın uzak köşesine uzaklığı 45 → 66; `fogNear 34 / fogFar 72`
+    ile uzak kenardaki sis %29 → **%84**. fov 34 seçilirse **sis yeniden ayarlanmalı** ve telefonda
+    yeniden ölçülmeli. Gölge kamerası (ortografik ±30) etkilenmiyor.
+  - **Önerilen: fov 50 KALSIN** (maketin 34'ü bir gözlem aracının tercihi; D-072'nin kuralı ölçüyü
+    dondurmak, ölçülmemiş bir kazanç için değiştirmek değil). Karar kullanıcının.
+- ⏳ İki karar (bandın açılması · fov) onaylanınca **DONDURMA + maket arşiv damgası**, sonra
+  `simulate.ts` TEK KEZ yeniden ölçülür.
+- **Rapor:** `docs/bm-adim3-4-bant-kamera.html` →
+  https://claude.ai/code/artifact/e49330bc-c918-41ec-a1b4-5c879cae146c
+  (`tools/embed-rapor.mjs` kareleri data URI olarak gömüp `*.artifact.html` üretir — artifact'ın
+  CSP'si dış görsel yüklemiyor; üretilen kopya git'e girmez).
 - ⏳ Sonra: `simulate.ts` TEK KEZ yeniden ölçülür (masa aralığı 3,20 → 6,40 oldu, eski denge
   ölçümleri geçersiz), ardından Faz 4 → 5 → 7 → 8.
 

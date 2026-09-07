@@ -24,6 +24,13 @@ interface SandboxState {
   topDownZoom: number;
   /** Zemine çizilen ölçü ızgarasının adımı (dünya birimi). 0 = ızgara kapalı. */
   gridStep: number;
+  /**
+   * KAMERA ÖLÇÜM KOLU (BM adım 4). Oyunun fov'u 50, maketinki 34 — aynı kadrajı iki farklı
+   * perspektif derinliğiyle kuruyorlar. Karşılaştırma karesi alabilmek için fov ve mesafe
+   * çarpanı DEV'de dışarıdan verilebilir. 0 = dokunma (üretim davranışı).
+   */
+  camFov: number;
+  camDistMul: number;
   set: (patch: Partial<SandboxState>) => void;
 }
 
@@ -35,6 +42,8 @@ export const useSandbox = create<SandboxState>((set) => ({
   topDown: false,
   topDownZoom: 1,
   gridStep: 0,
+  camFov: 0,
+  camDistMul: 0,
   set: (patch) => set(patch),
 }));
 
@@ -50,4 +59,14 @@ export function devTimeScale(): number {
 export function devTopDown(): { zoom: number } | null {
   const s = useSandbox.getState();
   return s.topDown ? { zoom: s.topDownZoom } : null;
+}
+
+/**
+ * Kamera ölçüm kolu: `{ fov, distMul }` — ikisi de 0 ise null (kamera üretim davranışında).
+ * `devTopDown` ile aynı desen: kamera her kare getState ile okur, abone olmaz.
+ */
+export function devCam(): { fov: number; distMul: number } | null {
+  const s = useSandbox.getState();
+  if (!s.camFov && !s.camDistMul) return null;
+  return { fov: s.camFov, distMul: s.camDistMul || 1 };
 }

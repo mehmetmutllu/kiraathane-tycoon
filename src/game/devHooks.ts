@@ -35,6 +35,7 @@ declare global {
     /** ÜSTTEN PLAN görünümü + ölçü ızgarası (ölçüm kareleri betikten çekilebilsin).
      *  gridStep 0 = ızgara kapalı; topDown false = normal takip kamerası. */
     __devPlan?: (opts: { topDown?: boolean; zoom?: number; gridStep?: number }) => void;
+    __devCam?: (opts: { fov?: number; distMul?: number }) => void;
   }
 }
 
@@ -220,6 +221,11 @@ export function installDevHooks(): void {
 
   window.__devPlan = ({ topDown = true, zoom = 1, gridStep = 0 }) => {
     useSandbox.getState().set({ topDown, topDownZoom: zoom, gridStep });
+  };
+
+  // BM adım 4 ölçümü: fov 50 ↔ 34 karşılaştırma karesi. `{ fov: 0, distMul: 0 }` üretime döner.
+  window.__devCam = ({ fov = 0, distMul = 0 }) => {
+    useSandbox.getState().set({ camFov: fov, camDistMul: distMul });
   };
 
   window.__setState = (patch) => {

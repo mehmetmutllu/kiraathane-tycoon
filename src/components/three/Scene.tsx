@@ -37,7 +37,7 @@ import {
   MaketWaterRack,
 } from './maketParts';
 import { perf } from '../../game/perf';
-import { devTimeScale, devTopDown, useSandbox } from '../../game/devSandbox';
+import { devCam, devTimeScale, devTopDown, useSandbox } from '../../game/devSandbox';
 import { screenPointer } from '../../game/screenPointer';
 
 /** GEÇİCİ (2026-09-07 ölçümü): maketle aynı ton eşlemesi (kapalı) — bkz. Canvas'taki not. */
@@ -155,6 +155,13 @@ function AdaptiveResolution() {
 // damping (1-exp(-k·dt)) AYNI katsayıyla hem konuma hem lookAt hedefine uygulanır → kamera↔hedef offset'i
 // rijit kalır (sallanma yok) + dt clamp (hitch sıçramaz) + fit/d YALNIZ gerçek resize'da (her kare size
 // okuması mobil viewport titremesini kameraya taşırdı).
+/** DEV ölçüm kolu fov'u değiştirebilsin diye ayrı fonksiyon (kamera nesnesine yazma tek yerde). */
+function setFov(cam: PerspectiveCamera, fov: number) {
+  if (cam.fov === fov) return;
+  cam.fov = fov;
+  cam.updateProjectionMatrix();
+}
+
 function CameraRig() {
   const { camera, size } = useThree();
   const desired = useMemo(() => new Vector3(), []);
@@ -183,6 +190,16 @@ function CameraRig() {
         return;
       }
     }
+    // DEV — KAMERA ÖLÇÜM KOLU (BM adım 4): fov ve mesafe çarpanı dışarıdan verilebilir, böylece
+    // aynı noktadan fov 50 ↔ 34 karesi alınıp maketle yan yana konabilir. Üretimde ölü kod.
+    let measureMul = 1;
+    if (import.meta.env.DEV) {
+      const dc = devCam();
+      if (dc) {
+        if (dc.fov) setFov(camera as PerspectiveCamera, dc.fov);
+        measureMul = dc.distMul;
+      }
+    }
     // fit/d YALNIZ ekran boyutu gerçekten değişince (resize/orientation) hesaplanır.
     if (size.width !== st.current.w || size.height !== st.current.h) {
       st.current.w = size.width;
@@ -201,7 +218,7 @@ function CameraRig() {
     // iptal eder → buradaki damping kendiliğinden oyuncuya geri süzülür (ek durum makinesi yok).
     const focus = g.camFocus;
     const zoomMul = g.camZoomOut ? 1.35 : 1; // B ↔ C kademesi (8,5 ↔ 11,5) — D-061
-    const d = (focus ? st.current.d * 0.72 : st.current.d) * zoomMul;
+    const d = (focus ? st.current.d * 0.72 : st.current.d) * zoomMul * measureMul;
     if (focus) {
       desired.set(focus.pos[0], d, focus.pos[2] + d);
       tmp.set(focus.pos[0], 0.6, focus.pos[2]);
