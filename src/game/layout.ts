@@ -216,8 +216,14 @@ export const BANKET = {
   cols: 3,
   /** Ada merkezinden: bank oturağı · masa · karşı sandalye · koridordaki yükseltme noktası. */
   benchDz: 0.74,
-  tableDz: 1.85,
-  chairDz: 2.95,
+  /* Kullanıcı 2026-09-08: *"banketlerdeki masaları banketten azıcık daha uzaklaştır, oradaki
+     tabureleri de ona göre ayarla"*. Masa 1,85 → 2,00 (adanın oturak kenarı 1,25; tabla yarısı
+     0,525 → aradaki boşluk 0,10'dan 0,225'e çıktı); sandalye masayla arasındaki 0,16'yı korumak
+     için 2,95 → 3,02'ye çekildi. Koridordaki yükseltme noktası (3,50) YERİNDE kaldı: 3,65'e
+     çıkarılınca güney yüzündeki nokta `waiter` pad'inin dairesine giriyordu (2,26 < 2,30 —
+     `layout-b32` bekçisi yakaladı). */
+  tableDz: 2.0,
+  chairDz: 3.02,
   aisleDz: 3.5,
 } as const;
 
@@ -574,8 +580,8 @@ export const LAYOUT = {
   //  bağlı: sol duvarda uzun kenar z'de, arka bantta x'te. `servicePlace(areasOpen).half`.)
   // BM adım 2 (D-073): iki mobilya dili, iki footprint. Dörtlü ÇAY masası maketin `teaTable`'ı
   // (1,75 → yarı 0,875); şeridin İKİLİ kafe masası `cafeTable2` (1,00 → yarı 0,50).
-  tableHalf: [0.875, 0.875] as [number, number], // dörtlü (four) — REACH_TABLE bundan türer
-  deuceHalf: [0.6, 0.6] as [number, number], // ikili (deuce) — kare 1,20 (L3+); banket adasının masası
+  tableHalf: [0.84, 0.84] as [number, number], // dörtlü (four) — kare 1,68; REACH_TABLE bundan türer
+  deuceHalf: [0.525, 0.525] as [number, number], // ikili (deuce) — kare 1,05 (L3+); banket adasının masası
   chairHalf: [0.3, 0.3] as [number, number], // tabure (maket yarıçapı 0,27) + oturan müşteri
   // Sandalye ofsetleri (Y2 tek kaynak): Tables.tsx görsel sandalyeyi, store koltuk pozisyonunu
   // (ALL_TABLES.seats) AYNI listeden türetir — görsel sandalye = oturulabilir koltuk.

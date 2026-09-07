@@ -1854,3 +1854,51 @@ olması normaldir, ERİŞİLEMEZ olması değil.
 
 **Testler:** 281/281 yeşil (3'ü yeniden yazıldı, biri "ikili her seviyede KARE" iddiasıyla
 güçlendirildi). tsc + eslint + build temiz, smoke 28/28.
+
+---
+
+## D-075 — MOBİLYA ÖLÇEĞİ KARAKTERE GÖRE AYARLANDI (2026-09-08 gece)
+
+**Kullanıcı (D-074'ün kareleri üzerine):** *"bu sefer de tabureler aşırı büyük oldu biraz daha
+ufaltabilirsin ve banketlerdeki masalar da biraz daha küçülebilir. ek olarak banketlerdeki
+masaları banketten azıcık daha uzaklaştır, oradaki tabureleri de ona göre ayarla. hatta normal
+masalar da belki emin olmamakla birlikte çok ama çok az ufalabilir çünkü **karaktere göre masalar
+ve tabureler çok büyük durdu**."*
+
+### KÖK SEBEP — maketin insanı 1,80, oyunun karakteri 1,30
+D-070 "maket bitmiş hâldir, ölçüler ondan alınır" dedi ve doğruydu; ama maketin mobilyası
+**maketin insanına** göre tasarlanmış. Oyunun karakteri 1,30 (eski karar) — yani maketin
+mobilyası 1:1 alındığında karakterin yanında **%38 büyük** kalıyor. D-073 ve D-074'ün her turda
+"biraz daha küçült" ile bitmesinin sebebi bu: kısılan hep PLAN ölçüsü, oysa oranı bozan
+**yükseklik**.
+
+| | maket | oyun (bugün) | maketin oranı 1,30'luk karaktere uygulansaydı |
+|---|---|---|---|
+| insan / karakter | 1,80 | **1,30** | — |
+| masa yüksekliği | 0,75 (%42) | **0,75 (%58)** | 0,54 |
+| tabla üstü | 0,795 | 0,795 (%61) | 0,57 |
+| tabure oturağı | 0,555 (%31) | 0,45 (%35) | 0,40 |
+
+### BU TURDA YAPILAN (yalnız PLAN ölçüsü)
+| | D-074 | D-075 |
+|---|---|---|
+| tabure ölçeği | 1,11 (oturak 0,555 · çap 0,83) | **0,90** (oturak 0,45 · çap 0,675) |
+| ikili masa | 1,00 → 1,20 | **0,90 → 1,05** |
+| dörtlü masa | 1,10 → 1,75 | **1,05 → 1,68** |
+| banket: masa ↔ ada | 1,85 (boşluk 0,10) | **2,00** (boşluk 0,225) |
+| banket: sandalye | 2,95 | **3,02** (masayla arası 0,16 korunur) |
+
+`tableHalf` 0,875 → 0,84 · `deuceHalf` 0,60 → 0,525. Koridordaki yükseltme noktası (`aisleDz`
+3,50) **yerinde bırakıldı**: 3,65'e çıkarılınca güney yüzündeki nokta `waiter` pad'inin dairesine
+giriyordu (2,26 < 2,30) — `layout-b32` bekçisi yakaladı.
+
+### AÇIK KALAN — kullanıcıya soruldu
+**Masa YÜKSEKLİĞİ 0,75'e dokunulmadı.** D-073'te kullanıcı kararıyla maketten alınmıştı ve ölçü
+katmanının dondurulacak listesinde. Oranı asıl bozan o; iki çıkış var ve ikisi de kullanıcının:
+**(a)** masa yüksekliği 0,75 → ~0,60 (mobilya karaktere uyar, maketten sapılır),
+**(b)** karakter 1,30 → ~1,75 (maket aynen kalır, karakter büyür — koltuk/pad/kamera mesafeleri
+yeniden ölçülür). Karar verilmeden ölçü DONDURULMAMALI.
+
+**Testler:** 281/281 yeşil. "banket birim geometrisi maketle birebir" testi yeniden yazıldı:
+artık sabit sayıları değil **sırayı ve boşlukları** bekçiliyor (ada → masa → sandalye → koridor,
+her aralık > 0,10). tsc + eslint + build temiz, smoke 28/28.

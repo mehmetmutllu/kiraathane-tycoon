@@ -129,14 +129,15 @@ describe('B5a — MASA TİPİ: dörtlü küme ↔ banket ikilisi', () => {
     expect(tableLook('four', 3).key).toBe('table_medium');
     // İkili masa hiçbir seviyede dörtlünün tablasını (1,75 = dört kişilik okuması) almaz.
     for (const l of [0, 1, 2, 3, 4]) expect(tableLook('deuce', l).key).not.toBe('table_medium');
-    // Kademeler: ikili 1,00 → 1,20 · dörtlü 1,10 → 1,75. İkili her seviyede dörtlüden KÜÇÜK,
+    // Kademeler: ikili 0,90 → 1,05 · dörtlü 1,05 → 1,68. İkili her seviyede dörtlüden KÜÇÜK,
     // ama L3'te kendi L0'ından büyük (basamak gözle görülür).
     const side = (k: 'four' | 'deuce', l: number) => tableLook(k, l).scale[0] * (tableLook(k, l).key === 'table_medium' ? 2 : 1);
-    expect(side('deuce', 0)).toBeCloseTo(1.0, 6);
-    expect(side('deuce', 3)).toBeCloseTo(1.2, 6);
-    expect(side('four', 0)).toBeCloseTo(1.1, 6);
-    expect(side('four', 3)).toBeCloseTo(1.75, 6);
-    for (const l of [0, 3]) expect(side('deuce', l)).toBeLessThan(side('four', l));
+    expect(side('deuce', 0)).toBeCloseTo(0.9, 6);
+    expect(side('deuce', 3)).toBeCloseTo(1.05, 6);
+    expect(side('four', 0)).toBeCloseTo(1.05, 6);
+    expect(side('four', 3)).toBeCloseTo(1.68, 6);
+    expect(side('deuce', 3)).toBeLessThan(side('four', 3));
+    expect(side('deuce', 0)).toBeLessThan(side('four', 0) + 1e-9); // L0'da ikisi de küçük tabla
     expect(side('deuce', 3)).toBeGreaterThan(side('deuce', 0));
     // İkilinin tablası BANKET adasının oturağının üstüne binmez (collision yarısı = tabla yarısı).
     expect(LAYOUT.deuceHalf[0]).toBeCloseTo(side('deuce', 3) / 2, 6);

@@ -30,11 +30,17 @@ const KAY = '/assets/models/kaykit-furniture-bits/';
 // **0,795**'e çıkmıştı → oturakla tabla arası 0,50, yani tabure masanın yarısı kadar alçak.
 // Referans maketin `stool()`'u: oturak üstü **0,555**, çapı 0,54. Ölçek buradan türer:
 // 0,555 / 0,50 = **1,11** → tabure 0,83 × 0,555; tabla üstüyle arası 0,24 (gerçek tabure oranı).
-const STOOL_S = 1.11; // chair_stool / chair_stool_wood — maketin oturak yüksekliğine (0,555) kilitli
+// 1,11 denendi ve kullanıcı *"bu sefer de tabureler aşırı büyük oldu"* dedi: maketin oranı
+// maketin 1,80'lik insanına göreydi, oyunun karakteri 1,30. Ölçek karakterin boyuna göre
+// yeniden seçildi: **0,90** → oturak üstü 0,45 (karakterin %35'i), çap 0,675, tabla üstüyle
+// (0,795) arası 0,345. Referans 1,11 sabit kalıyor çünkü greybox yedeği maketin ölçüleriyle
+// yazılı; o grup `STOOL_S / STOOL_REF` ile ölçeklenerek asset hattıyla aynı boya gelir.
+const STOOL_REF = 1.11; // greybox yedeğinin yazıldığı ölçek (maketin `stool()`'u birebir)
+const STOOL_S = 0.9;
 // Tabure (gerçek kıraathane formu): silindir gövde + kırmızı minder. Koltuk kutusu emekli.
 function Stool({ x, z }: { x: number; z: number }) {
   return (
-    <group position={[x, 0, z]}>
+    <group position={[x, 0, z]} scale={STOOL_S / STOOL_REF}>
       {/* Maketin `stool()`'u birebir: taban diski · ince ayak · geniş oturak · minder.
           Oturak üstü 0,555 (tabla üstü 0,795 ile arası 0,24), çap 0,54. */}
       <mesh castShadow position={[0, 0.03, 0]}>

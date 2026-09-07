@@ -1759,7 +1759,15 @@ tek yönlü sıra. Ölçü hedefi kullanıcı kararıyla **A**: kat 34 × 34, du
   - **Değişmez yeniden yazıldı:** "servis kümesi alanın içinde" iki rolü karıştırıyordu →
     aktörün bastığı noktalar alanın İÇİNDE · obje gövdeleri alana DEĞER + `pickupRadius` içinde.
   - **vitest 281/281 · smoke 28/28 · tsc + eslint + build temiz.**
-- ⏳ İki karar (bandın açılması · fov) onaylanınca **DONDURMA + maket arşiv damgası**, sonra
+- ✅ **Mobilya ölçeği (D-075, ikinci geri bildirim turu):** tabure 1,11 → **0,90** · ikili masa
+  1,00/1,20 → **0,90/1,05** · dörtlü 1,10/1,75 → **1,05/1,68** · banket masası adadan 1,85 →
+  **2,00** (boşluk 0,10 → 0,225), sandalye 2,95 → **3,02**. Koridor noktası (3,50) yerinde
+  bırakıldı — 3,65 `waiter` pad'inin dairesine giriyordu (bekçi yakaladı).
+  **KÖK SEBEP kayda geçti:** maketin insanı 1,80, oyunun karakteri 1,30 → maketin mobilyası 1:1
+  alınınca %38 büyük kalıyor. Her turda kısılan PLAN ölçüsü, oranı bozan ise **YÜKSEKLİK** (0,75).
+  **Masa yüksekliği bilerek değiştirilmedi** (D-073 kullanıcı kararı) — çıkış yolu kullanıcıya
+  soruldu: (a) masa 0,60'a insin (maketten sapılır) · (b) karakter ~1,75'e çıksın (maket kalır).
+- ⏳ ÜÇ karar (bandın açılması · fov · mobilya-karakter oranı) onaylanınca **DONDURMA + maket arşiv damgası**, sonra
   `simulate.ts` TEK KEZ yeniden ölçülür.
 - **Rapor:** `docs/bm-adim3-4-bant-kamera.html` →
   https://claude.ai/code/artifact/e49330bc-c918-41ec-a1b4-5c879cae146c

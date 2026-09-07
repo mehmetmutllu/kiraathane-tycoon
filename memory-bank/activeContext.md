@@ -59,7 +59,18 @@ DEV kolu: `window.__devCam({ fov, distMul })` · kareler `node tools/shot-fov.mj
 - Önerim: **50 kalsın** — maketin 34'ü bir gözlem aracının tercihi; D-072'nin kuralı ölçüyü
   DONDURMAK, ölçülmemiş bir kazanç için değiştirmek değil.
 
-### Kullanıcı geri bildirimi ✅ (D-074 — aynı gece uygulandı)
+### >>> KARAR 3 (yeni, D-075) — MOBİLYA / KARAKTER ORANI <<<
+Kullanıcı: *"karaktere göre masalar ve tabureler çok büyük durdu"*. İki tur küçültme yapıldı ama
+**kök sebep ölçüldü ve başka yerde:** maketin insanı **1,80**, oyunun karakteri **1,30**. Maketin
+mobilyası 1:1 alınınca karakterin yanında %38 büyük kalıyor. Her turda kısılan PLAN ölçüsü; oranı
+bozan ise **YÜKSEKLİK** — masa 0,75 (karakterin %58'i; makette %42), tabla üstü 0,795 (%61).
+**Masa yüksekliğine DOKUNULMADI** (D-073 kullanıcı kararı, dondurulacak listede). Çıkış iki tane:
+- **(a)** masa yüksekliği 0,75 → ~0,60 · tabure oturağı ~0,40 → mobilya karaktere uyar, maketten sapılır.
+- **(b)** karakter 1,30 → ~1,75 → maket aynen kalır, karakter büyür; koltuk ofsetleri, pad
+  yarıçapları, kamera mesafesi ve nav yarıçapları yeniden ölçülür.
+**Bu karar verilmeden ölçü DONDURULMAMALI** — yoksa donan liste yanlış oranı dondurur.
+
+### Kullanıcı geri bildirimi ✅ (D-074 + D-075 — aynı gece uygulandı)
 *"banketlerin masaları küçük… tabureler orantı olarak çok küçük… mutfak eşyaları mutfak dışında…
 banket masaları ideal boyda ama KARE olsun"*
 1. **İkili masa kare:** bistro (0,99 × 0,70) elendi → 1,00 (L0-L2) / **1,20** (L3+). Üst sınır
@@ -71,6 +82,9 @@ banket masaları ideal boyda ama KARE olsun"*
    çaycı hattı −11,3. Erişim sabit (0,85 br). `WAITER_STATION` da aynı hizada.
 4. **Değişmez ayrıldı:** aktörün bastığı noktalar alanın İÇİNDE · obje gövdeleri alana DEĞER
    ve alanın en yakın noktasından `serving.pickupRadius` içinde kalır.
+5. **İkinci tur (D-075):** tabure 1,11 → **0,90** (aşırı büyük olmuştu) · ikili masa 0,90/1,05 ·
+   dörtlü 1,05/**1,68** · banket masası adadan **2,00** (boşluk 0,225), sandalye **3,02**.
+   Koridor noktası 3,50'de bırakıldı (3,65 `waiter` pad dairesine giriyordu — bekçi yakaladı).
 **281/281 · smoke 28/28 · tsc + eslint + build temiz.** Kareler yenilendi (`bmm-*`).
 
 ### BM adım 3 ✅ (arka bant + odalar)

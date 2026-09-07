@@ -83,10 +83,19 @@ describe('B3-2 — banket adaları maket v13 birim geometrisini taşır', () => 
     expect(STRIP.length).toBe(12);
   });
 
-  it('BİRİM GEOMETRİSİ maketle birebir: bank 0,74 · masa 1,85 · sandalye 2,95', () => {
+  it('BİRİM GEOMETRİSİ: bank 0,74 (maket) · masa 2,00 · sandalye 3,02 — sıra ve boşluklar korunur', () => {
+    // Masa ve sandalye maketin 1,85 / 2,95'inden AÇILDI (kullanıcı 2026-09-08: *"banketlerdeki
+    // masaları banketten azıcık daha uzaklaştır, oradaki tabureleri de ona göre ayarla"*).
+    // Bank maketin yerinde: adanın kendi oturağı, masa ondan uzaklaşınca yerinden oynamaz.
     expect(BANKET.benchDz).toBeCloseTo(0.74, 6);
-    expect(BANKET.tableDz).toBeCloseTo(1.85, 6);
-    expect(BANKET.chairDz).toBeCloseTo(2.95, 6);
+    expect(BANKET.tableDz).toBeCloseTo(2.0, 6);
+    expect(BANKET.chairDz).toBeCloseTo(3.02, 6);
+    // Sıra bozulmaz ve iki boşluk da POZİTİF kalır: ada oturağı → masa → sandalye.
+    expect(BANKET.benchDz).toBeLessThan(BANKET.tableDz);
+    expect(BANKET.tableDz).toBeLessThan(BANKET.chairDz);
+    expect(BANKET.chairDz).toBeLessThan(BANKET.aisleDz);
+    expect(BANKET.tableDz - LAYOUT.deuceHalf[1] - BANKET.depth / 2).toBeGreaterThan(0.1); // ada ↔ tabla
+    expect(BANKET.chairDz - LAYOUT.chairHalf[1] - (BANKET.tableDz + LAYOUT.deuceHalf[1])).toBeGreaterThan(0.1); // tabla ↔ sandalye
     for (const i of STRIP) {
       const t = LAYOUT.tables[i];
       const face = t.table[2] > BANKET.z ? 1 : -1;
