@@ -503,8 +503,8 @@ function run() {
   const idealBuys: Buy[] = [];
   const ideal = runProfile(1, true, idealBuys);
 
-  console.log('\n--- Tempo denetimi (D-010 §3.6) ---');
-  console.log('Hedef: ilk satın alma < 90 sn; ilk 5-10 dk her ~20-40 sn bir alım; otomasyon < 15 dk.');
+  console.log('\n--- Tempo denetimi (D-010 §3.6 · ölçüt 2 D-079da değişti) ---');
+  console.log('Hedef (D-079): ilk alım < 90 sn; GARSONA KADAR hiçbir boşluk > 2 dk; otomasyon < 15 dk.');
   const first = ideal.get('İlk satın alma (2. Masa)');
   console.log(first != null && first <= 90 ? `  1) İlk satın alma ${fmtTime(first)} ✓` : `  1) İlk satın alma HEDEF DIŞI: ${first}`);
   const notHit = MILESTONES.filter((m) => !ideal.has(m.name)).map((m) => m.name);
@@ -515,27 +515,31 @@ function run() {
      kimse fark etmez. Üçü de ölçülür oldu; hiçbir denge sayısına dokunulmadı, değişen yalnız
      raporun kendisi. */
 
-  /* 2) AÇILIŞ TEMPOSU: ilk 10 dakikadaki ardışık alım boşlukları. "Her ~20-40 sn bir alım" bir
-     ORTALAMA iddiası → medyan boşluk onu doğrudan ölçer; en uzun boşluk ise iddianın NEREDE
-     koptuğunu söyler (ortalama iyi görünürken tek uzun boşluk temposu öldürebilir). */
-  const OPENING = 10 * 60;
+  /* 2) AÇILIŞ TEMPOSU — ÖLÇÜT D-079'da DEĞİŞTİ.
+     Eski ölçüt: "ilk 5-10 dk her ~20-40 sn bir alım". C1'de ölçüldü ve tutmuyordu (ilk 10 dk'de
+     8 alım, medyan boşluk 1,4 dk). Kullanıcı kararı: ölçüt BAYAT — oyunun ilk günlerinden
+     (kat 21 × 21, tek salon, dört masa) ve sonraki kuralla ÇELİŞİYOR. Geçerli kural
+     `feedback_economy_pacing_offline`: **garson öncesi ucuz, garson sonrası ölçülü pahalı.**
+     Ölçülebilir karşılığı: otomasyona kadar hiçbir alım boşluğu OPENING_GAP_MAX'ı aşmaz.
+     Garson SONRASI tempo zaten ayrı bir bekçide (EN UZUN BEKLEME, 20 dk). */
+  const OPENING_GAP_MAX = 2 * 60;
+  const autoAt = ideal.get('Garson');
   const openGaps = idealBuys
     .map((b, i) => ({ label: b.label, gap: b.t - (i === 0 ? 0 : idealBuys[i - 1].t), t: b.t }))
-    .filter((g) => g.t <= OPENING);
+    .filter((g) => autoAt != null && g.t <= autoAt);
   if (openGaps.length === 0) {
-    console.log("  2) Açılış temposu ÖLÇÜLEMEDİ (ilk 10 dk'de hiç alım yok)");
+    console.log('  2) Açılış temposu ÖLÇÜLEMEDİ (garsondan önce hiç alım yok)');
   } else {
     const sorted = openGaps.map((g) => g.gap).sort((a, b) => a - b);
     const median = sorted[Math.floor(sorted.length / 2)];
     const worst = openGaps.reduce((a, b) => (b.gap > a.gap ? b : a));
     console.log(
-      `  2) Açılış temposu: ilk 10 dk'de ${openGaps.length} alım · medyan boşluk ${fmtTime(median)}` +
-        ` · en uzun ${fmtTime(worst.gap)} → ${worst.label}  ${median <= 40 ? '✓' : '✗ (hedef ~20-40 sn)'}`,
+      `  2) Açılış temposu (garsona kadar): ${openGaps.length} alım · medyan boşluk ${fmtTime(median)}` +
+        ` · en uzun ${fmtTime(worst.gap)} → ${worst.label}  ${worst.gap <= OPENING_GAP_MAX ? '✓' : '✗ (hedef ≤ 2 dk)'}`,
     );
   }
 
   /* 3) OTOMASYON: garsonun tutulduğu an — oyuncunun TEK BAŞINA taşıdığı dönemin uzunluğu. */
-  const autoAt = ideal.get('Garson');
   console.log(
     autoAt == null
       ? '  3) Otomasyon (Garson) 6 saatte ULAŞILAMADI ✗'

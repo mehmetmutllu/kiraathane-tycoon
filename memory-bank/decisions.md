@@ -2085,3 +2085,28 @@ toplam 72 → 73**, kilometre taşları 57/71 → 58/72. Bütçeyi doğru göste
 önemli. Pano 56/73: https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 
 **Testler:** vitest 463/463 · tsc + build temiz. Denge sayısı DEĞİŞMEDİ.
+
+---
+
+## D-079 — Açılış temposu ölçütü BAYAT ilan edildi ve güncellendi
+
+**Tarih:** 2026-09-08 · **Faz:** C1 · **Kullanıcı kararı:** *"b, ölçütü güncelle"*
+
+**Eski ölçüt (D-010 3.6, ölçüt 2):** *"ilk 5-10 dk her ~20-40 sn bir alım (sık dopamin)"*.
+C1'de ilk kez ÖLÇÜLDÜ ve tutmadı: ilk 10 dakikada **8 alım**, medyan boşluk **1,4 dk**.
+
+**Neden bayat:** o ölçüt oyunun ilk günlerinden (kat 21 x 21, tek salon, dört masa) ve sonraki
+kullanıcı kararıyla **çelişiyor**: `feedback_economy_pacing_offline` → *"garson öncesi ucuz,
+garson sonrası ölçülü pahalı"*. Bugünkü eğri tam olarak ikincisini yapıyor (garson 6,1 dk).
+İki kural aynı anda tutulamaz; yeni olan kullanıcının kendi kararı.
+
+**Yeni ölçüt 2:** **garsona kadar hiçbir alım boşluğu 2 dakikayı aşmaz.**
+Ölçülen: 6 alım, medyan 1,4 dk, **en uzun 1,6 dk** ✓ (marj %20 — açılış pahalılaşırsa bekçi öter).
+Garson SONRASI tempo zaten ayrı bekçide: "20 dk'yı aşan alım kalmasın" (EN UZUN BEKLEME).
+İki ölçüt birlikte kuralın iki yarısını tutuyor.
+
+**Uygulandı:** `tools/simulate.ts` (ölçüt 2 yeniden yazıldı, `OPENING_GAP_MAX = 2 * 60`) ·
+`docs/progression-and-economy-v2.md` 3.6 · `docs/economy.md` 4 · `docs/denge-raporu-c1.md` 2.
+
+**HİÇBİR DENGE SAYISI DEĞİŞMEDİ** — değişen yalnız ölçüt. Tempo denetiminin üç ölçütü de artık
+yeşil ve üçü de gerçekten ÖLÇÜLÜYOR (C1'den önce yalnız birincisi ölçülüyordu).

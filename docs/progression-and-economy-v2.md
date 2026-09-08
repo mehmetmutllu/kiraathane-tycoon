@@ -99,10 +99,19 @@ requires?: {
 - Her pad **tek bir slota/objeye** bağlı (off-by-one yok): "3. masanın pad'i → 3. masa", "4.
   masanın pad'i → 4. masa". Sıra `requires` ile garanti.
 
-### 3.6 Tempo hedefleri (denetim listesi)
-- İlk satın alma **< 90 sn**. İlk 5-10 dk her ~20-40 sn bir alım. Otomasyon (garson) **< 15 dk**.
+### 3.6 Tempo hedefleri (denetim listesi) — **ölçüt 2 D-079'da DEĞİŞTİ**
+- İlk satın alma **< 90 sn**.
+- **GARSONA KADAR hiçbir alım boşluğu > 2 dk** *(eskiden: "ilk 5-10 dk her ~20-40 sn bir alım")*.
+- Otomasyon (garson) **< 15 dk**.
 - Orta oyun: alımlar dakikalar. Geç oyun: **prestige**'e yönlendir.
-- `tools/simulate.ts` her kilometre taşına süreyi raporlasın; hedeften sapma = config ayarı.
+- `tools/simulate.ts` üçünü de **ÖLÇER** (C1'e kadar yalnız birincisi ölçülüyordu, kalan ikisi
+  düz yazıydı); hedeften sapma = config ayarı.
+
+> **Ölçüt 2 neden değişti (D-079, kullanıcı kararı):** eski hâli oyunun ilk günlerinden kalmaydı
+> (kat 21 × 21, tek salon, dört masa) ve sonraki kullanıcı kararıyla — *"garson öncesi ucuz,
+> garson sonrası ölçülü pahalı"* (`feedback_economy_pacing_offline`) — **çelişiyordu**. Yeni
+> ölçüt o kuralın ölçülebilir karşılığıdır. Garson SONRASI tempo zaten ayrı bir bekçide:
+> "20 dk'yı aşan alım kalmasın" (EN UZUN BEKLEME). Ölçülen: en uzun açılış boşluğu **1,6 dk**.
 
 ## 4. Mevcut koddan ne değişecek (sonraki oturum planı)
 1. `economy.config`: çay fiyatını seviyeden ayır; **station = brewRate (çay/dk)** yap;

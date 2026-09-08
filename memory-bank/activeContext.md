@@ -14,8 +14,11 @@ bilerek **en sona**; önce sistem.
   çeyrekte MASALAR ARASI; garsonun turunu belirleyen servis→masa ekseninde kat büyümedi.
   **Geometri donması dengeyi bozmadı** — yeni taban bu.
 - **Tempo denetiminin üçte ikisi ölçülmüyormuş** (yazılıydı, göz kararıyla bakılıyordu). Üçü de
-  ölçülür oldu, denge sayısına dokunulmadan. **İkincisi ✗:** ilk 10 dk'de 8 alım, medyan boşluk
-  1,4 dk — hedef ~20-40 sn.
+  ölçülür oldu, denge sayısına dokunulmadan. **İkincisi ✗ çıktı → kullanıcı ölçütü BAYAT ilan
+  etti (D-079).** Yeni ölçüt: *garsona kadar hiçbir alım boşluğu 2 dk'yı aşmaz* — o da
+  `feedback_economy_pacing_offline`'ın ("garson öncesi ucuz, sonrası ölçülü pahalı") ölçülebilir
+  karşılığı. Ölçülen en uzun **1,6 dk** ✓ (marj %20). Garson SONRASI tempo zaten ayrı bekçide
+  (EN UZUN BEKLEME 20 dk). **Üç ölçüt de yeşil.**
 - **"Plato" bulgusu ÇÜRÜDÜ.** Raporun ilk hâli B5b'den devralmıştı; ölçüm oranın donmadığını
   gösterdi (12,57 → 19,40 → 31,09 → **52,57 ₺/sn**). Plato B4a'da kapanmış. **Kaynak sim'in kendi
   tablosuydu:** `ÜÇ KOL` senaryolarında `lavabo` hiç verilmiyordu → geç-oyun geliri **3,4 kat
@@ -27,12 +30,8 @@ bilerek **en sona**; önce sistem.
 **Doğrulama:** vitest **463/463** · tsc + build temiz. **Denge sayısı DEĞİŞMEDİ.**
 
 ### >>> SONRAKİ OTURUMDA İLK İŞ <<<
-**AÇIK SORUYU SOR, sonra Faz C'nin kalan 4 oturumuna geç.**
-
-**Açık soru (denge kararı — onaysız uygulanmaz):** açılış temposu ölçütü hangisi?
-(a) ölçüt geçerli → açılış eğrisi ucuzlar (ilk 10 dk'de 8 değil ~15-30 alım) ·
-(b) ölçüt bayat → D-010 §3.6 güncellenir, `feedback_economy_pacing_offline`'ın "garson öncesi
-ucuz, sonrası ölçülü pahalı" kuralı tek ölçüt kalır (bugünkü eğri zaten onu yapıyor, garson 6,1 dk).
+**Faz C'nin kalan 4 oturumu. BEKLEYEN DENGE KARARI YOK** — açılış temposu ölçütü D-079'da
+güncellendi, üç ölçüt de yeşil, hiçbir denge sayısı değişmedi.
 
 **Faz C kalan işi:** (1) **Tek Odak** kuralı deliniyor — opsiyonel pad'ler ve yükseltme dolumları
 görev filtresinin dışında çiziliyor · (2) **sipariş kuyruğu hiç ölçülmüyor** — D-046'nın "hiçbir

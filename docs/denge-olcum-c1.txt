@@ -29,10 +29,10 @@ Sabit çay fiyatı: 5 ₺ · Başlangıç: 1 masa, oran 0.42 ₺/sn
   ✓ Lavabo L6 (oda tavanı)             @ 2.70 sa  (oran 52.57 ₺/sn, servis L6, 17 masa, darboğaz: arz)
   ✓ ŞERİT DOLDU (20. masa)             @ 2.81 sa  (oran 52.57 ₺/sn, servis L6, 20 masa, darboğaz: arz)
 
---- Tempo denetimi (D-010 §3.6) ---
-Hedef: ilk satın alma < 90 sn; ilk 5-10 dk her ~20-40 sn bir alım; otomasyon < 15 dk.
+--- Tempo denetimi (D-010 §3.6 · ölçüt 2 D-079da değişti) ---
+Hedef (D-079): ilk alım < 90 sn; GARSONA KADAR hiçbir boşluk > 2 dk; otomasyon < 15 dk.
   1) İlk satın alma 22 sn ✓
-  2) Açılış temposu: ilk 10 dk'de 8 alım · medyan boşluk 1.4 dk · en uzun 3.7 dk → pad: table4  ✗ (hedef ~20-40 sn)
+  2) Açılış temposu (garsona kadar): 6 alım · medyan boşluk 1.4 dk · en uzun 1.6 dk → karakter: tepsi 2  ✓
   3) Otomasyon (Garson) 6.1 dk  ✓
 
 --- 3 PROFİL (milestone → süre) ---

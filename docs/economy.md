@@ -36,8 +36,11 @@ L5       = "Usta seviye": masterDiamondCost 💎 VEYA 1 ödüllü video
 ## 4. Para curve'ü ve tempo
 - İstasyon/masa **maliyetleri** geometrik (×~1.15-1.6/adet duruma göre).
 - İstasyon **AÇILIMLARI** lifetime-₺ eşiklerine bağlı (içerik tempolansın).
-- **Hedef tempo:**
-  - İlk 5-10 dk: her ~20-40 sn'de bir satın alma (sık dopamin).
+- **Hedef tempo** (denetim listesi: `docs/progression-and-economy-v2.md` §3.6):
+  - İlk satın alma **< 90 sn**.
+  - **Garsona kadar hiçbir alım boşluğu > 2 dk** (D-079; eskiden "her ~20-40 sn bir alım" —
+    o ölçüt bayattı ve "garson öncesi ucuz, sonrası ölçülü pahalı" kuralıyla çelişiyordu).
+  - Otomasyon (garson) **< 15 dk**; garson sonrası: **20 dk'yı aşan alım kalmasın**.
   - Orta oyun: satın almalar dakikalar mertebesinde.
   - Geç oyun: oyuncuyu **prestige**'e yönelt.
 

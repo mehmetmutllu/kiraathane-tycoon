@@ -1819,7 +1819,7 @@ tek yönlü sıra. Ölçü hedefi kullanıcı kararıyla **A**: kat 34 × 34, du
   - **Tempo denetiminin üçte ikisi ölçülmüyormuş:** üç ölçüt de yazılıydı ama yalnız birincisi
     ölçülüyordu, kalan ikisine göz kararıyla bakılıyordu. Üçü de ölçülür oldu (**denge sayısına
     dokunulmadan**): ilk alım 22 sn ✓ · **açılış temposu ✗** (ilk 10 dk'de 8 alım, medyan boşluk
-    1,4 dk; hedef ~20-40 sn) · otomasyon 6,1 dk ✓. Ölçüt geçerli mi bayat mı → **kullanıcı kararı**.
+    1,4 dk; hedef ~20-40 sn) · otomasyon 6,1 dk ✓.
   - **"Plato" bulgusu ÇÜRÜDÜ ve rapor düzeltildi.** İlk hâli B5b'den DEVRALIP "oran 15,62'de
     donuyor" diyordu; ölçüm donmadığını gösterdi (12,57 → 19,40 → 31,09 → **52,57 ₺/sn**). Plato
     B4a'da kapanmış. **Kaynak sim'in kendi tablosuydu:** `ÜÇ KOL` senaryolarında `lavabo` alanı hiç
@@ -1829,7 +1829,14 @@ tek yönlü sıra. Ölçü hedefi kullanıcı kararıyla **A**: kat 34 × 34, du
     devralınmasıydı ve aradaki turla geçersizleşmişti.
   - **Kapandı:** B5b Ö6 (`waiter3` artık zincirde + `q_waiter3` görev hattında).
   - **vitest 463/463 · tsc + build temiz · denge sayısı DEĞİŞMEDİ.**
-- ⏳ **SIRADAKİ:** açılış temposu kararı sorulur; sonra **Tek Odak** kuralının delinmesi ·
+- ✅ **D-079 — açılış temposu ölçütü BAYAT ilan edildi ve güncellendi** (kullanıcı: *"b, ölçütü
+  güncelle"*). Eski ölçüt oyunun ilk günlerinden (kat 21 × 21, dört masa) ve sonraki kullanıcı
+  kararıyla **çelişiyordu** (`feedback_economy_pacing_offline`: "garson öncesi ucuz, sonrası ölçülü
+  pahalı"). **Yeni ölçüt: garsona kadar hiçbir alım boşluğu 2 dk'yı aşmaz** — ölçülen en uzun
+  **1,6 dk** ✓ (marj %20). Garson SONRASI tempo zaten ayrı bekçide (EN UZUN BEKLEME 20 dk); iki
+  ölçüt birlikte kuralın iki yarısını tutuyor. Uygulandı: `simulate.ts` · `progression-and-economy-v2.md`
+  §3.6 · `economy.md` §4 · rapor §2. **Üç ölçüt de yeşil, hiçbir denge sayısı değişmedi.**
+- ⏳ **SIRADAKİ (bekleyen denge kararı YOK):** **Tek Odak** kuralının delinmesi ·
   **sipariş kuyruğunun ölçülmesi** (D-046'nın "hiçbir masa X sn beklemedi" iddiası) · **sim'in
   gerçeğe yaklaşması** (masa-başı yükseltme · bardak döngüsü · sabır).
 - **Rapor:** `docs/bm-adim3-4-bant-kamera.html` →

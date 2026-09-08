@@ -34,27 +34,30 @@ Beklenti "yürüme uzadı, tempo bozuldu" idi. Ölçüm bunu doğruladı ama bü
 
 **Sonuç: geometri donması dengeyi bozmadı.** Yeni taban bu tablodur; eski sayılar arşiv.
 
-## 2. Tempo denetimi — üç ölçütün ikisi tutuyor, **biri tutmuyor**
+## 2. Tempo denetimi — ölçülür oldu, **ölçüt 2 güncellendi (D-079)**
 
 Bu oturumda `simulate.ts`'in tempo bölümü **ölçülür** hâle getirildi. Önce yalnız birinci ölçüt
 ölçülüyordu; kalan ikisi hedef cümlesi olarak yazılıydı ve göz kararıyla bakılıyordu.
-*(Hiçbir denge sayısına dokunulmadı — değişen yalnız raporun kendisi.)*
 
-| # | ölçüt (D-010 §3.6) | ölçülen | |
+Ölçünce **ikinci ölçüt kırmızı yandı**: hedef "ilk 5-10 dk her ~20-40 sn bir alım" idi, ölçülen
+ilk 10 dakikada **8 alım** (medyan boşluk 1,4 dk). Bu bir hata mı bayat bir ölçüt mü diye soruldu.
+
+**Kullanıcı kararı: ölçüt bayat (b).** Eski hâli oyunun ilk günlerinden kalmaydı — o zaman kat
+21 × 21, tek salon, dört masaydı — ve sonraki kullanıcı kararıyla **çelişiyordu**:
+*"garson öncesi ucuz, garson sonrası ölçülü pahalı"* (`feedback_economy_pacing_offline`).
+
+**Yeni ölçüt 2:** *garsona kadar hiçbir alım boşluğu 2 dakikayı aşmaz.* Bu, o kuralın ölçülebilir
+karşılığıdır. Garson **sonrası** tempo zaten ayrı bir bekçide: "20 dk'yı aşan alım kalmasın"
+(EN UZUN BEKLEME) — yani iki ölçüt birlikte kuralın iki yarısını tutuyor.
+
+| # | ölçüt (D-010 §3.6, ölçüt 2 D-079'da güncellendi) | ölçülen | |
 |---|---|---|---|
 | 1 | ilk satın alma < 90 sn | **22 sn** | ✓ |
-| 2 | ilk 5-10 dk her ~20-40 sn bir alım | **medyan boşluk 1,4 dk**, en uzun **3,7 dk** (4. masa) | ✗ |
+| 2 | **garsona kadar hiçbir boşluk > 2 dk** | 6 alım · medyan 1,4 dk · **en uzun 1,6 dk** | ✓ |
 | 3 | otomasyon < 15 dk | **6,1 dk** (Garson) | ✓ |
 
-İlk 10 dakikada 8 alım var; hedef ~15-30 alım demek. Açılış temposu hedefin **2-3 katı yavaş**.
-
-**Bu bir hata mı, bayat bir ölçüt mü — karar gerekiyor.** İki okuma da savunulabilir:
-- D-010 §3.6 oyunun ilk günlerinden; o zaman kat 21 × 21, tek salon, dört masaydı.
-- Sonraki kullanıcı kararı (`feedback_economy_pacing_offline`) **"garson öncesi ucuz, garson
-  sonrası ölçülü pahalı"** diyor. Bugünkü eğri tam olarak bunu yapıyor: garson 6,1 dk'da geliyor
-  ve ondan öncesi zaten hızlı. Yani ölçüt ile sonraki karar **çelişiyor** olabilir.
-
-Denge sayısı kullanıcı onayı olmadan değiştirilmez → **açık soru, aşağıda.**
+Marj dar (1,6 / 2,0 = %20): açılış eğrisi pahalılaşırsa bekçi hemen öter. **Hiçbir denge sayısına
+dokunulmadı** — değişen yalnız ölçüt ve raporun kendisi.
 
 ## 3. **DÜZELTME — plato yok. Eski bulgu devralınmıştı, ölçüm çürüttü**
 
@@ -115,16 +118,12 @@ B5b §5'in sonundaki **Ö6 kapanmış:** `waiter3` artık `optional: false` ve g
 
 ---
 
-## Açık sorular (denge kararı — onaysız uygulanmaz)
+## Kararlar
 
-**Tek soru kaldı: açılış temposu ölçütü (2. madde) hangisi?**
+- **Açılış temposu ölçütü → (b) bayat, güncellendi.** Bkz. §2 ve D-079.
+- **Plato sorusu kapandı** (§3): ortada kırılacak bir plato yok, B4a onu zaten kapatmış.
 
-- **(a) ölçüt geçerli** → açılış eğrisi ucuzlatılır: ilk 10 dakikada 8 değil ~15-30 alım olur.
-- **(b) ölçüt bayat** → D-010 §3.6 güncellenir; `feedback_economy_pacing_offline`'ın
-  "garson öncesi ucuz, sonrası ölçülü pahalı" kuralı tek ölçüt olarak kalır. Bugünkü eğri
-  zaten bunu yapıyor (garson 6,1 dk).
-
-Plato sorusu **kapandı** (§3): ortada kırılacak bir plato yok, B4a onu zaten kapatmış.
+**Açık denge sorusu kalmadı.**
 
 ## Faz C'nin kalan işi (bu ölçümden sonra netleşen)
 
@@ -134,4 +133,3 @@ Plato sorusu **kapandı** (§3): ortada kırılacak bir plato yok, B4a onu zaten
    *"hiçbir masa X saniyeden fazla beklemedi"* iddiası teste yazılmadı.
 3. **Sim'i gerçeğe yaklaştırmak:** masa yükseltmesi kalem kalem modellenir (§4'teki sahte
    21,4 dk kapanır) · bardak döngüsü ve sabır hâlâ modellenmiyor.
-4. **Açılış temposu kararı** uygulanır (yukarıdaki soru).
