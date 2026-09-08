@@ -25,7 +25,7 @@
  */
 import {
   olcutler, profilBosluklari, onbellekTemizle, milestoneTazele, m1Ayarla,
-  modelDebisi, GERCEK, kolAyarla, VARSAYILAN, hedefAkisiAyarla,
+  modelDebisi, GERCEK, kolAyarla, VARSAYILAN, hedefAkisiAyarla, hedefCarpaniAyarla,
   type Olcut, type Bosluk,
 } from './simulate.ts';
 import { HEDEF_KOLLARI, odemeleriSifirla, sonKosuOdemeleri, sonKosuToplami, type HedefKol } from './hedef-kollari.ts';
@@ -45,6 +45,9 @@ const dozYaz = (kol: HedefKol, doz: number): string =>
 function kolaGec(kol: HedefKol | null, doz: number): void {
   odemeleriSifirla();
   hedefAkisiAyarla(kol ? kol.fabrika(doz) : null);
+  // D3b: çarpan kolları (hF) ₺ ödemez, ayrı kancaya takılır. İKİSİ de her geçişte yazılır —
+  // biri yazılmazsa önceki kolun çarpanı sessizce bir sonraki satıra sızardı (C4 tuzağı ②).
+  hedefCarpaniAyarla(kol?.carpanFabrika ? kol.carpanFabrika(doz) : null);
   m1Ayarla(false);
   onbellekTemizle();
   milestoneTazele();
@@ -210,13 +213,20 @@ for (const ad of Object.keys(HEDEF_KOLLARI)) {
   varyantDamgasi(`${kol.ad} (en uc doz)`, taban.iz, uc.s.iz);
   // C4 tuzagi ②'nin bu turdaki karsiligi: kanca hic tetiklenmediyse satir olcum degil, tabanin
   // kopyasidir. `odenen === 0` bunu tek basina yakalar (iz damgasi kacirsa bile).
-  damga(`${kol.ad} odeme dustu (doz ${son})`, uc.s.odenen > 0, 'hedef akisi hic tetiklenmedi');
+  // ODEMESIZ kol (hF — kalici carpan) hic ₺ dusurmez: onda bu damga yanlis alarm olurdu,
+  // sorumluluk tek basina varyant damgasindadir.
+  if (!kol.odemesiz) {
+    damga(`${kol.ad} odeme dustu (doz ${son})`, uc.s.odenen > 0, 'hedef akisi hic tetiklenmedi');
+  }
 }
 
 kolaGec(null, 0);
 const kontrol = olc();
 damga('taban geri donusu', kontrol.iz === taban.iz, `iz ${kontrol.iz} != ${taban.iz} — hedefAkisiAyarla(null) eksik`);
 damga('taban odeme yok', kontrol.odenen === 0, `${kontrol.odenen} ₺ — kanca kapaliyken odeme dusmus`);
+// D3b: carpan kancasi da kapandi mi? Kapanmazsa taban izi tutar ama SERIT sessizce kisalirdi.
+damga('taban serit geri dondu', Math.abs((kontrol.o.serit ?? 0) - (taban.o.serit ?? 0)) < 1e-6,
+  `${sa(kontrol.o.serit)} != ${sa(taban.o.serit)} — hedefCarpaniAyarla(null) eksik`);
 damga('taban ihlal 6 (Normal)', taban.o.normalAsan === 6, `${taban.o.normalAsan} (D-086 Bulgu 7'de 6 idi)`);
 damga('taban hukum 1 (Idealize)', taban.o.idealAsan <= 1, `${taban.o.idealAsan} (D-087'de 1 idi)`);
 damgaOzeti();

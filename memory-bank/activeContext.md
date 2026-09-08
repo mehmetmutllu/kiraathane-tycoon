@@ -5,30 +5,31 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-09 — **D3 BİTTİ** · Faz D 3/5 · 66/76)
+## ŞU AN (2026-09-09 — **D3b ölçüm** · Faz D · hedef ödülünün KALIBI)
 
 ```
-SORU            : Hedeflerin (koleksiyon) ödülü ₺ içermeli mi, hangi dozda? Meta katmanın ₺ akışı
-                  geç-oyunun bekleme pencerelerini dolduruyor mu?                      [KAPANDI]
-ÖLÇÜLECEK KOLLAR: h0 (yalnız 💎) · hA (kazanç eşikleri) · hB (mekân) · hC (ikisi) · hD (YOĞUNLUK,
-                  toplam sabit) · hE (yoğun+kısık) · hUYG (uygulanan config)
-SAYILAR         : docs/hedef-raporu-d3.md §4 — 10 bulgu, tam koşu, damgalar temiz
-KARAR           : D-089 — kullanıcı `hE %2` + kategoriler Servis·Mekân·Kazanç·Usta·Temizlik
-UYGULAMA        : `goals.ts` (yeni) · `economy.config.ts` +goals bloğu · `save.ts` goalsClaimed
-                  (additive, SÜRÜM ARTMADI) · `store.ts` claimGoal · `HUD.tsx` GoalsSheet+RewardModal
-                  `tick.ts`/`rules.ts` DEĞİŞMEDİ · mevcut hiçbir denge sayısı düzenlenmedi
-BEKÇİ           : tests/hedefler.test.ts — 20 test, SEKİZ mutasyonla doğrulandı (ikisi kaçtı → bant
-                  daraltıldı; çözünürlük ~%10 olarak kayda geçti) · vitest 604 · duman 31/31
+SORU            : Hedef (koleksiyon) ödülü hangi KALIPTA olmalı? Sabit ₺ merdiveni (bugünkü hâl)
+                  sektörün terk ettiği kalıp; kalıcı çarpan ve gelire-oranlı ₺ ölçülmedi.
+ÖLÇÜLECEK KOLLAR: hUYG (yürürlükteki sabit merdiven — kıyas) · h0 (yalnız 💎, bedel sıfır) ·
+                  **hF** (KALICI ÇARPAN: kademe toplandıkça kalıcı ₺/müşteri çarpanı) ·
+                  **hG** (GELİRE ORANLI ₺: ödül = o anki ₺/sn × N sn, kademe index'ine DEĞİL)
+SAYILAR         : docs/hedef-raporu-d3.md §6.3 — 6 bulgu, TAM koşu, damgalar temiz
+                  hG ELENDİ (geç pencere 6 dozda da 43,4 dk · açılışı eziyor: otom. 6,1→1,7 dk)
+                  hF çalışıyor (enUzun 43,4→34,4 · açılış SABİT) · tempo verimi hE ile DENK
+KARAR           : (adım 3)
+UYGULAMA        : (adım 4, yalnız kararın kolu)
+BEKÇİ           : (tests/hedefler.test.ts genişletilir)
 ```
 
-**Bu turun asıl dersi — `hUYG` kolu:** "seçilen doz iyiydi, config'e yazdığım da ona denktir" bir
-VARSAYIMDI ve iki kez çürüdü. ① Ortak ödül merdiveni toplamı bakımından denk görünüyordu ama
-gerçekleşen ödeme 3k değil **11k** çıktı. ② Kısıldı, toplam tuttu, ödemelerin **YERİ** tutmadı —
-ödül kademe *index*'ine bağlıydı, oyuncunun oraya *ulaştığı zamana* değil. Ödül kategori başına
-merdivene çevrildi. Yürürlükteki sayılar **üçüncü** ölçümün sonucu.
-
-**KABUL EDİLEN EKSİK (gizlenmedi):** seçilen kolun BEDELİ tutturuldu (%-3,2), vaat ettiği FAYDA
-gelmedi — ihlal 6'da, en uzun bekleme 43,4 dk'da kaldı. D-087'nin açık kalemi **kapanmadı**.
+**Neden bu tur açıldı:** D3'ün kapanışında "hedeflerin ₺ kolu kalsın mı (A) / h0'a dön (B) /
+ucuzlat (C)" diye sorulmuştu; kullanıcı üçünü de reddedip **sektörde kaliteli olanın ne olduğunu**
+sordu. Cevap üçünün dışında: idle/tycoon'da koleksiyon ödülü ya **sert para** (değeri enflasyona
+uğramaz) ya **kalıcı çarpan** (AdVenture Capitalist milestone · Cookie Clicker milk · Egg Inc.)
+olur; yumuşak para kullanılacaksa **gelire oranlı** tanımlanır ("şu anki gelirin N saniyesi"),
+sabit sayı olarak değil. Bizim ölçümümüz aynı şeyi zaten söylemişti — `hA %50`de 66.000 ₺ ödendi,
+geç pencerelere düşen **0** — ve Bulgu 10 ② kusuru yapısal olarak adlandırmıştı: ödül kademe
+*index*'ine bağlıydı, oyuncunun oraya *ulaştığı zamana* değil. A/B/C üçü de o kalıbı koruyor,
+siliyor ya da küçültüyordu; hiçbiri değiştirmiyordu.
 
 ## SIRADAKİ TAM ADIM
 
@@ -37,9 +38,9 @@ hazır, seviye atlama modali onu devralır) · ② **nav ızgarası ↔ oyuncu �
 tek başına duruyor) · ③ D5 elmas harcaması + Usta katmanı — **D5 geldiğinde D-089'un elmas hükmü
 bayatlar** (bekçideki `h0` beklentisi bilerek o gün kırılacak şekilde yazıldı).
 
-**SONRAKİ OTURUMDA SORULACAK (bu turdan taştı):** hedeflerin ₺ kolu bu hâliyle kalsın mı? Fayda
-ölçülemediğine göre `h0` (yalnız 💎, bedel tam sıfır) hâlâ savunulabilir; karar ₺ lehine verilirken
-faydanın ölçülebilir olduğu varsayılmıştı.
+**Bu tur bitince:** karar hangi kola giderse gitsin D-090 yazılır; ardından **D4 İtibar + günlük
+görevler** açılır (ödül ekranı hazır) — günlük görevler de aynı ödül kanalını kullanacağı için
+kalıp kararı ondan ÖNCE verilmek zorundaydı.
 
 ## AÇIK KALEMLER (bilinen, bilerek duruyor)
 
@@ -62,7 +63,7 @@ faydanın ölçülebilir olduğu varsayılmıştı.
 - Gölgenin telefondaki maliyeti ölçülmedi (Faz F riski) · bundle ~1,17 MB (Faz F kod-bölme).
 - C4'ten kalan ölçüm kusuru: B1 · oyuncu kipinde bot hiç yürümüyor (karar etkilenmedi).
 
-**Bekleyen denge kararı:** hedeflerin ₺ kolu kalsın mı (yukarıda) — sonraki oturumda sorulacak.
+**Bekleyen denge kararı:** hedef ödülünün KALIBI — bu turda ölçülüyor (yukarıdaki tur kartı).
 
 ---
 

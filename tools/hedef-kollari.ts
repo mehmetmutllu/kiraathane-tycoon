@@ -20,7 +20,7 @@
  * Gerçekte oyuncu paneli açıp "Al"a basana kadar bekler → buradan çıkan etki bir ÜST SINIRdır.
  */
 import { economyConfig as C } from '../src/config/economy.config.ts';
-import type { HedefDurum, HedefOdeyici } from './simulate.ts';
+import type { HedefCarpani, HedefDurum, HedefOdeyici } from './simulate.ts';
 
 const cfg = C as unknown as {
   pads: { id: string; cost: number }[];
@@ -100,12 +100,11 @@ function yogunEsikler(n: number): number[] {
   return Array.from({ length: n }, (_, i) => Math.round(alt * (ust / alt) ** (i / (n - 1))));
 }
 
-/**
- * `economy.config.ts`'in GERÇEK `goals` bloğunu çalıştıran ödeyici (hUYG kolu). Kategori başına
- * kademeler SIRAYLA açılır — oyunun kendi kuralı (`goals.ts`: önceki kademe toplanmadan sonraki
- * kilitli), yani sim de aynı sırayı izler; atlamalı ödeme gerçekte mümkün değil.
- */
-function configOdeyici(): HedefOdeyici {
+/** O tick'te AÇILAN kademeler (kategori index + kademe index). D3b'de üç kol da bu AYNI
+ *  merdiveni yürütür — aralarındaki tek fark ödülün KALIBI (sabit ₺ / gelire oranlı ₺ / çarpan).
+ *  Merdiven ortak olmasaydı kalıplar kıyaslanamazdı: fark kalıptan mı eşikten mi gelirdi
+ *  ayırt edilemezdi. */
+function kademeAkisi(): (d: HedefDurum) => { ci: number; ti: number }[] {
   const ortFiyat = cfg.service.basePrice;
   const durum = cfg.goals.categories.map(() => 0); // kategori başına AÇILMIŞ kademe sayısı
   const oku = (d: HedefDurum, metric: string): number => {
@@ -120,15 +119,28 @@ function configOdeyici(): HedefOdeyici {
     }
   };
   return (d) => {
-    let toplam = 0;
+    const acilan: { ci: number; ti: number }[] = [];
     cfg.goals.categories.forEach((cat, ci) => {
       while (durum[ci] < cat.tiers.length && oku(d, cat.metric) >= cat.tiers[durum[ci]]) {
-        toplam += cat.rewards[durum[ci]] ?? 0;
+        acilan.push({ ci, ti: durum[ci] });
         durum[ci] += 1;
       }
     });
-    return toplam;
+    return acilan;
   };
+}
+
+/** Config'teki toplam kademe sayısı (5 × 5 = 25) — hF'nin doz birimi "TAM koleksiyonda çarpan". */
+const TOPLAM_KADEME = cfg.goals.categories.reduce((a, c) => a + c.tiers.length, 0);
+
+/**
+ * `economy.config.ts`'in GERÇEK `goals` bloğunu çalıştıran ödeyici (hUYG kolu). Kategori başına
+ * kademeler SIRAYLA açılır — oyunun kendi kuralı (`goals.ts`: önceki kademe toplanmadan sonraki
+ * kilitli), yani sim de aynı sırayı izler; atlamalı ödeme gerçekte mümkün değil.
+ */
+function configOdeyici(): HedefOdeyici {
+  const akis = kademeAkisi();
+  return (d) => akis(d).reduce((a, k) => a + (cfg.goals.categories[k.ci].rewards[k.ti] ?? 0), 0);
 }
 
 export interface HedefKol {
@@ -140,9 +152,14 @@ export interface HedefKol {
   dozlar: number[];
   /** Doz için ödeyici fabrikası; `null` = akış yok (kanca kapalı kalır). */
   fabrika(doz: number): (() => HedefOdeyici) | null;
+  /** D3b — ödülü ₺ olarak DEĞİL kalıcı çarpan olarak veren kollar (hF) bunu doldurur. */
+  carpanFabrika?(doz: number): (() => HedefCarpani) | null;
   yaz(doz: number): string;
   /** Kolun ATIL kalması BEKLENEN sonuçtur — damga farkı değil AYNILIĞI arar (C5 deseni). */
   atilBeklenir?: boolean;
+  /** Kol hiç ₺ ÖDEMEZ (etkisi çarpandan gelir) → "ödeme düştü" damgası ona uygulanmaz;
+   *  yerine varyant damgası (iz taban'dan farklı mı) tek başına sorumludur. */
+  odemesiz?: boolean;
 }
 
 /** Doz ızgarası: tabandan (ödül yok) uzaklaşarak, LOGARİTMİK. İlk taslak %2'den başlıyordu ve
@@ -307,5 +324,65 @@ export const HEDEF_KOLLARI: Record<string, HedefKol> = {
       doz <= 0
         ? 'ödül yok'
         : `%${(doz * 100).toFixed(0)} → top. ${Math.round((kazancOlcekToplam + mekanOlcekToplam) * doz).toLocaleString('tr-TR')} ₺`,
+  },
+
+  /* ── D3b: SEKTÖRÜN İKİ KALIBI ───────────────────────────────────────────────────────────
+   * D3'ün kolları (hA-hE, hUYG) tek bir kalıbın DOZUNU tarıyordu: sabit ₺ merdiveni. Kullanıcı
+   * kapanışta o kalıbın kendisini sorguladı ("sektörde kaliteli olan hangisi"). Idle/tycoon'da
+   * koleksiyon ödülü ya sert para (h0 — ölçüldü, bedeli sıfır) ya KALICI ÇARPAN olur; yumuşak
+   * para kullanılacaksa GELİRE ORANLI tanımlanır. İkisi de bu turda tabloya giriyor. */
+
+  /* hF — KALICI ÇARPAN (AdVenture Capitalist milestone · Cookie Clicker milk · Egg Inc.).
+   *      Ödül tek seferlik DÜŞMEZ: her toplanan kademe ₺/müşteriyi kalıcı olarak büyütür.
+   *      Kalıbın vaadi "ödül oyuncuyla birlikte büyür, bayatlamaz". Sınavı D1'inkiyle aynı:
+   *      geliri sürekli çarptığı için zinciri her yerde kısaltır — %7 eşiğinin ALTINDA kalan
+   *      bir doz var mı, tablo söyleyecek. Doz = TAM koleksiyondaki (25/25) toplam çarpan. */
+  hF: {
+    ad: 'hF',
+    ne: 'KALICI ÇARPAN: her kademe ₺/müşteriyi kalıcı büyütür (doz = 25/25`te toplam artış)',
+    birim: 'tam koleksiyon artışı',
+    taban: 0,
+    dozlar: [0, 0.02, 0.05, 0.1, 0.2, 0.35, 0.5],
+    odemesiz: true,
+    fabrika: () => null,
+    carpanFabrika: (doz) => {
+      if (doz <= 0) return null;
+      return () => {
+        const akis = kademeAkisi();
+        let acik = 0;
+        return (d) => {
+          acik += akis(d).length;
+          return 1 + (doz * acik) / TOPLAM_KADEME;
+        };
+      };
+    },
+    yaz: (doz) =>
+      doz <= 0
+        ? 'çarpan yok'
+        : `+%${(doz * 100).toFixed(0)} tam koleksiyonda · kademe başına +%${((doz * 100) / TOPLAM_KADEME).toFixed(2)} (${TOPLAM_KADEME} kademe)`,
+  },
+
+  /* hG — GELİRE ORANLI ₺. Bulgu 10 ②'nin YAPISAL karşılığı: ödül kademe INDEX'ine değil,
+   *      oyuncunun oraya ULAŞTIĞI ANDAKİ gelirine bağlanır ("şu anki gelirin N saniyesi").
+   *      Böylece ödeme, eğrinin neresinde toplanırsa toplansın aynı ağırlıkta düşer — kısılmış
+   *      merdivenin "toplam tuttu, YERİ tutmadı" kusuru tanım gereği ortadan kalkar.
+   *      Kıyası doğrudan hUYG satırıdır: aynı 25 kademe, aynı eşikler, yalnız ödül kalıbı farklı. */
+  hG: {
+    ad: 'hG',
+    ne: 'GELİRE ORANLI ₺: ödül = o anki gelirin N saniyesi (kademe index`ine DEĞİL)',
+    birim: 'sn gelir',
+    taban: 0,
+    dozlar: [0, 15, 30, 60, 120, 300, 600],
+    fabrika: (sn) => {
+      if (sn <= 0) return null;
+      return () => {
+        const akis = kademeAkisi();
+        return sayacli((d) => akis(d).length * d.oran * sn);
+      };
+    },
+    yaz: (sn) =>
+      sn <= 0
+        ? 'ödül yok'
+        : `${TOPLAM_KADEME} kademe × o anki gelirin ${sn} sn`,
   },
 };

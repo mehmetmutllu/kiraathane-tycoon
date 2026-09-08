@@ -339,3 +339,184 @@ olmasına** çevrildi (`window.__game().goalsClaimed`).
   ödül düzenlenmedi.
 - Görev hattının M1 ödülleri (`quests[].reward`) aynen duruyor.
 
+
+---
+
+# D3b — Ödülün KALIBI: sabit ₺ mi, kalıcı çarpan mı, gelire oranlı ₺ mi?
+
+**Tur:** Faz D · D3b · 2026-09-09 · varyant kapısı (D-084) devrede
+**Araç:** aynı ikili — `tools/hedef-kollari.ts` (+`hF`, `hG`) + `tools/olcum-hedefler.ts`
+**Ham çıktı:** `docs/olcum-hedefler.txt` (tam koşu) · damgalar `docs/olcum-hedefler.damga.txt`
+**Model:** D-086 yürürlükteki model (`k1b` + `k2`) · `economy.config.ts` bu turda da **DEĞİŞMEDİ**
+
+## 6.1 Soru — ve neden D3 kapanmış sayılmadı
+
+D3 kapanırken tek bir kalem açık kalmıştı: *"hedeflerin ₺ kolu bu hâliyle kalsın mı?"* Karar
+paketi üç seçenekle sunuldu — **A** kalsın (yürürlükteki `hUYG`), **B** `h0`'a dön (yalnız 💎),
+**C** ucuzlat (`hE` %0,5-1 bandı). Kullanıcı üçünü de almadı ve şunu sordu: **sektörde kaliteli
+olan hangisi?**
+
+Soru haklıydı, çünkü A/B/C'nin üçü de **aynı kalıbın** varyasyonlarıydı: sabit ₺ merdiveni.
+A onu koruyor, B siliyor, C küçültüyordu; hiçbiri değiştirmiyordu. Oysa D3'ün kendi sayıları o
+kalıbın kusurunu iki kez göstermişti:
+
+- **Bulgu 2:** ödülün büyüklüğü pencereyi doldurmuyor — `hA %50`de **66.000 ₺** ödendi, geç
+  pencerelere düşen **0**. Sabit ₺, kazanıldığı noktadan birkaç dakika sonra gürültüye karışıyor,
+  çünkü gelir süperlineer büyüyor ve ödül büyümüyor.
+- **Bulgu 10 ②:** kısılmış merdiven toplamı tutturdu ama ödemelerin **yerini** tutturamadı.
+  Sebep yapısaldı: ödül kademe **index**'ine bağlıydı, oyuncunun oraya **ulaştığı zamana** değil.
+
+Sektörde idle/tycoon'un koleksiyon ödülü üç kalıba oturur ve sabit ₺ lump'ı bunların en zayıfı
+(yalnız erken oyunda, öğretici dürtüsü olarak kullanılır):
+
+| kalıp | örnek | neden bayatlamıyor |
+|---|---|---|
+| **sert para** | Idle Miner Tycoon ve idle-arcade tycoon'ların çoğu | değeri enflasyona uğramaz |
+| **kalıcı çarpan** | AdVenture Capitalist (milestone → kalıcı %kâr) · Cookie Clicker (achievement → milk çarpanı) · Egg Inc. | ödül oyuncuyla **birlikte büyür** |
+| **gelire oranlı yumuşak para** | ödül "şu anki gelirin N saniyesi" olarak tanımlanır | eğrinin neresinde toplanırsa toplansın aynı ağırlıkta düşer |
+
+Sert paranın satırı zaten tabloda: `h0`, tabanın birebir kopyası (Bulgu 1). Eksik olan iki kalıp
+bu turda ölçülüyor.
+
+## 6.2 İki yeni kol
+
+Üçü de **AYNI merdiveni** yürütür (`kademeAkisi()` — `economy.config.ts`'in gerçek 5×5 kademesi,
+gerçek eşikleri, gerçek sırası). Aralarındaki tek fark ödülün kalıbıdır; merdiven ortak olmasaydı
+farkın kalıptan mı eşikten mi geldiği ayırt edilemezdi.
+
+| kol | kalıp | doz birimi |
+|---|---|---|
+| `hUYG` | **sabit ₺ merdiveni** (yürürlükteki hâl) — kıyas satırı | açık/kapalı |
+| **`hF`** | **KALICI ÇARPAN**: her toplanan kademe ₺/müşteriyi kalıcı büyütür | tam koleksiyondaki (25/25) toplam artış |
+| **`hG`** | **GELİRE ORANLI ₺**: ödül = o anki gelirin N saniyesi | sn gelir |
+
+`hF` ayrı bir kancaya takılır (`hedefCarpaniAyarla`), çünkü ₺ akışından yapıca farklıdır: üç
+tavanın (talep/arz/taşıma) hiçbirine dokunmaz, yalnız aynı akışın müşteri başına ₺'sini çarpar —
+B4 oda kolunun girdiği yerin aynısı.
+
+### Bu iki kolun okuma biçimi D3'ünkünden FARKLI
+
+`hF` hiç ₺ **ödemez**, o yüzden tablonun `ÖDENEN` ve `PENCERE` kolonları onda tanım gereği 0'dır
+ve bir eksiklik değildir. `hF` yalnız `ihlal` · `enUzun` · `d.ŞERİT` kolonlarından okunur.
+"Ödeme düştü" damgası da ona uygulanmaz (yanlış alarm olurdu); sorumluluk tek başına varyant
+damgasındadır — iz tabandan farklı mı.
+
+### Model sınırları (karar bunları bilerek verilmeli)
+
+1. **Çarpan bir sonraki tick'te yürürlüğe girer.** Ödeyici kancasının yeri korunsun diye
+   (yoksa ölçülmüş `hUYG`/`hA`/`hB` satırları bir tick kayar ve §4 tablosuyla kıyaslanamaz
+   olurdu). DT = 1 sn → sapma bir saniyeliktir.
+2. **D3'ün model sınırları aynen sürüyor:** ödül düşer düşmez cüzdana geçer sayılır (üst sınır) ·
+   Temizlik kategorisi sim'de hiç ilerlemez ve Servis vekil okunur → her üç kol da gerçek etkinin
+   **alt** sınırıdır. Üç kol da aynı eksikten aynı yönde etkilendiği için **kıyas geçerli.**
+
+## 6.3 Bulgular (tam koşu · damgalar temiz)
+
+Tam tablo `docs/olcum-hedefler.txt`. Aşağıdaki satırlar §4 tablosunun devamıdır — aynı koşu,
+aynı taban, aynı kolonlar.
+
+| kol | doz | ÖDENEN | PENCERE | ihlal N/I | en uzun | ŞERİT | d.ŞERİT | ilk alım | açılış | otom. |
+|---|---|---|---|---|---|---|---|---|---|---|
+| **taban** | — | 0 | 0 (0) | 6/1 | 43,4 dk | 8,48 sa | %0,0 | 22 sn | 1,6 dk | 6,1 dk |
+| *(kıyas)* `hUYG` | uygulanan | 3.175 | 435 (2) | 6/1 | 43,4 dk | 8,21 sa | %-3,2 | 22 sn | 1,6 dk | 6,0 dk |
+| *(kıyas)* `hE` | %2 | 3k | 703 (3) | 4/1 | 42,0 dk | 8,25 sa | %-2,7 | 22 sn | 1,6 dk | 6,1 dk |
+| **hF** | %2 | **0** | **—** | 6/1 | 42,9 dk | 8,41 sa | **%-0,8** | 22 sn | 1,6 dk | 6,1 dk |
+| **hF** | %5 | **0** | **—** | 6/1 | **42,3 dk** | 8,31 sa | **%-2,0** | 22 sn | 1,6 dk | 6,1 dk |
+| **hF** | %10 | **0** | **—** | **5**/1 | **41,2 dk** | 8,14 sa | **%-4,0** | 22 sn | 1,6 dk | 6,1 dk |
+| **hF** | %20 | **0** | **—** | **4**/1 | **39,3 dk** | 7,83 sa | %-7,6 | 22 sn | 1,6 dk | 6,1 dk |
+| **hF** | %35 | **0** | **—** | **3**/1 | **36,7 dk** | 7,41 sa | %-12,6 | 22 sn | 1,5 dk | 6,0 dk |
+| **hF** | %50 | **0** | **—** | **3**/0 | **34,4 dk** | 7,04 sa | %-16,9 | 22 sn | 1,5 dk | 6,0 dk |
+| **hG** | 15 sn | 686 | 127 (2) | 6/1 | 43,4 dk | 8,42 sa | %-0,7 | 22 sn | 1,6 dk | **5,9 dk** |
+| **hG** | 30 sn | 1k | 253 (2) | 6/1 | 43,4 dk | 8,36 sa | %-1,4 | 22 sn | 1,6 dk | **5,7 dk** |
+| **hG** | 60 sn | 3k | 506 (2) | 6/1 | 43,4 dk | 8,23 sa | %-2,9 | 22 sn | 1,6 dk | **5,2 dk** |
+| **hG** | 120 sn | 5k | 1k (2) | 6/1 | 43,4 dk | 7,99 sa | %-5,8 | 22 sn | 1,5 dk | **4,4 dk** |
+| **hG** | 300 sn | 14k | 3k (2) | 6/1 | 43,4 dk | 7,27 sa | %-14,3 | 22 sn | 1,3 dk | **2,2 dk** |
+| **hG** | 600 sn | 27k | 5k (2) | 5/0 | 43,4 dk | 6,15 sa | %-27,5 | 22 sn | 1,3 dk | **1,7 dk** |
+
+`hF`'in PENCERE hücresi **—** ile yazıldı, 0 ile değil: kol hiç ₺ ödemez, o yüzden o kolon onda
+bir ölçüm değil bir tanım boşluğudur (bkz. Bulgu 15).
+
+### Bulgu 11 — `hG` hipotezi ÇÜRÜDÜ: gelire oranlı ödül geç pencereyi hiç açmıyor, açılışı eziyor
+
+Bu turun kurucu hipotezi şuydu: ödül kademe *index*'ine değil oyuncunun *ulaştığı andaki gelirine*
+bağlanırsa, Bulgu 10 ②'nin "toplam tuttu, YERİ tutmadı" kusuru tanım gereği ortadan kalkar. Teşhis
+doğruydu; **ilaç bu değildi.**
+
+En uzun bekleme **altı dozun altısında da 43,4 dk** — tabanın birebir aynısı. Kol %27,5'e varan bir
+zincir bedeli ödetirken bile o pencereyi bir saniye kısaltmadı. Buna karşılık **açılışı sistematik
+olarak eziyor**: otomasyon (garsonun geldiği an) 6,1 → 5,9 → 5,7 → 5,2 → **4,4** → 2,2 → **1,7 dk**.
+
+Sebep ham çıktının ödeme dağılımında açıkça duruyor (`hG` 600 sn, 13 ödeme):
+
+```
+@ 0.05 sa   275 ₺   @ 0.06 sa   743 ₺   @ 0.06 sa   371 ₺
+@ 0.09 sa   501 ₺   @ 0.09 sa   501 ₺        ← 13 ödemenin BEŞİ ilk 5,4 dakikada
+@ 1.34 sa 2.861 ₺   ...                       @ 6.15 sa 9.749 ₺
+```
+
+"Şu anki gelirin N saniyesi" **tekdüze bir zaman atlamasıdır**: her kademede aynı N saniyeyi
+bağışlar. Erken zincir kısa olduğu için aynı N orada oransal olarak çok daha ağır basar — ve
+hedeflerin ilk kademeleri (Servis 25, Mekân 3, Kazanç 1.000) zaten ilk dakikalarda kümeleniyor.
+Yani kalıp, ödülü tam da yardıma **en az** ihtiyaç duyulan yere yığıyor.
+
+D-079'un otomasyon ölçütü (< 15 dk) sayısal olarak hâlâ geçiyor, ama açılışın **karakteri** bozuluyor:
+oyuncunun eliyle servis yaptığı dönem 6 dakikadan 4,4'e (120 sn dozunda) iniyor. Bu, ölçütün
+değil oyunun kaybı — ve `hG` bu yüzden elenir.
+
+### Bulgu 12 — `hF` doğru yerde çalışıyor: geç oyunu kısaltıyor, açılışa DOKUNMUYOR
+
+En uzun bekleme dozla birlikte tekdüze geriliyor: 43,4 → 42,9 → 42,3 → 41,2 → 39,3 → 36,7 → 34,4 dk.
+İhlal 6 → 5 → 4 → 3. Aynı anda **ilk alım 22 sn ve otomasyon 6,1 dk yedi dozun altısında birebir
+sabit** (yalnız en uç iki dozda otomasyon 6,0'a, açılış 1,5 dk'ya iniyor).
+
+Sebep kalıbın kendisinde: çarpan **bileşikleniyor**. Kademeler eğri boyunca açıldığı için çarpanın
+çoğu geç oyunda yürürlüktedir; erken oyunda 25 kademenin ancak birkaçı açılmış olur, yani oradaki
+etkisi kendiliğinden küçüktür. `hG`'nin tekdüzeliği ile `hF`'in bileşikliği arasındaki fark tam da
+budur ve tabloda iki kolun **otomasyon** sütunu bunu tek başına gösteriyor (hG: 6,1 → 1,7 · hF: sabit).
+
+### Bulgu 13 — Tempo hanesinde `hF` ile `hE` DENK; karar tempo tablosundan ÇIKMIYOR
+
+Kolların "kazanılan dakika / ödenen zincir yüzdesi" verimi:
+
+| kol | doz aralığı | dk kısalma / %1 zincir bedeli |
+|---|---|---|
+| `hF` (kalıcı çarpan) | %2 … %50 | **0,53 – 0,63** |
+| `hE` (yoğun+kısık sabit ₺) | %0,5 … %5 | **0,50 – 0,57** |
+| `hA` · `hB` · `hC` · `hG` | tüm dozlar | **0** (%50'ye kadar hiç kıpırdamıyor) |
+
+Ölçüm **eleme** yaptı ve bu değerlidir: dört kalıbın verimi sıfır çıktı, ikisi kaldı. Ama kalan
+ikisi arasında tempo bakımından **anlamlı bir fark yok** — 0,55 ile 0,53 aynı sayıdır.
+
+Bunu açıkça yazmak gerekiyor, çünkü D-084'ün kuralı "sayı olmadan karar verme"dir, tersi değil:
+**sayı, kararın hangi eksende verilmeyeceğini de söyleyebilir.** Burada söylediği şu — iki kalıp
+arasındaki seçim tempo tablosundan çıkarılamaz, çünkü tablo ikisini ayırt etmiyor. Ayırt eden
+eksen sim'in hiç ölçmediği eksendir: **ödül zamanla bayatlıyor mu.**
+
+### Bulgu 14 — `hF`'in yapısal üstünlüğü: "yazılan ≠ ödenen" hatası TANIM GEREĞİ imkânsız
+
+D3'ün en pahalı dersi Bulgu 10'du: uygulanan sabit ₺ merdiveni, seçilen kola denk olduğu
+sanılırken **iki kez** çürüdü (önce toplam, sonra ödemelerin yeri) ve doğru hâline **üçüncü**
+ölçümde ulaşıldı. O hata sınıfı sabit merdivenin yapısından geliyordu: kademe başına elle yazılmış
+bir ₺ vardı ve o ₺'nin oyuncunun oraya vardığı andaki değeri hiçbir yerde görünmüyordu.
+
+Çarpanda ödenecek ₺ yok. Kademe başına tek bir oran var ve etkisi oyuncunun bulunduğu yere göre
+kendiliğinden ölçekleniyor. `hUYG` kolunun var olma sebebi olan hata sınıfı ortadan kalkıyor.
+
+### Bulgu 15 (ÖLÇÜM SINIRI — karar bunu bilerek versin) — PENCERE kolonu `hF`'i ölçemez
+
+`PENCERE`, "ödemenin 20 dk'yı aşan aralığın içine düşen ₺'si"ni sayar. `hF` hiç ₺ ödemediği için o
+hücre tanım gereği boştur — bu, kolun pencereye dokunmadığı anlamına **gelmez**; tersine, çarpan
+her aralığın içinde **sürekli** yürürlüktedir. `hF` için doğru okuma `enUzun` sütunudur ve o sütun
+tabloda `hF`'te en çok kıpırdayan sütundur.
+
+Bu, D3'ün beş-kolon disiplinine bir istisna değil, o disiplinin sınırının bulunduğu yerdir: kolonlar
+tek bir ödül kalıbı (tek seferlik ₺) varsayılarak tasarlanmıştı.
+
+### Bulgu 16 — 💎 hâlâ bedava, ve hâlâ tek "anlık" ödül
+
+`h0` satırı bu koşuda da tabanın **birebir** kopyası (iz damgası doğruladı). `hF`'in tek gerçek
+zayıflığı ödülün oyuncuya **görünmemesi** — "+%0,4 kalıcı gelir" cüzdana uçan bir sayı kadar
+tatmin etmez. 💎 o boşluğu **bedelsiz** doldurur; sektörde de ikisi zaten birlikte verilir
+(anlık ve görünür olan sert para, kalıcı olan çarpan).
+
+## 6.4 Karar — (BOŞ · adım 3'te doldurulacak)

@@ -189,6 +189,9 @@ export interface HedefDurum {
   padSayisi: number;
   /** Son seviyeye çıkmış masa sayısı — "Usta" kategorisinin sayacı. */
   ustaMasa: number;
+  /** O andaki gelir oranı (₺/sn), ödül düşmeden ÖNCE. D3b `hG` kolu ödülü bununla tanımlar:
+   *  "şu anki gelirin N saniyesi". Alan additive — onu okumayan kollar birebir aynı kalır. */
+  oran: number;
 }
 /** Bir koşunun ödeyicisi: her tick çağrılır, o tick düşen ₺'yi döndürür (yoksa 0). */
 export type HedefOdeyici = (d: HedefDurum) => number;
@@ -196,6 +199,21 @@ let hedefFabrika: (() => HedefOdeyici) | null = null;
 /** Her PROFİL koşusu taze bir ödeyici ister (kademeler koşu başına sıfırlanır) — bu yüzden
  *  ödeyici değil FABRİKA verilir. `null` = kanca kapalı. */
 export const hedefAkisiAyarla = (f: (() => HedefOdeyici) | null): void => { hedefFabrika = f; };
+
+/* ── D3b: KALICI ÇARPAN KANCASI ────────────────────────────────────────────────────────
+ * Sektörün koleksiyon ödülü kalıbı (AdVenture Capitalist milestone · Cookie Clicker milk):
+ * hedef toplandıkça ₺ tek seferlik DÜŞMEZ, ₺/müşteri kalıcı olarak BÜYÜR. Bu ₺ akışından
+ * yapıca farklı olduğu için ayrı kancadır: üç tavanın (talep/arz/taşıma) hiçbirine dokunmaz,
+ * yalnız aynı akışın müşteri başına ₺'sini çarpar — B4 oda kolunun girdiği yerin aynısı.
+ *
+ * MODEL SINIRI (rapora yazılır): çarpan bir sonraki tick'te yürürlüğe girer (ödeyici kancasının
+ * yeri korunsun diye; yoksa ölçülmüş hUYG/hA/hB satırları bir tick kayar ve tabloyla
+ * kıyaslanamaz olurdu). DT = 1 sn olduğu için sapma bir saniyeliktir. */
+export type HedefCarpani = (d: HedefDurum) => number;
+let hedefCarpanFabrika: (() => HedefCarpani) | null = null;
+export const hedefCarpaniAyarla = (f: (() => HedefCarpani) | null): void => { hedefCarpanFabrika = f; };
+/** Koşu içindeki yürürlükteki çarpan. Kanca kapalıyken 1 kalır → taban çıktısı BİREBİR korunur. */
+let carpanSimdiki = 1;
 
 /** Tamamlanan görevlerin ödüllerini öde (M1) — store'daki quest-advance döngüsünün sim karşılığı. */
 function advanceQuests(s: State): void {
@@ -544,7 +562,8 @@ function rate(s: State, eff = 1): number {
   // önüne bırakır → gelir MÜŞTERİ BAŞINA büyür. Üç tavanın (talep/arz/taşıma) HİÇBİRİNİ
   // gevşetmez, yalnız aynı akışın ₺'sini artırır — Kat 1'de throughput kolu tükendiği için
   // (arz L6'da 0,78 fincan/sn, taşıma tavanı 1,25) geriye kalan tek büyüme yönü budur.
-  const perCustomer = price + ortBahsis(w, s) + lavaboIncomePerCustomer(s.lavabo);
+  // D3b `hF`: hedef koleksiyonunun KALICI çarpanı da müşteri başına ₺'ye biner (kanca kapalıyken 1).
+  const perCustomer = (price + ortBahsis(w, s) + lavaboIncomePerCustomer(s.lavabo)) * carpanSimdiki;
 
   const carry = carryRateOf(s);
   let akis = Math.min(demand, supply, carry);
@@ -909,6 +928,8 @@ function runProfile(eff: number, log = false, buys?: Buy[]): Map<string, number>
   };
   const MAX_T = 60 * 60 * 12; // B5a: şeridin 12 birimi 6 saatin ötesine taşıyor — ölçüm penceresi büyüdü
   const hedef = hedefFabrika ? hedefFabrika() : null;
+  const carpan = hedefCarpanFabrika ? hedefCarpanFabrika() : null;
+  carpanSimdiki = 1; // kanca kapalı olsa bile sıfırlanır: önceki koşunun çarpanı sızmasın
   const done = new Map<string, number>();
   while (s.t < MAX_T) {
     const inc = rate(s, eff) * DT;
@@ -922,13 +943,20 @@ function runProfile(eff: number, log = false, buys?: Buy[]): Map<string, number>
       if (label) buys!.push({ t: s.t, label });
     }
     advanceQuests(s); // M1: görev ödülleri cüzdana
-    if (hedef) {
+    if (hedef || carpan) {
       // D3: hedef (koleksiyon) ödülleri — görev ödülüyle AYNI muamele (ikisi de lifetime'a sayar).
       const w = deriveWorld(s.padsDone);
       seviyeleriEsitle(s, w);
       const usta = s.tableLevels.slice(0, w.tables.length).filter((l) => l >= tableSoftMax()).length;
-      const odul = hedef({ t: s.t, lifetime: s.lifetime, padSayisi: s.padsDone.length, ustaMasa: usta });
-      if (odul > 0) { s.wallet += odul; s.lifetime += odul; }
+      const d: HedefDurum = {
+        t: s.t, lifetime: s.lifetime, padSayisi: s.padsDone.length, ustaMasa: usta, oran: inc / DT,
+      };
+      if (hedef) {
+        const odul = hedef(d);
+        if (odul > 0) { s.wallet += odul; s.lifetime += odul; }
+      }
+      // D3b: çarpan bir SONRAKİ tick'te yürürlüğe girer (bkz. hedefCarpaniAyarla model sınırı).
+      if (carpan) carpanSimdiki = carpan(d);
     }
     for (const m of MS()) {
       if (!done.has(m.name) && m.hit(s)) {
