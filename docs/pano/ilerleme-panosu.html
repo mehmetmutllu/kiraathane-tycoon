@@ -193,7 +193,7 @@ h2{font-size:21px;font-weight:800}
 <script type="application/json" id="durum">
 {
  "guncelleme": "08.09.2026",
- "yapilan": 64,
+ "yapilan": 65,
  "toplam": 76,
  "kilometre": [
   {
@@ -214,28 +214,28 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum · Faz D · 1/5 — geç-oyun eğrisi",
-  "baslik": "Ölçüt eğriyi değil, okuyanın seçtiği profili sınıyormuş",
-  "aciklama": "Geçen tur simülatör gerçeğe yaklaşınca bir ölçüt kırmızıya döndü: <i>\"20 dakikayı aşan tek alım kalmasın\"</i> kuralı, geç oyunda <b>altı kez</b> ihlal ediliyordu — en uzunu <b>43,4 dakika</b>. Bu tur o ihlalin turuydu.<br><br>Düzeltmenin dokuz olası kaldıracı vardı ve dokuzu da <b>koda değil varyanta</b> yazılıp ölçüldü. Dozlar tahmin edilmedi, <b>çözüldü</b>: her kol için \"ölçütü tutturan en küçük doz\" aranıp o dozun Kat 1 içeriğine faturası okundu. Fatura hepsinde aynı yöne çıktı — ölçütü tutturan her kol oyunun <b>ilk katını kısaltıyordu</b>: 8,48 saatlik içerik ×0,80 dozda 7,90 saate, çay tabanı düşürülünce 7,04 saate, tam temizlikte <b>%42</b>ye kadar iniyordu. Yani \"ölçüt geçsin\" ile \"Kat 1 uzun olsun\" aynı anda istenemiyordu.<br><br>Asıl bulgu kolların hiçbirinde değil, ölçütün kendisindeydi: <b>profili hiç yazılmamıştı.</b> Kardeş üç tempo ölçütü <b>İdealize</b> oyuncuda (verim 1,0) okunuyor, bu dördüncüsü <b>Normal</b>de okunuyordu. Aynı eğri profil değiştikçe <b>İdealize 1 · Yoğun 1 · Normal 6 · Rahat 11</b> ihlal veriyor. Hüküm eğriden değil, <b>okuyanın seçtiği profilden</b> geliyormuş. Kardeşlerinin profilinde ölçüt bugün de geçiyor: aşan 1, en uzun 23,9 dk.<br><br>Karar bu yüzden ekonomiye değil <b>ölçüte</b> yazıldı: dördüncü ölçüt de İdealize profilinde hüküm verir, Normal ve Rahat sayıları silinmez ama <b>hükümsüz gözlem bandı</b> olarak basılır. Ekonominin ayar dosyası iki commit’te de <b>sıfır satır</b> değişti.",
+  "etiket": "Bu oturum · Faz D · 2/5 — görev kimlikleri",
+  "baslik": "Görevlerin adı vardı, ama kayıt onları adıyla değil sırasıyla tanıyordu",
+  "aciklama": "Oyunda 50'yi aşkın görevlik sıralı bir hat var ve her görevin <b>kalıcı bir adı</b> zaten yazılıydı. Eksik olan tek şey kaydın o adı kullanmamasıydı: kayıt dosyasında duran şey <i>\"kaçıncı görevdeyim\"</i> bilgisiydi.<br><br>Bunun bedeli sessiz ve tekrar edendi. Hattın ortasına bir görev eklendiği an o sayı <b>başka bir görevi</b> göstermeye başlıyor — yani yayınlanmış bir kayıt varken hat güvenle değiştirilemiyor. Bugüne dek her değişiklikte kayda elle bir kimlik eşleme listesi yazılmış: <b>beş tane</b> birikmiş. Ve bu, meta katmanın ön koşuluydu: Hedefler (koleksiyon), günlük görevler ve ortak ödül ekranının üçü de aynı kimliğe yaslanacak.<br><br>Üç çözüm koda değil <b>karara</b> yazıldı ve yan yana tartışıldı. Seçilen, ikisinin en iyi yanını alıyor: kayıtta <b>yalnız tek bir liste</b> durur — bitirilen görevlerin adları — ve aktif görev ondan <b>türetilir</b>. Bu, oyunun kendi mevcut deseni: masa, servis ve personel de ayrı sayaçlarda değil, açılmış noktaların listesinden türetiliyor. İkinci bir konum alanı olmadığı için ikisi <b>desenkronize olamaz</b>.<br><br>Türetme kuralı bir güvence daha veriyor: aktif görev, listedeki <b>en geç</b> görevden sonraki ilk yapılmamış görevdir. Yani hattın ortasına sonradan eklenen bir görev, oraya çoktan varmış bir oyuncuyu <b>geri çekmez</b>; sona eklenen görev normal sıraya girer; silinen ya da adı değişen bir görev de kaydın yerini bozmaz.",
   "adimlar": [
-   "<b>Dokuz kol varyant olarak ölçüldü</b>, dozlar tahmin değil çözüldü — dokuzu da elendi",
-   "<b>Ölçütün profili yazılı değilmiş:</b> kardeş üçü İdealize’de, bu dördüncüsü Normal’de okunuyordu",
-   "<b>Aynı eğri:</b> İdealize 1 · Yoğun 1 · Normal 6 · Rahat 11 ihlal — fark eğride değil profilde",
-   "<b>Taşıma tavanı kolu ihlali AZALTMADI, 6 → 7 artırdı</b> — \"throughput kolu Kat 1’de tükendi\" sınırı yeniden ölçüldü",
-   "<b>Bir kol atıl çıktı:</b> sim’de serbest oyun bloğu hiç koşmuyor — tempoyu <b>görev hattı</b> belirliyor",
-   "<b>15 bekçi testi · 4 mutasyon</b> · ekonomi sayısı değişmedi (0 satır)"
+   "<b>Kayıtta artık sıra numarası yok:</b> tek liste (bitirilen görevlerin adları), aktif görev türetilir",
+   "<b>İlerleme geriye gitmez:</b> hattın ortasına eklenen görev, oraya varmış kaydı geri çekmez",
+   "<b>Silinen / adı değişen görev</b> kaydın yerini bozmuyor — konum kalan adlardan okunuyor",
+   "<b>Kayıt sürümü 32 + GERÇEK göç:</b> eski kayıtlar ilerlemesini kaybetmeden taşınıyor",
+   "<b>Yan iş:</b> kayıt sürümü ekonomi ayar dosyasından çıkıp kendi dosyasına taşındı",
+   "<b>17 bekçi testi · beş mutasyon</b>, beşi de yakalandı · toplam test 567 → <b>584</b>"
   ],
-  "not": "<b>Kabul edilen risk bilerek ödenmedi:</b> Normal profildeki oyuncu 6. saatte bir yükseltme için <b>43,4 dakika</b> bekliyor. O beklemeyi dolduracak katman — elmas, günlük görev, hedefler, ödül ekranı — <b>henüz yok</b>; bugün içerik uzunluğu ödemek erken olurdu. Sayı gözlem bandında görünür kalıyor ve <b>Faz D bitince aynı ölçüm yeniden okunacak</b>; ölçüm aracı ve elenen kolların kodu bu iş için duruyor."
+  "not": "<b>Göç uçtan uca, gerçek tarayıcıda sınandı.</b> Eski şemayla yazılmış bir kayıt (12. görevde, 7.500 ₺, üç açılmış nokta, sesi kapalı) oyun açılmadan önce cihaza ekildi. Oyun açıldığında görev barı <b>\"4. Masayı aç\"</b> dedi — hattın tam 12. görevi — parası, noktaları ve ayarı yerindeydi; ve oyunun geri yazdığı kayıt <b>yeni şemadaydı</b>: sıra numarası alanı yok, 12 görev adı ve doğru sayaç etiketi var. Konsol hatası yok. <b>Tek bir denge sayısı değişmedi.</b>"
  },
  "siradaki": {
-  "etiket": "Faz D · 2/5 — görev kimlikleri",
-  "baslik": "Görevlerin adı yok, yalnız sıra numarası var",
-  "aciklama": "Oyunun görev hattı bugün <b>sıra numarasıyla</b> tutuluyor: kayıtta duran şey \"kaçıncı görevdeyim\" bilgisi. Hattın ortasına bir görev eklendiği anda o numara <b>başka bir görevi</b> gösteriyor — yani hat, yayınlanmış bir kayıt varken güvenle değiştirilemez hâlde.<br><br>Sıradaki tur bunu kimliğe çeviriyor: her görevin <b>kalıcı bir adı</b> olacak, kayıt \"tamamlananlar\" listesi tutacak ve eski kayıtlar tek seferlik bir dönüşümle taşınacak. Bu bir cila işi değil, <b>meta katmanın ön koşulu</b>: Hedefler (koleksiyon), günlük görevler ve ortak ödül ekranının üçü de aynı kimliğe yaslanacak. Plan bunu açıkça yazıyor — düzeltilmeden meta katmana başlamak <b>borcu ikiye katlar</b>; bugüne dek beş ayrı yerde elle kimlik-eşleme listesi birikmiş durumda.<br><br>Bu turun ölçümü de aynı yeri işaret etti: sim’de ekonominin temposunu belirleyen şey serbest oyun değil, <b>görev hattının kendisi</b>.",
+  "etiket": "Faz D · 3/5 — Hedefler ve ortak ödül ekranı",
+  "baslik": "Oyunda dört ayrı yerde ödül veriliyor ve dördü dört farklı şey gösteriyor",
+  "aciklama": "Meta katmanın ön koşulu bu tur kapandı; sıra <b>Hedefler</b>e geldi: görev hattının dışında duran, kendi hızında ilerleyen bir <b>koleksiyon</b> katmanı — beş kategori, her biri kendi sayacından besleniyor.<br><br>Bunun teknik zemini artık hazır: kayıt bu turdan itibaren <b>bitirilen görevlerin listesini</b> tutuyor, ki Hedefler ekranının istediği tam olarak o liste. Ayrıca ödül verme anı bugün oyunda <b>dört ayrı yerde</b> ayrı ayrı yazılmış durumda; sıradaki tur bunları <b>tek bir ödül ekranına</b> indiriyor, böylece yeni bir ödül kaynağı eklemek dördüncü bir kopya yazdırmıyor.<br><br>Faz D'nin geri kalanı: İtibar (bugün anlamsız duran seviye/XP anlam kazanır) ve günlük görevler; sonra elmas kaynağı ile Usta katmanı.",
   "adimlar": [
-   "<b>Sıra numarası → kalıcı kimlik</b> · kayıt \"tamamlananlar\" listesi tutar",
-   "<b>Tek seferlik göç:</b> eski kayıtlar sürüm yükseltmesiyle taşınır, ilerleme kaybolmaz",
-   "<b>Beş elle eşleme listesi</b> tek kaynağa iner",
-   "<b>Sonra:</b> Hedefler + ortak ödül ekranı · İtibar + günlük görevler · elmas ve Usta katmanı",
+   "<b>Hedefler:</b> beş kategori, sayaçlar gerçek istatistikten türer (görev hattından bağımsız)",
+   "<b>Ortak ödül ekranı:</b> bugün dört yerde ayrı yazılmış olan an tek yerde toplanır",
+   "<b>Zemin hazır:</b> bitirilen görevlerin listesi bu turda kayda girdi",
+   "<b>Sonra:</b> İtibar + günlük görevler · elmas kaynak/harcama + Usta katmanı",
    "<b>Fazın içinde bekleyen hata:</b> yürüyüş ızgarası ile oyuncunun çarpışması aynı dünyayı görmüyor"
   ],
   "not": "<b>Faz D bitince geçen turun ölçümü yeniden okunacak:</b> meta katman geç-oyunun bekleme pencerelerini gerçekten dolduruyor mu? Ölçüm aracı hazır, elenen dokuz kolun kodu duruyor — soru o zaman tahminle değil <b>sayıyla</b> cevaplanacak."
@@ -352,8 +352,8 @@ h2{font-size:21px;font-weight:800}
     {
      "k": "D",
      "t": "Meta katman",
-     "d": "Görev kimlikleri · Hedefler ödülü · İtibar · günlük görev · elmas ekonomisi · Usta katmanı. <b>D1</b> geç-oyun eğrisi ölçüldü: dokuz kol elendi, düzeltilen şey eğri değil <b>tempo ölçütünün profili</b> oldu (D-087) ✓ · sırada <b>görev kimlikleri</b>.",
-     "yapilan": 1,
+     "d": "Görev kimlikleri · Hedefler ödülü · İtibar · günlük görev · elmas ekonomisi · Usta katmanı. <b>D1</b> geç-oyun eğrisi ölçüldü: dokuz kol elendi, düzeltilen şey eğri değil <b>tempo ölçütünün profili</b> oldu (D-087) ✓ · <b>D2</b> hattın kimliği sıra numarası olmaktan çıktı, kayıt v32 + gerçek göç (D-088) ✓ · sırada <b>Hedefler + ortak ödül ekranı</b>.",
+     "yapilan": 2,
      "toplam": 5,
      "kapi": "Elmas kazanılıp harcanabiliyor, Usta alınabiliyor",
      "durum": "now"
@@ -378,6 +378,21 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "08.09.2026",
+   "etiket": "Faz D · 2. oturum (D2 — görev kimlikleri · D-088)",
+   "baslik": "Görevlerin adı vardı; kayıt onları adıyla değil sırasıyla tanıyordu",
+   "govde": "Oyunun ilerlemesini elli görevi aşkın sıralı bir hat taşıyor ve her görevin <b>kalıcı bir adı</b> zaten yazılıydı. Bu turun bulgusu şuydu: eksik olan hattın kendisi değil, <b>kaydın</b> o adları hiç kullanmamasıydı. Kayıt dosyasında duran şey <i>\"kaçıncı görevdeyim\"</i> bilgisiydi — bir sıra numarası.<br><br>Bunun bedeli sessizdi ve her seferinde aynı biçimde ödeniyordu. Hattın ortasına bir görev eklendiği an o sayı <b>başka bir görevi</b> göstermeye başlar; yani yayınlanmış bir kayıt varken hat güvenle değiştirilemez. Bugüne dek her değişiklikte kayda elle bir kimlik eşleme listesi yazılmış ve <b>beş tanesi</b> birikmiş. Bu yüzden plan bunu meta katmanın <b>ön koşulu</b> saymıştı: Hedefler (koleksiyon), günlük görevler ve ortak ödül ekranının üçü de aynı kimliğe yaslanacak — düzeltilmeden başlamak borcu ikiye katlardı.<br><br>Çözüm koda değil önce <b>karara</b> yazıldı ve üç kol yan yana tartışıldı. ① Kayıtta yalnız bitirilenlerin listesi dursun, aktif görev ondan türesin — tek doğru kaynak, ama hattın ortasına eklenen görev ilerlemiş bir oyuncuyu <b>geri çekiyor</b>. ② Kayıtta hem aktif görevin adı hem liste dursun — geri çekmiyor ama <b>iki kaynak</b> demek, ikisi çelişebilir. Kullanıcı ikisinin de mantığını sorguladı ve seçimi bıraktı: <i>\"burada en kalitelisi ne ise o olsun.\"</i><br><br>Seçilen üçüncü kol ikisinin en iyi yanını alıyor. Kayıtta <b>tek bir liste</b> durur — bitirilen görevlerin adları — ve aktif görev ondan türetilir; ama türetme kuralı şu: aktif görev, listedeki <b>en geç</b> görevden sonraki ilk yapılmamış görevdir. Böylece tek alan korunur (ikinci bir konum alanı olmadığı için desenkronize olamaz) ve ilerleme <b>asla geriye gitmez</b>. Bu aynı zamanda oyunun kendi mevcut deseni: masa, servis ve personel de ayrı sayaçlarda değil, açılmış noktaların listesinden türetiliyor.<br><br>Sıra numarası tamamen kalkmadı — <b>yer değiştirdi</b>. Hat gerçekten sıralı ve tempo o sıraya bağlı, o yüzden index <b>çalışma zamanının</b> kodlaması olarak kaldı; kimlik listesi de <b>deponun</b> kodlaması oldu. İkisi aynı anda saklanmıyor: kaydederken index adlara çevriliyor, yüklerken adlardan index okunuyor.<br><br>Son olarak eski kayıtlar. Bir önceki sürümde <i>\"eşleşmeyen sürümü sıfırla\"</i> gibi bir istisna vardı ama o istisna kendi durumuna özeldi: o gün zincirin kimlikleri gerçekten yok olmuştu. Burada öyle bir şey yok — hattın görevleri aynı, değişen yalnız kaydın o hattı nasıl işaret ettiği. Bu yüzden projenin kendi kuralı uygulandı ve <b>gerçek bir göç</b> yazıldı: ilerleme kaybolmuyor.",
+   "maddeler": [
+    "<b>Kayıtta sıra numarası yok:</b> tek liste (bitirilenlerin adları), aktif görev türetilir",
+    "<b>İlerleme geriye gitmez:</b> ortaya eklenen görev, oraya varmış kaydı geri çekmez; sona eklenen sıraya girer",
+    "<b>Silinen / adı değişen görev</b> kaydın yerini bozmuyor — konum kalan adlardan okunuyor",
+    "<b>Kayıt sürümü 32 + gerçek göç</b> · daha eski kayıtların sıfırlanması olduğu gibi duruyor",
+    "<b>Yan iş:</b> kayıt sürümü ekonomi ayar dosyasından çıkıp kendi dosyasına taşındı",
+    "<b>17 bekçi · beş mutasyon</b> (beşi de yakalandı) · test 567 → <b>584</b> · duman 28/28 · denge değişmedi"
+   ],
+   "not": "<b>Göç uçtan uca, gerçek tarayıcıda sınandı</b> — testin kendisi bir kez yanlış kurulduktan sonra. İlk denemede kayıt oyun <b>zaten açıkken</b> ekildi ve sonuç \"göç olmadı\" dedi; sebep göçte değil ölçümdeydi: çalışan oyunun iki saniyelik kayıt sayacı, ekilen kaydın üstüne kendi durumunu yazıyordu. Tohum açılıştan <b>önce</b> konunca gerçek sonuç göründü: 12. görevde, 7.500 ₺'lik, üç noktası açılmış, sesi kapalı bir eski kayıt açıldı — görev barı <b>\"4. Masayı aç\"</b> dedi (hattın tam 12. görevi), para ve ayar yerindeydi, ve oyunun geri yazdığı kayıt <b>yeni şemadaydı</b>. Konsol hatası yok.<br><br><b>Bir uyarı da kayda geçirilerek geçildi.</b> Kapanış denetimi bu turu <i>\"denge dosyasına ölçümsüz dokundu\"</i> diye işaretledi. Doğru ama yanıltıcı: dokunulan tek şey, ekonomi ayar dosyasından <b>silinen</b> kayıt-sürümü satırıydı ve turda tek bir denge sayısı değişmedi. Üstelik bu, o yanlış alarmın <b>son</b> görülüşü — sürüm artık kendi dosyasında, gelecek kayıt değişiklikleri denetimi tetiklemeyecek. Araca dokunulmadı: kendi turunu ister."
+  },
   {
    "tarih": "08.09.2026",
    "etiket": "Faz D · 1. oturum (D1 — geç-oyun eğrisi · D-087)",

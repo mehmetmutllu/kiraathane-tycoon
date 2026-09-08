@@ -2424,3 +2424,40 @@ sınır 30 dk'ydı, Yoğun'un 29,8 dk'sı içinden geçiyordu. **Kaçan mutasyon
 gösterdi**; sınır 26 dk'ya çekildi. Bir bekçinin "geçti" demesi, kilitlediğini göstermez.
 **Detay:** `docs/gec-oyun-raporu-d1.md` · ham `docs/olcum-gec-oyun.txt`.
 
+## D-088 · Görev hattının kimliği sıra numarası olmaktan çıktı (kayıt v32) (2026-09-08)
+**Karar (kullanıcı "en kalitelisi ne ise o olsun" dedi, kol seçimi bana bırakıldı):** kayıtta
+**yalnız `questsDone: string[]`** (tamamlanan görev kimlikleri) durur; aktif görev **türetilir**:
+listedeki EN GEÇ görevden SONRAKİ ilk yapılmamış görev (`src/game/questProgress.ts`).
+`questIndex` ÇALIŞMA ZAMANININ kodlaması olarak kalır — hat sıralı ve tempo sıraya bağlı; kimlik
+listesi de DEPONUN kodlaması. İkisi aynı anda saklanmaz, biri diğerinden türer (`padsDone` deseni,
+D-015). Yanında tek bir etiket: `questBaseId` — sayaç tabanının hangi göreve ait olduğu; konum
+bilgisi değil, tabanın bayat olup olmadığını anlamak için.
+**Sorun:** hattın kimliği sıra numarasıydı; hatta her ekleme/sıra değişikliği kayda elle bir
+kimlik eşleme listesi yazdırıyordu — plan §D'ye göre **beş tane birikmiş**. Görev tanımlarının
+`id`si zaten vardı; eksik olan tek şey KAYDIN onu değil index'i saklamasıydı.
+**Değerlendirilen üç kol (kod yazılmadan):** ① yalnız `questsDone`, aktif = listede olmayan İLK
+görev → tek doğru kaynak ama hattın ORTASINA eklenen görev ilerlemiş kaydı GERİ ÇEKİYOR ve HUD'un
+index dilimlerini bozuyor · ② `questId` + `questsDone` → geri çekmiyor ama kayıtta iki kaynak ·
+③ **seçilen:** ①'in tek alanı + ②'nin "geriye gitmez" güvencesi. Ortaya eklenen görev o kayıt için
+atlanır, sona eklenen normal sıraya girer, silinen/yeniden adlandırılan görev konumu bozmaz.
+**Migrasyon (v31 → v32):** D-058'in temiz-sıfırlaması meşruydu (zincir kimliklerinin yeni modelde
+karşılığı YOKTU); burada öyle bir durum yok — hattın görevleri aynı, değişen yalnız kaydın o hattı
+nasıl işaret ettiği. CLAUDE.md gereği **gerçek göç** yazıldı: eski `questIndex` bugünkü hattın o
+index'ine kadarki kimliklere çevrilir. **v31'den ESKİ kayıt hâlâ sıfırlanır** (D-058 yerinde).
+**Yan iş — SAVE_VERSION `economy.config.ts`'ten `save.ts`'e taşındı:** bir denge sayısı değil,
+kayıt katmanının kendi kavramıydı; orada dururken **her sürüm artışı varyant kapısının commit
+denetimini boşuna tetikliyordu**. `economyConfig.saveVersion` alanı da kalktı (hiçbir çağıranı
+yoktu ve config → save döngüsü açardı).
+**SIRA KİLİDİ UYARISI — kayda geçirilerek geçildi (aracın kendi talimatı):** bu tur
+`economy.config.ts`'e dokunuyor (SAVE_VERSION'ın SİLİNMESİ) ve öncesinde ölçüm commit'i yok, o
+yüzden `npm run sira` **ihlal** dedi. Bu bir yanlış-pozitif: turda **tek bir denge sayısı
+değişmedi**, dokunulan satır zaten dosyadan ÇIKAN satır. Ve bu, o yanlış-pozitifin **son kez**
+görülmesi — sürüm artık başka dosyada. Araç değiştirilmedi (kendi turunu ister).
+**Bekçi:** `tests/gorev-kimligi.test.ts` — 17 test, **beş mutasyonla** doğrulandı (geri-gitme
+koruması kaldır · izdüşümde bir kaydırma · göç taban sahibini yazmaz · taban sahipliği
+doğrulanmaz · göç hiç çağrılmaz); beşi de yakalandı. Ayrıca modelin sessiz ön koşulu teste
+yazıldı: **hattaki kimlikler benzersiz olmalı.**
+**Uçtan uca doğrulandı (tarayıcı):** açılıştan önce ekilen gerçek bir v31 kaydı (12. görev, 7.500 ₺,
+3 pad) göç etti — HUD *"4. Masayı aç"* (hattın tam 12. görevi), para ve ayarlar yerinde; oyunun
+geri yazdığı kayıt **v32**, `questIndex` alanı yok, `questsDone` 12 kimlik, `questBaseId: q_table4`.
+vitest **584** (567 → +17) · duman **28/28** · derleme temiz · **denge sayısı DEĞİŞMEDİ.**

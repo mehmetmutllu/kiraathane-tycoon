@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 76 · YAPILAN 64 · %84):**
+**Oturum bütçesi (TOPLAM 76 · YAPILAN 65 · %86):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -22,10 +22,10 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | B model geçişi + maket taşıması | 13/13 ✅ |
 | | **C zincir ve denge** | **5/5 ✅** |
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
-| | D meta katman | 1/5 🔧 |
+| | D meta katman | 2/5 🔧 |
 | | E arayüz ve cila | 1/4 🔧 |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **36/48** |
+| **Program toplam** | | **37/48** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -80,7 +80,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
 **asıl sınav tick-temelli bir denge turu.** Ölçülen gerçek kazançlar: üç dosyalık okuma seti
 (oturum başı), uzun koşuların paralel arkaplanı, hazır ölçüm iskeleti.
 
-## Faz D — META KATMAN (1/5) 🔧
+## Faz D — META KATMAN (2/5) 🔧
 - ✅ **D1 — geç-oyun eğrisinin 20 dk ihlali ölçüldü ve ölçütün PROFİLİ sabitlendi (D-087)** ·
   dokuz kol varyant olarak ölçüldü, dozlar tahmin değil **çözüldü**; hepsi elendi, ölçütün
   kendisi (`o1`) alındı. Ölçüt kardeş üçüyle aynı profilde (İdealize) hüküm verir ve geçiyor
@@ -88,10 +88,15 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   (taşıma tavanı) ihlali 6 → 7 **artırdı**. `docs/gec-oyun-raporu-d1.md` · araç
   `tools/denge-kollari.ts` + `tools/olcum-gec-oyun.ts` · bekçi `tests/tempo-olcutu.test.ts`
   (15 test, 4 mutasyon) · vitest 567 · **denge sayısı DEĞİŞMEDİ** (`economy.config.ts` 0 satır).
-- ⏳ **D2 — görev kimlikleri:** `questIndex: number` → `questId: string` + tamamlananlar listesi
-  + tek seferlik migrasyon. Plan §D'nin ön koşulu ("düzeltilmeden meta katmana başlamak borcu
-  ikiye katlar"; bugüne dek beş elle kimlik-eşleme listesi birikti). D1 bunu ayrıca ölçtü:
-  sim'de ekonominin temposunu belirleyen şey **görev hattının kendisi**.
+- ✅ **D2 — görev hattının kimliği sıra numarası olmaktan çıktı (D-088)** · kayıtta artık yalnız
+  `questsDone` (tamamlanan kimlikler) durur, aktif görev türetilir; `questIndex` çalışma zamanının
+  kodlaması olarak kalır (`padsDone` deseni, D-015). Hattın ortasına eklenen görev ilerlemiş kaydı
+  **geri çekmez**, sona eklenen sıraya girer, silinen/yeniden adlandırılan konumu bozmaz.
+  **Kayıt v32 + v31'den GERÇEK göç** (v31'in temiz-sıfırlaması yalnız daha eskiler için duruyor).
+  Yan iş: `SAVE_VERSION` `economy.config.ts`'ten `save.ts`'e taşındı — bir denge sayısı değildi ve
+  orada dururken her sürüm artışı sıra kilidini boşuna tetikliyordu. Bekçi
+  `tests/gorev-kimligi.test.ts` (17 test, **5 mutasyon**) · uçtan uca tarayıcıda doğrulandı ·
+  vitest 584 · duman 28/28 · **denge sayısı DEĞİŞMEDİ**.
 - ⏳ **D3 — Hedefler (koleksiyon) + ortak ödül ekranı** (beş kategori; ekran dört yerde aynı).
 - ⏳ **D4 — İtibar (eski XP anlam kazanır) + günlük görevler.**
 - ⏳ **D5 — elmas kaynak/harcama + Usta katmanı** (masa ₺-tavanı L4'ün üstü).
@@ -113,7 +118,10 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
 - **Sim'in taşıma tavanı 4 masada fazla kötümser** (model 6,36 < ölçülen 7,53 müşteri/dk) —
   elenen `k3` bardak kolunun önündeki tek engel; kodu duruyor, bu kalem çözülünce yeniden ölçülür.
 - **Nav ızgarası ↔ oyuncu çarpışması aynı dünyayı görmüyor** (`actorRadius` sandalyesiz,
-  `playerRadius` sandalyeler katı) — **Faz D**.
+  `playerRadius` sandalyeler katı) — **Faz D** (D2'den sonraki en güçlü aday).
+- **`npm run pano`'nun günlük uyarısı yalnız TARİHE bakıyor** — aynı gün iki oturum kapanınca
+  sessiz kalıyor; C5 ve D1'in anlatısı bu yüzden iki tur yayınlanmadan kaldı (2026-09-08'de elle
+  düzeltildi, araç değişmedi). Kural "sayaç arttıysa günlük kartı da artmalı" olmalı.
 - D-046 ④ kaba, ⑤ yok · sipariş nesnesi v1.1'de.
 - Gölgenin telefondaki maliyeti ölçülmedi — **Faz F riski**.
 - Bundle ~1.17MB (three.js) — Faz F'de kod-bölme.

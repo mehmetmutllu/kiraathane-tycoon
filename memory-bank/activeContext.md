@@ -5,34 +5,36 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-08 — **D1 BİTTİ** · Faz D 1/5 · 64/76)
+## ŞU AN (2026-09-08 — **D2 BİTTİ** · Faz D 2/5 · 65/76)
 
 ```
-SORU            : Geç-oyun eğrisi 20 dk ölçütünü Normal'de 6 kez aşıyor — ölçüt mü bayat,
-                  eğri mi pahalı, düzeltilecekse hangi kaldıraçtan?   [KAPANDI]
-ÖLÇÜLECEK KOLLAR: m1 · f1 · f2 · f3 · f4 · g1 · g2 · b1 · c1 · o1  (dokuz kol + ölçüt kolu)
-SAYILAR         : docs/gec-oyun-raporu-d1.md §Bulgular · ham docs/olcum-gec-oyun.txt
-KARAR           : D-087 — o1 ALINDI (ölçütün PROFİLİ sabitlendi); dokuz kolun tamamı elendi
-UYGULAMA        : simulate.ts ölçüt sabitleri + 4. ölçüt hükümlü + üç-profil GÖZLEM BANDI
-                  economy.config.ts DEĞİŞMEDİ (iki commit'te de 0 satır)
-BEKÇİ           : tests/tempo-olcutu.test.ts — 15 test, DÖRT mutasyonla doğrulandı
+SORU            : Görev hattının kimliği sıra numarası; hatta ekleme yapılınca kayıt sessizce
+                  BAŞKA bir görevi gösteriyor. Kimlik nasıl kalıcı hâle gelir?   [KAPANDI]
+ÖLÇÜLECEK KOLLAR: (yok — denge kalemi DEĞİL; üç tasarım kolu kod yazılmadan tartışıldı)
+SAYILAR         : (yok — bu tur ölçüm turu değil)
+KARAR           : D-088 — kayıtta YALNIZ `questsDone`; aktif görev türetilir, ilerleme geriye
+                  gitmez. Kullanıcı "en kalitelisi ne ise o olsun" dedi, kol seçimi bana bırakıldı.
+UYGULAMA        : `questProgress.ts` (yeni) · `save.ts` v32 + gerçek göç · `store.ts` türetme
+                  `rules.ts`/`tick.ts` DEĞİŞMEDİ · `economy.config.ts` yalnız SAVE_VERSION'ı KAYBETTİ
+BEKÇİ           : tests/gorev-kimligi.test.ts — 17 test, BEŞ mutasyonla doğrulandı
 ```
 
-Ölçütün profili hiç yazılmamıştı: kardeş üç ölçüt İdealize'de okunuyor, bu dördüncüsü
-Normal'de. Aynı eğri **İdealize 1 · Yoğun 1 · Normal 6 · Rahat 11**. Kardeşlerinin profilinde
-ölçüt bugün de geçiyor (23,9 dk → `servis L6`, D-078'in bilerek bıraktığı).
+Görev tanımlarının `id`si zaten vardı; eksik olan tek şey **kaydın** onu değil index'i saklamasıydı.
+Artık index çalışma zamanının kodlaması, kimlik listesi deponun kodlaması — ikisi aynı anda
+saklanmıyor (`padsDone` deseni). Uçtan uca tarayıcıda doğrulandı: ekilen gerçek bir v31 kaydı
+(12. görev · 7.500 ₺ · 3 pad) göç etti, HUD *"4. Masayı aç"* dedi, oyun kaydı **v32** olarak geri
+yazdı. vitest **584** · duman **28/28** · **denge sayısı değişmedi.**
 
-Düzeltici kolların hepsi Kat 1 içeriğinden **%7-42** götürüyordu (8,48 sa → 7,90 / 7,04 / …).
-`g1` (taşıma tavanı) ihlali **artırdı** · `m1` **atıl** çıktı · `f1`/`f2`/`b1` tabana takıldı ·
-`f3`'ü `f4` domine etti. **Kabul edilen risk:** Normal oyuncu 6. saatte 43,4 dk bekliyor.
+**SIRA KİLİDİ UYARISI kayda geçirildi (D-088):** tur `economy.config.ts`'e dokunuyor — ama
+dokunduğu tek şey SAVE_VERSION'ın **silinmesi**. Yanlış-pozitif, ve bu onun **son** görülüşü:
+sürüm artık `save.ts`'te, gelecek kayıt sürümleri kapıyı tetiklemeyecek. Araç değiştirilmedi.
 
 ## SIRADAKİ TAM ADIM
 
-**Faz D — meta katman (1/5).** Sıradaki kalem seçilmeli; iki güçlü aday, ikisi de bu turda
-gerekçelendi: ① **görev kimlikleri** (`questIndex: number` → `questId: string` + migrasyon) —
-plan "bu düzeltilmeden meta katmana başlamak borcu ikiye katlar" diyor, ve D1 ölçtü ki sim'de
-tempoyu belirleyen şey **görev hattının kendisi** · ② **nav ızgarası ↔ oyuncu çarpışması**
-(`actorRadius` sandalyesiz, `playerRadius` sandalyeler katı).
+**Faz D — meta katman (2/5).** Sıradaki kalem seçilmeli. Aday sırası: ① **D3 Hedefler
+(koleksiyon) + ortak ödül ekranı** — `questsDone` artık hazır, bu ekranın istediği liste ta kendisi
+· ② **nav ızgarası ↔ oyuncu çarpışması** (bilinen hata, tek başına duruyor) · ③ D4 İtibar +
+günlük görevler.
 
 **Faz D bitince yeniden okunacak ölçüm:** meta katman geç-oyun bekleme pencerelerini gerçekten
 dolduruyor mu — `tools/olcum-gec-oyun.ts` hazır, elenen kolların kodu duruyor.
@@ -46,7 +48,10 @@ dolduruyor mu — `tools/olcum-gec-oyun.ts` hazır, elenen kolların kodu duruyo
 - **`outputMultByLevel` yok** — servis çıktı çarpanı merdiven-geneli; `b1` erken oyuna
   dokunmadan denenemiyor.
 - **Sim'de serbest oyun bloğu ölü kod** (D1 Bulgu 5) — model kalemi, bugün zarar vermiyor.
-- **Nav ızgarası ↔ oyuncu çarpışması** — Faz D.
+- **Nav ızgarası ↔ oyuncu çarpışması** — Faz D (D2'den sonraki aday).
+- **`npm run pano`'nun günlük uyarısı yalnız TARİHE bakıyor** — aynı gün iki oturum kapanınca
+  sessiz kalıyor. C5 ve D1'in anlatısı bu yüzden iki tur yayınlanmadı (2026-09-08'de düzeltildi,
+  araç değişmedi). Kural "sayaç arttıysa kart sayısı da artmalı" olmalı.
 - D-046 ④ kaba, ⑤ yok · sipariş nesnesi v1.1'de.
 - Gölgenin telefondaki maliyeti ölçülmedi (Faz F riski) · bundle ~1,17 MB (Faz F kod-bölme).
 - C4'ten kalan ölçüm kusuru: B1 · oyuncu kipinde bot hiç yürümüyor (karar etkilenmedi).

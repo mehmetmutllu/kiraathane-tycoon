@@ -42,6 +42,7 @@ import {
   waiterHomeAt,
 } from './layout';
 import { deriveWorld, defaultFloorTheme, MAX_AREAS, MAX_SERVICES, roomOpen, THE_SERVICE, type World } from './world';
+import { activeQuestIndex, completedQuestIds } from './questProgress';
 // Dünya modeli (ALAN · SERVİS · MASA · ODA) Faz B1'de world.ts'e ayrıldı; store aynı kapıdan sunar.
 export {
   deriveWorld,
@@ -108,6 +109,7 @@ import {
   incomeRate,
   revealKeys,
   questView,
+  questCounterValue,
   questFocusPos,
   computeOfflineEarned,
   type ActiveSpot,
@@ -399,6 +401,18 @@ export const useGame = create<GameState>((set, get) => ({
       dishCarry: Math.max(0, Math.min(save.waiterUpgrades?.dishCarry ?? 0, dishCarryMaxTier())),
       dishSpeed: Math.max(0, Math.min(save.waiterUpgrades?.dishSpeed ?? 0, dishSpeedMaxTier())),
     };
+    // GÖREV KONUMU (v32, D-088): kayıtta index yok — aktif görev tamamlanan KİMLİKLERDEN türer.
+    const loadedQuestIndex = activeQuestIndex(C.quests, save.questsDone);
+    const loadedActive = C.quests[loadedQuestIndex];
+    // Taban aktif göreve AİTTİR. Hat kayıt yazıldıktan sonra değiştiyse türetilen görev başkası
+    // olabilir; o hâlde eski taban bayattır ve sayaç görevi hedefini SIFIRDAN sayar (delta 0).
+    const loadedQuestBase =
+      loadedActive && save.questBaseId === loadedActive.id
+        ? save.questBase
+        : loadedActive
+          ? questCounterValue(loadedActive.target, save.stats) ?? 0
+          : 0;
+
     // Çevrimdışı gelir: açık SERVİSLERİN idealize oranları TOPLAMI; süre + PARA tavanlı (computeOfflineEarned).
     const elapsed = Math.max(0, (Date.now() - save.lastSaved) / 1000);
     let wallet = D(save.wallet);
@@ -480,8 +494,8 @@ export const useGame = create<GameState>((set, get) => ({
         stationLevels,
       ).map(([k]) => k),
       stats: { ...save.stats },
-      questIndex: save.questIndex,
-      questBase: save.questBase,
+      questIndex: loadedQuestIndex,
+      questBase: loadedQuestBase,
       questPhase: 'active',
       questPhaseT: 0,
       questDoneIndex: -1,
@@ -496,20 +510,20 @@ export const useGame = create<GameState>((set, get) => ({
       charPanelSeen: save.charPanelSeen,
       trayTipSeen: save.trayTipSeen,
       quest:
-        save.questIndex < C.quests.length
-          ? questView(C.quests[save.questIndex], {
+        loadedQuestIndex < C.quests.length
+          ? questView(C.quests[loadedQuestIndex], {
               padsDone: save.padsDone,
               stationLevels,
               tableLevels: save.tableLevels,
               stats: save.stats,
-              questBase: save.questBase,
+              questBase: loadedQuestBase,
               charUpgrades,
               waiterUpgrades,
             })
           : null,
       // İlk oyun (taze kayıt): kamera ilk görevin hedefine kısa pan → "hareketli" onboarding girişi.
       camFocus:
-        save.questIndex === 0 && lifetime.lte(0)
+        loadedQuestIndex === 0 && lifetime.lte(0)
           ? (() => {
               const p0 = questFocusPos(C.quests[0].target, save.tableLevels, world.tables.length, world.areasOpen);
               return p0 ? { pos: [p0[0], p0[1], p0[2]] as [number, number, number], ttl: 3 } : null;
@@ -793,8 +807,10 @@ export const useGame = create<GameState>((set, get) => ({
       padsDone: [...s.padsDone],
       padFills: { ...s.padFills },
       stats: { ...s.stats },
-      questIndex: s.questIndex,
+      // D-088: kayda index DEĞİL kimlik gider — hat değişse de kaydın yeri kaymasın.
+      questsDone: completedQuestIds(C.quests, s.questIndex),
       questBase: s.questBase,
+      questBaseId: C.quests[s.questIndex]?.id ?? '',
       xp: s.xp,
       settings: { ...s.settings },
       floorThemeByArea: [...s.floorThemeByArea],

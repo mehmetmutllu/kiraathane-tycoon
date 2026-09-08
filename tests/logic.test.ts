@@ -22,7 +22,6 @@ import {
   dishSpeedMaxTier,
   xpForLevel,
   levelProgress,
-  SAVE_VERSION,
   charValue,
   charNextCost,
   charMaxTier,
@@ -94,7 +93,7 @@ import {
   entranceAt,
   streetAt,
 } from '../src/game/store';
-import { resetKeepingSettings, loadSave, defaultSave, defaultStats, defaultSettings, defaultWaiterUpgrades } from '../src/game/save';
+import { resetKeepingSettings, loadSave, defaultSave, defaultStats, defaultSettings, defaultWaiterUpgrades, SAVE_VERSION } from '../src/game/save';
 import { buildNavGrid, findNavPath } from '../src/game/nav';
 
 /** Servis kümesinin YERİ (B3-1/D-062): 3. Alan açılınca arka banda taşınır. Testlerin çoğu tek
@@ -3562,9 +3561,9 @@ describe('Faz B1 — kayıt v31: TEMİZ SIFIRLAMA, migrasyon yok (D-058 karar 3)
     }
   }
 
-  it('SAVE_VERSION 31e çıktı (model değişimi kayıt şemasını da değiştirdi)', () => {
-    expect(SAVE_VERSION).toBe(31);
-    expect(defaultSave().saveVersion).toBe(31);
+  it('SAVE_VERSION 32ye çıktı (görev kimliği kayıt şemasını değiştirdi — D-088)', () => {
+    expect(SAVE_VERSION).toBe(32);
+    expect(defaultSave().saveVersion).toBe(32);
   });
 
   it('resetKeepingSettings: İLERLEME sıfırlanır (para/pad/masa/görev)', () => {
@@ -3573,14 +3572,14 @@ describe('Faz B1 — kayıt v31: TEMİZ SIFIRLAMA, migrasyon yok (D-058 karar 3)
       padsDone: ['table2', 'zone2', 'z3table4'], tableLevels: [4, 4, 4, 4],
       stationLevels: [6, 3, 2], questIndex: 17, questBase: 40, xp: 900,
     });
-    expect(r.saveVersion).toBe(31);
+    expect(r.saveVersion).toBe(32);
     expect(r.wallet).toBe('0');
     expect(r.diamonds).toBe('0');
     expect(r.lifetime).toBe('0');
     expect(r.padsDone).toEqual([]);
     expect(r.tableLevels).toEqual([]);
     expect(r.stationLevels).toEqual([]);
-    expect(r.questIndex).toBe(0);
+    expect(r.questsDone).toEqual([]);
     expect(r.questBase).toBe(0);
     expect(r.xp).toBe(0);
   });
@@ -3625,7 +3624,7 @@ describe('Faz B1 — kayıt v31: TEMİZ SIFIRLAMA, migrasyon yok (D-058 karar 3)
       lastSaved: Date.now(),
     }), () => {
       const s = loadSave();
-      expect(s.saveVersion).toBe(31);
+      expect(s.saveVersion).toBe(32);
       expect(s.wallet).toBe('0');
       expect(s.padsDone).toEqual([]);
       expect(s.settings.sound).toBe(false);
@@ -3648,7 +3647,7 @@ describe('Faz B1 — kayıt v31: TEMİZ SIFIRLAMA, migrasyon yok (D-058 karar 3)
       expect(loadSave().padsDone).toEqual([]);
     });
     withStorage('{bozuk', () => {
-      expect(loadSave().saveVersion).toBe(31);
+      expect(loadSave().saveVersion).toBe(32);
     });
   });
 

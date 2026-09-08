@@ -1,10 +1,21 @@
 // localStorage kayıt + saveVersion. Backend yok: cihaz = veritabanı.
 // v31 (D-058): migrasyon YOK — eski sürüm bulunursa ilerleme sıfırlanır, ayarlar korunur.
+// v32 (D-088): görev hattının kimliği sıra numarası olmaktan çıktı → GERÇEK migrasyon (aşağıda).
 import {
-  SAVE_VERSION,
+  economyConfig as C,
   type CharUpgrades,
   type WaiterUpgrades,
 } from '../config/economy.config';
+import { activeQuestIndex, completedQuestIds } from './questProgress';
+
+/**
+ * KAYIT ŞEMASI SÜRÜMÜ. Bir denge sayısı değil, bu dosyanın kendi kavramı — bu yüzden
+ * `economy.config.ts`'te değil burada durur (D-088; orada dururken her sürüm artışı varyant
+ * kapısının commit denetimini boşuna tetikliyordu).
+ *
+ * 31 → 32: `questIndex: number` yerine `questsDone: string[]` (+ tabanın sahibi `questBaseId`).
+ */
+export const SAVE_VERSION = 32;
 
 const KEY = 'kiraathane.save';
 
@@ -79,10 +90,14 @@ export interface SaveData {
   padFills: Record<string, number>;
   /** Kalıcı eylem sayaçları (quest + arka-plan reveal şartları; v16). */
   stats: SaveStats;
-  /** Sıradaki görevin index'i (economyConfig.quests; >= length ⇒ görev hattı bitti; v16). */
-  questIndex: number;
+  /** TAMAMLANMIŞ görev kimlikleri (v32; D-088). Konumun TEK kaynağı — index saklanmaz, aktif
+   *  görev `activeQuestIndex` ile buradan türetilir (questProgress.ts). `padsDone` deseni. */
+  questsDone: string[];
   /** Aktif SAYAÇ görevinin başlangıç sayaç değeri (delta hedefi için taban; v16). */
   questBase: number;
+  /** Tabanın AİT OLDUĞU görevin kimliği (v32). Konum bilgisi değil sahiplik etiketi: yüklemede
+   *  türetilen aktif görev bu değilse taban bayattır ve sıfırdan kurulur (store.init). */
+  questBaseId: string;
   /** Toplam oyuncu XP'si (v17; level `levelProgress(xp)` ile türetilir — ayrı saklanmaz). */
   xp: number;
   /** Oyuncu ayarları (v17). */
@@ -126,8 +141,9 @@ export function defaultSave(): SaveData {
     padsDone: [],
     padFills: {},
     stats: defaultStats(),
-    questIndex: 0,
+    questsDone: [],
     questBase: 0,
+    questBaseId: '',
     xp: 0,
     settings: defaultSettings(),
     floorThemeByArea: [],
@@ -150,8 +166,9 @@ export function defaultSave(): SaveData {
  * Artık var olmayan bir zincir için migrasyon yazılmaz — eski kayıt bulunursa ilerleme sıfırlanır,
  * yalnız AYARLAR (ses · müzik · bildirim · FPS) korunur.
  *
- * CLAUDE.md'nin "ilerleme kaybolmaz" kuralı **v1.0 mağazaya çıktığı andan itibaren** bağlayıcıdır;
- * o gün geldiğinde bu fonksiyonun yerini gerçek migrasyon zinciri alır.
+ * Bu fonksiyon artık yalnız **v31'den ESKİ** (ya da tanınmayan) kayıtların düşüş yeri: göç zinciri
+ * v32 ile başladı (`migrateV31`). CLAUDE.md'nin "ilerleme kaybolmaz" kuralı v1.0 mağazaya çıktığı
+ * andan itibaren bağlayıcı; o gün geldiğinde buraya düşen kayıt kalmamalı.
  */
 export function resetKeepingSettings(raw: Record<string, unknown>): SaveData {
   const def = defaultSave();
@@ -167,13 +184,41 @@ export function resetKeepingSettings(raw: Record<string, unknown>): SaveData {
   };
 }
 
+/**
+ * MİGRASYON v31 → v32 (D-088) — v31'in temiz-sıfırlamasından sonraki İLK gerçek göç.
+ *
+ * v31'de sıfırlama meşruydu: zincir kimliklerinin yeni modelde karşılığı YOKTU. Burada öyle bir
+ * durum yok — hattın görevleri aynı, değişen yalnız KAYDIN o hattı nasıl işaret ettiği. Bu yüzden
+ * CLAUDE.md'nin "şema değişince eski kayıt migrate edilir, ilerleme kaybolmaz" kuralı uygulanır.
+ *
+ * Dönüşüm tek satır: eski `questIndex` bugünkü hattın o index'ine kadarki KİMLİKLERİNE çevrilir.
+ * Bu, göçün yapılabildiği tek an — v31 kaydı yazıldığında hat neyse index onu gösteriyordu ve
+ * hat o günden bu yana değişmedi. Göçten sonra kaydın konumu bir daha sıra numarasına bağlı olmaz.
+ */
+function migrateV31(raw: Record<string, unknown>): SaveData | null {
+  if (raw.saveVersion !== 31) return null;
+  const index = typeof raw.questIndex === 'number' ? raw.questIndex : 0;
+  const questsDone = completedQuestIds(C.quests, index);
+  const active = C.quests[activeQuestIndex(C.quests, questsDone)];
+  const { questIndex: _drop, ...rest } = raw as Record<string, unknown> & { questIndex?: number };
+  return {
+    ...defaultSave(),
+    ...(rest as object),
+    saveVersion: SAVE_VERSION,
+    questsDone,
+    questBase: typeof raw.questBase === 'number' ? raw.questBase : 0,
+    // Taban eski kayıtta aktif olan görevin tabanıydı; göç konumu değiştirmediği için sahibi de aynı.
+    questBaseId: active?.id ?? '',
+  } as SaveData;
+}
+
 export function loadSave(): SaveData {
   try {
     const raw = localStorage.getItem(KEY);
     if (!raw) return defaultSave();
     const parsed = JSON.parse(raw) as Record<string, unknown>;
     if (parsed.saveVersion === SAVE_VERSION) return { ...defaultSave(), ...(parsed as object) } as SaveData;
-    return resetKeepingSettings(parsed);
+    return migrateV31(parsed) ?? resetKeepingSettings(parsed);
   } catch {
     return defaultSave();
   }

@@ -13,11 +13,9 @@
  *   maxLevel    = ₺ tavanı. 💎 "Usta" katmanı Faz D'de kendi tasarımıyla gelecek (bugün YOK).
  */
 
-// v31 (Faz B1, D-058): ALAN/SERVİS/MASA/ODA modeline geçiş. Eski kayıtlardaki pad kimliklerinin
-// yeni zincirde karşılığı olmadığı için MİGRASYON YAZILMAZ — eski kayıt bulunursa ilerleme
-// sıfırlanır, yalnız ayarlar korunur (save.ts resetKeepingSettings). "İlerleme kaybolmaz" kuralı
-// v1.0 mağazaya çıktığı andan itibaren bağlayıcıdır.
-export const SAVE_VERSION = 31;
+// KAYIT SÜRÜMÜ BURADA DEĞİL: `src/game/save.ts`. Bir denge sayısı olmadığı hâlde burada
+// duruyordu ve her sürüm artışı `economy.config.ts`'i değiştirdiği için varyant kapısının
+// commit denetimini (npm run sira) boşuna tetikliyordu — D2'de (D-088) kendi dosyasına taşındı.
 
 /**
  * ALAN (eski "zone") — mekânsal bölge sayısı, alan başına masa slotu ve o slotların MASA TİPİ.
@@ -201,7 +199,8 @@ export interface QuestDef {
 }
 
 export const economyConfig = {
-  saveVersion: SAVE_VERSION,
+  // `saveVersion` buradan KALKTI (D-088): kayıt sürümü artık `src/game/save.ts`'te ve hiçbir
+  // çağıran onu config üzerinden okumuyordu — burada kalsaydı config → save döngüsü açardı.
   currency: CURRENCY,
 
   /**
