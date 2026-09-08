@@ -57,6 +57,9 @@ hE  |    %1 |     2k |       423 (5) |        6/1 | 42.7 dk | 8.37 sa |   %-1.4 
 hE  |    %2 |     3k |       703 (3) |        4/1 | 42.0 dk | 8.25 sa |   %-2.7 |    22 sn | 1.6 dk | 6.1 dk
 hE  |    %3 |     5k |        1k (3) |        4/1 | 41.3 dk | 8.14 sa |   %-4.1 |    22 sn | 1.6 dk | 6.1 dk
 hE  |    %5 |     9k |        2k (3) |        4/1 | 39.9 dk | 7.91 sa |   %-6.8 |    22 sn | 1.6 dk | 6.1 dk
+    hUYG: UYGULANAN: economy.config.ts`in GERÇEK goals bloğu (5 kategori × 5 kademe)
+hUYG |     0 |      0 |         0 (0) |        6/1 | 43.4 dk | 8.48 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
+hUYG |     1 |     3k |       435 (2) |        6/1 | 43.4 dk | 8.21 sa |   %-3.2 |    22 sn | 1.6 dk | 6.0 dk
     hC: hA + hB birlikte (plan §6: hem Kazanç hem Mekân ₺ verir)
 hC  |     0 |      0 |         0 (0) |        6/1 | 43.4 dk | 8.48 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
 hC  |  %0.5 |    756 |        38 (2) |        6/1 | 43.4 dk | 8.44 sa |   %-0.5 |    22 sn | 1.6 dk | 6.1 dk
@@ -93,6 +96,7 @@ hC  |   %50 |    76k |         0 (0) |        4/0 | 28.2 dk | 5.37 sa |  %-36.7 
   hE    %2  24 kademe · 7…7430 ₺ (top. 28.620)
   hE    %3  24 kademe · 11…11146 ₺ (top. 42.930)
   hE    %5  24 kademe · 19…18576 ₺ (top. 71.550)
+  hUYG     1  5 kategori × 5 kademe · toplam 7.485 ₺
   hC  %0.5  %1 → top. 7.256 ₺
   hC    %1  %1 → top. 14.512 ₺
   hC    %2  %2 → top. 29.025 ₺
@@ -162,6 +166,20 @@ hC  |   %50 |    76k |         0 (0) |        4/0 | 28.2 dk | 5.37 sa |  %-36.7 
       @ 6.39 sa      1.245 ₺
       @ 7.06 sa      1.681 ₺
       @ 7.68 sa      2.269 ₺
+  hUYG (doz 1): 13 odeme · toplam 3k ₺
+      @ 0.05 sa          5 ₺
+      @ 0.18 sa         30 ₺
+      @ 0.30 sa          5 ₺
+      @ 0.58 sa         20 ₺
+      @ 0.65 sa         90 ₺
+      @ 2.09 sa        360 ₺
+      @ 4.10 sa        100 ₺
+      @ 4.16 sa        220 ₺
+      @ 4.44 sa        700 ₺
+      @ 4.47 sa        420 ₺
+      @ 5.85 sa         75 ₺
+      @ 5.99 sa        300 ₺
+      @ 8.21 sa        850 ₺
   hC (doz 0.5): 10 odeme · toplam 76k ₺
       @ 0.18 sa         65 ₺
       @ 0.29 sa        500 ₺

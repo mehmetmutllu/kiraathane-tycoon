@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 76 · YAPILAN 65 · %86):**
+**Oturum bütçesi (TOPLAM 76 · YAPILAN 66 · %87):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -22,10 +22,10 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | B model geçişi + maket taşıması | 13/13 ✅ |
 | | **C zincir ve denge** | **5/5 ✅** |
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
-| | D meta katman | 2/5 🔧 |
+| | D meta katman | 3/5 🔧 |
 | | E arayüz ve cila | 1/4 🔧 |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **37/48** |
+| **Program toplam** | | **38/48** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -80,7 +80,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
 **asıl sınav tick-temelli bir denge turu.** Ölçülen gerçek kazançlar: üç dosyalık okuma seti
 (oturum başı), uzun koşuların paralel arkaplanı, hazır ölçüm iskeleti.
 
-## Faz D — META KATMAN (2/5) 🔧
+## Faz D — META KATMAN (3/5) 🔧
 - ✅ **D1 — geç-oyun eğrisinin 20 dk ihlali ölçüldü ve ölçütün PROFİLİ sabitlendi (D-087)** ·
   dokuz kol varyant olarak ölçüldü, dozlar tahmin değil **çözüldü**; hepsi elendi, ölçütün
   kendisi (`o1`) alındı. Ölçüt kardeş üçüyle aynı profilde (İdealize) hüküm verir ve geçiyor
@@ -97,7 +97,17 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   orada dururken her sürüm artışı sıra kilidini boşuna tetikliyordu. Bekçi
   `tests/gorev-kimligi.test.ts` (17 test, **5 mutasyon**) · uçtan uca tarayıcıda doğrulandı ·
   vitest 584 · duman 28/28 · **denge sayısı DEĞİŞMEDİ**.
-- ⏳ **D3 — Hedefler (koleksiyon) + ortak ödül ekranı** (beş kategori; ekran dört yerde aynı).
+- ✅ **D3 — hedefler (koleksiyon) kuruldu; ödül YOĞUNLUKTAN geliyor, büyüklükten değil (D-089)** ·
+  beş kol varyant olarak ölçüldü. Ana bulgu: ödülün BÜYÜKLÜĞÜ bekleme penceresini doldurmuyor
+  (`hA %50`de 66.000 ₺ ödense bile pencereye düşen **0**), YOĞUNLUĞU dolduruyor — aynı iyileşme
+  `hE`de %2,7 bedelle, ~11 kat ucuz. **Uygulanan config de ölçüldü (`hUYG`) ve varsayımı İKİ KEZ
+  çürüttü**: ortak ödül merdiveni önce toplamı (3k yerine 11k), sonra ödemelerin YERİNİ
+  tutturamadı → ödül kategori başına merdivene çevrildi. Yürürlükte **3.175 ₺ · 13 ödeme · zincir
+  %-3,2 · 250 💎**. `docs/hedef-raporu-d3.md` · bekçi `tests/hedefler.test.ts` (20 test,
+  **8 mutasyon** — ikisi kaçtı ve bantları daralttı) · vitest 604 · duman **31/31** ·
+  **kayıt sürümü artmadı** (v32,
+  `goalsClaimed` additive). **Kabul edilen eksik:** vaat edilen ihlal iyileşmesi gelmedi (6'da,
+  43,4 dk'da kaldı) — bedel bandında, fayda gürültüde; D-087'nin açık kalemi KAPANMADI.
 - ⏳ **D4 — İtibar (eski XP anlam kazanır) + günlük görevler.**
 - ⏳ **D5 — elmas kaynak/harcama + Usta katmanı** (masa ₺-tavanı L4'ün üstü).
 
@@ -105,10 +115,16 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
 > seçilir. Ayrıca Faz D'de bekleyen bilinen bir hata var: **nav ızgarası ↔ oyuncu çarpışması**.
 
 ## Bilinen açık kalemler
+- **Hedeflerin ₺ kolu bu hâliyle kalsın mı?** D-089'da seçilen kolun BEDELİ tutturuldu (%-3,2)
+  ama vaat ettiği FAYDA gelmedi (ihlal 6'da, en uzun 43,4 dk'da kaldı). Karar ₺ lehine verilirken
+  faydanın ölçülebilir olduğu varsayılmıştı; `h0` (yalnız 💎, bedel tam sıfır) hâlâ savunulabilir.
+  **Sonraki oturumda sorulacak.**
 - ~~Geç-oyun eğrisi 20 dk ölçütünü ihlal ediyor~~ → **D1'de kapandı (D-087):** ölçütün profili
   sabitlendi, hüküm geçiyor. **Kabul edilen risk:** Normal profil oyuncusu 6. saatte `servis L6`
   için 43,4 dk bekliyor — bilerek ödenmedi, gözlem bandında görünür kalıyor. **Faz D bitince
-  yeniden okunacak** (meta katman o pencereleri dolduruyor mu; araç hazır).
+  yeniden okunacak** (meta katman o pencereleri dolduruyor mu; araç hazır). **D3'ün cevabı, hedefler
+  kanadı için: HAYIR** — tempo olarak doldurmuyor (D-089); doldurduğu şey oyuncunun o pencerede
+  gördüğü ilerleme. Kalan kanatlar D4 (İtibar · günlük görev) ve D5.
 - **Görev hattı `waiterTray` kademe 2'de bitiyor**, 3. kademe (₺2.500 → tepsi 4) hatta yok;
   oysa sim'in ÜÇ KOL tablosu 20 masada `waiterTray: 3` varsayıyor — tempo kalemi DEĞİL
   (g1 ölçüldü, iyileştirmiyor), görev/HUD tutarlılık kalemi.

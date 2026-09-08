@@ -192,8 +192,8 @@ h2{font-size:21px;font-weight:800}
      ══════════════════════════════════════════════════════════════════════ -->
 <script type="application/json" id="durum">
 {
- "guncelleme": "08.09.2026",
- "yapilan": 65,
+ "guncelleme": "09.09.2026",
+ "yapilan": 66,
  "toplam": 76,
  "kilometre": [
   {
@@ -215,30 +215,24 @@ h2{font-size:21px;font-weight:800}
  ],
  "ozet": {
   "etiket": "Bu oturum · Faz D · 2/5 — görev kimlikleri",
-  "baslik": "Görevlerin adı vardı, ama kayıt onları adıyla değil sırasıyla tanıyordu",
-  "aciklama": "Oyunda 50'yi aşkın görevlik sıralı bir hat var ve her görevin <b>kalıcı bir adı</b> zaten yazılıydı. Eksik olan tek şey kaydın o adı kullanmamasıydı: kayıt dosyasında duran şey <i>\"kaçıncı görevdeyim\"</i> bilgisiydi.<br><br>Bunun bedeli sessiz ve tekrar edendi. Hattın ortasına bir görev eklendiği an o sayı <b>başka bir görevi</b> göstermeye başlıyor — yani yayınlanmış bir kayıt varken hat güvenle değiştirilemiyor. Bugüne dek her değişiklikte kayda elle bir kimlik eşleme listesi yazılmış: <b>beş tane</b> birikmiş. Ve bu, meta katmanın ön koşuluydu: Hedefler (koleksiyon), günlük görevler ve ortak ödül ekranının üçü de aynı kimliğe yaslanacak.<br><br>Üç çözüm koda değil <b>karara</b> yazıldı ve yan yana tartışıldı. Seçilen, ikisinin en iyi yanını alıyor: kayıtta <b>yalnız tek bir liste</b> durur — bitirilen görevlerin adları — ve aktif görev ondan <b>türetilir</b>. Bu, oyunun kendi mevcut deseni: masa, servis ve personel de ayrı sayaçlarda değil, açılmış noktaların listesinden türetiliyor. İkinci bir konum alanı olmadığı için ikisi <b>desenkronize olamaz</b>.<br><br>Türetme kuralı bir güvence daha veriyor: aktif görev, listedeki <b>en geç</b> görevden sonraki ilk yapılmamış görevdir. Yani hattın ortasına sonradan eklenen bir görev, oraya çoktan varmış bir oyuncuyu <b>geri çekmez</b>; sona eklenen görev normal sıraya girer; silinen ya da adı değişen bir görev de kaydın yerini bozmaz.",
+  "baslik": "Hedefler kuruldu: ödülün gücü büyüklüğünde değil, sıklığında",
+  "aciklama": "Oyuna <b>Hedefler</b> geldi — görev hattının dışında duran, kendi hızında ilerleyen bir koleksiyon katmanı. Beş kategori (Servis · Mekân · Kazanç · Usta · Temizlik), her biri beş kademeli, toplam 25 hedef; ödülü hem ₺ hem elmas. Ekran zaten çizilmişti; eksik olan arkasındaki <b>sistemdi</b>: eşikler ekranın içine gömülüydü, kademe yoktu, ödül yoktu, toplama yoktu. Elmas da oyunda görünüyor ama hiçbir kaynağı bulunmuyordu — artık var (toplam 250 💎).<br><br>Turun ölçüm sorusu şuydu: hedeflerin parası oyunun eğrisini kısaltır mı, yoksa geç oyundaki uzun bekleme pencerelerini <b>doldurur</b> mu? Cevap net çıktı: <b>ödülün büyüklüğü pencereyi doldurmuyor.</b> En uç denemede 66.000 ₺ ödense bile bekleme aralıklarının içine düşen para <b>sıfır</b> — ihlal ancak zinciri %29 kısaltarak, yani oyunun içeriğinden çalarak azalıyor. İşe yarayan şey <b>sıklık</b>: aynı parayı 6 yerine 24 kademeye bölmek aynı iyileşmeyi <b>%2,7</b> bedelle veriyor, yaklaşık on bir kat ucuza.<br><br>Turun asıl dersi ise şu oldu: <i>“seçilen doz iyiydi, ayara yazdığım da ona denktir”</i> bir <b>varsayımdır</b> — ölçülünce iki kez çürüdü (önce toplam, sonra paranın düştüğü <b>yer</b> tutmadı) ve bugünkü sayılar üçüncü ölçümün sonucu.",
   "adimlar": [
-   "<b>Kayıtta artık sıra numarası yok:</b> tek liste (bitirilen görevlerin adları), aktif görev türetilir",
-   "<b>İlerleme geriye gitmez:</b> hattın ortasına eklenen görev, oraya varmış kaydı geri çekmez",
-   "<b>Silinen / adı değişen görev</b> kaydın yerini bozmuyor — konum kalan adlardan okunuyor",
-   "<b>Kayıt sürümü 32 + GERÇEK göç:</b> eski kayıtlar ilerlemesini kaybetmeden taşınıyor",
-   "<b>Yan iş:</b> kayıt sürümü ekonomi ayar dosyasından çıkıp kendi dosyasına taşındı",
-   "<b>17 bekçi testi · beş mutasyon</b>, beşi de yakalandı · toplam test 567 → <b>584</b>"
+   "<b>Ölçüldü:</b> beş kol — ödülün büyüklüğü pencereye 0 ₺ düşürüyor, yoğunluğu düşürüyor",
+   "<b>Uygulandı:</b> 5 kategori × 5 kademe · 3.175 ₺ + 250 💎 · zincir bedeli %2,7",
+   "<b>Kabul edilen eksik:</b> bedel tutturuldu, vaat edilen FAYDA gelmedi (ihlal ve en uzun bekleme yerinde kaldı)"
   ],
-  "not": "<b>Göç uçtan uca, gerçek tarayıcıda sınandı.</b> Eski şemayla yazılmış bir kayıt (12. görevde, 7.500 ₺, üç açılmış nokta, sesi kapalı) oyun açılmadan önce cihaza ekildi. Oyun açıldığında görev barı <b>\"4. Masayı aç\"</b> dedi — hattın tam 12. görevi — parası, noktaları ve ayarı yerindeydi; ve oyunun geri yazdığı kayıt <b>yeni şemadaydı</b>: sıra numarası alanı yok, 12 görev adı ve doğru sayaç etiketi var. Konsol hatası yok. <b>Tek bir denge sayısı değişmedi.</b>"
+  "not": "Meta katman geç-oyun bekleme penceresini <b>tempo olarak doldurmuyor</b>; doldurduğu şey oyuncunun o pencerede gördüğü ilerleme. Soru bir sonraki tura yazıldı."
  },
  "siradaki": {
   "etiket": "Faz D · 3/5 — Hedefler ve ortak ödül ekranı",
-  "baslik": "Oyunda dört ayrı yerde ödül veriliyor ve dördü dört farklı şey gösteriyor",
-  "aciklama": "Meta katmanın ön koşulu bu tur kapandı; sıra <b>Hedefler</b>e geldi: görev hattının dışında duran, kendi hızında ilerleyen bir <b>koleksiyon</b> katmanı — beş kategori, her biri kendi sayacından besleniyor.<br><br>Bunun teknik zemini artık hazır: kayıt bu turdan itibaren <b>bitirilen görevlerin listesini</b> tutuyor, ki Hedefler ekranının istediği tam olarak o liste. Ayrıca ödül verme anı bugün oyunda <b>dört ayrı yerde</b> ayrı ayrı yazılmış durumda; sıradaki tur bunları <b>tek bir ödül ekranına</b> indiriyor, böylece yeni bir ödül kaynağı eklemek dördüncü bir kopya yazdırmıyor.<br><br>Faz D'nin geri kalanı: İtibar (bugün anlamsız duran seviye/XP anlam kazanır) ve günlük görevler; sonra elmas kaynağı ile Usta katmanı.",
+  "baslik": "İtibar ve günlük görevler — meta katmanın kalan iki kanadı",
+  "aciklama": "Hedefler kurulunca ortak <b>ödül ekranı</b> gerçek bir kullanıcıya kavuştu; sırada onu ikinci kez kullanacak kalem var: <b>İtibar</b>. Bugün oyunda seviye kazanılıyor, ekranda görünüyor, kutlanıyor — ve <b>hiçbir şeye yaramıyor</b>. Anlam kazanması planlı: her seviye müşteri akışını ve bahşişi biraz artıracak, mağazada yeni kozmetikleri görünür kılacak, her seviye atlamada aynı ödül ekranı açılacak.<br><br>Yanında <b>günlük görevler</b> geliyor — elmasın ikinci kaynağı ve oyuncuyu ertesi gün geri getiren şey. İkisi bittiğinde Faz D&#39;nin son kalemi kalıyor: elmasın <b>harcanabilir</b> hâle gelmesi ve <b>Usta</b> katmanı. O gün geldiğinde bu turun bir hükmü bilerek bayatlayacak: bugün elmas ödülü tempoya hiç dokunmuyor, çünkü harcaması yok — bekçi testi tam o günü yakalayacak şekilde yazıldı.",
   "adimlar": [
-   "<b>Hedefler:</b> beş kategori, sayaçlar gerçek istatistikten türer (görev hattından bağımsız)",
-   "<b>Ortak ödül ekranı:</b> bugün dört yerde ayrı yazılmış olan an tek yerde toplanır",
-   "<b>Zemin hazır:</b> bitirilen görevlerin listesi bu turda kayda girdi",
-   "<b>Sonra:</b> İtibar + günlük görevler · elmas kaynak/harcama + Usta katmanı",
-   "<b>Fazın içinde bekleyen hata:</b> yürüyüş ızgarası ile oyuncunun çarpışması aynı dünyayı görmüyor"
+   "<b>Şimdi:</b> İtibar (seviye anlam kazanır) + günlük görevler",
+   "<b>Sonra:</b> elmas harcaması + Usta katmanı · nav ızgarası ↔ oyuncu çarpışması"
   ],
-  "not": "<b>Faz D bitince geçen turun ölçümü yeniden okunacak:</b> meta katman geç-oyunun bekleme pencerelerini gerçekten dolduruyor mu? Ölçüm aracı hazır, elenen dokuz kolun kodu duruyor — soru o zaman tahminle değil <b>sayıyla</b> cevaplanacak."
+  "not": "Bu turdan devreden soru: hedeflerin ₺ ödülü bu hâliyle kalsın mı? Faydası ölçülemediğine göre “yalnız elmas” seçeneği (bedeli tam sıfır) hâlâ savunulabilir."
  },
  "donemler": [
   {
@@ -352,8 +346,8 @@ h2{font-size:21px;font-weight:800}
     {
      "k": "D",
      "t": "Meta katman",
-     "d": "Görev kimlikleri · Hedefler ödülü · İtibar · günlük görev · elmas ekonomisi · Usta katmanı. <b>D1</b> geç-oyun eğrisi ölçüldü: dokuz kol elendi, düzeltilen şey eğri değil <b>tempo ölçütünün profili</b> oldu (D-087) ✓ · <b>D2</b> hattın kimliği sıra numarası olmaktan çıktı, kayıt v32 + gerçek göç (D-088) ✓ · sırada <b>Hedefler + ortak ödül ekranı</b>.",
-     "yapilan": 2,
+     "d": "Görev kimlikleri · Hedefler ödülü · İtibar · günlük görev · elmas ekonomisi · Usta katmanı. <b>D1</b> geç-oyun eğrisi ölçüldü: dokuz kol elendi, düzeltilen şey eğri değil <b>tempo ölçütünün profili</b> oldu (D-087) ✓ · <b>D2</b> hattın kimliği sıra numarası olmaktan çıktı, kayıt v32 + gerçek göç (D-088) ✓ · <b>D3</b> Hedefler (5 kategori × 5 kademe) kuruldu — ödül YOĞUNLUKTAN geliyor, büyüklükten değil; uygulanan ayar da ölçüldü ve varsayımı iki kez çürüttü (D-089) ✓ · sırada <b>İtibar + günlük görevler</b>.",
+     "yapilan": 3,
      "toplam": 5,
      "kapi": "Elmas kazanılıp harcanabiliyor, Usta alınabiliyor",
      "durum": "now"
@@ -378,6 +372,12 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "09.09.2026",
+   "etiket": "Faz D · 3. oturum (D3 — Hedefler · D-089)",
+   "baslik": "Ödülü büyütmek beklemeyi kısaltmadı; ödülü BÖLMEK kısalttı",
+   "govde": "Bu tur <b>Hedefler</b>i kurdu: görev hattının dışında duran, kendi hızında ilerleyen bir koleksiyon katmanı — beş kategori (Servis · Mekân · Kazanç · Usta · Temizlik), her biri beş kademeli. Ekran zaten çizilmişti; eksik olan <b>arkasındaki sistemdi</b>: eşikler ekranın içine gömülüydü, kademe yoktu, ödül yoktu, toplama yoktu. Elmas ise oyunda görünüyordu ama <b>hiçbir kaynağı ve hiçbir harcaması</b> yoktu.<br><br>Asıl soru ödülün ₺ tarafıydı, çünkü o doğrudan tempoya giriyor: hedeflerin parası oyunun eğrisini kısaltır mı, yoksa geç oyundaki uzun bekleme pencerelerini <b>doldurur</b> mu? Bir önceki turda tam bu soru açık bırakılmıştı.<br><br>Beş kol ölçüldü ve cevap şaşırtıcı çıktı: <b>ödülün büyüklüğü pencereyi hiç doldurmuyor.</b> En uç denemede 66.000 ₺ ödense bile 20 dakikayı aşan bekleme aralıklarının içine düşen para <b>sıfır</b>; ihlal sayısı düşüyor ama sadece zinciri <b>%29 kısaltarak</b> — yani oyunun içeriğinden çalarak. Sebebi yapısal: ödül eşikleri oyuncunun <b>ilerlemesine</b> bağlı, uzun bekleme aralıkları ise tam olarak <b>ilerlemenin durduğu</b> yerler.<br><br>İşe yarayan şey miktar değil <b>sıklık</b> oldu. Aynı toplam parayı 6 kademe yerine 24 kademeye bölmek, aynı iyileşmeyi <b>%2,7</b> bedelle veriyor — yaklaşık <b>on bir kat ucuz</b>. Bu, önceki turda elenen dokuz kolun en ucuzunun (%7) bile altında; yani hedef ödülü, o eleme gerekçesine takılmayan <b>ilk</b> para kaldıracı.<br><br>Sonra turun asıl dersi geldi. “Seçilen doz iyiydi, ayara yazdığım da ona denktir” cümlesi bir <b>varsayımdı</b> ve ölçülünce <b>iki kez çürüdü</b>. Önce toplam tutmadı: ayara yazılan merdiven 3.000 ₺ vermesi gerekirken <b>11.000</b> verdi, çünkü denemedeki üst kademeler oyunun ilk katında hiç dolmuyordu, gerçektekiler doluyordu. Merdiven kısıldı, toplam tuttu — bu kez <b>paranın düştüğü yer</b> tutmadı: en uzun bekleme aralığı bomboş kaldı, büyük ödül o aralık <b>bittikten sonra</b> düştü. Sebep de yapısaldı: ödül kademenin <b>kaçıncı</b> olduğuna bağlıydı, oyuncunun oraya <b>ne zaman ulaştığına</b> değil — geç açılan “Usta” kategorisi ilk kademesinde 5 ₺ veriyordu. Ödül kategori başına merdivene çevrildi; geç açılan kategori büyük başlıyor. Bugünkü sayılar <b>üçüncü</b> ölçümün sonucu.<br><br><b>Eksik olan da yazıldı, gizlenmedi:</b> seçilen kolun <b>bedeli</b> tutturuldu ama vaat ettiği <b>fayda gelmedi</b> — ihlal sayısı ve en uzun bekleme tabandaki yerinde kaldı. Yani “meta katman geç-oyun pencerelerini doldurur mu” sorusunun cevabı, en azından hedefler kanadı için <b>hayır</b>: doldurduğu şey oyuncunun o pencerede <b>gördüğü</b> ilerleme, ölçülen bir tempo kazancı değil. Ödemeyi pencereye denk getirmek kırılgan bir ayar olurdu (ekonominin başka bir kalemi değişince pencere kayar) — yapılmadı, soru bir sonraki tura yazıldı.<br><br>Son olarak sistem tarayıcıda çalıştırıldı ve <b>iki gerçek kusur</b> çıktı — ikisi de mantık testlerinin göremeyeceği türden. Panel <b>hiç açılmıyordu</b>: ekranın veri okuma biçimi her çizimde yeni bir nesne üretip sonsuz döngüye sokuyordu. İkincisi duman testinin kendi içinde <b>uyuyan</b> bir kırılganlıktı: panel kapatma tıklaması, panelin açılış animasyonu tamamlandığında kartın altına düşüyordu — test bugüne dek yalnız animasyon henüz bitmediği için geçiyormuş."
+  },
   {
    "tarih": "08.09.2026",
    "etiket": "Faz D · 2. oturum (D2 — görev kimlikleri · D-088)",

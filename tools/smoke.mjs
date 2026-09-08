@@ -139,7 +139,45 @@ try {
   if ((wL2.waiterUpgrades?.speed ?? 0) > beforeWL)
     pass(`Garson hız yükseltme panelden çalışıyor (speed ${beforeWL}→${wL2.waiterUpgrades.speed})`);
   else fail(`Garson hız yükseltmedi (speed ${beforeWL}→${wL2.waiterUpgrades?.speed})`);
-  await page.click('[data-testid="char-panel"]'); // backdrop'a tıkla → panel kapanır
+  // Backdrop'un ÜST şeridine tıkla (kartın dışı). Merkeze tıklamak kırılgandı: panel açılış
+  // animasyonu bitince kart backdrop'un merkezini kaplıyor ve tıklama "intercepted" oluyor —
+  // test bugüne dek yalnız animasyon henüz tamamlanmadığı için geçiyordu (D3'te ortaya çıktı).
+  await page.click('[data-testid="char-panel"]', { position: { x: 450, y: 40 } });
+
+  // HEDEFLER paneli (D3/D-089): beş kategori + ödül toplama. Ödülü CONFIG verir, HUD çizer —
+  // bu yüzden burada sınanan şey "panel açıldı mı" değil, ₺ ve 💎'un GERÇEKTEN cüzdana geçmesi.
+  {
+    const oncesi = await page.evaluate(() => window.__addMoney(1200) && window.__game());
+    await page.click('[data-testid="goals"]');
+    await page.waitForSelector('[data-testid="goals-panel"]', { timeout: 5000 });
+    const satir = await page.$$('[data-testid^="goal-"]:not([data-testid^="goal-claim"])');
+    if (satir.length === 5) pass('Hedefler paneli: beş kategori satırı');
+    else fail(`Hedefler panelinde 5 satır yok: ${satir.length}`);
+
+    // Kazanç kategorisinin ilk kademesi 1.000 ₺ — yukarıdaki para onu toplanabilir yapar.
+    const alBtn = await page.$('[data-testid="goal-claim-earn"]');
+    if (!alBtn) {
+      fail('Kazanç hedefi toplanabilir görünmüyor (1.200 ₺ eklendi, eşik 1.000)');
+    } else {
+      await alBtn.click();
+      await page.waitForSelector('[data-testid="goal-reward"]', { timeout: 5000 });
+      await page.click('[data-testid="goal-reward-ok"]');
+      const sonrasi = await page.evaluate(() => window.__game());
+      if (sonrasi.diamonds > oncesi.diamonds)
+        pass(`Hedef ödülü toplandı (💎 ${oncesi.diamonds}→${sonrasi.diamonds})`);
+      else fail(`Hedef ödülü elmas vermedi (💎 ${oncesi.diamonds}→${sonrasi.diamonds})`);
+      // Aynı hedef ikinci kez toplanamamalı: kategori sonraki kademeye geçer (eşik 1.000 → 10.000)
+      // ve buton kalkar. React'in yeniden çizmesi bir kare sürer — bekleyerek sorulur.
+      // Kimlik kayda geçti mi? "Buton kalktı mı" diye sormak YANILTICIYDI: duman akışının sonunda
+      // lifetime 100k'yı aşıyor, yani Kazanç kategorisinin SONRAKİ kademesi de hemen toplanabilir
+      // oluyor ve buton haklı olarak yerinde duruyor. Doğru soru, toplanan KİMLİĞİN kayıtta olması.
+      const kimlikler = (await page.evaluate(() => window.__game())).goalsClaimed ?? [];
+      if (kimlikler.includes('earn:0')) pass(`Toplanan hedef kimliği kayıtta (${kimlikler.join(',')})`);
+      else fail(`Toplanan hedef kayda geçmedi: ${JSON.stringify(kimlikler)}`);
+    }
+    // Backdrop'un ÜST şeridi (kartın dışı) — merkez kartın altında kalıyor.
+    await page.click('[data-testid="goals-panel"]', { position: { x: 450, y: 40 } });
+  }
 
   // Bardak döngüsü (Faz 2e): garson servis ederken kirli bardak üretilir → oyuncu toplar → bulaşıkta yıkar.
   await page.evaluate(() => window.__park()); // oyuncu uzak köşede; garson servis etsin, kirli birikir

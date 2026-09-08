@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { useGame, tableThemeUnlocked, tableSoftMaxLevel } from '../../game/store';
+import { useGame, goalMetricsOf, tableThemeUnlocked, tableSoftMaxLevel } from '../../game/store';
+import { claimableGoals, goalViews, type GoalView } from '../../game/goals';
 import { perf } from '../../game/perf';
 import { screenPointer } from '../../game/screenPointer';
 import { fmt } from '../../game/decimal';
@@ -70,6 +71,9 @@ export function HUD() {
   const toggleCamZoomOut = useGame((s) => s.toggleCamZoomOut);
   const [offlineSeen, setOfflineSeen] = useState(false);
   const [sheet, setSheet] = useState<Sheet>(null);
+  // D3: alt nav'daki Hedefler sekmesi, toplanabilir ödül varsa işaretlenir. Sahnede işaret
+  // ÇIKMAZ — Tek Odak (D-080) aktif adımın işaretini tek tutar; hedefler panelde bekler.
+  const goalsReady = useGame((s) => claimableGoals(goalMetricsOf(s), s.goalsClaimed).length > 0);
 
   const lvl = levelProgress(xp);
   const questPct = quest && quest.total != null ? Math.min(100, ((quest.cur ?? 0) / quest.total) * 100) : null;
@@ -266,6 +270,7 @@ export function HUD() {
           label="Hedefler"
           icon={<TargetIcon size={25} />}
           active={sheet === 'goals'}
+          bang={goalsReady}
           onClick={() => setSheet(sheet === 'goals' ? null : 'goals')}
         />
         <NavTab
@@ -498,39 +503,32 @@ function QuestsSheet({ onClose }: { onClose: () => void }) {
   );
 }
 
-/** HEDEFLER: beş kategori + ilerleme sayaçları + Usta sayacı (plan §9). Sayaçlar GERÇEK
- *  `stats`/durumdan türer — sahte veri yok. Ödül toplama Faz D'de bağlanacak (K5). */
+/**
+ * HEDEFLER (koleksiyon, D3/D-089): beş kategori, her biri AKTİF kademesiyle tek satır.
+ * Sayaç da eşik de burada DEĞİL — `goals.ts` durumdan türetir, eşikler `economy.config.ts`te.
+ * (D3 öncesi ikisi de bu bileşenin içindeydi: HUD'a gömülü sayı hem CLAUDE.md'yi deliyordu hem
+ * hedefleri ölçüm aracının göremeyeceği bir yere koyuyordu.)
+ *
+ * Dört durum (plan §9): kilitli · ilerliyor · toplanabilir · toplandı. Toplanabilir olan satır
+ * ödül ekranını açar — ORTAK bileşen, offline kazancıyla aynı `RewardModal`.
+ */
 function GoalsSheet({ onClose }: { onClose: () => void }) {
+  // Metrikler ALAN ALAN seçilir, tek seferde değil: `useGame((s) => goalMetricsOf(s))` her
+  // render'da YENİ bir nesne döndürür ve zustand'ı sonsuz render'a sokar (panel hiç açılmıyordu).
   const stats = useGame((s) => s.stats);
   const lifetime = useGame((s) => s.lifetime);
-  const tables = useGame((s) => s.tables);
-  const areasOpen = useGame((s) => s.areasOpen);
+  const padsDone = useGame((s) => s.padsDone);
   const tableLevels = useGame((s) => s.tableLevels);
+  const tables = useGame((s) => s.tables);
+  const goalsClaimed = useGame((s) => s.goalsClaimed);
+  const metrics = goalMetricsOf({ stats, lifetime, padsDone, tableLevels, tables });
+  const claimGoal = useGame((s) => s.claimGoal);
   const xp = useGame((s) => s.xp);
   const lvl = levelProgress(xp);
+  const [odul, setOdul] = useState<GoalView | null>(null);
 
-  const masterTables = tableLevels.slice(0, tables).filter((l) => l >= tableSoftMaxLevel()).length;
-  const totalSlots = MAX_AREAS * 4;
-
-  const goals: { key: string; name: string; cur: number; total: number; note: string }[] = [
-    {
-      key: 'service',
-      name: 'Servis',
-      cur: stats.teasServed + stats.waiterServed,
-      total: 500,
-      note: 'Elden ve garsonla yapılan toplam servis',
-    },
-    { key: 'clean', name: 'Temizlik', cur: stats.dishesWashed, total: 200, note: 'Yıkanan kirli bardak' },
-    { key: 'grow', name: 'Büyüme', cur: tables, total: totalSlots, note: `Açılan masa · salon ${areasOpen}/${MAX_AREAS}` },
-    {
-      key: 'earn',
-      name: 'Kazanç',
-      cur: Math.max(0, Math.floor(lifetime.toNumber())),
-      total: 1_000_000,
-      note: 'Toplam kazanılan ₺',
-    },
-    { key: 'master', name: 'Usta', cur: masterTables, total: totalSlots, note: 'Usta seviyesine çıkan masa' },
-  ];
+  const goals = goalViews(metrics, goalsClaimed);
+  const toplanabilir = goals.filter((g) => g.state === 'claimable').length;
 
   return (
     <Sheet title="Hedefler" testid="goals-panel" onClose={onClose}>
@@ -551,29 +549,69 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
         </span>
       </div>
 
-      <div className="sheet-sec">KATEGORİLER</div>
+      <div className="sheet-sec">
+        KATEGORİLER{toplanabilir > 0 ? ` · ${toplanabilir} ÖDÜL HAZIR` : ''}
+      </div>
       <ul className="goals">
         {goals.map((g) => {
-          const pct = Math.min(100, (g.cur / g.total) * 100);
-          const full = g.cur >= g.total;
+          const pct = Math.min(100, (g.cur / g.target) * 100);
+          const bitti = g.state === 'claimed';
           return (
-            <li className={`goal${full ? ' full' : ''}`} key={g.key} data-testid={`goal-${g.key}`}>
+            <li
+              className={`goal${g.state === 'claimable' ? ' ready' : ''}${bitti ? ' full' : ''}`}
+              key={g.categoryId}
+              data-testid={`goal-${g.categoryId}`}
+              data-state={g.state}
+            >
               <span className="goal-top">
-                <b>{g.name}</b>
+                <b>
+                  {g.categoryName} <i className="goal-tier">{g.tier + 1}/5</i>
+                </b>
                 <span className="goal-num">
                   {g.cur.toLocaleString('tr-TR')}
-                  <i>/{g.total.toLocaleString('tr-TR')}</i>
+                  <i>/{g.target.toLocaleString('tr-TR')}</i>
                 </span>
               </span>
               <span className="goal-track">
                 <span className="goal-fill" style={{ width: `${pct}%` }} />
               </span>
-              <span className="goal-note">{g.note}</span>
+              <span className="goal-foot">
+                <span className="goal-note">{g.note}</span>
+                {g.state === 'claimable' ? (
+                  <button
+                    className="goal-claim"
+                    data-testid={`goal-claim-${g.categoryId}`}
+                    onClick={() => setOdul(g)}
+                  >
+                    Ödülü al
+                  </button>
+                ) : (
+                  <span className="goal-reward">
+                    <CoinIcon size={13} />
+                    {g.reward.toLocaleString('tr-TR')}
+                    <GemIcon size={13} />
+                    {g.diamonds}
+                  </span>
+                )}
+              </span>
             </li>
           );
         })}
       </ul>
-      <div className="sheet-foot-note">Hedef ödülleri bir sonraki güncellemede toplanabilir olacak.</div>
+
+      {odul && (
+        <RewardModal
+          testid="goal-reward"
+          title={`${odul.categoryName} · ${odul.tier + 1}. kademe`}
+          amount={odul.reward}
+          diamonds={odul.diamonds}
+          claimTestid="goal-reward-ok"
+          onClaim={() => {
+            claimGoal(odul.id);
+            setOdul(null);
+          }}
+        />
+      )}
     </Sheet>
   );
 }
@@ -584,6 +622,7 @@ function RewardModal({
   testid,
   title,
   amount,
+  diamonds = 0,
   onClaim,
   claimTestid,
   adReady = false,
@@ -591,6 +630,8 @@ function RewardModal({
   testid: string;
   title: string;
   amount: number;
+  /** 💎 ödülü (D3: hedefler iki para birimi verir; offline yalnız ₺ verdiği için varsayılan 0). */
+  diamonds?: number;
   onClaim: () => void;
   claimTestid: string;
   adReady?: boolean;
@@ -601,7 +642,16 @@ function RewardModal({
         <div className="reward-glow" />
         <div className="reward-title">{title}</div>
         <div className="reward-amount">
-          <CoinIcon size={30} /> +{amount.toLocaleString('tr-TR')}
+          {amount > 0 && (
+            <>
+              <CoinIcon size={30} /> +{amount.toLocaleString('tr-TR')}
+            </>
+          )}
+          {diamonds > 0 && (
+            <>
+              <GemIcon size={30} /> +{diamonds}
+            </>
+          )}
         </div>
         <button className="sheet-cta" data-testid={claimTestid} onClick={onClaim}>
           Al

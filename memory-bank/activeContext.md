@@ -5,44 +5,56 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-08 — **D3 ölçüm turu** · Faz D 2/5 · 65/76)
+## ŞU AN (2026-09-09 — **D3 BİTTİ** · Faz D 3/5 · 66/76)
 
 ```
 SORU            : Hedeflerin (koleksiyon) ödülü ₺ içermeli mi, hangi dozda? Meta katmanın ₺ akışı
-                  geç-oyunun bekleme pencerelerini DOLDURUYOR mu, yoksa zinciri mi kısaltıyor?
-ÖLÇÜLECEK KOLLAR: hA kazanç eşikleri (lifetime) · hB mekân eşikleri (pad) · hC ikisi birlikte
-                  · h0 ödül YALNIZ 💎 (₺=0, atıl beklenir — damga tabanın kopyasını doğrular)
-                  Her kol tek skaler DOZ ile taranır (ödül = eşiğin/pad maliyetinin %p'si).
-SAYILAR         : (adım 2 sonrası — docs/hedef-raporu-d3.md §Bulgular)
-KARAR           : (adım 3 — kullanıcı seçer)
-UYGULAMA        : (adım 4 — yalnız kararın kolu)
-BEKÇİ           : (adım 4)
+                  geç-oyunun bekleme pencerelerini dolduruyor mu?                      [KAPANDI]
+ÖLÇÜLECEK KOLLAR: h0 (yalnız 💎) · hA (kazanç eşikleri) · hB (mekân) · hC (ikisi) · hD (YOĞUNLUK,
+                  toplam sabit) · hE (yoğun+kısık) · hUYG (uygulanan config)
+SAYILAR         : docs/hedef-raporu-d3.md §4 — 10 bulgu, tam koşu, damgalar temiz
+KARAR           : D-089 — kullanıcı `hE %2` + kategoriler Servis·Mekân·Kazanç·Usta·Temizlik
+UYGULAMA        : `goals.ts` (yeni) · `economy.config.ts` +goals bloğu · `save.ts` goalsClaimed
+                  (additive, SÜRÜM ARTMADI) · `store.ts` claimGoal · `HUD.tsx` GoalsSheet+RewardModal
+                  `tick.ts`/`rules.ts` DEĞİŞMEDİ · mevcut hiçbir denge sayısı düzenlenmedi
+BEKÇİ           : tests/hedefler.test.ts — 20 test, SEKİZ mutasyonla doğrulandı (ikisi kaçtı → bant
+                  daraltıldı; çözünürlük ~%10 olarak kayda geçti) · vitest 604 · duman 31/31
 ```
 
-**Neden bu tur ölçümlü:** hedef ödülü ₺ verirse `economy.config.ts`'e giren sayı bir DENGE
-sayısıdır → varyant kapısı devrede. D1'in açık bıraktığı soru da tam buydu: *"Faz D bitince
-yeniden okunacak — meta katman geç-oyun bekleme pencerelerini gerçekten dolduruyor mu."* Bu tur o
-sorunun ilk yarısını ölçüyor.
+**Bu turun asıl dersi — `hUYG` kolu:** "seçilen doz iyiydi, config'e yazdığım da ona denktir" bir
+VARSAYIMDI ve iki kez çürüdü. ① Ortak ödül merdiveni toplamı bakımından denk görünüyordu ama
+gerçekleşen ödeme 3k değil **11k** çıktı. ② Kısıldı, toplam tuttu, ödemelerin **YERİ** tutmadı —
+ödül kademe *index*'ine bağlıydı, oyuncunun oraya *ulaştığı zamana* değil. Ödül kategori başına
+merdivene çevrildi. Yürürlükteki sayılar **üçüncü** ölçümün sonucu.
 
-**Zeminde bulunan (E1'den):** `GoalsSheet` ve `RewardModal` bileşen olarak VAR; ama hedef eşikleri
-HUD'a gömülü (500 · 200 · 1.000.000 — CLAUDE.md "sayı koda gömme" ihlali), kademe yok, ödül yok,
-toplama yok. Elmasın bugün hiçbir kaynağı ve harcaması yok. D3 bu üçünü kapatır.
+**KABUL EDİLEN EKSİK (gizlenmedi):** seçilen kolun BEDELİ tutturuldu (%-3,2), vaat ettiği FAYDA
+gelmedi — ihlal 6'da, en uzun bekleme 43,4 dk'da kaldı. D-087'nin açık kalemi **kapanmadı**.
 
 ## SIRADAKİ TAM ADIM
 
-Adım 2 ÖLÇ: `tools/hedef-kollari.ts` + `tools/olcum-hedefler.ts` → kısa koşu doğrulaması → tam
-koşu → `docs/hedef-raporu-d3.md` (KARAR BÖLÜMÜ BOŞ) → **commit #1** → karar paketi.
+**Faz D — meta katman (3/5).** Aday sırası: ① **D4 İtibar + günlük görevler** (ortak ödül ekranı
+hazır, seviye atlama modali onu devralır) · ② **nav ızgarası ↔ oyuncu çarpışması** (bilinen hata,
+tek başına duruyor) · ③ D5 elmas harcaması + Usta katmanı — **D5 geldiğinde D-089'un elmas hükmü
+bayatlar** (bekçideki `h0` beklentisi bilerek o gün kırılacak şekilde yazıldı).
+
+**SONRAKİ OTURUMDA SORULACAK (bu turdan taştı):** hedeflerin ₺ kolu bu hâliyle kalsın mı? Fayda
+ölçülemediğine göre `h0` (yalnız 💎, bedel tam sıfır) hâlâ savunulabilir; karar ₺ lehine verilirken
+faydanın ölçülebilir olduğu varsayılmıştı.
 
 ## AÇIK KALEMLER (bilinen, bilerek duruyor)
 
-- **Normal profil 43,4 dk beklemesi** — D-087'de bilerek ödenmedi, gözlem bandında görünür.
+- **Normal profil 43,4 dk beklemesi** — D-087'de bilerek ödenmedi; **D3 de kapatamadı** (D-089:
+  hedef ödülü tempo olarak doldurmuyor). Gözlem bandında görünür kalıyor.
+- **Bekçi bandının çözünürlüğü ~%10** — `tests/hedefler.test.ts`'in ödenen-₺ bandı tek kategoride
+  %20'lik ince bir ödül artışını yakalamıyor (M9 mutasyonu kaçtı). Daha incesi için ölçüm aracı
+  koşulur; bandı ±%3'e indirmek sim'in her küçük değişiminde testi kırardı.
 - Sim'in taşıma tavanı 4 masada fazla kötümser (elenen `k3`'ün önündeki tek engel).
 - **Görev hattı `waiterTray` kademe 2'de bitiyor**, 3. kademe (₺2.500) hatta yok; oysa ÜÇ KOL
   tablosu 20 masada `waiterTray: 3` varsayıyor — tempo kalemi DEĞİL, görev/HUD tutarlılığı.
 - **`outputMultByLevel` yok** — servis çıktı çarpanı merdiven-geneli; `b1` erken oyuna
   dokunmadan denenemiyor.
 - **Sim'de serbest oyun bloğu ölü kod** (D1 Bulgu 5) — model kalemi, bugün zarar vermiyor.
-- **Nav ızgarası ↔ oyuncu çarpışması** — Faz D (D2'den sonraki aday).
+- **Nav ızgarası ↔ oyuncu çarpışması** — Faz D (D3'ten sonraki aday).
 - **`npm run pano`'nun günlük uyarısı yalnız TARİHE bakıyor** — aynı gün iki oturum kapanınca
   sessiz kalıyor. C5 ve D1'in anlatısı bu yüzden iki tur yayınlanmadı (2026-09-08'de düzeltildi,
   araç değişmedi). Kural "sayaç arttıysa kart sayısı da artmalı" olmalı.
@@ -50,7 +62,7 @@ koşu → `docs/hedef-raporu-d3.md` (KARAR BÖLÜMÜ BOŞ) → **commit #1** →
 - Gölgenin telefondaki maliyeti ölçülmedi (Faz F riski) · bundle ~1,17 MB (Faz F kod-bölme).
 - C4'ten kalan ölçüm kusuru: B1 · oyuncu kipinde bot hiç yürümüyor (karar etkilenmedi).
 
-**Bekleyen denge kararı YOK.**
+**Bekleyen denge kararı:** hedeflerin ₺ kolu kalsın mı (yukarıda) — sonraki oturumda sorulacak.
 
 ---
 

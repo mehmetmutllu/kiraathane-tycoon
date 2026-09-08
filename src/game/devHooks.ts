@@ -138,6 +138,8 @@ export function installDevHooks(): void {
       waiterPos: s.waiters[0] ? s.waiters[0].pos.map((n) => +n.toFixed(2)) : null,
       // Quest sistemi (2026-06-09): aktif görev + sayaçlar + kamera odağı.
       questIndex: s.questIndex,
+      /** D3: toplanmış hedef kimlikleri — duman testi ödül toplamayı buradan doğrular. */
+      goalsClaimed: [...(s.goalsClaimed ?? [])],
       quest: s.quest ? { id: s.quest.id, title: s.quest.title, cur: s.quest.cur, total: s.quest.total } : null,
       stats: { ...s.stats },
       // Level/XP sistemi (v17): toplam xp + türetilen seviye/ilerleme + ayarlar.

@@ -43,6 +43,7 @@ import {
 } from './layout';
 import { deriveWorld, defaultFloorTheme, MAX_AREAS, MAX_SERVICES, roomOpen, THE_SERVICE, type World } from './world';
 import { activeQuestIndex, completedQuestIds } from './questProgress';
+import { claimGoalReward, type GoalMetrics } from './goals';
 // Dünya modeli (ALAN · SERVİS · MASA · ODA) Faz B1'de world.ts'e ayrıldı; store aynı kapıdan sunar.
 export {
   deriveWorld,
@@ -163,6 +164,27 @@ export function trayCapacity(tier?: number): number {
 }
 
 
+/**
+ * HEDEF SAYAÇLARI (D3/D-089) — beş kategorinin okuduğu değerler TEK yerde durumdan türetilir.
+ * HUD kendi başına sayı hesaplamaz: D3 öncesi `GoalsSheet` bunu içinde yapıyordu ve eşikleri de
+ * kendi tutuyordu, yani hedefler ölçüm aracının göremediği bir yerde yaşıyordu.
+ */
+export function goalMetricsOf(s: {
+  stats: { teasServed: number; waiterServed: number; dishesWashed: number };
+  padsDone: readonly string[];
+  lifetime: Decimal;
+  tableLevels: readonly number[];
+  tables: number;
+}): GoalMetrics {
+  return {
+    served: s.stats.teasServed + s.stats.waiterServed,
+    pads: s.padsDone.length,
+    lifetime: Math.max(0, Math.floor(s.lifetime.toNumber())),
+    dishes: s.stats.dishesWashed,
+    masterTables: s.tableLevels.slice(0, s.tables).filter((l) => l >= tableSoftMaxLevel()).length,
+  };
+}
+
 export interface GameState {
   // Kalıcı
   wallet: Decimal;
@@ -228,6 +250,9 @@ export interface GameState {
   revealSeen: string[];
   /** Kalıcı eylem sayaçları (quest + arka-plan reveal şartları; v16 persist). */
   stats: SaveStats;
+  /** TOPLANMIŞ hedef kimlikleri (D3/D-089). Hedeflerin konumu SAKLANMAZ — `goals.ts` bu listeden
+   *  türetir (`questsDone` deseni, D-088). */
+  goalsClaimed: string[];
   /** Sıradaki görevin index'i (persist; >= quests.length ⇒ görev hattı bitti). */
   questIndex: number;
   /** Aktif sayaç görevinin başlangıç sayaç değeri (persist; delta hedefi tabanı). */
@@ -281,6 +306,8 @@ export interface GameState {
   addMoney: (amount: number) => void;
   /** Görev barına dokununca: kamera aktif görevin hedefine kayar (görev yoksa no-op). */
   focusQuest: () => void;
+  /** Hedef ödülünü topla (D3/D-089). Toplanabilir değilse hiçbir şey yapmaz ve `false` döner. */
+  claimGoal: (id: string) => boolean;
   toggleCamZoomOut: () => void;
   /** Ayar değiştir (ayarlar modalı) — anında kaydedilir. */
   setSetting: (key: keyof SaveSettings, value: boolean) => void;
@@ -352,6 +379,7 @@ export const useGame = create<GameState>((set, get) => ({
   noticeQueue: [],
   revealSeen: [],
   stats: defaultStats(),
+  goalsClaimed: [],
   questIndex: 0,
   questBase: 0,
   questPhase: 'active',
@@ -494,6 +522,7 @@ export const useGame = create<GameState>((set, get) => ({
         stationLevels,
       ).map(([k]) => k),
       stats: { ...save.stats },
+      goalsClaimed: [...(save.goalsClaimed ?? [])],
       questIndex: loadedQuestIndex,
       questBase: loadedQuestBase,
       questPhase: 'active',
@@ -582,6 +611,9 @@ export const useGame = create<GameState>((set, get) => ({
         noticeQueue: c.noticeQueue,
         revealSeen: c.revealSeen,
         stats: c.stats,
+        // `goalsClaimed` BİLEREK yok: hedefler tick'te değişmez, yalnız `claimGoal` yazar. Tick
+        // bağlamına eklemek `tick.ts`e (denge dosyası) dokunmak olurdu ve buraya `undefined`
+        // yazıyordu — 49 test bu yüzden kırıldı.
         questIndex: c.questIndex,
         questBase: c.questBase,
         questPhase: c.questPhase,
@@ -634,6 +666,29 @@ export const useGame = create<GameState>((set, get) => ({
   addMoney: (amount) => {
     const s = get();
     set({ wallet: s.wallet.add(amount), lifetime: s.lifetime.add(amount) });
+  },
+
+  /**
+   * HEDEF ÖDÜLÜ TOPLA (D3/D-089). Eşik/durum kontrolü BURADA YAPILMAZ — `claimGoalReward` tek
+   * karar yeridir; store yalnız onun verdiği ödülü işler. İki yerde kural olsaydı biri
+   * diğerinden sapardı (D-015'in dersi).
+   *
+   * Ödül iki para birimidir: ₺ tempoya girer (dozu D-089'da ölçüldü), 💎 girmez (bugün harcaması
+   * yok). XP de verilir — hedef, görev hattı gibi bir ilerleme olayıdır.
+   */
+  claimGoal: (id) => {
+    const s = get();
+    const odul = claimGoalReward(id, goalMetricsOf(s), s.goalsClaimed ?? []);
+    if (!odul) return false;
+    set({
+      goalsClaimed: [...(s.goalsClaimed ?? []), id],
+      wallet: s.wallet.add(odul.reward),
+      lifetime: s.lifetime.add(odul.reward),
+      diamonds: s.diamonds.add(odul.diamonds),
+      xp: s.xp + C.xp.perQuest,
+    });
+    get().saveNow();
+    return true;
   },
 
   // Görev barına dokununca: kamera aktif görevin hedefine kayar (kullanıcı onboarding isteği).
@@ -809,6 +864,7 @@ export const useGame = create<GameState>((set, get) => ({
       stats: { ...s.stats },
       // D-088: kayda index DEĞİL kimlik gider — hat değişse de kaydın yeri kaymasın.
       questsDone: completedQuestIds(C.quests, s.questIndex),
+      goalsClaimed: [...(s.goalsClaimed ?? [])],
       questBase: s.questBase,
       questBaseId: C.quests[s.questIndex]?.id ?? '',
       xp: s.xp,

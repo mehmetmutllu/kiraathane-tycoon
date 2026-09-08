@@ -183,7 +183,13 @@ function questMetSim(s: State, t: QuestTarget): boolean {
  *
  * Taban `null`: kanca kapalıyken tek bir toplama bile yapılmaz → taban çıktısı BİREBİR korunur.
  */
-export interface HedefDurum { t: number; lifetime: number; padSayisi: number }
+export interface HedefDurum {
+  t: number;
+  lifetime: number;
+  padSayisi: number;
+  /** Son seviyeye çıkmış masa sayısı — "Usta" kategorisinin sayacı. */
+  ustaMasa: number;
+}
 /** Bir koşunun ödeyicisi: her tick çağrılır, o tick düşen ₺'yi döndürür (yoksa 0). */
 export type HedefOdeyici = (d: HedefDurum) => number;
 let hedefFabrika: (() => HedefOdeyici) | null = null;
@@ -918,7 +924,10 @@ function runProfile(eff: number, log = false, buys?: Buy[]): Map<string, number>
     advanceQuests(s); // M1: görev ödülleri cüzdana
     if (hedef) {
       // D3: hedef (koleksiyon) ödülleri — görev ödülüyle AYNI muamele (ikisi de lifetime'a sayar).
-      const odul = hedef({ t: s.t, lifetime: s.lifetime, padSayisi: s.padsDone.length });
+      const w = deriveWorld(s.padsDone);
+      seviyeleriEsitle(s, w);
+      const usta = s.tableLevels.slice(0, w.tables.length).filter((l) => l >= tableSoftMax()).length;
+      const odul = hedef({ t: s.t, lifetime: s.lifetime, padSayisi: s.padsDone.length, ustaMasa: usta });
       if (odul > 0) { s.wallet += odul; s.lifetime += odul; }
     }
     for (const m of MS()) {

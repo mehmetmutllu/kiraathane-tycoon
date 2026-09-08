@@ -2461,3 +2461,47 @@ yazıldı: **hattaki kimlikler benzersiz olmalı.**
 3 pad) göç etti — HUD *"4. Masayı aç"* (hattın tam 12. görevi), para ve ayarlar yerinde; oyunun
 geri yazdığı kayıt **v32**, `questIndex` alanı yok, `questsDone` 12 kimlik, `questBaseId: q_table4`.
 vitest **584** (567 → +17) · duman **28/28** · derleme temiz · **denge sayısı DEĞİŞMEDİ.**
+
+## D-089 — Hedefler (koleksiyon): ödül YOĞUNLUKTAN gelir, büyüklükten değil (2026-09-08, D3)
+
+**Karar (kullanıcı seçti):** hedefler hem ₺ hem 💎 verir; ₺ tarafı **kol `hE %2`** — yani tek
+büyük ödül değil, **25 küçük kademeye yayılmış** akış. Kategoriler: Servis · Mekân · Kazanç ·
+Usta · **Temizlik** (plan §6'nın "Alışkanlık"ı D4'e ertelendi; gün-temelli olduğu için bugün ölü
+dururdu).
+**Ölçüm:** `docs/hedef-raporu-d3.md` · araç `tools/hedef-kollari.ts` + `tools/olcum-hedefler.ts`.
+**Ana bulgu:** ödülün BÜYÜKLÜĞÜ bekleme penceresini doldurmuyor — `hA %50`'de 66.000 ₺ ödense
+bile 20 dk'yı aşan aralıkların içine düşen **sıfır**; ihlali yalnız zinciri %29,4 kısaltarak
+indiriyor (D1'in elediği kolların aynısı). YOĞUNLUK dolduruyor: aynı iyileşme `hE`'de **%2,7**
+bedelle geliyor, ~11 kat ucuz.
+**💎 tempoya GİRMEYE BİLİR — ölçüldü, varsayılmadı:** `h0` kolu (yalnız elmas) tabanın **birebir**
+kopyası çıktı, çünkü elmasın bugün hiçbir harcaması yok. Hüküm D5 Usta katmanına kadar geçerli;
+bekçi bunu kilitler ve o gün kırılır.
+**UYGULANAN CONFIG DE ÖLÇÜLDÜ (`hUYG` kolu — C5'in `secilen` deseni) ve varsayımı İKİ KEZ
+çürüttü:** ① ortak ödül merdiveni toplamı bakımından seçilen kola denk görünüyordu ama gerçekleşen
+ödeme 3k değil **11k** çıktı (zincir %-8,7) — sentetik merdivenin üst kademeleri Kat 1'de hiç
+dolmuyordu. ② Merdiven kısıldı, toplam tuttu, ama ödemelerin **YERİ** tutmadı: ödül kademe
+INDEX'ine bağlıydı, oyuncunun oraya ULAŞTIĞI zamana değil — geç açılan "Usta" ilk kademesinde 5 ₺
+veriyordu. Bu yüzden ödül **kategori başına** merdivene çevrildi; geç açılan kategori büyük başlar.
+Yürürlükteki hâl üçüncü ölçümündür: **3.175 ₺ · 13 ödeme · zincir %-3,2 · otomasyon 6,0 dk.**
+**KABUL EDİLEN EKSİK:** seçilen kolun vaat ettiği **ihlal iyileşmesi gelmedi** (ihlal 6'da, en uzun
+43,4 dk'da kaldı). Bedel bandında, fayda ölçüm gürültüsünde. Yani D-087'nin açık kalemi
+**kapanmadı**: meta katmanın hedefler kanadı geç-oyun pencerelerini *tempo olarak* doldurmuyor;
+doldurduğu şey oyuncunun o pencerede gördüğü ilerleme. Ödemeyi pencereye denk getirmek kırılgan
+bir optimizasyon olurdu (ekonominin başka kalemi değişince pencere kayar) — **yapılmadı.**
+**Sonraki oturumda sorulacak:** fayda ölçülemediğine göre ₺ kolu bu hâliyle kalsın mı, yoksa `h0`
+(yalnız 💎, bedel tam sıfır) mı? Karar ₺ lehine verilirken faydanın ölçülebilir olduğu
+varsayılmıştı.
+**Kayıt:** `goalsClaimed: string[]` **additive** → `SAVE_VERSION` **artmadı** (v32 kaydı hedefsiz
+ama sağlam açılır — `lavaboLevel` deseni). Konum SAKLANMAZ, kimliklerden türetilir (D-088 deseni).
+**Değişmeyen:** `tick.ts` · `rules.ts` dokunulmadı · mevcut hiçbir denge sayısı düzenlenmedi
+(`goals` bloğu EKLENDİ) · görev hattının M1 ödülleri aynen duruyor.
+**Bekçi:** `tests/hedefler.test.ts` — 20 test, **sekiz mutasyonla** doğrulandı. Biri KAÇTI ve
+bekçinin zayıf yerini gösterdi: yalnız zincir bedeline bakan bant (%5) tek kategorinin ödülü 3'e
+katlandığında geçiyordu. Bant %4'e daraltıldı ve **ödenen ₺'ye doğrudan bir bant** eklendi (zincir
+bedeli dolaylı ve gürültülü, ödenen ₺ doğrudan).
+**Uçtan uca (tarayıcı) İKİ GERÇEK KUSUR buldu, ikisi de vitest'in göremeyeceği türden:** ① panel
+hiç açılmıyordu — `useGame((s) => goalMetricsOf(s))` her render'da yeni nesne döndürüp zustand'ı
+sonsuz render'a sokuyordu (metrikler alan alan seçilir yapıldı). ② Duman testinde uyuyan
+kırılganlık: panel kapatma tıklaması backdrop'un MERKEZİNE gidiyordu ve açılış animasyonu bitince
+kart orayı kaplıyor — test bugüne dek yalnız animasyon tamamlanmadığı için geçiyormuş.
+**Duman 28/28 → 31/31 · vitest 604.**

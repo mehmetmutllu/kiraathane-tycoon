@@ -22,7 +22,14 @@
 import { economyConfig as C } from '../src/config/economy.config.ts';
 import type { HedefDurum, HedefOdeyici } from './simulate.ts';
 
-const cfg = C as unknown as { pads: { id: string; cost: number }[] };
+const cfg = C as unknown as {
+  pads: { id: string; cost: number }[];
+  service: { basePrice: number };
+  goals: {
+    diamondByTier: number[];
+    categories: { id: string; name: string; metric: string; tiers: number[]; rewards: number[] }[];
+  };
+};
 
 /** Omurga pad'lerin maliyetleri, zincir sırasıyla (ücretsiz olanlar hariç). */
 const OMURGA = cfg.pads.filter((p) => p.cost > 0).map((p) => p.cost);
@@ -91,6 +98,37 @@ function yogunEsikler(n: number): number[] {
   const alt = KAZANC_ESIKLERI[0];
   const ust = KAZANC_ESIKLERI[KAZANC_ESIKLERI.length - 1];
   return Array.from({ length: n }, (_, i) => Math.round(alt * (ust / alt) ** (i / (n - 1))));
+}
+
+/**
+ * `economy.config.ts`'in GERÇEK `goals` bloğunu çalıştıran ödeyici (hUYG kolu). Kategori başına
+ * kademeler SIRAYLA açılır — oyunun kendi kuralı (`goals.ts`: önceki kademe toplanmadan sonraki
+ * kilitli), yani sim de aynı sırayı izler; atlamalı ödeme gerçekte mümkün değil.
+ */
+function configOdeyici(): HedefOdeyici {
+  const ortFiyat = cfg.service.basePrice;
+  const durum = cfg.goals.categories.map(() => 0); // kategori başına AÇILMIŞ kademe sayısı
+  const oku = (d: HedefDurum, metric: string): number => {
+    switch (metric) {
+      case 'lifetime': return d.lifetime;
+      case 'pads': return d.padSayisi;
+      case 'masterTables': return d.ustaMasa;
+      // VEKİL: sim kümülatif servis saymıyor (bkz. hUYG yorumu).
+      case 'served': return ortFiyat > 0 ? d.lifetime / ortFiyat : 0;
+      // Oyuncunun eliyle yıkaması sim'de yok → kategori ilerlemez.
+      default: return 0;
+    }
+  };
+  return (d) => {
+    let toplam = 0;
+    cfg.goals.categories.forEach((cat, ci) => {
+      while (durum[ci] < cat.tiers.length && oku(d, cat.metric) >= cat.tiers[durum[ci]]) {
+        toplam += cat.rewards[durum[ci]] ?? 0;
+        durum[ci] += 1;
+      }
+    });
+    return toplam;
+  };
 }
 
 export interface HedefKol {
@@ -222,6 +260,31 @@ export const HEDEF_KOLLARI: Record<string, HedefKol> = {
       const son = Math.round((toplam * esikler[esikler.length - 1]) / pay);
       return `24 kademe · ${ilk}…${son} ₺ (top. ${Math.round(toplam).toLocaleString('tr-TR')})`;
     },
+  },
+
+  /* hUYG — UYGULANAN KOL. C5'in `secilen` kolunun deseni: uygulanacak hâl, uygulanmadan ÖNCE
+   *        ayrı bir varyant satırı olarak ölçülür. "Seçilen doz iyiydi, config'e yazdığım şey de
+   *        ona denktir" bir VARSAYIMDIR — bu kol onu sayıya çevirir. Kollar sentetik merdivenler
+   *        kullanıyordu; bu kol `economy.config.ts`'in GERÇEK `goals` bloğunu okur.
+   *
+   *        MODELLENEN 4/5 KATEGORİ (bilerek eksik, rapora yazılır):
+   *          Kazanç · Mekân · Usta — sim'de birebir karşılığı var.
+   *          Servis — sim kümülatif servis saymıyor; lifetime / ortalama fiyat ile VEKİL okunur
+   *                   (Bulgu 2'de zaten "servis lifetime ile monoton aynı" ölçülmüştü).
+   *          Temizlik — oyuncunun ELİYLE yıkaması sim'de hiç modellenmiyor → bu kategori
+   *                   ilerlemez, ödülü hiç düşmez. Yani hUYG satırı gerçek etkinin ALT sınırıdır. */
+  hUYG: {
+    ad: 'hUYG',
+    ne: 'UYGULANAN: economy.config.ts`in GERÇEK goals bloğu (5 kategori × 5 kademe)',
+    birim: 'açık/kapalı',
+    taban: 0,
+    dozlar: [0, 1],
+    fabrika: (v) => (v <= 0 ? null : () => sayacli(configOdeyici())),
+    yaz: (v) =>
+      v <= 0
+        ? 'kapalı'
+        : `${cfg.goals.categories.length} kategori × ${cfg.goals.categories[0].tiers.length} kademe · ` +
+          `toplam ${cfg.goals.categories.reduce((a, c) => a + c.rewards.reduce((x, y) => x + y, 0), 0).toLocaleString('tr-TR')} ₺`,
   },
 
   /* hC — İKİSİ BİRLİKTE. C5'in dersi: kollar bağımsız değildir, birleşim KAZARA oluşmaz —

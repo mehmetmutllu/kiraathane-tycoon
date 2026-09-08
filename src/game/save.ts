@@ -93,6 +93,11 @@ export interface SaveData {
   /** TAMAMLANMIŞ görev kimlikleri (v32; D-088). Konumun TEK kaynağı — index saklanmaz, aktif
    *  görev `activeQuestIndex` ile buradan türetilir (questProgress.ts). `padsDone` deseni. */
   questsDone: string[];
+  /** TOPLANMIŞ hedef kimlikleri (D3/D-089; `<kategori>:<kademe>`). `questsDone` deseni: kademe
+   *  index'i SAKLANMAZ, her okumada sayaçtan türetilir (`src/game/goals.ts`). ADDITIVE alan →
+   *  sürüm ARTMADI: `defaultSave()` yayılımı eksik alanı `[]` ile doldurur, eski v32 kaydı
+   *  hedefsiz ama sağlam açılır (`lavaboLevel`/`showFps` deseni). */
+  goalsClaimed: string[];
   /** Aktif SAYAÇ görevinin başlangıç sayaç değeri (delta hedefi için taban; v16). */
   questBase: number;
   /** Tabanın AİT OLDUĞU görevin kimliği (v32). Konum bilgisi değil sahiplik etiketi: yüklemede
@@ -142,6 +147,7 @@ export function defaultSave(): SaveData {
     padFills: {},
     stats: defaultStats(),
     questsDone: [],
+    goalsClaimed: [],
     questBase: 0,
     questBaseId: '',
     xp: 0,

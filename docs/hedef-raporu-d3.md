@@ -144,6 +144,11 @@ ihlal **6/1** (Normal/İdealize) · en uzun bekleme **43,4 dk → `servis L6`** 
 | hC | %5 | 8k | 125 (1) | 5/1 | 43,4 dk | 8,09 sa | %-4,6 |
 | hC | %20 | 30k | 500 (1) | 5/1 | 43,4 dk | 7,02 sa | %-17,3 |
 | hC | %50 | 76k | 0 (0) | 4/**0** | **28,2 dk** | 5,37 sa | **%-36,7** |
+| **hUYG** | **UYGULANAN** | **3.175** | **435 (2)** | **6**/1 | **43,4 dk** | **8,21 sa** | **%-3,2** |
+
+**`hUYG` = yürürlüğe giren `economy.config.ts`'in kendisidir** (5 kategori × 5 kademe, kategori-başı
+ödül merdiveni). Varyant kapısının istediği "uygulanan kolun sayı satırı" bu satırdır; nasıl iki
+düzeltmeden geçtiği Bulgu 10'da.
 
 *(ara dozlar — hA %2, hB %0,5/%1/%2/%10, hC %0,5/%1/%2/%10 — ham çıktıda; eğri monoton, tabloya
 karar için gereken uçlar alındı.)*
@@ -211,6 +216,32 @@ takılmayan **ilk** ₺ kaldıracıdır; sebebi de büyüklüğü değil, ödeme
 pencerelerine **beş ayrı ödeme** düşürüyor — ihlal sayısını değiştirmiyor ama oyuncunun
 beklediği yerde bir şey oluyor.
 
+### Bulgu 10 — UYGULANAN config ölçüldü ve seçilen kolu İKİ KEZ tutturamadı (`hUYG`)
+
+C5'in `secilen` kolunun deseni: *uygulanacak hâl, uygulanmadan önce ayrı bir varyant satırı olarak
+ölçülür.* "Seçilen doz iyiydi, config'e yazdığım şey de ona denktir" bir **varsayımdır** — `hUYG`
+kolu onu sayıya çevirdi ve iki kez çürüttü:
+
+| deneme | yazılan | ölçülen | sorun |
+|---|---|---|---|
+| ① ortak merdiven | `[15·60·250·1.000·4.000]` × 5 kategori (top. 26.625 ≈ hE'nin 28.620'si) | ödenen **11k** · zincir **%-8,7** · otomasyon 6,1 → **5,8 dk** | Sentetik merdivenin üst kademeleri Kat 1'de hiç dolmuyordu, buradakiler doluyor. **Toplam denk ≠ ödenen denk.** |
+| ② kısılmış ortak merdiven | `[5·20·75·300·1.200]` | ödenen 3,4k · zincir **%-2,7** ✓ · ama en uzun **43,4 dk** (değişmedi) | Toplam tuttu, ödemelerin **YERİ** tutmadı: en uzun pencere (4,85-5,57 sa) boş kaldı, 1.275 ₺ pencere **bittikten sonra** düştü. Sebep yapısal — ödül kademe *index*'ine bağlıydı, oyuncunun oraya *ulaştığı zamana* değil; geç açılan "Usta" kategorisi ilk kademesinde 5 ₺ veriyordu. |
+| ③ **kategori-başı merdiven** | her kategori kendi `rewards`'ını taşır; geç açılan büyük başlar (`master: [100·220·420·750·1.400]`) | ödenen **3.175 ₺** · zincir **%-3,2** · otomasyon **6,0 dk** · 13 ödeme eğri boyunca | **Yürürlükteki hâl.** |
+
+**Dürüst sonuç — bedel tutturuldu, fayda tutturulamadı.** Seçilen `hE %2` kolu şunu vaat ediyordu:
+ihlal 6 → 4 · en uzun 43,4 → 42,0 dk · zincir %-2,7. Uygulanan config'in **bedeli** bandında
+(%-3,2) ama **ihlal 6'da, en uzun 43,4 dk'da kaldı.**
+
+Sebebi Bulgu 5'te zaten yazılıydı: ihlal sayısı gürültülü bir ölçüttür ve `hE`'nin 42,0 dk'sı da
+tabandan yalnız 1,4 dk uzaktaydı — yani vaat, ölçüm gürültüsünün içindeydi. Sentetik kolun
+kademeleri tek eksende (lifetime) geometrik yayılmıştı; gerçek kategoriler beş ayrı eksende ve
+eşikleri oyuncuya anlamlı yuvarlak sayılar (100 servis · 10 masa), pencerelere göre ayarlanmış
+sayılar değil. **Ödemeyi pencereye denk getirmek kırılgan bir optimizasyon olurdu** — ekonominin
+başka bir kalemi değiştiği an pencere kayar ve ayar bozulur. Yapılmadı.
+
+Geriye kalan, ölçülmüş ve gerçek olan şu: **eğri boyunca yayılmış 13 küçük ödeme, 3.175 ₺, zincir
+bedeli %3,2** — D1'de elenen dokuz kolun en ucuzunun (%7) yarısından az.
+
 ### Bulgu 5 — İhlal SAYISI gürültülü ölçüt, "en uzun bekleme" kararlı
 
 `hD` ihlal sütunu monoton değil: 10 kademe → 4, 16 kademe → **6**, 24 kademe → 4. Sebebi ölçütün
@@ -241,7 +272,70 @@ tamamen yalan yapardı. `odemeleriSifirla()` ile düzeltildi — D-084 P2'nin da
 
 ---
 
-## 5. Karar
+## 5. Karar — D-089
 
-<!-- BOŞ — karar paketi kullanıcıya sunulduktan sonra doldurulur (D-084 §3.2: commit #1'de bu
-     bölüm BOŞ olmak zorundadır). -->
+**Kullanıcı seçimi (2026-09-08):** kol **`hE %2`** · kategoriler **Servis · Mekân · Kazanç · Usta
+· Temizlik**.
+
+### Uygulanan
+
+| | |
+|---|---|
+| Ödül | ₺ **kategori başına** merdiven (`categories[].rewards`) + 💎 ortak (`diamondByTier`) |
+| Toplam ₺ | 8.000 tanımlı · Kat 1'de fiilen **3.175 ₺** düşer (13 ödeme) |
+| Toplam 💎 | 250 (kategori başına 50) — plan §6'nın hedefi |
+| Zincir bedeli | **%-3,2** (seçilen kolun bandı %-2,7; D1'in eleme eşiği %7) |
+| Açılış | ilk alım 22 sn · açılış enUzun 1,6 dk · otomasyon 6,0 dk (taban 6,1) — üç ölçüt de ✓ |
+| Kayıt | `goalsClaimed: string[]` **additive** → `SAVE_VERSION` **artmadı** (v32 kaydı hedefsiz ama sağlam açılır) |
+
+### Gerekçe (üç cümle)
+
+1. Ödülün **büyüklüğü** bekleme penceresini doldurmuyor, **yoğunluğu** dolduruyor — bu yüzden ödül
+   25 küçük kademeye yayıldı, tek büyük ödüle değil.
+2. 💎 tarafı tempoya **hiç** girmiyor (`h0` kolu tabanın birebir kopyası) çünkü elmasın bugün
+   harcaması yok; bu, D5 Usta katmanı gelene kadar geçerli bir hükümdür ve bekçi onu kilitler.
+3. Uygulanan config'in kendisi ölçüldü (`hUYG`) ve **iki kez düzeltildi** — bugünkü sayılar tahmin
+   değil, üçüncü ölçümün sonucu.
+
+### KABUL EDİLEN EKSİK (bilerek, gizlenmeden)
+
+Seçilen kolun vaat ettiği **ihlal iyileşmesi gerçekleşmedi**: ihlal 6'da, en uzun bekleme 43,4
+dk'da kaldı (Bulgu 10). Bedel bandında, fayda gürültü içinde. Buradan iki şey çıkar:
+
+- **D-087'nin açık kalemi kapanmadı.** "Meta katman geç-oyun bekleme pencerelerini dolduruyor mu?"
+  sorusunun cevabı, en azından hedefler kanadı için: **hayır — tempo anlamında doldurmuyor.**
+  Doldurduğu şey oyuncunun o pencerede *gördüğü* şey: koleksiyon ilerliyor, ödül ekranı açılıyor.
+  Bu bir his kazancıdır, ölçülen bir tempo kazancı değil.
+- **Sonraki oturumda sorulacak:** ₺ kolu bu hâliyle kalsın mı? Fayda ölçülemediğine göre `h0`
+  (yalnız 💎, zincir bedeli tam sıfır) hâlâ savunulabilir bir seçenektir; bu tur ₺'yi seçen karar,
+  faydanın *ölçülebilir* olduğu varsayımıyla verilmişti. Kalan meta kalemler (D4 İtibar · günlük
+  görevler) o pencereye başka bir kanaldan girecek — asıl cevap Faz D bitince okunmalı.
+
+### Uçtan uca doğrulama iki GERÇEK kusur buldu (duman testi)
+
+Sistem tarayıcıda çalıştırılınca ikisi de vitest'in göremeyeceği türdendi:
+
+1. **Hedefler paneli hiç açılmıyordu.** `useGame((s) => goalMetricsOf(s))` her render'da YENİ bir
+   nesne döndürüyor ve zustand'ı sonsuz render'a sokuyordu. Metrikler alan alan seçilir hâle
+   getirildi. Mantık testleri bunu yakalayamazdı — `goals.ts` doğru çalışıyordu, kusur onu
+   bileşene bağlama biçimindeydi.
+2. **Duman testinin kendisinde uyuyan bir kırılganlık.** Karakter panelini kapatmak için
+   backdrop'un MERKEZİNE tıklanıyordu; panel açılış animasyonu tamamlandığında kart o merkezi
+   kaplıyor ve tıklama "intercepted" oluyor. Test bugüne dek yalnız animasyon henüz bitmediği için
+   geçiyordu. Bu turda eklenen birkaç yüz milisaniye onu açığa çıkardı; iki panelin kapatma
+   tıklaması da backdrop'un üst şeridine alındı.
+
+Ayrıca ilk yazılan duman kontrolü **yanlış soruyu soruyordu** ("ödül alınınca buton kalkar"):
+duman akışının sonunda `lifetime` 100.000'i aştığı için Kazanç kategorisinin sonraki kademesi de
+toplanabilir oluyor ve buton haklı olarak yerinde duruyor. Kontrol, toplanan **kimliğin kayıtta
+olmasına** çevrildi (`window.__game().goalsClaimed`).
+
+**Duman 28/28 → 31/31.**
+
+### Değişmeyenler
+
+- `tick.ts` ve `rules.ts`'e **dokunulmadı.**
+- Hiçbir mevcut denge sayısı değişmedi: `goals` bloğu **eklendi**, var olan hiçbir maliyet/fiyat/
+  ödül düzenlenmedi.
+- Görev hattının M1 ödülleri (`quests[].reward`) aynen duruyor.
+
