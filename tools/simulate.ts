@@ -172,6 +172,25 @@ function questMetSim(s: State, t: QuestTarget): boolean {
   }
 }
 
+/* ── D3 HEDEF AKIŞI KANCASI (varyant katmanı; `economy.config.ts` DEĞİŞMEZ) ─────────────
+ * Hedefler (koleksiyon) ₺ ödülü verecekse bu bir DENGE sayısıdır ve varyant kapısı devrededir:
+ * kol önce ölçülür, config'e yazılmaz. Sim'in bildiği tek şey "şu an ne kadar ₺ düştü" —
+ * kademelerin kendisi `tools/hedef-kollari.ts`te durur, bu dosya onları tanımaz.
+ *
+ * MODEL SINIRI (rapora yazılır): ödül DÜŞER DÜŞMEZ cüzdana geçer. Gerçekte oyuncu paneli açıp
+ * "Al"a basana kadar bekler; yani buradan çıkan etki bir ÜST SINIRdır. Üst sınır bile küçükse
+ * kol güvenle elenir — büyükse gecikme ayrıca konuşulur.
+ *
+ * Taban `null`: kanca kapalıyken tek bir toplama bile yapılmaz → taban çıktısı BİREBİR korunur.
+ */
+export interface HedefDurum { t: number; lifetime: number; padSayisi: number }
+/** Bir koşunun ödeyicisi: her tick çağrılır, o tick düşen ₺'yi döndürür (yoksa 0). */
+export type HedefOdeyici = (d: HedefDurum) => number;
+let hedefFabrika: (() => HedefOdeyici) | null = null;
+/** Her PROFİL koşusu taze bir ödeyici ister (kademeler koşu başına sıfırlanır) — bu yüzden
+ *  ödeyici değil FABRİKA verilir. `null` = kanca kapalı. */
+export const hedefAkisiAyarla = (f: (() => HedefOdeyici) | null): void => { hedefFabrika = f; };
+
 /** Tamamlanan görevlerin ödüllerini öde (M1) — store'daki quest-advance döngüsünün sim karşılığı. */
 function advanceQuests(s: State): void {
   while (s.questIdx < C.quests.length && questMetSim(s, C.quests[s.questIdx].target)) {
@@ -883,6 +902,7 @@ function runProfile(eff: number, log = false, buys?: Buy[]): Map<string, number>
     questIdx: 0, lavabo: 0,
   };
   const MAX_T = 60 * 60 * 12; // B5a: şeridin 12 birimi 6 saatin ötesine taşıyor — ölçüm penceresi büyüdü
+  const hedef = hedefFabrika ? hedefFabrika() : null;
   const done = new Map<string, number>();
   while (s.t < MAX_T) {
     const inc = rate(s, eff) * DT;
@@ -896,6 +916,11 @@ function runProfile(eff: number, log = false, buys?: Buy[]): Map<string, number>
       if (label) buys!.push({ t: s.t, label });
     }
     advanceQuests(s); // M1: görev ödülleri cüzdana
+    if (hedef) {
+      // D3: hedef (koleksiyon) ödülleri — görev ödülüyle AYNI muamele (ikisi de lifetime'a sayar).
+      const odul = hedef({ t: s.t, lifetime: s.lifetime, padSayisi: s.padsDone.length });
+      if (odul > 0) { s.wallet += odul; s.lifetime += odul; }
+    }
     for (const m of MS()) {
       if (!done.has(m.name) && m.hit(s)) {
         done.set(m.name, s.t);

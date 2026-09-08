@@ -5,39 +5,33 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-08 — **D2 BİTTİ** · Faz D 2/5 · 65/76)
+## ŞU AN (2026-09-08 — **D3 ölçüm turu** · Faz D 2/5 · 65/76)
 
 ```
-SORU            : Görev hattının kimliği sıra numarası; hatta ekleme yapılınca kayıt sessizce
-                  BAŞKA bir görevi gösteriyor. Kimlik nasıl kalıcı hâle gelir?   [KAPANDI]
-ÖLÇÜLECEK KOLLAR: (yok — denge kalemi DEĞİL; üç tasarım kolu kod yazılmadan tartışıldı)
-SAYILAR         : (yok — bu tur ölçüm turu değil)
-KARAR           : D-088 — kayıtta YALNIZ `questsDone`; aktif görev türetilir, ilerleme geriye
-                  gitmez. Kullanıcı "en kalitelisi ne ise o olsun" dedi, kol seçimi bana bırakıldı.
-UYGULAMA        : `questProgress.ts` (yeni) · `save.ts` v32 + gerçek göç · `store.ts` türetme
-                  `rules.ts`/`tick.ts` DEĞİŞMEDİ · `economy.config.ts` yalnız SAVE_VERSION'ı KAYBETTİ
-BEKÇİ           : tests/gorev-kimligi.test.ts — 17 test, BEŞ mutasyonla doğrulandı
+SORU            : Hedeflerin (koleksiyon) ödülü ₺ içermeli mi, hangi dozda? Meta katmanın ₺ akışı
+                  geç-oyunun bekleme pencerelerini DOLDURUYOR mu, yoksa zinciri mi kısaltıyor?
+ÖLÇÜLECEK KOLLAR: hA kazanç eşikleri (lifetime) · hB mekân eşikleri (pad) · hC ikisi birlikte
+                  · h0 ödül YALNIZ 💎 (₺=0, atıl beklenir — damga tabanın kopyasını doğrular)
+                  Her kol tek skaler DOZ ile taranır (ödül = eşiğin/pad maliyetinin %p'si).
+SAYILAR         : (adım 2 sonrası — docs/hedef-raporu-d3.md §Bulgular)
+KARAR           : (adım 3 — kullanıcı seçer)
+UYGULAMA        : (adım 4 — yalnız kararın kolu)
+BEKÇİ           : (adım 4)
 ```
 
-Görev tanımlarının `id`si zaten vardı; eksik olan tek şey **kaydın** onu değil index'i saklamasıydı.
-Artık index çalışma zamanının kodlaması, kimlik listesi deponun kodlaması — ikisi aynı anda
-saklanmıyor (`padsDone` deseni). Uçtan uca tarayıcıda doğrulandı: ekilen gerçek bir v31 kaydı
-(12. görev · 7.500 ₺ · 3 pad) göç etti, HUD *"4. Masayı aç"* dedi, oyun kaydı **v32** olarak geri
-yazdı. vitest **584** · duman **28/28** · **denge sayısı değişmedi.**
+**Neden bu tur ölçümlü:** hedef ödülü ₺ verirse `economy.config.ts`'e giren sayı bir DENGE
+sayısıdır → varyant kapısı devrede. D1'in açık bıraktığı soru da tam buydu: *"Faz D bitince
+yeniden okunacak — meta katman geç-oyun bekleme pencerelerini gerçekten dolduruyor mu."* Bu tur o
+sorunun ilk yarısını ölçüyor.
 
-**SIRA KİLİDİ UYARISI kayda geçirildi (D-088):** tur `economy.config.ts`'e dokunuyor — ama
-dokunduğu tek şey SAVE_VERSION'ın **silinmesi**. Yanlış-pozitif, ve bu onun **son** görülüşü:
-sürüm artık `save.ts`'te, gelecek kayıt sürümleri kapıyı tetiklemeyecek. Araç değiştirilmedi.
+**Zeminde bulunan (E1'den):** `GoalsSheet` ve `RewardModal` bileşen olarak VAR; ama hedef eşikleri
+HUD'a gömülü (500 · 200 · 1.000.000 — CLAUDE.md "sayı koda gömme" ihlali), kademe yok, ödül yok,
+toplama yok. Elmasın bugün hiçbir kaynağı ve harcaması yok. D3 bu üçünü kapatır.
 
 ## SIRADAKİ TAM ADIM
 
-**Faz D — meta katman (2/5).** Sıradaki kalem seçilmeli. Aday sırası: ① **D3 Hedefler
-(koleksiyon) + ortak ödül ekranı** — `questsDone` artık hazır, bu ekranın istediği liste ta kendisi
-· ② **nav ızgarası ↔ oyuncu çarpışması** (bilinen hata, tek başına duruyor) · ③ D4 İtibar +
-günlük görevler.
-
-**Faz D bitince yeniden okunacak ölçüm:** meta katman geç-oyun bekleme pencerelerini gerçekten
-dolduruyor mu — `tools/olcum-gec-oyun.ts` hazır, elenen kolların kodu duruyor.
+Adım 2 ÖLÇ: `tools/hedef-kollari.ts` + `tools/olcum-hedefler.ts` → kısa koşu doğrulaması → tam
+koşu → `docs/hedef-raporu-d3.md` (KARAR BÖLÜMÜ BOŞ) → **commit #1** → karar paketi.
 
 ## AÇIK KALEMLER (bilinen, bilerek duruyor)
 
