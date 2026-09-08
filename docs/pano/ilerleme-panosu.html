@@ -189,7 +189,7 @@ h2{font-size:21px;font-weight:800}
 <script type="application/json" id="durum">
 {
  "guncelleme": "08.09.2026",
- "yapilan": 57,
+ "yapilan": 58,
  "toplam": 73,
  "kilometre": [
   {
@@ -210,28 +210,28 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum · Faz C · 2/5 — ekranda hangisi \"şu anki adım\" belli oldu",
-  "baslik": "Devralınan bulgunun yarısı bayat çıktı, gerçek kusur sayıda değil SESTE'ydi",
-  "aciklama": "Geçen oturumun raporu Faz C'nin kalan işini yazarken bir cümleyi <b>devralmıştı</b>: \"opsiyonel noktalar ve yükseltme dolumları görev filtresinin dışında çiziliyor.\" Cümle üç gün önce yazılmıştı. Bu oturum koda dokunmadan önce <b>onu ölçtü</b> — ve yarısının bayatladığını buldu: opsiyonel nokta diye bir şey <b>kalmamış</b>, sonuncusu geçen oturum ana zincire alınmıştı.<br><br>Ölçüm gerçek kusuru başka yerde buldu. Ekranda aynı anda ortalama <b>7,8</b>, en çok <b>16</b> zemin işareti çiziliyor (tek salonda 12) ve durumların <b>%90'ında</b> birden fazla var. Ama asıl sorun sayı değildi: aktif adımın işareti ile herhangi bir masa yükseltme noktası <b>aynı bileşen, aynı boy, aynı yazı</b> — tek fark halka rengi. Yani oyuncu \"şu an hangisi\" sorusunu ekrana bakarak cevaplayamıyordu. Kadraj bunu birebir gösterdi: tek ekranda altı halka, hepsinde aynı kelime, ve alt bandın söylediği hedefin işareti kadrajda yok.<br><br>Kuralın dört kanalından üçü (alt bant · kamera · kenar oku) <b>zaten tek görevden</b> türüyordu; delinen yalnız dördüncüsü, dünyadaki işaret.",
+  "etiket": "Bu oturum · Faz C · 3/5 — garson yolun ortasında dönmeyi bıraktı",
+  "baslik": "Üç gün önce yazılmış bir kuralın kodda karşılığı hiç yokmuş",
+  "aciklama": "Sipariş kuyruğunun kuralları üç gün önce yazılmıştı ve arasında şu vardı: <b>bir garson bir masayı üstlenince, teslim edene kadar bırakmaz.</b> Bu oturum koda dokunmadan önce onu ölçtü — ve kuralın kodda <b>hiçbir karşılığı olmadığını</b> buldu. Garsonun hedefi <b>her karede yeniden</b> seçiliyordu: o an en sabırsız müşteri kimse ona dönüyor, bir sonraki karede başkası daha sabırsız olduğunda yolun ortasında geri dönüyordu.<br><br>Ölçüm bunun bedelini sayıya döktü. Garson, teslim edeceği masaya giderken ondan <b>başlangıç mesafesinin 5,6 katı</b> kadar uzaklaşabiliyor; tam turu, modelin beklediğinin <b>2,35 katına</b> çıkıyordu. Dahası kuralın gerekçesi de tutmuyordu: \"en sabırsıza git\" kuralı <b>tam olarak uzak masaları korumak için</b> konmuştu, ama ölçüm uzak masaların hâlâ daha çok terk edildiğini gösterdi. Mekân dolduğunda kural garsonu <b>hep en umutsuz masaya</b> koşturuyor — vardığında müşteri çoktan kalkmış oluyor.<br><br>Beş farklı öncelik kuralı yan yana ölçüldü ve <b>debi ile adaletin ters yönde</b> çalıştığı çıktı: en çok müşteriye yetişen kural, uzak masaları tamamen terk ediyor. Karar kullanıcıya soruldu.",
   "adimlar": [
-   "<b>Ölçüldü:</b> ekranda ort. <b>7,8</b> · en çok <b>16</b> işaret, %90'ında birden çok — neredeyse tamamı masa noktası",
-   "<b>Bulgunun yarısı bayat:</b> opsiyonel nokta kalmamış, pad işareti <b>en çok 1</b> (D-078'in dersi ikinci kez tuttu)",
-   "<b>Karar (kullanıcı): nokta silinmez, SES katmanlanır</b> — aktif (yazı + parlak + nabız, en fazla 1) · konuşan (yakında) · sessiz (küçük, yazısız)",
-   "<b>Sonuç:</b> çizilen 16 → aynı anda <b>konuşan en çok 3</b> (ort. 2,39), en fazla biri aktif",
-   "<b>Dördüncü kanal tek kaynağa bağlandı</b> — kenar okuyla aynı hesaptan besleniyor, artık ayrışamaz",
-   "<b>13 bekçi + iki mutasyon denemesi</b> · 476/476 test · duman 28/28 · denge sayısı değişmedi"
+   "<b>Ölçüldü:</b> oyunun kendi motoru başsız koşturuldu — dört senaryo × 15 dakika, oyuncu devre dışı, yalnız garson",
+   "<b>Yazılı kural kodda yokmuş:</b> hedef her karede yeniden seçiliyordu → garson hedefinden <b>5,6 kat</b> uzaklaşabiliyor",
+   "<b>\"En sabırsıza git\" kuralı amacını karşılamıyormuş</b> — uzak masalar yine daha çok terk ediyor",
+   "<b>Karar (kullanıcı): bağlayıcı üstlenme</b> — beş seçenek içinde <b>en adil</b> olan, üstelik bugünkünden hızlı",
+   "<b>Sonuç:</b> servis edilen müşteri 20 masada <b>172 → 239</b> · gezinme 0,55 → <b>0,11</b> · tur süresi %35 kısaldı",
+   "<b>6 bekçi</b> + iki mutasyon denemesi · <b>482/482 test</b> · duman 28/28 · denge sayısı değişmedi"
   ],
-  "not": "<b>Karar neden kullanıcıya soruldu:</b> kuralın lafzı (\"yalnız aktif adımın işareti çizilir\") sonradan verilmiş bir kullanıcı kararıyla <b>çelişiyordu</b> — <i>\"her masanın yükseltmesi ayrı, masaların yanında, My Hotel'deki oda yükseltme gibi.\"</i> Harfiyen uygulamak o noktaları silmek olurdu. Seçilen yol ikisini birden tutuyor: nokta yerinde kalıyor, yüksek sesle konuşan tek işaret aktif adım oluyor."
+  "not": "<b>Ölçüm ummadığı bir şey daha buldu.</b> En küçük senaryoda (dört masa, bulaşıkçı yok, oyuncu yok) 15 dakikada yalnız <b>18 müşteri</b> oturuyor — ama sebep garson değil: karelerin <b>%90,8'inde temiz bardak sıfır</b>. Garson boş duruyor çünkü demlenecek bardak yok. Bu, ölçüme baştan konan <b>darboğaz ayrıştırması</b> sayesinde ortaya çıktı; o olmasaydı sayı yanlış kola yazılacaktı. Kullanıcı bunu tasarım gereği saymadı, <b>ayrı bir kalem</b> olarak açtı."
  },
  "siradaki": {
-  "etiket": "Faz C · kalan 3 oturum — sipariş kuyruğu, sim'in gerçeğe yaklaşması",
-  "baslik": "Sırada yazılmış ama hiç ölçülmemiş bir iddia var",
-  "aciklama": "Oyunda sipariş kuyruğunun kuralları <b>yazılı</b>: global havuz, bir garson bir siparişi üstlenince başkası ona dokunmuyor. Ama o kuralların vaadi — <b>\"hiçbir masa X saniyeden fazla beklemedi\"</b> — hiçbir zaman teste yazılmadı, hiç ölçülmedi. Son iki oturumun dersi tam olarak buydu: yazılı olan ama ölçülmeyen bir iddia, yok sayılır.<br><br>Ardından simülatörün gerçeğe yaklaştırılması kalıyor. Bugün simülatör masaları <b>tek kalemde</b> yükseltiyor, oysa oyunda her masa tek tek alınıyor — bu fark raporda <b>21,4 dakikalık sahte bir bekleme</b> üretiyor. Bardak döngüsü ve müşteri sabrı da hâlâ modellenmiyor.",
+  "etiket": "Faz C · kalan 2 oturum — bardak kilidi, sim'in gerçeğe yaklaşması",
+  "baslik": "Oyuncu telefonu bıraktığında mekân neden tamamen duruyor?",
+  "aciklama": "Bu oturumun ölçümü erken oyunda bir kilit buldu: dört masalı salonda, bulaşıkçı tutulmadan, oyuncu ekrandan çekildiğinde <b>temiz bardak bitiyor ve mekân duruyor</b> — 15 dakikada yalnız 18 müşteri. Bardağın sınırlı olması bilerek konmuş bir baskı (oyuncu bulaşığı yıkasın diye), ama <b>tamamen durması</b> istenmiyor. Sıradaki oturum aynı deseni izleyecek: <b>önce ölç</b>, sonra kararı sor, sonra bekçile.<br><br>Ardından simülatörün gerçeğe yaklaştırılması var ve bu oturum ona <b>somut bir ilk kalem</b> bıraktı: simülatör garsonu \"hedefi hiç değişmeyen, tepsi dolusu götürüp boş dönen\" ideal bir taşıyıcı sayıyor. Gerçekte 20 masalı katta bunun <b>%58'i</b> gerçekleşiyor. Masaların tek kalemde yükseltilmesi, bardak döngüsü ve müşteri sabrı da hâlâ modele girmedi.",
   "adimlar": [
-   "<b>Sipariş kuyruğu ölçülür:</b> masa başına bekleme süresi çıkarılır, tavan bir bekçiye yazılır",
-   "<b>Sim gerçeğe yaklaşır:</b> masa yükseltmesi kalem kalem (sahte 21,4 dk kapanır)",
+   "<b>Bardak kilidi ölçülür:</b> havuz boyu · bulaşıkçının zincirdeki yeri · asgari sızıntı seçenekleri",
+   "<b>Karar sorulmadan hiçbir denge sayısına dokunulmaz</b> — bu turun deseni aynen tekrarlanır",
+   "<b>Sim gerçeğe yaklaşır:</b> ilk kalem taşıma modeli (gerçekleşen %58), sonra masa yükseltmesi kalem kalem",
    "<b>Bardak döngüsü ve sabır</b> modele girer",
-   "<b>Bekleyen denge kararı yok</b> — üç tempo ölçütü de yeşil, hiçbir sayı onaysız değişmedi",
    "<b>Sonra Faz D–F:</b> meta katman, arayüz cilası, paketleme ve mağaza"
   ],
   "not": "<b>Sanat ve asset işi bilerek en sonda:</b> karakterler hâlâ greybox (kapsül gövde), KayKit Restaurant Bits takılmadı, animasyon hiç yapılmadı. Kullanıcı kararı: <i>\"sistem kusursuz otursun, sonra hallederiz.\"</i> Ölçü donduğu için sanat turları artık dengeyi bozamaz."
@@ -332,8 +332,8 @@ h2{font-size:21px;font-weight:800}
     {
      "k": "C",
      "t": "Zincir ve denge",
-     "d": "Tek Odak · tezgâh merdiveni · global garson ve sipariş kuyruğu · simülatör gerçeğe yaklaşır. Denge <b>bir kez ölçüldü</b> (C1) · <b>Tek Odak'ın dördüncü kanalı tekleşti</b> (C2). Kalan: sipariş kuyruğunun ölçülmesi ve simülatörün gerçeğe yaklaşması.",
-     "yapilan": 2,
+     "d": "Tek Odak · tezgâh merdiveni · global garson ve sipariş kuyruğu · simülatör gerçeğe yaklaşır. Denge <b>bir kez ölçüldü</b> (C1) · <b>Tek Odak'ın dördüncü kanalı tekleşti</b> (C2) · <b>sipariş kuyruğu ölçüldü, garson üstlenmesi bağlayıcı oldu</b> (C3). Kalan: erken oyun bardak kilidi ve simülatörün gerçeğe yaklaşması.",
+     "yapilan": 3,
      "toplam": 5,
      "kapi": "Sim tempo tablosunu tutuyor, tempo iddiaları teste yazılı",
      "durum": "now"
@@ -366,6 +366,23 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "08.09.2026",
+   "etiket": "Faz C · 3. oturum (C3 — sipariş kuyruğu ve üstlenme)",
+   "baslik": "Garson kararsızdı: her karede fikrini değiştiriyordu",
+   "govde": "Oturuma yine devralınmış bir cümleyle girildi, ama bu kez cümle bir <b>söz</b>dü: sipariş kuyruğunun kuralları üç gün önce yazılmış ve doğrulama satırına <i>\"hiçbir masa X saniyeden fazla beklemedi iddiası TESTE yazılır\"</i> notu düşülmüştü. O test hiç yazılmamıştı ve not iki tur devredilmişti. Son iki oturumun dersi tam olarak bu olduğu için koda dokunmadan önce <b>ölçüldü</b>.<br><br>Ölçüm için ikinci bir model kurulmadı. Elde zaten bir ekonomi simülatörü var ama o bir <b>debi</b> modeli — \"kim darboğaz?\" sorusunu cevaplıyor. Kuyruk ise bir <b>konum ve zaman</b> sorusu, o yüzden oyunun <b>kendi motoru</b> başsız koşturuldu: dört farklı büyüme aşaması, her biri 15 dakika, oyuncu sokağa park edilmiş — yani ölçülen şey garson havuzunun tek başına ne yaptığı. Ölçüme baştan bir <b>darboğaz ayrıştırması</b> kondu: bir müşteri beklediğinde suç her zaman garsonda değil; demlenmiş ürün de bitmiş olabilir, temiz bardak da. Üçü ayrı sayılmasa çıkan sayı yanlış kola yazılırdı.<br><br>Bulgu netti: <b>yazılı kuralın kodda hiçbir karşılığı yoktu.</b> Garsonun hedefi her karede sıfırdan seçiliyordu — o an kimin sabrı azsa ona. Bir kare sonra başkası daha sabırsız olduğunda garson yolun ortasında dönüyordu. Ölçülen sonuç: teslim edeceği masaya giderken ondan <b>başlangıç mesafesinin 5,6 katı</b> kadar uzaklaşabiliyor, tam turu modelin beklediğinin <b>2,35 katına</b> çıkıyor. Bu yalnız bir verim kaybı değil, <b>görülebilir bir kusur</b>: garson kararsız gidip geliyor.<br><br>İkinci bulgu daha rahatsız ediciydi. \"En sabırsıza git\" kuralı <b>uzak masaları korumak için</b> konmuştu; ölçüm uzak masaların hâlâ belirgin biçimde daha çok terk edildiğini gösterdi. Mekân dolduğunda kural, garsonu <b>her seferinde en umutsuz masaya</b> yolluyor — vardığında müşteri çoktan kalkmış oluyor, garson yeni \"en umutsuz\"a dönüyor, o da kalkıyor.<br><br>Burada tek bir doğru cevap yoktu, o yüzden <b>beş ayrı öncelik kuralı yan yana ölçüldü</b> (geçici bir düzenekle; ölçüm bitince geri alındı ve kontrol koşusuyla kodun birebir aynı davrandığı doğrulandı). Çıkan tablo bir <b>takas</b> gösterdi: en çok müşteriye yetişen kural (\"en yakına git\") uzak masaları tamamen terk ediyor. Karar kullanıcıya soruldu ve <b>en adil</b> olan seçildi — ki o aynı zamanda bugünkünden de hızlıydı: yazılı kuralı harfiyen uygulamak.<br><br>Uygulamanın <b>iki</b> parçası çıktı. Birincisi bariz olan: üstlenilen masa, servis edilebildiği sürece bırakılmaz. İkincisi ölçüm olmasa gözden kaçardı: <b>önceki karenin üstlenmeleri, yeni seçimlerden önce yer tutmalı</b> — yoksa birinci garsonun taze seçimi, ikinci garsonun yolun yarısında olduğu masayı kapıyor ve onu geri döndürüyor. Bağlayıcılık ancak iki parça birlikte tam oluyor.",
+   "maddeler": [
+    "<b>Ölçüldü:</b> oyunun kendi motoru başsız koşturuldu — 4 senaryo × 15 dk, oyuncu devre dışı",
+    "<b>Yazılı kural kodda yokmuş</b> — hedef her karede yeniden seçiliyor, garson hedefinden <b>5,6 kat</b> uzaklaşabiliyordu",
+    "<b>\"En sabırsıza git\" amacını karşılamıyormuş</b> — uzak masalar yine daha çok terk ediyor (doygunlukta kural savruluyor)",
+    "<b>Beş kural yan yana ölçüldü</b> — debi ile adalet ters yönde; kullanıcı en adil olanı seçti",
+    "<b>Sonuç:</b> servis edilen müşteri 20 masada <b>172 → 239</b> · adalet ölçüsü 0,53 → <b>0,24</b> · gezinme 0,55 → <b>0,11</b>",
+    "<b>Ummadık kazanç:</b> kare süresine duyarlılık %-9'dan <b>%+1,6</b>'ya düştü — hedefini koruyan garson kararlı",
+    "<b>6 bekçi</b> (eşik listesi değil davranış sözleşmesi) + iki mutasyon · <b>482/482 test</b> · duman 28/28 · denge değişmedi",
+    "<b>Yeni kalem açıldı:</b> erken oyunda oyuncu çekilince <b>bardak bitiyor</b> ve mekân duruyor (karelerin %90,8'i)"
+   ],
+   "not": "<b>Bu oturumun dersi bekçinin kendisinden çıktı.</b> Bütün-akış testi ilk yazıldığında ocak seviyesi sıfırdı; o rejimde demleme zaten kilitli olduğu için kuyruk hiç dolmuyor ve test <b>hiçbir bozmayı yakalamıyordu</b>. Üstelik uzun koşuda zaman aşımına düşüp <b>\"kırıldı\" gibi görünüyordu</b> — yani yakalıyormuş sanılabilirdi. Buradan çıkan kural: <b>bir bekçinin kırılması, onu KIRAN şeyin ne olduğu doğrulanmadan yakalama sayılmaz.</b><br><br>İkinci ders ölçüm tasarımından: <b>\"müşteri bekledi\" tek başına kimseyi suçlamaz.</b> Bekleme demlemeden, temiz bardaktan ya da taşımadan gelebilir. Üçü baştan ayrı sayıldığı için hem garson kolundaki gerçek kusur bulundu, hem de erken oyunun bambaşka bir kolda (bardak) kilitlendiği ortaya çıktı."
+  },
   {
    "tarih": "08.09.2026",
    "etiket": "Faz C · 2. oturum (C2 — Tek Odak'ın dördüncü kanalı)",
@@ -732,6 +749,18 @@ h2{font-size:21px;font-weight:800}
  ],
  "riskler": [
   {
+   "sev": "Tasarım",
+   "renk": "now",
+   "b": "Erken oyunda oyuncu çekilince <b>bardak bitiyor</b> ve mekân duruyor",
+   "p": "C3 ölçümünün yan bulgusu: dört masalı salonda, bulaşıkçı tutulmadan, oyuncu ekrandan çekildiğinde karelerin <b>%90,8'inde temiz bardak sıfır</b> — 15 dakikada yalnız <b>18 müşteri</b> oturuyor. Garson boş duruyor (tepsisi karelerin %6,6'sında dolu) ve turu zaten ideale çok yakın; yani kusur taşımada değil <b>bardak havuzunda</b>. Bardağın sınırlı olması bilerek konmuş bir baskı, ama <b>tamamen durması</b> istenmiyor — kullanıcı bunu ayrı bir kalem olarak açtı (D-082). Sıradaki oturum: önce ölç (havuz boyu · bulaşıkçının zincirdeki yeri · asgari sızıntı), sonra karar."
+  },
+  {
+   "sev": "Çözüldü",
+   "renk": "done",
+   "b": "Sipariş kuyruğunun kuralları yazılıydı ama <b>hiç ölçülmemişti</b> — ÇÖZÜLDÜ (C3)",
+   "p": "Kurallardan biri (\"garson üstlendiği masayı teslim edene kadar bırakmaz\") ölçünce <b>kodda hiç yok</b> çıktı: hedef her karede yeniden seçiliyordu. Ölçülen bedel: garson ilk durağına giderken hedefinden <b>başlangıç mesafesinin 5,6 katı</b> kadar uzaklaşabiliyor, tam turu modelin beklediğinin <b>2,35 katına</b> çıkıyordu. Üstelik önceliğin gerekçesi de tutmuyordu — \"en sabırsıza git\" kuralı uzak masaları korumak için konmuştu ama uzak masalar hâlâ daha çok terk ediyordu. Beş kural yan yana ölçüldü, kullanıcı <b>en adil</b> olanı seçti ve uygulandı: servis edilen müşteri 20 masada <b>172 → 239</b>, adalet ölçüsü 0,53 → <b>0,24</b>. <b>6 bekçi</b> tutuyor (eşik listesi değil davranış sözleşmesi), iki mutasyonla doğrulandı."
+  },
+  {
    "sev": "Açık",
    "renk": "now",
    "b": "Gölge geri açıldı — telefondaki maliyeti <b>ölçülmedi</b>",
@@ -789,7 +818,7 @@ h2{font-size:21px;font-weight:800}
    "sev": "Ölçüm",
    "renk": "wait",
    "b": "Simülatör oyunu doğrulamıyor",
-   "p": "İki parçası kapandı. B2: simülatörün <b>oyuncu modeli</b> düzeltildi — artık görev hattını takip ediyor ve personel yükseltmelerini gerçekten satın alıyor. B5b: <b>yürüme/taşıma açığı kapandı</b> — gelir artık üç tavanın en düşüğü (talep · arz · <b>taşıma</b>) ve taşıma gerçek yol bulma mesafeleriyle hesaplanıyor. Bu ölçüm hemen bir şey buldu: geliri tezgâhtan sonra <b>taşıma</b> kelepçeliyor ve 3. garson %19 gelir getiriyor — daha önce “boşuna” sanılıyordu. Kalan: bardak döngüsü ve sabır hâlâ modellenmiyor; Faz C'de gerçeğe yaklaştırılacak."
+   "p": "İki parçası kapandı. B2: simülatörün <b>oyuncu modeli</b> düzeltildi — artık görev hattını takip ediyor ve personel yükseltmelerini gerçekten satın alıyor. B5b: <b>yürüme/taşıma açığı kapandı</b> — gelir artık üç tavanın en düşüğü (talep · arz · <b>taşıma</b>) ve taşıma gerçek yol bulma mesafeleriyle hesaplanıyor. Bu ölçüm hemen bir şey buldu: geliri tezgâhtan sonra <b>taşıma</b> kelepçeliyor ve 3. garson %19 gelir getiriyor — daha önce “boşuna” sanılıyordu. C3 üçüncü bir açık buldu ve <b>ölçtü</b>: simülatör garsonu \"hedefi hiç değişmeyen, tepsi dolusu götürüp boş dönen\" ideal bir taşıyıcı sayıyor; gerçekte 20 masalı katta bunun <b>%58'i</b> gerçekleşiyor (C3 öncesi %42 idi). Kalan: taşıma modeli · masa yükseltmesinin kalem kalem alınması · bardak döngüsü · sabır. Faz C'nin son turlarında gerçeğe yaklaştırılacak."
   },
   {
    "sev": "Tempo",
@@ -838,7 +867,7 @@ h2{font-size:21px;font-weight:800}
   }
  ]
 }
-  </script>
+</script>
 
 <div class="bar-top"><div class="wrap bar-top-in">
   <span class="mark">Köşe Kıraathanesi · 3B idle-tycoon</span>
