@@ -169,16 +169,20 @@ h2{font-size:21px;font-weight:800}
 </style>
 
 <!-- ══════════════════════════════════════════════════════════════════════
-     TEK GERÇEK KAYNAK — yalnız aşağıdaki JSON bloğunu düzenle.
-     Sayfanın tamamı bundan üretilir; başka hiçbir yeri elle değiştirme.
+     Sayfanın tamamı aşağıdaki JSON bloğundan çizilir; başka hiçbir yerini
+     elle değiştirme. Bloğun kendisi de ikiye ayrılır (D-085):
 
-     Oturum sonunda sırasıyla:
-       1) ilgili fazın "yapilan" değerini artır
-       2) "yapilan" toplamını artır
-       3) "ozet" bloğunu bu oturumun işiyle değiştir
-       4) "siradaki" bloğunu yeniden yaz
-       5) "gunluk" listesinin EN ÜSTÜNE yeni satır ekle
-       6) "guncelleme" tarihini değiştir
+     SAYILAR — ELLE YAZILMAZ. "yapilan" · "toplam" · faz payları · kilometre
+       taşı · "guncelleme" tarihi, `memory-bank/progress.md` tablosundan
+       TÜRETİLİR:  npm run pano            (aktif faz değiştiyse --simdi=<KOD>)
+       Araç önce defterin dört sayı yerini (bütçe satırı · tablo · faz başlığı
+       · kalem listesi) karşılaştırır; tutmuyorsa panoyu YAZMAZ ve neyin
+       çeliştiğini söyler → önce progress.md düzeltilir.
+
+     ANLATI — ELLE YAZILIR (türetilebilir değil):
+       "ozet" · "siradaki" · "gunluk" listesinin EN ÜSTÜNE yeni kart ·
+       faz "d" açıklamaları · "riskler" · "olcut".
+
      Sonra AYNI dosya yoluyla yeniden yayınla — bağlantı değişmez.
 
      Oturum tanımı: CLAUDE.md'deki çalışma birimi — küçük, test edilebilir,
