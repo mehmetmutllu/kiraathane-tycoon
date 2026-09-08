@@ -1809,7 +1809,7 @@ tek yönlü sıra. Ölçü hedefi kullanıcı kararıyla **A**: kat 34 × 34, du
   - **vitest 463/463 · smoke 28/28 · tsc + build temiz.** eslint tabanı zaten kırık (122 ayrıştırma
     hatası; sebep merge edilmiş ama silinmemiş `.claude/worktrees/maket-tasima` — temizlik kalemi).
 
-## Faz C — ZİNCİR VE DENGE (3/5) 🔧
+## Faz C — ZİNCİR VE DENGE (4/5) 🔧
 - ✅ **C1 — ÖLÇÜ DONDUKTAN SONRAKİ TEK ÖLÇÜM (D-078).** Rapor `docs/denge-raporu-c1.md`, ham çıktı
   `docs/denge-olcum-c1.txt`.
   - **Geometrinin bedeli küçük:** yollar %2-6 uzadı (19,6 → 20,7 br) · taşıma %4 zayıfladı
@@ -1886,8 +1886,36 @@ tek yönlü sıra. Ölçü hedefi kullanıcı kararıyla **A**: kat 34 × 34, du
     temiz bardak 0, 15 dk'da 18 müşteri). Kullanıcı "ayrı kalem olarak incelensin" dedi.
   - **`simulate.ts` taşıma modeli iyimser kaldı** (G4 %42 → %58): C4/C5'in ilk somut kalemi.
   - **vitest 482/482 · smoke 28/28 · tsc + build temiz · denge sayısı DEĞİŞMEDİ.**
-- ⏳ **SIRADAKİ:** **D-082 bardak kilidi** (önce ölç) · **sim'in gerçeğe yaklaşması** (taşıma modeli
-  · masa-başı yükseltme kalem kalem · bardak döngüsü · sabır).
+- ✅ **C4 — BARDAK KİLİDİ ÖLÇÜLDÜ + GARSON BOŞTA BULAŞIĞA KOŞUYOR (D-082 → D-083).** Rapor
+  `docs/bardak-raporu-c4.md`, araç `tools/olcum-bardak.ts` → `docs/olcum-bardak.txt`.
+  - **Önce ölçüldü.** Oyunun KENDİ `tick()`'i başsız koşturuldu (C3 deseni), 5 senaryo × 900 sn,
+    İKİ oyuncu kipi: `park` (AFK, karar sayıları buradan) ve `oyuncu` (dikkatli oyuncu botu,
+    yalnız TAVAN göstergesi). Aracın kendi bekçileri: **korunum denetimi** (bardak kapalı sistem —
+    sapma 0 ✓) ve "bot yürümediyse bu satır ölçüm DEĞİL" damgası.
+  - **AFK'da mekân yavaşlamıyor, ÖLÜYOR:** 4 masada 15 dakikada 12 müşteri (= tam havuz kadar),
+    **dakika 3'ten sonra sıfır**, son çeyrek %100 kilitli, 12 bardağın 12'si masada kirli.
+    Üç ayrı tohumda birebir aynı → zarın değil YAPININ sonucu.
+  - **D-082'nin birinci kolu (havuz boyu) ÇIKMAZ SOKAK ÇIKTI:** havuz ×2 ve ×4'te debi
+    **0,80 servis/dk'da sabit**; kilit "bardak bitti"den "masa kirlendi"ye taşınıyor, o kadar.
+  - **Servise ORANTILI çare de çözmüyor** ("müşteri bardağını götürsün": %25'te sıfır fark,
+    %50'de bile son çeyrek %100 kilitli). Kilidi ancak servisten BAĞIMSIZ bir kaynak açar.
+  - **Kullanıcı kendi seçeneğini önerdi** (*"garsonlar hem bulaşıkçı hem çaycı gibi davransa?"*);
+    ölçüldü, en iyisi çıktı ve "sessiz sızıntı" kolu elendi (dünyada sebebi olan tek çözüm bu).
+    **Tetik DAR:** geniş tetik ölçülüp REDDEDİLDİ (AFK 7,27 = oyuncunun %90'ı; bulaşık çemberini
+    bitiriyordu). B2 0,80 → **6,80** · B3 1,40 → **5,27** · bulaşıkçılı senaryolar değişmedi.
+  - **Bekçi gerçek bir delik yakaladı:** kural ilk hâliyle kilidi AÇMIYORDU — garson tezgâhta
+    asla gelmeyecek çayı bekliyor, "boşta" sayılmıyordu. `demlemeKilidi` eklendi.
+  - `tests/bardak.test.ts` (3 test; ikisi mutasyonla, üçüncüsü kuralı kendi içinde kapatarak
+    doğrulandı) · `tests/logic.test.ts` kirli-masa testi kuralın KENDİSİNİ ölçecek şekilde
+    güçlendirildi · `Waiter.tsx` + yeni `carriedDirty.tsx` (taşınan kirli görünür, çizim
+    bulaşıkçıyla ORTAK).
+  - **Tek yeni denge sayısı `waiter.idleDishCarry: 2`** (1/2/4 ölçüldü, fark gürültüde).
+  - **vitest 485/485 · smoke 28/28 · tsc + build temiz.**
+- ⏳ **SIRADAKİ (C5):** **sim'in gerçeğe yaklaşması** (taşıma modeli — G4'te gerçekleşen %58 ·
+  masa-başı yükseltme kalem kalem · bardak döngüsü · sabır). Açık kalanlar: geç oyunda tek
+  bulaşıkçı 20 masaya yetişmiyor (%22,6 bardak darboğazı — vergi, ölümcül değil) · nav ızgarası
+  (`actorRadius`, sandalyesiz) ile oyuncu çarpışması (`playerRadius`, sandalyeler katı) aynı
+  dünyayı görmüyor.
 - **Rapor:** `docs/bm-adim3-4-bant-kamera.html` →
   https://claude.ai/code/artifact/e49330bc-c918-41ec-a1b4-5c879cae146c
   (`tools/embed-rapor.mjs` kareleri data URI olarak gömüp `*.artifact.html` üretir — artifact'ın

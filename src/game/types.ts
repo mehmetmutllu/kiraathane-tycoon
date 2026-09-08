@@ -71,5 +71,15 @@ export interface Waiter {
   /** Taşıdığı TOST (yalnız garson; B2'de tek servis iki ürün verdiği için tepsi iki bölmeli —
    *  oyuncunun tray/trayFood ikilisiyle aynı desen). Kapasite ORTAK: tray + trayFood ≤ tepsi. */
   trayFood: number;
+  /**
+   * BOŞTA taşınan KİRLİ kap (D-083; yalnız garson — bulaşıkçı kirliyi `tray`de taşır). Garson
+   * ancak servis edecek kimse kalmayınca toplar, leğene varınca temiz havuza döner. Ürün
+   * tepsisinden AYRI sayılır: kirli taşırken tepsi ürünle dolu görünmemeli (garson boşalan
+   * tepsisiyle servise anında dönebilir). TRANSIENT — garson kaydedilmez.
+   */
+  dirtyCarry?: number;
+  /** Boşta taşınan kirli TABAK (D-083). Kabın TÜRÜ korunur: garson tabak taşırken elinde bardak
+   *  görünmemeli (oyuncunun carriedDirty/carriedDirtyFood ikilisiyle aynı desen). TRANSIENT. */
+  dirtyCarryFood?: number;
 }
 

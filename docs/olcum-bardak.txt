@@ -1,0 +1,476 @@
+OLCUM — BARDAK KİLİDİ (Faz C4, D-082)
+Oyunun kendi tick()'i · dt = 0.1 sn · tohum 20260908
+Havuz kuralı: alan başına 10 + ocak seviyesi başına 2 bardak
+Kirli masa eşiği: koltuk başına 2 (eşiği AŞAN masa kapanır)
+Kirli bardak görev #8 "3 kirli bardak yıka"'dan itibaren çıkar — o an mekân: 2 masa · garson yok.
+
+
+==============================================================================
+B1 · 2 masa · L1 · garson yok  (bulaşık görevinin hemen ardı)
+==============================================================================
+
+------------------------------------------------------------------------------
+B1 · 2 masa · L1 · garson yok  (bulaşık görevinin hemen ardı)   [oyuncu: PARK]
+2 masa · 0 garson · bulaşıkçı yok · ocak L1 · masa L0 · HAVUZ 12 bardak · 900 sn
+------------------------------------------------------------------------------
+Müşteri: oturan 84 · servis 0 (%0.0) · terk 83 (%98.8)
+  servis / dk : 0.00   ·  oturan / dk : 5.60
+
+KİLİT:
+  temiz bardak 0 olan kare      : %0.0  (0/9000)
+  ilk sıfırlanma                : hiç
+  en uzun kesintisiz sıfır      : 0.0 sn
+  SON ÇEYREKTE sıfır            : %0.0  (kalıcı mı?)
+  bekleyen müşteri VAR + hazır 0 + temiz 0 : %0.0 (bardağın ısırdığı an)
+
+KİRLİ MASA (D-019 eşiği: >2×koltuk kirli ⇒ masa kapalı):
+  ortalama kirli masa : 0.00 / 2 · en çok 0
+  TÜM masaların kirli olduğu kare : %0.0
+
+YIKAMA: oyuncu 0 · bulaşıkçı 0 bardak (toplam 0.00 bardak/dk)
+
+BİTİŞ ENVANTERİ (havuz 12):
+  temiz                8
+  tezgâhta hazır       4
+
+DAKİKA DAKİKA (temiz bardak ort · masada kirli ort · kirli masa ort · o dk servis):
+  dk  1  temiz   8.7  kirli   0.0  kirliMasa  0.0  servis   0  oturan   6
+  dk  2  temiz   8.0  kirli   0.0  kirliMasa  0.0  servis   0  oturan   6
+  dk  3  temiz   8.0  kirli   0.0  kirliMasa  0.0  servis   0  oturan   6
+  dk  4  temiz   8.0  kirli   0.0  kirliMasa  0.0  servis   0  oturan   5
+  dk  5  temiz   8.0  kirli   0.0  kirliMasa  0.0  servis   0  oturan   5
+  dk  7  temiz   8.0  kirli   0.0  kirliMasa  0.0  servis   0  oturan   6
+  dk 10  temiz   8.0  kirli   0.0  kirliMasa  0.0  servis   0  oturan   5
+  dk 13  temiz   8.0  kirli   0.0  kirliMasa  0.0  servis   0  oturan   6
+  dk 16  temiz   8.0  kirli   0.0  kirliMasa  0.0  servis   0  oturan   0
+
+------------------------------------------------------------------------------
+B1 · 2 masa · L1 · garson yok  (bulaşık görevinin hemen ardı)   [oyuncu: OYUNCU]
+2 masa · 0 garson · bulaşıkçı yok · ocak L1 · masa L0 · HAVUZ 12 bardak · 900 sn
+------------------------------------------------------------------------------
+Müşteri: oturan 84 · servis 0 (%0.0) · terk 83 (%98.8)
+  servis / dk : 0.00   ·  oturan / dk : 5.60
+
+KİLİT:
+  temiz bardak 0 olan kare      : %0.0  (0/9000)
+  ilk sıfırlanma                : hiç
+  en uzun kesintisiz sıfır      : 0.0 sn
+  SON ÇEYREKTE sıfır            : %0.0  (kalıcı mı?)
+  bekleyen müşteri VAR + hazır 0 + temiz 0 : %0.0 (bardağın ısırdığı an)
+
+KİRLİ MASA (D-019 eşiği: >2×koltuk kirli ⇒ masa kapalı):
+  ortalama kirli masa : 0.00 / 2 · en çok 0
+  TÜM masaların kirli olduğu kare : %0.0
+!! OYUNCU KİPİ ÇALIŞMADI (oyuncu neredeyse hiç yürümedi) — bu koşu ölçüm DEĞİL.
+
+YIKAMA: oyuncu 0 · bulaşıkçı 0 bardak (toplam 0.00 bardak/dk) · oyuncu yolu 0.0 br/dk
+
+BİTİŞ ENVANTERİ (havuz 12):
+  temiz                8
+  tezgâhta hazır       4
+
+DAKİKA DAKİKA (temiz bardak ort · masada kirli ort · kirli masa ort · o dk servis):
+  dk  1  temiz   8.7  kirli   0.0  kirliMasa  0.0  servis   0  oturan   6
+  dk  2  temiz   8.0  kirli   0.0  kirliMasa  0.0  servis   0  oturan   6
+  dk  3  temiz   8.0  kirli   0.0  kirliMasa  0.0  servis   0  oturan   6
+  dk  4  temiz   8.0  kirli   0.0  kirliMasa  0.0  servis   0  oturan   5
+  dk  5  temiz   8.0  kirli   0.0  kirliMasa  0.0  servis   0  oturan   5
+  dk  7  temiz   8.0  kirli   0.0  kirliMasa  0.0  servis   0  oturan   6
+  dk 10  temiz   8.0  kirli   0.0  kirliMasa  0.0  servis   0  oturan   5
+  dk 13  temiz   8.0  kirli   0.0  kirliMasa  0.0  servis   0  oturan   6
+  dk 16  temiz   8.0  kirli   0.0  kirliMasa  0.0  servis   0  oturan   0
+
+
+==============================================================================
+B2 · 4 masa · L1 · 1 garson    (D-082 vakası = C3/G1)
+==============================================================================
+
+------------------------------------------------------------------------------
+B2 · 4 masa · L1 · 1 garson    (D-082 vakası = C3/G1)   [oyuncu: PARK]
+4 masa · 1 garson · bulaşıkçı yok · ocak L1 · masa L0 · HAVUZ 12 bardak · 900 sn
+------------------------------------------------------------------------------
+Müşteri: oturan 109 · servis 102 (%93.6) · terk 6 (%5.5)
+  servis / dk : 6.80   ·  oturan / dk : 7.27
+
+KİLİT:
+  temiz bardak 0 olan kare      : %45.6  (4103/9000)
+  ilk sıfırlanma                : 82.7 sn
+  en uzun kesintisiz sıfır      : 38.9 sn
+  SON ÇEYREKTE sıfır            : %45.5  (kalıcı mı?)
+  bekleyen müşteri VAR + hazır 0 + temiz 0 : %1.9 (bardağın ısırdığı an)
+
+KİRLİ MASA (D-019 eşiği: >2×koltuk kirli ⇒ masa kapalı):
+  ortalama kirli masa : 2.15 / 4 · en çok 3
+  TÜM masaların kirli olduğu kare : %0.0
+
+YIKAMA: oyuncu 92 · bulaşıkçı 0 bardak (toplam 6.13 bardak/dk)
+
+BİTİŞ ENVANTERİ (havuz 12):
+  temiz                1
+  tezgâhta hazır       1
+  müşteri elinde       1
+  MASADA KİRLİ         9
+
+DAKİKA DAKİKA (temiz bardak ort · masada kirli ort · kirli masa ort · o dk servis):
+  dk  1  temiz   6.2  kirli   2.5  kirliMasa  0.0  servis   5  oturan  11
+  dk  2  temiz   0.6  kirli   7.5  kirliMasa  1.5  servis   7  oturan   7
+  dk  3  temiz   0.7  kirli   9.3  kirliMasa  2.7  servis   5  oturan   6
+  dk  4  temiz   0.8  kirli   9.1  kirliMasa  2.5  servis   7  oturan   6
+  dk  5  temiz   0.6  kirli   9.0  kirliMasa  2.5  servis   6  oturan   7
+  dk  7  temiz   0.8  kirli   9.0  kirliMasa  2.3  servis   7  oturan   8
+  dk 10  temiz   0.7  kirli   9.1  kirliMasa  2.3  servis   7  oturan   6
+  dk 13  temiz   0.8  kirli   9.0  kirliMasa  2.3  servis   7  oturan   6
+  dk 16  temiz   1.0  kirli   9.0  kirliMasa  2.0  servis   0  oturan   0
+
+------------------------------------------------------------------------------
+B2 · 4 masa · L1 · 1 garson    (D-082 vakası = C3/G1)   [oyuncu: OYUNCU]
+4 masa · 1 garson · bulaşıkçı yok · ocak L1 · masa L0 · HAVUZ 12 bardak · 900 sn
+------------------------------------------------------------------------------
+Müşteri: oturan 136 · servis 111 (%81.6) · terk 25 (%18.4)
+  servis / dk : 7.40   ·  oturan / dk : 9.07
+
+KİLİT:
+  temiz bardak 0 olan kare      : %23.2  (2087/9000)
+  ilk sıfırlanma                : 239.7 sn
+  en uzun kesintisiz sıfır      : 29.7 sn
+  SON ÇEYREKTE sıfır            : %48.7  (kalıcı mı?)
+  bekleyen müşteri VAR + hazır 0 + temiz 0 : %1.9 (bardağın ısırdığı an)
+
+KİRLİ MASA (D-019 eşiği: >2×koltuk kirli ⇒ masa kapalı):
+  ortalama kirli masa : 0.98 / 4 · en çok 3
+  TÜM masaların kirli olduğu kare : %0.0
+
+YIKAMA: oyuncu 100 · bulaşıkçı 0 bardak (toplam 6.67 bardak/dk) · oyuncu yolu 196.9 br/dk
+
+BİTİŞ ENVANTERİ (havuz 12):
+  tezgâhta hazır       1
+  müşteri elinde       1
+  MASADA KİRLİ         10
+
+DAKİKA DAKİKA (temiz bardak ort · masada kirli ort · kirli masa ort · o dk servis):
+  dk  1  temiz   7.2  kirli   1.3  kirliMasa  0.0  servis   5  oturan  11
+  dk  2  temiz   6.5  kirli   0.7  kirliMasa  0.0  servis   7  oturan  11
+  dk  3  temiz   5.6  kirli   1.8  kirliMasa  0.0  servis   9  oturan  12
+  dk  4  temiz   4.3  kirli   3.1  kirliMasa  0.0  servis   9  oturan  12
+  dk  5  temiz   1.0  kirli   5.8  kirliMasa  0.1  servis   6  oturan  10
+  dk  7  temiz   3.0  kirli   3.8  kirliMasa  1.0  servis   7  oturan   9
+  dk 10  temiz   2.0  kirli   5.9  kirliMasa  0.2  servis   9  oturan  11
+  dk 13  temiz   0.9  kirli   9.4  kirliMasa  2.4  servis   7  oturan   7
+  dk 16  temiz   0.0  kirli  10.0  kirliMasa  3.0  servis   0  oturan   0
+
+
+==============================================================================
+B3 · 7 masa · L2 · 1 garson    (bulaşıkçıdan HEMEN ÖNCE)
+==============================================================================
+
+------------------------------------------------------------------------------
+B3 · 7 masa · L2 · 1 garson    (bulaşıkçıdan HEMEN ÖNCE)   [oyuncu: PARK]
+7 masa · 1 garson · bulaşıkçı yok · ocak L2 · masa L0 · HAVUZ 24 bardak · 900 sn
+------------------------------------------------------------------------------
+Müşteri: oturan 135 · servis 79 (%58.5) · terk 55 (%40.7)
+  servis / dk : 5.27   ·  oturan / dk : 9.00
+
+KİLİT:
+  temiz bardak 0 olan kare      : %31.1  (2801/9000)
+  ilk sıfırlanma                : 342.4 sn
+  en uzun kesintisiz sıfır      : 43.9 sn
+  SON ÇEYREKTE sıfır            : %41.2  (kalıcı mı?)
+  bekleyen müşteri VAR + hazır 0 + temiz 0 : %0.0 (bardağın ısırdığı an)
+
+KİRLİ MASA (D-019 eşiği: >2×koltuk kirli ⇒ masa kapalı):
+  ortalama kirli masa : 3.85 / 7 · en çok 6
+  TÜM masaların kirli olduğu kare : %0.0
+
+YIKAMA: oyuncu 60 · bulaşıkçı 0 bardak (toplam 4.00 bardak/dk)
+
+BİTİŞ ENVANTERİ (havuz 24):
+  tezgâhta hazır       4
+  garson tepsisinde    1
+  müşteri elinde       1
+  MASADA KİRLİ         18
+
+DAKİKA DAKİKA (temiz bardak ort · masada kirli ort · kirli masa ort · o dk servis):
+  dk  1  temiz  18.4  kirli   0.9  kirliMasa  0.0  servis   3  oturan  17
+  dk  2  temiz  13.1  kirli   4.9  kirliMasa  0.0  servis   5  oturan  17
+  dk  3  temiz   8.9  kirli   8.9  kirliMasa  1.4  servis   2  oturan  13
+  dk  4  temiz   6.5  kirli  11.1  kirliMasa  2.0  servis   3  oturan  14
+  dk  5  temiz   3.4  kirli  14.9  kirliMasa  3.8  servis   3  oturan   6
+  dk  7  temiz   0.4  kirli  17.7  kirliMasa  4.8  servis   5  oturan   7
+  dk 10  temiz   0.8  kirli  17.9  kirliMasa  5.1  servis   8  oturan   8
+  dk 13  temiz   0.9  kirli  17.9  kirliMasa  5.1  servis   6  oturan   8
+  dk 16  temiz   0.0  kirli  18.0  kirliMasa  5.0  servis   0  oturan   0
+
+------------------------------------------------------------------------------
+B3 · 7 masa · L2 · 1 garson    (bulaşıkçıdan HEMEN ÖNCE)   [oyuncu: OYUNCU]
+7 masa · 1 garson · bulaşıkçı yok · ocak L2 · masa L0 · HAVUZ 24 bardak · 900 sn
+------------------------------------------------------------------------------
+Müşteri: oturan 259 · servis 66 (%25.5) · terk 189 (%73.0)
+  servis / dk : 4.40   ·  oturan / dk : 17.27
+
+KİLİT:
+  temiz bardak 0 olan kare      : %0.0  (0/9000)
+  ilk sıfırlanma                : hiç
+  en uzun kesintisiz sıfır      : 0.0 sn
+  SON ÇEYREKTE sıfır            : %0.0  (kalıcı mı?)
+  bekleyen müşteri VAR + hazır 0 + temiz 0 : %0.0 (bardağın ısırdığı an)
+
+KİRLİ MASA (D-019 eşiği: >2×koltuk kirli ⇒ masa kapalı):
+  ortalama kirli masa : 0.00 / 7 · en çok 1
+  TÜM masaların kirli olduğu kare : %0.0
+
+YIKAMA: oyuncu 61 · bulaşıkçı 0 bardak (toplam 4.07 bardak/dk) · oyuncu yolu 137.8 br/dk
+
+BİTİŞ ENVANTERİ (havuz 24):
+  temiz                14
+  tezgâhta hazır       5
+  müşteri elinde       1
+  MASADA KİRLİ         4
+
+DAKİKA DAKİKA (temiz bardak ort · masada kirli ort · kirli masa ort · o dk servis):
+  dk  1  temiz  18.7  kirli   0.4  kirliMasa  0.0  servis   3  oturan  17
+  dk  2  temiz  15.2  kirli   2.5  kirliMasa  0.0  servis   5  oturan  17
+  dk  3  temiz  16.7  kirli   0.9  kirliMasa  0.0  servis   2  oturan  17
+  dk  4  temiz  14.6  kirli   2.1  kirliMasa  0.0  servis   7  oturan  18
+  dk  5  temiz  15.7  kirli   1.8  kirliMasa  0.0  servis   4  oturan  18
+  dk  7  temiz  13.6  kirli   3.3  kirliMasa  0.1  servis   7  oturan  17
+  dk 10  temiz  15.7  kirli   2.4  kirliMasa  0.0  servis   3  oturan  18
+  dk 13  temiz  13.5  kirli   4.1  kirliMasa  0.0  servis   3  oturan  20
+  dk 16  temiz  14.0  kirli   4.0  kirliMasa  0.0  servis   0  oturan   0
+
+
+==============================================================================
+B4 · 8 masa · L3 · 1 garson + BULAŞIKÇI
+==============================================================================
+
+------------------------------------------------------------------------------
+B4 · 8 masa · L3 · 1 garson + BULAŞIKÇI   [oyuncu: PARK]
+8 masa · 1 garson · bulaşıkçı VAR · ocak L3 · masa L1 · HAVUZ 26 bardak · 900 sn
+------------------------------------------------------------------------------
+Müşteri: oturan 525 · servis 89 (%17.0) · terk 424 (%80.8)
+  servis / dk : 5.93   ·  oturan / dk : 35.00
+
+KİLİT:
+  temiz bardak 0 olan kare      : %0.0  (0/9000)
+  ilk sıfırlanma                : hiç
+  en uzun kesintisiz sıfır      : 0.0 sn
+  SON ÇEYREKTE sıfır            : %0.0  (kalıcı mı?)
+  bekleyen müşteri VAR + hazır 0 + temiz 0 : %0.0 (bardağın ısırdığı an)
+
+KİRLİ MASA (D-019 eşiği: >2×koltuk kirli ⇒ masa kapalı):
+  ortalama kirli masa : 0.00 / 8 · en çok 0
+  TÜM masaların kirli olduğu kare : %0.0
+
+YIKAMA: oyuncu 0 · bulaşıkçı 89 bardak (toplam 5.93 bardak/dk)
+
+BİTİŞ ENVANTERİ (havuz 26):
+  temiz                19
+  tezgâhta hazır       4
+  garson tepsisinde    2
+  MASADA KİRLİ         1
+
+DAKİKA DAKİKA (temiz bardak ort · masada kirli ort · kirli masa ort · o dk servis):
+  dk  1  temiz  19.2  kirli   0.6  kirliMasa  0.0  servis   4  oturan  33
+  dk  2  temiz  16.6  kirli   0.5  kirliMasa  0.0  servis   4  oturan  37
+  dk  3  temiz  17.1  kirli   0.8  kirliMasa  0.0  servis   8  oturan  34
+  dk  4  temiz  16.8  kirli   1.1  kirliMasa  0.0  servis   8  oturan  35
+  dk  5  temiz  16.8  kirli   0.7  kirliMasa  0.0  servis   6  oturan  36
+  dk  7  temiz  17.6  kirli   0.5  kirliMasa  0.0  servis   5  oturan  37
+  dk 10  temiz  17.6  kirli   0.6  kirliMasa  0.0  servis   6  oturan  37
+  dk 13  temiz  17.3  kirli   0.5  kirliMasa  0.0  servis   6  oturan  37
+  dk 16  temiz  19.0  kirli   1.0  kirliMasa  0.0  servis   0  oturan   0
+
+------------------------------------------------------------------------------
+B4 · 8 masa · L3 · 1 garson + BULAŞIKÇI   [oyuncu: OYUNCU]
+8 masa · 1 garson · bulaşıkçı VAR · ocak L3 · masa L1 · HAVUZ 26 bardak · 900 sn
+------------------------------------------------------------------------------
+Müşteri: oturan 522 · servis 77 (%14.8) · terk 435 (%83.3)
+  servis / dk : 5.13   ·  oturan / dk : 34.80
+
+KİLİT:
+  temiz bardak 0 olan kare      : %0.0  (0/9000)
+  ilk sıfırlanma                : hiç
+  en uzun kesintisiz sıfır      : 0.0 sn
+  SON ÇEYREKTE sıfır            : %0.0  (kalıcı mı?)
+  bekleyen müşteri VAR + hazır 0 + temiz 0 : %0.0 (bardağın ısırdığı an)
+
+KİRLİ MASA (D-019 eşiği: >2×koltuk kirli ⇒ masa kapalı):
+  ortalama kirli masa : 0.00 / 8 · en çok 0
+  TÜM masaların kirli olduğu kare : %0.0
+
+YIKAMA: oyuncu 40 · bulaşıkçı 36 bardak (toplam 5.07 bardak/dk) · oyuncu yolu 109.9 br/dk
+
+BİTİŞ ENVANTERİ (havuz 26):
+  temiz                18
+  tezgâhta hazır       6
+  garson tepsisinde    1
+  müşteri elinde       1
+
+DAKİKA DAKİKA (temiz bardak ort · masada kirli ort · kirli masa ort · o dk servis):
+  dk  1  temiz  19.2  kirli   0.4  kirliMasa  0.0  servis   4  oturan  33
+  dk  2  temiz  17.2  kirli   0.2  kirliMasa  0.0  servis   4  oturan  37
+  dk  3  temiz  17.3  kirli   0.6  kirliMasa  0.0  servis   8  oturan  34
+  dk  4  temiz  17.7  kirli   0.5  kirliMasa  0.0  servis   8  oturan  37
+  dk  5  temiz  17.7  kirli   0.5  kirliMasa  0.0  servis   6  oturan  32
+  dk  7  temiz  18.0  kirli   0.1  kirliMasa  0.0  servis   6  oturan  35
+  dk 10  temiz  17.8  kirli   0.4  kirliMasa  0.0  servis   6  oturan  36
+  dk 13  temiz  16.9  kirli   0.7  kirliMasa  0.0  servis   8  oturan  34
+  dk 16  temiz  18.0  kirli   0.0  kirliMasa  0.0  servis   0  oturan   0
+
+
+==============================================================================
+B5 · 20 masa · L6 · 3 garson + bulaşıkçı (geç-oyun doygunluğu)
+==============================================================================
+
+------------------------------------------------------------------------------
+B5 · 20 masa · L6 · 3 garson + bulaşıkçı (geç-oyun doygunluğu)   [oyuncu: PARK]
+20 masa · 3 garson · bulaşıkçı VAR · ocak L6 · masa L4 · HAVUZ 42 bardak · 900 sn
+------------------------------------------------------------------------------
+Müşteri: oturan 913 · servis 242 (%26.5) · terk 646 (%70.8)
+  servis / dk : 16.13   ·  oturan / dk : 60.87
+
+KİLİT:
+  temiz bardak 0 olan kare      : %22.6  (2038/9000)
+  ilk sıfırlanma                : 543.0 sn
+  en uzun kesintisiz sıfır      : 21.2 sn
+  SON ÇEYREKTE sıfır            : %70.5  (kalıcı mı?)
+  bekleyen müşteri VAR + hazır 0 + temiz 0 : %7.5 (bardağın ısırdığı an)
+
+KİRLİ MASA (D-019 eşiği: >2×koltuk kirli ⇒ masa kapalı):
+  ortalama kirli masa : 0.54 / 20 · en çok 2
+  TÜM masaların kirli olduğu kare : %0.0
+
+YIKAMA: oyuncu 6 · bulaşıkçı 204 bardak (toplam 14.00 bardak/dk)
+
+BİTİŞ ENVANTERİ (havuz 42):
+  temiz                2
+  garson tepsisinde    7
+  garson elinde kirli  4
+  müşteri elinde       1
+  MASADA KİRLİ         26
+  bulaşıkçıda          2
+
+DAKİKA DAKİKA (temiz bardak ort · masada kirli ort · kirli masa ort · o dk servis):
+  dk  1  temiz  26.2  kirli   2.1  kirliMasa  0.0  servis  14  oturan  56
+  dk  2  temiz  18.4  kirli   6.1  kirliMasa  0.0  servis  21  oturan  63
+  dk  3  temiz  16.4  kirli   8.6  kirliMasa  0.0  servis  17  oturan  63
+  dk  4  temiz  13.8  kirli  11.3  kirliMasa  0.0  servis  13  oturan  61
+  dk  5  temiz  11.8  kirli  12.8  kirliMasa  0.0  servis  14  oturan  63
+  dk  7  temiz   8.9  kirli  15.8  kirliMasa  0.0  servis  17  oturan  71
+  dk 10  temiz   2.5  kirli  22.6  kirliMasa  0.9  servis  18  oturan  57
+  dk 13  temiz   0.6  kirli  30.9  kirliMasa  2.0  servis  13  oturan  62
+  dk 16  temiz   2.0  kirli  26.0  kirliMasa  1.0  servis   0  oturan   0
+
+------------------------------------------------------------------------------
+B5 · 20 masa · L6 · 3 garson + bulaşıkçı (geç-oyun doygunluğu)   [oyuncu: OYUNCU]
+20 masa · 3 garson · bulaşıkçı VAR · ocak L6 · masa L4 · HAVUZ 42 bardak · 900 sn
+------------------------------------------------------------------------------
+Müşteri: oturan 950 · servis 248 (%26.1) · terk 667 (%70.2)
+  servis / dk : 16.53   ·  oturan / dk : 63.33
+
+KİLİT:
+  temiz bardak 0 olan kare      : %0.0  (0/9000)
+  ilk sıfırlanma                : hiç
+  en uzun kesintisiz sıfır      : 0.0 sn
+  SON ÇEYREKTE sıfır            : %0.0  (kalıcı mı?)
+  bekleyen müşteri VAR + hazır 0 + temiz 0 : %0.0 (bardağın ısırdığı an)
+
+KİRLİ MASA (D-019 eşiği: >2×koltuk kirli ⇒ masa kapalı):
+  ortalama kirli masa : 0.00 / 20 · en çok 0
+  TÜM masaların kirli olduğu kare : %0.0
+
+YIKAMA: oyuncu 97 · bulaşıkçı 145 bardak (toplam 16.13 bardak/dk) · oyuncu yolu 166.1 br/dk
+
+BİTİŞ ENVANTERİ (havuz 42):
+  temiz                24
+  tezgâhta hazır       9
+  garson tepsisinde    3
+  müşteri elinde       1
+  MASADA KİRLİ         2
+  bulaşıkçıda          3
+
+DAKİKA DAKİKA (temiz bardak ort · masada kirli ort · kirli masa ort · o dk servis):
+  dk  1  temiz  27.1  kirli   1.0  kirliMasa  0.0  servis  14  oturan  56
+  dk  2  temiz  20.8  kirli   3.3  kirliMasa  0.0  servis  21  oturan  63
+  dk  3  temiz  20.6  kirli   3.3  kirliMasa  0.0  servis  17  oturan  64
+  dk  4  temiz  20.4  kirli   3.2  kirliMasa  0.0  servis  13  oturan  64
+  dk  5  temiz  22.9  kirli   0.9  kirliMasa  0.0  servis  11  oturan  64
+  dk  7  temiz  20.9  kirli   3.4  kirliMasa  0.0  servis  15  oturan  66
+  dk 10  temiz  21.4  kirli   4.3  kirliMasa  0.0  servis  14  oturan  64
+  dk 13  temiz  21.9  kirli   2.6  kirliMasa  0.0  servis  16  oturan  63
+  dk 16  temiz  24.0  kirli   2.0  kirliMasa  0.0  servis   0  oturan   0
+
+
+##############################################################################
+# ÖZET — zincir boyunca bardak kilidi
+##############################################################################
+senaryo                              kip        havuz  masa  dw   temiz0%   servis/dk  terk%
+B1 2 masa · L1                       park          12     2    -     %0.0       0.00   %98.8
+B1 2 masa · L1                       oyuncu        12     2    -     %0.0       0.00   %98.8
+B2 4 masa · L1                       park          12     4    -    %45.6       6.80    %5.5
+B2 4 masa · L1                       oyuncu        12     4    -    %23.2       7.40   %18.4
+B3 7 masa · L2                       park          24     7    -    %31.1       5.27   %40.7
+B3 7 masa · L2                       oyuncu        24     7    -     %0.0       4.40   %73.0
+B4 8 masa · L3                       park          26     8  var     %0.0       5.93   %80.8
+B4 8 masa · L3                       oyuncu        26     8  var     %0.0       5.13   %83.3
+B5 20 masa · L6                      park          42    20  var    %22.6      16.13   %70.8
+B5 20 masa · L6                      oyuncu        42    20  var     %0.0      16.53   %70.2
+
+KORUNUM DENETİMİ: en büyük sapma 0 bardak ✓ (bardak kapalı sistem)
+
+
+##############################################################################
+# TOHUM SAĞLAMLIĞI — B2/B3 · park · taban · sizinti:2 · bulasikci · üç ayrı tohum
+# (taban ve sizinti satırlarının tohumdan BAĞIMSIZ çıkması beklenir: o rejimlerde debi
+#  havuz/demleme ya da sızıntı oranıyla TAVANLANIR, zar sonucu değiştirmez. Zarın
+#  gerçekten döndüğü, bulasikci satırlarının tohumla oynamasından görülür.)
+##############################################################################
+senaryo   varyant            tohum      servis/dk  sonÇeyrek0%  ilkSıfır(sn)
+B2        garson:0           20260908       0.80       %100.0          82.7
+B2        garson:0                  7       0.80       %100.0          82.7
+B2        garson:0              31337       0.80       %100.0          82.7
+B2        garson:2           20260908       6.80        %45.5          82.7
+B2        garson:2                  7       7.00        %48.6          82.7
+B2        garson:2              31337       7.00        %48.6          82.7
+B2        garson:0,sizinti:2 20260908       2.73        %86.2         108.4
+B2        garson:0,sizinti:2        7       2.73        %86.2         108.4
+B2        garson:0,sizinti:2    31337       2.73        %86.2         108.4
+B3        garson:0           20260908       1.40       %100.0         342.4
+B3        garson:0                  7       1.40       %100.0         342.4
+B3        garson:0              31337       1.40       %100.0         342.4
+B3        garson:2           20260908       5.27        %41.2         342.4
+B3        garson:2                  7       4.93        %51.9         342.4
+B3        garson:2              31337       5.07        %44.3         342.4
+B3        garson:0,sizinti:2 20260908       3.33        %89.8         594.4
+B3        garson:0,sizinti:2        7       3.33        %89.8         594.4
+B3        garson:0,sizinti:2    31337       3.33        %89.8         594.4
+
+
+##############################################################################
+# VARYANTLAR — AFK (park) altında D-082 kolları
+##############################################################################
+('garson:N' = boşta kalan garsonun taşıdığı kirli sayısı; garson:0 = D-083 ÖNCESİ davranış)
+senaryo   varyant              havuz  temiz0%  sonÇeyrek0%  servis/dk  oturan/dk  kirliMasa  terk%
+B2        KONTROL                 12   %90.8       %100.0       0.80       1.20       3.57  %33.3
+B2        garson:1                12   %60.7        %65.1       4.80       5.27       2.69   %7.6
+B2        garson:2                12   %45.6        %45.5       6.80       7.27       2.15   %5.5
+B2        garson:4                12   %39.3        %42.3       7.73       8.20       1.84   %4.9
+B2        garson:0,havuz:2        24    %0.0         %0.0       0.80       1.20       3.57  %33.3
+B2        garson:0,havuz:4        48    %0.0         %0.0       0.80       1.20       3.57  %33.3
+B2        garson:0,bulasikci      12    %0.0         %0.0       7.80      11.13       0.00  %28.1
+B2        garson:0,sizinti:2      12   %75.1        %86.2       2.73       3.20       3.05  %14.6
+B2        garson:0,sizinti:6      12   %25.4        %56.5       6.67       9.13       0.80  %26.3
+B2        garson:0,iade:0.25      12   %90.8       %100.0       0.80       1.20       3.57  %33.3
+B2        garson:0,iade:0.5       12   %81.2       %100.0       1.80       2.20       3.25  %18.2
+
+B3        KONTROL                 24   %62.0       %100.0       1.40       5.00       4.93  %72.0
+B3        garson:1                24   %50.6        %80.0       3.40       7.13       4.33  %51.4
+B3        garson:2                24   %31.1        %41.2       5.27       9.00       3.85  %40.7
+B3        garson:4                24   %39.7        %64.9       5.20       8.93       3.71  %41.8
+B3        garson:0,havuz:2        48    %0.0         %0.0       1.40       5.00       4.93  %72.0
+B3        garson:0,havuz:4        96    %0.0         %0.0       1.40       5.00       4.93  %72.0
+B3        garson:0,bulasikci      24    %0.0         %0.0       4.00      16.00       0.41  %74.2
+B3        garson:0,sizinti:2      24   %27.6        %89.8       3.33      11.53       2.30  %71.1
+B3        garson:0,sizinti:6      24    %0.0         %0.0       4.20      17.13       0.00  %73.2
+B3        garson:0,iade:0.25      24   %53.4       %100.0       1.73       6.00       4.52  %71.1
+B3        garson:0,iade:0.5       24   %29.1        %95.6       2.93       9.93       2.90  %70.5
+

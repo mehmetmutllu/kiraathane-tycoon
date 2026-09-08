@@ -709,6 +709,8 @@ function dishCycleSystem(c: TickCtx): void {
 function waiterSystem(c: TickCtx): void {
   const { dt, s, world, obstacles, navGrid, ready, stats, dirty, liveNpcs, player, place } = c;
   let xp = c.xp;
+  let dishes = c.dishes;
+  let cleanCups = c.cleanCups;
   const svc = world.services[THE_SERVICE];
   const wCount = svc?.open ? Math.min(svc.waiters, MAX_WAITERS) : 0;
   if (wCount === 0) {
@@ -717,6 +719,14 @@ function waiterSystem(c: TickCtx): void {
   }
   const wStep = waiterSpeedFor(s.waiterUpgrades.speed) * dt;
   const wTrayCap = waiterTrayCapacityFor(s.waiterUpgrades.tray);
+  /**
+   * DEMLEME KİLİDİ (D-083): tezgâhta hazır ürün YOK ve temiz bardak da YOK ⇒ yeni ürün
+   * ÇIKAMAZ (demleme bir temiz bardak harcar). Bu durumda garsonun tezgâha gidip yüklenmeyi
+   * beklemesi sonsuz bir bekleyiştir — bardak ancak biri yıkarsa döner. Bekçi (`tests/bardak.test.ts`
+   * ③) tam bu deliği yakaladı: masaların bir kısmı temiz kaldığında bekleyen müşteri hiç bitmiyor,
+   * garson "boşta" sayılmıyor ve kilit, boşta-bulaşık kuralına RAĞMEN sürüyordu.
+   */
+  const demlemeKilidi = ready.tea + ready.tost === 0 && cleanCups === 0;
   const prev = s.waiters;
   const out: Waiter[] = [];
   // ÜSTLENME (claim) — hedeflenen masa index'leri. Önceki karenin üstlenmeleri, bu karenin YENİ
@@ -732,8 +742,9 @@ function waiterSystem(c: TickCtx): void {
     const home: Vec3 = waiterHomeAt(place, i);
     const p = prev[i];
     const w: Waiter = p
-      ? { pos: [...p.pos] as Vec3, tray: p.tray, trayFood: p.trayFood ?? 0, claim: p.claim }
-      : { pos: [...home] as Vec3, tray: 0, trayFood: 0 };
+      ? { pos: [...p.pos] as Vec3, tray: p.tray, trayFood: p.trayFood ?? 0, claim: p.claim,
+          dirtyCarry: p.dirtyCarry ?? 0, dirtyCarryFood: p.dirtyCarryFood ?? 0 }
+      : { pos: [...home] as Vec3, tray: 0, trayFood: 0, dirtyCarry: 0, dirtyCarryFood: 0 };
     // Garson kirli masaya ürün GÖTÜRMEZ (D-019). Her garson için YENİDEN filtrelenir (öncekinin
     // bu tick servis ettiği müşteri listeden düşer).
     const waiting = liveNpcs.filter((n) => n.state === 'waitingForTea' && !dirty.has(n.tableIndex));
@@ -777,7 +788,7 @@ function waiterSystem(c: TickCtx): void {
           xp += C.xp.perWaiterServed;
         }
       }
-    } else if (w.tray + w.trayFood < wTrayCap && waiting.length > 0) {
+    } else if (w.tray + w.trayFood < wTrayCap && waiting.length > 0 && !demlemeKilidi) {
       if (w.claim != null) { claimed.delete(w.claim); w.claim = undefined; } // yüklemeye dönen üstlenmez
       // Yükleme: servisin ÖN yüzüne git (ürünler önde); varınca EN ACİL bekleyenin ürününden yükle.
       if (navStep(w.pos, place.pickup, wStep, navGrid, REACH_PICKUP, player, obstacles)) {
@@ -795,12 +806,51 @@ function waiterSystem(c: TickCtx): void {
       }
     } else {
       if (w.claim != null) { claimed.delete(w.claim); w.claim = undefined; } // boşta kalan üstlenmez
-      // Boşta: kendi bekleme noktasına dön (garsonlar 0.7 br arayla — üst üste binmez).
-      navStep(w.pos, home, wStep, navGrid, REACH_HOME, player, obstacles);
+      // BOŞTA BULAŞIK (D-083): servis edecek kimse yokken garson bulaşık toplar. Kilit anında
+      // garson zaten boştadır (kirli masaya müşteri oturmaz → bekleyen kalmaz), yani bu kural
+      // servisten bir saniye bile çalmaz — yalnız ölü zamanı değerlendirir ve bardağın kapalı
+      // döngüsüne oyuncudan bağımsız TEK kaynak ekler (bkz. docs/bardak-raporu-c4.md).
+      // TETİK: yalnız TEMİZ BARDAK BİTTİĞİNDE. Garsonu rutin bulaşıkçı yapmak erken oyunda
+      // bulaşık çemberini bitiriyordu (ölçüm: AFK 7,27 servis/dk — dikkatli oyuncunun %90'ı;
+      // "aşırı otomasyon yok" kuralıyla çelişir). Dar tetikle kural bir ACİL MÜDAHALEDİR:
+      // zincir kilitlenmişse garson gidip birkaç bardak yıkar, havuz açılır açılmaz servise döner.
+      // Oyuncunun bulaşık işi böylece yerinde kalır; yalnız "mekân sonsuza kadar ölü" hâli kalkar.
+      const carry = C.waiter.idleDishCarry;
+      const tasinan = (w.dirtyCarry ?? 0) + (w.dirtyCarryFood ?? 0);
+      const bardakBitti = cleanCups === 0;
+      if (carry > 0 && (tasinan > 0 || (bardakBitti && dishes.length > 0))) {
+        if (tasinan >= carry || (tasinan > 0 && dishes.length === 0)) {
+          // Dolu (ya da toplanacak kalmadı) → leğene götür. Bardak da tabak da AYNI havuza döner.
+          if (navStep(w.pos, place.dish, wStep, navGrid, reachWash(c.areasOpen), player, obstacles)) {
+            cleanCups += tasinan; // bardak da tabak da AYNI havuza döner (korunum tek)
+            stats.dishesWashed += tasinan;
+            w.dirtyCarry = 0;
+            w.dirtyCarryFood = 0;
+          }
+        } else {
+          let target = dishes[0];
+          let td = Infinity;
+          for (const d of dishes) {
+            const dd = dist2D(w.pos, d.pos);
+            if (dd < td) { td = dd; target = d; }
+          }
+          if (navStep(w.pos, target.pos, wStep, navGrid, C.cups.collectRadius, player, obstacles)) {
+            dishes = dishes.filter((d) => d.id !== target.id);
+            // Kabın TÜRÜ korunur (kod tabanının "tepside yanlış kap" hatasına düşmemek için).
+            if (target.kind === 'plate') w.dirtyCarryFood = (w.dirtyCarryFood ?? 0) + 1;
+            else w.dirtyCarry = (w.dirtyCarry ?? 0) + 1;
+          }
+        }
+      } else {
+        // Boşta ve ortalık temiz: kendi bekleme noktasına dön (garsonlar 0.7 br arayla).
+        navStep(w.pos, home, wStep, navGrid, REACH_HOME, player, obstacles);
+      }
     }
     out.push(w);
   }
   c.xp = xp;
+  c.dishes = dishes;
+  c.cleanCups = cleanCups;
   c.waiters = out;
 }
 

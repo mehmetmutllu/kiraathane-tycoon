@@ -393,6 +393,25 @@ export const economyConfig = {
     // turu-5 denge (ONAYLI, kullanıcının rakamları): "garson bensiz yetemiyor" — T1 amortismanı
     // 32dk→~16dk; quest sırası AYNI kaldı (v29 migrasyonu gerekmedi).
     trayUpgrades: { costs: [400, 1200, 2500] },
+    /**
+     * BOŞTA BULAŞIK (D-083, C4): garsonun servis edecek kimsesi kalmayınca (bekleyen yok — ki
+     * mekân kilitlenince tam olarak bu olur, çünkü kirli masaya müşteri oturmaz) bulaşık köşesine
+     * dönmek yerine masadan KİRLİ toplar ve leğene götürür. Kaç kirli taşıdığı bu sayıdır;
+     * 0 = kapalı.
+     *
+     * NEDEN: bardak KAPALI bir sistemdir (temiz → demleme → müşteri → masada kirli → yıkama →
+     * temiz) ve tek kaynağı yıkamadır. Bulaşıkçı zincirde 8. pad'dedir; ondan öncesinde yıkayan
+     * TEK kişi oyuncudur, dolayısıyla oyuncu elini çektiğinde mekân ölür (ölçüm:
+     * `docs/bardak-raporu-c4.md` — 4 masada 15 dakikada 12 müşteri, dakika 3'ten sonra sıfır,
+     * geri dönüşü yok). Havuzu büyütmek çözmez (fazladan bardak temiz durur, masalar yine kirli),
+     * servise ORANTILI çare de çözmez (servis durunca çare de durur).
+     *
+     * NİÇİN GARSON: kilit anında garson ZATEN boştadır (servis edilecek kimse yok). Yani bu
+     * kural garsonu servisten ALIKOYMAZ — yalnız ölü zamanını değerlendirir. Kısmi assist
+     * (D-014) korunur: garson yavaştır, tek seferde az taşır, mekân dolu olduğunda hiç bulaşık
+     * toplamaz — oyuncu hâlâ gereklidir.
+     */
+    idleDishCarry: 2,
   },
 
   /**

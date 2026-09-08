@@ -2,6 +2,50 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-08 — **C4 BİTTİ · BARDAK KİLİDİ AÇILDI** · D-082 → D-083)
+
+Kullanıcı kararı: *"garsonlar hem bulaşıkçı hem çaycı gibi davransa? sen mantıklı olanı yap."*
+Faz C **4/5**. Sanat/asset hâlâ bilerek en sonda.
+
+### Yapıldı — C4: bardak kilidi önce ÖLÇÜLDÜ, sonra açıldı
+- **AFK'da mekân yavaşlamıyor, ÖLÜYOR:** 4 masa · bulaşıkçı yok · oyuncu park → 15 dakikada
+  **12 müşteri** (= tam havuz kadar), **dakika 3'ten sonra sıfır**, son çeyrek %100 kilitli,
+  12 bardağın 12'si masada kirli. **Üç ayrı tohumda birebir aynı** → zarın değil yapının sonucu.
+- **D-082'nin birinci kolu ÇIKMAZ ÇIKTI:** havuz ×2/×4'te debi **0,80 servis/dk'da sabit** —
+  fazladan bardak temiz durur, masalar yine kirli. Kilit havuzda değil **kirli masa eşiğinde**.
+- **Servise ORANTILI çare de çözmüyor:** "müşteri bardağını götürsün" %25'te SIFIR fark, %50'de
+  bile son çeyrek %100 kilitli. Servis durunca çare de durur → kilidi ancak **servisten BAĞIMSIZ**
+  bir kaynak açar.
+- **Uygulandı (D-083):** *temiz bardak bitince garson bulaşığa koşar* (2 kap topla → leğende yıka →
+  havuz açılınca servise dön). **Temiz varken kirliye dokunmaz** — bulaşık çemberi oyuncunun.
+  B2 0,80 → **6,80** servis/dk · B3 1,40 → **5,27** · bulaşıkçılı senaryolar değişmedi.
+  **Geniş tetik (boşta hep topla) ölçüldü ve REDDEDİLDİ** (AFK 7,27 = oyuncunun %90'ı).
+  "Sessiz sızıntı" kolu elendi: dünyada sebebi olan tek çözüm garson.
+- **Bekçi GERÇEK bir delik yakaladı:** kural ilk hâliyle kilidi açmıyordu — garson tezgâhta asla
+  gelmeyecek çayı bekliyor, "boşta" sayılmıyordu. `demlemeKilidi` eklendi.
+- **Bekçi `tests/bardak.test.ts` (3 test)** — iki mutasyonla + üçüncüsü kuralı kendi içinde
+  kapatıp mekânın gerçekten öldüğünü kanıtlayarak doğrulandı. Korunum her karede denetleniyor.
+- **Görsel:** `Waiter.tsx` + yeni `carriedDirty.tsx` — taşınan kirli GÖRÜNÜYOR, çizim
+  bulaşıkçıyla ORTAK (iki kopya er geç ayrışırdı).
+- **Rapor:** `docs/bardak-raporu-c4.md` · ham çıktı `docs/olcum-bardak.txt` · araç
+  `tools/olcum-bardak.ts`.
+
+**Doğrulama:** vitest **485/485** (482 → +3) · smoke **28/28** · tsc + build temiz.
+**Tek yeni denge sayısı:** `waiter.idleDishCarry: 2` (1/2/4 ölçüldü, fark gürültüde).
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**C5 — sim'i gerçeğe yaklaştırmak.** İlk somut kalem `simulate.ts`'in **taşıma modeli** (G4'te
+gerçekleşen %58; model hedefi hiç değişmeyen ideal taşıyıcı varsayıyor) · masa yükseltmesi kalem
+kalem (sahte 21,4 dk kapanır) · bardak döngüsü (artık D-083'ü de saymalı) · sabır.
+
+**Bekleyen denge kararı YOK. Bilinen ve bilerek duran:** `servis L6` 23,4 dk beklemesi ·
+D-046 ④ kaba hâlde, ⑤ yok, sipariş nesnesi bilerek v1.1'de · **geç oyunda tek bulaşıkçı 20 masaya
+yetişmiyor** (karelerin %22,6'sında temiz bardak 0 — vergi, ölümcül değil) · **nav ızgarası
+(`actorRadius`, sandalyesiz) ile oyuncu çarpışması (`playerRadius`, sandalyeler katı) aynı dünyayı
+görmüyor** (Faz D kalemi).
+
+---
+
 ## ŞU AN (2026-09-08 — **C3 BİTTİ · GARSON ÜSTLENMESİ BAĞLAYICI** · D-081 · D-082 açıldı)
 
 Kullanıcı kararı: *"Bağlayıcı + acil"*. Faz C **3/5**. Sanat/asset hâlâ bilerek en sonda.

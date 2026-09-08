@@ -2238,3 +2238,69 @@ Karar verilmeden **hiçbir denge sayısına dokunulmaz**; önce ölçülür (C3 
 **Not:** bu bir garson/kuyruk kalemi DEĞİL — C3 ölçümünde G1'in taşıma değil bardak kolunda
 kilitlendiği ayrıştırma sayesinde ortaya çıktı (darboğaz ayrıştırması olmasaydı sayı yanlış kola
 yazılırdı).
+
+## D-083 — Temiz bardak bitince GARSON bulaşığa koşar (D-082'nin cevabı) (2026-09-08)
+
+**Karar:** Zincir kilitlendiğinde (temiz bardak 0) servis edecek ürünü olmayan garson, tezgâhta
+beklemek yerine masadan kirli toplar (2 kap), leğende yıkar ve havuz açılır açılmaz servise döner.
+**Temiz bardak varken kirliye elini sürmez** — bulaşık çemberi OYUNCUNUNDUR.
+
+**Gerekçe:** D-082'nin üç kolu C4'te ölçüldü (`docs/bardak-raporu-c4.md`, `tools/olcum-bardak.ts`):
+bardak KAPALI bir sistemdir ve temiz bardağın tek kaynağı yıkamadır; bulaşıkçı zincirde 8. pad
+olduğu için ondan önce yıkayan tek kişi oyuncudur. Oyuncu elini çektiğinde 4 masalı mekân 15
+dakikada 12 müşteri (= tam havuz kadar) ağırlayıp **dakika 3'te KALICI olarak duruyordu** — üç
+ayrı tohumda birebir aynı, yani zarın değil yapının sonucu.
+- **Havuz boyu çıkmaz sokak:** havuz ×2 ve ×4 denendi, debi **0,80 servis/dk'da sabit** kaldı
+  (kilit "bardak bitti"den "masa kirlendi"ye taşınıyor, o kadar).
+- **Servise ORANTILI çare de çözmüyor:** "müşteri bardağını kendi götürsün" %25'te hiç fark
+  yaratmadı, %50'de bile son çeyrek %100 kilitli kaldı. Servis sıfırlanınca çare de sıfırlanır.
+- Kilidi ancak **servisten BAĞIMSIZ** bir kaynak açar.
+
+**Kullanıcı kararı:** önce "sabit sızıntı 2/dk" seçildi (bardak kendiliğinden temize dönsün), sonra
+kullanıcı *"garsonlar hem bulaşıkçı hem çaycı gibi davransa?"* diye sordu ve *"sen mantıklı olanı
+yap"* dedi. Garson kolu ölçüldü, en iyisi çıktı ve sızıntı kolu ELENDİ: dünyada sebebi olan
+(sihirle kaybolmayan) tek çözüm bu.
+
+**Tetik neden DAR:** "boşta kalınca hep topla" da ölçüldü ve **reddedildi** — AFK debisini 7,27
+servis/dk'ya çıkarıyordu, dikkatli oyuncunun %90'ı; erken oyunda bulaşık çemberini bitiriyordu
+(`feedback_active_play_no_overautomation`). Dar tetikle normal oyunda garson bulaşığa HİÇ gitmez.
+
+**Ölçülen etki (AFK · park · aynı tohumlar):** B2 (4 masa) 0,80 → **6,80** servis/dk, kalıcı ölüm
+kalktı · B3 (7 masa) 1,40 → **5,27** · B4/B5 (bulaşıkçılı) pratikte değişmedi (5,93 → 5,93 ·
+15,93 → 16,13). **Dürüst takas:** 4 masalık mekân tek garsona kolay geliyor, AFK (6,80) ile
+dikkatli oyuncu (7,40) arasında yalnız %9 var; baskı 7 masada (terk %41) ve 20 masada (%71) geri
+geliyor — kısmi assist (D-014) büyüdükçe kendini gösteriyor.
+
+**BEKÇİNİN YAKALADIĞI GERÇEK DELİK:** kural ilk hâliyle kilidi AÇMIYORDU. Temiz bardak bitince
+garson tezgâha gidip **asla gelmeyecek çayı** bekliyor, "boşta" sayılmıyor, bulaşığa hiç
+gitmiyordu. Eklendi: `demlemeKilidi` = *hazır ürün 0 + temiz bardak 0 ⇒ yükleme beklemesi
+anlamsızdır*. (Testi yazmasaydım kural sessizce yarım kalacaktı.)
+
+**Uygulama:** `economy.config.ts` → `waiter.idleDishCarry: 2` (TEK yeni denge sayısı; 1/2/4
+ölçüldü, fark gürültü içinde; 2 = bulaşıkçının taban leğeni, garson ondan güçlü olmasın) ·
+`tick.ts/waiterSystem` · `types.ts` → `Waiter.dirtyCarry`/`dirtyCarryFood` (transient, kabın türü
+korunur) · `Waiter.tsx` + yeni `carriedDirty.tsx` (taşınan kirli GÖRÜNÜR; çizim bulaşıkçıyla
+ORTAK — iki kopya er geç ayrışırdı).
+
+**Bekçi:** `tests/bardak.test.ts` (3 test) — ① temiz bardak varken garson kirliye dokunmaz
+② bitince toplar ve yıkar ③ AFK'da mekân kalıcı olarak durmaz **ve aynı test kuralı kapatıp
+mekânın gerçekten öldüğünü kanıtlar**. İki mutasyonla doğrulandı (dar tetik kaldırıldı → ① kırıldı;
+`demlemeKilidi` kaldırıldı → ③ kırıldı). Ayrıca KORUNUM her karede denetlenir (bardak yoktan var
+olmaz/yok olmaz).
+
+**`tests/logic.test.ts` güncellendi:** kirli-masa testi "50 kare sonra hâlâ bekliyor" diyordu;
+garson artık masayı temizleyip servis ettiği için kurulum sabit durmuyor. Test kuralın KENDİSİNİ
+ölçecek şekilde güçlendirildi: *masa o an kirliyken servis olamaz*, her karede.
+
+**Kayda geçen tuzaklar (ölçüm aracının kendi hataları):** ① ölçüm botu sokakta başlatılmıştı,
+`clampToOpenAreas` yüzünden hiç içeri giremedi ve sonuçlar park kipiyle BİREBİR aynı çıktı —
+"oyuncunun faydası yok" diye okunabilirdi ② bulaşıkçı varyantında config geri alma `kur()`'dan
+hemen sonraydı, `world` her karede yeniden türetildiği için varyant sessizce etkisiz kaldı ve
+**sahte bir "fark yok"** üretti ③ uzun bekçi koşusu paralel takımda zaman aşımına düşüp "kırıldı"
+gibi göründü (C3'ün aynı tuzağı) — sıcak döngüden `expect` çıkarıldı.
+
+**Açık kalan (bu turun kalemi değil):** geç oyunda tek bulaşıkçı 20 masaya yetişmiyor (karelerin
+%22,6'sında temiz bardak 0 — ölümcül değil, vergi) · nav ızgarası (`actorRadius`, sandalyesiz) ile
+oyuncu çarpışması (`playerRadius`, sandalyeler katı) aynı dünyayı görmüyor.
+
+**Doğrulama:** vitest **485/485** (482 → +3) · smoke **28/28** · tsc + build temiz.

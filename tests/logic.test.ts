@@ -836,10 +836,23 @@ describe('kirli masa mekaniği (D-019) — eşik aşılınca masa kilitlenir', (
       npcs: [{ id: 880, state: 'waitingForTea', pos: [...seat] as [number, number, number], tableIndex: idx, seatIndex: 0, timer: 999, product: 'tea', color: '#27ae60' }],
       dishes: dirtyDishes, spawnTimer: 999,
     });
-    for (let i = 0; i < 50; i++) useGame.getState().tick(0.1);
-    // Kirli masaya servis yapılmadı → müşteri hâlâ bekliyor, garson tepsisi dolu.
-    expect(useGame.getState().npcs.find((n) => n.id === 880)?.state).toBe('waitingForTea');
-    expect(useGame.getState().waiters[0]?.tray).toBe(1);
+    // D-083'ten sonra bu kurulum artık SABİT DURMUYOR: servis edecek kimsesi kalmayan garson
+    // masadaki kirlileri toplayıp yıkıyor, masa eşiğin altına inince de müşteriyi servis ediyor.
+    // Kural değişmedi (kirli masaya servis YOK) ama "50 kare sonra hâlâ bekliyor" iddiası artık
+    // kuralı değil, kurulumun kilitli kalmasını ölçüyordu. Kuralın KENDİSİ her karede denetlenir:
+    // masa o an kirliyken servis OLAMAZ.
+    let kirliKare = 0;
+    for (let i = 0; i < 50; i++) {
+      const kirliydi = dirtyTables(useGame.getState().dishes).has(idx);
+      const trayOnce = useGame.getState().waiters[0]?.tray;
+      useGame.getState().tick(0.1);
+      if (kirliydi) {
+        kirliKare += 1;
+        expect(useGame.getState().npcs.find((n) => n.id === 880)?.state).toBe('waitingForTea');
+        expect(useGame.getState().waiters[0]?.tray).toBe(trayOnce); // çay tepside kalır
+      }
+    }
+    expect(kirliKare).toBeGreaterThan(0); // masa gerçekten bir süre kirliydi (boş denetim değil)
   });
 });
 

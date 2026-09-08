@@ -5,6 +5,7 @@ import { Model } from './Model';
 import { useActorTransform } from './actorTransform';
 import { PALETTE } from '../../config/palette';
 import { actorScale, AUTHORED_HEIGHT, authoredRadius } from '../../config/actor';
+import { CarriedDirty } from './carriedDirty';
 
 // Kapsül gövde: BOYU `AUTHORED_HEIGHT.waiter`, yarıçapı mount ölçeğinden SONRA `CAPSULE_RADIUS`.
 const R = authoredRadius('waiter');
@@ -46,7 +47,9 @@ function WaiterTray({ tea, food }: { tea: number; food: number }) {
 // Tek garson gövdesi (hook'lar per-unit kalsın diye ayrı bileşen).
 // B2: "Tostçu Garson" kıyafeti (hardal önlük + beyaz kep) KALKTI — tek havuzda tür yok, hepsi
 // aynı yeşil önlüklü çaycı. Ne taşıdığı tepsisinden okunur, üstünden değil.
-function WaiterUnit({ index, tea, food }: { index: number; tea: number; food: number }) {
+function WaiterUnit({ index, tea, food, dirty, dirtyFood }: {
+  index: number; tea: number; food: number; dirty: number; dirtyFood: number;
+}) {
   const outerRef = useRef<Group>(null);
   const ref = useRef<Group>(null);
   // Konum store'dan HER KARE okunur ve doğrudan three'ye yazılır (React prop'u değil) — bkz.
@@ -70,7 +73,12 @@ function WaiterUnit({ index, tea, food }: { index: number; tea: number; food: nu
             </mesh>
           }
         />
+        {/* D-083: temiz bardak bitince garson bulaşığa koşar. Taşıdığı kirli, BULAŞIKÇIYLA AYNI
+            çizimle görünür (`carriedDirty.tsx`) — elinde ne olduğu tepsisinden okunur. Ürün ile
+            kirli aynı anda taşınmaz (kural yalnız tepsi boşken tetiklenir), bu yüzden iki tepsi
+            üst üste binmez. */}
         <WaiterTray tea={tea} food={food} />
+        <CarriedDirty cups={dirty} plates={dirtyFood} />
       </group>
     </group>
   );
@@ -82,13 +90,15 @@ export function Waiter() {
   // P0 perf: garson KONUMU React'e girmez (her kare değişir). Bu seçici yalnız AYRIK durumu okur:
   // kaç garson var + her birinin tepsisinde kaç çay/tost. Çıktı string → Zustand referansı değil
   // DEĞERİ karşılaştırır; tepsi değişmedikçe render yok.
-  const key = useGame((s) => s.waiters.map((w) => `${w.tray}.${w.trayFood}`).join(','));
+  const key = useGame((s) =>
+    s.waiters.map((w) => `${w.tray}.${w.trayFood}.${w.dirtyCarry ?? 0}.${w.dirtyCarryFood ?? 0}`).join(','),
+  );
   const trays = key ? key.split(',') : [];
   return (
     <>
       {trays.map((t, i) => {
-        const [tea, food] = t.split('.').map(Number);
-        return <WaiterUnit key={i} index={i} tea={tea} food={food} />;
+        const [tea, food, dirty, dirtyFood] = t.split('.').map(Number);
+        return <WaiterUnit key={i} index={i} tea={tea} food={food} dirty={dirty} dirtyFood={dirtyFood} />;
       })}
     </>
   );
