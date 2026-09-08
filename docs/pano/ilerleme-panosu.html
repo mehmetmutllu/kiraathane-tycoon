@@ -787,10 +787,16 @@ h2{font-size:21px;font-weight:800}
  ],
  "riskler": [
   {
-   "sev": "Tasarım",
+   "sev": "Ölçüm",
    "renk": "now",
-   "b": "Erken oyunda oyuncu çekilince <b>bardak bitiyor</b> ve mekân duruyor",
-   "p": "C3 ölçümünün yan bulgusu: dört masalı salonda, bulaşıkçı tutulmadan, oyuncu ekrandan çekildiğinde karelerin <b>%90,8'inde temiz bardak sıfır</b> — 15 dakikada yalnız <b>18 müşteri</b> oturuyor. Garson boş duruyor (tepsisi karelerin %6,6'sında dolu) ve turu zaten ideale çok yakın; yani kusur taşımada değil <b>bardak havuzunda</b>. Bardağın sınırlı olması bilerek konmuş bir baskı, ama <b>tamamen durması</b> istenmiyor — kullanıcı bunu ayrı bir kalem olarak açtı (D-082). Sıradaki oturum: önce ölç (havuz boyu · bulaşıkçının zincirdeki yeri · asgari sızıntı), sonra karar."
+   "b": "Ölçüm damgaları <b>iki geçersiz satır</b> buldu — kod bilerek değiştirilmedi",
+   "p": "D-084'te ölçüm araçlarına eklenen damgalar ilk tam koşuda iki gerçek kusur yakaladı. ① <b>\"Müşterilerin %25'i bardağını götürsün\" kolu hiç tetiklenmemiş:</b> koşunun davranış parmak izi kontrol koşusuyla <b>birebir aynı</b> çıktı. Sebep, botun sabit tohumlu üretecinin ilk 12 çekilişinin hepsinin 0,25 üstünde olması ve o senaryoda tam 12 bardak doğması — yani \"değişim yok\" sonucu bir ölçüm değil <b>totoloji</b>ymiş. C4 raporunun ilgili satırı düzeltildi; <b>bulgunun sonucu değişmedi</b>, çünkü %50 kolu gerçekten koştu ve kilidi yine açmadı. ② <b>En küçük senaryoda oyuncu botu hiç yürümüyor</b> (0,0 br/dk); o satır bir ölçüm değil. Kararlar AFK kipinden alındığı için etkilenmiyor. İkisi de <b>ölçüm turu işi</b>: varyant kapısı gereği kod, kendi ölçümü olmadan değiştirilmedi."
+  },
+  {
+   "sev": "Çözüldü",
+   "renk": "done",
+   "b": "Oyuncu çekilince mekân duruyordu — ÇÖZÜLDÜ (C4)",
+   "p": "C3'ün yan bulgusu C4'te ölçüldü ve sanılandan kötü çıktı: dört masalı salonda, bulaşıkçı yokken, oyuncu ekrandan çekildiğinde 15 dakikada <b>12 müşteri</b> — tam havuzdaki bardak kadar — ve <b>3. dakikadan sonra sıfır</b>; son çeyrek %100 kilitli. Havuzu büyütmek <b>çıkmaz sokak</b> çıktı (×2 ve ×4'te debi 0,80 servis/dk'da sabit), servise orantılı çareler de kurtarmadı. Kullanıcının kendi önerisi ölçüldü ve en iyisi çıktı: <b>servis edecek kimsesi kalmayan garson tek bir kirli bardağı leğene götürüyor.</b> Sonuç: 0,80 → <b>7,53</b> servis/dk, terk %33 → <b>%5</b>. Doz ölçülerek seçildi (1 bardak; 2 ve 4 belirgin kötü). Otomasyon takvimi: görev elle öğretir → garson boş vaktinde devralır → bulaşıkçı → yükseltmelerle tam otomatik. <b>3 bekçi, 4 mutasyonla doğrulandı.</b>"
   },
   {
    "sev": "Çözüldü",
