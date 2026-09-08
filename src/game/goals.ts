@@ -1,8 +1,14 @@
 /**
- * goals.ts — HEDEFLER (koleksiyon sistemi, D3 / D-089).
+ * goals.ts — HEDEFLER (koleksiyon sistemi, D3 / D-089 · ödül kalıbı D3b / D-090).
  *
  * NE: beş kategori × beş kademe = 25 hedef. Görev hattı bittikten sonra da devam eden tek yapı;
- * ödülü hem ₺ hem 💎 (dozu ölçüldü — `docs/hedef-raporu-d3.md`).
+ * ödülü **kalıcı gelir çarpanı** + 💎 (kalıbı da dozu da ölçüldü — `docs/hedef-raporu-d3.md` §6).
+ *
+ * ÖDÜL NEDEN ₺ DEĞİL: sabit ₺ merdiveni ölçümde zincirden %-3,2 götürüp tempoya hiç dokunmuyordu
+ * ve geç oyunda bayatlıyordu (kazanıldığı noktadan birkaç dakika sonra gürültü). Çarpan ödülü
+ * oyuncuyla birlikte büyütür ve "yazılan ≠ ödenen" hata sınıfını tanım gereği ortadan kaldırır
+ * (Bulgu 14). Toplam artış config'te TEK sayı (`goals.incomeBonusTotal`); kademe başına düşen pay
+ * burada türetilir — kademe sayısı değişirse toplam sabit kalır.
  *
  * KİMLİK — D-088'in dersinin aynısı. Kayıtta yalnız TOPLANMIŞ hedeflerin kimlikleri durur
  * (`goalsClaimed: string[]`); "kaçıncı kademedeyim" HİÇBİR yerde saklanmaz, her okumada
@@ -17,8 +23,9 @@
  * DÖRT DURUM (plan §9): kilitli · ilerliyor · toplanabilir · toplandı.
  *   toplandı    — kimlik `claimed` listesinde.
  *   toplanabilir— sayaç eşiği geçti ve önceki kademe TOPLANMIŞ.
- *   kilitli     — önceki kademe henüz toplanmamış (sıra atlanmaz: ödül merdiveni artan olduğu
- *                 için atlamaya izin vermek, beklemeden büyük ödülü almak demekti).
+ *   kilitli     — önceki kademe henüz toplanmamış (sıra atlanmaz: 💎 merdiveni artan olduğu için
+ *                 [3·5·8·12·22] atlamaya izin vermek, beklemeden büyük ödülü almak demekti.
+ *                 Gelir çarpanı D-090'dan beri kademeye göre DEĞİŞMİYOR, kural artık 💎 içindir).
  *   ilerliyor   — sırası gelmiş ama eşik henüz dolmamış.
  */
 import { economyConfig as C, type GoalCategory, type GoalMetric } from '../config/economy.config';
@@ -36,7 +43,8 @@ export interface GoalView {
   tier: number;
   target: number;
   cur: number;
-  reward: number;
+  /** Bu kademenin kalıcı gelir artışı (oran; 0,004 = +%0,4). Eski `reward` (₺) yerine geçti. */
+  bonus: number;
   diamonds: number;
   state: GoalState;
 }
@@ -56,6 +64,24 @@ export interface GoalMetrics {
 }
 
 export const goalId = (categoryId: string, tier: number): string => `${categoryId}:${tier}`;
+
+/** Koleksiyondaki TOPLAM kademe sayısı (5 × 5 = 25). */
+export const totalTiers = (): number => C.goals.categories.reduce((a, c) => a + c.tiers.length, 0);
+
+/** Bir kademenin kalıcı gelir artışı — toplam, kademelere EŞİT dağıtılır (ölçülen `hF` kolunun
+ *  biçimi: çarpan açılan kademe sayısıyla doğrusal). */
+export const tierBonus = (): number => C.goals.incomeBonusTotal / totalTiers();
+
+/** Toplanmış hedeflerden gelen kalıcı gelir artışı (oran; 0,04 = +%4). HUD bunu gösterir. */
+export const collectionBonus = (claimedList: readonly string[]): number => claimedList.length * tierBonus();
+
+/**
+ * Gelir ÇARPANI (1 + bonus). ₺'nin YARATILDIĞI her yerde bununla çarpılır: müşteri ödemesi ve
+ * lavabo ücreti (`tick.ts`) + çevrimdışı oran (`rules.ts`). Üç tavana (talep/arz/taşıma)
+ * DOKUNMAZ — yalnız aynı akışın müşteri başına ₺'sini büyütür; ölçümdeki `hF` kolu da tam olarak
+ * buraya biniyordu.
+ */
+export const collectionMult = (claimedList: readonly string[]): number => 1 + collectionBonus(claimedList);
 
 const metricOf = (m: GoalMetrics, k: GoalMetric): number => m[k];
 
@@ -105,7 +131,7 @@ export function goalViews(metrics: GoalMetrics, claimedList: readonly string[]):
       tier,
       target: cat.tiers[tier],
       cur: metricOf(metrics, cat.metric),
-      reward: cat.rewards[tier] ?? 0,
+      bonus: tierBonus(),
       diamonds: C.goals.diamondByTier[tier] ?? 0,
       state: bitti ? 'claimed' : tierState(cat, tier, metrics, claimed),
     };
@@ -128,11 +154,11 @@ export function claimGoalReward(
   id: string,
   metrics: GoalMetrics,
   claimedList: readonly string[],
-): { reward: number; diamonds: number } | null {
+): { bonus: number; diamonds: number } | null {
   const [catId, tierStr] = id.split(':');
   const cat = goalCategories().find((c) => c.id === catId);
   const tier = Number(tierStr);
   if (!cat || !Number.isInteger(tier) || tier < 0 || tier >= cat.tiers.length) return null;
   if (tierState(cat, tier, metrics, new Set(claimedList)) !== 'claimable') return null;
-  return { reward: cat.rewards[tier] ?? 0, diamonds: C.goals.diamondByTier[tier] ?? 0 };
+  return { bonus: tierBonus(), diamonds: C.goals.diamondByTier[tier] ?? 0 };
 }

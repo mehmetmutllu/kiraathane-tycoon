@@ -5,65 +5,69 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-09 — **D3b ölçüm** · Faz D · hedef ödülünün KALIBI)
+## ŞU AN (2026-09-09 — **D4 BİTTİ** · Faz D 4/6 · 67/77)
 
 ```
-SORU            : Hedef (koleksiyon) ödülü hangi KALIPTA olmalı? Sabit ₺ merdiveni (bugünkü hâl)
-                  sektörün terk ettiği kalıp; kalıcı çarpan ve gelire-oranlı ₺ ölçülmedi.
-ÖLÇÜLECEK KOLLAR: hUYG (yürürlükteki sabit merdiven — kıyas) · h0 (yalnız 💎, bedel sıfır) ·
-                  **hF** (KALICI ÇARPAN: kademe toplandıkça kalıcı ₺/müşteri çarpanı) ·
-                  **hG** (GELİRE ORANLI ₺: ödül = o anki ₺/sn × N sn, kademe index'ine DEĞİL)
-SAYILAR         : docs/hedef-raporu-d3.md §6.3 — 6 bulgu, TAM koşu, damgalar temiz
-                  hG ELENDİ (geç pencere 6 dozda da 43,4 dk · açılışı eziyor: otom. 6,1→1,7 dk)
-                  hF çalışıyor (enUzun 43,4→34,4 · açılış SABİT) · tempo verimi hE ile DENK
-KARAR           : (adım 3)
-UYGULAMA        : (adım 4, yalnız kararın kolu)
-BEKÇİ           : (tests/hedefler.test.ts genişletilir)
+SORU            : Hedef (koleksiyon) ödülü hangi KALIPTA olmalı? Sabit ₺ merdiveni sektörün terk
+                  ettiği kalıp; kalıcı çarpan ve gelire-oranlı ₺ hiç ölçülmemişti.      [KAPANDI]
+ÖLÇÜLECEK KOLLAR: hUYG (D-089'un sabit ₺ merdiveni — kıyas) · h0 (yalnız 💎) · **hF** (KALICI
+                  ÇARPAN) · **hG** (GELİRE ORANLI ₺) · hUYGF (uygulanan config)
+SAYILAR         : docs/hedef-raporu-d3.md §6.3 — 6 bulgu (11-16), tam koşu, damgalar temiz
+KARAR           : D-090 — kullanıcı "en kalitelisi ne ise o olsun" → `hF` %10 + 💎
+UYGULAMA        : `economy.config.ts` goals bloğu (`incomeBonusTotal: 0.10`, `rewards` SİLİNDİ) ·
+                  `goals.ts` (bonus/collectionMult) · `tick.ts` + `rules.ts` (çarpan ₺'nin
+                  yaratıldığı üç yere) · `store.ts` claimGoal artık cüzdana ₺ EKLEMİYOR ·
+                  `HUD.tsx` (+%0,4 satırda, kümülatif üstte) · `devHooks` goalMult · kayıt v32
+BEKÇİ           : tests/hedefler.test.ts + **tests/hedef-gelir-kablosu.test.ts (YENİ)** — DOKUZ
+                  mutasyon; M9 kaçtı (doz %10→%11 bandın içinde) → ölçülen doz DOĞRUDAN çivilendi,
+                  sonra yakalandı · vitest 612 · duman 32/32 (goalMult ×1,004 okundu)
 ```
 
-**Neden bu tur açıldı:** D3'ün kapanışında "hedeflerin ₺ kolu kalsın mı (A) / h0'a dön (B) /
-ucuzlat (C)" diye sorulmuştu; kullanıcı üçünü de reddedip **sektörde kaliteli olanın ne olduğunu**
-sordu. Cevap üçünün dışında: idle/tycoon'da koleksiyon ödülü ya **sert para** (değeri enflasyona
-uğramaz) ya **kalıcı çarpan** (AdVenture Capitalist milestone · Cookie Clicker milk · Egg Inc.)
-olur; yumuşak para kullanılacaksa **gelire oranlı** tanımlanır ("şu anki gelirin N saniyesi"),
-sabit sayı olarak değil. Bizim ölçümümüz aynı şeyi zaten söylemişti — `hA %50`de 66.000 ₺ ödendi,
-geç pencerelere düşen **0** — ve Bulgu 10 ② kusuru yapısal olarak adlandırmıştı: ödül kademe
-*index*'ine bağlıydı, oyuncunun oraya *ulaştığı zamana* değil. A/B/C üçü de o kalıbı koruyor,
-siliyor ya da küçültüyordu; hiçbiri değiştirmiyordu.
+**Bu turun asıl dersi — ölçümün NE SÖYLEMEDİĞİ:** tempo verimi `hF` 0,53-0,63 · `hE` 0,50-0,57
+dk/% çıktı, yani **denk**. Tablo ELEME yaptı (`hA`/`hB`/`hC`/`hG` verimi sıfır) ama kalan iki
+kalıbı ayırmadı. D-084'ün kuralı burada tersine de işledi: **sayı, kararın hangi eksende
+VERİLEMEYECEĞİNİ de söyleyebilir.** Seçim sim'in ölçmediği eksende verildi — ödül bayatlıyor mu,
+ve "yazılan ≠ ödenen" hata sınıfı mümkün mü (Bulgu 13-14).
+
+**İkinci ders — bekçide bulunan gerçek boşluk:** denge testleri SİM'in kolunu ölçüyordu, oyunun
+`tick.ts` kablolamasını değil. Biri `* incomeMult`'ı oradan silse hepsi yeşil kalırdı ve rapor
+yürürlükte olmayan bir sayıyı savunurdu. `tests/hedef-gelir-kablosu.test.ts` ₺'nin yaratıldığı
+**üç yeri** ayrı ayrı doğruluyor (müşteri ödemesi · lavabo ücreti · çevrimdışı oran).
 
 ## SIRADAKİ TAM ADIM
 
-**Faz D — meta katman (3/5).** Aday sırası: ① **D4 İtibar + günlük görevler** (ortak ödül ekranı
-hazır, seviye atlama modali onu devralır) · ② **nav ızgarası ↔ oyuncu çarpışması** (bilinen hata,
-tek başına duruyor) · ③ D5 elmas harcaması + Usta katmanı — **D5 geldiğinde D-089'un elmas hükmü
-bayatlar** (bekçideki `h0` beklentisi bilerek o gün kırılacak şekilde yazıldı).
-
-**Bu tur bitince:** karar hangi kola giderse gitsin D-090 yazılır; ardından **D4 İtibar + günlük
-görevler** açılır (ödül ekranı hazır) — günlük görevler de aynı ödül kanalını kullanacağı için
-kalıp kararı ondan ÖNCE verilmek zorundaydı.
+**Faz D — meta katman (4/6).** Aday sırası: ① **D5 İtibar + günlük görevler** (ödül ekranı hazır;
+günlük görevlerin ödülü D-090'ın kalıbına yaslanacak) · ② **nav ızgarası ↔ oyuncu çarpışması**
+(bilinen hata, tek başına duruyor) · ③ D6 elmas harcaması + Usta katmanı — **D6 geldiğinde
+D-089'un elmas hükmü bayatlar** (bekçideki `h0` beklentisi bilerek o gün kırılacak şekilde yazıldı).
 
 ## AÇIK KALEMLER (bilinen, bilerek duruyor)
 
-- **Normal profil 43,4 dk beklemesi** — D-087'de bilerek ödenmedi; **D3 de kapatamadı** (D-089:
-  hedef ödülü tempo olarak doldurmuyor). Gözlem bandında görünür kalıyor.
-- **Bekçi bandının çözünürlüğü ~%10** — `tests/hedefler.test.ts`'in ödenen-₺ bandı tek kategoride
-  %20'lik ince bir ödül artışını yakalamıyor (M9 mutasyonu kaçtı). Daha incesi için ölçüm aracı
-  koşulur; bandı ±%3'e indirmek sim'in her küçük değişiminde testi kırardı.
+- **Kalıcı çarpan GÖRÜNMEZ bir ödüldür** — cebe uçan sayı yok. Panelde iki yerde yazılıyor
+  (kademe payı +%0,4 · kümülatif "koleksiyon bonusu") ve anlık tatmini 💎 taşıyor, ama bunun
+  oyuncu üzerindeki etkisi **ölçülmedi**: sim'in ölçebileceği bir şey değil. **Telefonda oynanınca
+  yeniden okunacak.** (D-090'ın kabul edilen eksiği ③.)
+- **Normal profil 41,2 dk beklemesi** — D-087'de bilerek ödenmedi. D3 hiç kısaltamamıştı; D4
+  43,4 → 41,2'ye çekti ama 20 dk ölçütünün altına inmedi ve inmesi beklenmiyordu (kapatmak
+  `hF` %35+ ister, bedeli %-12,6). Gözlem bandında görünür kalıyor.
+- **Bekçi bandının çözünürlüğü** — `tests/hedefler.test.ts`'in zincir-bedeli bandı %3-5. Bandı
+  daraltmak sim'in her küçük değişiminde testi kırardı; daha incesi için ölçüm aracı koşulur
+  (`OLCUM=tam npx tsx tools/olcum-hedefler.ts`).
 - Sim'in taşıma tavanı 4 masada fazla kötümser (elenen `k3`'ün önündeki tek engel).
 - **Görev hattı `waiterTray` kademe 2'de bitiyor**, 3. kademe (₺2.500) hatta yok; oysa ÜÇ KOL
   tablosu 20 masada `waiterTray: 3` varsayıyor — tempo kalemi DEĞİL, görev/HUD tutarlılığı.
 - **`outputMultByLevel` yok** — servis çıktı çarpanı merdiven-geneli; `b1` erken oyuna
   dokunmadan denenemiyor.
 - **Sim'de serbest oyun bloğu ölü kod** (D1 Bulgu 5) — model kalemi, bugün zarar vermiyor.
-- **Nav ızgarası ↔ oyuncu çarpışması** — Faz D (D3'ten sonraki aday).
+- **Nav ızgarası ↔ oyuncu çarpışması** — Faz D (D5'ten sonraki aday).
 - **`npm run pano`'nun günlük uyarısı yalnız TARİHE bakıyor** — aynı gün iki oturum kapanınca
-  sessiz kalıyor. C5 ve D1'in anlatısı bu yüzden iki tur yayınlanmadı (2026-09-08'de düzeltildi,
-  araç değişmedi). Kural "sayaç arttıysa kart sayısı da artmalı" olmalı.
+  sessiz kalıyor. Bu turda yine sessiz kaldı (D3 ile aynı gün); günlük kartı elle eklendi.
+  Kural "sayaç arttıysa kart sayısı da artmalı" olmalı. Araç kendi turunu ister.
 - D-046 ④ kaba, ⑤ yok · sipariş nesnesi v1.1'de.
-- Gölgenin telefondaki maliyeti ölçülmedi (Faz F riski) · bundle ~1,17 MB (Faz F kod-bölme).
+- Gölgenin telefondaki maliyeti ölçülmedi (Faz F riski) · bundle ~1,49 MB (Faz F kod-bölme).
 - C4'ten kalan ölçüm kusuru: B1 · oyuncu kipinde bot hiç yürümüyor (karar etkilenmedi).
 
-**Bekleyen denge kararı:** hedef ödülünün KALIBI — bu turda ölçülüyor (yukarıdaki tur kartı).
+**Bekleyen denge kararı yok** — D-090 hedef ödülünün kalıbını kapattı.
 
 ---
 

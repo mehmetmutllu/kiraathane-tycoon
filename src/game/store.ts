@@ -43,7 +43,7 @@ import {
 } from './layout';
 import { deriveWorld, defaultFloorTheme, MAX_AREAS, MAX_SERVICES, roomOpen, THE_SERVICE, type World } from './world';
 import { activeQuestIndex, completedQuestIds } from './questProgress';
-import { claimGoalReward, type GoalMetrics } from './goals';
+import { claimGoalReward, collectionMult, type GoalMetrics } from './goals';
 // Dünya modeli (ALAN · SERVİS · MASA · ODA) Faz B1'de world.ts'e ayrıldı; store aynı kapıdan sunar.
 export {
   deriveWorld,
@@ -453,7 +453,10 @@ export const useGame = create<GameState>((set, get) => ({
       // B4: offline oran lavabo kolunu da sayar (oyuncu yokken de istif kabarır). Offline'ın iki
       // kelepçesi (rateMult + sıradaki pad'in oranı) değişmedi → "yokken zone bitmez" kuralı durur.
       const lavLevel = roomOpen(world, 'lavabo') ? Math.min(Math.max(save.lavaboLevel ?? 1, 1), lavaboMaxLevel()) : 0;
-      const rate = incomeRate(world.tables.length, stationLevels[THE_SERVICE], tipTotal, lavLevel);
+      // D-090: çevrimdışı oran da koleksiyon çarpanını görür — görmezse oyuncu oyunu KAPATARAK
+      // topladığı bonusu kaybederdi ve "hedef topla" ile "oyunu açık bırak" birbiriyle yarışırdı.
+      const rate = incomeRate(world.tables.length, stationLevels[THE_SERVICE], tipTotal, lavLevel,
+        collectionMult(save.goalsClaimed ?? []));
       offlineEarned = computeOfflineEarned(rate, elapsed, save.padsDone);
       wallet = wallet.add(offlineEarned);
       lifetime = lifetime.add(offlineEarned);
@@ -673,8 +676,11 @@ export const useGame = create<GameState>((set, get) => ({
    * karar yeridir; store yalnız onun verdiği ödülü işler. İki yerde kural olsaydı biri
    * diğerinden sapardı (D-015'in dersi).
    *
-   * Ödül iki para birimidir: ₺ tempoya girer (dozu D-089'da ölçüldü), 💎 girmez (bugün harcaması
-   * yok). XP de verilir — hedef, görev hattı gibi bir ilerleme olayıdır.
+   * Ödül iki kalemdir (kalıbı D-090'da ölçüldü): **kalıcı gelir çarpanı** + 💎. Çarpan cüzdana
+   * BİR ŞEY EKLEMEZ — `goalsClaimed` listesi büyüdükçe `collectionMult` kendiliğinden büyür ve
+   * ₺'nin yaratıldığı yerlerde (tick.ts · offline oran) uygulanır. Bu yüzden burada ayrıca
+   * saklanacak bir alan yok: kayıt sürümü ARTMADI. XP de verilir — hedef, görev hattı gibi bir
+   * ilerleme olayıdır.
    */
   claimGoal: (id) => {
     const s = get();
@@ -682,8 +688,6 @@ export const useGame = create<GameState>((set, get) => ({
     if (!odul) return false;
     set({
       goalsClaimed: [...(s.goalsClaimed ?? []), id],
-      wallet: s.wallet.add(odul.reward),
-      lifetime: s.lifetime.add(odul.reward),
       diamonds: s.diamonds.add(odul.diamonds),
       xp: s.xp + C.xp.perQuest,
     });

@@ -1,5 +1,5 @@
 /**
- * hedefler.test.ts — D-089'UN BEKÇİSİ: hedefler (koleksiyon) sistemi.
+ * hedefler.test.ts — D-089 + D-090'IN BEKÇİSİ: hedefler (koleksiyon) sistemi.
  *
  * Üç ayrı sözleşmeyi kilitler; üçü de bu turda ölçülerek ya da çürütülerek kazanıldı:
  *
@@ -15,11 +15,15 @@
  */
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
-  activeTier, claimGoalReward, claimableGoals, goalCategories, goalId, goalViews, tierState,
+  activeTier, claimGoalReward, claimableGoals, collectionBonus, collectionMult, goalCategories,
+  goalId, goalViews, tierBonus, tierState, totalTiers,
   type GoalMetrics,
 } from '../src/game/goals';
 import { economyConfig as C, type GoalCategory } from '../src/config/economy.config';
-import { kolAyarla, VARSAYILAN, onbellekTemizle, milestoneTazele, m1Ayarla, olcutler, hedefAkisiAyarla } from '../tools/simulate';
+import {
+  kolAyarla, VARSAYILAN, onbellekTemizle, milestoneTazele, m1Ayarla, olcutler,
+  hedefAkisiAyarla, hedefCarpaniAyarla,
+} from '../tools/simulate';
 import { HEDEF_KOLLARI, odemeleriSifirla, sonKosuToplami } from '../tools/hedef-kollari';
 
 const bos = (): GoalMetrics => ({ served: 0, pads: 0, lifetime: 0, dishes: 0, masterTables: 0 });
@@ -28,7 +32,7 @@ const kat = (id: string): GoalCategory => goalCategories().find((c) => c.id === 
 // Testlerin kendi kategorisi: gerçek config'e bağlı kalmadan kimlik/durum kuralları sınanır.
 const T: GoalCategory = {
   id: 'test', name: 'Test', metric: 'served', note: '—',
-  tiers: [10, 20, 30], rewards: [1, 2, 3],
+  tiers: [10, 20, 30],
 };
 
 describe('A · kimlik: konum SAKLANMAZ, toplanmış kimliklerden türetilir', () => {
@@ -91,25 +95,39 @@ describe('B · dört durum ve tek karar yeri', () => {
     }
   });
 
-  it('ödül CONFIG`ten gelir — kategori başına, HUD`a gömülü değil', () => {
-    const cat = kat('master');
+  it('ödül CONFIG`ten gelir — KALICI ÇARPAN payı + 💎, HUD`a gömülü değil', () => {
     const cok: GoalMetrics = { served: 1e9, pads: 99, lifetime: 1e9, dishes: 1e9, masterTables: 99 };
     expect(claimGoalReward(goalId('master', 0), cok, [])).toEqual({
-      reward: cat.rewards[0],
+      bonus: tierBonus(),
       diamonds: C.goals.diamondByTier[0],
     });
   });
 
-  it('GEÇ kategori BÜYÜK başlar — ortak merdiven ölçümde çürüdü (rapor Bulgu 10②)', () => {
-    // Usta kategorisinin ilk kademesi ~4. saatte gelir; erken kategorilerin ilkiyle aynı ödülü
-    // verirse ödeme eğrinin yanlış yerine düşer. Bu, bir stil tercihi değil ölçüm sonucudur.
-    expect(kat('master').rewards[0]).toBeGreaterThan(kat('service').rewards[0] * 5);
+  it('ödül ₺ VERMEZ — kalıp D-090`da değişti (sabit ₺ merdiveni kalktı)', () => {
+    // Bu beklenti bir REGRESYON bekçisidir: "hedefe biraz da para koyalım" diyen bir değişiklik
+    // ölçülmemiş bir ₺ akışı açar ve D-089'un üç ölçüm turu kaybettiren tuzağına geri döner
+    // (rapor Bulgu 10 · Bulgu 14). ₺ isteniyorsa önce `tools/olcum-hedefler.ts` koşulur.
+    const cok: GoalMetrics = { served: 1e9, pads: 99, lifetime: 1e9, dishes: 1e9, masterTables: 99 };
+    const odul = claimGoalReward(goalId('service', 0), cok, []) as unknown as Record<string, unknown>;
+    expect(odul).not.toHaveProperty('reward');
+    expect(Object.keys(odul).sort()).toEqual(['bonus', 'diamonds']);
+    // Hiçbir kategori kendi ₺ merdivenini taşımaz.
+    for (const cat of goalCategories()) expect(cat).not.toHaveProperty('rewards');
   });
 
-  it('her kategoride rewards ve tiers aynı uzunlukta', () => {
+  it('kademe payı EŞİT ve toplamı config`teki TEK sayıya eşit', () => {
+    // Ölçülen `hF` kolunun biçimi: çarpan açılan kademe sayısıyla DOĞRUSAL. Payı kademeye göre
+    // değiştirmek (geç kademe daha çok versin) ölçülmemiş bir eksen ekler.
+    const hepsi = goalCategories().flatMap((c) => c.tiers.map((_, i) => goalId(c.id, i)));
+    expect(hepsi.length).toBe(totalTiers());
+    expect(collectionBonus(hepsi)).toBeCloseTo(C.goals.incomeBonusTotal, 10);
+    expect(collectionMult([])).toBe(1); // hiç toplanmamışken ekonomi BİREBİR eski
+    expect(collectionMult(hepsi)).toBeCloseTo(1 + C.goals.incomeBonusTotal, 10);
+    for (const g of goalViews(bos(), [])) expect(g.bonus).toBeCloseTo(tierBonus(), 12);
+  });
+
+  it('eşikler ARTAN — değilse "sıradaki kademe" anlamını yitirir', () => {
     for (const cat of goalCategories()) {
-      expect(cat.rewards.length).toBe(cat.tiers.length);
-      // Eşikler ARTAN olmalı — değilse "sıradaki kademe" kavramı anlamını yitirir.
       for (let i = 1; i < cat.tiers.length; i++) expect(cat.tiers[i]).toBeGreaterThan(cat.tiers[i - 1]);
     }
   });
@@ -152,6 +170,8 @@ describe('C · denge: uygulanan config SEÇİLEN kolun bandında', () => {
     odemeleriSifirla();
     kolAyarla(VARSAYILAN);
     m1Ayarla(false);
+    hedefAkisiAyarla(null);
+    hedefCarpaniAyarla(null);
     kur();
     onbellekTemizle();
     milestoneTazele();
@@ -161,46 +181,69 @@ describe('C · denge: uygulanan config SEÇİLEN kolun bandında', () => {
     return r;
   }
 
-  const taban = () => olc('taban', () => hedefAkisiAyarla(null));
-  const uygulanan = () => olc('hUYG', () => hedefAkisiAyarla(HEDEF_KOLLARI.hUYG.fabrika(1)));
+  const taban = () => olc('taban', () => {});
+  /** UYGULANAN hâl: config'in gerçek `incomeBonusTotal`ini koşturan kol (hUYG deseni, D-090). */
+  const uygulanan = () => olc('hUYGF', () => hedefCarpaniAyarla(HEDEF_KOLLARI.hUYGF.carpanFabrika!(1)));
 
   beforeEach(() => {
     hedefAkisiAyarla(null);
+    hedefCarpaniAyarla(null);
     onbellekTemizle();
     milestoneTazele();
   });
 
-  it('hedef ödülü GERÇEKTEN düşüyor (kanca tetikleniyor)', { timeout: 90_000 }, () => {
+  it('çarpan GERÇEKTEN uygulanıyor (kanca tetikleniyor)', { timeout: 90_000 }, () => {
     // D1'de `iade:0.25` varyantı hiç tetiklenmemiş ve rapora sahte bir "fark yok" satırı
-    // girmişti. Bu beklenti o tuzağın bekçisi: ödeme sıfırsa aşağıdaki bant testi anlamsızdır.
-    expect(uygulanan().odenen).toBeGreaterThan(1_000);
+    // girmişti. `hF` kolu ₺ ÖDEMEDİĞİ için "ödenen > 0" damgası burada kullanılamaz — kanca
+    // tetiklendiğinin tek kanıtı şeridin tabandan FARKLI olmasıdır (rapor Bulgu 15).
+    expect(uygulanan().serit).not.toBe(taban().serit);
+    expect(uygulanan().odenen).toBe(0); // kalıp ₺ ödemez: ödeme düşerse kalıp sessizce değişmiş demektir
   });
 
-  it('Kat 1`de fiilen ödenen ₺ ölçülen bantta (2.900-3.500 · yürürlükte 3.175)', { timeout: 90_000 }, () => {
-    // Bu beklenti bir MUTASYON KAÇIŞINDAN doğdu: ilk hâlde yalnız zincir bedeline bakılıyordu ve
-    // TEK bir kategorinin ödülleri 3'e katlandığında test geçiyordu (zincir %-3,2 → ~%-4,5, üst
-    // sınır %5'in altında kalıyordu). Zincir bedeli dolaylı ve gürültülü bir göstergedir; ödenen
-    // ₺ doğrudandır ve config'teki her ödül değişikliğini yakalar.
-    // Bant DAR tutuldu (±%10). İlk hâli 2.500-4.000 idi ve ikinci bir mutasyon (tek kategorinin
-    // ödülleri 1,5×) oradan da kaçtı. Denge bekçisinin bandı, ölçülen değerin etrafında dar
-    // olmalı: geniş bant "bir şey değişti mi" sorusuna hep hayır der.
-    expect(uygulanan().odenen).toBeGreaterThan(2_900);
-    expect(uygulanan().odenen).toBeLessThan(3_500);
-    // ÇÖZÜNÜRLÜK ~%10, bilerek: tek bir kategorinin ödüllerini %20 artıran ince bir mutasyon bu
-    // banttan KAÇAR (M9). Bandı ±%3'e indirmek sim modelinin her küçük değişiminde testi kırardı
-    // ve bekçi "kurt geldi" diye bağıran bir teste dönerdi. Daha ince bir denge sorusu varsa
-    // cevabı test değil ölçüm aracıdır: `OLCUM=tam npx tsx tools/olcum-hedefler.ts`.
+  it('DOZ ÖLÇÜLEN değerde SABİTLİ — değiştirmek yeniden ölçüm ister', () => {
+    // Bu beklenti bir MUTASYON KAÇIŞINDAN doğdu (M9): dozu %10 → %11 yapan ince bir değişiklik
+    // aşağıdaki zincir-bedeli bandından KAÇIYOR (%4,0 → ~%4,4, üst sınır %5'in altında). Bandı
+    // ±%5'e indirmek sim modelinin her küçük değişiminde testi kırardı — D-089'da tam bu tuzağa
+    // düşülmüştü. Çözüm bandı daraltmak değil, ölçülen sayıyı DOĞRUDAN çivilemek: dolaylı ölçüt
+    // gürültülüdür, doğrudan olan her değişikliği yakalar.
+    //
+    // Bu test "kırılsın diye" yazıldı: dozu değiştirmek MEŞRU bir iş, ama varyant kapısından
+    // geçmek zorunda (`OLCUM=tam npx tsx tools/olcum-hedefler.ts` → rapor §6.3'e yeni satır →
+    // karar). Testi güncellemek o turun son adımıdır, ilk adımı değil.
+    expect(C.goals.incomeBonusTotal).toBe(0.10);
+    expect(tierBonus()).toBeCloseTo(0.004, 12); // 25 kademe → kademe başına +%0,4
   });
 
-  it('zincir bedeli SEÇİLEN kolun bandında (%2-4) — ölçülen hedef %2,7', { timeout: 90_000 }, () => {
+  it('zincir bedeli SEÇİLEN kolun bandında (%3-5) — ölçülen hedef %4,0', { timeout: 90_000 }, () => {
     const d = (uygulanan().serit - taban().serit) / taban().serit;
-    expect(d).toBeLessThan(0); // ödül zinciri kısaltır, uzatmaz
-    expect(Math.abs(d)).toBeGreaterThan(0.025);
-    // ÜST SINIR asıl bekçi: D1'de elenen dokuz kolun en ucuzu %7 götürüyordu. Hedef ödülü o
-    // bandın altında kaldığı sürece meşru; üstüne çıkarsa D1'in eleme gerekçesine düşer.
-    // Üst sınır yürürlükteki %3,2'ye YAKIN tutuldu (%4). Geniş bırakmak (%5) bir mutasyonun
-    // kaçmasına yol açmıştı — bant, ölçülen değerin etrafında dar olmalı ki bekçilik etsin.
-    expect(Math.abs(d)).toBeLessThan(0.038);
+    expect(d).toBeLessThan(0); // çarpan zinciri kısaltır, uzatmaz
+    expect(Math.abs(d)).toBeGreaterThan(0.03);
+    // ÜST SINIR asıl bekçi: D1'de elenen dokuz kolun en ucuzu %7 götürüyordu ve `hF` %20 dozu
+    // (%-7,6) tam bu yüzden alınmadı. Bant ölçülen %4,0'ın etrafında DAR tutuldu — geniş bant
+    // "bir şey değişti mi" sorusuna hep hayır der (D-089'da iki mutasyon geniş banttan kaçmıştı).
+    expect(Math.abs(d)).toBeLessThan(0.05);
+  });
+
+  it('UYGULANAN config, seçilen SENTETİK kola denk (hUYG dersi)', { timeout: 120_000 }, () => {
+    // D-089'un en pahalı dersi: "seçilen doz iyiydi, config'e yazdığım da ona denktir" bir
+    // VARSAYIMDI ve iki kez çürüdü (rapor Bulgu 10). Bu beklenti o varsayımı teste çevirir:
+    // config'in gerçek bloğu, kararın dayandığı `hF` %10 satırından anlamlı biçimde sapamaz.
+    const hF10 = olc('hF10', () => hedefCarpaniAyarla(HEDEF_KOLLARI.hF.carpanFabrika!(0.1)));
+    const dUyg = Math.abs(uygulanan().serit - taban().serit) / taban().serit;
+    const dhF = Math.abs(hF10.serit - taban().serit) / taban().serit;
+    expect(Math.abs(dUyg - dhF)).toBeLessThan(0.005);
+  });
+
+  it('SABİT ₺ kalıbı geri gelirse bekçi kırılır (D-089`un kolu artık yürürlükte değil)', { timeout: 90_000 }, () => {
+    // `hUYG` (dondurulmuş D-089 merdiveni) hâlâ ölçülebilir ve tempoya HİÇ dokunmadığı hâlde
+    // zincirden %-3,2 götürüyordu — bu satır kararın kıyas noktasıdır ve yeniden üretilebilir
+    // kalmalı. Bir gün biri "hem çarpan hem ₺ verelim" derse önce bu iki satır okunur.
+    const eski = olc('hUYG', () => hedefAkisiAyarla(HEDEF_KOLLARI.hUYG.fabrika(1)));
+    expect(eski.odenen).toBeGreaterThan(2_900);
+    expect(eski.odenen).toBeLessThan(3_500);
+    const d = Math.abs(eski.serit - taban().serit) / taban().serit;
+    expect(d).toBeGreaterThan(0.025);
+    expect(d).toBeLessThan(0.038);
   });
 
   it('💎 ödülü tempoya GİRMEZ (h0 kolunun hükmü)', { timeout: 90_000 }, () => {
@@ -212,16 +255,21 @@ describe('C · denge: uygulanan config SEÇİLEN kolun bandında', () => {
     expect(h0.odenen).toBe(0);
   });
 
-  it('AÇILIŞ ölçütleri (D-079) hedef ödülünden etkilenmedi', { timeout: 90_000 }, () => {
+  it('AÇILIŞ ölçütleri (D-079) çarpandan etkilenmedi', { timeout: 90_000 }, () => {
+    // `hF`'in kararı kazanmasının SEBEBİ buydu (rapor Bulgu 12): elenen `hG` kolu açılışı
+    // eziyordu (otomasyon 6,1 → 1,7 dk). Bu beklenti o farkı kilitler.
     odemeleriSifirla();
     kolAyarla(VARSAYILAN);
     m1Ayarla(false);
-    hedefAkisiAyarla(HEDEF_KOLLARI.hUYG.fabrika(1));
+    hedefAkisiAyarla(null);
+    hedefCarpaniAyarla(HEDEF_KOLLARI.hUYGF.carpanFabrika!(1));
     onbellekTemizle();
     milestoneTazele();
     const o = olcutler();
     expect(o.ilkAlim!).toBeLessThan(90);
     expect(o.acilisEnUzun).toBeLessThanOrEqual(2 * 60);
     expect(o.otomasyon!).toBeLessThan(15 * 60);
+    // Açılış SABİT kalmalı, yalnız "ölçütü geçmeli" değil: taban 6,1 dk (366 sn).
+    expect(Math.abs(o.otomasyon! - 366)).toBeLessThan(30);
   });
 });

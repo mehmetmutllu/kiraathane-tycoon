@@ -193,8 +193,8 @@ h2{font-size:21px;font-weight:800}
 <script type="application/json" id="durum">
 {
  "guncelleme": "09.09.2026",
- "yapilan": 66,
- "toplam": 76,
+ "yapilan": 67,
+ "toplam": 77,
  "kilometre": [
   {
    "at": 28,
@@ -209,30 +209,30 @@ h2{font-size:21px;font-weight:800}
    "etiket": "Model ve denge oturdu"
   },
   {
-   "at": 76,
+   "at": 77,
    "etiket": "v1.0 App Store"
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum · Faz D · 3/5 — Hedefler (koleksiyon)",
-  "baslik": "Hedefler kuruldu: ödülün gücü büyüklüğünde değil, sıklığında",
-  "aciklama": "Oyuna <b>Hedefler</b> geldi — görev hattının dışında duran, kendi hızında ilerleyen bir koleksiyon katmanı. Beş kategori (Servis · Mekân · Kazanç · Usta · Temizlik), her biri beş kademeli, toplam 25 hedef; ödülü hem ₺ hem elmas. Ekran zaten çizilmişti; eksik olan arkasındaki <b>sistemdi</b>: eşikler ekranın içine gömülüydü, kademe yoktu, ödül yoktu, toplama yoktu. Elmas da oyunda görünüyor ama hiçbir kaynağı bulunmuyordu — artık var (toplam 250 💎).<br><br>Turun ölçüm sorusu şuydu: hedeflerin parası oyunun eğrisini kısaltır mı, yoksa geç oyundaki uzun bekleme pencerelerini <b>doldurur</b> mu? Cevap net çıktı: <b>ödülün büyüklüğü pencereyi doldurmuyor.</b> En uç denemede 66.000 ₺ ödense bile bekleme aralıklarının içine düşen para <b>sıfır</b> — ihlal ancak zinciri %29 kısaltarak, yani oyunun içeriğinden çalarak azalıyor. İşe yarayan şey <b>sıklık</b>: aynı parayı 6 yerine 24 kademeye bölmek aynı iyileşmeyi <b>%2,7</b> bedelle veriyor, yaklaşık on bir kat ucuza.<br><br>Turun asıl dersi ise şu oldu: <i>“seçilen doz iyiydi, ayara yazdığım da ona denktir”</i> bir <b>varsayımdır</b> — ölçülünce iki kez çürüdü (önce toplam, sonra paranın düştüğü <b>yer</b> tutmadı) ve bugünkü sayılar üçüncü ölçümün sonucu.",
+  "etiket": "Bu oturum · Faz D · 4/6 — Hedeflerin ödül KALIBI",
+  "baslik": "Ödülü ne kadar vereceğimizi bulmuştuk; bu tur NE vereceğimizi değiştirdi",
+  "aciklama": "Bir önceki tur Hedefler'i kurmuş ve tek soruyu açık bırakmıştı: ödülün parası bu hâliyle kalsın mı? Soru üç seçenekle getirildi — kalsın, kaldıralım, küçültelim — ve üçü de <b>reddedildi</b>, çünkü üçü de <b>aynı fikrin</b> varyasyonuydu: hedefi toplayınca cebe bir miktar para düşer. Sorulan şey başkaydı: bu işin <b>kalitelisi</b> nedir?<br><br>Cevap oyun sektöründe yerleşik. Idle/tycoon oyunlarında koleksiyon ödülü ya <b>sert para</b> (değeri enflasyona uğramaz) ya da <b>kalıcı bir çarpan</b> olur — kazanılan bonus oyuncuyla birlikte büyür, bayatlamaz. Sabit para ödülü yalnız oyunun ilk dakikalarında kullanılır, çünkü gelir katlanarak büyürken ödül olduğu yerde kalır: <b>6. saatte 3 dakikalık gelire</b> düşer. Bizim kendi ölçümümüz de bunu zaten söylemişti — 66.000 ₺ ödense bile geç oyundaki bekleme pencerelerine düşen para <b>sıfırdı</b>.<br><br>İki yeni kalıp ölçüldü. <b>Gelire oranlı para</b> (&ldquo;şu anki gelirinin bir dakikası&rdquo;) <b>elendi</b>: geç oyundaki en uzun beklemeyi altı dozun altısında da <b>hiç</b> kıpırdatmadı, buna karşılık <b>açılışı ezdi</b> — garson 6 dakika yerine 1,7 dakikada geliyordu. <b>Kalıcı gelir çarpanı</b> ise tam doğru yerde çalıştı: en uzun bekleme <b>43,4 &rarr; 41,2 dakikaya</b> indi, açılış <b>hiç değişmedi</b>. Sebebi basit: çarpan bileşiklenir, ağırlığı kendiliğinden geç oyuna düşer.<br><br>Artık her hedef cebe para koymuyor; <b>kalıcı olarak +%0,4 gelir</b> veriyor (koleksiyonun tamamı +%10) ve yanında elmas geliyor. Sabit para merdiveni tamamen kaldırıldı.",
   "adimlar": [
-   "<b>Ölçüldü:</b> beş kol — ödülün büyüklüğü pencereye 0 ₺ düşürüyor, yoğunluğu düşürüyor",
-   "<b>Uygulandı:</b> 5 kategori × 5 kademe · 3.175 ₺ + 250 💎 · zincir bedeli %2,7",
-   "<b>Kabul edilen eksik:</b> bedel tutturuldu, vaat edilen FAYDA gelmedi (ihlal ve en uzun bekleme yerinde kaldı)"
+   "<b>Ölçüldü:</b> iki yeni kalıp — gelire oranlı para elendi, kalıcı çarpan seçildi",
+   "<b>Uygulandı:</b> her hedef +%0,4 kalıcı gelir (toplam +%10) + 250 💎 · sabit ₺ merdiveni silindi",
+   "<b>Yeni bekçi:</b> denge testleri simülasyonu ölçüyordu, oyunun kendi gelir yolunu değil — o boşluk kapatıldı"
   ],
-  "not": "Meta katman geç-oyun bekleme penceresini <b>tempo olarak doldurmuyor</b>; doldurduğu şey oyuncunun o pencerede gördüğü ilerleme. Soru bir sonraki tura yazıldı."
+  "not": "Turun asıl dersi ölçümün <b>ne söylemediğiydi</b>: iki kalıp tempo hanesinde <b>denk</b> çıktı. Tablo eleme yaptı, ama kalan ikisini ayırmadı — seçim simülasyonun ölçemediği eksende verildi: ödül zamanla bayatlıyor mu?"
  },
  "siradaki": {
-  "etiket": "Faz D · 4/5 — İtibar ve günlük görevler",
+  "etiket": "Faz D · 5/6 — İtibar ve günlük görevler",
   "baslik": "İtibar ve günlük görevler — meta katmanın kalan iki kanadı",
-  "aciklama": "Hedefler kurulunca ortak <b>ödül ekranı</b> gerçek bir kullanıcıya kavuştu; sırada onu ikinci kez kullanacak kalem var: <b>İtibar</b>. Bugün oyunda seviye kazanılıyor, ekranda görünüyor, kutlanıyor — ve <b>hiçbir şeye yaramıyor</b>. Anlam kazanması planlı: her seviye müşteri akışını ve bahşişi biraz artıracak, mağazada yeni kozmetikleri görünür kılacak, her seviye atlamada aynı ödül ekranı açılacak.<br><br>Yanında <b>günlük görevler</b> geliyor — elmasın ikinci kaynağı ve oyuncuyu ertesi gün geri getiren şey. İkisi bittiğinde Faz D&#39;nin son kalemi kalıyor: elmasın <b>harcanabilir</b> hâle gelmesi ve <b>Usta</b> katmanı. O gün geldiğinde bu turun bir hükmü bilerek bayatlayacak: bugün elmas ödülü tempoya hiç dokunmuyor, çünkü harcaması yok — bekçi testi tam o günü yakalayacak şekilde yazıldı.",
+  "aciklama": "Ödül ekranı iki turdur hazır; sırada onu ikinci kez kullanacak kalem var: <b>İtibar</b>. Bugün oyunda seviye kazanılıyor, ekranda görünüyor, kutlanıyor — ve <b>hiçbir şeye yaramıyor</b>. Anlam kazanması planlı: her seviye müşteri akışını ve bahşişi biraz artıracak, mağazada yeni kozmetikleri görünür kılacak, her seviye atlamada aynı ödül ekranı açılacak.<br><br>Yanında <b>günlük görevler</b> geliyor — elmasın ikinci kaynağı ve oyuncuyu ertesi gün geri getiren şey. Günlük görevlerin ödülü de bu turda seçilen kalıba yaslanacak; kalıp kararının ondan <b>önce</b> verilmesinin sebebi buydu.<br><br>İkisi bittiğinde Faz D'nin son kalemi kalıyor: elmasın <b>harcanabilir</b> hâle gelmesi ve <b>Usta</b> katmanı. O gün geldiğinde bir hüküm bilerek bayatlayacak: bugün elmas ödülü tempoya hiç dokunmuyor, çünkü harcaması yok — bekçi testi tam o günü yakalayacak şekilde yazıldı.",
   "adimlar": [
    "<b>Şimdi:</b> İtibar (seviye anlam kazanır) + günlük görevler",
-   "<b>Sonra:</b> elmas harcaması + Usta katmanı · nav ızgarası ↔ oyuncu çarpışması"
+   "<b>Sonra:</b> elmas harcaması + Usta katmanı · nav ızgarası &harr; oyuncu çarpışması"
   ],
-  "not": "Bu turdan devreden soru: hedeflerin ₺ ödülü bu hâliyle kalsın mı? Faydası ölçülemediğine göre “yalnız elmas” seçeneği (bedeli tam sıfır) hâlâ savunulabilir."
+  "not": "Bu turdan devreden soru: kalıcı çarpan <b>görünmez</b> bir ödüldür. Panelde iki yerde yazılıyor ve elmas anlık ödülü taşıyor, ama oyuncu üzerindeki etkisi ölçülmedi — simülasyonun ölçebileceği bir şey değil, telefonda oynanınca yeniden okunacak."
  },
  "donemler": [
   {
@@ -347,8 +347,8 @@ h2{font-size:21px;font-weight:800}
      "k": "D",
      "t": "Meta katman",
      "d": "Görev kimlikleri · Hedefler ödülü · İtibar · günlük görev · elmas ekonomisi · Usta katmanı. <b>D1</b> geç-oyun eğrisi ölçüldü: dokuz kol elendi, düzeltilen şey eğri değil <b>tempo ölçütünün profili</b> oldu (D-087) ✓ · <b>D2</b> hattın kimliği sıra numarası olmaktan çıktı, kayıt v32 + gerçek göç (D-088) ✓ · <b>D3</b> Hedefler (5 kategori × 5 kademe) kuruldu — ödül YOĞUNLUKTAN geliyor, büyüklükten değil; uygulanan ayar da ölçüldü ve varsayımı iki kez çürüttü (D-089) ✓ · sırada <b>İtibar + günlük görevler</b>.",
-     "yapilan": 3,
-     "toplam": 5,
+     "yapilan": 4,
+     "toplam": 6,
      "kapi": "Elmas kazanılıp harcanabiliyor, Usta alınabiliyor",
      "durum": "now"
     },
@@ -372,6 +372,21 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "09.09.2026",
+   "etiket": "Faz D · 4. oturum (D4 — ödülün kalıbı · D-090)",
+   "baslik": "Üç seçenek de reddedildi, çünkü üçü de aynı fikrin varyasyonuydu",
+   "govde": "Bir önceki tur Hedefler'i kurmuş, tek bir soruyu açık bırakmıştı: hedeflerin <b>para</b> ödülü bu hâliyle kalsın mı? Soru bu oturumda üç seçenekle getirildi — <b>kalsın</b> (bugünkü hâl), <b>kaldıralım</b> (yalnız elmas), <b>küçültelim</b> (ölçülmüş en ucuz bant). Üçü de reddedildi ve yerine tek bir soru soruldu: <i>bu işin sektörde kaliteli olanı hangisi?</i><br><br>Soru haklıydı, çünkü üç seçenek de <b>aynı fikrin</b> varyasyonuydu: hedefi topla, cebe bir miktar para düşsün. Biri o fikri koruyor, biri siliyor, biri küçültüyordu; hiçbiri <b>değiştirmiyordu</b>. Oysa turun kendi sayıları o fikrin kusurunu iki kez göstermişti: en uç denemede <b>66.000 ₺</b> ödense bile geç oyundaki uzun bekleme pencerelerine düşen para <b>sıfırdı</b>, ve uygulanan merdiven paranın <b>düştüğü yeri</b> tutturamamıştı.<br><br>Sektörde idle/tycoon oyunlarının koleksiyon ödülü üç kalıba oturur ve sabit para en zayıfı: yalnız oyunun ilk dakikalarında, öğretici dürtüsü olarak kullanılır. Sebebi basit — gelir katlanarak büyürken sabit ödül olduğu yerde kalır ve <b>6. saatte üç dakikalık gelire</b> düşer. Kalıcı olanlar ikisi: <b>sert para</b> (değeri enflasyona uğramaz) ve <b>kalıcı çarpan</b> (kazanılan bonus oyuncuyla birlikte büyür — AdVenture Capitalist'in kilometre taşları, Cookie Clicker'ın süt çarpanı, Egg Inc.). Üçüncü bir yol da var: yumuşak para kullanılacaksa <b>gelire oranlı</b> tanımlanır, sabit sayı olarak değil.<br><br>Sert paranın satırı zaten tabloda vardı (elmas: bedeli sıfır, tempoya hiç dokunmuyor). Eksik iki kalıp bu turda ölçüldü — ikisi de oyunun <b>gerçek</b> 25 kademesini yürütüyor, aralarındaki tek fark ödülün kalıbı.<br><br><b>Gelire oranlı para elendi ve hipotezi çürüttü.</b> Turun kurucu fikri şuydu: ödülü oyuncunun o andaki gelirine bağlarsak, &ldquo;paranın yanlış yere düşmesi&rdquo; sorunu tanım gereği biter. Teşhis doğruydu, <b>ilaç değildi</b>. Geç oyundaki en uzun bekleme altı dozun <b>altısında da</b> 43,4 dakikada kaldı — zincirden %27 götüren en uç dozda bile bir saniye kısalmadı. Buna karşılık <b>açılışı sistematik olarak ezdi</b>: garson normalde 6,1 dakikada geliyor, bu kolda 1,7 dakikaya iniyordu. Sebep ham çıktıda apaçık duruyor: 13 ödemenin <b>beşi ilk 5,4 dakikaya</b> düşüyor. &ldquo;Gelirinin bir dakikası&rdquo; tekdüze bir <b>zaman atlaması</b>dır; kısa olan erken zincirde oransal olarak çok daha ağır basar. Yani ödülü tam da yardıma <b>en az</b> ihtiyaç duyulan yere yığıyor.<br><br><b>Kalıcı çarpan seçildi ve tam doğru yerde çalıştı.</b> En uzun bekleme dozla birlikte tekdüze geriliyor (43,4 &rarr; 41,2 &rarr; 39,3 &rarr; 34,4 dakika), ihlal sayısı 6'dan 3'e iniyor — ve aynı anda <b>açılış hiç kıpırdamıyor</b>: ilk alım 22 saniye, garson 6,1 dakika, yedi dozun altısında birebir sabit. Sebep kalıbın kendisinde: çarpan <b>bileşiklenir</b>. Kademeler eğri boyunca açıldığı için çarpanın çoğu geç oyunda yürürlüktedir; erken oyunda 25 kademenin ancak birkaçı toplanmış olur.<br><br><b>Turun asıl dersi ise ölçümün ne SÖYLEMEDİĞİ oldu.</b> Kazanılan dakika başına ödenen bedele bakıldığında kalıcı çarpan ile önceki turun en iyi para kolu <b>denk</b> çıktı — 0,55 ile 0,53 aynı sayıdır. Yani tablo <b>eleme</b> yaptı (dört kalıbın verimi sıfır çıktı) ama kalan ikisini <b>ayırmadı</b>. Bu, kararın ölçümsüz verildiği anlamına gelmiyor; tam tersine, ölçüm kararın hangi eksende <b>verilemeyeceğini</b> söyledi. Ayıran eksen simülasyonun hiç ölçmediği eksendi: ödül zamanla bayatlıyor mu, ve &ldquo;yazdığımız sayı ile oyuncunun aldığı sayı&rdquo; birbirinden ayrılabilir mi. Çarpanda kademe başına elle yazılan bir para yok; dolayısıyla önceki turda <b>üç ölçüm turu</b> kaybettiren o hata sınıfı artık <b>tanım gereği</b> imkânsız.<br><br>Uygulama sonrası ayarın kendisi ayrı bir satır olarak yeniden ölçüldü ve seçilen denemenin <b>birebir aynısı</b> çıktı — önceki turda bu bir varsayımdı ve iki kez çürümüştü.<br><br><b>Ve bu turda bekçilerde gerçek bir boşluk bulundu.</b> Denge testleri <b>simülasyonun</b> kolunu ölçüyordu, oyunun kendi gelir yolunu değil: biri çarpanı oyunun kodundan silseydi testlerin hepsi yeşil kalır, rapor yürürlükte olmayan bir sayıyı savunuyor olurdu. Yeni bir bekçi dosyası paranın <b>yaratıldığı üç yeri</b> ayrı ayrı doğruluyor — müşteri ödemesi, lavabo ücreti ve çevrimdışı gelir. Sonuncusu ayrıca bir tasarım kuralını kilitliyor: çevrimdışı gelir de aynı çarpanı görmeli, yoksa oyuncu oyunu <b>kapatarak</b> bonusunu kaybederdi.",
+   "maddeler": [
+    "<b>Her hedef artık para değil kalıcı gelir veriyor:</b> +%0,4 (koleksiyonun tamamı +%10) + elmas",
+    "<b>Gelire oranlı para elendi:</b> geç beklemeyi hiç kısaltmıyor, buna karşılık açılışı eziyor (6,1 &rarr; 1,7 dk)",
+    "<b>Kalıcı çarpan:</b> en uzun bekleme 43,4 &rarr; 41,2 dk · ihlal 6 &rarr; 5 · açılış sabit · zincir bedeli %4",
+    "<b>Sabit para merdiveni silindi</b> — beş kategori artık kendi para listesini taşımıyor",
+    "<b>Yeni bekçi dosyası:</b> çarpanın oyunun gelir yoluna gerçekten bağlı olduğu üç yerde doğrulanıyor",
+    "<b>Kayıt sürümü yine artmadı</b> — çarpan toplanmış hedeflerden türetiliyor, saklanan yeni alan yok"
+   ],
+   "not": "<b>Kabul edilen eksikler yazıldı.</b> &#9312; Bedel önceki tura göre 0,8 puan arttı (%3,2 &rarr; %4), yani Kat 1 içeriğinden biraz daha götürüyor — karşılığında ilk kez <b>ölçülebilir</b> bir tempo faydası var; önceki turda fayda hanesi boştu. &#9313; Geç oyundaki 20 dakika ölçütü <b>hâlâ aşılıyor</b> (41,2 dk) ve bu turda kapatılması da beklenmiyordu; kapatmak çarpanı üç katına çıkarmayı ve Kat 1 içeriğinin %12'sini ödemeyi gerektirirdi. &#9314; Çarpan <b>görünmez</b> bir ödüldür: cebe uçan bir sayı yok. Panelde iki yerde yazılıyor (her hedefin payı ve kümülatif toplam) ve anlık tatmini elmas taşıyor — ama bunun oyuncu üzerindeki etkisi <b>ölçülmedi</b>, çünkü simülasyonun ölçebileceği bir şey değil."
+  },
   {
    "tarih": "09.09.2026",
    "etiket": "Faz D · 3. oturum (D3 — Hedefler · D-089)",

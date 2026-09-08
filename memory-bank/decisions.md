@@ -2505,3 +2505,49 @@ sonsuz render'a sokuyordu (metrikler alan alan seçilir yapıldı). ② Duman te
 kırılganlık: panel kapatma tıklaması backdrop'un MERKEZİNE gidiyordu ve açılış animasyonu bitince
 kart orayı kaplıyor — test bugüne dek yalnız animasyon tamamlanmadığı için geçiyormuş.
 **Duman 28/28 → 31/31 · vitest 604.**
+
+## D-090 — Hedef ödülünün KALIBI: sabit ₺ değil KALICI GELİR ÇARPANI (2026-09-09, D3b)
+**Soru** D3 kapanırken açık kalmıştı: "hedeflerin ₺ kolu bu hâliyle kalsın mı?" Sunulan üç seçenek
+(kalsın · yalnız 💎 · ucuzlat) reddedildi — üçü de **aynı kalıbın** varyasyonuydu. Kullanıcı sektörde
+kaliteli olanı sordu. Idle/tycoon'da koleksiyon ödülü ya sert para, ya **kalıcı çarpan** (AdVenture
+Capitalist milestone · Cookie Clicker milk · Egg Inc.), ya da **gelire oranlı** yumuşak para olur;
+sabit ₺ lump'ı yalnız erken oyunda kullanılır çünkü gelir süperlineer büyürken ödül büyümez.
+**Ölçüldü** (`docs/hedef-raporu-d3.md` §6, tam koşu, damgalar temiz): iki yeni kol, üçü de config'in
+GERÇEK 5×5 merdivenini yürütüyor, tek fark ödülün kalıbı.
+**`hG` (gelire oranlı ₺) ELENDİ:** geç pencere ALTI dozun altısında da 43,4 dk — %-27,5 bedel
+ödense bile kıpırdamadı; buna karşılık açılışı ezdi (otomasyon 6,1 → 1,7 dk), çünkü 13 ödemenin
+beşi ilk 5,4 dakikaya düşüyor. "N saniyelik gelir" tekdüze bir zaman atlamasıdır ve kısa olan erken
+zincirde oransal olarak çok daha ağır basar. Bulgu 10 ②'nin TEŞHİSİ doğruydu, ilacı bu değildi.
+**`hF` (kalıcı çarpan) SEÇİLDİ, doz %10:** en uzun bekleme 43,4 → 41,2 dk, ihlal 6 → 5, zincir
+bedeli %-4,0 (D1'in eleme eşiği %7; `hF` %20 = %-7,6 tam bu yüzden alınmadı) ve **açılış sabit**
+(ilk alım 22 sn · otomasyon 6,1 dk). Sebep: çarpan bileşikleniyor, ağırlığı kendiliğinden geç oyuna
+düşüyor — `hG`'nin tekdüzeliğinin tam tersi.
+**Kararın hangi eksende verilmediği de yazıldı (Bulgu 13):** tempo verimi `hF` 0,53-0,63 ·
+`hE` 0,50-0,57 dk/% — **denk.** Tablo ELEME yaptı (hA/hB/hC/hG verimi sıfır), kalan iki kalıbı
+ayırmadı. Seçim sim'in ölçmediği eksende verildi: ödül bayatlıyor mu (sabit ₺ 6. saatte 3 dakikalık
+gelir) ve "yazılan ≠ ödenen" hata sınıfı mümkün mü. **D-084 kuralı burada tersine de işledi: sayı,
+kararın hangi eksende VERİLEMEYECEĞİNİ de söyleyebilir.**
+**Uygulanan:** `goals.incomeBonusTotal: 0.10` (TEK sayı; kademe payı `goals.ts`te türetilir =
++%0,4/hedef) · `categories[].rewards` **silindi** · çarpan ₺'nin yaratıldığı ÜÇ yere biner
+(müşteri ödemesi + lavabo ücreti `tick.ts` · çevrimdışı oran `rules.ts`). Aktif ve çevrimdışı AYNI
+çarpanı görür — görmeseydi oyuncu oyunu kapatarak bonusunu kaybederdi.
+**Kayıt:** çarpan `goalsClaimed`ten TÜRETİLİR, saklanacak yeni alan yok → **`SAVE_VERSION` yine
+artmadı** (v32). D-088/D-015 deseni.
+**Uygulanan config KENDİ satırıyla ölçüldü (`hUYGF`):** 41,2 dk · %-4,0 · ihlal 5 — sentetik
+`hF` %10'un birebir aynısı. D-089'da bu bir varsayımdı ve iki kez çürümüştü; artık bekçi ±0,5
+puanlık bantla kilitliyor.
+**KABUL EDİLEN EKSİKLER:** ① bedel %-3,2 → %-4,0'a çıktı (Kat 1 içeriğinden 0,8 puan daha fazla)
+② D-087'nin açık kalemi hâlâ kapanmadı — 41,2 dk hâlâ 20 dk ölçütünün üstünde, kapatmak `hF` %35+
+ister (%-12,6) ③ çarpan GÖRÜNMEZ bir ödüldür; panelde iki yerde yazılıyor (kademe payı + kümülatif
+toplam) ve 💎 anlık ödülü taşıyor, ama oyuncu üzerindeki etkisi ÖLÇÜLMEDİ — sim'in ölçebileceği bir
+şey değil, telefonda oynanınca yeniden okunacak.
+**Bekçi iki dosya, DOKUZ mutasyon:** `tests/hedefler.test.ts` (denge bandı + kalıp regresyonu;
+sim kolunu ölçer) + **`tests/hedef-gelir-kablosu.test.ts` (YENİ)**. İkincisi bu turda açılan gerçek
+bir boşluğu kapatır: denge testleri SİM'in kolunu ölçüyordu, oyunun `tick.ts` kablolamasını değil —
+biri `* incomeMult` çarpanını oradan silse hepsi yeşil kalırdı (M5-M8 tam bunu sınar). Sekizi
+yakalandı; **M9 kaçtı** (doz %10 → %11 zincir bandının içinde kalıyor) ve bekçiyi değiştirdi:
+bandı daraltmak yerine ölçülen sayı DOĞRUDAN çivilendi — dolaylı ölçüt gürültülü, doğrudan olan
+her değişikliği yakalar. O test bilerek kırılgandır: dozu değiştirmek meşrudur ama varyant
+kapısından geçmek zorundadır.
+**Uçtan uca:** `window.__game().goalMult` eklendi (ödül cüzdana ₺ koymadığı için duman testinin
+okuyabileceği tek kanıt) — hedef toplanınca ×1,004 okundu. **Duman 31/31 → 32/32.**

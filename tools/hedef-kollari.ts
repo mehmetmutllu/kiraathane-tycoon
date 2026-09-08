@@ -26,9 +26,25 @@ const cfg = C as unknown as {
   pads: { id: string; cost: number }[];
   service: { basePrice: number };
   goals: {
+    incomeBonusTotal: number;
     diamondByTier: number[];
-    categories: { id: string; name: string; metric: string; tiers: number[]; rewards: number[] }[];
+    categories: { id: string; name: string; metric: string; tiers: number[] }[];
   };
+};
+
+/**
+ * D-089'un SABİT ₺ MERDİVENİ — DONDURULMUŞ tarihsel veri, config'ten kopya değil.
+ * `economy.config.ts` D-090'da bu merdiveni sildi (ödül kalıbı çarpana döndü), ama raporun §4
+ * tablosundaki `hUYG` satırı yeniden üretilebilir kalmalı: o satır kararın kıyas noktasıdır.
+ * Bu yüzden merdiven buraya, ölçüm aracına, "artık yürürlükte olmayan hâl" olarak taşındı.
+ * BURAYA BAKARAK DENGE DEĞİŞTİRİLMEZ — yürürlükteki sayı `goals.incomeBonusTotal`.
+ */
+const D089_MERDIVEN: Record<string, number[]> = {
+  service: [5, 25, 90, 260, 700],
+  space: [5, 20, 80, 300, 850],
+  earn: [5, 20, 75, 280, 800],
+  clean: [5, 25, 90, 260, 700],
+  master: [100, 220, 420, 750, 1_400],
 };
 
 /** Omurga pad'lerin maliyetleri, zincir sırasıyla (ücretsiz olanlar hariç). */
@@ -140,7 +156,7 @@ const TOPLAM_KADEME = cfg.goals.categories.reduce((a, c) => a + c.tiers.length, 
  */
 function configOdeyici(): HedefOdeyici {
   const akis = kademeAkisi();
-  return (d) => akis(d).reduce((a, k) => a + (cfg.goals.categories[k.ci].rewards[k.ti] ?? 0), 0);
+  return (d) => akis(d).reduce((a, k) => a + (D089_MERDIVEN[cfg.goals.categories[k.ci].id]?.[k.ti] ?? 0), 0);
 }
 
 export interface HedefKol {
@@ -279,7 +295,9 @@ export const HEDEF_KOLLARI: Record<string, HedefKol> = {
     },
   },
 
-  /* hUYG — UYGULANAN KOL. C5'in `secilen` kolunun deseni: uygulanacak hâl, uygulanmadan ÖNCE
+  /* hUYG — D-089'da UYGULANMIŞ olan kol (sabit ₺ merdiveni). D-090'dan beri YÜRÜRLÜKTE DEĞİL;
+   *        merdiveni `D089_MERDIVEN`de dondurulmuş durumda tutuluyor ki raporun §4 tablosu ve
+   *        D3b'nin kıyas satırı yeniden üretilebilsin. Uygulanan HÂLİ ölçen kol artık `hUYGF`. C5'in `secilen` kolunun deseni: uygulanacak hâl, uygulanmadan ÖNCE
    *        ayrı bir varyant satırı olarak ölçülür. "Seçilen doz iyiydi, config'e yazdığım şey de
    *        ona denktir" bir VARSAYIMDIR — bu kol onu sayıya çevirir. Kollar sentetik merdivenler
    *        kullanıyordu; bu kol `economy.config.ts`'in GERÇEK `goals` bloğunu okur.
@@ -301,7 +319,7 @@ export const HEDEF_KOLLARI: Record<string, HedefKol> = {
       v <= 0
         ? 'kapalı'
         : `${cfg.goals.categories.length} kategori × ${cfg.goals.categories[0].tiers.length} kademe · ` +
-          `toplam ${cfg.goals.categories.reduce((a, c) => a + c.rewards.reduce((x, y) => x + y, 0), 0).toLocaleString('tr-TR')} ₺`,
+          `toplam ${Object.values(D089_MERDIVEN).reduce((a, r) => a + r.reduce((x, y) => x + y, 0), 0).toLocaleString('tr-TR')} ₺ (DONDURULMUŞ D-089 merdiveni)`,
   },
 
   /* hC — İKİSİ BİRLİKTE. C5'in dersi: kollar bağımsız değildir, birleşim KAZARA oluşmaz —
@@ -384,5 +402,40 @@ export const HEDEF_KOLLARI: Record<string, HedefKol> = {
       sn <= 0
         ? 'ödül yok'
         : `${TOPLAM_KADEME} kademe × o anki gelirin ${sn} sn`,
+  },
+
+  /* hUYGF — UYGULANAN KOL (D-090). `hUYG` deseninin aynısı, yeni kalıp için: uygulanacak hâl,
+   *         uygulanmadan önce ayrı bir varyant satırı olarak ölçülür. D3'ün en pahalı dersi
+   *         buydu — "seçilen doz iyiydi, config'e yazdığım da ona denktir" varsayımı İKİ KEZ
+   *         çürüdü (Bulgu 10). Bu kol `economy.config.ts`'in GERÇEK `incomeBonusTotal`ini ve
+   *         GERÇEK kademe sayısını okur; sentetik `hF` koluna denk çıkması BEKLENTİDİR, ölçüm
+   *         onu doğrular ya da çürütür.
+   *
+   *         MODELLENEN 4/5 KATEGORİ (hUYG ile aynı, bilerek eksik): Temizlik sim'de hiç ilerlemez,
+   *         Servis vekil okunur → bu satır gerçek etkinin ALT sınırıdır. */
+  hUYGF: {
+    ad: 'hUYGF',
+    ne: 'UYGULANAN: economy.config.ts`in GERÇEK goals.incomeBonusTotal`i (kalıcı çarpan)',
+    birim: 'açık/kapalı',
+    taban: 0,
+    dozlar: [0, 1],
+    odemesiz: true,
+    fabrika: () => null,
+    carpanFabrika: (v) => {
+      if (v <= 0) return null;
+      return () => {
+        const akis = kademeAkisi();
+        let acik = 0;
+        return (d) => {
+          acik += akis(d).length;
+          return 1 + (cfg.goals.incomeBonusTotal * acik) / TOPLAM_KADEME;
+        };
+      };
+    },
+    yaz: (v) =>
+      v <= 0
+        ? 'kapalı'
+        : `${TOPLAM_KADEME} kademe · tam koleksiyonda +%${(cfg.goals.incomeBonusTotal * 100).toFixed(0)} · ` +
+          `kademe başına +%${((cfg.goals.incomeBonusTotal * 100) / TOPLAM_KADEME).toFixed(2)}`,
   },
 };

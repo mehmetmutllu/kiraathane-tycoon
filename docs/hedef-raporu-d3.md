@@ -432,6 +432,12 @@ aynı taban, aynı kolonlar.
 | **hG** | 120 sn | 5k | 1k (2) | 6/1 | 43,4 dk | 7,99 sa | %-5,8 | 22 sn | 1,5 dk | **4,4 dk** |
 | **hG** | 300 sn | 14k | 3k (2) | 6/1 | 43,4 dk | 7,27 sa | %-14,3 | 22 sn | 1,3 dk | **2,2 dk** |
 | **hG** | 600 sn | 27k | 5k (2) | 5/0 | 43,4 dk | 6,15 sa | %-27,5 | 22 sn | 1,3 dk | **1,7 dk** |
+| **hUYGF** | **uygulanan** | **0** | **—** | **5**/1 | **41,2 dk** | 8,14 sa | **%-4,0** | 22 sn | 1,6 dk | 6,1 dk |
+
+`hUYGF` — yürürlüğe alınan config'in KENDİ satırı — sentetik `hF` %10 satırının **birebir
+aynısı** çıktı (41,2 dk · %-4,0 · ihlal 5). D-089'da bu denklik bir varsayımdı ve iki kez çürümüştü
+(Bulgu 10); bu turda ölçüldü ve tuttu. Sebebi Bulgu 14: çarpanda kademe başına elle yazılan bir
+sayı yok, dolayısıyla "yazılan ≠ ödenen" sapması doğabileceği bir yer de yok.
 
 `hF`'in PENCERE hücresi **—** ile yazıldı, 0 ile değil: kol hiç ₺ ödemez, o yüzden o kolon onda
 bir ölçüm değil bir tanım boşluğudur (bkz. Bulgu 15).
@@ -519,4 +525,84 @@ zayıflığı ödülün oyuncuya **görünmemesi** — "+%0,4 kalıcı gelir" c�
 tatmin etmez. 💎 o boşluğu **bedelsiz** doldurur; sektörde de ikisi zaten birlikte verilir
 (anlık ve görünür olan sert para, kalıcı olan çarpan).
 
-## 6.4 Karar — (BOŞ · adım 3'te doldurulacak)
+## 6.4 Karar — D-090
+
+**Seçilen kol: `hF` %10 + 💎 — sabit ₺ merdiveni tamamen kalktı.**
+(Kullanıcı kararı 2026-09-09: "en kalitelisi ne ise o olsun".)
+
+### Uygulanan
+
+| | |
+|---|---|
+| Ödül | **kalıcı gelir çarpanı** (`goals.incomeBonusTotal: 0.10`) + 💎 ortak (`diamondByTier`) |
+| Kademe payı | toplam ÷ kademe sayısı = **+%0,4 / hedef** — `goals.ts`'te türetilir, config'te TEK sayı durur |
+| Nereye biner | ₺'nin YARATILDIĞI üç yer: müşteri ödemesi · lavabo ücreti (`tick.ts`) · çevrimdışı oran (`rules.ts`) |
+| Kalkan | `categories[].rewards` — beş kategorinin ₺ merdiveni silindi (D-089'un "geç kategori büyük başlar" düzeltmesi de gereksizleşti) |
+| Kayıt | `goalsClaimed` yeterli: çarpan listeden TÜRETİLİR, saklanacak yeni alan yok → **`SAVE_VERSION` yine artmadı** (v32) |
+
+### Gerekçe (üç cümle)
+
+Sabit ₺ merdiveni %-3,2 zincir bedeli ödetip tempoya **hiç** dokunmuyordu ve geç oyunda
+bayatlıyordu; çarpan %-4,0 bedelle ihlali 6 → 5'e, en uzun beklemeyi 43,4 → 41,2 dk'ya çekiyor ve
+**açılışa dokunmuyor**. Kalıp seçimi tempo tablosundan çıkmadı (Bulgu 13: `hF` ile `hE` denk) —
+tabloyu ELEME için kullandık (`hA`/`hB`/`hC`/`hG` verimi sıfır), kalan iki kalıp arasındaki seçim
+sim'in ölçmediği eksende verildi: ödülün bayatlaması ve "yazılan ≠ ödenen" hata sınıfının
+mümkün olup olmaması (Bulgu 14). 💎 kalıcı kalır — bedeli sıfır (Bulgu 1) ve çarpanın tek gerçek
+zayıflığı olan **görünmezliği** bedelsiz telafi eden anlık ödül odur (Bulgu 16).
+
+### KABUL EDİLEN EKSİK (bilerek, gizlenmeden)
+
+- **Bedel D-089'unkinden 0,8 puan YÜKSEK** (%-3,2 → %-4,0), yani Kat 1 içeriğinden biraz daha
+  götürüyor. Karşılığında ilk kez ölçülebilir bir tempo faydası var; D-089'da fayda hanesi boştu.
+- **D-087'nin açık kalemi HÂLÂ kapanmadı.** En uzun bekleme 43,4 → 41,2 dk'ya indi ama 20 dk
+  ölçütünün altına inmedi ve inmesi de beklenmiyordu (o iş `hF` %35+ ister, bedeli %-12,6).
+- **Çarpan GÖRÜNMEZ bir ödüldür.** Panelde iki yerde yazılıyor (satırda kademe payı, üstte
+  kümülatif toplam) ama cüzdana uçan bir sayı yok. Bunun oyuncu üzerindeki etkisi **ölçülmedi** —
+  sim'in ölçebileceği bir şey değil; telefonda oynanınca yeniden okunacak.
+- **Sim'in modeli ödülü "toplanır toplanmaz" sayar**; gerçekte oyuncu paneli açıp "Al"a basana
+  kadar çarpan yürürlüğe girmez → ölçülen etki bir **üst sınırdır** (D3'ün model sınırı aynen sürüyor).
+
+### Yürürlükteki config KENDİ satırıyla ölçüldü (`hUYGF`)
+
+D-089'un en pahalı dersi tekrarlanmadı: uygulanan `goals` bloğu, uygulandıktan sonra ayrı bir
+varyant satırı olarak koşturuldu ve kararın dayandığı sentetik `hF` %10 satırıyla karşılaştırıldı.
+Bekçi bu denkliği ±0,5 puanlık bir bantla kilitliyor (`tests/hedefler.test.ts` · "UYGULANAN config,
+seçilen SENTETİK kola denk").
+
+### Bekçi: iki dosya, DOKUZ mutasyon
+
+| # | mutasyon | sonuç |
+|---|---|---|
+| M1 | doz %10 → %16 (bandın üstü) | yakalandı |
+| M2 | doz %10 → %6 (bandın altı) | yakalandı |
+| M3 | kademe payı çarpıtıldı (×1,3 — pay artık eşit değil) | yakalandı |
+| M4 | ödüle ₺ geri eklendi (D-089 kalıbına dönüş) | yakalandı |
+| M5 | çarpan MÜŞTERİ ÖDEMESİNDEN silindi (`tick.ts`) | yakalandı |
+| M6 | çarpan LAVABO ücretinden silindi (`tick.ts`) | yakalandı |
+| M7 | çarpan ÇEVRİMDIŞI orandan silindi (`rules.ts`) | yakalandı |
+| M8 | tick bağlamında çarpan 1'e çakıldı (kablo koptu) | yakalandı |
+| M9 | doz %10 → %11 (ince sapma) | **KAÇTI** → bekçi güçlendirildi, sonra yakalandı |
+
+**M9 bekçinin zayıf yerini gösterdi ve onu değiştirdi.** Zincir-bedeli bandı (%3-5) dolaylı ve
+gürültülü bir ölçüttür: %11 doz onu %4,4'e taşıyor, yani bandın içinde kalıyor. Bandı ±%5'e
+daraltmak sim modelinin her küçük değişiminde testi kırardı — D-089'da tam bu tuzağa düşülmüştü.
+Çözüm bandı daraltmak değil, ölçülen sayıyı **doğrudan çivilemek** oldu (`incomeBonusTotal`
+üzerinde bir eşitlik beklentisi). Bu test bilerek kırılgandır: dozu değiştirmek meşru bir iştir
+ama varyant kapısından geçmek zorundadır, ve testi güncellemek o turun **son** adımıdır.
+
+**M5-M8, denge testlerinin GÖREMEDİĞİ bir bölgeyi sınıyor.** Dördü de `tests/hedefler.test.ts`'in
+tamamı yeşilken geçerdi, çünkü o dosya SİM'in kolunu ölçüyor — oyunun kendi gelir yolunu değil.
+Bu boşluk turun içinde fark edildi ve `tests/hedef-gelir-kablosu.test.ts` ile kapatıldı.
+
+### Uçtan uca (tarayıcı) doğrulama
+
+`window.__game()` anlık görüntüsüne `goalMult` eklendi — ödül artık cüzdana ₺ koymadığı için
+duman testinin okuyabileceği tek görünür kanıt bu. Hedef toplandıktan sonra çarpan **×1,004**
+okundu (bir kademe = +%0,4 ✓). **Duman 31/31 → 32/32.**
+
+### Değişmeyenler
+
+- Görev hattının M1 ödülleri (`quests[].reward`) aynen duruyor — hedeflerin ₺'si kalktı, görevlerinki değil.
+- `diamondByTier` değişmedi (250 💎 toplam).
+- Kategoriler, eşikler, kimlik biçimi, dört durum, sıra kuralı: hepsi D-089'daki gibi.
+

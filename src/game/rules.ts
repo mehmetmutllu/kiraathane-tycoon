@@ -160,13 +160,16 @@ export function tableUpgradeUnlocked(g: GateState): boolean {
  * Masa BAHŞİŞLERİ de orana dahil (kullanıcı 2026-06-11): tipTotal = açık masaların Σ(tipBase × seviye).
  * B4: LAVABO kolu da dahil — uğrayan müşteri lavabonun önüne para bırakır, yani gelir müşteri
  * BAŞINA büyür (fiyata/bahşişe dokunmadan). Oda kapalıyken (L0) terim 0 → formül birebir eski.
+ * D-090: hedef koleksiyonunun KALICI gelir çarpanı (`goals.collectionMult`) da buraya biner —
+ * çevrimdışı gelir aktif gelirle aynı çarpanı görmezse oyuncu oyunu KAPATARAK bonusunu kaybederdi.
+ * Varsayılan 1 → hiç hedef toplanmamış kayıt için formül birebir eski.
  */
-export function incomeRate(tables: number, level: number, tipTotal = 0, lavaboLevel = 0): number {
+export function incomeRate(tables: number, level: number, tipTotal = 0, lavaboLevel = 0, mult = 1): number {
   const p = tostShare(level);
   const price = (1 - p) * PRODUCTS.tea.price + p * PRODUCTS.tost.price;
   const prepTime = (1 - p) * PRODUCTS.tea.prepTime + p * PRODUCTS.tost.prepTime;
   const cycle = C.npc.walkTime + brewTime(level, prepTime) + C.npc.eatTime;
-  return (tables * (price + lavaboIncomePerCustomer(lavaboLevel)) + tipTotal) / cycle;
+  return ((tables * (price + lavaboIncomePerCustomer(lavaboLevel)) + tipTotal) / cycle) * mult;
 }
 
 /**

@@ -85,6 +85,9 @@ hG  |    60 |     3k |       506 (2) |        6/1 | 43.4 dk | 8.23 sa |   %-2.9 
 hG  |   120 |     5k |        1k (2) |        6/1 | 43.4 dk | 7.99 sa |   %-5.8 |    22 sn | 1.5 dk | 4.4 dk
 hG  |   300 |    14k |        3k (2) |        6/1 | 43.4 dk | 7.27 sa |  %-14.3 |    22 sn | 1.3 dk | 2.2 dk
 hG  |   600 |    27k |        5k (2) |        5/0 | 43.4 dk | 6.15 sa |  %-27.5 |    22 sn | 1.3 dk | 1.7 dk
+    hUYGF: UYGULANAN: economy.config.ts`in GERÇEK goals.incomeBonusTotal`i (kalıcı çarpan)
+hUYGF |     0 |      0 |         0 (0) |        6/1 | 43.4 dk | 8.48 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
+hUYGF |     1 |      0 |         0 (0) |        5/1 | 41.2 dk | 8.14 sa |   %-4.0 |    22 sn | 1.6 dk | 6.1 dk
 
 --- Dozun karsiligi (kademe odulleri, ₺) ---
   h0     0  ₺ ödülü yok (elmas tempoya girmez: bugün harcaması da yok)
@@ -112,7 +115,7 @@ hG  |   600 |    27k |        5k (2) |        5/0 | 43.4 dk | 6.15 sa |  %-27.5 
   hE    %2  24 kademe · 7…7430 ₺ (top. 28.620)
   hE    %3  24 kademe · 11…11146 ₺ (top. 42.930)
   hE    %5  24 kademe · 19…18576 ₺ (top. 71.550)
-  hUYG     1  5 kategori × 5 kademe · toplam 7.485 ₺
+  hUYG     1  5 kategori × 5 kademe · toplam 7.485 ₺ (DONDURULMUŞ D-089 merdiveni)
   hC  %0.5  %1 → top. 7.256 ₺
   hC    %1  %1 → top. 14.512 ₺
   hC    %2  %2 → top. 29.025 ₺
@@ -132,6 +135,7 @@ hG  |   600 |    27k |        5k (2) |        5/0 | 43.4 dk | 6.15 sa |  %-27.5 
   hG   120  25 kademe × o anki gelirin 120 sn
   hG   300  25 kademe × o anki gelirin 300 sn
   hG   600  25 kademe × o anki gelirin 600 sn
+  hUYGF     1  25 kademe · tam koleksiyonda +%10 · kademe başına +%0.40
 
 --- Odemelerin ZAMAN dagilimi (her kolun en uc dozu, Normal profil) ---
   h0 (doz 0): 0 odeme · toplam 0 ₺
@@ -234,4 +238,5 @@ hG  |   600 |    27k |        5k (2) |        5/0 | 43.4 dk | 6.15 sa |  %-27.5 
       @ 4.04 sa      2.204 ₺
       @ 4.05 sa      2.713 ₺
       @ 6.15 sa      9.749 ₺
+  hUYGF (doz 1): 0 odeme · toplam 0 ₺
 

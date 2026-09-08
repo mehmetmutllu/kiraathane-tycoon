@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useGame, goalMetricsOf, tableThemeUnlocked, tableSoftMaxLevel } from '../../game/store';
-import { claimableGoals, goalViews, type GoalView } from '../../game/goals';
+import { claimableGoals, collectionBonus, goalViews, type GoalView } from '../../game/goals';
 import { perf } from '../../game/perf';
 import { screenPointer } from '../../game/screenPointer';
 import { fmt } from '../../game/decimal';
@@ -30,6 +30,10 @@ import { CharacterPanel } from './CharacterPanel';
 import { TableThemePreview } from './TableThemePreview';
 import { DioramaPreview } from './DioramaPreview';
 import './hud.css';
+
+/** Oran → yüzde etiketi (0,004 → "+%0,4"). Gelir bonusu tek biçimde yazılsın diye TEK yerde. */
+const yuzde = (oran: number): string =>
+  `+%${(oran * 100).toLocaleString('tr-TR', { maximumFractionDigits: 1 })}`;
 
 /**
  * HUD — arayüz v2 (plan §9 bilgi mimarisi; docs/plan-kat1-yayin.html).
@@ -504,7 +508,12 @@ function QuestsSheet({ onClose }: { onClose: () => void }) {
 }
 
 /**
- * HEDEFLER (koleksiyon, D3/D-089): beş kategori, her biri AKTİF kademesiyle tek satır.
+ * HEDEFLER (koleksiyon, D3/D-089 · ödül kalıbı D3b/D-090): beş kategori, AKTİF kademesiyle tek satır.
+ *
+ * ÖDÜL GÖRÜNÜRLÜĞÜ: kalıcı gelir çarpanı ölçümde kazandı ama tek zayıflığı GÖRÜNMEZ olmasıydı
+ * (rapor Bulgu 16) — cüzdana uçan bir sayı yok. Bu yüzden panel iki yerde gösterir: satırda o
+ * kademenin payı (+%0,4) ve üstte KÜMÜLATİF toplam ("Koleksiyon bonusu +%X gelir"). Anlık ve
+ * görünür ödül tarafını 💎 taşır.
  * Sayaç da eşik de burada DEĞİL — `goals.ts` durumdan türetir, eşikler `economy.config.ts`te.
  * (D3 öncesi ikisi de bu bileşenin içindeydi: HUD'a gömülü sayı hem CLAUDE.md'yi deliyordu hem
  * hedefleri ölçüm aracının göremeyeceği bir yere koyuyordu.)
@@ -529,6 +538,7 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
 
   const goals = goalViews(metrics, goalsClaimed);
   const toplanabilir = goals.filter((g) => g.state === 'claimable').length;
+  const bonus = collectionBonus(goalsClaimed);
 
   return (
     <Sheet title="Hedefler" testid="goals-panel" onClose={onClose}>
@@ -545,7 +555,10 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
               {lvl.cur}/{lvl.need}
             </span>
           </span>
-          <small>Her hedef itibarını yükseltir.</small>
+          <small>
+            Her hedef itibarını yükseltir
+            {bonus > 0 ? ` · koleksiyon bonusu ${yuzde(bonus)} gelir` : ''}.
+          </small>
         </span>
       </div>
 
@@ -588,7 +601,7 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
                 ) : (
                   <span className="goal-reward">
                     <CoinIcon size={13} />
-                    {g.reward.toLocaleString('tr-TR')}
+                    {yuzde(g.bonus)}
                     <GemIcon size={13} />
                     {g.diamonds}
                   </span>
@@ -603,7 +616,8 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
         <RewardModal
           testid="goal-reward"
           title={`${odul.categoryName} · ${odul.tier + 1}. kademe`}
-          amount={odul.reward}
+          amount={0}
+          bonus={odul.bonus}
           diamonds={odul.diamonds}
           claimTestid="goal-reward-ok"
           onClaim={() => {
@@ -623,6 +637,7 @@ function RewardModal({
   title,
   amount,
   diamonds = 0,
+  bonus = 0,
   onClaim,
   claimTestid,
   adReady = false,
@@ -632,6 +647,8 @@ function RewardModal({
   amount: number;
   /** 💎 ödülü (D3: hedefler iki para birimi verir; offline yalnız ₺ verdiği için varsayılan 0). */
   diamonds?: number;
+  /** KALICI gelir artışı (oran; D-090). Offline ekranı ₺ verir → varsayılan 0, o ekran değişmedi. */
+  bonus?: number;
   onClaim: () => void;
   claimTestid: string;
   adReady?: boolean;
@@ -645,6 +662,11 @@ function RewardModal({
           {amount > 0 && (
             <>
               <CoinIcon size={30} /> +{amount.toLocaleString('tr-TR')}
+            </>
+          )}
+          {bonus > 0 && (
+            <>
+              <CoinIcon size={30} /> {yuzde(bonus)} kalıcı gelir
             </>
           )}
           {diamonds > 0 && (

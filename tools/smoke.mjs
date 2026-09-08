@@ -144,8 +144,9 @@ try {
   // test bugüne dek yalnız animasyon henüz tamamlanmadığı için geçiyordu (D3'te ortaya çıktı).
   await page.click('[data-testid="char-panel"]', { position: { x: 450, y: 40 } });
 
-  // HEDEFLER paneli (D3/D-089): beş kategori + ödül toplama. Ödülü CONFIG verir, HUD çizer —
-  // bu yüzden burada sınanan şey "panel açıldı mı" değil, ₺ ve 💎'un GERÇEKTEN cüzdana geçmesi.
+  // HEDEFLER paneli (D3/D-089 · ödül kalıbı D3b/D-090): beş kategori + ödül toplama. Ödülü CONFIG
+  // verir, HUD çizer — burada sınanan şey "panel açıldı mı" değil, ödülün GERÇEKTEN işlemesi:
+  // 💎 cüzdana geçiyor mu ve KALICI GELİR ÇARPANI büyüyor mu (D-090'da ₺ ödülü kalktı).
   {
     const oncesi = await page.evaluate(() => window.__addMoney(1200) && window.__game());
     await page.click('[data-testid="goals"]');
@@ -174,6 +175,10 @@ try {
       const kimlikler = (await page.evaluate(() => window.__game())).goalsClaimed ?? [];
       if (kimlikler.includes('earn:0')) pass(`Toplanan hedef kimliği kayıtta (${kimlikler.join(',')})`);
       else fail(`Toplanan hedef kayda geçmedi: ${JSON.stringify(kimlikler)}`);
+      // D-090: asıl ödül kalıcı gelir çarpanı. Cüzdana bir şey düşmediği için tek görünür kanıt bu.
+      const mult = (await page.evaluate(() => window.__game())).goalMult ?? 1;
+      if (mult > 1) pass(`Kalıcı gelir çarpanı büyüdü (×${mult.toFixed(3)})`);
+      else fail(`Hedef toplandı ama gelir çarpanı 1 kaldı (×${mult})`);
     }
     // Backdrop'un ÜST şeridi (kartın dışı) — merkez kartın altında kalıyor.
     await page.click('[data-testid="goals-panel"]', { position: { x: 450, y: 40 } });

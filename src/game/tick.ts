@@ -12,6 +12,7 @@
  */
 import type { Decimal } from './decimal';
 import type { Coin, Dish, Npc, Vec3, Waiter } from './types';
+import { collectionMult } from './goals';
 import {
   economyConfig as C,
   brewQueueCapacity,
@@ -143,6 +144,10 @@ export interface TickCtx {
   tableLevels: number[];
   /** ODA: lavabo seviyesi (B4; 0 = kapalı). Bu karede yükseltilebilir. */
   lavaboLevel: number;
+  /** D-090: hedef koleksiyonunun KALICI gelir çarpanı (1 = hiç hedef toplanmamış). ₺'nin
+   *  yaratıldığı iki yerde (müşteri ödemesi · lavabo ücreti) çarpan olarak uygulanır. Kare içinde
+   *  DEĞİŞMEZ: hedefler tick'te toplanmaz, yalnız `claimGoal` yazar. */
+  readonly incomeMult: number;
   /** Servisin HAZIR ürünleri — B2: servis başına değil ÜRÜN başına (tek nokta, iki ürün). */
   ready: Record<ProductId, number>;
   /** Ürün başına birikmiş demleme süresi (sn). Tezgâh aynı anda TEK kalem hazırlar: hangi ürünün
@@ -225,6 +230,7 @@ export function createTickCtx(s: GameState, dt: number): TickCtx {
     stationLevels: s.stationLevels.slice(), // SERVİS başına ocak seviyesi (bu karede yükselebilir)
     tableLevels: s.tableLevels.slice(), // masa-başı seviyeler (kopya; bu karede yükseltilebilir)
     lavaboLevel: s.lavaboLevel,
+    incomeMult: collectionMult(s.goalsClaimed ?? []),
     ready: { ...s.ready },
     brewProgress: { ...s.brewProgress },
     tray: s.tray,
@@ -391,7 +397,7 @@ function spawnSystem(c: TickCtx): void {
  * NPC durum makinesi
  */
 function npcSystem(c: TickCtx): void {
-  const { dt, npcs, coins, dishes, navGrid, tableLevels, questIndex, areasOpen, lavaboLevel } = c;
+  const { dt, npcs, coins, dishes, navGrid, tableLevels, questIndex, areasOpen, lavaboLevel, incomeMult } = c;
   let cleanCups = c.cleanCups;
   let nextId = c.nextId;
   const step = NPC_SPEED * dt;
@@ -441,7 +447,9 @@ function npcSystem(c: TickCtx): void {
           coins.push({
             id: nextId++,
             pos: [slot.table[0] + (Math.random() - 0.5), 0.3, slot.table[2] + 0.6 + (Math.random() - 0.5)],
-            value: PRODUCTS[n.product].price + tableTip(tableLevels[n.tableIndex] ?? 0),
+            // D-090: koleksiyon çarpanı ₺'nin YARATILDIĞI yerde uygulanır (üç tavana dokunmaz,
+            // yalnız müşteri başına ₺'yi büyütür — ölçümdeki `hF` kolunun bindiği yer).
+            value: (PRODUCTS[n.product].price + tableTip(tableLevels[n.tableIndex] ?? 0)) * incomeMult,
           });
           // İçtiği bardak masada KİRLİ kalır (Faz 2e): toplanıp yıkanmalı, yoksa temiz biter.
           // tableIndex ile masaya etiketlenir (D-019): masa-başı eşik aşılınca masa KİRLİ olur.
@@ -486,7 +494,7 @@ function npcSystem(c: TickCtx): void {
               LAVABO.coinSpot[1],
               LAVABO.coinSpot[2] + (Math.random() - 0.5),
             ],
-            value: lavaboFee(lavaboLevel),
+            value: lavaboFee(lavaboLevel) * incomeMult, // D-090: lavabo ücreti de müşteri başına ₺'dir
           });
           n.state = 'leaving';
         }

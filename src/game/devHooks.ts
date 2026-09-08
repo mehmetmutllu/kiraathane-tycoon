@@ -5,6 +5,7 @@ import { useSandbox } from './devSandbox';
 import { useGame, visiblePads, questCounterValue, LAYOUT, LAVABO, servicePlace, trayCapacity, dirtyTables, parkSpot } from './store';
 import { THE_SERVICE, sellsTost } from './world';
 import { perf, type PerfSnapshot } from './perf';
+import { collectionMult } from './goals';
 import { economyConfig, levelProgress, charLevel, lavaboVisitChance, lavaboFee, lavaboIncomePerCustomer, type CharStat } from '../config/economy.config';
 import type { SaveStats } from './save';
 import type { Vec3 } from './types';
@@ -140,6 +141,9 @@ export function installDevHooks(): void {
       questIndex: s.questIndex,
       /** D3: toplanmış hedef kimlikleri — duman testi ödül toplamayı buradan doğrular. */
       goalsClaimed: [...(s.goalsClaimed ?? [])],
+      /** D-090: koleksiyonun KALICI gelir çarpanı (1 = hiç hedef toplanmamış). Ödül artık cüzdana
+       *  ₺ koymuyor, bu yüzden duman testi ödülün işe yaradığını buradan okur. */
+      goalMult: collectionMult(s.goalsClaimed ?? []),
       quest: s.quest ? { id: s.quest.id, title: s.quest.title, cur: s.quest.cur, total: s.quest.total } : null,
       stats: { ...s.stats },
       // Level/XP sistemi (v17): toplam xp + türetilen seviye/ilerleme + ayarlar.

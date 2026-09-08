@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 76 · YAPILAN 66 · %87):**
+**Oturum bütçesi (TOPLAM 77 · YAPILAN 67 · %87):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -22,14 +22,15 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | B model geçişi + maket taşıması | 13/13 ✅ |
 | | **C zincir ve denge** | **5/5 ✅** |
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
-| | D meta katman | 3/5 🔧 |
+| | D meta katman | 4/6 🔧 |
 | | E arayüz ve cila | 1/4 🔧 |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **38/48** |
+| **Program toplam** | | **39/49** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
-(D-084 P1-P3) üç kalemlik yeni faz olarak eklendi → toplam 73 → 76.
+(D-084 P1-P3) üç kalemlik yeni faz olarak eklendi → toplam 73 → 76. **2026-09-09:** D3'ün ödül
+KALIBI kendi turunu istedi (D3b) → Faz D 5 → 6 kalem, toplam 76 → 77.
 
 **v1 kapsam çizgisi:** prestij · Kat 2 · sipariş nesnesi · aktif WC döngüsü · dekor instancing
 **v1.1'e**; v1 = Kat 1 + elmas/Usta + offline tavan + reklam/IAP + mağaza.
@@ -80,7 +81,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
 **asıl sınav tick-temelli bir denge turu.** Ölçülen gerçek kazançlar: üç dosyalık okuma seti
 (oturum başı), uzun koşuların paralel arkaplanı, hazır ölçüm iskeleti.
 
-## Faz D — META KATMAN (3/5) 🔧
+## Faz D — META KATMAN (4/6) 🔧
 - ✅ **D1 — geç-oyun eğrisinin 20 dk ihlali ölçüldü ve ölçütün PROFİLİ sabitlendi (D-087)** ·
   dokuz kol varyant olarak ölçüldü, dozlar tahmin değil **çözüldü**; hepsi elendi, ölçütün
   kendisi (`o1`) alındı. Ölçüt kardeş üçüyle aynı profilde (İdealize) hüküm verir ve geçiyor
@@ -108,17 +109,32 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   **kayıt sürümü artmadı** (v32,
   `goalsClaimed` additive). **Kabul edilen eksik:** vaat edilen ihlal iyileşmesi gelmedi (6'da,
   43,4 dk'da kaldı) — bedel bandında, fayda gürültüde; D-087'nin açık kalemi KAPANMADI.
-- ⏳ **D4 — İtibar (eski XP anlam kazanır) + günlük görevler.**
-- ⏳ **D5 — elmas kaynak/harcama + Usta katmanı** (masa ₺-tavanı L4'ün üstü).
+- ✅ **D4 — hedef ödülünün KALIBI ölçüldü; sabit ₺ kalktı, KALICI GELİR ÇARPANI geldi (D-090)** ·
+  *(tur kartında `D3b` adıyla açıldı — D3'ün açık kalemini kapattığı için; defter numarası D4.)*
+  D3'ün açık kalemi ("₺ kolu kalsın mı?") üç seçenekle sorulmuştu; üçü de aynı kalıbın varyasyonu
+  olduğu için reddedildi ve sektörün iki kalıbı varyant olarak ölçüldü. **`hG` (gelire oranlı ₺)
+  elendi:** geç pencere altı dozun altısında da 43,4 dk, buna karşılık açılışı eziyor (otomasyon
+  6,1 → 1,7 dk). **`hF` (kalıcı çarpan) %10 seçildi:** en uzun 43,4 → **41,2 dk**, ihlal 6 → **5**,
+  zincir **%-4,0**, **açılış sabit**. Ana ders (Bulgu 13): tempo tablosu `hF` ile `hE`'yi AYIRMADI
+  (verim denk) — tablo ELEME yaptı, seçim sim'in ölçmediği eksende verildi (ödül bayatlıyor mu).
+  Uygulanan config kendi satırıyla ölçüldü (`hUYGF` = sentetik kolun birebir aynısı).
+  `docs/hedef-raporu-d3.md` §6 · bekçi `tests/hedefler.test.ts` + **`tests/hedef-gelir-kablosu.test.ts`
+  (YENİ — denge testleri sim'i ölçüyordu, oyunun `tick.ts` kablolamasını değil)** ·
+  **dokuz mutasyon** (M9 kaçtı → ölçülen doz doğrudan çivilendi, sonra yakalandı) ·
+  vitest **612** · duman **32/32** · **kayıt sürümü yine artmadı** (v32; çarpan `goalsClaimed`ten
+  türer). **Kabul edilen eksik:** çarpan GÖRÜNMEZ bir ödüldür — panelde iki yerde yazılıyor ve 💎
+  anlık ödülü taşıyor, ama oyuncu üzerindeki etkisi ölçülmedi (sim'in ölçebileceği bir şey değil).
+- ⏳ **D5 — İtibar (eski XP anlam kazanır) + günlük görevler.**
+- ⏳ **D6 — elmas kaynak/harcama + Usta katmanı** (masa ₺-tavanı L4'ün üstü).
 
-> D2-D5 `docs/plan-kat1-yayin.html` §D kapsamından türetildi; **sırası açık** — her tur başında
+> D2-D6 `docs/plan-kat1-yayin.html` §D kapsamından türetildi; **sırası açık** — her tur başında
 > seçilir. Ayrıca Faz D'de bekleyen bilinen bir hata var: **nav ızgarası ↔ oyuncu çarpışması**.
 
 ## Bilinen açık kalemler
-- **Hedeflerin ₺ kolu bu hâliyle kalsın mı?** D-089'da seçilen kolun BEDELİ tutturuldu (%-3,2)
-  ama vaat ettiği FAYDA gelmedi (ihlal 6'da, en uzun 43,4 dk'da kaldı). Karar ₺ lehine verilirken
-  faydanın ölçülebilir olduğu varsayılmıştı; `h0` (yalnız 💎, bedel tam sıfır) hâlâ savunulabilir.
-  **Sonraki oturumda sorulacak.**
+- ~~Hedeflerin ₺ kolu bu hâliyle kalsın mı?~~ → **D3b'de kapandı (D-090):** ₺ kolu tamamen kalktı,
+  yerine kalıcı gelir çarpanı geldi. **Yeni açık kalem:** çarpan GÖRÜNMEZ bir ödüldür (panelde iki
+  yerde yazılıyor + 💎 anlık ödülü taşıyor) ama oyuncu üzerindeki etkisi ölçülmedi — sim'in
+  ölçebileceği bir şey değil, **telefonda oynanınca yeniden okunacak.**
 - ~~Geç-oyun eğrisi 20 dk ölçütünü ihlal ediyor~~ → **D1'de kapandı (D-087):** ölçütün profili
   sabitlendi, hüküm geçiyor. **Kabul edilen risk:** Normal profil oyuncusu 6. saatte `servis L6`
   için 43,4 dk bekliyor — bilerek ödenmedi, gözlem bandında görünür kalıyor. **Faz D bitince

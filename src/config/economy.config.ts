@@ -199,9 +199,6 @@ export interface GoalCategory {
   note: string;
   /** Artan eşikler; index = kademe. Hedef kimliği `<id>:<index>`. */
   tiers: readonly number[];
-  /** Kademe başına ₺ ödülü (`tiers` ile aynı uzunlukta). Kategori başınadır: geç açılan kategori
-   *  büyük başlar — ortak merdiven `hUYG` ölçümünde ödemeleri yanlış yere düşürüyordu. */
-  rewards: readonly number[];
 }
 
 /** Sıralı görev (tek aktif; üst görev barında gösterilir, kamera hedefe yönlendirilebilir). */
@@ -783,42 +780,43 @@ export const economyConfig = {
   },
 
   /**
-   * HEDEFLER — koleksiyon sistemi (D3, D-089). Görev hattı bittikten sonra da devam eden tek yapı.
+   * HEDEFLER — koleksiyon sistemi (D3 · D-089, ödül kalıbı D3b · D-090). Görev hattı bittikten
+   * sonra da devam eden tek yapı.
    *
    * KİMLİK: `<kategori>:<kademe>` (örn. `service:2`). Kayıtta yalnız TOPLANMIŞ kimlikler durur
    * (`goalsClaimed`); kademe index'i çalışma zamanının kodlamasıdır — D-088'in `questsDone`
    * deseninin aynısı. Kategoriye kademe eklemek/çıkarmak ilerlemiş kaydı bozmaz.
    *
-   * ÖDÜL — İKİ PARA BİRİMİ, ölçülmüş dozda (D-089, `docs/hedef-raporu-d3.md`):
-   *   ₺  tempoya girer → varyant kapısından geçti. Ölçüm şunu söyledi: ödülün BÜYÜKLÜĞÜ bekleme
-   *      pencerelerini doldurmuyor (`hA %50`de 66.000 ₺ ödense bile pencereye düşen SIFIR),
-   *      YOĞUNLUĞU dolduruyor. Bu yüzden ödül 25 küçük kademeye yayıldı: seçilen kol `hE %2` —
-   *      ihlal 6 → 4, en uzun bekleme 43,4 → 42,0 dk, zincir bedeli yalnız **%2,7**. (D1'de
-   *      elenen dokuz kolun en ucuzu %7'ydi; bu, o bandın altındaki İLK ₺ kaldıracıdır.)
+   * ÖDÜL — İKİ PARA BİRİMİ, kalıbı da dozu da ölçülmüş (D-090, `docs/hedef-raporu-d3.md` §6):
+   *   📈 KALICI GELİR ÇARPANI — koleksiyonun asıl ödülü. Her toplanan kademe ₺/müşteriyi kalıcı
+   *      olarak büyütür; 25/25'te toplam **+%10**. Sabit ₺ merdiveninin (D-089) yerine geçti.
+   *      Gerekçe ölçülmüş: sabit ₺ %-3,2 zincir bedeli ödetip tempoya HİÇ dokunmuyordu (`hUYG`),
+   *      çarpan aynı bandın biraz üstünde (%-4,0) ihlali 6 → 5'e, en uzun beklemeyi 43,4 → 41,2
+   *      dk'ya çekiyor ve AÇILIŞA dokunmuyor (ilk alım 22 sn · otomasyon 6,1 dk sabit) — çünkü
+   *      çarpan bileşikleniyor, ağırlığı kendiliğinden geç oyuna düşüyor (`hF`, Bulgu 12).
    *   💎 tempoya GİRMEZ — `h0` kolu tabanın birebir kopyası çıktı, çünkü elmasın bugün harcaması
    *      yok. D5 Usta katmanı elması harcanabilir yaptığı an bu ölçüm bayatlar (bekçi damgası
-   *      `tests/hedefler.test.ts` bunu kilitler).
+   *      `tests/hedefler.test.ts` bunu kilitler). Elmas, çarpanın GÖRÜNMEZ olmasını bedelsiz
+   *      telafi eden anlık ödüldür (Bulgu 16) — sektörde de ikisi birlikte verilir.
    *
-   * Kademe ödülü kategoriden BAĞIMSIZ ortak merdivendir: hangi kategoride olursa olsun n. kademe
-   * aynı ödülü verir. Gerekçe: ölçüm kademelerin SAYISINA duyarlı çıktı, hangi metrikte oldukları
-   * fark etmiyordu — ödülü kategoriye göre ayırmak ölçülmemiş bir eksen eklerdi.
+   * ELENEN İKİ KALIP (ölçüldü, tabloda satırı var — bir daha denenmeden önce §6.3 okunsun):
+   *   `hG` gelire oranlı ₺ ("şu anki gelirin N sn'si"): geç pencereyi ALTI dozun altısında da
+   *        kıpırdatmadı (43,4 dk sabit) ve açılışı ezdi (otomasyon 6,1 → 1,7 dk) — 13 ödemenin
+   *        beşi ilk 5,4 dakikaya düşüyor. Tekdüze zaman-atlaması, kısa olan erken zincirde
+   *        oransal olarak çok daha ağır basıyor.
+   *   `hA`/`hB`/`hC` sabit ₺'nin büyüklük kolları: verimleri SIFIR (%50 doza kadar hiç kıpırdamıyor).
    */
   goals: {
     /**
-     * ₺ ÖDÜLÜ KATEGORİ BAŞINADIR (`categories[].rewards`), ortak merdiven DEĞİL. Bu, ölçümün iki
-     * kez çürüttüğü bir varsayımın yerine geçti:
-     *   ① İlk hâl ortak merdivendi ([15·60·250·1.000·4.000]) ve sentetik `hE %2` koluna toplamı
-     *     bakımından denk görünüyordu (26.625 ≈ 28.620). `hUYG` kolu — uygulanan config'i gerçek
-     *     sim'de koşturan varyant — çürüttü: gerçekleşen ödeme 3k değil **11k** (zincir %-8,7,
-     *     otomasyon 6,1 → 5,8 dk). Sentetik merdivenin üst kademeleri Kat 1'de hiç dolmuyordu.
-     *   ② Merdiven kısıldı, toplam tuttu (3,4k · %-2,7) ama ödemelerin YERİ tutmadı: en uzun
-     *     pencere (4,85-5,57 sa · 43 dk) boş kaldı, 1.275 ₺ pencere bittikten SONRA düştü.
-     *     Sebep yapısaldı — ödül kademe INDEX'ine bağlıydı, oyuncunun oraya ULAŞTIĞI zamana
-     *     değil. Geç açılan "Usta" kategorisi ilk kademesinde 5 ₺ veriyordu.
-     * Bu yüzden her kategori kendi merdivenini taşır: geç açılan kategori büyük başlar.
+     * TAM KOLEKSİYONUN (25/25) toplam kalıcı gelir artışı. Kademe başına düşen pay burada DEĞİL
+     * `goals.ts`'te türetilir (`toplam / kademe sayısı`) — ölçülen denge sayısı TOPLAMDIR, kademe
+     * başına düşen onun sonucudur. Kategori eklenirse toplam sabit kalır, pay incelir; tersi
+     * olsaydı sessiz bir denge değişikliği olurdu.
+     *
+     * Doz `hF` taramasından geldi (tam koşu): %2 → %-0,8 · **%10 → %-4,0** · %20 → %-7,6.
+     * %20 D1'in eleme eşiğinin (%7) üstünde kalıyor ve o yüzden alınmadı.
      */
-    /** 💎 ödülü ortak KALDI — `h0` kolu elmasın tempoya hiç dokunmadığını ölçtü (bugün harcaması
-     *  yok), yani onu kategoriye göre ayırmak ölçülemeyen bir eksen eklemek olurdu. */
+    incomeBonusTotal: 0.10,
     /** n. kademenin 💎 ödülü (kategori başına 50 · toplam 250 — plan §6'nın "~250 💎" hedefi). */
     diamondByTier: [3, 5, 8, 12, 22],
     /**
@@ -826,19 +824,23 @@ export const economyConfig = {
      * ÇALIŞAN "Temizlik" var: Alışkanlık gün-temellidir ve günlük görevlere bağlıdır (D4) —
      * o gelene kadar ölü bir kategori olarak durmasın diye beşinci sırayı Temizlik aldı.
      * `metric` alanları `src/game/goals.ts`'te tek yerde okunur.
+     *
+     * Kategoriler artık kendi ₺ merdivenlerini TAŞIMIYOR (D-090): ödül kalıbı çarpana döndüğü
+     * için kademe başına ödenecek bir sayı yok. D-089'un "geç kategori büyük başlasın" düzeltmesi
+     * de böylece gereksizleşti — çarpanın değeri oyuncunun bulunduğu yere göre kendiliğinden
+     * ölçekleniyor (Bulgu 14: "yazılan ≠ ödenen" hata sınıfı tanım gereği imkânsız).
      */
     categories: [
       { id: 'service', name: 'Servis', metric: 'served', note: 'Elden ve garsonla yapılan toplam servis',
-        tiers: [25, 100, 500, 2_000, 6_000], rewards: [5, 25, 90, 260, 700] },
+        tiers: [25, 100, 500, 2_000, 6_000] },
       { id: 'space', name: 'Mekân', metric: 'pads', note: 'Açılan masa · salon · personel',
-        tiers: [3, 6, 10, 16, 24], rewards: [5, 20, 80, 300, 850] },
+        tiers: [3, 6, 10, 16, 24] },
       { id: 'earn', name: 'Kazanç', metric: 'lifetime', note: 'Toplam kazanılan ₺',
-        tiers: [1_000, 10_000, 50_000, 200_000, 600_000], rewards: [5, 20, 75, 280, 800] },
+        tiers: [1_000, 10_000, 50_000, 200_000, 600_000] },
       { id: 'clean', name: 'Temizlik', metric: 'dishes', note: 'Kendi elinle yıkadığın kirli bardak',
-        tiers: [3, 15, 50, 150, 400], rewards: [5, 25, 90, 260, 700] },
-      // GEÇ KATEGORİ: ilk kademesi bile ~4. saatte gelir, o yüzden BÜYÜK başlar (bkz. ② yukarıda).
+        tiers: [3, 15, 50, 150, 400] },
       { id: 'master', name: 'Usta', metric: 'masterTables', note: 'Son seviyeye çıkardığın masa',
-        tiers: [1, 3, 8, 14, 20], rewards: [100, 220, 420, 750, 1_400] },
+        tiers: [1, 3, 8, 14, 20] },
     ] as readonly GoalCategory[],
   },
 
