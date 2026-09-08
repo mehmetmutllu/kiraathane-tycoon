@@ -214,7 +214,7 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum · Faz D · 2/5 — görev kimlikleri",
+  "etiket": "Bu oturum · Faz D · 3/5 — Hedefler (koleksiyon)",
   "baslik": "Hedefler kuruldu: ödülün gücü büyüklüğünde değil, sıklığında",
   "aciklama": "Oyuna <b>Hedefler</b> geldi — görev hattının dışında duran, kendi hızında ilerleyen bir koleksiyon katmanı. Beş kategori (Servis · Mekân · Kazanç · Usta · Temizlik), her biri beş kademeli, toplam 25 hedef; ödülü hem ₺ hem elmas. Ekran zaten çizilmişti; eksik olan arkasındaki <b>sistemdi</b>: eşikler ekranın içine gömülüydü, kademe yoktu, ödül yoktu, toplama yoktu. Elmas da oyunda görünüyor ama hiçbir kaynağı bulunmuyordu — artık var (toplam 250 💎).<br><br>Turun ölçüm sorusu şuydu: hedeflerin parası oyunun eğrisini kısaltır mı, yoksa geç oyundaki uzun bekleme pencerelerini <b>doldurur</b> mu? Cevap net çıktı: <b>ödülün büyüklüğü pencereyi doldurmuyor.</b> En uç denemede 66.000 ₺ ödense bile bekleme aralıklarının içine düşen para <b>sıfır</b> — ihlal ancak zinciri %29 kısaltarak, yani oyunun içeriğinden çalarak azalıyor. İşe yarayan şey <b>sıklık</b>: aynı parayı 6 yerine 24 kademeye bölmek aynı iyileşmeyi <b>%2,7</b> bedelle veriyor, yaklaşık on bir kat ucuza.<br><br>Turun asıl dersi ise şu oldu: <i>“seçilen doz iyiydi, ayara yazdığım da ona denktir”</i> bir <b>varsayımdır</b> — ölçülünce iki kez çürüdü (önce toplam, sonra paranın düştüğü <b>yer</b> tutmadı) ve bugünkü sayılar üçüncü ölçümün sonucu.",
   "adimlar": [
@@ -225,7 +225,7 @@ h2{font-size:21px;font-weight:800}
   "not": "Meta katman geç-oyun bekleme penceresini <b>tempo olarak doldurmuyor</b>; doldurduğu şey oyuncunun o pencerede gördüğü ilerleme. Soru bir sonraki tura yazıldı."
  },
  "siradaki": {
-  "etiket": "Faz D · 3/5 — Hedefler ve ortak ödül ekranı",
+  "etiket": "Faz D · 4/5 — İtibar ve günlük görevler",
   "baslik": "İtibar ve günlük görevler — meta katmanın kalan iki kanadı",
   "aciklama": "Hedefler kurulunca ortak <b>ödül ekranı</b> gerçek bir kullanıcıya kavuştu; sırada onu ikinci kez kullanacak kalem var: <b>İtibar</b>. Bugün oyunda seviye kazanılıyor, ekranda görünüyor, kutlanıyor — ve <b>hiçbir şeye yaramıyor</b>. Anlam kazanması planlı: her seviye müşteri akışını ve bahşişi biraz artıracak, mağazada yeni kozmetikleri görünür kılacak, her seviye atlamada aynı ödül ekranı açılacak.<br><br>Yanında <b>günlük görevler</b> geliyor — elmasın ikinci kaynağı ve oyuncuyu ertesi gün geri getiren şey. İkisi bittiğinde Faz D&#39;nin son kalemi kalıyor: elmasın <b>harcanabilir</b> hâle gelmesi ve <b>Usta</b> katmanı. O gün geldiğinde bu turun bir hükmü bilerek bayatlayacak: bugün elmas ödülü tempoya hiç dokunmuyor, çünkü harcaması yok — bekçi testi tam o günü yakalayacak şekilde yazıldı.",
   "adimlar": [
@@ -857,6 +857,12 @@ h2{font-size:21px;font-weight:800}
    "p": "D-084'te ölçüm araçlarına eklenen damgalar ilk tam koşuda iki gerçek kusur yakaladı. ① <b>\"Müşterilerin %25'i bardağını götürsün\" kolu hiç tetiklenmemiş:</b> koşunun davranış parmak izi kontrol koşusuyla <b>birebir aynı</b> çıktı. Sebep, botun sabit tohumlu üretecinin ilk 12 çekilişinin hepsinin 0,25 üstünde olması ve o senaryoda tam 12 bardak doğması — yani \"değişim yok\" sonucu bir ölçüm değil <b>totoloji</b>ymiş. C4 raporunun ilgili satırı düzeltildi; <b>bulgunun sonucu değişmedi</b>, çünkü %50 kolu gerçekten koştu ve kilidi yine açmadı. ② <b>En küçük senaryoda oyuncu botu hiç yürümüyor</b> (0,0 br/dk); o satır bir ölçüm değil. Kararlar AFK kipinden alındığı için etkilenmiyor. İkisi de <b>ölçüm turu işi</b>: varyant kapısı gereği kod, kendi ölçümü olmadan değiştirilmedi."
   },
   {
+   "sev": "Karar bekliyor",
+   "renk": "wait",
+   "b": "Hedeflerin ₺ ödülü bu hâliyle kalsın mı? — <b>bedeli tutturuldu, faydası gelmedi</b>",
+   "p": "D-089'da kullanıcı ₺ + 💎 veren kolu seçti ve ölçülen <b>bedel</b> tutturuldu (zincir %-3,2; D1'de elenen dokuz kolun en ucuzu %7'ydi). Ama o kolun vaat ettiği <b>fayda gelmedi</b>: ihlal 6'da, en uzun bekleme 43,4 dk'da kaldı. Sebep raporda: sentetik kolun kademeleri tek eksende geometrik yayılmıştı, gerçek kategoriler beş ayrı eksende ve eşikleri oyuncuya anlamlı yuvarlak sayılar (100 servis · 10 masa) — pencerelere göre ayarlanmış sayılar değil. <b>Ödemeyi pencereye denk getirmek kırılgan bir optimizasyon olurdu</b> (ekonominin başka bir kalemi değişince pencere kayar), o yüzden yapılmadı. Karar ₺ lehine verilirken faydanın ölçülebilir olduğu varsayılmıştı; <b>“yalnız 💎” seçeneği (bedeli tam sıfır, parmak iziyle kanıtlı) hâlâ savunulabilir</b>. Sonraki oturumda sorulacak."
+  },
+  {
    "sev": "Çözüldü",
    "renk": "done",
    "b": "Oyuncu çekilince mekân duruyordu — ÇÖZÜLDÜ (C4)",
@@ -896,7 +902,7 @@ h2{font-size:21px;font-weight:800}
    "sev": "Tempo",
    "renk": "now",
    "b": "Normal profil oyuncusu 6. saatte <b>43,4 dakika</b> bekliyor — <b>kabul edilen risk</b> (D-087)",
-   "p": "Eski kayıt 3. salonun 26,9 dakikalık boşluğuydu; model gerçeğe yaklaşınca (C5) tablo değişti ve <i>\"20 dakikayı aşan tek alım kalmasın\"</i> ölçütü Normal profilde <b>altı</b> ihlale düştü, en uzunu <b>43,4 dk</b> (<code>servis L6</code>). D1 turu dokuz düzeltici kolu ölçtü ve <b>dokuzu da elendi</b>: ölçütü tutturabilen dört kolun hepsi Kat 1 içeriğini <b>%7-42</b> kısaltıyordu, biri (taşıma tavanı) ihlali <b>6 → 7 artırıyordu</b>, biri atıl çıktı. Asıl bulgu ölçütün kendisindeydi: <b>profili hiç yazılmamış</b>. Kardeş üç tempo ölçütü <b>İdealize</b> oyuncuda okunuyor, bu dördüncüsü Normal'de — aynı eğri <b>İdealize 1 · Yoğun 1 · Normal 6 · Rahat 11</b> veriyor. Ölçüt kardeşlerinin profiline alındı ve <b>orada geçiyor</b> (aşan 1 · en uzun 23,9 dk); Normal ve Rahat sayıları hükümsüz <b>gözlem bandı</b> olarak basılmaya devam ediyor. Ekonomiye dokunulmadı. <b>Bu bekleme bilerek ödenmedi</b>: onu dolduracak katman (Faz D meta — elmas, günlük görev, hedefler, ödül ekranı) henüz yok. <b>Faz D bitince aynı ölçüm yeniden okunacak</b>; araç ve elenen kolların kodu hazır duruyor."
+   "p": "Eski kayıt 3. salonun 26,9 dakikalık boşluğuydu; model gerçeğe yaklaşınca (C5) tablo değişti ve <i>\"20 dakikayı aşan tek alım kalmasın\"</i> ölçütü Normal profilde <b>altı</b> ihlale düştü, en uzunu <b>43,4 dk</b> (<code>servis L6</code>). D1 turu dokuz düzeltici kolu ölçtü ve <b>dokuzu da elendi</b>: ölçütü tutturabilen dört kolun hepsi Kat 1 içeriğini <b>%7-42</b> kısaltıyordu, biri (taşıma tavanı) ihlali <b>6 → 7 artırıyordu</b>, biri atıl çıktı. Asıl bulgu ölçütün kendisindeydi: <b>profili hiç yazılmamış</b>. Kardeş üç tempo ölçütü <b>İdealize</b> oyuncuda okunuyor, bu dördüncüsü Normal'de — aynı eğri <b>İdealize 1 · Yoğun 1 · Normal 6 · Rahat 11</b> veriyor. Ölçüt kardeşlerinin profiline alındı ve <b>orada geçiyor</b> (aşan 1 · en uzun 23,9 dk); Normal ve Rahat sayıları hükümsüz <b>gözlem bandı</b> olarak basılmaya devam ediyor. Ekonomiye dokunulmadı. <b>Bu bekleme bilerek ödenmedi</b>: onu dolduracak katman (Faz D meta — elmas, günlük görev, hedefler, ödül ekranı) henüz yok. <b>D3'te ölçümün ilk yarısı okundu (D-089) ve cevap HAYIR çıktı:</b> hedeflerin ₺ ödülü bu pencereyi <b>tempo olarak doldurmuyor</b>. Ödülün büyüklüğü hiç işe yaramıyor (66.000 ₺ ödense bile pencerelerin içine düşen <b>sıfır</b>), yoğunluğu ise ancak ölçüm gürültüsü kadar etki veriyor — uygulanan hâlde ihlal <b>6'da</b>, en uzun bekleme <b>43,4 dk'da</b> kaldı. Meta katmanın doldurduğu şey oyuncunun o pencerede <b>gördüğü</b> ilerleme. Kalan kanatlar D4 (İtibar · günlük görev) ve D5 (elmas harcaması); <b>faz bitince ölçüm yeniden okunacak</b>, araç ve elenen kolların kodu hazır duruyor."
   },
   {
    "sev": "Tasarım",
