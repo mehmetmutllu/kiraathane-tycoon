@@ -2349,3 +2349,45 @@ sınandı: **C3 turu temiz, C4 turu ihlal** (D-084 tam o turdan doğmuştu) · *
 **Kayda geçen ders:** mutasyonların ilk turunda üçü kaçtı ve üçü de aracın **gerçek kusuruna**
 işaret etti (sessiz seçim yapan kural · hiç test edilmemiş yazma yolu · ölü koşul) — kaçan mutasyon
 testin değil kodun zayıf yerini gösterir. **Rapor yok:** denge değişmedi, ölçüm turu değil.
+
+## D-086 — simulate.ts gerçeğe yaklaştırıldı: taşıma çok duraklı, masa kalem kalem (2026-09-08)
+
+**Karar:** Modelin dört bilinen kusurundan **ikisi** yürürlüğe girdi, üçü ölçülerek elendi.
+Yürürlükteki model = `k1b` (taşıma turu çok duraklı) + `k2` (masa yükseltmesi kalem kalem).
+
+**Gerekçe (ölçüm):** `docs/sim-gercek-raporu-c5.md` · ham çıktı `docs/olcum-sim-kollar.txt`.
+Sınav: modelin tahmini ile `olcum-kuyruk.ts`in **oyunun kendi tick'iyle** ölçtüğü G1-G4 debisi.
+- Taban model 4 masada gerçeğin **%85'ini**, 20 masada **%169'unu** söylüyordu (ort. sapma %36) —
+  "biraz iyimser" değil, erken oyunda kötümser + geç oyunda iyimser.
+- `k1b` sapmayı **%36 → %8**'e indirdi ve **tek bir uydurma sabit kullanmıyor**: N bardaklık tepsi
+  N ayrı masaya gider, mesafeler düzenin kendi BFS'inden (tur tabanın ~1,8 katı).
+- `k2` C1 §4'ün sahte beklemesini kapattı: **21,4 dk → 4,5 dk**, başka hiçbir ölçüte dokunmadan.
+- Uygulanan **birleşim de uygulanmadan önce ölçüldü** (`secilen`): %8 · 4,5 dk · açılış aynı.
+
+**Elenenler, gerekçesiyle:**
+- `k1a` (ölçülen oranı çarpan yapmak) — sapması %0 ama **totoloji**: çarpan kendi sınav
+  sorularından aradeğerleniyor, örneklem dışı öngörüsü yok.
+- `k4` (sabır) — ölçülen etki **SIFIR**. Talep hiçbir senaryoda bağlayıcı değil; doygun kuyrukta
+  terk eden müşteri servis kapasitesini düşürmez. Kolun cevabı yapısal, tesadüfi değil.
+- `k3` (bardak tavanı) — **ertelenmedi, düzeltildi ve yine de elendi.** Kullanıcı "işten kaçma"
+  dedi; Bulgu 5'in iki kusuru (kirliye tam tur yazılması · sim'in bulaşıkçı merdivenini hiç
+  almaması) kapatıldı, birleşim %46 → %15'e düzeldi ama **k1b'nin %8'inden hâlâ kötü**. Kalan
+  sapmanın tamamı G1'de ve sebebi ölçüldü: orada modelin **taşıma tavanı zaten gerçeğin altında**
+  (6,36 < 7,53 müşteri/dk). Kodu duruyor, G1 kalemi çözülünce yeniden ölçülecek.
+
+**Kayda geçen iki ders:**
+1. **Yanlış çözücü, doğru modeli çürük gösterir.** k3'ün sabit noktası `min` yinelemesiyle
+   aranınca hep sıfıra iniyordu ve model "mekân tamamen kilitli" diyordu; ikiye bölme kararlı
+   kökü buldu. Sayıdan önce sayıyı üreten yöntem sınanır.
+2. **Kolları toplamak modeli iyileştirmiyor:** `hepsi` %15, parçalarının en iyisi %8. k1b ile k3
+   aynı garsonun aynı boş vaktini iki kez kısıyor — kollar bağımsız değil.
+
+**Açılan kalem (uygulanmadı, kullanıcı kararı):** model gerçeğe yaklaşınca *"20 dk'yı aşan tek
+alım kalmasın"* ölçütü Normal profilde **2 → 6** ihlale düşüyor (en uzun 43,4 dk → `servis L6`).
+Geç-oyun eğrisi `economy.config.ts`'e dokunur ve o kolun **ölçülmüş sayı satırı yok** — varyant
+kapısı gereği kendi turunda ölçülecek. D-079'un açılış hükmü ise **dokunulmadan sağlam**: ilk üç
+ölçüt yedi kolun hepsinde birebir aynı (22 sn · 1,6 dk · 6,1 dk).
+
+**Bekçi:** `tests/sim-model.test.ts` — 17 test, **üç mutasyonla** doğrulandı (masalar-arası terim
+silindi → 4 test · k2 geri alındı → 1 test · elenen k3 varsayılana sokuldu → 4 test). C5 öncesi
+model `SIMKOL=eski` ile hâlâ koşuyor; karşılaştırma zemini silinmedi.

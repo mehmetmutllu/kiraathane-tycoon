@@ -5,33 +5,47 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-08 — **C5 turu AÇIK** · Faz C 4/5 · 62/76)
+## ŞU AN (2026-09-08 — **Faz C BİTTİ 5/5** · 63/76 · sırada Faz D)
 
 ```
-SORU            : simulate.ts'in modeli gerçeğe ne kadar uzak — ve gerçeğe yaklaştırılınca
-                  üç tempo ölçütünün HÜKMÜ değişiyor mu? (Değişiyorsa denge kararı doğar.)
-ÖLÇÜLECEK KOLLAR: dört model kusuru, HER BİRİ AYRI VARYANT (kod kalıcı yazılmadan):
-                  K1 taşıma realizasyonu — model ideal taşıyıcı sayıyor (G4'te gerçekleşen %58,4)
-                  K2 masa yükseltmesi kalem kalem — sim 20 masayı TEK kalemde alıyor (sahte 21,4 dk)
-                  K3 bardak tavanı — D-083 sonrası yıkama debisi dördüncü tavan olarak modele girer
-                  K4 müşteri sabrı — terk modelde HİÇ yok, talep kolu abartılı
-                  + K5 = hepsi birden (kollar birbirini gizleyebilir; tek tek + toplu ölçülür)
-SAYILAR         : (adım 2 — docs/sim-gercek-raporu-c5.md §Bulgular)
-KARAR           : (adım 3 — kullanıcı seçer)
-UYGULAMA        : (adım 4 — yalnız kararın kolu)
-BEKÇİ           : (adım 4)
+SORU            : simulate.ts'in modeli gerçeğe ne kadar uzak — hüküm değişiyor mu?  [KAPANDI]
+ÖLÇÜLECEK KOLLAR: k1a · k1b · k2 · k3 · k4 · hepsi · secilen (uygulanan birleşim de ölçüldü)
+SAYILAR         : docs/sim-gercek-raporu-c5.md §Bulgular · ham docs/olcum-sim-kollar.txt
+KARAR           : D-086 — k1b + k2 ALINDI; k1a (totoloji) · k4 (sıfır etki) · k3 ELENDİ
+UYGULAMA        : tools/simulate.ts VARSAYILAN = {k1b, k2}; SIMKOL=eski eski modeli koşturur
+BEKÇİ           : tests/sim-model.test.ts — 17 test, ÜÇ mutasyonla doğrulandı
 ```
 
-**Kalibrasyon gerçek koddan gelir, tahminden değil:** `olcum-kuyruk.ts` zaten senaryo başına
-*"simulate.ts modelinin beklediği X · gerçekleşen %Y"* basıyor; `olcum-bardak.ts` yıkama debisini
-basıyor. İkisi de **D-083 ÖNCESİNDEN kalma** — tam koşuyla tazelenecek (açık kalemdi, bu tur kapanır).
+Model↔gerçek sapması **%36 → %8** · sahte masa beklemesi **21,4 → 4,5 dk** · **denge sayısı
+değişmedi** (`economy.config.ts`'e dokunulmadı). D-079'un açılış hükmü kollardan bağımsız çıktı:
+ilk üç ölçüt yedi kolun hepsinde birebir aynı (22 sn · 1,6 dk · 6,1 dk).
 
-**Bu tur aynı zamanda İA FAZ KAPISI:** başlangıç damgası `2026-09-08T17:56Z`; süre
-`docs/oturum-akisi-mantik.md` §4 tahminiyle (168 → ~95 dk) karşılaştırılacak, sapma > %15 ise
-hızlandırma mantığı düzeltilir.
+k3 ertelenmedi — kullanıcı *"işten kaçma"* dedi, iki kusuru düzeltilip yeniden ölçüldü ve
+**ölçüm elemesi** oldu (birleşim %46 → %15, ama k1b tek başına %8).
 
-**Varyant kapısı DEVREDE** (kollardan biri seçilirse `economy.config.ts` ihtimali var):
-iki commit sırası zorunlu, kapanışta `npm run sira` denetler.
+**İA faz kapısı ölçüldü:** 31 dk (tahmin ~95). Karşılaştırma birebir değil — gerekçe
+`progress.md` faz kapısı notunda; asıl sınav tick-temelli bir denge turu.
+
+## SIRADAKİ TAM ADIM
+
+**Faz D — meta katman (0/5).** Faz C kapandı. D'nin ilk kalemi seçilmeli; **`kiraathane-devam`
+oturumunda kullanıcıya sorulacak.** Faz D'de bekleyen bilinen iş: **nav ızgarası ↔ oyuncu
+çarpışması aynı dünyayı görmüyor** (`actorRadius` sandalyesiz, `playerRadius` sandalyeler katı;
+personelin geçtiği boşluktan oyuncu geçemiyor).
+
+**Denge tarafında bekleyen ama Faz D'ye ait OLMAYAN iki kalem** (ikisi de ölçüm turu ister):
+① geç-oyun eğrisi 20 dk ölçütünü 6 kez ihlal ediyor (D-086'nın açtığı; `economy.config.ts`) ·
+② sim'in taşıma tavanı 4 masada fazla kötümser (elenen k3'ün önündeki tek engel).
+
+## AÇIK KALEMLER (bilinen, bilerek duruyor)
+
+- Yukarıdaki ① ve ② · D-046 ④ kaba hâlde, ⑤ yok · sipariş nesnesi v1.1'de.
+- **Nav ızgarası ↔ oyuncu çarpışması** — Faz D.
+- Gölgenin telefondaki maliyeti ölçülmedi (Faz F riski) · bundle ~1,17 MB (Faz F kod-bölme).
+- **C4'ten kalan ölçüm kusuru:** B1 · oyuncu kipinde bot hiç yürümüyor (0,0 br/dk); C4 kararları
+  `park` kipinden alındığı için karar etkilenmiyor. (`iade:0.25` kusuru C4 raporunda düzeltilmişti.)
+
+**Bekleyen denge kararı YOK.**
 
 ---
 

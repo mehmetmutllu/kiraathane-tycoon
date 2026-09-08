@@ -33,12 +33,18 @@ import {
   lavaboMaxLevel,
   waiterTrayNextCost,
   waiterSpeedNextCost,
+  dishCarryNextCost,
+  dishCarryCapacityFor,
+  dishSpeedNextCost,
+  dishSpeedFor,
   PRODUCTS,
   type GateState,
   type QuestTarget,
 } from '../src/config/economy.config.ts';
 import { deriveWorld, tostShare, THE_SERVICE, MAX_SERVICES } from '../src/game/world.ts';
-import { getNavGrid, servicePlace, LAYOUT, REACH_TABLE } from '../src/game/layout.ts';
+import { getNavGrid, servicePlace, LAYOUT, REACH_TABLE, REACH_PICKUP, reachWash } from '../src/game/layout.ts';
+
+type Vec3n = readonly [number, number, number];
 import { findNavPath } from '../src/game/nav.ts';
 
 const DT = 1; // saniyelik adım
@@ -64,11 +70,16 @@ const TABLE_SOFT_MAX = C.tables.upgrade.maxLevel;
  */
 export interface ModelKollari { k1a: boolean; k1b: boolean; k2: boolean; k3: boolean; k4: boolean }
 const KOL_KAPALI: ModelKollari = { k1a: false, k1b: false, k2: false, k3: false, k4: false };
-let M: ModelKollari = { ...KOL_KAPALI };
-const kolAyarla = (k: Partial<ModelKollari>): void => { M = { ...KOL_KAPALI, ...k }; };
+/** D-086 ile YÜRÜRLÜKTEKİ model: k1b (çok duraklı tur) + k2 (masa kalem kalem). */
+export const VARSAYILAN: Partial<ModelKollari> = { k1b: true, k2: true };
+let M: ModelKollari = { ...KOL_KAPALI, ...VARSAYILAN };
+export const kolAyarla = (k: Partial<ModelKollari>): void => { M = { ...KOL_KAPALI, ...k }; };
 
 /** Kol adı → bayraklar. `hepsi` kolların birbirini gizleyip gizlemediğini gösterir. */
-const KOLLAR: Record<string, Partial<ModelKollari>> = {
+export const KOLLAR: Record<string, Partial<ModelKollari>> = {
+  /** C5 ÖNCESİ model — ölçüm turunun tabanı. Silinmedi: bekçi "yeni model eskisinden gerçekten
+   *  daha yakın mı" sorusunu ancak eskisini koşturabildiği sürece sorabilir. */
+  eski: {},
   taban: {},
   k1a: { k1a: true },
   k1b: { k1b: true },
@@ -77,6 +88,9 @@ const KOLLAR: Record<string, Partial<ModelKollari>> = {
   k4: { k4: true },
   // `hepsi` k1'in İKİ kolundan yapısal olanı alır (k1a ile k1b aynı kaybı iki kez sayardı).
   hepsi: { k1b: true, k2: true, k3: true, k4: true },
+  // UYGULANAN kol (D-086). Kendi başına bir varyanttır: uygulanacak birleşim, uygulanmadan
+  // ÖNCE ölçülür — "iki kol tek tek iyiydi, birlikte de iyidir" bir varsayımdır.
+  secilen: { k1b: true, k2: true },
 };
 
 // D-015: masa/servis ayrı tutulmaz; padsDone'dan türetilir (store ile aynı kaynak — world.ts).
@@ -96,6 +110,10 @@ interface State {
   /** Personel kademeleri — B2'de gerçekten SATIN ALINIR (eski sim bunları bedava sayıyordu). */
   waiterTray: number;
   waiterSpeed: number;
+  /** Bulaşıkçı kademeleri (leğen/hız) — oyunda karakter panelinden ALINIR; sim hiç almıyordu
+   *  ve bu yüzden K3 bulaşıkçıyı sonsuza dek kademe 0'da sayıyordu (rapor Bulgu 5 ②). */
+  dishCarry: number;
+  dishSpeed: number;
   /** Görev hattı index'i (M1 ödülleri): tamamlanan görev cüzdana reward ekler. */
   questIdx: number;
   /** ODA: lavabo seviyesi (B4; 0 = kapalı). Pad açılışı 1, kalanı yükseltme noktasından. */
@@ -236,7 +254,7 @@ function avgServeDist(tables: number, areasOpen: number): number {
 /** K1b — açık masalar arasındaki ORTALAMA gerçek (BFS) mesafe. Aynı ızgara, aynı yol bulucu;
  *  yeni bir sayı UYDURULMAZ, mesafe düzenden türer. */
 const araCache = new Map<string, number>();
-function avgInterTableDist(tables: number, areasOpen: number): number {
+export function avgInterTableDist(tables: number, areasOpen: number): number {
   const key = `${tables}|${areasOpen}`;
   const hit = araCache.get(key);
   if (hit != null) return hit;
@@ -265,7 +283,7 @@ function avgInterTableDist(tables: number, areasOpen: number): number {
  *        bir masa daha dolaşmak demek (C3 §6: açık masa sayısıyla BÜYÜYOR — 8 masada %11,
  *        20 masada %58). Kusur "biraz iyimser" değil, YAPIYA ait.
  */
-const carrierRate = (tray: number, speed: number, dist: number, ara = 0): number =>
+export const carrierRate = (tray: number, speed: number, dist: number, ara = 0): number =>
   tray / ((2 * dist + Math.max(0, tray - 1) * ara) / speed + tray * CARRY_HANDLE);
 
 /**
@@ -308,6 +326,71 @@ function carryRateOf(s: State, oyuncusuz = false): number {
   return M.k1a ? ham * carryRealization(w.tables.length) : ham;
 }
 
+/* ─────────── K3'ün İKİ KUSURU (rapor Bulgu 5) — ölçülerek kapatıldı ───────────
+ * İlk hâli G1'de 3,20 diyordu, oyunun kendi tick'i aynı senaryoda 7,53 ölçmüştü (%42).
+ * Sebebi iki YAPISAL eksikti, kalibrasyon değil:
+ *
+ * ① Kirli bardağa TAM bir gidiş-dönüş yazılıyordu. Gerçekte boştaki garson zaten tezgâha
+ *    DÖNMEKTE; kirliyi o dönüşün üstüne alır ve leğen dönüş yolundadır. Ödenen bedel turun
+ *    tamamı değil, SAPMA payıdır:  d(masa→leğen) + d(leğen→tezgâh) − d(masa→tezgâh).
+ *    D-083'ün dozu (tek bardak) tam bu kısa taahhüt için seçilmişti.
+ * ② Sim bulaşıkçının yükseltme merdivenini HİÇ satın almıyordu (leğen 2→4→6→8 ₺600/2000/5000,
+ *    hız 2,0→2,4→2,8 ₺700/2200). D-083 o merdiven tavandayken 20 masada temiz bardağın hiç
+ *    bitmediğini ölçmüştü; model kademe 0'da donmuş bir bulaşıkçı varsayıyordu.
+ */
+
+/** ① Boştaki garsonun kirli için ödediği EK yol (sapma payı) — tezgâha zaten dönüyor. */
+const sapmaCache = new Map<string, number>();
+function avgDishDetour(tables: number, areasOpen: number): number {
+  const key = `${tables}|${areasOpen}`;
+  const hit = sapmaCache.get(key);
+  if (hit != null) return hit;
+  const sp = servicePlace(areasOpen);
+  const grid = getNavGrid(tables, areasOpen);
+  const yol = (a: Vec3n, bx: number, bz: number, reach: number): number => {
+    const path = findNavPath(grid, [a[0], 0, a[2]], bx, bz, reach);
+    if (!path || path.length === 0) return 0;
+    let d = Math.hypot(path[0][0] - a[0], path[0][1] - a[2]);
+    for (let k = 1; k < path.length; k++) d += Math.hypot(path[k][0] - path[k - 1][0], path[k][1] - path[k - 1][1]);
+    return d;
+  };
+  const wash = reachWash(areasOpen);
+  let toplam = 0, n = 0;
+  for (let i = 0; i < tables; i++) {
+    const t = LAYOUT.tables[i].table as Vec3n;
+    const masaLegen = yol(t, sp.dish[0], sp.dish[2], wash);
+    const legenTezgah = yol(sp.dish as Vec3n, sp.pickup[0], sp.pickup[2], REACH_PICKUP);
+    const masaTezgah = yol(t, sp.pickup[0], sp.pickup[2], REACH_PICKUP);
+    toplam += Math.max(0, masaLegen + legenTezgah - masaTezgah);
+    n += 1;
+  }
+  const avg = n > 0 ? toplam / n : 0;
+  sapmaCache.set(key, avg);
+  return avg;
+}
+
+/** Bulaşıkçının kendi döngüsü: leğenden çık, kirli topla, leğene dön. */
+const legenCache = new Map<string, number>();
+function avgDishToTable(tables: number, areasOpen: number): number {
+  const key = `${tables}|${areasOpen}`;
+  const hit = legenCache.get(key);
+  if (hit != null) return hit;
+  const sp = servicePlace(areasOpen);
+  const grid = getNavGrid(tables, areasOpen);
+  let toplam = 0, n = 0;
+  for (let i = 0; i < tables; i++) {
+    const t = LAYOUT.tables[i].table;
+    const path = findNavPath(grid, [sp.dish[0], 0, sp.dish[2]], t[0], t[2], REACH_TABLE);
+    if (!path || path.length === 0) continue;
+    let d = Math.hypot(path[0][0] - sp.dish[0], path[0][1] - sp.dish[2]);
+    for (let k = 1; k < path.length; k++) d += Math.hypot(path[k][0] - path[k - 1][0], path[k][1] - path[k - 1][1]);
+    toplam += d; n += 1;
+  }
+  const avg = n > 0 ? toplam / n : 0;
+  legenCache.set(key, avg);
+  return avg;
+}
+
 /**
  * K3'ün SABİT NOKTASI. `washRateOf` akışın AZALAN fonksiyonudur (akış arttıkça boş vakit azalır),
  * aranan akış ise onun ARTAN tarafı: en büyük `f ≤ tavan` öyle ki `f ≤ washRateOf(f)`.
@@ -345,18 +428,28 @@ function washRateOf(s: State, akis: number, oyuncusuz = false): number {
   // Boşluk payı: taşıma tavanının kullanılmayan kısmı (D-083 tetiği "servis edecek kimse yok").
   const bos = tavan > 0 && Number.isFinite(tavan) ? Math.max(0, 1 - akis / tavan) : 0;
 
+  // ① SAPMA payı: tezgâha zaten dönen taşıyıcı için kirli, turun tamamı değil ek yoldur.
+  const sapma = avgDishDetour(w.tables.length, w.areasOpen);
+  const kirliOran = (hiz: number, adet: number): number => adet / (sapma / hiz + adet * CARRY_HANDLE);
+
   const wSpeed = C.waiter.speedUpgrades.speeds[s.waiterSpeed];
   const waiters = w.services[THE_SERVICE]?.waiters ?? 0;
   // D-083: boştaki garson TEK kirli alır (idleDishCarry) — kısa taahhüt, ölçülerek seçildi.
-  const garson = bos * waiters * carrierRate(C.waiter.idleDishCarry, wSpeed, dist);
+  const garson = bos * waiters * kirliOran(wSpeed, C.waiter.idleDishCarry);
   // Oyuncu boş vaktinde elle yıkar (q_wash); tepsi kapasitesiyle taşır.
-  const oyuncu = oyuncusuz ? 0 : bos * carrierRate(
-    C.character.tray.values[s.char.tray], C.character.speed.values[s.char.speed], dist);
-  // Bulaşıkçı SÜREKLİ çalışır (kısmi assist: oyuncudan yavaş, küçük leğen — kademe 0 modellenir,
-  // sim bulaşıkçı yükseltmesi satın almıyor).
-  const bulasikci = w.services[THE_SERVICE]?.hasDishwasher
-    ? carrierRate(2, C.dishwasher.speedUpgrades.speeds[0], dist)
-    : 0;
+  const oyuncu = oyuncusuz ? 0
+    : bos * kirliOran(C.character.speed.values[s.char.speed], C.character.tray.values[s.char.tray]);
+  // ② Bulaşıkçı SÜREKLİ çalışır ve KADEMELERİ vardır: leğenden çık, kapasitesi dolana dek masa
+  //    dolaş, leğene dön. Bir masada eşik kadar (dirtyThreshold) kirli birikir → durak sayısı.
+  let bulasikci = 0;
+  if (w.services[THE_SERVICE]?.hasDishwasher) {
+    const kap = dishCarryCapacityFor(s.dishCarry);
+    const hiz = dishSpeedFor(s.dishSpeed);
+    const legenMasa = avgDishToTable(w.tables.length, w.areasOpen);
+    const duraklar = Math.max(1, Math.ceil(kap / C.cups.dirtyThreshold));
+    const ara = avgInterTableDist(w.tables.length, w.areasOpen);
+    bulasikci = kap / ((2 * legenMasa + (duraklar - 1) * ara) / hiz + kap * CARRY_HANDLE);
+  }
   return garson + oyuncu + bulasikci;
 }
 
@@ -617,6 +710,22 @@ function trySpend(s: State): void {
     }
     return;
   }
+  // K3: bardak darboğazsa oyuncu bulaşıkçının merdivenini alır (oyunda karakter panelinden;
+  // "yetişemiyor" hissi v28/v29'da tam bu yüzden yükseltmeye bağlanmıştı). Akıllı-oyuncu
+  // kuralı servis merdiveniyle aynı: darboğaz olan kolu yükselt.
+  if (M.k3 && deriveWorld(s.padsDone).services[THE_SERVICE]?.hasDishwasher && bindingArm(s) === 'bardak') {
+    const kap = dishCarryNextCost(s.dishCarry);
+    const hiz = dishSpeedNextCost(s.dishSpeed);
+    const secim: [number | null, 'carry' | 'speed'][] = [[kap, 'carry'], [hiz, 'speed']];
+    const uygun = secim.filter((x) => x[0] != null).sort((a, b) => a[0]! - b[0]!)[0];
+    if (uygun) {
+      if (s.wallet >= uygun[0]!) {
+        s.wallet -= uygun[0]!;
+        if (uygun[1] === 'carry') s.dishCarry += 1; else s.dishSpeed += 1;
+      }
+      return;
+    }
+  }
   const lavCost = lavaboUpgradeCost(s.lavabo);
   if (lavCost != null) {
     if (s.wallet >= lavCost) {
@@ -687,6 +796,7 @@ function spendSnap(s: State) {
     tlTop: s.tableLevels.reduce((a, b) => a + b, 0),
     tray: s.char.tray, magnet: s.char.magnet, speed: s.char.speed,
     wt: s.waiterTray, ws: s.waiterSpeed, lav: s.lavabo,
+    dc: s.dishCarry, ds: s.dishSpeed,
   };
 }
 type Snap = ReturnType<typeof spendSnap>;
@@ -702,6 +812,8 @@ function boughtLabel(a: Snap, b: Snap): string | null {
   if (b.speed > a.speed) return `karakter: hız ${b.speed}`;
   if (b.wt > a.wt) return `garson tepsi ${b.wt}`;
   if (b.ws > a.ws) return `garson hız ${b.ws}`;
+  if (b.dc > a.dc) return `bulaşıkçı leğen ${b.dc}`;
+  if (b.ds > a.ds) return `bulaşıkçı hız ${b.ds}`;
   return null;
 }
 
@@ -712,7 +824,7 @@ function runProfile(eff: number, log = false, buys?: Buy[]): Map<string, number>
     stationLevels: Array.from({ length: MAX_SERVICES }, () => 0),
     tableLevel: 0, tableLevels: [], padsDone: [],
     char: { tray: 0, magnet: 0, speed: 0 },
-    waiterTray: 0, waiterSpeed: 0,
+    waiterTray: 0, waiterSpeed: 0, dishCarry: 0, dishSpeed: 0,
     questIdx: 0, lavabo: 0,
   };
   const MAX_T = 60 * 60 * 12; // B5a: şeridin 12 birimi 6 saatin ötesine taşıyor — ölçüm penceresi büyüdü
@@ -749,7 +861,7 @@ function runProfile(eff: number, log = false, buys?: Buy[]): Map<string, number>
  * kollar birbirini gizleyebilir (taşıma kısılınca bardak tavanı hiç konuşmayabilir), o yüzden
  * "tek tek etkisiz" ile "birlikte etkisiz" ayrı sorulardır.
  */
-interface Olcut {
+export interface Olcut {
   ilkAlim: number | undefined;
   acilisEnUzun: number;
   acilisAlim: number;
@@ -761,7 +873,7 @@ interface Olcut {
   masaEnUzun: number;
 }
 
-function olcutler(): Olcut {
+export function olcutler(): Olcut {
   const idealBuys: Buy[] = [];
   const ideal = runProfile(1, false, idealBuys);
   const otomasyon = ideal.get('Garson');
@@ -811,24 +923,28 @@ interface GercekSenaryo {
   tableLevel: number;
   waiterTray: number;
   waiterSpeed: number;
+  dishCarry: number;
+  dishSpeed: number;
   /** `docs/olcum-kuyruk.txt` — oyunun kendi tick'iyle ÖLÇÜLEN servis/dk (D-083 sonrası tam koşu). */
   olculen: number;
 }
 
-const GERCEK: GercekSenaryo[] = [
-  { ad: 'G1 · 4 masa · 1 garson', sonPad: 'table4', stationLevel: 1, tableLevel: 0, waiterTray: 0, waiterSpeed: 0, olculen: 7.53 },
-  { ad: 'G2 · 8 masa · 1 garson', sonPad: 'z2table4', stationLevel: 3, tableLevel: 1, waiterTray: 1, waiterSpeed: 1, olculen: 5.93 },
-  { ad: 'G3 · 12 masa · 2 garson', sonPad: 'z3table4', stationLevel: 5, tableLevel: 2, waiterTray: 1, waiterSpeed: 1, olculen: 8.27 },
-  { ad: 'G4 · 20 masa · 3 garson', sonPad: 'z3table12', stationLevel: 6, tableLevel: 4, waiterTray: 2, waiterSpeed: 1, olculen: 16.13 },
+export const GERCEK: GercekSenaryo[] = [
+  // Kademeler `tools/olcum-kuyruk.ts`in SENARYOLAR dizisiyle birebir (waiterUpgrades).
+  { ad: 'G1 · 4 masa · 1 garson', sonPad: 'table4', stationLevel: 1, tableLevel: 0, waiterTray: 0, waiterSpeed: 0, dishCarry: 0, dishSpeed: 0, olculen: 7.53 },
+  { ad: 'G2 · 8 masa · 1 garson', sonPad: 'z2table4', stationLevel: 3, tableLevel: 1, waiterTray: 1, waiterSpeed: 1, dishCarry: 1, dishSpeed: 1, olculen: 5.93 },
+  { ad: 'G3 · 12 masa · 2 garson', sonPad: 'z3table4', stationLevel: 5, tableLevel: 2, waiterTray: 1, waiterSpeed: 1, dishCarry: 1, dishSpeed: 1, olculen: 8.27 },
+  { ad: 'G4 · 20 masa · 3 garson', sonPad: 'z3table12', stationLevel: 6, tableLevel: 4, waiterTray: 2, waiterSpeed: 1, dishCarry: 2, dishSpeed: 1, olculen: 16.13 },
 ];
 
 /** Senaryonun model tahmini (müşteri/dk) — oyuncusuz, o an açık kollarla. */
-function modelDebisi(g: GercekSenaryo): number {
+export function modelDebisi(g: GercekSenaryo): number {
   const padsDone = zincireKadar(g.sonPad);
   const st: State = {
     t: 0, wallet: 0, lifetime: 999999, stationLevels: [g.stationLevel], tableLevel: g.tableLevel,
     tableLevels: [], padsDone, char: { tray: 0, magnet: 0, speed: 0 },
-    waiterTray: g.waiterTray, waiterSpeed: g.waiterSpeed, questIdx: C.quests.length,
+    waiterTray: g.waiterTray, waiterSpeed: g.waiterSpeed,
+    dishCarry: g.dishCarry, dishSpeed: g.dishSpeed, questIdx: C.quests.length,
     lavabo: padsDone.includes('lavabo') ? 1 : 0,
   };
   const w = deriveWorld(padsDone);
@@ -848,7 +964,7 @@ function dogrula(): void {
   console.log('--- MODEL ↔ GERCEK (olcum-kuyruk.ts, oyunun kendi tick`i, D-083 sonrasi) ---');
   console.log('  Sapma = |model - olculen| / olculen. KUCUK olan model gercege YAKIN.');
   console.log('');
-  const adlar = ['taban', 'k1a', 'k1b', 'k2', 'k3', 'k4', 'hepsi'];
+  const adlar = ['taban', 'k1a', 'k1b', 'k2', 'k3', 'k4', 'hepsi', 'secilen'];
   const head = 'kol'.padEnd(6) + '| ' + GERCEK.map((g) => g.ad.split(' · ')[0].padStart(15)).join(' | ') + ' | ORT SAPMA';
   console.log('olculen'.padEnd(6) + '| ' + GERCEK.map((g) => `${g.olculen.toFixed(2)}/dk`.padStart(15)).join(' | ') + ' |     —');
   console.log(head);
@@ -870,6 +986,9 @@ function dogrula(): void {
   kolAyarla(KOLLAR.taban);
 }
 
+/** Kol degistiginde mesafe onbellekleri tazelenmeli (kol mesafe TERIMINI degistiriyor). */
+export function onbellekTemizle(): void { distCache.clear(); araCache.clear(); sapmaCache.clear(); legenCache.clear(); }
+
 function karsilastir(): void {
   console.log('=== C5 — MODEL KOLLARI KARSILASTIRMASI (ayni kosu, fark yalniz modelden) ===');
   console.log('');
@@ -877,7 +996,7 @@ function karsilastir(): void {
   console.log('                               3) otomasyon (Garson) < 15 dk · 4) en uzun bekleme <= 20 dk');
   console.log('"masa enUzun" = Normal profilde en uzun MASA YUKSELTMESI beklemesi (C1in sahte 21,4 dk).');
   console.log('');
-  const adlar = ['taban', 'k1a', 'k1b', 'k2', 'k3', 'k4', 'hepsi'];
+  const adlar = ['taban', 'k1a', 'k1b', 'k2', 'k3', 'k4', 'hepsi', 'secilen'];
   const bas = (x: number | undefined, birim: 'sn' | 'dk' | 'sa'): string =>
     x == null || Number.isNaN(x)
       ? '—'
@@ -909,14 +1028,14 @@ function karsilastir(): void {
 
   console.log('');
   console.log('--- Gec-oyun sahnesi (20 masa · L6 · garson 3 · lavabo L6): kol basina DARBOGAZ ---');
-  for (const ad of adlar) {
+  for (const ad of ['taban', 'k1a', 'k1b', 'k2', 'k3', 'k4', 'hepsi', 'secilen']) {
     kolAyarla(KOLLAR[ad]);
     distCache.clear();
     araCache.clear();
     const st: State = {
       t: 0, wallet: 0, lifetime: 0, stationLevels: [6], tableLevel: 4, tableLevels: [],
       padsDone: [...GEC_OYUN_PADS], char: { tray: 4, magnet: 3, speed: 3 },
-      waiterTray: 3, waiterSpeed: 1, questIdx: 0, lavabo: lavaboMaxLevel(),
+      waiterTray: 3, waiterSpeed: 1, dishCarry: 0, dishSpeed: 0, questIdx: 0, lavabo: lavaboMaxLevel(),
     };
     const w = deriveWorld(st.padsDone);
     st.tableLevels = Array.from({ length: w.tables.length }, () => st.tableLevel);
@@ -957,7 +1076,7 @@ function run() {
   console.log('=== Köşe Kıraathanesi — Ekonomi Simülasyonu (B2: TEK servis, bottleneck) ===\n');
   const s0: State = {
     t: 0, wallet: 0, lifetime: 0, stationLevels: [0], tableLevel: 0, tableLevels: [], padsDone: [],
-    char: { tray: 0, magnet: 0, speed: 0 }, waiterTray: 0, waiterSpeed: 0, questIdx: 0, lavabo: 0,
+    char: { tray: 0, magnet: 0, speed: 0 }, waiterTray: 0, waiterSpeed: 0, dishCarry: 0, dishSpeed: 0, questIdx: 0, lavabo: 0,
   };
   console.log(`Sabit çay fiyatı: ${TEA_PRICE} ₺ · Başlangıç: 1 masa, oran ${rate(s0).toFixed(2)} ₺/sn\n`);
 
@@ -1062,7 +1181,7 @@ function run() {
   ];
   for (const [name, patch] of scenes) {
     const st: State = { t: 0, wallet: 0, lifetime: 0, stationLevels: [0], tableLevel: 0, tableLevels: [], padsDone: [],
-      char: { tray: 0, magnet: 0, speed: 0 }, waiterTray: 0, waiterSpeed: 0, questIdx: 0, lavabo: 0, ...patch } as State;
+      char: { tray: 0, magnet: 0, speed: 0 }, waiterTray: 0, waiterSpeed: 0, dishCarry: 0, dishSpeed: 0, questIdx: 0, lavabo: 0, ...patch } as State;
     const w = deriveWorld(st.padsDone);
     // Senaryo bir ANLIK GÖRÜNTÜ, bir ilerleme değil: masalar senaryonun seviyesinde doğar
     // (k2 açıkken "yeni masa L0 doğar" kuralı burada geçerli olsaydı senaryo başka bir şey ölçerdi).
@@ -1085,10 +1204,11 @@ function run() {
 
 /* Giris: SIMKOL yoksa TABAN (eski cikti birebir korunur — bekci bunu denetler).
  * SIMKOL=karsilastir  → rapor tablosu · SIMKOL=k1b vb. → o kolla tam cikti. */
-const SECIM = process.env.SIMKOL ?? '';
-if (SECIM === 'karsilastir') {
-  karsilastir();
-} else {
+/* Giris: SIMKOL yoksa YURURLUKTEKI model (D-086 = k1b + k2).
+ * SIMKOL=eski  -> C5 oncesi model · SIMKOL=karsilastir -> kol tablosu. */
+export function anaKosu(): void {
+  const SECIM = process.env.SIMKOL ?? '';
+  if (SECIM === 'karsilastir') { karsilastir(); return; }
   if (SECIM) {
     if (!KOLLAR[SECIM]) {
       console.error(`Bilinmeyen kol: ${SECIM} (gecerli: ${Object.keys(KOLLAR).join(', ')})`);
@@ -1100,3 +1220,6 @@ if (SECIM === 'karsilastir') {
   }
   run();
 }
+
+// Test icinde import edilirken kendiliginden KOSMAZ (bekci fonksiyonlari cagirir).
+if (!process.env.VITEST) anaKosu();

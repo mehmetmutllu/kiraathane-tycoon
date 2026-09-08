@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 76 · YAPILAN 62 · %82):**
+**Oturum bütçesi (TOPLAM 76 · YAPILAN 63 · %83):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -20,12 +20,12 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | G görsel taban | 4/4 ✅ |
 | | A temizlik | 3/3 ✅ |
 | | B model geçişi + maket taşıması | 13/13 ✅ |
-| | **C zincir ve denge** | **4/5 🔧** |
+| | **C zincir ve denge** | **5/5 ✅** |
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
 | | D meta katman | 0/5 ⏳ |
 | | E arayüz ve cila | 1/4 🔧 |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **34/48** |
+| **Program toplam** | | **35/48** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -36,7 +36,7 @@ defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:**
 
 ---
 
-## Faz C — ZİNCİR VE DENGE (4/5) 🔧
+## Faz C — ZİNCİR VE DENGE (5/5) ✅
 - ✅ **C1 — ölçü donduktan sonraki tek ölçüm (D-078)** · geometri dengeyi bozmadı (zincir +%0,8),
   "plato" bulgusu çürüdü, tempo denetiminin 3 ölçütü de ölçülür oldu · `docs/denge-raporu-c1.md`
   · vitest 463 · denge sayısı değişmedi.
@@ -49,9 +49,11 @@ defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:**
 - ✅ **C4 — bardak kilidi ölçüldü ve açıldı (D-082 → D-083)** · boştaki garson bulaşık topluyor:
   B2 0,80 → 7,53 servis/dk, terk %33 → %5 · `docs/bardak-raporu-c4.md` · vitest 485 ·
   tek yeni denge sayısı `waiter.idleDishCarry: 1`.
-- ⏳ **C5 — sim'i gerçeğe yaklaştırmak:** taşıma modeli (G4'te gerçekleşen %58) · masa yükseltmesi
-  kalem kalem · bardak döngüsü (D-083'ü de saymalı) · sabır. **Sırada bu var; yeni akışın sınavı
-  da bu tur (İA faz kapısı).**
+- ✅ **C5 — sim gerçeğe yaklaştırıldı (D-086)** · dört model kusuru varyant olarak ölçüldü, ikisi
+  girdi (taşıma çok duraklı + masa kalem kalem), üçü ölçülerek elendi. Model↔gerçek sapması
+  **%36 → %8**, sahte masa beklemesi **21,4 → 4,5 dk** · `docs/sim-gercek-raporu-c5.md` ·
+  bekçi `tests/sim-model.test.ts` (17 test, 3 mutasyon) · vitest 552 · **denge sayısı değişmedi.**
+  Açılan kalem: gerçek modelde 20 dk ölçütü 6 kez ihlal (kendi turunu ister).
 
 ## Faz İA — İŞ AKIŞI HIZLANDIRMA (3/3) ✅ — D-084
 - ✅ **P1 — mantık kuruldu + hafıza kesimi.** Fable 5.1 ölçtü: tam ölçüm koşusu 8 dk 02 sn × 7 =
@@ -71,14 +73,21 @@ defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:**
   `tests/sira-kilidi.test.ts` (40 test, **dokuz mutasyonla** doğrulandı) · sıra kilidi gerçek
   geçmişte sınandı (C3 turu temiz, C4 turu ihlal). Araç ilk koşusunda **üç gerçek sapma** buldu.
 
-**Faz kapısı (ayrı oturum DEĞİL, C5'in içinde koşar):** yeni akışla yapılan denge turunun süresi
-git damgalarıyla ölçülür ve `docs/oturum-akisi-mantik.md` §4 tahminiyle (168 → ~95 dk)
-karşılaştırılır; sapma > %15 ise mantık düzeltilir. Bütçe düzeltmesi 2026-09-08'de bu fazı
-**üç kalemlik** (P1-P3) saydı — doğrulama kalem değil kapıdır.
+**Faz kapısı ÖLÇÜLDÜ (C5 turu, 2026-09-08):** 17:56Z → 18:27Z = **31 dk** (tahmin ~95 dk).
+**Ama karşılaştırma birebir DEĞİL ve öyle sayılmamalı:** C4'ün 168 dakikasının üçte biri
+tick-temelli tam koşulardı; C5'in aracı ANALİTİK (2 sn) ve gereken iki tick koşusu arkaplanda
+PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulandı ne çürütüldü —
+**asıl sınav tick-temelli bir denge turu.** Ölçülen gerçek kazançlar: üç dosyalık okuma seti
+(oturum başı), uzun koşuların paralel arkaplanı, hazır ölçüm iskeleti.
 
 ## Bilinen açık kalemler
+- **Geç-oyun eğrisi 20 dk ölçütünü ihlal ediyor** — D-086'nın açtığı kalem: model gerçeğe
+  yaklaşınca Normal profilde aşan alım 2 → **6**, en uzun **43,4 dk** (`servis L6`; eski modelde
+  23,4 görünüyordu). `economy.config.ts`'e dokunur → **kendi ölçüm turunu ister.**
+- **Sim'in taşıma tavanı 4 masada fazla kötümser** (model 6,36 < ölçülen 7,53 müşteri/dk) —
+  elenen `k3` bardak kolunun önündeki tek engel; kodu duruyor, bu kalem çözülünce yeniden ölçülür.
 - **Nav ızgarası ↔ oyuncu çarpışması aynı dünyayı görmüyor** (`actorRadius` sandalyesiz,
   `playerRadius` sandalyeler katı) — **Faz D**.
-- `servis L6` 23,4 dk beklemesi · D-046 ④ kaba, ⑤ yok · sipariş nesnesi v1.1'de.
+- D-046 ④ kaba, ⑤ yok · sipariş nesnesi v1.1'de.
 - Gölgenin telefondaki maliyeti ölçülmedi — **Faz F riski**.
 - Bundle ~1.17MB (three.js) — Faz F'de kod-bölme.
