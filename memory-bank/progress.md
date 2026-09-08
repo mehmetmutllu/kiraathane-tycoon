@@ -1925,6 +1925,13 @@ tek yönlü sıra. Ölçü hedefi kullanıcı kararıyla **A**: kat 34 × 34, du
     bulaşıkçıyla ORTAK).
   - **Tek yeni denge sayısı `waiter.idleDishCarry: 1`** (1/2/4 ölçüldü, 1 açık ara kazandı).
   - **vitest 485/485 · smoke 28/28 · tsc + build temiz.**
+- ⏳ **AÇIK KALEM (C5'ten ÖNCE) — oturum akışı çok yavaş.** Kullanıcı sordu (2026-09-08): bir
+  oturum 2 saat sürüyor, sebebi memory yapısı mı başka bir şey mi. Ham gözlem `activeContext.md`'de
+  (süre dağılımı + iki ana sebep). **Kullanıcı kararı: dağınık iyileştirme uygulanmaz; sonraki
+  oturumda FABLE 5.1 net bir mantık kurar, hızlandırma ona göre yapılır.** Kullanıcının kendi
+  notu: *"activecontext çok şişik ama onu direkt memory dosyaları ile de çözebiliriz"* — yani
+  çözüm yerinde budama olmak zorunda değil, hafıza yapısını değiştirmek de olabilir.
+  (Boyutlar: `activeContext.md` 4.170 · `decisions.md` 2.319 · `progress.md` 1.945 satır.)
 - ⏳ **SIRADAKİ (C5):** **sim'in gerçeğe yaklaşması** (taşıma modeli — G4'te gerçekleşen %58 ·
   masa-başı yükseltme kalem kalem · bardak döngüsü · sabır). Açık kalan: nav ızgarası
   (`actorRadius`, sandalyesiz) ile oyuncu çarpışması (`playerRadius`, sandalyeler katı) aynı

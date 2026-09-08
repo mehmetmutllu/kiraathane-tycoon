@@ -43,7 +43,56 @@ Faz C **4/5**. Sanat/asset hâlâ bilerek en sonda.
 **Doğrulama:** vitest **485/485** (482 → +3) · smoke **28/28** · tsc + build temiz.
 **Tek yeni denge sayısı:** `waiter.idleDishCarry: 1` (1/2/4 ölçüldü, 1 açık ara kazandı).
 
+---
+
+## AÇIK KALEM — OTURUMLAR ÇOK UZUN SÜRÜYOR (2026-09-08, kullanıcı sorusu)
+
+Kullanıcı sordu: *"neden yapılan her şey aşırı uzun sürüyor, sırf bu chat 2 saat sürdü. bunun
+geliştirme memory yapısıyla vs ilgisi var mı?"*
+
+**Bu oturumun (C4) süresi nereye gitti — gözlem, ölçüm değil:**
+
+| iş | payı |
+|---|---|
+| ölçüm aracını sıfırdan yazmak (~600 satır) | ~%20 |
+| **aracın KENDİ hatalarını ayıklamak** (bot duvar dışında sıkıştı · mobilyaya dayandı · varyant sessizce etkisiz kaldı) | ~%15 |
+| simülasyon koşuları (tam koşu ≈ 1 milyon tick; 7 kez koştu) | ~%15 |
+| **yanlış yola girip geri dönmek** (dar tetik yazıldı, ölçüldü, test edildi, sonra geniş tetiğe dönüldü) | ~%15 |
+| uygulama + 3 bekçi + 4 mutasyon doğrulaması | ~%15 |
+| **aynı bulguyu 4 dosyaya yazmak** (rapor · decisions · progress · activeContext) | ~%12 |
+| soru-cevap turları (4 tur) | ~%8 |
+
+**İki ana sebep ayırt edildi:**
+1. **Yöntemin kendisi ağır ve bu BİLİNÇLİ** — "önce ölç → sor → uygula → mutasyonla doğrulanmış
+   bekçi" protokolü bugün ÜÇ gerçek hatayı yakaladı (kural kilidi hiç açmıyordu · garson iki
+   tepsiyi birden taşıyordu · sayaç yanlış kişiye yazıyordu). Bu sürenin çoğu israf değil, bedel.
+2. **Sıra yanlış kuruldu (asistanın hatası):** dar tetik ÖNCE uygulandı sonra ölçüldü; oysa
+   karşılaştırma sayısı (6,80 ↔ 7,27) implementasyondan önce elde vardı. Bir tam
+   uygulama+test+ölçüm turu boşa gitti. Ayrıca ölçüm botu ilk koşuda doğrulanmadan sonuç üretti.
+
+### >>> KULLANICI KARARI: hızlandırmayı SONRAKİ OTURUMDA FABLE 5.1 TASARLASIN <<<
+*"direk hızlandırma önerilerinden ziyade sonraki chatte fable 5.1 çalışsın ve net bir mantık
+kursun, ona göre hızlandırma yapalım."*
+
+Yani: dağınık iyileştirme kalemleri UYGULANMAZ. Fable 5.1 önce **net bir mantık** kurar (oturum
+akışının neresi zorunlu bedel, neresi israf; hangi adım hangi sırada; belge yazımı nereye), sonra
+ona göre hızlandırma yapılır. Asistanın bu oturumda çıkardığı ham gözlemler girdi olarak
+kullanılabilir ama BAĞLAYICI DEĞİL:
+- `activeContext.md` **4.170 satır** — tanımı gereği "şu an" dosyası ama hiç budanmıyor, içinde
+  20+ eski oturumun tam anlatısı var (geçmişi zaten `decisions.md` + git tutuyor).
+  **Kullanıcı notu: "activecontext çok şişik ama onu direkt memory dosyaları ile de çözebiliriz"**
+  — yani çözüm yerinde budama DEĞİL, hafızanın (memory) yapısını değiştirmek de olabilir.
+- Aynı bulgu 4 dosyaya yazılıyor, içerikleri %80 aynı.
+- Alternatifler uygulamadan ÖNCE ölçülmeli.
+- Sorular tek turda toplanmalı.
+- Geliştirme sırasında kısa koşu, yalnız finalde tam koşu.
+
+**Diğer dosya boyutları (2026-09-08):** `progress.md` 1.945 satır · `decisions.md` 2.319 satır.
+
+---
+
 ### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**(0) Fable 5.1 ile oturum-akışı hızlandırma mantığını kur** (yukarıdaki açık kalem), sonra
 **C5 — sim'i gerçeğe yaklaştırmak.** İlk somut kalem `simulate.ts`'in **taşıma modeli** (G4'te
 gerçekleşen %58; model hedefi hiç değişmeyen ideal taşıyıcı varsayıyor) · masa yükseltmesi kalem
 kalem (sahte 21,4 dk kapanır) · bardak döngüsü (artık D-083'ü de saymalı) · sabır.
