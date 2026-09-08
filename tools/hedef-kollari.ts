@@ -196,6 +196,34 @@ export const HEDEF_KOLLARI: Record<string, HedefKol> = {
     },
   },
 
+  /* hE — İKİNCİ EKSEN. hD yoğunluğu SABİT TOPLAMLA taradı; yani "24 kademe ama daha az ₺" hiç
+   *      sorulmadı. Karar paketi iki eksenli olmalı (kaç tane × ne kadar), yoksa seçilen kolun
+   *      bedeli ölçülmemiş bir varsayıma dayanır. Bu kol kademe sayısını hD'nin en verimli
+   *      noktasında (24) sabitler ve yalnız TOPLAMI kısar. */
+  hE: {
+    ad: 'hE',
+    ne: 'YOĞUN + KISIK: 24 kademe SABİT, toplam ödül doz (hA ölçeğinin oranı)',
+    birim: 'ölçek oranı',
+    taban: 0,
+    dozlar: [0, 0.005, 0.01, 0.02, 0.03, 0.05],
+    fabrika: (oran) => {
+      if (oran <= 0) return null;
+      const esikler = yogunEsikler(24);
+      const pay = esikler.reduce((a, e) => a + e, 0);
+      const toplam = kazancOlcekToplam * oran;
+      return () => sayacli(esikOdeyici(esikler, (d) => d.lifetime, (e) => (toplam * e) / pay, 1));
+    },
+    yaz: (oran) => {
+      if (oran <= 0) return 'ödül yok';
+      const esikler = yogunEsikler(24);
+      const pay = esikler.reduce((a, e) => a + e, 0);
+      const toplam = kazancOlcekToplam * oran;
+      const ilk = Math.round((toplam * esikler[0]) / pay);
+      const son = Math.round((toplam * esikler[esikler.length - 1]) / pay);
+      return `24 kademe · ${ilk}…${son} ₺ (top. ${Math.round(toplam).toLocaleString('tr-TR')})`;
+    },
+  },
+
   /* hC — İKİSİ BİRLİKTE. C5'in dersi: kollar bağımsız değildir, birleşim KAZARA oluşmaz —
    *      uygulanacak hâl neyse o ayrı bir varyant satırı olarak ölçülür. */
   hC: {

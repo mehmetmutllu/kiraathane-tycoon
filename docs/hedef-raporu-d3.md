@@ -55,11 +55,18 @@ aynısı, farkı hiçbir config alanına yazmaması.
 | **hB** | **Mekân** eşikleri (3 · 6 · 10 · 14 · 18 · 24. pad) · ödül = o pad'in maliyeti × doz | oran |
 | **hC** | hA + hB **birlikte** (plan §6: iki kategori de ₺ verir) | oran |
 | **hD** | **YOĞUNLUK**: toplam ödül SABİT, kademe **sayısı** doz | adet |
+| **hE** | **YOĞUN + KISIK**: kademe 24'te SABİT, **toplam** ödül doz | oran |
 
 **hD neden sonradan eklendi:** ilk üç kolun ortak bulgusu, ödülün *büyüklüğünü* artırmanın 20 dk'yı
 aşan pencerelerin içine düşen ₺'yi artırmadığıydı — altı kademe, altı pencereyle örtüşmüyordu. Yani
 asıl kaldıraç "ne kadar" değil "kaç tane" olabilirdi. hD tam onu ayırır: toplam sabit, tek değişken
 yoğunluk. Plan §6 zaten ~30 hedef diyor; bu kol o sayının tempo karşılığını ölçer.
+
+**hE neden gerekti:** hD yoğunluğu *sabit toplamla* taradı — yani "24 kademe **ama daha az ₺**"
+hiç sorulmamış oldu. Doz aslında iki eksenli (kaç tane × ne kadar) ve karar tek eksende verilirse
+seçilen kolun bedeli ölçülmemiş bir varsayıma dayanırdı. hE kademe sayısını hD'nin en verimli
+noktasında (24) sabitler ve yalnız toplamı kısar. Bu kol commit #1'den sonra, karar paketi
+hazırlanırken eklendi — ve tablonun **en ucuz gerçek faydasını** o buldu (Bulgu 9).
 
 ### 3.2 Okunan beş kolon
 
@@ -129,6 +136,11 @@ ihlal **6/1** (Normal/İdealize) · en uzun bekleme **43,4 dk → `servis L6`** 
 | **hD** | **16 kademe** | 7k | **2k (3)** | 6/1 | **38,1 dk** | 7,95 sa | %-6,3 |
 | **hD** | **24 kademe** | 9k | **2k (3)** | 4/1 | **39,9 dk** | 7,91 sa | **%-6,8** |
 | **hD** | **40 kademe** | 8k | 1k (**5**) | 4/1 | **38,9 dk** | 7,88 sa | %-7,1 |
+| **hE** | **24 kad · %0,5** | 869 | **212 (5)** | 6/1 | 43,0 dk | 8,42 sa | **%-0,7** |
+| **hE** | **24 kad · %1** | 2k | **423 (5)** | 6/1 | 42,7 dk | 8,37 sa | **%-1,4** |
+| **hE** | **24 kad · %2** | 3k | 703 (3) | **4**/1 | 42,0 dk | 8,25 sa | **%-2,7** |
+| **hE** | **24 kad · %3** | 5k | 1k (3) | **4**/1 | 41,3 dk | 8,14 sa | %-4,1 |
+| **hE** | **24 kad · %5** | 9k | 2k (3) | **4**/1 | 39,9 dk | 7,91 sa | %-6,8 |
 | hC | %5 | 8k | 125 (1) | 5/1 | 43,4 dk | 8,09 sa | %-4,6 |
 | hC | %20 | 30k | 500 (1) | 5/1 | 43,4 dk | 7,02 sa | %-17,3 |
 | hC | %50 | 76k | 0 (0) | 4/**0** | **28,2 dk** | 5,37 sa | **%-36,7** |
@@ -178,6 +190,26 @@ kademe sayısıyla birlikte artıyor: 6 kademe → 0 · 16 kademe → 3 · 40 ka
 
 Plan §6'nın "~30 hedef" sayısı bu ölçümle örtüşüyor: 24-40 bandı, hem PENCERE'ye düşmenin
 başladığı hem zincir bedelinin %7'de düzleştiği yer.
+
+### Bulgu 9 — En ucuz gerçek fayda `hE`'de: D1'in eleme bandının ALTINDA
+
+hD'nin bulduğu yoğunluk kazancı, toplam ödül kısıldığında **kaybolmuyor** — ucuzluyor:
+
+| | ihlal | en uzun | zincir bedeli | pencereye düşen |
+|---|---|---|---|---|
+| taban | 6 | 43,4 dk | — | — |
+| `hE` 24 kademe · %0,5 · **869 ₺** | 6 | 43,0 dk | **%-0,7** | 212 ₺ (**5 ödeme**) |
+| `hE` 24 kademe · %2 · **3.000 ₺** | **4** | 42,0 dk | **%-2,7** | 703 ₺ (3 ödeme) |
+| `hD`/`hE` 24 kademe · %5 · 9.000 ₺ | 4 | 39,9 dk | %-6,8 | 2k (3 ödeme) |
+| *(kıyas)* `hA` %50 · 66.000 ₺ | 4 | 28,2 dk | %-29,4 | **0** |
+
+**`hE %2` bu tablodaki tek "ucuz gerçek fayda" noktası:** ihlali 6 → 4 indiriyor ve bedeli
+**%2,7** — D1'in elediği dokuz kolun en ucuzu **%7**'ydi. Yani hedef ödülü, D1'in eleme gerekçesine
+takılmayan **ilk** ₺ kaldıracıdır; sebebi de büyüklüğü değil, ödemeyi eğri boyunca yaymasıdır.
+
+`hE %0,5` ise pratikte bedelsiz (%-0,7 ölçüm gürültüsü mertebesinde) ve yine de ihlal
+pencerelerine **beş ayrı ödeme** düşürüyor — ihlal sayısını değiştirmiyor ama oyuncunun
+beklediği yerde bir şey oluyor.
 
 ### Bulgu 5 — İhlal SAYISI gürültülü ölçüt, "en uzun bekleme" kararlı
 
