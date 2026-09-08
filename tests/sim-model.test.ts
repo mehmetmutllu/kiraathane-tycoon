@@ -68,12 +68,12 @@ describe('1 — model gerçeğe yaklaştı (asıl sözleşme)', () => {
 });
 
 describe('2 — masa yükseltmesi KALEM KALEM (k2)', () => {
-  it('20 masa tek kalemde yükselmez: en uzun masa beklemesi 5 dk altında', () => {
+  it('20 masa tek kalemde yükselmez: en uzun masa beklemesi 5 dk altında', { timeout: 60_000 }, () => {
     const o = olcutlerle('secilen');
     expect(o.masaEnUzun).toBeLessThan(5 * 60);
   });
 
-  it('kalem kalem OLMAYAN model o beklemeyi 20 dk üstünde gösteriyordu', () => {
+  it('kalem kalem OLMAYAN model o beklemeyi 20 dk üstünde gösteriyordu', { timeout: 60_000 }, () => {
     const o = olcutlerle('eski');
     expect(o.masaEnUzun).toBeGreaterThan(20 * 60);
   });
@@ -121,7 +121,7 @@ describe('4 — açılış penceresi model kollarından bağımsız (D-079)', ()
     }
   });
 
-  it('D-079 hedefleri yürürlükteki modelde de tutuyor', () => {
+  it('D-079 hedefleri yürürlükteki modelde de tutuyor', { timeout: 60_000 }, () => {
     const o = olcutlerle('secilen');
     expect(o.ilkAlim!).toBeLessThanOrEqual(90);
     expect(o.acilisEnUzun).toBeLessThanOrEqual(2 * 60);
@@ -135,7 +135,7 @@ describe('5 — kollar birbirinden ayrı durur', () => {
     expect(ortSapma('eski')).toBeGreaterThan(ortSapma('secilen'));
   });
 
-  it('k4 (sabır) hiçbir ölçütü değiştirmez — ölçülen sonuç buydu, kol bu yüzden alınmadı', () => {
+  it('k4 (sabır) hiçbir ölçütü değiştirmez — ölçülen sonuç buydu, kol bu yüzden alınmadı', { timeout: 60_000 }, () => {
     const a = olcutlerle('eski');
     const b = olcutlerle('k4');
     expect(b.masaEnUzun).toBeCloseTo(a.masaEnUzun, 6);

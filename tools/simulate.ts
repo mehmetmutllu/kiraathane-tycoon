@@ -46,11 +46,15 @@ import { getNavGrid, servicePlace, LAYOUT, REACH_TABLE, REACH_PICKUP, reachWash 
 
 type Vec3n = readonly [number, number, number];
 import { findNavPath } from '../src/game/nav.ts';
+import { pathToFileURL } from 'node:url';
 
 const DT = 1; // saniyelik adım
 const TEA_PRICE = C.service.basePrice;
-const SOFT_MAX = C.service.upgrade.maxLevel; // ₺ ile çıkılabilen en yüksek seviye
-const TABLE_SOFT_MAX = C.tables.upgrade.maxLevel;
+/* D1: bu iki tavan eskiden modül yükleme anında SABİTLENİYORDU. `DENGE` kolu merdivenin
+ * basamağını değiştirebildiği için artık her okumada config'ten türer — yoksa varyant
+ * uygulanır ama sim eski tavanı kullanır ve ölçüm sessizce yalan söyler. */
+const softMax = () => C.service.upgrade.maxLevel; // ₺ ile çıkılabilen en yüksek seviye
+const tableSoftMax = () => C.tables.upgrade.maxLevel;
 
 /* ═════════════ C5 — MODEL KOLLARI (simulate.ts'i gerçeğe yaklaştırma) ═════════════
  * C1/C3 dört kusur saydı; her biri AYRI KOL olarak ölçülür, hiçbiri "zaten doğrudur"
@@ -74,6 +78,17 @@ const KOL_KAPALI: ModelKollari = { k1a: false, k1b: false, k2: false, k3: false,
 export const VARSAYILAN: Partial<ModelKollari> = { k1b: true, k2: true };
 let M: ModelKollari = { ...KOL_KAPALI, ...VARSAYILAN };
 export const kolAyarla = (k: Partial<ModelKollari>): void => { M = { ...KOL_KAPALI, ...k }; };
+
+/* ── D1 MODEL KOLU (m1) — "TAŞIMA darboğazken oyuncu TAŞIYICIYI yükseltir" ──────────────
+ * Sim'in oyuncusu garson tepsisini/hızını YALNIZ görev hattı istediğinde alıyor. Hat
+ * `waiterSpeed t1` + `waiterTray t1,t2`de bitiyor; üçüncü tepsi kademesi (₺2.500 → tepsi 4)
+ * hiçbir koşuda satın alınmıyor — oysa 8 masadan sonra bağlayıcı kol HEP taşıma ve oyunda o
+ * kademe karakter panelinden alınabiliyor. Yani "taşıma tavanını açan bir kaldıraç tempoyu
+ * değiştirmiyor" sonucu bir oyun gerçeği değil, modelin kendi kör noktasıydı.
+ * Kural, servis merdiveni (`stationBottleneck`) ve bulaşıkçı (k3) için ZATEN yazılı olanın
+ * aynısı: darboğaz olan kolu yükselt. Ayrı kol olarak ölçülür, kalıcı yazılmaz. */
+export let m1: boolean = false;
+export const m1Ayarla = (v: boolean): void => { m1 = v; };
 
 /** Kol adı → bayraklar. `hepsi` kolların birbirini gizleyip gizlemediğini gösterir. */
 export const KOLLAR: Record<string, Partial<ModelKollari>> = {
@@ -525,7 +540,7 @@ function stationBottleneck(s: State): boolean {
 }
 
 function upgradeUnlocked(s: State): boolean {
-  if (s.stationLevels[THE_SERVICE] >= SOFT_MAX) return false;
+  if (s.stationLevels[THE_SERVICE] >= softMax()) return false;
   return requiresMet(C.service.upgradeRequires, gateOf(s));
 }
 
@@ -533,7 +548,7 @@ const stationCost = (s: State) => upgradeCost(C.service.upgrade, s.stationLevels
 
 // İdealize tek tableLevel: 1. alanın gate'i referans (v21 alan-başı; sim masa seviyesini tekilleştirir).
 function tableUpgradeUnlocked(s: State): boolean {
-  return requiresMet(C.tables.upgradeRequiresByArea[0], gateOf(s)) && s.tableLevel < TABLE_SOFT_MAX;
+  return requiresMet(C.tables.upgradeRequiresByArea[0], gateOf(s)) && s.tableLevel < tableSoftMax();
 }
 
 /**
@@ -547,7 +562,7 @@ function enUcuzMasa(s: State, w: Dunya): { i: number; cost: number } | null {
   let best: { i: number; cost: number } | null = null;
   for (let i = 0; i < w.tables.length; i++) {
     const lv = s.tableLevels[i];
-    if (lv >= TABLE_SOFT_MAX) continue;
+    if (lv >= tableSoftMax()) continue;
     const alan = w.tables[i].areaIndex;
     const kapi = C.tables.upgradeRequiresByArea[alan] ?? C.tables.upgradeRequiresByArea[0];
     if (!requiresMet(kapi, gateOf(s))) continue;
@@ -693,6 +708,21 @@ function trySpend(s: State): void {
     }
     return;
   }
+  // m1: taşıma darboğazsa taşıyıcı merdiveni pad'den ÖNCE gelir — servis merdiveninde
+  // uygulanan "akıllı oyuncu önce darboğazı açar" kuralının taşıma kolundaki karşılığı.
+  if (m1 && (deriveWorld(s.padsDone).services[THE_SERVICE]?.waiters ?? 0) > 0 && bindingArm(s) === 'taşıma') {
+    const tepsi = waiterTrayNextCost(s.waiterTray);
+    const hiz = waiterSpeedNextCost(s.waiterSpeed);
+    const uygun = ([[tepsi, 'tepsi'], [hiz, 'hiz']] as [number | null, 'tepsi' | 'hiz'][])
+      .filter((x) => x[0] != null).sort((a, b) => a[0]! - b[0]!)[0];
+    if (uygun) {
+      if (s.wallet >= uygun[0]!) {
+        s.wallet -= uygun[0]!;
+        if (uygun[1] === 'tepsi') s.waiterTray += 1; else s.waiterSpeed += 1;
+      }
+      return; // biriktiriyor
+    }
+  }
   const pad = currentPad(s);
   if (pad) {
     if (s.wallet >= pad.cost) {
@@ -738,7 +768,14 @@ function trySpend(s: State): void {
 }
 
 interface Milestone { name: string; hit: (s: State) => boolean }
-const MILESTONES: Milestone[] = [
+/* D1: liste eskiden modül yükleme anında kuruluyordu; oysa AD'ları config'ten sayı okuyor
+ * (`zone2` ₺'si, servis tavanı). `DENGE` kolu o sayıları değiştirince ad bayatlıyordu.
+ * Artık tembel kurulur; kol değiştiren `milestoneTazele()` çağırır. */
+let _milestones: Milestone[] | null = null;
+export function milestoneTazele(): void { _milestones = null; }
+function MS(): Milestone[] {
+  if (_milestones) return _milestones;
+  _milestones = [
   { name: 'İlk satın alma (2. Masa)', hit: (s) => s.padsDone.includes('table2') },
   { name: `Karakter: Tepsi T1 (${charNextCost('tray', 0)}₺)`, hit: (s) => s.char.tray >= 1 },
   { name: 'Çay ocağı L1 (z1)', hit: (s) => s.stationLevels[0] >= 1 },
@@ -750,7 +787,7 @@ const MILESTONES: Milestone[] = [
   { name: `Karakter: Mıknatıs M1 (${charNextCost('magnet', 0)}₺)`, hit: (s) => s.char.magnet >= 1 },
   { name: 'TEZGÂH kuruldu (L4)', hit: (s) => s.stationLevels[0] >= C.service.counterLevel },
   { name: 'TOST açıldı (L5)', hit: (s) => s.stationLevels[0] >= C.service.tostLevel },
-  { name: `Servis ₺-max L${SOFT_MAX}`, hit: (s) => s.stationLevels[0] >= SOFT_MAX },
+  { name: `Servis ₺-max L${softMax()}`, hit: (s) => s.stationLevels[0] >= softMax() },
   { name: `ZONE-2 AÇILDI (₺${C.pads.find((p) => p.id === 'zone2')?.cost})`, hit: (s) => s.padsDone.includes('zone2') },
   { name: 'Z2: 2. Masa', hit: (s) => s.padsDone.includes('z2table2') },
   { name: '2. Garson', hit: (s) => s.padsDone.includes('waiter2') },
@@ -765,7 +802,9 @@ const MILESTONES: Milestone[] = [
   { name: 'Masa yükseltme L1 (bahşiş)', hit: (s) => tlMax(s, deriveWorld(s.padsDone)) >= 1 },
   { name: 'lifetime 1.000 ₺', hit: (s) => s.lifetime >= 1_000 },
   { name: 'lifetime 10.000 ₺', hit: (s) => s.lifetime >= 10_000 },
-];
+  ];
+  return _milestones;
+}
 
 const NL = String.fromCharCode(10);
 
@@ -841,7 +880,7 @@ function runProfile(eff: number, log = false, buys?: Buy[]): Map<string, number>
       if (label) buys!.push({ t: s.t, label });
     }
     advanceQuests(s); // M1: görev ödülleri cüzdana
-    for (const m of MILESTONES) {
+    for (const m of MS()) {
       if (!done.has(m.name) && m.hit(s)) {
         done.set(m.name, s.t);
         if (log) {
@@ -851,9 +890,18 @@ function runProfile(eff: number, log = false, buys?: Buy[]): Map<string, number>
         }
       }
     }
-    if (done.size === MILESTONES.length) break;
+    if (done.size === MS().length) break;
   }
   return done;
+}
+
+/** Bir profilin ARDIŞIK ALIM boşlukları — D1 tarayıcısı ihlalleri buradan sayar.
+ *  Boşluğun etiketi onu BİTİREN alımdır: oyuncu o süre boyunca ONUN için biriktiriyordu. */
+export interface Bosluk { t: number; gap: number; label: string }
+export function profilBosluklari(eff: number): Bosluk[] {
+  const buys: Buy[] = [];
+  runProfile(eff, false, buys);
+  return buys.map((b, i) => ({ t: b.t, label: b.label, gap: b.t - (i === 0 ? 0 : buys[i - 1].t) }));
 }
 
 /* ═══════════ C5 — KOL KARŞILAŞTIRMASI (rapor §Bulgular tablosunu üretir) ═══════════
@@ -870,6 +918,11 @@ export interface Olcut {
   normalEnUzun: number;
   normalEnUzunEtiket: string;
   normalAsan: number;
+  /** 20 dk'yı aşan alımların TAMAMI (D1: sayı tek başına hangi basamak olduğunu söylemiyordu). */
+  asanlar: Bosluk[];
+  /** Normal profilin TÜM boşlukları — D1 tarayıcısının parmak izi bunu okur (ayrı koşu ETMEZ:
+   *  üçüncü bir profil koşusu tarama süresini 1,5 katına çıkarıyordu). */
+  bosluklarNormal: Bosluk[];
   masaEnUzun: number;
 }
 
@@ -896,6 +949,8 @@ export function olcutler(): Olcut {
     normalEnUzun: gaps[0]?.gap ?? NaN,
     normalEnUzunEtiket: gaps[0]?.label ?? '—',
     normalAsan: gaps.filter((g) => g.gap > 20 * 60).length,
+    asanlar: gaps.filter((g) => g.gap > 20 * 60).map((g) => ({ t: g.t, gap: g.gap, label: g.label })).sort((a, b) => a.t - b.t),
+    bosluklarNormal: [...gaps].sort((a, b) => a.t - b.t).map((g) => ({ t: g.t, gap: g.gap, label: g.label })),
     masaEnUzun: masa[0]?.gap ?? NaN,
   };
 }
@@ -1088,7 +1143,7 @@ function run() {
   console.log('Hedef (D-079): ilk alım < 90 sn; GARSONA KADAR hiçbir boşluk > 2 dk; otomasyon < 15 dk.');
   const first = ideal.get('İlk satın alma (2. Masa)');
   console.log(first != null && first <= 90 ? `  1) İlk satın alma ${fmtTime(first)} ✓` : `  1) İlk satın alma HEDEF DIŞI: ${first}`);
-  const notHit = MILESTONES.filter((m) => !ideal.has(m.name)).map((m) => m.name);
+  const notHit = MS().filter((m) => !ideal.has(m.name)).map((m) => m.name);
   if (notHit.length) console.log('6 saatte ulaşılamayan:', notHit.join(', '));
 
   /* Faz C1 — D-010'un üç ölçütünden yalnız BİRİ ölçülüyordu; kalan ikisi düz yazı olarak durup
@@ -1140,7 +1195,7 @@ function run() {
   });
   const header = 'Milestone'.padEnd(34) + ' | ' + results.map((r) => r.name.split(' ')[0].padStart(8)).join(' | ');
   console.log(header);
-  for (const m of MILESTONES) {
+  for (const m of MS()) {
     const row = m.name.padEnd(34) + ' | ' +
       results.map((r) => (r.res.has(m.name) ? fmtTime(r.res.get(m.name)!) : '—').padStart(8)).join(' | ');
     console.log(row);
@@ -1156,12 +1211,19 @@ function run() {
     const gaps = r.buys.map((b, i) => ({ ...b, gap: b.t - (i === 0 ? 0 : r.buys[i - 1].t) }));
     gaps.sort((a, b) => b.gap - a.gap);
     const worst = gaps.slice(0, 3);
-    const over = gaps.filter((g) => g.gap > WAIT_LIMIT).length;
+    const asan = gaps.filter((g) => g.gap > WAIT_LIMIT);
     console.log(
       `  ${r.name.split(' ')[0].padEnd(7)} en uzun ${fmtTime(worst[0]?.gap ?? 0).padStart(7)} → ${worst[0]?.label ?? '—'}` +
-        `   (20 dk'yı aşan: ${over})`,
+        `   (20 dk'yı aşan: ${asan.length})`,
     );
-    for (const g of worst.slice(1)) console.log(`          ardından ${fmtTime(g.gap).padStart(7)} → ${g.label}`);
+    /* D-086 Bulgu 7 açık kalemi: ihlal SAYISI tek başına hangi basamağın pahalı olduğunu
+       söylemiyor. İlk üç yerine AŞANın TAMAMI, gerçekleşme sırasıyla ve o anın darboğazıyla
+       birlikte basılır — kol seçimi bu listeden yapılır, göz kararıyla değil. */
+    for (const g of [...asan].sort((a, b) => a.t - b.t)) {
+      console.log(
+        `          @ ${fmtTime(g.t).padStart(7)}  bekleme ${fmtTime(g.gap).padStart(7)} → ${g.label}`,
+      );
+    }
   }
 
   // ÜÇ KOL tablosu (Ö5): geliri hangi tavan kelepçeliyor, ve garson/tepsi ne satın alıyor.
@@ -1221,5 +1283,12 @@ export function anaKosu(): void {
   run();
 }
 
-// Test icinde import edilirken kendiliginden KOSMAZ (bekci fonksiyonlari cagirir).
-if (!process.env.VITEST) anaKosu();
+/* Kutuphane olarak import edildiginde KOSMAZ — yalniz DOGRUDAN calistirilinca kosar.
+ * (Once yalniz VITEST bakiliyordu; D1'in `olcum-gec-oyun.ts` tarayicisi da bu dosyayi
+ * import ediyor ve import aninda 4 sn'lik tam kosuyu tetiklememeli.) */
+const dogrudanCalisti = (() => {
+  const arg = process.argv[1];
+  if (!arg) return false;
+  return import.meta.url === pathToFileURL(arg).href;
+})();
+if (!process.env.VITEST && dogrudanCalisti) anaKosu();
