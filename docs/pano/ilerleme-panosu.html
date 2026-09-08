@@ -214,31 +214,31 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum · Faz İA · 3/3 — kapanış otomasyonu",
-  "baslik": "Defterin yanlış olduğunu insan değil, defteri okuyan araç söyledi",
-  "aciklama": "Her oturum bir <b>kapanış</b> ile bitiyor: ilerleme dosyası güncellenir, bu pano elle altı ayrı yerinden düzeltilir, testler koşar, commit atılır. Bu turun işi o kapanışın <b>elle yapılan iki adımını</b> makineye devretmekti.<br><br>Birincisi sayaçlar. Panonun sayıları bundan böyle <b>ilerleme dosyasındaki tek tablodan türetiliyor</b>; panoya elle sayı yazılmıyor. Ama asıl kazanç türetme değil <b>denetim</b> çıktı: aynı sayı ilerleme dosyasında <b>üç ayrı yerde</b> duruyor (bütçe satırı, tablo, faz başlığı) ve dördüncü bir yerden de türetilebiliyor (fazın altındaki kalem listesi). Araç dördünü <b>bağımsız</b> okuyup karşılaştırıyor, tutmuyorlarsa panoyu <b>yazmıyor</b>. İlk koşusunda <b>üç gerçek sapma</b> buldu — üçü de aylardır sessizce yanlış duruyordu.<br><br>İkincisi sıra kilidi. Geçen turun bulgusu şuydu: <i>\"önce ölç, sonra karar sor\"</i> kuralı koda <b>yazılı olarak</b> girmişti ve yine ihlal edildi, çünkü yazılı kural <b>hiçbir şeyi engellemiyordu</b>. Artık kapanışta bir denetim koşuyor: denge dosyasına dokunan ilk commit'ten önce bir ölçüm commit'i yoksa <b>uyarıyor ve çıkış kodunu düşürüyor</b>. Araç uydurma veriyle değil, projenin <b>kendi geçmişiyle</b> sınandı.",
+  "etiket": "Bu oturum · Faz D · 1/5 — geç-oyun eğrisi",
+  "baslik": "Ölçüt eğriyi değil, okuyanın seçtiği profili sınıyormuş",
+  "aciklama": "Geçen tur simülatör gerçeğe yaklaşınca bir ölçüt kırmızıya döndü: <i>\"20 dakikayı aşan tek alım kalmasın\"</i> kuralı, geç oyunda <b>altı kez</b> ihlal ediliyordu — en uzunu <b>43,4 dakika</b>. Bu tur o ihlalin turuydu.<br><br>Düzeltmenin dokuz olası kaldıracı vardı ve dokuzu da <b>koda değil varyanta</b> yazılıp ölçüldü. Dozlar tahmin edilmedi, <b>çözüldü</b>: her kol için \"ölçütü tutturan en küçük doz\" aranıp o dozun Kat 1 içeriğine faturası okundu. Fatura hepsinde aynı yöne çıktı — ölçütü tutturan her kol oyunun <b>ilk katını kısaltıyordu</b>: 8,48 saatlik içerik ×0,80 dozda 7,90 saate, çay tabanı düşürülünce 7,04 saate, tam temizlikte <b>%42</b>ye kadar iniyordu. Yani \"ölçüt geçsin\" ile \"Kat 1 uzun olsun\" aynı anda istenemiyordu.<br><br>Asıl bulgu kolların hiçbirinde değil, ölçütün kendisindeydi: <b>profili hiç yazılmamıştı.</b> Kardeş üç tempo ölçütü <b>İdealize</b> oyuncuda (verim 1,0) okunuyor, bu dördüncüsü <b>Normal</b>de okunuyordu. Aynı eğri profil değiştikçe <b>İdealize 1 · Yoğun 1 · Normal 6 · Rahat 11</b> ihlal veriyor. Hüküm eğriden değil, <b>okuyanın seçtiği profilden</b> geliyormuş. Kardeşlerinin profilinde ölçüt bugün de geçiyor: aşan 1, en uzun 23,9 dk.<br><br>Karar bu yüzden ekonomiye değil <b>ölçüte</b> yazıldı: dördüncü ölçüt de İdealize profilinde hüküm verir, Normal ve Rahat sayıları silinmez ama <b>hükümsüz gözlem bandı</b> olarak basılır. Ekonominin ayar dosyası iki commit’te de <b>sıfır satır</b> değişti.",
   "adimlar": [
-   "<b>Üç sapma bulundu:</b> faz başlığı 1/2 derken tablo 2/3 diyordu · bütçesiz bir kalem listede duruyordu · \"v1.0\" kilometre taşı bütçe 73→76 olurken <b>75'te kalmıştı</b>",
-   "<b>Pano artık türev:</b> sayaçlar tek tablodan üretilir, panoya elle sayı yazılmaz",
-   "<b>Denetim yazmayı engelliyor:</b> defterin dört sayı yeri tutmuyorsa pano güncellenmiyor",
-   "<b>Sıra kilidi makinede:</b> ölçüm commit'i koddan önce gelmemişse kapanış uyarır (çıkış kodu 1)",
-   "<b>Gerçek geçmişle sınandı:</b> C3 turu <b>temiz</b> · C4 turu <b>ihlal</b> — ki D-084 tam o turdan doğmuştu",
-   "<b>40 bekçi testi · dokuz mutasyon</b>, dokuzu da yakalandı"
+   "<b>Dokuz kol varyant olarak ölçüldü</b>, dozlar tahmin değil çözüldü — dokuzu da elendi",
+   "<b>Ölçütün profili yazılı değilmiş:</b> kardeş üçü İdealize’de, bu dördüncüsü Normal’de okunuyordu",
+   "<b>Aynı eğri:</b> İdealize 1 · Yoğun 1 · Normal 6 · Rahat 11 ihlal — fark eğride değil profilde",
+   "<b>Taşıma tavanı kolu ihlali AZALTMADI, 6 → 7 artırdı</b> — \"throughput kolu Kat 1’de tükendi\" sınırı yeniden ölçüldü",
+   "<b>Bir kol atıl çıktı:</b> sim’de serbest oyun bloğu hiç koşmuyor — tempoyu <b>görev hattı</b> belirliyor",
+   "<b>15 bekçi testi · 4 mutasyon</b> · ekonomi sayısı değişmedi (0 satır)"
   ],
-  "not": "<b>Bu turun dersi bekçiden çıktı.</b> Mutasyonların ilk turunda <b>üçü kaçtı</b> ve üçü de aracın kendisinde gerçek bir kusura işaret ediyordu: bir kural sessizce seçim yapıyordu (belirsizlik hata sayılmalıydı), yazma yolu <b>hiç test edilmemişti</b> (girinti kayarsa tek sayı değişikliği 900 satırlık sahte bir diff üretirdi), ve sıra kilidinde <b>hiçbir zaman çalışmayan ölü bir koşul</b> vardı. Üçü de düzeltildi. Yani mutasyon turu bir formalite değil, aracın kendi denetimiydi."
+  "not": "<b>Kabul edilen risk bilerek ödenmedi:</b> Normal profildeki oyuncu 6. saatte bir yükseltme için <b>43,4 dakika</b> bekliyor. O beklemeyi dolduracak katman — elmas, günlük görev, hedefler, ödül ekranı — <b>henüz yok</b>; bugün içerik uzunluğu ödemek erken olurdu. Sayı gözlem bandında görünür kalıyor ve <b>Faz D bitince aynı ölçüm yeniden okunacak</b>; ölçüm aracı ve elenen kolların kodu bu iş için duruyor."
  },
  "siradaki": {
-  "etiket": "Faz C · C5 — ve yeni akışın sınavı",
-  "baslik": "Simülatör garsonu hâlâ \"ideal taşıyıcı\" sanıyor",
-  "aciklama": "İş akışı fazı bitti; sıra <b>Faz C'nin son oturumuna</b> geldi: <b>simülatörün gerçeğe yaklaşması.</b> Bugünkü model garsonu hedefi hiç değişmeyen ideal bir taşıyıcı sayıyor; 20 masalı katta bunun <b>%58'i</b> gerçekleşiyor. Masa yükseltmesini tek kalemde yapıyor, oysa oyunda masa masa alınıyor. Bardak döngüsü geçen turun kararını (boştaki garson bulaşık toplar) henüz saymıyor. Müşteri sabrı modelde hiç yok.<br><br>O oturum aynı zamanda <b>kurulan akışın sınavı</b>: süresi git damgalarıyla ölçülüp tahminle karşılaştırılacak. Hedef bir denge turunu 168 dakika yerine <b>~95 dakikada</b> kapatmak; sapma <b>%15'ten</b> büyükse hızlandırma mantığı düzeltilecek. Sınav ayrı bir oturum değil, bu fazın <b>kapısı</b>.",
+  "etiket": "Faz D · 2/5 — görev kimlikleri",
+  "baslik": "Görevlerin adı yok, yalnız sıra numarası var",
+  "aciklama": "Oyunun görev hattı bugün <b>sıra numarasıyla</b> tutuluyor: kayıtta duran şey \"kaçıncı görevdeyim\" bilgisi. Hattın ortasına bir görev eklendiği anda o numara <b>başka bir görevi</b> gösteriyor — yani hat, yayınlanmış bir kayıt varken güvenle değiştirilemez hâlde.<br><br>Sıradaki tur bunu kimliğe çeviriyor: her görevin <b>kalıcı bir adı</b> olacak, kayıt \"tamamlananlar\" listesi tutacak ve eski kayıtlar tek seferlik bir dönüşümle taşınacak. Bu bir cila işi değil, <b>meta katmanın ön koşulu</b>: Hedefler (koleksiyon), günlük görevler ve ortak ödül ekranının üçü de aynı kimliğe yaslanacak. Plan bunu açıkça yazıyor — düzeltilmeden meta katmana başlamak <b>borcu ikiye katlar</b>; bugüne dek beş ayrı yerde elle kimlik-eşleme listesi birikmiş durumda.<br><br>Bu turun ölçümü de aynı yeri işaret etti: sim’de ekonominin temposunu belirleyen şey serbest oyun değil, <b>görev hattının kendisi</b>.",
   "adimlar": [
-   "<b>Taşıma modeli:</b> ideal taşıyıcı varsayımı yerine ölçülen %58",
-   "<b>Masa yükseltmesi kalem kalem</b> — sim tek kalemde alıyor, oyun masa masa",
-   "<b>Bardak döngüsü</b> geçen turun kararını da saymalı · <b>müşteri sabrı</b> modele girmeli",
-   "<b>Faz kapısı:</b> turun süresi ölçülür, ~95 dakikadan %15'ten çok saparsa mantık düzeltilir",
-   "<b>Sonra Faz D–F:</b> meta katman, arayüz cilası, paketleme ve mağaza"
+   "<b>Sıra numarası → kalıcı kimlik</b> · kayıt \"tamamlananlar\" listesi tutar",
+   "<b>Tek seferlik göç:</b> eski kayıtlar sürüm yükseltmesiyle taşınır, ilerleme kaybolmaz",
+   "<b>Beş elle eşleme listesi</b> tek kaynağa iner",
+   "<b>Sonra:</b> Hedefler + ortak ödül ekranı · İtibar + günlük görevler · elmas ve Usta katmanı",
+   "<b>Fazın içinde bekleyen hata:</b> yürüyüş ızgarası ile oyuncunun çarpışması aynı dünyayı görmüyor"
   ],
-  "not": "<b>Sanat ve asset işi bilerek en sonda:</b> karakterler hâlâ greybox, KayKit takılmadı, animasyon yok. Kullanıcı kararı: <i>\"sistem kusursuz otursun, sonra hallederiz.\"</i> Ölçü donduğu için sanat turları artık dengeyi bozamaz."
+  "not": "<b>Faz D bitince geçen turun ölçümü yeniden okunacak:</b> meta katman geç-oyunun bekleme pencerelerini gerçekten dolduruyor mu? Ölçüm aracı hazır, elenen dokuz kolun kodu duruyor — soru o zaman tahminle değil <b>sayıyla</b> cevaplanacak."
  },
  "donemler": [
   {
@@ -336,11 +336,10 @@ h2{font-size:21px;font-weight:800}
     {
      "k": "C",
      "t": "Zincir ve denge",
-     "d": "Tek Odak · tezgâh merdiveni · global garson ve sipariş kuyruğu · simülatör gerçeğe yaklaşır. Denge <b>bir kez ölçüldü</b> (C1) · <b>Tek Odak'ın dördüncü kanalı tekleşti</b> (C2) · <b>sipariş kuyruğu ölçüldü, garson üstlenmesi bağlayıcı oldu</b> (C3). <b>Bardak kilidi ölçüldü ve açıldı</b> (C4 — boştaki garson bulaşık topluyor). Kalan: simülatörün gerçeğe yaklaşması.",
+     "d": "Tek Odak · tezgâh merdiveni · global garson ve sipariş kuyruğu · simülatörün gerçeğe yaklaşması. Denge <b>bir kez ölçüldü</b> (C1) · <b>Tek Odak’ın dördüncü kanalı tekleşti</b> (C2) · <b>sipariş kuyruğu ölçüldü, garson üstlenmesi bağlayıcı oldu</b> (C3) · <b>bardak kilidi ölçüldü ve açıldı</b> (C4) · <b>model gerçeğe yaklaştı</b> (C5 — sapma %36 → %8). <b>Faz kapandı.</b>",
      "yapilan": 5,
      "toplam": 5,
-     "kapi": "Sim tempo tablosunu tutuyor, tempo iddiaları teste yazılı",
-     "durum": "now"
+     "kapi": "Sim tempo tablosunu tutuyor, tempo iddiaları teste yazılı"
     },
     {
      "k": "İA",
@@ -353,10 +352,11 @@ h2{font-size:21px;font-weight:800}
     {
      "k": "D",
      "t": "Meta katman",
-     "d": "Görev kimlikleri · Hedefler ödülü · İtibar · günlük görev · elmas ekonomisi · Usta katmanı",
+     "d": "Görev kimlikleri · Hedefler ödülü · İtibar · günlük görev · elmas ekonomisi · Usta katmanı. <b>D1</b> geç-oyun eğrisi ölçüldü: dokuz kol elendi, düzeltilen şey eğri değil <b>tempo ölçütünün profili</b> oldu (D-087) ✓ · sırada <b>görev kimlikleri</b>.",
      "yapilan": 1,
      "toplam": 5,
-     "kapi": "Elmas kazanılıp harcanabiliyor, Usta alınabiliyor"
+     "kapi": "Elmas kazanılıp harcanabiliyor, Usta alınabiliyor",
+     "durum": "now"
     },
     {
      "k": "E",
@@ -378,6 +378,36 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "08.09.2026",
+   "etiket": "Faz D · 1. oturum (D1 — geç-oyun eğrisi · D-087)",
+   "baslik": "Dokuz kol ölçüldü, dokuzu da elendi — düzeltilen şey eğri değil ölçütün profili oldu",
+   "govde": "Geçen tur model gerçeğe yaklaşınca bir tempo ölçütü kırmızıya dönmüştü: <i>\"20 dakikayı aşan tek alım kalmasın\"</i> kuralı geç oyunda <b>iki değil altı</b> kez ihlal ediliyordu, en uzunu <b>43,4 dakika</b>. O tur kurala dokunmamıştı, çünkü kural ekonominin ayar dosyasına dokunur ve <b>o kolun ölçülmüş bir sayı satırı yoktu</b>. Bu tur o ölçümün turuydu.<br><br>Dokuz kaldıraç ayrı ayrı ölçüldü — hepsi <b>koda değil varyanta</b> yazılarak. Ve dozlar tahmin edilmedi: her kol için \"ölçütü tutturan en küçük doz\" bir tarayıcıyla <b>çözüldü</b>, sonra o dozun faturası okundu. Fatura dokuzunda da aynı yöne çıktı. Ölçütü tutturabilen dört kolun hepsi <b>Kat 1’in içeriğini kısaltıyordu</b>: fiyat eğrisi ×0,80 → 8,48 saat 7,90’a (−%7), çay tabanı 3,5 → 7,04 saate (−%17), tam temizlikte <b>%42</b>ye kadar. Kalan beş kol ölçütü zaten tutturamıyordu — ikisi tabana takıldı, biri başka bir kol tarafından domine edildi, biri <b>atıl</b> çıktı (sim’de serbest oyun bloğu hiç koşmuyor; tempoyu <b>görev hattı</b> belirliyor), ve biri — taşıma tavanı — ihlali azaltmak yerine <b>6’dan 7’ye çıkardı</b>.<br><br>Asıl bulgu kolların hiçbirinde değildi. Ölçütün <b>profili hiç yazılmamıştı.</b> Tempo denetiminin dört ölçütü var; kardeş üçü <b>İdealize</b> oyuncuda okunuyor, bu dördüncüsü <b>Normal</b>de. Aynı eğri, aynı gün, yalnız profil değişince: <b>İdealize 1 · Yoğun 1 · Normal 6 · Rahat 11</b> ihlal. Yani hüküm eğriden değil, <b>okuyanın seçtiği profilden</b> geliyordu — ve o seçim hiçbir yerde yazılı değildi. Kardeşlerinin profilinde ölçüt bugün de geçiyor: aşan <b>1</b>, en uzunu <b>23,9 dakika</b>, ve o tek aşan zaten bir önceki denge turunun <b>bilerek bıraktığı</b> yükseltme.<br><br>Karar bu yüzden ekonomiye değil ölçüte yazıldı: dördüncü ölçüt de kardeşlerinin profilinde hüküm verir; Normal ve Rahat sayıları <b>silinmez</b> ama hükümsüz bir <b>gözlem bandı</b> olarak basılır ve aşanların tamamı listelenir. Ekonominin ayar dosyası bu turun <b>iki commit’inde de sıfır satır</b> değişti.",
+   "maddeler": [
+    "<b>Dokuz kol varyant olarak ölçüldü</b> — dozlar tahmin edilmedi, tarayıcıyla çözüldü",
+    "<b>Ölçütü tutturan her kol Kat 1’i kısaltıyor:</b> −%7 · −%14 · −%17 … tam temizlikte −%42",
+    "<b>Taşıma tavanı kolu ters çıktı:</b> ihlal 6 → 7 (throughput kolunun Kat 1’de tükendiği yeniden ölçüldü)",
+    "<b>Bir kol atıl:</b> sim’de serbest oyun bloğu hiç koşmuyor — tempoyu görev hattı belirliyor",
+    "<b>Ölçüt sabitleri artık tek yerde</b> · üç-profil bloğu <b>gözlem bandı</b> oldu",
+    "<b>15 bekçi testi · 4 mutasyon</b> · vitest 567 · ekonomi sayısı değişmedi"
+   ],
+   "not": "<b>Bu turun dersi yine bekçiden çıktı.</b> Dört mutasyondan ikincisi — ölçütü bir profil kaydırmak — ilk hâlinde <b>yakalanmadı</b>. Sebep testin üst sınırıydı: 30 dakikaya kurulmuştu ve kaydırılan profilin 29,8 dakikası <b>içinden geçiyordu</b>. Sınır 26 dakikaya çekilince mutasyon yakalandı. Bir bekçinin \"geçti\" demesi, kilitlediğini göstermez.<br><br><b>Kabul edilen risk:</b> Normal profildeki oyuncu 6. saatte 43,4 dakika bekliyor; bu tur bunun için bir şey ödenmedi. O pencereleri dolduracak katman (Faz D meta) henüz yok — <b>faz bitince aynı ölçüm yeniden okunacak</b>, araç hazır duruyor."
+  },
+  {
+   "tarih": "08.09.2026",
+   "etiket": "Faz C · 5. oturum (C5 — sim gerçeğe yaklaştı · D-086) — Faz C kapandı",
+   "baslik": "Simülatör ideal bir garson hayal ediyordu; ölçünce sapması %36 çıktı",
+   "govde": "Dengeyi bu projede bir simülatör okuyor: kaç saatte ne alınır, hangi yükseltme ne kadar bekletir. Ama o simülatörün <b>kendisi hiç sınanmamıştı</b>. Bu turun işi onu oyunun kendi tik döngüsüyle karşılaştırmaktı — dört bilinen model kusuru, dördü de varyant olarak.<br><br>Sınav tek soruydu: modelin söylediği debi ile oyunun gerçekte ürettiği debi. Sonuç \"biraz iyimser\" değildi, <b>iki yönlü</b>ydü: 4 masalık mekânda model gerçeğin <b>%85</b>ini, 20 masalıkta <b>%169</b>unu söylüyordu. Ortalama sapma <b>%36</b>. Yani model erken oyunda kötümser, geç oyunda iyimserdi — ve denge kararları tam olarak o iki uçta veriliyordu.<br><br>Sebebi garsonun taşıma turuydu. Model garsonu <b>hedefi hiç değişmeyen ideal bir taşıyıcı</b> sayıyordu; oysa dört bardaklık bir tepsi <b>dört ayrı masaya</b> gidiyor ve tur, düzenin kendi yol bulmasına göre tabanın ~1,8 katı sürüyor. Bu düzeltilince sapma <b>%36 → %8</b>e indi — ve tek bir uydurma sabit kullanmadan: mesafeler mekânın kendi ızgarasından geliyor. İkinci düzeltme masa yükseltmesiydi: model 20 masayı <b>tek kalemde</b> alıyordu, oyunda masalar tek tek alınıyor. Bu, önceki denge raporundaki <b>sahte bir beklemeyi</b> kapattı: 21,4 dakika → <b>4,5 dakika</b>, başka hiçbir ölçüte dokunmadan.<br><br>Üç kol <b>ölçülerek elendi</b>. Biri sapmayı sıfıra indiriyordu ama <b>totolojiydi</b> — çarpanı kendi sınav sorularından okuyordu, örneklem dışında hiçbir öngörüsü yoktu. Biri (müşteri sabrı) ölçülen etkisi <b>tam sıfır</b> çıktı: doygun bir kuyrukta terk eden müşteri servis kapasitesini düşürmüyor. Üçüncüsü ertelenmek istendi, kullanıcı <i>\"işten kaçma\"</i> dedi; kolun iki kusuru kapatıldı, sapması %46’dan %15’e düzeldi — <b>ve yine de elendi</b>, çünkü %8’den kötüydü. Kalan sapmanın nerede olduğu da ölçüldü ve açık kalem olarak yazıldı.",
+   "maddeler": [
+    "<b>Model sınandı:</b> 4 masada gerçeğin %85’i, 20 masada %169’u — ortalama sapma %36",
+    "<b>Taşıma turu düzeltildi:</b> sapma %36 → %8, uydurma sabit yok (mesafeler mekânın ızgarasından)",
+    "<b>Masa yükseltmesi kalem kalem:</b> sahte bekleme 21,4 dk → 4,5 dk",
+    "<b>Üç kol ölçülerek elendi:</b> totoloji · etkisi sıfır çıkan sabır · düzeltilip yine geride kalan bardak tavanı",
+    "<b>17 bekçi testi · 3 mutasyon</b> · vitest 552 · <b>denge sayısı değişmedi</b>",
+    "<b>Açılan kalem:</b> gerçekleşen modelde 20 dk ölçütü Normal profilde 2 → 6 ihlale düşüyor (kendi turunu ister)"
+   ],
+   "not": "<b>İki ders kayda geçti.</b> Birincisi: <b>yanlış çözücü, doğru modeli çürük gösterir.</b> Elenen kolun denge noktası bir yineleme ile aranınca hep sıfıra iniyor ve model <i>\"mekân tamamen kilitli\"</i> diyordu; ikiye bölme yöntemi kararlı kökü buldu. Sayıdan önce <b>sayıyı üreten yöntem</b> sınanır. İkincisi: <b>kolları toplamak modeli iyileştirmiyor.</b> Hepsi birden %15, en iyi tek parça %8 — çünkü iki kol aynı garsonun aynı boş vaktini iki kez kısıyor. Kollar bağımsız değil."
+  },
   {
    "tarih": "08.09.2026",
    "etiket": "Faz İA · 2. oturum (P3 — kapanış otomasyonu)",
@@ -824,16 +854,22 @@ h2{font-size:21px;font-weight:800}
    "p": "Kurallardan biri (\"garson üstlendiği masayı teslim edene kadar bırakmaz\") ölçünce <b>kodda hiç yok</b> çıktı: hedef her karede yeniden seçiliyordu. Ölçülen bedel: garson ilk durağına giderken hedefinden <b>başlangıç mesafesinin 5,6 katı</b> kadar uzaklaşabiliyor, tam turu modelin beklediğinin <b>2,35 katına</b> çıkıyordu. Üstelik önceliğin gerekçesi de tutmuyordu — \"en sabırsıza git\" kuralı uzak masaları korumak için konmuştu ama uzak masalar hâlâ daha çok terk ediyordu. Beş kural yan yana ölçüldü, kullanıcı <b>en adil</b> olanı seçti ve uygulandı: servis edilen müşteri 20 masada <b>172 → 239</b>, adalet ölçüsü 0,53 → <b>0,24</b>. <b>6 bekçi</b> tutuyor (eşik listesi değil davranış sözleşmesi), iki mutasyonla doğrulandı."
   },
   {
+   "sev": "Hata",
+   "renk": "now",
+   "b": "Yürüyüş ızgarası ile oyuncunun çarpışması <b>aynı dünyayı görmüyor</b>",
+   "p": "Personelin yol bulduğu ızgara sandalyeleri <b>geçilebilir</b> sayıyor; oyuncunun çarpışması ise onları <b>katı</b> sayıyor. Yani iki sistem aynı salonun iki farklı haritasını okuyor — personelin rahatça geçtiği bir aralıkta oyuncu takılabiliyor. Bugüne kadar zarar vermedi çünkü aralıklar geniş, ama masa yoğunluğu arttıkça ya da mobilya ölçüsü değiştikçe <b>sessizce</b> kötüleşir: hiçbir test bunu tutmuyor. <b>Faz D</b>'de kapatılacak; ölçü katmanı donduğu için (163 bekçi) düzeltme dengeye dokunmadan yapılabilir."
+  },
+  {
    "sev": "Açık",
    "renk": "now",
    "b": "Gölge geri açıldı — telefondaki maliyeti <b>ölçülmedi</b>",
    "p": "Gölge, masaüstünde ölçülüp kapatılmıştı: kare süresi 1,31 → 0,67 ms, yani <b>karenin yarısı</b>. Kullanıcı maketin gölgelerini görüp geri isteyince takım maketin değerleriyle açıldı (yumuşak gölge, 2048 harita, ±30 ortografik). Telefonda ne kadara mal olduğu <b>bilinmiyor</b>. Ölçüm Faz F'de yapılacak; ayar kolları hazır: harita 1024'e inebilir, gölge kamerası oyuncunun etrafına daraltılabilir. <b>Karar gölgesizliğe dönmek değil</b>, önce ölçmek."
   },
   {
-   "sev": "Plan",
-   "renk": "now",
-   "b": "Faz B'nin bütçesi 9 → 12 oturuma çıktı",
-   "p": "Maket taşıması tek oturumluk bir iş değil: duvar · arka bant ve odalar · kamera + ölçü dondurma. Bütçe olduğu gibi bırakılsaydı iş kaybolmaz, <b>Faz C'nin denge ölçümlerinin arasına sızardı</b> — ve ölçü sonradan değiştiği için o ölçümler ikinci kez yapılırdı. v1.0 hedefi bu yüzden 68'den <b>71. oturuma</b> kaydı. Karşılığında Kat 1'in ölçüsü bir kez donuyor ve denge bir kez ölçülüyor."
+   "sev": "Kayda geçti",
+   "renk": "done",
+   "b": "Faz B'nin bütçesi 9 → 13 oturuma çıktı — <b>karşılığı alındı</b>",
+   "p": "Maket taşıması tek oturumluk bir iş değildi: duvar · arka bant ve odalar · kamera · aktör ölçüsü · ölçü dondurma. Bütçe olduğu gibi bırakılsaydı iş kaybolmaz, <b>Faz C'nin denge ölçümlerinin arasına sızardı</b> — ve ölçü sonradan değiştiği için o ölçümler ikinci kez yapılırdı. Karşılığında Kat 1'in ölçüsü <b>bir kez donduruldu</b> (163 bekçi testi) ve denge onun üstünde <b>bir kez</b> ölçüldü (C1). Bütçe o günden bu yana bir kez daha düzeltildi: iş akışı fazı eklenince <b>73 → 76</b>, v1.0 kilometre taşı da onunla birlikte taşındı."
   },
   {
    "sev": "Çözüldü",
@@ -844,8 +880,8 @@ h2{font-size:21px;font-weight:800}
   {
    "sev": "Tempo",
    "renk": "now",
-   "b": "3. salonun açılışı ortalama oyuncuyu <b>27 dakika</b> bekletiyor",
-   "p": "B4a ölçümünün yan bulgusu: 3.400 ₺'lik <code>zone3</code> pad'i, Normal profilde “hiçbir şey satın alınamayan” <b>26,9 dakikalık</b> bir aralık üretiyor ve bu, “20 dakikayı aşan alım kalmasın” ölçütünü aşan <b>tek</b> nokta. B4'ten önce de vardı, B4 değiştirmedi. Kolun kendisi sağlam (alan açılışı gerçekten pahalı olmalı), sorun onun <b>öncesindeki gelirin</b> düşüklüğü — Faz C'nin denge turunda bakılacak."
+   "b": "Normal profil oyuncusu 6. saatte <b>43,4 dakika</b> bekliyor — <b>kabul edilen risk</b> (D-087)",
+   "p": "Eski kayıt 3. salonun 26,9 dakikalık boşluğuydu; model gerçeğe yaklaşınca (C5) tablo değişti ve <i>\"20 dakikayı aşan tek alım kalmasın\"</i> ölçütü Normal profilde <b>altı</b> ihlale düştü, en uzunu <b>43,4 dk</b> (<code>servis L6</code>). D1 turu dokuz düzeltici kolu ölçtü ve <b>dokuzu da elendi</b>: ölçütü tutturabilen dört kolun hepsi Kat 1 içeriğini <b>%7-42</b> kısaltıyordu, biri (taşıma tavanı) ihlali <b>6 → 7 artırıyordu</b>, biri atıl çıktı. Asıl bulgu ölçütün kendisindeydi: <b>profili hiç yazılmamış</b>. Kardeş üç tempo ölçütü <b>İdealize</b> oyuncuda okunuyor, bu dördüncüsü Normal'de — aynı eğri <b>İdealize 1 · Yoğun 1 · Normal 6 · Rahat 11</b> veriyor. Ölçüt kardeşlerinin profiline alındı ve <b>orada geçiyor</b> (aşan 1 · en uzun 23,9 dk); Normal ve Rahat sayıları hükümsüz <b>gözlem bandı</b> olarak basılmaya devam ediyor. Ekonomiye dokunulmadı. <b>Bu bekleme bilerek ödenmedi</b>: onu dolduracak katman (Faz D meta — elmas, günlük görev, hedefler, ödül ekranı) henüz yok. <b>Faz D bitince aynı ölçüm yeniden okunacak</b>; araç ve elenen kolların kodu hazır duruyor."
   },
   {
    "sev": "Tasarım",
@@ -878,10 +914,10 @@ h2{font-size:21px;font-weight:800}
    "p": "Faz A2'de 17 sisteme bölündü; geriye kalan 65 satır sadece bağlamı kurup sistemleri çağırıyor. Yerleşim ve kurallar ayrı dosyalara çıktı (store 2337 → 756 satır). Davranışın değişmediği tohumlu parmak iziyle ölçüldü."
   },
   {
-   "sev": "Ölçüm",
-   "renk": "wait",
-   "b": "Simülatör oyunu doğrulamıyor",
-   "p": "İki parçası kapandı. B2: simülatörün <b>oyuncu modeli</b> düzeltildi — artık görev hattını takip ediyor ve personel yükseltmelerini gerçekten satın alıyor. B5b: <b>yürüme/taşıma açığı kapandı</b> — gelir artık üç tavanın en düşüğü (talep · arz · <b>taşıma</b>) ve taşıma gerçek yol bulma mesafeleriyle hesaplanıyor. Bu ölçüm hemen bir şey buldu: geliri tezgâhtan sonra <b>taşıma</b> kelepçeliyor ve 3. garson %19 gelir getiriyor — daha önce “boşuna” sanılıyordu. C3 üçüncü bir açık buldu ve <b>ölçtü</b>: simülatör garsonu \"hedefi hiç değişmeyen, tepsi dolusu götürüp boş dönen\" ideal bir taşıyıcı sayıyor; gerçekte 20 masalı katta bunun <b>%58'i</b> gerçekleşiyor (C3 öncesi %42 idi). Kalan: taşıma modeli · masa yükseltmesinin kalem kalem alınması · bardak döngüsü · sabır. Faz C'nin son turlarında gerçeğe yaklaştırılacak."
+   "sev": "Çözüldü",
+   "renk": "done",
+   "b": "Simülatör oyunu doğrulamıyordu — ÇÖZÜLDÜ (C5)",
+   "p": "Üç parçası daha önce kapanmıştı (oyuncu modeli · yürüme ve taşıma açığı · üstlenme). Kalan dört model kusuru C5'te <b>varyant olarak ölçüldü</b> ve model oyunun kendi tik döngüsüyle sınandı. Sonuç iki yönlüydü: model 4 masada gerçeğin <b>%85</b>ini, 20 masada <b>%169</b>unu söylüyordu (ortalama sapma <b>%36</b>) — yani erken oyunda kötümser, geç oyunda iyimser. İkisi yürürlüğe girdi: <b>taşıma turu çok duraklı</b> (N bardaklık tepsi N ayrı masaya gider, mesafeler düzenin kendi yol bulmasından — sapma <b>%36 → %8</b>) ve <b>masa yükseltmesi kalem kalem</b> (sahte bekleme <b>21,4 → 4,5 dk</b>). Üçü ölçülerek elendi: biri totoloji, biri (müşteri sabrı) etkisi <b>tam sıfır</b>, biri düzeltildiği hâlde %8'in gerisinde kaldı. <b>Kalan tek kalem:</b> modelin taşıma tavanı 4 masada hâlâ fazla kötümser (6,36 < ölçülen 7,53 müşteri/dk) — elenen bardak kolunun önündeki tek engel, kodu duruyor. Bekçi <b>17 test, 3 mutasyon</b>."
   },
   {
    "sev": "Tempo",
