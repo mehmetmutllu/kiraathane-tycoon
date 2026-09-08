@@ -79,11 +79,31 @@ Havuz iki katına ve dört katına çıkarıldı (12 → 24 → 48). **Hiçbir �
 | B2 · park | servis/dk | son çeyrek temiz 0 |
 |---|---|---|
 | KONTROL | 0,80 | %100 |
-| müşterilerin %25'i bardağını götürür | **0,80** (değişim yok) | %100 |
+| müşterilerin %25'i bardağını götürür | ~~0,80 (değişim yok)~~ **ÖLÇÜM DEĞİL — aşağı bak** | — |
 | müşterilerin %50'si bardağını götürür | 1,80 | **%100** |
 
 Sebep yapısal: **iade servise orantılıdır, servis sıfırlanınca iade de sıfırlanır.** Mekân
 durduğu an çare de durur. Yavaşlatır, kurtarmaz.
+
+> ### DÜZELTME (2026-09-08, D-084 P2 damgası) — %25 satırı bir ölçüm DEĞİLDİ
+> Yeni **varyant-etkili damgası** bu satırı kırdı: `iade:0.25` koşusunun davranış parmak izi
+> kontrol koşusununkiyle **birebir aynı** (`0faedd45`) — yani varyant dünyaya **hiç dokunmadı**,
+> "değişim yok" sonucu bir ölçüm değil bir **totolojiydi**.
+>
+> **Sebep:** iade filtresi, botun kendi tohumlu üretecinden (`botRnd`, sabit tohum 1234567) çekiyor.
+> O üretecin ilk 12 çekilişi `0,944 · 0,501 · 0,562 · 0,377 · 0,596 · 0,624 · 0,264 · 0,979 · 0,392 ·
+> 0,439 · 0,301 · 0,465` — **hepsi 0,25'in üstünde**. B2'de mekân tam 12 müşteride öldüğü için 12
+> kirli bardak doğuyor ve **hiçbiri** eşiği geçmiyor. (Üreteç bozuk değil: 100.000 çekilişte %25,8
+> oran çıkıyor; sorun sabit tohumun ilk dizisiyle küçük örneklemin çakışması.)
+>
+> **Bulgu 3'ün sonucu DEĞİŞMEDİ:** %50 kolu gerçekten koştu (damga onu kırmadı) ve son çeyrekte
+> mekân yine %100 kilitli kaldı; "servise orantılı çare kurtarmaz" cümlesi o kola dayanıyor.
+> Değişen, %25 satırının **kanıt değeri**: o satır silinmedi ama ölçüm sayılmıyor.
+>
+> **Yapılacak (C5 veya sonraki ölçüm turu):** küçük örneklemde varyantın hiç tetiklenmemesi
+> yapısal bir tuzak — iade kolu yeniden ölçülecekse çekiliş tohumu koşu başına değiştirilmeli
+> ya da oran **beklenen sayıya** çevrilmeli (12 bardağın 3'ü). Kod bu turda BİLEREK değiştirilmedi:
+> denge/ölçüm değişikliği kendi turunu ve kendi ölçümünü ister (varyant kapısı, D-084).
 
 > Kilidi açabilen tek şey **servisten BAĞIMSIZ** bir temiz-bardak kaynağıdır.
 

@@ -14,34 +14,13 @@
  * ÖNEMLİ: çıktının ANAHTAR ADLARI ölçüm aracının SÖZLEŞMESİDİR — kod içindeki alan adı değişse de
  * (Faz B1: zone → alan/servis) anahtar sabit kalır, böylece diff literal olarak boş çıkar.
  */
+// Tohumlu rastgelelik + sahte localStorage ORTAK İSKELETTEN (tools/olcum-lib.ts, D-084 P2).
+import { seedRandom } from './olcum-lib';
 import { useGame, LAYOUT, servicePlace } from '../src/game/store';
 
 /** Servis kümesinin O ANKİ yeri (B3-1/D-062: 3. Alan açılınca arka banda taşınır). */
 const SP = () => servicePlace(useGame.getState().areasOpen);
 import { economyConfig } from '../src/config/economy.config';
-
-// --- Tohumlu rastgelelik (mulberry32): NPC spawn/renk/kirli konumu deterministik olsun.
-function seedRandom(seed: number): void {
-  let a = seed >>> 0;
-  Math.random = () => {
-    a = (a + 0x6d2b79f5) >>> 0;
-    let t = a;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-// localStorage yok (node) → kayıt yazma/okuma no-op.
-const g = globalThis as unknown as Record<string, unknown>;
-if (!g.localStorage) {
-  const mem: Record<string, string> = {};
-  g.localStorage = {
-    getItem: (k: string) => (k in mem ? mem[k] : null),
-    setItem: (k: string, v: string) => { mem[k] = v; },
-    removeItem: (k: string) => { delete mem[k]; },
-  };
-}
 
 const round = (n: number, d = 4) => +n.toFixed(d);
 

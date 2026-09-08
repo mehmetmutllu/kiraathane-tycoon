@@ -1,7 +1,10 @@
 /**
  * olcum-kuyruk.ts — D-046'nın SİPARİŞ KUYRUĞU iddialarını ÖLÇER (Faz C3).
  *
- * Çalıştır:  npx tsx tools/olcum-kuyruk.ts > docs/olcum-kuyruk.txt
+ * Çalıştır (D-084):
+ *   geliştirirken : npx tsx tools/olcum-kuyruk.ts            (KISA — 2 senaryo × 300 sn, < 60 sn)
+ *   sayı üretirken: OLCUM=tam npx tsx tools/olcum-kuyruk.ts > docs/olcum-kuyruk.txt
+ * Damgalar stderr'e yazar; biri kırılırsa çıkış kodu 1. Ortak iskelet: tools/olcum-lib.ts.
  *
  * NEDEN: D-046 (2026-09-06) beş kural yazdı — global havuz · bağlayıcı üstlenme · "en acil"
  * önceliği · sipariş boyuna bağlı sabır · türetilen garson sayısı — ve doğrulama satırında
@@ -23,6 +26,11 @@
  * (hazır yok), temiz bardaktan (havuz bitti) veya taşımadan (garson yetişmedi) gelebilir.
  * Üçü de ayrı sayılır, yoksa çıkan sayı yanlış kola yazılır.
  */
+// Tohum · sahte depo · biçimleyici · istatistik · KİP · DAMGA ortak iskeletten (D-084 P2).
+import {
+  seedRandom, d2, pct, ort, yuzdelik, pearson,
+  KISA, kisalt, kipBandi, damga, damgaOzeti,
+} from './olcum-lib';
 import { useGame, LAYOUT, servicePlace, streetAt } from '../src/game/store';
 import { getNavGrid, REACH_TABLE } from '../src/game/layout';
 import { findNavPath } from '../src/game/nav';
@@ -40,39 +48,8 @@ import type { NpcState, Vec3 } from '../src/game/types';
 /** simulate.ts'in taşıma modelindeki bardak başına alma+bırakma payı (sn) — aynı sayı, aynı isim. */
 const CARRY_HANDLE = 0.5;
 
-// --- Tohumlu rastgelelik (mulberry32) — tick-fingerprint.ts ile aynı, ölçüm tekrarlanabilir olsun.
-function seedRandom(seed: number): void {
-  let a = seed >>> 0;
-  Math.random = () => {
-    a = (a + 0x6d2b79f5) >>> 0;
-    let t = a;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-const g = globalThis as unknown as Record<string, unknown>;
-if (!g.localStorage) {
-  const mem: Record<string, string> = {};
-  g.localStorage = {
-    getItem: (k: string) => (k in mem ? mem[k] : null),
-    setItem: (k: string, v: string) => { mem[k] = v; },
-    removeItem: (k: string) => { delete mem[k]; },
-  };
-}
-
-const d2 = (a: readonly number[], b: readonly number[]) => Math.hypot(a[0] - b[0], a[2] - b[2]);
 const n1 = (n: number) => n.toFixed(1);
 const n2 = (n: number) => n.toFixed(2);
-const pct = (a: number, b: number) => (b === 0 ? '—' : `%${((100 * a) / b).toFixed(1)}`);
-
-function yuzdelik(xs: number[], p: number): number {
-  if (!xs.length) return NaN;
-  const s = [...xs].sort((a, b) => a - b);
-  return s[Math.min(s.length - 1, Math.floor(p * s.length))];
-}
-const ort = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : NaN);
 
 /** Pad zinciri TEK KAYNAKTAN: economy.config'in kendi sırası (elle liste tutulmaz). */
 const ZINCIR = C.pads.map((p) => p.id);
@@ -353,24 +330,6 @@ function kosu(sn: Senaryo, dt: number): Sonuc {
   };
 }
 
-function pearson(x: number[], y: number[]): number {
-  const n = x.length;
-  if (n < 3) return NaN;
-  const mx = ort(x);
-  const my = ort(y);
-  let sxy = 0;
-  let sxx = 0;
-  let syy = 0;
-  for (let i = 0; i < n; i++) {
-    const a = x[i] - mx;
-    const b = y[i] - my;
-    sxy += a * b;
-    sxx += a * a;
-    syy += b * b;
-  }
-  return sxx === 0 || syy === 0 ? NaN : sxy / Math.sqrt(sxx * syy);
-}
-
 function rapor(r: Sonuc): void {
   const sn = r.senaryo;
   const servis = r.beklemeler.filter((b) => b.sonuc === 'servis');
@@ -441,21 +400,29 @@ function rapor(r: Sonuc): void {
 
 // ---------------------------------------------------------------------------
 const DT = 0.1;
+kipBandi();
 console.log("OLCUM — SİPARİŞ KUYRUĞU / ÜSTLENME / STARVATION (Faz C3, D-046 doğrulaması)");
 console.log(`Oyunun kendi tick()'i · dt = ${DT} sn · oyuncu sokakta park (garson havuzu yalnız)`);
 console.log(`Tohum 20260908 · sabır tabanı ${C.npc.patience} sn + masa L başına ${C.tables.patiencePerLevel} sn`);
 
-for (const sn of SENARYOLAR) {
+// KISA koşuda ilk iki senaryo × 300 sn (yön gösterir); tam koşuda dördü × 900 sn (rapora girer).
+for (const sn0 of kisalt(SENARYOLAR, 2)) {
+  const sn = KISA ? { ...sn0, sure: 300 } : sn0;
   seedRandom(20260908);
-  rapor(kosu(sn, DT));
+  const r = kosu(sn, DT);
+  // DAMGA: garson hiç tur atmadıysa bu satır bir ölçüm değildir (kuyruk aracının bot damgası).
+  damga(`garson tur attı (${sn.ad.split('·')[0].trim()})`, r.turlar.length > 0, 'hiç tepsi yüklenmedi');
+  rapor(r);
 }
 
 // dt DUYARLILIĞI: 0,1 sn'lik adım sonucu belirliyor mu? Tek senaryo daha ince adımla tekrarlanır.
 // (KUYRUK_HIZLI=1 ile atlanır — karşılaştırmalı koşularda dört senaryo yeter.)
-if (!process.env.KUYRUK_HIZLI) {
+if (!KISA && !process.env.KUYRUK_HIZLI) {
   console.log(`\n\n${'#'.repeat(80)}`);
   console.log('# dt DUYARLILIK KONTROLÜ — G3 aynı senaryo, dt = 1/30');
   console.log('#'.repeat(80));
   seedRandom(20260908);
   rapor(kosu(SENARYOLAR[2], 1 / 30));
 }
+
+damgaOzeti();

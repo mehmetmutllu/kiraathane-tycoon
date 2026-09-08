@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan üretilir (P3'te `tools/pano-guncelle.mjs`).
 
-**Oturum bütçesi (TOPLAM 75 · YAPILAN 60 · %80):**
+**Oturum bütçesi (TOPLAM 76 · YAPILAN 61 · %80):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -21,15 +21,15 @@ Bu tablo **kaynaktır**; pano JSON'u buradan üretilir (P3'te `tools/pano-guncel
 | | A temizlik | 3/3 ✅ |
 | | B model geçişi + maket taşıması | 13/13 ✅ |
 | | **C zincir ve denge** | **4/5 🔧** |
-| | **İA iş akışı hızlandırma** (D-084) | **1/2 🔧** |
+| | **İA iş akışı hızlandırma** (D-084) | **2/3 🔧** |
 | | D meta katman | 0/5 ⏳ |
 | | E arayüz ve cila | 1/4 🔧 |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **32/47** |
+| **Program toplam** | | **33/48** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
-(D-084 P1-P3) iki oturumluk yeni kalem olarak eklendi → toplam 73 → 75.
+(D-084 P1-P3) üç kalemlik yeni faz olarak eklendi → toplam 73 → 76.
 
 **v1 kapsam çizgisi:** prestij · Kat 2 · sipariş nesnesi · aktif WC döngüsü · dekor instancing
 **v1.1'e**; v1 = Kat 1 + elmas/Usta + offline tavan + reklam/IAP + mağaza.
@@ -58,8 +58,12 @@ defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:**
   C4'ün 11 anahtar sayısının 9'u dört dosyanın dördünde de var. Rapor `docs/oturum-akisi-mantik.md`.
   Uygulanan: `memory-bank/arsiv/` kesimi · activeContext → 61 satırlık tur kartı · progress → bu hâl ·
   iki skill güncellendi. Hedef 168 → ~95 dk.
-- ⏳ **P2 — `tools/olcum-lib.ts`** (1 oturum): ortak iskelet + üç damga + `OLCUM=kisa|tam`;
-  kabul: kısa koşu < 60 sn, tam koşu çıktısı birebir aynı.
+- ✅ **P2 — `tools/olcum-lib.ts` + üç damga + `OLCUM=kisa|tam`.** Kısa koşu bardak **11,0 sn** ·
+  kuyruk **14,6 sn** (tabanları 8-13 dk); tam koşu çıktısı tabanla **birebir aynı** (ikisi de).
+  Damga C4 tuzağı ② yeniden üretilince yakaladı (3 damga, çıkış kodu 1). Bekçi
+  `tests/olcum-lib.test.ts` (10 test, iki mutasyonla doğrulandı). Üç araç lib'e bağlandı.
+  **Damgalar ilk tam koşuda iki GERÇEK kusur buldu:** `iade:0.25` varyantı hiç tetiklenmemiş
+  (C4 raporu §4 düzeltildi; Bulgu 3'ün sonucu değişmedi) · B1 oyuncu kipinde bot hiç yürümüyor.
 - ⏳ **P3 — kapanış otomasyonu** (½ oturum): `tools/pano-guncelle.mjs` + `oturum-bitir`'e sıra
   kilidi kontrolü (kod commit'i rapor commit'inden önceyse uyar).
 - ⏳ **P4 — doğrulama:** C5 yeni akışla koşulur, süre git damgalarıyla ölçülür; sapma > %15 ise

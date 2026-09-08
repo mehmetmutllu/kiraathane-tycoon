@@ -1,7 +1,10 @@
 /**
  * olcum-bardak.ts — D-082'nin BARDAK KİLİDİNİ ölçer (Faz C4).
  *
- * Çalıştır:  npx tsx tools/olcum-bardak.ts > docs/olcum-bardak.txt
+ * Çalıştır (D-084):
+ *   geliştirirken : npx tsx tools/olcum-bardak.ts            (KISA — 3 senaryo × 300 sn × park, < 60 sn)
+ *   sayı üretirken: OLCUM=tam npx tsx tools/olcum-bardak.ts > docs/olcum-bardak.txt
+ * Damgalar stderr'e yazar (bot yürüdü · korunum · rejim · varyant etkili); biri kırılırsa çıkış kodu 1.
  *
  * NEDEN: C3 ölçümünün yan bulgusu (docs/kuyruk-raporu-c3.md §5): 4 masa · bulaşıkçı yok ·
  * oyuncu yokken karelerin %90,8'inde temiz bardak SIFIR ve 15 dakikada yalnız 18 müşteri
@@ -24,6 +27,11 @@
  * masada kirli = havuz. Her kare toplanır; sapma varsa ölçüm değil KOD hatalıdır ve rapor bunu
  * söyler (ölçüm aracının kendi bekçisi).
  */
+// Tohum · sahte depo · biçimleyici · KİP · DAMGA ortak iskeletten (D-084 P2).
+import {
+  seedRandom, d2, pct, KISA, kisalt, kipBandi,
+  damga, damgaOzeti, botDamgasi, korunumDamgasi, varyantDamgasi, izOlustur,
+} from './olcum-lib';
 import { useGame, LAYOUT, servicePlace, streetAt } from '../src/game/store';
 import { getNavGrid, activeSolids, hitsSolid, clampToOpenAreas, LAYOUT as L } from '../src/game/layout';
 import { findNavPath } from '../src/game/nav';
@@ -33,32 +41,8 @@ import { economyConfig as C, playerSpeedFor, trayCapacityFor, type WaiterUpgrade
 import { THE_SERVICE, MAX_SERVICES } from '../src/game/world';
 import type { Vec3 } from '../src/game/types';
 
-// --- Tohumlu rastgelelik (mulberry32) — olcum-kuyruk.ts / tick-fingerprint.ts ile AYNI.
-function seedRandom(seed: number): void {
-  let a = seed >>> 0;
-  Math.random = () => {
-    a = (a + 0x6d2b79f5) >>> 0;
-    let t = a;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-const g = globalThis as unknown as Record<string, unknown>;
-if (!g.localStorage) {
-  const mem: Record<string, string> = {};
-  g.localStorage = {
-    getItem: (k: string) => (k in mem ? mem[k] : null),
-    setItem: (k: string, v: string) => { mem[k] = v; },
-    removeItem: (k: string) => { delete mem[k]; },
-  };
-}
-
-const d2 = (a: readonly number[], b: readonly number[]) => Math.hypot(a[0] - b[0], a[2] - b[2]);
 const n1 = (n: number) => (Number.isFinite(n) ? n.toFixed(1) : '—');
 const n2 = (n: number) => (Number.isFinite(n) ? n.toFixed(2) : '—');
-const pct = (a: number, b: number) => (b === 0 ? '—' : `%${((100 * a) / b).toFixed(1)}`);
 
 /** Pad zinciri TEK KAYNAKTAN (elle liste tutulmaz). */
 const ZINCIR = C.pads.map((p) => p.id);
@@ -152,6 +136,8 @@ interface Sonuc {
   yol: number;
   /** Senaryo boyunca masa/ocak seviyesi değişti mi (değişmemeli — ölçüm sabit rejimde). */
   rejimBozuldu: boolean;
+  /** Koşunun davranış parmak izi — varyant damgası bunu kontrol koşusununkiyle karşılaştırır. */
+  izi: string;
 }
 
 function kur(sn: Senaryo, ekPadlar: string[] = []): void {
@@ -321,6 +307,7 @@ function kosu(sn: Senaryo, kip: Kip, dt: number, vr: Varyant = VARYANT_YOK): Son
   let oncekiYikanan = s0.stats.dishesWashed;
   let oncekiDwYuk = 0;
   let rejimBozuldu = false;
+  const iz = izOlustur();
 
   const adim = Math.round(sn.sure / dt);
   const sonCeyrekBas = Math.floor(adim * 0.75);
@@ -489,6 +476,7 @@ function kosu(sn: Senaryo, kip: Kip, dt: number, vr: Varyant = VARYANT_YOK): Son
     const toplam =
       s.cleanCups + s.ready.tea + s.ready.tost + garsonda + elde(s) + musteriElinde + s.dishes.length + dwDa;
     korunumSapma = Math.max(korunumSapma, Math.abs(toplam - havuz));
+    iz.ekle(s.cleanCups, s.dishes.length, s.npcs.length, musteriElinde, garsonda);
 
     // --- Kilit sayaçları
     if (s.cleanCups === 0) {
@@ -602,6 +590,7 @@ function kosu(sn: Senaryo, kip: Kip, dt: number, vr: Varyant = VARYANT_YOK): Son
     korunumSapma,
     yol,
     rejimBozuldu,
+    izi: iz.deger,
   };
 }
 
@@ -658,6 +647,9 @@ function rapor(r: Sonuc): void {
 // ---------------------------------------------------------------------------
 const DT = 0.1;
 const TOHUM = 20260908;
+/** Kısa koşuda senaryo süresi 900 → 300 sn (yön gösterir, rapora girmez). */
+const S = (i: number): Senaryo => (KISA ? { ...SENARYOLAR[i], sure: 300 } : SENARYOLAR[i]);
+kipBandi();
 console.log('OLCUM — BARDAK KİLİDİ (Faz C4, D-082)');
 console.log(`Oyunun kendi tick()'i · dt = ${DT} sn · tohum ${TOHUM}`);
 console.log(`Havuz kuralı: alan başına ${C.cups.poolBase} + ocak seviyesi başına ${C.cups.poolPerLevel} bardak`);
@@ -667,13 +659,21 @@ console.log(
   ` — o an mekân: 2 masa · garson yok.`,
 );
 
-const KIPLER: Kip[] = (process.env.BARDAK_KIP ? [process.env.BARDAK_KIP as Kip] : ['park', 'oyuncu']);
+const KIPLER: Kip[] = process.env.BARDAK_KIP
+  ? [process.env.BARDAK_KIP as Kip]
+  : KISA ? ['park'] : ['park', 'oyuncu'];
 const sonuclar: Sonuc[] = [];
-for (const sn of SENARYOLAR) {
+// KISA koşuda ilk üç senaryo × 300 sn × yalnız park kipi (yön gösterir, rapora girmez).
+for (const sn of kisalt(SENARYOLAR, 3).map((_, i) => S(i))) {
   console.log(`\n\n${'='.repeat(78)}\n${sn.ad}\n${'='.repeat(78)}`);
   for (const kip of KIPLER) {
     seedRandom(TOHUM);
     const r = kosu(sn, kip, DT);
+    // DAMGALAR (stderr): bot gerçekten yürüdü mü · korunum bozuldu mu · rejim sabit mi.
+    const ad = sn.ad.split('·')[0].trim();
+    if (kip === 'oyuncu') botDamgasi(ad, r.yol, sn.sure / 60);
+    korunumDamgasi(ad, r.korunumSapma);
+    damga(`rejim sabit (${ad})`, !r.rejimBozuldu, 'masa/ocak seviyesi koşu içinde değişti');
     sonuclar.push(r);
     rapor(r);
   }
@@ -708,9 +708,9 @@ if (!process.env.BARDAK_VARYANTSIZ) {
   console.log('#  gerçekten döndüğü, bulasikci satırlarının tohumla oynamasından görülür.)');
   console.log('#'.repeat(78));
   console.log('senaryo   varyant            tohum      servis/dk  sonÇeyrek0%  ilkSıfır(sn)');
-  for (const sn of [SENARYOLAR[1], SENARYOLAR[2]]) {
+  for (const sn of KISA ? [S(1)] : [S(1), S(2)]) {
     for (const spec of ['garson:0', 'garson:2', 'garson:0,sizinti:2']) {
-      for (const tohum of [20260908, 7, 31337]) {
+      for (const tohum of KISA ? [20260908] : [20260908, 7, 31337]) {
         seedRandom(tohum);
         const r = kosu(sn, 'park', DT, varyantOku(spec || undefined));
         console.log(
@@ -737,18 +737,23 @@ if (!process.env.BARDAK_VARYANTSIZ) {
     'garson:0,iade:0.25',
     'garson:0,iade:0.5',
   ];
-  const HEDEF = [SENARYOLAR[1], SENARYOLAR[2]];
+  const HEDEF = KISA ? [S(1)] : [S(1), S(2)];
   console.log(`\n\n${'#'.repeat(78)}`);
   console.log('# VARYANTLAR — AFK (park) altında D-082 kolları');
   console.log('#'.repeat(78));
   console.log("('garson:N' = boşta kalan garsonun taşıdığı kirli sayısı; garson:0 = D-083 ÖNCESİ davranış)");
   console.log('senaryo   varyant              havuz  temiz0%  sonÇeyrek0%  servis/dk  oturan/dk  kirliMasa  terk%');
   for (const sn of HEDEF) {
-    for (const spec of VARYANTLAR) {
+    // KONTROL ('garson:0') listenin başında: her varyantın parmak izi ONUNKİYLE karşılaştırılır.
+    // Aynı çıkarsa varyant dünyaya hiç dokunmamıştır (C4 tuzağı ②: sahte "fark yok").
+    let kontrolIzi = '';
+    for (const spec of KISA ? VARYANTLAR.slice(0, 4) : VARYANTLAR) {
       seedRandom(TOHUM);
       const r = kosu(sn, 'park', DT, varyantOku(spec || undefined));
       if (process.env.BARDAK_DETAY) rapor(r);
       const ad = sn.ad.split('·')[0].trim();
+      if (spec === 'garson:0') kontrolIzi = r.izi;
+      else varyantDamgasi(`${ad} · ${spec}`, kontrolIzi, r.izi);
       console.log(
         `${ad.padEnd(9)} ${(spec === 'garson:0' ? 'KONTROL' : spec).padEnd(20)} ${String(r.havuz).padStart(5)}` +
         ` ${pct(r.kareSifir, r.kareToplam).padStart(7)} ${pct(r.sonCeyrekSifir, r.sonCeyrekKare).padStart(12)}` +
@@ -759,3 +764,5 @@ if (!process.env.BARDAK_VARYANTSIZ) {
     console.log('');
   }
 }
+
+damgaOzeti();

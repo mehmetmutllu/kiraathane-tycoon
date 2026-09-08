@@ -189,8 +189,8 @@ h2{font-size:21px;font-weight:800}
 <script type="application/json" id="durum">
 {
  "guncelleme": "08.09.2026",
- "yapilan": 58,
- "toplam": 73,
+ "yapilan": 61,
+ "toplam": 76,
  "kilometre": [
   {
    "at": 28,
@@ -205,36 +205,36 @@ h2{font-size:21px;font-weight:800}
    "etiket": "Model ve denge oturdu"
   },
   {
-   "at": 72,
+   "at": 75,
    "etiket": "v1.0 App Store"
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum · Faz C · 3/5 — garson yolun ortasında dönmeyi bıraktı",
-  "baslik": "Üç gün önce yazılmış bir kuralın kodda karşılığı hiç yokmuş",
-  "aciklama": "Sipariş kuyruğunun kuralları üç gün önce yazılmıştı ve arasında şu vardı: <b>bir garson bir masayı üstlenince, teslim edene kadar bırakmaz.</b> Bu oturum koda dokunmadan önce onu ölçtü — ve kuralın kodda <b>hiçbir karşılığı olmadığını</b> buldu. Garsonun hedefi <b>her karede yeniden</b> seçiliyordu: o an en sabırsız müşteri kimse ona dönüyor, bir sonraki karede başkası daha sabırsız olduğunda yolun ortasında geri dönüyordu.<br><br>Ölçüm bunun bedelini sayıya döktü. Garson, teslim edeceği masaya giderken ondan <b>başlangıç mesafesinin 5,6 katı</b> kadar uzaklaşabiliyor; tam turu, modelin beklediğinin <b>2,35 katına</b> çıkıyordu. Dahası kuralın gerekçesi de tutmuyordu: \"en sabırsıza git\" kuralı <b>tam olarak uzak masaları korumak için</b> konmuştu, ama ölçüm uzak masaların hâlâ daha çok terk edildiğini gösterdi. Mekân dolduğunda kural garsonu <b>hep en umutsuz masaya</b> koşturuyor — vardığında müşteri çoktan kalkmış oluyor.<br><br>Beş farklı öncelik kuralı yan yana ölçüldü ve <b>debi ile adaletin ters yönde</b> çalıştığı çıktı: en çok müşteriye yetişen kural, uzak masaları tamamen terk ediyor. Karar kullanıcıya soruldu.",
+  "etiket": "Bu oturum · Faz İA · 2/3 — oturumun kendisi ölçüldü",
+  "baslik": "Sekiz dakikalık bir ölçüm koşusu, iki saatin üçte birini yiyormuş",
+  "aciklama": "Bu oturum oyuna değil, <b>oyunun yapılma biçimine</b> bakıyor. Kullanıcı sordu: neden her şey bu kadar uzun sürüyor, sebebi hafıza yapısı mı? Cevap tahminle değil <b>kronometreyle</b> arandı ve önceki oturumun kendi tahmini çürüdü: suçlu sanılan belge yığını değil, <b>tek bir ölçüm koşusu</b>. Tam koşu <b>8 dakika 2 saniye</b> sürüyor ve önceki turda <b>yedi kez</b> koşmuş — yani 168 dakikanın <b>üçte biri</b>. Aracın kısa koşu kipi hiç yokmuş.<br><br>İkinci bulgu daha ince: geçen tur koda <i>\"önce ölç, sonra karar sor\"</i> talimatı <b>yazılı olarak</b> girilmişti ve yine ihlal edildi — bir seçenek önce uygulandı, sonra ölçüldü, sonra geri alındı. Bundan çıkan sonuç: <b>yazılı kural yetmiyor, kilit sıraya gömülmeli.</b> Artık denge değişikliği iki ayrı commit istiyor: önce ölçüm ve raporun karar bölümü <b>boş</b>, sonra karar, sonra kod.<br><br>Üçüncüsü: aynı bulgunun 11 anahtar sayısından <b>9’u dört ayrı dosyada birden</b> yazılıydı. Artık sayı raporda, karar defterde, durum tek satırda, anlatı ise ikinci kez hiçbir yerde.",
   "adimlar": [
-   "<b>Ölçüldü:</b> oyunun kendi motoru başsız koşturuldu — dört senaryo × 15 dakika, oyuncu devre dışı, yalnız garson",
-   "<b>Yazılı kural kodda yokmuş:</b> hedef her karede yeniden seçiliyordu → garson hedefinden <b>5,6 kat</b> uzaklaşabiliyor",
-   "<b>\"En sabırsıza git\" kuralı amacını karşılamıyormuş</b> — uzak masalar yine daha çok terk ediyor",
-   "<b>Karar (kullanıcı): bağlayıcı üstlenme</b> — beş seçenek içinde <b>en adil</b> olan, üstelik bugünkünden hızlı",
-   "<b>Sonuç:</b> servis edilen müşteri 20 masada <b>172 → 239</b> · gezinme 0,55 → <b>0,11</b> · tur süresi %35 kısaldı",
-   "<b>6 bekçi</b> + iki mutasyon denemesi · <b>482/482 test</b> · duman 28/28 · denge sayısı değişmedi"
+   "<b>Ölçüldü:</b> tam ölçüm koşusu <b>8 dk 02 sn</b> × 7 koşu = oturumun <b>%33’ü</b> (önceki tahmin %15’ti — çürüdü)",
+   "<b>Hafıza kesildi:</b> \"şu an\" dosyası 4.219 → <b>61 satır</b>, oturum başlangıcı 150-350 KB yerine <b>9,7 KB</b> okuyor",
+   "<b>Varyant kapısı:</b> denge değişikliği, raporda o kolun sayı satırı olmadan yapılamaz — kilit commit yapısında",
+   "<b>Ortak ölçüm iskeleti:</b> üç araçta birebir kopya olan bloklar tek dosyada; <b>üç damga</b> eklendi",
+   "<b>Kısa koşu:</b> bardak <b>11 sn</b> · kuyruk <b>14,6 sn</b>; tam koşu çıktıları tabanla <b>birebir aynı</b>",
+   "<b>Damga sınandı:</b> geçen turun tuzağı bilerek yeniden üretildi — damga yakaladı ve koşuyu geçersiz saydı"
   ],
-  "not": "<b>Ölçüm ummadığı bir şey daha buldu.</b> En küçük senaryoda (dört masa, bulaşıkçı yok, oyuncu yok) 15 dakikada yalnız <b>18 müşteri</b> oturuyor — ama sebep garson değil: karelerin <b>%90,8'inde temiz bardak sıfır</b>. Garson boş duruyor çünkü demlenecek bardak yok. Bu, ölçüme baştan konan <b>darboğaz ayrıştırması</b> sayesinde ortaya çıktı; o olmasaydı sayı yanlış kola yazılacaktı. Kullanıcı bunu tasarım gereği saymadı, <b>ayrı bir kalem</b> olarak açtı."
+  "not": "<b>Neyin kesilmediği, neyin kesildiği kadar önemli.</b> Bekçi testleri, mutasyonla doğrulama ve finalde tam koşu <b>aynen duruyor</b> — geçen tur bu protokol üç gerçek hatayı yakalamıştı. Hız, ölçümün <b>tekrarından</b> ve aynı metnin dört kez yazılmasından çıkarıldı; doğrulamadan değil. Hedef: bir denge turu 168 dakika yerine <b>~95 dakika</b>."
  },
  "siradaki": {
-  "etiket": "Faz C · kalan 2 oturum — bardak kilidi, sim'in gerçeğe yaklaşması",
-  "baslik": "Oyuncu telefonu bıraktığında mekân neden tamamen duruyor?",
-  "aciklama": "Bu oturumun ölçümü erken oyunda bir kilit buldu: dört masalı salonda, bulaşıkçı tutulmadan, oyuncu ekrandan çekildiğinde <b>temiz bardak bitiyor ve mekân duruyor</b> — 15 dakikada yalnız 18 müşteri. Bardağın sınırlı olması bilerek konmuş bir baskı (oyuncu bulaşığı yıkasın diye), ama <b>tamamen durması</b> istenmiyor. Sıradaki oturum aynı deseni izleyecek: <b>önce ölç</b>, sonra kararı sor, sonra bekçile.<br><br>Ardından simülatörün gerçeğe yaklaştırılması var ve bu oturum ona <b>somut bir ilk kalem</b> bıraktı: simülatör garsonu \"hedefi hiç değişmeyen, tepsi dolusu götürüp boş dönen\" ideal bir taşıyıcı sayıyor. Gerçekte 20 masalı katta bunun <b>%58'i</b> gerçekleşiyor. Masaların tek kalemde yükseltilmesi, bardak döngüsü ve müşteri sabrı da hâlâ modele girmedi.",
+  "etiket": "Faz İA · P3 — sonra Faz C’nin son oturumu",
+  "baslik": "Kapanış da elle yazılmaktan çıkıyor, sonra sıra simülatörde",
+  "aciklama": "Sıradaki küçük adım <b>kapanış otomasyonu</b>: bu panonun sayaç ve kartları hâlâ elle güncelleniyor (altı ayrı adım). Bundan sonra <b>ilerleme dosyasındaki tek satırdan</b> üretilecek. Aynı adımda kapanış protokolüne bir denetim ekleniyor: kod commit’i ölçüm commit’inden önce gelmişse <b>uyarı verecek</b> — yani varyant kapısı yalnız yazılı bir kural değil, makinenin denetlediği bir şey olacak.<br><br>Ardından Faz C’nin son oturumu: <b>simülatörün gerçeğe yaklaşması.</b> Simülatör garsonu hâlâ \"hedefi hiç değişmeyen ideal taşıyıcı\" sayıyor; 20 masalı katta bunun <b>%58’i</b> gerçekleşiyor. Masa yükseltmesi kalem kalem, bardak döngüsü ve müşteri sabrı da modele girmedi. O oturum aynı zamanda bu turun <b>sınavı</b>: süresi git damgalarıyla ölçülüp tahminle karşılaştırılacak, sapma büyükse kurulan mantık düzeltilecek.",
   "adimlar": [
-   "<b>Bardak kilidi ölçülür:</b> havuz boyu · bulaşıkçının zincirdeki yeri · asgari sızıntı seçenekleri",
-   "<b>Karar sorulmadan hiçbir denge sayısına dokunulmaz</b> — bu turun deseni aynen tekrarlanır",
-   "<b>Sim gerçeğe yaklaşır:</b> ilk kalem taşıma modeli (gerçekleşen %58), sonra masa yükseltmesi kalem kalem",
-   "<b>Bardak döngüsü ve sabır</b> modele girer",
+   "<b>Pano kendi kendini günceller:</b> sayaç ve kart, ilerleme dosyasındaki satırdan üretilir",
+   "<b>Sıra kilidi denetlenir:</b> kod ölçümden önce commit’lenmişse kapanış uyarır",
+   "<b>Sim gerçeğe yaklaşır:</b> taşıma modeli (gerçekleşen %58) · masa yükseltmesi · bardak döngüsü · sabır",
+   "<b>Yeni akış sınanır:</b> oturum süresi ölçülür, tahminden %15’ten çok saparsa mantık düzeltilir",
    "<b>Sonra Faz D–F:</b> meta katman, arayüz cilası, paketleme ve mağaza"
   ],
-  "not": "<b>Sanat ve asset işi bilerek en sonda:</b> karakterler hâlâ greybox (kapsül gövde), KayKit Restaurant Bits takılmadı, animasyon hiç yapılmadı. Kullanıcı kararı: <i>\"sistem kusursuz otursun, sonra hallederiz.\"</i> Ölçü donduğu için sanat turları artık dengeyi bozamaz."
+  "not": "<b>Sanat ve asset işi bilerek en sonda:</b> karakterler hâlâ greybox, KayKit takılmadı, animasyon yok. Kullanıcı kararı: <i>\"sistem kusursuz otursun, sonra hallederiz.\"</i> Ölçü donduğu için sanat turları artık dengeyi bozamaz."
  },
  "donemler": [
   {
@@ -332,10 +332,18 @@ h2{font-size:21px;font-weight:800}
     {
      "k": "C",
      "t": "Zincir ve denge",
-     "d": "Tek Odak · tezgâh merdiveni · global garson ve sipariş kuyruğu · simülatör gerçeğe yaklaşır. Denge <b>bir kez ölçüldü</b> (C1) · <b>Tek Odak'ın dördüncü kanalı tekleşti</b> (C2) · <b>sipariş kuyruğu ölçüldü, garson üstlenmesi bağlayıcı oldu</b> (C3). Kalan: erken oyun bardak kilidi ve simülatörün gerçeğe yaklaşması.",
-     "yapilan": 3,
+     "d": "Tek Odak · tezgâh merdiveni · global garson ve sipariş kuyruğu · simülatör gerçeğe yaklaşır. Denge <b>bir kez ölçüldü</b> (C1) · <b>Tek Odak'ın dördüncü kanalı tekleşti</b> (C2) · <b>sipariş kuyruğu ölçüldü, garson üstlenmesi bağlayıcı oldu</b> (C3). <b>Bardak kilidi ölçüldü ve açıldı</b> (C4 — boştaki garson bulaşık topluyor). Kalan: simülatörün gerçeğe yaklaşması.",
+     "yapilan": 4,
      "toplam": 5,
-     "kapi": "Sim tempo tablosunu tutuyor, tempo iddiaları teste yazılı",
+     "kapi": "Sim tempo tablosunu tutuyor, tempo iddiaları teste yazılı"
+    },
+    {
+     "k": "İA",
+     "t": "İş akışı hızlandırma",
+     "d": "Oturumların neden 2 saat sürdüğü <b>ölçüldü</b> ve akış yeniden kuruldu (D-084). <b>P1</b> hafıza kesimi + varyant kapısı ✓ · <b>P2</b> ortak ölçüm iskeleti + damgalar + kısa/tam koşu ✓ · <b>P3</b> kapanış otomasyonu.",
+     "yapilan": 2,
+     "toplam": 3,
+     "kapi": "Bir denge turu ölçülen süreyle ~95 dakikada kapanıyor",
      "durum": "now"
     },
     {
@@ -366,6 +374,36 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "08.09.2026",
+   "etiket": "Faz İA · 1. oturum (D-084 — oturum akışı ölçüldü ve kuruldu)",
+   "baslik": "Bu kez ölçülen şey oyun değil, oyunu yapma biçimiydi",
+   "govde": "Kullanıcı bir soru sordu: <i>\"neden yapılan her şey aşırı uzun sürüyor, sırf bu chat 2 saat sürdü — bunun hafıza yapısıyla ilgisi var mı?\"</i> Ve bir de karar verdi: dağınık iyileştirme önerileri istemiyordu, <b>önce net bir mantık</b> kurulsun, hızlandırma ona göre yapılsın.<br><br>Mantığı kuran tur, projenin kendi kuralını kendine uyguladı: <b>önce ölç.</b> Önceki oturumun kendi tahmin tablosu vardı ama tahmindi; kronometreyle bakılınca <b>bir kalem çürüdü</b>. Ölçüm koşusunun tek seferi <b>8 dakika 2 saniye</b> sürüyor ve o tur yedi kez koşmuş — 168 dakikanın <b>%33’ü</b>. Sanılan suçlu (şişmiş hafıza dosyaları) ikinci sıradaydı ve süreden çok <b>kaliteyi</b> vuruyordu: oturum, gerçekten gereken 7 KB yerine 150-350 KB geçmiş okuyarak başlıyordu.<br><br>İkinci bulgu bir alışkanlığı yıktı. Geçen tur bir seçenek <b>önce uygulanmış, sonra ölçülmüş</b>, sonra geri alınmıştı — bir tam uygulama+test+ölçüm turu boşa gitti. Oysa o tura <i>\"önce ölç, sonra karar sor\"</i> talimatı <b>yazılı olarak</b> girilmişti. Yani sorun kuralın bilinmemesi değil, kuralın <b>hiçbir şeyi engellememesiydi</b>. Çözüm kuralı yeniden yazmak değil, <b>sıraya gömmek</b> oldu: denge değişikliği artık iki commit istiyor — birincisinde ölçüm aracı, ham çıktı ve raporun <b>karar bölümü boş</b>; ikincisinde kod. Rapor bir kolun sayısını göstermiyorsa o kola kod yazılamıyor.<br><br>Üçüncüsü defter tutmayla ilgiliydi: bir bulgunun 11 anahtar sayısından <b>9’u dört ayrı dosyada birden</b> duruyordu. Artık sayı raporda, karar defterde, durum tek satırda; anlatı ikinci kez hiçbir yere yazılmıyor. \"Şu an\" dosyası 4.219 satırlık bir arşiv olmaktan çıkıp <b>61 satırlık, üzerine yazılan bir tur kartına</b> indi; geçmiş arşive ve git’e taşındı.<br><br>Aynı oturumda ikinci parça da yapıldı: üç ölçüm aracında <b>birebir kopya</b> duran iskelet (tohum, sahte depo, biçimleyiciler) tek dosyaya toplandı ve üstüne <b>üç damga</b> eklendi — bot gerçekten yürüdü mü, kapalı sistemde korunum bozuldu mu, denenen seçenek dünyaya <b>gerçekten dokundu mu</b>. Sonuncusu geçen turun sessiz tuzağıydı: bir seçenek fark etmeden etkisiz kalmış ve <b>sahte bir \"fark yok\"</b> üretmişti. Damganın işe yaradığı, o tuzak bilerek yeniden üretilerek sınandı — damga koşuyu geçersiz saydı.<br><br>Bir de kısa/tam koşu ayrımı geldi: geliştirme sırasında araç <b>saniyeler</b> içinde yön gösteriyor (bardak 11 sn, kuyruk 14,6 sn), sekiz dakikalık tam koşu yalnız <b>rapora girecek sayı</b> için. Tam koşu çıktılarının değişmediği, önceki çıktıyla <b>birebir karşılaştırılarak</b> doğrulandı.",
+   "maddeler": [
+    "<b>Ölçüldü:</b> tam koşu 8 dk 02 sn × 7 = oturumun %33’ü · \"şu an\" dosyası 96 üst üste blok, silme oranı %13",
+    "<b>Varyant kapısı:</b> ölç → sor → uygula sırası iki commit’e gömüldü; yazılı kural yetmemişti",
+    "<b>Hafıza kesildi:</b> başlangıç okuma seti 150-350 KB → <b>9,7 KB</b>; geçmiş arşive ve git’e",
+    "<b>Ortak iskelet + üç damga</b> · kısa koşu 11-15 sn · tam koşu çıktısı <b>birebir aynı</b>",
+    "<b>Damga sınandı:</b> geçen turun tuzağı yeniden üretildi, damga yakaladı (koşu geçersiz sayıldı)",
+    "<b>Bekçi:</b> iskeletin kendi testi 10/10, iki mutasyonla doğrulandı · bekçi/mutasyon/final koşu kesilmedi"
+   ],
+   "not": "<b>Hız nereden çıkarıldı, nereden çıkarılmadı.</b> Kesilenler: aynı ölçümün tekrarı, aynı metnin dört kez yazılması, iskeletin her turda yeniden keşfi. <b>Kesilmeyenler:</b> bekçi testleri, mutasyonla doğrulama, finalde tam koşu — geçen tur bu üçü <b>üç gerçek hata</b> yakalamıştı. Hedef 168 → ~95 dakika; sınavı bir sonraki denge turu."
+  },
+  {
+   "tarih": "08.09.2026",
+   "etiket": "Faz C · 4. oturum (C4 — bardak kilidi)",
+   "baslik": "Oyuncu telefonu bıraktığında mekân yavaşlamıyordu, ölüyordu",
+   "govde": "Geçen turun yan bulgusu ayrı bir kalem olarak açılmıştı: dört masalı salonda, bulaşıkçı tutulmadan, oyuncu ekrandan çekildiğinde temiz bardak bitiyordu. Ölçüm bunun sanılandan kötü olduğunu gösterdi: 15 dakikada <b>12 müşteri</b> — tam olarak havuzdaki bardak sayısı kadar — ve <b>üçüncü dakikadan sonra sıfır</b>. Son çeyrekte mekân <b>%100 kilitli</b>, 12 bardağın 12’si masada kirli duruyor. Üç ayrı tohumda birebir aynı çıktı: bu zarın değil, <b>yapının</b> sonucu.<br><br>Akla gelen ilk çare (havuzu büyütmek) <b>çıkmaz sokak</b> çıktı: havuz iki katına da dört katına da çıkarılsa debi <b>0,80 servis/dakikada sabit</b> kalıyor. Kilit \"bardak bitti\"den \"masa kirlendi\"ye taşınıyor, o kadar. Servise orantılı çareler de (müşteri bardağını kendi götürsün) işe yaramadı: servis durunca çare de duruyor. Kilidi ancak <b>servisten bağımsız</b> bir kaynak açabilirdi.<br><br>Kullanıcı kendi seçeneğini önerdi: <i>\"garsonlar hem bulaşıkçı hem çaycı gibi davransa?\"</i> Ölçüldü ve en iyisi çıktı — üstelik dünyada bir sebebi olan tek çözüm buydu. Servis edecek kimsesi kalmayan garson tek bir kirli bardağı alıp leğene götürüyor, sonra servise dönüyor. Dört masalı salonda debi <b>0,80 → 7,53</b> servis/dakika, terk oranı <b>%33 → %5</b>.<br><br>Kuralın dozu da tahminle değil ölçülerek seçildi: garson <b>bir</b> bardak taşıyınca 5,53; iki taşıyınca 2,87; dört taşıyınca 2,47 servis/dakika — çünkü elinde kirli olan garson leğene bağlanıyor. Bekçiler kural yazıldıktan <b>sonra</b> üç gerçek delik yakaladı: kural kilidi hiç açmıyordu, garson çayla kirliyi aynı anda taşıyabiliyordu, elinde kirliyle tezgâhtan çay alabiliyordu.",
+   "maddeler": [
+    "<b>Ölçüldü:</b> AFK’da 15 dakikada 12 müşteri, 3. dakikadan sonra sıfır, son çeyrek %100 kilitli",
+    "<b>Havuzu büyütmek çıkmaz sokak:</b> ×2 ve ×4’te debi 0,80 servis/dk’da sabit kalıyor",
+    "<b>Karar (kullanıcı):</b> boştaki garson bulaşık toplar — 0,80 → <b>7,53</b> servis/dk, terk %33 → <b>%5</b>",
+    "<b>Doz ölçülerek seçildi:</b> 1 bardak (2 ve 4 belirgin biçimde kötü)",
+    "<b>Otomasyon takvimi:</b> görev elle öğretir → garson boş vaktinde devralır → bulaşıkçı → tam otomatik",
+    "<b>3 bekçi + 4 mutasyon</b> · 485/485 test · duman 28/28 · tek yeni denge sayısı"
+   ],
+   "not": "<b>Bir cümle daha çürüdü.</b> \"Geç oyunda bulaşık oyuncuya vergi olarak döner\" deniyordu; 20 masada bulaşıkçı yükseltmeleri tavandayken temiz bardağın bittiği kare oranı <b>%0,0</b> çıktı. Ölçülen %22’lik darboğaz, <b>yükseltilmemiş</b> bulaşıkçınındı."
+  },
   {
    "tarih": "08.09.2026",
    "etiket": "Faz C · 3. oturum (C3 — sipariş kuyruğu ve üstlenme)",

@@ -5,25 +5,30 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-08 — **oturum akışı mantığı kuruldu · D-084** · Faz C 4/5)
+## ŞU AN (2026-09-08 — **D-084 P1+P2 BİTTİ** · Faz C 4/5 · Faz İA 2/3)
 
 Son tamamlanan oyun turu: **C4 — bardak kilidi ölçüldü ve açıldı (D-083)**; garson boşta
-bulaşık topluyor. vitest 485/485 · smoke 28/28. Rapor: `docs/bardak-raporu-c4.md`.
+bulaşık topluyor. Rapor: `docs/bardak-raporu-c4.md`.
 
-Bu tur oyun koduna dokunmadı: kullanıcının *"oturumlar neden 2 saat sürüyor"* sorusu
-Fable 5.1 tarafından **ölçülerek** yanıtlandı → `docs/oturum-akisi-mantik.md` (216 satır).
-Dört karar da önerilen seçenekle onaylandı (arşiv · pano script · decisions ≤12 satır ·
-ölçüm/uygulama ayrı commit). **P1 (hafıza kesimi) bu turda uygulandı.**
+Bu tur OYUN KODUNA DOKUNMADI. Kullanıcının *"oturumlar neden 2 saat sürüyor"* sorusu
+Fable 5.1 tarafından **ölçülerek** yanıtlandı → `docs/oturum-akisi-mantik.md`; dört karar da
+önerilen seçenekle onaylandı. Uygulananlar:
+- **P1 — hafıza kesimi:** `memory-bank/arsiv/` · activeContext 4.219 → 61 satır tur kartı ·
+  progress 1.952 → 73 satır · başlangıç okuma seti 150-350 KB → **9,7 KB** · iki skill +
+  `CLAUDE.md` yeni sıraya göre yazıldı (varyant kapısı artık her oturumda otomatik yükleniyor).
+- **P2 — `tools/olcum-lib.ts`:** ortak iskelet (tohum · sahte depo · biçimleyici · istatistik) +
+  **üç damga** (bot yürüdü · korunum · varyant etkili) + `OLCUM=kisa|tam`. Üç araç bağlandı.
+  Kısa koşu bardak **11,0 sn** · kuyruk **14,6 sn**; tam koşu çıktıları tabanla **birebir aynı**.
+  Damga, C4 tuzağı ②'yi yeniden üretince yakaladı (çıkış kodu 1). Bekçi `tests/olcum-lib.test.ts`
+  (10 test, iki mutasyonla doğrulandı).
 
 ## SIRADAKİ TAM ADIM
 
-**P2 — `tools/olcum-lib.ts`** (1 oturum): ortak ölçüm iskeleti + üç damga
-(bot-yürüdü · varyant-etkili · korunum) + `OLCUM=kisa|tam`. Üç araç lib'e bağlanır.
-Kabul: kısa koşu < 60 sn · tam koşu çıktısı `docs/olcum-*.txt` ile **birebir aynı**
-(`tick-fingerprint` deseni, Faz B1).
-Sonra **P3** (½ oturum): `tools/pano-guncelle.mjs` + `oturum-bitir`'e sıra kilidi kontrolü.
-Sonra **C5** yeni akışla; süre git damgalarıyla ölçülür ve §4 tahminiyle karşılaştırılır
-(sapma > %15 → mantık düzeltilir).
+**P3 — kapanış otomasyonu** (½ oturum): `tools/pano-guncelle.mjs` (pano JSON'unu
+`progress.md` tablosundan üretir; bugün hâlâ elle 6 adım) + `oturum-bitir`'e **sıra kilidi
+kontrolü** (kod commit'i ölçüm commit'inden önceyse uyar).
+Sonra **C5** yeni akışla; süre git damgalarıyla ölçülür ve `docs/oturum-akisi-mantik.md` §4
+tahminiyle (168 → ~95 dk) karşılaştırılır — sapma > %15 ise mantık düzeltilir (P4).
 
 **C5'in içeriği (değişmedi):** `simulate.ts`'i gerçeğe yaklaştırmak — taşıma modeli
 (G4'te gerçekleşen %58, model ideal taşıyıcı varsayıyor) · masa yükseltmesi kalem kalem
@@ -35,7 +40,17 @@ Sonra **C5** yeni akışla; süre git damgalarıyla ölçülür ve §4 tahminiyl
 - **Nav ızgarası ↔ oyuncu çarpışması aynı dünyayı görmüyor** (`actorRadius` sandalyesiz,
   `playerRadius` sandalyeler katı): personelin geçtiği boşluktan oyuncu geçemiyor. **Faz D.**
 - Gölgenin telefondaki maliyeti ölçülmedi (Faz F riski).
-- Pano JSON'u C4'ü henüz saymadı (58/73 yazıyor); bu tur kapanışında düzeltilir.
+- `docs/olcum-bardak.txt` ve `docs/olcum-kuyruk.txt` D-083 ÖNCESİNDEN kalma; C5'in tam koşusu
+  bunları tazeleyecek (bu turda bilerek dokunulmadı — kod değişmedi, sayı değişmedi).
+- **Damgalar tam koşuda İKİ gerçek kusur yakaladı** (ikisi de C4'ten kalma, kod bu turda
+  BİLEREK değiştirilmedi — ölçüm değişikliği kendi turunu ister):
+  ① `iade:0.25` varyantı hiç tetiklenmemiş → C4 raporundaki "%25'te sıfır fark" satırı ölçüm
+  değil totolojiymiş (`botRnd`'in sabit tohumunun ilk 12 çekilişi hep 0,25 üstü, B2'de tam 12
+  bardak doğuyor). Düzeltme `docs/bardak-raporu-c4.md` §4'e yazıldı; **Bulgu 3'ün sonucu**
+  **değişmedi** (%50 kolu gerçekten koştu ve kilidi açmadı).
+  ② B1 · oyuncu kipi satırında bot **hiç yürümüyor** (0,0 br/dk). Taban çıktıda da yazıyordu
+  (563 satırın içinde bir uyarı satırı); damga artık çıkış kodunu düşürüyor. C4 kararları
+  `park` kipinden alındığı için karar etkilenmiyor, ama o satır ölçüm değil.
 
 **Bekleyen denge kararı YOK.**
 
