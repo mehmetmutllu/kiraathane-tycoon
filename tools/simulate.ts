@@ -49,6 +49,22 @@ import { findNavPath } from '../src/game/nav.ts';
 import { pathToFileURL } from 'node:url';
 
 const DT = 1; // saniyelik adım
+
+/* ═══ D-087 — DÖRDÜNCÜ TEMPO ÖLÇÜTÜNÜN PROFİLİ SABİTLENDİ ═══════════════════════════════
+ * D-010 §3.6'nın "20 dk'yı aşan tek alım kalmasın" ölçütü, hangi PROFİLDE okunacağı hiç
+ * yazılmadan yaşadı; araç onu Normal'de (verim 0,55) basıyordu, oysa KARDEŞ ÜÇ ÖLÇÜT
+ * (ilk alım · açılış boşluğu · otomasyon) İDEALİZE'de (verim 1,0) okunuyor. D1 turu bunu
+ * ölçtü: aynı eğri İdealize'de 1, Yoğun'da 1, Normal'de 6, Rahat'ta 11 ihlal veriyor —
+ * yani "hüküm" tamamen okunan profile bağlıydı (`docs/gec-oyun-raporu-d1.md` Bulgu 1).
+ * Karar: ölçüt kardeşleriyle AYNI profilde hüküm verir. Normal/Rahat sayıları silinmez,
+ * HÜKÜMSÜZ GÖZLEM BANDI olarak basılır — geç oyunun gerçek maliyeti görünür kalsın diye.
+ * Ekonomiye dokunulmadı: D1'de ölçülen düzeltici kolların hepsi Kat 1 içeriğinden %7-42
+ * götürüyordu ve o pencereleri dolduracak katman (Faz D meta) henüz yok. */
+const BEKLEME_SINIRI = 20 * 60;
+/** D-078'in BİLEREK bıraktığı tek basamak (`servis L6`) hükümde sayılmaz → hedef ≤ 1. */
+const BEKLEME_IZIN = 1;
+/** Hükmün okunduğu profil (kardeş üç ölçütle aynı): İDEALİZE. */
+const OLCUT_VERIM = 1;
 const TEA_PRICE = C.service.basePrice;
 /* D1: bu iki tavan eskiden modül yükleme anında SABİTLENİYORDU. `DENGE` kolu merdivenin
  * basamağını değiştirebildiği için artık her okumada config'ten türer — yoksa varyant
@@ -917,6 +933,11 @@ export interface Olcut {
   serit: number | undefined;
   normalEnUzun: number;
   normalEnUzunEtiket: string;
+  /** D-087: DÖRDÜNCÜ tempo ölçütünün HÜKÜM sayıları — İDEALİZE profilden (kardeş üç ölçütle
+   *  aynı profil). Normal/Rahat sayıları hüküm değil GÖZLEM bandıdır. */
+  idealAsan: number;
+  idealEnUzun: number;
+  idealEnUzunEtiket: string;
   normalAsan: number;
   /** 20 dk'yı aşan alımların TAMAMI (D1: sayı tek başına hangi basamak olduğunu söylemiyordu). */
   asanlar: Bosluk[];
@@ -928,12 +949,16 @@ export interface Olcut {
 
 export function olcutler(): Olcut {
   const idealBuys: Buy[] = [];
-  const ideal = runProfile(1, false, idealBuys);
+  const ideal = runProfile(OLCUT_VERIM, false, idealBuys);
   const otomasyon = ideal.get('Garson');
   const acilis = idealBuys
     .map((b, i) => ({ label: b.label, gap: b.t - (i === 0 ? 0 : idealBuys[i - 1].t), t: b.t }))
     .filter((g) => otomasyon != null && g.t <= otomasyon);
   const acilisEnUzun = acilis.length ? Math.max(...acilis.map((g) => g.gap)) : NaN;
+
+  const idealGaps = idealBuys
+    .map((b, i) => ({ ...b, gap: b.t - (i === 0 ? 0 : idealBuys[i - 1].t) }))
+    .sort((a, b) => b.gap - a.gap);
 
   const nBuys: Buy[] = [];
   const normal = runProfile(0.55, false, nBuys);
@@ -948,8 +973,11 @@ export function olcutler(): Olcut {
     serit: normal.get('ŞERİT DOLDU (20. masa)'),
     normalEnUzun: gaps[0]?.gap ?? NaN,
     normalEnUzunEtiket: gaps[0]?.label ?? '—',
-    normalAsan: gaps.filter((g) => g.gap > 20 * 60).length,
-    asanlar: gaps.filter((g) => g.gap > 20 * 60).map((g) => ({ t: g.t, gap: g.gap, label: g.label })).sort((a, b) => a.t - b.t),
+    idealAsan: idealGaps.filter((g) => g.gap > BEKLEME_SINIRI).length,
+    idealEnUzun: idealGaps[0]?.gap ?? NaN,
+    idealEnUzunEtiket: idealGaps[0]?.label ?? '—',
+    normalAsan: gaps.filter((g) => g.gap > BEKLEME_SINIRI).length,
+    asanlar: gaps.filter((g) => g.gap > BEKLEME_SINIRI).map((g) => ({ t: g.t, gap: g.gap, label: g.label })).sort((a, b) => a.t - b.t),
     bosluklarNormal: [...gaps].sort((a, b) => a.t - b.t).map((g) => ({ t: g.t, gap: g.gap, label: g.label })),
     masaEnUzun: masa[0]?.gap ?? NaN,
   };
@@ -1182,6 +1210,23 @@ function run() {
       : `  3) Otomasyon (Garson) ${fmtTime(autoAt)}  ${autoAt <= 15 * 60 ? '✓' : '✗ (hedef < 15 dk)'}`,
   );
 
+  /* 4) EN UZUN BEKLEME (D-010 §3.6) — D-087'de PROFİLİ SABİTLENDİ: hüküm bu üçün YANINDA,
+     AYNI profilde (İDEALİZE) verilir. Eskiden bu ölçüt buradan değil, aşağıdaki üç-profil
+     bloğundan göz kararıyla okunuyordu ve "hangi profil" hiç yazılmamıştı. */
+  const hukumGaps = idealBuys
+    .map((b, i) => ({ ...b, gap: b.t - (i === 0 ? 0 : idealBuys[i - 1].t) }))
+    .sort((a, b) => b.gap - a.gap);
+  const hukumAsan = hukumGaps.filter((g) => g.gap > BEKLEME_SINIRI);
+  console.log(
+    `  4) En uzun bekleme ${fmtTime(hukumGaps[0]?.gap ?? 0)} → ${hukumGaps[0]?.label ?? '—'}` +
+      ` · 20 dk'yı aşan: ${hukumAsan.length}  ` +
+      (hukumAsan.length <= BEKLEME_IZIN ? '✓' : `✗ (hedef ≤ ${BEKLEME_IZIN})`),
+  );
+  console.log(
+    `     (hüküm İDEALİZE profilden — 1-3 ile aynı. İzin verilen ${BEKLEME_IZIN} aşan:` +
+      ` D-078'in bilerek bıraktığı son basamak. Gerekçe: D-087.)`,
+  );
+
   // 3-PROFİL raporu (gece 5/7; gerekçeler docs/curve-report.md)
   const profiles: [string, number][] = [
     ['Yoğun (aktif, verim 0.80)', 0.8],
@@ -1205,8 +1250,12 @@ function run() {
      "20 dk'yı aşan tek alım kalmasın." Bekleme = iki ARDIŞIK alım arasındaki boşluk; etiketi
      boşluğu BİTİREN alımdır (oyuncu o süre boyunca ONUN için biriktiriyordu). B4 raporunun
      §7'sinde elle ölçülen bu sayı burada kalıcı bir bekçi oldu. */
-  console.log(NL + '--- EN UZUN BEKLEME (ardışık iki alım arası) ---');
-  const WAIT_LIMIT = 20 * 60;
+  /* D-087: bu blok artık HÜKÜM VERMEZ — hüküm yukarıda, ölçüt 4'te, İdealize profilinden.
+     Burası GÖZLEM BANDI: aynı eğrinin daha seyrek oynayan oyuncuda ne kadar uzadığını
+     gösterir. Silinmedi, çünkü D1'in ölçtüğü asıl takas burada görünüyor: bu sayıları
+     düzelten her kol Kat 1 içeriğinden %7-42 götürüyor (`docs/gec-oyun-raporu-d1.md`). */
+  console.log(NL + '--- GÖZLEM BANDI: profil başına en uzun bekleme (HÜKÜM DEĞİL — ölçüt 4 yukarıda) ---');
+  const WAIT_LIMIT = BEKLEME_SINIRI;
   for (const r of results) {
     const gaps = r.buys.map((b, i) => ({ ...b, gap: b.t - (i === 0 ? 0 : r.buys[i - 1].t) }));
     gaps.sort((a, b) => b.gap - a.gap);

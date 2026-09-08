@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 76 · YAPILAN 63 · %83):**
+**Oturum bütçesi (TOPLAM 76 · YAPILAN 64 · %84):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -22,10 +22,10 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | B model geçişi + maket taşıması | 13/13 ✅ |
 | | **C zincir ve denge** | **5/5 ✅** |
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
-| | D meta katman | 0/5 ⏳ |
+| | D meta katman | 1/5 🔧 |
 | | E arayüz ve cila | 1/4 🔧 |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **35/48** |
+| **Program toplam** | | **36/48** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -80,10 +80,36 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
 **asıl sınav tick-temelli bir denge turu.** Ölçülen gerçek kazançlar: üç dosyalık okuma seti
 (oturum başı), uzun koşuların paralel arkaplanı, hazır ölçüm iskeleti.
 
+## Faz D — META KATMAN (1/5) 🔧
+- ✅ **D1 — geç-oyun eğrisinin 20 dk ihlali ölçüldü ve ölçütün PROFİLİ sabitlendi (D-087)** ·
+  dokuz kol varyant olarak ölçüldü, dozlar tahmin değil **çözüldü**; hepsi elendi, ölçütün
+  kendisi (`o1`) alındı. Ölçüt kardeş üçüyle aynı profilde (İdealize) hüküm verir ve geçiyor
+  (23,9 dk · 1 aşan). Düzeltici kolların hepsi Kat 1 içeriğinden %7-42 götürüyordu; `g1`
+  (taşıma tavanı) ihlali 6 → 7 **artırdı**. `docs/gec-oyun-raporu-d1.md` · araç
+  `tools/denge-kollari.ts` + `tools/olcum-gec-oyun.ts` · bekçi `tests/tempo-olcutu.test.ts`
+  (15 test, 4 mutasyon) · vitest 567 · **denge sayısı DEĞİŞMEDİ** (`economy.config.ts` 0 satır).
+- ⏳ **D2 — görev kimlikleri:** `questIndex: number` → `questId: string` + tamamlananlar listesi
+  + tek seferlik migrasyon. Plan §D'nin ön koşulu ("düzeltilmeden meta katmana başlamak borcu
+  ikiye katlar"; bugüne dek beş elle kimlik-eşleme listesi birikti). D1 bunu ayrıca ölçtü:
+  sim'de ekonominin temposunu belirleyen şey **görev hattının kendisi**.
+- ⏳ **D3 — Hedefler (koleksiyon) + ortak ödül ekranı** (beş kategori; ekran dört yerde aynı).
+- ⏳ **D4 — İtibar (eski XP anlam kazanır) + günlük görevler.**
+- ⏳ **D5 — elmas kaynak/harcama + Usta katmanı** (masa ₺-tavanı L4'ün üstü).
+
+> D2-D5 `docs/plan-kat1-yayin.html` §D kapsamından türetildi; **sırası açık** — her tur başında
+> seçilir. Ayrıca Faz D'de bekleyen bilinen bir hata var: **nav ızgarası ↔ oyuncu çarpışması**.
+
 ## Bilinen açık kalemler
-- **Geç-oyun eğrisi 20 dk ölçütünü ihlal ediyor** — D-086'nın açtığı kalem: model gerçeğe
-  yaklaşınca Normal profilde aşan alım 2 → **6**, en uzun **43,4 dk** (`servis L6`; eski modelde
-  23,4 görünüyordu). `economy.config.ts`'e dokunur → **kendi ölçüm turunu ister.**
+- ~~Geç-oyun eğrisi 20 dk ölçütünü ihlal ediyor~~ → **D1'de kapandı (D-087):** ölçütün profili
+  sabitlendi, hüküm geçiyor. **Kabul edilen risk:** Normal profil oyuncusu 6. saatte `servis L6`
+  için 43,4 dk bekliyor — bilerek ödenmedi, gözlem bandında görünür kalıyor. **Faz D bitince
+  yeniden okunacak** (meta katman o pencereleri dolduruyor mu; araç hazır).
+- **Görev hattı `waiterTray` kademe 2'de bitiyor**, 3. kademe (₺2.500 → tepsi 4) hatta yok;
+  oysa sim'in ÜÇ KOL tablosu 20 masada `waiterTray: 3` varsayıyor — tempo kalemi DEĞİL
+  (g1 ölçüldü, iyileştirmiyor), görev/HUD tutarlılık kalemi.
+- **`outputMultByLevel` yok** — servis çıktı çarpanı basamak-başı değil merdiven-geneli;
+  `b1` (basamak bölme) erken oyuna dokunmadan denenemiyor.
+- **Sim'de serbest oyun bloğu ölü kod** (D1 Bulgu 5): tempoyu görev hattı belirliyor.
 - **Sim'in taşıma tavanı 4 masada fazla kötümser** (model 6,36 < ölçülen 7,53 müşteri/dk) —
   elenen `k3` bardak kolunun önündeki tek engel; kodu duruyor, bu kalem çözülünce yeniden ölçülür.
 - **Nav ızgarası ↔ oyuncu çarpışması aynı dünyayı görmüyor** (`actorRadius` sandalyesiz,

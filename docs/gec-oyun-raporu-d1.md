@@ -159,13 +159,77 @@ ister — ayrı kalem.
 yapısal sebebi: bu ölçütler garsondan ÖNCEKİ pencereye ait, bu turun kollarının hepsi
 garsondan SONRASINA dokunuyor. **D-079'un açılış hükmü bu turdan da etkilenmiyor.**
 
-## §Karar
+## §Karar — D-087
 
-*(BOŞ — karar paketi kullanıcıya sunulacak; D-084 sıra kilidi gereği bu bölüm commit #1'de
-boştur ve kullanıcının seçiminden sonra doldurulur.)*
+**Seçilen kol: `o1` — dördüncü tempo ölçütünün PROFİLİ sabitlendi. Ekonomiye DOKUNULMADI.**
+
+| kol | karar | gerekçe (sayı) |
+|---|---|---|
+| **`o1`** | **ALINDI** | Ölçüt, kardeş üç ölçütle aynı profilde (İDEALİZE) hüküm verir ve **bugün geçiyor**: aşan 1, en uzun 23,9 dk → `servis L6` (D-078'in bilerek bıraktığı). Zincir 8,48 sa korunur. |
+| `f4` | alınmadı | Ölçütü tutturuyor (×0,80 → 1) ama Kat 1 içeriğinden **%7** götürüyor (8,48 → 7,90 sa). |
+| `g2` | alınmadı | Ölçütü tutturuyor (tipBase 3,5 → 1) ama içerikten **%17** götürüyor (→ 7,04 sa). |
+| `c1` | alınmadı | Aynı sonuç, **%14** bedel (→ 7,33 sa). |
+| `f3` | alınmadı | `f4` tarafından **domine ediliyor**: aynı ihlal, 0,68 sa daha kısa zincir. |
+| `f1` | alınmadı | Hiçbir dozda 4'ün altına inmiyor. |
+| `f2` | alınmadı | Hiçbir dozda 2'nin altına inmiyor. |
+| `b1` | alınmadı | Hiçbir dozda 4'ün altına inmiyor; ayrıca bugünkü şemada erken oyunu da etkiliyor. |
+| `g1` | alınmadı | İhlali **artırıyor** (6 → 7). |
+| `m1` | alınmadı | **ATIL** — hiçbir sayıyı değiştirmiyor (model bulgusu, Bulgu 5). |
+
+**Kararın üç gerekçesi (kullanıcı seçimi):**
+
+1. **"6 ihlal"in kaynağı büyük ölçüde profil karışıklığı** (Bulgu 1) — bir denge kusurunu değil,
+   bir tanım boşluğunu ölçüyorduk.
+2. **Düzelten her kol Kat 1 içeriğinden %7-42 götürüyor** (Bulgu 2) ve o içerik v1'in kendisi.
+   Ölçütü tutturmak için oyunun uzunluğunu satmak, ölçütün amacına ters.
+3. **Faz D'nin meta katmanı** (elmas, günlük görev, hedefler, ortak ödül ekranı, offline kazanç)
+   tam da bu geç-oyun bekleme pencerelerini doldurmak için var. O katman yokken içerik
+   uzunluğu ödemek erken; **Faz D bitince aynı ölçüm yeniden okunacak.**
+
+**Kabul edilen risk (açıkça kayda geçer):** Normal profildeki oyuncu 6. saat civarında
+`servis L6` için **43,4 dk** bekliyor ve bu tur bunun için bir şey ödenmedi. Sayı silinmedi,
+`GÖZLEM BANDI` olarak basılmaya devam ediyor.
 
 ---
 
 ## §Uygulama
 
-*(karar sonrası)*
+- `tools/simulate.ts`
+  - Ölçüt sabitleri tek yerde: `BEKLEME_SINIRI` (20 dk) · `BEKLEME_IZIN` (1 — D-078'in
+    bıraktığı basamak) · `OLCUT_VERIM` (1,0 = İDEALİZE, kardeş üç ölçütle aynı).
+  - **Dördüncü ölçüt artık "Tempo denetimi" bloğunda, ✓/✗ hükmüyle** — kardeşlerinin yanında.
+    Eskiden hiç hüküm vermiyordu, aşağıdaki üç-profil bloğundan göz kararıyla okunuyordu.
+  - Üç-profil bloğunun başlığı **`GÖZLEM BANDI (HÜKÜM DEĞİL)`** oldu ve 20 dk'yı aşanların
+    TAMAMINI listeliyor (eskiden yalnız ilk üçünü — hangi basamakların aştığı görünmüyordu).
+  - `Olcut`'e `idealAsan` · `idealEnUzun` · `idealEnUzunEtiket` eklendi (hükmün sayıları).
+- **`src/config/economy.config.ts` DEĞİŞMEDİ** — iki commit'in de diff'i bu dosyada 0 satır.
+- Bekçi: `tests/tempo-olcutu.test.ts` — 15 test, **dört mutasyonla** doğrulandı:
+  1. Ölçüt 4 Normal'den okunsun → 5 test kırıldı.
+  2. Ölçüt Yoğun'a (0,80) kaydırılsın → 2 test kırıldı *(bu mutasyon ilk hâlinde YAKALANMIYORDU:
+     üst sınır 30 dk'ydı, Yoğun'un 29,8 dk'sı içinden geçiyordu. Sınır 26 dk'ya çekildi —
+     kaçan mutasyon testin zayıf yerini gösterdi.)*
+  3. `g2` sessizce config'e uygulansın (`tipBase` 3,5) → 4 test kırıldı.
+  4. `m1` gerçekten ateşlensin (blok görev hattının önüne alındı) → "m1 ATIL" kırıldı.
+- Araç kalıcı: `tools/denge-kollari.ts` + `tools/olcum-gec-oyun.ts`. **Elenen kolların kodu
+  duruyor** — Faz D sonrası yeniden ölçülecekler.
+- Final tam koşu: `docs/olcum-sim.txt` · `docs/olcum-sim-kollar.txt` · `docs/olcum-gec-oyun.txt`
+  (+ damga dosyası). D-079'un üç ölçütü ve D-087'nin dördüncüsü geçiyor:
+  **22 sn ✓ · 1,6 dk ✓ · 6,1 dk ✓ · 23,9 dk / 1 aşan ✓**
+
+## §Bu turun kapattığı açık kalemler
+
+- **D-086 Bulgu 7** — "geç-oyun eğrisi 20 dk ölçütünü 6 kez aşıyor" (**kapandı**: ölçütün
+  profili sabitlendi, hüküm geçiyor; Normal sayısı gözlem bandına taşındı).
+
+## §Bu turun AÇTIĞI kalemler
+
+- **Faz D sonrası yeniden ölçüm:** meta katman (elmas/günlük görev/ödül ekranı/offline) geç-oyun
+  bekleme pencerelerini gerçekten dolduruyor mu — `tools/olcum-gec-oyun.ts` hazır bekliyor.
+- **Görev hattı `waiterTray` kademe 2'de bitiyor**, üçüncü kademe (₺2.500 → tepsi 4) hatta yok;
+  oysa `simulate.ts`'in ÜÇ KOL tablosu 20 masada `waiterTray: 3` varsayıyor. Tempo kalemi
+  DEĞİL (g1 ölçüldü, iyileştirmiyor) — görev/HUD tutarlılık kalemi.
+- **`outputMultByLevel` yok:** servis merdiveninin çıktı çarpanı basamak-başı değil
+  merdiven-geneli; bu yüzden `b1` (basamak bölme) erken oyuna dokunmadan denenemiyor.
+- **Sim'de serbest oyun bloğu ölü kod** (Bulgu 5): tempoyu görev hattı belirliyor. Bu bir
+  model kalemi; bugün bir zarar vermiyor ama "akıllı oyuncu" kuralları orada yazılı olduğu
+  için yanıltıcı.

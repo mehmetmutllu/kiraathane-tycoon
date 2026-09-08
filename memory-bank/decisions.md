@@ -2391,3 +2391,36 @@ kapısı gereği kendi turunda ölçülecek. D-079'un açılış hükmü ise **d
 **Bekçi:** `tests/sim-model.test.ts` — 17 test, **üç mutasyonla** doğrulandı (masalar-arası terim
 silindi → 4 test · k2 geri alındı → 1 test · elenen k3 varsayılana sokuldu → 4 test). C5 öncesi
 model `SIMKOL=eski` ile hâlâ koşuyor; karşılaştırma zemini silinmedi.
+
+## D-087 · Dördüncü tempo ölçütünün PROFİLİ sabitlendi; ekonomiye dokunulmadı (2026-09-08)
+**Karar (kullanıcı seçimi):** D-010 §3.6'nın *"20 dk'yı aşan tek alım kalmasın"* ölçütü,
+**kardeş üç ölçütle AYNI profilde (İDEALİZE, verim 1,0) hüküm verir.** Normal/Rahat sayıları
+silinmez, **hükümsüz GÖZLEM BANDI** olarak basılır. `economy.config.ts` DEĞİŞMEDİ.
+**Sorun:** D-086 Bulgu 7, model gerçeğe yaklaşınca Normal profilde ihlalin 2 → 6 çıktığını
+açmıştı. D1 turu ölçtü ki ölçütün profili **hiç yazılmamış**: kardeş üçü İdealize'de okunuyor,
+bu dördüncüsü Normal'de. Aynı eğri **İdealize 1 · Yoğun 1 · Normal 6 · Rahat 11** veriyor —
+hüküm eğriden değil, okuyanın seçtiği profilden geliyordu. Kardeşlerinin profilinde ölçüt
+**bugün de geçiyor**: aşan 1, en uzun 23,9 dk → `servis L6` (D-078'in bilerek bıraktığı).
+**Neden düzeltici kol ALINMADI (ölçülerek):** ölçütü tutturabilen dört kolun hepsi Kat 1
+içeriğini kısaltıyor — `f4` ×0,80 → 7,90 sa (−%7) · `c1` → 7,33 sa · `f3` → 7,22 sa ·
+`g2` tipBase 3,5 → 7,04 sa (−%17); tam temizlik (=0) −%19…−%42. Taban 8,48 sa. Yani "ölçütü
+tuttur" ile "Kat 1 uzun olsun" aynı anda istenemiyor. Üstelik bu bekleme pencerelerini
+dolduracak katman (**Faz D meta**: elmas, günlük görev, hedefler, ödül ekranı, offline) henüz
+yok — içerik uzunluğu ödemek erken. Faz D bitince aynı ölçüm yeniden okunacak.
+**Ölçülerek ELENENLER:** `f1` (4'ün altına inmiyor) · `f2` (2'nin altına inmiyor) ·
+`b1` basamak bölme (4'ün altına inmiyor) · `g1` taşıma tavanı (ihlali **6 → 7 ARTIRIYOR** —
+`feedback_economy_throughput`'un "Kat 1'de bu kol tükendi" sınırının görev-hattı yolundan da
+ölçülmüş hâli) · `f3` (`f4` tarafından domine ediliyor) · `m1` (**ATIL** — sim'de serbest oyun
+bloğu görev hattı bitmeden hiç koşmuyor; tempoyu görev hattı belirliyor).
+**Kabul edilen risk:** Normal oyuncu 6. saatte `servis L6` için 43,4 dk bekliyor; bu tur
+bunun için bir şey ödenmedi, sayı gözlem bandında görünür kalıyor.
+**Uygulama:** `simulate.ts`'te ölçüt sabitleri tek yerde (`BEKLEME_SINIRI`/`BEKLEME_IZIN`/
+`OLCUT_VERIM`), dördüncü ölçüt artık ✓/✗ hükmüyle kardeşlerinin yanında, üç-profil bloğu
+`GÖZLEM BANDI` oldu ve aşanların TAMAMINI listeliyor. Araçlar kalıcı: `tools/denge-kollari.ts`
+(varyant katmanı) + `tools/olcum-gec-oyun.ts` (doz→ihlal tarayıcı; doz tahmin edilmez çözülür).
+Bekçi `tests/tempo-olcutu.test.ts` — 15 test, **dört mutasyonla** doğrulandı.
+**Kayda geçen ders:** ikinci mutasyon (ölçütü Yoğun'a kaydır) ilk hâlinde YAKALANMADI — üst
+sınır 30 dk'ydı, Yoğun'un 29,8 dk'sı içinden geçiyordu. **Kaçan mutasyon testin zayıf yerini
+gösterdi**; sınır 26 dk'ya çekildi. Bir bekçinin "geçti" demesi, kilitlediğini göstermez.
+**Detay:** `docs/gec-oyun-raporu-d1.md` · ham `docs/olcum-gec-oyun.txt`.
+
