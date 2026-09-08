@@ -189,7 +189,7 @@ h2{font-size:21px;font-weight:800}
 <script type="application/json" id="durum">
 {
  "guncelleme": "08.09.2026",
- "yapilan": 61,
+ "yapilan": 62,
  "toplam": 76,
  "kilometre": [
   {
@@ -205,33 +205,33 @@ h2{font-size:21px;font-weight:800}
    "etiket": "Model ve denge oturdu"
   },
   {
-   "at": 75,
+   "at": 76,
    "etiket": "v1.0 App Store"
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum · Faz İA · 2/3 — oturumun kendisi ölçüldü",
-  "baslik": "Sekiz dakikalık bir ölçüm koşusu, iki saatin üçte birini yiyormuş",
-  "aciklama": "Bu oturum oyuna değil, <b>oyunun yapılma biçimine</b> bakıyor. Kullanıcı sordu: neden her şey bu kadar uzun sürüyor, sebebi hafıza yapısı mı? Cevap tahminle değil <b>kronometreyle</b> arandı ve önceki oturumun kendi tahmini çürüdü: suçlu sanılan belge yığını değil, <b>tek bir ölçüm koşusu</b>. Tam koşu <b>8 dakika 2 saniye</b> sürüyor ve önceki turda <b>yedi kez</b> koşmuş — yani 168 dakikanın <b>üçte biri</b>. Aracın kısa koşu kipi hiç yokmuş.<br><br>İkinci bulgu daha ince: geçen tur koda <i>\"önce ölç, sonra karar sor\"</i> talimatı <b>yazılı olarak</b> girilmişti ve yine ihlal edildi — bir seçenek önce uygulandı, sonra ölçüldü, sonra geri alındı. Bundan çıkan sonuç: <b>yazılı kural yetmiyor, kilit sıraya gömülmeli.</b> Artık denge değişikliği iki ayrı commit istiyor: önce ölçüm ve raporun karar bölümü <b>boş</b>, sonra karar, sonra kod.<br><br>Üçüncüsü: aynı bulgunun 11 anahtar sayısından <b>9’u dört ayrı dosyada birden</b> yazılıydı. Artık sayı raporda, karar defterde, durum tek satırda, anlatı ise ikinci kez hiçbir yerde.",
+  "etiket": "Bu oturum · Faz İA · 3/3 — kapanış otomasyonu",
+  "baslik": "Defterin yanlış olduğunu insan değil, defteri okuyan araç söyledi",
+  "aciklama": "Her oturum bir <b>kapanış</b> ile bitiyor: ilerleme dosyası güncellenir, bu pano elle altı ayrı yerinden düzeltilir, testler koşar, commit atılır. Bu turun işi o kapanışın <b>elle yapılan iki adımını</b> makineye devretmekti.<br><br>Birincisi sayaçlar. Panonun sayıları bundan böyle <b>ilerleme dosyasındaki tek tablodan türetiliyor</b>; panoya elle sayı yazılmıyor. Ama asıl kazanç türetme değil <b>denetim</b> çıktı: aynı sayı ilerleme dosyasında <b>üç ayrı yerde</b> duruyor (bütçe satırı, tablo, faz başlığı) ve dördüncü bir yerden de türetilebiliyor (fazın altındaki kalem listesi). Araç dördünü <b>bağımsız</b> okuyup karşılaştırıyor, tutmuyorlarsa panoyu <b>yazmıyor</b>. İlk koşusunda <b>üç gerçek sapma</b> buldu — üçü de aylardır sessizce yanlış duruyordu.<br><br>İkincisi sıra kilidi. Geçen turun bulgusu şuydu: <i>\"önce ölç, sonra karar sor\"</i> kuralı koda <b>yazılı olarak</b> girmişti ve yine ihlal edildi, çünkü yazılı kural <b>hiçbir şeyi engellemiyordu</b>. Artık kapanışta bir denetim koşuyor: denge dosyasına dokunan ilk commit'ten önce bir ölçüm commit'i yoksa <b>uyarıyor ve çıkış kodunu düşürüyor</b>. Araç uydurma veriyle değil, projenin <b>kendi geçmişiyle</b> sınandı.",
   "adimlar": [
-   "<b>Ölçüldü:</b> tam ölçüm koşusu <b>8 dk 02 sn</b> × 7 koşu = oturumun <b>%33’ü</b> (önceki tahmin %15’ti — çürüdü)",
-   "<b>Hafıza kesildi:</b> \"şu an\" dosyası 4.219 → <b>61 satır</b>, oturum başlangıcı 150-350 KB yerine <b>9,7 KB</b> okuyor",
-   "<b>Varyant kapısı:</b> denge değişikliği, raporda o kolun sayı satırı olmadan yapılamaz — kilit commit yapısında",
-   "<b>Ortak ölçüm iskeleti:</b> üç araçta birebir kopya olan bloklar tek dosyada; <b>üç damga</b> eklendi",
-   "<b>Kısa koşu:</b> bardak <b>11 sn</b> · kuyruk <b>14,6 sn</b>; tam koşu çıktıları tabanla <b>birebir aynı</b>",
-   "<b>Damga sınandı:</b> geçen turun tuzağı bilerek yeniden üretildi — damga yakaladı ve koşuyu geçersiz saydı"
+   "<b>Üç sapma bulundu:</b> faz başlığı 1/2 derken tablo 2/3 diyordu · bütçesiz bir kalem listede duruyordu · \"v1.0\" kilometre taşı bütçe 73→76 olurken <b>75'te kalmıştı</b>",
+   "<b>Pano artık türev:</b> sayaçlar tek tablodan üretilir, panoya elle sayı yazılmaz",
+   "<b>Denetim yazmayı engelliyor:</b> defterin dört sayı yeri tutmuyorsa pano güncellenmiyor",
+   "<b>Sıra kilidi makinede:</b> ölçüm commit'i koddan önce gelmemişse kapanış uyarır (çıkış kodu 1)",
+   "<b>Gerçek geçmişle sınandı:</b> C3 turu <b>temiz</b> · C4 turu <b>ihlal</b> — ki D-084 tam o turdan doğmuştu",
+   "<b>40 bekçi testi · dokuz mutasyon</b>, dokuzu da yakalandı"
   ],
-  "not": "<b>Neyin kesilmediği, neyin kesildiği kadar önemli.</b> Bekçi testleri, mutasyonla doğrulama ve finalde tam koşu <b>aynen duruyor</b> — geçen tur bu protokol üç gerçek hatayı yakalamıştı. Hız, ölçümün <b>tekrarından</b> ve aynı metnin dört kez yazılmasından çıkarıldı; doğrulamadan değil. Hedef: bir denge turu 168 dakika yerine <b>~95 dakika</b>."
+  "not": "<b>Bu turun dersi bekçiden çıktı.</b> Mutasyonların ilk turunda <b>üçü kaçtı</b> ve üçü de aracın kendisinde gerçek bir kusura işaret ediyordu: bir kural sessizce seçim yapıyordu (belirsizlik hata sayılmalıydı), yazma yolu <b>hiç test edilmemişti</b> (girinti kayarsa tek sayı değişikliği 900 satırlık sahte bir diff üretirdi), ve sıra kilidinde <b>hiçbir zaman çalışmayan ölü bir koşul</b> vardı. Üçü de düzeltildi. Yani mutasyon turu bir formalite değil, aracın kendi denetimiydi."
  },
  "siradaki": {
-  "etiket": "Faz İA · P3 — sonra Faz C’nin son oturumu",
-  "baslik": "Kapanış da elle yazılmaktan çıkıyor, sonra sıra simülatörde",
-  "aciklama": "Sıradaki küçük adım <b>kapanış otomasyonu</b>: bu panonun sayaç ve kartları hâlâ elle güncelleniyor (altı ayrı adım). Bundan sonra <b>ilerleme dosyasındaki tek satırdan</b> üretilecek. Aynı adımda kapanış protokolüne bir denetim ekleniyor: kod commit’i ölçüm commit’inden önce gelmişse <b>uyarı verecek</b> — yani varyant kapısı yalnız yazılı bir kural değil, makinenin denetlediği bir şey olacak.<br><br>Ardından Faz C’nin son oturumu: <b>simülatörün gerçeğe yaklaşması.</b> Simülatör garsonu hâlâ \"hedefi hiç değişmeyen ideal taşıyıcı\" sayıyor; 20 masalı katta bunun <b>%58’i</b> gerçekleşiyor. Masa yükseltmesi kalem kalem, bardak döngüsü ve müşteri sabrı da modele girmedi. O oturum aynı zamanda bu turun <b>sınavı</b>: süresi git damgalarıyla ölçülüp tahminle karşılaştırılacak, sapma büyükse kurulan mantık düzeltilecek.",
+  "etiket": "Faz C · C5 — ve yeni akışın sınavı",
+  "baslik": "Simülatör garsonu hâlâ \"ideal taşıyıcı\" sanıyor",
+  "aciklama": "İş akışı fazı bitti; sıra <b>Faz C'nin son oturumuna</b> geldi: <b>simülatörün gerçeğe yaklaşması.</b> Bugünkü model garsonu hedefi hiç değişmeyen ideal bir taşıyıcı sayıyor; 20 masalı katta bunun <b>%58'i</b> gerçekleşiyor. Masa yükseltmesini tek kalemde yapıyor, oysa oyunda masa masa alınıyor. Bardak döngüsü geçen turun kararını (boştaki garson bulaşık toplar) henüz saymıyor. Müşteri sabrı modelde hiç yok.<br><br>O oturum aynı zamanda <b>kurulan akışın sınavı</b>: süresi git damgalarıyla ölçülüp tahminle karşılaştırılacak. Hedef bir denge turunu 168 dakika yerine <b>~95 dakikada</b> kapatmak; sapma <b>%15'ten</b> büyükse hızlandırma mantığı düzeltilecek. Sınav ayrı bir oturum değil, bu fazın <b>kapısı</b>.",
   "adimlar": [
-   "<b>Pano kendi kendini günceller:</b> sayaç ve kart, ilerleme dosyasındaki satırdan üretilir",
-   "<b>Sıra kilidi denetlenir:</b> kod ölçümden önce commit’lenmişse kapanış uyarır",
-   "<b>Sim gerçeğe yaklaşır:</b> taşıma modeli (gerçekleşen %58) · masa yükseltmesi · bardak döngüsü · sabır",
-   "<b>Yeni akış sınanır:</b> oturum süresi ölçülür, tahminden %15’ten çok saparsa mantık düzeltilir",
+   "<b>Taşıma modeli:</b> ideal taşıyıcı varsayımı yerine ölçülen %58",
+   "<b>Masa yükseltmesi kalem kalem</b> — sim tek kalemde alıyor, oyun masa masa",
+   "<b>Bardak döngüsü</b> geçen turun kararını da saymalı · <b>müşteri sabrı</b> modele girmeli",
+   "<b>Faz kapısı:</b> turun süresi ölçülür, ~95 dakikadan %15'ten çok saparsa mantık düzeltilir",
    "<b>Sonra Faz D–F:</b> meta katman, arayüz cilası, paketleme ve mağaza"
   ],
   "not": "<b>Sanat ve asset işi bilerek en sonda:</b> karakterler hâlâ greybox, KayKit takılmadı, animasyon yok. Kullanıcı kararı: <i>\"sistem kusursuz otursun, sonra hallederiz.\"</i> Ölçü donduğu için sanat turları artık dengeyi bozamaz."
@@ -335,16 +335,16 @@ h2{font-size:21px;font-weight:800}
      "d": "Tek Odak · tezgâh merdiveni · global garson ve sipariş kuyruğu · simülatör gerçeğe yaklaşır. Denge <b>bir kez ölçüldü</b> (C1) · <b>Tek Odak'ın dördüncü kanalı tekleşti</b> (C2) · <b>sipariş kuyruğu ölçüldü, garson üstlenmesi bağlayıcı oldu</b> (C3). <b>Bardak kilidi ölçüldü ve açıldı</b> (C4 — boştaki garson bulaşık topluyor). Kalan: simülatörün gerçeğe yaklaşması.",
      "yapilan": 4,
      "toplam": 5,
-     "kapi": "Sim tempo tablosunu tutuyor, tempo iddiaları teste yazılı"
+     "kapi": "Sim tempo tablosunu tutuyor, tempo iddiaları teste yazılı",
+     "durum": "now"
     },
     {
      "k": "İA",
      "t": "İş akışı hızlandırma",
-     "d": "Oturumların neden 2 saat sürdüğü <b>ölçüldü</b> ve akış yeniden kuruldu (D-084). <b>P1</b> hafıza kesimi + varyant kapısı ✓ · <b>P2</b> ortak ölçüm iskeleti + damgalar + kısa/tam koşu ✓ · <b>P3</b> kapanış otomasyonu.",
-     "yapilan": 2,
+     "d": "Oturumların neden 2 saat sürdüğü <b>ölçüldü</b> ve akış yeniden kuruldu (D-084). <b>P1</b> hafıza kesimi + varyant kapısı ✓ · <b>P2</b> ortak ölçüm iskeleti + damgalar + kısa/tam koşu ✓ · <b>P3</b> kapanış otomasyonu ✓ — pano sayaçları tek tablodan türer, sıra kilidi makinede denetlenir (D-085). Kalemler bitti; <b>faz kapısı</b> bir sonraki denge turunda ölçülecek.",
+     "yapilan": 3,
      "toplam": 3,
-     "kapi": "Bir denge turu ölçülen süreyle ~95 dakikada kapanıyor",
-     "durum": "now"
+     "kapi": "Bir denge turu ölçülen süreyle ~95 dakikada kapanıyor"
     },
     {
      "k": "D",
@@ -374,6 +374,21 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "08.09.2026",
+   "etiket": "Faz İA · 2. oturum (P3 — kapanış otomasyonu)",
+   "baslik": "Kapanışın iki elle adımı makineye geçti — ve makine ilk iş defteri yanlışladı",
+   "govde": "Geçen tur oturum akışının kendisi ölçülmüş ve üç parçaya bölünmüştü. İlk ikisi yapılmıştı: hafıza kesimi ve ortak ölçüm iskeleti. Kalan parça <b>kapanıştı</b> — her oturumun sonunda elle yapılan iki iş.<br><br>Birincisi bu panonun kendisi. Sayaçlar, faz payları ve kartlar kapanışta <b>altı ayrı yerden</b> elle düzeltiliyordu. Artık ilerleme dosyasındaki <b>tek tablo kaynak</b>, pano onun türevi. Ama araç yazılırken asıl mesele türetme olmadığı anlaşıldı: aynı sayı ilerleme dosyasının <b>kendi içinde üç yerde</b> duruyor — bütçe satırı, pano tablosu ve faz başlığı — ve dördüncü bir yerden türetilebiliyor: fazın altındaki kalem listesi. Dördü <b>bağımsız</b> okunup karşılaştırılınca ortaya çıkanlar tahmin değil, oradaydı:<br><br>① Faz başlığı <b>\"1/2\"</b> derken tablo <b>\"2/3\"</b> diyordu — başlık bir tur önce güncellenmemiş.<br>② Fazın altında <b>dört</b> kalem sıralıyken bütçe fazı <b>üç</b> kalem sayıyordu. Fazlalık kalem aslında bir <b>faz kapısı</b>ydı (yeni akışın sınavı), ayrı bir oturum değil; kalem sanıldığı için bütçe her iki okumada farklı çıkıyordu.<br>③ <b>\"v1.0 App Store\"</b> kilometre taşı <b>75</b>'te duruyordu; bütçe iki tur önce 73'ten <b>76</b>'ya çıkmıştı ve taş geride kalmıştı.<br><br>Üçü de küçük. Üçü de aylardır orada. Ve üçü de tam olarak <b>elle güncellemenin</b> ürettiği hata sınıfı: sayıyı bir yerde düzeltip diğerini unutmak. Araç artık defteri tutarsız bulursa panoyu <b>yazmıyor</b> — sayıyı düzeltmeden yayınlanamıyor.<br><br>İkinci iş sıra kilidiydi. Geçen turun en can sıkıcı bulgusu şuydu: <i>\"önce ölç, sonra karar sor\"</i> kuralı bir tur önce koda <b>yazılı olarak</b> girmiş ve <b>yine ihlal edilmişti</b>. Sorun kuralın bilinmemesi değil, <b>hiçbir şeyi engellememesiydi</b>. Bu tur kuralı denetleyen bir şey kondu: kapanışta commit'lere bakılıyor, denge dosyalarına (ekonomi ayarları, tik döngüsü, kurallar) dokunan <b>ilk</b> commit'ten önce bir <b>ölçüm</b> commit'i yoksa uyarı veriliyor ve çıkış kodu düşüyor.<br><br>Bu araç uydurma veriyle değil <b>projenin kendi geçmişiyle</b> sınandı. İki tur seçildi: C3 turunda ölçüm ayrı bir commit'te atılmıştı → <b>temiz</b>. C4 turunda ölçüm çıktısı ile kod <b>aynı commit'te</b>ydi → <b>ihlal</b>. Ve C4, D-084'ün doğduğu turun ta kendisi. Yani araç, kendisini doğuran hatayı geriye dönük olarak da işaretliyor.",
+   "maddeler": [
+    "<b>Pano artık türev:</b> sayaçlar ilerleme dosyasındaki tek tablodan üretilir, elle sayı yazılmaz",
+    "<b>Denetim üç gerçek sapma buldu:</b> başlık 1/2 ↔ tablo 2/3 · bütçesiz kalem · kilometre taşı 75'te kalmış",
+    "<b>Tutarsız defter yayınlanamıyor:</b> dört sayı yeri tutmuyorsa pano yazılmıyor (çıkış kodu 1)",
+    "<b>Sıra kilidi makinede:</b> ölçüm commit'i koddan önce gelmemişse kapanış uyarır — yazılı kural yetmemişti",
+    "<b>Gerçek geçmişle sınandı:</b> C3 temiz · C4 ihlal (D-084'ün doğduğu tur)",
+    "<b>40 bekçi testi · 9 mutasyon</b>, dokuzu da yakalandı · testler gerçek ilerleme dosyasını da okuyor"
+   ],
+   "not": "<b>Mutasyon turu formalite değil, aracın kendi denetimiymiş.</b> İlk turda dokuz mutasyonun <b>üçü kaçtı</b> ve üçü de aracın gerçek bir kusuruna işaret ediyordu. Biri: bir kural belirsizlik durumunda <b>sessizce seçim yapıyordu</b> — belirsizlik hata sayılmalıydı. İkincisi: panoya <b>yazma yolu hiç test edilmemişti</b>; girinti biçimi kayarsa tek bir sayı değişikliği 900 satırlık sahte bir fark üretir ve anlatının korunduğu gözle görülemezdi. Üçüncüsü: sıra kilidinde <b>hiçbir zaman çalışamayacak ölü bir koşul</b> vardı. Üçü de düzeltildi, sonra dokuzu da yakalandı. Kaçan mutasyon, testin değil <b>kodun</b> zayıf yerini gösterir."
+  },
   {
    "tarih": "08.09.2026",
    "etiket": "Faz İA · 1. oturum (D-084 — oturum akışı ölçüldü ve kuruldu)",

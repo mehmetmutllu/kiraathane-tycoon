@@ -2333,3 +2333,19 @@ satır); geçmiş `memory-bank/arsiv/`'e.
 **Gerekçe:** C4'e "önce ölç, sonra sor" talimatı **yazılı girilmişti** ve yine ihlal edildi — yazılı
 kural yetmiyor, kilit commit yapısına gömülmeli. Bekçi/mutasyon/final tam koşu **dokunulmadı**.
 **Rapor:** `docs/oturum-akisi-mantik.md` (Fable 5.1, ölçümlü).
+
+## D-085 — Kapanış otomasyonu: pano TÜREV, sıra kilidi MAKİNEDE (2026-09-08)
+**Karar:** D-084'ün kalan parçası (P3) uygulandı. ① Pano sayaçları elle yazılmaz, `progress.md`
+tablosundan **türetilir** (`npm run pano`); araç önce defterin dört sayı yerini (bütçe satırı ·
+tablo · faz başlığı · kalem listesi) **bağımsız okuyup** karşılaştırır, tutmuyorsa panoyu YAZMAZ.
+② Varyant kapısının commit sırası artık denetleniyor (`npm run sira`): denge dosyasına dokunan
+ilk commit'ten önce bir ölçüm commit'i yoksa çıkış kodu 1. Uyarıdır, geri alma değil — sebep
+`decisions.md`'ye yazılır. İkisi de `oturum-bitir` adım 2-3'e bağlandı.
+**Belirleyici sayılar:** denetim ilk koşusunda **üç gerçek sapma** buldu (faz başlığı 1/2 ↔ tablo
+2/3 · bütçesiz kalem P4 · kilometre taşı 73→76'da 75'te kalmış) · sıra kilidi gerçek geçmişte
+sınandı: **C3 turu temiz, C4 turu ihlal** (D-084 tam o turdan doğmuştu) · **40 test, 9 mutasyon**.
+**Gerekçe:** D-084 "yazılı kural yetmiyor" demişti; P3 aynı ilkeyi kapanışa uyguluyor. Anlatı
+(özet · sıradaki · günlük kartı · faz açıklaması) türetilebilir değil, **elle yazılmaya devam eder**.
+**Kayda geçen ders:** mutasyonların ilk turunda üçü kaçtı ve üçü de aracın **gerçek kusuruna**
+işaret etti (sessiz seçim yapan kural · hiç test edilmemiş yazma yolu · ölü koşul) — kaçan mutasyon
+testin değil kodun zayıf yerini gösterir. **Rapor yok:** denge değişmedi, ölçüm turu değil.

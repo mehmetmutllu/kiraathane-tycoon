@@ -19,18 +19,25 @@ tur boyunca zaten yazıldı; burada yalnız yerine oturtulur (D-084, `docs/oturu
    - `docs/<konu>-raporu-<faz>.md` → sayılar, yöntem, tuzaklar, etki. **Tek kaynak budur.**
    Kalıcı tercih/ilke çıktıysa otomatik hafızaya (`~/.claude/projects/.../memory/`) — memory-bank'e
    kopyalanmaz.
-2. **SIRA KİLİDİ KONTROLÜ** (D-084 §3.2): bu turda denge/tick değişmişse
-   - raporda o kolun **§Bulgular sayı satırı** var mı?
-   - ölçüm commit'i (#1) kod commit'inden (#2) **önce** mi?
-   Değilse kullanıcıya söyle ve nedenini kayda geç — sessizce geçme.
-3. **İLERLEME PANOSU** — `docs/pano/ilerleme-panosu.html`. Kaynak `memory-bank/progress.md`
-   tablosudur; pano onun türevidir. (P3'ten sonra: `node tools/pano-guncelle.mjs`.)
-   Elle yapılıyorsa tek `<script type="application/json" id="durum">` bloğunda: fazın `yapilan`+1 ·
-   toplam `yapilan`+1 · `ozet` · `siradaki` · `gunluk` listesinin en üstüne yeni kart (progress
-   satırının 3-4 cümlelik hâli) · `guncelleme` tarihi. **Başka hiçbir yerini elle değiştirme.**
+2. **SIRA KİLİDİ KONTROLÜ** (D-084 §3.2) — `npm run sira`
+   Push'lanmamış commit'leri + çalışma ağacını okur; denge dosyasına (`economy.config.ts` ·
+   `tick.ts` · `rules.ts`) dokunan ilk commit'ten önce bir ölçüm commit'i yoksa **çıkış kodu 1**.
+   İhlalde: kullanıcıya söyle ve nedenini `decisions.md`'ye kayda geç — **sessizce geçme.**
+   Araç sırayı denetler, sayıyı denetleyemez: çıktının işaret ettiği raporda **o kolun §Bulgular
+   sayı satırı** var mı, elle bak. Geçmiş bir tur için: `npm run sira -- --menzil=A..B`.
+3. **İLERLEME PANOSU** — `npm run pano`
+   Sayılar `memory-bank/progress.md` tablosundan **türetilir**; pano onun türevidir, elle sayı
+   yazılmaz. Araç önce defteri **denetler** (bütçe satırı · tablo · faz başlığı · kalem listesi
+   birbirini tutuyor mu); tutmuyorsa yazmaz ve neyin çeliştiğini söyler → önce `progress.md`
+   düzeltilir. Aktif faz değiştiyse `npm run pano -- --simdi=<KOD>`.
+   **Elle yazılan tek şey ANLATI:** `ozet` · `siradaki` · `gunluk` listesinin en üstüne yeni kart
+   (progress satırının 3-4 cümlelik hâli) · faz `d` açıklamaları. Araç bunlara dokunmaz; sayaç
+   arttığı hâlde yeni günlük kartı yoksa uyarır.
    Sonra aynı dosya yoluyla yeniden yayınla (Artifact tool, `file_path` aynı; bağlantı değişmez):
    https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 4. **Testler:** `npm run test` (vitest ~12 sn) + mümkünse duman testi (`node tools/smoke.mjs`).
+   Not: `tests/pano-guncelle.test.ts` gerçek `progress.md` + panoyu okur — defter tutarsızsa
+   burası da kırılır, yani adım 3 atlansa bile tutarsızlık testte yakalanır.
    Başarısızsa düzelt ya da bilinen-bug olarak `progress.md`'ye yaz.
 5. **Commit:** `git add -A && git commit -m "<anlamlı, kapsamı özetleyen mesaj>"`.
    Sırlar (.env vb.) commit'lenmez. Pre-commit hook hata verirse düzelt, yeni commit at.

@@ -5,34 +5,34 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-08 — **D-084 P1+P2 BİTTİ** · Faz C 4/5 · Faz İA 2/3)
+## ŞU AN (2026-09-08 — **Faz İA BİTTİ 3/3** · Faz C 4/5 · 62/76)
 
-Son tamamlanan oyun turu: **C4 — bardak kilidi ölçüldü ve açıldı (D-083)**; garson boşta
-bulaşık topluyor. Rapor: `docs/bardak-raporu-c4.md`.
+Son tamamlanan oyun turu hâlâ **C4** (bardak kilidi, D-083). Son iki tur oyun koduna
+dokunmadı; ikisi de iş akışıydı ve **Faz İA kalemleri bitti** (P1 hafıza kesimi · P2 ortak
+ölçüm iskeleti + damgalar · P3 kapanış otomasyonu — **D-085**).
 
-Bu tur OYUN KODUNA DOKUNMADI. Kullanıcının *"oturumlar neden 2 saat sürüyor"* sorusu
-Fable 5.1 tarafından **ölçülerek** yanıtlandı → `docs/oturum-akisi-mantik.md`; dört karar da
-önerilen seçenekle onaylandı. Uygulananlar:
-- **P1 — hafıza kesimi:** `memory-bank/arsiv/` · activeContext 4.219 → 61 satır tur kartı ·
-  progress 1.952 → 73 satır · başlangıç okuma seti 150-350 KB → **9,7 KB** · iki skill +
-  `CLAUDE.md` yeni sıraya göre yazıldı (varyant kapısı artık her oturumda otomatik yükleniyor).
-- **P2 — `tools/olcum-lib.ts`:** ortak iskelet (tohum · sahte depo · biçimleyici · istatistik) +
-  **üç damga** (bot yürüdü · korunum · varyant etkili) + `OLCUM=kisa|tam`. Üç araç bağlandı.
-  Kısa koşu bardak **11,0 sn** · kuyruk **14,6 sn**; tam koşu çıktıları tabanla **birebir aynı**.
-  Damga, C4 tuzağı ②'yi yeniden üretince yakaladı (çıkış kodu 1). Bekçi `tests/olcum-lib.test.ts`
-  (10 test, iki mutasyonla doğrulandı).
+**P3'te olan:** kapanışın elle yapılan iki adımı makineye geçti.
+- `npm run pano` — sayaçlar `progress.md` tablosundan **türer**; araç defterin dört sayı
+  yerini (bütçe satırı · tablo · faz başlığı · kalem listesi) bağımsız okuyup karşılaştırır,
+  tutmuyorsa panoyu **yazmaz**. İlk koşusunda **üç gerçek sapma** buldu.
+- `npm run sira` — denge dosyasına dokunan ilk commit'ten önce ölçüm commit'i yoksa çıkış 1.
+  Gerçek geçmişte sınandı: **C3 temiz · C4 ihlal**.
+- Bekçi: `tests/pano-guncelle.test.ts` + `tests/sira-kilidi.test.ts` · **40 test, 9 mutasyon**.
+- Anlatı (özet · sıradaki · günlük kartı · faz açıklaması) **elle yazılmaya devam ediyor** —
+  türetilebilir değil.
 
 ## SIRADAKİ TAM ADIM
 
-**P3 — kapanış otomasyonu** (½ oturum): `tools/pano-guncelle.mjs` (pano JSON'unu
-`progress.md` tablosundan üretir; bugün hâlâ elle 6 adım) + `oturum-bitir`'e **sıra kilidi
-kontrolü** (kod commit'i ölçüm commit'inden önceyse uyar).
-Sonra **C5** yeni akışla; süre git damgalarıyla ölçülür ve `docs/oturum-akisi-mantik.md` §4
-tahminiyle (168 → ~95 dk) karşılaştırılır — sapma > %15 ise mantık düzeltilir (P4).
+**C5 — `simulate.ts`'i gerçeğe yaklaştırmak.** Dört kalem: taşıma modeli (G4'te gerçekleşen
+**%58**, model ideal taşıyıcı varsayıyor) · masa yükseltmesi kalem kalem (sahte 21,4 dk kapanır)
+· bardak döngüsü artık **D-083'ü de saymalı** · müşteri sabrı modelde hiç yok.
 
-**C5'in içeriği (değişmedi):** `simulate.ts`'i gerçeğe yaklaştırmak — taşıma modeli
-(G4'te gerçekleşen %58, model ideal taşıyıcı varsayıyor) · masa yükseltmesi kalem kalem
-(sahte 21,4 dk kapanır) · bardak döngüsü artık D-083'ü de saymalı · sabır.
+**Bu tur aynı zamanda İA'nın FAZ KAPISI:** yeni akışla koşulacak ve süresi git damgalarıyla
+ölçülüp `docs/oturum-akisi-mantik.md` §4 tahminiyle (168 → ~95 dk) karşılaştırılacak; sapma
+**> %15** ise hızlandırma mantığı düzeltilir. Kapı ayrı bir oturum değil.
+
+**C5 denge dosyalarına dokunacak → varyant kapısı DEVREDE:** iki commit sırası zorunlu ve
+kapanışta `npm run sira` bunu denetleyecek.
 
 ## AÇIK KALEMLER (bilinen, bilerek duruyor)
 
@@ -41,16 +41,11 @@ tahminiyle (168 → ~95 dk) karşılaştırılır — sapma > %15 ise mantık d�
   `playerRadius` sandalyeler katı): personelin geçtiği boşluktan oyuncu geçemiyor. **Faz D.**
 - Gölgenin telefondaki maliyeti ölçülmedi (Faz F riski).
 - `docs/olcum-bardak.txt` ve `docs/olcum-kuyruk.txt` D-083 ÖNCESİNDEN kalma; C5'in tam koşusu
-  bunları tazeleyecek (bu turda bilerek dokunulmadı — kod değişmedi, sayı değişmedi).
-- **Damgalar tam koşuda İKİ gerçek kusur yakaladı** (ikisi de C4'ten kalma, kod bu turda
-  BİLEREK değiştirilmedi — ölçüm değişikliği kendi turunu ister):
-  ① `iade:0.25` varyantı hiç tetiklenmemiş → C4 raporundaki "%25'te sıfır fark" satırı ölçüm
-  değil totolojiymiş (`botRnd`'in sabit tohumunun ilk 12 çekilişi hep 0,25 üstü, B2'de tam 12
-  bardak doğuyor). Düzeltme `docs/bardak-raporu-c4.md` §4'e yazıldı; **Bulgu 3'ün sonucu**
-  **değişmedi** (%50 kolu gerçekten koştu ve kilidi açmadı).
-  ② B1 · oyuncu kipi satırında bot **hiç yürümüyor** (0,0 br/dk). Taban çıktıda da yazıyordu
-  (563 satırın içinde bir uyarı satırı); damga artık çıkış kodunu düşürüyor. C4 kararları
-  `park` kipinden alındığı için karar etkilenmiyor, ama o satır ölçüm değil.
+  bunları tazeleyecek.
+- **C4'ten kalan iki ölçüm kusuru** (kod bilerek değiştirilmedi, ölçüm değişikliği kendi turunu
+  ister): ① `iade:0.25` varyantı hiç tetiklenmemiş — düzeltme `docs/bardak-raporu-c4.md` §4'te,
+  **Bulgu 3'ün sonucu değişmedi**. ② B1 · oyuncu kipinde bot hiç yürümüyor (0,0 br/dk); C4
+  kararları `park` kipinden alındığı için karar etkilenmiyor.
 
 **Bekleyen denge kararı YOK.**
 
@@ -67,10 +62,13 @@ UYGULAMA        : (adım 4, yalnız kararın kolu)
 BEKÇİ           : (test dosyası + kaç mutasyonla doğrulandı)
 ```
 
-**Sıra (D-084 §3.2) — ihlali commit yapısı engeller:**
+**Sıra (D-084 §3.2) — ihlali commit yapısı engeller, kapanışta `npm run sira` denetler:**
 `0 BAŞLA → 1 SORU (kart açılır) → 2 ÖLÇ → commit #1 (araç + ham çıktı + rapor, KARAR BÖLÜMÜ BOŞ)
 → 3 KARAR (tek karar paketi) → 4 UYGULA + bekçi + mutasyon + final tam koşu
 → commit #2 (kod + test + rapor tamam + D-0xx) → 5 KAPAT`
 
 **Varyant kapısı:** `economy.config.ts` / `tick.ts` / `rules.ts`'e dokunan denge değişikliği,
 raporun §Bulgular tablosunda o kolun **sayı satırı** olmadan yapılmaz.
+
+**Kapanış (D-085):** `npm run sira` → `npm run pano` → `npm run test` → commit → push.
+Pano denetimi kırmızıysa önce `progress.md` düzeltilir; anlatı elle yazılır.
