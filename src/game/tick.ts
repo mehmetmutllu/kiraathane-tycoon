@@ -788,7 +788,10 @@ function waiterSystem(c: TickCtx): void {
           xp += C.xp.perWaiterServed;
         }
       }
-    } else if (w.tray + w.trayFood < wTrayCap && waiting.length > 0 && !demlemeKilidi) {
+    } else if (
+      w.tray + w.trayFood < wTrayCap && waiting.length > 0 && !demlemeKilidi &&
+      (w.dirtyCarry ?? 0) + (w.dirtyCarryFood ?? 0) === 0
+    ) {
       if (w.claim != null) { claimed.delete(w.claim); w.claim = undefined; } // yüklemeye dönen üstlenmez
       // Yükleme: servisin ÖN yüzüne git (ürünler önde); varınca EN ACİL bekleyenin ürününden yükle.
       if (navStep(w.pos, place.pickup, wStep, navGrid, REACH_PICKUP, player, obstacles)) {
@@ -806,24 +809,31 @@ function waiterSystem(c: TickCtx): void {
       }
     } else {
       if (w.claim != null) { claimed.delete(w.claim); w.claim = undefined; } // boşta kalan üstlenmez
-      // BOŞTA BULAŞIK (D-083): servis edecek kimse yokken garson bulaşık toplar. Kilit anında
-      // garson zaten boştadır (kirli masaya müşteri oturmaz → bekleyen kalmaz), yani bu kural
-      // servisten bir saniye bile çalmaz — yalnız ölü zamanı değerlendirir ve bardağın kapalı
-      // döngüsüne oyuncudan bağımsız TEK kaynak ekler (bkz. docs/bardak-raporu-c4.md).
-      // TETİK: yalnız TEMİZ BARDAK BİTTİĞİNDE. Garsonu rutin bulaşıkçı yapmak erken oyunda
-      // bulaşık çemberini bitiriyordu (ölçüm: AFK 7,27 servis/dk — dikkatli oyuncunun %90'ı;
-      // "aşırı otomasyon yok" kuralıyla çelişir). Dar tetikle kural bir ACİL MÜDAHALEDİR:
-      // zincir kilitlenmişse garson gidip birkaç bardak yıkar, havuz açılır açılmaz servise döner.
-      // Oyuncunun bulaşık işi böylece yerinde kalır; yalnız "mekân sonsuza kadar ölü" hâli kalkar.
+      // BOŞTA BULAŞIK (D-083): SERVİS EDECEK KİMSE YOKKEN garson bulaşık toplar. Servisten bir
+      // saniye bile çalmaz — bu dala ancak taşıyacak ürünü ve bekleyen müşterisi kalmayınca
+      // düşülür; biri gelince tepsiyi bırakıp servise döner (öncelik sırası yukarıdan aşağı).
+      //
+      // TETİK GENİŞ (kullanıcı 2026-09-08: *"bulaşığı ben yapmak istemiyorum, bir süre sonra
+      // otomatize olmalı"*). Önce DAR denendi (yalnız temiz bardak bitince) ama ölçüm gösterdi ki
+      // dar/geniş tetik AFK debisinde neredeyse fark etmiyor (B2: 6,80 ↔ 7,27) — fark OYUNCU
+      // OYNARKEN: dar tetikte bulaşık hep oyuncuya kalıyordu. Otomasyon takvimi böylece net:
+      // `q_wash` (~3 dk) elle öğretir → garson (~6-11 dk) boş vaktinde devralır → bulaşıkçı
+      // (~33 dk) mekân DOLUYKEN bile devralır. Kısmi assist (D-014) korunur: mekân doldukça
+      // garsonun boş vakti biter, kirli birikir, oyuncu yine gerekir.
       const carry = C.waiter.idleDishCarry;
       const tasinan = (w.dirtyCarry ?? 0) + (w.dirtyCarryFood ?? 0);
-      const bardakBitti = cleanCups === 0;
-      if (carry > 0 && (tasinan > 0 || (bardakBitti && dishes.length > 0))) {
+      // Tepside ÜRÜN varken kirliye başlanmaz. Bu dala ürünle de düşülebiliyor: bekleyen
+      // müşterilerin HEPSİ kirli masadaysa `claimable` boşalır, `waiting` de boşalır ve garson
+      // elinde çayla buraya gelir. O hâlde bulaşık DEĞİL bekleme doğrudur — yoksa garson çayı
+      // ve kirliyi aynı anda taşır (iki tepsi görseli üst üste biner). Bekçi ③ bunu yakaladı.
+      const urunVar = w.tray + w.trayFood > 0;
+      if (carry > 0 && !urunVar && (tasinan > 0 || dishes.length > 0)) {
         if (tasinan >= carry || (tasinan > 0 && dishes.length === 0)) {
           // Dolu (ya da toplanacak kalmadı) → leğene götür. Bardak da tabak da AYNI havuza döner.
           if (navStep(w.pos, place.dish, wStep, navGrid, reachWash(c.areasOpen), player, obstacles)) {
             cleanCups += tasinan; // bardak da tabak da AYNI havuza döner (korunum tek)
-            stats.dishesWashed += tasinan;
+            // `stats.dishesWashed` OYUNCUNUN sayacıdır (q_wash görevi + "Temizlik" başarımı +
+            // XP): personelin yıkadığı oraya yazılmaz. Bulaşıkçı da yazmaz — aynı kural.
             w.dirtyCarry = 0;
             w.dirtyCarryFood = 0;
           }

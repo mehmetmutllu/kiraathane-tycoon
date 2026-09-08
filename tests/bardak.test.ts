@@ -11,10 +11,9 @@
  * Çözüm (D-083, kullanıcı kararı): **servis edecek kimsesi kalmayan garson bulaşık toplar.**
  *
  * Bu bekçi bir EŞİK LİSTESİ değil, bir DAVRANIŞ SÖZLEŞMESİ — üç madde:
- *   ① DAR TETİK: garson ancak TEMİZ BARDAK BİTTİĞİNDE bulaşığa gider. Temiz bardak varken —
- *      servis edecek kimsesi olsun olmasın — kirliye dokunmaz; bulaşık işi OYUNCUNUNDUR
- *      (kısmi assist, D-014: garson oyuncunun yerini almaz). Geniş tetik ölçüldü ve REDDEDİLDİ:
- *      AFK debisi 7,27 servis/dk'ya çıkıyordu, dikkatli oyuncunun %90'ı.
+ *   ① SERVİS HER ZAMAN ÖNCE: servis edilebilecek biri varken garson bulaşığa gitmez, ve elinde
+ *      kirli varken tezgâha yüklemeye gitmez (ürün ile kirli aynı anda taşınmaz). Kısmi assist
+ *      (D-014) buradan gelir: mekân doldukça garsonun boş vakti biter, oyuncu yine gerekir.
  *   ② BOŞTAKİ GARSON ZİNCİRİ KAPATIR: bekleyen kalmayınca kirliyi toplar, leğende yıkar.
  *   ③ MEKÂN AFK'DA KALICI OLARAK DURMAZ — ve bu, aynı testin içinde kuralı KAPATARAK kanıtlanır
  *      (kural kapalıyken aynı koşu gerçekten duruyor; yani test kuralın kendisini yakalıyor).
@@ -61,10 +60,10 @@ function bardakToplami(s: ReturnType<typeof useGame.getState>): number {
 }
 
 describe('boşta bulaşık (D-083)', () => {
-  it('① temiz bardak VARKEN garson kirliye dokunmaz (bulaşık oyuncunun işi)', () => {
+  it('① servis edilebilecek biri VARKEN garson bulaşığa gitmez', () => {
     useGame.getState().hardReset();
     // Garson tepsisinde çay + TEMİZ masada bekleyen müşteri + başka masada kirli yığını.
-    // Havuzda temiz bardak VAR: zincir kilitli değil, yani garsonun bulaşıkta hiçbir işi yok.
+    // Elinde servis edilecek çay olduğu sürece bulaşık dalına DÜŞMEZ.
     const bekleyenMasa = 0;
     const kirliMasa = 1;
     const wPos = servicePlace(1).pickup;
@@ -77,17 +76,26 @@ describe('boşta bulaşık (D-083)', () => {
       player: PARK, inputKeyboard: [0, 0], inputJoystick: [0, 0], spawnTimer: 999,
     });
     let servisEdildi = false;
+    let kare = 0;
     for (let k = 0; k < 600; k++) {
       useGame.getState().tick(0.1);
       const s = useGame.getState();
-      expect(s.waiters[0]?.dirtyCarry ?? 0).toBe(0); // temiz varken kirli TAŞINMAZ
-      expect(s.dishes.length).toBe(2); // kirliye hiç dokunulmadı
+      if (!servisEdildi) {
+        kare += 1;
+        expect(s.waiters[0]?.dirtyCarry ?? 0).toBe(0); // servis bitmeden kirli TAŞINMAZ
+        expect(s.dishes.length).toBe(2); // kirliye hiç dokunulmadı
+      }
+      // Garson ürün ve kirliyi AYNI ANDA taşımaz (tepsi görselleri üst üste binmesin).
+      const urun = s.waiters[0] ? s.waiters[0].tray + s.waiters[0].trayFood : 0;
+      const kir = (s.waiters[0]?.dirtyCarry ?? 0) + (s.waiters[0]?.dirtyCarryFood ?? 0);
+      expect(urun > 0 && kir > 0).toBe(false);
       if (s.npcs.find((n) => n.id === 900)?.state === 'drinking') servisEdildi = true;
     }
     expect(servisEdildi).toBe(true); // boş denetim değil: garson servis işini gerçekten yaptı
+    expect(kare).toBeGreaterThan(0); // servis anında olmadı: denetim gerçekten koştu
   });
 
-  it('② temiz bardak BİTİNCE garson kirliyi toplar ve leğende yıkar', () => {
+  it('② servis edecek kimsesi kalmayınca garson kirliyi toplar ve leğende yıkar', () => {
     useGame.getState().hardReset();
     const wPos = servicePlace(1).pickup;
     const temizOnce = 0;
@@ -96,7 +104,7 @@ describe('boşta bulaşık (D-083)', () => {
       waiters: [{ pos: [wPos[0], 0.6, wPos[2]] as Vec3, tray: 0, trayFood: 0, dirtyCarry: 0 }],
       npcs: [],
       dishes: [kirli(0, 6001), kirli(0, 6002)],
-      cleanCups: 0, // zincir KİLİTLİ: tetik bu (bkz. ①)
+      cleanCups: 0,
       player: PARK, inputKeyboard: [0, 0], inputJoystick: [0, 0], spawnTimer: 999,
     });
     let elineAldi = false;
@@ -145,10 +153,16 @@ describe('boşta bulaşık (D-083)', () => {
         // assertion vitest'i yavaşlatıp testi zaman aşımına düşürüyordu — yani yeşil/kırmızı
         // sinyali kuralla değil, koşu süresiyle belirleniyordu (C3'te kayda geçen tuzağın aynısı).
         let sapma = 0;
+        let karisik = 0;
         for (let k = 0; k < toplamKare; k++) {
           useGame.getState().tick(0.1);
           const s = useGame.getState();
           sapma = Math.max(sapma, Math.abs(bardakToplami(s) - havuz));
+          // Ürün ile kirli AYNI ANDA taşınmaz — elle kurulan durumda bu hiç tetiklenmiyor
+          // (mutasyon testi yakalamamıştı), gerçek akışta her karede denetlenir.
+          for (const w of s.waiters) {
+            if (w.tray + w.trayFood > 0 && (w.dirtyCarry ?? 0) + (w.dirtyCarryFood ?? 0) > 0) karisik += 1;
+          }
           if (k >= toplamKare - sonPencere) {
             for (const n of s.npcs) {
               if (n.state === 'drinking' && onceki.get(n.id) === 'waitingForTea') sonServis += 1;
@@ -159,6 +173,7 @@ describe('boşta bulaşık (D-083)', () => {
           onceki = yeni;
         }
         expect(sapma).toBe(0); // bardak yoktan var olmadı, yok olmadı
+        expect(karisik).toBe(0); // hiçbir karede ürün + kirli birlikte taşınmadı
         return sonServis;
       } finally {
         cfg.idleDishCarry = eski;

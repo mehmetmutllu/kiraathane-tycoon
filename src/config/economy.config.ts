@@ -406,12 +406,16 @@ export const economyConfig = {
      * geri dönüşü yok). Havuzu büyütmek çözmez (fazladan bardak temiz durur, masalar yine kirli),
      * servise ORANTILI çare de çözmez (servis durunca çare de durur).
      *
-     * NİÇİN GARSON: kilit anında garson ZATEN boştadır (servis edilecek kimse yok). Yani bu
-     * kural garsonu servisten ALIKOYMAZ — yalnız ölü zamanını değerlendirir. Kısmi assist
-     * (D-014) korunur: garson yavaştır, tek seferde az taşır, mekân dolu olduğunda hiç bulaşık
-     * toplamaz — oyuncu hâlâ gereklidir.
+     * NİÇİN GARSON: garson ancak servis edecek kimsesi kalmayınca bu dala düşer, yani kural
+     * servisten bir saniye çalmaz — yalnız ölü zamanı değerlendirir. Kısmi assist (D-014)
+     * korunur: mekân doldukça garsonun boş vakti biter, kirli birikir, oyuncu yine gerekir.
+     *
+     * NİÇİN 1: ölçüldü (`docs/olcum-bardak.txt`, AFK · 7 masa) — 1 taşıma **5,53 servis/dk ·
+     * terk %38,7**, 2 taşıma 2,87 · %56,1, 4 taşıma 2,47 · %62,2. Sebep: garson kirliyi alınca
+     * leğene kadar bağlanıyor; tek bardak = kısa taahhüt = servise hemen dönüş. Büyük leğen
+     * BULAŞIKÇININ ayrıcalığı olarak kalıyor (o 2→8 taşır), garson yalnız "geçerken alır".
      */
-    idleDishCarry: 2,
+    idleDishCarry: 1,
   },
 
   /**

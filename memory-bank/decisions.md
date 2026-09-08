@@ -2239,68 +2239,81 @@ Karar verilmeden **hiçbir denge sayısına dokunulmaz**; önce ölçülür (C3 
 kilitlendiği ayrıştırma sayesinde ortaya çıktı (darboğaz ayrıştırması olmasaydı sayı yanlış kola
 yazılırdı).
 
-## D-083 — Temiz bardak bitince GARSON bulaşığa koşar (D-082'nin cevabı) (2026-09-08)
+## D-083 — Boşta kalan GARSON bulaşık toplar (D-082'nin cevabı) (2026-09-08)
 
-**Karar:** Zincir kilitlendiğinde (temiz bardak 0) servis edecek ürünü olmayan garson, tezgâhta
-beklemek yerine masadan kirli toplar (2 kap), leğende yıkar ve havuz açılır açılmaz servise döner.
-**Temiz bardak varken kirliye elini sürmez** — bulaşık çemberi OYUNCUNUNDUR.
+**Karar:** Servis edecek kimsesi kalmayan garson, bekleme noktasına dönmek yerine masadan **tek**
+kirli alır, leğende yıkar, servise döner. Elinde ürün varken kirliye başlamaz; elinde kirli varken
+tezgâha yüklemeye gitmez (ürün ile kirli aynı anda taşınmaz).
 
-**Gerekçe:** D-082'nin üç kolu C4'te ölçüldü (`docs/bardak-raporu-c4.md`, `tools/olcum-bardak.ts`):
-bardak KAPALI bir sistemdir ve temiz bardağın tek kaynağı yıkamadır; bulaşıkçı zincirde 8. pad
-olduğu için ondan önce yıkayan tek kişi oyuncudur. Oyuncu elini çektiğinde 4 masalı mekân 15
-dakikada 12 müşteri (= tam havuz kadar) ağırlayıp **dakika 3'te KALICI olarak duruyordu** — üç
-ayrı tohumda birebir aynı, yani zarın değil yapının sonucu.
-- **Havuz boyu çıkmaz sokak:** havuz ×2 ve ×4 denendi, debi **0,80 servis/dk'da sabit** kaldı
-  (kilit "bardak bitti"den "masa kirlendi"ye taşınıyor, o kadar).
-- **Servise ORANTILI çare de çözmüyor:** "müşteri bardağını kendi götürsün" %25'te hiç fark
-  yaratmadı, %50'de bile son çeyrek %100 kilitli kaldı. Servis sıfırlanınca çare de sıfırlanır.
+**Gerekçe (ölçüm):** `docs/bardak-raporu-c4.md` · `tools/olcum-bardak.ts`. Bardak KAPALI bir
+sistemdir, temiz bardağın tek kaynağı yıkamadır ve bulaşıkçı zincirde 8. paddir. Oyuncu elini
+çektiğinde 4 masalı mekân 15 dakikada 12 müşteri (= tam havuz kadar) ağırlayıp **dakika 3'te
+KALICI olarak duruyordu** — üç ayrı tohumda birebir aynı, yani zarın değil yapının sonucu.
+- **Havuz boyu çıkmaz sokak:** havuz ×2 ve ×4'te debi **0,80 servis/dk'da sabit** (kilit "bardak
+  bitti"den "masa kirlendi"ye taşınıyor, o kadar).
+- **Servise ORANTILI çare de çözmüyor** ("müşteri bardağını götürsün": %25'te SIFIR fark, %50'de
+  bile son çeyrek %100 kilitli). Servis durunca çare de durur.
 - Kilidi ancak **servisten BAĞIMSIZ** bir kaynak açar.
 
-**Kullanıcı kararı:** önce "sabit sızıntı 2/dk" seçildi (bardak kendiliğinden temize dönsün), sonra
-kullanıcı *"garsonlar hem bulaşıkçı hem çaycı gibi davransa?"* diye sordu ve *"sen mantıklı olanı
-yap"* dedi. Garson kolu ölçüldü, en iyisi çıktı ve sızıntı kolu ELENDİ: dünyada sebebi olan
-(sihirle kaybolmayan) tek çözüm bu.
+**Kullanıcı kararı iki adımda oluştu:** önce "sabit sızıntı 2/dk" seçildi (bardak kendiliğinden
+temize dönsün), sonra kullanıcı *"garsonlar hem bulaşıkçı hem çaycı gibi davransa?"* diye sordu ve
+*"sen mantıklı olanı yap"* dedi. Garson kolu ölçüldü, en iyisi çıktı, sızıntı kolu ELENDİ.
+Ardından kullanıcı otomasyon beklentisini netleştirdi: *"bulaşığı ben yapmak istemiyorum, bir süre
+sonra otomatize olmalı."*
 
-**Tetik neden DAR:** "boşta kalınca hep topla" da ölçüldü ve **reddedildi** — AFK debisini 7,27
-servis/dk'ya çıkarıyordu, dikkatli oyuncunun %90'ı; erken oyunda bulaşık çemberini bitiriyordu
-(`feedback_active_play_no_overautomation`). Dar tetikle normal oyunda garson bulaşığa HİÇ gitmez.
+**Tetik neden GENİŞ (dar tetik denendi ve bırakıldı):** ilk uygulama yalnız "temiz bardak bitince"
+tetikleniyordu. Ölçüm gösterdi ki dar/geniş tetik **AFK debisinde neredeyse aynı** (B2 6,80 ↔ 7,27);
+fark OYUNCU OYNARKEN: dar tetikte bulaşık hep oyuncuya kalıyordu — yani kullanıcının istemediği şey.
+Geniş tetikte otomasyon takvimi net: `q_wash` (~3 dk) elle öğretir → **garson (6-11 dk) boş
+vaktinde devralır** → bulaşıkçı (~33 dk) mekân doluyken de devralır. Kısmi assist (D-014) korunur:
+mekân doldukça garsonun boş vakti biter, oyuncu yine gerekir.
 
-**Ölçülen etki (AFK · park · aynı tohumlar):** B2 (4 masa) 0,80 → **6,80** servis/dk, kalıcı ölüm
-kalktı · B3 (7 masa) 1,40 → **5,27** · B4/B5 (bulaşıkçılı) pratikte değişmedi (5,93 → 5,93 ·
-15,93 → 16,13). **Dürüst takas:** 4 masalık mekân tek garsona kolay geliyor, AFK (6,80) ile
-dikkatli oyuncu (7,40) arasında yalnız %9 var; baskı 7 masada (terk %41) ve 20 masada (%71) geri
-geliyor — kısmi assist (D-014) büyüdükçe kendini gösteriyor.
+**Doz 1 bardak, ÖLÇÜLEREK seçildi** (7 masa · AFK): taşıma 1 → **5,53 servis/dk · terk %38,7 ·
+son çeyrek %14,6** · taşıma 2 → 2,87 · %56,1 · %100 · taşıma 4 → 2,47 · %62,2 · %100. Sebep: garson
+kirliyi alınca leğene kadar bağlanıyor, tek bardak = kısa taahhüt = servise hemen dönüş. Büyük leğen
+**bulaşıkçının ayrıcalığı** olarak kalıyor (2→8).
 
-**BEKÇİNİN YAKALADIĞI GERÇEK DELİK:** kural ilk hâliyle kilidi AÇMIYORDU. Temiz bardak bitince
-garson tezgâha gidip **asla gelmeyecek çayı** bekliyor, "boşta" sayılmıyor, bulaşığa hiç
-gitmiyordu. Eklendi: `demlemeKilidi` = *hazır ürün 0 + temiz bardak 0 ⇒ yükleme beklemesi
-anlamsızdır*. (Testi yazmasaydım kural sessizce yarım kalacaktı.)
+**Ölçülen etki (AFK · park):** B2 (4 masa) 0,80 → **7,53** servis/dk, terk %33 → **%5**, kalıcı ölüm
+kalktı · B3 (7 masa) 1,40 → **5,53**, terk %72 → %38,7 · B4/B5 (bulaşıkçılı) pratikte değişmedi.
 
-**Uygulama:** `economy.config.ts` → `waiter.idleDishCarry: 2` (TEK yeni denge sayısı; 1/2/4
-ölçüldü, fark gürültü içinde; 2 = bulaşıkçının taban leğeni, garson ondan güçlü olmasın) ·
+**GEÇ OYUN ZATEN TAM OTOMATİK — eski "vergi" cümlesi bayattı.** 20 masada bulaşıkçının leğen VE hız
+yükseltmeleri TAVANDAYKEN temiz bardak 0 olan kare **%0,0** (servis 18,87/dk); ölçtüğüm %22'lik
+darboğaz **yükseltmeleri alınmamış** bulaşıkçınındı. Yani 10.300 ₺ ödendiğinde bulaşık işi tamamen
+oyuncudan çıkıyor. Kalan %66 terk bardak değil **taşıma** darboğazı (C3'ün bilinen kalemi).
+
+**BEKÇİLERİN YAKALADIĞI ÜÇ GERÇEK DELİK** (üçü de kural yazıldıktan SONRA, test sayesinde):
+1. **Kural kilidi hiç açmıyordu:** temiz bardak bitince garson tezgâha gidip *asla gelmeyecek* çayı
+   bekliyor, "boşta" sayılmıyordu → `demlemeKilidi` (*hazır 0 + temiz 0 ⇒ yükleme beklemesi
+   anlamsızdır*).
+2. **Çayla kirli aynı anda taşınabiliyordu:** bekleyenlerin HEPSİ kirli masadaysa `waiting` boşalır
+   ve garson elinde çayla bulaşık dalına düşerdi (iki tepsi görseli üst üste binerdi) → `urunVar`.
+3. **Elde kirliyle tezgâha yükleme:** aynı kaynaktan ikinci yol → yükleme dalına da koşul.
+
+**Uygulama:** `economy.config.ts` → `waiter.idleDishCarry: 1` (TEK yeni denge sayısı) ·
 `tick.ts/waiterSystem` · `types.ts` → `Waiter.dirtyCarry`/`dirtyCarryFood` (transient, kabın türü
-korunur) · `Waiter.tsx` + yeni `carriedDirty.tsx` (taşınan kirli GÖRÜNÜR; çizim bulaşıkçıyla
-ORTAK — iki kopya er geç ayrışırdı).
+korunur) · `Waiter.tsx` + yeni `carriedDirty.tsx` (taşınan kirli GÖRÜNÜR; çizim bulaşıkçıyla ORTAK).
+**Düzeltme:** garsonun yıkadığı `stats.dishesWashed`'e YAZILMAZ — o sayaç oyuncunundur (`q_wash` +
+"Temizlik" başarımı + XP); bulaşıkçı da yazmıyor, aynı kural.
 
-**Bekçi:** `tests/bardak.test.ts` (3 test) — ① temiz bardak varken garson kirliye dokunmaz
-② bitince toplar ve yıkar ③ AFK'da mekân kalıcı olarak durmaz **ve aynı test kuralı kapatıp
-mekânın gerçekten öldüğünü kanıtlar**. İki mutasyonla doğrulandı (dar tetik kaldırıldı → ① kırıldı;
-`demlemeKilidi` kaldırıldı → ③ kırıldı). Ayrıca KORUNUM her karede denetlenir (bardak yoktan var
-olmaz/yok olmaz).
+**Bekçi:** `tests/bardak.test.ts` (3 test) — ① servis önce gelir + karışık taşıma yok ② boşta kalınca
+toplar ve yıkar ③ AFK'da mekân kalıcı olarak durmaz **ve aynı test kuralı kapatıp mekânın gerçekten
+öldüğünü kanıtlar**. **Dört mutasyonla doğrulandı**, dördü de bekçiyi kırdı. Korunum her karede
+denetleniyor (bardak yoktan var olmaz/yok olmaz).
 
-**`tests/logic.test.ts` güncellendi:** kirli-masa testi "50 kare sonra hâlâ bekliyor" diyordu;
-garson artık masayı temizleyip servis ettiği için kurulum sabit durmuyor. Test kuralın KENDİSİNİ
-ölçecek şekilde güçlendirildi: *masa o an kirliyken servis olamaz*, her karede.
+**`tests/logic.test.ts` güncellendi:** kirli-masa testi "50 kare sonra hâlâ bekliyor" diyordu; garson
+artık masayı temizleyip servis ettiği için kurulum sabit durmuyor. Test kuralın KENDİSİNİ ölçüyor:
+*masa o an kirliyken servis olamaz*, her karede.
 
-**Kayda geçen tuzaklar (ölçüm aracının kendi hataları):** ① ölçüm botu sokakta başlatılmıştı,
-`clampToOpenAreas` yüzünden hiç içeri giremedi ve sonuçlar park kipiyle BİREBİR aynı çıktı —
-"oyuncunun faydası yok" diye okunabilirdi ② bulaşıkçı varyantında config geri alma `kur()`'dan
-hemen sonraydı, `world` her karede yeniden türetildiği için varyant sessizce etkisiz kaldı ve
-**sahte bir "fark yok"** üretti ③ uzun bekçi koşusu paralel takımda zaman aşımına düşüp "kırıldı"
-gibi göründü (C3'ün aynı tuzağı) — sıcak döngüden `expect` çıkarıldı.
+**Kayda geçen tuzaklar (ölçüm aracının kendi hataları):** ① bot sokakta başlatılmıştı,
+`clampToOpenAreas` yüzünden hiç içeri giremedi, sonuçlar park kipiyle BİREBİR aynı çıktı —
+"oyuncunun faydası yok" diye okunabilirdi ② bulaşıkçı varyantında config geri alma `kur()`'dan hemen
+sonraydı, `world` her karede yeniden türetildiği için varyant sessizce etkisiz kaldı ve **sahte bir
+"fark yok"** üretti ③ uzun bekçi koşusu paralel takımda zaman aşımına düşüp "kırıldı" gibi göründü
+(C3'ün aynı tuzağı) — sıcak döngüden `expect` çıkarıldı ④ elle kurulan durumda hiç tetiklenmeyen bir
+değişmez mutasyonu YAKALAMADI; gerçek akış testine taşınınca yakaladı.
 
-**Açık kalan (bu turun kalemi değil):** geç oyunda tek bulaşıkçı 20 masaya yetişmiyor (karelerin
-%22,6'sında temiz bardak 0 — ölümcül değil, vergi) · nav ızgarası (`actorRadius`, sandalyesiz) ile
-oyuncu çarpışması (`playerRadius`, sandalyeler katı) aynı dünyayı görmüyor.
+**Açık kalan (bu turun kalemi değil):** nav ızgarası (`actorRadius`, sandalyesiz) ile oyuncu
+çarpışması (`playerRadius`, sandalyeler katı) aynı dünyayı görmüyor — personelin geçtiği boşluktan
+oyuncu geçemiyor (Faz D kalemi).
 
 **Doğrulama:** vitest **485/485** (482 → +3) · smoke **28/28** · tsc + build temiz.

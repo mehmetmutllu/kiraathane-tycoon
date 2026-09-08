@@ -16,13 +16,23 @@ Faz C **4/5**. Sanat/asset hâlâ bilerek en sonda.
 - **Servise ORANTILI çare de çözmüyor:** "müşteri bardağını götürsün" %25'te SIFIR fark, %50'de
   bile son çeyrek %100 kilitli. Servis durunca çare de durur → kilidi ancak **servisten BAĞIMSIZ**
   bir kaynak açar.
-- **Uygulandı (D-083):** *temiz bardak bitince garson bulaşığa koşar* (2 kap topla → leğende yıka →
-  havuz açılınca servise dön). **Temiz varken kirliye dokunmaz** — bulaşık çemberi oyuncunun.
-  B2 0,80 → **6,80** servis/dk · B3 1,40 → **5,27** · bulaşıkçılı senaryolar değişmedi.
-  **Geniş tetik (boşta hep topla) ölçüldü ve REDDEDİLDİ** (AFK 7,27 = oyuncunun %90'ı).
+- **Uygulandı (D-083):** *servis edecek kimsesi kalmayan garson bulaşık toplar* — TEK kirli al →
+  leğende yıka → servise dön. Ürünle kirli aynı anda taşınmaz. B2 0,80 → **7,53** servis/dk
+  (terk %33 → **%5**) · B3 1,40 → **5,53** (terk %72 → %38,7) · bulaşıkçılı senaryolar değişmedi.
   "Sessiz sızıntı" kolu elendi: dünyada sebebi olan tek çözüm garson.
-- **Bekçi GERÇEK bir delik yakaladı:** kural ilk hâliyle kilidi açmıyordu — garson tezgâhta asla
-  gelmeyecek çayı bekliyor, "boşta" sayılmıyordu. `demlemeKilidi` eklendi.
+- **Kullanıcı otomasyon beklentisini netleştirdi** (*"bulaşığı ben yapmak istemiyorum, bir süre
+  sonra otomatize olmalı"*). Dar tetik (yalnız bardak bitince) AFK'da geniş tetikle neredeyse
+  aynıydı (6,80 ↔ 7,27); fark OYUNCU OYNARKEN — dar tetikte bulaşık hep oyuncuda kalıyordu.
+  **Tetik geniş yapıldı.** Otomasyon takvimi: `q_wash` (~3 dk) elle öğretir → garson (6-11 dk)
+  boş vaktinde devralır → bulaşıkçı (~33 dk) doluyken de → yükseltmelerle (10.300 ₺) TAM otomatik.
+- **Doz 1 bardak, ölçülerek:** 7 masada taşıma 1 → 5,53 · 2 → 2,87 · 4 → 2,47 servis/dk (garson
+  kirliyi alınca leğene bağlanıyor; tek bardak = servise hemen dönüş).
+- **"Geç oyun vergisi" cümlesi BAYAT çıktı:** 20 masada bulaşıkçı yükseltmeleri TAVANDAYKEN temiz
+  bardak 0 olan kare **%0,0** (18,87 servis/dk). Ölçtüğüm %22 yükseltilmemiş bulaşıkçınındı.
+- **Bekçiler ÜÇ gerçek delik yakaladı** (üçü de kural yazıldıktan sonra): kural kilidi hiç
+  açmıyordu (`demlemeKilidi`) · garson çayla kirliyi aynı anda taşıyabiliyordu (`urunVar`) ·
+  elde kirliyle tezgâha yükleme. **Dört mutasyonla doğrulandı.**
+- **Düzeltme:** garsonun yıkadığı `stats.dishesWashed`'e yazılmıyor (o sayaç oyuncunun).
 - **Bekçi `tests/bardak.test.ts` (3 test)** — iki mutasyonla + üçüncüsü kuralı kendi içinde
   kapatıp mekânın gerçekten öldüğünü kanıtlayarak doğrulandı. Korunum her karede denetleniyor.
 - **Görsel:** `Waiter.tsx` + yeni `carriedDirty.tsx` — taşınan kirli GÖRÜNÜYOR, çizim
@@ -31,7 +41,7 @@ Faz C **4/5**. Sanat/asset hâlâ bilerek en sonda.
   `tools/olcum-bardak.ts`.
 
 **Doğrulama:** vitest **485/485** (482 → +3) · smoke **28/28** · tsc + build temiz.
-**Tek yeni denge sayısı:** `waiter.idleDishCarry: 2` (1/2/4 ölçüldü, fark gürültüde).
+**Tek yeni denge sayısı:** `waiter.idleDishCarry: 1` (1/2/4 ölçüldü, 1 açık ara kazandı).
 
 ### >>> SONRAKİ OTURUMDA İLK İŞ <<<
 **C5 — sim'i gerçeğe yaklaştırmak.** İlk somut kalem `simulate.ts`'in **taşıma modeli** (G4'te
@@ -39,8 +49,7 @@ gerçekleşen %58; model hedefi hiç değişmeyen ideal taşıyıcı varsayıyor
 kalem (sahte 21,4 dk kapanır) · bardak döngüsü (artık D-083'ü de saymalı) · sabır.
 
 **Bekleyen denge kararı YOK. Bilinen ve bilerek duran:** `servis L6` 23,4 dk beklemesi ·
-D-046 ④ kaba hâlde, ⑤ yok, sipariş nesnesi bilerek v1.1'de · **geç oyunda tek bulaşıkçı 20 masaya
-yetişmiyor** (karelerin %22,6'sında temiz bardak 0 — vergi, ölümcül değil) · **nav ızgarası
+D-046 ④ kaba hâlde, ⑤ yok, sipariş nesnesi bilerek v1.1'de · **nav ızgarası
 (`actorRadius`, sandalyesiz) ile oyuncu çarpışması (`playerRadius`, sandalyeler katı) aynı dünyayı
 görmüyor** (Faz D kalemi).
 

@@ -73,10 +73,10 @@ function WaiterUnit({ index, tea, food, dirty, dirtyFood }: {
             </mesh>
           }
         />
-        {/* D-083: temiz bardak bitince garson bulaşığa koşar. Taşıdığı kirli, BULAŞIKÇIYLA AYNI
-            çizimle görünür (`carriedDirty.tsx`) — elinde ne olduğu tepsisinden okunur. Ürün ile
-            kirli aynı anda taşınmaz (kural yalnız tepsi boşken tetiklenir), bu yüzden iki tepsi
-            üst üste binmez. */}
+        {/* D-083: boşta kalan garson bulaşık toplar. Taşıdığı kirli, BULAŞIKÇIYLA AYNI çizimle
+            görünür (`carriedDirty.tsx`) — elinde ne olduğu tepsisinden okunur. Ürün ile kirli
+            AYNI ANDA taşınmaz: garson elinde kirli varken tezgâha yüklemeye gitmez, önce leğene
+            boşaltır (tick.ts'teki yükleme dalının koşulu). Bu yüzden iki tepsi üst üste binmez. */}
         <WaiterTray tea={tea} food={food} />
         <CarriedDirty cups={dirty} plates={dirtyFood} />
       </group>

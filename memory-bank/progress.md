@@ -1901,21 +1901,34 @@ tek yönlü sıra. Ölçü hedefi kullanıcı kararıyla **A**: kat 34 × 34, du
     %50'de bile son çeyrek %100 kilitli). Kilidi ancak servisten BAĞIMSIZ bir kaynak açar.
   - **Kullanıcı kendi seçeneğini önerdi** (*"garsonlar hem bulaşıkçı hem çaycı gibi davransa?"*);
     ölçüldü, en iyisi çıktı ve "sessiz sızıntı" kolu elendi (dünyada sebebi olan tek çözüm bu).
-    **Tetik DAR:** geniş tetik ölçülüp REDDEDİLDİ (AFK 7,27 = oyuncunun %90'ı; bulaşık çemberini
-    bitiriyordu). B2 0,80 → **6,80** · B3 1,40 → **5,27** · bulaşıkçılı senaryolar değişmedi.
-  - **Bekçi gerçek bir delik yakaladı:** kural ilk hâliyle kilidi AÇMIYORDU — garson tezgâhta
-    asla gelmeyecek çayı bekliyor, "boşta" sayılmıyordu. `demlemeKilidi` eklendi.
+    Ardından otomasyon beklentisi netleşti (*"bulaşığı ben yapmak istemiyorum"*): dar tetik
+    (yalnız bardak bitince) ile geniş tetik AFK'da neredeyse aynı çıkıyor (6,80 ↔ 7,27), fark
+    OYUNCU OYNARKEN — dar tetikte bulaşık hep oyuncuya kalıyordu → **tetik GENİŞ**.
+    B2 0,80 → **7,53** (terk %33 → **%5**) · B3 1,40 → **5,53** (terk %72 → %38,7).
+  - **Doz ÖLÇÜLEREK seçildi (1 bardak):** 7 masada taşıma 1 → 5,53 servis/dk · taşıma 2 → 2,87 ·
+    taşıma 4 → 2,47. Garson kirliyi alınca leğene bağlanıyor; tek bardak = servise hemen dönüş.
+    Büyük leğen bulaşıkçının ayrıcalığı kalıyor (2→8).
+  - **OTOMASYON TAKVİMİ:** `q_wash` (~3 dk) elle öğretir → garson (6-11 dk) boş vaktinde devralır →
+    bulaşıkçı (~33 dk) doluyken de devralır → bulaşıkçı yükseltmeleri (10.300 ₺) TAM otomasyon.
+  - **"Geç oyun vergisi" cümlesi BAYAT çıktı:** 20 masada bulaşıkçının leğen+hız yükseltmeleri
+    TAVANDAYKEN temiz bardak 0 olan kare **%0,0** (servis 18,87/dk). Ölçtüğüm %22'lik darboğaz
+    yükseltilmemiş bulaşıkçınındı. Kalan %66 terk bardak değil TAŞIMA darboğazı (C3 kalemi).
+  - **Bekçiler ÜÇ gerçek delik yakaladı** (üçü de kural yazıldıktan sonra): ① kural kilidi hiç
+    açmıyordu — garson tezgâhta asla gelmeyecek çayı bekliyordu (`demlemeKilidi`) ② garson çayla
+    kirliyi aynı anda taşıyabiliyordu (`urunVar`) ③ elde kirliyle tezgâha yükleme. **Dört
+    mutasyonla doğrulandı.**
+  - **Düzeltme:** garsonun yıkadığı `stats.dishesWashed`'e yazılmıyor — o sayaç OYUNCUNUN
+    (`q_wash` + "Temizlik" başarımı + XP); bulaşıkçı da yazmıyor.
   - `tests/bardak.test.ts` (3 test; ikisi mutasyonla, üçüncüsü kuralı kendi içinde kapatarak
     doğrulandı) · `tests/logic.test.ts` kirli-masa testi kuralın KENDİSİNİ ölçecek şekilde
     güçlendirildi · `Waiter.tsx` + yeni `carriedDirty.tsx` (taşınan kirli görünür, çizim
     bulaşıkçıyla ORTAK).
-  - **Tek yeni denge sayısı `waiter.idleDishCarry: 2`** (1/2/4 ölçüldü, fark gürültüde).
+  - **Tek yeni denge sayısı `waiter.idleDishCarry: 1`** (1/2/4 ölçüldü, 1 açık ara kazandı).
   - **vitest 485/485 · smoke 28/28 · tsc + build temiz.**
 - ⏳ **SIRADAKİ (C5):** **sim'in gerçeğe yaklaşması** (taşıma modeli — G4'te gerçekleşen %58 ·
-  masa-başı yükseltme kalem kalem · bardak döngüsü · sabır). Açık kalanlar: geç oyunda tek
-  bulaşıkçı 20 masaya yetişmiyor (%22,6 bardak darboğazı — vergi, ölümcül değil) · nav ızgarası
+  masa-başı yükseltme kalem kalem · bardak döngüsü · sabır). Açık kalan: nav ızgarası
   (`actorRadius`, sandalyesiz) ile oyuncu çarpışması (`playerRadius`, sandalyeler katı) aynı
-  dünyayı görmüyor.
+  dünyayı görmüyor — personelin geçtiği boşluktan oyuncu geçemiyor (Faz D kalemi).
 - **Rapor:** `docs/bm-adim3-4-bant-kamera.html` →
   https://claude.ai/code/artifact/e49330bc-c918-41ec-a1b4-5c879cae146c
   (`tools/embed-rapor.mjs` kareleri data URI olarak gömüp `*.artifact.html` üretir — artifact'ın

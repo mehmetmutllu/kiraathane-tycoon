@@ -96,6 +96,12 @@ const SENARYOLAR: Senaryo[] = [
     waiterUpgrades: { tray: 1, speed: 1, dishCarry: 1, dishSpeed: 1 }, charTray: 2, sure: 900 },
   { ad: 'B5 · 20 masa · L6 · 3 garson + bulaşıkçı (geç-oyun doygunluğu)', sonPad: 'z3table12', stationLevel: 6, tableLevel: 4,
     waiterUpgrades: { tray: 2, speed: 1, dishCarry: 2, dishSpeed: 1 }, charTray: 2, sure: 900 },
+  // B6: "her şeyi satın aldım" hâli — bulaşıkçının hızı VE leğeni TAVANDA, garson tepsisi tavanda.
+  // Soru: oyuncu parasını verdiğinde bulaşık tamamen otomatikleşiyor mu, yoksa geç oyunda yine
+  // oyuncuya iş mi düşüyor? (Kullanıcı 2026-09-08: "bulaşığı ben yapmak istemiyorum, bir süre
+  // sonra otomatize olmalı".)
+  { ad: 'B6 · 20 masa · L6 · 3 garson + bulaşıkçı TAVAN YÜKSELTMELİ', sonPad: 'z3table12', stationLevel: 6, tableLevel: 4,
+    waiterUpgrades: { tray: 3, speed: 1, dishCarry: 3, dishSpeed: 2 }, charTray: 2, sure: 900 },
 ];
 
 interface Sonuc {
@@ -630,7 +636,7 @@ function rapor(r: Sonuc): void {
   if (r.kip === 'oyuncu' && r.yol / (sn.sure / 60) < 30) {
     console.log('!! OYUNCU KİPİ ÇALIŞMADI (oyuncu neredeyse hiç yürümedi) — bu koşu ölçüm DEĞİL.');
   }
-  console.log(`\nYIKAMA: oyuncu ${r.yikananOyuncu} · bulaşıkçı ${r.yikananBulasikci} bardak` +
+  console.log(`\nYIKAMA: oyuncu ${r.yikananOyuncu} · bulaşıkçı ${r.yikananBulasikci} bardak (garsonun boşta yıkadığı sayaca girmez)` +
     ` (toplam ${n2((60 * (r.yikananOyuncu + r.yikananBulasikci)) / sn.sure)} bardak/dk)` +
     (r.kip === 'oyuncu' ? ` · oyuncu yolu ${n1(r.yol / (sn.sure / 60))} br/dk` : ''));
 

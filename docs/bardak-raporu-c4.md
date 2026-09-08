@@ -135,52 +135,86 @@ kurallarıyla doğrudan çelişir. Sızıntı ise oranıyla **ayarlanabilir**: 2
 ## 8. Karar ve uygulama (D-083)
 
 Kullanıcı ölçülen kollara bakıp **kendi seçeneğini önerdi**: *"garsonlar hem bulaşıkçı hem çaycı
-gibi davransa?"* — ölçüldü ve kolların en iyisi çıktı. Uygulanan kural:
+gibi davransa?"* — ölçüldü, kolların en iyisi çıktı ve "sessiz sızıntı" kolu ELENDİ (dünyada
+sebebi olan tek çözüm bu; kaybolan bardak yok, yeni aktör yok).
 
-> **Temiz bardak BİTTİĞİNDE garson bulaşığa koşar:** masadan kirli toplar (2 kap), leğende yıkar,
-> havuz açılır açılmaz servise döner. Temiz bardak varken kirliye ELİNİ SÜRMEZ.
+Ardından kullanıcı otomasyon beklentisini netleştirdi: *"bulaşığı ben yapmak istemiyorum, bir süre
+sonra otomatize olmalı."* İlk uygulama DAR tetikliydi (garson yalnız temiz bardak bitince yıkar);
+ölçüm gösterdi ki **dar ve geniş tetik AFK debisinde neredeyse aynı** (B2: 6,80 ↔ 7,27) — fark
+OYUNCU OYNARKEN ortaya çıkıyor: dar tetikte bulaşık hep oyuncuya kalıyordu. Bu yüzden tetik
+genişletildi.
 
-Neden bu:
-- **Dünyada sebebi var.** Yeni aktör yok, sihir yok, kaybolan bardak yok — gerçek bir kıraathane
-  garsonu da ikisini birden yapar. "Sessiz sızıntı" kolu (bardak kendiliğinden kaybolur) bu yüzden
-  ELENDİ, oysa ölçümü iyiydi (2,73 servis/dk).
-- **Oyuncunun işini almıyor.** Tetik DAR: yalnız zincir kilitliyken. Normal oyunda garson bulaşığa
-  hiç gitmez, bulaşık çemberi oyuncunundur. *Geniş tetik (boşta kalınca hep topla) ölçüldü ve
-  REDDEDİLDİ:* AFK debisini 7,27'ye çıkarıyordu — dikkatli oyuncunun %90'ı.
-- **Kısmi assist (D-014) korunuyor:** mekân büyüdükçe garsonun boş vakti bitiyor, baskı geri
-  geliyor — 7 masada terk %41, 20 masada %71.
+**Uygulanan kural:**
+> **Servis edecek kimsesi kalmayan garson bulaşık toplar:** masadan TEK kirli alır, leğende yıkar,
+> servise döner. Elinde ürün varken kirliye başlamaz; elinde kirli varken tezgâha yüklemeye gitmez.
 
-**Ölçülen sonuç (AFK · park · aynı tohumlar):**
+**Otomasyon takvimi böylece net oluyor** (süreler `tools/simulate.ts`):
 
-| senaryo | önce | sonra | dikkatli oyuncu (tavan) |
+| aşama | ne zaman | bulaşığı kim yapar |
+|---|---|---|
+| `q_wash` görevi | ~3 dk | **oyuncu** (mekanik burada öğretilir) |
+| garson tutulur | 6-11 dk | garson, BOŞ VAKTİNDE devralır |
+| bulaşıkçı tutulur | ~33 dk (yoğun 41 dk · normal 1 sa) | bulaşıkçı, mekân DOLUYKEN de |
+| bulaşıkçı yükseltmeleri (10.300 ₺) | geç oyun | **tamamen otomatik** (aşağıda) |
+
+**Ölçülen etki (AFK · park · aynı tohumlar):**
+
+| senaryo | önce | sonra |
+|---|---|---|
+| B2 · 4 masa | 0,80 servis/dk · dk 3'te **kalıcı ölüm** · terk %33 | **7,53** · ölüm yok · terk **%5** |
+| B3 · 7 masa | 1,40 · son çeyrek %100 kilitli · terk %72 | **5,53** · %14,6 · terk %38,7 |
+| B4 · 8 masa + bulaşıkçı | 5,93 | 5,93 (değişmedi) |
+| B5 · 20 masa | 15,93 | 16,13 |
+
+**Doz = 1 bardak, ölçülerek seçildi.** Garson kirliyi alınca leğene kadar bağlanıyor; taşıma
+büyüdükçe servise dönüşü gecikiyor:
+
+| B3 · 7 masa · AFK | servis/dk | terk | son çeyrek kilitli |
 |---|---|---|---|
-| B2 · 4 masa | 0,80 servis/dk · dk 3'te **kalıcı ölüm** | **6,80** · ölüm yok | 7,40 |
-| B3 · 7 masa | 1,40 · son çeyrek %100 kilitli | **5,27** · %31 | 4,40 |
-| B4 · 8 masa + bulaşıkçı | 5,93 | 5,93 (değişmedi) | 5,13 |
-| B5 · 20 masa | 15,93 | 16,13 | 16,53 |
+| taşıma **1** | **5,53** | **%38,7** | **%14,6** |
+| taşıma 2 | 2,87 | %56,1 | %100 |
+| taşıma 4 | 2,47 | %62,2 | %100 |
 
-**Dürüst olmak gerekirse:** 4 masalık mekân tek garsona kolay geliyor — AFK (6,80) ile dikkatli
-oyuncu (7,40) arasındaki fark %9. Erken oyunda "oynamak" bu yüzden servis DEBİSİ için değil,
-para toplamak ve pad doldurmak için değerli. Baskı 7 masadan itibaren geri geliyor. Bu bir takas
-ve bilinerek yapıldı; istenirse tetik daha da daraltılabilir (kol config'te: `waiter.idleDishCarry`).
+Büyük leğen böylece **bulaşıkçının ayrıcalığı** olarak kalıyor (2→8 taşır); garson yalnız
+"geçerken alır".
 
-**Yan bulgu — bekçinin yakaladığı GERÇEK delik:** kural ilk hâliyle kilidi açmıyordu. Temiz bardak
-bitince garson tezgâha gidip **asla gelmeyecek çayı** bekliyor, "boşta" sayılmıyor ve bulaşığa hiç
-gitmiyordu. Bu yüzden `demlemeKilidi` eklendi: *hazır ürün 0 + temiz bardak 0 ⇒ yükleme beklemesi
-anlamsızdır.* Bekçi bunu ilk koşuda yakaladı.
+## 9. Geç oyun: sistem zaten TAM otomatikleşiyor
 
-**Neler değişti:**
-- `economy.config.ts` → `waiter.idleDishCarry: 2` (yeni sayı; tek denge kalemi).
-- `tick.ts` → `waiterSystem`: demleme kilidi + boşta bulaşık dalı.
+Kullanıcının *"bir süre sonra her şey otomatize olmalı"* beklentisi ölçüldü — 20 masa, oyuncu yok:
+
+| bulaşıkçı | temiz bardak 0 olan kare | servis/dk |
+|---|---|---|
+| orta kademe (leğen 6 · hız 2,4) | %21,7 | 16,13 |
+| **tavan (leğen 8 · hız 2,8)** | **%0,0 — hiç kilitlenmiyor** | **18,87** |
+
+Yani §6'da "geç oyun vergisi" diye yazdığım şey **yükseltmeleri alınmamış bir bulaşıkçının**
+hâliymiş. Parası verilince (leğen 600/2000/5000 + hız 700/2200 = 10.300 ₺) bulaşık işi tamamen
+oyuncudan çıkıyor. Kalan %66 terk oranı bardak değil **taşıma** darboğazı (C3'ün bilinen kalemi).
+
+## 10. Neler değişti
+
+- `economy.config.ts` → `waiter.idleDishCarry: 1` (TEK yeni denge sayısı; 1/2/4 ölçüldü, 1 kazandı).
+- `tick.ts/waiterSystem` → boşta bulaşık dalı + **demleme kilidi** (aşağıda) + "ürün ile kirli
+  aynı anda taşınmaz" iki koşulu.
 - `types.ts` → `Waiter.dirtyCarry` / `dirtyCarryFood` (transient; kabın türü korunur).
 - `Waiter.tsx` + yeni `carriedDirty.tsx` → taşınan kirli GÖRÜNÜYOR; çizim bulaşıkçıyla ORTAK
   (iki ayrı kopya er geç birbirinden ayrışırdı).
-- `tests/bardak.test.ts` (3 bekçi) — ikisi mutasyonla doğrulandı, üçüncüsü kuralı kendi içinde
-  kapatıp mekânın gerçekten öldüğünü kanıtlıyor.
-- `tests/logic.test.ts` → kirli-masa testi güçlendirildi: artık "50 kare sonra hâlâ bekliyor"
-  yerine *masa o an kirliyken servis olamaz* değişmezini her karede denetliyor (garson masayı
-  temizleyebildiği için eski kurulum sabit durmuyordu).
+- `tests/bardak.test.ts` (3 bekçi) · `tests/logic.test.ts` kirli-masa testi güçlendirildi.
+- **Düzeltme:** garsonun yıkadığı `stats.dishesWashed`'e yazılmıyor — o sayaç OYUNCUNUNDUR
+  (`q_wash` görevi + "Temizlik" başarımı + XP). Bulaşıkçı da yazmıyor; aynı kural.
 
-**Denge sayısı:** yalnız `idleDishCarry: 2` eklendi. Havuz, eşik, sabır, fiyat, ₺ — hiçbiri
-değişmedi. `1 / 2 / 4` ölçüldü, aralarındaki fark gürültü içinde kaldı; 2 seçildi çünkü
-bulaşıkçının TABAN leğen kapasitesiyle aynı (garson ondan güçlü olmasın).
+**Bekçilerin yakaladığı ÜÇ gerçek delik** (üçü de kural yazıldıktan sonra, test sayesinde çıktı):
+1. **Kural kilidi hiç açmıyordu:** temiz bardak bitince garson tezgâha gidip *asla gelmeyecek*
+   çayı bekliyor, "boşta" sayılmıyordu → `demlemeKilidi` eklendi (*hazır 0 + temiz 0 ⇒ yükleme
+   beklemesi anlamsızdır*).
+2. **Garson çayla kirliyi aynı anda taşıyabiliyordu:** bekleyenlerin HEPSİ kirli masadaysa
+   `waiting` boşalıyor ve garson elinde çayla bulaşık dalına düşüyordu (iki tepsi görseli üst üste
+   binerdi) → `urunVar` koşulu.
+3. **Elde kirliyle tezgâha yükleme:** aynı kaynaktan ikinci yol → yükleme dalına da koşul eklendi.
+
+**Mutasyon doğrulaması:** dört ayrı mutasyon denendi, dördü de bekçiyi kırdı (kural kapalı →
+mekân ölüyor · `demlemeKilidi` kaldırıldı → kilit sürüyor · `urunVar` kaldırıldı → karışık taşıma ·
+yükleme koşulu kaldırıldı → karışık taşıma). Ayrıca **korunum** her karede denetleniyor.
+
+**Denge sayısı:** yalnız `idleDishCarry: 1`. Havuz, eşik, sabır, fiyat, pad ₺'leri, zincir sırası —
+hiçbiri değişmedi.
