@@ -5,49 +5,33 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-08 — **Faz İA BİTTİ 3/3** · Faz C 4/5 · 62/76)
+## ŞU AN (2026-09-08 — **C5 turu AÇIK** · Faz C 4/5 · 62/76)
 
-Son tamamlanan oyun turu hâlâ **C4** (bardak kilidi, D-083). Son iki tur oyun koduna
-dokunmadı; ikisi de iş akışıydı ve **Faz İA kalemleri bitti** (P1 hafıza kesimi · P2 ortak
-ölçüm iskeleti + damgalar · P3 kapanış otomasyonu — **D-085**).
+```
+SORU            : simulate.ts'in modeli gerçeğe ne kadar uzak — ve gerçeğe yaklaştırılınca
+                  üç tempo ölçütünün HÜKMÜ değişiyor mu? (Değişiyorsa denge kararı doğar.)
+ÖLÇÜLECEK KOLLAR: dört model kusuru, HER BİRİ AYRI VARYANT (kod kalıcı yazılmadan):
+                  K1 taşıma realizasyonu — model ideal taşıyıcı sayıyor (G4'te gerçekleşen %58,4)
+                  K2 masa yükseltmesi kalem kalem — sim 20 masayı TEK kalemde alıyor (sahte 21,4 dk)
+                  K3 bardak tavanı — D-083 sonrası yıkama debisi dördüncü tavan olarak modele girer
+                  K4 müşteri sabrı — terk modelde HİÇ yok, talep kolu abartılı
+                  + K5 = hepsi birden (kollar birbirini gizleyebilir; tek tek + toplu ölçülür)
+SAYILAR         : (adım 2 — docs/sim-gercek-raporu-c5.md §Bulgular)
+KARAR           : (adım 3 — kullanıcı seçer)
+UYGULAMA        : (adım 4 — yalnız kararın kolu)
+BEKÇİ           : (adım 4)
+```
 
-**P3'te olan:** kapanışın elle yapılan iki adımı makineye geçti.
-- `npm run pano` — sayaçlar `progress.md` tablosundan **türer**; araç defterin dört sayı
-  yerini (bütçe satırı · tablo · faz başlığı · kalem listesi) bağımsız okuyup karşılaştırır,
-  tutmuyorsa panoyu **yazmaz**. İlk koşusunda **üç gerçek sapma** buldu.
-- `npm run sira` — denge dosyasına dokunan ilk commit'ten önce ölçüm commit'i yoksa çıkış 1.
-  Gerçek geçmişte sınandı: **C3 temiz · C4 ihlal**.
-- Bekçi: `tests/pano-guncelle.test.ts` + `tests/sira-kilidi.test.ts` · **40 test, 9 mutasyon**.
-- Anlatı (özet · sıradaki · günlük kartı · faz açıklaması) **elle yazılmaya devam ediyor** —
-  türetilebilir değil.
+**Kalibrasyon gerçek koddan gelir, tahminden değil:** `olcum-kuyruk.ts` zaten senaryo başına
+*"simulate.ts modelinin beklediği X · gerçekleşen %Y"* basıyor; `olcum-bardak.ts` yıkama debisini
+basıyor. İkisi de **D-083 ÖNCESİNDEN kalma** — tam koşuyla tazelenecek (açık kalemdi, bu tur kapanır).
 
-## SIRADAKİ TAM ADIM
+**Bu tur aynı zamanda İA FAZ KAPISI:** başlangıç damgası `2026-09-08T17:56Z`; süre
+`docs/oturum-akisi-mantik.md` §4 tahminiyle (168 → ~95 dk) karşılaştırılacak, sapma > %15 ise
+hızlandırma mantığı düzeltilir.
 
-**C5 — `simulate.ts`'i gerçeğe yaklaştırmak.** Dört kalem: taşıma modeli (G4'te gerçekleşen
-**%58**, model ideal taşıyıcı varsayıyor) · masa yükseltmesi kalem kalem (sahte 21,4 dk kapanır)
-· bardak döngüsü artık **D-083'ü de saymalı** · müşteri sabrı modelde hiç yok.
-
-**Bu tur aynı zamanda İA'nın FAZ KAPISI:** yeni akışla koşulacak ve süresi git damgalarıyla
-ölçülüp `docs/oturum-akisi-mantik.md` §4 tahminiyle (168 → ~95 dk) karşılaştırılacak; sapma
-**> %15** ise hızlandırma mantığı düzeltilir. Kapı ayrı bir oturum değil.
-
-**C5 denge dosyalarına dokunacak → varyant kapısı DEVREDE:** iki commit sırası zorunlu ve
-kapanışta `npm run sira` bunu denetleyecek.
-
-## AÇIK KALEMLER (bilinen, bilerek duruyor)
-
-- `servis L6` 23,4 dk beklemesi · D-046 ④ kaba hâlde, ⑤ yok · sipariş nesnesi v1.1'de.
-- **Nav ızgarası ↔ oyuncu çarpışması aynı dünyayı görmüyor** (`actorRadius` sandalyesiz,
-  `playerRadius` sandalyeler katı): personelin geçtiği boşluktan oyuncu geçemiyor. **Faz D.**
-- Gölgenin telefondaki maliyeti ölçülmedi (Faz F riski).
-- `docs/olcum-bardak.txt` ve `docs/olcum-kuyruk.txt` D-083 ÖNCESİNDEN kalma; C5'in tam koşusu
-  bunları tazeleyecek.
-- **C4'ten kalan iki ölçüm kusuru** (kod bilerek değiştirilmedi, ölçüm değişikliği kendi turunu
-  ister): ① `iade:0.25` varyantı hiç tetiklenmemiş — düzeltme `docs/bardak-raporu-c4.md` §4'te,
-  **Bulgu 3'ün sonucu değişmedi**. ② B1 · oyuncu kipinde bot hiç yürümüyor (0,0 br/dk); C4
-  kararları `park` kipinden alındığı için karar etkilenmiyor.
-
-**Bekleyen denge kararı YOK.**
+**Varyant kapısı DEVREDE** (kollardan biri seçilirse `economy.config.ts` ihtimali var):
+iki commit sırası zorunlu, kapanışta `npm run sira` denetler.
 
 ---
 

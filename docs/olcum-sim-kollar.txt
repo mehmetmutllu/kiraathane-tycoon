@@ -1,0 +1,45 @@
+=== C5 — MODEL KOLLARI KARSILASTIRMASI (ayni kosu, fark yalniz modelden) ===
+
+Olcutler (D-010 §3.6 · D-079): 1) ilk alim < 90 sn · 2) garsona kadar bosluk <= 2 dk
+                               3) otomasyon (Garson) < 15 dk · 4) en uzun bekleme <= 20 dk
+"masa enUzun" = Normal profilde en uzun MASA YUKSELTMESI beklemesi (C1in sahte 21,4 dk).
+
+kol   | ilk alim | acilis enUzun | otomasyon | SERIT(N) | en uzun bekleme (Normal)       | >20dk | masa enUzun
+--------------------------------------------------------------------------------------------------------------
+taban |    22 sn |        1.6 dk |    6.1 dk |  5.12 sa | 23.4 dk -> servis L6           |     2 |     21.4 dk
+k1a   |    22 sn |        1.6 dk |    6.1 dk |  6.27 sa | 30.9 dk -> servis L6           |     2 |     28.3 dk
+k1b   |    22 sn |        1.6 dk |    6.1 dk |  8.12 sa | 43.4 dk -> servis L6           |     6 |     39.7 dk
+k2    |    22 sn |        1.6 dk |    6.1 dk |  5.36 sa | 23.4 dk -> servis L6           |     1 |      2.5 dk
+k3    |    22 sn |        1.6 dk |    6.1 dk |  8.56 sa | 45.7 dk -> servis L6           |     7 |     41.9 dk
+k4    |    22 sn |        1.6 dk |    6.1 dk |  5.12 sa | 23.4 dk -> servis L6           |     2 |     21.4 dk
+hepsi |    22 sn |        1.6 dk |    6.1 dk | 11.96 sa | 62.6 dk -> servis L6           |    12 |      6.5 dk
+
+--- Gec-oyun sahnesi (20 masa · L6 · garson 3 · lavabo L6): kol basina DARBOGAZ ---
+  taban  talep   7.69 · arz 0.78 · tasima  1.21 · bardak     — -> ARZ     · gelir 52.57 TL/sn
+  k1a    talep   7.69 · arz 0.78 · tasima  0.71 · bardak     — -> TAŞIMA  · gelir 47.93 TL/sn
+  k1b    talep   7.69 · arz 0.78 · tasima  0.52 · bardak     — -> TAŞIMA  · gelir 35.15 TL/sn
+  k2     talep   7.69 · arz 0.78 · tasima  1.21 · bardak     — -> ARZ     · gelir 52.57 TL/sn
+  k3     talep   7.69 · arz 0.78 · tasima  1.21 · bardak  0.38 -> BARDAK  · gelir 35.95 TL/sn
+  k4     talep   3.38 · arz 0.78 · tasima  1.21 · bardak     — -> ARZ     · gelir 52.57 TL/sn
+  hepsi  talep   2.26 · arz 0.78 · tasima  0.52 · bardak  0.10 -> BARDAK  · gelir 23.79 TL/sn
+
+--- Tasima modeli: kol basina TUR mesafesi (4/8/12/20 masa, garson tepsisi 3) ---
+  masa | servis yolu | masalar arasi | taban tur | k1b tur | k1b/taban
+     4 |         6.7 |           6.9 |       8.2 |    15.1 |      1.84   (istenen 4 masa)
+     8 |        15.0 |          12.8 |      16.5 |    29.4 |      1.78   (istenen 8 masa)
+    12 |        20.7 |          16.7 |      22.2 |    38.8 |      1.75   (istenen 12 masa)
+    20 |        18.3 |          15.6 |      19.8 |    35.4 |      1.79   (istenen 20 masa)
+
+--- MODEL ↔ GERCEK (olcum-kuyruk.ts, oyunun kendi tick`i, D-083 sonrasi) ---
+  Sapma = |model - olculen| / olculen. KUCUK olan model gercege YAKIN.
+
+olculen|         7.53/dk |         5.93/dk |         8.27/dk |        16.13/dk |     —
+kol   |              G1 |              G2 |              G3 |              G4 | ORT SAPMA
+-----------------------------------------------------------------------------------------
+taban |      6.39 (85%) |     7.49 (126%) |    11.08 (134%) |    27.28 (169%) |       %36
+k1a   |     7.53 (100%) |     5.93 (100%) |     8.26 (100%) |    16.12 (100%) |        %0
+k1b   |      6.39 (85%) |      5.35 (90%) |      8.00 (97%) |     15.26 (95%) |        %8
+k2    |      6.39 (85%) |     7.49 (126%) |    11.08 (134%) |    27.28 (169%) |       %36
+k3    |      3.20 (42%) |     7.49 (126%) |      7.41 (90%) |     11.69 (72%) |       %30
+k4    |      6.39 (85%) |     7.49 (126%) |    11.08 (134%) |    27.28 (169%) |       %36
+hepsi |      3.20 (42%) |      5.35 (90%) |      6.56 (79%) |      9.70 (60%) |       %32
