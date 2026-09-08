@@ -10,7 +10,7 @@ import { recoloredAtlas, atlasReady, onAtlasReady } from './recolor';
 import type { Vec3 } from '../../game/types';
 import type { SeatKind } from '../../game/store';
 // Seviye → asset/ölçek/örtü eşlemesi ayrı dosyada (React'siz → vitest'te doğrudan sınanır).
-import { tableLook } from './tableLook';
+import { tableLook, STOOL_REF, STOOL_S } from './tableLook';
 export { tableLook } from './tableLook';
 
 // KayKit Furniture Bits (CC0). Native boyutlar (origin tabanda, üst ~y=1.0): table_small 1×1×1,
@@ -35,8 +35,7 @@ const KAY = '/assets/models/kaykit-furniture-bits/';
 // yeniden seçildi: **0,90** → oturak üstü 0,45 (karakterin %35'i), çap 0,675, tabla üstüyle
 // (0,795) arası 0,345. Referans 1,11 sabit kalıyor çünkü greybox yedeği maketin ölçüleriyle
 // yazılı; o grup `STOOL_S / STOOL_REF` ile ölçeklenerek asset hattıyla aynı boya gelir.
-const STOOL_REF = 1.11; // greybox yedeğinin yazıldığı ölçek (maketin `stool()`'u birebir)
-const STOOL_S = 0.9;
+// STOOL_REF / STOOL_S artık `tableLook.ts`te (ölçü katmanı — bekçi testi oradan okuyor).
 // Tabure (gerçek kıraathane formu): silindir gövde + kırmızı minder. Koltuk kutusu emekli.
 function Stool({ x, z }: { x: number; z: number }) {
   return (

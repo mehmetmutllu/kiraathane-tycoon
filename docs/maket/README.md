@@ -1,5 +1,21 @@
 # Tasarım Maketleri (2026-09-03 oturumu)
 
+> ## ⏹ ARŞİV DAMGASI — 2026-09-08
+>
+> **Maket v13'ün Kat 1 ölçü kaynağı olarak işi BİTTİ.** Ölçüler oyuna taşındı (Faz BM adım 1-5)
+> ve `docs/olcu-donduruldu.md` + `tests/olcu-donduruldu.test.ts` ile **donduruldu** (D-072
+> katman 1). Bundan sonra bir ölçü sorusunun cevabı bu klasördeki HTML değil **o liste ve
+> koddur**.
+>
+> Maketler okunmaya devam eder — **program, açılma sırası, atmosfer, malzeme fikri** için. Ama
+> buradan **yeni sayı transkribe edilmez**: oyunun odası maketinkinden 0,5 geniş (duvar hattı
+> kat kenarının dışında), karakteri 1,75 (maketinki 1,80), mobilyası maketin %96'sı. Bu farklar
+> ölçülerek ve kullanıcı kararıyla seçildi, kusur değil.
+>
+> **Kalıcı ders (D-075):** maketten ölçü almadan önce **insan boyunu karşılaştır**. Maketin
+> mobilyası 1:1 alındığında oyunun 1,29'luk karakterinin yanında %38 büyük kaldı ve üç tur
+> boyunca yanlış kol (mobilyayı kısmak) çekildi; kök sebep D-076'da karakter tarafında çözüldü.
+
 Bu klasör, 3 Eylül 2026 tasarım oturumunda üretilen **gezilebilir 3B kat maketlerini** ve
 **geliştirme planını** saklar. Hepsi tek dosyalık, bağımsız HTML (three.js r128 CDN'den).
 Tarayıcıda doğrudan açılmaz (charset/CORS) — bir HTTP sunucuyla servis et:

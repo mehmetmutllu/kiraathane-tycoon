@@ -23,13 +23,19 @@ import {
   type ActorKind,
 } from '../src/config/actor';
 import { LAYOUT, REACH_TABLE } from '../src/game/layout';
+import { STOOL_SEAT_Y, TABLE_TOP_Y } from '../src/components/three/tableLook';
 
-/** Dondurulmuş mobilya ölçüleri (D-073 · D-074 · D-075) — bu testin referans noktaları. */
+/**
+ * Dondurulmuş mobilya ölçüleri (D-073 · D-074 · D-075) — bu testin referans noktaları.
+ * BM adım 6'da elle yazılmaktan çıkıp `tableLook.ts`ten okunur oldu: sayılar iki yerde durursa
+ * biri değişip diğeri kalabilir ve o hâlde bu test yanlış zemine karşı yeşil kalır.
+ * Değerlerin kendisini `tests/olcu-donduruldu.test.ts` bekçiliyor; burası ORANI sınar.
+ */
 const FURNITURE = {
   /** dörtlü çay masası: tabla üstü */
-  tableTop: 0.795,
-  /** tabure oturağı üstü: maketin 0,555'i × (STOOL_S 0,9 / STOOL_REF 1,11) */
-  stoolSeat: 0.555 * (0.9 / 1.11),
+  tableTop: TABLE_TOP_Y,
+  /** tabure oturağı üstü */
+  stoolSeat: STOOL_SEAT_Y,
 } as const;
 
 const KINDS = Object.keys(AUTHORED_HEIGHT) as ActorKind[];

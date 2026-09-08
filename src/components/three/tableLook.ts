@@ -62,3 +62,40 @@ export function tableLook(kind: TableKind, level: number): TableLook {
     ? { key: 'table_small', scale: TEA_TABLE_S, cloth: TEA_CLOTH_S }
     : { key: 'table_medium', scale: TEA_TABLE_M, cloth: TEA_CLOTH_M };
 }
+
+// ---- ÖLÇÜ KATMANI: mobilyanın DONDURULMUŞ referans sayıları (D-072 katman 1) ----
+// Bunlar `Tables.tsx`'te yazılıydı; o dosya vitest'te import EDİLEMEZ (`recolor` → `Image`),
+// yani sayılar bekçilenemiyordu. Ölçek eşlemesi zaten bu dosyanın işi (yukarıdaki tablolar),
+// tabure de aynı sorunun ikinci yarısı — ikisi de burada durur, çizim hatları buradan okur.
+
+/** KayKit assetlerinin NATIVE tabla eni. Dünya eni = `tableLook().scale[0] × bu`. */
+export const NATIVE_W: Record<TableLook['key'], number> = {
+  table_small: 1,
+  table_medium: 2,
+  table_medium_long: 3,
+};
+
+/** Masanın dünya cinsinden tabla eni (dörtlü L3+ → 1,68 · ikili L0-L2 → 0,90). */
+export const tableWidth = (kind: TableKind, level: number): number => {
+  const look = tableLook(kind, level);
+  return look.scale[0] * NATIVE_W[look.key];
+};
+
+/**
+ * TABLANIN ÜST YÜZEYİ (ölçülen). KayKit `table_small`/`table_medium` mesh'inin tepesi native
+ * y ≈ 1,06'da; y-ölçeği 0,75 olduğu için dünyada **0,795**. Örtü plakası bunun 0,04 altında
+ * merkezlenir (`cloth.y` = 0,75) — yani "masa yüksekliği 0,75" derken kastedilen ölçek, gözün
+ * gördüğü tabla üstü ise 0,795. Karakter/mobilya oranının kabul kriteri (D-076) bu sayıyı kullanır.
+ */
+export const TABLE_TOP_Y = 0.795;
+
+/**
+ * TABURE ÖLÇEĞİ. Greybox yedeği maketin `stool()`'u birebir yazılıdır (oturak üstü 0,555) ve
+ * `STOOL_S / STOOL_REF` ile asset hattıyla aynı boya çekilir — bu yüzden referans sabit kalır.
+ * 1,11 → 0,90 turu D-075'in kullanıcı geri bildirimi (*"tabureler aşırı büyük oldu"*).
+ */
+export const STOOL_REF = 1.11;
+export const STOOL_S = 0.9;
+
+/** Tabure oturağının üst yüzeyi: 0,555 × (0,90 / 1,11) = **0,45**. */
+export const STOOL_SEAT_Y = 0.555 * (STOOL_S / STOOL_REF);

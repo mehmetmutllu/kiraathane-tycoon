@@ -36,6 +36,7 @@ import {
   MaketWallShelf,
   MaketWaterRack,
 } from './maketParts';
+import { CAMERA_FOCUS_MUL, CAMERA_FOV, CAMERA_ZOOM_OUT_MUL, cameraDistance } from '../../config/camera';
 import { perf } from '../../game/perf';
 import { devCam, devTimeScale, devTopDown, useSandbox } from '../../game/devSandbox';
 import { screenPointer } from '../../game/screenPointer';
@@ -205,21 +206,14 @@ function CameraRig() {
     if (size.width !== st.current.w || size.height !== st.current.h) {
       st.current.w = size.width;
       st.current.h = size.height;
-      const aspect = size.width / Math.max(1, size.height);
-      // Kamera mesafesi tarihçesi: ilk APK dönemi taban 6 × clamp 1.3 (telefonda ~7.8). 2026-06-09'da
-      // 7'ye çekildi, turu-5'te 6.4 + clamp 1.4 (~8.96) oldu, 2026-06-13'te "ilk zamandaki gibi
-      // yakın" isteğiyle taban 6'ya döndü. **B3-1 (D-061):** kat 21×21 → 34×34 büyüdüğü için taban
-      // 6 elendi (portrede oyuncu hizasında yalnız 4,6 birim = sürekli koridor hissi). Yeni taban
-      // 8,5 (~6,5 birim: bir banket adası tam sığar), HUD düğmesi ×1.35 ile 11,5'e çıkar
-      // (~8,9 birim: alanın yarısı + arka bandın bir bloğu). Ölçüm: docs/gorsel/kadraj-b3.html.
-      const fit = aspect < 1 ? Math.min(1.3, 1 / aspect) : 1;
-      st.current.d = 8.5 * fit;
+      // Mesafe/clamp `src/config/camera.ts`te (D-072 katman 1 — dondurulmus ankraj).
+      st.current.d = cameraDistance(size.width / Math.max(1, size.height));
     }
     // KAMERA ODAĞI (quest sistemi): odak varken hedefe kay + hafif zoom; girdi gelince store odağı
     // iptal eder → buradaki damping kendiliğinden oyuncuya geri süzülür (ek durum makinesi yok).
     const focus = g.camFocus;
-    const zoomMul = g.camZoomOut ? 1.35 : 1; // B ↔ C kademesi (8,5 ↔ 11,5) — D-061
-    const d = (focus ? st.current.d * 0.72 : st.current.d) * zoomMul * measureMul;
+    const zoomMul = g.camZoomOut ? CAMERA_ZOOM_OUT_MUL : 1; // B ↔ C kademesi (8,5 ↔ 11,5) — D-061
+    const d = (focus ? st.current.d * CAMERA_FOCUS_MUL : st.current.d) * zoomMul * measureMul;
     if (focus) {
       desired.set(focus.pos[0], d, focus.pos[2] + d);
       tmp.set(focus.pos[0], CAMERA_LOOK_Y, focus.pos[2]);
@@ -1099,7 +1093,7 @@ export function Scene() {
     // (kare süresi ~+0,6 ms); Faz 7'de telefonda yeniden ölçülecek.
     <Canvas
       shadows="soft"
-      camera={{ position: [0, 9, 11], fov: 50 }}
+      camera={{ position: [0, 9, 11], fov: CAMERA_FOV }}
       gl={{ antialias: true, toneMappingExposure: LIGHTING.exposure }}
       dpr={[1, 2]}
     >

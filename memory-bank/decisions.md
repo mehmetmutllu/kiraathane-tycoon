@@ -1967,3 +1967,63 @@ yarıçap 0,30 → 0,44 = 88 cm omuz, oturunca tabureyi yutuyorlardı; kare `ora
 **Testler:** vitest **300/300** (281 → +19: yeni bekçi dosyası) · smoke **28/28** ·
 tsc + build temiz · eslint'te yeni hata yok (kalan 19'un hepsi dokunulmayan eski dosyalarda).
 **Kareler:** `docs/gorsel/ss/oran-once-*.png` ↔ `oran-sonra-*.png` (`node tools/shot-oran.mjs`).
+
+---
+
+## D-077 — ÖLÇÜ DONDURULDU (bekçi testli)
+
+**Tarih:** 2026-09-08 · **Faz:** BM adım 6 (Faz B'nin son adımı) · **Kullanıcı onayı:** *"evet,
+bekçi testli dondurmayla devam et"*
+
+**Karar:** D-072'nin 1. katmanı (ölçü/ankraj) **dondu**. Dondurma bir belge değil bir **TEST**:
+`tests/olcu-donduruldu.test.ts` (163 bekçi) canlı kodun türettiği her ankrajı dondurulmuş sayıyla
+karşılaştırır. İnsan tarafı `docs/olcu-donduruldu.md`.
+
+### Neden test, neden belge yetmedi
+"Ölçüyü değiştirme" yazılı bir kural olarak D-072'den beri vardı ve **üç turda üst üste ihlal
+edildi** (D-074 · D-075 · D-076'da mobilya ölçüsü üç kez değişti). Yazılı kuralın yakalayamadığı
+şey sessiz sapmadır: bir cila turu `STOOL_S`'i 0,90 → 0,85 çekse hiçbir test kırılmaz ve katman
+2'nin denge ölçümü yanlış zemine oturur. Bekçi mutasyonla doğrulandı (0,85 denendi → 2 test kırıldı,
+biri de türev `tabure.oturakUstu`).
+
+### Liste İKİNCİ BİR DOĞRU KAYNAK DEĞİL
+Çalışan kod kendi dosyalarından okumaya devam ediyor (`actor.ts` · `camera.ts` · `layout.ts` ·
+`tableLook.ts` · `wallPanel.tsx`); test o dosyalardan **türeyen** değeri dondurulmuş sayıyla
+karşılaştırıyor. Tablo yalnız testin gördüğü fotoğraf.
+
+### Dondurmanın AÇTIĞI iki kusur (ikisi de "bekçilenemiyordu" sınıfı)
+1. **Kamera ölçü katmanındaydı ama test edilemiyordu.** fov/mesafe/clamp `Scene.tsx`'in `useFrame`
+   gövdesinde gömülüydü ve Scene.tsx vitest'te import EDİLEMEZ (Canvas + `recolor` → `Image`).
+   → **`src/config/camera.ts`** açıldı (`actor.ts` deseni): `CAMERA_FOV 50` · `CAMERA_DIST 8,5` ·
+   `PORTRAIT_CLAMP 1,3` · `ZOOM_OUT_MUL 1,35` · `FOCUS_MUL 0,72` + `cameraDistance(aspect)`.
+   `CAMERA_LOOK_Y` bilerek `actor.ts`'te kaldı — o sayı kameranın değil AKTÖRÜN türevi.
+2. **Tabure ölçeği aynı sebeple bekçisizdi** (`Tables.tsx` → `Image`). `STOOL_S/STOOL_REF` +
+   ölçülen `TABLE_TOP_Y 0,795` + türev `STOOL_SEAT_Y 0,45` **`tableLook.ts`**'e taşındı (o dosya
+   zaten "ölçek eşlemesi React'siz olsun" diye ayrılmıştı). `actor-scale.test.ts` bu sayıları artık
+   elle yazmıyor, oradan okuyor — aynı sayı iki yerde durursa biri değişip diğeri kalabilirdi.
+
+Ayrıca `NAV_CELL` export edildi (ankraj) ve `layout.ts`'teki bayat yorum düzeltildi
+(`actorRadius` "(0,40)" yazıyordu, değeri 0,28 — ilk turdan kalma).
+
+### Dondurulan (7 blok, 42 sayı + 21 nokta)
+kat kabuğu (17 · 3,20 · 2,65 …) · mobilya (1,68 · 1,05 · 0,90 · 0,795 · 0,45 …) · yerleşim ritmi
+(küme aralığı 6,40 · banket birimi) · aktör (1,75 + türeyen yarıçaplar) · kamera (fov 50 · 8,5) ·
+nav/erişim (0,30 · 1,47 · pad yarıçapları) · noktalar (pad'ler · kapı · servisin iki dönemi).
+
+**Kasten DONMAYAN:** dekor koordinatları · renk/materyal/ışık · `economy.config.ts` (katman 2'nin
+konusu; ölçü donduğu için artık ölçülebilir).
+
+### Değiştirme yolu (testin başlığında da yazılı)
+kullanıcı kararı → `decisions.md` D-xxx → testteki değer + `karar` alanı → belge.
+Testi susturarak ya da toleransı gevşeterek geçilmez. Belge ile liste arasındaki sapmayı da bir
+bekçi tutuyor: her ankraj adı `docs/olcu-donduruldu.md`'de geçmek zorunda (biçim değil VARLIK).
+
+### Maket arşiv damgası
+`docs/maket/README.md` başına damga: **maket v13'ün Kat 1 ölçü kaynağı olarak işi bitti.** Maketler
+program/sıra/atmosfer için okunmaya devam eder ama **yeni sayı transkribe edilmez** — oyunun odası
+maketinkinden 0,5 geniş, karakteri 1,75 (maketinki 1,80). Kalıcı ders D-075'ten: *maketten ölçü
+almadan önce insan boyunu karşılaştır.*
+
+**Testler:** vitest **463/463** (300 → +163 bekçi) · smoke **28/28** · tsc + build temiz ·
+eslint tabanı zaten kırık (122 ayrıştırma hatası, sebep bayat `.claude/worktrees/maket-tasima`;
+dokunulan dosyalarda yeni hata yok).

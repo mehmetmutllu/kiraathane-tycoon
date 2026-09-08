@@ -2,6 +2,52 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-08 — **ÖLÇÜ DONDURULDU · FAZ B BİTTİ** · D-077)
+
+Kullanıcı: *"evet, bekçi testli dondurmayla devam et"*. D-072'nin **1. katmanı (ölçü/ankraj)
+kapandı** — artık belge değil **TEST** koruyor.
+
+### Yapıldı — BM adım 6: ölçü dondurma
+- **`tests/olcu-donduruldu.test.ts` (163 bekçi).** Canlı kodun TÜRETTİĞİ her ankrajı dondurulmuş
+  sayıyla karşılaştırır. Liste ikinci bir doğru kaynak DEĞİL: kod hâlâ kendi dosyalarından okur,
+  tablo yalnız testin gördüğü fotoğraf. 7 blok: kat kabuğu · mobilya · yerleşim ritmi · aktör ·
+  kamera · nav/erişim · noktalar (42 sayı + 21 nokta).
+- **Mutasyonla doğrulandı:** `STOOL_S` 0,90 → 0,85 denendi, 2 test kırıldı (biri de türev
+  `tabure.oturakUstu`) — bekçi gerçekten yakalıyor, sonra geri alındı.
+- **`docs/olcu-donduruldu.md`** insan tarafı (gerekçe + değiştirme yolu + donmayanlar listesi).
+  Belge ile test arasındaki sapmayı da bir bekçi tutuyor: her ankraj adı belgede geçmek zorunda.
+- **Maket arşiv damgası** `docs/maket/README.md` başına: maket v13'ün Kat 1 ölçü kaynağı olarak
+  işi bitti; program/sıra/atmosfer için okunur ama **yeni sayı transkribe edilmez**.
+
+### Dondurma İKİ KUSUR AÇTI (ikisi de "ankraj ama bekçilenemiyor" sınıfı)
+1. **Kamera** ölçü katmanındaydı ama `Scene.tsx`'in `useFrame` gövdesinde gömülüydü ve o dosya
+   vitest'te import EDİLEMEZ (Canvas + `recolor` → `Image`). → **`src/config/camera.ts`** açıldı
+   (`actor.ts` deseni): fov 50 · mesafe 8,5 · portre tavanı 1,3 · uzaklaş 1,35 · odak 0,72 +
+   `cameraDistance(aspect)`. `CAMERA_LOOK_Y` bilerek `actor.ts`'te kaldı (aktörün türevi).
+2. **Tabure ölçeği** aynı sebeple bekçisizdi (`Tables.tsx` → `Image`). `STOOL_S/STOOL_REF` +
+   ölçülen `TABLE_TOP_Y 0,795` + türev `STOOL_SEAT_Y 0,45` **`tableLook.ts`**'e taşındı;
+   `actor-scale.test.ts` artık o sayıları elle yazmıyor, oradan okuyor.
+
+Ayrıca `NAV_CELL` export edildi ve `layout.ts`'te bayat yorum düzeltildi (`actorRadius` "(0,40)"
+yazıyordu, değeri 0,28).
+
+**Doğrulama:** vitest **463/463** (300 → +163) · smoke **28/28** · tsc + build temiz.
+**eslint tabanı zaten kırık:** 122 ayrıştırma hatası, sebep bayat `.claude/worktrees/maket-tasima`
+worktree'si (merge edilmişti, silinmemiş) — tsconfigRootDir belirsizliği. Dokunulan dosyalarda
+yeni hata yok. **Temizlik kalemi: `git worktree remove .claude/worktrees/maket-tasima`.**
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**Faz C — DENGE: `simulate.ts` TEK KEZ yeniden ölçülür.** Ölçü donduğu için artık ölçüm geçerli
+olur. Masa aralığı 3,20 → 6,40'a çıktı (yürüme mesafeleri uzadı) ve aktör boyu değişti → **eski
+denge ölçümlerinin hepsi geçersiz**. Ölçüm öncesi hatırlanacak iki bilinen kalem:
+`servis L6` 23,4 dk ve `masa seviyesi L4` 21,4 dk beklemeleri (ikincisi model kusuru: sim tüm
+masaları tek kalemde yükseltiyor, oyunda masa-başı alınıyor).
+Sonra: Faz 4 → 5 → 7 → 8.
+
+**Denge sayıları DONMADI** (kasten) — `economy.config.ts` katman 2'nin konusu.
+
+---
+
 ## ŞU AN (2026-09-08 — **ÜÇ KARAR ALINDI · AKTÖR ÖLÇÜSÜ TEK KAYNAKTA (D-076)**)
 
 Kullanıcı üç kararı da verdi:

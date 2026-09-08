@@ -580,7 +580,7 @@ export const LAYOUT = {
   // BM adım 5 (D-076): iki yarıçap da AKTÖR BOYUNDAN türer (`src/config/actor.ts`) — gövde
   // 1,29 → 1,75'e çıkınca omuz genişliği de büyüdü, standoff eski gövdeye göre kalamazdı.
   playerRadius: PLAYER_RADIUS, // oyuncu gövde yarıçapı = standoff'u görsel kenara denk getirir (0,47)
-  actorRadius: ACTOR_RADIUS, // garson/bulaşıkçı engel-kaçınma yarıçapı (0,40)
+  actorRadius: ACTOR_RADIUS, // garson/bulaşıkçı engel-kaçınma yarıçapı (0,28 — kapsül gövde enine büyümedi)
   // (B3-1: `stationHalf`/`stationHalves`/`dishHalf` KALKTI — servis footprint'i artık yerine
   //  bağlı: sol duvarda uzun kenar z'de, arka bantta x'te. `servicePlace(areasOpen).half`.)
   // BM adım 2 (D-073): iki mobilya dili, iki footprint. Dörtlü ÇAY masası maketin `teaTable`'ı
@@ -709,7 +709,7 @@ export function hitsSolid(x: number, z: number, solids: Solid[], r: number): boo
 // Masaya BİTİŞİK teslim → "tam masaya gelmeden veriyor" hissi biter (eski serveRadius 1.6 yerine ~1.05).
 // Izgara hücre boyu (dünya birimi) — masalar arası koridorları açık tutar. REACH_TABLE bununla
 // BAĞLIDIR: aşağıya bak.
-const NAV_CELL = 0.3;
+export const NAV_CELL = 0.3;
 
 /**
  * Masaya teslim mesafesi. **Izgara hücre boyuna BAĞLIDIR** ve bu bağ B3-1'de bulundu:

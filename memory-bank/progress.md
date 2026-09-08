@@ -1787,8 +1787,29 @@ tek yönlü sıra. Ölçü hedefi kullanıcı kararıyla **A**: kat 34 × 34, du
     **%45**'i (gerçek %43), tabure oturağı %35 → **%26** (gerçek %26), kapsül yarıçap/boy %17.
   - **vitest 300/300 · smoke 28/28 · tsc + build temiz · eslint'te yeni hata yok.**
     Kareler: `docs/gorsel/ss/oran-once-*.png` ↔ `oran-sonra-*.png` (`node tools/shot-oran.mjs`).
-- ⏳ **SIRADAKİ:** **ÖLÇÜ DONDURMA + maket arşiv damgası**, sonra `simulate.ts` TEK KEZ yeniden
-  ölçülür (masa aralığı 3,20 → 6,40 oldu, eski denge ölçümleri geçersiz).
+- ✅ **BM adım 6 — ÖLÇÜ DONDURULDU (D-077).** D-072'nin 1. katmanı kapandı; koruyan şey artık
+  belge değil **TEST**: `tests/olcu-donduruldu.test.ts` (**163 bekçi**) canlı kodun TÜRETTİĞİ her
+  ankrajı dondurulmuş sayıyla karşılaştırıyor. 7 blok / 42 sayı + 21 nokta: kat kabuğu · mobilya ·
+  yerleşim ritmi · aktör · kamera · nav/erişim · noktalar.
+  - **Neden test:** "ölçüyü değiştirme" kuralı D-072'den beri yazılıydı ve **üç turda üst üste
+    ihlal edildi** (D-074/075/076). Yakalanamayan şey sessiz sapma. **Mutasyonla doğrulandı:**
+    `STOOL_S` 0,90 → 0,85 → 2 test kırıldı (biri türev), sonra geri alındı.
+  - **Liste ikinci bir doğru kaynak DEĞİL:** kod hâlâ kendi dosyalarından okur; tablo testin
+    fotoğrafı. `docs/olcu-donduruldu.md` insan tarafı — ve belge/test sapmasını da bir bekçi tutuyor
+    (her ankraj adı belgede geçmek zorunda).
+  - **Dondurmanın AÇTIĞI iki kusur (ikisi de "ankraj ama bekçilenemiyor"):** (1) kamera sayıları
+    `Scene.tsx`'in `useFrame`'inde gömülüydü, o dosya vitest'te import edilemiyor → **`src/config/
+    camera.ts`** açıldı (fov 50 · mesafe 8,5 · portre 1,3 · uzaklaş 1,35 · odak 0,72);
+    (2) tabure ölçeği aynı sebeple bekçisizdi → `STOOL_S/STOOL_REF` + `TABLE_TOP_Y` + `STOOL_SEAT_Y`
+    **`tableLook.ts`**'e taşındı, `actor-scale.test.ts` artık elle yazmıyor oradan okuyor.
+  - Ayrıca `NAV_CELL` export edildi; `layout.ts`'te bayat yorum düzeltildi (`actorRadius` "(0,40)"
+    yazıyordu, değeri 0,28).
+  - **Maket arşiv damgası** `docs/maket/README.md` başına vuruldu: v13'ün Kat 1 ölçü kaynağı olarak
+    işi bitti; program/sıra/atmosfer için okunur ama **yeni sayı transkribe edilmez**.
+  - **vitest 463/463 · smoke 28/28 · tsc + build temiz.** eslint tabanı zaten kırık (122 ayrıştırma
+    hatası; sebep merge edilmiş ama silinmemiş `.claude/worktrees/maket-tasima` — temizlik kalemi).
+- ⏳ **SIRADAKİ — FAZ C:** `simulate.ts` **TEK KEZ** yeniden ölçülür (masa aralığı 3,20 → 6,40,
+  aktör boyu değişti → eski denge ölçümlerinin hepsi geçersiz). Ölçü donduğu için artık geçerli olur.
 - **Rapor:** `docs/bm-adim3-4-bant-kamera.html` →
   https://claude.ai/code/artifact/e49330bc-c918-41ec-a1b4-5c879cae146c
   (`tools/embed-rapor.mjs` kareleri data URI olarak gömüp `*.artifact.html` üretir — artifact'ın
