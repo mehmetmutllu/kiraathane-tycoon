@@ -1,0 +1,98 @@
+=== TEK ODAK ÖLÇÜMÜ (D-038) — ekranda aynı anda kaç zemin işareti var? ===
+Yürüyüş: 142 durum · görev hattı 50 adım · masa slotu 20
+
+--- ÖZET ---
+  Durumların %90'inde ekranda BİRDEN ÇOK işaret ÇİZİLİYOR (128/142).
+  EN YOĞUN durum: 16 çizilen işaret  →  "görev 49/50" (adım 75)
+  EN YOĞUN TEK ALAN (kamera vekili): 12 işaret  →  salon 3, "görev 49/50"
+
+--- KATMAN AYRIMI SONRASI: kaçı KONUŞUYOR? ---
+  En çok KONUŞAN (yazı + maliyet): 3  ·  ortalama 2.39
+  Bunların EN FAZLA BİRİ aktif adım (kaynak tek `activeStep` hedefi — yapısal garanti).
+  Gerisi sessiz: küçük, yazısız halka. Çizilen 16 → konuşan 3.
+
+--- KAYNAK KIRILIMI (işaret sayısı: ortalama / en çok) ---
+  pad     ort 0.17  ·  en çok 1
+  servis  ort 0.31  ·  en çok 1
+  masa    ort 7.82  ·  en çok 16
+  lavabo  ort 0.14  ·  en çok 1
+
+--- EN YOĞUN DURUMDA EKRANDA NE VAR ---
+  [pad   ] 12. Masa               salon 3  @ 5.3,-5.8
+  [masa  ] Masa 5                 salon 2  @ 3.1,13.8
+  [masa  ] Masa 6                 salon 2  @ 9.5,13.8
+  [masa  ] Masa 7                 salon 2  @ 3.1,3.1
+  [masa  ] Masa 8                 salon 2  @ 9.5,3.1
+  [masa  ] Masa 9                 salon 3  @ -11.7,-0.3
+  [masa  ] Masa 10                salon 3  @ -11.7,-7.3
+  [masa  ] Masa 11                salon 3  @ 11.7,-0.3
+  [masa  ] Masa 12                salon 3  @ 11.7,-7.3
+  [masa  ] Masa 13                salon 3  @ -8.5,-0.3
+  [masa  ] Masa 14                salon 3  @ -8.5,-7.3
+  [masa  ] Masa 15                salon 3  @ 8.5,-0.3
+  [masa  ] Masa 16                salon 3  @ 8.5,-7.3
+  [masa  ] Masa 17                salon 3  @ -5.3,-0.3
+  [masa  ] Masa 18                salon 3  @ -5.3,-7.3
+  [masa  ] Masa 19                salon 3  @ 5.3,-0.3
+
+--- ZAMAN ÇİZGİSİ (işaret sayısı her değiştiğinde) ---
+  adım   0   0 işaret  (p0 s0 m0 l0)  başlangıç
+  adım   1   1 işaret  (p1 s0 m0 l0)  görev 3/50
+  adım   5   2 işaret  (p1 s1 m0 l0)  görev 8/50
+  adım   6   1 işaret  (p0 s1 m0 l0)  ✔ pad
+  adım   7   2 işaret  (p1 s1 m0 l0)  görev 10/50
+  adım   8   1 işaret  (p0 s1 m0 l0)  ✔ pad
+  adım  11   2 işaret  (p1 s1 m0 l0)  görev 12/50
+  adım  12   5 işaret  (p0 s1 m4 l0)  ✔ pad
+  adım  13   6 işaret  (p1 s1 m4 l0)  görev 14/50
+  adım  14   5 işaret  (p0 s1 m4 l0)  ✔ pad
+  adım  15   6 işaret  (p1 s1 m4 l0)  görev 15/50
+  adım  16   5 işaret  (p0 s1 m4 l0)  ✔ pad
+  adım  21   6 işaret  (p1 s1 m4 l0)  görev 19/50
+  adım  22   5 işaret  (p0 s1 m4 l0)  ✔ pad
+  adım  23   6 işaret  (p1 s1 m4 l0)  görev 21/50
+  adım  24   5 işaret  (p0 s1 m4 l0)  ✔ pad
+  adım  25   6 işaret  (p1 s1 m4 l0)  görev 22/50
+  adım  26   9 işaret  (p0 s1 m8 l0)  ✔ pad
+  adım  29  10 işaret  (p1 s1 m8 l0)  görev 24/50
+  adım  30   9 işaret  (p0 s1 m8 l0)  ✔ pad
+  adım  31  10 işaret  (p1 s1 m8 l0)  görev 25/50
+  adım  32   9 işaret  (p0 s1 m8 l0)  ✔ pad
+  adım  35  10 işaret  (p1 s1 m8 l0)  görev 27/50
+  adım  36   9 işaret  (p0 s1 m8 l0)  ✔ pad
+  adım  37  10 işaret  (p1 s1 m8 l0)  görev 28/50
+  adım  38   9 işaret  (p0 s1 m8 l0)  ✔ pad
+  adım  41  10 işaret  (p1 s1 m8 l0)  görev 31/50
+  adım  42  13 işaret  (p0 s1 m12 l0)  ✔ pad
+  adım  44   9 işaret  (p0 s1 m8 l0)  ✔ tablesAtLevel
+  adım  46   8 işaret  (p0 s0 m8 l0)  ✔ stationLevel
+  adım  47   9 işaret  (p1 s0 m8 l0)  görev 35/50
+  adım  48   8 işaret  (p0 s0 m8 l0)  ✔ pad
+  adım  49   9 işaret  (p1 s0 m8 l0)  görev 36/50
+  adım  51  10 işaret  (p1 s0 m8 l1)  görev 37/50
+  adım  55  11 işaret  (p1 s0 m9 l1)  görev 39/50
+  adım  59  12 işaret  (p1 s0 m10 l1)  görev 41/50
+  adım  63  13 işaret  (p1 s0 m11 l1)  görev 43/50
+  adım  67  14 işaret  (p1 s0 m12 l1)  görev 45/50
+  adım  70  13 işaret  (p0 s0 m13 l0)  ✔ lavaboLevel
+  adım  71  14 işaret  (p1 s0 m13 l0)  görev 47/50
+  adım  73  15 işaret  (p1 s0 m14 l0)  görev 48/50
+  adım  75  16 işaret  (p1 s0 m15 l0)  görev 49/50
+  adım  81  15 işaret  (p0 s0 m15 l0)  serbest oyun
+  adım  85  14 işaret  (p0 s0 m14 l0)  serbest oyun
+  adım  89  13 işaret  (p0 s0 m13 l0)  serbest oyun
+  adım  93  12 işaret  (p0 s0 m12 l0)  serbest oyun
+  adım  97  11 işaret  (p0 s0 m11 l0)  serbest oyun
+  adım 101  10 işaret  (p0 s0 m10 l0)  serbest oyun
+  adım 105   9 işaret  (p0 s0 m9 l0)  serbest oyun
+  adım 109   8 işaret  (p0 s0 m8 l0)  serbest oyun
+  adım 113   7 işaret  (p0 s0 m7 l0)  serbest oyun
+  adım 117   6 işaret  (p0 s0 m6 l0)  serbest oyun
+  adım 121   5 işaret  (p0 s0 m5 l0)  serbest oyun
+  adım 125   4 işaret  (p0 s0 m4 l0)  serbest oyun
+  adım 129   3 işaret  (p0 s0 m3 l0)  serbest oyun
+  adım 133   2 işaret  (p0 s0 m2 l0)  serbest oyun
+  adım 137   1 işaret  (p0 s0 m1 l0)  serbest oyun
+  adım 141   0 işaret  (p0 s0 m0 l0)  serbest oyun
+
+(kırılım: p=pad · s=servis · m=masa · l=lavabo)

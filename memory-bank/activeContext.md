@@ -2,6 +2,44 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-08 — **C2 BİTTİ · TEK ODAK'IN 4. KANALI TEKLEŞTİ** · D-080)
+
+Kullanıcı kararı: *"Katman ayrımı"*. Faz C **2/5**. Sanat/asset hâlâ bilerek en sonda.
+
+### Yapıldı — C2: Tek Odak'ın dördüncü kanalı
+- **Devralınan bulgunun YARISI bayat çıktı.** C1 raporu "opsiyonel pad'ler VE yükseltme dolumları
+  görev filtresinin dışında" diyordu; cümle D-038'den (2026-09-05) devralınmıştı. Ölçüldü:
+  **`optional:true` pad kalmamış** (son kalan `waiter3` C1'de omurgaya alınmıştı) → pad işareti
+  **en çok 1**. D-078'in dersi ikinci kez tuttu.
+- **Gerçek delik:** ekranda ort. **7,8** · en çok **16** zemin işareti (tek salonda 12), durumların
+  **%90'ında** birden çok — neredeyse tamamı masa yükseltme noktası. Asıl kusur sayı değil: aktif
+  adımın işareti ile masa noktası aynı bileşen/boy/yazı, "hangisi şu anki adım" okunmuyordu.
+  D-038'in dört kanalından üçü (bant · kamera · kenar oku) **zaten tek görevden türüyordu**.
+- **Karar (kullanıcı): nokta silinmez, SES katmanlanır.** Harfiyen D-038 `feedback_upgrade_per_object`
+  ile çelişiyordu (her masanın noktası kendi yanında, My Hotel). Üç katman: `aktif` (yazı + tam
+  parlak halka + hafif nabız, **en fazla 1**) · `konusan` (oyuncu 3,2 br yakında) · `sessiz`
+  (0,55× küçük, YAZISIZ; dolum yayı durur). **Çizilen 16 → konuşan en çok 3** (ort. 2,39).
+- **Yapısal kısım:** `src/game/activeStep.ts` — singleton'ı `QuestPointer` kenar okuyla **AYNI
+  `questFocusPos` çağrısından** yazıyor; dördüncü kanal artık ayrışamaz. `markerTier` saf fonksiyon,
+  `GroundMarker` `useFrame` içinde damp'liyor (React'e dokunmuyor).
+- **Bekçi `tests/tek-odak.test.ts` (13 test)** + mutasyon doğrulaması (iki mutasyon, ikisi de kırdı).
+- **Yan kazanç:** bayat worktree silindi → eslint tabanı **122 ayrıştırma hatası → 19 lint hatası**.
+- **Rapor:** `docs/tek-odak-c2.md` · ham çıktı `docs/olcum-tek-odak.txt` ·
+  kareler `docs/gorsel/ss/tekodak-once-*.png` ↔ `tekodak-*.png`.
+
+**Doğrulama:** vitest **476/476** (463 → +13) · smoke **28/28** · tsc + build temiz ·
+dokunulan dosyalarda eslint temiz. **Denge sayısı DEĞİŞMEDİ.**
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**C3 — sipariş kuyruğunun ÖLÇÜLMESİ.** D-046 global havuz + üstlenme kurallarını yazdı ama
+*"hiçbir masa X saniyeden fazla beklemedi"* iddiası **teste yazılmadı**. Önce ölç, sonra bekçile.
+Ardından C4/C5: **sim'i gerçeğe yaklaştırmak** (masa yükseltmesi kalem kalem — sahte 21,4 dk
+kapanır · bardak döngüsü · sabır).
+
+**Bekleyen denge kararı YOK. Bilinen ve bilerek duran:** `servis L6` 23,4 dk beklemesi.
+
+---
+
 ## ŞU AN (2026-09-08 — **FAZ C BAŞLADI · DENGE TEK KEZ ÖLÇÜLDÜ** · D-078)
 
 Kullanıcı: *"tamam sorun yok sistem kusursuz otursun sonra hallederiz. sen şimdi faz c ye başla,

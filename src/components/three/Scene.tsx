@@ -40,6 +40,7 @@ import { CAMERA_FOCUS_MUL, CAMERA_FOV, CAMERA_ZOOM_OUT_MUL, cameraDistance } fro
 import { perf } from '../../game/perf';
 import { devCam, devTimeScale, devTopDown, useSandbox } from '../../game/devSandbox';
 import { screenPointer } from '../../game/screenPointer';
+import { activeStep } from '../../game/activeStep';
 import { actorScale, CAMERA_LOOK_Y } from '../../config/actor';
 
 /** GEÇİCİ (2026-09-07 ölçümü): maketle aynı ton eşlemesi (kapalı) — bkz. Canvas'taki not. */
@@ -54,6 +55,9 @@ function Simulation() {
 // AKTİF ADIMIN EKRAN İZDÜŞÜMÜ (plan §9 — Tek Odak'ın görsel kanalı). Aktif görevin dünya hedefi
 // kameraya izdüşürülür; ekran dışındaysa HUD kenarda ok gösterir. Store'a YAZMAZ (her kare render
 // tetiklemesin) — `perf` gibi singleton'a yazar, HUD ~20Hz okur.
+// C2: aynı hedefi `activeStep`e de yazar — DÖRDÜNCÜ kanal (dünyadaki işaret) de buradan türesin
+// diye. Böylece bant · kamera · kenar oku · zemin işareti dördü de TEK `questFocusPos` çağrısından
+// besleniyor; iki kanalın ayrı hesaplayıp ayrışması yapısal olarak mümkün değil (D-038).
 function QuestPointer() {
   const camera = useThree((s) => s.camera);
   const size = useThree((s) => s.size);
@@ -64,8 +68,12 @@ function QuestPointer() {
     const target = g.quest && def ? questFocusPos(def.target, g.tableLevels, g.tables, g.areasOpen, def.area ?? 0) : null;
     if (!target) {
       screenPointer.active = false;
+      activeStep.has = false;
       return;
     }
+    activeStep.has = true;
+    activeStep.x = target[0];
+    activeStep.z = target[2];
     v.set(target[0], 0.9, target[2]);
     screenPointer.dist = Math.hypot(target[0] - g.player[0], target[2] - g.player[2]);
     v.project(camera);

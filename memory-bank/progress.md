@@ -1809,7 +1809,7 @@ tek yönlü sıra. Ölçü hedefi kullanıcı kararıyla **A**: kat 34 × 34, du
   - **vitest 463/463 · smoke 28/28 · tsc + build temiz.** eslint tabanı zaten kırık (122 ayrıştırma
     hatası; sebep merge edilmiş ama silinmemiş `.claude/worktrees/maket-tasima` — temizlik kalemi).
 
-## Faz C — ZİNCİR VE DENGE (1/5) 🔧
+## Faz C — ZİNCİR VE DENGE (2/5) 🔧
 - ✅ **C1 — ÖLÇÜ DONDUKTAN SONRAKİ TEK ÖLÇÜM (D-078).** Rapor `docs/denge-raporu-c1.md`, ham çıktı
   `docs/denge-olcum-c1.txt`.
   - **Geometrinin bedeli küçük:** yollar %2-6 uzadı (19,6 → 20,7 br) · taşıma %4 zayıfladı
@@ -1836,9 +1836,32 @@ tek yönlü sıra. Ölçü hedefi kullanıcı kararıyla **A**: kat 34 × 34, du
   **1,6 dk** ✓ (marj %20). Garson SONRASI tempo zaten ayrı bekçide (EN UZUN BEKLEME 20 dk); iki
   ölçüt birlikte kuralın iki yarısını tutuyor. Uygulandı: `simulate.ts` · `progression-and-economy-v2.md`
   §3.6 · `economy.md` §4 · rapor §2. **Üç ölçüt de yeşil, hiçbir denge sayısı değişmedi.**
-- ⏳ **SIRADAKİ (bekleyen denge kararı YOK):** **Tek Odak** kuralının delinmesi ·
-  **sipariş kuyruğunun ölçülmesi** (D-046'nın "hiçbir masa X sn beklemedi" iddiası) · **sim'in
-  gerçeğe yaklaşması** (masa-başı yükseltme · bardak döngüsü · sabır).
+- ✅ **C2 — TEK ODAK'IN DÖRDÜNCÜ KANALI (D-080).** Rapor `docs/tek-odak-c2.md`, ölçüm aracı
+  `tools/olcum-tek-odak.ts` → `docs/olcum-tek-odak.txt`.
+  - **Devralınan bulgunun yarısı bayat çıktı:** "opsiyonel pad'ler görev filtresinin dışında"
+    cümlesi D-038'den (2026-09-05) devralınmıştı; `optional:true` pad **kalmamış** (son kalan
+    `waiter3` C1'de omurgaya alınmıştı). Ölçüm: **pad işareti en çok 1**. D-078'in dersi ikinci kez.
+  - **Gerçek delik ölçüldü:** ekranda ort. **7,8** · en çok **16** zemin işareti (tek salonda 12),
+    durumların **%90'ında** birden çok — neredeyse tamamı masa yükseltme noktası. Asıl kusur sayı
+    değil: aktif adımın işareti ile masa noktası **aynı bileşen, aynı boy, aynı yazı**; "hangisi şu
+    anki adım" okunmuyordu. D-038'in dört kanalından **üçü zaten tek görevden türüyordu**.
+  - **Kullanıcı kararı: nokta silinmez, SES katmanlanır** (harfiyen D-038 `feedback_upgrade_per_object`
+    ile çelişiyordu). `aktif` (yazı + tam parlak + nabız · en fazla 1) · `konusan` (3,2 br yakında) ·
+    `sessiz` (0,55× küçük, yazısız). **Çizilen 16 → aynı anda konuşan en çok 3** (ort. 2,39).
+  - **Yapısal kısım:** `src/game/activeStep.ts` — singleton'ı `QuestPointer` **kenar okuyla AYNI
+    `questFocusPos` çağrısından** yazıyor → dördüncü kanal da tek kaynakta; ayrışma mümkün değil.
+    `markerTier` saf fonksiyon; `GroundMarker` `useFrame` içinde damp'liyor, React'e dokunmuyor.
+  - **Bekçi `tests/tek-odak.test.ts` (13 test):** en fazla bir aktif (ankrajlar pairwise ayrı) ·
+    **her işaretli görev hedefi tam bir ankraja oturur** (ayrışırsa aktif işaret sessizce hiç yanmaz) ·
+    yakınlık bütçesi (tavan 4). **Mutasyonla doğrulandı** (SPEAK_RADIUS 3,2→4,5 ve `questFocusPos`
+    `stationLevel` dalı — ikisi de bekçi kırdı, geri alındı).
+  - **Yan kazanç:** bayat `.claude/worktrees/maket-tasima` silindi (D-077 temizlik kalemi) → eslint
+    tabanı **122 ayrıştırma hatası → 19 gerçek lint hatası**.
+  - **vitest 476/476 · smoke 28/28 · tsc + build temiz · denge sayısı DEĞİŞMEDİ.**
+    Kareler: `docs/gorsel/ss/tekodak-once-*.png` ↔ `tekodak-*.png` (`node tools/shot-tek-odak.mjs`).
+- ⏳ **SIRADAKİ (bekleyen denge kararı YOK):** **sipariş kuyruğunun ölçülmesi** (D-046'nın "hiçbir
+  masa X sn beklemedi" iddiası teste yazılmadı) · **sim'in gerçeğe yaklaşması** (masa-başı yükseltme
+  kalem kalem · bardak döngüsü · sabır).
 - **Rapor:** `docs/bm-adim3-4-bant-kamera.html` →
   https://claude.ai/code/artifact/e49330bc-c918-41ec-a1b4-5c879cae146c
   (`tools/embed-rapor.mjs` kareleri data URI olarak gömüp `*.artifact.html` üretir — artifact'ın

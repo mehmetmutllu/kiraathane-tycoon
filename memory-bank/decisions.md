@@ -2110,3 +2110,70 @@ Garson SONRASI tempo zaten ayrı bekçide: "20 dk'yı aşan alım kalmasın" (EN
 
 **HİÇBİR DENGE SAYISI DEĞİŞMEDİ** — değişen yalnız ölçüt. Tempo denetiminin üç ölçütü de artık
 yeşil ve üçü de gerçekten ÖLÇÜLÜYOR (C1'den önce yalnız birincisi ölçülüyordu).
+
+---
+
+## D-080 — Tek Odak'ın dördüncü kanalı: nokta silinmez, SES katmanlanır
+
+**Tarih:** 2026-09-08 · **Faz:** C2 · **Kullanıcı kararı:** *"Katman ayrımı"*
+**Rapor:** `docs/tek-odak-c2.md` · **Ölçüm:** `tools/olcum-tek-odak.ts` → `docs/olcum-tek-odak.txt`
+
+### Devralınan bulgunun YARISI bayat çıktı
+C1 raporu Faz C'nin kalan işini *"opsiyonel pad'ler VE yükseltme dolumları görev filtresinin
+dışında çiziliyor"* diye yazıyordu; cümle D-038'den (2026-09-05) devralınmıştı. Ölçüldü:
+**`optional:true` pad KALMAMIŞ** (26 pad'in hepsi `false`; son kalan `waiter3` C1'de omurgaya
+alınmıştı) → `availableOptionalPads` her çağrıda boş dönüyor, **pad işareti en çok 1**.
+D-078'in dersi ikinci kez tuttu: *devralınan bulgu, yeni yazılan tahmin kadar bayatlar.*
+
+### Ölçülen gerçek delik
+Ekranda **ortalama 7,8 · en çok 16** zemin işareti (tek salonda 12); durumların **%90'ında** birden
+çok. Kaynağı neredeyse tamamen **masa yükseltme noktaları** (ort. 7,82). Ama asıl kusur sayı değil:
+aktif adımın işareti ile bir masa noktası **aynı bileşen, aynı boy, aynı yazı ağırlığı** — tek fark
+halka rengi. Yani "hangisi ŞU ANKİ adım" okunmuyordu. Kadraj bunu doğruladı: tek ekranda altı halka,
+hepsinde aynı kelime ("Masa"), alt bant başka şey diyor ve o hedefin işareti kadrajda yok.
+
+D-038'in dört kanalından **üçü zaten tek görevden türüyordu** (alt bant · kamera odağı · kenar oku);
+delinen yalnız dördüncüsü, dünyadaki işaret.
+
+### Karar: silme, katmanla
+D-038'in lafzı ("yalnız aktif adım çizilir") sonraki kullanıcı kararıyla ÇELİŞİYORDU
+(`feedback_upgrade_per_object`: her masanın noktası kendi yanında, My Hotel modeli). Harfiyen
+uygulamak o noktaları silmek olurdu. Kullanıcı **katman ayrımını** seçti — nokta kalır, ses ayrılır:
+
+| katman | görünüm | ne zaman |
+|---|---|---|
+| `aktif` | yazı + maliyet + TAM parlak halka + hafif nabız | aktif adımın ankrajı (en fazla 1) |
+| `konusan` | yazı + maliyet, nabız yok | oyuncu 3,2 br yakınında |
+| `sessiz` | küçük (0,55×), YAZISIZ halka; dolum yayı durur | gerisi |
+
+**Sonuç ölçüldü: çizilen 16 → aynı anda KONUŞAN en çok 3** (ortalama 2,39), ve bunların
+**en fazla biri aktif**.
+
+### Yapısal kısım (asıl iş bu)
+`src/game/activeStep.ts` açıldı: `activeStep` singleton'ı **Scene'in `QuestPointer`'ı tarafından,
+kenar okuyla AYNI `questFocusPos` çağrısından** yazılıyor. Böylece dördüncü kanal da öbür üçüyle tek
+kaynaktan besleniyor — iki kanalın ayrı hesaplayıp ayrışması artık mümkün değil. `markerTier` saf
+fonksiyon (vitest edilebilir); `GroundMarker` her karede onu çağırıp `useFrame` içinde damp'liyor,
+React'e dokunmuyor (her kare setState = 60 render/sn olurdu).
+
+### Bekçi: `tests/tek-odak.test.ts` (13 test)
+1. `markerTier` davranışı — aktiflik MESAFEDEN değil aktif adımdan gelir.
+2. **En fazla bir aktif** — ankrajlar pairwise ayrı (tek kasıtlı istisna: lavabo pad'i ile lavabo
+   yükseltme noktası aynı noktada, ikisi asla birlikte çizilmez; onu ayrı bir bekçi tutuyor).
+3. **Her işaretli görev hedefi tam bir ankraja oturur** — `questFocusPos` ile işaretlerin çizim yeri
+   ayrışırsa aktif işaret sessizce HİÇ yanmaz; korunan sessiz sapma budur.
+4. Yakınlık bütçesi (tavan 4: yürüyüşte ölçülen 3 + kümenin yanına düşebilecek 1 pad).
+
+**Mutasyonla doğrulandı:** `SPEAK_RADIUS` 3,2 → 4,5 → bütçe bekçisi kırıldı; `questFocusPos`'un
+`stationLevel` dalı `upgradeSpot` → `station` → ankraj bekçisi kırıldı. İkisi de geri alındı.
+
+**Kareler:** `docs/gorsel/ss/tekodak-once-*.png` ↔ `tekodak-*.png` (`node tools/shot-tek-odak.mjs`).
+**Doğrulama:** vitest **476/476** (463 → +13) · smoke **28/28** · tsc + build temiz · dokunulan
+dosyalarda eslint temiz. **Hiçbir denge sayısı değişmedi.**
+
+**Yan kazanç:** bayat `.claude/worktrees/maket-tasima` worktree'si silindi (D-077'nin temizlik
+kalemi) → eslint tabanı **122 ayrıştırma hatasından 19 gerçek lint hatasına** düştü.
+
+**Donmayan:** `SPEAK_RADIUS` (3,2) · `SILENT_SCALE` (0,55) · nabız genliği — üçü de KATMAN 3
+(sunum), dondurulmuş ölçü değil. Masa sütun aralığı 3,20 olduğu için eşik oraya oturtuldu:
+iki masanın arasında durunca ikisi de konuşur (seçim anı), üçüncüsü susar.

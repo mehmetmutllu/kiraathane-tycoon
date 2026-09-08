@@ -189,7 +189,7 @@ h2{font-size:21px;font-weight:800}
 <script type="application/json" id="durum">
 {
  "guncelleme": "08.09.2026",
- "yapilan": 56,
+ "yapilan": 57,
  "toplam": 73,
  "kilometre": [
   {
@@ -210,27 +210,28 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum · Faz C · 1/5 — denge ölçüldü, bir ölçüt emekli oldu",
-  "baslik": "Yürüme yolları uzadı, tempo bozulmadı — ama bir ölçüt yıllardır göz kararıyla bakılıyormuş",
-  "aciklama": "Geçen oturum ölçüyü <b>dondurdu</b>; bu oturum onun açtığı kapıdan geçti. Masa aralığı 3,20'den 6,40'a çıktığı için bütün tempo tablosu geçersiz sayılmıştı ve yeniden ölçülmesi gerekiyordu. Simülatör yürüme sürelerini <b>gerçek yol bulma rotalarıyla</b> hesapladığı için bu ölçüm gerçekten yeni sayılar üretti.<br><br>Beklenti \"yürüme uzadı, tempo bozuldu\" idi. Ölçüm bunu doğruladı ama <b>büyüklüğü küçük çıktı</b>: yollar %2-6 uzadı, taşıma kolu %4 zayıfladı, zincirin tamamı <b>5,08 → 5,12 saat</b> — yani <b>%0,8</b>. Darboğazın kim olduğu hiçbir satırda değişmedi. Ön çeyrekte masa aralığı ikiye katlandığı hâlde bunun olmasının sebebi şu: uzayan mesafe <b>masalar arası</b>, oysa garsonun turunu belirleyen şey servisten masaya olan mesafe ve o eksende kat büyümedi.<br><br>Asıl bulgu tempo denetiminde çıktı. Oyunun üç tempo ölçütü var ve <b>yalnız biri ölçülüyormuş</b>; kalan ikisi hedef cümlesi olarak yazılıydı, göz kararıyla bakılıyordu. Üçü de ölçülür hâle getirildi — ve <b>ikincisi kırmızı yandı</b>.",
+  "etiket": "Bu oturum · Faz C · 2/5 — ekranda hangisi \"şu anki adım\" belli oldu",
+  "baslik": "Devralınan bulgunun yarısı bayat çıktı, gerçek kusur sayıda değil SESTE'ydi",
+  "aciklama": "Geçen oturumun raporu Faz C'nin kalan işini yazarken bir cümleyi <b>devralmıştı</b>: \"opsiyonel noktalar ve yükseltme dolumları görev filtresinin dışında çiziliyor.\" Cümle üç gün önce yazılmıştı. Bu oturum koda dokunmadan önce <b>onu ölçtü</b> — ve yarısının bayatladığını buldu: opsiyonel nokta diye bir şey <b>kalmamış</b>, sonuncusu geçen oturum ana zincire alınmıştı.<br><br>Ölçüm gerçek kusuru başka yerde buldu. Ekranda aynı anda ortalama <b>7,8</b>, en çok <b>16</b> zemin işareti çiziliyor (tek salonda 12) ve durumların <b>%90'ında</b> birden fazla var. Ama asıl sorun sayı değildi: aktif adımın işareti ile herhangi bir masa yükseltme noktası <b>aynı bileşen, aynı boy, aynı yazı</b> — tek fark halka rengi. Yani oyuncu \"şu an hangisi\" sorusunu ekrana bakarak cevaplayamıyordu. Kadraj bunu birebir gösterdi: tek ekranda altı halka, hepsinde aynı kelime, ve alt bandın söylediği hedefin işareti kadrajda yok.<br><br>Kuralın dört kanalından üçü (alt bant · kamera · kenar oku) <b>zaten tek görevden</b> türüyordu; delinen yalnız dördüncüsü, dünyadaki işaret.",
   "adimlar": [
-   "<b>Yeni taban ölçüldü:</b> zincir 5,08 → <b>5,12 sa</b> (Normal) · yollar 19,6 → 20,7 br · L6 geliri 13,13 → 12,57 ₺/sn",
-   "<b>Sonuç:</b> geometri donması dengeyi <b>bozmadı</b> — eski sayılar arşiv, yeni taban bu",
-   "<b>Tempo denetimi ölçülür oldu:</b> ilk alım 22 sn ✓ · otomasyon 6,1 dk ✓ · <b>açılış temposu ✗</b>",
-   "<b>Kırmızı yanan ölçüt BAYAT çıktı</b> ve güncellendi (D-079): yenisi <b>garsona kadar hiçbir boşluk > 2 dk</b> — ölçülen en uzun 1,6 dk ✓",
-   "<b>Denge sayısına dokunulmadı</b> — değişen yalnız raporun kendisi (onaysız denge değişmez)"
+   "<b>Ölçüldü:</b> ekranda ort. <b>7,8</b> · en çok <b>16</b> işaret, %90'ında birden çok — neredeyse tamamı masa noktası",
+   "<b>Bulgunun yarısı bayat:</b> opsiyonel nokta kalmamış, pad işareti <b>en çok 1</b> (D-078'in dersi ikinci kez tuttu)",
+   "<b>Karar (kullanıcı): nokta silinmez, SES katmanlanır</b> — aktif (yazı + parlak + nabız, en fazla 1) · konuşan (yakında) · sessiz (küçük, yazısız)",
+   "<b>Sonuç:</b> çizilen 16 → aynı anda <b>konuşan en çok 3</b> (ort. 2,39), en fazla biri aktif",
+   "<b>Dördüncü kanal tek kaynağa bağlandı</b> — kenar okuyla aynı hesaptan besleniyor, artık ayrışamaz",
+   "<b>13 bekçi + iki mutasyon denemesi</b> · 476/476 test · duman 28/28 · denge sayısı değişmedi"
   ],
-  "not": "<b>Karar verildi: ölçüt bayattı (D-079).</b> Eski hâli oyunun ilk günlerinden kalmaydı (kat 21 × 21, tek salon, dört masa) ve sonraki kullanıcı kararıyla — <i>\"garson öncesi ucuz, garson sonrası ölçülü pahalı\"</i> — çelişiyordu. Yeni ölçüt o kuralın ölçülebilir karşılığı: <b>garsona kadar hiçbir boşluk 2 dakikayı aşmaz</b> (ölçülen 1,6 dk, marj %20). Garson sonrası tempo zaten ayrı bekçide: 20 dakikayı aşan alım kalmasın. <b>Hiçbir denge sayısına dokunulmadı</b> — değişen yalnız ölçüt."
+  "not": "<b>Karar neden kullanıcıya soruldu:</b> kuralın lafzı (\"yalnız aktif adımın işareti çizilir\") sonradan verilmiş bir kullanıcı kararıyla <b>çelişiyordu</b> — <i>\"her masanın yükseltmesi ayrı, masaların yanında, My Hotel'deki oda yükseltme gibi.\"</i> Harfiyen uygulamak o noktaları silmek olurdu. Seçilen yol ikisini birden tutuyor: nokta yerinde kalıyor, yüksek sesle konuşan tek işaret aktif adım oluyor."
  },
  "siradaki": {
-  "etiket": "Faz C · kalan 4 oturum — Tek Odak, sipariş kuyruğu, sim'in gerçeğe yaklaşması",
-  "baslik": "Ölçüm bir soruyu kapattı, üç işi netleştirdi",
-  "aciklama": "Bu oturumun ölçümü <b>bir açık maddeyi kapattı</b>: geç oyunda gelirin donduğu sanılıyordu, ölçünce donmadığı çıktı — lavabo kolu oranı 12,57'den <b>52,57 ₺/sn'ye</b> taşıyor. Yanlış inanç simülatörün kendi tablosundan geliyordu: o tablo lavabo kolunu hiç hesaba katmıyor, yani geç-oyun gelirini <b>3,4 kat eksik</b> gösteriyordu. Tablo düzeltildi.<br><br>Geriye Faz C'nin asıl kalemleri kaldı ve hepsi zaten panoda yazılıydı: ekranda <b>tek hedef</b> kuralı deliniyor (opsiyonel noktalar filtrenin dışında çiziliyor), <b>sipariş kuyruğunun</b> kuralları yazıldı ama hiç ölçülmüyor, ve simülatör hâlâ bardak döngüsünü, sabrı ve masa-başı yükseltmeyi modellemiyor.",
+  "etiket": "Faz C · kalan 3 oturum — sipariş kuyruğu, sim'in gerçeğe yaklaşması",
+  "baslik": "Sırada yazılmış ama hiç ölçülmemiş bir iddia var",
+  "aciklama": "Oyunda sipariş kuyruğunun kuralları <b>yazılı</b>: global havuz, bir garson bir siparişi üstlenince başkası ona dokunmuyor. Ama o kuralların vaadi — <b>\"hiçbir masa X saniyeden fazla beklemedi\"</b> — hiçbir zaman teste yazılmadı, hiç ölçülmedi. Son iki oturumun dersi tam olarak buydu: yazılı olan ama ölçülmeyen bir iddia, yok sayılır.<br><br>Ardından simülatörün gerçeğe yaklaştırılması kalıyor. Bugün simülatör masaları <b>tek kalemde</b> yükseltiyor, oysa oyunda her masa tek tek alınıyor — bu fark raporda <b>21,4 dakikalık sahte bir bekleme</b> üretiyor. Bardak döngüsü ve müşteri sabrı da hâlâ modellenmiyor.",
   "adimlar": [
-   "<b>Bekleyen denge kararı kalmadı</b> — açılış temposu ölçütü D-079'da güncellendi, üç ölçüt de yeşil",
-   "<b>Tek Odak:</b> opsiyonel pad'ler ve yükseltme dolumları görev filtresine alınır",
-   "<b>Sipariş kuyruğu ölçülür:</b> \"hiçbir masa X saniyeden fazla beklemedi\" teste yazılır",
-   "<b>Sim gerçeğe yaklaşır:</b> masa yükseltmesi kalem kalem · bardak döngüsü · sabır",
+   "<b>Sipariş kuyruğu ölçülür:</b> masa başına bekleme süresi çıkarılır, tavan bir bekçiye yazılır",
+   "<b>Sim gerçeğe yaklaşır:</b> masa yükseltmesi kalem kalem (sahte 21,4 dk kapanır)",
+   "<b>Bardak döngüsü ve sabır</b> modele girer",
+   "<b>Bekleyen denge kararı yok</b> — üç tempo ölçütü de yeşil, hiçbir sayı onaysız değişmedi",
    "<b>Sonra Faz D–F:</b> meta katman, arayüz cilası, paketleme ve mağaza"
   ],
   "not": "<b>Sanat ve asset işi bilerek en sonda:</b> karakterler hâlâ greybox (kapsül gövde), KayKit Restaurant Bits takılmadı, animasyon hiç yapılmadı. Kullanıcı kararı: <i>\"sistem kusursuz otursun, sonra hallederiz.\"</i> Ölçü donduğu için sanat turları artık dengeyi bozamaz."
@@ -331,8 +332,8 @@ h2{font-size:21px;font-weight:800}
     {
      "k": "C",
      "t": "Zincir ve denge",
-     "d": "Tek Odak · tezgâh merdiveni · global garson ve sipariş kuyruğu · simülatör gerçeğe yaklaşır. <b>İlk iş:</b> ölçü donduğu için <code>simulate.ts</code> TEK KEZ yeniden ölçülür (masa aralığı 6,40 · aktör 1,75 → eski tempo ölçümleri geçersiz).",
-     "yapilan": 1,
+     "d": "Tek Odak · tezgâh merdiveni · global garson ve sipariş kuyruğu · simülatör gerçeğe yaklaşır. Denge <b>bir kez ölçüldü</b> (C1) · <b>Tek Odak'ın dördüncü kanalı tekleşti</b> (C2). Kalan: sipariş kuyruğunun ölçülmesi ve simülatörün gerçeğe yaklaşması.",
+     "yapilan": 2,
      "toplam": 5,
      "kapi": "Sim tempo tablosunu tutuyor, tempo iddiaları teste yazılı",
      "durum": "now"
@@ -365,6 +366,22 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "08.09.2026",
+   "etiket": "Faz C · 2. oturum (C2 — Tek Odak'ın dördüncü kanalı)",
+   "baslik": "Ekranda on altı işaret vardı ve hepsi aynı sesle konuşuyordu",
+   "govde": "Oturuma devralınmış bir cümleyle girildi: <i>\"opsiyonel noktalar ve yükseltme dolumları görev filtresinin dışında çiziliyor.\"</i> Cümle üç gün önce yazılmıştı ve doğru görünüyordu. Bir önceki oturumun dersi <b>tam da bu</b> olduğu için koda dokunmadan önce ölçüldü — ve yarısı bayat çıktı: <b>opsiyonel nokta diye bir şey kalmamış</b>, sonuncusu geçen oturum ana zincire alınmıştı. Ölçüm bunu doğruladı: satın alma noktası ekranda <b>hiçbir zaman birden fazla</b> olmuyor.<br><br>Gerçek kusur başka yerdeydi. Oyunun ilerlemesi <b>tek hedef</b> göstermek üzerine kurulu ve bunun dört kanalı var: alt bandın metni, kameranın odağı, ekran kenarındaki ok, ve dünyadaki işaret. İlk üçü zaten <b>tek görevden</b> türüyordu. Dördüncüsü türemiyordu — ve ölçüm bunun ne demek olduğunu gösterdi: ekranda aynı anda ortalama <b>7,8</b>, en çok <b>16</b> zemin işareti çiziliyor, tek salonda 12'si birden. Ama sorun sayı bile değildi: aktif adımın işareti ile sıradan bir masa yükseltme noktası <b>aynı bileşen, aynı boy, aynı yazı</b> — tek fark halka rengi. Alınan kadraj bunu birebir gösterdi: tek ekranda altı halka, hepsinde aynı kelime, altta \"Ocaktan çay al\" yazıyor ve o hedefin işareti kadrajda <b>yok</b>. Kuralın doğduğu şikâyetin ta kendisi.<br><br>Burada koda değil <b>karara</b> ihtiyaç vardı, çünkü kuralın lafzı (\"yalnız aktif adımın işareti çizilir\") sonradan verilmiş bir kullanıcı kararıyla çelişiyordu: <i>\"her masanın yükseltmesi ayrı, masaların yanında, My Hotel'deki oda yükseltme gibi.\"</i> Harfiyen uygulamak o noktaları silmek olurdu. Karar soruldu ve <b>katman ayrımı</b> seçildi: nokta yerinde kalır, <b>ses</b> ikiye ayrılır. Aktif adım tek yüksek sesli işaret olur — yazı, maliyet, tam parlak halka, hafif nabız. Oyuncu yaklaşınca komşu nokta da konuşur. Gerisi küçülür ve susar; yazısı hiç çizilmez.<br><br>Sonuç ölçüldü: <b>çizilen 16, konuşan en çok 3</b> — ve bunların en fazla biri aktif. Asıl iş görselden çok yapısaldı: dördüncü kanal artık kenar okuyla <b>aynı hesaptan</b> besleniyor, yani iki kanalın ayrışması mümkün değil. Bekçilerden biri özellikle bunu tutuyor: her görev hedefi tam bir işaret ankrajına oturmak zorunda — ayrışırsa aktif işaret <b>sessizce hiç yanmaz</b>, ve sessiz sapma tam olarak budur. İki mutasyon denemesiyle bekçilerin gerçekten yakaladığı doğrulandı.",
+   "maddeler": [
+    "<b>Ölçüldü:</b> ekranda ort. <b>7,8</b> · en çok <b>16</b> işaret, durumların %90'ında birden çok",
+    "<b>Devralınan bulgunun yarısı bayat</b> — opsiyonel nokta kalmamış, satın alma noktası en çok 1",
+    "<b>Karar (kullanıcı): nokta silinmez, ses katmanlanır</b> — aktif · konuşan · sessiz",
+    "<b>Sonuç: çizilen 16 → konuşan en çok 3</b> (ort. 2,39), en fazla biri aktif",
+    "<b>Dördüncü kanal tek kaynağa bağlandı</b> — kenar okuyla aynı hesap, ayrışma yapısal olarak imkânsız",
+    "<b>13 bekçi</b> + iki mutasyon denemesi · <b>476/476 test</b> · duman 28/28 · derleme temiz",
+    "<b>Yan kazanç:</b> bayat çalışma kopyası silindi — kod denetleyicisi 122 ayrıştırma hatasından <b>19 gerçek uyarıya</b> düştü"
+   ],
+   "not": "<b>Bu oturumun dersi bir öncekinin devamı.</b> Geçen oturum \"devralınan bir bulgu, yeni yazılan bir tahmin kadar bayatlar\" demişti. Bu oturum aynı şeyi <b>bir tur sonra</b> yaşadı: kalan işi tarif eden cümlenin yarısı, yazıldıktan üç gün sonra geçersizdi. Ölçmeden koda dokunulsaydı olmayan bir deliği kapatmak için kod yazılmış olacaktı.<br><br>İkinci ders şu: <b>her kalabalık bir clutter sorunu değil.</b> On altı işaretin varlığı kusur değildi — kullanıcı zaten her objenin kendi noktasını istemişti. Kusur hepsinin <b>aynı sesle</b> konuşmasıydı. Sayıyı düşürmek yanlış çözüm olurdu; doğrusu hiyerarşi kurmaktı."
+  },
   {
    "tarih": "08.09.2026",
    "etiket": "Faz C · 1. oturum (C1 — ölçüm turu)",
@@ -757,10 +774,10 @@ h2{font-size:21px;font-weight:800}
    "p": "Kök neden ölçümle bulundu: sorun çizimde değil arayüzdeydi — oyun kare başına 3,2 kez arayüzü yeniden çiziyordu. Kare başına yeniden çizim 3,23 → 0,23, kare süresi 10,24 → 6,05 ms. Ayrıca tam ekranda piksel tavanı kondu. Kullanıcının makinesinde tekrar bakılacak."
   },
   {
-   "sev": "Yapısal",
-   "renk": "now",
-   "b": "Ekranda tek hedef kuralı deliniyor",
-   "p": "Görev filtresi satın-alma noktalarına uygulanıyor ama opsiyonel noktalar ve yükseltme dolumları filtrenin dışında çiziliyor. Oyuncu aynı anda birden çok hedef görüyor. Faz C'de kapanacak."
+   "sev": "Çözüldü",
+   "renk": "done",
+   "b": "Ekranda tek hedef kuralı deliniyordu — ÇÖZÜLDÜ",
+   "p": "C2'de ölçüldü ve maddenin yarısının <b>bayatladığı</b> görüldü: opsiyonel nokta kalmamış, satın alma noktası ekranda en çok bir tane. Gerçek delik yükseltme noktalarıydı — ekranda ort. 7,8 · en çok <b>16</b> işaret, hepsi aynı görsel ağırlıkta, yani \"hangisi şu anki adım\" okunmuyordu. Çözüm nokta silmek değil <b>ses katmanlamak</b> oldu (kullanıcı kararı): çizilen 16 → aynı anda konuşan <b>en çok 3</b>, en fazla biri aktif. Dördüncü kanal artık kenar okuyla aynı hesaptan besleniyor; 13 bekçi tutuyor."
   },
   {
    "sev": "Çözüldü",
