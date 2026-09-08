@@ -1,9 +1,12 @@
 # C3 — Sipariş kuyruğu ölçümü (D-046'nın kodda karşılığı)
 
 **Tarih:** 2026-09-08 · **Araç:** `tools/olcum-kuyruk.ts`
-**Ham çıktı:** `docs/olcum-kuyruk.txt` (mevcut kod) · `docs/olcum-kuyruk-varyant.txt` (beş kural karşılaştırması)
-**Kod değişmedi:** karşılaştırma için `tick.ts`'e geçici enjeksiyon yapıldı, ölçüm bitince geri alındı.
-Kontrol koşusu ile doğrulandı: enjeksiyonlu "acil" çıktısı, enjeksiyonsuz çıktıyla **birebir aynı**.
+**Ham çıktı:** `docs/olcum-kuyruk.txt` (UYGULAMA SONRASI kod) · `docs/olcum-kuyruk-varyant.txt` (beş kural karşılaştırması)
+**Sıra:** §0-§7 **ölçümdür** ve C3 ÖNCESİ kodu anlatır (o aşamada tek satır davranış değişmedi;
+karşılaştırma `tick.ts`'e geçici enjeksiyonla yapıldı ve geri alındı — kontrol koşusu enjeksiyonlu
+"acil" çıktısının enjeksiyonsuz çıktıyla **birebir aynı** olduğunu doğruladı). §8'den itibarı
+kullanıcı kararı ve **uygulama**dır (D-081). Aşağıda "mevcut kod" hep **ölçüm anındaki**, yani
+C3 öncesi kod demektir.
 
 ## 0. Neden ölçüldü
 
@@ -32,16 +35,16 @@ ve masalar arası **yayılım**dır.
 | # | Kural | Durum |
 |---|---|---|
 | ① | Havuz **global** | ✅ D-060'ta uygulandı |
-| ② | **Üstlenme bağlayıcı** — hedef teslim edilene kadar değişmez | ❌ **YOK** (aşağıda ölçüldü) |
-| ③ | Öncelik "en yakın" değil **"en acil"** | ✅ uygulandı — ama işe yaramıyor (§3) |
+| ② | **Üstlenme bağlayıcı** — hedef teslim edilene kadar değişmez | ❌ **YOKTU** → ölçüldü (§2), §8'de **uygulandı** (D-081) |
+| ③ | Öncelik "en yakın" değil **"en acil"** | ✅ uygulanmış — ama tek başına amacını karşılamıyordu (§3) |
 | ④ | Sabır sipariş boyuna bağlı | 🟡 kaba hâli var (`PRODUCTS.patienceMult`) — D-046 bunu kendisi "kaba hâl" diye niteliyordu |
 | ⑤ | Garson sayısı türetilir + HUD "garsonlar yetişemiyor" der | ❌ yok (`grep`: böyle bir bildirim yok) |
 
 Sipariş nesnesi `{çay:1, tost:2}` **bilerek** v1.1'de (v1.0 kapsam çizgisi, `progress.md`).
 
-**②'nin kodda karşılığı yok, çünkü `claimed` kümesi yalnız O KARE için geçerli** (`tick.ts`
-`waiterSystem`): garsonun hedefi **her karede yeniden** "sabrı en az kalan"a göre seçiliyor. Bir
-kare sonra listedeki en acil kişi değişirse garson yolun ortasında dönüyor.
+**②'nin kodda karşılığı yoktu, çünkü `claimed` kümesi yalnız O KARE için geçerliydi** (`tick.ts`
+`waiterSystem`): garsonun hedefi **her karede yeniden** "sabrı en az kalan"a göre seçiliyordu. Bir
+kare sonra listedeki en acil kişi değişirse garson yolun ortasında dönüyordu.
 
 ## 2. Ölçülen: üstlenme gerçekten dağılıyor
 
@@ -135,15 +138,73 @@ tavanıyla zaten kelepçeli. Anlamlı bekçi süre değil, **yayılım + debi** 
 
 Eşikler kural kararı verildikten sonra, ölçülen değerden marjla donacak.
 
-## 8. Sonuç ve karar noktası
+## 8. Karar ve uygulama
 
-**Kusur:** D-046'nın ② numaralı kuralı hiç uygulanmadı; ③ ise uygulandığı hâliyle amacını
-(starvation'ı önlemek) **karşılamıyor** ve debiyi düşürüyor.
+**Kusur:** D-046'nın ② numaralı kuralı hiç uygulanmamıştı; ③ ise uygulandığı hâliyle amacını
+(starvation'ı önlemek) karşılamıyordu ve debiyi düşürüyordu.
 
-**Denge sayısı değişmedi; bu turda hiçbir davranış değişmedi.** Sıradaki adım bir **karar**:
-garsonun teslimat önceliği ne olsun? Seçenekler ve ölçülen bedelleri §4'te. Karar verilmeden
-bekçi testinin eşikleri donmaz, çünkü eşikler seçilen kuralın sayılarından türeyecek.
+**Kullanıcı kararı (2026-09-08): "bağlayıcı + acil"** — yani D-046 ② harfiyen uygulanır, öncelik
+③'teki gibi "en acil" kalır. Gerekçe §4'teki ölçüm: bu seçenek hem **en adil** (mesafe↔terk
+korelasyonu en düşük) hem de mevcut hâlden **daha hızlı**; ayrıca yeni bir denge kararı değil,
+zaten alınmış bir kararın uygulanması.
 
-**Not:** hangi kural seçilirse seçilsin, `tests/logic.test.ts`'teki *"garson en ACİL (sabrı en az)
-bekleyene gider — yakın ama sabrı bol masa atlanır (anti-starvation)"* testi (satır 351) mevcut
-kuralı bekçiliyor; kural değişirse o test de değişir.
+### Uygulanan (D-081)
+
+`Waiter.claim` alanı (transient) + `waiterSystem`'de iki parça:
+1. **Üstlenme korunur:** hedef, servis edilebilir olduğu sürece her karede yeniden seçilmez.
+   Düşer: müşteri kalktı · masa kirlendi · tepside o ürün kalmadı · tepsi boşaldı · boşta kalındı.
+2. **Önceki karenin üstlenmeleri, bu karenin YENİ seçimlerinden ÖNCE yer tutar.** Bu ikinci parça
+   olmadan bağlayıcılık yarım kalıyordu: 1. garsonun taze seçimi, 2. garsonun yolun yarısında
+   olduğu masayı kapıp onu geri döndürüyordu.
+
+İlk seçim ③ gereği hâlâ **en acil** (eşitlikte en yakın) — o kural değişmedi.
+
+### Ölçülen etki (aynı tohum, aynı senaryolar, `docs/olcum-kuyruk.txt`)
+
+| | G2 (8/1) | G3 (12/2) | G4 (20/3) |
+|---|---|---|---|
+| servis edilen müşteri | 100 → **89** | 101 → **124** | 172 → **239** |
+| mesafe↔terk korelasyonu | 0,59 → **0,50** | 0,83 → **0,71** | 0,53 → **0,24** |
+| terk oranı yayılımı | %58-100 → **%77-89** | %65-97 → **%71-86** | %57-100 → **%48-100** |
+| gezinme (ort / en kötü) | 0,21/1,85 → **0,08/1,74** | 0,47/5,59 → **0,07/0,93** | 0,55/3,00 → **0,11/1,44** |
+| tam tur (model katı) | ×1,23 → **×1,23** | ×1,64 → **×1,31** | ×2,35 → **×1,54** |
+
+G2 (tek garson · 8 masa) **%11 debi kaybediyor** — beklenen takas: garson artık yakınından geçtiği
+daha acil masaya sapmıyor. Karşılığında o senaryonun yayılımı %58-100'den %77-89'a daralıyor, yani
+"bazı masalar hep aç kalıyor" hâli en çok orada düzeliyor. Diğer iki senaryoda hem debi hem adalet
+birlikte iyileşiyor.
+
+**Beklenmeyen kazanç — dt kararlılığı:** aynı senaryo dt 1/30 ile koşulduğunda eski kod %9 sapıyordu
+(G3: 101 → 92); yeni kodda sapma **%1,6** (124 → 126). Hedefini koruyan garson, kare süresine
+duyarsız hâle geldi.
+
+**Denge sayısı değişmedi.** `economy.config.ts`'e dokunulmadı; `simulate.ts`'in modeli hedef seçimini
+zaten modellemiyor, dolayısıyla üç tempo ölçütü de yerinde kaldı — gerçek oyun yalnız modele
+**yaklaştı** (G4'te %42 → %58).
+
+## 9. Bekçi: `tests/kuyruk.test.ts` (6 test)
+
+Bekçi bir eşik listesi değil **davranış sözleşmesi**: *bir garson üstlendiği masayı, ancak teslim
+edince ya da o masa servis edilemez hâle gelince bırakır.* Beş elle kurulan durum + gerçek akışta
+her kareyi denetleyen bir bütün-akış testi (12 masa · 2 garson · 150 sn; kirli masa kümesi tick'in
+KENDİ `dirtyTables`'ıyla okunur, ikinci kaynak yazılmaz).
+
+**Mutasyonla doğrulandı — iki ayrı mutasyon, iki ayrı test:**
+- üstlenmeyi koruma kaldırıldı → "yol ortasında… BIRAKILMAZ" **ve** bütün-akış testi kırıldı
+  (akış testi ihlalleri ping-pong'u da gösterdi: *"masa 5 → 8"*, üç kare sonra *"masa 8 → 5"*).
+- ön-rezervasyon kaldırıldı → "bir garsonun taze seçimi… çalamaz" kırıldı.
+
+**Bir tuzak kayda geçsin:** akış testi ilk hâlinde ocak L0 · masa L0 ile koşuyordu; o rejimde
+demleme kilitli olduğu için kuyruk hiç doymuyor, test **hiçbir mutasyonu yakalamıyordu** (üstelik
+uzun koşuda 5 sn'lik vitest zaman aşımına düşüp "kırıldı" gibi görünüyordu — sahte bir yakalama).
+Senaryo ölçüm aracının G3'üyle aynı seviyelere getirilince gerçekten yakalar oldu.
+
+## 10. Açık kalan kalemler
+
+- **BARDAK KİLİDİ (§5) ayrı kalem olarak açıldı** (kullanıcı kararı 2026-09-08). Erken oyunda
+  oyuncu telefonu bıraktığında mekânın tamamen durması istenmiyor; havuz boyu · bulaşıkçının
+  zincirdeki yeri · minimum sızıntı seçenekleri ayrı bir ölçüm/karar turunda ele alınacak.
+- **simulate.ts'in taşıma modeli hâlâ iyimser** (§6): G4'te %58. C4/C5'in "sim'i gerçeğe
+  yaklaştır" işinin ilk kalemi.
+- **D-046 ④ ve ⑤ hâlâ kısmi/yok** (§1). Sipariş nesnesi bilerek v1.1'de.
+- `economy.config.ts`'in garson hız yorumundaki *"tur ~12 sn"* cümlesi güncellendi.

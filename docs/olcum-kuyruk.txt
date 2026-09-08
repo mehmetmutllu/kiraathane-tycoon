@@ -45,145 +45,145 @@ STARVATION — masa başına (mesafe = tezgâhtan kuş uçuşu):
 G2 · 1 garson · 8 masa · bulaşıkçı
 8 masa · 1 garson · ocak L3 · masa L1 · 900 sn
 ================================================================================
-Oturan müşteri        : 509
-  servis edildi       : 100  (%19.6)
-  SABRI BİTTİ (terk)  : 409  (%80.4)
-Bekleme (servis edilenler, sn): ort 16.3 · medyan 18.0 · p95 19.8 · EN UZUN 19.9
+Oturan müşteri        : 513
+  servis edildi       : 89  (%17.3)
+  SABRI BİTTİ (terk)  : 424  (%82.7)
+Bekleme (servis edilenler, sn): ort 13.4 · medyan 15.5 · p95 19.7 · EN UZUN 19.9
 Sabır tavanı (tablePatience)  : 20.0 sn
 
 DARBOĞAZ AYRIŞTIRMASI (bekleyen varken hangi kol boştu):
   bekleyen müşteri olan kare    : 8935 / 9000  (%99.3)
   ...ve tezgâhta hazır ürün 0   : 0  (%0.0 → DEMLEME darboğazı)
   temiz bardak 0 olan kare      : 0  (%0.0 → BARDAK darboğazı)
-  garson tepsisi dolu geçen kare: %65.3 (taşıma meşguliyeti)
+  garson tepsisi dolu geçen kare: %61.7 (taşıma meşguliyeti)
 
 DEBİ:
-  servis edilen müşteri / dk     : 6.67
-  garson BAŞINA servis / dk      : 6.67
-  simulate.ts modelinin beklediği: 7.49 müşteri/dk · gerçekleşen %89.0
+  servis edilen müşteri / dk     : 5.93
+  garson BAŞINA servis / dk      : 5.93
+  simulate.ts modelinin beklediği: 7.49 müşteri/dk · gerçekleşen %79.2
   model tam tur 16.0 sn (2×15.0 br BFS ÷ 2.0 br/sn + 2×0.5 sn)
 
-GARSON BACAĞI (50 bacak; bacak = yükleme → tepsi boşalması):
-  yükleme → İLK teslimat (sn): ort 9.0 · p95 19.9 · en uzun 29.3
-  bacak boyu (sn)            : ort 11.7 · p95 24.4 · en uzun 29.8
-  tam tur (yükleme→yükleme)  : ort 17.8 · p95 34.3 · en uzun 40.1  [model 16.0]
-  bacak başına durak         : ort 1.32 (tepsi kapasitesi 2)
-  ÜSTLENME — ilk durağa dek hedeften uzaklaşma: ort 0.21 · p95 0.98 · en kötü 1.85
+GARSON BACAĞI (45 bacak; bacak = yükleme → tepsi boşalması):
+  yükleme → İLK teslimat (sn): ort 7.7 · p95 13.5 · en uzun 25.8
+  bacak boyu (sn)            : ort 12.3 · p95 21.1 · en uzun 25.8
+  tam tur (yükleme→yükleme)  : ort 19.7 · p95 29.4 · en uzun 31.7  [model 16.0]
+  bacak başına durak         : ort 1.69 (tepsi kapasitesi 2)
+  ÜSTLENME — ilk durağa dek hedeften uzaklaşma: ort 0.08 · p95 0.31 · en kötü 1.74
 
 STARVATION — masa başına (mesafe = tezgâhtan kuş uçuşu):
   masa  alan  mesafe  oturan  terk   terk%   ort.bekleme  en uzun
-     0     0     6.2      64    54   %84.4         16.9     19.7
-     1     0    11.1      67    53   %79.1         16.9     19.9
-     2     0     3.5      61    45   %73.8         15.5     19.9
-     3     0     9.8      62    36   %58.1         16.4     19.8
-     4     1    21.0      70    60   %85.7         16.5     19.6
-     5     1    27.2      63    63  %100.0          NaN      0.0
-     6     1    20.3      63    43   %68.3         15.5     19.9
-     7     1    26.7      59    55   %93.2         18.7     19.8
-  → terk oranı yayılımı: en düşük %58.1 · en yüksek %100.0
-  → mesafe ↔ terk oranı korelasyonu   : 0.59
-  → mesafe ↔ ort. bekleme korelasyonu : NaN
+     0     0     6.2      62    48   %77.4         17.2     19.9
+     1     0    11.1      70    56   %80.0         12.5     19.7
+     2     0     3.5      62    52   %83.9         13.1     19.7
+     3     0     9.8      60    49   %81.7         15.9     19.7
+     4     1    21.0      71    62   %87.3          9.4     18.9
+     5     1    27.2      64    57   %89.1         10.3     19.6
+     6     1    20.3      63    50   %79.4         13.9     19.9
+     7     1    26.7      61    50   %82.0         11.9     19.7
+  → terk oranı yayılımı: en düşük %77.4 · en yüksek %89.1
+  → mesafe ↔ terk oranı korelasyonu   : 0.50
+  → mesafe ↔ ort. bekleme korelasyonu : -0.67
 
 ================================================================================
 G3 · 2 garson · 12 masa · tezgâh L5
 12 masa · 2 garson · ocak L5 · masa L2 · 900 sn
 ================================================================================
-Oturan müşteri        : 574
-  servis edildi       : 101  (%17.6)
-  SABRI BİTTİ (terk)  : 473  (%82.4)
-Bekleme (servis edilenler, sn): ort 19.3 · medyan 19.4 · p95 32.9 · EN UZUN 34.9
+Oturan müşteri        : 583
+  servis edildi       : 124  (%21.3)
+  SABRI BİTTİ (terk)  : 459  (%78.7)
+Bekleme (servis edilenler, sn): ort 16.9 · medyan 18.2 · p95 32.8 · EN UZUN 35.1
 Sabır tavanı (tablePatience)  : 22.0 / 35.2 sn
 
 DARBOĞAZ AYRIŞTIRMASI (bekleyen varken hangi kol boştu):
   bekleyen müşteri olan kare    : 8935 / 9000  (%99.3)
   ...ve tezgâhta hazır ürün 0   : 13  (%0.1 → DEMLEME darboğazı)
   temiz bardak 0 olan kare      : 0  (%0.0 → BARDAK darboğazı)
-  garson tepsisi dolu geçen kare: %73.0 (taşıma meşguliyeti)
+  garson tepsisi dolu geçen kare: %64.2 (taşıma meşguliyeti)
 
 DEBİ:
-  servis edilen müşteri / dk     : 6.73
-  garson BAŞINA servis / dk      : 3.37
-  simulate.ts modelinin beklediği: 11.08 müşteri/dk · gerçekleşen %60.8
+  servis edilen müşteri / dk     : 8.27
+  garson BAŞINA servis / dk      : 4.13
+  simulate.ts modelinin beklediği: 11.08 müşteri/dk · gerçekleşen %74.6
   model tam tur 21.7 sn (2×20.7 br BFS ÷ 2.0 br/sn + 2×0.5 sn)
 
-GARSON BACAĞI (50 bacak; bacak = yükleme → tepsi boşalması):
-  yükleme → İLK teslimat (sn): ort 18.0 · p95 49.8 · en uzun 69.7
-  bacak boyu (sn)            : ort 25.7 · p95 64.8 · en uzun 69.7
-  tam tur (yükleme→yükleme)  : ort 35.5 · p95 75.8 · en uzun 80.0  [model 21.7]
-  bacak başına durak         : ort 1.56 (tepsi kapasitesi 2)
-  ÜSTLENME — ilk durağa dek hedeften uzaklaşma: ort 0.47 · p95 1.57 · en kötü 5.59
+GARSON BACAĞI (62 bacak; bacak = yükleme → tepsi boşalması):
+  yükleme → İLK teslimat (sn): ort 11.5 · p95 19.8 · en uzun 23.7
+  bacak boyu (sn)            : ort 18.6 · p95 34.9 · en uzun 48.9
+  tam tur (yükleme→yükleme)  : ort 28.5 · p95 47.8 · en uzun 63.3  [model 21.7]
+  bacak başına durak         : ort 1.74 (tepsi kapasitesi 2)
+  ÜSTLENME — ilk durağa dek hedeften uzaklaşma: ort 0.07 · p95 0.51 · en kötü 0.93
 
 STARVATION — masa başına (mesafe = tezgâhtan kuş uçuşu):
   masa  alan  mesafe  oturan  terk   terk%   ort.bekleme  en uzun
-     0     0    21.0      52    42   %80.8         17.2     28.9
-     1     0    22.4      53    48   %90.6         21.7     32.8
-     2     0    14.7      48    37   %77.1         20.3     34.9
-     3     0    16.5      48    38   %79.2         17.4     21.4
-     4     1    27.9      55    48   %87.3         18.5     24.3
-     5     1    32.4      49    45   %91.8         26.6     33.5
-     6     1    23.4      48    34   %70.8         18.9     33.9
-     7     1    28.7      45    42   %93.3         18.7     28.0
-     8     2     7.6      49    32   %65.3         17.3     28.4
-     9     2     3.7      44    29   %65.9         20.6     34.1
-    10     2    25.8      45    41   %91.1         19.7     21.8
-    11     2    24.9      38    37   %97.4         34.6     34.6
-  → terk oranı yayılımı: en düşük %65.3 · en yüksek %97.4
-  → mesafe ↔ terk oranı korelasyonu   : 0.83
-  → mesafe ↔ ort. bekleme korelasyonu : 0.31
+     0     0    21.0      56    42   %75.0         16.3     32.7
+     1     0    22.4      55    40   %72.7         15.8     34.1
+     2     0    14.7      48    39   %81.3         20.1     33.4
+     3     0    16.5      48    35   %72.9         16.2     33.7
+     4     1    27.9      57    45   %78.9         18.0     34.1
+     5     1    32.4      51    44   %86.3         14.6     31.0
+     6     1    23.4      48    40   %83.3         18.8     35.1
+     7     1    28.7      44    37   %84.1         17.6     26.0
+     8     2     7.6      48    36   %75.0         16.2     21.9
+     9     2     3.7      45    32   %71.1         16.8     21.9
+    10     2    25.8      42    34   %81.0         18.5     33.7
+    11     2    24.9      41    35   %85.4         13.6     18.7
+  → terk oranı yayılımı: en düşük %71.1 · en yüksek %86.3
+  → mesafe ↔ terk oranı korelasyonu   : 0.71
+  → mesafe ↔ ort. bekleme korelasyonu : -0.12
 
 ================================================================================
 G4 · 3 garson · 20 masa · L6 · lavabo
 20 masa · 3 garson · ocak L6 · masa L4 · 900 sn
 ================================================================================
-Oturan müşteri        : 899
-  servis edildi       : 172  (%19.1)
-  SABRI BİTTİ (terk)  : 727  (%80.9)
-Bekleme (servis edilenler, sn): ort 25.6 · medyan 24.4 · p95 40.7 · EN UZUN 41.4
+Oturan müşteri        : 894
+  servis edildi       : 239  (%26.7)
+  SABRI BİTTİ (terk)  : 655  (%73.3)
+Bekleme (servis edilenler, sn): ort 21.0 · medyan 22.0 · p95 39.6 · EN UZUN 41.5
 Sabır tavanı (tablePatience)  : 26.0 / 41.6 sn
 
 DARBOĞAZ AYRIŞTIRMASI (bekleyen varken hangi kol boştu):
   bekleyen müşteri olan kare    : 8935 / 9000  (%99.3)
-  ...ve tezgâhta hazır ürün 0   : 18  (%0.2 → DEMLEME darboğazı)
-  temiz bardak 0 olan kare      : 0  (%0.0 → BARDAK darboğazı)
-  garson tepsisi dolu geçen kare: %77.0 (taşıma meşguliyeti)
+  ...ve tezgâhta hazır ürün 0   : 723  (%8.1 → DEMLEME darboğazı)
+  temiz bardak 0 olan kare      : 2098  (%23.3 → BARDAK darboğazı)
+  garson tepsisi dolu geçen kare: %63.7 (taşıma meşguliyeti)
 
 DEBİ:
-  servis edilen müşteri / dk     : 11.47
-  garson BAŞINA servis / dk      : 3.82
-  simulate.ts modelinin beklediği: 27.28 müşteri/dk · gerçekleşen %42.0
+  servis edilen müşteri / dk     : 15.93
+  garson BAŞINA servis / dk      : 5.31
+  simulate.ts modelinin beklediği: 27.28 müşteri/dk · gerçekleşen %58.4
   model tam tur 19.8 sn (2×18.3 br BFS ÷ 2.0 br/sn + 3×0.5 sn)
 
-GARSON BACAĞI (58 bacak; bacak = yükleme → tepsi boşalması):
-  yükleme → İLK teslimat (sn): ort 20.8 · p95 52.5 · en uzun 71.5
-  bacak boyu (sn)            : ort 35.6 · p95 75.7 · en uzun 108.8
-  tam tur (yükleme→yükleme)  : ort 46.6 · p95 85.0 · en uzun 123.2  [model 19.8]
-  bacak başına durak         : ort 2.10 (tepsi kapasitesi 3)
-  ÜSTLENME — ilk durağa dek hedeften uzaklaşma: ort 0.55 · p95 1.95 · en kötü 3.00
+GARSON BACAĞI (89 bacak; bacak = yükleme → tepsi boşalması):
+  yükleme → İLK teslimat (sn): ort 10.8 · p95 18.0 · en uzun 26.9
+  bacak boyu (sn)            : ort 19.3 · p95 34.1 · en uzun 46.7
+  tam tur (yükleme→yükleme)  : ort 30.4 · p95 46.2 · en uzun 54.4  [model 19.8]
+  bacak başına durak         : ort 1.96 (tepsi kapasitesi 3)
+  ÜSTLENME — ilk durağa dek hedeften uzaklaşma: ort 0.11 · p95 0.96 · en kötü 1.44
 
 STARVATION — masa başına (mesafe = tezgâhtan kuş uçuşu):
   masa  alan  mesafe  oturan  terk   terk%   ort.bekleme  en uzun
-     0     0    21.0      80    72   %90.0         23.6     41.4
-     1     0    22.4      76    66   %86.8         24.4     40.8
-     2     0    14.7      69    50   %72.5         22.5     38.5
-     3     0    16.5      74    49   %66.2         27.2     39.8
-     4     1    27.9      83    71   %85.5         21.9     41.0
-     5     1    32.4      72    70   %97.2         15.2     15.4
-     6     1    23.4      75    45   %60.0         23.0     38.2
-     7     1    28.7      60    55   %91.7         20.4     25.2
-     8     2     7.6      31    23   %74.2         22.3     39.4
-     9     2     3.7      29    21   %72.4         24.5     32.1
-    10     2    25.8      30    30  %100.0          NaN      0.0
-    11     2    24.9      31    29   %93.5         40.9     41.3
-    12     2     8.7      32    23   %71.9         29.7     40.1
-    13     2     5.7      27    26   %96.3         21.3     21.3
-    14     2    22.8      31    26   %83.9         30.8     41.4
-    15     2    21.8      27    24   %88.9         31.6     39.1
-    16     2    10.7      24    14   %58.3         28.5     40.0
-    17     2     8.5      21    12   %57.1         32.1     40.7
-    18     2    19.8      19    14   %73.7         33.2     41.1
-    19     2    18.6       8     7   %87.5         38.9     38.9
-  → terk oranı yayılımı: en düşük %57.1 · en yüksek %100.0
-  → mesafe ↔ terk oranı korelasyonu   : 0.53
+     0     0    21.0      85    59   %69.4         17.7     38.2
+     1     0    22.4      83    60   %72.3         17.0     38.6
+     2     0    14.7      74    46   %62.2         22.0     41.3
+     3     0    16.5      73    55   %75.3         19.0     34.1
+     4     1    27.9      75    49   %65.3         18.5     41.1
+     5     1    32.4      51    36   %70.6         16.6     41.4
+     6     1    23.4      81    55   %67.9         16.8     28.7
+     7     1    28.7      69    53   %76.8         22.6     33.3
+     8     2     7.6      31    22   %71.0         34.0     41.5
+     9     2     3.7      31    15   %48.4         26.0     40.3
+    10     2    25.8      30    27   %90.0         24.6     25.4
+    11     2    24.9      27    24   %88.9         28.0     39.6
+    12     2     8.7      27    20   %74.1         28.0     41.1
+    13     2     5.7      25    19   %76.0         24.8     37.8
+    14     2    22.8      30    25   %83.3         29.1     41.4
+    15     2    21.8      28    25   %89.3         23.4     25.6
+    16     2    10.7      26    22   %84.6         24.0     27.2
+    17     2     8.5      21    17   %81.0         27.7     38.9
+    18     2    19.8      19    18   %94.7         29.3     29.3
+    19     2    18.6       8     8  %100.0          NaN      0.0
+  → terk oranı yayılımı: en düşük %48.4 · en yüksek %100.0
+  → mesafe ↔ terk oranı korelasyonu   : 0.24
   → mesafe ↔ ort. bekleme korelasyonu : NaN
 
 
@@ -195,45 +195,45 @@ STARVATION — masa başına (mesafe = tezgâhtan kuş uçuşu):
 G3 · 2 garson · 12 masa · tezgâh L5
 12 masa · 2 garson · ocak L5 · masa L2 · 900 sn
 ================================================================================
-Oturan müşteri        : 585
-  servis edildi       : 92  (%15.7)
-  SABRI BİTTİ (terk)  : 493  (%84.3)
-Bekleme (servis edilenler, sn): ort 19.5 · medyan 20.4 · p95 33.0 · EN UZUN 34.8
+Oturan müşteri        : 588
+  servis edildi       : 126  (%21.4)
+  SABRI BİTTİ (terk)  : 462  (%78.6)
+Bekleme (servis edilenler, sn): ort 17.5 · medyan 18.6 · p95 32.8 · EN UZUN 35.1
 Sabır tavanı (tablePatience)  : 22.0 / 35.2 sn
 
 DARBOĞAZ AYRIŞTIRMASI (bekleyen varken hangi kol boştu):
   bekleyen müşteri olan kare    : 26808 / 27000  (%99.3)
   ...ve tezgâhta hazır ürün 0   : 38  (%0.1 → DEMLEME darboğazı)
   temiz bardak 0 olan kare      : 0  (%0.0 → BARDAK darboğazı)
-  garson tepsisi dolu geçen kare: %75.8 (taşıma meşguliyeti)
+  garson tepsisi dolu geçen kare: %64.7 (taşıma meşguliyeti)
 
 DEBİ:
-  servis edilen müşteri / dk     : 6.13
-  garson BAŞINA servis / dk      : 3.07
-  simulate.ts modelinin beklediği: 11.08 müşteri/dk · gerçekleşen %55.4
+  servis edilen müşteri / dk     : 8.40
+  garson BAŞINA servis / dk      : 4.20
+  simulate.ts modelinin beklediği: 11.08 müşteri/dk · gerçekleşen %75.8
   model tam tur 21.7 sn (2×20.7 br BFS ÷ 2.0 br/sn + 2×0.5 sn)
 
-GARSON BACAĞI (45 bacak; bacak = yükleme → tepsi boşalması):
-  yükleme → İLK teslimat (sn): ort 17.3 · p95 40.4 · en uzun 52.4
-  bacak boyu (sn)            : ort 29.0 · p95 58.8 · en uzun 94.1
-  tam tur (yükleme→yükleme)  : ort 37.0 · p95 68.6 · en uzun 91.1  [model 21.7]
-  bacak başına durak         : ort 1.67 (tepsi kapasitesi 2)
-  ÜSTLENME — ilk durağa dek hedeften uzaklaşma: ort 0.34 · p95 1.39 · en kötü 3.64
+GARSON BACAĞI (63 bacak; bacak = yükleme → tepsi boşalması):
+  yükleme → İLK teslimat (sn): ort 11.2 · p95 18.6 · en uzun 25.8
+  bacak boyu (sn)            : ort 18.4 · p95 34.3 · en uzun 42.5
+  tam tur (yükleme→yükleme)  : ort 28.1 · p95 45.9 · en uzun 57.7  [model 21.7]
+  bacak başına durak         : ort 1.70 (tepsi kapasitesi 2)
+  ÜSTLENME — ilk durağa dek hedeften uzaklaşma: ort 0.13 · p95 0.56 · en kötü 3.36
 
 STARVATION — masa başına (mesafe = tezgâhtan kuş uçuşu):
   masa  alan  mesafe  oturan  terk   terk%   ort.bekleme  en uzun
-     0     0    21.0      51    48   %94.1         13.8     21.5
-     1     0    22.4      53    47   %88.7         19.8     32.3
-     2     0    14.7      50    41   %82.0         18.0     21.9
-     3     0    16.5      49    30   %61.2         18.9     21.9
-     4     1    27.9      58    49   %84.5         16.9     21.4
-     5     1    32.4      51    49   %96.1         27.3     33.3
-     6     1    23.4      51    40   %78.4         19.0     33.0
-     7     1    28.7      45    40   %88.9         24.2     31.5
-     8     2     7.6      49    36   %73.5         18.7     34.8
-     9     2     3.7      44    34   %77.3         23.1     34.6
-    10     2    25.8      43    41   %95.3         19.0     20.7
-    11     2    24.9      41    38   %92.7         20.9     34.5
-  → terk oranı yayılımı: en düşük %61.2 · en yüksek %96.1
-  → mesafe ↔ terk oranı korelasyonu   : 0.64
-  → mesafe ↔ ort. bekleme korelasyonu : 0.22
+     0     0    21.0      53    42   %79.2         17.4     32.3
+     1     0    22.4      55    49   %89.1         18.9     34.8
+     2     0    14.7      48    38   %79.2         16.6     31.8
+     3     0    16.5      47    37   %78.7         19.4     35.1
+     4     1    27.9      58    41   %70.7         15.3     31.3
+     5     1    32.4      53    45   %84.9         10.7     20.6
+     6     1    23.4      51    37   %72.5         17.0     22.0
+     7     1    28.7      46    39   %84.8         20.0     33.5
+     8     2     7.6      48    32   %66.7         18.0     34.6
+     9     2     3.7      43    26   %60.5         20.6     34.5
+    10     2    25.8      43    40   %93.0         21.6     31.5
+    11     2    24.9      43    36   %83.7         16.1     23.6
+  → terk oranı yayılımı: en düşük %60.5 · en yüksek %93.0
+  → mesafe ↔ terk oranı korelasyonu   : 0.69
+  → mesafe ↔ ort. bekleme korelasyonu : -0.44

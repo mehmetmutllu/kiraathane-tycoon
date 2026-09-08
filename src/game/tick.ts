@@ -698,8 +698,12 @@ function dishCycleSystem(c: TickCtx): void {
  * kendi bölgesinin masalarına götürürdü (D-012/D-022). Kat tek servisten döndüğü için o ayrım
  * anlamını yitirdi — havuz GLOBAL: hepsi aynı noktadan alır, hepsi her masaya gider.
  * Kısmi assist korunur (D-014): oyuncudan yavaş ve küçük tepsili.
- * CLAIM: sıra sabit (1., 2., 3. garson); bir garsonun bu tick'te hedeflediği masayı diğeri HARİÇ
- * tutar → çift-hedef salınımı yok. Boşta bekleme noktaları 0.7 br arayla yan yana.
+ * ÜSTLENME (claim) BAĞLAYICI (D-046 ② — C3'te uygulandı): garson bir masayı üstlenince teslim
+ * edene kadar bırakmaz, üstlendiği masa diğer garsonlara kapalıdır. Eskiden claim yalnız O KARE
+ * için tutuluyordu ve hedef her karede yeniden seçiliyordu; `docs/kuyruk-raporu-c3.md` bunun
+ * ölçülebilir bedelini gösterdi (ilk durağına giderken hedefinden başlangıç mesafesinin 5,6 katı
+ * kadar uzaklaşan garson; modelin beklediğinin 2,35 katı tur süresi).
+ * Boşta bekleme noktaları 0.7 br arayla yan yana.
  * Tepsi B2'de İKİ BÖLMELİ (çay/tost): garson en acil bekleyenin ürününü yükler.
  */
 function waiterSystem(c: TickCtx): void {
@@ -713,36 +717,51 @@ function waiterSystem(c: TickCtx): void {
   }
   const wStep = waiterSpeedFor(s.waiterUpgrades.speed) * dt;
   const wTrayCap = waiterTrayCapacityFor(s.waiterUpgrades.tray);
-  const claimed = new Set<number>(); // bu tick'te hedeflenen masa index'leri (claim)
   const prev = s.waiters;
   const out: Waiter[] = [];
+  // ÜSTLENME (claim) — hedeflenen masa index'leri. Önceki karenin üstlenmeleri, bu karenin YENİ
+  // seçimlerinden ÖNCE yer tutar: yoksa 1. garsonun taze seçimi, 2. garsonun yolun yarısında
+  // olduğu masayı kapar ve onu geri döndürürdü (D-046 ②'nin tam olarak yasakladığı şey).
+  const claimed = new Set<number>();
+  for (let i = 0; i < wCount; i++) {
+    const c = prev[i]?.claim;
+    if (c != null) claimed.add(c);
+  }
 
   for (let i = 0; i < wCount; i++) {
     const home: Vec3 = waiterHomeAt(place, i);
     const p = prev[i];
     const w: Waiter = p
-      ? { pos: [...p.pos] as Vec3, tray: p.tray, trayFood: p.trayFood ?? 0 }
+      ? { pos: [...p.pos] as Vec3, tray: p.tray, trayFood: p.trayFood ?? 0, claim: p.claim }
       : { pos: [...home] as Vec3, tray: 0, trayFood: 0 };
     // Garson kirli masaya ürün GÖTÜRMEZ (D-019). Her garson için YENİDEN filtrelenir (öncekinin
     // bu tick servis ettiği müşteri listeden düşer).
     const waiting = liveNpcs.filter((n) => n.state === 'waitingForTea' && !dirty.has(n.tableIndex));
     // Elindeki ürünle DOYURULABİLİR bekleyenler (tepsisinde çay varsa çay isteyenler…).
     const canServe = (n: (typeof waiting)[number]) => (n.product === 'tost' ? w.trayFood > 0 : w.tray > 0);
-    const claimable = waiting.filter((n) => !claimed.has(n.tableIndex) && canServe(n));
+    // Kendi üstlendiği masa kendini engellemez; başkasının üstlendiği masa hariç tutulur.
+    const claimable = waiting.filter((n) => (n.tableIndex === w.claim || !claimed.has(n.tableIndex)) && canServe(n));
 
     if (w.tray + w.trayFood > 0 && claimable.length > 0) {
-      // Teslimat: en ACİL (sabrı en az kalan) bekleyene; eşitlikte en yakın (anti-starvation).
-      let best = claimable[0];
-      let bestTimer = Infinity;
-      let bestDist = Infinity;
-      for (const n of claimable) {
-        const d = dist2D(w.pos, LAYOUT.tables[n.tableIndex].table);
-        if (n.timer < bestTimer - 1e-6 || (Math.abs(n.timer - bestTimer) <= 1e-6 && d < bestDist)) {
-          bestTimer = n.timer;
-          bestDist = d;
-          best = n;
+      // ÜSTLENME hâlâ servis edilebiliyorsa KORUNUR (D-046 ②). Düşerse — müşteri kalktı, masa
+      // kirlendi ya da tepside o ürün kalmadı — yeniden seçilir.
+      const sabit = w.claim == null ? undefined : claimable.find((n) => n.tableIndex === w.claim);
+      let best = sabit ?? claimable[0];
+      if (!sabit) {
+        // İlk seçim: en ACİL (sabrı en az kalan) bekleyen; eşitlikte en yakın (anti-starvation).
+        let bestTimer = Infinity;
+        let bestDist = Infinity;
+        for (const n of claimable) {
+          const d = dist2D(w.pos, LAYOUT.tables[n.tableIndex].table);
+          if (n.timer < bestTimer - 1e-6 || (Math.abs(n.timer - bestTimer) <= 1e-6 && d < bestDist)) {
+            bestTimer = n.timer;
+            bestDist = d;
+            best = n;
+          }
         }
+        if (w.claim != null) claimed.delete(w.claim); // düşen üstlenme başkasına serbest kalsın
       }
+      w.claim = best.tableIndex;
       claimed.add(best.tableIndex);
       if (navStep(w.pos, LAYOUT.tables[best.tableIndex].table, wStep, navGrid, REACH_TABLE, player, obstacles)) {
         // TEK durakta o masada bekleyen HERKESE tepsi yettiğince bırakır (grup + tepsi-3 = tek seferde).
@@ -759,6 +778,7 @@ function waiterSystem(c: TickCtx): void {
         }
       }
     } else if (w.tray + w.trayFood < wTrayCap && waiting.length > 0) {
+      if (w.claim != null) { claimed.delete(w.claim); w.claim = undefined; } // yüklemeye dönen üstlenmez
       // Yükleme: servisin ÖN yüzüne git (ürünler önde); varınca EN ACİL bekleyenin ürününden yükle.
       if (navStep(w.pos, place.pickup, wStep, navGrid, REACH_PICKUP, player, obstacles)) {
         // Talep sırası: en acil bekleyenin ürünü önce; kalan yere diğer üründen doldurur.
@@ -774,6 +794,7 @@ function waiterSystem(c: TickCtx): void {
         }
       }
     } else {
+      if (w.claim != null) { claimed.delete(w.claim); w.claim = undefined; } // boşta kalan üstlenmez
       // Boşta: kendi bekleme noktasına dön (garsonlar 0.7 br arayla — üst üste binmez).
       navStep(w.pos, home, wStep, navGrid, REACH_HOME, player, obstacles);
     }

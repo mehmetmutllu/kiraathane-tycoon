@@ -1809,7 +1809,7 @@ tek yönlü sıra. Ölçü hedefi kullanıcı kararıyla **A**: kat 34 × 34, du
   - **vitest 463/463 · smoke 28/28 · tsc + build temiz.** eslint tabanı zaten kırık (122 ayrıştırma
     hatası; sebep merge edilmiş ama silinmemiş `.claude/worktrees/maket-tasima` — temizlik kalemi).
 
-## Faz C — ZİNCİR VE DENGE (2/5) 🔧
+## Faz C — ZİNCİR VE DENGE (3/5) 🔧
 - ✅ **C1 — ÖLÇÜ DONDUKTAN SONRAKİ TEK ÖLÇÜM (D-078).** Rapor `docs/denge-raporu-c1.md`, ham çıktı
   `docs/denge-olcum-c1.txt`.
   - **Geometrinin bedeli küçük:** yollar %2-6 uzadı (19,6 → 20,7 br) · taşıma %4 zayıfladı
@@ -1859,9 +1859,35 @@ tek yönlü sıra. Ölçü hedefi kullanıcı kararıyla **A**: kat 34 × 34, du
     tabanı **122 ayrıştırma hatası → 19 gerçek lint hatası**.
   - **vitest 476/476 · smoke 28/28 · tsc + build temiz · denge sayısı DEĞİŞMEDİ.**
     Kareler: `docs/gorsel/ss/tekodak-once-*.png` ↔ `tekodak-*.png` (`node tools/shot-tek-odak.mjs`).
-- ⏳ **SIRADAKİ (bekleyen denge kararı YOK):** **sipariş kuyruğunun ölçülmesi** (D-046'nın "hiçbir
-  masa X sn beklemedi" iddiası teste yazılmadı) · **sim'in gerçeğe yaklaşması** (masa-başı yükseltme
-  kalem kalem · bardak döngüsü · sabır).
+- ✅ **C3 — SİPARİŞ KUYRUĞU ÖLÇÜLDÜ + ÜSTLENME BAĞLAYICI OLDU (D-081).** Rapor
+  `docs/kuyruk-raporu-c3.md`, araç `tools/olcum-kuyruk.ts` → `docs/olcum-kuyruk.txt` ·
+  beş kural karşılaştırması `docs/olcum-kuyruk-varyant.txt`.
+  - **Önce ölçüldü, sonra değiştirildi.** Oyunun KENDİ `tick()`'i başsız koşturuldu
+    (`tick-fingerprint.ts` deseni), dört senaryo × 900 sn, oyuncu sokakta park (garson havuzu
+    yalnız). İkinci bir model kurulmadı: `simulate.ts` bir **debi** modelidir, kuyruk ise **konum
+    ve zaman** sorusudur.
+  - **D-046 ② (bağlayıcı üstlenme) hiç uygulanmamıştı:** `claimed` yalnız o kare geçerliydi, hedef
+    her karede yeniden seçiliyordu. Ölçülen bedel: garson ilk durağına giderken hedefinden
+    **başlangıç mesafesinin 5,6 katı** kadar uzaklaşabiliyor, tam tur modelin beklediğinin
+    **2,35 katına** çıkıyordu.
+  - **③ "en acil" tek başına starvation'ı ÖNLEMİYORDU:** mesafe↔terk korelasyonu +0,53…+0,83.
+    Doygun mekânda kural garsonu hep en umutsuz masaya koşturuyor (EDF'in doygunlukta savrulması).
+  - **Beş kural karşı-olgusal ölçüldü** (geçici enjeksiyon, geri alındı; kontrol koşusu
+    enjeksiyonsuz çıktıyla birebir aynı). **Debi ile adalet ters yönde.** Kullanıcı **"bağlayıcı +
+    acil"**i seçti — en adil olan ve bugünkünden de hızlı.
+  - **Uygulandı:** `Waiter.claim` (transient) + ön-rezervasyon + üstlenme koruma. Ölçülen etki:
+    servis G3 101→**124**, G4 172→**239** · korelasyon G4 0,53→**0,24** · gezinme G3 0,47→**0,07** ·
+    tur/model G4 ×2,35→**×1,54**. G2 %11 debi kaybediyor (kabul edilen takas; yayılımı %58-100 →
+    **%77-89**). **Yan kazanç: dt duyarlılığı %-9 → %+1,6.**
+  - **Bekçi `tests/kuyruk.test.ts` (6 test)** — eşik değil **davranış sözleşmesi**. İKİ mutasyonla
+    doğrulandı. **Tuzak kayda geçti:** akış testinin ilk hâli ocak L0 rejiminde koşuyordu, hiçbir
+    mutasyonu yakalamıyordu ve zaman aşımıyla "kırıldı" gibi görünüyordu (sahte yakalama).
+  - **Yeni kalem D-082:** erken oyunda AFK **bardak havuzunda** kilitleniyor (karelerin %90,8'inde
+    temiz bardak 0, 15 dk'da 18 müşteri). Kullanıcı "ayrı kalem olarak incelensin" dedi.
+  - **`simulate.ts` taşıma modeli iyimser kaldı** (G4 %42 → %58): C4/C5'in ilk somut kalemi.
+  - **vitest 482/482 · smoke 28/28 · tsc + build temiz · denge sayısı DEĞİŞMEDİ.**
+- ⏳ **SIRADAKİ:** **D-082 bardak kilidi** (önce ölç) · **sim'in gerçeğe yaklaşması** (taşıma modeli
+  · masa-başı yükseltme kalem kalem · bardak döngüsü · sabır).
 - **Rapor:** `docs/bm-adim3-4-bant-kamera.html` →
   https://claude.ai/code/artifact/e49330bc-c918-41ec-a1b4-5c879cae146c
   (`tools/embed-rapor.mjs` kareleri data URI olarak gömüp `*.artifact.html` üretir — artifact'ın

@@ -2,6 +2,54 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-08 — **C3 BİTTİ · GARSON ÜSTLENMESİ BAĞLAYICI** · D-081 · D-082 açıldı)
+
+Kullanıcı kararı: *"Bağlayıcı + acil"*. Faz C **3/5**. Sanat/asset hâlâ bilerek en sonda.
+
+### Yapıldı — C3: sipariş kuyruğu önce ÖLÇÜLDÜ, sonra düzeltildi
+- **D-046'nın ② numaralı kuralı (bağlayıcı üstlenme) kodda hiç yokmuş.** `claimed` kümesi yalnız
+  O KARE için tutuluyordu; garsonun hedefi her karede yeniden "sabrı en az kalan"a göre seçiliyordu.
+  Ölçülen bedel: garson ilk durağına giderken hedefinden **başlangıç mesafesinin 5,6 katı** kadar
+  uzaklaşabiliyor, tam turu modelin beklediğinin **2,35 katına** çıkıyordu.
+- **③ "en acil" tek başına amacını karşılamıyormuş:** mesafe↔terk korelasyonu **+0,53…+0,83** —
+  uzak masa hâlâ daha çok terk ediyordu. Doygunlukta EDF savruluyor.
+- **Ölçüm aracı `tools/olcum-kuyruk.ts`:** oyunun KENDİ `tick()`'i başsız koşturuluyor
+  (tick-fingerprint deseni), 4 senaryo × 900 sn, oyuncu sokakta park. **Darboğaz ayrıştırması**
+  (demleme / bardak / taşıma) sayının yanlış kola yazılmasını engelledi — G1'in taşıma değil
+  **bardak** kolunda kilitlendiği böyle çıktı.
+- **Beş kural karşı-olgusal ölçüldü** (geçici enjeksiyon + geri alma; kontrol koşusu enjeksiyonsuz
+  çıktıyla birebir aynı). **Debi ile adalet ters yönde.** Kullanıcı en adil olanı seçti.
+- **Uygulandı (D-081):** `Waiter.claim` (transient) + **ön-rezervasyon** (önceki karenin
+  üstlenmeleri yeni seçimlerden ÖNCE yer tutar) + üstlenme koruma. Servis G3 101→**124**,
+  G4 172→**239** · korelasyon G4 0,53→**0,24** · gezinme G3 0,47→**0,07** · tur/model ×2,35→**×1,54**.
+  G2 %11 debi kaybetti (kabul edilen takas; yayılımı %58-100 → %77-89). **dt duyarlılığı %-9 → %+1,6.**
+- **Bekçi `tests/kuyruk.test.ts` (6 test)** — eşik listesi değil **davranış sözleşmesi**. İki ayrı
+  mutasyonla doğrulandı.
+- **Kayda geçen tuzak:** akış testinin ilk hâli ocak L0 rejiminde koşuyordu → kuyruk hiç doymuyor,
+  **hiçbir mutasyonu yakalamıyor**, üstelik uzun koşuda vitest zaman aşımına düşüp "kırıldı" gibi
+  görünüyordu. *Bir bekçinin kırılması, onu KIRAN şey doğrulanmadan yakalama sayılmaz.*
+- **Rapor:** `docs/kuyruk-raporu-c3.md` · ham çıktı `docs/olcum-kuyruk.txt` +
+  `docs/olcum-kuyruk-varyant.txt`.
+
+**Doğrulama:** vitest **482/482** (476 → +6) · smoke **28/28** · tsc + build temiz.
+**Denge sayısı DEĞİŞMEDİ** (`economy.config.ts`'te yalnız bayat bir yorum güncellendi).
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**D-082 — erken oyun BARDAK KİLİDİ.** Kullanıcı "sorun, ayrı kalem olarak incelensin" dedi:
+4 masa · bulaşıkçı yok · oyuncu yokken karelerin **%90,8'inde temiz bardak sıfır**, 15 dakikada
+yalnız **18 müşteri**. C3 deseniyle: **önce ölç** (havuz boyu · bulaşıkçının zincirdeki yeri ·
+minimum sızıntı seçenekleri), sonra karar sor, sonra bekçile. **Karar verilmeden hiçbir denge
+sayısına dokunulmaz.**
+
+Ardından C4/C5: **sim'i gerçeğe yaklaştırmak** — ilk somut kalem `simulate.ts`'in **taşıma
+modeli** (G4'te gerçekleşen %58; hedefi hiç değişmeyen ideal taşıyıcı varsayıyor) · masa
+yükseltmesi kalem kalem (sahte 21,4 dk kapanır) · bardak döngüsü · sabır.
+
+**Bekleyen denge kararı YOK. Bilinen ve bilerek duran:** `servis L6` 23,4 dk beklemesi ·
+D-046 ④ kaba hâlde, ⑤ yok, sipariş nesnesi bilerek v1.1'de.
+
+---
+
 ## ŞU AN (2026-09-08 — **C2 BİTTİ · TEK ODAK'IN 4. KANALI TEKLEŞTİ** · D-080)
 
 Kullanıcı kararı: *"Katman ayrımı"*. Faz C **2/5**. Sanat/asset hâlâ bilerek en sonda.

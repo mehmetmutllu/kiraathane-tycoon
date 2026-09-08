@@ -2177,3 +2177,64 @@ kalemi) → eslint tabanı **122 ayrıştırma hatasından 19 gerçek lint hatas
 **Donmayan:** `SPEAK_RADIUS` (3,2) · `SILENT_SCALE` (0,55) · nabız genliği — üçü de KATMAN 3
 (sunum), dondurulmuş ölçü değil. Masa sütun aralığı 3,20 olduğu için eşik oraya oturtuldu:
 iki masanın arasında durunca ikisi de konuşur (seçim anı), üçüncüsü susar.
+
+
+## D-081 — Garson üstlenmesi BAĞLAYICI (D-046 ②'nin uygulanması) (2026-09-08)
+
+**Karar:** Garson bir masayı üstlenince, o masaya **teslim edene kadar** bırakmaz. Üstlenme yalnız
+şu hâllerde düşer: müşteri kalktı · masa kirlendi · tepside o ürün kalmadı · tepsi boşaldı · boşta
+kalındı. Öncelik ③'teki gibi **en acil** kalır (ilk seçim değişmedi). İkinci parça: **önceki karenin
+üstlenmeleri, bu karenin yeni seçimlerinden ÖNCE yer tutar** — yoksa bağlayıcılık yarım kalır,
+1. garsonun taze seçimi 2. garsonun yolun yarısında olduğu masayı kapar.
+
+**Gerekçe:** D-046 (2026-09-06) bu kuralı zaten yazmıştı ama **kodda karşılığı yoktu**: `claimed`
+kümesi yalnız o kare için tutuluyor, hedef her karede yeniden seçiliyordu. C3'te ölçüldü
+(`docs/kuyruk-raporu-c3.md`, `tools/olcum-kuyruk.ts`): garson ilk durağına giderken hedefinden
+**başlangıç mesafesinin 5,6 katı** kadar uzaklaşabiliyor, tam turu modelin beklediğinin **2,35
+katına** çıkıyordu. Ayrıca ③ tek başına amacını (starvation) **karşılamıyordu** — mesafe↔terk
+korelasyonu +0,53…+0,83.
+
+**Kullanıcı kararı:** ölçülen beş seçenek arasından **"bağlayıcı + acil"**. Debi ile adalet ters
+yönde çalışıyor ("yakın" en hızlı ama korelasyon 0,96); seçilen seçenek **en adil** olan ve
+bugünkünden de hızlı — yani yeni bir denge kararı değil, alınmış kararın uygulanması.
+
+**Ölçülen etki (aynı tohum · aynı senaryolar):** servis edilen müşteri G3 101 → **124**,
+G4 172 → **239**; mesafe↔terk korelasyonu G4 0,53 → **0,24**; gezinme G3 0,47 → **0,07**;
+tam tur / model katı G4 ×2,35 → **×1,54**. G2 (tek garson · 8 masa) %11 debi kaybediyor —
+kabul edilen takas, karşılığında o senaryonun terk yayılımı %58-100'den **%77-89**'a daralıyor.
+**Beklenmeyen kazanç:** dt duyarlılığı %-9'dan **%+1,6**'ya düştü.
+
+**Uygulama:** `Waiter.claim` (transient, kayıt şeması değişmedi) + `waiterSystem`'de ön-rezervasyon
+ve üstlenme koruma. **Hiçbir denge sayısı değişmedi** (`economy.config.ts`'te yalnız bayat bir
+yorum güncellendi).
+
+**Bekçi:** `tests/kuyruk.test.ts` (6 test) — eşik listesi değil **davranış sözleşmesi**. Beş elle
+kurulan durum + gerçek akışta her kareyi denetleyen bütün-akış testi. **İki mutasyonla
+doğrulandı:** üstlenme koruma kaldırıldı → iki test kırıldı (akış testi ping-pong'u da gösterdi:
+"masa 5 → 8", üç kare sonra "masa 8 → 5"); ön-rezervasyon kaldırıldı → ayrı test kırıldı.
+
+**Kayda geçen tuzak:** akış testinin ilk hâli ocak L0 ile koşuyordu; o rejimde demleme kilitli
+olduğu için kuyruk hiç doymuyor ve test **hiçbir mutasyonu yakalamıyordu** — üstelik uzun koşuda
+vitest zaman aşımına düşüp "kırıldı" gibi görünüyordu (sahte yakalama). *Bir bekçinin kırılması,
+onu KIRAN şeyin ne olduğu doğrulanmadan yakalama sayılmaz.*
+
+**Açık kalan:** ④ (sabır sipariş boyuna bağlı) hâlâ kaba hâlde, ⑤ (garson sayısı türetilir + HUD
+uyarısı) yok, sipariş nesnesi bilerek v1.1'de.
+
+**Doğrulama:** vitest **482/482** (476 → +6) · smoke **28/28** · tsc + build temiz · dokunulan
+dosyalarda eslint temiz.
+
+## D-082 — Erken oyun BARDAK KİLİDİ ayrı kalem açıldı (2026-09-08)
+
+**Karar:** 4 masa · bulaşıkçı yok · oyuncu yokken karelerin **%90,8'inde temiz bardak sıfır** ve 15
+dakikada yalnız **18 müşteri** oturuyor (C3 ölçümü §5). Kullanıcı bunu tasarım gereği saymadı:
+*"sorun, ayrı kalem olarak incelensin"* — oyuncu telefonu bıraktığında mekânın tamamen durması
+istenmiyor.
+
+**Kapsam (sonraki tur):** bardak havuzu boyu (`cups.poolBase/poolPerLevel`) · bulaşıkçının
+zincirdeki yeri (bugün 2. Alan'da, `dishwasher` pad'i) · ya da minimum sızıntı (AFK'da tam durmasın).
+Karar verilmeden **hiçbir denge sayısına dokunulmaz**; önce ölçülür (C3 deseni).
+
+**Not:** bu bir garson/kuyruk kalemi DEĞİL — C3 ölçümünde G1'in taşıma değil bardak kolunda
+kilitlendiği ayrıştırma sayesinde ortaya çıktı (darboğaz ayrıştırması olmasaydı sayı yanlış kola
+yazılırdı).

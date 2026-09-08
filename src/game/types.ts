@@ -57,6 +57,15 @@ export interface Dish {
 // (Bulaşıkçı da aynı yapıyı kullanır: `tray` = taşınan kirli bardak sayısı.)
 export interface Waiter {
   pos: Vec3;
+  /**
+   * ÜSTLENİLEN masa (D-046 ②, C3'te uygulandı): garson bir masayı üstlenince teslim edene kadar
+   * BIRAKMAZ. Eskiden hedef HER KAREDE yeniden "sabrı en az kalan"a göre seçiliyordu; ölçüm
+   * (`docs/kuyruk-raporu-c3.md`) garsonun ilk durağına giderken hedefinden başlangıç mesafesinin
+   * 5,6 katı kadar uzaklaşabildiğini gösterdi. Üstlenme, hedef artık servis edilemez olunca düşer
+   * (müşteri kalktı · masa kirlendi · tepside o ürün kalmadı). TRANSIENT — garson kaydedilmez.
+   * (Bulaşıkçı da bu yapıyı kullanır ama üstlenmez: `claim` onda hep undefined.)
+   */
+  claim?: number;
   /** Taşıdığı ÇAY (garson) / kirli kap (bulaşıkçı). 0..ilgili kapasite. */
   tray: number;
   /** Taşıdığı TOST (yalnız garson; B2'de tek servis iki ürün verdiği için tepsi iki bölmeli —

@@ -377,7 +377,11 @@ export const economyConfig = {
      * speeds[kademe] = hareket hızı (dünya birimi/sn); havuza ORTAK kademe (B2: tür ayrımı yok).
      * Oyuncudan (character.speed taban 4.5) HER kademede yavaş =
      * kısmi assist korunur (D-014). Değerler/₺ eski sistemle aynı (kullanıcı: "garson hızı
-     * okey, böyle kalsın"): 1.5→2.0, 250₺. Tur hesabı: L1 tek yön ~5.8sn, tur ~12sn < sabır 18sn.
+     * okey, böyle kalsın"): 1.5→2.0, 250₺.
+     * TUR HESABI (C3'te ÖLÇÜLDÜ — eski "L1 tek yön ~5,8 sn, tur ~12 sn < sabır 18 sn" cümlesi
+     * kat 21×21 dönemindendi ve bayattı). `docs/kuyruk-raporu-c3.md`, oyuncu yokken ölçülen tam
+     * tur: 8 masada 19,7 sn · 12 masada 28,5 sn · 20 masada 30,4 sn. Yani garsonun turu sabrı
+     * ÇOKTAN aşıyor — kısmi assist (D-014) tam olarak bu demek: garson tek başına yetişmez.
      */
     speedUpgrades: { speeds: [1.5, 2.0], costs: [250] },
     // Tepsi kapasitesi Y3'te yükseltmeden türetilir: waiterTrayCapacityFor(tier) = 1 + kademe.
