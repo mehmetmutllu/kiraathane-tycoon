@@ -2,6 +2,47 @@
 
 > En sık güncelleyen dosya. Her anlamlı adımdan sonra güncelle.
 
+## ŞU AN (2026-09-08 — **FAZ C BAŞLADI · DENGE TEK KEZ ÖLÇÜLDÜ** · D-078)
+
+Kullanıcı: *"tamam sorun yok sistem kusursuz otursun sonra hallederiz. sen şimdi faz c ye başla,
+ilerleme panosunu da aç."* Sanat/asset (KayKit Restaurant Bits · karakter modelleri · animasyon)
+bilerek **en sona**; önce sistem.
+
+### Yapıldı — C1: ölçü donduktan sonraki TEK ölçüm
+- **Geometrinin bedeli küçük çıktı:** yollar %2-6 uzadı (19,6 → 20,7 br), taşıma %4 zayıfladı,
+  **zincir 5,08 → 5,12 sa (+%0,8)**. Darboğaz sıralaması hiç değişmedi. Sebep: uzayan mesafe ön
+  çeyrekte MASALAR ARASI; garsonun turunu belirleyen servis→masa ekseninde kat büyümedi.
+  **Geometri donması dengeyi bozmadı** — yeni taban bu.
+- **Tempo denetiminin üçte ikisi ölçülmüyormuş** (yazılıydı, göz kararıyla bakılıyordu). Üçü de
+  ölçülür oldu, denge sayısına dokunulmadan. **İkincisi ✗:** ilk 10 dk'de 8 alım, medyan boşluk
+  1,4 dk — hedef ~20-40 sn.
+- **"Plato" bulgusu ÇÜRÜDÜ.** Raporun ilk hâli B5b'den devralmıştı; ölçüm oranın donmadığını
+  gösterdi (12,57 → 19,40 → 31,09 → **52,57 ₺/sn**). Plato B4a'da kapanmış. **Kaynak sim'in kendi
+  tablosuydu:** `ÜÇ KOL` senaryolarında `lavabo` hiç verilmiyordu → geç-oyun geliri **3,4 kat
+  eksik**. Lavabolu satır eklendi.
+- **Rapor:** `docs/denge-raporu-c1.md` · ham çıktı `docs/denge-olcum-c1.txt`.
+- **Pano 56/73 yayınlandı:** https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
+  Defter düzeltildi: dondurma Faz B'nin işiydi → **B 13/13, toplam 72 → 73**, kilometre 58/72.
+
+**Doğrulama:** vitest **463/463** · tsc + build temiz. **Denge sayısı DEĞİŞMEDİ.**
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**AÇIK SORUYU SOR, sonra Faz C'nin kalan 4 oturumuna geç.**
+
+**Açık soru (denge kararı — onaysız uygulanmaz):** açılış temposu ölçütü hangisi?
+(a) ölçüt geçerli → açılış eğrisi ucuzlar (ilk 10 dk'de 8 değil ~15-30 alım) ·
+(b) ölçüt bayat → D-010 §3.6 güncellenir, `feedback_economy_pacing_offline`'ın "garson öncesi
+ucuz, sonrası ölçülü pahalı" kuralı tek ölçüt kalır (bugünkü eğri zaten onu yapıyor, garson 6,1 dk).
+
+**Faz C kalan işi:** (1) **Tek Odak** kuralı deliniyor — opsiyonel pad'ler ve yükseltme dolumları
+görev filtresinin dışında çiziliyor · (2) **sipariş kuyruğu hiç ölçülmüyor** — D-046'nın "hiçbir
+masa X sn beklemedi" iddiası teste yazılmadı · (3) **sim gerçeğe yaklaşır** — masa yükseltmesi
+kalem kalem (sahte 21,4 dk kapanır) · bardak döngüsü · sabır.
+
+**Bilinen ve bilerek duran:** `servis L6` 23,4 dk beklemesi (merdivenin son basamağı).
+
+---
+
 ## ŞU AN (2026-09-08 — **ÖLÇÜ DONDURULDU · FAZ B BİTTİ** · D-077)
 
 Kullanıcı: *"evet, bekçi testli dondurmayla devam et"*. D-072'nin **1. katmanı (ölçü/ankraj)

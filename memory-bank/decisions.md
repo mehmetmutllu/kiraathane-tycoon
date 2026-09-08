@@ -2027,3 +2027,61 @@ almadan önce insan boyunu karşılaştır.*
 **Testler:** vitest **463/463** (300 → +163 bekçi) · smoke **28/28** · tsc + build temiz ·
 eslint tabanı zaten kırık (122 ayrıştırma hatası, sebep bayat `.claude/worktrees/maket-tasima`;
 dokunulan dosyalarda yeni hata yok).
+
+---
+
+## D-078 — FAZ C1: ölçü donduktan sonraki TEK denge ölçümü
+
+**Tarih:** 2026-09-08 · **Faz:** C, 1. oturum · **Rapor:** `docs/denge-raporu-c1.md` ·
+**Ham çıktı:** `docs/denge-olcum-c1.txt` · **Önkoşul:** D-077
+
+**Neden:** D-073 masa aralığını 3,20 → 6,40 yaptı; `simulate.ts` yürüme sürelerini canlı
+`layout.ts` + gerçek BFS ile hesapladığı için (`getNavGrid`/`REACH_TABLE`/`findNavPath`) tempo
+tablosunun tamamı geçersiz sayılmıştı. Ölçü D-077'de donduğu için artık TEK KEZ ölçülebilir.
+
+### Bulgu 1 — geometrinin bedeli ÖLÇÜLDÜ ve KÜÇÜK
+Yollar %2-6 uzadı (19,6 → 20,7 br), taşıma kolu %4 zayıfladı (L6/2 garson 13,13 → 12,57 ₺/sn),
+**zincir 5,08 → 5,12 sa (+%0,8)**. Darboğazın kim olduğu HİÇBİR satırda değişmedi.
+Sebep: uzayan mesafe ön çeyrekte MASALAR ARASI; garsonun turunu belirleyen servis→masa ekseninde
+kat büyümedi. **Geometri donması dengeyi bozmadı** — yeni taban bu, eski sayılar arşiv.
+
+### Bulgu 2 — tempo denetiminin ÜÇTE İKİSİ ölçülmüyormuş
+`simulate.ts` üç ölçütü de yazıyordu ama yalnız birincisini ÖLÇÜYORDU; kalan ikisi düz yazıydı ve
+göz kararıyla bakılıyordu. Üçü de ölçülür oldu (**denge sayısına dokunulmadan**):
+| ölçüt | ölçülen | |
+|---|---|---|
+| ilk satın alma < 90 sn | 22 sn | ✓ |
+| ilk 5-10 dk her ~20-40 sn bir alım | medyan boşluk **1,4 dk**, en uzun 3,7 dk | ✗ |
+| otomasyon < 15 dk | 6,1 dk | ✓ |
+İlk 10 dk'de 8 alım var, hedef ~15-30 demek. **AÇIK SORU (kullanıcı kararı):** ölçüt geçerli mi
+(açılış ucuzlar) yoksa bayat mı (D-010 §3.6 güncellenir; `feedback_economy_pacing_offline`'ın
+"garson öncesi ucuz, sonrası ölçülü pahalı" kuralı tek ölçüt kalır — bugünkü eğri zaten onu yapıyor).
+
+### Bulgu 3 — "PLATO" YOK. Rapor bir kez yanlış yazıldı ve düzeltildi
+İlk hâli B5b'nin bulgusunu DEVRALIP *"L6'dan sonra oran 15,62 ₺/sn'de donuyor"* diyordu. Çıktı
+çürüttü: lavabo açıldıktan sonra oran **12,57 → 19,40 → 31,09 → 52,57 ₺/sn**. Plato **B4a'da
+kapatılmıştı** ve kapalı; oda tavanından sonra oran donuyor ama zincirin bitmesine 6 dk kalıyor.
+**Yanlış inancın kaynağı simülatörün KENDİ TABLOSU:** `ÜÇ KOL` senaryolarında `lavabo` alanı hiç
+verilmiyordu (hepsi lavabo = 0) → geç-oyun gelirini **3,4 kat eksik** gösteriyor ve kapanmış bir
+bulguyu açıkmış gibi okutuyordu. Tam kadro satırı lavabosuyla eklendi (raporlama düzeltmesi,
+denge sayısı değişmedi); darboğaz iki satırda da ARZ (0,78 bardak/sn).
+
+**DERS: devralınan bir bulgu, yeni yazılan bir tahmin kadar bayatlar.** B5b "ölçmeden yazılan her
+cümle bir varsayımdır" demişti; buradaki cümle tahmin değil GERÇEK BİR ÖLÇÜMÜN devralınmasıydı ve
+aradaki B4a turuyla geçersizleşmişti. Üstelik sim'in tablosu onu doğruluyor gibi görünüyordu.
+
+### Kapanan / duran kalemler
+- **Kapandı:** B5b Ö6 — `waiter3` artık `optional: false` + görev hattında `q_waiter3` var.
+- **Duruyor (bilinen):** `servis L6` 23,4 dk (merdivenin son basamağı, bilerek) · `masa seviyesi
+  L4` 21,4 dk (**sim kusuru**: tüm masalar TEK kalemde yükseliyor, oyunda masa-başı alınıyor).
+
+### Faz C'nin kalan işi (bu ölçümden sonra netleşen)
+Tek Odak kuralının delinmesi · sipariş kuyruğunun hiç ölçülmemesi (D-046'nın "hiçbir masa X sn
+beklemedi" iddiası teste yazılmadı) · sim'in gerçeğe yaklaşması (masa-başı yükseltme · bardak
+döngüsü · sabır) · açılış temposu kararı.
+
+**Pano defteri düzeltildi:** dondurma Faz B'nin işiydi ama faz 12/12 kapatılmıştı → **B 13/13,
+toplam 72 → 73**, kilometre taşları 57/71 → 58/72. Bütçeyi doğru göstermek, kapanmış görünmesinden
+önemli. Pano 56/73: https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
+
+**Testler:** vitest 463/463 · tsc + build temiz. Denge sayısı DEĞİŞMEDİ.

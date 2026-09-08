@@ -1808,8 +1808,30 @@ tek yönlü sıra. Ölçü hedefi kullanıcı kararıyla **A**: kat 34 × 34, du
     işi bitti; program/sıra/atmosfer için okunur ama **yeni sayı transkribe edilmez**.
   - **vitest 463/463 · smoke 28/28 · tsc + build temiz.** eslint tabanı zaten kırık (122 ayrıştırma
     hatası; sebep merge edilmiş ama silinmemiş `.claude/worktrees/maket-tasima` — temizlik kalemi).
-- ⏳ **SIRADAKİ — FAZ C:** `simulate.ts` **TEK KEZ** yeniden ölçülür (masa aralığı 3,20 → 6,40,
-  aktör boyu değişti → eski denge ölçümlerinin hepsi geçersiz). Ölçü donduğu için artık geçerli olur.
+
+## Faz C — ZİNCİR VE DENGE (1/5) 🔧
+- ✅ **C1 — ÖLÇÜ DONDUKTAN SONRAKİ TEK ÖLÇÜM (D-078).** Rapor `docs/denge-raporu-c1.md`, ham çıktı
+  `docs/denge-olcum-c1.txt`.
+  - **Geometrinin bedeli küçük:** yollar %2-6 uzadı (19,6 → 20,7 br) · taşıma %4 zayıfladı
+    (L6/2 garson 13,13 → 12,57 ₺/sn) · **zincir 5,08 → 5,12 sa (+%0,8)**. Darboğazın kim olduğu
+    HİÇBİR satırda değişmedi — uzayan mesafe ön çeyrekte MASALAR ARASI, garsonun turunu belirleyen
+    servis→masa ekseninde kat büyümedi. **Geometri donması dengeyi bozmadı**; yeni taban bu.
+  - **Tempo denetiminin üçte ikisi ölçülmüyormuş:** üç ölçüt de yazılıydı ama yalnız birincisi
+    ölçülüyordu, kalan ikisine göz kararıyla bakılıyordu. Üçü de ölçülür oldu (**denge sayısına
+    dokunulmadan**): ilk alım 22 sn ✓ · **açılış temposu ✗** (ilk 10 dk'de 8 alım, medyan boşluk
+    1,4 dk; hedef ~20-40 sn) · otomasyon 6,1 dk ✓. Ölçüt geçerli mi bayat mı → **kullanıcı kararı**.
+  - **"Plato" bulgusu ÇÜRÜDÜ ve rapor düzeltildi.** İlk hâli B5b'den DEVRALIP "oran 15,62'de
+    donuyor" diyordu; ölçüm donmadığını gösterdi (12,57 → 19,40 → 31,09 → **52,57 ₺/sn**). Plato
+    B4a'da kapanmış. **Kaynak sim'in kendi tablosuydu:** `ÜÇ KOL` senaryolarında `lavabo` alanı hiç
+    verilmiyordu → geç-oyun geliri **3,4 kat eksik**. Lavabolu satır eklendi (raporlama düzeltmesi).
+  - **DERS:** *devralınan bir bulgu, yeni yazılan bir tahmin kadar bayatlar.* B5b'nin dersi
+    "ölçmeden yazılan cümle bir varsayımdır"dı; buradaki cümle tahmin değil GERÇEK BİR ÖLÇÜMÜN
+    devralınmasıydı ve aradaki turla geçersizleşmişti.
+  - **Kapandı:** B5b Ö6 (`waiter3` artık zincirde + `q_waiter3` görev hattında).
+  - **vitest 463/463 · tsc + build temiz · denge sayısı DEĞİŞMEDİ.**
+- ⏳ **SIRADAKİ:** açılış temposu kararı sorulur; sonra **Tek Odak** kuralının delinmesi ·
+  **sipariş kuyruğunun ölçülmesi** (D-046'nın "hiçbir masa X sn beklemedi" iddiası) · **sim'in
+  gerçeğe yaklaşması** (masa-başı yükseltme · bardak döngüsü · sabır).
 - **Rapor:** `docs/bm-adim3-4-bant-kamera.html` →
   https://claude.ai/code/artifact/e49330bc-c918-41ec-a1b4-5c879cae146c
   (`tools/embed-rapor.mjs` kareleri data URI olarak gömüp `*.artifact.html` üretir — artifact'ın

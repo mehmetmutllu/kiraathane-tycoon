@@ -500,14 +500,47 @@ function run() {
   console.log(`Sabit çay fiyatı: ${TEA_PRICE} ₺ · Başlangıç: 1 masa, oran ${rate(s0).toFixed(2)} ₺/sn\n`);
 
   console.log('--- İDEALİZE (verim 1.0 — tempo denetimi bununla) ---');
-  const ideal = runProfile(1, true);
+  const idealBuys: Buy[] = [];
+  const ideal = runProfile(1, true, idealBuys);
 
   console.log('\n--- Tempo denetimi (D-010 §3.6) ---');
   console.log('Hedef: ilk satın alma < 90 sn; ilk 5-10 dk her ~20-40 sn bir alım; otomasyon < 15 dk.');
   const first = ideal.get('İlk satın alma (2. Masa)');
-  console.log(first != null && first <= 90 ? `İlk satın alma ${fmtTime(first)} ✓` : `İlk satın alma HEDEF DIŞI: ${first}`);
+  console.log(first != null && first <= 90 ? `  1) İlk satın alma ${fmtTime(first)} ✓` : `  1) İlk satın alma HEDEF DIŞI: ${first}`);
   const notHit = MILESTONES.filter((m) => !ideal.has(m.name)).map((m) => m.name);
   if (notHit.length) console.log('6 saatte ulaşılamayan:', notHit.join(', '));
+
+  /* Faz C1 — D-010'un üç ölçütünden yalnız BİRİ ölçülüyordu; kalan ikisi düz yazı olarak durup
+     göz kararıyla bakılıyordu. B5a'nın dersi burada da geçerli: ölçülmeyen ölçüt bayatlar ve
+     kimse fark etmez. Üçü de ölçülür oldu; hiçbir denge sayısına dokunulmadı, değişen yalnız
+     raporun kendisi. */
+
+  /* 2) AÇILIŞ TEMPOSU: ilk 10 dakikadaki ardışık alım boşlukları. "Her ~20-40 sn bir alım" bir
+     ORTALAMA iddiası → medyan boşluk onu doğrudan ölçer; en uzun boşluk ise iddianın NEREDE
+     koptuğunu söyler (ortalama iyi görünürken tek uzun boşluk temposu öldürebilir). */
+  const OPENING = 10 * 60;
+  const openGaps = idealBuys
+    .map((b, i) => ({ label: b.label, gap: b.t - (i === 0 ? 0 : idealBuys[i - 1].t), t: b.t }))
+    .filter((g) => g.t <= OPENING);
+  if (openGaps.length === 0) {
+    console.log("  2) Açılış temposu ÖLÇÜLEMEDİ (ilk 10 dk'de hiç alım yok)");
+  } else {
+    const sorted = openGaps.map((g) => g.gap).sort((a, b) => a - b);
+    const median = sorted[Math.floor(sorted.length / 2)];
+    const worst = openGaps.reduce((a, b) => (b.gap > a.gap ? b : a));
+    console.log(
+      `  2) Açılış temposu: ilk 10 dk'de ${openGaps.length} alım · medyan boşluk ${fmtTime(median)}` +
+        ` · en uzun ${fmtTime(worst.gap)} → ${worst.label}  ${median <= 40 ? '✓' : '✗ (hedef ~20-40 sn)'}`,
+    );
+  }
+
+  /* 3) OTOMASYON: garsonun tutulduğu an — oyuncunun TEK BAŞINA taşıdığı dönemin uzunluğu. */
+  const autoAt = ideal.get('Garson');
+  console.log(
+    autoAt == null
+      ? '  3) Otomasyon (Garson) 6 saatte ULAŞILAMADI ✗'
+      : `  3) Otomasyon (Garson) ${fmtTime(autoAt)}  ${autoAt <= 15 * 60 ? '✓' : '✗ (hedef < 15 dk)'}`,
+  );
 
   // 3-PROFİL raporu (gece 5/7; gerekçeler docs/curve-report.md)
   const profiles: [string, number][] = [
@@ -554,6 +587,12 @@ function run() {
     ['12 masa · L6 · garson 2', { padsDone: ['table2','table3','waiter','table4','zone2','z2table2','z2table3','dishwasher','z2table4','zone3','z3table2','waiter2','z3table3','z3table4'], stationLevels: [6], tableLevel: 4, char: { tray: 2, magnet: 1, speed: 0 }, waiterTray: 2, waiterSpeed: 1 }],
     ['12 masa · L6 · garson 3', { padsDone: ['table2','table3','waiter','table4','zone2','z2table2','z2table3','dishwasher','z2table4','zone3','z3table2','waiter2','z3table3','z3table4','waiter3'], stationLevels: [6], tableLevel: 4, char: { tray: 2, magnet: 1, speed: 0 }, waiterTray: 2, waiterSpeed: 1 }],
     ['20 masa · L6 · garson 3', { padsDone: ['table2','table3','waiter','table4','zone2','z2table2','z2table3','dishwasher','z2table4','zone3','z3table2','waiter2','z3table3','z3table4','waiter3','z3table5','z3table6','z3table7','z3table8','z3table9','z3table10','z3table11','z3table12'], stationLevels: [6], tableLevel: 4, char: { tray: 4, magnet: 3, speed: 3 }, waiterTray: 3, waiterSpeed: 1 }],
+    /* FAZ C1: bu tablo LAVABO KOLUNU hic icermiyordu (senaryolarda `lavabo` verilmiyor, yani 0
+       kalıyor) ve o yüzden geç-oyun gelirini 3,4 KAT eksik gösteriyordu — son satır 15,62 ₺/sn
+       diyordu, oyunun gerçek tavanı ise 52,57. B5b'nin "gelir L6'dan sonra donuyor" bulgusu
+       B4a'da kapanmıştı; tablo kapanmamış gibi göstermeye devam ediyordu. Tam kadro satırı
+       lavabosuyla birlikte eklendi: darboğaz aynı (ARZ), değişen yalnız müşteri başına ₺. */
+    ['20 masa · L6 · garson 3 · lavabo L6', { padsDone: ['table2','table3','waiter','table4','zone2','z2table2','z2table3','dishwasher','z2table4','zone3','z3table2','waiter2','z3table3','z3table4','waiter3','z3table5','z3table6','z3table7','z3table8','z3table9','z3table10','z3table11','z3table12','lavabo'], stationLevels: [6], tableLevel: 4, char: { tray: 4, magnet: 3, speed: 3 }, waiterTray: 3, waiterSpeed: 1, lavabo: lavaboMaxLevel() }],
   ];
   for (const [name, patch] of scenes) {
     const st: State = { t: 0, wallet: 0, lifetime: 0, stationLevels: [0], tableLevel: 0, padsDone: [],

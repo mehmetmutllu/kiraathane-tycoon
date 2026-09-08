@@ -1,0 +1,86 @@
+=== Köşe Kıraathanesi — Ekonomi Simülasyonu (B2: TEK servis, bottleneck) ===
+
+Sabit çay fiyatı: 5 ₺ · Başlangıç: 1 masa, oran 0.42 ₺/sn
+
+--- İDEALİZE (verim 1.0 — tempo denetimi bununla) ---
+  ✓ İlk satın alma (2. Masa)           @   22 sn  (oran 0.83 ₺/sn, servis L0, 2 masa, darboğaz: talep)
+  ✓ Karakter: Tepsi T1 (75₺)           @  1.7 dk  (oran 0.83 ₺/sn, servis L0, 2 masa, darboğaz: talep)
+  ✓ Çay ocağı L1 (z1)                  @  1.7 dk  (oran 0.96 ₺/sn, servis L1, 2 masa, darboğaz: talep)
+  ✓ 3. Masa                            @  3.1 dk  (oran 1.13 ₺/sn, servis L1, 3 masa, darboğaz: arz)
+  ✓ Karakter: Tepsi T2 (130₺)          @  4.6 dk  (oran 1.13 ₺/sn, servis L1, 3 masa, darboğaz: arz)
+  ✓ Garson                             @  6.1 dk  (oran 1.13 ₺/sn, servis L1, 3 masa, darboğaz: arz)
+  ✓ 4. Masa (zone-1 dolu)              @  9.8 dk  (oran 1.52 ₺/sn, servis L2, 4 masa, darboğaz: arz)
+  ✓ lifetime 1.000 ₺                   @ 10.3 dk  (oran 1.52 ₺/sn, servis L2, 4 masa, darboğaz: arz)
+  ✓ Karakter: Mıknatıs M1 (200₺)       @ 11.4 dk  (oran 1.52 ₺/sn, servis L2, 4 masa, darboğaz: arz)
+  ✓ ZONE-2 AÇILDI (₺750)               @ 19.1 dk  (oran 1.52 ₺/sn, servis L2, 5 masa, darboğaz: arz)
+  ✓ Z2: 2. Masa                        @ 19.6 dk  (oran 1.52 ₺/sn, servis L2, 6 masa, darboğaz: arz)
+  ✓ Masa yükseltme L1 (bahşiş)         @ 24.0 dk  (oran 2.87 ₺/sn, servis L3, 6 masa, darboğaz: arz)
+  ✓ Bulaşıkçı                          @ 33.1 dk  (oran 2.87 ₺/sn, servis L3, 7 masa, darboğaz: arz)
+  ✓ Z2: 4. Masa (zone-2 dolu)          @ 40.5 dk  (oran 2.87 ₺/sn, servis L3, 8 masa, darboğaz: arz)
+  ✓ ZONE-3 AÇILDI (₺2500)              @ 56.4 dk  (oran 3.69 ₺/sn, servis L3, 9 masa, darboğaz: arz)
+  ✓ lifetime 10.000 ₺                  @ 56.7 dk  (oran 3.69 ₺/sn, servis L3, 9 masa, darboğaz: arz)
+  ✓ TEZGÂH kuruldu (L4)                @ 1.03 sa  (oran 4.22 ₺/sn, servis L4, 10 masa, darboğaz: taşıma)
+  ✓ 2. Garson                          @ 1.12 sa  (oran 4.98 ₺/sn, servis L4, 10 masa, darboğaz: arz)
+  ✓ TOST açıldı (L5)                   @ 1.35 sa  (oran 7.71 ₺/sn, servis L5, 11 masa, darboğaz: taşıma)
+  ✓ Z3: 4. Masa                        @ 1.43 sa  (oran 7.59 ₺/sn, servis L5, 12 masa, darboğaz: taşıma)
+  ✓ Servis ₺-max L6                    @ 1.99 sa  (oran 12.57 ₺/sn, servis L6, 12 masa, darboğaz: taşıma)
+  ✓ LAVABO açıldı                      @ 2.15 sa  (oran 19.40 ₺/sn, servis L6, 12 masa, darboğaz: taşıma)
+  ✓ Şerit yarısı (16. masa)            @ 2.51 sa  (oran 31.09 ₺/sn, servis L6, 16 masa, darboğaz: arz)
+  ✓ Lavabo L6 (oda tavanı)             @ 2.70 sa  (oran 52.57 ₺/sn, servis L6, 17 masa, darboğaz: arz)
+  ✓ ŞERİT DOLDU (20. masa)             @ 2.81 sa  (oran 52.57 ₺/sn, servis L6, 20 masa, darboğaz: arz)
+
+--- Tempo denetimi (D-010 §3.6) ---
+Hedef: ilk satın alma < 90 sn; ilk 5-10 dk her ~20-40 sn bir alım; otomasyon < 15 dk.
+  1) İlk satın alma 22 sn ✓
+  2) Açılış temposu: ilk 10 dk'de 8 alım · medyan boşluk 1.4 dk · en uzun 3.7 dk → pad: table4  ✗ (hedef ~20-40 sn)
+  3) Otomasyon (Garson) 6.1 dk  ✓
+
+--- 3 PROFİL (milestone → süre) ---
+Milestone                          |    Yoğun |   Normal |    Rahat
+İlk satın alma (2. Masa)           |    28 sn |    40 sn |   1.0 dk
+Karakter: Tepsi T1 (75₺)           |   2.1 dk |   3.0 dk |   4.8 dk
+Çay ocağı L1 (z1)                  |   2.1 dk |   3.0 dk |   4.8 dk
+3. Masa                            |   3.8 dk |   5.6 dk |   8.7 dk
+Karakter: Tepsi T2 (130₺)          |   5.8 dk |   8.4 dk |  13.2 dk
+Garson                             |   7.6 dk |  11.1 dk |  17.4 dk
+Bulaşıkçı                          |  41.4 dk |  1.00 sa |  1.58 sa
+4. Masa (zone-1 dolu)              |  12.3 dk |  17.9 dk |  28.1 dk
+Karakter: Mıknatıs M1 (200₺)       |  14.2 dk |  20.7 dk |  32.5 dk
+TEZGÂH kuruldu (L4)                |  1.29 sa |  1.87 sa |  2.94 sa
+TOST açıldı (L5)                   |  1.68 sa |  2.45 sa |  3.85 sa
+Servis ₺-max L6                    |  2.49 sa |  3.62 sa |  5.69 sa
+ZONE-2 AÇILDI (₺750)               |  23.8 dk |  34.6 dk |  54.4 dk
+Z2: 2. Masa                        |  24.5 dk |  35.6 dk |  56.0 dk
+2. Garson                          |  1.39 sa |  2.03 sa |  3.19 sa
+Z2: 4. Masa (zone-2 dolu)          |  50.7 dk |  1.23 sa |  1.93 sa
+ZONE-3 AÇILDI (₺2500)              |  1.17 sa |  1.71 sa |  2.68 sa
+Z3: 4. Masa                        |  1.79 sa |  2.61 sa |  4.10 sa
+LAVABO açıldı                      |  2.69 sa |  3.91 sa |  6.14 sa
+Lavabo L6 (oda tavanı)             |  3.37 sa |  4.90 sa |  7.70 sa
+Şerit yarısı (16. masa)            |  3.14 sa |  4.56 sa |  7.17 sa
+ŞERİT DOLDU (20. masa)             |  3.52 sa |  5.12 sa |  8.04 sa
+Masa yükseltme L1 (bahşiş)         |  29.9 dk |  43.5 dk |  1.14 sa
+lifetime 1.000 ₺                   |  12.8 dk |  18.7 dk |  29.3 dk
+lifetime 10.000 ₺                  |  1.18 sa |  1.72 sa |  2.70 sa
+
+--- EN UZUN BEKLEME (ardışık iki alım arası) ---
+  Yoğun   en uzun 16.1 dk → servis L6   (20 dk'yı aşan: 0)
+          ardından 14.7 dk → masa seviyesi L4
+          ardından 13.4 dk → pad: zone3
+  Normal  en uzun 23.4 dk → servis L6   (20 dk'yı aşan: 2)
+          ardından 21.4 dk → masa seviyesi L4
+          ardından 19.6 dk → pad: zone3
+  Rahat   en uzun 36.8 dk → servis L6   (20 dk'yı aşan: 6)
+          ardından 33.7 dk → masa seviyesi L4
+          ardından 30.7 dk → pad: zone3
+
+--- ÜÇ KOL (talep / arz / TAŞIMA) — bardak/sn ---
+  4 masa · L2 · garson 1   yol   6.7 br · talep 0.43 · arz 0.30 · taşıma 0.78 → darboğaz ARZ · gelir 1.52 ₺/sn
+  8 masa · L3 · garson 1   yol  15.0 br · talep 1.90 · arz 0.41 · taşıma 0.59 → darboğaz ARZ · gelir 2.87 ₺/sn
+  12 masa · L6 · garson 2  yol  20.7 br · talep 5.49 · arz 0.78 · taşıma 0.63 → darboğaz TAŞIMA · gelir 12.57 ₺/sn
+  12 masa · L6 · garson 3  yol  20.7 br · talep 5.49 · arz 0.78 · taşıma 0.76 → darboğaz TAŞIMA · gelir 15.27 ₺/sn
+  20 masa · L6 · garson 3  yol  18.3 br · talep 7.69 · arz 0.78 · taşıma 1.21 → darboğaz ARZ · gelir 15.62 ₺/sn
+  20 masa · L6 · garson 3 · lavabo L6 yol  18.3 br · talep 7.69 · arz 0.78 · taşıma 1.21 → darboğaz ARZ · gelir 52.57 ₺/sn
+
+--- Servis kapasitesi (bilgi) ---
+Garson havuzu (ilk ₺130): hız 1.5→2 br/sn (₺250; panel), tepsi 1+kademe (₺400/1200/2500). Servis merdiveni: ₺20/30/45/800/2400/9000 (L4 tezgâh, L5 tost).
