@@ -1,0 +1,4121 @@
+# ARŞİV — activeContext (2026-06-09 … 2026-09-08)
+
+> Bu dosya **arşivdir, okunmaz**. Oturum başlangıcında yüklenmez; yalnız eski bir bulguyu
+> ararken `grep` ile açılır. Canlı "şu an" dosyası: `memory-bank/activeContext.md` (tur kartı).
+> Kesim: 2026-09-08, D-084 (bkz. `docs/oturum-akisi-mantik.md` §3.4). Tam geçmiş git'te.
+
+---
+
+## ŞU AN (2026-09-08 — **C3 BİTTİ · GARSON ÜSTLENMESİ BAĞLAYICI** · D-081 · D-082 açıldı)
+
+Kullanıcı kararı: *"Bağlayıcı + acil"*. Faz C **3/5**. Sanat/asset hâlâ bilerek en sonda.
+
+### Yapıldı — C3: sipariş kuyruğu önce ÖLÇÜLDÜ, sonra düzeltildi
+- **D-046'nın ② numaralı kuralı (bağlayıcı üstlenme) kodda hiç yokmuş.** `claimed` kümesi yalnız
+  O KARE için tutuluyordu; garsonun hedefi her karede yeniden "sabrı en az kalan"a göre seçiliyordu.
+  Ölçülen bedel: garson ilk durağına giderken hedefinden **başlangıç mesafesinin 5,6 katı** kadar
+  uzaklaşabiliyor, tam turu modelin beklediğinin **2,35 katına** çıkıyordu.
+- **③ "en acil" tek başına amacını karşılamıyormuş:** mesafe↔terk korelasyonu **+0,53…+0,83** —
+  uzak masa hâlâ daha çok terk ediyordu. Doygunlukta EDF savruluyor.
+- **Ölçüm aracı `tools/olcum-kuyruk.ts`:** oyunun KENDİ `tick()`'i başsız koşturuluyor
+  (tick-fingerprint deseni), 4 senaryo × 900 sn, oyuncu sokakta park. **Darboğaz ayrıştırması**
+  (demleme / bardak / taşıma) sayının yanlış kola yazılmasını engelledi — G1'in taşıma değil
+  **bardak** kolunda kilitlendiği böyle çıktı.
+- **Beş kural karşı-olgusal ölçüldü** (geçici enjeksiyon + geri alma; kontrol koşusu enjeksiyonsuz
+  çıktıyla birebir aynı). **Debi ile adalet ters yönde.** Kullanıcı en adil olanı seçti.
+- **Uygulandı (D-081):** `Waiter.claim` (transient) + **ön-rezervasyon** (önceki karenin
+  üstlenmeleri yeni seçimlerden ÖNCE yer tutar) + üstlenme koruma. Servis G3 101→**124**,
+  G4 172→**239** · korelasyon G4 0,53→**0,24** · gezinme G3 0,47→**0,07** · tur/model ×2,35→**×1,54**.
+  G2 %11 debi kaybetti (kabul edilen takas; yayılımı %58-100 → %77-89). **dt duyarlılığı %-9 → %+1,6.**
+- **Bekçi `tests/kuyruk.test.ts` (6 test)** — eşik listesi değil **davranış sözleşmesi**. İki ayrı
+  mutasyonla doğrulandı.
+- **Kayda geçen tuzak:** akış testinin ilk hâli ocak L0 rejiminde koşuyordu → kuyruk hiç doymuyor,
+  **hiçbir mutasyonu yakalamıyor**, üstelik uzun koşuda vitest zaman aşımına düşüp "kırıldı" gibi
+  görünüyordu. *Bir bekçinin kırılması, onu KIRAN şey doğrulanmadan yakalama sayılmaz.*
+- **Rapor:** `docs/kuyruk-raporu-c3.md` · ham çıktı `docs/olcum-kuyruk.txt` +
+  `docs/olcum-kuyruk-varyant.txt`.
+
+**Doğrulama:** vitest **482/482** (476 → +6) · smoke **28/28** · tsc + build temiz.
+**Denge sayısı DEĞİŞMEDİ** (`economy.config.ts`'te yalnız bayat bir yorum güncellendi).
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**D-082 — erken oyun BARDAK KİLİDİ.** Kullanıcı "sorun, ayrı kalem olarak incelensin" dedi:
+4 masa · bulaşıkçı yok · oyuncu yokken karelerin **%90,8'inde temiz bardak sıfır**, 15 dakikada
+yalnız **18 müşteri**. C3 deseniyle: **önce ölç** (havuz boyu · bulaşıkçının zincirdeki yeri ·
+minimum sızıntı seçenekleri), sonra karar sor, sonra bekçile. **Karar verilmeden hiçbir denge
+sayısına dokunulmaz.**
+
+Ardından C4/C5: **sim'i gerçeğe yaklaştırmak** — ilk somut kalem `simulate.ts`'in **taşıma
+modeli** (G4'te gerçekleşen %58; hedefi hiç değişmeyen ideal taşıyıcı varsayıyor) · masa
+yükseltmesi kalem kalem (sahte 21,4 dk kapanır) · bardak döngüsü · sabır.
+
+**Bekleyen denge kararı YOK. Bilinen ve bilerek duran:** `servis L6` 23,4 dk beklemesi ·
+D-046 ④ kaba hâlde, ⑤ yok, sipariş nesnesi bilerek v1.1'de.
+
+---
+
+## ŞU AN (2026-09-08 — **C2 BİTTİ · TEK ODAK'IN 4. KANALI TEKLEŞTİ** · D-080)
+
+Kullanıcı kararı: *"Katman ayrımı"*. Faz C **2/5**. Sanat/asset hâlâ bilerek en sonda.
+
+### Yapıldı — C2: Tek Odak'ın dördüncü kanalı
+- **Devralınan bulgunun YARISI bayat çıktı.** C1 raporu "opsiyonel pad'ler VE yükseltme dolumları
+  görev filtresinin dışında" diyordu; cümle D-038'den (2026-09-05) devralınmıştı. Ölçüldü:
+  **`optional:true` pad kalmamış** (son kalan `waiter3` C1'de omurgaya alınmıştı) → pad işareti
+  **en çok 1**. D-078'in dersi ikinci kez tuttu.
+- **Gerçek delik:** ekranda ort. **7,8** · en çok **16** zemin işareti (tek salonda 12), durumların
+  **%90'ında** birden çok — neredeyse tamamı masa yükseltme noktası. Asıl kusur sayı değil: aktif
+  adımın işareti ile masa noktası aynı bileşen/boy/yazı, "hangisi şu anki adım" okunmuyordu.
+  D-038'in dört kanalından üçü (bant · kamera · kenar oku) **zaten tek görevden türüyordu**.
+- **Karar (kullanıcı): nokta silinmez, SES katmanlanır.** Harfiyen D-038 `feedback_upgrade_per_object`
+  ile çelişiyordu (her masanın noktası kendi yanında, My Hotel). Üç katman: `aktif` (yazı + tam
+  parlak halka + hafif nabız, **en fazla 1**) · `konusan` (oyuncu 3,2 br yakında) · `sessiz`
+  (0,55× küçük, YAZISIZ; dolum yayı durur). **Çizilen 16 → konuşan en çok 3** (ort. 2,39).
+- **Yapısal kısım:** `src/game/activeStep.ts` — singleton'ı `QuestPointer` kenar okuyla **AYNI
+  `questFocusPos` çağrısından** yazıyor; dördüncü kanal artık ayrışamaz. `markerTier` saf fonksiyon,
+  `GroundMarker` `useFrame` içinde damp'liyor (React'e dokunmuyor).
+- **Bekçi `tests/tek-odak.test.ts` (13 test)** + mutasyon doğrulaması (iki mutasyon, ikisi de kırdı).
+- **Yan kazanç:** bayat worktree silindi → eslint tabanı **122 ayrıştırma hatası → 19 lint hatası**.
+- **Rapor:** `docs/tek-odak-c2.md` · ham çıktı `docs/olcum-tek-odak.txt` ·
+  kareler `docs/gorsel/ss/tekodak-once-*.png` ↔ `tekodak-*.png`.
+
+**Doğrulama:** vitest **476/476** (463 → +13) · smoke **28/28** · tsc + build temiz ·
+dokunulan dosyalarda eslint temiz. **Denge sayısı DEĞİŞMEDİ.**
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**C3 — sipariş kuyruğunun ÖLÇÜLMESİ.** D-046 global havuz + üstlenme kurallarını yazdı ama
+*"hiçbir masa X saniyeden fazla beklemedi"* iddiası **teste yazılmadı**. Önce ölç, sonra bekçile.
+Ardından C4/C5: **sim'i gerçeğe yaklaştırmak** (masa yükseltmesi kalem kalem — sahte 21,4 dk
+kapanır · bardak döngüsü · sabır).
+
+**Bekleyen denge kararı YOK. Bilinen ve bilerek duran:** `servis L6` 23,4 dk beklemesi.
+
+---
+
+## ŞU AN (2026-09-08 — **FAZ C BAŞLADI · DENGE TEK KEZ ÖLÇÜLDÜ** · D-078)
+
+Kullanıcı: *"tamam sorun yok sistem kusursuz otursun sonra hallederiz. sen şimdi faz c ye başla,
+ilerleme panosunu da aç."* Sanat/asset (KayKit Restaurant Bits · karakter modelleri · animasyon)
+bilerek **en sona**; önce sistem.
+
+### Yapıldı — C1: ölçü donduktan sonraki TEK ölçüm
+- **Geometrinin bedeli küçük çıktı:** yollar %2-6 uzadı (19,6 → 20,7 br), taşıma %4 zayıfladı,
+  **zincir 5,08 → 5,12 sa (+%0,8)**. Darboğaz sıralaması hiç değişmedi. Sebep: uzayan mesafe ön
+  çeyrekte MASALAR ARASI; garsonun turunu belirleyen servis→masa ekseninde kat büyümedi.
+  **Geometri donması dengeyi bozmadı** — yeni taban bu.
+- **Tempo denetiminin üçte ikisi ölçülmüyormuş** (yazılıydı, göz kararıyla bakılıyordu). Üçü de
+  ölçülür oldu, denge sayısına dokunulmadan. **İkincisi ✗ çıktı → kullanıcı ölçütü BAYAT ilan
+  etti (D-079).** Yeni ölçüt: *garsona kadar hiçbir alım boşluğu 2 dk'yı aşmaz* — o da
+  `feedback_economy_pacing_offline`'ın ("garson öncesi ucuz, sonrası ölçülü pahalı") ölçülebilir
+  karşılığı. Ölçülen en uzun **1,6 dk** ✓ (marj %20). Garson SONRASI tempo zaten ayrı bekçide
+  (EN UZUN BEKLEME 20 dk). **Üç ölçüt de yeşil.**
+- **"Plato" bulgusu ÇÜRÜDÜ.** Raporun ilk hâli B5b'den devralmıştı; ölçüm oranın donmadığını
+  gösterdi (12,57 → 19,40 → 31,09 → **52,57 ₺/sn**). Plato B4a'da kapanmış. **Kaynak sim'in kendi
+  tablosuydu:** `ÜÇ KOL` senaryolarında `lavabo` hiç verilmiyordu → geç-oyun geliri **3,4 kat
+  eksik**. Lavabolu satır eklendi.
+- **Rapor:** `docs/denge-raporu-c1.md` · ham çıktı `docs/denge-olcum-c1.txt`.
+- **Pano 56/73 yayınlandı:** https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
+  Defter düzeltildi: dondurma Faz B'nin işiydi → **B 13/13, toplam 72 → 73**, kilometre 58/72.
+
+**Doğrulama:** vitest **463/463** · tsc + build temiz. **Denge sayısı DEĞİŞMEDİ.**
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**Faz C'nin kalan 4 oturumu. BEKLEYEN DENGE KARARI YOK** — açılış temposu ölçütü D-079'da
+güncellendi, üç ölçüt de yeşil, hiçbir denge sayısı değişmedi.
+
+**Faz C kalan işi:** (1) **Tek Odak** kuralı deliniyor — opsiyonel pad'ler ve yükseltme dolumları
+görev filtresinin dışında çiziliyor · (2) **sipariş kuyruğu hiç ölçülmüyor** — D-046'nın "hiçbir
+masa X sn beklemedi" iddiası teste yazılmadı · (3) **sim gerçeğe yaklaşır** — masa yükseltmesi
+kalem kalem (sahte 21,4 dk kapanır) · bardak döngüsü · sabır.
+
+**Bilinen ve bilerek duran:** `servis L6` 23,4 dk beklemesi (merdivenin son basamağı).
+
+---
+
+## ŞU AN (2026-09-08 — **ÖLÇÜ DONDURULDU · FAZ B BİTTİ** · D-077)
+
+Kullanıcı: *"evet, bekçi testli dondurmayla devam et"*. D-072'nin **1. katmanı (ölçü/ankraj)
+kapandı** — artık belge değil **TEST** koruyor.
+
+### Yapıldı — BM adım 6: ölçü dondurma
+- **`tests/olcu-donduruldu.test.ts` (163 bekçi).** Canlı kodun TÜRETTİĞİ her ankrajı dondurulmuş
+  sayıyla karşılaştırır. Liste ikinci bir doğru kaynak DEĞİL: kod hâlâ kendi dosyalarından okur,
+  tablo yalnız testin gördüğü fotoğraf. 7 blok: kat kabuğu · mobilya · yerleşim ritmi · aktör ·
+  kamera · nav/erişim · noktalar (42 sayı + 21 nokta).
+- **Mutasyonla doğrulandı:** `STOOL_S` 0,90 → 0,85 denendi, 2 test kırıldı (biri de türev
+  `tabure.oturakUstu`) — bekçi gerçekten yakalıyor, sonra geri alındı.
+- **`docs/olcu-donduruldu.md`** insan tarafı (gerekçe + değiştirme yolu + donmayanlar listesi).
+  Belge ile test arasındaki sapmayı da bir bekçi tutuyor: her ankraj adı belgede geçmek zorunda.
+- **Maket arşiv damgası** `docs/maket/README.md` başına: maket v13'ün Kat 1 ölçü kaynağı olarak
+  işi bitti; program/sıra/atmosfer için okunur ama **yeni sayı transkribe edilmez**.
+
+### Dondurma İKİ KUSUR AÇTI (ikisi de "ankraj ama bekçilenemiyor" sınıfı)
+1. **Kamera** ölçü katmanındaydı ama `Scene.tsx`'in `useFrame` gövdesinde gömülüydü ve o dosya
+   vitest'te import EDİLEMEZ (Canvas + `recolor` → `Image`). → **`src/config/camera.ts`** açıldı
+   (`actor.ts` deseni): fov 50 · mesafe 8,5 · portre tavanı 1,3 · uzaklaş 1,35 · odak 0,72 +
+   `cameraDistance(aspect)`. `CAMERA_LOOK_Y` bilerek `actor.ts`'te kaldı (aktörün türevi).
+2. **Tabure ölçeği** aynı sebeple bekçisizdi (`Tables.tsx` → `Image`). `STOOL_S/STOOL_REF` +
+   ölçülen `TABLE_TOP_Y 0,795` + türev `STOOL_SEAT_Y 0,45` **`tableLook.ts`**'e taşındı;
+   `actor-scale.test.ts` artık o sayıları elle yazmıyor, oradan okuyor.
+
+Ayrıca `NAV_CELL` export edildi ve `layout.ts`'te bayat yorum düzeltildi (`actorRadius` "(0,40)"
+yazıyordu, değeri 0,28).
+
+**Doğrulama:** vitest **463/463** (300 → +163) · smoke **28/28** · tsc + build temiz.
+**eslint tabanı zaten kırık:** 122 ayrıştırma hatası, sebep bayat `.claude/worktrees/maket-tasima`
+worktree'si (merge edilmişti, silinmemiş) — tsconfigRootDir belirsizliği. Dokunulan dosyalarda
+yeni hata yok. **Temizlik kalemi: `git worktree remove .claude/worktrees/maket-tasima`.**
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**Faz C — DENGE: `simulate.ts` TEK KEZ yeniden ölçülür.** Ölçü donduğu için artık ölçüm geçerli
+olur. Masa aralığı 3,20 → 6,40'a çıktı (yürüme mesafeleri uzadı) ve aktör boyu değişti → **eski
+denge ölçümlerinin hepsi geçersiz**. Ölçüm öncesi hatırlanacak iki bilinen kalem:
+`servis L6` 23,4 dk ve `masa seviyesi L4` 21,4 dk beklemeleri (ikincisi model kusuru: sim tüm
+masaları tek kalemde yükseltiyor, oyunda masa-başı alınıyor).
+Sonra: Faz 4 → 5 → 7 → 8.
+
+**Denge sayıları DONMADI** (kasten) — `economy.config.ts` katman 2'nin konusu.
+
+---
+
+## ŞU AN (2026-09-08 — **ÜÇ KARAR ALINDI · AKTÖR ÖLÇÜSÜ TEK KAYNAKTA (D-076)**)
+
+Kullanıcı üç kararı da verdi:
+1. **Arka bant AÇIK kalsın** (servis köşesi + merdiven kovası salondan görünür) — *kod değişmedi.*
+2. **Kamera fov 50 kalsın** — *kod değişmedi.*
+3. **Karakter 1,29 → 1,75** (mobilya KISILMADI; D-073/074/075'in mobilya sayıları yerinde).
+
+### Yapıldı — BM adım 5: `src/config/actor.ts` (yeni TEK KAYNAK)
+Ölçüm şunu buldu: "karakter boyu" diye tek bir sayı hiç yokmuş. Beş gövde, beş boy, **ikisi
+zemine gömülü** — müşteri kapsülü y=0'da MERKEZLİYDİ, görünen boyu **0,60** (yarısı yerin
+altında). Yürüyen müşteri de gömülüydü, yani oturuş numarası değil kusurdu.
+
+**İki gövde ailesi, iki kural:** PARÇALI gövde (sahip · çaycı) düzgün ölçeklenir · KAPSÜL gövde
+(garson · bulaşıkçı · müşteri) **boyuna uzar, enine şişmez**. İlk tur hepsini düzgün ölçekledi ve
+kapsüller blob'a döndü (yarıçap 0,44 = 88 cm omuz; oturunca tabureyi yutuyordu) — kareden görülüp
+`CAPSULE_RADIUS = 0,30` ile düzeltildi.
+
+| türeyen sayı | eski | yeni |
+|---|---:|---:|
+| `playerRadius` | 0,35 | **0,47** (sahibin parçalı gövdesi enine de büyüdü) |
+| `actorRadius` | 0,28 | **0,28** (kapsüller enine büyümedi) |
+| kamera bakış y | 0,60 | **0,80** |
+| kamera mesafesi | 8,5 | **8,5** (odanın kadrajı — oda büyümedi) |
+| `SEATED_DROP` | — | **−0,45** (oturan müşteri iner, baş tepesi 1,30) |
+
+**Kabul kriteri (D-072: sayı listesi) → `tests/actor-scale.test.ts`:** tabla üstü boyun %62 →
+**%45**'i (gerçek hayat %43) · tabure oturağı %35 → **%26** (gerçek %26) · kapsül yarıçap/boy %17.
+**vitest 300/300 · smoke 28/28 · tsc + build temiz · eslint'te yeni hata yok.**
+Kareler: `docs/gorsel/ss/oran-once-*.png` ↔ `oran-sonra-*.png` (`node tools/shot-oran.mjs`).
+
+### Oturum notu (2026-09-08 akşam — KOD DEĞİŞMEDİ)
+Kısa oturum: hafıza okundu, plan doğrulandı, kod/denge/ölçü **hiç değişmedi**. `vitest 300/300`
+yeşil; smoke tekrar çalıştırılmadı (son commit'ten beri değişiklik yok, orada 28/28 doğrulanmıştı).
+Pano sayacı bilerek **artırılmadı** — bu oturumda iş yapılmadı, 54/72 yerinde.
+Aşağıdaki "SONRAKİ OTURUMDA İLK İŞ" **aynen geçerli.**
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**ÖLÇÜ DONDURMA + maket arşiv damgası**, sonra `simulate.ts` **TEK KEZ** yeniden ölçülür
+(masa aralığı 3,20 → 6,40 oldu → eski denge ölçümleri geçersiz). Ardından Faz 4 → 5 → 7 → 8.
+Dondurulacak liste: kat 34 × 34 · duvar 3,20 · kapı 2,65 · masa ölçüleri/aralığı (D-073/074/075) ·
+koltuk ofsetleri · **aktör boyu 1,75 + türeyen yarıçaplar (D-076)** · kamera fov 50 / mesafe 8,5 /
+bakış 0,80 · pad noktaları · nav katıları.
+
+---
+
+## ŞU AN (2026-09-07 gece — **KARIŞIKLIK ÇÖZÜLDÜ: ÜÇ KATMAN · ÖLÇÜ DONDURULUYOR**)
+
+**Kararlar: D-072 (üç katman + ölçü dondurma) · D-073 (gölge geri · zemin düz ahşap · masa
+ölçüleri maketten).** Kullanıcı: *"bu tasarım ve geliştirme meselesi aşırı karıştı"* → sıra
+tartışması yerine **bağımlılık yönü** çözüldü: yalnız GEOMETRİ başka işi geçersiz kılıyor, o yüzden
+önce o donar; sanat cilası en sona kalır ve ankrajlara dokunamaz.
+
+| Katman | İçerik | Kural |
+|---|---|---|
+| **1 · ÖLÇÜ/ANKRAJ** | kat · duvar · masa ölçüsü/aralığı · koltuk · kamera · servis yüzü · pad noktaları · nav katıları | Kabul kriteri SAYI LİSTESİ, "aynı görünüyor mu" değil. Bitince **DONAR** |
+| **2 · SİSTEM** | denge TEK KEZ ölçülür → Faz 4 → 5 → 7 → 8 | ankrajlara dokunmaz |
+| **3 · SANAT CİLASI** | dekor · materyal · renk · ışık · animasyon | ankrajlara **dokunamaz** (sınırsız tur) |
+
+**Ölçü hedefi (kullanıcı kararı A):** kat **34 × 34**, duvar **3,20** — maket v13 aynen.
+32 × 32 + KayKit duvarı (4,00) ölçüldü ve **reddedildi** (onaylı maket yeniden açılırdı, kayan kapı
+çatışırdı). KayKit yalnız mobilya tarafında.
+
+### v1.0 YAYIN PLANI — DENETLENDİ (2026-09-07 gece, kullanıcı isteği)
+Plan bu hâliyle v1'i çıkarır, ama **bütçe yanlıştı**: pano Faz B'ye 1 oturum bırakmıştı, maket
+taşıması ise 3 oturum. Bırakılsaydı iş kaybolmaz, **Faz C'nin denge ölçümlerinin arasına sızardı**
+ve ölçü sonradan değiştiği için o ölçümler ikinci kez yapılırdı. Pano düzeltildi: **B 9 → 12**,
+toplam **69 → 72**, v1.0 kilometre taşı 68 → **71. oturum**.
+
+**Kalan yol (pano ile birebir):** B 3 oturum (duvar · arka bant+odalar · kamera+DONDURMA) →
+C zincir/denge 5 (ölçü donduktan sonra TEK ölçüm turu) → D meta 5 → E arayüz/cila 3 → F paketleme
+ve yayın 5. **21 oturum.**
+
+**v1 KAPSAM ÇİZGİSİ (bu oturumda çekildi) — v1.1'e bırakılanlar:** Prestij "Renovasyon" · Kat 2
+(D-050 zaten ertelemişti) · sipariş NESNESİ (D-058 karar 1) · aktif WC kâğıt döngüsü + temizlikçi ·
+dekorun tek InstancedMesh'e toplanması (yalnız FPS ölçümü zorlarsa v1'e alınır).
+**v1 = Kat 1 + elmas/Usta + offline tavan + reklam/IAP + mağaza.**
+
+**Açık risk:** gölgenin telefondaki maliyeti ölçülmedi (masaüstünde D-054'te ~+0,6 ms). Ölçüm
+Faz F'de; ayar kolları harita 1024 ve gölge kamerasını oyuncu çevresine daraltmak. **Gölgesizliğe
+dönmek çözüm değil** (D-073 kullanıcı kararı).
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**İKİ KARARI AL, SONRA ÖLÇÜYÜ DONDUR.** Rapor hazır ve yayında:
+https://claude.ai/code/artifact/e49330bc-c918-41ec-a1b4-5c879cae146c
+
+1. **Bandın açılması onaylanıyor mu?** Arka bant artık düz krem kütle değil, maketin odaları —
+   servis köşesi ve merdiven kovası salondan GÖRÜNÜYOR. Maketin kendi kurgusu ama oyunda ilk kez
+   böyle. Geri dönüş noktası tek satır: `Scene.Walls` içindeki `side === 'back'` atlaması.
+2. **Kamera fov: 50 · 42 · 34?** Ölçüldü (aşağıda). Önerim **50 kalsın**.
+
+Karar verilince: **ÖLÇÜ DONDURMA + maket arşiv damgası** → `simulate.ts` TEK KEZ yeniden ölçülür
+→ Faz 4 → 5 → 7 → 8. (Adım 1 duvar ✅ · adım 3 bant ✅ · adım 4 ölçüm ✅ — hepsi main'de.)
+
+### BM adım 4 ölçümü (kod DEĞİŞMEDİ — fov hâlâ 50)
+DEV kolu: `window.__devCam({ fov, distMul })` · kareler `node tools/shot-fov.mjs` →
+`docs/gorsel/ss/bm4-fov50|42|34.png` (aynı nokta, aynı kapsam; mesafe `tan25°/tan(fov/2)` telafili).
+- fov 50 → 34: uzak/yakın görünen boyut oranı **0,60 → 0,70** = sahne **%16 düzleşiyor**.
+- Bedeli: uzak köşeye uzaklık 45 → 66 · `fogNear 34/fogFar 72` ile uzak kenarda sis **%29 → %84**
+  → **fov 34 seçilirse sis yeniden ayarlanmalı** + telefonda yeniden ölçüm. Gölge kamerası etkilenmiyor.
+- Önerim: **50 kalsın** — maketin 34'ü bir gözlem aracının tercihi; D-072'nin kuralı ölçüyü
+  DONDURMAK, ölçülmemiş bir kazanç için değiştirmek değil.
+
+### >>> KARAR 3 (yeni, D-075) — MOBİLYA / KARAKTER ORANI <<<
+Kullanıcı: *"karaktere göre masalar ve tabureler çok büyük durdu"*. İki tur küçültme yapıldı ama
+**kök sebep ölçüldü ve başka yerde:** maketin insanı **1,80**, oyunun karakteri **1,30**. Maketin
+mobilyası 1:1 alınınca karakterin yanında %38 büyük kalıyor. Her turda kısılan PLAN ölçüsü; oranı
+bozan ise **YÜKSEKLİK** — masa 0,75 (karakterin %58'i; makette %42), tabla üstü 0,795 (%61).
+**Masa yüksekliğine DOKUNULMADI** (D-073 kullanıcı kararı, dondurulacak listede). Çıkış iki tane:
+- **(a)** masa yüksekliği 0,75 → ~0,60 · tabure oturağı ~0,40 → mobilya karaktere uyar, maketten sapılır.
+- **(b)** karakter 1,30 → ~1,75 → maket aynen kalır, karakter büyür; koltuk ofsetleri, pad
+  yarıçapları, kamera mesafesi ve nav yarıçapları yeniden ölçülür.
+**Bu karar verilmeden ölçü DONDURULMAMALI** — yoksa donan liste yanlış oranı dondurur.
+
+### Kullanıcı geri bildirimi ✅ (D-074 + D-075 — aynı gece uygulandı)
+*"banketlerin masaları küçük… tabureler orantı olarak çok küçük… mutfak eşyaları mutfak dışında…
+banket masaları ideal boyda ama KARE olsun"*
+1. **İkili masa kare:** bistro (0,99 × 0,70) elendi → 1,00 (L0-L2) / **1,20** (L3+). Üst sınır
+   geometriden: banket adasının görsel yarı-derinliği 1,25, masa merkezi 1,85 → tabla yarısı
+   0,60'ı geçerse tabla oturağın üstüne biner. `deuceHalf` 0,60.
+2. **Tabure ölçeği 0,6 → 1,11:** maketin `stool()`'u referans (oturak üstü 0,555, çap 0,54);
+   eskiden oturak 0,30'daydı, tabla üstü 0,795 → tabure masanın yarısı kadar alçaktı.
+3. **Servis kümesi mutfağın içine:** z −8,6 → −10,3 (tezgâhın ön yüzü bandın hattında),
+   çaycı hattı −11,3. Erişim sabit (0,85 br). `WAITER_STATION` da aynı hizada.
+4. **Değişmez ayrıldı:** aktörün bastığı noktalar alanın İÇİNDE · obje gövdeleri alana DEĞER
+   ve alanın en yakın noktasından `serving.pickupRadius` içinde kalır.
+5. **İkinci tur (D-075):** tabure 1,11 → **0,90** (aşırı büyük olmuştu) · ikili masa 0,90/1,05 ·
+   dörtlü 1,05/**1,68** · banket masası adadan **2,00** (boşluk 0,225), sandalye **3,02**.
+   Koridor noktası 3,50'de bırakıldı (3,65 `waiter` pad dairesine giriyordu — bekçi yakaladı).
+**281/281 · smoke 28/28 · tsc + eslint + build temiz.** Kareler yenilendi (`bmm-*`).
+
+### BM adım 3 ✅ (arka bant + odalar)
+Bant kütle değil **maketin odaları**: bina kabuğu (`BAND_SHELL`, 3,2, salonun duvarıyla aynı bileşen)
++ ara duvarlar 2,2 (x ∓4,6) + servis köşesi (fayans zemin · cezve ocağı · tezgâh · raflar · bulaşık ·
+kasalar · damacana rafı) + merdiven kovası (yıkık merdiven · uyarı şeridi · dubalar) + lavabo
+(açıkken oda, kapalıyken tadilat perdesi + iskele + moloz).
+**Arka yarının ARKA duvarı artık çizilmiyor** — o kenar bir program, tek düz duvar değil.
+Duvarlar collision değil → **nav/denge/kayıt hiç etkilenmedi**; değişen yalnız görüntü.
+Yeni transkripsiyonlar `maketParts.tsx`'te: `MaketCounter · MaketWallShelf · MaketCrates ·
+MaketWaterRack · MaketCezveStation · MaketDishSink · MaketMerdivenHarap · MaketUyariSeridi ·
+MaketDuba · MaketTadilatPerde · MaketIskele · MaketMoloz`.
+**vitest 281/281 · smoke 28/28 · tsc + eslint + build temiz.**
+
+### BM adım 1 ✅ (merge edildi)
+
+`worktree-maket-tasima` main'e alındı. **Korkulan çakışma çıkmadı:** dalın hunk'ları
+`MOUNT`/`LEFT_WALL`/`RIGHT_WALL`/`ENTRY` + `WallTheme`, main'inkiler `CORRIDOR`/`FLOOR_THEMES`/
+`LIGHTING` idi — kesişmediler. Yalnız `activeContext.md` çakıştı, main'in güncel bölümü tutuldu
+(dalın oturum günlüğü git geçmişinde ve `docs/bm-adim1-duvar.html`'de duruyor).
+
+**Merge'ün açtığı kusur aynı adımda kapatıldı:** duvar 1,2 → 3,2 olunca kapı boşluğu da 3,2'ye
+uzamıştı (lento duvarın tepesine yapışıyor, maketteki alınlık hiç doğmuyordu). Maketin giriş bloğu
+transkribe edildi — kapı **2,65** · söveler ∓**2,2** · lento 2,73 · **alınlık 2,65…3,20** · üst
+kordon 3,15. `DOOR = { half, height }` `wallPanel.tsx`'te tek kaynak (Scene + test oradan okur).
+`decor.ts` başlığındaki bayat "duvar 1,2" ve "düşey ölçek ×0,72" gerekçeleri geçersiz işaretlendi.
+**vitest 279/279 · smoke 28/28 · tsc + build temiz.** Kareler: `node tools/shot-kadraj.mjs` →
+`docs/gorsel/ss/bmm-plan|salon|kapi|arka.png`.
+
+### BU OTURUMDA YAPILANLAR
+1. **Dev panelinde ÜSTTEN PLAN** (kullanıcı isteği): `Plan (üstten)` satırı — üstten bak · tam kat /
+   ×1,4 / ×2 · **ölçü ızgarası** (kapalı / 3,20 maket / 4,00 KayKit). Betikten:
+   `window.__devPlan({ topDown, zoom, gridStep })`. Kamera `CameraRig`'te dallanır (DEV'de ölü kod).
+2. **Ölçüm + karar raporu:** `docs/olcu-plan-karar.html` →
+   https://claude.ai/code/artifact/a17055c1-de75-4017-9036-54a893c1992b
+3. **D-073 uygulandı:** gölge geri (maketin takımı) · zemin düz ahşap #b98a5a (plank kalktı) ·
+   ön çeyrek masası 1,75 @ 0,75 · küme aralığı 6,40 · koltuk ∓1,45 · yükseltme noktası ∓2,15 ·
+   collision tipe bağlı (dörtlü 0,875 / ikili 0,50) · REACH_TABLE 1,505 · koridor saksıları taşındı.
+   **vitest 280/280 · tsc temiz.**
+
+### ÖLÇÜM ARAÇLARI (tekrar aranmasın)
+- Oyun kareleri: `node tools/shot-plan.mjs` (dev sunucusu 5173'te açıkken) → `docs/gorsel/ss/olcu-*.png`.
+- Maket kareleri: `cd docs/maket && python -m http.server 8899` + `node tools/shot-maket.mjs`
+  (oyunla AYNI kadraj; maketin fov'u 34, oyunun 50 → mesafe formülü betiğin içinde).
+- Belge kareleri: `node tools/shot-doc.mjs <html> <png>`.
+
+### AÇIK KALEMLER
+- Gölgenin kare maliyeti telefonda ölçülmedi (Faz 7; masaüstünde D-054'te ~+0,6 ms ölçülmüştü).
+- `servis L6` 23,4 dk · `masa seviyesi L4` 21,4 dk bekleme (ikincisi model kusuru).
+- Lavabo seviyesi TEK sinyalle okunuyor. · Dekor tek InstancedMesh'e toplanmadı (Faz F).
+- `optional` pad kategorisi ve `allAreaTablesLevel` gate'i ÜYESİZ. · `spawnInterval` sabit.
+- bundle ~1,46 MB · eslint 16 (hepsi eski dosyalarda).
+- **Denge ölçümleri şimdilik GEÇERSİZ:** masa aralığı 3,20 → 6,40 oldu, yürüme süreleri değişti.
+  Yeniden ölçüm ölçü DONDUKTAN sonra, tek seferde yapılacak (D-072).
+
+---
+
+## ŞU AN (2026-09-07 gece — **TASARIM EN SONA ALINDI, sıra oynanışta**)
+
+**Karar: D-071.** Kullanıcı sırayı geri aldı: *"tasarıma en son döneriz artık yapacak bir şey yok"*.
+Faz B (maket taşıması) **PARK**; önce oynanış/mantık tarafı **eksiksiz** tamamlanacak.
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**Kalan oynanış işlerinin sırasını kullanıcıyla netleştir, sonra başla.** Panoda bekleyenler:
+
+| Faz | İçerik | Durum |
+|---|---|---|
+| **Faz 4 — Ekonomi/meta** | Evrensel L5 (💎/video) · elmas ekonomisi · Prestige "Renovasyon" + İtibar · offline tavan | ⏳ hiç başlanmadı |
+| **Faz 5 — Monetizasyon** | AdMob (banner · sıklık-sınırlı interstitial · rewarded) · RevenueCat IAP · çocuk-güvenli yapılandırma | ⏳ ~%0 |
+| **Faz 7 — Mobil cila** | Capacitor build (APK zaten derleniyor) · dokunmatik · 60 fps (instancing/atlas/LOD) · bundle 1,46 MB | ⏳ |
+| **Faz 8 — Yayın** | Mağaza hesapları · COPPA/GDPR-K · derecelendirme | ⏳ |
+| Faz C/D artıkları | Sipariş NESNESİ (D-058 karar 1) · Kat 2 · aktif WC kâğıt döngüsü + temizlikçi | ⏳ |
+
+**Not:** 2026-09-01 yayına hazırlık denetiminin sonucu hâlâ geçerli — oynanış ~%60-65, **yayın
+katmanı ~%0-5**. Faz 5 + 7 + 8 hiç el değmemiş; mağazaya çıkmak için asıl darboğaz orası.
+
+### PARK EDİLEN İŞ — KAYBOLMASIN
+**`worktree-maket-tasima` dalı (uzakta, `6e61e4c`) SİLİNMEMELİ.** İçinde BM adım 1 var: duvar
+maket v13'ün `wall()`'ı oldu (3,20 · lambri 0,90 · üç katman 0,18/0,22/0,26 · KOYU çıta =
+`WallTheme.rail`), dekorun asma bandı maketin değerlerinde (aplik 2,05 · tablo 1,95 · saat 2,20 ·
+askı rayı 1,85 · pencere 1,15…2,80). vitest 277/277 · smoke 28/28 · tsc temiz.
+Yerel worktree: `.claude/worktrees/maket-tasima` (gitignore'a alındı).
+
+### BU GECENİN ÖLÇÜMLERİ (tasarım sırası gelince buradan devam)
+1. **Oyun maketin küçültülmüşü değil, BAŞKA BİR BİNA** — duvar 1,2↔3,2 · masa 0,9↔1,75 ·
+   masa yüksekliği 0,5↔0,75 · seviyeye göre üç masa boyu makette yok · fov 50↔34.
+2. **Ön çeyrek kümeleri eşleşmiyor, orta şerit eşleşiyor** (`docs/olcum-kaykit-ve-yerlesim.md`):
+   küme merkezi aynı ama masa aralığı 6,40→3,20 · tabla 1,75→~0,90 · koltuk 1,45→0,78 ·
+   kümenin ayak izi maketin **dörtte biri**. Şerit birebir (3,20 · 1,85 · 1,00).
+   **Teşhis: oyun ŞERİDİN masasını ve ızgarasını ön çeyreklere de uygulamış.**
+3. **`WALL_H = 1.2`'nin gerekçesi (kamera) DOĞRULANMADI** — maketin kamerası da 44°, tek fark
+   mesafe; 3,2'lik duvar hiçbir kadrajı kapatmadı. B6a'nın "ağır öğe duvardan iner" kuralı
+   gereksizleşti (TV duvara geri dönebilir).
+4. **Işık/renk boru hattı farkı** (main'de UYGULANDI): maket three r128 + varsayılan renderer →
+   `LinearEncoding`, ton eşlemesi yok = renk yönetimi yapmıyor, yüzeyleri patlatıyor. Oyun
+   three 0.184 ile renk-doğru. Yakınsama: pozlama 1,05→1,60 · yarımküre 0,35→0,72 · güneş
+   1,6→1,45 · soğuk dolgu ışığı eklendi · `parke` teması maketin ahşabına (#b98a5a) çekildi.
+   Ton eşlemesini kapatmak (`flat`) DENENDİ, daha da karartıyor → elendi.
+5. **KayKit duvarları 4 × 4 × 0,5 modül**, 144 model tek materyal + tek atlas. Kat 34 × 34 dörde
+   bölünmüyor (→ 32 ya da 36), duvar 4,0, kapı modül içinde sabit. **KayKit istenirse ÖNCE MAKET
+   güncellenmeli**, sonra transkribe edilmeli (yoksa iki doğru kaynak sorunu geri gelir).
+
+### Maketi oyunun kamerasıyla render etme kancası (tekrar aranmasın)
+`cd docs/maket && python -m http.server 8899` → sayfada `window.__bak(azi, ele, dist, tx, ty, tz)`.
+Oyunun kamerası: oyuncunun (px, pz) noktasından `d = 8,5 × fit × 1,35` yukarı ve güneye, 45°;
+412×915'te d = 14,92 → gerçek mesafe **21,1**. Aynı GÖRÜNEN boyut için maketin dar fov'u yüzünden
+`dist = 21,1 × tan17°/tan25° = 13,83`. Oyun tarafında: `.hud/.touch-layer/.dsb-fab` gizle +
+`__setState` ile tüm pad'leri aç + `camZoomOut: true` + teleport + ~2 sn bekle (kamera lerp'i).
+
+### Raporlar
+`docs/olcum-kaykit-ve-yerlesim.md` · `docs/b6b-arka-bant.html` · `docs/b6b-maket-fark.html` ·
+`docs/b6b-lavabo-varyant.html` · (dalda) `docs/bm-adim1-duvar.html`.
+Ekran görüntüleri `docs/gorsel/ss/b6b-*.png` ve `bm-*.png`.
+
+### Açık kalemler
+- `servis L6` 23,4 dk · `masa seviyesi L4` 21,4 dk bekleme (ikincisi model kusuru: sim masaları
+  tek kalemde yükseltiyor, oyunda masa-başı alınıyor).
+- Lavabo seviyesi TEK sinyalle okunuyor (çini bordür kalktı) — ikinci sinyal lazım.
+- Dekor tek InstancedMesh'e toplanmadı (Faz F). · `optional` pad kategorisi ve
+  `allAreaTablesLevel` gate'i ÜYESİZ. · `spawnInterval` sabit, Kat 2'den önce bakılmalı.
+- bundle ~1,46 MB · eslint 16 (hepsi eski dosyalarda).
+
+### Kırmızı çizgi (duruyor)
+**"Objeler yüzüyor" hissine bir daha blob shadow ÖNERME** (D-054).
+
+---
+
+## ŞU AN (2026-09-07 gece — **PLAN DEĞİŞTİ: B6b iptal, MAKET TAŞIMASI (BM) başlıyor**)
+
+> ⚠️ **İŞ BU DALDA DEĞİL.** BM ayrı bir dalda ilerliyor: **`worktree-maket-tasima`**
+> (yerel worktree: `.claude/worktrees/maket-tasima`, uzakta da var). Main'de yalnız bu kontrol
+> noktası var. **BM adım 1 (duvar) O DALDA BİTTİ** — güncel durum, ölçümler ve sıradaki adım için
+> o daldaki `memory-bank/activeContext.md`'ye bak. Rapor:
+> https://claude.ai/code/artifact/e898c8ea-e518-40e4-927d-5a203eeb148d
+> Dal onaylanınca main'e merge edilecek.
+
+Karar: **D-070**. Raporlar: `docs/b6b-arka-bant.html` (ölçüm) · `docs/b6b-maket-fark.html`
+(maket↔oyun yan yana + ışık ölçümü) · `docs/b6b-lavabo-varyant.html` (A/B).
+
+### Ne oldu
+B6b "arka yarı + bant" üç kez denendi, üçü de kullanıcı tarafından reddedildi:
+1. **Maketin programı ×0,72 ile küçültülüp 1,15'lik banda kırpıldı** (kabin 2,00 → 1,00).
+   *"kabin değil kanat"* — reddedildi, geri alındı.
+2. **`maketParts.tsx` — maketin sayılarıyla birebir transkripsiyon.** Geometri düzeldi,
+   yine *"maketle zerre alakası yok"*.
+3. **Işık/renk ölçülerek maketin ailesine çekildi.** Yine yetmedi.
+
+Üçüncüden sonra ölçüm asıl sebebi verdi: **oyun maketin küçültülmüş hâli değil, BAŞKA BİR BİNA.**
+
+| | maket v13 | oyun |
+|---|---|---|
+| duvar yüksekliği | 3,20 | 1,20 |
+| duvar profili | gövde 0,18 + lambri 0,90 + çıta 0,08 | gövde + lambri 0,50 + süpürgelik + çıta + kartonpiyer |
+| masa tablası | 1,75 × 1,75 | ~0,90 × 0,90 |
+| masa yüksekliği | 0,75 | 0,50 |
+| masa tipi | tek tip | seviyeye göre ÜÇ ayrı boy (makette yok) |
+| kamera | fov 34 | fov 50 |
+
+### Kullanıcının yeni planı (D-070)
+**Önce tasarım komple geçirilecek, sonra kalan işler EKSİKSİZ tamamlanacak.** Kat oda oda değil,
+**tek geçişte** taşınır. Masa çelişkisinin cevabı: ***maket BİTMİŞ HÂLDİR*** — en üst kademe maketin
+ölçüsüne eşitlenir, ara kademeler ondan geriye doğru türetilir ("geçmişe dönük seviyeleri
+tamamlarken ayar vereceğiz").
+
+### Bu gecenin ÖLÇÜLMÜŞ kazancı (main'e kaydedildi, BM bunun üstüne gelir)
+- **Işık/renk boru hattı farkı bulundu ve sayısallaştırıldı.** Maket **three r128**'i varsayılan
+  `WebGLRenderer` ile kullanıyor → `LinearEncoding` çıkış + ton eşlemesi yok, yani renk yönetimi
+  YAPMIYOR ve yüzeyleri patlatıyor (WC fayansı ekrana saf beyaz 255,255,255 düşüyor). Oyun
+  **three 0.184** ile renk-doğru çalışıyor (sRGB + ACESFilmic) ve doğal olarak çok daha koyu iniyor.
+  Ölçüm: salon zemini maket L201 ↔ oyun L118 · WC fayansı L255 ↔ L151 · duvar kremi L185 ↔ L135.
+- Yakınsama: pozlama 1,05 → **1,60** · yarımküre 0,35 → **0,72** · güneş 1,6 → **1,45** ·
+  maketteki **soğuk dolgu ışığı** (#dfe6ff @ 0,28) eklendi. **Güneşin açısı DEĞİŞMEDİ** ([9,9,7],
+  ~40°) — gölge olmadığı için (D-054) hacmi tek başına o taşıyor.
+- **İkinci sebep doygunluk çıktı:** yalnız pozlamayı açmak zemini kum rengine patlattı; oyunun
+  `parke` teması (#c9a87d) maketin ahşabından (#b98a5a) hem açık hem soluktu → tema maketin
+  ahşabına çekildi, pozlama 2,05'ten 1,60'a indi. Sonuç: salon zemini L118 → **L147**,
+  WC fayansı L151 → **L201**. Maketin patlamış değerleri BİLEREK hedeflenmedi.
+- **Ton eşlemesini kapatmak (`flat`) denendi ve sahneyi DAHA da kararttı → elendi.**
+- `maketParts.tsx` doğdu: maketin `wall` · `sink` · `wcSign` · `plant` · `lavaboBlock`
+  fonksiyonlarının birebir transkripsiyonu. **BM'nin çekirdeği bu dosya olacak.**
+- Yol boyunca kapanan gerçek kusurlar: lavabo kapısının **%53'ü** 1,2'lik bandın üstünde havada
+  duruyordu (B4a'dan beri) · menü panosu y 1,28–2,28'de, yani hem duvarın hem bandın üstündeydi ·
+  kendi eklediğim çini bordür maketin kesintisiz lambri kuşağını ikiye bölüyordu (kaldırıldı).
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**BM — MAKET TAŞIMASI.** Ayrı worktree'de, kat komple, tek geçiş.
+`docs/maket/maket-v13.html` · `buildFloor1` TEK DOĞRU KAYNAK.
+Kural: **transkripsiyon yapılır, esinlenilmez**; sapma varsa yanında gerekçesi yazar ve gerekçe
+ancak (a) oynanışa bağlı koordinat ya da (b) maketin kendi parametresi olabilir.
+Kapsam: duvarlar (yükseklik + profil + birleşim) · zemin · mobilya ölçüleri/aralıkları · arka bant ·
+orta şerit · ön çeyreklerin dekoru · kamera. Kabul: 4-5 kadrajdan maket↔oyun yan yana + kullanıcı onayı.
+Sonra: `simulate.ts` bir kez yeniden ölçülür, ara seviyeler maketin bitmiş hâline göre geriye dönük
+ayarlanır, sonra kalan işler eksiksiz tamamlanır.
+
+**Maketi oyunun kamerasıyla render etme kancası (kayda geçiyor, tekrar aranmasın):**
+`docs/maket` klasörünü `python -m http.server 8899` ile servis et, sayfada
+`window.__bak(azi, ele, dist, tx, ty, tz)` çağır. Oyunun kamerası: oyuncunun (px, pz) noktasından
+`d = 8,5 × fit × 1,35` kadar yukarı ve güneye, 45°; 412×915'te d = 14,92 → gerçek mesafe **21,1**.
+Aynı GÖRÜNEN boyut için maketin fov'u dar olduğundan `dist = 21,1 × tan17°/tan25° = 13,83`.
+
+### Açık kalemler (BM'den sonra)
+- `servis L6` 23,4 dk · `masa seviyesi L4` 21,4 dk bekleme (ikincisi model kusuru — sim masaları
+  tek kalemde yükseltiyor). BM sonrası yeniden ölçülecek.
+- Dekor tek InstancedMesh'e toplanmadı (Faz F).
+- Aktif WC kâğıt döngüsü + temizlikçi → Faz C/D.
+- `optional` pad kategorisi ve `allAreaTablesLevel` gate'i ÜYESİZ.
+- `spawnInterval` sabit; Kat 2'den önce yeniden bakılmalı.
+- Lavabo seviyesi şu an TEK sinyalle (lentodaki noktalar) okunuyor — çini bordür kalkınca ikinci
+  sinyal açıkta kaldı, maketi bozmayan bir karşılığı bulunmalı.
+- bundle ~1,46 MB · eslint 16 (hepsi eski dosyalarda).
+
+### Kırmızı çizgi (duruyor)
+**"Objeler yüzüyor" hissine bir daha blob shadow ÖNERME** (D-054).
+
+---
+
+## ŞU AN (2026-09-07 gece — **B6a TAMAM: ön çeyrekler sanat katmanını aldı**)
+
+B6a'nın sorusu "maketin duvar programı oyuna nasıl iner" idi. Cevap iki ölçümden çıktı ve program
+değil, **programın nereye asıldığı** değişti. Karar: **D-069**. Ekran görüntüleri `docs/gorsel/ss/b6a-*.png`
+(aynı kadrajın önce/sonrası: `b6a-once-soldivar.png` ↔ `b6a-sonra-soldivar-eskadraj.png`).
+
+### Bulgu 1 — kesik duvar (1,2 br) maketin programını TAŞIYAMAZ
+Maketin duvarı 3,2, oyununki 1,2 (`wallPanel.WALL_H` — kamera tepeden baktığı için tavana çıkmıyor).
+Maketin y = 1,85…2,20'deki öğeleri bu duvara sığmıyor; nitekim **TV bugüne kadar y = 1,85'te, yani
+duvarın ÜSTÜNDE havada duruyordu**. Kural: **ağır öğe (TV · konsol) duvardan iner, kendi ayaklı
+ünitesine oturur** — hem "havada obje" kusuru kapanıyor hem 45°'lik kameraya bir ÜST YÜZEY doğuyor.
+Duvarda yalnız ince öğeler kalıyor (tablo · aplik · saat · askı rayı · pencere), hepsi 0,54–1,15 bandında.
+
+### Bulgu 2 — yan duvarda DÜZ ASILAN hiçbir şey okunmuyor
+Kamera yatayda tam −z'ye baktığı için z ekseninde uzanan yan duvarlar neredeyse PROFİLDEN görünüyor.
+İlk denemede maketin penceresi birebir küçültülmüştü (koyu doğrama + yarı saydam cam) ve ekranda
+**koyu kahve dikey çubuklara** dönüştü (`b6a-pencere-yakin.png`). Pencere üç sinyale bölündü: derin
+denizlik (odaya 0,30 taşar → ÜST yüzeyi görünür) · AÇIK doğrama · **duvarın TEPESİNE basılan cam bandı**
+(mimari kesitte camın taranması gibi). Aynı sebeple aplik kolu 0,18 → 0,30. **ÖN duvarın iç yüzü ise
+hiçbir kadrajda görünmüyor** → giriş hissi duvarla değil kapının iki yanındaki düşey siluetlerle
+kuruldu (askılık · şemsiyelik · lamba · saksı), üçü kapıyla birlikte taşınıyor.
+
+### Tasarım turu (D-068 §2 uygulandı)
+Kompozisyon için **Fable 5.1** danışıldı; "ağır öğe zemine insin", "yan duvar profilden görünüyor" ve
+"a0/a1 aynalı değil ayrı kimlik" onun ikinci gözünden çıktı. **Alınmayan üç öneri:** soba (maket onu
+arka salona koyuyor — B6b) · ayaklı kül tablası (D-032 yaş sınırı) · sarkıt lamba (Fable'ın kendisi de
+"önce mockup onayı" dedi → B6b'de sorulacak).
+
+### Yapılan (kod)
+- **`src/config/decor.ts` (YENİ)** — dekorun tek veri kaynağı, 17 tür, `from` ile adım katmanı.
+  `LAYOUT.decor` **KALKTI** (eski 21 × 21 koordinatları taşınarak kapandı). Çizim `Decor.tsx`te.
+- a0 **"ocak duvarı"**: aplik · konsol/büfe (radyo + tepsi + saksı) · tablo · saksı · TV ünitesi · aplik.
+- a1 **"cam kenarı"**: üç pencere · petek · denizlik çiçekleri · iki aplik · gazetelik.
+- Giriş: paspas + askılık + şemsiyelik (kapıya göreli) · lamba · saksı · askı rayı · saat · kovalar.
+- Koridor çerçevesi: ∓4,6 · z 13,4 ve 3,4 — boşluğu **hol · salon · duvar dibi** diye üçe ayırıyor.
+- **Personel bekleme noktaları taşındı** (açık kalem): garsonlar (−11,0/−7,2) → **(−14,6/−6,6)**,
+  bulaşıkçı (−5,6/−7,2) → **(−6,9/−7,75)**. İkincisi kayıtlarda yoktu, ölçümde çıktı: masa 12'nin
+  yükseltme noktasına **0,32 br** kalıyordu. Ritim tek kaynakta: `waiterHomeAt` · `staffIdleSpots`.
+- **`zone3` 3400 → 2500₺** (açık kalem). `simulate.ts`'e kalıcı **"EN UZUN BEKLEME"** bekçisi eklendi
+  (iki ardışık ALIM arası boşluk). Ölçülen: **26,9 → 19,6 dk**; zincir Normal 5,21 → 5,08 sa; `zone3`
+  öncesindeki her satır birebir aynı. Gerekçe fiyat kırmak değil D-066'nın alan pad'ine uygulanması:
+  **alan MEKÂN satar, gelir satmaz** — oranı büyüten şey arkasından gelen TEZGÂH.
+
+### Doğrulama
+vitest **279/279** (yeni `tests/layout-b6a.test.ts` 9) · smoke **28/28** · build + `tsc -b` temiz ·
+eslint 20 (tabanla birebir aynı). Perf (NPC kapalı, aynı kadrajlar): sol duvar 119 → 120 çağrı ·
+**cam kenarı 104 → 167** · giriş 162 → 180.
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**B6b — arka yarı + bant** (Faz B'nin son adımı): sedir köşesi (üç sedir U + alçak sehpa + minder +
+soba) · yan salon · servis bloğunun içi · bandın okunur hâli · **lavabonun İÇİ** (kabin · ayna ·
+fayans · tavan ışığı) · **yıkık merdiven** (D-058 karar 2). Çalışma biçimi D-068 ile aynı.
+**B6a'dan devreden üç görsel soru B6b'de kullanıcıya sorulacak:** (1) masa kümelerinin üstüne sarkıt
+lamba mı, (2) pencerelerin önüne zemine düşen gündüz ışığı lekesi mi (gölge değil, ışık — D-054'ün
+kapsamında değil ama onay ister), (3) şeridin ORTASI (x ≈ 0) hangi objeyle dolacak.
+
+### Bilinen, ertelenmiş
+- **`servis L6` 23,4 dk bekletiyor** (Normal) — merdivenin son basamağı; B4 "eğrinin dikliği
+  çarpandan belirleyici" dediği için yassıltılmadı, yassıltmak platoyu geri getirir. Açık kalem.
+- **`masa seviyesi L4` 21,4 dk — MODEL KUSURU**, denge kusuru değil: `simulate.ts` tüm masaları TEK
+  kalemde yükseltiyor, oyunda masa-başı alınıyor. Simülatör masa-başı alıma çevrilirse kapanır.
+- Dekor **tek InstancedMesh'e toplanmadı** (duvar/zemin deseninde olduğu gibi) — cam kenarı kadrajı
+  +63 çizim çağrısı. Faz F kalemi.
+- Aktif WC kâğıt döngüsü + temizlikçi personeli → Faz C/D (taşıma kolunda boşluk %74 olunca).
+- Şeridin ORTASI (x ≈ 0) bilerek boş (kapı–merdiven geçidi) — B6b.
+- `spawnInterval` sabit: timer küresel, katla büyümüyor → 56 koltuğun ~yarısı hiç dolmuyor.
+  Bilinçli (arz zaten darboğaz) ama Kat 2'den önce yeniden bakılmalı.
+- `optional` pad kategorisi ve `allAreaTablesLevel` gate'i hâlâ ÜYESİZ (B5b/Ö6'dan beri).
+- Maket girişinin üst çıtasında z-fighting · bundle ~1,46 MB · eslint 20 hatası (hepsi eski).
+
+### Kırmızı çizgi (duruyor)
+**"Objeler yüzüyor" hissine bir daha blob shadow ÖNERME** (D-054).
+
+---
+
+## ŞU AN (2026-09-07 gece — **B4a TAMAM: plato kırıldı, lavabo kendi istifiyle geliyor**)
+
+B4'ün sorusu "lavabonun çarpan eğrisi ne olsun" idi. Ölçüm iki şeyi düzeltti, kullanıcı üçüncüyü.
+Tam rapor: `docs/denge-raporu-b4.md` · karar: **D-067**.
+
+### Bulgu 1 — Kat 1'de THROUGHPUT kolu tükenmiş (kolun yeri artık tercih değil)
+Servis merdiveni ₺ ile L6'da bittiği için arz **0,78 fincan/sn**'de tavan; taşıma tavanı tam
+kadroda **1,25**. Çay/dk'da kalan tüm baş boşluğu **×1,6** ve arkası ölü (garson havuzu 3'te,
+karakter kademeleri bitiyor). Yani "ekonomi = throughput" kuralı iptal olmadı — **Kat 1 için
+tükendi**, yeni throughput Kat 2 ile gelir. Kalan tek büyüme yönü: **müşteri başına ₺**.
+
+### Bulgu 2 — aktif kâğıt döngüsü YANLIŞ DEĞİL, YANLIŞ ZAMANDA (çıkarıldı)
+Eski tasarım kâğıt ikmalini aktif angarya olarak kurmuştu. Platonun tam penceresinde
+(L6 · 12 masa · 3 garson) oyuncunun taşıma kolundaki **boş zaman payı %5**, kâğıt turu ise
+zamanının **%31**'i → tam orada geliri KESER. Şerit dolduktan sonra boşluk %74, aynı döngü
+bedava sığıyor → **Faz C/D'ye ertelendi.**
+
+### Kullanıcı düzeltmesi — çarpan DEĞİL, odanın KENDİ İSTİFİ
+> *"lavabo geliri lavabo önünde istif olarak birikir... müşteriler çıkmadan lavaboya girip
+> çıkabilir, girip çıkınca da ekstra orada da para birikir"*
+
+Müşteri ödeyip kalkar → lavaboya uğrar (içeride görünmez) → çıkışta parasını **odanın önündeki
+istife** bırakır → oyuncu gidip toplar. Aynı `Coin`, aynı Model B′ istifi: **para sunumu
+değişmedi**, yalnız ikinci bir düşme noktası doğdu. Fiyat/bahşiş sabit → **D-010 delinmedi**.
+
+### Sayılar (onaylı ivme ×1,38/adım)
+| lavabo | uğrama | ücret | müşteri başına | idealize gelir |
+|---|---|---|---|---|
+| L0 | — | — | 0 | 15,62 ₺/sn |
+| L1 (pad 3.000₺) | %30 | 18₺ | 5,4 | 19,84 |
+| L3 (5.000₺) | %40 | 32₺ | 12,8 | ~26 |
+| L6 (11.500₺) | %55 | 86₺ | 47,3 | **52,57** |
+
+Seviyeler 4.000/5.000/7.000/9.000/11.500; görev hattı **DÖNÜŞÜMLÜ** (bir şerit masası → bir
+lavabo seviyesi). **Plato 1,42 sa → 13,4 dk · zincir 5,35 → 5,21 sa (tempo bedeli YOK) · servis
+L6'ya kadarki her satır taban ile birebir.** Öğrenilen: **seviye maliyet eğrisinin dikliği
+çarpanın kendisinden daha belirleyici** (dik eğri düz aralığı 41 dk'ya çıkarıyor).
+
+### Yapılan (kod)
+- `world.ts` odaları türetir (`openRoom` etkisi + `roomOpen`) — oda oturma EKLEMEZ.
+- `layout.ts` `LAVABO`: pad = yükseltme noktası = müşterinin kapı hedefi **aynı nokta**
+  ([13,4 · −9,3]; x tesadüf değil, masa 12'nin yükseltme noktasına 2,55 br kalsın diye).
+- `types.ts` NPC durumları `toWc`/`inWc` · `Customers` içerdekini çizmez (ölçek 0).
+- `tick.ts` uğrama + istif + `lavaboUpgradeSystem` · `rules.ts` `hasLeftTable` (lavabodaki
+  müşteri KOLTUĞU tutmaz) + `incomeRate`'in dördüncü parametresi.
+- `store/save` `lavaboLevel` **additive** → **SAVE_VERSION 31'de KALDI**; oda kapalıysa seviye
+  0'a, açıksa en az 1'e kelepçelenir (çelişki sızamaz).
+- `Scene.LavaboFront`: kapalıyken **tadilat hâli** (tahta perde + uyarı bandı), açıkken kapı +
+  çini bordür + kapı üstünde seviye noktaları. `simulate.ts`'e kol kalıcı girdi.
+
+### Doğrulama
+vitest **270/270** (yeni `tests/room-b4.test.ts` 12) · build + `tsc -b` temiz · eslint 16
+(değişmedi) · smoke **28/28** (yeni iki adım: pad gerçek yerinde açılıyor · ücret odanın önündeki
+istifte birikiyor — 3 ödeme 72₺ ölçüldü).
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**B6a — maketin SANAT KATMANI, ön çeyrekler (a0 + a1).** Maket görselliğine geçiş burada başlıyor.
+(**B4b KALDIRILDI** — kapsamı B6b'ye katıldı, D-068. Sebebi: lavabonun içi + merdiven + bandın içi
+zaten B6b'nin "arka yarı + bant" işiydi; greybox'la şimdi yapıp KayKit'le orada yeniden yapmak
+aynı işi iki kez yazmak olurdu. Kullanıcı onayladı.)
+
+**B6a kapsamı:** giriş holü (paspas · askılık · gazetelik · saksı · tablo · duvar saati), sol duvar
+donanımı (askı rayı · konsol · TV · aplik), cam kenarı, kilim/zemin yamaları, ayaklı lamba.
+Ölçü: bugün oyunda **16 dosya**, maket v13'te **107 obje/yardımcı**.
+
+**ÇALIŞMA BİÇİMİ (kullanıcı kararı — D-068), dört madde:**
+1. **Önce ben tam gücümle denerim; Astra SONRA, gerekirse.** (*"önce sen dene ona göre astraya
+   geçeriz"*) — Astra'nın ölçülmüş 3B üstünlüğü Blender/geometride, react-three-fiber'da kod
+   yazarak sahne kurmada karşılaştırma YOK.
+2. **Tasarım turunda Fable 5.1 desteği al** (*"tasarım aşamasında fable 5.1'den destek alman
+   faydalı olabilir"*): dekor/kompozisyon turu için `model: "fable"` alt ajanı — kararı ve kodu
+   BEN yazarım, Fable görsel yön için ikinci göz. Devir değil danışma (D-045 bozulmaz).
+3. **A/B'ye hazır kur:** dekor salt görsel (collision yok) → `layout.ts`'in nav/collision kısmından
+   ayrı, TEK veri dosyasına insin. `store.ts`/`economy.config.ts`/`save.ts`/testler bölünmez.
+4. **Görsel karar tek "sonra" görüntüsüyle verilmez** (Faz G dersi): varyantlar aynı kadrajdan
+   çekilip sorulur.
+
+**Not — LAVABONUN BUGÜNKÜ HÂLİ:** `LavaboFront` **6 düz düzlem, 0 hacim**. Bandın ön yüzüne
+yapıştırılmış kapı çerçevesi + koyu kapı boşluğu + çini bordür + seviye noktaları. Kapının arkasında
+oda YOK; müşteri kapı noktasında ölçeği 0'a düşüp kayboluyor, 2,5 sn sonra beliriyor. Bu bilinçli
+bir ara durum — hacmi B6b verecek.
+
+### Bilinen, ertelenmiş
+- **`zone3` pad'i (3.400₺) Normal profilde 26,9 dk bekletiyor** — B4 öncesinde duruyor, tabanda
+  da vardı; "20 dk'yı aşan alım kalmasın" ölçütünü aşan tek nokta. Açık kalem.
+- Aktif WC kâğıt döngüsü + temizlikçi personeli → Faz C/D (taşıma kolunda boşluk %74 olunca).
+- Yerleşim düzenlemesi ("kesinlikle düzenlenmeli" — kullanıcı) → B6a/B6b.
+- Şeridin ORTASI (x ≈ 0) bilerek boş (kapı–merdiven geçidi) — B6b.
+- Sol duvar programının gerisi (askı rayı · konsol · gazetelik) — B6a.
+- `LAYOUT.decor` hâlâ eski 21 × 21 koordinatlarında — B6.
+- Arka bandın `waiterHome`'u masa 12'nin yükseltme noktasına 0,7 br — B6a.
+- `spawnInterval` sabit: timer küresel, katla büyümüyor → 56 koltuğun ~yarısı hiç dolmuyor.
+  Bilinçli (arz zaten darboğaz) ama Kat 2'den önce yeniden bakılmalı.
+- `optional` pad kategorisi ve `allAreaTablesLevel` gate'i hâlâ ÜYESİZ (B5b/Ö6'dan beri).
+- Maket girişinin üst çıtasında z-fighting · bundle ~1,44 MB · eslint 16 hatası (hepsi eski).
+
+### Kırmızı çizgi (duruyor)
+**"Objeler yüzüyor" hissine bir daha blob shadow ÖNERME** (D-054).
+
+---
+
+## ŞU AN (2026-09-07 gece — **B5b TAMAM: masa ALAN satar, gelir satmaz**)
+
+B5b'nin sorusu "şeridin eğrisi dik mi kalsın" idi. Model sökülünce sorunun **yanlış soru**
+olduğu çıktı (**D-066**). Tam rapor: `docs/denge-raporu-b5b.md`.
+
+### Bulgu 1 — masa açmak bu ekonomide HİÇ gelir kolu olmamış
+`gelir = min(talep, arz, taşıma) × (fiyat + bahşiş)`. Arz tek servis noktasının demleme hızı ve
+sadeleşince **bir servis noktası en fazla `(yürüme+içme)/demleme + 1` koltuk** doyuruyor — L6'da
+**5,69 koltuk**. Kat ise masa L4'te **56 koltuk**. Yani `table3`'ten (≈3. dk) itibaren talep hep
+en büyük terim: açılan HİÇBİR masa geliri artırmıyor. 16 masa pad'i, ~350.000₺, katkı **sıfır**.
+B5a'nın "denge birebir aynı çıktı" ölçümünün sebebi de buymuş — masa sayısı geliri değiştiremiyor.
+
+### Bulgu 2 — asıl sorun eğri değil, PLATO
+Servis L6 (₺ tavanı) Normal profilde 3,72 sa'de, masa L4 bahşişi 43 dk'da tavana ulaşıyor. Sonra
+oran donuyor ve şeridin sekiz masası tam o donmuş bandın içinde duruyor → **~6,6 saatlik sabit
+hızlı plato** (onaylı tempo kuralı "zone ~1 sa+" iken 3. Alan ~8,5 saat sürüyordu).
+
+### Bulgu 3 — gelirin ÜÇÜNCÜ tavanı vardı: TAŞIMA (sim onu hiç görmüyordu)
+Verim çarpanının (0,80/0,55/0,35) içinde saklıydı → garson/tepsi/karakter fiyatları ÖLÇÜLEMİYORDU.
+`simulate.ts`'e gerçek BFS yollarıyla eklendi: `avgServeDist` · `carrierRate` · `carryRateOf` ·
+`bindingArm`; formüle üçüncü `min` terimi olarak girdi (tavan bilerek İYİMSER = üst sınır, yanlış
+alarm vermesin diye). Ölçüm:
+
+| durum | ort. yol | talep | arz | **taşıma** | darboğaz | gelir |
+|---|---|---|---|---|---|---|
+| 4 masa · L2 · 1 garson | 6,3 | 0,43 | 0,30 | 0,81 | arz | 1,52 |
+| 8 masa · L3 · 1 garson | 15,0 | 1,90 | 0,41 | 0,59 | arz | 2,87 |
+| **12 masa · L6 · 2 garson** | 19,6 | 5,49 | 0,78 | **0,66** | **TAŞIMA** | **13,13** |
+| 12 masa · L6 · **3 garson** | 19,6 | 5,49 | 0,78 | 0,80 | arz | **15,62** |
+| 20 masa · L6 · 3 garson (tam karakter) | 17,5 | 7,69 | 0,78 | 1,25 | arz | 15,62 |
+
+→ Tezgâhtan (L4) sonra darboğaz TAŞIMA; L6'da oran sanılan 15,62 değil **13,13 ₺/sn** (yani şerit
+dolumu 9,74 değil **10,31 sa** imiş). **3. garson +%19 gelir** alıyor, 6000₺ ~40 dk'da amorti.
+Taşıma kolu tükendiğinde darboğaz yine arza dönüyor: **plato ~45 dk gecikiyor, kalkmıyor.**
+
+### Yapılan
+- **Ö5 · taşıma kolu** `simulate.ts`'e eklendi + `bindingArm` teşhisi + "ÜÇ KOL" tablosu.
+- **Ö1 · şerit eğrisi ×1,4545 → ×1,15** (194.300 → **51.100₺**):
+  3700 · 4250 · 4900 · 5650 · 6500 · 7500 · 8650 · 9950 (fillRate = maliyet / 3,5 sn).
+  Ölçüldü: şerit dolumu Normal **10,31 → 5,28 sa**; Rahat profil ilk kez bitiriyor (**8,30 sa**).
+  Servis L6'ya kadarki HER satır birebir aynı — erken oyuna dokunulmadı.
+- **Ö4 · ödüllü video kararı** `docs/monetization.md`'ye yazıldı: ödül = geçici DEMLEME çarpanı
+  ("Semaver kaynadı" ×2 / 60 sn) — bağlayıcı tavanın (arz) tam üstüne biner. Uygulama Faz 5.
+- **Ö2 · plan sırası düzeltildi:** B4 (lavabo = pasif çarpan) platoyu kıran kolu taşıyor →
+  **B4 önce, şeridin SON fiyatı B4'ten sonra ölçülür.**
+- **Eğri bekçisi yeniden yazıldı** (`tests/table-b5a.test.ts`): eski test ×1,4545 oranını
+  koruyordu — o oran artık bir yalan. Yeni bekçi ×1,15'i, a2'den şeride girişte sıçrama
+  olmamasını ve şeridin toplamının 6 × 9000₺'yi geçmemesini bekliyor.
+
+### Reddedilenler (gerekçeleriyle)
+- **Arzı şişirmek:** masaların gelir getirmesi için arz ~10 katına çıkmalı; taşıma (1,25), geliş
+  (`spawnInterval` 1,6 sn/grup ≈ 1,38 kişi/sn) ve 58 NPC tavanı (`maxConcurrent = koltuk + 2`)
+  yolu keser. Üçünü açmak "elle servis, aşırı otomasyon yok" kuralını (D-014) iptal eder.
+  **Oyunun throughput tavanı ~1 bardak/sn ve bu bilinçli** — uyumsuz olan masa sayısının iddiası.
+- **"Para eksik kalırsa reklamla pad'i tamamla"** (kullanıcı fikri): kural ihlali değil ama
+  gereksiz — Ö1'den sonra ~20 dk'yı aşan tek bir alım kalmadı (en pahalı masa 9.950₺ ≈ 10,6 dk;
+  en büyük tek harcama karakter tepsisi T4, 18.000₺ ≈ 19,2 dk). Tempo sorununu eğriyi düzeltmek
+  varken reklamla geçiştirmek türün tuzağı. B4'ten sonra 20 dk'yı aşan alım kalırsa yeniden açılır.
+
+### Doğrulama
+vitest **258/258** (yeni `tests/chain-b5b.test.ts` 3) · build + `tsc -b` temiz · smoke 26/26 · `simulate.ts`'in servis L6'ya kadarki
+tüm satırları taban ile birebir.
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**B4 — Odalar** (D-066 plan düzeltmesi: platoyu kıran gelir kolu burada).
+Lavabo = oturma EKLEMEZ, **pasif gelir çarpanı**, kendi seviyeleri · yıkık merdiven ("Kat 2 çok
+yakında") · arka bandın içi açılır. Lavabonun çarpan eğrisi tasarlanırken hedef: L6'dan sonra
+oranın donması BİTSİN (bugün 15,62'de duruyor). Ölçüm aracı artık üç kolu da görüyor.
+
+### Ö6 + Ö7 — `waiter3` omurgaya girdi, hiza BEKÇİLENDİ ✅ (ayrı commit)
+Kullanıcı: *"en kalitelisi ne ise o olsun ama görev ve geliştirme zincirinde bunu da mutlaka
+hesaba kat çünkü onlar birbirine karışıyordu."* Sökünce çıkan: `waiter3` oyundaki **tek**
+`optional` pad ve `allAreaTablesLevel`'ın **tek** kullanıcısıydı — tek üyeli bir kategori, ve o
+gate masa yükseltmeleri serbest sırayla alındığı için görev hattının sırasıyla hizalanamıyordu.
+- **Ö6:** `optional: true` kalktı, gate **`minStationLevel: 6`** oldu, görevi (`q_waiter3`)
+  `q_stationMax`'in hemen ardına kondu, `z3table5.prev = ['waiter3']`. Şerit artık 13,13 değil
+  **15,62 ₺/sn**'de akıyor; tempo bedeli 5,28 → **5,35 sa** (Normal) — kazanç hızda değil histe.
+- **Ö7:** `tests/chain-b5b.test.ts` — üç değişmez, hepsi config'den türer:
+  (1) görev hedefi olan pad yalnız hattın SIRALAYABİLDİĞİ gate'leri taşır (`prev` ·
+  `minStationLevel` · `minTables`; `minLifetime` yazılı istisna), (2) hat yürütülünce her pad
+  görevi gate'i karşılanmışken gelir, (3) omurga pad sırası == hattaki pad sırası.
+  **Karışmanın yapısal sebebi:** `visiblePads` aktif görevin hedef pad'inde tempo gate'lerini
+  BİLEREK atlıyor (2026-06-11 fix) → hattın gösterdiği pad, zincir "sırası gelmedi" dese bile
+  beliriyor ve gate bir SÜSE dönüşüyor. waiter3'ün eski gate'i tam olarak buydu.
+- **Temizlik adayı:** `optional` pad kategorisi ve `allAreaTablesLevel` artık ÜYESİZ. Silinmediler
+  (Faz D meta katmanı opsiyonel pad getirebilir) ama boşluk teste yazıldı — kaza değil karar.
+
+### Onay bekleyen
+(yok — B5b'nin tüm kalemleri kapandı)
+- **Ö3 — bahşiş seyrelmesi ✅ YAPILDI** (ayrı commit). `findTableForGroup` alan içinde artık
+  **önce SEVİYE, sonra boş koltuk** sıralıyor (alan round-robin'i korundu). Kusur şuydu: servis
+  edilen bardak sayısı arz tavanıyla SABİT olduğu için yeni açılan L0 masa o sabit bardakların bir
+  kısmını çekip bahşişsiz ödüyordu → masa AÇMAK geliri kısa vadede DÜŞÜRÜYORDU. Artık yeni masa
+  yalnız TAŞMA alıyor; yan kazanç: iyi masalar hep dolu, yani yükseltme ekranda okunuyor.
+
+### Kırmızı çizgi (duruyor)
+**"Objeler yüzüyor" hissine bir daha blob shadow ÖNERME** (D-054).
+
+### Bilinen, ertelenmiş
+- Yerleşim düzenlemesi ("kesinlikle düzenlenmeli" — kullanıcı, sonraya bıraktı) → B6a/B6b.
+- Arka bandın içi boş kütle (lavabo kabinleri, yıkık merdiven) — **B4**.
+- Şeridin ORTASI (x ≈ 0) bilerek boş (kapı–merdiven geçidi) — **B6b**.
+- Sol duvar programının gerisi (askı rayı · konsol · gazetelik) — **B6a**.
+- `LAYOUT.decor` hâlâ eski 21 × 21 koordinatlarında — **B6** (yeni masalarla çakışmıyor).
+- Arka bandın `waiterHome`'u masa 12'nin yükseltme noktasına 0,7 br — **B6a**.
+- `spawnInterval` sabit: config yorumu "talep kapasiteyi takip eder" diyor ama timer küresel ve
+  katla büyümüyor → 56 koltuğun ~yarısı hiçbir zaman dolmuyor. Bilinçli bırakıldı (arz zaten
+  darboğaz), ama **B4'ten sonra yeniden bakılmalı**.
+- Maket girişinin üst çıtasında z-fighting · bundle ~1,44 MB · eslint 16 hatası (hepsi eski).
+
+---
+
+## ŞU AN (2026-09-07 gece — **B5a TAMAM: kat 20 masa, masa tipleri ayrıldı**)
+
+B5 kullanıcı kararıyla ikiye bölündü: **B5a = model + pad zinciri + masa tipleri (denge SABİT
+tutulur ve ölçülür)** · **B5b = denge ayarı**. B5a bitti (**D-065**). Kat **12 → 20 masa**
+(8 dörtlü + 12 banket ikilisi). Denge DEĞİŞMEDİ — ölçüldü, aşağıda.
+
+### İki kelepçe birden kalktı
+1. **`TABLES_PER_AREA = 4` → `TABLE_SLOTS_PER_AREA = [4, 4, 12]`.** B3-1'de alanların KENDİSİ eş
+   olmaktan çıkmıştı; masa sayısı hâlâ tek sabite bağlıydı, yani `i / 4` aritmetiği artık YANLIŞ
+   cevap veriyordu (12. masa a2'nin 5. slotu, "3. alan" değil). Sınırlar tek prefix toplamında
+   (`AREA_TABLE_START = [0,4,8,20]`); `areaOfTable` bölme değil sınır sorgusu.
+2. **`seatsByLevel` masa TİPİNE ayrıldı:** `four` 1/2/2/**4**/4 · `deuce` 1/2/2/**2**/2. Tip alanın
+   PLANINDAN gelir (`TABLE_KIND_PER_AREA = ['four','four','deuce']`), koltuğun YERİ layout'tan; test
+   ikisini bağlar (`seats.length === SEATS_OF_KIND[kind]`). B3-2'nin `seatsAtTable` kelepçesi doğru
+   cevabı TESADÜFEN veriyordu (min(4,2)=2) — artık cevabı merdiven veriyor, kelepçe savunma.
+
+### Görsel: L3 iki tipte de tek değişim, farklı geometri
+Dörtlü masa kare BÜYÜR (`table_medium`), ikili BİSTROYA döner (`table_medium_long` — banka paralel
+uzar, derinliği azalır). İkili masa hiçbir seviyede dört sandalyelik tabla taşımaz (oyuncuya yalan
+söylemez). Eşleme `tableLook()` tek kaynağında: React'siz ayrı dosyada (`tableLook.ts`) çünkü
+`Tables.tsx` `recolor` üzerinden `Image`'a bağlı ve vitest'te import edilemiyor.
+
+### Zincir + gating
+8 yeni pad (`z3table5…12`). Maliyet yeni eğri DEĞİL, a2'nin kendi son oranının (3200/2200 = ×1,4545)
+sürdürülmesi: 4650 · 6750 · 9800 · 14250 · 20750 · 30200 · 43950 · 63950 (toplam 194.300₺).
+Görevleri hattın SONUNA eklendi (araya değil) + önlerine **`q_stationMax`** (tezgâh L6): arz
+tavandayken yeni masa hiçbir şeyi hızlandırmaz. `allAreaTablesLevel` **`count`** alanı aldı —
+`waiter3`'ün "a2'nin tüm masaları L2" koşulu a2 dörtten 12'ye çıkınca sessizce üç katına
+fırlıyordu; `count: 4` ile eşik B5a öncesiyle birebir aynı kaldı (kaydırmak B5b'nin kararı).
+
+### Testin yakaladığı GERÇEK kusur
+`waiter2`/`waiter3` pad'leri bandın önündeki koridordaydı ve B3-2'de doğruydu (şerit yalnız DIŞ
+sütunu taşıyordu). Orta/iç sütunlar (∓8,5 · ∓5,3) açılınca güney yüzlerinin yükseltme noktaları o
+koridoru doldurdu: waiter2 masa 13'ün noktasına **0,50 br**, waiter3 masa 17'ninkine 1,77 br
+(eşik `PAD_RADIUS + TABLE_UP_RADIUS` = 2,3) → oyuncu garson pad'ini doldurmak için durunca masayı da
+yükseltmeye başlıyordu. İkisi şeridin uçlarına çekildi (∓14,7 / −5,0; adaların dış ucundan sonrası
+duvara kadar 4,7 br boş).
+
+### Ölçüm — DENGE BİREBİR AYNI
+`simulate.ts`'in var olan **yirmi bir satırının hepsi** taban ile birebir: ilk alım 40 sn · garson
+11,1 dk · 2. Alan 34,6 dk · bulaşıkçı 1,00 sa · 3. Alan 1,83 sa · tezgâh 1,99 sa · tost 2,55 sa ·
+servis L6 3,69 sa (Normal profil). Tek fark: iki YENİ satır + artık yanlış olan "(zone-3 dolu)"
+etiketinin kalkması.
+
+| Yeni ölçüm (B5b'nin girdisi) | Yoğun | **Normal** | Rahat |
+|---|---|---|---|
+| Şerit yarısı (16. masa) | 3,27 sa | **4,84 sa** | 7,48 sa |
+| ŞERİT DOLDU (20. masa) | 6,70 sa | **9,74 sa** | — (12 sa'de bitmiyor) |
+
+### Doğrulama
+vitest **255/255** (242 + yeni `tests/table-b5a.test.ts` 13) · smoke **26/26** · build + `tsc -b`
+temiz · eslint **16** (taban 19'du, 3 azaldı) · tarayıcıda dört kare
+(`docs/gorsel/ss/b5a-serit-sol|genis|L4|dortlu-vs-ikili.png`), konsol **0 hata**.
+
+### Bu adımın kalıcı dersi
+**Bir sabit yalana dönüştüğünde en tehlikeli yeri kod değil TESTTİR.** `layout-b32`'nin
+`STRIP = [8,9,10,11]` dizisi ve `layout-b31`'in rota kademesi `[3, 12]` yazıldıkları gün doğruydu;
+şerit 12 birime çıkınca ikisi de sessizce KÖRLEŞTİ — bekçilik ettikleri kurallar yeni sekiz birimde
+hiç sınanmayacaktı. Aralıkları yerleşimden türetince test hemen gerçek kusuru yakaladı. Elle yazılmış
+index dizisi bir VARSAYIMDIR ve varsayımlar da tıpkı kod gibi bayatlar.
+B1 aracın ÇIKTISI · B2 aracın VARSAYIMI · B3-1 aracın GÜRÜLTÜSÜ · B3-2 kaynağın KAPSAMI ·
+**B5a bekçinin KÖR NOKTASI.**
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**B5b — denge (kullanıcı onayı GEREKİR, sayılar masada).** Ölçümün söylediği: şeridin son sekiz
+masası 194.300₺ ve gelir orada SABİT (servis L6 tavanı 15,62 ₺/sn; L6'dan sonra başka throughput
+kolu yok) → kuyruk düz bir grind, Rahat profil şeridi 12 saatte bitiremiyor. Karar verilecek dört şey:
+1. Eğri ×1,4545 kalsın mı, yoksa şeridin kuyruğu yassılaşsın mı?
+2. L6 sonrası bir **throughput kolu** gerekiyor mu (3. garson zorunlu / garson tepsi kademesi /
+   B4'ün lavabo çarpanı) — yoksa 20 masanın koltukları hiçbir zaman dolmaz.
+3. a2'nin masa yükseltme eşiği `z3table4`'te mi kalsın (bugün öyle, tempo sabit kalsın diye)?
+4. `waiter3`'ün `count: 4`'ü büyüsün mü?
+
+**KULLANICININ B5b İÇİN VERDİĞİ GİRDİ (2026-09-07 oturum sonu):**
+- Soru 1 açıklandı ve somutlandı: bugünkü ×1,4545 eğride saf bekleme 13. masada 5 dk, 16'da 15 dk,
+  18'de 32 dk, **20. masada 68 dk** (gelir L6'da sabit 15,62 ₺/sn). Yani son masa ilkinin 13 katı
+  bekletiyor. Soru "dik mi kalsın, yoksa artış oranı mı düşsün".
+- Soru 2 için kullanıcı: *"destek gelebilir ama reklam ile mi olsa acaba bilemedim"* → **ödüllü
+  video** (geçici hız artışı) bu kuyruğun içine oturabilir; monetizasyon kuralına da uyuyor
+  (zorunlu değil, yalnız hızlandırır — `docs/monetization.md`). Karar verilmedi.
+- Kullanıcı yönergesi: *"bu sorularını en mantıklı şekilde çözeriz"* → B5b'de dört soruya
+  GEREKÇELİ birer öneri getir, sonra onay al (denge değişikliği onaysız uygulanmaz kuralı sürer).
+
+⚠ Kullanıcı ayrıca **yerleşimin düzenlenmesi gerektiğini** söyledi ("kesinlikle düzenlenmeli") ama
+onu SONRAYA bıraktı — B6a/B6b'nin konusu, B5b'den önce açılmaz.
+
+### Kırmızı çizgi (duruyor)
+**"Objeler yüzüyor" hissine bir daha blob shadow ÖNERME** (D-054).
+
+### Bilinen, ertelenmiş
+- Arka bandın içi boş kütle (lavabo kabinleri, yıkık merdiven) — **B4**.
+- Şeridin ORTASI (x ≈ 0) bilerek boş: maket orayı kapı–merdiven geçidi yapıyor. Dolgusu **B6b**.
+- Sol duvar programının gerisi (askı rayı · konsol · gazetelik) — **B6a**.
+- `LAYOUT.decor` (çöp kovaları, saksılar) hâlâ eski 21 × 21 koordinatlarında — **B6**.
+  (B5a'da ölçüldü: yeni 20 masanın hiçbiriyle ÇAKIŞMIYOR, acil değil.)
+- Arka bandın `waiterHome`'u (−11,0 / −7,2) masa 12'nin yükseltme noktasına 0,7 br — garson orada
+  boşta beklerken oyuncunun noktasının üstünde duruyor (collision yok, yalnız görsel). **B6a**.
+- Maket girişinin üst çıtasında z-fighting.
+- Bundle ~1,44 MB (three.js) — Faz F kod bölme.
+- `eslint` 16 hatası (hepsi eski) — Faz E/F işi.
+
+---
+
+## ŞU AN (2026-09-07 gece — **B3-2 TAMAM: orta şerit kuruldu, kapı ortaya kaydı**)
+
+Maket v13'ün 6. adımı YAPI olarak geçti (**D-064**). Arka yarının önündeki 34 × 9,8'lik boş şerit
+artık mobilyalı: **iki banket adası** (tam boy 7,6 · merkez x = ∓8,5 · z = −3,8) ve a2'nin dört
+masa slotu bu adaların yüzlerine oturdu. İçerik BÜYÜMEDİ — masa 12'de kaldı, denge dokunulmadı.
+
+### Kesme çizgisi (kullanıcıya soruldu)
+Kayıtta iki satır çelişiyordu: handoff "B3-2 = iki ada + 12 ikili masa", D-063 sıra satırı ise
+"B5 = 12 → 20 masa". Kullanıcı: *"makette 2 banket 8 masa var, oradaki gibi olsun… ilk açılıştan
+bahsediyorsan mantıklı olan ne ise o olsun."* → **bitmiş hâl maket, bu adımda masa 12'de kalır**;
+B5'in 12 → 20 defteri aynen duruyor. Garson servis istasyonu için de kullanıcı **"yalnız obje +
+collision"** seçti (aktarma mekaniği davranış değiştirir, kendi adımını ister).
+
+### İki karar ekranda/testte değişti
+1. **Ada TAM BOY doğar; büyüyen şey masa sayısıdır.** Önce B5'in stub'ına sadık kalıp adaları tek
+   sütunla (1,2 × 2,5) kurdum — ekran görüntüsünde **banka değil dolaba** benziyor (derinliği
+   boyundan büyük, sırtlık+başlıkla 1,38 yüksek). Bank mekânın sabit donanımıdır; uzayan şey bank
+   değil önüne dizilen masa sayısıdır. B5'in asıl sözü ("var olan masalar yer değiştirmez") duruyor.
+2. **Adanın collision derinliği görselin üçte biri** (`BANKET.coreHalf` 0,4 ↔ görsel 2,5). Tam
+   derinlik bank koltuğunu YOL BULMAYA kapatıyor: masa (±0,78) ve ada şişirilmiş ayak izleri
+   birleşince aradaki koltuğa BFS'in girebileceği hücre kalmıyor → `navStep` düz-çizgi yedeğine
+   düşüyor (B3-1'in kusurunun aynısı). Adanın İÇİNDEN geçilememesi asıl kural, o duruyor.
+
+### Şerit maketten 0,85 br geri (BANKET.z = −3,8; makette −2,95)
+Maket ne **nav ızgarası** ne de **yükseltme noktası** taşıyor. −2,95'te güney sandalyesi tam z = 0'a
+(a2 ile ön çeyreklerin dikişi), güney yükseltme noktası ise alan DIŞINA düşüyordu. Birim geometrisi
+maketle birebir (bank 0,74 · masa 1,85 · sandalye 2,95); değişen yalnız şeridin ekseni.
+
+### Yapılan (özet)
+- **Banket modeli** `layout.ts`'te: `BANKET` · `banketLen(cols)` · `banketUnit(u)` · `banketIslands(tables)`.
+  Sütunlar ∓11,7 · ∓8,5 · ∓5,3 (ön kümelerle aynı hat); `banketUnit` u = 4…11 için B5'in
+  koordinatlarını ZATEN üretiyor.
+- **Masa artık kendi koltuklarını taşır** (`seatOffsets`/`seatKinds`; `bench` koltuk için tabure
+  çizilmez). Yanında gerçek bir açık kapandı: **`seatsAtTable(i, level)`** = min(seviye, gerçek
+  koltuk sayısı) — kelepçesiz spawn iki koltuklu banketi "4 koltuklu, 2'si boş" sanıp hedefler,
+  kimseyi yerleştiremeden sayacı harcardı.
+- **Garson servis istasyonu** x = −9,9 (ana tezgâh [−14,6, −11,4] ile bulaşık [−8,4, −6,4] arasındaki
+  3,0 br açıklık). Obje + collision; garson tepsisini hâlâ ana tezgâhtan alır.
+- **Kapı 2. Alan'da ortaya kayıyor**: `LAYOUT.entrances/streets` dizileri kalktı →
+  `doorX/entranceAt/streetAt(areasOpen)` (servisle aynı desen). `waiter2` pad'i −9,0 / −7,3'e çekildi.
+- **Hayalet objeler temizlendi:** DEPO + TUVALET kutuları (eski rezerv arsanın kalıntısı; KİLİTLİ
+  a2'nin ortasına düşüyorlardı) kaldırıldı; havada asılı **TV** ve **duvar saati** sol duvara taşındı.
+
+### Testin yakaladığı gerçek kusur
+Duvar, kapı boşluğunu *"kapı bu parçanın İÇİNDE mi"* diye kesiyordu. Kapı x = 0'a kayınca tam iki ön
+duvar parçasının **dikişine** düşüyor, ikisi de "hayır" diyor ve **kapının önüne duvar örülüyordu**.
+Kesme artık çıkarma (parça ∖ kapı aralığı).
+
+### Ölçümler
+- **Denge DEĞİŞMEDİ:** `simulate.ts` altı kilometre taşı B2/B3-1 ile birebir aynı (ilk alım 40 sn ·
+  garson 11,1 dk · 2. Alan 34,6 dk · bulaşıkçı 1,00 sa · 3. Alan 1,83 sa · tezgâh 1,99 sa · tost 2,55 sa).
+- **Yürüme:** tezgâhtan masaya ortalama BFS yolu **19,6 br**, en uzak **30,4 br** (B3-1: 29,1).
+  Şerit yükü hem artırıyor hem hafifletiyor: sol ada tezgâhın dibinde (5,1 / 1,3), sağ ada uzakta
+  (25,9 / 24,4).
+
+### Doğrulama
+vitest **242/242** (222 + yeni `tests/layout-b32.test.ts` 20) · smoke **26/26** · build temiz ·
+`tsc -b` temiz · **eslint 19** (HEAD ile birebir aynı — B3-1 notundaki "15" yanlışmış, gerçek taban 19) ·
+tarayıcıda beş kare: `docs/gorsel/ss/b32-serit-ilk|guney|kuzey|seviye.png` + `b32-kapi.png`, konsol temiz.
+
+### Bu adımın kalıcı dersi
+**Bir ölçünün doğruluğu, onu doğuran maketin TAŞIMADIĞI nesneyle sınanır.** Maket v13 banket birimini
+kâğıtta doğru kuruyor ama maket ne yol bulma ızgarası ne de yükseltme noktası taşıyor. Şerit maketin
+koordinatına birebir konsa iki şey SESSİZCE kırılacaktı: bank koltuğu erişilemez olacaktı (BFS değil
+düz çizgi) ve güney yükseltme noktası alan dışına düşecekti. İkisi de ekranda görünmez — birini test,
+birini ekran görüntüsü yakaladı. Makete sadakat koordinat kopyalamak değil, maketin ANLATTIĞI şeyi
+oyunun kendi kısıtlarıyla kurmaktır.
+B1 aracın ÇIKTISI · B2 aracın VARSAYIMI · B3-1 aracın GÜRÜLTÜSÜ · **B3-2 kaynağın KAPSAMI.**
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**B5 — masa tipleri ve 12 → 20 masa.** Şeridin donanımı hazır: adalar tam boyda duruyor, sütunlar
+(∓11,7 · ∓8,5 · ∓5,3) hazır ve `banketUnit(u)` u = 4…11 için doğru koordinatı zaten üretiyor.
+B5'in işi:
+1. **Model:** a2 bugün `TABLES_PER_AREA = 4` ile kelepçeli — 12 birimi açacak masa modeli + pad
+   zinciri (masa 12 → 20). `world.deriveWorld`, `areaOfTable` ve global index bitişikliği bu
+   kelepçeye bağlı, önce onlar açılmalı.
+2. **Masa tipi:** dörtlü (ön çeyrekler, 4 koltuk) ↔ ikili (şerit, 2 koltukta tavanlanır).
+   `seatsAtTable` kelepçesi B3-2'de kuruldu; `seatsByLevel` masa TİPİNE göre okunmalı.
+3. **Denge:** masa 12 → 20 kapasiteyi ~%40 büyütür → `simulate.ts` altı bandı yeniden ölçülmeli
+   (B3-2'ye kadar denge hiç değişmedi, ilk gerçek denge etkisi B5'te).
+⚠ Şerit birimleri açılırken ada BOYU değişmez (D-064) — B5'in taslağındaki "seviyesi boyudur"
+cümlesi geçersiz, `progress.md`'deki B5 bölümü düzeltilmiş hâlini taşıyor.
+
+### Kırmızı çizgi (duruyor)
+**"Objeler yüzüyor" hissine bir daha blob shadow ÖNERME** (D-054).
+
+### Bilinen, ertelenmiş
+- Arka bandın içi boş kütle (lavabo kabinleri, yıkık merdiven) — **B4**.
+- Şeridin ORTASI (x ≈ 0) bilerek boş: maket orayı kapı–merdiven geçidi yapıyor. Dolgusu **B6b**.
+- Sol duvar programının gerisi (askı rayı · konsol · gazetelik; TV taşındı) — **B6a**.
+- `LAYOUT.decor` (çöp kovaları, saksılar) hâlâ eski 21 × 21 koordinatlarında — **B6**.
+- Maket girişinin üst çıtasında z-fighting.
+- Bundle ~1,45 MB (three.js) — Faz F kod bölme.
+- `eslint` 19 hatası (hepsi eski) — Faz E/F işi.
+
+---
+
+## ŞU AN (2026-09-07 gece — **B3-1 TAMAM: kat 34 × 34, servis arka banda taşınıyor**)
+
+Kadraj onaylandı (**D-061**) ve yerleşim maket v13 ölçeğine taşındı (**D-062**). İÇERİK büyümedi
+(12 masa · tek servis · aynı zincir); büyüyen **katın kendisi**: 21,2 × 20,6 → **34 × 34** (×2,6).
+
+### Kadraj kararı (D-061)
+Araç: `docs/gorsel/kadraj-b3.html` → https://claude.ai/code/artifact/6a9edb37-cb90-4312-968b-f8d9e63ad814
+Bulgu kararın çerçevesini değiştirdi: portrede kadraj **derin ama dar** (dikey 50°, yatay yalnız
+**24°**) → 17 × 17'lik bir alanı tek kareye sığdırmak taban ~22 ister, o mesafede karakter birkaç
+piksel. Yani **katın tamamı hiçbir kademede görünmüyor**; karar "kaç birimlik KOMŞULUK okunacak".
+
+| Kademe | taban | oyuncu hizasında en |
+|---|---|---|
+| A | 6 | 4,6 br — **elendi** ("en yakını çok kötü") |
+| **B** | **8,5** | **6,5 br — varsayılan** |
+| **C** | **11,5** | **8,9 br — HUD düğmesi buraya geçer** |
+
+HUD'daki genel-bakış düğmesi artık "genel bakış" değil **kademe değiştirici**: çarpan ×1,45 → **×1,35**
+(8,5 × 1,35 = 11,5). Uygulama iki sayı: `Scene.tsx` `st.current.d = 8.5 * fit` + `zoomMul = 1.35`.
+
+### Yerleşim (D-062)
+- Zemin x, z ∈ [−17, 17]. **Arka bant** z ∈ [−16,9, −9,8]: servis bloğu · merdiven · lavabo.
+  Bant **yürünmez kütle** (alanlar z = −9,8'de biter); içi B4'te açılır.
+- Alanlar artık **EŞ DEĞİL** → şablon (`AREA_DX/AREA_DZ/mir/areaCol/areaRow/areaAt`) kalktı,
+  yerine açık dikdörtgen listesi: a0 ön-sol 17×17 · a1 ön-sağ 17×17 · a2 arka yarı 34 × 9,8.
+- **Duvarlar geometriden türüyor:** `wallSpans(alan, kenar, açık)` kenardan açık komşuların
+  kapattığı parçaları düşer. Bir kenarı BİRDEN ÇOK komşu kapatabilir (arka yarının ön kenarını iki
+  ön çeyrek birlikte) — eski `areaAt(col±1,row)` ızgara sorgusu bunu anlatamıyordu.
+- **Servis 3. Alan açılınca ARKA BANDA TAŞINIR** (kullanıcı kararı, maket v13 adım 3'e sadık):
+  koordinatlar sabit dizi değil **`servicePlace(areasOpen)`**. Seviye korunur. Sonucu: `SERVICE_AREAS`
+  world'den kalkıp layout'a geçti (`serviceInArea(area, areasOpen)`), `Service.areaIndex` silindi —
+  "servis nerede duruyor" bir KOORDİNAT sorusuymuş.
+- Kapı x = −8,5'te sabit (v13'ün kapıyı ortaya kaydırması cephe işi → B3-2).
+
+### Bulunan GERÇEK kusur (eski koddan geliyordu)
+`REACH_TABLE` nav ızgarasının hücre boyuna **gizliden bağlıymış**. Masa koordinatı ızgara merkezine
+denk gelirse en yakın boş hücre 1,1 br'ye kayıyor, BFS "yol yok" diyor ve `navStep` **düz-çizgi
+yedeğine** düşüyordu → garson masaya varıyor ama **engelden kaçmadan**. Eski yerleşimde de vardı,
+masa koordinatları şans eseri denk düşmediği için görünmüyordu. `REACH_TABLE = tableHalf +
+actorRadius + NAV_CELL + 0,05` (1,03 → 1,13). ROTA testi kalıcı bekçi.
+
+### Ölçümler
+- **Denge DEĞİŞMEDİ:** simulate.ts altı kilometre taşı da B2 ile birebir aynı.
+- **Yürüme maliyeti arttı:** pickup → masa ortalaması +16% (1 alan) · +57% (2) · **+66%** (3);
+  en uzak masa 17,8 → 29,1 br.
+- **Ama servis sonucu değişmedi:** tohumlu sonda eski/yeni yerleşimde BİREBİR aynı
+  (1 alan 79,6 servis / 24,0 kaçış · 3 alan 105,6 / 144,0) → darboğaz yürüme değil.
+  Gerçek tempo doğrulaması Faz C'nin; uzak masaların yolunu kısaltan **garson servis istasyonu**
+  zaten maket v13'te var (B3-2).
+
+### Doğrulama
+vitest **222/222** (209 + yeni `tests/layout-b31.test.ts` 13) · smoke **26/26** · build temiz ·
+`tsc -b` temiz · eslint 15 (B2 ile aynı) · tarayıcıda 34 × 34 gezildi, tezgâh arka bantta, konsol temiz.
+
+### Bu adımın kalıcı dersi
+**Ölçüm gürültüsü bulguyu TERS ÇEVİREBİLİR.** Tohumsuz sonda aynı kodla 54 ve 105 servis verdi;
+ilk sayı "34 × 34 servisi kırdı (%77 kaçış)" diye okunuyordu. Tohumlanınca sonuç eski yerleşimle
+birebir aynı çıktı. Üstelik sondanın ilk sürümü **yanlış şeyi** ölçüyordu (oyuncu parkta yıkamadığı
+için bardak havuzu bitiyordu → ölçülen yürüme değil BARDAK'tı).
+B1 aracın ÇIKTISI · B2 aracın VARSAYIMI · **B3-1 aracın GÜRÜLTÜSÜ ve neyi ölçtüğü.**
+
+### Çalışma biçimi değişti (kullanıcı kararı)
+Büyük adım **en fazla İKİYE** bölünür ve yalnız gerekiyorsa; oturum sayısı da bir bütçe.
+Kesme çizgisi keyfî değil: **mantık işi ile görsel iş aynı parçada olmaz**, her parça kendi başına
+yeşil biter. B3 bu yüzden B3-1 (mantık) + B3-2 (görsel) oldu.
+
+### ⚠ OTURUM SONUNDA ÇIKAN PLAN DÜZELTMESİ (D-063)
+Kullanıcı ekrana bakıp sordu: *"bu direk maketteki hâl değil ki... geçici tasarım mı yoksa tüm
+maketi geçirdin mi?"* Cevap: **maketin yalnız İSKELETİ geçti** — ölçü, alan sınırları, bant hizası,
+masa küme merkezleri, servisin taşınması. **Sanat katmanının hiçbiri geçmedi**
+(maket v13'te 107 obje/yardımcı, oyunda 16 dosya).
+
+Kayıtta bu iş VARDI: plandaki **G4/G5** (KayKit Restaurant + City Builder yerleşimi) "yerleşime
+bağlı" diye Faz B'ye ertelenmişti — ama **D-058'in B1…B5 haritasına yazılmamış**, üstelik pano
+Faz G'yi *"KayKit yerleşimi dahil 4/4 bitti"* diye gösteriyordu. Bitmemişti.
+
+**Kullanıcının kararı: "önce yapı, sonra sanat."** Yeni sıra ve gerekçesi:
+`B3-2 (şerit+banket) → B5 (12→20 masa) → B4 (odalar) → B6a/B6b (sanat katmanı, alan alan)`
+Propleri bugünkü 4 masanın etrafına dizersek B5 masaları taşıyınca hepsi yeniden dizilir.
+Ayrıca boşluk hissi prop sorunu DEĞİL doluluk sorunu: 1. alan 109 → 289 birim², hâlâ 4 masa
+(**birim başına 2,6× seyrek**). Kat ölçüsü (34 × 34) kullanıcı kararıyla KALIYOR.
+Bütçe: Faz B 6 → **8 oturum**, toplam 66 → **68** (yeni iş değil, düzeltilen defter).
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**B3-2 — orta şerit + banket adaları.** Maket v13'ün 6. adımı: sırt sırta **iki banket adası**
+(x = ∓8,5, z ≈ −2,95, boy 7,6) + 12 ikili masa + **garson servis istasyonu** (−7,1 civarı, uzak
+masaların yolunu kısaltan aktarma tezgâhı — B3-1'de ölçülen %66 yürüme artışının maketteki cevabı).
+Cephe/prop/dolgu **B6'ya** ait; bu adım yapı adımıdır.
+⚠ Şerit z ≈ −2,95'e oturacak; a2 masa sırası z = −5,6'da — sandalyeler −4,82'ye kadar geliyor,
+şerit adasının alt kenarı −4,55. **0,27 br pay var**, şerit yerleşirken bu kontrol edilmeli.
+
+### Kırmızı çizgi (duruyor)
+**"Objeler yüzüyor" hissine bir daha blob shadow ÖNERME** (D-054).
+
+### Bilinen, ertelenmiş
+- Arka bandın içi boş kütle (lavabo kabinleri, yıkık merdiven) — **B4**.
+- Kapı x = −8,5'te sabit; v13 2. adımda ortaya kaydırıyor — **B3-2** cephe işi.
+- Maket girişinin üst çıtasında z-fighting.
+- Bundle ~1,45 MB (three.js) — Faz F kod bölme.
+- `eslint` 15 hatası (hepsi eski) — Faz E/F işi.
+
+---
+
+## ŞU AN (2026-09-06 gece — **B2 TAMAM: servis tekilleşti, tempo altı bandın altısını tutuyor**)
+
+Faz B'nin üçüncü adımı bitti. Üç ocak **tek servis noktasına** indi; ürün bölgeden değil
+**seviyeden** geliyor (L4 tezgâh · L5 tost); personel **global havuz** (3 garson + 1 bulaşıkçı).
+Karar kaydı **D-060**. Bu adımda oyun DAVRANIŞI değişti — güvence parmak izi değil **tempo ölçümü**.
+
+### Kabul kriteri — ÖLÇÜLDÜ (simulate.ts, Normal profil 0,55)
+| Kilometre taşı | plan §5 hedefi | Ölçülen |
+|---|---|---|
+| İlk alım | ≤ 60 sn | **40 sn** |
+| Garson (otomasyon) | 8-12 dk | **11,1 dk** |
+| 2. Alan | 25-35 dk | **34,6 dk** |
+| Bulaşıkçı | 45-60 dk | **60 dk** |
+| 3. Alan + Tezgâh | 1,5-2 sa | **1,83 / 1,99 sa** |
+| Tost (L5) | 2-2,5 sa | **2,55 sa** |
+
+"Kat tamam" 2,69 sa. Plan §5'in **5-7 saati B3'ün 20 masası + B5 banketleri + Faz C eğrisiyle**
+gelir; olmayan içeriği pahalılıkla taklit etmek grind üretirdi, yapılmadı.
+
+### Yapılan
+- **`SERVICE_AREAS = [0]`** — B1'in ayırdığı iki soru burada ayrı cevap verdi: `serviceInArea()`
+  yerleşim (yalnız 1. alanda servis DURUR), `serviceOfTable()` üretim (hep tek nokta).
+  **Alan açmak artık ocak açmıyor** ve çağıranların hiçbiri değişmedi — B1'in ödediği bedelin karşılığı.
+- **Tek merdiven, iki kimlik:** `TeaStation` + `TostStation` → tek **`ServicePoint.tsx`**;
+  L4'te gövde tezgâha döner (pirinç bant + arka cezve ocağı), L5'te sac + pres gelir, tostlar
+  sacın üstünde bekler. Yer değişmez, seviye sıfırlanmaz.
+- **Talep müşteride:** `Npc.product` — müşteri gelirken ürününü seçer (`tostShare(level)`).
+  Tezgâh iki kuyruğa üretir; hangi ürünün AÇIĞI büyükse onu hazırlar, diğerinin yarım ilerlemesi bekler.
+- **Global havuz:** `waiters[]` düz liste + tek `dishwasher`. "Tostçu Garson" sekmesi/eğrisi kalktı;
+  garson tepsisi artık KARIŞIK (çay+tost, kapasite ortak), bulaşıkçı kabın türünü leğende korur.
+- **Zincir asgari cerrahi:** alan-başı personel pad'leri çıktı, bulaşıkçı **Bölüm 2'ye** taşındı
+  (plan §4 adım 14); `waiter3` opsiyonel geç-oyun pad'i geldi; görev hattı yeniden dizildi
+  (**q_counter L4** ve **q_tost L5** artık hattın omurgasında).
+- **Denge:** servis eğrisi **20/30/45/800/2400/9000** (L1-L3 dokunulmadı); zone2 750, zone3 3400,
+  dishwasher 900.
+- **Yan temizlik:** "yemek alanı" kimliği (dikdörtgen masa, arkalıklı sandalye, sofra propları,
+  zemin amblemi, ayrı tost tezgâhı geometrisi) ürünle birlikte kalktı; menü panosu tezgâhın L6
+  basamağına bağlandı. Bardak havuzu ALANLA ölçekleniyor.
+- **Mağaza önizlemeleri sahnenin ışığına bağlandı** (ayrı iş, aynı oturum): `three/lights.tsx`
+  tek tanım; kartta gördüğün renk artık salondakiyle birebir (ölçüm: ton oranı sapması 0,109 → 0,018).
+
+### Bu adımın kalıcı dersi
+**Ölçüm aracının OYUNCU MODELİ de yanılabilir.** Simülatör "her an en ucuz darboğaz ocağı al"
+diyordu; oyun ise ekranda tek görev gösterip oyuncuyu ona yönlendiriyor. Ocak ucuzken fark küçüktü;
+tezgâh/tost pahalılaşınca **sıralama tempoyu belirleyen şeyin kendisi** oldu. Sim görev hattını
+takip edecek şekilde yeniden yazıldı ve personel/masa yükseltmeleri de gerçekten satın alınır oldu
+(eskiden bedava sayılıyorlardı). B1'in dersi "aracın çıktısı yanılabilir"di; B2'ninki
+**"aracın varsayımı yanılabilir"**.
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**B3 — yerleşim maket ölçeğine.** AMA önce **KADRAJ ONAYI** (D-058 karar 4, bağlayıcı):
+kat 21,2×20,6 → **34×34** (alan ×2,6) büyüyor; portre ekranda ne görüneceği mühendislik değil
+**tasarım** kararı. Üç kamera kademesi AYNI kareden çekilip kullanıcıya sunulacak, onay gelmeden
+`layout.ts` YAZILMAYACAK. Sonra: B4 odalar (lavabo + yıkık merdiven) → B5 masa tipleri + banket.
+
+### Faz G'den kalan artık
+UI Canvas'ları ışık işi **kapandı** (bu oturum). Geriye kalan: yok.
+
+### Kırmızı çizgi (duruyor)
+**"Objeler yüzüyor" hissine bir daha blob shadow ÖNERME** (D-054).
+
+### Bilinen, ertelenmiş
+- Maket girişinin üst çıtasında z-fighting ("oyuna geçerken hallederiz").
+- Bundle ~1,45 MB (three.js) — Faz F kod bölme.
+- `eslint` 15 hatası (hepsi eski; B1 ile aynı sayı) — Faz E/F işi.
+- Servis noktası hâlâ 1. alanın sol duvarında (B1'deki yerinde); maket v13'ün arka bandına
+  **B3'te** taşınacak.
+
+---
+
+## ŞU AN (2026-09-06 gece — **B1 TAMAM: model dönüştü, davranış BİREBİR aynı**)
+
+Faz B'nin ikinci adımı bitti. `ZONE` tek index'i **ALAN · SERVİS · MASA · ODA** olarak ayrıştı;
+içerik hiç değişmedi (3 alan × 4 masa, 3 servis). Kayıt **v31 = temiz sıfırlama** (D-058 karar 3).
+
+### Kabul kriteri — ÖLÇÜLDÜ
+`tools/tick-fingerprint.ts` çıktısı (2014 satır) **birebir aynı**. HEAD'in git worktree'sinde AYNI
+(düzeltilmiş) ölçüm aracıyla taban yeniden alındı → `diff` boş. `simulate.ts` denge sayıları da
+birebir aynı (tek fark: başlık metni). Yani model değişti, oyun değişmedi.
+
+### Yapılan
+- **YENİ `src/game/world.ts` (217 satır)** — dört kavramın TEK tanımı + `deriveWorld(padsDone)`:
+  `Area` · `Service{index, areaIndex, product, waiters, hasDishwasher}` ·
+  `Table{index, areaIndex, serviceIndex}` · `Room` (B4'e kadar boş).
+- **Servis ↔ alan bağı tek yerde:** `SERVICE_AREAS = [0,1,2]`. **B2 bunu `[0]` yapacak** →
+  alan açmak artık servis açmayacak, çağıranların hiçbiri değişmeyecek. B1'in asıl kazancı bu.
+- **Masa artık sayaç değil LİSTE:** `world.tables[i]` alanını ve servisini AYRI taşır;
+  `areaOfTable(i)` ≠ `serviceOfTable(i)` iki ayrı soru (bugün aynı cevap).
+- **`layout.ts` dizileri kavramını söylüyor:** servis dizileri (`stations`, `dishStations`,
+  `waiterHomes`, `stationPickups`, `stationUpgradeSpots`, `stationHalves`) ↔ alan dizileri
+  (`areaBounds`, `entrances`, `tables`). Tek geçit: `openServices(areasOpen)`.
+- **Yalan adlar düzeltildi:** `activeZone → activeSpot` (bölge değil, "üstünde durulan nokta"),
+  `upgradeZones → stationUpgradeSpots`, `teasServedByZone → teasServedByArea`,
+  `waiterServedByZone → waiterServedByService`, `floor/wallThemeByZone → *ByArea`.
+- **`save.ts` 751 → 188 satır:** `migrate()` silindi, yerine `resetKeepingSettings()`.
+- **Testler 206 → 207**: 32 migrasyon testi kalktı, 33 yeni test geldi (dünya ayrışması 20 +
+  v31 sıfırlama 9 + gating/reveal/gelir ayrımı 3). smoke 26/26 · build temiz · eslint 16 → 15.
+
+### Bilinçli olarak DEĞİŞMEYENLER (B1 "içerik sabit" demek)
+- **Pad ve görev kimlikleri aynı** (`zone2`, `z2table2`, `q_zone2` …) — parmak izi `padsDone`'u
+  dökümlediği için birebir karşılaştırma ancak böyle mümkün. Zincir zaten **B2/B3'te yeniden yazılacak.**
+- CSS sınıf adları (`preview-zones`, `shop-zone-btn`) — model değil stil.
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**B2 — servis TEKİLLEŞİR.** 3 ocak → 1 servis noktası: `SERVICE_AREAS = [0]`, ürün seviyeden gelir
+(L1-L3 çay ocağı · L4 tezgâh · L5 tost · L6 son ₺ seviyesi), garson havuzu global ("Tostçu Garson"
+ayrımı kalkar). **Davranış BURADA değişir** → güvence parmak izi DEĞİL, tempo ölçümü
+(`simulate.ts` + tempo tablosu). Sonra: B3 yerleşim (ÖNCE KADRAJ ONAYI — D-058 karar 4) →
+B4 odalar → B5 masa tipleri.
+
+### Faz G'den kalan artık (hâlâ açık)
+UI Canvas'ları (`CharacterPanel`, `SalonSlice`, `DioramaPreview`, `TableThemePreview`) hâlâ eski düz
+`ambientLight` ile — dünya ısındı, mağaza önizlemeleri soğuk kaldı.
+
+### Bu adımın kalıcı dersi
+**Ölçüm aracı da yanılabilir.** Parmak izinin `{...s.stats}` sığ kopyası yüzünden `teasServedBy*`
+dizisi tüm anlık görüntülerde PAYLAŞILIYORDU — dört karenin dördü de son değeri gösteriyordu, yani
+taban dosyası sessizce yanlıştı. Fark çıkınca "davranış bozuldu" diye kodu kurcalamak yerine önce
+ARACIN kendisi denetlendi; düzeltilmiş araçla HEAD'de taban yeniden alındı ve diff boş çıktı.
+Refactor güvencesi, aracın da doğrulanmasını gerektirir.
+
+### Kırmızı çizgi (duruyor)
+**"Objeler yüzüyor" hissine bir daha blob shadow ÖNERME** (D-054).
+
+### Bilinen, ertelenmiş
+- Maket girişinin üst çıtasında z-fighting ("oyuna geçerken hallederiz").
+- Bundle ~1,45 MB (three.js) — Faz F kod bölme.
+- `eslint` 15 hatası (hepsi eski; B1'de bir tanesi silinen `migrate` ile birlikte kalktı) — Faz E/F işi.
+
+---
+
+## ŞU AN (2026-09-06 — **FAZ B HARİTASI ÇIKTI + DÖRT KARAR ALINDI**; kod yazılmadı)
+
+Faz A kapandıktan sonra Faz B'nin **1. adımı** yapıldı: maket v13'ün altı adımı ile bugünkü pad
+zinciri eşleştirildi. Rapor **`docs/faz-b-harita.html`** →
+https://claude.ai/code/artifact/114662f8-0d0e-4a4d-ba03-1e84cd17e81c
+(Maket v13 referansı: https://claude.ai/code/artifact/813bdc4c-3052-46ca-ac3b-23076f425b23)
+Kararların tamamı **D-058**'de. **Bu oturumda hiç kod değişmedi** — `src/` dokunulmadı.
+
+### Haritanın bulgusu
+İlk üç maket adımı bugünkü zincirin ÜZERİNDE duruyor (masa aç · ocak yükselt · personel tut).
+Son üç adım (lavabo · merdiven · orta şerit) kodda hiç karşılığı olmayan iki kavram istiyor:
+**ODA** ve **banket**. Çelişki pad'lerde değil MODELDE:
+- `zone2` bugün "yeni salon + **YENİ OCAK** + yeni bulaşık" demek; makette 2. Alan'ın ocağı YOK.
+- `zone3` masa getirmiyor — **servis noktasını tezgâha dönüştürüyor**; tost bölgeden değil **L5**'ten.
+- Ölçüm: `zone` geçen **1090 satır** (248'i `tests/logic.test.ts`). Zemin 21,2×20,6 → **34×34**
+  (alan ×2,6), masa 12 → 20, servis noktası 3 → 1 + 1 aktarma.
+
+### ⚠ Eski notun düzeltmesi
+Önceki activeContext "Faz B ilk iş: **mutfak dışarı çıkma hangi pad**" diyordu — **bu soru
+GEÇERSİZ**. Mutfağın binadan dışarı taşması **v11'in** kararıydı, **v13 iptal etti**; servis bloğu
+arka bandın sol ucunda, kat içinde. Karşılığı olan adım **3. Alan**'dır (aynı anda hem arka yarıyı
+açar hem ocağı tezgâha çevirir).
+
+### Kullanıcının verdiği dört karar (D-058)
+1. **Sipariş nesnesi Faz C'de.** Faz B yalnız YAPIYI kurar: tek servis noktası + global garson havuzu.
+2. **Merdiven satın alınamaz** ama üstüne basınca **"Kat 2 çok yakında"** der (kullanıcının ifadesi).
+3. **Kayıt v31 = TEMİZ SIFIRLAMA, migrasyon YOK** (yalnız ayarlar korunur). "İlerleme kaybolmaz"
+   kuralı **v1.0 mağazaya çıkınca** bağlayıcı olur. → Faz B belirgin ölçüde kısaldı.
+4. **B3'ün yerleşimi kadraj onayı alınmadan YAZILMAZ** — üç kamera kademesi aynı kareden çekilip
+   kullanıcıya sunulur.
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**B1 — model dönüşümü, içerik SABİT.** `ZONE` → `ALAN / SERVİS / MASA / ODA`; masa listesi türetilir;
+servis noktası alandan ayrılır. İçerik hâlâ 3 alan × 4 masa, 3 servis noktası kalır →
+**`tools/tick-fingerprint.ts` çıktısı birebir aynı olmalı** (B1'in tek kabul kriteri budur).
+Kayıt v31 (temiz sıfırlama + test) bu adımda. **Önce parmak izini al, sonra kod değiştir.**
+Sonra sırayla: B2 servis tekilleşir → B3 yerleşim (ÖNCE KADRAJ) → B4 odalar → B5 masa tipleri.
+
+### Faz G'den kalan artık (hâlâ açık)
+UI Canvas'ları (`CharacterPanel`, `SalonSlice`, `DioramaPreview`, `TableThemePreview`) hâlâ eski düz
+`ambientLight` ile — dünya ısındı, mağaza önizlemeleri soğuk kaldı.
+
+### Kırmızı çizgi (duruyor)
+**"Objeler yüzüyor" hissine bir daha blob shadow ÖNERME** (D-054).
+
+### Bilinen, ertelenmiş
+- Maket girişinin üst çıtasında z-fighting ("oyuna geçerken hallederiz").
+- Bundle 1,45 MB (three.js) — Faz F kod bölme.
+- `eslint` 16 hatası (hepsi eski) — Faz E/F işi.
+
+---
+
+
+## ŞU AN (2026-09-06 gece — **FAZ A TAMAM 3/3** + duman testi onarıldı; SAVE v30 değişmedi)
+
+Kullanıcı iki şeyi onayladı: *"tamam renk değişimi düzeldi şu an yok. faz a da yapılsın sorun yok"*
+→ (1) G3'ün açık sorusu KAPANDI, (2) Faz A **tam** yapıldı. Oturumda dört commit, hepsi push'landı.
+
+### 0) Duman testi 8/15 → **26/26** (Faz A'nın önkoşuluydu) — commit c0393f1
+**Kök neden (G0'dan beri açık):** görev tamamlanınca `questIndex` 1,3 sn'lik kutlama
+(`completing` 0,5 + `gap` 0,8) BİTTİKTEN sonra ilerliyordu. Oyuncu o pencerede doğal akışta
+(servis → ödeme → topla) parayı topluyor, `coinsCollected` artıyor; görev aktifleşince taban
+o değere kuruluyor ve `q_coin` **0/1'de kilitleniyordu** → sonrası domino.
+**Düzeltme yapısal:** `questIndex` + `questBase` **bitiş ANINDA** ilerler; kutlama yalnız görsel.
+Ekranda gösterilen biten görev yeni transient `questDoneIndex` ile tutulur → **kayıt şeması
+değişmedi (SAVE_VERSION 30)**; kutlama ortasında yeniden yüklemede de kilitlenme yok (test var).
+
+### 1) Faz A1 — beş ölü alan kaldırıldı — commit 73e023a
+`serviceSpeedMult` (hep 1'di) · `Requires.minTables` (hiç kullanılmıyordu) · `prestige` config
+(Faz D'de İtibar kendi tasarımıyla gelecek) · `MailIcon` (öksüz) · **ulaşılamaz "Usta" dalı**
+(satın alma yolu yok → `level >= masterLevel` HİÇ gerçekleşmiyordu). `UpgradeSpec` artık tek
+tavan alanı taşıyor: **`maxLevel` (= eski masterLevel − 1)**.
+**DENGE DEĞİŞMEDİ, ölçüldü:** `simulate.ts` çıktısı öncesi/sonrası birebir aynı (tek fark silinen,
+zaten hiçbir profilde ulaşılmayan prestige satırı).
+
+### 2) Faz A2 — 800 satırlık `tick()` **17 sisteme** bölündü — commit 3726e04
+Kabul kriteri "tick() < 150 satır" → **65**. `store.ts` **2337 → 756 satır**. Üç yeni modül:
+- **`layout.ts`** (435) — LAYOUT, collision katıları, nav ızgarası/adımı. Durum yok, koordinat var.
+- **`rules.ts`** (483) — gating, görev motoru, yükseltme/ekonomi türetmeleri, `keepIdentity`. Saf.
+- **`tick.ts`** (1121) — brew · spawn · npc · playerMove · coin · serve · dishCycle · waiter ·
+  dishwasher · interactionZone · reveal · padFill · stationUpgrade · tableUpgrade · derive ·
+  quest · levelNotice. **Sıra eskisiyle birebir.**
+Sistemler yalnız `TickCtx` üstünde çalışır (Zustand/React/DOM yok). Sistemden sisteme geçen ara
+değerler (dirty, liveNpcs, input, player, out, quest …) artık ctx'te AÇIKÇA görünür.
+`tick.ts` store'a **yalnız tip** olarak bağlı (`import type`) → çalışma zamanında döngü yok.
+store.ts taşınan isimleri yeniden dışa aktarır; hiçbir çağıran değişmedi.
+
+### 3) Faz A3 — testler koordinat bağından koparıldı — commit aa09ca6
+45 elle yazılmış `player: [0, 0.6, 6.5]` tipi koordinat kalktı. **`layout.parkSpot()`** açık alanı
+0,25'lik ızgarayla tarar, katı engele girmeyen ve TÜM etkileşim noktalarına uzaklığı en büyük
+hücreyi seçer (bugün boşluk **3,79**). Testlerde `PARK` / `park()` / `stand()`; duman testinde yeni
+`window.__park()` kancası. **İki bekçi test**: boşluk pickup/serve/pad/mıknatıs yarıçaplarının
+hepsinden büyük mü + park edilen oyuncu gerçekten hiçbir şeyi tetiklemiyor mu → Faz B yerleşimi
+daraltırsa testler SESSİZCE değil GÜRÜLTÜYLE düşer.
+
+### Refactor güvencesi: `tools/tick-fingerprint.ts` (YENİ, kalıcı araç)
+`Math.random` tohumlanır, 8 kontrol noktalı senaryo koşar (servis turları, para, bulaşık, omurga
+pad'leri, yükseltmeler, zone-2, personel yalnız 90 sn) ve **2018 satırlık tam durum dökümü** üretir.
+A2/A3 boyunca her adımda öncesi/sonrası **birebir aynı** çıktı alındı. Faz B'de yerleşim değişirken
+de aynı işi görecek. Kullanım dosyanın başında yazılı.
+
+### Doğrulama (oturum sonu)
+`npm run test` **206/206** (5 yeni) · `npm run build` temiz · `npx eslint src/` **16 — değişmedi**
+(hepsi bu oturumdan önce vardı; yeni 4 modül temiz) · `tools/smoke.mjs` **26/26** ·
+`npx tsx tools/simulate.ts` çıktısı değişmedi · tick parmak izi birebir aynı.
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**Faz B — model geçişi** (plan `docs/plan-kat1-yayin.html` §11; pano "sıradaki"):
+1. Maketin (v11/v13) adımları ile `economy.config.ts` **pad zinciri** arasındaki haritayı çıkar:
+   hangi satın alma hangi kanadı açıyor, mutfak dışarı çıkma hangi pad.
+2. **Yerleşimi maket ölçeğine taşı** — artık tek dosyalık iş (`layout.ts`); sistemler koordinat bilmiyor.
+3. **Kayıt v31** (masa listesi + görev kimlikleri) + migrasyon.
+4. G4/G5 (KayKit mutfak/sokak modelleri) bu geçişle birlikte değerlendirilecek.
+5. Faz G'den kalan artık: UI Canvas'ları (`CharacterPanel`, `SalonSlice`, `DioramaPreview`,
+   `TableThemePreview`) hâlâ eski düz `ambientLight` ile — dünya ısındı, önizlemeler soğuk kaldı.
+
+### Bu oturumun kalıcı dersi
+**Büyük refactor'ın güvencesi test SAYISI değil, DAVRANIŞIN ÖLÇÜLMESİDİR.** Bölmeden önce oyundan
+tohumlu bir parmak izi alındı; bölme bitince aynı parmak izi tekrar alındı ve tek karakter fark
+çıkmadı. Ayrıca: bir test eski (hatalı) davranışı koruyor olabilir — `questIndex` kutlama boyunca
+ilerlemesin diyen test tam olarak buydu; testin KORUDUĞU KULLANICI SÖZÜNÜ (kart takas edilmesin)
+ayırıp motoru serbest bırakmak gerekti.
+
+### Kırmızı çizgi (duruyor)
+**"Objeler yüzüyor" hissine bir daha blob shadow ÖNERME** (D-054).
+
+### Bilinen, ertelenmiş
+- Maket girişinin üst çıtasında z-fighting (kullanıcı: "oyuna geçerken hallederiz").
+- Bundle 1,45 MB (three.js) — Faz F kod bölme.
+- `eslint` 16 hatası (Coins/CharacterPanel ref-during-render, floorPattern/wallPanel react-refresh,
+  save.ts no-useless-assignment) — hepsi eski, Faz E/F işi.
+
+---
+
+## ŞU AN (2026-09-06 — G3 KAPANDI: **FAZ G TAMAM 4/4** + pano rengi; SAVE v30 değişmedi)
+
+**G3 duvar bitimi bitti.** Duvar artık iki düz kuşak değil, üç profille biten bir yüzey:
+süpürgelik (0,08) + lambri üstü çıta (0,04) + kartonpiyer (0,05). Tam rapor:
+**`docs/gorsel/README.md` §G3**.
+
+### Yapılan
+- **YENİ `src/components/three/wallPanel.tsx`** — `wallBoxes()` saf fonksiyon (8 birim testi) +
+  `WallPanels`: **TÜM duvarlar + profiller TEK InstancedMesh** (birim küp + per-instance renk,
+  matrisler mount'ta bir kez). Eski `WallPiece` (parça başına 2 mesh) SİLİNDİ.
+- **Çıkıntılar kademeli:** gövde 0 < lambri 0,02 < kartonpiyer 0,045 < çıta 0,05 < süpürgelik 0,06.
+  Süpürgelik zeminin 0,02 ALTINDAN başlar, kartonpiyer duvar tepesini 0,015 AŞAR → hiçbir yüz
+  eş düzlemde kalmaz (z-fighting yok).
+- **Tek kaynak:** mağaza önizlemesi (`SalonSlice.WallBack`) aynı bileşeni kullanır; `PreviewWall`
+  kopyası silindi (G2'de zemin için kurulan kural).
+- **Draw call AZALDI:** telefon 49 → **40**, geniş 71 → **63** (profiller eklendiği hâlde).
+
+### Renk kararı — plandaki koyu ahşap ÖLÇÜLDÜ ve reddedildi
+Plan `#5d4037` diyordu; uygulandı ve telefon kadrajında **süpürgelik + çıta lambri kuşağıyla tek
+koyu kütleye karıştı** — görünmeyen profil profil değildir. Üç varyant AYNI kareden çekilip
+kullanıcıya soruldu (`ss/g3-karsilastirma.png`: ÖNCE ↔ A koyu ↔ B açık ↔ C orta ahşap).
+Kullanıcı: *"uyumlu bir renk olsun işte"* → üç profil de **TEK açık ton** (`theme.trim`).
+`WallTheme` artık cream + wainscot + trim (tema başına tek profil rengi).
+
+### Kullanıcının ikinci şartı ve ölçümü
+Kullanıcı: *"hareket edince renk değişiyor o olmasın çok çirkin duruyor öyle olunca"*.
+İnce şeritte gerçek risk (dokuda reddedilen moiré'nin geometrideki karşılığı) → **ölçüldü**:
+kamera 10 adımda duvara yaklaştırıldı, şeritler ekranda 9 px kaydı, şeridin tepe parlaklığı her
+karede **171,7 — yayılım %0**. Yatay hareket satır profilini zaten değiştirmiyor (duvar yatay
+olarak tekdüze), bu yüzden sınav DERİNLİK hareketiyle yapıldı. Kanıt `ss/g3-hareket-testi.png`.
+
+### Doğrulama
+`npm run test` **201/201** (8 yeni) · `npm run build` temiz · `npx tsc --noEmit` temiz ·
+`npx eslint src/` **15 → 16** (tek fark `wallPanel.tsx` react-refresh — `floorPattern.tsx` aynı
+deseni zaten iki kez tetikliyor) · `tools/smoke.mjs` **8/15, öncesiyle aynı** · Playwright
+**0 konsol hatası** (oyun + mağaza duvar sekmesi + krem/yeşil/mavi temalar).
+
+### Pano (bu oturumun ikinci işi)
+`docs/pano/ilerleme-panosu.html` — **renk paleti nötrlendi.** Kullanıcı: *"sarı filtre var gibi
+durmasın"*. Zemin `#f3e9d6` → `#f4f2ed`, mürekkep `#33220f` → `#23211d`, çizgiler tan → nötr-sıcak
+gri; koyu tema de kahverengiden nötre çekildi. **Vurgular (yeşil/bakır/bordo) DEĞİŞMEDİ** — renk
+işini artık yalnız onlar yapıyor. Tasarımın kendisi (düzen, tipografi) aynı kaldı.
+
+> **Kullanıcı bir tur maket tasarımına çevirmemi istedi, sonra vazgeçti** (*"gerçi tamam ya böyle
+> kalsın sadece rengi düzelt... şu an yayında olan var ya o güzel"*). Maket dilinde yeniden yazılmış
+> kabuk ATILDI, yayındaki tasarım korundu. Bir daha panonun tasarımını kendiliğinden değiştirme;
+> istenen tek şey renk baskısıydı.
+
+### Kullanıcının stratejik sorusu ve cevabı (kayda geçti)
+Kullanıcı sordu: *"biz bunları neden yaptık, zaten tasarımı baştan sona değiştirmeyecek miydik?"*
+Cevap: **Faz G yeni tasarım değildi, malzeme katmanıydı** — ışık, gölge kararı, bir zeminin neye
+benzediği, bir duvarın kenarının nasıl bittiği. **Nerede** duvar/masa olduğuna hiç dokunmadı.
+G'den çıkan üç dosya koordinat bilmiyor (`palette.ts` · `floorPattern.tsx` · `wallPanel.tsx`),
+Faz B yerleşimi değiştirince aynen çalışırlar. Yerleşime BAĞLI olan G4/G5 zaten Faz B'ye ertelendi.
+Planın G'yi öne alma gerekçesi: bundan sonraki her fazda **bu sahneye bakıp onay vereceğiz**.
+
+**Yeni tasarım = Faz B · Görevler/meta = Faz D.** Panoda ikisi de yazılı.
+**Kullanıcıya sorulan, cevaplanmamış soru:** Faz A planlandığı gibi tam mı yapılsın, yoksa sadece
+"testleri koordinattan kopar" kısmı alınıp gerisi sonraya mı bırakılsın?
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+1. **Kullanıcıya açık soru:** *"hareket edince renk değişiyor"* — G3 profilleri ölçümle titremiyor
+   (%0). Kullanıcının gördüğü şey başka bir yerde olabilir. **Nerede/hangi objede gördüğünü sor**,
+   sonra o kadrajda aynı kare-kare ölçümü uygula. Tahminle dokunma.
+2. **Faz A'ya geçmeden `tools/smoke.mjs`'in 7 kırık adımı** onarılmalı (kök neden `q_coin` questBase
+   yarışı → domino; G0'dan beri 8/15, bu oturumda da bozulmadı).
+3. G4/G5 KayKit yerleşimi Faz B model geçişiyle birlikte değerlendirilecek (paketler indirildi).
+
+### Kırmızı çizgi (duruyor)
+**"Objeler yüzüyor" hissine bir daha blob shadow ÖNERME** (D-054). G2 zemin ✅ → G3 duvar ✅ →
+sıra ışık dengesinde; gölge haritası en son çare.
+
+### Bu oturumun kalıcı dersi
+**Plandaki sayı ölçümü geçmiyorsa plan değil ölçüm kazanır — ama renk kararını kullanıcı verir.**
+G3'te plandaki `#5d4037` teknik olarak doğru uygulandı ve GÖRÜNMEDİ; doğru hamle tek bir "sonra"
+görüntüsü sunmak değil, üç varyantı aynı kareden çekip sormaktı (G1'in dersinin tekrarı, bu kez
+baştan uygulandı ve bir tur geri alma tasarruf etti).
+
+### G fazının sonunda kapatılacak artık (HÂLÂ AÇIK)
+- UI Canvas'ları (`CharacterPanel`, `SalonSlice`, `DioramaPreview`, `TableThemePreview`) hâlâ
+  eski düz `ambientLight` ile → dünya G0'da ısındı, mağaza önizlemeleri soğuk kaldı.
+
+### Bilinen, ertelenmiş
+- Maket girişinin üst çıtasında z-fighting (kullanıcı: "oyuna geçerken hallederiz").
+- Bundle 1,45 MB (three.js) — Faz F kod bölme.
+
+---
+
+## ŞU AN (2026-09-06 — PC KASMASI ÇÖZÜLDÜ + G2 ZEMİN KAPANDI; SAVE v30 değişmedi)
+
+Bu oturumda kullanıcı **"ikisini de yap benden bir şey istemeden"** dedi → hem PC kasması hem G2
+tek oturumda bitti. Faz G artık **3/4**.
+
+### 1) PC'de tam ekran kasması — ÖLÇÜLDÜ ve ÇÖZÜLDÜ
+Tam rapor: **`docs/fps-bulgulari-2026-09-06.md`**.
+
+**Kök neden çizim değil ARAYÜZDÜ.** `tick()` her karede diziyi/nesneyi kopyalayıp tek `set()` ile
+yazıyordu → içerik aynı olsa bile referans değişiyor, Zustand seçicisi "değişti" sanıyor, abone
+bileşen her kare render oluyordu. Ölçüm: **kare başına 3,23 React commit**; 12 anahtar
+(`tableLevels` `stationLevels` `stats` `quest` `dishes` `upgradeFills` …) karelerin **%100'ünde
+SADECE kimlik** değiştiriyordu.
+
+| | Önce | Sonra |
+|---|---|---|
+| React commit / kare | 3,23 | **0,23** |
+| rAF kare süresi (ort. / p95) | 10,24 / 16,30 ms | **6,05 / 6,80 ms** (ekran tavanı) |
+| `tick()` | 0,268 ms | **0,058 ms** |
+| `gl.render` gönderme · draw call | 1,35 ms · 190 | 1,40 ms · 196 (beklendiği gibi değişmedi) |
+
+Üç düzeltme:
+1. **`keepIdentity()`** (`store.ts`) — `set()` öncesi içeriği aynı kalan değer eski referansa çevrilir.
+2. **Her-kare-değişen veri React'ten çıktı.** `Coins`/`Customers`/`Dishes` listeyi artık
+   `getState()` ile useFrame'de okuyor. `Player`/`Waiter`/`Dishwasher` konumu **prop değil**: yeni
+   ortak kanca **`useActorTransform`** (`components/three/actorTransform.ts`, eski `useFacing`'in
+   yerini aldı) konumu ve yönü doğrudan three nesnesine yazar; React yalnız ayrık değişimde çalışır.
+3. **`AdaptiveResolution`** (`Scene.tsx`) — piksel bütçesi 2,3 M. Tam ekran + Windows ölçeklemesi
+   (%125-150) tamponu 2,25 kata çıkarıyordu. Telefonda hiçbir şey değişmez, **dpr 1'in altına inmez**.
+
+> **Ölçüm uyarısı (kalıcı):** `gl.render` döngüsü GPU'yu ÖLÇMEZ (JS, GPU bitmeden döner) — dpr'yi
+> 4 katına çıkarınca bu sayı kıpırdamıyor. GPU tarafı ancak gerçek makinede görülür; bu yüzden
+> fill-rate'e ölçümle değil ÜST SINIR koyarak yaklaşıldı.
+
+### 2) G2 — zemine ölçek referansı, geometriyle ✅
+Tam rapor: **`docs/gorsel/README.md` §G2**, A/B görüntü `docs/gorsel/ss/g2-oncesi.png` ↔ `g2-sonrasi.png`.
+
+- **YENİ `src/components/three/floorPattern.tsx`** — `floorQuads()` saf fonksiyon (6 birim testi) +
+  `FloorPattern` bileşeni (alan başına TEK InstancedMesh, matrisler mount'ta BİR KEZ yazılır).
+- `parke`/`ceviz` → **plank** (2,20 × 0,55, satır başı yarım tahta kaydırma, tahta başına ±%4 ton
+  sapması) · `fayans`/`yemek` → **tile** (0,70 / iri karo 1,05) · `dama` **bilerek değişmedi**.
+- **Derz çizgi değil BOŞLUK** — quad hücresinden küçük, aradan alttaki koyu `theme.grout` görünür.
+- **Tek kaynak:** mağaza önizlemesi (`SalonSlice.FloorPatch`) AYNI bileşeni kullanır; `CheckerPatch`
+  kopyası silindi. Mağaza kartı swatch'ı `floorSwatch()` (tahta yüzü + derz).
+- drei `<Instances>` KULLANILMADI: kaynakta doğrulandı ki matrisleri HER KARE yeniden hesaplıyor.
+
+### Doğrulama (ikisi birden)
+`npm run test` **192/192** (6 yeni) · `npm run build` temiz · `npx tsc --noEmit` temiz ·
+`npx eslint src/` **13 hata — öncesiyle BİREBİR aynı** (hepsi bu oturumdan önce vardı) ·
+`tools/smoke.mjs` **8/15 — öncesiyle aynı, regresyon yok** · Playwright **0 konsol hatası**,
+klavye hareketi + aktörlerin sahnedeki gerçek konumu (store ile ±0,005) + para toplama doğrulandı.
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+1. **Kullanıcı onayı:** `docs/gorsel/ss/g2-oncesi.png` ↔ `g2-sonrasi.png` yan yana gösterilecek.
+   Tahta ölçüsü (2,20 × 0,55) plandan geldi; kullanıcı "daha ince/kalın" derse tek sabit değişir.
+2. **G3 — duvar bitimi:** süpürgelik (0,08 · `#5d4037`) + lambri üstü çıta (0,04) + kartonpiyer
+   şeridi; ince box'lar, instanced. Zemin↔duvar geçişi "kutuya renk sürülmüş" olmaktan çıkar.
+3. Sonra **G4/G5 KayKit** (paketler indirildi, `public/assets/` manifestte).
+4. **Faz A'ya geçmeden** `tools/smoke.mjs`'in 7 kırık adımı onarılmalı (kök neden `q_coin`
+   questBase yarışı → domino; bu oturumda da 8/15, bozulmadı).
+
+### Bu oturumun kalıcı iki dersi
+1. **Vite HMR'den sonra dinamik `import()` FARKLI bir modül örneği döndürür** → o örnekten yapılan
+   `useGame.setState` uygulamanın store'una yazmaz. Tarayıcıda durum değiştirirken her zaman
+   uygulamanın kendi kancası (`window.__setState`) kullanılmalı. Bu, G2'de yarım saat "tema
+   değişmiyor" sanılmasına yol açtı.
+2. **Performans şikâyetinde önce hangi katman olduğunu ölç.** Burada üç ayrı metrik gerekti
+   (render gönderme · tick · React commit) ve suçlu üçüncüsüydü; ilk ikisi hiç kıpırdamadı.
+
+### Kırmızı çizgi (duruyor)
+**"Objeler yüzüyor" hissine bir daha blob shadow ÖNERME** (D-054). Sıra artık: G2 zemin ✅ →
+G3 duvar bitimi → ışık dengesi → en son çare gölge haritası.
+
+### G fazının sonunda kapatılacak artık
+- UI Canvas'ları (`CharacterPanel`, `SalonSlice`, `DioramaPreview`, `TableThemePreview`) hâlâ
+  eski düz `ambientLight` ile → dünya G0'da ısındı, mağaza önizlemeleri soğuk kaldı.
+
+### Bilinen, ertelenmiş
+- Maket girişinin üst çıtasında z-fighting (kullanıcı: "oyuna geçerken hallederiz").
+- Bundle 1,45 MB (three.js) — Faz F kod bölme.
+
+---
+
+## ŞU AN (2026-09-06 — G1 KAPANDI: SAHNEDE GÖLGE YOK; SAVE v30 değişmedi)
+
+**Karar D-054: kıraathanede hiçbir gölge çizilmez** — ne yönlü gölge haritası, ne zemine yatık
+temas lekesi. My Hotel'in düz görünümü. Detay + dört varyantın görüntüsü: `docs/gorsel/README.md` §G1.
+
+### Üç turda nasıl buraya gelindi (sonraki oturum bunu bilsin)
+1. Obje başına temas lekesi + o anki sert gölge → *"bu kötü duruyo her şeyin altında bi yuvarlak
+   var"* → geri alındı.
+2. Kullanıcı asıl şikâyeti netleştirdi: *"hem gölge hem de alttaki yuvarlak kötü duruyo AYNI
+   ANDA... zınk diye keskin çizgi gibi duruyo... bak mesela myhotelde hiç gölge yok, benlik
+   sorun yok"*.
+3. Dört varyant AYNI kareden çekilip gösterildi (A sert · B gölgesiz · C yumuşak/VSM · D
+   gölgesiz+havuz). Önce D seçildi, sonra: *"vazgeçtim hiç gölge olmasın komple kaldır"* → **B**.
+
+| | Varyant | Kare süresi (412×915) |
+|---|---|---|
+| A | Sert yönlü gölge (eski) | 1,31 ms |
+| **B** | **Hiç gölge yok — YÜRÜRLÜKTE** | **0,67 ms** |
+| C | Yumuşak (VSM) — ışık sızıyor | ~1,5 ms |
+| D | Gölge yok + masa başına havuz | 0,74 ms |
+
+### Kodda ne var / ne yok
+- `<Canvas>`'ta `shadows` YOK; directional'da `castShadow`/`shadow-*` YOK; `LIGHTING.shadow`
+  bloğu kaldırıldı (geri açma değerleri yorumda: −13/28/15/−15, mapSize 1024).
+- Mesh'lerdeki `castShadow`/`receiveShadow` bayrakları **duruyor** — bedelsiz, geri açmak iki satır.
+- Yönlü ışık **duruyor** (gölge dökmüyor ama yüzey aydınlatması/hacim hissi ondan geliyor).
+- Silinen: `ContactShadows.tsx` · `visualActors.ts` · `CONTACT_SHADOW` · `Footprint` ·
+  `tableFootprints`/`tableShadowPools`.
+- **Kalan sadeleşme:** `LAYOUT.decor` — dekor konumları (çöp kovaları, saksılar) JSX'ten tek
+  listeye çıktı; `DecorProps` oradan çiziyor.
+
+### >>> AÇIK SORUN — PC'DE TAM EKRAN TAKILIYOR <<<
+Kullanıcı: *"pcde tam ekran oynarken hayvan gibi kasıyo"*. Gölgenin kalkması **en büyük parçayı**
+çözdü ama bitmedi:
+- Telefon kadrajı (412×915): **1,31 → 0,56 ms**, 91 draw call, 37k üçgen.
+- PC (1920×1080): **2,02 → 1,44 ms**, **ama 245 draw call** — geniş oranda bütün dükkân görünür
+  oluyor, frustum culling kurtarmıyor.
+
+**Sonraki şüpheliler, bu sırayla:**
+1. **Draw-call sayısı** (91 → 245 sadece en-boy oranı değişince). Instancing zaten var; bakılacak
+   yer uzak salonların/duvarların kırpılmaması (`frustumCulled={false}` verilen batch'ler).
+2. `<Canvas dpr={[1, 2]} gl={{ antialias: true }}>` — yüksek DPI ekranda çözünürlüğün 2 katı + MSAA.
+3. CPU: her karede dönen ~800 satırlık `tick()` + Zustand'ın tetiklediği React render'ları.
+
+**Yöntem:** kullanıcının makinesinde gerçek sayı gerekiyor (`window.__perf()` → fps/calls/tris).
+Headless tarayıcıda fps ANLAMSIZ (arka plan rAF kısıtlaması, 1 gösterir); kare süresi doğrudan
+`gl.render` döngüsüyle ölçülür. **Tahminle dokunma.**
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+1. **PC kasmasını ölç ve çöz** (yukarıdaki üç şüpheli). Kullanıcıdan ekran çözünürlüğü +
+   tam ekranda `window.__perf()` çıktısı iste.
+2. Sonra **G2 — zemine ölçek referansı, GEOMETRİYLE** (doku yolu D-041 ile kapalı): `CheckerTiles`
+   genelleştir → `plank` (0,55×2,2, satır başı yarım ofset, tahta başına ±%4 renk sapması) ve
+   `tile` (0,7 kare); derz **çizgi değil boşluk**. Alan başına ~90 plank = 1 draw call.
+   → **G3** duvar bitimi → **G4/G5** KayKit yerleşimi.
+3. **Faz A'ya geçmeden** `tools/smoke.mjs`'in 7 kırık adımı onarılmalı (kök neden `q_coin`
+   questBase yarışı → domino; G0'dan önce de kırıktı, hâlâ 8/15).
+
+### Kırmızı çizgi
+**"Objeler yüzüyor" hissine bir daha blob shadow ÖNERME** — üç turda reddedildi. Sıra: G2 zemin
+geometrisi → hemisphere/directional dengesi → en son çare gölge haritası (bedeli D-054'te yazılı).
+
+### Bu oturumun kalıcı dersi
+**Ölçümün "hedefini tutturdu" demesi, kullanıcının beğeneceği anlamına gelmiyor.** rev1 A/B
+ölçümünde hedefini tutturmuştu ve reddedildi. Görsel adımda doğru yöntem: birden çok varyantı
+**aynı kareden** çekip yan yana koymak ve sormak — tek bir "sonra" görüntüsü karar için yetmez.
+(Görünmeyeni teşhis için abartma numarası ayrıca geçerli: G0'da test kutusu, G1'de kırmızı+opak
+materyal — `ss/g1-teshis-kirmizi.png`.)
+
+### G fazının sonunda kapatılacak artık
+- UI Canvas'ları (`CharacterPanel`, `SalonSlice`, `DioramaPreview`, `TableThemePreview`) hâlâ
+  eski düz `ambientLight` ile → dünya G0'da ısındı, mağaza önizlemeleri soğuk kaldı.
+
+### Bilinen, ertelenmiş
+- Maket girişinin üst çıtasında z-fighting (kullanıcı: "oyuna geçerken hallederiz").
+- Bundle 1,44 MB (three.js) — Faz F kod bölme.
+
+---
+
+## ŞU AN (2026-09-06 — G1 DENENDİ ve REDDEDİLDİ; sahne G0 hâlinde; SAVE v30 değişmedi)
+
+**G1 (temas gölgesi) uygulandı, ölçüldü, kullanıcıya gösterildi ve GERİ ALINDI → D-054.**
+Kullanıcı: *"bu kötü duruyo her şeyin altında bi yuvarlak var"* ve *"temas gölgesi şart mı?
+bence böyle bir şey yok hiçbir oyunda"*.
+
+İtiraz teknik olarak da haklıydı: blob shadow yaygın bir tekniktir ama neredeyse hep **gerçek
+gölgenin YERİNE** kullanılır. Bu sahnede G0'dan beri çalışan bir gölge haritası var; blob onun
+ÜSTÜNE ikinci katman koyuyordu — katkısı küçük, bedeli her objenin altında ayrı bir daire
+(masa + 4 tabure = 5 yuvarlak, küme hâlinde puanlı kumaş).
+
+**Sahne şu an G0 hâlinde.** Silinen: `ContactShadows.tsx` · `visualActors.ts` · `CONTACT_SHADOW` ·
+`Footprint` · `tableFootprints`. **Kalan:** `LAYOUT.decor` (dekor konumları artık JSX'te değil,
+tek listede — bağımsız sadeleşme). `npm run test` 186/186 · `npm run build` temiz.
+
+### >>> AÇIK SORUN — PC'DE TAM EKRAN TAKILIYOR <<<
+Kullanıcı bildirdi: *"pcde tam ekran oynarken hayvan gibi kasıyo"*. **G1 DEĞİL** — 1920×1080'de
+temas gölgesinin bedeli 0,09 ms ölçüldü (2,02 ↔ 1,93 ms, `blob.visible` açık/kapalı). Yani sorun
+G1'den önce de vardı ve şimdiye kadar hiç ölçülmedi.
+
+**İlk şüpheliler (sırayla ölçülecek):**
+1. `Scene.tsx` → `<Canvas dpr={[1, 2]} gl={{ antialias: true }}>` — yüksek DPI ekranda
+   çözünürlüğün **2 katına** render + MSAA. Tam ekranda piksel sayısı patlar; pencerede sorun
+   çıkmaması bu şüpheyi güçlendiriyor (fill-rate bağlı).
+2. Gölge haritası: 1024, ortografik kamera −13/28/15/−15 (G0'da genişledi).
+3. CPU: her karede dönen ~800 satırlık `tick()` + Zustand güncellemelerinin tetiklediği React
+   render'ları.
+
+**Yöntem:** kullanıcının makinesinde gerçek sayı gerekiyor — `window.__perf()` (fps/calls/tris)
+HUD'da açılabilir; headless tarayıcıdaki fps ANLAMSIZ (arka plan rAF kısıtlaması, 1 gösterir).
+Kare süresi doğrudan `gl.render` döngüsüyle ölçülür. **Tahminle dokunma.**
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+1. **PC kasma sorununu ölç ve çöz** (yukarıdaki üç şüpheli, bu sırayla). Kullanıcıdan ekran
+   çözünürlüğü + `window.__perf()` çıktısı iste.
+2. Sonra **G2 — zemine ölçek referansı, GEOMETRİYLE** (doku yolu D-041 ile kapalı):
+   `CheckerTiles` genelleştir → `plank` (0,55×2,2, satır başı yarım ofset, tahta başına ±%4 renk
+   sapması) ve `tile` (0,7 kare); derz **çizgi değil boşluk**. Alan başına ~90 plank = 1 draw call.
+   → **G3** duvar bitimi → **G4/G5** KayKit yerleşimi.
+3. **Faz A'ya geçmeden** `tools/smoke.mjs`'in 7 kırık adımı onarılmalı (kök neden `q_coin`
+   questBase yarışı → domino; G0'dan önce de kırıktı, hâlâ 8/15).
+
+### G fazının sonunda kapatılacak artıklar
+- UI Canvas'ları (`CharacterPanel`, `SalonSlice`, `DioramaPreview`, `TableThemePreview`) hâlâ
+  eski düz `ambientLight` ile → dünya ısındı, mağaza önizlemeleri soğuk kaldı.
+- `shadow.bias`/`normalBias` **0'da**: bu açıda akne yok; eklemek ince çıtalarda ışık sızdırır.
+
+### Bu oturumun kalıcı dersi (D-053'ün tekrarı)
+Görsel bir iddia **aynı kameradan A/B** ile ölçülür; görünmüyorsa **abartıp görünür kıl**
+(G0'da test kutusu, G1'de kırmızı+opak materyal — `ss/g1-teshis-kirmizi.png`). Ama A/B'nin
+"çalışıyor" demesi **kullanıcının beğeneceği anlamına gelmiyor**: G1 teknik olarak hedefini
+tutturdu, ürün kararı olarak reddedildi.
+
+### Bilinen, ertelenmiş
+- Maket girişinin üst çıtasında z-fighting (kullanıcı: "oyuna geçerken hallederiz").
+- Bundle 1,45 MB (three.js) — Faz F kod bölme.
+
+---
+
+## ŞU AN (2026-09-06 — FAZ G: G1 TEMAS GÖLGESİ BİTTİ; SAVE v30 değişmedi)
+
+G0 (ışık) geçen oturumda kapanmıştı; bu oturumda **G1 — temas gölgesi** uygulandı, ölçüldü,
+belgelendi. Detay + öncesi/sonrası kanıt: **`docs/gorsel/README.md` §G1**, görüntüler
+`docs/gorsel/ss/g1-*.png`.
+
+### G1 — ne yapıldı
+Her objenin tabanına zemine yatık yumuşak elips. **Tek InstancedMesh** (`ContactShadows.tsx`),
+geometri önceden yatırıldı → matris yalnız öteleme+ölçek. Doku çalışma anında çizilen 64px
+radyal degrade (`alphaMap`) → **0 byte asset**, **+1 draw call**.
+
+| | Kapsam |
+|---|---|
+| Statik (memo) | masa + oturak (her seviye) · ocak/tezgâh · bulaşık modülü · çöp kovaları · saksılar |
+| Dinamik (her kare) | oyuncu · garsonlar · bulaşıkçılar · **AYAKTA** müşteriler · çaycı/tost ustası |
+
+**Tek kaynak:** masa/oturak ayak izi yerleşimi YENİDEN HESAPLAMAZ — `buildFurniture`'ın instance
+listesini okur (`tableFootprints`, Tables.tsx). Tezgâh/bulaşık `LAYOUT.stationHalves`/`dishHalf`'ten.
+Dekor konumları `LAYOUT.decor`'a taşındı; `DecorProps` artık o listeden çizer (ikisi ortak okur).
+Çaycı store'da olmadığı için `src/game/visualActors.ts` kaydı eklendi (`perf`/`screenPointer` kalıbı).
+
+### >>> BU OTURUMUN ÜÇ BULGUSU <<<
+1. **Oturan müşteriye leke KONMAZ.** Konunca altındaki oturağın lekesiyle üst üste binip o
+   koltuk komşularından belirgin koyu çıkıyor. Yalnız `toTable`/`leaving` leke alır.
+2. **Kaldırımda leke gömülüyordu.** Sokak düzlemleri z-fighting için y 0,02–0,06'ya yükseltilmiş
+   ve OPAK → 0,008'deki leke derinlik testinde eleniyor; kapıdan çıkan müşteri gölgesini
+   kaybediyordu. Ön duvar hattının DIŞI `CONTACT_SHADOW.streetY` = 0,075'e çıkarıldı.
+3. **"Göremiyorum" tek başına kanıt değil.** İlk turda leke görünmedi; materyal geçici olarak
+   **kırmızı + opaklık 1** yapılınca lekelerin doğru yerde ve doğru yumuşaklıkta olduğu görüldü
+   (`ss/g1-teshis-kirmizi.png`), sorun yalnız koyuluk/kontrasttı. G0'daki "test kutusu"nun aynısı.
+
+### Ölçüm (aynı kameradan `blob.visible` açık/kapalı — güvenilir yöntem)
+- Draw-call **107 → 108** (+1, salon başına değil TOPLAM).
+- Uzak kamera 91 leke **~0,03 ms/kare** · yakın kamera 28 BÜYÜK leke **~0,13 ms/kare** (fill-rate
+  bağlı: lekeler ekranda büyüdükçe artar; ~16 ms bütçenin %1'i).
+- Kare süresi 1,06 → 1,20 ms · üçgen +56.
+- Koyuluk A/B: 0,40 ahşap zeminde ancak fark ediliyor · 0,58 güneş gölgesiyle ağırlaşıyor →
+  **0,50** seçildi. Sayı `palette.ts` → `CONTACT_SHADOW.opacity`, gerekçesi orada yazılı.
+
+### Sahneyi hızlı doldurma reçetesi (ekran görüntüsü için — hâlâ geçerli)
+```js
+window.__setState({ padsDone: ['table2','table3','waiter','dishwasher','table4','zone2',
+  'z2table2','z2waiter','z2table3','z2dishwasher','z2table4','zone3','z3table2','z3waiter',
+  'z3table3','z3dishwasher','z3table4','waiter2','z2waiter2','z3waiter2'],
+  padFills: {}, stationLevels: [4,4,4], tableLevels: new Array(12).fill(4), camZoomOut: true });
+window.__addMoney(1e6); window.__advanceTime(120); window.__teleport(2, 1);
+```
+G1 A/B'sinde kullanılan daha sade kadraj: 4 masa L1–L4, `__advanceTime(45)`, `__teleport(0, 0.2)`.
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+1. **G2 — zemine ölçek referansı, GEOMETRİYLE** (doku yolu D-041 ile kapalı): `CheckerTiles`
+   genelleştir → `plank` (0,55×2,2 ince quad, satır başı yarım ofset, tahta başına ±%4 renk
+   sapması) ve `tile` (0,7 kare); derz **çizgi değil boşluk** (altındaki koyu taban görünür).
+   Alan başına ~90 plank = 1 draw call. Kozmetik mağazasına doğrudan bağlanır.
+2. Sonra **G3** duvar bitimi (süpürgelik 0,08 · lambri çıtası 0,04 · kartonpiyer) →
+   **G4/G5** KayKit yerleşimi (paketler elde).
+3. **Faz A'ya geçmeden** `tools/smoke.mjs`'in 7 kırık adımı onarılmalı (kök neden `q_coin`
+   questBase yarışı → domino; G0'dan da ÖNCE kırıktı, bu oturumda da 8/15 — DEĞİŞMEDİ).
+
+### G fazının sonunda kapatılacak artıklar
+- UI Canvas'ları (`CharacterPanel`, `SalonSlice`, `DioramaPreview`, `TableThemePreview`) hâlâ
+  eski düz `ambientLight` ile → dünya ısındı, mağaza önizlemeleri soğuk kaldı. Ortak ışığa alınmalı.
+- `shadow.bias`/`normalBias` **0'da**: bu açıda akne yok; eklemek ince çıtalarda ışık sızdırır.
+- Temas gölgesi ELİPS → dikdörtgen tezgâhın köşeleri tam kapanmıyor (2. doku = 2. draw call
+  olacağından tezgâhlarda daha DAR yayılım seçildi, `counterSpread` 1,18 — köşe boşluğu görünmüyor).
+- Kaldırım geçişinde leke 0,008 → 0,075'e "zıplar"; bu kamera açısında algılanmıyor.
+
+### Bilinen, ertelenmiş
+- Maket girişinin üst çıtasında z-fighting (kullanıcı: "oyuna geçerken hallederiz").
+- Bundle 1,45 MB (three.js) — Faz F kod bölme.
+
+---
+
+## ŞU AN (2026-09-06 — FAZ G BAŞLADI: G0 IŞIK BİTTİ; SAVE v30 değişmedi)
+
+Kullanıcı arayüz v2'yi ayrıca gözden geçirmedi, doğrudan **Faz G0'ı seçti**. G0 uygulandı,
+ölçüldü, onaylandı ve push'landı (`d1b238a`). Kullanıcı onayı: *"tamam şu an sorun yok zaten
+genel tasarım değişecek."* — yani G0 kalıcı bir cila değil, **sonraki fazlarda bakılacak
+sahnenin tabanını** düzeltti.
+
+Kullanıcının bu oturumda verdiği ikinci talimat: **"oturum kaydederken push da yap"** (zaten
+protokolde vardı, `oturum-bitir` adım 5) + **"ilerleme panosu artifact'ini de aç"** → pano her
+oturum sonunda güncellenip AYNI yolla yeniden yayınlanıyor, link paylaşılıyor.
+
+### G0 — ne yapıldı (detay: `docs/gorsel/README.md`)
+`src/config/palette.ts`'e **`LIGHTING`** bloğu (tek renk/sayı kaynağı kuralı), `Scene.tsx` yalnız okuyor.
+
+| | Önce | Sonra |
+|---|---|---|
+| Dolgu | `ambientLight 0.6` | `hemisphereLight` gök `#ffe9c8` / yer `#6b5a4a` @ **0.35** |
+| Yönlü | beyaz `1.1` | krem `#fff2d8` **`1.6`** |
+| **Güneş konumu** | **`[6,12,6]` (~55°)** | **`[9,9,7]` (~40°)** |
+| Gölge kamerası | −12/24/12/−20 | −13/28/15/−15 (1024) |
+| Sis | yok | `#1f2933`, 34 → 72 |
+| Tone mapping | ACESFilmic (r3f varsayılanı) | aynı + `toneMappingExposure 1.05` |
+
+### >>> BU OTURUMUN ASIL BULGUSU (sonraki oturum bunu bilsin) <<<
+**Planın G0 tarifi eksikti.** İki şey ölçümle çıktı:
+1. **ACESFilmic zaten açıktı** — r3f v9 varsayılanı (`node_modules/@react-three/fiber` kaynağında
+   doğrulandı). O madde bir iş değildi; yapılacak tek şey exposure'du.
+2. **Yalnız ışık ŞİDDETİNİ oynatmak sahneyi hiç değiştirmedi.** Üç ayar turunun ekran görüntüleri
+   "önce"den ayırt edilemiyordu. Sahneye geçici 3×3 test kutusu konunca sebep göründü:
+   **gölge haritası çalışıyordu**, ama güneş ~55° dik olduğu için gölge objenin ALTINDA kalıyor
+   ve tepeden bakan kamera onu hiç görmüyordu. **Açı = asıl kaldıraç.** 40°'ye inince her masa,
+   tabure ve müşteri zemine oturdu.
+   → Ders: bu sahnede görsel bir iddiayı ölçmenin yolu **aynı kameradan A/B ekran görüntüsü**
+   (oyuncuyu `__teleport` ile sabitle, `camZoomOut` aç, `git stash` ile önce/sonra çek).
+
+### Ölçüm (plan "FPS ölçümü" istiyordu)
+- Draw-call **91 → 91** (ışık geometri eklemez). Sis ~**0,04 ms/kare**.
+- Kare süresi **1,1–1,3 ms** (masaüstü, 3 salon açık, 40k üçgen).
+- **DİKKAT:** headless tarayıcıda `window.__perf().fps` arka plan rAF kısıtlaması yüzünden
+  **anlamsız** (1 gösterir). Ölçüm doğrudan `gl.render` döngüsüyle yapıldı:
+  `for (let i=0;i<200;i++) gl.render(scene,camera); gl.getContext().finish();`
+  (`window.__three` DEV kancasından `gl/scene/camera` alınır.)
+
+### Sahneyi hızlı doldurma reçetesi (ekran görüntüsü için)
+```js
+window.__setState({ padsDone: ['table2','table3','waiter','dishwasher','table4','zone2',
+  'z2table2','z2waiter','z2table3','z2dishwasher','z2table4','zone3','z3table2','z3waiter',
+  'z3table3','z3dishwasher','z3table4','waiter2','z2waiter2','z3waiter2'],
+  padFills: {}, stationLevels: [4,4,4], tableLevels: new Array(12).fill(4), camZoomOut: true });
+window.__addMoney(1e6); window.__advanceTime(120); window.__teleport(2, 1);
+```
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+1. **G1 — temas gölgesi.** Instanced blob shadow: 64px radial-gradient `CanvasTexture`,
+   `transparent`, `depthWrite:false`, y=0.005, masa/tabure/müşteri/tezgâh altına. Tek draw call.
+   G0'dan sonra "yüzme" hissinin yarısı zaten geçti — G1 kalanını kapatır.
+2. Sonra **G2** zemine ölçek referansı (**dokuyla değil geometriyle**; doku yolu D-041 ile kapalı):
+   `CheckerTiles` genelleştir → `plank` (0,55×2,2, satır başı yarım ofset, tahta başına ±%4 renk
+   sapması) ve `tile` (0,7 kare); derz **çizgi değil boşluk**. → **G3** duvar bitimi (süpürgelik
+   0,08 · lambri çıtası 0,04 · kartonpiyer) → **G4/G5** KayKit yerleşimi (paketler elde).
+3. **Faz A'ya geçmeden** `tools/smoke.mjs`'in 7 kırık adımı onarılmalı (kök neden `q_coin`
+   questBase yarışı → domino; bu oturumdan ÖNCE de kırıktı).
+
+### G fazının sonunda kapatılacak iki artık
+- UI Canvas'ları (`CharacterPanel`, `SalonSlice`, `DioramaPreview`, `TableThemePreview`) hâlâ
+  eski düz `ambientLight` ile → dünya ısındı, mağaza önizlemeleri soğuk kaldı. Ortak ışığa alınmalı.
+- `shadow.bias`/`normalBias` **0'da**: bu açıda akne yok; eklemek ince çıtalarda (0,04–0,08)
+  ışık sızdırır. Güneş açısı değişirse tekrar bakılmalı.
+
+### Bilinen, ertelenmiş
+- Maket girişinin üst çıtasında z-fighting (kullanıcı: "oyuna geçerken hallederiz").
+- Bundle 1,44 MB (three.js) — Faz F kod bölme.
+
+---
+
+## ŞU AN (2026-09-06 — ARAYÜZ v2 UYGULANDI + SANDBOX + KayKit paketleri; SAVE v30 değişmedi)
+
+Plan gözden geçirildi, **§14'ün dört açık kararı da kapandı** (D-049…D-052) ve kullanıcı
+arayüz işini öne aldı: *"arayüz işini direkt oyunu oynuyormuşum gibi tam bir oyun ekranında
+yap ki anlaşılır ve gerçek senaryo gibi olsun... bir de sınırsız para vs verirsen güzel olur
+her seviyeyi göreyim veya her şeyin seviyesini ayarlamam için ayar koy."*
+Bu yüzden **statik mockup yapılmadı — arayüz gerçek oyunun içine uygulandı.**
+
+### Kapanan kararlar
+- **D-049** Kritik yol **5–7 saat ONAYLANDI** (tekrarlı yükseltmeler kritik yol dışı, ×3,5).
+- **D-050** Kat 2'nin ürünü **ertelendi** (Kat 1 yayınından sonra; `zoneProduct(z)` bloklamıyor).
+- **D-051** Astra ile eş zamanlı A/B **yok** — önce ben tam gücümle, **gerçek asset'lerle**;
+  kullanıcı kontrol edecek, **gerekirse** Astra sonra ölçülecek.
+- **D-052** Interstitial **120 sn** + ilk 5 dk muaf + yalnız doğal aralar + günlük tavan.
+
+### Bu oturumda yapılanlar
+**1. Asset temini (CC0 doğrulandı, indirildi, commit'lendi)**
+`public/assets/models/kaykit-restaurant-bits/` (144 model, 3,4 MB) ve
+`kaykit-city-builder-bits/` (41 model, 1,7 MB). Yalnız `Assets/gltf/` + doku alındı;
+manifest `public/assets/README.md` güncellendi (öncelikli 12 listesi + sokak listesi).
+
+**2. Geliştirici SANDBOX'ı** — `src/components/ui/DevSandbox.tsx` (+ `devSandbox.css`,
+`src/game/devSandbox.ts`). Sol-üstteki **DEV** düğmesi veya **`** tuşu açar. DEV-only:
+`dist/` içinde yok (doğrulandı). İçerik: para (sınırsız anahtarı) · zaman ×1…×25 ve
++1dk/+10dk/+1sa · her salonun ocak seviyesi · 12 masanın tek tek seviyesi (+"hepsi L1…L5") ·
+karakter/personel kademeleri · pad zinciri (sağ tık = o pad'e kadar aç) · görev atlama ·
+kozmetik ("hepsini aç") · HUD'ı gizle · kaydet/sıfırla. Oyun mantığına dokunmaz.
+
+**3. ARAYÜZ v2** — plan §9 bilgi mimarisi gerçek oyunda. Detay: **`docs/ui/README.md`**,
+ekran görüntüleri `docs/ui/ss/` (412×915).
+```
+ÜST ŞERİT   İtibar madalyonu + çubuğu · ₺ · 💎 · ayar
+SAHNE       yalnız aktif adımın işareti + EKRAN KENARI OKU
+ALT BANT    AKTİF ADIM — tek satır (dokun → kamera hedefe)
+ALT NAV     Görevler · Hedefler · Mağaza · Karakter
+```
+- Kaldırıldı: dağınık dört yan buton, sağ-üst görev kartı, **Posta** (K16).
+- Görsel dil iki katman: **overlay = ceviz+pirinç** (sahne üstünde kontrast), **sayfa = krem
+  kâğıt** (içerik okunaklı). Mağaza ve Karakter panelleri de ortak `Sheet` kabuğuna girdi.
+- **Emoji/CSS ikon yok:** 6 yeni elle çizilmiş SVG ikon (`QuestListIcon`, `TargetIcon`,
+  `ShopAwningIcon`, `ChevronIcon`, `ReputationIcon`, `PlayAdIcon`).
+- **Ekran kenarı oku:** `QuestPointer` (Scene) hedefi kameraya izdüşürür → `screenPointer`
+  singleton (store'a yazılsa her kare render'ı tetiklerdi; `perf` kalıbı), HUD ~20 Hz okur.
+- **Görevler** ekranı: aktif adım büyük kart + SIRADA + TAMAMLANAN listesi.
+- **Hedefler** ekranı: 5 kategori, sayaçlar **gerçek `stats`/durumdan türer** (sahte veri yok);
+  ödül TOPLAMA Faz D'de bağlanacak (sayfa bunu açıkça söylüyor). İtibar çubuğu bugün XP
+  sistemini kullanıyor, Faz D'de İtibar'a devrolur.
+- **Ortak ödül modali** (offline ekranı bunu kullanıyor): başlık · ödül · [Al] · [▶ İzle, 2× al]
+  (reklam hazır değilken buton pasif ama görünür — D-039 kalıbı).
+
+### Doğrulama
+- `npm run test` → **186/186 geçti**. `npm run build` → **temiz** (tsc -b + vite).
+- Sandbox üretim paketinde yok (`dist/` grep = 0).
+- Playwright: 0 konsol hatası; altı ekran gerçek oyun durumuyla görüntülendi.
+- **DİKKAT — ÖNCEDEN VAR OLAN KIRIK:** `tools/smoke.mjs` **8/15**. `b455764` (bu oturumdan
+  ÖNCEKİ commit) ayrı bir worktree'de aynı sonucu verdi → **bu oturumun değişikliği değil.**
+  Kök neden: `q_coin` görevi aktif olmadan önce para toplanıyor → `questBase` = 1, sayaç 0/1'de
+  takılıyor; sonrası domino. Faz A/C işi (plan zaten "testler koordinat/akış bağından koparılacak"
+  diyor). ⚠ Düzeltilmeden Faz B'ye geçilmemeli.
+
+### İLERLEME PANOSU (bu oturumun son çıktısı)
+**`docs/pano/ilerleme-panosu.html`** — artifact https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
+Kullanıcı istedi: *"kaç faz ve oturum kaldı kaçı yapıldı totali ne gibi düşün"* + referans olarak
+ikravakfi'nin **Mali Takip Panosu**'nu (f467bc3f) gösterdi. O panonun iskeleti birebir alındı,
+görsel imza kıraathaneye ait (ceviz/pirinç/krem + Baloo 2 · IBM Plex Sans/Mono).
+
+**Yapısı — tek gerçek kaynak:** sayfanın tamamı dosyanın içindeki
+`<script type="application/json" id="durum">` bloğundan çizilir. **Her oturum sonunda
+SADECE o blok güncellenir**, sonra AYNI dosya yoluyla yeniden yayınlanır (bağlantı değişmez):
+1. ilgili fazın `yapilan`'ını artır · 2. üstteki `yapilan` toplamını artır ·
+3. `ozet` bloğunu bu oturumun işiyle değiştir · 4. `siradaki` bloğunu yeniden yaz ·
+5. `gunluk` listesinin EN ÜSTÜNE satır ekle · 6. `guncelleme` tarihini değiştir.
+
+**Oturum bütçesi (bu oturumda tanımlandı — 65 oturum, 35 yapıldı, %54):**
+- **Kuruluş dönemi 28/28** ✅ (F0 1 · F1 3 · F2 6 · F2Q 3 · F3 8 · F6 5 · Denetim 2).
+  Bu sayı **commit kaydından türetildi** (114 commit / 14 çalışma günü) — tahmindir, panoda
+  öyle yazıyor. Geri kalan bütün sayılar sayımdır.
+- **Yayın programı 7/37:** P 6/6 ✅ · **G 0/4 (SIRADAKİ)** · A 0/3 · B 0/5 · C 0/5 · D 0/5 ·
+  **E 1/4** (arayüz v2 öne alındı) · F 0/5.
+- Kilometre taşları: 28 oynanabilir gövde · 34 plan kesinleşti · 51 model+denge oturdu ·
+  65 v1.0 App Store.
+
+**İlk panoyu kullanıcı REDDETTİ** (statik faz kartları + karar defteri): *"böyle bir ilerleme
+panosu gibi değil"*. Ders: bu kullanıcı için pano = **sayılar** (yapılan/kalan/toplam, faz başına
+oturum), anlatı değil. Anlatı `gunluk` kartlarında kalır.
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+0. **PANOYU GÜNCELLE** — oturum bitince `docs/pano/ilerleme-panosu.html` içindeki JSON bloğu
+   (yukarıdaki 6 adım) + aynı yolla yeniden yayınla. Panoyu güncellemeden oturum kapatma.
+1. **Kullanıcı arayüz v2'yi kontrol edecek** (`docs/ui/ss/` + `npm run dev`). Geri bildirime göre
+   düzeltme. Astra ölçümü kullanıcı isterse ondan sonra (D-051).
+2. Sonra plandaki sıra: **Faz G** — G0 ışık (hemisphere + fog + ACESFilmic, ~15 satır, en yüksek
+   etki/çaba) → G1 temas gölgesi → G2 plank/karo geometrisi → G3 duvar bitimi → G4/G5 KayKit
+   (paketler artık elde).
+3. Faz A'ya geçmeden `tools/smoke.mjs`'in 7 kırık adımı onarılmalı.
+
+### Bilinen, ertelenmiş
+- Maket girişinin üst çıtasında z-fighting (kullanıcı: "oyuna geçerken hallederiz").
+- Bundle 1,44 MB (three.js) — Faz 7 kod bölme.
+
+---
+
+## ŞU AN (2026-09-06 — PLANLAMA OTURUMU; KOD DEĞİŞMEDİ, SAVE v30)
+
+`src/` DOKUNULMADI. Bu oturum tamamen denetim + tasarım + planlama.
+**Ana çıktı: `docs/plan-kat1-yayin.html`** — artifact https://claude.ai/code/artifact/62027184-9196-4da4-83ce-b7bd347d78ac
+Maket de güncellendi: `docs/maket/maket-v13.html` (içerik v15) — artifact https://claude.ai/code/artifact/813bdc4c-3052-46ca-ac3b-23076f425b23
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+Kullanıcı: *"sen oturumu kaydet, sonraki chatte planı netleştirelim ona göre hareket ederiz."*
+**Yani: önce PLANI BİRLİKTE GÖZDEN GEÇİR, sonra koda başla.** Plan artifact'ini aç, §14'teki açık
+kararları kapat, sonra **Faz G**'den (ışık → temas gölgesi → plank geometrisi → duvar bitimi) başla.
+
+### Bu oturumda ne oldu — üç bölüm
+
+**1. Maket v14–v15** (`docs/maket/maket-v13.html`, dosya adı v13 kaldı):
+Kat 1'in dört eksiğinden ikisi kapandı — sokak cephesine **cam vitrin** (`shopFront` · `shopGlass`
+· `shopWins` · `doorLeaf`) ve **sol duvar programı** (askı rayı · konsol raf · **televizyon** ·
+gazetelik). Sonra kullanıcı *"güzel ama düzgün durmadı"* dedi → dört ayrı kusur bulundu:
+- duvar 2,7 iken kapı boşluğu 2,9'du, **kapı duvardan taşıyordu** → `WALL_H = 3.2` sabiti
+- cam bandının üstünde **alınlık yoktu** → kaide 0–0,4 · cam 0,4–2,65 · lento · **alınlık
+  2,65–3,2 (tabela)** · üst kordon
+- tente alınlığın **üstündeydi** ve **eğimi tersti** (dış kenar yukarı kalkıyordu) →
+  lentonun altına indi, `rotation.x` −0,18 → **+0,18**
+- kapı kanadı içi dolu ahşap kutuydu, camın arkasında tahta kalıyordu → `doorLeaf` iki dikme +
+  üç kayıt olarak yeniden yazıldı, **çift kanatlı camlı**, sağ kanat içeri açık
+**Gölge sızması** da düzeldi: içerideki rafların gölgesi duvarın DIŞ yüzüne sızıyordu →
+`shadow.normalBias` 0,02 → **0,14** (duvar kalınlığından küçüktü), `bias` −0,0004 → −0,0012.
+Yan etki kabul edildi: Kat 2–3 duvarları da 3,2 oldu; sınır duvarları 2,9 → `WALL_H` (7 yer).
+
+**2. Denetim ve araştırmalar**
+- Fable 5.1 ile `src/` tam tarandı (9.669 satır); bulgular kodda **doğrulandı**.
+- Üç araştırma daha: asset/doku kaynakları · idle tempo kıyaslaması · GPT-6 Astra.
+
+**3. Plan** — `docs/plan-kat1-yayin.html`, 14 bölüm, karar defteri K1–K18, açık 4 karar.
+
+### Bu oturumun KALICI kararları (decisions.md D-037 … D-048)
+- **D-038 Tek Odak Kuralı** — pad + seviye + görev TEK listede; dünyadaki işaret, alt bant metni,
+  kamera odağı ve kenar oku dördü de tek `activeStepId`'den türer. **Kök sebep kodda doğrulandı:**
+  `visiblePads` pad'leri göreve göre filtreliyor ama `optional:true` pad'ler ve
+  `upgradeFills` / `tableUpgradeFills` bu filtrenin **tamamen dışında** çiziliyor.
+  Usta (L4) noktaları listeye GİRMEZ — rozet olarak görünür.
+- **D-039 L1–L3 para, L4 "Usta" reklam/💎, KRİTİK YOL DIŞI, masa başına** (20 masa = 20 hedef).
+  Reklam hazır değilse **pad yine görünür**, yalnız buton pasifleşir.
+- **D-040 "Reklamları Kaldır" IAP elmas geliri satar** (kalıcı günde 10 💎) — L4'ü parayla satmaz.
+- **D-041 Zemin/duvar DOKUSU KULLANILMAZ** — `d08c445` canvas-tile parke denendi, `d29b7d9`
+  geri alındı. Çözüm sırası: ışık → temas gölgesi → plank/karo geometrisi → duvar bitimi →
+  KayKit. **Kod Lambert değil `meshStandardMaterial` (153 yer), `flatShading` hiç yok.**
+- **D-042 KayKit CC0 + 5 Türk objesi elle.** AI ücretsiz planları **YASAK**: Meshy free =
+  CC BY 4.0 atıf zorunlu · Tripo free = ticari yok · Hunyuan3D (Spline AI dahil) = AB/UK yasak.
+  Semaver zaten makette var (`samovar()`), taşınacak.
+- **D-043 Tost tezgâh seviyesiyle gelir**, alanla değil. Ürün makinesi zaten tamamen kurulu;
+  ürünü bölgeye bağlayan tek şey `zoneProduct(z)` — 12 çağrı noktası ondan geçiyor.
+- **D-044 Kritik yol 5–7 saat**; tekrarlı yükseltmeler kritik yol DIŞI (+6–10 sa isteğe bağlı
+  derinlik), Usta katmanı açık uçlu. Uzatma ×6 değil **×3,5**.
+  Başarı ölçütü saat değil **retention: D1 ≥ %40 · D7 ≥ %10 · oturum 8–12 dk.**
+- **D-045 Astra: disipline göre bölme yok, tek ekranda A/B.** `store.ts` / `economy.config.ts` /
+  `save.ts` / testler bölünmez.
+- **D-046 Global garson havuzu + sipariş tabanlı servis** (son turda eklendi, aşağıda).
+- **D-047 Servis noktası tek merdiven:** L1–L3 Çay Ocağı · **L4 → TEZGÂH** · **L5 TOST açılır** ·
+  L6 son ₺ · Usta (L7). Mevcut `costsByLevel` altı girdiyle birebir → **şema değişmiyor**.
+- **D-048 Astra kullanımı zorunlu değil**; karar arayüz A/B çıktısından sonra verilecek.
+
+### Kullanıcının son turda eklediği şartlar (D-046'nın kaynağı)
+- **Çay garsonu / tost garsonu ayrımı KALKACAK** — *"öyle bir masa ve alan ayrımı da kalmadı,
+  globalleşmesi lazım."*
+- **Senkronizasyon çok iyi olmalı:** hiçbir masa **starvation** çekmemeli · garson yanından
+  geçtiği masaya **elindekini bırakmamalı**, kime gidecekse ona gitmeli · **garson sayısı ideal**
+  olmalı.
+- **Sipariş toplanmalı:** *"bir masa 2 tost 1 çay istiyorsa ona göre sipariş toplanıp gitmeli"* —
+  sabır, bekleme ve hazırlanma süreleri buna göre ayarlanmalı.
+- **Retention verisi tutulacak** (onaylandı).
+- **Frontend merakı:** kullanıcı benim *"çok uğraştığım"* arayüz denememi görmek istiyor;
+  o denemede **asset'ler de elde olacak**. Astra kararı ondan sonra.
+
+### Kalan açık kararlar (planın §14'ü)
+1. 5–7 saatlik kritik yol onayı — zincirin bütün fiyatlarını bu belirliyor
+2. Kat 2'nin ürünü (Türk kahvesi önerildi; pizza da mümkün)
+3. Arayüz A/B testi yapılacak mı
+4. Interstitial sıklığı (plan 3 dk; kıyas: My Perfect Hotel ~90 sn)
+
+### Bilinen, ertelenmiş bug
+Maket girişinin üst çıtasında renk yalpalanması (z-fighting) — kullanıcı *"oyuna geçerken
+hallederiz"* dedi.
+
+## ŞU AN (2026-09-05 — v15: CEPHE ORANLARI DÜZELTİLDİ; KOD DEĞİŞMEDİ, SAVE v30)
+
+Kullanıcı v14 vitrinine baktı: *"dışarıdaki camlar güzel ama düzgün durmadı sanki, acaba duvarları
+az daha mı yükseltsek ne diyosun? ve ön taraf cam olarak daha güzel durabilir belki o şekilde."*
+Haklıydı — dört ayrı kusur vardı, hepsi düzeltildi. **Karar: `decisions.md` D-037.**
+SS: `docs/maket/ss/v15-cephe.png` · `v15-adim1.png` · `v15-adim6.png` · `v15-kat2.png` · `v15-kat3.png`
+
+### Teşhis (dört kusur) ve çözümü
+1. **Duvar 2,7 iken kapı boşluğu 2,9'du → kapı duvardan taşıyordu.**
+   → `WALL_H = 3.2` sabiti eklendi (`wall()` varsayılanı buradan gelir); kapı boşluğu 2,65.
+2. **Cam bandının üstünde tabelaya yer yoktu**, bina alçak bir baraka gibi duruyordu.
+   → Cephe dizilimi: kaide 0–0,4 · cam 0,4–2,65 · lento · **alınlık 2,65–3,2** · üst kordon.
+   Alınlığa çerçeveli koyu levha + küçük pirinç harfler (ortada kelime boşluğu).
+3. **Tente alınlığın ÜSTÜNDEYDİ ve tabelayı kapatıyordu; üstelik eğimi tersti** (dış kenar yukarı
+   kalkıyordu; `rotation.x = -0.18`). → Tente lentonun ALTINA indi, eğim `+0.18` (dış kenar aşağı).
+   Not: `buildingBelow` zaten `+0.18` kullanıyordu, cephe tutarsızdı.
+4. **Kapı kanadı içi dolu ahşap kutuydu**, camın arkasında tahta kalıyordu → cam cam görünmüyordu.
+   → `doorLeaf(w,h)` iki dikme + üç kayıt olarak yeniden yazıldı, gövde içi boş; üstte cam göz,
+   altta ahşap etek, pirinç dikey kol. **Çift kanatlı, sağ kanat içeri açık** (menteşe sağ sövede,
+   ry = −1,15 · merkez x+1,77 · z 16,04).
+
+### Yan etki (bilinçli kabul edildi)
+`wall()` varsayılanı değiştiği için **Kat 2 ve Kat 3'ün duvarları da 3,2** oldu; kilitli alan sınır
+duvarları 2,9'dan `WALL_H`'e çekildi (7 yerde). `windowWall` (sağ duvar) da h = WALL_H, pencere başı
+2,45 → 2,80 (cephe camıyla aynı hiza). Üç kat da Playwright'la kontrol edildi: **0 konsol hatası**,
+kamera görünürlüğü bozulmadı — iç mekân aksine daha oranlı okunuyor.
+`archCol()` (2,7) artık 3,2'lik duvarda bir geçit portalı; doğru okunuyor, dokunulmadı.
+
+## ŞU AN (2026-09-05 — v14: CAM CEPHE + SOL DUVAR; KOD DEĞİŞMEDİ, SAVE v30)
+
+`src/` DOKUNULMADI. **Çalışılan dosya: `docs/maket/maket-v13.html`** (dosya adı v13 kaldı, içerik v14).
+**Artifact (canlı, aynı link):** https://claude.ai/code/artifact/813bdc4c-3052-46ca-ac3b-23076f425b23
+SS: `docs/maket/ss/v14-adim1.png` · `v14-adim3.png` · `v14-adim6.png` · `v14-cephe-sokak.png` ·
+`v14-cephe-yakin.png` · `v14-solduvar.png`
+
+### Bu oturumda ne yapıldı
+Kullanıcı iki seçenekli soruya cevap verdi: **"önce eksikleri kapat, sonra entegrasyon haritası"**
+ve **"maket devam"** (src/ donuk kalsın). Kat 1'in dört eksiğinden **ilk ikisi kapatıldı**:
+
+1. ✅ **CAM CEPHE (eksik #1, en büyüğü).** Ön duvar (z = +17) artık düz duvar değil, **vitrin**.
+   Yeni yapı taşları: `shopGlass(w,h)` · `shopWins(len)` · `shopFront(x1,z1,x2,z2)`.
+   `windowWall`'dan farkı: kaide 0,5 (yerine 1,15 denizlik değil), cam 0,5 → 2,5, üstte lento,
+   ~1,9'da bir ince ahşap dikme, vasistas kaydı, camda pirinç isim şeridi. Bölümleme otomatik:
+   uçlarda 0,9 · aralarda 1,5 ayak, gözler ~5,8'i geçmez. Adım 1'de iki 4,5'lik göz, adım 2+'de
+   kapının iki yanında ikişer 5,75'lik göz. **Kapı ve tente aynen kaldı.**
+2. ✅ **SOL DUVAR PROGRAMI (eksik #2).** Adım 3'te ocak arkaya taşınınca boşalan z 2…14 arası
+   13 birim dolduruldu — **oturma EKLENMEDİ** (masa sayısı ve ekonomi zinciri bozulmasın diye):
+   askı rayı (z 3,0) · uzun konsol raf + üstünde tablo (z 7,0) · **TELEVİZYON** (z 10,8) ·
+   gazetelik (z 13,2) · iki aplik · ayakta TV izleyen bir müşteri.
+   Yeni yapı taşları: `askiRayi(len)` · `konsol(len)`.
+   **TV kararı:** kıraathanenin en tanımlayıcı duvar öğesi; ileride kendi seviyesi olan bir obje
+   olabilir (henüz karar değil, not).
+3. ✅ **Yeni inceleme kancası:** `window.__bak(azi, ele, dist, tx, ty, tz)` — Playwright'ın belirli
+   bir açıdan ekran görüntüsü alabilmesi için. `window.__maketScene` ile aynı amaçta.
+4. ✅ Adım 1 ve adım 3 açıklama metinleri (STEPS[1]) yeni eklemelere göre güncellendi.
+5. ✅ Playwright MCP 1440×960: adım 1/3/6 çizildi, **0 konsol hatası**. Vitest 186/186.
+
+### Geri alınabilirlik (yorum işaretli bloklar)
+- `>>> CAM CEPHE (vitrin) ... <<<` — `buildFloor1` içindeki iki `shopFront(...)` çağrısı
+  `wall(...)` yapılırsa cephe eski hâline döner; başka hiçbir yeri etkilemez.
+- `>>> SOL DUVAR PROGRAMI ... <<<` — `buildFloor1` içindeki `if (s >= 3)` bloğu silinirse duvar
+  yeniden boşalır.
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+**Adım adım oyuna entegrasyon haritası** (kullanıcının ifadesi: *"bunu oyuna entegre etmek için
+her adımda sırayla ne olacak onu tasarlarız"*): hangi pad neyi açıyor, hangi seviye neyi artırıyor,
+`economy.config.ts` pad zinciri + `LAYOUT` (store.ts) koordinatlarına nasıl bağlanıyor.
+Haritadan önce **kullanıcı onayı bekleyen üç karar** (aşağıdaki "KULLANICI ONAYI BEKLEYEN"):
+banket seviyesi = boy · lavabo erken-kalkma mekaniği · 12 adımlık açılış zinciri.
+Ayrıca yeni: **cam cephe ve TV birer pad/seviye olacak mı**, olacaksa zincirin neresinde?
+
+### Kat 1'de KALAN iki eksik (2 tanesi bu oturumda kapandı)
+3. **Tek tezgâh 20 masaya yetmiyor** — garson mekaniği veya ikinci servis noktası şart olacak.
+   Tasarım hatası değil, ekonomi tasarımının çözmesi gereken gerçek.
+4. **Merdiven kovasının ağzı tanımsız** — 9,2 birimlik çerçevesiz açıklık; `archCol()` portalı
+   iki yanına konsa okunur.
+
+## ŞU AN (2026-09-05 gece — KAT 1 PLANI KESİNLEŞTİ; KOD DEĞİŞMEDİ, SAVE v30)
+
+`src/` DOKUNULMADI. Bu oturum da tamamen maket. **Çalışılan dosya: `docs/maket/maket-v13.html`**
+**Artifact (canlı, aynı link):** https://claude.ai/code/artifact/813bdc4c-3052-46ca-ac3b-23076f425b23
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+Kullanıcı: *"şimdi oturumu kaydet sonraki chatte devam ederiz"*. Sıradaki iş **adım adım oyuna
+entegrasyon haritası** (kullanıcının ifadesiyle: *"bunu oyuna entegre etmek için her adımda sırayla
+ne olacak onu tasarlarız"*): hangi pad neyi açıyor, hangi seviye neyi artırıyor,
+`economy.config.ts` pad zinciri ve `LAYOUT` (store.ts) koordinatlarına nasıl bağlanıyor.
+**Ama önce cevaplanmamış soru:** aşağıdaki dört eksikten ilk ikisi (cam cephe + boş sol duvar)
+haritadan ÖNCE mi yapılsın, sonra mı?
+
+### Kat 1 — ONAYLANMIŞ hâl (v13, ALTI adım)
+Bina 34 × 34, bölme eksenleri x = 0 ve z = 0. Arka bant z = −17 … −9,8; üç blok **aynı hizada biter**:
+
+```
+┌──────────────────────┬──────────────┬──────────────────────┐
+│ SERVİS BLOĞU+TEZGÂH  │   MERDİVEN   │       LAVABO         │  z = −17
+│ 12,2 × 7,0 (adım 3)  │ 9,2×7 (ad.5) │  12,3 × 7,0 (adım 4) │
+├──────────────────────┴──────────────┴──────────────────────┤  z = −9,8
+│      ORTA ŞERİT 34 × 9,8 (adım 6): iki banket adası        │
+│      + 12 ikili masa + garson servis istasyonu             │  banket z = −2,95
+├────────────────────────────────────────────────────────────┤  z = 0
+│   1. ALAN (adım 1)          │        2. ALAN (adım 2)      │
+│   4 dörtlü masa             │        4 dörtlü masa         │  z = +17 cephe
+└────────────────────────────────────────────────────────────┘
+```
+
+- **Adım 1** ön-sol çeyrek: 4 masa + sol duvarda çay ocağı; kapı bu cephenin ortasında (x = −8,5).
+- **Adım 2** ön-sağ çeyrek: birebir aynısı; cephe tamamlanınca **kapı x = 0'a kayar**.
+- **Adım 3** arka yarının tamamı + **servis bloğu**; bloğun salona bakan yüzü **TEZGÂH**
+  (semaver + temiz bardak istifleri + hazır tepsiler önde; cezve ocağı, hazırlık tezgâhı, menü
+  tahtası, bulaşık arkada). Tezgâhın ortasında **2 birimlik geçit**. Ön iki alandaki ocak kalkar.
+- **Adım 4** lavabo: 4 kabin + sağ duvarda 3 lavabo, kapısı salona bakar.
+- **Adım 5** merdiven: 14 basamak, Kat 2'nin tek çıkışı.
+- **Adım 6** orta şerit: sırt sırta iki **banket adası** (boy 7,6 · derinlik 2,5) + **12 ikili masa**
+  + **garson servis istasyonu** (sürahi, peçete, temiz bardak, kirli tepsi).
+- Toplam: **20 masa · 56 koltuk · tek tezgâh.**
+
+### Bu oturumun KALICI kararları (decisions.md D-033…D-036)
+- **D-033 — Kilitli obje üç hâlde görünür.** ① Kilitli ALAN hiç çizilmez. ② Kilitli ODA (lavabo)
+  tahta perde + uyarı bandı + duba, arkasında iskele/moloz — arkası görünmez. ③ Kilitli YAPI
+  (merdiven) **perdesiz**, kendisi yıkık hâlde görünür (eksik basamak tahtaları, kırık korkuluk,
+  moloz) ve önüne yalnız **uyarı şeridi** + dubalar konur. Gerekçe: perde çekilince orası yeni bir
+  oda gibi görünüyor ve oyuncu üst kat olduğunu göremiyor.
+- **D-034 — Kat 1 ızgarası.** Sütunlar x = ∓5,3 · ∓8,5 · ∓11,7 (3,2 aralık), satırlar
+  z = −1,1 · 5,3 · 11,7 (6,4 aralık), ortada x ∈ [−4,6, 4,6] kapı–merdiven geçidi. Yan duvarlarla
+  mobilya arasında ~4,5 birimlik **çevre koridoru**; duvara yalnız servis/tezgâh/depo yapışır.
+- **D-035 — Servis bloğunun yüzü tezgâh.** Kafede tezgâh mekânın yüzüdür, mutfak arkasında kalır.
+- **D-036 — Orta şerit: banket adası + ikili masa.** Katın eksiği masa sayısı değil masa
+  **çeşidi**ydi; en çok eksik olan ikili masa. Duvar olmadığı için banket adası kullanıldı.
+
+### Bu oturumda REDDEDİLENLER (tekrarlanmasın)
+- **Soba / kuzine köşesi** ve **ocakbaşı tezgâhı (tabureli bar)** — kullanıcı: *"soba ve ocakbaşı
+  hiç mantıklı gelmiyor ya"*.
+- **"4 masa daha koyalım"** — kullanıcı da zayıf buldu (*"masa da çok eksik gibi"*).
+- **Merdiven kovasına tahta perde** — *"yeni bir oda izlenimi oluyor o da hoş değil"*.
+
+### KULLANICI ONAYI BEKLEYEN
+1. **Banket seviyeleri.** Önerim: seviye = **boy**; dış uç sabit, içe doğru uzar, her seviye iki
+   masa ekler (her yüze bir). Sol ada: L1 x −12,3…−9,7 (masa −11,7) → L2 −12,3…−6,5 (+ masa −8,5)
+   → L3 −12,3…−4,7 (+ masa −5,3). Var olan masalar hiç yer değiştirmez; yükseltme noktası bankın
+   uzayan ucunda kayar. Kullanıcı: *"onu adım adım ne olacak ayarlıcaz, orada kararını veririz."*
+2. **Lavabo mekaniği.** Sert tavan YOK; lavabosuzken müşterilerin ~%20'si oturumun ~%60'ında
+   **erken kalkar** (görünür: kalkma + küçük para istifi), yaklaşınca *"lavabo olmadığı için erken
+   kalkıyorlar"* yazısı çıkar. ~%12 gelir kaybı. Kullanıcının kendi fikri, onay bekliyor.
+3. **Açılış zinciri.** Kullanıcının fikri doğrulandı: *"3. alanla birlikte bir tanesi gelsin,
+   seviyeyi biz artıralım, 2.'yi biz açalım."* Alan açılınca **çalışır hâlde** gelir (1. ve 2. alan
+   da 4 masayla geldi), gerisi kazanılır.
+
+### Kat 1'in TESPİT EDİLEN dört eksiği (kullanıcıya sunuldu, karar bekliyor)
+1. **Sokak cephesinde hiç cam yok** — ön duvarda sadece kapı. Kıraathanenin en tanımlayıcı özelliği
+   büyük cam cephedir; bina dışarıdan depo gibi duruyor. **En büyük eksik.**
+2. **Sol duvarın ön yarısı bomboş** — 13 birim çıplak duvar (adım 3'te ocak arkaya taşınınca
+   boşaldı). Gerçek kafede orası duvar boyu banket ya da uzun raf/askılık olur.
+3. **Tek tezgâh 20 masaya yetmiyor** — garson mekaniği veya ikinci servis noktası şart olacak.
+   Tasarım hatası değil, ekonomi tasarımının çözmesi gereken gerçek.
+4. **Merdiven kovasının ağzı tanımsız** — 9,2 birimlik çerçevesiz açıklık; `archCol()` portalı iki
+   yanına konsa okunur.
+
+Bilinçli ertelenenler: zemin dekoru/halılar, aydınlatma ince ayarı, Kat 2-3'ün aynı dile çevrilmesi.
+
+### Önerilen açılış zinciri (onay bekliyor)
+| # | Tür | Ne gelir | Etki |
+|---|---|---|---|
+| — | başlangıç | 1. Alan: 4 masa + küçük çay ocağı | döngü öğrenilir |
+| 1 | seviye | Ocak L2 | çay/dk ↑ |
+| 2 | pad | 2. Alan + 4 masa | kapasite ↑ |
+| 3 | seviye | Ocak L3 | çay/dk ↑ |
+| 4 | pad | 3. Alan → arka yarı + servis bloğu + tezgâh + **1. Banket L1** (2 masa) | yeni oturma tipi |
+| 5 | seviye | 1. Banket L2 (4 masa) | kapasite ↑ |
+| 6 | pad | Lavabo | erken kalkma biter |
+| 7 | seviye | 1. Banket L3 (6 masa) | kapasite ↑ |
+| 8 | pad | Servis istasyonu | servis yolu kısalır |
+| 9 | pad | 2. Banket L1 (2 masa) | kapasite ↑ |
+| 10-11 | seviye | 2. Banket L2 → L3 | kapasite ↑ |
+| 12 | pad | Merdiven | **Kat 2 açılır** |
+
+Paralelde tezgâhın kendi seviye hattı (demleme hızı) devam eder.
+
+### Geri alınabilirlik (kullanıcı: *"her an geri aldırabilirim"*)
+`maket-v13.html` içinde yorum işaretleriyle sınırlı bloklar:
+- `>>> ÖN TEZGÂH ... <<<` (adım 3) — silinirse semaver sol duvara (−16,4 · −13,4 · PI/2) döner.
+- `>>> ADIM 6 — ORTA ŞERİT ... <<<` — silinirse şerit yeniden boşalır.
+- `>>> TADİLAT ... <<<` (adım 3) — lavabo perdesi.
+
+Commit sınırları: `a5d8982` (arka bant + tezgâh + banket) · `9d6f997` (ızgara + tadilat) ·
+`4bf8790` (kalın banket) · `a52daf1` (yıkık merdiven).
+
+### Bu oturumda eklenen yapı taşları (maket-v13.html)
+`lavaboBlock` · `banketIsland` · `cafeTable2` · `banketUnit` · `servisIstasyonu` ·
+`tadilatPerde` · `duba` · `iskele` · `moloz` · `uyariSeridi` · `merdivenHarap`
+
+### Düzeltilen bug
+1. adımda `z = 0` sınır duvarı 34 birim tam boy çiziliyordu ve açık alanın sağ köşesinin ötesine
+taşıyordu. Artık `s < 2` iken x = 0'da kesiliyor.
+
+## ŞU AN (2026-09-04 gece — MAKET v11: SABİT OMURGA + ÜÇ KANAT; KOD DEĞİŞMEDİ, SAVE v30)
+
+Uzun bir maket iterasyonu oturumu. `src/` içinde HİÇBİR değişiklik yok — yalnız `docs/maket/`.
+**Kullanıcı v11'i onayladı** ("tamam bir sonraki sefere net anlatımlı yaparız şimdi oturumu kaydet").
+
+### Yayında olan maket
+`docs/maket/maket-v10-v2-duzen.html` (dosya adı v10 kaldı, içerik v11).
+**Artifact:** https://claude.ai/code/artifact/9d8c6d5a-5bd9-464b-a4e3-975c214236cd
+Ekran görüntüleri: `docs/maket/ss/v11-adim1..4.png`. Tüm kurallar: `docs/maket/README.md`.
+
+### v11'in kesin kararları (kullanıcının yedi şikâyetinin karşılığı)
+1. **SABİT OMURGA.** Ana kapı ön duvarın, merdiven arka duvarın tam ortasında; hiç kaymaz.
+   Adım 1'de açık alan kapının iki yanına SİMETRİK 12 birimlik merkez dilim. Kat, omurganın
+   sağına → soluna → arkasına kanat olarak açılır. Açık alan her adımda DİKDÖRTGEN.
+   Adımlar: ① merkez omurga x[−6,6] z[0,2,17] ② + sağ kanat (Cam Kenarı) ③ + sol kanat
+   (Ocakbaşı) + mutfak dışarı ④ + arka yarı (Tavla/Okey + WC + merdiven).
+2. **HALI = YOL İŞARETİ**, zemin kaplaması değil: kapıdan merdivene 3 birimlik sabit yolluk +
+   her salona kısa dal halı. Hiçbir adımda salon kaplanmaz.
+3. **KASA ve KUYRUK YOK** (oyunda kasada ödeme/sipariş kuyruğu yok — Model B′). Yerine
+   KARŞILAMA TEZGÂHI: askılık, gazete-tavla rafı, temiz bardak istifi = oyuncunun ilk tepsi noktası.
+4. **VİTRİN YOK** (tatlı vitrini tamamen kaldırıldı).
+5. **MUTFAK BİNANIN DIŞINA ÇIKINTI:** batı duvarına yapışık 8 × 9 ek hacim, ÜSTÜ AÇIK (içi görünür).
+   Kat içi 34 × 34 tamamen salon kalır. Salona tek bağ: servis penceresi (adisyon askısı + hazır
+   bardaklar) + ayrı personel kapısı; davlumbaz bacası dış cepheden yükselir.
+   Adım 1-2'de mutfak = omurganın dibinde küçük çay ocağı (semaver/cezve/bulaşık), SERVİS TEZGÂHI YOK.
+6. **ARKA YARI = TAVLA / OKEY ODASI:** tek tip 4 kişilik oyun masası, geniş koridor, skor tahtası.
+   ("Ayaküstü köşesi" iptal — yüksek masa yok, karışık mobilya yok.)
+7. **OCAKBAŞI = TEZGÂH:** servis penceresine paralel uzun tezgâh, önünde 5 tabure, tezgâh üstünde
+   ısıtıcı hattı, arkasında personel koridoru. Sipariş tezgâh üstüne konur; **para istifi her
+   taburenin önünde tezgâhta birikir.**
+
+### Fable 5.1'in genel ilkeleri (kullanıcı isteğiyle danışıldı, uygulandı)
+- Sabit omurga: kapı-yolluk-merdiven ekseni hiç değişmez, kat onun etrafında kanatlanır.
+- Her salonun TEK mobilya dili (normal masa / oyun masası / tezgâh); karışık tip yok.
+- Kapalı hacimler (mutfak, WC) salon alanından değil bina dışından/arka duvardan alınır.
+- **Oyunda olmayan hiçbir şey mekânda yok** (kasa, kuyruk, vitrin).
+- Her yüzey bir sinyal: halı = yol, tezgâh = servis noktası, istif = para.
+
+### Reddedilen ara denemeler (dosyalar duruyor, referans)
+- **v7** dört eşit çeyrek + asma tavanlı köşe mutfağı → kullanıcı yarıda kesti (asma tavan reddedildi).
+- **v8** tek uzun salon, yana doğru büyüme → *"yana doğru büyüme çok kötü"*.
+- **v9** kare plan üç alan → *"v2'deki yapı çok daha iyiydi, ona geri dön"*.
+- v8/v9'un doğru kararları v10/v11'e taşındı: tek renk zemin eğilimi, mutfak üstü açık,
+  ilk kademede küçük mutfak, iç bölme duvarlarının azaltılması, kilitli alanın görünmemesi.
+
+### Asset kararı (kullanıcı iki paketi de onayladı)
+Hepsi CC0 ve **aynı sanatçı (Kay Lousberg)** → tek stil kilidi korunuyor:
+- **KayKit Restaurant Bits** https://kaylousberg.itch.io/restaurant-bits — mutfak mimarisi/mobilyası
+  (`kitchencounter_*`, `stove_single`, `oven`, `fridge_A`, `extractorhood`, `dishrack`,
+  `wall_orderwindow`, `floor_kitchen`, `menu`, `crate_*`). **Yemek propları ALINMAYACAK**
+  (burger/ketçap/biftek Türk menüsüne uymaz; semaver, çay bardağı, cezve, tost, baklava kendi modelimiz).
+- **KayKit City Builder Bits** https://kaylousberg.itch.io/city-builder-bits — sokak/şehir
+  (`road_*`, `building_A…H`, `car_*`, `streetlight`, `trafficlight`, `bench`, `bush`, `firehydrant`).
+- Mevcut **Furniture Bits** zaten kurulu. **Hiçbiri henüz indirilmedi** — Faz 6 işi.
+
+### >>> SONRAKİ OTURUMDA İLK İŞ <<<
+1. **Kullanıcı notu:** *"bir sonraki sefere net anlatımlı yaparız"* → maket değişikliklerini
+   uygulamadan önce ne yapılacağını KISA ve NET yaz, sonra uygula. Bu oturumda çok iterasyon oldu.
+2. Kat 2 ve Kat 3'ü aynı v11 diline çevir (omurga, halı=yol, tek mobilya dili, dış hacimler).
+3. Onaylanınca **koda entegrasyon**: v11'in dört adımını `economy.config.ts` pad zincirine ve
+   `LAYOUT` (store.ts) koordinatlarına bağla. Hangi pad hangi kanadı açıyor, mutfak dışarı
+   çıkma hangi pad — bu haritayı çıkar.
+4. Kod tarafında bekleyen **Faz A (Zemin)**: dev kancalarını DEV'e kapat, Capacitor Preferences
+   kalıcı kayıt, perf paketi, kamera çerçeveleme, ses sistemi, Android paketleme.
+
+## AÇIK DÜZELTME LİSTESİ — MAKET (2026-09-04 gecesi, kullanıcı maddeledi)
+
+Kullanıcı v10'un dört-salon sürümünü gezdi ve şunları saydı. **Hepsi çözülmeden maket onaylanmaz.**
+
+1. **Kapı ve orta halı, adım 1'de açık alanın ortasında değil.** Kullanıcı: *"kapı bu alanın
+   ortasında olur, yan taraf açılınca sola kayar vs"* → kapı/aks büyümeyle birlikte konum değiştirmeli.
+2. **Halı tutarsız:** adım 1'de alanı boydan boya kaplıyor, adım 3'te kaplamıyor.
+3. **Girişteki kasa ve kuyruk SAÇMA:** *"girişteki masa ne orada, neden para toplanıyor veya sıra var?"*
+   Oyunda kasada ödeme YOK (Model B′: para masa yanındaki istiften toplanır), sipariş kuyruğu YOK.
+4. **Tatlı vitrini istenmiyor** — kaldırılacak.
+5. **Mutfak ocakbaşı salonundan yer çalıyor.** Kullanıcı önerisi: *"duvar sınırı dışında duran bir
+   halde... duvardan dışarı doğru bir çıkıntı gibi ama o ocakbaşı alanını da etkilemesin."*
+6. **"Ayaküstü Köşesi" saçma:** yüksek masalar ile oturma alanı iç içe, *"çok fazla dar alan var"*.
+7. **Ocakbaşı ocakbaşı gibi değil:** *"insanlar oturuyor önlerinde masa yok, sipariş nereye gidecek?"*
+8. Kullanıcının genel eleştirisi: *"bunların hepsini düşünüp ona göre hareket etmen gerek ama etmiyosun."*
+   → Maket değişikliğinden ÖNCE servis akışı ve boşluk/dolaşım kontrol edilecek.
+
+**Süreç kararı (kullanıcı):** genel tablo için önce **Fable 5.1**'den ucuz fikir alınacak, sonra
+**Opus** uygulayacak, **kullanıcı onay verince** oturum kaydedilecek.
+
+## ŞU AN (2026-09-04 — MAKET v6: KAT 1 BÜYÜME HARİTASI; KOD DEĞİŞMEDİ, SAVE v30)
+
+Oturum "devam" ile açıldı. Plan, önceki oturumun bıraktığı üç soruyu tek tek sormaktı.
+**Kullanıcı 2. soruda yönü değiştirdi** ve oturumun asıl işi bu oldu.
+
+### Kullanıcının sözleri (aynen, kritik)
+> "ilk katta da mutfağın yeri bence çok kötü... mutfak bir köşede olmalı ve **yükseltilebilir** olmalı
+> çünkü normalde oyun ilk başladığında oyunda **1 masa ve mutfak** olmalı ki müşteriler geldiğinde
+> sipariş taşıyayım... biz **son duruma göre tasarım yaptık ama sırayla ilerleme adımlarını da
+> tasarlayıp ona göre hareket etmemiz gerek**... bir kaykit var ya onun gibi bir **mutfak asseti**
+> vardı ona benzer bir şey... **konumlandırma ve seviye tasarımı çok çok önemli**."
+
+### Soruların durumu
+1. **A mı B mi?** → Kullanıcı "ikisi de dursun, sonra karar" dedi. **Sonra v6 bu soruyu ortadan
+   kaldırdı:** B (yarı açık) = mutfak Kd.3, A (kapalı) = Kd.4. Seçim değil, kademe.
+2. **Kat 2 servis köşesi?** → Cevaplanmadı; kullanıcı yukarıdaki yön değişikliğini yaptı. AÇIK.
+3. **Servis mesafesi?** → v6'da **servis noktası** modeliyle çözüldü (aşağıda), ONAY BEKLİYOR.
+
+### Bulunan asset (kullanıcının hatırladığı paket)
+**KayKit Restaurant Bits 1.0** — CC0, 140+ low-poly model, **Furniture Bits ile aynı sanatçı**
+(Kay Lousberg) → CLAUDE.md'deki tek-stil kilidi bozulmuyor.
+https://github.com/KayKit-Game-Assets/KayKit-Restaurant-Bits-1.0
+Elle çizdiğimiz her şeyin hazır karşılığı var: `kitchencounter_straight/innercorner/outercorner/sink`
+(+`_backsplash`), `stove_single/multi`, `oven`, `fridge_A/B`, `extractorhood`, `kitchencabinet`,
+`kitchentable_*`, `dishrack`, **`wall_orderwindow`**, `wall_half`, `wall_doorway`, `floor_kitchen`,
+`menu`, `shelf_papertowel`, `crate_*`. **Tezgâhlar modüler karo** → mutfak karo karo büyütülebilir.
+Paket HENÜZ İNDİRİLMEDİ (Faz 6 işi; indirilince `public/assets/models/` + manifest).
+
+### Verilen karar
+**Mutfak = arka-sol köşe** (kullanıcı üç seçenek arasından seçti: arka-sol köşe / arka duvar ortası /
+giriş-sol köşe). Gerekçe: köşede başlama sıcaklığı + oyunun mevcut zone-açma koduyla uyum;
+bedeli, uzak adaların servise uzak kalması → **servis noktası** satın almasıyla karşılanıyor.
+
+### Üretilen: `docs/maket/maket-v6-buyume.html` (v5'e DOKUNULMADI, yeni dosya)
+**Artifact (YENİ link):** https://claude.ai/code/artifact/0c63ef60-ebb5-4b16-89e6-d0a587583f27
+Altı sekme = altı büyüme adımı. Ekran görüntüleri: `docs/maket/ss/v6-adim1..6.png`.
+Tüm kurallar yazılı: `docs/maket/README.md` → "Büyüme kuralları (v6)".
+
+- **Mutfak beş kademe, hepsi yerinde:** Kd.1 cezve ocağı + semaver (2 karo, duvar yok) → Kd.2 evye +
+  bulaşık (4 karo) → Kd.3 tost sacı + davlumbaz + buzdolabı + **yarı duvar** → Kd.4 **tam duvar +
+  sipariş çıkış penceresi** + hazırlık adası (8 karo) → Kd.5 fırın + kiler + asma tavan + menü tahtası.
+- **Kat üç bölüm** (oyunun `MAX_ZONES = 3` yapısıyla birebir): 1 arka-sol · 2 ön (cephe+hol) · 3 arka-sağ
+  (ocakbaşı + WC + **merdiven → Kat 2**).
+- **Kilitli bölüm boş zemin değil:** çıplak şap, toz örtüsü altında mobilya, iskele, **tahta perde**.
+- **Bir bölümün açılması ile dolması ayrı iki adım** (adım 4 açar, adım 5 sağ yarısını döşer).
+- **Yan sokak kapısı:** oyun batı duvarındaki küçük kapıyla başlar; ana cephe adım 4'te açılınca
+  aynı kapı mutfağın personel/malzeme girişi olur. Tek öğe, iki dönem.
+- Adım adları `economy.config.ts` pad zinciriyle hizalı (`table2 · table3 · waiter · dishwasher ·
+  table4 · zone2 · zone3`).
+- Doğrulama: Playwright MCP 1440×960, **0 konsol hatası**, altı sekme de çizildi.
+
+### >>> SONRAKİ OTURUMDA İLK İŞ — ÜÇ ONAY SORUSU <<<
+Maketi aç (artifact linki), sekmeleri sırayla gez, sonra **tek tek** sor:
+1. **Büyüme sırası onaylanıyor mu?** (bölüm 1 arka-sol → 2 ön/cephe → 3 arka-sağ/merdiven)
+   Özellikle: oyun **yan sokak kapısıyla** başlasın mı, yoksa ana kapı baştan açık mı olsun?
+2. **Servis noktası modeli** (Karar 3+5 revizyonu): yemek yalnız ana mutfakta pişer, uzak adaların
+   kenarında pişirme yapmayan aktarma tezgâhı durur. Onay? (Alternatif: katı küçültmek.)
+3. **Kat 2 servis köşesi** aynı çekirdeğin küçük hâli mi olsun (Kd.1-3'te kalan), yoksa Kat 2
+   tamamen oturma katı olup her şey Kat 1 mutfağından mı taşınsın?
+Onaylanınca sıra **koda**: bu büyüme haritası `economy.config.ts` pad zinciri + `LAYOUT` (store.ts)
+üstünde uygulanacak. Ondan önce **Faz A (Zemin)** hâlâ duruyor: dev kancalarını DEV'e kapat,
+Capacitor Preferences kalıcı kayıt, perf paketi, kamera çerçeveleme, ses sistemi, Android paketleme.
+
+## ŞU AN (2026-09-04 — MAKET v5: MUTFAK ODASI, iki varyant; KOD DEĞİŞMEDİ, SAVE v30)
+
+Bir önceki oturum elektrik kesintisiyle kullanıcının mesajının ÜSTÜNDE kesildi (asistan hiç cevap veremedi).
+Kaldığı yer: **"mutfak şeridi bi mutfakmış gibi izlenim uyandırmıyo; mutfak dediğin 4 köşe bir yer olur.
+onu nasıl yapabilirsin bi öneride bulun bakalım."** Bu oturumda önce öneri verildi, sonra uygulandı.
+`src/` içinde HİÇBİR değişiklik yok — yalnız `docs/maket/`.
+
+### Yapılan
+- **Teşhis:** v4'te mutfak = sol duvara dizilmiş 5 ayrı tezgâh (22 birim şerit). Hacim yok, tezgâh kopuk,
+  dikey öğe (davlumbaz/dolap/raf) yok, salonla arasında eşik yok. Ayrıca batı duvarı (x=-17) bu kamerada
+  şeridin önünü ~1,6 birim **kapatıyor** — tezgâhlar yarı görünmez. Bu yüzden "mutfak" okunmuyordu.
+- **Öneri (3 seçenek sunuldu):** ① kapalı mutfak odası ② yarı açık ③ çay ocağı kabini + arkada mutfak.
+  Kullanıcı: **"iki varyasyon görsem iyi olur: kapalı ve yarı açık"** + boşalan bant için
+  **"A adasını genişlet + duvar dekoru"**. İkisi de yapıldı.
+- **`docs/maket/maket-v5-mutfak.html`** (v4'e dokunulmadı, yeni dosya). Sekmeler: *Kat 1 · Mutfak A — kapalı*,
+  *Kat 1 · Mutfak B — yarı açık*, Kat 2, Kat 3. FLOORS anahtarları sayıdan string'e ('1a','1b','2','3').
+- **Artifact aynı URL'de güncellendi:** https://claude.ai/code/artifact/d8bbf576-e755-46b7-9608-3ebd0ab57245
+
+### Mutfak odasının tasarım kuralları (docs/maket/README.md'de de yazılı)
+- Oda **6,5 × 8,6**: x∈[-16,9,-10,4] × z∈[-7,6,1,0]. C adasıyla 0,6, A adasıyla 0,5 boşluk.
+- **Kamera -x/+z köşesinden bakar** → doğu ve güney duvarları ARKA PLAN: fayans, davlumbaz, raflar
+  yalnız orada okunur; bu yüzden o iki duvar **iki varyantta da tam yükseklikte**. Fark yalnız
+  salona bakan yüzde: A = tam duvar + pencere/kapı boşluğu, B = 1,05 lambri + cam + köşe dikmeleri.
+- İçerik (ikisinde birebir aynı): gri seramik karo + gider · tezgâh üstü beyaz fayans (`tileBand`) ·
+  tost sacı + **çelik davlumbaz + tavana giren baca** (`kitchenHood`) · güney duvarında bulaşık +
+  cezve ocağı + raflar · batı duvarında boy dolabı/kasa/damacana/çöp · ortada **serbest hazırlık
+  tezgâhı** (`prepIsland`) + **asılı tencere rayı** (`hangRail`) · kuzey duvarında semaver ·
+  asma tavan kirişleri + **soğuk beyaz** floresan panel (salonun sıcak ışığından ayrışır).
+- **Sipariş çıkış penceresi** doğu duvarında z∈[-2,4, 0,4]: çelik tezgâh, **adisyon askısı**
+  (`ticketRail`), ısı lambası, bekleyen hazır tepsiler; ayrı **personel kapısı** z∈[-4,2, -2,8]
+  (aralık duran kanat). Garson mutfağa GİRMEZ (Karar 3: tek çıkış penceresi).
+- Kapalı varyantta salona bakan duvarda **menü tahtası** — mutfak salondan da kendini anlatıyor.
+- Servis koridoru (x∈[-10,4,-3,6]) doldu: pencereden tepsi alan garson + **servis arabası**
+  (`serviceCart`) + bekleme cebi (bank, sehpa, gazetelik, kilim).
+- **A adası büyüdü:** 9,8 → 12,8 (x[-16,4,-3,6]), 2×2 → **3×2 çay ünitesi**; boşalan sol duvar bandına
+  tatlı vitrini + tablolar + lamba/saksı ritmi. Alçak bölmenin batı ucu -13,4 → **-8,6** (mutfak geçidi).
+
+### Yeni yardımcı fonksiyonlar (maket dosyasında)
+`wallSeg` (delikli duvar parçası) · `tileBand` (fayans) · `kitchenHood` · `hangRail` · `tallCabinet` ·
+`prepIsland` · `ticketRail` · `serviceCart` · `glassWall` (lambri+cam) · `kitchenRoom(semi)` ·
+`buildFloor1(variant)`. `checker()` artık karo boyu parametresi alıyor. Ayrıca konsol kancası:
+**`__view(mesafe, azimut, yükseklik, hedefX, hedefZ)`** — maketi belli bir açıdan incelemek için.
+
+### AÇIK UÇ (kullanıcıya söylendi)
+Mutfak solda kaldığı için **B ve D adaları çıkış penceresine ~19-23 birim uzakta** — karar 5'teki
+"her oturma bölgesi çıkışa ≤10 birim" kısıtı bu yerleşimde sağlanmıyor. Gerçek oyunda ya ikinci bir
+servis noktası ya da mutfağın merkeze kaydırılması gerekecek. Kullanıcı henüz karar vermedi.
+
+### KULLANICININ KAPANIŞ SÖZÜ (2026-09-04)
+> "gayet iyi ama çok karmaşık oldu. **sonraki chatte sor.**"
+
+Yani: v5 mutfağı BEĞENİLDİ ama oturum sonunda karar verilecek kadar çok başlık birikti; kararlar
+temiz kafayla, yeni oturumda verilecek. Bu oturumda başka bir şey uygulanmadı.
+
+### >>> SONRAKİ OTURUMDA İLK İŞ — BU ÜÇ SORUYU SOR (kullanıcının talimatı) <<<
+Önce maketi aç (`docs/maket/maket-v5-mutfak.html` veya artifact linki), sonra **tek tek, sade** sor —
+hepsini aynı anda yığma, kullanıcı "çok karmaşık oldu" dedi:
+1. **A mı B mi?** Kapalı mutfak odası mı, yarı açık (lambri + cam) mı? Seçilen, Kat 1'in referansı olur.
+2. **Kat 2'nin servis köşesi** de aynı "oda" diline çevrilsin mi (şu an v2 yerleşiminde, duvar kenarı şerit)?
+3. **Servis mesafesi:** B ve D adaları çıkış penceresine ~19-23 birim uzakta (karar 5: ≤10). İkinci servis
+   noktası mı, mutfağı merkeze mi çekelim, yoksa kısıtı mı gevşetelim?
+
+Kod tarafında sıradaki iş hâlâ **Faz A (Zemin)**: dev kancalarını DEV'e kapat, Capacitor Preferences
+kalıcı kayıt, perf paketi, kamera çerçeveleme, ses sistemi, Android paketleme.
+
+## ŞU AN (2026-09-03 — BÜYÜK TASARIM OTURUMU: yol haritası v2 + servis mimarisi + 3B kat maketi; KOD DEĞİŞMEDİ, SAVE v30)
+
+Kullanıcı sırayla şunları istedi: (1) projeyi incele + telefonda oynanır mı + asset/texture eksikleri +
+ekonomi değerlendirmesi + AdMob nereye; (2) çok detaylı YENİ PLAN (artifact); (3) oyun akışı/salonlar/kat
+sırası + arayüz yeniden tasarımı + A/B/C servis modellerinin tam mekaniği; (4) tamamlanmış katların
+GÖRSEL MAKETİ. `src/` içinde HİÇBİR değişiklik yapılmadı — bu oturum tamamen araştırma/tasarım.
+
+### Üretilen kalıcı çıktılar
+- **Plan artifact:** https://claude.ai/code/artifact/c45e15a9-9dd1-4bd1-ae00-cd1d35ed0aa8
+- **Maket artifact:** https://claude.ai/code/artifact/d8bbf576-e755-46b7-9608-3ebd0ab57245
+- Repoya kopyalandı: `docs/maket/` (v2 ONAYLI + v3 REDDEDİLDİ + plan + ekran görüntüleri, README ile)
+- Mevcut oyunun denetim ekran görüntüleri: `docs/denetim-2026-09-03/`
+
+### >>> SONRAKİ OTURUMDA İLK İŞ (kullanıcının son talimatı) <<<
+**Maket artifact'ini `docs/maket/maket-v2-ONAYLI.html` içeriğiyle YENİDEN YAYINLA** (aynı URL).
+Kullanıcı v3'ü tümüyle reddetti: "hayır hepsini bir önceki sefere çevirmeni isticem çünkü çok kötü oldu".
+v3'ten HİÇBİR ŞEY taşınmayacak. Yayınlamadan önce kullanıcıya sor: v2 üstünde hangi ince ayarlar istiyor.
+
+### Bu oturumda VERİLEN KARARLAR (kod henüz yazılmadı)
+1. **Para modeli B′ (kullanıcı kararı):** Yere dağınık sikke YOK. Her masanın yanında **tek para istifi**,
+   oyuncu üstünden geçince **tamamı tek seferde** cebe. Hesabı kasaya taşıma fikri İPTAL edildi.
+   **Garson parayı ASLA toplamaz.** Kayıp yok; istifin görsel tavanı var (sayaç sürer); oto-toplama erken
+   oyunda KAPALI, geç oyunda "Muhasebeci" yükseltmesiyle açılır; offline dönüşte Kasa Raporu'nda toplanır.
+   (Eski D-012/D-016 "KASA YOK" ve eski "para sunumuna dokunma" kuralları kullanıcı tarafından kaldırıldı.)
+2. **Ürün-silosu KALKTI (global menü):** "her salona bir ürün" yapay bulundu. Artık tek mutfak şeridi,
+   her masada her ürün istenebilir. Salonlar ürün değil KARAKTER bölgeleri.
+3. **Tek sipariş çıkış penceresi (pass):** Siparişin TAMAMI hazır olunca tek noktada hazır tepsi olur;
+   servis eden tezgâh tezgâh dolaşmaz, yarım sipariş taşınmaz. İstasyonlar "gidilecek" değil
+   "yükseltilecek" yerler. Bu yol bulmayı bugünkünden UCUZLATIR (3 ocak+3 bulaşık → 1 çıkış+1 bulaşık).
+4. **Ekonomi 3 kaldıraca oturuyor:** gelir = min(kapasite, üretim, servis) × ortalama sepet.
+   `tools/simulate.ts` bu modele göre yeniden yazılacak. Hiçbir denge sayısı ONAYSIZ değişmez.
+5. **Yerleşim kısıtı:** her oturma bölgesinin merkezi sipariş çıkışına ≤ ~10 birim (tur ~12sn < sabır 18sn).
+6. **Garson bölge-başı kalıyor** (D-012 korunuyor); sadece ortak çıkıştan alıyor.
+7. **İçerik hedefi:** 3 kat / 9 salon / ilk tur ~5 sa; renovasyon + 4 şube ile 25-30 sa.
+8. **Her kat kendi servis üçgenini taşır** (ocak + bulaşık + WC + merdiven). WC her kata konulacak.
+9. **Terasa çıkış:** dönüşlü (switchback) merdiven — kat 1'in merdivenine dokunulmadan.
+10. **Cam bölme:** sadece kat 3'te kapalı/açık teras arasında; iç katlarda YOK.
+11. **Arayüz yeniden tasarımı DİREKTİF** (öneri değil): paneller "kıraathane kâğıt işleri" metaforu
+    (adisyon fişi, menü tahtası, katalog defteri, personel künyesi, tapu, kasa raporu). Emoji ikon YASAK.
+12. **Yaş kategorisi önerisi:** Kids DIŞI 12+ (Kids'te AdMob kullanılamıyor). Kullanıcı henüz onaylamadı.
+13. **AdMob:** `@capacitor-community/admob` v8.1.0 Capacitor 8'i destekliyor → mevcut kurulumla uyumlu.
+
+### AÇIK KALAN KARARLAR (kullanıcı cevaplamadı)
+- Yaş kategorisi 12+ mı çocuk-güvenli mi (Faz F'yi bloke ediyor)
+- Nargile katı planda kalsın mı (yaş derecesine bağlı)
+- Offline tavanı 1 sa → 2,5 sa gevşesin mi
+- Eşzamanlı müşteri tavanı ~50 → 28'e insin mi
+- Önce kat mı şube mi (öneri: önce kat 2)
+- Stok/hammadde katmanı ne kadar girsin (öneri: yalnız vitrin)
+
+### DENETİM BULGULARI (ölçümlü, 2026-09-03)
+vitest **186/186** ✅ · build temiz **1.457 MB / 410 KB gzip** · tam kurulu sahnede **98 draw call /
+37.092 üçgen / masaüstü 133 FPS** · içerik sim'e göre **~3,2 saat** · elmas hiç kazanılmıyor/harcanmıyor ·
+prestige kodda yok · **ses dosyası SIFIR** ama Ayarlar'da 3 ölü anahtar · müşteriler tek renkli kapsül
+(`Customers.tsx:11`) · çay bardağı KIRMIZI silindir (`Player.tsx:171`) · `App.tsx:28` `installDevHooks()`
+KOŞULSUZ (hile kapısı) · `?proto` üretim bundle'ında · kayıt yalnız localStorage · varsayılan Android ikonu ·
+`minifyEnabled false` · `index.html lang="en"` · iOS platformu YOK.
+Telefon çerçevesinde ekranın üst ~%20'si boş arka plan; taze oyunda ilk karede masa görünmüyor.
+
+### PERFORMANS RAPORU (dış çevre maliyeti — kullanıcı istedi)
+Statik + merged + GÖLGESİZ yapılırsa: sokak+komşu binalar+ağaç/araba+alt kat kütleleri ≈ **+7-9 draw call,
++7k üçgen, kare başı 0 CPU**. Makette doğrulandı: dış çevre 982 mesh, hepsi gölge geçişinin DIŞINDA.
+Gölgeli/ayrı mesh yapılırsa +60 call/+30k üçgen olurdu — o yol kapalı.
+
+### FAZ PLANI (planın tamamı artifact'te; sıra: A → B → C → D → F → G, E paralel)
+- **A Zemin (5-6 oturum, hiçbir karara bağlı değil):** dev kancalarını DEV'e kapat · Capacitor Preferences
+  kalıcı kayıt · perf paketi (dpr≤1.5, gölge 512, NPC tavanı 28, ≤60 call/≤25k üçgen) · kamera çerçeveleme ·
+  ses sistemi · Android paketleme (ikon/minify/imza/AAB/lang=tr)
+- **B Kasa pivotu (save v31):** para istifi + toplu toplama + harita revizyonu + sim kalibrasyonu
+- **C Meta (save v32):** elmas kazanma/harcama + Renovasyon(İtibar) + offline + günlük döngü
+- **D İçerik (save v33+):** menü ağacı · müşteri arketipleri · gün döngüsü/etkinlikler · kat 2-3 · şubeler
+- **E Sanat/arayüz (paralel):** E1 müşteri modeli (en yüksek etki) · E2 arayüz · E3 Türk objeleri · E4 ışık/dekor
+- **F Monetizasyon:** yaş kararı → ads.ts+UMP+AdMob → yerleşimler → RevenueCat
+- **G Yayın:** iOS · mağaza evrakı · TR soft launch
+
+### ASSET LİSTESİ
+Plan artifact'inde bölüm 10'da tam liste (P1/P2/P3 öncelikli, 6 grup). Özet: müşteri gövdesi (P1, en yüksek
+etki) · ince belli bardak/semaver/cezve/sac (P1) · KayKit'te VAR ama entegre edilmemiş halı/tablo/lamba/
+dolap/kanepe (P2, bedava) · zemin-duvar-kilim dokuları (P2) · ses seti (P1, şu an sıfır) · SVG ikon seti (P1).
+**NOT:** Maket artifact'i gerçek KayKit .gltf dosyalarını YÜKLEYEMEZ (yerel dosyalar + CSP) — makette her şey
+ilkel şekil; gerçek oyunda KayKit couch/armchair kullanılacak.
+
+
+## ŞU AN (2026-09-01 — YAYINA HAZIRLIK DENETİMİ (kod yazılmadı, sadece araştırma+rapor); SAVE v30 kaldı)
+Kullanıcı sordu: "uygulama yayına hazır mı? App Store'a çıkacağız, reklam eklenecek." Kod DEĞİŞMEDİ
+(çalışma ağacı temiz). Bu bölüm denetimin sonucudur; sonraki oturum buradan devam eder.
+
+**ORTAM DÜZELTMESİ (bu makine):** `npm run test` ve `npm run build` rolldown native binding eksikliğinden
+patlıyordu (`Cannot find module './rolldown-binding.win32-x64-msvc.node'`). Çözüm:
+`npm install --no-save @rolldown/binding-win32-x64-msvc@1.0.3` (rolldown 1.0.3 ile eşleşmeli).
+Sonrasında **vitest 186/186 geçti, build temiz: 1.457 MB JS / 410 KB gzip.** node_modules gitignore'da,
+commit'e girmedi. Diğer makinede aynı hata çıkarsa aynı komut.
+
+**DENETİM SONUCU: yayına HAZIR DEĞİL.** Oynanış ~%60-65, yayın katmanı ~%0-5.
+
+**A) iOS tarafı SIFIR:** `ios/` klasörü yok, `@capacitor/ios` bağımlılığı yok. Windows'tan iOS build
+alınamaz → Mac + Xcode + Apple Developer ($99/yıl) + vergi/banka gerekli. Ayrı bir iş kalemi.
+
+**B) Monetizasyon (Faz 5) hiç başlamamış:** `src` içinde admob/rewarded/interstitial/purchase geçen TEK
+satır yok. `docs/monetization.md` yalnızca kural metni.
+
+**C) Faz 4 eksikleri doğrudan reklamı bloke ediyor:** 💎 elmas HUD'da var ama kodda hiç KAZANILMIYOR ve
+HARCANMIYOR (`store.ts`'te sadece init/save/load). Ödüllü reklamın verecek ödülü yok → **sıra Faz 4 → Faz 5
+olmak zorunda.** Prestige de yok; sim'e göre içerik ~1.7 saatte bitiyor (retention yok).
+
+**D) Yayın-engelleyici teknik borçlar (hepsi doğrulandı):**
+1. `src/App.tsx:28` — `installDevHooks()` KOŞULSUZ çağrılıyor → `__addMoney/__setState/__advanceTime`
+   üretim bundle'ında = hile kapısı. `import.meta.env.DEV` ile sarılmalı.
+2. `?proto` (FurniturePrototype) sayfası da üretim bundle'ında.
+3. **SES/MÜZİK HİÇ YOK** (public'te tek .mp3/.ogg yok) ama Ayarlar'da "Ses"/"Müzik"/"Bildirimler"
+   anahtarları duruyor → 3 ölü anahtar (Apple "çalışmayan özellik" diye reddedebilir).
+4. Kayıt YALNIZCA localStorage → iOS WKWebView 7 gün kullanılmayan uygulamanın site verisini silebilir =
+   ilerleme kaybı. Capacitor Preferences/Filesystem'e taşınmalı.
+5. Android ikonu hâlâ VARSAYILAN Capacitor/Android robot ikonu; `versionCode 1`, `minifyEnabled false`.
+6. `index.html` `lang="en"`, tek dil; gizlilik politikası yok; crash/analytics yok; mağaza görselleri yok.
+
+**E) REKLAM MİMARİSİ — kullanıcıya açıklandı (kavramsal):** App Store reklam SAĞLAMAZ; Apple'ın kendi ağı
+(iAd) 2016'da kapandı, Apple Search Ads = kendi oyununun reklamı (gider, gelir değil). Reklam üçüncü-parti
+ağlardan gelir: AdMob / AppLovin MAX / Unity LevelPlay (ironSource) / Meta Audience Network / Mintegral vb.
+**AdMob ZORUNLU DEĞİL** — ama bizim stack'te (Capacitor, Unity değil) native köprü gerekiyor ve bakımlı
+Capacitor eklentisi pratikte yalnız AdMob'da var (`@capacitor-community/admob`); diğerleri için köprüyü
+kendin yazarsın. İleride AdMob Mediation ile AppLovin/Unity talebi aynı SDK altına eklenebilir.
+Ağdan bağımsız Apple şartları: ATT izni + `NSUserTrackingUsageDescription`, SKAdNetwork ID listesi
+(Info.plist), App Privacy beyanı, AB için onay formu (UMP), IAP gelince "Satın Alımları Geri Yükle" butonu.
+Ödeme: AdMob → AdSense altyapısı, vergi+banka, 100 $ eşiği, Türkiye sorunsuz.
+
+**>>> AÇIK KARAR (kullanıcı verecek, Faz 4 VE Faz 5 tasarımını etkiliyor) <<<**
+`docs/monetization.md` "çocuğa-yönelik mod" diyor AMA App Store **Kids kategorisi üçüncü-parti reklam ağına
+izin vermiyor** (AdMob orada kullanılamaz) + kişiselleştirilmemiş reklam geliri ~yarıya düşer. Ayrıca yol
+haritasındaki **nargile (tütün göndermesi)** ve **okey/tavla (simüle kumar)** yaş derecesini yukarı çeker.
+İKİSİ AYNI ANDA OLMAZ → seçim: (a) Kids kategorisi DIŞI, 9+/12+, normal reklam geliri; (b) çocuk-güvenli
+kal, düşük gelir. Karar verilmeden Faz 5'e girilmemeli; karar `decisions.md`'ye D-0xx olarak yazılacak.
+
+**SONRAKİ OTURUM — sıra:** (0) yaş/reklam kararı → (1) Faz 4: elmas kazanma+harcama, prestige, içerik
+uzunluğu → (2) Faz 5: AdMob + RevenueCat + izin akışları → (3) D maddeleri (dev kanca kapatma, ses, kalıcı
+kayıt, ikon, minify) → (4) iOS platformu (Mac/Xcode/TestFlight) → (5) Faz 8 mağaza evrakı.
+İstenirse ilk iş: `@capacitor-community/admob` bakım durumu + Capacitor 8 uyumu doğrulaması.
+
+## ÖNCEKİ (2026-06-17 — GÖREV SENKRON & SIRALAMA DÜZELTMESİ: A) ritim + B) bildirim kuyruğu + C) suppression/okunabilirlik)
+Telefon feedback'i: görev gösterimi senkron/sıralama sorunu (üst üste binme, anlık takas, karartma altında okunmama,
+"yükseltebilirsin" reveal'ı görev sanılması). Kullanıcı onayı: boşluk 0.8sn · ③→(a) · ⑤⑥→(a). UYGULANDI.
+tsc temiz, **vitest 186/186** (2 yeni test), build temiz, MCP **0 konsol hatası**. HENÜZ COMMIT YOK (onay bekliyor).
+
+**Kök neden:** Ekranda 5 ayrı yönlendirme kanalı koordinatörsüz, aynı tick'te bağımsız ateşleniyordu (quest kartı /
+notice toast / karakter spotlight / tepsi spotlight / reveal toast); tek slot ezilme, anlık takas, karartma altında kart.
+
+**A — Görev geçiş ritmi (`store.ts`):** `questPhase` durum makinesi (active→completing 0.5s→gap 0.8s→active). Hedef
+tamamlanınca kart ANINDA takas OLMAZ: completing'de kart %100 dolar + yeşil onay flash'ı (`QuestView.done`), gap'te
+tamamlanmış görev tutulur, sonra questIndex ilerler + yeni kart `cardPop` ile girer. Ödül/toast/xp completing-start'ta
+bir kez. Zincirli tamamlamalar artık sıraya girer (instant skip yok). `QUEST_COMPLETE_DUR`/`QUEST_GAP_DUR` sabit.
+Transient (saveVersion DEĞİŞMEDİ): questPhase/questPhaseT default+load'da 'active'/0.
+
+**B — Bildirim kuyruğu (`store.ts`):** tek `notice` slotu yerine `noticeQueue` FIFO; bitiş/reveal/seviye/autoCollect
+toast'ları `enqueueNotice` ile sıraya girer, birbirini EZMEZ. Tick sonunda boşsa sıradakini gösterir.
+
+**C1 — Reveal suppression (⑤⑥, `store.ts`):** bir reveal'ın açtığı özelliği AYNI/İLERİDEKİ bir görev öğretiyorsa
+(stationLevel→upgrade:z, tableLevel/tablesAtLevel→tableUp:z, pad→opt:id) reveal toast'ı GÖSTERİLMEZ (sessizce
+revealSeen'e tüketilir). "Çay ocağını yükseltebilirsin ☕" gibi mesajlar görev cümlesiyle çakışmaz; tek talimat = görev kartı.
+
+**C2 — Spotlight okunabilirliği (③, `HUD.tsx`+`index.css`):** spotlight/traySpot aktifken görev kartına `.lit`
+(z-index 35, karartmanın ÜSTÜ + altın halka) → "Tepsini büyüt" karartma altında kalmıyor. `.done` = yeşil onay flash'ı.
+
+**Testler:** `completePad` helper'ı questPhase'i 'active'e sıfırlar (önceki tamamlamadan kalan faz yeni pad fill'ini
+bozmasın). `flushQuestTransition()` helper'ı (faz active'e dönene kadar tikler) eylem→ilerleme bekleyen testlerde.
+turu-6 reveal testi yeniden yazıldı (artık upgrade:0 q_station2 tarafından kapsanıp suppress edilir). 2 yeni test:
+A ritmi (completing→gap→advance + done) + B kuyruğu (iki toast sırayla). MCP doğrulama: q_pickup→1.3s→q_serve1;
+q_charTray1 spotlight'ında kart `lit` + okunur (`sync-spotlight-lit.jpeg`).
+
+**SIRADAKİ:** kullanıcı telefonda test (yeni APK gerek); commit+push onayı bekleniyor. Sonra: önceki fikir listesi
+(KayKit dekor / tema çeşit / per-zone masa teması / Türk objeleri Meshy).
+
+## ÖNCEKİ (2026-06-17 — ÖNİZLEME DOĞALLAŞTIRMA (A) + MASA TEMASI GATING (3 salon + tüm masalar max))
+İki ertelenmiş iş de bitti. tsc temiz, vitest **184/184** (yeni gate testi), build temiz, MCP **0 konsol hatası**.
+
+**1) Önizleme doğallaştırma — Seçenek A (ONAYLI) UYGULANDI:** `SalonSlice.tsx` yeniden yazıldı. Eski L köşe
+(sol+arka duvar) + ahşap çerçeveli dar zemin "inşaat/kutu" görünüyordu. ŞİMDİ: `FloorPatch` tema base'i
+40×40 tam-taşan plane → kenarda void/çerçeve YOK (zemin tüm canvas'ı doldurur) + merkez checker (`checkerHalf`).
+`WallCornerL` → `WallBack` (TEK arka duvar, z/width param; L köşe yok) = ferah salon kesiti. Kameralar biraz
+uzaklaştı: TableThemePreview d 2.9→3.4 ty 0.42, WallBack z=-2.1, checkerHalf=3; DioramaPreview d 4.0→3.8 ty 0.42,
+WallBack z=-2.6, checkerHalf=4, referans masa (0.4,0.5). `PALETTE` importu kalktı (çerçeve gitti).
+DOĞRULANDI (MCP): masa/zemin(parke)/zemin(checker fayans)/duvar — hepsi salon kesiti gibi, zemin canvas'ı dolduruyor.
+Screenshot: `slice-after-table.jpeg`, `slice-after-floor.jpeg`, `slice-after-checker.jpeg` (önce: `slice-before-*`).
+
+**2) Masa teması gating — KARAR (kullanıcı 2026-06-17): 3 salon AÇIK + TÜM açık masalar MAX seviye ("seviyeler
+fullenince", açılınca değil).** Zemin/duvar temaları ETKİLENMEZ (sadece MASA sekmesi). Uygulama:
+- `store.ts`: `tableThemeUnlocked({zonesOpen,tables,tableLevels})` = zonesOpen≥MAX_ZONES(3) && tüm açık masalar
+  ≥ `tableSoftMaxLevel()`. `buyCosmetic('table')` başında guard (kilitliyken satın alma/uygula reddedilir; default
+  'mavi' kalır). saveVersion DEĞİŞMEDİ (sadece türetilen kilit; persist alan yok).
+- `HUD.tsx ShopPanel`: kilitliyken Masa sekmesi önizleme+kart yerine `.shop-locked` paneli (kilit ikonu + açıklama +
+  "✓ Salon z/3" & "• Max masa m/n" rozetleri). Masa sekme butonunda 🔒. Açılınca normal önizleme+kartlar döner.
+- `index.css`: `.shop-locked*`, `.shop-tab-lock` stilleri. testid: `shop-table-locked`.
+- Test: `tests/logic.test.ts` "masa teması KİLİTLİ" — taze/yalnız-3-salon kilitli, 3 salon+tüm masa max açılır.
+DOĞRULANDI (MCP): taze save (3 salon ama 1/10 masa max) → kilit paneli; `__setState` ile 10 masa lv4 → kilit açıldı,
+önizleme+kartlar geldi. Screenshot: `gate-locked.jpeg`, `gate-unlocked.jpeg`.
+
+**SIRADAKİ FİKİRLER:** (a) tema mağazasına daha fazla çeşit; (b) masa teması per-zone (şu an global); (c) telefon/APK
+testi (splash+instancing gerçek cihaz FPS); (d) kalan perf riskli kalemler (GroundMarker/dekor) ancak ölçüm gösterirse.
+
+## ÖNCEKİ (2026-06-15 — BUG FIX: uzak salonda mobilya kayboluyordu + 2 açık tasarım sorusu)
+**BUG (kullanıcı bildirdi, çözüldü):** Salon 2/3'e yaklaşınca masaların KayKit modelleri kaybolup sadece
+örtü plakaları kalıyordu. KÖK NEDEN: instanced mobilya (`<Merged>` InstancedMesh) ve dama zemini (`<Instances>`)
+sınır küresi LOCAL origin'de → kamera uzak salona odaklanınca tüm batch FRUSTUM CULLED. Örtüler ayrı mesh
+olduğundan kalıyordu. ÇÖZÜM: `frustumCulled={false}` (Tables.tsx `<Merged>` + Scene.tsx CheckerTiles `<Instances>`).
+DOĞRULANDI (MCP 390×844, padsDone tam + tableLevels=4, salon 2 ve 3'e teleport): mobilya+dama her salonda
+render. tsc temiz, vitest 183/183, 0 hata. Screenshot: `bug-salon2-now.jpeg` (önce), `fix-salon2.jpeg`/`fix-salon3.jpeg` (sonra).
+NOT: dev save `__setState` ile tam-kurulu hale geldi (kullanıcının önceki ilerlemesi üzerine yazılmış olabilir).
+
+**>>> SONRAKİ OTURUM İŞLERİ (kullanıcı 2026-06-15 erteledi) <<<**
+1. **Önizleme doğallığı — SEÇENEK A ONAYLANDI, sonraki oturumda yapılacak:** Canlı 3B kesiti daha dolu/doğal
+   yap (tema ile anında güncellenir). Şu an sorun: SalonSlice L köşe (sol+arka duvar, sağ açık) "inşaat gibi"
+   duruyor (kullanıcı). HEDEF (A): kapalı köşe kutu hissini bırak → oyundaki gibi FERAH çerçeve — zemin tüm
+   canvas'ı doldursun (kenar boşluğu/void görünmesin), tek arka duvar (veya yumuşak köşe), kamera biraz daha
+   uzak; "salondan kes-yapıştır" doğal dursun. (B reddedildi: statik SS tema-başı recolor edilemez.)
+   Dosyalar: `src/components/ui/SalonSlice.tsx` (FloorPatch/WallCornerL/FixedCam), `TableThemePreview.tsx`,
+   `DioramaPreview.tsx`.
+2. **Tema mağazası gating — HÂLÂ AÇIK SORU (kullanıcı a/b/c/d seçmedi):** "Seviyeler tamamlandıktan sonra
+   açılsın" (başta masalar renksiz). Koşul: (a) 3 salon açık · (b) tüm masalar max · (c) oyuncu seviyesi · (d) başka.
+   → Ekonomi/progression gate; ONAYSIZ uygulanmaz. Sonraki oturumda önce bunu SOR, sonra uygula.
+
+Sıralama: ÖNCE iş #1 (önizleme A), gating (#2) kullanıcı koşulu seçince.
+
+## ÖNCEKİ (2026-06-15 — TEMA MAĞAZASI ÖNİZLEME: SAYFA-İÇİ + "SALONDAN KESİT")
+Kullanıcı iki aşamada istedi: (1) "karta tıklayınca MODAL açılmasın, önizleme aynı sayfada zaten dursun,
+kompakt"; (2) "önizleme oyun-anı gibi olsun — AÇI/DURUŞ/UZAKLIK direk salonun bir parçasını kes-yapıştır gibi;
+masa/zemin/duvar HEPSİ için." Her ikisi de uygulandı.
+
+**Sayfa-içi (modal kaldırıldı):**
+- `TableThemePreview` + `DioramaPreview`: modal sarmalayıcı (modal-backdrop/preview-card + onClose) → `.shop-preview`
+  bloğu; satın al/uygula + per-salon butonları yerinde. `ShopPanel` (HUD.tsx): `preview` modal state → sekme başına
+  `sel:{table,floor,wall}` (önizlenen çeşit; varsayılan = uygulanmış tema). Önizleme sekmenin ALTINDA, kartların ÜSTÜNDE.
+  Karta tıkla → `setSel` ile üstteki önizleme güncellenir. Kart `.sel` = önizlenen; swatch ✓ = uygulanmış.
+
+**"Salondan kesit" (oyun kamerası birebir):**
+- YENİ `src/components/ui/SalonSlice.tsx`: `FixedCam` (oyun açısı = izometrik offset (0,d,+d), bakış (0,ty,0),
+  fov 50 — Scene.tsx CameraRig dili; OrbitControls KALDIRILDI, sabit duruş), `SalonLights` (ambient 0.6 + dirLight
+  [6,12,6]), `FloorPatch` (dış ahşap taban + tema base overlay + checker quad — Ground ile birebir), `WallCornerL`
+  (L köşe; WallPiece ile birebir: krem üst h-wh + lambri wh=0.5, h=1.2).
+- `TableThemePreview`: FloorPatch(parke) + WallCornerL(krem) + temalı masa (table_medium + 4 recolor tabure + örtü
+  plakası); d=2.9. `DioramaPreview`: FloorPatch(seçili zemin) + WallCornerL(seçili duvar) + **gerçek `Table`** (Tables.tsx
+  export, level 1) referans; d=4.0. Soyut diorama (DioramaScene) ve OrbitControls SİLİNDİ.
+- CSS: `.preview-backdrop`/`.preview-card`/`.preview-hint` kaldırıldı; `.shop-preview` eklendi; `.preview-canvas` 150px.
+- DOĞRULANDI (MCP 390×844): üç sekme de salon köşesi kesiti gibi render (masa→mavi temalı masa+köşe duvar;
+  zemin→dama checker+masa; duvar→yeşil tema duvar+masa), kart seçimi önizlemeyi günceller, **0 konsol hatası**.
+  tsc temiz, vitest **183/183**. Screenshot: `shop-slice-table.jpeg`, `shop-slice-floor.jpeg`, `shop-slice-wall.jpeg`.
+- NOT: testid'ler korundu (`shop-card-*`, `preview-buy-*`, `preview-<kind>-<id>-z<z>`); henüz commit YOK.
+
+## ÖNCEKİ (2026-06-15 GECE — PERF + SPLASH + TEMA MAĞAZASI TAM BİTTİ; 8 commit)
+Kullanıcı bu oturumda: "#1 doğrula → sonra FPS optimizasyonu YAPABİLDİĞİN KADAR + tema mağazası, HİÇ DURMA".
+Tamamlanan milestone'lar (hepsi test+commit+push'lu, vitest 183/183, tsc temiz, MCP 0 hata):
+1. **Mobilya instancing** (commit 6e241a9): KayKit mobilya (tek mesh+ortak atlas) `drei <Merged>` ile model
+   tipi başına 1 InstancedMesh (~37 primitive → 8). Görsel birebir. Greybox fallback korundu (`Table greybox`
+   prop + Suspense/error boundary). PerfProbe'a DEV-only `window.__three` (sahne/kamera) teşhis kancası.
+2. **Dama zemini instancing** (commit 9af6506): CheckerTiles ~40 plane → 1 InstancedMesh (birim plane +
+   per-instance scale). Düz mesh 323→288.
+3. **Açılış splash/loading** (commit 3e51054): `SplashScreen.tsx` + `useProgress`; asset hazır olana kadar
+   sıcak temalı ekran sahneyi örter → greybox→model "pop"u + ilk-kare FPS sıçraması GÖRÜNMEZ (talimat #2/#3).
+4. **Masa teması 5a** (commit a183c8d): mağazaya MASA bölümü + `tableThemes` (mavi/bordo/zümrüt/altın 30k).
+   Seçilen tema mobilya minderini (ortak atlas recolor swap) + örtü plakasını boyar → TÜM mobilya tek swap'le
+   renklenir (instancing 8 draw-call korunur). saveVersion 29→30 (`tableTheme`, default 'mavi'). `buyCosmetic('table')`
+   GLOBAL (zone'suz, key `table:id`). UÇTAN UCA doğrulandı (mağazadan altın al → 30k düştü → tüm mobilya altın).
+
+**ÖNEMLİ KEŞİF:** Zaten bir "Dekor Mağazası" var (HUD shop butonu → `ShopPanel`): zemin+duvar temaları
+ZONE-başına (`floorThemeByZone`/`wallThemeByZone`, `buyCosmetic(kind,id,zone)`, `ownedCosmetics`). 5a bunun
+üstüne MASA bölümü ekledi. Tema mağazası SIFIRDAN değil, bu panelin üstüne kuruluyor.
+
+**PERF DRAW-CALL ANALİZİ (window.__three ile, tam kurulu 12 masa/3 zone):** en büyük kaynaklar mobilya DEĞİL:
+zemin dama (40→1 yapıldı), pad işaretçileri (GroundMarker daire+halka+Text ~52; Text+dinamik tint → instancing
+RİSKLİ, UX hassas, DOKUNULMADI), dekor (saksı/ağaç ~seyrek, el-yerleştirme → küçük kazanç, dokunulmadı).
+İki büyük temiz kazanç (mobilya+dama) alındı. Kalan perf fırsatları düşük ROI/yüksek risk.
+
+5. **Tema mağazası 5b** (commit 5345c7c): Dekor Mağazası tek-scroll → SEKME (Masa/Zemin/Duvar). Masa sekmesi
+   kaydırılabilir çeşit kartları; karta tıkla → `TableThemePreview.tsx` modalı: parmakla DÖNDÜRÜLEBİLİR 3D
+   masa (drei OrbitControls; minder+örtü temaya boyalı) + Satın Al + ücret. Önizleme Canvas'ında gölge KAPALI
+   (PCFSoftShadowMap deprecation spam'i giderildi).
+6. **Tema mağazası 5c** (commit 96abcc3): Zemin/Duvar da çift-renk swatch'lı kartlara döndü → `DioramaPreview.tsx`:
+   bağlamlı KÖŞE diorama (zemin + L-duvar + referans masa, döndürülebilir) + per-salon (Salon 1/2/3) satın al +
+   ücret. Floor önizleme seçili zemini, wall önizleme seçili duvarı bağlamda gösterir. TÜM sekmeler artık tutarlı:
+   sekme → kart şeridi → 3D önizleme modalı → satın al. UÇTAN UCA doğrulandı (masa/zemin/duvar al → para düşer).
+
+**TEMA MAĞAZASI TAM BİTTİ** — kullanıcının istediği TAM redesign uygulandı (sekme + kart + döndürülebilir 3D
+önizleme + diorama + satın al). Çay masası önizlemesi ayrı (TableThemePreview), zemin/duvar diorama (DioramaPreview).
+
+**PERF SONUÇ (taze oyun ölçümü):** eski baz ~88 draw-call / ~5k üçgen → ŞİMDİ **56 call / 3.2k üçgen** (instancing
+erken oyunu da kazandırdı). Tam kuruluda mobilya 45→8, dama 40→1. **SIRADAKİ PERF FIRSATLARI (düşük ROI/risk):**
+GroundMarker pad işaretçileri (Text+dinamik tint, gerçek oyunda kademeli açıldığından worst-case değil), dekor
+(seyrek el-yerleştirme), dpr/gölge (kalite ödünü → onay ister). İki büyük temiz kazanç alındı; kalan riskli.
+
+**SIRADAKİ OTURUM FİKİRLERİ:** (a) tema mağazasına daha fazla çeşit (duvar/zemin/masa renkleri); (b) opsiyonel
+masa teması PER-ZONE'a çevirme (şu an global — instancing'i bozmadan zone-başı atlas batch gerekir); (c) telefon
+testi (APK) — açılış splash + instancing gerçek cihazda FPS; (d) kalan perf riskli kalemler ancak ölçüm gösterirse.
+
+## ÖNCEKİ (2026-06-15 gündüz — MOBİLYA TIER PROTO'DA OTURDU (rev10))
+Bu oturum tamamen **prototip sayfasında (`?proto`) mobilya tier tasarımı** iterasyonuydu. Sonuç (rev10):
+
+**PROTO SAYFASI (`src/components/three/FurniturePrototype.tsx`, App.tsx `?proto` ile):** numaralı KATALOG
+(tüm sandalye+masa, #1-#15 isimli) + ÇAY/YEMEK ilerleme satırları + **ok tuşları/WASD serbest gezme**
+(FreeMove; Q/E yukarı-aşağı, fare döndür, tekerlek zoom). **BU SAYFAYI SİLME** — genişlete genişlete
+çalışılacak (kullanıcı emri).
+
+**KESİNLEŞEN TIER YAPISI (Tables.tsx, gerçek oyun da kullanır; seatsByLevel 1/2/2/4/4 — ekonomi değişmedi):**
+- **ÇAY (Seçenek A):** Sv1 çıplak 1 tabure · Sv2 +1 tabure (2) · **Sv3 tabureler minderli, masa ÇIPLAK** ·
+  **Sv4 +2 tabure (4) + masa büyür (table_medium), masa hâlâ çıplak** · **Sv5 ÖRTÜ gelir** (finalde).
+  Tabure HEP `chair_stool` (kullanıcı: "kıraathanede tabure kalmalı"); şekil değişmez.
+- **YEMEK:** Sv1-2 ahşap chair_A_wood (tekli masa, sandalyeler ORTALI) · Sv3 örtü+minderli chair_A ·
+  Sv4 masa büyür (table_medium_long, 4) · **Sv5 dolu `chair_C`** (premium şekil). Sv0-2 tekli küçük masa.
+- **RENK: HER ŞEY MAVİ** (asset native mavisi `defaultTone #5a93cf`). ALTIN/teal YOK → **tema mağazasında**
+  satılacak (pahalı tema). Renk artık TIER DEĞİL.
+- **recolor sistemi** (`src/components/three/recolor.ts` + Model.tsx `recolor` prop): asset'in gömülü
+  mavisini DÜZ renge boyar (overlay değil). Şu an kullanılmıyor (varsayılan native mavi) ama tema
+  mağazası için HAZIR — tema seçilince `chairRecolor` ile devreye girer.
+- Örtü = `meshStandardMaterial` düz renk plakası tabla üstünde; minder = asset native (boyanırsa recolor).
+- `window.__setState(patch)` dev kancası eklendi (devHooks.ts) — tam pad listesiyle tamamlanmış oyun zorlama.
+
+Doğrulandı: vitest 183/183, tsc temiz, canlı MCP 0 hata. Screenshot: `proto-rev10.jpeg`, `proto-rev10-right.jpeg`.
+
+## DOĞRULAMA (2026-06-15 — talimat #1: mobilya tier GERÇEK OYUNDA gezildi/doğrulandı ✅)
+`__setState` ile tam oyun zorlandı (padsDone = tüm pad listesi → tables=12, zonesOpen=3 kalıcı; tableLevels
+gradyanı [0,1,2,3, 4,3,2,1, 1,2,3,4]). Oyuncu zone'lara `__teleport` ile gezildi (MCP, 390×844). Bulgular:
+- **KayKit modelleri gerçek oyunda yükleniyor** (ağ: table_small/medium, chair_stool/_wood, chair_A/_wood/C,
+  table_medium_long, texture → hepsi 200). **GREYBOX FALLBACK YOK.** Tabureler/masalar/sandalyeler zeminde,
+  zone yerleşimine oturmuş; ölçek/konum doğru.
+- **Çay tier görünür:** tabure kahve→mavi (chair_stool_wood→chair_stool), sayı 1/2/2/4/4, masa büyür
+  (table_small→table_medium), Sv5'te örtü katmanı. **Yemek tier görünür:** chair_A_wood→chair_A→chair_C,
+  örtü Sv3+, checker "yemek" zemini, büyük masa table_medium_long.
+- **Perf (tam kurulu 12 masa/3 zone, masaüstü):** 56 FPS / 214 draw-call / 25.6k üçgen / **0 konsol hatası**.
+  NOT: mobilya INSTANCE EDİLMEMİŞ → 214 call tam kuruluda; talimat #2/#3 (preload/splash/FPS) için akılda tut.
+- **Küçük gözlem (bug değil, tasarım gereği):** Çay Sv5 örtüsü native maviyle aynı renk → tier sinyali olarak
+  ince kalıyor (renk bilerek hep mavi, altın tema mağazasına kaldı). Şekil katmanı yine de ekleniyor.
+- Kod DEĞİŞMEDİ (saf doğrulama). Screenshot: `verify-zone0-row.jpeg`, `verify-zone2-food.jpeg`, `verify-zone1-tea.jpeg`.
+- SONUÇ: talimat #1 ✅. Sıradaki = #2 ASSET PRELOAD FIX (açılışta greybox→model "pop"u engelle).
+
+## >>> SONRAKİ OTURUM — KULLANICI TALİMAT PAKETİ (uyumadan önce sıraladı) <<<
+1. **Mobilya tier'ını GERÇEK OYUNA tam entegre + doğrula** (Tables.tsx zaten ortak; oyunda gez/gör).
+   - NOT: tabure sayısı değişmedi (1/2/2/4/4) ama ileride sayı oynanırsa **garson/bulaşıkçı mantığı** da
+     düzenlenmeli (kullanıcı uyarısı). Şimdilik gerek yok.
+2. **ASSET YÜKLEME FIX:** oyun açılışında assetler yüklenene kadar ÖNCE eski/greybox hali görünüp sonra
+   "pop"luyor — bu OLMASIN. Modelleri PRELOAD et (useGLTF.preload + atlas) → hazır olunca göster.
+3. **SPLASH / YÜKLENİYOR EKRANI:** oyun başında loading ekranı (assetler + atlas preload). Açılışta
+   greybox-flash ve FPS sıçraması yaşanmasın.
+4. **TEMA MAĞAZASI (tasarla + kur):** karakter paneli gibi **üstte SEKME** (masalar / duvar / zemin / ...).
+   - Altta çeşitler (örn. mavi/sarı masa) sağa-sola **kaydırılabilir/sekmeli**.
+   - Bir çeşide tıkla → **MODAL**: ortada **ÖNİZLEME** (3D, kullanıcı eliyle **DÖNDÜREBİLİR**, hafif/ağır
+     değil; "oyunda nasıl duracaksa öyle"), altında **SATIN AL butonu + ücret**.
+   - Duvar/zemin için **küçük diorama sahne** → seçilen duvar/zemin önünde/üstünde anlık önizleme
+     (örn. duvar çeşit-3 seçiliyse masa o duvar önünde / o zemin üstünde önizlensin).
+   - **ÇAY masası önizlemesine farklı bir yaklaşım gerekir** (kullanıcı notu).
+   - **Ücretleri sen belirle** (sonra ayarlanır). ALTIN tema burada PAHALI olarak satılır.
+   - Etik monetizasyon kuralları geçerli (kozmetik, pay-to-win değil).
+5. **FPS:** preload/splash ile açılış FPS sorunu olmasın.
+ÖNCE bunlar; SONRA proto'yu genişleterek tema mağazası önizlemelerini orada deneyebiliriz.
+
+## ÖNCEKİ (2026-06-14 — KAYKIT MOBİLYA ENTEGRE EDİLDİ; KULLANICI DEV-SERVER'DA BAKACAK)
+Bu oturum: KayKit Furniture Bits (CC0) asset entegrasyonu (Faz 6a). Kullanıcı paketi `public/models/`'e
+dağınık koymuştu → **modüler yapıya** taşındı: `public/assets/models/kaykit-furniture-bits/` (53 gltf+bin+
+tek atlas). fbx / fbx(unity) / obj+mtl / ekstra png / License.txt / .url SİLİNDİ (CC0 → künye manifestte).
+Manifest (`public/assets/README.md`) modüler tabloyla güncellendi.
+
+KOD:
+- `Model.tsx`: scale/position/rotation prop'ları (yalnız yüklenen modele uygulanır; greybox fallback
+  oyun-ölçeğinde kalır, dokunulmaz).
+- `Tables.tsx`: KayKit çiziyor (greybox fallback korunur, oynanış değişmedi):
+  - Çay: `table_small` (L0-2 ufak kıraathane masası) → `table_medium` (L3+). Tabure
+    `chair_stool_wood` (KAHVE, L0-1) → `chair_stool` (MAVİ minder, L2+); sayı 1/2/2/4.
+  - Yemek: `table_medium_long` + `chair_A` (arkalık dışta, masaya bakar; yön DÜZELTİLDİ).
+  - **TIER SİNYALİ (kullanıcı şartı):** tabla ÜSTÜNE ÖRTÜ mesh'i — sadece üst, seviyeye göre renk
+    (çıplak→yeşil→bordo→lacivert→altın). Kullanıcı: "seviye atışı gözle belli olmalı; sandalye
+    sayısını bilmeyen hepsini aynı sanmamalı" → çoklu sinyal (örtü+tabure tipi+sayı+L3 masa büyür).
+  - Ölçek sabitleri Tables.tsx başında (TEA_TABLE_S/M, STOOL_S, FOOD_*, *_CLOTH) — canlı ayarlandı.
+- `devHooks.ts`: `window.__setState(patch)` ham setState kancası eklendi (canlı görsel ayar; `tables`
+  padsDone'dan TÜRER → tam pad listesiyle tamamlanmış oyun zorlanır, tableLevels ile tier sergilenir).
+
+DOĞRULAMA: vitest 183/183, `tsc -b` temiz, canlı MCP 390×844 konsol 0 hata. Screenshot'lar kökte:
+`kay-tiers-overview.jpeg` (çay L0-L3 tier), `kay-food-tiers.jpeg` (yemek örtü+sandalye yön),
+`kay-t3-closeup.jpeg`, `kay-row-L0L1.jpeg`, `kay-food-v2.jpeg`.
+
+SIRADAKİ (kullanıcı sırası): **Kullanıcı dev server'da (localhost, `npm run dev`) bakacak. BEĞENMEZSE
+ESKİ GREYBOX MASAYA DÖNÜLECEK** (kullanıcı aynen: "olmadı eski masa haline çevireceğiz güzel olmazsa").
+Geri dönüş kolay: Tables.tsx Model `src`/örtü mesh'i kaldırılır, fallback greybox zaten yerinde; Model.tsx
+xform prop'ları + devHooks `__setState` kalabilir (zararsız). Beğenirse açık tweak'ler: mavi minderi
+tint'leyip örtüyle uyumlu üst renk; örtü boyut/yükseklik ince ayar; KayKit dekor (cactus/pictureframe/
+lamp/rug) ekleme; Türk objeleri (semaver/çay bardağı/nargile) Meshy AI.
+
+## ÖNCEKİ (2026-06-14 — YENİDEN TASARIM GERİ ALINDI; ESKİ ZONE MODELİ DEVAM; SONRAKİ = ASSET)
+Bu oturum: (1) FPS Tier 2 (coins/NPC/dishes instancing + FPS sayacı) + reveal bug fix bitti, commit'li
+(HEAD 8e69893), APK hazır (`android/app/build/outputs/apk/debug/app-debug.apk`). (2) Kıraathane
+"tek-mekân + alan çeşitliliği" yeniden tasarımı DENENDİ → kullanıcı REDDETTİ ("nefret ettim") → TÜM
+artefaktlar silindi (preview, ?layout, plan doc, activeContext asset notu). **ESKİ ZONE-BAZLI MODEL
+aynen geçerli, oyun mantığı hiç değişmedi.** Çalışan oyun yedeği: git tag `checkpoint-2026-06-14-calisan-oyun`.
+
+SONRAKİ OTURUM (kullanıcı sırası): **1) ASSET entegrasyonu → 2) telefon testi.**
+- **ASSET PLANI (KayKit, kullanıcı onaylı yön):** **KayKit Furniture Bits Bundle 1** (glTF, CC0,
+  statik=ucuz, hatta instance edilebilir). ÇAY masası seviye-bazlı OTURAK: küçük masa+1 tabure → 2 → 4;
+  tier'lar = model değişimi + RENK recolor (atlas-swap: kahve→mavi-üst→altın). Masa sabit (yalnız üst
+  rengi değişebilir). YEMEK alanı: geniş masa + sandalye (çaydan SONRA). DEKOR: saksı bitki/çerçeve
+  (duvar tablosu)/lamba/halı paketten (büyük AĞAÇ YOK → Forest Nature paketinde). Mevcut
+  seatsByLevel/tableLevels/tableclothByLevel kancasına eldiven gibi oturur; glb fallback loader'a
+  (Model.tsx) kod değişmeden takılır. Recolor yolu = atlas-swap/tint (önceki konuşma). İŞ: koltuk
+  pozisyonlarına ölçek/hizalama + tier recolor varyantları. Faz 6 işi ama düşük risk.
+  KULLANICI ADIMI: paketi `public/assets/`'e koyacak → sonra model adları+atlas incelenip tier
+  eşlemesi netleşir. (Karakter paketi planı da auto-memory'de: KayKit Adventurers sivil + ele tepsi.)
+- **TELEFON TESTİ (bekliyor):** FPS sayacı+instancing (yer parayla/salon insanla dolunca FPS sabit mi?),
+  reveal fix, turu-6 tost bulaşıkçısı kirli TABAK görseli. Sonuca göre statik bina merge gerekli mi karar.
+- **4. alan = "maç salonu"** (ESKİ model içinde, ileride; tost alanı belki bahçe — kullanıcı sonra netleştirir).
+NOT: auto-memory'de asset zevki (KayKit evet/Kenney hayır) + sonraki oyun fikirleri (ortaçağ/uzay) duruyor.
+
+## ÖNCEKİ (2026-06-13 — FPS TIER 2 BAŞLADI: SAYAÇ + COINS/NPC INSTANCING + REVEAL BUG FIX; commit'li)
+Turu-6 zaten commit'liydi (f07f4a6); bu oturum FPS Tier 2'ye girdi. Yapılanlar (hepsi vitest 183/183,
+build, canlı MCP 390×844 konsol 0 hata):
+1. **FPS SAYACI (dev/teşhis):** `src/game/perf.ts` singleton {fps,calls,tris}; Scene.tsx `PerfProbe`
+   (Canvas-içi useFrame, 0.5sn pencere FPS + gl.info.render kare-başı draw-call/üçgen); HUD Ayarlar →
+   "FPS Sayacı" toggle (`set-showfps`) + sol-üst canlı overlay (`fps-overlay`, rAF ~4Hz, renk FPS'e göre);
+   `settings.showFps` (save.ts additive default false, SÜRÜM ARTMADI); `window.__perf()` devHook.
+   Baz ölçüm (taze oyun): ~60 FPS / ~88 draw-call / ~5k üçgen.
+2. **COINS INSTANCING:** Coins.tsx tek InstancedMesh (COIN_CAP 1024). Eskiden her coin ayrı draw-call
+   (~215 → ~215 call); şimdi 1. Görsel BİREBİR (aynı COIN_GEO/COIN_MAT; per-instance matris: doğuş-pop
+   + dönüş; üniform ölçek dönüşle komütatif → T·S·R=T·R·S). Floater mantığı AYNEN. Canlı: altın disk
+   masada doğru (coin-instanced.jpeg). PARA SUNUMU DEĞİŞMEDİ (feedback_coin_presentation korunur).
+3. **NPC INSTANCING:** Customers.tsx 2 InstancedMesh — gövde (paylaşımlı kapsül + per-instance renk
+   instanceColor) + "çay bekliyor" baloncuğu (NPC_CAP 128). facing(useFacing math)/bob matriste birebir
+   türetildi. Greybox fallback kapsülü instance edilir (Model src'siz); Faz 6 .glb = AYRI karar (skinned
+   instancing farklı, NOT). Canlı: teal kapsül + sarı baloncuk doğru (npc-instanced2.jpeg).
+4. **BUG FIX — "Çay ocağını yükseltebilirsin" reveal'ı (kullanıcı bildirdi):** KÖK NEDEN: table2 açılınca
+   görev q_charTray1'e (charStat) geçip ekranı karartırken (spotlight) AYNI tick'te `upgrade:0` reveal
+   toast'ı çıkıp eski m.8 yalnız PANI bastırıyor ama toast'ı gösterip reveal'ı KALICI tüketiyordu →
+   "yükseltebilirsin" yazısı kararma altında pan'sız çıkıp o pad bir daha gösterilmiyordu. FIX (store.ts
+   ~1688): spotlight beklerken PAN'lı reveal TAMAMEN ertelenir (toast+tüketim dahil); panel görülünce
+   reveal doğru anda toast+pan ile gelir. m.8 testi yeni davranışa güncellendi. Canlı doğrulandı.
+5. **DISHES INSTANCING:** Dishes.tsx 3 InstancedMesh — bardak (çay), tabak diski + kırıntı (tost; kırıntı
+   d.pos'a sabit ofset). Statik → matris yalnız konum. DISH_CAP 256. Görsel birebir; "koku bulutu" düşük
+   sayı + saydam → instance edilmedi. Canlı: gri bardak masada doğru (dish-instanced.jpeg); tost tabağı
+   varyantı tost salonu gerektiğinden canlı test edilmedi (kod orijinali birebir yansıtır).
+SONRAKİ: kullanıcı kararı → commit/push (+APK) → TELEFONDA gerçek FPS ölç (sayaç hazır) → ölçüme göre
+sıradaki hedef. Hafıza notu: "telefonda gerçek bütçeyi gör, körlemesine optimize etme" — coins+NPC+dishes
+en yüksek dinamik sayımlardı, güvenli temiz kazanç.
+Beklemede (YAPILMADI): sandalye/tabure statik instancing (seviyeye göre değişken, kazanç düşük), statik
+bina merge (Walls/Street/DecorProps — farklı materyaller → sınırlı kazanç), StinkCloud (düşük sayı).
+
+## ESKİ ŞU AN (2026-06-13 — TURU-6 PAKETİ ✅ UYGULANDI; SAVE v28→v29; COMMIT BEKLİYOR)
+Kullanıcının 2026-06-13 talimat paketi (6 madde) tek oturumda uygulandı; vitest **183/183**,
+build, smoke **26/26** (waiterUp adımı panele taşındı → 1 adım birleşti), Playwright canlı
+390×844 konsol 0 hata (screenshot'lar kökte `night2-*.jpeg`). Telefon APK testi bekleniyor.
+1. **Map ferahlama (m.12 kalan yarı):** BASE_TABLES kolonlar −1.4/3.7 (aralık 5.1, koridor ~2.2),
+   sıralar 2.55/−0.95 (aralık 3.5, koridor ~0.6). Plandaki −1.6 OLMADI: arka-sol masa ocağın
+   çay-al+servis birleşik dairesine giriyordu (3.00<3.2) → −1.4 + açılım öne; ayrım 3.33 ✓.
+   zone2 pad z 0.6→0.8 (yeni koridor merkezi). Zone alanı sabit.
+2. **Kamera:** taban d 6.4→**6**, portrait clamp 1.4→**1.3** (= ilk APK dönemi ~7.8; kullanıcı
+   "ilk zamandaki gibi yakın"). + **Genel-bakış TOGGLE butonu** (sağ-alt, tepsi butonlarının
+   altında, CamZoomIcon): camZoomOut transient ×1.45. Basılı-tut DEĞİL toggle (analiz: başparmak
+   joystick/tepsiyle meşgul). data-testid="cam-zoom".
+3. **Masa fiyatları:** AÇMA −%10 + 5'in katı (table2 20, table3 115, table4 380, z2: 200/485/900,
+   z3: 485/1125/2025; fillRate'ler dwell süresi korunarak ölçekli). YÜKSELTME zone-kademeli:
+   `tables.upgrade.zoneCostMult [1, 1.5, 2.5]` — z1 BİREBİR eski (60/108/194/349), z2 90/160/290/525,
+   z3 150/270/485/875 (5'e yuvarlı). tableUpgradeCost(level, zone). YAN ETKİ: offline
+   capNextPadFrac 1.2→1.15 (z2table2 200'e inince "zone açılır ama içi bitmez" değişmezi bozuluyordu).
+   Sim: garson 10.3dk, z3 dolu 1.62sa, ocak ₺-max 1.81sa — tempo korunuyor.
+4. **Personel HIZ → karakter paneli (SAVE v29):** mekânsal waiterUp pad'i/waiterLevels TAMAMEN
+   kalktı (LAYOUT.waiterUpgradeSpots, FILL_WAITER, reveal, Scene marker, devHooks dahil).
+   WaiterUpgrades += teaSpeed/tostSpeed/dishSpeed. Garson hızı AYNI değerler (1.5→2.0, 250₺;
+   kullanıcı "böyle kalsın"); BULAŞIKÇI YENİ hız merdiveni 2.0→2.4→2.8 (₺700/2200 — kullanıcı
+   "net şekilde eklenmeli"). Migrasyon v29: teaSpeed=max(wl0,wl1), tostSpeed=wl2 (₺ kaybolmaz).
+   Quest q_waiterL2 AYNI id/sıra, hedef tipi waiterLevel→waiterSpeed (quest migrasyonu GEREKMEDİ).
+   HUD char-buton nabzı artık waiterTray/waiterSpeed görevlerinde de yanar ("görev orayı göstersin").
+5. **Coin OTO-TOPLAMA:** money.autoCollectAfter **180sn** (+config'te gerekçe), mıknatıs alanı
+   muaf, stats.coinsCollected ARTMAZ (manuel sayaç). Toast TOPLU: autoCollectToastEvery 20sn —
+   "Bekleyen paralar otomatik toplandı +X" (canlı doğrulandı; coin tavanı ~215 → m.13 FPS bulgusunun
+   kalıcı çözümü, InstancedMesh kararı gereksizleşti). Para SUNUMU değişmedi (feedback_coin_presentation).
+6. **Bug fix:** TOST salonu bulaşıkçısının taşıdığı kirli artık TABAK çizilir (Dishwasher.tsx
+   CarriedDirty food prop — zone'dan türer; oyuncu m.11 kalıbı). NOT: canlıda taşıma anı kareye
+   yakalanamadı — telefon testinde göz at.
+SONRAKİ: kullanıcı onayı → commit/push (+APK derleme) → telefon feedback turu-6.
+Beklemede kalanlar: garson tepsi geç-seviye fiyat indirimi "belki ileride" (kullanıcı), para
+sunumu ferahlama sonrası yeniden değerlendirilecek (mockup onayı şartı sürüyor).
+
+## >>> SONRAKİ OTURUM: FPS Tier 2 (INSTANCING) — KULLANICI ONAYLI <<<
+2026-06-13 FPS tartışması yapıldı (canlı A/B screenshot fps-A-yuksek.png vs fps-B-dusuk.png).
+KARARLAR:
+- **Tier 2 = bu oturumda DEĞİL, sonraki taze oturumda** (bağlam doldu; kullanıcı "önce kaydet").
+  Görsel bedeli SIFIR (instancing birebir aynı üçgenleri tek draw-call'da çizer). Kapsam:
+  InstancedMesh'e geçir → sandalye/tabure (12 masa × ~4), coin'ler (Coins.tsx, m.13 "Seçenek A"),
+  kirli kaplar (Dishes), NPC gövdeleri (aynı kapsül, per-instance renk via instancedColor).
+  + statik bina geometrisini (Walls/Ground/dekor) merged BufferGeometry'ye indir. Hedef: 200-400
+  draw-call → bir avuç. ÖNCE telefonda FPS sayacı devHook'u ekle (gerçek bütçeyi gör, körlemesine
+  optimize etme). Mevcut render: Scene.tsx dpr [1,2], antialias true, shadows 1024, ~7 useFrame
+  bileşeni (her NPC'de useFacing + bob = 2/NPC), drei Html floater (batch'li) + Text marker.
+- **Tier 1 (dpr/AA/shadow düşürme) ERTELENDİ → Faz 7 (asset turu).** Gerekçe: kullanıcı haklı —
+  flat low-poly aliasing'i gizliyor (A/B'de fark ~yok) AMA gerçek dokulu .glb gelince düşük dpr
+  sırıtır. Çözüm: SABİT düşük değer GÖMME → uyarlanabilir yap (drei PerformanceMonitor/AdaptiveDpr
+  + Ayarlar'da Düşük/Orta/Yüksek). dpr runtime değer, tek satır — kalıcı taahhüt değil.
+- **Gölge uzun-vade planı:** bina STATİK → statik gölgeyi BAKE et, sadece karakterlere dinamik
+  gölge → hem ucuz hem daha kaliteli (production hissi çözünürlükten değil bundan gelir).
+- m.13 InstancedMesh kararı: oto-toplama (180sn) coin sayısını ~215'te tavanladı → acil değil,
+  ama Tier 2'de yine de yapılacak (kalıcı temizlik).
+
+## ESKİ (2026-06-12 GECE OTURUMU — TURU-5 UX PAKETİ ✅; şema değişmedi, v28 kaldı)
+Gece protokolü: kullanıcı uyuyor, onaylı turu-5 listesi sırayla işleniyor. 1. milestone (hızlı UX
+paketi, maddeler 7/8/9/10/11) TAMAM:
+- **m.7 kilitli sekme gizle**: CharacterPanel sekmeleri dinamik liste — tutulmamış karakterin
+  sekmesi HİÇ çizilmez; tek sekme kalırsa çubuk komple gizli. WaiterTab/DishTab kilit dalları +
+  `.char-locked` CSS kaldırıldı (ulaşılamaz oldu).
+- **m.8 spotlight çakışması**: KÖK NEDEN table2 bitişi AYNI anda (a) ertesi tick 'upgrade:0'
+  reveal panı (prio 1) + (b) q_charTray1 spotlight'ı tetikliyordu → kamera "Çay Yükselt"e kayarken
+  ekran kararıp char butonunu gösteriyordu. FIX (store.tick 2 nokta): spotlightPending
+  (aktif görev charStat + !charPanelSeen) iken reveal panı BASTIRILIR + görev geçişinde camFocus
+  null. Reveal toast'ı korunur; q_station2 zaten sonra oraya pan atar. Eski reveal-pan testi
+  charPanelSeen:true ile güncellendi + yeni bastırma testi.
+- **m.11 tabak görseli**: yeni TRANSIENT `carriedDirtyFood` (persist YOK — v28 kaldı); toplama
+  `d.kind==='plate'` ayrımı, kapasite/yıkama toplamdan (havuz ortak). CupTray `dirtyFood` prop →
+  yayvan disk + kırıntı; devHooks.carriedDirtyFood. Canlı doğrulandı (tabak toplandı=1).
+- **m.10 tost masası kare→dikdörtgen**: Tables.tsx `rect = food && tableSeats(level)>2` —
+  L0-L2 KARE (0.475), L3+ dikdörtgen (0.675/0.425). SALT görsel; collision foodTableHalf SABİT
+  (nav cache + büyüme-tuzağı riski yüzünden bilinçli). Canlı: L0 kare + L3 dikdörtgen screenshot'lı.
+- **m.9 aktör çarpışması kaldırıldı**: store.tick'teki oyuncu-aktör (NPC/garson/bulaşıkçı) bloğu
+  + LAYOUT.actorHalf silindi — oyuncu kalabalığın içinden geçer. Personel navStep separation'ı
+  (oyuncuya yol verme) KORUNDU. Mobilya collision'ı aynı. Yeni vitest: NPC içinden geçiş.
+Doğrulama: vitest **182/182** (3 yeni), build, smoke **27/27**, sim eğri AYNI (z3 dolu @1.63sa),
+Playwright canlı (390×844): taze oyunda sekme çubuğu YOK, gelişmiş v28 kayıtla 4 sekme, tabak
+toplama, kare/dikdörtgen masalar; konsol 0 hata. Screenshot'lar kökte `night-ux*.png`.
+NOT: kayıt enjeksiyonunda yine "Storage.prototype.setItem no-op" hilesi gerekti (unload-autosave eziyor).
+
+**2. milestone — DENGE RAPORU ✅ (uygulama YOK):** `docs/denge-raporu-2026-06-13.md` — sim 3 profil +
+el hesabı: m.1 ocak +2 ₺ seviyesi önerisi (çay 102/153, tost 2040/3060, Usta L7'ye, şema değişmez);
+m.2 tost arz/talep 1:5-8 ÖLÇÜLDÜ → prepTime 14→11 + m.1A paketi; m.3 garson tepsi maliyet indirimi
+(800/2400/6000→400/1500/4500; quest yeri AYNI = v29 GEREKMEZ — Öneri A) vs reorder (B, v29 ister);
+m.5 karakter köprülü eğri (tepsi T3 15k→5k, T4 60k→18k...); m.4 seçenek A(dokunma)/B(garson-öncesi
+−%15, önerilen)/C(genel −%10 ÖNERMEM). 5 onay sorusu raporun sonunda.
+
+**3. milestone — FPS (m.13) ✅ kanıtlı 2 bulgu (`docs/fps-bulgulari-2026-06-13.md`):**
+1) FLOATER SIZINTISI (FIX ✅): MoneyFloater useEffect deps [onDone] → her toplamada timer reset →
+   395 floater DOM'da birikti (ölçüldü), FPS 12-16. Fix: onDoneRef + mount'ta tek timer →
+   1.5sn'de 0 floater, FPS 39. "Kapa-aç düzeltiyor"un ana açıklaması (floaters React state'i).
+2) COIN BİRİKİMİ (rapora): AFK 10dk = 377 coin → FPS 24 (masaüstü); money.lifetime 0 bilinçli.
+   Paylaşımlı COIN_GEO/COIN_MAT uygulandı (görsel sıfır fark); InstancedMesh (A, önerilen) vs
+   para-yığını merge (B) kararı sabaha. dishes/NPC/notice/navGrid temiz çıktı.
+**4. milestone — KAMERA+MAP PLANI (m.12) ✅ (uygulama YOK):** `docs/kamera-map-plan-2026-06-13.md` —
+ölçüm: sıralar arası net koridor 0.0 br (tabureler değiyor); öneri B+A-hafif (kolon 4.4→5.2,
+sıra 2.9→3.5, kamera d 7→6.4; zone alanı sabit); ×1.15 genel ölçek ÖNERİLMEDİ. 3 onay sorusu.
+
+**GECE OTURUMU KAPANIŞI:** `GECE-RAPORU-2026-06-13.md` kökte (screenshot'lı, "SABAH KARARLARI"
+bölümlü). FPS fix'li FINAL APK 22:46 (~5.3MB).
+
+## >>> SIRADAKİ OTURUM: para desteleri (m.6-B) + kamera/map (m.7) + APK testi feedback'i <<<
+KULLANICI KARARLARI GELDİ (2026-06-12 gece, 2. tur) ve **DENGE PAKETİ UYGULANDI** (şema v28 kaldı,
+migrasyon yok):
+- Ocak +2 ₺ seviyesi: `costsByLevel [20,30,45,67,150,300]` (L1-L4 eski floor'larla birebir;
+  L5/L6 kuyruğu kullanıcı isteğiyle DİK — saf eğri 102/153 az bulundu), masterLevel 5→**7**
+  (Usta 💎 L7'ye). Tost tezgâhı ×20 → 400/600/900/1340/**3000/6000**. Canlı doğrulandı
+  (45→67→150→300 ödendi, L6'da ₺ tavanı).
+- Tost prepTime **14→11** (arz/talep 1:5-8 darboğazı; L1 tezgâh 5.45sn/tost → max bekleme ~16sn
+  < sabır 28.8sn).
+- Garson tepsisi: çay **400/1200/2500**, tost **1200/3000** (kullanıcının rakamları; quest sırası
+  aynı → v29 GEREKMEDİ).
+- Karakter: tepsi [75,**130**,**5000**,**18000**], mıknatıs [200,**700**,**2200**], hız
+  [400,**1100**,**3200**].
+- 5B kısmen: garson pad **150→130** (fillRate 60 kaldı ~2.2sn). table3 130→110 YAPILMADI —
+  **MASA RAKAMLARI ERTELENDİ** (kullanıcı: "masa rakamlarına şimdi dokunma, sonra bakarız" —
+  açma −%10 + yükseltme 100/200/400/800 önerisi denge raporunda beklemede).
+Sim SONRASI (Normal): garson 11.1dk, z3 dolu 1.69sa, ocak ₺-max L6 @1.87sa (yeni geç-oyun hedefi);
+tempo hedefleri korunuyor. simulate.ts milestone etiketi dinamik oldu (`₺-max L${SOFT_MAX}`).
+vitest 182/182 (3 test yeni sayılara güncellendi; usta testi masterLevel'dan türetilir oldu),
+build, smoke 27/27. Rapor güncel: `docs/denge-raporu-2026-06-13.md` SONUÇ bölümü.
+
+**PARA REVİZYONU-3 (TAM GERİ ALMA — kullanıcı: "böyle de çok kötü, eski haline dönder"):**
+moneySpot saçılımı DA reddedildi → coin spawn ORİJİNAL satırına döndü (masa önü ±0.5 saçılım),
+moneySpot LAYOUT'tan tamamen kalktı, ilgili test silindi. KORUNAN: toplu floater + paylaşımlı
+COIN_GEO/COIN_MAT (FPS fix'leri, görsel fark yok) + kamera 6.4. vitest 182/182, smoke 27/27.
+DERS (hafızaya da yazıldı — feedback_coin_presentation): para sunumu 2 kez geri alındı; bir daha
+dokunmadan önce telefonda mockup ONAYI şart, "kullanıcı tarif etti" yetmiyor.
+
+(Aşağıdaki blok TARİHÇE — kuleler geri alındı:)
+**PARA DESTELERİ (m.6-B) + KAMERA UYGULANDI (aynı oturum devamı, kullanıcı netleştirmesiyle):**
+Kullanıcı: "paralar masa altında kalıyor; YERDE üst üste, yan yana 3-4 KULE gibi, görünür yerde
+biriksin (havada değil); kamera biraz daha yaksın." Uygulama:
+- `BASE_TABLES.moneySpot` (masanın ÖN-DIŞ çaprazı; upgradeSpot ön-İÇ'te) → `LAYOUT.tables[i].moneySpot`.
+- `Coin.tableIndex?` (transient; yoksa serbest coin — eski testler/davranış korunur).
+- Ödeme coin'i moneySpot'a `tableIndex`'le düşer; tick'te İSTİF DÖNGÜSÜ (mıknatıs bloğundan önce):
+  masa başına 4 kule z-yönlü (aralık 0.46), kat yüksekliği 0.062; mıknatıs alanındaki coin istiflenmez;
+  HER TICK yeniden derlenir → kısmi toplamada havada coin kalmaz. attractR tek yerden.
+- Çakışma doğrulandı: waiterUp [-3.5,3.4] 1.17 br, ocak yükseltme [-4.35,-0.5] 1.95 br (>1.3 pad yarıçapı).
+- Coins.tsx: coin YERDE YATIK (X-rotasyon + spin kalktı), pos.y store'dan, id-bazlı hafif açı;
+  floater'lar TEK TOPLU "+toplam" yazısına birleşti (kule toplamada spam/Html maliyeti yok).
+- Kamera d 7→**6.4** (Scene.tsx; m.12'nin kamera yarısı — masa araları HENÜZ açılmadı).
+vitest **184/184** (2 yeni: istif+yeniden derleme, ödeme→moneySpot), build, smoke 27/27, Playwright
+canlı: 392 coin'le kuleler masa yanında görünür (`night-ux5b-para-desteleri.png`), konsol 0.
+
+SONRAKİ OTURUMDA SIRADA:
+1. **Map ferahlama (m.12'nin kalan yarısı):** masa aralarını aç (kolon 4.4→5.2, sıra 2.9→3.5,
+   docs/kamera-map-plan-2026-06-13.md) — kamera 6.4 YAPILDI.
+2. Masa rakamları: kullanıcı APK testi + feedback sonrası karar verecek (öneri denge raporunda).
+3. Kullanıcı en yeni APK'yı (denge + desteler + kamera) test edip feedback verecek.
+
+## >>> SIRADAKİ: FEEDBACK TURU-5 LİSTESİ (2026-06-12 akşam — UX PAKETİ ✅, kalanlar aşağıda) <<<
+Kullanıcı turu-4 APK'sını (a96a478, 15:37) test etti; 14 maddelik feedback verdi. TAM LİSTE +
+triyaj + önerilen sıra: `docs/feedback-2026-06-12-turu5.md`. Özet sıra: 1) hızlı UX paketi
+(kilitli panel sekmesi gizle, onboarding spotlight çakışması, tepside tost bulaşığı TABAK görseli,
+tost masası seviyeye göre kare→dikdörtgen, oyuncu-aktör çarpışması kalksın) → 2) denge paketi
+(ocak +1-2 seviye, tost arz darboğazı, garson tepsi erken+ucuz [quest reorder = v29 İD-eşleme!],
+karakter eğrisi yumuşat, GENEL FİYAT İNDİRİMİ ÖNERİSİ ONAYA — "çok az veya aynı; belki sadece
+garson öncesi dönem") → 3) FPS profiling ("kapa-aç düzeltiyor" = birikim/sızıntı ipucu) →
+4) kamera+map ferahlama tasarım turu. Sonraki oturum bu listeyle başlar.
+KULLANICI ŞARTI: denge/para maddeleri "en ince detayına kadar HESAPLANARAK" yapılacak — önce
+sayısal rapor (sim + amortisman/tempo hesabı), onay, sonra uygulama (docs dosyasındaki şart bloğu).
+
+## ŞU AN (2026-06-12 — FEEDBACK TURU-4 başladı: TOST SALONUNA MÜŞTERİ GELMİYOR fix'i ✅)
+Kullanıcı telefon testine başladı; ilk bulgu: "tost servis et görevi var ama tost yemeye kimse
+gelmiyor". KÖK NEDEN: `findTableForGroup` GLOBAL "en çok boş koltuklu masa" seçiyordu (eşitlikte
+düşük index) — tost masaları L0=1 koltukla açılırken çay masaları L1+ (2-4 koltuk) olduğundan tost
+salonu spawn'ı neredeyse HİÇ kazanamıyordu (q_tost5 ilerlemiyor; aynı açlık z3 açılan HER yeni
+salonda yaşanacaktı). FIX: spawn ZONE ROUND-ROBIN — transient `spawnZone` imleci (persist YOK,
+şema değişmedi); her spawn imleçten başlayıp boş koltuğu olan İLK zone'u seçer, zone İÇİNDE eski
+kural (en çok boş koltuk, düşük index); başarıda imleç seçilen zone'un SONRAKİNE geçer → her açık
+salon ~eşit grup payı alır (L0 tost masası 1 kişi, L4 çay masası 4 kişi aldığından koltuk-temelli
+sim talebiyle de doğal uyumlu). `findTableForGroup` artık export (unit test edilir).
+Doğrulama: vitest **172/172** (4 yeni dağılım testi: starvation fix, zone-içi seçim, dolu/kirli
+sarma + -1, STORE tick 3-salon entegrasyonu), build, smoke **27/27**. Sıradaki: YENİ APK + kalan
+telefon feedback'i.
+
+İKİNCİ FEEDBACK: "bulaşıkçı kesinlikle yetmiyor — 2. bulaşıkçı mı yükseltme mi?" → KARAR: 2.
+bulaşıkçı DEĞİL (3 yeni pad + 4. dolaşan aktör = yer/kalabalık; kapasite 2 kalınca 2 kişi de
+yetmez), LEĞEN KAPASİTE YÜKSELTMESİ (SAVE **v28**). Kök neden: carryCapacity 2 SABİTTİ — Y2
+grupları tek L4 masada 4 kirli bırakıyor, bulaşıkçı bir masayı bile tek turda temizleyemiyordu.
+Uygulama: `waiterUpgrades.dishCarry` (v28 alanı; migrasyon default 0 + kelepçe — init() de kelepçeler,
+DERS: init() waiterUpgrades'i alan alan kurar, yeni alan oraya DA eklenmeli yoksa undefined kalır),
+`dishCarryCapacityFor(tier)=2+2×tier` (2→4→6→8), maliyet config `dishwasher.carryUpgrades.costs
+[600,2000,5000]` (tüm salonların bulaşıkçılarına ORTAK; carryCapacity config'ten KALKTI — tek
+kaynak), `buyDishCarry()` aksiyonu, CharacterPanel 4. SEKME "Bulaşıkçı" (kilit: hiç bulaşıkçı
+yoksa; DishwasherPreviewModel TEK Canvas'ta), sahnede CarriedDirty 4'lük sıralar (8'e kadar, leğen
+genişler). Doğrulama: vitest **176/176** (4 yeni v28 testi: eğri+kelepçe, buyDishCarry, FSM tek-tur
+4 kirli vs taban 2, v27→v28 migrasyon), build, smoke **27/27**, Playwright CANLI: v27 kayıt enjeksiyonu
+(setItem no-op hilesi) → v28 (teaTray 1 korundu, dishCarry 0 eklendi), Bulaşıkçı sekmesi "Leğen 2→4",
+satın alma −600₺ → "4→6"+2K buton + önizlemede 4 bardak; konsol 0. Sıradaki: YENİ APK (iki fix
+birlikte) + kalan telefon feedback'i.
+
+ÜÇÜNCÜ FEEDBACK PAKETİ (4 başlık, onaylı uygulandı):
+1) "Tostta müşteri sabırdan kaçıyor" → SABIR ÜRÜN-BAZLI: PRODUCTS.patienceMult (çay ×1, tost ×1.6
+   → L0 ~28.8sn > hazırlık 14sn + servis turu); tablePatience(level, product) — store oturma anında
+   zoneProduct'tan geçirir. (Tost talebi round-robin fix'iyle artınca arz/sabır dengesizliği açığa çıktı.)
+2) "Garsonlar/temizlik yetişmiyor, masalar hep kirli" → bulaşıkçı hızı 1.8→2.0 (leğen v28 ile birleşik;
+   oyuncudan hâlâ yavaş — kısmi assist korunur). Garson hızına DOKUNULMADI (kullanıcı 2026-06-11'de
+   yavaşlatmayı onaylamıştı); tepsi yükseltmeleri zaten Y3 panelinde.
+3) SVG TUTARLILIĞI: TrayIcon'a `food` prop (tost dilimli tepsi) → q_tostTray1 rozeti + panel Tostçu
+   sekmesi; DishTab "Leğen" satırı BasinIcon (WashIcon türevi — çay tepsisi görünmez); QuestPhoto 'pad'
+   case'i includes('waiter'/'dishwasher') ile eşleşir (z2waiter/z3waiter/waiter2... MASA ikonu alıyordu;
+   z3'lüler tostçu hardal kişi ikonu).
+4) PAD DOLUM TAVANI 3.5sn (kullanıcı önce "max 5sn" dedi, push öncesi "3-3.5sn olsun"a indirdi):
+   table4 120, zone2 315, z2table3 155, z2dishwasher 206, z2table4 286, zone3 1030 (8→3.5sn!),
+   z3table2 155, z3waiter 229, z3table3 358, z3dishwasher 458, z3table4 643, waiter2 229,
+   z2waiter2 343, z3waiter2 572; upgradeFillRateFor kelepçe 1-3.5sn (tost L4 3.5sn). Öğretici
+   pad'ler (1.5-3sn) AYNI kaldı.
+Doğrulama: vitest **179/179** (3 yeni turu-4 testi + 2 güncellenen dolum testi), build, smoke 27/27,
+sim eğri AYNI (z3 dolu @1.63sa — sabır/dolum sim'de yok), Playwright CANLI: Tostçu sekmesi tost
+dilimli tepsi ikonu, Leğen leğen ikonu, q_tostTray1 görev rozeti tost tepsisi (ekran görüntüleri);
+konsol 0. NOT: package.json `apk` script'i `.\gradlew.bat` oldu (PowerShell'de çıplak ad bulunamıyor).
+
+## ŞU AN (2026-06-12 — TELEFON FEEDBACK TURU-3 oturumu; M-A ✅ + M-B ✅, SAVE v27)
+Kullanıcı feedback'i (onaylı plan: M-A fixler → M-B görev redesign → M-C=Y3 → M-D=Y4; fiyat
+indirimi son teste ERTELENDİ):
+- ✅ **M-A** (commit 5727b07): pad fiyat yazısı büyüdü (GroundMarker sub 0.29/başlık 0.3);
+  garson hız noktası [-3.5,3.4]'e (duvar arkasında kayboluyordu); merdiven kaldırıldı;
+  dolum süreleri — pad fillRate = cost/hedef-dwell (öğretici 1.5-3sn, orta 3-5sn, açılış max 8sn),
+  yükseltmeler `upgradeFillRateFor(cost)` süre 1-6sn kelepçe (tost L4 22.5→6sn).
+- ✅ **M-B GÖREV REDESIGN (SAVE v27)**: q_z2serve KALDIRILDI, q_z3serve→q_tost5 ("5 tost servis et");
+  yeni çeşitler: q_z2station/q_z3station (zone'lu stationLevel), q_tableL2x2 (tablesAtLevel 2×L2),
+  q_waiterTray1/q_tostTray1 (waiterTray — Y3 panel satın alımı M-C'DE GELİYOR, o görevlere kadar
+  oyuncu ulaşamadan M-C bitmiş olmalı!). Kamera: serveTea→stations[z] (boş salon ortası bitti),
+  stationLevel zone'lu, tablesAtLevel→ilk eksik masa. QuestPhoto: tost dilimi ikonları (zone 2).
+  v27 migrasyonu: İD-eşleme (alias q_z2serve→q_z2table2, q_z3serve→q_tost5) + GENEL güvenlik ağı
+  (aktif görevin gerisinde alınmamış pad görevi → geri çek; hattı bitmiş kayda dokunma) + questBase
+  tutarlılığı (sayaç değilse 0; eşdeğer sayaçsa korunur). `waiterUpgrades {teaTray,tostTray}` persist
+  v27'de AÇILDI (default 0; Y3 UI M-C'de). vitest 156/156, build, smoke 27/27, sim z3 @1.63sa.
+- ✅ **M-C (Y3)**: CharacterPanel SEKMELİ (Oyuncu|Çay Garsonu|Tostçu; kilit: garson tutulmadan
+  garson sekmesi kilitli mesaj). `buyWaiterTray(kind)` store aksiyonu; garson FSM tepsiyi
+  `waiterTrayCapacityFor`'dan okur (çay=teaTray z0+z1 ortak, tost=tostTray) + TEK durakta masadaki
+  HERKESE bırakır (artan tepsiyle sıradaki masa). Waiter görseli: tepside N birim (genişleyen tepsi),
+  TOSTÇU hardal gövde + beyaz kep (y 1.24 — 1.06 kapsül içinde kalıyordu). ÖNEMLİ DERS: panelde
+  sekme başına AYRI <Canvas> WebGL context limitine takılıp önizlemeyi karartıyor → TEK Canvas,
+  sekme modeli değiştirir. config.waiter.trayCapacity KALDIRILDI (tek kaynak: waiterTrayCapacityFor).
+  Playwright canlı: v26 enjeksiyon → v27 (q_z3serve→q_tost5 1/5 taban korunmuş ✓), panel satın alma
+  (tost 1→2, cüzdan −2000 ✓), sahnede tostçu+büyük fiyat yazısı+tost görev ikonu ekran görüntüleri;
+  unload-autosave enjeksiyonu ezer → testte Storage.prototype.setItem no-op hilesi. vitest 161/161.
+- ✅ **M-D (Y4)**: 2. garson pad'leri waiter2/z2waiter2/z3waiter2 (800/1200/2000, OPSİYONEL;
+  requires yeni türü `allZoneTablesLevel {zone,level:4}` — GateState'e opsiyonel tableLevels eklendi).
+  Pad konumları = kendi salonunun 1. garson pad'inin TAM yeri (prev:waiter → eski pad yok olmuş;
+  sıfır çakışma riski). `derivedFromPads.waiterCountByZone` (hasWaiter = count>0; max 2).
+  **visiblePads artık availableOptionalPads'ı DA döndürür** (eskiden opsiyonel pad hiç çizilmiyor/
+  doldurulamıyordu!); q_waiter2 görevinde çiftleme filtreli. FSM: `waiters2` paralel dizi + CLAIM
+  (runWaiter closure; 1. garson en acil masayı claim eder, 2. garson o masayı hariç tutar; ev ofseti
+  +0.7). Görevler APPEND: q_z1allL4 (tablesAtLevel 4×L4 z0, 400₺) + q_waiter2 (300₺). Sim: talep
+  koltuk-temelli (tablesByZone × tableSeats(tableLevel) — L0'da çarpan 1 → ölçülen eğri AYNI:
+  z3 dolu @1.63sa). vitest 168/168 (7 yeni Y4 testi), build, smoke 27/27, Playwright canlı (L4 salon
+  + waiter2 pad'de 4.5sn dur → −800₺ → 2. garson spawn + servis, waiterServed 80→88; konsol 0).
+- ⏳ Sıradaki: **YENİ APK** (`npm run apk`) → kullanıcı Y3+Y4 TOPLU telefon testi → feedback turu;
+  fiyat indirimi kararı bu testten sonra. Sonra: arka-sol rezerv arsa içeriği + üst kat tasarım turu.
+
+## ŞU AN (2026-06-11 — Y2 ✅ KOLTUK + GRUP SİSTEMİ; kayıt şeması DEĞİŞMEDİ, v26 kaldı)
+Onaylı planın (docs/yemek-alani-garson-plan.md §2) Y2 milestone'u uygulandı:
+- **Koltuk türetme:** `tables.seatsByLevel` [1,2,2,4,4] + `tableSeats(level)` (economy.config — tek
+  kaynak). Görsel sandalye sayısı = oturulabilir koltuk (Tables.tsx `tableSeats`; eski level+1
+  kuralında L2 3 sandalyeydi, plan gereği 2'ye indi). Koltuk POZİSYONLARI `ALL_TABLES.seats`
+  (CHAIR_SPOTS/FOOD_CHAIR_SPOTS store.ts'e taşındı; Tables.tsx LAYOUT.chairSpots/foodChairSpots'tan
+  çizer; seats[0] eski .seat ile birebir).
+- **Grup spawn:** `npc.groupChances` %30/35/20/15 (1-4 kişi; `rollGroupSize(roll)` SAF fonksiyon —
+  deterministik test); hedef = en çok BOŞ koltuklu temiz masa (eşitlikte düşük index); koltuk
+  yetmezse grup KÜÇÜLÜR; üyeler sokakta saçılıp AYNI masada FARKLI koltuklara (`Npc.seatIndex`,
+  transient — migrasyon yok); çay/timer/ödeme/bahşiş BİREYSEL (ekonomi korunumu).
+- **Tavan + kirli eşik:** müşteri tavanı = max(8, toplam KOLTUK+2); kirli eşik koltukla ölçeklenir
+  (`dirtyTables(dishes, tableLevels)` → eşik 2×koltuk; L0 eski davranış >2). Dishes.tsx koku işareti
+  + devHooks aynı imzayla tutarlı. Yeni dev kancası: `__setTableLevel(i, lvl)`.
+- **FLAKY TEST FIX (öncesinden):** bahşiş testi "uzak" oyuncuyu [0,0.6,99]'a koyuyordu → z=5'e
+  kelepçelenip ~%10 olasılıkla parayı mıknatısla topluyordu (aynı-tick attract→pickup) → gerçek
+  uzak alan-içi nokta [5.2,0.6,-5.2]. HEAD'de de reproduce edildi (bizden değildi).
+- Doğrulama: vitest **145/145** (8 yeni Y2 testi; 8 ardışık tam koşu stabil), build, sim AYNI
+  (z3 dolu @1.67sa normal — sim grup/koltuğu Y4'te öğrenecek, plan §6), smoke **27/27**, Playwright
+  canlı: L3 masada 4 kişilik grup farklı taburelerde (ekran görüntüsü), L2'de 2 karşılıklı koltuk,
+  tepsiyle TEK durakta 2 müşteriye servis → 2 AYRI para, 10dk hızlı-sarma soak; konsol 0.
+
+## >>> SIRADAKİ: TELEFON FEEDBACK'İ → Y3 → Y4 (kullanıcı kararı, 2026-06-11 oturum sonu) <<<
+APK DERLENDİ ✅ (`android/app/build/outputs/apk/debug/app-debug.apk`, beee864 içerikli) — kullanıcı
+telefonda KISA test yapacak. Akış: **1)** Sonraki chat: telefon feedback'i alınır, gerekirse fix.
+**2)** Sonraki chat(ler): **Y3** (sekmeli karakter paneli Oyuncu|Çay Garsonu|Tostçu + garson tepsi
+yükseltmeleri çay 800/2400/6000, tost 2000/5000 + tostçu kıyafet farklılaşması; SAVE **v27**
+`waiterUpgrades`) → **Y4** (2. garson 800/1200/2000, gating: salonun 4 masası L4 + claim + görevler
+APPEND + sim kalibrasyonu — grup/koltuk talebi sim'e burada işlenir). **3)** Y3+Y4 bitince TOPLU
+telefon testi (yeni APK).
+
+## ŞU AN (2026-06-11 — Y1 ✅ YEMEK ALANI KİMLİK PAKETİ, SAVE v26)
+Onaylı planın (docs/yemek-alani-garson-plan.md) Y1 milestone'u uygulandı:
+- **Y1a counter:** tost tezgâhı (z2) ARKA duvara paralel, önü güneye — `FOOD_ZONE/FOOD_STATION`
+  [10.6,-14.65], stationRots[2]=0, per-zone `stationHalves` (yemek [1.1,0.4]); pickup ön yüzde
+  [10.6,-13.8], garson evi [11.5,-13.8], yükseltme pad'i [8.6,-14.65] (pad↔pickup değişmezi 2.0 ✓);
+  `dishRots` ayrıldı (bulaşık yan duvarda kaldı); z3dishwasher pad'i [13.3,-14.3]'e taşındı (eski
+  nokta counter footprint'i içinde kalıyordu); KitchenHand z2'de tezgâh arkasında x-boyu yürür.
+- **Y1b masa:** yemek masaları DİKDÖRTGEN (1.35×0.85, `foodTableHalf` [0.7,0.45], collision+nav dahil)
+  + ARKALIKLI sandalye (chairWood+petrol minder) 2'ye 2 karşılıklı (FOOD_CHAIR_SPOTS); oturma yeri
+  G-BATI sandalyesi (ALL_TABLES seat dünya x −0.35); çay tarafı kare+tabure aynen.
+- **Y1c zemin:** FLOOR_THEMES `yemek` (düşük kontrast iri karo, #e3dac6/#d8cdb4) tost salonunun
+  DOĞUŞTAN teması (`defaultFloorTheme`); mağazada ücretsiz satır olarak da var; zemine primitive
+  ÇATAL-BIÇAK/TOST amblemi (FoodCorner — daire plaka + işaretler).
+- **Y1d pano:** menü panosu counter üstündeki arka duvarda (kara tahta + tebeşir satırları + fiyat
+  pirinçleri + tost silüeti).
+- **Y1e buton:** `emptyTray(kind:'tea'|'food')`; HUD'da AYRI tost-bırak butonu (kendi TostEmptyIcon
+  SVG'si, data-testid empty-tray-food) — yalnız ilgili sayaçla görünür, korunum ayrı ayrı.
+- **SAVE v25→v26:** z2 zemini eski varsayılan 'parke' ise 'yemek'e migrate; satın alınan tema korunur.
+  **NOT: Y3'ün garson-tepsi şeması artık v27 olacak** (plan dokümanı v26 diyordu, Y1 aldı).
+- Doğrulama: vitest **137/137** (6 yeni Y1 testi: counter geometrisi, pad-dışı footprint, dikdörtgen
+  masa+koltuk hizası, nav rotaları, v26 migrasyonu, yeni-oyun defaults), build, sim AYNI (z3 dolu
+  @1.67sa), smoke **27/27**, Playwright canlı: v25 kayıt → v26 'yemek' zemini; counter+pano+amblem+
+  sandalyeli masalar ekran görüntüsüyle doğrulandı; tost/çay butonları ayrı çalışıyor; konsol 0.
+
+## >>> SIRADAKİ: Y2 — KOLTUK + GRUP SİSTEMİ (EN RİSKLİ) <<<
+`docs/yemek-alani-garson-plan.md` §2: seatIndex (transient), grup spawn (%30/35/20/15), koltuk =
+masa seviyesi (1/2/2/4/4), müşteri tavanı koltuk+2, kirli eşik koltukla ölçeklenir; gerçek-dt
+regresyon testleri ŞART. **Kullanıcı kararı (2026-06-11): Y2 sonraki oturumda; Y2 bitince YENİ APK
+derlenip telefonda test edilecek** (`npm run apk`). Sonra Y3 (sekmeli panel + garson tepsi
+yükseltmeleri, SAVE v27) → Y4 (2. garson + claim + gating).
+
+## ŞU AN (2026-06-11 — KULLANICI KARARI: M4+M5 GERİ ALINDI, TOST SALONU ARKA-SAĞA TAŞINDI, SAVE v25)
+Kullanıcı gece oturumu çıktısını tarayıcıda gördü: "tasarımsal olarak çok kötü — geri al, zone zone
+düzenleyelim; 3. zone sağ üstte olsun, 4. zone ve lavabo/depoyu kaldır" → ONAYLI uygulandı:
+- **git revert** ab6e02e (M5 maç salonu) + e494aee (M4 tuvalet+depo) — temiz geçti.
+- **MAX_ZONES=3**; z2 (TOST) arka-SAĞA taşındı (`zoneCol = z<2?z:1`), arka-SOL hücre kalıcı
+  REZERV arsa: `zoneAt(col,row)` yardımcıyla duvar komşulukları ızgaradan; rezerv hücre nav'da
+  DAİMA bloke; L-köşe dikmesi aynalandı (bx−m/2); DEPO görseli rezerv arsada kalıcı, TUVALET
+  görseli zone-3 açılınca kalkar; zone3 unlock pad'i z1 arka şeridine ([7.7,0,-4.3], sağ geçit x 9.0).
+- **SAVE v25 migrasyonu**: v24 kayıtlardaki kaldırılan pad'ler (wc/cleaner/zone4 zinciri) düşülür,
+  harcanan + yarım dolan ₺ İADE edilir; silinen görevler hep listenin SONUNDAYDI → questIndex clamp
+  yeter; tost ilerlemesi (z2 index'i değişmedi) aynen korunur.
+- Doğrulama: vitest **131/131** (v25 iade testi + sağ-geçit/rezerv-arsa kelepçe testleri), build,
+  sim (zone-3 dolu @1.25sa idealize), smoke **27/27**, Playwright canlı (v24 kayıt → v25 + iade
+  10K→27.4K, tost salonu sağ üstte istasyonuyla, rezerv arka-sol duvarlı; konsol 0).
+- **DENGE + GÖRSEL TURU (aynı gün, kullanıcı ONAYLI, uygulandı):**
+  1. Mıknatıs M1 250→200 (M2/M3 aynı).
+  2. Offline: rateMult 0.2→0.5 + masa BAHŞİŞLERİ orana dahil (incomeRate tipTotal parametresi;
+     ilerleme offline'ı da büyütür) + capNextPadFrac 0.6→1.2 (sıradaki pad + birkaç yükseltme;
+     zone unlock sıradaysa açılır ama İÇİ bitmez).
+  3. z2/z3 zincir pad'leri −%10 yuvarlanmış (zone2 1100, z2 zinciri 225-1000; zone3 3600,
+     z3 zinciri 540-2250). Öğretici pad'leri + yükseltme eğrileri AYNI. Sim: zone-3 dolu
+     1.81→1.67sa normal (~%8 — "çok az" bandı ✓).
+  4. **z1↔z2 (alan 2↔3) arası duvar TAMAMEN kaldırıldı** (rowWallSegments + rowPassageX/Half silindi;
+     kilitli z2 blokajı lockedZoneSolids+clampToOpenZones'ta sürer; z0 arka duvarı + corner dikme durur).
+  5. **Zemin redesign**: orta KİLİM kaldırıldı (PALETTE.carpet/carpetBorder silindi); parke teması
+     soft kum tonuna (#c9a87d) yumuşatıldı; Ground komşulukları zoneAt(col,row) ile ızgaradan.
+  Doğrulama: vitest 131/131 (offline tavan/oran + bahşiş-oran testleri güncellendi), build,
+  smoke 27/27, Playwright canlı (duvarsız sınır + halısız soft zemin + 90sn akış; konsol 0).
+- **YEMEK ALANI + KOLTUK + GARSON PLANI ONAYLANDI** (aynı gün, iki compute raporu sonrası):
+  TAM PLAN → `docs/yemek-alani-garson-plan.md` (görsel kimlik, koltuk 1/2/2/4/4 + karışık gruplar,
+  2. garson L4-masa gating'li + claim, sekmeli karakter paneli + garson tepsi yükseltmeleri SAVE v26,
+  ayrı tost-bırak butonu, zemine kendi amblemimiz). Bu oturumda ayrıca KÜÇÜK FİX girdi: tepsi-boşalt
+  butonu artık tray+trayFood toplamıyla görünüyor (elde sadece tost varken de çıkar; Y1'de ikiye ayrılır).
+
+## >>> SONRAKİ OTURUM: ONAYLI PLANIN UYGULANMASI (Y1→Y4) <<<
+`docs/yemek-alani-garson-plan.md` sırasıyla; her milestone: vitest+sim+smoke+Playwright+commit+PUSH.
+1. **Y1** Yemek alanı kimliği: tost tezgâhı arka duvara paralel (önü güneye) + restoran masa düzeni
+   (dikdörtgen + 2'ye 2 arkalıklı sandalye) + farklı zemin tonu + zemine kendi çatal-bıçak/tost
+   amblemi + menü panosu + AYRI tost-bırak butonu (kendi SVG).
+2. **Y2** Koltuk+grup sistemi (EN RİSKLİ): seatIndex (transient), grup spawn (%30/35/20/15),
+   koltuk = masa seviyesi (1/2/2/4/4), tavan koltuk+2, kirli eşik ölçekleme; gerçek-dt testler.
+3. **Y3** Sekmeli karakter paneli (Oyuncu|Çay Garsonu|Tostçu) + garson tepsi yükseltmeleri
+   (çay 800/2400/6000; tost 2000/5000) + tostçu kıyafet farklılaşması; SAVE v25→v26.
+4. **Y4** 2. garson pad'leri (800/1200/2000; gating: salonun 4 masası L4) + claim sistemi +
+   görevler APPEND + sim kalibrasyonu.
+Ayrıca bekleyen: istek üzerine yeni APK; arka-sol rezerv arsa içeriği + üst kat tasarım turu
+kullanıcıyla.
+
+## GECE OTURUMU 2026-06-12 — 1. KAT TAMAMLAMA (onaylı plan: docs/zone34-wc-floor2-design.md §5b)
+**NOT (2026-06-11): M4+M5 bu sabah kullanıcı kararıyla GERİ ALINDI (üstteki blok).**
+Kullanıcı uyuyor; onay: "zone-3 tost planıyla devam + 1. kattaki her şeyi görevlerle planla-yap +
+görev para ödülleri + yemek masaları farklı/seviyeyle artan görsel". Milestone başına test+commit+push.
+- ✅ **M1 GÖREV ÖDÜLLERİ** (commit b4d8ac7): QuestDef.reward — tamamlanınca cüzdan+lifetime,
+  toast'ta coin+tutar, görev kartında rozet; tüm görevlere ödül (öğretici 3-15, z2 zinciri 50-200);
+  sim'e quest-ödül modeli (ilk alım 60→34sn idealize). vitest 120/120, smoke 27/27, Playwright canlı.
+- ✅ **M2 2×2 IZGARA**: MAX_ZONES=4 (z2 arka-sol TOST rezervi, z3 arka-sağ MAÇ rezervi); zonePoint
+  (ayna+sıra kaydırma); sıra-arası GEÇİTLİ duvar (rowWallSegments — collision+nav+çizim TEK liste);
+  kilitli zone nav'da bloke; oyuncu AÇIK-zone-birleşimi kelepçesi (L-şekil); duvarlar zone-kenarı
+  başına üretilir (L-köşe dikmesi 3-zone halinde); zone3/zone4 pad zincirleri config'te (görevler
+  M3/M5'te; zone-3 şimdilik çay olarak açılabilir — M3 tost'a çevirir); Ground/ReservedRooms/
+  KitchenStaff/gölge kamerası genellendi. vitest 124/124 (4 yeni: zincir türetme, geçit segmentleri,
+  gerçek-dt müşteri nav'ı arka salona, union kelepçe), sim (z3 @44dk, kat dolu @1.8sa idealize),
+  smoke 27/27, Playwright canlı 3-zone + 4-zone görsel (konsol 0).
+- ✅ **M3 TOST HATTI (zone-3)**: `PRODUCTS` (tea 5₺/6sn ↔ tost 25₺/14sn; dish cup/plate;
+  upgradeCostMult ×20) + `ZONE_PRODUCTS` (z2=tost); teaStation.basePrice/npc.orderTime artık
+  PRODUCTS.tea'dan (tek kaynak). Tepside ayrı `trayFood` (kapasite paylaşımlı); tost müşterisi
+  ÇAYLA doyurulamaz; ödeme ürün fiyatından; kirli TABAK görseli; emptyTray tostu da döndürür.
+  Görsel: TostStation (sac+ısınan pres kapakları, L2+ çift pres, ekmek kasası) + tost ustası
+  (hardal önlük/beyaz kep) + YEMEK masası evrimi (kırmızı muşamba→turuncu→petrol→altın + L1
+  peçetelik/L2 ketçap-mayo/L3 servis tabağı) + garson tepsisinde tost. Görevler q_zone3..q_z3table4
+  APPEND (İD-eşleme gerekmedi; SAVE v23 kaldı — şema değişmedi). **BUG FIX: maxConcurrent 8 sabitti,
+  9+ masada arka salon müşterisiz kalıyordu → tavan masalarla ölçeklenir (tables+2).** Sim ürün-
+  farkındalı (zone-3 dolu @60dk idealize). vitest 130/130, build, smoke 27/27, Playwright canlı
+  (tost al→servis→25₺ ödeme→görev 1/5; tabak; "Tost Tezgâhı" etiketi; konsol 0).
+- ⏳ M4 tuvalet+depo → M5 maç salonu + APK.
+
+## ŞU AN (2026-06-11 — TELEFON FEEDBACK TURU-2 ✅ UYGULANDI, SAVE v23)
+Kullanıcı v22 APK'yı CANLI test ederken 8 maddelik turu-2 feedback'i verdi; HEPSİ onaylanıp uygulandı:
+1. **Bulaşıkçı pad 330→200** (kullanıcı verdi — "git gel bitmiyor").
+2. **Pad'lerde KALAN tutar**: 4 işaret tipi de (pad + çay/masa/garson yükseltme) `ceil(maliyet−dolum)`
+   gösterir; `afford` da kalana bakar (100'e 50 verdiysen "50" yazar + 50'yle parlar).
+3. **Müşteri kapı-önü takılması KÖK ÇÖZÜM**: `buildNavGrid` ceil yüzünden son satır hücre merkezleri
+   alanın DIŞINA taşıyordu (z≈5.05 > maxZ 5.0) → kapıdan girip SAĞA kıracak müşterinin ilk waypoint'i
+   oraya düşünce "içeri gir" eşiğiyle (z>5.0→kapıya dön) SONSUZ SALINIM (çöp kovası hizası, kullanıcının
+   gördüğü bug). Alan-dışı hücreler artık BLOKE. 2 yeni vitest: gerçek dt (1/60) ile sokaktan SAĞ masaya
+   oturma (eski dt=0.1 testleri bug'ı atlıyordu — kırmızı→yeşil) + ızgara sınır değişmezi. Çöp kovası
+   kapı şeridinden ön duvar dibine ([1.6,4.5]→[2.5,4.85]) taşındı (salt görsel).
+4. **Görev senkronu v23**: q_z2serve, q_zone2'nin HEMEN arkasına (salon açılınca kamera oraya pan
+   atarken görev zone-1'e geri yollamıyordu çelişkisi bitti); yeni sıra ...q_charMagnet → q_zone2 →
+   q_z2serve → q_waiterL2 → q_tableL2 → q_z2table2... + **stats.teasServedByZone** (zone'lu serveTea
+   hedefi YALNIZ o salonu sayar — eski global sayaç "Yeni salonda 5 çay"ı z1'de de dolduruyordu).
+   **SAVE v22→v23**: İD-eşlemeli questIndex (entryV≥22; eski aktif q_waiterL2/q_tableL2 → q_z2serve'e
+   alınır, yoksa görev sessizce atlanırdı), q_z2serve aktifse questBase=0, teasServedByZone tohumu
+   [global, 0].
+5. **Semaver/bardak çakışması**: semaver tezgâhın yanına (lokal x+0.55), hazır bardaklar sol yarıda
+   2 sıra × 4 (max kuyruk 8) — gömülme bitti.
+6. **Garson SADECE ÖNDEN çay alır**: `LAYOUT.stationPickups` (modül ön yüzü, z2 aynalı) + REACH_PICKUP
+   0.45; eski merkez+geniş-yarıçap hedefi arka çaycı koridorunu da kabul ediyordu. Canlı 60sn örnekleme:
+   ocak bandında hiç arkaya geçmedi.
+7. **Garson boşta ÜST SIRADA bekler**: waiterHomes sol-alt [-4.7,4.2] → mutfak bloğu yanı [-3.5,-3.4]
+   (z2 aynalı); bulaşıkçı zaten üstteydi (yerinde).
+8. **Tepsiyi Boşalt butonu** (onaylı tasarım): tepside ≥1 çay varken sağ-alt buton (TrayEmptyIcon SVG +
+   adet rozeti); basınca çaylar gider, bardaklar TEMİZ havuza döner (korunum; kirliler kalır). İlk
+   belirişte spotlight + açıklama balonu (`trayTipSeen` persist; charPanelSeen kalıbı). `emptyTray`/
+   `markTrayTipSeen` store aksiyonları. NOT: ocak önünde basılırsa canlı döngü tepsiyi anında yeniden
+   doldurur (pickup yarıçapı) — bug değil, bilinçli.
+**Doğrulama:** vitest **119/119** (7 yeni) · build temiz · sim (etiketler artık config'ten; bulaşıkçı
+~19dk, zone-2 ~45dk normal — tempo korunmuş) · smoke **27/27** · Playwright canlı: tepsi butonu+spotlight,
+pad'de kalan ("80" = 200−120), v22→v23 migrasyon enjeksiyonla birebir (q_dish korundu, dolum 120 korundu),
+zone-sayaçlı q_z2serve (z1 servisi ilerletmedi, z2 ilerletti), garson önden alım + üst sıra idle, konsol 0 hata.
+NOT (canlı test tekniği): sayfanın beforeunload-otosave'i localStorage enjeksiyonunu eziyor —
+enjeksiyon+`Storage.prototype.setItem=noop`+reload AYNI evaluate bloğunda yapılmalı.
+**SIRADAKİ:** yeni APK (v23) kullanıcıya; oynadıkça turu-3 feedback'leri gelecek.
+
+## İÇERİK TASARIM ARAŞTIRMASI ✅ RAPOR YAZILDI — ONAY BEKLİYOR (2026-06-11)
+Rapor: **`docs/zone34-wc-floor2-design.md`** (kod yazılmadı). Öneri özeti:
+- **Seçenek A (önerilen):** Zone-3 = TOST OCAĞI (ikinci ürün hattı; tost pahalı+yavaş, D-010
+  "fiyat artışı yeni menüyle"; tost ustası NPC + kirli tabak döngüsü) + Zone-4 = MAÇ SALONU
+  (çay iskeleti + büyük TV; MVP dekor+hafif bahşiş, maç rush event'i Faz 4 anahtarıyla).
+- **Bahçe zone REDDi gerekçeli:** duvar/nav/kat ızgarası bozulur; bahçe hissi = sokak masaları
+  (görsel) + üst kat nargile balkonu.
+- **Tuvalet+Depo MVP:** arka şerit rezervlerinde (depo sol, tuvalet sağ); tek pad'le birlikte
+  açılır (zone-3↔zone-4 arası omurga); döngü = %~25-30 müşteri kullanır → 1 kâğıt + kapı önüne
+  ödeme; kâğıt bitti → depodan koli taşı; temizlikçi personeli ikmali otomatikler (kısmi).
+- **Üst kat = OYUN KATI:** okey/tavla zone'ları (4 müşteri birlikte, uzun oturum, kalkışta yüksek
+  masa ücreti + periyodik çay) + servis çay-zone'u + nargile balkonu (ön cephe) + kata özel
+  tuvalet+depo. Kumarsız/çocuk-güvenli sunum.
+- Uygulama sırası önerisi: zone-3 → tuvalet/depo → zone-4 → Faz 3b üst kat (her biri ayrı plan).
+**SIRADAKİ:** kullanıcı raporu onaylar/değiştirir → onaylanan kısım uygulama planına çevrilir.
+(Feedback turu-3 [v23 APK telefon testi] hâlâ beklemede — kullanıcı sonra verecek.)
+
+## (ÖNCEKİ HEDEF) >>> İÇERİK TASARIM ARAŞTIRMASI (kod YOK — önce araştır+raporla+onay) <<<
+Kullanıcı istedi (2026-06-11 gece): **sonraki 2 zone + lavabo/depo + üst kat** detaylı tasarlanacak.
+- **Sonraki 2 zone ne olacak?** Kullanıcının aklındakiler: yemek salonu (sıcak bakıyor) + bahçe
+  ("bahçe mantıksız olur gibi" — şüpheli). Mekânı KOMPLE restorana çevirmek İSTEMİYOR (kıraathane
+  kimliği korunmalı). Kararı BANA bıraktı — tür araştırması yap (My Perfect Hotel/Idle Miner katman
+  desenleri + gerçek Türk kıraathane kültürü: tost/sahanda yumurta/gazoz tarzı atıştırmalık, okey/tavla
+  salonu, nargile, TV/maç köşesi...), 2-3 seçenekli kısa rapor + NET önerimle gel.
+- **Yemek alanı seçilirse detay:** hangi çalışan(lar) (aşçı? tost ustası?), hangi yemekler (menü =
+  yeni ürün hattı mı, çay hattına paralel ikinci kaynak mı), istasyon/teçhizat tasarımı (ocak modülü
+  deseninde mi), ekonomi kancası (fiyat/throughput D-010'a uyum).
+- **Lavabo (tuvalet) + DEPO:** ne olacak, NEREDE olacak (progress 3c taslağı: kata özel, parayla
+  açılır, tuvalet kâğıdı döngüsü depodan al→tak + temizlikçi — bu taslak detaylandırılacak/revize).
+  Zone içinde mi kat koridorunda mı, hangi döngüyle oyuncuya iş üretir, hangi personel.
+- **ÜST KAT ne olmalı?** (Faz 3b kat geçişi merdivenle) — kat konsepti + zone dağılımı önerisi.
+- Çıktı: `docs/`'a kısa tasarım raporu (seçenekler+öneri+yerleşim krokisi metni) → kullanıcı onayı →
+  ancak ondan sonra uygulama planı. (Planla-onayla-uygula kuralı; onaysız denge/yerleşim değişikliği yok.)
+
+## (ÖNCEKİ — 2026-06-11 — TELEFON FEEDBACK TURU-1 ✅ COMMIT+PUSH (6aa7325) + YENİ APK, SAVE v22)
+Kullanıcı v21 APK telefon testinden 6 maddelik feedback verdi; HEPSİ uygulandı:
+1. **Müşteri takılma bug'ı (KÖK çözüm):** "masaya müşteri gelmiyor / müşteriler kümeleniyor" =
+   müşteriler hâlâ `moveAvoid` (eksen-kayma) kullanıyordu; yerleşim v3'te ÖN-SIRA masa, kapı ile
+   ARKA koltuk arasına TAM giriyor → müşteri kilitlenip masayı SÜRESİZ rezerve ediyordu (garsondaki
+   eski deadlock'un aynısı). Müşteri de salon içinde **navStep (BFS)** kullanır (kapı↔koltuk);
+   sokak segmenti düz `moveToward`. +30sn vazgeçme sigortası (toTable'da timer). `moveAvoid` SİLİNDİ
+   (çağıran kalmadı). 2 yeni vitest (arka masaya oturur + çıkışta takılmaz).
+2. **Zone-2 gizleme → 4 GERÇEK DUVAR:** karanlık hacim telefonda AYDINLIK göründü + kelepçe
+   "görünmez engel" hissi verdi → `LockedZoneShade` SİLİNDİ. Duvarlar yalnız AÇIK zone'ları sarar
+   (sağ duvar kilitliyken zone sınırında = kelepçe duvara dönüşür; standoff dış duvarlarla birebir).
+   Kilitliyken zone-2 zemin overlay/kilim + tuvalet/merdiven ÇİZİLMEZ (yanı boş arsa). Açılınca bina
+   sağa uzar (kamera panı mevcuttu). Ground/Walls/ReservedRooms zonesOpen'a bağlandı.
+3. **Çay yükseltme pad'i ocağın ALTINA:** upgradeZones [-2.4,-2.5]→[-4.35,-0.5] (sol duvar, modülün
+   kapı tarafı; ocak merkez ayrımı 2.0 > pickup 1.6). Garson pad'i çakışmasın diye [-4.6,1.5]→[-4.6,2.2]
+   (ayrım 2.71 > 2×PAD_RADIUS 2.6). z2 aynalı otomatik.
+4. **Tepsi fiyatları (kullanıcı verdi):** T1/T2 150/500 → **75/150**. T3/T4 (15k/60k) DOKUNULMADI
+   (onaysız denge değişikliği yok — kullanıcı isterse sonra).
+5. **Toast redesign + ALT-ORTA:** üstte görev kartına biniyordu + "çirkin" → alt-orta (bottom 88px),
+   krem kart + tür-bazlı SVG madalyon (görev=yeşil CheckBadge, seviye=StarBadge, reveal=altın BangBadge),
+   emoji prefix'leri ('✓','🎉') metinden çıktı; `GameNotice.kind` eklendi.
+6. **Zone-2 gating — yükseltmesiz:** q_zone2 görevi yükseltme görevlerinin (q_waiterL2/q_tableL2)
+   ÖNÜNE alındı (yeni sıra: q_charMagnet → q_zone2 → q_waiterL2 → q_tableL2 → q_z2serve). Pad zinciri
+   zaten tüm z1 pad'lerini istiyordu (table4←dishwasher←waiter←table3). **SAVE v21→v22**: questIndex
+   İD-EŞLEMELİ (yalnız entryV≥20) + GÜVENLİK kelepçesi (aktif görev q_zone2'nin ilerisinde ama zone2
+   pad'i alınmamışsa q_zone2'ye geri çekilir — yoksa hat q_z2serve'de kilitlenirdi; tamamlanmış sonraki
+   görevler tick auto-advance ile anında geçilir).
+**Doğrulama:** vitest **110/110** (4 yeni: 2 müşteri-nav + 3 v22 migrasyon/sıra) · build temiz ·
+sim (zone-2 ~32dk, tempo korunmuş) · smoke **27/27** · Playwright canlı: kilitli duvar görünümü,
+zone-2 satın alma + duvar uzaması, v21→v22 kelepçesi canlı (questIndex 14 → q_zone2), toast alt-orta
+DOM+görsel, arka masada oturan müşteriler, konsol 0 hata.
+**Commit 6aa7325 push'landı + YENİ APK derlendi (kök `KoseKiraathanesi-debug.apk`, 5.1MB, v22).**
+**SIRADAKİ:** kullanıcı yeni APK'yı telefonda test eder; feedback turu-2 ile devam.
+
+## (ÖNCEKİ — 2026-06-11/12 — KARAKTER YÜKSELTME v20 ✅ + ZONE-2 TAM GİZLEME ✅ + ÇAYCI v2 ✅ + YENİ APK)
+**Karakter yükseltme sistemi UYGULANDI** (commit 0955e21 — onaylı tasarım birebir):
+- `economy.config.character` (tepsi [2..6] 150/500/15k/60k · mıknatıs [2.6..5.0] · hız [4.5..5.4])
+  + türeticiler (`trayCapacityFor/attractRadiusFor/playerSpeedFor`, `charNextCost`, `charLevel`).
+  Eski sabitler (serving.trayCapacity, money.attractRadius, player.moveSpeed) KALKTI — kademeden türetilir.
+- **SAVE v19→v20**: eski kayda `tray:2` HEDİYE (kapasite 4 korunur); yeni oyun tepsi 2;
+  `questIndex` İD-EŞLEMELİ migrasyon (entryV≥16 ise; v<16 zaten yeni listeyle tohumlanır,
+  seedQuestIndex charStat'ı hediye değerleriyle değerlendirir). `charPanelSeen` persist (spotlight 1 kez).
+- 3 charStat görevi onaylı zamanlamada (q_charTray1 q_table2→q_serve5; q_charTray2 q_table3→q_waiter;
+  q_charMagnet q_table4→q_waiterL2); charStat'ta kamera SIÇRAMAZ (questFocusPos null).
+- HUD: sol küme YATAY 4-buton (⚙✉🖌👤, genişlik ≤ seviye pill — 390px'te 116≤130 ölçüldü);
+  görev aktifken altın nabız + "!"; ilk seferde spotlight karartma. `CharacterPanel.tsx`:
+  mini Canvas 3/4 açı + canlı tepsi önizleme (satın almada pop) + 3 kart. `__buyChar` dev kancası.
+**Kullanıcı feedback turu aynı oturumda yapıldı:**
+- **Zone-2 TAM GİZLİ** (commit 2c80a20): kilitliyken opak karanlık HACİM (void — hiçbir şey görünmez);
+  pad açılınca ~1.8sn karanlıktan aydınlığa fade + kamera panı. zone2 pad'i eşiğin zone-1 tarafına
+  (x 5.3→4.55) alındı (halka/etiket karanlığa taşmasın).
+- **Çaycı v2**: ayrı bacaklar+ayakkabı, tepsiye uzanan simetrik kollar+ten eller, göz/burun;
+  panel kamera kadrajı düzeltildi (tam gövde 3/4).
+- **YENİ APK**: kök `KoseKiraathanesi-debug.apk` (5.1MB) — kullanıcı telefona kuracak.
+Doğrulama: vitest **99/99** · build temiz · smoke **27/27** · sim (T1 ~4dk idealize, akış sağlıklı) ·
+Playwright gerçek-tıklama (panel satın alma, spotlight, zone reveal) · konsol 0 hata.
+**SIRADAKİ ADAY İŞLER:** kullanıcının APK/telefon feedback'i; T3/T4 fiyatlarının gerçek oyunda hissi;
+karakter kıyafet kozmetikleri (Dekor Mağazası rafı — gelecek); UAL Pro/asset kararı hâlâ açık.
+
+## >>> SONRAKİ OTURUM: KULLANICI TELEFON TESTİ FEEDBACK'LERİYLE GELECEK <<<
+Kullanıcı yeni APK'yı (kök, 5.1MB, v21) kurup test ediyor. Oturum feedback'leri dinleyerek başlar.
+Test edilmesi beklenenler: (a) salon-2 yükseltmelerinin sıralı açılışı (ocak→z2 2. masa sonrası,
+masalar→z2 dolunca, garson hız→kendi 20 taşıması), (b) kilitli salonun TAM karanlık görünümü +
+açılışta karanlıktan aydınlığa fade, (c) karakter yükseltme akışı (görev zamanlaması, panel,
+spotlight, T1-T2 fiyat hissi), (d) çaycı v2 gövdesi, (e) yeni oyun tepsi-2 temposu (eski kayıtta T2 hediye).
+
+## EK (2026-06-12 — ZONE-2 YÜKSELTME GATING'İ v21 ✅, kullanıcı isteği "zone-2'de de düzen olmalı")
+Tür araştırması (önce kapasite, sonra verim — Idle Miner/Dino Park konvansiyonu) + zone-1 deseni AYNALANDI:
+- **z2 ocak yükseltmesi**: salon açılır açılmaz DEĞİL → z2table2 sonrası (`teaStation.upgradeRequiresByZone`).
+- **z2 masa yükseltmeleri**: z2table4 sonrası, per-zone gate (`tables.upgradeRequiresByZone` + `tableUpgradeUnlockedZ`).
+- **z2 garson hızlandırma**: KENDİ garsonunun 20 taşıması (`stats.waiterServedByZone`, **SAVE v20→v21**:
+  global→z1; z2waiter zaten tutulmuşsa eşik tohumu — görünür işaret elinden alınmaz). z0 global ile harman (geri-uyum).
+- **Reveal toast'ları zone-başına** (`upgrade:z/waiterUp:z/tableUp:z`, "Salon 2:" öneki + pan hedefi revealKeys'ten).
+Doğrulama: vitest **104/104** (6 yeni gating/migrasyon testi) · sim (z2L1 artık z2table2 SONRASI, tempo aynı) ·
+smoke **27/27** (anahtar adları güncellendi) · Playwright canlı (upgrade:1 doğru anda, waiterUp:1 doğru şekilde YOK) ·
+konsol 0. YENİ APK kökte. NOT: dev sunucu artık 5178 portunda olabilir (5173-5177 dolu).
+
+## (ÖNCEKİ — 2026-06-11 FEEDBACK TURU-3 — D-025 rev. A: TEK MUTFAK BLOĞU + yavaş garson; SAVE v19)
+Kullanıcı turu-2'ye "bulaşık ayrı garip" dedi; iki seçenek sunuldu, **A'yı seçti** (uygulandı):
+- Bulaşık kendi ocağının HEMEN BİTİŞİĞİNDE (z1 sol/z2 sağ duvar TEK mutfak bloğu; dishHalf döndü).
+- GARSON YAVAŞLATILDI (onaylı): [1.8,2.3]→[1.5,2.0] — tur ~12sn < sabır 18sn (ölçüm 51 servis/180sn).
+- Masa sıraları hafif yukarı (-1.0/1.9); bulaşıkçı pad'i [0.2,-4.5] (pad daireleri kesişmez).
+- Görev zoom'ları canlı doğrulandı (yeni bulaşık/ocak/çay pad'i/zone-2 merkez).
+
+## (ÖNCEKİ — 2026-06-11 FEEDBACK TURU-2 UYGULANDI — YERLEŞİM v3, D-025; SAVE v19 değişmedi)
+Kullanıcı PC başında değildi; tasarım+uygulama+doğrulama tek oturumda bitirildi (agent'sız, bizzat):
+- **Per-zone AYNALI mutfak:** z2'nin kendi ocağı (sağ duvar) + bulaşık arka duvarda ocaktan AYRI →
+  zone-2 garson turu ~21sn→~10sn (sabır 18sn artık dolmuyor; 180sn ölçümünde 50 servis, kaçan yok).
+- **Masalar sağa+yukarı**, masa pad'leri kapı çaprazında; çay pad'i ocağın yanında ferah alanda.
+- **KARE masa evrimi** + seviye başına sandalye (4'e kadar) + yakın oturma (0.78).
+- **Mağaza fix:** dama=quad satranç deseni; zemin overlay duvara kadar; kilim yumuşak toprak-bordo.
+- **KARAR (raporlandı): 2 GARSON** (salon başına 1) — 3.sü fazla otomasyon, L2 hız yedek var.
+Kullanıcı dönünce: telefonda/tarayıcıda OYNAYIP yerleşim v3 hissini değerlendirecek; masa açılış
+sırası ÖN sıradan (t0 ön-sol) — feedback'e açık. APK hâlâ ESKİ (istenirse yeni derlenir).
+
+## (ÖNCEKİ — 2026-06-11 SABAH FEEDBACK'İ UYGULANDI — WP3/WP4 kısmi GERİ ALMA; SAVE v19 değişmedi)
+Kullanıcı gece-2 paketine feedback verdi: **"assetler çok kötü oldu — karakterler küçük, zemin
+iğrenç, çay ocağı birleşmesi kötü; konsept My Hotel tarzı olmalı."** Yapılan (detay progress.md):
+- Karakterler/zemin/çay ocağı/bulaşık ESKİYE döndü (primitive + düz zemin + semaver + lavabo/koku).
+  Quaternius glb'leri ve pipeline repo'dan SİLİNDİ. WP5 (tek gösterge) + WP6 (mağaza, düz renkle) korundu.
+- Çay yükseltme pad'i ocağın hemen yanına (kullanıcı "soluna" dedi — solda duvar/çaycı koridoru var,
+  salon tarafına bitişik koyuldu; kullanıcı görüp onaylayacak). Geometri testi gevşetildi (pickup-guard asıl).
+- Zone'lar bitişik (ZONE_DX 10.6, sınır x=5.3) — duvarsız "ölü boşluk" kapandı. Duvar yine YOK.
+**AÇIK KONU — YENİ KARAKTER/ASSET SEÇİMİ:** kullanıcı $9.99 listesini inceleyecek (UAL Pro:
+https://quaternius.itch.io/universal-animation-library · B planı Synty POLYGON City $29.99).
+Karakter paketi BİRLİKTE seçilecek; seçilmeden karakter asset'i ekleme. APK henüz YENİLENMEDİ
+(eski APK'da silinen karakterler var — kullanıcı isterse yeni APK derle).
+Kalan sabah kararları: curve Ö1-Ö4 (docs/curve-report.md) + telefon tempo testi.
+
+## (ÖNCEKİ) >>> ☀️ SABAH: kullanıcı GECE-RAPORU-2026-06-11.md'yi okumuş olacak <<<
+GECE-2 (2026-06-11→12) TAMAMLANDI: WP1-WP6 hepsi uygulandı + yeni APK (kök
+`KoseKiraathanesi-debug.apk`, 8.8MB — karakter modelleri dahil) + GECE-RAPORU-2026-06-11.md.
+**Sabah kullanıcıdan beklenen kararlar (rapor sonunda):**
+1. Kirli masa A (koku bulutu) / B (leke+sünger, AKTİF) — night2-wp4-dirty-A/B.png.
+2. UAL Pro $9.99 (Sit/Carry animasyonu — oturan müşteri gömülme çözümü; satın alma kullanıcıda).
+3. Curve Ö1-Ö4 (docs/curve-report.md) + dünya-v2 sonrası zone-2 servis mesafesi/tempo telefon testi.
+4. Telefon testi: tek salon hissi, karakterler, mağaza, offline kapa-aç (artık ≤ pad %60 tavanlı).
+NOT: `npm run apk` script'i Git-Bash'ten `gradlew.bat`'ı bulamaz — bash'te
+`cd android && cmd //c ".\gradlew.bat assembleDebug"` kullan (npm/cmd'den sorunsuz).
+
+## ŞU AN (2026-06-11 GECE-2 🌙 — WP1-WP6 HEPSİ ✅; sırada SABAH PAKETİ: APK + rapor; SAVE v19)
+**TÜM iş paketleri UYGULANDI** (detay progress.md): WP1 bug paketi · WP2 dünya v2 (D-024) ·
+WP3 Quaternius karakterler (10 CC0 glb + Character.tsx) · WP4 görsel kimlik v2 (canvas parke,
+masa şekil evrimi, klasik ocak, TV maç, kirli masa B + A/B screenshot, dekor) · WP5 tek gösterge ·
+WP6 kozmetik mağaza (SAVE v18→v19; buyCosmetic; per-zone tema; gerçek-tıklama doğrulandı).
+vitest 91/91 · build temiz · smoke 27/27 · Playwright canlı ✓ · konsol 0 hata.
+**SABAH PAKETİ DE BİTTİ:** yeni APK (kök, 8.8MB) + GECE-RAPORU-2026-06-11.md yazıldı.
+⚠️ Sabah kararları (yukarıdaki blok): kirli masa A/B, UAL Pro $9.99, curve Ö1-Ö4 + z2 tempo,
+telefon testi.
+
+## (ÖNCEKİ — 2026-06-11 GÜNDÜZ: FEEDBACK ALINDI + ARAŞTIRMA/PLAN BİTTİ; kod değişmedi, SAVE v18)
+Kullanıcı feedback'i işlendi → docs/feedback-2026-06-11.md (A-D feedback, E bug kök nedenleri,
+F asset araştırması [öneri: Quaternius Modular Men+Women CC0 + UAL], G dünya-v2/kat planı revizyonu
+[duvarsız tek salon = fiilen MERKEZİ SERVİS modeli → D-022 revizyon karar noktası], H iş paketleri
+WP1-WP6 + 5 karar sorusu). Offline 7k bug'ı doğrulandı: oran×0.5×min(geçen,1sa), zone-2'de oran
+~4₺/sn → 1sa tavanda ~7.2k; tavan süreye var paraya yok.
+
+## (ÖNCEKİ — 2026-06-11 SABAH: 🌙 GECE OTURUMU TAMAMLANDI 7/7 ✅; SAVE v18)
+Gece listesi bitti (detay aşağıdaki ✅'lı maddeler + progress.md): (1) ocak-yükseltme para yeme fix'i,
+(2) kat master planı (docs/floorplan-master.md), (3) **ZONE-2 ÇALIŞIR** (per-zone ocak+bulaşık D-022,
+SAVE v17→v18, quest +7), (4) görsel kimlik (palette.ts + kilim/lambri/tabure/örtü-evrimi/TV/tabela),
+(5) curve raporu (docs/curve-report.md — **Ö1-Ö4 SABAH ONAYI BEKLİYOR, uygulanmadı**), (6) çaycı
+karakter prototipi, (7) YENİ APK (kök `KoseKiraathanesi-debug.apk`, 5.1MB) + **`GECE-RAPORU-2026-06-10.md`**
+(kökte — kullanıcı sabah BUNU okusun). vitest 85/85 · smoke 27/27 · sim 60sn · konsol 0 hata · 6 commit push'lu.
+**SABAH KARARLARI:** (a) curve Ö1-Ö4 (önerim Ö1+Ö2), (b) lavabo mekaniği zamanı (önerim zone-3 ile),
+(c) görsel kimlik feedback'i (renkler palette.ts'te tek dosya), (d) telefonda zone-2 akışı testi.
+
+## (ÖNCEKİ — 2026-06-10 GECE BAŞI: HUD SIFIRDAN REDESIGN + LEVEL/XP + AYARLAR; SAVE v17)
+Kullanıcının "UI oyun gibi değil / ikonlar AI slop" feedback'i üzerine TAM UI redesign UYGULANDI (onaylı akış:
+gerçek tycoon HUD referans araştırması → mock → kullanıcı onayı → uygulama → Playwright didik didik):
+- **Referans araştırması:** My Perfect Hotel (gerçek HUD ×2 YouTube karesi), MPH-Empire, My Mini Mart, Burger
+  Please! App Store görüntüleri indirilip görsel incelendi (kullanıcı: 2D oyunlara BAKMA, MPH-benzeri 3D'lere bak).
+  Ortak gramer çıkarıldı: konturlu bold yuvarlak font, 3D-görünümlü ikonlar, K/M kısaltma, yıldız+XP barı,
+  alt ekran boş. (Telifli referans görselleri repo'ya KONMADI.)
+- **Yerleşim (kullanıcı tarifi, MPH birebir):** SOL-ÜST yıldız rozet (seviye) + yeşil XP barı; altında küçük
+  dişli + posta butonu. SAĞ-ÜST chip'siz para+elmas (SVG ikon + Lilita konturlu rakam). SAĞ-ÜST ALTI görev
+  kartı: görev FOTOĞRAFI (hedef tipine göre SVG sahne) + ad + yeşil ilerleme barı / maliyet; dokun → kamera odak.
+- **İkonlar:** `src/components/ui/icons.tsx` — elle çizilmiş gradyanlı SVG seti (CoinIcon/GemIcon/StarBadge/
+  GearIcon/MailIcon/QuestPhoto). Emoji + CSS-circle coin TAMAMEN gitti.
+- **Font:** Baloo 2 (metin) + Lilita One (rakam) @fontsource'tan YEREL bundle (main.tsx; CDN yok). 3D zemin
+  yazıları (GroundMarker drei Text) `public/assets/fonts/Baloo2.ttf` (OFL, manifestte) — troika CDN default'u
+  kalktı, D-018'in "fontu yerele bundle'la" Faz 7 TODO'su KAPANDI.
+- **LEVEL/XP sistemi (kullanıcı onayladı; ileride kat L-kapısı + kozmetik mağaza):** `economy.config.xp`
+  (eylem-temelli: servis 2 / garson 1 / yıkama 1 / görev 25 / pad 15 / yükseltme 10; eğri 60×1.5^L),
+  `xpForLevel`/`levelProgress` helper. xp PERSIST → **SAVE_VERSION 16→17 + migrasyon** (xp eski stats/quest/
+  pad/seviyelerden TOHUMLANIR — eski oyuncu L1'e düşmez). Level-up toast "🎉 Seviye N!".
+- **Ayarlar modalı:** dişli → Ses/Müzik/Bildirimler toggle'ları (`settings` persist v17, `setSetting` anında
+  kaydeder) + Oyunu Sıfırla (confirm) + Tamam. Posta butonu → "Posta kutun boş" modalı (ileride gelen kutusu).
+  Eski `.reset-btn`/dişli-menü kalktı. Offline modal yeni krem/altın stile geçti.
+- **🐛→✅ Duplicate-key bug (kök neden):** floater'lar coin id'siyle key'liydi; reset sonrası store nextId başa
+  dönünce id çakışıp her kare React hatası basıyordu → floater'a bağımsız monoton sayaç (Coins.tsx).
+- **Doğrulama:** vitest **77/77** (5 yeni: eğri, eylem-XP, pad-XP+level-up, v17 tohumlama, ayar persist),
+  build temiz, sim ilk-alım 60sn DEĞİŞMEDİ, smoke **27/27**, konsol 0 hata; Playwright görsel: 320/390/768
+  portrait + 844×390 landscape taşma YOK; ayar toggle persist canlı doğrulandı.
+- **Mock artefaktı:** `tools/hud-mock.html` (+backdrop png) — onay sürecinde kullanıldı, referans olarak duruyor.
+### HUD v2 ince ayarları (kullanıcı 1. tur feedback'i AYNI OTURUMDA uygulandı, 2026-06-10 gece):
+- **🐛 KRİTİK tıklama fix:** dişli/posta/görev karta DOKUNULAMIYORDU — touch-layer (z:5) üst HUD öğelerinin
+  üstündeydi (reset-btn dersinin tekrarı). Tüm üst widget'lar z-index:10. DERS: tıklanabilirlik testini
+  evaluate .click() ile DEĞİL gerçek hit-testing yapan Playwright click ile doğrula (bu kez öyle doğrulandı).
+- **Bütünleşik level ünitesi:** ayrı duran yıldız+bar "çirkin" → TEK ceviz-kahve pill (yıldız kenara gömülü,
+  XP barı içinde); para+elmas da AYNI pill ailesinde chip'e girdi (kullanıcının "chip olmalı mı?" tereddütüne
+  cevap: tutarlılık) ve level ile AYNI hizada (hizaFarki=0 ölçüldü). Renk: tutarlı ceviz ailesi (kullanıcı
+  alternatif renk bulamadı; istenirse bordo accent denenir).
+- **Zemin yazıları bold:** GroundMarker drei Text `fontWeight 700` (Baloo2 variable TTF ekseni) — HUD fontuyla uyumlu.
+- **Bulaşık onboarding gate:** q_wash görevi gelmeden kirli bardak HİÇ çıkmaz (bardak temize geri döner —
+  korunum bozulmaz, demleme kilitlenmez); görev gelince mekanik başlar. WASH_QUEST_INDEX store'da.
+- **Doğrulama:** vitest **78/78**, build temiz, smoke 27/27, 320/landscape taşma yok, gerçek-click ayar+posta+görev ✓.
+### ✅ ZONE KARARI ONAYLANDI (D-022): per-zone TEMALI ocak+bulaşık; kat başına 4 zone (2×2).
+Zemin kat = çay teması (zone 1-2 çay salonu; zone 3-4 FARKLI konsept: tost/TV adayları); okey/tavla ÜST kat + balkon.
+
+### >>> SONRAKİ OTURUM = 🌙 GECE OTURUMU (kullanıcı UYUYOR — "devam" deyince DURMADAN çalış) <<<
+KULLANICI TALİMATI (2026-06-10 gece): "sabaha kadar kesintisiz çalış; kaliteli iş yapabildiğin sürece yap,
+context'i hesaba katarak sağlıklı iş yapabildiğin son ana kadar git; sabah kalktığımda telefonumda güzel bir
+oyun oynayayım. Çizgi güzel — tasarım/mantık/görev yoğunluğunda küçük değişiklikler olabilir sadece."
+**GECE GÖREV LİSTESİ (kullanıcı ONAYLI, sırayla; her milestone: test+screenshot+memory-bank+commit+PUSH):**
+1. ✅ **Ocak-yükseltme para yeme fix'i (BİTTİ 2026-06-10 gece):** KÖK = daire kesişimi (tezgâh önü oyuncu
+   pozisyonu upgradeZone PAD_RADIUS'u içindeydi; eski yorum merkez-merkez 1.8'e bakıyordu). Fix: upgradeZone
+   [-1.6,-1.7]'ye (merkez mesafe 3.1 ≥ 1.6+1.3) + pickup-yarıçapı guard'ı + 2 vitest (geometri değişmezi +
+   davranış). Vitest 80/80, smoke 27/27, sim 60sn, Playwright canlı ✓ (para sabit kaldı, çay alındı; yeni
+   noktada dolum çalışıyor). Screenshot: night-1-upgradezone-fix.png (kök, git-ignored).
+2. ✅ **Kıraathane araştırması → KAT MASTER PLANI (BİTTİ):** web araştırması (Yahya Kaptan bölümlü kahvehane
+   örneği, Ticaret Bakanlığı kıraathanecilik kılavuzu, tipoloji) → **`docs/floorplan-master.md`**: zemin kat
+   ASCII planı (zone1-2 önde çay salonları, zone3 tost / zone4 TV-köşesi arka sırada, DEPO sol-arka +
+   TUVALET sağ-arka köşe odaları rezerve, merdiven ön-sağ, sokak bahçe masaları); üst kat okey/tavla+balkon
+   notu; gerçek-kıraathane → oyun karşılığı tablosu. Lavabo mekaniği sabaha (zone-3 önerisi).
+3. ✅ **Zone-2 ÇALIŞIR (BİTTİ; SAVE v17→v18):** per-zone ocak+bulaşık (D-022); LAYOUT zone-şablonu (+X offset 12);
+   global bitişik masa indeksleri (0-3 z1 / 4-7 z2); bölme duvarı + HEP açık geçit (z=-0.75) + kilitliyken karanlık
+   örtü; zone2 pad'i geçitte ₺1200 (sabah curve onayıyla kalibre edilecek); per-zone personel + müşteri kendi
+   kapısından; cleanCups GLOBAL depo; quest hattı +7 görev. vitest 85/85, smoke 27/27, sim 60sn, Playwright canlı ✓
+   (geçit input'la geçilir, duvar bloklar, 2. ocak demler, z2 müşterisi oturur). Detay: progress.md + docs/zone2-design.md.
+4. ✅ **Türk kıraathane GÖRSEL KİMLİĞİ (BİTTİ):** YENİ `src/config/palette.ts` (TEK renk kaynağı — varyant
+   denemek = tek dosya) + `docs/visual-identity.md` (evrim tablosu). Uygulanan: ahşap parke zemin + zone-başına
+   kırmızı KİLİM (bordürlü; ilk deneme 8.6×6.2 "bilardo masası" gibiydi → 6.6×4.6 küçültüldü); duvarlar krem +
+   koyu ahşap LAMBRİ kuşağı (WallPiece helper — bölme dahil); masa redesign: yuvarlak tabla + merkez ayak + İKİ
+   MİNDERLİ TABURE (koltuk kutusu emekli; seat collision AYNI, 2. tabure salt görsel); **masa örtüsü = seviye
+   evrimi** (L1 çıplak → çuha yeşili → bordo → lacivert → altın; tableclothByLevel) — Playwright'ta L3 lacivert
+   doğrulandı; TV köşesi (zone-1 arka duvar, ışıldayan ekran); sokak: kapı üstü TABELA şeridi (eğimli tente
+   kamera +z'den bakınca ekranı kapatıyordu → dikey şerit), kapı önü bahçe masaları+tabureler+saksılar.
+   **vitest 85/85, build temiz, smoke 27/27, konsol 0 hata.** Screenshots: night-4-visual-v3.png, night-4-table-evolution.png.
+5. ✅ **Curve raporu (BİTTİ — SABAH ONAYI BEKLİYOR, uygulanmadı):** `docs/curve-report.md` — sim zone'lu
+   bottleneck modeline genişletildi (per-zone arz/talep + 3-profil verim 0.80/0.55/0.35; idealize ilk-alım
+   60sn SABİT). Bulgular: zone-1 ömrü hedefin altında (Normal ~25dk; hedef ~1sa), zone-2 kapısı 39dk, zone-2
+   içi 25dk (düz). **ÖNERİLER (onay bekliyor): Ö1 zone2 1200→2000; Ö2 z2 zinciri ×1.3; Ö3 q_z2serve 5→10;
+   Ö4 (alt.) zone2'ye minLifetime 6000.** Offline Faz-4 notu: zone-2 sonu oran ~11₺/sn → offline tek giriş ~20k.
+6. ✅ **Karakter prototipi (BİTTİ):** Player altın kapsül → PARÇALI çaycı gövdesi (`OwnerBody`, Player.tsx;
+   her uzuv ayrı mesh = Faz 6 animasyon hazırlığı): kasket+vizör, ten baş+bıyık, krem gömlek, bordo önlük,
+   koyu pantolon, iki kol; renkler palette.ts'te. Screenshot: night-6-character.png. vitest 85/85, smoke 27/27.
+7. **SABAH PAKETİ:** en sonda `npm run apk` ile YENİ APK + screenshot'lı gece raporu (kullanıcı telefonda test edecek).
+İLKELER: çizgiyi koru; görsel beğeni işlerinde varyant bırak, geri dönüşü zor şey yapma; mağazaya dokunma;
+context tükenmeden düzenli commit+push + memory-bank güncelle (sonraki pencere kaldığı yerden alır).
+
+## (ÖNCEKİ — 2026-06-10 GÜNDÜZ: FABLE 5 BRIEF ADIM 1+2 UYGULANDI: quest sistemi + UI game-feel; D-021)
+Fable brief'in onaylı 4-adımlı planından **Adım 1 (quest/görev sistemi + kamera) ve Adım 2 (reveal arka-plan şartları)
+TAMAM**; HUD game-feel revizyonu da (kullanıcı isteğiyle) Adım 1'e dahil edildi. Tam karar: **decisions.md D-021.**
+- **Quest hattı:** `quests[]` 13 sıralı görev; üst-orta görev barı (dokun → kamera hedefe pan/zoom, joystick iptal eder);
+  görev geçişi + reveal + ilk açılışta otomatik kamera panı. Ekranda TEK pad (`visiblePads`). Personel ZORUNLU omurga
+  (D-014 geçersiz). Garson-hız işareti garson 20 çay taşımadan görünmez (`minWaiterServed`, stats sayaçları persist).
+- **HUD:** sadece para (altın coin ikonu — ₺ display'den tamamen kalktı) + 💎 chip; offline = modal kart [Tamam];
+  sıfırla dişli menüsünde; coach + next-step silindi. GroundMarker fiyatları coin puluyla.
+- **SAVE 15→16** + questIndex/stats tohumlamalı migrasyon (eski oyuncu başa düşmez; garson tutulmamışsa hat q_waiter'da durur).
+- **Doğrulama:** vitest 72/72, build temiz, sim ilk-alım 60sn, smoke 27/27, Playwright görsel ✓ (görev barı/kamera/modal).
+  Dev kancaları: `__setQuest(id)`, `__grantStat(k,v)`. Kullanıcı oturum sırasında canlı önizlemede bizzat oynamaya başladı.
+### >>> SONRAKİ OTURUM ANA GÖREVİ — KULLANICI FEEDBACK'İ (2026-06-10, oturum kapanışında verildi) <<<
+Kullanıcı quest sistemini gördü ama **UI'dan memnun DEĞİL** ("üstteki chip'ler, ekran dağılımı, görev barı —
+hiçbir şey istediğim gibi değil; hâlâ oyun gibi değil"). İstekler:
+1. **UI'ı SIFIRDAN tasarla — GERÇEK tycoon oyunlarının arayüz fotoğraflarını inceleyerek.** Birden fazla oyunun
+   (My Perfect Hotel, Idle Miner, vb.) HUD ekran görüntülerini araştır/incele; chip yerleşimi, görev barı, ekran
+   dağılımını onlara bakarak yeniden kur. (Web araştırması + görsel referans analizi gerekir.)
+2. **İkonlar "aşırı AI slop"** — düzgün asset istiyor: "gerekirse Claude ile asset üret veya farklı bir yapay zeka
+   kullan, ama çöz." → SVG/sprite ikon seti üret (para, elmas, görev, ayarlar...), CSS-circle coin gibi geçici
+   çözümler yerine gerçek ikonografi. (Kenney CC0 UI pack de değerlendirilebilir — asset stil kilidiyle uyumlu.)
+3. **Font düzenlemesi:** system-ui yerine oyun hissi veren font (yuvarlak/bold, TR karakter destekli; bundle'a
+   yerel olarak eklenmeli — D-018 font-CDN dersi: networkidle bozulmasın).
+4. **Zone sorusu:** "zone mantığını ŞU AN getirmek ne kadar mantıklı, öyle de mi test etsek?" → Kullanıcı zone-2'yi
+   erken getirip denemeye açık. Adım 3 (curve) ile Adım 4 (zone) sıralaması sonraki oturumda kullanıcıyla netleşsin.
+5. **Zone mimarisi HÂLÂ AÇIK:** per-zone ocak+bulaşık mı, yoksa ANA SERVİS NOKTASI (merkezi ocak+bulaşık) + zone-başı
+   garson/bulaşıkçı mı? D-021'deki per-zone önerim ONAYLANMADI — kullanıcı iki seçeneği tekrar sordu. Sonraki oturumda
+   iki modeli artı/eksi tablosuyla (taşıma mesafesi, darboğaz, ekran karmaşası, balance grind) kısaca karşılaştırıp
+   NET öneri + onay al; istenirse prototip karşılaştırması.
+Sıra önerisi: (1) UI redesign (referans araştırması → mock → onay → uygula) → (2) zone modeli kararı + zone-2
+prototipi → (3) curve hesabı (Adım 3) zone yapısına göre.
+
+### (genel sıradaki — değişmedi)
+- Adım 3: simulate.ts 3-profil curve hesabı · Adım 4: Faz 3a zone-2 · Faz 4+: prestige/elmas/mağaza.
+
+## >>> (TAMAMLANDI 2026-06-10) ÖNCEKİ ANA GÖREV: FABLE 5 BRIEF (2026-06-09) <<<
+Kullanıcı büyük tasarım/denge geri bildirimi verdi → tek brief'e döküldü: **`docs/fable5-progression-redesign-brief.md`**.
+Sonraki sohbette kullanıcı `/model` ile **Claude Fable 5**'e (9 Haz 2026 çıktı, Mythos-sınıfı) geçip o brief'i çalıştıracak;
+Fable kendi yapar veya alt-agent'lara dağıtır. Kapsam (8 başlık): (1) **görev/quest tabanlı progression, ekranda TEK pad**;
+(2) **4-zone mimarisi** — per-zone servis mi tek servis mi (KARAR araştırmayla) + üst kata çıkış; (3) **aktif↔idle dengesi**
+(My Hotel: yavaş temizlikçi → flip yok); (4) **onboarding (hareketli) + UI/menü + üst chip + para birimi ₺→jenerik money ikonu**;
+(5) **karakter + görsel-evrim** (seviyeyle değişen Türk/kıraathane estetiği); (6) **kozmetik mağaza** (parke/duvar kağıdı);
+(7) **tam denge geçişi** (çay fiyatı, garson/bulaşıkçı hız+zaman, her yükseltme neyi ne kadar etkiler). **Yöntem:**
+araştır→öner→kullanıcı onayı→uygula (kod yazmadan önce sor). Bu oturumda kod YAZILMADI, sadece brief hazırlandı.
+**NOT:** onboarding "hareketli olmalı" feedback'i + telefon test feedback'i hâlâ beklemede (aşağıdaki blok) — Fable önce bunu sorsun.
+
+## Şu an neredeyiz (2026-06-09 — EKONOMİ TEMPO + OFFLINE + KAMERA AYARI → kullanıcı telefonda test edecek)
+Kullanıcı telefon feedback'i: (1) başta AŞIRI yavaş; (2) 1 gece sonra ~18k birikip ilk zone tek seferde bitti (offline
+kısıtsız hissi); (3) garson+bulaşıkçı açılınca her şey çok hızlı/ucuz; (4) kamera çok yakın. 2 agent (idle-tycoon tempo
+araştırması + kod tarama) + bizzat Playwright/devHooks taraması yapıldı. **KÖK:** tek darboğaz = MANUEL SERVİS (yardımcılar
+açılınca açık/kapalı gibi flip); offline = idealize aktif oranın %100'ü × 2h cap = gelişmiş dükkânda ~18k (ölçümle teyit:
+120sn pasif=0 gelir; offline matematiği 2.56₺/sn×7200=18.4k).
+**UYGULANAN (kullanıcı onayıyla, SAVE_VERSION 15 DEĞİŞMEDİ — hepsi config/kod, şema değişmedi):**
+- **Offline sert kısıldı:** YENİ `offline.rateMult 0.5` + `baseCapHours 2→1` (store.ts init çarpanı uygular) → built shop
+  18.4k→**~4.6k** (4× az), orta dükkân ~1.7k. Hedef: "birkaç yükseltme parası, oyuncu nefes alsın; zone'u tek seferde bitirmesin."
+- **Eğri garson noktasında ayarlandı:** garson ÖNCESİ ucuz (table2 35→25 & minLifetime 30→20; çay yük. tabanı 25→20) →
+  **ilk alım 84sn→60sn**; SONRASI ölçülü pahalı (table3 120→130, table4 300→420, bulaşıkçı 280→330, masa yük. growth
+  1.6→1.8 = L1-4 **60/108/194/349**, garson L2 hız 2.6→2.3 & maliyet 200→250). "Abartma, akış sürsün, zone ~1sa+ aktif oyunda bitsin."
+- **Kamera uzaklaştırıldı:** Scene.tsx CameraRig d 6→7, portrait clamp 1.3→1.4.
+- **🐛→✅ DEADLOCK FIX + PAYLAŞIMLI TEPSİ (kullanıcı bug raporu 2026-06-09):** Eski "eli boşken / tek renk tepsi"
+  kısıtı (Faz 2f) deadlock yapıyordu: elinde çay + TÜM masalar kirli → bırakacak bekleyen masa yok (kirli masada
+  müşteri oturmaz) + çay elindeyken kirli toplanamaz (`tray===0` şartı) → ne bırakır ne temizler = sonsuz kilit.
+  Kullanıcı "neden hep böyle olmasın" dedi → **PAYLAŞIMLI kapasiteli karışık tepsi:** `serving.trayCapacity 2→4`,
+  çay + kirli AYNI tepsiyi paylaşır (toplam ≤ trayCap); iki gate (`carriedDirty===0` / `tray===0`) KALDIRILDI →
+  yapısal kilit-geçirmez + solo angarya azalır. store.ts servis+toplama blokları `tray+carriedDirty<trayCap`;
+  Player.tsx tek CupTray çay(kırmızı)+kirli(gri) ardışık dizer (üst üste binmez). Yeni vitest "DEADLOCK YOK" testi.
+  SAVE değişmedi (trayCap transient/config). vitest 70/70, build temiz, smoke 22/22 (tray 3/4, kirli 4 toplandı).
+- **✅ ONBOARDING (Faz 2i) + SIFIRLAMA BUTONU (kullanıcı isteği 2026-06-09):** İlk-oyun koç ipucu `onboardingHint(g)` saf helper —
+  2. masa açılana kadar çekirdek döngüyü ADIM ADIM öğretir (ocağa git→çayı al → müşteriye götür → parayı topla → "2. Masa"
+  işaretinde bekle), açılınca null. KALICI durum YOK, oyun durumundan türetilir (SAVE değişmedi); mevcut kayıtta table2 zaten
+  açıksa hiç görünmez; **sıfırlayınca tekrar belirir.** HUD `.coach` yeşil bant (sade, havada kart yok); onboarding aktifken
+  `.next-step` gizlenir; `store.onboardHint` transient (init+tick). **Sıfırlama butonu** `.reset-btn` sol-altta (window.confirm
+  onaylı → hardReset=clearSave+init) cihazda test için. devHooks `onboardHint`. Yeni vitest (5 adım). **vitest 71/71, build temiz,
+  smoke 22/22, Playwright gözle doğrulandı (onboarding-reset.png).** Faz 2'de açık tek kalem (onboarding) BİTTİ.
+- **🐛→✅ Sıfırla butonu dokunuş çakışması (kullanıcı 2026-06-09):** drag-anywhere `.touch-layer` (z:5) butonla aynı z-index'te
+  olduğu için DOM sırasıyla üstte kalıp dokunuşu çalıyordu (joystick tetikleniyor, buton tıklanmıyordu). Fix: `.reset-btn`
+  z-index 5→**10** (touch-layer 5 + joystick 6 üstünde). Playwright doğruladı: butonun merkezinde en üst eleman reset-btn,
+  butona pointerdown joystick'i TETİKLEMİYOR. CSS-only (test/şema etkilenmez).
+**Doğrulama:** sim ilk-alım **60sn** / 10k @35.7dk (idealize → gerçek solo ~1-1.5sa); **vitest 71/71**, build temiz, **smoke 22/22**,
+konsol temiz. Önizleme: http://localhost:5201/.
+### >>> SONRAKİ OTURUM — KULLANICI FEEDBACK BEKLENİYOR (2026-06-09) <<<
+Kullanıcı telefonda kısa test etti, APK push'landı (commit 902cac9). Erken geri bildirim: **"onboarding HAREKETLİ olmalı"**
+→ şu anki onboarding sade STATİK koç metin bandı (`.coach`); kullanıcı bunun yerine **hareketli/dinamik** bir onboarding
+istiyor (muhtemelen: hedefe doğru animasyonlu işaretçi/ok, yanıp sönen/zıplayan ipucu, ya da kameranın ilgili objeye yönelmesi —
+SONRAKİ oturumda kullanıcıya tam ne hayal ettiğini SOR: ok/parıltı mı, animasyonlu el/işaretçi mi, zoom mu). Etkileşim modeli
+korunur (havada kart YOK, hareket-temelli). Kullanıcı: "bir sonraki chatte feedback vereceğim, ben test edip döneceğim" →
+SONRAKİ oturumda özet verdikten sonra **başka iş yapmadan kullanıcının test feedback'ini bekle/iste**, sonra onboarding'i
+hareketlendir + gelen bulguları uygula.
+**SIRADAKİ (feedback sonrası):** onboarding'i hareketli yap; ekonomi/akış ince ayarı; sorun yoksa Faz 3a. **İkinci ilerleme
+ekseni** (nakit-dışı zone gate) + **tost/yemek (tost makinesi)** Faz 3a/3d'ye ertelendi (bkz. D-020).
+
+## (önceki) MOBİL CİLA + ANDROID APK (kullanıcı cihazda test etti)
+Kullanıcı önizleme sonrası mobil istekleri verdi; hepsi yapıldı + Android APK derlendi (arkadaşına da gönderecek).
+**Mobil cila (5):** (1) **drag-anywhere joystick** — ekranın her yerine basıp sürükle, joystick parmağın yerinde belirir
+(`touch-layer` tüm ekran + floating `.joystick`); (2) **alttaki WASD/ipucu yazısı KALDIRILDI** (`.hint` silindi); (3) **kamera
+BAYA yakın** (CameraRig d 9→6, portrait geri-çekme 1.7→1.3); (4) **üst chip'ler responsive** (`.hud-top` flex-wrap + küçült +
+portrait media query); (5) **sokak/kapı z-fighting** giderildi (sokak düzlemleri y-ayrımı + polygonOffset; kapı çerçevesi
+duvarın tamamen önüne, kesişme yok). Playwright ile portrait + drag-anywhere görsel doğrulandı.
+**ANDROID APK (Capacitor 8.4, Faz 7 öne çekildi):** `npx cap add android` → debug APK derlendi →
+**`KoseKiraathanesi-debug.apk` (~4.6 MB)** proje kökünde (git-ignored). Ortam: SDK `C:\flutter\bin`, build JDK = Android Studio
+JBR 21 (`gradle.properties org.gradle.java.home`; sistem JDK 23 AGP'yi kırıyor). Yeniden derleme: `npm run apk`. Telefon
+tarayıcısı testi: `npm run dev:host` → LAN URL. Detay: architecture.md "Android APK derleme".
+**Doğrulama:** vitest 69/69, web build temiz, sim 84sn, smoke 22/22, APK BUILD SUCCESSFUL (JAVA_HOME'suz da çalışıyor).
+
+### >>> SONRAKİ OTURUM — İLK İŞ: KULLANICIDAN FEEDBACK İSTE <<<
+Kullanıcı APK'yı **telefonda test etti (2026-06-08)** ve dedi ki: "bir sonraki oturumda bana feedback sor, orada gördüklerimi
+yazacağım, ona göre hareket edeceğiz." → **Bu oturum commit+push ile kaydedildi.** SONRAKİ oturumda (`/kiraathane-devam`),
+özet verdikten SONRA başka iş yapmadan **kullanıcıya telefonda ne gördüğünü/neyi beğenmediğini SOR** (drag-anywhere kontrol,
+kamera yakınlığı, z-fighting/titreme, chip'ler, genel his, Faz 2 akışı). Aldığın bulgulara göre düzelt/ayarla; bulgu yoksa Faz 3a
+(zone çoğaltma) önerisini getir. Feedback almadan yeni özelliğe/refactor'a girme.
+
+## (önceki) FAZ 2 TEK-ZONE TAMAM
+**Bu oturumda kalan tek-zone işleri bitti (3 parça):**
+1. **D-018 adım 6 — GARSON L2:** garson hızı seviyeli (`waiter.moveSpeedByLevel [1.8, 2.6]`), ₺200 mekânsal yükseltme noktası
+   (`LAYOUT.waiterUpgradeSpot [-4.6,0,-0.9]`, tutma pad'inin ARKASINDA → tutar tutmaz akmaz; `WAITER_UP_RADIUS 1.0`). `waiterLevel`
+   PERSIST → **SAVE_VERSION 14→15 + v14→v15** (eksikse 0, clamp). `FILL_WAITER` dwell dolum (biriken ₺ korunur). Scene `WaiterUpgradeMarker`
+   (altın sade işaret, L2'de kaybolur). Ekonomi DEĞİŞMEZ (sim 84sn sabit).
+2. **D-019 madde 4 — YENİ-ÖZELLİK BİLDİRİMİ:** özellik İLK açılınca üst-orta toast (`notice`, HUD `.notice` pop). `revealKeys` helper +
+   `revealSeen` baseline init'te kurulur → yeniden-yükleme spam'ı YOK (persist gerekmez). Reveal: çay yükseltme / garson / bulaşıkçı /
+   garson hız / masa yükseltme (omurga masa pad'leri HARİÇ — onlar nextStep).
+3. **D-017 §6 — KAMERA DAMPING:** CameraRig kare-hızı BAĞIMSIZ damping `1-exp(-8·dt)` konuma VE pürüzsüz lookAt hedefine AYNI katsayı
+   (rijit offset → sallanma yok) + dt clamp + fit/d yalnız resize'da + ilk kare anında yerleşir.
+
+**Doğrulama:** Vitest **69/69**, build temiz, sim **84sn SABİT**, smoke **22/22** (garson L1→L2 + reveal upgrade/opt:waiter/waiterUp/
+opt:dishwasher/tableUp), konsol temiz, Playwright ekran görüntüsü ile görsel kontrol (4 masa + sade yükseltme işaretleri + toast üretildi).
+SAVE_VERSION **15**.
+
+### >>> SIRADAKİ (kullanıcı planı) <<<
+Kullanıcı: "tek zonedakileri tamamla → ben uçtan uca test edeyim → bulgularla OPSİYONEL bir ara-faz olabilir → sonra Faz 3 (zone çoğaltma)."
+**Bu oturumda Faz 2 tek-zone TAMAMLANDI.** Sonraki adım: **kullanıcı oyunu baştan sona oynayıp test etsin** (gözle onay + his). Bulgular
+gelirse önce onları gider (ara-faz), yoksa **Faz 3a (zone çoğaltma / kat-ızgara modeli, D-016)** başlar. Henüz commit/push YAPILMADI
+(kullanıcı test etmeden bekletiliyor; "oturumu bitir" denince oturum-bitir protokolü çalışır).
+
+**ÖNİZLEME:** `npm run dev` → http://localhost:5200/ (port değişebilir). Test edilecekler: garson tut → garson hız noktasında (sol kenar,
+tutma yerinin arkasında) L2 yap; her yeni özellik açılınca toast çıkıyor mu; yürürken kamera sallanmıyor mu; masa/çay/garson yükseltme akışı.
+
+---
+## (önceki) D-019 madde 2-3 (reveal sırası + gating) + L1-başlangıç
+**Pad/yükseltme ÇIKIŞ SIRASI sadeleştirildi (kullanıcı: "2. masa açılınca birden 4 yükseltme geldi").** Yeni reveal:
+başta sadece 2.Masa → 2.Masa açılınca **çay ocağı yükseltme + 3.Masa** → ocak bir kez yükselince **garson** belirir
+→ 3.Masa açılınca **bulaşıkçı** → **4 masa da açılınca masa yükseltme işaretleri** (geç oyun). Böylece 2.masada 4 işaret
+patlamaz. Config gating: `table3`'ten `minStationLevel:1` KALKTI (D-019 §2 — masa açmak yükseltme gerektirmez);
+`waiter`'a `minStationLevel:1` EKLENDİ (garson reveal); `tables.upgradeRequires` `prev:['table2']`→**`prev:['table4']`**.
+**L1-BAŞLANGIÇ (kullanıcı isteği):** çay ocağı + masalar GÖRSEL olarak **L1**'den başlar (iç stationLevel/tableLevels
+0-tabanlı KALIR — ekonomi değişmez; sadece `activeZone.label` `seviye+1` gösterir; soft max → "Usta 💎"). **Sim BOTTLENECK
+modeli:** `rate = min(talep tables/cycle, arz 1/brewTime) × (fiyat+bahşiş)` → tek ocak gerçek darboğaz; `trySpend` ocak
+darboğazsa masadan ÖNCE ocağı yükseltir (akıllı oyuncu). **İlk-alım 84sn SABİT** (1 masada talep<arz → değişmez); ocak L1
+@1.9dk emergent, 4.masa @8dk, masa-yük @15.7dk. SAVE_VERSION **13** (değişmedi). **Vitest 60/60, build temiz, sim 84sn,
+smoke 20/20, konsol temiz.** Değişen: economy.config.ts (gating), store.ts (L1 etiket ×2), tools/simulate.ts (bottleneck+
+akıllı ocak), tests/logic.test.ts (gating testleri yeni sıraya), tools/smoke.mjs (ocak→garson→table3/4→masa-yük sırası).
+**ÖNİZLEME (gözle onay):** http://localhost:5199/ — 2.masa açınca artık 4 işaret patlıyor mu, ocak/masa L1'den mi başlıyor kontrol et.
+
+### D-018 adım 5 — SEMAVER = OCAK ÜST YÜKSELTMESİ (samovar ayrı pad KALDIRILDI) — gözle onay bekliyor
+Kullanıcı: "semavere geç pad'i kalkacaktı, ne zaman?" → ayrı `samovar` omurga pad'i (₺850, serviceSpeed ×0.7) **KALDIRILDI**.
+Semaver artık çay ocağının üst yükseltmesidir (TeaStation seviyeyle büyüyen semaveri zaten çiziyor); omurga zinciri **table4'te
+biter**. `derivedFromPads`'ten `serviceSpeed` case'i silindi (serviceSpeedMult hep 1; Faz 3a addStation için alan duruyor).
+**EKONOMİ (sim bottleneck ile doğrulandı):** tek ocak ₺ L4 (throughput ×3.32) 4 masaya YETİŞİR → arz 0.553 > talep 0.512;
+ilk-alım **84sn SABİT**, ocak L4 @8.7dk, masa-yük @10.2dk, lifetime 10k @35dk (samovar tasarrufu kalkınca biraz hızlandı).
+"Usta" master tier (💎/video) Faz 4'e kaldı. **SAVE_VERSION 13→14 + v13→v14 migrasyon** (samovar padsDone+padFills'ten düşer,
+ilerleme korunur). **Vitest 61/61, build temiz, sim 84sn, smoke 20/20, konsol temiz.** Değişen: economy.config.ts (samovar pad
++ serviceSpeed case sil, SAVE_VERSION 14), save.ts (v13→v14), store.ts (LAYOUT.padPos.samovar sil), simulate.ts (milestone),
+tests/logic.test.ts (samovar referansları + v13→v14 testi).
+**SIRADAKİ:** D-018 adım 6 (garson L2: 1.4→1.8, yan-kenar yükseltme kartı, persist waiterLevel) + D-019 madde 4 (yeni-özellik
+bildirimi: özellik açılınca kamera zoom/pinboard) + D-017 §6 kamera damping.
+
+### >>> KULLANICI PLANI (2026-06-07, oturum sonu) <<<
+Kullanıcı kararı: **"tek zone'da olan HER ŞEYİ hallet → sonra ben baştan sona test edeyim → ardından zone yükseltme (Faz 3a)
+kısmına geçeriz."** Yani Faz 2'nin tek-zone cilası TAM bitmeli (kalan: D-018 adım 6 + D-019 madde 4 + D-017 §6 kamera),
+sonra kullanıcı tek zone'u uçtan uca oynayıp onaylayacak, SONRA Faz 3a (zone çoğaltma) başlayacak. **Bu oturum BURADA kaydedildi.**
+Sonraki oturum: kalan tek-zone işleriyle başla (adım 6 garson L2 önce önerilir — küçük, izole, persist waiterLevel + SAVE bump).
+
+### (önceki) D-019 madde 1 — KİRLİ MASA mekaniği (BİTTİ, gözle onaylandı)
+**D-019 madde 1 (KİRLİ MASA) BİTTİ.** Her kirli bardak bırakıldığı masaya etiketlenir (`Dish.tableIndex`); bir
+masada `cups.dirtyThreshold` (2)'den FAZLA = **3+ kirli → masa KİRLİ**: (a) masa üstünde alçak primitive yeşilimsi
+"koku" bulutu (StinkCloud, Dishes.tsx; hafif bob), (b) **garson o masaya çay GÖTÜRMEZ** (`waitingNpcs` kirli masayı
+filtreler), (c) **YENİ MÜŞTERİ OTURMAZ** (`findFreeTable(npcs, tables, dirty)` kirli masayı boş saymaz). Oyuncu
+≤2'ye indirince masa normale döner. `dirtyTables(dishes)` helper export; devHooks `dirtyTables`+`dishesByTable`.
+SAVE_VERSION **13** (DEĞİŞMEDİ — dishes transient, persist alan yok). **Vitest 60/60 (3 yeni: eşik/oturmaz/garson-götürmez),
+build temiz, sim 84sn (1.4dk; ekonomi etkilenmez), smoke 19/19, konsol temiz.** Değişen: types.ts (Dish.tableIndex),
+economy.config.ts (cups.dirtyThreshold), store.ts (dirtyTables/findFreeTable/spawn/garson/dish-push+export), Dishes.tsx
+(StinkCloud), devHooks.ts, tests/logic.test.ts.
+**ÖNİZLEME (gözle onay):** http://localhost:5199/ — kirli masada koku bulutu + müşteri o masaya oturmuyor mu kontrol et.
+(Test: bir masaya servis et, parayı/kirliyi toplama, 3 müşteri çevriminden sonra masa kirlenmeli.)
+
+### (önceki) D-018 adım 1+2+3 (BİTTİ)
+**D-018 DEVAM. Adım 1 (bug-fix) + 2 (tray kaldır) BİTTİ. Adım 3: KART TASARIMI KULLANICI TARAFINDAN REDDEDİLDİ →
+SADE işaretlere geri alındı; DWELL süre-sayma yerine HAREKET-TEMELLİ yapıldı. Kenar-yerleşim KORUNDU.**
+SAVE_VERSION **13**. **Vitest 57/57, build temiz, sim 84sn (1.4dk), smoke 19/19, konsol temiz.**
+
+### D-018 adım 3 — kullanıcı feedback'i (2026-06-07): "kart çok kötü oldu, eski haline çevir; dwell süre saymasın"
+- **(1) GroundMarker GERİ ALINDI:** kesik-köşeli billboard kart → **eski SADE düz zemin işareti** (D-017 §2 stili:
+  şeffaf beyaz çember + ince kategori halkası + DÜZ zemin yazısı + ₺ + dolum yayı). Kart denemesi terk.
+  **DERS:** kullanıcı havada/dik kart sevmiyor → mekânsal sade zemin işareti tercih (feedback_*).
+- **(2) KENAR-YERLEŞİM KORUNDU:** `tables[i].upgradeSpot` sol kolon **−3.7** / sağ kolon **+3.7** (orta koridor boş);
+  personel pad'leri masa satırları ARASINA **z=1.5** (waiter/dishwasher [∓4.6,0,1.5]) → −3.7 spot ile çakışma yok.
+  (Kullanıcı placement'i ayrıca eleştirmedi; istenirse merkeze geri alınabilir.)
+- **(3) DWELL → HAREKET-TEMELLİ (süre YOK):** Kullanıcı "önce 1.5sn sayıyor sonra başlıyor — HAYIR; üstünden geçerken
+  almasın ama durduğu anda HEMEN başlasın, bekleme süresi de dolmasın." → süre sayacı (`dwellId`/`dwellTime`/`dwellDelay`)
+  KALDIRILDI. Yeni: `fillReady = hypot(input) <= 0.1` (oyuncu DURUYOR mu). Para yalnız oyuncu durunca akar → geçerken
+  (hareket) hiç alınmaz, input bırakınca HEMEN başlar, countdown görseli yok. `onFillId` (pad.id/FILL_TEA/FILL_TABLE+i)
+  tek aktif nokta seçer; üç dolum bloğu `fillReady && wallet>0` ile akar. Çay-fill leave'de SIFIRLANMIYOR (biriken korunur).
+  3 vitest: geçerken(hareket) akmaz + durunca hemen akar + biriken korunur.
+- Değişen: economy.config.ts (interaction bloğu kaldırıldı), store.ts (fillReady hareket gate, dwell state çıkarıldı,
+  LAYOUT spot/pad korundu), GroundMarker.tsx (sade haline döndü), Pad.tsx + Scene.tsx (dwell prop çıkarıldı),
+  tests/logic.test.ts (hareket-temelli 3 test). FILL_TEA/FILL_TABLE store-içi export (onFillId için).
+
+### >>> SIRADAKİ İŞ: D-019 madde 2-4 + kalan D-018 <<<
+Kullanıcı feedback 2026-06-07 (tam metin decisions.md **D-019**). Ana kaygı: "her şey çok yer kaplıyor" → sade ekran.
+1. ✅ **KİRLİ MASA mekaniği — UYGULANDI (gözle onay bekliyor; yukarı bak).**
+2. **(SIRADAKİ) Çay ocağı yükseltme noktasını ÇAY-ALMA'dan AYIR + SOL DUVAR ile ocak arasına koy** (çay alırken zorla tetiklenmesin;
+   ocaktan >2.9 br). **`table3`'ten `minStationLevel:1` KALK** (masa açmak yükseltme gerektirmesin).
+3. **Yükseltme gating (sade ekran):** ÖNERİ → çay ocağı yükseltme 2. masadan sonra; MASA yükseltmeleri table4 sonra. (Kesinleştir,
+   simülasyonla denge, ilk-alım 84sn sabit.)
+4. **Personel pad'leri SAĞ-ARKA köşe** (garson+bulaşıkçı tutma; ör. [4.6,−1.5] / [4.6,−3.2]).
+5. **YENİ-ÖZELLİK BİLDİRİMİ:** özellik açılınca kamera zoom / "pinboard" bildirim (garson tutma vb.) — D-018 §4 reveal/onboarding ile.
+Ayrıca kalan D-018: adım 5 (semaver=ocak L4 + ekonomi denge), adım 6 (garson L2), §6 kamera damping.
+
+### (eski plan) D-018 adım 4 — SIRALI REVEAL zinciri (D-019 §5 ile birleşti)
+"Al-pad → (inşa) → o nesnenin yükseltmeleri" zinciri; hepsi birden dökülmez; yakınlık-gizleme YOK. padsDone'dan
+türetilir, ek persist yok. Sonra adım 5 (semaver=ocak L4 + ekonomi denge) + adım 6 (garson L2). Detay: decisions.md D-018 §4/§5/§6.
+
+### (önceki) D-018 adım 1+2
+
+### D-018 adım 1 — BUG-FIX (BİTTİ, gözle ✓)
+- **(b) table2 açılınca KARARMA fix (KÖK):** drei `<Text>` (GroundMarker) troika fontunu ilk mount'ta yükler ve
+  SUSPEND eder; Suspense sınırı yoktu → tüm sahne kararıyordu. ÇÖZÜM: Scene.tsx'te DÜNYA (Ground/Walls/Tables/Player/
+  mutfak) Suspense DIŞINDA; SADECE Text içeren marker'lar (`Pad`/`UpgradeZone`/`TableUpgradeMarkers`) ayrı
+  `<Suspense fallback={null}>` içinde → font yüklenirken yalnız küçük işaret yazısı bekler, dünya HİÇ kararmaz.
+  NOT: troika modern sürümü `font` belirtilmezse unicode-font-resolver'dan **CDN (jsdelivr)** font verisi çeker.
+  İlk denenen module-scope `preloadFont` boot'ta bu CDN fetch'i tetikleyip smoke `networkidle`'ı bozdu (+ offline
+  Faz 7 riski) → KALDIRILDI; font artık lazy (ilk marker'da) yüklenir, nested-Suspense kararmayı zaten önler.
+  **Faz 7 TODO: fontu YERELE bundle'la (offline + CDN bağımsız).**
+- **(a) kapı z-fighting fix:** lento + 2 yan direk ön duvarla eş-düzlemdeydi (z=z1) → `z1+0.06` offset + derinlik t.
+
+### D-018 adım 2 — TRAY YÜKSELTME KALDIRILDI (BİTTİ, gözle ✓)
+- Tepsi SABİT 2 (`C.serving.trayCapacity`). Silinen: economy.config `trayUpgrade`+`trayUpgradeRequires`+helper'lar
+  (`trayCapacityForLevel`/`trayUpgradeCost`); store `trayLevel`/`trayUpgradeFill` state + tick yükseltme bloğu +
+  `trayMaxLevel`/`trayNextCost`/`trayUpgradeZoneUnlocked`/`LAYOUT.trayUpgradeZone`; Scene `TrayUpgradeZone`; devHooks
+  `trayLevel`/`trayUpgradeZonePos`; HUD trayLevel. `trayCapacity()` artık no-arg sabit döner.
+- **SAVE_VERSION 12→13 + v12→v13 migrasyon** (trayLevel persist alanı DÜŞER; v9/v10 adımları artık sadece sürüm
+  ilerletir). Eski v9/v10 tray clamp testleri → tek "v12→v13 trayLevel düşer" testine indirgendi.
+- Değişen: economy.config.ts, store.ts, save.ts, Scene.tsx, devHooks.ts, HUD.tsx, tests/logic.test.ts, tools/smoke.mjs.
+
+### >>> SIRADAKİ: D-018 adım 3 — KESİK-KÖŞELİ KART + KENAR-YERLEŞİM + DWELL <<<
+GroundMarker çember→dashed/kesik-köşeli yuvarlatılmış kare kart (eylem/lvl/₺ + dolum çubuğu + yeşil/gri, yazı kart
+hizasında küçük DİK-OKUNUR). Masa yükseltme işaretleri MERKEZDEN KENARA (sol masa→sol x≈−3.7, sağ→sağ x≈+3.7; orta
+omurga boş). DWELL ~1.5sn (noktaya girince halka hemen, para sonra akar; çıkınca sıfırlanır, biriken korunur →
+"üstünden geçince param gidiyor" çözülür). Detay: decisions.md D-018 §1/§2/§3.
+
+### (eski) D-017 adım 1+2 (önceki sohbet, SAVE 12 — GÖZLE ONAYLANDI)
+
+### Bu turda yapılanlar (kullanıcı feedback 2026-06-07: "masa içinde hapsoldum + padler çirkin/her yerde + duvar/kapı/sokak istiyorum")
+- 🐛→✅ **Masa açınca hapsolma (KRİTİK):** Masa pad'i oyuncunun DURDUĞU yerde belirince oyuncu masanın içinde kalıp hareket
+  edemiyordu. KÖK NEDEN: mobilya collision'ında (store.ts) "zaten içindeyse çıkışa izin" guard'ı YOKtu (aktör collision'ında
+  vardı). Düzeltme: `stuckInFurn = hitsSolid(oldX,oldZ,furn,pr)` → içindeyken eksen blokları atlanır (çıkışa izin; "zorlasan da
+  GİRİŞ engellenir" korunur) + masa pad'i tamamlanınca oyuncu yeni masanın footprint'i DIŞINA itilir (anında temiz konum). Yeni
+  vitest (masa merkezine koy → input ver → footprint dışına çıkar). Gözle doğrulandı (table3 açıldı, oyuncu z 3.0→3.95'e itildi).
+- ✅ **Adım 2 — SADE ZEMİN İŞARETLERİ (D-017 §2):** Havadaki Html rozetler + iri disk/koni KALDIRILDI. Yeni `GroundMarker.tsx`
+  (drei `<Text>`): yerde UFAK şeffaf beyazımsı çember + ortasında DÜZ zemin yazısı (ne yapacağı: "2. Masa"/"Garson Tut"/"Çay
+  Yükselt"/"Masa") + ₺maliyet alt satır; ince kategori halkası (yeşil=aç/mavi=opsiyonel/altın=yükseltme); parası yetince parlar
+  (afford) + dolum yayı (progress). Uygulandı: Pad.tsx, Scene UpgradeZone/TrayUpgradeZone/TableUpgradeMarkers. DishStation "🧼
+  Bulaşık" + TeaStation "Çay Lv" havada etiketleri SİLİNDİ (lavabo/semaver görseli zaten anlatır).
+- ✅ **Sıralı reveal (light, D-017 §3 kısmi):** Pad.tsx artık opsiyonel pad'lerin HEPSİNİ değil AYNI ANDA TEK ilk alınabiliri
+  gösterir (garson → alınınca bulaşıkçı). Personel pad/home konumları arka köşeden GÖRÜNÜR orta-kenara taşındı (waiter/dishwasher
+  pad [∓4.6,0,0.0], home [∓4.6,0,-1.6]) — eski "bulaşıkçı dairesi yarı ekran-dışı" şikayeti çözüldü. TAM onboarding (reveal-on-
+  interact + kamera zoom + "Yeni" rozeti + onboardStep persist) HÂLÂ BEKLİYOR (step 3 proper).
+- ✅ **DIŞ DÜNYA (kullanıcı isteği — D-017 dışı ek):** Ön duvar + **kapı boşluğu** (x=0, doorHalf 1.3, söve+çerçeve) eklendi
+  (Walls front 2 parça). Müşteriler artık `LAYOUT.street [0,_,8.0]` SOKAKTA belirir → kapıya yürür → koltuğa (toTable goingIn);
+  çıkarken kapı→sokak→kaybolur (leaving goingOut). Yeni `Street()` (kaldırım + asfalt + yol çizgileri + karşı binalar; salt görsel).
+  NOT: kamera mağazaya (-z) baktığı için karşı binalar pratikte görünmüyor (sokak/kaldırım + kapıdan giren müşteri görünür); daha
+  fazla "dış dünya" istenirse kamera açısı (step 6) ile birlikte ele alınmalı.
+- **Değişen:** store.ts (LAYOUT street/personel konum + bug-fix + NPC kapı akışı + masa-eject), tests/logic.test.ts (escape testi),
+  YENİ GroundMarker.tsx + Street, Pad.tsx (sade+reveal), Scene.tsx (zones sade + Walls kapı + Street), TeaStation.tsx (badge sil).
+### >>> SIRADAKİ İŞ (SONRAKİ SOHBET): D-018 ONAYLANDI — Faz 2 cila v2 <<<
+Kullanıcı ikinci tur feedback + onay (2026-06-07). Tam karar: **decisions.md D-018** (araştırma destekli — My Perfect Hotel modeli).
+Özet (uygulama sırası):
+1. **BUG-FIX:** (a) kapı z-fighting (lento/çerçeve ön duvarla eş-düzlem → z offset). (b) table2 açılınca KARARMA = App.tsx'te Canvas
+   çevresinde `<Suspense>` YOK → drei `<Text>` font SDF suspend edip sahneyi karartıyor → `<Suspense fallback={null}>` + `preloadFont({characters})`.
+2. **TRAY YÜKSELTME KALDIR** (gereksiz; tepsi sabit 2). trayUpgrade/TrayUpgradeZone/trayLevel/trayUpgradeFill/helper/test/smoke/devHooks sil.
+3. **KESİK-KÖŞELİ ZEMİN KARTI + KENAR-YERLEŞİM + DWELL:** GroundMarker çember→dashed-köşe kare kart (eylem/lvl/₺ + dolum çubuğu +
+   yeşil/gri, yazı kart hizasında küçük DİK-OKUNUR). Masa yükseltme işaretleri MERKEZDEN KENARA (sol masa→sol x≈−3.7, sağ→sağ x≈+3.7;
+   orta omurga boş). Dwell: noktaya girince halka hemen, para ~1.5sn sonra akar; çıkınca sıfırlanır (biriken korunur). YAKINLIK-GİZLEME YOK.
+4. **SIRALI REVEAL zinciri:** al-pad→(inşa)→o nesnenin yükseltmeleri; hepsi birden dökülmez; opsiyonel tek tek (zaten). padsDone'dan türetilir (ek persist yok).
+5. **SEMAVER = OCAK L4 (premium 💎/video, şimdilik GÖRÜNÜR-KİLİTLİ):** ayrı `samovar` pad kalkar; ocak L1-L3 ₺, L4=semaver (hız×0.7+throughput
+   sıçraması); masterLevel 4. EKONOMİ: tek ocak L3 (2.46x) 4 masaya yetişmeli → simülatörle yeniden denge (ilk-alım 84sn SABİT). 
+6. **GARSON L2:** L1=1.4 (yavaş) → L2=1.8 (şimdiki); garson yanında yan-kenar yükseltme kartı (tutulunca açılır). Yeni persist waiterLevel.
+- **SAVE_VERSION 12→13** (tek migrasyon: trayLevel düşer, samovar padsDone/padFills'ten düşer, waiterLevel=0 eklenir; ilerleme korunur).
+- Etkileşim KARARI: yürü+dur (dwell), TIKLAMA YOK (araştırma: tür standardı stand-to-fill). Alan GENİŞLEMEZ (placement sorunu).
+- Kalan D-017 §4 gating / §5 bağımsız çay+kirli taşıma / §6 kamera sallanması bu işlerle birlikte ele alınır.
+
+### >>> SIRADAKİ İŞ: D-017 redesign — adım 1 BİTTİ (gözle onay), sonra adım 2 <<<
+Faz 2 cila redesign'ı (decisions.md **D-017**, progress.md "2-REDESIGN"). 6 adım (sırayla, her biri Vitest+sim+smoke yeşil + gözle onay):
+1. ✅ **Yerleşim UYGULANDI (LAYOUT v6, D-017 §1):** Mutfak ARKA DUVARDA KÜME — ocak `[-1.6,-4.8]` + bulaşık `[0.6,-4.8]`
+   (bitişik, AYRILMAZ) + semaver pad `[-3.8,-4.8]`. Masalar ÖNE UZAK 2×2 (kolon x ∓2.4, satır z 0.0/3.0) → her masa↔ocak
+   >2R=3.2 (ön sıra ~4.9, başlangıç masası table0 ocaktan **4.87**; eski **2.26** idi = tek noktada her şey bug'ı çözüldü).
+   area derinleşti `{minX-5.3,maxX5.3,minZ-5.3,maxZ5.0}`. Çay-yükseltme noktası ocağın TAM önü `[-1.6,-3.0]` (pickup+personel
+   pad çakışması yok — taşınmasaydı garson pad'iyle para çekişirdi, bug bulundu&düzeltildi). trayUpgradeZone `[0,4.3]`, personel
+   pad/home arka köşeler (waiter `[-4.8,-3.0]`/home`[-4.8,-1.6]`; dishwasher `[4.8,-3.0]`/home`[4.8,-1.6]`). player start `[0,1.5]`,
+   entrance `[0,4.8]`. nav ızgarası/garson yolu/masa-yükseltme noktaları LAYOUT'tan türediği için otomatik uydu. YENİ "çakışma yok"
+   testleri (masa ocak pickup+serve birleşiğinde DEĞİL; masa bulaşık wash+collect birleşiğinde DEĞİL; table0 ocaktan >4 br).
+   **Değişen:** store.ts (LAYOUT + upgradeZone), tests/logic.test.ts (3 invariant testi + nav yorumları). Gözle: ekran görüntüsü
+   (layout-v6-start.png) — mutfak arkada, önde geniş yürüme alanı, başlangıç masası uzakta. Ekonomi/persist SABİT (SAVE_VERSION 12).
+1-eski. ~~Yerleşim: masalar ocaktan UZAK (>3.2, hedef ~5)~~ → yukarı (uygulandı).
+2. **Pad/işaret:** küçük (~0.5) + **zeminde DÜZ yazı** (havada rozet YOK); renk: yeşil=aç/mavi=opsiyonel/altın=yükseltme.
+3. **Sıralı reveal + onboarding (ilk oyun):** öncekiyle etkileşilene dek gizli; 2.masa→garsona zoom(atlanabilir)→"3.Masayı Aç"→
+   ocak yükseltme sonra; sonraki açılış "Yeni" rozeti; onboardStep persist.
+4. **Gating:** table3'ten minStationLevel:1 kalkar; simulate denge (84sn sabit kalmalı).
+5. **Servis kısıtı GEVŞET:** çay+kirli BAĞIMSIZ taşınır (eli-boşken kısıtı deadlock → kirli birikip toplanamıyordu).
+6. **Kamera sallanması fix (kök neden TEŞHİS EDİLDİ):** CameraRig (Scene.tsx) `lerp(desired, dt*4)` kare-hızı bağımlı +
+   `lookAt(tam oyuncu)` → trailing mesafe dalgalanınca dünya sallanıyor; dt clamp yok; fit/d her kare size'dan. Çözüm: kare-hızı
+   bağımsız damping (`1-exp(-k*dt)`) konum+lookAt'a TUTARLI + dt clamp + fit/d yalnız resize'da. NOT: sim deterministik & pürüzsüz,
+   sorun yalnız kamerada.
+
+- **Faz 2h (MASA-BAŞI, son hali):** Kullanıcı ilk "zone-başı/toplu + merkez altın disk + ★L rozet" uygulamasını REDDETTİ →
+  **her masanın AYRI seviyesi** (`tableLevels[i]`), **her masanın YANINDA ayrı nokta** (`LAYOUT.tables[i].upgradeSpot`, +1.2x merkeze),
+  My Hotel oda mantığı. Çay fiyatı SABİT; OTURULAN masanın seviyesi BAHŞİŞ↑ (coin=5+tipBase×lvl) + SABIR↑ (+2/lvl). 2. masa açılınca belirir.
+  Görsel: masanın yanında **sade küçük işaret** (altın halka YOK, dünya-içi L yazısı YOK; parası yetince yeşil parlar); bilgi HUD bar'ında.
+  Sayılar (data-driven): tipBase 2, patience +2/lvl, maliyet 60×1.6^lvl (60/96/153/245), soft max L4. SAVE 10→11→12 migrasyon zinciri.
+  Karar: D-016 §5 "zone-başı"→"masa-başı" güncellendi (decisions.md). Hafıza: feedback_upgrade_per_object.md.
+- **Baş üstü radial ilerleme cızırtı düzeltmesi (2026-06-07):** Kullanıcı "dolma animasyonu cızırtılı" dedi. İki neden: (1) arka halka
+  ile dolan yay TAM aynı düzlemdeydi → z-fighting; (2) `ringGeometry` sabit 32 segmenti değişen yay uzunluğuna her frame yeniden
+  dağıtıyordu → tüm yay titriyordu. Düzeltme (Player.tsx HeadRadial): yay `position z +0.003` + her iki materyal `depthWrite=false` +
+  `renderOrder` (z-fighting yok); segment sayısı ilerlemeyle ORANTILI (`round(progress*48)`) → sabit açısal dilim, sadece uçta yeni
+  dilim eklenir (titremez). build temiz, smoke 20/20, konsol temiz. **GÖZLE onay bekliyor.**
+- **Test sıfırlama (kullanıcıya):** tarayıcı **DevTools Console** sekmesinde `__resetGame()` (çift alt çizgi + parantez). AMPİRİK
+  DOĞRULANDI çalışıyor (playwright: tables 2→1, padsDone temizlendi, localStorage null). En garantili: `localStorage.clear()` sonra F5.
+  Para: `__addMoney(500)`, zaman: `__advanceTime(60)`. E2E: testten önce `localStorage.clear()` + reload.
+- **Garson/bulaşıkçı oyuncudan KAÇINIR (2026-06-07):** Kullanıcı "garson benim içimden geçiyor, bana göre hareket etmeli." navStep'e
+  opsiyonel `avoid`(oyuncu)+`avoidSolids`(masa) eklendi: personel oyuncunun üstüne binmeyip kenarına ayrılır (boids separation;
+  masaya itecekse itmez). Oyuncu otoriter (input), personel yer açar → "garson etrafından geçer" hissi. Garson+bulaşıkçı tüm navStep
+  çağrılarına player+obstacles geçti. Vitest 54/54, build temiz, smoke 20/20. GÖZLE onay bekliyor.
+- **Sıradaki:** 2h gözle onaylanırsa → **Faz 2i** (onboarding/işaretçi: ilk masa-açma + sonraki açılışlar "Yeni ▲" rozet).
+
+## (eski) Şu an neredeyiz (2026-06-06)
+Faz 0 + Faz 1 ✅. **Faz 2 (2a–2f) BİTTİ.** SAVE_VERSION **10**, max tepsi **6**.
+**YENİ TASARIM KİLİDİ: D-016** (kullanıcı onayı 2026-06-06) — D-012 "açık-alan salon"u **kat + zone ızgarası** ile
+DEĞİŞTİRDİ. Çok turlu tasarım tartışması sonucu yol haritası revize edildi (aşağı bak). **Sıradaki: Faz 2g** (his/yerleşim/
+collision/tuning, tek zone). docs'a yazıldı: decisions.md D-016, progress.md (2g/2h/2i + revize Faz 3).
+
+**D-016 özeti (tam metin decisions.md):**
+- **ZONE = atomik birim:** 1 ocak + 1 bulaşık + 1→4 masa (pad) + ops. garson/bulaşıkçı. **1 ocak:4 masa, paylaşımsız.**
+  Başlangıç 1 ocak(L1)+TEK masa; 2.→3.→4. masa omurga pad'iyle.
+- **Tek kapı + rastgele oturma**; oturma havuzu global, **servis kaynakları (ocak kuyruğu/garson/bulaşıkçı) zone'a bölünür.**
+- **KAT modeli:** kat = max ~4 zone (2×2); kat dolunca merdiven→kararma→üst kat. Üst katlar: balkon/okey/nargile.
+- **Açma SIRALI** (omurga, büyük yeşil disk) **vs Yükseltme SERBEST/paralel** (sıra yok, açılan her obje; küçük altın
+  halka+rozet, parası yetince parlar). Yükseltme kavramı **2. masa açılınca** tanıtılır.
+- **Masa yükseltme = BAHŞİŞ↑ (`tipBase×seviye`, öneri tipBase=2) + sabır↑**, zone-başı. Çay fiyatı SABİT (D-010).
+  Bekleme-süreli bahşiş Faz 4'e ERTELENDİ.
+- **Bulaşık zone'a özel; Tuvalet+Depo KATA özel** (kâğıt döngüsü: depodan al→tak→temizlikçi).
+- **Yerleşim:** mutfak sol-üst duvara 0 (arkası geçilemez), masalar sağda, dar başlangıç, **collision**. Şekil değişimi Faz 6 asset.
+- **Onboarding** ilk sefere özel (masa-açma). **Garson yavaşlatılır**, tempo simulate ile dengelenir.
+
+Önceki kilitler korunur: **D-011** (servis) ✅, **D-013** (primitive=nihai stil), **D-014** (garson opsiyonel pad) ✅,
+**D-009** (mekânsal etkileşim), **D-015** (state türetme). D-012'nin KASA-YOK/bölge-başı-personel/manuel-toplama parçaları geçerli.
+Tam servis tasarımı: `docs/serving-and-automation.md` (zone/kat detayı D-016'da).
+
+## En son ne yapıldı (bu oturum — Faz 2g his/yerleşim/collision/tuning, D-016) — YERLEŞİM v3
+Çok turlu tasarım → D-016 kilitlendi. Yerleşim 4 kez revize edildi (kullanıcı önizleme feedback'leri); **v5 GEÇERLİ.**
+- **v5 (2026-06-07 #4 — GEÇERLİ):** Kullanıcı: "iğrenç, sandalyelerden yürüyemiyorum (koridorlar tıkalı); karakterler
+  alana göre çok iri → ALAN BÜYÜMELİ HEM DE BAYA." → ölçek düzeltmesi: alan büyütüldü + masalar köşelere yayıldı.
+  - **BÜYÜK alan** `area={minX:-5.5,maxX:5.5,minZ:-5.0,maxZ:4.5}`; masalar **köşelere yayık 2×2** (kolon x -2.5/2.5 gap 5,
+    satır z -2.2/1.4 gap 3.6) → orta geniş yürüme alanı, sandalyeler kenarda (koridor tıkanmaz). Kamera d 7→9 (karakterler
+    alana göre küçük görünür). Mutfak arka duvarda: ocak[-3.0,-4.4], bulaşık[-1.0,-4.4] (dist 2.0>washR), semaver[1.0,-4.4].
+    upgradeZone ocağın solu [-3.5,-3.0]; trayUpgradeZone [0,3.8]; entrance/player orta-ön [0,..]; personel x±4.8.
+  - Önceki davranışlar korunur: müşteri+garson+bulaşıkçı masa gövdesinden DOLAŞIR (`moveAvoid`+`tableSolids`); oyuncu
+    collision HAPSETMEZ; bulaşıkçı toplama mesafe-tabanlı; `hitsSolid(r)` yarıçaplı. smoke park (5.2,4.2).
+  - Görsel doğrulandı (ekran görüntüsü): büyük ferah salon, 4 masa dört köşede, orta açık, karakterler uygun ölçekte.
+  - **Collision footprint düzeltmesi (kullanıcı: "masaya çok sokulmam gerekiyor, arada boşluk fazla"):** `*Half`'lar
+    GÖRSEL mesh'e yaslandı → "değiyor gibi" sokulma, boşluk yok. stationHalf [0.8,0.6]→[1.1,0.4] (ocak tezgah 2.2×0.8),
+    dishHalf →[0.7,0.4] (bulaşık 1.4×0.8), tableHalf →[0.5,0.5] (masa r0.5), chairHalf →[0.22,0.22] (sandalye 0.42).
+    playerRadius 0.35 (=kapsül görsel yarıçapı → standoff görsel kenara denk). **'samovar' collision KALDIRILDI** (ayrı
+    görünür mesh'i yok → görünmez duvardı); `activeSolids(tables)` (padsDone param atıldı). Vitest 44/44, smoke 19/19, build temiz.
+  - **Mobilya KATI (zorlasan da geçilmez):** oyuncu collision'ı ayrıştı — MOBİLYA katı (hapsetme istisnası YOK → zorlasan da
+    içine geçmez), eksen-başı kayma (diyagonalde süzülür, kafa kafaya gelince DURUR); AKTÖRLER (npc/garson/bulaşıkçı) yumuşak
+    (hapsetmez). NOT: kısa süre denenen "kafa kafaya kenardan otomatik kayma (deflection)" kullanıcı isteğiyle GERİ ALINDI
+    (daha kötü hissettirdi); sadece "zorlayınca içine geçmesin" kaldı. Vitest 44/44, smoke 19/19, build temiz.
+- **v4 (terk):** orta-boy/hizalı ama sandalyeler koridor tıkadı + iri ölçek. v3 çapraz-geniş, v2 dar (hepsi terk).
+
+**Eski v2 detayı (referans, geçerli değil):**
+- **Yerleşim v2 (LAYOUT, store.ts) — SOLA-YASLI KOMPAKT BLOK:** mutfak (ocak `[-2.7,0,-3.0]` + bulaşık `[-1.0,0,-3.0]` +
+  semaver `[0.6,0,-3.0]`) sol-ARKA köşede duvara 0; **masalar mutfağın TAM ÖNÜNDE** (aynı sol blok) — 2×2 x -2.0/0.0,
+  z -1.2/0.9 (seat=table z+1.0). "Çapraz/geniş" duruş gitti. **Asimetrik oynanabilir alan** `area={minX:-3.5,maxX:2.5,
+  minZ:-3.6,maxZ:3.4}` (içeriği sıkı sarar → boş sağ taraf yok; `bounds` alanı KALDIRILDI). upgradeZone `[-2.7,0,-2.0]`
+  (ocak-masa arası boşluk; oyuncu ocağa dayanır, PAD_RADIUS 1.3 içinde → dolar); trayUpgradeZone `[-1.0,0,3.0]`; waiter/
+  dishwasher pad `[-3.0,0,3.0]`/`[2.0,0,3.0]`, home `[-3.0,0,2.0]`/`[2.0,0,2.0]`; entrance `[-1.0,..,3.3]`, player `[-1.0,..,1.8]`.
+- **Collision (D-016) — SABİT + DİNAMİK:** sabit = ocak/bulaşık/açık-masa/sandalye(seat)/(semaver alınmışsa); **dinamik =
+  her müşteri + garson + bulaşıkçı** (`actorHalf`/`chairHalf`). `activeSolids()` sabitleri, hareket bloğu liveNpcs+waiter+
+  dishwasher'ı ekler. Çözüm **yalnız input'la harekette** (eksen-başı kayma) → doğrudan setState/__teleport input'suz
+  konumu ETKİLEMEZ → testler korunur. Oyuncu artık mobilya/müşteri/garson/sandalye içine giremiyor.
+- **Tuning:** `waiter.moveSpeed 1.8→1.5`. Kamera `d 8→7`. Walls asimetrik `area`'ya göre çizilir (arka+sol+sağ; ön açık).
+- **Smoke uyarlaması:** "uzağa park" konumları `(0,2)`/`(0,6.5)` → `(2.5,-3.0)` (sol-yaslı yerleşimde sağ-arka köşe tüm
+  masalardan attract-yarıçapı dışı → garson-assist/kirli-birikim testleri sağlam).
+- **Doğrulama:** **build temiz ✅, Vitest 44/44 ✅** (collision: önünde durma + input'suz teleport collision'sız),
+  **sim 84sn sabit ✅, smoke 19/19 ✅, konsol temiz.** Önizleme: http://localhost:5173/
+- Değişen: economy.config.ts, store.ts (LAYOUT v2+area+collision), Scene.tsx (Walls/kamera), tools/smoke.mjs,
+  tests/logic.test.ts; decisions.md (D-016), progress.md, activeContext.md. **Henüz commit yok** (ortam git repo'su değil).
+- **2g servis-her-taraftan + garson kilitlenme düzeltmesi (2026-06-07 #2 — kullanıcı: "garson sol-üst masanın önünde takıldı, servis yapamıyor; engeli dolaşamıyor; alan büyük, garson eski hızına dönsün"):**
+  - **KÖK NEDEN:** garson teslimatı KOLTUK noktasına (`seat`) gidip oraya VARMAYI (`moveAvoid===true`) bekliyordu. Koltuk masanın bir tarafında; garson ters/mutfak tarafından gelince masa TAM aradadır → `moveAvoid`'in basit eksen-kayması tek engeli dolaşamayıp KİLİTLENİYORDU (gerçek pathfinding yok).
+  - **ÇÖZÜM:** servis MASA MERKEZİNE yakınlıkla (her taraftan). Garson teslimat: `seat`→`table` merkez, teslim koşulu `moveAvoid===true` yerine `dist2D(w.pos, table) < serveRadius(1.6)` → masaya yaklaşınca (hangi yön olursa) bırakır, engelin ardına geçmek gerekmez (bulaşıkçının çalışan deseni). Oyuncu servisi de `seat`→`table` yakınlığı (arkadan da servis). En-acil hedef seçimi korunur (timer önce; mesafe `table`'a göre tie-break). Bardak toplama zaten masa-yarıçaplı (her taraftan) → değişmedi.
+  - **GARSON HIZI:** `waiter.moveSpeed 1.4→1.8` (eski hız). Alan büyüdüğü için 1.5/1.4 çok yavaş kalıyordu; kullanıcı "eski hızına dönsün". Müşteri geliş hızı AYNI (spawnInterval 1.6, orderTime 6 — "müşteriler aynı hızda").
+  - **Doğrulama:** Vitest 44/44 ✅ (anti-starvation + servis testleri geçer: koltuk masaya 1.0 < serveRadius 1.6), build temiz, sim 84sn (garson hesabı etkilemez), smoke **19/19** ✅ — garson assist düşen para **1→8** (önceden 1→2; artık gerçekten servis ediyor, takılmıyor). SAVE_VERSION değişmedi. **Faz 2g BİTTİ → sıradaki Faz 2h.**
+  - Değişen: economy.config.ts (waiter.moveSpeed), store.ts (oyuncu+garson servis masa-yakınlığı).
+- **2g GERÇEK YOL BULMA — garson kilitlenme KÖK çözüm (2026-06-07 #3 — kullanıcı: "yine bug; tam masaya gelmeden veriyor; ön masada takılı kalıp arka masaya gidemiyor, engeli anlamıyor → arka masa sabrı doluyor; elinde çayla sol-üst↔sağ-üst↔sol-alt salınıyor; SERVİSE OPTİMİZASYON + harita düzeni ŞART"):**
+  - **TEŞHİS:** `moveAvoid` (eksen-başı kayma) GERÇEK pathfinding değildi → masa aktör ile hedef arasında TAM ortadaysa (mutfak arka duvarda, ön masa arka masayı x-kolonunda kapatıyor) tek engeli dolaşamayıp KİLİTLENİYORDU. Tüm belirtiler bunun (deadlock + en-acil hedef değişince yarı-yaklaşıp salınım). "Uzaktan veriyor" = serveRadius 1.6 (kenardan 1.1).
+  - **KULLANICI KARARI:** "sen mantıklı olanı yap, layout'a karar veremedim, olmazsa değişiriz ama mantıksal sorun çözülsün." → pathfinding eklendi, **layout v5 KORUNDU** (görseli zaten onaylıydı).
+  - **ÇÖZÜM — `src/game/nav.ts` (YENİ):** kaba ızgara (NAV_CELL 0.3) BFS yol bulma. `buildNavGrid(area,cell,solids,inflate=actorRadius)` + `findNavPath(grid,start,tx,tz,reach)` (8-yön, köşe-kesme engelli, bloklu-başlangıç en yakın açığa snap). Saf modül (LAYOUT'tan bağımsız → circular import yok; store solid'leri verir). **store.ts:** `navSolids`(ocak+bulaşık+masalar; koltuk/semaver hariç) + `getNavGrid(tables)` cache + `navStep(pos,target,step,grid,reach)`. Garson + bulaşıkçı artık `moveAvoid` yerine `navStep` → engeli GERÇEKTEN dolaşır. **Oyuncu DEĞİŞMEDİ** (input+kendi collision). Müşteriler de moveAvoid'te kaldı (kendi koltuğuna gider, blokaj yok).
+  - **Teslim mesafesi (geometrik, footprint+actorRadius+pay):** REACH_TABLE ~1.05 (servis), REACH_STATION/WASH ~1.08, REACH_HOME 0.4. Masaya BİTİŞİK teslim → "tam masaya gelmeden veriyor" biter.
+  - **Doğrulama:** **Vitest 47/47** (3 yeni nav testi: ocaktan HER masaya yol var + engel-tam-aradayken dolaşır + garson kolon-bloklu ARKA masaya gerçekten servis eder/deadlock yok), build temiz, sim 84sn (garson hesabı etkilemez), smoke 19/19. SAVE_VERSION değişmedi.
+  - Değişen: YENİ nav.ts; store.ts (nav entegrasyonu, garson+bulaşıkçı). **GÖZLE doğrulama BEKLİYOR** (kullanıcı önizlemede garsonun artık takılmadan tüm masalara servis ettiğini teyit etmeli — 3D nav kod testiyle değil gözle onaylanır).
+- ~~**2g KALAN (opsiyonel):** müşteri spawn/sipariş tempo ince-ayarı + "sayı düzeni". NOT: SAVE_VERSION değişmedi (persist alan yok).~~ (tempo yapıldı — yukarı bak)
+
+## (önceki oturum — Faz 2f görsel/animasyon/yerleşim cilası)
+Kullanıcı 4 kararı onayladı: ızgara (istif değil), yerleşim bana bırakıldı (taşmasın yeter), react-spring'siz hafif
+animasyon. (Asset sorusu yanıtlandı: animasyonlar = kod/bedava; 3D modeller = Faz 6, CC0 Quaternius/Kenney + AI Türk objeleri.)
+- **(B) Max tepsi 8→6:** `economy.config.serving.trayUpgrade.maxLevel` 3→2 (L0=2/L1=4/L2=6). **SAVE_VERSION 9→10** +
+  v9→v10 migrasyonu (eski L3 → max'a clamp) + store init savunmacı clamp.
+- **(A) Taşıma öne tepsiye:** `Player.tsx` kafadaki DirtyStack KALDIRILDI; temiz(kırmızı)+kirli(gri) ellerin önünde tek
+  tepside **3×2 ızgara** (CupTray, taşmaz). **"Eli boşken" kısıtı (store.ts):** servis `tray<cap && carriedDirty===0`,
+  kirli toplama `tray===0` → tepside hep tek renk. Waiter/Dishwasher zaten önde taşıyor → değişmedi.
+- **(C) Yerleşim (LAYOUT):** ocak `[-3.6,0,-3.6]` + bulaşık `[-1.7,0,-3.6]` sol-ARKA köşede BİTİŞİK mutfak bloğu;
+  **bounds 7→5**; 4 masa 2×2 sıkı (x 0/2.6, z ∓1.2); upgradeZone/samovar/trayUpgrade/personel pad'leri eş-zamanlı
+  çakışmayacak aralıkta (aktif fill ≥2.6, yıkama/fill ≥2.9); Scene kamera d 9→8. Render bileşenleri LAYOUT'tan okur → otomatik uydu.
+- **(D) Juice (useFrame/damp, react-spring YOK):** para mıknatısı (aşağı bug-fix), toplanınca "+₺" floating (CSS `floatUp`
+  keyframe, per-frame JS yok); `Player.tsx` baş üstü radial ilerleme (activeZone fill/cost; pad=yeşil, yükseltme=altın);
+  `TeaStation.tsx` semaver buharı (Puff, 2 adet); `Customers.tsx` otururken idle bob; yeni `useFacing.ts` (damp yön
+  dönüşü) Player/Waiter/Dishwasher/Customer'a uygulandı.
+- **🐛→✅ Para mıknatısı bug-fix (kullanıcı gözlemi: "bir coin peşime takılıp arkama yapıştı"):** İlk uygulamada süzülme
+  GÖRSEL-only'di (Coins.tsx mesh'i oyuncuya damp'lerken store toplamayı paranın ESKİ düşme konumuna göre yapıyordu) →
+  oyuncu 1.4'e girmeden geçince para görsel olarak yapışıp asla toplanmıyordu. **Çözüm:** mıknatıs STORE'a taşındı —
+  `economy.config.money.attractRadius 2.6/attractSpeed 9` (>oyuncu 4.5 → daima yetişir); tick'te attract içindeki coin
+  `moveToward(player)` ile GERÇEKTEN akar, pickupRadius'a varınca toplanır. Coins.tsx artık yalnız `c.pos`'u çizer
+  (görsel=mantık → "yapışan para" yapısal imkansız). coins map'inde `pos` klonlandı (mutasyon güvenliği). Yeni vitest:
+  pickup'a hiç girilmeden mıknatısla toplanır + attract dışı çekilmez.
+- **Doğrulama:** **Vitest 40/40 ✅** (eli-boşken kısıtı + v9→v10 clamp + kapasite 2→4→6 testleri eklendi), **build temiz ✅,
+  sim 84sn ✅ (mantık değişmedi), smoke 19/19 ✅, konsol temiz, gözle doğrulandı** (kompakt köşe mutfağı, derli masalar, çakışma yok).
+- Değişen: economy.config.ts, save.ts, store.ts (LAYOUT+kısıt), Scene.tsx, Player.tsx, Coins.tsx, Customers.tsx,
+  TeaStation.tsx, Waiter.tsx, Dishwasher.tsx, index.css, tests/logic.test.ts, +yeni useFacing.ts; progress.md, activeContext.md.
+  (Henüz commit'lenmedi — oturum-bitir'de.)
+
+## (önceki — 2e-B tepsi yükseltme)
+- **Tepsi kapasitesi yükseltilebilir** mekânsal noktayla (çay yükseltme deseni): **2→4→6→8** (`trayCapacityForLevel`
+  = trayCapacityBase 2 + perLevel 2 × level; maxLevel 3). `LAYOUT.trayUpgradeZone` [0,0,4.5] (giriş önü, doğal yol).
+  Gating `C.serving.trayUpgradeRequires` = prev table3. Maliyet `trayUpgradeCost` (costBase 80, growth 1.8), fillRate 60.
+- **`trayLevel` PERSIST** (stationLevel deseni): store GameState + init(save.trayLevel) + saveNow yazar; tick'te
+  `trayCapacity(trayLevel)` hem servis tepsisi hem kirli-toplama kapasitesi için. Ayrı transient `trayUpgradeFill`
+  biriktirici (çay `upgradeFill` gibi). **SAVE_VERSION 8→9 + v8→v9 migrasyonu** (trayLevel eksikse 0, varsa korunur).
+- Render: Scene.TrayUpgradeZone (mavi disk + 🫖). HUD tepsi chip'i `trayCapacity(trayLevel)`. devHooks: trayLevel,
+  trayUpgradeZonePos, trayCap seviyeli. Yardımcılar: `trayMaxLevel`, `trayNextCost`, `trayUpgradeZoneUnlocked`.
+- **NOT (test ortamı):** vitest **node** ortamında (jsdom yok) → `localStorage` yok, writeSave/loadSave sessizce no-op.
+  Kalıcılık şema-düzeyinde migrate() ile test edilir; canlı yazımı **smoke** (gerçek tarayıcı) doğrular.
+- **Doğrulama:** **Vitest 37/37 ✅, build temiz ✅, sim 84sn ✅, smoke 19/19 ✅** (3. masa aç → tepsi 2→6, L2).
+- Değişen: economy.config.ts, save.ts, store.ts, devHooks.ts, Scene.tsx, HUD.tsx, tests/logic.test.ts, tools/smoke.mjs,
+  progress.md, activeContext.md.
+
+## (önceki — 2e-A bardak döngüsü + bulaşıkçı, commit f93de78)
+- **Bardak SINIRLI kaynak:** demleme bir TEMİZ bardak harcar (`cleanCups`); temiz biterse demleme DURUR
+  (yeni darboğaz → kirli topla/yıka çemberi zorunlu). İçen müşteri masada KİRLİ bardak bırakır (`dishes[]`,
+  coins gibi mekânsal nesne). Oyuncu yakınlıkla toplar (`carriedDirty`, kapasite = trayCapacity) → **bulaşık
+  noktasında** (`LAYOUT.dishStation` [-4.8,0,-3]) yıkar → temiz havuza döner. Havuz ocak seviyesine bağlı
+  (`cupPoolCapacity` poolBase 10 + 2/lvl); seviye artınca (zone + upgradeStation) cleanCups += poolPerLevel.
+- **Bulaşıkçı** = opsiyonel pad (`dishwasher`, ₺280, requires prev table3, garson deseni). `hasDishwasher`
+  derivedFromPads'ten (D-015, effect `hireDishwasher`). FSM: en yakın kirliyi topla (kapasiteye kadar) →
+  bulaşığa götür → yıka → boşta dishwasherHome [-4.8,0,1.5]. Oyuncudan yavaş/küçük → kısmi assist.
+- **KORUNUM:** toplam bardak = havuz değişmezi (clean+ready+tray+carried+dishes+drinking+waiter.tray+
+  dishwasher.tray); her geçiş atomik tek bardak taşır. Vitest'te totalCups() ile doğrulandı.
+- **Kalıcılık:** bardak sayıları TRANSIENT (her oturum dolu-temiz başlar) → **şema değişmedi, SAVE_VERSION 8'de KALDI**
+  (bulaşıkçı=pad zaten padsDone'da). Migrasyon gerekmedi.
+- **Render:** Dishes.tsx (gri kirli), Dishwasher.tsx (gri-mavi kapsül + gri yığın), Scene.DishStation (lavabo),
+  Player DirtyStack (sırtta gri), HUD 🧼 temiz / 🧽 kirli chip'leri, hint güncellendi.
+- **devHooks:** cleanCups, dirtyCount, carriedDirty, dishStationPos, firstDishPos, hasDishwasher, dishwasherTray/Pos.
+- **Doğrulama:** **Vitest 32/32 ✅, build temiz ✅, sim 84sn ✅ (idealize tempo değişmedi), smoke 18/18 ✅** (kirli üret→topla→yıka).
+- Değişen: economy.config.ts, types.ts, store.ts, devHooks.ts, Player/Scene/HUD + yeni Dishes.tsx/Dishwasher.tsx,
+  tools/simulate.ts (not), tests/logic.test.ts, tools/smoke.mjs, progress.md, activeContext.md.
+
+## (önceki — garson anti-starvation)
+- **Sorun (kullanıcı gözlemi):** Garson "en yakın bekleyene" gidiyordu → ön masalar sürekli dolunca arka masalara
+  hiç gidemiyor, sabırları (18sn) dolup sessizce gidiyordu (kaçan gelir, kötü dağılım).
+- **Çözüm:** `store.ts` garson teslimat bloğunda hedef "en yakın" → **"en acil" (sabrı en az kalan = en düşük `timer`)**;
+  eşitlikte en yakın (`bestTimer`/`bestDist`, 1e-6 epsilon). Timer'lar aynı hızda azaldığından kararlı FIFO, salınım yok.
+  Garson hız/tepsi limiti AYNI → D-014 "partial assist" tasarımı korunur (oyuncu hâlâ gerekli). Ekonomi etkilenmez.
+- **Test:** Yeni vitest — garsonu yakın masanın koltuğuna tepsi-dolu koy; yakın(timer17) vs uzak(timer2) bekleyen →
+  yakın masa SERVİS EDİLMEZ (nearest olsa anında içerdi), garson uzak-acil masaya yaklaşır. **Vitest 26/26, build temiz, smoke 15/15.**
+- Değişen: store.ts, tests/logic.test.ts, progress.md, activeContext.md. (Henüz commit'lenmedi.)
+
+## (önceki — D-015 state türetme refactor'ı; commit 61b4e07)
+- **`economy.config.ts`:** saf `derivedFromPads(padsDone) → {tables, stations, serviceSpeedMult, hasWaiter}` +
+  `DerivedState` tipi. `SAVE_VERSION 7→8`. (stations şu an hep 1; Faz 3a addStation pad'leriyle artacak.)
+- **`store.ts`:** GameState yine `tables/stations/serviceSpeedMult/hasWaiter` alanlarını TUTAR (bileşenler okur) ama
+  bunlar artık YALNIZ `derivedFromPads`'ten set edilir. init save.padsDone'dan türetir (eski `min(stations,...)`
+  kelepçesi kalktı). tick: başta `derived` (frame anlık görüntüsü, const); pad tamamlanınca SADECE `padsDone += id`,
+  switch-effect mutasyonları silindi; sonda `out = derivedFromPads(padsDone)` → set + garson varlığı kurulur.
+  saveNow türetilenleri yazmaz.
+- **`save.ts`:** SaveData/defaultSave'den 4 türetilen alan çıkarıldı. migrate gevşek `d: Record` üstünde çalışır,
+  sonda yalnız v8 alanlarını üretir; **v7→v8 adımı:** eski `hasWaiter:true` → `padsDone`'a `waiter` taşınır.
+- **`tools/simulate.ts`:** State'ten tables/stations/serviceSpeedMult çıktı; rate/brewTime/gate `derivedFromPads`'ten
+  okur; pad alımında yalnız `padsDone.push`. Ekonomi SABİT (ilk alım 84sn, table4 @7.5dk, semaver 14.9dk).
+- **Testler:** garson testi `padsDone:['table2','waiter']` ile kuruldu (sahte `hasWaiter` set artık işe yaramaz);
+  yeni testler: derivedFromPads tutarlılığı, **kayıttaki çelişen sahte `tables/hasWaiter` türetmeye SIZAMAZ**,
+  **store pad açıldıkça daima `derivedFromPads(padsDone)` ile tutarlı (desenkronizasyon üretilemez)**.
+- **Doğrulama:** **Vitest 25/25 ✅, build temiz ✅, sim 84sn ✅, smoke 15/15 ✅.**
+- Değişen dosyalar: economy.config.ts, store.ts, save.ts, tools/simulate.ts, tests/logic.test.ts, progress.md,
+  decisions.md, activeContext.md. (Henüz commit'lenmedi — oturum-bitir'de.)
+
+## (önceki oturum — 2d-harita, D-012 1 ocak : 4 masa)
+- **Başlangıç salonu 1 ocak : 4 masa'ya çekildi.** Omurga pad zinciri: 2.Masa → (ocak L≥1) → 3.Masa →
+  **4.Masa (YENİ, addTable, cost 300/fillRate 75, requires prev table3)** → Semaver (requires prev table4).
+- **`station2` omurgadan ÇIKARILDI** (D-012: 2. ocak Faz 3a'da yeni salonla otomatik gelir). `addStation` effect
+  tipi pads'ten düştü → store.ts ve simulate.ts'teki `case 'addStation'` (ölü) kaldırıldı; `extraStationSpeedFactor`
+  config'te Faz 3a için kaldı. tick'teki `stations` artık `const`.
+- **LAYOUT:** tek ana ocak `[0,0,-5]`; 4 masa 2×2 derli toplu (x ±2.5, z -1.5/1.2; seat = table + z+1.1).
+  padPos table2/table3/table4 masa slotlarında; **samovar sağ-ön [1.6,-3.4]**, **upgradeZone sol-ön [-1.6,-3.4]**
+  (çakışmaz); waiter [-4.5,4], waiterHome [4.5,4]; player start [0,2.5]. `stations` artık tek elemanlı dizi.
+- **SAVE_VERSION 5→6 + migrasyon (v5→v6):** station2 padsDone/padFills'ten çıkarılır, `stations=1` kelepçe
+  (ilerleme/₺ korunur). init'te de savunmacı `min(save.stations, LAYOUT.stations.length)` → eski çok-ocaklı kayıt taşmaz.
+- Render bileşenleri (Pad/Scene/Tables/Stations) veri-güdümlü → table4 otomatik geldi, station2 düştü, kod değişmedi.
+  smoke.mjs de pozisyonları kancalardan okur → değişmedi.
+- Testler: **Vitest 21/21 ✅** (table4 omurga adımı, v4→v6 + v5→v6 migrasyon), **build temiz**, **sim ilk-alım 84sn**
+  (omurga ~15dk, table4 @7.5dk), **smoke 15/15 ✅** (tek-ocak yerleşiminde servis+garson assist+yükseltme L0→L4).
+- Değişen dosyalar: economy.config.ts, store.ts, save.ts, tools/simulate.ts, tests/logic.test.ts, progress.md, activeContext.md.
+- Commit `2105083` push'landı.
+
+## Takip düzeltmesi (aynı oturum — eski-kayıt masa+pad çakışması)
+- **Bulgu:** Kullanıcı eski kayıtla açınca "4. masa zaten var + üstünde pad" gördü. Tanı (geçici playwright scripti,
+  A/B/C senaryoları): `tables=4` AMA `table4` padsDone'da yokken, `table4` pad'i çizili 4. masayla TAM aynı konumda
+  ([2.5,0,1.2]) çakışıyor. Kök neden: `addTable` gating'i masa SAYISINA bakmıyordu (sadece `prev:table3`).
+- **Düzeltme:** `addTable` pad'lerini masa sayısıyla senkronlama (i. addTable = (i+2). masa; masa çiziliyse pad done).
+  **ÖNEMLİ:** kullanıcının kaydı ilk commit'te zaten v6'ya yükseldiği için (loadSave güncel sürümde migrate'i atlar)
+  senkron ayrı **v6→v7** adımına konuldu ve **SAVE_VERSION 6→7** yapıldı → v6'da takılı bozuk kayıt da düzelir.
+  Çakışma giderildi (currentPad=samovar). Kalıcı vitest testleri (v6→v7 senaryosu dahil).
+- **Doğrulama:** Vitest **22/22**, build temiz. Commit `c0e9e24` (v6 fix) + sonraki commit (v7 bump) push'landı.
+
+## TAM sıradaki adım (Faz 2g — his & yerleşim & collision & tuning, TEK zone)
+D-016 kararıyla, çoğaltmadan ÖNCE tek zone'u mükemmel hissettir (şablon olsun). İş kalemleri:
+1. **Yerleşim:** mutfak şeridi sol-üst köşede duvara 0 (ocak + bulaşık bitişik, arkası geçilemez); tost/kahve için sağına
+   yer ayır; **masalar sağda** 2×2; **bounds küçült** (dar başlangıç → boş-büyük-alan hissi biter); kamera/duvar uydur.
+2. **Collision:** ocak/bulaşık/masa = katı AABB engel; oyuncu içine giremez (kenardan kayar). (Personel hedefleri obje ÖNÜ;
+   gerekirse onlara da uygula.) Yeni: footprint tanımı LAYOUT'a; store hareket çözümüne AABB push-out.
+3. **Tuning:** `waiter.moveSpeed` düşür (çok hızlı); müşteri `spawnInterval`/`orderTime` temposu simulate ile yeniden
+   dengele (frantik değil akışkan, ilk-alım hedefini koru); sayıları tek şablona topla.
+4. Vitest + sim + smoke yeşil; progress/activeContext + (gerekirse) docs güncelle; SAVE_VERSION yalnız persist alan değişirse bump.
+   NOT: tek-masa başlangıç ZATEN var (derivedFromPads tables=1); 2g'de masa SAYISI değil ALAN/HİS düzeltilir.
+
+## Sonraki dilimler (kilitli plan — D-016)
+- **2h:** masa yükseltme + bahşiş (zone-başı; 2. masa açılınca; bahşiş `tipBase×seviye` + sabır↑; SAVE bump).
+- **2i:** onboarding/işaretçi katmanı (ilk masa-açma; sonraki açılışlar "Yeni ▲" rozeti).
+- **Faz 3:** 3a zone çoğaltma (kat başına ~4 zone, 2×2 ızgara, zone-açma pad'i, stations türetme) · 3b kat geçişi
+  (merdiven/kararma/üst kat) · 3c tuvalet+depo+temizlikçi (kata özel) · 3d menü (tost/kahve mutfak şeridine).
+
+## Faydalı dev kancaları (konsol)
+`__game()` (readyCups/tray/trayCap/trayLevel/waitingCount/stationPos/firstWaitingSeat + bardak döngüsü:
+cleanCups/dirtyCount/carriedDirty/dishStationPos/firstDishPos/hasDishwasher/dishwasherTray/Pos +
+trayUpgradeZonePos/upgradeZonePos), `__advanceTime(60)`, `__addMoney(1000)`, `__upgradeStation()`, `__teleport(x,z)`, `__resetGame()`.
+Servis testi: ocağa ışınla (`__game().stationPos`) → tick → tepsi dolar; bekleyen koltuğa ışınla
+(`__game().firstWaitingSeat`) → tick → servis.
+
+## Hızlı komutlar
+- `npm run dev` · `npm run build` · `npm run test` · `npm run sim`
+- Duman testi: `npm run dev` (ayrı) → `node tools/smoke.mjs`

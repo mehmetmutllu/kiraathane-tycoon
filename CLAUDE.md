@@ -11,7 +11,7 @@ Stil: LOW-POLY STİLİZE, gerçekçiye kaçma. Gerekçe: `memory-bank/decisions.
 
 ## Klasör yapısı
 ```
-memory-bank/  hafıza   |  docs/  planlama   |  tools/  simulate.ts
+memory-bank/  hafıza (arsiv/ = eski anlatı, okunmaz)  |  docs/  planlama+raporlar  |  tools/  simulate.ts
 public/assets/ models/ audio/ + README manifest
 src/config/   economy.config.ts (TEK sayı kaynağı)
 src/game/     zustand store, sistemler, kayıt, decimal yardımcı
@@ -27,6 +27,19 @@ src/components/ui/     HUD, joystick
 - **Kayıt: `saveVersion` + migrasyon.** Şema değişince eski kayıt migrate edilir; ilerleme kaybolmaz.
 - Güvenlik/temiz kod; gereksiz soyutlama/yorum yok; mevcut dosyaları düzenle.
 - Bir kararda takılırsan **kod yazmadan önce sor.**
+
+## Oturum akışı — VARYANT KAPISI (D-084, `docs/oturum-akisi-mantik.md`)
+- **Ölç → sor → uygula.** `economy.config.ts` / `tick.ts` / `rules.ts`'e dokunan denge değişikliği,
+  raporun §Bulgular tablosunda o kolun **sayı satırı** olmadan yapılmaz. Seçenekler (A mı B mi)
+  koda değil **varyanta** yazılır; kod yalnız seçilen kola.
+- **İki commit:** #1 araç + ham çıktı + rapor (karar bölümü BOŞ) → karar paketi → #2 kod + bekçi
+  + final tam koşu. Sıra kilidi budur; yazılı kural tek başına yetmedi.
+- **Koşu kipi:** geliştirirken `OLCUM=kisa` (< 60 sn); `OLCUM=tam` yalnız taban ve final. Rapora
+  yalnız tam-koşu damgalı sayı girer.
+- **Her bilgi bir yerde:** sayı → `docs/*-raporu-*.md` · karar ≤ 12 satır → `decisions.md` ·
+  durum → `progress.md`'de 1-2 satır · şu an → `activeContext.md` tur kartı (≤ 80 satır, üzerine
+  yazılır) · eski anlatı → `memory-bank/arsiv/` + git. Aynı metin iki dosyaya yazılmaz.
+- **Kesilmez:** bekçi testi, en az 2 mutasyonla doğrulama, finalde tam koşu.
 
 ## Test kancaları (dev) — 3D sahne görsel doğrulanamaz
 - `window.__game` üstünde oyun durumunu aç: `wallet`, `diamonds`, `tables`, `stations`,

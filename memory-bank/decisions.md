@@ -2317,3 +2317,19 @@ değişmez mutasyonu YAKALAMADI; gerçek akış testine taşınınca yakaladı.
 oyuncu geçemiyor (Faz D kalemi).
 
 **Doğrulama:** vitest **485/485** (482 → +3) · smoke **28/28** · tsc + build temiz.
+
+---
+
+## D-084 — Oturum akışı: varyant kapısı + tek-kaynak belge + tur kartı (2026-09-08)
+**Karar (kullanıcı, dört soru da önerilen seçenekle):** oturum akışı ölçülerek yeniden kuruldu.
+① Denge/tick değişikliği, raporun §Bulgular tablosunda o kolun **sayı satırı** olmadan yapılmaz;
+kilit sıraya gömülü — **commit #1** (araç + ham çıktı + rapor, karar bölümü BOŞ) → karar paketi →
+**commit #2** (kod + bekçi + final koşu). ② Ölçüm koşusu `OLCUM=kisa|tam`; tam koşu yalnız taban ve
+final. ③ Her bilgi bir yerde: sayı → rapor · karar ≤ 12 satır → bu defter · durum → progress'te
+1-2 satır · anlatı → hiçbir yerde ikinci kez. ④ `activeContext` = üzerine yazılan tur kartı (≤ 80
+satır); geçmiş `memory-bank/arsiv/`'e.
+**Belirleyici sayılar:** tam ölçüm koşusu **8 dk 02 sn** × 7 koşu = C4'ün 168 dakikasının **%33'ü**
+(en büyük tek kalem) · C4'ün 11 anahtar sayısının **9'u dört markdown dosyanın dördünde de** var.
+**Gerekçe:** C4'e "önce ölç, sonra sor" talimatı **yazılı girilmişti** ve yine ihlal edildi — yazılı
+kural yetmiyor, kilit commit yapısına gömülmeli. Bekçi/mutasyon/final tam koşu **dokunulmadı**.
+**Rapor:** `docs/oturum-akisi-mantik.md` (Fable 5.1, ölçümlü).

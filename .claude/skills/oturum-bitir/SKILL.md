@@ -5,37 +5,40 @@ description: Köşe Kıraathanesi oturumunu güvenle kapatır — hafızayı gü
 
 # oturum-bitir — Oturum kapatma protokolü
 
-Köşe Kıraathanesi projesinde oturumu temiz kapat. Sırayla:
+Köşe Kıraathanesi projesinde oturumu temiz kapat. **Kapanışta YENİ metin yazılmaz** —
+tur boyunca zaten yazıldı; burada yalnız yerine oturtulur (D-084, `docs/oturum-akisi-mantik.md`).
 
 ## Adımlar
-1. **Hafızayı güncelle:**
-   - `memory-bank/progress.md` — biten alt görevleri ✅, devam edeni 🔧, bilinen bugları yaz,
-     sıradaki kilometre taşını netle.
-   - `memory-bank/activeContext.md` — ŞU AN, en son yapılan, TAM sıradaki adım, açık sorular.
-   - Yeni karar verildiyse `memory-bank/decisions.md`.
-2. **İLERLEME PANOSUNU GÜNCELLE** — `docs/pano/ilerleme-panosu.html`.
-   Sayfanın tamamı dosyanın içindeki tek `<script type="application/json" id="durum">` bloğundan
-   üretilir; **başka hiçbir yerini elle değiştirme.** Sırayla:
-   1. bu oturumun ait olduğu fazın `yapilan` değerini +1
-   2. üstteki `yapilan` toplamını +1
-   3. `ozet` bloğunu bu oturumun işiyle değiştir
-   4. `siradaki` bloğunu bir sonraki oturumun işiyle yeniden yaz
-   5. `gunluk` listesinin **en üstüne** yeni satır ekle (tarih, etiket, baslik, govde, maddeler, not)
-   6. `guncelleme` tarihini değiştir
-   Sonra **aynı dosya yoluyla yeniden yayınla** (Artifact tool, `file_path` aynı) — bağlantı değişmez:
+1. **Hafıza — dört yer, her bilgi BİR kez:**
+   - `memory-bank/progress.md` → aktif faza **1-2 satır**: `✅ <tur> — <tek cümle> · D-0xx ·
+     docs/<rapor>.md · vitest <n>`. Anlatı yok, sayı yok (rapordadır).
+   - `memory-bank/activeContext.md` → tur kartını **ÜZERİNE YAZ** (≤ 80 satır): şu an, tam
+     sıradaki adım, açık kalemler. Eski turun anlatısı **taşınmaz, silinir** (git tutuyor).
+   - `memory-bank/decisions.md` → yeni karar varsa `D-0xx`: karar cümlesi + **belirleyici 1-2 sayı**
+     + gerekçe, **≤ 12 satır**, sonunda rapor linki. Sayı tablosu KOPYALANMAZ.
+   - `docs/<konu>-raporu-<faz>.md` → sayılar, yöntem, tuzaklar, etki. **Tek kaynak budur.**
+   Kalıcı tercih/ilke çıktıysa otomatik hafızaya (`~/.claude/projects/.../memory/`) — memory-bank'e
+   kopyalanmaz.
+2. **SIRA KİLİDİ KONTROLÜ** (D-084 §3.2): bu turda denge/tick değişmişse
+   - raporda o kolun **§Bulgular sayı satırı** var mı?
+   - ölçüm commit'i (#1) kod commit'inden (#2) **önce** mi?
+   Değilse kullanıcıya söyle ve nedenini kayda geç — sessizce geçme.
+3. **İLERLEME PANOSU** — `docs/pano/ilerleme-panosu.html`. Kaynak `memory-bank/progress.md`
+   tablosudur; pano onun türevidir. (P3'ten sonra: `node tools/pano-guncelle.mjs`.)
+   Elle yapılıyorsa tek `<script type="application/json" id="durum">` bloğunda: fazın `yapilan`+1 ·
+   toplam `yapilan`+1 · `ozet` · `siradaki` · `gunluk` listesinin en üstüne yeni kart (progress
+   satırının 3-4 cümlelik hâli) · `guncelleme` tarihi. **Başka hiçbir yerini elle değiştirme.**
+   Sonra aynı dosya yoluyla yeniden yayınla (Artifact tool, `file_path` aynı; bağlantı değişmez):
    https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
-   Oturum bütçesi ve faz tablosu: `memory-bank/progress.md` "İLERLEME PANOSU" bölümü.
-3. **Testler:**
-   - `npm run test` (Vitest mantık testleri) — varsa.
-   - Mümkünse Playwright MCP duman testi (sahne render hatasız mı, hareket, NPC ödeme,
-     toplama, pad). Başarısızsa düzelt ya da bilinen-bug olarak `progress.md`'ye yaz.
-4. **Commit:** `git add -A && git commit -m "<anlamlı, kapsamı özetleyen mesaj>"`.
-   - Sırlar (.env vb.) commit'lenmez. Pre-commit hook hata verirse düzelt, yeni commit at.
-5. **Push:** `git push` (ilk seferde gerekiyorsa `-u origin <branch>`).
-6. **Bitiş mesajı (AYNEN):**
+4. **Testler:** `npm run test` (vitest ~12 sn) + mümkünse duman testi (`node tools/smoke.mjs`).
+   Başarısızsa düzelt ya da bilinen-bug olarak `progress.md`'ye yaz.
+5. **Commit:** `git add -A && git commit -m "<anlamlı, kapsamı özetleyen mesaj>"`.
+   Sırlar (.env vb.) commit'lenmez. Pre-commit hook hata verirse düzelt, yeni commit at.
+6. **Push:** `git push` (ilk seferde gerekiyorsa `-u origin <branch>`).
+7. **Bitiş mesajı (AYNEN):**
    `✅ Kaydedildi ve push'landı. Artık /clear yapıp yeni oturumda /kiraathane-devam ile devam edebilirsin.`
 
 ## Kurallar
 - Kullanıcı açıkça istemedikçe force-push / reset --hard / amend yapma.
 - Push uzak hata verirse net çözümü kullanıcıya söyle (auth, branch, çakışma).
-- Dosyaları her anlamlı adımda da güncel tut; bu protokol oturum SONUNU resmileştirir.
+- Bu protokol oturum SONUNU resmileştirir; ara commit'ler (#1/#2) tur içinde zaten atılır.
