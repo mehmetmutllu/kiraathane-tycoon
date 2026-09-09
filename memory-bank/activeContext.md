@@ -5,34 +5,30 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-09 — **D4 BİTTİ** · Faz D 4/6 · 67/77)
+## ŞU AN (2026-09-09 — **D5 AÇILDI** · nav ızgarası ↔ oyuncu çarpışması · Faz D 4/6 · 67/77)
 
 ```
-SORU            : Hedef (koleksiyon) ödülü hangi KALIPTA olmalı? Sabit ₺ merdiveni sektörün terk
-                  ettiği kalıp; kalıcı çarpan ve gelire-oranlı ₺ hiç ölçülmemişti.      [KAPANDI]
-ÖLÇÜLECEK KOLLAR: hUYG (D-089'un sabit ₺ merdiveni — kıyas) · h0 (yalnız 💎) · **hF** (KALICI
-                  ÇARPAN) · **hG** (GELİRE ORANLI ₺) · hUYGF (uygulanan config)
-SAYILAR         : docs/hedef-raporu-d3.md §6.3 — 6 bulgu (11-16), tam koşu, damgalar temiz
-KARAR           : D-090 — kullanıcı "en kalitelisi ne ise o olsun" → `hF` %10 + 💎
-UYGULAMA        : `economy.config.ts` goals bloğu (`incomeBonusTotal: 0.10`, `rewards` SİLİNDİ) ·
-                  `goals.ts` (bonus/collectionMult) · `tick.ts` + `rules.ts` (çarpan ₺'nin
-                  yaratıldığı üç yere) · `store.ts` claimGoal artık cüzdana ₺ EKLEMİYOR ·
-                  `HUD.tsx` (+%0,4 satırda, kümülatif üstte) · `devHooks` goalMult · kayıt v32
-BEKÇİ           : tests/hedefler.test.ts + **tests/hedef-gelir-kablosu.test.ts (YENİ)** — DOKUZ
-                  mutasyon; M9 kaçtı (doz %10→%11 bandın içinde) → ölçülen doz DOĞRUDAN çivilendi,
-                  sonra yakalandı · vitest 612 · duman 32/32 (goalMult ×1,004 okundu)
+SORU            : Oyuncunun YÜRÜDÜĞÜ dünya ile rotaların KURULDUĞU dünya aynı değil
+                  (nav: `navSolids` + actorRadius 0,28, sandalyesiz · oyuncu: `activeSolids` +
+                  playerRadius 0,47, sandalyeler katı). Bu fark nerede ve NE KADAR ısırıyor?
+ÖLÇÜLECEK KOLLAR: ölçüm turu (denge kolu YOK — economy.config/tick/rules'a dokunulmuyor):
+                  k1 ayrışma (personele açık, oyuncuya kapalı hücre oranı, her açıklık için) ·
+                  k2 ulaşılabilirlik (her etkileşim noktası oyuncunun dünyasında erişilebilir mi) ·
+                  k3 tuzak cepler (oyuncu dünyasının bağlı bileşenleri) ·
+                  k4 pay (en dar geçidin oyuncuya kalan payı)
+SAYILAR         : (adım 2'den sonra dolar — docs/nav-oyuncu-raporu-d5.md §Bulgular)
+KARAR           : (adım 3)
+UYGULAMA        : (adım 4, yalnız kararın kolu)
+BEKÇİ           : (test dosyası + kaç mutasyonla doğrulandı)
 ```
 
-**Bu turun asıl dersi — ölçümün NE SÖYLEMEDİĞİ:** tempo verimi `hF` 0,53-0,63 · `hE` 0,50-0,57
-dk/% çıktı, yani **denk**. Tablo ELEME yaptı (`hA`/`hB`/`hC`/`hG` verimi sıfır) ama kalan iki
-kalıbı ayırmadı. D-084'ün kuralı burada tersine de işledi: **sayı, kararın hangi eksende
-VERİLEMEYECEĞİNİ de söyleyebilir.** Seçim sim'in ölçmediği eksende verildi — ödül bayatlıyor mu,
-ve "yazılan ≠ ödenen" hata sınıfı mümkün mü (Bulgu 13-14).
+**Bu tur neden şimdi:** hata tek başına duruyor ve iki yerde ısırdığı BİLİNİYOR ama hiç ölçülmedi
+— (a) C4'ün ölçüm aracı bu yüzden ±30/60/90° kayma + kara liste + kurtulma yamalarıyla dolu
+(`tools/olcum-bardak.ts` §rota), (b) P2 damgaları "B1 · oyuncu kipinde bot hiç yürümüyor"
+kusurunu buldu ve açık bıraktı. İkisi de aynı kökü işaret ediyor: **oyuncunun dünyasının rota
+planlayıcısı yok.** Denge dosyalarına dokunulmadığı için varyant kapısı devrede değil; ölç-önce
+disiplini yine de uygulanıyor (iki commit).
 
-**İkinci ders — bekçide bulunan gerçek boşluk:** denge testleri SİM'in kolunu ölçüyordu, oyunun
-`tick.ts` kablolamasını değil. Biri `* incomeMult`'ı oradan silse hepsi yeşil kalırdı ve rapor
-yürürlükte olmayan bir sayıyı savunurdu. `tests/hedef-gelir-kablosu.test.ts` ₺'nin yaratıldığı
-**üç yeri** ayrı ayrı doğruluyor (müşteri ödemesi · lavabo ücreti · çevrimdışı oran).
 
 ## SIRADAKİ TAM ADIM
 
