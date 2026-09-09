@@ -215,6 +215,67 @@ export const hedefCarpaniAyarla = (f: (() => HedefCarpani) | null): void => { he
 /** Koşu içindeki yürürlükteki çarpan. Kanca kapalıyken 1 kalır → taban çıktısı BİREBİR korunur. */
 let carpanSimdiki = 1;
 
+/* ── D6: İTİBAR KANCASI (varyant katmanı; `economy.config.ts` DEĞİŞMEZ) ────────────────
+ * Plan §6 İtibar'a "her seviye +%2 müşteri akışı, +%1 bahşiş" yazdı — ikisi de DENGE sayısı,
+ * ikisi de hiç ölçülmedi. Kapı gereği önce ölçülür. Bu kanca kolun ETKİSİNİ üç ayrı yere
+ * bindirebilir, çünkü soru tam olarak "hangi kanal" sorusudur:
+ *   talep — koltuk/döngü akışı (planın kolu). Kat 1'de talep bağlayıcı DEĞİLSE etkisi 0 çıkar.
+ *   gelir — müşteri başına ₺ (D-090 `hF`nin girdiği yer; bahşiş kolu da buraya denk düşer).
+ *   arz   — hazırlama süresinin kendisi (`bt /= arz`), yani üç tavandan birine DOKUNAN tek kol.
+ *           Bölme brewTime üstünden yapılır ki müşteri döngüsü de tutarlı kısalsın; supply'ı
+ *           tek başına çarpmak döngüyü olduğu yerde bırakır ve sahte bir talep tavanı üretirdi.
+ *
+ * XP SİM'DE MODELLENMİYOR — kol onu bu durumdan TÜRETİR (rapora yazılan model sınırı):
+ *   servis akışı × oyuncu/garson payı (taşıma kapasitesi payından) · görev · pad · yükseltme.
+ *   `perDishWashed` sim'de SIFIRDIR: oyuncunun eliyle bulaşık yıkaması modellenmiyor
+ *   (AFK kurulumu). Yani türetilen seviye eğrisi gerçeğin bir ALT sınırıdır.
+ *
+ * MODEL SINIRI: çarpanlar `carpanSimdiki` ile aynı desende bir SONRAKİ tick'te yürürlüğe girer.
+ * Taban `null`: hiçbir ek hesap yapılmaz → taban çıktısı BİREBİR korunur.
+ */
+export interface ItibarDurum {
+  t: number;
+  /** Bu tick'te servis edilen müşteri (akış × DT) — XP'nin ana kaynağı. */
+  servis: number;
+  /** Taşımanın oyuncudan gelen payı (0-1): XP'yi elle/garsonla ikiye böler. */
+  oyuncuPayi: number;
+  questIdx: number;
+  padSayisi: number;
+  /** Satın alınmış ₺ yükseltmelerinin TOPLAM sayısı (servis + masa + karakter + personel + oda). */
+  yukseltme: number;
+  /** `HedefDurum` ile AYNI iki sayı — ö1 (örtüşme) kolu hedef kademelerini de aynı koşuda
+   *  yürütmek zorunda: iki zaman çizelgesi ayrı koşulardan gelirse kıyaslanamaz. */
+  lifetime: number;
+  ustaMasa: number;
+}
+/** Kolun o tick'teki etkisi. Dördü de 1 = etkisiz (taban).
+ *  `tasima` kolu ölçüm SIRASINDA eklendi: darboğaz dağılımı kelepçenin zamanın %93'ünde
+ *  taşımada olduğunu gösterdi, yani tur kartındaki dört kanaldan hiçbiri gerçek kelepçeye
+ *  dokunmuyordu (D5'in süreç dersi: ilk sayılar hangi kolun EKSİK olduğunu da söyler). */
+export interface ItibarEtki { talep: number; gelir: number; arz: number; tasima: number }
+export type ItibarKol = (d: ItibarDurum) => ItibarEtki;
+const ITIBAR_ETKISIZ: ItibarEtki = { talep: 1, gelir: 1, arz: 1, tasima: 1 };
+let itibarFabrika: (() => ItibarKol) | null = null;
+export const itibarAyarla = (f: (() => ItibarKol) | null): void => { itibarFabrika = f; };
+let itibarSimdiki: ItibarEtki = ITIBAR_ETKISIZ;
+/** rate() içinde hesaplanan o tick'in AKIŞI (müşteri/sn) — kanca açıkken okunur. */
+let sonAkis = 0;
+/** Yükseltme sayacı: `boughtLabel`in saydığı kalemlerin toplamı (pad hariç — o ayrı kalem). */
+function yukseltmeSayisi(s: State): number {
+  return s.stationLevels.reduce((a, b) => a + b, 0)
+    + s.tableLevels.reduce((a, b) => a + b, 0)
+    + s.char.tray + s.char.magnet + s.char.speed
+    + s.waiterTray + s.waiterSpeed + s.dishCarry + s.dishSpeed
+    + Math.max(0, s.lavabo - 1); // lavabonun L1'i pad açılışıdır, yükseltme değil
+}
+/** Taşımanın oyuncu payı — XP'nin elle/garsonla bölünmesi (kanca açıkken hesaplanır). */
+function oyuncuTasimaPayi(s: State): number {
+  const tam = carryRateOf(s);
+  if (!Number.isFinite(tam) || tam <= 0) return 1;
+  const garson = carryRateOf(s, true);
+  return Math.max(0, Math.min(1, (tam - garson) / tam));
+}
+
 /** Tamamlanan görevlerin ödüllerini öde (M1) — store'daki quest-advance döngüsünün sim karşılığı. */
 function advanceQuests(s: State): void {
   while (s.questIdx < C.quests.length && questMetSim(s, C.quests[s.questIdx].target)) {
@@ -396,7 +457,8 @@ function carryRateOf(s: State, oyuncusuz = false): number {
     : carrierRate(C.character.tray.values[s.char.tray], C.character.speed.values[s.char.speed], dist, ara);
   const wSpeed = C.waiter.speedUpgrades.speeds[s.waiterSpeed];
   const waiters = w.services[THE_SERVICE]?.waiters ?? 0;
-  const ham = player + waiters * carrierRate(1 + s.waiterTray, wSpeed, dist, ara);
+  // D6 r6 kolu: İtibar taşıma kapasitesini büyütürse buraya biner (kanca kapalıyken 1).
+  const ham = (player + waiters * carrierRate(1 + s.waiterTray, wSpeed, dist, ara)) * itibarSimdiki.tasima;
   return M.k1a ? ham * carryRealization(w.tables.length) : ham;
 }
 
@@ -552,10 +614,12 @@ function servedFraction(s: State, w: Dunya, koltuk: number, kapasite: number): n
 
 function rate(s: State, eff = 1): number {
   const w = deriveWorld(s.padsDone);
-  const bt = brewTimeOf(s);
+  // D6 İtibar `arz` kolu hazırlama SÜRESİNİ kısaltır (çarpan supply'a değil bt'ye biner) —
+  // böylece müşteri döngüsü de tutarlı kısalır. Kanca kapalıyken bölen 1'dir → taban birebir.
+  const bt = brewTimeOf(s) / itibarSimdiki.arz;
   const cycle = C.npc.walkTime + bt + C.npc.eatTime;
   const koltuk = openSeats(w, s);
-  let demand = koltuk / cycle;
+  let demand = (koltuk / cycle) * itibarSimdiki.talep;
   const supply = 1 / bt;
   const price = mixAt(s.stationLevels[THE_SERVICE]).price;
   // B4 ODA KOLU: servis edilen her müşteri çıkarken lavaboya uğrayabilir ve parasını odanın
@@ -563,7 +627,7 @@ function rate(s: State, eff = 1): number {
   // gevşetmez, yalnız aynı akışın ₺'sini artırır — Kat 1'de throughput kolu tükendiği için
   // (arz L6'da 0,78 fincan/sn, taşıma tavanı 1,25) geriye kalan tek büyüme yönü budur.
   // D3b `hF`: hedef koleksiyonunun KALICI çarpanı da müşteri başına ₺'ye biner (kanca kapalıyken 1).
-  const perCustomer = (price + ortBahsis(w, s) + lavaboIncomePerCustomer(s.lavabo)) * carpanSimdiki;
+  const perCustomer = (price + ortBahsis(w, s) + lavaboIncomePerCustomer(s.lavabo)) * carpanSimdiki * itibarSimdiki.gelir;
 
   const carry = carryRateOf(s);
   let akis = Math.min(demand, supply, carry);
@@ -572,6 +636,7 @@ function rate(s: State, eff = 1): number {
     demand *= servedFraction(s, w, koltuk, Math.min(supply, carry));
     akis = Math.min(akis, demand);
   }
+  sonAkis = akis; // D6: XP'nin kaynağı — kanca açıkken runProfile bunu okur
   return akis * perCustomer * eff;
 }
 
@@ -579,10 +644,10 @@ function rate(s: State, eff = 1): number {
 type Kol = 'talep' | 'arz' | 'taşıma' | 'bardak';
 function bindingArm(s: State): Kol {
   const w = deriveWorld(s.padsDone);
-  const bt = brewTimeOf(s);
+  const bt = brewTimeOf(s) / itibarSimdiki.arz;
   const koltuk = openSeats(w, s);
   const carry = carryRateOf(s);
-  let demand = koltuk / (C.npc.walkTime + bt + C.npc.eatTime);
+  let demand = (koltuk / (C.npc.walkTime + bt + C.npc.eatTime)) * itibarSimdiki.talep;
   if (M.k4) demand *= servedFraction(s, w, koltuk, Math.min(1 / bt, carry));
   const arms: [string, number][] = [['talep', demand], ['arz', 1 / bt], ['taşıma', carry]];
   if (M.k3) arms.push(['bardak', washRateOf(s, Math.min(demand, 1 / bt, carry))]);
@@ -917,7 +982,7 @@ function boughtLabel(a: Snap, b: Snap): string | null {
 }
 
 /** Bir profili koştur; milestone → saniye haritası döner. `buys` verilirse alım hattı da dolar. */
-function runProfile(eff: number, log = false, buys?: Buy[]): Map<string, number> {
+function runProfile(eff: number, log = false, buys?: Buy[], darbogaz?: Record<string, number>): Map<string, number> {
   const s: State = {
     t: 0, wallet: 0, lifetime: 0,
     stationLevels: Array.from({ length: MAX_SERVICES }, () => 0),
@@ -929,13 +994,16 @@ function runProfile(eff: number, log = false, buys?: Buy[]): Map<string, number>
   const MAX_T = 60 * 60 * 12; // B5a: şeridin 12 birimi 6 saatin ötesine taşıyor — ölçüm penceresi büyüdü
   const hedef = hedefFabrika ? hedefFabrika() : null;
   const carpan = hedefCarpanFabrika ? hedefCarpanFabrika() : null;
+  const itibar = itibarFabrika ? itibarFabrika() : null;
   carpanSimdiki = 1; // kanca kapalı olsa bile sıfırlanır: önceki koşunun çarpanı sızmasın
+  itibarSimdiki = ITIBAR_ETKISIZ; // aynı gerekçe (C4 tuzağı ②: kol sızması)
   const done = new Map<string, number>();
   while (s.t < MAX_T) {
     const inc = rate(s, eff) * DT;
     s.wallet += inc;
     s.lifetime += inc;
     s.t += DT;
+    if (darbogaz) { const k = bindingArm(s); darbogaz[k] = (darbogaz[k] ?? 0) + DT; }
     const before = buys ? spendSnap(s) : null;
     trySpend(s);
     if (before) {
@@ -943,7 +1011,7 @@ function runProfile(eff: number, log = false, buys?: Buy[]): Map<string, number>
       if (label) buys!.push({ t: s.t, label });
     }
     advanceQuests(s); // M1: görev ödülleri cüzdana
-    if (hedef || carpan) {
+    if (hedef || carpan || itibar) {
       // D3: hedef (koleksiyon) ödülleri — görev ödülüyle AYNI muamele (ikisi de lifetime'a sayar).
       const w = deriveWorld(s.padsDone);
       seviyeleriEsitle(s, w);
@@ -957,6 +1025,19 @@ function runProfile(eff: number, log = false, buys?: Buy[]): Map<string, number>
       }
       // D3b: çarpan bir SONRAKİ tick'te yürürlüğe girer (bkz. hedefCarpaniAyarla model sınırı).
       if (carpan) carpanSimdiki = carpan(d);
+      if (itibar) {
+        // D6: XP sim durumundan TÜRETİLİR. `sonAkis` bu tick'in rate() çağrısında yazıldı.
+        itibarSimdiki = itibar({
+          t: s.t,
+          servis: sonAkis * DT,
+          oyuncuPayi: oyuncuTasimaPayi(s),
+          questIdx: s.questIdx,
+          padSayisi: s.padsDone.length,
+          yukseltme: yukseltmeSayisi(s),
+          lifetime: d.lifetime,
+          ustaMasa: usta,
+        });
+      }
     }
     for (const m of MS()) {
       if (!done.has(m.name) && m.hit(s)) {
@@ -970,7 +1051,23 @@ function runProfile(eff: number, log = false, buys?: Buy[]): Map<string, number>
     }
     if (done.size === MS().length) break;
   }
+  // D6: kolun çarpanı koşunun DIŞINA sızmamalı. `carryRateOf` koşu bittikten sonra da çağrılıyor
+  // (`modelDebisi` → GERÇEK senaryo sapması); sızarsa r6 satırının sapma kolonu sessizce bozulur.
+  itibarSimdiki = ITIBAR_ETKISIZ;
   return done;
+}
+
+/**
+ * D6 TANI: bir profil koşusunda geliri KİM kelepçeliyor — kolların zamandaki payı (saniye).
+ * Kol taramasında r1 (talep) ve r3 (arz) neredeyse atıl çıktı; "neden" sorusunun cevabı bu
+ * dağılımdır ve tabloya bakarak TAHMİN edilmez, ölçülür. Ek bir profil koşusudur (taban için
+ * bir kez çağrılır), kol taramasına girmez.
+ */
+export function darbogazDagilimi(eff: number): Record<string, number> {
+  const pay: Record<string, number> = {};
+  const buys: Buy[] = [];
+  runProfile(eff, false, buys, pay);
+  return pay;
 }
 
 /** Bir profilin ARDIŞIK ALIM boşlukları — D1 tarayıcısı ihlalleri buradan sayar.

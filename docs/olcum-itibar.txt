@@ -1,0 +1,97 @@
+=== D6 — ITIBAR (eski XP): odul hangi KANALDAN gelsin (varyant olarak) ===
+
+Model: D-086 yururlukteki model (k1b + k2). economy.config.ts DOSYASI DEGISMEDI —
+kollar sim`in itibar kancasina takilir (tools/itibar-kollari.ts).
+
+MODEL SINIRI (rapora aynen gecer):
+  1) XP sim`de MODELLENMIYOR — egri sim durumundan TURETILIR (servis x oyuncu/garson
+     payi + gorev + pad + yukseltme). `perDishWashed` SIFIR sayilir (oyuncunun eliyle
+     bulasik yikamasi sim`de yok) → turetilen seviye gercegin bir ALT sinirdir.
+  2) Seviye atladigi an odul yururluge girer; gercekte oyuncu modali kapatana kadar
+     bekler → etkiler bir UST sinirdir. Ust sinir bile kucukse kol guvenle elenir.
+  3) Hedef kademeleri bu turda ₺ ODEMEZ (yalniz zaman kaydi, ortusme kolonu icin).
+
+--- TABAN: dort profilde 20 dk`yi asan alimlar (Itibar odulu YOK) ---
+  Idealize asan  1 · en uzun  23.9 dk -> servis L6
+  Yogun    asan  1 · en uzun  29.8 dk -> servis L6
+  Normal   asan  6 · en uzun  43.4 dk -> servis L6
+  Rahat    asan 11 · en uzun  68.2 dk -> servis L6
+
+  TABAN olcutleri: ilk alim 22 sn · acilis enUzun 1.6 dk · otomasyon 6.1 dk · SERIT 8.48 sa · sapma %8
+  TABAN en uzun bekleme (Normal): 43.4 dk -> servis L6
+  TABAN hukum (Idealize): asan 1 · en uzun 23.9 dk -> servis L6
+
+--- DARBOGAZ dagilimi: gelirin kelepcesi zamanin yuzde kacinda kimde ---
+  Idealize taşıma %93.0 · arz %5.9 · talep %1.1
+  Normal   taşıma %93.0 · arz %5.9 · talep %1.1
+
+--- KOL x DOZ: odulun KANALI, YOGUNLUGU ve takasi ---
+  acilis olcutleri (D-079): ilk alim < 90 sn · acilis enUzun <= 2 dk · otomasyon < 15 dk
+  ihlal(N/I): Normal (gozlem) / Idealize (HUKUM, D-087) profilinde 20 dk`yi asan alim
+  PENCERE   : 20 dk`yi asan bekleme araliginin ICINE dusen seviye atlamasi sayisi
+  ORTUSME   : bunlarin kacinda AYNI pencerede bir hedef kademesi de aciliyor
+  d.SERIT   : zincirin TABANA gore kisalmasi — D1`in eleme olcutu (Kat 1 icerigi)
+
+kol | doz    | SEVIYE | atlama | PENCERE | ORTUSME | ihlal(N/I) | enUzun  | SERIT   | d.SERIT | ilk alim | acilis | otom.
+-------------------------------------------------------------------------------------------------------------------------
+tab |      — |      1 |      0 |       0 |       0 |        6/1 | 43.4 dk | 8.48 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
+    t0: İtibar ödülü YOK — kanca kapalı (gerçek taban)
+t0  |      — |      1 |      0 |       0 |       0 |        6/1 | 43.4 dk | 8.48 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
+    r4: İtibar KAPI: tempoya sıfır dokunur (yalnız 💎 + kozmetik) — kanca açık, etki 1
+r4  |      — |     13 |     12 |       3 |       1 |        6/1 | 43.4 dk | 8.48 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
+    r1: talep: her seviye +%N müşteri akışı (PLANIN kolu)
+r1  |      0 |      1 |      0 |       0 |       0 |        6/1 | 43.4 dk | 8.48 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
+r1  | %0.5/sv |     13 |     12 |       3 |       1 |        6/1 | 43.4 dk | 8.48 sa |   %-0.0 |    22 sn | 1.6 dk | 6.1 dk
+r1  |  %1/sv |     13 |     12 |       3 |       1 |        6/1 | 43.4 dk | 8.48 sa |   %-0.0 |    22 sn | 1.6 dk | 6.1 dk
+r1  |  %2/sv |     13 |     12 |       3 |       1 |        6/1 | 43.4 dk | 8.48 sa |   %-0.0 |    22 sn | 1.6 dk | 6.0 dk
+r1  |  %5/sv |     13 |     12 |       3 |       1 |        6/1 | 43.4 dk | 8.47 sa |   %-0.1 |    21 sn | 1.6 dk | 6.0 dk
+r1  | %10/sv |     13 |     12 |       3 |       1 |        6/1 | 43.4 dk | 8.47 sa |   %-0.1 |    20 sn | 1.6 dk | 5.9 dk
+    r2: gelir: her seviye +%N müşteri başına ₺ (D-090 kalıbı; "+%1 bahşiş" buraya düşer)
+r2  |      0 |      1 |      0 |       0 |       0 |        6/1 | 43.4 dk | 8.48 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
+r2  | %0.5/sv |     13 |     12 |       2 |       1 |        5/1 | 41.1 dk | 8.09 sa |   %-4.6 |    22 sn | 1.5 dk | 6.0 dk
+r2  |  %1/sv |     13 |     12 |       3 |       1 |        4/1 | 39.1 dk | 7.74 sa |   %-8.7 |    22 sn | 1.5 dk | 6.0 dk
+r2  |  %2/sv |     13 |     12 |       3 |       1 |        3/1 | 35.9 dk | 7.14 sa |  %-15.7 |    22 sn | 1.5 dk | 5.8 dk
+r2  |  %5/sv |     12 |     11 |       0 |       0 |        1/0 | 28.9 dk | 5.85 sa |  %-31.0 |    21 sn | 1.4 dk | 5.5 dk
+r2  | %10/sv |     12 |     11 |       0 |       0 |        1/0 | 21.7 dk | 4.58 sa |  %-46.0 |    20 sn | 1.2 dk | 5.0 dk
+    r3: arz: her seviye +%N servis çıktısı (hazırlama süresi kısalır — tavana dokunan tek kol)
+r3  |      0 |      1 |      0 |       0 |       0 |        6/1 | 43.4 dk | 8.48 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
+r3  | %0.5/sv |     13 |     12 |       3 |       1 |        6/1 | 43.4 dk | 8.47 sa |   %-0.1 |    22 sn | 1.5 dk | 6.0 dk
+r3  |  %1/sv |     13 |     12 |       3 |       1 |        6/1 | 43.4 dk | 8.46 sa |   %-0.3 |    22 sn | 1.5 dk | 6.0 dk
+r3  |  %2/sv |     13 |     12 |       3 |       1 |        6/1 | 43.4 dk | 8.43 sa |   %-0.5 |    22 sn | 1.5 dk | 5.9 dk
+r3  |  %5/sv |     13 |     12 |       3 |       1 |        6/1 | 43.4 dk | 8.39 sa |   %-1.1 |    22 sn | 1.4 dk | 5.6 dk
+r3  | %10/sv |     13 |     12 |       3 |       1 |        6/1 | 43.4 dk | 8.33 sa |   %-1.8 |    21 sn | 1.3 dk | 5.2 dk
+    r6: taşıma: her seviye +%N taşıma kapasitesi (gerçek kelepçe — ölçüm sırasında eklendi)
+r6  |      0 |      1 |      0 |       0 |       0 |        6/1 | 43.4 dk | 8.48 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
+r6  | %0.5/sv |     13 |     12 |       2 |       1 |        5/1 | 41.1 dk | 8.10 sa |   %-4.5 |    22 sn | 1.6 dk | 6.1 dk
+r6  |  %1/sv |     13 |     12 |       1 |       1 |        4/1 | 39.1 dk | 7.76 sa |   %-8.5 |    22 sn | 1.6 dk | 6.1 dk
+r6  |  %2/sv |     13 |     12 |       1 |       1 |        3/0 | 35.5 dk | 7.16 sa |  %-15.6 |    22 sn | 1.6 dk | 6.1 dk
+r6  |  %5/sv |     13 |     12 |       0 |       0 |        1/0 | 28.0 dk | 5.97 sa |  %-29.6 |    22 sn | 1.6 dk | 6.1 dk
+r6  | %10/sv |     13 |     12 |       0 |       0 |        1/0 | 23.4 dk | 5.30 sa |  %-37.5 |    22 sn | 1.6 dk | 6.1 dk
+    r5: eğri: levelGrowth taranır — atlama YOĞUNLUĞU (ekonomik etki yok)
+r5  |  ×1.20 |     23 |     22 |       5 |       0 |        6/1 | 43.4 dk | 8.48 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
+r5  |  ×1.30 |     18 |     17 |       4 |       2 |        6/1 | 43.4 dk | 8.48 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
+r5  |  ×1.40 |     15 |     14 |       2 |       0 |        6/1 | 43.4 dk | 8.48 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
+r5  |  ×1.50 |     13 |     12 |       3 |       1 |        6/1 | 43.4 dk | 8.48 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
+r5  |  ×1.70 |     11 |     10 |       1 |       0 |        6/1 | 43.4 dk | 8.48 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
+r5  |  ×2.00 |      9 |      8 |       1 |       0 |        6/1 | 43.4 dk | 8.48 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
+
+--- Seviye atlamalarinin ZAMAN dagilimi (Normal profil) ---
+  r4 = yururlukteki egri (levelGrowth 1,5), ekonomik etki yok → tabanin kendi cizelgesi.
+  r4      —: L13 · 12 atlama · XP 18.912 · pencerede 3 · ortusen 1
+      L2@0.00sa · L3@0.03sa · L4@0.05sa · L5@0.14sa · L6@0.26sa · L7@0.45sa · L8@0.70sa · L9@1.13sa · L10@1.78sa · L11@2.98sa · L12@4.64sa · L13@7.08sa
+  r5  ×1.20: L23 · 22 atlama · XP 18.912 · pencerede 5 · ortusen 0
+      L2@0.00sa · L3@0.02sa · L4@0.05sa · L5@0.07sa · L6@0.13sa · L7@0.18sa · L8@0.25sa · L9@0.34sa · L10@0.45sa · L11@0.59sa · L12@0.70sa · L13@0.88sa · L14@1.11sa · L15@1.41sa · L16@1.71sa · L17@2.14sa · L18@2.74sa · L19@3.45sa · L20@4.17sa · L21@5.10sa · L22@6.26sa · L23@7.42sa
+  r5  ×1.30: L18 · 17 atlama · XP 18.912 · pencerede 4 · ortusen 2
+      L2@0.00sa · L3@0.02sa · L4@0.05sa · L5@0.09sa · L6@0.17sa · L7@0.25sa · L8@0.36sa · L9@0.55sa · L10@0.70sa · L11@0.96sa · L12@1.33sa · L13@1.76sa · L14@2.47sa · L15@3.44sa · L16@4.52sa · L17@6.10sa · L18@7.76sa
+  r5  ×1.40: L15 · 14 atlama · XP 18.912 · pencerede 2 · ortusen 0
+      L2@0.00sa · L3@0.03sa · L4@0.05sa · L5@0.12sa · L6@0.19sa · L7@0.34sa · L8@0.55sa · L9@0.76sa · L10@1.13sa · L11@1.65sa · L12@2.51sa · L13@3.76sa · L14@5.40sa · L15@7.52sa
+  r5  ×1.50: L13 · 12 atlama · XP 18.912 · pencerede 3 · ortusen 1
+      L2@0.00sa · L3@0.03sa · L4@0.05sa · L5@0.14sa · L6@0.26sa · L7@0.45sa · L8@0.70sa · L9@1.13sa · L10@1.78sa · L11@2.98sa · L12@4.64sa · L13@7.08sa
+  r5  ×1.70: L11 · 10 atlama · XP 18.912 · pencerede 1 · ortusen 0
+      L2@0.00sa · L3@0.04sa · L4@0.08sa · L5@0.18sa · L6@0.39sa · L7@0.73sa · L8@1.36sa · L9@2.49sa · L10@4.55sa · L11@7.81sa
+  r5  ×2.00: L9 · 8 atlama · XP 18.912 · pencerede 1 · ortusen 0
+      L2@0.00sa · L3@0.05sa · L4@0.11sa · L5@0.30sa · L6@0.67sa · L7@1.48sa · L8@3.41sa · L9@7.02sa
+
+--- Hedef kademelerinin acilis zamani (Normal profil, ayni kosu) ---
+  16 kademe · 0.05sa · 0.18sa · 0.18sa · 0.31sa · 0.59sa · 0.67sa · 2.13sa · 2.13sa · 2.13sa · 4.23sa · 4.29sa · 4.60sa · 4.69sa · 6.10sa · 6.25sa · 8.48sa
+

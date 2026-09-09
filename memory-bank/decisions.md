@@ -2572,3 +2572,7 @@ yok (oyuncu joystick ile sürülüyor) — bekçili bir doğruluk, henüz görü
 ölçüldü (bot katının içinde başlıyor · `×0,7` rota payı oyuncu dünyasında olanaksız · tetik
 yarıçapı ızgara yuvarlamasına yetmiyor, `+NAV_CELL` çözüyor); üçü düzeltildi, B2 yine 0,0 kaldı.
 Araç ölçülmüş hâline döndürüldü — botun göçü kendi turunu ister.
+**Turun süreç dersi (D-084'e ek):** kolları önceden yazmak GEREKLİ ama YETERLİ değil — asıl zararı
+gösteren `k5` (rota izlenebilirliği) tur kartında yoktu, ilk sayılar okununca eklendi. Beklenen
+zarar ("içerik kapalı") çürüdü. Kural: adım 2'nin ilk çıktısı hangi kolun EKSİK olduğunu da
+söyler; kol eklemek kapıyı delmez, kol eklemeden karar vermek deler.

@@ -5,39 +5,39 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-09 — **D5 BİTTİ** · Faz D 5/7 · 68/78)
+## ŞU AN (2026-09-09 — **D6 ADIM 1/2** · Faz D 6/7 · 68/78)
 
 ```
-SORU            : Oyuncunun YÜRÜDÜĞÜ dünya ile rotaların KURULDUĞU dünya aynı değil
-                  (nav: `navSolids` + actorRadius 0,28, sandalyesiz · oyuncu: `activeSolids` +
-                  playerRadius 0,47, sandalyeler katı). Nerede ve NE KADAR ısırıyor?     [KAPANDI]
-ÖLÇÜLECEK KOLLAR: k1 ayrışma · k2 ulaşılabilirlik · k3 tuzak cep · k4 pay · **k5 rota
-                  izlenebilirliği** (k5 ölçüm sırasında eklendi — asıl zararı o kol gösterdi)
-SAYILAR         : docs/nav-oyuncu-raporu-d5.md §2 — 7 bulgu, tam koşu (20 açıklık), damgalar temiz
-KARAR           : D-091 — `getPlayerNavGrid`; dünyaları birleştirmek elendi (personel masaya
-                  erişmek zorunda, `REACH_TABLE` actorRadius'a çivili)
-UYGULAMA        : `src/game/layout.ts` (+38 satır: activeSolids + playerRadius + alan kelepçesi,
-                  `navCache` deseninde tek yuvalı önbellek) · ölçüm aracı da bu fonksiyonu ÇAĞIRIR
-BEKÇİ           : tests/oyuncu-dunyasi.test.ts — 8 test, **8 mutasyon, sekizi de yakalandı**
-                  (sandalye · yarıçap · kelepçe silme · kelepçe ters · önbellek anahtarı ×2 ·
-                  doğrudan personel ızgarası · hücre boyu) · vitest 620
+SORU            : Plan §6 İtibar'a **"her seviye +%2 müşteri akışı, +%1 bahşiş"** yazdı — bu bir
+                  DENGE sayısı ve hiç ölçülmedi. Ama B4 Kat 1'de throughput kolunun TÜKENDİĞİNİ
+                  ölçmüştü (arz servis L6'da 0,78 fincan/sn, taşıma tavanı 1,25). Talep zaten
+                  bağlayıcı değilse planın ödülü HİÇBİR ŞEY yapmaz. **İtibar hangi kanaldan
+                  ödesin — ve ödemeleri hedeflerinkiyle ÖRTÜŞÜYOR mu (kanal mı, kapı mı)?**
+ÖLÇÜLECEK KOLLAR: **t0** taban (XP sim'de türetilir, ödül YOK — seviye atlamaları zamanda nereye
+                  düşüyor; ölçüm, kol değil) · **r1 talep** seviye başına +%N müşteri akışı
+                  (PLANIN kolu) · **r2 gelir** seviye başına +%N müşteri başına ₺ (D-090 kalıbı)
+                  · **r3 arz** seviye başına servis çıktısı (tavanın kendisine dokunan tek kol)
+                  · **r4 kapı** tempoya sıfır dokunur, yalnız 💎 + kozmetik (doz 0 kıyas satırı)
+                  · **r5 eğri** `levelGrowth` taranır — atlama YOĞUNLUĞU (D3'ün dersi: pencereyi
+                  yoğunluk doldurur, büyüklük değil) · **ö1 örtüşme** seviye atlamaları ↔ hedef
+                  ödemeleri aynı pencereye mi düşüyor · **g1** günlük görev 💎 arzı (D7'nin
+                  15 💎'lik Usta fiyatına karşı; ₺'ye dokunmama varsayımı sınanır)
+SAYILAR         : (adım 2'den sonra dolar → docs/itibar-raporu-d6.md §Bulgular)
+KARAR           : (adım 3 — kullanıcı seçer)
+UYGULAMA        : (adım 4 — yalnız kararın kolu)
+BEKÇİ           : (test dosyası + kaç mutasyonla doğrulandı)
 ```
 
-**Bu turun asıl dersi — ölçüm korkulan zararı ÇÜRÜTTÜ, başkasını buldu.** Beklenen zarar "içerik
-oyuncuya kapalı kalmış olabilir"di; 20 açıklığın 20'sinde de ulaşılamayan nokta 0, cep 0. Zarar
-ROTADA çıktı (%74,1) ve o kol (k5) tur kartında YOKTU — ölçerken eklendi. Yani kolları önceden
-yazmak gerekli ama yeterli değil: ilk sayılar hangi kolun eksik olduğunu da söylüyor.
-
-**İkinci ders — yarım geçiş bırakmamak.** Yeni ızgaranın tek doğal tüketicisi sim botuydu; göçü
-denendi, üç gerçek tuzak ÖLÇÜLDÜ ve düzeltildi (bot katının içinde başlıyor · `×0,7` rota payı
-oyuncunun dünyasında olanaksız · tetik yarıçapı ızgara yuvarlamasına yetmiyor), bot yine yürümedi
-(B2 159,1 → 0,0 br/dk). Araç ölçülmüş hâline **geri alındı**: yarım geçiş bırakmak C4 raporunun
-oyuncu-kipi sayılarını yeniden üretilemez kılardı.
+**Model sınırı, baştan yazılır:** XP sim'de HİÇ modellenmiyor. Araç onu sim durumundan TÜRETİR
+(servis akışı × oyuncu/garson payı · görev · pad · yükseltme) — yani seviye eğrisi bir ölçüm
+değil, ölçülmüş akışın üstüne kurulan bir türev. Günlük görevin geri dönüş (retention) değeri
+sim'in ölçebileceği bir şey DEĞİL; 💎 arzı defter hesabıdır, tempo tablosuna girmez.
 
 ## SIRADAKİ TAM ADIM
 
-**Faz D — meta katman (5/7).** Sıradaki: **D6 İtibar (eski XP anlam kazanır) + günlük görevler.**
-Ödül ekranı üç turdur hazır; günlük görevlerin ödülü D-090'ın kalıcı-çarpan kalıbına yaslanacak.
+**D6 adım 2 (ÖLÇ):** `tools/itibar-kollari.ts` + `tools/olcum-itibar.ts` → kısa koşuyla araç
+doğrulanır (seviye atlıyor mu? kol etkili mi? taban birebir mi?) → tam koşu TABAN → sekiz kol
+→ `docs/itibar-raporu-d6.md` §Bulgular → **commit #1 (karar bölümü BOŞ)**.
 Sonra D7 (elmas harcaması + Usta katmanı) — **D7 geldiğinde D-089'un elmas hükmü bayatlar**
 (bekçideki `h0` beklentisi bilerek o gün kırılacak şekilde yazıldı).
 

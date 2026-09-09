@@ -120,7 +120,7 @@ function yogunEsikler(n: number): number[] {
  *  merdiveni yürütür — aralarındaki tek fark ödülün KALIBI (sabit ₺ / gelire oranlı ₺ / çarpan).
  *  Merdiven ortak olmasaydı kalıplar kıyaslanamazdı: fark kalıptan mı eşikten mi gelirdi
  *  ayırt edilemezdi. */
-function kademeAkisi(): (d: HedefDurum) => { ci: number; ti: number }[] {
+export function kademeAkisi(): (d: HedefDurum) => { ci: number; ti: number }[] {
   const ortFiyat = cfg.service.basePrice;
   const durum = cfg.goals.categories.map(() => 0); // kategori başına AÇILMIŞ kademe sayısı
   const oku = (d: HedefDurum, metric: string): number => {
