@@ -214,26 +214,29 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum · Faz E · 4/5 — ses kaynağı seçildi: dosya değil KOD",
-  "baslik": "Hangi ses paketini alalım diye açıldı, ölçüm “paket alma, motoru büyüt” dedi",
-  "aciklama": "Tur basit bir alışveriş işi olarak açılmıştı: hangi ücretsiz ses paketinden dosyaları indirelim? Ama o sorunun önünde sınanmamış bir iddia duruyordu — önceki tur “tonlar birbirinden <b>kulakla ayırt edilebilecek</b> kadar farklı” demişti. Sistem dosyasız da çalıştığı için “sentez <b>nihai</b> olsun” hayali bir seçenek değil, gerçek bir koldu.<br><br><b>Ses duyulamaz ama fiziği hesaplanabilir.</b> Dokuz sesin otuz altı çifti ölçüldü. İlk sonuç tertemizdi — ve tam da bu yüzden şüpheliydi: <b>görev</b> ve <b>ödül</b> sesleri aynı dalga, aynı iki nota, aynı yükselen aralık, neredeyse aynı süreydi. Ölçüm bunları “ayrı” saydı çünkü mutlak perdeleri uzaktı. <b>Metrik yanlış değildi; sorulan soru eksikti</b> — oyunda bu sesler arka arkaya değil, dakikalarca arayla duyulur ve o zaman kulakta perde değil <b>jest</b> kalır. Bütün sesler aynı perdeye taşınıp yeniden ölçüldü; kusur görünür oldu.<br><br><b>Asıl bulgu bir kapasite sınırıydı:</b> dokuz sesin yedisi yükselen bir arpejdi, çünkü tek osilatörlü motor yalnız nota dizisi üretebiliyordu. Oysa bir bardağın masaya konması bir nota değil, kısa bir cam şıngırtısı ve tok bir gövdedir. Karar soruldu, cevap “en kalitelisi ne olacaksa o” oldu — ve hazır kayıt setleri en kalitelisi değildi: seslerde tek stil kilidi hiç kurulmamıştı ve gerçekçi kayıt sade bir sahnede yabancı durur. <b>Motor büyütüldü:</b> gürültü, süzgeç, metalik tını. Katalog iki aileye ayrıldı — fiziksel olaylar fiziksel duyuluyor, ilerleme olayları tonal kalıyor.<br><br><b>En kalıcı parça bir mimari düzeltme:</b> ölçüm aracı sesi üreten kodu <b>taklit</b> etmek zorundaydı, yani ölçülen kod ile duyulan kod ayrıydı. Sentez tek yere taşındı; tarayıcı artık üretmiyor, yalnızca çalıyor. Klasör <b>bilerek boş</b>: indirilecek dosya yok, doğrulanacak lisans yok — ama biri yarın bir dosya bırakırsa tek satır kod değişmeden üstüne yazar.",
+  "etiket": "Bu oturum · Faz S · 2/12 — pad ve modal, kullanıcı testiyle",
+  "baslik": "Oyun oynandı; tasarım tek hamlede değil, oynanarak bulundu",
+  "aciklama": "Bu tur bir ölçüm turu değil bir <b>oynama</b> turuydu. Kullanıcı oyunu açtı ve dört ayrı mesajda geri bildirim verdi; her seferinde bir öncekinin üstüne yazdı.<br><br><b>Önce bir hizalama hatası, ama sebebi öğretici.</b> Yükseltme noktasında &ldquo;YÜKSELT&rdquo; yazısıyla solundaki ok üst üste biniyordu. Çünkü çerçevenin genişliği işaretin yarıçapından türüyor, yazı da ortalanıyordu — <b>ikisi aynı genişlik için yarışıyor ve kimse ölçmüyordu</b>. Artık genişlik yazıdan çözülüyor. Köşeler yuvarlatıldı; kullanıcı içteki koyu zeminin hâlâ keskin olduğunu ve çizgilerin dışına taştığını görünce o da yuvarlatılıp çerçevenin içine gömüldü.<br><br><b>Sonra iki karar geri döndü.</b> Usta onayı bir alt şerit olarak yapılmıştı ve gerekçesi yazılıydı: modal hareketi keser. Kullanıcı oynayınca reddetti. Karar kullanıcınındır — ama eski gerekçenin işaret ettiği tuzak boş bırakılmadı: modal <b>kapatılabilir</b> ve oyuncu o masadan uzaklaşana kadar geri gelmiyor. Etkileşim de değişti: yaklaşınca değil, noktada <b>durdukça</b> işaret yeşil doluyor ve dolunca açılıyor.<br><br><b>Bir de biçim tekleşti.</b> Usta noktası bir ara yuvarlak yapılmıştı; kullanıcı <i>&ldquo;yuvarlak yapma, direkt yükseltme gibi olsun&rdquo;</i> deyince ayrım tamamen kalktı. Geriye tek fark kaldı: dolumun kaynağı ve rengi. <b>İki biçim tutmak iki bakım yeri demekti.</b> Ve işaretlerin yaklaşınca büyümesi kaldırıldı — boy sabit, yalnız oyuncu üstündeyken hafifçe kabarıyor.",
   "adimlar": [
-   "<b>36 çiftin 36'sı ayrı</b> — tek gerçek kusur düzeltildi, artık tabanın 12 katı uzakta",
-   "<b>Motor üç kaynağa çıktı:</b> gürültü + süzgeç · metalik tını · klasik dalgalar",
-   "<b>Lisans yüzeyi sıfır</b> — dış ses paketi yok, stil kilidi tanımı gereği sağlanıyor",
-   "<b>Ölçülen şey artık birebir duyulan şey</b> — aracın taklit kaydı silindi",
-   "<b>62 test · 18 mutasyonun 18'i yakalandı · denge sayısı değişmedi</b>"
-  ]
+   "<b>Çerçeve genişliği artık yazıdan çözülüyor</b> — çakışmanın kökü buydu",
+   "<b>Modal yaklaşınca değil DURUNCA açılıyor</b> · kapatılabilir · merkezî kabukta",
+   "<b>İşaret tek biçim</b> · <b>ölçek mesafeye göre değişmiyor</b>",
+   "<b>Görev toast'ı kalktı:</b> tamamlanma artık bandın kendi hâli",
+   "<b>770 test · duman 42/42</b> — biri yeni: modal alt sayfaya düşerse test kırılır"
+  ],
+  "not": "<b>İki soru sayıya çevrildi.</b> Kullanıcı <i>&ldquo;masalar birbirine çok mu yakın&rdquo;</i> diye sordu ve bir yerde yürüyemediğini söyledi; ikisi aynı kökmüş. Oyuncunun bir açıklıktan geçebilmesi için <b>0,94 birim</b> gerekiyor — ön salonda boşluk <b>3,50</b>, arka salonda <b>0,68</b>: yirmi masanın on ikisi arasından <b>geçilemiyor</b>. Çarpışma verisi bağımsız olarak aynı sonucu verdi. <b>&ldquo;Yürüyemiyorum&rdquo; bir his değil, geometri.</b> Bir de para sorusu vardı: tek bir ödemenin üst sınırı — en yüksek masa, Usta çarpanı ve bütün koleksiyon ödülleri dahil — <b>44 lira</b>. Yani &ldquo;bir masadan elli bin&rdquo; olamaz; görülen şey yerde biriken paraların <b>toplu toplanma bildirimi</b> ve o bildirim bir toplamı tek olay gibi gösteriyor."
  },
  "siradaki": {
-  "etiket": "Faz E · sırada hareketli onboarding, sonra paketleme",
-  "baslik": "Ses bitti; kalan tek cila kalemi oyunun ilk otuz saniyesi",
-  "aciklama": "Faz E'nin son kalemi <b>hareketli onboarding</b>: oyunun ilk otuz saniyesi. İlk satın alma bugün <b>22 saniyede</b> oluyor ve bu sayı on turdur hiç bozulmadı — yani öğretici yeni bir tempo icat etmeyecek, var olanı <b>görünür</b> kılacak.<br><br><b>Ardından paketleme fazı.</b> Telefon derlemesi bu turda zaten çalışır hale geldi (iki makine arasında kırık olan yapılandırma düzeltildi), yani o fazda kalan iş <b>boyut ve performans</b>: kod bölme, gölgelerin telefondaki maliyeti, mağaza hazırlığı.<br><br><b>Sesin açık bıraktığı iki kalem</b> kendi turlarını bekliyor: <b>ortam uğultusu</b> (motor üretebiliyor, eksik olan kablo — müzik ayarı henüz hiçbir şeye bağlı değil) ve sentezin <b>telefonda nasıl duyulduğu</b> — araç ayırt edilebilirliği ölçtü, hoşluğu değil.",
+  "etiket": "Sırada Faz S · 10 oturum — yayın öncesi toplam 19",
+  "baslik": "Depoda 185 KayKit modeli duruyor ve hiçbiri oyundan çağrılmıyor",
+  "aciklama": "Kullanıcının en ağır eleştirisi ölçülüp <b>doğrulandı</b>: üç KayKit paketi indirilmiş ve manifeste yazılmış, ama kodda paket adı yalnız <b>dört yerde</b> geçiyor ve dördü de aynı şeye bakıyor — masa ile sandalye. Restoran paketinin 144, şehir paketinin 41 modeli <b>hiçbir yerden çağrılmıyor</b>. Üstelik şikâyetlerin üçünün cevabı da orada: pencere duvarın parçası olarak modellenmiş, mutfak zemini ve duvar parçaları hazır, lavabo kabin kapısı için gerçek kapı modelleri var.<br><br><b>Sıra şöyle:</b> mutfak → duvar ve zemin → dekor takası → dış cephe ve tente → lavabo kabin kapıları. <b>Beşi de ne indirme ne onay istiyor</b> — hepsi diskte duran modellerle yapılacak iş. Ardından ses assetleri, arayüz dili (araştırma ve maket ayrı, uygulama ayrı) ve karakterler.<br><br><b>Ve bir faz ayrıldı:</b> bilinen üç oynanış hatası, yükseltme sırası ve masa aralığı sanat kalemi değil. Ayrı tutuldu ki asset işi onların arkasında beklemesin.",
   "adimlar": [
-   "<b>Şimdi:</b> hareketli onboarding — ilk 30 saniye görünür olsun",
-   "<b>Sonra:</b> paketleme — kod bölme, gölge maliyeti, mağaza hazırlığı",
-   "<b>Kendi turunu bekleyen:</b> ortam uğultusu (kablo işi) · sesin telefonda dinlenmesi"
-  ]
+   "<b>Şimdi:</b> mutfak bloğu KayKit'e geçer — elle çizilen altı parça gider",
+   "<b>Sonra:</b> duvar ve zemin · dekor takası · dış cephe ve tente · lavabo kapıları",
+   "<b>Karar bekleyen:</b> ses kaynağı · karakter kolu · yükseltme sırası · masa aralığı",
+   "<b>Yayın öncesi 19 oturum:</b> sanat 10 · oynanış 3 · onboarding 1 · paketleme 5"
+  ],
+  "not": "<b>Ses kararı bir dönüşü göze alıyor.</b> Beş tur önce ses için <i>&ldquo;kaynak dosya değil kod&rdquo;</i> seçilmiş, klasör bilerek boş bırakılmış ve doğrulanacak lisans sıfıra indirilmişti. Kullanıcı şimdi ortam uğultusu ve daha gerçekçi para sesi istiyor. Motor dosya üstüne yazmayı zaten destekliyor, yani <b>kablo hazır</b>; açılan tek şey lisans yüzeyi ve seslerdeki tek kaynak kilidi. Bir tuzak baştan yazıldı: hazır kafe ambiyans kayıtlarının çoğunda <b>anlaşılır yabancı konuşma</b> var ve kısa döngüde aynı cümle dakikada bir tekrar eder — aranması gereken şey kelimesi seçilmeyen kalabalık mırıltısıdır."
  },
  "donemler": [
   {
@@ -1034,6 +1037,18 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "riskler": [
+  {
+   "sev": "Oynanış",
+   "renk": "now",
+   "b": "Arka salonda <b>12 masa arasından geçilemiyor</b> — ölçüldü, düzeltme kullanıcı kararı bekliyor",
+   "p": "Kullanıcı oynarken <i>&ldquo;bir yerde resmen yürüyemiyorum&rdquo;</i> dedi ve ayrıca masaların birbirine çok yakın olup olmadığını sordu. İkisi <b>aynı kök</b> çıktı ve sayıya döküldü: oyuncunun bir açıklıktan geçebilmesi için <b>2 × yarıçap = 0,94 birim</b> gerekiyor. Ön salonun dörtlü masaları arasında boşluk <b>3,50</b> (rahat), ama arka salonun ikili masaları arasında yalnız <b>0,68</b> — yani yirmi masanın <b>on ikisi</b> arasından geçilemiyor. Çarpışma katıları bağımsız olarak tarandığında aynı sonuç çıktı: eşiğin altında <b>52 açıklık</b>, en darı <b>0,04 birim</b>. Yani bu bir his değil <b>geometri</b>. İki kol sayısıyla yazıldı: <b>K1</b> arka salon sütun aralığı 3,20 → 3,80 (boşluk 1,28'e çıkar, oda biraz genişler) · <b>K2</b> oturak ayak izini küçültmek (boşluk aynı yere gelir ama masa görsel olarak küçülür — proje kuralı <i>&ldquo;oranı mobilyayı kısarak kovalama&rdquo;</i> tam bunu yasaklıyor, o yüzden K1 öneriliyor). Düzeltme <b>onaylı maket düzenine</b> dokunduğu için uygulanmadı; Faz H'nin kalemi."
+  },
+  {
+   "sev": "Tasarım",
+   "renk": "wait",
+   "b": "Ses assetleri kararı <b>D-096'yı kısmen geri alıyor</b> — lisans yüzeyi yeniden açılıyor",
+   "p": "Beş tur önce ses için <i>&ldquo;kaynak dosya değil KOD&rdquo;</i> seçilmişti: sentez nihai, <code>public/assets/audio/</code> bilerek boş, <b>doğrulanacak lisans sıfır</b>, ve seslerde tek-stil kilidi tanım gereği sağlanıyordu. Kullanıcı şimdi <b>ortam uğultusu</b> (kıraathane kalabalığı) ve <b>daha gerçekçi para sesi</b> istiyor. Teknik taraf sorun değil: motor dosya üstüne yazmayı zaten destekliyor (<code>Model.tsx</code> fallback deseninin tersi), yani <b>kablo hazır</b> ve tek satır kod değişmeyecek. Açılan iki şey var: <b>lisans yüzeyi</b> (her dosyanın lisansı tek tek doğrulanmalı — manifest kuralı) ve <b>tek kaynak kilidi</b> (karışık sanatçı riski). Aday kaynaklar asset panosunda dört kol olarak duruyor; en temizi <b>Kenney Audio</b> (CC0, künye gerekmez, tek sanatçı, Casino Audio'da madeni para sesleri). <b>Bir tuzak baştan yazıldı:</b> hazır &ldquo;cafe ambience&rdquo; kayıtlarının çoğunda <b>anlaşılır İngilizce/İtalyanca konuşma</b> var ve döngü kısa olduğu için aynı cümle dakikada bir tekrar eder — Türk kıraathanesinde anında yabancı duyulur. Aranması gereken şey <b>walla</b>: kelimesi seçilmeyen kalabalık mırıltısı. Ayrıca <code>settings.music</code> anahtarı hâlâ hiçbir şeye bağlı değil; ortam sesi o kabloyu da kapatır."
+  },
   {
    "sev": "Çözüldü",
    "renk": "done",
