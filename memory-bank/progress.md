@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 81 · YAPILAN 74 · %91):**
+**Oturum bütçesi (TOPLAM 81 · YAPILAN 75 · %93):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -23,9 +23,9 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | **C zincir ve denge** | **5/5 ✅** |
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
 | | D meta katman | 9/9 ✅ |
-| | E arayüz ve cila | 3/5 🔧 |
+| | E arayüz ve cila | 4/5 🔧 |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **46/53** |
+| **Program toplam** | | **47/53** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -36,7 +36,9 @@ oyuncu çarpışması bilinen-hata listesinden çıkıp kendi turu oldu (D5) →
 toplam 78 → 79. **Aynı gün:** meta katmanın yığını beş turdur açık duran D-087 ölçümü olarak
 kendi turunu aldı (D9) → Faz D 8 → 9, toplam 79 → 80. **Aynı gün:** E3 (ses) kullanıcı
 kararıyla SİSTEM (E3) ve DOSYALAR (E4) olarak ikiye bölündü, onboarding E5 oldu → Faz E 4 → 5,
-toplam 80 → 81.
+toplam 80 → 81. **E4 kapsamı ölçümle değişti ama kalem sayısı değişmedi:** tur "dosya bırak"
+olarak açılmıştı, ölçüm "dosya alma, motoru büyüt" dedi (D-096); ortam sesi + `settings.music`
+kablosu E4'ün dışında kaldı ve **henüz kendi kalemi olmadı** — açık kalemler listesinde duruyor.
 
 **v1 kapsam çizgisi:** prestij · Kat 2 · sipariş nesnesi · aktif WC döngüsü · dekor instancing
 **v1.1'e**; v1 = Kat 1 + elmas/Usta + offline tavan + reklam/IAP + mağaza.
@@ -191,7 +193,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
 > D2-D7 `docs/plan-kat1-yayin.html` §D kapsamından türetildi; **sırası açık** — her tur başında
 > seçilir. Ayrıca Faz D'de bekleyen bilinen bir hata var: **nav ızgarası ↔ oyuncu çarpışması**.
 
-## Faz E — ARAYÜZ VE CİLA (3/5) 🔧
+## Faz E — ARAYÜZ VE CİLA (4/5) 🔧
 - ✅ **E1 — bilgi mimarisi + Görevler/Hedefler ekranı** (kuruluş turunda yapıldı; D-049…D-052).
 - ✅ **E2 — duman testi `package.json`'a BAĞLANDI: `npm run duman`** · koşucu sunucuyu kendi
   kaldırıp indiriyor (`tools/duman.mjs`), 41/41 · çıkış 0 · **25 sn**. Fazın kapısı buydu.
@@ -216,7 +218,27 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   `audioBridge.ts` · manifest yeniden yazıldı (kaynak/lisans kolonları bilerek `?` — seçilmiş
   değil VARSAYILMIŞ kaynaklardı) · bekçi `tests/ses.test.ts` (29 test, **16 mutasyon, on altısı
   da yakalandı**) · vitest **734** · duman 41/41 · **denge sayısı DEĞİŞMEDİ.**
-- ⏳ **E4 — ses DOSYALARI** *(tur adı `E3b`)* (kaynak + lisans kararı; tek stil kilidi seslerde de geçerli)
+- ✅ **E4 — ses kaynağı seçildi: dosya değil KOD; motor büyütüldü (D-096)** *(tur adı `E3b`)* ·
+  tur "hangi CC0 kaynaktan dosya" diye açıldı, ölçüm önündeki soruyu sordu: motor dosyasız da
+  çalışıyordu. **İddia ölçüldü ve ayakta çıktı** (36 çiftin 35'i ayrı); tek gerçek kusur
+  `quest ↔ reward` — aynı dalga, aynı +5 aralık, 0,6 JND süre farkı, yani **aynı jestin
+  transpozesi** (jest 0,13 dB < taban 0,22). **İkinci kanalı ölçümün kendisi doğurdu:** tek
+  kanalla 36/36 "AYRI" çıkıyordu, metrik yanlış değil SORULAN SORU eksikti — oyunda sesler art
+  arda değil dakikalarca arayla duyulur, o zaman perde değil JEST kalır. Kullanıcı "en kalitelisi
+  olsun" dedi, kol bana bırakıldı → **motor büyütüldü**: gürültü + bant süzgeci · inharmonik
+  kısmiler · band-limitli dalgalar. Katalog **iki aileye** ayrıldı (fiziksel `pour`/`serve` ·
+  ilerleme tonal · `coin` metalik arada) — D-080 Tek Odak'ın ses karşılığı. Sonuç **36/36 AYRI ·
+  ikiz 0 grup · tını 3 → 6 · gürültü-baskın ses 0 → 2**, `quest↔reward` taban altından
+  **×12,45 tabana**. **Sentez NİHAİ, dosya opsiyonel üstüne yazma**; `public/assets/audio/`
+  bilerek boş, lisans yüzeyi sıfır, stil kilidi `docs/assets.md` §7'ye yazıldı. **En kalıcı
+  parça:** sentez tek yerde üretiliyor (`audioSynth.ts`) — E3'te ölçüm aracı motoru TAKLİT
+  ediyordu, artık ölçülen şey birebir duyulan şey. `docs/ses-raporu-e4.md` · araç
+  `tools/olcum-ses-ayirt.ts` · bekçi `tests/ses-sentez.test.ts` (19 test, YENİ) +
+  `tests/ses.test.ts` (43) · **18 mutasyon, on sekizi de yakalandı** — üçü ilk turda kaçtı ve
+  üçü de gerçek delikti (M3 zarfın gecikme dalının ÖLÜ KOD olduğunu, M15/M16 aile testinin fazla
+  gevşek olduğunu gösterdi). vitest **767** · duman **41/41** · **denge sayısı DEĞİŞMEDİ.**
+  **Kabul edilen kapsam sınırı:** `settings.music` + ortam sesi girmedi — kablo sorunu, kabiliyet
+  değil; kendi turunu ister.
 - ⏳ **E5 — hareketli onboarding**
 
 ## Bilinen açık kalemler

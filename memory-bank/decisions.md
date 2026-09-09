@@ -2730,3 +2730,74 @@ birden yazılmaz, onu ölçen bekçide kalır.**
 
 **Açılan kalem:** zinciri UZATAN kollar hiç ölçülmedi. `outputMultByLevel` yok ve `b1` (basamak
 bölme) erken oyuna dokunmadan denenemiyor — ikisi de tam oraya bakıyor, kendi turunu ister.
+
+---
+
+## D-096 — Ses kaynağı: dosya değil KOD. Motor büyütüldü, sentez NİHAİ stil oldu (E4)
+
+**Bağlam.** E4 "hangi CC0 kaynaktan ses dosyası alalım" turu olarak açıldı. Ölçüm o sorunun
+önündeki soruyu sordu: motor dosya olmadan da çalışıyordu, yani "sentez nihai olsun" gerçek bir
+koldu. `docs/ses-raporu-e4.md`.
+
+**① İddia ölçüldü ve AYAKTA çıktı.** E3'ün "kulaktan ayırt edilebilir" iddiası sınanmamıştı.
+36 çiftin 35'i ayrı; sentez yer tutucu gibi davranmıyor. Tek gerçek kusur `quest ↔ reward`:
+ikisi de triangle, iki nota, aynı +5 aralık, süre farkı 0,6 JND — **aynı jestin transpozesi**,
+jest mesafesi 0,13 dB ve jest tabanının (0,22) ALTINDA.
+
+**② Ölçüm İKİ KANALLI olmak zorundaydı ve bunu ölçümün kendisi öğretti.** Tek kanalla sonuç
+36/36 "AYRI" çıkıyordu. Metrik yanlış değildi — **sorulan soru eksikti**: oyunda sesler art arda
+değil dakikalarca arayla duyulur (`coin` saniyede bir, `level` saatte bir), o zaman mutlak perde
+hafızada tutulmaz, kalan şey JESTtir. Perde silinince kusur görünür oldu.
+
+**③ Karar: kullanıcı "en kalitelisi olsun" dedi, kol bana bırakıldı → MOTORU BÜYÜT.**
+Elenen üçü: (A) tek osilatörle kalmak Bulgu 3'ün üstünü örterdi; (B) hazır CC0 seti seslerde hiç
+kurulmamış stil kilidini karışık sanatçıyla açardı ve gerçekçi kayıt flat-shaded sahnede yabancı
+durur, üstelik ölçülmüş bir sistemi ölçülmemişle değiştirirdi; (C) hibrit, `settings.music`
+kablosuz olduğu için bugün "2 dosya bırak"a inmiyor.
+
+**④ Sentez NİHAİDİR, dosya opsiyonel ÜSTÜNE YAZMADIR.** E3'te sıra tersti. `dosya` alanı duruyor:
+bir `.ogg` bırakılırsa üstüne yazar, tek satır kod değişmeden — **karar geri alınabilir**, hiçbir
+kapı kapanmadı. Stil kilidi `docs/assets.md` §7'ye yazıldı (eski satır bir seçim değil aday
+listesiydi), künye manifeste; `public/assets/audio/` **bilerek boş**. Lisans yüzeyi SIFIR.
+Gerekçe D-013'ün aynısı: primitive yer tutucu değil nihai stil.
+
+**⑤ Motor üç kaynağa çıktı ve katalog İKİ AİLEYE ayrıldı.** Gürültü + bant süzgeci · inharmonik
+kısmiler · band-limitli klasik dalgalar. FİZİKSEL olaylar gürültü ailesinde (`pour` bant merkezi
+yükselen akış · `serve` cam şıngırtısı + tok gövde), İLERLEME olayları tonal; `coin` arada
+(tonal ama inharmonik = metalik). D-080 Tek Odak'ın ses karşılığı: aileler aynı dili konuşmuyor.
+Sonuç: **36/36 AYRI · ikiz 0 grup · tını 3 → 6 · gürültü-baskın ses 0 → 2** ·
+`quest↔reward` taban altından **×12,45 tabana** çıktı.
+
+**⑥ En kalıcı parça: sentez TEK YERDE üretiliyor — ölçülen şey birebir duyulan şey.** E3'te
+sentez `audioWeb.ts` içinde WebAudio düğümleriyle kuruluydu ve ölçüm aracı o zinciri TAKLİT
+etmek zorunda kaldı; iki ayrı kod vardı ve sapmayı hiçbir şey tutmuyordu. Artık `audioSynth.ts`
+saf/deterministik PCM üretiyor, tarayıcı çalıyor, araç aynı fonksiyonu çağırıyor.
+**Süreç dersi: bir ölçüm aracı ölçtüğü şeyi yeniden yazıyorsa, ölçtüğü şey o değildir.**
+
+**Bekçi.** `tests/ses-sentez.test.ts` (19 test · YENİ) + `tests/ses.test.ts` (43 test) =
+62 test, **18 mutasyon, on sekizi de yakalandı**. **Üçü ilk turda kaçtı ve üçü de gerçek delikti:**
+M3 `zarf`ın gecikme dalının ÖLÜ KOD olduğunu gösterdi (döngü zaten gecikmeden başlıyordu — iki
+mekanizma, biri bekçisiz; döngü 0'a çekildi, gecikmeyi yalnız zarf uyguluyor). M15/M16 "en az bir
+gürültü + en az bir ton sesi olsun" testinin fazla gevşek olduğunu gösterdi (biri çökünce öteki
+aileyi tek başına dolduruyordu) — kural **hangi sesin hangi ailede olduğu** diye ses ses yazıldı.
+Ayrıca `serve`in katman kazançları 0,10/0,10 ile **beraberdi** ve teşhis katman sırasına bağlıydı;
+0,11/0,09 yapıldı, beraberlik test tarafından yasaklandı.
+
+**Aracın kendi kusuru da bulundu:** `oruntu` teşhisi "çok değerli İLK katman"ı okuyordu ve
+`padFill`in gürültü süpürmesi tonal üçlüyü gölgeleyip **+28** yazdırıyordu (kulağın duyduğu jest
+**+7,+5**). İkiz denetimi bu kolona baktığı için gerçek bir ikizi kaçırabilirdi; teşhisler artık
+**baskın katmanı** okuyor.
+
+**Denge sayısı DEĞİŞMEDİ** — `economy.config.ts` / `tick.ts` / `rules.ts` hiç açılmadı, varyant
+kapısı tetiklenmedi. vitest **767** · duman **41/41** · kayıt sürümü artmadı.
+
+**Kabul edilen kapsam sınırı.** `settings.music` + ortam sesi bu tura GİRMEDİ; kesme çizgisi
+bilerek orada. E4 bir SENTEZ turu, ortam sesi bir YAŞAM DÖNGÜSÜ işi. Motorun gürültü kaynağı
+ortam uğultusunu üretebilir — eksik olan **kablo, kabiliyet değil**. `settings.music` bugün
+`settings.sound`un E3 öncesi hâlinde: kayıtta duruyor, hiçbir şeye bağlı değil. Kendi turunu ister.
+
+**Yan iş (denge dışı, kayda geçsin).** APK derlemesi iki makine arasında kırıktı:
+`android/gradle.properties` diğer makinenin Android Studio JBR yolunu MUTLAK yazıyordu ve o yol bu
+makinede yok. Mutlak yol committed dosyadan çıkarıldı, makineye özel JDK seçimi
+`~/.gradle/gradle.properties`e (git'te değil) taşındı. Ayrıca **Capacitor 8 JDK 21 istiyor**
+(JDK 17 "invalid source release: 21" veriyor); bu makineye Temurin 21 kuruldu. Debug APK: 7,3 MB.

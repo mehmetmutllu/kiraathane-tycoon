@@ -30,11 +30,29 @@ AI üretimi (Meshy / Tripo, low-poly mod, .glb) + temizlik + seçilen stile uydu
 - **semaver**, **ince belli çay bardağı**, **okey takımı**, **nargile**, **bakır demlik**,
   tavla, çay tepsisi, şekerlik.
 
-## 7. Ses (CC0)
-Kaynak: Kenney / Pixabay / Freesound (CC0).
-- Kısık **ortam kıraathane döngüsü** (uğultu, bardak şıngırtısı).
-- SFX: para toplama, çay dökme, okey pulu, pad dolma, satın alma.
-- Ses / mute kontrolü (ayarlar).
+## 7. Ses — SENTEZ (stil kilidi · D-096)
+**Kaynak: `src/game/audioSynth.ts`. Dış ses paketi YOK, lisans yüzeyi SIFIR.**
+
+Bu satır eskiden *"Kaynak: Kenney / Pixabay / Freesound (CC0)"* diyordu; o bir **seçim değil aday
+listesiydi** ve seslerde §3'ün tek stil kilidi hiç kurulmamıştı. E4'te kuruldu ve ölçümle verildi
+(`docs/ses-raporu-e4.md`): sentez kataloğu 36 çiftin 36'sında ayrışıyor, yani yer tutucu değil.
+
+Gerekçe §2 ve D-013'ün aynısı: **primitive yer tutucu değil NİHAİ stil.** Sesin karşılığı da bu.
+Sentez tek "sanatçı"dır — stil kilidi tanımı gereği sağlanır; hazır kayıt setleri ise iki sorunu
+birden getiriyordu (karışık sanatçı + gerçekçi kaydın flat-shaded sahnede yabancı durması).
+
+**İki ses ailesi** (D-080 Tek Odak'ın ses karşılığı):
+- **Fiziksel** — gürültü + bant süzgeci. `pour` (bant merkezi yükselen akış) · `serve` (cam
+  şıngırtısı + tok gövde). Metalik `coin` de buraya yakındır: tonaldir ama kısmileri inharmoniktir.
+- **İlerleme** — tonal. `purchase` · `padFill` · `quest` · `level` · `master` · `reward`.
+  Aralık örüntüleri bilerek ayrı: −5 · +7,+5 · +4,+3 · +7,+5,+4 · +5,+5 · +12.
+
+**Dosya OPSİYONELDİR, kural değişmedi:** `public/assets/audio/`'ya bir `.ogg` bırakılırsa üstüne
+yazar ve tek satır kod değişmez (`Model.tsx` fallback deseninin aynısı, yönü ters). Bırakılan her
+dosya §8'in lisans disiplinine tabidir. Bugün klasör **bilerek boştur.**
+
+**Henüz sentezlenemeyen:** ortam uğultusu (`settings.music` kablosu yok) ve okey pulu (masa v1.1).
+İkisi de kendi turunu ister; motorun gürültü kaynağı ikisini de üretebilir.
 
 ## 8. Lisans disiplini (kural)
 - `public/assets/README.md` = **manifest**: gereken her model + kaynağı + LİSANSI.

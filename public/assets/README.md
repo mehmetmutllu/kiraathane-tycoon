@@ -69,34 +69,37 @@ ayrı CC0 paket; eklenince ayrı modüler klasöre (`public/assets/models/<paket
 > UI fontları (Baloo 2 + Lilita One) npm `@fontsource/*` paketlerinden YEREL bundle'lanır
 > (main.tsx; CDN yok). İkisi de OFL 1.1.
 
-## Sesler (`public/assets/audio/`)
+## Sesler (`public/assets/audio/`) — **KLASÖR BİLEREK BOŞ**
 
-**Motor E3a'da kuruldu, dosyalar E3b'nin işi.** Liste artık serbest bir dilek değil: her satırın
-karşılığı `src/game/audio.ts` içindeki `SES_KATALOG`ta duruyor ve **dosya yokken sentezlenmiş bir
-ton çalınıyor** (`components/three/Model.tsx` fallback loader deseninin sesteki karşılığı). Yani
-oyun bugün de tam sesli oynanıyor; dosya bırakmak tek satır kod değiştirmiyor.
+**Kaynak seçildi ve seçim "dosya değil KOD" oldu (E4 · D-096).** Sesler
+`src/game/audioSynth.ts` tarafından çalışma anında sentezlenir. Dış ses paketi yok, indirilecek
+dosya yok, doğrulanacak lisans yok. Gerekçe `docs/assets.md` §7; sayılar `docs/ses-raporu-e4.md`.
 
-**Dosya adı katalogla BİREBİR eşleşmek zorunda** — `tests/ses.test.ts` her sesin dosyasının
+Bu tablo bir **alışveriş listesi değil**: aşağıdaki `.ogg` adları, birileri o dosyayı bırakırsa
+sentezin ÜSTÜNE YAZACAĞI yolları gösterir (`Model.tsx` fallback deseninin aynısı, yönü ters).
+Bugün hiçbiri yok ve oyun tam sesli oynanıyor.
+
+**Dosya adı katalogla BİREBİR eşleşmek zorunda** — `tests/ses.test.ts` her sesin yolunun
 `/assets/audio/*.ogg` kalıbında olduğunu bekçiliyor, ama adın DOĞRU dosyayı gösterdiğini
-doğrulayamaz; oradaki tek koruma bu tablodur.
+doğrulayamaz; oradaki tek koruma bu tablodur. **Bırakılacak her dosya lisans disiplinine tabidir**
+(`docs/assets.md` §8): belirsiz lisanslı hiçbir ses commit'lenmez.
 
-| Dosya | Olay (`SesId`) | Ne zaman | Kaynak | Lisans | Durum |
-|---|---|---|---|---|---|
-| coin_pickup.ogg | `coin` | Yerden para toplandı | ? | ? | ⏳ |
-| tea_pour.ogg | `pour` | Ocaktan tepsiye çay alındı | ? | ? | ⏳ |
-| tea_serve.ogg | `serve` | Oyuncu masaya ürün bıraktı | ? | ? | ⏳ |
-| purchase.ogg | `purchase` | ₺ yükseltme alındı | ? | ? | ⏳ |
-| pad_fill.ogg | `padFill` | Pad açıldı (alan/masa/personel) | ? | ? | ⏳ |
-| quest_done.ogg | `quest` | Görev tamamlandı | ? | ? | ⏳ |
-| level_up.ogg | `level` | İtibar seviyesi atladı | ? | ? | ⏳ |
-| master.ogg | `master` | 💎 ile Usta alındı | ? | ? | ⏳ |
-| reward.ogg | `reward` | Hedef / günlük görev ödülü toplandı | ? | ? | ⏳ |
-| ambience_loop.ogg | *(olay değil)* | Ortam uğultusu — `settings.music`, henüz bağlı DEĞİL | ? | ? | ⏳ |
-| okey_tile.ogg | *(olay değil)* | Okey pulu — okey masası v1.1'de | ? | ? | ⏳ |
+| Üstüne yazma yolu | Olay (`SesId`) | Ne zaman | Sentezdeki karşılığı | Durum |
+|---|---|---|---|---|
+| coin_pickup.ogg | `coin` | Yerden para toplandı | metalik tık — inharmonik kısmiler + tiz gürültü geçişi | ✅ sentez |
+| tea_pour.ogg | `pour` | Ocaktan tepsiye çay alındı | bant merkezi 650→1500 Hz yükselen süzülmüş gürültü + fokurdama | ✅ sentez |
+| tea_serve.ogg | `serve` | Oyuncu masaya ürün bıraktı | dar bantlı cam şıngırtısı (q=8) + tok alçak gövde | ✅ sentez |
+| purchase.ogg | `purchase` | ₺ yükseltme alındı | tahta tok + alçak registerda İNEN onay (−5) | ✅ sentez |
+| pad_fill.ogg | `padFill` | Pad açıldı (alan/masa/personel) | yükselen gürültü süpürmesi + yükselen üçlü (+7,+5) | ✅ sentez |
+| quest_done.ogg | `quest` | Görev tamamlandı | majör üçlü (+4,+3), triangle | ✅ sentez |
+| level_up.ogg | `level` | İtibar seviyesi atladı | 4 notalı fanfar (+7,+5,+4) + oktav üstü parlaklık | ✅ sentez |
+| master.ogg | `master` | 💎 ile Usta alındı | ÇAN — inharmonik kısmiler, uzun sönme (+5,+5) | ✅ sentez |
+| reward.ogg | `reward` | Hedef / günlük görev ödülü toplandı | oktav sıçraması (+12) + kısa parıltı | ✅ sentez |
+| ambience_loop.ogg | *(olay değil)* | Ortam uğultusu | **YOK** — `settings.music` kablosu çekilmedi, kendi turunu ister | ⏳ |
+| okey_tile.ogg | *(olay değil)* | Okey pulu | **YOK** — okey masası v1.1 | ⏳ |
 
-**Kaynak ve lisans kolonları bilerek `?`.** Önceki hâlde "Kenney / CC0" ve "Freesound / CC0
-doğrula" yazıyordu; ikisi de **seçilmiş değil varsayılmış** kaynaklardı ve tek stil kilidi
-(`docs/assets.md`) seslerde henüz kurulmadı. E3b'nin işi tam olarak bu: kaynağı seçmek, lisansı
-tek tek doğrulamak, sonra bu kolonları doldurmak. **Belirsiz lisanslı hiçbir ses commit'lenmez.**
+**Ölçüldü:** 36 çiftin 36'sı ayrı (KARIŞIR 0 · AYNI JEST 0 · ikiz 0 grup) ·
+`docs/olcum-ses-ayirt.txt` · araç `tools/olcum-ses-ayirt.ts` · bekçi `tests/ses.test.ts` +
+`tests/ses-sentez.test.ts`.
 
 Durum: ⏳ greybox (model/ses yok, ilkel/ton kullanılıyor) · ✅ eklendi (lisans doğrulanmış).

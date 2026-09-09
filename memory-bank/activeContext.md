@@ -5,50 +5,51 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-09 — **E4 ÖLÇÜM BİTTİ, KARAR BEKLİYOR** · Faz E 3/5 · 74/81)
+## ŞU AN (2026-09-09 — **E4 BİTTİ** · Faz E 4/5 · 75/81)
 
 ```
-SORU            : E4 "hangi CC0 kaynaktan ses dosyası" turu olarak açıldı. Ama o sorunun ÖNÜNDE
-                  duran soru sınanmamıştı: motor dosya yokken sentez tonuna düşüyor, yani
-                  "dosya HİÇ gelmesin, sentez NİHAİ olsun" gerçek bir kol (D-013'ün sesteki
-                  karşılığı). E3'ün "kulaktan ayırt edilebilir" iddiası doğru mu?
-ÖLÇÜLECEK KOLLAR: kol değil ÖLÇÜM — 9 sesin 36 çifti, iki kanalda (MUTLAK perde + JEST perde-siz)
-                  + süre JND'si. Kaynak kolları (sentez / CC0 dosya / hibrit) karar paketinde.
-SAYILAR         : KARIŞIR 0/36 · AYNI JEST 1/36 (quest<->reward) · AYRI 35/36 · yükselen arpej 7/9
-                  · mutlak taban 1,39 dB · jest tabanı 0,22 dB · docs/ses-raporu-e4.md §Bulgular
-KARAR           : (BOŞ — karar paketi kullanıcıya sunuldu, bekliyor)
-UYGULAMA        : (karardan sonra)
-BEKÇİ           : (karardan sonra)
+SORU            : E4 "hangi CC0 kaynaktan ses dosyası" diye açıldı. Önündeki soru sınanmamıştı:
+                  motor dosyasız da çalışıyor, yani "sentez NİHAİ olsun" gerçek bir kol.
+                  E3'ün "kulaktan ayırt edilebilir" iddiası doğru mu?  [KAPANDI]
+ÖLÇÜLECEK KOLLAR: ölçüm — 36 çift, iki kanal (MUTLAK perde + JEST perde-siz) + süre JND'si.
+                  Kaynak kolları (A sentez / B CC0 set / C hibrit / D motoru büyüt) karar paketinde.
+SAYILAR         : TABAN: KARIŞIR 0 · AYNI JEST 1 (quest<->reward, 0,13 dB < taban 0,22) · AYRI 35
+                  FİNAL: KARIŞIR 0 · AYNI JEST 0 · AYRI 36/36 · quest<->reward x12,45 taban
+                  ikiz 1 grup → 0 · tını 3 → 6 · gürültü-baskın ses 0 → 2 · docs/ses-raporu-e4.md
+KARAR           : D-096 — kullanıcı "en kalitelisi olsun" dedi, kol bana bırakıldı → MOTORU BÜYÜT.
+                  Sentez NİHAİ, dosya opsiyonel üstüne yazma. Klasör bilerek boş, lisans yüzeyi 0.
+UYGULAMA        : src/game/audioSynth.ts (YENİ, saf+deterministik) · audio.ts katalog iki AİLEYE
+                  ayrıldı · audioWeb.ts artık üretmiyor sadece ÇALIYOR · docs/assets.md §7 stil
+                  kilidi · manifest yeniden yazıldı
+BEKÇİ           : tests/ses-sentez.test.ts (19, YENİ) + tests/ses.test.ts (43) = 62 test,
+                  **18 mutasyon, on sekizi de yakalandı**
 ```
 
-**Ölçüm iddiayı DOĞRULADI, tek istisnayla.** Sentez tonları yer tutucu gibi davranmıyor; katalog
-gerçekten ayrışmış (35/36). Tek gerçek kusur `quest` ↔ `reward`: ikisi de triangle, iki nota,
-**aynı +5 yarım ses aralığı**, süre farkı 0,6 JND — aynı jestin transpozesi. Jest mesafesi
-0,13 dB, jest tabanının (0,22) ALTINDA. Bulgu metriğe bağlı değil: metrikten bağımsız yapısal
-denetim de tek başına aynı çifti buluyor.
+**En kalıcı parça mimarî:** E3'te sentez `audioWeb.ts` içinde WebAudio düğümleriyle kuruluydu ve
+ölçüm aracı o zinciri **TAKLİT** etmek zorundaydı — ölçülen kod ile duyulan kod ayrıydı, sapmayı
+hiçbir şey tutmuyordu. Artık tek üretim yeri var. **Ders: bir ölçüm aracı ölçtüğü şeyi yeniden
+yazıyorsa, ölçtüğü şey o değildir.**
 
-**İkinci kanal ölçümün kendisinden doğdu.** Tek kanalla sonuç 36/36 "AYRI" çıkıyordu; metrik
-yanlış değil, SORULAN SORU eksikti — oyunda sesler art arda değil dakikalarca arayla duyulur,
-o zaman mutlak perde değil JEST kalır.
+**İkinci kanalı ölçümün kendisi doğurdu.** Tek kanalla 36/36 "AYRI" çıkıyordu; metrik yanlış
+değil, SORULAN SORU eksikti — oyunda sesler art arda değil dakikalarca arayla duyulur (`coin`
+saniyede bir, `level` saatte bir), o zaman mutlak perde hafızada kalmaz, JEST kalır.
 
-**Kapasite sınırı (kusur değil):** tek osilatörlü motor yalnız nota dizisi üretebiliyor; 9 sesin
-7'si yükselen arpej. Gürültü bileşeni (şıngırtı, fokurdama, tıkırtı) bugün ÜRETİLEMEZ — kataloğun
-ölçüme girmeyen iki sesi (`ambience_loop`, `okey_tile`) tam oraya düşüyor. Ayrıca `ambience`ın
-bağlanacağı **`settings.music` kayıtta duruyor ama hiçbir şeye bağlı değil** — `settings.sound`un
-E3'ten önceki hâli. Yani ortam sesi önce bir DOSYA değil, bir KABLO sorunu.
+**Üç mutasyon ilk turda kaçtı, üçü de gerçek delikti:** M3 `zarf`ın gecikme dalının ÖLÜ KOD
+olduğunu gösterdi (döngü zaten gecikmeden başlıyordu — iki mekanizma, biri bekçisiz; döngü 0'a
+çekildi). M15/M16 "en az bir gürültü + bir ton sesi olsun" testinin fazla gevşek olduğunu gösterdi
+(biri çökünce öteki aileyi tek başına dolduruyordu) — kural ses ses yazıldı. Ayrıca aracın KENDİ
+teşhisi kusurluydu: `oruntu` ilk katmanı okuyordu ve `padFill`in gürültü süpürmesi tonal üçlüyü
+gölgeleyip "+28" yazdırıyordu (gerçek jest +7,+5); artık BASKIN katman okunuyor.
 
 ## SIRADAKİ TAM ADIM
 
-**Karar paketi bekliyor** (oturum akışı adım 3). Kollar: ① sentez nihai + tek kusuru düzelt
-② CC0 dosya seti ③ hibrit (olay sesleri sentez, gürültü sesleri dosya). Karar gelince commit #2:
-seçilen kol + bekçi + en az 2 mutasyon. Ardından **E5 — hareketli onboarding**.
+**E5 — hareketli onboarding** (Faz E'nin son kalemi). Ardından **Faz F — paketleme ve yayın**
+(0/5); APK iş hattı bu turda zaten çalışır hâle geldi, F'nin işi kod-bölme + gölge maliyeti +
+mağaza hazırlığı.
 
-**Yan iş (bu turda yapıldı, denge dışı):** APK derlemesi iki makine arasında kırıktı —
-`android/gradle.properties` diğer makinenin Android Studio JBR yolunu mutlak yazıyordu ve bu
-makinede o yol yok. Mutlak yol committed dosyadan çıkarıldı, makineye özel JDK seçimi
-`~/.gradle/gradle.properties`e (git'te değil) taşındı. Ayrıca Capacitor 8 **JDK 21** istiyor
-(JDK 17 "invalid source release: 21" veriyor); bu makineye Temurin 21 kuruldu. Debug APK çıktı:
-7,3 MB, kullanıcıya gönderildi.
+**APK:** debug derlemesi çalışıyor (7,8 MB, yeni ses motoruyla). Komut:
+`npm run apk` değil — bash'te `export JAVA_HOME=~/.jdks/jdk-21.0.12.1+1 && npm run build &&
+npx cap sync android && cd android && ./gradlew assembleDebug`.
 
 ## AÇIK KALEMLER (bilinen, bilerek duruyor)
 
@@ -85,6 +86,13 @@ makinede o yol yok. Mutlak yol committed dosyadan çıkarıldı, makineye özel 
   4,6 sn · üç ardışık koşuda temiz). Yük altında paralel çakışma; ölçüm sonucunu etkilemiyor.
 - **Usta olmuş masanın DÜNYADA görünen bir işareti yok** — alım sonrası nokta kalkıyor, masa
   aynı kalıyor. Rozet/malzeme farkı Faz 6 sanat işi (`feedback_upgrade_legibility`).
+- **`settings.music` KAYITTA DURUYOR ama hiçbir şeye bağlı değil** — `settings.sound`un E3
+  öncesi hâli. Ortam sesi (kıraathane uğultusu) E4'e bilerek girmedi: motorun gürültü kaynağı onu
+  üretebiliyor, eksik olan **kablo, kabiliyet değil**. Kendi turunu ister (D-096 kapsam sınırı).
+- **`okey_tile` sesi yok** — okey masası v1.1 içeriği; motor hazır, olay yok.
+- **Sentezin telefonda nasıl DUYULDUĞU ölçülmedi** — araç ayırt edilebilirliği ölçtü, hoşluğu
+  değil. `feedback_visual_polish`in ses karşılığı: mantık+test yeşil ≠ bitti. APK elde,
+  telefonda dinlenince okunacak.
 - **"İzle ve Usta yap" + "İzle, 2× al" butonları PASİF** — yer tutuyor, reklam SDK'sı Faz 5.
 - D-046 ④ kaba, ⑤ yok · sipariş nesnesi v1.1'de.
 - Gölgenin telefondaki maliyeti ölçülmedi (Faz F riski) · bundle ~1,49 MB (Faz F kod-bölme).

@@ -1,8 +1,12 @@
 # E4 — Ses kaynağı kararı: önce sentezin kendisi ölçüldü
 
 > Ham çıktı: `docs/olcum-ses-ayirt.txt` · Araç: `tools/olcum-ses-ayirt.ts`
-> Koşu: `OLCUM=tam npx tsx tools/olcum-ses-ayirt.ts` · damgalar temiz (7/7)
+> Koşu: `OLCUM=tam npx tsx tools/olcum-ses-ayirt.ts` · damgalar temiz (9/9)
 > Kaynak: `src/game/audio.ts` → `SES_KATALOG` (ikinci bir doğru kaynak yazılmadı)
+>
+> **Okuma notu:** §1-§3 ve §Bulgular **TABANI** (E3'ün hâlini) anlatır — karar bu sayılardan
+> çıktı. §Karar'daki tablo tabanı uygulanan hâlle yan yana koyar. Ham çıktı dosyası **final**
+> koşunundur; taban sayıları bu raporun içinde durur.
 
 ## §1 Soru
 
@@ -23,9 +27,15 @@ sistemi ölçmeden değiştirmek olurdu.
 
 ## §2 Yöntem ve model sınırı (karara aynen geçer)
 
-Ses duyulamaz ama sesin **fiziği** hesaplanabilir. Her ton, `audioWeb.ts`in `tonCal`i birebir
-taklit edilerek PCM'e çevrilir (band-limitli toplamsal sentez · faz sürekliliği · üstel zarf),
-log-frekans bantlı spektrogramı çıkarılır, çiftler arası mesafe ölçülür.
+Ses duyulamaz ama sesin **fiziği** hesaplanabilir. Her ses PCM'e çevrilir, log-frekans bantlı
+spektrogramı çıkarılır, çiftler arası mesafe ölçülür.
+
+**Taban koşusunda PCM bir TAKLİTTEN geliyordu** — sentez o sırada `audioWeb.ts` içinde WebAudio
+düğümleriyle kuruluydu ve araç o zinciri (band-limitli toplamsal sentez · faz sürekliliği · üstel
+zarf) yeniden yazmak zorundaydı. Yani ölçülen kod ile duyulan kod AYRIYDI ve sapmayı hiçbir şey
+tutmuyordu. §Karar ③ bunu kapattı: artık iki taraf da `audioSynth.ts`in aynı `seslendir`
+fonksiyonunu çağırıyor. Taban sayıları taklitten, final sayıları gerçek üreticiden gelir —
+**karşılaştırmayı okurken bu farkı bilmek gerekir.**
 
 **İki kanal, çünkü iki dinleme durumu var:**
 
@@ -140,11 +150,89 @@ değiştiriyoruz?**
   değiştiriyor — ve fallback yüzünden bu değişim **her zaman geri alınabilir** (dosyayı
   klasörden kaldırmak sentezi geri getirir; tek satır kod değişmez).
 
-## §Karar
+## §Karar — D-096
 
-*(Ölçüm turu — bu bölüm bilerek boş. Karar paketi kullanıcıya sunulacak; seçilen kol commit #2'de
-buraya ve `decisions.md`'ye yazılır.)*
+**Kullanıcı "en kalitelisi ne olacaksa o olsun" dedi; kol seçimi bana bırakıldı ve D seçildi:
+MOTORU BÜYÜT.** Sunulan dört kol ve elenme gerekçeleri:
+
+| Kol | Neden seçilmedi / seçildi |
+|---|---|
+| A · sentez nihai, tek kusuru düzelt | Ölçüm zaten iddiayı doğruluyordu ama Bulgu 3 duruyordu: tek osilatör kataloğu tek kalıba sıkıştırıyor. "En kalitelisi" bunun üstünü örtmek olmazdı. |
+| B · tam CC0 dosya seti | Seslerde tek stil kilidi hiç kurulmamıştı (karışık sanatçı) ve gerçekçi kayıt flat-shaded low-poly sahnenin üstünde yabancı durur. Ayrıca ölçülmüş bir sistemi ölçülmemiş bir setle değiştirirdi. 11 ayrı lisans doğrulaması. |
+| C · hibrit | `ambience`ın bağlanacağı `settings.music` kablosuz; C bugün "2 dosya bırak"a inmiyor, önce bir kablo turu istiyor. |
+| **D · motoru büyüt** ✓ | Kapasite sınırını KALDIRIYOR: gürültü + filtre + inharmonik kısmi eklenince fiziksel olaylar fiziksel duyulabiliyor. Stil kilidi kusursuz kalıyor (tek "sanatçı"), lisans yüzeyi sıfır, D-013 ile tutarlı. |
+
+**Kararın kendisi üç parça:**
+
+**① Sentez NİHAİDİR, dosya opsiyonel üstüne yazmadır.** E3'te sıra tersti (dosya asıl, sentez
+"gelene kadar" fallback). Ölçüm bunu çürüttü. `dosya` alanı duruyor — bir `.ogg` bırakılırsa üstüne
+yazar, tek satır kod değişmeden. **Karar geri alınabilir kalıyor**, bu yüzden hiçbir kapı kapanmadı.
+Stil kilidi `docs/assets.md` §7'ye, künye `public/assets/README.md`'ye yazıldı; klasör bilerek boş.
+
+**② Motor üç kaynağa çıktı** (`src/game/audioSynth.ts`): gürültü + bant süzgeci · inharmonik
+kısmiler · band-limitli klasik dalgalar. Katalog iki AİLEYE ayrıldı — fiziksel olaylar gürültü
+ailesinde (`pour` · `serve`), ilerleme olayları tonal ailede; `coin` ikisinin arasında (tonal ama
+inharmonik = metalik). Bu D-080 Tek Odak'ın ses karşılığıdır: aileler aynı dili konuşmuyor.
+
+**③ Sentez TEK YERDE üretiliyor — ölçülen şey birebir duyulan şey.** E3'te sentez `audioWeb.ts`
+içinde WebAudio düğümleriyle kuruluydu ve bu turun aracı o zinciri **taklit** etmek zorunda kaldı;
+ölçülen kod ile duyulan kod ayrıydı ve sapmayı hiçbir şey tutmuyordu. Artık `audioSynth.ts` saf ve
+deterministik bir PCM üretiyor, tarayıcı onu yalnızca çalıyor, araç aynı fonksiyonu çağırıyor.
+Bu, kararın en kalıcı parçası: **aracın "taklit" kaydı silindi.**
+
+### Ölçülen sonuç (final tam koşu)
+
+| | E3 (taban) | E4 (uygulanan) |
+|---|---|---|
+| KARIŞIR | 0/36 | **0/36** |
+| AYNI JEST | **1/36** (`quest↔reward`) | **0/36** |
+| AYRI | 35/36 | **36/36** |
+| `quest↔reward` jest mesafesi | 0,13 dB (**taban ALTI**, ×0,59) | **2,29 dB** (×12,45 taban) |
+| İKİZ grup (metrikten bağımsız) | 1 (`quest/reward`) | **0** |
+| Ayrı tını sayısı | 3 (triangle · sine · square) | **6** |
+| Yükselen arpej | 7/9 | **6/9** |
+| Gürültü-baskın ses | **0** (motor üretemiyordu) | **2** (`pour` · `serve`) |
+
+Kalibrasyon: mutlak taban 1,65 dB · jest tabanı 0,18 dB. En yakın çift hâlâ `quest ↔ reward` ama
+artık tabanın **12,45 katında**.
+
+### Kabul edilen kapsam sınırı
+
+**`settings.music` + ortam sesi bu tura GİRMEDİ.** Kesme çizgisi bilerek burada: E4 bir SENTEZ
+turu, ortam sesi ise bir YAŞAM DÖNGÜSÜ işi (döngü başlat/durdur, ayara bağla, sahne durumuna
+göre kıs). Motorun gürültü kaynağı ortam uğultusunu üretebilir — eksik olan kablo, kabiliyet değil.
+`settings.music` bugün `settings.sound`un E3 öncesi hâlinde: kayıtta duruyor, hiçbir şeye bağlı
+değil. Kendi turunu ister.
 
 ## §Bekçi
 
-*(Karardan sonra.)*
+İki dosya, **62 test**, **18 mutasyonun 18'i de yakalandı**.
+
+- `tests/ses-sentez.test.ts` (19 test · YENİ) — sentez çekirdeğinin fiziği: determinizm, sürenin
+  katmanlardan türemesi, zarf (gecikme/atak/sönme), süzgecin gerçekten süzmesi, `suzul`ün bandı
+  taşıması, inharmonik kısmiler, taşma sınırlaması.
+- `tests/ses.test.ts` (43 test · genişletildi) — olay türetme ve üç kelepçe duruyor; üstüne
+  **katalog ayrışmasının bekçisi** eklendi: ikiz yok · `quest` ile `reward` aynı örüntüde değil ·
+  hangi sesin hangi ailede olduğu · satın alma jestinin inmesi · baskın katmanın beraberliğe
+  düşmemesi.
+
+**Üç mutasyon ilk turda KAÇTI ve üçü de bekçide gerçek bir delik gösterdi:**
+
+- **M3 (gecikmeyi yok say)** — `zarf`ın gecikme dalı ÖLÜ KODdU: döngü zaten `bas` indeksinden
+  başlıyordu, yani gecikme iki ayrı mekanizmayla uygulanıyordu ve biri hiç çalışmıyordu.
+  Düzeltme kodda: döngü 0'dan başlıyor, gecikmeyi **yalnız zarf** uyguluyor. Tek mekanizma.
+- **M15 / M16 (aileyi çökert)** — "en az bir gürültü, en az bir ton sesi olsun" testi fazla
+  gevşekti: `pour` tonal'e çevrilince aileyi `serve` tek başına dolduruyor, test yeşil kalıyordu.
+  Düzeltme testte: kural "en az biri" değil, **hangi sesin hangi ailede olduğu** — ses ses yazıldı.
+
+Ayrıca `serve`in iki katmanı 0,10/0,10 ile **beraberdi** ve "baskın katman" teşhisi katman
+sırasına bağlı kalıyordu; 0,11/0,09 yapıldı (şıngırtı baskın — sesin kimliği cam) ve beraberliği
+yasaklayan bir test eklendi.
+
+**Ölçüm aracının kendi kusuru da bu turda bulundu ve düzeltildi:** `oruntu` teşhisi "çok değerli
+İLK katman"ı okuyordu; `padFill`in ilk katmanı gürültü süpürmesi olduğu için örüntü **+28**
+yazılıyordu, oysa kulağın duyduğu jest **+7,+5**. İkiz denetimi de bu kolona baktığı için gerçek
+bir ikizi kaçırabilirdi. Teşhisler artık **baskın katmanı** okuyor.
+
+**Denge sayısı DEĞİŞMEDİ** — `economy.config.ts` / `tick.ts` / `rules.ts` hiç açılmadı, varyant
+kapısı tetiklenmedi. Ses bir denge kolu değil, sunum katmanı.

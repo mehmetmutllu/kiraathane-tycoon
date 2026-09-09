@@ -1,5 +1,5 @@
 /**
- * ses.test.ts — SES SİSTEMİNİN BEKÇİSİ (Faz E · E3a).
+ * ses.test.ts — SES SİSTEMİNİN BEKÇİSİ (Faz E · E3'te kuruldu, E4'te büyütüldü).
  *
  * Ses doğrulanamaz: "duyuldu mu" diye bir test yok, 3B sahnenin görsel doğrulanamaması gibi
  * (CLAUDE.md). O yüzden bu bekçi başka bir şey iddia ediyor — **hangi durum değişiminin hangi
@@ -16,15 +16,16 @@
  *      (birikip kilit açılınca hep birden patlamasın).
  *   5. Aynı ses `aralik`tan sık çalınmaz — Tek Odak'ın (D-080) ses karşılığı. Kelepçe olmasa
  *      tek bir mıknatıs turunda onlarca `coin` üst üste binerdi.
- *   6. Dosya yoksa TON çalınır (`Model.tsx` fallback deseni) — dosyalar E3b'de gelecek,
- *      oyun bugün de tam sesli oynanır.
+ *   6. SENTEZ NİHAİDİR, dosya opsiyonel üstüne yazmadır (E4 · D-013'ün sesteki karşılığı).
+ *      E3'te sıra tersti (dosya asıl, sentez fallback); ölçüm bunu çürüttü. Bekçi ikisini de
+ *      tutuyor: dosya yoksa sentez çalar, dosya varsa çift ses ÇIKMAZ.
  *   7. `tick.ts`'e DOKUNULMADI: ses bir denge kolu değil, sunum katmanı.
  */
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import {
-  sesOlaylari, sesMotoruKur, SES_KATALOG,
-  type SesKesit, type SesId, type SesArkaUc, type SesTanim,
+  sesOlaylari, sesMotoruKur, SES_KATALOG, sesSure,
+  type SesKesit, type SesId, type SesArkaUc,
 } from '../src/game/audio';
 
 const TABAN: SesKesit = {
@@ -35,13 +36,13 @@ const ile = (y: Partial<SesKesit>): SesKesit => ({ ...TABAN, ...y });
 
 /** Sahte arka uç: neyin çalınmaya ÇALIŞILDIĞINI kaydeder. Saat elle ilerletilir. */
 function sahteArkaUc(opts: { dosyaVar?: boolean } = {}) {
-  const kayit = { dosyalar: [] as string[], tonlar: [] as SesTanim['ton'][], kilitAcildi: 0 };
+  const kayit = { dosyalar: [] as string[], sentezler: [] as SesId[], kilitAcildi: 0 };
   let t = 0;
   const arkaUc: SesArkaUc = {
     simdi: () => t,
     kilidiAc: () => { kayit.kilitAcildi += 1; },
     dosyaCal: (yol) => { if (!opts.dosyaVar) return false; kayit.dosyalar.push(yol); return true; },
-    tonCal: (ton) => { kayit.tonlar.push(ton); },
+    sentezCal: (id) => { kayit.sentezler.push(id); },
   };
   return { arkaUc, kayit, ilerlet: (sn: number) => { t += sn; } };
 }
@@ -114,7 +115,7 @@ describe('5 — `settings.sound` GERÇEKTEN bağlı', () => {
     const m = sesMotoruKur(arkaUc, false);
     m.kilidiAc();
     expect(m.cal('coin')).toBe(false);
-    expect(kayit.tonlar).toHaveLength(0);
+    expect(kayit.sentezler).toHaveLength(0);
     expect(kayit.dosyalar).toHaveLength(0);
   });
 
@@ -137,7 +138,7 @@ describe('6 — tarayıcı ses kilidi (mobil otomatik-oynatma kuralı)', () => {
     const { arkaUc, kayit } = sahteArkaUc();
     const m = sesMotoruKur(arkaUc, true);
     expect(m.cal('coin')).toBe(false);
-    expect(kayit.tonlar).toHaveLength(0);
+    expect(kayit.sentezler).toHaveLength(0);
   });
 
   it('kilit açılınca çalıyor — ama BEKLEYENLER kuyruğa alınmamış', () => {
@@ -148,7 +149,7 @@ describe('6 — tarayıcı ses kilidi (mobil otomatik-oynatma kuralı)', () => {
     ilerlet(1);
     m.cal('coin');
     // Kilitliyken düşen 5 çağrı BİRİKMEDİ: yalnız kilit açıldıktan sonraki tek ses çalındı.
-    expect(kayit.tonlar).toHaveLength(1);
+    expect(kayit.sentezler).toHaveLength(1);
   });
 
   it('kilit yalnız BİR KEZ açılıyor (her karede resume çağrısı yok)', () => {
@@ -187,8 +188,8 @@ describe('7 — aralık kelepçesi: aynı ses yığılmıyor (Tek Odak`ın ses k
     const m = sesMotoruKur(arkaUc, true);
     m.kilidiAc();
     for (let i = 0; i < 40; i++) { m.cal('coin'); ilerlet(1 / 60); }
-    expect(kayit.tonlar.length).toBeLessThanOrEqual(12);
-    expect(kayit.tonlar.length).toBeGreaterThan(0);
+    expect(kayit.sentezler.length).toBeLessThanOrEqual(12);
+    expect(kayit.sentezler.length).toBeGreaterThan(0);
   });
 
   it('her sesin aralığı POZİTİF — sıfır olsaydı kelepçe hiç tutmazdı', () => {
@@ -198,38 +199,133 @@ describe('7 — aralık kelepçesi: aynı ses yığılmıyor (Tek Odak`ın ses k
   });
 });
 
-describe('8 — dosya yoksa TON (Model.tsx fallback deseni)', () => {
-  it('dosya çalınamıyorsa sentez tonuna düşüyor', () => {
+describe('8 — SENTEZ nihai, dosya opsiyonel üstüne yazma (E4)', () => {
+  it('dosya yoksa sentez çalınıyor', () => {
     const { arkaUc, kayit } = sahteArkaUc({ dosyaVar: false });
     const m = sesMotoruKur(arkaUc, true);
     m.kilidiAc();
     m.cal('level');
     expect(kayit.dosyalar).toHaveLength(0);
-    expect(kayit.tonlar).toEqual([SES_KATALOG.level.ton]);
+    expect(kayit.sentezler).toEqual(['level']);
   });
 
-  it('dosya varsa TON çalınmıyor (çift ses yok)', () => {
+  it('dosya varsa sentez çalınmıyor (çift ses yok)', () => {
     const { arkaUc, kayit } = sahteArkaUc({ dosyaVar: true });
     const m = sesMotoruKur(arkaUc, true);
     m.kilidiAc();
     m.cal('level');
     expect(kayit.dosyalar).toEqual([SES_KATALOG.level.dosya]);
-    expect(kayit.tonlar).toHaveLength(0);
+    expect(kayit.sentezler).toHaveLength(0);
   });
 
-  it('her sesin hem dosyası hem tonu tanımlı — yarım tanım yok', () => {
+  it('her sesin hem dosya yolu hem katmanları tanımlı — yarım tanım yok', () => {
     for (const [id, t] of Object.entries(SES_KATALOG)) {
       expect(t.dosya, id).toMatch(/^\/assets\/audio\/.+\.ogg$/);
-      expect(t.ton.hz.length, id).toBeGreaterThan(0);
-      expect(t.ton.sure, id).toBeGreaterThan(0);
-      expect(t.ton.gain, id).toBeGreaterThan(0);
-      // Ses seviyesi tavanı: sentez tonu bir DOLGU, oyunun sesi değil — yüksek olmamalı.
-      expect(t.ton.gain, id).toBeLessThanOrEqual(0.25);
+      expect(t.katmanlar.length, id).toBeGreaterThan(0);
+      expect(sesSure(id as SesId), id).toBeGreaterThan(0);
+      for (const k of t.katmanlar) {
+        expect(k.hz.length, id).toBeGreaterThan(0);
+        expect(Math.min(...k.hz), id).toBeGreaterThan(0);
+        expect(k.gain, id).toBeGreaterThan(0);
+        expect(k.sonme, id).toBeGreaterThan(0);
+        expect(k.atak, id).toBeGreaterThanOrEqual(0);
+        // Katman kazancı tavanı: katmanlar TOPLANIYOR, tek katman tek başına baskın olmamalı.
+        expect(k.gain, id).toBeLessThanOrEqual(0.25);
+      }
+    }
+  });
+
+  it('süre katmanlardan TÜRÜYOR — katalogda elle yazılı bir süre yok', () => {
+    // Bu, `SesTanim`in en kolay bozulacak yeriydi: E3'te `sure` elle yazılıydı ve katmanlar
+    // değişince güncellenmesi unutulabilirdi. Artık tek doğru kaynak katmanların kendisi.
+    for (const id of Object.keys(SES_KATALOG) as SesId[]) {
+      const k = SES_KATALOG[id].katmanlar;
+      const beklenen = Math.max(...k.map((x) => (x.gecikme ?? 0) + x.atak + x.sonme));
+      expect(sesSure(id), id).toBeCloseTo(beklenen, 10);
+    }
+  });
+
+  it('`aralik` sesin kendi süresinden bağımsız ama POZİTİF — yığılma kelepçesi her seste var', () => {
+    for (const id of Object.keys(SES_KATALOG) as SesId[]) {
+      expect(SES_KATALOG[id].aralik, id).toBeGreaterThan(0);
     }
   });
 });
 
-describe('9 — ses `tick.ts`e dokunmuyor (denge dosyası değil, sunum katmanı)', () => {
+describe('9 — KATALOG AYRIŞMASI: ölçümün bulduğu kusur geri gelmesin (E4)', () => {
+  /** Baskın katman = en yüksek kazançlı. Teşhisler bunu okur (ölçüm aracıyla AYNI tanım). */
+  const baskin = (id: SesId) =>
+    SES_KATALOG[id].katmanlar.reduce((a, b) => (b.gain > a.gain ? b : a));
+  const oruntu = (id: SesId): string => {
+    const k = baskin(id);
+    return k.hz.length < 2 ? '—'
+      : k.hz.slice(1).map((h, i) => Math.round(12 * Math.log2(h / k.hz[i]))).join(',');
+  };
+  const tini = (id: SesId): string => {
+    const k = baskin(id);
+    if (k.kaynak === 'gurultu') return 'gurultu';
+    return k.kismi ? 'kismi:' + k.kismi.join('/') : (k.dalga ?? 'sine');
+  };
+  const IDLER = Object.keys(SES_KATALOG) as SesId[];
+
+  it('İKİZ YOK: hiçbir iki ses aynı tını + aynı aralık örüntüsünü paylaşmıyor', () => {
+    // E4 ölçümünün tek gerçek bulgusu buydu: E3'te `quest` ve `reward` ikisi de triangle,
+    // ikisi de +5 idi — aynı jestin transpozesi (jest mesafesi 0,13 dB < taban 0,22).
+    // Bu test o kusurun GERİ GELMESİNİ engelliyor; yeni bir ses eklendiğinde de tutar.
+    const gorulen = new Map<string, SesId>();
+    for (const id of IDLER) {
+      const anahtar = tini(id) + '|' + oruntu(id);
+      if (anahtar === 'gurultu|—') continue; // aralıksız gürültü sesleri tınıyla ayrışır
+      const onceki = gorulen.get(anahtar);
+      expect(onceki, `${id} ile ${onceki} aynı jest: ${anahtar}`).toBeUndefined();
+      gorulen.set(anahtar, id);
+    }
+  });
+
+  it('quest ile reward AYNI aralık örüntüsünde DEĞİL (ölçülen kusurun çivisi)', () => {
+    expect(oruntu('quest')).not.toBe(oruntu('reward'));
+  });
+
+  // Aile ayrımı D-080 Tek Odak'ın ses karşılığı: FİZİKSEL olay fiziksel duyulur.
+  // İlk hâlde bu tek bir "en az biri gürültü, en az biri ton" testiydi ve MUTASYONDA KAÇTI:
+  // `pour` tonal'e çevrilince aileyi `serve` tek başına dolduruyor, test yeşil kalıyordu.
+  // Asıl kural "en az biri" değil, HANGİ sesin hangi ailede olduğuydu — o yüzden ses ses yazılı.
+  it.each([['pour'], ['serve']] as const)('%s GÜRÜLTÜ-baskın (fiziksel aile)', (id) => {
+    expect(baskin(id).kaynak).toBe('gurultu');
+  });
+
+  it.each([['quest'], ['level'], ['reward'], ['padFill'], ['purchase']] as const)(
+    '%s TON-baskın (ilerleme ailesi)', (id) => {
+      expect(baskin(id).kaynak).toBe('ton');
+    });
+
+  it('coin ve master METALİK: baskın katman inharmonik kısmili ton', () => {
+    // Metalik tını klasik dalgayla üretilemez; motorun `kismi` yeteneği bu iki sesin kimliği.
+    for (const id of ['coin', 'master'] as const) {
+      const k = baskin(id);
+      expect(k.kaynak, id).toBe('ton');
+      expect(k.kismi, id).toBeDefined();
+      // İnharmonik olmanın tanımı: en az bir kısmi TAM KAT DEĞİL.
+      expect(k.kismi!.some((x) => Math.abs(x - Math.round(x)) > 0.05), id).toBe(true);
+    }
+  });
+
+  it('baskın katman BERABERLİĞE düşmüyor — teşhis katman sırasına bağlı kalmasın', () => {
+    for (const id of IDLER) {
+      const gainler = SES_KATALOG[id].katmanlar.map((k) => k.gain);
+      const enBuyuk = Math.max(...gainler);
+      expect(gainler.filter((g) => g === enBuyuk).length, id).toBe(1);
+    }
+  });
+
+  it('satın alma jesti İNİYOR — para çıkışı kazanç gibi duyulmaz', () => {
+    const o = baskin('purchase').hz;
+    expect(o.length).toBeGreaterThan(1);
+    expect(o[o.length - 1]).toBeLessThan(o[0]);
+  });
+});
+
+describe('10 — ses `tick.ts`e dokunmuyor (denge dosyası değil, sunum katmanı)', () => {
   it('tick.ts ses modüllerini import ETMİYOR', () => {
     // Bu satır bir mimari kararın bekçisi (bkz. audio.ts §1): tick bir DENGE dosyasıdır,
     // ona dokunan her değişiklik varyant kapısını açar ve ses bir denge kolu değildir.

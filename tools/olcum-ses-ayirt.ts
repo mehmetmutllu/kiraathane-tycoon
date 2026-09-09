@@ -1,119 +1,118 @@
 /**
  * olcum-ses-ayirt.ts — ses kataloğunun "KULAKTAN AYIRT EDİLEBİLİR" iddiasını ÖLÇER (Faz E · E4).
  *
- * NEDEN BU ÖLÇÜM: `src/game/audio.ts` sentez tonları için şunu yazıyor — "Ton değerleri 'müzik'
- * değil OKUNABİLİRLİK için seçildi... Amaç, dosyalar gelene kadar bile olayların KULAKTAN ayırt
- * edilebilmesi." Bu bir TASARIM İDDİASI ve E3'te hiç sınanmadı. E4 "hangi kaynaktan ses dosyası
- * alalım" turu olarak açıldı, ama o sorunun ÖNÜNDE duran soru bu: fallback zaten oyunu tam sesli
- * oynatıyor, yani "dosya HİÇ gelmesin, sentez nihai olsun" gerçek bir koldur (D-013'ün — primitive
- * = nihai sanat stili — sesteki karşılığı). O kol ancak iddia ölçülürse tartışılabilir.
+ * NEDEN BU ÖLÇÜM: `src/game/audio.ts` sentez sesleri için şunu iddia ediyor — değerler "müzik"
+ * değil OKUNABİLİRLİK için seçildi; amaç olayların KULAKTAN ayırt edilebilmesi. Bu bir TASARIM
+ * İDDİASI ve E3'te hiç sınanmadı. E4 "hangi kaynaktan ses dosyası alalım" turu olarak açıldı, ama
+ * o sorunun ÖNÜNDE duran soru buydu: motor dosya olmadan da çalıyor, yani "sentez NİHAİ olsun"
+ * gerçek bir kol (D-013'ün sesteki karşılığı). Kol ancak iddia ölçülürse tartışılabilir.
  *
  * NE ÖLÇÜLÜYOR: 9 sesin İKİŞERLİ (36 çift) ayırt edilebilirliği. Ses "duyulamaz" ama sesin
- * FİZİĞİ hesaplanabilir: her ton, `audioWeb.ts`in `tonCal`i birebir taklit edilerek PCM'e
- * çevrilir, log-frekans bantlı spektrogramı çıkarılır ve çiftler arası mesafe ölçülür.
+ * FİZİĞİ hesaplanabilir: her ses PCM'e çevrilir, log-frekans bantlı spektrogramı çıkarılır ve
+ * çiftler arası mesafe ölçülür.
  *
- * NEDEN TAKLİT, NEDEN GERÇEK WebAudio DEĞİL: node'da AudioContext yok; olsaydı da çıktısı
- * hoparlöre giderdi, sayıya değil. Taklit `tonCal`in üç davranışını da kopyalar:
- *   · osilatör tipi (sine/square/triangle) — band-limitli TOPLAMSAL sentezle (WebAudio'nun
- *     dalga tablosu da band-limitlidir; naif dalga sahte tiz harmonik üretip mesafeyi şişirirdi),
- *   · frekansın `setValueAtTime` ile BASAMAK basamak değişmesi + FAZ SÜREKLİLİĞİ,
- *   · üstel zarf (0.0001 -> gain, 10 ms; sonra gain -> 0.0001, sürenin sonuna kadar).
- *
- * EŞİK NEREDEN GELİYOR (sihirli sayı YOK): mesafenin kendisi anlamsızdır, kıyas gerekir. İki
- * kalibrasyon kontrolü ölçülür:
- *   · TABAN  = her sesin KENDİSİYLE, yalnız 1 yarım ses tizleştirilmiş hâli arasındaki mesafe.
- *     Bu ikisi tanım gereği AYNI sestir — insan kulağı bunları OLAY olarak ayırt edemez.
- *     Gerçek bir çift bu mesafenin ALTINDAYSA, o çift "aynı sesin bir tık kaydırılmışı" kadar
- *     bile ayrı değildir.
- *   · TAVAN  = 36 gerçek çiftin en büyüğü (kataloğun kendi eriştiği en uzak mesafe).
- * SÜRE ayrı bir kanaldır ve bilerek ayrı ölçülür: spektrogram zamanda 32 kareye normalize edilir
- * (yani ŞEKİL karşılaştırılır), süre farkı bu yüzden mesafeye girmez. Süre, Weber oranıyla (%15)
- * "kaç JND" olarak ayrı raporlanır ve hükme İKİNCİ kanal olarak girer.
+ * TAKLİT YOK (E4'ün mimarî düzeltmesi): örnekler `src/game/audioSynth.ts`in KENDİ `seslendir`
+ * fonksiyonundan gelir — oyuncunun duyduğu tamponun ta kendisi. E3'te sentez `audioWeb.ts` içinde
+ * WebAudio düğümleriyle kuruluydu ve bu araç o zinciri TAKLİT etmek zorundaydı; ölçülen kod ile
+ * duyulan kod ayrıydı ve sapmayı hiçbir şey tutmuyordu. Artık tek bir üretim yeri var.
+ * (Bu yüzden sentez `Math.random` değil TOHUMLU gürültü kullanır: koşudan koşuya değişen bir
+ * gürültü ölçümü tekrarlanamaz kılardı. Damgalardan biri bunu her koşuda doğruluyor.)
  *
  * İKİ KANAL, ÇÜNKÜ İKİ DİNLEME DURUMU VAR:
  *   · MUTLAK — sesler ART ARDA duyulursa. Mutlak perde burada güçlü bir ipucudur.
  *   · JEST   — sesler DAKİKALARCA ARAYLA duyulursa (oyunun gerçek hâli: `level` saatte bir,
- *     `coin` saniyede bir). Mutlak perde hafızada tutulmaz; kalan şey JESTtir — dalga biçimi,
- *     nota sayısı ve ARALIK ÖRÜNTÜSÜ. Bu kanalda her ton ilk notası 440 Hz olacak şekilde
- *     transpoze edilir, yani perde farkı silinir ve geriye yalnız jest kalır.
- *   Bu ayrımı eklememin sebebi ölçümün kendisi: tek kanalla 36/36 "AYRI" çıkıyordu, oysa
- *   `quest` (660-880) ile `reward` (988-1319) aynı dalga, aynı nota sayısı, aynı yükselen
- *   dörtlü aralık ve süre farkı 0,6 JND — yani AYNI JESTİN transpozesi. Tek kanal bunu
- *   göremiyordu; metrik değil, sorulan soru eksikti.
+ *     `coin` saniyede bir). Mutlak perde hafızada tutulmaz; kalan şey JESTtir — tını, katman
+ *     yapısı ve ARALIK ÖRÜNTÜSÜ. Bu kanalda her sesin bütün frekansları, ilk katmanın ilk
+ *     değeri 440 Hz olacak şekilde ölçeklenir; yani perde farkı silinir, jest kalır.
+ *   Bu ayrımı ölçümün KENDİSİ doğurdu: tek kanalla sonuç 36/36 "AYRI" çıkıyordu, oysa E3'ün
+ *   `quest` (660-880) ve `reward` (988-1319) sesleri aynı dalga, aynı nota sayısı, aynı yükselen
+ *   dörtlü ve 0,6 JND süre farkıyla AYNI JESTİN transpozesiydi. Metrik yanlış değildi — sorulan
+ *   soru eksikti.
+ *
+ * SÜRE üçüncü ve BAĞIMSIZ kanaldır: spektrogram zamanda 32 kareye normalize edilir (yani ŞEKİL
+ * karşılaştırılır), süre bu yüzden mesafeye girmez; ayrıca Weber oranıyla (%15) "kaç JND" olarak
+ * ölçülür ve her iki hükme ikinci koşul olarak girer. 0,10 sn ile 0,55 sn, spektrumları ne olursa
+ * olsun benzemez.
+ *
+ * EŞİK NEREDEN GELİYOR (sihirli sayı YOK): mesafenin kendisi anlamsızdır, kıyas gerekir. Her
+ * kanalın KENDİ kalibrasyon tabanı ölçülür:
+ *   · MUTLAK TABAN = aynı sesin 1 yarım ses tizleştirilmiş hâli (tanım gereği AYNI ses).
+ *   · JEST TABANI  = aynı jestin son aralığı 1 yarım ses kaydırılmış hâli. (Jest kanalında
+ *     transpoze mesafesi tanımı gereği 0'dır, o yüzden taban başka bir bozmadan gelmek zorunda.)
+ * Bir çift kendi kanalının tabanının ALTINDAYSA, o kanalda ayrı ses sayılamaz.
+ *
+ * METRİĞİN BİLİNEN KUSURU (yönü İYİ tarafa): 24 bant 80 Hz - 12 kHz arasını kaplıyor, yani bir
+ * bant ~3,6 yarım ses. Tek yarım seslik bozma çoğunlukla bant İÇİNDE kalıyor ve tabanları
+ * olduğundan DÜŞÜK çıkarıyor. Düşük taban = dar eşik = araç karışan çifti EKSİK bildirir, fazla
+ * değil. Bu yüzden §5'te metrikten TAMAMEN bağımsız yapısal sayılar da basılıyor (aile + tını +
+ * aralık örüntüsü ikizleri): iki yöntem aynı çifti gösteriyorsa bulgu metriğe bağlı değildir.
  *
  * ÖLÇMEDİĞİ ŞEY (bilerek): iki sesin oyunda BİRBİRİNE YAKIN ZAMANDA düşüp düşmediği. `sesOlaylari`
- * tek karede birden çok olay döndürebiliyor ve motor onları aralıksız arka arkaya çalıyor; hangi
- * bileşimlerin gerçekten ulaşılabilir olduğu oyun kurallarının işi, bu aracın değil. Karışan bir
- * çiftin ZARARI bu yüzden burada değil, karar paketinde tartışılır.
- *
- * METRİĞİN BİLİNEN KUSURU (yönü İYİ tarafa): 24 bant, 80 Hz - 12 kHz arasını kaplar, yani bir
- * bant ~3,6 yarım ses genişliğindedir. Tek yarım seslik bir bozma çoğu zaman bant İÇİNDE kalır ve
- * mesafeye zayıf yansır. Bunun sonucu, kalibrasyon TABANLARININ olduğundan düşük çıkmasıdır
- * (3-4 notalı seslerde jest tabanı ~0,0'a iniyor: bozulan son nota sürenin yalnız üçte/dörtte
- * birini kaplıyor). Düşük taban = DAR eşik = araç karışan çifti EKSİK bildirir, fazla değil.
- * Yani "KARIŞIR 0" sonucu iyimser olabilir; "AYNI JEST 1" sonucu ise sağlamdır. Bu yüzden §5'te
- * metrikten TAMAMEN bağımsız yapısal sayılar da basılıyor (dalga + aralık örüntüsü ikizleri):
- * iki yöntem aynı çifti gösteriyorsa bulgu metriğe bağlı değildir.
+ * tek karede birden çok olay döndürebiliyor ve motor onları aralıksız çalıyor; hangi bileşimlerin
+ * gerçekten ulaşılabilir olduğu oyun kurallarının işi, bu aracın değil.
  *
  * KOŞU KİPİ YOK: araç ANALİTİK (tick simülasyonu yok), deterministik ve saniyeler sürer.
- * `OLCUM=kisa|tam` ayrımı burada anlamsız olurdu — kısaltılacak bir şey yok. Aynı gerekçe
- * `olcum-tek-odak.ts`te de geçerli. Çıktının tamamı yayınlanabilir. Yine de koşu `OLCUM=tam`
- * ile alınır: `olcum-lib`in damga özeti kip etiketini basıyor ve "rapora yalnız tam-koşu damgalı
- * sayı girer" kuralı (D-084) etiketin "tam" demesini istiyor — kipin kendisi burada işlevsiz.
+ * `OLCUM=kisa|tam` ayrımı burada anlamsız olurdu — kısaltılacak bir şey yok. Yine de koşu
+ * `OLCUM=tam` ile alınır: `olcum-lib`in damga özeti kip etiketini basıyor ve "rapora yalnız
+ * tam-koşu damgalı sayı girer" kuralı (D-084) etiketin "tam" demesini istiyor.
  *
  * Çalıştır:  OLCUM=tam npx tsx tools/olcum-ses-ayirt.ts > docs/olcum-ses-ayirt.txt
  */
-import { SES_KATALOG, type SesId, type SesTanim } from '../src/game/audio.ts';
+import { SES_KATALOG, sesSure, type SesId } from '../src/game/audio.ts';
+import { ORNEKLEME, seslendir, type Katman } from '../src/game/audioSynth.ts';
 import { damga, damgaOzeti } from './olcum-lib';
 
-type Ton = SesTanim['ton'];
+const YARIM_SES = Math.pow(2, 1 / 12);
+const SURE_WEBER = 1.15; // sure JND'si ~%15 (kisa seslerde Weber orani) — 1 JND = 1.15 kat
 
-// --- Sentez ----------------------------------------------------------------
-const SR = 32000; // örnekleme hızı (Nyquist 16 kHz — en tiz harmonikleri kapsar)
-const ZARF_ATAK = 0.01; // audioWeb.ts: exponentialRampToValueAtTime(gain, t0 + 0.01)
-const ZARF_TABAN = 0.0001; // audioWeb.ts: setValueAtTime(0.0001, t0)
+// --- Katman yardimcilari ---------------------------------------------------
+/** Butun katmanlarin butun frekanslarini `k` ile olcekler (transpoze). */
+const transpoze = (katmanlar: readonly Katman[], k: number): Katman[] =>
+  katmanlar.map((kat) => ({ ...kat, hz: kat.hz.map((h) => h * k) }));
 
-/** Band-limitli osilatör örneği. Harmonikler Nyquist'te kesilir (WebAudio dalga tablosu gibi). */
-function ornek(dalga: Ton['dalga'], faz: number, f0: number): number {
-  if (dalga === 'sine') return Math.sin(faz);
-  const nyq = SR / 2;
-  let s = 0;
-  if (dalga === 'square') {
-    for (let k = 1; k * f0 < nyq; k += 2) s += Math.sin(k * faz) / k;
-    return (4 / Math.PI) * s;
-  }
-  // triangle: tek harmonikler, 1/k^2, isaret donusumlu
-  let isaret = 1;
-  for (let k = 1; k * f0 < nyq; k += 2) {
-    s += (isaret * Math.sin(k * faz)) / (k * k);
-    isaret = -isaret;
-  }
-  return (8 / (Math.PI * Math.PI)) * s;
+/** JEST hali: ilk katmanin ilk frekansi 440 Hz'e tasinir, oranlar korunur → mutlak perde silinir. */
+const jestHali = (katmanlar: readonly Katman[]): Katman[] =>
+  transpoze(katmanlar, 440 / katmanlar[0].hz[0]);
+
+/** Cok degerli ILK katmanin SON degeri 1 yarim ses kaydirilir — "ayni jest, bir tik farkli". */
+function araligiBoz(katmanlar: readonly Katman[]): Katman[] {
+  const i = katmanlar.findIndex((k) => k.hz.length > 1);
+  if (i < 0) return katmanlar.map((k) => ({ ...k }));
+  return katmanlar.map((k, j) => {
+    if (j !== i) return { ...k };
+    const hz = k.hz.slice();
+    hz[hz.length - 1] = hz[hz.length - 1] * YARIM_SES;
+    return { ...k, hz };
+  });
 }
 
-/** audioWeb.ts'in kazanç zarfı: üstel açılış (10 ms), sonra sürenin sonuna üstel kapanış. */
-function zarf(t: number, ton: Ton): number {
-  if (t <= 0) return ZARF_TABAN;
-  if (t < ZARF_ATAK) return ZARF_TABAN * Math.pow(ton.gain / ZARF_TABAN, t / ZARF_ATAK);
-  if (t < ton.sure) {
-    return ton.gain * Math.pow(ZARF_TABAN / ton.gain, (t - ZARF_ATAK) / (ton.sure - ZARF_ATAK));
-  }
-  return ZARF_TABAN;
+/**
+ * BASKIN katman = en yuksek kazancli olan. Uc teshis (aile · tini · oruntu) hep BUNU okur.
+ *
+ * Ilk hali "cok degerli ILK katman" diyordu ve bu YANLIS teshis uretiyordu: `padFill`in ilk
+ * katmani gurultu supurmesi (400->2000 Hz), tonal ucluyu (440-660-880) golgeliyordu; oruntu
+ * "+28" cikiyordu, oysa kulagin duydugu jest "+7,+5". Ikiz denetimi de bu kolona baktigi icin
+ * gercek bir ikizi KACIRABILIRDI. Teshis, sesin en yuksek katmanini anlatmali.
+ */
+const baskin = (katmanlar: readonly Katman[]): Katman =>
+  katmanlar.reduce((a, b) => (b.gain > a.gain ? b : a));
+
+/** Sesin aralik oruntusu (yariton): BASKIN katmanin kendi deger dizisinden. */
+function oruntu(katmanlar: readonly Katman[]): number[] {
+  const k = baskin(katmanlar);
+  if (k.hz.length < 2) return [];
+  return k.hz.slice(1).map((h, i) => Math.round(12 * Math.log2(h / k.hz[i])));
 }
 
-/** Tonu PCM'e çevirir. `transpoze` = frekans çarpanı (kalibrasyon kontrolü 1 yarım ses kullanır). */
-function seslendir(ton: Ton, transpoze = 1): Float64Array {
-  const n = Math.round(ton.sure * SR);
-  const cikti = new Float64Array(n);
-  const adim = ton.sure / ton.hz.length;
-  let faz = 0; // FAZ SUREKLI: WebAudio osilatoru frekans degisiminde fazi sifirlamaz
-  for (let i = 0; i < n; i++) {
-    const t = i / SR;
-    const f = ton.hz[Math.min(ton.hz.length - 1, Math.floor(t / adim))] * transpoze;
-    cikti[i] = ornek(ton.dalga, faz, f) * zarf(t, ton);
-    faz += (2 * Math.PI * f) / SR;
-  }
-  return cikti;
+/** AILE: baskin katman gurultu ise FIZIKSEL, degilse TONAL. */
+const aile = (katmanlar: readonly Katman[]): 'fiziksel' | 'tonal' =>
+  baskin(katmanlar).kaynak === 'gurultu' ? 'fiziksel' : 'tonal';
+
+/** TINI: BASKIN katmanin uretim bicimi — inharmonik kismi (can/metal), klasik dalga, ya da gurultu. */
+function tini(katmanlar: readonly Katman[]): string {
+  const k = baskin(katmanlar);
+  if (k.kaynak === 'gurultu') return 'gurultu q=' + (k.q ?? 1);
+  return k.kismi ? 'kismi:' + k.kismi.join('/') : (k.dalga ?? 'sine');
 }
 
 // --- Spektrogram -----------------------------------------------------------
@@ -163,7 +162,7 @@ const BANT_KENAR = Array.from({ length: BANT + 1 }, (_, i) =>
   BANT_ALT * Math.pow(BANT_UST / BANT_ALT, i / BANT));
 
 /** PCM -> [kare][bant] dB matrisi; tepe 0 dB'e normalize (yukseklik degil SEKIL karsilastirilir). */
-function spektrogram(pcm: Float64Array): number[][] {
+function spektrogram(pcm: Float32Array): number[][] {
   const kareler: number[][] = [];
   const hann = Array.from({ length: PENCERE }, (_, i) =>
     0.5 - 0.5 * Math.cos((2 * Math.PI * i) / (PENCERE - 1)));
@@ -174,7 +173,7 @@ function spektrogram(pcm: Float64Array): number[][] {
     fft(re, im);
     const bantlar = new Array<number>(BANT).fill(0);
     for (let b = 1; b < PENCERE / 2; b++) {
-      const f = (b * SR) / PENCERE;
+      const f = (b * ORNEKLEME) / PENCERE;
       if (f < BANT_ALT || f >= BANT_UST) continue;
       let j = 0;
       while (j < BANT - 1 && f >= BANT_KENAR[j + 1]) j++;
@@ -204,8 +203,7 @@ function zamandaNormalize(spek: number[][]): number[][] {
   return cikti;
 }
 
-const izParmak = (ton: Ton, transpoze = 1) =>
-  zamandaNormalize(spektrogram(seslendir(ton, transpoze)));
+const izParmak = (katmanlar: readonly Katman[]) => zamandaNormalize(spektrogram(seslendir(katmanlar)));
 
 /** Iki spektrogram arasi ortalama mutlak fark (dB). Simetrik; kendisiyle 0. */
 function mesafe(a: number[][], b: number[][]): number {
@@ -218,55 +216,39 @@ function mesafe(a: number[][], b: number[][]): number {
 
 // --- Olcum -----------------------------------------------------------------
 const IDLER = Object.keys(SES_KATALOG) as SesId[];
-const YARIM_SES = Math.pow(2, 1 / 12);
-const SURE_WEBER = 1.15; // sure JND'si ~%15 (kisa seslerde Weber orani) — 1 JND = 1.15 kat
-const JEST_KOK = 440; // jest kanalinda her tonun ilk notasi buraya tasinir
 
-/** JEST tonu: aralik oruntusu ve dalga korunur, MUTLAK PERDE silinir (ilk nota 440 Hz olur). */
-const jestTonu = (ton: Ton): Ton => ({ ...ton, hz: ton.hz.map((h) => (h * JEST_KOK) / ton.hz[0]) });
-
-/** Jest tabani icin bozma: SON notanin araligi 1 yarim ses kaydirilir — "ayni jest, bir tik farkli". */
-function araligiBoz(ton: Ton): Ton {
-  const hz = ton.hz.slice();
-  hz[hz.length - 1] = hz[hz.length - 1] * YARIM_SES;
-  return { ...ton, hz };
-}
-
-console.log('='.repeat(78));
-console.log('SES AYIRT EDILEBILIRLIGI — sentez tonlarinin olcumu (Faz E · E4)');
-console.log('ANALITIK ARAC · kosu kipi yok · deterministik · kaynak: src/game/audio.ts SES_KATALOG');
-console.log('='.repeat(78));
+console.log('='.repeat(84));
+console.log('SES AYIRT EDILEBILIRLIGI — sentez seslerinin olcumu (Faz E · E4)');
+console.log('ANALITIK ARAC · kosu kipi yok · deterministik · TAKLIT YOK: ornekler audioSynth.ts-ten');
+console.log('='.repeat(84));
 
 const mutlak = new Map<SesId, number[][]>();
 const jest = new Map<SesId, number[][]>();
 for (const id of IDLER) {
-  mutlak.set(id, izParmak(SES_KATALOG[id].ton));
-  jest.set(id, izParmak(jestTonu(SES_KATALOG[id].ton)));
+  mutlak.set(id, izParmak(SES_KATALOG[id].katmanlar));
+  jest.set(id, izParmak(jestHali(SES_KATALOG[id].katmanlar)));
 }
 
-// KALIBRASYON TABANLARI — her kanalin kendi tabani var, cunku kanallar farkli seyi siliyor.
 const mutlakTabanlar = IDLER.map((id) =>
-  mesafe(mutlak.get(id)!, izParmak(SES_KATALOG[id].ton, YARIM_SES)));
+  mesafe(mutlak.get(id)!, izParmak(transpoze(SES_KATALOG[id].katmanlar, YARIM_SES))));
 const MUTLAK_TABAN = mutlakTabanlar.reduce((a, b) => a + b, 0) / mutlakTabanlar.length;
 
-// Jest kanalinda transpoze mesafesi TANIMI GEREGI 0'dir (perde silindi) — o yuzden taban
-// baska bir bozmadan gelir: ayni jestin ARALIGI 1 yarim ses kaydirilmisi. Tek notali sesin
-// (pour) araligi yok, taban hesabina girmez.
-const jestTabanIdler = IDLER.filter((id) => SES_KATALOG[id].ton.hz.length > 1);
+// Jest tabani yalnizca ARALIGI OLAN seslerden hesaplanir; tek degerli sesin bozulacak araligi yok.
+const jestTabanIdler = IDLER.filter((id) => oruntu(SES_KATALOG[id].katmanlar).length > 0);
 const jestTabanlar = jestTabanIdler.map((id) =>
-  mesafe(jest.get(id)!, izParmak(jestTonu(araligiBoz(SES_KATALOG[id].ton)))));
+  mesafe(jest.get(id)!, izParmak(jestHali(araligiBoz(SES_KATALOG[id].katmanlar)))));
 const JEST_TABAN = jestTabanlar.reduce((a, b) => a + b, 0) / jestTabanlar.length;
 
 console.log('\n§1 KATALOG');
-console.log('id        dalga     nota  sure(sn)  gain   aralik(sn)  frekanslar        oruntu(yariton)');
+console.log('id        aile      tini              katman  sure(sn)  aralik(sn)  oruntu(yariton)');
 for (const id of IDLER) {
-  const t = SES_KATALOG[id].ton;
-  const aralik = t.hz.slice(1).map((h, i) => Math.round(12 * Math.log2(h / t.hz[i])));
+  const k = SES_KATALOG[id].katmanlar;
+  const o = oruntu(k);
   console.log(
-    id.padEnd(9) + ' ' + t.dalga.padEnd(9) + ' ' + String(t.hz.length).padEnd(5) + ' ' +
-    t.sure.toFixed(2).padEnd(9) + ' ' + t.gain.toFixed(2).padEnd(6) + ' ' +
-    SES_KATALOG[id].aralik.toFixed(2).padEnd(11) + ' ' + t.hz.join('-').padEnd(17) + ' ' +
-    (aralik.length ? aralik.map((a) => (a > 0 ? '+' + a : String(a))).join(',') : '—'));
+    id.padEnd(9) + ' ' + aile(k).padEnd(9) + ' ' + tini(k).padEnd(17) + ' ' +
+    String(k.length).padEnd(7) + ' ' + sesSure(id).toFixed(3).padEnd(9) + ' ' +
+    SES_KATALOG[id].aralik.toFixed(2).padEnd(11) + ' ' +
+    (o.length ? o.map((a) => (a > 0 ? '+' + a : String(a))).join(',') : '—'));
 }
 
 console.log('\n§2 KALIBRASYON (iki kanal, iki taban)');
@@ -284,11 +266,7 @@ for (let i = 0; i < IDLER.length; i++) {
     const b = IDLER[j];
     const dm = mesafe(mutlak.get(a)!, mutlak.get(b)!);
     const dj = mesafe(jest.get(a)!, jest.get(b)!);
-    const sa = SES_KATALOG[a].ton.sure;
-    const sb = SES_KATALOG[b].ton.sure;
-    const sureJnd = Math.abs(Math.log(sa / sb)) / Math.log(SURE_WEBER);
-    // Sure her iki hukumde de IKINCI kanaldir: 0.09 sn ile 0.42 sn hic benzemez, spektrumlari
-    // ne olursa olsun. 2 JND = sureler ~%32 ayrilmis demektir.
+    const sureJnd = Math.abs(Math.log(sesSure(a) / sesSure(b))) / Math.log(SURE_WEBER);
     const sureYakin = sureJnd < 2;
     const hukum = dm < MUTLAK_TABAN && sureYakin ? 'KARISIR'
       : dj < JEST_TABAN && sureYakin ? 'AYNI JEST'
@@ -314,38 +292,52 @@ console.log('\n§4 OZET');
 console.log('KARISIR   : ' + karisan.length + '/36  ' + (karisan.map((c) => c.a + '<->' + c.b).join(' · ') || '—'));
 console.log('AYNI JEST : ' + ayniJest.length + '/36  ' + (ayniJest.map((c) => c.a + '<->' + c.b).join(' · ') || '—'));
 console.log('AYRI      : ' + (36 - karisan.length - ayniJest.length) + '/36');
+console.log('EN YAKIN  : ' + cifter[0].a + ' <-> ' + cifter[0].b +
+  ' (jest ' + cifter[0].dj.toFixed(2) + ' dB = x' + (cifter[0].dj / JEST_TABAN).toFixed(2) + ' taban)');
 
-// Yapisal sayilar — "hepsi ayni kaliptan mi" sorusunun cevabi metrikten BAGIMSIZ okunabilsin.
-const dalgaSay = new Map<string, number>();
-for (const id of IDLER) {
-  const d = SES_KATALOG[id].ton.dalga;
-  dalgaSay.set(d, (dalgaSay.get(d) ?? 0) + 1);
-}
+// --- §5 Yapisal sayilar — metrikten BAGIMSIZ -------------------------------
 console.log('\n§5 YAPISAL SAYILAR (metrikten bagimsiz)');
-console.log('Dalga dagilimi: ' + [...dalgaSay].map(([k, v]) => k + ' ' + v).join(' · '));
-const cikanArpej = IDLER.filter((id) => {
-  const h = SES_KATALOG[id].ton.hz;
-  return h.length > 1 && h.every((v, i) => i === 0 || v > h[i - 1]);
-});
-console.log('Yukselen arpej (cok notali, hep tizlesen): ' + cikanArpej.length + '/9 — ' + cikanArpej.join(' · '));
-const digerleri = IDLER.filter((id) => !cikanArpej.includes(id));
-console.log('Yukselen OLMAYAN: ' + digerleri.length + '/9 — ' + digerleri.join(' · '));
-// Ayni aralik oruntusunu paylasanlar: jest kanalinin yapisal karsiligi.
-const oruntuHarita = new Map<string, SesId[]>();
+const aileSay = new Map<string, SesId[]>();
 for (const id of IDLER) {
-  const t = SES_KATALOG[id].ton;
-  const anahtar = t.dalga + '|' + t.hz.slice(1).map((h, i) => Math.round(12 * Math.log2(h / t.hz[i]))).join(',');
-  oruntuHarita.set(anahtar, [...(oruntuHarita.get(anahtar) ?? []), id]);
+  const a = aile(SES_KATALOG[id].katmanlar);
+  aileSay.set(a, [...(aileSay.get(a) ?? []), id]);
 }
-const ikizler = [...oruntuHarita.entries()].filter(([, v]) => v.length > 1);
-console.log('Ayni dalga + ayni aralik oruntusu: ' + ikizler.length + ' grup — ' +
+for (const [a, ids] of aileSay) console.log('Aile ' + a.padEnd(9) + ': ' + ids.length + '/9 — ' + ids.join(' · '));
+const tiniSay = new Map<string, number>();
+for (const id of IDLER) {
+  const t = tini(SES_KATALOG[id].katmanlar);
+  tiniSay.set(t, (tiniSay.get(t) ?? 0) + 1);
+}
+console.log('Tini dagilimi: ' + [...tiniSay].map(([k, v]) => k + ' ' + v).join(' · '));
+const cikanArpej = IDLER.filter((id) => {
+  const o = oruntu(SES_KATALOG[id].katmanlar);
+  return o.length > 0 && o.every((v) => v > 0);
+});
+console.log('Yukselen arpej (aralikli, hep tizlesen): ' + cikanArpej.length + '/9 — ' + cikanArpej.join(' · '));
+// IKIZ: ayni aile + ayni tini + ayni aralik oruntusu. Jest kanalinin yapisal karsiligi.
+const ikizHarita = new Map<string, SesId[]>();
+for (const id of IDLER) {
+  const k = SES_KATALOG[id].katmanlar;
+  const anahtar = aile(k) + '|' + tini(k) + '|' + oruntu(k).join(',');
+  ikizHarita.set(anahtar, [...(ikizHarita.get(anahtar) ?? []), id]);
+}
+const ikizler = [...ikizHarita.entries()].filter(([, v]) => v.length > 1);
+console.log('IKIZ (ayni aile + tini + oruntu): ' + ikizler.length + ' grup — ' +
   (ikizler.map(([k, v]) => v.join('/') + ' (' + k + ')').join(' · ') || '—'));
 
 // --- Damgalar --------------------------------------------------------------
 damga(
   'sentez sessiz degil',
-  IDLER.every((id) => seslendir(SES_KATALOG[id].ton).some((v) => Math.abs(v) > 1e-3)),
-  'bir ton hic ornek uretmedi');
+  IDLER.every((id) => seslendir(SES_KATALOG[id].katmanlar).some((v) => Math.abs(v) > 1e-3)),
+  'bir ses hic ornek uretmedi');
+damga(
+  'sentez deterministik',
+  IDLER.every((id) => {
+    const a = seslendir(SES_KATALOG[id].katmanlar);
+    const b = seslendir(SES_KATALOG[id].katmanlar);
+    return a.length === b.length && a.every((v, i) => v === b[i]);
+  }),
+  'ayni katmanlar iki farkli tampon uretti — gurultu tohumsuz');
 damga('mesafe kendisiyle 0', IDLER.every((id) => mesafe(mutlak.get(id)!, mutlak.get(id)!) === 0));
 damga(
   'mesafe simetrik',
@@ -354,13 +346,11 @@ damga(
 damga('mutlak taban pozitif', MUTLAK_TABAN > 0, 'taban ' + MUTLAK_TABAN.toFixed(3));
 damga('jest taban pozitif', JEST_TABAN > 0, 'taban ' + JEST_TABAN.toFixed(3));
 // Jest kanali GERCEKTEN perdeyi siliyor mu? Transpoze edilmis kopyanin jest mesafesi ~0 olmali.
-// Bu damga olmasaydi jestTonu() sessizce etkisiz kalabilir ve kanal mutlagin kopyasi olurdu.
+// Bu damga olmasaydi jestHali() sessizce etkisiz kalabilir ve kanal mutlagin kopyasi olurdu.
 damga(
   'jest kanali perdeyi siliyor',
-  IDLER.every((id) => {
-    const t = SES_KATALOG[id].ton;
-    return mesafe(jest.get(id)!, izParmak(jestTonu({ ...t, hz: t.hz.map((h) => h * 1.5) }))) < 1e-9;
-  }),
+  IDLER.every((id) =>
+    mesafe(jest.get(id)!, izParmak(jestHali(transpoze(SES_KATALOG[id].katmanlar, 1.5)))) < 1e-9),
   'transpoze kopya jest kanalinda ayni cikmadi — perde silinmemis');
 damga(
   'iki kanal ayni sey degil',
