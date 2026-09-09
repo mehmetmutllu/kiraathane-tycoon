@@ -2,7 +2,8 @@ import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import type { Mesh, MeshStandardMaterial } from 'three';
 import type { Vec3 } from '../../game/types';
-import { Model } from './Model';
+import { KayTezgah } from './Kitchen';
+import { FRONT_TOP_Y } from './kitchenLook';
 import { PALETTE } from '../../config/palette';
 import { isCounter, sellsTost } from '../../game/world';
 
@@ -62,14 +63,23 @@ export function ServicePoint({
   const lid = LID_HEAT[Math.min(level + 1, LID_HEAT.length - 1)];
   return (
     <group position={[position[0], 0, position[2]]}>
-      <Model
-        fallback={
-          <group>
-            {/* GÖVDE: L4'te derme çatma ahşaptan gerçek tezgâha döner (renk + pirinç bant). */}
+      <group>
+        {/* GÖVDE (S3): KayKit tezgâhı, eski kutunun TAM ölçüsüne çekilmiş (2,2 × 0,8, tabla 0,90).
+            L4'ün kimlik değişimi gövdenin RENGİNDEN değil artık pirinç banttan okunur — model
+            tek dokulu olduğu için seviye rengi yedeğe (greybox) kaldı. */}
+        <KayTezgah
+          model="kitchencounter_straight_A"
+          w={2.2}
+          d={0.8}
+          topY={FRONT_TOP_Y}
+          fallback={
             <mesh castShadow receiveShadow position={[0, 0.45, 0]}>
               <boxGeometry args={[2.2, 0.9, 0.8]} />
               <meshStandardMaterial color={counter ? PALETTE.counterWood : '#795548'} />
             </mesh>
+          }
+        />
+        <group>
             {counter && (
               <>
                 {/* pirinç bant (tezgâhın yüzünü "kafenin yüzü" yapan detay) */}
@@ -170,9 +180,8 @@ export function ServicePoint({
                 </mesh>
               </group>
             ))}
-          </group>
-        }
-      />
+        </group>
+      </group>
     </group>
   );
 }

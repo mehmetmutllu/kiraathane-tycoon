@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 96 · YAPILAN 77 · %80):**
+**Oturum bütçesi (TOPLAM 96 · YAPILAN 78 · %81):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -24,10 +24,10 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
 | | D meta katman | 9/9 ✅ |
 | | E arayüz ve cila | 4/5 🔧 |
-| | **S sanat ve arayüz geçişi** | **2/12 🔧** |
+| | **S sanat ve arayüz geçişi** | **3/12 🔧** |
 | | H oynanış düzeltmeleri | 0/3 ⏳ |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **49/68** |
+| **Program toplam** | | **50/68** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -243,7 +243,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   değil; kendi turunu ister.
 - ⏳ **E5 — hareketli onboarding**
 
-## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (2/12) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
+## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (3/12) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
 - ✅ **S1 — pad ve yükseltme dili yeniden yazıldı** · çember → **köşe parantezli kare** (kenar
   ortaları boş), dolum büyüyen disk → **alttan üste dolan kare**, "Masa"/"Çay Yükselt"/"Usta"
   → hepsinde **YÜKSELT** + solunda düz yukarı ok, yazı 700 → 800, 💎 pulu "mavi kare" → gerçek
@@ -277,10 +277,20 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   çarpışma katılarında **52 açıklık eşiğin altında** (en darı **0,04 br**). Yani "yürüyemiyorum"
   bir his değil geometri. Düzeltme `layout.ts` ve **onaylı maket düzenine** dokunuyor →
   iki kol sayılarıyla yazıldı, **kullanıcı kararı bekliyor** (`docs/geribildirim-oyun-testi-2026-09-09.md`).
-- ⏳ **S3 — mutfak bloğu KayKit'e geçer** — `kitchencounter_*` · `kitchencounter_sink` ·
-  `stove_multi` · `oven` · `extractorhood` · `fridge_A` · `kitchencabinet*` · `dishrack_plates` ·
-  `crate*` yerine geçer: `MaketCounter` · `MaketSink` · `MaketDishSink` · `MaketCezveStation` ·
-  `MaketWaterRack` · `MaketCrates`. *(restaurant-bits, diskte)*
+- ✅ **S3 — mutfak KayKit'e geçti; ön hat da dahil (D-099)** · arka duvarda **7 modüllük**
+  hat (1,80 adım) + batı dönüşü + depo, **ve oyunun işleyen üç tezgâhı** (çay ocağı · garson
+  istasyonu · bulaşık). Ölçek **tahmin edilmedi**: paket furniture-bits ile aynı ham ölçekte
+  (`chair_A` ikisinde de 0,75) → `STOOL_S = 0,90`; sağlaması insan boyuyla (tezgâh üstü 0,90 =
+  karakterin %51'i, gerçek oranın aynısı). Ön hat modelin değil **collision kutusunun** ölçüsüne
+  çekiliyor (`kayGovde`), çekmeceler **mutfağa** dönük (kullanıcı). Kasa ayrı ölçekte (0,45) —
+  0,90'da fırının önünü kapatıyordu. **Palet KayKit'in kendi paleti KALDI** (kullanıcı: *"her şey
+  çok kahve kalıyor"*; renk ileride **tema olarak satılabilir** — boyama hattı ölçülü hazır:
+  `tools/atlas-goz.mjs` + `tools/atlas-ton.mjs`). **Menü panosu kaldırıldı** (kullanıcı).
+  Yeni: `kitchenLook.ts` (ölçü katmanı) · `Kitchen.tsx` (çizim) · `tools/model-olc.mjs` (gltf bbox).
+  Bekçi `tests/kitchen-look.test.ts` 15 test, **4 mutasyonla** doğrulandı.
+  **Yan bulgu: `npm run build` temiz ağaçta da KIRIKTI** — `tsc -b` HUD'da S2'den kalan ölü bir
+  dal buldu (`notice.kind !== 'quest'`); vitest tip denetlemediği için görünmüyordu. Silindi.
+  vitest **785** · duman **42/42** · `tsc -b` temiz · **denge sayısı DEĞİŞMEDİ**.
 - ⏳ **S4 — duvar + zemin** — `wall` / `wall_half` / `wall_decorated` / `wall_doorway` /
   `pillar_A·B` · `floor_kitchen`; kıraathane rengi `recolor.ts` atlas kopyasıyla. *(diskte)*
 - ⏳ **S5 — dekor takası** — elle çizilen 17 parçanın 8'i: `trash_A/B` · `lamp_standing` ·

@@ -22,11 +22,10 @@ import { Customers } from './Customers';
 import { Coins } from './Coins';
 import { Pad } from './Pad';
 import { Decor } from './Decor';
+import { Kitchen, KayTezgah } from './Kitchen';
+import { FRONT_TOP_Y } from './kitchenLook';
 import {
-  MaketCezveStation,
-  MaketCounter,
   MaketCrates,
-  MaketDishSink,
   MaketDuba,
   MaketIskele,
   MaketLavaboBlock,
@@ -35,8 +34,6 @@ import {
   MaketTadilatPerde,
   MaketUyariSeridi,
   MaketWall,
-  MaketWallShelf,
-  MaketWaterRack,
 } from './maketParts';
 import { CAMERA_FOCUS_MUL, CAMERA_FOV, CAMERA_ZOOM_OUT_MUL, cameraDistance } from '../../config/camera';
 import { perf } from '../../game/perf';
@@ -427,15 +424,24 @@ function WaiterStation() {
   const [hx, hz] = WAITER_STATION.half;
   return (
     <group position={WAITER_STATION.pos}>
-      <mesh castShadow position={[0, 0.45, 0]}>
-        <boxGeometry args={[hx * 2, 0.9, hz * 2]} />
-        <meshStandardMaterial color={PALETTE.counterWood} />
-      </mesh>
-      {/* tezgâh tablası (pirinç bantlı üst yüzey — ana tezgâhla aynı dil) */}
-      <mesh castShadow position={[0, 0.94, 0]}>
-        <boxGeometry args={[hx * 2 + 0.1, 0.08, hz * 2 + 0.08]} />
-        <meshStandardMaterial color={PALETTE.copper} metalness={0.4} roughness={0.5} />
-      </mesh>
+      {/* GÖVDE (S3): KayKit tezgâhı, collision kutusunun TAM ölçüsünde. */}
+      <KayTezgah
+        model="kitchencounter_straight_B"
+        w={hx * 2}
+        d={hz * 2}
+        topY={FRONT_TOP_Y}
+        fallback={
+          <mesh castShadow position={[0, 0.45, 0]}>
+            <boxGeometry args={[hx * 2, 0.9, hz * 2]} />
+            <meshStandardMaterial color={PALETTE.counterWood} />
+          </mesh>
+        }
+      />
+      {/* S3: elle çizilen pirinç tabla KALKTI — KayKit gövdesinin kendi tablası var ve ikisi
+          üst üste binince ayrı bir levha gibi okunuyordu. Üstteki eşyalar o tablanın üst
+          yüzüne (0,98) göre yazılıydı; grup 0,08 indirilince hepsi yeni tablaya (0,90) oturur
+          ve tek bir koordinat elle değişmez. */}
+      <group position={[0, -0.08, 0]}>
       {/* sürahiler */}
       {[-0.95, -0.62].map((x) => (
         <group key={x} position={[x, 0, 0.05]}>
@@ -472,6 +478,7 @@ function WaiterStation() {
           <meshStandardMaterial color={PALETTE.plateDirty} />
         </mesh>
       ))}
+      </group>
     </group>
   );
 }
@@ -515,21 +522,30 @@ function StationUpgradeSpots() {
 function DishStationUnit({ pos, rot }: { pos: readonly [number, number, number]; rot: number }) {
   return (
     <group position={[pos[0], 0, pos[2]]} rotation={[0, rot, 0]}>
-      {/* tezgah */}
-      <mesh castShadow receiveShadow position={[0, 0.45, 0]}>
-        <boxGeometry args={[1.4, 0.9, 0.8]} />
-        <meshStandardMaterial color="#607d8b" />
-      </mesh>
-      {/* lavabo çukuru */}
-      <mesh position={[0, 0.9, 0]}>
-        <boxGeometry args={[1.0, 0.12, 0.5]} />
-        <meshStandardMaterial color="#90a4ae" metalness={0.5} roughness={0.4} />
-      </mesh>
-      {/* musluk */}
-      <mesh castShadow position={[0, 1.15, -0.2]}>
-        <cylinderGeometry args={[0.04, 0.04, 0.4, 8]} />
-        <meshStandardMaterial color="#b0bec5" metalness={0.6} roughness={0.3} />
-      </mesh>
+      {/* GÖVDE (S3): KayKit'in LAVABOLU tezgâhı — çanak ve musluk modelin kendi parçası,
+          o yüzden elle çizilen çukur + musluk kalktı. Yedek hâlâ eski üç kutuyu çiziyor. */}
+      <KayTezgah
+        model="kitchencounter_sink"
+        w={1.4}
+        d={0.8}
+        topY={FRONT_TOP_Y}
+        fallback={
+          <group>
+            <mesh castShadow receiveShadow position={[0, 0.45, 0]}>
+              <boxGeometry args={[1.4, 0.9, 0.8]} />
+              <meshStandardMaterial color="#607d8b" />
+            </mesh>
+            <mesh position={[0, 0.9, 0]}>
+              <boxGeometry args={[1.0, 0.12, 0.5]} />
+              <meshStandardMaterial color="#90a4ae" metalness={0.5} roughness={0.4} />
+            </mesh>
+            <mesh castShadow position={[0, 1.15, -0.2]}>
+              <cylinderGeometry args={[0.04, 0.04, 0.4, 8]} />
+              <meshStandardMaterial color="#b0bec5" metalness={0.6} roughness={0.3} />
+            </mesh>
+          </group>
+        }
+      />
     </group>
   );
 }
@@ -725,70 +741,6 @@ function Ground() {
   );
 }
 
-/**
- * MENÜ PANOSU — servis noktasının arkasındaki duvarda. Plan §4'te tezgâhın **L6** basamağının
- * görsel karşılığı ("hazırlık adası + menü tahtası"): menü ancak menüyü hak edecek kadar
- * büyümüş bir tezgâhın arkasında asılır.
- * B2 öncesi bu blok "YEMEK ALANI kimlik paketi"ydi (3. bölge açılınca beliren pano + zemine
- * çatal-bıçak amblemi). Bölge kimliği ürünle birlikte kalktığı için amblem gitti, pano
- * seviyeye bağlandı.
- */
-function MenuBoard() {
-  const level = useGame((s) => s.stationLevels[THE_SERVICE]);
-  const areasOpen = useGame((s) => s.areasOpen);
-  if (level < stationSoftMaxLevel()) return null;
-  // B3-1: pano servisin ARKASINDAKİ duvara asılır — sol duvar döneminde katın sol kenarına,
-  // arka bant döneminde bandın ön yüzünün üstüne (servis nerede ise pano da orada).
-  const place = servicePlace(areasOpen);
-  const st = place.station;
-  const backWall = place.rot === 0;
-  const pos: [number, number, number] = backWall ? [st[0], 0, BAND.front - 0.15] : [-FLOOR_HALF + 0.3, 0, st[2]];
-  return (
-    <group position={pos} rotation={[0, place.rot, 0]}>
-      <mesh castShadow position={[0, 1.35, 0]}>
-        <boxGeometry args={[0.1, 0.4, 0.1]} />
-        <meshStandardMaterial color={PALETTE.menuBoardFrame} />
-      </mesh>
-      <mesh castShadow position={[0, 1.78, 0.05]}>
-        <boxGeometry args={[2.5, 1.0, 0.08]} />
-        <meshStandardMaterial color={PALETTE.menuBoardFrame} />
-      </mesh>
-      <mesh position={[0, 1.78, 0.1]}>
-        <boxGeometry args={[2.3, 0.84, 0.02]} />
-        <meshStandardMaterial color={PALETTE.menuBoard} />
-      </mesh>
-      {/* başlık şeridi + altında 3 menü satırı (satır + fiyat noktası) */}
-      <mesh position={[-0.3, 2.08, 0.115]}>
-        <boxGeometry args={[1.0, 0.09, 0.01]} />
-        <meshStandardMaterial color={PALETTE.menuChalk} />
-      </mesh>
-      {[1.88, 1.7, 1.52].map((y, i) => (
-        <group key={y}>
-          <mesh position={[-0.42, y, 0.115]}>
-            <boxGeometry args={[1.2 - i * 0.15, 0.05, 0.01]} />
-            <meshStandardMaterial color={PALETTE.menuChalk} opacity={0.8} transparent />
-          </mesh>
-          <mesh position={[0.78, y, 0.115]}>
-            <boxGeometry args={[0.18, 0.05, 0.01]} />
-            <meshStandardMaterial color={PALETTE.brass} />
-          </mesh>
-        </group>
-      ))}
-      {/* panonun sağ alt köşesinde tost silüeti (ekmek + ızgara izi) */}
-      <group position={[0.82, 2.0, 0.115]}>
-        <mesh>
-          <boxGeometry args={[0.3, 0.22, 0.012]} />
-          <meshStandardMaterial color={PALETTE.toast} />
-        </mesh>
-        <mesh position={[0, 0, 0.008]} rotation={[0, 0, 0.6]}>
-          <boxGeometry args={[0.3, 0.04, 0.006]} />
-          <meshStandardMaterial color={PALETTE.toastDark} />
-        </mesh>
-      </group>
-    </group>
-  );
-}
-
 // Duvarlar yalnız AÇIK ALANLARI sarar (2026-06-11 telefon feedback'i: karanlık örtü hacmi mobilde
 // AYDINLIK göründü + alan sınırındaki kelepçe "görünmez engel" hissi verdi → örtü KALDIRILDI, bina
 // kilitliyken 1. alanı 4 GERÇEK duvarla biter; sağ duvar alan sınırına oturur = kelepçe duvar olur).
@@ -961,15 +913,9 @@ function BackBand({ areasOpen }: { areasOpen: number }) {
       <MaketWall x1={BAND.service.maxX} z1={zb} x2={BAND.service.maxX} z2={zf} h={BAND_SHELL.roomH} />
       <MaketWall x1={BAND.wc.minX} z1={zb} x2={BAND.wc.minX} z2={zf} h={BAND_SHELL.roomH} />
 
-      {/* SERVİS KÖŞESİ — arka duvarda hazırlık, sol duvarda bulaşık, doğu ucunda depo */}
-      <MaketCezveStation pos={[-13.6, 0, sz0 + 0.47]} />
-      <MaketWallShelf w={2.2} pos={[-13.6, 1.95, sz0 + 0.02]} />
-      <MaketCounter len={2.6} pos={[-9.6, 0, sz0 + 0.47]} />
-      <MaketWallShelf w={2.0} pos={[-9.6, 1.95, sz0 + 0.02]} />
-      <MaketDishSink pos={[sx0 + 0.51, 0, -13.6]} rot={Math.PI / 2} />
-      <MaketWallShelf w={2.0} pos={[sx0 + 0.06, 1.95, -13.6]} rot={Math.PI / 2} />
-      <MaketCrates pos={[-5.5, 0, sz0 + 0.87]} />
-      <MaketWaterRack pos={[-5.4, 0, -13.4]} rot={-Math.PI / 2} />
+      {/* SERVİS KÖŞESİ (S3) — arka duvarda 7 modüllük KayKit hattı, doğu ucunda depo.
+          Yerleşimin TEK kaynağı `kitchenLook.KITCHEN_UNITS`; buraya koordinat yazılmaz. */}
+      <Kitchen />
 
       {/* MERDİVEN KOVASI — yıkık merdiven + uyarı şeridi + dubalar (hepsi bandın İÇİNDE:
           oyuncu z = −9,8'de duruyor, salona taşan hiçbir parça olmasın diye maketin
@@ -1213,7 +1159,6 @@ export function Scene() {
       <Ground />
       <Street />
       <Walls />
-      <MenuBoard />
       <Decor />
       <BanketIslands />
       <WaiterStation />

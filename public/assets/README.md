@@ -15,19 +15,36 @@ servis eder → URL: `/assets/models/<paket>/<isim>.gltf`. Loader: `components/t
 | Paket klasörü | İçerik | Kaynak | Lisans | Durum |
 |---|---|---|---|---|
 | `kaykit-furniture-bits/` | 53 model (gltf+bin) + `furniturebits_texture.png` (ortak atlas) | KayKit Furniture Bits 1.0 — Kay Lousberg (kaylousberg.com) | **CC0** (kredi opsiyonel) | ✅ eklendi (entegrasyon ⏳) |
-| `kaykit-restaurant-bits/` | 144 model (gltf+bin) + `restaurantbits_texture.png` | KayKit Restaurant Bits 1.0 — Kay Lousberg | **CC0** (kredi opsiyonel) | ✅ eklendi 2026-09-06 (entegrasyon ⏳ Faz G4) |
+| `kaykit-restaurant-bits/` | 144 model (gltf+bin) + `restaurantbits_texture.png` | KayKit Restaurant Bits 1.0 — Kay Lousberg | **CC0** (kredi opsiyonel) | ✅ eklendi 2026-09-06 · **entegre edildi 2026-09-09 (S3: mutfak)** |
 | `kaykit-city-builder-bits/` | 41 model (gltf+bin) + `citybits_texture.png` | KayKit City Builder Bits 1.0 — Kay Lousberg | **CC0** (kredi opsiyonel) | ✅ eklendi 2026-09-06 (entegrasyon ⏳ Faz G5) |
 
 > Not: Pakette gelen fbx / fbx(unity) / obj+mtl / ekstra png (sample, contents) ve License.txt/url
 > dosyaları silindi — yalnız glTF iş hattı tutuluyor (boyut + tekillik). CC0 olduğu için lisans
 > dosyasını saklama zorunluluğu yok; künye bu manifestte.
 
-### kaykit-restaurant-bits — öncelikli 12 (plan §8 G4)
-Maketteki servis bloğunun neredeyse tamamı hazır; aynı sanatçı → stil kilidi korunur.
-`kitchencounter_straight_A` (+ `_innercorner` / `_outercorner` / `_backsplash`) ·
-`kitchencabinet` · `stove_multi` · `extractorhood` · `fridge_A` · `dishrack_plates` ·
-`shelf_papertowel` · `table_round_A` · `menu` · `wall_orderwindow`.
-Tost hattı için ayrıca: `pan_A` / `cuttingboard` / `plate` / `food_ingredient_cheese_slice`.
+### kaykit-restaurant-bits — **S3'te kullanıma girdi (2026-09-09)**
+Yerleşimin tek kaynağı `src/components/three/kitchenLook.ts`, çizim `Kitchen.tsx`,
+bekçi `tests/kitchen-look.test.ts`. Ölçüler `node tools/model-olc.mjs` çıktısıdır.
+
+**Arka duvar hattı (7 modül, 1,80 adım, ölçek 0,90):** `fridge_A` ·
+`kitchencounter_straight_A_backsplash` ×2 · `stove_multi` · `kitchencounter_straight_B_backsplash` ·
+`kitchencounter_sink_backsplash` · `oven`. Duvarda: `kitchencabinet` ×2 · `extractorhood`.
+Tezgâh üstü: `dishrack_plates`. Batı duvarı: bir `_straight_B_backsplash` (L dönüşü).
+**Depo (ölçek 0,45):** `crate` · `crate_lid` · `crate_potatoes`.
+**Ön hat (oyunun işleyen tezgâhları, `kayGovde` ile collision kutusuna çekilir, çekmeceler
+mutfağa dönük):** çay ocağı `kitchencounter_straight_A` · garson istasyonu
+`kitchencounter_straight_B` · bulaşık `kitchencounter_sink`.
+
+**Palet KayKit'in kendi paleti (kullanıcı kararı 2026-09-09, D-099):** atlas boyanmadı.
+Boyama aracı yine de duruyor (`tools/atlas-ton.mjs` + `tools/atlas-goz.mjs`) — renk artık
+bir tema mağazası kalemi. Hangi gözün hangi modele gittiği ölçülü:
+[3,6] tezgâh · [1,1] fırın/ocak gövdesi · [1,2] soğutucu.
+
+**Henüz kullanılmayan (sonraki kalemler):** `shelf_papertowel` · `table_round_A` · `menu` ·
+`wall_orderwindow` · duvar/zemin parçaları (S4). Tost hattı için: `pan_A` / `cuttingboard` /
+`plate` / `food_ingredient_cheese_slice`.
+**Karşılığı YOK (elle çizili kalır):** damacana rafı (`MaketWaterRack`) ve çay bardağı
+duvar rafı (`MaketWallShelf`) — KayKit'te Türk kıraathanesi eşyası yok.
 
 ### kaykit-city-builder-bits — kıraathane önü sokak (plan §8 G5)
 `building_A…H` · yol parçaları · `streetlight` · `bench` · `car_taxi`. Toplam atlas 3'te kalır.

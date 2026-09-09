@@ -212,16 +212,10 @@ export function HUD() {
           ve oyuncu ikisini yeni görev sanıyordu. Tek ses: bant. `tick.ts`e DOKUNULMADI (sunum
           katmanı kararı, E3/D-096 deseni) — olay hâlâ üretiliyor, yalnız burada çizilmiyor;
           devHooks anlık görüntüsü ve ona bağlı testler değişmedi. */}
-      {notice && notice.kind !== 'quest' && (
+      {notice && (
         <div className="notice" data-testid="notice" key={notice.text}>
           <span className="notice-badge">
-            {notice.kind === 'quest' ? (
-              <CheckBadge size={28} />
-            ) : notice.kind === 'level' ? (
-              <StarBadge size={28} />
-            ) : (
-              <BangBadge size={28} />
-            )}
+            {notice.kind === 'level' ? <StarBadge size={28} /> : <BangBadge size={28} />}
           </span>
           <span className="notice-text">{notice.text}</span>
           {notice.reward != null && (

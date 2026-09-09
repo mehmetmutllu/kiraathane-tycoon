@@ -5,75 +5,55 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-09 — **S2 BİTTİ + PLAN SAYILDI** · Faz S 2/12 · 77/96)
+## ŞU AN (2026-09-09 — **S3 BİTTİ** · Faz S 3/12 · 78/96)
 
 ```
-SORU            : Kullanıcı oynadı ve 25 kalemlik geri bildirim verdi (G-01…G-25,
-                  docs/geribildirim-oyun-testi-2026-09-09.md). En ağır iddia: "her şeyi yaptık
-                  ama KayKit'i hiçbir yere eklemedik." Doğru mu, ve pad dili nasıl olmalı?
-ÖLÇÜLECEK KOLLAR: yok — bu bir DENGE turu değil, sanat/arayüz turu. Varyant kapısı tetiklenmedi
-                  (economy.config.ts / tick.ts / rules.ts hiç açılmadı). Kapı: test + duman.
-SAYILAR         : İddia SAYIYLA doğrulandı — 238 KayKit modeli repoda, `grep kaykit src/` = 4 satır
-                  (yalnız masa+sandalye) → **185 model, 0 satır kod**. Elle çizilen 17 dekorun
-                  8'i birebir KayKit karşılığına sahip, 2'si yaklaşık, 6'sı yok.
-KARAR           : Kullanıcı "ücretsiz olduğu sürece her asseti çek ve yap" dedi → **Faz S açıldı**
-                  (6 kalem, docs/plan-faz-s-sanat.md). İki eski karar kullanıcı isteğiyle DÖNDÜ:
-                  D-094'ün Usta ŞERİDİ → MODAL (G-14) · görev toast'ı → KALKTI (G-04).
-UYGULAMA        : S1 · çember → köşe parantezli kare · YÜKSELT + ok · toast kalktı, bant
-                  "TAMAMLANDI" oldu · Usta şeridi modal oldu.
-                  S2 (D-098) · kullanıcı S1'i oynadı, altı kusur kapandı: çerçeve genişliği artık
-                  YAZIDAN çözülüyor (ok/yazı çakışması bitti) · köşeler yuvarlatıldı · modal
-                  yaklaşınca değil DURUNCA açılıyor (dwellState, 1,1 sn) · modal MERKEZÎ kabukta ·
-                  Usta'nın yuvarlak biçimi kalktı, işaret TEK biçim · ölçek mesafeye göre
-                  değişmiyor (yalnız üstündeyken ×1,12) · modal yazı rengi düzeldi
-BEKÇİ           : vitest 770 · duman 42/42 (biri YENİ: "modal merkezî kabukta" — alt sayfaya
-                  geri düşüş artık testle yasak) · kare işaret tarayıcıda gözle doğrulandı.
-                  Yan iş: tools/pano-guncelle.mjs `yazmaliMi()` + 3 test, 2 mutasyon yakalandı.
+SORU            : Mutfak KayKit'e nasıl geçer — modelin ölçeği ne, ve hangi parçalar
+                  gerçekten takas edilebilir?
+ÖLÇÜLECEK KOLLAR: yok — sanat turu, varyant kapısı tetiklenmedi (economy/tick/rules açılmadı).
+                  Kapı: `npm run test` + `npm run duman` + `tsc -b`.
+SAYILAR         : `tools/model-olc.mjs` (yeni): KayKit restaurant-bits 2×2 modül karosunda —
+                  tezgâh 2,00 × 1,00 × 2,04 · duvar 4,00 · `chair_A` 0,75 (furniture-bits ile
+                  AYNI ham ölçek) → paket ölçeği **0,90**, mimari ölçek 0,80 REDDEDİLDİ
+                  (tezgâh üstü masa üstüyle aynı hizaya düşüyordu). `tools/atlas-goz.mjs` (yeni):
+                  UV → atlas gözü — [3,6] tezgâh · [1,1] fırın/ocak · [1,2] soğutucu.
+KARAR           : D-099. Ölçek 0,90 · kasa 0,45 · ön hat collision kutusuna çekilir · çekmeceler
+                  MUTFAĞA bakar · **palet KayKit'in kendi paleti** (kullanıcı) · menü panosu kalktı.
+UYGULAMA        : `kitchenLook.ts` (ölçü/ankraj, React'siz) + `Kitchen.tsx` (çizim) ·
+                  arka duvarda 7 modül + batı dönüşü + depo · duvarda 2 dolap + davlumbaz ·
+                  ön hattaki üç tezgâh (`kayGovde`) · maket parçaları SİLİNMEDİ, fallback oldu.
+BEKÇİ           : `tests/kitchen-look.test.ts` 15 test · **4 mutasyon** (ölçek 0,90→1,00 ·
+                  kasa 0,45→0,90 · ortalama kayması silindi · ön hat salona döndürüldü) — dördü
+                  de yakalandı. vitest **785** · duman **42/42** · `tsc -b` temiz.
 ```
 
-**Turun en kalıcı parçası bir araç hatası:** kapanışta pano bekçisi kırmızıydı — **ve benim
-değişikliğimden önce de kırmızıydı** (temiz ağaçta doğrulandı). Sebep CRLF sanılıyordu, değildi:
-aracın yazma şartı *"veri değişti mi"* idi, oysa pano elle düzenlenince **biçimi** kayabiliyor
-(blokta 830 `\uXXXX` kaçışı ile 15.020 ham karakter yan yana). Veri aynı, bayt farklı → araç
-"zaten güncel" deyip çıkıyor, bekçi **sessizce** kırmızı kalıyor. **Ders: bir aracın yazma şartı
-ürettiği çıktıya bakmıyorsa, kendi bekçisini göremez.**
+**Turun en pahalı bulgusu bir test boşluğu:** `npm run build` **temiz ağaçta da kırıktı.**
+`tsc -b` HUD'da S2'den kalan ölü bir dal buldu (`notice.kind !== 'quest'`, oysa tip artık
+`'level' | 'reveal'`). `npm run test` bunu göremez — vitest tip denetlemez — ve kapanış
+protokolü `build` çalıştırmıyor. **Ders: yeşil test paketi "derleniyor" demek değil;
+kapanışa `tsc -b` girmeli** (`oturum-bitir` adım 2'ye eklenmeli, henüz eklenmedi).
 
-**İkinci ders — şikâyetin cevabı çoğu zaman zaten diskte.** "Pencere duvardan ayrı duruyor" →
-`wall_window_open` pencereyi duvarın parçası olarak modelliyor. "Texture lazım" → `floor_kitchen`
-+ üç atlas PNG repoda. Foto-gerçekçi CC0 doku siteleri (Poly Haven / ambientCG) bu stile **uymaz**
-ve panoya bilerek alınmadı.
+**İkinci ders — paketin modül karosu her obje için ölçek değildir.** KayKit her şeyi 2×2'lik
+karoda yazıyor; kasa da öyle. 0,90'da kasa 1,80 br oldu ve arkasındaki fırını kapattı. Küçük
+prop kendi gerçek boyunu ister (0,45 → 0,90 × 0,36; iki kasa yan yana tam bir modül eni).
 
-
-**ÖLÇÜLDÜ, KARAR BEKLİYOR — masalar çok yakın ve bu bir HİS DEĞİL GEOMETRİ.** Kullanıcı
-"birbirlerine çok mu yakın" diye sordu ve "mutfağa yakın yerde yürüyemiyorum" dedi; ikisi aynı kök:
-geçiş için **2 × playerRadius = 0,94 br** gerekiyor · ön salon boşluğu **3,50 br** (rahat) ·
-**arka salon 0,68 br** → 20 masanın **12'si geçilemez**. Çarpışma katılarında eşik altında
-**52 açıklık**, en darı **0,04 br**. Düzeltme `layout.ts` ve ONAYLI maket düzenine dokunuyor →
-iki kol sayılarıyla `docs/geribildirim-oyun-testi-2026-09-09.md` sonunda, **uygulanmadı.**
-
-**İNDİRME ENGELİ KALKTI.** Bash'in ağı yok ama **PowerShell'in var**. `tools/indir-itch.ps1`
-itch akışının 3/4 adımını yapıyor (csrf → indirme sayfası → dosya listesi), son adım 404.
-Not: PS 5.1 BOM'suz UTF-8 `.ps1`i ANSI okuyor — Türkçe betikler **BOM'lu** yazılmalı.
+**Renk bir kusur değil, bir ÜRÜN KALEMİ oldu.** Kıraathane tonuna boyanmış varyant üretildi ve
+gösterildi (`docs/gorsel/ss/mutfak-varyant-*.png`); kullanıcı *"her şey çok kahve kalıyor, biraz
+daha renkli olsun istiyorum"* deyip KayKit'in kendi paletinde kaldı ve ekledi: **farklı renkler
+ileride TEMA olarak satılabilir.** Boyama hattı ölçülü ve hazır bekliyor (iki yeni araç).
 
 ## SIRADAKİ TAM ADIM
 
-**S3 — mutfak bloğu KayKit'e geçer.** `maketParts.tsx`teki `MaketCounter` · `MaketSink` ·
-`MaketDishSink` · `MaketCezveStation` · `MaketWaterRack` · `MaketCrates` yerine
-`kitchencounter_straight_A/B(+_backsplash)` · `kitchencounter_sink` · `stove_multi` · `oven` ·
-`extractorhood` · `fridge_A` · `kitchencabinet*` · `dishrack_plates` · `crate*`.
-Yükleyici hazır (`Model.tsx`, fallback ilkel şekle düşer), renk `recolor.ts` atlas kopyasıyla.
+**S4 — duvar + zemin KayKit'e geçer.** `MaketWall` yerine `wall` / `wall_half` /
+`wall_decorated` / `pillar_A·B`; mutfak zemini `floor_kitchen`. Dikkat: KayKit duvarı native
+**4,0**, oyununki `WALL_H` **3,2** → mimari ölçek **0,80** (D-099 §1'de ölçüldü, mobilyanınkinden
+farklı ve öyle kalmalı). Renk `recolor.ts` atlas kopyasıyla.
+S4-S7 indirme ve onay İSTEMİYOR — diskteki 185 KayKit modeliyle yapılacak iş.
 
-**YAYIN ÖNCESİ TOPLAM 19 OTURUM** (kullanıcı 2026-09-09 sordu, sayım panoya işlendi):
-Faz S sanat **10** · Faz H oynanış **3** · E5 onboarding **1** · Faz F paketleme **5**.
-S3-S7 (mutfak · duvar+zemin · dekor · dış cephe+tente · lavabo kapıları) **indirme ve onay
-İSTEMİYOR** — hepsi diskteki 185 KayKit modeliyle yapılacak iş, sırayla girilebilir.
-
-**KULLANICI KARARI BEKLEYEN ÜÇ ŞEY** (hiçbiri S3-S7'yi bloklamıyor):
-1. **Ses kaynağı** (S8) — asset panosu §7, dört kol. Bu karar **D-096'yı kısmen geri alır**
-   (sentez "nihai" seçilmişti, `audio/` bilerek boştu, lisans yüzeyi sıfırdı). Kablo hazır;
-   açılan tek şey lisans yüzeyi + tek-stil kilidi. **Walla tuzağı yazılı:** hazır kafe
-   ambiyansında anlaşılır yabancı konuşma var, kısa döngüde dakikada bir tekrar eder.
-2. **Karakter kolu** (S12) — asset panosu §3, altı kol, hepsinin bedeli yazılı.
+**KULLANICI KARARI BEKLEYEN ÜÇ ŞEY** (hiçbiri S4-S7'yi bloklamıyor):
+1. **Ses kaynağı** (S8) — asset panosu §7, dört kol. D-096'yı kısmen geri alır.
+   **Walla tuzağı yazılı:** hazır kafe ambiyansında anlaşılır yabancı konuşma var.
+2. **Karakter kolu** (S12) — asset panosu §3, altı kol, bedelleri yazılı.
 3. **H2 yükseltme sırası** (A tek hedef / B kuşak) ve **H3 masa aralığı** (K1 aralığı aç /
    K2 oturak küçült — K2 önerilmiyor, `feedback_reference_scale_trap`).
 
@@ -81,27 +61,25 @@ S3-S7 (mutfak · duvar+zemin · dekor · dış cephe+tente · lavabo kapıları)
 
 ## AÇIK KALEMLER (bilinen, bilerek duruyor)
 
-- **G-01 çay/bulaşık toplama masanın her tarafından olmuyor · G-02 çay ocağından alma güvenilmez
-  (tepside yer varken) · G-03 2. masa görevinde kamera kendiliğinden kayıyor** — üçü de HATA,
-  kendi turunu ister; tasarım kararı beklemiyor.
+- **`tsc -b` kapanışa girmeli** — bu turda elle yakalandı, kural olmadıkça yine kaçar.
+- **G-01 çay/bulaşık toplama masanın her tarafından olmuyor · G-02 çay ocağından alma güvenilmez ·
+  G-03 2. masa görevinde kamera kendiliğinden kayıyor** — üçü de HATA, kendi turunu ister.
 - **G-05 görev metinleri açıklayıcı değil** — altta net hedef, üstte kısa lakap (yazım işi).
 - **G-06 tepsi ilk yükseltme 75 → ~50 · G-07 yükseltme dwell'i para-bağımsız sabit olsun** —
-  ikisi de DENGE, varyant kapısına tabi, **ölçülmeden uygulanmaz**. (Faz H'ye girmedi; H2 ile
-  aynı ölçüm turunda birlikte bakılabilir.)
-- **Oto-toplama toast'ı bir TOPLAMI tek olay gibi gösteriyor** — kullanıcı "bir masadan 50k
-  aldım" sandı. ÖLÇÜLDÜ: tek ödemenin tavanı **44 ₺** (tost + maks masa + Usta ×1,5 + gelir
-  çarpanı tavanı ×1,10); 50k ≈ **1.140 coin**in toplu toplanması. Gelir formülü cüzdana da
-  `lifetime`a da hiç bakmıyor → dev parasının etkisi YOK. Metne adet eklemek `tick.ts`'e
-  dokunuyor, kullanıcı onayı bekliyor.
-- **G-16 arayüz kahverengi/iç karartıcı → mavi · G-17 ekranlar tam-ekran mı modal mı (Subway
-  Surfers) · G-10 pad şekli** — kullanıcı "bilemedim" dedi; **maket görmeden koda girmemeli**.
+  ikisi de DENGE, varyant kapısına tabi, **ölçülmeden uygulanmaz** (Faz H'de H2 ile aynı turda).
+- **Masalar geçilmiyor (ÖLÇÜLDÜ, uygulanmadı):** geçiş 2 × playerRadius = 0,94 br ister; ön salon
+  3,50 br rahat, **arka salon 0,68 br** → 20 masanın 12'si geçilemez, 52 açıklık eşik altında.
+  İki kol `docs/geribildirim-oyun-testi-2026-09-09.md` sonunda. (H3.)
+- **Oto-toplama toast'ı bir TOPLAMI tek olay gibi gösteriyor** — tek ödemenin tavanı 44 ₺;
+  metne adet eklemek `tick.ts`'e dokunuyor, kullanıcı onayı bekliyor.
+- **G-16 arayüz kahverengi/iç karartıcı → mavi · G-17 ekranlar tam-ekran mı modal mı · G-10 pad
+  şekli** — kullanıcı "bilemedim" dedi; **maket görmeden koda girmemeli**.
 - **G-18 masaya tıklayınca seviye gözüksün mü** — kullanıcı düşünüyor, açık soru.
-- **`.gitattributes` YOK** — `core.autocrlf=true` her `git checkout`ta metin dosyalarını CRLF'e
-  çeviriyor. Pano aracı artık satır sonundan da biçimden de bağımsız, ama başka araç düşebilir.
-- **`npm run pano`'nun günlük uyarısı yalnız TARİHE bakıyor** — aynı gün ikinci oturum kapanınca
-  sessiz kalıyor; bu turda kart ELLE eklendi. Kural "sayaç arttıysa kart da artmalı" olmalı.
-
-**Bekleyen denge kararı:** G-06 ve G-07 bekliyor — ikisi de ölçüm turu ister, S fazında YAPILMAZ.
+- **`.gitattributes` YOK** — `core.autocrlf=true` her checkout'ta metin dosyalarını CRLF'e çeviriyor.
+- **`npm run pano`'nun günlük uyarısı yalnız TARİHE bakıyor** — aynı gün ikinci oturumda sessiz
+  kalıyor; kural "sayaç arttıysa kart da artmalı" olmalı.
+- **Damacana rafı ve çay bardağı duvar rafı elle çizili kalıyor** — KayKit'te Türk kıraathanesi
+  eşyası yok. Kendi modelini yaptırmak S12'nin (karakter/özel model) konusu.
 
 ---
 

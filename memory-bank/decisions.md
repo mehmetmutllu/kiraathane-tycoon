@@ -2904,3 +2904,58 @@ BOM'suz UTF-8'de ANSI okuyor — Türkçe karakterli betikler **BOM'lu** yazılm
 
 vitest **770** · duman **42/42** · **denge sayısı DEĞİŞMEDİ** · kare işaret tarayıcıda gözle
 doğrulandı (ok/yazı çakışması gitti, köşeler yuvarlak).
+
+## D-099 — S3: mutfak KayKit'e geçti; ÖLÇEK insan boyundan, PALET KayKit'ten (2026-09-09)
+
+**Karar.** Servis köşesinin tamamı — arka duvar hattı, batı dönüşü, depo **ve oyunun işleyen ön
+hattı** (çay ocağı · garson istasyonu · bulaşık) — KayKit restaurant-bits'e geçti. Elle çizilen
+maket parçaları silinmedi, `Model`'in **yedeği** oldu (greybox-first kuralı gerçekten çalışıyor).
+
+**① Paket ölçeği ölçüldü, tahmin edilmedi: 0,90.** KayKit restaurant-bits, furniture-bits ile
+aynı ham ölçekte yazılmış (`chair_A` iki pakette de 0,75 geniş) → projenin dondurduğu
+`STOOL_S = 0,90` burada da geçerli. Sağlama insan boyuyla yapıldı (`feedback_reference_scale_trap`):
+tezgâh üstü **0,90** = 1,75'lik karakterin **%51**'i (gerçekte 0,90/1,75 = %51), masa üstü %45.
+**0,80 neden değil:** KayKit'in duvarı native 4,0, oyununki `WALL_H` 3,2 → mimari ölçek 0,80
+çıkıyor, ama o ölçekte tezgâh üstü 0,80'e yani **masa üstüyle aynı hizaya** düşerdi. Mobilya insana,
+duvar odaya göre ölçeklenir; ikisi tek sayıya zorlanmadı. Duvar dolabı/davlumbaz farkı **üst
+hizadan** kapatır: tepesi `WALL_H`'a oturur, altı 1,40'a düşer (tezgâhla arası 0,50).
+
+**② Ön hat modele değil COLLISION'a uyar.** Arka hat serbestçe derinleşebiliyordu (bant yürünmez,
+7,1 br derin); ön hat üç collision kutusudur. KayKit modülü 1,84 derin, kutu 1,00 — model kutuya
+eksen başına ÇEKİLDİ (`kayGovde`). Modelin z aralığı asimetrik (−1,000 → +1,042), o yüzden
+ölçekten sonra bir de **ortalama kayması** gerekiyor; olmazsa gövde kutunun 2 cm önüne oturur.
+Tabla üstü **0,90** seçildi çünkü elle çizilen gövdelerin tablası da tam oradaydı → semaver,
+hazır bardaklar, tost sacı, sürahiler, peçetelik **tek koordinat değişmeden** yerinde kaldı.
+
+**③ Çekmeceler mutfağa bakar (kullanıcı, aynı gün).** İlk uygulamada ön yüz salona bakıyordu;
+gerçek bir bankoda dolap personelin durduğu yüzde açılır. Arka hat bunun İSTİSNASI değil aynı
+kuralın kendisi — orada da personel tezgâhın önünde (mutfağın içinde) durur.
+
+**④ Kasa ölçeği ayrı: 0,45.** KayKit'in kasası da 2×2 modül karosunda yazılı; 0,90'da 1,80 br
+enine çıkıp arkasındaki fırının önünü kapatıyordu (kullanıcı: *"kasa olduğu için daha küçük
+yapabilirsin"*). 0,45 → 0,90 × 0,36: hem gerçek kasa oranı, hem iki kasa yan yana tam bir modül
+eni. **Ders: paketin modül karosu her obje için ölçek değildir — küçük prop kendi boyunu ister.**
+
+**⑤ PALET KayKit'in kendi paleti KALDI (kullanıcı kararı).** Turuncu tezgâh / nane yeşili soğutucu /
+kırmızı fırın salonun kahve-krem diline göre yüksek sesli; kıraathane tonuna boyanmış varyant
+üretildi ve gösterildi (`docs/gorsel/ss/mutfak-varyant-*.png`). Kullanıcı: *"her şey çok kahve
+kalıyor, biraz daha renkli olsun istiyorum … şu an KayKit'in kendi paleti kalsın"* ve ekledi:
+**farklı renkler ileride TEMA olarak satılabilir.** Yani renk bir kusur değil, bir **ürün kalemi** —
+`PALETTE`'in tema mağazası notuyla (Faz 5) aynı hatta girdi. Boyama hattı ölçülü ve hazır bekliyor:
+`tools/atlas-goz.mjs` hangi gözün hangi modele gittiğini söylüyor ([3,6] tezgâh · [1,1] fırın/ocak ·
+[1,2] soğutucu), `tools/atlas-ton.mjs` gözü gradyanı bozmadan boyuyor.
+
+**⑥ Menü panosu kaldırıldı (kullanıcı).** Ön hattın üstünde asılı duran pano istenmedi; L6'nın
+görsel karşılığıydı, `MenuBoard` tamamen silindi. Seviye okunurluğu tezgâhın kendi basamaklarında
+(pirinç bant, cezve ocağı, tost hattı) duruyor.
+
+**⑦ Yan bulgu — `npm run build` TEMİZ AĞAÇTA DA KIRIKTI.** `tsc -b` HUD'da S2'den kalmış ölü bir
+dal buldu (`notice.kind !== 'quest'`, oysa tip artık `'level' | 'reveal'`). `npm run test` bunu
+görmüyor çünkü vitest tip denetlemiyor; kapanış protokolü de `build` çalıştırmıyor. Dal silindi.
+**Ders: yeşil test paketi derlenebilirlik demek değil — kapanışa `tsc -b` girmeli.**
+
+Bekçi: `tests/kitchen-look.test.ts` (15 test) — oda sınırları, ayak izi çakışması, ızgara adımı,
+düşey ankraj, ön hat türetmesi. **Dört mutasyonla doğrulandı** (ölçek 0,90→1,00 · kasa 0,45→0,90 ·
+ortalama kayması silindi · ön hat salona döndürüldü); dördü de yakalandı.
+vitest **785** · duman **42/42** · `tsc -b` temiz · **denge dosyalarına DOKUNULMADI** (varyant
+kapısı tetiklenmedi).
