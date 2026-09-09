@@ -260,6 +260,72 @@ export const itibarAyarla = (f: (() => ItibarKol) | null): void => { itibarFabri
 let itibarSimdiki: ItibarEtki = ITIBAR_ETKISIZ;
 /** rate() içinde hesaplanan o tick'in AKIŞI (müşteri/sn) — kanca açıkken okunur. */
 let sonAkis = 0;
+
+/* ── D7: USTA KATMANI KANCASI (varyant katmanı; `economy.config.ts` DEĞİŞMEZ) ─────────────
+ * Plan §5/§6: ₺ merdiveni tavana varınca objenin ÜSTÜNE bir basamak daha gelir — "Usta",
+ * 💎 (ya da ödüllü reklam) ile alınır ve "üstüne ×2" verir. Bugün kodda YOK: planın
+ * "zaten yazılmışlar (`masterLevel`, `masterDiamondCost`)" cümlesi bayat, iki ad da kod
+ * tabanında geçmiyor. Yani hem ETKİSİ hem FİYATI ölçülmemiş denge sayılarıdır.
+ *
+ * NEDEN AYRI KANCA (itibar'ınkine binmiyor): Usta bir ÇARPAN değil, bir SATIN ALMA sistemidir.
+ * Etkisi ancak 💎 birikip harcandıktan sonra başlar; yani kolun zamandaki şekli, itibar
+ * kolunun (seviyeyle doğrusal) tersine BASAMAKLIDIR. Aynı slota binseydi iki kol aynı koşuda
+ * ölçülemezdi — oysa D7'nin tabanı D-090 + D-092'nin AÇIK olduğu bugünkü dünyadır.
+ *
+ * İKİ KANAL, ikisi de mevcut tavanların girdiği yerlere biner:
+ *   arz   — servis noktasının Usta basamağı: hazırlama süresi kısalır (`bt /= arz`), üç
+ *           tavandan birine dokunan tek kanal. Planın "üstüne ×2"si buraya düşer.
+ *   gelir — Usta MASALARIN bahşişi. Masa seviyesi throughput vermez, bahşiş verir; bu yüzden
+ *           kol `perCustomer`a biner. Kolun kendisi çarpanı bahşişin gelirdeki PAYINDAN ve
+ *           Usta masa ORANINDAN hesaplar (`sonBahsisPayi` bu yüzden dışa verilir) — masaların
+ *           tamamına ×2 yazmak, bahşişi olmayan fiyatı da çarpıp sahte bir gelir üretirdi.
+ *
+ * MODEL SINIRI: `carpanSimdiki`/`itibarSimdiki` ile AYNI desende bir sonraki tick'te
+ * yürürlüğe girer. Taban `null`: hiçbir ek hesap yapılmaz → taban çıktısı BİREBİR korunur. */
+export interface UstaDurum {
+  t: number;
+  /** Servis noktasının ₺ seviyesi ve ₺ tavanı — Usta ancak tavanda AÇILIR. */
+  servisSeviye: number;
+  servisTavan: number;
+  /** ₺ tavanına (`tables.upgrade.maxLevel`) ulaşmış masa sayısı ve açık masa sayısı. */
+  masaTavanda: number;
+  masaSayisi: number;
+  /** Bahşişin müşteri başına ₺ içindeki PAYI (0-1) — Usta masa kolunun çarpanı bundan çıkar. */
+  bahsisPayi: number;
+  /** ₺ TAVANINA varmış PERSONEL merdiveni sayısı (0-5): garson · bulaşıkçı · 3 karakter statı.
+   *  Usta ancak tavanda açılır; e6 kolunun uygun hedefleri bunlardır. */
+  personelTavanda: number;
+  /** `HedefDurum` ile aynı üç sayı: 💎 arzı hedef kademelerinden gelir, kol onu türetir. */
+  lifetime: number;
+  padSayisi: number;
+  ustaMasa: number;
+}
+/** Kolun o tick'teki etkisi. Üçü de 1 = etkisiz (taban).
+ *  `tasima` kolu ölçüm SIRASINDA eklendi (D6'nın `r6`'sıyla aynı gerekçe): ilk kısa koşu
+ *  darboğazın zamanın %91,5'inde TAŞIMADA olduğunu gösterdi, yani tur kartındaki iki kanalın
+ *  (servis arzı · masa bahşişi) hiçbiri gerçek kelepçeye dokunmuyordu. Planın ~26 Usta
+ *  hedefindeki garson · bulaşıkçı · 3 karakter statı tam o kanalda duruyor. */
+export interface UstaEtki { arz: number; gelir: number; tasima: number }
+export type UstaKol = (d: UstaDurum) => UstaEtki;
+const USTA_ETKISIZ: UstaEtki = { arz: 1, gelir: 1, tasima: 1 };
+/** Kaç personel merdiveni ₺ TAVANINDA (bir sonraki maliyet yoksa o merdiven bitmiştir).
+ *  Planın beş personel Usta hedefi: garson (tepsi+hız) · bulaşıkçı (leğen+hız) · karakterin
+ *  üç statı. İki basamaklı olanlar (garson, bulaşıkçı) ikisi de bitince tavanda sayılır. */
+function personelTavanSayisi(s: State): number {
+  const bitti = (x: number | null) => x == null;
+  let n = 0;
+  if (bitti(waiterTrayNextCost(s.waiterTray)) && bitti(waiterSpeedNextCost(s.waiterSpeed))) n += 1;
+  if (bitti(dishCarryNextCost(s.dishCarry)) && bitti(dishSpeedNextCost(s.dishSpeed))) n += 1;
+  for (const t of ['tray', 'magnet', 'speed'] as const) {
+    if (bitti(charNextCost(t, s.char[t]))) n += 1;
+  }
+  return n;
+}
+let ustaFabrika: (() => UstaKol) | null = null;
+export const ustaAyarla = (f: (() => UstaKol) | null): void => { ustaFabrika = f; };
+let ustaSimdiki: UstaEtki = USTA_ETKISIZ;
+/** rate() içinde hesaplanan bahşiş payı — Usta masa kolu bunu okur (kanca açıkken). */
+let sonBahsisPayi = 0;
 /** Yükseltme sayacı: `boughtLabel`in saydığı kalemlerin toplamı (pad hariç — o ayrı kalem). */
 function yukseltmeSayisi(s: State): number {
   return s.stationLevels.reduce((a, b) => a + b, 0)
@@ -458,7 +524,10 @@ function carryRateOf(s: State, oyuncusuz = false): number {
   const wSpeed = C.waiter.speedUpgrades.speeds[s.waiterSpeed];
   const waiters = w.services[THE_SERVICE]?.waiters ?? 0;
   // D6 r6 kolu: İtibar taşıma kapasitesini büyütürse buraya biner (kanca kapalıyken 1).
-  const ham = (player + waiters * carrierRate(1 + s.waiterTray, wSpeed, dist, ara)) * itibarSimdiki.tasima;
+  // D7 e6: Usta'nın PERSONEL kolu da aynı kanala biner (garson · bulaşıkçı · karakter statları) —
+  // darboğaz dağılımı kelepçenin zamanın %91'inde burada olduğunu söylüyor.
+  const ham = (player + waiters * carrierRate(1 + s.waiterTray, wSpeed, dist, ara))
+    * itibarSimdiki.tasima * ustaSimdiki.tasima;
   return M.k1a ? ham * carryRealization(w.tables.length) : ham;
 }
 
@@ -616,7 +685,7 @@ function rate(s: State, eff = 1): number {
   const w = deriveWorld(s.padsDone);
   // D6 İtibar `arz` kolu hazırlama SÜRESİNİ kısaltır (çarpan supply'a değil bt'ye biner) —
   // böylece müşteri döngüsü de tutarlı kısalır. Kanca kapalıyken bölen 1'dir → taban birebir.
-  const bt = brewTimeOf(s) / itibarSimdiki.arz;
+  const bt = brewTimeOf(s) / (itibarSimdiki.arz * ustaSimdiki.arz);
   const cycle = C.npc.walkTime + bt + C.npc.eatTime;
   const koltuk = openSeats(w, s);
   let demand = (koltuk / cycle) * itibarSimdiki.talep;
@@ -627,7 +696,12 @@ function rate(s: State, eff = 1): number {
   // gevşetmez, yalnız aynı akışın ₺'sini artırır — Kat 1'de throughput kolu tükendiği için
   // (arz L6'da 0,78 fincan/sn, taşıma tavanı 1,25) geriye kalan tek büyüme yönü budur.
   // D3b `hF`: hedef koleksiyonunun KALICI çarpanı da müşteri başına ₺'ye biner (kanca kapalıyken 1).
-  const perCustomer = (price + ortBahsis(w, s) + lavaboIncomePerCustomer(s.lavabo)) * carpanSimdiki * itibarSimdiki.gelir;
+  const bahsis = ortBahsis(w, s);
+  const hamMusteri = price + bahsis + lavaboIncomePerCustomer(s.lavabo);
+  // D7: Usta masa kolu bahşişin PAYINI ister (çarpan yalnız o paya biner) — kanca kapalıyken
+  // okunmaz, taban çıktısı birebir korunur.
+  sonBahsisPayi = hamMusteri > 0 ? bahsis / hamMusteri : 0;
+  const perCustomer = hamMusteri * carpanSimdiki * itibarSimdiki.gelir * ustaSimdiki.gelir;
 
   const carry = carryRateOf(s);
   let akis = Math.min(demand, supply, carry);
@@ -644,7 +718,7 @@ function rate(s: State, eff = 1): number {
 type Kol = 'talep' | 'arz' | 'taşıma' | 'bardak';
 function bindingArm(s: State): Kol {
   const w = deriveWorld(s.padsDone);
-  const bt = brewTimeOf(s) / itibarSimdiki.arz;
+  const bt = brewTimeOf(s) / (itibarSimdiki.arz * ustaSimdiki.arz);
   const koltuk = openSeats(w, s);
   const carry = carryRateOf(s);
   let demand = (koltuk / (C.npc.walkTime + bt + C.npc.eatTime)) * itibarSimdiki.talep;
@@ -995,8 +1069,10 @@ function runProfile(eff: number, log = false, buys?: Buy[], darbogaz?: Record<st
   const hedef = hedefFabrika ? hedefFabrika() : null;
   const carpan = hedefCarpanFabrika ? hedefCarpanFabrika() : null;
   const itibar = itibarFabrika ? itibarFabrika() : null;
+  const ustaKol = ustaFabrika ? ustaFabrika() : null;
   carpanSimdiki = 1; // kanca kapalı olsa bile sıfırlanır: önceki koşunun çarpanı sızmasın
   itibarSimdiki = ITIBAR_ETKISIZ; // aynı gerekçe (C4 tuzağı ②: kol sızması)
+  ustaSimdiki = USTA_ETKISIZ; // aynı gerekçe
   const done = new Map<string, number>();
   while (s.t < MAX_T) {
     const inc = rate(s, eff) * DT;
@@ -1011,7 +1087,7 @@ function runProfile(eff: number, log = false, buys?: Buy[], darbogaz?: Record<st
       if (label) buys!.push({ t: s.t, label });
     }
     advanceQuests(s); // M1: görev ödülleri cüzdana
-    if (hedef || carpan || itibar) {
+    if (hedef || carpan || itibar || ustaKol) {
       // D3: hedef (koleksiyon) ödülleri — görev ödülüyle AYNI muamele (ikisi de lifetime'a sayar).
       const w = deriveWorld(s.padsDone);
       seviyeleriEsitle(s, w);
@@ -1038,6 +1114,21 @@ function runProfile(eff: number, log = false, buys?: Buy[], darbogaz?: Record<st
           ustaMasa: usta,
         });
       }
+      if (ustaKol) {
+        // D7: Usta ancak ₺ TAVANINDA açılır — kol hangi objenin tavanda olduğunu buradan görür.
+        ustaSimdiki = ustaKol({
+          t: s.t,
+          servisSeviye: s.stationLevels[THE_SERVICE],
+          servisTavan: softMax(),
+          masaTavanda: usta,
+          masaSayisi: w.tables.length,
+          bahsisPayi: sonBahsisPayi,
+          personelTavanda: personelTavanSayisi(s),
+          lifetime: d.lifetime,
+          padSayisi: d.padSayisi,
+          ustaMasa: usta,
+        });
+      }
     }
     for (const m of MS()) {
       if (!done.has(m.name) && m.hit(s)) {
@@ -1054,6 +1145,7 @@ function runProfile(eff: number, log = false, buys?: Buy[], darbogaz?: Record<st
   // D6: kolun çarpanı koşunun DIŞINA sızmamalı. `carryRateOf` koşu bittikten sonra da çağrılıyor
   // (`modelDebisi` → GERÇEK senaryo sapması); sızarsa r6 satırının sapma kolonu sessizce bozulur.
   itibarSimdiki = ITIBAR_ETKISIZ;
+  ustaSimdiki = USTA_ETKISIZ;
   return done;
 }
 

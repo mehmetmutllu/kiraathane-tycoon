@@ -1,0 +1,109 @@
+=== D7a — ELMAS: arz (hedef + gunluk gorev) ve harcama (USTA katmani) birlikte ===
+
+Model: D-086 yururlukteki model (k1b + k2). economy.config.ts DOSYASI DEGISMEDI —
+kollar sim`in usta kancasina takilir (tools/usta-kollari.ts).
+
+TABAN = BUGUNKU DUNYA: hedef carpani (D-090 hUYGF) + tasima odulu (D-092 rUYG) ACIK.
+Usta bir ICERIK KUYRUGUDUR ve kuyruk ₺ merdiveninin BITTIGI yerde baslar; kapali bir
+dunyada olcmek tavana varis zamanini oldugundan GEC gosterirdi.
+
+MODEL SINIRI (rapora aynen gecer):
+  1) 12 sa`lik pencere YARIM GUN — gunluk gorev arzi (e5) bu tabloda tanim geregi
+     kucuk kalir. Gun olcegindeki hesap §5 DEFTER bolumundedir.
+  2) Odullu reklam ve IAP arzi YOK sayilir → arz bir ALT sinirdir.
+  3) Usta hedefleri: servis (1) + masalar (20) + PERSONEL merdivenleri (5: garson ·
+     bulasikci · 3 karakter stati) = 26. Personel kanali TUR KARTINDA YOKTU, olcum
+     sirasinda eklendi (e6): ilk kisa kosu kelepcenin %91,5 tasimada oldugunu gosterdi.
+  4) Oyuncu 💎`i biriktigi ANDA harcar (personel → servis → masa) → etki UST sinir.
+  5) Hedeflerin bugunku 💎 toplami: 250 💎 (economy.config.ts
+     goals.diamondByTier`den turer, elle yazilmadi).
+
+--- TABAN: dort profilde 20 dk`yi asan alimlar (Usta katmani YOK) ---
+  Idealize asan  0 · en uzun  19.0 dk -> servis L6
+  Yogun    asan  1 · en uzun  23.6 dk -> servis L6
+  Normal   asan  2 · en uzun  33.8 dk -> servis L6
+  Rahat    asan  9 · en uzun  52.2 dk -> servis L6
+
+  TABAN olcutleri: ilk alim 22 sn · acilis enUzun 1.6 dk · otomasyon 6.1 dk · SERIT 6.88 sa · sapma %8
+  TABAN en uzun bekleme (Normal): 33.8 dk -> servis L6
+  TABAN hukum (Idealize): asan 0 · en uzun 19.0 dk -> servis L6
+
+--- DARBOGAZ dagilimi: gelirin kelepcesi zamanin yuzde kacinda kimde ---
+  D6`da bu dagilim planin talep kolunu elemisti; Usta`nin arz kanali da ayni tabloda okunur.
+  Idealize taşıma %91.6 · arz %7.1 · talep %1.3
+  Normal   taşıma %91.5 · arz %7.2 · talep %1.3
+
+--- KOL x DOZ: Usta katmaninin kuyrugu ve takasi ---
+  acilis olcutleri (D-079): ilk alim < 90 sn · acilis enUzun <= 2 dk · otomasyon < 15 dk
+  ihlal(N/I): Normal (gozlem) / Idealize (HUKUM, D-087) profilinde 20 dk`yi asan alim
+  ALIM      : 12 sa`de alinan Usta sayisi · ilk Usta: ilkinin zamani
+  KUYRUK    : kosu sonunda UYGUN ama alinamamis Usta hedefi (0 = kuyruk COKTU)
+  d.SERIT   : zincirin TABANA gore kisalmasi — D1`in eleme olcutu, esik %7
+
+kol   | doz              | ALIM | ilk Usta | KUYRUK | 💎 kalan | ihlal(N/I) | enUzun  | SERIT   | d.SERIT | ilk alim | acilis | otom.
+-------------------------------------------------------------------------------------------------------------------------------------
+tab   |                — |    0 |        — |      0 |      0.0 |        2/0 | 33.8 dk | 6.88 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
+    e0: Usta katmanı YOK — kanca kapalı (gerçek taban; D-090 + D-092 açık)
+e0    |                — |    0 |        — |      0 |      0.0 |        2/0 | 33.8 dk | 6.88 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
+    eKAPI: kanca açık, etki 1, fiyat ulaşılmaz — aracın kendi denetimi
+eKAPI |                — |    0 |        — |     13 |    132.0 |        2/0 | 33.8 dk | 6.88 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
+    e1: Usta basamağının ETKİSİ (servis arz ×N · Usta masa bahşiş ×N) — PLANIN kolu ×2
+e1    |            ×1.25 |    8 |  3.59 sa |      5 |     12.0 |        2/0 | 32.0 dk | 6.77 sa |   %-1.6 |    22 sn | 1.6 dk | 6.1 dk
+e1    |            ×1.50 |    8 |  3.59 sa |      5 |     12.0 |        2/0 | 30.4 dk | 6.67 sa |   %-3.0 |    22 sn | 1.6 dk | 6.1 dk
+e1    |            ×2.00 |    8 |  3.59 sa |      5 |     12.0 |        2/0 | 27.6 dk | 6.50 sa |   %-5.6 |    22 sn | 1.6 dk | 6.1 dk
+e1    |            ×3.00 |    8 |  3.59 sa |      5 |     12.0 |        2/0 | 23.4 dk | 6.21 sa |   %-9.8 |    22 sn | 1.6 dk | 6.1 dk
+    e2: Usta seviyesinin 💎 FİYATI (etki ×2 sabit) — kuyruk hangi fiyatta doğuyor
+e2    |            15 💎 |    8 |  3.59 sa |      5 |     12.0 |        2/0 | 27.6 dk | 6.50 sa |   %-5.6 |    22 sn | 1.6 dk | 6.1 dk
+e2    |            25 💎 |    5 |  3.59 sa |      8 |      7.0 |        2/0 | 30.4 dk | 6.67 sa |   %-3.0 |    22 sn | 1.6 dk | 6.1 dk
+e2    |            40 💎 |    3 |  3.59 sa |     10 |     12.0 |        2/0 | 31.4 dk | 6.74 sa |   %-2.0 |    22 sn | 1.6 dk | 6.1 dk
+e2    |            60 💎 |    2 |  3.64 sa |     11 |     12.0 |        2/0 | 32.6 dk | 6.81 sa |   %-1.1 |    22 sn | 1.6 dk | 6.1 dk
+    e3: KAPSAM: hangi kanal ödüyor — servis (arz) · masa (bahşiş) · personel (taşıma)
+e3    |    yalnız servis |    1 |  4.75 sa |      0 |    117.0 |        2/0 | 33.8 dk | 6.88 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
+e3    |      yalnız masa |    8 |  3.59 sa |      4 |     12.0 |        2/0 | 27.6 dk | 6.48 sa |   %-5.9 |    22 sn | 1.6 dk | 6.1 dk
+e3    |  yalnız personel |    0 |        — |      0 |    132.0 |        2/0 | 33.8 dk | 6.88 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
+e3    |      servis+masa |    8 |  3.59 sa |      5 |     12.0 |        2/0 | 27.6 dk | 6.50 sa |   %-5.6 |    22 sn | 1.6 dk | 6.1 dk
+e3    |            hepsi |    8 |  3.59 sa |      5 |     12.0 |        2/0 | 27.6 dk | 6.50 sa |   %-5.6 |    22 sn | 1.6 dk | 6.1 dk
+    e4: hedeflerin 💎 arzı ölçeklenir (bugün 250 💎) — kuyruk arzın neresinde ayakta
+e4    |     ×0.00 (0 💎) |    0 |        — |     13 |      0.0 |        2/0 | 33.8 dk | 6.88 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
+e4    |    ×0.32 (80 💎) |    2 |  3.59 sa |     11 |     12.2 |        2/0 | 32.6 dk | 6.80 sa |   %-1.1 |    22 sn | 1.6 dk | 6.1 dk
+e4    |   ×0.60 (150 💎) |    5 |  3.59 sa |      8 |      4.2 |        2/0 | 30.4 dk | 6.67 sa |   %-3.0 |    22 sn | 1.6 dk | 6.1 dk
+e4    |   ×1.00 (250 💎) |    8 |  3.59 sa |      5 |     12.0 |        2/0 | 27.6 dk | 6.50 sa |   %-5.6 |    22 sn | 1.6 dk | 6.1 dk
+    e6: yalnız PERSONEL Usta — ₺ tavanı ŞARTLI (bugünkü kural); 12 sa`de tavana hiç varılmıyor
+e6    |            ×1.25 |    0 |        — |      0 |    132.0 |        2/0 | 33.8 dk | 6.88 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
+e6    |            ×1.50 |    0 |        — |      0 |    132.0 |        2/0 | 33.8 dk | 6.88 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
+e6    |            ×2.00 |    0 |        — |      0 |    132.0 |        2/0 | 33.8 dk | 6.88 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
+e6    |            ×3.00 |    0 |        — |      0 |    132.0 |        2/0 | 33.8 dk | 6.88 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
+    e6X: yalnız PERSONEL Usta — ₺ tavanı şartı YOK (kanal denetimi + kanalın ÜST sınırı)
+e6X   |            ×1.25 |    5 |  0.59 sa |      0 |     57.0 |        1/0 | 27.0 dk | 5.96 sa |  %-13.4 |    22 sn | 1.6 dk | 6.1 dk
+e6X   |            ×1.50 |    5 |  0.59 sa |      0 |     57.0 |        1/0 | 22.5 dk | 5.34 sa |  %-22.4 |    22 sn | 1.6 dk | 6.1 dk
+e6X   |            ×2.00 |    5 |  0.59 sa |      0 |     57.0 |        1/0 | 22.3 dk | 5.09 sa |  %-26.1 |    22 sn | 1.6 dk | 6.1 dk
+e6X   |            ×3.00 |    5 |  0.59 sa |      0 |     57.0 |        1/0 | 22.3 dk | 5.07 sa |  %-26.4 |    22 sn | 1.6 dk | 6.1 dk
+    e5: günlük görev arzı (💎/gün) — hedef arzı KAPALI, yalnız günlük akış
+e5    |         6 💎/gün |    0 |        — |     13 |      1.7 |        2/0 | 33.8 dk | 6.88 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
+e5    |        12 💎/gün |    0 |        — |     13 |      3.4 |        2/0 | 33.8 dk | 6.88 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
+e5    |        20 💎/gün |    0 |        — |     13 |      5.7 |        2/0 | 33.8 dk | 6.88 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
+e5    |        40 💎/gün |    0 |        — |     13 |     11.5 |        2/0 | 33.8 dk | 6.88 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
+e5    |        80 💎/gün |    1 |  4.50 sa |     12 |      7.8 |        2/0 | 33.3 dk | 6.83 sa |   %-0.7 |    22 sn | 1.6 dk | 6.1 dk
+
+--- USTA alim hatti (Normal profil) — plan dozu ×2 · 15 💎 ---
+  8 alim · ilk 3.59 sa · kuyrukta kalan 5 · 💎 kazanilan 132 · harcanan 120 · kalan 12.0
+      masa 1@3.59sa · masa 2@3.61sa · masa 3@3.64sa · masa 4@3.66sa · masa 5@3.85sa · masa 6@3.91sa · servis@4.92sa · masa 7@6.50sa
+
+--- §5 DEFTER (analitik, gun olcegi) — kuyruk 12 saatten sonra ne kadar dayaniyor ---
+  Hedef sayisi: 26 (servis 1 + masa 20 + personel 5) — planin ~26`si ile ortusuyor.
+  Hedeflerin 250 💎`i tek seferliktir: tick tablosu onun ne zaman dustugunu olcuyor.
+  Asagidaki gun sayilari, hedef 💎`i BITTIKTEN sonra kalan kuyruk icindir.
+
+fiyat | hedef      | hedef 💎 kac Usta alir | kalan kuyruk | reklamsiz (gunluk gorev 3/gun)| Reklamlari Kaldir (+10/gun)   | odullu izleyen (~3 Usta/gun)  
+------------------------------------------------------------------------------------------------------------------------------------------------------
+   15 | Kat 1 (26) |                     16 |           10 | 25.0 gun · 2.50 gun/Usta      | 9.4 gun · 0.94 gun/Usta       | 2.9 gun · 0.29 gun/Usta       
+   15 | yalniz masa (20) |                     16 |            4 | 10.0 gun · 2.50 gun/Usta      | 3.8 gun · 0.94 gun/Usta       | 1.2 gun · 0.29 gun/Usta       
+   25 | Kat 1 (26) |                     10 |           16 | 66.7 gun · 4.17 gun/Usta      | 25.0 gun · 1.56 gun/Usta      | 7.8 gun · 0.49 gun/Usta       
+   25 | yalniz masa (20) |                     10 |           10 | 41.7 gun · 4.17 gun/Usta      | 15.6 gun · 1.56 gun/Usta      | 4.9 gun · 0.49 gun/Usta       
+   40 | Kat 1 (26) |                      6 |           20 | 133.3 gun · 6.67 gun/Usta     | 50.0 gun · 2.50 gun/Usta      | 15.7 gun · 0.78 gun/Usta      
+   40 | yalniz masa (20) |                      6 |           14 | 93.3 gun · 6.67 gun/Usta      | 35.0 gun · 2.50 gun/Usta      | 11.0 gun · 0.78 gun/Usta      
+   60 | Kat 1 (26) |                      4 |           22 | 220.0 gun · 10.00 gun/Usta    | 82.5 gun · 3.75 gun/Usta      | 25.9 gun · 1.18 gun/Usta      
+   60 | yalniz masa (20) |                      4 |           16 | 160.0 gun · 10.00 gun/Usta    | 60.0 gun · 3.75 gun/Usta      | 18.8 gun · 1.18 gun/Usta      
+
+  Planin vaadi: "hic reklam izlemeyen ~2,5 gunde bir Usta alir" → gun/Usta ~2,5 olmali.
+

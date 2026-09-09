@@ -5,76 +5,80 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-09 — **D6 BİTTİ** · Faz D 6/7 · 69/78)
+## ŞU AN (2026-09-09 — **D7a ÖLÇÜM** · Faz D 7/7 · 69/79)
+
+D7 kullanıcı kararıyla İKİYE BÖLÜNDÜ (2026-09-09): **D7a = ölçüm** (bu tur — 💎 arz/harcama
+dengesi + Usta katmanının denge sayıları) · **D7b = UI** (Usta paneli + günlük görev kartları).
+Kesme çizgisi yeşil ara durum: D7a bitince sayılar çivili ve bekçili, ama panel yok.
 
 ```
-SORU            : Plan §6 İtibar'a "her seviye +%2 müşteri akışı, +%1 bahşiş" yazdı — iki denge
-                  sayısı, ikisi de hiç ölçülmedi. İtibar hangi KANALDAN ödesin?         [KAPANDI]
-ÖLÇÜLECEK KOLLAR: t0 taban · r1 talep · r2 gelir · r3 arz · r4 kapı · r5 eğri · ö1 örtüşme ·
-                  **r6 taşıma** (tur kartında YOKTU — darboğaz dağılımı okununca eklendi) ·
-                  rUYG uygulanan config · g1 günlük görev (ölçülmedi, defter)
-SAYILAR         : docs/itibar-raporu-d6.md §2 — 10 bulgu, tam koşu 2 dk 45 sn, damgalar temiz
-KARAR           : D-092 — `xp.carryBonusPerLevel: 0.02`; talep ve arz kolları ölçümle elendi,
-                  gelir kolu AÇILIŞ ölçütünden elendi, eğri (×1,5) korundu
-UYGULAMA        : `economy.config.ts` (+1 sayı) · `tick.ts` `carryMult` (`incomeMult` deseni,
-                  kayıtta alan yok) · oyuncu + garson hareket hızı · toast ve HUD bonusu yazıyor
-BEKÇİ           : tests/itibar.test.ts — 8 test, **8 mutasyon, sekizi de yakalandı** ·
-                  vitest 628 · duman 32/32 · kayıt sürümü ARTMADI (v32)
+SORU            : Elmas bugün KAZANILIYOR ama harcanamıyor (kaynak: yalnız hedefler, 250 💎 ·
+                  harcama: SIFIR). D7 harcamayı (Usta katmanı) ve ek arzı (günlük görev) getiriyor.
+                  İki denge sayısı hiç ölçülmedi: (a) Usta'nın ETKİSİ — ₺ tavanının üstünde ×N
+                  çıktı/bahşiş, (b) 💎 arzı ile Usta fiyatının kuyruğu. Plan §6 "hiç reklam
+                  izlemeyen ~2,5 günde bir Usta alır" diyor; oysa hedefler tek başına 250 💎
+                  ödüyor = 15 💎'lık fiyatta 16 Usta. Kuyruk daha doğmadan çöküyor mu?
+ÖLÇÜLECEK KOLLAR: e0 taban (Usta yok — bugünkü hâl) · e1 Usta ETKİ dozu (×2 plan · ×1,5 · ×1,25)
+                  · e2 Usta FİYATI (15 · 25 · 40 💎) · e3 KAPSAM (yalnız servis · yalnız masa ·
+                  ikisi = ~26 hedef) · e4 hedef 💎 arzı (250 bugün · 150 · 80) · e5 günlük görev
+                  arzı — **DEFTER kolu** (12 sa penceresi bir günü aşmıyor, tick ölçemez) ·
+                  eUYG uygulanan config
+SAYILAR         : (adım 2'den sonra dolar — docs/elmas-raporu-d7.md §Bulgular)
+KARAR           : (adım 3 — kullanıcı seçer, D-093)
+UYGULAMA        : (adım 4 — yalnız kararın kolu)
+BEKÇİ           : (test dosyası + kaç mutasyonla doğrulandı)
 ```
 
-**Turun asıl dersi — tempo tablosu ELER, SEÇMEZ (D-090 Bulgu 13'ün tekrarı).** Gelir ve taşıma
-kolları %5'e kadar ayırt edilemedi (fark ≤ 0,2 puan). Seçimi tablo değil **açılış ölçütü** verdi:
-taşıma kolu D-079'un üçüne de hiçbir dozda dokunmuyor. İkinci gerekçe sim'in hiç ölçemediği
-eksende: gelir kolu D-090'ın çarpanıyla aynı GÖRÜNMEZ kanalda birikirdi.
+**Turun bilinen MODEL SINIRI (rapora aynen geçer):** sim penceresi 12 sa KESİNTİSİZ aktif oyun
+(`MAX_T`); günlük görev gün ölçeğindedir, bu pencerede en çok bir günlük arz (≈6 💎) düşer.
+Yani günlük görev kolu tick ile ÖLÇÜLEMEZ — defter (analitik) kolu olarak yürür, D6'nın `g1`
+kolunun aynısı. Ölçülebilen şey Usta'nın etkisi, fiyatı, kapsamı ve hedef arzının kuyruğa etkisi.
 
-**İkinci ders — bekçi FORMÜLÜ değil KAREYİ koşturmalı.** İlk hâli garson satırında
-`waiterSpeedFor(0) * carryMult` doğruluyordu; `tick.ts`ten çarpan silinse yeşil kalıyordu — yani
-dosyanın var olma sebebini (D-090'ın dersi) ıskalıyordu. Mutasyon M1 bunu yakaladı.
+**Kodun bugünkü hâli (ölçüm öncesi doğrulandı):** Usta katmanı kodda **YOK** — planın "zaten
+yazılmışlar (`masterLevel`, `masterDiamondCost`)" cümlesi BAYAT, iki ad da kod tabanında geçmiyor.
+`tables.upgrade.maxLevel: 4` ₺ tavanı; `masterTables` hedef sayacı bugün **L4'ü** (₺ tavanı)
+sayıyor — Usta gelince "Usta masa" L4 mü L5 mi, karar paketine girer.
 
 ## SIRADAKİ TAM ADIM
 
-**Faz D — meta katman (6/7).** Sıradaki ve son kalem: **D7 — elmas kaynak/harcama + Usta katmanı
-+ GÜNLÜK GÖREVLER.** Üçü tek turda: 💎 arzı (günlük görev ≈6/gün, hedefler 250) ile harcaması
-(Usta 15 💎, kozmetik 30-60 💎) birbirini belirliyor, ayrı ölçülemez. **D7 geldiğinde D-089'un
-elmas hükmü bayatlar** (`tests/hedefler.test.ts`teki `h0` beklentisi bilerek o gün kırılacak
-şekilde yazıldı). Faz D bitince D-087'nin tempo penceresi yeniden okunacak (araç hazır).
+**D7a adım 2 (ÖLÇ):** `tools/usta-kollari.ts` + `tools/olcum-elmas.ts` · sim'e Usta kancası
+(`ustaAyarla`, `itibarAyarla` deseni — `economy.config.ts` DEĞİŞMEZ) · kısa koşu ile araç
+doğrulaması → tam koşu TABAN → kollar → `docs/elmas-raporu-d7.md` §Bulgular →
+**commit #1 (karar bölümü BOŞ)**. Sonra karar paketi, sonra D7b (UI) ayrı tur.
 
 ## AÇIK KALEMLER (bilinen, bilerek duruyor)
 
-- **`getPlayerNavGrid`in oyunda tüketicisi YOK** — oyuncu joystick ile sürülüyor; bugün bekçili
-  bir doğruluk, görünen bir davranış değil. İlk gerçek tüketici yol gösterme/oto-yürüme olacak.
+- **`tests/hedefler.test.ts`'in `h0` elmas beklentisi D7a'da BİLEREK kırılacak** (D-089): "💎
+  tempoya girmez" damgası elmasın harcaması olmadığı için geçerliydi; harcama gelince bayatlar.
+- **`getPlayerNavGrid`in oyunda tüketicisi YOK** — oyuncu joystick ile sürülüyor; bekçili bir
+  doğruluk, görünen bir davranış değil. İlk gerçek tüketici yol gösterme/oto-yürüme olacak.
 - **Sim botunun yeni ızgaraya göçü** — denendi, ölçüldü, geri alındı (D-091 ②). Kendi turunu
-  ister: kalan sebep bulunmadı, üç tuzağın ölçülmüş sayıları `nav-oyuncu-raporu-d5.md` Bulgu 7'de.
-- **Kalıcı çarpan GÖRÜNMEZ bir ödüldür** — panelde iki yerde yazılıyor, anlık tatmini 💎 taşıyor,
-  ama oyuncu üzerindeki etkisi ölçülmedi (sim'in ölçebileceği bir şey değil). **Telefonda
-  oynanınca yeniden okunacak.** (D-090'ın kabul edilen eksiği ③.)
-- **Zincirin %7 eleme eşiği D-092'de BİLEREK aşıldı** (%-15,5). Karşılığında 41,2 dk kalemi
-  ödendi (→ 33,8 dk, hüküm 1 → 0). Emsal DEĞİL, sayısı yazılı istisna: sonraki turlar eşiği
-  yeniden %7 kabul eder. **Kat 1 içeriği %15,5 hızlı tükeniyor** — Faz F öncesi yeniden okunmalı.
-- **`carryMult` oyuncunun GENEL hızına biniyor** — ölçülen kol taşıma debisiydi, ama oyuncu
-  aynı hızla para da topluyor, mekânda da geziyor. Sim bunu ayırmıyor; L13'te +%24 hız
-  **telefonda oynanınca his olarak okunmalı** (fazla mı çevik?).
-- **Masa parasının payı 0,34 br** (D5 Bulgu 5) — 20 açıklıkta da aynı, yani yapısal: masa ayak izi
-  büyürse ya da `money.pickupRadius` küçülürse ilk kırılacak yer burası.
+  ister: üç tuzağın ölçülmüş sayıları `nav-oyuncu-raporu-d5.md` Bulgu 7'de.
+- **Kalıcı çarpan GÖRÜNMEZ bir ödüldür** (D-090 ③) ve **`carryMult` oyuncunun GENEL hızına
+  biniyor** (D-092): ikisi de sim'in ölçemediği eksende — **telefonda oynanınca okunacak**
+  (L13'te +%24 hız fazla mı çevik?).
+- **Zincirin %7 eleme eşiği D-092'de BİLEREK aşıldı** (%-15,5) — emsal DEĞİL, sayısı yazılı
+  istisna. **Kat 1 içeriği %15,5 hızlı tükeniyor**; Faz F öncesi yeniden okunmalı. D7a'nın
+  Usta kolu aynı zincire dokunuyor: eleme eşiği bu turda yine %7 kabul edilir.
+- **Faz D bitince D-087'nin tempo penceresi yeniden okunacak** (araç hazır) — meta katman o
+  pencereleri doldurdu mu?
+- **Masa parasının payı 0,34 br** (D5 Bulgu 5) — yapısal: masa ayak izi büyürse ya da
+  `money.pickupRadius` küçülürse ilk kırılacak yer burası.
 - **Bekçi bandının çözünürlüğü** — `tests/hedefler.test.ts`'in zincir-bedeli bandı %3-5.
 - Sim'in taşıma tavanı 4 masada fazla kötümser (elenen `k3`'ün önündeki tek engel).
 - **Görev hattı `waiterTray` kademe 2'de bitiyor**, 3. kademe (₺2.500) hatta yok; ÜÇ KOL tablosu
   20 masada `waiterTray: 3` varsayıyor — tempo kalemi DEĞİL, görev/HUD tutarlılığı.
-- **Günlük görevler D7'ye taşındı** (D-092): 💎 harcama tarafı yazılmadan arz tarafı çivilenemez.
-- **`outputMultByLevel` yok** — servis çıktı çarpanı merdiven-geneli; `b1` erken oyuna dokunmadan
-  denenemiyor.
+- **`outputMultByLevel` yok** — servis çıktı çarpanı merdiven-geneli; `b1` erken oyuna
+  dokunmadan denenemiyor. **D7a'nın Usta kolu bu eksiğin üstüne biniyor** (tavan üstü tek basamak).
 - **Sim'de serbest oyun bloğu ölü kod** (D1 Bulgu 5) — model kalemi, bugün zarar vermiyor.
-- **`npm run pano`'nun günlük uyarısı yalnız TARİHE bakıyor** — aynı gün üçüncü kez sessiz kaldı
-  (D3 · D4 · D5 aynı gün); günlük kartı yine elle eklendi. Kural "sayaç arttıysa kart sayısı da
-  artmalı" olmalı. **Araç kendi turunu ister** (üç turdur aynı elle-düzeltme).
+- **`npm run pano`'nun günlük uyarısı yalnız TARİHE bakıyor** — üç turdur aynı elle-düzeltme;
+  kural "sayaç arttıysa kart sayısı da artmalı" olmalı. **Araç kendi turunu ister.**
 - D-046 ④ kaba, ⑤ yok · sipariş nesnesi v1.1'de.
 - Gölgenin telefondaki maliyeti ölçülmedi (Faz F riski) · bundle ~1,49 MB (Faz F kod-bölme).
-- C4'ten kalan ölçüm kusuru: B1 · oyuncu kipinde bot hiç yürümüyor — **D5'te sebebi bulundu ve
-  nav DEĞİLMİŞ:** B1'de hiç servis yapılmıyor (terk %98,8), dolayısıyla kirli bardak da hiç
-  doğmuyor; bot boşta bekliyor. Botun kendi turuna yazıldı.
+- C4'ten kalan ölçüm kusuru: B1 · oyuncu kipinde bot hiç yürümüyor — sebebi D5'te bulundu
+  (B1'de hiç servis yok → kirli bardak doğmuyor → bot boşta). Botun kendi turuna yazıldı.
 
-**Bekleyen denge kararı yok** — D-092'nin tek sayısı (`xp.carryBonusPerLevel: 0.02`) ölçüldü,
-seçildi, çivilendi ve uygulanan hâli `rUYG` koluyla ayrıca doğrulandı.
+**Bekleyen denge kararı:** D7a'nın karar paketi (D-093) — ölçüm bitince gelir.
 
 ---
 
