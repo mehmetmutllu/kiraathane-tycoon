@@ -49,6 +49,8 @@ const KENAR_PAYI = 0.18;
 const KOL = 0.46;
 const KALINLIK = 0.17;
 const KOSE_R = 0.3;
+/** İç zeminin çerçeveden içeri kaçtığı pay — parantez çizgilerinin DIŞINA taşmasın. */
+const ZEMIN_ICE = 0.055;
 
 /* İşaretin zemin düzlemindeki YEREL ekseni: `rotation=[-PI/2,0,0]` sonrası yerel +Y dünyada
    −Z'ye bakar; yani "yukarı" = kameradan uzağa. Yazı, ok ve dolum bu eksende kurulur. */
@@ -61,6 +63,32 @@ function gemShape(): Shape {
   s.lineTo(0.6, 0.1);
   s.lineTo(0, -0.56);
   s.lineTo(-0.6, 0.1);
+  s.closePath();
+  return s;
+}
+
+/**
+ * Yuvarlak köşeli dikdörtgen — işaretin İÇ ZEMİNİ.
+ *
+ * Önce düz `planeGeometry` idi: parantezlerin köşesi yuvarlaktı ama içteki koyu kare keskin
+ * kalıyor ve kenarları parantezlerin dışına TAŞIYORDU (kullanıcı 2026-09-09: "etrafındaki
+ * çizgilere border radius geldi ama içindeki kareye gelmedi... üstteki çizgilerin etrafından
+ * taşıyor"). Zemin artık hem yuvarlak köşeli hem de çerçevenin İÇİNE gömülü (`ZEMIN_ICE`).
+ */
+function roundedRectShape(w: number, h: number, r: number): Shape {
+  const s = new Shape();
+  const hw = w / 2;
+  const hh = h / 2;
+  const rr = Math.min(r, hw, hh);
+  s.moveTo(-hw + rr, -hh);
+  s.lineTo(hw - rr, -hh);
+  s.quadraticCurveTo(hw, -hh, hw, -hh + rr);
+  s.lineTo(hw, hh - rr);
+  s.quadraticCurveTo(hw, hh, hw - rr, hh);
+  s.lineTo(-hw + rr, hh);
+  s.quadraticCurveTo(-hw, hh, -hw, hh - rr);
+  s.lineTo(-hw, -hh + rr);
+  s.quadraticCurveTo(-hw, -hh, -hw + rr, -hh);
   s.closePath();
   return s;
 }
@@ -149,6 +177,10 @@ export function GroundMarker({
 
   const gem = useMemo(gemShape, []);
   const bracket = useMemo(() => bracketShape(hh * KOL, hh * KALINLIK, hh * KOSE_R), [hh]);
+  // Zemin çerçeveden ZEMIN_ICE kadar içeride ve köşeleri parantezle AYNI yarıçapta.
+  const zeminW = 2 * (hw - hh * ZEMIN_ICE);
+  const zeminH = 2 * (hh - hh * ZEMIN_ICE);
+  const zemin = useMemo(() => roundedRectShape(zeminW, zeminH, hh * KOSE_R), [zeminW, zeminH, hh]);
 
   const koseler = useMemo(
     () => [
@@ -181,7 +213,7 @@ export function GroundMarker({
   });
 
   // Dolum: alttan üste (kare) — ölçekle birlikte kaydırılır ki alt kenara yapışsın.
-  const fillH = 2 * hh * 0.86;
+  const fillH = zeminH * 0.9;
   useEffect(() => {
     if (fillRef.current) {
       fillRef.current.scale.y = p;
@@ -194,14 +226,14 @@ export function GroundMarker({
       <group ref={scaleRef}>
         {/* şeffaf koyu zemin — yazı ve çerçeve açık ahşabın üstünde okunsun */}
         <mesh position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]} material={plateMat}>
-          <planeGeometry args={[2 * hw, 2 * hh]} />
+          <shapeGeometry args={[zemin]} />
         </mesh>
 
         {/* ₺ dolumu — ALTTAN ÜSTE */}
         {p > 0.001 && (
           <group position={[0, 0.035, 0]} rotation={[-Math.PI / 2, 0, 0]}>
             <mesh ref={fillRef}>
-              <planeGeometry args={[2 * hw * 0.86, fillH]} />
+              <planeGeometry args={[zeminW * 0.9, fillH]} />
               <meshBasicMaterial color={tint} transparent opacity={0.42} depthWrite={false} />
             </mesh>
           </group>
@@ -209,7 +241,7 @@ export function GroundMarker({
 
         {/* BEKLEME dolumu (Usta) — aynı kare, aynı yön, YEŞİL. Oyuncu üstünde durdukça dolar,
             dolunca onay modali açılır. React'e dokunmaz: ölçek her karede `dwellState`ten yazılır. */}
-        {dwellId && <DwellFill w={2 * hw * 0.86} h={fillH} dwellId={dwellId} />}
+        {dwellId && <DwellFill w={zeminW * 0.9} h={fillH} dwellId={dwellId} />}
 
         {/* köşe parantezleri — kenar ortaları BOŞ, dış köşeler YUVARLATILMIŞ */}
         <group position={[0, 0.03, 0]} rotation={[-Math.PI / 2, 0, 0]}>
