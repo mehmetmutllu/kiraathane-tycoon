@@ -98,6 +98,9 @@ export interface SaveData {
    *  sürüm ARTMADI: `defaultSave()` yayılımı eksik alanı `[]` ile doldurur, eski v32 kaydı
    *  hedefsiz ama sağlam açılır (`lavaboLevel`/`showFps` deseni). */
   goalsClaimed: string[];
+  /** D-093: USTA olmuş objelerin kimlikleri. Additive — kayıt sürümü ARTMADI; eski kayıtta
+   *  alan yoksa boş liste okunur (`goalsClaimed`in v32'deki deseni). */
+  mastersOwned: string[];
   /** Aktif SAYAÇ görevinin başlangıç sayaç değeri (delta hedefi için taban; v16). */
   questBase: number;
   /** Tabanın AİT OLDUĞU görevin kimliği (v32). Konum bilgisi değil sahiplik etiketi: yüklemede
@@ -148,6 +151,7 @@ export function defaultSave(): SaveData {
     stats: defaultStats(),
     questsDone: [],
     goalsClaimed: [],
+    mastersOwned: [],
     questBase: 0,
     questBaseId: '',
     xp: 0,

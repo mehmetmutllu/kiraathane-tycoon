@@ -131,8 +131,39 @@ export function totalCupPool(areasOpen: number, stationLevels: number[]): number
   return areasOpen * C.cups.poolBase + C.cups.poolPerLevel * lv;
 }
 
-/** ₺ ile çıkılabilen en yüksek masa seviyesi (💎 "Usta" katmanı Faz D'de gelecek). */
+/** ₺ ile çıkılabilen en yüksek masa seviyesi — üstünde 💎 "Usta" basamağı durur (D-093). */
 export const tableSoftMaxLevel = () => C.tables.upgrade.maxLevel;
+
+/* ─────────────────────── USTA KATMANI (D7a · D-093) ───────────────────────
+ * Kayıtta yalnız KİMLİK durur (`mastersOwned: string[]`), "kaç Usta aldım" HİÇBİR yerde
+ * saklanmaz — `padsDone` (D-015) ve `goalsClaimed` (D-088) deseninin aynısı. Böylece Usta
+ * hedefi eklemek/çıkarmak ilerlemiş kaydı bozmaz.
+ *
+ * Usta ancak ₺ TAVANINDA açılır ve bu şart ölçülmüş bir karardır, kolaylık değil: tavan şartı
+ * kalkarsa personel kanalı ×1,25'te bile zinciri %13,4 kısaltıyor (`docs/elmas-raporu-d7.md`
+ * §2 Bulgu 4), yani Kat 1 içeriğini yiyor. Plan K6 gereği Usta KRİTİK YOL DIŞIDIR: hiçbir
+ * ilerleme Usta'ya bağlı değildir, yalnız hızlandırır. */
+
+/** Usta kimliği. `tur` bugün yalnız 'table'; servis ve personel D7b/Kat 2'de aynı kalıptan gelir. */
+export const masterId = (tur: 'table' | 'service' | 'staff', index: number | string): string =>
+  `${tur}:${index}`;
+
+/** Bir masa Usta olabilir mi — ₺ tavanına varmış olmalı. */
+export const masterUnlockedForTable = (level: number): boolean => level >= tableSoftMaxLevel();
+
+/** Usta basamağının 💎 fiyatı (tempo kolu DEĞİL, kuyruk kolu — §2 Bulgu 6). */
+export const masterCost = (): number => C.master.diamondCost;
+
+/** Bir masanın bahşiş çarpanı: Usta ise ölçülen doz, değilse 1 (taban birebir korunur). */
+export const masterTipMult = (isMaster: boolean): number => (isMaster ? C.master.tipMult : 1);
+
+/** Masa başına bahşiş çarpanı dizisi — kimlik listesinden TÜRETİLİR (tick bağlamı bunu okur).
+ *  Usta olmayan hiç masa yoksa dizi baştan sona 1'dir, yani taban çıktısı birebir korunur. */
+export function masterTipsOf(mastersOwned: readonly string[], tableCount: number): number[] {
+  const sahip = new Set(mastersOwned);
+  return Array.from({ length: Math.max(0, tableCount) }, (_, i) =>
+    masterTipMult(sahip.has(masterId('table', i))));
+}
 
 /**
  * Masa teması mağazası kilidi (kullanıcı kararı 2026-06-17): 3 salon AÇIK **VE** tüm açık masalar

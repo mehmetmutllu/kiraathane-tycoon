@@ -5,51 +5,55 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-09 — **D7a ÖLÇÜM** · Faz D 7/7 · 69/79)
+## ŞU AN (2026-09-09 — **D7a BİTTİ** · Faz D 7/8 · 70/79)
 
-D7 kullanıcı kararıyla İKİYE BÖLÜNDÜ (2026-09-09): **D7a = ölçüm** (bu tur — 💎 arz/harcama
-dengesi + Usta katmanının denge sayıları) · **D7b = UI** (Usta paneli + günlük görev kartları).
-Kesme çizgisi yeşil ara durum: D7a bitince sayılar çivili ve bekçili, ama panel yok.
+D7 kullanıcı kararıyla İKİYE BÖLÜNDÜ: **D7a = ölçüm + denge** (bu tur, bitti) ·
+**D7b = UI** (Usta paneli + günlük görev kartları — sıradaki).
 
 ```
-SORU            : Elmas bugün KAZANILIYOR ama harcanamıyor (kaynak: yalnız hedefler, 250 💎 ·
-                  harcama: SIFIR). D7 harcamayı (Usta katmanı) ve ek arzı (günlük görev) getiriyor.
-                  İki denge sayısı hiç ölçülmedi: (a) Usta'nın ETKİSİ — ₺ tavanının üstünde ×N
-                  çıktı/bahşiş, (b) 💎 arzı ile Usta fiyatının kuyruğu. Plan §6 "hiç reklam
-                  izlemeyen ~2,5 günde bir Usta alır" diyor; oysa hedefler tek başına 250 💎
-                  ödüyor = 15 💎'lık fiyatta 16 Usta. Kuyruk daha doğmadan çöküyor mu?
-ÖLÇÜLECEK KOLLAR: e0 taban (Usta yok — bugünkü hâl) · e1 Usta ETKİ dozu (×2 plan · ×1,5 · ×1,25)
-                  · e2 Usta FİYATI (15 · 25 · 40 💎) · e3 KAPSAM (yalnız servis · yalnız masa ·
-                  ikisi = ~26 hedef) · e4 hedef 💎 arzı (250 bugün · 150 · 80) · e5 günlük görev
-                  arzı — **DEFTER kolu** (12 sa penceresi bir günü aşmıyor, tick ölçemez) ·
-                  eUYG uygulanan config
-SAYILAR         : (adım 2'den sonra dolar — docs/elmas-raporu-d7.md §Bulgular)
-KARAR           : (adım 3 — kullanıcı seçer, D-093)
-UYGULAMA        : (adım 4 — yalnız kararın kolu)
-BEKÇİ           : (test dosyası + kaç mutasyonla doğrulandı)
+SORU            : Elmas kazanılıyor (250 💎) ama harcanamıyor. Usta katmanının ETKİSİ ve
+                  FİYATI ölçülmemiş iki denge sayısı; 250 💎 kuyruğu doğmadan çökertiyor mu?
+                                                                                  [KAPANDI]
+ÖLÇÜLECEK KOLLAR: e0 taban · eKAPI araç denetimi · e1 etki dozu · e2 fiyat · e3 kapsam ·
+                  e4 hedef arzı · e5 günlük görev · **e6 personel/taşıma** (tur kartında
+                  YOKTU — darboğaz dağılımı okununca eklendi) · **e6X** tavan şartı yok
+                  (kanal denetimi) · eUYG uygulanan config
+SAYILAR         : docs/elmas-raporu-d7.md §2 — 13 bulgu, tam koşu, damgalar temiz
+KARAR           : D-093 — `master.tipMult 1.5` · `master.diamondCost 25` ·
+                  `dailyQuests.diamondsPerDay 10`; planın iki sayısı da ölçümde düzeltildi
+UYGULAMA        : `economy.config.ts` (2 blok) · `rules.ts` (Usta yardımcıları) · `tick.ts`
+                  `masterTip` (kimlikten TÜRER, `incomeMult` deseni) · `store.ts` `buyMaster`
+                  · kayıt sürümü ARTMADI (v32, `mastersOwned` additive)
+BEKÇİ           : tests/usta.test.ts — 11 test, **10 mutasyon, onu da yakalandı** ·
+                  vitest 639 · duman 32/32
 ```
 
-**Turun bilinen MODEL SINIRI (rapora aynen geçer):** sim penceresi 12 sa KESİNTİSİZ aktif oyun
-(`MAX_T`); günlük görev gün ölçeğindedir, bu pencerede en çok bir günlük arz (≈6 💎) düşer.
-Yani günlük görev kolu tick ile ÖLÇÜLEMEZ — defter (analitik) kolu olarak yürür, D6'nın `g1`
-kolunun aynısı. Ölçülebilen şey Usta'nın etkisi, fiyatı, kapsamı ve hedef arzının kuyruğa etkisi.
+**Turun asıl dersi — UYGULANAN HÂL İKİ KNOB'UN TOPLAMI DEĞİL (Bulgu 13).** Etki ×1,5 ve fiyat
+25 💎 tabloda AYRI ölçülmüştü (ikisi de %-3,0 / 30,4 dk); birleşimleri **%-1,6 / 32,0 dk** —
+yaklaşık yarısı, çünkü ikisi de aynı yönü çekiyor (biri alım başına değeri, diğeri alım
+sayısını düşürüyor). D-090 Bulgu 10 ve D-092 `rUYG`den sonra **üçüncü kez** aynı varsayım
+çürüdü. `eUYG` satırı olmasaydı rapor yürürlükte olmayan bir sayıyı savunacaktı.
 
-**Kodun bugünkü hâli (ölçüm öncesi doğrulandı):** Usta katmanı kodda **YOK** — planın "zaten
-yazılmışlar (`masterLevel`, `masterDiamondCost`)" cümlesi BAYAT, iki ad da kod tabanında geçmiyor.
-`tables.upgrade.maxLevel: 4` ₺ tavanı; `masterTables` hedef sayacı bugün **L4'ü** (₺ tavanı)
-sayıyor — Usta gelince "Usta masa" L4 mü L5 mi, karar paketine girer.
+**İkinci ders — sıfır satır iki farklı şey olabilir.** `e5` ve `e6` ikisi de 0 alım ölçtü ama
+sebepleri farklıydı: `e5` ÖLÇEK uyuşmazlığı (12 sa yarım gün), `e6` ULAŞILAMAZLIK (personel
+merdivenleri tavana varmıyor). Ayırmak için iki ayrı denetim satırı gerekti (`e5` ızgarası
+80 💎/gün'e uzatıldı · `e6X` tavan şartı kaldırıldı) — yoksa ikisi de "kol etkisiz" diye
+okunurdu ve `e6X`in %-26,1'i hiç görülmezdi.
 
 ## SIRADAKİ TAM ADIM
 
-**D7a adım 2 (ÖLÇ):** `tools/usta-kollari.ts` + `tools/olcum-elmas.ts` · sim'e Usta kancası
-(`ustaAyarla`, `itibarAyarla` deseni — `economy.config.ts` DEĞİŞMEZ) · kısa koşu ile araç
-doğrulaması → tam koşu TABAN → kollar → `docs/elmas-raporu-d7.md` §Bulgular →
-**commit #1 (karar bölümü BOŞ)**. Sonra karar paketi, sonra D7b (UI) ayrı tur.
-
+**D7b — UI: Usta paneli + günlük görev kartları.** Faz D'nin son kalemi. Mekanik ve sayılar
+D7a'da çivilendi ve bekçili; eksik olan ETKİLEŞİM: (a) oyuncu Usta'ya yaklaşınca panel
+(plan §5: "adım listesine girmez, rozet + Hedefler paneli üzerinden"), (b) günlük görev
+SİSTEMİ (bugün yalnız ölçülmüş sayısı config'te duruyor — 3 görev/gün, toplam 10 💎),
+(c) `buyMaster` çağıran buton + "İzle ve Usta yap" reklam yeri (Faz 5'te bağlanacak).
+Faz D bitince D-087'nin tempo penceresi yeniden okunacak (araç hazır).
 ## AÇIK KALEMLER (bilinen, bilerek duruyor)
 
-- **`tests/hedefler.test.ts`'in `h0` elmas beklentisi D7a'da BİLEREK kırılacak** (D-089): "💎
-  tempoya girmez" damgası elmasın harcaması olmadığı için geçerliydi; harcama gelince bayatlar.
+- **UYGULANAN HÂL BEKLENENDEN ZAYIF (D-093 Bulgu 13):** `eUYG` %-1,6 / 32,0 dk verdi, oysa
+  kullanıcı ×1,5'i "%-3,0 / 30,4 dk" satırına bakarak seçti. Yönü güvenli tarafta (bedel ucuz,
+  ödül küçük) ve dört ölçüt de geçiyor. **Aynı bedele daha çok ödül istenirse tek satır:**
+  `tipMult` ×2 → `e2`nin 25 💎 satırına çıkar (%-3,0 / 30,4 dk). **Sonraki oturumda sorulacak.**
 - **`getPlayerNavGrid`in oyunda tüketicisi YOK** — oyuncu joystick ile sürülüyor; bekçili bir
   doğruluk, görünen bir davranış değil. İlk gerçek tüketici yol gösterme/oto-yürüme olacak.
 - **Sim botunun yeni ızgaraya göçü** — denendi, ölçüldü, geri alındı (D-091 ②). Kendi turunu

@@ -844,6 +844,62 @@ export const economyConfig = {
     ] as readonly GoalCategory[],
   },
 
+  /**
+   * USTA KATMANI (D7a · D-093) — ₺ merdiveninin BİTTİĞİ yerde başlayan 💎 basamağı.
+   * Elmasın ilk HARCAMASI budur; D-089'un "💎 tempoya girmez" ölçümü bu blokla bayatladı.
+   *
+   * Plan §5/§6'nın iki sayısı da ölçümde DÜZELTİLDİ (`docs/elmas-raporu-d7.md`, tam koşu):
+   *   ① "Servis noktasına üstüne ×2" — **ELENDİ** (§2 Bulgu 2). Yalnız servis kapsamı zinciri
+   *      %0,0 kıpırdatıyor, en uzun bekleme 33,8 dk'da sabit kalıyor: arz zamanın yalnız
+   *      %7,2'sinde bağlayıcı, kelepçe zamanın **%91,5**'inde TAŞIMADA. Bu, D-092'nin planın
+   *      talep kolunu elediği ölçümün birebir tekrarıdır — plan aynı hatayı ikinci kez yaptı:
+   *      ödülü, kelepçe OLMAYAN bir tavana bağladı. Kapsama servis eklemek etkiyi AZALTIYOR
+   *      (yalnız masa %-5,9 → hepsi %-5,6): 💎 hiçbir şey yapmayan yere gidiyor.
+   *   ② "15 💎" — **25'e çıkarıldı** (§5 defter, kullanıcı kararı). 15'te 26 hedefin 16'sı
+   *      hedeflerin 250 💎'ıyla PEŞİN alınıyor ve kuyruğun %62'si tek günde bitiyor; oysa Usta
+   *      "prestijin yerini tutan açık uçlu kuyruk" olacaktı. 25'te 10 peşin / 16 kuyrukta.
+   *
+   * ÖDEYEN TEK KANAL MASA BAHŞİŞİDİR (§2 Bulgu 3). Doz **×1,5 ÖLÇÜLEREK** seçildi:
+   * zincir **%-3,0** (6,88 → 6,67 sa) · en uzun bekleme **33,8 → 30,4 dk** · ihlal **2/0 SABİT**
+   * · açılış üç ölçütü SABİT (22 sn · 1,6 dk · 6,1 dk). ×2 (planın dozu) %-5,6 ile eleme
+   * eşiğinin ALTINDA kalıyordu ama seçilmedi: D-092 bir tur önce zincirden %15,5 almıştı ve iki
+   * tur bileşikleniyor (×1,5 ile %-18,0 · ×2 ile %-20,2). Hiçbir doz 20 dk ölçütünü kurtarmıyor,
+   * yani ×2'nin fazladan 2,8 dakikası %2,6'lık ek içerik bedeline değmiyor (kullanıcı kararı).
+   *
+   * KAPSAM masa + servis + personel (26 hedef) — ama servis ve personel Kat 1'de ÖDEMİYOR ve
+   * bu BİLİNEREK böyle: personel merdivenleri 12 sa penceresinde ₺ tavanına **hiç varmıyor**
+   * (§2 Bulgu 4: garson tepsi 2/3 · karakter hız 0/3 · bulaşıkçı 0), yani ölçülen bedelleri 0.
+   * Yer tutuyorlar, Kat 2'de anlam kazanacaklar. TAVAN ŞARTI KALKMAZ: kalkarsa personel kanalı
+   * ×1,25'te bile %-13,4 — eleme eşiğinin iki katı (kanal en güçlüsü, o yüzden en tehlikelisi).
+   */
+  master: {
+    /** Usta masanın bahşiş çarpanı — `tableTip` sonucunun üstüne biner. ÖLÇÜLDÜ (yukarı bak). */
+    tipMult: 1.5,
+    /** Bir Usta basamağının 💎 fiyatı. Tempo kolu DEĞİL, KUYRUK kolu (§2 Bulgu 6). */
+    diamondCost: 25,
+  },
+
+  /**
+   * GÜNLÜK GÖREVLER (D7a · D-093) — 💎'ın gün ölçeğindeki arzı. Sistemin kendisi D7b'de kurulur;
+   * burada yalnız ÖLÇÜLMÜŞ denge sayıları durur.
+   *
+   * `diamondsPerDay` **10** seçildi (plan §6'nın 6'sı değil): `master.diamondCost` 25 olunca
+   * kuyruğun kalan 16 hedefi 40 günde biter → **2,50 gün/Usta**, yani planın vaadi ("hiç reklam
+   * izlemeyen ~2,5 günde bir Usta alır") birebir korunur. 6 💎/gün + 25 💎 aynı vaadi
+   * 4,17 gün/Usta'ya düşürürdü.
+   *
+   * MODEL SINIRI (raporda yazılı): bu sayı tick tablosunda ÖLÇÜLEMEZ — sim penceresi 12 sa,
+   * yani yarım gün; günlük arzın 25 💎'lık fiyatı o pencerede geçmesi için gün başına 50 💎
+   * gerekirdi. Sayı §5 DEFTERİNDEN (analitik) geliyor, ve `e5` kolu bu sınırı tabloda SAYIYLA
+   * gösteriyor (6→40 💎/gün'ün beşi de 12 sa'de 0 alım).
+   */
+  dailyQuests: {
+    /** Günde verilen görev sayısı (plan §6: "3/gün"). */
+    count: 3,
+    /** Üç görevin TOPLAM 💎 ödülü. */
+    diamondsPerDay: 10,
+  },
+
   xp: {
     /** Oyuncunun ELİYLE servis ettiği çay başına XP. */
     perTeaServed: 2,

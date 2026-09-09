@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 78 · YAPILAN 69 · %88):**
+**Oturum bütçesi (TOPLAM 79 · YAPILAN 70 · %89):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -22,16 +22,18 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | B model geçişi + maket taşıması | 13/13 ✅ |
 | | **C zincir ve denge** | **5/5 ✅** |
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
-| | D meta katman | 6/7 🔧 |
+| | D meta katman | 7/8 🔧 |
 | | E arayüz ve cila | 1/4 🔧 |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **41/50** |
+| **Program toplam** | | **42/51** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
 (D-084 P1-P3) üç kalemlik yeni faz olarak eklendi → toplam 73 → 76. **2026-09-09:** D3'ün ödül
 KALIBI kendi turunu istedi (D3b) → Faz D 5 → 6 kalem, toplam 76 → 77. **Aynı gün:** nav ızgarası ↔
 oyuncu çarpışması bilinen-hata listesinden çıkıp kendi turu oldu (D5) → Faz D 6 → 7, toplam 77 → 78.
+**Aynı gün:** D7 kullanıcı kararıyla ölçüm (D7a) ve UI (D7b) olarak ikiye bölündü → Faz D 7 → 8,
+toplam 78 → 79.
 
 **v1 kapsam çizgisi:** prestij · Kat 2 · sipariş nesnesi · aktif WC döngüsü · dekor instancing
 **v1.1'e**; v1 = Kat 1 + elmas/Usta + offline tavan + reklam/IAP + mağaza.
@@ -82,7 +84,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
 **asıl sınav tick-temelli bir denge turu.** Ölçülen gerçek kazançlar: üç dosyalık okuma seti
 (oturum başı), uzun koşuların paralel arkaplanı, hazır ölçüm iskeleti.
 
-## Faz D — META KATMAN (6/7) 🔧
+## Faz D — META KATMAN (7/8) 🔧
 - ✅ **D1 — geç-oyun eğrisinin 20 dk ihlali ölçüldü ve ölçütün PROFİLİ sabitlendi (D-087)** ·
   dokuz kol varyant olarak ölçüldü, dozlar tahmin değil **çözüldü**; hepsi elendi, ölçütün
   kendisi (`o1`) alındı. Ölçüt kardeş üçüyle aynı profilde (İdealize) hüküm verir ve geçiyor
@@ -145,10 +147,23 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   vitest **628** · duman **32/32** · **kayıt sürümü artmadı** (v32, çarpan `xp`ten türer).
   **Kabul edilen bedel:** zincir %-15,5, %7'lik eleme eşiğinin üstünde — kullanıcı kararı,
   karşılığında D-087'nin 41,2 dk kalemi ödendi. **Günlük görevler D7'ye bırakıldı.**
-- ⏳ **D7 — elmas kaynak/harcama + Usta katmanı + GÜNLÜK GÖREVLER** (masa ₺-tavanı L4'ün üstü;
-  günlük görevin 💎 arzı D6'da bilerek ertelendi — harcama tarafıyla birlikte çivilenir).
+- ✅ **D7 — Usta katmanı: ödeyen tek kanal MASA BAHŞİŞİ (D-093)**
+  *(tur kartında `D7a` adıyla açıldı — D7 ikiye bölündü; defter numarası D7.)* · planın iki sayısı da ölçümde
+  düzeltildi: *"servis noktasına üstüne ×2"* **elendi** (yalnız servis %0,0 — arz zamanın %7,2'sinde
+  bağlayıcı, kelepçe **%91,5 taşımada**; D-092'nin talep kolunu elediği ölçümün tekrarı) ve *"15 💎"*
+  **25**'e çıktı (15'te 26 hedefin 16'sı ilk gün peşin gidiyor). Personel kanalı atıl değil
+  **ULAŞILAMAZ** — 12 sa'de hiçbir personel merdiveni ₺ tavanına varmıyor; tavan şartı kalkarsa
+  ×1,25'te bile %-13,4, o yüzden **şart kalıyor**. Yürürlükte `master.tipMult 1.5` ·
+  `master.diamondCost 25` · `dailyQuests.diamondsPerDay 10`. `docs/elmas-raporu-d7.md` · araç
+  `tools/olcum-elmas.ts` + `tools/usta-kollari.ts` + sim kancası `ustaAyarla` · bekçi
+  `tests/usta.test.ts` (11 test, **10 mutasyon, onu da yakalandı**) · vitest **639** · duman **32/32**
+  · **kayıt sürümü artmadı** (v32, `mastersOwned` additive).
+  **Kabul edilen eksik:** uygulanan hâl iki knob'un toplamı çıkmadı (`eUYG` %-1,6 / 32,0 dk;
+  tek-knob satırları %-3,0 / 30,4 dk gösteriyordu) — D-090 Bulgu 10'un ÜÇÜNCÜ tekrarı.
+- ⏳ **D8 — UI: Usta paneli + günlük görev kartları** *(tur adı `D7b`)* (mekanik ve sayılar D7a'da çivilendi ve
+  bekçili; günlük görev SİSTEMİ henüz yok, yalnız ölçülmüş sayısı config'te duruyor).
 
-> D2-D6 `docs/plan-kat1-yayin.html` §D kapsamından türetildi; **sırası açık** — her tur başında
+> D2-D7 `docs/plan-kat1-yayin.html` §D kapsamından türetildi; **sırası açık** — her tur başında
 > seçilir. Ayrıca Faz D'de bekleyen bilinen bir hata var: **nav ızgarası ↔ oyuncu çarpışması**.
 
 ## Bilinen açık kalemler
@@ -165,9 +180,10 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   yeniden okunacak** (meta katman o pencereleri dolduruyor mu; araç hazır). **D3'ün cevabı, hedefler
   kanadı için: HAYIR** — tempo olarak doldurmuyor (D-089); doldurduğu şey oyuncunun o pencerede
   gördüğü ilerleme. Kalan kanatlar D4 (İtibar · günlük görev) ve D5.
-- **Görev hattı `waiterTray` kademe 2'de bitiyor**, 3. kademe (₺2.500 → tepsi 4) hatta yok;
-  oysa sim'in ÜÇ KOL tablosu 20 masada `waiterTray: 3` varsayıyor — tempo kalemi DEĞİL
-  (g1 ölçüldü, iyileştirmiyor), görev/HUD tutarlılık kalemi.
+- **Görev hattı `waiterTray` kademe 2'de bitiyor**, 3. kademe (₺2.500) hatta yok;
+  oysa sim'in ÜÇ KOL tablosu 20 masada `waiterTray: 3` varsayıyor. **D7a'da ilk kez tempo
+  sonucu doğurdu (D-093):** garson merdiveni tavana varmadığı için personel Usta hedefleri
+  12 saatte hiç açılmıyor — artık yalnız görev/HUD tutarlılığı değil, İÇERİK kalemi.
 - **`outputMultByLevel` yok** — servis çıktı çarpanı basamak-başı değil merdiven-geneli;
   `b1` (basamak bölme) erken oyuna dokunmadan denenemiyor.
 - **Sim'de serbest oyun bloğu ölü kod** (D1 Bulgu 5): tempoyu görev hattı belirliyor.

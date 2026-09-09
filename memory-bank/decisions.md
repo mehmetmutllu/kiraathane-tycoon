@@ -2606,3 +2606,47 @@ kol yok. **Eşiğin bilerek aşıldığı ilk karardır** — emsal değil, say�
 kanaldan hiçbirinin gerçek kelepçeye dokunmadığı görüldü ve kol ölçüm sırasında eklendi — D-091'in
 ekindeki dersin ikinci doğrulanması. **Günlük görevler D7'ye bırakıldı:** 💎 harcama tarafı
 yazılmadan arz tarafını çivilemek ölçülemeyen bir sayıyı config'e yazmak olurdu.
+
+## D-093 — Usta katmanı: ödeyen tek kanal MASA BAHŞİŞİ (2026-09-09, D7a)
+
+**Karar.** `master.tipMult: 1.5` · `master.diamondCost: 25` · `dailyQuests.diamondsPerDay: 10`.
+Elmasın ilk HARCAMASI kuruldu; D-089'un "💎 tempoya girmez" hükmü bilerek bayatlatıldı.
+
+**Planın iki sayısı da ölçümde düzeltildi** (`docs/elmas-raporu-d7.md`, tam koşu):
+① *"servis noktasına üstüne ×2"* ELENDİ — yalnız servis kapsamı zinciri %0,0 kıpırdatıyor, çünkü
+arz zamanın yalnız %7,2'sinde bağlayıcı (kelepçe %91,5 TAŞIMADA). Bu D-092'nin planın talep
+kolunu elediği ölçümün birebir tekrarı: plan ödülü ikinci kez kelepçe OLMAYAN bir tavana bağladı.
+Kapsama servis eklemek etkiyi AZALTIYOR (%-5,9 → %-5,6). ② *"15 💎"* 25'e çıkarıldı — 15'te
+26 hedefin 16'sı ilk gün peşin alınıyor, kuyruğun %62'si bitiyor.
+
+**Personel kanalı atıl DEĞİL, ULAŞILAMAZ** (Bulgu 4): 12 sa penceresinde hiçbir personel merdiveni
+₺ tavanına varmıyor (garson tepsi 2/3 — 3. kademe görev hattında yok · karakter hız 0/3 ·
+bulaşıkçı 0), o yüzden `e6` dört dozda da 0 alım. Tavan şartı kaldırılmış denetim satırı `e6X`
+kanalın hem TAKILI hem de en güçlüsü olduğunu gösterdi (×1,25'te %-13,4, ×2'de %-26,1) — eleme
+eşiğinin iki katı. Bu yüzden **tavan şartı KALKMAZ**: kanal ulaşılamaz kalarak korunuyor.
+
+**Doz ve fiyat kullanıcı kararı.** ×2 eşiğin altındaydı (%-5,6) ama alınmadı: D-092 bir tur önce
+zincirden %15,5 aldı, iki tur bileşikleniyor ve hiçbir doz 20 dk ölçütünü kurtarmıyor. 25 💎
+kuyruğu 10 peşin / 16 bekleyen yapıyor; 10 💎/gün planın "~2,5 gün/Usta" vaadini korur.
+
+**UYGULANAN HÂL İKİ KNOB'UN TOPLAMI ÇIKMADI (Bulgu 13).** Etki ×1,5 ve fiyat 25 💎 tabloda AYRI
+ölçülmüştü (ikisi de %-3,0 / 30,4 dk); birleşimleri **%-1,6 / 32,0 dk** — yaklaşık yarısı, çünkü
+ikisi de aynı yönü çekiyor (biri alım başına değeri, diğeri alım sayısını düşürüyor). D-090
+Bulgu 10 ve D-092 `rUYG`den sonra **üçüncü kez**: "seçtiğim dozlar iyiydi, birlikte de öyledir"
+varsayımı çürüdü. Yönü güvenli tarafta (bedel ucuz, ödül küçük) ve dört ölçüt de geçiyor, ama
+kullanıcı ×1,5'i 30,4 dk sayısına bakarak seçti — **açık kalem**: aynı bedele daha çok ödül
+istenirse tek satır `tipMult` ×2 (o zaman %-3,0 / 30,4 dk).
+
+**Veri kalemleri (sorulmadı, gerekçesiyle seçildi).** `masterTables` sayacı L4'te (₺ tavanı)
+KALDI: Usta seviyesini sayarsa arz kendi harcamasına bağlanır (250 💎'ın 50'si Usta
+kategorisinden gelir → 3 💎 için 15 💎 harcamak, kapalı döngü). Kayıtta yalnız `mastersOwned`
+KİMLİK listesi durur, çarpan ondan türer (`goalsClaimed`/`padsDone` deseni) → **kayıt sürümü
+ARTMADI (v32)**.
+
+**Bekçi.** `tests/usta.test.ts` 11 test, **10 mutasyon, onu da yakalandı**. Kritik olan M7:
+çarpanı ürün fiyatına da bindirmek — beklenti "daha çok ödüyor" diye yazılsaydı kaçardı, tam
+değere yazıldığı için yakalandı. `tests/hedefler.test.ts`in bayat elmas hükmü daraltıldı ve
+bayatlamayı kilitleyen iki damga eklendi. vitest 639 · duman 32/32.
+
+**D7 ikiye bölündü** (kullanıcı): D7a = ölçüm + denge (bu karar) · D7b = UI (Usta paneli +
+günlük görev kartları). Günlük görev SİSTEMİ henüz yok — yalnız ölçülmüş sayısı config'te durur.

@@ -105,6 +105,8 @@ import {
   keepIdentity,
   totalCupPool,
   tableSoftMaxLevel,
+  masterUnlockedForTable,
+  masterCost,
   stationSoftMaxLevel,
   stationUpgradeCost,
   incomeRate,
@@ -253,6 +255,9 @@ export interface GameState {
   /** TOPLANMIŞ hedef kimlikleri (D3/D-089). Hedeflerin konumu SAKLANMAZ — `goals.ts` bu listeden
    *  türetir (`questsDone` deseni, D-088). */
   goalsClaimed: string[];
+  /** USTA olmuş objelerin KİMLİKLERİ (D7a · D-093). "Kaç Usta aldım" saklanmaz — tick
+   *  çarpanı (`masterTipsOf`) ve hedef sayaçları bu listeden türer (`goalsClaimed` deseni). */
+  mastersOwned: string[];
   /** Sıradaki görevin index'i (persist; >= quests.length ⇒ görev hattı bitti). */
   questIndex: number;
   /** Aktif sayaç görevinin başlangıç sayaç değeri (persist; delta hedefi tabanı). */
@@ -308,6 +313,8 @@ export interface GameState {
   focusQuest: () => void;
   /** Hedef ödülünü topla (D3/D-089). Toplanabilir değilse hiçbir şey yapmaz ve `false` döner. */
   claimGoal: (id: string) => boolean;
+  /** D-093: USTA basamağını 💎 ile satın al. Kimlik `masterId()` kalıbında (`table:3`). */
+  buyMaster: (id: string) => boolean;
   toggleCamZoomOut: () => void;
   /** Ayar değiştir (ayarlar modalı) — anında kaydedilir. */
   setSetting: (key: keyof SaveSettings, value: boolean) => void;
@@ -380,6 +387,7 @@ export const useGame = create<GameState>((set, get) => ({
   revealSeen: [],
   stats: defaultStats(),
   goalsClaimed: [],
+  mastersOwned: [],
   questIndex: 0,
   questBase: 0,
   questPhase: 'active',
@@ -526,6 +534,7 @@ export const useGame = create<GameState>((set, get) => ({
       ).map(([k]) => k),
       stats: { ...save.stats },
       goalsClaimed: [...(save.goalsClaimed ?? [])],
+      mastersOwned: [...(save.mastersOwned ?? [])],
       questIndex: loadedQuestIndex,
       questBase: loadedQuestBase,
       questPhase: 'active',
@@ -690,6 +699,33 @@ export const useGame = create<GameState>((set, get) => ({
       goalsClaimed: [...(s.goalsClaimed ?? []), id],
       diamonds: s.diamonds.add(odul.diamonds),
       xp: s.xp + C.xp.perQuest,
+    });
+    get().saveNow();
+    return true;
+  },
+
+  /**
+   * USTA BASAMAĞINI SATIN AL (D7a · D-093) — elmasın ilk HARCAMASI.
+   *
+   * Üç şart: (a) obje ₺ TAVANINDA olmalı (Usta kritik yol dışıdır, plan K6 — ve tavan şartı
+   * ölçülmüş bir karardır: kalkarsa zincir %13,4 kısalıyor, `docs/elmas-raporu-d7.md` §2
+   * Bulgu 4); (b) daha önce alınmamış olmalı; (c) 💎 yetmeli.
+   *
+   * `claimGoal` gibi kayıt sürümü ARTIRMAZ: eklenen tek şey kimlik listesidir, bahşiş çarpanı
+   * ondan TÜRETİLİR (`masterTipsOf` → `tick.ts` bağlamı). Eski kayıtta alan yoksa boş liste.
+   */
+  buyMaster: (id) => {
+    const s = get();
+    if ((s.mastersOwned ?? []).includes(id)) return false;
+    const masaIdx = id.startsWith('table:') ? Number(id.slice('table:'.length)) : -1;
+    if (!Number.isInteger(masaIdx) || masaIdx < 0 || masaIdx >= s.tables) return false;
+    if (!masterUnlockedForTable(s.tableLevels[masaIdx] ?? 0)) return false;
+    const fiyat = D(masterCost());
+    if (s.diamonds.lt(fiyat)) return false;
+    set({
+      mastersOwned: [...(s.mastersOwned ?? []), id],
+      diamonds: s.diamonds.sub(fiyat),
+      xp: s.xp + C.xp.perUpgrade,
     });
     get().saveNow();
     return true;
@@ -869,6 +905,7 @@ export const useGame = create<GameState>((set, get) => ({
       // D-088: kayda index DEĞİL kimlik gider — hat değişse de kaydın yeri kaymasın.
       questsDone: completedQuestIds(C.quests, s.questIndex),
       goalsClaimed: [...(s.goalsClaimed ?? [])],
+      mastersOwned: [...(s.mastersOwned ?? [])],
       questBase: s.questBase,
       questBaseId: C.quests[s.questIndex]?.id ?? '',
       xp: s.xp,

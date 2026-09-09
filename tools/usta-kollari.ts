@@ -301,6 +301,32 @@ export const USTA_KOLLARI: Record<string, UstaKolTanim> = {
     yaz: (doz) => '×' + doz.toFixed(2),
   },
 
+  /* eUYG — UYGULANAN KOL (D-093). `hUYGF` / `rUYG` deseninin aynısı: uygulanacak hâl,
+   *        uygulandıktan sonra AYRI bir varyant satırı olarak ölçülür.
+   *
+   *        BU TURDA ZORUNLU, çünkü karar İKİ KNOB'u birleştirdi ve ikisi de tabloda AYRI ayrı
+   *        ölçülmüştü: etki ×1,5 (`e1`, fiyat 15 💎 ile) ve fiyat 25 💎 (`e2`, etki ×2 ile).
+   *        Birleşimleri hiçbir satırda yok. "Seçtiğim dozlar iyiydi, ikisi birlikte de öyledir"
+   *        varsayımı D3'te iki kez çürüdü (D-090 Bulgu 10) — o yüzden varsayılmaz, ölçülür.
+   *
+   *        Kol `economy.config.ts`in GERÇEK sayılarını okur: `master.tipMult`,
+   *        `master.diamondCost`, `dailyQuests.diamondsPerDay`. */
+  eUYG: {
+    ad: 'eUYG',
+    ne: 'UYGULANAN: economy.config.ts`in GERÇEK master + dailyQuests sayıları',
+    birim: 'açık/kapalı',
+    taban: 0,
+    dozlar: [0, 1],
+    fabrika: (v) => (v <= 0 ? null : kolGovdesi({
+      ...VARSAYILAN,
+      etki: C.master.tipMult,
+      fiyat: C.master.diamondCost,
+      gunluk: C.dailyQuests.diamondsPerDay,
+    })),
+    yaz: (v) => (v <= 0 ? 'kapalı'
+      : `×${C.master.tipMult} · ${C.master.diamondCost} 💎 · ${C.dailyQuests.diamondsPerDay}/gün`),
+  },
+
   /* e5 — GÜNLÜK GÖREV ARZI. MODEL SINIRI ①: 12 sa yarım gündür, bu kolun tick tablosundaki
    *      payı tanım gereği küçüktür. Yine de ölçülüyor, çünkü "günlük görev ilk 12 saatte
    *      hiçbir şey yapmaz" bir VARSAYIM değil, tablonun satırı olmalı (D-084 · h0 deseni).

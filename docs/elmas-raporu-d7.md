@@ -194,6 +194,33 @@ harcamasına bağlanır**: 250 💎'ın 50'si Usta kategorisinden geliyor, yani 
 için 15 💎 harcamak zorunda kalır — kapalı döngü. Bugünkü hâl (L4 sayması) bu döngüyü açıyor.
 Karar kalemi: sayaç **L4'te kalsın mı**, yoksa iki ayrı kategori mi olsun.
 
+### Bulgu 13 — UYGULANAN config İKİ knob'un toplamı DEĞİL (`eUYG`) — turun en önemli düzeltmesi
+
+Karar iki knob'u birleştirdi ve ikisi de tabloda **ayrı ayrı** ölçülmüştü: etki ×1,5 (`e1`, fiyat
+15 💎 ile) ve fiyat 25 💎 (`e2`, etki ×2 ile). Birleşimleri hiçbir satırda yoktu, o yüzden
+uygulandıktan sonra kendi satırıyla ölçüldü:
+
+| Satır | ALIM | KUYRUK | en uzun | d.ŞERİT |
+|---|---|---|---|---|
+| `e1` ×1,5 (fiyat 15 💎) | 8 | 5 | 30,4 dk | %-3,0 |
+| `e2` 25 💎 (etki ×2) | 5 | 8 | 30,4 dk | %-3,0 |
+| **`eUYG` ×1,5 · 25 💎 · 10/gün** | **5** | **8** | **32,0 dk** | **%-1,6** |
+
+**İki iyi doz birleşince iyi bir sonuç vermedi — ikisi de AYNI yönü çekiyor.** ×1,5 her alımın
+değerini, 25 💎 alım sayısını düşürüyor; çarpımları tek tek okunan satırların yaklaşık **yarısı**.
+Teslim edilen gerçek kazanç: en uzun bekleme **33,8 → 32,0 dk** (1,8 dk, kararın dayandığı
+tabloda 3,4 dk görünüyordu) ve zincir bedeli **%-1,6** (beklenen %-3,0'ın yarısı).
+
+Bu, D-090 Bulgu 10'un ve D-092 `rUYG`nin üçüncü kez tekrarı: **"seçtiğim dozlar iyiydi, birlikte
+de öyledir" varsayımı yine çürüdü.** Satırın ölçülmesi zorunluydu ve zorunluluk yine kendini
+kanıtladı.
+
+Yönü **güvenli tarafta**: bedel beklenenden ucuz, ödül beklenenden küçük. Dört ölçütün dördü de
+geçiyor (ihlal 2/0 sabit · açılış üç ölçütü sabit · eşiğin çok altında). Ama kullanıcı ×1,5'i
+"33,8 → 30,4 dk" sayısına bakarak seçmişti; teslim edilen 32,0 dk. **Açık kalem** olarak duruyor:
+aynı bedele daha çok ödül isteniyorsa tek satırlık değişiklik `tipMult` ×2 (o zaman `e2`nin
+25 💎 satırına, yani %-3,0 / 30,4 dk'ya çıkar).
+
 ### Bulgu 12 — Damgalar
 
 `eKAPI` (kanca açık, etki 1, fiyat ulaşılmaz) tabanın **birebir** kopyası çıktı → kancanın kendisi
@@ -215,9 +242,27 @@ koşuyu kımıldatmıyor. **💎 korunumu** (kazanılan − harcanan = kalan) al
 
 ---
 
-## §4 Karar
+## §4 Karar — D-093 (kullanıcı, 2026-09-09)
 
-<!-- BOŞ — karar paketi kullanıcıya sunulacak, seçim buraya D-093 olarak yazılacak. -->
+**Yürürlükte:** `master.tipMult: 1.5` · `master.diamondCost: 25` · `dailyQuests.diamondsPerDay: 10`.
+
+| Kalem | Seçilen | Neden |
+|---|---|---|
+| **Kanal** | yalnız **masa bahşişi** (servis + personel yer tutar, ödemez) | Ölçüm belirledi, seçim değil: servis %0,0 (Bulgu 2), personel ulaşılamaz (Bulgu 4). |
+| **Doz** | **×1,5** (planın ×2'si değil) | Kullanıcı kararı. ×2 eşiğin altındaydı (%-5,6) ama D-092 bir tur önce zincirden %15,5 aldı; iki tur bileşikleniyor (×1,5 → %-18,0 · ×2 → %-20,2). Hiçbir doz 20 dk ölçütünü kurtarmadığı için ×2'nin fazladan 2,8 dakikası %2,6'lık ek içerik bedeline değmedi. |
+| **Fiyat** | **25 💎** (planın 15'i değil) | Kullanıcı kararı. 15'te 26 hedefin 16'sı ilk günde peşin alınıyor ve kuyruğun %62'si bitiyor; 25'te 10 peşin / **16 kuyrukta** — "prestijin yerini tutan açık uçlu kuyruk" hedefiyle uyumlu. |
+| **Günlük arz** | **10 💎/gün** (planın 6'sı değil) | Fiyat 25'e çıkınca planın "~2,5 gün/Usta" vaadini korumak için gereken sayı (defter §5). 6 💎/gün aynı vaadi 4,17 gün/Usta'ya düşürürdü. |
+| **`masterTables` sayacı** | **L4'te (₺ tavanı) KALDI** | Veri kalemi, sorulmadı. Usta seviyesini sayarsa arz kendi harcamasına bağlanır: 250 💎'ın 50'si Usta kategorisinden gelir → 3 💎 kazanmak için 15 💎 harcamak gerekir (kapalı döngü). |
+| **Tavan şartı** | **KALDI** | Ölçüm: kalkarsa personel kanalı ×1,25'te bile %-13,4 (Bulgu 4). |
+| **Hedeflerin 250 💎'ı** | **DEĞİŞMEDİ** | `e4`: kuyruk hiçbir arz dozunda çökmüyor (Bulgu 7). |
+
+**Uygulanan hâlin ÖLÇÜLEN sonucu (`eUYG`, Bulgu 13):** en uzun bekleme **33,8 → 32,0 dk** ·
+zincir **%-1,6** · ihlal **2/0 sabit** · açılış üç ölçütü **sabit** · 12 sa'de **5 Usta**,
+kuyrukta 8. Kararın dayandığı tek-knob satırlarının (%-3,0 / 30,4 dk) **yarısı** — sebebi ve açık
+kalemi Bulgu 13'te.
+
+**Kayıt sürümü ARTMADI** (v32): eklenen tek şey `mastersOwned` kimlik listesidir, bahşiş çarpanı
+ondan türetilir (`goalsClaimed`in deseni, D-088).
 
 ---
 
@@ -245,4 +290,32 @@ Kozmetikler (30–60 💎) aynı 💎'ı paylaşıyor: bir kozmetik, iki–dört
 
 ## §6 Bekçi
 
-<!-- BOŞ — karar verildikten sonra yazılacak (test dosyası + mutasyon sayısı). -->
+`tests/usta.test.ts` — **11 test, 10 mutasyonla doğrulandı, onu da yakalandı.**
+
+Dosya **formülü değil KAREYİ** koşturuyor (D-092'nin M1 dersi): `masterTipMult`in doğru sayıyı
+döndürmesi yetmez, o sayının `tick.ts`te ₺'nin yaratıldığı yere bindiği doğrulanır.
+
+| Mutasyon | Yakalayan beklenti |
+|---|---|
+| M1 · `tick.ts`ten Usta çarpanı silindi | Usta masa ödemesi = taban |
+| M2 · `masterTipMult` hep 1 | çarpan türetme + kare |
+| M3 · `tipMult` 1,5 → 2 | ölçülen doz kilidi |
+| M4 · `diamondCost` 25 → 15 | ölçülen fiyat kilidi + defter hesabı |
+| M5 · tavan şartı bir seviye gevşedi | `masterUnlockedForTable` + `buyMaster` reddi |
+| M6 · `buyMaster` 💎 düşürmüyor | 💎 bakiyesi |
+| M7 · çarpan ÜRÜN FİYATINA da biniyor | **tam değer** beklentisi (yalnız ">" olsaydı kaçardı) |
+| M8 · `mastersOwned` kaydedilmiyor | kayıt turu |
+| M9 · `diamondsPerDay` 10 → 6 | 2,50 gün/Usta türetmesi |
+| M10 · aynı masa iki kez alınabiliyor | ikinci alım reddi |
+
+**M7 bu turun kritik mutasyonu:** çarpanı `(fiyat + bahşiş)`e uygulamak testi "Usta daha çok
+ödüyor" diye yazsaydım **kaçardı** — ölçülen kol yalnız bahşiş kanalıydı, fiyatı da çarpmak
+ölçülmemiş bir gelir yaratırdı. Beklenti bu yüzden tam değere yazıldı.
+
+**Bayatlayan bekçi güncellendi:** `tests/hedefler.test.ts`'in *"💎 ödülü tempoya GİRMEZ"* hükmü
+(D-089) bilerek kırılacak şekilde yazılmıştı. Elmasın harcaması gelince kolun ölçtüğü şey
+daraltıldı ("hedeflerin ₺ akışı sıfırdır", "elmas etkisizdir" değil) ve bayatlamayı kilitleyen
+iki damga eklendi (`master.diamondCost > 0` · `master.tipMult > 1`).
+
+**Koşu:** vitest **639** (23 dosya) · Playwright duman **32/32** · tam koşu damgaları temiz ·
+kayıt sürümü **v32** (artmadı).

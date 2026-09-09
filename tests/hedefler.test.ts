@@ -246,13 +246,22 @@ describe('C · denge: uygulanan config SEÇİLEN kolun bandında', () => {
     expect(d).toBeLessThan(0.038);
   });
 
-  it('💎 ödülü tempoya GİRMEZ (h0 kolunun hükmü)', { timeout: 90_000 }, () => {
-    // `h0` kolu tabanın birebir kopyası çıkmıştı: elmasın bugün harcaması yok. Bu, elmas
-    // ödüllerinin ekonomiye HİÇBİR kanaldan giremediğini söyler — D5 Usta katmanı elması
-    // harcanabilir yaptığı gün bu beklenti kırılır ve D-089'un elmas hükmü yeniden okunur.
+  it('h0 kolu ₺ ÖDEMEZ — ama D-089`un elmas hükmü D7a`da BAYATLADI', { timeout: 90_000 }, () => {
+    // D-089'da `h0` tabanın birebir kopyası çıkmıştı ve hüküm şuydu: "💎 tempoya GİRMEZ".
+    // O hüküm elmasın HARCAMASI OLMADIĞI için doğruydu; buraya bilerek kırılacak şekilde
+    // yazılmıştı. D-093 Usta katmanını getirdi: elmas artık harcanıyor ve tempoya GİRİYOR
+    // (yürürlükteki config `eUYG` satırıyla ölçüldü, `docs/elmas-raporu-d7.md` §4).
+    //
+    // Kolun kendisi hâlâ geçerli ve hâlâ ölçülüyor — ama ölçtüğü şey daralttı: "hedeflerin
+    // ₺ akışı sıfırdır", "elmas etkisizdir" DEĞİL. Elmasın kanalı bu dosyada değil,
+    // `tests/usta.test.ts`te bekçili.
     const h0 = olc('h0', () => hedefAkisiAyarla(HEDEF_KOLLARI.h0.fabrika(0)));
     expect(h0.serit).toBe(taban().serit);
     expect(h0.odenen).toBe(0);
+    // Bayatlama damgası: elmasın artık bir harcaması VAR. Bu satır kalkarsa yukarıdaki
+    // yorum sessizce yalan olur.
+    expect(C.master.diamondCost).toBeGreaterThan(0);
+    expect(C.master.tipMult).toBeGreaterThan(1);
   });
 
   it('AÇILIŞ ölçütleri (D-079) çarpandan etkilenmedi', { timeout: 90_000 }, () => {

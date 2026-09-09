@@ -103,6 +103,7 @@ import {
   questTargetMet,
   questCounterValue,
   questFocusPos,
+  masterTipsOf,
   type ActiveSpot,
   type GameNotice,
   type QuestView,
@@ -152,6 +153,10 @@ export interface TickCtx {
   /** D-092: İtibar seviyesinden TÜRETİLEN taşıma çarpanı (oyuncu + garson hareket hızı).
    *  `incomeMult` deseninin aynısı — kayıtta ayrı alan YOK, `xp`ten türer. */
   readonly carryMult: number;
+  /** D-093: masa başına Usta bahşiş çarpanı (1 = Usta değil). `incomeMult`/`carryMult` deseni —
+   *  kayıtta ayrı alan YOK, `mastersOwned` KİMLİK listesinden türer. Kare içinde değişmez:
+   *  Usta tick'te alınmaz, yalnız `buyMaster` yazar. */
+  readonly masterTip: readonly number[];
   /** Servisin HAZIR ürünleri — B2: servis başına değil ÜRÜN başına (tek nokta, iki ürün). */
   ready: Record<ProductId, number>;
   /** Ürün başına birikmiş demleme süresi (sn). Tezgâh aynı anda TEK kalem hazırlar: hangi ürünün
@@ -236,6 +241,7 @@ export function createTickCtx(s: GameState, dt: number): TickCtx {
     lavaboLevel: s.lavaboLevel,
     incomeMult: collectionMult(s.goalsClaimed ?? []),
     carryMult: reputationCarryMult(levelProgress(s.xp).level),
+    masterTip: masterTipsOf(s.mastersOwned ?? [], tableCount),
     ready: { ...s.ready },
     brewProgress: { ...s.brewProgress },
     tray: s.tray,
@@ -402,7 +408,7 @@ function spawnSystem(c: TickCtx): void {
  * NPC durum makinesi
  */
 function npcSystem(c: TickCtx): void {
-  const { dt, npcs, coins, dishes, navGrid, tableLevels, questIndex, areasOpen, lavaboLevel, incomeMult } = c;
+  const { dt, npcs, coins, dishes, navGrid, tableLevels, questIndex, areasOpen, lavaboLevel, incomeMult, masterTip } = c;
   let cleanCups = c.cleanCups;
   let nextId = c.nextId;
   const step = NPC_SPEED * dt;
@@ -454,7 +460,11 @@ function npcSystem(c: TickCtx): void {
             pos: [slot.table[0] + (Math.random() - 0.5), 0.3, slot.table[2] + 0.6 + (Math.random() - 0.5)],
             // D-090: koleksiyon çarpanı ₺'nin YARATILDIĞI yerde uygulanır (üç tavana dokunmaz,
             // yalnız müşteri başına ₺'yi büyütür — ölçümdeki `hF` kolunun bindiği yer).
-            value: (PRODUCTS[n.product].price + tableTip(tableLevels[n.tableIndex] ?? 0)) * incomeMult,
+            // D-093: Usta masanın bahşişi ×`master.tipMult`. Çarpan YALNIZ bahşişe biner —
+            // ürün fiyatına değil: ölçülen kol tam olarak buydu (§2 Bulgu 3), fiyatı da çarpmak
+            // ölçülmemiş bir gelir yaratırdı.
+            value: (PRODUCTS[n.product].price
+              + tableTip(tableLevels[n.tableIndex] ?? 0) * (masterTip[n.tableIndex] ?? 1)) * incomeMult,
           });
           // İçtiği bardak masada KİRLİ kalır (Faz 2e): toplanıp yıkanmalı, yoksa temiz biter.
           // tableIndex ile masaya etiketlenir (D-019): masa-başı eşik aşılınca masa KİRLİ olur.
