@@ -67,6 +67,9 @@ r6  |  %1/sv |     13 |     12 |       1 |       1 |        4/1 | 39.1 dk | 7.76
 r6  |  %2/sv |     13 |     12 |       1 |       1 |        3/0 | 35.5 dk | 7.16 sa |  %-15.6 |    22 sn | 1.6 dk | 6.1 dk
 r6  |  %5/sv |     13 |     12 |       0 |       0 |        1/0 | 28.0 dk | 5.97 sa |  %-29.6 |    22 sn | 1.6 dk | 6.1 dk
 r6  | %10/sv |     13 |     12 |       0 |       0 |        1/0 | 23.4 dk | 5.30 sa |  %-37.5 |    22 sn | 1.6 dk | 6.1 dk
+    rUYG: UYGULANAN: economy.config.ts`in GERÇEK xp.carryBonusPerLevel`i (taşıma çarpanı)
+rUYG | kapalı |      1 |      0 |       0 |       0 |        6/1 | 43.4 dk | 8.48 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
+rUYG | %2.0/sv (config) |     13 |     12 |       1 |       1 |        3/0 | 35.5 dk | 7.16 sa |  %-15.6 |    22 sn | 1.6 dk | 6.1 dk
     r5: eğri: levelGrowth taranır — atlama YOĞUNLUĞU (ekonomik etki yok)
 r5  |  ×1.20 |     23 |     22 |       5 |       0 |        6/1 | 43.4 dk | 8.48 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
 r5  |  ×1.30 |     18 |     17 |       4 |       2 |        6/1 | 43.4 dk | 8.48 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
@@ -94,4 +97,20 @@ r5  |  ×2.00 |      9 |      8 |       1 |       0 |        6/1 | 43.4 dk | 8.4
 
 --- Hedef kademelerinin acilis zamani (Normal profil, ayni kosu) ---
   16 kademe · 0.05sa · 0.18sa · 0.18sa · 0.31sa · 0.59sa · 0.67sa · 2.13sa · 2.13sa · 2.13sa · 4.23sa · 4.29sa · 4.60sa · 4.69sa · 6.10sa · 6.25sa · 8.48sa
+
+--- BIRLIKTE: yururlukteki hedef carpani (hUYGF) ACIK ---
+  Tabanin kendisi de degisir: hedef carpani zaten yururlukte. d.SERIT bu satirlarda
+  ITIBARSIZ-AMA-CARPANLI tabana gore okunur (asagidaki ilk satir).
+
+kol | doz    | SEVIYE | atlama | PENCERE | ORTUSME | ihlal(N/I) | enUzun  | SERIT   | d.SERIT | ilk alim | acilis | otom.
+-------------------------------------------------------------------------------------------------------------------------
+hUY | carpan |      1 |      0 |       0 |       0 |        5/1 | 41.2 dk | 8.14 sa |    %0.0 |    22 sn | 1.6 dk | 6.1 dk
+r2  | %0.5/sv |     13 |     12 |       2 |       1 |        4/1 | 39.1 dk | 7.77 sa |   %-4.6 |    22 sn | 1.5 dk | 6.0 dk
+r2  |  %1/sv |     13 |     12 |       3 |       1 |        4/1 | 37.2 dk | 7.44 sa |   %-8.6 |    22 sn | 1.5 dk | 6.0 dk
+r2  |  %2/sv |     13 |     12 |       2 |       1 |        3/0 | 34.2 dk | 6.87 sa |  %-15.6 |    22 sn | 1.5 dk | 5.8 dk
+r2  |  %5/sv |     12 |     11 |       0 |       0 |        1/0 | 27.5 dk | 5.63 sa |  %-30.8 |    21 sn | 1.4 dk | 5.5 dk
+r6  | %0.5/sv |     13 |     12 |       2 |       1 |        4/1 | 39.1 dk | 7.78 sa |   %-4.4 |    22 sn | 1.6 dk | 6.1 dk
+r6  |  %1/sv |     13 |     12 |       2 |       1 |        4/1 | 37.1 dk | 7.45 sa |   %-8.5 |    22 sn | 1.6 dk | 6.1 dk
+r6  |  %2/sv |     13 |     12 |       1 |       1 |        2/0 | 33.8 dk | 6.88 sa |  %-15.5 |    22 sn | 1.6 dk | 6.1 dk
+r6  |  %5/sv |     13 |     12 |       0 |       0 |        1/0 | 26.6 dk | 5.75 sa |  %-29.3 |    22 sn | 1.6 dk | 6.1 dk
 

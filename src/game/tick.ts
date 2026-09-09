@@ -33,6 +33,7 @@ import {
   trayCapacityFor,
   attractRadiusFor,
   playerSpeedFor,
+  reputationCarryMult,
   type PadDef,
   type GateState,
   type ProductId,
@@ -148,6 +149,9 @@ export interface TickCtx {
    *  yaratıldığı iki yerde (müşteri ödemesi · lavabo ücreti) çarpan olarak uygulanır. Kare içinde
    *  DEĞİŞMEZ: hedefler tick'te toplanmaz, yalnız `claimGoal` yazar. */
   readonly incomeMult: number;
+  /** D-092: İtibar seviyesinden TÜRETİLEN taşıma çarpanı (oyuncu + garson hareket hızı).
+   *  `incomeMult` deseninin aynısı — kayıtta ayrı alan YOK, `xp`ten türer. */
+  readonly carryMult: number;
   /** Servisin HAZIR ürünleri — B2: servis başına değil ÜRÜN başına (tek nokta, iki ürün). */
   ready: Record<ProductId, number>;
   /** Ürün başına birikmiş demleme süresi (sn). Tezgâh aynı anda TEK kalem hazırlar: hangi ürünün
@@ -231,6 +235,7 @@ export function createTickCtx(s: GameState, dt: number): TickCtx {
     tableLevels: s.tableLevels.slice(), // masa-başı seviyeler (kopya; bu karede yükseltilebilir)
     lavaboLevel: s.lavaboLevel,
     incomeMult: collectionMult(s.goalsClaimed ?? []),
+    carryMult: reputationCarryMult(levelProgress(s.xp).level),
     ready: { ...s.ready },
     brewProgress: { ...s.brewProgress },
     tray: s.tray,
@@ -529,7 +534,9 @@ function playerMoveSystem(c: TickCtx): void {
   const pr = LAYOUT.playerRadius;
   const oldX = s.player[0];
   const oldZ = s.player[2];
-  const moveSpeed = playerSpeedFor(s.charUpgrades.speed); // hız kademesinden (v20)
+  // D-092: İtibar seviyesi taşıma hızını büyütür — oyuncu da bir taşıyıcıdır (ölçüm kolu
+  // `carryRateOf` oyuncu + garson toplamıydı, ikisine de biner).
+  const moveSpeed = playerSpeedFor(s.charUpgrades.speed) * c.carryMult; // hız kademesinden (v20)
   const dxIn = input[0] * moveSpeed * dt;
   const dzIn = input[1] * moveSpeed * dt;
   // Oyuncu yalnız AÇIK zone'ların BİRLEŞİMİNDE gezer (M2 union kelepçesi; L-şekil destekli —
@@ -725,7 +732,7 @@ function waiterSystem(c: TickCtx): void {
     c.waiters = [];
     return;
   }
-  const wStep = waiterSpeedFor(s.waiterUpgrades.speed) * dt;
+  const wStep = waiterSpeedFor(s.waiterUpgrades.speed) * c.carryMult * dt; // D-092: İtibar çarpanı
   const wTrayCap = waiterTrayCapacityFor(s.waiterUpgrades.tray);
   /**
    * DEMLEME KİLİDİ (D-083): tezgâhta hazır ürün YOK ve temiz bardak da YOK ⇒ yeni ürün
@@ -1360,7 +1367,12 @@ function levelNoticeSystem(c: TickCtx): void {
   if (xp !== s.xp) {
     const before = levelProgress(s.xp).level;
     const after = levelProgress(xp).level;
-    if (after > before) enqueueNotice({ text: `Seviye ${after}!`, ttl: 4.5, kind: 'level' });
+    // D-092: seviyenin ne KAZANDIRDIĞI toast'ta yazar. Ödül görünmezse yok gibidir — D-090'ın
+    // kalıcı çarpanı tam bu yüzden açık kalem olarak duruyor.
+    if (after > before) {
+      const artis = Math.round((reputationCarryMult(after) - 1) * 100);
+      enqueueNotice({ text: `Seviye ${after}! Servis hızı +%${artis}`, ttl: 4.5, kind: 'level' });
+    }
   }
 
   // Bildirim kuyruğu: mevcut toast yoksa sıradakini göster (tek slot, sırayla — B paketi).

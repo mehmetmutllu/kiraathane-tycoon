@@ -861,6 +861,26 @@ export const economyConfig = {
     levelBase: 60,
     /** Seviye başına gereksinim büyümesi. */
     levelGrowth: 1.5,
+    /**
+     * D-092 — İTİBARIN ÖDÜLÜ: seviye başına TAŞIMA hızı artışı (oyuncu + garson).
+     *
+     * ÖLÇÜLDÜ (`docs/itibar-raporu-d6.md`, tam koşu). Planın yazdığı iki sayı ("her seviye
+     * +%2 müşteri akışı, +%1 bahşiş") ölçümde ELENDİ: gelirin kelepçesi zamanın **%93,0**'ünde
+     * TAŞIMADA (talep %1,1 · arz %5,9), dolayısıyla talep kolu %10/sv dozunda bile zinciri
+     * %0,1 kısaltıyor ve 20 dk ihlallerini hiç kıpırdatmıyordu (§2 Bulgu 2).
+     *
+     * Doz %2 ÖLÇÜLEREK seçildi, tahminle değil (yürürlükteki hedef çarpanı AÇIKKEN):
+     * en uzun bekleme **41,2 → 33,8 dk** · ihlal **5 → 2** (Normal) ve **1 → 0** (İdealize
+     * hüküm) · zincir **%-15,5**. Kabul edilen bedel: D1/D-090'ın %7'lik eleme eşiğinin
+     * üstünde — kullanıcı kararı, karşılığında D-087'den beri açık duran 41,2 dk kalemi ödendi.
+     *
+     * NEDEN GELİR DEĞİL (aynı tempoyu veren r2 kolu elendi): ikisi tempo tablosunda ayırt
+     * edilemiyordu (fark ≤ 0,2 puan), ayıran şey AÇILIŞ oldu — taşıma kolu D-079'un üç
+     * ölçütünün üçüne de hiçbir dozda dokunmuyor (22 sn · 1,6 dk · 6,1 dk sabit), gelir kolu
+     * her dozda biraz yiyor. Ayrıca gelir kolu D-090'ın çarpanıyla AYNI görünmez kanalda
+     * birikirdi; taşıma ödülü tepside GÖRÜNÜR.
+     */
+    carryBonusPerLevel: 0.02,
   },
 
   /**
@@ -1017,6 +1037,23 @@ export function levelProgress(totalXp: number): { level: number; cur: number; ne
     need = xpForLevel(level);
   }
   return { level, cur: rest, need };
+}
+
+/**
+ * D-092 — İtibar seviyesinin TAŞIMA çarpanı. L1'de 1 (yeni oyuncu ödülsüz başlar), her seviye
+ * `carryBonusPerLevel` kadar artar. Oyuncunun ve garsonun HAREKET hızına biner (`tick.ts`).
+ *
+ * NEDEN HAREKET HIZI: oyunda taşıma turunda elleçleme (yükleme/bırakma) beklemesi YOK — garson
+ * varınca anında yükler/bırakır. Yani tur süresi tümüyle yoldan gelir ve `hız × k` taşıma
+ * debisini tam olarak `k` katına çıkarır. Sim'in `carrierRate` modelinde bardak başına 0,5 sn'lik
+ * bir elleçleme payı VAR; orada hızı çarpmak debiyi `k`'dan az büyütürdü, o yüzden ölçüm kolu
+ * debiyi doğrudan çarpıyordu. Oyundaki karşılığı budur — ölçülen etkiyle birebir.
+ *
+ * BULAŞIKÇIYA BİNMEZ: ölçülen kol yalnız `carryRateOf`a (oyuncu + garson) biniyordu; bulaşık
+ * debisi sim'de ayrı bir koldur (`washRateOf`) ve ölçülmedi.
+ */
+export function reputationCarryMult(level: number): number {
+  return 1 + Math.max(0, level - 1) * economyConfig.xp.carryBonusPerLevel;
 }
 
 /** Mevcut masa seviyesinden bir sonraki yükseltmenin maliyeti (₺). Faz 2h.

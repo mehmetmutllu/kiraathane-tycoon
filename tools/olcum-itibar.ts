@@ -33,6 +33,7 @@ import {
   darbogazDagilimi,
   type Olcut, type Bosluk,
 } from './simulate.ts';
+import { HEDEF_KOLLARI } from './hedef-kollari.ts';
 import {
   ITIBAR_KOLLARI, kayitSifirla, sonKosuAtlamalari, sonKosuHedefAcilislari, sonKosuXp,
   egriDenetimi, type ItibarKolTanim,
@@ -231,6 +232,54 @@ olc();
 const hedefZaman = sonKosuHedefAcilislari();
 console.log('--- Hedef kademelerinin acilis zamani (Normal profil, ayni kosu) ---');
 console.log(`  ${hedefZaman.length} kademe · ${hedefZaman.map((t) => `${(t / 3600).toFixed(2)}sa`).join(' · ') || '(yok)'}`);
+console.log('');
+
+/* ── BIRLIKTE: yururlukteki hedef carpani ACIKKEN aday dozlarin bedeli ────────────────
+ * Kol taramasi hedef carpanini KAPALI tutuyor (olculen sey Itibar'in KENDI kanali). Ama
+ * D-090'in carpani zaten YURURLUKTE; karar o dunyada verilecek. Iki kolun ust uste binmesi
+ * dogrusal olmak ZORUNDA DEGIL (ikisi de ayni akisi carpiyor) → varsayilmaz, olculur.
+ */
+function birlikteOlc(kol: ItibarKolTanim | null, doz: number): Sonuc {
+  kayitSifirla();
+  itibarAyarla(kol ? kol.fabrika(doz) : null);
+  hedefAkisiAyarla(null);
+  hedefCarpaniAyarla(HEDEF_KOLLARI.hUYGF.carpanFabrika!(1));
+  m1Ayarla(false);
+  onbellekTemizle();
+  milestoneTazele();
+  return olc();
+}
+
+console.log('--- BIRLIKTE: yururlukteki hedef carpani (hUYGF) ACIK ---');
+console.log('  Tabanin kendisi de degisir: hedef carpani zaten yururlukte. d.SERIT bu satirlarda');
+console.log('  ITIBARSIZ-AMA-CARPANLI tabana gore okunur (asagidaki ilk satir).');
+const birlikteTaban = birlikteOlc(null, 0);
+console.log('');
+console.log(bas);
+console.log('-'.repeat(bas.length));
+{
+  const yazB = (ad: string, doz: string, s: Sonuc) => {
+    const d = (s.o.serit! - birlikteTaban.o.serit!) / birlikteTaban.o.serit!;
+    console.log(
+      ad.padEnd(3) + ' | ' + doz.padStart(6) +
+      ' | ' + String(s.seviye).padStart(6) + ' | ' + String(s.atlama).padStart(6) +
+      ' | ' + String(s.pencere).padStart(7) + ' | ' + String(s.ortusme).padStart(7) +
+      ' | ' + `${s.o.normalAsan}/${s.o.idealAsan}`.padStart(10) +
+      ' | ' + dk(s.o.normalEnUzun).padStart(7) + ' | ' + sa(s.o.serit).padStart(7) +
+      ' | ' + `%${(d * 100).toFixed(1)}`.padStart(7) +
+      ' | ' + sn(s.o.ilkAlim).padStart(8) + ' | ' + dk(s.o.acilisEnUzun).padStart(6) +
+      ' | ' + dk(s.o.otomasyon ?? NaN).padStart(6),
+    );
+  };
+  yazB('hUY', 'carpan', birlikteTaban);
+  for (const ad of ['r2', 'r6'] as const) {
+    for (const doz of KISA ? [0.005, 0.02] : [0.005, 0.01, 0.02, 0.05]) {
+      yazB(ad, ITIBAR_KOLLARI[ad].yaz(doz), birlikteOlc(ITIBAR_KOLLARI[ad], doz));
+    }
+  }
+}
+// Carpan kancasi kapatilir; kalan damgalar TABAN dunyasinda okunur.
+kolaGec(null, 0);
 console.log('');
 
 /* ── DAMGALAR ──────────────────────────────────────────────────────────────────────── */

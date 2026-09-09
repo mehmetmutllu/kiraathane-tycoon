@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 78 · YAPILAN 68 · %87):**
+**Oturum bütçesi (TOPLAM 78 · YAPILAN 69 · %88):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -22,10 +22,10 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | B model geçişi + maket taşıması | 13/13 ✅ |
 | | **C zincir ve denge** | **5/5 ✅** |
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
-| | D meta katman | 5/7 🔧 |
+| | D meta katman | 6/7 🔧 |
 | | E arayüz ve cila | 1/4 🔧 |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **40/50** |
+| **Program toplam** | | **41/50** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -82,7 +82,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
 **asıl sınav tick-temelli bir denge turu.** Ölçülen gerçek kazançlar: üç dosyalık okuma seti
 (oturum başı), uzun koşuların paralel arkaplanı, hazır ölçüm iskeleti.
 
-## Faz D — META KATMAN (5/7) 🔧
+## Faz D — META KATMAN (6/7) 🔧
 - ✅ **D1 — geç-oyun eğrisinin 20 dk ihlali ölçüldü ve ölçütün PROFİLİ sabitlendi (D-087)** ·
   dokuz kol varyant olarak ölçüldü, dozlar tahmin değil **çözüldü**; hepsi elendi, ölçütün
   kendisi (`o1`) alındı. Ölçüt kardeş üçüyle aynı profilde (İdealize) hüküm verir ve geçiyor
@@ -134,8 +134,19 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   `tests/oyuncu-dunyasi.test.ts` (8 test, **8 mutasyon**) · vitest 620 · **denge sayısı DEĞİŞMEDİ.**
   **Açılan kalem:** sim botunun bu ızgaraya göçü denendi ve geri alındı (B2 159,1 → 0,0 br/dk;
   üç tuzak ölçüldü, düzeltildi, yetmedi) — kendi turunu ister.
-- ⏳ **D6 — İtibar (eski XP anlam kazanır) + günlük görevler.**
-- ⏳ **D7 — elmas kaynak/harcama + Usta katmanı** (masa ₺-tavanı L4'ün üstü).
+- ✅ **D6 — İtibarın ödülü ÖLÇÜLDÜ; planın kolu elendi, taşıma hızı geldi (D-092)** · gelirin
+  kelepçesi zamanın **%93,0**'ünde taşımada (arz %5,9 · talep %1,1), bu yüzden plan §6'nın
+  "+%2 müşteri akışı" kolu %10/sv dozunda bile atıl (zincir %-0,1, ihlal sabit). İşe yarayan iki
+  kol tempoda ayırt EDİLEMEDİ (≤ 0,2 puan); seçimi **açılış** verdi — taşıma kolu D-079'un üç
+  ölçütüne hiçbir dozda dokunmuyor. Yürürlükte `xp.carryBonusPerLevel: 0.02`: en uzun bekleme
+  **41,2 → 33,8 dk**, ihlal **5 → 2**, hüküm **1 → 0**, açılış sabit. `docs/itibar-raporu-d6.md`
+  · araç `tools/olcum-itibar.ts` + `tools/itibar-kollari.ts` · bekçi `tests/itibar.test.ts`
+  (8 test, **8 mutasyon**; ilk hâli M1'i kaçırıyordu → formül testi gerçek kareye çevrildi) ·
+  vitest **628** · duman **32/32** · **kayıt sürümü artmadı** (v32, çarpan `xp`ten türer).
+  **Kabul edilen bedel:** zincir %-15,5, %7'lik eleme eşiğinin üstünde — kullanıcı kararı,
+  karşılığında D-087'nin 41,2 dk kalemi ödendi. **Günlük görevler D7'ye bırakıldı.**
+- ⏳ **D7 — elmas kaynak/harcama + Usta katmanı + GÜNLÜK GÖREVLER** (masa ₺-tavanı L4'ün üstü;
+  günlük görevin 💎 arzı D6'da bilerek ertelendi — harcama tarafıyla birlikte çivilenir).
 
 > D2-D6 `docs/plan-kat1-yayin.html` §D kapsamından türetildi; **sırası açık** — her tur başında
 > seçilir. Ayrıca Faz D'de bekleyen bilinen bir hata var: **nav ızgarası ↔ oyuncu çarpışması**.
@@ -145,6 +156,9 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   yerine kalıcı gelir çarpanı geldi. **Yeni açık kalem:** çarpan GÖRÜNMEZ bir ödüldür (panelde iki
   yerde yazılıyor + 💎 anlık ödülü taşıyor) ama oyuncu üzerindeki etkisi ölçülmedi — sim'in
   ölçebileceği bir şey değil, **telefonda oynanınca yeniden okunacak.**
+- ~~Normal profil 6. saatte 43,4 dk bekliyor~~ → **D6'da ödendi (D-092):** 41,2 → **33,8 dk**,
+  ihlal 5 → 2, İdealize hükmü 1 → **0**. Bedeli zincirin %15,5'i — %7'lik eleme eşiğinin
+  bilerek aşıldığı **ilk** karar. Sonraki turlar bunu emsal değil, sayısı yazılı istisna okusun.
 - ~~Geç-oyun eğrisi 20 dk ölçütünü ihlal ediyor~~ → **D1'de kapandı (D-087):** ölçütün profili
   sabitlendi, hüküm geçiyor. **Kabul edilen risk:** Normal profil oyuncusu 6. saatte `servis L6`
   için 43,4 dk bekliyor — bilerek ödenmedi, gözlem bandında görünür kalıyor. **Faz D bitince

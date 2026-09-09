@@ -225,6 +225,21 @@ export const ITIBAR_KOLLARI: Record<string, ItibarKolTanim> = {
     yaz: (doz) => (doz === 0 ? '0' : `%${(doz * 100).toFixed(doz < 0.01 ? 1 : 0)}/sv`),
   },
 
+  /* rUYG — UYGULANAN KOL (D-092). `hUYGF` deseninin aynısı: uygulanacak hâl, uygulanmadan ÖNCE
+   *        ayrı bir varyant satırı olarak ölçülür. Sentetik `r6` kolu dozu elle alır; bu kol
+   *        `economy.config.ts`in GERÇEK `xp.carryBonusPerLevel`ini okur. r6 %2/sv satırına DENK
+   *        çıkması BEKLENTİDİR — ölçüm onu doğrular ya da çürütür ("seçilen doz iyiydi, config'e
+   *        yazdığım da ona denktir" varsayımı D3'te iki kez çürümüştü, D-090 Bulgu 10). */
+  rUYG: {
+    ad: 'rUYG',
+    ne: 'UYGULANAN: economy.config.ts`in GERÇEK xp.carryBonusPerLevel`i (taşıma çarpanı)',
+    birim: 'açık/kapalı',
+    taban: 0,
+    dozlar: [0, 1],
+    fabrika: (v) => (v <= 0 ? null : kolGovdesi(X.levelGrowth, (sv) => ({ ...ETKISIZ, tasima: dogrusal(sv, X.carryBonusPerLevel) }))),
+    yaz: (v) => (v <= 0 ? 'kapalı' : `%${(X.carryBonusPerLevel * 100).toFixed(1)}/sv (config)`),
+  },
+
   /* r5 — EĞRİ: `levelGrowth` taranır. Ekonomik etkisi YOKTUR (r4 gibi atıl) — ölçtüğü şey
    *      atlamaların ZAMANDAKİ YOĞUNLUĞU. D3'ün dersi: bekleme penceresini ödülün büyüklüğü
    *      değil YOĞUNLUĞU dolduruyor; o yüzden yoğunluk kendi satırını hak ediyor. Doz = büyüme

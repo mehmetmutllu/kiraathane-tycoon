@@ -2576,3 +2576,33 @@ Araç ölçülmüş hâline döndürüldü — botun göçü kendi turunu ister.
 gösteren `k5` (rota izlenebilirliği) tur kartında yoktu, ilk sayılar okununca eklendi. Beklenen
 zarar ("içerik kapalı") çürüdü. Kural: adım 2'nin ilk çıktısı hangi kolun EKSİK olduğunu da
 söyler; kol eklemek kapıyı delmez, kol eklemeden karar vermek deler.
+
+## D-092 — İtibarın ödülü: taşıma hızı (2026-09-09, D6)
+**Soru** Plan §6 İtibar'a "her seviye +%2 müşteri akışı, +%1 bahşiş" yazmıştı — iki denge sayısı,
+ikisi de hiç ölçülmemişti. XP kazanılıyor, HUD'da görünüyor, kutlanıyor ve hiçbir şeye yaramıyordu.
+**Ölçüldü** (`docs/itibar-raporu-d6.md`, tam koşu 2 dk 45 sn, damgalar temiz): gelirin kelepçesi
+zamanın **%93,0**'ünde TAŞIMADA (arz %5,9 · talep %1,1). Planın kolu bu yüzden **atıl**: %10/sv
+dozunda bile zincir %-0,1, 20 dk ihlalleri hiç kıpırdamıyor. Arz kolu da neredeyse atıl (%-1,8).
+İşe yarayan iki kol — gelir (`r2`) ve taşıma (`r6`) — tempoda **ayırt edilemedi** (fark ≤ 0,2 puan,
+D-090 Bulgu 13'ün tekrarı: tempo tablosu ELER, SEÇMEZ).
+**Karar** `xp.carryBonusPerLevel: 0.02` — İtibar seviyesi oyuncunun ve garsonun HAREKET hızını
+seviye başına %2 büyütür (`tick.ts` · `carryMult`, `incomeMult` deseni; kayıtta alan yok, `xp`ten
+türer, kayıt sürümü ARTMADI). Yürürlükteki hedef çarpanı açıkken: en uzun bekleme **41,2 → 33,8 dk**,
+ihlal **5 → 2** (Normal), hüküm **1 → 0** (İdealize), açılışın üç ölçütü de **değişmedi**.
+**Seçimi tempo tablosu vermedi, AÇILIŞ verdi:** taşıma kolu D-079'un üç ölçütüne hiçbir dozda
+dokunmuyor, gelir kolu her dozda yiyor (D4'te `hG` tam buradan elenmişti). İkinci gerekçe: gelir
+kolu D-090'ın kalıcı çarpanıyla aynı GÖRÜNMEZ kanalda birikirdi; taşıma ödülü tepside görünür —
+toast artık "Seviye 7! Servis hızı +%12" yazıyor.
+**Eğri korundu** (`levelGrowth ×1,5`): ölçüm eğrinin tempoya hiç dokunmadığını gösterdi (altı dozda
+da ŞERİT 8,48 sa), değiştirmek için sayı yoktu.
+**Bekçi** `tests/itibar.test.ts` — 8 test, **8 mutasyon, sekizi de yakalandı**. Bekçinin ilk hâli
+M1'i (garson çarpanının silinmesi) KAÇIRIYORDU: formülü doğruluyor, `waiterSystem`i koşturmuyordu —
+yani D-090'ın dersini ıskalıyordu. Gerçek kareye çevrildi, garsonun kat ettiği yol ölçülüyor.
+`rUYG` kolu uygulanan config'i kendi satırıyla ölçtü; sentetik `r6 %2/sv` ile **birebir**.
+**KABUL EDİLEN BEDEL (kullanıcı kararı):** zincir **%-15,5**, D1/D-090'ın %7'lik eleme eşiğinin
+üstünde. Karşılığında D-087'den beri açık duran 41,2 dk kalemi ödendi; bunu ödeyen ölçülmüş başka
+kol yok. **Eşiğin bilerek aşıldığı ilk karardır** — emsal değil, sayısı yazılı istisna.
+**Turun süreç dersi:** `r6` tur kartında YOKTU. Darboğaz dağılımı okununca tur kartındaki dört
+kanaldan hiçbirinin gerçek kelepçeye dokunmadığı görüldü ve kol ölçüm sırasında eklendi — D-091'in
+ekindeki dersin ikinci doğrulanması. **Günlük görevler D7'ye bırakıldı:** 💎 harcama tarafı
+yazılmadan arz tarafını çivilemek ölçülemeyen bir sayıyı config'e yazmak olurdu.

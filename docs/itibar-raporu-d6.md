@@ -8,7 +8,7 @@ bağlayıcı değilse planın ödülü hiçbir şey yapmaz — bu bir varsayım 
 
 **Araç.** `tools/olcum-itibar.ts` + varyant katmanı `tools/itibar-kollari.ts` · sim kancası
 `itibarAyarla` (`tools/simulate.ts`). **`economy.config.ts` DEĞİŞMEDİ.**
-Ham çıktı: `docs/olcum-itibar.txt` — **tam koşu** (`OLCUM=tam`, 1 dk 41 sn), damgalar temiz.
+Ham çıktı: `docs/olcum-itibar.txt` — **tam koşu** (`OLCUM=tam`, 2 dk 45 sn — final koşu, uygulanan config dahil), damgalar temiz.
 
 ---
 
@@ -149,6 +149,48 @@ eklendi ve tablonun iki etkili kolundan biri çıktı. Bu D5'in süreç dersinin
 kez doğrulanmasıdır: *kolları önceden yazmak gerekli ama yeterli değil; adım 2'nin ilk çıktısı
 hangi kolun eksik olduğunu da söyler.*
 
+### Bulgu 9 — Birleşik dünya: hedef çarpanı AÇIKKEN aday dozlar
+
+Kol taraması hedef çarpanını kapalı tutuyor (ölçülen şey İtibar'ın kendi kanalı). Ama D-090'ın
+çarpanı **zaten yürürlükte** ve karar o dünyada verilecek; iki çarpanın üst üste binmesi doğrusal
+olmak zorunda değil (ikisi de aynı akışı çarpıyor), o yüzden varsayılmadı, ölçüldü.
+
+Bu tablonun tabanı **hedef çarpanı açık, İtibar yok** hâlidir: ihlal **5/1** · en uzun
+**41,2 dk** · ŞERİT **8,14 sa** (= D-090'ın yürürlükteki sonucu, birebir).
+
+| kol | doz | ihlal (N/İ) | en uzun | ŞERİT | d.ŞERİT | açılış | otom. |
+|---|---|---|---|---|---|---|---|
+| — | (yalnız hedef çarpanı) | 5/1 | 41,2 dk | 8,14 sa | %0,0 | 1,6 dk | 6,1 dk |
+| r2 | %0,5/sv | 4/1 | 39,1 dk | 7,77 sa | %-4,6 | 1,5 dk | 6,0 dk |
+| r2 | %1/sv | 4/1 | 37,2 dk | 7,44 sa | %-8,6 | 1,5 dk | 6,0 dk |
+| r2 | %2/sv | 3/0 | 34,2 dk | 6,87 sa | %-15,6 | 1,5 dk | 5,8 dk |
+| r2 | %5/sv | 1/0 | 27,5 dk | 5,63 sa | %-30,8 | 1,4 dk | 5,5 dk |
+| r6 | %0,5/sv | 4/1 | 39,1 dk | 7,78 sa | %-4,4 | **1,6 dk** | **6,1 dk** |
+| r6 | %1/sv | 4/1 | 37,1 dk | 7,45 sa | %-8,5 | **1,6 dk** | **6,1 dk** |
+| r6 | %2/sv | **2/0** | **33,8 dk** | 6,88 sa | %-15,5 | **1,6 dk** | **6,1 dk** |
+| r6 | %5/sv | 1/0 | 26,6 dk | 5,75 sa | %-29,3 | **1,6 dk** | **6,1 dk** |
+
+**Üst üste binme doğrusal:** tek başına ölçülen d.ŞERİT değerleriyle (Bulgu 4) fark ≤ 0,2 puan.
+İki çarpan birbirini ne söndürüyor ne büyütüyor.
+
+**Eleme eşiği hatırlatması:** D1 düzeltici kolları %7-42 zincir bedeliyle elemişti; D-090 `hF`
+%20 dozunu **tam bu eşikten** reddedip %10'u (%-4,0) almıştı. Bu tabloda eşiğin ALTINDA kalan
+tek doz **%0,5/sv**tir. %1 ve %2 eşiği aşıyor — ama %2/sv, D-087'den beri açık duran
+**41,2 dk** kalemini ödeyen ölçülmüş tek kol.
+
+### Bulgu 10 — Uygulanan config kendi satırıyla ölçüldü (`rUYG`)
+
+D3'ün en pahalı dersi (D-090 Bulgu 10): *"seçilen doz iyiydi, config'e yazdığım da ona denktir"*
+bir **varsayımdır** ve iki kez çürümüştü. Bu yüzden `economy.config.ts`in gerçek
+`xp.carryBonusPerLevel`ini okuyan ayrı bir kol ölçüldü:
+
+| kol | doz | ihlal (N/İ) | en uzun | ŞERİT | d.ŞERİT | ilk alım | açılış | otom. |
+|---|---|---|---|---|---|---|---|---|
+| r6 (sentetik) | %2/sv | 3/0 | 35,5 dk | 7,16 sa | %-15,6 | 22 sn | 1,6 dk | 6,1 dk |
+| **rUYG (config)** | **%2,0/sv** | **3/0** | **35,5 dk** | **7,16 sa** | **%-15,6** | **22 sn** | **1,6 dk** | **6,1 dk** |
+
+**Birebir aynı** — yazılan sayı ölçülen koldur.
+
 ---
 
 ## §3 Günlük görevler — bu tur ÖLÇMEDİ, defter hesabı
@@ -169,12 +211,66 @@ D-089'un `h0` hükmü ("💎 tempoya dokunmaz") D7'de bilerek bayatlayacak.
 
 ---
 
-## §4 Karar
+## §4 Karar — D-092 (kullanıcı, 2026-09-09)
 
-*(Adım 3 — karar paketi kullanıcıya sunulacak. Bu bölüm commit #1'de BOŞTUR: D-084 sıra kilidi.)*
+**Kanal: `r6` taşıma · doz `%2/seviye`.** İtibar seviyesi oyuncunun ve garsonun HAREKET hızını
+seviye başına %2 büyütür (`xp.carryBonusPerLevel: 0.02`).
+
+| Ne | Taban (hedef çarpanı açık) | D-092 sonrası |
+|---|---|---|
+| En uzun bekleme (Normal) | 41,2 dk | **33,8 dk** |
+| 20 dk'yı aşan alım (Normal) | 5 | **2** |
+| Hüküm (İdealize, D-087) | 1 | **0** |
+| ŞERİT | 8,14 sa | 6,88 sa (**%-15,5**) |
+| İlk alım · açılış · otomasyon | 22 sn · 1,6 dk · 6,1 dk | **değişmedi** |
+
+**Elenen kollar ve gerekçeleri:**
+
+- **`r1` talep (planın kolu)** — kelepçe zamanın %1,1'inde talepte; %10/sv dozunda bile zincir
+  %0,1, ihlal sabit. *Plan §6'nın "her seviye +%2 müşteri akışı" satırı yürürlükten kalktı.*
+- **`r3` arz** — kelepçe %5,9; %10/sv → %-1,8, ihlal sabit.
+- **`r2` gelir** — tempoda `r6` ile denk (fark ≤ 0,2 puan) ama iki nedenle elendi: ① açılışı her
+  dozda yiyor (D-079 ölçütleri; D4'te `hG` tam buradan elenmişti), ② D-090'ın kalıcı çarpanıyla
+  **aynı görünmez kanalda** birikirdi — "çarpan görünmez bir ödüldür" açık kalemi ikiye katlanırdı.
+  `r6`nın ödülü tepside GÖRÜNÜR.
+- **`r4` kapı (hiç ödemeden)** — mümkündü ve bedelsizdi; alınmadı çünkü XP'nin "hiçbir şeye
+  yaramıyor" sorununu yarım bırakıyordu.
+- **`r5` eğri** — `levelGrowth ×1,5` **korundu**. Ölçüm eğrinin tempoya hiç dokunmadığını
+  gösterdi (altı dozda da ŞERİT 8,48 sa); değiştirmek için bir sayı yoktu.
+
+**Kabul edilen bedel (kullanıcı kararı):** zincir %-15,5, D1/D-090'ın %7'lik eleme eşiğinin
+üstünde. Karşılığında D-087'den beri açık duran **41,2 dk** kalemi ödendi — bunu ödeyen ölçülmüş
+başka kol yok. Eşiğin bilinçli olarak aşıldığı **ilk** karardır; sonraki turlar bunu bir emsal
+değil, sayısı yazılı bir istisna olarak okumalı.
+
+**Günlük görevler D7'ye bırakıldı** (§3): 💎 harcama tarafı yazılmadan arz tarafını çivilemek,
+ölçülemeyen bir sayıyı config'e yazmak olurdu.
 
 ---
 
 ## §5 Bekçi
 
-*(Adım 4'te dolar.)*
+`tests/itibar.test.ts` — **8 test, 8 mutasyon, sekizi de yakalandı:**
+
+| # | Mutasyon | Yakalayan |
+|---|---|---|
+| M1 | garson çarpanı silindi (`tick.ts` · `wStep`) | garson gerçekten yürütülen kare |
+| M2 | oyuncu çarpanı silindi (`tick.ts` · `moveSpeed`) | oyuncu adım oranı |
+| M3 | doz %2 → %5 (ölçülmemiş sayı) | çivili doz + config denetimi |
+| M4 | L1 de ödül alır (off-by-one) | 5 test birden |
+| M5 | çarpan bulaşıkçıya da bindirildi | bulaşıkçı yolu sabit kalmalı |
+| M6 | ctx çarpanı sabit 1 | 3 test birden |
+| M7 | seviye yerine seviye-içi ilerleme (`cur`) | 3 test birden |
+| M8 | doğrusal yerine bileşik büyüme | çivili doz |
+
+**Bekçinin ilk hâli M1'i KAÇIRIYORDU** — garson satırı `waiterSpeedFor(0) * carryMult` formülünü
+doğruluyordu, `waiterSystem`i koşturmuyordu; yani bu dosyanın var olma sebebini (D-090'ın dersi)
+ıskalıyordu. Gerçek kareye çevrildi: garson tepsisinde çayla masaya yürütülüyor ve **kat ettiği
+yol** ölçülüyor.
+
+**Kayıt sürümü ARTMADI** (v32): çarpan `xp`ten türer, kayıtta yeni alan yok — `padsDone` (D-015)
+ve `goalsClaimed` (D-090) deseninin aynısı.
+
+**Ödül görünür kılındı:** seviye atlama toast'ı artık *"Seviye 7! Servis hızı +%12"* yazıyor ve
+Hedefler panelinin İtibar başlığında yürürlükteki bonus duruyor. D-090'ın "çarpan görünmez bir
+ödüldür" açık kalemi bu turda tekrarlanmadı.

@@ -4,7 +4,7 @@ import { claimableGoals, collectionBonus, goalViews, type GoalView } from '../..
 import { perf } from '../../game/perf';
 import { screenPointer } from '../../game/screenPointer';
 import { fmt } from '../../game/decimal';
-import { levelProgress, economyConfig, MAX_AREAS } from '../../config/economy.config';
+import { levelProgress, reputationCarryMult, economyConfig, MAX_AREAS } from '../../config/economy.config';
 import { floorSwatch, WALL_THEMES } from '../../config/palette';
 import {
   CoinIcon,
@@ -556,7 +556,8 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
             </span>
           </span>
           <small>
-            Her hedef itibarını yükseltir
+            Her hedef itibarını yükseltir · itibar bonusu{' '}
+            {yuzde(reputationCarryMult(lvl.level) - 1)} servis hızı
             {bonus > 0 ? ` · koleksiyon bonusu ${yuzde(bonus)} gelir` : ''}.
           </small>
         </span>

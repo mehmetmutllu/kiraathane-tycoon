@@ -193,7 +193,7 @@ h2{font-size:21px;font-weight:800}
 <script type="application/json" id="durum">
 {
  "guncelleme": "09.09.2026",
- "yapilan": 68,
+ "yapilan": 69,
  "toplam": 78,
  "kilometre": [
   {
@@ -225,14 +225,14 @@ h2{font-size:21px;font-weight:800}
   "not": "<b>Yarım kalan yazıldı:</b> bu ızgarayı kullanacak doğal tüketici simülasyon botuydu ve geçişi <b>denendi, ölçüldü, geri alındı</b>. Yolda üç gerçek tuzak ölçüldü (bot işe kendi çarpışma kutusunun içinde başlıyor · rota payı oyuncunun dünyasında olanaksız · tetik yarıçapı ızgara yuvarlamasına yetmiyor), üçü de düzeltildi ve bot yine yürümedi. Araç ölçülmüş hâline döndürüldü — botun göçü kendi turunu ister."
  },
  "siradaki": {
-  "etiket": "Faz D · 6/7 — İtibar ve günlük görevler",
-  "baslik": "İtibar ve günlük görevler — meta katmanın kalan iki kanadı",
-  "aciklama": "Ödül ekranı üç turdur hazır; sırada onu ikinci kez kullanacak kalem var: <b>İtibar</b>. Bugün oyunda seviye kazanılıyor, ekranda görünüyor, kutlanıyor — ve <b>hiçbir şeye yaramıyor</b>. Anlam kazanması planlı: her seviye müşteri akışını ve bahşişi biraz artıracak, mağazada yeni kozmetikleri görünür kılacak, her seviye atlamada aynı ödül ekranı açılacak.<br><br>Yanında <b>günlük görevler</b> geliyor — elmasın ikinci kaynağı ve oyuncuyu ertesi gün geri getiren şey. Günlük görevlerin ödülü, iki tur önce seçilen <b>kalıcı çarpan</b> kalıbına yaslanacak.<br><br>İkisi bittiğinde Faz D'nin son kalemi kalıyor: elmasın <b>harcanabilir</b> hâle gelmesi ve <b>Usta</b> katmanı. O gün geldiğinde bir hüküm bilerek bayatlayacak: bugün elmas ödülü tempoya hiç dokunmuyor, çünkü harcaması yok — bekçi testi tam o günü yakalayacak şekilde yazıldı.",
+  "etiket": "Faz D · 7/7 — Elmas ekonomisi, Usta katmanı ve günlük görevler",
+  "baslik": "Elmasın harcanabilir hâle gelmesi — Faz D'nin son kalemi",
+  "aciklama": "Oyunda bugün elmas <b>kazanılıyor</b> ama harcanamıyor: hedeflerin yirmi beş kademesi toplam 250 elmas ödüyor ve elmasın gideceği bir yer yok. Son tur bunu kapatıyor — ve üç işi birden yapmak zorunda, çünkü <b>ayrı ayrı ölçülemezler</b>: elmasın <b>kaynağı</b> (günlük görevler), <b>harcaması</b> (Usta seviyeleri, kozmetikler) ve ikisinin <b>dengesi</b> tek bir hesabın üç yüzü.<br><br><b>Günlük görevler</b> bir önceki turda bilerek ertelendi. Ödülleri elmas; harcama tarafı yazılmadan &ldquo;günde şu kadar elmas versin&rdquo; demek, karşılığı olmayan bir sayıyı denge dosyasına yazmak olurdu — projenin kendi kuralının tam olarak yasakladığı şey. Kaynağın günlük değeri ancak <b>Usta seviyesinin fiyatı</b> belli olduğunda anlam kazanır.<br><br>Bu turda bir hüküm de <b>bilerek bayatlayacak</b>: bugün &ldquo;elmas ödülü tempoya hiç dokunmaz&rdquo; diye ölçülmüş bir satır var ve o satır doğru, çünkü elmasın harcaması yok. Harcama geldiği an yanlış olacak — bekçi testi tam o günü yakalayacak şekilde yazılmıştı.",
   "adimlar": [
-   "<b>Şimdi:</b> İtibar (seviye anlam kazanır) + günlük görevler",
-   "<b>Sonra:</b> elmas harcaması + Usta katmanı · simülasyon botunun yeni ızgaraya göçü"
+   "<b>Şimdi:</b> elmas kaynak/harcama dengesi + Usta katmanı + günlük görevler",
+   "<b>Sonra:</b> Faz D bitince tempo penceresi yeniden okunur · simülasyon botunun yeni ızgaraya göçü"
   ],
-  "not": "Bu turdan devreden soru: oyuncunun yeni ızgarası bugün <b>bekçili bir doğruluk</b>, henüz görünen bir davranış değil — oyunda onu çağıran bir tüketici yok, çünkü oyuncu joystick ile sürülüyor."
+  "not": "Bu turdan devreden iki soru: ① zincirin <b>%7</b>'lik bedel eşiği ilk kez bilerek aşıldı (%15,5) — bir emsal değil, sayısı yazılı bir istisna; Kat 1 içeriği artık %15,5 daha hızlı tükeniyor ve yayın öncesi yeniden okunmalı. ② İtibar bonusu oyuncunun <b>genel</b> hızına biniyor — ölçülen şey taşımaydı, ama oyuncu aynı hızla para da topluyor; on üçüncü seviyede +%24 hız telefonda <b>his olarak</b> okunmalı."
  },
  "donemler": [
   {
@@ -346,8 +346,8 @@ h2{font-size:21px;font-weight:800}
     {
      "k": "D",
      "t": "Meta katman",
-     "d": "Görev kimlikleri · Hedefler ödülü · İtibar · günlük görev · elmas ekonomisi · Usta katmanı. <b>D1</b> geç-oyun eğrisi ölçüldü: dokuz kol elendi, düzeltilen şey eğri değil <b>tempo ölçütünün profili</b> oldu (D-087) ✓ · <b>D2</b> hattın kimliği sıra numarası olmaktan çıktı, kayıt v32 + gerçek göç (D-088) ✓ · <b>D3</b> Hedefler (5 kategori × 5 kademe) kuruldu — ödül YOĞUNLUKTAN geliyor, büyüklükten değil (D-089) ✓ · <b>D4</b> ödülün KALIBI değişti: sabit para kalktı, yerine <b>kalıcı gelir çarpanı</b> geldi; gelire oranlı para ölçülerek elendi (D-090) ✓ · <b>D5</b> oyuncunun yürüdüğü dünya ile rotaların kurulduğu dünya aynı değildi: içerik kilitli çıkmadı ama rotaların <b>%74</b>'ü geçersizdi — oyuncuya kendi ızgarası verildi (D-091) ✓ · sırada <b>İtibar + günlük görevler</b>.",
-     "yapilan": 5,
+     "d": "Görev kimlikleri · Hedefler ödülü · İtibar · günlük görev · elmas ekonomisi · Usta katmanı. <b>D1</b> geç-oyun eğrisi ölçüldü: dokuz kol elendi, düzeltilen şey eğri değil <b>tempo ölçütünün profili</b> oldu (D-087) ✓ · <b>D2</b> hattın kimliği sıra numarası olmaktan çıktı, kayıt v32 + gerçek göç (D-088) ✓ · <b>D3</b> Hedefler (5 kategori × 5 kademe) kuruldu — ödül YOĞUNLUKTAN geliyor, büyüklükten değil (D-089) ✓ · <b>D4</b> ödülün KALIBI değişti: sabit para kalktı, yerine <b>kalıcı gelir çarpanı</b> geldi; gelire oranlı para ölçülerek elendi (D-090) ✓ · <b>D5</b> oyuncunun yürüdüğü dünya ile rotaların kurulduğu dünya aynı değildi: içerik kilitli çıkmadı ama rotaların <b>%74</b>'ü geçersizdi — oyuncuya kendi ızgarası verildi (D-091) ✓ · <b>D6</b> İtibarın ödülü ölçüldü: planın <b>talep</b> kolu atıl çıktı, tıkanıklığın %93'ü <b>taşımada</b>; seviye başına +%2 taşıma hızı geldi ve en uzun bekleme 41,2 → 33,8 dk'ya indi (D-092) ✓ · sırada <b>elmas ekonomisi + Usta + günlük görevler</b>.",
+     "yapilan": 6,
      "toplam": 7,
      "kapi": "Elmas kazanılıp harcanabiliyor, Usta alınabiliyor",
      "durum": "now"
@@ -372,6 +372,21 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "09.09.2026",
+   "etiket": "Faz D · 6. oturum (D6 — İtibarın ödülü · D-092)",
+   "baslik": "Planın yazdığı ödül ölçüldü ve hiçbir şey yapmıyordu",
+   "govde": "Oyunda seviye kazanılıyor, ekranda bir madalyon dolıyor, atlayınca kutlama çıkıyor — ve <b>hiçbir şeye yaramıyor</b>. Yayın planı bu boşluğu doldurmak için bir cümle yazmıştı: <i>&ldquo;her seviye +%2 müşteri akışı, +%1 bahşiş&rdquo;</i>. İki sayı, ikisi de denge dosyasına girecek, ikisi de <b>hiç ölçülmemiş</b>. Projenin kuralı gereği önce ölçüldüler.<br><br><b>İlk ölçüm cümleyi çürüttü.</b> Gelirin önündeki tıkanıklığın zamanın yüzde kaçında hangi kolda olduğu sayıldı: <b>%93'ünde taşımada</b> — yani çayı masaya yetiştirmekte. Müşteri akışı (talep) tıkanıklığı zamanın yalnız <b>%1,1'inde</b> tutuyor. Talebi büyütmek, zaten dolmayan bir kabı büyütmek demek. Ölçüm bunu doğruladı: seviye başına <b>%10</b> gibi abartılı bir dozda bile — on üçüncü seviyede müşteri akışı iki katından fazla — ilerleme zinciri <b>binde bir</b> kısaldı ve uzun beklemelerin sayısı <b>hiç kıpırdamadı</b>. Planın ikinci yarısı (bahşiş) ise ölçülünce gerçekten işe yaradı, ama seçilmedi; gerekçesi aşağıda.<br><br><b>Turun asıl dersi tabloya bakma biçiminde çıktı.</b> İşe yarayan iki kol vardı — <b>gelir</b> (her müşteriden daha çok para) ve <b>taşıma</b> (aynı sürede daha çok bardak). Tempo tablosunda ikisi <b>ayırt edilemedi</b>: aynı dozda aynı iyileşmeyi verdiler, fark ölçüm gürültüsü kadar. Yani tablo hangisinin doğru olduğunu söylemiyor — yalnız hangilerinin <b>yanlış</b> olduğunu söylüyor. Bu, iki tur önce de yaşanmış bir dersin tekrarıydı.<br><br><b>Seçimi açılış ölçütü verdi.</b> Oyunun en iyi çalışan parçası ilk üç dakikası: ilk satın alma 22 saniyede, ilk garson altı dakikada. Gelir kolu bu üç sayıyı <b>her dozda</b> biraz yiyor, çünkü ilk saniyeden itibaren her müşterinin parasını büyütüyor. Taşıma kolu <b>hiçbir dozda</b> dokunmuyor — çünkü oyunun başında masa az, tıkanıklık taşımada değil; çarpan ancak mekân dolunca konuşmaya başlıyor. Yani ödül tam olarak <b>ihtiyaç duyulan yerde</b> devreye giriyor.<br><br><b>İkinci gerekçe ölçülemeyen eksende.</b> Gelir kolu, iki tur önce hedeflere verilen kalıcı gelir çarpanıyla <b>aynı görünmez kanalda</b> birikirdi; o çarpanın &ldquo;oyuncu bunu hissediyor mu&rdquo; sorusu zaten açık bir kalem. Taşıma ödülü ise <b>gözle görülür</b>: garson daha hızlı yürür, tepsi daha sık gider gelir. Kutlama da artık ne kazanıldığını yazıyor: <i>&ldquo;Seviye 7! Servis hızı +%12&rdquo;</i>.<br><br><b>Bedel açıkça ödendi.</b> Seçilen doz ilerleme zincirini <b>%15,5</b> kısaltıyor; projenin kendi eleme eşiği %7 ve bu eşik iki turdur onurlandırılmıştı. Karşılığında beş turdur açık duran bir kalem kapandı: altıncı saatteki en uzun bekleme <b>41,2 dakikadan 33,8'e</b> indi, yirmi dakikayı aşan bekleme sayısı <b>beşten ikiye</b>, hüküm profilinde <b>bire karşı sıfıra</b>. Bunu ölçülmüş biçimde ödeyen başka kol yok. Karar kullanıcıya sayılarla sunuldu ve bilerek verildi — <b>emsal değil, sayısı yazılı bir istisna</b>.<br><br><b>Ve bir kol tur kartında yoktu.</b> Turun başında dört kanal yazılmıştı; tıkanıklık ölçülünce dördünün de <b>gerçek tıkanıklığa dokunmadığı</b> görüldü ve taşıma kolu ölçüm sırasında eklendi. Seçilen kol o oldu. Bir önceki turun dersi ikinci kez doğrulandı: kolları önceden yazmak gerekli ama yeterli değil — ilk sayılar hangi kolun <b>eksik</b> olduğunu da söylüyor.",
+   "maddeler": [
+    "<b>Tıkanıklık taşımada:</b> zamanın %93,0'ü · arz %5,9 · talep %1,1",
+    "<b>Planın kolu atıl:</b> %10/seviye dozunda bile zincir %-0,1, uzun bekleme sayısı sabit",
+    "<b>Kazanç:</b> en uzun bekleme 41,2 → 33,8 dk · ihlal 5 → 2 · hüküm 1 → 0",
+    "<b>Açılış hiç bozulmadı:</b> 22 sn · 1,6 dk · 6,1 dk — üçü de sabit",
+    "<b>Bedel:</b> zincir %-15,5 — %7'lik eşiğin bilerek aşıldığı ilk karar",
+    "<b>Bekçi:</b> 8 test, 8 mutasyon; ilk hâli birini kaçırıyordu, formül testi gerçek kareye çevrildi"
+   ],
+   "not": "<b>Günlük görevler bilerek ertelendi:</b> ödülleri elmas, elmasın harcaması ise henüz yazılmadı. Kaynağı harcamadan önce çivilemek, karşılığı olmayan bir sayıyı denge dosyasına yazmak olurdu — son tura, Usta katmanıyla birlikte bırakıldı."
+  },
   {
    "tarih": "09.09.2026",
    "etiket": "Faz D · 5. oturum (D5 — oyuncunun dünyası · D-091)",
