@@ -1,0 +1,82 @@
+﻿=== D9 — META KATMANIN YIGINI: uc kanat ilk kez AYNI kosuda ===
+
+Model: D-086 yururlukteki model (k1b + k2). economy.config.ts DOSYASI DEGISMEDI —
+uc katman da sim`in KANCALARINA takilir (hedef carpani · itibar · usta).
+
+KATMANLAR:
+  H = hedef koleksiyonunun KALICI gelir carpani   (D-090 · hUYGF)
+  R = Itibar`in TASIMA carpani                     (D-092 · rUYG)
+  E = Usta katmani + gunluk gorev 💎 arzi          (D-093/094 · eUYG)
+  M0  = ucu de KAPALI — D1`in tabani, tum tablonun kiyas noktasi.
+  HRE = ucu de ACIK — **YURURLUKTEKI OYUN**, bugune dek hicbir tabloda yok.
+
+MODEL SINIRI (rapora aynen gecer):
+  1) Her katman kendi turunun MODEL SINIRLARINI beraberinde getirir: H 4/5 kategori
+     modelliyor (alt sinir) · R`nin XP`si turetiliyor ve perDishWashed=0 (alt sinir)
+     · E`nin 12 sa penceresi yarim gun (gunluk arz kucuk kalir) ve odul ANINDA
+     harcanir (ust sinir). Yigin bu sinirlarin BILESIMIDIR, daha dar degil.
+  2) Hedeflerin ₺ AKISI her satirda kapali (D-090`da kalkti).
+  3) HUKUM profili IDEALIZE (D-087); Normal satiri GOZLEM bandidir.
+
+--- §1 KATMAN BILESIMLERI: hukum · gozlem · zincir · acilis ---
+  acilis olcutleri (D-079): ilk alim < 90 sn · acilis enUzun <= 2 dk · otomasyon < 15 dk
+  dSERIT = zincirin M0`a gore uzama/kisalma orani. Eleme esigi %7 (D1); asan satir gerekce ister.
+
+kol | H R E | HUKUM(ideal)   | GOZLEM(normal) | ilk alim | acilis | otom.  | SERIT   | dSERIT | sapma
+-----------------------------------------------------------------------------------------------------
+M0  | · · · |  1 · 23.9 dk   |  6 · 43.4 dk   |    22 sn | 1.6 dk | 6.1 dk | 8.48 sa |  +0.0% |    %8
+H   | H · · |  1 · 22.7 dk   |  5 · 41.2 dk   |    22 sn | 1.6 dk | 6.1 dk | 8.14 sa |  -4.0% |    %8
+R   | · R · |  0 · 19.9 dk   |  3 · 35.5 dk   |    22 sn | 1.6 dk | 6.1 dk | 7.16 sa | -15.6% |    %8
+E   | · · E |  1 · 22.6 dk   |  6 · 41.1 dk   |    22 sn | 1.6 dk | 6.1 dk | 8.34 sa |  -1.7% |    %8
+HR  | H R · |  0 · 19.0 dk   |  2 · 33.8 dk   |    22 sn | 1.6 dk | 6.1 dk | 6.88 sa | -18.9% |    %8
+HE  | H · E |  1 · 21.5 dk   |  5 · 39.0 dk   |    22 sn | 1.6 dk | 6.1 dk | 8.01 sa |  -5.6% |    %8
+RE  | · R E |  0 · 18.9 dk   |  3 · 33.7 dk   |    22 sn | 1.6 dk | 6.1 dk | 7.04 sa | -17.0% |    %8
+HRE | H R E |  0 · 18.0 dk   |  2 · 32.0 dk   |    22 sn | 1.6 dk | 6.1 dk | 6.77 sa | -20.1% |    %8
+
+--- §2 HANGI ALIMLAR 20 dk`yi ASIYOR (Normal gozlem bandi) ---
+  M0   20.5 dk -> pad: z2table4 · 25.0 dk -> pad: zone3 · 20.9 dk -> pad: z3table3 · 24.9 dk -> servis L5 · 43.4 dk -> servis L6 · 23.6 dk -> pad: waiter3
+  H    24.4 dk -> pad: zone3 · 20.2 dk -> pad: z3table3 · 24.0 dk -> servis L5 · 41.2 dk -> servis L6 · 22.4 dk -> pad: waiter3
+  R    21.2 dk -> pad: zone3 · 20.7 dk -> servis L5 · 35.5 dk -> servis L6
+  E    20.5 dk -> pad: z2table4 · 25.0 dk -> pad: zone3 · 20.9 dk -> pad: z3table3 · 24.9 dk -> servis L5 · 41.1 dk -> servis L6 · 22.5 dk -> pad: waiter3
+  HR   20.8 dk -> pad: zone3 · 33.8 dk -> servis L6
+  HE   24.4 dk -> pad: zone3 · 20.2 dk -> pad: z3table3 · 24.0 dk -> servis L5 · 39.0 dk -> servis L6 · 21.4 dk -> pad: waiter3
+  RE   21.2 dk -> pad: zone3 · 20.7 dk -> servis L5 · 33.7 dk -> servis L6
+  HRE  20.8 dk -> pad: zone3 · 32.0 dk -> servis L6
+
+--- §3 HUKUM (Idealize profil, D-087): en uzun bekleme hangi basamakta ---
+  M0    1 asan · en uzun 23.9 dk -> servis L6
+  H     1 asan · en uzun 22.7 dk -> servis L6
+  R     0 asan · en uzun 19.9 dk -> servis L6
+  E     1 asan · en uzun 22.6 dk -> servis L6
+  HR    0 asan · en uzun 19.0 dk -> servis L6
+  HE    1 asan · en uzun 21.5 dk -> servis L6
+  RE    0 asan · en uzun 18.9 dk -> servis L6
+  HRE   0 asan · en uzun 18.0 dk -> servis L6
+
+--- §4 TOPLANABILIRLIK: yigin, parcalarinin toplami mi? ---
+  en uzun bekleme (Normal)
+     M0 43.4 dk · tekil delta H -2.1 dk · R -7.8 dk · E -2.3 dk
+     BEKLENEN (toplanir) 31.1 dk · OLCULEN HRE 32.0 dk · FARK 0.9 dk
+  ihlal sayisi (Normal)
+     M0 6 · tekil delta H -1 · R -3 · E 0
+     BEKLENEN (toplanir) 2 · OLCULEN HRE 2 · FARK 0
+  ihlal sayisi (Idealize · HUKUM)
+     M0 1 · tekil delta H 0 · R -1 · E 0
+     BEKLENEN (toplanir) 0 · OLCULEN HRE 0 · FARK 0
+  SERIT (zincir omru)
+     M0 8.48 sa · tekil delta H -0.34 sa · R -1.32 sa · E -0.14 sa
+     BEKLENEN (toplanir) 6.67 sa · OLCULEN HRE 6.77 sa · FARK 0.10 sa
+
+--- §5 KELEPCE: darbogazin zamandaki dagilimi (Normal profil) ---
+  toplam tick: M0 30527 · HRE 24379
+  kanal      | M0     | HRE    | fark
+  talep      |   %1.1 |   %1.4 |   +0.3%
+  arz        |   %5.9 |   %7.3 |   +1.4%
+  taşıma     |  %93.0 |  %91.3 |   -1.7%
+
+--- §6 USTA ALIMI: E acik satirlarda kac Usta alindi (12 sa, Normal) ---
+  E    alim  5 · kalan  10.5 💎 · korunum sapmasi 0.000000
+  HE   alim  5 · kalan  10.3 💎 · korunum sapmasi 0.000000
+  RE   alim  5 · kalan   9.9 💎 · korunum sapmasi 0.000000
+  HRE  alim  5 · kalan   9.8 💎 · korunum sapmasi 0.000000
+

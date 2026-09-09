@@ -5,45 +5,40 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-09 — **D8 BİTTİ** · **Faz D 8/8 ✅** · 71/79)
+## ŞU AN (2026-09-09 — **D9 açıldı** · Faz D bitti (8/8) · ÖLÇÜM turu · 71/79)
 
 ```
-SORU            : Usta ve günlük görevin MEKANİĞİ ve SAYISI vardı (D-093), ETKİLEŞİMİ yoktu.
-                  Oyuncu 250 💎'ını nasıl harcayacak, günlük 10 💎'ı nasıl kazanacak?  [KAPANDI]
-ÖLÇÜLECEK KOLLAR: YOK — denge sayısı değişmedi, varyant kapısı ürün kararına açılmadı.
-SAYILAR         : gerekmedi · dayanak `docs/elmas-raporu-d7.md` §2, §5 (D7a'nın tam koşusu)
-KARAR           : D-094 — ① Usta noktası = masanın MEVCUT yükseltme noktasının 💎 kimliği
-                  (planın "yaklaşınca panel açılır"ı ELENDİ; onay alt bantta, dwell ile alım yok)
-                  ② günlük görev = havuzdan gün-index'iyle deterministik 3 görev, eşik masaya
-                  ölçekli, ödül TOPLAMDAN türetilir (3+3+4 = 10) ③ `tipMult` ×1,5'te KALDI
-UYGULAMA        : `dailyQuests.ts` (YENİ) · `economy.config.ts` (yalnız görev TANIMLARI) ·
-                  `save.ts` `daily` additive · `store.ts` türetici + `claimDailyQuest` +
-                  `nearMaster` · `Scene.tsx` `TableMasterSpots` · `GroundMarker` `pip='gem'` ·
-                  `HUD.tsx` `MasterBar` + BUGÜN kartları + Usta şeridi · kayıt sürümü ARTMADI (v32)
-BEKÇİ           : tests/gunluk-gorev.test.ts — 22 test, **14 mutasyon, on dördü de yakalandı** ·
-                  vitest 662 · duman **41/41** (32 → 41)
+SORU            : Meta katmanın DÖRT kanadı (hedef çarpanı · İtibar · Usta · günlük görev)
+                  bugüne dek HEP AYRI AYRI ölçüldü — her tur ötekilerin kancasını KAPATTI.
+                  Hepsi aynı anda açıkken, yani YÜRÜRLÜKTEKİ oyunda, D-087'nin 20 dk
+                  penceresi ne? Ve D-092'nin bilerek ödediği %15,5 zincir borcu ne oldu?
+ÖLÇÜLECEK KOLLAR: Yığın ablasyonu — 8 satır, hiçbiri config'e dokunmaz (dördü de KANCA):
+                  M0   dört kanca KAPALI (D1 tabanı — ihlal 6 / 43,4 dk, kıyas noktası)
+                  H    yalnız hedef çarpanı        (hUYGF · D-090)
+                  R    yalnız İtibar taşıma çarpanı (rUYG  · D-092)
+                  E    yalnız Usta + günlük görev   (eUYG  · D-093/094)
+                  HR · HE · RE   ikili birleşimler (kaybın NEREDE olduğunu adresler)
+                  HRE  ÜÇÜ BİRDEN = **yürürlükteki gerçek oyun** — bu satır hiç ölçülmedi
+                  Okunan kolonlar: İdealize ihlal (HÜKÜM) · Normal ihlal (gözlem) · en uzun
+                  bekleme · ŞERİT (zincir borcu) · açılışın üç ölçütü (D-079) · sapma
+SAYILAR         : (adım 2'den sonra dolar → docs/meta-pencere-raporu-d9.md §Bulgular)
+KARAR           : (adım 3 — kullanıcı seçer)
+UYGULAMA        : (adım 4 — yalnız kararın kolu; bu tur ÖLÇÜM turudur, kol açılırsa açılır)
+BEKÇİ           : (adım 4)
 ```
 
-**Turun asıl dersi — BEKÇİ, KODDAN ÖNCE YAZILSAYDI BULUNAMAYACAK BİR HATA BULDU.** Gün dönümünün
-sayaç tabanı çevrimdışı gelirden ÖNCE alınıyordu: gece kazanılan ₺ sabah açılışta o günün "kazan"
-görevini bedavaya dolduruyor, yani D7a'da ÖLÇÜLEN 10 💎/gün arzı sessizce büyüyordu. Testin
-yazıldığı sıra doğruydu (kod → bekçi), ama yakalayan şey testin *iddiası* oldu: "hiçbir görev
-açılışta kendiliğinden toplanabilir olmamalı". Ölçülen sayıyı koruyan bekçiler, kodun ne yaptığını
-değil **sayının ne kadar olması gerektiğini** yazmalı.
+**Turun gerekçesi tek cümle:** D-090 Bulgu 10 "uygulanan hâl knob'ların toplamı çıkmadı"
+dedi, D-093 aynı şeyi ÜÇÜNCÜ kez tekrarladı (`eUYG` %-1,6 · tek-knob satırları %-3,0).
+Aynı hata bir kat yukarıda da duruyor olabilir: **katmanların toplamı da katmanların
+toplamı olmayabilir.** Bu tur onu kapatır — beş turdur açık duran D-087 kalemi de burada.
 
-**İkinci ders — araç iki kez aynı yerden kırıldı ve sebebi dosyada değildi.** `npm run pano` CRLF
-görünce "JSON bloğu bulunamadı" dedi. Bir önceki sefer dosya elle LF'e çevrilerek geçilmişti; bu
-sefer görüldü ki depoda `core.autocrlf=true` açık, yani **her `git checkout` tuzağı yeniden
-kuruyor**. Düzeltme dosyada değil araçta: okuma da yazma da satır sonundan bağımsız
-(`tests/pano-guncelle.test.ts` CRLF koluyla kilitli).
 
 ## SIRADAKİ TAM ADIM
 
-**Faz D BİTTİ (8/8).** Sıradaki iş, beş turdur açık duran ölçüm: **D-087'nin tempo penceresinin
-yeniden okunması** — meta katman (Hedefler · çarpan · İtibar · Usta · günlük görev) 20 dk
-ihlallerini doldurdu mu? Araç hazır (`tools/olcum-gec-oyun.ts` + `tools/denge-kollari.ts`), tek
-tam koşu yeter. Aynı koşu D-092'nin borcunu da tartar (zincirden bilerek alınan %15,5).
-Ardından **Faz E** (1/4): ses · hareketli onboarding · duman testinin `package.json`'a bağlanması.
+**Adım 2 — ÖLÇ.** `tools/olcum-meta-penceresi.ts` (YENİ): dört kancayı aynı koşuda açıp
+kapatan ablasyon; kısa koşu ile araç doğrulanır (her kol izi kımıldattı mı, korunum 0 mı),
+sonra `OLCUM=tam` TABAN + 8 satır → `docs/meta-pencere-raporu-d9.md` §Bulgular →
+**commit #1 (KARAR BÖLÜMÜ BOŞ)**. Ardından adım 3: tek karar paketi.
 
 ## AÇIK KALEMLER (bilinen, bilerek duruyor)
 
@@ -59,7 +54,7 @@ Ardından **Faz E** (1/4): ses · hareketli onboarding · duman testinin `packag
 - **Zincirin %7 eleme eşiği D-092'de BİLEREK aşıldı** (%-15,5) — emsal DEĞİL, sayısı yazılı
   istisna. **Kat 1 içeriği %15,5 hızlı tükeniyor**; Faz F öncesi yeniden okunmalı. D7a'nın
   Usta kolu aynı zincire dokunuyor: eleme eşiği bu turda yine %7 kabul edilir.
-- **D-087'nin tempo penceresi ARTIK OKUNABİLİR** — Faz D bitti, araç hazır. **Sıradaki iş bu.**
+- **D-087'nin tempo penceresi BU TURDA ÖLÇÜLÜYOR** (D9) — sonuç §Bulgular'a düşecek.
 - **Masa parasının payı 0,34 br** (D5 Bulgu 5) — yapısal: masa ayak izi büyürse ya da
   `money.pickupRadius` küçülürse ilk kırılacak yer burası.
 - **Bekçi bandının çözünürlüğü** — `tests/hedefler.test.ts`'in zincir-bedeli bandı %3-5.
@@ -85,7 +80,7 @@ Ardından **Faz E** (1/4): ses · hareketli onboarding · duman testinin `packag
 - C4'ten kalan ölçüm kusuru: B1 · oyuncu kipinde bot hiç yürümüyor — sebebi D5'te bulundu
   (B1'de hiç servis yok → kirli bardak doğmuyor → bot boşta). Botun kendi turuna yazıldı.
 
-**Bekleyen denge kararı:** yok. Sıradaki tur ÖLÇÜM turudur (D-087 penceresi) — kolları o tur açar.
+**Bekleyen denge kararı:** yok — bu tur ÖLÇÜM turu; kol açılacaksa karar paketinden çıkar.
 
 ---
 
