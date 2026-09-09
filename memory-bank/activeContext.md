@@ -5,42 +5,50 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-09 — **E3 BİTTİ** · Faz E 3/5 · 74/81)
+## ŞU AN (2026-09-09 — **E4 ÖLÇÜM BİTTİ, KARAR BEKLİYOR** · Faz E 3/5 · 74/81)
 
 ```
-SORU            : `settings.sound` v17'den beri KAYITTA duruyor ama hiçbir şeye bağlı değil;
-                  ses kodu da dosyası da yok. Motor nereye kurulacak?  [KAPANDI]
-ÖLÇÜLECEK KOLLAR: YOK — denge dosyasına dokunulmadı, varyant kapısı devrede değil.
-SAYILAR         : gerekmedi (ses bir denge kolu değil) · vitest 734 · duman 41/41
-KARAR           : kullanıcı E3'ü ikiye böldü — SİSTEM bu tur (E3), DOSYALAR kendi turunda (E4).
-                  Mimarî karar bende kaldı ve gerekçesi `audio.ts` başında yazılı:
-                  **ses `tick.ts`'e DOKUNMAZ**, olaylar durumun FARKINDAN türetilir.
-UYGULAMA        : `src/game/audio.ts` (saf çekirdek + katalog) · `audioWeb.ts` (WebAudio arka uç)
-                  · `audioBridge.ts` (store aboneliği) · `App.tsx` bağlantısı ·
-                  `public/assets/README.md` manifesti yeniden yazıldı
-BEKÇİ           : tests/ses.test.ts — 29 test, **16 mutasyon, on altısı da yakalandı**
+SORU            : E4 "hangi CC0 kaynaktan ses dosyası" turu olarak açıldı. Ama o sorunun ÖNÜNDE
+                  duran soru sınanmamıştı: motor dosya yokken sentez tonuna düşüyor, yani
+                  "dosya HİÇ gelmesin, sentez NİHAİ olsun" gerçek bir kol (D-013'ün sesteki
+                  karşılığı). E3'ün "kulaktan ayırt edilebilir" iddiası doğru mu?
+ÖLÇÜLECEK KOLLAR: kol değil ÖLÇÜM — 9 sesin 36 çifti, iki kanalda (MUTLAK perde + JEST perde-siz)
+                  + süre JND'si. Kaynak kolları (sentez / CC0 dosya / hibrit) karar paketinde.
+SAYILAR         : KARIŞIR 0/36 · AYNI JEST 1/36 (quest<->reward) · AYRI 35/36 · yükselen arpej 7/9
+                  · mutlak taban 1,39 dB · jest tabanı 0,22 dB · docs/ses-raporu-e4.md §Bulgular
+KARAR           : (BOŞ — karar paketi kullanıcıya sunuldu, bekliyor)
+UYGULAMA        : (karardan sonra)
+BEKÇİ           : (karardan sonra)
 ```
 
-**Üç kelepçe, üçü de gerçek bir kusuru kapatıyor:** ① AYAR — kapalıyken tek ses çalınmaz
-(bağlantının kendisi bu turun asıl işi) ② KİLİT — mobil tarayıcı dokunmadan ses çalmaz;
-kilitliyken düşen çağrılar **kuyruğa alınmaz** (birikip sonra hep birden patlamasın) ③ ARALIK —
-aynı ses `aralik`tan sık çalınmaz; mıknatıs bir karede birden çok para topluyor, kelepçe olmasa
-tek turda 40 ses üst üste binerdi (Tek Odak'ın D-080 ses karşılığı).
+**Ölçüm iddiayı DOĞRULADI, tek istisnayla.** Sentez tonları yer tutucu gibi davranmıyor; katalog
+gerçekten ayrışmış (35/36). Tek gerçek kusur `quest` ↔ `reward`: ikisi de triangle, iki nota,
+**aynı +5 yarım ses aralığı**, süre farkı 0,6 JND — aynı jestin transpozesi. Jest mesafesi
+0,13 dB, jest tabanının (0,22) ALTINDA. Bulgu metriğe bağlı değil: metrikten bağımsız yapısal
+denetim de tek başına aynı çifti buluyor.
 
-**Dosya yoksa SENTEZ TONU** — `Model.tsx` fallback loader deseninin sesteki karşılığı. `.ogg`
-gelmeden de oyun **tam sesli** oynanıyor; E4 yalnız `public/assets/audio/`'a dosya bırakacak,
-tek satır kod değişmeyecek.
+**İkinci kanal ölçümün kendisinden doğdu.** Tek kanalla sonuç 36/36 "AYRI" çıkıyordu; metrik
+yanlış değil, SORULAN SORU eksikti — oyunda sesler art arda değil dakikalarca arayla duyulur,
+o zaman mutlak perde değil JEST kalır.
 
-**Manifest yeniden yazıldı ve bir varsayım silindi:** kaynak/lisans kolonlarında "Kenney / CC0"
-ve "Freesound / CC0 doğrula" yazıyordu — ikisi de **seçilmiş değil VARSAYILMIŞ** kaynaklardı.
-Kolonlar bilerek `?` yapıldı; seçim E4'ün işi.
+**Kapasite sınırı (kusur değil):** tek osilatörlü motor yalnız nota dizisi üretebiliyor; 9 sesin
+7'si yükselen arpej. Gürültü bileşeni (şıngırtı, fokurdama, tıkırtı) bugün ÜRETİLEMEZ — kataloğun
+ölçüme girmeyen iki sesi (`ambience_loop`, `okey_tile`) tam oraya düşüyor. Ayrıca `ambience`ın
+bağlanacağı **`settings.music` kayıtta duruyor ama hiçbir şeye bağlı değil** — `settings.sound`un
+E3'ten önceki hâli. Yani ortam sesi önce bir DOSYA değil, bir KABLO sorunu.
 
 ## SIRADAKİ TAM ADIM
 
-**Faz E 4/5 — SES DOSYALARI (tur adı E3b).** Teknik iş yok, **kaynak + lisans kararı** var:
-tek stil kilidi (`docs/assets.md`) seslerde henüz kurulmadı ve "belirsiz lisanslı hiçbir asset
-commit'lenmez" bağlayıcı. Motor hazır, katalog 9 olay + 2 olay-dışı (ortam · okey) sayıyor;
-karar verilince iş bir klasör bırakmaktan ibaret. Ardından **E5 — hareketli onboarding**.
+**Karar paketi bekliyor** (oturum akışı adım 3). Kollar: ① sentez nihai + tek kusuru düzelt
+② CC0 dosya seti ③ hibrit (olay sesleri sentez, gürültü sesleri dosya). Karar gelince commit #2:
+seçilen kol + bekçi + en az 2 mutasyon. Ardından **E5 — hareketli onboarding**.
+
+**Yan iş (bu turda yapıldı, denge dışı):** APK derlemesi iki makine arasında kırıktı —
+`android/gradle.properties` diğer makinenin Android Studio JBR yolunu mutlak yazıyordu ve bu
+makinede o yol yok. Mutlak yol committed dosyadan çıkarıldı, makineye özel JDK seçimi
+`~/.gradle/gradle.properties`e (git'te değil) taşındı. Ayrıca Capacitor 8 **JDK 21** istiyor
+(JDK 17 "invalid source release: 21" veriyor); bu makineye Temurin 21 kuruldu. Debug APK çıktı:
+7,3 MB, kullanıcıya gönderildi.
 
 ## AÇIK KALEMLER (bilinen, bilerek duruyor)
 

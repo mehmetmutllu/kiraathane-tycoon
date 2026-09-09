@@ -1,0 +1,73 @@
+==============================================================================
+SES AYIRT EDILEBILIRLIGI — sentez tonlarinin olcumu (Faz E · E4)
+ANALITIK ARAC · kosu kipi yok · deterministik · kaynak: src/game/audio.ts SES_KATALOG
+==============================================================================
+
+§1 KATALOG
+id        dalga     nota  sure(sn)  gain   aralik(sn)  frekanslar        oruntu(yariton)
+coin      triangle  2     0.09      0.18   0.06        880-1320          +7
+pour      sine      1     0.14      0.14   0.15        420               —
+serve     sine      2     0.11      0.14   0.12        660-520           -4
+purchase  square    2     0.20      0.12   0.20        520-780           +7
+padFill   triangle  3     0.30      0.16   0.30        440-660-880       +7,+5
+quest     triangle  2     0.26      0.16   0.30        660-880           +5
+level     triangle  4     0.42      0.17   0.40        523-659-784-1047  +4,+3,+5
+master    sine      3     0.36      0.17   0.30        784-1047-1319     +5,+4
+reward    triangle  2     0.24      0.16   0.25        988-1319          +5
+
+§2 KALIBRASYON (iki kanal, iki taban)
+MUTLAK TABAN (ayni ses, 1 yarim ses tiz)    = 1.39 dB
+JEST TABAN   (ayni jest, araligi 1 yariton) = 0.22 dB
+  -> Bir cift kendi kanalinin tabaninin ALTINDAYSA, o kanalda AYRI SES SAYILAMAZ.
+  Mutlak taban / ses: coin 2.0 · pour 0.9 · serve 0.9 · purchase 1.7 · padFill 1.7 · quest 1.9 · level 1.4 · master 0.7 · reward 1.3
+  Jest taban / ses  : coin 0.3 · serve 0.3 · purchase 0.4 · padFill 0.0 · quest 0.3 · level 0.0 · master 0.1 · reward 0.3
+
+§3 CIFTLER (36 · JEST mesafesine gore artan)
+cift                    mutlak(dB) jest(dB)  sure(JND)  hukum      jest/taban
+quest <-> reward           5.98     0.13      0.6     AYNI JEST  x0.59
+pour <-> serve             4.93     1.36      1.7     AYRI       x6.14
+padFill <-> level          4.04     1.92      2.4     AYRI       x8.64
+padFill <-> quest          4.85     2.08      1.0     AYRI       x9.37
+padFill <-> reward         7.29     2.15      1.6     AYRI       x9.69
+quest <-> level            3.53     2.37      3.4     AYRI       x10.66
+pour <-> master            5.91     2.41      6.8     AYRI       x10.87
+level <-> reward           7.36     2.44      4.0     AYRI       x10.98
+coin <-> reward            3.78     2.88      7.0     AYRI       x12.98
+padFill <-> master         6.54     2.89      1.3     AYRI       x12.99
+level <-> master           6.06     2.96      1.1     AYRI       x13.31
+coin <-> quest             5.89     2.98      7.6     AYRI       x13.39
+serve <-> master           4.02     3.20      8.5     AYRI       x14.39
+quest <-> master           5.05     3.30      2.3     AYRI       x14.87
+master <-> reward          4.05     3.39      2.9     AYRI       x15.26
+pour <-> reward            8.10     3.46      3.9     AYRI       x15.56
+pour <-> quest             7.49     3.50      4.4     AYRI       x15.75
+coin <-> padFill           7.64     4.05      8.6     AYRI       x18.21
+serve <-> reward           7.22     4.24      5.6     AYRI       x19.10
+serve <-> quest            4.14     4.27      6.2     AYRI       x19.20
+coin <-> level             6.46     4.36     11.0     AYRI       x19.63
+pour <-> level             6.37     4.49      7.9     AYRI       x20.20
+coin <-> serve             6.71     4.71      1.4     AYRI       x21.18
+pour <-> padFill           5.34     4.72      5.5     AYRI       x21.22
+coin <-> pour              8.49     4.92      3.2     AYRI       x22.13
+serve <-> level            4.87     5.20      9.6     AYRI       x23.42
+purchase <-> reward       10.83     5.23      1.3     AYRI       x23.54
+purchase <-> quest         8.38     5.31      1.9     AYRI       x23.91
+coin <-> purchase          8.58     5.34      5.7     AYRI       x24.02
+serve <-> padFill          5.84     5.44      7.2     AYRI       x24.49
+coin <-> master            4.73     5.60      9.9     AYRI       x25.22
+purchase <-> padFill       8.51     6.46      2.9     AYRI       x29.06
+purchase <-> level         6.34     6.84      5.3     AYRI       x30.76
+pour <-> purchase          9.58     8.16      2.6     AYRI       x36.70
+purchase <-> master       10.98     8.17      4.2     AYRI       x36.74
+serve <-> purchase         9.51     8.81      4.3     AYRI       x39.66
+
+§4 OZET
+KARISIR   : 0/36  —
+AYNI JEST : 1/36  quest<->reward
+AYRI      : 35/36
+
+§5 YAPISAL SAYILAR (metrikten bagimsiz)
+Dalga dagilimi: triangle 5 · sine 3 · square 1
+Yukselen arpej (cok notali, hep tizlesen): 7/9 — coin · purchase · padFill · quest · level · master · reward
+Yukselen OLMAYAN: 2/9 — pour · serve
+Ayni dalga + ayni aralik oruntusu: 1 grup — quest/reward (triangle|5)
