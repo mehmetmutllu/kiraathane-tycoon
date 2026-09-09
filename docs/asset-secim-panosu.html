@@ -238,8 +238,8 @@
   <div class="tally">
     <div><b>238</b><span>KayKit modeli repoda, CC0, indirilmiş</span></div>
     <div class="hot"><b>185</b><span>bunun hiç kullanılmayanı — <code>src/</code>'de 0 referans</span></div>
-    <div><b>4</b><span>koda bağlı KayKit modeli (masa + sandalye)</span></div>
-    <div><b>0</b><span>karakter asseti — tek gerçek boşluk</span></div>
+    <div><b>2</b><span>ses kalemi: ortam uğultusu + gerçekçi para</span></div>
+    <div><b>2</b><span>karar bekleyen: karakter kolu · ses kaynağı</span></div>
   </div>
 
   <section>
@@ -501,6 +501,84 @@
     </ul>
     <p class="sub" style="margin-top:14px">Yine de istersen tek tek bakarız; sadece varsayılan yol
       olmasın diye ayırdım.</p>
+  </section>
+
+  <section>
+    <h2><span class="num">§7</span>Ses assetleri — bu bir karar dönüşü, öyle işaretleyelim</h2>
+    <p class="sub">İstediğin iki şey net: <b>ortam uğultusu</b> (kıraathane kalabalığı) ve
+      <b>daha gerçekçi para sesi</b>. İkisi de yapılabilir, ama şunu açıkça söylemem gerek:</p>
+
+    <div class="note">
+      <b>Bu karar D-096'yı kısmen geri alır.</b> Beş tur önce sesler ölçüldü ve
+      <i>"kaynak dosya değil KOD"</i> seçildi: sentez nihai, <code>public/assets/audio/</code>
+      bilerek boş, <b>doğrulanacak lisans sıfır</b>. Motor dosya üstüne yazmayı zaten destekliyor
+      (<code>Model.tsx</code> fallback deseninin tersi) — yani <b>kablo hazır</b>, dosya bırakmak
+      tek satır kod değiştirmez. Açılan tek şey <b>lisans yüzeyi</b> ve seslerdeki
+      <b>tek-stil kilidi</b>. Senin kararın; ben sadece bedelini yazıyorum.
+    </div>
+
+    <h3>Ortam uğultusu — burada bir tuzak var</h3>
+    <p class="sub" style="margin-bottom:14px">Hazır "cafe ambience" kayıtlarının çoğunda
+      <b>anlaşılır İngilizce/İtalyanca konuşma</b> var. Bir Türk kıraathanesinde bu anında
+      yabancı duyulur — üstelik döngü kısa olduğu için aynı cümle dakikada bir tekrar eder.
+      Aranması gereken şey <b>"walla"</b>: kelimesi seçilmeyen kalabalık mırıltısı.</p>
+
+    <div class="grid">
+      <button class="pick" type="button" data-pick="SES A — Kenney Audio paketleri (CC0, künye gerekmez): Casino Audio (para) + Interface/UI + Impact">
+        <span class="top"><span class="nm"><span class="mark"></span>A · Kenney Audio</span><span class="pr">ücretsiz · CC0</span></span>
+        <p>On paket: <b>Casino Audio</b> (madeni para düşmesi, jeton, çekmece), Interface Sounds, UI Audio, Impact Sounds, RPG Audio, Music Jingles.</p>
+        <div class="solves"><b>NEDEN İLK SIRADA</b>Tek sanatçı → seslerde stil kilidi korunur. CC0, künye gerekmez, indirme formu yok. <b>Not:</b> Kenney'i 3D'de "tam 3D değil" diye reddetmiştin — o gerekçe seste geçerli değil.</div>
+        <div class="lnk"><a href="https://kenney.nl/assets/category:Audio" target="_blank" rel="noopener">kenney.nl/assets/category:Audio →</a></div>
+      </button>
+
+      <button class="pick" type="button" data-pick="SES B — Freesound CC0 süzgeci: walla (kelimesiz kalabalık) + para; ses ses lisans doğrulanır">
+        <span class="top"><span class="nm"><span class="mark"></span>B · Freesound (CC0 süzgeci)</span><span class="pr">ücretsiz · CC0</span></span>
+        <p>En geniş havuz. <b>Lisans süzgecini CC0'a almadan arama yapma</b> — varsayılan sonuçlar CC-BY içerir.</p>
+        <div class="solves"><b>NEYİ ÇÖZER</b>Ortam uğultusu buradan çıkar. Aranacak kelime <b>"walla"</b> ya da <b>"crowd murmur"</b> — "cafe ambience" değil (konuşma anlaşılıyor).</div>
+        <div class="lnk"><a href="https://freesound.org/browse/tags/cc0/" target="_blank" rel="noopener">freesound.org CC0 →</a> · <a href="https://freesound.org/people/SoundDesignForYou/packs/35937/" target="_blank" rel="noopener">Coin Pick Up paketi</a></div>
+      </button>
+
+      <button class="pick" type="button" data-pick="SES C — OpenGameArt CC0 süzgeci (oyun için toplanmış, döngüye hazır)">
+        <span class="top"><span class="nm"><span class="mark"></span>C · OpenGameArt (CC0)</span><span class="pr">ücretsiz · CC0</span></span>
+        <p>Oyun için toplanmış, çoğu döngüye hazır. Lisans süzgeci sitede var ve güvenilir.</p>
+        <div class="solves"><b>NEYİ ÇÖZER</b>Ortam + müzik. B'ye göre daha az seçenek ama daha az ayıklama işi.</div>
+        <div class="lnk"><a href="https://opengameart.org/" target="_blank" rel="noopener">opengameart.org →</a></div>
+      </button>
+
+      <button class="pick" type="button" data-pick="SES D — motoru büyütmeye devam: uğultu SENTEZLENSIN, dosya alınmasın (D-096 korunur)">
+        <span class="top"><span class="nm"><span class="mark"></span>D · Sentez sürsün</span><span class="pr">ücretsiz · lisans yok</span></span>
+        <p>Motorun gürültü kaynağı + bant süzgeci uğultu üretebilir; para sesi de metalik kısmilerle zenginleştirilebilir.</p>
+        <div class="solves"><b>BEDEL</b>"Gerçekçi" istiyorsan sentez bir yere kadar gider — kalabalık mırıltısı sentezle inandırıcı olmaz. Buna karşılık <b>lisans yüzeyi sıfır kalır</b> ve stil kilidi hiç açılmaz.</div>
+        <div class="lnk" style="color:var(--faint)">Karar defteri: D-096 · <code>docs/assets.md</code> §7</div>
+      </button>
+    </div>
+
+    <div class="note" style="border-left-color:var(--cini)">
+      <b>Önerim: A + B karışımı, ama sırayla.</b> Önce <b>Kenney Casino Audio</b>'dan para sesi
+      (tek sanatçı, künyesiz, hemen indirilir) → sonra <b>Freesound CC0</b>'dan tek bir walla
+      döngüsü. Ortam sesi ayrıca <code>settings.music</code> anahtarını da bağlar — o anahtar
+      kayıtta duruyor ama bugün <b>hiçbir şeye bağlı değil</b>.
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">§8</span>Lavabo kabin kapıları — bu da diskte</h2>
+    <p class="sub">"Lavabodaki kapılar kötü" dedin, haklısın: bugün kabin kapısı düz bir kutu —
+      <code>boxGeometry(1,36 × 1,95 × 0,06)</code>, tek renk kahve, kol yok, çerçeve yok.</p>
+    <div class="scroller">
+      <table>
+        <thead><tr><th>Parça</th><th>Bugün</th><th>Karşılığı</th></tr></thead>
+        <tbody>
+          <tr><td>Kabin kapısı</td><td class="f">düz kutu, tek renk</td><td class="f">door_A · door_B <span class="pkg">R</span></td></tr>
+          <tr><td>Kapı boşluğu / söve</td><td class="f">iki duvar + lento kutusu</td><td class="f">wall_doorway <span class="pkg">R</span></td></tr>
+          <tr><td>Kabin bölmesi</td><td class="f">0,06 kalınlığında kutu</td><td class="f">wall_half · pillar_A · pillar_B <span class="pkg">R</span></td></tr>
+          <tr><td>Lavabo</td><td class="f">elle çizim</td><td class="f">kitchencounter_sink · kitchentable_sink <span class="pkg">R</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="sub" style="margin-top:12px"><b>Dördü de <code>kaykit-restaurant-bits</code>'te,
+      indirilmiş, CC0.</b> Yani bu bir satın alma değil — <b>S7 entegrasyon kalemi</b>.
+      Panoda seçilecek bir şey yok.</p>
   </section>
 
   <div class="summary" id="summary">

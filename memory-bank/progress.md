@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 88 · YAPILAN 77 · %88):**
+**Oturum bütçesi (TOPLAM 91 · YAPILAN 77 · %85):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -24,9 +24,9 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
 | | D meta katman | 9/9 ✅ |
 | | E arayüz ve cila | 4/5 🔧 |
-| | **S sanat ve arayüz geçişi** | **2/7 🔧** |
+| | **S sanat ve arayüz geçişi** | **2/10 🔧** |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **49/60** |
+| **Program toplam** | | **49/63** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -37,7 +37,7 @@ oyuncu çarpışması bilinen-hata listesinden çıkıp kendi turu oldu (D5) →
 toplam 78 → 79. **Aynı gün:** meta katmanın yığını beş turdur açık duran D-087 ölçümü olarak
 kendi turunu aldı (D9) → Faz D 8 → 9, toplam 79 → 80. **Aynı gün:** E3 (ses) kullanıcı
 kararıyla SİSTEM (E3) ve DOSYALAR (E4) olarak ikiye bölündü, onboarding E5 oldu → Faz E 4 → 5,
-toplam 80 → 81. **2026-09-09 (ikinci oturum):** kullanıcı oynadı, 25 kalemlik geri bildirim verdi (`docs/geribildirim-oyun-testi-2026-09-09.md`); sanat/arayüz işi **Faz S** olarak açıldı (6 kalem, `docs/plan-faz-s-sanat.md`) → toplam 81 → 87. Faz adı S, çünkü defterde zaten bir Faz G (görsel taban) var; `G-0x` numaraları geri bildirimin, fazın kalemleri `S1…S6`. **Aynı gün:** kullanıcı S1'i oynadı ve dokuz kalem daha verdi (G-26…G-34); pad/modal düzeltmeleri **S2** olarak kendi kalemini aldı → Faz S 6 → 7, toplam 87 → 88. **E4 kapsamı ölçümle değişti ama kalem sayısı değişmedi:** tur "dosya bırak"
+toplam 80 → 81. **2026-09-09 (ikinci oturum):** kullanıcı oynadı, 25 kalemlik geri bildirim verdi (`docs/geribildirim-oyun-testi-2026-09-09.md`); sanat/arayüz işi **Faz S** olarak açıldı (6 kalem, `docs/plan-faz-s-sanat.md`) → toplam 81 → 87. Faz adı S, çünkü defterde zaten bir Faz G (görsel taban) var; `G-0x` numaraları geri bildirimin, fazın kalemleri `S1…S6`. **Aynı gün:** kullanıcı S1'i oynadı ve dokuz kalem daha verdi (G-26…G-34); pad/modal düzeltmeleri **S2** olarak kendi kalemini aldı → Faz S 6 → 7, toplam 87 → 88. **Aynı gün, üçüncü tur:** kullanıcı lavabo kabin kapılarını ve ses assetlerini (ortam uğultusu + gerçekçi para sesi) istedi, ikisi de ayrı kalem oldu; UI araştırması da kendi kalemine ayrıldı → Faz S 7 → 10, toplam 88 → 91. **E4 kapsamı ölçümle değişti ama kalem sayısı değişmedi:** tur "dosya bırak"
 olarak açılmıştı, ölçüm "dosya alma, motoru büyüt" dedi (D-096); ortam sesi + `settings.music`
 kablosu E4'ün dışında kaldı ve **henüz kendi kalemi olmadı** — açık kalemler listesinde duruyor.
 
@@ -242,7 +242,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   değil; kendi turunu ister.
 - ⏳ **E5 — hareketli onboarding**
 
-## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (2/7) 🔧 — kullanıcı geri bildirimi 2026-09-09
+## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (2/10) 🔧 — kullanıcı geri bildirimi 2026-09-09
 - ✅ **S1 — pad ve yükseltme dili yeniden yazıldı** · çember → **köşe parantezli kare** (kenar
   ortaları boş), dolum büyüyen disk → **alttan üste dolan kare**, "Masa"/"Çay Yükselt"/"Usta"
   → hepsinde **YÜKSELT** + solunda düz yukarı ok, yazı 700 → 800, 💎 pulu "mavi kare" → gerçek
@@ -276,13 +276,35 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   çarpışma katılarında **52 açıklık eşiğin altında** (en darı **0,04 br**). Yani "yürüyemiyorum"
   bir his değil geometri. Düzeltme `layout.ts` ve **onaylı maket düzenine** dokunuyor →
   iki kol sayılarıyla yazıldı, **kullanıcı kararı bekliyor** (`docs/geribildirim-oyun-testi-2026-09-09.md`).
-- ⏳ **S3 — mutfak bloğu KayKit'e geçer** (restaurant-bits, elde)
-- ⏳ **S4 — duvar + zemin** (restaurant-bits, elde)
-- ⏳ **S5 — dekor takası** (furniture + city, elde)
-- ⏳ **S6 — dış cephe + pencere + tente** (city-builder + maket-v13)
-- ⏳ **S7 — yeni ücretsiz paketler + UI tasarım dili araştırması** — okey/tavla, çiçek, süs.
-  **İndirme engeli KALKTI:** Bash'in ağı yok ama **PowerShell'in var**; `tools/indir-itch.ps1`
-  itch akışının 3/4 adımını çalıştırıyor (dosya listesi geliyor), son adım 404 — kendi turunu ister.
+- ⏳ **S3 — mutfak bloğu KayKit'e geçer** — `kitchencounter_*` · `kitchencounter_sink` ·
+  `stove_multi` · `oven` · `extractorhood` · `fridge_A` · `kitchencabinet*` · `dishrack_plates` ·
+  `crate*` yerine geçer: `MaketCounter` · `MaketSink` · `MaketDishSink` · `MaketCezveStation` ·
+  `MaketWaterRack` · `MaketCrates`. *(restaurant-bits, diskte)*
+- ⏳ **S4 — duvar + zemin** — `wall` / `wall_half` / `wall_decorated` / `wall_doorway` /
+  `pillar_A·B` · `floor_kitchen`; kıraathane rengi `recolor.ts` atlas kopyasıyla. *(diskte)*
+- ⏳ **S5 — dekor takası** — elle çizilen 17 parçanın 8'i: `trash_A/B` · `lamp_standing` ·
+  `lamp_table` · `rug_*` · `pictureframe_*` · `cabinet_*` · `cactus_*`. Kalan 6'sı elde yok,
+  elle kalır (askılık · duvar saati · aplik · askı rayı · şemsiyelik · petek). *(diskte)*
+- ⏳ **S6 — dış cephe + pencere + tente** — `building_A…H` · yollar · `streetlight` · `bench` ·
+  `bush` · `car_taxi`; pencere `wall_window_open` (kullanıcının "pencere duvardan ayrı duruyor"
+  şikâyetinin doğrudan karşılığı); **tente maket-v13'ten** (`box(6.4, 0.18, 1.9, 0x2e6b4f)`,
+  x-rot 0,18, kapının üstünde). *(city-builder diskte + maket)*
+- ⏳ **S7 — lavabo / WC odası** — kabin kapıları bugün düz kutu (`boxGeometry 1,36×1,95×0,06`,
+  tek renk kahve) ve kullanıcı "kötü" dedi. Karşılığı diskte: `door_A` · `door_B` ·
+  `wall_doorway` · bölme için `wall_half` + `pillar_A/B`; lavabo `kitchencounter_sink`.
+  *(restaurant-bits, diskte)*
+- ⏳ **S8 — SES ASSETLERİ (D-096'nın kapsam sınırı açılıyor)** — kullanıcı ortam uğultusu
+  ("kalabalık sesi") ve **daha gerçekçi para sesi** istedi. **Bu karar D-096'yı kısmen geri
+  alır:** sentez "nihai" seçilmişti ve `public/assets/audio/` bilerek boştu (lisans yüzeyi sıfır).
+  Motor dosya üstüne yazmayı zaten destekliyor (`Model.tsx` deseninin tersi) — yani kablo hazır,
+  açılan tek şey **lisans yüzeyi ve tek-stil kilidi**. Ayrıca `settings.music` hâlâ hiçbir şeye
+  bağlı değil; ortam sesi o kabloyu da kapatır. Aday kaynaklar asset panosunda.
+- ⏳ **S9 — UI tasarım dili** — kullanıcı: *"hâlâ genel olarak UI çok kötü"*. Piyasa tycoon'larının
+  HUD/modal dili + ücretsiz UI kit araştırması → **maket → onay → kod**. Mavi palet (G-16),
+  ekran modeli (G-17, Subway Surfers referansı) ve pad'in son hâli (G-10) bu turda sorulur.
+- ⏳ **S10 — yeni ücretsiz KayKit paketleri** — Board Game Bits (okey/tavla) · Forest Nature
+  (çiçek) · Holiday · Resource · Prototype · Block. **İndirme engeli KALKTI:** Bash'in ağı yok
+  ama PowerShell'in var; `tools/indir-itch.ps1` itch akışının 3/4 adımını yapıyor, son adım 404.
 
 ## Bilinen açık kalemler
 - ~~Hedeflerin ₺ kolu bu hâliyle kalsın mı?~~ → **D3b'de kapandı (D-090):** ₺ kolu tamamen kalktı,
