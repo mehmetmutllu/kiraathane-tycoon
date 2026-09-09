@@ -5,7 +5,7 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-09 — **S1 BİTTİ** · Faz S 1/6 · 76/87)
+## ŞU AN (2026-09-09 — **S2 BİTTİ** · Faz S 2/7 · 77/88)
 
 ```
 SORU            : Kullanıcı oynadı ve 25 kalemlik geri bildirim verdi (G-01…G-25,
@@ -19,12 +19,16 @@ SAYILAR         : İddia SAYIYLA doğrulandı — 238 KayKit modeli repoda, `gre
 KARAR           : Kullanıcı "ücretsiz olduğu sürece her asseti çek ve yap" dedi → **Faz S açıldı**
                   (6 kalem, docs/plan-faz-s-sanat.md). İki eski karar kullanıcı isteğiyle DÖNDÜ:
                   D-094'ün Usta ŞERİDİ → MODAL (G-14) · görev toast'ı → KALKTI (G-04).
-UYGULAMA        : S1 · GroundMarker.tsx yeniden yazıldı (çember → köşe parantezli kare, dolum
-                  alttan üste, YÜKSELT + düz ok, yazı 800, 💎 gerçek taş silüeti) · Scene.tsx üç
-                  çağrı yeri · HUD.tsx MasterBar → MasterModal (kapatılabilir) + toast filtresi +
-                  bandın "TAMAMLANDI" hâli · hud.css
-BEKÇİ           : vitest 770 · duman 41/41 · tarayıcıda GÖZLE doğrulandı (3D test edilemez).
-                  Yan iş: tools/pano-guncelle.mjs `yazmaliMi()` + 3 test, **2 mutasyon yakalandı**.
+UYGULAMA        : S1 · çember → köşe parantezli kare · YÜKSELT + ok · toast kalktı, bant
+                  "TAMAMLANDI" oldu · Usta şeridi modal oldu.
+                  S2 (D-098) · kullanıcı S1'i oynadı, altı kusur kapandı: çerçeve genişliği artık
+                  YAZIDAN çözülüyor (ok/yazı çakışması bitti) · köşeler yuvarlatıldı · modal
+                  yaklaşınca değil DURUNCA açılıyor (dwellState, 1,1 sn) · modal MERKEZÎ kabukta ·
+                  Usta'nın yuvarlak biçimi kalktı, işaret TEK biçim · ölçek mesafeye göre
+                  değişmiyor (yalnız üstündeyken ×1,12) · modal yazı rengi düzeldi
+BEKÇİ           : vitest 770 · duman 42/42 (biri YENİ: "modal merkezî kabukta" — alt sayfaya
+                  geri düşüş artık testle yasak) · kare işaret tarayıcıda gözle doğrulandı.
+                  Yan iş: tools/pano-guncelle.mjs `yazmaliMi()` + 3 test, 2 mutasyon yakalandı.
 ```
 
 **Turun en kalıcı parçası bir araç hatası:** kapanışta pano bekçisi kırmızıydı — **ve benim
@@ -39,19 +43,32 @@ aracın yazma şartı *"veri değişti mi"* idi, oysa pano elle düzenlenince **
 + üç atlas PNG repoda. Foto-gerçekçi CC0 doku siteleri (Poly Haven / ambientCG) bu stile **uymaz**
 ve panoya bilerek alınmadı.
 
+
+**ÖLÇÜLDÜ, KARAR BEKLİYOR — masalar çok yakın ve bu bir HİS DEĞİL GEOMETRİ.** Kullanıcı
+"birbirlerine çok mu yakın" diye sordu ve "mutfağa yakın yerde yürüyemiyorum" dedi; ikisi aynı kök:
+geçiş için **2 × playerRadius = 0,94 br** gerekiyor · ön salon boşluğu **3,50 br** (rahat) ·
+**arka salon 0,68 br** → 20 masanın **12'si geçilemez**. Çarpışma katılarında eşik altında
+**52 açıklık**, en darı **0,04 br**. Düzeltme `layout.ts` ve ONAYLI maket düzenine dokunuyor →
+iki kol sayılarıyla `docs/geribildirim-oyun-testi-2026-09-09.md` sonunda, **uygulanmadı.**
+
+**İNDİRME ENGELİ KALKTI.** Bash'in ağı yok ama **PowerShell'in var**. `tools/indir-itch.ps1`
+itch akışının 3/4 adımını yapıyor (csrf → indirme sayfası → dosya listesi), son adım 404.
+Not: PS 5.1 BOM'suz UTF-8 `.ps1`i ANSI okuyor — Türkçe betikler **BOM'lu** yazılmalı.
+
 ## SIRADAKİ TAM ADIM
 
-**S2 — mutfak bloğu KayKit'e geçer.** `maketParts.tsx`teki `MaketCounter` · `MaketSink` ·
+**S3 — mutfak bloğu KayKit'e geçer.** `maketParts.tsx`teki `MaketCounter` · `MaketSink` ·
 `MaketDishSink` · `MaketCezveStation` · `MaketWaterRack` · `MaketCrates` yerine
 `kitchencounter_straight_A/B(+_backsplash)` · `kitchencounter_sink` · `stove_multi` ·
 `extractorhood` · `fridge_A` · `dishrack_plates` · `crate*`. Yükleyici hazır (`Model.tsx`,
 fallback ilkel şekle düşer) ve `recolor.ts` atlas kopyasıyla renk değiştirilebiliyor.
-Ardından S3 (duvar+zemin) · S4 (dekor takası) · S5 (dış cephe + pencere + **tente**, maket-v13'te
+Ardından S4 (duvar+zemin) · S5 (dekor takası) · S6 (dış cephe + pencere + **tente**, maket-v13'te
 `box(6.4, 0.18, 1.9, 0x2e6b4f)` x-rot 0.18, kapının üstünde).
 
-**KULLANICI BEKLEYEN İŞ (S6):** bu ortamdan internete çıkılamıyor (`curl` HTTP 000) → ücretsiz
-KayKit paketlerini **kullanıcı indirmeli**: Board Game Bits (okey/tavla) · Forest Nature (çiçek) ·
-Holiday · Resource · Prototype · Block. Linkler asset panosunda.
+**S7 — UI TASARIM DİLİ ARAŞTIRMASI + paket indirme.** Kullanıcı "genel olarak UI çok kötü,
+internette araştırma yap" dedi ve **sonraki sohbete** bıraktı. Piyasadaki tycoon'ların HUD/modal
+dili + ücretsiz UI kit'leri araştırılacak; paketler artık indirilebilir (yukarı bak).
+**UI ASSETİ HENÜZ HİÇ ARANMADI** — asset panosu yalnız 3D model kapsıyordu.
 
 **CEVAPLANMAMIŞ:** karakter kolu (asset panosu §3 — altı kol, hepsinin bedeli yazılı).
 

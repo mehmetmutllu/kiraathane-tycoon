@@ -1006,65 +1006,89 @@
 }
 
 /* ── USTA (D8 → G-14) ─────────────────────────────────────────────────────────
-   Şerit kalktı, MODAL geldi (kullanıcı 2026-09-09). Alt sayfa kabuğunun aynısı ama kısa ve
-   ortalanmış: 💎 rozeti + masa adı + iki buton. Kapatma çarpısı sağ üstte — kapatılınca oyuncu
-   o masadan uzaklaşana kadar geri gelmez (HUD.tsx `masterKapali`). */
-.master-modal {
-  position: relative;
-  align-items: center;
-  gap: 4px;
-  padding: 22px 20px calc(var(--sab) + 20px);
-  border-top-color: #4fa8d8;
-  box-shadow:
-    0 -14px 44px rgba(0, 0, 0, 0.6),
-    0 0 0 1px rgba(79, 195, 247, 0.35) inset;
-}
-.master-x {
-  position: absolute;
-  top: 10px;
-  right: 12px;
-}
-.master-badge {
+   Şerit kalktı, MERKEZÎ MODAL geldi. İlk denemede alt-sayfa kabuğu (.modal-card) yeniden
+   kullanılmıştı ve kullanıcı haklı olarak "modal dedim hâlâ alttan açılıyor, genel bir modal
+   değil" dedi: o kabuk `align-items: flex-end` ile ekranın altına yapışıyor. Usta modali artık
+   kendi kabuğunu kuruyor — ekranın ORTASINDA, ölçeklenerek açılan bir kart. */
+.usta-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
   display: grid;
   place-items: center;
-  width: 56px;
-  height: 56px;
-  border-radius: 18px;
-  margin-bottom: 6px;
+  padding: 20px;
+  background: rgba(8, 14, 20, 0.62);
+  backdrop-filter: blur(2px);
+  pointer-events: auto;
+  animation: ustaFade 0.16s ease-out both;
+}
+@keyframes ustaFade {
+  from { opacity: 0; }
+}
+.usta-card {
+  position: relative;
+  width: min(100%, 340px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 26px 22px 22px;
+  border-radius: 24px;
+  border: 2px solid #4fa8d8;
+  background: linear-gradient(180deg, var(--paper-1) 0 64%, var(--paper-2));
+  box-shadow:
+    0 0 0 4px rgba(79, 168, 216, 0.16),
+    0 22px 50px rgba(0, 0, 0, 0.6);
+  animation: ustaPop 0.24s cubic-bezier(0.2, 1.1, 0.4, 1.05) both;
+}
+@keyframes ustaPop {
+  from { transform: scale(0.9); opacity: 0; }
+}
+.usta-x {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+}
+.usta-badge {
+  display: grid;
+  place-items: center;
+  width: 62px;
+  height: 62px;
+  border-radius: 20px;
+  margin-bottom: 8px;
   background: linear-gradient(180deg, #9ddffb, #3f9ecb);
   border: 2px solid #cbeeff;
   box-shadow: 0 3px 0 #2b7ca6;
   color: #06283c;
 }
-.master-head {
+.usta-head {
   font-weight: 800;
-  font-size: 18px;
-  color: var(--ink-1, #2a1a0c);
+  font-size: 19px;
+  /* Renk AÇIKÇA yazılır: HUD kabuğu `color: #fff` taşıyor ve bu kart krem zeminli —
+     miras alınan beyaz, yazıyı görünmez yapıyordu (kullanıcı 2026-09-09). */
+  color: #4a2c12;
 }
-.master-note {
+.usta-note {
   font-size: 13px;
-  opacity: 0.75;
-  margin-bottom: 14px;
+  color: #7a5626;
+  margin-bottom: 16px;
+  text-align: center;
 }
-.master-acts {
+.usta-acts {
   display: flex;
   gap: 10px;
-}
-.master-acts .master-buy {
-  padding: 10px 18px;
-  font-size: 15px;
 }
 .master-buy {
   flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   border: 0;
   border-radius: 999px;
-  padding: 8px 13px;
+  padding: 11px 20px;
   font: inherit;
   font-weight: 800;
-  font-size: 13px;
+  font-size: 15px;
   font-family: var(--font-num);
   color: #06283c;
   background: linear-gradient(180deg, #9ddffb, #47b6e6);

@@ -282,8 +282,10 @@ try {
     fail(`Masa yükseltme için 4. masa açık değil (padsDone=${JSON.stringify(preTable.padsDone)})`);
   }
 
-  // USTA NOKTASI (D8 · D-093): masa ₺ tavanına varınca aynı nokta 💎 kimliğine döner; oyuncu
-  // yaklaşınca alt bant ONAY çubuğuna dönüşür ve satın alma 💎 düşürüp kimliği kayda yazar.
+  // USTA NOKTASI (D8 · D-093 → G-14): masa ₺ tavanına varınca aynı nokta 💎 kimliğine döner.
+  // 2026-09-09'da etkileşim DEĞİŞTİ: yaklaşmak yetmiyor, oyuncunun noktada DURMASI gerekiyor —
+  // kalın çerçeve yeşil dolunca MERKEZÎ modal açılıyor (alt şerit değil, alt sayfa da değil).
+  // Işınlanma sonrası oyuncu hareketsiz kaldığı için dolum ~1,1 sn'de tamamlanır.
   {
     const max = (await page.evaluate(() => window.__game())).tableMaxLevel;
     await page.evaluate((lv) => window.__setTableLevel(0, lv), max);
@@ -292,7 +294,14 @@ try {
     await page.evaluate((p) => window.__teleport(p[0], p[2]), spot);
     await page.evaluate(() => window.__advanceTime(0.5));
     await page.waitForSelector('[data-testid="master-bar"]', { timeout: 5000 });
-    pass('Usta noktasına yaklaşınca onay çubuğu çıktı');
+    pass('Usta noktasında BEKLEYİNCE onay modali açıldı (dwell)');
+
+    // G-14: modal MERKEZÎ olmalı — alt sayfa kabuğuna (.modal-card) düşerse kullanıcının
+    // reddettiği "alttan açılan" hâle geri dönmüşüz demektir.
+    const merkezi = await page.evaluate(() => !!document.querySelector('.usta-backdrop .usta-card')
+      && !document.querySelector('[data-testid="master-bar"] .modal-card'));
+    if (merkezi) pass('Usta modali merkezî kabukta (alt sayfa değil)');
+    else fail('Usta modali alt sayfa kabuğuna düşmüş (.modal-card)');
 
     const once = (await page.evaluate(() => window.__game())).diamonds;
     await page.click('[data-testid="master-buy"]');

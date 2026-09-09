@@ -62,3 +62,54 @@
 `saksi` · `buyukSaksi` · `copKovasi` · `askilik` · `gazetelik` · `ayakliLamba` · `paspas` ·
 `tablo` · `duvarSaati` · `aplik` · `askiRayi` · `konsol` · `tvUnitesi` · `semsiyelik` ·
 `petek` · `denizlikSaksi` · `pencere`
+
+---
+
+# İKİNCİ TUR — kullanıcı S1'i oynadı (2026-09-09, aynı gün)
+
+| # | Bulgu | Durum |
+|---|---|---|
+| G-26 | Usta/masa noktalarında **"YÜKSELT" ile ok üst üste biniyor** | ✅ S2'de düzeldi — çerçeve genişliği artık yazıdan ÇÖZÜLÜYOR (ok bloğu + yazının gerçek genişliği), tahmin edilmiyor |
+| G-27 | **Kare çok keskin, köşelerde border-radius olsun** | ✅ S2 — parantezlerin dış köşesi yuvarlatıldı (`bracketShape`) |
+| G-28 | **Usta modali yaklaşınca açılıyor** — durunca açılmalı | ✅ S2 — kalın çerçeve oyuncu hareketsizken 1,1 sn'de YEŞİL dolar, dolunca açılır (`dwellState`) |
+| G-29 | **"Modal dedim hâlâ alttan açılıyor"** | ✅ S2 — alt-sayfa kabuğu (`.modal-card`, `align-items: flex-end`) bırakıldı; kendi merkezî kabuğu (`.usta-card`) |
+| G-30 | **Masalar birbirine çok yakın mı?** | 📏 ÖLÇÜLDÜ — aşağıya bak. **EVET, arka salonda.** |
+| G-31 | **Mutfağa yakın yerde yürüyemiyorum** | 📏 ÖLÇÜLDÜ — aynı kök sebep. **Geçilemeyen açıklıklar var.** |
+| G-32 | Seçim/modal **daha can alıcı** olmalı, piyasadaki tycoon'lar incelensin | ⏳ araştırma turu (kullanıcı: sonraki sohbet) |
+| G-33 | **Genel UI çok kötü**, internetten araştırma yapılsın | ⏳ araştırma turu |
+| G-34 | Diğer ekranlar ölçülmedi | ⏳ araştırma turuyla birlikte |
+
+## G-30 / G-31 — ÖLÇÜM (kullanıcının sorusu sayıya çevrildi)
+
+Oyuncunun bir açıklıktan geçebilmesi için gereken boşluk = **2 × `playerRadius` = 0,94 br**
+(`LAYOUT.playerRadius` = 0,47).
+
+**Masalar arası açık boşluk** (merkez mesafesi − iki masanın oturak yarıçapı):
+
+| Bölge | Masa türü | Oturak yarıçapı | Merkez arası | **Açık boşluk** | Geçilir mi |
+|---|---|---|---|---|---|
+| Ön salon (masa 0-7) | `four` | 1,45 | 6,40 | **3,50 br** | ✓ rahat |
+| Arka salon (masa 8-19) | `deuce` | 1,26 | 3,20 | **0,68 br** | ✗ **GEÇMEZ** |
+
+Yani kullanıcının sezgisi doğru ve **yalnız arka salon için** doğru: 20 masanın **12'si**
+birbirine oyuncunun sığamayacağı kadar yakın.
+
+**Çarpışma katılarının** taranması aynı sonucu bağımsız olarak veriyor — eşiğin altında
+**52 açıklık** var, en darları:
+
+```
+0,04 br  x ≈ −8,5 … −11,7 · z ≈ −3,1 … −4,5   (arka salon masa sırası, altı çift)
+0,04 br  x ≈  8,5 …  11,7 · z ≈ −3,1 … −4,5   (simetriği, altı çift)
+0,20 br  z ≈ −10,3 boyunca üç katı arası       (arka duvar hattı)
+```
+
+**Sonuç:** "yürüyemiyorum" bir his değil, geometrik bir gerçek — 0,04 br'lik bir aralıktan
+0,94 br'lik bir gövde geçemez. Düzeltme **`layout.ts`** işidir ve onaylı maket düzenine
+dokunur (`feedback_layout_order`: v2 onaylı) → **kullanıcı kararı ister**, S2'de yapılmadı.
+
+**İki kol (ikisi de ölçülebilir):**
+- **K1 — masa aralığını aç:** arka salon sütun aralığı 3,20 → **3,80** (boşluk 0,68 → 1,28 br).
+  Bedeli: arka salon 0,60 br × sütun sayısı kadar genişler; oda sınırına yaklaşır.
+- **K2 — oturak ayak izini küçült:** `deuce` oturak offseti 1,26 → **0,96** (boşluk 0,68 → 1,28).
+  Bedeli: masa görsel olarak küçülür — `feedback_reference_scale_trap` tam bu tuzağı yasaklıyor
+  ("oranı mobilyayı kısarak kovalama"), o yüzden K1 önerilir.

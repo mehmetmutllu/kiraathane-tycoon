@@ -237,7 +237,7 @@ export function HUD() {
           modal istedi. Bant artık devredilmiyor — görev adımı yerinde kalır, Usta önüne modal gelir.
           Kapatılınca oyuncu O MASADAN uzaklaşana kadar geri açılmaz (aşağıdaki effect). */}
       {nearMaster && masterKapali !== nearMaster && (
-        <MasterModal id={nearMaster} onClose={() => setMasterKapali(nearMaster)} />
+        <UstaModal id={nearMaster} onClose={() => setMasterKapali(nearMaster)} />
       )}
 
       {/* ───────── ALT BANT: AKTİF ADIM (Tek Odak) ───────── */}
@@ -461,7 +461,7 @@ function EdgeArrow({ onClick }: { onClick: () => void }) {
  *
  * Reklam butonu Faz 5'te bağlanacak; şimdi pasif ama KAYBOLMAZ (D-039 kalıbı) — yeri belli olsun.
  */
-function MasterModal({ id, onClose }: { id: string; onClose: () => void }) {
+function UstaModal({ id, onClose }: { id: string; onClose: () => void }) {
   const diamonds = useGame((s) => s.diamonds);
   const buyMaster = useGame((s) => s.buyMaster);
   const fiyat = masterCost();
@@ -469,17 +469,17 @@ function MasterModal({ id, onClose }: { id: string; onClose: () => void }) {
   const masaNo = Number(id.split(':')[1] ?? 0) + 1;
   const kat = economyConfig.master.tipMult.toLocaleString('tr-TR');
   return (
-    <div className="modal-backdrop" data-testid="master-bar" data-master={id} onClick={onClose}>
-      <div className="modal-card master-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="sheet-x master-x" onClick={onClose} aria-label="Kapat">
+    <div className="usta-backdrop" data-testid="master-bar" data-master={id} onClick={onClose}>
+      <div className="usta-card" onClick={(e) => e.stopPropagation()}>
+        <button className="sheet-x usta-x" onClick={onClose} aria-label="Kapat">
           ✕
         </button>
-        <span className="master-badge">
-          <GemIcon size={30} />
+        <span className="usta-badge">
+          <GemIcon size={34} />
         </span>
-        <span className="master-head">Masa {masaNo} · Usta</span>
-        <span className="master-note">Bahşiş ×{kat} — kalıcı</span>
-        <div className="master-acts">
+        <span className="usta-head">Masa {masaNo} · Usta</span>
+        <span className="usta-note">Bu masanın bahşişi kalıcı olarak ×{kat} olur</span>
+        <div className="usta-acts">
           <button
             className={`master-buy${yeter ? '' : ' off'}`}
             data-testid="master-buy"

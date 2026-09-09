@@ -2852,3 +2852,55 @@ bedelleriyle asset panosuna yazıldı (https://claude.ai/code/artifact/2e7f92c0-
 
 vitest **770** · duman **41/41** · **denge sayısı DEĞİŞMEDİ** · kayıt sürümü artmadı ·
 yeni pad tarayıcıda **gözle doğrulandı** (3D sahne testle doğrulanamaz).
+
+---
+
+## D-098 — S2: pad/modal etkileşimi kullanıcı testiyle düzeltildi; işaret biçimi TEKLEŞTİ
+
+**Bağlam.** Kullanıcı S1'i oynadı ve altı kusur bildirdi (G-26…G-31 + ölçek). Hepsi kapandı;
+ikisi ölçüldü ama karar bekliyor.
+
+**① Ok ile yazı üst üste biniyordu.** Çerçeve `radius`tan türüyor, yazı ortalanıyordu — ikisi
+aynı genişlik için yarışıyor ve **kimse ölçmüyordu**. Genişlik artık yazıdan ÇÖZÜLÜYOR:
+`ok bloğu + harf ilerlemesi (0,58 em) × punto`. Ölçü tahmin değil hesap; `maxWidth` üst sınırı
+ayrıca kilitler, yani hata payı taşmaya değil sarmaya gider.
+
+**② Köşeler keskindi** → parantezlerin dış köşesi `quadraticCurveTo` ile yuvarlatıldı.
+
+**③ Modal YAKLAŞINCA açılıyordu.** Artık işaret oyuncu **hareketsizken** 1,1 sn'de yeşil dolar,
+dolunca açılır (`dwellState` modül değişkeni — 60 fps setState yok). Yürüyünce dolum sıfırlanır.
+
+**④ "Modal dedim hâlâ alttan açılıyor."** Haklıydı: alt-sayfa kabuğu (`.modal-card`,
+`align-items: flex-end`) yeniden kullanılmıştı. Usta artık kendi **merkezî** kabuğunda
+(`.usta-card`). Duman testine bu kararı kilitleyen bir denetim eklendi — alt sayfaya geri düşüş
+artık testle yasak.
+
+**⑤ İşaret biçimi TEKLEŞTİ (aynı gün ikinci geri bildirim).** Usta noktası önce kalın çerçeveli
+YUVARLAK yapılmıştı (kullanıcının ilk tarifi). Oynayınca *"yuvarlak yapma, direkt yükseltme gibi
+olsun"* dedi → yuvarlak dal tamamen kaldırıldı. Geriye tek fark kaldı: dolumun KAYNAĞI (₺ değil
+bekleme) ve RENGİ (yeşil). **Ders: iki biçim tutmak iki bakım yeri demekti; tek biçim + tek
+farklı kanal daha ucuz ve daha okunur.**
+
+**⑥ Ölçek mesafeye göre değişmiyor artık.** İşaret uzakta 0,55, yaklaşınca 1,00 ölçekteydi —
+kullanıcı: *"yaklaşınca büyümesi çirkin duruyor"*. Boy SABİT; yalnız oyuncu işaretin ÜZERİNDEYKEN
+×1,12 kabarır. **Tek Odak (D-080) katmanlaması ölçekten değil YAZIDAN devam ediyor** (uzaktaki
+işaret hâlâ yazısız) — yani D-080 iptal olmadı, kanalı değişti.
+
+**⑦ Modal yazıları görünmezdi.** `.usta-head` / `.usta-note` renk taşımıyordu ve HUD kabuğunun
+`color: #fff`ini miras alıyordu; krem kartta beyaz yazı kayboluyor. Renk açıkça yazıldı.
+
+**ÖLÇÜLDÜ AMA YAPILMADI — kullanıcı kararı bekliyor.** *"Masalar birbirine çok yakın mı"* ve
+*"mutfağa yakın yerde yürüyemiyorum"* aynı kökten: geçiş için **2 × `playerRadius` = 0,94 br**
+gerekiyor. Ön salon boşluğu **3,50 br** (rahat), **arka salon 0,68 br** — 20 masanın 12'si
+geçilemez. Çarpışma katılarında eşiğin altında **52 açıklık**, en darı **0,04 br**. Yani
+"yürüyemiyorum" bir his değil geometri. Düzeltme `layout.ts` ve **onaylı maket düzenine**
+dokunuyor (`feedback_layout_order`: v2 onaylı, katı ızgara v3 reddedilmişti) → iki kol
+sayılarıyla `docs/geribildirim-oyun-testi-2026-09-09.md`'ye yazıldı, uygulanmadı.
+
+**İndirme engeli KALKTI (yan bulgu).** Bash'in ağı yok (`curl` HTTP 000) ama **PowerShell'in var**.
+`tools/indir-itch.ps1` yazıldı; itch akışının 3/4 adımı çalışıyor (csrf → indirme sayfası →
+dosya listesi), son adım 404 veriyor. Kendi turunu ister. **Not:** PS 5.1 `.ps1` dosyasını
+BOM'suz UTF-8'de ANSI okuyor — Türkçe karakterli betikler **BOM'lu** yazılmalı.
+
+vitest **770** · duman **42/42** · **denge sayısı DEĞİŞMEDİ** · kare işaret tarayıcıda gözle
+doğrulandı (ok/yazı çakışması gitti, köşeler yuvarlak).

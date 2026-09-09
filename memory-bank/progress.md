@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 87 · YAPILAN 76 · %87):**
+**Oturum bütçesi (TOPLAM 88 · YAPILAN 77 · %88):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -24,9 +24,9 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
 | | D meta katman | 9/9 ✅ |
 | | E arayüz ve cila | 4/5 🔧 |
-| | **S sanat ve arayüz geçişi** | **1/6 🔧** |
+| | **S sanat ve arayüz geçişi** | **2/7 🔧** |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **48/59** |
+| **Program toplam** | | **49/60** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -37,7 +37,7 @@ oyuncu çarpışması bilinen-hata listesinden çıkıp kendi turu oldu (D5) →
 toplam 78 → 79. **Aynı gün:** meta katmanın yığını beş turdur açık duran D-087 ölçümü olarak
 kendi turunu aldı (D9) → Faz D 8 → 9, toplam 79 → 80. **Aynı gün:** E3 (ses) kullanıcı
 kararıyla SİSTEM (E3) ve DOSYALAR (E4) olarak ikiye bölündü, onboarding E5 oldu → Faz E 4 → 5,
-toplam 80 → 81. **2026-09-09 (ikinci oturum):** kullanıcı oynadı, 25 kalemlik geri bildirim verdi (`docs/geribildirim-oyun-testi-2026-09-09.md`); sanat/arayüz işi **Faz S** olarak açıldı (6 kalem, `docs/plan-faz-s-sanat.md`) → toplam 81 → 87. Faz adı S, çünkü defterde zaten bir Faz G (görsel taban) var; `G-0x` numaraları geri bildirimin, fazın kalemleri `S1…S6`. **E4 kapsamı ölçümle değişti ama kalem sayısı değişmedi:** tur "dosya bırak"
+toplam 80 → 81. **2026-09-09 (ikinci oturum):** kullanıcı oynadı, 25 kalemlik geri bildirim verdi (`docs/geribildirim-oyun-testi-2026-09-09.md`); sanat/arayüz işi **Faz S** olarak açıldı (6 kalem, `docs/plan-faz-s-sanat.md`) → toplam 81 → 87. Faz adı S, çünkü defterde zaten bir Faz G (görsel taban) var; `G-0x` numaraları geri bildirimin, fazın kalemleri `S1…S6`. **Aynı gün:** kullanıcı S1'i oynadı ve dokuz kalem daha verdi (G-26…G-34); pad/modal düzeltmeleri **S2** olarak kendi kalemini aldı → Faz S 6 → 7, toplam 87 → 88. **E4 kapsamı ölçümle değişti ama kalem sayısı değişmedi:** tur "dosya bırak"
 olarak açılmıştı, ölçüm "dosya alma, motoru büyüt" dedi (D-096); ortam sesi + `settings.music`
 kablosu E4'ün dışında kaldı ve **henüz kendi kalemi olmadı** — açık kalemler listesinde duruyor.
 
@@ -242,7 +242,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   değil; kendi turunu ister.
 - ⏳ **E5 — hareketli onboarding**
 
-## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (1/6) 🔧 — kullanıcı geri bildirimi 2026-09-09
+## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (2/7) 🔧 — kullanıcı geri bildirimi 2026-09-09
 - ✅ **S1 — pad ve yükseltme dili yeniden yazıldı** · çember → **köşe parantezli kare** (kenar
   ortaları boş), dolum büyüyen disk → **alttan üste dolan kare**, "Masa"/"Çay Yükselt"/"Usta"
   → hepsinde **YÜKSELT** + solunda düz yukarı ok, yazı 700 → 800, 💎 pulu "mavi kare" → gerçek
@@ -259,12 +259,30 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   Şart `yazmaliMi()` olarak dışa alındı ve bayta bakıyor; bekçi 3 test daha aldı,
   **iki mutasyonla doğrulandı**. Açık kalemlerdeki "araç kendi turunu ister" maddesi bu kadarıyla
   kapandı; `.gitattributes` eksiği DURUYOR.
-- ⏳ **S2 — mutfak bloğu KayKit'e geçer** (restaurant-bits, elde)
-- ⏳ **S3 — duvar + zemin** (restaurant-bits, elde)
-- ⏳ **S4 — dekor takası** (furniture + city, elde)
-- ⏳ **S5 — dış cephe + pencere + tente** (city-builder + maket-v13)
-- ⏳ **S6 — yeni ücretsiz paketler** — okey/tavla, çiçek, süs · **kullanıcı indirmesini bekler**
-  (bu ortamda ağ yok: `curl` HTTP 000)
+- ✅ **S2 — pad/modal etkileşimi kullanıcı testiyle düzeltildi (D-098)** · S1 oynandı, dört kusur
+  çıktı ve dördü de kapandı: ① **ok ile yazı üst üste biniyordu** — çerçeve `radius`tan türüyor ve
+  yazı ortalanıyordu, yani ikisi aynı genişlik için yarışıyor ve kimse ölçmüyordu; genişlik artık
+  **yazıdan çözülüyor** (ok bloğu + harf ilerlemesi × punto). ② köşeler keskindi → parantezlerin
+  **dış köşesi yuvarlatıldı**. ③ **modal yaklaşınca açılıyordu** → artık noktanın kalın çerçevesi
+  oyuncu HAREKETSİZKEN 1,1 sn'de yeşil dolar, dolunca açılır (`dwellState`, modül değişkeni —
+  60 fps setState yok). ④ **"modal dedim hâlâ alttan açılıyor"** — haklıydı: alt-sayfa kabuğu
+  (`.modal-card`, `align-items: flex-end`) yeniden kullanılmıştı; Usta artık **kendi merkezî
+  kabuğunda** (`.usta-card`). Usta noktasının biçimi de kareden **kalın çerçeveli yuvarlağa**
+  döndü (kullanıcı tarifi). vitest **770** · duman **42/42** (biri YENİ: "modal merkezî kabukta" —
+  alt sayfaya geri düşüş artık testle yasak) · **denge sayısı DEĞİŞMEDİ.**
+  **Ölçülen ama YAPILMAYAN:** kullanıcı "masalar birbirine çok yakın mı" diye sordu ve
+  "mutfağa yakın yerde yürüyemiyorum" dedi — ikisi **aynı kök**: geçiş için 2 × `playerRadius`
+  = **0,94 br** gerekiyor, ön salonda boşluk **3,50 br** (rahat) ama **arka salonda 0,68 br**,
+  çarpışma katılarında **52 açıklık eşiğin altında** (en darı **0,04 br**). Yani "yürüyemiyorum"
+  bir his değil geometri. Düzeltme `layout.ts` ve **onaylı maket düzenine** dokunuyor →
+  iki kol sayılarıyla yazıldı, **kullanıcı kararı bekliyor** (`docs/geribildirim-oyun-testi-2026-09-09.md`).
+- ⏳ **S3 — mutfak bloğu KayKit'e geçer** (restaurant-bits, elde)
+- ⏳ **S4 — duvar + zemin** (restaurant-bits, elde)
+- ⏳ **S5 — dekor takası** (furniture + city, elde)
+- ⏳ **S6 — dış cephe + pencere + tente** (city-builder + maket-v13)
+- ⏳ **S7 — yeni ücretsiz paketler + UI tasarım dili araştırması** — okey/tavla, çiçek, süs.
+  **İndirme engeli KALKTI:** Bash'in ağı yok ama **PowerShell'in var**; `tools/indir-itch.ps1`
+  itch akışının 3/4 adımını çalıştırıyor (dosya listesi geliyor), son adım 404 — kendi turunu ister.
 
 ## Bilinen açık kalemler
 - ~~Hedeflerin ₺ kolu bu hâliyle kalsın mı?~~ → **D3b'de kapandı (D-090):** ₺ kolu tamamen kalktı,

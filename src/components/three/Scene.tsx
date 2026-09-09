@@ -7,6 +7,7 @@ import { economyConfig, lavaboUpgradeCost } from '../../config/economy.config';
 import { areaOfTable, THE_SERVICE } from '../../game/world';
 import { masterId, masterCost, masterUnlockedForTable } from '../../game/rules';
 import { SceneLights } from './lights';
+import { dwellState } from '../../game/dwell';
 import { GroundMarker } from './GroundMarker';
 import { FloorPattern } from './floorPattern';
 import { DOOR, WALL_H, WallPanels, type WallSlab } from './wallPanel';
@@ -593,6 +594,10 @@ function TableUpgradeMarkers() {
  * yalnız hedef DEĞİŞİNCE yazılır — oyuncu konumuna abone olmak HUD'u 60 fps yeniden çizerdi.
  */
 const MASTER_REACH = 1.9;
+/** Modalin açılması için oyuncunun noktada durması gereken süre (sn) — kullanıcı: "1 2 sn". */
+const USTA_BEKLEME = 1.1;
+/** Bu hızın altı "duruyor" sayılır (br/sn). Joystick'in ölü bölgesinden yüksek, yürüyüşten düşük. */
+const DURMA_HIZI = 0.35;
 
 function TableMasterSpots() {
   const tables = useGame((s) => s.tables);
@@ -611,7 +616,8 @@ function TableMasterSpots() {
   }, [tables, tableLevels, mastersOwned]);
 
   const son = useRef<string | null>(null);
-  useFrame(() => {
+  const oncekiPos = useRef<[number, number]>([0, 0]);
+  useFrame((_, dt) => {
     const p = useGame.getState().player;
     let en: string | null = null;
     let enYakin = MASTER_REACH * MASTER_REACH;
@@ -619,7 +625,24 @@ function TableMasterSpots() {
       const d2 = (p[0] - a.pos[0]) ** 2 + (p[2] - a.pos[2]) ** 2;
       if (d2 <= enYakin) { enYakin = d2; en = a.id; }
     }
-    if (en !== son.current) { son.current = en; setNearMaster(en); }
+
+    // G-14 ② — MODAL YAKLAŞINCA DEĞİL, DURUNCA AÇILIR (kullanıcı 2026-09-09).
+    // Yalnız yakınlık yeterli sayılınca oyuncu masanın yanından geçerken bile modal açılıyordu.
+    // Artık noktanın kalın çerçevesi oyuncu HAREKETSİZKEN dolar; dolunca modal açılır. Hareket
+    // ölçüsü kare-başı yer değiştirme: joystick bırakılınca sıfırlanır, yürürken dolum sıfırlanır.
+    const hiz = Math.hypot(p[0] - oncekiPos.current[0], p[2] - oncekiPos.current[1]) / Math.max(dt, 1e-4);
+    oncekiPos.current = [p[0], p[2]];
+    const duruyor = hiz < DURMA_HIZI;
+
+    if (en && duruyor) dwellState.p = Math.min(1, dwellState.p + dt / USTA_BEKLEME);
+    else if (en) dwellState.p = 0;
+    else dwellState.p = 0;
+    dwellState.id = en;
+
+    // React'e yalnız EŞİK geçilince dokunulur — her kare setState = 60 render/sn.
+    const acik = en != null && dwellState.p >= 1;
+    const hedef = acik ? en : null;
+    if (hedef !== son.current) { son.current = hedef; setNearMaster(hedef); }
   });
 
   const fiyat = masterCost();
@@ -631,11 +654,14 @@ function TableMasterSpots() {
           key={a.id}
           pos={a.pos}
           // G-11: "Usta" yazısı kalktı — söz her yerde aynı, kimliği 💎 pulu taşıyor.
+          // G-14 ②: biçim öteki yükseltme noktalarıyla AYNI (kullanıcı: "yuvarlak yapma").
+          // Tek fark dolumun kaynağı: ₺ değil BEKLEME, ve rengi yeşil — dolunca modal açılır.
           label="YÜKSELT"
           arrow
           sub={String(fiyat)}
           pip="gem"
           tint="#4fc3f7"
+          dwellId={a.id}
           radius={0.6}
           afford={yeter}
         />
