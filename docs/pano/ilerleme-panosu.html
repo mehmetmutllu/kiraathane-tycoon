@@ -193,8 +193,8 @@ h2{font-size:21px;font-weight:800}
 <script type="application/json" id="durum">
 {
  "guncelleme": "09.09.2026",
- "yapilan": 73,
- "toplam": 80,
+ "yapilan": 74,
+ "toplam": 81,
  "kilometre": [
   {
    "at": 28,
@@ -209,31 +209,31 @@ h2{font-size:21px;font-weight:800}
    "etiket": "Model ve denge oturdu"
   },
   {
-   "at": 80,
+   "at": 81,
    "etiket": "v1.0 App Store"
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum · Faz E · 2/4 — duman testi komut dosyasına bağlandı",
-  "baslik": "Fazın kapısı buydu: tarayıcı testi artık tek komut, ve iki iddiası ölçümde düzeltildi",
-  "aciklama": "Oyunun 41 denetimlik <b>tarayıcı duman testi</b> aylardır vardı ama <b>elle</b> çalıştırılıyordu: önce sunucuyu aç, sonra ayrı bir terminalde testi koştur, sonra sunucuyu kapat. Bu yüzden kapanış protokolünde <i>&ldquo;mümkünse&rdquo;</i> diye geçiyordu — yani atlanabilir bir adımdı. Artık <b>tek komut</b>: sunucuyu kendisi kaldırıyor, testi koşuyor, indiriyor. 41/41, <b>25 saniye</b>.<br><br><b>Ama iki tasarım iddiası ölçümde çürüdü ve ikisi de düzeltildi.</b><br><br><b>Birincisi adresti.</b> Koşucu sunucuyu <code>127.0.0.1</code> üzerinden yokluyordu. İlk denemede sunucu ayakta olduğu hâlde <i>&ldquo;ayağa kalkmadı&rdquo;</i> dedi ve altmış saniye bekleyip pes etti: vite <code>localhost</code> adına bağlanıyor, o ad bu makinede IPv6 adresine çözülüyor ve IPv4 yoklaması bağlantı reddi alıyordu. İkisi aynı makinede <b>aynı yer değil</b>.<br><br><b>İkincisi daha öğreticiydi.</b> Koşucuya, port doluysa sessizce başka bir porta kaymasın diye bir bayrak konmuştu ve bunun yeterli olduğu <b>varsayılmıştı</b>. Varsayım sınandı: port bilerek dolduruldu. Sonuç yarı doğru çıktı — koşu kırmızıya döndü, evet, <b>ama yanlış sebeple</b>. Yoklama, portu tutan yabancı sunucunun cevabını <i>&ldquo;hazır&rdquo;</i> sanıyor, tarayıcı testi <b>başka bir uygulamaya</b> bağlanıyor ve hata <i>&ldquo;sahne bulunamadı&rdquo;</i> diye görünüyordu. Yani mesaj, gerçek sebebi (port dolu) hiç söylemiyordu. Düzeltme: hazır olup olmadığı artık porta sorulmuyor, <b>sunucunun kendisine</b> soruluyor — vite kalkınca bunu yazıyor, kalkamazsa süreç ölüyor; ikisi de kesin sinyal.",
+  "etiket": "Bu oturum · Faz E · 3/5 — ses sistemi kuruldu",
+  "baslik": "Ayar aylardır kayıtta duruyordu ama hiçbir şeye bağlı değildi — bu tur o bağlantı",
+  "aciklama": "Oyunun ayarlar panelinde <b>Ses</b> düğmesi vardı, kayıt dosyasında da duruyordu — ve <b>hiçbir işe yaramıyordu</b>. Ne ses kodu vardı ne dosya. Bu tur motoru kurdu; dosya seçimi kendi turunu aldı.<br><br><b>Karar: ses simülasyona dokunmuyor.</b> Kolay yol, oyunun kalbindeki döngüye bir ses kuyruğu eklemekti. Yapılmadı, iki sebeple. Birincisi kuralla ilgili: o dosya bir <b>denge dosyası</b> ve ona dokunan her değişiklik projenin ölçüm kapısını açıyor — ses ise bir denge kolu değil. İkincisi daha temel: ses bir <b>sunum</b> katmanıdır. Durum zaten her şeyi taşıyor — kaç para toplandı, kaç pad açıldı, seviye kaç. O yüzden olaylar <b>türetiliyor</b>: iki kare arasındaki farka bakılıyor ve ses ondan doğuyor. Yan kazanç, oyunun davranış parmak izinin <b>birebir</b> korunması.<br><br><b>Üç kelepçe var ve üçü de gerçek bir kusuru kapatıyor.</b> ① Ayar kapalıyken tek ses bile çalınmıyor. ② Mobil tarayıcılar kullanıcı dokunmadan ses çalmaya izin vermiyor; kilit açılmadan yapılan çağrılar <b>kuyruğa alınmıyor</b> — birikip kilit açılınca hep birden patlamasın. ③ Aynı ses arka arkaya çalınmıyor: para mıknatısı bir karede birden çok parayı topluyor ve kelepçe olmasa tek bir turda kırk ses üst üste binerdi. Bu, ekrandaki &ldquo;aynı anda tek yüksek ses&rdquo; kuralının <b>kulaktaki karşılığı</b>.<br><br><b>Ve dosya yokken sessizlik değil, ton çalıyor.</b> Projede modeller için zaten şöyle bir kural var: model yoksa ilkel şekle düş, oyun tam oynansın. Aynısı sese uygulandı — her olayın kendi kısa sentez tonu var, birbirinden <b>kulakla ayırt edilebilecek</b> kadar farklı. Yani oyun bugün de tam sesli oynanıyor; sonraki tur yalnız bir klasör bırakacak, tek satır kod değişmeyecek.",
   "adimlar": [
-   "<b>Tek komut:</b> sunucuyu kendisi kaldırıp indiriyor · 41/41 · 25 saniye",
-   "<b>Ayrı port + katı port kuralı:</b> geliştiricinin açık sunucusuyla çakışmıyor, sessizce kaymıyor",
-   "<b>Hazır sinyali sunucunun kendisinden</b> — portu tutan yabancı bir uygulama artık &ldquo;hazır&rdquo; sayılmıyor",
-   "<b>Bekçi:</b> 21 test, 18 mutasyon, on sekizi de yakalandı · protokolde artık &ldquo;mümkünse&rdquo; yok"
+   "<b>Ayar gerçekten bağlandı</b> — kapalıyken tek ses çalınmıyor, çalışma anında açılıp kapanıyor",
+   "<b>Simülasyona dokunulmadı</b> — olaylar durumun farkından türetiliyor, parmak izi birebir korundu",
+   "<b>Üç kelepçe:</b> ayar · tarayıcı ses kilidi · aynı sesin üst üste binmemesi",
+   "<b>Dosya yoksa ton</b> — dokuz olayın dokuzu da bugün duyuluyor · <b>bekçi:</b> 29 test, 16 mutasyon, on altısı da yakalandı"
   ],
-  "not": "<b>Bir mutasyon ilk hâlde kaçtı ve bekçinin zayıf yerini gösterdi.</b> Port kuralının bayrağı dosyanın <b>metninde</b> aranıyordu; bayrak açıklama satırında da geçtiği için, gerçek argümanlardan <b>silindiği hâlde</b> arama onu buluyor ve test yeşil kalıyordu. Bekçi artık kodun ne <i>yazdığını</i> değil ne <b>çalıştırdığını</b> okuyor — komut, argümanlarıyla birlikte ayrı bir fonksiyona çıkarıldı ve test onu çağırıyor."
+  "not": "<b>Manifestten bir varsayım silindi.</b> Ses listesinde kaynak ve lisans kolonları doluydu — ama o kaynaklar <b>seçilmiş değil varsayılmıştı</b>: kimse dinlememiş, kimse lisansı tek tek doğrulamamıştı. Kolonlar bilerek <b>soru işaretine</b> çevrildi. Projede modeller için tek bir stil kilidi var ve seslerde henüz yok; onu kurmak sonraki turun işi."
  },
  "siradaki": {
-  "etiket": "Faz E · sırada ses ve hareketli onboarding",
-  "baslik": "İki kalem kaldı ve ikisi de ürün kararı istiyor",
-  "aciklama": "Fazın ölçülebilir kapısı geçildi: tarayıcı testi bağlı ve yeşil. Kalan iki kalem teknik değil <b>ürün</b> kalemi.<br><br><b>Ses:</b> semaver fokurtusu, bardak şıngırtısı, okey pulu takırtısı, kasa sesi, arka plan uğultusu. Asıl soru kaynak ve lisans — projenin kuralı net: <b>belirsiz lisanslı hiçbir varlık depoya girmez</b>, ve tek stil kilidi var. Ses için de aynı kilit gerekiyor: dağınık kaynaklardan toplanmış sesler, dağınık sanatçıdan toplanmış modeller kadar bozar.<br><br><b>Hareketli onboarding:</b> oyunun ilk otuz saniyesi. Bugün ilk satın alma <b>22 saniyede</b> oluyor ve bu sayı dokuz turdur hiç bozulmadı — yani öğretici yeni bir tempo icat etmeyecek, var olanı <b>görünür</b> kılacak.",
+  "etiket": "Faz E · sırada ses dosyaları, sonra hareketli onboarding",
+  "baslik": "Motor hazır; kalan iş bir kaynak seçmek ve lisansını doğrulamak",
+  "aciklama": "Ses sistemi kurulduğu için sıradaki tur <b>teknik değil</b>: dokuz olayın her birine bir dosya, ve hepsinin <b>tek ağızdan</b> çıkması. Projenin modellerdeki kuralı burada da geçerli — karışık sanatçı yasak, belirsiz lisans yasak. Karar verilince iş bir klasör bırakmaktan ibaret; motor onu kendiliğinden bulup çalmaya başlıyor.<br><br><b>Ardından hareketli onboarding:</b> oyunun ilk otuz saniyesi. İlk satın alma bugün <b>22 saniyede</b> oluyor ve bu sayı on turdur hiç bozulmadı — yani öğretici yeni bir tempo icat etmeyecek, var olanı <b>görünür</b> kılacak.",
   "adimlar": [
-   "<b>Şimdi:</b> ses (kaynak ve lisans kararı önce) · sonra hareketli onboarding",
-   "<b>Sonra:</b> Faz F — paketleme ve yayın (köşe kesme, gölgenin telefondaki maliyeti, reklam ve mağaza)"
+   "<b>Şimdi:</b> ses dosyaları — kaynak ve lisans kararı, sonra klasör",
+   "<b>Sonra:</b> hareketli onboarding · ardından Faz F — paketleme ve yayın"
   ],
-  "not": "Telefonda okunacaklar birikmeye devam ediyor: kalıcı gelir çarpanının <b>görünmezliği</b>, on üçüncü seviyede oyuncunun <b>+%24 hızı</b>, ve Kat 1&rsquo;in <b>6,8 saatlik</b> ömrü kısa hissettiriyor mu. Üçü de simülasyonun ölçemediği eksende."
+  "not": "Telefonda okunacaklar: kalıcı gelir çarpanının <b>görünmezliği</b>, on üçüncü seviyede oyuncunun <b>+%24 hızı</b>, Kat 1&rsquo;in <b>6,8 saatlik</b> ömrü, ve artık <b>sentez tonlarının</b> gerçek cihazda nasıl duyulduğu."
  },
  "donemler": [
   {
@@ -357,8 +357,8 @@ h2{font-size:21px;font-weight:800}
      "k": "E",
      "t": "Arayüz ve cila",
      "d": "Bilgi mimarisi ✓ · Görevler ve Hedefler ekranı ✓ · kalan: ses, hareketli onboarding, duman testinin bağlanması",
-     "yapilan": 2,
-     "toplam": 4,
+     "yapilan": 3,
+     "toplam": 5,
      "kapi": "Duman testi package.json'a bağlı ve yeşil"
     },
     {
@@ -373,6 +373,21 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "09.09.2026",
+   "etiket": "Faz E · 3. oturum (E3 — ses sistemi · tur adı E3a)",
+   "baslik": "Ayar düğmesi vardı, kayıtta duruyordu, hiçbir şeye bağlı değildi",
+   "govde": "Ayarlar panelinde bir <b>Ses</b> düğmesi vardı. Açılıp kapanıyordu, değeri kayıt dosyasına yazılıyordu, oyun yeniden açıldığında hatırlanıyordu — ve <b>hiçbir işe yaramıyordu</b>, çünkü ortada ne ses kodu ne ses dosyası vardı. Bu tur, kullanıcının kararıyla ikiye bölündü: <b>sistem bugün, dosyalar kendi turunda</b>.<br><br><b>İlk karar mimariydi ve kolay yol seçilmedi.</b> Oyunun kalbinde her kareyi işleyen bir döngü var ve orada zaten bir <b>bildirim kuyruğu</b> duruyor — ses için de aynısını eklemek en kısa yoldu. Yapılmadı. Birincisi kuralla ilgili: o dosya projenin <b>denge dosyalarından</b> biri ve ona dokunan her değişiklik ölçüm kapısını açıyor, yani &ldquo;önce ölç, sonra sor, sonra uygula&rdquo; sırasını zorunlu kılıyor. Ses bir denge kolu değil. İkincisi daha temel: ses bir <b>sunum</b> katmanı. Durum zaten her şeyi taşıyor — kaç para toplandı, kaç pad açıldı, seviye kaç, kaç Usta alındı. O yüzden olaylar <b>türetiliyor</b>: iki kare arasındaki farka bakılıyor ve ses ondan doğuyor. Bu, projenin kendi mevcut deseni (masa ve personel de ayrı sayaçlarda değil, açılmış noktalardan türetiliyor) ve yan kazancı büyük: oyunun davranış parmak izi <b>birebir</b> korundu.<br><br><b>Sonra üç kelepçe geldi ve üçü de gerçek bir kusuru kapatıyor.</b><br><br><b>Ayar.</b> Kapalıyken tek ses bile çalınmıyor, ve çalışma anında açılıp kapanabiliyor. Bu turun asıl işi zaten buydu: aylardır kayıtta duran değeri gerçekten bir şeye bağlamak.<br><br><b>Tarayıcı ses kilidi.</b> Mobil tarayıcılar, kullanıcı ekrana dokunmadan ses çalmaya izin vermez. Kilit ilk dokunuşta açılıyor — ama o ana kadar yapılan çağrılar <b>kuyruğa alınmıyor</b>, düşürülüyor. Kuyruğa alınsalardı oyuncu ekrana ilk dokunduğunda birikmiş sesler hep birden patlardı.<br><br><b>Aralık.</b> Aynı ses arka arkaya çalınmıyor. Bu soyut bir önlem değil: para mıknatısı bir karede birden çok parayı birden topluyor ve kelepçe olmasa tek bir toplama turunda kırk ses üst üste binerdi. Ekranda zaten şöyle bir kural var — on altı işaret çizilir ama aynı anda en çok üçü konuşur; bu, onun <b>kulaktaki karşılığı</b>.<br><br><b>Ve dosya yokken sessizlik değil, ton çalıyor.</b> Projede modeller için şöyle bir kural var: model yoksa ilkel şekle düş, oyun tam oynansın. Aynısı sese uygulandı. Her olayın kendi kısa sentez tonu var ve tonlar birbirinden <b>kulakla ayırt edilebilecek</b> kadar farklı seçildi: para tiz ve kısa, satın alma tok ve iki kademeli, seviye en uzun ve yükselen. Yani oyun bugün de tam sesli oynanıyor; sonraki tur yalnız bir klasör bırakacak.<br><br><b>Son olarak manifestten bir varsayım silindi.</b> Ses listesinin kaynak ve lisans kolonları doluydu — bazıları &ldquo;doğrula&rdquo; notuyla. Ama o kaynaklar <b>seçilmiş değil varsayılmıştı</b>: kimse dinlememiş, kimse lisansı tek tek açıp bakmamıştı. Dolu görünen bir kolon, boş bir kolondan daha tehlikeli: birinin o işi yaptığını sandırıyor. Kolonlar <b>soru işaretine</b> çevrildi.",
+   "maddeler": [
+    "<b>Ayar gerçekten bağlandı</b> — aylardır kayıtta duruyordu, hiçbir şeye bağlı değildi",
+    "<b>Simülasyona dokunulmadı:</b> olaylar durumun farkından türetiliyor, parmak izi birebir korundu",
+    "<b>Üç kelepçe:</b> ayar · tarayıcı ses kilidi (bekleyenler kuyruğa alınmıyor) · aynı sesin yığılmaması",
+    "<b>Dosya yoksa ton</b> — dokuz olayın dokuzu da bugün kulakla ayırt edilebiliyor",
+    "<b>Manifest yeniden yazıldı:</b> kaynak ve lisans kolonları bilerek soru işareti oldu",
+    "<b>Bekçi:</b> 29 test, 16 mutasyon, on altısı da yakalandı · <b>denge sayısı değişmedi</b>"
+   ],
+   "not": "<b>Sesin doğrulanamayacağı baştan kabul edildi ve bekçi ona göre yazıldı.</b> &ldquo;Duyuldu mu&rdquo; diye bir test yok — 3B sahnenin görsel olarak doğrulanamaması gibi. Bunun yerine doğrulanan şey <b>hangi durum değişiminin hangi olayı doğurduğu</b>: para sayacı artınca para sesi, seviye artınca seviye sesi, ve <b>azalınca hiçbir şey</b>. Sonuncusu en kolay kaçırılacak kural: eski bir kayıt yüklenince bütün sayaçlar sıfırdan o değerlere atlıyor, ve kıyas noktası olmasa oyuncunun <b>bütün geçmişi</b> açılışta tek karede çalardı."
+  },
   {
    "tarih": "09.09.2026",
    "etiket": "Faz E · 2. oturum (E2 — duman testinin bağlanması)",

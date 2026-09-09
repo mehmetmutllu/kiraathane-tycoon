@@ -4,6 +4,7 @@ import { HUD } from './components/ui/HUD';
 import { Joystick } from './components/ui/Joystick';
 import { SplashScreen } from './components/ui/SplashScreen';
 import { useGame } from './game/store';
+import { sesiBagla } from './game/audioBridge';
 
 const KEY_MAP: Record<string, [number, number]> = {
   KeyW: [0, -1],
@@ -69,6 +70,10 @@ export default function App() {
       apply();
     };
     const onHide = () => useGame.getState().saveNow();
+    // Ses (E3a): store'a abone olur, olayları durum FARKINDAN türetir. `init()`ten SONRA
+    // bağlanır — ilk kesit kıyas noktasıdır ve hiçbir ses çalmaz, yoksa açılışta yüklenen
+    // kaydın bütün geçmişi bir anda çalardı.
+    const sesiCoz = sesiBagla();
 
     window.addEventListener('keydown', down);
     window.addEventListener('keyup', up);
@@ -83,6 +88,7 @@ export default function App() {
       window.removeEventListener('keyup', up);
       window.removeEventListener('blur', blur);
       window.removeEventListener('beforeunload', onHide);
+      sesiCoz();
     };
   }, []);
 

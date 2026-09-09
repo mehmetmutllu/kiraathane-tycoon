@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 80 · YAPILAN 73 · %91):**
+**Oturum bütçesi (TOPLAM 81 · YAPILAN 74 · %91):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -23,9 +23,9 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | **C zincir ve denge** | **5/5 ✅** |
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
 | | D meta katman | 9/9 ✅ |
-| | E arayüz ve cila | 2/4 🔧 |
+| | E arayüz ve cila | 3/5 🔧 |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **45/52** |
+| **Program toplam** | | **46/53** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -34,7 +34,9 @@ KALIBI kendi turunu istedi (D3b) → Faz D 5 → 6 kalem, toplam 76 → 77. **Ay
 oyuncu çarpışması bilinen-hata listesinden çıkıp kendi turu oldu (D5) → Faz D 6 → 7, toplam 77 → 78.
 **Aynı gün:** D7 kullanıcı kararıyla ölçüm (D7a) ve UI (D7b) olarak ikiye bölündü → Faz D 7 → 8,
 toplam 78 → 79. **Aynı gün:** meta katmanın yığını beş turdur açık duran D-087 ölçümü olarak
-kendi turunu aldı (D9) → Faz D 8 → 9, toplam 79 → 80.
+kendi turunu aldı (D9) → Faz D 8 → 9, toplam 79 → 80. **Aynı gün:** E3 (ses) kullanıcı
+kararıyla SİSTEM (E3) ve DOSYALAR (E4) olarak ikiye bölündü, onboarding E5 oldu → Faz E 4 → 5,
+toplam 80 → 81.
 
 **v1 kapsam çizgisi:** prestij · Kat 2 · sipariş nesnesi · aktif WC döngüsü · dekor instancing
 **v1.1'e**; v1 = Kat 1 + elmas/Usta + offline tavan + reklam/IAP + mağaza.
@@ -189,7 +191,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
 > D2-D7 `docs/plan-kat1-yayin.html` §D kapsamından türetildi; **sırası açık** — her tur başında
 > seçilir. Ayrıca Faz D'de bekleyen bilinen bir hata var: **nav ızgarası ↔ oyuncu çarpışması**.
 
-## Faz E — ARAYÜZ VE CİLA (2/4) 🔧
+## Faz E — ARAYÜZ VE CİLA (3/5) 🔧
 - ✅ **E1 — bilgi mimarisi + Görevler/Hedefler ekranı** (kuruluş turunda yapıldı; D-049…D-052).
 - ✅ **E2 — duman testi `package.json`'a BAĞLANDI: `npm run duman`** · koşucu sunucuyu kendi
   kaldırıp indiriyor (`tools/duman.mjs`), 41/41 · çıkış 0 · **25 sn**. Fazın kapısı buydu.
@@ -203,8 +205,19 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   `--strictPort` mutasyonu KAÇMIŞTI — bayrak dosya metninde aranıyordu ve yorumda da geçtiği için
   argümanlardan silinince bile bulunuyordu → bekçi metin yerine **gerçek argümanları** okur oldu).
   Protokol güncellendi: `oturum-bitir` ve `CLAUDE.md` artık "mümkünse" demiyor, duman **kesilmez**.
-- ⏳ **E3 — ses** (kaynak + lisans kararı ister)
-- ⏳ **E4 — hareketli onboarding**
+- ✅ **E3 — ses SİSTEMİ kuruldu; `tick.ts`e DOKUNULMADI**
+  *(tur kartında `E3a` adıyla açıldı — E3 ikiye bölündü; defter numarası E3.)* · olaylar durumun FARKINDAN türetiliyor
+  (`sesOlaylari` saf), motor üç kelepçeli (ayar · tarayıcı ses kilidi · ses-başına aralık) ve
+  **dosya yokken sentezlenmiş tona düşüyor** — `Model.tsx` fallback deseninin sesteki karşılığı,
+  yani oyun `.ogg` gelmeden de tam sesli oynanıyor. **`settings.sound` v17'den beri kayıtta
+  duruyordu ama hiçbir şeye bağlı değildi; bu turun asıl işi o bağlantı.** Mimarî karar: ses bir
+  denge kolu değil SUNUM katmanı → `tick.ts` (denge dosyası) hiç açılmadı, varyant kapısı
+  tetiklenmedi, tick parmak izi birebir korundu. `src/game/audio.ts` + `audioWeb.ts` +
+  `audioBridge.ts` · manifest yeniden yazıldı (kaynak/lisans kolonları bilerek `?` — seçilmiş
+  değil VARSAYILMIŞ kaynaklardı) · bekçi `tests/ses.test.ts` (29 test, **16 mutasyon, on altısı
+  da yakalandı**) · vitest **734** · duman 41/41 · **denge sayısı DEĞİŞMEDİ.**
+- ⏳ **E4 — ses DOSYALARI** *(tur adı `E3b`)* (kaynak + lisans kararı; tek stil kilidi seslerde de geçerli)
+- ⏳ **E5 — hareketli onboarding**
 
 ## Bilinen açık kalemler
 - ~~Hedeflerin ₺ kolu bu hâliyle kalsın mı?~~ → **D3b'de kapandı (D-090):** ₺ kolu tamamen kalktı,

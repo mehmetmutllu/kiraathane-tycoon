@@ -70,13 +70,33 @@ ayrı CC0 paket; eklenince ayrı modüler klasöre (`public/assets/models/<paket
 > (main.tsx; CDN yok). İkisi de OFL 1.1.
 
 ## Sesler (`public/assets/audio/`)
-| Dosya | Açıklama | Kaynak | Lisans | Durum |
-|---|---|---|---|---|
-| ambience_loop.ogg | Kıraathane ortam uğultusu | Pixabay/Freesound | CC0/doğrula | ⏳ |
-| coin_pickup.ogg | Para toplama | Kenney | CC0 | ⏳ |
-| tea_pour.ogg | Çay dökme | Freesound | CC0/doğrula | ⏳ |
-| okey_tile.ogg | Okey pulu | Freesound | CC0/doğrula | ⏳ |
-| pad_fill.ogg | Pad dolma | Kenney | CC0 | ⏳ |
-| purchase.ogg | Satın alma | Kenney | CC0 | ⏳ |
 
-Durum: ⏳ greybox (model/ses yok, ilkel kullanılıyor) · ✅ eklendi (lisans doğrulanmış).
+**Motor E3a'da kuruldu, dosyalar E3b'nin işi.** Liste artık serbest bir dilek değil: her satırın
+karşılığı `src/game/audio.ts` içindeki `SES_KATALOG`ta duruyor ve **dosya yokken sentezlenmiş bir
+ton çalınıyor** (`components/three/Model.tsx` fallback loader deseninin sesteki karşılığı). Yani
+oyun bugün de tam sesli oynanıyor; dosya bırakmak tek satır kod değiştirmiyor.
+
+**Dosya adı katalogla BİREBİR eşleşmek zorunda** — `tests/ses.test.ts` her sesin dosyasının
+`/assets/audio/*.ogg` kalıbında olduğunu bekçiliyor, ama adın DOĞRU dosyayı gösterdiğini
+doğrulayamaz; oradaki tek koruma bu tablodur.
+
+| Dosya | Olay (`SesId`) | Ne zaman | Kaynak | Lisans | Durum |
+|---|---|---|---|---|---|
+| coin_pickup.ogg | `coin` | Yerden para toplandı | ? | ? | ⏳ |
+| tea_pour.ogg | `pour` | Ocaktan tepsiye çay alındı | ? | ? | ⏳ |
+| tea_serve.ogg | `serve` | Oyuncu masaya ürün bıraktı | ? | ? | ⏳ |
+| purchase.ogg | `purchase` | ₺ yükseltme alındı | ? | ? | ⏳ |
+| pad_fill.ogg | `padFill` | Pad açıldı (alan/masa/personel) | ? | ? | ⏳ |
+| quest_done.ogg | `quest` | Görev tamamlandı | ? | ? | ⏳ |
+| level_up.ogg | `level` | İtibar seviyesi atladı | ? | ? | ⏳ |
+| master.ogg | `master` | 💎 ile Usta alındı | ? | ? | ⏳ |
+| reward.ogg | `reward` | Hedef / günlük görev ödülü toplandı | ? | ? | ⏳ |
+| ambience_loop.ogg | *(olay değil)* | Ortam uğultusu — `settings.music`, henüz bağlı DEĞİL | ? | ? | ⏳ |
+| okey_tile.ogg | *(olay değil)* | Okey pulu — okey masası v1.1'de | ? | ? | ⏳ |
+
+**Kaynak ve lisans kolonları bilerek `?`.** Önceki hâlde "Kenney / CC0" ve "Freesound / CC0
+doğrula" yazıyordu; ikisi de **seçilmiş değil varsayılmış** kaynaklardı ve tek stil kilidi
+(`docs/assets.md`) seslerde henüz kurulmadı. E3b'nin işi tam olarak bu: kaynağı seçmek, lisansı
+tek tek doğrulamak, sonra bu kolonları doldurmak. **Belirsiz lisanslı hiçbir ses commit'lenmez.**
+
+Durum: ⏳ greybox (model/ses yok, ilkel/ton kullanılıyor) · ✅ eklendi (lisans doğrulanmış).

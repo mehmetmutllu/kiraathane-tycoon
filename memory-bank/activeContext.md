@@ -5,37 +5,42 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-09 — **E2 BİTTİ** · Faz E 2/4 · 73/80)
+## ŞU AN (2026-09-09 — **E3 BİTTİ** · Faz E 3/5 · 74/81)
 
 ```
-SORU            : Duman testi 41 denetime çıktı ama ELLE koşuluyordu (sunucuyu aç → ayrı
-                  terminalde koştur → kapat) ve protokolde "mümkünse" diye geçiyordu.
-                  Fazın kapısı tam olarak bu: bağlı ve yeşil.  [KAPANDI]
+SORU            : `settings.sound` v17'den beri KAYITTA duruyor ama hiçbir şeye bağlı değil;
+                  ses kodu da dosyası da yok. Motor nereye kurulacak?  [KAPANDI]
 ÖLÇÜLECEK KOLLAR: YOK — denge dosyasına dokunulmadı, varyant kapısı devrede değil.
-SAYILAR         : `npm run duman` → **41/41 · çıkış 0 · 25 sn** (taban dev sunucusunda)
-KARAR           : ürün kararı gerekmedi; iki TASARIM iddiası ölçümle düzeltildi (aşağıda)
-UYGULAMA        : `tools/duman.mjs` (YENİ) · `package.json` `duman` script'i ·
-                  `CLAUDE.md` + `oturum-bitir` protokolü ("mümkünse" kalktı)
-BEKÇİ           : tests/duman-kosucu.test.ts — 21 test, **18 mutasyon, on sekizi de yakalandı**
-                  · vitest 705 · duman 41/41
+SAYILAR         : gerekmedi (ses bir denge kolu değil) · vitest 734 · duman 41/41
+KARAR           : kullanıcı E3'ü ikiye böldü — SİSTEM bu tur (E3), DOSYALAR kendi turunda (E4).
+                  Mimarî karar bende kaldı ve gerekçesi `audio.ts` başında yazılı:
+                  **ses `tick.ts`'e DOKUNMAZ**, olaylar durumun FARKINDAN türetilir.
+UYGULAMA        : `src/game/audio.ts` (saf çekirdek + katalog) · `audioWeb.ts` (WebAudio arka uç)
+                  · `audioBridge.ts` (store aboneliği) · `App.tsx` bağlantısı ·
+                  `public/assets/README.md` manifesti yeniden yazıldı
+BEKÇİ           : tests/ses.test.ts — 29 test, **16 mutasyon, on altısı da yakalandı**
 ```
 
-**Ders — ARAÇ YEŞİLKEN DE YANLIŞ ŞEYİ ÖLÇEBİLİR; iki kez aynı ders.** ① Koşucu `127.0.0.1`
-yokluyordu: vite `localhost`a bağlanıyor, o ad bu makinede IPv6 `::1`e çözülüyor → sunucu
-AYAKTAYKEN "ayağa kalkmadı" deyip 60 sn bekliyordu. ② `--strictPort` yeterli SANILDI; port
-bilerek doldurulup sınandı ve varsayım çürüdü — koşu kırmızıya dönüyor **ama yanlış sebeple**:
-yoklama, portu tutan YABANCI sunucunun 200'ünü hazır sanıyor ve hata "canvas bulunamadı" diye
-görünüyor. Düzeltme: hazır sinyali **vite'ın kendi stdout'undan**; süreç ölürse anında bilinir.
-③ Aynı ders bekçide de çıktı: `--strictPort` dosya METNİNDE aranıyordu, yorumda da geçtiği için
-argümanlardan silinince bile bulunuyordu — mutasyon KAÇTI. Bekçi artık kodun ne yazdığını değil
-**ne çalıştırdığını** okuyor (`sunucuKomutu` ayrı fonksiyona çıkarıldı).
+**Üç kelepçe, üçü de gerçek bir kusuru kapatıyor:** ① AYAR — kapalıyken tek ses çalınmaz
+(bağlantının kendisi bu turun asıl işi) ② KİLİT — mobil tarayıcı dokunmadan ses çalmaz;
+kilitliyken düşen çağrılar **kuyruğa alınmaz** (birikip sonra hep birden patlamasın) ③ ARALIK —
+aynı ses `aralik`tan sık çalınmaz; mıknatıs bir karede birden çok para topluyor, kelepçe olmasa
+tek turda 40 ses üst üste binerdi (Tek Odak'ın D-080 ses karşılığı).
+
+**Dosya yoksa SENTEZ TONU** — `Model.tsx` fallback loader deseninin sesteki karşılığı. `.ogg`
+gelmeden de oyun **tam sesli** oynanıyor; E4 yalnız `public/assets/audio/`'a dosya bırakacak,
+tek satır kod değişmeyecek.
+
+**Manifest yeniden yazıldı ve bir varsayım silindi:** kaynak/lisans kolonlarında "Kenney / CC0"
+ve "Freesound / CC0 doğrula" yazıyordu — ikisi de **seçilmiş değil VARSAYILMIŞ** kaynaklardı.
+Kolonlar bilerek `?` yapıldı; seçim E4'ün işi.
 
 ## SIRADAKİ TAM ADIM
 
-**Faz E 3/4 — SES.** Teknik iş değil, önce **kaynak + lisans kararı** ister: tek stil kilidi
-seslerde de geçerli (`feedback_asset_taste` · "belirsiz lisanslı hiçbir asset commit'lenmez").
-Ardından **E4 — hareketli onboarding** (ilk 22 sn zaten ölçülü; öğretici yeni tempo icat etmez,
-var olanı görünür kılar).
+**Faz E 4/5 — SES DOSYALARI (tur adı E3b).** Teknik iş yok, **kaynak + lisans kararı** var:
+tek stil kilidi (`docs/assets.md`) seslerde henüz kurulmadı ve "belirsiz lisanslı hiçbir asset
+commit'lenmez" bağlayıcı. Motor hazır, katalog 9 olay + 2 olay-dışı (ortam · okey) sayıyor;
+karar verilince iş bir klasör bırakmaktan ibaret. Ardından **E5 — hareketli onboarding**.
 
 ## AÇIK KALEMLER (bilinen, bilerek duruyor)
 
