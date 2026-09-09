@@ -1,0 +1,204 @@
+================================================================================================================
+S5 DEKOR ÖLÇÜMÜ — elle çizilen dekor ↔ KayKit adayları
+tarih: 2026-09-09 · karakter boyu 1.75 · WALL_H 3.2 · lambri çıtası 0.98
+================================================================================================================
+
+§0 SAĞLAMA — paketler AYNI ham ölçekte mi? (S3 sağlaması: `chair_A` her pakette 0,750 ise evet)
+
+paket                         model           ham en   gerçek en   ham/gerçek
+kaykit-restaurant-bits        chair_A         0.750  0.450   ×1.67
+kaykit-furniture-bits         chair_A         0.750  0.450   ×1.67
+kaykit-city-builder-bits      bench           0.400  1.500   ×0.27
+kaykit-city-builder-bits      firehydrant     0.135  0.320   ×0.42
+kaykit-city-builder-bits      dumpster        0.566  1.800   ×0.31
+
+  furniture ≡ restaurant (chair_A ikisinde de 0,750) → `KITCHEN_S = 0,90` dekor için de geçerli.
+  CITY paketi AYRI ÖLÇEKTE: sokak mobilyası gerçeğin ~1/4,3'ü yazılmış (bench 0,400 ↔ 1,50 m).
+  → city modeline 0,90 uygulanamaz; kendi ölçeği hesaplanmalı (aşağıda "gerçek boy" kolu).
+
+================================================================================================================
+§A BUGÜNKÜ ELLE ÇİZİM — taban (Decor.tsx) + gerçek eşya oranı
+
+parça                      en    boy    der   | boy/kar. | oran en/boy | gerçek oran | gerçek en×boy | çizim/gerçek
+saksı (küçük)             0.53  0.92  0.48  |      53% |        0.58 |        0.37 | 0.28×0.75   | ×1.23
+saksı (büyük, ×1,25)      0.66  1.15  0.60  |      66% |        0.57 |        0.38 | 0.45×1.20   | ×0.96
+denizlik saksısı          0.22  0.31  0.22  |      18% |        0.71 |        0.53 | 0.16×0.30   | ×1.03
+çöp kovası (len 1,0)      0.42  0.66  0.42  |      38% |        0.64 |        0.46 | 0.30×0.65   | ×1.02
+çöp kovası (len 0,85)     0.36  0.56  0.36  |      32% |        0.64 |        0.46 | 0.30×0.65   | ×0.86
+ayaklı lamba              0.52  1.45  0.52  |      83% |        0.36 |        0.29 | 0.45×1.55   | ×0.94
+gazetelik                 0.60  0.90  0.40  |      51% |        0.67 |        0.59 | 0.50×0.85   | ×1.06
+kapı paspası              2.80  0.01  1.20  |       1% |        2.33 |        1.67 | 0.75×0.45   | ×3.73 (enden)
+konsol/büfe (len 3,0)     3.08  1.19  0.51  |      68% |        2.59 |        1.75 | 1.40×0.80   | ×1.49
+duvar tablosu             1.20  0.42  0.05  |      24% |        2.86 |        1.33 | 0.60×0.45   | ×0.93
+
+  ORAN sütunu neden var: ölçek her zaman ayarlanabilir, BİÇİM ayarlanamaz. Adayın en/boy oranı
+  gerçeğinden uzaksa o model o eşya DEĞİLDİR ve hangi ölçekte konursa konsun yanlış okunur.
+
+  ! kapı paspası: bugünkü paspas ENİ gerçeğin 3,7 katı — kapı paspası değil KORİDOR KİLİMİ ölçüsünde
+  ! konsol/büfe (len 3,0): h 1,19 üstündeki eşyalarla (radyo/tepsi/saksı); gövde tablası 0,75
+
+SAHNEDEKİ ÖRNEK SAYISI (areasOpen = 3): askiRayi×1 · duvarSaati×1 · ayakliLamba×2 · buyukSaksi×4 · copKovasi×2 · saksi×3 · aplik×4 · konsol×1 · tablo×1 · tvUnitesi×1 · pencere×3 · denizlikSaksi×2 · petek×1 · gazetelik×1 · paspas×1 · askilik×1 · semsiyelik×1
+
+================================================================================================================
+§B ADAYLAR — ham sınır kutusu, üç ÖLÇEK KOLU ve insan oranı
+
+  K1 0,90     : mobilya ölçeği (KITCHEN_S/STOOL_S) — hattın ritmiyle aynı sayı
+  K2 fit      : bugünkü parçanın BOYUNA çek (ölçek = bugünBoy / hamBoy)
+  K3 gerçekBoy: gerçek eşya boyuna çek (ölçek = gerçekBoy / hamBoy) — KASA_S deseni
+
+aday                      parça          hamEn  hamBoy  hamDer | oran  ↔gerçek | K1 en×boy×der      ins% | K2 ölçek en   | K3 ölçek en×boy  | merkez kayması
+trash_A                   copKovasi      0.127  0.052  0.133 |  2.42  0.46*|   0.11×0.05×0.12      3% | 12.601 1.60   | 12.410 1.57×0.65 | x +0.003 · z +0.000
+trash_B                   copKovasi      0.068  0.040  0.071 |  1.69  0.46*|   0.06×0.04×0.06      2% | 16.341 1.11   | 16.093 1.10×0.65 | x +0.008 · z +0.003
+dumpster                  copKovasi      0.566  0.317  0.353 |  1.78  1.50 |   0.51×0.29×0.32     16% | 2.080 1.18    | 3.782 2.14×1.20  | x +0.000 · z +0.000
+lamp_standing             ayakliLamba    1.000  2.520  1.000 |  0.40  0.29 |   0.90×2.27×0.90    130% | 0.575 0.58    | 0.615 0.62×1.55  | x +0.000 · z -0.000
+lamp_table                yeni           1.000  1.022  1.000 |  0.98  0.71 |   0.90×0.92×0.90     53% | —             | 0.440 0.44×0.45  | x +0.000 · z -0.000
+cabinet_medium            konsol         2.000  1.000  1.002 |  2.00  1.75 |   1.80×0.90×0.90     51% | 1.190 2.38    | 0.800 1.60×0.80  | x +0.000 · z +0.001
+cabinet_medium_decorated  konsol         2.042  1.827  1.002 |  1.12  1.75 |   1.84×1.64×0.90     94% | 0.651 1.33    | 0.438 0.89×0.80  | x +0.021 · z +0.001
+cabinet_small             konsol         1.000  1.000  1.002 |  1.00  0.87 |   0.90×0.90×0.90     51% | 1.190 1.19    | 0.800 0.80×0.80  | x +0.000 · z +0.001
+cabinet_small_decorated   konsol         1.048  1.618  1.104 |  0.65  0.87 |   0.94×1.46×0.99     83% | 0.736 0.77    | 0.495 0.52×0.80  | x -0.021 · z +0.052
+shelf_B_large_decorated   konsol         2.000  0.818  0.500 |  2.45  3.50 |   1.80×0.74×0.45     42% | 1.456 2.91    | 0.489 0.98×0.40  | x +0.000 · z +0.250
+pictureframe_large_A      tablo          1.010  1.200  0.200 |  0.84  0.78 |   0.91×1.08×0.18     62% | 0.350 0.35    | 0.750 0.76×0.90  | x +0.005 · z +0.100
+pictureframe_large_B      tablo          2.000  1.200  0.200 |  1.67  1.71 |   1.80×1.08×0.18     62% | 0.350 0.70    | 0.583 1.17×0.70  | x +0.000 · z +0.100
+pictureframe_medium       tablo          0.700  0.900  0.200 |  0.78  0.80 |   0.63×0.81×0.18     46% | 0.467 0.33    | 0.833 0.58×0.75  | x +0.000 · z +0.100
+pictureframe_small_A      tablo          0.500  0.600  0.200 |  0.83  0.80 |   0.45×0.54×0.18     31% | 0.700 0.35    | 0.833 0.42×0.50  | x +0.000 · z +0.100
+pictureframe_small_B      tablo          0.700  0.440  0.200 |  1.59  1.43 |   0.63×0.40×0.18     23% | 0.955 0.67    | 0.795 0.56×0.35  | x +0.000 · z +0.100
+pictureframe_small_C      tablo          0.500  0.500  0.200 |  1.00  1.00 |   0.45×0.45×0.18     26% | 0.840 0.42    | 0.800 0.40×0.40  | x +0.000 · z +0.100
+rug_rectangle_A           paspas         3.000  0.100  2.000 |  1.50  1.67 |   2.70×0.09×1.80      5% | 0.933 2.80    | 0.250 0.75×0.02  | x +0.000 · z +0.000
+rug_rectangle_B           paspas         3.000  0.100  2.000 |  1.50  1.67 |   2.70×0.09×1.80      5% | 0.933 2.80    | 0.250 0.75×0.02  | x +0.000 · z +0.000
+rug_rectangle_stripes_A   paspas         3.000  0.100  2.000 |  1.50  1.67 |   2.70×0.09×1.80      5% | 0.933 2.80    | 0.250 0.75×0.02  | x +0.000 · z +0.000
+rug_rectangle_stripes_B   paspas         3.000  0.100  2.000 |  1.50  1.67 |   2.70×0.09×1.80      5% | 0.933 2.80    | 0.250 0.75×0.02  | x +0.000 · z +0.000
+rug_oval_A                paspas         3.000  0.100  2.000 |  1.50  1.67 |   2.70×0.09×1.80      5% | 0.933 2.80    | 0.250 0.75×0.02  | x +0.000 · z +0.000
+rug_oval_B                paspas         3.000  0.100  2.000 |  1.50  1.67 |   2.70×0.09×1.80      5% | 0.933 2.80    | 0.250 0.75×0.02  | x +0.000 · z +0.000
+cactus_small_A            saksi          0.500  0.552  0.500 |  0.91  0.37*|   0.45×0.50×0.45     28% | 1.668 0.83    | 1.360 0.68×0.75  | x +0.000 · z +0.000
+cactus_small_B            saksi          0.500  0.552  0.500 |  0.91  0.37*|   0.45×0.50×0.45     28% | 1.668 0.83    | 1.360 0.68×0.75  | x +0.000 · z +0.000
+cactus_medium_A           buyukSaksi     0.880  0.827  0.837 |  1.06  0.38*|   0.79×0.74×0.75     43% | 1.390 1.22    | 1.451 1.28×1.20  | x -0.000 · z +0.000
+cactus_medium_B           buyukSaksi     0.880  0.827  0.837 |  1.06  0.38*|   0.79×0.74×0.75     43% | 1.390 1.22    | 1.451 1.28×1.20  | x -0.000 · z +0.000
+bush                      buyukSaksi     0.189  0.381  0.199 |  0.50  1.00*|   0.17×0.34×0.18     20% | 3.022 0.57    | 2.365 0.45×0.90  | x +0.005 · z -0.000
+shelf_A_small             gazetelik      1.000  0.400  0.500 |  2.50  2.67 |   0.90×0.36×0.45     21% | 2.250 2.25    | 0.750 0.75×0.30  | x +0.000 · z +0.250
+shelf_B_small_decorated   gazetelik      1.000  1.012  0.571 |  0.99  1.07 |   0.90×0.91×0.51     52% | 0.890 0.89    | 0.741 0.74×0.75  | x +0.000 · z +0.286
+book_set                  gazetelik      0.780  0.500  0.365 |  1.56  1.20 |   0.70×0.45×0.33     26% | 1.800 1.40    | 0.500 0.39×0.25  | x +0.000 · z +0.005
+
+  * = BİÇİM oranı gerçeğinden %50'den fazla sapıyor → o model o eşya olmayabilir.
+
+  ! K1 (0,90) SAPMASI — aday bugünkü parçadan yüzde kaç farklı (düz parçada ENDEN):
+    trash_A                    boy   0.05 ↔ bugün   0.66  = -93%  <<< 35% ÜSTÜ
+    trash_B                    boy   0.04 ↔ bugün   0.66  = -94%  <<< 35% ÜSTÜ
+    dumpster                   boy   0.29 ↔ bugün   0.66  = -57%  <<< 35% ÜSTÜ
+    lamp_standing              boy   2.27 ↔ bugün   1.45  = +56%  <<< 35% ÜSTÜ
+    cabinet_medium             boy   0.90 ↔ bugün   1.19  = -24%
+    cabinet_medium_decorated   boy   1.64 ↔ bugün   1.19  = +38%  <<< 35% ÜSTÜ
+    cabinet_small              boy   0.90 ↔ bugün   1.19  = -24%
+    cabinet_small_decorated    boy   1.46 ↔ bugün   1.19  = +22%
+    shelf_B_large_decorated    boy   0.74 ↔ bugün   1.19  = -38%  <<< 35% ÜSTÜ
+    pictureframe_large_A       boy   1.08 ↔ bugün   0.42  = +157%  <<< 35% ÜSTÜ
+    pictureframe_large_B       boy   1.08 ↔ bugün   0.42  = +157%  <<< 35% ÜSTÜ
+    pictureframe_medium        boy   0.81 ↔ bugün   0.42  = +93%  <<< 35% ÜSTÜ
+    pictureframe_small_A       boy   0.54 ↔ bugün   0.42  = +29%
+    pictureframe_small_B       boy   0.40 ↔ bugün   0.42  = -6%
+    pictureframe_small_C       boy   0.45 ↔ bugün   0.42  = +7%
+    rug_rectangle_A            en    2.70 ↔ bugün   2.80  = -4%
+    rug_rectangle_B            en    2.70 ↔ bugün   2.80  = -4%
+    rug_rectangle_stripes_A    en    2.70 ↔ bugün   2.80  = -4%
+    rug_rectangle_stripes_B    en    2.70 ↔ bugün   2.80  = -4%
+    rug_oval_A                 en    2.70 ↔ bugün   2.80  = -4%
+    rug_oval_B                 en    2.70 ↔ bugün   2.80  = -4%
+    cactus_small_A             boy   0.50 ↔ bugün   0.92  = -46%  <<< 35% ÜSTÜ
+    cactus_small_B             boy   0.50 ↔ bugün   0.92  = -46%  <<< 35% ÜSTÜ
+    cactus_medium_A            boy   0.74 ↔ bugün   1.15  = -35%  <<< 35% ÜSTÜ
+    cactus_medium_B            boy   0.74 ↔ bugün   1.15  = -35%  <<< 35% ÜSTÜ
+    bush                       boy   0.34 ↔ bugün   1.15  = -70%  <<< 35% ÜSTÜ
+    shelf_A_small              boy   0.36 ↔ bugün   0.90  = -60%  <<< 35% ÜSTÜ
+    shelf_B_small_decorated    boy   0.91 ↔ bugün   0.90  = +1%
+    book_set                   boy   0.45 ↔ bugün   0.90  = -50%  <<< 35% ÜSTÜ
+
+  ! ODAYA TAŞMA — duvara yaslanan/asılan parçada derinlik (kamera yan duvarı PROFİLDEN görür:
+    D-068 dersi, taşma okunurluğu ARTIRIR ama yürüme koridorunu daraltır):
+    cabinet_medium             der   0.90 ↔ bugün   0.51  = +77%
+    cabinet_medium_decorated   der   0.90 ↔ bugün   0.51  = +77%
+    cabinet_small              der   0.90 ↔ bugün   0.51  = +77%
+    cabinet_small_decorated    der   0.99 ↔ bugün   0.51  = +95%
+    shelf_B_large_decorated    der   0.45 ↔ bugün   0.51  = -12%
+    pictureframe_large_A       der   0.18 ↔ bugün   0.05  = +260%
+    pictureframe_large_B       der   0.18 ↔ bugün   0.05  = +260%
+    pictureframe_medium        der   0.18 ↔ bugün   0.05  = +260%
+    pictureframe_small_A       der   0.18 ↔ bugün   0.05  = +260%
+    pictureframe_small_B       der   0.18 ↔ bugün   0.05  = +260%
+    pictureframe_small_C       der   0.18 ↔ bugün   0.05  = +260%
+
+================================================================================================================
+§C AYAK İZİ EŞİKLERİ — gövde KENARINDAN açıklık (bugünkü bekçi yalnız MERKEZE bakıyor)
+
+  eşikler: pad yarıçapı 1.3 · masa yükseltme noktası 1 · masa katısı kenarı 0
+  ölçüm: parçanın her ÖRNEĞİ için, gövde yarı-eni çıkarılmış en küçük açıklık.
+
+parça                 konum              bugün r  → açıklık | K1 r    → açıklık | fark
+ayakliLamba           [-13.6,15.9]        0.37 →  3.16   |  0.64 →  2.89   | -0.27   (masa katısı)
+buyukSaksi            [-16.0,16.0]        0.45 →  4.25   |  0.55 →  4.15   | -0.10   (pad dishwasher)
+copKovasi             [-3.2,16.2]         0.30 →  1.05   |  0.30 →  1.05   | -0.00   (masa 1 nokta)
+saksi                 [16.0,16.0]         0.36 →  4.42   |  0.32 →  4.46   |  0.04   (pad z2table2)
+ayakliLamba           [13.4,15.9]         0.37 →  2.86   |  0.64 →  2.59   | -0.27   (pad z2table2)
+copKovasi             [14.6,13.0]         0.30 →  1.58   |  0.30 →  1.58   | -0.00   (pad z2table2)
+buyukSaksi            [-3.0,10.4]         0.45 →  0.61   |  0.55 →  0.51   | -0.10   (pad zone2)
+saksi                 [-3.0,6.6]          0.36 →  0.70   |  0.32 →  0.74   |  0.04   (pad zone2)
+buyukSaksi            [3.0,10.4]          0.45 →  1.08   |  0.55 →  0.98   | -0.10   (masa katısı)
+saksi                 [3.0,6.6]           0.36 →  0.98   |  0.32 →  1.02   |  0.04   (pad z2table3)
+konsol                [-17.1,6.0]         1.56 →  2.63   |  1.02 →  3.17   |  0.54   (pad table3)
+tablo                 [-17.3,6.0]         0.60 →  3.76   |  0.90 →  3.46   | -0.30   (pad table3)
+buyukSaksi            [-16.0,8.3]         0.45 →  1.73   |  0.55 →  1.62   | -0.10   (pad dishwasher)
+gazetelik             [16.4,14.4]         0.36 →  3.76   |  0.52 →  3.60   | -0.16   (pad z2table2)
+paspas                [0.0,16.1]          1.52 →  1.35   |  1.62 →  1.25   | -0.10   (masa 1 nokta)
+
+================================================================================================================
+§D BANT — duvara asılan aday `WALL_H` altında ve lambri çıtasının (0,98) üstünde mi?
+
+aday                      ölçek  asmaY   altKenar  üstKenar |  çıta payı  tepe payı
+pictureframe_large_A      K1 0,90      1.95  1.41  2.49  |  0.43  0.71
+pictureframe_large_A      K3 gerçek    1.95  1.50  2.40  |  0.52  0.80
+pictureframe_large_B      K1 0,90      1.95  1.41  2.49  |  0.43  0.71
+pictureframe_large_B      K3 gerçek    1.95  1.60  2.30  |  0.62  0.90
+pictureframe_medium       K1 0,90      1.95  1.54  2.36  |  0.56  0.84
+pictureframe_medium       K3 gerçek    1.95  1.57  2.33  |  0.59  0.88
+pictureframe_small_A      K1 0,90      1.95  1.68  2.22  |  0.70  0.98
+pictureframe_small_A      K3 gerçek    1.95  1.70  2.20  |  0.72  1.00
+pictureframe_small_B      K1 0,90      1.95  1.75  2.15  |  0.77  1.05
+pictureframe_small_B      K3 gerçek    1.95  1.77  2.13  |  0.79  1.08
+pictureframe_small_C      K1 0,90      1.95  1.72  2.18  |  0.74  1.02
+pictureframe_small_C      K3 gerçek    1.95  1.75  2.15  |  0.77  1.05
+
+================================================================================================================
+§E RENK — her adayın atlas gözleri ve o gözlerin ÖLÇÜLEN rengi (tahmin yok, D-100 dersi)
+
+trash_A                   [1,7]#6b5d53×16
+trash_B                   [1,7]#6b5d53×16
+dumpster                  [2,2]#008754×116 [0,4]#343434×116
+lamp_standing             [2,1]#ddd2c6×128 [0,6]#828c91×98 [2,0]#d5dcdf×78
+lamp_table                [2,1]#ddd2c6×128 [1,2]#63a0d0×122 [2,0]#d5dcdf×77
+cabinet_medium            [0,4]#b27052×236 [0,0]#995842×180 [0,5]#daae7d×136 [0,1]#995842×56
+cabinet_medium_decorated  [0,4]#b27052×236 [0,0]#995842×180 [2,6]#66b46e×174 [1,7]#bf5f30×141
+cabinet_small             [0,0]#995842×180 [0,4]#b27052×176 [0,5]#daae7d×96 [0,1]#995842×56
+cabinet_small_decorated   [0,0]#995842×180 [0,4]#b27052×176 [0,3]#b27052×110 [1,0]#f9aa4f×100
+shelf_B_large_decorated   [0,3]#b27052×322 [1,2]#63a0d0×98 [1,7]#bf5f30×97 [1,0]#f9aa4f×94
+pictureframe_large_A      [0,3]#b27052×84 [0,7]#d5dcdf×4
+pictureframe_large_B      [0,3]#b27052×84 [0,7]#d5dcdf×4
+pictureframe_medium       [0,3]#b27052×84 [0,7]#d5dcdf×4
+pictureframe_small_A      [0,3]#b27052×84 [0,7]#d5dcdf×4
+pictureframe_small_B      [0,3]#b27052×84 [0,7]#d5dcdf×4
+pictureframe_small_C      [0,3]#b27052×84 [0,7]#d5dcdf×4
+rug_rectangle_A           [1,0]#f9aa4f×48
+rug_rectangle_B           [1,2]#63a0d0×48
+rug_rectangle_stripes_A   [1,0]#f9aa4f×72
+rug_rectangle_stripes_B   [1,2]#63a0d0×72
+rug_oval_A                [1,0]#f9aa4f×172
+rug_oval_B                [1,2]#63a0d0×172
+cactus_small_A            [2,7]#53ab47×122 [1,7]#bf5f30×113 [2,5]#995842×9
+cactus_small_B            [2,6]#66b46e×122 [1,7]#bf5f30×113 [2,5]#995842×9
+cactus_medium_A           [2,7]#53ab47×235 [1,7]#bf5f30×141 [2,6]#66b46e×77 [2,5]#995842×11
+cactus_medium_B           [2,6]#66b46e×174 [1,7]#bf5f30×141 [2,7]#53ab47×138 [2,5]#995842×11
+bush                      [0,7]#be5e2f×44 [2,2]#008754×26 [0,6]#995842×12
+shelf_A_small             [0,3]#b27052×212 [0,0]#995842×64
+shelf_B_small_decorated   [0,3]#b27052×212 [2,6]#66b46e×122 [1,7]#bf5f30×113 [1,0]#f9aa4f×100
+book_set                  [1,2]#63a0d0×98 [1,7]#bf5f30×97 [1,0]#f9aa4f×94 [0,7]#d5dcdf×36
+
+================================================================================================================
+BİTTİ — karar bu dosyada YOK. Kollar `docs/dekor-raporu-s5.md` §Bulgular'da, seçim kullanıcının.
+================================================================================================================

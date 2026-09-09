@@ -1,9 +1,11 @@
 // KayKit atlası 8×4 gözlü bir renk şeridi. Bu araç bir modelin UV'lerinin HANGİ gözlere
 // düştüğünü söyler — "hangi swatch'i boyarsam ne değişir" sorusunun ölçülmüş cevabı.
 import { readFileSync } from 'node:fs';
-const dir = `public/assets/models/${process.argv[2]}/`;
 const N = 8;
-for (const ad of process.argv.slice(3)) {
+
+/** Modelin gözleri, ÇOKTAN AZA sıralı: `[['satır,kolon', vertexSayısı], ...]`. */
+export function gozler(paket, ad) {
+  const dir = `public/assets/models/${paket}/`;
   const g = JSON.parse(readFileSync(`${dir}${ad}.gltf`, 'utf8'));
   const bin = readFileSync(dir + g.buffers[0].uri);
   const say = new Map();
@@ -23,6 +25,9 @@ for (const ad of process.argv.slice(3)) {
         say.set(k, (say.get(k) || 0) + 1);
       }
     }
-  const sirali = [...say].sort((a, b) => b[1] - a[1]);
-  console.log(ad.padEnd(38), sirali.map(([k, n]) => `[${k}]×${n}`).join(' '));
+  return [...say].sort((a, b) => b[1] - a[1]);
 }
+
+if (process.argv[1].endsWith('atlas-goz.mjs'))
+  for (const ad of process.argv.slice(3))
+    console.log(ad.padEnd(38), gozler(process.argv[2], ad).map(([k, n]) => `[${k}]×${n}`).join(' '));

@@ -5,49 +5,50 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-09 — **S4 BİTTİ** · Faz S 4/12 · 79/96)
+## ŞU AN (2026-09-10 — **S5 ÖLÇÜM AÇIK** · Faz S 4/12 · 79/96)
 
 ```
-SORU            : KayKit duvar ve zemin modülleri oyunun geometrisine oturuyor mu?
-ÖLÇÜLECEK KOLLAR: dört döşeme kolu (tek parça · tam+artık · tam+yarım+artık · eş dağıtım) +
-                  kalınlık · kapı deliği · zemin karosu · tema.
-SAYILAR         : `docs/duvar-zemin-raporu-s4.md` · ham `docs/olcum-duvar.txt`.
-                  Mimari ölçek **0,80** (D-099'un öngördüğü sayı doğrulandı), modül **3,20**.
-                  9 hattın hiçbiri tam bölünmüyor. K4 eş dağıtım en kötü **%18,7** (K2 %87,5).
-                  Kalınlık 0,26 → 0,40, **kesişen katı 0**. Kapı deliği **1,28** (oyunun 4,40).
-KARAR           : **D-100 — duvar KayKit'e GEÇMEZ.** Mutfak zemini geçti; kahve varyant
-                  mağaza teması (10.000 ₺). Tezgâh+dolap teması REDDEDİLDİ.
-UYGULAMA        : `wallLook.ts` · `KayWalls.tsx` (kip, silinmedi) · `atlasUV.ts` · `DishSink.tsx`
-                  · mutfak zemini + ön hat birleşmesi + batı duvarı aksesuarları · 2 HUD düzeltmesi.
-BEKÇİ           : `wall-look` 11 test / **4 mutasyon** · `kitchen-look` 15→16 / **3 mutasyon** ·
-                  v32→v33 göç bekçisi. vitest **798** · duman **42/42** · `tsc -b` temiz.
+SORU            : Elle çizilen dekor parçaları KayKit karşılığına geçebilir mi — ölçüsü,
+                  ankrajı, ayak izi ve rengi oyunun bandına oturuyor mu?
+ÖLÇÜLECEK KOLLAR: ① ÖLÇEK — tek dekor ölçeği 0,90 (KITCHEN_S/STOOL_S) · parça-başı hedef-boya-çek
+                    (fit) · karışık (mobilya 0,90, küçük eşya gerçek boy = KASA_S deseni)
+                  ② ADAY — her parça için paketin adayları: copKovasi→`trash_A/B`·`dumpster` ·
+                    ayakliLamba→`lamp_standing` · konsol→`cabinet_medium(_decorated)`·
+                    `cabinet_small(_decorated)`·`shelf_B_large(_decorated)` · tablo→
+                    `pictureframe_large_A/B`·`_medium`·`_small_A/B/C` · paspas→`rug_rectangle_*`·
+                    `rug_oval_*` · saksı/buyukSaksi/denizlikSaksi→`cactus_small/medium_A/B`·`bush` ·
+                    gazetelik→`shelf_A_small`·`shelf_B_small(_decorated)` · konsol üstü→`lamp_table`
+                  ③ AYAK İZİ — aday büyüyünce pad / masa yükseltme noktası / masa katısı / koridor
+                    eşikleri ihlal ediliyor mu (bugünkü bekçi yalnız MERKEZE bakıyor, ayak izine
+                    bakmıyor — turun asıl riski bu)
+                  ④ BANT — duvara asılan aday `WALL_H` altında ve lambri çıtası (0,98) üstünde mi
+                  ⑤ RENK — her adayın atlas gözü + gözün gerçek rengi; paket paleti mi kalır,
+                    `atlasUV.gozDegistir` mi gerekir (`feedback_color_variety`)
+SAYILAR         : (adım 2'den sonra — `docs/dekor-raporu-s5.md` · ham `docs/olcum-dekor.txt`)
+KARAR           : (adım 3 — kullanıcı seçer)
+UYGULAMA        : (adım 4 — yalnız kararın kolu)
+BEKÇİ           : (adım 4 — `tests/decor-look.test.ts` + mutasyon sayısı)
 ```
 
-**Turun en pahalı dersi: ölçüm doğru soruyu sordu, ama YETERİNCE GENİŞ sormadı.** Rapor gerilmeyi
-**her hat içinde** ölçtü ve K4'ü kazanan ilan etti (%18,7). Kullanıcı ekranda *"her parça arasında
-fark var"* dedi — çünkü **hatlar arasında** modül eni 3,00…3,80 (%27 fark) ve iki hattın buluştuğu
-köşede yan yana düşüyor. Ölçüt bir parçanın kendi içindeydi, oysa göz **komşuluğu** görüyor.
-Tekrar denenirse çözüm bina için tek ortak adımdır.
-
-**İkinci ders — kapsam.** Paketin paletinden renk SEÇMEK, o seçimi bir ürün hattına çevirmeye
-yetmiyor. Tezgâh+dolap+zemini kapsayan beş kollu bir tema seti kuruldu ve kullanıcı
-*"bunları sen kendin uydurmuşsun"* dedi. Renk paletten gelse bile **kombinasyon tasarım kararıdır
-ve onaysız çoğaltılmaz.** Satılan tek kalem zemin kaldı, mutfak bugünkü hâliyle.
-
-**Üçüncü ders — ölçüm yöntemi de ölçülmeli.** Düşük-poli modelde delik/profil **vertex sayımıyla
-bulunamaz** (düz yüzün ortasında vertex yoktur): kapı 0,68 ölçüldü, gerçeği 1,28. Doğrusu üçgene
-ışın atmak. Renk de tahminle seçilemez → `tools/atlas-renk.mjs`.
-
-**Bekçi bu turda iki GERÇEK hata yakaladı** (kod yazılırken, gözle değil): peçetelik rafı duvarın
-tepesini 0,17 aşıyordu · havluluk çay ocağının kutusuna 0,12 giriyordu. Ayrıca "her duvar
-ünitesinin tepesi WALL_H'de" kuralı **daraltıldı, gevşetilmedi**.
+**Turun bilinen tuzakları (S3/S4'ten devralınan, tekrar ısırmasın):**
+- **Modül karosu ölçek değildir** (S3). Paketin 2×2'lik karosunda yazılı KÜÇÜK eşya 0,90'da absürt
+  büyüyor (kasa dersi → `KASA_S = 0,45`). Çöp kovası, saksı, masa lambası aynı sınıfta.
+- **Origin ortalı sanılmaz** (S4, sucuk dersi): görsel merkez kayması ölçülür, telafi edilir.
+- **Kombinasyon onaysız çoğaltılmaz** (D-100): renk paletten gelse bile beş kollu tema kurulmaz.
+- **HALI YOK** (kullanıcı üç kez reddetti — `config/decor.ts` başlığı): `rug_*` yalnız **paspas**
+  adayıdır, salona halı serilmez.
+- **Dekor collision'sız kalır**: hiçbir aday nav/çarpışma listesine girmez (M2 dersi).
 
 ## SIRADAKİ TAM ADIM
 
-**S5 — dekor takası.** Elle çizilen 17 parçanın 8'i: `trash_A/B` · `lamp_standing` · `lamp_table` ·
-`rug_*` · `pictureframe_*` · `cabinet_*` · `cactus_*` (hepsi furniture-bits, diskte). Kalan 6'sı
-elde yok, elle kalır (askılık · duvar saati · aplik · askı rayı · şemsiyelik · petek).
-**Not:** `atlasUV.gozDegistir` artık hazır — dekor renkleri de atlas kopyalamadan seçilebilir.
+**Adım 2 — ÖLÇ.** `tools/olcum-dekor.ts` → kısa doğrulama (paket ham ölçeği gerçekten 0,90 mı:
+`chair_A` sağlaması) → tam koşu → `docs/olcum-dekor.txt` + `docs/dekor-raporu-s5.md` §Bulgular
+(KARAR BÖLÜMÜ BOŞ) → **commit #1**. Sonra tek karar paketi.
+
+**KARAR PAKETİNE EKLENECEK (bu turda çıktı, sıraya alındı):**
+- **S4'ün iki sözü** kendi turunda mı kalsın, S5'e mi binsin: ① banket masası
+  `table_round_A_small` (`tableLook.ts`, D-073'ün dondurduğu ölçüler) ② mağaza kartlarının gerçek
+  oyun render'ı (`tools/tema-kapak.mjs` kadrajı bozuk).
 
 **KULLANICI KARARI BEKLEYEN ÜÇ ŞEY** (hiçbiri S5'i bloklamıyor):
 1. **Ses kaynağı** (S8) — asset panosu §7, dört kol. D-096'yı kısmen geri alır.
@@ -59,11 +60,6 @@ elde yok, elle kalır (askılık · duvar saati · aplik · askı rayı · şems
 
 ## AÇIK KALEMLER (bilinen, bilerek duruyor)
 
-- **S4'te söz verilip YAPILMAYAN:** ① banket masası `table_round_A_small`e geçecekti (kullanıcı
-  istedi, tur doldu — `tableLook.ts`e dokunur, D-073'ün dondurduğu ölçülerin turudur) ·
-  ② mağaza kartlarının **gerçek oyun render'ı** (kullanıcı: *"öbür masalardaki gibi kalitesiz
-  olmasın"*) — `tools/tema-kapak.mjs` yazıldı ama kadrajı kötü (DEV rozeti, oyuncu, pad'ler
-  kadrajda); kart hâlâ iki renkli swatch gösteriyor.
 - **`tsc -b` kapanışa girmeli** — iki turdur elle yakalanıyor, kural olmadıkça yine kaçar.
 - **G-01 çay/bulaşık toplama masanın her tarafından olmuyor · G-02 çay ocağından alma güvenilmez ·
   G-03 2. masa görevinde kamera kendiliğinden kayıyor** — üçü de HATA, kendi turunu ister. (H1.)
