@@ -2681,3 +2681,52 @@ yazarken GERÇEK bir hata buldu: gün dönümü tabanı çevrimdışı gelirden 
 kazanılan ₺ bugünün "kazan" görevini bedava dolduruyordu. Taban artık offline SONRASI alınıyor.
 vitest **661** · duman **41/41** (32 → 41: dokuz yeni denetim) · **kayıt sürümü artmadı** (v32,
 `daily` additive).
+
+## D-095 — Meta katmanın yığını ölçüldü: D-087 KAPANDI, zincir borcu %20,1 KABUL (2026-09-09, D9)
+
+**Ölçüm turu — kod yazılmadı, `economy.config.ts` hiç değişmedi.** Faz D üç ödül kanadı ekledi
+(H hedef çarpanı D-090 · R İtibar taşıma D-092 · E Usta+günlük görev D-093/094) ama **her tur
+ötekilerin kancasını kapatarak ölçtü**; yürürlükteki oyunun tempo penceresi hiçbir tabloda yoktu.
+Sekiz bileşim tek koşuda ölçüldü. `docs/meta-pencere-raporu-d9.md`.
+
+**① D-087 KAPANDI.** Yığın açıkken (HRE) hüküm profilinde 20 dk'yı aşan alım **0**, en uzun
+bekleme **18,0 dk** — ölçütün 2 dk altında. Gözlem bandı 6 → 2 ihlal, 43,4 → 32,0 dk. Beş turdur
+açık duran kalem bitti.
+
+**② Kapatan katman R'dir, "meta katman" değil.** H ve E tek başlarına hükmü kımıldatmıyor
+(23,9 → 22,7 ve 22,6 dk, ikisi de eşiğin üstünde); yalnız R kapatıyor. Ters yönde okunuşu:
+**R geri alınırsa D-087 yeniden açılır** (HE satırı: hüküm 1, en uzun 39,0 dk).
+
+**③ Katmanlar TOPLANIYOR — D-090 Bulgu 10 bir kat yukarıda TEKRARLAMADI.** İki ihlal sayısında
+fark **tam sıfır**, sürekli iki ölçüde %1,5-2,9. Bu, Bulgu 10'un sınırını da adlandırıyor:
+toplanamama **knob'lar arasında** çıkıyor (aynı tavana biniyorlar), **katmanlar arasında**
+çıkmıyor (üçü üç ayrı yere biniyor: gelir · taşıma · bahşiş+arz).
+
+**④ KARAR: zincir borcu %−20,1 kabul edildi, eşik yazıldı.** Kat 1 ömrü 8,48 → **6,77 sa**.
+Üç ölçülmüş geri-alma kolu da reddedildi: R'yi kısmak D-087'yi yeniden açıyor · H'yi kısmak %3,1
+zincir için ölçülen tempoyu veriyor · E'yi kısmak %1,2 için Usta katmanını siliyor. Zincirin
+%78'ini yiyen katman aynı zamanda hükmü kapatan tek katman — **"pahalıyı kıs, ucuzlarla idare et"
+diye bir kol ölçümde YOK.**
+
+**Yürürlükteki eşik artık İKİ sayı:** tek kol için D1'in **%7'si aynen duruyor**; yığın için
+yeni ve yazılı sayı **%−20,1 · ŞERİT tabanı 6,77 sa**. D-092'nin "sayısı yazılı istisna"sı
+istisna olmaktan çıktı, yığının ölçülmüş hâli oldu.
+
+**⑤ Açılış sağlam; tek sızıntı 1 saniye ve yalnız H'den.** Rapor önce "sekiz satırın sekizinde
+birebir aynı" diye yazılmıştı — **bekçi o cümleyi çürüttü**: aracın dakikaya yuvarlaması
+otomasyondaki 366 → 365 sn farkını gizliyordu. Sızıntı %0,27 ve D-079'un üç ölçütü sekiz
+bileşimin sekizinde de geçiyor. **Süreç dersi: yuvarlanmış bir kolon "fark yok" diye okunamaz.**
+
+**⑥ Kelepçe hâlâ TAŞIMADA** (%93,0 → %91,3) — üçüncü kez aynı sonuç (D6 · D7 · D9). Bir sonraki
+denge kolunun kanalı değişmedi.
+
+**Bekçi.** `tests/meta-pencere.test.ts` 22 test, **10 mutasyon, dokuzu yakalandı**. M5
+(`tipMult` 1,5 → 1, Usta etkisi ölür) **ilk hâlde kaçtı** — E'nin ihlal sayısındaki izi zaten
+sıfır olduğu için 21 testin 21'i de geçiyordu; eklenen iddia E'nin tek ölçülebilir izini
+(ŞERİT %−1,7) kilitledi. M8 (`diamondsPerDay` 10 → 0) **bilerek kaçıyor**: ölçüldü, 12 sa
+penceresinde tempo saniyesi saniyesine aynı (ŞERİT 30.017 sn her iki hâlde de) — yalnız elmas
+defteri kımıldıyor. O kanal `tests/gunluk-gorev.test.ts`te kilitli; **bir sayı iki bekçiye
+birden yazılmaz, onu ölçen bekçide kalır.**
+
+**Açılan kalem:** zinciri UZATAN kollar hiç ölçülmedi. `outputMultByLevel` yok ve `b1` (basamak
+bölme) erken oyuna dokunmadan denenemiyor — ikisi de tam oraya bakıyor, kendi turunu ister.

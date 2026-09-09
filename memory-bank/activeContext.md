@@ -5,40 +5,40 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-09 — **D9 açıldı** · Faz D bitti (8/8) · ÖLÇÜM turu · 71/79)
+## ŞU AN (2026-09-09 — **D9 BİTTİ** · **Faz D 9/9 ✅** · 72/80)
 
 ```
-SORU            : Meta katmanın DÖRT kanadı (hedef çarpanı · İtibar · Usta · günlük görev)
-                  bugüne dek HEP AYRI AYRI ölçüldü — her tur ötekilerin kancasını KAPATTI.
-                  Hepsi aynı anda açıkken, yani YÜRÜRLÜKTEKİ oyunda, D-087'nin 20 dk
-                  penceresi ne? Ve D-092'nin bilerek ödediği %15,5 zincir borcu ne oldu?
-ÖLÇÜLECEK KOLLAR: Yığın ablasyonu — 8 satır, hiçbiri config'e dokunmaz (dördü de KANCA):
-                  M0   dört kanca KAPALI (D1 tabanı — ihlal 6 / 43,4 dk, kıyas noktası)
-                  H    yalnız hedef çarpanı        (hUYGF · D-090)
-                  R    yalnız İtibar taşıma çarpanı (rUYG  · D-092)
-                  E    yalnız Usta + günlük görev   (eUYG  · D-093/094)
-                  HR · HE · RE   ikili birleşimler (kaybın NEREDE olduğunu adresler)
-                  HRE  ÜÇÜ BİRDEN = **yürürlükteki gerçek oyun** — bu satır hiç ölçülmedi
-                  Okunan kolonlar: İdealize ihlal (HÜKÜM) · Normal ihlal (gözlem) · en uzun
-                  bekleme · ŞERİT (zincir borcu) · açılışın üç ölçütü (D-079) · sapma
-SAYILAR         : (adım 2'den sonra dolar → docs/meta-pencere-raporu-d9.md §Bulgular)
-KARAR           : (adım 3 — kullanıcı seçer)
-UYGULAMA        : (adım 4 — yalnız kararın kolu; bu tur ÖLÇÜM turudur, kol açılırsa açılır)
-BEKÇİ           : (adım 4)
+SORU            : Meta katmanın üç kanadı (H hedef çarpanı · R İtibar · E Usta+günlük görev)
+                  hep AYRI ölçüldü — her tur ötekilerin kancasını kapattı. Hepsi açıkken,
+                  yani yürürlükteki oyunda, D-087'nin penceresi ne?  [KAPANDI]
+ÖLÇÜLECEK KOLLAR: sekiz bileşim — M0 · H · R · E · HR · HE · RE · HRE (config'e dokunmadan)
+SAYILAR         : `docs/meta-pencere-raporu-d9.md` §Bulgular · ham `docs/olcum-meta-penceresi.txt`
+                  HRE: hüküm **0 ihlal / 18,0 dk** · gözlem 2 / 32,0 dk · ŞERİT 6,77 sa (%−20,1)
+KARAR           : D-095 — ① D-087 KAPANDI ② kapatan katman **R'dir** (H ve E kımıldatmıyor)
+                  ③ katmanlar TOPLANIYOR (Bulgu 10 knob'lar arası, katmanlar arası değil)
+                  ④ zincir borcu %−20,1 KABUL, eşik yazıldı: tek kol %7 durur, yığın %−20,1
+UYGULAMA        : **KOD YAZILMADI** — `economy.config.ts` hiç değişmedi. Yeni: araç
+                  `tools/olcum-meta-penceresi.ts` · rapor · D-095 · bekçi.
+BEKÇİ           : tests/meta-pencere.test.ts — 22 test, **10 mutasyon, dokuzu yakalandı**
+                  (M5 ilk hâlde kaçtı → E'nin tek ölçülebilir izi yazıldı · M8 ölçülerek
+                  bilerek bırakıldı, kardeş bekçide kilitli) · vitest 684 · duman 41/41
 ```
 
-**Turun gerekçesi tek cümle:** D-090 Bulgu 10 "uygulanan hâl knob'ların toplamı çıkmadı"
-dedi, D-093 aynı şeyi ÜÇÜNCÜ kez tekrarladı (`eUYG` %-1,6 · tek-knob satırları %-3,0).
-Aynı hata bir kat yukarıda da duruyor olabilir: **katmanların toplamı da katmanların
-toplamı olmayabilir.** Bu tur onu kapatır — beş turdur açık duran D-087 kalemi de burada.
+**Turun dersi — BEKÇİ RAPORDAKİ BİR CÜMLEYİ ÇÜRÜTTÜ.** Rapor "açılış sekiz satırın sekizinde
+birebir aynı" diyordu; araç dakikaya yuvarladığı için üç satır da "6,1 dk" görünüyordu. Bekçi
+sayıyı ham sorunca otomasyonun H açıkken 366 → 365 sn kaydığı çıktı (%0,27, ölçütler geçiyor).
+**Yuvarlanmış bir kolon "fark yok" diye okunamaz** — tabloya bakan göz bunu bulamazdı.
 
+**İkinci ders — kaçan mutasyon bekçinin değil KATMANIN zayıf yerini gösterdi.** `tipMult`
+1,5 → 1 yapılınca 21 testin 21'i geçiyordu, çünkü E'nin ihlal sayısındaki izi zaten sıfır.
+Eklenen iddia E'nin tek ölçülebilir izini (ŞERİT %−1,7) kilitledi. Diğer kaçan (M8, günlük
+görev) ölçüldü: 12 sa'de tempo saniyesi saniyesine aynı — kardeş bekçide kilitli, buraya
+ikinci kez yazılmadı.
 
 ## SIRADAKİ TAM ADIM
 
-**Adım 2 — ÖLÇ.** `tools/olcum-meta-penceresi.ts` (YENİ): dört kancayı aynı koşuda açıp
-kapatan ablasyon; kısa koşu ile araç doğrulanır (her kol izi kımıldattı mı, korunum 0 mı),
-sonra `OLCUM=tam` TABAN + 8 satır → `docs/meta-pencere-raporu-d9.md` §Bulgular →
-**commit #1 (KARAR BÖLÜMÜ BOŞ)**. Ardından adım 3: tek karar paketi.
+**Faz D BİTTİ (9/9) — bütün kalemleri kapalı.** Sıradaki iş **Faz E (2/4)**: ses ·
+hareketli onboarding · duman testinin `package.json`'a bağlanması.
 
 ## AÇIK KALEMLER (bilinen, bilerek duruyor)
 
@@ -51,10 +51,11 @@ sonra `OLCUM=tam` TABAN + 8 satır → `docs/meta-pencere-raporu-d9.md` §Bulgul
 - **Kalıcı çarpan GÖRÜNMEZ bir ödüldür** (D-090 ③) ve **`carryMult` oyuncunun GENEL hızına
   biniyor** (D-092): ikisi de sim'in ölçemediği eksende — **telefonda oynanınca okunacak**
   (L13'te +%24 hız fazla mı çevik?).
-- **Zincirin %7 eleme eşiği D-092'de BİLEREK aşıldı** (%-15,5) — emsal DEĞİL, sayısı yazılı
-  istisna. **Kat 1 içeriği %15,5 hızlı tükeniyor**; Faz F öncesi yeniden okunmalı. D7a'nın
-  Usta kolu aynı zincire dokunuyor: eleme eşiği bu turda yine %7 kabul edilir.
-- **D-087'nin tempo penceresi BU TURDA ÖLÇÜLÜYOR** (D9) — sonuç §Bulgular'a düşecek.
+- **Zincir eşiği artık İKİ sayı (D-095):** tek kol için D1'in **%7'si aynen duruyor**; YIĞIN
+  için yeni ve yazılı sayı **%−20,1 · ŞERİT tabanı 6,77 sa**. D-092'nin istisnası istisna
+  olmaktan çıktı. **Kat 1 ömrü 8,48 → 6,77 sa** — Faz F içerik planı bunu böyle okumalı.
+- ~~D-087'nin tempo penceresi~~ → **D9'da KAPANDI (D-095).** **Yeni kalem:** zinciri UZATAN
+  kollar hiç ölçülmedi — `outputMultByLevel` ve `b1` tam oraya bakıyor, kendi turunu ister.
 - **Masa parasının payı 0,34 br** (D5 Bulgu 5) — yapısal: masa ayak izi büyürse ya da
   `money.pickupRadius` küçülürse ilk kırılacak yer burası.
 - **Bekçi bandının çözünürlüğü** — `tests/hedefler.test.ts`'in zincir-bedeli bandı %3-5.

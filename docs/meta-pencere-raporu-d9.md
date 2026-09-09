@@ -95,11 +95,27 @@ Katman başına bedel ve karşılığı:
 Zincirin %78'ini R yiyor ve hükmü kapatan da o. **Ucuz olan iki katman (H %−4,0 · E %−1,7)
 tempoyu zaten kımıldatmıyor** — yani "pahalı olanı kısıp ucuzlarla idare et" diye bir kol yok.
 
-### Bulgu 5 — Açılış SEKİZ satırın sekizinde de birebir aynı
+### Bulgu 5 — Açılış sağlam; tek sızıntı **1 saniye** ve yalnız H'den *(bekçi düzeltti)*
 
-`ilk alım 22 sn · açılış en uzun 1,6 dk · otomasyon 6,1 dk` — D-079'un üç ölçütü hiçbir
-bileşimde kımıldamadı. **Meta katman erken oyuna hiç sızmıyor.** D4'te `hG` kolu tam buradan
-elenmişti (otomasyon 6,1 → 1,7 dk); yürürlükteki üç katmanın hiçbirinde o sızıntı yok.
+Tablo sekiz satırda da `ilk alım 22 sn · açılış en uzun 1,6 dk · otomasyon 6,1 dk` basıyor ve
+bu rapor önce "sekiz satırın sekizinde birebir aynı" diye yazıldı. **Bekçi testi o cümleyi
+çürüttü:** aracın dakikaya yuvarlaması bir farkı gizliyordu. Saniye çözünürlüğünde:
+
+| bileşim | ilk alım | açılış en uzun | otomasyon |
+|---|---|---|---|
+| M0 | 22 sn | 93 sn | **366 sn** |
+| H | 22 sn | 93 sn | **365 sn** |
+| R | 22 sn | 93 sn | 366 sn |
+| E | 22 sn | 93 sn | 366 sn |
+| HRE | 22 sn | 93 sn | **365 sn** |
+
+Sızıntı **gerçek ama tek saniye** (%0,27) ve **yalnız H'den** geliyor: hedef koleksiyonunun ilk
+kazanç kademesi (1.000 ₺) garsondan önce açılıyor, çarpan bir tick sonra yürürlüğe giriyor.
+D-079'un üç ölçütü (< 90 sn · ≤ 2 dk · < 15 dk) sekiz bileşimin sekizinde de geçiyor; D4'te
+`hG` kolunun elendiği sızıntı (otomasyon 6,1 → 1,7 dk) burada **yok**.
+
+Süreç dersi: **yuvarlanmış bir kolon "fark yok" diye okunamaz.** Bekçi sayıyı ham hâliyle
+sorduğu için buldu; tabloya bakan göz bulamazdı.
 
 ### Bulgu 6 — Kelepçe hâlâ TAŞIMADA; yığın onu yerinden oynatmadı
 
@@ -130,7 +146,69 @@ E'nin gerçek işi gün ölçeğinde, bu tabloda değil.
 
 ---
 
-## §Karar
+## §Karar — D-095
 
-*(Bu bölüm bilerek BOŞTUR — commit #1 ölçümü taşır, karar paketi ondan sonra sorulur.
-D-084 §3.2 sıra kilidi.)*
+**Zincir borcu %−20,1 KABUL EDİLDİ; eşik yazıldı. Kod değişmedi.**
+
+Kullanıcıya üç ölçülmüş kol sunuldu:
+
+| kol | ΔŞERİT | hüküm | en uzun (Normal) | sonuç |
+|---|---|---|---|---|
+| **HRE — kabul et** | −20,1% | **0** | 32,0 dk | **✓ SEÇİLDİ** |
+| HE — R'yi kıs | −5,6% | 1 | 39,0 dk | reddedildi: D-087'yi yeniden açıyor |
+| RE — H'yi kıs | −17,0% | 0 | 33,7 dk | reddedildi: %3,1 zincir için ölçülen tempoyu veriyor |
+| HR — E'yi kıs | −18,9% | 0 | 33,8 dk | reddedildi: %1,2 zincir için Usta katmanını siliyor |
+
+**Yürürlükteki eşik iki sayı oldu:**
+
+- **Tek kol** için D1'in %7 eleme eşiği **aynen duruyor** — bir kaldıraç zincirden %7'den
+  fazlasını alıyorsa gerekçe ister.
+- **Yığın** için yeni ve yazılı sayı: **%−20,1 · ŞERİT tabanı 6,77 sa.** D-092'nin "sayısı
+  yazılı istisna"sı böylece istisna olmaktan çıkıp yığının ölçülmüş hâli oldu.
+
+**Gerekçe:** hüküm temiz (18,0 dk, ölçütün 2 dk altında), açılış temiz, ve ölçüm gösterdi ki
+üç katmanın hiçbiri "ucuza geri alınabilir" değil — zincirin %78'ini yiyen R aynı zamanda
+hükmü kapatan tek katman (Bulgu 2), ucuz iki katman ise tempoyu zaten kımıldatmıyor (Bulgu 4).
+Kat 1 içeriğinin 6,77 saatlik ömrü mobil idle için kısa değil ve boşluğu meta katman içerikle
+değil ilerlemeyle dolduruyor.
+
+**Kapanan kalem:** D-087'nin beş turdur açık duran "meta katman pencereleri doldurdu mu"
+sorusu — cevap **evet**, hüküm profilinde ihlal sıfır.
+
+**Açılan kalem:** zinciri UZATAN kollar hiç ölçülmedi. Zaten açık duran iki kalem tam oraya
+bakıyor (`outputMultByLevel` yok · `b1` basamak bölme erken oyuna dokunmadan denenemiyor).
+Kendi turunu ister; bu turda kod yazılmadı.
+
+## §Bekçi
+
+`tests/meta-pencere.test.ts` — **22 test**, **10 mutasyon**, dokuzu bu bekçide yakalandı.
+
+| mutasyon | sonuç |
+|---|---|
+| M1 `carryBonusPerLevel` 0,02 → 0 (R öldürüldü) | 7 test kırıldı ✓ |
+| M2 `carryBonusPerLevel` → 0,04 | 5 test kırıldı ✓ |
+| M3 `incomeBonusTotal` 0,10 → 0 (H öldürüldü) | 3 test kırıldı ✓ |
+| M4 `incomeBonusTotal` → 0,30 | 5 test kırıldı ✓ |
+| M5 `tipMult` 1,5 → 1 (Usta etkisi öldürüldü) | **İLK HÂLİNDE KAÇTI** → bant eklendi → ✓ |
+| M6 `tipMult` → 3 | 6 test kırıldı ✓ |
+| M7 `diamondCost` 25 → 500 (Usta alınamaz) | 1 test kırıldı ✓ |
+| M8 `diamondsPerDay` 10 → 0 | **KAÇTI — bilerek** (aşağıda) |
+| M9 `tipBase` 2 → 4 | 4 test kırıldı ✓ |
+| M10 `tipMult` → 1,2 (hafif doz) | 1 test kırıldı ✓ |
+
+**M5 kaçtı ve bekçinin zayıf yerini gösterdi:** Usta'nın etkisi tamamen ölürken 21 testin 21'i
+de geçiyordu, çünkü E'nin ihlal sayısındaki izi zaten sıfırdı. Eklenen iddia E'nin **tek
+ölçülebilir izini** kilitliyor: ŞERİT'i en az %1 kısaltmalı (ölçülen %−1,7).
+
+**M8 bilerek kaçıyor ve bu bir eksik değil, ölçülmüş bir model sınırıdır.** Günlük görev arzı
+kesilince 12 sa penceresinde değişen tek şey elmas defteridir:
+
+| | kazanılan 💎 | kalan 💎 | Usta alımı | ŞERİT | en uzun | ihlal |
+|---|---|---|---|---|---|---|
+| `diamondsPerDay: 10` | 135,47 | 10,47 | 5 | 30.017 sn | 2465,0 sn | 6 |
+| `diamondsPerDay: 0` | 132,00 | 7,00 | 5 | **30.017 sn** | **2465,0 sn** | 6 |
+
+Tempo saniyesi saniyesine aynı — D-093'ün "12 sa yarım gündür, günlük arz bu tabloda küçük
+kalır" model sınırının sayısal karşılığı. Kanal guardsız değil: `tests/gunluk-gorev.test.ts`
+aynı mutasyonda kırılıyor (1 test). **Bir sayıyı iki bekçiye birden yazmak yerine, onu ölçen
+bekçide bırakmak doğrudur.**

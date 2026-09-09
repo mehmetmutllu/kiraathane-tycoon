@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 79 · YAPILAN 71 · %90):**
+**Oturum bütçesi (TOPLAM 80 · YAPILAN 72 · %90):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -22,10 +22,10 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | B model geçişi + maket taşıması | 13/13 ✅ |
 | | **C zincir ve denge** | **5/5 ✅** |
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
-| | D meta katman | 8/8 ✅ |
+| | D meta katman | 9/9 ✅ |
 | | E arayüz ve cila | 1/4 🔧 |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **43/51** |
+| **Program toplam** | | **44/52** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -33,7 +33,8 @@ defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:**
 KALIBI kendi turunu istedi (D3b) → Faz D 5 → 6 kalem, toplam 76 → 77. **Aynı gün:** nav ızgarası ↔
 oyuncu çarpışması bilinen-hata listesinden çıkıp kendi turu oldu (D5) → Faz D 6 → 7, toplam 77 → 78.
 **Aynı gün:** D7 kullanıcı kararıyla ölçüm (D7a) ve UI (D7b) olarak ikiye bölündü → Faz D 7 → 8,
-toplam 78 → 79.
+toplam 78 → 79. **Aynı gün:** meta katmanın yığını beş turdur açık duran D-087 ölçümü olarak
+kendi turunu aldı (D9) → Faz D 8 → 9, toplam 79 → 80.
 
 **v1 kapsam çizgisi:** prestij · Kat 2 · sipariş nesnesi · aktif WC döngüsü · dekor instancing
 **v1.1'e**; v1 = Kat 1 + elmas/Usta + offline tavan + reklam/IAP + mağaza.
@@ -84,7 +85,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
 **asıl sınav tick-temelli bir denge turu.** Ölçülen gerçek kazançlar: üç dosyalık okuma seti
 (oturum başı), uzun koşuların paralel arkaplanı, hazır ölçüm iskeleti.
 
-## Faz D — META KATMAN (8/8) ✅
+## Faz D — META KATMAN (9/9) ✅
 - ✅ **D1 — geç-oyun eğrisinin 20 dk ihlali ölçüldü ve ölçütün PROFİLİ sabitlendi (D-087)** ·
   dokuz kol varyant olarak ölçüldü, dozlar tahmin değil **çözüldü**; hepsi elendi, ölçütün
   kendisi (`o1`) alındı. Ölçüt kardeş üçüyle aynı profilde (İdealize) hüküm verir ve geçiyor
@@ -171,6 +172,20 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   tabanı çevrimdışı gelirden ÖNCE alınıyordu, gece kazancı bugünün görevini bedava dolduruyordu.
   vitest **661** · duman **41/41** · **kayıt sürümü artmadı** (v32, `daily` additive).
 
+- ✅ **D9 — meta katmanın YIĞINI ölçüldü; D-087 KAPANDI, zincir borcu %20,1 KABUL (D-095)** ·
+  üç ödül kanadı (H hedef çarpanı · R İtibar taşıma · E Usta+günlük görev) bugüne dek hep
+  ötekilerin kancası KAPALI ölçülmüştü; sekiz bileşim ilk kez tek koşuda okundu. Yığın açıkken
+  hüküm profilinde ihlal **0**, en uzun **18,0 dk** (gözlem 6 → 2 ihlal, 43,4 → 32,0 dk).
+  **Kapatan katman R'dir**, H ve E tek başlarına kımıldatmıyor. **Katmanlar TOPLANIYOR** —
+  D-090 Bulgu 10'un toplanamaması knob'lar arasındaydı, katmanlar arasında değil. Zincir
+  8,48 → **6,77 sa** (%−20,1): üç geri-alma kolu da ölçülüp reddedildi, eşik yazıldı (tek kol
+  %7 duruyor; yığın için yeni sayı %−20,1). `docs/meta-pencere-raporu-d9.md` · araç
+  `tools/olcum-meta-penceresi.ts` · bekçi `tests/meta-pencere.test.ts` (22 test, **10 mutasyon,
+  dokuzu yakalandı**; M5 ilk hâlde kaçtı ve E'nin ölçülebilir tek izini yazdırdı, M8 ölçülerek
+  bilerek bırakıldı) · **kod YAZILMADI, `economy.config.ts` hiç değişmedi.**
+  **Bekçi bir yazım hatası da düzeltti:** rapor "açılış sekiz satırda birebir aynı" diyordu;
+  saniye çözünürlüğünde otomasyon H açıkken 366 → 365 sn kayıyor (%0,27, ölçütler geçiyor).
+
 > D2-D7 `docs/plan-kat1-yayin.html` §D kapsamından türetildi; **sırası açık** — her tur başında
 > seçilir. Ayrıca Faz D'de bekleyen bilinen bir hata var: **nav ızgarası ↔ oyuncu çarpışması**.
 
@@ -182,6 +197,10 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
 - ~~Normal profil 6. saatte 43,4 dk bekliyor~~ → **D6'da ödendi (D-092):** 41,2 → **33,8 dk**,
   ihlal 5 → 2, İdealize hükmü 1 → **0**. Bedeli zincirin %15,5'i — %7'lik eleme eşiğinin
   bilerek aşıldığı **ilk** karar. Sonraki turlar bunu emsal değil, sayısı yazılı istisna okusun.
+- ~~Meta katman D-087'nin pencerelerini dolduruyor mu?~~ → **D9'da KAPANDI (D-095):** evet,
+  yığın açıkken hüküm profilinde ihlal **0** (18,0 dk). **Yeni açık kalem:** zincir borcu
+  %−20,1 kabul edildi ama zinciri UZATAN kollar hiç ölçülmedi — `outputMultByLevel` ve `b1`
+  tam oraya bakıyor, kendi turunu ister.
 - ~~Geç-oyun eğrisi 20 dk ölçütünü ihlal ediyor~~ → **D1'de kapandı (D-087):** ölçütün profili
   sabitlendi, hüküm geçiyor. **Kabul edilen risk:** Normal profil oyuncusu 6. saatte `servis L6`
   için 43,4 dk bekliyor — bilerek ödenmedi, gözlem bandında görünür kalıyor. **Faz D bitince
