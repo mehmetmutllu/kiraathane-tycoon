@@ -101,7 +101,10 @@ export function progressOku(metin) {
   return p;
 }
 
-/** Panonun `<script id="durum">` JSON bloğunu ayıklar. */
+/** Panonun `<script id="durum">` JSON bloğunu ayıklar.
+ *  DİKKAT: regex açılış etiketinden sonra düz satır sonu bekler — pano dosyası **LF** olmak zorunda.
+ *  Düzenleyici/betik CRLF yazarsa araç "JSON bloğu bulunamadı" der ve panoyu yazmaz (2026-09-09'da
+ *  bir kez oldu: dosyayı Windows kipinde yeniden yazan bir betik bütün satır sonlarını çevirdi). */
 export function panoOku(html) {
   const m = html.match(/(<script type="application\/json" id="durum">\n)([\s\S]*?)(\n<\/script>)/);
   if (!m) throw new Error('panoda `id="durum"` JSON bloğu bulunamadı');

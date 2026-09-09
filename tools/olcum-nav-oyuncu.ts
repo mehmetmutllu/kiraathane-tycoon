@@ -24,17 +24,16 @@
 import {
   LAYOUT,
   NAV_CELL,
-  activeSolids,
-  navSolids,
   clampToOpenAreas,
   getNavGrid,
+  getPlayerNavGrid,
   PAD_RADIUS,
   TABLE_UP_RADIUS,
   LAVABO,
   servicePlace,
   openServices,
 } from '../src/game/layout';
-import { buildNavGrid, findNavPath, type NavGrid } from '../src/game/nav';
+import { findNavPath, type NavGrid } from '../src/game/nav';
 import { MAX_AREAS, areaTableSlots, areaTableStart } from '../src/game/world';
 import { economyConfig as C } from '../src/config/economy.config';
 import { KISA, kipBandi, damga, damgaOzeti, pct } from './olcum-lib';
@@ -50,20 +49,13 @@ function acikAlanda(x: number, z: number, areasOpen: number): boolean {
 }
 
 /**
- * OYUNCUNUN DÜNYASI — nav ızgarasıyla AYNI hücre ızgarası, farklı kurallar: katılar
- * `activeSolids` (sandalyeler dahil), şişirme `playerRadius`, ve açık alanların dışı kapalı
- * (oyuncu `clampToOpenAreas` ile kelepçeli — personel değil).
+ * OYUNCUNUN DÜNYASI — `layout.getPlayerNavGrid` (D-091). Araç bunu KENDİ kurmaz: ilk hâlinde
+ * kuruyordu ve o zaman ölçtüğü şey kodun dünyası değil, aracın dünyasının KOPYASIYDI. Biri
+ * `getPlayerNavGrid`'den sandalyeleri ya da alan kelepçesini düşürse ölçüm bunu görmezdi
+ * (D-090'ın dersi: bekçi sim'i değil, YÜRÜRLÜKTEKİ kabloyu ölçer).
  */
 function oyuncuIzgarasi(tables: number, areasOpen: number): NavGrid {
-  const g = buildNavGrid(LAYOUT.area, NAV_CELL, activeSolids(tables, areasOpen), LAYOUT.playerRadius);
-  for (let r = 0; r < g.rows; r++) {
-    const z = g.minZ + (r + 0.5) * g.cell;
-    for (let c = 0; c < g.cols; c++) {
-      const x = g.minX + (c + 0.5) * g.cell;
-      if (!acikAlanda(x, z, areasOpen)) g.blocked[r * g.cols + c] = 1;
-    }
-  }
-  return g;
+  return getPlayerNavGrid(tables, areasOpen);
 }
 
 /** Personelin dünyası, oyuncununkiyle KIYASLANABİLİR olsun diye aynı alan kelepçesiyle. */

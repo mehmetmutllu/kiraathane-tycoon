@@ -5,65 +5,72 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-09 — **D5 AÇILDI** · nav ızgarası ↔ oyuncu çarpışması · Faz D 4/6 · 67/77)
+## ŞU AN (2026-09-09 — **D5 BİTTİ** · Faz D 5/7 · 68/78)
 
 ```
 SORU            : Oyuncunun YÜRÜDÜĞÜ dünya ile rotaların KURULDUĞU dünya aynı değil
                   (nav: `navSolids` + actorRadius 0,28, sandalyesiz · oyuncu: `activeSolids` +
-                  playerRadius 0,47, sandalyeler katı). Bu fark nerede ve NE KADAR ısırıyor?
-ÖLÇÜLECEK KOLLAR: ölçüm turu (denge kolu YOK — economy.config/tick/rules'a dokunulmuyor):
-                  k1 ayrışma (personele açık, oyuncuya kapalı hücre oranı, her açıklık için) ·
-                  k2 ulaşılabilirlik (her etkileşim noktası oyuncunun dünyasında erişilebilir mi) ·
-                  k3 tuzak cepler (oyuncu dünyasının bağlı bileşenleri) ·
-                  k4 pay (en dar geçidin oyuncuya kalan payı)
-SAYILAR         : (adım 2'den sonra dolar — docs/nav-oyuncu-raporu-d5.md §Bulgular)
-KARAR           : (adım 3)
-UYGULAMA        : (adım 4, yalnız kararın kolu)
-BEKÇİ           : (test dosyası + kaç mutasyonla doğrulandı)
+                  playerRadius 0,47, sandalyeler katı). Nerede ve NE KADAR ısırıyor?     [KAPANDI]
+ÖLÇÜLECEK KOLLAR: k1 ayrışma · k2 ulaşılabilirlik · k3 tuzak cep · k4 pay · **k5 rota
+                  izlenebilirliği** (k5 ölçüm sırasında eklendi — asıl zararı o kol gösterdi)
+SAYILAR         : docs/nav-oyuncu-raporu-d5.md §2 — 7 bulgu, tam koşu (20 açıklık), damgalar temiz
+KARAR           : D-091 — `getPlayerNavGrid`; dünyaları birleştirmek elendi (personel masaya
+                  erişmek zorunda, `REACH_TABLE` actorRadius'a çivili)
+UYGULAMA        : `src/game/layout.ts` (+38 satır: activeSolids + playerRadius + alan kelepçesi,
+                  `navCache` deseninde tek yuvalı önbellek) · ölçüm aracı da bu fonksiyonu ÇAĞIRIR
+BEKÇİ           : tests/oyuncu-dunyasi.test.ts — 8 test, **8 mutasyon, sekizi de yakalandı**
+                  (sandalye · yarıçap · kelepçe silme · kelepçe ters · önbellek anahtarı ×2 ·
+                  doğrudan personel ızgarası · hücre boyu) · vitest 620
 ```
 
-**Bu tur neden şimdi:** hata tek başına duruyor ve iki yerde ısırdığı BİLİNİYOR ama hiç ölçülmedi
-— (a) C4'ün ölçüm aracı bu yüzden ±30/60/90° kayma + kara liste + kurtulma yamalarıyla dolu
-(`tools/olcum-bardak.ts` §rota), (b) P2 damgaları "B1 · oyuncu kipinde bot hiç yürümüyor"
-kusurunu buldu ve açık bıraktı. İkisi de aynı kökü işaret ediyor: **oyuncunun dünyasının rota
-planlayıcısı yok.** Denge dosyalarına dokunulmadığı için varyant kapısı devrede değil; ölç-önce
-disiplini yine de uygulanıyor (iki commit).
+**Bu turun asıl dersi — ölçüm korkulan zararı ÇÜRÜTTÜ, başkasını buldu.** Beklenen zarar "içerik
+oyuncuya kapalı kalmış olabilir"di; 20 açıklığın 20'sinde de ulaşılamayan nokta 0, cep 0. Zarar
+ROTADA çıktı (%74,1) ve o kol (k5) tur kartında YOKTU — ölçerken eklendi. Yani kolları önceden
+yazmak gerekli ama yeterli değil: ilk sayılar hangi kolun eksik olduğunu da söylüyor.
 
+**İkinci ders — yarım geçiş bırakmamak.** Yeni ızgaranın tek doğal tüketicisi sim botuydu; göçü
+denendi, üç gerçek tuzak ÖLÇÜLDÜ ve düzeltildi (bot katının içinde başlıyor · `×0,7` rota payı
+oyuncunun dünyasında olanaksız · tetik yarıçapı ızgara yuvarlamasına yetmiyor), bot yine yürümedi
+(B2 159,1 → 0,0 br/dk). Araç ölçülmüş hâline **geri alındı**: yarım geçiş bırakmak C4 raporunun
+oyuncu-kipi sayılarını yeniden üretilemez kılardı.
 
 ## SIRADAKİ TAM ADIM
 
-**Faz D — meta katman (4/6).** Aday sırası: ① **D5 İtibar + günlük görevler** (ödül ekranı hazır;
-günlük görevlerin ödülü D-090'ın kalıbına yaslanacak) · ② **nav ızgarası ↔ oyuncu çarpışması**
-(bilinen hata, tek başına duruyor) · ③ D6 elmas harcaması + Usta katmanı — **D6 geldiğinde
-D-089'un elmas hükmü bayatlar** (bekçideki `h0` beklentisi bilerek o gün kırılacak şekilde yazıldı).
+**Faz D — meta katman (5/7).** Sıradaki: **D6 İtibar (eski XP anlam kazanır) + günlük görevler.**
+Ödül ekranı üç turdur hazır; günlük görevlerin ödülü D-090'ın kalıcı-çarpan kalıbına yaslanacak.
+Sonra D7 (elmas harcaması + Usta katmanı) — **D7 geldiğinde D-089'un elmas hükmü bayatlar**
+(bekçideki `h0` beklentisi bilerek o gün kırılacak şekilde yazıldı).
 
 ## AÇIK KALEMLER (bilinen, bilerek duruyor)
 
-- **Kalıcı çarpan GÖRÜNMEZ bir ödüldür** — cebe uçan sayı yok. Panelde iki yerde yazılıyor
-  (kademe payı +%0,4 · kümülatif "koleksiyon bonusu") ve anlık tatmini 💎 taşıyor, ama bunun
-  oyuncu üzerindeki etkisi **ölçülmedi**: sim'in ölçebileceği bir şey değil. **Telefonda oynanınca
-  yeniden okunacak.** (D-090'ın kabul edilen eksiği ③.)
-- **Normal profil 41,2 dk beklemesi** — D-087'de bilerek ödenmedi. D3 hiç kısaltamamıştı; D4
-  43,4 → 41,2'ye çekti ama 20 dk ölçütünün altına inmedi ve inmesi beklenmiyordu (kapatmak
-  `hF` %35+ ister, bedeli %-12,6). Gözlem bandında görünür kalıyor.
-- **Bekçi bandının çözünürlüğü** — `tests/hedefler.test.ts`'in zincir-bedeli bandı %3-5. Bandı
-  daraltmak sim'in her küçük değişiminde testi kırardı; daha incesi için ölçüm aracı koşulur
-  (`OLCUM=tam npx tsx tools/olcum-hedefler.ts`).
+- **`getPlayerNavGrid`in oyunda tüketicisi YOK** — oyuncu joystick ile sürülüyor; bugün bekçili
+  bir doğruluk, görünen bir davranış değil. İlk gerçek tüketici yol gösterme/oto-yürüme olacak.
+- **Sim botunun yeni ızgaraya göçü** — denendi, ölçüldü, geri alındı (yukarıdaki ikinci ders).
+  Kendi turunu ister: kalan sebep bulunmadı, üç tuzağın ölçülmüş sayıları raporda Bulgu 7'de.
+- **Kalıcı çarpan GÖRÜNMEZ bir ödüldür** — panelde iki yerde yazılıyor, anlık tatmini 💎 taşıyor,
+  ama oyuncu üzerindeki etkisi ölçülmedi (sim'in ölçebileceği bir şey değil). **Telefonda
+  oynanınca yeniden okunacak.** (D-090'ın kabul edilen eksiği ③.)
+- **Normal profil 41,2 dk beklemesi** — D-087'de bilerek ödenmedi; D4 43,4 → 41,2'ye çekti, 20 dk
+  ölçütünün altına inmedi ve inmesi beklenmiyordu. Gözlem bandında görünür kalıyor.
+- **Masa parasının payı 0,34 br** (D5 Bulgu 5) — 20 açıklıkta da aynı, yani yapısal: masa ayak izi
+  büyürse ya da `money.pickupRadius` küçülürse ilk kırılacak yer burası.
+- **Bekçi bandının çözünürlüğü** — `tests/hedefler.test.ts`'in zincir-bedeli bandı %3-5.
 - Sim'in taşıma tavanı 4 masada fazla kötümser (elenen `k3`'ün önündeki tek engel).
-- **Görev hattı `waiterTray` kademe 2'de bitiyor**, 3. kademe (₺2.500) hatta yok; oysa ÜÇ KOL
-  tablosu 20 masada `waiterTray: 3` varsayıyor — tempo kalemi DEĞİL, görev/HUD tutarlılığı.
-- **`outputMultByLevel` yok** — servis çıktı çarpanı merdiven-geneli; `b1` erken oyuna
-  dokunmadan denenemiyor.
+- **Görev hattı `waiterTray` kademe 2'de bitiyor**, 3. kademe (₺2.500) hatta yok; ÜÇ KOL tablosu
+  20 masada `waiterTray: 3` varsayıyor — tempo kalemi DEĞİL, görev/HUD tutarlılığı.
+- **`outputMultByLevel` yok** — servis çıktı çarpanı merdiven-geneli; `b1` erken oyuna dokunmadan
+  denenemiyor.
 - **Sim'de serbest oyun bloğu ölü kod** (D1 Bulgu 5) — model kalemi, bugün zarar vermiyor.
-- **Nav ızgarası ↔ oyuncu çarpışması** — Faz D (D5'ten sonraki aday).
-- **`npm run pano`'nun günlük uyarısı yalnız TARİHE bakıyor** — aynı gün iki oturum kapanınca
-  sessiz kalıyor. Bu turda yine sessiz kaldı (D3 ile aynı gün); günlük kartı elle eklendi.
-  Kural "sayaç arttıysa kart sayısı da artmalı" olmalı. Araç kendi turunu ister.
+- **`npm run pano`'nun günlük uyarısı yalnız TARİHE bakıyor** — aynı gün üçüncü kez sessiz kaldı
+  (D3 · D4 · D5 aynı gün); günlük kartı yine elle eklendi. Kural "sayaç arttıysa kart sayısı da
+  artmalı" olmalı. **Araç kendi turunu ister** (üç turdur aynı elle-düzeltme).
 - D-046 ④ kaba, ⑤ yok · sipariş nesnesi v1.1'de.
 - Gölgenin telefondaki maliyeti ölçülmedi (Faz F riski) · bundle ~1,49 MB (Faz F kod-bölme).
-- C4'ten kalan ölçüm kusuru: B1 · oyuncu kipinde bot hiç yürümüyor (karar etkilenmedi).
+- C4'ten kalan ölçüm kusuru: B1 · oyuncu kipinde bot hiç yürümüyor — **D5'te sebebi bulundu ve
+  nav DEĞİLMİŞ:** B1'de hiç servis yapılmıyor (terk %98,8), dolayısıyla kirli bardak da hiç
+  doğmuyor; bot boşta bekliyor. Botun kendi turuna yazıldı.
 
-**Bekleyen denge kararı yok** — D-090 hedef ödülünün kalıbını kapattı.
+**Bekleyen denge kararı yok** — D-091 denge dosyalarına dokunmadı.
 
 ---
 

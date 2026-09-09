@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 77 · YAPILAN 67 · %87):**
+**Oturum bütçesi (TOPLAM 78 · YAPILAN 68 · %87):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -22,15 +22,16 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | B model geçişi + maket taşıması | 13/13 ✅ |
 | | **C zincir ve denge** | **5/5 ✅** |
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
-| | D meta katman | 4/6 🔧 |
+| | D meta katman | 5/7 🔧 |
 | | E arayüz ve cila | 1/4 🔧 |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **39/49** |
+| **Program toplam** | | **40/50** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
 (D-084 P1-P3) üç kalemlik yeni faz olarak eklendi → toplam 73 → 76. **2026-09-09:** D3'ün ödül
-KALIBI kendi turunu istedi (D3b) → Faz D 5 → 6 kalem, toplam 76 → 77.
+KALIBI kendi turunu istedi (D3b) → Faz D 5 → 6 kalem, toplam 76 → 77. **Aynı gün:** nav ızgarası ↔
+oyuncu çarpışması bilinen-hata listesinden çıkıp kendi turu oldu (D5) → Faz D 6 → 7, toplam 77 → 78.
 
 **v1 kapsam çizgisi:** prestij · Kat 2 · sipariş nesnesi · aktif WC döngüsü · dekor instancing
 **v1.1'e**; v1 = Kat 1 + elmas/Usta + offline tavan + reklam/IAP + mağaza.
@@ -81,7 +82,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
 **asıl sınav tick-temelli bir denge turu.** Ölçülen gerçek kazançlar: üç dosyalık okuma seti
 (oturum başı), uzun koşuların paralel arkaplanı, hazır ölçüm iskeleti.
 
-## Faz D — META KATMAN (4/6) 🔧
+## Faz D — META KATMAN (5/7) 🔧
 - ✅ **D1 — geç-oyun eğrisinin 20 dk ihlali ölçüldü ve ölçütün PROFİLİ sabitlendi (D-087)** ·
   dokuz kol varyant olarak ölçüldü, dozlar tahmin değil **çözüldü**; hepsi elendi, ölçütün
   kendisi (`o1`) alındı. Ölçüt kardeş üçüyle aynı profilde (İdealize) hüküm verir ve geçiyor
@@ -124,8 +125,17 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   vitest **612** · duman **32/32** · **kayıt sürümü yine artmadı** (v32; çarpan `goalsClaimed`ten
   türer). **Kabul edilen eksik:** çarpan GÖRÜNMEZ bir ödüldür — panelde iki yerde yazılıyor ve 💎
   anlık ödülü taşıyor, ama oyuncu üzerindeki etkisi ölçülmedi (sim'in ölçebileceği bir şey değil).
-- ⏳ **D5 — İtibar (eski XP anlam kazanır) + günlük görevler.**
-- ⏳ **D6 — elmas kaynak/harcama + Usta katmanı** (masa ₺-tavanı L4'ün üstü).
+- ✅ **D5 — oyuncunun dünyasına kendi ızgarası; iki dünya ölçüldü (D-091)** · rotalar personelin
+  ızgarasında kuruluyordu (sandalyesiz, `actorRadius`), oyuncu `activeSolids` + `playerRadius` +
+  alan kelepçesiyle yürüyor. Ayrışma %3,1 → **%8,2**; **içerik kilitli DEĞİL** (ulaşılamayan nokta
+  0, cep 0, 20 açıklığın 20'sinde) ama dolu katta rotaların **%74,1'i** oyuncuya kapalı en az bir
+  ara noktadan geçiyor. `getPlayerNavGrid` eklendi; doğru rota yalnız ×1,069 uzun.
+  `docs/nav-oyuncu-raporu-d5.md` · araç `tools/olcum-nav-oyuncu.ts` · bekçi
+  `tests/oyuncu-dunyasi.test.ts` (8 test, **8 mutasyon**) · vitest 620 · **denge sayısı DEĞİŞMEDİ.**
+  **Açılan kalem:** sim botunun bu ızgaraya göçü denendi ve geri alındı (B2 159,1 → 0,0 br/dk;
+  üç tuzak ölçüldü, düzeltildi, yetmedi) — kendi turunu ister.
+- ⏳ **D6 — İtibar (eski XP anlam kazanır) + günlük görevler.**
+- ⏳ **D7 — elmas kaynak/harcama + Usta katmanı** (masa ₺-tavanı L4'ün üstü).
 
 > D2-D6 `docs/plan-kat1-yayin.html` §D kapsamından türetildi; **sırası açık** — her tur başında
 > seçilir. Ayrıca Faz D'de bekleyen bilinen bir hata var: **nav ızgarası ↔ oyuncu çarpışması**.
@@ -149,8 +159,10 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
 - **Sim'de serbest oyun bloğu ölü kod** (D1 Bulgu 5): tempoyu görev hattı belirliyor.
 - **Sim'in taşıma tavanı 4 masada fazla kötümser** (model 6,36 < ölçülen 7,53 müşteri/dk) —
   elenen `k3` bardak kolunun önündeki tek engel; kodu duruyor, bu kalem çözülünce yeniden ölçülür.
-- **Nav ızgarası ↔ oyuncu çarpışması aynı dünyayı görmüyor** (`actorRadius` sandalyesiz,
-  `playerRadius` sandalyeler katı) — **Faz D** (D2'den sonraki en güçlü aday).
+- ~~Nav ızgarası ↔ oyuncu çarpışması aynı dünyayı görmüyor~~ → **D5'te kapandı (D-091):**
+  `getPlayerNavGrid` eklendi, bekçili. **Yeni açık kalem:** oyunda bu ızgarayı çağıran tüketici
+  henüz yok (oyuncu joystick ile sürülüyor) ve tek doğal tüketici olan sim botunun göçü
+  ölçülerek geri alındı — botun göçü kendi turunu ister.
 - **`npm run pano`'nun günlük uyarısı yalnız TARİHE bakıyor** — aynı gün iki oturum kapanınca
   sessiz kalıyor; C5 ve D1'in anlatısı bu yüzden iki tur yayınlanmadan kaldı (2026-09-08'de elle
   düzeltildi, araç değişmedi). Kural "sayaç arttıysa günlük kartı da artmalı" olmalı.

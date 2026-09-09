@@ -193,8 +193,8 @@ h2{font-size:21px;font-weight:800}
 <script type="application/json" id="durum">
 {
  "guncelleme": "09.09.2026",
- "yapilan": 67,
- "toplam": 77,
+ "yapilan": 68,
+ "toplam": 78,
  "kilometre": [
   {
    "at": 28,
@@ -209,30 +209,30 @@ h2{font-size:21px;font-weight:800}
    "etiket": "Model ve denge oturdu"
   },
   {
-   "at": 77,
+   "at": 78,
    "etiket": "v1.0 App Store"
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum · Faz D · 4/6 — Hedeflerin ödül KALIBI",
-  "baslik": "Ödülü ne kadar vereceğimizi bulmuştuk; bu tur NE vereceğimizi değiştirdi",
-  "aciklama": "Bir önceki tur Hedefler'i kurmuş ve tek soruyu açık bırakmıştı: ödülün parası bu hâliyle kalsın mı? Soru üç seçenekle getirildi — kalsın, kaldıralım, küçültelim — ve üçü de <b>reddedildi</b>, çünkü üçü de <b>aynı fikrin</b> varyasyonuydu: hedefi toplayınca cebe bir miktar para düşer. Sorulan şey başkaydı: bu işin <b>kalitelisi</b> nedir?<br><br>Cevap oyun sektöründe yerleşik. Idle/tycoon oyunlarında koleksiyon ödülü ya <b>sert para</b> (değeri enflasyona uğramaz) ya da <b>kalıcı bir çarpan</b> olur — kazanılan bonus oyuncuyla birlikte büyür, bayatlamaz. Sabit para ödülü yalnız oyunun ilk dakikalarında kullanılır, çünkü gelir katlanarak büyürken ödül olduğu yerde kalır: <b>6. saatte 3 dakikalık gelire</b> düşer. Bizim kendi ölçümümüz de bunu zaten söylemişti — 66.000 ₺ ödense bile geç oyundaki bekleme pencerelerine düşen para <b>sıfırdı</b>.<br><br>İki yeni kalıp ölçüldü. <b>Gelire oranlı para</b> (&ldquo;şu anki gelirinin bir dakikası&rdquo;) <b>elendi</b>: geç oyundaki en uzun beklemeyi altı dozun altısında da <b>hiç</b> kıpırdatmadı, buna karşılık <b>açılışı ezdi</b> — garson 6 dakika yerine 1,7 dakikada geliyordu. <b>Kalıcı gelir çarpanı</b> ise tam doğru yerde çalıştı: en uzun bekleme <b>43,4 &rarr; 41,2 dakikaya</b> indi, açılış <b>hiç değişmedi</b>. Sebebi basit: çarpan bileşiklenir, ağırlığı kendiliğinden geç oyuna düşer.<br><br>Artık her hedef cebe para koymuyor; <b>kalıcı olarak +%0,4 gelir</b> veriyor (koleksiyonun tamamı +%10) ve yanında elmas geliyor. Sabit para merdiveni tamamen kaldırıldı.",
+  "etiket": "Bu oturum · Faz D · 5/7 — Oyuncunun dünyası",
+  "baslik": "Oyunda iki ayrı dünya vardı: personelin yürüdüğü ve oyuncunun yürüdüğü",
+  "aciklama": "Bu tur bilinen ama hiç <b>ölçülmemiş</b> bir hatayı ele aldı. Oyunda yol bulma için bir ızgara kuruluyor ve o ızgara <b>personele göre</b> kurulmuş: garson ince bir gövdedir, sandalyelerin içinden geçer (masaya servis yapabilmesi için gerekir). Oyuncu ise <b>daha geniş</b> bir gövde ve sandalyeler onun için <b>katı</b>. Yani personelin geçtiği boşluktan oyuncu geçemiyor — ama rota yine de o ızgarada kuruluyordu.<br><br>Ölçüm önce <b>korkulan zararı çürüttü</b>: hiçbir içerik kilitli kalmıyor. Zincirin <b>yirmi açıklığının yirmisinde de</b> her pad, her yükseltme noktası ve yere düşen her para oyuncunun erişebildiği yerde; oyuncunun bir cebe hapsolabileceği tek bir nokta yok.<br><br>Zarar başka yerdeydi: <b>rotalarda</b>. Dolu katta kurulan rotaların <b>%74'ü</b>, oyuncunun içine giremeyeceği en az bir ara noktadan geçiyor. Yani oyuncu adına yol soran her şey (bugün simülasyon botu, yarın yol gösterme ya da oto-yürüme) <b>izlenemeyen</b> bir yol alıyor.<br><br>Düzeltme, iki dünyayı birleştirmek değil — personel masaya erişmek zorunda. Oyuncuya <b>kendi ızgarası</b> verildi. Bunun bedava olduğu da ölçüldü: oyuncunun kendi dünyasında her hedefe yol <b>var</b> ve o yol yalnızca <b>%7</b> daha uzun.",
   "adimlar": [
-   "<b>Ölçüldü:</b> iki yeni kalıp — gelire oranlı para elendi, kalıcı çarpan seçildi",
-   "<b>Uygulandı:</b> her hedef +%0,4 kalıcı gelir (toplam +%10) + 250 💎 · sabit ₺ merdiveni silindi",
-   "<b>Yeni bekçi:</b> denge testleri simülasyonu ölçüyordu, oyunun kendi gelir yolunu değil — o boşluk kapatıldı"
+   "<b>Ölçüldü:</b> iki dünyanın farkı %3'ten %8'e büyüyor · içerik kilitli DEĞİL · rotaların %74'ü geçersiz",
+   "<b>Uygulandı:</b> oyuncuya kendi yol-bulma ızgarası (sandalyeler katı + kendi gövde genişliği + açık alan kelepçesi)",
+   "<b>Bekçi:</b> 8 test, <b>8 mutasyonun 8'i de</b> yakalandı — bekçi kendi kopyasını değil yürürlükteki kodu ölçüyor"
   ],
-  "not": "Turun asıl dersi ölçümün <b>ne söylemediğiydi</b>: iki kalıp tempo hanesinde <b>denk</b> çıktı. Tablo eleme yaptı, ama kalan ikisini ayırmadı — seçim simülasyonun ölçemediği eksende verildi: ödül zamanla bayatlıyor mu?"
+  "not": "<b>Yarım kalan yazıldı:</b> bu ızgarayı kullanacak doğal tüketici simülasyon botuydu ve geçişi <b>denendi, ölçüldü, geri alındı</b>. Yolda üç gerçek tuzak ölçüldü (bot işe kendi çarpışma kutusunun içinde başlıyor · rota payı oyuncunun dünyasında olanaksız · tetik yarıçapı ızgara yuvarlamasına yetmiyor), üçü de düzeltildi ve bot yine yürümedi. Araç ölçülmüş hâline döndürüldü — botun göçü kendi turunu ister."
  },
  "siradaki": {
-  "etiket": "Faz D · 5/6 — İtibar ve günlük görevler",
+  "etiket": "Faz D · 6/7 — İtibar ve günlük görevler",
   "baslik": "İtibar ve günlük görevler — meta katmanın kalan iki kanadı",
-  "aciklama": "Ödül ekranı iki turdur hazır; sırada onu ikinci kez kullanacak kalem var: <b>İtibar</b>. Bugün oyunda seviye kazanılıyor, ekranda görünüyor, kutlanıyor — ve <b>hiçbir şeye yaramıyor</b>. Anlam kazanması planlı: her seviye müşteri akışını ve bahşişi biraz artıracak, mağazada yeni kozmetikleri görünür kılacak, her seviye atlamada aynı ödül ekranı açılacak.<br><br>Yanında <b>günlük görevler</b> geliyor — elmasın ikinci kaynağı ve oyuncuyu ertesi gün geri getiren şey. Günlük görevlerin ödülü de bu turda seçilen kalıba yaslanacak; kalıp kararının ondan <b>önce</b> verilmesinin sebebi buydu.<br><br>İkisi bittiğinde Faz D'nin son kalemi kalıyor: elmasın <b>harcanabilir</b> hâle gelmesi ve <b>Usta</b> katmanı. O gün geldiğinde bir hüküm bilerek bayatlayacak: bugün elmas ödülü tempoya hiç dokunmuyor, çünkü harcaması yok — bekçi testi tam o günü yakalayacak şekilde yazıldı.",
+  "aciklama": "Ödül ekranı üç turdur hazır; sırada onu ikinci kez kullanacak kalem var: <b>İtibar</b>. Bugün oyunda seviye kazanılıyor, ekranda görünüyor, kutlanıyor — ve <b>hiçbir şeye yaramıyor</b>. Anlam kazanması planlı: her seviye müşteri akışını ve bahşişi biraz artıracak, mağazada yeni kozmetikleri görünür kılacak, her seviye atlamada aynı ödül ekranı açılacak.<br><br>Yanında <b>günlük görevler</b> geliyor — elmasın ikinci kaynağı ve oyuncuyu ertesi gün geri getiren şey. Günlük görevlerin ödülü, iki tur önce seçilen <b>kalıcı çarpan</b> kalıbına yaslanacak.<br><br>İkisi bittiğinde Faz D'nin son kalemi kalıyor: elmasın <b>harcanabilir</b> hâle gelmesi ve <b>Usta</b> katmanı. O gün geldiğinde bir hüküm bilerek bayatlayacak: bugün elmas ödülü tempoya hiç dokunmuyor, çünkü harcaması yok — bekçi testi tam o günü yakalayacak şekilde yazıldı.",
   "adimlar": [
    "<b>Şimdi:</b> İtibar (seviye anlam kazanır) + günlük görevler",
-   "<b>Sonra:</b> elmas harcaması + Usta katmanı · nav ızgarası &harr; oyuncu çarpışması"
+   "<b>Sonra:</b> elmas harcaması + Usta katmanı · simülasyon botunun yeni ızgaraya göçü"
   ],
-  "not": "Bu turdan devreden soru: kalıcı çarpan <b>görünmez</b> bir ödüldür. Panelde iki yerde yazılıyor ve elmas anlık ödülü taşıyor, ama oyuncu üzerindeki etkisi ölçülmedi — simülasyonun ölçebileceği bir şey değil, telefonda oynanınca yeniden okunacak."
+  "not": "Bu turdan devreden soru: oyuncunun yeni ızgarası bugün <b>bekçili bir doğruluk</b>, henüz görünen bir davranış değil — oyunda onu çağıran bir tüketici yok, çünkü oyuncu joystick ile sürülüyor."
  },
  "donemler": [
   {
@@ -346,9 +346,9 @@ h2{font-size:21px;font-weight:800}
     {
      "k": "D",
      "t": "Meta katman",
-     "d": "Görev kimlikleri · Hedefler ödülü · İtibar · günlük görev · elmas ekonomisi · Usta katmanı. <b>D1</b> geç-oyun eğrisi ölçüldü: dokuz kol elendi, düzeltilen şey eğri değil <b>tempo ölçütünün profili</b> oldu (D-087) ✓ · <b>D2</b> hattın kimliği sıra numarası olmaktan çıktı, kayıt v32 + gerçek göç (D-088) ✓ · <b>D3</b> Hedefler (5 kategori × 5 kademe) kuruldu — ödül YOĞUNLUKTAN geliyor, büyüklükten değil (D-089) ✓ · <b>D4</b> ödülün KALIBI değişti: sabit para kalktı, yerine <b>kalıcı gelir çarpanı</b> geldi; gelire oranlı para ölçülerek elendi (D-090) ✓ · sırada <b>İtibar + günlük görevler</b>.",
-     "yapilan": 4,
-     "toplam": 6,
+     "d": "Görev kimlikleri · Hedefler ödülü · İtibar · günlük görev · elmas ekonomisi · Usta katmanı. <b>D1</b> geç-oyun eğrisi ölçüldü: dokuz kol elendi, düzeltilen şey eğri değil <b>tempo ölçütünün profili</b> oldu (D-087) ✓ · <b>D2</b> hattın kimliği sıra numarası olmaktan çıktı, kayıt v32 + gerçek göç (D-088) ✓ · <b>D3</b> Hedefler (5 kategori × 5 kademe) kuruldu — ödül YOĞUNLUKTAN geliyor, büyüklükten değil (D-089) ✓ · <b>D4</b> ödülün KALIBI değişti: sabit para kalktı, yerine <b>kalıcı gelir çarpanı</b> geldi; gelire oranlı para ölçülerek elendi (D-090) ✓ · <b>D5</b> oyuncunun yürüdüğü dünya ile rotaların kurulduğu dünya aynı değildi: içerik kilitli çıkmadı ama rotaların <b>%74</b>'ü geçersizdi — oyuncuya kendi ızgarası verildi (D-091) ✓ · sırada <b>İtibar + günlük görevler</b>.",
+     "yapilan": 5,
+     "toplam": 7,
      "kapi": "Elmas kazanılıp harcanabiliyor, Usta alınabiliyor",
      "durum": "now"
     },
@@ -372,6 +372,21 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "09.09.2026",
+   "etiket": "Faz D · 5. oturum (D5 — oyuncunun dünyası · D-091)",
+   "baslik": "Rotalar başkasının dünyasında kuruluyordu",
+   "govde": "Bu tur, defterde bir süredir <i>bilinen hata</i> olarak duran ve hiç ölçülmemiş bir kalemi ele aldı. Oyunda yol bulma için bir ızgara kuruluyor: kat hücrelere bölünüyor, mobilyanın kapladığı hücreler kapalı işaretleniyor, kalanlarda yol aranıyor. Sorun şuydu: o ızgara <b>personele göre</b> kurulmuş. Garson ince bir gövdedir ve sandalyeler onun için engel <b>değildir</b> — masaya servis yapabilmesi için böyle olmak zorunda. Oyuncu ise hem <b>daha geniş</b> bir gövde, hem sandalyelere <b>çarpıyor</b>, hem de yalnız açılmış alanlarda gezebiliyor. Üç farkın üçü de tek yönde: <b>personelin geçtiği boşluktan oyuncu geçemez.</b><br><br>Hata iki yerde ısırdığı <b>bilinerek</b> yamayla geçilmişti; bu turda önce sayıya döküldü. Yazılan araç iki dünyayı hücre hücre karşılaştırıyor ve zincirin <b>yirmi açıklığının</b> hepsini tarıyor.<br><br><b>İlk bulgu korkulanı çürüttü.</b> Beklenen zarar şuydu: bazı içerik oyuncuya kapalı kalmış olabilir — ulaşılamayan bir pad, toplanamayan bir para, ya da oyuncunun sıkışıp kalabileceği bir cep. Yirmi açıklığın <b>yirmisinde de</b> böyle bir nokta çıkmadı: her pad, her yükseltme noktası, tezgâh ve yere düşen paranın dört köşesi erişilebilir, ve oyuncunun yürüyebildiği alan <b>tek parça</b>. Yani yerleşim sağlam; hata içeriği kilitlemiyor.<br><br><b>Zarar rotalardaydı.</b> Aynı araç bugün kurulan yolları alıp oyuncunun dünyasında sınadı: dolu katta rotaların <b>%74'ü</b> oyuncunun içine giremeyeceği en az bir ara noktadan geçiyor, ara noktaların <b>%15'i</b> kapalı hücre. Erken oyunda bile tek masada %23, dört masada %56. Yani oyuncu adına yol soran her şey <b>izlenemeyen</b> bir yol alıyor ve izleyen şey masaya dayanıp itiyor.<br><br><b>Çözüm iki dünyayı birleştirmek değildi.</b> Personeli de sandalyelere çarptırmak ilk akla gelen ve <b>yanlış</b> olan: garson masaya erişemezse servis durur, üstelik servis koridorları kapanır. Bunun yerine oyuncuya <b>kendi ızgarası</b> verildi — aynı hücre bölünmesi, oyuncunun kendi kuralları. Ölçüm bunun neredeyse bedava olduğunu da gösterdi: oyuncunun kendi dünyasında her hedefe yol <b>var</b> ve o yol yalnızca <b>%7</b> daha uzun. Yani bu bir yerleşim darlığı değil, <b>eksik bir ızgaraydı</b>.<br><br><b>Aracın kendisi de bir yanlış alarm üretti ve düzeltildi.</b> İlk koşu &ldquo;masa pad'leri ulaşılamıyor&rdquo; dedi. Cümle doğru ama ölçülen şey yok: masa pad'i <b>açacağı masanın tam yerinde</b> durur, yani masa kurulduğu anda pad zaten biter. Araç pad'i masa <b>varken</b> soruyordu. Dersin özeti: bir ölçüm aracı bir şeyin nerede olduğunu değil, <b>ne zaman var olduğunu</b> da modellemek zorunda.<br><br><b>Ve turun yarısı bilerek yarım bırakıldı.</b> Yeni ızgarayı kullanacak tek doğal tüketici simülasyon botuydu; geçişi denendi ve <b>çalışmadı</b>. Yolda üç gerçek tuzak ölçüldü — bot işe kendi çarpışma kutusunun <b>içinde</b> başlıyor, hedefe yaklaşma payı oyuncunun dünyasında <b>olanaksız</b>, ve toplama yarıçapı ızgara yuvarlamasına kıl payı yetmiyor. Üçü de düzeltildi, bot yine yürümedi. Kalan sebep bulunamayınca araç <b>ölçülmüş hâline geri alındı</b>: yarım bir geçiş bırakıp önceki turların sayılarını yeniden üretilemez kılmak, hatanın kendisinden pahalıya gelirdi.",
+   "maddeler": [
+    "<b>İçerik kilitli DEĞİL:</b> 20 açıklığın 20'sinde ulaşılamayan nokta 0 · tuzak cep 0",
+    "<b>Zarar rotada:</b> dolu katta rotaların %74'ü oyuncuya kapalı bir ara noktadan geçiyor",
+    "<b>Doğru rota bedava:</b> oyuncunun kendi dünyasındaki yol yalnızca %7 daha uzun",
+    "<b>Düzeltme:</b> oyuncuya kendi yol-bulma ızgarası — dünyaları birleştirmek elendi (garson masaya erişemezdi)",
+    "<b>Bekçi:</b> 8 test, 8 mutasyon, sekizi de yakalandı",
+    "<b>Denge sayısı değişmedi</b> — ekonomi dosyalarına tek satır dokunulmadı"
+   ],
+   "not": "<b>Kabul edilen eksikler yazıldı.</b> &#9312; Bu düzeltme bugün <b>görünen bir davranış değil</b>: oyunda oyuncu joystick ile sürülüyor, yani yeni ızgarayı çağıran bir tüketici henüz yok — bekçili bir doğruluk. &#9313; Tek doğal tüketici olan simülasyon botunun geçişi ölçülerek geri alındı ve kendi turuna bırakıldı. &#9314; Ölçümün çözünürlüğü ızgara hücresi kadar; bundan ince geçitler hakkında hüküm vermiyor."
+  },
   {
    "tarih": "09.09.2026",
    "etiket": "Faz D · 4. oturum (D4 — ödülün kalıbı · D-090)",

@@ -91,6 +91,34 @@ açılınca biter). Düzeltmeden sonra k2 tamamen temizlendi.
 D-084'ün kuralının bu tura düşen hâli: **araç bir şeyin NEREDE olduğunu değil, NE ZAMAN var
 olduğunu da modellemek zorunda.**
 
+### Bulgu 7 — sim botunun göçü DENENDİ, ölçüldü ve GERİ ALINDI
+
+`tools/olcum-bardak.ts` botu bugün rotasını personelin ızgarasında kuruyor (bu raporun sebebi).
+Botu `getPlayerNavGrid`'e bağlamak bu turun doğal ikinci adımıydı; denendi ve **çalışmadı**:
+
+| | B1 | B2 | B3 | B4 |
+|---|---|---|---|---|
+| taban (personel ızgarası, HEAD) | 0,0 | **159,1** | ölçülü | ölçülü |
+| oyuncu ızgarasına bağlanınca | 0,0 | **0,0** | 0,0 | 0,0 |
+
+*(br/dk — botun yürüdüğü yol. B1 tabanı da 0,0'dı: D-084 P2'nin bulup açık bıraktığı kusur.)*
+
+Yolda **üç gerçek tuzak ölçüldü** (üçü de personelin dünyasında görünmez, çünkü orada yasaldılar):
+
+1. **Bot işe katının İÇİNDE başlıyor.** Başlangıç `place.dish + [0,0,1]`; leğenin yarı-boyu
+   `dishHalf` 1,0 ve `playerRadius` 0,47 → oyuncu için 1,47'ye kadar KATI. Ölçüldü:
+   `hitsSolid(başlangıç, activeSolids, playerRadius) === true`. İlk yasal nokta `+1,5`.
+2. **Botun `×0,7` rota payı oyuncunun dünyasında olanaksız.** Yıkama 1,12 br → oyuncu dünyasında
+   **yol YOK** (personelde 6 ara nokta); bardak toplama 0,98 br → **her iki dünyada da yol yok**
+   (yani bot tabanda da düz-çizgi yedeğiyle yürüyormuş).
+3. **Tetik yarıçapı ızgara yuvarlamasına yetmiyor.** `collectRadius` 1,40 ile masa 1 ve masa 3'ün
+   merkezine oyuncu dünyasında yol YOK, masa 2 ve 4'e var. `+ NAV_CELL` (1,70) dördünü de açıyor —
+   `REACH_TABLE`'ın belgelenmiş `+ NAV_CELL + 0,05` düzeltmesinin aynısı.
+
+Üç düzeltme de uygulandı (yarıçap merdiveni + yasal başlangıç) ve **B2 yine 0,0 kaldı** — kalan
+sebep bulunamadı. Araç ölçülmüş hâline **geri alındı**: C4 raporunun oyuncu-kipi sayıları
+yeniden üretilebilir kalsın. Botun göçü kendi turunu ister (kendi ölçümü, kendi raporu).
+
 ## 3. Ölçümün söylemedikleri
 
 - **Oyunun kendisinde bugün oyuncu rotası yok.** Oyuncu joystick/WASD ile sürülüyor; `findNavPath`'i
@@ -103,6 +131,35 @@ olduğunu da modellemek zorunda.**
 - **Hareket modeli ızgara değil.** Oyuncu sürekli eksen-kayması ile hareket ediyor; ızgara
   bileşenleri bir yaklaşıklık. k3'ün "cep yok" hükmü bu yaklaşıklık altında geçerlidir.
 
-## 4. Karar
+## 4. Karar — D-091
 
-*(BOŞ — karar paketi bu raporun sayılarıyla verilir; D-084 §3.2.)*
+**Uygulanan kol: `getPlayerNavGrid` (oyuncunun dünyasına kendi ızgarası).**
+`src/game/layout.ts` · `activeSolids` + `playerRadius` + `clampToOpenAreas`, `getNavGrid` ile
+aynı hücre ızgarası ve aynı tek-yuvalı önbellek deseni.
+
+**Neden bu kol:** Bulgu 4 — oyuncunun kendi dünyasında her hedefe yol var ve yalnız ×1,069 daha
+uzun. Yani sorun yerleşimin darlığı değil, eksik bir ızgara; bedeli yolun %5-14 uzaması,
+karşılığı rotaların %74'ünün geçerli hâle gelmesi.
+
+**Elenen kollar:**
+- **Dünyaları birleştirmek** (personel de sandalyeye çarpsın / aynı yarıçap): personel masaya
+  ERİŞMEK zorunda; `REACH_TABLE` ve yerleşim testleri `actorRadius`'a çivili, 0,47'ye şişirmek
+  servis koridorlarını kapatır. Bulgu 4 ayrıca gereksiz kılıyor.
+- **Hiçbir şey yapmamak:** Bulgu 2 (içerik kilitli değil) bunu savunulabilir kılıyordu, ama
+  Bulgu 3 rotaların %74'ünün geçersiz olduğunu söylüyor ve bu her oyuncu-rotası tüketicisini
+  vuruyor.
+
+**Bekçi:** `tests/oyuncu-dunyasi.test.ts` — 8 test, **8 mutasyonla** doğrulandı, sekizi de
+yakalandı: sandalyeleri düşürmek · yarıçapı `actorRadius` yapmak · alan kelepçesini silmek ·
+kelepçeyi ters çevirmek · önbellek anahtarından `tables` düşürmek · `areasOpen` düşürmek ·
+doğrudan personel ızgarasını döndürmek · hücre boyunu büyütmek.
+
+Bekçi ızgarayı yeniden KURMAZ, `getPlayerNavGrid`'i çağırır (D-090'ın dersi). Ölçüm aracı da
+öyle: `oyuncuIzgarasi()` artık yürürlükteki fonksiyonu döndürüyor ve tam koşu sayıları
+birebir aynı çıkıyor — yani bu raporun sayıları yayınlanan fonksiyonu anlatıyor.
+
+**Denge sayısı DEĞİŞMEDİ** (`economy.config.ts` · `tick.ts` · `rules.ts` 0 satır).
+
+**Kabul edilen eksik:** oyunun kendisinde bugün bu ızgarayı çağıran bir tüketici yok (oyuncu
+joystick ile sürülüyor). Tek doğal tüketici sim botuydu ve göçü Bulgu 7'de ölçülerek geri
+alındı. Yani D-091 bugün **bekçili bir doğruluk**, henüz görünen bir davranış değil.

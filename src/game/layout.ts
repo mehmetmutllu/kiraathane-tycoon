@@ -753,11 +753,49 @@ export function navSolids(tables: number, areasOpen: number): NavSolid[] {
 
 // Izgara masa+alan sayısına göre cache'lenir (masa/alan açılınca yeniden kurulur; her frame değil).
 let navCache: { key: string; grid: NavGrid } | null = null;
+let playerNavCache: { key: string; grid: NavGrid } | null = null;
 export function getNavGrid(tables: number, areasOpen: number): NavGrid {
   const key = `${tables}|${areasOpen}`;
   if (navCache && navCache.key === key) return navCache.grid;
   const grid = buildNavGrid(LAYOUT.area, NAV_CELL, navSolids(tables, areasOpen), LAYOUT.actorRadius);
   navCache = { key, grid };
+  return grid;
+}
+
+/**
+ * OYUNCUNUN DÜNYASI — personelinkiyle AYNI ızgara, FARKLI kurallar (D-091).
+ *
+ * NEDEN AYRI: `getNavGrid` personelin dünyasını kurar — katılar `navSolids` (sandalyesiz),
+ * şişirme `actorRadius` (0,28), alan kelepçesi yok. Oyuncu ise `activeSolids` ile (sandalyeler
+ * KATI), `playerRadius` (0,47) ile ve `clampToOpenAreas` kelepçesiyle yürür. Yani personelin
+ * geçtiği boşluktan oyuncu geçemeyebilir ve BU FARK ÖLÇÜLDÜ (`docs/nav-oyuncu-raporu-d5.md`):
+ * dolu katta rotaların **%74,1'i** oyuncuya kapalı en az bir ara noktadan geçiyor, ara
+ * noktaların %14,4'ü kapalı hücre. Oyuncu adına personelin ızgarasında rota kurmak, oyuncunun
+ * içine giremeyeceği hücrelerden geçen bir yol vermektir; izleyen aktör masaya dayanıp iter.
+ *
+ * NEDEN DÜNYALARI BİRLEŞTİRMEK DEĞİL: personel masaya ERİŞMEK zorunda; `REACH_TABLE` ve yerleşim
+ * testleri `actorRadius`'a çivili, 0,47'ye şişirmek servis koridorlarını kapatır. Ölçüm bunu
+ * gereksiz de kılıyor: oyuncunun kendi dünyasında her hedefe yol VAR ve yalnız ×1,069 daha uzun.
+ *
+ * KİMİN İŞİ DEĞİL: oyuncunun KARE-İÇİ hareketi (`playerMoveSystem`) — o eksen-başı kaymadır ve
+ * ızgara kullanmaz. Bu ızgara ROTA soranlar içindir (sim botu, bekçi testi, ileride yol gösterme
+ * / oto-yürüme). İkisi aynı katılardan türer: tek doğru kaynak `activeSolids` + `playerRadius`.
+ */
+export function getPlayerNavGrid(tables: number, areasOpen: number): NavGrid {
+  const key = `${tables}|${areasOpen}`;
+  if (playerNavCache && playerNavCache.key === key) return playerNavCache.grid;
+  const grid = buildNavGrid(LAYOUT.area, NAV_CELL, activeSolids(tables, areasOpen), LAYOUT.playerRadius);
+  // AÇIK ALAN KELEPÇESİ: oyuncu `clampToOpenAreas` ile açık alanların birleşimine kapalıdır —
+  // personel değildir. Kelepçe ızgaraya anlatılmazsa rota kilitli arsadan kestirme yapar.
+  for (let r = 0; r < grid.rows; r++) {
+    const z = grid.minZ + (r + 0.5) * grid.cell;
+    for (let c = 0; c < grid.cols; c++) {
+      const x = grid.minX + (c + 0.5) * grid.cell;
+      const [cx, cz] = clampToOpenAreas(x, z, areasOpen);
+      if (cx !== x || cz !== z) grid.blocked[r * grid.cols + c] = 1;
+    }
+  }
+  playerNavCache = { key, grid };
   return grid;
 }
 

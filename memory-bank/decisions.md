@@ -2551,3 +2551,24 @@ her değişikliği yakalar. O test bilerek kırılgandır: dozu değiştirmek me
 kapısından geçmek zorundadır.
 **Uçtan uca:** `window.__game().goalMult` eklendi (ödül cüzdana ₺ koymadığı için duman testinin
 okuyabileceği tek kanıt) — hedef toplanınca ×1,004 okundu. **Duman 31/31 → 32/32.**
+
+## D-091 — Oyuncunun dünyasına kendi ızgarası (2026-09-09, D5)
+**Soru** Rotalar PERSONELİN dünyasında kuruluyordu (`navSolids`, sandalyesiz, `actorRadius` 0,28,
+alan kelepçesi yok); oyuncu ise `activeSolids` (sandalyeler katı) + `playerRadius` 0,47 +
+`clampToOpenAreas` ile yürüyor. Fark biliniyordu, hiç ölçülmemişti.
+**Ölçüldü** (`docs/nav-oyuncu-raporu-d5.md`, tam koşu 20 açıklık, damgalar temiz): ayrışma %3,1 →
+**%8,2** (745 hücre). **İçerik kilitli DEĞİL** — ulaşılamayan etkileşim noktası 0, bağlı bileşen 1,
+cep 0 (20 açıklığın 20'sinde). Zarar ROTADA: dolu katta rotaların **%74,1'i** oyuncuya kapalı en az
+bir ara noktadan geçiyor, ara noktaların %14,4'ü kapalı.
+**Karar** `getPlayerNavGrid` (`layout.ts`) — `activeSolids` + `playerRadius` + alan kelepçesi.
+Gerekçe: oyuncunun kendi dünyasında her hedefe yol VAR ve yalnız **×1,069** daha uzun; yani bu
+yerleşim darlığı değil, eksik ızgara. **Dünyaları birleştirmek elendi** (personel masaya erişmek
+zorunda; `REACH_TABLE` ve yerleşim testleri `actorRadius`'a çivili).
+**Bekçi** `tests/oyuncu-dunyasi.test.ts` — 8 test, **8 mutasyon**, sekizi de yakalandı. Bekçi ve
+ölçüm aracı ızgarayı yeniden KURMAZ, `getPlayerNavGrid`'i çağırır (D-090'ın dersi).
+**Denge sayısı değişmedi.** **Kabul edilen eksik ①:** oyunda bugün bu ızgarayı çağıran tüketici
+yok (oyuncu joystick ile sürülüyor) — bekçili bir doğruluk, henüz görünen davranış değil.
+**② Sim botunun göçü denendi, ölçüldü, GERİ ALINDI:** B2 159,1 → 0,0 br/dk. Yolda üç tuzak
+ölçüldü (bot katının içinde başlıyor · `×0,7` rota payı oyuncu dünyasında olanaksız · tetik
+yarıçapı ızgara yuvarlamasına yetmiyor, `+NAV_CELL` çözüyor); üçü düzeltildi, B2 yine 0,0 kaldı.
+Araç ölçülmüş hâline döndürüldü — botun göçü kendi turunu ister.
