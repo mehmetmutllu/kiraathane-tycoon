@@ -1,6 +1,7 @@
 // localStorage kayıt + saveVersion. Backend yok: cihaz = veritabanı.
 // v31 (D-058): migrasyon YOK — eski sürüm bulunursa ilerleme sıfırlanır, ayarlar korunur.
 // v32 (D-088): görev hattının kimliği sıra numarası olmaktan çıktı → GERÇEK migrasyon (aşağıda).
+import { defaultDaily, type DailyState } from './dailyQuests';
 import {
   economyConfig as C,
   type CharUpgrades,
@@ -101,6 +102,11 @@ export interface SaveData {
   /** D-093: USTA olmuş objelerin kimlikleri. Additive — kayıt sürümü ARTMADI; eski kayıtta
    *  alan yoksa boş liste okunur (`goalsClaimed`in v32'deki deseni). */
   mastersOwned: string[];
+  /** D8: bugünün günlük görevleri (gün · kimlikler · sayaç tabanı · toplananlar). Additive →
+   *  sürüm ARTMADI: eksik alan `defaultDaily()` ile dolar, `day: -1` ilk tick'te dönümü tetikler
+   *  (`mastersOwned` deseni). Kimlikler NEDEN saklanıyor: havuz gate'li, gün içinde yeniden
+   *  türetilse oyuncunun sabah aldığı görev öğlen altından kayardı (`dailyQuests.ts` başlığı). */
+  daily: DailyState;
   /** Aktif SAYAÇ görevinin başlangıç sayaç değeri (delta hedefi için taban; v16). */
   questBase: number;
   /** Tabanın AİT OLDUĞU görevin kimliği (v32). Konum bilgisi değil sahiplik etiketi: yüklemede
@@ -152,6 +158,7 @@ export function defaultSave(): SaveData {
     questsDone: [],
     goalsClaimed: [],
     mastersOwned: [],
+    daily: defaultDaily(),
     questBase: 0,
     questBaseId: '',
     xp: 0,

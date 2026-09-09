@@ -201,6 +201,28 @@ export interface GoalCategory {
   tiers: readonly number[];
 }
 
+/**
+ * GÜNLÜK GÖREV metriği — hepsi AKIŞ sayacıdır (her gün yeniden üretilebilir), bilerek: bir
+ * "yükseltme al" görevi geç oyunda merdiven tükenince İMKÂNSIZ olurdu ve o günün 💎'ı sessizce
+ * kaybolurdu. Sayaçların okunduğu tek yer `src/game/dailyQuests.ts`.
+ */
+export type DailyMetric = 'served' | 'hand' | 'coins' | 'dishes' | 'earn' | 'pickup' | 'waiter' | 'tost';
+
+/** Günlük görev ŞABLONU — havuzda durur, gün seçince somut hedefe dönüşür. */
+export interface DailyQuestDef {
+  id: string;
+  metric: DailyMetric;
+  /** Panel metni; `{N}` somut hedefle değiştirilir. */
+  label: string;
+  /** Hedef = `base + perTable × açık masa`. Ölçek masaya bağlı, çünkü oyuncunun günlük hacmi de
+   *  masaya bağlı: sabit eşik erken oyunda bitmez, geç oyunda üç dakikada biter. */
+  base: number;
+  perTable: number;
+  /** Şablon ancak bu koşul sağlanınca havuza girer (yoksa hep girer). Gün DÖNÜMÜNDE bir kez
+   *  bakılır — gün içinde havuz değişmez, yoksa oyuncunun görevi altından kayardı. */
+  gate?: 'waiter' | 'tost';
+}
+
 /** Sıralı görev (tek aktif; üst görev barında gösterilir, kamera hedefe yönlendirilebilir). */
 export interface QuestDef {
   id: string;
@@ -898,6 +920,27 @@ export const economyConfig = {
     count: 3,
     /** Üç görevin TOPLAM 💎 ödülü. */
     diamondsPerDay: 10,
+    /**
+     * HAVUZ (D8) — günün üçlüsü buradan DETERMİNİSTİK seçilir (gün numarası → deste; kayıtta
+     * tohum yok, `dailyQuests.ts`). Sayılar TEMPO KOLU DEĞİL: günün toplam 💎 arzı yukarıdaki
+     * `diamondsPerDay`dir ve o D7a'da ölçüldü; buradaki eşikler o arzın hangi işle ödendiğini
+     * söyler. Tek denge şartı **ulaşılabilirlik**: eşik bir oturumda bitmezse ölçülen arz
+     * gerçekleşmez, o yüzden hepsi masa sayısına ölçeklenir.
+     *
+     * XP VERMEZ — bilerek. Görev hattının 25 XP'si İtibar'a, İtibar da D-092'de ölçülen
+     * `carryBonusPerLevel` taşıma çarpanına biniyor; günlük göreve XP takmak ölçülmemiş bir
+     * hızlanma enjekte ederdi (varyant kapısı). Günlük görevin ödülü YALNIZ 💎.
+     */
+    pool: [
+      { id: 'serve', metric: 'served', label: '{N} çay servis et', base: 12, perTable: 2 },
+      { id: 'hand', metric: 'hand', label: '{N} çayı kendi elinle götür', base: 8, perTable: 1 },
+      { id: 'coins', metric: 'coins', label: '{N} para topla', base: 20, perTable: 3 },
+      { id: 'dishes', metric: 'dishes', label: '{N} kirli bardak yıka', base: 4, perTable: 1 },
+      { id: 'earn', metric: 'earn', label: '{N} ₺ kazan', base: 400, perTable: 120 },
+      { id: 'pickup', metric: 'pickup', label: 'Ocaktan {N} çay al', base: 10, perTable: 2 },
+      { id: 'waiter', metric: 'waiter', label: 'Garson {N} çay taşısın', base: 10, perTable: 2, gate: 'waiter' },
+      { id: 'tost', metric: 'tost', label: '{N} tost servis et', base: 3, perTable: 1, gate: 'tost' },
+    ] as readonly DailyQuestDef[],
   },
 
   xp: {

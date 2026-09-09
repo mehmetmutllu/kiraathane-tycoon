@@ -41,8 +41,17 @@ import {
   servicePlace,
   waiterHomeAt,
 } from './layout';
-import { deriveWorld, defaultFloorTheme, MAX_AREAS, MAX_SERVICES, roomOpen, THE_SERVICE, type World } from './world';
+import { deriveWorld, defaultFloorTheme, MAX_AREAS, MAX_SERVICES, roomOpen, sellsTost, THE_SERVICE, type World } from './world';
 import { activeQuestIndex, completedQuestIds } from './questProgress';
+import {
+  dayIndex,
+  defaultDaily,
+  rollDaily,
+  claimDailyReward,
+  type DailyState,
+  type DailyContext,
+  type DailyCounters,
+} from './dailyQuests';
 import { claimGoalReward, collectionMult, type GoalMetrics } from './goals';
 // Dünya modeli (ALAN · SERVİS · MASA · ODA) Faz B1'de world.ts'e ayrıldı; store aynı kapıdan sunar.
 export {
@@ -187,6 +196,42 @@ export function goalMetricsOf(s: {
   };
 }
 
+/**
+ * GÜNLÜK GÖREV GİRDİLERİ (D8) — sayaçlar ve gate'ler TEK yerde durumdan türetilir; `goalMetricsOf`
+ * deseninin aynısı. HUD ne sayaç toplar ne gate bakar.
+ */
+export function dailyCountersOf(s: {
+  stats: {
+    teasServed: number; waiterServed: number; dishesWashed: number;
+    coinsCollected: number; teaPickups: number; tostServed: number;
+  };
+  lifetime: Decimal;
+}): DailyCounters {
+  return {
+    served: s.stats.teasServed + s.stats.waiterServed,
+    hand: s.stats.teasServed,
+    coins: s.stats.coinsCollected,
+    dishes: s.stats.dishesWashed,
+    earn: Math.max(0, Math.floor(s.lifetime.toNumber())),
+    pickup: s.stats.teaPickups,
+    waiter: s.stats.waiterServed,
+    tost: s.stats.tostServed,
+  };
+}
+
+/** Havuz gate'lerinin ve hedef ölçeğinin baktığı dünya — yalnız gün DÖNÜMÜNDE okunur. */
+export function dailyContextOf(s: {
+  tables: number;
+  waiters: readonly unknown[];
+  stationLevels: readonly number[];
+}): DailyContext {
+  return {
+    tables: s.tables,
+    hasWaiter: s.waiters.length > 0,
+    tostOpen: sellsTost(s.stationLevels[THE_SERVICE] ?? 0),
+  };
+}
+
 export interface GameState {
   // Kalıcı
   wallet: Decimal;
@@ -258,6 +303,9 @@ export interface GameState {
   /** USTA olmuş objelerin KİMLİKLERİ (D7a · D-093). "Kaç Usta aldım" saklanmaz — tick
    *  çarpanı (`masterTipsOf`) ve hedef sayaçları bu listeden türer (`goalsClaimed` deseni). */
   mastersOwned: string[];
+  /** D8: bugünün günlük görevleri (gün · kimlikler · sayaç tabanı · toplananlar). Gün dönümü
+   *  `store.tick`te bakılır — `tick.ts`e (denge dosyası) DOKUNULMAZ, `saveTimer` deseni. */
+  daily: DailyState;
   /** Sıradaki görevin index'i (persist; >= quests.length ⇒ görev hattı bitti). */
   questIndex: number;
   /** Aktif sayaç görevinin başlangıç sayaç değeri (persist; delta hedefi tabanı). */
@@ -315,6 +363,8 @@ export interface GameState {
   claimGoal: (id: string) => boolean;
   /** D-093: USTA basamağını 💎 ile satın al. Kimlik `masterId()` kalıbında (`table:3`). */
   buyMaster: (id: string) => boolean;
+  /** D8: bugünün bir günlük görevinin 💎 ödülünü al. Eşik doğrulaması `dailyQuests.ts`te. */
+  claimDailyQuest: (id: string) => boolean;
   toggleCamZoomOut: () => void;
   /** Ayar değiştir (ayarlar modalı) — anında kaydedilir. */
   setSetting: (key: keyof SaveSettings, value: boolean) => void;
@@ -388,6 +438,7 @@ export const useGame = create<GameState>((set, get) => ({
   stats: defaultStats(),
   goalsClaimed: [],
   mastersOwned: [],
+  daily: defaultDaily(),
   questIndex: 0,
   questBase: 0,
   questPhase: 'active',
@@ -469,6 +520,21 @@ export const useGame = create<GameState>((set, get) => ({
       wallet = wallet.add(offlineEarned);
       lifetime = lifetime.add(offlineEarned);
     }
+    // GÜN DÖNÜMÜ (D8): gece kapalıyken gün değiştiyse görevler BURADA yenilenir — çevrimdışı
+    // gelir eklendikten SONRA. Sıra ölçülen arzın parçası: taban offline'dan önce alınsaydı
+    // gece kazanılan ₺ bugünün "kazan" görevini bedavaya doldururdu (bekçi bunu yakaladı) ve
+    // 10 💎/gün sessizce büyürdü. `stats` offline'da değişmez, tek kritik sayaç `lifetime`.
+    const loadedDaily = rollDaily(
+      save.daily,
+      dayIndex(Date.now()),
+      dailyContextOf({
+        tables: world.tables.length,
+        waiters: new Array(world.services[THE_SERVICE].waiters),
+        stationLevels,
+      }),
+      dailyCountersOf({ stats: save.stats, lifetime }),
+    );
+
     set({
       wallet,
       lifetime,
@@ -535,6 +601,7 @@ export const useGame = create<GameState>((set, get) => ({
       stats: { ...save.stats },
       goalsClaimed: [...(save.goalsClaimed ?? [])],
       mastersOwned: [...(save.mastersOwned ?? [])],
+      daily: loadedDaily,
       questIndex: loadedQuestIndex,
       questBase: loadedQuestBase,
       questPhase: 'active',
@@ -591,6 +658,15 @@ export const useGame = create<GameState>((set, get) => ({
     const c = createTickCtx(s, dt);
     runTick(c);
 
+    // GÜN DÖNÜMÜ (D8): `tick.ts`e DOKUNMAZ — denge dosyası değil, store'un defter işi
+    // (`saveTimer` deseni). Gün değişmediyse `rollDaily` ÖNCEKİ NESNEYİ döndürür, yani
+    // `keepIdentity` hiçbir yeniden render tetiklemez; ancak dönümde yeni nesne doğar.
+    const gun = dayIndex(Date.now());
+    const daily =
+      s.daily.day === gun
+        ? s.daily // sıcak yol: tek sayı karşılaştırması, nesne üretilmez
+        : rollDaily(s.daily, gun, dailyContextOf(s), dailyCountersOf({ stats: c.stats, lifetime: c.lifetime }));
+
     // Periyodik kayıt (sistemlerin dışında: store'un işi).
     let saveTimer = s.saveTimer - dt;
     if (saveTimer <= 0) {
@@ -623,6 +699,7 @@ export const useGame = create<GameState>((set, get) => ({
         noticeQueue: c.noticeQueue,
         revealSeen: c.revealSeen,
         stats: c.stats,
+        daily,
         // `goalsClaimed` BİLEREK yok: hedefler tick'te değişmez, yalnız `claimGoal` yazar. Tick
         // bağlamına eklemek `tick.ts`e (denge dosyası) dokunmak olurdu ve buraya `undefined`
         // yazıyordu — 49 test bu yüzden kırıldı.
@@ -726,6 +803,28 @@ export const useGame = create<GameState>((set, get) => ({
       mastersOwned: [...(s.mastersOwned ?? []), id],
       diamonds: s.diamonds.sub(fiyat),
       xp: s.xp + C.xp.perUpgrade,
+    });
+    get().saveNow();
+    return true;
+  },
+
+  /**
+   * GÜNLÜK GÖREV ÖDÜLÜ (D8) — günün 💎'ı. `claimGoal` deseni: eşik kontrolü BURADA DEĞİL
+   * `dailyQuests.ts`te (iki yerde kural olsaydı biri diğerinden sapardı — D-015 dersi).
+   * Kayıt sürümü ARTMAZ, XP VERMEZ (ölçülmemiş İtibar enjeksiyonu olurdu — `economy.config.ts`).
+   */
+  claimDailyQuest: (id) => {
+    const s = get();
+    const odul = claimDailyReward(
+      id,
+      s.daily,
+      dailyContextOf(s),
+      dailyCountersOf({ stats: s.stats, lifetime: s.lifetime }),
+    );
+    if (odul === null) return false;
+    set({
+      daily: { ...s.daily, claimed: [...s.daily.claimed, id] },
+      diamonds: s.diamonds.add(odul),
     });
     get().saveNow();
     return true;
@@ -906,6 +1005,7 @@ export const useGame = create<GameState>((set, get) => ({
       questsDone: completedQuestIds(C.quests, s.questIndex),
       goalsClaimed: [...(s.goalsClaimed ?? [])],
       mastersOwned: [...(s.mastersOwned ?? [])],
+      daily: { ...s.daily, ids: [...s.daily.ids], base: { ...s.daily.base }, claimed: [...s.daily.claimed] },
       questBase: s.questBase,
       questBaseId: C.quests[s.questIndex]?.id ?? '',
       xp: s.xp,

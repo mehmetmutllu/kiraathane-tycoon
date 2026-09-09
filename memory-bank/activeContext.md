@@ -5,49 +5,28 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-09 — **D7a BİTTİ** · Faz D 7/8 · 70/79)
+## ŞU AN (2026-09-09 — **D8 AÇIK** · Faz D 8/8 · 70/79)
 
-D7 kullanıcı kararıyla İKİYE BÖLÜNDÜ: **D7a = ölçüm + denge** (bu tur, bitti) ·
-**D7b = UI** (Usta paneli + günlük görev kartları — sıradaki).
+D7 ikiye bölünmüştü: **D7a = ölçüm + denge** (bitti, D-093) · **D8 = UI** (bu tur, tur adı `D7b`).
 
 ```
-SORU            : Elmas kazanılıyor (250 💎) ama harcanamıyor. Usta katmanının ETKİSİ ve
-                  FİYATI ölçülmemiş iki denge sayısı; 250 💎 kuyruğu doğmadan çökertiyor mu?
-                                                                                  [KAPANDI]
-ÖLÇÜLECEK KOLLAR: e0 taban · eKAPI araç denetimi · e1 etki dozu · e2 fiyat · e3 kapsam ·
-                  e4 hedef arzı · e5 günlük görev · **e6 personel/taşıma** (tur kartında
-                  YOKTU — darboğaz dağılımı okununca eklendi) · **e6X** tavan şartı yok
-                  (kanal denetimi) · eUYG uygulanan config
-SAYILAR         : docs/elmas-raporu-d7.md §2 — 13 bulgu, tam koşu, damgalar temiz
-KARAR           : D-093 — `master.tipMult 1.5` · `master.diamondCost 25` ·
-                  `dailyQuests.diamondsPerDay 10`; planın iki sayısı da ölçümde düzeltildi
-UYGULAMA        : `economy.config.ts` (2 blok) · `rules.ts` (Usta yardımcıları) · `tick.ts`
-                  `masterTip` (kimlikten TÜRER, `incomeMult` deseni) · `store.ts` `buyMaster`
-                  · kayıt sürümü ARTMADI (v32, `mastersOwned` additive)
-BEKÇİ           : tests/usta.test.ts — 11 test, **10 mutasyon, onu da yakalandı** ·
-                  vitest 639 · duman 32/32
+SORU            : Usta ve günlük görevin MEKANİĞİ ve SAYISI var (D-093), ETKİLEŞİMİ yok.
+                  Oyuncu 250 💎'ını nasıl harcayacak, günlük 10 💎'ı nasıl kazanacak?
+ÖLÇÜLECEK KOLLAR: YOK — bu tur denge sayısı değiştirmiyor, **varyant kapısı tetiklenmiyor**
+                  (`economy.config.ts`e eklenen tek şey görev TANIMLARI; arz `diamondsPerDay 10`
+                  D7a'da ölçüldü ve DEĞİŞMİYOR). Karar ürün kararıdır, tempo kararı değil.
+                  İSTİSNA: `master.tipMult` ×1,5 → ×2 sorusu D7a'nın ÖLÇÜLMÜŞ satırıdır
+                  (`e2` 25 💎 · %-3,0 / 30,4 dk) — kapı sağlanıyor, yeni ölçüm gerekmiyor.
+SAYILAR         : gerekmiyor (ölçüm turu değil) · dayanak `docs/elmas-raporu-d7.md` §2, §5
+KARAR           : (karar paketi bekliyor)
+UYGULAMA        : (kararın kolu)
+BEKÇİ           : (test dosyası + mutasyon sayısı)
 ```
 
-**Turun asıl dersi — UYGULANAN HÂL İKİ KNOB'UN TOPLAMI DEĞİL (Bulgu 13).** Etki ×1,5 ve fiyat
-25 💎 tabloda AYRI ölçülmüştü (ikisi de %-3,0 / 30,4 dk); birleşimleri **%-1,6 / 32,0 dk** —
-yaklaşık yarısı, çünkü ikisi de aynı yönü çekiyor (biri alım başına değeri, diğeri alım
-sayısını düşürüyor). D-090 Bulgu 10 ve D-092 `rUYG`den sonra **üçüncü kez** aynı varsayım
-çürüdü. `eUYG` satırı olmasaydı rapor yürürlükte olmayan bir sayıyı savunacaktı.
+**Tur iki yeşil parçaya bölündü** (`feedback_task_splitting`: mantık ile görsel ayrı parçada):
+**① günlük görev SİSTEMİ** (mantık + bekçi — 💎 gerçekten günlük akmaya başlar) →
+**② UI** (Usta noktası + görev kartları + Hedefler'de Usta sayacı).
 
-**İkinci ders — sıfır satır iki farklı şey olabilir.** `e5` ve `e6` ikisi de 0 alım ölçtü ama
-sebepleri farklıydı: `e5` ÖLÇEK uyuşmazlığı (12 sa yarım gün), `e6` ULAŞILAMAZLIK (personel
-merdivenleri tavana varmıyor). Ayırmak için iki ayrı denetim satırı gerekti (`e5` ızgarası
-80 💎/gün'e uzatıldı · `e6X` tavan şartı kaldırıldı) — yoksa ikisi de "kol etkisiz" diye
-okunurdu ve `e6X`in %-26,1'i hiç görülmezdi.
-
-## SIRADAKİ TAM ADIM
-
-**D7b — UI: Usta paneli + günlük görev kartları.** Faz D'nin son kalemi. Mekanik ve sayılar
-D7a'da çivilendi ve bekçili; eksik olan ETKİLEŞİM: (a) oyuncu Usta'ya yaklaşınca panel
-(plan §5: "adım listesine girmez, rozet + Hedefler paneli üzerinden"), (b) günlük görev
-SİSTEMİ (bugün yalnız ölçülmüş sayısı config'te duruyor — 3 görev/gün, toplam 10 💎),
-(c) `buyMaster` çağıran buton + "İzle ve Usta yap" reklam yeri (Faz 5'te bağlanacak).
-Faz D bitince D-087'nin tempo penceresi yeniden okunacak (araç hazır).
 ## AÇIK KALEMLER (bilinen, bilerek duruyor)
 
 - **UYGULANAN HÂL BEKLENENDEN ZAYIF (D-093 Bulgu 13):** `eUYG` %-1,6 / 32,0 dk verdi, oysa
