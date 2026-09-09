@@ -13,7 +13,7 @@
  * (aynı `m`, aynı `t`, aynı kapı kesmesi, aynı sıra). Tek fark, artık okunabilir olması.
  */
 import { BAND, BAND_SHELL, LAYOUT, doorX, wallSpans, type AreaSide } from '../../game/layout';
-import { DOOR } from './wallPanel';
+import { DOOR, WALL_H as WALL_H_REF } from './wallPanel';
 
 /** Duvar hattının alan kenarından dışarıdaki payı — oyuncu kelepçe standoff'u ile birebir. */
 export const WALL_M = 0.5;
@@ -111,3 +111,74 @@ export function BAND_SHELL_RUNS(): WallRun[] {
     { x: xr, z: (zb + zf) / 2, w: WALL_T, d: zf - zb, area: 2, side: 'right' },
   ];
 }
+
+// ============================================================================================
+//  KAYKIT KABUĞU (S4) — duvar hattı paketin modülleriyle döşenir
+// ============================================================================================
+//
+// ÖLÇÜLER `docs/olcum-duvar.txt` / `docs/duvar-zemin-raporu-s4.md`'den; hiçbiri tahmin değil.
+//
+// MİMARİ ÖLÇEK 0,80: KayKit duvarı native 4,0 boyunda, oyununki `WALL_H` 3,2 → 3,2/4 = 0,80.
+// Bu MOBİLYANIN 0,90'ı DEĞİLDİR (D-099 §1): mobilya insana göre, duvar odaya göre ölçeklenir.
+//
+// K4 EŞ DAĞITIM: hiçbir hat 3,20'ye tam bölünmüyor (18,00 · 15,30 · 10,80 · 7,60 · 6,80 · 35,00).
+// Ölçülen dört koldan kazanan bu: n = yuvarla(L / 3,20) modül, HEPSİ aynı oranda gerilir.
+// En kötü gerilme %18,7 · ortalama %6,1 — "tam modül + gerilmiş artık" kolunda aynı sayılar
+// %87,5 / %42,8'di VE bozulma tek bir parçada toplanıp gözle "yama" olarak okunuyordu.
+// Gerilme yalnız modülün DİKEY pahını etkiler (0,080 → en kötü 0,095); modülün YATAY oluğu
+// yatay olduğu için hiç etkilenmez.
+
+/** KayKit duvarının ham boyu — `tools/model-olc.mjs kaykit-restaurant-bits wall`. */
+export const KAY_WALL_NATIVE = { w: 4, h: 4, d: 0.5 } as const;
+
+/** Mimari ölçek: oyunun duvar yüksekliği / modelin boyu. */
+export const KAY_S = WALL_H_REF / KAY_WALL_NATIVE.h;
+
+/** Bir modülün gerilmemiş dünya eni. */
+export const KAY_MODUL_W = KAY_WALL_NATIVE.w * KAY_S;
+
+/** Bir modülün dünya kalınlığı (oyunun 0,20'lik hattından 0,20 kalın; ölçüm: kesişen katı 0). */
+export const KAY_MODUL_T = KAY_WALL_NATIVE.d * KAY_S;
+
+/** Bir hattın kaç modüle bölüneceği ve her modülün gerilme çarpanı (K4). */
+export function esDagit(uzunluk: number): { n: number; adim: number; gerilme: number } {
+  const n = Math.max(1, Math.round(uzunluk / KAY_MODUL_W));
+  const adim = uzunluk / n;
+  return { n, adim, gerilme: adim / KAY_MODUL_W };
+}
+
+/** Yerleştirilmiş tek modül: dünya konumu + y ekseni dönüşü + ölçek. */
+export interface KayModul {
+  x: number;
+  z: number;
+  /** y ekseni dönüşü (radyan). Dik hatlarda π/2. */
+  rot: number;
+  /** [en, boy, kalınlık] — en, K4 gerilmesini taşır. */
+  scale: [number, number, number];
+}
+
+/**
+ * Bir duvar hattını modüllere böler. Modüller hattın ÜSTÜNE ortalanır: ilk modülün dış kenarı
+ * hattın başına, sonuncusununki sonuna değer — köşelerde boşluk kalmaz.
+ */
+export function kayModuller(r: WallRun): KayModul[] {
+  const dikey = wallDikey(r);
+  const uz = wallUzunluk(r);
+  const { n, adim, gerilme } = esDagit(uz);
+  const line = wallSideLine(r);
+  const bas = (dikey ? r.z : r.x) - uz / 2;
+  const out: KayModul[] = [];
+  for (let k = 0; k < n; k++) {
+    const orta = bas + adim * (k + 0.5);
+    out.push({
+      x: dikey ? line : orta,
+      z: dikey ? orta : line,
+      rot: dikey ? Math.PI / 2 : 0,
+      scale: [KAY_S * gerilme, KAY_S, KAY_S],
+    });
+  }
+  return out;
+}
+
+/** Bir parça listesinin tüm modülleri — çizim hattı bunu okur. */
+export const kayDuvar = (runs: WallRun[]): KayModul[] => runs.flatMap(kayModuller);

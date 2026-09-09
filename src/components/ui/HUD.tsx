@@ -64,7 +64,23 @@ export function HUD() {
   const setSetting = useGame((s) => s.setSetting);
   const offlineEarned = useGame((s) => s.offlineEarned);
   const notice = useGame((s) => s.notice);
+  /**
+   * GÖREV HATTI BİTİŞ BANDI 5 SANİYE DURUR (kullanıcı 2026-09-09: *"görev hattı tamamlanınca
+   * 'tamamlandı kıraathane senin' yazmasın, 5 sn sonra çıktıktan sonra gitsin"*).
+   * Bant kalıcıydı ve ekranın altında sürekli yer kaplıyordu; oysa bir KUTLAMA, bir durum satırı
+   * değil. Süre dolunca bant kalkar ve alt nav yukarı toplanır.
+   */
   const quest = useGame((s) => s.quest);
+  const [bitisGorunur, setBitisGorunur] = useState(true);
+  const questBitti = quest == null;
+  useEffect(() => {
+    if (!questBitti) {
+      setBitisGorunur(true); // hat yeniden uzarsa (yeni görev eklenirse) bant tekrar hak eder
+      return undefined;
+    }
+    const t = setTimeout(() => setBitisGorunur(false), 5000);
+    return () => clearTimeout(t);
+  }, [questBitti]);
   const focusQuest = useGame((s) => s.focusQuest);
   const hardReset = useGame((s) => s.hardReset);
   const charPanelSeen = useGame((s) => s.charPanelSeen);
@@ -220,7 +236,10 @@ export function HUD() {
           <span className="notice-text">{notice.text}</span>
           {notice.reward != null && (
             <span className="notice-reward" data-testid="notice-reward">
-              <CoinIcon size={16} />+{notice.reward}
+              {/* TAM SAYI: oto-toplama toplamı kesirli geliyordu ve "273.3333" Türkçe okumada
+                  binlik ayracı gibi görünüyordu (kullanıcı: *"273k para toplanmış gibi
+                  gözüküyor"*). Para zaten kuruşsuz sunuluyor; burada da yuvarlanır. */}
+              <CoinIcon size={16} />+{Math.round(notice.reward)}
             </span>
           )}
         </div>
@@ -277,13 +296,13 @@ export function HUD() {
             <ChevronIcon size={18} />
           </span>
         </button>
-      ) : (
+      ) : bitisGorunur ? (
         <div className="band idle">
           <span className="band-body">
             <span className="band-title">Görev hattı tamamlandı — kıraathane senin.</span>
           </span>
         </div>
-      )}
+      ) : null}
 
       {/* ───────── ALT NAV ───────── */}
       <nav className="botnav">

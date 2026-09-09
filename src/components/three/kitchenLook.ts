@@ -19,7 +19,8 @@
  * Mobilya insana göre ölçeklenir, duvar odaya göre; ikisi tek sayıya zorlanmadı. Duvara asılan
  * üniteler bu farkı ÜST HİZADAN kapatır: `WALL_UNIT_Y` aşağıda türetiliyor.
  */
-import { BAND, BAND_SHELL, servicePlace } from '../../game/layout';
+import { BAND, BAND_SHELL, WAITER_STATION, servicePlace, waiterStationOpen } from '../../game/layout';
+import type { Goz } from './atlasUV';
 import { WALL_H } from './wallPanel';
 
 /** KayKit ham ölçek → dünya. `tableLook.STOOL_S` ile aynı sayı, aynı gerekçe. */
@@ -42,6 +43,22 @@ export type KitchenKey =
   | 'crate'
   | 'crate_potatoes'
   | 'crate_lid'
+  // S4 (kullanıcı 2026-09-09): "bulaşık için altı boş metalimsi duran lavabo var, onu dene" +
+  // "duvar aksesuarları var orada, peçetelik/havluluk" + mutfağı paketle güzelleştir.
+  | 'kitchentable_sink_large'
+  | 'kitchentable_sink_large_decorated'
+  | 'shelf_papertowel_decorated'
+  | 'towelrail'
+  | 'papertowel'
+  | 'dishrack'
+  | 'jar_A_medium'
+  | 'jar_B_small'
+  | 'jar_C_large'
+  | 'pot_A'
+  | 'pan_A'
+  | 'cuttingboard'
+  | 'knife'
+  | 'food_ingredient_ham'
   | 'waterRack';
 
 /**
@@ -68,6 +85,29 @@ export const NATIVE: Record<KitchenKey, { w: number; h: number; minY: number; mi
   crate: { w: 2.0, h: 0.8, minY: 0, minZ: -1.0, maxZ: 1.0 },
   crate_potatoes: { w: 2.0, h: 0.966, minY: 0, minZ: -1.0, maxZ: 1.0 },
   crate_lid: { w: 2.0, h: 0.2, minY: 0, minZ: -1.0, maxZ: 1.0 },
+  // S4 — hepsi `node tools/model-olc.mjs kaykit-restaurant-bits <ad>` çıktısı, birebir.
+  // BULAŞIK ÇİFTİ (kullanıcı 2026-09-09: *"kenarında bulaşık dizmek için olan, kendinden
+  // bulaşıklı ve bulaşıksız hâli olan"*). Paket bu ikisini KARDEŞ olarak veriyor: aynı gövde,
+  // aynı ayak izi, tek farkı üstündeki bulaşık yığını (1,802 → 1,947 = 0,145'lik istif).
+  // Yani boş↔dolu geçişi bir yer değiştirme değil, tek modelin değişmesi.
+  kitchentable_sink_large: { w: 3.0, h: 1.802, minY: 0, minZ: -1.0, maxZ: 1.0 },
+  kitchentable_sink_large_decorated: { w: 3.0, h: 1.947, minY: 0, minZ: -1.0, maxZ: 1.0 },
+  // Duvara asılanlar: origin ASKI noktasında, gövde AŞAĞI sarkıyor (minY negatif).
+  shelf_papertowel_decorated: { w: 2.0, h: 1.71, minY: -0.91, minZ: 0, maxZ: 0.626 },
+  // Havluluk z'de KAYIK yazılmış (sırtı 0'da değil 0,8'de) — duvara yaslamak için telafi gerek.
+  towelrail: { w: 1.6, h: 0.583, minY: 0.281, minZ: 0.8, maxZ: 1.263 },
+  papertowel: { w: 0.5, h: 0.914, minY: 0, minZ: -0.25, maxZ: 0.25 },
+  dishrack: { w: 1.2, h: 0.6, minY: 0, minZ: -0.6, maxZ: 0.6 },
+  jar_A_medium: { w: 0.5, h: 0.65, minY: 0, minZ: -0.25, maxZ: 0.25 },
+  jar_B_small: { w: 0.566, h: 0.55, minY: 0, minZ: -0.283, maxZ: 0.283 },
+  jar_C_large: { w: 0.5, h: 0.75, minY: 0, minZ: -0.25, maxZ: 0.25 },
+  pot_A: { w: 1.4, h: 0.5, minY: 0, minZ: -0.5, maxZ: 0.5 },
+  pan_A: { w: 1.0, h: 0.25, minY: 0, minZ: -0.5, maxZ: 1.0 },
+  cuttingboard: { w: 1.5, h: 0.15, minY: 0, minZ: -0.5, maxZ: 0.5 },
+  // Bıçak origin'i sapın altında (minY negatif) — tahtaya saplı dursun diye ankraj y = 0.
+  knife: { w: 0.25, h: 1.15, minY: -0.211, minZ: -0.05, maxZ: 0.05 },
+  // Sucuk: origin ORTADA (minY −0,415) — kasanın içine koyarken taban değil merkez hizalanır.
+  food_ingredient_ham: { w: 1.391, h: 0.83, minY: -0.415, minZ: -0.415, maxZ: 0.415 },
   // MaketWaterRack (elle çizili): 1,3 en × 1,5 yükseklik × 0,5 derinlik, origin ortada.
   // Ham sayı olarak yazılır ki `unitBox` ölçeği herkese aynı uygulasın.
   waterRack: {
@@ -154,6 +194,26 @@ const DEPO_Z = -13.9;
 const KASA_S = 0.45;
 
 /**
+ * Peçetelik rafının askı yüksekliği. `WALL_UNIT_Y` ile AYNI türetme: ünitenin tepesi duvarın
+ * tepesine oturur, altı nereye düşerse oraya düşer. Elle 0,55 yazılmıştı ve bekçi yakaladı —
+ * raf duvarın tepesini 0,17 aşıyordu. Asılı ünitelerin hepsi tek bir ÜST HİZADA okunmalı.
+ */
+const RAF_Y = WALL_H - (NATIVE.shelf_papertowel_decorated.minY + NATIVE.shelf_papertowel_decorated.h) * KITCHEN_S;
+/**
+ * Havluluğun askı yüksekliği — tezgâh üstü ile asılı ünitelerin ALT yüzü arasındaki boşluğun
+ * ortası. Üst hizaya BİLEREK oturmuyor: havluluk bir dolap değil, gerçek bir mutfakta da
+ * tezgâhın hemen üstünde durur.
+ */
+const HAVLU_Y = COUNTER_TOP_Y + 0.5 - NATIVE.towelrail.minY * KITCHEN_S;
+/**
+ * Havluluğun z'si — batı duvarında, ÖN SINIRIN 0,1 gerisinde biter. Elle −11,4 yazılmıştı ve
+ * bekçi yakaladı: havluluk 1,44 br geniş, ön sınırı 0,12 aşıp çay ocağının kutusuna giriyordu.
+ */
+const HAVLU_Z = FRONT_Z - 0.1 - (NATIVE.towelrail.w / 2) * KITCHEN_S;
+/** Havluluk z'de KAYIK yazılmış (sırtı 0'da değil 0,8'de); duvara yaslamak için telafi. */
+const NATIVE_TOWEL_Z = 0.8 * KITCHEN_S;
+
+/**
  * MUTFAĞIN YERLEŞİMİ — arka duvarda 7 modüllük tek hat, doğu ucunda depo.
  *
  * Hat okunabilir bir iş sırası anlatır (maket v13'ün kurgusu): soğutucu → hazırlık → ocak →
@@ -192,9 +252,40 @@ export const KITCHEN_UNITS: readonly KitchenUnit[] = [
   { key: 'crate_potatoes', x: modulX(6) + 0.45, z: DEPO_Z, ceyrek: 0, kat: 'zemin', olcek: KASA_S },
   { key: 'crate', x: modulX(6) + 0.45, z: DEPO_Z, ceyrek: 1, kat: 'tezgah', y: NATIVE.crate_potatoes.h * KASA_S, olcek: KASA_S },
 
-  // Damacana rafı: KayKit karşılığı yok, elle çizili duruyor; yeri depo hattının devamı.
-  { key: 'waterRack', x: modulX(6) + 0.4, z: -11.9, ceyrek: 3, kat: 'zemin' },
+  // DEPO — üstteki AÇIK kasanın içine sucuk (kullanıcı 2026-09-09: *"kasaların üstte boş olanın
+  // içine assetteki sucuk gibi olan şeyi koy"*). Kasa `ceyrek: 1` döndüğü için sucuk da onunla
+  // aynı dönüşü alır; y kasanın iç tabanı + sucuğun yarı boyu (origin ortada).
+  {
+    key: 'food_ingredient_ham',
+    // Modelin origin'i x'te ORTALI DEĞİL (minX −0,496 · maxX 0,895 → görsel merkez 0,1995 sağda);
+    // kasanın ortasına oturması için o kadar sola itilir. Dönüş YOK: `ceyrek: 1` verilince
+    // telafi ekseni de dönüyor ve sucuk kasanın kenarından taşıyordu (ilk deneme).
+    x: modulX(6) + 0.45 - 0.1995 * KASA_S,
+    z: DEPO_Z,
+    ceyrek: 0,
+    kat: 'tezgah',
+    // Üstteki AÇIK kasanın İÇ tabanı + sucuğun yarı boyu (origin dikeyde ortalı, minY −0,415).
+    y: (NATIVE.crate_potatoes.h + 0.12) * KASA_S + -NATIVE.food_ingredient_ham.minY * KASA_S,
+    olcek: KASA_S,
+  },
+
+  // ---- S4 DUVAR AKSESUARLARI — BATI DUVARINDA ----
+  // Kullanıcı 2026-09-09: peçetelik ilk denemede arka duvarda buzdolabının önüne düşmüş ve
+  // içine girmiş gibi görünüyordu; ayrıca soldaki (batı) çay bardağı rafının kalkması istendi.
+  // İkisinin cevabı aynı: aksesuarlar BATI duvarına geçti, bardak rafları yalnız arka duvarda
+  // kaldı. Batı duvarında önlerinde yalnız 1,08 boyunda bir tezgâh var — hiçbir şeyin içine
+  // girmiyorlar. `ceyrek: 1` → modelin sırtı (+z yüzü) batı duvarına döner.
+  { key: 'shelf_papertowel_decorated', x: LEFT_X, z: -12.5, ceyrek: 1, kat: 'duvar', y: RAF_Y },
+  { key: 'towelrail', x: LEFT_X - NATIVE_TOWEL_Z, z: HAVLU_Z, ceyrek: 1, kat: 'duvar', y: HAVLU_Y },
+
 ];
+
+/**
+ * ÜST HİZAYA oturan asılı üniteler: tepeleri duvarın tepesindedir ve tek bir çizgi okunur.
+ * Bu listede OLMAYAN duvar üniteleri (havluluk) kendi yüksekliğinde asılır — bekçi ikisini
+ * ayrı denetler. Liste burada durur ki kural ile çizim tek kaynaktan okusun.
+ */
+export const UST_HIZALI: readonly KitchenKey[] = ['kitchencabinet', 'extractorhood', 'shelf_papertowel_decorated'];
 
 /** Duvar rafının (çay bardakları) asıldığı modüller — hattın ortası. */
 export const RAF_MODULLERI = [3, 4] as const;
@@ -253,6 +344,44 @@ export function unitBox(u: KitchenUnit): {
 export const FRONT_TOP_Y = COUNTER_TOP_Y;
 
 /**
+ * ÖN HAT KESİNTİSİZ OLSUN (kullanıcı 2026-09-09: *"en önde olan 3 şeyi birleştir"*).
+ *
+ * Üç tezgâhın (çay ocağı · garson istasyonu · bulaşık) COLLISION kutuları arasında 0,20'şer
+ * boşluk var ve üçü ayrı ada gibi okunuyordu. Kutulara DOKUNULMUYOR — yürüme ve erişim aynı
+ * kalsın diye. Değişen yalnız ÇİZİLEN genişlik: her gövde komşusuyla arasındaki boşluğun
+ * ORTASINA kadar uzatılır, dış kenarlar kendi yerinde kalır. Sonuç tek bir banko.
+ *
+ * Ayrıca bulaşık BUGÜNE KADAR YANLIŞ ÇİZİLİYORDU: `dishHalf` [1,0 · 0,5] yani kutu 2,00 × 1,00,
+ * ama çizim 1,4 × 0,8 elle yazılmıştı. Artık üçü de kutusundan türüyor.
+ */
+export interface OnHatGovde {
+  /** Çizilecek genişlik. */
+  w: number;
+  /** Derinlik — kutunun kendi derinliği. */
+  d: number;
+  /** Gövdenin merkezinin, ünitenin kendi merkezine göre x kayması. */
+  dx: number;
+}
+
+export function onHat(
+  parcalar: readonly { x: number; hx: number; hz: number }[],
+): OnHatGovde[] {
+  const sirali = [...parcalar].map((p, i) => ({ ...p, i })).sort((a, b) => a.x - b.x);
+  const kenar = sirali.map((p) => [p.x - p.hx, p.x + p.hx] as [number, number]);
+  for (let k = 0; k < sirali.length - 1; k++) {
+    const orta = (kenar[k][1] + kenar[k + 1][0]) / 2;
+    kenar[k][1] = orta;
+    kenar[k + 1][0] = orta;
+  }
+  const out: OnHatGovde[] = new Array(parcalar.length);
+  sirali.forEach((p, k) => {
+    const [x0, x1] = kenar[k];
+    out[p.i] = { w: x1 - x0, d: p.hz * 2, dx: (x0 + x1) / 2 - p.x };
+  });
+  return out;
+}
+
+/**
  * Bir KayKit tezgâhını verilen kutuya çeken dönüşüm.
  * `w` gövde eni · `d` derinlik · `topY` tabla üstü. Modelin z aralığı simetrik DEĞİL
  * (−1,000 → +1,042: tabla öne taşar), o yüzden ölçekten sonra bir de ORTALAMA kayması gerekir;
@@ -282,4 +411,155 @@ export function kayGovde(
     position: [0, 0, arka ? merkez : -merkez],
     rotation: [0, arka ? Math.PI : 0, 0],
   };
+}
+
+// ============================================================================================
+//  MUTFAK ZEMİNİ — KayKit karosu (S4)
+// ============================================================================================
+//
+// Zemin bugüne kadar tek `planeGeometry` + düz renk (#d9cdb4). S3'te tezgâhlar KayKit'e geçti,
+// altlarındaki zemin düz renk kaldı. Ölçüm (`docs/duvar-zemin-raporu-s4.md` §B7):
+//
+//   floor_kitchen        native 4,00 × 0,50 × 4,00 → dünyada 3,20 karo, KALINLIK 0,40
+//   floor_kitchen_small  native 2,00               → dünyada 1,60 karo
+//   mutfak fayans alanı  12,71 × 7,46
+//     büyük karo → 3,97 × 2,33 · eş dağıtımla 4 × 2, gerilme %−0,7 × %+16,6
+//     küçük karo → 7,94 × 4,66 · eş dağıtımla 8 × 5, gerilme %−0,7 × %−6,8   ← seçilen
+//
+// Küçük karo z ekseninde belirgin daha iyi oturuyor. Duvarla AYNI eş-dağıtım kuralı (K4)
+// kullanılır: iki eksende de karo sayısı yuvarlanır ve fark bütün karolara eşit dağıtılır.
+
+/** Mimari ölçek — duvarla aynı sayı, aynı gerekçe (`wallLook.KAY_S`). */
+export const FLOOR_S = 0.8;
+
+/**
+ * KARO: `floor_kitchen_small` — KÜÇÜK karo, paketin kendi SİYAH-BEYAZ deseniyle.
+ *
+ * Dört kol ekranda karşılaştırıldı (`docs/gorsel/ss/fayans-*.png`) ve kullanıcı 2026-09-09:
+ * *"kesinlikle ufak ve siyah beyaz olan olsun"*. Ölçüm de aynı yeri gösteriyordu:
+ *   küçük (1,60) → 8 × 5 karo, gerilme %−0,7 × **%−6,8**
+ *   büyük (3,20) → 4 × 2 karo, gerilme %−0,7 × **%+16,6**  ← karolar gözle dikdörtgenleşiyor
+ * Kahve tonu da denendi ve elendi: ton materyal renginin dokuyla ÇARPIMIYLA veriliyordu, çarpım
+ * siyahı boyayamaz — sonuç "kahve + siyah" oluyordu, klasik "kahve + krem" değil.
+ * Gerçek kahve karo isteği gelirse yol atlas kopyasıdır (`tools/atlas-ton.mjs`, S3'te ölçüldü).
+ */
+export type FayansKaro = 'kucuk' | 'buyuk';
+
+export const FLOOR_NATIVE = { kucuk: 2.0, buyuk: 4.0, h: 0.5 } as const;
+export const floorKaroModel = (k: FayansKaro) => (k === 'kucuk' ? 'floor_kitchen_small' : 'floor_kitchen');
+export const floorKaroW = (k: FayansKaro) => FLOOR_NATIVE[k] * FLOOR_S;
+
+/**
+ * ZEMİN TEMASI — mutfak zemininin rengi (S4).
+ *
+ * KAPSAM BİLEREK DAR: yalnız ZEMİN. Bir ara tezgâh/dolap rengini de temaya bağlayan beş kollu
+ * bir set kuruldu ve kullanıcı 2026-09-09 reddetti (*"bunları sen kendin uydurmuşsun; mutfak şu
+ * anki hâliyle kalsın, sadece o kahve zemin tema olarak satılsın"*). Ders: paketin paletinden
+ * SEÇMEK, o seçimi bir ürün hattına çevirmek için yetmiyor — renk paletten gelse bile
+ * KOMBİNASYON tasarım kararıdır ve onaysız çoğaltılmaz.
+ *
+ * KayKit'in dokusu bir resim değil, 8×4'lük bir RENK ŞERİDİ: her model UV'siyle bir "göz" seçer.
+ * Paket kahve bir zemin MODELİ içermiyor (üç paket tarandı: yalnız `floor_kitchen` ve
+ * `floor_kitchen_small` var, ikisi de aynı iki göze bakıyor) — ama kahve RENKLERİ içeriyor.
+ * KayKit'in tanıtım görselindeki kiremit zemin de böyle yapılmış: aynı model, başka göz.
+ * Yani renk uydurulmuyor, paketin paletinden seçiliyor (tek-stil kilidi korunur).
+ *
+ * Gözlerin gerçek renkleri `node tools/atlas-renk.mjs` ile ÖLÇÜLDÜ (tahminle seçilince ilk
+ * denemede yanlış çıkmıştı — istenen "yakın iki kahve" yerine yüksek kontrastlı dama gelmişti):
+ *   [0,1] #343434 koyu  · [0,4] #d5dcdf beyaz    ← zeminin doğal çifti
+ *   [0,6] #995842 kahve · [1,5] #daae7d açık tan ← satılan temanın çifti
+ */
+export interface ZeminTemasi {
+  koyu: Goz;
+  acik: Goz;
+  /** Mağaza kartının iki renkli özeti (gerçek render yüklenemezse yedek). */
+  swatch: [string, string];
+}
+
+/** Zeminin DOĞAL gözleri — temanın kaynak tarafı. */
+export const ZEMIN_NATIVE = { koyu: [0, 1] as Goz, acik: [0, 4] as Goz };
+
+export const ZEMIN_TEMALARI: Record<string, ZeminTemasi> = {
+  // Paketin kendi hâli — hiçbir göz taşınmaz. Kullanıcı dört kolu ekranda karşılaştırıp seçti
+  // (`docs/gorsel/ss/s4-zemin-*.png`): *"kesinlikle ufak ve siyah beyaz olan olsun"*.
+  klasik: { ...ZEMIN_NATIVE, swatch: ['#343434', '#d5dcdf'] },
+  // Satılan TEK tema — `docs/gorsel/ss/s4-zemin-kucuk-kahve.png` karesindeki zeminin ta kendisi.
+  kahve: { koyu: [0, 6], acik: [1, 5], swatch: ['#995842', '#daae7d'] },
+};
+
+/** Temanın UV eşlemesi (kaynak göz → hedef göz). */
+export function zeminEsleme(id: string): (readonly [Goz, Goz])[] {
+  const t = ZEMIN_TEMALARI[id] ?? ZEMIN_TEMALARI.klasik;
+  return [
+    [ZEMIN_NATIVE.koyu, t.koyu],
+    [ZEMIN_NATIVE.acik, t.acik],
+  ];
+}
+
+/** Tema hiçbir gözü taşımıyorsa geometri klonlamaya gerek yok. */
+export const temaNative = (id: string): boolean => (id || 'klasik') === 'klasik';
+
+/**
+ * Karonun dünya KALINLIĞI. Model bir levha: üst yüzü native y = 0,5'te, tabanı 0'da.
+ * Zemin y = 0 olduğu için karo bu kadar AŞAĞI kaydırılır, yoksa 0,40 yükselip eşik olur.
+ */
+export const FLOOR_KALINLIK = FLOOR_NATIVE.h * FLOOR_S;
+
+/** Mutfak fayansının sınırları — `Scene.BackBand`in kullandığı dikdörtgenin ta kendisi. */
+export const FAYANS = {
+  x0: BAND_SHELL.innerLeft,
+  x1: BAND.service.maxX - 0.1,
+  z0: BAND_SHELL.innerBack,
+  z1: BAND.front - 0.05,
+} as const;
+
+export interface FloorKaro {
+  x: number;
+  z: number;
+  /** [en, kalınlık, boy] — en ve boy K4 gerilmesini taşır. */
+  scale: [number, number, number];
+}
+
+/**
+ * Fayans alanını karolara böler (duvarla aynı K4 eş dağıtımı).
+ * Karo sayısı yuvarlanır, artan/eksilen fark BÜTÜN karolara eşit dağıtılır — tek bir kenarda
+ * yamalı bir şerit kalmaz.
+ */
+export function fayansKarolari(karo: FayansKaro = 'kucuk'): FloorKaro[] {
+  const birim = floorKaroW(karo);
+  const enW = FAYANS.x1 - FAYANS.x0;
+  const boyW = FAYANS.z1 - FAYANS.z0;
+  const nx = Math.max(1, Math.round(enW / birim));
+  const nz = Math.max(1, Math.round(boyW / birim));
+  const adimX = enW / nx;
+  const adimZ = boyW / nz;
+  const out: FloorKaro[] = [];
+  for (let i = 0; i < nx; i++)
+    for (let k = 0; k < nz; k++)
+      out.push({
+        x: FAYANS.x0 + adimX * (i + 0.5),
+        z: FAYANS.z0 + adimZ * (k + 0.5),
+        scale: [FLOOR_S * (adimX / birim), FLOOR_S, FLOOR_S * (adimZ / birim)],
+      });
+  return out;
+}
+
+/**
+ * ÖN HATTIN ÜÇ GÖVDESİ — çay ocağı · garson istasyonu · bulaşık, tek kaynaktan.
+ *
+ * Üçü de kendi COLLISION kutusundan türer (elle yazılı 2,2 / 1,4 / 0,8 sayıları kalktı) ve
+ * garson istasyonu sahnedeyken birbirine BİRLEŞİR. Garson istasyonu açılmadan önce (servis hâlâ
+ * sol duvardayken) üçü bir sıra oluşturmuyor — o dönemde birleştirme yapılmaz, her gövde kendi
+ * kutusunda kalır.
+ */
+export function onHatGovdeleri(areasOpen: number): { station: OnHatGovde; waiter: OnHatGovde; dish: OnHatGovde } {
+  const p = servicePlace(areasOpen);
+  const kutu = (x: number, h: readonly [number, number]) => ({ x, hx: h[0], hz: h[1] });
+  const parcalar = [kutu(p.station[0], p.half), kutu(WAITER_STATION.pos[0], WAITER_STATION.half), kutu(p.dish[0], p.dishHalf)];
+  if (!waiterStationOpen(areasOpen)) {
+    const [a, b, c] = parcalar.map((q) => ({ w: q.hx * 2, d: q.hz * 2, dx: 0 }));
+    return { station: a, waiter: b, dish: c };
+  }
+  const [station, waiter, dish] = onHat(parcalar);
+  return { station, waiter, dish };
 }

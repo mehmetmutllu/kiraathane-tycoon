@@ -2959,3 +2959,33 @@ düşey ankraj, ön hat türetmesi. **Dört mutasyonla doğrulandı** (ölçek 0
 ortalama kayması silindi · ön hat salona döndürüldü); dördü de yakalandı.
 vitest **785** · duman **42/42** · `tsc -b` temiz · **denge dosyalarına DOKUNULMADI** (varyant
 kapısı tetiklenmedi).
+
+## D-100 — Duvar KayKit'e GEÇMEZ; mutfak geçer, zemin mağaza kalemi olur (S4, 2026-09-09)
+
+**Karar.** KayKit duvar modülleri ölçüldü, kuruldu, ekranda denendi ve **reddedildi**. Duvar
+maketin üç katmanlı hâlinde kalıyor. Mutfak zemini KayKit karosuna geçti (küçük karo,
+siyah-beyaz); kahve varyantı **mağaza teması** oldu (10.000 ₺).
+
+**Neden reddedildi — biri ölçülmüştü, biri kaçırıldı.**
+1. Modülün KENDİ yatay oluğu y = **1,60**'ta; maketin lambri hattı **0,94**'te. Rapor §B2 bunu
+   önceden söyledi, kullanıcı ekranda gördü: *"duvar 2'ye bölünük."*
+2. K4 eş dağıtım gerilmeyi **hat içinde** eşitliyor, **hatlar arasında** eşitlemiyor: modül eni
+   3,00…3,80 (%27 fark) ve köşede yan yana düşüyor. **Bu ölçülmedi.** Tekrar denenirse çözüm
+   bina için tek ortak adım.
+
+**Geri dönüş bir AYAR, revert değil** (kullanıcı şartı: *"beğenmezsek eskisine dönebilir olalım"*).
+Eski duvar silinmedi; `KayWalls` yanına kondu, ikisi de aynı parça listesini okuyor,
+`config/kabuk.ts` tek satır. Varsayılan `'maket'`.
+
+**Renk paketin, birleşim bizim.** Paket kahve zemin MODELİ içermiyor (üç paket tarandı) ama
+dokusu bir resim değil 8×4'lük **renk şeridi** ve kahve gözleri var. Kahve tema boyayarak değil
+**UV taşıyarak** kuruldu (`atlasUV.gozDegistir`) — renk KayKit'in paletinden, stil kilidi sağlam.
+Atlas kopyalanmadı: `[0,4]` gözünü lavabo da kullanıyor, boyansa o da renk değiştirirdi.
+
+**Kapsam sınırı.** Tezgâh+dolap rengini de kapsayan beş kollu bir tema seti kuruldu ve kullanıcı
+reddetti: *"bunları sen kendin uydurmuşsun."* **Ders:** renk paletten gelse bile KOMBİNASYON bir
+tasarım kararıdır ve onaysız çoğaltılmaz. Mutfak bugünkü hâliyle kaldı, satılan tek kalem zemin.
+
+**Yöntem dersi.** Düşük-poli modelde delik/profil ölçümü **vertex sayımıyla yapılamaz** (düz yüzün
+ortasında vertex yoktur): kapı 0,68 ölçüldü, gerçeği 1,28. Doğrusu üçgene ışın atmak. Renk seçimi
+de tahminle yapılamaz — `tools/atlas-renk.mjs` yazıldı.

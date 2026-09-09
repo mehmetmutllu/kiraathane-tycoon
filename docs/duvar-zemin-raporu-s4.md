@@ -209,17 +209,85 @@ listesiyle besler.
 
 ---
 
-## Karar
+## Karar (D-100)
 
-<!-- BOŞ — karar paketi kullanıcıya sunulacak, seçilen kol buraya yazılacak (D-0xx). -->
+Karar paketi dört soruyla sunuldu; kullanıcı **"önce deneyelim, gözle karar vereyim"** dedi ve
+tur ölçümden **denemeye** döndü. Sonuçlar:
+
+| Kol | Karar | Gerekçe |
+|---|---|---|
+| Duvar KayKit'e geçsin mi | **HAYIR** | ekranda görüldü ve reddedildi (aşağıda) |
+| Döşeme kolu | K4 eş dağıtım | ölçülen dört koldan açık ara kazanan (%18,7 ↔ %87,5) |
+| Ana giriş | maket kalır | modülün kapı deliği 1,28, oyunun kapısı 4,40 (D-070) |
+| `wall_decorated` | kullanılmaz | salona 1,93 taşıyor, duvar değil duvar+mobilya |
+| Dikiş ritmi | sütunsuz | `pillar_A` 3,28 boyunda, duvarı 0,08 aşıyor; paketin tasarımı dikişli |
+| Mutfak zemini | **küçük karo · siyah-beyaz** | dört kare karşılaştırıldı (`docs/gorsel/ss/s4-zemin-*.png`) |
+| Kahve zemin | **mağaza teması** (10.000 ₺) | paket kahve zemin MODELİ içermiyor, rengi içeriyor |
+| Mutfak teması (tezgâh+dolap) | **REDDEDİLDİ** | *"bunları sen kendin uydurmuşsun"* |
+
+### Duvar neden reddedildi — biri ölçülmüştü, biri KAÇIRILMIŞTI
+
+1. **Duvar ikiye bölünüyor.** §B2 bunu önceden söylemişti: modülün yatay oluğu y = 1,60'ta,
+   maketin lambri hattı 0,94'te. Kullanıcı ekranda görünce *"duvar 2'ye bölünük"* dedi.
+2. **Parçalar birbirinden farklı.** K4 gerilmeyi **her hat İÇİNDE** eşitliyor ama **hatlar
+   ARASINDA** eşitlemiyor: modül eni 3,00 · 3,06 · 3,18 · 3,40 · 3,60 · 3,80 çıkıyor (**%27
+   fark**) ve iki hattın buluştuğu köşede yan yana düşüyor. Kullanıcı: *"her parça arasında fark
+   var."* **Bu ölçülmedi** — rapor gerilmeyi hat içinde ölçtü, bina genelinde değil. Tekrar
+   denenirse çözüm bina için TEK ortak adımdır.
+
+Kullanıcı ayrıca *"düz duvarlı başka bir paket var mı"* diye sordu. Üç paket tarandı: yok.
+`wall` yalnız iki düz renk gözü kullanıyor ([1,2] yeşil + [1,4] krem), karo ızgarası hiç yok.
+
+### Kahve zemin: renk paketin, birleşim bizim
+
+Kullanıcı paketin kendi kahve zemini olduğunu düşünüyordu. **Yok:** üç pakette zemin olarak
+yalnız `floor_kitchen` ve `floor_kitchen_small` var, ikisi de aynı iki göze bakıyor. Ama KayKit'in
+dokusu bir resim değil **8×4'lük bir renk şeridi**, ve şeritte kahve gözleri VAR. Paketin tanıtım
+görselindeki kiremit zemin de böyle yapılmış: aynı model, başka göz. Bu yüzden kahve tema
+**boyayarak değil UV'yi taşıyarak** kuruldu — renk KayKit'in paletinden geliyor, tek-stil kilidi
+bozulmuyor. Atlas KOPYALANMADI: `[0,4]` gözünü `kitchentable_sink_large_decorated` de kullanıyor,
+boyansaydı lavabo da renk değiştirirdi.
 
 ## Uygulama
 
-<!-- BOŞ -->
+- **`wallLook.ts`** — parça listesi + K4 döşeme matematiği (`esDagit` · `kayModuller`).
+- **`KayWalls.tsx`** — KayKit duvar kipi. **Eski duvar SİLİNMEDİ**, yanında duruyor; geri dönüş
+  bir revert değil `config/kabuk.ts`in tek satırı (kullanıcı şartı). Varsayılan `'maket'`.
+- **`atlasUV.ts`** — atlas gözü değiştirme (UV taşıma). `recolor.ts`ten farkı: atlas kopyalanmaz.
+- **`tools/atlas-renk.mjs`** — gözlerin GERÇEK rengini ölçer (bağımlılık yok; PNG node `zlib` ile
+  çözülür). İlk denemede göz tahminle seçilmişti ve yanlış kahve çıkmıştı.
+- **Mutfak zemini** `floor_kitchen_small` karolarıyla (8 × 5, eş dağıtım) + `kitchenTheme` mağaza
+  kalemi (`klasik` 0 ₺ / `kahve` 10.000 ₺). Kayıt **v32 → v33** göçüyle taşındı.
+- **Bulaşık** `kitchentable_sink_large` ↔ `_decorated` çiftine geçti: kirli kap varken dolu model,
+  bulaşıkçı yıkayınca boş model + kısa su halkası. **`tick.ts`e DOKUNULMADI** (E3/D-096 deseni:
+  var olan `cleanCups` sayacının artışı okunuyor, yeni durum üretilmiyor).
+- **Ön hat birleşti** (`onHat`): üç tezgâh komşusuyla arasındaki boşluğun ortasına kadar uzar,
+  collision kutuları DEĞİŞMEDEN. Bulaşık bugüne kadar yanlış çiziliyordu — kutusu 2,00 × 1,00 iken
+  çizimi elle 1,4 × 0,8 yazılmıştı; artık üçü de kutusundan türüyor.
+- **Batı duvarı** paketin peçetelik rafı + havluluğuna geçti; oradaki çay bardağı rafı kalktı
+  (arka duvardaki ikisi kaldı). Damacana rafı kaldırıldı. Depodaki açık kasaya sucuk kondu.
+- **HUD:** oto-toplama toast'ı yuvarlanıyor (*"273.3333"* binlik ayracı gibi okunuyordu) ·
+  görev hattı bitiş bandı 5 sn sonra kalkıyor (kalıcıydı).
+
+**Denenip GERİ ALINANLAR** (ikisi de kullanıcı kararı): tezgâh arkası fayans bandı — pakette duvar
+karosu yok, zemin karosunu dik çevirmek tutmadı · tezgâh üstü kavanoz/tencere/tahta süslemeleri.
 
 ## Bekçi
 
-<!-- BOŞ -->
+- `tests/wall-look.test.ts` — 11 test, **4 mutasyon** (`WALL_M` 0,5→0,4 · arka-kenar atlaması
+  silindi · kapı kesmesi silindi · `WALL_T` 0,2→0,3). Dördüncüsü ÖNCE KAÇTI: kalınlık testi sabiti
+  sabitle karşılaştırıyordu (`toBe(WALL_T)`), yani kendini doğruluyordu → beklenti raporun
+  sayısına (0,20) bağlandı.
+- `tests/kitchen-look.test.ts` 15 → **16 test**, **3 mutasyon** (havluluk ön sınıra dayandı · raf
+  ankrajı elle 0,55'e döndü · v32 göçü kaldırıldı). Bekçi bu turda **iki gerçek hata yakaladı**:
+  peçetelik rafı duvarın tepesini 0,17 aşıyordu, havluluk çay ocağının kutusuna 0,12 giriyordu.
+  *"Her duvar ünitesinin tepesi WALL_H'de"* kuralı DARALTILDI (gevşetilmedi): üst hizalılar
+  birebir hizada + HER duvar ünitesi duvarın içinde ve tezgâhın üstünde.
+- `tests/logic.test.ts` — v32 → v33 göç bekçisi eklendi: ilerleme (para · pad · masa · kozmetik)
+  korunur, yeni alan varsayılanla doğar.
+
+**vitest 798 · duman 42/42 · `tsc -b` temiz · denge sayısı DEĞİŞMEDİ** (kozmetik fiyatı var olan
+merdivenden kopyalandı; oynanışa etkisi yok).
 
 ---
 

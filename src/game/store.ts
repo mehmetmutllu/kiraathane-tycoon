@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { KABUK_VARSAYILAN, type KabukKipi } from '../config/kabuk';
 import { Decimal, D } from './decimal';
 import type { Coin, Dish, Npc, Vec3, Waiter } from './types';
 import {
@@ -323,6 +324,21 @@ export interface GameState {
   wallThemeByArea: string[];
   /** GLOBAL masa teması (persist v30): mobilya minder+örtü rengi (recolor atlas). */
   tableTheme: string;
+  /**
+   * GLOBAL mutfak teması (persist v33, S4): tezgâh üstü + dolap gövdesi + zemin damasının rengi.
+   * Masa temasıyla aynı desen (alansız, tek sahiplik anahtarı) — mutfak tek bir oda.
+   * Renkler KayKit atlasının kendi gözlerinden gelir; uygulama UV taşımayla (`atlasUV`).
+   */
+  kitchenTheme: string;
+  /**
+   * DUVAR KABUĞU KİPİ (S4) — `'maket'` maketin üç katmanı, `'kaykit'` KayKit modülleri.
+   *
+   * KAYDA GİRMEZ (bilerek): kullanıcı takası *deneme* olarak istedi (*"beğenmezsek eskisine
+   * dönebilir olalım"*), yani bu bir oyuncu ilerlemesi değil bir GELİŞTİRME AYARI. Kayda
+   * girseydi `saveVersion` + migrasyon gerekirdi ve geri dönüş eski kayıtları da etkilerdi.
+   * Varsayılanı `config/kabuk.ts` verir; `__kabuk()` dev kancası ve DevSandbox canlı çevirir.
+   */
+  kabuk: KabukKipi;
   ownedCosmetics: string[];
   /** Karakter yükseltme kademeleri (persist v20): tepsi/mıknatıs/hız. Karakter seviyesi türetilir. */
   charUpgrades: CharUpgrades;
@@ -372,13 +388,14 @@ export interface GameState {
   /** Sahne katmanı çağırır: oyuncunun menzilindeki Usta noktası (yoksa `null`). */
   setNearMaster: (id: string | null) => void;
   toggleCamZoomOut: () => void;
+  setKabuk: (kip: KabukKipi) => void;
   /** Ayar değiştir (ayarlar modalı) — anında kaydedilir. */
   setSetting: (key: keyof SaveSettings, value: boolean) => void;
   /**
    * Kozmetik tema satın al/uygula (WP6): ALAN AÇIK olmalı; ilk satın alma ₺ düşer (cüzdan yetmezse
    * false), sahip olunan tema ücretsiz yeniden seçilir. Başarıda anında kaydedilir.
    */
-  buyCosmetic: (kind: 'floor' | 'wall' | 'table', id: string, area: number) => boolean;
+  buyCosmetic: (kind: 'floor' | 'wall' | 'table' | 'kitchen', id: string, area: number) => boolean;
   /**
    * Karakter özelliği satın al (v20, karakter paneli): cüzdan yeterliyse kademe +1 (yetmezse/max'taysa
    * false). Başarıda anında kaydedilir; charStat görevi varsa sonraki tick'te tamamlanır.
@@ -456,6 +473,8 @@ export const useGame = create<GameState>((set, get) => ({
   floorThemeByArea: Array.from({ length: MAX_AREAS }, (_, z) => defaultFloorTheme(z)),
   wallThemeByArea: Array.from({ length: MAX_AREAS }, () => 'krem'),
   tableTheme: 'mavi',
+  kitchenTheme: 'klasik',
+  kabuk: KABUK_VARSAYILAN,
   ownedCosmetics: [],
   charUpgrades: defaultCharUpgrades(),
   waiterUpgrades: defaultWaiterUpgrades(),
@@ -619,6 +638,7 @@ export const useGame = create<GameState>((set, get) => ({
       floorThemeByArea: Array.from({ length: MAX_AREAS }, (_, a) => save.floorThemeByArea[a] ?? defaultFloorTheme(a)),
       wallThemeByArea: Array.from({ length: MAX_AREAS }, (_, a) => save.wallThemeByArea[a] ?? 'krem'),
       tableTheme: save.tableTheme ?? 'mavi',
+      kitchenTheme: save.kitchenTheme ?? 'klasik',
       ownedCosmetics: [...save.ownedCosmetics],
       charUpgrades,
       waiterUpgrades,
@@ -852,6 +872,9 @@ export const useGame = create<GameState>((set, get) => ({
 
   toggleCamZoomOut: () => set({ camZoomOut: !get().camZoomOut }),
 
+  /** Duvar kabuğu kipini değiştir (S4 denemesi). Kayda YAZILMAZ — saveNow çağrılmaz. */
+  setKabuk: (kip: KabukKipi) => set({ kabuk: kip }),
+
   setSetting: (key, value) => {
     set({ settings: { ...get().settings, [key]: value } });
     get().saveNow();
@@ -875,6 +898,22 @@ export const useGame = create<GameState>((set, get) => ({
         ownedCosmetics = [...ownedCosmetics, key];
       }
       set({ wallet, ownedCosmetics, tableTheme: id });
+      get().saveNow();
+      return true;
+    }
+    // MUTFAK teması de GLOBAL (mutfak tek oda) — masa temasının deseni birebir.
+    if (kind === 'kitchen') {
+      const theme = C.cosmetics.kitchenThemes.find((t) => t.id === id);
+      if (!theme) return false;
+      const key = `kitchen:${id}`;
+      let wallet = s.wallet;
+      let ownedCosmetics = s.ownedCosmetics;
+      if (theme.cost > 0 && !ownedCosmetics.includes(key)) {
+        if (wallet.lt(theme.cost)) return false;
+        wallet = wallet.sub(theme.cost);
+        ownedCosmetics = [...ownedCosmetics, key];
+      }
+      set({ wallet, ownedCosmetics, kitchenTheme: id });
       get().saveNow();
       return true;
     }
@@ -1024,6 +1063,7 @@ export const useGame = create<GameState>((set, get) => ({
       floorThemeByArea: [...s.floorThemeByArea],
       wallThemeByArea: [...s.wallThemeByArea],
       tableTheme: s.tableTheme,
+      kitchenTheme: s.kitchenTheme,
       ownedCosmetics: [...s.ownedCosmetics],
       charUpgrades: { ...s.charUpgrades },
       waiterUpgrades: { ...s.waiterUpgrades },

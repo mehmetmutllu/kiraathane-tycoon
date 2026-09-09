@@ -11,6 +11,7 @@ import { D } from './decimal';
 import { economyConfig, levelProgress, charLevel, lavaboVisitChance, lavaboFee, lavaboIncomePerCustomer, type CharStat } from '../config/economy.config';
 import type { SaveStats } from './save';
 import type { Vec3 } from './types';
+import type { KabukKipi } from '../config/kabuk';
 
 declare global {
   interface Window {
@@ -39,6 +40,11 @@ declare global {
     /** ÜSTTEN PLAN görünümü + ölçü ızgarası (ölçüm kareleri betikten çekilebilsin).
      *  gridStep 0 = ızgara kapalı; topDown false = normal takip kamerası. */
     __devPlan?: (opts: { topDown?: boolean; zoom?: number; gridStep?: number }) => void;
+    /** DUVAR KABUĞU KİPİ (S4): 'maket' maketin üç katmanı · 'kaykit' KayKit modülleri.
+     *  Kullanıcı takası deneme olarak istedi; geri dönüş bir revert değil bu çağrı. */
+    __kabuk?: (kip: KabukKipi) => string;
+    /** S4 mutfak zemini karşılaştırma kolu: karo boyu × renk. */
+    __fayans?: (karo: 'kucuk' | 'buyuk', renk: 'siyahbeyaz' | 'kahve') => string;
     __devCam?: (opts: { fov?: number; distMul?: number }) => void;
   }
 }
@@ -252,6 +258,16 @@ export function installDevHooks(): void {
   };
 
   window.__perf = () => ({ ...perf });
+
+  window.__kabuk = (kip) => {
+    useGame.getState().setKabuk(kip);
+    return kip;
+  };
+
+  window.__fayans = (karo, renk) => {
+    useSandbox.getState().set({ fayansKaro: karo, fayansRenk: renk });
+    return `${karo}/${renk}`;
+  };
 
   window.__devPlan = ({ topDown = true, zoom = 1, gridStep = 0 }) => {
     useSandbox.getState().set({ topDown, topDownZoom: zoom, gridStep });

@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import type { Mesh, MeshStandardMaterial } from 'three';
 import type { Vec3 } from '../../game/types';
 import { KayTezgah } from './Kitchen';
+import { onHatGovdeleri } from './kitchenLook';
 import { FRONT_TOP_Y } from './kitchenLook';
 import { PALETTE } from '../../config/palette';
 import { isCounter, sellsTost } from '../../game/world';
@@ -48,8 +49,11 @@ export function ServicePoint({
   level = 0,
   readyTea = 0,
   readyTost = 0,
+  areasOpen,
 }: {
   position: Vec3;
+  /** Ön hattın birleşik gövdesi açık-alan sayısından türer (`onHatGovdeleri`). */
+  areasOpen: number;
   level?: number;
   /** Tezgâhta bekleyen hazır çay (D-011 hazır-kuyruk) — ön sırada bardak olarak çizilir. */
   readyTea?: number;
@@ -61,16 +65,21 @@ export function ServicePoint({
   const counter = isCounter(level); // L4: ocak → TEZGÂH
   const tost = sellsTost(level); // L5: tost açılır
   const lid = LID_HEAT[Math.min(level + 1, LID_HEAT.length - 1)];
+  const govde = onHatGovdeleri(areasOpen).station;
   return (
     <group position={[position[0], 0, position[2]]}>
       <group>
         {/* GÖVDE (S3): KayKit tezgâhı, eski kutunun TAM ölçüsüne çekilmiş (2,2 × 0,8, tabla 0,90).
             L4'ün kimlik değişimi gövdenin RENGİNDEN değil artık pirinç banttan okunur — model
             tek dokulu olduğu için seviye rengi yedeğe (greybox) kaldı. */}
+        {/* S4: gövde ÖN HATTIN birleşik genişliğinden gelir (`onHatGovde`) — üç tezgâh tek
+            banko okunsun diye komşusuyla arasındaki boşluğun ortasına kadar uzar. Collision
+            kutusu DEĞİŞMEDİ; elle yazılı 2,2 × 0,8 de kalktı, ölçü kutudan türüyor. */}
         <KayTezgah
           model="kitchencounter_straight_A"
-          w={2.2}
-          d={0.8}
+          w={govde.w}
+          d={govde.d}
+          dx={govde.dx}
           topY={FRONT_TOP_Y}
           fallback={
             <mesh castShadow receiveShadow position={[0, 0.45, 0]}>

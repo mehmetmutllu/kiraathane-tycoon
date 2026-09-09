@@ -1033,6 +1033,17 @@ export const economyConfig = {
     // MASA teması (2026-06-15): mobilya minderi + örtüsü seçilen renge boyanır (recolor atlas swap;
     // GLOBAL — tüm salonlar; tek-atlas instancing 8 draw-call'da kalır). 'mavi' = native (ücretsiz).
     // Altın en pahalı premium (kullanıcı: "altın tema burada PAHALI satılır"). Sadece kozmetik.
+    // MUTFAK ZEMİNİ teması (S4, 2026-09-09) — GLOBAL (mutfak tek oda), masa temasıyla aynı desen.
+    // Yalnız ZEMİN: tezgâh/dolabı da kapsayan beş kollu bir set önerildi ve kullanıcı reddetti
+    // (*"bunları sen kendin uydurmuşsun"*); mutfak bugünkü hâliyle kalıyor.
+    // Renk UYDURULMADI: KayKit atlasının kendi gözlerinden seçildi (`kitchenLook.ZEMIN_TEMALARI`;
+    // gözler `tools/atlas-renk.mjs` ile ölçüldü) — tek-stil kilidi korunur.
+    // FİYAT yeni türetilmedi: `floorThemes` merdiveninin ilk basamağının (10.000) aynısı.
+    // Kozmetiğin oynanışa etkisi YOKTUR; denge sayısı değişmez.
+    kitchenThemes: [
+      { id: 'klasik', label: 'Klasik Dama', cost: 0 },
+      { id: 'kahve', label: 'Kahve Dama', cost: 10_000 },
+    ],
     tableThemes: [
       { id: 'mavi', label: 'Klasik Mavi', cost: 0, color: '#5a93cf' },
       { id: 'bordo', label: 'Bordo Kadife', cost: 12_000, color: '#7c2230' },

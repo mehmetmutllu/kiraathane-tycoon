@@ -11,6 +11,7 @@ import { GroundMarker } from './GroundMarker';
 import { FloorPattern } from './floorPattern';
 import { DOOR, WALL_H, WallPanels, type WallSlab } from './wallPanel';
 import { BAND_SHELL_RUNS, WALL_M, WALL_RUNS } from './wallLook';
+import { KayWalls } from './KayWalls';
 import { PALETTE, FLOOR_THEMES, WALL_THEMES, LIGHTING } from '../../config/palette';
 import { Player } from './Player';
 import { Waiter } from './Waiter';
@@ -23,6 +24,8 @@ import { Coins } from './Coins';
 import { Pad } from './Pad';
 import { Decor } from './Decor';
 import { Kitchen, KayTezgah } from './Kitchen';
+import { onHatGovdeleri } from './kitchenLook';
+import { DishSink } from './DishSink';
 import { FRONT_TOP_Y } from './kitchenLook';
 import {
   MaketCrates,
@@ -255,7 +258,7 @@ function Stations() {
   const p = place.station;
   return (
     <group position={[p[0], 0, p[2]]} rotation={[0, place.rot, 0]}>
-      <ServicePoint position={[0, 0, 0]} level={level} readyTea={readyTea} readyTost={readyTost} />
+      <ServicePoint position={[0, 0, 0]} areasOpen={areasOpen} level={level} readyTea={readyTea} readyTost={readyTost} />
     </group>
   );
 }
@@ -422,13 +425,16 @@ function WaiterStation() {
   const areasOpen = useGame((s) => s.areasOpen);
   if (!waiterStationOpen(areasOpen)) return null;
   const [hx, hz] = WAITER_STATION.half;
+  const govde = onHatGovdeleri(areasOpen).waiter;
   return (
     <group position={WAITER_STATION.pos}>
       {/* GÖVDE (S3): KayKit tezgâhı, collision kutusunun TAM ölçüsünde. */}
+      {/* S4: gövde ÖN HATTIN birleşik genişliğinden (üç tezgâh tek banko okunsun). */}
       <KayTezgah
         model="kitchencounter_straight_B"
-        w={hx * 2}
-        d={hz * 2}
+        w={govde.w}
+        d={govde.d}
+        dx={govde.dx}
         topY={FRONT_TOP_Y}
         fallback={
           <mesh castShadow position={[0, 0.45, 0]}>
@@ -519,41 +525,11 @@ function StationUpgradeSpots() {
 // Bulaşık noktaları (Faz 2e; SERVİS BAŞINA, D-022): kirli bardaklar burada yıkanır.
 // (Havadaki etiket KALDIRILDI — lavabo görseli zaten ne olduğunu anlatır; D-017 §2 sadelik.)
 // D-025 rev. A: modül kendi ocağının bitişiğinde, yan duvara paralel (rotasyon ocakla aynı).
-function DishStationUnit({ pos, rot }: { pos: readonly [number, number, number]; rot: number }) {
-  return (
-    <group position={[pos[0], 0, pos[2]]} rotation={[0, rot, 0]}>
-      {/* GÖVDE (S3): KayKit'in LAVABOLU tezgâhı — çanak ve musluk modelin kendi parçası,
-          o yüzden elle çizilen çukur + musluk kalktı. Yedek hâlâ eski üç kutuyu çiziyor. */}
-      <KayTezgah
-        model="kitchencounter_sink"
-        w={1.4}
-        d={0.8}
-        topY={FRONT_TOP_Y}
-        fallback={
-          <group>
-            <mesh castShadow receiveShadow position={[0, 0.45, 0]}>
-              <boxGeometry args={[1.4, 0.9, 0.8]} />
-              <meshStandardMaterial color="#607d8b" />
-            </mesh>
-            <mesh position={[0, 0.9, 0]}>
-              <boxGeometry args={[1.0, 0.12, 0.5]} />
-              <meshStandardMaterial color="#90a4ae" metalness={0.5} roughness={0.4} />
-            </mesh>
-            <mesh castShadow position={[0, 1.15, -0.2]}>
-              <cylinderGeometry args={[0.04, 0.04, 0.4, 8]} />
-              <meshStandardMaterial color="#b0bec5" metalness={0.6} roughness={0.3} />
-            </mesh>
-          </group>
-        }
-      />
-    </group>
-  );
-}
-
+// S4: gövde + kirli/temiz döngüsü `DishSink.tsx`e taşındı (kullanıcı isteği; sunum katmanı).
 function DishStation() {
   const areasOpen = useGame((s) => s.areasOpen);
   const place = servicePlace(areasOpen);
-  return <DishStationUnit pos={place.dish} rot={place.dishRot} />;
+  return <DishSink pos={place.dish} rot={place.dishRot} areasOpen={areasOpen} />;
 }
 
 // Masa-başı yükseltme işaretleri (Faz 2h + D-018 §1 KENAR-YERLEŞİM): her AÇIK masanın DUVAR-KENARI tarafında
@@ -748,6 +724,7 @@ function Ground() {
 // TEK KAPI (1. alanın ortası; D-023 — tüm müşteriler buradan girer/çıkar). Açıkken İÇ BÖLME DUVARI YOK.
 function Walls() {
   const areasOpen = useGame((s) => s.areasOpen);
+  const kabuk = useGame((s) => s.kabuk);
   // WP6: duvar teması ALAN başına (wallThemeByArea persist). M2: duvarlar alan-kenarı başına üretilir →
   // tema bölmesi kendiliğinden doğru (her parça kendi ALANININ temasını giyer).
   const wallThemeByArea = useGame((s) => s.wallThemeByArea);
@@ -760,17 +737,14 @@ function Walls() {
   // Liste Scene'in içindeyken vitest'te import edilemiyordu (`recolor` → `Image`), yani hiç
   // bekçilenemedi: "hat kaç metre, KayKit modülüne bölünüyor mu" sorusu koda bakmadan
   // yanıtlanamıyordu. `kitchenLook.ts` (S3) aynı deseni mutfak için kurmuştu.
-  const pieces: WallSlab[] = WALL_RUNS(areasOpen).map((r) => ({
-    x: r.x,
-    z: r.z,
-    w: r.w,
-    d: r.d,
-    theme: themeOf(r.area),
-  }));
+  const runs = WALL_RUNS(areasOpen);
+  const pieces: WallSlab[] = runs.map((r) => ({ x: r.x, z: r.z, w: r.w, d: r.d, theme: themeOf(r.area) }));
   const frontEdgeZ = LAYOUT.areaBounds[0].maxZ + WALL_M; // kapı sövesi referansı
   return (
     <group>
-      <WallPanels slabs={pieces} />
+      {/* S4: iki kabuk kipi YAN YANA durur — maket duvarı silinmedi (kullanıcı: "beğenmezsek
+          eskisine dönebilir olalım"). Geri dönüş `config/kabuk.ts`in tek satırı. */}
+      {kabuk === 'kaykit' ? <KayWalls runs={runs} theme={themeOf(0)} /> : <WallPanels slabs={pieces} />}
       <BackBand areasOpen={areasOpen} />
       <LavaboFront />
       {/* ANA GİRİŞ — maket v13'ün giriş bloğunun transkripsiyonu (BM adım 1).
@@ -831,6 +805,7 @@ function Walls() {
  */
 function BackBand({ areasOpen }: { areasOpen: number }) {
   const lavaboOpen = useGame((s) => s.padsDone.includes('lavabo'));
+  const kabuk = useGame((s) => s.kabuk);
   const wallThemeByArea = useGame((s) => s.wallThemeByArea);
   const floorThemeByArea = useGame((s) => s.floorThemeByArea);
   if (areasOpen < 3) return null; // arka yarı açılmadan bant görünmez (kilitli alan çizilmez, D-057)
@@ -841,8 +816,9 @@ function BackBand({ areasOpen }: { areasOpen: number }) {
   const zb = BAND_SHELL.back; // −17,4 (duvar hattı)
   const xl = BAND_SHELL.left;
   const xr = BAND_SHELL.right;
-  // Bina kabuğu — salonun duvarıyla AYNI bileşen, yani aynı üç katman ve aynı tema.
-  const shell: WallSlab[] = BAND_SHELL_RUNS().map((r) => ({ x: r.x, z: r.z, w: r.w, d: r.d, theme }));
+  // Bina kabuğu — salonun duvarıyla AYNI bileşen, yani aynı kip ve aynı tema.
+  const shellRuns = BAND_SHELL_RUNS();
+  const shell: WallSlab[] = shellRuns.map((r) => ({ x: r.x, z: r.z, w: r.w, d: r.d, theme }));
   // Servis köşesinin fayans zemini (maket: floorPatch(−10,8 · −13,35 · 12,2 × 7,0 · floorTile)) —
   // oyunda oda 0,5 daha geniş olduğu için ölçü duvarın İÇ YÜZLERİNDEN türetilir.
   const sx0 = BAND_SHELL.innerLeft;
@@ -855,7 +831,7 @@ function BackBand({ areasOpen }: { areasOpen: number }) {
 
   return (
     <group>
-      <WallPanels slabs={shell} />
+      {kabuk === 'kaykit' ? <KayWalls runs={shellRuns} theme={theme} /> : <WallPanels slabs={shell} />}
       {/* bandın zemini: salonunkiyle aynı tema (maket de arka yarının tamamını tek ahşapla döşer) */}
       <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[(xl + xr) / 2, 0.004, (zb + zf) / 2]}>
         <planeGeometry args={[xr - xl, zf - zb]} />

@@ -182,7 +182,7 @@ describe('Usta satın alma kuralı (store.ts · buyMaster)', () => {
       // Alan ADDITIVE: `goalsClaimed`in v32'deki deseni. Sürüm artsaydı her oyuncunun kaydı
       // göç yolundan geçerdi — bu turda buna gerek yok.
       expect(kayit.saveVersion).toBe(SAVE_VERSION);
-      expect(SAVE_VERSION).toBe(32);
+      expect(SAVE_VERSION).toBe(33);
     });
   });
 

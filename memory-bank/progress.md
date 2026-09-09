@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 96 · YAPILAN 78 · %81):**
+**Oturum bütçesi (TOPLAM 96 · YAPILAN 79 · %82):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -24,10 +24,10 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
 | | D meta katman | 9/9 ✅ |
 | | E arayüz ve cila | 4/5 🔧 |
-| | **S sanat ve arayüz geçişi** | **3/12 🔧** |
+| | **S sanat ve arayüz geçişi** | **4/12 🔧** |
 | | H oynanış düzeltmeleri | 0/3 ⏳ |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **50/68** |
+| **Program toplam** | | **51/68** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -243,7 +243,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   değil; kendi turunu ister.
 - ⏳ **E5 — hareketli onboarding**
 
-## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (3/12) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
+## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (4/12) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
 - ✅ **S1 — pad ve yükseltme dili yeniden yazıldı** · çember → **köşe parantezli kare** (kenar
   ortaları boş), dolum büyüyen disk → **alttan üste dolan kare**, "Masa"/"Çay Yükselt"/"Usta"
   → hepsinde **YÜKSELT** + solunda düz yukarı ok, yazı 700 → 800, 💎 pulu "mavi kare" → gerçek
@@ -291,8 +291,25 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   **Yan bulgu: `npm run build` temiz ağaçta da KIRIKTI** — `tsc -b` HUD'da S2'den kalan ölü bir
   dal buldu (`notice.kind !== 'quest'`); vitest tip denetlemediği için görünmüyordu. Silindi.
   vitest **785** · duman **42/42** · `tsc -b` temiz · **denge sayısı DEĞİŞMEDİ**.
-- ⏳ **S4 — duvar + zemin** — `wall` / `wall_half` / `wall_decorated` / `wall_doorway` /
-  `pillar_A·B` · `floor_kitchen`; kıraathane rengi `recolor.ts` atlas kopyasıyla. *(diskte)*
+- ✅ **S4 — duvar REDDEDİLDİ, mutfak zemini + bulaşık + aksesuarlar geçti (D-100)** · KayKit duvarı
+  ölçüldü (mimari ölçek 0,80 · modül 3,20 · dört döşeme kolu), kuruldu, ekranda denendi ve
+  kullanıcı reddetti: modülün kendi yatay oluğu 1,60'ta (maketinki 0,94) ve hatlar arası modül eni
+  3,00…3,80 (%27 fark). **Eski duvar silinmedi**, KayKit kipi yanında duruyor (`config/kabuk.ts`
+  tek satır — kullanıcı şartı *"beğenmezsek dönebilelim"*). **Geçenler:** mutfak zemini
+  `floor_kitchen_small` (8×5, küçük+siyah-beyaz — dört kare karşılaştırıldı) · kahve varyant
+  **mağaza teması** (10.000 ₺, kayıt **v33** göçü) · bulaşık `kitchentable_sink_large` ↔
+  `_decorated` çifti + kirli/temiz döngüsü (**`tick.ts`e dokunulmadı**) · ön hattın üç tezgâhı
+  BİRLEŞTİ (bulaşık bugüne dek kutusundan küçük çiziliyordu: 2,00×1,00 kutu, 1,4×0,8 çizim) ·
+  batı duvarı paketin peçetelik+havluluğuna geçti, oradaki bardak rafı kalktı · damacana rafı
+  kaldırıldı · depo kasasına sucuk. **HUD:** oto-toplama toast'ı yuvarlanıyor ("273.3333" binlik
+  ayracı gibi okunuyordu) · görev bitiş bandı 5 sn sonra kalkıyor.
+  Yeni: `wallLook.ts` · `KayWalls.tsx` · `atlasUV.ts` · `DishSink.tsx` · `tools/olcum-duvar.ts`
+  (ışın testli delik/profil ölçümü) · `tools/atlas-renk.mjs` (göz renkleri).
+  Bekçi: `tests/wall-look.test.ts` 11 test **4 mutasyon** · `kitchen-look` 15→16 **3 mutasyon**
+  (ikisi GERÇEK hata yakaladı) · v32→v33 göç bekçisi. vitest **798** · duman **42/42** ·
+  `tsc -b` temiz · **denge sayısı DEĞİŞMEDİ**.
+  **Denenip geri alındı:** tezgâh arkası fayans bandı (pakette duvar karosu yok) · tezgâh üstü
+  süslemeler · beş kollu mutfak teması (*"bunları sen kendin uydurmuşsun"*).
 - ⏳ **S5 — dekor takası** — elle çizilen 17 parçanın 8'i: `trash_A/B` · `lamp_standing` ·
   `lamp_table` · `rug_*` · `pictureframe_*` · `cabinet_*` · `cactus_*`. Kalan 6'sı elde yok,
   elle kalır (askılık · duvar saati · aplik · askı rayı · şemsiyelik · petek). *(diskte)*

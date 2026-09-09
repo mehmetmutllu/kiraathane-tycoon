@@ -31,6 +31,12 @@ interface SandboxState {
    */
   camFov: number;
   camDistMul: number;
+  /**
+   * MUTFAK ZEMİNİ KARŞILAŞTIRMA KOLU (S4). Karo boyu × renk çifti. Kullanıcı ekranda seçiyor;
+   * seçim kesinleşince kaybeden kol koddan silinir.
+   */
+  fayansKaro: 'kucuk' | 'buyuk';
+  fayansRenk: 'siyahbeyaz' | 'kahve';
   set: (patch: Partial<SandboxState>) => void;
 }
 
@@ -42,6 +48,8 @@ export const useSandbox = create<SandboxState>((set) => ({
   topDown: false,
   topDownZoom: 1,
   gridStep: 0,
+  fayansKaro: 'kucuk',
+  fayansRenk: 'siyahbeyaz',
   camFov: 0,
   camDistMul: 0,
   set: (patch) => set(patch),

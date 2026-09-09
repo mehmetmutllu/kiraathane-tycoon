@@ -5,54 +5,52 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-09 — **S3 BİTTİ** · Faz S 3/12 · 78/96)
+## ŞU AN (2026-09-09 — **S4 BİTTİ** · Faz S 4/12 · 79/96)
 
 ```
-SORU            : Mutfak KayKit'e nasıl geçer — modelin ölçeği ne, ve hangi parçalar
-                  gerçekten takas edilebilir?
-ÖLÇÜLECEK KOLLAR: yok — sanat turu, varyant kapısı tetiklenmedi (economy/tick/rules açılmadı).
-                  Kapı: `npm run test` + `npm run duman` + `tsc -b`.
-SAYILAR         : `tools/model-olc.mjs` (yeni): KayKit restaurant-bits 2×2 modül karosunda —
-                  tezgâh 2,00 × 1,00 × 2,04 · duvar 4,00 · `chair_A` 0,75 (furniture-bits ile
-                  AYNI ham ölçek) → paket ölçeği **0,90**, mimari ölçek 0,80 REDDEDİLDİ
-                  (tezgâh üstü masa üstüyle aynı hizaya düşüyordu). `tools/atlas-goz.mjs` (yeni):
-                  UV → atlas gözü — [3,6] tezgâh · [1,1] fırın/ocak · [1,2] soğutucu.
-KARAR           : D-099. Ölçek 0,90 · kasa 0,45 · ön hat collision kutusuna çekilir · çekmeceler
-                  MUTFAĞA bakar · **palet KayKit'in kendi paleti** (kullanıcı) · menü panosu kalktı.
-UYGULAMA        : `kitchenLook.ts` (ölçü/ankraj, React'siz) + `Kitchen.tsx` (çizim) ·
-                  arka duvarda 7 modül + batı dönüşü + depo · duvarda 2 dolap + davlumbaz ·
-                  ön hattaki üç tezgâh (`kayGovde`) · maket parçaları SİLİNMEDİ, fallback oldu.
-BEKÇİ           : `tests/kitchen-look.test.ts` 15 test · **4 mutasyon** (ölçek 0,90→1,00 ·
-                  kasa 0,45→0,90 · ortalama kayması silindi · ön hat salona döndürüldü) — dördü
-                  de yakalandı. vitest **785** · duman **42/42** · `tsc -b` temiz.
+SORU            : KayKit duvar ve zemin modülleri oyunun geometrisine oturuyor mu?
+ÖLÇÜLECEK KOLLAR: dört döşeme kolu (tek parça · tam+artık · tam+yarım+artık · eş dağıtım) +
+                  kalınlık · kapı deliği · zemin karosu · tema.
+SAYILAR         : `docs/duvar-zemin-raporu-s4.md` · ham `docs/olcum-duvar.txt`.
+                  Mimari ölçek **0,80** (D-099'un öngördüğü sayı doğrulandı), modül **3,20**.
+                  9 hattın hiçbiri tam bölünmüyor. K4 eş dağıtım en kötü **%18,7** (K2 %87,5).
+                  Kalınlık 0,26 → 0,40, **kesişen katı 0**. Kapı deliği **1,28** (oyunun 4,40).
+KARAR           : **D-100 — duvar KayKit'e GEÇMEZ.** Mutfak zemini geçti; kahve varyant
+                  mağaza teması (10.000 ₺). Tezgâh+dolap teması REDDEDİLDİ.
+UYGULAMA        : `wallLook.ts` · `KayWalls.tsx` (kip, silinmedi) · `atlasUV.ts` · `DishSink.tsx`
+                  · mutfak zemini + ön hat birleşmesi + batı duvarı aksesuarları · 2 HUD düzeltmesi.
+BEKÇİ           : `wall-look` 11 test / **4 mutasyon** · `kitchen-look` 15→16 / **3 mutasyon** ·
+                  v32→v33 göç bekçisi. vitest **798** · duman **42/42** · `tsc -b` temiz.
 ```
 
-**Turun en pahalı bulgusu bir test boşluğu:** `npm run build` **temiz ağaçta da kırıktı.**
-`tsc -b` HUD'da S2'den kalan ölü bir dal buldu (`notice.kind !== 'quest'`, oysa tip artık
-`'level' | 'reveal'`). `npm run test` bunu göremez — vitest tip denetlemez — ve kapanış
-protokolü `build` çalıştırmıyor. **Ders: yeşil test paketi "derleniyor" demek değil;
-kapanışa `tsc -b` girmeli** (`oturum-bitir` adım 2'ye eklenmeli, henüz eklenmedi).
+**Turun en pahalı dersi: ölçüm doğru soruyu sordu, ama YETERİNCE GENİŞ sormadı.** Rapor gerilmeyi
+**her hat içinde** ölçtü ve K4'ü kazanan ilan etti (%18,7). Kullanıcı ekranda *"her parça arasında
+fark var"* dedi — çünkü **hatlar arasında** modül eni 3,00…3,80 (%27 fark) ve iki hattın buluştuğu
+köşede yan yana düşüyor. Ölçüt bir parçanın kendi içindeydi, oysa göz **komşuluğu** görüyor.
+Tekrar denenirse çözüm bina için tek ortak adımdır.
 
-**İkinci ders — paketin modül karosu her obje için ölçek değildir.** KayKit her şeyi 2×2'lik
-karoda yazıyor; kasa da öyle. 0,90'da kasa 1,80 br oldu ve arkasındaki fırını kapattı. Küçük
-prop kendi gerçek boyunu ister (0,45 → 0,90 × 0,36; iki kasa yan yana tam bir modül eni).
+**İkinci ders — kapsam.** Paketin paletinden renk SEÇMEK, o seçimi bir ürün hattına çevirmeye
+yetmiyor. Tezgâh+dolap+zemini kapsayan beş kollu bir tema seti kuruldu ve kullanıcı
+*"bunları sen kendin uydurmuşsun"* dedi. Renk paletten gelse bile **kombinasyon tasarım kararıdır
+ve onaysız çoğaltılmaz.** Satılan tek kalem zemin kaldı, mutfak bugünkü hâliyle.
 
-**Renk bir kusur değil, bir ÜRÜN KALEMİ oldu.** Kıraathane tonuna boyanmış varyant üretildi ve
-gösterildi (`docs/gorsel/ss/mutfak-varyant-*.png`); kullanıcı *"her şey çok kahve kalıyor, biraz
-daha renkli olsun istiyorum"* deyip KayKit'in kendi paletinde kaldı ve ekledi: **farklı renkler
-ileride TEMA olarak satılabilir.** Boyama hattı ölçülü ve hazır bekliyor (iki yeni araç).
+**Üçüncü ders — ölçüm yöntemi de ölçülmeli.** Düşük-poli modelde delik/profil **vertex sayımıyla
+bulunamaz** (düz yüzün ortasında vertex yoktur): kapı 0,68 ölçüldü, gerçeği 1,28. Doğrusu üçgene
+ışın atmak. Renk de tahminle seçilemez → `tools/atlas-renk.mjs`.
+
+**Bekçi bu turda iki GERÇEK hata yakaladı** (kod yazılırken, gözle değil): peçetelik rafı duvarın
+tepesini 0,17 aşıyordu · havluluk çay ocağının kutusuna 0,12 giriyordu. Ayrıca "her duvar
+ünitesinin tepesi WALL_H'de" kuralı **daraltıldı, gevşetilmedi**.
 
 ## SIRADAKİ TAM ADIM
 
-**S4 — duvar + zemin KayKit'e geçer.** `MaketWall` yerine `wall` / `wall_half` /
-`wall_decorated` / `pillar_A·B`; mutfak zemini `floor_kitchen`. Dikkat: KayKit duvarı native
-**4,0**, oyununki `WALL_H` **3,2** → mimari ölçek **0,80** (D-099 §1'de ölçüldü, mobilyanınkinden
-farklı ve öyle kalmalı). Renk `recolor.ts` atlas kopyasıyla.
-S4-S7 indirme ve onay İSTEMİYOR — diskteki 185 KayKit modeliyle yapılacak iş.
+**S5 — dekor takası.** Elle çizilen 17 parçanın 8'i: `trash_A/B` · `lamp_standing` · `lamp_table` ·
+`rug_*` · `pictureframe_*` · `cabinet_*` · `cactus_*` (hepsi furniture-bits, diskte). Kalan 6'sı
+elde yok, elle kalır (askılık · duvar saati · aplik · askı rayı · şemsiyelik · petek).
+**Not:** `atlasUV.gozDegistir` artık hazır — dekor renkleri de atlas kopyalamadan seçilebilir.
 
-**KULLANICI KARARI BEKLEYEN ÜÇ ŞEY** (hiçbiri S4-S7'yi bloklamıyor):
+**KULLANICI KARARI BEKLEYEN ÜÇ ŞEY** (hiçbiri S5'i bloklamıyor):
 1. **Ses kaynağı** (S8) — asset panosu §7, dört kol. D-096'yı kısmen geri alır.
-   **Walla tuzağı yazılı:** hazır kafe ambiyansında anlaşılır yabancı konuşma var.
 2. **Karakter kolu** (S12) — asset panosu §3, altı kol, bedelleri yazılı.
 3. **H2 yükseltme sırası** (A tek hedef / B kuşak) ve **H3 masa aralığı** (K1 aralığı aç /
    K2 oturak küçült — K2 önerilmiyor, `feedback_reference_scale_trap`).
@@ -61,25 +59,29 @@ S4-S7 indirme ve onay İSTEMİYOR — diskteki 185 KayKit modeliyle yapılacak i
 
 ## AÇIK KALEMLER (bilinen, bilerek duruyor)
 
-- **`tsc -b` kapanışa girmeli** — bu turda elle yakalandı, kural olmadıkça yine kaçar.
+- **S4'te söz verilip YAPILMAYAN:** ① banket masası `table_round_A_small`e geçecekti (kullanıcı
+  istedi, tur doldu — `tableLook.ts`e dokunur, D-073'ün dondurduğu ölçülerin turudur) ·
+  ② mağaza kartlarının **gerçek oyun render'ı** (kullanıcı: *"öbür masalardaki gibi kalitesiz
+  olmasın"*) — `tools/tema-kapak.mjs` yazıldı ama kadrajı kötü (DEV rozeti, oyuncu, pad'ler
+  kadrajda); kart hâlâ iki renkli swatch gösteriyor.
+- **`tsc -b` kapanışa girmeli** — iki turdur elle yakalanıyor, kural olmadıkça yine kaçar.
 - **G-01 çay/bulaşık toplama masanın her tarafından olmuyor · G-02 çay ocağından alma güvenilmez ·
-  G-03 2. masa görevinde kamera kendiliğinden kayıyor** — üçü de HATA, kendi turunu ister.
+  G-03 2. masa görevinde kamera kendiliğinden kayıyor** — üçü de HATA, kendi turunu ister. (H1.)
 - **G-05 görev metinleri açıklayıcı değil** — altta net hedef, üstte kısa lakap (yazım işi).
 - **G-06 tepsi ilk yükseltme 75 → ~50 · G-07 yükseltme dwell'i para-bağımsız sabit olsun** —
   ikisi de DENGE, varyant kapısına tabi, **ölçülmeden uygulanmaz** (Faz H'de H2 ile aynı turda).
-- **Masalar geçilmiyor (ÖLÇÜLDÜ, uygulanmadı):** geçiş 2 × playerRadius = 0,94 br ister; ön salon
-  3,50 br rahat, **arka salon 0,68 br** → 20 masanın 12'si geçilemez, 52 açıklık eşik altında.
-  İki kol `docs/geribildirim-oyun-testi-2026-09-09.md` sonunda. (H3.)
-- **Oto-toplama toast'ı bir TOPLAMI tek olay gibi gösteriyor** — tek ödemenin tavanı 44 ₺;
-  metne adet eklemek `tick.ts`'e dokunuyor, kullanıcı onayı bekliyor.
+- **Masalar geçilmiyor (ÖLÇÜLDÜ, uygulanmadı):** arka salonda açıklık **0,68 br**, geçiş 0,94
+  ister → 20 masanın 12'si geçilemez. İki kol
+  `docs/geribildirim-oyun-testi-2026-09-09.md` sonunda. (H3.)
 - **G-16 arayüz kahverengi/iç karartıcı → mavi · G-17 ekranlar tam-ekran mı modal mı · G-10 pad
-  şekli** — kullanıcı "bilemedim" dedi; **maket görmeden koda girmemeli**.
+  şekli** — kullanıcı "bilemedim" dedi; **maket görmeden koda girmemeli**. (S9.)
 - **G-18 masaya tıklayınca seviye gözüksün mü** — kullanıcı düşünüyor, açık soru.
 - **`.gitattributes` YOK** — `core.autocrlf=true` her checkout'ta metin dosyalarını CRLF'e çeviriyor.
 - **`npm run pano`'nun günlük uyarısı yalnız TARİHE bakıyor** — aynı gün ikinci oturumda sessiz
   kalıyor; kural "sayaç arttıysa kart da artmalı" olmalı.
-- **Damacana rafı ve çay bardağı duvar rafı elle çizili kalıyor** — KayKit'te Türk kıraathanesi
-  eşyası yok. Kendi modelini yaptırmak S12'nin (karakter/özel model) konusu.
+- **Bulaşık gövdesi kutusundan geniş çizilemiyor** — `kitchentable_sink_large` native 3,0, kutu
+  2,0 × 1,0; model kutuya çekiliyor ve hafif basık duruyor. Kutuyu büyütmek yürüme alanına dokunur,
+  kendi ölçümünü ister.
 
 ---
 

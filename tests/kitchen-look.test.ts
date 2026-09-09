@@ -12,6 +12,7 @@ import {
   RIGHT_X,
   FRONT_Z,
   FRONT_TOP_Y,
+  UST_HIZALI,
   kayGovde,
   unitBox,
   modulX,
@@ -82,11 +83,23 @@ describe('kitchenLook — düşey ankraj', () => {
     expect(COUNTER_TOP_Y).toBeGreaterThan(TABLE_TOP_Y);
   });
 
-  it('duvar ünitesinin tepesi tam duvarın tepesine oturur', () => {
-    for (const u of KITCHEN_UNITS.filter((x) => x.kat === 'duvar')) {
-      expect(unitBox(u).maxY).toBeCloseTo(WALL_H, 6);
-    }
+  // S4'te daraltıldı: "her duvar ünitesinin tepesi WALL_H'de" kuralı yalnız ASILI ÜNİTE hattı
+  // için doğruydu (dolap · davlumbaz · peçetelik rafı). Havluluk gerçek bir mutfakta da tezgâhın
+  // hemen üstünde durur, tavan hizasında değil. Kural ikiye ayrıldı ve İKİSİ DE denetleniyor —
+  // gevşetilmedi: üst hizalılar birebir hizada, hepsi duvarın içinde ve tezgâhın üstünde.
+  it('üst hizalı asılı ünitelerin tepesi tam duvarın tepesine oturur', () => {
+    const hizali = KITCHEN_UNITS.filter((x) => x.kat === 'duvar' && UST_HIZALI.includes(x.key));
+    expect(hizali.length).toBeGreaterThanOrEqual(3);
+    for (const u of hizali) expect(unitBox(u).maxY).toBeCloseTo(WALL_H, 6);
     expect(WALL_UNIT_Y).toBeCloseTo(WALL_H - 3.6, 6);
+  });
+
+  it('HER duvar ünitesi duvarın içinde ve tezgâhın üstünde kalır', () => {
+    for (const u of KITCHEN_UNITS.filter((x) => x.kat === 'duvar')) {
+      const b = unitBox(u);
+      expect(b.maxY).toBeLessThanOrEqual(WALL_H + 1e-6);
+      expect(b.minY).toBeGreaterThanOrEqual(COUNTER_TOP_Y - 1e-6);
+    }
   });
 
   it('duvar ünitesi tezgâhın üstünde durur (çalışma payı ≥ 0,45)', () => {

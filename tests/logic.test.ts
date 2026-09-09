@@ -3561,9 +3561,36 @@ describe('Faz B1 — kayıt v31: TEMİZ SIFIRLAMA, migrasyon yok (D-058 karar 3)
     }
   }
 
-  it('SAVE_VERSION 32ye çıktı (görev kimliği kayıt şemasını değiştirdi — D-088)', () => {
-    expect(SAVE_VERSION).toBe(32);
-    expect(defaultSave().saveVersion).toBe(32);
+  it('SAVE_VERSION 33e çıktı (S4: mutfak zemini teması kayıt şemasına girdi)', () => {
+    expect(SAVE_VERSION).toBe(33);
+    expect(defaultSave().saveVersion).toBe(33);
+    expect(defaultSave().kitchenTheme).toBe('klasik');
+  });
+
+  // S4'ün asıl bekçisi: v32 kaydı SIFIRLANMAZ, göç eder. Şema EKLEMELİ değişti (yeni alan
+  // `kitchenTheme`), ilerlemeyi etkileyen hiçbir şey değişmedi — CLAUDE.md: "eski kayıt migrate
+  // edilir; ilerleme kaybolmaz". Bu test olmadan v33'e çıkmak sessizce ilerleme silerdi.
+  it('loadSave: v32 kaydı GÖÇ EDER — ilerleme korunur, tema varsayılana düşer', () => {
+    withStorage(
+      JSON.stringify({
+        ...defaultSave(),
+        saveVersion: 32,
+        wallet: '4242',
+        padsDone: ['table2', 'table3', 'waiter'],
+        tableLevels: [3, 2, 1, 0],
+        ownedCosmetics: ['floor:dama:z0'],
+        lastSaved: Date.now(),
+      }),
+      () => {
+        const s = loadSave();
+        expect(s.saveVersion).toBe(33);
+        expect(s.wallet).toBe('4242'); // İLERLEME DURUYOR
+        expect(s.padsDone).toEqual(['table2', 'table3', 'waiter']);
+        expect(s.tableLevels).toEqual([3, 2, 1, 0]);
+        expect(s.ownedCosmetics).toEqual(['floor:dama:z0']);
+        expect(s.kitchenTheme).toBe('klasik'); // yeni alan varsayılanla doğar
+      },
+    );
   });
 
   it('resetKeepingSettings: İLERLEME sıfırlanır (para/pad/masa/görev)', () => {
@@ -3572,7 +3599,7 @@ describe('Faz B1 — kayıt v31: TEMİZ SIFIRLAMA, migrasyon yok (D-058 karar 3)
       padsDone: ['table2', 'zone2', 'z3table4'], tableLevels: [4, 4, 4, 4],
       stationLevels: [6, 3, 2], questIndex: 17, questBase: 40, xp: 900,
     });
-    expect(r.saveVersion).toBe(32);
+    expect(r.saveVersion).toBe(33);
     expect(r.wallet).toBe('0');
     expect(r.diamonds).toBe('0');
     expect(r.lifetime).toBe('0');
@@ -3624,7 +3651,7 @@ describe('Faz B1 — kayıt v31: TEMİZ SIFIRLAMA, migrasyon yok (D-058 karar 3)
       lastSaved: Date.now(),
     }), () => {
       const s = loadSave();
-      expect(s.saveVersion).toBe(32);
+      expect(s.saveVersion).toBe(33);
       expect(s.wallet).toBe('0');
       expect(s.padsDone).toEqual([]);
       expect(s.settings.sound).toBe(false);
@@ -3647,7 +3674,7 @@ describe('Faz B1 — kayıt v31: TEMİZ SIFIRLAMA, migrasyon yok (D-058 karar 3)
       expect(loadSave().padsDone).toEqual([]);
     });
     withStorage('{bozuk', () => {
-      expect(loadSave().saveVersion).toBe(32);
+      expect(loadSave().saveVersion).toBe(33);
     });
   });
 

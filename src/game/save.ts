@@ -16,7 +16,7 @@ import { activeQuestIndex, completedQuestIds } from './questProgress';
  *
  * 31 → 32: `questIndex: number` yerine `questsDone: string[]` (+ tabanın sahibi `questBaseId`).
  */
-export const SAVE_VERSION = 32;
+export const SAVE_VERSION = 33;
 
 const KEY = 'kiraathane.save';
 
@@ -120,6 +120,8 @@ export interface SaveData {
    *  (`kind:id:zN` anahtarları — tekrar seçmek ücretsiz). */
   floorThemeByArea: string[];
   wallThemeByArea: string[];
+  /** GLOBAL mutfak teması (v33, S4): tezgâh + dolap + zemin rengi. */
+  kitchenTheme: string;
   /** GLOBAL masa teması id'si (mobilya minder+örtü rengi). */
   tableTheme: string;
   ownedCosmetics: string[];
@@ -165,6 +167,7 @@ export function defaultSave(): SaveData {
     settings: defaultSettings(),
     floorThemeByArea: [],
     wallThemeByArea: [],
+    kitchenTheme: 'klasik',
     tableTheme: 'mavi',
     ownedCosmetics: [],
     charUpgrades: defaultCharUpgrades(),
@@ -212,6 +215,24 @@ export function resetKeepingSettings(raw: Record<string, unknown>): SaveData {
  * Bu, göçün yapılabildiği tek an — v31 kaydı yazıldığında hat neyse index onu gösteriyordu ve
  * hat o günden bu yana değişmedi. Göçten sonra kaydın konumu bir daha sıra numarasına bağlı olmaz.
  */
+/**
+ * MİGRASYON v32 → v33 (S4) — mutfak teması eklendi.
+ *
+ * Şema EKLEMELİ değişti: yeni alan `kitchenTheme`, eski kayıtta yok. İlerlemeyi etkileyen
+ * hiçbir şey değişmediği için göç tek satır — varsayılan tema ('klasik') eski kaydın üstüne
+ * eklenir ve oyuncu bugüne kadarki her şeyiyle devam eder. CLAUDE.md: *"şema değişince eski
+ * kayıt migrate edilir; ilerleme kaybolmaz."*
+ */
+function migrateV32(raw: Record<string, unknown>): SaveData | null {
+  if (raw.saveVersion !== 32) return null;
+  return {
+    ...defaultSave(),
+    ...(raw as object),
+    saveVersion: SAVE_VERSION,
+    kitchenTheme: typeof raw.kitchenTheme === 'string' ? raw.kitchenTheme : 'klasik',
+  } as SaveData;
+}
+
 function migrateV31(raw: Record<string, unknown>): SaveData | null {
   if (raw.saveVersion !== 31) return null;
   const index = typeof raw.questIndex === 'number' ? raw.questIndex : 0;
@@ -235,7 +256,8 @@ export function loadSave(): SaveData {
     if (!raw) return defaultSave();
     const parsed = JSON.parse(raw) as Record<string, unknown>;
     if (parsed.saveVersion === SAVE_VERSION) return { ...defaultSave(), ...(parsed as object) } as SaveData;
-    return migrateV31(parsed) ?? resetKeepingSettings(parsed);
+    // Göç zinciri YENİDEN ESKİYE: v32 → v33, sonra v31 → v33.
+    return migrateV32(parsed) ?? migrateV31(parsed) ?? resetKeepingSettings(parsed);
   } catch {
     return defaultSave();
   }
