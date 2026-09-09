@@ -102,11 +102,12 @@ export function progressOku(metin) {
 }
 
 /** Panonun `<script id="durum">` JSON bloğunu ayıklar.
- *  DİKKAT: regex açılış etiketinden sonra düz satır sonu bekler — pano dosyası **LF** olmak zorunda.
- *  Düzenleyici/betik CRLF yazarsa araç "JSON bloğu bulunamadı" der ve panoyu yazmaz (2026-09-09'da
- *  bir kez oldu: dosyayı Windows kipinde yeniden yazan bir betik bütün satır sonlarını çevirdi). */
+ *  SATIR SONUNDAN BAĞIMSIZ (D8): regex önce yalnız LF kabul ediyordu ve araç CRLF görünce
+ *  "JSON bloğu bulunamadı" deyip panoyu yazmıyordu. Bu İKİ kez oldu ve ikisinde de sebep
+ *  dosyanın içeriği değildi: depoda `core.autocrlf=true` açık, yani **her `git checkout`**
+ *  tuzağı yeniden kuruyor. Çözüm dosyayı elle LF'e çevirmek değil, aracın umursamaması. */
 export function panoOku(html) {
-  const m = html.match(/(<script type="application\/json" id="durum">\n)([\s\S]*?)(\n<\/script>)/);
+  const m = html.match(/(<script type="application\/json" id="durum">\r?\n)([\s\S]*?)(\r?\n<\/script>)/);
   if (!m) throw new Error('panoda `id="durum"` JSON bloğu bulunamadı');
   return { durum: JSON.parse(m[2]), ham: m[2], onEk: m[1], sonEk: m[3] };
 }
@@ -242,7 +243,11 @@ export function panoyaUygula(durum, p, { tarih = bugun(), simdi = null } = {}) {
  */
 export function panoYaz(html, durum) {
   const { ham, onEk, sonEk } = panoOku(html);
-  return html.replace(onEk + ham + sonEk, onEk + JSON.stringify(durum, null, 1) + sonEk);
+  // JSON.stringify her zaman LF üretir; dosya CRLF ise blok da CRLF yazılır. Yoksa araç kendi
+  // dosyasını KARIŞIK satır sonlu bırakır ve tek sayı değişen bir tur binlerce satırlık diff
+  // gösterir (D8: okuma CRLF'e açıldı, yazma da aynı yerden geçmeli).
+  const govde = JSON.stringify(durum, null, 1);
+  return html.replace(onEk + ham + sonEk, onEk + (onEk.includes('\r\n') ? govde.replace(/\n/g, '\r\n') : govde) + sonEk);
 }
 
 /** Panonun `yapilan`'ı arttıysa o tarihe yeni bir günlük kartı da yazılmış olmalı. */

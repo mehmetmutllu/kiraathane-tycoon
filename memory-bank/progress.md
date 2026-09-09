@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 79 · YAPILAN 70 · %89):**
+**Oturum bütçesi (TOPLAM 79 · YAPILAN 71 · %90):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -22,10 +22,10 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | B model geçişi + maket taşıması | 13/13 ✅ |
 | | **C zincir ve denge** | **5/5 ✅** |
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
-| | D meta katman | 7/8 🔧 |
+| | D meta katman | 8/8 ✅ |
 | | E arayüz ve cila | 1/4 🔧 |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **42/51** |
+| **Program toplam** | | **43/51** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -84,7 +84,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
 **asıl sınav tick-temelli bir denge turu.** Ölçülen gerçek kazançlar: üç dosyalık okuma seti
 (oturum başı), uzun koşuların paralel arkaplanı, hazır ölçüm iskeleti.
 
-## Faz D — META KATMAN (7/8) 🔧
+## Faz D — META KATMAN (8/8) ✅
 - ✅ **D1 — geç-oyun eğrisinin 20 dk ihlali ölçüldü ve ölçütün PROFİLİ sabitlendi (D-087)** ·
   dokuz kol varyant olarak ölçüldü, dozlar tahmin değil **çözüldü**; hepsi elendi, ölçütün
   kendisi (`o1`) alındı. Ölçüt kardeş üçüyle aynı profilde (İdealize) hüküm verir ve geçiyor
@@ -160,8 +160,16 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   · **kayıt sürümü artmadı** (v32, `mastersOwned` additive).
   **Kabul edilen eksik:** uygulanan hâl iki knob'un toplamı çıkmadı (`eUYG` %-1,6 / 32,0 dk;
   tek-knob satırları %-3,0 / 30,4 dk gösteriyordu) — D-090 Bulgu 10'un ÜÇÜNCÜ tekrarı.
-- ⏳ **D8 — UI: Usta paneli + günlük görev kartları** *(tur adı `D7b`)* (mekanik ve sayılar D7a'da çivilendi ve
-  bekçili; günlük görev SİSTEMİ henüz yok, yalnız ölçülmüş sayısı config'te duruyor).
+- ✅ **D8 — Usta ve günlük görevin ETKİLEŞİMİ kuruldu (D-094)** *(tur adı `D7b`)* · Usta noktası
+  masanın MEVCUT yükseltme noktasının 💎 kimliği oldu (planın "yaklaşınca panel açılır"ı elendi —
+  modal hareketi keser; onayı alt bant alır, dwell ile alım yok). Günlük görev SİSTEMİ kuruldu:
+  havuzdan gün-index'iyle deterministik 3 görev, eşik masaya ölçekli, ödül toplamdan türetilir
+  (3+3+4 = 10 💎). `master.tipMult` ×1,5'te KALDI (D-093'ün açık kalemi kapandı; ×2'nin ölçülmüş
+  %-3,0 / 30,4 dk satırı reddedildi). **Denge sayısı DEĞİŞMEDİ** — eklenen tek şey görev tanımları;
+  **sıra kilidi bilerek aşıldı** (D-094'te gerekçesiyle yazılı). Bekçi `tests/gunluk-gorev.test.ts`
+  (22 test, **14 mutasyon, on dördü de yakalandı**) — bekçi yazarken gerçek bir hata buldu: gün
+  tabanı çevrimdışı gelirden ÖNCE alınıyordu, gece kazancı bugünün görevini bedava dolduruyordu.
+  vitest **661** · duman **41/41** · **kayıt sürümü artmadı** (v32, `daily` additive).
 
 > D2-D7 `docs/plan-kat1-yayin.html` §D kapsamından türetildi; **sırası açık** — her tur başında
 > seçilir. Ayrıca Faz D'de bekleyen bilinen bir hata var: **nav ızgarası ↔ oyuncu çarpışması**.

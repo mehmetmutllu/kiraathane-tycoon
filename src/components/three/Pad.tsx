@@ -31,7 +31,7 @@ export function Pad() {
             pos={LAYOUT.padPos[pad.id]}
             label={pad.label}
             sub={String(remaining)}
-            coin
+            pip="coin"
             tint={isHire ? '#42a5f5' : '#43d17a'}
             progress={fill / pad.cost}
             afford={cash >= remaining}

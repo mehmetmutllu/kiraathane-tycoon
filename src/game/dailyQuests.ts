@@ -162,14 +162,20 @@ export function rollDaily(
   return { day, ids, base, claimed: [] };
 }
 
-/** Bugünün görev kartları — sıra kimlik sırasıdır, 💎 payı o sıradan gelir. */
-export function dailyViews(daily: DailyState, ctx: DailyContext, counters: DailyCounters): DailyQuestView[] {
+/**
+ * Bugünün görev kartları — sıra kimlik sırasıdır, 💎 payı o sıradan gelir.
+ *
+ * Girdisi `DailyContext` DEĞİL yalnız `tables`: gate'ler yalnız gün DÖNÜMÜNDE okunur, kartları
+ * çizmek için gerekmez. HUD'un `waiters`a abone olmaması bu yüzden önemli — o dizi her karede
+ * değişir ve arayüzü saniyede 60 kez yeniden çizerdi.
+ */
+export function dailyViews(daily: DailyState, tables: number, counters: DailyCounters): DailyQuestView[] {
   const claimed = new Set(daily.claimed);
   const out: DailyQuestView[] = [];
   daily.ids.forEach((id, i) => {
     const t = templateOf(id);
     if (!t) return;
-    const target = targetOf(t, ctx.tables);
+    const target = targetOf(t, tables);
     const cur = Math.max(0, Math.floor((counters[t.metric] ?? 0) - (daily.base[id] ?? 0)));
     out.push({
       id,
@@ -184,8 +190,8 @@ export function dailyViews(daily: DailyState, ctx: DailyContext, counters: Daily
 }
 
 /** Şu an toplanabilir günlük görevlerin sayısı — HUD rozetini besler. */
-export const claimableDailyCount = (daily: DailyState, ctx: DailyContext, counters: DailyCounters): number =>
-  dailyViews(daily, ctx, counters).filter((v) => v.state === 'claimable').length;
+export const claimableDailyCount = (daily: DailyState, tables: number, counters: DailyCounters): number =>
+  dailyViews(daily, tables, counters).filter((v) => v.state === 'claimable').length;
 
 /**
  * Bir günlük görevin ÖDÜLÜ — yalnız gerçekten toplanabilirse döner, yoksa `null`. Doğrulama
@@ -194,9 +200,9 @@ export const claimableDailyCount = (daily: DailyState, ctx: DailyContext, counte
 export function claimDailyReward(
   id: string,
   daily: DailyState,
-  ctx: DailyContext,
+  tables: number,
   counters: DailyCounters,
 ): number | null {
-  const v = dailyViews(daily, ctx, counters).find((x) => x.id === id);
+  const v = dailyViews(daily, tables, counters).find((x) => x.id === id);
   return v && v.state === 'claimable' ? v.diamonds : null;
 }

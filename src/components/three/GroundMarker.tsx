@@ -40,7 +40,7 @@ export function GroundMarker({
   pos,
   label,
   sub,
-  coin = false,
+  pip,
   tint,
   progress = 0,
   afford = false,
@@ -49,8 +49,10 @@ export function GroundMarker({
   pos: Vec3;
   label: string;
   sub?: string;
-  /** Sub bir maliyetse yanına küçük altın para pulu çiz (₺ yazısı display'den kalktı — 2026-06-09). */
-  coin?: boolean;
+  /** Sub bir MALİYETSE yanına para birimi pulu çiz: altın pul (₺) ya da mavi elmas (💎).
+   *  D8: Usta noktası aynı işaretin 💎 kimliğidir — ayrı bir görsel dil açılmadı, para birimi
+   *  değişti (kullanıcı kararı: "aynı nokta, 💎 kimliği + onay çubuğu"). */
+  pip?: 'coin' | 'gem';
   tint: string;
   progress?: number;
   afford?: boolean;
@@ -128,22 +130,25 @@ export function GroundMarker({
           </Text>
           {sub && (
             <>
-              {coin && (
+              {pip && (
                 <group position={[-0.2 - sub.length * 0.08, 0.05, 0.32]}>
-                  <mesh rotation={[-Math.PI / 2, 0, 0]}>
-                    <circleGeometry args={[0.115, 20]} />
-                    <meshBasicMaterial color="#ffc933" depthWrite={false} />
+                  {/* Elmas pulu DÖRTGEN, para pulu YUVARLAK — renk körü bir oyuncu için de
+                      iki para birimi biçimden ayrılır (çoklu sinyal, feedback_upgrade_legibility). */}
+                  <mesh rotation={[-Math.PI / 2, 0, pip === 'gem' ? Math.PI / 4 : 0]}>
+                    <circleGeometry args={[pip === 'gem' ? 0.125 : 0.115, pip === 'gem' ? 4 : 20]} />
+                    <meshBasicMaterial color={pip === 'gem' ? '#81d4fa' : '#ffc933'} depthWrite={false} />
                   </mesh>
-                  <mesh position={[0, 0.004, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-                    <ringGeometry args={[0.085, 0.115, 20]} />
-                    <meshBasicMaterial color="#b87400" depthWrite={false} />
+                  <mesh position={[0, 0.004, 0]} rotation={[-Math.PI / 2, 0, pip === 'gem' ? Math.PI / 4 : 0]}>
+                    <ringGeometry args={
+                      pip === 'gem' ? [0.09, 0.125, 4] : [0.085, 0.115, 20]} />
+                    <meshBasicMaterial color={pip === 'gem' ? '#0277bd' : '#b87400'} depthWrite={false} />
                   </mesh>
                 </group>
               )}
               <Text
                 font={GAME_FONT_3D}
                 fontWeight={700}
-                position={[coin ? 0.08 : 0, 0.05, 0.32]}
+                position={[pip ? 0.08 : 0, 0.05, 0.32]}
                 rotation={[-Math.PI / 2, 0, 0]}
                 fontSize={0.29}
                 color="#ffe082"

@@ -220,6 +220,16 @@ describe('gerçek dosyalar', () => {
     expect(panoYaz(html, panoOku(html).durum)).toBe(html);
   });
 
+  // D8: araç CRLF görünce "JSON bloğu bulunamadı" deyip panoyu yazmıyordu — ve bu İKİ kez oldu.
+  // Sebep dosyanın içeriği değil, deponun `core.autocrlf=true` ayarı: her `git checkout` pano
+  // dosyasını CRLF'e çeviriyor, yani tuzak kendi kendine geri kuruluyor. Araç artık satır
+  // sonundan bağımsız; bu test onu kilitler (LF'e dönüş = kapanışın sessizce kırılması).
+  it('CRLF satır sonlu pano da okunur ve BİREBİR geri yazılır', () => {
+    const crlf = html.replace(/\r?\n/g, '\r\n');
+    expect(panoOku(crlf).durum).toEqual(panoOku(html).durum);
+    expect(panoYaz(crlf, panoOku(crlf).durum)).toBe(crlf);
+  });
+
   it('tek sayı değişince diff de tek satır — anlatının korunduğu gözle görülebilir', () => {
     const { durum } = panoOku(html);
     durum.yapilan += 1;

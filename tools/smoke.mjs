@@ -184,6 +184,43 @@ try {
     await page.click('[data-testid="goals-panel"]', { position: { x: 450, y: 40 } });
   }
 
+  // GÜNLÜK GÖREVLER (D8): kartlar Görevler panelinde çıkıyor mu ve ödül GERÇEKTEN 💎 veriyor mu?
+  // Sınanan şey panelin açılması değil, günün ölçülen arzının (10 💎) akması.
+  {
+    await page.click('[data-testid="quests"]');
+    await page.waitForSelector('[data-testid="quests-panel"]', { timeout: 5000 });
+    const kart = await page.$$('[data-testid^="daily-"][data-state]');
+    if (kart.length === 3) pass('Günlük görev: üç kart çizildi');
+    else fail(`Günlük görev kartı 3 değil: ${kart.length}`);
+
+    // Kartların 💎 payı toplamı config toplamına eşit olmalı (kaçak arz bekçisi).
+    const g = await page.evaluate(() => window.__game());
+    const toplam = (g.daily ?? []).reduce((a, d) => a + d.diamonds, 0);
+    if (toplam === 10) pass(`Günün 💎 tavanı doğru (${toplam})`);
+    else fail(`Günün 💎 toplamı 10 değil: ${toplam}`);
+
+    // Bir görevi sayaçtan DOLDUR → kart toplanabilir olsun → ödülü al.
+    const hedef = (g.daily ?? [])[0];
+    if (!hedef) {
+      fail('Günlük görev kartı okunamadı');
+    } else {
+      await page.evaluate((id) => window.__fillDaily(id), hedef.id);
+      await page.waitForSelector(`[data-testid="daily-claim-${hedef.id}"]`, { timeout: 5000 });
+      const oncesi = (await page.evaluate(() => window.__game())).diamonds;
+      await page.click(`[data-testid="daily-claim-${hedef.id}"]`);
+      await page.waitForSelector('[data-testid="daily-reward"]', { timeout: 5000 });
+      await page.click('[data-testid="daily-reward-ok"]');
+      const sonrasi = (await page.evaluate(() => window.__game())).diamonds;
+      if (sonrasi === oncesi + hedef.diamonds)
+        pass(`Günlük görev ödülü ödendi (💎 ${oncesi}→${sonrasi})`);
+      else fail(`Günlük ödül yanlış (💎 ${oncesi}→${sonrasi}, beklenen +${hedef.diamonds})`);
+      const tekrar = await page.$(`[data-testid="daily-claim-${hedef.id}"]`);
+      if (!tekrar) pass('Toplanan günlük görev ikinci kez toplanamıyor');
+      else fail('Toplanan günlük görevin "Ödülü al" butonu duruyor');
+    }
+    await page.click('[data-testid="quests-panel"]', { position: { x: 450, y: 40 } });
+  }
+
   // Bardak döngüsü (Faz 2e): garson servis ederken kirli bardak üretilir → oyuncu toplar → bulaşıkta yıkar.
   await page.evaluate(() => window.__park()); // oyuncu uzak köşede; garson servis etsin, kirli birikir
   const cupRun = await page.evaluate(() => window.__advanceTime(30));
@@ -244,6 +281,41 @@ try {
   } else {
     fail(`Masa yükseltme için 4. masa açık değil (padsDone=${JSON.stringify(preTable.padsDone)})`);
   }
+
+  // USTA NOKTASI (D8 · D-093): masa ₺ tavanına varınca aynı nokta 💎 kimliğine döner; oyuncu
+  // yaklaşınca alt bant ONAY çubuğuna dönüşür ve satın alma 💎 düşürüp kimliği kayda yazar.
+  {
+    const max = (await page.evaluate(() => window.__game())).tableMaxLevel;
+    await page.evaluate((lv) => window.__setTableLevel(0, lv), max);
+    await page.evaluate(() => window.__setState({ diamonds: 999 }));
+    const spot = (await page.evaluate(() => window.__game())).tableUpgradeSpots[0];
+    await page.evaluate((p) => window.__teleport(p[0], p[2]), spot);
+    await page.evaluate(() => window.__advanceTime(0.5));
+    await page.waitForSelector('[data-testid="master-bar"]', { timeout: 5000 });
+    pass('Usta noktasına yaklaşınca onay çubuğu çıktı');
+
+    const once = (await page.evaluate(() => window.__game())).diamonds;
+    await page.click('[data-testid="master-buy"]');
+    const sonra = await page.evaluate(() => window.__game());
+    if (sonra.mastersOwned.includes('table:0')) pass(`Usta alındı (${sonra.mastersOwned.join(',')})`);
+    else fail(`Usta alınamadı: ${JSON.stringify(sonra.mastersOwned)}`);
+    if (sonra.diamonds === once - 25) pass(`Usta 25 💎 düşürdü (${once}→${sonra.diamonds})`);
+    else fail(`Usta fiyatı yanlış düştü (${once}→${sonra.diamonds})`);
+
+    // Alındıktan sonra nokta da çubuk da KALKAR (yapacak iş kalmadı).
+    await page.evaluate(() => window.__advanceTime(0.5));
+    await page.waitForSelector('[data-testid="master-bar"]', { state: 'detached', timeout: 5000 });
+    pass('Usta alınınca onay çubuğu kalktı');
+
+    // Hedefler panelindeki toplu sayaç güncellendi mi (plan §5: "Usta masalar 7/20")?
+    await page.click('[data-testid="goals"]');
+    await page.waitForSelector('[data-testid="usta-strip"]', { timeout: 5000 });
+    const sayac = await page.textContent('[data-testid="usta-owned"]');
+    if (sayac.trim() === '1') pass('Hedefler panelinde Usta sayacı 1');
+    else fail(`Usta sayacı yanlış: "${sayac}"`);
+    await page.click('[data-testid="goals-panel"]', { position: { x: 450, y: 40 } });
+  }
+
 
   // Yeni-özellik bildirimi (D-019 §4): ilerleme boyunca açılan ikincil özellikler bildirilmiş olmalı.
   // ('opt:waiter' kalktı — personel artık quest hattının zorunlu halkası, opsiyonel pad yok.)

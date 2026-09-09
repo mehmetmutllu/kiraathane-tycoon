@@ -60,7 +60,7 @@ describe('Günün arzı — ölçülen 10 💎 tam olarak dağıtılır', () => 
     const daily = rollDaily(undefined, 100, ctx, sifirSayac());
     const doldur = (): DailyCounters =>
       ({ served: 1e9, hand: 1e9, coins: 1e9, dishes: 1e9, earn: 1e9, pickup: 1e9, waiter: 1e9, tost: 1e9 });
-    const toplam = dailyViews(daily, ctx, doldur()).reduce((a, v) => a + v.diamonds, 0);
+    const toplam = dailyViews(daily, ctx.tables, doldur()).reduce((a, v) => a + v.diamonds, 0);
     expect(toplam).toBe(C.dailyQuests.diamondsPerDay);
   });
 });
@@ -159,14 +159,14 @@ describe('Gün dönümü ve ilerleme — delta, kalıcı sayaç değil', () => {
     const baslangic: DailyCounters = { ...sifirSayac(), served: 5_000, coins: 5_000, dishes: 5_000, earn: 5_000, hand: 5_000, pickup: 5_000, waiter: 5_000, tost: 5_000 };
     const daily = rollDaily(undefined, 60, ctx, baslangic);
     // Gün başında hiçbir görev ilerlememiş olmalı — yoksa dünkü emek bugünü bedava bitirirdi.
-    for (const v of dailyViews(daily, ctx, baslangic)) {
+    for (const v of dailyViews(daily, ctx.tables, baslangic)) {
       expect(v.cur).toBe(0);
       expect(v.state).toBe('progress');
     }
     // Sayaçlar taban + hedef kadar artınca tam dolar.
     const t0 = templateOf(daily.ids[0])!;
     const sonra = { ...baslangic, [t0.metric]: baslangic[t0.metric] + targetOf(t0, ctx.tables) };
-    const v0 = dailyViews(daily, ctx, sonra)[0];
+    const v0 = dailyViews(daily, ctx.tables, sonra)[0];
     expect(v0.cur).toBe(v0.target);
     expect(v0.state).toBe('claimable');
   });
@@ -174,15 +174,15 @@ describe('Gün dönümü ve ilerleme — delta, kalıcı sayaç değil', () => {
   it('sayaç geri giderse ilerleme negatife düşmez, hedefi de aşmaz', () => {
     const ctx = acikCtx();
     const daily = rollDaily(undefined, 61, ctx, { ...sifirSayac(), coins: 100, served: 100, hand: 100, dishes: 100, earn: 100, pickup: 100, waiter: 100, tost: 100 });
-    for (const v of dailyViews(daily, ctx, sifirSayac())) expect(v.cur).toBe(0);
+    for (const v of dailyViews(daily, ctx.tables, sifirSayac())) expect(v.cur).toBe(0);
     const cok: DailyCounters = { served: 1e6, hand: 1e6, coins: 1e6, dishes: 1e6, earn: 1e6, pickup: 1e6, waiter: 1e6, tost: 1e6 };
-    for (const v of dailyViews(daily, ctx, cok)) expect(v.cur).toBe(v.target);
+    for (const v of dailyViews(daily, ctx.tables, cok)) expect(v.cur).toBe(v.target);
   });
 
   it('havuzdan KALKMIŞ bir kimlik kartı sessizce düşürür (çöker değil)', () => {
     const ctx = acikCtx();
     const bozuk: DailyState = { day: 70, ids: ['serve', 'yok-boyle-gorev', 'dishes'], base: {}, claimed: [] };
-    const v = dailyViews(bozuk, ctx, sifirSayac());
+    const v = dailyViews(bozuk, ctx.tables, sifirSayac());
     expect(v.map((x) => x.id)).toEqual(['serve', 'dishes']);
   });
 
@@ -200,24 +200,24 @@ describe('Ödül alma — tek yerde doğrulanır, iki kez alınamaz', () => {
 
   it('eşik dolmadan ödül YOK', () => {
     const daily = rollDaily(undefined, 80, ctx, sifirSayac());
-    expect(claimDailyReward(daily.ids[0], daily, ctx, sifirSayac())).toBeNull();
-    expect(claimableDailyCount(daily, ctx, sifirSayac())).toBe(0);
+    expect(claimDailyReward(daily.ids[0], daily, ctx.tables, sifirSayac())).toBeNull();
+    expect(claimableDailyCount(daily, ctx.tables, sifirSayac())).toBe(0);
   });
 
   it('dolunca ödül var; toplandıktan sonra bir daha YOK', () => {
     const daily = rollDaily(undefined, 81, ctx, sifirSayac());
-    expect(claimableDailyCount(daily, ctx, dolu())).toBe(C.dailyQuests.count);
+    expect(claimableDailyCount(daily, ctx.tables, dolu())).toBe(C.dailyQuests.count);
     const id = daily.ids[1];
-    const odul = claimDailyReward(id, daily, ctx, dolu());
+    const odul = claimDailyReward(id, daily, ctx.tables, dolu());
     expect(odul).toBe(diamondsFor(1, daily.ids.length));
     const sonra: DailyState = { ...daily, claimed: [id] };
-    expect(claimDailyReward(id, sonra, ctx, dolu())).toBeNull();
-    expect(dailyViews(sonra, ctx, dolu()).find((v) => v.id === id)!.state).toBe('claimed');
+    expect(claimDailyReward(id, sonra, ctx.tables, dolu())).toBeNull();
+    expect(dailyViews(sonra, ctx.tables, dolu()).find((v) => v.id === id)!.state).toBe('claimed');
   });
 
   it('var olmayan kimlik ödül vermez', () => {
     const daily = rollDaily(undefined, 82, ctx, sifirSayac());
-    expect(claimDailyReward('uydurma', daily, ctx, dolu())).toBeNull();
+    expect(claimDailyReward('uydurma', daily, ctx.tables, dolu())).toBeNull();
   });
 });
 
@@ -267,7 +267,7 @@ describe('OYUNA bağlı mı — store (saf fonksiyon değil, gerçek durum)', ()
       expect(s.daily.day).toBe(dayIndex(Date.now())); // gün döndü
       expect(s.lifetime.toNumber()).toBeGreaterThan(50_000); // offline ₺ gerçekten geldi
       // Hiçbir görev, açılışta kendiliğinden toplanabilir olmamalı.
-      const gorunum = dailyViews(s.daily, dailyContextOf(s), dailyCountersOf(s));
+      const gorunum = dailyViews(s.daily, s.tables, dailyCountersOf(s));
       expect(gorunum.every((v) => v.state === 'progress')).toBe(true);
       const kazan = gorunum.find((v) => v.id === 'earn');
       if (kazan) expect(kazan.cur).toBe(0);

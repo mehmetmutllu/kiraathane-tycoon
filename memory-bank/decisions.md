@@ -2650,3 +2650,34 @@ bayatlamayı kilitleyen iki damga eklendi. vitest 639 · duman 32/32.
 
 **D7 ikiye bölündü** (kullanıcı): D7a = ölçüm + denge (bu karar) · D7b = UI (Usta paneli +
 günlük görev kartları). Günlük görev SİSTEMİ henüz yok — yalnız ölçülmüş sayısı config'te durur.
+
+## D-094 — Usta ve günlük görevin ETKİLEŞİMİ: aynı nokta, 💎 kimliği (2026-09-09, D8)
+
+**Karar (üç ürün kararı, tek pakette sorulup seçildi).**
+① **Usta noktası = masanın MEVCUT yükseltme noktası.** ₺ tavanında işaret kaybolmuyor, elmas
+kimliğine dönüyor (mavi halka + dörtgen pul + "Usta"). Yeni görsel dil açılmadı, para birimi
+değişti. Planın "yaklaşınca panel açılır"ı **elendi**: oyuncu masanın yanından her geçtiğinde
+ekranı kapatan modal hem hareketi keser hem Tek Odak'ı kırar. Onayı **alt bant** alır (`MasterBar`),
+dwell ile satın alma YOK — 25 💎 premium harcamadır, yürürken kazara gitmemeli.
+② **Günlük görev = havuzdan gün-index'iyle DETERMİNİSTİK 3 görev**, eşik açık masa sayısına ölçekli.
+Kayıtta rastgelelik tohumu yok; seçilen kimlikler duruyor çünkü havuz gate'li (garson/tost kapalıysa
+seçilmez — imkânsız görev o günün ölçülen 💎'ını sessizce yok ederdi).
+③ **`master.tipMult` ×1,5'te KALDI** (D-093'ün açık kalemi kapandı): ×2'nin ölçülmüş satırı
+(%-3,0 / 30,4 dk) reddedildi, yürürlükteki %-1,6 / 32,0 dk korundu.
+
+**Denge sayısı DEĞİŞMEDİ.** `diamondsPerDay 10` ve `count 3` aynen duruyor; eklenen tek şey görev
+TANIMLARI. Ödülün üçe dağılımı config'e yazılmadı, **toplamdan türetilir** (3+3+4 = 10) —
+`goals.incomeBonusTotal` dersinin aynısı (D-090): parçalar toplamdan ayrışamaz. Günlük görev
+**XP VERMEZ**: İtibar D-092'de ölçülen taşıma çarpanına biniyor, XP takmak ölçülmemiş bir
+hızlanma enjekte ederdi.
+
+**SIRA KİLİDİ BİLEREK AŞILDI** (araç uyardı, sessiz geçilmedi). `npm run sira` `economy.config.ts`
+dokunuşunu görüp ölçüm commit'i istedi. Bu turda ölçüm YOK çünkü değişen sayı tempo kolu değil:
+ölçülen arz sabit, eklenen tanımların tek denge şartı **ulaşılabilirlik** ve o şart bekçiyle
+kilitlendi (havuzun tamamı akış sayacı; "yükseltme al" gibi tükenebilir bir görev yok).
+
+**Bekçi.** `tests/gunluk-gorev.test.ts` 22 test, **14 mutasyon, on dördü de yakalandı**. Bekçi
+yazarken GERÇEK bir hata buldu: gün dönümü tabanı çevrimdışı gelirden ÖNCE alınıyordu → gece
+kazanılan ₺ bugünün "kazan" görevini bedava dolduruyordu. Taban artık offline SONRASI alınıyor.
+vitest **661** · duman **41/41** (32 → 41: dokuz yeni denetim) · **kayıt sürümü artmadı** (v32,
+`daily` additive).

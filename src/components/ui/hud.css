@@ -985,3 +985,102 @@
   background: #ff6b3d;
   border: 1.5px solid rgba(255, 255, 255, 0.85);
 }
+
+/* ── USTA (D8) ────────────────────────────────────────────────────────────────
+   Alt bandın 💎 kimliği: aynı kabuk, mavi kenar. Farklı bir bant açılmadı — oyuncu
+   bandı zaten "şu an ne var" diye okuyor, değişen yalnız para birimi. */
+.band.master {
+  cursor: default;
+  border-color: #4fa8d8;
+  box-shadow:
+    inset 0 1.5px 0 rgba(190, 230, 255, 0.28),
+    inset 0 -4px 8px rgba(0, 0, 0, 0.4),
+    0 5px 14px rgba(0, 0, 0, 0.45),
+    0 0 18px rgba(79, 195, 247, 0.3);
+}
+.master-buy {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  border-radius: 999px;
+  padding: 8px 13px;
+  font: inherit;
+  font-weight: 800;
+  font-size: 13px;
+  font-family: var(--font-num);
+  color: #06283c;
+  background: linear-gradient(180deg, #9ddffb, #47b6e6);
+  box-shadow: 0 2px 0 #2b7ca6;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.master-buy:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 #2b7ca6;
+}
+.master-buy.off {
+  filter: grayscale(0.75) brightness(0.8);
+  cursor: default;
+}
+.master-buy.ad {
+  background: linear-gradient(180deg, #f0dcb4, #c9a76a);
+  box-shadow: 0 2px 0 #96733c;
+  color: #3a2a10;
+}
+
+/* Hedefler panelindeki toplu Usta sayacı — satın alma yok, sayaç ve yol tarifi var. */
+.usta-strip {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 2px solid #bfe2f4;
+  background: linear-gradient(180deg, #f4fbff, #dcf0fb);
+  box-shadow: 0 2px 0 #c6e2f0;
+}
+.usta-count {
+  flex: none;
+  font-family: var(--font-num);
+  color: #0a4d73;
+}
+.usta-count b {
+  font-size: 22px;
+}
+.usta-count i {
+  font-style: normal;
+  font-size: 13px;
+  color: #6d95ac;
+}
+.usta-body {
+  flex: 1;
+  min-width: 0;
+}
+.usta-body b {
+  display: block;
+  font-size: 14.5px;
+  color: var(--ink);
+}
+.usta-body small {
+  display: block;
+  margin-top: 2px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #56798d;
+}
+.usta-price {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-family: var(--font-num);
+  font-size: 13px;
+  color: #0a4d73;
+}
+/* Alt notta satır içi para simgesi yazıyla aynı hizada dursun (emoji YOK, gerçek ikon). */
+.sheet-foot-note svg {
+  vertical-align: -2px;
+}

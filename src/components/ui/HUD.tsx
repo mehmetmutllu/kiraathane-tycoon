@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { useGame, goalMetricsOf, tableThemeUnlocked, tableSoftMaxLevel } from '../../game/store';
 import { claimableGoals, collectionBonus, goalViews, type GoalView } from '../../game/goals';
+import { dailyViews, claimableDailyCount, type DailyQuestView } from '../../game/dailyQuests';
+import { dailyCountersOf } from '../../game/store';
+import { masterCost } from '../../game/rules';
 import { perf } from '../../game/perf';
 import { screenPointer } from '../../game/screenPointer';
 import { fmt } from '../../game/decimal';
@@ -78,6 +81,10 @@ export function HUD() {
   // D3: alt nav'daki Hedefler sekmesi, toplanabilir ödül varsa işaretlenir. Sahnede işaret
   // ÇIKMAZ — Tek Odak (D-080) aktif adımın işaretini tek tutar; hedefler panelde bekler.
   const goalsReady = useGame((s) => claimableGoals(goalMetricsOf(s), s.goalsClaimed).length > 0);
+  // D8: aynı kural günlük görevler için — Görevler sekmesi işaretlenir, sahnede işaret çıkmaz.
+  const dailyReady = useGame((s) => claimableDailyCount(s.daily, s.tables, dailyCountersOf(s)) > 0);
+  // D8: oyuncu bir Usta noktasının yanında mı? Sahne katmanı yazar (yakınlık `useFrame`te ölçülür).
+  const nearMaster = useGame((s) => s.nearMaster);
 
   const lvl = levelProgress(xp);
   const questPct = quest && quest.total != null ? Math.min(100, ((quest.cur ?? 0) / quest.total) * 100) : null;
@@ -214,8 +221,13 @@ export function HUD() {
         </div>
       )}
 
-      {/* ───────── ALT BANT: AKTİF ADIM (Tek Odak) ───────── */}
-      {quest ? (
+      {/* ───────── ALT BANT: AKTİF ADIM (Tek Odak) ─────────
+          D8: oyuncu bir Usta noktasının yanındayken bandı USTA ONAYI devralır. Üst üste iki bant
+          çizilmez — Tek Odak'ın kuralı: alt bantta aynı anda tek ses. Oyuncu uzaklaşınca adım geri
+          gelir. Panel AÇILMAZ (kullanıcı kararı): hareket kesilmesin, 25 💎 kazara gitmesin. */}
+      {nearMaster ? (
+        <MasterBar id={nearMaster} />
+      ) : quest ? (
         <button
           className={`band${quest.done ? ' done' : ''}`}
           data-testid="quest"
@@ -267,6 +279,7 @@ export function HUD() {
           label="Görevler"
           icon={<QuestListIcon size={25} />}
           active={sheet === 'quests'}
+          bang={dailyReady}
           onClick={() => setSheet(sheet === 'quests' ? null : 'quests')}
         />
         <NavTab
@@ -414,6 +427,49 @@ function EdgeArrow({ onClick }: { onClick: () => void }) {
 }
 
 /** GÖREVLER: aktif adım büyük kart + tamamlananlar listesi (plan §9 durumları). */
+/**
+ * USTA ONAY ÇUBUĞU (D8) — kullanıcı kararı: "aynı nokta, 💎 kimliği + onay çubuğu".
+ *
+ * NEDEN MODAL DEĞİL: plan §5 "yaklaşınca panel açılır" diyordu; oyuncu masanın yanından her
+ * geçtiğinde ekranı kapatan bir modal hem hareketi keser hem Tek Odak'ı kırar. Bunun yerine
+ * mekânsal nokta zaten "burada bir şey var" diyor, çubuk yalnız ONAYI topluyor.
+ *
+ * NEDEN DWELL DEĞİL: ₺ noktaları üstünde durunca dolar, ama 25 💎 tek seferlik premium bir
+ * harcamadır — yürürken kazara gitmesi kabul edilemez (`feedback_interaction_model`: etkileşim
+ * hareket-temelli, ama PARA harcaması açık onay ister).
+ *
+ * Reklam butonu Faz 5'te bağlanacak; şimdi pasif ama KAYBOLMAZ (D-039 kalıbı) — yeri belli olsun.
+ */
+function MasterBar({ id }: { id: string }) {
+  const diamonds = useGame((s) => s.diamonds);
+  const buyMaster = useGame((s) => s.buyMaster);
+  const fiyat = masterCost();
+  const yeter = diamonds.toNumber() >= fiyat;
+  const masaNo = Number(id.split(':')[1] ?? 0) + 1;
+  const kat = economyConfig.master.tipMult.toLocaleString('tr-TR');
+  return (
+    <div className="band master" data-testid="master-bar" data-master={id}>
+      <span className="band-body">
+        <span className="band-title">Masa {masaNo} · Usta</span>
+        <span className="band-sub dim">Bahşiş ×{kat} — kalıcı</span>
+      </span>
+      <button
+        className={`master-buy${yeter ? '' : ' off'}`}
+        data-testid="master-buy"
+        disabled={!yeter}
+        onClick={() => buyMaster(id)}
+      >
+        <GemIcon size={16} />
+        {fiyat}
+      </button>
+      <button className="master-buy ad off" data-testid="master-ad" disabled>
+        <PlayAdIcon size={15} />
+        İzle
+      </button>
+    </div>
+  );
+}
+
 function QuestsSheet({ onClose }: { onClose: () => void }) {
   const questIndex = useGame((s) => s.questIndex);
   const quest = useGame((s) => s.quest);
@@ -421,9 +477,86 @@ function QuestsSheet({ onClose }: { onClose: () => void }) {
   const all = economyConfig.quests;
   const done = all.slice(0, Math.min(questIndex, all.length));
   const upcoming = all.slice(questIndex + 1, questIndex + 4);
+  // GÜNLÜK GÖREVLER (D8) burada durur, beşinci bir sekme açılmadan: ikisi de "görev"dir, biri
+  // hattın adımı biri günün işi. Sayaç ve eşik `dailyQuests.ts`te — panel yalnız çiziyor.
+  const stats = useGame((s) => s.stats);
+  const lifetime = useGame((s) => s.lifetime);
+  const tables = useGame((s) => s.tables);
+  const daily = useGame((s) => s.daily);
+  const claimDailyQuest = useGame((s) => s.claimDailyQuest);
+  const [gunOdul, setGunOdul] = useState<DailyQuestView | null>(null);
+  const gunler = dailyViews(daily, tables, dailyCountersOf({ stats, lifetime }));
+  const gunHazir = gunler.filter((g) => g.state === 'claimable').length;
+  const gunKalan = gunler.filter((g) => g.state !== 'claimed').reduce((a, g) => a + g.diamonds, 0);
 
   return (
     <Sheet title="Görevler" testid="quests-panel" onClose={onClose}>
+      <div className="sheet-sec" data-testid="daily-sec">
+        BUGÜN{gunHazir > 0 ? ` · ${gunHazir} ÖDÜL HAZIR` : ''}
+      </div>
+      <ul className="goals" data-testid="daily-list">
+        {gunler.map((g) => (
+          <li
+            className={`goal${g.state === 'claimable' ? ' ready' : ''}${g.state === 'claimed' ? ' full' : ''}`}
+            key={g.id}
+            data-testid={`daily-${g.id}`}
+            data-state={g.state}
+          >
+            <span className="goal-top">
+              <b>{g.label}</b>
+              <span className="goal-num">
+                {g.cur.toLocaleString('tr-TR')}
+                <i>/{g.target.toLocaleString('tr-TR')}</i>
+              </span>
+            </span>
+            <span className="goal-track">
+              <span className="goal-fill" style={{ width: `${Math.min(100, (g.cur / g.target) * 100)}%` }} />
+            </span>
+            <span className="goal-foot">
+              <span className="goal-note">{g.state === 'claimed' ? 'Bugün alındı' : 'Her gün yenilenir'}</span>
+              {g.state === 'claimable' ? (
+                <button
+                  className="goal-claim"
+                  data-testid={`daily-claim-${g.id}`}
+                  onClick={() => setGunOdul(g)}
+                >
+                  Ödülü al
+                </button>
+              ) : (
+                <span className="goal-reward">
+                  <GemIcon size={13} />
+                  {g.diamonds}
+                </span>
+              )}
+            </span>
+          </li>
+        ))}
+      </ul>
+      <div className="sheet-foot-note" data-testid="daily-left">
+        {gunKalan > 0 ? (
+          <>
+            Bugün kalan ödül: {gunKalan} <GemIcon size={12} /> · yarın üç yeni görev
+          </>
+        ) : (
+          'Bugünün görevleri bitti — yarın üç yeni görev'
+        )}
+      </div>
+
+      {gunOdul && (
+        <RewardModal
+          testid="daily-reward"
+          title={gunOdul.label}
+          amount={0}
+          diamonds={gunOdul.diamonds}
+          claimTestid="daily-reward-ok"
+          onClaim={() => {
+            claimDailyQuest(gunOdul.id);
+            setGunOdul(null);
+          }}
+        />
+      )}
+
+      <div className="sheet-sec">KIRAATHANE</div>
       {quest ? (
         <button
           className="qbig"
@@ -530,6 +663,7 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
   const tableLevels = useGame((s) => s.tableLevels);
   const tables = useGame((s) => s.tables);
   const goalsClaimed = useGame((s) => s.goalsClaimed);
+  const mastersOwned = useGame((s) => s.mastersOwned);
   const metrics = goalMetricsOf({ stats, lifetime, padsDone, tableLevels, tables });
   const claimGoal = useGame((s) => s.claimGoal);
   const xp = useGame((s) => s.xp);
@@ -539,6 +673,10 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
   const goals = goalViews(metrics, goalsClaimed);
   const toplanabilir = goals.filter((g) => g.state === 'claimable').length;
   const bonus = collectionBonus(goalsClaimed);
+  // Usta sayacı: sahip olunan KİMLİK listesinden türer (kayıtta "kaç Usta" alanı yok, D-093).
+  const ustaSahip = mastersOwned.filter((id) => id.startsWith('table:')).length;
+  const ustaBekleyen =
+    tableLevels.slice(0, tables).filter((l) => l >= tableSoftMaxLevel()).length - ustaSahip;
 
   return (
     <Sheet title="Hedefler" testid="goals-panel" onClose={onClose}>
@@ -560,6 +698,28 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
             {yuzde(reputationCarryMult(lvl.level) - 1)} servis hızı
             {bonus > 0 ? ` · koleksiyon bonusu ${yuzde(bonus)} gelir` : ''}.
           </small>
+        </span>
+      </div>
+
+      {/* USTA ŞERİDİ (D8 · plan §5 "Hedefler panelinden de toplu erişilir: Usta masalar 7/20").
+          Burada SATIN ALINMAZ — alım mekânsaldır (masanın yanındaki 💎 noktası). Bu şerit
+          koleksiyonun sayacıdır: kaç masa Usta oldu, kaçı sırada bekliyor, elmas yetiyor mu. */}
+      <div className="usta-strip" data-testid="usta-strip">
+        <span className="usta-count">
+          <b data-testid="usta-owned">{ustaSahip}</b>
+          <i>/{tables}</i>
+        </span>
+        <span className="usta-body">
+          <b>Usta masalar</b>
+          <small>
+            {ustaBekleyen > 0
+              ? `${ustaBekleyen} masa hazır — yanındaki mavi noktaya git`
+              : 'Masayı ₺ tavanına çıkarınca Usta noktası açılır'}
+          </small>
+        </span>
+        <span className="usta-price" data-testid="usta-price">
+          <GemIcon size={14} />
+          {masterCost()}
         </span>
       </div>
 

@@ -193,7 +193,7 @@ h2{font-size:21px;font-weight:800}
 <script type="application/json" id="durum">
 {
  "guncelleme": "09.09.2026",
- "yapilan": 70,
+ "yapilan": 71,
  "toplam": 79,
  "kilometre": [
   {
@@ -214,25 +214,25 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum · Faz D · 7/8 — Usta katmanı (elmasın harcaması)",
-  "baslik": "Planın iki sayısı da ölçümde düzeltildi — ve üçüncüsü uygulandıktan sonra",
-  "aciklama": "Oyunda elmas <b>kazanılıyor</b> ama harcanamıyordu: hedeflerin yirmi beş kademesi 250 elmas ödüyor ve elmasın gideceği bir yer yok. Bu tur harcamayı kurdu — <b>Usta katmanı</b>: para merdiveninin bittiği yerde başlayan, elmasla alınan son basamak.<br><br><b>Planın &ldquo;üstüne ×2&rdquo;si ölçüldü ve hiçbir şey yapmadı.</b> Plan bu basamağı servis noktasına yazmıştı. Ölçüm gösterdi ki gelirin önündeki tıkanıklık zamanın <b>%91,5</b>&rsquo;inde taşımada; servis hızı yalnız %7,2&rsquo;sinde. Servis noktasını iki katına çıkarmak ilerleme zincirini <b>%0,0</b> kıpırdattı. Bu, bir önceki turun aynısı: plan ödülü ikinci kez <b>tıkanıklık olmayan</b> bir yere bağlamıştı. Ödeyen tek kanal <b>masa bahşişi</b> çıktı.<br><br><b>Fiyat da düzeltildi.</b> Plan 15 elmas diyordu; o fiyatta hedeflerin 250 elması yirmi altı Usta hedefinin <b>on altısını ilk gün peşin</b> satın alıyor, yani &ldquo;açık uçlu kuyruk&rdquo; olacak şey ilk oturumda bitiyordu. 25 elmasta on peşin, <b>on altısı kuyrukta</b> kalıyor — ve günlük görev ödülü 10 elmasa çıkarılınca planın kendi vaadi (&ldquo;reklamsız oyuncu ~2,5 günde bir Usta&rdquo;) <b>birebir</b> korunuyor.<br><br><b>En önemli düzeltme uygulamadan SONRA geldi.</b> Seçilen iki ayar tabloda ayrı ayrı ölçülmüştü ve ikisi de aynı iyileşmeyi veriyordu. Birlikte uygulanınca sonuç <b>ikisinin yarısı</b> çıktı — çünkü ikisi de aynı yönü çekiyor: biri her alımın değerini, diğeri alım sayısını düşürüyor. Bu, üçüncü kez aynı varsayımın çürümesi: <i>&ldquo;seçtiğim dozlar iyiydi, birlikte de öyledir.&rdquo;</i>",
+  "etiket": "Bu oturum · Faz D · 8/8 — Usta ve günlük görevin etkileşimi",
+  "baslik": "Planın “yaklaşınca panel açılır”ı elendi — mekânsal nokta zaten konuşuyor",
+  "aciklama": "Önceki tur Usta katmanının <b>sayılarını</b> çivilemişti; bu tur oyuncunun ona <b>dokunacağı yeri</b> kurdu. Elmas artık hem kazanılıyor hem harcanıyor.<br><br><b>Planın etkileşim kuralı değiştirildi.</b> Plan <i>&ldquo;oyuncu objeye yaklaşınca Usta paneli açılır&rdquo;</i> diyordu. Uygulanmadı: masanın yanından her geçişte ekranı kapatan bir panel hem hareketi keser hem oyunun <b>tek odak</b> kuralını kırar. Yerine, masanın <b>zaten bildiği</b> yükseltme noktası kullanıldı: para tavanına varınca işaret <b>kaybolmuyor</b>, elmas kimliğine dönüşüyor (mavi halka, dörtgen pul). Yeni bir görsel dil açılmadı — yalnız para birimi değişti.<br><br><b>Satın alma &ldquo;üstünde dur&rdquo; ile olmuyor.</b> Para yükseltmeleri noktada beklerken dolar; 25 elmas ise <b>tek seferlik</b> bir harcamadır ve yürürken kazara gitmemeli. Onayı ekranın alt bandı alıyor: yaklaşınca aktif adımın bandı geçici olarak <b>Usta onayına</b> dönüşüyor, uzaklaşınca geri geliyor.<br><br><b>Günlük görevler gerçekten akmaya başladı.</b> Düne kadar yalnız <b>ölçülmüş sayısı</b> vardı (3 görev, toplam 10 elmas). Artık sekiz şablonluk bir havuzdan her gün <b>üçü seçiliyor</b> — rastgele değil, gün numarasından; böylece kayıtta tohum tutmaya gerek yok ve test aynı günü yeniden üretebiliyor. Eşikler açık masa sayısına ölçekli: erken oyunda da geç oyunda da bir oturumda bitiyor.<br><br><b>Bekçi yazılırken gerçek bir hata çıktı.</b> Gün dönümünde sayaç tabanı <b>çevrimdışı gelirden önce</b> alınıyordu: gece kapalıyken kazanılan para, sabah açılır açılmaz o günün <i>&ldquo;para kazan&rdquo;</i> görevini <b>bedavaya</b> dolduruyordu — yani ölçülen günlük elmas arzı sessizce büyüyordu. Taban artık çevrimdışı gelir eklendikten <b>sonra</b> alınıyor.",
   "adimlar": [
-   "<b>Ölçüldü:</b> tıkanıklığın %91,5&rsquo;i taşımada · planın servis kolu %0,0 · ödeyen tek kanal masa bahşişi",
-   "<b>Uygulandı:</b> Usta bahşişi ×1,5 · fiyat 25 elmas · günlük görev 10 elmas/gün",
-   "<b>Bekçi:</b> 11 test, <b>10 mutasyonun 10&rsquo;u da</b> yakalandı — kayıt sürümü artmadı"
+   "<b>Usta noktası:</b> masanın mevcut yükseltme noktasının elmas kimliği · onay alt bantta · modal yok",
+   "<b>Günlük görev:</b> 8 şablonluk havuz · gün numarasından deterministik 3&rsquo;lü · ödül toplamdan türetilir (3+3+4 = 10)",
+   "<b>Bekçi:</b> 22 test, <b>14 mutasyonun 14&rsquo;ü de</b> yakalandı · duman testi 32 → <b>41</b> denetim"
   ],
-  "not": "<b>Bir kanal &ldquo;etkisiz&rdquo; değil, ULAŞILAMAZ çıktı.</b> Planın Usta listesinde garson, bulaşıkçı ve karakter statları da var — ve bunlar tam olarak tıkanıklığın bulunduğu kanalda. Ama on iki saatlik ölçüm penceresinde <b>hiçbiri para tavanına varmıyor</b>, yani Usta&rsquo;ları hiç açılmıyor. Sıfır satırın sebebini ayırmak için tavan şartı kaldırılmış ikinci bir satır ölçüldü: kanal açılsa zinciri <b>%26</b> kısaltıyordu — eşiğin dört katı. Yani kapalı kalması iyi; ama <b>neden</b> kapalı olduğu artık biliniyor."
+  "not": "<b>Denge sayısı değişmedi</b> — günün 10 elması ve 3 görev sayısı önceki turda ölçülmüştü, bu tur yalnız görev <b>tanımlarını</b> ekledi. Ödülün üçe dağılımı ayara <b>yazılmadı</b>, toplamdan türetiliyor: parçalar toplamdan ayrışamaz. Geçen turdan devreden soru da kapandı: Usta bahşişi <b>×1,5&rsquo;te kaldı</b> — ×2&rsquo;nin ölçülmüş satırı (1,6 dakika daha iyi tempo, %1,4 daha fazla içerik bedeli) reddedildi."
  },
  "siradaki": {
-  "etiket": "Faz D · 8/8 — Usta paneli ve günlük görev kartları",
-  "baslik": "Mekanik hazır ve bekçili; eksik olan oyuncunun ona dokunacağı yer",
-  "aciklama": "Bu tur ikiye bölünmüştü: <b>ölçüm ve denge</b> (bitti) · <b>arayüz</b> (sırada). Usta basamağı bugün kodda çalışıyor, kayıtta duruyor, bahşişi büyütüyor ve on mutasyona karşı korunuyor — ama oyuncunun onu satın alacağı bir <b>ekran</b> yok.<br><br>Üç iş var. ① <b>Usta paneli:</b> plan bunu bilerek adım listesinin dışında tutuyor (Usta kritik yol değil, hızlandırıcı) — oyuncu objeye yaklaşınca açılan bir panel ve Hedefler ekranından toplu erişim. ② <b>Günlük görev sistemi:</b> bugün yalnız ölçülmüş <b>sayısı</b> var (3 görev, toplam 10 elmas); görevlerin kendisi, gün dönümü ve kartları yazılacak. ③ <b>Ödüllü reklam yeri:</b> &ldquo;İzle ve Usta yap&rdquo; butonu — reklam SDK&rsquo;sı Faz 5&rsquo;te bağlanacağı için şimdilik yalnız yeri açılıyor.<br><br>Faz D bitince, beş turdur açık duran tempo penceresi <b>yeniden okunacak</b>: meta katman o boşlukları doldurdu mu? Ölçüm aracı hazır duruyor.",
+  "etiket": "Faz D bitti · sırada tempo penceresinin yeniden okunması ve Faz E",
+  "baslik": "Beş turdur açık duran soru artık cevaplanabilir: meta katman o boşlukları doldurdu mu?",
+  "aciklama": "Meta katman tamamlandı: görev kimlikleri, Hedefler koleksiyonu, kalıcı gelir çarpanı, oyuncunun kendi ızgarası, İtibar&rsquo;ın taşıma ödülü, Usta katmanı ve günlük görevler — sekiz turun sekizi de ölçülerek verildi.<br><br><b>Önce açık kalan ölçüm.</b> Beş tur önce geç-oyun eğrisinde yirmi dakikayı aşan bekleme pencereleri bulunmuş ve <i>&ldquo;Faz D bitince yeniden okunacak&rdquo;</i> diye yazılmıştı. Araç hazır duruyor; meta katmanın o pencereleri gerçekten doldurup doldurmadığı artık <b>tek koşuda</b> okunabilir. Aynı koşu bir borcu da tartıyor: İtibar turu ilerleme zincirinden <b>%15,5</b> almıştı ve bu, projenin kendi eleme eşiğinin (%7) bilerek aşıldığı tek karardı.<br><br><b>Sonra Faz E:</b> ses, hareketli onboarding ve duman testinin komut dosyasına bağlanması. Duman testi bu tur <b>41 denetime</b> çıktı ama hâlâ elle çalıştırılıyor.",
   "adimlar": [
-   "<b>Şimdi:</b> Usta paneli · günlük görev sistemi ve kartları · ödüllü reklam yeri",
-   "<b>Sonra:</b> Faz D bitince tempo penceresi yeniden okunur · simülasyon botunun yeni ızgaraya göçü"
+   "<b>Şimdi:</b> tempo penceresinin yeniden okunması (araç hazır) · ardından Faz E — ses · onboarding · duman testinin bağlanması",
+   "<b>Sonra:</b> Faz F — paketleme ve yayın (köşe kesme, gölgenin telefondaki maliyeti, reklam ve mağaza)"
   ],
-  "not": "Bu turdan devreden soru: uygulanan ayarlar <b>beklenenden zayıf</b> çıktı (en uzun bekleme 33,8 → 32,0 dakika; seçim yapılırken 30,4 görünüyordu). Yön güvenli tarafta — bedel de beklenenden ucuz — ve dört ölçütün dördü de geçiyor. Ama aynı bedele daha çok ödül isteniyorsa <b>tek satırlık</b> bir değişiklik yeterli: Usta bahşişi ×2."
+  "not": "Telefonda okunacak iki şey birikti: kalıcı gelir çarpanının <b>görünmezliği</b> ve on üçüncü seviyede oyuncunun <b>+%24 hızı</b>. İkisi de simülasyonun ölçemediği eksende — gerçek cihazda oynanınca karara bağlanacak."
  },
  "donemler": [
   {
@@ -346,8 +346,8 @@ h2{font-size:21px;font-weight:800}
     {
      "k": "D",
      "t": "Meta katman",
-     "d": "Görev kimlikleri · Hedefler ödülü · İtibar · günlük görev · elmas ekonomisi · Usta katmanı. <b>D1</b> geç-oyun eğrisi ölçüldü: dokuz kol elendi, düzeltilen şey eğri değil <b>tempo ölçütünün profili</b> oldu (D-087) ✓ · <b>D2</b> hattın kimliği sıra numarası olmaktan çıktı, kayıt v32 + gerçek göç (D-088) ✓ · <b>D3</b> Hedefler (5 kategori × 5 kademe) kuruldu — ödül YOĞUNLUKTAN geliyor, büyüklükten değil (D-089) ✓ · <b>D4</b> ödülün KALIBI değişti: sabit para kalktı, yerine <b>kalıcı gelir çarpanı</b> geldi; gelire oranlı para ölçülerek elendi (D-090) ✓ · <b>D5</b> oyuncunun yürüdüğü dünya ile rotaların kurulduğu dünya aynı değildi: içerik kilitli çıkmadı ama rotaların <b>%74</b>'ü geçersizdi — oyuncuya kendi ızgarası verildi (D-091) ✓ · <b>D6</b> İtibarın ödülü ölçüldü: planın <b>talep</b> kolu atıl çıktı, tıkanıklığın %93'ü <b>taşımada</b>; seviye başına +%2 taşıma hızı geldi ve en uzun bekleme 41,2 → 33,8 dk'ya indi (D-092) ✓ · <b>D7</b> Usta katmanı kuruldu — elmasın ilk harcaması; planın <b>servis</b> kolu ölçümde atıl çıktı (%0,0, tıkanıklığın %91,5'i taşımada) ve ödeyen tek kanal <b>masa bahşişi</b> oldu; fiyat 15 → <b>25 💎</b> (15'te kuyruğun %62'si ilk gün bitiyordu) (D-093) ✓ · sırada <b>Usta paneli + günlük görev kartları</b>.",
-     "yapilan": 7,
+     "d": "Görev kimlikleri · Hedefler ödülü · İtibar · günlük görev · elmas ekonomisi · Usta katmanı. <b>D1</b> geç-oyun eğrisi ölçüldü: dokuz kol elendi, düzeltilen şey eğri değil <b>tempo ölçütünün profili</b> oldu (D-087) ✓ · <b>D2</b> hattın kimliği sıra numarası olmaktan çıktı, kayıt v32 + gerçek göç (D-088) ✓ · <b>D3</b> Hedefler (5 kategori × 5 kademe) kuruldu — ödül YOĞUNLUKTAN geliyor, büyüklükten değil (D-089) ✓ · <b>D4</b> ödülün KALIBI değişti: sabit para kalktı, yerine <b>kalıcı gelir çarpanı</b> geldi; gelire oranlı para ölçülerek elendi (D-090) ✓ · <b>D5</b> oyuncunun yürüdüğü dünya ile rotaların kurulduğu dünya aynı değildi: içerik kilitli çıkmadı ama rotaların <b>%74</b>'ü geçersizdi — oyuncuya kendi ızgarası verildi (D-091) ✓ · <b>D6</b> İtibarın ödülü ölçüldü: planın <b>talep</b> kolu atıl çıktı, tıkanıklığın %93'ü <b>taşımada</b>; seviye başına +%2 taşıma hızı geldi ve en uzun bekleme 41,2 → 33,8 dk'ya indi (D-092) ✓ · <b>D7</b> Usta katmanı kuruldu — elmasın ilk harcaması; planın <b>servis</b> kolu ölçümde atıl çıktı (%0,0, tıkanıklığın %91,5'i taşımada) ve ödeyen tek kanal <b>masa bahşişi</b> oldu; fiyat 15 → <b>25 💎</b> (15'te kuyruğun %62'si ilk gün bitiyordu) (D-093) ✓ · <b>D8</b> Usta ve günlük görevin <b>etkileşimi</b> kuruldu: planın “yaklaşınca panel açılır”ı elendi, masanın mevcut yükseltme noktası <b>elmas kimliğine</b> dönüşüyor ve onayı alt bant alıyor; günlük görev sistemi kuruldu (D-094) ✓",
+     "yapilan": 8,
      "toplam": 8,
      "kapi": "Elmas kazanılıp harcanabiliyor, Usta panelden alınabiliyor",
      "durum": "now"
@@ -372,6 +372,21 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "09.09.2026",
+   "etiket": "Faz D · 8. oturum (D8 — Usta ve günlük görevin etkileşimi · D-094)",
+   "baslik": "Mekanik hazırdı, ekran yoktu — ve planın etkileşim kuralı gerekçesiyle elendi",
+   "govde": "Bu tur üç ürün kararı tek pakette soruldu ve üçü de seçildi.<br><br><b>① Usta noktası nerede duracak?</b> Planın yazdığı hâl <i>&ldquo;oyuncu objeye yaklaşınca panel açılır&rdquo;</i>dı. Reddedildi: masanın yanından her geçişte yüze çıkan bir panel hareketi keser ve oyunun tek odak kuralını kırar. Onun yerine masanın <b>zaten var olan</b> yükseltme noktası devraldı — para tavanına varınca işaret kaybolmuyor, <b>elmas kimliğine</b> dönüşüyor. Yeni bir görsel dil açılmadı; oyuncunun öğrendiği tek şey &ldquo;bu noktanın parası mavi&rdquo;. Satın alma noktada bekleyerek olmuyor: 25 elmas tek seferlik bir harcama, yürürken kazara gitmemeli — onayı alt bant alıyor.<br><br><b>② Günlük görevler nasıl kurulacak?</b> Havuzdan her gün üç görev, ama rastgele değil <b>gün numarasından</b>. Böylece kayda rastgelelik tohumu girmiyor ve test aynı günü yeniden üretebiliyor. Eşikler açık masa sayısına ölçekli: sabit bir eşik erken oyunda bitmez, geç oyunda üç dakikada biterdi. Havuzun tamamı <b>akış sayaçı</b> — &ldquo;bir yükseltme al&rdquo; gibi bir görev yirmi masada merdiven tükenince imkânsız olur ve o günün elması sessizce kaybolurdu.<br><br><b>③ Geçen turun açık kalemi kapandı.</b> Usta bahşişi ×2&rsquo;ye çıkarılabilirdi (ölçülmüş satır: 1,6 dakika daha iyi tempo, %1,4 daha fazla içerik bedeli). ×1,5&rsquo;te kalmaya karar verildi.<br><br><b>Ve bekçi yazılırken gerçek bir hata çıktı.</b> Gün dönümünde sayaç tabanı çevrimdışı gelirden <b>önce</b> alınıyordu: gece kazanılan para sabah o günün &ldquo;para kazan&rdquo; görevini bedavaya dolduruyor, yani ölçülen günlük elmas arzı sessizce büyüyordu. Sıra düzeltildi.",
+   "maddeler": [
+    "<b>Usta noktası:</b> masanın mevcut yükseltme noktasının elmas kimliği (mavi halka + dörtgen pul) · modal yok",
+    "<b>Onay alt bantta:</b> yaklaşınca aktif adımın bandı Usta onayına dönüşüyor, uzaklaşınca geri geliyor",
+    "<b>Günlük görev:</b> 8 şablonluk havuz · gün numarasından deterministik üçlü · eşik masaya ölçekli",
+    "<b>Ödül toplamdan türetilir:</b> 3+3+4 = 10 — parçalar ayara ayrı ayrı yazılmadı",
+    "<b>Usta bahşişi ×1,5&rsquo;te kaldı</b> · <b>denge sayısı değişmedi</b> · kayıt sürümü artmadı",
+    "<b>Bekçi:</b> 22 test, 14 mutasyon, on dördü de yakalandı · duman testi 32 → 41 denetim"
+   ],
+   "not": "<b>Sıra kilidi bu turda bilerek aşıldı ve sessiz geçilmedi.</b> Araç ayar dosyasına dokunulduğunu görüp bir ölçüm commit&rsquo;i istedi. Bu turda ölçüm yok, çünkü değişen sayı tempo kolu değil: günün elmas arzı önceki turda ölçüldü ve <b>aynen duruyor</b>; eklenen görev tanımlarının tek denge şartı <b>ulaşılabilirlik</b> ve o şart bekçiyle kilitlendi. Gerekçe karar defterine yazıldı."
+  },
   {
    "tarih": "09.09.2026",
    "etiket": "Faz D · 7. oturum (D7 — Usta katmanı · D-093)",

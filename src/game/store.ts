@@ -306,6 +306,10 @@ export interface GameState {
   /** D8: bugünün günlük görevleri (gün · kimlikler · sayaç tabanı · toplananlar). Gün dönümü
    *  `store.tick`te bakılır — `tick.ts`e (denge dosyası) DOKUNULMAZ, `saveTimer` deseni. */
   daily: DailyState;
+  /** D8: oyuncunun YANINDA duran Usta noktasının kimliği (`table:3`) ya da `null`. GEÇİCİ —
+   *  kaydedilmez. Sahne katmanı `useFrame` içinde hesaplar ve yalnız hedef DEĞİŞİNCE yazar
+   *  (oyuncu konumuna abone olmak HUD'u saniyede 60 kez yeniden çizerdi). */
+  nearMaster: string | null;
   /** Sıradaki görevin index'i (persist; >= quests.length ⇒ görev hattı bitti). */
   questIndex: number;
   /** Aktif sayaç görevinin başlangıç sayaç değeri (persist; delta hedefi tabanı). */
@@ -365,6 +369,8 @@ export interface GameState {
   buyMaster: (id: string) => boolean;
   /** D8: bugünün bir günlük görevinin 💎 ödülünü al. Eşik doğrulaması `dailyQuests.ts`te. */
   claimDailyQuest: (id: string) => boolean;
+  /** Sahne katmanı çağırır: oyuncunun menzilindeki Usta noktası (yoksa `null`). */
+  setNearMaster: (id: string | null) => void;
   toggleCamZoomOut: () => void;
   /** Ayar değiştir (ayarlar modalı) — anında kaydedilir. */
   setSetting: (key: keyof SaveSettings, value: boolean) => void;
@@ -439,6 +445,7 @@ export const useGame = create<GameState>((set, get) => ({
   goalsClaimed: [],
   mastersOwned: [],
   daily: defaultDaily(),
+  nearMaster: null,
   questIndex: 0,
   questBase: 0,
   questPhase: 'active',
@@ -818,7 +825,7 @@ export const useGame = create<GameState>((set, get) => ({
     const odul = claimDailyReward(
       id,
       s.daily,
-      dailyContextOf(s),
+      s.tables,
       dailyCountersOf({ stats: s.stats, lifetime: s.lifetime }),
     );
     if (odul === null) return false;
@@ -828,6 +835,10 @@ export const useGame = create<GameState>((set, get) => ({
     });
     get().saveNow();
     return true;
+  },
+
+  setNearMaster: (id) => {
+    if (get().nearMaster !== id) set({ nearMaster: id });
   },
 
   // Görev barına dokununca: kamera aktif görevin hedefine kayar (kullanıcı onboarding isteği).

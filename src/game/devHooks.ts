@@ -2,10 +2,12 @@
 // window.__game  -> salt-okunur anlık görüntü
 // window.__advanceTime(sn) -> simülasyonu hızlı ileri sar
 import { useSandbox } from './devSandbox';
-import { useGame, visiblePads, questCounterValue, LAYOUT, LAVABO, servicePlace, trayCapacity, dirtyTables, parkSpot } from './store';
+import { useGame, visiblePads, questCounterValue, LAYOUT, LAVABO, servicePlace, trayCapacity, dirtyTables, parkSpot, dailyCountersOf, tableSoftMaxLevel } from './store';
 import { THE_SERVICE, sellsTost } from './world';
 import { perf, type PerfSnapshot } from './perf';
 import { collectionMult } from './goals';
+import { dailyViews } from './dailyQuests';
+import { D } from './decimal';
 import { economyConfig, levelProgress, charLevel, lavaboVisitChance, lavaboFee, lavaboIncomePerCustomer, type CharStat } from '../config/economy.config';
 import type { SaveStats } from './save';
 import type { Vec3 } from './types';
@@ -26,6 +28,7 @@ declare global {
     __buyChar?: (stat: CharStat) => boolean;
     /** Masa seviyesini doğrudan ayarla (Y2 koltuk/grup testleri — koltuk = seviyeden türetilir). */
     __setTableLevel?: (tableIndex: number, level: number) => Record<string, unknown>;
+    __fillDaily?: (id: string) => Record<string, unknown>;
     /** Anlık render bütçesi (FPS Tier 2): { fps, calls, tris }. PerfProbe 0.5sn'de bir günceller. */
     __perf?: () => PerfSnapshot;
     /** DEV-ONLY ham setState (canlı görsel ayar; masa/zone/seviye zorlama). Üretimde kullanılmaz. */
@@ -144,6 +147,17 @@ export function installDevHooks(): void {
       /** D-090: koleksiyonun KALICI gelir çarpanı (1 = hiç hedef toplanmamış). Ödül artık cüzdana
        *  ₺ koymuyor, bu yüzden duman testi ödülün işe yaradığını buradan okur. */
       goalMult: collectionMult(s.goalsClaimed ?? []),
+      /** D-093: USTA olmuş obje kimlikleri + D8'in yakınlık hedefi. Duman testi Usta alımını
+       *  buradan doğrular (çarpan kimlik listesinden türer, ayrı alan yok). */
+      mastersOwned: [...(s.mastersOwned ?? [])],
+      nearMaster: s.nearMaster,
+      /** ₺ ile çıkılabilen en yüksek masa seviyesi — üstünde 💎 Usta basamağı durur. */
+      tableMaxLevel: tableSoftMaxLevel(),
+      /** D8: bugünün günlük görev kartları (kimlik · ilerleme · durum) — HUD'un çizdiğiyle
+       *  aynı türetici, böylece duman testi DOM'a değil duruma bakabilir. */
+      daily: dailyViews(s.daily, s.tables, dailyCountersOf(s)).map((v) => ({
+        id: v.id, cur: v.cur, target: v.target, diamonds: v.diamonds, state: v.state,
+      })),
       quest: s.quest ? { id: s.quest.id, title: s.quest.title, cur: s.quest.cur, total: s.quest.total } : null,
       stats: { ...s.stats },
       // Level/XP sistemi (v17): toplam xp + türetilen seviye/ilerleme + ayarlar.
@@ -216,6 +230,20 @@ export function installDevHooks(): void {
 
   window.__buyChar = (stat: CharStat) => useGame.getState().buyCharUpgrade(stat);
 
+  /** D8: bir GÜNLÜK GÖREVİ tam olarak toplanabilir yap — gün tabanını hedefin altına çeker.
+   *  Sayacı şişirmek yerine TABAN oynatılır: gerçek sayaçlar (ve onlara bağlı hedefler/görev
+   *  hattı) bozulmasın, yalnız bugünün deltası dolsun. */
+  window.__fillDaily = (id: string) => {
+    const s = useGame.getState();
+    const v = dailyViews(s.daily, s.tables, dailyCountersOf(s)).find((x) => x.id === id);
+    if (v) {
+      const sayac = dailyCountersOf(s);
+      const t = economyConfig.dailyQuests.pool.find((x) => x.id === id);
+      if (t) useGame.setState({ daily: { ...s.daily, base: { ...s.daily.base, [id]: sayac[t.metric] - v.target } } });
+    }
+    return window.__game!();
+  };
+
   window.__setTableLevel = (tableIndex: number, level: number) => {
     const levels = useGame.getState().tableLevels.slice();
     levels[tableIndex] = level;
@@ -235,7 +263,13 @@ export function installDevHooks(): void {
   };
 
   window.__setState = (patch) => {
-    useGame.setState(patch as never);
+    // Para alanları Decimal'dir; tarayıcı konsolundan/duman testinden düz sayı gelirse sarmalanır
+    // (yoksa store sessizce bozulur ve sonraki `__game()` "toNumber is not a function" ile patlar).
+    const p: Record<string, unknown> = { ...patch };
+    for (const k of ['wallet', 'diamonds', 'lifetime']) {
+      if (typeof p[k] === 'number' || typeof p[k] === 'string') p[k] = D(p[k] as number);
+    }
+    useGame.setState(p as never);
     return window.__game!();
   };
 

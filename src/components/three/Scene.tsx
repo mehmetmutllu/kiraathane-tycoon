@@ -5,6 +5,7 @@ import type { AreaSide } from '../../game/store';
 import { useGame, questFocusPos, LAYOUT, LAVABO, BAND, BAND_SHELL, FLOOR_HALF, wallSpans, servicePlace, stationSoftMaxLevel, stationUpgradeCostAt, stationUpgradeUnlocked, tableSoftMaxLevel, tableUpgradeUnlockedIn, tableNextCost, openServices, doorX as doorAt, entranceAt, banketIslands, BANKET, WAITER_STATION, waiterStationOpen } from '../../game/store';
 import { economyConfig, lavaboUpgradeCost } from '../../config/economy.config';
 import { areaOfTable, isCounter, THE_SERVICE } from '../../game/world';
+import { masterId, masterCost, masterUnlockedForTable } from '../../game/rules';
 import { SceneLights } from './lights';
 import { GroundMarker } from './GroundMarker';
 import { FloorPattern } from './floorPattern';
@@ -497,7 +498,7 @@ function StationUpgradeSpots() {
       // Etiket seviyenin kimliğini söyler: L4'e kadar ocak, sonrası tezgâh (tek merdiven iki kimlik).
       label={isCounter(level) ? 'Tezgâhı Yükselt' : 'Çay Yükselt'}
       sub={String(remaining)}
-      coin
+      pip="coin"
       tint="#ffce54"
       progress={upgradeFills[THE_SERVICE] / cost}
       afford={wallet.toNumber() >= remaining}
@@ -554,7 +555,8 @@ function TableUpgradeMarkers() {
         // v21: her masanın işareti KENDİ ALANININ gate'ine bağlı (o alanın 4 masası açık mı).
         if (!tableUpgradeUnlockedIn(areaOfTable(i), gate)) return null;
         const lvl = tableLevels[i] ?? 0;
-        if (lvl >= tableSoftMaxLevel()) return null; // max → işaret gizlenir
+        // D8: ₺ tavanında işaret KAYBOLMAZ — `TableMasterSpots` aynı yerde 💎 kimliğiyle devralır.
+        if (lvl >= tableSoftMaxLevel()) return null;
         const cost = tableNextCost(lvl, areaOfTable(i));
         const remaining = Math.max(0, Math.ceil(cost - (tableUpgradeFills[i] ?? 0)));
         return (
@@ -563,7 +565,7 @@ function TableUpgradeMarkers() {
             pos={t.upgradeSpot}
             label="Masa"
             sub={String(remaining)}
-            coin
+            pip="coin"
             tint="#ffce54"
             radius={0.6}
             progress={(tableUpgradeFills[i] ?? 0) / cost}
@@ -571,6 +573,68 @@ function TableUpgradeMarkers() {
           />
         );
       })}
+    </>
+  );
+}
+
+/**
+ * USTA NOKTALARI (D8 · D-093'ün etkileşimi) — kullanıcı kararı: "aynı nokta, 💎 kimliği".
+ *
+ * Masa ₺ TAVANINA varınca yükseltme noktası kaybolmaz, aynı yerde ELMAS kimliğine döner
+ * (mavi halka + dörtgen pul + "Usta"). Yeni bir görsel dil açılmadı: oyuncunun zaten bildiği
+ * mekânsal yükseltme noktasının para birimi değişti.
+ *
+ * SATIN ALMA DWELL İLE OLMAZ. ₺ noktaları üstünde durunca dolar; 💎 tek seferde 25'lik bir
+ * PREMİUM harcamadır ve yürürken kazara gitmemeli. Bu yüzden nokta yalnız YAKINLIK bildirir,
+ * onayı HUD'un alt bandı alır (`MasterBar`). Yakınlık `useFrame` içinde ölçülür ve store'a
+ * yalnız hedef DEĞİŞİNCE yazılır — oyuncu konumuna abone olmak HUD'u 60 fps yeniden çizerdi.
+ */
+const MASTER_REACH = 1.9;
+
+function TableMasterSpots() {
+  const tables = useGame((s) => s.tables);
+  const tableLevels = useGame((s) => s.tableLevels);
+  const mastersOwned = useGame((s) => s.mastersOwned);
+  const diamonds = useGame((s) => s.diamonds);
+  const setNearMaster = useGame((s) => s.setNearMaster);
+
+  const adaylar = useMemo(() => {
+    const sahip = new Set(mastersOwned);
+    return LAYOUT.tables.slice(0, tables).flatMap((t, i) => {
+      const id = masterId('table', i);
+      if (sahip.has(id) || !masterUnlockedForTable(tableLevels[i] ?? 0)) return [];
+      return [{ id, pos: t.upgradeSpot }];
+    });
+  }, [tables, tableLevels, mastersOwned]);
+
+  const son = useRef<string | null>(null);
+  useFrame(() => {
+    const p = useGame.getState().player;
+    let en: string | null = null;
+    let enYakin = MASTER_REACH * MASTER_REACH;
+    for (const a of adaylar) {
+      const d2 = (p[0] - a.pos[0]) ** 2 + (p[2] - a.pos[2]) ** 2;
+      if (d2 <= enYakin) { enYakin = d2; en = a.id; }
+    }
+    if (en !== son.current) { son.current = en; setNearMaster(en); }
+  });
+
+  const fiyat = masterCost();
+  const yeter = diamonds.toNumber() >= fiyat;
+  return (
+    <>
+      {adaylar.map((a) => (
+        <GroundMarker
+          key={a.id}
+          pos={a.pos}
+          label="Usta"
+          sub={String(fiyat)}
+          pip="gem"
+          tint="#4fc3f7"
+          radius={0.6}
+          afford={yeter}
+        />
+      ))}
     </>
   );
 }
@@ -956,7 +1020,7 @@ function LavaboFront() {
           pos={LAVABO.spot}
           label="Lavaboyu Büyüt"
           sub={String(remaining)}
-          coin
+          pip="coin"
           tint="#ffce54"
           progress={fill / cost}
           afford={wallet.toNumber() >= remaining}
@@ -1139,6 +1203,7 @@ export function Scene() {
         <Pad />
         <StationUpgradeSpots />
         <TableUpgradeMarkers />
+        <TableMasterSpots />
       </Suspense>
       {import.meta.env.DEV && <MeasureGrid />}
       <CameraRig />
