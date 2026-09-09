@@ -1,0 +1,202 @@
+S4 DUVAR + ZEMİN ÖLÇÜMÜ — 2026-09-09
+==================================================================================================
+
+§1 ÖLÇEK — paketin duvarı oyunun duvarına nasıl oturur
+--------------------------------------------------------------------------------------------------
+KayKit wall native       :    4.000 en ×    4.000 yük ×    0.500 der
+oyunun duvarı (WALL_H)   :    3.200 yük · taban kalınlığı    0.200 (gövde 0,18 · lambri 0,22 · çıta 0,26)
+MİMARİ ÖLÇEK  S = 3,2/4  = 0.8000   ← mobilyanın 0,90'ı DEĞİL (S3/D-099 §1)
+→ modül eni              :    3.200
+→ modül kalınlığı        :    0.400   (oyunun bugünkü hattından    0.200 kalın)
+→ yarım modül wall_half  :    1.600   native    2.000, origin x   -0.000…   2.000 — ORTALANMAMIŞ
+→ sütun pillar_A         :    3.280 boy · duvardan    0.080 UZUN, tabanı    0.480 kare
+
+§2 DUVAR HATLARI — her açık-alan durumunda, gerçek uzunluklarıyla
+--------------------------------------------------------------------------------------------------
+Kaynak: `wallLook.WALL_RUNS` — `Scene.Walls`tan çıkarıldı, sayı ORADA tek yerde durur.
+
+— areasOpen = 1 (kapı x = -8.50)
+    #  alan kenar     hat      uzunluk   tam modül    kalan   kalan/modül
+    0     0 left    -17.50   18.000        5     2.000       0.625
+    1     0 right     0.50   18.000        5     2.000       0.625
+    2     0 front    17.50    6.800        2     0.400       0.125
+    3     0 front    17.50    6.800        2     0.400       0.125
+    4     0 back     -0.50   18.000        5     2.000       0.625
+   TOPLAM hat   67.600 · parça 5 · tam modül karşılığı 21.12
+
+— areasOpen = 2 (kapı x = 0.00)
+    #  alan kenar     hat      uzunluk   tam modül    kalan   kalan/modül
+    0     0 left    -17.50   18.000        5     2.000       0.625
+    1     0 front    17.50   15.300        4     2.500       0.781
+    2     0 back     -0.50   18.000        5     2.000       0.625
+    3     1 right    17.50   18.000        5     2.000       0.625
+    4     1 front    17.50   15.300        4     2.500       0.781
+    5     1 back     -0.50   18.000        5     2.000       0.625
+   TOPLAM hat  102.600 · parça 6 · tam modül karşılığı 32.06
+
+— areasOpen = 3 (kapı x = 0.00)
+    #  alan kenar     hat      uzunluk   tam modül    kalan   kalan/modül
+    0     0 left    -17.50   18.000        5     2.000       0.625
+    1     0 front    17.50   15.300        4     2.500       0.781
+    2     1 right    17.50   18.000        5     2.000       0.625
+    3     1 front    17.50   15.300        4     2.500       0.781
+    4     2 left    -17.50   10.800        3     1.200       0.375
+    5     2 right    17.50   10.800        3     1.200       0.375
+   TOPLAM hat   88.200 · parça 6 · tam modül karşılığı 27.56
+
+— arka bandın bina kabuğu (BackBand, areasOpen = 3'te görünür)
+    #  kenar        hat      uzunluk   tam modül    kalan   kalan/modül
+    0  back    -17.40   35.000       10     3.000       0.937
+    1  left    -17.50    7.600        2     1.200       0.375
+    2  right    17.50    7.600        2     1.200       0.375
+
+§3 MODÜLÜN KENDİ PROFİLİ — duvarın nereden bölündüğü ZATEN yazılı
+--------------------------------------------------------------------------------------------------
+  wall'ın x düzlemleri : -2.00 · -1.90 · 1.90 · 2.00
+  → panelin ORTASINDA hiç vertex yok: düz yüz tek dörtgenle geçiliyor. Profil ışınla ölçüldü.
+
+  panelin ön yüzü, yükseklik boyunca (x = 0):
+     y native   y dünya    ön yüz z    dünyada duvar kalınlığı
+       0.500     0.400       0.250       0.400
+       1.500     1.200       0.250       0.400
+       1.900     1.520       0.250       0.400
+       2.000     1.600       0.150       0.240   ← YATAY OLUK
+       2.100     1.680       0.250       0.400
+       2.500     2.000       0.250       0.400
+       3.500     2.800       0.250       0.400
+
+  ① YATAY OLUK: modülün yüzü y =    2.000 native =    1.600 DÜNYA'da bir kuşakla bölünür
+     (z    0.250 →    0.150, yani    0.160 derin). Bu KayKit'in kendi lambri hattıdır.
+     OYUNUN maket duvarında aynı hat    0.940'te (WAINSCOT_H 0,9 + çıta) — yani duvar yüksekliğinin
+     %29'inde. KayKit'inki %50'inde, tam ORTADA. Takas bu hattı    0.660 YUKARI taşır.
+
+  ② ÇEVRE PAHI: x    1.900 →    2.000 arasında yüz    0.250'ten    0.171'e iner
+     (   0.080 eninde bir pah). İki modül yan yana gelince dikişte    0.160 enli
+     bir V-OLUK okunur — çıkıntı değil, GİRİNTİ. Paketin kendi döşeme ritmi budur.
+  ③ x ekseninde gerdirme yalnız bu DİKEY pahı gerer; yatay oluk etkilenmez (yataydır).
+     Bindirme (modülleri üst üste kaydırma) işe yaramaz: pah panelin ortasına düşer.
+
+§4 DÖŞEME KOLLARI — kalan nasıl kapanır? (dört kol, hepsi aynı hatlarda ölçüldü)
+--------------------------------------------------------------------------------------------------
+K1 TEK PARÇA        : her hat TEK `wall`, hattın boyuna gerilir.
+K2 TAM + ARTIK      : tam modüller 1:1 döşenir, ARTAN tek bir modülün gerilmişidir.
+K3 TAM + YARIM + ARTIK: `wall` (3,20) ve `wall_half` (1,60) ile döşenir, artan yine gerilir.
+K4 EŞ DAĞITIM       : n = yuvarla(L / 3,20) modül, HEPSİ aynı oranda gerilir → dikiş eşit.
+
+kol                       parça   gerilen   en kötü gerilme   ortalama gerilme   pah en kötü
+K1 tek parça                 20        20            993.7%             382.2%         0.875
+K2 tam + artık              105        20             87.5%              42.8%         0.150
+K3 tam + yarım + artık      119        20             75.0%              55.6%         0.140
+K4 eş dağıtım                99        99             18.7%               6.1%         0.095
+
+  ("pah en kötü": normalde 0.080 olan dikey pahın en çok gerildiği hâli.)
+
+PARÇA SAYISI DRAW-CALL DEĞİLDİR: her duvar modeli tek node/tek mesh/tek materyal
+(`restaurant` atlası) → `<Merged>` ile masalarda olduğu gibi MODEL BAŞINA 1 draw-call.
+Kıyas: `Tables.tsx` bugün 5 mobilya modelini ~8 draw-call'da çiziyor.
+
+  K4 eş dağıtımın hat başına gerçek gerilmesi:
+    uzunluk    n    gerilme     modül eni
+      18.000    6      -6.3%      3.000
+       6.800    2       6.2%      3.400
+      15.300    5      -4.4%      3.060
+      10.800    3      12.5%      3.600
+      35.000   11      -0.6%      3.182
+       7.600    2      18.7%      3.800
+
+§5 KALINLIK — modül 0,40, oyunun hattı 0,20 (en kalın katmanı çıta 0,26). Fazlalık nereye?
+--------------------------------------------------------------------------------------------------
+hat merkezinden iç yüze  : bugün    0.130 (çıta) → KayKit    0.200
+İÇERİ FAZLADAN TAŞMA     :    0.070
+
+Duvar collision DEĞİL (`activeSolids` duvarı içermez) → bu taşma yürümeyi engellemez.
+Ama katı bir objeyi KESERSE gözle hata olarak okunur. Hat başına en yakın katı:
+
+  duvar hattı                    en yakın katı   KayKit sonrası
+  0/left   @ -17.50 L  18.00         4.960            4.890
+  0/front  @  17.50 L  15.30         4.050            3.980
+  1/right  @  17.50 L  18.00         4.960            4.890
+  1/front  @  17.50 L  15.30         4.050            3.980
+  2/left   @ -17.50 L  10.80         2.900            2.830
+  2/right  @  17.50 L  10.80         5.200            5.130
+  2/back   @ -17.40 L  35.00         6.600            6.530
+  2/left   @ -17.50 L   7.60         2.900            2.830
+  2/right  @  17.50 L   7.60        23.900           23.830
+  → kesişen hat: 0 · en dar kalan boşluk    2.830 (oyuncu yarıçapı 0,47)
+
+§6 KAPI VE PENCERE — modülün deliği ışın testiyle ölçüldü (vertex sayımı YANLIŞ sonuç verir)
+--------------------------------------------------------------------------------------------------
+  wall_doorway  @y1,4 : x   -0.800 …    0.800 =    1.600 native →    1.280 dünya
+  wall_doorway lento  : y ≈    2.850 native →    2.280 dünya
+  wall_window_open @y1,5: x   -0.800 …    0.800 =    1.600 native →    1.280 dünya
+  pencere boşluğu y   :    1.250 …    2.850 native →    1.000 …    2.280 dünya
+  door_A kanadı       :    1.600 ×    2.800 native →    1.280 ×    2.240 dünya (deliğe TAM oturuyor)
+
+  OYUNUN kapı boşluğu :    4.400 (DOOR.half 2,2 × 2) · lento 2,65 · alınlık 2,65…3,20
+  → modülün deliği oyunun kapısının %29'i ·    3.120 DAR
+  → oyunun kapısı 1.37 modül geniş; tek wall_doorway yetmez.
+  → oyuncu çapı 0,94 · modülün deliği    1.280 → geçilebilir ama TEK KİŞİLİK.
+
+§7 `wall_decorated` — adı "süslü duvar", geometrisi ne? (S3 dersi: ada bakma, ölç)
+--------------------------------------------------------------------------------------------------
+  bbox:    4.005 ×    4.000 ×    2.912 · z   -0.250 …    2.662
+  duvar yüzeyinin ÖNÜNE taşan geometri: x   -2.005 …    2.000 · tepe y    4.000
+  → dünyada salona    1.929 taşar,    3.200 boyunda,    3.204 eninde.
+  çıkıntının profili (ön yüz z, ışınla):
+     y native   y dünya    ön yüz z    salona taşma (dünya)
+       0.400     0.320       2.220       1.576
+       1.000     0.800       2.200       1.560
+       2.000     1.600       0.150      -0.080
+       2.600     2.080       0.733       0.387
+       3.000     2.400       1.050       0.640
+       3.600     2.880       1.050       0.640
+  KIYAS: oyuncu yarıçapı 0,47 · banket adası derinliği ~2,4 — bu bir DUVAR değil, duvar+mobilya.
+  Salon duvarında kullanılırsa collision listesine GİRMEK zorunda, yoksa içinden geçilir.
+
+§8 ZEMİN — `floor_kitchen` mutfak fayansına oturuyor mu?
+--------------------------------------------------------------------------------------------------
+  floor_kitchen native  :    4.000 ×    0.500 kalınlık ×    4.000 · üst yüz y    0.500
+  → dünyada karo        :    3.200 ×    3.200 · KALINLIK    0.400 → zemine gömülmeli (y kayması   -0.400)
+  → küçük karo          :    1.600 ×    1.600
+  mutfak fayans alanı   :   12.710 ×    7.460  (x  -17.41…  -4.70 · z  -17.31…  -9.85)
+  → büyük karo ile      : 3.97 × 2.33 · eş dağıtımla 4 × 2 karo, gerilme %-0.7 × %16.6
+  → küçük karo ile      : 7.94 × 4.66 · eş dağıtımla 8 × 5 karo, gerilme %-0.7 × %-6.8
+  bugünkü hâli          : tek planeGeometry + düz renk #d9cdb4 (1 draw-call, 2 üçgen)
+  servis tezgâhının ön yüzü z = -10.30 — fayans buraya kadar geliyor.
+
+  SALON zemini (kıyas)  :   34.000 ×   34.000 → büyük karoyla 113 karo.
+  Salon zemini D-073'te KARARDIR: "kesinlikle parke değil, maketteki gibi TEK DÜZ AHŞAP"
+  ve MAĞAZA ÜRÜNÜdür (5 kalem) — bu ölçüm salon zeminine dokunmaz, yalnız mutfağa.
+
+§9 KOZMETİK TEMA — duvar teması MAĞAZA ÜRÜNÜ, KayKit dokusu tek renk getiriyor
+--------------------------------------------------------------------------------------------------
+  economy.config.cosmetics.wallThemes : krem (0 ₺) · yeşil (10.000 ₺) · mavi (14.000 ₺)
+  Bugün tema üç KUTU RENGİDİR (cream/wainscot/rail) ve `wallPanel.wallBoxes` doğrudan boyar:
+  tema değişince üç instance rengi değişir, başka hiçbir şey olmaz.
+  KayKit duvarı tek `restaurant` atlasına bağlı → renk materyalden değil ATLASTAN gelir.
+  Hattın karşılığı S3'te ölçüldü ve HAZIR: `tools/atlas-goz.mjs` + `tools/atlas-ton.mjs`
+  (`recolor.ts` çalışma-zamanı atlas kopyası; masalarda 8 draw-call'da kalıyor).
+  Yani tema kaybolmak zorunda değil — ama üç temanın da atlasta karşılığı ÜRETİLMELİ.
+
+§10 GERİ DÖNÜŞ — kullanıcı şartı: "beğenmezsek eskisine dönebilir olalım"
+--------------------------------------------------------------------------------------------------
+  Eski duvar `wallPanel.tsx`te ve KENDİ BAŞINA çalışıyor: `wallBoxes()` saf fonksiyon,
+  `WallPanels` tek InstancedMesh. Yani KayKit hattı onun YERİNE geçmek zorunda değil,
+  YANINA konabilir — `wallLook.WALL_RUNS` ikisini de besler (aynı parça listesi).
+  Maliyet: iki çizim hattı bakımda kalır; kazanç: kip değiştirmek tek satır, geri dönüş
+  bir commit revert'ı değil bir AYAR. `Model.tsx` fallback deseni zaten bunun aynısı.
+  Eski hattın bugünkü bedeli: 9 parça × 3 kutu = 27 instance, 1 draw-call.
+
+==================================================================================================
+§BULGULAR — karar bekleyen kollar (SAYILAR yukarıda; raporun KARAR bölümü BOŞ)
+==================================================================================================
+
+B1  modül eni 3.20 · hiçbir hat tam bölünmüyor → K1 %994 · K2 %88 · K3 %75 · K4 %18.7 en kötü gerilme
+B2  modülün ucunda 0.08 enli PAH var → gerdirme pahı da geriyor; K4'te en kötü 0.095
+B3  kalınlık 0,26 → 0.40 · içeri 0.07 taşma · kesişen hat 0 · en dar boşluk 2.83
+B4  kapı deliği 1.28 × 2.28 · oyunun kapısı 4,40 × 2,65 → 3.12 dar
+B5  wall_decorated salona 1.93 taşıyor — düz duvar DEĞİL, duvar+mobilya
+B6  floor_kitchen karosu 3.20 · mutfak 3.97 × 2.33 karo
+B7  duvar teması MAĞAZA ÜRÜNÜ (3 kalem · 24.000 ₺) — atlas boyama hattı gerekiyor
+B8  geri dönüş: eski hat silinmeden YANINDA durabilir (kip ayarı), bedeli iki hattın bakımı
+

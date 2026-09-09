@@ -1,7 +1,6 @@
 import { Suspense, useEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Vector3, BufferGeometry, Float32BufferAttribute, DoubleSide, type Group, type PerspectiveCamera } from 'three';
-import type { AreaSide } from '../../game/store';
 import { useGame, questFocusPos, LAYOUT, LAVABO, BAND, BAND_SHELL, FLOOR_HALF, wallSpans, servicePlace, stationSoftMaxLevel, stationUpgradeCostAt, stationUpgradeUnlocked, tableSoftMaxLevel, tableUpgradeUnlockedIn, tableNextCost, openServices, doorX as doorAt, entranceAt, banketIslands, BANKET, WAITER_STATION, waiterStationOpen } from '../../game/store';
 import { economyConfig, lavaboUpgradeCost } from '../../config/economy.config';
 import { areaOfTable, THE_SERVICE } from '../../game/world';
@@ -11,6 +10,7 @@ import { dwellState } from '../../game/dwell';
 import { GroundMarker } from './GroundMarker';
 import { FloorPattern } from './floorPattern';
 import { DOOR, WALL_H, WallPanels, type WallSlab } from './wallPanel';
+import { BAND_SHELL_RUNS, WALL_M, WALL_RUNS } from './wallLook';
 import { PALETTE, FLOOR_THEMES, WALL_THEMES, LIGHTING } from '../../config/palette';
 import { Player } from './Player';
 import { Waiter } from './Waiter';
@@ -752,58 +752,22 @@ function Walls() {
   // tema bölmesi kendiliğinden doğru (her parça kendi ALANININ temasını giyer).
   const wallThemeByArea = useGame((s) => s.wallThemeByArea);
   const themeOf = (z: number) => WALL_THEMES[wallThemeByArea[z] ?? 'krem'] ?? WALL_THEMES.krem;
-  const m = 0.5; // alan kenarı ile dış duvar arası pay (oyuncu kelepçe standoff'u ile birebir)
   const h = WALL_H; // BM: yükseklik + katmanlar wallPanel.tsx'te (mağaza önizlemesiyle ortak)
-  const t = 0.2;
   const doorHalf = DOOR.half;
   // TEK KAPI. B3-2: 2. Alan açılınca cephenin ortasına kayar (maket v13 adım 2) → `doorAt`.
   const dx0 = doorAt(areasOpen);
-  type Piece = WallSlab;
-  const pieces: Piece[] = [];
-  // B3-1: duvarlar ızgara komşuluğundan değil GEOMETRİDEN gelir. `wallSpans(alan, kenar, açık)`
-  // o kenarın AÇIK komşularca kapatılmayan parçalarını verir — bir kenarı birden çok komşu
-  // paylaşabildiği için (arka yarının ön kenarını iki ön çeyrek BİRLİKTE kapatır) eski
-  // `areaAt(col±1, row)` ızgara sorgusu yetmiyordu. Kapı boşluğu yalnız kapıyı içeren parçada açılır.
-  const SIDES: AreaSide[] = ['left', 'right', 'front', 'back'];
-  for (let z = 0; z < areasOpen; z++) {
-    const za = LAYOUT.areaBounds[z];
-    const th = themeOf(z);
-    for (const side of SIDES) {
-      // BM adım 3: arka yarının ARKA kenarı artık bandın işi. Bant kütle değil oda olunca o kenar
-      // tek bir düz duvar değil bir PROGRAM: servis köşesi açık, merdiven kovası açık, lavabo
-      // kapılı/tadilatta. `BackBand` her bloğun kendi yüzünü çiziyor; burada çizilirse önüne
-      // kesintisiz bir duvar örülür ve odalar görünmez olur.
-      if (side === 'back' && za.minZ === BAND.front) continue;
-      const vertical = side === 'left' || side === 'right';
-      // Duvar hattı alan kenarından m kadar dışarıda (oyuncu kelepçe standoff'u ile birebir).
-      const line =
-        side === 'left' ? za.minX - m : side === 'right' ? za.maxX + m : side === 'front' ? za.maxZ + m : za.minZ - m;
-      for (const [s0, s1] of wallSpans(z, side, areasOpen)) {
-        const a0 = s0 - m; // uçlar m taşar → köşeler kapanır
-        const a1 = s1 + m;
-        // Kapı boşluğu parçadan ÇIKARILIR (içinde olmasını beklemek yetmiyor): kapı 2. Alan'da
-        // x = 0'a kayınca tam iki ön duvar parçasının DİKİŞİNE düşüyor ve "parçanın içinde mi"
-        // sorusuna ikisi de hayır diyordu → kapının önüne duvar örülüyordu (B3-2 testi yakaladı).
-        const cut: [number, number] = [dx0 - doorHalf, dx0 + doorHalf];
-        const segs: [number, number][] =
-          side === 'front'
-            ? ([
-                [a0, Math.min(a1, cut[0])],
-                [Math.max(a0, cut[1]), a1],
-              ] as [number, number][])
-            : [[a0, a1]];
-        for (const [p0, p1] of segs) {
-          if (p1 - p0 <= 0.01) continue;
-          pieces.push(
-            vertical
-              ? { x: line, z: (p0 + p1) / 2, w: t, d: p1 - p0, theme: th }
-              : { x: (p0 + p1) / 2, z: line, w: p1 - p0, d: t, theme: th },
-          );
-        }
-      }
-    }
-  }
-  const frontEdgeZ = LAYOUT.areaBounds[0].maxZ + m; // kapı sövesi referansı
+  // S4: parça listesi `wallLook.WALL_RUNS`ta — GEOMETRİ oradan gelir, tema burada giydirilir.
+  // Liste Scene'in içindeyken vitest'te import edilemiyordu (`recolor` → `Image`), yani hiç
+  // bekçilenemedi: "hat kaç metre, KayKit modülüne bölünüyor mu" sorusu koda bakmadan
+  // yanıtlanamıyordu. `kitchenLook.ts` (S3) aynı deseni mutfak için kurmuştu.
+  const pieces: WallSlab[] = WALL_RUNS(areasOpen).map((r) => ({
+    x: r.x,
+    z: r.z,
+    w: r.w,
+    d: r.d,
+    theme: themeOf(r.area),
+  }));
+  const frontEdgeZ = LAYOUT.areaBounds[0].maxZ + WALL_M; // kapı sövesi referansı
   return (
     <group>
       <WallPanels slabs={pieces} />
@@ -877,13 +841,8 @@ function BackBand({ areasOpen }: { areasOpen: number }) {
   const zb = BAND_SHELL.back; // −17,4 (duvar hattı)
   const xl = BAND_SHELL.left;
   const xr = BAND_SHELL.right;
-  const t = 0.2;
   // Bina kabuğu — salonun duvarıyla AYNI bileşen, yani aynı üç katman ve aynı tema.
-  const shell: WallSlab[] = [
-    { x: (xl + xr) / 2, z: zb, w: xr - xl, d: t, theme },
-    { x: xl, z: (zb + zf) / 2, w: t, d: zf - zb, theme },
-    { x: xr, z: (zb + zf) / 2, w: t, d: zf - zb, theme },
-  ];
+  const shell: WallSlab[] = BAND_SHELL_RUNS().map((r) => ({ x: r.x, z: r.z, w: r.w, d: r.d, theme }));
   // Servis köşesinin fayans zemini (maket: floorPatch(−10,8 · −13,35 · 12,2 × 7,0 · floorTile)) —
   // oyunda oda 0,5 daha geniş olduğu için ölçü duvarın İÇ YÜZLERİNDEN türetilir.
   const sx0 = BAND_SHELL.innerLeft;
