@@ -194,7 +194,7 @@ h2{font-size:21px;font-weight:800}
 {
  "guncelleme": "09.09.2026",
  "yapilan": 77,
- "toplam": 91,
+ "toplam": 96,
  "kilometre": [
   {
    "at": 28,
@@ -209,7 +209,7 @@ h2{font-size:21px;font-weight:800}
    "etiket": "Model ve denge oturdu"
   },
   {
-   "at": 91,
+   "at": 96,
    "etiket": "v1.0 App Store"
   }
  ],
@@ -364,11 +364,19 @@ h2{font-size:21px;font-weight:800}
     {
      "k": "S",
      "t": "Sanat ve arayüz geçişi",
-     "d": "Kullanıcı oynadı ve üç tur geri bildirim verdi. Bitti: pad dili ✓ · pad/modal etkileşimi ✓. Sırada: KayKit mutfağı → duvar ve zemin → dekor takası → dış cephe ve tente → lavabo kabin kapıları → ses assetleri (ortam uğultusu + gerçekçi para) → UI tasarım dili (araştırma + maket + onay) → yeni ücretsiz paketler (okey, tavla, çiçek)",
+     "d": "Kullanıcı oynadı ve dört tur geri bildirim verdi. HER KALEM ≈ 1 OTURUM, 10 oturum kaldı. Bitti: pad dili ✓ · pad/modal etkileşimi ✓. Sırada: mutfak → duvar ve zemin → dekor takası → dış cephe ve tente → lavabo kabin kapıları → ses assetleri → UI dili (araştırma+maket) → UI dili (uygulama) → yeni ücretsiz paketler → karakterler. İlk beşi indirme ve onay istemiyor: hepsi diskte duran 185 KayKit modeliyle yapılacak iş.",
      "yapilan": 2,
-     "toplam": 10,
+     "toplam": 12,
      "durum": "now",
      "kapi": "185 kullanılmayan KayKit modeli oyuna bağlanır + UI dili maketle onaylanır"
+    },
+    {
+     "k": "H",
+     "t": "Oynanış düzeltmeleri",
+     "d": "Sanat değil oynanış: bilinen üç hata (çay alma güvenilmez, toplama yarıçapı, kaçak kamera) · yükseltme sırası (bugün sıra yok, dört masa aynı anda açık) · masa aralığı (arka salonda 0,68 br boşluk, geçiş 0,94 br istiyor — 12 masa arasından geçilemiyor). Faz S'ten ayrı tutuldu ki asset işi bunların arkasında beklemesin. Her kalem ≈ 1 oturum.",
+     "yapilan": 0,
+     "toplam": 3,
+     "kapi": "Oyuncu her yere yürüyebiliyor ve yükseltme sırası karara bağlanmış"
     },
     {
      "k": "F",
@@ -382,6 +390,22 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "09.09.2026",
+   "etiket": "Faz S · 2. oturum (S2 — pad ve modal, kullanıcı testiyle) + plan",
+   "baslik": "Oyun oynandı, dört tur geri bildirim geldi; yol haritası oturum oturum sayıldı",
+   "govde": "Bu tur bir ölçüm turu değil, bir <b>oynama</b> turuydu. Kullanıcı oyunu açtı, dört ayrı mesajda geri bildirim verdi ve her seferinde bir öncekinin üstüne yazdı — yani tasarım tek hamlede değil, <b>oynanarak</b> bulundu.<br><br><b>Önce dört kusur.</b> Yükseltme noktasında “YÜKSELT” yazısı ile solundaki ok <b>üst üste biniyordu</b>. Sebep basitti ve öğreticiydi: çerçevenin genişliği işaretin yarıçapından türüyor, yazı da ortalanıyordu — <b>ikisi aynı genişlik için yarışıyor ve kimse ölçmüyordu</b>. Artık genişlik yazıdan çözülüyor: ok bloğu, boşluk, ve harf ilerlemesiyle hesaplanan gerçek yazı genişliği. Köşeler keskindi, yuvarlatıldı. Ardından kullanıcı içteki koyu zeminin hâlâ keskin olduğunu ve çizgilerin dışına taştığını gördü — zemin de yuvarlak köşeli yapıldı ve çerçevenin içine gömüldü.<br><br><b>Sonra iki karar geri döndü.</b> Usta onayı bir alt şerit olarak yapılmıştı ve gerekçesi yazılıydı: modal hareketi keser. Kullanıcı oynayınca şeridi reddetti. Karar kullanıcınındır — ama eski gerekçe geçersiz değildi, o yüzden modal <b>kapatılabilir</b> yapıldı ve oyuncu o masadan uzaklaşana kadar geri açılmıyor. İlk denemede modal alt sayfa kabuğunu kullanıyordu ve kullanıcı haklı olarak <i>“modal dedim hâlâ alttan açılıyor”</i> dedi; kendi merkezî kabuğuna taşındı ve <b>duman testine bu kararı kilitleyen bir denetim</b> eklendi — alt sayfaya geri düşüş artık testle yasak.<br><br><b>Etkileşim de değişti.</b> Modal yaklaşınca açılıyordu; artık oyuncu noktada <b>durdukça</b> işaret yeşil doluyor ve dolunca açılıyor. Yürüyünce dolum sıfırlanıyor, yani yanından geçerken açılmıyor. Bir ara Usta noktası yuvarlak yapılmıştı; kullanıcı <i>“yuvarlak yapma, direkt yükseltme gibi olsun”</i> deyince biçim ayrımı tamamen kalktı — geriye tek fark kaldı: dolumun kaynağı ve rengi. <b>İki biçim tutmak iki bakım yeri demekti.</b><br><br><b>Ve bir alışkanlık kırıldı:</b> işaret uzaktayken küçük duruyor, yaklaşınca büyüyordu. Kullanıcı <i>“yaklaşınca büyümesi çirkin duruyor”</i> dedi. Boy sabitlendi; artık yalnız oyuncu işaretin üzerindeyken hafifçe kabarıyor. Bu, ekranda tek yüksek sesi tutan katmanlamayı iptal etmedi — o kural <b>ölçekten değil yazıdan</b> yürümeye devam ediyor.<br><br><b>İki soru sayıya çevrildi.</b> Kullanıcı <i>“masalar birbirine çok mu yakın”</i> diye sordu ve ayrıca bir yerde yürüyemediğini söyledi. İkisi aynı kökmüş: oyuncunun bir açıklıktan geçebilmesi için <b>0,94 birim</b> gerekiyor; ön salonda boşluk <b>3,50</b> (rahat), <b>arka salonda 0,68</b> — yani yirmi masanın on ikisi arasından <b>geçilemiyor</b>. Çarpışma verisi bağımsız olarak aynı sonucu verdi: eşiğin altında elli iki açıklık, en darı dört santimlik. <b>“Yürüyemiyorum” bir his değil, geometri.</b> Düzeltme onaylı yerleşim düzenine dokunduğu için yapılmadı; iki kol sayılarıyla yazıldı ve karara bırakıldı.<br><br><b>Bir de para sorusu vardı:</b> “bir masadan elli bin aldım, mantık ne?” Hesaplandı: tek bir ödemenin üst sınırı — en yüksek masa, Usta çarpanı ve bütün koleksiyon ödülleri dahil — <b>44 lira</b>. Yani elli bin tek bir masadan gelemez; görülen şey <b>yerde bekleyen paraların toplu toplanma bildirimi</b>, ve o bildirim bir toplamı tek olay gibi gösteriyor. Gelir formülü cüzdana da toplam kazanca da hiç bakmıyor, yani geliştirici modunda eklenen paranın etkisi yok.<br><br><b>Turun sonu plan oldu.</b> Kullanıcı <i>“paketleme ve yayın öncesi oyun assetlerle hazır olsun”</i> dedi ve kaç oturum süreceğini sordu. Sayım dürüstçe yapıldı: arayüz dili tek oturuma sığmaz (araştırma ile uygulama ayrı), karakterler kendi turunu ister, ve bekleyen üç oynanış işi sanat kalemi değildir — <b>ayrı bir faz</b> olarak ayrıldı ki asset işi onların arkasında beklemesin.",
+   "maddeler": [
+    "<b>Çerçeve genişliği artık yazıdan çözülüyor</b> — ok ile yazı üst üste binmesinin kökü buydu",
+    "<b>Modal yaklaşınca değil DURUNCA açılıyor</b>; kapatılabilir, uzaklaşmadan geri gelmiyor",
+    "<b>İşaret tek biçim oldu</b> — yuvarlak dal kalktı; iki biçim iki bakım yeri demekti",
+    "<b>Ölçek mesafeye göre değişmiyor</b>; katmanlama ölçekten değil yazıdan yürüyor",
+    "<b>“Yürüyemiyorum” ölçüldü:</b> gereken 0,94 br, arka salonda olan 0,68 br — 12 masa geçilemez",
+    "<b>50.000 ₺ tek masadan gelemez:</b> tek ödemenin tavanı 44 ₺; görülen şey toplu toplama bildirimi",
+    "<b>Yol haritası oturum oturum sayıldı:</b> yayın öncesi 19 oturum (sanat 10 · oynanış 3 · onboarding 1 · paketleme 5)"
+   ],
+   "not": "<b>Bu turda bir karar bilerek geri alındı ve bir tanesi de geri alınmak üzere.</b> Usta onayının şerit olması yazılı gerekçeli bir karardı; kullanıcı oynayıp reddetti ve modal geldi — ama eski gerekçenin işaret ettiği tuzak (her geçişte ekranı kesmek) kapatılarak. Sırada duran ikincisi ses: beş tur önce <b>“kaynak dosya değil kod”</b> seçilmiş, ses klasörü bilerek boş bırakılmış ve doğrulanacak lisans sıfıra indirilmişti. Kullanıcı şimdi ortam uğultusu ve daha gerçekçi para sesi istiyor. Motor dosya üstüne yazmayı zaten destekliyor, yani <b>kablo hazır</b>; açılan tek şey lisans yüzeyi ve seslerdeki tek kaynak kilidi. Bir tuzak da baştan yazıldı: hazır kafe ambiyans kayıtlarının çoğunda <b>anlaşılır yabancı konuşma</b> var ve kısa döngüde aynı cümle dakikada bir tekrar eder; aranması gereken şey kelimesi seçilmeyen kalabalık mırıltısıdır."
+  },
   {
    "tarih": "09.09.2026",
    "etiket": "Faz S · 1. oturum (S1 — pad ve yükseltme dili)",

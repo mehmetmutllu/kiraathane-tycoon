@@ -5,7 +5,7 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-09 — **S2 BİTTİ** · Faz S 2/7 · 77/88)
+## ŞU AN (2026-09-09 — **S2 BİTTİ + PLAN SAYILDI** · Faz S 2/12 · 77/96)
 
 ```
 SORU            : Kullanıcı oynadı ve 25 kalemlik geri bildirim verdi (G-01…G-25,
@@ -59,18 +59,25 @@ Not: PS 5.1 BOM'suz UTF-8 `.ps1`i ANSI okuyor — Türkçe betikler **BOM'lu** y
 
 **S3 — mutfak bloğu KayKit'e geçer.** `maketParts.tsx`teki `MaketCounter` · `MaketSink` ·
 `MaketDishSink` · `MaketCezveStation` · `MaketWaterRack` · `MaketCrates` yerine
-`kitchencounter_straight_A/B(+_backsplash)` · `kitchencounter_sink` · `stove_multi` ·
-`extractorhood` · `fridge_A` · `dishrack_plates` · `crate*`. Yükleyici hazır (`Model.tsx`,
-fallback ilkel şekle düşer) ve `recolor.ts` atlas kopyasıyla renk değiştirilebiliyor.
-Ardından S4 (duvar+zemin) · S5 (dekor takası) · S6 (dış cephe + pencere + **tente**, maket-v13'te
-`box(6.4, 0.18, 1.9, 0x2e6b4f)` x-rot 0.18, kapının üstünde).
+`kitchencounter_straight_A/B(+_backsplash)` · `kitchencounter_sink` · `stove_multi` · `oven` ·
+`extractorhood` · `fridge_A` · `kitchencabinet*` · `dishrack_plates` · `crate*`.
+Yükleyici hazır (`Model.tsx`, fallback ilkel şekle düşer), renk `recolor.ts` atlas kopyasıyla.
 
-**S7 — UI TASARIM DİLİ ARAŞTIRMASI + paket indirme.** Kullanıcı "genel olarak UI çok kötü,
-internette araştırma yap" dedi ve **sonraki sohbete** bıraktı. Piyasadaki tycoon'ların HUD/modal
-dili + ücretsiz UI kit'leri araştırılacak; paketler artık indirilebilir (yukarı bak).
-**UI ASSETİ HENÜZ HİÇ ARANMADI** — asset panosu yalnız 3D model kapsıyordu.
+**YAYIN ÖNCESİ TOPLAM 19 OTURUM** (kullanıcı 2026-09-09 sordu, sayım panoya işlendi):
+Faz S sanat **10** · Faz H oynanış **3** · E5 onboarding **1** · Faz F paketleme **5**.
+S3-S7 (mutfak · duvar+zemin · dekor · dış cephe+tente · lavabo kapıları) **indirme ve onay
+İSTEMİYOR** — hepsi diskteki 185 KayKit modeliyle yapılacak iş, sırayla girilebilir.
 
-**CEVAPLANMAMIŞ:** karakter kolu (asset panosu §3 — altı kol, hepsinin bedeli yazılı).
+**KULLANICI KARARI BEKLEYEN ÜÇ ŞEY** (hiçbiri S3-S7'yi bloklamıyor):
+1. **Ses kaynağı** (S8) — asset panosu §7, dört kol. Bu karar **D-096'yı kısmen geri alır**
+   (sentez "nihai" seçilmişti, `audio/` bilerek boştu, lisans yüzeyi sıfırdı). Kablo hazır;
+   açılan tek şey lisans yüzeyi + tek-stil kilidi. **Walla tuzağı yazılı:** hazır kafe
+   ambiyansında anlaşılır yabancı konuşma var, kısa döngüde dakikada bir tekrar eder.
+2. **Karakter kolu** (S12) — asset panosu §3, altı kol, hepsinin bedeli yazılı.
+3. **H2 yükseltme sırası** (A tek hedef / B kuşak) ve **H3 masa aralığı** (K1 aralığı aç /
+   K2 oturak küçült — K2 önerilmiyor, `feedback_reference_scale_trap`).
+
+**Asset panosu:** https://claude.ai/code/artifact/2e7f92c0-15b6-4f72-814d-753cf79d74e0
 
 ## AÇIK KALEMLER (bilinen, bilerek duruyor)
 
@@ -79,7 +86,13 @@ dili + ücretsiz UI kit'leri araştırılacak; paketler artık indirilebilir (yu
   kendi turunu ister; tasarım kararı beklemiyor.
 - **G-05 görev metinleri açıklayıcı değil** — altta net hedef, üstte kısa lakap (yazım işi).
 - **G-06 tepsi ilk yükseltme 75 → ~50 · G-07 yükseltme dwell'i para-bağımsız sabit olsun** —
-  ikisi de DENGE, varyant kapısına tabi, **ölçülmeden uygulanmaz**.
+  ikisi de DENGE, varyant kapısına tabi, **ölçülmeden uygulanmaz**. (Faz H'ye girmedi; H2 ile
+  aynı ölçüm turunda birlikte bakılabilir.)
+- **Oto-toplama toast'ı bir TOPLAMI tek olay gibi gösteriyor** — kullanıcı "bir masadan 50k
+  aldım" sandı. ÖLÇÜLDÜ: tek ödemenin tavanı **44 ₺** (tost + maks masa + Usta ×1,5 + gelir
+  çarpanı tavanı ×1,10); 50k ≈ **1.140 coin**in toplu toplanması. Gelir formülü cüzdana da
+  `lifetime`a da hiç bakmıyor → dev parasının etkisi YOK. Metne adet eklemek `tick.ts`'e
+  dokunuyor, kullanıcı onayı bekliyor.
 - **G-16 arayüz kahverengi/iç karartıcı → mavi · G-17 ekranlar tam-ekran mı modal mı (Subway
   Surfers) · G-10 pad şekli** — kullanıcı "bilemedim" dedi; **maket görmeden koda girmemeli**.
 - **G-18 masaya tıklayınca seviye gözüksün mü** — kullanıcı düşünüyor, açık soru.

@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 91 · YAPILAN 77 · %85):**
+**Oturum bütçesi (TOPLAM 96 · YAPILAN 77 · %80):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -24,9 +24,10 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
 | | D meta katman | 9/9 ✅ |
 | | E arayüz ve cila | 4/5 🔧 |
-| | **S sanat ve arayüz geçişi** | **2/10 🔧** |
+| | **S sanat ve arayüz geçişi** | **2/12 🔧** |
+| | H oynanış düzeltmeleri | 0/3 ⏳ |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **49/63** |
+| **Program toplam** | | **49/68** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -37,7 +38,7 @@ oyuncu çarpışması bilinen-hata listesinden çıkıp kendi turu oldu (D5) →
 toplam 78 → 79. **Aynı gün:** meta katmanın yığını beş turdur açık duran D-087 ölçümü olarak
 kendi turunu aldı (D9) → Faz D 8 → 9, toplam 79 → 80. **Aynı gün:** E3 (ses) kullanıcı
 kararıyla SİSTEM (E3) ve DOSYALAR (E4) olarak ikiye bölündü, onboarding E5 oldu → Faz E 4 → 5,
-toplam 80 → 81. **2026-09-09 (ikinci oturum):** kullanıcı oynadı, 25 kalemlik geri bildirim verdi (`docs/geribildirim-oyun-testi-2026-09-09.md`); sanat/arayüz işi **Faz S** olarak açıldı (6 kalem, `docs/plan-faz-s-sanat.md`) → toplam 81 → 87. Faz adı S, çünkü defterde zaten bir Faz G (görsel taban) var; `G-0x` numaraları geri bildirimin, fazın kalemleri `S1…S6`. **Aynı gün:** kullanıcı S1'i oynadı ve dokuz kalem daha verdi (G-26…G-34); pad/modal düzeltmeleri **S2** olarak kendi kalemini aldı → Faz S 6 → 7, toplam 87 → 88. **Aynı gün, üçüncü tur:** kullanıcı lavabo kabin kapılarını ve ses assetlerini (ortam uğultusu + gerçekçi para sesi) istedi, ikisi de ayrı kalem oldu; UI araştırması da kendi kalemine ayrıldı → Faz S 7 → 10, toplam 88 → 91. **E4 kapsamı ölçümle değişti ama kalem sayısı değişmedi:** tur "dosya bırak"
+toplam 80 → 81. **2026-09-09 (ikinci oturum):** kullanıcı oynadı, 25 kalemlik geri bildirim verdi (`docs/geribildirim-oyun-testi-2026-09-09.md`); sanat/arayüz işi **Faz S** olarak açıldı (6 kalem, `docs/plan-faz-s-sanat.md`) → toplam 81 → 87. Faz adı S, çünkü defterde zaten bir Faz G (görsel taban) var; `G-0x` numaraları geri bildirimin, fazın kalemleri `S1…S6`. **Aynı gün:** kullanıcı S1'i oynadı ve dokuz kalem daha verdi (G-26…G-34); pad/modal düzeltmeleri **S2** olarak kendi kalemini aldı → Faz S 6 → 7, toplam 87 → 88. **Aynı gün, üçüncü tur:** kullanıcı lavabo kabin kapılarını ve ses assetlerini (ortam uğultusu + gerçekçi para sesi) istedi, ikisi de ayrı kalem oldu; UI araştırması da kendi kalemine ayrıldı → Faz S 7 → 10, toplam 88 → 91. **Aynı gün, dördüncü tur:** kullanıcı *"paketleme ve yayın öncesi oyun assetlerle hazır olsun"* dedi ve **oturum sayısı** istedi. Sayım dürüstçe yapıldı: UI dili tek oturuma sığmaz (araştırma+maket ile uygulama ayrı), karakterler kendi turunu ister → Faz S 10 → 12. Ayrıca bekleyen üç oynanış işi (hatalar · yükseltme sırası · masa aralığı) sanat kalemi değil; **Faz H** olarak ayrıldı (3 kalem). Toplam 91 → 96. **E4 kapsamı ölçümle değişti ama kalem sayısı değişmedi:** tur "dosya bırak"
 olarak açılmıştı, ölçüm "dosya alma, motoru büyüt" dedi (D-096); ortam sesi + `settings.music`
 kablosu E4'ün dışında kaldı ve **henüz kendi kalemi olmadı** — açık kalemler listesinde duruyor.
 
@@ -242,7 +243,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   değil; kendi turunu ister.
 - ⏳ **E5 — hareketli onboarding**
 
-## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (2/10) 🔧 — kullanıcı geri bildirimi 2026-09-09
+## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (2/12) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
 - ✅ **S1 — pad ve yükseltme dili yeniden yazıldı** · çember → **köşe parantezli kare** (kenar
   ortaları boş), dolum büyüyen disk → **alttan üste dolan kare**, "Masa"/"Çay Yükselt"/"Usta"
   → hepsinde **YÜKSELT** + solunda düz yukarı ok, yazı 700 → 800, 💎 pulu "mavi kare" → gerçek
@@ -299,12 +300,35 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   Motor dosya üstüne yazmayı zaten destekliyor (`Model.tsx` deseninin tersi) — yani kablo hazır,
   açılan tek şey **lisans yüzeyi ve tek-stil kilidi**. Ayrıca `settings.music` hâlâ hiçbir şeye
   bağlı değil; ortam sesi o kabloyu da kapatır. Aday kaynaklar asset panosunda.
-- ⏳ **S9 — UI tasarım dili** — kullanıcı: *"hâlâ genel olarak UI çok kötü"*. Piyasa tycoon'larının
-  HUD/modal dili + ücretsiz UI kit araştırması → **maket → onay → kod**. Mavi palet (G-16),
-  ekran modeli (G-17, Subway Surfers referansı) ve pad'in son hâli (G-10) bu turda sorulur.
-- ⏳ **S10 — yeni ücretsiz KayKit paketleri** — Board Game Bits (okey/tavla) · Forest Nature
+- ⏳ **S9 — UI tasarım dili: ARAŞTIRMA + MAKET** — kullanıcı: *"hâlâ genel olarak UI çok kötü"*.
+  Piyasa tycoon'larının HUD/modal dili + ücretsiz UI kit araştırması → maket → **onay**.
+  Mavi palet (G-16), ekran modeli (G-17, Subway Surfers) ve pad'in son hâli (G-10) burada sorulur.
+  **Kod YAZILMAZ** — `feedback_workflow_plan_approve`: tasarım-hassas çatalda önce maket, sonra onay.
+- ⏳ **S10 — UI tasarım dili: UYGULAMA** — onaylanan dil koda geçer; görev metinleri (G-05) ve
+  ekranların tek kabuğa oturması da burada.
+- ⏳ **S11 — yeni ücretsiz KayKit paketleri** — Board Game Bits (okey/tavla) · Forest Nature
   (çiçek) · Holiday · Resource · Prototype · Block. **İndirme engeli KALKTI:** Bash'in ağı yok
   ama PowerShell'in var; `tools/indir-itch.ps1` itch akışının 3/4 adımını yapıyor, son adım 404.
+- ⏳ **S12 — karakterler** — ana karakter · garson · bulaşıkçı · müşteriler. Altı kol bedeliyle
+  asset panosunda; **kullanıcı seçimi bekliyor**, seçilmeden tur açılamaz.
+
+**Faz S kapısı:** 185 kullanılmayan KayKit modeli oyuna bağlı + UI dili maketle onaylanmış +
+ses kaynağı kararı yazılı. Ondan sonra Faz F'e (paketleme) geçilir.
+
+## Faz H — OYNANIŞ DÜZELTMELERİ (0/3) ⏳ — her kalem ≈ 1 oturum
+Sanat kalemi değil; Faz S'ten ayrı tutuldu ki asset işi bunların arkasında beklemesin.
+- ⏳ **H1 — oynanış hataları (G-01 · G-02 · G-03)** · çay/bulaşık toplama masanın her tarafından
+  olmuyor · çay ocağından alma güvenilmez (tepside yer varken) · 2. masa görevinde kamera
+  kendiliğinden kayıyor. Üçü de hata, tasarım kararı beklemiyor.
+- ⏳ **H2 — yükseltme SIRASI (ölç → seç → uygula)** · bugün sıra YOK: bir alan açılınca o alandaki
+  4 masanın 4'ü de aynı anda ve serbest sırayla yükseltilebiliyor (`tableUpgradeUnlockedIn` yalnız
+  ALANIN kapısına bakıyor). Kullanıcı sıralı istiyor. **`rules.ts`'e dokunur → varyant kapısı:**
+  iki kol ölçülmeden uygulanmaz — *A: tek hedef* (aynı anda tek masanın noktası canlı, tavana
+  varmadan sonraki açılmaz) · *B: kuşak* (hepsi L'ye varmadan hiçbiri L+1'e çıkamaz).
+- ⏳ **H3 — masa aralığı / geçilemeyen açıklıklar** · ÖLÇÜLDÜ (D-098): geçiş için
+  **2 × playerRadius = 0,94 br** gerekiyor; ön salon **3,50 br** (rahat), **arka salon 0,68 br**
+  → 20 masanın 12'si geçilemez, çarpışma katılarında eşik altında **52 açıklık** (en darı 0,04 br).
+  Onaylı maket düzenine dokunur → iki kol sayılarıyla yazılı, **kullanıcı kararı bekliyor**.
 
 ## Bilinen açık kalemler
 - ~~Hedeflerin ₺ kolu bu hâliyle kalsın mı?~~ → **D3b'de kapandı (D-090):** ₺ kolu tamamen kalktı,
