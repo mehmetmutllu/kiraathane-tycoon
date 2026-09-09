@@ -35,7 +35,8 @@ tur boyunca zaten yazıldı; burada yalnız yerine oturtulur (D-084, `docs/oturu
    arttığı hâlde yeni günlük kartı yoksa uyarır.
    Sonra aynı dosya yoluyla yeniden yayınla (Artifact tool, `file_path` aynı; bağlantı değişmez):
    https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
-4. **Testler:** `npm run test` (vitest ~12 sn) + mümkünse duman testi (`node tools/smoke.mjs`).
+4. **Testler:** `npm run test` (vitest) + **`npm run duman`** (~25 sn; sunucuyu kendi kaldırır,
+   41 denetim, çıkış kodu duman testinden gelir). İkisi de KESİLMEZ — "mümkünse" değil.
    Not: `tests/pano-guncelle.test.ts` gerçek `progress.md` + panoyu okur — defter tutarsızsa
    burası da kırılır, yani adım 3 atlansa bile tutarsızlık testte yakalanır.
    Başarısızsa düzelt ya da bilinen-bug olarak `progress.md`'ye yaz.

@@ -5,40 +5,37 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-09 — **D9 BİTTİ** · **Faz D 9/9 ✅** · 72/80)
+## ŞU AN (2026-09-09 — **E2 BİTTİ** · Faz E 2/4 · 73/80)
 
 ```
-SORU            : Meta katmanın üç kanadı (H hedef çarpanı · R İtibar · E Usta+günlük görev)
-                  hep AYRI ölçüldü — her tur ötekilerin kancasını kapattı. Hepsi açıkken,
-                  yani yürürlükteki oyunda, D-087'nin penceresi ne?  [KAPANDI]
-ÖLÇÜLECEK KOLLAR: sekiz bileşim — M0 · H · R · E · HR · HE · RE · HRE (config'e dokunmadan)
-SAYILAR         : `docs/meta-pencere-raporu-d9.md` §Bulgular · ham `docs/olcum-meta-penceresi.txt`
-                  HRE: hüküm **0 ihlal / 18,0 dk** · gözlem 2 / 32,0 dk · ŞERİT 6,77 sa (%−20,1)
-KARAR           : D-095 — ① D-087 KAPANDI ② kapatan katman **R'dir** (H ve E kımıldatmıyor)
-                  ③ katmanlar TOPLANIYOR (Bulgu 10 knob'lar arası, katmanlar arası değil)
-                  ④ zincir borcu %−20,1 KABUL, eşik yazıldı: tek kol %7 durur, yığın %−20,1
-UYGULAMA        : **KOD YAZILMADI** — `economy.config.ts` hiç değişmedi. Yeni: araç
-                  `tools/olcum-meta-penceresi.ts` · rapor · D-095 · bekçi.
-BEKÇİ           : tests/meta-pencere.test.ts — 22 test, **10 mutasyon, dokuzu yakalandı**
-                  (M5 ilk hâlde kaçtı → E'nin tek ölçülebilir izi yazıldı · M8 ölçülerek
-                  bilerek bırakıldı, kardeş bekçide kilitli) · vitest 684 · duman 41/41
+SORU            : Duman testi 41 denetime çıktı ama ELLE koşuluyordu (sunucuyu aç → ayrı
+                  terminalde koştur → kapat) ve protokolde "mümkünse" diye geçiyordu.
+                  Fazın kapısı tam olarak bu: bağlı ve yeşil.  [KAPANDI]
+ÖLÇÜLECEK KOLLAR: YOK — denge dosyasına dokunulmadı, varyant kapısı devrede değil.
+SAYILAR         : `npm run duman` → **41/41 · çıkış 0 · 25 sn** (taban dev sunucusunda)
+KARAR           : ürün kararı gerekmedi; iki TASARIM iddiası ölçümle düzeltildi (aşağıda)
+UYGULAMA        : `tools/duman.mjs` (YENİ) · `package.json` `duman` script'i ·
+                  `CLAUDE.md` + `oturum-bitir` protokolü ("mümkünse" kalktı)
+BEKÇİ           : tests/duman-kosucu.test.ts — 21 test, **18 mutasyon, on sekizi de yakalandı**
+                  · vitest 705 · duman 41/41
 ```
 
-**Turun dersi — BEKÇİ RAPORDAKİ BİR CÜMLEYİ ÇÜRÜTTÜ.** Rapor "açılış sekiz satırın sekizinde
-birebir aynı" diyordu; araç dakikaya yuvarladığı için üç satır da "6,1 dk" görünüyordu. Bekçi
-sayıyı ham sorunca otomasyonun H açıkken 366 → 365 sn kaydığı çıktı (%0,27, ölçütler geçiyor).
-**Yuvarlanmış bir kolon "fark yok" diye okunamaz** — tabloya bakan göz bunu bulamazdı.
-
-**İkinci ders — kaçan mutasyon bekçinin değil KATMANIN zayıf yerini gösterdi.** `tipMult`
-1,5 → 1 yapılınca 21 testin 21'i geçiyordu, çünkü E'nin ihlal sayısındaki izi zaten sıfır.
-Eklenen iddia E'nin tek ölçülebilir izini (ŞERİT %−1,7) kilitledi. Diğer kaçan (M8, günlük
-görev) ölçüldü: 12 sa'de tempo saniyesi saniyesine aynı — kardeş bekçide kilitli, buraya
-ikinci kez yazılmadı.
+**Ders — ARAÇ YEŞİLKEN DE YANLIŞ ŞEYİ ÖLÇEBİLİR; iki kez aynı ders.** ① Koşucu `127.0.0.1`
+yokluyordu: vite `localhost`a bağlanıyor, o ad bu makinede IPv6 `::1`e çözülüyor → sunucu
+AYAKTAYKEN "ayağa kalkmadı" deyip 60 sn bekliyordu. ② `--strictPort` yeterli SANILDI; port
+bilerek doldurulup sınandı ve varsayım çürüdü — koşu kırmızıya dönüyor **ama yanlış sebeple**:
+yoklama, portu tutan YABANCI sunucunun 200'ünü hazır sanıyor ve hata "canvas bulunamadı" diye
+görünüyor. Düzeltme: hazır sinyali **vite'ın kendi stdout'undan**; süreç ölürse anında bilinir.
+③ Aynı ders bekçide de çıktı: `--strictPort` dosya METNİNDE aranıyordu, yorumda da geçtiği için
+argümanlardan silinince bile bulunuyordu — mutasyon KAÇTI. Bekçi artık kodun ne yazdığını değil
+**ne çalıştırdığını** okuyor (`sunucuKomutu` ayrı fonksiyona çıkarıldı).
 
 ## SIRADAKİ TAM ADIM
 
-**Faz D BİTTİ (9/9) — bütün kalemleri kapalı.** Sıradaki iş **Faz E (2/4)**: ses ·
-hareketli onboarding · duman testinin `package.json`'a bağlanması.
+**Faz E 3/4 — SES.** Teknik iş değil, önce **kaynak + lisans kararı** ister: tek stil kilidi
+seslerde de geçerli (`feedback_asset_taste` · "belirsiz lisanslı hiçbir asset commit'lenmez").
+Ardından **E4 — hareketli onboarding** (ilk 22 sn zaten ölçülü; öğretici yeni tempo icat etmez,
+var olanı görünür kılar).
 
 ## AÇIK KALEMLER (bilinen, bilerek duruyor)
 

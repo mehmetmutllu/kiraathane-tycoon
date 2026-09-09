@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 80 · YAPILAN 72 · %90):**
+**Oturum bütçesi (TOPLAM 80 · YAPILAN 73 · %91):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -23,9 +23,9 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | **C zincir ve denge** | **5/5 ✅** |
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
 | | D meta katman | 9/9 ✅ |
-| | E arayüz ve cila | 1/4 🔧 |
+| | E arayüz ve cila | 2/4 🔧 |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **44/52** |
+| **Program toplam** | | **45/52** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -188,6 +188,23 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
 
 > D2-D7 `docs/plan-kat1-yayin.html` §D kapsamından türetildi; **sırası açık** — her tur başında
 > seçilir. Ayrıca Faz D'de bekleyen bilinen bir hata var: **nav ızgarası ↔ oyuncu çarpışması**.
+
+## Faz E — ARAYÜZ VE CİLA (2/4) 🔧
+- ✅ **E1 — bilgi mimarisi + Görevler/Hedefler ekranı** (kuruluş turunda yapıldı; D-049…D-052).
+- ✅ **E2 — duman testi `package.json`'a BAĞLANDI: `npm run duman`** · koşucu sunucuyu kendi
+  kaldırıp indiriyor (`tools/duman.mjs`), 41/41 · çıkış 0 · **25 sn**. Fazın kapısı buydu.
+  **İki tasarım iddiası ölçümde düzeltildi:** ① adres `127.0.0.1` yazılmıştı — vite `localhost`a
+  bağlanıyor ve o ad bu makinede IPv6 `::1`e çözülüyor, yani sunucu AYAKTAYKEN "ayağa kalkmadı"
+  deniyordu; ② `--strictPort` yeterli sanılmıştı — port bilerek doldurulup sınandı ve **varsayım
+  çürüdü**: koşu kırmızıya dönüyor ama yanlış sebeple (yoklama, portu tutan YABANCI sunucunun
+  200'ünü hazır sanıyor, hata "canvas bulunamadı" diye görünüyor). Düzeltme: hazır sinyali
+  **vite'ın kendi stdout'undan** okunuyor, süreç ölürse anında biliniyor. Bekçi
+  `tests/duman-kosucu.test.ts` (21 test, **18 mutasyon, on sekizi de yakalandı**; ilk hâlinde
+  `--strictPort` mutasyonu KAÇMIŞTI — bayrak dosya metninde aranıyordu ve yorumda da geçtiği için
+  argümanlardan silinince bile bulunuyordu → bekçi metin yerine **gerçek argümanları** okur oldu).
+  Protokol güncellendi: `oturum-bitir` ve `CLAUDE.md` artık "mümkünse" demiyor, duman **kesilmez**.
+- ⏳ **E3 — ses** (kaynak + lisans kararı ister)
+- ⏳ **E4 — hareketli onboarding**
 
 ## Bilinen açık kalemler
 - ~~Hedeflerin ₺ kolu bu hâliyle kalsın mı?~~ → **D3b'de kapandı (D-090):** ₺ kolu tamamen kalktı,

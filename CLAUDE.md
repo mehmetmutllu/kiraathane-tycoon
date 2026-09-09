@@ -6,7 +6,8 @@ Hafıza `/memory-bank/`'te; her oturum `/kiraathane-devam` ile başla, `oturum-b
 ## Stack (kesin — Unity DEĞİL)
 TypeScript · Vite · React 19 · @react-three/fiber + drei + rapier + postprocessing ·
 three · Zustand · break_infinity.js (Decimal). Mobil: Capacitor (Faz 7). IAP: RevenueCat,
-Reklam: Capacitor AdMob (Faz 5). Test: Vitest (mantık) + Playwright MCP (UI/duman).
+Reklam: Capacitor AdMob (Faz 5). Test: Vitest (mantık) + `npm run duman` (tarayıcı duman,
+Playwright; MCP varsa o da kullanılır).
 Stil: LOW-POLY STİLİZE, gerçekçiye kaçma. Gerekçe: `memory-bank/decisions.md`.
 
 ## Klasör yapısı
@@ -62,7 +63,7 @@ src/components/ui/     HUD, joystick
 
 ## Oturum bitirme protokolü ("oturumu bitir" denince veya anlamlı parça bitince)
 1. `progress.md` + `activeContext.md` güncelle.
-2. Testleri çalıştır (`npm run test`, mümkünse Playwright duman).
+2. Testleri çalıştır: `npm run test` **ve** `npm run duman` (ikisi de kesilmez).
 3. `git add -A && git commit -m "<anlamlı mesaj>"`.
 4. `git push`.
 5. Aynen şu mesajı ver:
@@ -71,5 +72,7 @@ Dosyaları her anlamlı adımdan sonra da güncelle.
 
 ## Komutlar
 - Geliştirme: `npm run dev` · Build: `npm run build` · Test: `npm run test` ·
+  Duman (tarayıcı, 41 denetim): `npm run duman` — sunucuyu kendi kaldırır; port doluysa
+  `DUMAN_PORT=4000 npm run duman`, üretim derlemesi için `DUMAN_MOD=preview` ·
   Ekonomi simülasyon: `npx tsx tools/simulate.ts`
 - Devam: `/kiraathane-devam` veya "kıraathane-devam" → kaldığım yerden.

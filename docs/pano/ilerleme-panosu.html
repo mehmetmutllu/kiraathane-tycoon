@@ -193,7 +193,7 @@ h2{font-size:21px;font-weight:800}
 <script type="application/json" id="durum">
 {
  "guncelleme": "09.09.2026",
- "yapilan": 72,
+ "yapilan": 73,
  "toplam": 80,
  "kilometre": [
   {
@@ -214,26 +214,26 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum · Faz D · 9/9 — meta katmanın yığını ölçüldü",
-  "baslik": "Beş turdur açık duran soru kapandı: ölçüt artık geçiyor — ve bedeli sayıya döküldü",
-  "aciklama": "Faz D üç ödül kanadı ekledi: hedeflerin <b>kalıcı gelir çarpanı</b>, İtibar&rsquo;ın <b>taşıma hızı</b> ve <b>Usta katmanı + günlük görevler</b>. Ama her tur ötekileri <b>kapatarak</b> ölçtü — yani <b>yürürlükteki oyunun</b> temposu bugüne dek hiçbir tabloda yoktu. Bu tur sekiz bileşim tek koşuda okundu ve kod hiç yazılmadı.<br><br><b>Ölçüt geçiyor.</b> Üç katman birden açıkken yirmi dakikayı aşan bekleme <b>kalmadı</b>; en uzunu <b>18 dakika</b>, ölçütün iki dakika altında. Beş tur önce açılan <i>&ldquo;meta katman o pencereleri dolduruyor mu&rdquo;</i> sorusunun cevabı <b>evet</b>.<br><br><b>Ama dolduran katman &ldquo;meta katman&rdquo; değil.</b> Üçü ayrı ayrı ölçülünce çıktı ki hedefler ve Usta ölçütü <b>hiç kımıldatmıyor</b> — kapatan tek şey İtibar&rsquo;ın taşıma ödülü. Bu, ters yönde de okunur: o ödül geri alınırsa ölçüt <b>yeniden açılır</b>.<br><br><b>Katmanlar toplanıyor — bu hiç kesin değildi.</b> Proje üç kez şunu yaşamıştı: iki ayarı ayrı ayrı ölçüp birlikte uygulayınca sonuç ikisinin toplamı çıkmıyordu. Aynı sınav bir kat yukarıda, katmanlar arasında yapıldı ve bu kez <b>tuttu</b>: iki ihlal sayısında fark tam <b>sıfır</b>. Ayrım da adlandırıldı — toplanamama aynı tavana binen <b>ayarlar</b> arasında oluyor, ayrı yerlere binen <b>katmanlar</b> arasında değil.<br><br><b>Bedel açıkça kesildi ve kabul edildi.</b> Üç ödülün toplamı Kat 1 içeriğinin ömrünü <b>8,5 saatten 6,8 saate</b> indiriyor. Geri almanın üç yolu da ölçüldü ve üçü de reddedildi: içeriği en çok yiyen katman aynı zamanda ölçütü kapatan tek katman, ucuz iki katman ise tempoyu zaten kımıldatmıyor. <b>&ldquo;Pahalıyı kıs, ucuzlarla idare et&rdquo; diye bir yol ölçümde yok.</b>",
+  "etiket": "Bu oturum · Faz E · 2/4 — duman testi komut dosyasına bağlandı",
+  "baslik": "Fazın kapısı buydu: tarayıcı testi artık tek komut, ve iki iddiası ölçümde düzeltildi",
+  "aciklama": "Oyunun 41 denetimlik <b>tarayıcı duman testi</b> aylardır vardı ama <b>elle</b> çalıştırılıyordu: önce sunucuyu aç, sonra ayrı bir terminalde testi koştur, sonra sunucuyu kapat. Bu yüzden kapanış protokolünde <i>&ldquo;mümkünse&rdquo;</i> diye geçiyordu — yani atlanabilir bir adımdı. Artık <b>tek komut</b>: sunucuyu kendisi kaldırıyor, testi koşuyor, indiriyor. 41/41, <b>25 saniye</b>.<br><br><b>Ama iki tasarım iddiası ölçümde çürüdü ve ikisi de düzeltildi.</b><br><br><b>Birincisi adresti.</b> Koşucu sunucuyu <code>127.0.0.1</code> üzerinden yokluyordu. İlk denemede sunucu ayakta olduğu hâlde <i>&ldquo;ayağa kalkmadı&rdquo;</i> dedi ve altmış saniye bekleyip pes etti: vite <code>localhost</code> adına bağlanıyor, o ad bu makinede IPv6 adresine çözülüyor ve IPv4 yoklaması bağlantı reddi alıyordu. İkisi aynı makinede <b>aynı yer değil</b>.<br><br><b>İkincisi daha öğreticiydi.</b> Koşucuya, port doluysa sessizce başka bir porta kaymasın diye bir bayrak konmuştu ve bunun yeterli olduğu <b>varsayılmıştı</b>. Varsayım sınandı: port bilerek dolduruldu. Sonuç yarı doğru çıktı — koşu kırmızıya döndü, evet, <b>ama yanlış sebeple</b>. Yoklama, portu tutan yabancı sunucunun cevabını <i>&ldquo;hazır&rdquo;</i> sanıyor, tarayıcı testi <b>başka bir uygulamaya</b> bağlanıyor ve hata <i>&ldquo;sahne bulunamadı&rdquo;</i> diye görünüyordu. Yani mesaj, gerçek sebebi (port dolu) hiç söylemiyordu. Düzeltme: hazır olup olmadığı artık porta sorulmuyor, <b>sunucunun kendisine</b> soruluyor — vite kalkınca bunu yazıyor, kalkamazsa süreç ölüyor; ikisi de kesin sinyal.",
   "adimlar": [
-   "<b>Ölçüt geçiyor:</b> yığın açıkken yirmi dakikayı aşan bekleme <b>0</b> · en uzunu <b>18,0 dk</b>",
-   "<b>Kapatan katman İtibar&rsquo;dır</b> — hedefler ve Usta tek başlarına ölçütü kımıldatmıyor",
-   "<b>Katmanlar toplanıyor:</b> ihlal sayısında fark tam sıfır (toplanamama <b>ayarlar</b> arasında, katmanlar arasında değil)",
-   "<b>Bekçi:</b> 22 test, 10 mutasyon, dokuzu yakalandı — biri kaçtı ve bir katmanın <b>ölçülemez</b> olduğunu gösterdi"
+   "<b>Tek komut:</b> sunucuyu kendisi kaldırıp indiriyor · 41/41 · 25 saniye",
+   "<b>Ayrı port + katı port kuralı:</b> geliştiricinin açık sunucusuyla çakışmıyor, sessizce kaymıyor",
+   "<b>Hazır sinyali sunucunun kendisinden</b> — portu tutan yabancı bir uygulama artık &ldquo;hazır&rdquo; sayılmıyor",
+   "<b>Bekçi:</b> 21 test, 18 mutasyon, on sekizi de yakalandı · protokolde artık &ldquo;mümkünse&rdquo; yok"
   ],
-  "not": "<b>Bekçi, raporun bir cümlesini çürüttü.</b> Rapor &ldquo;açılış sekiz satırın sekizinde birebir aynı&rdquo; diyordu; araç dakikaya yuvarladığı için üç satır da aynı görünüyordu. Bekçi sayıyı <b>ham</b> sorunca otomasyonun bir saniye kaydığı çıktı — ölçütlerin hepsi geçiyor ama ders kalıcı: <b>yuvarlanmış bir kolon &ldquo;fark yok&rdquo; diye okunamaz.</b>"
+  "not": "<b>Bir mutasyon ilk hâlde kaçtı ve bekçinin zayıf yerini gösterdi.</b> Port kuralının bayrağı dosyanın <b>metninde</b> aranıyordu; bayrak açıklama satırında da geçtiği için, gerçek argümanlardan <b>silindiği hâlde</b> arama onu buluyor ve test yeşil kalıyordu. Bekçi artık kodun ne <i>yazdığını</i> değil ne <b>çalıştırdığını</b> okuyor — komut, argümanlarıyla birlikte ayrı bir fonksiyona çıkarıldı ve test onu çağırıyor."
  },
  "siradaki": {
-  "etiket": "Faz D bitti (9/9) · sırada Faz E — arayüz ve cila",
-  "baslik": "Meta katmanın bütün kalemleri kapalı; sıra sese, onboarding'e ve testin otomatikleşmesine geldi",
-  "aciklama": "Faz D dokuz turun dokuzunda da <b>ölçerek</b> karar verdi ve bu turla bütün açık kalemleri kapandı: görev kimlikleri, Hedefler koleksiyonu, ödülün kalıbı, oyuncunun kendi ızgarası, İtibar, Usta katmanı, günlük görevler ve son olarak hepsinin <b>birlikte</b> ne yaptığı.<br><br><b>Sırada Faz E var:</b> ses, hareketli onboarding ve duman testinin komut dosyasına bağlanması. Duman testi 41 denetime çıktı ama hâlâ elle çalıştırılıyor — otomatikleşmesi yayın öncesi son güvenlik ağı.<br><br><b>Yeni açılan kalem yayın planına yazıldı.</b> İçeriğin ömrü ölçülerek 6,8 saate indi ve kabul edildi; ama zinciri <b>uzatan</b> kollar bugüne dek hiç ölçülmedi. İki teknik kalem tam oraya bakıyor ve ikisi de kendi turunu bekliyor.",
+  "etiket": "Faz E · sırada ses ve hareketli onboarding",
+  "baslik": "İki kalem kaldı ve ikisi de ürün kararı istiyor",
+  "aciklama": "Fazın ölçülebilir kapısı geçildi: tarayıcı testi bağlı ve yeşil. Kalan iki kalem teknik değil <b>ürün</b> kalemi.<br><br><b>Ses:</b> semaver fokurtusu, bardak şıngırtısı, okey pulu takırtısı, kasa sesi, arka plan uğultusu. Asıl soru kaynak ve lisans — projenin kuralı net: <b>belirsiz lisanslı hiçbir varlık depoya girmez</b>, ve tek stil kilidi var. Ses için de aynı kilit gerekiyor: dağınık kaynaklardan toplanmış sesler, dağınık sanatçıdan toplanmış modeller kadar bozar.<br><br><b>Hareketli onboarding:</b> oyunun ilk otuz saniyesi. Bugün ilk satın alma <b>22 saniyede</b> oluyor ve bu sayı dokuz turdur hiç bozulmadı — yani öğretici yeni bir tempo icat etmeyecek, var olanı <b>görünür</b> kılacak.",
   "adimlar": [
-   "<b>Şimdi:</b> Faz E — ses · hareketli onboarding · duman testinin komut dosyasına bağlanması",
+   "<b>Şimdi:</b> ses (kaynak ve lisans kararı önce) · sonra hareketli onboarding",
    "<b>Sonra:</b> Faz F — paketleme ve yayın (köşe kesme, gölgenin telefondaki maliyeti, reklam ve mağaza)"
   ],
-  "not": "Telefonda okunacak iki şey birikmeye devam ediyor: kalıcı gelir çarpanının <b>görünmezliği</b> ve on üçüncü seviyede oyuncunun <b>+%24 hızı</b>. İkisi de simülasyonun ölçemediği eksende — gerçek cihazda oynanınca karara bağlanacak. Üçüncüsü eklendi: Kat 1&rsquo;in <b>6,8 saatlik</b> ömrü gerçek oyuncuda kısa hissettiriyor mu?"
+  "not": "Telefonda okunacaklar birikmeye devam ediyor: kalıcı gelir çarpanının <b>görünmezliği</b>, on üçüncü seviyede oyuncunun <b>+%24 hızı</b>, ve Kat 1&rsquo;in <b>6,8 saatlik</b> ömrü kısa hissettiriyor mu. Üçü de simülasyonun ölçemediği eksende."
  },
  "donemler": [
   {
@@ -357,7 +357,7 @@ h2{font-size:21px;font-weight:800}
      "k": "E",
      "t": "Arayüz ve cila",
      "d": "Bilgi mimarisi ✓ · Görevler ve Hedefler ekranı ✓ · kalan: ses, hareketli onboarding, duman testinin bağlanması",
-     "yapilan": 1,
+     "yapilan": 2,
      "toplam": 4,
      "kapi": "Duman testi package.json'a bağlı ve yeşil"
     },
@@ -373,6 +373,21 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "09.09.2026",
+   "etiket": "Faz E · 2. oturum (E2 — duman testinin bağlanması)",
+   "baslik": "Elle çalıştırılan test tek komuta indi — ve iki varsayımı ölçüm düzeltti",
+   "govde": "Oyunun tarayıcıda koşan <b>41 denetimlik</b> duman testi aylardır vardı: sahne yükleniyor mu, klavye çalışıyor mu, para birikiyor mu, panel açılıyor mu, konsolda hata var mı. Ama çalıştırmak üç elle adım istiyordu — sunucuyu aç, ayrı bir terminalde testi koştur, sunucuyu kapat — ve bu yüzden kapanış protokolünde <i>&ldquo;mümkünse&rdquo;</i> diye geçiyordu. Atlanabilir bir güvenlik ağı, güvenlik ağı değildir. Fazın ölçülebilir kapısı zaten buydu.<br><br><b>Yapılan iş küçüktü: bir koşucu.</b> Sunucuyu kendi kaldırıyor, hazır olmasını bekliyor, testi koşuyor, sunucuyu indiriyor ve <b>testin çıkış kodunu</b> geri veriyor. 41/41, 25 saniye. Ama küçük işin iki iddiası vardı ve ikisi de sınandı.<br><br><b>Birinci iddia: adres.</b> Koşucu sunucuyu <code>127.0.0.1</code> üzerinden yokluyordu — makul görünen bir seçim. İlk koşuda altmış saniye bekleyip <i>&ldquo;sunucu ayağa kalkmadı&rdquo;</i> dedi, oysa sunucu <b>ayaktaydı</b>. Sebep: vite <code>localhost</code> adına bağlanıyor ve o ad bu makinede IPv6 adresine çözülüyor; IPv4 yoklaması bağlantı reddi alıyordu. Aynı makinede aynı port, <b>ama aynı yer değil</b>.<br><br><b>İkinci iddia daha öğretici çıktı.</b> Koşucuya, port doluysa sessizce başka bir porta kaymasın diye bir bayrak konmuştu — çünkü kayarsa duman testi <b>başka bir uygulamayı</b> ölçer ve yeşil kalır. Bayrağın bunu çözdüğü <b>varsayılmıştı</b>; sınandı: port bilerek dolduruldu. Sonuç yarı doğru: koşu kırmızıya döndü — <b>ama yanlış sebeple</b>. Yoklama, portu tutan yabancı sunucunun cevabını <i>&ldquo;hazır&rdquo;</i> saydı, tarayıcı testi ona bağlandı ve hata <i>&ldquo;sahne bulunamadı&rdquo;</i> diye göründü. Yani koşu kırmızıydı ve mesaj <b>gerçek sebebi hiç söylemiyordu</b>; bir sonraki sefer aynı hatayı gören kişi oyunda hata arayacaktı.<br><br><b>Düzeltme yönü değiştirdi:</b> hazır olup olmadığı artık <b>porta</b> sorulmuyor, <b>sunucunun kendisine</b> soruluyor. Vite ayağa kalkınca bunu kendi çıktısına yazıyor; kalkamazsa süreç ölüyor. İkisi de kesin sinyal ve ikisi de yabancı bir sunucunun taklit edemeyeceği şeyler. Port dolu hâlde koşu artık şunu diyor: <i>&ldquo;vite ayağa kalkamadan kapandı — port dolu olabilir&rdquo;</i>.<br><br><b>Ve bekçi turunda bir mutasyon kaçtı.</b> Port kuralının bayrağı testte dosyanın <b>metninde</b> aranıyordu; bayrak açıklama satırında da geçtiği için, gerçek argümanlardan <b>silindiği hâlde</b> arama onu buluyordu — yani testin kilitlediğini sandığı şeyi hiç kilitlemiyordu. Komut, argümanlarıyla birlikte ayrı bir fonksiyona çıkarıldı ve test artık onu çağırıyor. Bundan sonra on sekiz mutasyonun on sekizi de yakalandı.",
+   "maddeler": [
+    "<b>Tek komut:</b> sunucuyu kendisi kaldırıp indiriyor · <b>41/41</b> · 25 saniye · çıkış kodu testten gelir",
+    "<b>Ayrı port + katı port kuralı</b> — geliştiricinin açık sunucusuyla çakışmıyor",
+    "<b>Adres düzeltildi:</b> IPv4 yoklaması sunucu ayaktayken &ldquo;kalkmadı&rdquo; diyordu",
+    "<b>Hazır sinyali sunucunun kendisinden</b> — portu tutan yabancı uygulama artık hazır sayılmıyor",
+    "<b>Bekçi:</b> 21 test, 18 mutasyon, on sekizi de yakalandı",
+    "<b>Protokol güncellendi:</b> kapanışta duman testi artık &ldquo;mümkünse&rdquo; değil, <b>kesilmez</b>"
+   ],
+   "not": "<b>Turun dersi iki kez aynı şeyi söyledi: bir aracın yeşil olması, doğru şeyi ölçtüğünü göstermez.</b> Koşucu port doluyken kırmızıya dönüyordu ve bu yeterli sanılabilirdi — ama yanlış sebeple kırmızıydı ve mesajı yanlış yere bakmaya yönlendiriyordu. Bekçi de <i>&ldquo;bayrak var&rdquo;</i> diyordu ve doğruydu — ama baktığı yer açıklama satırıydı. İkisi de ancak <b>bilerek bozulunca</b> ortaya çıktı."
+  },
   {
    "tarih": "09.09.2026",
    "etiket": "Faz D · 9. oturum (D9 — meta katmanın yığını · D-095)",
