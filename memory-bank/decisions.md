@@ -2801,3 +2801,54 @@ ortam uğultusunu üretebilir — eksik olan **kablo, kabiliyet değil**. `setti
 makinede yok. Mutlak yol committed dosyadan çıkarıldı, makineye özel JDK seçimi
 `~/.gradle/gradle.properties`e (git'te değil) taşındı. Ayrıca **Capacitor 8 JDK 21 istiyor**
 (JDK 17 "invalid source release: 21" veriyor); bu makineye Temurin 21 kuruldu. Debug APK: 7,3 MB.
+
+---
+
+## D-097 — Faz S açıldı; pad dili yeniden yazıldı, iki eski karar kullanıcı isteğiyle döndü
+
+**Bağlam.** Kullanıcı oyunu oynadı ve 25 kalemlik geri bildirim verdi (G-01…G-25,
+`docs/geribildirim-oyun-testi-2026-09-09.md`). En ağır iddiası: *"her şeyi yaptık ama KayKit'i
+hiçbir yere eklemedik."* **İddia sayıyla doğrulandı:** depoda 238 KayKit modeli var,
+`grep kaykit src/` yalnız **4 satır** buluyor ve dördü de masa/sandalye — yani **restaurant-bits'in
+144, city-builder'ın 41 modeli, toplam 185 model, sıfır satır kod tarafından çağrılıyor.**
+
+**Karar.** Kullanıcı *"ücretsiz olduğu sürece her asseti çek ve yap"* dedi → **Faz S — sanat ve
+arayüz geçişi** açıldı, 6 kalem (`docs/plan-faz-s-sanat.md`). Faz adı **S**, çünkü defterde zaten
+bir Faz G (görsel taban) var; `G-0x` numaraları geri bildirimin, fazın kalemleri `S1…S6`.
+Faz denge dosyalarına dokunmaz → varyant kapısı ve iki-commit kilidi tetiklenmez; kapı test+duman.
+
+**S1'de yapılan (pad ve yükseltme dili).** Çember → **köşe parantezli kare** (kenar ortaları boş) ·
+dolum büyüyen disk → **alttan üste dolan kare** · "Masa"/"Çay Yükselt"/"Usta" → hepsinde
+**YÜKSELT** + solunda düz yukarı ok · yazı 700 → 800 · 💎 pulu "mavi kare" → gerçek taş silüeti.
+Etiketin tekleşmesi bilinçli: hangi obje olduğunu **metin değil KONUM** anlatır — oyunun zaten
+kurduğu mekânsal dil (`feedback_spatial_tycoon_ux`).
+
+**İKİ KARAR GERİ DÖNDÜ — ikisi de kullanıcı isteği, ikisi de yazılı gerekçenin üstüne.**
+① **D-094'ün Usta ŞERİDİ → MODAL (G-14).** D-094 modali gerekçesiyle reddetmişti: *"oyuncu masanın
+yanından her geçtiğinde ekranı kapatan bir modal hareketi keser."* Kullanıcı oynadıktan sonra
+şeridi reddetti. Karar kullanıcınındır — **ama eski gerekçe geçersiz değil**, o yüzden modal
+kapatılabilir ve oyuncu o masadan uzaklaşana kadar geri açılmaz. Yani modal geldi, tuzağı gelmedi.
+② **Görev tamamlanma toast'ı KALKTI (G-04).** Toast ile alt bandın "tamamlandı" hâli aynı anda
+konuşuyordu ve oyuncu ikisini yeni görev sanıyordu. Tamamlanma artık **bandın kendi hâli**
+(yeşil zemin + onay ikonu + "TAMAMLANDI"), sonra yeni görev geliyor. **`tick.ts`e DOKUNULMADI** —
+olay hâlâ üretiliyor, yalnız HUD çizmiyor (E3/D-096'nın sunum-katmanı deseni; tick parmak izi
+korundu, `devHooks` anlık görüntüsü ve ona bağlı testler değişmedi).
+
+**Yan iş — `npm run pano` kendi bekçisini göremiyormuş.** Kapanışta pano testleri kırmızıydı ve
+**değişikliklerden ÖNCE de kırmızıydı** (temiz ağaçta doğrulandı). İlk teşhis CRLF'ti, yanlış çıktı:
+aracın yazma şartı *"veri değişti mi"* idi, oysa pano elle düzenlenince **biçimi** kayabiliyor —
+JSON bloğunda **830 `\uXXXX` kaçışı ile 15.020 ham karakter yan yana** bulundu. Veri aynı, bayt
+farklı → araç "zaten güncel" deyip çıkıyor, `panoYaz` bekçisi sessizce kırmızı kalıyor. Şart
+`yazmaliMi()` olarak dışa alındı ve **bayta** bakıyor; bekçi 3 test aldı, **iki mutasyonla
+doğrulandı**. **Ders: bir aracın yazma şartı ürettiği çıktıya bakmıyorsa, kendi bekçisini göremez.**
+Açık kalemlerdeki "pano aracı kendi turunu ister" maddesi bu kadarıyla kapandı; `.gitattributes`
+eksiği DURUYOR.
+
+**Ölçülen engel.** Bu ortamdan internete çıkılamıyor (`curl` HTTP 000, çıkış 43) → yeni ücretsiz
+KayKit paketlerini araç indiremez. S1-S5 zaten gerektirmiyor; **S6 kullanıcının indirmesini bekler.**
+
+**Karakter kolu CEVAPLANMADI.** KayKit'in bütün karakter paketleri fantezi temalı; altı kol
+bedelleriyle asset panosuna yazıldı (https://claude.ai/code/artifact/2e7f92c0-15b6-4f72-814d-753cf79d74e0).
+
+vitest **770** · duman **41/41** · **denge sayısı DEĞİŞMEDİ** · kayıt sürümü artmadı ·
+yeni pad tarayıcıda **gözle doğrulandı** (3D sahne testle doğrulanamaz).

@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 81 · YAPILAN 75 · %93):**
+**Oturum bütçesi (TOPLAM 87 · YAPILAN 76 · %87):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -24,8 +24,9 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
 | | D meta katman | 9/9 ✅ |
 | | E arayüz ve cila | 4/5 🔧 |
+| | **S sanat ve arayüz geçişi** | **1/6 🔧** |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **47/53** |
+| **Program toplam** | | **48/59** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -36,7 +37,7 @@ oyuncu çarpışması bilinen-hata listesinden çıkıp kendi turu oldu (D5) →
 toplam 78 → 79. **Aynı gün:** meta katmanın yığını beş turdur açık duran D-087 ölçümü olarak
 kendi turunu aldı (D9) → Faz D 8 → 9, toplam 79 → 80. **Aynı gün:** E3 (ses) kullanıcı
 kararıyla SİSTEM (E3) ve DOSYALAR (E4) olarak ikiye bölündü, onboarding E5 oldu → Faz E 4 → 5,
-toplam 80 → 81. **E4 kapsamı ölçümle değişti ama kalem sayısı değişmedi:** tur "dosya bırak"
+toplam 80 → 81. **2026-09-09 (ikinci oturum):** kullanıcı oynadı, 25 kalemlik geri bildirim verdi (`docs/geribildirim-oyun-testi-2026-09-09.md`); sanat/arayüz işi **Faz S** olarak açıldı (6 kalem, `docs/plan-faz-s-sanat.md`) → toplam 81 → 87. Faz adı S, çünkü defterde zaten bir Faz G (görsel taban) var; `G-0x` numaraları geri bildirimin, fazın kalemleri `S1…S6`. **E4 kapsamı ölçümle değişti ama kalem sayısı değişmedi:** tur "dosya bırak"
 olarak açılmıştı, ölçüm "dosya alma, motoru büyüt" dedi (D-096); ortam sesi + `settings.music`
 kablosu E4'ün dışında kaldı ve **henüz kendi kalemi olmadı** — açık kalemler listesinde duruyor.
 
@@ -240,6 +241,30 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   **Kabul edilen kapsam sınırı:** `settings.music` + ortam sesi girmedi — kablo sorunu, kabiliyet
   değil; kendi turunu ister.
 - ⏳ **E5 — hareketli onboarding**
+
+## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (1/6) 🔧 — kullanıcı geri bildirimi 2026-09-09
+- ✅ **S1 — pad ve yükseltme dili yeniden yazıldı** · çember → **köşe parantezli kare** (kenar
+  ortaları boş), dolum büyüyen disk → **alttan üste dolan kare**, "Masa"/"Çay Yükselt"/"Usta"
+  → hepsinde **YÜKSELT** + solunda düz yukarı ok, yazı 700 → 800, 💎 pulu "mavi kare" → gerçek
+  taş silüeti (`shapeGeometry`). **Usta şeridi MODAL oldu (G-14): D-094'ün kararı kullanıcı
+  isteğiyle döndü** — o kararın endişesi ("modal hareketi keser") geçersiz değil, o yüzden modal
+  kapatılabilir ve oyuncu o masadan uzaklaşana kadar geri açılmaz. **Görev toast'ı kalktı (G-04):**
+  tamamlanma artık bandın kendi hâli (yeşil zemin + onay ikonu + "TAMAMLANDI"); `tick.ts`e
+  DOKUNULMADI, olay hâlâ üretiliyor yalnız çizilmiyor (E3/D-096 sunum-katmanı deseni).
+  vitest **770** · duman **41/41** · **denge sayısı DEĞİŞMEDİ** · tarayıcıda gözle doğrulandı.
+  **Yan iş — `npm run pano` gerçek bir hata veriyordu:** yazma şartı "veri değişti mi"ydi, oysa
+  pano elle düzenlenince BİÇİMİ kayabiliyor (JSON bloğunda 830 `\uXXXX` kaçışı ile 15.020 ham
+  karakter yan yana bulundu) — veri aynı, bayt farklı, araç "zaten güncel" deyip çıkıyor ve
+  `tests/pano-guncelle.test.ts`in "BİREBİR geri yazılır" bekçisi **sessizce kırmızı** kalıyordu.
+  Şart `yazmaliMi()` olarak dışa alındı ve bayta bakıyor; bekçi 3 test daha aldı,
+  **iki mutasyonla doğrulandı**. Açık kalemlerdeki "araç kendi turunu ister" maddesi bu kadarıyla
+  kapandı; `.gitattributes` eksiği DURUYOR.
+- ⏳ **S2 — mutfak bloğu KayKit'e geçer** (restaurant-bits, elde)
+- ⏳ **S3 — duvar + zemin** (restaurant-bits, elde)
+- ⏳ **S4 — dekor takası** (furniture + city, elde)
+- ⏳ **S5 — dış cephe + pencere + tente** (city-builder + maket-v13)
+- ⏳ **S6 — yeni ücretsiz paketler** — okey/tavla, çiçek, süs · **kullanıcı indirmesini bekler**
+  (bu ortamda ağ yok: `curl` HTTP 000)
 
 ## Bilinen açık kalemler
 - ~~Hedeflerin ₺ kolu bu hâliyle kalsın mı?~~ → **D3b'de kapandı (D-090):** ₺ kolu tamamen kalktı,

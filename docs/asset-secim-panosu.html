@@ -1,0 +1,572 @@
+<title>Kıraathane Asset Panosu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;800&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400&display=swap">
+
+<style>
+  :root {
+    --ground:   #E9EEF1;
+    --surface:  #FFFFFF;
+    --sunk:     #DCE5EA;
+    --line:     #C3D2D9;
+    --line-soft:#DDE7EC;
+    --ink:      #10202A;
+    --muted:    #566E7A;
+    --faint:    #7E95A0;
+    --cini:     #0E6E7D;
+    --cini-ink: #0A5460;
+    --demli:    #B4671A;
+    --ok:       #2C7355;
+    --yok-c:    #9E3F1E;
+    --chip:     #E2EBEF;
+    --shadow:   0 1px 2px rgba(16,32,42,.06), 0 8px 22px -14px rgba(16,32,42,.28);
+    --sel:      #0E6E7D;
+    --sel-bg:   #E0F0F2;
+    color-scheme: light;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:   #0C171D;
+      --surface:  #142530;
+      --sunk:     #0F1E26;
+      --line:     #294049;
+      --line-soft:#1E333D;
+      --ink:      #E2EDF1;
+      --muted:    #93AAB4;
+      --faint:    #6E8792;
+      --cini:     #45B8C8;
+      --cini-ink: #7FD3DE;
+      --demli:    #E2953C;
+      --ok:       #5CB68C;
+      --yok-c:    #E08059;
+      --chip:     #1C313B;
+      --shadow:   0 1px 2px rgba(0,0,0,.4), 0 10px 26px -16px rgba(0,0,0,.75);
+      --sel:      #45B8C8;
+      --sel-bg:   #15343B;
+      color-scheme: dark;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground:   #0C171D;
+    --surface:  #142530;
+    --sunk:     #0F1E26;
+    --line:     #294049;
+    --line-soft:#1E333D;
+    --ink:      #E2EDF1;
+    --muted:    #93AAB4;
+    --faint:    #6E8792;
+    --cini:     #45B8C8;
+    --cini-ink: #7FD3DE;
+    --demli:    #E2953C;
+    --ok:       #5CB68C;
+    --yok-c:    #E08059;
+    --chip:     #1C313B;
+    --shadow:   0 1px 2px rgba(0,0,0,.4), 0 10px 26px -16px rgba(0,0,0,.75);
+    --sel:      #45B8C8;
+    --sel-bg:   #15343B;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    font-size: 15.5px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .shell { max-width: 1080px; margin: 0 auto; padding: 34px 22px 120px; }
+  .prose { max-width: 68ch; }
+
+  /* ---------- başlık ---------- */
+  .masthead { border-bottom: 2px solid var(--ink); padding-bottom: 22px; margin-bottom: 30px; }
+  .eyebrow {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11.5px; letter-spacing: .13em; text-transform: uppercase;
+    color: var(--cini); font-weight: 600; margin: 0 0 12px;
+  }
+  h1 {
+    font-family: Archivo, ui-sans-serif, system-ui, sans-serif;
+    font-weight: 800; font-size: clamp(30px, 5.4vw, 47px); line-height: 1.02;
+    letter-spacing: -.028em; margin: 0 0 14px; text-wrap: balance;
+  }
+  .dek { margin: 0; color: var(--muted); font-size: 17px; max-width: 60ch; }
+
+  /* ---------- sayı şeridi ---------- */
+  .tally { display: grid; grid-template-columns: repeat(auto-fit, minmax(158px, 1fr)); gap: 1px;
+           background: var(--line); border: 1px solid var(--line); margin: 26px 0 40px; }
+  .tally div { background: var(--surface); padding: 15px 16px 14px; }
+  .tally b {
+    display: block; font-family: Archivo, sans-serif; font-weight: 800;
+    font-size: 30px; line-height: 1; letter-spacing: -.02em;
+    font-variant-numeric: tabular-nums; margin-bottom: 5px;
+  }
+  .tally span { font-size: 12.5px; color: var(--muted); line-height: 1.35; display: block; }
+  .tally .hot b { color: var(--demli); }
+
+  /* ---------- bölüm ---------- */
+  section { margin: 0 0 52px; scroll-margin-top: 18px; }
+  h2 {
+    font-family: Archivo, sans-serif; font-weight: 800;
+    font-size: 25px; letter-spacing: -.02em; line-height: 1.15;
+    margin: 0 0 6px; text-wrap: balance;
+  }
+  h2 .num {
+    font-family: "IBM Plex Mono", monospace; font-size: 13px; font-weight: 600;
+    color: var(--cini); letter-spacing: 0; margin-right: 10px; vertical-align: 3px;
+  }
+  .sub { margin: 0 0 22px; color: var(--muted); max-width: 66ch; }
+  h3 {
+    font-family: Archivo, sans-serif; font-weight: 600; font-size: 15px;
+    letter-spacing: .01em; margin: 30px 0 12px; color: var(--ink);
+  }
+
+  code, .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .875em; }
+  code { background: var(--chip); padding: 1px 5px; border-radius: 3px; color: var(--cini-ink); }
+
+  a { color: var(--cini); text-underline-offset: 2.5px; text-decoration-thickness: 1px; }
+  a:focus-visible, button:focus-visible, .pick:focus-visible {
+    outline: 2px solid var(--cini); outline-offset: 2px;
+  }
+
+  /* ---------- eşleme tablosu ---------- */
+  .scroller { overflow-x: auto; border: 1px solid var(--line); background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 14px; }
+  th {
+    text-align: left; font-family: "IBM Plex Mono", monospace; font-weight: 600;
+    font-size: 10.5px; letter-spacing: .11em; text-transform: uppercase;
+    color: var(--faint); padding: 11px 14px; border-bottom: 1px solid var(--line);
+    background: var(--sunk); white-space: nowrap;
+  }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  td.f { font-family: "IBM Plex Mono", monospace; font-size: 12.5px; line-height: 1.7; }
+  .pkg {
+    display: inline-block; font-family: "IBM Plex Mono", monospace; font-size: 10px;
+    font-weight: 600; letter-spacing: .06em; padding: 1px 5px; border-radius: 3px;
+    background: var(--chip); color: var(--muted); vertical-align: 1px; margin-left: 2px;
+  }
+  .st { white-space: nowrap; font-weight: 600; font-size: 12.5px; }
+  .st.v  { color: var(--ok); }
+  .st.y  { color: var(--demli); }
+  .st.x  { color: var(--yok-c); }
+
+  /* ---------- seçilebilir kart ---------- */
+  .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(268px, 1fr)); }
+  .pick {
+    display: block; width: 100%; text-align: left; font: inherit; color: inherit;
+    background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--line);
+    padding: 15px 16px 14px; cursor: pointer; box-shadow: var(--shadow);
+    transition: border-color .13s, background .13s, transform .13s;
+  }
+  .pick:hover { border-color: var(--cini); transform: translateY(-1px); }
+  .pick[aria-pressed="true"] { border-color: var(--sel); border-left-color: var(--sel); background: var(--sel-bg); }
+  .pick .top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 7px; }
+  .pick .nm { font-family: Archivo, sans-serif; font-weight: 600; font-size: 15px; letter-spacing: -.008em; }
+  .pick .pr {
+    font-family: "IBM Plex Mono", monospace; font-size: 11.5px; font-weight: 600;
+    white-space: nowrap; color: var(--ok);
+  }
+  .pick .pr.paid { color: var(--demli); }
+  .pick p { margin: 0 0 9px; font-size: 13.5px; color: var(--muted); line-height: 1.5; }
+  .pick .solves {
+    font-size: 12px; color: var(--ink); border-top: 1px dashed var(--line);
+    padding-top: 9px; margin-top: 10px;
+  }
+  .pick .solves b { font-family: "IBM Plex Mono", monospace; font-size: 10.5px; letter-spacing: .06em;
+                    color: var(--faint); font-weight: 600; display: block; margin-bottom: 3px; }
+  .pick .mark {
+    display: inline-block; width: 13px; height: 13px; border: 1.5px solid var(--line);
+    margin-right: 8px; vertical-align: -1px; position: relative; flex: 0 0 auto;
+  }
+  .pick[aria-pressed="true"] .mark { background: var(--sel); border-color: var(--sel); }
+  .pick[aria-pressed="true"] .mark::after {
+    content: ""; position: absolute; left: 3.5px; top: .5px; width: 4px; height: 8px;
+    border: solid var(--surface); border-width: 0 2px 2px 0; transform: rotate(43deg);
+  }
+  .lnk { font-size: 12.5px; margin-top: 9px; }
+
+  /* ---------- uyarı kutusu ---------- */
+  .note {
+    border-left: 3px solid var(--demli); background: var(--surface);
+    padding: 13px 16px; margin: 20px 0; font-size: 14px;
+  }
+  .note b { color: var(--demli); }
+
+  /* ---------- özet ---------- */
+  .summary {
+    border: 2px solid var(--ink); background: var(--surface);
+    padding: 20px 20px 18px; margin-top: 46px;
+  }
+  .summary h2 { margin-bottom: 4px; }
+  #out {
+    font-family: "IBM Plex Mono", monospace; font-size: 12.5px; line-height: 1.75;
+    background: var(--sunk); border: 1px solid var(--line); padding: 14px 15px;
+    margin: 16px 0 0; white-space: pre-wrap; word-break: break-word; color: var(--ink);
+  }
+  .empty { color: var(--faint); font-style: italic; }
+  .btnrow { display: flex; gap: 9px; flex-wrap: wrap; margin-top: 14px; }
+  button.act {
+    font: 600 13px Archivo, sans-serif; padding: 8px 15px; cursor: pointer;
+    border: 1px solid var(--ink); background: var(--ink); color: var(--surface);
+  }
+  button.act.ghost { background: transparent; color: var(--ink); }
+  button.act:hover { opacity: .87; }
+
+  ul.tight { margin: 0 0 0 1.1em; padding: 0; }
+  ul.tight li { margin-bottom: 5px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+
+<div class="shell">
+
+  <header class="masthead">
+    <p class="eyebrow">Köşe Kıraathanesi · 2026-09-09 · G-19…G-25</p>
+    <h1>Kıraathane Asset Panosu</h1>
+    <p class="dek">Elde ne var, ne kullanılmıyor, ne satın alınmalı. Kartlara tıkla — en altta
+      seçim listen birikiyor, bana onu okursun.</p>
+  </header>
+
+  <div class="tally">
+    <div><b>238</b><span>KayKit modeli repoda, CC0, indirilmiş</span></div>
+    <div class="hot"><b>185</b><span>bunun hiç kullanılmayanı — <code>src/</code>'de 0 referans</span></div>
+    <div><b>4</b><span>koda bağlı KayKit modeli (masa + sandalye)</span></div>
+    <div><b>0</b><span>karakter asseti — tek gerçek boşluk</span></div>
+  </div>
+
+  <section>
+    <h2><span class="num">§1</span>Şikâyet doğrulandı: paketler duruyor, kablo yok</h2>
+    <p class="sub">“Her şeyi yaptık ama KayKit’i hiçbir yere eklemedik” — sayıyla:
+      üç paket indirildi ve manifeste yazıldı, ama <code>grep kaykit src/</code> yalnız
+      <b>furniture-bits</b>’i buluyor, o da sadece masa/sandalye için.
+      <b>Restaurant Bits’in 144 modeli ve City Builder’ın 41 modeli hiçbir yerden çağrılmıyor.</b></p>
+
+    <div class="note">
+      <b>Bu bölümde para harcanmıyor.</b> Aşağıdaki her şey zaten diskte, CC0, aynı sanatçı —
+      yani stil kilidi bedava sağlanıyor. Eksik olan tek şey <code>Model.tsx</code>’e verilecek
+      <code>src</code> yolu. Bu, satın alma değil <b>entegrasyon turu</b>.
+    </div>
+
+    <h3>Elle çizdiğim 17 dekor parçasının KayKit karşılığı</h3>
+    <div class="scroller">
+      <table>
+        <thead>
+          <tr><th>Şu an elle çizili</th><th>KayKit karşılığı</th><th>Durum</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>pencere <span class="pkg">Decor</span></td>
+              <td class="f">wall_window_open · wall_window_closed <span class="pkg">R</span></td>
+              <td class="st v">✓ birebir</td></tr>
+          <tr><td>saksı / büyük saksı / denizlik saksısı</td>
+              <td class="f">cactus_small_A·B · cactus_medium_A·B <span class="pkg">F</span><br>bush <span class="pkg">C</span></td>
+              <td class="st y">~ kaktüs, çiçek değil</td></tr>
+          <tr><td>çöp kovası</td>
+              <td class="f">trash_A · trash_B · dumpster <span class="pkg">C</span></td>
+              <td class="st v">✓ birebir</td></tr>
+          <tr><td>ayaklı lamba</td>
+              <td class="f">lamp_standing · lamp_table <span class="pkg">F</span></td>
+              <td class="st v">✓ birebir</td></tr>
+          <tr><td>paspas / halı</td>
+              <td class="f">rug_rectangle_A·B · rug_oval_A·B · rug_rectangle_stripes_A·B <span class="pkg">F</span></td>
+              <td class="st v">✓ 6 varyant</td></tr>
+          <tr><td>tablo</td>
+              <td class="f">pictureframe_large_A·B · _medium · _small_A·B·C · _standing_A·B <span class="pkg">F</span></td>
+              <td class="st v">✓ 8 varyant</td></tr>
+          <tr><td>konsol</td>
+              <td class="f">cabinet_medium(_decorated) · cabinet_small <span class="pkg">F</span> · kitchencabinet <span class="pkg">R</span></td>
+              <td class="st v">✓ birebir</td></tr>
+          <tr><td>gazetelik</td>
+              <td class="f">shelf_A_small + book_set · book_single <span class="pkg">F</span></td>
+              <td class="st y">~ birleştirilir</td></tr>
+          <tr><td>TV ünitesi</td>
+              <td class="f">cabinet_medium <span class="pkg">F</span> + ekran elle kalır</td>
+              <td class="st y">~ yarısı</td></tr>
+          <tr><td>askılık · duvar saati · aplik · askı rayı · şemsiyelik · petek</td>
+              <td class="f">—</td>
+              <td class="st x">✗ hiçbir pakette yok</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:12.5px;color:var(--faint);margin-top:9px">
+      <span class="pkg">F</span> furniture-bits · <span class="pkg">R</span> restaurant-bits ·
+      <span class="pkg">C</span> city-builder-bits — üçü de <code>public/assets/models/</code> altında.
+    </p>
+
+    <h3>Senin bildirdiğin üç somut kusurun cevabı da elimizde</h3>
+    <div class="scroller">
+      <table>
+        <thead><tr><th>Şikâyet</th><th>Elde olan</th></tr></thead>
+        <tbody>
+          <tr><td><b>“Pencere duvardan ayrı duruyor, sağda”</b></td>
+              <td class="f">wall_window_open / _closed — pencere duvarın <i>parçası</i>; ayrıca wall · wall_half · wall_decorated · wall_doorway · pillar_A·B <span class="pkg">R</span></td></tr>
+          <tr><td><b>“Zemin ve duvar için texture lazım”</b></td>
+              <td class="f">floor_kitchen · floor_kitchen_small <span class="pkg">R</span> — ve doku atlası zaten repoda (<code>restaurantbits_texture.png</code>)</td></tr>
+          <tr><td><b>“Kapının üstünde tente yok, düz plaka duruyor”</b></td>
+              <td class="f">✗ <b>tente hiçbir KayKit paketinde yok.</b> §4’e düşüyor.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Ayrıca hiç dokunulmamış, oyuna doğrudan yarayanlar</h3>
+    <p class="sub" style="margin-bottom:14px">Bunlar “belki lazım olur” değil — bugün ilkel şekille
+      çizilen ya da hiç olmayan şeylerin hazır karşılıkları.</p>
+    <div class="scroller">
+      <table>
+        <thead><tr><th>Oyunda ne</th><th>Hazır model</th></tr></thead>
+        <tbody>
+          <tr><td>Mutfak bloğu (maketteki servis hattı)</td><td class="f">kitchencounter_straight_A·B (+_backsplash, +_decorated) · _innercorner · _outercorner · kitchencounter_sink · kitchencabinet(_corner, _half) · stove_multi · stove_single · oven · extractorhood · fridge_A·B <span class="pkg">R</span></td></tr>
+          <tr><td>Bulaşık döngüsü (kirli bardak / bulaşıkçı)</td><td class="f">plate · plate_dirty · plate_small · bowl · bowl_dirty · dishrack · dishrack_plates <span class="pkg">R</span></td></tr>
+          <tr><td>Çay ocağı çevresi</td><td class="f">pot_A · pot_B · pot_large (semavere en yakın) · jar_A…D_small/medium/large (çay kutusu, şekerlik) · papertowel · towelrail <span class="pkg">R</span></td></tr>
+          <tr><td>Sipariş / menü</td><td class="f">menu · wall_orderwindow(_decorated) <span class="pkg">R</span></td></tr>
+          <tr><td><b>Dışarısı</b> (hiç yapılmadı)</td><td class="f">building_A…H (+_withoutBase) · road_straight · _corner · _junction · _tsplit · _crossing · streetlight · bench · bush · firehydrant · car_taxi · car_sedan · watertower <span class="pkg">C</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">§2</span>İndirilecek KayKit paketleri — hepsi ücretsiz, hepsi CC0</h2>
+    <p class="sub">Aynı sanatçı, aynı atlas mantığı → stil kilidi (<code>docs/assets.md</code> §3)
+      kendiliğinden korunur. Fiyatlar “ne verirsen” (0 ₺ geçerli); parantezdeki ücretli katman
+      sadece ekstra model/kaynak dosyası içindir.</p>
+
+    <div class="grid">
+      <button class="pick" type="button" data-pick="KayKit Board Game Bits (ücretsiz, CC0) — okey/tavla masası için">
+        <span class="top"><span class="nm"><span class="mark"></span>Board Game Bits</span><span class="pr">ücretsiz</span></span>
+        <p>75+ model: pullar, domino taşları, zar, jeton, para, piyon, dama, satranç. Ekstra katman $4.99.</p>
+        <div class="solves"><b>NEYİ ÇÖZER</b>okey pulu + tavla — kıraathanenin asıl kimliği. Bugün <code>box</code> ilkeliyle duruyor, <code>okey_tile</code> sesi bile hazır ama olay yok.</div>
+        <div class="lnk"><a href="https://kaylousberg.itch.io/board-game-bits" target="_blank" rel="noopener">kaylousberg.itch.io/board-game-bits →</a></div>
+      </button>
+
+      <button class="pick" type="button" data-pick="KayKit Forest Nature Pack (ücretsiz, CC0) — çiçek/ağaç/çalı, dışarısı + saksılar">
+        <span class="top"><span class="nm"><span class="mark"></span>Forest Nature Pack</span><span class="pr">ücretsiz</span></span>
+        <p>100+ ağaç, çalı, çimen kümesi, kaya. Ekstra $9.99 (200+ ve renk varyantları).</p>
+        <div class="solves"><b>NEYİ ÇÖZER</b>“kendi çizdiğin çiçekler yerine” — furniture paketinde yalnız kaktüs var. Dışarısının yeşili de buradan gelir.</div>
+        <div class="lnk"><a href="https://kaylousberg.itch.io/kaykit-forest" target="_blank" rel="noopener">kaylousberg.itch.io/kaykit-forest →</a></div>
+      </button>
+
+      <button class="pick" type="button" data-pick="KayKit Prototype Bits (ücretsiz, CC0) — pad/işaret/ok geometrileri">
+        <span class="top"><span class="nm"><span class="mark"></span>Prototype Bits</span><span class="pr">ücretsiz</span></span>
+        <p>Ok, işaret, çerçeve, blok gibi yer-tutucu ve UI-benzeri 3D parçalar.</p>
+        <div class="solves"><b>NEYİ ÇÖZER</b>G-12 “nitro tarzı yukarı ok” ve pad çerçevesi — SVG yerine dünya-içi geometri seçeneği.</div>
+        <div class="lnk"><a href="https://kaylousberg.itch.io/prototype-bits" target="_blank" rel="noopener">kaylousberg.itch.io/prototype-bits →</a></div>
+      </button>
+
+      <button class="pick" type="button" data-pick="KayKit Block Bits (ücretsiz, CC0) — modüler duvar/kütle">
+        <span class="top"><span class="nm"><span class="mark"></span>Block Bits</span><span class="pr">ücretsiz</span></span>
+        <p>Modüler blok/duvar kütleleri; mekân hacmini (mutfak, WC, depo odaları) kutu yerine parça ile kurmaya yarar.</p>
+        <div class="solves"><b>NEYİ ÇÖZER</b><code>feedback_room_volume</code> — “mekân hacim olmalı, duvar kenarı değil”.</div>
+        <div class="lnk"><a href="https://kaylousberg.itch.io/block-bits" target="_blank" rel="noopener">kaylousberg.itch.io/block-bits →</a></div>
+      </button>
+
+      <button class="pick" type="button" data-pick="KayKit Holiday Bits (ücretsiz, CC0) — süs/askı/ışık dizisi">
+        <span class="top"><span class="nm"><span class="mark"></span>Holiday Bits</span><span class="pr">ücretsiz</span></span>
+        <p>Askı süsleri, ışık dizileri, kutu ve bayrak parçaları.</p>
+        <div class="solves"><b>NEYİ ÇÖZER</b>Askı rayı / şemsiyelik gibi §1’de “✗” çıkan küçük dekorlara en yakın kaynak. Ayrıca dış cephe flama süsü.</div>
+        <div class="lnk"><a href="https://kaylousberg.itch.io/holiday-bits" target="_blank" rel="noopener">kaylousberg.itch.io/holiday-bits →</a></div>
+      </button>
+
+      <button class="pick" type="button" data-pick="KayKit Resource Bits (ücretsiz, CC0) — çuval/sandık/kasa stoğu">
+        <span class="top"><span class="nm"><span class="mark"></span>Resource Bits</span><span class="pr">ücretsiz</span></span>
+        <p>Çuval, sandık, kasa, yığın — depo alanı ve “stok” hissi için.</p>
+        <div class="solves"><b>NEYİ ÇÖZER</b>Depo odası bugün boş kutu; ayrıca kilitli obje “tadilat hâli” için malzeme yığını.</div>
+        <div class="lnk"><a href="https://kaylousberg.itch.io/resource-bits" target="_blank" rel="noopener">kaylousberg.itch.io/resource-bits →</a></div>
+      </button>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">§3</span>Karakterler — tek gerçek boşluk, karar senin</h2>
+    <p class="sub">Ana karakter, garson, bulaşıkçı ve müşteriler bugün <b>parçalı ilkel gövde</b>.
+      2026-06-11’de Quaternius Modular Men/Women eklenmiş ve senin geri bildiriminle
+      <i>geri alınmıştı</i> (“konsepte uygun değil; My&nbsp;Hotel tarzı olmalı”). Aşağıdaki altı kol
+      o kararın üstüne biniyor — <b>burada bir tane seç</b>, gerisi bilgi.</p>
+
+    <div class="note">
+      <b>Dürüst uyarı.</b> KayKit’in karakter paketlerinin hepsi <b>fantezi temalı</b> (şövalye, büyücü,
+      iskelet, orc). Kıraathaneye sivil müşteri lazım. Yani “KayKit al, bitsin” diye temiz bir yol
+      <b>yok</b>; her kolun bir bedeli var ve aşağıda yazılı.
+    </div>
+
+    <div class="grid">
+      <button class="pick" type="button" data-pick="KARAKTER KOLU A — KayKit Adventurers (ücretsiz CC0) alıp sivilleştir">
+        <span class="top"><span class="nm"><span class="mark"></span>A · Adventurers + sivilleştir</span><span class="pr">ücretsiz</span></span>
+        <p>KayKit’in kendi karakter paketi. Rigged, animasyonlu, Mixamo uyumlu, gövde oranları KayKit mobilyasıyla birebir.</p>
+        <div class="solves"><b>BEDEL</b>Silüet fantezi: zırh, pelerin, kılıç. Sivil görünüm için mesh düzenleme + yeniden dokulama işi bende — birkaç oturum.</div>
+        <div class="lnk"><a href="https://kaylousberg.itch.io/kaykit-adventurers" target="_blank" rel="noopener">kaykit-adventurers →</a> · <a href="https://kaylousberg.itch.io/kaykit-character-animations" target="_blank" rel="noopener">animasyonlar (ayrı, ücretsiz)</a></div>
+      </button>
+
+      <button class="pick" type="button" data-pick="KARAKTER KOLU B — KayKit Mystery Monthly Series 4/5/6 satın al ($19.99/paket)">
+        <span class="top"><span class="nm"><span class="mark"></span>B · Mystery Monthly 4/5/6</span><span class="pr paid">$19.99 / paket</span></span>
+        <p>Paket başına 14 rigged karakter, CC0. Series 6’da <i>Farmers</i>, <i>Hoarder</i>, <i>Toy Soldier</i> gibi sivile yakın birkaç figür var.</p>
+        <div class="solves"><b>BEDEL</b>Yine ağırlıklı fantezi; 14 karakterin belki 3’ü işe yarar. Paket başına ~₺700 ve içeriği önceden tam göremiyorsun.</div>
+        <div class="lnk"><a href="https://kaylousberg.itch.io/kaykit-series-6" target="_blank" rel="noopener">series 6 →</a> · <a href="https://kaylousberg.itch.io/kaykit-series-5" target="_blank" rel="noopener">5</a> · <a href="https://kaylousberg.itch.io/kaykit-series-4" target="_blank" rel="noopener">4</a></div>
+      </button>
+
+      <button class="pick" type="button" data-pick="KARAKTER KOLU C — The Complete KayKit ($150), her şey dahil">
+        <span class="top"><span class="nm"><span class="mark"></span>C · The Complete KayKit</span><span class="pr paid">$150</span></span>
+        <p>Kay Lousberg’in bütün paketleri, tüm karakter serileri, .blend kaynak dosyaları dahil.</p>
+        <div class="solves"><b>BEDEL</b>~₺5.500. Karakter sorununu <i>tam</i> çözmüyor (hâlâ fantezi), ama §2’deki her şeyi ve kaynak dosyaları da getirir — sivilleştirme işi .blend ile çok kolaylaşır.</div>
+        <div class="lnk"><a href="https://kaylousberg.itch.io/kaykit-complete" target="_blank" rel="noopener">kaykit-complete →</a></div>
+      </button>
+
+      <button class="pick" type="button" data-pick="KARAKTER KOLU D — Quaternius Universal Base Characters + Modular Outfits (ücretsiz CC0)">
+        <span class="top"><span class="nm"><span class="mark"></span>D · Quaternius modüler</span><span class="pr">ücretsiz</span></span>
+        <p>6 temel gövde + 62 parçalı modüler kıyafet, CC0, rigged, retargetable. Sivil giydirme buradan çıkar.</p>
+        <div class="solves"><b>BEDEL</b><b>Bunu 2026-06-11’de bir kez reddettin.</b> Oranlar KayKit’ten ince ve gerçekçi; flat-shaded mobilyanın yanında yabancı durabilir. Kabul edersen “tek stil kilidi” kuralına yazılı istisna gerekir.</div>
+        <div class="lnk"><a href="https://quaternius.com/packs/universalbasecharacters.html" target="_blank" rel="noopener">Universal Base Characters →</a> · <a href="https://quaternius.itch.io/modular-character-outfits-fantasy" target="_blank" rel="noopener">Modular Outfits</a></div>
+      </button>
+
+      <button class="pick" type="button" data-pick="KARAKTER KOLU E — Synty POLYGON Town/Restaurant (ücretli, ~$20-40) ve tüm sahne o stile geçer">
+        <span class="top"><span class="nm"><span class="mark"></span>E · Synty POLYGON</span><span class="pr paid">~$20–40</span></span>
+        <p>Sektör standardı, çok tutarlı, kalabalık sivil karakter kadrosu, şehir + restoran kitleri mevcut.</p>
+        <div class="solves"><b>BEDEL</b>En büyük bedel: Synty stili KayKit’ten belirgin farklı → <b>mobilyayı da Synty’ye taşımak</b> gerekir, yani §1’deki 238 model çöpe. Faz F öncesinde çok riskli.</div>
+        <div class="lnk"><a href="https://syntystore.com/" target="_blank" rel="noopener">syntystore.com →</a></div>
+      </button>
+
+      <button class="pick" type="button" data-pick="KARAKTER KOLU F — asset alma, mevcut ilkel karakterleri elle iyileştir (D-013 tutarlı)">
+        <span class="top"><span class="nm"><span class="mark"></span>F · İlkel kalsın, iyileşsin</span><span class="pr">ücretsiz</span></span>
+        <p>D-013 zaten “primitive yer tutucu değil <i>nihai</i> stil” diyor. Gövde parçalarını yeniden orantıla, önlük/tepsi/kasket gibi rol işaretleri ekle, yürüyüş salınımı ver.</p>
+        <div class="solves"><b>BEDEL</b>Lisans yüzeyi sıfır, stil riski sıfır, para sıfır — ama iskeletli animasyon (skinned) gelmez; hareket <code>useFrame</code> ile parça salınımı olarak kalır.</div>
+        <div class="lnk" style="color:var(--faint)">Karar defteri: D-013 · <code>feedback_primitive_art_style</code></div>
+      </button>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">§4</span>Hiçbir CC0 pakette olmayanlar</h2>
+    <p class="sub">Bunlar Türkiye’ye özgü ya da fazla dar; generic paketlerde aramak zaman kaybı.
+      İki gerçekçi yol var: <b>AI üretimi</b> (Meshy / Tripo, low-poly kip, .glb çıktı, sonra
+      atlasa uydurma) veya <b>elle modelleme</b>. İkisi de <code>docs/assets.md</code> §8’in
+      lisans kuralına takılmaz, çünkü kaynak biziz.</p>
+    <div class="scroller">
+      <table>
+        <thead><tr><th>Obje</th><th>Bugün</th><th>En yakın hazır</th><th>Öneri</th></tr></thead>
+        <tbody>
+          <tr><td><b>İnce belli çay bardağı</b></td><td class="f">küçük silindir <span class="pkg">Dishes</span></td><td class="f">yok — <code>jar_*</code> uzak</td><td>AI · <b>en yüksek öncelik</b>, oyunun simgesi</td></tr>
+          <tr><td><b>Tente / sundurma</b></td><td class="f">düz plaka</td><td class="f">yok</td><td>elle — basit çizgili kumaş kütlesi, 5 dk’lık iş</td></tr>
+          <tr><td>Semaver</td><td class="f">silindir + küre</td><td class="f"><code>pot_large</code> <span class="pkg">R</span> idare eder</td><td>önce <code>pot_large</code> dene, yetmezse AI</td></tr>
+          <tr><td>Okey takımı</td><td class="f">box</td><td class="f">Board Game Bits (§2)</td><td>paket yeter, AI gereksiz</td></tr>
+          <tr><td>Bakır demlik</td><td class="f">silindir</td><td class="f"><code>pot_A</code> · <code>pot_B</code></td><td>recolor ile bakır tonu</td></tr>
+          <tr><td>Tavla</td><td class="f">yok</td><td class="f">Board Game Bits</td><td>paket yeter</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="grid" style="margin-top:16px">
+      <button class="pick" type="button" data-pick="§4 — çay bardağı + tente için AI üretimi (Meshy/Tripo) onaylandı">
+        <span class="top"><span class="nm"><span class="mark"></span>AI üretimini onayla</span><span class="pr">ücretsiz katman var</span></span>
+        <p>Çay bardağı ve tente için Meshy/Tripo ile low-poly .glb üret, KayKit atlasına uydur, manifeste “kendi üretimimiz” diye yaz.</p>
+        <div class="solves"><b>NEDEN</b>Bu iki obje olmadan mekân “kıraathane” gibi görünmüyor; hiçbir CC0 paket bunları taşımıyor.</div>
+      </button>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">§5</span>Texture: aradığın şey foto-doku değil</h2>
+    <p class="sub">“Zemin ve duvar için texture lazım” dedin ve doğru yeri de söyledin — KayKit
+      restaurant’ta var. Bunu netleştireyim, çünkü yanlış yola sapmak kolay:</p>
+    <ul class="tight" style="max-width:66ch;color:var(--muted)">
+      <li><b>Poly Haven / ambientCG</b> (ikisi de CC0, kaliteli) <b>bu oyuna uymaz.</b> 4K PBR foto-doku,
+        flat-shaded low-poly sahnede yamalı durur ve mobil bellek bütçesini yer.</li>
+      <li>Doğru cevap iki katmanlı: <b>①</b> KayKit’in kendi atlası — zaten repoda, üç dosya
+        (<code>furniturebits_texture.png</code>, <code>restaurantbits_texture.png</code>,
+        <code>citybits_texture.png</code>); <b>②</b> zemin deseni için hâlâ prosedürel
+        (<code>floorPattern.tsx</code> zaten var), çünkü fayans ölçüsü ızgaraya oturmalı.</li>
+      <li><code>floor_kitchen</code> / <code>floor_kitchen_small</code> mutfak zemini olarak
+        doğrudan takılabilir — mekânın hacim hissini de o veriyor.</li>
+    </ul>
+    <p class="sub" style="margin-top:16px"><b>Yani §5 bir satın alma kalemi değil, bir entegrasyon
+      kalemi.</b> Bu panoda seçilecek bir şey yok; §1’in içinde çözülüyor.</p>
+  </section>
+
+  <section>
+    <h2><span class="num">§6</span>Poly Pizza ve benzeri toplayıcılar — neden listede yok</h2>
+    <p class="sub">Baktım: <a href="https://poly.pizza/search/samovar" target="_blank" rel="noopener">çaydanlık/kettle</a>,
+      <a href="https://poly.pizza/search/awning" target="_blank" rel="noopener">tente/canopy</a> gibi aradığımız objelerin
+      birçoğu orada var. İki sebeple ana listeye almadım:</p>
+    <ul class="tight" style="max-width:66ch;color:var(--muted)">
+      <li><b>Lisans model başına değişiyor</b> — arşivin büyük kısmı Google Poly’den gelen CC-BY.
+        Yasak değil ama künye zorunlu, ve <code>docs/assets.md</code> §8 “belirsiz hiçbir asset
+        commit’lenmez” diyor: her modelin lisansını tek tek doğrulamak gerekir.</li>
+      <li><b>Her model başka sanatçıdan</b> — §3’teki tek stil kilidi tam da bunu yasaklıyor.
+        Tek bir yabancı çaydanlık bile sahnede sırıtır.</li>
+    </ul>
+    <p class="sub" style="margin-top:14px">Yine de istersen tek tek bakarız; sadece varsayılan yol
+      olmasın diye ayırdım.</p>
+  </section>
+
+  <div class="summary" id="summary">
+    <h2 style="font-size:20px">Seçim listen</h2>
+    <p class="sub" style="margin-bottom:0">Kartlara tıkladıkça burası doluyor. Bitince kopyala,
+      bana yapıştır — o kola göre uygulama turunu açarım.</p>
+    <pre id="out"><span class="empty">Henüz seçim yok.</span></pre>
+    <div class="btnrow">
+      <button class="act" type="button" id="copy">Listeyi kopyala</button>
+      <button class="act ghost" type="button" id="clear">Temizle</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  (function () {
+    var KEY = 'kiraathane-asset-secim-v1';
+    var picks = document.querySelectorAll('.pick');
+    var out = document.getElementById('out');
+
+    function load() {
+      try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { return []; }
+    }
+    function save(list) {
+      try { localStorage.setItem(KEY, JSON.stringify(list)); } catch (e) { /* özel pencere */ }
+    }
+
+    var chosen = load();
+
+    function render() {
+      if (!chosen.length) {
+        out.innerHTML = '<span class="empty">Henüz seçim yok.</span>';
+        return;
+      }
+      var lines = chosen.map(function (t, i) { return (i + 1) + '. ' + t; });
+      out.textContent = 'KIRAATHANE ASSET SEÇİMİ (' + chosen.length + ' kalem)\n\n' + lines.join('\n');
+    }
+
+    picks.forEach(function (btn) {
+      var label = btn.getAttribute('data-pick');
+      var on = chosen.indexOf(label) !== -1;
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      btn.addEventListener('click', function () {
+        var idx = chosen.indexOf(label);
+        if (idx === -1) { chosen.push(label); btn.setAttribute('aria-pressed', 'true'); }
+        else { chosen.splice(idx, 1); btn.setAttribute('aria-pressed', 'false'); }
+        save(chosen); render();
+      });
+    });
+
+    document.getElementById('copy').addEventListener('click', function () {
+      var btn = this;
+      var text = chosen.length ? out.textContent : 'Seçim yok.';
+      var done = function () { btn.textContent = 'Kopyalandı'; setTimeout(function () { btn.textContent = 'Listeyi kopyala'; }, 1600); };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, function () { btn.textContent = 'Kopyalanamadı — elle seç'; });
+      } else { btn.textContent = 'Kopyalanamadı — elle seç'; }
+    });
+
+    document.getElementById('clear').addEventListener('click', function () {
+      chosen = []; save(chosen);
+      picks.forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
+      render();
+    });
+
+    render();
+  })();
+</script>

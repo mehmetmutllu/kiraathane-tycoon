@@ -8,7 +8,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { progressOku, panoOku, panoYaz, denetle, panoyaUygula, gunlukUyarisi } from '../tools/pano-guncelle.mjs';
+import { progressOku, panoOku, panoYaz, denetle, panoyaUygula, gunlukUyarisi, yazmaliMi } from '../tools/pano-guncelle.mjs';
 
 // --- Küçük ama gerçeğin biçimini birebir taşıyan defter örneği.
 const DEFTER = `# progress
@@ -228,6 +228,30 @@ describe('gerçek dosyalar', () => {
     const crlf = html.replace(/\r?\n/g, '\r\n');
     expect(panoOku(crlf).durum).toEqual(panoOku(html).durum);
     expect(panoYaz(crlf, panoOku(crlf).durum)).toBe(crlf);
+  });
+
+  // 2026-09-09: aracın yazma şartı "veri değişti mi"ydi ve pano elle düzenlenip BİÇİMİ kayınca
+  // (JSON bloğunda `\uXXXX` kaçışları ile ham karakterler yan yana) araç "zaten güncel" deyip
+  // çıkıyordu — veri aynı, bayt farklı, üstteki BİREBİR bekçisi kırmızı. Şart artık bayt
+  // karşılaştırması; bu test kaymanın YAKALANABİLİR olduğunu kilitler.
+  it('biçim kayması veri değişmeden de saptanır (kaçışlı JSON aracın çıktısına eşit değildir)', () => {
+    const { durum, ham, onEk, sonEk } = panoOku(html);
+    // Türkçe karakterleri \uXXXX'e çevirerek elle-düzenlenmiş panoyu taklit et.
+    const kacisli = ham.replace(/[^\x00-\x7F]/g, (c) => '\\u' + c.charCodeAt(0).toString(16).padStart(4, '0'));
+    const kaymis = html.replace(onEk + ham + sonEk, onEk + kacisli + sonEk);
+    expect(kacisli).not.toBe(ham); // taklit gerçekten kaydı
+    expect(panoOku(kaymis).durum).toEqual(durum); // VERİ aynı
+    expect(panoYaz(kaymis, panoOku(kaymis).durum)).not.toBe(kaymis); // ama BAYT farklı → yazılmalı
+    // ve aracın YAZMA KARARI bunu görmeli: veri değişmedi (degisen boş) ama dosya yazılmalı.
+    expect(yazmaliMi(kaymis, panoYaz(kaymis, panoOku(kaymis).durum), [])).toBe(true);
+  });
+
+  it('yazma kararı: veri de bayt da aynıysa dosya YAZILMAZ', () => {
+    expect(yazmaliMi(html, panoYaz(html, panoOku(html).durum), [])).toBe(false);
+  });
+
+  it('yazma kararı: veri değiştiyse bayt aynı olsa bile YAZILIR', () => {
+    expect(yazmaliMi(html, html, ['bir sayı değişti'])).toBe(true);
   });
 
   it('tek sayı değişince diff de tek satır — anlatının korunduğu gözle görülebilir', () => {

@@ -1,7 +1,7 @@
-import { useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Text } from '@react-three/drei';
-import { MathUtils, type Group, type MeshBasicMaterial } from 'three';
+import { MathUtils, MeshBasicMaterial, Shape, type Group, type Mesh } from 'three';
 import { activeStep, markerTier } from '../../game/activeStep';
 import { useGame } from '../../game/store';
 import type { Vec3 } from '../../game/types';
@@ -20,20 +20,45 @@ const SAY_DAMP = 14;
 /** Yazı bu ses seviyesinin üstünde çizilir. */
 const TEXT_ON = 0.55;
 
+/** Köşe parantezinin kol uzunluğu ve kalınlığı (yarı-ölçüye oran). */
+const BRACKET_ARM = 0.44;
+const BRACKET_THICK = 0.18;
+
 /**
- * Sade zemin işareti (D-017 §2): havada Html rozet / iri disk+koni YOK. Yerde UFAK, şeffaf beyazımsı
- * çember + ortasında DÜZ zemin yazısı (ne yapacağı: "Yeni Masa" / "Garson" / "Yükselt") + maliyet.
- * Kategori rengi yalnız ince halka + dolum yayında (yeşil=aç / mavi=personel / altın=yükseltme).
- * Parası yetiyorsa hafif parlar (afford).
+ * İşaretin zemin düzlemindeki YEREL ekseni: `rotation=[-PI/2,0,0]` sonrası yerel +Y dünyada
+ * −Z'ye bakar. Yani "yukarı" = kameradan uzağa. Yazı, ok ve dolum bu eksende kurulur —
+ * dolumun "alttan üste" gitmesi bu yüzden yerel +Y yönüdür.
+ */
+
+/** Elmas silüeti (G-08: eski "mavi kare" pulun yerine gerçek taş kesimi). */
+function gemShape(): Shape {
+  const s = new Shape();
+  s.moveTo(-0.42, 0.34);
+  s.lineTo(0.42, 0.34);
+  s.lineTo(0.6, 0.1);
+  s.lineTo(0, -0.56);
+  s.lineTo(-0.6, 0.1);
+  s.closePath();
+  return s;
+}
+
+/**
+ * Sade zemin işareti (D-017 §2): havada Html rozet / iri disk+koni YOK. Yerde UFAK işaret +
+ * ortasında DÜZ zemin yazısı + maliyet. Kategori rengi yalnız köşe parantezlerinde ve dolumda.
+ *
+ * **G-10 (2026-09-09 kullanıcı):** çember "oyun yansıtmıyor" → **köşe parantezli kare**.
+ * Kenarların ortası boş; yalnız dört köşe çizilir. Nişangâh hissi, tycoon dili.
+ * **G-13:** dolum artık büyüyen disk değil, **alttan üste dolan kare** — sıvı/şarj okuması.
+ * **G-11/G-12:** her yükseltme noktası aynı sözü söyler ("YÜKSELT") ve solunda düz yukarı ok
+ * durur; ayrımı METİN değil KONUM yapar (mekânsal tycoon, `feedback_spatial_tycoon_ux`).
  *
  * **C2 — KATMAN AYRIMI (D-038'in dördüncü kanalı).** İşaretlerin hepsi aynı ağırlıkta çizilince
  * "hangisi şu anki adım" okunmuyordu (ölçüm: ekranda ort. 7,8 / en çok 16 işaret, hepsi aynı ses).
  * Nokta silinmez — kullanıcı kararı gereği her objenin yükseltme noktası kendi yanında durur — ama
  * sesi üç kademeye ayrılır (`markerTier`):
- *   - `aktif`   → yazı + maliyet + tam parlak halka + hafif nabız. Ekranda EN FAZLA BİR TANE olabilir,
- *                 çünkü kaynağı kameranın/okun/bandın okuduğu TEK `activeStep` hedefi.
+ *   - `aktif`   → yazı + maliyet + tam parlak parantez + hafif nabız. Ekranda EN FAZLA BİR TANE.
  *   - `konusan` → oyuncu yaklaştı: yazı + maliyet açılır, nabız yok.
- *   - `sessiz`  → uzakta: küçük, YAZISIZ halka. Dolum yayı her hâlde görünür (kısmi dolum kaybolmasın).
+ *   - `sessiz`  → uzakta: küçük, YAZISIZ parantez. Dolum her hâlde görünür (kısmi dolum kaybolmasın).
  * Geçiş `useFrame` içinde damp'lenir ve React'e DOKUNMAZ (her kare setState = 60 render/sn).
  */
 export function GroundMarker({
@@ -45,6 +70,7 @@ export function GroundMarker({
   progress = 0,
   afford = false,
   radius = 0.85,
+  arrow = false,
 }: {
   pos: Vec3;
   label: string;
@@ -56,15 +82,47 @@ export function GroundMarker({
   tint: string;
   progress?: number;
   afford?: boolean;
+  /** Karenin yarı-ölçüsü (eski adı yarıçaptı; kare geçişinde anlam korundu). */
   radius?: number;
+  /** Yükseltme noktası mı — öyleyse yazının soluna düz yukarı ok çizilir (G-12). */
+  arrow?: boolean;
 }) {
   const p = Math.max(0, Math.min(1, progress));
+  const r = radius;
   const scaleRef = useRef<Group>(null);
   const speakRef = useRef<Group>(null);
-  const discRef = useRef<MeshBasicMaterial>(null);
-  const ringRef = useRef<MeshBasicMaterial>(null);
+  const fillRef = useRef<Mesh>(null);
   /** 0 = sessiz … 1 = konuşuyor (damp'lenmiş). */
   const say = useRef(0);
+
+  // Parantez sekiz ayrı mesh ama TEK materyal — opaklık her karede bir kez yazılır.
+  const bracketMat = useMemo(
+    () => new MeshBasicMaterial({ color: tint, transparent: true, opacity: 0.5, depthWrite: false }),
+    [tint],
+  );
+  const plateMat = useMemo(
+    () => new MeshBasicMaterial({ color: '#14202a', transparent: true, opacity: 0.16, depthWrite: false }),
+    [],
+  );
+  useEffect(() => () => { bracketMat.dispose(); plateMat.dispose(); }, [bracketMat, plateMat]);
+
+  const gem = useMemo(gemShape, []);
+
+  // Dört köşe × iki kol. Kollar köşeden İÇERİ doğru uzar; kenarların ortası bilerek boş.
+  const arms = useMemo(() => {
+    const arm = r * BRACKET_ARM;
+    const th = r * BRACKET_THICK;
+    const out: { pos: [number, number, number]; size: [number, number] }[] = [];
+    for (const sx of [-1, 1]) {
+      for (const sy of [-1, 1]) {
+        // yatay kol: köşeden içeri
+        out.push({ pos: [sx * (r - arm / 2), sy * (r - th / 2), 0], size: [arm, th] });
+        // dikey kol: köşe karesi iki kez çizilmesin diye th kadar kısaltılır
+        out.push({ pos: [sx * (r - th / 2), sy * (r - th / 2 - (arm - th) / 2), 0], size: [th, arm - th] });
+      }
+    }
+    return out;
+  }, [r]);
 
   useFrame((state, dt) => {
     const tier = markerTier(pos, activeStep, useGame.getState().player);
@@ -78,52 +136,79 @@ export function GroundMarker({
       scaleRef.current.scale.setScalar((SILENT_SCALE + (1 - SILENT_SCALE) * s) * pulse);
     }
     if (speakRef.current) speakRef.current.visible = s > TEXT_ON;
-    // Halka: sessizken soluk, konuşurken afford'a göre, AKTİF adımda tam parlak (tek yüksek ses).
-    if (ringRef.current) {
-      const loud = tier === 'aktif' ? 1 : afford ? 0.85 : 0.5;
-      ringRef.current.opacity = 0.28 + (loud - 0.28) * s;
-    }
-    if (discRef.current) {
-      const loud = afford ? 0.26 : 0.16;
-      discRef.current.opacity = 0.07 + (loud - 0.07) * s;
-    }
+    // Parantez: sessizken soluk, konuşurken afford'a göre, AKTİF adımda tam parlak (tek yüksek ses).
+    const loud = tier === 'aktif' ? 1 : afford ? 0.95 : 0.72;
+    bracketMat.opacity = 0.45 + (loud - 0.45) * s;
+    plateMat.opacity = 0.10 + ((afford ? 0.34 : 0.24) - 0.10) * s;
   });
+
+  // Alttan üste dolum: yerel −Y kenarına yapışık kalsın diye ölçekle birlikte kaydırılır.
+  const fillH = 2 * r * 0.86;
+  useEffect(() => {
+    if (fillRef.current) {
+      fillRef.current.scale.y = p;
+      fillRef.current.position.y = -fillH / 2 + (fillH * p) / 2;
+    }
+  }, [p, fillH]);
 
   return (
     <group position={[pos[0], 0, pos[2]]}>
       <group ref={scaleRef}>
-        {/* şeffaf beyazımsı zemin çemberi */}
-        <mesh position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-          <circleGeometry args={[radius, 40]} />
-          <meshBasicMaterial ref={discRef} color="#ffffff" transparent opacity={0.16} depthWrite={false} />
+        {/* şeffaf beyazımsı zemin karesi */}
+        <mesh position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]} material={plateMat}>
+          <planeGeometry args={[2 * r, 2 * r]} />
         </mesh>
-        {/* ince kategori halkası */}
-        <mesh position={[0, 0.03, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-          <ringGeometry args={[radius * 0.9, radius, 40]} />
-          <meshBasicMaterial ref={ringRef} color={tint} transparent opacity={0.5} depthWrite={false} />
-        </mesh>
-        {/* dolum yayı (progress) — büyüyen iç disk. Sessizken de görünür: kısmi dolum kaybolmasın. */}
+
+        {/* dolum (progress) — ALTTAN ÜSTE dolan kare. Sessizken de görünür: kısmi dolum kaybolmasın. */}
         {p > 0.001 && (
-          <mesh position={[0, 0.035, 0]} rotation={[-Math.PI / 2, 0, 0]} scale={[p, p, 1]}>
-            <circleGeometry args={[radius * 0.85, 40]} />
-            <meshBasicMaterial color={tint} transparent opacity={0.45} depthWrite={false} />
-          </mesh>
+          <group position={[0, 0.035, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+            <mesh ref={fillRef}>
+              <planeGeometry args={[2 * r * 0.86, fillH]} />
+              <meshBasicMaterial color={tint} transparent opacity={0.42} depthWrite={false} />
+            </mesh>
+          </group>
         )}
-        {/* KONUŞAN katman: yazı + maliyet. Sessizken hiç çizilmez (16 kez "Masa" yazmasın). */}
+
+        {/* köşe parantezleri — kenar ortaları BOŞ (G-10) */}
+        <group position={[0, 0.03, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          {arms.map((a, i) => (
+            <mesh key={i} position={a.pos} material={bracketMat}>
+              <planeGeometry args={a.size} />
+            </mesh>
+          ))}
+        </group>
+
+        {/* KONUŞAN katman: yazı + maliyet. Sessizken hiç çizilmez (16 kez "YÜKSELT" yazmasın). */}
         <group ref={speakRef} visible={false}>
+          {/* Düz yukarı ok — yalnız yükseltme noktalarında, yazının solunda (G-12). */}
+          {arrow && (
+            <group position={[-r * 0.66, 0.05, sub ? -0.16 : 0]} rotation={[-Math.PI / 2, 0, 0]}>
+              {/* gövde */}
+              <mesh position={[0, -r * 0.13, 0]}>
+                <planeGeometry args={[r * 0.2, r * 0.4]} />
+                <meshBasicMaterial color="#ffffff" transparent opacity={0.95} depthWrite={false} />
+              </mesh>
+              {/* uç: 3 kenarlı çember = üçgen; +90° döndürülünce yukarı bakar */}
+              <mesh position={[0, r * 0.2, 0]} rotation={[0, 0, Math.PI / 2]}>
+                <circleGeometry args={[r * 0.32, 3]} />
+                <meshBasicMaterial color="#ffffff" transparent opacity={0.95} depthWrite={false} />
+              </mesh>
+            </group>
+          )}
           {/* zemin yazısı (havada değil; objenin değil yerin üstünde) */}
           <Text
             font={GAME_FONT_3D}
-            fontWeight={700}
-            position={[0, 0.05, sub ? -0.16 : 0]}
+            fontWeight={800}
+            letterSpacing={0.02}
+            position={[arrow ? r * 0.14 : 0, 0.05, sub ? -0.16 : 0]}
             rotation={[-Math.PI / 2, 0, 0]}
-            fontSize={0.3}
+            fontSize={r * 0.42}
             color="#ffffff"
             anchorX="center"
             anchorY="middle"
-            outlineWidth={0.015}
-            outlineColor="#1a1a1a"
-            maxWidth={radius * 2.1}
+            outlineWidth={r * 0.038}
+            outlineColor="#14202a"
+            maxWidth={r * 2.4}
             textAlign="center"
           >
             {label}
@@ -132,30 +217,44 @@ export function GroundMarker({
             <>
               {pip && (
                 <group position={[-0.2 - sub.length * 0.08, 0.05, 0.32]}>
-                  {/* Elmas pulu DÖRTGEN, para pulu YUVARLAK — renk körü bir oyuncu için de
+                  {/* Elmas GERÇEK taş silüeti, para pulu YUVARLAK — renk körü bir oyuncu için de
                       iki para birimi biçimden ayrılır (çoklu sinyal, feedback_upgrade_legibility). */}
-                  <mesh rotation={[-Math.PI / 2, 0, pip === 'gem' ? Math.PI / 4 : 0]}>
-                    <circleGeometry args={[pip === 'gem' ? 0.125 : 0.115, pip === 'gem' ? 4 : 20]} />
-                    <meshBasicMaterial color={pip === 'gem' ? '#81d4fa' : '#ffc933'} depthWrite={false} />
-                  </mesh>
-                  <mesh position={[0, 0.004, 0]} rotation={[-Math.PI / 2, 0, pip === 'gem' ? Math.PI / 4 : 0]}>
-                    <ringGeometry args={
-                      pip === 'gem' ? [0.09, 0.125, 4] : [0.085, 0.115, 20]} />
-                    <meshBasicMaterial color={pip === 'gem' ? '#0277bd' : '#b87400'} depthWrite={false} />
-                  </mesh>
+                  {pip === 'gem' ? (
+                    <>
+                      <mesh rotation={[-Math.PI / 2, 0, 0]} scale={[0.3, 0.3, 1]}>
+                        <shapeGeometry args={[gem]} />
+                        <meshBasicMaterial color="#0277bd" depthWrite={false} />
+                      </mesh>
+                      <mesh position={[0, 0.004, 0]} rotation={[-Math.PI / 2, 0, 0]} scale={[0.24, 0.24, 1]}>
+                        <shapeGeometry args={[gem]} />
+                        <meshBasicMaterial color="#81d4fa" depthWrite={false} />
+                      </mesh>
+                    </>
+                  ) : (
+                    <>
+                      <mesh rotation={[-Math.PI / 2, 0, 0]}>
+                        <circleGeometry args={[0.115, 20]} />
+                        <meshBasicMaterial color="#ffc933" depthWrite={false} />
+                      </mesh>
+                      <mesh position={[0, 0.004, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+                        <ringGeometry args={[0.085, 0.115, 20]} />
+                        <meshBasicMaterial color="#b87400" depthWrite={false} />
+                      </mesh>
+                    </>
+                  )}
                 </group>
               )}
               <Text
                 font={GAME_FONT_3D}
-                fontWeight={700}
+                fontWeight={800}
                 position={[pip ? 0.08 : 0, 0.05, 0.32]}
                 rotation={[-Math.PI / 2, 0, 0]}
                 fontSize={0.29}
                 color="#ffe082"
                 anchorX="center"
                 anchorY="middle"
-                outlineWidth={0.012}
-                outlineColor="#1a1a1a"
+                outlineWidth={0.016}
+                outlineColor="#14202a"
               >
                 {sub}
               </Text>

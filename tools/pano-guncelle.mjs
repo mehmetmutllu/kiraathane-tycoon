@@ -250,6 +250,18 @@ export function panoYaz(html, durum) {
   return html.replace(onEk + ham + sonEk, onEk + (onEk.includes('\r\n') ? govde.replace(/\n/g, '\r\n') : govde) + sonEk);
 }
 
+/**
+ * Dosya yazılmalı mı? İki sebep var ve İKİNCİSİ 2026-09-09'a kadar yoktu:
+ *   ① veri değişti (`degisen` dolu) — asıl iş;
+ *   ② veri aynı ama BAYT farklı — pano elle düzenlenip biçimi kaymış (JSON bloğunda `\uXXXX`
+ *      kaçışları ile ham karakterler yan yana bulundu). Eski şart yalnız ①'e bakıyordu, bu yüzden
+ *      araç "zaten güncel" diyip çıkıyor ve `panoYaz` bekçisi sessizce kırmızı kalıyordu.
+ * Ayrı fonksiyon çünkü CLI'nin içinde kalsaydı test edilemezdi.
+ */
+export function yazmaliMi(html, hedef, degisen) {
+  return degisen.length > 0 || hedef !== html;
+}
+
 /** Panonun `yapilan`'ı arttıysa o tarihe yeni bir günlük kartı da yazılmış olmalı. */
 export function gunlukUyarisi(eskiYapilan, durum, tarih) {
   if (durum.yapilan <= eskiYapilan) return null;
@@ -290,10 +302,18 @@ if (process.argv[1] && process.argv[1].replace(/\\/g, '/').endsWith('tools/pano-
 
   console.log(`Denetim temiz · ${p.butce.yapilan}/${p.butce.toplam} (%${p.butce.yuzde}) · ${p.program.length} program fazı`);
   for (const u of uyarilar) console.log(`   ⚠ ${u}`);
-  if (!degisen.length) { console.log('Pano zaten güncel — dosya yazılmadı.'); process.exit(0); }
+
+  // BİÇİM KAYMASI (2026-09-09): "veri değişti mi" yeterli bir yazma şartı DEĞİL. Pano elle
+  // düzenlenince JSON bloğu aracın ürettiğinden farklı BİÇİMDE kalabilir (blokta 830 `\uXXXX`
+  // kaçışı ile 15.020 ham karakter yan yana bulundu) — veri aynı, bayt farklı. O hâlde araç
+  // "zaten güncel" deyip çıkıyor, ama `tests/pano-guncelle.test.ts`in "BİREBİR geri yazılır"
+  // bekçisi kırmızı kalıyor: araç kendi dosyasını tanımıyor. Şart artık BAYT karşılaştırması.
+  const hedef = panoYaz(html, durum);
+  if (!yazmaliMi(html, hedef, degisen)) { console.log('Pano zaten güncel — dosya yazılmadı.'); process.exit(0); }
   for (const d of degisen) console.log(`   · ${d}`);
+  if (!degisen.length) console.log('   · biçim kayması normalize edildi (veri aynı, bayt farklıydı)');
 
   if (yalnizKontrol) { console.log('\n--kontrol: dosya yazılmadı.'); process.exit(0); }
-  writeFileSync(panoYolu, panoYaz(html, durum), 'utf8');
+  writeFileSync(panoYolu, hedef, 'utf8');
   console.log(`\n${panoYolu} yazıldı. Anlatı (özet · sıradaki · günlük · faz açıklamaları) elle yazılır.`);
 }

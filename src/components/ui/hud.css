@@ -316,12 +316,31 @@
   justify-content: center;
   text-align: center;
 }
+/* G-04: tamamlanma artık BANDIN KENDİ HÂLİ (toast kalktı) — bu yüzden yalnız kenarlık değil,
+   bandın gövdesi de değişir: yeşil zemin, fotoğrafın yerinde onay işareti, ilerleme yerine
+   "Tamamlandı". Oyuncu tek yere bakar; yeni görev bu hâl inince gelir. */
 .band.done {
   border-color: var(--leaf);
+  background: linear-gradient(180deg, #3f7a2a, #2b5a1c);
   box-shadow:
     inset 0 1.5px 0 rgba(255, 255, 255, 0.25),
-    0 0 18px rgba(124, 192, 67, 0.45),
+    0 0 22px rgba(124, 192, 67, 0.5),
     0 5px 14px rgba(0, 0, 0, 0.45);
+}
+.band.done .band-photo {
+  background: linear-gradient(180deg, #7cc043, #4d8a26);
+  border-color: #a5df6d;
+  color: #10240a;
+}
+.band.done .band-title {
+  color: #f2ffe4;
+}
+.band-sub.done-sub {
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 12px;
+  color: #d6f5b0;
 }
 .band-photo {
   flex: none;
@@ -986,17 +1005,54 @@
   border: 1.5px solid rgba(255, 255, 255, 0.85);
 }
 
-/* ── USTA (D8) ────────────────────────────────────────────────────────────────
-   Alt bandın 💎 kimliği: aynı kabuk, mavi kenar. Farklı bir bant açılmadı — oyuncu
-   bandı zaten "şu an ne var" diye okuyor, değişen yalnız para birimi. */
-.band.master {
-  cursor: default;
-  border-color: #4fa8d8;
+/* ── USTA (D8 → G-14) ─────────────────────────────────────────────────────────
+   Şerit kalktı, MODAL geldi (kullanıcı 2026-09-09). Alt sayfa kabuğunun aynısı ama kısa ve
+   ortalanmış: 💎 rozeti + masa adı + iki buton. Kapatma çarpısı sağ üstte — kapatılınca oyuncu
+   o masadan uzaklaşana kadar geri gelmez (HUD.tsx `masterKapali`). */
+.master-modal {
+  position: relative;
+  align-items: center;
+  gap: 4px;
+  padding: 22px 20px calc(var(--sab) + 20px);
+  border-top-color: #4fa8d8;
   box-shadow:
-    inset 0 1.5px 0 rgba(190, 230, 255, 0.28),
-    inset 0 -4px 8px rgba(0, 0, 0, 0.4),
-    0 5px 14px rgba(0, 0, 0, 0.45),
-    0 0 18px rgba(79, 195, 247, 0.3);
+    0 -14px 44px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(79, 195, 247, 0.35) inset;
+}
+.master-x {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+}
+.master-badge {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  margin-bottom: 6px;
+  background: linear-gradient(180deg, #9ddffb, #3f9ecb);
+  border: 2px solid #cbeeff;
+  box-shadow: 0 3px 0 #2b7ca6;
+  color: #06283c;
+}
+.master-head {
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--ink-1, #2a1a0c);
+}
+.master-note {
+  font-size: 13px;
+  opacity: 0.75;
+  margin-bottom: 14px;
+}
+.master-acts {
+  display: flex;
+  gap: 10px;
+}
+.master-acts .master-buy {
+  padding: 10px 18px;
+  font-size: 15px;
 }
 .master-buy {
   flex: 0 0 auto;

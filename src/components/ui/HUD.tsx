@@ -85,6 +85,12 @@ export function HUD() {
   const dailyReady = useGame((s) => claimableDailyCount(s.daily, s.tables, dailyCountersOf(s)) > 0);
   // D8: oyuncu bir Usta noktasının yanında mı? Sahne katmanı yazar (yakınlık `useFrame`te ölçülür).
   const nearMaster = useGame((s) => s.nearMaster);
+  // G-14: kapatılan Usta modali, oyuncu O MASADAN uzaklaşana kadar geri açılmaz. D-094'ün
+  // "modal her geçişte ekranı keser" endişesinin karşılığı bu — modal geldi, tuzağı gelmedi.
+  const [masterKapali, setMasterKapali] = useState<string | null>(null);
+  useEffect(() => {
+    if (!nearMaster) setMasterKapali(null);
+  }, [nearMaster]);
 
   const lvl = levelProgress(xp);
   const questPct = quest && quest.total != null ? Math.min(100, ((quest.cur ?? 0) / quest.total) * 100) : null;
@@ -200,8 +206,13 @@ export function HUD() {
         <div className="tray-tip">Müşteri kalmadıysa tepsini boşaltabilirsin — kaplar temiz rafa döner.</div>
       )}
 
-      {/* ───────── BİLDİRİM (toast) ───────── */}
-      {notice && (
+      {/* ───────── BİLDİRİM (toast) ─────────
+          G-04 (2026-09-09 kullanıcı): görev tamamlanma toast'ı ARTIK ÇİZİLMEZ. Aynı anda iki yerde
+          konuşuyordu — toast "şu görev bitti" derken alt bant zaten tamamlanma hâlini gösteriyordu
+          ve oyuncu ikisini yeni görev sanıyordu. Tek ses: bant. `tick.ts`e DOKUNULMADI (sunum
+          katmanı kararı, E3/D-096 deseni) — olay hâlâ üretiliyor, yalnız burada çizilmiyor;
+          devHooks anlık görüntüsü ve ona bağlı testler değişmedi. */}
+      {notice && notice.kind !== 'quest' && (
         <div className="notice" data-testid="notice" key={notice.text}>
           <span className="notice-badge">
             {notice.kind === 'quest' ? (
@@ -221,13 +232,16 @@ export function HUD() {
         </div>
       )}
 
-      {/* ───────── ALT BANT: AKTİF ADIM (Tek Odak) ─────────
-          D8: oyuncu bir Usta noktasının yanındayken bandı USTA ONAYI devralır. Üst üste iki bant
-          çizilmez — Tek Odak'ın kuralı: alt bantta aynı anda tek ses. Oyuncu uzaklaşınca adım geri
-          gelir. Panel AÇILMAZ (kullanıcı kararı): hareket kesilmesin, 25 💎 kazara gitmesin. */}
-      {nearMaster ? (
-        <MasterBar id={nearMaster} />
-      ) : quest ? (
+      {/* ───────── USTA MODALİ (G-14) ─────────
+          D8'de bu bir alt şeritti ve bandı devralıyordu; kullanıcı 2026-09-09'da şeridi reddedip
+          modal istedi. Bant artık devredilmiyor — görev adımı yerinde kalır, Usta önüne modal gelir.
+          Kapatılınca oyuncu O MASADAN uzaklaşana kadar geri açılmaz (aşağıdaki effect). */}
+      {nearMaster && masterKapali !== nearMaster && (
+        <MasterModal id={nearMaster} onClose={() => setMasterKapali(nearMaster)} />
+      )}
+
+      {/* ───────── ALT BANT: AKTİF ADIM (Tek Odak) ───────── */}
+      {quest ? (
         <button
           className={`band${quest.done ? ' done' : ''}`}
           data-testid="quest"
@@ -235,11 +249,16 @@ export function HUD() {
           onClick={() => (charQuestActive ? openChar() : focusQuest())}
         >
           <span className="band-photo">
-            <QuestPhoto target={quest.target} size={38} />
+            {quest.done ? <CheckBadge size={26} /> : <QuestPhoto target={quest.target} size={38} />}
           </span>
           <span className="band-body">
             <span className="band-title">{quest.title}</span>
-            {questPct != null ? (
+            {/* G-04: tamamlanma bandın KENDİ hâlidir — ayrı bir toast yok. */}
+            {quest.done ? (
+              <span className="band-sub done-sub" data-testid="quest-done">
+                Tamamlandı
+              </span>
+            ) : questPct != null ? (
               <span className="band-track">
                 <span className="band-fill" style={{ width: `${questPct}%` }} />
                 <span className="band-count" data-testid="quest-prog">
@@ -428,19 +447,21 @@ function EdgeArrow({ onClick }: { onClick: () => void }) {
 
 /** GÖREVLER: aktif adım büyük kart + tamamlananlar listesi (plan §9 durumları). */
 /**
- * USTA ONAY ÇUBUĞU (D8) — kullanıcı kararı: "aynı nokta, 💎 kimliği + onay çubuğu".
+ * USTA ONAY MODALİ (D8 → G-14 ile revize).
  *
- * NEDEN MODAL DEĞİL: plan §5 "yaklaşınca panel açılır" diyordu; oyuncu masanın yanından her
- * geçtiğinde ekranı kapatan bir modal hem hareketi keser hem Tek Odak'ı kırar. Bunun yerine
- * mekânsal nokta zaten "burada bir şey var" diyor, çubuk yalnız ONAYI topluyor.
+ * **KARAR DÖNDÜ (2026-09-09, kullanıcı):** D-094'te bu bir alt ŞERİT olarak yapılmıştı ve
+ * gerekçesi yazılıydı — "modal hareketi keser". Kullanıcı oynadıktan sonra şeridi reddetti ve
+ * modal istedi; karar kullanıcınındır. D-094'ün endişesi geçersiz değil, o yüzden **kapatılabilir**
+ * ve kapatılan masa için oyuncu uzaklaşana kadar bir daha açılmaz — modalin "her geçişte ekranı
+ * kapatma" tuzağı böyle kapanıyor.
  *
- * NEDEN DWELL DEĞİL: ₺ noktaları üstünde durunca dolar, ama 25 💎 tek seferlik premium bir
- * harcamadır — yürürken kazara gitmesi kabul edilemez (`feedback_interaction_model`: etkileşim
+ * NEDEN DWELL DEĞİL (değişmedi): ₺ noktaları üstünde durunca dolar, ama 25 💎 tek seferlik premium
+ * bir harcamadır — yürürken kazara gitmesi kabul edilemez (`feedback_interaction_model`: etkileşim
  * hareket-temelli, ama PARA harcaması açık onay ister).
  *
  * Reklam butonu Faz 5'te bağlanacak; şimdi pasif ama KAYBOLMAZ (D-039 kalıbı) — yeri belli olsun.
  */
-function MasterBar({ id }: { id: string }) {
+function MasterModal({ id, onClose }: { id: string; onClose: () => void }) {
   const diamonds = useGame((s) => s.diamonds);
   const buyMaster = useGame((s) => s.buyMaster);
   const fiyat = masterCost();
@@ -448,24 +469,32 @@ function MasterBar({ id }: { id: string }) {
   const masaNo = Number(id.split(':')[1] ?? 0) + 1;
   const kat = economyConfig.master.tipMult.toLocaleString('tr-TR');
   return (
-    <div className="band master" data-testid="master-bar" data-master={id}>
-      <span className="band-body">
-        <span className="band-title">Masa {masaNo} · Usta</span>
-        <span className="band-sub dim">Bahşiş ×{kat} — kalıcı</span>
-      </span>
-      <button
-        className={`master-buy${yeter ? '' : ' off'}`}
-        data-testid="master-buy"
-        disabled={!yeter}
-        onClick={() => buyMaster(id)}
-      >
-        <GemIcon size={16} />
-        {fiyat}
-      </button>
-      <button className="master-buy ad off" data-testid="master-ad" disabled>
-        <PlayAdIcon size={15} />
-        İzle
-      </button>
+    <div className="modal-backdrop" data-testid="master-bar" data-master={id} onClick={onClose}>
+      <div className="modal-card master-modal" onClick={(e) => e.stopPropagation()}>
+        <button className="sheet-x master-x" onClick={onClose} aria-label="Kapat">
+          ✕
+        </button>
+        <span className="master-badge">
+          <GemIcon size={30} />
+        </span>
+        <span className="master-head">Masa {masaNo} · Usta</span>
+        <span className="master-note">Bahşiş ×{kat} — kalıcı</span>
+        <div className="master-acts">
+          <button
+            className={`master-buy${yeter ? '' : ' off'}`}
+            data-testid="master-buy"
+            disabled={!yeter}
+            onClick={() => buyMaster(id)}
+          >
+            <GemIcon size={16} />
+            {fiyat}
+          </button>
+          <button className="master-buy ad off" data-testid="master-ad" disabled>
+            <PlayAdIcon size={15} />
+            İzle
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

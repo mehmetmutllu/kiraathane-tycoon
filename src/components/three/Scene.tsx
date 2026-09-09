@@ -4,7 +4,7 @@ import { Vector3, BufferGeometry, Float32BufferAttribute, DoubleSide, type Group
 import type { AreaSide } from '../../game/store';
 import { useGame, questFocusPos, LAYOUT, LAVABO, BAND, BAND_SHELL, FLOOR_HALF, wallSpans, servicePlace, stationSoftMaxLevel, stationUpgradeCostAt, stationUpgradeUnlocked, tableSoftMaxLevel, tableUpgradeUnlockedIn, tableNextCost, openServices, doorX as doorAt, entranceAt, banketIslands, BANKET, WAITER_STATION, waiterStationOpen } from '../../game/store';
 import { economyConfig, lavaboUpgradeCost } from '../../config/economy.config';
-import { areaOfTable, isCounter, THE_SERVICE } from '../../game/world';
+import { areaOfTable, THE_SERVICE } from '../../game/world';
 import { masterId, masterCost, masterUnlockedForTable } from '../../game/rules';
 import { SceneLights } from './lights';
 import { GroundMarker } from './GroundMarker';
@@ -495,8 +495,10 @@ function StationUpgradeSpots() {
   return (
     <GroundMarker
       pos={upPos}
-      // Etiket seviyenin kimliğini söyler: L4'e kadar ocak, sonrası tezgâh (tek merdiven iki kimlik).
-      label={isCounter(level) ? 'Tezgâhı Yükselt' : 'Çay Yükselt'}
+      // G-11 (2026-09-09): her yükseltme noktası AYNI sözü söyler; hangi obje olduğunu metin değil
+      // KONUM anlatır (mekânsal tycoon). Eskiden 'Çay Yükselt' / 'Tezgâhı Yükselt' ayrımı vardı.
+      label="YÜKSELT"
+      arrow
       sub={String(remaining)}
       pip="coin"
       tint="#ffce54"
@@ -563,7 +565,8 @@ function TableUpgradeMarkers() {
           <GroundMarker
             key={i}
             pos={t.upgradeSpot}
-            label="Masa"
+            label="YÜKSELT"
+            arrow
             sub={String(remaining)}
             pip="coin"
             tint="#ffce54"
@@ -627,7 +630,9 @@ function TableMasterSpots() {
         <GroundMarker
           key={a.id}
           pos={a.pos}
-          label="Usta"
+          // G-11: "Usta" yazısı kalktı — söz her yerde aynı, kimliği 💎 pulu taşıyor.
+          label="YÜKSELT"
+          arrow
           sub={String(fiyat)}
           pip="gem"
           tint="#4fc3f7"
