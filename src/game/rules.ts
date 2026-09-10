@@ -221,7 +221,7 @@ export function dirtyTables(dishes: Dish[], tableLevels: number[] = []): Set<num
 /** Masa-başı DOLU koltuk indeksleri (leaving sayılmaz — koltuk kalkar kalkmaz boşalır, Y2). */
 /** Müşteri masasından KALKTI mı (B4: lavabo uğrağı da kalkmış sayılır — koltuğu boşalmıştır). */
 export const hasLeftTable = (state: NpcState): boolean =>
-  state === 'leaving' || state === 'toWc' || state === 'inWc';
+  state === 'leaving' || state === 'toWc' || state === 'wcGiris' || state === 'inWc' || state === 'wcCikis';
 
 export function occupiedSeats(npcs: Npc[]): Map<number, Set<number>> {
   const occ = new Map<number, Set<number>>();

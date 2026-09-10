@@ -170,3 +170,134 @@ export const aynaOnZ = (): number => AYNA_Z + AYNA_NATIVE.maxZ * AYNA_S;
  * aynanın önünde durur). Kusur olacak şey derinlikte iç içe geçmeleriydi.
  */
 export const muslukAynaPayi = (): number => muslukZ().max - aynaOnZ();
+
+// =============================================================================================
+//  KABİN KAPISI — S7/K2 (D-104). Kullanıcı: bugünkü düz kutu **"kötü"**.
+// =============================================================================================
+/**
+ * `door_A` SEÇİLDİ ve seçimi bir SAYI değil, modelin ÇİZİLMİŞ HÂLİ yaptı.
+ *
+ * **Bu turun dersi:** `door_A`nın köşe histogramı x'te 0,48…1,12 arasında hiç köşe göstermiyor
+ * ve ilk okumam *"ortası boş, demek ki bu bir kapı KASASI"* oldu. **Yanlıştı** — orası düz bir
+ * panelin içi; düşük-poli modelde düz yüzün ortasında vertex yoktur. Aynı ders S4'te öğrenilmiş
+ * ve `docs/dis-cephe-raporu-s6.md` §Yöntem'de yazılıydı, yine de ısırdı. Modeli ÇİZDİREN araç
+ * (`tools/model-bak.mjs`) o yüzden bu turda doğdu: ekran ile sayı birbirinin yerine geçmiyor.
+ *
+ * Modelin gerçek hâli: **gri kasa + kapalı kanat + kanadın üstünde küçük cam + iki yüzde itme
+ * barı.** `door_B` ile tek farkı kanat gözü — A yeşil, B kahve. Kullanıcı **A**'yı seçti:
+ * WC bugün tek bir kahve kütle olarak okunuyor ve yeşil onu kırıyor (`feedback_color_variety`).
+ */
+export const KABIN_NATIVE = {
+  w: 1.6,
+  h: 2.8,
+  /** Ham kutu derinliği — modelin KALINLIĞI DEĞİL, itme barının taşması. */
+  d: 0.771,
+  /** Bar hariç gövde kalınlığı (ölçüldü: y < 0,80 ve y > 1,30 dilimleri). */
+  govdeD: 0.3,
+  /** Menteşe modelin SOL kenarında: bbox x 0 → 1,60. Kapı origin'i etrafında AÇILIR. */
+  minX: 0,
+  /** z'de SİMETRİK (−0,386 … +0,386) → lavabodaki gibi bir telafi GEREKMEZ. */
+  minZ: -0.386,
+  maxZ: 0.386,
+  /** İtme barının y aralığı — WC kabininde yeri yok ama tek mesh olduğu için SÖKÜLEMEZ. */
+  bar: { min: 0.8, max: 1.2 },
+} as const;
+
+/** Bugünkü kabin gözü. DEĞİŞMEDİ: yerleşim, nav ve yürüme açıklığı bu turda hiç oynamadı. */
+export const KABIN_KUTU = { w: 1.36, h: 1.95 } as const;
+
+/**
+ * ÖLÇEK — TEKDÜZE DEĞİL, ve bu bilinçli. Tekdüze kollar ölçüldü ve ikisi de daha pahalı:
+ *   · BOYDAN (h → 1,95): kanat 1,11 br kalıyor, kabin gözünde 0,25 br boşluk açılıyor.
+ *   · ENDEN  (w → 1,36): boy 2,38'e çıkıyor, **bölmenin 2,00'ını 0,38 aşıyor** (kapı bölmeden
+ *     taşar, kabin okunmaz olur).
+ * Kalan kol x/y'de çarpıtma demek; bedeli **1,221** ve D-103'ün lavabo gövdesinde kabul ettiği
+ * **2,715**'in ALTINDA. Derinlik x ölçeğine bağlanır (kapı z'de ezilmesin) — kabin 1,60 derin,
+ * gövdenin 0,255'i rahat oturur.
+ */
+export const KABIN_SCALE: [number, number, number] = [
+  KABIN_KUTU.w / KABIN_NATIVE.w,
+  KABIN_KUTU.h / KABIN_NATIVE.h,
+  KABIN_KUTU.w / KABIN_NATIVE.w,
+];
+
+/** Çarpıtma oranı — bekçi bunu D-103'ün kabul ettiği bedelin altında tutar. */
+export const KABIN_CARPITMA = Math.max(...KABIN_SCALE) / Math.min(...KABIN_SCALE);
+
+/** z telafisi — kutu z'de simetrik olduğu için SIFIR. Yazılmaz, TÜRETİLİR (lavabodaki desen). */
+export const KABIN_DZ = -((KABIN_NATIVE.minZ + KABIN_NATIVE.maxZ) / 2) * KABIN_SCALE[2];
+
+/** Menteşeden kanat ORTASINA olan mesafe — kapı hem kapalı hem aralık çizilirken buradan konur. */
+export const KABIN_MENTESE_ORTA = KABIN_KUTU.w / 2;
+
+/** Maketin aralık kapısının açısı (rad) — artık gerçek MENTEŞE etrafında dönüyor. */
+export const KABIN_ARALIK_ACI = 0.55;
+
+/**
+ * GÖZ TAŞIMASI YOK — ve bu bir KARAR, eksiklik değil.
+ *
+ * `door_A`nın **%73'ü `[0,3] #828c91`**, yani S6/②'de lavabonun ve aynanın taşındığı gri.
+ * Kapı WC'nin diline hiçbir şey taşımadan oturuyor. Geri kalan %25 kanadın **yeşili**
+ * (`[1,2] #21a489`) ve o **bilerek duruyor**: kullanıcı kahve bloğu kırılsın diye A'yı seçti.
+ * Bir sonraki tur bunu "gri yapalım" diye taşırsa kararı sessizce geri almış olur — bekçi
+ * bu listenin BOŞ kalmasını denetler.
+ */
+export const KABIN_GOZ: readonly (readonly [Goz, Goz])[] = [];
+
+// =============================================================================================
+//  SEVİYE SİNYALİ — S7/L (G-36 · D-104)
+// =============================================================================================
+/**
+ * SEVİYE ARTIK MEKÂNSAL OKUNUYOR: lavabo sayısı VE kabin kapısı sayısı birlikte büyür.
+ *
+ * NEDEN İKİSİ BİRDEN — ölçüm tek başına lavabonun yetmediğini gösterdi:
+ * doğu duvarı **7,40 br** ve 1,36'lık gövdeyle **en çok 5** lavabo alıyor; üstelik en öndeki
+ * slot ön duvarın kör bandında kalıp **%0** görünüyor. Yani mekânsal sayı gerçekte **4**
+ * kademe taşıyor, `maxLevel` ise **6**. Kabin kapısı kolu (%27 ile odanın en görünür parçası)
+ * kalan iki kademeyi taşır ve `feedback_upgrade_legibility`nin istediği **çoklu redundant
+ * sinyali** de aynı hamlede kurar.
+ *
+ * Kural: **her seviye tam bir şeyi büyütür** — L1(2+2) → L2(3+2) → L3(3+3) → L4(4+3) →
+ * L5(4+4) → L6(4+5). Hiçbir yükseltme "ekranda hiçbir şey değişmedi" hissi bırakmaz.
+ *
+ * DENGEYE DOKUNMAZ: bu iki dizi yalnız ÇİZİMİ sürüyor; `economy.config.rooms.lavabo`
+ * (maliyet · uğrama olasılığı · ücret) hiç oynamadı, varyant kapısı açılmadı.
+ */
+export const LAVABO_SAYI_BY_LEVEL = [2, 3, 3, 4, 4, 4] as const;
+export const KABIN_SAYI_BY_LEVEL = [2, 2, 3, 3, 4, 5] as const;
+
+/**
+ * ODANIN ETKİN SEVİYESİ — `feedback_single_source_of_truth`: iki alan ayrışabiliyor.
+ *
+ * Oda `padsDone.includes('lavabo')` ile ÇİZİLİYOR, sayılar ise `lavaboLevel`den geliyor. Oyunda
+ * ikisini `tick` birlikte kuruyor (pad bitince `lavaboLevel = max(level, 1)`), ama dev kancası
+ * `__setState({ padsDone })` bu bağı atlıyor — ve GÖRSEL TUR bunu yakaladı: oda açık, seviye 0,
+ * içi bomboş. Eski kod sabit "üç lavabo / dört kabin" çizdiği için kusur görünmüyordu; sayı
+ * seviyeye bağlanınca ortaya çıktı.
+ *
+ * Yama değil TÜRETME: oda açıkken seviye tanım gereği en az 1'dir, kural burada yazılı.
+ */
+export const wcSeviye = (level: number, odaAcik: boolean): number =>
+  odaAcik ? Math.max(1, level) : 0;
+
+/** Seviye → çizilecek lavabo sayısı (0 = oda kapalı). */
+export const lavaboSayisi = (level: number): number =>
+  level <= 0 ? 0 : LAVABO_SAYI_BY_LEVEL[Math.min(level, LAVABO_SAYI_BY_LEVEL.length) - 1];
+
+/** Seviye → çizilecek kabin kapısı sayısı (0 = oda kapalı). Bölme sayısı bunun bir fazlası. */
+export const kabinSayisi = (level: number): number =>
+  level <= 0 ? 0 : KABIN_SAYI_BY_LEVEL[Math.min(level, KABIN_SAYI_BY_LEVEL.length) - 1];
+
+/**
+ * LAVABO SLOTLARI — merkezleri arası mesafe artık gövde eniyle AYNI (bitişik dizi).
+ * Eski sabit 1,70'ti ve duvara yalnız 4 tane sığdırıyordu; 1,36 beşe çıkarıyor, biz dördünü
+ * kullanıyoruz (beşincisi §V'de %0 görünür çıktı).
+ */
+export const LAVABO_SLOT_ARALIK = LAVABO_KUTU.w;
+
+/** i. slotun arka duvardan (odanın iç yüzünden) uzaklığı — z'si çağıran tarafta toplanır. */
+export const lavaboSlotOfset = (i: number): number => LAVABO_KUTU.w / 2 + i * LAVABO_SLOT_ARALIK;
+
+/** Bölmelerin x adımı ve ilk bölmenin odanın sol kenarından ofseti (maketin sayıları). */
+export const KABIN_ADIM = 1.5;
+export const KABIN_X_OFSET = 0.4;

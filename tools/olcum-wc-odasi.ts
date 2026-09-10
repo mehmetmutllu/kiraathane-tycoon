@@ -22,9 +22,10 @@ import { readFileSync } from 'node:fs';
 import { ACTOR_HEIGHT, CAMERA_LOOK_Y, PLAYER_RADIUS } from '../src/config/actor';
 import { CAMERA_DIST, CAMERA_FOV, CAMERA_PORTRAIT_CLAMP, CAMERA_ZOOM_OUT_MUL } from '../src/config/camera';
 import { economyConfig } from '../src/config/economy.config';
-import { BAND, BAND_SHELL, FLOOR_HALF, LAVABO, LAYOUT } from '../src/game/layout';
+import { BAND, BAND_SHELL, FLOOR_HALF, LAVABO, LAYOUT, wcYol } from '../src/game/layout';
 import {
-  AYNA_H, AYNA_S, AYNA_Y, LAVABO_CARPITMA, LAVABO_DUVAR_PAYI, LAVABO_KUTU, LAVABO_NATIVE, LAVABO_SCALE,
+  AYNA_H, AYNA_S, AYNA_Y, KABIN_ADIM, KABIN_CARPITMA, KABIN_X_OFSET, LAVABO_CARPITMA, LAVABO_DUVAR_PAYI,
+  LAVABO_KUTU, LAVABO_NATIVE, LAVABO_SCALE, LAVABO_SLOT_ARALIK, kabinSayisi, lavaboSayisi, lavaboSlotOfset,
 } from '../src/components/three/wcLook';
 import { KIP, damga, damgaOzeti, kipBandi } from './olcum-lib';
 // @ts-expect-error — .mjs araçlar, tip bildirimi yok (tools/ tsconfig kapsamında değil)
@@ -133,14 +134,15 @@ const x2 = BAND_SHELL.innerRight;     // doğu duvarının İÇ yüzü
 const zBack = BAND_SHELL.innerBack;   // arka duvarın İÇ yüzü
 const zFront = BAND.front;            // −9,80
 const doorX = LAVABO.door[0];         // 13,40
-const p0 = x1 + 0.4;                  // ilk bölme
+const p0 = x1 + KABIN_X_OFSET;        // ilk bölme (wcLook)
 const zp = zBack + 0.8;               // bölmelerin z'si
 const zd = zBack + 1.6;               // kabin kapılarının z'si
 const KAPI_YARI = 0.7;                // ön duvardaki boşluğun yarı eni
 const DUVAR_KALIN = 0.22;             // MaketWall'un en kalın parçası (lambri kuşağı)
 const LAVABO_X = x2 - LAVABO_DUVAR_PAYI;
-const LAVABO_Z0 = zBack + 2.4;        // bugünkü üçlünün ORTASI
-const LAVABO_ARALIK = 1.7;            // bugünkü sabit dz
+/** Lavabo slotunun dünya z'si — artık `wcLook` türetiyor (S7 öncesi sabit `zBack + 2,4 ∓ 1,70`ti). */
+const lavaboZ = (i: number) => zBack + lavaboSlotOfset(i);
+const LAVABO_ARALIK = LAVABO_SLOT_ARALIK;
 
 kipBandi();
 yaz('='.repeat(112));
@@ -150,8 +152,8 @@ yaz("Bu dosya KARAR İÇERMEZ. Kollar `docs/wc-odasi-raporu-s7.md` §Bulgular'da
 yaz();
 yaz(`ODANIN KUTUSU (MaketLavaboBlock'tan birebir): x ${n2(x1)} … ${n2(x2)}  ·  z ${n2(zBack)} … ${n2(zFront)}`);
 yaz(`  → iç ölçü ${(x2 - x1).toFixed(2)} × ${(zFront - zBack).toFixed(2)} br · oda duvarı ${n2(ROOM_H)} · kapı boşluğu ${(KAPI_YARI * 2).toFixed(2)} br @ x ${n2(doorX)}`);
-yaz(`  → bölmeler z ${n2(zp)} (5 adet, x ${n2(p0)} + i×1,50) · kabin kapıları z ${n2(zd)} (4 adet)`);
-yaz(`  → lavabolar x ${n2(LAVABO_X)} · z ${n2(LAVABO_Z0)} ∓ ${n2(LAVABO_ARALIK)} (3 adet, SABİT)`);
+yaz(`  → bölmeler z ${n2(zp)} · x ${n2(p0)} + i×${KABIN_ADIM.toFixed(2)} · kabin adedi SEVİYEDEN: ${[1, 2, 3, 4, 5, 6].map((l) => kabinSayisi(l)).join('/')}`);
+yaz(`  → lavabolar x ${n2(LAVABO_X)} · slot aralığı ${n2(LAVABO_ARALIK)} · adet SEVİYEDEN: ${[1, 2, 3, 4, 5, 6].map((l) => lavaboSayisi(l)).join('/')}`);
 yaz();
 
 // ============================================================================================
@@ -266,10 +268,11 @@ const PARCALAR: [string, number[]][] = [
   ['BÖLME #1 (x 5,00)', [p0, 1.0, zp]],
   ['BÖLME #5 (x 11,00)', [p0 + 4 * 1.5, 1.0, zp]],
   ['KLOZET (aralık kabinin içi)', [cx(2), 0.4, zBack + 0.65]],
-  ['LAVABO #1 (arka)', [LAVABO_X, LAVABO_KUTU.tablaY, LAVABO_Z0 - LAVABO_ARALIK]],
-  ['LAVABO #2 (orta)', [LAVABO_X, LAVABO_KUTU.tablaY, LAVABO_Z0]],
-  ['LAVABO #3 (ön)', [LAVABO_X, LAVABO_KUTU.tablaY, LAVABO_Z0 + LAVABO_ARALIK]],
-  ['AYNA #2 (y 1,75)', [LAVABO_X, AYNA_Y, LAVABO_Z0]],
+  ['LAVABO #1 (L1de var)', [LAVABO_X, LAVABO_KUTU.tablaY, lavaboZ(0)]],
+  ['LAVABO #2 (L1de var)', [LAVABO_X, LAVABO_KUTU.tablaY, lavaboZ(1)]],
+  ['LAVABO #3 (L2de gelir)', [LAVABO_X, LAVABO_KUTU.tablaY, lavaboZ(2)]],
+  ['LAVABO #4 (L4te gelir, EN ÖN)', [LAVABO_X, LAVABO_KUTU.tablaY, lavaboZ(3)]],
+  ['AYNA #2 (y 1,75)', [LAVABO_X, AYNA_Y, lavaboZ(1)]],
   ['fayans zemin (oda ortası)', [(x1 + x2) / 2, 0.02, (zBack + zFront) / 2]],
   ['MÜŞTERİNİN KAYBOLDUĞU NOKTA', [LAVABO.door[0], ACTOR_HEIGHT / 2, LAVABO.door[2]]],
   ['müşterinin BAŞI kaybolurken', [LAVABO.door[0], ACTOR_HEIGHT, LAVABO.door[2]]],
@@ -316,7 +319,7 @@ yaz();
 // ============================================================================================
 //  §K KABİN KAPILARI VE BÖLMELER — kullanıcı: "kötü"
 // ============================================================================================
-yaz('§K KABİN KAPISI + BÖLME — bugün düz kutu; pakette karşılığı ne veriyor?');
+yaz('§K KABİN KAPISI + BÖLME — `door_A` UYGULANDI (D-104); ölçüler kararın dayanağıdır.');
 yaz('-'.repeat(112));
 const KUTU_KAPI = { w: 1.36, h: 1.95, d: 0.06 };
 const KUTU_BOLME = { w: 0.06, h: 2.0, d: 1.6 };
@@ -434,7 +437,8 @@ for (const ad of ['wall_half', 'pillar_A', 'pillar_B']) {
   );
 }
 yaz();
-yaz('KARŞILAŞTIRMA — lavabo gövdesi bu turda ÇARPITMA ' + LAVABO_CARPITMA.toFixed(3) + ' ile kabul edildi (D-103).');
+yaz('KARŞILAŞTIRMA — lavabo gövdesi ÇARPITMA ' + LAVABO_CARPITMA.toFixed(3) + ' ile kabul edilmişti (D-103);');
+yaz('uygulanan kabin kapısının çarpıtması ' + KABIN_CARPITMA.toFixed(3) + ' — onun ALTINDA.');
 yaz('Ondan büyük bir çarpıtma "kabul edilmiş bedelin üstüne çıkıyor" demektir.');
 yaz();
 
@@ -494,16 +498,16 @@ for (let n = 0; n < 7; n++) {
   const P = [LAVABO_X, LAVABO_KUTU.tablaY, z];
   const t = tara(P, CAMERA_DIST);
   const yakin = taraYakin(P, CAMERA_DIST);
-  const bugunku = [LAVABO_Z0 - LAVABO_ARALIK, LAVABO_Z0, LAVABO_Z0 + LAVABO_ARALIK].some((b) => Math.abs(b - z) < 0.7);
+  const bugunku = n < lavaboSayisi(6);
   yaz(n2(z) + '     ' + n2(zFront - z) + '            ' + yz(t.gorunur) + '   ' + yz(yakin) +
-      (bugunku ? '   (bugünkü üçlünün yakınında)' : ''));
+      (bugunku ? `   (KULLANILIYOR — L${[1, 2, 3, 4, 5, 6].find((l) => lavaboSayisi(l) > n)}'de gelir)` : '   (kullanılmıyor)'));
 }
 yaz();
 yaz("İKİNCİ SİNYAL ADAYLARI — `feedback_upgrade_legibility`: tek sinyal yetmez, çoklu redundant.");
 yaz('aday'.padEnd(34) + 'konum'.padEnd(28) + 'GÖRÜNÜR  YAKIN');
 const SINYAL_ADAY: [string, string, number[]][] = [
-  ['lavabo SAYISI (doğu duvarı)', `x ${LAVABO_X.toFixed(2)} · z değişken`, [LAVABO_X, LAVABO_KUTU.tablaY, LAVABO_Z0]],
-  ['ayna SAYISI (lavabo başına)', `x ${LAVABO_X.toFixed(2)} · y ${AYNA_Y}`, [LAVABO_X, AYNA_Y, LAVABO_Z0]],
+  ['lavabo SAYISI (doğu duvarı)', `x ${LAVABO_X.toFixed(2)} · z değişken`, [LAVABO_X, LAVABO_KUTU.tablaY, lavaboZ(1)]],
+  ['ayna SAYISI (lavabo başına)', `x ${LAVABO_X.toFixed(2)} · y ${AYNA_Y}`, [LAVABO_X, AYNA_Y, lavaboZ(1)]],
   ['kabin kapısı SAYISI (arka duvar)', `x 5,75…10,25 · z ${zd.toFixed(2)}`, [cx(1), 0.975, zd]],
   ['fayans şeridi (zemin, oda ortası)', 'y 0,02', [(x1 + x2) / 2, 0.02, (zBack + zFront) / 2]],
   ['kapı boşluğunun kendisi', `x ${doorX} · z ${zFront}`, [doorX, 1.2, zFront]],
@@ -523,7 +527,7 @@ yaz('-'.repeat(112));
 yaz(`bugün: 'toWc' → LAVABO.spot ${JSON.stringify(LAVABO.spot)} · varınca pos = LAVABO.door ${JSON.stringify(LAVABO.door)}`);
 yaz(`        → 'inWc' + scale 0 · ${economyConfig.rooms.lavabo.visitTime} sn · sonra AYNI yerde belirip parasını bırakır`);
 yaz(`spot → door mesafesi: ${Math.hypot(LAVABO.spot[0] - LAVABO.door[0], LAVABO.spot[2] - LAVABO.door[2]).toFixed(3)} br`);
-yaz(`kapı eşiği ön duvarın ${(LAVABO.door[2] - (zFront + DUVAR_KALIN / 2)).toFixed(3)} br ÖNÜNDE → müşteri duvara GİRMEDEN yok oluyor`);
+yaz(`kapı eşiği ön duvarın ${(LAVABO.door[2] - (zFront + DUVAR_KALIN / 2)).toFixed(3)} br ÖNÜNDE (eski davranışta müşteri buharlaşıyordu)`);
 yaz();
 yaz('M1 — ODA YÜRÜNÜR OLSUN: bedel nedir?');
 const a2 = LAYOUT.areaBounds[2];
@@ -549,7 +553,16 @@ for (let mz = zFront + 0.3; mz >= zFront - 3.0; mz -= 0.5) {
       '            ' + yz(govdeGorunur(doorX - 2.0, mz)));
 }
 yaz();
-yaz('M3 — BUGÜNKÜ: kayboluş noktası §V tablosunda. Oyuncu o an oraya bakıyorsa kayboluş GÖRÜLÜR.');
+yaz('UYGULANAN YOL (D-104) — `layout.wcYol` üzerindeki noktaların GÖRÜNÜRLÜĞÜ:');
+yaz('  t'.padEnd(8) + '      x        z   GÖRÜNÜR(yakın)');
+for (let i = 0; i <= 10; i++) {
+  const [px, pz] = wcYol(i / 10);
+  const gor = [0.25, 0.9, ACTOR_HEIGHT].reduce((a, y) => a + taraYakin([px, y, pz], CAMERA_DIST), 0) / 3;
+  yaz(`  ${(i / 10).toFixed(1)}`.padEnd(8) + n2(px) + n2(pz) + '        ' + yz(gor) +
+      (i === 10 ? '   << müşterinin kaybolduğu nokta' : ''));
+}
+yaz();
+yaz('M3 — ESKİ DAVRANIŞ: kayboluş noktası §V tablosunda. Oyuncu o an oraya bakıyorsa kayboluş GÖRÜLÜRDÜ.');
 yaz();
 yaz('ZİYARET SIKLIĞI — kaç müşteride bir görülür? visitChance seviyeye göre:');
 yaz('  seviye'.padEnd(10) + economyConfig.rooms.lavabo.visitChanceByLevel.map((v, i) => `L${i + 1} %${(v * 100).toFixed(0)}`).join('  '));

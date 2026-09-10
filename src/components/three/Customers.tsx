@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import { CapsuleGeometry, SphereGeometry, MeshStandardMaterial, Object3D, Color, MathUtils, type InstancedMesh } from 'three';
 import { useGame } from '../../game/store';
 import { ACTOR_HEIGHT, BUBBLE_Y, CAPSULE_RADIUS, SEATED_DROP } from '../../config/actor';
+import { WC_GECIS, wcOlcek } from '../../game/layout';
 
 // FPS Tier 2 (2026-06-13): tüm müşteri gövdeleri TEK InstancedMesh — eskiden her NPC ayrı kapsül
 // draw-call'ı (+facing/bob useFrame'i); kalabalık salonda onlarca draw-call. Görsel BİREBİR AYNI:
@@ -71,9 +72,19 @@ export function Customers() {
       // etkilemediğinden = position(x,bobY,z) + RotY(facing). Tek dummy ile birebir.
       dummy.position.set(x, bobY, z);
       dummy.rotation.set(0, f.angle, 0);
-      // B4: lavaboya giren müşteri İÇERİDEDİR — çizilmez (instancing'de ölçek 0). Kapıda
-      // kaybolur, `visitTime` sonra aynı yerde belirir: "girdi, çıktı" okunur.
-      dummy.scale.setScalar(npc.state === 'inWc' ? 0 : 1);
+      // B4 + S7/G-35: lavaboya giren müşteri İÇERİDEDİR — çizilmez (instancing'de ölçek 0).
+      // Artık kapı eşiğinde ANINDA yok olmuyor: 'wcGiris'/'wcCikis' boyunca kapı boşluğundan
+      // içeri yürür ve son %40'ta söner (per-instance opaklık yok, sönme ÖLÇEKLE). Sönme bir
+      // yedek — hedef köşede görünürlük zaten %0 ölçüldü (`docs/wc-odasi-raporu-s7.md` §M).
+      dummy.scale.setScalar(
+        npc.state === 'inWc'
+          ? 0
+          : npc.state === 'wcGiris'
+            ? wcOlcek(1 - npc.timer / WC_GECIS)
+            : npc.state === 'wcCikis'
+              ? wcOlcek(npc.timer / WC_GECIS)
+              : 1,
+      );
       dummy.updateMatrix();
       body.setMatrixAt(i, dummy.matrix);
       col.set(npc.color);

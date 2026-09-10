@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 96 · YAPILAN 81 · %84):**
+**Oturum bütçesi (TOPLAM 96 · YAPILAN 82 · %85):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -24,10 +24,10 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
 | | D meta katman | 9/9 ✅ |
 | | E arayüz ve cila | 4/5 🔧 |
-| | **S sanat ve arayüz geçişi** | **6/12 🔧** |
+| | **S sanat ve arayüz geçişi** | **7/12 🔧** |
 | | H oynanış düzeltmeleri | 0/3 ⏳ |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **53/68** |
+| **Program toplam** | | **54/68** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -243,7 +243,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   değil; kendi turunu ister.
 - ⏳ **E5 — hareketli onboarding**
 
-## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (6/12) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
+## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (7/12) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
 - ✅ **S1 — pad ve yükseltme dili yeniden yazıldı** · çember → **köşe parantezli kare** (kenar
   ortaları boş), dolum büyüyen disk → **alttan üste dolan kare**, "Masa"/"Çay Yükselt"/"Usta"
   → hepsinde **YÜKSELT** + solunda düz yukarı ok, yazı 700 → 800, 💎 pulu "mavi kare" → gerçek
@@ -361,10 +361,15 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   bloğuna dokunuyor, **S7'nin başlığı oldu.** İki mutasyon kaçtı, ikisi de bekçiyi güçlendirdi
   (aralık → eşitlik; gölge kararı ölçü katmanına çıktı). vitest **864** · duman **42/42** ·
   toplam **26 mutasyon** · **denge sayısı DEĞİŞMEDİ**.
-- ⏳ **S7 — lavabo / WC odası** — kabin kapıları bugün düz kutu (`boxGeometry 1,36×1,95×0,06`,
-  tek renk kahve) ve kullanıcı "kötü" dedi. Karşılığı diskte: `door_A` · `door_B` ·
-  `wall_doorway` · bölme için `wall_half` + `pillar_A/B`; lavabo `kitchencounter_sink`.
-  *(restaurant-bits, diskte)*
+- ✅ **S7 — WC odası: kabin kapısı KayKit'e geçti, seviye mekânsal okunuyor, kayboluş örtüldü (D-104)** ·
+  §V S6'nın tersini söyledi (oda kapının önünde **%100** görünür); kapı `door_A` (%73'ü zaten
+  WC'nin grisi, %25 yeşil kahve bloğunu kırıyor, çarpıtma 1,221 < D-103'ün 2,715'i); seviye artık
+  lavabo **ve** kabin sayısıyla okunuyor (duvar 6 lavabo almıyor — 7,40 br, ön slot %0); müşteri
+  kapıda buharlaşmıyor, içeri yürüyüp %0 görünür köşede sönüyor. **Denge DEĞİŞMEDİ.**
+  Yeni araç `tools/model-bak.mjs`: sayı `door_A`yı kasa sandırdı, ekran düzeltti. İkinci kusuru
+  (oda açık ama BOŞ) testler değil GÖRSEL TUR yakaladı → `wcSeviye()`.
+  Bekçi `tests/wc-odasi.test.ts` 26 denetim · **15 mutasyon** (biri kaçtı, ölçüt sıkıldı) ·
+  vitest **889** · duman **42/42**.
 - ⏳ **S8 — SES ASSETLERİ (D-096'nın kapsam sınırı açılıyor)** — kullanıcı ortam uğultusu
   ("kalabalık sesi") ve **daha gerçekçi para sesi** istedi. **Bu karar D-096'yı kısmen geri
   alır:** sentez "nihai" seçilmişti ve `public/assets/audio/` bilerek boştu (lisans yüzeyi sıfır).

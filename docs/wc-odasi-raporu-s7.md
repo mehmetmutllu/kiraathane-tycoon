@@ -1,12 +1,13 @@
 # S7 — WC odası: kabin kapıları · seviye sinyali · müşterinin kayboluşu (ÖLÇÜM RAPORU)
 
-Ham çıktı: `docs/olcum-wc-odasi.txt` · araç: `tools/olcum-wc-odasi.ts` (`OLCUM=tam npx tsx tools/olcum-wc-odasi.ts`)
+Ham çıktı: **taban** `docs/olcum-wc-odasi-taban.txt` (§Bulgular bu koşudan) · **final** `docs/olcum-wc-odasi-final.txt` · araç: `tools/olcum-wc-odasi.ts` (`OLCUM=tam npx tsx tools/olcum-wc-odasi.ts`)
 Görsel: `docs/gorsel/s7-kapi-adaylari.png` · `docs/gorsel/s7-kapi-yan.png` · `docs/gorsel/ss/s7-*.png`
 Yeni araçlar: `tools/model-bak.mjs` + `tools/model-bak.html` (modeli çizip gösterir) · `tools/shot-wc-s7.mjs`
 Tarih: 2026-09-10 · karakter boyu **1,75** · oda duvarı **2,20** · kabin bölmesi **2,00**
 
-> Bu rapor **ölçüm commit'iyle** yazıldı; **§Karar bölümü bilerek BOŞ.** Karar paketi kullanıcıya
-> sunulur, seçilen kol ikinci commit'te uygulanır (D-084 varyant kapısı).
+> Bu rapor **iki commit'te** yazıldı (D-084 varyant kapısı): §Bulgular ölçüm commit'iyle geldi ve
+> §Karar o commit'te **BOŞTU**; karar paketi kullanıcıya sunuldu, seçilen kollar ikinci commit'te
+> uygulandı ve §Karar + §Final koşu o zaman dolduruldu.
 
 ---
 
@@ -200,6 +201,49 @@ içeride oda yeniden açılıyor. Yani "içeri yürüyüp gözden kaybolma" yaz�
 
 ---
 
-## §Karar
+## §Karar — **D-104** (kullanıcı, 2026-09-10)
 
-*(BOŞ — karar paketi kullanıcıya sunulacak, seçilen kol ikinci commit'te uygulanacak.)*
+| kol | seçim | gerekçe |
+|---|---|---|
+| **K** kabin kapısı | **`door_A`** (yeşil kanat) | %73'ü zaten WC'nin grisi → göz taşıması gerekmedi; %25 yeşil kahve bloğunu kırıyor. Bedel bilinerek kabul edildi: itme barı tek mesh, sökülemez. |
+| **L** seviye sinyali | **lavabo + kabin sayısı birlikte** | Tek başına lavabo 6 kademeyi taşımıyor (duvar 5 alıyor, ön slot %0). Kabin kolu (%27, odanın en görünür parçası) kalanı taşıyor ve çoklu redundant sinyal kuralını da kurar. |
+| **M** kayboluş | **içeri yürü + yana sap + sön** | Nav'a, bant kütlesine ve dengeye dokunmadan çözüyor; oda tümüyle yürünür olmak (v1.1 "aktif WC döngüsü") kendi turunu istiyor. |
+
+**Kod yapısına ait, ölçüme dayanarak kendim kararlaştırdıklarım** (`feedback_technical_forks`):
+ölçek **tekdüze değil** (1,36 × 1,95, çarpıtma 1,221 < D-103'ün 2,715'i) · derinlik x ölçeğine
+bağlı (kapı z'de ezilmesin) · kabin gözü (1,36 × 1,95) ve bölme adımı (1,50) **değişmedi**, yani
+yerleşim/nav hiç oynamadı · lavabo aralığı 1,70 → **1,36** (gövde eniyle aynı, dördü de görünür
+slotta) · seviye eşlemesi L1(2+2) → L6(4+5), her adım tam bir şeyi büyütür.
+
+## §Final koşu (uygulamadan sonra)
+
+Araç canlı kodu okuyor, yani final koşu uygulanan hâli ölçüyor.
+
+**Uygulanan kayboluş yolu** — `layout.wcYol` üzerindeki görünürlük (oyuncu kapının önündeyken):
+
+| t | x | z | görünür |
+|---|---|---|---|
+| 0,0 | 13,40 | −9,55 | %100 |
+| 0,3 | 13,40 | −9,97 | %100 |
+| 0,5 | 13,40 | −10,25 | %78 |
+| 0,7 | 12,60 | −10,25 | %9 |
+| **1,0** | **11,40** | **−10,25** | **%0** |
+
+Sönme eşiği 0,60'ta başlıyor, geometri 0,80'de devralıyor — ikisi üst üste biniyor, yani müşteri
+hiçbir karede "birden yok olmuyor".
+
+**Kullanılan lavabo slotları:** −16,63 (L1) · −15,27 (L1) · −13,91 (L2) · −12,55 (L4).
+Beşinci slot (−11,19, %0 görünür) **kullanılmıyor**.
+
+## §Uygulamanın yakaladığı iki kusur
+
+1. **`door_A` bir kasa sanıldı.** Köşe histogramı x'te 0,48…1,12 arasında boşluk gösterdi; orası
+   düz bir panelin içiydi (düz yüzün ortasında vertex yoktur — S4 dersi, yazılıydı, yine ısırdı).
+   Modeli çizdiren araç bu yüzden doğdu: `tools/model-bak.mjs`.
+2. **Oda açık ama BOŞ çizilebiliyordu.** Sayılar `lavaboLevel`den, odanın çizilmesi
+   `padsDone`tan geliyordu ve dev kancası `__setState({ padsDone })` bağı atlıyordu. Testler
+   yeşilken **görsel tur** yakaladı (`feedback_visual_polish`). Yama değil türetme: `wcSeviye()`.
+
+**Bekçi:** `tests/wc-odasi.test.ts` — 26 denetim, **15 mutasyon**. Biri kaçtı (kaynak denetimi
+`door_A.gltf`i bir yorumdan buluyordu) ve ölçüt gerçek `src=` ifadesine çevrildi.
+vitest **889** · duman **42/42** · `tsc -b` temiz · beş kadraj gözle (`docs/gorsel/ss/s7-*.png`).

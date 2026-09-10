@@ -111,7 +111,58 @@ export const LAVABO = {
   door: [13.4, 0, -9.55] as Vec3,
   /** Çıkarken parasının bırakıldığı yer — lavabonun ÖNÜNDEKİ istif (masalarınkiyle aynı desen). */
   coinSpot: [13.4, 0.3, -8.4] as Vec3,
+  /**
+   * KAYBOLUŞ YOLU (S7/M2 · G-35 · D-104) — müşteri artık kapı eşiğinde BUHARLAŞMIYOR.
+   *
+   * Eski davranış bir TASARIMDI ("oda yürünmez, müşteri kapıda kaybolur") ve oda çizilmeden
+   * önce doğruydu. Oda çizilip kamera içini görünce kullanıcı onu **hata** olarak okudu — ve
+   * ölçüm haklı çıkardı: kayboluş noktası kapının önündeyken **%100** görülüyor ve her iki
+   * müşteriden biri oraya uğruyor.
+   *
+   * Neden İKİ nokta (düz içeri + yana sapma): ölçüm kapı EKSENİNDE içeri yürüyen müşterinin
+   * **hiç saklanmadığını** gösterdi (boşluktan bakılıyor, %78–100 görünür). Saklanma yalnız
+   * YANA sapınca ve yalnız duvarın dibindeki **0,2–1,2 br**'lik bantta oluyor. `path` da tam
+   * bunu yapıyor: önce kapı boşluğundan düz içeri (duvara sürtmesin), sonra yana.
+   *
+   * NAV'A VE DENGEYE DOKUNMAZ: `clampToOpenAreas` yalnız OYUNCUYA uygulanıyor (tick §oyuncu),
+   * müşteri konumu zaten doğrudan yazılıyor. Yürünebilir alan, bant kütlesi ve `maxConcurrent`
+   * tavanı aynen duruyor — yeni durumlar `hasLeftTable`'a dahil, yani koltuk ve spawn tavanı
+   * eskisi gibi kalkış anında serbest kalıyor.
+   */
+  wcIn: [13.4, 0, -10.25] as Vec3,
+  wcCorner: [11.4, 0, -10.25] as Vec3,
 } as const;
+
+/** WC geçişinin (giriş ve çıkış ayrı ayrı) süresi — görsel zamanlama, dengeye girmez. */
+export const WC_GECIS = 0.8;
+
+/**
+ * Müşteri geçişin hangi oranından sonra SÖNMEYE başlar. Instancing'de per-instance opaklık yok,
+ * o yüzden sönme ÖLÇEKLE yapılır; zaten hedef nokta %0 görünür olduğu için sönme bir yedek,
+ * asıl işi köşeye sapma görüyor.
+ */
+export const WC_SOLMA_ESIGI = 0.6;
+
+/** Geçiş yolu: t ∈ [0,1] → dünya (x, z). İlk yarı kapı boşluğundan düz içeri, ikinci yarı yana. */
+export function wcYol(t: number): [number, number] {
+  const k = Math.min(1, Math.max(0, t));
+  const [ax, , az] = LAVABO.door;
+  const [bx, , bz] = LAVABO.wcIn;
+  const [cx, , cz] = LAVABO.wcCorner;
+  if (k <= 0.5) {
+    const u = k * 2;
+    return [ax + (bx - ax) * u, az + (bz - az) * u];
+  }
+  const u = (k - 0.5) * 2;
+  return [bx + (cx - bx) * u, bz + (cz - bz) * u];
+}
+
+/** Geçiş oranına göre müşterinin ölçeği (1 = tam görünür, 0 = yok). */
+export function wcOlcek(t: number): number {
+  const k = Math.min(1, Math.max(0, t));
+  if (k <= WC_SOLMA_ESIGI) return 1;
+  return 1 - (k - WC_SOLMA_ESIGI) / (1 - WC_SOLMA_ESIGI);
+}
 
 /**
  * ALAN DİKDÖRTGENLERİ — şablon değil AÇIK LİSTE (maket v13'ün açılma sırası):

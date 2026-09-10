@@ -936,19 +936,18 @@ function LavaboFront() {
               açık mavi şerit koymuştum; maketle yan yana konunca görüldü ki maketin ön duvarındaki
               kesintisiz 0,9 birimlik KOYU LAMBRİ kuşağı kadrajın en güçlü yatay çizgisi ve şeritler
               onu tam ortadan bölüyordu. Maketin duvarında böyle bir kaplama yok.
-              AÇIK KALEM: seviye şu an tek sinyalle (lentodaki noktalar) okunuyor; "tek sinyal
-              yetmez" kuralı için ikinci sinyal maketi bozmadan bulunmalı. */}
+              (Bu açık kalem S7'de kapandı: sinyal artık odanın İÇİNDE ve iki koldan okunuyor.) */}
           {/* SEVİYE NOKTALARI KALDIRILDI (S6/③, kullanıcı isteği). Lentonun hizasında (y = 2,14)
               seviye kadar sarı daire çiziliyordu; kullanıcı iki turda da onları işaret etti
               ("kapı üstündeki sarı daireler"). İlk turda ben yanlış parçayı — lentonun KENDİSİNİ —
               kaldırmıştım; lento geri geldi, noktalar gitti.
 
-              **AÇIK KALEM, BİLEREK AÇIK:** bu noktalar lavabo seviyesinin TEK görsel sinyaliydi
-              (kodun kendi notu da bunu "tek sinyal yetmez" diye işaretliyordu). Şimdi seviye
-              HİÇBİR yerden okunmuyor. `feedback_upgrade_legibility` çoklu redundant sinyal
-              istiyor; lavaboda doğru yer büyük ihtimalle MEKÂNSAL olan: seviye arttıkça
-              lavabo SAYISI artsın (S7 adayı, ölçüm ister — `MaketLavaboBlock` bugün üç lavaboyu
-              sabit dz ∓1,70 ile çiziyor). */}
+              KAPANDI (S7/L · D-104): o noktalar seviyenin TEK sinyaliydi ve kalkınca seviye
+              hiçbir yerden okunmaz olmuştu. Yerine geçen sinyal MEKÂNSAL ve ÇİFT: seviye
+              arttıkça hem lavabo hem kabin kapısı SAYISI büyüyor (`wcLook.LAVABO_SAYI_BY_LEVEL`
+              + `KABIN_SAYI_BY_LEVEL`). Ölçüm neden ikisi birden olduğunu söylüyor: doğu duvarı
+              6 lavabo almıyor (7,40 br, en çok 5) ve en öndeki slot %0 görünür —
+              `docs/wc-odasi-raporu-s7.md` §L. */}
         </group>
       )}
       {/* Yükseltme noktası: pad bitince AYNI yerde belirir (obje-başı yükseltme). */}

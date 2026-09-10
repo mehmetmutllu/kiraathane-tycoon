@@ -72,6 +72,20 @@ for (const [ad, x, z] of KADRAJ) {
   await page.screenshot({ path: `${OUT}/s7-${ad}.png` });
   console.log('çekildi:', ad);
 }
+
+// SEVİYE KADRAJLARI (S7/L) — sinyal ancak seviyeler yan yana konunca doğrulanabilir.
+for (const lv of [1, 3, 6]) {
+  await page.evaluate((l) => window.__setState({ lavaboLevel: l }), lv);
+  await page.evaluate(() => window.__teleport(10.5, -9.0));
+  await page.waitForTimeout(1800);
+  await page.screenshot({ path: `${OUT}/s7-seviye-L${lv}.png` });
+  console.log('çekildi: seviye L' + lv);
+}
+// Tepeden plan — kapıların bölmelerle hizası ve zeminle teması sayıyla değil GÖZLE denetlenir.
+await page.evaluate(() => window.__devPlan({ topDown: true, zoom: 1, gridStep: 0 }));
+await page.waitForTimeout(1600);
+await page.screenshot({ path: `${OUT}/s7-plan-L6.png` });
+console.log('çekildi: plan');
 console.log(errs.length ? 'KONSOL HATASI: ' + errs.join(' | ') : 'konsol temiz');
 await browser.close();
 sunucu.kill();

@@ -1,0 +1,244 @@
+================================================================================================================
+S7 ÖLÇÜM — WC ODASI  ·  kip: TAM  ·  2026-09-10
+================================================================================================================
+Bu dosya KARAR İÇERMEZ. Kollar `docs/wc-odasi-raporu-s7.md` §Bulgular'da; seçim kullanıcının.
+
+ODANIN KUTUSU (MaketLavaboBlock'tan birebir): x    4.60 …   17.41  ·  z  -17.31 …   -9.80
+  → iç ölçü 12.81 × 7.51 br · oda duvarı    2.20 · kapı boşluğu 1.40 br @ x   13.40
+  → bölmeler z  -16.51 · x    5.00 + i×1.50 · kabin adedi SEVİYEDEN: 2/2/3/3/4/5
+  → lavabolar x   17.07 · slot aralığı    1.36 · adet SEVİYEDEN: 2/3/3/4/4/4
+
+§V GÖRÜNÜRLÜK — WC odasının hangi parçası EKRANA GİRİYOR? (§K/§L/§M'den ÖNCEKİ soru)
+----------------------------------------------------------------------------------------------------------------
+kamera oyuncunun +z'sinde (pz +    8.50) ve −z'ye bakıyor · fov 50
+İKİ SÜZGEÇ: (1) kadraj konisi · (2) odanın    2.20 birimlik ÖN DUVARI ışını kesiyor mu
+taban = tüm kat taranır (1 × 0.5 adım) · YAKIN = oyuncu kapının önündeyken (asıl an)
+
+parça                                     x       y       z   kadraj  GÖRÜNÜR  uzaklaş   portre    YAKIN
+kapı boşluğu (referans)               13.40   1.00  -9.80    31%     31%      53%      51%     100%
+KABİN KAPISI #1 (x 5,75)               5.75   0.97 -15.71    29%     29%      54%      50%     100%
+KABİN KAPISI #2 (x 7,25)               7.25   0.97 -15.71    27%     27%      52%      48%     100%
+KABİN KAPISI #3 (aralık, x 8,75)       8.75   0.97 -15.71    26%     26%      50%      45%     100%
+KABİN KAPISI #4 (x 10,25)             10.25   0.97 -15.71    24%     24%      48%      43%     100%
+kabin kapısı ÜST kenarı (#2)           7.25   1.95 -15.71    17%     17%      40%      35%     100%
+BÖLME #1 (x 5,00)                      5.00   1.00 -16.51    28%     28%      51%      47%     100%
+BÖLME #5 (x 11,00)                    11.00   1.00 -16.51    22%     22%      43%      39%     100%
+KLOZET (aralık kabinin içi)            8.75   0.40 -16.66    30%     30%      53%      51%     100%
+LAVABO #1 (L1de var)                  17.07   0.86 -16.63    16%     16%      34%      32%     100%
+LAVABO #2 (L1de var)                  17.07   0.86 -15.27    19%     19%      37%      35%     100%
+LAVABO #3 (L2de gelir)                17.07   0.86 -13.91    21%     17%      37%      33%     100%
+LAVABO #4 (L4te gelir, EN ÖN)         17.07   0.86 -12.55    22%      4%      12%      10%      78%
+AYNA #2 (y 1,75)                      17.07   1.75 -15.27    12%     12%      29%      25%     100%
+fayans zemin (oda ortası)             11.00   0.02 -13.55    39%      2%       8%       8%      33%
+MÜŞTERİNİN KAYBOLDUĞU NOKTA           13.40   0.88  -9.55    32%     32%      57%      52%     100%
+müşterinin BAŞI kaybolurken           13.40   1.75  -9.55    25%     25%      46%      43%     100%
+
+KADRAJ = yalnız görüş konisi · GÖRÜNÜR = koni VE ön duvar örtmüyor. İkisi arasındaki fark
+duvarın kestiği paydır. Üç kipte de GÖRÜNÜR %0 çıkan parça ekrana HİÇ girmez (S6 dersi).
+
+ÖRTME PROFİLİ — oyuncu kapının önünde (x 13,40) dururken, odanın içindeki bir nokta
+hangi YÜKSEKLİKTE duvarın üstünden görünmeye başlıyor?
+  z       derinlik  y=0,20  y=0,50  y=1,00  y=1,50  y=1,95  y=2,20
+ -10.30   0.50     0%     0%     0%     0%    17%   100%
+ -11.30   1.50     0%     0%     0%    58%   100%   100%
+ -12.30   2.50     0%     0%    58%   100%   100%   100%
+ -13.30   3.50    33%    58%   100%   100%   100%   100%
+ -14.30   4.50    83%   100%   100%   100%   100%   100%
+ -15.30   5.50   100%   100%   100%   100%   100%   100%
+ -16.30   6.50   100%   100%   100%   100%   100%    83%
+ -17.30   7.50   100%   100%   100%   100%    83%    67%
+
+(x = kapı boşluğunun 3 br solu, yani DUVARIN arkasında — kapı deliğinden değil duvarın
+ ÜSTÜNDEN görünme sınırı ölçülüyor.)
+
+§K KABİN KAPISI + BÖLME — `door_A` UYGULANDI (D-104); ölçüler kararın dayanağıdır.
+----------------------------------------------------------------------------------------------------------------
+bugünkü KAPI  :    1.36 ×    1.95 ×    0.06 · tek renk #5d4037 (MC.doorWood) · 12 üçgen
+bugünkü BÖLME :    0.06 ×    2.00 ×    1.60 · tek renk #6d4c41 (MC.wain) · 12 üçgen
+
+model                         w        h        d     minX     minY     minZ   üçgen  rol
+door_A                   1.600   2.800   0.771  -0.000   0.000  -0.386     188  kapı adayı K2
+door_B                   1.600   2.800   0.771  -0.000   0.000  -0.386     188  kapı adayı K3
+wall_doorway             4.000   4.000   0.500  -2.000   0.000  -0.250     162  kapı ÇERÇEVESİ adayı
+wall_half                2.000   4.000   0.500  -0.000   0.000  -0.250      76  bölme adayı B2
+pillar_A                 0.600   4.100   0.600  -0.300   0.000  -0.300      44  bölme adayı B3
+pillar_B                 1.000   4.100   1.000  -0.500   0.000  -0.500      44  bölme adayı B3
+
+minX ≈ 0 ise MENTEŞE MODELİN KENARINDA → kapı origin'i etrafında AÇILABİLİR (aralık kabin,
+ve G-35'in M2 kolundaki "kapı açılıp kapanma" geçişi bunu ister). minX ≈ −w/2 ise ortadan.
+
+PARÇA DÖKÜMÜ — bbox tek kutu verir ve YANILTIR (S6'nın ayna dersi). Kanat mı, kasa+kanat mı?
+model / parça                                   w        h        d    y-açı
+door_A / door_A                            1.600   2.800   0.771     0.0°
+door_B / door_B                            1.600   2.800   0.771     0.0°
+wall_doorway / wall_doorway                4.000   4.000   0.500     0.0°
+wall_half / wall_half                      2.000   4.000   0.500     0.0°
+pillar_A / pillar_A                        0.600   4.100   0.600     0.0°
+pillar_B / pillar_B                        1.000   4.100   1.000     0.0°
+
+y-açı hepsinde 0,0° → hiçbiri gltf içinde döndürülmemiş. Yani 0,771 derinlik bir DÖNÜŞ
+değil, modelin kendi çıkıntısı. Ne olduğunu BOY PROFİLİ söylüyor.
+
+BOY PROFİLİ — 0,771 derinlik düz bir kapı için fazla. Hangi YÜKSEKLİKTE ne kadar kalın?
+
+  UYARI (bu turda ısırdı): düşük-poli modelde KÖŞE histogramı DOLULUK göstermez. door_A modelinin
+  x köşeleri 0,48…1,12 arasında hiç yok ve ilk okumam "ortası boş, demek ki kasa" oldu —
+  yanlıştı: orası düz bir panelin İÇİ, köşesi olmayan dolu yüzey. Doğrusunu ancak modeli
+  ÇİZDİRMEK söyledi (`tools/model-bak.mjs`, `docs/gorsel/s7-kapi-adaylari.png`). Sayı burada
+  ekranın YERİNE geçemedi; ekran sayının yerine geçemediği gibi.
+
+model       y dilimi     z kalınlığı   x aralığı      not
+door_A       0.00…0.20   0.300     -0.00 … 1.60
+door_A       0.80…1.00   0.735      0.18 … 1.42   << İTME BARI (iki yüzden de taşıyor)
+door_A       1.00…1.20   0.771      0.15 … 1.45   << İTME BARI (iki yüzden de taşıyor)
+door_A       1.40…1.60   0.300      0.40 … 1.20
+door_A       1.60…1.80   0.100      0.43 … 1.17
+door_A       2.20…2.40   0.100      0.43 … 1.17
+door_A       2.40…2.60   0.300      0.40 … 1.20
+door_A       2.60…2.80   0.300      0.10 … 1.50
+door_A       2.80…3.00   0.200     -0.00 … 1.60
+door_A      BAR HARİÇ gövde kalınlığı: 0.300
+
+wall_half    0.00…0.20   0.500     -0.00 … 2.00
+wall_half    1.80…2.00   0.500     -0.00 … 2.00
+wall_half    2.00…2.20   0.500     -0.00 … 2.00
+wall_half    3.80…4.00   0.500     -0.00 … 2.00
+wall_half   BAR HARİÇ gövde kalınlığı: 0.500
+
+wall_doorway   0.00…0.20   0.500     -2.00 … 2.00
+wall_doorway   1.80…2.00   0.500     -2.00 … 2.00
+wall_doorway   2.00…2.20   0.500     -2.00 … 2.00
+wall_doorway   2.80…3.00   0.500     -2.00 … 2.00
+wall_doorway   3.80…4.00   0.500     -2.00 … 2.00
+wall_doorway  BAR HARİÇ gövde kalınlığı: 0.500
+
+door_A/door_B OKUNDU: kasa + KAPALI kanat + üstte küçük cam + iki yüzde İTME BARI.
+Gövde 0,300 kalın; bbox 0,771 degeri barin taşmasından geliyor (y 0,80…1,20).
+Bar bir RESTORAN MUTFAK kapısının parçası — WC kabin kapısında yeri yok, ayrı ölçülür.
+wall_half / wall_doorway / pillar_A / pillar_B: hepsi 4,00 (pillar 4,10) BOYUNDA duvar
+modülü. Odanın duvarı 2,20, kabin bölmesi 2,00 → bunlar BÖLME DEĞİL. B2/B3 kolları ölür.
+
+KABİN RİTMİ — kapı 1,60 × 2,80 (oran 0,571). Bugünkü kabin gözü 1,36 × 1,95 (oran 0,697).
+Tekdüze ölçek ikisini birden tutturamaz; hangisinden gidileceği KARAR:
+  ölçek kaynağı             en      boy    kabin adımı   4 kabin kaplar   bölme boyunu aşar mı
+  BOYDAN (h → 1,95)          1.11   1.95   1.25          5.02        hayır
+  ENDEN (w → 1,36)           1.36   2.38   1.50          6.00        EVET +0.38
+  TEKDÜZE OLMAYAN            1.36   1.95   1.50          6.00        hayır
+(bugünkü ritim: 5 bölme x 5,00…11,00 · adım 1,50 · 4 kabin · toplam 6,00 br · bölme boyu 2,00)
+TEKDÜZE OLMAYAN kolun x/y çarpıtması: 1.221 — D-103 kabul ettiği bedel 2,715 idi.
+
+HEDEF KUTUYA ÇEKME — bugünkü kutuya (1,36 × 1,95 × 0,06) oturtmanın bedeli:
+DİKKAT: sz sütunu ve ÇARPITMA yanıltıcıdır — bugünkü kutunun 0,06 DERİNLİĞİ elle çizilmiş bir
+levhanın sayısı, modelin taşıması gereken bir hedef değil. Kabin 1,60 br derin; kapı kendi
+0,300 gövdesiyle rahat oturur. Anlamlı çarpıtma yalnız x/y arasındadır (KABİN RİTMİ tablosu).
+model                       sx       sy       sz   ÇARPITMA  not
+door_A                   0.850   0.696   0.078  10.928  tekdüze(boydan) 0.696 → en 1.11 (hedef 1.36) · derinlik 0.54
+door_B                   0.850   0.696   0.078  10.928  tekdüze(boydan) 0.696 → en 1.11 (hedef 1.36) · derinlik 0.54
+wall_half                —        —        —        —  tekdüze(boydan) 0.500 → 1.00 × 2 × 0.25 (hedef 0.06 × 1.6)
+pillar_A                 —        —        —        —  tekdüze(boydan) 0.488 → 0.29 × 2 × 0.29 (hedef 0.06 × 1.6)
+pillar_B                 —        —        —        —  tekdüze(boydan) 0.488 → 0.49 × 2 × 0.49 (hedef 0.06 × 1.6)
+
+KARŞILAŞTIRMA — lavabo gövdesi ÇARPITMA 2.715 ile kabul edilmişti (D-103);
+uygulanan kabin kapısının çarpıtması 1.221 — onun ALTINDA.
+Ondan büyük bir çarpıtma "kabul edilmiş bedelin üstüne çıkıyor" demektir.
+
+ATLAS GÖZLERİ — WC'nin dili GRİ/BEYAZ (lavabo + ayna S6/②'de griye geçti). Kapı hangi renk?
+model                 gözler (çoktan aza, renk)
+door_A                [0,3] #828c91 73%  [1,2] #21a489 25%  [3,0] #68c0de 1%  [3,1] #68bedc 1%
+door_B                [0,3] #828c91 73%  [0,6] #995842 25%  [3,0] #68c0de 1%  [3,1] #68bedc 1%
+wall_doorway          [1,4] #e8ceb4 47%  [1,2] #21a489 38%  [0,3] #828c91 15%
+wall_half             [1,2] #21a489 50%  [1,4] #e8ceb4 50%
+pillar_A              [1,4] #e8ceb4 59%  [1,2] #21a489 41%
+pillar_B              [1,4] #e8ceb4 59%  [1,2] #21a489 41%
+
+Lavabo bu turda [3,6] turuncu → [0,3] gri taşındı (D-103). Kapı turuncu göz taşıyorsa AYNI
+taşıma gerekir; taşımasız konursa WC gri/beyaz iken kapı turuncu kalır (S6/②'nin şikâyeti).
+
+§L SEVİYE SİNYALİ (G-36) — "seviye arttıkça lavabo SAYISI artsın" kolu ölçülüyor
+----------------------------------------------------------------------------------------------------------------
+lavabo maxLevel = 6 → L2 kolu "seviye = lavabo sayısı" ise doğu duvarı 6 lavabo ALMALI.
+lavabo z'de kapladığı en (rot −90° → LAVABO_KUTU.w) =    1.36 br
+
+doğu duvarının z boyu:  -17.31 …   -9.91 =    7.40 br
+(kabin bloğu z  -17.31 …  -15.41 arasında ama x 5.00…11.00'de — doğu duvarıyla ÇAKIŞMIYOR)
+
+kaç lavabo sığar? (aralık = merkezler arası mesafe; gövde 1.36 br)
+aralık      n=1     n=2     n=3     n=4     n=5     n=6     n=7   ← kaplanan boy (sığmayan ×)
+  1.36       1.36    2.72    4.08    5.44    6.80    8.16×   9.52×
+  1.50       1.36    2.86    4.36    5.86    7.36    8.86×  10.36×
+  1.70       1.36    3.06    4.76    6.46    8.16×   9.86×  11.56×
+  1.90       1.36    3.26    5.16    7.06    8.96×  10.86×  12.76×
+
+Bugünkü aralık 1.36 br ve 3 lavabo var. Duvar boyu 7.40 br.
+  aralık 1.36 → en çok 5 lavabo
+  aralık 1.50 → en çok 5 lavabo
+  aralık 1.70 → en çok 4 lavabo
+  aralık 1.90 → en çok 4 lavabo
+
+HER SLOTUN GÖRÜNÜRLÜĞÜ — sayı artarsa yeni lavabolar NEREYE eklenir, oralar ekranda mı?
+slot z      ön duvara uzaklık  GÖRÜNÜR  YAKIN   not
+ -16.63        6.83              16%    100%   (KULLANILIYOR — L1'de gelir)
+ -15.27        5.47              19%    100%   (KULLANILIYOR — L1'de gelir)
+ -13.91        4.11              17%    100%   (KULLANILIYOR — L2'de gelir)
+ -12.55        2.75               4%     78%   (KULLANILIYOR — L4'de gelir)
+ -11.19        1.39               0%      0%   (kullanılmıyor)
+
+İKİNCİ SİNYAL ADAYLARI — `feedback_upgrade_legibility`: tek sinyal yetmez, çoklu redundant.
+aday                              konum                       GÖRÜNÜR  YAKIN
+lavabo SAYISI (doğu duvarı)       x 17.07 · z değişken          19%    100%
+ayna SAYISI (lavabo başına)       x 17.07 · y 1.75              12%    100%
+kabin kapısı SAYISI (arka duvar)  x 5,75…10,25 · z -15.71       27%    100%
+fayans şeridi (zemin, oda ortası) y 0,02                         2%     33%
+kapı boşluğunun kendisi           x 13.4 · z -9.8               30%    100%
+kapının ÜSTÜ (eski sarı daireler) y 2,14 · lentonun 0,2 ÖNÜ     22%    100%
+
+§M KAYBOLUŞ (G-35) — müşteri kapı eşiğinde buharlaşıyor; üç kol ölçülüyor
+----------------------------------------------------------------------------------------------------------------
+bugün: 'toWc' → LAVABO.spot [13.4,0,-9.3] · varınca pos = LAVABO.door [13.4,0,-9.55]
+        → 'inWc' + scale 0 · 2.5 sn · sonra AYNI yerde belirip parasını bırakır
+spot → door mesafesi: 0.250 br
+kapı eşiği ön duvarın 0.140 br ÖNÜNDE (eski davranışta müşteri buharlaşıyordu)
+
+M1 — ODA YÜRÜNÜR OLSUN: bedel nedir?
+  bugün a2 alanı: x  -17.00 …   17.00 · z   -9.80 …    0.00 → oda (z <   -9.80) DIŞARIDA
+  clampToOpenAreas müşteriyi de oyuncuyu da z ≥   -9.80'de tutuyor (tek kural, ikisi de aynı)
+  odanın YÜRÜNEBİLİR iç ölçüsü (kabin kapılarına kadar): 5.61 × 12.81 br
+  lavabo duvarı 0.66 br yer kaplıyor → net en 12.15 br
+  kapı boşluğu 1.40 br · oyuncu yarıçapı 0.47 → geçiş payı 0.46 br
+
+M2 — KAYBOLUŞ ÖRTÜLSÜN: müşteri içeri yürüyüp SOLARSA, hangi derinlikte gözden çıkar?
+  (oyuncu kapının önünde 0,5…4,5 br arasında dururken müşterinin kaç %'inden görünür)
+  İKİ HAT: (a) kapı ekseninde düz içeri — boşluktan geçer, duvar örtemez ·
+           (b) girip YANA sapan (x = kapı − 2,0) — ön duvarın arkasına girer.
+  müşteri z   içeri   (a) kapı ekseni   (b) yana sapan
+  -9.50    -0.30         100%             100%
+ -10.00     0.20         100%               0%
+ -10.50     0.70          67%               0%
+ -11.00     1.20         100%              33%
+ -11.50     1.70          89%              33%
+ -12.00     2.20          78%              44%
+ -12.50     2.70          81%              59%
+
+UYGULANAN YOL (D-104) — `layout.wcYol` üzerindeki noktaların GÖRÜNÜRLÜĞÜ:
+  t           x        z   GÖRÜNÜR(yakın)
+  0.0     13.40  -9.55         100%
+  0.1     13.40  -9.69         100%
+  0.2     13.40  -9.83         100%
+  0.3     13.40  -9.97         100%
+  0.4     13.40 -10.11          96%
+  0.5     13.40 -10.25          78%
+  0.6     13.00 -10.25          78%
+  0.7     12.60 -10.25           9%
+  0.8     12.20 -10.25           0%
+  0.9     11.80 -10.25           0%
+  1.0     11.40 -10.25           0%   << müşterinin kaybolduğu nokta
+
+M3 — ESKİ DAVRANIŞ: kayboluş noktası §V tablosunda. Oyuncu o an oraya bakıyorsa kayboluş GÖRÜLÜRDÜ.
+
+ZİYARET SIKLIĞI — kaç müşteride bir görülür? visitChance seviyeye göre:
+  seviye  L1 %30  L2 %35  L3 %40  L4 %45  L5 %50  L6 %55
+  visitTime 2.5 sn — kayboluş ile beliriş arasındaki sessizlik bu kadar.
+
+================================================================================================================
+BİTTİ — bu dosyada KARAR YOK. Kollar `docs/wc-odasi-raporu-s7.md` §Bulgular'da.
+================================================================================================================

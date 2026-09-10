@@ -69,11 +69,13 @@ describe('ÇARPAN OYUNUN gelir yoluna bağlı mı (sim değil, tick.ts/rules.ts)
     expect(kur(hepsi())).toBeCloseTo(tabanPara * (1 + C.goals.incomeBonusTotal), 6);
   });
 
-  it('LAVABO ÜCRETİ çarpanı görür (tick.ts · toWc çıkışı)', () => {
+  it('LAVABO ÜCRETİ çarpanı görür (tick.ts · wcCikis sonu)', () => {
     // İkinci ödeme noktası ayrı bir `coins.push`tur: çarpanı yalnız birinden silmek denge
     // testlerinden de, yukarıdaki müşteri-ödemesi testinden de KAÇARDI.
+    // S7/G-35 (D-104): ödeme noktası 'inWc' bitişinden 'wcCikis' bitişine taşındı — müşteri
+    // artık kapı eşiğinde belirmiyor, odadan ÇIKARKEN parasını bırakıyor. Kablo aynı kablo.
     const s = useGame.getState();
-    const npc: Npc = { ...icenMusteri(), state: 'inWc', timer: 0 };
+    const npc: Npc = { ...icenMusteri(), state: 'wcCikis', timer: 0 };
     const kur = (goalsClaimed: string[]) => {
       const c: TickCtx = createTickCtx({ ...s, npcs: [npc], coins: [], lavaboLevel: 1, goalsClaimed }, 1 / 60);
       runTick(c);

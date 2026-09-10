@@ -7,7 +7,11 @@ export type Vec3 = [number, number, number];
 // Sabır biterse sessizce gider (lavaboya da uğramaz — parasını ödememiştir).
 // B4: ödeyip kalktıktan sonra müşteri LAVABOYA uğrayabilir — 'toWc' kapıya yürür, 'inWc' içeride
 // (görünmez) bekler, çıkışta parasını lavabonun önündeki istife bırakıp 'leaving'e geçer.
-export type NpcState = 'toTable' | 'waitingForTea' | 'drinking' | 'toWc' | 'inWc' | 'leaving';
+// S7/G-35: 'inWc' artık kapı EŞİĞİNDE başlamıyor. Arada iki geçiş durumu var — 'wcGiris'
+// müşteriyi kapı boşluğundan içeri ve yana yürütür (orada görünürlük %0 ölçüldü), 'wcCikis'
+// aynı yolu tersten alır. Kayboluş artık bir yok oluş değil, bir GİRİŞ.
+export type NpcState =
+  | 'toTable' | 'waitingForTea' | 'drinking' | 'toWc' | 'wcGiris' | 'inWc' | 'wcCikis' | 'leaving';
 
 export interface Npc {
   id: number;

@@ -17,9 +17,13 @@
  * `flatShading` birebir; materyal sınıfı oyunun ışık kurulumuyla (SceneLights) uyumlu kalsın diye
  * oyununki. Geometri segment sayıları maketin kendi önbelleğinden alındı (küre 10 × 8).
  */
-import { BAND, BAND_SHELL, LAVABO } from '../../game/store';
+import { BAND, BAND_SHELL, LAVABO, useGame } from '../../game/store';
 import { Model } from './Model';
-import { AYNA_GOZ, AYNA_S, AYNA_Y, AYNA_Z, LAVABO_DUVAR_PAYI, LAVABO_DZ, LAVABO_GOZ, LAVABO_SCALE } from './wcLook';
+import {
+  AYNA_GOZ, AYNA_S, AYNA_Y, AYNA_Z,
+  KABIN_ADIM, KABIN_ARALIK_ACI, KABIN_DZ, KABIN_GOZ, KABIN_KUTU, KABIN_MENTESE_ORTA, KABIN_SCALE, KABIN_X_OFSET,
+  LAVABO_DUVAR_PAYI, LAVABO_DZ, LAVABO_GOZ, LAVABO_SCALE, kabinSayisi, lavaboSayisi, lavaboSlotOfset, wcSeviye,
+} from './wcLook';
 import { STEP_D, STEP_H, STEP_N } from './wallLook';
 
 /** KayKit restaurant-bits kökü — `Kitchen.tsx` ile aynı yol. */
@@ -128,6 +132,20 @@ export function MaketSink({ pos, rot = 0 }: { pos: [number, number, number]; rot
         fallback={<MaketAyna />}
       />
     </group>
+  );
+}
+
+/**
+ * GREYBOX-FIRST yedeği (CLAUDE.md): `door_A.gltf` gelmezse kabin kapısı maketin düz levhasına
+ * düşer. Oynanış ve yerleşim değişmez — yalnız görsel sadeleşir. Levha artık MENTEŞE grubunun
+ * içinde çizildiği için modelle aynı yerde durur (eski kod kutuyu merkezinden döndürüyordu).
+ */
+function MaketKabinKapisi() {
+  return (
+    <mesh position={[KABIN_MENTESE_ORTA, KABIN_KUTU.h / 2, 0]}>
+      <boxGeometry args={[KABIN_KUTU.w, KABIN_KUTU.h, 0.06]} />
+      <meshStandardMaterial color={MC.doorWood} flatShading />
+    </mesh>
   );
 }
 
@@ -258,6 +276,8 @@ export function MaketPlant({ pos, big = false }: { pos: [number, number, number]
  * mobilya duvara yaslı kalsın diye ölçü duvardan okunur, maketten kopyalanmaz.
  */
 export function MaketLavaboBlock() {
+  // Oda yalnız pad bitince ÇİZİLİYOR; etkin seviye o yüzden `wcSeviye`den türer (gerekçe orada).
+  const level = useGame((st) => wcSeviye(st.lavaboLevel, st.padsDone.includes('lavabo')));
   const H = ROOM_H; // maketin lavaboBlock'undaki sabit (2,2)
   const x1 = BAND.wc.minX; // 4,6 — maketle aynı
   const x2 = BAND_SHELL.innerRight; // doğu duvarının İÇ yüzü (maketin 16,9'unun oyundaki karşılığı)
@@ -265,9 +285,15 @@ export function MaketLavaboBlock() {
   const zFront = BAND.front; // −9,8 — maketle aynı
   const doorX = LAVABO.door[0]; // 13,4 (oynanışa bağlı; maket 13,2)
 
-  const p0 = x1 + 0.4;
+  const p0 = x1 + KABIN_X_OFSET;
   const zp = zBack + 0.8;
   const zd = zBack + 1.6;
+
+  // S7/L (G-36) — SEVİYE MEKÂNSAL OKUNUYOR: sayılar `wcLook`taki iki diziden gelir, buraya
+  // sayı yazılmaz. Her yükseltme ikisinden TAM BİRİNİ büyütür, yani hiçbir seviye "ekranda
+  // hiçbir şey değişmedi" bırakmaz. Gerekçe ve ölçüm: `docs/wc-odasi-raporu-s7.md` §L.
+  const kabinN = kabinSayisi(level);
+  const lavaboN = lavaboSayisi(level);
 
   return (
     <group>
@@ -289,27 +315,32 @@ export function MaketLavaboBlock() {
         <meshStandardMaterial color="#cfd8dc" />
       </mesh>
 
-      {/* arka duvar boyunca BEŞ bölme, aralarında DÖRT kabin kapısı */}
-      {[0, 1, 2, 3, 4].map((i) => (
-        <mesh key={`p${i}`} position={[p0 + i * 1.5, 1.0, zp]}>
+      {/* arka duvar boyunca bölmeler (kabin sayısı + 1) ve aralarında kabin kapıları.
+          Sayı SEVİYEDEN gelir (S7/L) — maketin sabit "beş bölme / dört kapı"sı kalktı. */}
+      {Array.from({ length: kabinN + 1 }, (_, i) => (
+        <mesh key={`p${i}`} position={[p0 + i * KABIN_ADIM, 1.0, zp]}>
           <boxGeometry args={[0.06, 2.0, 1.6]} />
           <meshStandardMaterial color={MC.wain} />
         </mesh>
       ))}
-      {[0, 1, 2, 3].map((i) => {
-        const cx = p0 + 0.75 + i * 1.5;
-        const ajar = i === 2; // maket: üçüncü kapı aralık, içeride klozet görünür
+      {Array.from({ length: kabinN }, (_, i) => {
+        const cx = p0 + KABIN_ADIM / 2 + i * KABIN_ADIM;
+        const ajar = i === Math.min(2, kabinN - 1); // maket: bir kapı aralık, içeride klozet görünür
         return (
           <group key={`c${i}`}>
-            <mesh
-              position={ajar ? [cx - 0.2, 0.975, zd + 0.3] : [cx, 0.975, zd]}
-              rotation={[0, ajar ? 0.55 : 0, 0]}
-            >
-              <boxGeometry args={[1.36, 1.95, 0.06]} />
-              <meshStandardMaterial color={MC.doorWood} flatShading />
-            </mesh>
-            {/* S6/②: pirinç kapı düğmeleri kaldırıldı (kullanıcı: "üzerindeki sarılıkları da
-                kaldır"). Kabin kapıları S7'de KayKit `door_A/B`ye geçecek, düğme onunla gelir. */}
+            {/* S7/K2 (D-104) — KayKit `door_A`: gri kasa + kapalı kanat + üstte cam + itme barı.
+                Menteşe modelin SOL kenarında (bbox x 0 → 1,60), o yüzden kapı artık gerçek bir
+                MENTEŞE etrafında açılıyor; eski kutu merkezinden dönüp havada kayıyordu.
+                Ölçü/ölçek/gerekçe `wcLook.ts`te; burada tek sayı yok. */}
+            <group position={[cx - KABIN_MENTESE_ORTA, 0, zd]} rotation={[0, ajar ? KABIN_ARALIK_ACI : 0, 0]}>
+              <Model
+                src={`${KAY_REST}door_A.gltf`}
+                scale={KABIN_SCALE}
+                position={[0, 0, KABIN_DZ]}
+                esleme={KABIN_GOZ}
+                fallback={<MaketKabinKapisi />}
+              />
+            </group>
             {ajar && (
               <group>
                 <mesh position={[cx, 0.2, zBack + 0.65]}>
@@ -326,12 +357,14 @@ export function MaketLavaboBlock() {
         );
       })}
 
-      {/* doğu duvarı boyunca üç lavabo + ortadakinin yanında sabunluk */}
-      {[-1.7, 0, 1.7].map((dz, k) => (
+      {/* doğu duvarı boyunca lavabolar — SAYI SEVİYEDEN (S7/L). Slotlar arka duvardan başlar ve
+          bitişik dizilir (aralık = gövde eni): ölçüm eski 1,70'lik aralığın duvara yalnız dört
+          tane sığdırdığını, öne eklenen beşincinin ise %0 görünür kaldığını gösterdi. */}
+      {Array.from({ length: lavaboN }, (_, k) => (
         <group key={`s${k}`}>
-          <MaketSink pos={[x2 - LAVABO_DUVAR_PAYI, 0, zBack + 2.4 + dz]} rot={-Math.PI / 2} />
+          <MaketSink pos={[x2 - LAVABO_DUVAR_PAYI, 0, zBack + lavaboSlotOfset(k)]} rot={-Math.PI / 2} />
           {k === 1 && (
-            <mesh position={[x2 - 1.0, 0.9, zBack + 2.4 + dz]}>
+            <mesh position={[x2 - 1.0, 0.9, zBack + lavaboSlotOfset(k)]}>
               <cylinderGeometry args={[0.05, 0.05, 0.14, 8]} />
               <meshStandardMaterial color="#f1ece0" />
             </mesh>

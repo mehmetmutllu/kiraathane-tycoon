@@ -3131,3 +3131,56 @@ edilemiyordu → karar ölçü katmanına (`PENCERE_GOLGE` · `DUVAR_GOLGE`) ç�
 Bekçi `tests/pencere-nis.test.ts` 29 test · toplam **26 mutasyon** (S6 + S6/②) ·
 vitest **864** · duman **42/42** · `tsc -b` temiz · lint taban seviyesinde · beş kadraj gözle
 doğrulandı (`docs/gorsel/ss/s6-*.png`).
+
+## D-104 — WC odası: kabin kapısı KayKit'e geçti, seviye MEKÂNSAL okunuyor, müşteri artık kapıda buharlaşmıyor (S7, 2026-09-10)
+
+**Turun ana bulgusu S6'nın tersi çıktı: WC odası EKRANDA.** S6'da karşı binalar üç kamera kipinde
+de %0 görünürdü ve 10.389 üçgenlik iş ölçülmeseydi yapılacaktı; burada aynı soru sorulduğunda oda
+kapının önünde **%100**, kat genelinde %24–31 görünüyor. Ölçüm ikinci bir şeyi de düzeltti:
+2,20'lik ön duvarın örtmesi bir yarım-uzay değil **bant** — duvarın dibi kör, içeri gidildikçe
+oda duvarın üstünden yeniden açılıyor. Bu yüzden odaya ne kadar İÇERİ konursa o kadar görünür ve
+**öne** eklenen her şey kaybolur.
+
+**KABİN KAPISI → `door_A` (kullanıcı seçimi).** Model gri kasa + kapalı kanat + üstte küçük cam +
+iki yüzde itme barı; **%73'ü `[0,3] #828c91`**, yani lavabo ve aynanın S6/②'de taşındığı gri →
+**göz taşıması gerekmedi**. Kalan %25 kanadın **yeşili** ve o bilerek duruyor: WC tek bir kahve
+kütle olarak okunuyordu (`feedback_color_variety`). Ölçek tekdüze DEĞİL, çünkü tekdüze kollar
+ölçülüp elendi — boydan 1,11 br kanat (gözde 0,25 boşluk), enden 2,38 boy (bölmenin 2,00'ını 0,38
+aşar). Çarpıtma **1,221**, D-103'ün kabul ettiği 2,715'in altında. Menteşe modelin sol kenarında
+olduğu için aralık kapı artık **gerçek menteşeden** dönüyor. `wall_half` · `wall_doorway` ·
+`pillar_A/B` kolları ÖLDÜ: hepsi 4,00 (pillar 4,10) boyunda duvar modülü, bölme değil.
+
+**SEVİYE SİNYALİ (G-36) → lavabo VE kabin sayısı birlikte.** Sarı daireler S6/③'te kalkınca
+seviye hiçbir yerden okunmuyordu. Ölçüm tek başına lavabonun yetmediğini gösterdi: doğu duvarı
+**7,40 br** ve en çok **5** lavabo alıyor, üstelik en öndeki slot duvarın kör bandında **%0**
+görünüyor → mekânsal sayı gerçekte **4** kademe taşıyor, `maxLevel` ise **6**. Kabin kapısı kolu
+(%27 ile odanın en görünür parçası) kalan kademeleri taşıyor. Eşleme L1(2+2) → L2(3+2) → L3(3+3)
+→ L4(4+3) → L5(4+4) → L6(4+5): **her yükseltme tam bir şeyi büyütür.** Lavabo aralığı 1,70 → 1,36
+(gövde eniyle aynı). **Denge hiç oynamadı** — `rooms.lavabo`ya dokunulmadı, varyant kapısı açılmadı.
+Dürüst not: kaldırılan sarı daireler görünmez değildi (%22/%100); kullanıcı onları biçimleri için
+istememişti, yerleri için değil.
+
+**KAYBOLUŞ (G-35) → içeri yürüyüp yana sapma + sönme.** Ölçüm iki şeyi söyledi: kayboluş noktası
+kapı önündeyken **%100** görülüyor (her ~2 müşteriden biri uğruyor) ve kapı EKSENİNDE içeri
+yürüyen müşteri **hiç saklanmıyor** — saklanma yalnız yana sapınca ve duvar dibindeki 0,2–1,2 br
+bantta oluyor. Yol o yüzden **iki bacaklı**: önce kapı boşluğundan düz içeri (tek bacaklı düz yol
+duvarın köşesini 0,01 br payla yalıyordu), sonra yana. Final koşu uygulanan yolu doğruladı:
+görünürlük t = 0,0'da %100 → t = 0,8'de %0. **Nav'a ve dengeye dokunmadı:** `clampToOpenAreas`
+yalnız OYUNCUYA uygulanıyor, müşteri konumu zaten doğrudan yazılıyordu; yeni `wcGiris`/`wcCikis`
+durumları `hasLeftTable`'a girdiği için koltuk ve `maxConcurrent` tavanı eskisi gibi kalkış anında
+serbest kalıyor. Lavabo ücreti `inWc` bitişinden `wcCikis` bitişine taşındı (aynı kablo).
+
+**BU TURUN ASIL DERSİ — sayı ile ekran birbirinin yerine geçmiyor.** `door_A`nın köşe histogramı
+x'te 0,48…1,12 arasında hiç köşe göstermedi ve ilk okumam *"ortası boş, demek ki kasa"* oldu.
+Yanlıştı: orası düz bir panelin içi, düşük-poli modelde düz yüzün ortasında vertex yoktur. Aynı
+ders S4'te öğrenilmiş ve `docs/dis-cephe-raporu-s6.md` §Yöntem'de **yazılıydı**, yine de ısırdı.
+Yazılı kural yetmedi; araç gerekti → **`tools/model-bak.mjs`** (modeli çizip ekran görüntüsü alır).
+İkinci kez aynı şey oldu: `padsDone` ile `lavaboLevel` dev kancasında ayrışıyor ve oda açık ama
+BOŞ çiziliyordu — testler yeşilken **görsel tur** yakaladı (`feedback_visual_polish`), kural
+`wcSeviye()` olarak türetildi.
+
+**Bekçi:** `tests/wc-odasi.test.ts` (26 denetim), **15 mutasyon**. Biri KAÇTI ve zayıf yeri
+gösterdi: kaynak denetimi `door_A.gltf` metnini bir YORUMDAN da bulabiliyordu → ölçüt gerçek
+`src=` ifadesine çevrildi. vitest **889** · duman **42/42** · `tsc -b` temiz.
+Sayılar: `docs/wc-odasi-raporu-s7.md` · taban `docs/olcum-wc-odasi-taban.txt` · final
+`docs/olcum-wc-odasi-final.txt`.

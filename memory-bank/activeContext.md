@@ -5,51 +5,59 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-10 — **S7 ölçüm turu AÇIK** · Faz S 6/12 · 81/96)
+## ŞU AN (2026-09-10 — **S7 BİTTİ** · Faz S 7/12 · 82/96)
 
 ```
-SORU            : (S7) WC odasının içi EKRANA GİRİYOR MU — giriyorsa kabin kapıları KayKit'e
-                  geçer mi (kullanıcı: "kötü"), lavabo seviyesi MEKÂNSAL okunur mu (G-36),
-                  müşteri kapıda niye buharlaşıyor (G-35)?
-ÖLÇÜLECEK KOLLAR: §V GÖRÜNÜRLÜK — her aday parça (kabin kapısı · bölme · lavabo · ayna · klozet)
-                    kaç oyuncu konumundan kadrajda VE 2,2'lik ön duvarın arkasına saklanmıyor?
-                    S6'nın dersi: "hangisi güzel"den ÖNCE "ekrana giriyor mu" sorulur.
-                  §K KAPI — K1 bugünkü kutu (1,36 × 1,95 × 0,06, tek renk kahve) · K2 `door_A`
-                    · K3 `door_B`; bölme için B1 bugünkü kutu · B2 `wall_half` · B3 `pillar_A/B`.
-                    Ölçü · çarpıtma oranı · üçgen · atlas gözü (gri karşılığı var mı).
-                  §L SEVİYE (G-36) — L1 bugünkü sabit 3 lavabo (sinyal YOK) · L2 seviye = lavabo
-                    SAYISI (1→6, maxLevel 6 ile birebir) · L3 sayı sabit, başka mekânsal sinyal.
-                    Doğu duvarı kaç lavabo alır, aralık kaça iner?
-                  §M KAYBOLUŞ (G-35) — M1 oda yürünür olsun (nav + bant kütlesi bedeli) ·
-                    M2 kayboluş ÖRTÜLSÜN (kapıdan içeri yürüyüp solma / kabin kapısı geçişi) ·
-                    M3 bugünkü (kapı eşiğinde anında yok ol).
-SAYILAR         : (adım 2'den sonra dolar — `docs/wc-odasi-raporu-s7.md` §Bulgular)
-KARAR           : (adım 3 — kullanıcı seçer, D-1xx)
-UYGULAMA        : (adım 4 — yalnız kararın kolu)
-BEKÇİ           : (adım 4)
+SORU            : (S7) WC odasının içi ekrana giriyor mu — giriyorsa kabin kapıları KayKit'e
+                  geçer mi, seviye MEKÂNSAL okunur mu (G-36), müşteri niye buharlaşıyor (G-35)?
+SAYILAR         : `docs/wc-odasi-raporu-s7.md` · taban `docs/olcum-wc-odasi-taban.txt` ·
+                  final `docs/olcum-wc-odasi-final.txt` · görsel `docs/gorsel/ss/s7-*.png`
+KARAR           : **D-104** — K2 `door_A` (yeşil kanat) · L lavabo+kabin sayısı birlikte ·
+                  M içeri yürü + yana sap + sön.
+BEKÇİ           : `tests/wc-odasi.test.ts` (26 denetim) · **15 mutasyon** (biri kaçtı, ölçüt sıkıldı)
+                  vitest **889** · duman **42/42** · `tsc -b` temiz · 7 kadraj gözle.
 ```
 
-**Giriş cephesi cam bu turda YOK** — kullanıcı kararı 2026-09-10: kapı bloğuna (söve · lento ·
-alınlık) ve duvar temasına dokunduğu için kendi turunu alacak. S7 = WC odası.
+**S7'nin dersi: sayı ile ekran birbirinin yerine geçmiyor.** `door_A`nın köşe histogramı x'te
+0,48…1,12 arasında boşluk gösterdi ve *"ortası boş, demek ki kasa"* diye okudum — yanlıştı, orası
+düz bir panelin İÇİ (düz yüzün ortasında vertex yoktur). Bu ders S4'te öğrenilmiş ve S6 raporunda
+**yazılıydı**; yazılı kural yetmedi, araç gerekti → **`tools/model-bak.mjs`** modeli çizip gösteriyor.
 
-**S6'nın dersi bu turun §V'sini doğurdu:** karşı binalar üç kamera kipinde de %0 görünürdü;
-10.389 üçgenlik iş ölçülmeseydi yapılacaktı. WC odası aynı riski taşıyor — oda bandın İÇİNDE,
-önünde 2,2 birimlik bir duvar var. Kabin kapısını KayKit'e geçirmeden önce o kapının ekranda
-kaç kareden göründüğü ölçülür.
+**İkinci ders: görsel tur, testlerin bulamadığını buluyor.** Oda açıkken BOŞ çizilebiliyordu
+(`padsDone` ile `lavaboLevel` dev kancasında ayrışıyor). 889 test yeşilken ekran görüntüsü
+yakaladı. Yama değil türetme: `wcSeviye()`.
 
-**S6/②'nin dersi:** dokuz şikâyetin çoğu TEK bir tahmini sayıydı (`WALL_FACE` 17,32 ≠ 17,41);
-sayı duvarın kalınlığından türetilince altı parça birden düzeldi. **S6/③'ün dersi:** "şu şeyi
-kaldır" denince neyin kastedildiği ekran görüntüsünde İŞARETLENMEDEN varsayılmamalı — yanlış
-parça (lento) kalktı, bir tur kaybedildi.
+**Üçüncü ders: kaçan mutasyon bazen kodu değil BEKÇİYİ gösterir** — kaynak denetimi `door_A.gltf`
+metnini bir yorumdan buluyordu, ölçüt gerçek `src=` ifadesine çevrildi.
+
+**En pahalı bulgu:** doğu duvarı `maxLevel` kadar (6) lavabo **almıyor** (7,40 br, en çok 5) ve en
+öndeki slot **%0** görünüyor → sinyal lavabo + kabin diye ikiye bölündü.
 
 ## SIRADAKİ TAM ADIM
 
-**Adım 2 — ÖLÇ.** `tools/olcum-wc-odasi.ts` yazılır (iskelet `olcum-lib.ts`, görünürlük yöntemi
-`olcum-dis-cephe.ts` §V'den devralınır, artı bu turda YENİ: **2,2'lik ön duvarın örtmesi**).
-Kısa koşuyla araç doğrulanır → `OLCUM=tam` taban → tüm kollar varyant olarak
-`docs/wc-odasi-raporu-s7.md` §Bulgular'a → **commit #1 (karar bölümü BOŞ)** → karar paketi.
+**S8 — SES ASSETLERİ** ya da **giriş cephesi camı**. İkisi de hazır ama **ses kaynağı kararı
+kullanıcıdan bekliyor** (asset panosu §7, dört kol; D-096'yı kısmen geri alır). Karar gelmezse
+sıradaki iş **giriş cephesi cam turu**: S6/②'de ertelendi, S7'de kullanıcı kararıyla ayrıldı;
+ölçüm değer diyor (cephe salonun en görünür ikinci şeridi, %8–15) ama kapı bloğuna (söve · lento
+· alınlık) ve duvar temasına dokunduğu için kendi turunu ister.
+
+**KULLANICI KARARI BEKLEYEN ÜÇ ŞEY** (hiçbiri sıradaki turu bloklamıyor):
+1. **Ses kaynağı** (S8) — asset panosu §7, dört kol.
+2. **Karakter kolu** (S12) — asset panosu §3, altı kol, bedelleri yazılı.
+3. **H2 yükseltme sırası** (A tek hedef / B kuşak) ve **H3 masa aralığı** (K1 aralığı aç /
+   K2 oturak küçült — K2 önerilmiyor, `feedback_reference_scale_trap`).
+
+**Asset panosu:** https://claude.ai/code/artifact/2e7f92c0-15b6-4f72-814d-753cf79d74e0
 
 ## AÇIK KALEMLER (bilinen, bilerek duruyor)
+
+### S7'den DEVREDEN (ölçüldü, bilerek yapılmadı)
+
+- **`door_A`nın İTME BARI duruyor.** Bar bir restoran mutfak kapısının parçası, WC kabininde
+  yeri yok — ama modelde ayrı alt-mesh DEĞİL (tek mesh, 188 üçgen), sökülemiyor. Bedeli bilinerek
+  kabul edildi. Başka paket gelirse ilk bakılacak kalem.
+- **WC odasının ORTASI hâlâ boş + TAVAN IŞIĞI yok** (`feedback_room_volume`). §V zeminin %2
+  görünür olduğunu söylüyor: dolgu zemine değil duvar kenarına/yüksekliğe gitmeli. Kendi turu.
 
 - **S5'te söz verilip YAPILMAYAN:** ① banket masası `table_round_A_small`e geçecekti ② mağaza
   kartlarının gerçek oyun render'ı (`tools/tema-kapak.mjs` kadrajı bozuk). Kullanıcı 2026-09-10'da

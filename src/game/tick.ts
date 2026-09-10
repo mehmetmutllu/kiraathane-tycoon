@@ -52,6 +52,8 @@ import type { SaveStats } from './save';
 import {
   LAYOUT,
   LAVABO,
+  WC_GECIS,
+  wcYol,
   PAD_RADIUS,
   NPC_SPEED,
   TABLE_UP_RADIUS,
@@ -489,17 +491,43 @@ function npcSystem(c: TickCtx): void {
         }
         break;
       case 'toWc':
-        // Lavabonun kapısına yürü (bant kütlesinin ön yüzü). Varınca içeri girer = görünmez olur.
+        // Lavabonun kapısına yürü (bant kütlesinin ön yüzü). Varınca İÇERİ GİRER.
         if (navStep(n.pos, LAVABO.spot, step, navGrid, 0.45)) {
           n.pos[0] = LAVABO.door[0];
           n.pos[2] = LAVABO.door[2];
+          n.state = 'wcGiris';
+          n.timer = WC_GECIS;
+        }
+        break;
+      case 'wcGiris': {
+        // S7/G-35: kapı eşiğinde buharlaşmak yerine kapı boşluğundan içeri yürüyüp yana sapar.
+        // Yol `layout.wcYol` — sayı burada değil ölçü katmanında (bekçi oradan okur).
+        n.timer -= dt;
+        const [gx, gz] = wcYol(1 - Math.max(0, n.timer) / WC_GECIS);
+        n.pos[0] = gx;
+        n.pos[2] = gz;
+        if (n.timer <= 0) {
           n.state = 'inWc';
           n.timer = C.rooms.lavabo.visitTime;
         }
         break;
+      }
       case 'inWc':
         n.timer -= dt;
         if (n.timer <= 0) {
+          n.state = 'wcCikis';
+          n.timer = WC_GECIS;
+        }
+        break;
+      case 'wcCikis': {
+        // Aynı yol tersten: köşeden kapı boşluğuna, oradan eşiğe.
+        n.timer -= dt;
+        const [cx2, cz2] = wcYol(Math.max(0, n.timer) / WC_GECIS);
+        n.pos[0] = cx2;
+        n.pos[2] = cz2;
+        if (n.timer <= 0) {
+          n.pos[0] = LAVABO.door[0];
+          n.pos[2] = LAVABO.door[2];
           // Çıkarken parasını lavabonun ÖNÜNDEKİ istife bırakır (masa istifiyle aynı desen ve
           // aynı saçılım — para SUNUMU değişmedi, yalnız ikinci bir düşme noktası doğdu).
           coins.push({
@@ -514,6 +542,7 @@ function npcSystem(c: TickCtx): void {
           n.state = 'leaving';
         }
         break;
+      }
       case 'leaving': {
         // Önce KAPIYA (içerdeyse BFS rotayla — masalara takılmaz), sonra SOKAĞA düz yürü.
         const nearDoor = n.pos[2] >= nEntrance[2] - 0.2 || dist2D(n.pos, nEntrance) <= 0.45;
