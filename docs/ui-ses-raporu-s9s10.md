@@ -246,3 +246,53 @@ Sebep: Subway Surfers / My Perfect Hotel arayüzü satın alınmış bir kit de�
   durumda geçerliliğini yitiriyor.
 
 **Açık kalan iki soru:** alt gezinme (A/B/C — önerim **B**) · mağaza içi (M1/M2 — önerim **M2**).
+
+---
+
+## ASSET İNDİRME TURU (2026-09-10, aynı tur) — "sen çizme, hazır assetleri değerlendirelim"
+
+Kullanıcı önceki bölümdeki "aradığın görünüm indirilebilir bir kit değil" sonucunu kabul etmedi ve
+haklıydı: o sonuç **dört sayfa okunarak** çıkarılmıştı, hiçbir paket indirilmemişti.
+**Sekiz paket indirildi, açıldı, içine bakıldı** (PowerShell; Bash'in ağı yok —
+`project_network_powershell`).
+
+**Pano:** `docs/paketten-cikanlar.html` · https://claude.ai/code/artifact/e2917b1e-64c9-4f9f-96e6-7d3ba5a719a9
+
+| Paket | İçerik | Lisans |
+|---|---|---|
+| Kenney UI Pack | 870 PNG · **434 SVG** · 6 ses | CC0 |
+| Kenney UI Pack · Adventure | 260 PNG · 128 SVG | CC0 |
+| Kenney UI Pack · RPG | 90 PNG (9-dilim çubuklar) | CC0 |
+| Kenney Game Icons | 425 PNG (tek renk siluet) | CC0 |
+| Kenney Interface Sounds | 100 ses | CC0 |
+| Kenney RPG Audio | 50 ses | CC0 |
+| Kenney Casino Audio | 54 ses | CC0 |
+| Kenney Music Jingles | 85 jingle | CC0 |
+
+### Ölçümün iki iddiası ÇÜRÜDÜ
+
+1. **"Kenney UI Pack düz, mat, kabartmasız."** Yanlış — `button_*_depth_gloss` ve
+   `depth_gradient` var, altı renkte. Doğru olan kısım: **kalın koyu kontur yok**, chunky hissin
+   asıl kaynağı o. Aradığı şekle en yakın parça `Adventure/button_brown` (kalın kahve çerçeve +
+   krem iç) ve o zaten ahşap dilinde.
+2. **"Casino Audio jeton foley'i taşıyor, coin için uygun."** Yanlış — plastik poker jetonu, kart
+   ve zar. Madenî para yok. Ama boşa gitmedi: **okey/tavla (Kat 2) için birebir.**
+
+### Beklenmedik eşleşme: RPG Audio
+
+`handleCoins` + `handleCoins2` (**gerçek madenî para**) · `metalPot1-3` (**semaver**) ·
+`doorOpen/Close` (**kapı — bugün ses YOK**) · `footstep00-09` (**yürüyüş — bugün ses YOK**) ·
+`metalClick`. Interface Sounds'tan `glass_001-006` (**bardak servisi**). Yani kıraathanenin
+yaşam döngüsü tek bir CC0 sanatçının paketlerinden karşılanıyor — stil kilidi korunuyor.
+
+**Kalıcı boşluk:** akan sıvı sesi (çay dökme) hiçbir pakette yok → `pour` sentezde kalır.
+
+### Yeni araç: `tools/ses-disari.ts`
+
+D-096 sesleri ölçtü ama kimse karar anında **duyamıyordu** — "panodaki seslere ısınmadım"ın
+sebebi buydu. Araç `audioSynth.seslendir()`in TAM tamponunu WAV'a yazar (ölçülen = duyulan,
+D-096 §6) ve ayrıca **seri ivmesi örneği** üretir: beş toplama düz perde vs beş toplama yarım-ton
+basamaklı. Pano bu ikisini ve Kenney kaydının canlı `playbackRate` basamağını yan yana dinletiyor.
+
+**Paketler henüz repoya EKLENMEDİ** — seçim yapılınca yalnız kullanılacak dosyalar künyesiyle
+`public/assets/` altına girer.
