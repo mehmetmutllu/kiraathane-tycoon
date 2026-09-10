@@ -1,0 +1,311 @@
+<title>Chip'siz HUD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Baloo+2:wght@600;700;800&family=Lilita+One&display=swap">
+
+<style>
+:root {
+  --ink:#17140f; --ink-2:#3d3529; --mid:#6f675d;
+  --paper:#faf7f2; --surface:#fff; --sunken:#f2ece2;
+  --rule:#e6dfd4; --rule-2:#f0eae0;
+  --accent:#a8431f; --accent-w:#fdf0e8;
+  --good:#2f6b46; --good-w:#eaf3ed; --bad:#a32f28;
+  --f-disp:'Archivo',system-ui,sans-serif;
+  --f-body:'Source Serif 4',Georgia,serif;
+  --f-game:'Baloo 2',system-ui,sans-serif;
+  --f-num:'Lilita One','Baloo 2',system-ui,sans-serif;
+  --r-s:3px; --r-m:9px;
+}
+:root:not([data-theme="light"]) { @media (prefers-color-scheme: dark) {
+  --ink:#f2ece1; --ink-2:#cdc3b4; --mid:#9a9082;
+  --paper:#14120f; --surface:#1d1a15; --sunken:#100e0b;
+  --rule:#332e26; --rule-2:#262119;
+  --accent:#e0793f; --accent-w:#2a1a11; --good:#7fc199; --good-w:#16241c; --bad:#e08c85;
+}}
+:root[data-theme="dark"] {
+  --ink:#f2ece1; --ink-2:#cdc3b4; --mid:#9a9082;
+  --paper:#14120f; --surface:#1d1a15; --sunken:#100e0b;
+  --rule:#332e26; --rule-2:#262119;
+  --accent:#e0793f; --accent-w:#2a1a11; --good:#7fc199; --good-w:#16241c; --bad:#e08c85;
+}
+body { background:var(--paper); color:var(--ink); font-family:var(--f-body); font-size:17px; line-height:1.6; -webkit-font-smoothing:antialiased; }
+.wrap { max-width:1160px; margin:0 auto; padding:0 24px 96px; }
+.col { max-width:72ch; }
+h1,h2,h3,h4 { font-family:var(--f-disp); font-weight:700; margin:0; line-height:1.12; text-wrap:balance; }
+p { margin:0 0 1em; } p:last-child { margin-bottom:0; }
+strong { font-weight:600; }
+code { font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.84em; background:var(--sunken); padding:1px 5px; border-radius:var(--r-s); }
+
+header { padding:70px 0 34px; border-bottom:2px solid var(--ink); }
+.eyebrow { font-family:var(--f-disp); font-weight:600; font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--accent); margin:0 0 18px; }
+h1 { font-size:clamp(38px,6.5vw,60px); font-stretch:112%; letter-spacing:-.02em; }
+.lede { font-size:20px; line-height:1.5; color:var(--ink-2); margin-top:20px; max-width:60ch; }
+.quote { border-left:3px solid var(--accent); padding-left:20px; font-size:18px; color:var(--ink-2); margin:26px 0 0; max-width:62ch; }
+.quote b { color:var(--ink); font-weight:600; }
+
+section { padding:52px 0; border-bottom:1px solid var(--rule); }
+.sec-head { display:flex; align-items:baseline; gap:14px; margin-bottom:8px; flex-wrap:wrap; }
+.sec-tag { font-family:var(--f-disp); font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--surface); background:var(--ink); padding:4px 8px; border-radius:var(--r-s); }
+.sec-tag.ask { background:var(--accent); }
+h2 { font-size:clamp(26px,3.6vw,34px); font-stretch:108%; letter-spacing:-.015em; }
+.sub { color:var(--mid); font-size:16px; margin:10px 0 26px; max-width:66ch; }
+
+.tbl-wrap { overflow-x:auto; margin:20px 0; }
+table { border-collapse:collapse; width:100%; font-size:15px; }
+th,td { text-align:left; padding:10px 14px 10px 0; border-bottom:1px solid var(--rule-2); vertical-align:top; }
+th { font-family:var(--f-disp); font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--mid); border-bottom:1px solid var(--rule); white-space:nowrap; }
+td.k { font-family:var(--f-disp); font-weight:600; white-space:nowrap; }
+.hi { color:var(--bad); font-weight:600; } .ok { color:var(--good); font-weight:600; }
+
+/* ═════════ TELEFON MAKETİ ═════════ */
+.mock {
+  --out:#2a1a10; --ob:2.5px;
+  --up:inset 0 3px 0 rgba(255,255,255,.42);
+  --dn:inset 0 -5px 0 rgba(0,0,0,.16);
+  --drop:0 4px 0 var(--out);
+  --amb:#f5a623; --amb-2:#d17d0a;
+  --cream:#fff6e4; --cream-2:#f2e2c4;
+  --wood:#3f2a1a; --wood-2:#2a1a10;
+  --tx:#fff8ec; --tx2:#cbb190; --pt:#40291a; --pt2:#8a6a47;
+  --gem:#45c8f0; --gd:#62b543;
+  font-family:var(--f-game); user-select:none;
+}
+.phone { position:relative; width:100%; aspect-ratio:390/760; border-radius:24px; overflow:hidden; border:1px solid var(--rule); box-shadow:0 12px 34px rgba(20,14,6,.16); }
+.scene { position:absolute; inset:0; background:
+  linear-gradient(#3a2418 0 5%,#d3a066 5% 58%,#cfc4b4 58% 64%,#2f7d50 64% 78%,#b9ab97 78% 100%); }
+.scene::after { content:''; position:absolute; inset:0; background:
+  radial-gradient(circle at 28% 30%,#7a4a2c 0 7%,transparent 7.1%),
+  radial-gradient(circle at 70% 42%,#7a4a2c 0 7%,transparent 7.1%),
+  radial-gradient(circle at 28% 31.4%,rgba(0,0,0,.16) 0 7%,transparent 7.1%),
+  radial-gradient(circle at 70% 43.4%,rgba(0,0,0,.16) 0 7%,transparent 7.1%); }
+
+/* ── KONTURLU SAYI: chip'siz okunabilirliğin tek şartı ── */
+.val {
+  font-family:var(--f-num); color:#fff; letter-spacing:.02em; line-height:1;
+  -webkit-text-stroke:5px var(--out); paint-order:stroke fill;
+  filter:drop-shadow(0 2px 0 rgba(0,0,0,.35));
+}
+.val.sm { font-size:19px; -webkit-text-stroke-width:4px; }
+.val.lg { font-size:25px; }
+
+/* chip'li (bugün) */
+.chip { display:flex; align-items:center; gap:6px; color:var(--tx);
+  background:linear-gradient(var(--wood),var(--wood-2)); border:var(--ob) solid var(--out);
+  border-radius:999px; box-shadow:var(--up),var(--drop); padding:3px 12px 4px 4px; }
+.chip .cv { font-family:var(--f-num); font-size:16px; }
+
+.top { position:absolute; top:11px; left:11px; right:11px; display:flex; align-items:flex-start; gap:8px; z-index:3; }
+.purse { margin-left:auto; display:flex; flex-direction:column; gap:8px; align-items:flex-end; }
+.money { display:flex; align-items:center; gap:7px; }
+.rbtn { width:40px; height:40px; flex:none; display:grid; place-items:center; color:var(--tx);
+  background:linear-gradient(var(--wood),var(--wood-2)); border:var(--ob) solid var(--out);
+  border-radius:50%; box-shadow:var(--up),var(--drop); }
+.medal { width:44px; height:44px; border-radius:50%; flex:none; background:linear-gradient(var(--amb),var(--amb-2));
+  border:var(--ob) solid var(--out); box-shadow:var(--up),var(--drop); display:grid; place-items:center;
+  font-family:var(--f-num); font-size:19px; color:#402506; }
+.lvl { display:flex; flex-direction:column; gap:3px; align-items:center; }
+.xp { width:44px; height:9px; border-radius:999px; background:rgba(0,0,0,.42); border:2px solid var(--out); overflow:hidden; }
+.xp i { display:block; height:100%; width:38%; background:var(--gd); }
+.lvlpill { display:flex; align-items:center; gap:7px; background:linear-gradient(var(--wood),var(--wood-2));
+  border:var(--ob) solid var(--out); border-radius:999px; box-shadow:var(--up),var(--drop); padding:3px 12px 3px 3px; }
+.lvlpill .m2 { width:30px; height:30px; border-radius:50%; background:var(--amb); border:2px solid var(--out);
+  display:grid; place-items:center; font-family:var(--f-num); font-size:14px; color:#402506; }
+.lvlpill .xp { width:46px; height:8px; }
+
+.band { position:absolute; left:11px; right:11px; bottom:78px; display:flex; align-items:center; gap:9px; z-index:3;
+  background:linear-gradient(var(--wood),var(--wood-2)); color:var(--tx);
+  border:var(--ob) solid var(--out); border-radius:22px; box-shadow:var(--up),var(--drop); padding:8px 9px 10px; }
+.band .pic { width:36px; height:36px; flex:none; border-radius:14px; background:rgba(0,0,0,.3); border:2px solid var(--out); display:grid; place-items:center; }
+.band .body { flex:1; min-width:0; display:flex; flex-direction:column; gap:1px; }
+.band .t { font-size:15px; font-weight:800; line-height:1.12; }
+.band .p { font-size:11px; color:var(--tx2); font-variant-numeric:tabular-nums; letter-spacing:.04em; }
+.band .rw { font-family:var(--f-num); font-size:13px; color:#402506; background:var(--amb); border:2px solid var(--out); border-radius:999px; padding:2px 9px 3px; }
+
+.nav { position:absolute; left:46px; right:46px; bottom:11px; z-index:3; display:grid; grid-template-columns:repeat(4,1fr);
+  background:linear-gradient(var(--wood),var(--wood-2)); border:var(--ob) solid var(--out); border-radius:999px;
+  box-shadow:var(--up),var(--drop); padding:6px 8px; }
+.nav b { display:grid; place-items:center; color:var(--tx2); height:34px; position:relative; }
+.nav b { justify-items:center; }
+.nav b.on::before { content:''; position:absolute; width:34px; height:34px; border-radius:50%;
+  background:var(--amb); box-shadow:var(--up); z-index:0; }
+.nav b.on { color:#402506; }
+.nav b svg, .nav b .dot { position:relative; z-index:1; }
+.nav .dot { position:absolute; top:0; right:2px; width:10px; height:10px; border-radius:50%; background:#e0402c; border:2px solid var(--out); }
+
+.two { display:grid; grid-template-columns:repeat(auto-fit,minmax(258px,1fr)); gap:30px; margin-top:26px; }
+.cap { font-size:14.5px; color:var(--ink-2); margin-top:14px; }
+.cap b { display:block; font-family:var(--f-disp); font-size:15px; color:var(--ink); margin-bottom:4px; }
+
+/* ── okunabilirlik denemesi ── */
+.legib { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; margin-top:24px; }
+.zone { border-radius:var(--r-m); border:1px solid var(--rule); overflow:hidden; }
+.zone .sky { height:110px; display:grid; place-items:center; }
+.zone .lab { font-family:var(--f-disp); font-size:11.5px; color:var(--mid); padding:9px 12px; background:var(--surface); border-top:1px solid var(--rule); }
+
+.verdict { display:grid; grid-template-columns:96px 1fr; gap:16px; border:1px solid var(--rule); border-left:3px solid var(--accent); border-radius:var(--r-m); padding:16px 20px; background:var(--surface); margin-top:16px; }
+.verdict.yes { border-left-color:var(--good); }
+.verdict .lab { font-family:var(--f-disp); font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); }
+.verdict.yes .lab { color:var(--good); }
+.verdict p { font-size:15px; margin:0; } .verdict p + p { margin-top:.55em; }
+
+.opts { display:grid; gap:14px; margin-top:22px; }
+.opt { display:grid; grid-template-columns:56px 1fr; gap:18px; border:1px solid var(--rule); border-radius:var(--r-m); padding:18px 20px; background:var(--surface); }
+.opt.rec { border-color:var(--accent); background:var(--accent-w); }
+.opt .code { font-family:var(--f-disp); font-size:18px; font-weight:700; color:var(--accent); }
+.opt h4 { font-size:15px; margin-bottom:6px; }
+.opt p { font-size:15px; margin:0 0 8px; color:var(--ink-2); }
+.opt .facts { display:flex; flex-wrap:wrap; gap:6px 16px; font-family:var(--f-disp); font-size:12.5px; color:var(--mid); }
+.opt .facts b { color:var(--ink); font-weight:600; }
+.pill { font-family:var(--f-disp); font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; padding:3px 7px; border-radius:var(--r-s); background:var(--accent); color:#fff; margin-left:8px; vertical-align:2px; }
+.pill.no { background:var(--bad); }
+.note { font-size:14.5px; color:var(--mid); border-top:1px solid var(--rule); padding-top:16px; margin-top:26px; }
+:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+</style>
+
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">Faz S · S10 · üst şerit denemesi</p>
+  <h1>Chip'siz HUD</h1>
+  <p class="lede">Para ve elmas artık bir kutunun içinde değil — doğrudan oyunun üstünde duruyor.
+  Solda bugünkü hâl, sağda istediğin hâl.</p>
+  <p class="quote">"Bizim üstteki veriler bar içinde değil, öyle <b>direk oyun üstünde</b> olsun
+  istiyorum. Bunu örnek alarak bir örnek yap bana kontrol edeyim."</p>
+</header>
+
+<!-- ══════ ÖNCE / SONRA ══════ -->
+<section>
+  <div class="sec-head"><span class="sec-tag ask">Kontrol et</span><h2>Aynı ekran, iki üst şerit</h2></div>
+  <p class="sub">Alt taraf ikisinde de aynı — değişen tek şey üstteki değerlerin kutusu.</p>
+
+  <div class="two">
+    <div>
+      <div class="mock"><div class="phone">
+        <div class="scene"></div>
+        <div class="top">
+          <span class="lvlpill"><span class="m2">1</span><span class="xp"><i></i></span></span>
+          <span class="purse">
+            <span class="chip"><svg width="19" height="19" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="16" rx="9" ry="4.4" fill="#d17d0a"/><ellipse cx="12" cy="11" rx="9" ry="4.8" fill="#ffd45e" stroke="#2a1a10" stroke-width="1.8"/><ellipse cx="12" cy="11" rx="4.4" ry="2.2" fill="none" stroke="#2a1a10" stroke-width="1.5"/></svg><span class="cv">5,2K</span></span>
+            <span class="chip"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12l4 5-10 12L2 9z" fill="#45c8f0" stroke="#2a1a10" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 21L8 9h8z" fill="#fff" opacity=".32"/></svg><span class="cv">12</span></span>
+          </span>
+          <span class="rbtn"><svg width="19" height="19" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12 8.6a3.4 3.4 0 100 6.8 3.4 3.4 0 000-6.8zm8.4 3.4c0-.6-.06-1.2-.17-1.75l2.05-1.5-2-3.46-2.4.98a8.5 8.5 0 00-3-1.74L14.5 2h-4l-.38 2.53a8.5 8.5 0 00-3 1.74l-2.4-.98-2 3.46 2.05 1.5a8.7 8.7 0 000 3.5l-2.05 1.5 2 3.46 2.4-.98a8.5 8.5 0 003 1.74L10.5 22h4l.38-2.53a8.5 8.5 0 003-1.74l2.4.98 2-3.46-2.05-1.5c.11-.55.17-1.15.17-1.75z"/></svg></span>
+        </div>
+        <div class="band"><span class="pic"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 8.6c.4 2.6.9 3.6 2.9 5-1.9 2.3-2.3 4.8-2.3 4.8h9.6s-.4-2.5-2.3-4.8c2-1.4 2.5-2.4 2.9-5z" fill="#d24e1c"/><path d="M6 4c0 0 .8 7.2 3.5 9.6C7.6 15.9 7.2 19 7.2 19h9.6c0-.1-.4-3.1-2.3-5.4C17.2 11.2 18 4 18 4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M5.4 19.6h13.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span><span class="body"><span class="t">Ocaktan çay al</span><span class="p">0 / 1</span></span><span class="rw">+3</span></div>
+        <nav class="nav"><b class="on"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2.6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 9l1.7 1.7L13.2 7M8 15.2l1.7 1.7 3.5-3.7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15.6 9.5h2M15.6 15.5h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></b><b class=""><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/></svg><i class="dot"></i></b><b class=""><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 10h15v9.4a1.6 1.6 0 01-1.6 1.6H6.1a1.6 1.6 0 01-1.6-1.6z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 10l1.8-5.2A1.6 1.6 0 016.3 3.7h11.4a1.6 1.6 0 011.5 1.1L21 10z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 3.8L8.2 10M15 3.8l.8 6.2" stroke="currentColor" stroke-width="1.7"/><rect x="9.6" y="13.8" width="4.8" height="7.2" rx="1" fill="currentColor" opacity=".55"/></svg></b><b class=""><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.2" r="4.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4.6 20.6a7.4 7.4 0 0114.8 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></b></nav>
+      </div></div>
+      <p class="cap"><b>Bugün — chip'li</b>Para ve elmas ceviz pill'in içinde. D-023'te (10 Haziran)
+      senin onayladığın karar buydu: <em>"para+elmas aynı pill ailesinde chip"</em>. Yani bu bir
+      bozulma değil, kararın kendisi.</p>
+    </div>
+
+    <div>
+      <div class="mock"><div class="phone">
+        <div class="scene"></div>
+        <div class="top">
+          <span class="lvl">
+            <span class="medal">1</span>
+            <span class="xp"><i></i></span>
+          </span>
+          <span class="purse">
+            <span class="money"><svg width="34" height="34" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="16" rx="9" ry="4.4" fill="#d17d0a"/><ellipse cx="12" cy="11" rx="9" ry="4.8" fill="#ffd45e" stroke="#2a1a10" stroke-width="1.8"/><ellipse cx="12" cy="11" rx="4.4" ry="2.2" fill="none" stroke="#2a1a10" stroke-width="1.5"/></svg><span class="val lg">5,2K</span></span>
+            <span class="money"><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12l4 5-10 12L2 9z" fill="#45c8f0" stroke="#2a1a10" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 21L8 9h8z" fill="#fff" opacity=".32"/></svg><span class="val sm">12</span></span>
+          </span>
+          <span class="rbtn"><svg width="19" height="19" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12 8.6a3.4 3.4 0 100 6.8 3.4 3.4 0 000-6.8zm8.4 3.4c0-.6-.06-1.2-.17-1.75l2.05-1.5-2-3.46-2.4.98a8.5 8.5 0 00-3-1.74L14.5 2h-4l-.38 2.53a8.5 8.5 0 00-3 1.74l-2.4-.98-2 3.46 2.05 1.5a8.7 8.7 0 000 3.5l-2.05 1.5 2 3.46 2.4-.98a8.5 8.5 0 003 1.74L10.5 22h4l.38-2.53a8.5 8.5 0 003-1.74l2.4.98 2-3.46-2.05-1.5c.11-.55.17-1.15.17-1.75z"/></svg></span>
+        </div>
+        <div class="band"><span class="pic"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 8.6c.4 2.6.9 3.6 2.9 5-1.9 2.3-2.3 4.8-2.3 4.8h9.6s-.4-2.5-2.3-4.8c2-1.4 2.5-2.4 2.9-5z" fill="#d24e1c"/><path d="M6 4c0 0 .8 7.2 3.5 9.6C7.6 15.9 7.2 19 7.2 19h9.6c0-.1-.4-3.1-2.3-5.4C17.2 11.2 18 4 18 4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M5.4 19.6h13.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span><span class="body"><span class="t">Ocaktan çay al</span><span class="p">0 / 1</span></span><span class="rw">+3</span></div>
+        <nav class="nav"><b class="on"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2.6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 9l1.7 1.7L13.2 7M8 15.2l1.7 1.7 3.5-3.7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15.6 9.5h2M15.6 15.5h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></b><b class=""><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/></svg><i class="dot"></i></b><b class=""><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 10h15v9.4a1.6 1.6 0 01-1.6 1.6H6.1a1.6 1.6 0 01-1.6-1.6z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 10l1.8-5.2A1.6 1.6 0 016.3 3.7h11.4a1.6 1.6 0 011.5 1.1L21 10z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 3.8L8.2 10M15 3.8l.8 6.2" stroke="currentColor" stroke-width="1.7"/><rect x="9.6" y="13.8" width="4.8" height="7.2" rx="1" fill="currentColor" opacity=".55"/></svg></b><b class=""><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.2" r="4.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4.6 20.6a7.4 7.4 0 0114.8 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></b></nav>
+      </div></div>
+      <p class="cap"><b>Chip'siz — istediğin</b>Değerler doğrudan sahnenin üstünde. Simge büyüdü,
+      sayı büyüdü, kutu gitti. Seviye rozeti de kutusundan çıktı; XP çubuğu altına indi.</p>
+    </div>
+  </div>
+
+  <div class="verdict col">
+    <span class="lab">Şart</span>
+    <div>
+      <p><strong>Kutuyu kaldırınca sayının okunurluğunu kutu değil KONTUR taşır.</strong>
+      Chip'in görünmeyen işi buydu: arkasına koyu bir zemin koyup metni her sahnede okutuyordu.
+      Yerine <code>-webkit-text-stroke: 5px</code> + <code>paint-order: stroke fill</code> geliyor —
+      yani beyaz dolgu, altında kalın koyu kontur, üstüne 2 px katı gölge.</p>
+      <p>Bu teknik projede <em>zaten var</em> (<code>index.css</code>'teki konturlu oyun yazısı);
+      chip'lerin içinde olduğu için işe yaramıyordu. Aşağıda dört farklı zeminde sınandı.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ OKUNABİLİRLİK ══════ -->
+<section>
+  <div class="sec-head"><span class="sec-tag">Sınama</span><h2>Kutu yokken sayı her zeminde okunuyor mu?</h2></div>
+  <p class="sub">Chip'siz tasarımın tek gerçek riski bu. Oyunun dört farklı yüzeyi üstünde aynı sayı:</p>
+
+  <div class="legib">
+    <div class="zone"><div class="sky" style="background:#d3a066"><span class="mock" style="display:flex;align-items:center;gap:8px"><svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="16" rx="9" ry="4.4" fill="#d17d0a"/><ellipse cx="12" cy="11" rx="9" ry="4.8" fill="#ffd45e" stroke="#2a1a10" stroke-width="1.8"/><ellipse cx="12" cy="11" rx="4.4" ry="2.2" fill="none" stroke="#2a1a10" stroke-width="1.5"/></svg><span class="val lg">5,2K</span></span></div><div class="lab">açık ahşap zemin</div></div>
+    <div class="zone"><div class="sky" style="background:#2f7d50"><span class="mock" style="display:flex;align-items:center;gap:8px"><svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="16" rx="9" ry="4.4" fill="#d17d0a"/><ellipse cx="12" cy="11" rx="9" ry="4.8" fill="#ffd45e" stroke="#2a1a10" stroke-width="1.8"/><ellipse cx="12" cy="11" rx="4.4" ry="2.2" fill="none" stroke="#2a1a10" stroke-width="1.5"/></svg><span class="val lg">5,2K</span></span></div><div class="lab">yeşil çuha (okey masası)</div></div>
+    <div class="zone"><div class="sky" style="background:#3a2418"><span class="mock" style="display:flex;align-items:center;gap:8px"><svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="16" rx="9" ry="4.4" fill="#d17d0a"/><ellipse cx="12" cy="11" rx="9" ry="4.8" fill="#ffd45e" stroke="#2a1a10" stroke-width="1.8"/><ellipse cx="12" cy="11" rx="4.4" ry="2.2" fill="none" stroke="#2a1a10" stroke-width="1.5"/></svg><span class="val lg">5,2K</span></span></div><div class="lab">koyu ceviz duvar</div></div>
+    <div class="zone"><div class="sky" style="background:#f4efe3"><span class="mock" style="display:flex;align-items:center;gap:8px"><svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="16" rx="9" ry="4.4" fill="#d17d0a"/><ellipse cx="12" cy="11" rx="9" ry="4.8" fill="#ffd45e" stroke="#2a1a10" stroke-width="1.8"/><ellipse cx="12" cy="11" rx="4.4" ry="2.2" fill="none" stroke="#2a1a10" stroke-width="1.5"/></svg><span class="val lg">5,2K</span></span></div><div class="lab">badana / gün ışığı</div></div>
+  </div>
+  <p class="note col">Dördünde de okunuyor çünkü kontur <strong>koyu</strong>, dolgu <strong>beyaz</strong>:
+  açık zeminde konturu, koyu zeminde dolguyu görüyorsun. Tek sayıyla ikisi birden çalışıyor —
+  chip bunu yaparken bir de ekranda yer kaplıyordu.</p>
+</section>
+
+<!-- ══════ KARAR ══════ -->
+<section style="border-bottom:none">
+  <div class="sec-head"><span class="sec-tag ask">Soru</span><h2>Paketi entegre mi edelim, kendimizinkini mi çevirelim?</h2></div>
+  <p class="sub">Sorduğun üç yol. Önce lisans: <strong>Unity Asset Store EULA'sı bizi engellemiyor</strong> —
+  varlığı "Asset Store dışından gelen özgün içerikle birlikte bir elektronik uygulamaya" katmaya
+  izin veriyor, Unity şartı koymuyor. Yani üçü de mümkün.</p>
+
+  <div class="opts col">
+    <div class="opt">
+      <span class="code">1</span>
+      <div>
+        <h4>Paketi olduğu gibi entegre et</h4>
+        <p>300Mind kitini indir, PNG'leri çıkar, panelleri 9-dilim olarak kullan. Hızlı başlar
+        ama paletine kilitlenirsin: kit hazır renklerle gelir, kıraathanenin sıcak ahşabına
+        boyanamaz (PNG, vektör değil). Ayrıca ekran yerleşimlerini yine biz kurarız — kit
+        <em>bileşen</em> verir, <em>ekran</em> vermez.</p>
+        <p class="facts"><span><b>Artı</b> anında “asset yapımı” görünüm</span><span><b>Eksi</b> renk kilidi · Unity paketinden çıkarma işi · her ekranda ölçek uyumsuzluğu riski</span></p>
+      </div>
+    </div>
+    <div class="opt rec">
+      <span class="code">2</span>
+      <div>
+        <h4>Bizimkini bu tarza çevir + ikonları hazır paketten al<span class="pill">önerim</span></h4>
+        <p>Gövde (panel, düğme, şerit, çubuk) bizim CSS'imizde kalır ama <strong>şekil grameri</strong>
+        o kitten alınır: kalın koyu kontur, katı kaydırılmış gölge, iki taraflı kabartma, büyük
+        yarıçap. Bu sayfadaki maketler zaten öyle çizildi — yukarıdaki telefonlarda tek bir PNG yok.</p>
+        <p>Kazanç: her çözünürlükte keskin, her renge boyanabilir, dosya boyutu sıfır.
+        <strong>İkonlar</strong> ise hazır paketten gelir — çünkü asıl emek isteyen ve bugün en
+        zayıf olan yer orası (G-15: “SVG'ler zayıf”).</p>
+        <p class="facts"><span><b>Artı</b> palet özgür · APK şişmez · G-15 çözülür</span><span><b>Eksi</b> gövdeyi biz yazarız (ama zaten yazıyoruz)</span></p>
+      </div>
+    </div>
+    <div class="opt">
+      <span class="code">3</span>
+      <div>
+        <h4>Sadece ikonları al, gerisine dokunma</h4>
+        <p>En küçük adım. Ama tek başına yetmez: ölçümde çıkan 108 farklı görsel karar (17 punto,
+        27 gölge) ikon değiştirerek düzelmiyor. İkon iyileşir, “çalışılmamış” hissi kalır.</p>
+        <p class="facts"><span><b>Artı</b> en hızlı</span><span><b>Eksi</b> asıl şikâyeti çözmez</span></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="verdict yes col">
+    <span class="lab">Özet</span>
+    <div>
+      <p><strong>2.</strong> Kit'in değerli olan kısmı dosyaları değil <em>şekil dili</em>; onu
+      kopyalamak için indirmeye gerek yok ve indirirsek renk özgürlüğünü kaybediyoruz. İkon
+      başka mesele — orada hazır asset gerçekten kazandırıyor.</p>
+      <p>Onaylarsan sıradaki adım: chip'siz üst şerit + şekil grameri jetonları (6 punto · 3 yarıçap ·
+      1 gölge) koda girer, ikon seti ayrı turda seçilir.</p>
+    </div>
+  </div>
+
+  <p class="note col">Bu değişiklik <strong>D-023'ün bir maddesini geri alıyor</strong>
+  (“sağ-üst para+elmas aynı pill ailesinde chip”). Onaylarsan yeni karar olarak yazılır; eski
+  karar silinmez, geri alındığı not edilir.</p>
+</section>
+
+</div>

@@ -296,3 +296,46 @@ basamaklı. Pano bu ikisini ve Kenney kaydının canlı `playbackRate` basamağ�
 
 **Paketler henüz repoya EKLENMEDİ** — seçim yapılınca yalnız kullanılacak dosyalar künyesiyle
 `public/assets/` altına girer.
+
+---
+
+## CHIP'SİZ ÜST ŞERİT (2026-09-10, aynı tur)
+
+Kullanıcı Unity Asset Store'dan bir kit paylaştı (**2D Mobile Game UI Kit**, 300Mind, ücretsiz —
+`assetstore.unity.com/packages/2d/gui/2d-mobile-game-ui-kit-355774`) ve yeni bir istek ekledi:
+*"bizim üstteki veriler bar içinde değil, öyle **direk oyun üstünde** olsun istiyorum."*
+
+**Maket:** `docs/chipsiz-hud-maketi.html` · https://claude.ai/code/artifact/d8440214-e478-4ebd-9abe-a7772f57b958
+
+### Bu, D-023'ün bir maddesini GERİ ALIR
+
+D-023 (2026-06-10, kullanıcı onaylı) şunu diyordu: *"sağ-üst para+elmas AYNI pill ailesinde chip
+(hiza piksel-eş)"*. Yani chip'li üst şerit bir bozulma değil, **onaylanmış kararın kendisiydi.**
+Bugünkü istek onu geri alıyor. Eski karar silinmez, geri alındığı not edilir.
+
+### Kutunun görünmeyen işi: OKUNABİLİRLİK
+
+Chip yalnız bir çerçeve değildi — metnin arkasına koyu bir zemin koyup her sahnede okunmasını
+sağlıyordu. Kutu kalkınca o işi **kontur** devralmalı:
+`-webkit-text-stroke: 5px` + `paint-order: stroke fill` + 2 px katı gölge; beyaz dolgu, koyu kontur.
+Teknik projede **zaten var** (`index.css`'teki konturlu oyun yazısı), chip'lerin içinde kaldığı için
+işe yaramıyordu. Maket dört zeminde sınadı: açık ahşap · yeşil çuha · koyu ceviz · badana —
+dördünde de okunuyor, çünkü açık zeminde kontur, koyu zeminde dolgu taşıyor.
+
+### Lisans: Unity Asset Store EULA bizi ENGELLEMİYOR
+
+EULA varlığın *"Asset Store dışından gelen özgün içerikle birlikte bir elektronik uygulamaya"*
+katılmasına izin veriyor; Unity motoru şartı **yok**. Sınır: varlık ürünün "substantial portion"ı
+olamaz (bizde UI kromu, sorun değil). Yani üç yol da hukuken açık.
+
+### Üç yol ve öneri
+
+| Yol | Ne | Değerlendirme |
+|---|---|---|
+| **1** | Paketi olduğu gibi entegre et | PNG geldiği için **palet kilidi**; kıraathanenin sıcak ahşabına boyanamaz. Kit *bileşen* verir, *ekran* vermez — yerleşimi yine biz kurarız. |
+| **2** | **Bizimkini bu tarza çevir + ikonları hazır paketten al** | **ÖNERİ.** Gövde CSS'te kalır ama şekil grameri kitten alınır (kalın kontur · katı kaydırılmış gölge · iki taraflı kabartma · büyük yarıçap). Her çözünürlükte keskin, her renge boyanabilir, APK şişmez. İkonlar hazır paketten — G-15'in ("SVG'ler zayıf") çözümü orada. |
+| **3** | Sadece ikonları al | Yetmez: 108 farklı görsel karar (17 punto · 27 gölge) ikon değiştirerek düzelmiyor. |
+
+**Gerekçe:** kitin değerli kısmı dosyaları değil **şekil dili**; onu kopyalamak için indirmeye
+gerek yok ve indirirsek renk özgürlüğünü kaybediyoruz. İkon başka mesele — orada hazır asset
+gerçekten kazandırıyor.
