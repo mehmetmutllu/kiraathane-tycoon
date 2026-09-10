@@ -34,7 +34,10 @@
  *
  * HALI YOK: kullanıcı üç kez reddetti ("zemini tek renk ayarla yeter"); maket v13 de ön
  * çeyreklerde halı taşımaz. Zemindeki tek dokuma parça **kapı paspasıdır** ve o da kapıyla
- * birlikte yer değiştirir.
+ * birlikte yer değiştirir. **S5 (2026-09-10):** o tek parça KayKit'in `rug_rectangle_B`'sine
+ * geçti (mavi) — kural değişmedi, kuralın izin verdiği tek parçanın modeli değişti. Ölçüm bu
+ * arada şunu da söyledi: bugünkü paspas eni gerçeğin **3,7 katı**, yani ölçüsüyle zaten bir
+ * kilim (`docs/dekor-raporu-s5.md` §B6).
  *
  * ALINMAYAN ÜÇ ÖNERİ (gerekçeleriyle, tekrar tartışılmasın diye):
  *  - **Soba + kömür kovası:** maket sobayı ARKA salonun sedir köşesine koyuyor (B6b). Ön çeyreğe
@@ -74,7 +77,7 @@ export type DecorKind =
   | 'copKovasi' // çöp kovası (zemin)
   | 'askilik' // portmanto (zemin)
   | 'semsiyelik' // şemsiyelik (zemin)
-  | 'gazetelik' // gazete/dergi sehpası (zemin)
+  | 'gazetelik' // S5'ten beri DUVAR kitaplığı (eskiden ayaklı gazete sehpası)
   | 'ayakliLamba' // ayaklı lamba (zemin)
   | 'paspas' // kapı paspası (zemin, düz)
   | 'konsol' // AYAKLI konsol/büfe + üstünde radyo, tepsi, saksı (zemin)
@@ -136,7 +139,10 @@ const RIGHT_WALL: DecorItem[] = [
   { kind: 'aplik', pos: [WALL_FACE, MOUNT.high, 9.8], rot: -Math.PI / 2, from: 2 },
   { kind: 'pencere', pos: [WALL_FACE, (WINDOW.sill + WINDOW.top) / 2, 12.2], rot: -Math.PI / 2, from: 2, len: 3.2, h: WINDOW.top - WINDOW.sill },
   { kind: 'denizlikSaksi', pos: [WALL_FACE - 0.15, WINDOW.sill, 12.2], rot: -Math.PI / 2, from: 2 },
-  { kind: 'gazetelik', pos: [16.4, 0, 14.4], rot: -Math.PI / 2, from: 2 },
+  // S5: gazetelik KayKit kitaplığına geçti (kullanıcı kararı) ve ölçüm o modelin bir DUVAR rafı
+  // olduğunu söyledi (`minZ = 0` → sırtı origin'de, ayağı yok). Bu yüzden zeminden asma bandına
+  // taşındı; `MOUNT.mid` çünkü tablo ile aynı üst hizada okunmalı (`decorLook.KITAPLIK_DY`).
+  { kind: 'gazetelik', pos: [WALL_FACE, MOUNT.mid, 14.4], rot: -Math.PI / 2, from: 2 },
 ];
 
 /**

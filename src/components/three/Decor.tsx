@@ -4,6 +4,8 @@ import type { Group, MeshStandardMaterial } from 'three';
 import { PALETTE } from '../../config/palette';
 import { decorItems, type DecorItem } from '../../config/decor';
 import { useGame } from '../../game/store';
+import { Model } from './Model';
+import { DECOR_MODELS, DENIZLIK_DERINLIK, parcaYerlesim, varyant } from './decorLook';
 
 /**
  * Decor.tsx — B6a'nın ÇİZİM tarafı. Ne çizileceği burada, NEREYE çizileceği `config/decor.ts`te.
@@ -18,6 +20,12 @@ import { useGame } from '../../game/store';
  * lambri çıtası (0,54) ile kartonpiyer (1,15) arasındaki banda sığar.
  *
  * YÖN: her parça yerel +z'ye BAKAR. Sol duvar +π/2 · sağ duvar −π/2 · ön duvar π.
+ *
+ * S5 — KAYKIT GEÇİŞİ. Yedi tür paketin modeline geçti; bu dosyadaki elle çizimleri SİLİNMEDİ,
+ * `Model`'in **fallback**'i oldular (CLAUDE.md greybox-first: `.gltf` gelmezse ilkel şekle düş).
+ * Hangi türün hangi modele geçtiği ve NEDEN — hepsi `decorLook.ts`te; burada ikinci bir karar
+ * yok, tek bir koordinat da yok. Geçmeyenler (çöp kovası · TV · askılık · şemsiyelik · petek ·
+ * saat · aplik · askı rayı · pencere) doğrudan kendi çizimleriyle gelir.
  */
 
 // ---- zemin parçaları ----
@@ -481,8 +489,8 @@ function Pencere({ len, h, capY }: { len: number; h: number; capY: number }) {
       {/* DERİN DENİZLİK: odaya taşar → ÜST YÜZEYİ kameradan okunur (asıl sinyal bu). Üstü AÇIK
           (mermer denizlik), altı koyu ahşap konsol: iki ton üst üste gelince şerit "raf" değil
           "pencere eşiği" okunuyor. */}
-      <mesh castShadow position={[0, -h / 2 - 0.04, 0.14]}>
-        <boxGeometry args={[len + 0.2, 0.06, 0.3]} />
+      <mesh castShadow position={[0, -h / 2 - 0.04, DENIZLIK_DERINLIK / 2 - 0.01]}>
+        <boxGeometry args={[len + 0.2, 0.06, DENIZLIK_DERINLIK]} />
         <meshStandardMaterial color={PALETTE.sill} flatShading />
       </mesh>
       <mesh position={[0, -h / 2 - 0.11, 0.09]}>
@@ -630,16 +638,52 @@ function Piece({ item }: { item: DecorItem }) {
   }
 }
 
+const KAY = '/assets/models/kaykit-furniture-bits/';
+
+/**
+ * Bir dekor öğesinin gövdesi: KayKit karşılığı varsa onun parçaları, yoksa elle çizim.
+ * `sira` aynı türün kaçıncı örneği olduğu — saksılarda A/B varyantı buradan dönüyor
+ * (`decorLook.varyant`), aynı model dokuz kez tekrarlanmasın diye.
+ */
+function Govde({ item, sira }: { item: DecorItem; sira: number }) {
+  const parcalar = DECOR_MODELS[item.kind];
+  if (!parcalar) return <Piece item={item} />;
+  return (
+    <>
+      {parcalar.map((p, i) => {
+        const model = varyant(p.model, sira);
+        const yer = parcaYerlesim(p, model);
+        return (
+          <Model
+            key={`${model}${i}`}
+            src={`${KAY}${model}.gltf`}
+            scale={p.olcek}
+            position={[yer.x, yer.y, yer.z]}
+            // Yedek yalnız İLK parçada çizilir: konsolun yedeği zaten bütün bir konsoldur,
+            // üç parçanın her biri için ayrı ayrı çizilirse üst üste üç konsol olur.
+            fallback={i === 0 ? <Piece item={item} /> : null}
+          />
+        );
+      })}
+    </>
+  );
+}
+
 export function Decor() {
   const areasOpen = useGame((s) => s.areasOpen);
   const items = decorItems(areasOpen);
+  const sayac = new Map<string, number>();
   return (
     <group>
-      {items.map((item, i) => (
-        <group key={`${item.kind}${i}`} position={item.pos as [number, number, number]} rotation={[0, item.rot, 0]}>
-          <Piece item={item} />
-        </group>
-      ))}
+      {items.map((item, i) => {
+        const sira = sayac.get(item.kind) ?? 0;
+        sayac.set(item.kind, sira + 1);
+        return (
+          <group key={`${item.kind}${i}`} position={item.pos as [number, number, number]} rotation={[0, item.rot, 0]}>
+            <Govde item={item} sira={sira} />
+          </group>
+        );
+      })}
     </group>
   );
 }

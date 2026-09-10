@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 96 · YAPILAN 79 · %82):**
+**Oturum bütçesi (TOPLAM 96 · YAPILAN 80 · %83):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -24,10 +24,10 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
 | | D meta katman | 9/9 ✅ |
 | | E arayüz ve cila | 4/5 🔧 |
-| | **S sanat ve arayüz geçişi** | **4/12 🔧** |
+| | **S sanat ve arayüz geçişi** | **5/12 🔧** |
 | | H oynanış düzeltmeleri | 0/3 ⏳ |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **51/68** |
+| **Program toplam** | | **52/68** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -243,7 +243,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   değil; kendi turunu ister.
 - ⏳ **E5 — hareketli onboarding**
 
-## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (4/12) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
+## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (5/12) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
 - ✅ **S1 — pad ve yükseltme dili yeniden yazıldı** · çember → **köşe parantezli kare** (kenar
   ortaları boş), dolum büyüyen disk → **alttan üste dolan kare**, "Masa"/"Çay Yükselt"/"Usta"
   → hepsinde **YÜKSELT** + solunda düz yukarı ok, yazı 700 → 800, 💎 pulu "mavi kare" → gerçek
@@ -310,9 +310,23 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   `tsc -b` temiz · **denge sayısı DEĞİŞMEDİ**.
   **Denenip geri alındı:** tezgâh arkası fayans bandı (pakette duvar karosu yok) · tezgâh üstü
   süslemeler · beş kollu mutfak teması (*"bunları sen kendin uydurmuşsun"*).
-- ⏳ **S5 — dekor takası** — elle çizilen 17 parçanın 8'i: `trash_A/B` · `lamp_standing` ·
-  `lamp_table` · `rug_*` · `pictureframe_*` · `cabinet_*` · `cactus_*`. Kalan 6'sı elde yok,
-  elle kalır (askılık · duvar saati · aplik · askı rayı · şemsiyelik · petek). *(diskte)*
+- ✅ **S5 — dekorun sekiz türü KayKit'e geçti (D-101)** · ölçüm planın iki maddesini **eledi**:
+  `trash_A/B` kova değil 18 üçgenlik yer çöpü, `cactus_*` yaprak bitkisi değil (biçim oranı
+  saksının 2,4–2,8 katı — kullanıcıya soruldu, *kaktüs geçsin* dedi). Üç pakette iç mekân kovası
+  YOK → **elle çizilen kova asıl kaldı**. Geçenler: saksı/büyük/denizlik → `cactus_medium/small`
+  (A/B dönüşümlü) · ayaklı lamba → `lamp_standing` · konsol → `cabinet_medium + cabinet_small` ·
+  tablo → `pictureframe_large_A` · paspas → `rug_rectangle_B` (**mavi**, kullanıcı) · gazetelik →
+  `shelf_B_small_decorated` (ölçüm bunun **duvar rafı** olduğunu söyledi → zeminden asma bandına
+  taşındı) · konsol üstüne yeni `lamp_table`. **Ölçek kuralı yazıldı: mobilya 0,90, aydınlatma
+  GERÇEK BOY** — 0,90'da ayaklı lamba karakterin %130'u oluyordu (S3'ün kasa dersinin devamı).
+  Yeni `decorLook.ts` (ölçü katmanı); elle çizimler silinmedi, **fallback** oldu.
+  **Yeni ölçüt — AYAK İZİ:** eski bekçi dekoru yalnız MERKEZLE denetliyordu, artık gövde
+  KENARINDAN (en dar açıklık 0,51 br, ihlal yok). Bekçi `tests/decor-look.test.ts` 20 test,
+  **8 mutasyon** (biri kaçtı → bekçi düzeltildi, sonra yakalandı).
+  `docs/dekor-raporu-s5.md` · vitest **818** · duman **42/42** · `tsc -b` temiz ·
+  **denge sayısı DEĞİŞMEDİ**.
+  **Yan iş:** ölçüm aracı kendi iki hatasını düzeltti — düz parçada boy karşılaştırması sahte
+  %650 sapma üretiyordu (ölçek ENDEN türer) ve **biçim oranı** hiç ölçülmüyordu.
 - ⏳ **S6 — dış cephe + pencere + tente** — `building_A…H` · yollar · `streetlight` · `bench` ·
   `bush` · `car_taxi`; pencere `wall_window_open` (kullanıcının "pencere duvardan ayrı duruyor"
   şikâyetinin doğrudan karşılığı); **tente maket-v13'ten** (`box(6.4, 0.18, 1.9, 0x2e6b4f)`,

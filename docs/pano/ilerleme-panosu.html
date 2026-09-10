@@ -193,7 +193,7 @@ h2{font-size:21px;font-weight:800}
 <script type="application/json" id="durum">
 {
  "guncelleme": "10.09.2026",
- "yapilan": 79,
+ "yapilan": 80,
  "toplam": 96,
  "kilometre": [
   {
@@ -214,29 +214,14 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum · Faz S · 2/12 — pad ve modal, kullanıcı testiyle",
-  "baslik": "Oyun oynandı; tasarım tek hamlede değil, oynanarak bulundu",
-  "aciklama": "Bu tur bir ölçüm turu değil bir <b>oynama</b> turuydu. Kullanıcı oyunu açtı ve dört ayrı mesajda geri bildirim verdi; her seferinde bir öncekinin üstüne yazdı.<br><br><b>Önce bir hizalama hatası, ama sebebi öğretici.</b> Yükseltme noktasında &ldquo;YÜKSELT&rdquo; yazısıyla solundaki ok üst üste biniyordu. Çünkü çerçevenin genişliği işaretin yarıçapından türüyor, yazı da ortalanıyordu — <b>ikisi aynı genişlik için yarışıyor ve kimse ölçmüyordu</b>. Artık genişlik yazıdan çözülüyor. Köşeler yuvarlatıldı; kullanıcı içteki koyu zeminin hâlâ keskin olduğunu ve çizgilerin dışına taştığını görünce o da yuvarlatılıp çerçevenin içine gömüldü.<br><br><b>Sonra iki karar geri döndü.</b> Usta onayı bir alt şerit olarak yapılmıştı ve gerekçesi yazılıydı: modal hareketi keser. Kullanıcı oynayınca reddetti. Karar kullanıcınındır — ama eski gerekçenin işaret ettiği tuzak boş bırakılmadı: modal <b>kapatılabilir</b> ve oyuncu o masadan uzaklaşana kadar geri gelmiyor. Etkileşim de değişti: yaklaşınca değil, noktada <b>durdukça</b> işaret yeşil doluyor ve dolunca açılıyor.<br><br><b>Bir de biçim tekleşti.</b> Usta noktası bir ara yuvarlak yapılmıştı; kullanıcı <i>&ldquo;yuvarlak yapma, direkt yükseltme gibi olsun&rdquo;</i> deyince ayrım tamamen kalktı. Geriye tek fark kaldı: dolumun kaynağı ve rengi. <b>İki biçim tutmak iki bakım yeri demekti.</b> Ve işaretlerin yaklaşınca büyümesi kaldırıldı — boy sabit, yalnız oyuncu üstündeyken hafifçe kabarıyor.",
-  "adimlar": [
-   "<b>Çerçeve genişliği artık yazıdan çözülüyor</b> — çakışmanın kökü buydu",
-   "<b>Modal yaklaşınca değil DURUNCA açılıyor</b> · kapatılabilir · merkezî kabukta",
-   "<b>İşaret tek biçim</b> · <b>ölçek mesafeye göre değişmiyor</b>",
-   "<b>Görev toast'ı kalktı:</b> tamamlanma artık bandın kendi hâli",
-   "<b>770 test · duman 42/42</b> — biri yeni: modal alt sayfaya düşerse test kırılır"
-  ],
-  "not": "<b>İki soru sayıya çevrildi.</b> Kullanıcı <i>&ldquo;masalar birbirine çok mu yakın&rdquo;</i> diye sordu ve bir yerde yürüyemediğini söyledi; ikisi aynı kökmüş. Oyuncunun bir açıklıktan geçebilmesi için <b>0,94 birim</b> gerekiyor — ön salonda boşluk <b>3,50</b>, arka salonda <b>0,68</b>: yirmi masanın on ikisi arasından <b>geçilemiyor</b>. Çarpışma verisi bağımsız olarak aynı sonucu verdi. <b>&ldquo;Yürüyemiyorum&rdquo; bir his değil, geometri.</b> Bir de para sorusu vardı: tek bir ödemenin üst sınırı — en yüksek masa, Usta çarpanı ve bütün koleksiyon ödülleri dahil — <b>44 lira</b>. Yani &ldquo;bir masadan elli bin&rdquo; olamaz; görülen şey yerde biriken paraların <b>toplu toplanma bildirimi</b> ve o bildirim bir toplamı tek olay gibi gösteriyor."
+  "etiket": "Bu oturum — Faz S · 5/12 — dekor KayKit'e geçti (D-101)",
+  "baslik": "Aday listesi model ADINA yazılmıştı; ölçüm iki maddesini eledi",
+  "aciklama": "Faz S planı dekor için sekiz aday saymıştı ve o liste <b>dosya adlarına bakılarak</b> yazılmıştı. Ölçüm modelin kendi geometrisine baktı ve ikisi düştü.<br><br><b>Birincisi: <code>trash_A/B</code> bir çöp kovası değil.</b> Ham ölçüsü 0,127 × <b>0,052</b> — enden geniş, boydan beş santim; mesh'i 18 üçgenlik bir ikosfer. Yani yerde duran buruşuk bir çöp. Paketin gerçek konteyneri <code>dumpster</code> ise iç mekân kovası değil: kova oranı 0,46 (boydan uzun), konteyner 1,78 (enden geniş) — <b>3,9 kat</b> fark. Üç paket tarandı, iç mekân kovası hiçbirinde yok. Elle çizilen kova ölçüsüyle zaten doğruydu (gerçeğin ×1,02'si) ve <b>asıl</b> olarak kaldı.<br><br><b>İkincisi: <code>cactus_*</code> bir yaprak bitkisi değil.</b> Biçim oranı 0,91–1,06, saksı bitkisininki 0,37 — 2,4 ile 2,8 kat sapma. Bu bir ölçü sorunu değil <b>kimlik</b> sorunu, o yüzden karar kullanıcıya soruldu: <i>&ldquo;kaktüs geçsin, kıraathanede kaktüs olur&rdquo;</i>.<br><br><b>Ölçek kuralı yazıldı: mobilya 0,90, aydınlatma gerçek boy.</b> S3 bunu kasa için bulmuştu; dekorda iki kez daha ısırdı. <code>lamp_standing</code> 0,90'da 2,27 birim — <b>karakterin %130'u</b>, yani insandan uzun bir direk. <code>lamp_table</code> aynı ölçekte 0,90 × 0,92: masa lambası değil yer lambası. Artık bir kural ve bekçi 0,90'a dönüşü yasaklıyor.<br><br><b>Ölçüm aracı kendi iki hatasını düzeltti.</b> Düz parçada (paspas) boy karşılaştırması %650'lik sahte bir sapma üretiyordu — düz parçada ölçek <b>enden</b> türer. Ve <b>biçim oranı hiç ölçülmüyordu</b>: ölçek her zaman ayarlanabilir, biçim ayarlanamaz. O sütun eklenince iki aday elendi."
  },
  "siradaki": {
-  "etiket": "Sırada Faz S · 10 oturum — yayın öncesi toplam 19",
-  "baslik": "Depoda 185 KayKit modeli duruyor ve hiçbiri oyundan çağrılmıyor",
-  "aciklama": "Kullanıcının en ağır eleştirisi ölçülüp <b>doğrulandı</b>: üç KayKit paketi indirilmiş ve manifeste yazılmış, ama kodda paket adı yalnız <b>dört yerde</b> geçiyor ve dördü de aynı şeye bakıyor — masa ile sandalye. Restoran paketinin 144, şehir paketinin 41 modeli <b>hiçbir yerden çağrılmıyor</b>. Üstelik şikâyetlerin üçünün cevabı da orada: pencere duvarın parçası olarak modellenmiş, mutfak zemini ve duvar parçaları hazır, lavabo kabin kapısı için gerçek kapı modelleri var.<br><br><b>Sıra şöyle:</b> mutfak → duvar ve zemin → dekor takası → dış cephe ve tente → lavabo kabin kapıları. <b>Beşi de ne indirme ne onay istiyor</b> — hepsi diskte duran modellerle yapılacak iş. Ardından ses assetleri, arayüz dili (araştırma ve maket ayrı, uygulama ayrı) ve karakterler.<br><br><b>Ve bir faz ayrıldı:</b> bilinen üç oynanış hatası, yükseltme sırası ve masa aralığı sanat kalemi değil. Ayrı tutuldu ki asset işi onların arkasında beklemesin.",
-  "adimlar": [
-   "<b>Şimdi:</b> mutfak bloğu KayKit'e geçer — elle çizilen altı parça gider",
-   "<b>Sonra:</b> duvar ve zemin · dekor takası · dış cephe ve tente · lavabo kapıları",
-   "<b>Karar bekleyen:</b> ses kaynağı · karakter kolu · yükseltme sırası · masa aralığı",
-   "<b>Yayın öncesi 19 oturum:</b> sanat 10 · oynanış 3 · onboarding 1 · paketleme 5"
-  ],
-  "not": "<b>Ses kararı bir dönüşü göze alıyor.</b> Beş tur önce ses için <i>&ldquo;kaynak dosya değil kod&rdquo;</i> seçilmiş, klasör bilerek boş bırakılmış ve doğrulanacak lisans sıfıra indirilmişti. Kullanıcı şimdi ortam uğultusu ve daha gerçekçi para sesi istiyor. Motor dosya üstüne yazmayı zaten destekliyor, yani <b>kablo hazır</b>; açılan tek şey lisans yüzeyi ve seslerdeki tek kaynak kilidi. Bir tuzak baştan yazıldı: hazır kafe ambiyans kayıtlarının çoğunda <b>anlaşılır yabancı konuşma</b> var ve kısa döngüde aynı cümle dakikada bir tekrar eder — aranması gereken şey kelimesi seçilmeyen kalabalık mırıltısıdır."
+  "etiket": "Sırada S6 — dış cephe, pencere ve tente",
+  "baslik": "Şehir paketi AYRI ölçekte: 0,90 oraya uygulanamaz",
+  "aciklama": "S5 kapanırken S6'nın en riskli sayısı da ölçüldü ve devredildi. İki mobilya paketi (restaurant-bits ve furniture-bits) <b>aynı ham ölçekte</b> yazılmış — <code>chair_A</code> ikisinde de 0,750 geniş, o yüzden 0,90 ikisinde de geçerli. Ama <b>city-builder-bits başka bir ölçekte</b>: <code>bench</code> 0,400 birim ↔ gerçek 1,50 m, <code>firehydrant</code> 0,135 ↔ 0,32, <code>dumpster</code> 0,566 ↔ 1,80. Sokak mobilyası gerçeğin kabaca dörtte biri yazılmış.<br><br>Yani binalar, yollar, <code>streetlight</code> ve <code>bench</code> için 0,90 kullanılamaz; o paketin kendi çarpanı hesaplanmalı. Araç hazır: <code>npx tsx tools/olcum-dekor.ts</code> §0 bu sağlamayı basıyor. S6'nın ikinci işi kullanıcının <i>&ldquo;pencere duvardan ayrı duruyor&rdquo;</i> şikâyeti — karşılığı <code>wall_window_open</code>, duvarı gerçekten delen model."
  },
  "donemler": [
   {
@@ -368,7 +353,7 @@ h2{font-size:21px;font-weight:800}
      "k": "S",
      "t": "Sanat ve arayüz geçişi",
      "d": "Kullanıcı oynadı ve dört tur geri bildirim verdi. HER KALEM ≈ 1 OTURUM, 10 oturum kaldı. Bitti: pad dili ✓ · pad/modal etkileşimi ✓. Sırada: mutfak → duvar ve zemin → dekor takası → dış cephe ve tente → lavabo kabin kapıları → ses assetleri → UI dili (araştırma+maket) → UI dili (uygulama) → yeni ücretsiz paketler → karakterler. İlk beşi indirme ve onay istemiyor: hepsi diskte duran 185 KayKit modeliyle yapılacak iş.",
-     "yapilan": 4,
+     "yapilan": 5,
      "toplam": 12,
      "durum": "now",
      "kapi": "185 kullanılmayan KayKit modeli oyuna bağlanır + UI dili maketle onaylanır"
@@ -393,6 +378,12 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "10.09.2026",
+   "etiket": "Faz S · 5. oturum (S5 — dekor KayKit'e geçti — D-101)",
+   "baslik": "Sekiz tür pakete geçti, biri hiç geçemedi; ve bekçi merkeze bakmayı bıraktı",
+   "govde": "Dekorun 17 türünden <b>sekizi</b> KayKit'e geçti: saksı, büyük saksı, denizlik saksısı, ayaklı lamba, konsol, tablo, paspas, gazetelik — üstüne konsolun tablasına yeni bir masa lambası. Dokuzu elle kaldı ve her birinin <b>yazılı bir gerekçesi</b> var: TV ünitesinin ekranında maç oynuyor (paketin dolabı o animasyonu taşımaz), askılık ile şemsiyeliğin karşılığı yok, pencere S6'nın işi, çöp kovasının karşılığı <b>hiçbir pakette</b> yok.<br><br><b>Kullanıcının seçtiği üç kol.</b> Kaktüs geçsin (bitkinin kimliği değişiyor, bu bir ölçü kararı değil). Paspas <code>rug_rectangle_B</code> — <b>mavi</b>; paketin altı halısı da aynı ham kutuda (3,0 × 2,0), fark yalnız dokuda, ve A turuncu B mavi. Gazetelik kitaplığa geçsin.<br><br><b>Ölçüm gazetelik hakkında beklenmedik bir şey söyledi.</b> <code>shelf_B_small_decorated</code> boyu bugünkü gazeteliğin <b>%1</b> farkında (0,91 ↔ 0,90) ama <code>minZ = 0</code>: sırtı origin'de, ayağı yok. Yani bu bir <b>duvar rafı</b>, ayaklı bir sehpa değil. Gazetelik bu yüzden zeminden asma bandına taşındı ve rafın üstündeki eşyaların tepesi tablo bandına oturtuldu — sağ duvar artık tek bir üst hizada okunuyor.<br><br><b>Yeni bir ölçüt doğdu: AYAK İZİ.</b> Eski dekor bekçisi parçaları yalnız <b>merkez noktasıyla</b> denetliyordu: &ldquo;saksının merkezi pad'den 1,3'ten uzak mı&rdquo;. Model geçince merkez aynı kalıp gövde büyüyebilir; kutu pad'in içine sarkar ama bekçi yeşil kalır. Açıklık artık gövdenin <b>kenarından</b> ölçülüyor. Ölçülen en dar açıklık 0,51 birim (koridor saksısı ↔ zone2 pad kenarı), ihlal yok.<br><br><b>Bekçi kod yazılırken bir hatayı da yakaladı</b> — ama önce kendi hatasını. İlk ölçütüm gövdeyi <b>disk</b> sanıyordu ve halının köşe yarıçapı 1,62 çıkıyordu; oysa halının uzun kenarına dik yönde gövde yalnız 0,90 birim. Yanlış alarm verdi, ölçüt kutuya çevrildi, gerçek mesafe 1,35 çıktı.<br><br><b>Sekiz mutasyondan biri kaçtı ve kodun zayıf yerini gösterdi.</b> Bekçi denizlik saksısının ölçeğini bir <b>sabit üzerinden</b> denetliyordu, o sabitin <b>kullanımını</b> değil: listedeki ölçek 0,90'a çevrilince test yeşil kalıyordu. Arkasında daha derin bir açık vardı — saksının denizliğe <i>sığdığı</i> hiçbir yerde ölçülmüyordu, üstelik denizliğin derinliği çizim dosyasına gömülü bir sayıydı. Üçü birden kapandı: sayı tek kaynağa çıktı, ölçüt &ldquo;gövde denizliğe sığar&rdquo; oldu, mutasyon yakalandı.<br><br>vitest 798 → <b>818</b> · duman 42/42 · <code>tsc -b</code> temiz · beş kadraj gözle doğrulandı · <b>denge sayısı değişmedi</b>."
+  },
   {
    "tarih": "10.09.2026",
    "etiket": "Faz S · 3. oturum (S3 — mutfak KayKit'e geçti · D-099)",

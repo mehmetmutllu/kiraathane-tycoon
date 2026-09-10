@@ -3,8 +3,8 @@
 Ham çıktı: `docs/olcum-dekor.txt` · araç: `tools/olcum-dekor.ts` (`npx tsx tools/olcum-dekor.ts`)
 Tarih: 2026-09-10 · karakter boyu **1,75** · `WALL_H` **3,20** · lambri çıtası **0,98**
 
-> **KARAR BÖLÜMÜ BİLEREK BOŞTUR.** Bu commit ölçümü taşır; kol seçimi kullanıcının
-> (D-084 §3.2 · `docs/oturum-akisi-mantik.md`). Karar paketinden sonra doldurulur.
+> Ölçüm commit'i `3938163` (karar bölümü boştu) → karar paketi → uygulama commit'i.
+> Karar **D-101**, `memory-bank/decisions.md`.
 
 ---
 
@@ -247,14 +247,64 @@ gerçek boy.*
 
 ---
 
-## Karar
+## Karar (D-101 — kullanıcı, 2026-09-10)
 
-*(BOŞ — karar paketinden sonra doldurulur.)*
+| kalem | karar | kim seçti |
+|---|---|---|
+| çöp kovası ×2 | **elle kalır** — aday yok | ölçüm eledi (B1) |
+| ayaklı lamba ×2 | `lamp_standing` @ **K3 0,615** | ölçüm (B2), kullanıcı itiraz etmedi |
+| konsol ×1 | `cabinet_medium` + `cabinet_small` @ K1 | ölçüm (B3), kullanıcı itiraz etmedi |
+| tablo ×1 | `pictureframe_large_A` @ K1 | ölçüm (B4), kullanıcı itiraz etmedi |
+| saksı ×3 · büyük ×4 · denizlik ×2 | **kaktüs GEÇSİN** — `cactus_medium/small` | **kullanıcı** (kimlik kararı) |
+| paspas ×1 | `rug_rectangle_B` — **MAVİ** | **kullanıcı** (renk kolu) |
+| gazetelik ×1 | `shelf_B_small_decorated` — kitaplığa geçsin | **kullanıcı** |
+| konsol üstü | `lamp_table` @ **K3 0,44** | ölçüm (B8), kullanıcı itiraz etmedi |
+| S4'ün iki sözü | **kendi turunda kalır** | **kullanıcı** |
+
+**Ölçek kuralı yazıldı:** *mobilya 0,90 · aydınlatma gerçek boy.* S3 bunu kasa için bulmuştu
+(`KASA_S`); dekorda iki kez daha ısırdı ve artık bir kural, bir tesadüf değil.
 
 ## Uygulama
 
-*(BOŞ.)*
+- **Yeni `src/components/three/decorLook.ts`** — dekorun ölçü/ankraj katmanı (`tableLook` ·
+  `kitchenLook` deseni). `NATIVE` ham kutular, üç ölçek sabiti, `DECOR_MODELS` eşlemesi,
+  `parcaYerlesim` (sırt/origin telafisi), `turKutu`/`turDunyaKutu`/`govdeMesafe` (ayak izi),
+  `asmaKenar` (bant), `varyant` (A/B kaktüs).
+- **`Decor.tsx`** — `Model` ile yükleme; **elle çizimler silinmedi, fallback oldu**. Dosyada
+  hâlâ tek koordinat yok, tek karar da yok: eşleme `decorLook`ta.
+- **`config/decor.ts`** — gazetelik zeminden asma bandına taşındı (`WALL_FACE`, `MOUNT.mid`),
+  çünkü ölçüm `shelf_B_small_decorated`ın **duvar rafı** olduğunu söyledi (`minZ = 0`).
+- **Denizliğin derinliği (0,30) tek kaynağa çıktı** (`DENIZLIK_DERINLIK`): `Pencere` çizimi de,
+  denizlik saksısının sığma bekçisi de artık aynı sayıyı okuyor.
+- **Kaktüsler A/B dönüşümlü** — dokuz saksı aynı modelin kopyası değil; paketin kendi iki yeşili.
 
 ## Bekçi
 
-*(BOŞ.)*
+`tests/decor-look.test.ts` — **20 test**, altısı yeni ölçütü (gövde kenarı) taşıyor.
+**Sekiz mutasyon** çalıştırıldı:
+
+| # | mutasyon | sonuç |
+|---|---|---|
+| M1 | aydınlatma ölçeği 0,90'a döner | yakalandı (ölçek + insan oranı) |
+| M2 | duvar sırtı telafisi kalkar | yakalandı |
+| M3 | kitaplık üst hiza ankrajı ters döner | yakalandı |
+| M4 | ikinci dolap yuvadan taşar | yakalandı |
+| M5 | elenen çöp kovası listeye geri girer | yakalandı |
+| M6 | denizlik saksısı 0,90'a çıkar | **KAÇTI** → bekçi düzeltildi, sonra yakalandı |
+| M7 | gövde kutusu dönüşe göre eksen değiştirmez | yakalandı |
+| M8 | denizlik derinliği sessizce büyür | yakalandı |
+
+**M6'nın gösterdiği zayıf yer** (`feedback_session_flow`: kaçan mutasyon kodun zayıf yerini
+gösterir): bekçi `DENIZLIK_S` **sabitini** denetliyordu, o sabitin **kullanımını** değil — liste
+0,90'a çevrilince test yeşil kalıyordu. Daha derin sorun şuydu: saksının denizliğe *sığdığı*
+hiçbir yerde ölçülmüyordu; denizliğin derinliği `Decor.tsx`te gömülü bir 0,3'tü. Ölçüt artık
+gövdenin denizliğe sığması ve sayı tek kaynakta.
+
+**Bekçi kod yazılırken bir hatayı da yakaladı** (gözle değil): halının ayak izi testi yanlış
+alarm verdi çünkü ölçütüm gövdeyi **disk** sanıyordu (köşe yarıçapı 1,62). Halının uzun kenarına
+dik yönde gövde yalnız 0,90 br; gerçek mesafe 1,35 br. Ölçüt kutuya çevrildi.
+
+## Final koşu
+
+`tsc -b` temiz · vitest **818** (798 → +20) · duman **42/42**, konsol hatası yok ·
+görsel doğrulama `docs/gorsel/ss/s5-dekor-*.png` (5 kadraj, `tools/shot-dekor-s5.mjs`).

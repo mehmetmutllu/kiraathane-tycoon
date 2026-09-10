@@ -2989,3 +2989,39 @@ tasarım kararıdır ve onaysız çoğaltılmaz. Mutfak bugünkü hâliyle kald�
 **Yöntem dersi.** Düşük-poli modelde delik/profil ölçümü **vertex sayımıyla yapılamaz** (düz yüzün
 ortasında vertex yoktur): kapı 0,68 ölçüldü, gerçeği 1,28. Doğrusu üçgene ışın atmak. Renk seçimi
 de tahminle yapılamaz — `tools/atlas-renk.mjs` yazıldı.
+
+## D-101 — Dekorun yedi türü KayKit'e geçer; ölçek kuralı: mobilya 0,90, aydınlatma gerçek boy (S5, 2026-09-10)
+
+**Karar.** Elle çizilen 17 dekor türünün **sekizi** pakete geçti (saksı · büyük saksı · denizlik
+saksısı · ayaklı lamba · konsol · tablo · paspas · gazetelik) + konsolun üstüne yeni bir masa
+lambası. Dokuzu elle kaldı. Sayılar `docs/dekor-raporu-s5.md`, ham çıktı `docs/olcum-dekor.txt`.
+
+**Planın iki maddesi ÖLÇÜMDE düştü.** Faz S planı adayları **model adına** bakarak yazmıştı:
+1. `trash_A/B` çöp kovası değil, **18 üçgenlik ikosfer** (0,127 × 0,052) = yerde duran çöp.
+   `dumpster` gerçek konteyner ama iç mekân kovası değil (oran 1,78 ↔ kova 0,46 = 3,9 kat).
+   Üç paket tarandı, kova yok → **elle çizilen kova ASIL kalıyor** (ölçüsü gerçeğin ×1,02'si).
+2. `cactus_*` yaprak bitkisi değil; biçim oranı saksının 2,4–2,8 katı. Bu bir ölçü değil
+   **kimlik** sorunu, o yüzden kullanıcıya soruldu — *kaktüs geçsin* dedi.
+
+**Ölçek kuralı: mobilya 0,90 · aydınlatma GERÇEK BOY.** S3 bunu kasa için bulmuştu (`KASA_S`),
+"paketin modül karosu her obje için ölçek değildir". Dekorda iki kez daha ısırdı: `lamp_standing`
+0,90'da 2,27 br = karakterin **%130'u**; `lamp_table` 0,90'da 0,90 × 0,92 = masa lambası değil
+yer lambası. Artık kural, tesadüf değil — `tests/decor-look.test.ts` 0,90'a dönüşü yasaklıyor.
+
+**Ölçüm yönteminin kendi iki hatası düzeltildi** (S4'ün "yöntem de ölçülmeli" dersinin devamı):
+düz parçada (paspas) **boy** karşılaştırması %650'lik sahte sapma üretiyordu — düz parçada ölçek
+ENDEN türer. Ve **biçim oranı** (en/boy) hiç ölçülmüyordu: ölçek her zaman ayarlanabilir, biçim
+ayarlanamaz. Oran sütunu eklenince planın iki maddesi elendi.
+
+**Yeni ölçüt: AYAK İZİ.** Eski dekor bekçisi parçaları yalnız MERKEZLE denetliyordu — model
+geçince merkez aynı kalıp gövde büyüyebiliyor ve bekçi kör kalıyordu. Açıklık artık gövde
+KENARINDAN ölçülüyor (`turDunyaKutu` · `govdeMesafe`). Ölçülen en dar açıklık 0,51 br; ihlal yok.
+
+**Kullanıcı kolları:** kaktüs GEÇER · paspas `rug_rectangle_B` **MAVİ** · gazetelik kitaplığa
+geçer (ölçüm o modelin **duvar rafı** olduğunu söyledi → zeminden asma bandına taşındı).
+S4'ün iki sözü (banket masası · mağaza kartı render'ı) kendi turunda kaldı.
+
+**Kaçan mutasyon bir zayıflık gösterdi (M6).** Bekçi `DENIZLIK_S` sabitini denetliyordu, o
+sabitin KULLANIMINI değil; ayrıca saksının denizliğe *sığdığı* hiçbir yerde ölçülmüyordu ve
+denizliğin derinliği `Decor.tsx`te gömülü bir sayıydı. Üçü birden düzeltildi: sayı tek kaynağa
+çıktı (`DENIZLIK_DERINLIK`), ölçüt "gövde denizliğe sığar" oldu, mutasyon yakalandı.
