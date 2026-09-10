@@ -5,45 +5,32 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-10 — **S5 BİTTİ** · Faz S 5/12 · 80/96)
+## ŞU AN (2026-09-10 — **S6 ÖLÇÜM** · Faz S 6/12 · 80/96)
 
 ```
-SORU            : Elle çizilen dekor parçaları KayKit karşılığına geçebilir mi?
-ÖLÇÜLECEK KOLLAR: ölçek (0,90 · fit · gerçek boy) · aday · ayak izi · duvar bandı · renk.
-SAYILAR         : `docs/dekor-raporu-s5.md` · ham `docs/olcum-dekor.txt`.
-                  `trash_A/B` = 0,127 × **0,052**, 18 üçgen ikosfer (kova değil).
-                  `lamp_standing` 0,90'da **2,27 br = karakterin %130'u**.
-                  `cactus_*` biçim oranı 0,91–1,06 ↔ saksı **0,37** (2,4–2,8 kat).
-                  `rug_*` en −%4 (en uyumlu), derinlik +%50. Ayak izi en dar **0,51 br**, ihlal yok.
-KARAR           : **D-101 — sekiz tür GEÇTİ.** Kullanıcı: kaktüs geçsin · paspas **mavi** ·
-                  gazetelik kitaplığa. Çöp kovası aday yok → elle kaldı.
-                  **Ölçek kuralı: mobilya 0,90, aydınlatma GERÇEK BOY.**
-UYGULAMA        : yeni `decorLook.ts` (ölçü katmanı) · `Decor.tsx` (elle çizimler **fallback**) ·
-                  `config/decor.ts` (gazetelik zeminden asma bandına) · `DENIZLIK_DERINLIK`
-                  tek kaynağa çıktı · kaktüsler A/B dönüşümlü.
-BEKÇİ           : `decor-look` **20 test / 8 mutasyon** (M6 kaçtı → düzeltildi → yakalandı).
-                  vitest **818** · duman **42/42** · `tsc -b` temiz · 5 kadraj gözle doğrulandı.
+SORU            : Kıraathanenin DIŞI (cephe · sokak · pencere · tente) KayKit'e geçebilir mi —
+                  ve kullanıcı isteği: WC lavaboları paketin GRİ musluklu modeline geçsin mi?
+ÖLÇÜLECEK KOLLAR: A ölçek çarpanı (city-builder ayrı ölçekte — S5'ten devreden) · B karşı binalar ·
+                  C yol karosu · D sokak mobilyası (streetlight/bench/bush/car_taxi) ·
+                  E pencere (wall_window_open ↔ çizimi duvara gömme) · F tente (eğik ↔ dikey tabela) ·
+                  G lavabo musluğu (kitchentable_sink gri ↔ kitchencounter_sink ↔ bugünkü MaketSink).
+SAYILAR         : (adım 2'den sonra dolar — `docs/dis-cephe-raporu-s6.md` §Bulgular)
+KARAR           : (adım 3 — kullanıcı seçer, D-102)
+UYGULAMA        : (adım 4 — yalnız kararın kolu)
+BEKÇİ           : (test dosyası + mutasyon sayısı)
 ```
 
-**Turun en pahalı dersi: aday listesi model ADINA bakılarak yazılmıştı.** Faz S planındaki sekiz
-kalemin **ikisi ölçümde düştü** — `trash_A/B` bir çöp kovası değil 18 üçgenlik yer çöpü,
-`cactus_*` bir yaprak bitkisi değil. İkisi de dosya adından "doğru" görünüyordu. Ölçüm bu turda
-plana değil, **modelin kendi geometrisine** baktı ve plan yanıldı.
-
-**İkinci ders — biçim oranı ölçek kadar önemli.** Ölçek her zaman ayarlanabilir, **biçim
-ayarlanamaz**: bir adayın en/boy oranı gerçeğinden uzaksa hangi ölçeğe konursa konsun yanlış
-okunur. Araç ilk koşuda bunu hiç ölçmüyordu; sütun eklenince iki aday elendi. Aynı koşuda ikinci
-bir yöntem hatası daha çıktı: düz parçada (paspas) **boy** karşılaştırması %650'lik sahte sapma
-üretiyor — düz parçada ölçek ENDEN türer.
-
-**Üçüncü ders — bekçi neyi denetlediğine dikkat etmeli.** Kaçan mutasyon (M6) `DENIZLIK_S`
-**sabitinin** denetlendiğini ama **kullanımının** denetlenmediğini gösterdi; arkasında daha derin
-bir açık vardı — saksının denizliğe *sığdığı* hiçbir yerde ölçülmüyor, denizliğin derinliği
-`Decor.tsx`te gömülü bir sayıydı. Sayı tek kaynağa çıktı, ölçüt "gövde sığar" oldu.
-
-**Bekçi kod yazılırken bir hatayı da yakaladı:** halının ayak izi ölçütü gövdeyi DİSK sanıyordu
-(köşe yarıçapı 1,62) ve yanlış alarm verdi; halının uzun kenarına dik yönde gövde yalnız 0,90 br.
-Ölçüt kutuya çevrildi (`turDunyaKutu`).
+**Bu turun ÖN BİLGİSİ (ölçmeden bilinen, ölçüm bunları SINAYACAK):**
+- **A** — city-builder-bits gerçeğin ~1/4'ü yazılmış (`bench` 0,400 ↔ 1,50 m · `firehydrant`
+  0,135 ↔ 0,32 · `dumpster` 0,566 ↔ 1,80). **0,90 uygulanamaz**, kendi çarpanı hesaplanacak.
+- **E** — D-100 duvarı KayKit'e GEÇİRMEDİ (modülün kendi oluğu 1,60 ↔ maketin lambrisi 0,94).
+  `wall_window_open` aynı modül ailesinden → aynı risk. Bu kol ölçülmeden elenmez ama
+  **bedelini taşıyor**; ikinci kol pencereyi duvarın İÇİNE gömmek.
+- **F** — bugünkü dikey tabela şeridi bir TERCİH: eğik tente kamera +z'den bakınca kapı önünü
+  kapatıyordu. O gerekçe **sayıyla sınanmadı**; bu tur kapanmayı ölçer.
+- **G** — kullanıcı 2026-09-10: *"lavabodaki musluklar… pakette gri renkli hali var, onu kullan."*
+  Aday `kitchentable_sink` (çelik/gri) ↔ `kitchencounter_sink` (ahşap, mutfakta zaten kullanılıyor).
+  Renk **atlas gözünden ölçülecek**, model ADINDAN varsayılmayacak (S5'in en pahalı dersi).
 
 ## SIRADAKİ TAM ADIM
 

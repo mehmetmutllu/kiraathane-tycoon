@@ -1,0 +1,358 @@
+================================================================================================================
+S6 ÖLÇÜM — DIŞ CEPHE · SOKAK · PENCERE · TENTE · LAVABO MUSLUĞU
+Bu dosya KARAR İÇERMEZ. Kollar `docs/dis-cephe-raporu-s6.md` §Bulgular'da; seçim kullanıcının.
+dünya birimi = METRE (ACTOR_HEIGHT 1.75 = 1,75 m insan)
+================================================================================================================
+
+§0 ÖLÇEK — city-builder-bits paketi hangi çarpanla dünyaya girer? (S5'ten DEVREDEN soru)
+----------------------------------------------------------------------------------------------------------------
+KRİTİK: bu paketin karosu bir ODA değil bir SOKAK. Mutfağın 0,90'ı buraya UYGULANAMAZ.
+
+model             eksen  ham    gerçek   ima edilen çarpan   aile
+bench             x   0.400   1.500       3.750   mobilya    park bankı uzunluğu 1,5 m
+streetlight       y   0.960   4.000       4.167   mobilya    sokak lambası direği 4 m
+firehydrant       y   0.225   0.750       3.339   mobilya    yangın musluğu 0,75 m
+dumpster          x   0.566   1.800       3.181   mobilya    çöp konteyneri eni 1,8 m
+trafficlight_A    y   0.729   3.500       4.798   mobilya    trafik lambası direği 3,5 m
+car_taxi          z   0.938   4.500       4.797   arac       sedan taksi uzunluğu 4,5 m
+car_sedan         z   0.938   4.500       4.797   arac       sedan uzunluğu 4,5 m
+bush              y   0.381   1.000       2.628   bitki      sokak çalısı 1,0 m
+building_A        y   1.650   6.000       3.636   bina       2 katlı bina 6 m (kat 3 m)
+building_H        y   3.050  11.000       3.607   bina       en yüksek bina ≈ 3,5-4 kat
+road_straight     x   2.000   7.000       3.500   yol        iki şeritli yol 2 × 3,5 m
+
+ORTANCA çarpan  =    3.636   ortalama =    3.836   yayılım =    2.628 …    4.798
+paketin karosu  = 2,000 ham →    7.273 dünya (ortancayla). Bir yol karosu ≈ bu kadar metre.
+
+KOLLAR:
+  A1 TEK GLOBAL ÇARPAN  =    3.636  (ortanca; tüm paket aynı ölçek → paket kendi içinde tutarlı kalır)
+  A2 AİLE BAŞI ÇARPAN   = mobilya    3.750 · bina    3.636 · yol    3.500 · araç    4.797 · bitki    2.628
+  A3 KONTROL 0,90       = mobilyanın ölçeği — paket sokak olduğu için bekleniyor ki SAÇMA çıksın
+
+  ⚠ A2 KOLUNUN YÖNTEM KUSURU (araç kendi kusurunu basar): bir ailede TEK ölçülen model varsa
+     mobilya   5 model
+     bina      2 model
+     yol       1 model  ← TAUTOLOJİ: çarpan o modelden türüyor, sapması zorunlu olarak %0 çıkar. A2 sütunu bu satırda BİLGİ TAŞIMAZ.
+     arac      2 model  ← iki model AYNI ölçüde (car_sedan = car_taxi); bağımsız kanıt yine tek.
+     bitki     1 model  ← TAUTOLOJİ: çarpan o modelden türüyor, sapması zorunlu olarak %0 çıkar. A2 sütunu bu satırda BİLGİ TAŞIMAZ.
+
+Her kolun her modelde ürettiği DÜNYA ölçüsü ve gerçekten sapması:
+model               gerçek |    A1     sapma |    A2     sapma |    A3     sapma
+bench                1.50 |   1.45     -3% |   1.50      0% |   0.36    -76%
+streetlight          4.00 |   3.49    -13% |   3.60    -10% |   0.86    -78%
+firehydrant          0.75 |   0.82      9% |   0.84     12% |   0.20    -73%
+dumpster             1.80 |   2.06     14% |   2.12     18% |   0.51    -72%
+trafficlight_A       3.50 |   2.65    -24% |   2.74    -22% |   0.66    -81%
+car_taxi             4.50 |   3.41    -24% |   4.50      0% |   0.84    -81%
+car_sedan            4.50 |   3.41    -24% |   4.50      0% |   0.84    -81%
+bush                 1.00 |   1.38     38% |   1.00      0% |   0.34    -66%
+building_A           6.00 |   6.00      0% |   6.00      0% |   1.48    -75%
+building_H          11.00 |  11.09      1% |  11.09      1% |   2.74    -75%
+road_straight        7.00 |   7.27      4% |   7.00      0% |   1.80    -74%
+
+§V GÖRÜNÜRLÜK — sokaktaki hangi şerit EKRANA GİRİYOR? (§B/§C/§D'den ÖNCEKİ soru)
+----------------------------------------------------------------------------------------------------------------
+kamera oyuncunun +z'sinde (pz +    8.50) ve −z'ye bakıyor → +z'deki sokak ARKADA kalabilir.
+fov 50 → yarım düşey 25.0° · yarım yatay (16:9) 39.7°
+oyuncunun z tavanı   17.00 → kameranın z tavanı   25.50
+
+şerit                                          z      y   taban  uzaklaş  portre
+salonun ön duvarı                           17.50   1.60     8%    15%    12%
+kapı önü / tente                            17.90   2.57     7%    14%    12%
+kaldırım (bahçe masaları)                   18.65   0.40     5%    11%    11%
+kaldırım dış kenarı                         19.90   0.10     3%     9%     6%
+müşteri beliriş noktası                     20.50   0.90     3%     6%     6%
+asfaltın ÖN kenarı                          20.00   0.10     3%     8%     6%
+asfalt cadde (orta)                         23.00   0.10     0%     2%     0%
+KARŞI BİNALAR (bugünkü kutular)             26.50   3.00     0%     0%     0%   <<< HİÇBİR KİPTE YOK
+KayKit binası (7,27 derin, ön yüzü 26,3)    29.90   5.00     0%     0%     0%   <<< HİÇBİR KİPTE YOK
+KayKit binası TEPESİ (building_H)           29.90  11.09     0%     0%     0%   <<< HİÇBİR KİPTE YOK
+bugünkü kutunun TEPESİ                      26.50   7.00     0%     0%     0%   <<< HİÇBİR KİPTE YOK
+bugünkü kutunun ÖN yüzü (en yakın nokta)    25.50   4.00     0%     0%     0%   <<< HİÇBİR KİPTE YOK
+
+UZAKLAŞ = HUD düğmesi (×1,35 → 11,48) · PORTRE = dar ekran kelepçesi (×1,30 → 11,05).
+Üç kipin üçünde de %0 çıkan bir şey ekrana HİÇ girmiyor demektir — çizmenin bedeli var, karşılığı yok.
+
+§B KARŞI BİNALAR — bugün 9 renkli KUTU; paket 8 gerçek bina veriyor
+----------------------------------------------------------------------------------------------------------------
+bugünkü hat: 9 kutu ×    3.00 en, adım    3.40, z =   26.50, boy 4…7
+hat uzunluğu:   30.20 br · kat cephesi (asfalt eni) 56 br
+
+model                   ham en × boy × der   |  A1 dünya en × boy × der  | üçgen | insan oranı (boy/1,75)
+building_A                 2.00   1.65   2.00  |   7.27   6.00   7.27  |   828 |   3.43 kat insan
+building_B                 2.00   1.65   2.00  |   7.27   6.00   7.27  |  1082 |   3.43 kat insan
+building_C                 2.00   2.98   2.00  |   7.27  10.82   7.27  |  1020 |   6.19 kat insan
+building_D                 2.00   2.97   2.02  |   7.27  10.80   7.35  |  1118 |   6.17 kat insan
+building_E                 2.01   2.35   2.00  |   7.30   8.55   7.27  |  1356 |   4.88 kat insan
+building_F                 2.01   2.35   2.00  |   7.30   8.55   7.27  |  1389 |   4.88 kat insan
+building_G                 2.01   2.98   2.00  |   7.30  10.82   7.27  |  1711 |   6.18 kat insan
+building_H                 2.01   3.05   2.00  |   7.30  11.09   7.27  |  1885 |   6.34 kat insan
+
+bina eni (A2) =    7.27 → 56 br cepheye 7 bina sığar (bugün 9 kutu var)
+8 binanın toplam üçgeni = 10389 · bugünkü 9 kutu = 108 üçgen · fark ×96.2
+
+`_withoutBase` varyantı — paketin binası KENDİ 2×2 KAROSUYLA geliyor (base dahil):
+  building_A                    2.000 ×    1.650 ×    2.000  ·  minY    0.000
+  building_A_withoutBase        1.207 ×    1.550 ×    1.450  ·  minY    0.100
+  → base'li varyant zemine karo basar; bizim sokağımızda zaten asfalt var → çakışma riski.
+
+§C YOL — bugün 56 × 6 düz DÜZLEM; paket 2×2 karo veriyor
+----------------------------------------------------------------------------------------------------------------
+bugünkü asfalt :   56.00 ×    6.00 @ z   23.00
+bugünkü kaldırım:   40.00 ×    2.40 @ z   18.70
+
+road_straight           ham    2.000 ×    0.100 ×    2.000  →  A2-yol    7.00 ×    0.35 ×    7.00  ·    58 üçgen
+road_straight_crossing  ham    2.000 ×    0.100 ×    2.000  →  A2-yol    7.00 ×    0.35 ×    7.00  ·    64 üçgen
+road_corner             ham    2.000 ×    0.100 ×    2.000  →  A2-yol    7.00 ×    0.35 ×    7.00  ·   152 üçgen
+road_junction           ham    2.000 ×    0.100 ×    2.000  →  A2-yol    7.00 ×    0.35 ×    7.00  ·   170 üçgen
+road_tsplit             ham    2.000 ×    0.100 ×    2.000  →  A2-yol    7.00 ×    0.35 ×    7.00  ·   138 üçgen
+base                    ham    2.000 ×    0.100 ×    2.000  →  A2-yol    7.00 ×    0.35 ×    7.00  ·    60 üçgen
+KARO GERÇEKTEN NE KADARI YOL? — atlas gözü kümeleri (ad değil geometri konuşuyor):
+  göz [0,2]  76 köşe · x   -1.00 …    1.00 · z   -1.00 …    1.00
+  göz [0,1]  20 köşe · x   -0.02 …    0.02 · z   -0.90 …    0.90
+  göz [1,3]   8 köşe · x   -0.62 …    0.62 · z   -1.00 …    1.00
+  → orta çizgi dizisi Z ekseninde uzanıyor (karo yola dik gelmek için π/2 döner).
+  → asfalt şeridi karonun tamamı DEĞİL; kalan pay karonun kendi kaldırımı. Oyunun 2,40'lık
+    gri kaldırımıyla yan yana gelirse EKRANDA İKİ KALDIRIM olur.
+
+
+KARO ENİ (A2-yol) =    7.00 br
+  56 br cepheye 8.00 karo → 8 karo döşenirse artık    0.00 br
+  asfalt bandı 6 br derin, karo    7.00 derin → 0.86 karo sığar (TAM SAYI DEĞİLSE yol bandı büyümek zorunda)
+  56 br'yi 8 karoya bölmek için gerekli gerilme:    0%
+
+§D SOKAK MOBİLYASI — kaldırım 2,40 br derin · müşteri yolu kapıdan kaldırıma iniyor
+----------------------------------------------------------------------------------------------------------------
+kapı x: 1 alan açıkken   -8.50 · 2+ alan açıkken    0.00 (DOOR_MOVES_AT)
+müşteri yolu: sokak   -8.50,  20.50 → giriş   -8.50,  16.60 · koridor yarısı    0.94
+
+model             A1 dünya en×boy×der      | A2 dünya en×boy×der      | ayak izi | kaldırıma(2,40) | üçgen
+streetlight          0.98   3.49   0.25  |   1.01   3.60   0.26  |   1.01  | sığar (   1.39 pay)  176
+bench                1.45   0.36   0.55  |   1.50   0.38   0.56  |   1.50  | sığar (   0.90 pay)   44
+bush                 0.69   1.38   0.72  |   0.50   1.00   0.52  |   0.52  | sığar (   1.88 pay)   72
+car_taxi             1.52   1.58   3.41  |   2.01   2.08   4.50  |   4.50  | SIĞMAZ (   2.10 taşar) 1256
+firehydrant          0.49   0.82   0.48  |   0.51   0.84   0.49  |   0.51  | sığar (   1.89 pay)  180
+dumpster             2.06   1.15   1.28  |   2.12   1.19   1.32  |   2.12  | sığar (   0.28 pay)  126
+trash_A              0.46   0.19   0.48  |   0.48   0.20   0.50  |   0.50  | sığar (   1.90 pay)   18
+trash_B              0.25   0.15   0.26  |   0.26   0.15   0.27  |   0.27  | sığar (   2.13 pay)   18
+trafficlight_A       0.63   2.65   0.55  |   0.65   2.74   0.56  |   0.65  | sığar (   1.75 pay)  508
+box_A                0.73   0.64   0.74  |   0.75   0.66   0.76  |   0.76  | sığar (   1.64 pay)   32
+
+BUGÜN kaldırımda duran elle çizimler (yerlerini bunlar dolduruyor — takas edilecekler):
+  bahçe masası ×2  @ x = kapı ∓2,30, z =   18.65 · tabla çapı 0,72 · tabure ×4
+  saksı ×2         @ x = kapı ∓1,70, z =   17.92 · çap 0,32
+  → yeni sokak mobilyası bunların DIŞINA konmalı; ikisi de kapıya    1.70…   2.30 br mesafede.
+
+§E PENCERE — kullanıcı: "pencere duvardan ayrı duruyor". Modül mü, gömme mi?
+----------------------------------------------------------------------------------------------------------------
+modül ham        :    4.000 ×    4.000 ×    0.500
+deliğin ham ölçüsü: en    1.600 · boy    1.600 (y    1.250 …    2.850)
+
+OYUNUN pencere bandı (config/decor.WINDOW · maket v13):
+  denizlik    1.15 · pencere başı    2.80 → BOY    1.65 · çizilen EN 3,20
+  duvar: yükseklik    3.20 · lambri kuşağı 0…   0.90 · çıta    0.94 · en kalın katman 0,26
+
+KOLLAR:
+  E1 modül mimari ölçekte (0,80 — duvarla aynı sayı)
+     ölçek    0.800 → modül eni    3.20 · modül boyu    3.20 · kalınlık    0.40
+     delik     1.28 en ×    1.28 boy   (oyunun bandı 3,20 ×    1.65)
+     delik alt kenarı y =    1.00  (oyunun denizliği    1.15 → fark   -0.15)
+     modül boyu ↔ duvar    3.20: fark    0.00  
+     kalınlık ↔ oyunun hattı 0,26:    0.14 fazla → her iki yüzden    0.07 taşar
+     D-100 RİSKİ — modülün kendi yatay oluğu ham y = 2,00 → dünya    1.60 · maketin lambrisi    0.94 · SAPMA    0.66
+  E2 modül PENCERE BANDINA çekilir (delik boyu = 1,65 olsun)
+     ölçek    1.031 → modül eni    4.13 · modül boyu    4.13 · kalınlık    0.52
+     delik     1.65 en ×    1.65 boy   (oyunun bandı 3,20 ×    1.65)
+     delik alt kenarı y =    1.29  (oyunun denizliği    1.15 → fark    0.14)
+     modül boyu ↔ duvar    3.20: fark    0.93  <<< DUVARLA AYNI BOYDA DEĞİL
+     kalınlık ↔ oyunun hattı 0,26:    0.26 fazla → her iki yüzden    0.13 taşar
+     D-100 RİSKİ — modülün kendi yatay oluğu ham y = 2,00 → dünya    2.06 · maketin lambrisi    0.94 · SAPMA    1.12
+
+  E3 ÇİZİMİ DUVARA GÖMME (model yok — bugünkü Pencere'nin duvar yüzünden taşması sıfırlanır)
+     bugün cam z +0,015 · doğrama z +0,030 (kalınlık 0,05 → yüzü +0,055) · denizlik    0.30 derin
+     duvar yüzü = en kalın katman/2 =    0.13 → doğrama duvarın önünde    0.06 duruyor,
+     yani duvar YÜZEYİNE YAPIŞIK bir levha (niş yok). Kullanıcının gördüğü "ayrı duruyor" bu.
+     gömme = duvar gövdesinden    1.65 × 3,20'lik parça KESİLİR + kasa eklenir.
+     bedel: duvar parçası tek kutu değil, kesme wallBoxes'ı (3 katman) etkiler.
+
+  E4 BUGÜNKÜ (kontrol) — üç sinyal: derin denizlik + açık doğrama + duvar tepesinde lento kapağı
+     3 pencere × (cam 1 + doğrama 4 + denizlik 2 + lento 1) = 24 mesh
+
+§F TENTE — "eğik tente kamera +z'den bakınca ekranı kapatıyor" gerekçesi ÖLÇÜLÜYOR
+----------------------------------------------------------------------------------------------------------------
+kamera: konum (px,    8.50, pz +    8.50) · bakış (px,    0.80, pz)
+maket v13 tentesi:    6.40 ×    0.18 ×    1.90 @ (  -8.50,    2.57,   17.90) · x-rot 0.18
+bugünkü tabela   :    3.40 ×    0.34 ×    0.06 @ (  -8.50,    1.42,   17.80) · dikey
+
+oyuncu kapıya yaklaşırken kamera→oyuncu ışını engelleniyor mu? (px = kapı x)
+oyuncu z  kamera z  TENTE       TABELA      not
+   8.00     16.50   açık        açık        
+   9.20     17.70   açık        açık        
+  10.40     18.90   açık        açık        
+  11.60     20.10   açık        açık        
+  12.80     21.30   açık        açık        
+  14.00     22.50   açık        açık        
+  15.20     23.70   KAPATIYOR   açık        kapı eşiği
+  16.40     24.90   KAPATIYOR   açık        kapı eşiği
+
+TENTE  2/8 konumda oyuncuyu kapatıyor · TABELA 0/8
+
+Aynı test KAPI EŞİĞİNİN KENDİSİ için (müşteri kapıdan girip çıkarken görünüyor mu?):
+  TENTE    kapı eşiği 17/22 konumdan görünmez (  77%)
+  TABELA   kapı eşiği 0/22 konumdan görünmez (   0%)
+
+TENTENİN ALT KENARI (eğim yüzünden) ve kapı lentosu:
+  arka kenar y =    2.74 · ön kenar y =    2.40 · kapı lentosu    2.65 · duvar tepesi    3.20
+  → tente lentonun ÜSTÜNDEN çıkıyor; maketin notu "lentonun ALTINDAN çıkar, alınlıktaki tabela kapanmasın".
+  insan oranı: tentenin altından geçen 1,75'lik biri    0.65 br boşlukla geçer.
+
+F3 KOLU — "tente kalsın ama kadrajı kapatmasın" mümkün mü? (y × derinlik taraması)
+kapanma ölçütü: kapı eşiği kaç konumdan görünmez (maket tentesi = %77 · bugünkü tabela = %0)
+
+  y \ derinlik   der 0.9   der 1.3   der 1.9
+  y    1.90          32%       50%       68%   (lentonun altında)
+  y    2.15          45%       55%       73%   (lentonun altında)
+  y    2.40          50%       64%       77%   (lentonun altında)
+  y    2.57          55%       64%       77%   (lentonun üstünde)
+  y    2.80          50%       68%       82%   (lentonun üstünde)
+
+  NOT — tarama tentenin z'sini SABİT tutuyor (17,90). Kapanma z'ye de bağlı; bu tabloda
+  değişen yalnız yükseklik ve derinlik. Sıfır kapanma çıkan bir hücre "tente olur" demek
+  DEĞİLDİR: 1,75'lik biri altından geçebilmeli (aşağıdaki geçiş payı sütunu).
+
+F4 KOLU — kimlik DİKEY yüzeyle: tabela büyütülürse kapanma nerede başlar?
+  tabela boyu   kapanma   (z 17,80 sabit, kalınlık 0,06)
+     0.34 (merkez y    1.42, üst    1.59)     0%
+     0.60 (merkez y    1.55, üst    1.85)     0%
+     0.90 (merkez y    1.70, üst    2.15)    14%
+     1.20 (merkez y    1.85, üst    2.45)    32%
+     1.60 (merkez y    2.05, üst    2.85)    45%
+  → belirleyici olan yüzeyin YÖNÜ değil ÜST KENARIN yüksekliği: %0 kapanmanın sınırı üst kenar    1.97.
+     bugünkü tabelanın üstü 1,59 → kimlik    0.38 br daha BÜYÜYEBİLİR (boy 0,34 →    0.72) bedelsiz.
+     yatay levha (F1/F3) bu sınırı kaçınılmaz aşıyor, çünkü kapının üstünde durmak zorunda.
+
+  geçiş payı (tentenin ÖN kenarı − 1,75):
+     y    1.90 → ön kenar    1.73 → pay   -0.02 <<< KAFAYA ÇARPAR
+     y    2.15 → ön kenar    1.98 → pay    0.23 
+     y    2.40 → ön kenar    2.23 → pay    0.48 
+     y    2.57 → ön kenar    2.40 → pay    0.65 
+     y    2.80 → ön kenar    2.63 → pay    0.88 
+
+§G LAVABO MUSLUĞU — kullanıcı isteği: paketin GRİ musluklu modeli WC'ye geçsin mi?
+----------------------------------------------------------------------------------------------------------------
+bugünkü MaketSink :    1.36 en ×    2.10 boy (ayna dahil) ×    0.66 der · 8 mesh
+  gövde üstü    0.86 · musluk + boru ayrı silindirler · üstünde ayna çerçevesi + camı
+GERÇEK lavabo     : 0,60 en × 0,85 boy × 0,50 der (yaygın kabul)
+WC odası          : x    4.60 …   17.41 · z  -17.31 …   -9.80 · lavabolar doğu duvarında x =   16.96, dz ∓1,70
+
+ÖNCE MUSLUK — modelin boyunun ne kadarı TEZGÂH, ne kadarı MUSLUK KOLU? (ışın testi)
+kullanıcı "musluk" istedi; bu yüzden ölçülen şey tezgâhın boyu DEĞİL, musluğun boyu.
+
+model                             toplam ham | gövde üstü | MUSLUK boyu | musluk eni | musluk / gövde
+kitchentable_sink                    1.805 |   0.996   |   0.805   |   0.100  |      0.81
+kitchentable_sink_large              1.802 |   0.980   |   0.822   |   0.080  |      0.84
+kitchencounter_sink                  1.802 |   0.980   |   0.822   |   0.100  |      0.84
+kitchencounter_sink_backsplash       1.802 |   1.200   |   0.602   |   0.100  |      0.50
+
+`kitchentable_sink` EN PROFİLİ — "gövde üstü" tek eşikten okundu, eşik doğru mu? (tek sinyale güvenme)
+  ham y   dolu en   ne olduğu
+     0.10      1.860   TEZGÂH gövdesi
+     0.20      1.860   TEZGÂH gövdesi
+     0.30      1.860   TEZGÂH gövdesi
+     0.40      1.860   TEZGÂH gövdesi
+     0.50      1.860   TEZGÂH gövdesi
+     0.60      1.860   TEZGÂH gövdesi
+     0.70      1.860   TEZGÂH gövdesi
+     0.80      1.860   TEZGÂH gövdesi
+     0.90      1.980   TEZGÂH gövdesi
+     1.00      1.980   TEZGÂH gövdesi
+     1.10      0.780   çanak/kenar
+     1.20      0.660   çanak/kenar
+     1.30      0.100   MUSLUK kolu
+     1.40      0.100   MUSLUK kolu
+     1.50      0.100   MUSLUK kolu
+     1.60      0.100   MUSLUK kolu
+     1.70      0.100   MUSLUK kolu
+  — geçiş bölgesi 0,02 adımla:
+     0.96      1.980   TEZGÂH gövdesi
+     0.98      1.980   TEZGÂH gövdesi
+     1.00      1.980   TEZGÂH gövdesi
+     1.02      1.580   çanak/kenar
+     1.04      1.580   çanak/kenar
+     1.06      1.580   çanak/kenar
+     1.08      1.580   çanak/kenar
+     1.10      0.780   çanak/kenar
+     1.12      0.940   çanak/kenar
+     1.14      1.100   çanak/kenar
+     1.16      1.100   çanak/kenar
+     1.18      0.660   çanak/kenar
+     1.20      0.660   çanak/kenar
+     1.22      0.660   çanak/kenar
+     1.24      0.100   MUSLUK kolu
+     1.26      0.100   MUSLUK kolu
+     1.28      0.100   MUSLUK kolu
+     1.30      0.100   MUSLUK kolu
+
+ADAYLAR — ham ölçü ve 0,90 (mutfağın ölçeği) dünya karşılığı:
+model                             ham en×boy×der       | 0,90 dünya en×boy×der  | tezgâh üstü | üçgen
+kitchentable_sink                    2.00   1.81   2.00  |   1.80   1.62   1.80  |       0.90 |   742
+kitchentable_sink_large              3.00   1.80   2.00  |   2.70   1.62   1.80  |       0.88 |   846
+kitchencounter_sink                  2.00   1.80   2.04  |   1.80   1.62   1.84  |       0.88 |   674
+kitchencounter_sink_backsplash       2.00   1.80   2.04  |   1.80   1.62   1.84  |       1.08 |   686
+
+BU BİR MUTFAK MODÜLÜ — WC lavabosu DEĞİL. Ölçü bunu söylüyor:
+  paketin karosu 2,00 ham → 0,90'da    1.80 br ENİNDE bir tezgâh.
+  gerçek WC lavabosu 0,60 en × 0,50 der · bugünkü MaketSink    1.36 ×    0.66.
+  yani model, konulacağı yerin 1.3 katı eninde ve 2.7 katı derinliğinde.
+  → soru "geçsin mi" değil, "NASIL sığdırılsın": dört kol aşağıda.
+
+KOLLAR — hepsi `kitchentable_sink` üzerinden (renk ölçümü aşağıda hangisinin GRİ olduğunu söylüyor):
+
+  G1 kayGovde — bugünkü lavabo KUTUSUNA çekilir (mutfağın ön hattıyla aynı desen)
+     ölçek [0.680, 0.863, 0.330]  · ÇARPITMA oranı 2.62  <<< GÖZLE OKUNUR (musluk basıklaşır)
+     dünya    1.36 en ×    1.56 boy ×    0.66 der · tezgâh üstü    0.86 = boyun   49%'i (gerçek %49)
+     musluk tepesi    1.56 = boyun   89%'i · tezgâhtan    0.70 yukarı
+     1.70 aralıkta:    0.34 boşluk
+     doğu duvarı    7.51 br → 4 lavabo sığar (maket 3 istiyor)
+     odaya taşma    0.66 · duvardan lavabo yüzüne   16.96 → yürüme   12.03 kalır (oyuncu çapı    0.94)
+     not: yer/nav/collision HİÇ değişmez; bedel çarpıtma
+
+  G2 TEKDÜZE ölçek, ENDEN türetilir (en = bugünkü 1,36)
+     ölçek [0.680, 0.680, 0.680]  · ÇARPITMA oranı 1.00  (yok)
+     dünya    1.36 en ×    1.23 boy ×    1.36 der · tezgâh üstü    0.68 = boyun   39%'i (gerçek %49)
+     musluk tepesi    1.23 = boyun   70%'i · tezgâhtan    0.55 yukarı
+     1.70 aralıkta:    0.34 boşluk
+     doğu duvarı    7.51 br → 4 lavabo sığar (maket 3 istiyor)
+     odaya taşma    1.36 · duvardan lavabo yüzüne   16.96 → yürüme   11.68 kalır (oyuncu çapı    0.94)
+     not: çarpıtma yok; derinlik bugünkünün 2,1 katı
+
+  G3 TEKDÜZE ölçek, TEZGÂH ÜSTÜNDEN türetilir (üst = 0,86 — insan oranı doğru)
+     ölçek [0.863, 0.863, 0.863]  · ÇARPITMA oranı 1.00  (yok)
+     dünya    1.73 en ×    1.56 boy ×    1.73 der · tezgâh üstü    0.86 = boyun   49%'i (gerçek %49)
+     musluk tepesi    1.56 = boyun   89%'i · tezgâhtan    0.70 yukarı
+     1.70 aralıkta:    0.03 ÇAKIŞMA → aralık    1.93 olmalı
+     doğu duvarı    7.51 br → 4 lavabo sığar (maket 3 istiyor)
+     odaya taşma    1.73 · duvardan lavabo yüzüne   16.96 → yürüme   11.50 kalır (oyuncu çapı    0.94)
+     not: çarpıtma yok; insan oranı G4 ile birebir aynı
+
+  G4 BUGÜNKÜ MaketSink (kontrol) —    1.36 ×    2.10 ×    0.66 · 8 mesh · musluk + boru ayrı silindir
+     tezgâh üstü    0.86 = boyun   49%'i · üstünde AYNA var (adayların hiçbirinde yok)
+
+  G5 YALNIZ MUSLUK (çanak elle çizili kalır) — ÖLÇÜLDÜ ve ELENDİ:
+     model 1 düğüm / 1 primitive taşıyor → musluk ayrı bir alt-nesne DEĞİL.
+     ayırmak için mesh'in y > 1,24 köşelerini kesip yeni .gltf yazmak gerekir (çevrimdışı iş, bu turun dışı).
+
+ANKRAJ SAĞLAMASI — tezgâh üstü 0,996 ham; paketin öbür tezgâhları da 1,000 (kitchencounter_straight_A).
+Yani ölçü modelin kendi tesadüfü değil, PAKETİN tezgâh düzlemi. `kayGovde` zaten bu 1,0'ı varsayıyor.
+
+RENK — "gri renkli hali" ADINDAN değil ATLAS GÖZÜNDEN ölçüldü (S5 dersi):
+  kitchentable_sink                  [0,3]#828c91 doy 0.11 ×879
+  kitchentable_sink_large            [0,3]#828c91 doy 0.11 ×1043
+  kitchencounter_sink                [0,3]#828c91 doy 0.11 ×552  [3,6]#be5e2f doy 0.75 ×124  [3,5]#d5dcdf doy 0.04 ×91  [3,7]#d5dcdf doy 0.04 ×20
+  kitchencounter_sink_backsplash     [0,3]#828c91 doy 0.11 ×552  [3,6]#be5e2f doy 0.75 ×142  [3,5]#d5dcdf doy 0.04 ×92  [3,7]#d5dcdf doy 0.04 ×20
+
+KIYAS — bugünkü elle çizimin renkleri (maketten): gövde MC.wc1 · tezgâh #f1ece0 · çanak porselen · musluk çelik
+
+================================================================================================================
+BİTTİ — bu dosyada KARAR YOK. Kollar `docs/dis-cephe-raporu-s6.md` §Bulgular'da.
+================================================================================================================
