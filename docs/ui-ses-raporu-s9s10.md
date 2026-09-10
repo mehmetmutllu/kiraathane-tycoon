@@ -5,6 +5,7 @@
 **Araçlar:** `tools/shot-ui-s10.mjs` (ekran) · `tools/olcum-ui.ts` (çözümleme)
 **Ham çıktı:** `docs/olcum-ui-ses.txt` · `docs/olcum-ui-ekran.json`
 **Görsel tur:** `docs/gorsel/ss/s10-*.png` (6 kadraj)
+**Maket:** `docs/arayuz-dili-maketi.html` · https://claude.ai/code/artifact/b690a386-80ff-4687-8951-0b9f0f5d2d6d
 
 ---
 
