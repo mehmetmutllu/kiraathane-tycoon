@@ -920,14 +920,11 @@ function LavaboFront() {
   const fill = useGame((s) => s.lavaboFill);
   const wallet = useGame((s) => s.wallet);
   if (areasOpen < 3) return null; // bant görünmüyorsa kapısı da yok
-  const x = LAVABO.door[0];
   const open = padsDone.includes('lavabo');
   const cost = lavaboUpgradeCost(level);
   const remaining = cost != null ? Math.max(0, Math.ceil(cost - fill)) : 0;
-  // AÇIKKEN kapının kendisini `MaketLavaboBlock` çiziyor (gerçek boşluk + lento + WC levhası);
-  // burada yalnız SEVİYE sinyalleri kalır. Yüzeyler maketin ön duvarının güney yüzüne göre:
-  // duvar z = −9,8'de 0,26 kalınlığında → yüz ≈ −9,67; lento tepesi y = 2,14 (H − 0,06).
-  const zw = BAND.front + 0.16; // duvar yüzünün önü
+  // AÇIKKEN kapının kendisini `MaketLavaboBlock` çiziyor (gerçek boşluk + lento + WC levhası).
+  // S6/③'ten sonra burada duvara çizilen HİÇBİR ŞEY kalmadı; yalnız yükseltme noktası duruyor.
   return (
     <group>
       {/* KAPALIYKEN buraya hiçbir şey çizilmez: tadilat hâlini (tahta perde + iskele + moloz)
@@ -941,13 +938,17 @@ function LavaboFront() {
               onu tam ortadan bölüyordu. Maketin duvarında böyle bir kaplama yok.
               AÇIK KALEM: seviye şu an tek sinyalle (lentodaki noktalar) okunuyor; "tek sinyal
               yetmez" kuralı için ikinci sinyal maketi bozmadan bulunmalı. */}
-          {/* SİNYAL 2 — lentonun üstünde seviye kadar nokta (maketin lentosu y = 2,14) */}
-          {Array.from({ length: level }, (_, i) => (
-            <mesh key={i} position={[x - (level - 1) * 0.16 + i * 0.32, 2.14, zw]}>
-              <circleGeometry args={[0.08, 10]} />
-              <meshStandardMaterial color="#ffce54" />
-            </mesh>
-          ))}
+          {/* SEVİYE NOKTALARI KALDIRILDI (S6/③, kullanıcı isteği). Lentonun hizasında (y = 2,14)
+              seviye kadar sarı daire çiziliyordu; kullanıcı iki turda da onları işaret etti
+              ("kapı üstündeki sarı daireler"). İlk turda ben yanlış parçayı — lentonun KENDİSİNİ —
+              kaldırmıştım; lento geri geldi, noktalar gitti.
+
+              **AÇIK KALEM, BİLEREK AÇIK:** bu noktalar lavabo seviyesinin TEK görsel sinyaliydi
+              (kodun kendi notu da bunu "tek sinyal yetmez" diye işaretliyordu). Şimdi seviye
+              HİÇBİR yerden okunmuyor. `feedback_upgrade_legibility` çoklu redundant sinyal
+              istiyor; lavaboda doğru yer büyük ihtimalle MEKÂNSAL olan: seviye arttıkça
+              lavabo SAYISI artsın (S7 adayı, ölçüm ister — `MaketLavaboBlock` bugün üç lavaboyu
+              sabit dz ∓1,70 ile çiziyor). */}
         </group>
       )}
       {/* Yükseltme noktası: pad bitince AYNI yerde belirir (obje-başı yükseltme). */}

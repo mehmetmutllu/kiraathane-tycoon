@@ -62,14 +62,19 @@ Geri dönüş kolu ölçülü ve hazır: **F4**, dikey tabela 0,34 → **0,72** 
   **(a)** odayı yürünür yapıp müşteriyi gerçekten içeri sokmak (nav + bant kütlesine dokunur,
   `v1.1'e ertelenen "aktif WC döngüsü"nün ta kendisi) · **(b)** kayboluşu ÖRTMEK — kabin kapısı
   açılıp kapanan bir geçiş, ya da müşterinin kapının içine doğru yürüyüp solması.
-- **G-36 · Kapının üstündeki SARI DAİRELER.** Kaynağı bulundu: `LAVABO.coinSpot` = `[13.4, 0.3, −8.4]`
-  — lavabo ücretinin biriktiği para istifi (`Coins.tsx`). Kullanıcı "hâlâ duruyo" diyor, yani
-  toplanmıyor ya da orada durması istenmiyor. **Not: `feedback_coin_presentation` — para
-  görselinde her değişiklik önce maket onayı ister.**
+- **G-36 · Kapının üstündeki SARI DAİRELER — KALDIRILDI (yapıldı).** İlk teşhisim yanlıştı
+  (para istifi sandım); kullanıcı düzeltti: **lentonun tam hizasında.** Kaynak `Scene.LavaboFront`,
+  `circleGeometry` + `#ffce54`, y = 2,14, lavabo seviyesi kadar adet.
+  **BEDELİ AÇIK KALEM:** o noktalar lavabo seviyesinin **TEK** görsel sinyaliydi — kodun kendi
+  notu da bunu *"tek sinyal yetmez"* diye işaretliyordu. Şimdi seviye **hiçbir yerden okunmuyor.**
+  `feedback_upgrade_legibility` çoklu redundant sinyal istiyor; doğru yer büyük ihtimalle
+  **MEKÂNSAL**: seviye arttıkça **lavabo SAYISI artsın** (S7 adayı — `MaketLavaboBlock` bugün üç
+  lavaboyu sabit `dz ∓1,70` ile çiziyor, ölçüm ister).
 - **G-37 · Üst şerit GERİ GELDİ (yapıldı).** S6/②'de "üstteki şeridi kaldır" denince WC kapısının
-  LENTO şeridini kaldırmıştım; kastedilen o değil sarı dairelermiş. Şerit geri kondu.
+  LENTO şeridini kaldırmıştım; kastedilen o değil, aynı hizadaki sarı dairelermiş.
   **Ders: "şu şeyi kaldır" denince neyin kastedildiği ekran görüntüsünde İŞARETLENMEDEN
-  varsayılmamalı** — yanlış parça kalktı ve bir tur kaybedildi.
+  varsayılmamalı** — yanlış parça kalktı, bir tur kaybedildi ve kullanıcı iki kez tarif etmek
+  zorunda kaldı.
 
 - **S5'te söz verilip YAPILMAYAN:** ① banket masası `table_round_A_small`e geçecekti ② mağaza
   kartlarının gerçek oyun render'ı (`tools/tema-kapak.mjs` kadrajı bozuk). Kullanıcı 2026-09-10'da
