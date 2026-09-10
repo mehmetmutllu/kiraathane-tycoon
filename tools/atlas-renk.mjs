@@ -143,6 +143,9 @@ function ton([r, g, b]) {
   return 'kırmızı/pembe';
 }
 
+// CLI bloğu — SADECE doğrudan çalıştırılınca. Guard'sızken bu dosyayı IMPORT eden her ölçüm
+// aracının stdout'una 32 satırlık atlas dökümü karışıyordu (rapor çıktısı `>` ile dosyaya gider).
+if (process.argv[1] && process.argv[1].endsWith('atlas-renk.mjs')) {
 const paket = process.argv.find((a) => a.startsWith('kaykit-')) ?? 'kaykit-restaurant-bits';
 const yalnizKahve = process.argv.includes('--kahve');
 const dosya = `public/assets/models/${paket}/${DOKU[paket]}`;
@@ -155,4 +158,5 @@ for (const g of gozler) {
   console.log(
     `[${g.goz[0]},${g.goz[1]}]  ${hex(...g.ort)}    ${hex(...g.ust)}  ${hex(...g.alt)}   ${t}`,
   );
+}
 }

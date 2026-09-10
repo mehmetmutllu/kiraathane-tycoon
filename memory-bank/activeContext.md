@@ -5,76 +5,51 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-10 — **S6 + S6/② BİTTİ** · Faz S 6/12 · 81/96)
+## ŞU AN (2026-09-10 — **S7 ölçüm turu AÇIK** · Faz S 6/12 · 81/96)
 
 ```
-SORU            : (S6) dış cephe KayKit'e geçer mi · (S6/②) kullanıcı S6'yı oynadı, dokuz kalem verdi.
-SAYILAR         : `docs/dis-cephe-raporu-s6.md` · ham `docs/olcum-dis-cephe.txt`.
-KARAR           : **D-102** (S6) + **D-103** (S6/②).
-BEKÇİ           : `street-look` (19) + `pencere-nis` (29) · toplam **26 mutasyon**.
-                  vitest **864** · duman **42/42** · `tsc -b` temiz · lint tabanda · 5 kadraj gözle.
+SORU            : (S7) WC odasının içi EKRANA GİRİYOR MU — giriyorsa kabin kapıları KayKit'e
+                  geçer mi (kullanıcı: "kötü"), lavabo seviyesi MEKÂNSAL okunur mu (G-36),
+                  müşteri kapıda niye buharlaşıyor (G-35)?
+ÖLÇÜLECEK KOLLAR: §V GÖRÜNÜRLÜK — her aday parça (kabin kapısı · bölme · lavabo · ayna · klozet)
+                    kaç oyuncu konumundan kadrajda VE 2,2'lik ön duvarın arkasına saklanmıyor?
+                    S6'nın dersi: "hangisi güzel"den ÖNCE "ekrana giriyor mu" sorulur.
+                  §K KAPI — K1 bugünkü kutu (1,36 × 1,95 × 0,06, tek renk kahve) · K2 `door_A`
+                    · K3 `door_B`; bölme için B1 bugünkü kutu · B2 `wall_half` · B3 `pillar_A/B`.
+                    Ölçü · çarpıtma oranı · üçgen · atlas gözü (gri karşılığı var mı).
+                  §L SEVİYE (G-36) — L1 bugünkü sabit 3 lavabo (sinyal YOK) · L2 seviye = lavabo
+                    SAYISI (1→6, maxLevel 6 ile birebir) · L3 sayı sabit, başka mekânsal sinyal.
+                    Doğu duvarı kaç lavabo alır, aralık kaça iner?
+                  §M KAYBOLUŞ (G-35) — M1 oda yürünür olsun (nav + bant kütlesi bedeli) ·
+                    M2 kayboluş ÖRTÜLSÜN (kapıdan içeri yürüyüp solma / kabin kapısı geçişi) ·
+                    M3 bugünkü (kapı eşiğinde anında yok ol).
+SAYILAR         : (adım 2'den sonra dolar — `docs/wc-odasi-raporu-s7.md` §Bulgular)
+KARAR           : (adım 3 — kullanıcı seçer, D-1xx)
+UYGULAMA        : (adım 4 — yalnız kararın kolu)
+BEKÇİ           : (adım 4)
 ```
 
-**S6'nın dersi: "hangisi daha güzel"den ÖNCE "ekrana giriyor mu" sorulmalı.** Karşı binalar üç
-kamera kipinde de **%0** görünür (kameranın z tavanı 25,50, binalar 26,5'te) → 10.389 üçgenlik
-iş ölçülmeseydi yapılacak ve ekranda hiçbir şey değişmeyecekti. Bugünkü 9 kutu da silindi.
+**Giriş cephesi cam bu turda YOK** — kullanıcı kararı 2026-09-10: kapı bloğuna (söve · lento ·
+alınlık) ve duvar temasına dokunduğu için kendi turunu alacak. S7 = WC odası.
 
-**S6/②'nin dersi: dokuz şikâyetin çoğu TEK bir tahmini sayıydı.** `WALL_FACE` = 17,32 yazılıydı
-(gerekçe: *"gövde yüzünün ~0,1 önü"*), duvarın yüzü **17,41** → asılan her şey 0,09 havada;
-petek 0,30; lavabo 0,12. Sayı artık duvarın kalınlığından türüyor, bir düzeltme altı parçayı
-düzeltti. **Kullanıcı bunu ben bulmadan önce iki ayrı yerde gördü** (raf ve kalorifer) — yani
-görsel doğrulama turu, ölçüm turunun bulamadığını buluyor.
+**S6'nın dersi bu turun §V'sini doğurdu:** karşı binalar üç kamera kipinde de %0 görünürdü;
+10.389 üçgenlik iş ölçülmeseydi yapılacaktı. WC odası aynı riski taşıyor — oda bandın İÇİNDE,
+önünde 2,2 birimlik bir duvar var. Kabin kapısını KayKit'e geçirmeden önce o kapının ekranda
+kaç kareden göründüğü ölçülür.
 
-**Üçüncü ders: `Decor.tsx`te yazılı bir karar bekçilenemez.** Gölge kararı orada duruyordu ve
-onu geri açan mutasyon KAÇTI; karar `decorLook.PENCERE_GOLGE`/`DUVAR_GOLGE`'ye çıktı.
-Aynı tur bir de zayıf ölçüt yakaladı: ayna bekçisi ARALIK denetliyordu, eşitliğe çevrildi.
-
-**Tente (F1) kullanıcı kararı, bedeli bilinerek kabul edildi** — kapı eşiği %77 konumda görünmez.
-Geri dönüş kolu ölçülü ve hazır: **F4**, dikey tabela 0,34 → **0,72** (%0 sınırı üst kenar 1,97).
+**S6/②'nin dersi:** dokuz şikâyetin çoğu TEK bir tahmini sayıydı (`WALL_FACE` 17,32 ≠ 17,41);
+sayı duvarın kalınlığından türetilince altı parça birden düzeldi. **S6/③'ün dersi:** "şu şeyi
+kaldır" denince neyin kastedildiği ekran görüntüsünde İŞARETLENMEDEN varsayılmamalı — yanlış
+parça (lento) kalktı, bir tur kaybedildi.
 
 ## SIRADAKİ TAM ADIM
 
-**S7 — GİRİŞ DUVARI CAM + WC kabin kapıları.** İkisi de kullanıcıdan geldi:
-1. **Giriş cephesi cam** (kullanıcı bana bıraktı, S6/②'de ERTELENDİ): maket v13'te cephe camdı.
-   Ölçüm değer diyor — cephe salonun **en görünür ikinci şeridi** (%8–15, §V). Ertelenme sebebi
-   kapsam: kapı bloğuna (söve · lento · alınlık) ve duvar temasına dokunuyor, kendi turunu ister.
-2. **WC kabin kapıları** düz kutu (`1,36 × 1,95 × 0,06`, tek renk kahve) ve kullanıcı *"kötü"*
-   dedi. Karşılığı diskte: `door_A` · `door_B` · `wall_doorway` · `wall_half` + `pillar_A/B`.
-   S6/②'den devreden: lavabolar ve ayna artık gri KayKit — kapılar onunla aynı dilde olmalı.
-   Klozet karşılığı üç pakette de YOK (S5'in çöp kovası dersi), elle çizim kalacak.
-
-**KULLANICI KARARI BEKLEYEN ÜÇ ŞEY** (hiçbiri S7'yi bloklamıyor):
-1. **Ses kaynağı** (S8) — asset panosu §7, dört kol. D-096'yı kısmen geri alır.
-2. **Karakter kolu** (S12) — asset panosu §3, altı kol, bedelleri yazılı.
-3. **H2 yükseltme sırası** (A tek hedef / B kuşak) ve **H3 masa aralığı** (K1 aralığı aç /
-   K2 oturak küçült — K2 önerilmiyor, `feedback_reference_scale_trap`).
-
-**Asset panosu:** https://claude.ai/code/artifact/2e7f92c0-15b6-4f72-814d-753cf79d74e0
+**Adım 2 — ÖLÇ.** `tools/olcum-wc-odasi.ts` yazılır (iskelet `olcum-lib.ts`, görünürlük yöntemi
+`olcum-dis-cephe.ts` §V'den devralınır, artı bu turda YENİ: **2,2'lik ön duvarın örtmesi**).
+Kısa koşuyla araç doğrulanır → `OLCUM=tam` taban → tüm kollar varyant olarak
+`docs/wc-odasi-raporu-s7.md` §Bulgular'a → **commit #1 (karar bölümü BOŞ)** → karar paketi.
 
 ## AÇIK KALEMLER (bilinen, bilerek duruyor)
-
-### S6/③ — kullanıcı 2026-09-10 (oturum kapandıktan sonra geldi, SIRADAKİ TURUN İLK İŞİ)
-
-- **G-35 · Müşteri lavabo kapısında YOK OLUYOR.** Bu bugün TASARIM: `layout.LAVABO` yorumu
-  *"oda YÜRÜNMEZ (bant kütlesi); müşteri kapıda kaybolur, `visitTime` sonra aynı yerde belirir"*
-  diyor. Ama oda ARTIK ÇİZİLİ ve kamera içini görüyor — görünen bir odanın kapısında insanın
-  buharlaşması hata gibi okunuyor. Kullanıcı öyle okudu. İki kol var, ölçüm ister:
-  **(a)** odayı yürünür yapıp müşteriyi gerçekten içeri sokmak (nav + bant kütlesine dokunur,
-  `v1.1'e ertelenen "aktif WC döngüsü"nün ta kendisi) · **(b)** kayboluşu ÖRTMEK — kabin kapısı
-  açılıp kapanan bir geçiş, ya da müşterinin kapının içine doğru yürüyüp solması.
-- **G-36 · Kapının üstündeki SARI DAİRELER — KALDIRILDI (yapıldı).** İlk teşhisim yanlıştı
-  (para istifi sandım); kullanıcı düzeltti: **lentonun tam hizasında.** Kaynak `Scene.LavaboFront`,
-  `circleGeometry` + `#ffce54`, y = 2,14, lavabo seviyesi kadar adet.
-  **BEDELİ AÇIK KALEM:** o noktalar lavabo seviyesinin **TEK** görsel sinyaliydi — kodun kendi
-  notu da bunu *"tek sinyal yetmez"* diye işaretliyordu. Şimdi seviye **hiçbir yerden okunmuyor.**
-  `feedback_upgrade_legibility` çoklu redundant sinyal istiyor; doğru yer büyük ihtimalle
-  **MEKÂNSAL**: seviye arttıkça **lavabo SAYISI artsın** (S7 adayı — `MaketLavaboBlock` bugün üç
-  lavaboyu sabit `dz ∓1,70` ile çiziyor, ölçüm ister).
-- **G-37 · Üst şerit GERİ GELDİ (yapıldı).** S6/②'de "üstteki şeridi kaldır" denince WC kapısının
-  LENTO şeridini kaldırmıştım; kastedilen o değil, aynı hizadaki sarı dairelermiş.
-  **Ders: "şu şeyi kaldır" denince neyin kastedildiği ekran görüntüsünde İŞARETLENMEDEN
-  varsayılmamalı** — yanlış parça kalktı, bir tur kaybedildi ve kullanıcı iki kez tarif etmek
-  zorunda kaldı.
 
 - **S5'te söz verilip YAPILMAYAN:** ① banket masası `table_round_A_small`e geçecekti ② mağaza
   kartlarının gerçek oyun render'ı (`tools/tema-kapak.mjs` kadrajı bozuk). Kullanıcı 2026-09-10'da

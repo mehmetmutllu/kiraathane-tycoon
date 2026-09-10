@@ -1,0 +1,80 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>model-bak</title>
+<style>
+  body { margin: 0; background: #eceff1; }
+  canvas { display: block; }
+</style>
+<script type="module">
+  // model-bak.html — BİR MODELİ GERÇEKTEN ÇİZ.
+  //
+  // NEDEN: `model-olc.mjs` bir kutu, `atlas-goz.mjs` bir renk listesi veriyor; ikisi de "bu model
+  // NE" sorusunu bazen ayıramıyor. S7'de `door_A` ölçüldü — 1,60 × 2,80 × 0,771, tek mesh, ortası
+  // x'te BOŞ, iki yanda simetrik iki kütle. Sayı "kasa mı, açık duran çift kanat mı" diyemedi.
+  // Aynı boşluk S6'da aynanın SIRTINI odaya döndürmüştü. Bu sayfa o boşluğu kapatır.
+  //
+  // Kullanım (sunucuyu `tools/model-bak.mjs` kaldırır):
+  //   /tools/model-bak.html?p=kaykit-restaurant-bits&m=door_A,door_B,wall_half
+  import * as THREE from 'three';
+  import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+
+  const q = new URLSearchParams(location.search);
+  const paket = q.get('p') ?? 'kaykit-restaurant-bits';
+  const adlar = (q.get('m') ?? 'door_A').split(',').filter(Boolean);
+  const H = 1.75; // ACTOR_HEIGHT — insan boyu referansı (feedback_reference_scale_trap)
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.setClearColor('#eceff1');
+  document.body.appendChild(renderer.domElement);
+
+  const scene = new THREE.Scene();
+  scene.add(new THREE.HemisphereLight('#ffffff', '#8d99a6', 2.2));
+  const dir = new THREE.DirectionalLight('#fff6e0', 1.6);
+  dir.position.set(4, 8, 6);
+  scene.add(dir);
+
+  const loader = new GLTFLoader();
+  const yerlestir = [];
+  let x = 0;
+  for (const ad of adlar) {
+    const g = await loader.loadAsync(`/assets/models/${paket}/${ad}.gltf`);
+    const o = g.scene;
+    const kutu = new THREE.Box3().setFromObject(o);
+    const b = kutu.getSize(new THREE.Vector3());
+    o.position.set(x - kutu.min.x, -kutu.min.y, -(kutu.min.z + b.z / 2));
+    const grup = new THREE.Group();
+    grup.add(o);
+    // insan referansı — modelin yanında 1,75 m'lik ince bir çubuk
+    const insan = new THREE.Mesh(
+      new THREE.BoxGeometry(0.4, H, 0.25),
+      new THREE.MeshStandardMaterial({ color: '#d32f2f', transparent: true, opacity: 0.55 }),
+    );
+    insan.position.set(x + b.x + 0.5, H / 2, 0);
+    grup.add(insan);
+    scene.add(grup);
+    yerlestir.push({ ad, x, b });
+    x += b.x + 1.6;
+  }
+  // zemin ızgarası
+  const grid = new THREE.GridHelper(Math.max(20, x + 4), Math.max(20, Math.round(x + 4)), '#90a4ae', '#cfd8dc');
+  grid.position.set(x / 2, 0, 0);
+  scene.add(grid);
+
+  const genislik = Math.max(6, x);
+  const cam = new THREE.PerspectiveCamera(35, innerWidth / innerHeight, 0.1, 200);
+  const kip = q.get('kip') ?? 'on';
+  const merkez = new THREE.Vector3(x / 2 - 0.8, 1.4, 0);
+  if (kip === 'ust') cam.position.set(merkez.x, genislik * 1.6, 0.01);
+  else if (kip === 'yan') cam.position.set(merkez.x + genislik * 1.4, 1.6, 0.01);
+  else cam.position.set(merkez.x - genislik * 0.15, 1.9, genislik * 1.35);
+  cam.lookAt(merkez);
+  renderer.render(scene, cam);
+
+  // ölçü etiketleri (DOM — üç.js metin yükü olmasın)
+  const bar = document.createElement('div');
+  bar.style.cssText = 'position:fixed;left:0;top:0;font:12px system-ui;background:#fff;padding:6px 10px;color:#263238';
+  bar.textContent = `${paket} · ${yerlestir.map((y) => `${y.ad} ${y.b.x.toFixed(2)}×${y.b.y.toFixed(2)}×${y.b.z.toFixed(2)}`).join('  |  ')}  ·  kırmızı çubuk = 1,75 m insan`;
+  document.body.appendChild(bar);
+  document.title = 'hazir';
+</script>
