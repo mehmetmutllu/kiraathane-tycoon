@@ -29,6 +29,7 @@ import { CAMERA_DIST, CAMERA_FOV, CAMERA_PORTRAIT_CLAMP, CAMERA_ZOOM_OUT_MUL } f
 import { BAND, FLOOR_HALF, LAYOUT, doorX, entranceAt } from '../src/game/layout';
 import { DOOR, WAINSCOT_H, WALL_H, WALL_M } from '../src/components/three/wallPanel';
 import { WALL_RUNS, wallDikey, wallUzunluk } from '../src/components/three/wallLook';
+import { decorItems } from '../src/config/decor';
 import { KIP, damga, damgaOzeti, kipBandi } from './olcum-lib';
 // @ts-expect-error — .mjs araçlar, tip bildirimi yok (tools/ tsconfig kapsamında değil)
 import { bbox } from './model-olc.mjs';
@@ -458,6 +459,60 @@ for (const u of USTLER) {
   const fark = bantOrt(VITRIN_KAIDE, u) - taban;
   yaz(`  cam üstü ${u.toFixed(2)} → ${yz1(bantOrt(VITRIN_KAIDE, u))}  (${fark >= 0 ? '+' : ''}${(fark * 100).toFixed(1)} puan)` + (u >= WALL_H ? '   ← ALINLIK da yok demek: cephenin TABELASI gider' : ''));
 }
+yaz();
+
+// ============================================================================================
+//  §P CAMIN ARDINDA NE GÖRÜNÜR? — vitrin seçilirse bakılacak yer neresi?
+// ============================================================================================
+//
+// §Ö2 "cam örtme kazandırmıyor" dedi; ama vitrin yine de bir DELİK açıyor ve o delikten bir
+// şey görünecek. Kameradan cam bandının ALT ve ÜST kenarından geçen ışınlar salonun zeminini
+// nerede vuruyor? O şerit vitrinin VİTRİNİ; boşsa cam boşluğa bakar.
+yaz('§P CAMIN ARDINDA NE GÖRÜNÜR? — cam bandından geçen ışın salonun zeminini nerede vuruyor?');
+yaz('-'.repeat(112));
+yaz('  oyuncu pz'.padEnd(14) + 'kamera cz   cam ALT (0,40) → zemin z   cam ÜST (2,65) → zemin z   şerit derinliği');
+const zeminVurus = (C: number[], camY: number): number => {
+  // Kameradan cephedeki (x sabit) camY yüksekliğindeki noktaya giden ışın, y = ZEMIN'e inince z?
+  const ZEMIN = 0.1;
+  const P = [C[0], camY, CEPHE_Z];
+  const d = [P[0] - C[0], P[1] - C[1], P[2] - C[2]];
+  const t = (ZEMIN - C[1]) / d[1];
+  return C[2] + t * d[2];
+};
+let seritOrt = 0;
+let seritSay = 0;
+for (const pz of [12, 13.5, 15, 16.5]) {
+  const C = kameraKonum(DX0 - 9, pz, CAMERA_DIST);
+  const zAlt = zeminVurus(C, VITRIN_KAIDE);
+  const zUst = zeminVurus(C, VITRIN_UST);
+  const derin = Math.abs(zAlt - zUst);
+  seritOrt += derin;
+  seritSay++;
+  yaz('  ' + n2(pz) + n2(pz + CAMERA_DIST) + '            ' + n2(zAlt) + '              ' + n2(zUst) + '           ' + n2(derin));
+}
+yaz();
+const zUstOrt = zeminVurus(kameraKonum(DX0 - 9, 15, CAMERA_DIST), VITRIN_UST);
+yaz(`ORTALAMA ŞERİT DERİNLİĞİ ${n2(seritOrt / seritSay)} br · şeridin İÇ sınırı ≈ z ${n2(zUstOrt)}`);
+yaz(`ÖN SIRA MASALARIN z'si ${n2(onMasaZ)} → şerit masalara ${n2(zUstOrt - onMasaZ)} br UZAK.`);
+yaz('Yani camdan içeri bakınca masalar değil, GİRİŞ KORİDORUNUN ZEMİNİ görünüyor. O şeritte');
+yaz('bugün ne var? Aşağıdaki liste `config/decor.ts` + `layout` üstünden sayıyor:');
+const seritIcerik = decorItems(AREAS).filter((d) => d.pos[2] > zUstOrt - 0.5 && d.pos[2] < CEPHE_Z);
+yaz(`  · dekor öğesi: ${seritIcerik.length ? seritIcerik.map((d) => d.kind).join(', ') : 'YOK'}`);
+yaz(`  · masa: ${LAYOUT.tables.filter((t) => t.table[2] > zUstOrt - 0.5).length} (ön sıra z ${n2(onMasaZ)}, şeridin dışında)`);
+yaz(`  · giriş (entranceAt z ${GIRIS[2].toFixed(2)}): şeridin İÇİNDE — müşteriler buradan giriyor`);
+yaz();
+yaz(
+  seritIcerik.length === 0
+    ? 'OKUMA: şerit BOŞ — cam boş zemine bakar, "içerisi görünüyor" hissi için önce içerik ister.'
+    : `OKUMA: şerit BOŞ DEĞİL — ${seritIcerik.length} dekor öğesi tam oraya düşüyor ve hepsi bir GİRİŞ HOLÜ`,
+);
+if (seritIcerik.length) {
+  yaz('programı: paspas · askılık · şemsiyelik · gazetelik · çöp kovası · ayaklı lamba · saksı. Yani');
+  yaz('vitrinin ardında gösterilecek şey ZATEN VAR ve bugün kimse görmüyor — cephe onu kapatıyor.');
+  yaz('Bu, §Ö2 nin "örtme kazancı 0" sonucuyla çelişmiyor: §Ö2 nin hedefleri masa/para/müşteriydi,');
+  yaz('bu şerit ise dekor. Cam bir OYNANIŞ kazancı değil, bir VİTRİN kazancı sağlıyor — adı üstünde.');
+}
+damga('cam ardı şeridi sayıldı', true);
 yaz();
 
 // ============================================================================================

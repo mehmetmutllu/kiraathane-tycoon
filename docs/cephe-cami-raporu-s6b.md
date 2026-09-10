@@ -130,6 +130,30 @@ Cephenin arkasındaki dört hedefin YAKIN görünürlük ortalaması:
 - Cam üstü: 2,65 → **+0,0** · 2,80 → **+1,5** · 3,00 → **+3,1** · 3,20 → **+7,3 puan**.
   Ama 3,20 demek **alınlığın da olmaması** demek — yani cephenin tabelasını yok etmek.
 
+### P — Camın ardında ne görünür? **Şerit boş değil: bir giriş holü var**
+
+§Ö2 "cam örtme kazandırmıyor" dedi. Ama vitrin yine de bir delik açıyor ve o delikten bir şey
+görünecek. Cam bandının alt (0,40) ve üst (2,65) kenarından geçen ışınlar salonun zeminini
+nerede vuruyor?
+
+| oyuncu pz | kamera cz | cam ALT → zemin z | cam ÜST → zemin z | şerit derinliği |
+|---|---|---|---|---|
+| 12,00 | 20,50 | 17,39 | 16,19 | 1,20 |
+| 13,50 | 22,00 | 17,33 | 15,54 | 1,79 |
+| 15,00 | 23,50 | 17,28 | 14,88 | 2,39 |
+| 16,50 | 25,00 | 17,22 | 14,23 | **2,99** |
+
+**Ortalama şerit derinliği 2,09 br · şeridin iç sınırı ≈ z 14,88.** Ön sıra masalar z 11,70 —
+şerit masalara **3,18 br uzak**. Yani camdan bakınca masalar değil, **giriş bölgesi** görünür.
+
+> **Ve o bölge boş değil.** `config/decor.ts` üstünden sayıldı: şeride **10 dekor öğesi**
+> düşüyor — paspas · askılık · şemsiyelik · gazetelik · çöp kovası · iki ayaklı lamba · saksılar
+> · askı rayı. Bu **bir giriş holü programı** ve bugün **kimse görmüyor**, çünkü cephe kapatıyor.
+> `entranceAt` (z 16,60) da şeridin içinde: müşteriler tam oradan giriyor.
+
+Bu §Ö2 ile çelişmiyor: §Ö2'nin hedefleri masa · para · müşteriydi (oynanış), bu şerit ise dekor.
+**Cam bir oynanış kazancı değil, bir vitrin kazancı sağlıyor** — adı üstünde.
+
 ### C — Vitrin modülasyonu
 
 Kullanılabilir yarı-hat **14,50 br** (söve dış kenarı ∓2,40'ten duvarın ucuna, 0,60 köşe payı);

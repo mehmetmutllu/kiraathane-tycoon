@@ -118,6 +118,28 @@ OKUMA — CAM ÜSTÜ: kazanç bandın üst kenarı yükseldikçe doğuyor (taban
   cam üstü 3.00 → 82.7%  (+3.1 puan)
   cam üstü 3.20 → 87.0%  (+7.3 puan)   ← ALINLIK da yok demek: cephenin TABELASI gider
 
+§P CAMIN ARDINDA NE GÖRÜNÜR? — cam bandından geçen ışın salonun zeminini nerede vuruyor?
+----------------------------------------------------------------------------------------------------------------
+  oyuncu pz   kamera cz   cam ALT (0,40) → zemin z   cam ÜST (2,65) → zemin z   şerit derinliği
+    12.00  20.50              17.39                16.19              1.20
+    13.50  22.00              17.33                15.54              1.79
+    15.00  23.50              17.28                14.88              2.39
+    16.50  25.00              17.22                14.23              2.99
+
+ORTALAMA ŞERİT DERİNLİĞİ    2.09 br · şeridin İÇ sınırı ≈ z   14.88
+ÖN SIRA MASALARIN z'si   11.70 → şerit masalara    3.18 br UZAK.
+Yani camdan içeri bakınca masalar değil, GİRİŞ KORİDORUNUN ZEMİNİ görünüyor. O şeritte
+bugün ne var? Aşağıdaki liste `config/decor.ts` + `layout` üstünden sayıyor:
+  · dekor öğesi: askiRayi, ayakliLamba, buyukSaksi, copKovasi, saksi, ayakliLamba, gazetelik, paspas, askilik, semsiyelik
+  · masa: 0 (ön sıra z   11.70, şeridin dışında)
+  · giriş (entranceAt z 16.60): şeridin İÇİNDE — müşteriler buradan giriyor
+
+OKUMA: şerit BOŞ DEĞİL — 10 dekor öğesi tam oraya düşüyor ve hepsi bir GİRİŞ HOLÜ
+programı: paspas · askılık · şemsiyelik · gazetelik · çöp kovası · ayaklı lamba · saksı. Yani
+vitrinin ardında gösterilecek şey ZATEN VAR ve bugün kimse görmüyor — cephe onu kapatıyor.
+Bu, §Ö2 nin "örtme kazancı 0" sonucuyla çelişmiyor: §Ö2 nin hedefleri masa/para/müşteriydi,
+bu şerit ise dekor. Cam bir OYNANIŞ kazancı değil, bir VİTRİN kazancı sağlıyor — adı üstünde.
+
 §C VİTRİN MODÜLASYONU — cam hattı kaç GÖZE bölünür?
 ----------------------------------------------------------------------------------------------------------------
 kullanılabilir yarı-hat:  -16.90 …   -2.40 →   14.50 br (köşe payı    0.60, söve dış kenarı    2.40)
