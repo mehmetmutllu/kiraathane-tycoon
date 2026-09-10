@@ -240,6 +240,20 @@ NOT: tema `wallThemeByArea` üstünden ALAN başına seçiliyor ve cephe iki ala
 Cephe camlaşırsa temanın cephedeki payı düşer — ama §V cephenin kadraja giren payını zaten
 düşük ölçüyor; temanın asıl gösterildiği yüzey İÇ duvarlar. Bu satır bir BEDEL, engel değil.
 
+§S SON DURUM — uygulanan vitrin (D-105) ölçülen kolla aynı mı?
+----------------------------------------------------------------------------------------------------------------
+denetim                                          beklenen        gerçek   durum
+göz sayısı (2 alan açık, 4/yarı)                        8             8   ✓
+göz eni (karar paketi 3,35 br)                       3.35          3.35   ✓
+kaide = lambri çıtasının üstü (C4b)                  0.98          0.98   ✓
+cam üstü = kapı boyu                                 2.65          2.65   ✓
+ayak                                                 0.36          0.36   ✓
+cam yüzeyi (m²)                                     ≈44.7         44.82   ✓
+en içteki göz kenarı ↔ söve dış kenarı               2.40          2.40   ✓
+
+ŞERİT DERİNLİĞİ karar sonrası: cam    0.98…   2.65 → boy    1.67 br
+(D-037'nin yazdığı 0,40…2,65 = 2,25 br idi; C4b lambriyi koruyunca    0.58 br kısaldı.)
+
 ================================================================================================================
-SON — karar bölümü RAPORDA, bu dosyada YOK (D-084: ölç → sor → uygula).
+SON — karar §Karar bölümünde (D-105). Ölçüm bölümleri karar ÖNCESİ hâliyle duruyor.
 ================================================================================================================

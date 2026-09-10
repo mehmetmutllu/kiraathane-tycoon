@@ -5,46 +5,65 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-10 — **S6/② GİRİŞ CEPHESİ CAMI** · Faz S 7/12 · 82/96)
+## ŞU AN (2026-09-10 — **S8 BİTTİ** · Faz S 8/13 · 83/97)
 
 ```
-SORU            : Giriş cephesi (ön duvar, z 17,50) düz badana duvar olarak mı kalsın, yoksa
-                  D-037'nin vitrin programına (kaide · cam · alınlık) mı geçsin? Geçerse cam
-                  nasıl kurulur, kapı bloğuna ve duvar temasına bedeli ne?
-ÖLÇÜLECEK KOLLAR: §V görünürlük + ÖRTME (ön duvar salonu kameradan kaç noktada gizliyor —
-                  camın asıl işi bu) · C0 bugünkü solid (kontrol) · C1 duvarın KENDİ boşluğu +
-                  cam levha (S6/E3 deseni) · C2 KayKit wall_window_* / wall_orderwindow modülü ·
-                  C3 kısmi (yalnız kapının iki yanında birer vitrin gözü) · C4 kaidede lambri
-                  kalsın mı · §Ş şeffaflık bedeli · §K kapı bloğu hizası · §T tema kolu
+SORU            : (S8) Giriş cephesi düz badana mı kalsın, D-037'nin vitrin programına mı geçsin?
 SAYILAR         : `docs/cephe-cami-raporu-s6b.md` · ham `docs/olcum-cephe-cami.txt` ·
                   görsel `docs/gorsel/ss/s6b-*.png` (6 kadraj)
-KARAR           : (adım 3 — kullanıcı seçer, D-105)
-UYGULAMA        : (adım 4 — yalnız kararın kolu)
-BEKÇİ           : (test dosyası + mutasyon sayısı)
+KARAR           : **D-105** — C1 vitrin · 4 göz/yarı (3,35 br) · kaide C4b (lambri korunur).
+                  KayKit duvar modülü (C2) elendi.
+UYGULAMA        : yeni `cepheLook.ts` · `Scene.Vitrin` (2 InstancedMesh) · `wallPanel`den
+                  `SOVE_W`/`SOVE_DIS`/`RAIL_TOP` dışa açıldı · vitrin açıklıkları PENCEREYLE
+                  AYNI `wallPieces` çağrısına giriyor (ayrı kod yolu yok).
+BEKÇİ           : `tests/cephe-vitrin.test.ts` (17 denetim) · **23 mutasyon, kaçan 0**
+                  vitest **907** · duman **42/42** · `tsc -b` temiz · 6 kadraj gözle.
 ```
 
-**Neden bu tur ayrı:** S6'da cephe ölçüldü ama pencere kolu (§E) yalnız SAĞ duvar içindi;
-D-037 cephenin vitrin olmasını 2026-09-05'te karara bağladı ve oyuna **hiç geçmedi** — bugün
-ön duvar iç duvarla aynı badana. Kapı bloğu (söve · lento · alınlık) ve `wallThemeByArea`
-buna dokunduğu için S7'de kullanıcı kararıyla kendi turuna ayrıldı.
+**S8'in dersi: ölçüm "yapma" derken ekran "yap" diyebilir ve ikisi çelişmez.** Örtme kazancı
+**0,0 puan** çıktı — kamera 45°'den bakıyor, ışın cepheyi duvarın tepesinin üstünden geçiyor
+(ön sıra masaya giden ışın cepheyi 4,13'te kesiyor, duvar 3,20). Sayıya bakıp "vitrin
+gereksiz" denebilirdi. **Görsel tur** başka bir şey gösterdi: cephe kadraja girdiğinde ekranın
+dikey **%27'sini** kaplıyor ve o bant bomboştu. İkisi çelişmiyor çünkü farklı soruları
+yanıtlıyor: cam bir **oynanış** aracı değil, bir **kimlik** aracı.
+
+**İkinci ders: aracın kendisi anlatıyı yalanlayabiliyor.** "Camın ardındaki şerit boş" diye
+yazmıştım; aynı araca eklenen sayım şeritte **10 dekor öğesi** buldu (paspas · askılık ·
+şemsiyelik · gazetelik) — cephe onları kapatıyormuş. Paragraf sayıdan türetilir hâle getirildi.
+
+**Üçüncü ders: aritmetik simetri mutasyonu gizliyor.** 23 mutasyondan biri kaçtı: söve ve köşe
+paylarını YER DEĞİŞTİREN mutasyon hat uzunluğunu değiştirmiyor (0,60 + 0,20 iki yönde de aynı),
+gözler yalnız 0,40 kayıyordu — ve bina köşesinde payanda kalmıyordu. Bekçi "gözler hattın içinde
+mi" diye soruyordu, "hangi uçta hangi pay var" diye sormuyordu.
+
+**Kararın içinden çıkan iki ayrıntı:** ① kaide 0,90 değil **0,98** — 0,90'da `wallBoxes` çıtayı
+hiç üretmiyor ve "lambri korunur" kararı lambriyi çıtasız bırakırdı. ② Göz **sayısı** değil göz
+**eni** sabitlendi; sayı sabitlense 1 alan açıkken göz 1,23'e düşer, ritim alan açıldıkça değişirdi.
 
 ## SIRADAKİ TAM ADIM
 
-**S8 — SES ASSETLERİ** ya da **giriş cephesi camı**. İkisi de hazır ama **ses kaynağı kararı
-kullanıcıdan bekliyor** (asset panosu §7, dört kol; D-096'yı kısmen geri alır). Karar gelmezse
-sıradaki iş **giriş cephesi cam turu**: S6/②'de ertelendi, S7'de kullanıcı kararıyla ayrıldı;
-ölçüm değer diyor (cephe salonun en görünür ikinci şeridi, %8–15) ama kapı bloğuna (söve · lento
-· alınlık) ve duvar temasına dokunduğu için kendi turunu ister.
+**S9 — SES ASSETLERİ** (numarası kaydı, eski S8). Hâlâ **ses kaynağı kararı kullanıcıdan
+bekliyor** (asset panosu §7, dört kol; D-096'yı kısmen geri alır). Karar gelmezse sıradaki iş
+**S10 UI tasarım dili: araştırma + maket** — kullanıcının en çok şikâyet ettiği konu
+(*"hâlâ genel olarak UI çok kötü"*), kod yazılmaz, maket + onay turu.
 
 **KULLANICI KARARI BEKLEYEN ÜÇ ŞEY** (hiçbiri sıradaki turu bloklamıyor):
-1. **Ses kaynağı** (S8) — asset panosu §7, dört kol.
-2. **Karakter kolu** (S12) — asset panosu §3, altı kol, bedelleri yazılı.
+1. **Ses kaynağı** (S9) — asset panosu §7, dört kol.
+2. **Karakter kolu** (S13) — asset panosu §3, altı kol, bedelleri yazılı.
 3. **H2 yükseltme sırası** (A tek hedef / B kuşak) ve **H3 masa aralığı** (K1 aralığı aç /
    K2 oturak küçült — K2 önerilmiyor, `feedback_reference_scale_trap`).
 
 **Asset panosu:** https://claude.ai/code/artifact/2e7f92c0-15b6-4f72-814d-753cf79d74e0
 
 ## AÇIK KALEMLER (bilinen, bilerek duruyor)
+
+### S8'den DEVREDEN (ölçüldü, bilerek yapılmadı)
+
+- **Vitrinin ardındaki giriş holü artık GÖRÜNÜYOR ama vitrin için düzenlenmiş değil.** Şerit
+  z 14,88…17,39; içindeki 10 dekor öğesi duvar diplerine dağılmış durumda. Vitrinin "dolu"
+  okunması için o şeridin kendi yerleşim turu gerekiyor.
+- **Cephe temasının payı %100 → %45 düştü** (bilinerek, D-105). Mağazadaki duvar teması artık
+  cephede yalnız kaide + alınlıkta görünüyor; §V camın iç yüzünün hiç görünmediğini ölçtü.
 
 ### S7'den DEVREDEN (ölçüldü, bilerek yapılmadı)
 
@@ -76,7 +95,7 @@ sıradaki iş **giriş cephesi cam turu**: S6/②'de ertelendi, S7'de kullanıc�
   ister → 20 masanın 12'si geçilemez. İki kol
   `docs/geribildirim-oyun-testi-2026-09-09.md` sonunda. (H3.)
 - **G-16 arayüz kahverengi/iç karartıcı → mavi · G-17 ekranlar tam-ekran mı modal mı · G-10 pad
-  şekli** — kullanıcı "bilemedim" dedi; **maket görmeden koda girmemeli**. (S9.)
+  şekli** — kullanıcı "bilemedim" dedi; **maket görmeden koda girmemeli**. (S10.)
 - **G-18 masaya tıklayınca seviye gözüksün mü** — kullanıcı düşünüyor, açık soru.
 - **`.gitattributes` YOK** — `core.autocrlf=true` her checkout'ta metin dosyalarını CRLF'e çeviriyor.
 - **`npm run pano`'nun günlük uyarısı yalnız TARİHE bakıyor** — aynı gün ikinci oturumda sessiz

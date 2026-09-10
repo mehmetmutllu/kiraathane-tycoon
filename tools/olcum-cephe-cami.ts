@@ -27,9 +27,10 @@ import { readFileSync } from 'node:fs';
 import { ACTOR_HEIGHT, CAMERA_LOOK_Y } from '../src/config/actor';
 import { CAMERA_DIST, CAMERA_FOV, CAMERA_PORTRAIT_CLAMP, CAMERA_ZOOM_OUT_MUL } from '../src/config/camera';
 import { BAND, FLOOR_HALF, LAYOUT, doorX, entranceAt } from '../src/game/layout';
-import { DOOR, WAINSCOT_H, WALL_H, WALL_M } from '../src/components/three/wallPanel';
+import { DOOR, SOVE_DIS, WAINSCOT_H, WALL_H, WALL_M } from '../src/components/three/wallPanel';
 import { WALL_RUNS, wallDikey, wallUzunluk } from '../src/components/three/wallLook';
 import { decorItems } from '../src/config/decor';
+import { VITRIN, camYuzeyi, vitrinGozleri } from '../src/components/three/cepheLook';
 import { KIP, damga, damgaOzeti, kipBandi } from './olcum-lib';
 // @ts-expect-error — .mjs araçlar, tip bildirimi yok (tools/ tsconfig kapsamında değil)
 import { bbox } from './model-olc.mjs';
@@ -818,8 +819,41 @@ yaz('Cephe camlaşırsa temanın cephedeki payı düşer — ama §V cephenin ka
 yaz('düşük ölçüyor; temanın asıl gösterildiği yüzey İÇ duvarlar. Bu satır bir BEDEL, engel değil.');
 yaz();
 
+// ============================================================================================
+//  §S SON DURUM — UYGULANAN vitrin, KARARI VERİLEN kolla aynı mı? (final koşunun asıl işi)
+// ============================================================================================
+//
+// Bu bölüm uygulamadan SONRA eklendi. Sebebi somut: §B/§C'nin kolları hipotezdi (araç kendi
+// kutularını kuruyordu); kod yazıldıktan sonra aynı aracın HİPOTEZİ ölçmeye devam etmesi
+// final koşuyu bir tekrardan ibaret bırakırdı. Burada araç `cepheLook`u okuyor — yani
+// "ölçülen kol" ile "sevk edilen kod" arasındaki bağ makineyle denetleniyor.
+yaz('§S SON DURUM — uygulanan vitrin (D-105) ölçülen kolla aynı mı?');
+yaz('-'.repeat(112));
+const sonGozler = vitrinGozleri(AREAS);
+const enler = sonGozler.map((g) => g.en);
+const enOrt = enler.reduce((a, b) => a + b, 0) / (enler.length || 1);
+yaz('denetim'.padEnd(46) + '   beklenen        gerçek   durum');
+const satir = (ad: string, bek: string, ger: string, ok: boolean) =>
+  yaz(ad.padEnd(46) + bek.padStart(11) + ger.padStart(14) + (ok ? '   ✓' : '   ✗ SAPMA'));
+satir('göz sayısı (2 alan açık, 4/yarı)', '8', `${sonGozler.length}`, sonGozler.length === 8);
+satir('göz eni (karar paketi 3,35 br)', '3.35', enOrt.toFixed(2), Math.abs(enOrt - 3.35) < 0.05);
+satir('kaide = lambri çıtasının üstü (C4b)', '0.98', VITRIN.kaide.toFixed(2), Math.abs(VITRIN.kaide - 0.98) < 0.005);
+satir('cam üstü = kapı boyu', DOOR.height.toFixed(2), VITRIN.ust.toFixed(2), VITRIN.ust === DOOR.height);
+satir('ayak', '0.36', VITRIN.ayak.toFixed(2), VITRIN.ayak === 0.36);
+satir('cam yüzeyi (m²)', '≈44.7', camYuzeyi(AREAS).toFixed(2), camYuzeyi(AREAS) > 40);
+const enIcGoz = Math.min(...sonGozler.map((g) => Math.abs(g.x) - g.en / 2));
+satir('en içteki göz kenarı ↔ söve dış kenarı', SOVE_DIS.toFixed(2), enIcGoz.toFixed(2), enIcGoz >= SOVE_DIS - 1e-6);
+damga('uygulanan göz sayısı kararla aynı', sonGozler.length === 8, `${sonGozler.length} göz`);
+damga('uygulanan göz eni kararla aynı', Math.abs(enOrt - 3.35) < 0.05, `${enOrt.toFixed(3)} br`);
+damga('cam üstü kapıyla hizalı (uygulanan)', VITRIN.ust === DOOR.height);
+damga('vitrin söveye girmiyor (uygulanan)', enIcGoz >= SOVE_DIS - 1e-6, `${enIcGoz.toFixed(3)} < ${SOVE_DIS}`);
+yaz();
+yaz(`ŞERİT DERİNLİĞİ karar sonrası: cam ${n2(VITRIN.kaide)}…${n2(VITRIN.ust)} → boy ${n2(VITRIN.ust - VITRIN.kaide)} br`);
+yaz(`(D-037'nin yazdığı 0,40…2,65 = 2,25 br idi; C4b lambriyi koruyunca ${n2(2.25 - (VITRIN.ust - VITRIN.kaide))} br kısaldı.)`);
+yaz();
+
 yaz('='.repeat(112));
-yaz('SON — karar bölümü RAPORDA, bu dosyada YOK (D-084: ölç → sor → uygula).');
+yaz('SON — karar §Karar bölümünde (D-105). Ölçüm bölümleri karar ÖNCESİ hâliyle duruyor.');
 yaz('='.repeat(112));
 
 console.log(cikti.join('\n'));

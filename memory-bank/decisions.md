@@ -3184,3 +3184,27 @@ gösterdi: kaynak denetimi `door_A.gltf` metnini bir YORUMDAN da bulabiliyordu �
 `src=` ifadesine çevrildi. vitest **889** · duman **42/42** · `tsc -b` temiz.
 Sayılar: `docs/wc-odasi-raporu-s7.md` · taban `docs/olcum-wc-odasi-taban.txt` · final
 `docs/olcum-wc-odasi-final.txt`.
+
+## D-105 — Giriş cephesi VİTRİN oldu; D-037 sekiz oturum sonra koda girdi (2026-09-10)
+**Karar:** Cephe (z 17,50) **C1 vitrin**: kaide = lambri + çıtası (0…0,98) · **cam 0,98…2,65** ·
+alınlık 2,65…3,20. **4 göz/yarı** (3,35 br ≈ insan boyunun 1,92 katı), ayak 0,36. KayKit duvar
+modülü (C2) **girmedi**.
+**Gerekçe — ölçüm "yapma" diyordu, ekran "yap" dedi ve ikisi çelişmiyor:** vitrinin ÖRTME
+kazancı **0,0 puan** (kamera 45°'den bakıyor, ışın cepheyi duvarın tepesinin üstünden geçiyor;
+ön sıra masaya giden ışın cepheyi 4,13'te kesiyor, duvar 3,20). Ama cephe kadraja girdiğinde
+ekranın dikey **%27'sini** kaplıyor ve o bant bomboştu; camın ardındaki şeritte (z 14,88…17,39)
+**10 dekor öğesi** — paspas · askılık · şemsiyelik · gazetelik · saksılar — zaten vardı ve cephe
+onları kapatıyordu. Yani cam bir **oynanış** aracı değil, bir **vitrin**: adı üstünde.
+**Kaide neden 0,90 değil 0,98:** kullanıcı C4b "lambri korunur" dedi; 0,90'da `wallBoxes`
+çıtayı (0,90…0,98) hiç üretmiyor ve lambri çıtasız kalıyordu → sınır `RAIL_TOP`.
+**Göz SAYISI değil göz ENİ sabit:** "4 göz" kararı 14,50 br'lik hattı görüyordu; sayı sabitlense
+1 alan açıkken göz 1,23'e düşer, ritim alan açıldıkça değişirdi.
+**Camın arkasına opak panel YOK** (`Decor.Pencere`nin "dışarısı gündüz" paneli): cephede camın
+arkası salonun kendisi, panel camı delik olmaktan çıkarırdı. Cephe **125/125 konumda yalnız
+dışarıdan** görülüyor → camın iç yüzü ekrana hiç girmiyor.
+**Bedel:** temalı cephe yüzeyi %100 → %45. §Ş'nin saydığı 40 ek çizim çağrısı instanslanınca **2**.
+**Bekçi:** `tests/cephe-vitrin.test.ts` (17 denetim), **23 mutasyon, kaçan 0**. Biri önce KAÇTI ve
+zayıf yeri gösterdi: söve/köşe paylarını YER DEĞİŞTİREN mutasyon hat uzunluğunu değiştirmiyor
+(0,60 + 0,20 iki yönde de aynı), gözler yalnız 0,40 kayıyor ve bina köşesinde payanda kalmıyordu
+→ "hangi uçta hangi pay" denetimi eklendi. vitest **907** · duman **42/42** · `tsc -b` temiz.
+Sayılar: `docs/cephe-cami-raporu-s6b.md` · ham `docs/olcum-cephe-cami.txt` · görsel `s6b-*.png`.

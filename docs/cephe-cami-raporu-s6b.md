@@ -270,6 +270,48 @@ ilgilendiriyor. Karar bu ayrım üstünden verilmeli.
 
 ---
 
-## §Karar
+## §Karar — **D-105** (kullanıcı, 2026-09-10)
 
-*(BOŞ — karar paketi kullanıcıya sunulacak, seçilen kol ikinci commit'te uygulanacak.)*
+| kol | karar | gerekçe |
+|---|---|---|
+| **ana çatal** | **C1 vitrin** | Cam oynanışa hiçbir şey katmıyor (örtme kazancı **0,0 puan**) — ama cephenin sorunu örtme değil **boşluk**: kadraja girdiğinde ekranın dikey **%27'si** boş bir levha ve tam ardında **zaten yapılmış ama görünmeyen** bir giriş holü duruyor (§P, 10 dekor öğesi). |
+| **göz sayısı** | **4 göz/yarı — 3,35 br** | Göz eni insan boyunun **1,92 katı** (dükkân vitrini oranı). Hat artıksız bölünüyor. |
+| **kaide** | **C4b — lambri korunur** | §B: dört kaide arasında yayılım **0,0 puan** → ölçüm ayırt etmiyor, görsel tercih. Lambri korununca cephe iç duvarlarla tek dil konuşuyor. |
+| **C2 KayKit modülü** | **GİRMEDİ** | deliği cam bandının %57'si · hat 9,56 modül (1,80 br artık) · atlas turkuaz #21a489 → D-100'ün reddedilen düzenine dönüş. |
+
+**Uygulama:** yeni `cepheLook.ts` (vitrinin ölçü katmanı) · `Scene.Vitrin` (iki InstancedMesh:
+kasa + cam) · `wallPanel.SOVE_W` / `SOVE_DIS` / `RAIL_TOP` dışa açıldı · vitrin açıklıkları
+`pencereBosluklari` ile **aynı** `wallPieces` çağrısına giriyor (ayrı kod yolu yok).
+
+**Kararın uygulamada doğurduğu iki ayrıntı — ikisi de kararın İÇİNDEN çıktı, yeni tercih değil:**
+
+1. **Kaide 0,90 değil 0,98.** "Lambri korunur" tam 0,90'a konsaydı kuşak kalır ama **üstündeki
+   ÇITA hiç doğmazdı** (`wallBoxes` çıtayı 0,90…0,98 üretir; parçanın tepesi 0,90 olunca o
+   katman boş pencereye düşer). Kararın karşılığı kuşak + çıtasıdır → sınır `RAIL_TOP`.
+   Bedeli: cam bandı 2,25 → **1,67 br**.
+2. **Göz SAYISI değil göz ENİ sabitlendi.** "4 göz" kararı 14,50 br'lik yarı-hattı görüyordu
+   (2 alan açık). Sayı koda sabitlenseydi 1 alan açıkken hat 6,00 br olduğu için göz eni
+   1,23'e düşer, cephenin ritmi alan açıldıkça değişirdi. Hedef en sabit → 14,50'de sayı yine
+   tam **4** çıkıyor ((14,50 + 0,36) / (3,35 + 0,36) = 4,005).
+
+**Çizim bedeli rapordan DÜŞTÜ:** §Ş 4 göz/yarı için **40 ek çizim çağrısı** saymıştı; kasa ve
+cam instanslandığı için gerçek bedel **2**.
+
+**Bekçi:** `tests/cephe-vitrin.test.ts` — **17 denetim**, **23 mutasyon**, kaçan **0**.
+`tsc -b` temiz · vitest **907** · duman **42/42** · altı kadraj gözle doğrulandı.
+
+**Kaçan mutasyonun öğrettiği (S6/②'nin kendi dersi):** ilk turda 23 mutasyondan **biri kaçtı** —
+söve ve köşe paylarını **yer değiştiren** mutasyon 16 denetimin hepsinden geçiyordu. Sebep
+aritmetik: 0,60 + 0,20 iki yönde de aynı toplamı verir, yani hat **uzunluğu** değişmez, gözler
+yalnız 0,40 **kayar**. O kayma masum değil — binanın köşesinde payanda kalmaz, cam köşeye
+dayanır. Bekçi "gözler hattın içinde mi" diye soruyordu, "**hangi uçta hangi pay var**" diye
+sormuyordu. Denetim eklendi (17.), mutasyon yakalandı.
+
+**§S SON DURUM (ham çıktının sonunda):** araç artık `cepheLook`u okuyor — uygulanan göz sayısı,
+göz eni, kaide, cam üstü, ayak, cam yüzeyi ve söve mesafesi **kararla birebir** çıkıyor. Final
+koşu bir tekrar değil, "ölçülen kol ↔ sevk edilen kod" bağının makine denetimi.
+
+**Bu turdan DEVREDEN (ölçüldü, bilerek yapılmadı):** camın ardındaki giriş holü şeridi
+(z 14,88…17,39) artık **görünüyor** ama içeriği vitrin için düzenlenmiş değil — öğeler duvar
+diplerine dağılmış durumda. Vitrinin gerçekten "dolu" okunması için o şeridin kendi yerleşim
+turu gerekiyor.

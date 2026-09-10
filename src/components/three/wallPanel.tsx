@@ -53,6 +53,12 @@ const T_RAIL = 0.26;
 /** Çıtanın yüksekliği ve merkez y'si — maket: box(...,0.08,...) @ y = 0.94. */
 const RAIL_H = 0.08;
 const RAIL_Y = 0.94;
+/**
+ * Çıtanın ÜST kenarı (0,98). Cephe vitrininin kaidesi buradan türüyor (D-105/C4b): sınır tam
+ * 0,90'a konsaydı `wallBoxes` çıta katmanını hiç üretmezdi (parçanın tepesi 0,90 → 0,90…0,98
+ * penceresi boş kalır) ve "lambri korunur" kararı lambriyi çıtasız bırakırdı.
+ */
+export const RAIL_TOP = RAIL_Y + RAIL_H / 2;
 
 /**
  * ANA KAPI BOŞLUĞU — maket v13'ün ana giriş bloğu (`DH = 2.65`, söveler dx ∓2,2).
@@ -65,6 +71,16 @@ const RAIL_Y = 0.94;
  * yerde durur: `Scene.Walls` da `tests/layout-b32` de buradan okur (D-015 — sayıyı iki yere yazma).
  */
 export const DOOR = { half: 2.2, height: 2.65 } as const;
+
+/**
+ * Kapı SÖVESİNİN eni. `Scene.Walls` bu kutuyu çiziyordu ve sayı orada gömülüydü; cephe vitrini
+ * (D-105) sövenin DIŞ kenarını bilmek zorunda (gözler oradan başlar) ve `Scene.tsx` vitest'te
+ * import edilemiyor — yani bekçi testi sınırı ancak vitrinin KENDİ payından türetebilirdi, o da
+ * testin kendi kendini doğrulaması olurdu. Sayı tek yerde (D-015).
+ */
+export const SOVE_W = 0.4;
+/** Sövenin kapı ekseninden ölçülen DIŞ kenarı — vitrin gözlerinin başlayabileceği ilk nokta. */
+export const SOVE_DIS = DOOR.half + SOVE_W / 2;
 
 /**
  * Bir duvar parçasının taban dikdörtgeni (merkez + ölçüler) ve teması.
