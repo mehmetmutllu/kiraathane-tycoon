@@ -1,0 +1,223 @@
+================================================================================================================
+S6/② ÖLÇÜM — GİRİŞ CEPHESİ CAMI (vitrin). D-037 karar verdi, oyuna hiç geçmedi.
+================================================================================================================
+
+§Ö ÖLÇÜ TABANI — cephenin BUGÜNKÜ sayıları
+----------------------------------------------------------------------------------------------------------------
+duvar yüksekliği WALL_H    3.20 · lambri üstü WAINSCOT_H    0.90 · çıta y 0,94
+cephe hattı z   17.50 · kapı ekseni x    0.00 · kapı boşluğu    4.40 · kapı boyu    2.65
+kapı bloğu dış yarı-eni    2.50 (lento/kordon) · söve dış kenarı    2.40
+
+ön duvar parçaları (WALL_RUNS, areasOpen = 2):
+  parça          x0      x1  uzunluk   alan
+  front      -17.50  -2.20  15.30      0
+  front        2.20  17.50  15.30      1
+  → TOPLAM CEPHE HATTI   30.60 br (kapı boşluğu    4.40 br hariç)
+
+D-037 PROGRAMI (yazıldı, kodda YOK): kaide 0…0,40 · CAM 0,40…2,65 · lento · alınlık 2,65…3,20
+BUGÜN KODDA OLAN      : gövde    0.90…   3.20 (krem) · lambri 0…   0.90 · çıta 0,94 — CAM YOK
+  → cam bandının boyu    2.25 br · cephe hattı   30.60 br → aday cam yüzeyi   68.85 m²
+
+§V GÖRÜNÜRLÜK — cephenin hangi ŞERİDİ ekrana giriyor? (S6 §V yöntemi, birebir)
+----------------------------------------------------------------------------------------------------------------
+kamera oyuncunun +z'sinde (pz +    8.50), −z'ye bakıyor · fov 50 · tarama 1 × 0.5
+KAMERA BİNANIN DIŞINDA (cz >   17.50) olduğu konum oranı: taban   29% · uzaklaş   41%
+  → cephe ancak bu konumlarda kameranın ÖNÜNDE; geri kalanında kameranın ARKASINDA kalır.
+
+şerit                                 x       y   kadraj  uzaklaş   portre
+kaide (y 0,20)                    -6.00   0.20     8%      15%      14%
+lambri kuşağı (y 0,60)            -6.00   0.60     7%      15%      13%
+lambri ÇITASI (y 0,94)            -6.00   0.94     8%      15%      14%
+CAM BANDI alt (y 1,20)            -6.00   1.20     8%      15%      14%
+CAM BANDI orta (y 1,80)           -6.00   1.80     7%      15%      13%
+CAM BANDI üst (y 2,40)            -6.00   2.40     8%      14%      14%
+ALINLIK / tabela (y 2,90)         -6.00   2.90     7%      15%      13%
+üst kordon (y 3,15)               -6.00   3.15     7%      15%      14%
+cam bandı — kapının 3 br solu     -3.00   1.80     7%      15%      14%
+cam bandı — hattın UCU (x −16)   -16.00   1.80     4%       8%       7%
+cam bandı — hattın UCU (x +16)    16.00   1.80     4%       8%       7%
+
+CEPHE KADRAJA GİRDİĞİ 125 konumun 0'inde kamera İÇERİDE, 125'inde DIŞARIDA.
+  → CEPHE HİÇ İÇERİDEN GÖRÜLMÜYOR. Kamera cephenin içindeyken cephe kameranın ARKASINDA
+    kalıyor (kamera −z ye bakar, cephe +z dedir). Sonuç: camın İÇ yüzü — kasa, lambri, tema —
+    ekrana hiç girmiyor; vitrin bir DIŞ CEPHE kalemi, bir iç mekân kalemi değil.
+
+EKRAN PAYI — cephe kadraja girdiğinde ekranın YÜZDE KAÇINI kaplıyor? (konum yüzdesi bunu
+söylemiyor: görsel tur cephenin alt üçte biri doldurduğunu gösterdi, ölçüm onu doğruluyor)
+  oyuncu pz   kamera cz   taban ekran y   tepe ekran y   DİKEY EKRAN PAYI
+    12.00  20.50          -1.14          -0.73          13%
+    13.50  22.00          -0.80          -0.30          25%
+    15.00  23.50          -0.50           0.03          27%
+    16.00  24.50          -0.33           0.20          27%
+    16.50  25.00          -0.26           0.28          27%
+  (ekran y: −1 kadrajın altı · +1 üstü · pay = cephenin kapladığı dikey oran)
+
+(Burada ÖRTME süzgeci YOK — şerit duvarın kendi yüzünde, onu örten bir şey yok. Örtme
+ sorusu §Ö2 de: duvarın SALONU örtmesi.)
+
+§Ö2 ÖRTME KAZANCI — cam bir SÜS değil bir DELİK. Ön duvar salonu ne kadar gizliyor?
+----------------------------------------------------------------------------------------------------------------
+C0 = bugünkü (ön duvar 0…3,20 katı) · C1 = vitrin (yalnız kaide 0…0,40 + alınlık 2,65…3,20 katı)
+Kapı bloğu (söve · lento · alınlık kutusu) İKİ KOLDA DA duruyor — kolların farkı değil.
+
+İKİ PAYDA — "tüm kat" ve "YAKIN". Duvar ancak kamera dışarıdayken (oyuncu pz > 9,00) araya
+girer; tüm katı tarayınca kazanç, duvarın hiç etkisi olmadığı bölgeyle seyreliyor. YAKIN
+sütunları oyuncu ön yarıdayken (pz ≥ 10) ölçer ve KADRAJA GİREN konumları payda alır.
+
+hedef                               kadraj  |  TÜM KAT C0→C1  kazanç  |  YAKIN C0→C1  kazanç
+ön sıra MASA ÜSTÜ (z 11.70)           17%  |   100%→ 100%      0%  |   100%→ 100%      0%
+ön sıra müşteri BAŞI (z 11.70)        17%  |   100%→ 100%      0%  |   100%→ 100%      0%
+ön sıra YERDEKİ PARA (z 11.70)        17%  |   100%→ 100%      0%  |   100%→ 100%      0%
+ön sıra masa — İÇ sütun (x −5,30)     22%  |   100%→ 100%      0%  |   100%→ 100%      0%
+ikinci sıra masa üstü (z 5,30)        32%  |   100%→ 100%      0%  |   100%→ 100%      0%
+ikinci sıra yerdeki para (z 5,30)     32%  |   100%→ 100%      0%  |   100%→ 100%      0%
+GİRİŞ KORİDORU — yerdeki para (z 14.15)    16%  |    68%→  68%      0%  |    58%→  58%      0%
+GİRİŞ KORİDORU — müşteri başı (z 14.15)    15%  |   100%→ 100%      0%  |   100%→ 100%      0%
+GİRİŞ (entranceAt, z 16.60)            9%  |    54%→  54%      0%  |    60%→  60%      0%
+oyuncunun kendi BAŞI (kapı önü)       12%  |    90%→  90%      0%  |    82%→  82%      0%
+sağ kanat masa üstü (x +11,70)        17%  |   100%→ 100%      0%  |   100%→ 100%      0%
+
+ORTALAMA KAZANÇ — tüm kat: 0.0 puan · YAKIN: 0.0 puan
+
+ÖRTME PROFİLİ — oyuncu cepheye yaklaşırken (kamera dışarı çıkarken) ön duvarın gölgesi
+salona kaç birim giriyor? (x = kapının 5 br solu, yani duvarın arkasında)
+  oyuncu pz   kamera cz       y=0.10     y=0.75     y=1.75   (C0 → C1)
+     9.00  17.50    100%→100%  100%→100%  100%→100%
+    10.50  19.00    100%→100%  100%→100%  100%→100%   kamera DIŞARIDA
+    12.00  20.50      86%→93%    86%→86%  100%→100%   kamera DIŞARIDA
+    13.50  22.00      71%→86%    79%→86%    93%→93%   kamera DIŞARIDA
+    15.00  23.50      57%→79%    71%→86%    86%→86%   kamera DIŞARIDA
+    16.50  25.00      43%→79%    57%→79%    79%→86%   kamera DIŞARIDA
+
+§B BANT SINIRI — cam nerede başlayıp nerede bitmeli? (kaide × cam üstü, YAKIN paydası)
+----------------------------------------------------------------------------------------------------------------
+Her hücre: cephenin ARKASINDAKİ dört hedefin YAKIN görünürlük ORTALAMASI (C0 tabanı = ilk satır).
+
+kaide | cam üstü       2.40     2.65     2.80     3.00     3.20     not
+C0 KATI DUVAR         79.6%                                         bugünkü
+0.00                  79.6%    79.6%    81.2%    82.7%    87.0%     cam zemine iner
+0.40                  79.6%    79.6%    81.2%    82.7%    87.0%     D-037
+0.60                  79.6%    79.6%    81.2%    82.7%    87.0%     
+0.90                  79.6%    79.6%    81.2%    82.7%    87.0%     lambri korunur (C4b)
+
+IŞIN CEPHEYİ HANGİ YÜKSEKLİKTE KESİYOR? (§B tablosunun nedeni — kaide satırlarının aynı
+çıkmasının sebebi burada)
+hedef                                   en yakın oyuncu  kesişme y   cam bandı 0,40…2,65 içinde mi?
+ön sıra masa üstü (z 11.70)             16.50           4.13     hayır (camın ÜSTÜNDEN geçiyor)
+giriş koridoru zemini (z 14.15)         16.50           2.69     hayır (camın ÜSTÜNDEN geçiyor)
+cephenin 1 br arkası — zemin (z 16,50)  16.50           1.09     EVET → vitrin kazandırır
+cephenin 1 br arkası — bel hizası (z 16,50)  16.50           1.88     EVET → vitrin kazandırır
+
+OKUMA — KAİDE: dört kaide (0,00 · 0,40 · 0,60 · 0,90) arasındaki yayılım 0.0 puan.
+Kaidenin yüksekliği örtmeyi etkilemiyor; ışın cepheyi hep yukarıdan kesiyor. Kaide/lambri
+seçimi (C4a ↔ C4b) bu yüzden bir ÖLÇÜM sorusu değil, bir GÖRSEL tercih — karar paketine öyle gider.
+OKUMA — CAM ÜSTÜ: kazanç bandın üst kenarı yükseldikçe doğuyor (taban 79.6%):
+  cam üstü 2.40 → 79.6%  (+0.0 puan)
+  cam üstü 2.65 → 79.6%  (+0.0 puan)
+  cam üstü 2.80 → 81.2%  (+1.5 puan)
+  cam üstü 3.00 → 82.7%  (+3.1 puan)
+  cam üstü 3.20 → 87.0%  (+7.3 puan)   ← ALINLIK da yok demek: cephenin TABELASI gider
+
+§C VİTRİN MODÜLASYONU — cam hattı kaç GÖZE bölünür?
+----------------------------------------------------------------------------------------------------------------
+kullanılabilir yarı-hat:  -16.90 …   -2.40 →   14.50 br (köşe payı    0.60, söve dış kenarı    2.40)
+  → iki yarı toplam   29.00 br cam hattı adayı
+
+göz   göz eni  ayak sayısı  ayak eni  toplam ayak    artık   göz eni / insan boyu
+   2     7.07            1   0.36   0.36   0.00   4.04 × insan boyu
+   3     4.59            2   0.36   0.72   0.00   2.62 × insan boyu
+   4     3.35            3   0.36   1.08   0.00   1.92 × insan boyu
+   5     2.61            4   0.36   1.44   0.00   1.49 × insan boyu
+   6     2.12            5   0.36   1.80  -0.00   1.21 × insan boyu
+   7     1.76            6   0.36   2.16   0.00   1.01 × insan boyu
+
+C3 (ayaksız — yalnız kapının İKİ YANINDA birer göz): göz eni   14.50 br × 2 göz,
+  cam yüzeyi   65.25 m² · C1 (tam hat) ile AYNI yüzey —
+  fark yalnız ayakların (düşey bölmelerin) olup olmaması. C3 "kısmi" değil, "ayaksız C1".
+
+§M KayKit DUVAR MODÜLÜ CEPHEYE OLUR MU? (C2) — S6 §E sağ duvar için elemişti, cephe başka soru
+----------------------------------------------------------------------------------------------------------------
+mimari ölçek KAY_S = WALL_H / 4 =    0.800 (S6 ile aynı gerekçe: modül 4,00 ham boy → duvar    3.20)
+
+modül                           ham en   ham boy  ham kal   üçgen   dünya en  dünya boy   kalınlık
+wall                             4.00   4.00   0.50      76   3.20   3.20   0.40
+wall_half                        2.00   4.00   0.50      76   1.60   3.20   0.40
+wall_window_open                 4.00   4.00   0.50     192   3.20   3.20   0.40
+wall_window_closed               4.00   4.00   0.50     196   3.20   3.20   0.40
+wall_orderwindow                 4.00   4.00   0.90     206   3.20   3.20   0.72
+wall_orderwindow_decorated       4.00   4.00   0.90     650   3.20   3.20   0.72
+wall_doorway                     4.00   4.00   0.50     162   3.20   3.20   0.40
+wall_decorated                   4.01   4.00   2.91    3880   3.20   3.20   2.33
+
+DELİKLERİ IŞINLA (S4/S6 dersi: vertex saymak yanlış — düz yüzün ortasında vertex yoktur):
+modül                          delik alt delik üst delik eni   dünya delik (en × boy)   cam bandı 0,40…2,65 karşılığı
+wall_window_open                 1.25   2.85   1.60        1.28 ×   1.28        boy   57% · en    1.28 br
+wall_window_closed               —        —        —      DELİK YOK
+wall_orderwindow                 1.25   2.85   2.60        2.08 ×   1.28        boy   57% · en    2.08 br
+wall_orderwindow_decorated       1.25   2.85   2.60        2.08 ×   1.28        boy   57% · en    2.08 br
+wall_doorway                     0.05   2.85   1.60        1.28 ×   2.24        boy  100% · en    1.28 br
+
+MODÜLÜN KENDİ YATAY OLUĞU ↔ maketin LAMBRİ ÇITASI (D-100 riski — kullanıcı "duvar 2ye bölünük" dedi):
+modül                           oluk ham y   oluk DÜNYA y   çıta y 0,94   sapma
+wall                             3.95   3.16   0.94   2.22
+wall_decorated                   3.95   3.16   0.94   2.22
+wall_window_open                 1.25   1.00   0.94   0.06
+
+ATLAS GÖZLERİ (rengi addan değil dokudan oku — S6 §G dersi):
+  wall                        [1,2] #21a489 doy 0.80 ×76  [1,4] #e8ceb4 doy 0.22 ×76
+  wall_window_open            [1,2] #21a489 doy 0.80 ×136  [1,4] #e8ceb4 doy 0.22 ×136  [0,3] #828c91 doy 0.11 ×48
+  wall_orderwindow            [1,2] #21a489 doy 0.80 ×136  [1,4] #e8ceb4 doy 0.22 ×136  [0,6] #995842 doy 0.57 ×36  [0,3] #828c91 doy 0.11 ×32
+
+MODÜL SAYISI: cephe hattı   30.60 br ÷ modül eni    3.20 br = 9.56 modül
+  → tam bölünme olmuyor; artık    1.80 br (D-100'ün duvarda çuvalladığı yer)
+
+§Ş ŞEFFAFLIK BEDELİ — cephe bugün TEK InstancedMesh içinde; cam onu böler mi?
+----------------------------------------------------------------------------------------------------------------
+Bugün: ön duvarın iki parçası `WallPanels` tek InstancedMesh'ine giriyor (gövde + lambri + çıta
+= 2 × 3 = 6 kutu, ek çizim çağrısı YOK — instans).
+
+kol                                 duvar kutusu  cam mesh  kasa mesh  ek çizim çağrısı  üçgen (cam+kasa)
+C0 bugünkü (cam yok)                           6         0          0                 0                 0
+C1 tam hat — 4 göz/yarı                       30         8         32                40               480
+C1 tam hat — 3 göz/yarı                       24         6         24                30               360
+C3 ayaksız — 1 göz/yarı                       12         2          8                10               120
+
+NOT — sağ duvarın penceresi (`Decor.Pencere`) camın ARKASINA opak bir "dışarısı gündüz" paneli
+koyuyor. CEPHEDE O PANEL OLAMAZ: cephede camın arkası salonun kendisi. §Ö2 zaten cam ARDINDA
+görülecek bir şey OLMADIĞINI ölçtü (kazanç 0.0 puan), ama panel konursa cam bir DELİK bile
+olmaz — kapalı bir renk şeridi olur ve şeffaflığın çizim bedeli karşılıksız ödenir.
+
+§K KAPI BLOĞU HİZASI — vitrin gelince kapı bloğunun neyi değişir?
+----------------------------------------------------------------------------------------------------------------
+parça                               y0       y1        en   x aralığı (kapı ekseninden)
+  söve (sol/sağ)               0.00   2.65   0.40   ∓0.20
+  lento                        2.65   2.81   5.00   ∓2.50
+  alınlık (duvar hattında)     2.65   3.20   4.80   ∓2.40
+  üst kordon                   3.10   3.20   5.00   ∓2.50
+  VİTRİN kaidesi               0.00   0.40  14.50   ∓2.40 … ∓16.90
+  VİTRİN camı                  0.40   2.65  14.50   ∓2.40 … ∓16.90
+  VİTRİN alınlığı              2.65   3.20  14.50   ∓2.40 … ∓16.90
+
+CAM ÜSTÜ ↔ KAPI ÜSTÜ hizası:    2.65 ↔    2.65 → sapma    0.000 ✓ HİZALI (D-037in kendi kuralı)
+VİTRİN ALINLIĞI ↔ KAPI ALINLIĞI: ikisi de    2.65…   3.20 → cephe tepesi TEK ŞERİT olur ✓
+VİTRİN ↔ SÖVE çakışması: vitrin ∓   2.40'ten başlar, söve dış kenarı ∓   2.40 → çakışma yok ✓
+
+LAMBRİ SORUSU (C4): bugün cephede lambri kuşağı 0…0,90 + çıta 0,94. Vitrin kaidesi 0…0,40.
+  → lambri kaideden    0.50 br YÜKSEK; ikisi bir arada duramaz.
+  C4a kaide 0,40 (D-037) — lambri cepheden KALKAR, iç duvarlarda kalır (cephe ayrışır).
+  C4b kaide    0.90 (lambri boyu) — lambri korunur, cam bandı    1.75 br (D-037den    0.50 br kısa).
+
+§T TEMA KOLU — `wallThemeByArea` cephede ne kadar yüzey kaybeder?
+----------------------------------------------------------------------------------------------------------------
+kol                                 temalı yüzey (m²)   cephe yüzeyinin  ·  kaybolan
+C0 bugünkü                          97.92             100%      0%
+C1 vitrin (kaide 0,40)              29.07              30%     70%
+C4b vitrin (kaide 0,90 = lambri)    44.37              45%     55%
+
+NOT: tema `wallThemeByArea` üstünden ALAN başına seçiliyor ve cephe iki alanın da kenarı.
+Cephe camlaşırsa temanın cephedeki payı düşer — ama §V cephenin kadraja giren payını zaten
+düşük ölçüyor; temanın asıl gösterildiği yüzey İÇ duvarlar. Bu satır bir BEDEL, engel değil.
+
+================================================================================================================
+SON — karar bölümü RAPORDA, bu dosyada YOK (D-084: ölç → sor → uygula).
+================================================================================================================

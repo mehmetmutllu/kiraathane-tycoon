@@ -5,33 +5,28 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-10 — **S7 BİTTİ** · Faz S 7/12 · 82/96)
+## ŞU AN (2026-09-10 — **S6/② GİRİŞ CEPHESİ CAMI** · Faz S 7/12 · 82/96)
 
 ```
-SORU            : (S7) WC odasının içi ekrana giriyor mu — giriyorsa kabin kapıları KayKit'e
-                  geçer mi, seviye MEKÂNSAL okunur mu (G-36), müşteri niye buharlaşıyor (G-35)?
-SAYILAR         : `docs/wc-odasi-raporu-s7.md` · taban `docs/olcum-wc-odasi-taban.txt` ·
-                  final `docs/olcum-wc-odasi-final.txt` · görsel `docs/gorsel/ss/s7-*.png`
-KARAR           : **D-104** — K2 `door_A` (yeşil kanat) · L lavabo+kabin sayısı birlikte ·
-                  M içeri yürü + yana sap + sön.
-BEKÇİ           : `tests/wc-odasi.test.ts` (26 denetim) · **15 mutasyon** (biri kaçtı, ölçüt sıkıldı)
-                  vitest **889** · duman **42/42** · `tsc -b` temiz · 7 kadraj gözle.
+SORU            : Giriş cephesi (ön duvar, z 17,50) düz badana duvar olarak mı kalsın, yoksa
+                  D-037'nin vitrin programına (kaide · cam · alınlık) mı geçsin? Geçerse cam
+                  nasıl kurulur, kapı bloğuna ve duvar temasına bedeli ne?
+ÖLÇÜLECEK KOLLAR: §V görünürlük + ÖRTME (ön duvar salonu kameradan kaç noktada gizliyor —
+                  camın asıl işi bu) · C0 bugünkü solid (kontrol) · C1 duvarın KENDİ boşluğu +
+                  cam levha (S6/E3 deseni) · C2 KayKit wall_window_* / wall_orderwindow modülü ·
+                  C3 kısmi (yalnız kapının iki yanında birer vitrin gözü) · C4 kaidede lambri
+                  kalsın mı · §Ş şeffaflık bedeli · §K kapı bloğu hizası · §T tema kolu
+SAYILAR         : `docs/cephe-cami-raporu-s6b.md` · ham `docs/olcum-cephe-cami.txt` ·
+                  görsel `docs/gorsel/ss/s6b-*.png` (6 kadraj)
+KARAR           : (adım 3 — kullanıcı seçer, D-105)
+UYGULAMA        : (adım 4 — yalnız kararın kolu)
+BEKÇİ           : (test dosyası + mutasyon sayısı)
 ```
 
-**S7'nin dersi: sayı ile ekran birbirinin yerine geçmiyor.** `door_A`nın köşe histogramı x'te
-0,48…1,12 arasında boşluk gösterdi ve *"ortası boş, demek ki kasa"* diye okudum — yanlıştı, orası
-düz bir panelin İÇİ (düz yüzün ortasında vertex yoktur). Bu ders S4'te öğrenilmiş ve S6 raporunda
-**yazılıydı**; yazılı kural yetmedi, araç gerekti → **`tools/model-bak.mjs`** modeli çizip gösteriyor.
-
-**İkinci ders: görsel tur, testlerin bulamadığını buluyor.** Oda açıkken BOŞ çizilebiliyordu
-(`padsDone` ile `lavaboLevel` dev kancasında ayrışıyor). 889 test yeşilken ekran görüntüsü
-yakaladı. Yama değil türetme: `wcSeviye()`.
-
-**Üçüncü ders: kaçan mutasyon bazen kodu değil BEKÇİYİ gösterir** — kaynak denetimi `door_A.gltf`
-metnini bir yorumdan buluyordu, ölçüt gerçek `src=` ifadesine çevrildi.
-
-**En pahalı bulgu:** doğu duvarı `maxLevel` kadar (6) lavabo **almıyor** (7,40 br, en çok 5) ve en
-öndeki slot **%0** görünüyor → sinyal lavabo + kabin diye ikiye bölündü.
+**Neden bu tur ayrı:** S6'da cephe ölçüldü ama pencere kolu (§E) yalnız SAĞ duvar içindi;
+D-037 cephenin vitrin olmasını 2026-09-05'te karara bağladı ve oyuna **hiç geçmedi** — bugün
+ön duvar iç duvarla aynı badana. Kapı bloğu (söve · lento · alınlık) ve `wallThemeByArea`
+buna dokunduğu için S7'de kullanıcı kararıyla kendi turuna ayrıldı.
 
 ## SIRADAKİ TAM ADIM
 
