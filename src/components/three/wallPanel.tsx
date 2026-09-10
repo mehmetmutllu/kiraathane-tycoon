@@ -61,7 +61,22 @@ export const DOOR = { half: 2.2, height: 2.65 } as const;
  * `h` verilmezse `WALL_H`. İnce eksen (w ya da d, hangisi küçükse) KALINLIKTIR; katmanlar o
  * ekseni kendi kalınlıklarıyla değiştirir, uzun eksen olduğu gibi kalır.
  */
-export type WallSlab = { x: number; z: number; w: number; d: number; theme: WallTheme; h?: number };
+export type WallSlab = {
+  x: number;
+  z: number;
+  w: number;
+  d: number;
+  theme: WallTheme;
+  h?: number;
+  /**
+   * Parçanın ALT sınırı (S6/E3). Varsayılan 0 = zeminden başlar.
+   *
+   * NEDEN EKLENDİ: pencere artık duvarın YÜZEYİNE yapışan bir levha değil, duvarda GERÇEK bir
+   * boşluk (kullanıcı: *"pencere duvardan ayrı duruyor"*). Boşluğun üstünde kalan lento şeridi
+   * (2,80 … 3,20) zeminden başlamayan bir duvar parçasıdır; `h` tek başına onu ifade edemiyordu.
+   */
+  y0?: number;
+};
 
 /** Çizilecek renkli kutu — merkez (x,y,z) + kenar uzunlukları. */
 export type WallBox = { x: number; y: number; z: number; w: number; h: number; d: number; color: string };
@@ -70,25 +85,31 @@ export type WallBox = { x: number; y: number; z: number; w: number; h: number; d
  * Bir duvar parçasını maketin ÜÇ kutusuna çevirir: gövde · lambri · çıta.
  * SAF fonksiyon (birim testi var); çizim `WallPanels`'da.
  */
-export function wallBoxes({ x, z, w, d, theme, h: slabH }: WallSlab): WallBox[] {
+export function wallBoxes({ x, z, w, d, theme, h: slabH, y0 = 0 }: WallSlab): WallBox[] {
   const H = slabH ?? WALL_H;
   const alongX = w >= d; // uzun eksen x mi? (yatay duvar) — değilse z (düşey duvar)
   const len = alongX ? w : d;
-  // Katman: kalınlığı ince eksene yaz, uzunluğu koru.
-  const layer = (t: number, yBot: number, yTop: number, color: string): WallBox => ({
-    x,
-    y: (yBot + yTop) / 2,
-    z,
-    w: alongX ? len : t,
-    h: yTop - yBot,
-    d: alongX ? t : len,
-    color,
-  });
+  // Katman: kalınlığı ince eksene yaz, uzunluğu koru. `y0`/`H` penceresi dışında kalan katman
+  // hiç üretilmez — yoksa lento şeridine lambri de çizilirdi (havada asılı bir kuşak).
+  const layer = (t: number, yBot: number, yTop: number, color: string): WallBox | null => {
+    const b = Math.max(yBot, y0);
+    const u = Math.min(yTop, H);
+    if (u - b <= 1e-6) return null;
+    return {
+      x,
+      y: (b + u) / 2,
+      z,
+      w: alongX ? len : t,
+      h: u - b,
+      d: alongX ? t : len,
+      color,
+    };
+  };
   return [
-    layer(T_BODY, WAINSCOT_H, H, theme.cream), // badana gövdesi
+    layer(T_BODY, WAINSCOT_H, WALL_H, theme.cream), // badana gövdesi
     layer(T_WAINSCOT, 0, WAINSCOT_H, theme.wainscot), // lambri kuşağı
     layer(T_RAIL, RAIL_Y - RAIL_H / 2, RAIL_Y + RAIL_H / 2, theme.rail), // lambri üstü çıta (KOYU)
-  ];
+  ].filter((b): b is WallBox => b !== null);
 }
 
 // Birim küp + BEYAZ materyal: gerçek renk per-instance (instanceColor diffuse ile çarpılır,

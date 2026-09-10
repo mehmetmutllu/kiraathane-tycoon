@@ -275,7 +275,27 @@ Model, konulacağı yerin **1,3 katı eninde ve 2,7 katı derinliğinde.** Soru 
 
 ---
 
-## §Karar
+## §Karar — **D-102** (kullanıcı, 2026-09-10)
 
-*(Bu bölüm ölçüm commit'inde BİLEREK BOŞ. Karar paketi kullanıcıya sunulur; seçilen kol
-ikinci commit'te uygulanır ve D-102 olarak `memory-bank/decisions.md`'ye yazılır.)*
+| kol | karar | gerekçe |
+|---|---|---|
+| **A ölçek** | **A1 tek global 3,636** | aile-başı kolun üç ailesinde tek model var → sapması tautolojik %0, bilgi taşımıyor. Tek çarpan paketin kendi iç oranlarını korur. |
+| **B binalar** | **GİRMEDİ**, bugünkü kutular da **SİLİNDİ** | §V: üç kamera kipinde de %0 görünürlük. 10.389 üçgen, sıfır karşılık. |
+| **C yol karosu** | **GİRMEDİ** | karo kendi kaldırım payını taşıyor (asfalt 1,24/2,00) → iki kaldırım yan yana; ayrıca 7,00 derin ↔ bant 6,00. |
+| **D sokak mobilyası** | **GİRDİ** — lamba ×3 · bank ×2 · çalı ×4 · musluk · yer çöpü ×2 · taksi | görünen tek şerit burası (%3–14). |
+| **E pencere** | **E3 — duvara GÖMÜLDÜ** | E1 deliği bandın yarısı + D-100'ün reddedilen düzeni; E2 duvarı 3,20 → 4,13 yapıyor. |
+| **F tente** | **F1 — maket tentesi, bedeli kabul** | kullanıcı sayıyı görerek seçti. F3 ölçümle elendi (hiçbir hücre %0'a inmiyor). |
+| **G lavabo** | **G1 — `kitchentable_sink`, bugünkü kutuya çekildi** | gri olan bu (atlas gözü). Çarpıtma 2,62 kabul; yerleşim/nav/insan oranı korunuyor. |
+
+**Uygulama:** yeni `streetLook.ts` (sokağın ölçü katmanı) · `wcLook.ts` (lavabo) ·
+`wallLook.wallPieces` + `wallBoxes.y0` (duvarda gerçek açıklık) · `Scene.Street` yeniden yazıldı ·
+`Decor.Pencere` nişe göre yeniden kuruldu (lento kapağı hack'i kalktı) · `MERDIVEN_DERINLIK`
+ölçü katmanına taşındı.
+
+**Bekçi:** `tests/street-look.test.ts` (19) + `tests/pencere-nis.test.ts` (19), **16 mutasyon**.
+vitest **856** · duman **42/42** · `tsc -b` temiz · beş kadraj gözle doğrulandı
+(`docs/gorsel/ss/s6-*.png`, `tools/shot-dis-cephe-s6.mjs`).
+
+**Görsel doğrulamanın söylediği fazladan şey:** tentenin ekran görüntüsü sayıdan daha sert —
+kapı önü kadrajında kapı **tamamen** kayboluyor (`s6-sokak.png`). Karar kullanıcının; dönülmek
+istenirse hazır kol **F4**: dikey tabela 0,34 → **0,72** (üst kenar 1,97 = %0 kapanmanın sınırı).

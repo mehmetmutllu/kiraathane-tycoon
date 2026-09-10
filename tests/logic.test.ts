@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { floorQuads } from '../src/components/three/floorPattern';
 import { DOOR, wallBoxes, WALL_H, WAINSCOT_H } from '../src/components/three/wallPanel';
-import { MERDIVEN_DERINLIK } from '../src/components/three/maketParts';
+import { MERDIVEN_DERINLIK } from '../src/components/three/wallLook';
 import { FLOOR_THEMES, WALL_THEMES } from '../src/config/palette';
 import {
   economyConfig,

@@ -10,8 +10,19 @@ import { dwellState } from '../../game/dwell';
 import { GroundMarker } from './GroundMarker';
 import { FloorPattern } from './floorPattern';
 import { DOOR, WALL_H, WallPanels, type WallSlab } from './wallPanel';
-import { BAND_SHELL_RUNS, WALL_M, WALL_RUNS } from './wallLook';
+import { BAND_SHELL_RUNS, WALL_M, WALL_RUNS, pencereBosluklari, wallPieces } from './wallLook';
 import { KayWalls } from './KayWalls';
+import { Model } from './Model';
+import {
+  ASFALT,
+  CITY_S,
+  KALDIRIM,
+  STREET_PROPS,
+  STREET_Z0,
+  TENTE,
+  cityBoyut,
+  propX,
+} from './streetLook';
 import { PALETTE, FLOOR_THEMES, WALL_THEMES, LIGHTING } from '../../config/palette';
 import { Player } from './Player';
 import { Waiter } from './Waiter';
@@ -738,7 +749,20 @@ function Walls() {
   // bekçilenemedi: "hat kaç metre, KayKit modülüne bölünüyor mu" sorusu koda bakmadan
   // yanıtlanamıyordu. `kitchenLook.ts` (S3) aynı deseni mutfak için kurmuştu.
   const runs = WALL_RUNS(areasOpen);
-  const pieces: WallSlab[] = runs.map((r) => ({ x: r.x, z: r.z, w: r.w, d: r.d, theme: themeOf(r.area) }));
+  // S6/E3: pencere artık duvarın YÜZEYİNE yapışan bir levha değil, duvarda GERÇEK boşluk.
+  // Hangi hattın nerede delineceği `wallLook.pencereBosluklari` ile `config/decor.ts`ten TÜRER
+  // (pencere yeri iki dosyaya ayrı ayrı yazılmaz — D-015). Bölme saf fonksiyonda, bekçisi var.
+  // NOT: `kabuk === 'kaykit'` kolu bölünmemiş listeyi kullanır; o kol D-100'de reddedildi ve
+  // yalnız geri dönüş için duruyor.
+  const pieces: WallSlab[] = wallPieces(runs, pencereBosluklari(areasOpen)).map((r) => ({
+    x: r.x,
+    z: r.z,
+    w: r.w,
+    d: r.d,
+    theme: themeOf(r.area),
+    y0: r.y0,
+    h: r.h,
+  }));
   const frontEdgeZ = LAYOUT.areaBounds[0].maxZ + WALL_M; // kapı sövesi referansı
   return (
     <group>
@@ -947,52 +971,79 @@ function LavaboFront() {
 function Street() {
   const areasOpen = useGame((s) => s.areasOpen);
   const e = entranceAt(areasOpen);
-  const a = LAYOUT.area;
-  const z1 = a.maxZ + 0.5; // ön duvar hattı
-  const buildingColors = ['#7e6b8f', '#6b8f7e', '#8f7e6b', '#6b7d8f', '#8f6b7d'];
+  const z1 = STREET_Z0; // ön duvar hattı — sayı `streetLook`ta (Scene'de gömülü duruyordu)
   // z-fighting fix (kullanıcı: "sokakta/kapıda hareket ederken parazitlenme"): sokak düzlemleri zemin (y=0) ile
   // EŞ-DÜZLEM olunca titriyordu (asfalt zemin kenarıyla çakışıyordu). Net y ayrımı (≥0.02) + polygonOffset →
   // kamera hareket ederken titreme biter. Sokak düzlemleri opak → altındaki zemini kapatır (boşluk görünmez).
+  //
+  // S6 — KARŞI BİNALAR SİLİNDİ. Ölçüm (rapor §V): kamera oyuncunun +z'sinde durup −z'ye baktığı
+  // için z > 25,50 hiçbir kadrajda yok; binalar 26,5'teydi ve üç kamera kipinde de görünürlükleri
+  // %0 çıktı (tepeleri dahil). Gölgeleri de görünür şeride ulaşmıyor (güneş 14/26/16 → 7 boyunda
+  // kütlenin gölgesi z ≈ 22,2, görünür şerit z ≤ 20,5). KayKit `building_A…H` de bu yüzden
+  // GİRMEDİ: 10.389 üçgen, %0 karşılık. Bütün harcama görünen kaldırım bandına (z 17,5…20,5) yapıldı.
   return (
     <group>
       {/* kaldırım şeridi (TÜM cephe boyu — alanların kapıları da buraya açılır) */}
-      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[6, 0.04, z1 + 1.2]}>
-        <planeGeometry args={[40, 2.4]} />
+      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[KALDIRIM.x, 0.04, KALDIRIM.z]}>
+        <planeGeometry args={[KALDIRIM.w, KALDIRIM.d]} />
         <meshStandardMaterial color="#9e9e9e" polygonOffset polygonOffsetFactor={-2} polygonOffsetUnits={-2} />
       </mesh>
-      {/* asfalt cadde */}
-      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[6, 0.02, z1 + 5.5]}>
-        <planeGeometry args={[56, 6]} />
+      {/* asfalt cadde — ortası kadrajda yok ama ÖN KENARI (z 20,0) %3–8 görünüyor, o yüzden kalıyor */}
+      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[ASFALT.x, 0.02, ASFALT.z]}>
+        <planeGeometry args={[ASFALT.w, ASFALT.d]} />
         <meshStandardMaterial color="#37424a" polygonOffset polygonOffsetFactor={-1} polygonOffsetUnits={-1} />
       </mesh>
       {/* yol orta çizgileri */}
       {[-8, -4, 0, 4, 8, 12, 16, 20].map((x) => (
-        <mesh key={x} rotation={[-Math.PI / 2, 0, 0]} position={[x, 0.06, z1 + 5.5]}>
+        <mesh key={x} rotation={[-Math.PI / 2, 0, 0]} position={[x, 0.06, ASFALT.z]}>
           <planeGeometry args={[1.4, 0.18]} />
           <meshStandardMaterial color="#c9b458" polygonOffset polygonOffsetFactor={-3} polygonOffsetUnits={-3} />
         </mesh>
       ))}
-      {/* karşı binalar (cadde ötesi cephe) */}
-      {[-9, -5.6, -2.2, 1.2, 4.6, 8, 11.4, 14.8, 18.2].map((x, i) => {
-        const bh = 4 + ((i * 1.7) % 3);
+      {/* KALDIRIM MOBİLYASI (S6) — yerleşim `streetLook.STREET_PROPS`ta, burada tek koordinat yok.
+          Hepsi salt görsel; `.gltf` gelmezse `StreetFallback` ilkel şekle düşer (greybox-first). */}
+      {STREET_PROPS.map((p, i) => {
+        const x = propX(p, e[0]);
         return (
-          <mesh key={x} castShadow position={[x, bh / 2, z1 + 9]}>
-            <boxGeometry args={[3, bh, 2]} />
-            <meshStandardMaterial color={buildingColors[i % buildingColors.length]} />
-          </mesh>
+          <Model
+            key={`${p.model}${i}`}
+            src={`/assets/models/kaykit-city-builder-bits/${p.model}.gltf`}
+            scale={CITY_S}
+            position={[x, 0, p.z]}
+            rotation={[0, p.rot ?? 0, 0]}
+            fallback={<StreetFallback model={p.model} pos={[x, 0, p.z]} rot={p.rot ?? 0} />}
+          />
         );
       })}
-      {/* KAPI ÖNÜ (görsel kimlik): TEK kapıda yeşil TENTE + kaldırımda bahçe masaları + saksılar.
+      {/* KAPI ÖNÜ (görsel kimlik): TENTE + alınlık tabelası + kaldırımda bahçe masaları + saksılar.
           Salt görsel (collision yok); müşteri yolu (kapı hizası) boş bırakıldı. */}
       {(
         <group key={e[0]}>
-          {/* TABELA şeridi (dikey — eğimli tente kamera +z'den bakınca ekranı kapatıyordu; dikey yüzey
-              üstten bakışta incecik kalır, kimliği taşır) */}
-          <mesh castShadow position={[e[0], 1.42, z1 + 0.3]}>
+          {/* TENTE — maket v13, birebir (S6/F1 kullanıcı kararı). Bedeli ölçüldü ve kabul edildi:
+              kapı eşiği kameradan %77 konumda görünmez. Alternatif arandı, yükseklik × derinlik
+              düzleminde %0 veren hücre YOK (rapor §F). */}
+          <mesh castShadow position={[e[0], TENTE.y, TENTE.z]} rotation={[TENTE.rotX, 0, 0]}>
+            <boxGeometry args={[TENTE.w, TENTE.h, TENTE.d]} />
+            <meshStandardMaterial color={PALETTE.awning} flatShading />
+          </mesh>
+          {/* fırfır: tentenin ön kenarından sarkan açık şerit (dikey → kadraja eklediği bir şey yok) */}
+          <mesh
+            position={[
+              e[0],
+              TENTE.y - (TENTE.d / 2) * Math.sin(TENTE.rotX) - 0.14,
+              TENTE.z + (TENTE.d / 2) * Math.cos(TENTE.rotX),
+            ]}
+          >
+            <boxGeometry args={[TENTE.w, 0.26, 0.05]} />
+            <meshStandardMaterial color={PALETTE.awningStripe} />
+          </mesh>
+          {/* ALINLIK TABELASI — maketin kendi kuralı: tente lentonun ALTINDAN çıkar, bu şerit
+              kapanmasın. Ölçüm doğruladı: tentenin duvar YÜZÜNDEKİ yüksekliği 2,64 ≈ lento 2,65. */}
+          <mesh castShadow position={[e[0], 2.92, z1 + 0.3]}>
             <boxGeometry args={[3.4, 0.34, 0.06]} />
             <meshStandardMaterial color={PALETTE.awning} />
           </mesh>
-          <mesh position={[e[0], 1.22, z1 + 0.31]}>
+          <mesh position={[e[0], 2.72, z1 + 0.31]}>
             <boxGeometry args={[3.4, 0.05, 0.06]} />
             <meshStandardMaterial color={PALETTE.awningStripe} />
           </mesh>
@@ -1030,6 +1081,24 @@ function Street() {
           ))}
         </group>
       )}
+    </group>
+  );
+}
+
+/**
+ * Sokak parçasının GREYBOX yedeği (CLAUDE.md greybox-first). Ölçüsü modelin kendi dünya
+ * kutusundan gelir (`cityBoyut`), elle yazılmaz — model gelmese de sokak aynı hacimde durur.
+ */
+function StreetFallback({ model, pos, rot }: { model: (typeof STREET_PROPS)[number]['model']; pos: [number, number, number]; rot: number }) {
+  const b = cityBoyut(model);
+  const renk =
+    model === 'bush' ? PALETTE.plant : model === 'car_taxi' ? '#d9b23a' : model === 'firehydrant' ? '#b53a2f' : '#8a8f94';
+  return (
+    <group position={pos} rotation={[0, rot, 0]}>
+      <mesh castShadow position={[0, b.h / 2, 0]}>
+        <boxGeometry args={[b.w, b.h, b.d]} />
+        <meshStandardMaterial color={renk} flatShading />
+      </mesh>
     </group>
   );
 }

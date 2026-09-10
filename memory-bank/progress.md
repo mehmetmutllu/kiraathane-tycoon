@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 96 · YAPILAN 80 · %83):**
+**Oturum bütçesi (TOPLAM 96 · YAPILAN 81 · %84):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -24,10 +24,10 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
 | | D meta katman | 9/9 ✅ |
 | | E arayüz ve cila | 4/5 🔧 |
-| | **S sanat ve arayüz geçişi** | **5/12 🔧** |
+| | **S sanat ve arayüz geçişi** | **6/12 🔧** |
 | | H oynanış düzeltmeleri | 0/3 ⏳ |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **52/68** |
+| **Program toplam** | | **53/68** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -243,7 +243,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   değil; kendi turunu ister.
 - ⏳ **E5 — hareketli onboarding**
 
-## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (5/12) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
+## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (6/12) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
 - ✅ **S1 — pad ve yükseltme dili yeniden yazıldı** · çember → **köşe parantezli kare** (kenar
   ortaları boş), dolum büyüyen disk → **alttan üste dolan kare**, "Masa"/"Çay Yükselt"/"Usta"
   → hepsinde **YÜKSELT** + solunda düz yukarı ok, yazı 700 → 800, 💎 pulu "mavi kare" → gerçek
@@ -327,10 +327,24 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   **denge sayısı DEĞİŞMEDİ**.
   **Yan iş:** ölçüm aracı kendi iki hatasını düzeltti — düz parçada boy karşılaştırması sahte
   %650 sapma üretiyordu (ölçek ENDEN türer) ve **biçim oranı** hiç ölçülmüyordu.
-- ⏳ **S6 — dış cephe + pencere + tente** — `building_A…H` · yollar · `streetlight` · `bench` ·
-  `bush` · `car_taxi`; pencere `wall_window_open` (kullanıcının "pencere duvardan ayrı duruyor"
-  şikâyetinin doğrudan karşılığı); **tente maket-v13'ten** (`box(6.4, 0.18, 1.9, 0x2e6b4f)`,
-  x-rot 0,18, kapının üstünde). *(city-builder diskte + maket)*
+- ✅ **S6 — sokak görünen şeride indi · pencere duvara gömüldü · tente kondu (D-102)** ·
+  **Ölçüm planı çürüttü:** karşı binalar üç kamera kipinde de **%0 görünür** (kamera oyuncunun
+  +z'sinde, z tavanı 25,50; binalar 26,5'te) → `building_A…H` girmedi ve **bugünkü 9 kutu silindi**;
+  yol karosu da girmedi (karo kendi kaldırım payını taşıyor + 7,00 derin ↔ bant 6,00). Harcamanın
+  tamamı görünen şeride (z 17,5…20,5) gitti: lamba ×3 · bank ×2 · çalı ×4 · musluk · yer çöpü ×2 ·
+  taksi, ölçek **3,636** (paketin ortancası; mutfağın 0,90'ı burada −%66…−%81).
+  **Pencere şikâyeti geometriydi:** doğrama duvar yüzünün 0,055 önündeydi. KayKit modülü ölçüldü ve
+  elendi (deliği 1,28 × 1,28 ↔ band 3,20 × 1,65; oluğu 1,60 ↔ lambri 0,94 = D-100'ün reddedilen
+  düzeni) → boşluk **duvarın kendisinde** açıldı, nerede delineceği `config/decor.ts`ten türüyor.
+  **Tente F1 kullanıcı kararı:** bedeli ölçüldü (kapı eşiği %77 konumda görünmez) ve kabul edildi;
+  kaçamak kol aranıp **bulunamadı** (hiçbir yükseklik/derinlik hücresi %0'a inmiyor).
+  **Lavabo G1:** kullanıcının *"gri hali"* tarifi atlas gözüyle doğrulandı (`kitchentable_sink`,
+  tek göz #828c91); mutfak modülü olduğu için 0,90 değil bugünkü lavabo kutusuna çekildi.
+  Yeni `streetLook.ts` + `wcLook.ts`; `wallBoxes` `y0` aldı; `MERDIVEN_DERINLIK` ölçü katmanına
+  taşındı (çizim değişikliği mantık testini kırmıştı). Bekçi `tests/street-look.test.ts` (19) +
+  `tests/pencere-nis.test.ts` (19), **16 mutasyon**. `docs/dis-cephe-raporu-s6.md` ·
+  vitest **856** · duman **42/42** · `tsc -b` temiz · beş kadraj gözle doğrulandı ·
+  **denge sayısı DEĞİŞMEDİ**.
 - ⏳ **S7 — lavabo / WC odası** — kabin kapıları bugün düz kutu (`boxGeometry 1,36×1,95×0,06`,
   tek renk kahve) ve kullanıcı "kötü" dedi. Karşılığı diskte: `door_A` · `door_B` ·
   `wall_doorway` · bölme için `wall_half` + `pillar_A/B`; lavabo `kitchencounter_sink`.

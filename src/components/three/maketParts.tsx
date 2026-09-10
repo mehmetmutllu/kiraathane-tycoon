@@ -18,6 +18,12 @@
  * oyununki. Geometri segment sayıları maketin kendi önbelleğinden alındı (küre 10 × 8).
  */
 import { BAND, BAND_SHELL, LAVABO } from '../../game/store';
+import { Model } from './Model';
+import { AYNA_H, AYNA_T, AYNA_Y, AYNA_Z, LAVABO_SCALE } from './wcLook';
+import { STEP_D, STEP_H, STEP_N } from './wallLook';
+
+/** KayKit restaurant-bits kökü — `Kitchen.tsx` ile aynı yol. */
+const KAY_REST = '/assets/models/kaykit-restaurant-bits/';
 
 /** Maketin `C` paleti — yalnız bu dosyanın kullandığı girdiler, maketteki hex değerleriyle. */
 const MC = {
@@ -86,10 +92,46 @@ export function MaketWall({
   );
 }
 
-/** Maketin `sink()` — gövde · tezgâh · çanak · musluk · boru · ayna çerçevesi + camı. Birebir. */
+/**
+ * WC LAVABOSU — S6/G1: gövde KayKit'in GRİ musluklu modeli, ayna elle çizim olarak kalıyor.
+ *
+ * Kullanıcı 2026-09-10: *"lavabodaki musluklar var ya … pakette gri renkli hali var, onu kullan."*
+ * Aday `kitchentable_sink` ADINDAN değil ATLAS GÖZÜNDEN seçildi (tek göz #828c91, doygunluk
+ * 0,11 = gri); mutfaktaki `kitchencounter_sink` turuncu ahşap gövdeli olduğu için elendi.
+ * Ölçü/ölçek/gerekçe `wcLook.ts`te — burada tek sayı yok.
+ *
+ * AYNA MODELDE YOK: paketin hiçbir lavabosunda ayna yok, elle çizim taşıyordu. O yüzden ayna
+ * (çerçeve + cam) burada KALIYOR — model gelse de gelmese de duvarda duruyor.
+ *
+ * GREYBOX-FIRST: `.gltf` gelmezse `MaketSinkGovde` (maketin `sink()`'inin gövde/çanak/musluk
+ * kısmı, birebir) çizilir; oynanış kodu ve yerleşim değişmez.
+ */
 export function MaketSink({ pos, rot = 0 }: { pos: [number, number, number]; rot?: number }) {
   return (
     <group position={pos} rotation={[0, rot, 0]}>
+      <Model
+        src={`${KAY_REST}kitchentable_sink.gltf`}
+        scale={LAVABO_SCALE}
+        position={[0, 0, 0]}
+        fallback={<MaketSinkGovde />}
+      />
+      {/* AYNA — maketin kendi ölçüleri; modelde karşılığı yok. */}
+      <mesh position={[0, AYNA_Y, AYNA_Z]}>
+        <boxGeometry args={[0.9, AYNA_H, AYNA_T - 0.01]} />
+        <meshStandardMaterial color={MC.boardFrame} />
+      </mesh>
+      <mesh position={[0, AYNA_Y, AYNA_Z + 0.005]}>
+        <boxGeometry args={[0.8, AYNA_H - 0.1, AYNA_T]} />
+        <meshStandardMaterial color={MC.mirror} />
+      </mesh>
+    </group>
+  );
+}
+
+/** Maketin `sink()` gövdesi — model yüklenmezse çizilen yedek (ayna dışarıda, o hep çiziliyor). */
+function MaketSinkGovde() {
+  return (
+    <group>
       <mesh position={[0, 0.4, 0]}>
         <boxGeometry args={[1.3, 0.8, 0.6]} />
         <meshStandardMaterial color={MC.wc1} flatShading />
@@ -109,14 +151,6 @@ export function MaketSink({ pos, rot = 0 }: { pos: [number, number, number]; rot
       <mesh position={[0, 1.08, -0.13]} rotation={[Math.PI / 2, 0, 0]}>
         <cylinderGeometry args={[0.025, 0.025, 0.16, 6]} />
         <meshStandardMaterial color={MC.steel} />
-      </mesh>
-      <mesh position={[0, 1.75, -0.27]}>
-        <boxGeometry args={[0.9, 0.7, 0.04]} />
-        <meshStandardMaterial color={MC.boardFrame} />
-      </mesh>
-      <mesh position={[0, 1.75, -0.265]}>
-        <boxGeometry args={[0.8, 0.6, 0.05]} />
-        <meshStandardMaterial color={MC.mirror} />
       </mesh>
     </group>
   );
@@ -308,15 +342,6 @@ function prnd(i: number, lo: number, hi: number) {
   return lo + (x - Math.floor(x)) * (hi - lo);
 }
 
-/** Maketin merdiven sabitleri: `STEP_D = 0.46 · STEP_N = 14`; 14 basamakta 2,90 yükselir. */
-const STEP_D = 0.46;
-const STEP_N = 14;
-const STEP_H = 2.9 / STEP_N;
-/**
- * Yıkık merdivenin toplam derinliği: 14 basamak + sahanlık (0,3 boşluk + 0,6 derinlik, merkezi
- * `-L - 0.3` olduğu için arka yüzü `L + 0,6`). Bandın derinliğine sığdığı `logic.test` ile bekçili.
- */
-export const MERDIVEN_DERINLIK = STEP_N * STEP_D + 0.6;
 
 /**
  * Maketin `merdivenHarap()` — YIKIK MERDİVEN, birebir.

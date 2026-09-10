@@ -3025,3 +3025,56 @@ S4'ün iki sözü (banket masası · mağaza kartı render'ı) kendi turunda kal
 sabitin KULLANIMINI değil; ayrıca saksının denizliğe *sığdığı* hiçbir yerde ölçülmüyordu ve
 denizliğin derinliği `Decor.tsx`te gömülü bir sayıydı. Üçü birden düzeltildi: sayı tek kaynağa
 çıktı (`DENIZLIK_DERINLIK`), ölçüt "gövde denizliğe sığar" oldu, mutasyon yakalandı.
+
+## D-102 — Sokakta yalnız GÖRÜNEN şerit; pencere duvara gömüldü; tente bilerek kabul edildi (S6, 2026-09-10)
+
+**Turun ana bulgusu ölçüm sırasında çıktı ve planı çürüttü: KARŞI BİNALAR EKRANA HİÇ GİRMİYOR.**
+Kamera oyuncunun +z'sinde durup −z'ye bakıyor; oyuncunun z tavanı 17 → kameranın z tavanı
+**25,50**, binalar ise 26,5'te. Üç kamera kipinde de (taban · uzaklaş ×1,35 · portre ×1,30)
+görünürlük **%0** — binanın tepesi dahil. Gölgeleri de kurtarmıyor (7 boyunda kütlenin gölgesi
+z ≈ 22,2'ye düşüyor, görünür şerit z ≤ 20,5).
+
+**Sonuç:** `building_A…H` GEÇMEDİ (10.389 üçgen, %0 karşılık) ve bugünkü 9 renkli kutu SİLİNDİ.
+Yol karosu da girmedi: karo kendi kaldırım payını taşıyor (asfalt şeridi karonun yalnız
+1,24/2,00'si) → oyunun 2,40'lık gri kaldırımıyla **iki kaldırım** yan yana gelirdi; ayrıca karo
+7,00 derin, asfalt bandı 6,00. **Bütün harcama görünen şeride yapıldı** (z 17,5…20,5, %3–14):
+lamba ×3 · bank ×2 · çalı ×4 · yangın musluğu · yer çöpü ×2 · taksi. Ölçek **3,636**
+(city-builder paketi ORTANCASI; mutfağın 0,90'ı burada −%66…−%81 sapıyor).
+
+**Pencere — kullanıcının *"duvardan ayrı duruyor"* şikâyeti geometriydi, his değil.** Doğrama
+duvar yüzünün **0,055 önündeydi**, arkasında hiçbir boşluk yoktu. KayKit `wall_window_open`
+ölçüldü ve SEÇİLMEDİ: deliği 1,28 × 1,28 (oyunun bandı 3,20 × 1,65 — pencere yarıya inerdi) ve
+modülün kendi yatay oluğu 1,60'ta, lambri 0,94'te → D-100'de reddedilen *"duvar 2'ye bölünük"*
+düzenine dönülürdü. Boşluk **duvarın kendisinde** açıldı (`wallLook.wallPieces` + `wallBoxes.y0`);
+hangi hattın nerede delineceği `config/decor.ts`ten TÜRÜYOR, iki yere yazılmıyor. Bekçi ölçütü
+**korunum**: çizilen duvar alanı = eski alan − açıklık alanı.
+
+**Tente — kullanıcı bedeli GÖREREK kabul etti (F1).** Maket v13'ün tentesi birebir kondu.
+Ölçülen bedel: kapı eşiği kameradan **17/22 konumda (%77) görünmez**; bugünkü dikey tabela %0'dı.
+Kaçamak arandı ve YOK: yükseklik × derinlik düzlemi tarandı, hiçbir hücre %0'a inmiyor (en iyi
+geçilebilir hücre %45), çünkü tente giriş yolunun tam üstünde YATAY bir levha. Ölçüm ayrıca
+maketin kendi notunu doğruladı: tentenin duvar YÜZÜNDEKİ yüksekliği 2,64 ≈ lento 2,65.
+**Ekran görüntüsü sayıdan daha sert konuşuyor** (`docs/gorsel/ss/s6-sokak.png`): kapı tamamen
+kayboluyor. Karar kullanıcının, kayıt burada duruyor; dönülürse kol F4 (dikey tabela 0,34 → 0,72,
+%0 kapanmanın sınırı üst kenar 1,97).
+
+**Lavabo — kullanıcının tarifi ölçümle birebir tuttu.** *"Gri renkli hali"* = `kitchentable_sink`
+(TEK atlas gözü #828c91, doygunluk 0,11); mutfaktaki `kitchencounter_sink` turuncu ahşap gövdeli.
+Model bir MUTFAK MODÜLÜ (0,90'da 1,80 br eninde tezgâh), o yüzden ölçek 0,90 değil bugünkü lavabo
+KUTUSUNDAN türedi (G1): çarpıtma 2,62 kabul edildi, karşılığında yerleşim/nav/collision hiç
+değişmedi ve tezgâh üstü insan oranı (%49) korundu. Ayna modelde yok, elle çizim olarak kaldı.
+
+**Araç üç kez kendi hatasını buldu — üçü de tek eşiğe güvenmemekten çıktı.** ① "tezgâh üstü"
+ölçütü enin YARISINA bakıyordu ve çanağın üstündeki parçaya yapıştı (1,146 okundu, gerçeği 0,996);
+eklenen **en profili** yakaladı. ② "dikey yüzey kadrajı hiç kesmez" yazılacaktı, tarama 0,90'dan
+itibaren %14 gösterdi — belirleyici olan yüzeyin YÖNÜ değil **üst kenarın yüksekliği**.
+③ `propKutu` kutuyu origin etrafında simetrik sanıyordu; `streetlight`in kolu −x'e uzanıyor
+(minX −0,239 · maxX 0,030) ve test asimetriyi söylüyordu ama kutu onu KULLANMIYORDU.
+
+**Yan iş — `MERDIVEN_DERINLIK` ölçü katmanına taşındı.** Bir R3F dosyasında (`maketParts.tsx`)
+duruyordu ve `tests/logic.test.ts` oradan import ediyordu; o dosya lavabo için `Model`i import
+edince zincir `recolor` → `Image`e uzandı ve bir ÇİZİM değişikliği bir MANTIK testini kırdı.
+Sabitler `wallLook.ts`e geçti.
+
+Ölçüm `docs/olcum-dis-cephe.txt` · rapor `docs/dis-cephe-raporu-s6.md` · bekçiler
+`tests/street-look.test.ts` (19) + `tests/pencere-nis.test.ts` (19), **16 mutasyonla doğrulandı.**

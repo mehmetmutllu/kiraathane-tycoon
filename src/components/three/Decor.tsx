@@ -438,57 +438,74 @@ function DenizlikSaksi() {
 }
 
 /**
- * PENCERE — "cam kenarı"nın tek görsel kanıtı, ama ÖLÇÜLEREK yeniden kuruldu.
+ * PENCERE — S6/E3: artık duvara ASILMIŞ bir levha değil, duvardaki GERÇEK boşluğun kasası.
  *
- * İlk deneme maketin penceresini birebir küçültmüştü (koyu ahşap doğrama + yarı saydam cam) ve
- * oyunda **hiç okunmadı**: kamera yatayda tam −z'ye baktığı için z ekseninde uzanan yan duvarlar
- * neredeyse PROFİLDEN görünüyor; duvar yüzü ince bir dilime iniyor, 0,09 derinliğindeki koyu
- * doğrama ise camın önünü tamamen kapatıyor. Ekran görüntüsünde sağ duvar "koyu kahve dikey
- * çubuklar" oluyordu (`b6a-pencere-yakin.png`).
+ * KULLANICI ŞİKÂYETİ: *"pencere duvardan ayrı duruyor."* Ölçüm onu doğruladı (rapor §E):
+ * doğrama duvar yüzünün **0,055 önündeydi**, arkasında hiçbir boşluk yoktu — yani duvarda
+ * pencere değil, duvara asılmış bir pencere RESMİ vardı. Üç sinyalli eski çözüm (derin denizlik
+ * + açık doğrama + duvar tepesine basılan lento kapağı) bu eksikliği ÖRTMEK için kurulmuştu.
  *
- * Bu yüzden pencere üç sinyale bölündü ve üçü de kameranın GERÇEKTEN gördüğü yerlere kondu:
- *  1. **Derin denizlik** — odaya 0,30 taşar; 45°'lik kamera onun ÜST YÜZEYİNİ görür. Saksı da
- *     buraya oturur.
- *  2. **AÇIK doğrama** — koyu ahşap yerine duvarın açık çıta tonu; ince (0,04) ve az taşar,
- *     böylece camı kapatmaz. Cam da hafif emissive: gündüz ışığı içeri giriyor.
- *  3. **Duvar tepesinde lento kapağı** — duvarın ÜST bandı bu kadrajda geniş ve okunur bir
- *     yüzey; pencerenin oradan da işaretlenmesi "duvarda açıklık var" bilgisini profilden bile
- *     verir.
+ * Boşluk artık duvarın kendisinde açılıyor (`wallLook.wallPieces`), bu yüzden:
+ *  - **Lento kapağı KALKTI** — duvar tepesine cam rengi basmaya gerek yok, orada gerçek lento var.
+ *  - **Cam nişin İÇİNE girdi** (yerel z −0,18 = duvarın orta hattı), önüne değil.
+ *  - **KASA (söve dönüşü) eklendi** — boşluğun dört kenarını duvar kalınlığı boyunca saran
+ *    şeritler. Derinliği okutan şey bu: 45°'lik kamera üst ve yan dönüşleri görüyor.
+ *  - **Dış panel** camın arkasında duruyor: boşluk salonun dışına açıldığı için arkada boşluk
+ *    kalırdı; panel "dışarısı gündüz" yüzeyini verir ve delik hissini kapatır.
+ *  - **Derin denizlik KALDI** — ölçüm onu en güçlü kamera sinyali diye seçmişti, hâlâ öyle.
+ *
+ * YEREL EKSEN: parçanın yüzü yerel +z'ye bakar; sağ duvarda `rot = −π/2` olduğu için yerel +z
+ * dünyada −x, yani ODANIN İÇİ. Duvarın orta hattı yerel z = −0,18, dış yüzü −0,27.
  */
-function Pencere({ len, h, capY }: { len: number; h: number; capY: number }) {
-  const t = 0.05;
+function Pencere({ len, h }: { len: number; h: number }) {
+  const t = 0.06; // kasa şeridinin kalınlığı
+  const ORTA = -0.18; // duvarın orta hattı (yüz 17,32 ↔ hat 17,50)
+  const YARI = 0.09; // gövde kalınlığının yarısı — kasa bu derinlikte uzanır
   return (
     <group>
-      {/* cam: krem duvarın önünde açık mavi, hafif ışıklı (dışarısı gündüz) */}
-      <mesh position={[0, 0, 0.015]}>
+      {/* DIŞ PANEL — boşluğun arkası: "dışarısı gündüz". Camdan biraz dışarıda. */}
+      <mesh position={[0, 0, ORTA - YARI - 0.01]}>
+        <boxGeometry args={[len, h, 0.02]} />
+        <meshStandardMaterial
+          color={PALETTE.glass}
+          emissive={PALETTE.glass}
+          emissiveIntensity={0.45}
+        />
+      </mesh>
+      {/* CAM — nişin ortasında, hafif saydam */}
+      <mesh position={[0, 0, ORTA]}>
         <boxGeometry args={[len - 2 * t, h - 2 * t, 0.02]} />
         <meshStandardMaterial
           color={PALETTE.glass}
           emissive={PALETTE.glass}
           emissiveIntensity={0.28}
           transparent
-          opacity={0.85}
+          opacity={0.7}
         />
       </mesh>
-      {/* doğrama: AÇIK ton, ince — camı kapatmasın */}
+      {/* KASA — boşluğun dört kenarı, duvar kalınlığı boyunca. Derinliği okutan parça bu. */}
       {([
         [0, h / 2 - t / 2, len, t],
         [0, -h / 2 + t / 2, len, t],
       ] as const).map(([x, y, w, hh], i) => (
-        <mesh key={`h${i}`} position={[x, y, 0.03]}>
-          <boxGeometry args={[w, hh, 0.05]} />
+        <mesh key={`h${i}`} position={[x, y, ORTA]} castShadow>
+          <boxGeometry args={[w, hh, 2 * YARI]} />
           <meshStandardMaterial color={PALETTE.windowSash} />
         </mesh>
       ))}
       {[-len / 2 + t / 2, len / 2 - t / 2].map((x) => (
-        <mesh key={x} position={[x, 0, 0.03]}>
-          <boxGeometry args={[t, h, 0.05]} />
+        <mesh key={x} position={[x, 0, ORTA]} castShadow>
+          <boxGeometry args={[t, h, 2 * YARI]} />
           <meshStandardMaterial color={PALETTE.windowSash} />
         </mesh>
       ))}
-      {/* DERİN DENİZLİK: odaya taşar → ÜST YÜZEYİ kameradan okunur (asıl sinyal bu). Üstü AÇIK
-          (mermer denizlik), altı koyu ahşap konsol: iki ton üst üste gelince şerit "raf" değil
-          "pencere eşiği" okunuyor. */}
+      {/* ORTA KAYIT — tek büyük cam yerine iki kanat okunsun (maketin doğraması) */}
+      <mesh position={[0, 0, ORTA + YARI - 0.01]}>
+        <boxGeometry args={[t * 0.7, h, 0.03]} />
+        <meshStandardMaterial color={PALETTE.windowSash} />
+      </mesh>
+      {/* DERİN DENİZLİK: odaya taşar → ÜST YÜZEYİ kameradan okunur (ölçümün seçtiği ana sinyal).
+          Üstü AÇIK (mermer denizlik), altı koyu ahşap konsol. */}
       <mesh castShadow position={[0, -h / 2 - 0.04, DENIZLIK_DERINLIK / 2 - 0.01]}>
         <boxGeometry args={[len + 0.2, 0.06, DENIZLIK_DERINLIK]} />
         <meshStandardMaterial color={PALETTE.sill} flatShading />
@@ -497,15 +514,6 @@ function Pencere({ len, h, capY }: { len: number; h: number; capY: number }) {
         <boxGeometry args={[len + 0.12, 0.08, 0.2]} />
         <meshStandardMaterial color={PALETTE.wainscot} />
       </mesh>
-      {/* DUVAR TEPESİ: bu kadrajda yan duvarın gerçekten görünen tek geniş yüzeyi burası. Kesik
-          duvarda açıklık gösteremediğimiz için pencerenin bandı duvarın ÜSTÜNE de basılıyor —
-          mimari kesit çiziminde camın taranması gibi: profilden bakışta bile "burada açıklık var"
-          okunuyor. Uçlarda iki ince kayıt onu "boyanmış duvar" olmaktan çıkarıp doğrama yapıyor. */}
-      <mesh position={[0, capY, 0.02]}>
-        <boxGeometry args={[len, 0.045, 0.3]} />
-        <meshStandardMaterial color={PALETTE.glass} emissive={PALETTE.glass} emissiveIntensity={0.2} />
-      </mesh>
-      {/* (lento uçlarındaki iki kayıt kaldırıldı — çizim çağrısı bütçesi: bkz. dosya sonu notu) */}
     </group>
   );
 }
@@ -630,9 +638,7 @@ function Piece({ item }: { item: DecorItem }) {
     case 'denizlikSaksi':
       return <DenizlikSaksi />;
     case 'pencere':
-      // capY: duvarın TEPESİ (1,20 + kartonpiyer payı) parçanın YEREL eksenine çevrilmiş hâli —
-      // lento kapağı pencerenin y'si değişse de duvarın üstünde kalsın.
-      return <Pencere len={item.len ?? 3.0} h={item.h ?? 0.48} capY={1.235 - item.pos[1]} />;
+      return <Pencere len={item.len ?? 3.0} h={item.h ?? 0.48} />;
     default:
       return null;
   }

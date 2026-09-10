@@ -13,6 +13,7 @@
  * (aynı `m`, aynı `t`, aynı kapı kesmesi, aynı sıra). Tek fark, artık okunabilir olması.
  */
 import { BAND, BAND_SHELL, LAYOUT, doorX, wallSpans, type AreaSide } from '../../game/layout';
+import { decorItems } from '../../config/decor';
 import { DOOR, WALL_H as WALL_H_REF } from './wallPanel';
 
 /** Duvar hattının alan kenarından dışarıdaki payı — oyuncu kelepçe standoff'u ile birebir. */
@@ -111,6 +112,139 @@ export function BAND_SHELL_RUNS(): WallRun[] {
     { x: xr, z: (zb + zf) / 2, w: WALL_T, d: zf - zb, area: 2, side: 'right' },
   ];
 }
+
+// ============================================================================================
+//  PENCERE BOŞLUKLARI (S6/E3) — duvarda GERÇEK açıklık
+// ============================================================================================
+//
+// KULLANICI ŞİKÂYETİ: *"pencere duvardan ayrı duruyor."* Ölçüm haklı çıkardı (rapor §E): pencere
+// duvarın YÜZEYİNE yapışan bir levhaydı — doğrama duvar yüzünün 0,055 önünde, arkasında hiçbir
+// boşluk yok. Yani duvarda pencere değil, duvara ASILMIŞ bir pencere resmi vardı.
+//
+// KayKit'in `wall_window_open` modülü ölçüldü ve SEÇİLMEDİ: deliği 1,28 × 1,28, oyunun pencere
+// bandı ise 3,20 × 1,65 (pencere yarıya inerdi) ve modülün kendi yatay oluğu dünyada 1,60'ta,
+// maketin lambrisi 0,94'te — yani D-100'de kullanıcının ekranda görüp reddettiği *"duvar 2'ye
+// bölünük"* düzenine geri dönülürdü.
+//
+// Bu yüzden boşluk duvarın KENDİSİNDE açılıyor: pencerenin denk geldiği hat parçası dört alt
+// parçaya bölünüyor (solu · sağı · denizlik altı · lento üstü) ve pencere bandında hiç duvar
+// üretilmiyor. Kasa/cam/denizlik çizimi `Decor.Pencere`de.
+
+/** Bir duvar hattındaki açıklık: hat boyunca `a…b`, yükseklikte `y0…y1`. */
+export interface WallHole {
+  /** Hattın koordinatı — dik parçada x, yatayda z (`wallSideLine` ile aynı). */
+  line: number;
+  dikey: boolean;
+  a: number;
+  b: number;
+  y0: number;
+  y1: number;
+}
+
+/** Parçanın y aralığı taşıyan hâli — `WallSlab.y0/h` buradan doldurulur. */
+export interface WallPiece extends WallRun {
+  y0?: number;
+  h?: number;
+}
+
+/** Bir açıklık bu parçanın üstünde mi? (aynı hat + aynı eksen + örtüşen aralık) */
+const holeOnRun = (r: WallRun, o: WallHole): boolean =>
+  o.dikey === wallDikey(r) &&
+  Math.abs(o.line - wallSideLine(r)) < 0.4 &&
+  o.b > (wallDikey(r) ? r.z : r.x) - wallUzunluk(r) / 2 &&
+  o.a < (wallDikey(r) ? r.z : r.x) + wallUzunluk(r) / 2;
+
+/** Parçayı hat boyunca `[p0,p1]` aralığına kırpılmış bir kopyası olarak üretir. */
+function dilim(r: WallRun, p0: number, p1: number, y0?: number, h?: number): WallPiece {
+  const dikey = wallDikey(r);
+  const orta = (p0 + p1) / 2;
+  const uz = p1 - p0;
+  return dikey
+    ? { ...r, z: orta, d: uz, y0, h }
+    : { ...r, x: orta, w: uz, y0, h };
+}
+
+/**
+ * PENCERE PROGRAMINDAN açıklık listesi. Tek kaynak `config/decor.ts`: pencerenin nerede olduğu
+ * orada yazılı, duvarın nerede delineceği buradan TÜREDİ — iki yere ayrı ayrı yazılmıyor (D-015).
+ *
+ * `line` pencerenin kendi x'i (duvar YÜZÜ, 17,32); duvar hattı 17,50. Eşleşme toleransla
+ * yapılıyor çünkü dekor duvarın yüzüne, duvar ise kendi orta hattına göre konumlanır.
+ */
+export function pencereBosluklari(areasOpen: number): WallHole[] {
+  return decorItems(areasOpen)
+    .filter((d) => d.kind === 'pencere')
+    .map((d) => {
+      const dikey = Math.abs(Math.abs(d.rot) - Math.PI / 2) < 1e-6;
+      const len = d.len ?? 3.0;
+      const h = d.h ?? 0.48;
+      const eksen = dikey ? d.pos[2] : d.pos[0];
+      return {
+        line: dikey ? d.pos[0] : d.pos[2],
+        dikey,
+        a: eksen - len / 2,
+        b: eksen + len / 2,
+        y0: d.pos[1] - h / 2,
+        y1: d.pos[1] + h / 2,
+      };
+    });
+}
+
+/**
+ * Duvar parçalarını açıklıklara göre böler. Açıklığı olmayan parça AYNEN döner (bugünkü
+ * görüntü bozulmasın), olan parça dörde bölünür: açıklığın solu · sağı · altı · üstü.
+ *
+ * Kesişen iki açıklık desteklenmez — pencere programı (`config/decor.ts`) onları 4,8 br
+ * aralıkla koyuyor, pencere eni 3,20; bekçi testi bu ayrımı denetler.
+ */
+export function wallPieces(runs: WallRun[], holes: WallHole[]): WallPiece[] {
+  const out: WallPiece[] = [];
+  for (const r of runs) {
+    const dikey = wallDikey(r);
+    const uz = wallUzunluk(r);
+    const bas = (dikey ? r.z : r.x) - uz / 2;
+    const son = bas + uz;
+    const benim = holes.filter((o) => holeOnRun(r, o)).sort((p, q) => p.a - q.a);
+    if (!benim.length) {
+      out.push(r);
+      continue;
+    }
+    let imlec = bas;
+    for (const o of benim) {
+      const a = Math.max(bas, o.a);
+      const b = Math.min(son, o.b);
+      if (a - imlec > 0.01) out.push(dilim(r, imlec, a)); // açıklığın solundaki tam parça
+      if (b - a > 0.01) {
+        if (o.y0 > 0.01) out.push(dilim(r, a, b, 0, o.y0)); // denizlik altı
+        if (WALL_H_REF - o.y1 > 0.01) out.push(dilim(r, a, b, o.y1, WALL_H_REF)); // lento üstü
+      }
+      imlec = Math.max(imlec, b);
+    }
+    if (son - imlec > 0.01) out.push(dilim(r, imlec, son));
+  }
+  return out;
+}
+
+// ============================================================================================
+//  MERDİVEN KOVASI — maketin `merdivenHarap`ının ÖLÇÜSÜ (çizimi `maketParts.tsx`te)
+// ============================================================================================
+//
+// S6'da buraya TAŞINDI. Sebep somut: `MERDIVEN_DERINLIK` bir ÖLÇÜ sabiti ama bir R3F dosyasında
+// (`maketParts.tsx`) duruyordu ve `tests/logic.test.ts` onu oradan import ediyordu. O dosya
+// S6'da `Model`i (KayKit lavabosu için) import edince zincir `recolor` → `Image`e uzandı ve
+// node ortamında ÇÖKTÜ — yani bir ÇİZİM değişikliği bir MANTIK testini kırdı. Ölçü katmanının
+// varlık sebebi tam olarak bu (D-072 katman 1).
+
+/** Maketin merdiven sabitleri: 14 basamak × 0,46 derinlik; toplam 2,90 yükselir. */
+export const STEP_D = 0.46;
+export const STEP_N = 14;
+export const STEP_H = 2.9 / STEP_N;
+
+/**
+ * Yıkık merdivenin toplam derinliği: 14 basamak + sahanlık (0,3 boşluk + 0,6 derinlik, merkezi
+ * `-L - 0.3` olduğu için arka yüzü `L + 0,6`). Bandın derinliğine sığdığı `logic.test` ile bekçili.
+ */
+export const MERDIVEN_DERINLIK = STEP_N * STEP_D + 0.6;
 
 // ============================================================================================
 //  KAYKIT KABUĞU (S4) — duvar hattı paketin modülleriyle döşenir
