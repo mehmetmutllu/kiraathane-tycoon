@@ -1,0 +1,177 @@
+==============================================================================================
+§S  SES — bugünkü katalog ve eksikleri
+==============================================================================================
+
+  ses        süre(sn)  katman  baskın aile  toplam gain  en uzun dizi
+  --------------------------------------------------------------------------
+  serve         0.10       2  gürültü         0.20       1
+  coin          0.11       2  ton             0.22       1
+  purchase      0.26       2  ton             0.19       2
+  reward        0.26       2  ton             0.17       2
+  quest         0.30       1  ton             0.13       3
+  padFill       0.35       2  ton             0.17       3
+  pour          0.43       2  gürültü         0.15       2
+  level         0.45       2  ton             0.16       4
+  master        0.55       1  ton             0.11       3
+
+  COIN'İN YERİ: süre sıralamasında 2./9 · 0.111 sn
+                katalog ortalaması 0.313 sn → coin ortalamanın 0.35× ı
+                katman 2 · toplam gain 0.22 (katalogda en yüksek 0.22)
+
+  OKUMA: coin kataloğun EN KISA sesi ve bu bir kusur DEĞİL — saniyede birden çok kez
+  çalıyor, uzun olsa yığılırdı (`aralik` 0,06 sn). Kullanıcının "güzel coin sesi" isteği
+  süreyle değil KATMAN SAYISI ve GÖVDE ile ilgili: bugünkü coin tek bir metalik tık +
+  bir tiz geçiş. Piyasa tycoon'larının para sesi bir OLAY zinciridir (tık → tınlama →
+  kısa "kasa" onayı) ve genelde ÇOKLU TOPLAMADA perde basamak basamak yükselir.
+
+  ÇOKLU TOPLAMADA PERDE BASAMAĞI: YOK — art arda toplanan her para AYNI perdede çalıyor.
+
+  ORTAM SESİ / DÖNGÜ         : YOK — katalogda 9 sesin 9'u TEK ATIŞ, sürekli ses yok.
+  settings.music BAĞLANTISI  : 3 referans (kayıtta duruyor, hiçbir sese bağlı değil)
+  KATALOGDA BİLDİRİLEN DOSYA : 9/9 — her sesin dosya alanı dolu, üstüne yazmaya hazır
+  DİSKTEKİ SES DOSYASI       : 0 — kablo hazır, lisans yüzeyi bugün SIFIR (D-096 ④)
+
+==============================================================================================
+§S3 SES KAYNAK KOLLARI — künyeli (kaynak sayfaları 2026-09-10'da okundu)
+==============================================================================================
+
+  kol   sanatçı sayısı        lisans   künye      dosya  stil kilidi
+  --------------------------------------------------------------------------
+  S-A   tek (motorun kendisi) yok (kod) gerekmez   0      korunur
+  S-B   2 (sentez + 1 dış)  CC0      gerekmez (CC0) 2      KIRILIR
+  S-C   1 (Kenney)          CC0      gerekmez (CC0) 9+     korunur
+  S-D   9 ayrı olabilir     CC0 (ses ses doğrulanmalı) gerekmez (CC0) 9+     KIRILIR
+
+  S-A Sentez kalsın — coin zenginleşsin + ortam sentezle
+       kaynak: D-096 · src/game/audioSynth.ts
+       coin 2→4 katman + çoklu toplamada perde basamağı; ortam = gürültü kaynağı + yavaş bant süzgeci
+  S-B Hibrit — yalnız coin + ortam DOSYA, gerisi sentez
+       kaynak: kenney.nl/assets/casino-audio · freesound CC0
+       en çok istenen iki ses gerçekçi olur, gerisi sentez kalır — iki dil aynı sahnede
+  S-C Tek CC0 sanatçı seti (Kenney) baştan sona
+       kaynak: kenney.nl/assets/interface-sounds (100 ses) + casino-audio (50 ses)
+       stil kilidi tek sanatçıyla sağlanır; ölçülmüş bir katalog ölçülmemişle değişir (D-096 ③B)
+  S-D Serbest CC0 derleme (Freesound/OpenGameArt, ses ses seçilir)
+       kaynak: freesound.org CC0 süzgeci (cafe ambience: 44 sonuç) · opengameart.org
+       en zengin havuz, en yüksek lisans denetim yükü; tek stil kilidi tanımı gereği kırılır
+
+  LİSANS UYARISI (okundu, 2026-09-10): Pixabay CC0 DEĞİLDİR — kendi "Content License"ı
+  içeriğin "Standalone" dağıtımını yasaklar ve marka/logo taşıyan içeriği ticari kullanımdan
+  çıkarır. Oyun içi kullanım türev sayılıyor ama metin "yalnız tam lisans bağlayıcıdır"
+  diyor. CLAUDE.md kuralı net: **belirsiz hiçbir asset commit'lenmez** → Pixabay ELENDİ.
+  Zapsplat da elendi: künye ZORUNLU (ücretsiz katman) ve CC0 değil.
+
+==============================================================================================
+§U  ARAYÜZ — telefon kadrajında (390×844) ÇİZİLEN'den ölçüldü
+==============================================================================================
+
+§U1 ÖLÇEK — "çalışılmış hissettirmiyor"un sayısı: kaç FARKLI karar çiziliyor?
+
+  boyut               farklı değer   sağlıklı bir sistemde   fazlalık
+  ----------------------------------------------------------------------
+  punto (font-size)           17                     6   +11
+  köşe yarıçapı                9                     4   +5
+  gölge (box-shadow)          27                     4   +23
+  zemin rengi                 29                     8   +21
+  metin rengi                 23                     5   +18
+  font ailesi                  3                     2   +1
+
+  Toplam farklı görsel karar: 108 · sistemli karşılığı 29
+  Puntolar: 9.5 · 10 · 10.5 · 11 · 11.5 · 12 · 12.5 · 13 · 13.5 · 14 · 14.5 · 15 · 16 · 17 · 21 · 22 · 30
+  YARIM PİKSEL adımlar (10,5 · 11,5 · 12,5 · 13,5 · 14,5) bir ölçek değil, tek tek
+  ayarlanmış değerlerdir — göz farkı seçemez ama sistem OLMADIĞINI kanıtlar.
+
+§U2 PALET — "arayüz kahverengi, iç karartıcı" (G-16) iddiası sayıya döndü
+
+  kromatik zemin durağı            : 38 (gri/beyaz sayılmadı)
+  UÇLARIN kapladığı yay            : 216° / 360° — tek tük rozet renkleri yayı açıyor
+  KÜTLE merkezi                    : h 31° (turuncu-kahve)
+  kütlenin 60°'lik dilimdeki payı : %92.7  ← ASIL SAYI BU
+  bileşke vektör boyu R            : 0.909 (1 = hepsi tek yöne bakıyor)
+  SICAK (kırmızı-turuncu-sarı) payı: %93.1  (öğe ağırlıklı)
+  SOĞUK (yeşil-mavi) payı          : %2.8
+  ortalama açıklık (L)             : %42.3 — 0,5'in altı "koyu" okunur
+
+  En çok çizilen 6 zemin:
+    36× h  25°  s  %35.8  l  %21.4   grad:linear-gradient(rgb(74, 51, 35), rgb(45, 
+    14× h  23°  s  %42.1  l   %7.5   grad:linear-gradient(rgb(27, 17, 11), rgb(58, 
+    12× h  42°  s  %76.0  l  %75.5   grad:linear-gradient(rgb(240, 211, 145), rgb(1
+    12× h  17°  s %100.0  l  %68.0   grad:linear-gradient(rgb(255, 138, 92), rgb(22
+     8× h  40°  s %100.0  l  %97.1   grad:linear-gradient(rgb(255, 250, 240), rgb(2
+     8× h  40°  s  %45.6  l  %79.8   rgb(227, 211, 180)
+
+  OKUMA (sayıdan türetildi): şikâyet DOĞRULANDI. Zeminlerin %92.7'i h 31°
+  çevresindeki 60°'lik TEK dilimde, R = 0.91. Ekranda hiçbir yüzey bir başkasından
+  renkle AYRILMIYOR; ayrım yalnız açıklıkla yapılıyor ve ortalama açıklık da düşük
+  (%42.3). Sonuç: her şey tek bir kahverengi lekeye düşüyor — "iç karartıcı" tam bu.
+  DİKKAT: uç yay 216° çıkıyor ama bu YANILTICI — tek bir yeşil rozet ve tek bir mavi ipucu
+  yayı açıyor, kütle hâlâ tek dilimde. Yayına bakıp "palet zaten geniş" denemez.
+  Çözüm ille MAVİ değil (kullanıcı: "mavi şart değil"): KÜTLEYİ dağıtmak yeter — nötr bir
+  gövde + tek doygun aksan, sıcak kimliği KORUYARAK da R'yi düşürür.
+
+§U3 KABUK — "ekranlar tutarsız" (G-17) gerçekte NE?
+
+  ekran       kabuk tipi   kart en×boy   ekranın payı   yarıçap   kapat
+  --------------------------------------------------------------------------
+  gorevler    alt sayfa      390×675.2      %80.0      22px     ✕+arka
+  hedefler    alt sayfa      390×675.2      %80.0      22px     ✕+arka
+  magaza      alt sayfa      390×471.4      %55.9      22px     ✕+arka
+  karakter    alt sayfa      390×530        %62.8      22px     ✕+arka
+  ayarlar     alt sayfa      390×430        %50.9      22px     ✕+arka
+
+  BULGU: kabuk TİPİ zaten tutarlı — beş ekranın 5'i de alt sayfa, hepsinde ✕ + arkaya
+  tıklama var. Tutarsız olan BOY: 5 ekranda 4 farklı yükseklik
+  (675 · 675 · 471 · 530 · 430 px) → ekranın %50.9…%80.0'i.
+  Her sekmede panelin üst kenarı BAŞKA yere zıplıyor; "tutarsız" hissi buradan geliyor,
+  modal/tam-ekran seçiminden değil. G-17 bu yüzden yanlış sorulmuş bir soru.
+
+§U4 OKUNABİLİRLİK + KENDİ KURALLARIMIZIN DENETİMİ
+
+  ölçülen metin öğesi          : 184
+  WCAG AA eşiğinin ALTINDA     : 45 (%24.5)
+  farklı SINIF sayısı          : 10
+     2.32 : 4.5    11px  ×12  span.navtab-bang
+     2.59 : 4.5  11.5px  × 9  i.
+     2.59 : 4.5  11.5px  × 5  i.goal-tier
+     3.06 : 4.5   9.5px  × 1  span.qbig-kicker
+     3.27 : 4.5  10.5px  × 4  div.sheet-sec
+     3.27 : 4.5  11.5px  × 1  div.sheet-foot-note
+
+  FONT AİLESİ ekranda          : Lilita One 83× · Arial 13× · Baloo 2 88×
+  ⚠ OYUN FONTU SIZDIRIYOR      : 13 öğe tarayıcı varsayılanına (Arial) düşüyor
+     sızan sınıflar: span.band-title · button.sheet-x · span.qbig-kicker · span.qbig-title
+     KÖK SEBEP: <button> font-family MİRAS ALMAZ ve hiçbir kuralda `button { font-family:
+     inherit }` yok. Görev şeridi (.band) bir <button> — yani oyunun EN ÇOK OKUNAN metni
+     Arial. `feedback_ui_game_feel`in "system-ui font = AI slop" dediği şey tam bu.
+
+  SİMGE: 33 SVG · 17 METİN GLİFİ — örnekler: + ✕ ₺ 🔒 → ↺
+  Plan §9 ve `feedback_ui_game_feel`: "emoji ve CSS ikon YOK, her simge SVG". Bugün
+  mağaza panelinde 🔒 EMOJİ çiziliyor (HUD.tsx:1001, 1007) ve ✕ · → · ↺ · ₺ metin glifi.
+
+§U5 KROM KAPLAMASI — sahne bir tycoon'da baş aktör; arayüz ne kadarını yiyor?
+
+  .topbar         370×70    @ 10,8
+  .botnav         390×70    @ 0,774
+  .band           370×58    @ 10,708
+  .side-stack      38×38    @ 342,658
+  TOPLAM (birleşim): 76104 / 329160 px = %23.1
+  Bu sayı SAĞLIKLI (%23.1); sorun kromun MİKTARI değil, KALİTESİ. Kaplamayı
+  büyüten bir yeniden tasarım kabul edilmemeli — kazanç ölçekten ve paletten gelmeli.
+
+==============================================================================================
+§B  BULGULAR — karar paketine giren sayı satırları
+==============================================================================================
+
+  B1  ölçek dağınıklığı    17 punto · 9 yarıçap · 27 gölge
+  B2  palet kütlesi        zeminlerin %92.7'i h 31° çevresi 60° dilimde · R 0.91
+  B3  kabuk boyu           5 ekran, 4 farklı yükseklik (430…675 px)
+  B4  kontrast             45/184 metin öğesi WCAG AA altında (%24.5)
+  B5  font sızıntısı       13 öğe Arial — button font-family mirası yok
+  B6  kendi kuralımız      17 metin glifi + 🔒 emoji (plan §9: yalnız SVG)
+  B7  krom kaplaması       %23.1 — sağlıklı, büyütülmemeli
+  B8  coin sesi            0.111 sn · 2 katman · çoklu toplamada perde basamağı YOK
+  B9  ortam sesi           katalogda 9/9 tek atış; döngü YOK · settings.music hiçbir sese bağlı değil
+  B10 lisans yüzeyi        bugün 0 dosya · Pixabay ve Zapsplat elendi (CC0 değil) · CC0 kollar: S-B/S-C/S-D
+
+  KARAR: (BOŞ — adım 3, kullanıcı seçer)
+

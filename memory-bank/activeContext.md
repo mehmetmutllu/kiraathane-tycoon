@@ -5,53 +5,40 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-10 — **S8 BİTTİ** · Faz S 8/13 · 83/97)
+## ŞU AN (2026-09-10 — **S9+S10 ARAŞTIRMA TURU** · Faz S 8/13 · 83/97)
+
+Kullanıcı iki kalemi birleştirdi: *"panodaki seslere çok ısınmadım… para toplama vs güzel coin
+sesi gibi olsa güzel olur. bu tarz tycoon oyunlarının kullandığı veya bize uygun sesler için
+ui araştırması ile birlikte araştırma başlat. sonra ikisine de karar verelim."* UI için:
+*"mavi şart değil ama görsel olarak güzel ve çalışılmış hissettirsin."*
 
 ```
-SORU            : (S8) Giriş cephesi düz badana mı kalsın, D-037'nin vitrin programına mı geçsin?
-SAYILAR         : `docs/cephe-cami-raporu-s6b.md` · ham `docs/olcum-cephe-cami.txt` ·
-                  görsel `docs/gorsel/ss/s6b-*.png` (6 kadraj)
-KARAR           : **D-105** — C1 vitrin · 4 göz/yarı (3,35 br) · kaide C4b (lambri korunur).
-                  KayKit duvar modülü (C2) elendi.
-UYGULAMA        : yeni `cepheLook.ts` · `Scene.Vitrin` (2 InstancedMesh) · `wallPanel`den
-                  `SOVE_W`/`SOVE_DIS`/`RAIL_TOP` dışa açıldı · vitrin açıklıkları PENCEREYLE
-                  AYNI `wallPieces` çağrısına giriyor (ayrı kod yolu yok).
-BEKÇİ           : `tests/cephe-vitrin.test.ts` (17 denetim) · **23 mutasyon, kaçan 0**
-                  vitest **907** · duman **42/42** · `tsc -b` temiz · 6 kadraj gözle.
+SORU            : (S9+S10) Ses hangi kaynaktan gelecek ve UI hangi tasarım dilini konuşacak?
+                  İki soru tek turda ÖLÇÜLÜR, tek karar paketinde karara bağlanır. KOD YAZILMAZ.
+ÖLÇÜLECEK KOLLAR:
+  SES  S-A sentez kalsın, coin zenginleşsin + ortam sentezle    (lisans yüzeyi 0, tek sanatçı)
+       S-B hibrit: yalnız coin + ortam DOSYA, gerisi sentez     (2 dosya, iki dil bir arada)
+       S-C tek CC0 sanatçı seti (Kenney) baştan sona            (stil kilidi korunur, 9+ dosya)
+       S-D serbest CC0 derleme (Freesound/OGA, ses ses seçilir) (karışık sanatçı — kilit kırılır)
+  UI   U-1 palet yönü      (bugünkü ceviz+pirinç / mavi-gece / sıcak-nötr)
+       U-2 ekran modeli    (hepsi tam ekran / hepsi modal / karma: kabuk TEK)
+       U-3 pad şekli       (G-10 — yuvarlak / köşe-parantezli kare)
+SAYILAR         : (adım 2'den sonra dolar)
+KARAR           : (BOŞ — adım 3)
+UYGULAMA        : (S10 kod yazmaz; UI uygulaması S11'in, ses uygulaması S9'un turu)
+BEKÇİ           : (uygulama turunda)
 ```
-
-**S8'in dersi: ölçüm "yapma" derken ekran "yap" diyebilir ve ikisi çelişmez.** Örtme kazancı
-**0,0 puan** çıktı — kamera 45°'den bakıyor, ışın cepheyi duvarın tepesinin üstünden geçiyor
-(ön sıra masaya giden ışın cepheyi 4,13'te kesiyor, duvar 3,20). Sayıya bakıp "vitrin
-gereksiz" denebilirdi. **Görsel tur** başka bir şey gösterdi: cephe kadraja girdiğinde ekranın
-dikey **%27'sini** kaplıyor ve o bant bomboştu. İkisi çelişmiyor çünkü farklı soruları
-yanıtlıyor: cam bir **oynanış** aracı değil, bir **kimlik** aracı.
-
-**İkinci ders: aracın kendisi anlatıyı yalanlayabiliyor.** "Camın ardındaki şerit boş" diye
-yazmıştım; aynı araca eklenen sayım şeritte **10 dekor öğesi** buldu (paspas · askılık ·
-şemsiyelik · gazetelik) — cephe onları kapatıyormuş. Paragraf sayıdan türetilir hâle getirildi.
-
-**Üçüncü ders: aritmetik simetri mutasyonu gizliyor.** 23 mutasyondan biri kaçtı: söve ve köşe
-paylarını YER DEĞİŞTİREN mutasyon hat uzunluğunu değiştirmiyor (0,60 + 0,20 iki yönde de aynı),
-gözler yalnız 0,40 kayıyordu — ve bina köşesinde payanda kalmıyordu. Bekçi "gözler hattın içinde
-mi" diye soruyordu, "hangi uçta hangi pay var" diye sormuyordu.
-
-**Kararın içinden çıkan iki ayrıntı:** ① kaide 0,90 değil **0,98** — 0,90'da `wallBoxes` çıtayı
-hiç üretmiyor ve "lambri korunur" kararı lambriyi çıtasız bırakırdı. ② Göz **sayısı** değil göz
-**eni** sabitlendi; sayı sabitlense 1 alan açıkken göz 1,23'e düşer, ritim alan açıldıkça değişirdi.
 
 ## SIRADAKİ TAM ADIM
 
-**S9 — SES ASSETLERİ** (numarası kaydı, eski S8). Hâlâ **ses kaynağı kararı kullanıcıdan
-bekliyor** (asset panosu §7, dört kol; D-096'yı kısmen geri alır). Karar gelmezse sıradaki iş
-**S10 UI tasarım dili: araştırma + maket** — kullanıcının en çok şikâyet ettiği konu
-(*"hâlâ genel olarak UI çok kötü"*), kod yazılmaz, maket + onay turu.
+Ölçüm aracı `tools/olcum-ui.ts` → ham çıktı `docs/olcum-ui-ses.txt` → rapor
+`docs/ui-ses-raporu-s9s10.md` (§Bulgular, KARAR BÖLÜMÜ BOŞ) → **commit #1** → maket artifact
+→ **karar paketi**.
 
-**KULLANICI KARARI BEKLEYEN ÜÇ ŞEY** (hiçbiri sıradaki turu bloklamıyor):
-1. **Ses kaynağı** (S9) — asset panosu §7, dört kol.
-2. **Karakter kolu** (S13) — asset panosu §3, altı kol, bedelleri yazılı.
-3. **H2 yükseltme sırası** (A tek hedef / B kuşak) ve **H3 masa aralığı** (K1 aralığı aç /
-   K2 oturak küçült — K2 önerilmiyor, `feedback_reference_scale_trap`).
+**KULLANICI KARARI BEKLEYEN** (bu turun paketine girecek): ses kaynağı · UI paleti · ekran
+modeli · pad şekli · G-18 (masaya tıklayınca seviye).
+**Bu turun DIŞINDA bekleyen:** karakter kolu (S13, asset panosu §3) · H2 yükseltme sırası ·
+H3 masa aralığı.
 
 **Asset panosu:** https://claude.ai/code/artifact/2e7f92c0-15b6-4f72-814d-753cf79d74e0
 
