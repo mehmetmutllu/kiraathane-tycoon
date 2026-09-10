@@ -274,8 +274,14 @@ export function MaketLavaboBlock() {
       {/* ön duvar, kapı boşluğunun iki yanı + lento */}
       <MaketWall x1={x1} z1={zFront} x2={doorX - 0.7} z2={zFront} h={H} />
       <MaketWall x1={doorX + 0.7} z1={zFront} x2={x2} z2={zFront} h={H} />
-      {/* S6/②: kapının üstündeki koyu LENTO ŞERİDİ kaldırıldı (kullanıcı: "lavabo girişindeki
-          üstteki şeridi kaldır"). Kapı boşluğunu iki yandaki duvar parçaları zaten tanımlıyor. */}
+      {/* LENTO ŞERİDİ — maketin kendi parçası. S6/②'de kaldırılmıştı (kullanıcı "üstteki şeridi
+          kaldır" dedi) ama S6/③'te GERİ İSTENDİ: kaldırılması gereken şey bu değilmiş, kullanıcı
+          kapının üstündeki SARI DAİRELERİ kastediyormuş (bkz. `LAVABO.coinSpot` istifi).
+          Yanlış parçayı kaldırmışım; şerit geri geldi. */}
+      <mesh position={[doorX, H - 0.06, zFront]}>
+        <boxGeometry args={[1.6, 0.12, 0.3]} />
+        <meshStandardMaterial color={MC.doorWood} />
+      </mesh>
 
       {/* fayans zemin (maketin floorPatch'i: 0,2 kalınlığında kutu, üstü y'de) */}
       <mesh position={[(x1 + x2) / 2, 0.012 - 0.1, (zBack + zFront) / 2]}>

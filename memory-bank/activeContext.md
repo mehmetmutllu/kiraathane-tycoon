@@ -53,6 +53,24 @@ Geri dönüş kolu ölçülü ve hazır: **F4**, dikey tabela 0,34 → **0,72** 
 
 ## AÇIK KALEMLER (bilinen, bilerek duruyor)
 
+### S6/③ — kullanıcı 2026-09-10 (oturum kapandıktan sonra geldi, SIRADAKİ TURUN İLK İŞİ)
+
+- **G-35 · Müşteri lavabo kapısında YOK OLUYOR.** Bu bugün TASARIM: `layout.LAVABO` yorumu
+  *"oda YÜRÜNMEZ (bant kütlesi); müşteri kapıda kaybolur, `visitTime` sonra aynı yerde belirir"*
+  diyor. Ama oda ARTIK ÇİZİLİ ve kamera içini görüyor — görünen bir odanın kapısında insanın
+  buharlaşması hata gibi okunuyor. Kullanıcı öyle okudu. İki kol var, ölçüm ister:
+  **(a)** odayı yürünür yapıp müşteriyi gerçekten içeri sokmak (nav + bant kütlesine dokunur,
+  `v1.1'e ertelenen "aktif WC döngüsü"nün ta kendisi) · **(b)** kayboluşu ÖRTMEK — kabin kapısı
+  açılıp kapanan bir geçiş, ya da müşterinin kapının içine doğru yürüyüp solması.
+- **G-36 · Kapının üstündeki SARI DAİRELER.** Kaynağı bulundu: `LAVABO.coinSpot` = `[13.4, 0.3, −8.4]`
+  — lavabo ücretinin biriktiği para istifi (`Coins.tsx`). Kullanıcı "hâlâ duruyo" diyor, yani
+  toplanmıyor ya da orada durması istenmiyor. **Not: `feedback_coin_presentation` — para
+  görselinde her değişiklik önce maket onayı ister.**
+- **G-37 · Üst şerit GERİ GELDİ (yapıldı).** S6/②'de "üstteki şeridi kaldır" denince WC kapısının
+  LENTO şeridini kaldırmıştım; kastedilen o değil sarı dairelermiş. Şerit geri kondu.
+  **Ders: "şu şeyi kaldır" denince neyin kastedildiği ekran görüntüsünde İŞARETLENMEDEN
+  varsayılmamalı** — yanlış parça kalktı ve bir tur kaybedildi.
+
 - **S5'te söz verilip YAPILMAYAN:** ① banket masası `table_round_A_small`e geçecekti ② mağaza
   kartlarının gerçek oyun render'ı (`tools/tema-kapak.mjs` kadrajı bozuk). Kullanıcı 2026-09-10'da
   **kendi turunda kalsın** dedi; ikisi de ölçüm ister.
