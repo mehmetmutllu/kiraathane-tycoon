@@ -171,4 +171,78 @@ kuralı · B4 kontrast · B5 Arial · B6 emoji/glif. Bunlar S11'in işi.
 
 ## KARAR
 
-*(BOŞ — adım 3, kullanıcı seçer.)*
+*(KISMEN DOLU — aşağıdaki DÜZELTME bölümüne bakın. İki kol hâlâ açık.)*
+
+---
+
+## DÜZELTME — ilk maket yanlış soruyu sordu (2026-09-10, aynı tur)
+
+Kullanıcı palet sorusunu reddetti ve turu yeniden yönlendirdi:
+
+> *"Sen şunu anlamadın, mesele renk değil. **Şekil.** Alttaki bar çok büyük geldi gözüme.
+> Birine basınca alttan gelmesi kötü duruyo, **mağaza gibi hissettirmiyo**. Tam ekran veya modal
+> gibi olsun istiyorum, bu yüzden de internetten UI asset bul dedim. My Hotel veya Subway
+> Surfers gibi."*
+
+**Ölçüm doğruydu, sorusu yanlıştı.** §Bulgular'daki on satır ayakta; ama turun ağırlığı renk
+kütlesinden (B2) **biçime** kaydı. Palet kolu (U-1) masadan kalktı — renk, biçim çözülünce onun
+içinden çıkar. Ders: bir ölçüm aracı doğru sayıyı üretip yanlış soruyu yanıtlayabilir; kolları
+seçerken kullanıcının cümlesindeki **isimler** (bar · alttan gelme · mağaza hissi) kola
+çevrilmeliydi, benim çıkardığım soyutlamalar değil.
+
+### Asset araştırmasının dürüst sonucu
+
+Kullanıcının iki kez istediği "internetten UI asset" **bulunamadı ve bulunamayacağı ölçüldü**:
+
+| Kaynak | Ne var | Lisans | Uyar mı |
+|---|---|---|---|
+| Kenney *UI Pack* | 430 parça, düz/mat, ince kontur | CC0 | **Hayır** — referansların tersi: kabartmasız, gölgesiz |
+| Kenney *UI Pack · Adventure* | 130 parça, ahşap/parşömen | CC0 | Kısmen — tema RPG, tycoon değil |
+| itch.io ücretsiz GUI | ilk 20 sonucun **16'sı piksel-art** | karışık | **Hayır** — 3B low-poly sahneyle çelişir |
+| OpenGameArt UI | RPG/sci-fi panel setleri | ses ses doğrulanmalı | **Hayır** — tür uyuşmuyor |
+
+Sebep: Subway Surfers / My Perfect Hotel arayüzü satın alınmış bir kit değil, o oyunlar için
+çizilmiş. Ama o görünümün **kuralları** var ve beş maddeye iniyor — ve bu beş kural, B1'in
+108 kararını ~29'a indiren şeyin ta kendisi:
+
+| # | Kural | Bugün | Gramer |
+|---|---|---|---|
+| 1 | Kontur her şeyin etrafında, koyu ve kalın | 1 px açık pirinç | **2,5 px koyu ceviz** |
+| 2 | Gölge bulanık değil, **kaydırılmış katı** | 4 px bulanık, 27 çeşit | `0 4px 0`, tek çeşit |
+| 3 | Kabartma: üstte ışık, altta oyuk | yalnız üstte, silik | iki taraflı, belirgin |
+| 4 | Yarıçap büyük ve az basamaklı | 9 basamak, 8…22 px | 3 basamak: 14 · 22 · tam |
+| 5 | Simge büyük, metin küçük | 19–25 px simge, 17 punto | 28 px simge, 6 punto |
+
+### Yeni kollar (maketle gösterildi)
+
+**Alt gezinme** — bugün `390×70 px`, ekranın **%8,3'ü**, tam genişlikte kesintisiz levha:
+
+| Kol | Ne | Ekran payı |
+|---|---|---|
+| **A** | bugünkü levha, etiketli, 70 px | %8,3 |
+| **B** | kompakt hap: kenarlardan içeri çekilmiş, etiketsiz, 46 px | **%5,5** |
+| **C** | bar yok, sağ altta yüzen üç yuvarlak düğme | %4,1 |
+
+**Mağaza içi** (tam ekran K3 seçildikten sonra kalan soru):
+
+| Kol | Ne | Ürün önizlemesi |
+|---|---|---|
+| **M1** | ızgara: 6 ürün, her kartın kendi fiyat düğmesi | ~74 px |
+| **M2** | büyük önizleme + seçim şeridi + tek büyük satın alma | **~230 px** |
+
+### Kullanıcının verdiği kararlar
+
+- **K3 — tam ekran** (sol üstte geri, sağ üstte para). Ölçüm K3'ü önermiyordu (kabuk zaten
+  tutarlıydı, krom kaplaması sağlıklıydı); kullanıcı sahne görünürlüğü yerine "gerçek ekran"
+  hissini seçti. Karar kullanıcınındır.
+- **Y2 — köşe-parantezli kare pad.**
+- **Ses: "en kalitelisi olsun, şu anki ses çok kötü"** + *"fazla para topladıkça ses de ivme
+  almalı, fazla topladığını sezgisel olarak hissettirmek için."* İki ayrı iş:
+  ① **seri ivmesi** (kaynaktan BAĞIMSIZ, kod): ~1,2 sn'lik seri penceresinde her toplama perdeyi
+  bir basamak yükseltir, üst sınırda durur, seri kesilince tabana döner.
+  ② **kaynak → S-C** (tek CC0 sanatçı seti: Kenney *Interface Sounds* 100 + *Casino Audio* 50).
+  **Bu, D-096'nın "sentez nihaidir" kararını geri alır** — gerekçe: kullanıcı sentezi oyunda
+  duydu ve reddetti; D-096 ③B'nin "ölçülmemişle değiştirme" itirazı, ölçülenin beğenilmediği
+  durumda geçerliliğini yitiriyor.
+
+**Açık kalan iki soru:** alt gezinme (A/B/C — önerim **B**) · mağaza içi (M1/M2 — önerim **M2**).
