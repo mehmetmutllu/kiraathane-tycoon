@@ -14,10 +14,10 @@
  */
 import { BAND, BAND_SHELL, LAYOUT, doorX, wallSpans, type AreaSide } from '../../game/layout';
 import { decorItems } from '../../config/decor';
-import { DOOR, WALL_H as WALL_H_REF } from './wallPanel';
+import { DOOR, WALL_M, WALL_H as WALL_H_REF } from './wallPanel';
 
-/** Duvar hattının alan kenarından dışarıdaki payı — oyuncu kelepçe standoff'u ile birebir. */
-export const WALL_M = 0.5;
+/** Duvar hattının alan kenarından dışarıdaki payı — sayı `wallPanel`de (döngü olmasın), burada yeniden dışa açılıyor. */
+export { WALL_M } from './wallPanel';
 
 /** Duvar parçasının taban kalınlığı. Katmanlar (gövde 0,18 · lambri 0,22 · çıta 0,26) `wallPanel`'de. */
 export const WALL_T = 0.2;

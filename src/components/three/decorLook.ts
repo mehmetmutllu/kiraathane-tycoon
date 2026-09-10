@@ -83,18 +83,11 @@ export const LAMBA_YER_S = LAMBA_YER_H / NATIVE.lamp_standing.h;
 export const LAMBA_MASA_S = LAMBA_MASA_H / NATIVE.lamp_table.h;
 
 /**
- * PENCERE DENİZLİĞİNİN oda içine taşan derinliği — `Decor.tsx`teki `Pencere` bu sayıdan çizer.
- * Buraya taşındı çünkü denizliğe konan saksının SIĞMASI bu sayıya bağlı ve iki yerde durursa
- * biri değişince öbürü sessizce yalan olur.
+ * PENCERE — S6/② ile denizlik ve denizlik saksısı KALKTI (kullanıcı: *"altlarındaki o şerit
+ * olmasın, üzerlerindeki kaktüslere de gerek yok, düz cam ve ışıklar yeter"*). Pencere artık
+ * duvarda gerçek bir açıklık olduğu için denizliğin taşıdığı "burada boşluk var" işi zaten
+ * boşluğun kendisi tarafından yapılıyor; şerit ikinci bir sinyaldi ve fazlaydı.
  */
-export const DENIZLIK_DERINLIK = 0.3;
-
-/**
- * DENİZLİK SAKSISI da gerçek boyuna çekilir: pencere eşiğine 0,90'lık bir kaktüs sığmaz —
- * 0,45 br derinliğinde olur, denizlik ise 0,30. Gerçek eşik saksısı 0,30 m boyunda.
- */
-export const DENIZLIK_H = 0.3;
-export const DENIZLIK_S = DENIZLIK_H / NATIVE.cactus_small_A.h;
 
 /** Konsol dolaplarının ÜST yüzü — masa lambası buraya oturur (elle 0,90 yazılmaz). */
 export const KONSOL_TOP_Y = NATIVE.cabinet_medium.maxY * DECOR_S;
@@ -108,6 +101,28 @@ export const KONSOL_TOP_Y = NATIVE.cabinet_medium.maxY * DECOR_S;
  * gazetelik bu yüzden zeminden duvara taşındı (rapor §B7 uygulaması).
  */
 export const KITAPLIK_DY = -NATIVE.shelf_B_small_decorated.maxY * DECOR_S;
+
+/**
+ * PENCERE GÖLGE ATMAZ — kullanıcı 2026-09-10: *"gölgeleri havadalarmış gibi duruyo."*
+ *
+ * Kasa `castShadow` taşıyordu ve güneş (14, 26, 16) yönünde odaya DÜŞEN dikdörtgen gölgeler
+ * duvardan kopuk duruyordu: pencere camdan ibaret, gölgenin dayanacağı bir kütle yok.
+ *
+ * Bayrak neden burada: `Decor.tsx` vitest'te import EDİLEMEZ, yani orada yazılı bir `castShadow`
+ * bekçilenemez — mutasyon testi bunu kanıtladı (gölgeyi geri açan mutasyon KAÇTI). Karar ölçü
+ * katmanına çıktı; çizim buradan okuyor, bekçi de buradan.
+ */
+export const PENCERE_GOLGE = false;
+
+/**
+ * DUVARA ASILAN KÜÇÜK PARÇALAR DA GÖLGE ATMAZ — aynı artefakt, aynı gerekçe.
+ *
+ * Pencerenin gölgesi kapatıldıktan sonra ekranda hâlâ zeminde kopuk kahverengi lekeler kaldı:
+ * aplik gibi 0,2 br'lik parçaların güneş (14, 26, 16) yönünde odaya düşen gölgeleri. Küçük bir
+ * parçanın gölgesi büyük bir yüzeyde "kir lekesi" olarak okunuyor — kullanıcının pencerede
+ * gördüğü *"havadalarmış gibi"* halinin küçük ölçeklisi.
+ */
+export const DUVAR_GOLGE = false;
 
 /** Lambri çıtasının üstü — duvara asılan hiçbir şey buranın altına inmez (`config/decor.ts`). */
 export const CITA_Y = WAINSCOT_H + 0.08;
@@ -141,7 +156,6 @@ export interface DecorPart {
 export const DECOR_MODELS: Partial<Record<DecorKind, readonly DecorPart[]>> = {
   saksi: [{ model: 'cactus_small_A', olcek: DECOR_S, sirt: 'serbest' }],
   buyukSaksi: [{ model: 'cactus_medium_A', olcek: DECOR_S, sirt: 'serbest' }],
-  denizlikSaksi: [{ model: 'cactus_small_A', olcek: DENIZLIK_S, sirt: 'serbest' }],
   ayakliLamba: [{ model: 'lamp_standing', olcek: LAMBA_YER_S, sirt: 'serbest' }],
   paspas: [{ model: 'rug_rectangle_B', olcek: DECOR_S, sirt: 'serbest' }],
   tablo: [{ model: 'pictureframe_large_A', olcek: DECOR_S, sirt: 'duvar' }],

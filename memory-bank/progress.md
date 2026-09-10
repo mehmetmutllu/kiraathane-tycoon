@@ -345,6 +345,22 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   `tests/pencere-nis.test.ts` (19), **16 mutasyon**. `docs/dis-cephe-raporu-s6.md` ·
   vitest **856** · duman **42/42** · `tsc -b` temiz · beş kadraj gözle doğrulandı ·
   **denge sayısı DEĞİŞMEDİ**.
+- ✅ **S6/② — kullanıcı testi: "duvardan ayrı duruyor" TEK sayıydı (D-103)** · S6 oynandı,
+  dokuz kalem geldi ve çoğu aynı köke çıktı: `WALL_FACE` bir TAHMİNDİ (17,32), duvarın gövde
+  yüzü **17,41** → duvara asılan her şey **0,09 br havada**; petek `WALL_BACK`le birlikte
+  **0,30**; lavabo maketin 0,45'iyle **0,12**. Üçü de artık duvarın kendi kalınlığından TÜRÜYOR.
+  **Pencere sadeleşti** (denizlik · konsol şeridi · orta kayıt · denizlik saksısı kalktı; tür
+  listeden de çıktı) ve **gölge kapandı** — kasa `castShadow` taşıyordu, odaya düşen dikdörtgen
+  gölgelerin dayanacağı kütle yoktu; aynı artefakt apliklerde de vardı, o da kapandı.
+  **Lavabo dolaplı-griye geçti:** "gri hali" ayrı bir MODEL değil ayrı bir GÖZ — `kitchencounter_sink`
+  zaten %70 gri, turuncu olan %16'lık [3,6] gözü; `atlasUV.gozDegistir` ile griye taşındı
+  (`recolor` seçilseydi mutfak da grileşirdi). `Model`e `esleme` kolu eklendi. **Ayna** KayKit'ten
+  (`pictureframe_medium`in tuvali cam mavisine, çerçevesi lavabonun grisine); **çöp kutusu
+  ölçüldü ve YOK** → elle çizim kaldı. WC girişindeki lento şeridi + pirinç düğmeler kalktı.
+  **Giriş duvarı cam** kullanıcı bana bıraktı → ölçüm değer diyor (%8–15 görünür) ama kapı
+  bloğuna dokunuyor, **S7'nin başlığı oldu.** İki mutasyon kaçtı, ikisi de bekçiyi güçlendirdi
+  (aralık → eşitlik; gölge kararı ölçü katmanına çıktı). vitest **864** · duman **42/42** ·
+  toplam **26 mutasyon** · **denge sayısı DEĞİŞMEDİ**.
 - ⏳ **S7 — lavabo / WC odası** — kabin kapıları bugün düz kutu (`boxGeometry 1,36×1,95×0,06`,
   tek renk kahve) ve kullanıcı "kötü" dedi. Karşılığı diskte: `door_A` · `door_B` ·
   `wall_doorway` · bölme için `wall_half` + `pillar_A/B`; lavabo `kitchencounter_sink`.

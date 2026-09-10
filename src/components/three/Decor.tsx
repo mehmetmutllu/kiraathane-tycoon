@@ -2,10 +2,12 @@ import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import type { Group, MeshStandardMaterial } from 'three';
 import { PALETTE } from '../../config/palette';
-import { decorItems, type DecorItem } from '../../config/decor';
+import { WALL_FACE, decorItems, type DecorItem } from '../../config/decor';
+import { FLOOR_HALF } from '../../game/layout';
+import { WALL_M, WALL_T_BODY } from './wallPanel';
 import { useGame } from '../../game/store';
 import { Model } from './Model';
-import { DECOR_MODELS, DENIZLIK_DERINLIK, parcaYerlesim, varyant } from './decorLook';
+import { DECOR_MODELS, DUVAR_GOLGE, PENCERE_GOLGE, parcaYerlesim, varyant } from './decorLook';
 
 /**
  * Decor.tsx — B6a'nın ÇİZİM tarafı. Ne çizileceği burada, NEREYE çizileceği `config/decor.ts`te.
@@ -202,7 +204,7 @@ function Paspas() {
 function Tablo({ len, h }: { len: number; h: number }) {
   return (
     <group>
-      <mesh castShadow>
+      <mesh castShadow={DUVAR_GOLGE}>
         <boxGeometry args={[len, h, 0.05]} />
         <meshStandardMaterial color={PALETTE.menuBoardFrame} />
       </mesh>
@@ -242,7 +244,7 @@ function DuvarSaati() {
 function Aplik() {
   return (
     <group>
-      <mesh castShadow position={[0, 0.05, 0.02]}>
+      <mesh castShadow={DUVAR_GOLGE} position={[0, 0.05, 0.02]}>
         <boxGeometry args={[0.13, 0.22, 0.04]} />
         <meshStandardMaterial color={PALETTE.copper} metalness={0.45} roughness={0.5} />
       </mesh>
@@ -268,7 +270,7 @@ function AskiRayi({ len }: { len: number }) {
   const n = Math.max(2, Math.round(len / 0.7));
   return (
     <group>
-      <mesh castShadow>
+      <mesh castShadow={DUVAR_GOLGE}>
         <boxGeometry args={[len, 0.1, 0.07]} />
         <meshStandardMaterial color={PALETTE.doorWood} />
       </mesh>
@@ -397,18 +399,21 @@ function Petek({ len }: { len: number }) {
   const n = Math.max(4, Math.round(len / 0.34)); // dilim aralığı: 0,18 iken 9 mesh oluyordu
   return (
     <group>
-      <mesh castShadow position={[0, 0.3, 0.1]}>
+      {/* S6/②: gövde yerel z 0,10'daydı → sırtı 0,04 öndeydi ve duvardan boşluk kalıyordu
+          (kullanıcı: "kalorifer duvardan uzakta"). Sırt artık tam z = 0'da; öğenin kendisi de
+          `WALL_INNER` hattına, yani duvarın gerçek yüzüne oturuyor. */}
+      <mesh castShadow position={[0, 0.3, 0.06]}>
         <boxGeometry args={[len, 0.5, 0.12]} />
         <meshStandardMaterial color="#e4e0d6" />
       </mesh>
       {Array.from({ length: n }, (_, i) => (
-        <mesh key={i} position={[-len / 2 + 0.09 + (i * (len - 0.18)) / (n - 1), 0.3, 0.17]}>
+        <mesh key={i} position={[-len / 2 + 0.09 + (i * (len - 0.18)) / (n - 1), 0.3, 0.13]}>
           <boxGeometry args={[0.05, 0.44, 0.03]} />
           <meshStandardMaterial color="#cfcabb" />
         </mesh>
       ))}
       {[-len / 2 + 0.1, len / 2 - 0.1].map((x) => (
-        <mesh key={x} position={[x, 0.06, 0.05]}>
+        <mesh key={x} position={[x, 0.06, 0.06]}>
           <cylinderGeometry args={[0.03, 0.03, 0.12, 8]} />
           <meshStandardMaterial color={PALETTE.trashLid} metalness={0.4} roughness={0.5} />
         </mesh>
@@ -417,62 +422,42 @@ function Petek({ len }: { len: number }) {
   );
 }
 
-/** Denizlik saksısı: pencere eşiğine oturan minik çiçek. */
-function DenizlikSaksi() {
-  return (
-    <group>
-      <mesh castShadow position={[0, 0.07, 0]}>
-        <cylinderGeometry args={[0.09, 0.07, 0.14, 8]} />
-        <meshStandardMaterial color="#a5563a" />
-      </mesh>
-      <mesh castShadow position={[0, 0.19, 0]}>
-        <sphereGeometry args={[0.11, 8, 8]} />
-        <meshStandardMaterial color={PALETTE.plantAlt} flatShading />
-      </mesh>
-      <mesh position={[0.05, 0.26, 0.03]}>
-        <sphereGeometry args={[0.045, 6, 6]} />
-        <meshStandardMaterial color="#d4646a" flatShading />
-      </mesh>
-    </group>
-  );
-}
-
 /**
- * PENCERE — S6/E3: artık duvara ASILMIŞ bir levha değil, duvardaki GERÇEK boşluğun kasası.
+ * PENCERE — duvardaki GERÇEK açıklığın camı. **S6/② ile SADELEŞTİ.**
  *
- * KULLANICI ŞİKÂYETİ: *"pencere duvardan ayrı duruyor."* Ölçüm onu doğruladı (rapor §E):
- * doğrama duvar yüzünün **0,055 önündeydi**, arkasında hiçbir boşluk yoktu — yani duvarda
- * pencere değil, duvara asılmış bir pencere RESMİ vardı. Üç sinyalli eski çözüm (derin denizlik
- * + açık doğrama + duvar tepesine basılan lento kapağı) bu eksikliği ÖRTMEK için kurulmuştu.
+ * S6/E3 boşluğu duvarın kendisinde açtı (`wallLook.wallPieces`) ve şikâyetin ("duvardan ayrı
+ * duruyor") kökünü kapattı. Ama o turda eski çözümün süsleri de taşınmıştı: derin denizlik,
+ * altındaki koyu konsol şeridi, orta kayıt ve denizlik saksısı. Kullanıcı onları GÖRDÜ ve
+ * *"altlarındaki o şerit olmasın, üzerlerindeki kaktüslere de gerek yok, düz cam ve ışıklar
+ * yeter"* dedi. Hepsi kalktı; kalan üç şey:
  *
- * Boşluk artık duvarın kendisinde açılıyor (`wallLook.wallPieces`), bu yüzden:
- *  - **Lento kapağı KALKTI** — duvar tepesine cam rengi basmaya gerek yok, orada gerçek lento var.
- *  - **Cam nişin İÇİNE girdi** (yerel z −0,18 = duvarın orta hattı), önüne değil.
- *  - **KASA (söve dönüşü) eklendi** — boşluğun dört kenarını duvar kalınlığı boyunca saran
- *    şeritler. Derinliği okutan şey bu: 45°'lik kamera üst ve yan dönüşleri görüyor.
- *  - **Dış panel** camın arkasında duruyor: boşluk salonun dışına açıldığı için arkada boşluk
- *    kalırdı; panel "dışarısı gündüz" yüzeyini verir ve delik hissini kapatır.
- *  - **Derin denizlik KALDI** — ölçüm onu en güçlü kamera sinyali diye seçmişti, hâlâ öyle.
+ *  1. **Cam** — nişin ortasında, hafif saydam.
+ *  2. **Dış panel** — camın arkasında "dışarısı gündüz" yüzeyi; boşluk salonun dışına açıldığı
+ *     için arkada boşluk kalmasın.
+ *  3. **İnce kasa** — açıklığın dört kenarı. Duvar gövdesi 0,18 kalın, kesim kenarı zaten temiz
+ *     bir badana dönüşü; kasa onu doğrama olarak okutan tek şerit.
+ *
+ * **GÖLGE YOK.** Kullanıcı: *"gölgeleri havadalarmış gibi duruyo."* Haklıydı: kasa `castShadow`
+ * taşıyordu ve güneş (14, 26, 16) yönünde odaya DÜŞEN dikdörtgen gölgeler duvardan kopuk
+ * duruyordu — pencerenin kendisi camdan ibaret olduğu için gölgenin dayanacağı bir kütle yok.
+ * Pencere artık hiçbir gölge atmıyor.
  *
  * YEREL EKSEN: parçanın yüzü yerel +z'ye bakar; sağ duvarda `rot = −π/2` olduğu için yerel +z
- * dünyada −x, yani ODANIN İÇİ. Duvarın orta hattı yerel z = −0,18, dış yüzü −0,27.
+ * dünyada −x, yani ODANIN İÇİ. Duvarın orta hattı `ORTA` (türetilir, yazılmaz).
  */
 function Pencere({ len, h }: { len: number; h: number }) {
-  const t = 0.06; // kasa şeridinin kalınlığı
-  const ORTA = -0.18; // duvarın orta hattı (yüz 17,32 ↔ hat 17,50)
-  const YARI = 0.09; // gövde kalınlığının yarısı — kasa bu derinlikte uzanır
+  const t = 0.05; // kasa şeridinin kalınlığı
+  /** Öğenin asıldığı düzlem (`WALL_FACE`) ile duvarın ORTA hattı arasındaki yerel mesafe. */
+  const ORTA = WALL_FACE - (FLOOR_HALF + WALL_M);
+  const YARI = WALL_T_BODY / 2;
   return (
     <group>
-      {/* DIŞ PANEL — boşluğun arkası: "dışarısı gündüz". Camdan biraz dışarıda. */}
+      {/* DIŞ PANEL — boşluğun arkası: "dışarısı gündüz" */}
       <mesh position={[0, 0, ORTA - YARI - 0.01]}>
         <boxGeometry args={[len, h, 0.02]} />
-        <meshStandardMaterial
-          color={PALETTE.glass}
-          emissive={PALETTE.glass}
-          emissiveIntensity={0.45}
-        />
+        <meshStandardMaterial color={PALETTE.glass} emissive={PALETTE.glass} emissiveIntensity={0.45} />
       </mesh>
-      {/* CAM — nişin ortasında, hafif saydam */}
+      {/* CAM — düz, tek parça (orta kayıt kalktı) */}
       <mesh position={[0, 0, ORTA]}>
         <boxGeometry args={[len - 2 * t, h - 2 * t, 0.02]} />
         <meshStandardMaterial
@@ -483,37 +468,22 @@ function Pencere({ len, h }: { len: number; h: number }) {
           opacity={0.7}
         />
       </mesh>
-      {/* KASA — boşluğun dört kenarı, duvar kalınlığı boyunca. Derinliği okutan parça bu. */}
+      {/* KASA — açıklığın dört kenarı, duvar kalınlığı boyunca. Gölge ATMAZ. */}
       {([
         [0, h / 2 - t / 2, len, t],
         [0, -h / 2 + t / 2, len, t],
       ] as const).map(([x, y, w, hh], i) => (
-        <mesh key={`h${i}`} position={[x, y, ORTA]} castShadow>
+        <mesh key={`h${i}`} position={[x, y, ORTA]} castShadow={PENCERE_GOLGE}>
           <boxGeometry args={[w, hh, 2 * YARI]} />
           <meshStandardMaterial color={PALETTE.windowSash} />
         </mesh>
       ))}
       {[-len / 2 + t / 2, len / 2 - t / 2].map((x) => (
-        <mesh key={x} position={[x, 0, ORTA]} castShadow>
+        <mesh key={x} position={[x, 0, ORTA]} castShadow={PENCERE_GOLGE}>
           <boxGeometry args={[t, h, 2 * YARI]} />
           <meshStandardMaterial color={PALETTE.windowSash} />
         </mesh>
       ))}
-      {/* ORTA KAYIT — tek büyük cam yerine iki kanat okunsun (maketin doğraması) */}
-      <mesh position={[0, 0, ORTA + YARI - 0.01]}>
-        <boxGeometry args={[t * 0.7, h, 0.03]} />
-        <meshStandardMaterial color={PALETTE.windowSash} />
-      </mesh>
-      {/* DERİN DENİZLİK: odaya taşar → ÜST YÜZEYİ kameradan okunur (ölçümün seçtiği ana sinyal).
-          Üstü AÇIK (mermer denizlik), altı koyu ahşap konsol. */}
-      <mesh castShadow position={[0, -h / 2 - 0.04, DENIZLIK_DERINLIK / 2 - 0.01]}>
-        <boxGeometry args={[len + 0.2, 0.06, DENIZLIK_DERINLIK]} />
-        <meshStandardMaterial color={PALETTE.sill} flatShading />
-      </mesh>
-      <mesh position={[0, -h / 2 - 0.11, 0.09]}>
-        <boxGeometry args={[len + 0.12, 0.08, 0.2]} />
-        <meshStandardMaterial color={PALETTE.wainscot} />
-      </mesh>
     </group>
   );
 }
@@ -635,8 +605,6 @@ function Piece({ item }: { item: DecorItem }) {
       return <Semsiyelik />;
     case 'petek':
       return <Petek len={item.len ?? 1.6} />;
-    case 'denizlikSaksi':
-      return <DenizlikSaksi />;
     case 'pencere':
       return <Pencere len={item.len ?? 3.0} h={item.h ?? 0.48} />;
     default:

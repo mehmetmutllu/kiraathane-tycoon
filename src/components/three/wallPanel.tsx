@@ -36,8 +36,18 @@ export const WALL_H = 3.2;
 /** Lambri kuşağının yüksekliği — maket v13 `wall()` içindeki 0,9. */
 export const WAINSCOT_H = 0.9;
 
+/**
+ * Duvar hattının alan kenarından dışarıdaki payı. **S6/② ile buraya taşındı:** `wallLook`ta
+ * duruyordu ama `config/decor.ts`in de duvarın YÜZÜNÜ hesaplaması gerekti ve `wallLook` artık
+ * `config/decor.ts`i import ediyor (pencere boşlukları) → döngü olurdu. `wallPanel` kimseyi
+ * import etmiyor, sayının doğru yeri burası.
+ */
+export const WALL_M = 0.5;
+
 /** Katman kalınlıkları (maketin kendi sayıları). Gövde en ince, çıta en kalın. */
 const T_BODY = 0.18;
+/** Gövde kalınlığı — duvarın oda tarafındaki YÜZÜ bundan türer (`config/decor.WALL_INNER`). */
+export const WALL_T_BODY = T_BODY;
 const T_WAINSCOT = 0.22;
 const T_RAIL = 0.26;
 /** Çıtanın yüksekliği ve merkez y'si — maket: box(...,0.08,...) @ y = 0.94. */

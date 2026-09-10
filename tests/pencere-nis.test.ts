@@ -7,19 +7,30 @@ import {
   wallSideLine,
   wallUzunluk,
 } from '../src/components/three/wallLook';
-import { WALL_H, WAINSCOT_H, wallBoxes } from '../src/components/three/wallPanel';
+import { WALL_H, WAINSCOT_H, WALL_M, WALL_T_BODY, wallBoxes } from '../src/components/three/wallPanel';
 import {
+  AYNA_GOZ,
   AYNA_H,
+  AYNA_NATIVE,
+  AYNA_Z,
+  LAVABO_DUVAR_PAYI,
+  lavaboSirtZ,
+  AYNA_S,
   AYNA_Y,
   LAVABO_CARPITMA,
+  LAVABO_DZ,
+  LAVABO_GOZ,
   LAVABO_KUTU,
   LAVABO_NATIVE,
   LAVABO_SCALE,
+  aynaOnZ,
   muslukAynaPayi,
   muslukTepeY,
 } from '../src/components/three/wcLook';
+import { DUVAR_GOLGE, PENCERE_GOLGE } from '../src/components/three/decorLook';
 import { WALL_THEMES } from '../src/config/palette';
-import { WINDOW, decorItems } from '../src/config/decor';
+import { WALL_BACK, WALL_FACE, WINDOW, decorItems } from '../src/config/decor';
+import { FLOOR_HALF } from '../src/game/layout';
 import { MAX_AREAS } from '../src/game/world';
 
 const TEMA = WALL_THEMES.krem;
@@ -188,7 +199,65 @@ describe('wallBoxes — y0 (S6/E3)', () => {
   });
 });
 
-describe('wcLook — KayKit lavabosu (S6/G1)', () => {
+describe('duvar ankrajı — asılan/yaslanan hiçbir şey HAVADA durmaz (S6/②)', () => {
+  it('pencere GÖLGE ATMAZ (kullanıcı: gölgeleri havadalarmış gibi duruyo)', () => {
+    // Karar bilerek ölçü katmanında: `Decor.tsx` vitest'te import edilemiyor, yani orada yazılı
+    // bir `castShadow` bekçilenemezdi — gölgeyi geri açan mutasyon ilk turda KAÇTI.
+    expect(PENCERE_GOLGE).toBe(false);
+    // Aynı artefaktın küçük ölçeklisi: aplik/tablo/askı rayı da zemine kopuk leke düşürüyordu.
+    expect(DUVAR_GOLGE).toBe(false);
+  });
+
+  it('WALL_FACE duvarın gövde yüzüyle BİREBİR aynı (tahmini pay yok)', () => {
+    // Kullanıcı iki ayrı parçada gördü: raf ve kalorifer duvardan kopuktu. Kök tek sayıydı —
+    // 17,32 tahminiydi, duvarın yüzü 17,41. Bu test o payın geri gelmesini yasaklıyor.
+    expect(WALL_FACE).toBeCloseTo(FLOOR_HALF + WALL_M - WALL_T_BODY / 2, 6);
+  });
+
+  it('zemine yaslananlar da AYNI hatta (konsol · TV · petek)', () => {
+    expect(WALL_BACK).toBeCloseTo(WALL_FACE, 6);
+  });
+
+  it('duvara asılan hiçbir öğe duvarın ÖNÜNDE boşlukta durmuyor', () => {
+    const yuz = FLOOR_HALF + WALL_M - WALL_T_BODY / 2;
+    for (const d of decorItems(MAX_AREAS)) {
+      const dikey = Math.abs(Math.abs(d.rot) - Math.PI / 2) < 1e-6;
+      if (!dikey) continue;
+      // Dik duvardaki öğenin |x|'i duvar yüzünden KÜÇÜK olamaz (küçükse odaya doğru kaçmış).
+      expect({ kind: d.kind, kopuk: Math.abs(d.pos[0]) < yuz - 1e-6 }).toEqual({
+        kind: d.kind,
+        kopuk: false,
+      });
+    }
+  });
+
+  it('pencere denizliği ve denizlik saksısı KALKTI (kullanıcı: düz cam yeter)', () => {
+    expect(decorItems(MAX_AREAS).some((d) => d.kind === 'denizlikSaksi' as never)).toBe(false);
+  });
+});
+
+describe('wcLook — KayKit lavabosu (S6/G1 → S6/②)', () => {
+  it('DOLAPLI gövde seçildi ve turuncu gözü GRİYE taşındı', () => {
+    // Kullanıcı: "dolaplı ama gri olan var; mutfaktaki turuncular... onların gri halleri".
+    // Gri hâli ayrı bir MODEL değil ayrı bir GÖZ — eşleme kaybolursa lavabo turunculaşır.
+    expect(LAVABO_GOZ).toEqual([[[3, 6], [0, 3]]]);
+  });
+
+  it('modelin ASİMETRİK z kutusu telafi ediliyor (tabla öne 0,042 taşıyor)', () => {
+    expect(LAVABO_NATIVE.minZ + LAVABO_NATIVE.maxZ).not.toBeCloseTo(0, 3); // kutu gerçekten simetrik değil
+    const merkez = ((LAVABO_NATIVE.minZ + LAVABO_NATIVE.maxZ) / 2) * (LAVABO_KUTU.d / LAVABO_NATIVE.d);
+    expect(LAVABO_DZ).toBeCloseTo(-merkez, 6);
+  });
+
+  it("AYNA KayKit'ten ve TUVALİ cam gözüne taşınmış", () => {
+    expect(AYNA_GOZ).toEqual([
+      [[0, 7], [1, 2]],
+      [[0, 3], [0, 6]],
+    ]);
+    expect(AYNA_S).toBeGreaterThan(0.5);
+    expect(AYNA_Y).toBe(1.75);
+  });
+
   it('tezgâh üstü bugünkü lavaboyla BİREBİR aynı (yerleşim değişmiyor)', () => {
     expect(LAVABO_NATIVE.tablaY * LAVABO_SCALE[1]).toBeCloseTo(LAVABO_KUTU.tablaY, 6);
     expect(LAVABO_NATIVE.w * LAVABO_SCALE[0]).toBeCloseTo(LAVABO_KUTU.w, 6);
@@ -203,6 +272,19 @@ describe('wcLook — KayKit lavabosu (S6/G1)', () => {
   it('tezgâh üstü 1,75\'lik insanın %49\'unda (gerçek lavabo oranı)', () => {
     expect(LAVABO_KUTU.tablaY / 1.75).toBeGreaterThan(0.45);
     expect(LAVABO_KUTU.tablaY / 1.75).toBeLessThan(0.53);
+  });
+
+  it("LAVABONUN SIRTI duvarın yüzüne değiyor (pay türetilir, maketin 0,45'i tahmindi)", () => {
+    expect(lavaboSirtZ()).toBeCloseTo(-LAVABO_DUVAR_PAYI, 6);
+  });
+
+  it('aynanın SIRTI duvarın yüzünde — aralık değil EŞİTLİK', () => {
+    // İlk sürüm bunu bir aralıkla denetliyordu ("−0,45 < ön yüz < 0") ve aynayı havaya geri
+    // asan mutasyon o aralıktan KAÇTI. Ayna duvarın 0,45 içindeki lavabo grubunun üstünde;
+    // model minZ = 0 olduğu için sırt tam −LAVABO_DUVAR_PAYI'da olmak zorunda.
+    expect(AYNA_Z).toBeCloseTo(-LAVABO_DUVAR_PAYI, 6);
+    // Ve odaya yalnız kendi derinliği kadar taşar (havada değil, duvarın içinde de değil).
+    expect(aynaOnZ() - AYNA_Z).toBeCloseTo(AYNA_NATIVE.maxZ * AYNA_S, 6);
   });
 
   it("MUSLUK aynayla DERİNLİKTE çakışmaz (y ekseninde üst üste binmesi doğrusu)", () => {

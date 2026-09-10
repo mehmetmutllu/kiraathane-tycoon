@@ -4,7 +4,6 @@ import {
   CITA_Y,
   DECOR_MODELS,
   DECOR_S,
-  DENIZLIK_DERINLIK,
   INSAN_ORANI,
   KITAPLIK_DY,
   KONSOL_TOP_Y,
@@ -60,31 +59,6 @@ describe('S5 — dekorun ölçek kuralı: mobilya 0,90, aydınlatma gerçek boy'
     expect(INSAN_ORANI.konsol).toBeGreaterThan(0.4);
     expect(INSAN_ORANI.konsol).toBeLessThan(0.6);
     expect(NATIVE.lamp_standing.h * DECOR_S / ACTOR_HEIGHT).toBeGreaterThan(1); // 0,90'ın neden düştüğü
-  });
-
-  it('denizlik saksısı pencere eşiğine SIĞAR — ölçüt eşiğin kendi derinliği', () => {
-    // Kaçan mutasyon dersi: `DENIZLIK_S` sabitini denetlemek yetmiyordu; listedeki KULLANIM
-    // 0,90'a çevrilince bekçi yeşil kalıyordu. Ölçüt artık gövdenin denizliğe sığması.
-    const p = DECOR_MODELS.denizlikSaksi![0];
-    const n = NATIVE[p.model];
-    const derinlik = (n.maxZ - n.minZ) * p.olcek;
-    expect(derinlik, 'saksı denizlikten taşıyor').toBeLessThanOrEqual(DENIZLIK_DERINLIK);
-    expect(n.h * p.olcek).toBeCloseTo(0.3, 6);
-    // 0,90 neden düştü: aynı model o ölçekte denizliğe sığmıyor.
-    expect((n.maxZ - n.minZ) * DECOR_S).toBeGreaterThan(DENIZLIK_DERINLIK);
-  });
-});
-
-describe('S5 — ankraj: sırt duvarda, taban zeminde, origin kayması telafi edilmiş', () => {
-  it('sırtı DUVARDA olan her parçanın arka yüzü tam yerel z = 0’da', () => {
-    for (const [kind, parts] of Object.entries(DECOR_MODELS)) {
-      for (const p of parts ?? []) {
-        if (p.sirt !== 'duvar') continue;
-        const yer = parcaYerlesim(p, p.model);
-        const arka = yer.z + NATIVE[p.model].minZ * p.olcek;
-        expect(arka, `${kind}/${p.model} sırtı duvarda değil`).toBeCloseTo(0, 6);
-      }
-    }
   });
 
   it('SERBEST duran parça z’de itilmez (kaktüs/halı/lamba yerinden kaymaz)', () => {
@@ -227,10 +201,12 @@ describe('S5 — AYAK İZİ: gövde kenarından açıklık (merkez bekçisinin k
 
 describe('S5 — tek kaynak ve kullanıcı kararı', () => {
   it('KayKit’e geçen türler karar paketinde seçilenlerdir (fazlası da eksiği de hata)', () => {
+    // S6/②: `denizlikSaksi` LİSTEDEN ÇIKTI — kullanıcı pencere denizliğini ve üstündeki
+    // kaktüsü kaldırttı ("düz cam ve ışıklar yeter"). Denizlik yoksa saksı da yok.
     // 2026-09-10 karar paketi: kaktüs GEÇER · paspas mavi GEÇER · gazetelik kitaplığa GEÇER.
     // Çöp kovası ve TV ölçümle elendi; bu liste o kararların tek yazılı hâli.
     expect(Object.keys(DECOR_MODELS).sort()).toEqual(
-      ['ayakliLamba', 'buyukSaksi', 'denizlikSaksi', 'gazetelik', 'konsol', 'paspas', 'saksi', 'tablo'].sort(),
+      ['ayakliLamba', 'buyukSaksi', 'gazetelik', 'konsol', 'paspas', 'saksi', 'tablo'].sort(),
     );
     const gecmeyen: DecorKind[] = ['copKovasi', 'tvUnitesi', 'askilik', 'semsiyelik', 'petek', 'duvarSaati', 'aplik', 'askiRayi', 'pencere'];
     for (const k of gecmeyen) expect(DECOR_MODELS[k], `${k} ölçümle elenmişti`).toBeUndefined();

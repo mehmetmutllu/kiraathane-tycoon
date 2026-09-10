@@ -49,11 +49,31 @@
  */
 import type { RVec3 } from '../game/layout';
 import { FLOOR_HALF, doorX } from '../game/layout';
+import { WALL_M, WALL_T_BODY } from '../components/three/wallPanel';
 
-/** Duvar öğelerinin ASILDIĞI düzlem: krem gövdenin yüzünün ~0,1 önü (tüm profilleri geçer). */
-export const WALL_FACE = FLOOR_HALF + 0.32;
-/** Zemine oturan ama duvara YASLANAN öğelerin (konsol · TV ünitesi · petek) sırt hattı. */
-export const WALL_BACK = FLOOR_HALF + 0.15;
+/**
+ * Duvar öğelerinin ASILDIĞI düzlem = duvarın oda tarafındaki GERÇEK YÜZÜ (`WALL_INNER`).
+ *
+ * **S6/② ile düzeltildi.** Eskiden `FLOOR_HALF + 0.32` = 17,32'ydi; gerekçesi *"krem gövdenin
+ * yüzünün ~0,1 önü (tüm profilleri geçer)"*di ve o pay bir TAHMİNDİ. Duvarın gövde yüzü 17,41 →
+ * duvara asılan HER ŞEY 0,09 br havada duruyordu. Kullanıcı iki ayrı parçada gördü:
+ * *"sağ en altta bir raf … o duvardan ayrı duruyo"* ve *"alttaki kalorifer duvardan uzakta"*.
+ * Tek kök, tek düzeltme: pay tahmini kalktı, düzlem duvarın kendi kalınlığından TÜRÜYOR.
+ *
+ * Profilleri geçme kaygısı geçersiz: lambri (0,22) ve çıta (0,26) yalnız y ≤ 0,98'de var,
+ * asılan hiçbir öğe oraya inmiyor (`decorLook.CITA_Y` bekçisi).
+ */
+export const WALL_FACE = FLOOR_HALF + WALL_M - WALL_T_BODY / 2;
+/**
+ * Zemine oturan ama duvara YASLANAN öğelerin (konsol · TV ünitesi · petek) SIRT hattı.
+ * Artık `WALL_FACE` ile AYNI sayı: ikisi de duvarın oda tarafındaki yüzü. Eskiden 17,15'ti
+ * (yani duvarın 0,26 önünde) ve o da bir tahmindi — asılan öğelerdeki 0,09'un zemindeki karşılığı.
+ * `parcaYerlesim` `sirt: 'duvar'` parçalarının SIRTINI tam bu hatta getiriyor.
+ */
+export const WALL_BACK = WALL_FACE;
+
+/** `WALL_FACE`in okunur takma adı — zemine oturan öğelerin gerekçesi orada yazılı. */
+export const WALL_INNER = WALL_FACE;
 
 /**
  * DUVARIN ASMA BANDI — **BM (D-070) ile maketin değerlerine çekildi.**
@@ -73,7 +93,6 @@ export const WINDOW = { sill: 1.15, top: 2.8 } as const;
 export type DecorKind =
   | 'saksi' // küçük saksı (zemin)
   | 'buyukSaksi' // büyük saksı (zemin)
-  | 'denizlikSaksi' // pencere denizliğindeki küçük çiçek
   | 'copKovasi' // çöp kovası (zemin)
   | 'askilik' // portmanto (zemin)
   | 'semsiyelik' // şemsiyelik (zemin)
@@ -132,13 +151,11 @@ const LEFT_WALL: DecorItem[] = [
  */
 const RIGHT_WALL: DecorItem[] = [
   { kind: 'pencere', pos: [WALL_FACE, (WINDOW.sill + WINDOW.top) / 2, 2.6], rot: -Math.PI / 2, from: 2, len: 3.2, h: WINDOW.top - WINDOW.sill },
-  { kind: 'denizlikSaksi', pos: [WALL_FACE - 0.15, WINDOW.sill, 2.6], rot: -Math.PI / 2, from: 2 },
   { kind: 'aplik', pos: [WALL_FACE, MOUNT.high, 5.0], rot: -Math.PI / 2, from: 2 },
   { kind: 'pencere', pos: [WALL_FACE, (WINDOW.sill + WINDOW.top) / 2, 7.4], rot: -Math.PI / 2, from: 2, len: 3.2, h: WINDOW.top - WINDOW.sill },
-  { kind: 'petek', pos: [WALL_BACK, 0, 7.4], rot: -Math.PI / 2, from: 2, len: 1.6 },
+  { kind: 'petek', pos: [WALL_INNER, 0, 7.4], rot: -Math.PI / 2, from: 2, len: 1.6 },
   { kind: 'aplik', pos: [WALL_FACE, MOUNT.high, 9.8], rot: -Math.PI / 2, from: 2 },
   { kind: 'pencere', pos: [WALL_FACE, (WINDOW.sill + WINDOW.top) / 2, 12.2], rot: -Math.PI / 2, from: 2, len: 3.2, h: WINDOW.top - WINDOW.sill },
-  { kind: 'denizlikSaksi', pos: [WALL_FACE - 0.15, WINDOW.sill, 12.2], rot: -Math.PI / 2, from: 2 },
   // S5: gazetelik KayKit kitaplığına geçti (kullanıcı kararı) ve ölçüm o modelin bir DUVAR rafı
   // olduğunu söyledi (`minZ = 0` → sırtı origin'de, ayağı yok). Bu yüzden zeminden asma bandına
   // taşındı; `MOUNT.mid` çünkü tablo ile aynı üst hizada okunmalı (`decorLook.KITAPLIK_DY`).

@@ -5,58 +5,43 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-10 — **S6 BİTTİ** · Faz S 6/12 · 81/96)
+## ŞU AN (2026-09-10 — **S6 + S6/② BİTTİ** · Faz S 6/12 · 81/96)
 
 ```
-SORU            : Kıraathanenin DIŞI KayKit'e geçebilir mi + WC lavabosu gri musluklu modele geçsin mi?
-ÖLÇÜLECEK KOLLAR: A ölçek · B binalar · C yol karosu · D sokak mobilyası · E pencere · F tente · G lavabo.
+SORU            : (S6) dış cephe KayKit'e geçer mi · (S6/②) kullanıcı S6'yı oynadı, dokuz kalem verdi.
 SAYILAR         : `docs/dis-cephe-raporu-s6.md` · ham `docs/olcum-dis-cephe.txt`.
-                  **§V GÖRÜNÜRLÜK — turun ana bulgusu:** karşı binalar üç kamera kipinde de **%0**.
-                  Kamera oyuncunun +z'sinde (z tavanı 25,50), binalar 26,5'te → HER ZAMAN arkada.
-                  city-builder çarpanı **3,636** (0,90 kolu −%66…−%81 saptı).
-                  Pencere modülünün deliği **1,28 × 1,28** ↔ oyunun bandı 3,20 × 1,65; oluğu 1,60 ↔ lambri 0,94.
-                  Tente: kapı eşiği **17/22 konumda (%77) görünmez**; %0 veren hücre YOK.
-                  Gri lavabo = `kitchentable_sink` (TEK atlas gözü #828c91, doygunluk 0,11).
-KARAR           : **D-102.** A1 global 3,636 · **B ve C GİRMEDİ** (bugünkü 9 kutu da silindi) ·
-                  D girdi · **E3 pencere duvara GÖMÜLDÜ** · **F1 tente (kullanıcı bedeli kabul etti)** ·
-                  **G1 lavabo bugünkü kutuya çekildi** (çarpıtma 2,62, yerleşim korunuyor).
-UYGULAMA        : yeni `streetLook.ts` + `wcLook.ts` · `wallLook.wallPieces` + `wallBoxes.y0`
-                  (duvarda gerçek açıklık, yeri `config/decor.ts`ten türer) · `Scene.Street` yeniden
-                  yazıldı · `Decor.Pencere` nişe göre kuruldu (lento kapağı hack'i kalktı) ·
-                  `MERDIVEN_DERINLIK` ölçü katmanına taşındı.
-BEKÇİ           : `street-look` (19) + `pencere-nis` (19) · **16 mutasyon, hepsi yakalandı**.
-                  vitest **856** · duman **42/42** · `tsc -b` temiz · beş kadraj gözle doğrulandı.
+KARAR           : **D-102** (S6) + **D-103** (S6/②).
+BEKÇİ           : `street-look` (19) + `pencere-nis` (29) · toplam **26 mutasyon**.
+                  vitest **864** · duman **42/42** · `tsc -b` temiz · lint tabanda · 5 kadraj gözle.
 ```
 
-**Turun en pahalı dersi: "hangisi daha güzel" sorusundan ÖNCE "ekrana giriyor mu" sorulmalıydı.**
-Faz S planı S6'yı *"dış cephe: `building_A…H`, yollar…"* diye yazmıştı ve ölçüm o binaların
-**hiçbir kadrajda görünmediğini** söyledi. 10.389 üçgenlik bir iş, ölçülmeseydi yapılacaktı ve
-ekranda hiçbir şey değişmeyecekti. Görünürlük ölçütü artık `streetLook.GORUNUR_Z_SON` olarak
-bekçili — buranın ötesine model konamıyor.
+**S6'nın dersi: "hangisi daha güzel"den ÖNCE "ekrana giriyor mu" sorulmalı.** Karşı binalar üç
+kamera kipinde de **%0** görünür (kameranın z tavanı 25,50, binalar 26,5'te) → 10.389 üçgenlik
+iş ölçülmeseydi yapılacak ve ekranda hiçbir şey değişmeyecekti. Bugünkü 9 kutu da silindi.
 
-**İkinci ders — araç üç kez kendi hatasını buldu, üçü de TEK EŞİĞE güvenmemekten çıktı.**
-① "tezgâh üstü" ölçütü enin YARISINA bakıyordu, çanağın üstündeki parçaya yapıştı (1,146 okundu,
-gerçeği 0,996) → **en profili** eklenince yakalandı. ② "dikey yüzey kadrajı kesmez" yazılacaktı,
-tarama 0,90'dan itibaren %14 gösterdi: belirleyici olan yüzeyin YÖNÜ değil **üst kenarın
-yüksekliği**. ③ `propKutu` kutuyu simetrik sanıyordu; test asimetriyi söylüyordu ama kutu onu
-KULLANMIYORDU (S4'ün "sucuk" dersinin aynısı, farklı dosyada).
+**S6/②'nin dersi: dokuz şikâyetin çoğu TEK bir tahmini sayıydı.** `WALL_FACE` = 17,32 yazılıydı
+(gerekçe: *"gövde yüzünün ~0,1 önü"*), duvarın yüzü **17,41** → asılan her şey 0,09 havada;
+petek 0,30; lavabo 0,12. Sayı artık duvarın kalınlığından türüyor, bir düzeltme altı parçayı
+düzeltti. **Kullanıcı bunu ben bulmadan önce iki ayrı yerde gördü** (raf ve kalorifer) — yani
+görsel doğrulama turu, ölçüm turunun bulamadığını buluyor.
 
-**Üçüncü ders — çizim değişikliği bir MANTIK testini kırdı.** `maketParts.tsx` lavabo için `Model`i
-import edince zincir `recolor` → `Image`e uzandı; `tests/logic.test.ts` oradan `MERDIVEN_DERINLIK`
-alıyordu. Ölçü sabiti R3F dosyasında durursa bu her seferinde olur → sabit `wallLook.ts`e taşındı.
+**Üçüncü ders: `Decor.tsx`te yazılı bir karar bekçilenemez.** Gölge kararı orada duruyordu ve
+onu geri açan mutasyon KAÇTI; karar `decorLook.PENCERE_GOLGE`/`DUVAR_GOLGE`'ye çıktı.
+Aynı tur bir de zayıf ölçüt yakaladı: ayna bekçisi ARALIK denetliyordu, eşitliğe çevrildi.
 
-**KULLANICI GÖRDÜ VE ONAYLADI, ama görsel sayıdan sert konuşuyor:** tentenin ekran görüntüsünde
-kapı **tamamen** kayboluyor (`docs/gorsel/ss/s6-sokak.png`). Dönülmek istenirse hazır kol **F4**:
-dikey tabela 0,34 → **0,72** (üst kenar 1,97 = %0 kapanmanın ölçülen sınırı). Kod değişikliği tek
-sayı; ölçüm zaten yapıldı.
+**Tente (F1) kullanıcı kararı, bedeli bilinerek kabul edildi** — kapı eşiği %77 konumda görünmez.
+Geri dönüş kolu ölçülü ve hazır: **F4**, dikey tabela 0,34 → **0,72** (%0 sınırı üst kenar 1,97).
 
 ## SIRADAKİ TAM ADIM
 
-**S7 — lavabo / WC odası.** Kabin kapıları bugün düz kutu (`boxGeometry 1,36 × 1,95 × 0,06`, tek
-renk kahve) ve kullanıcı *"kötü"* dedi. Karşılığı diskte: `door_A` · `door_B` · `wall_doorway` ·
-bölme için `wall_half` + `pillar_A/B`. **S6'dan devreden:** lavabolar artık KayKit
-(`kitchentable_sink`, G1 dönüşümü) — kabin kapıları onunla aynı dilde olmalı. Klozet karşılığı
-üç pakette de YOK, elle çizim kalacak (S5'in çöp kovası dersi).
+**S7 — GİRİŞ DUVARI CAM + WC kabin kapıları.** İkisi de kullanıcıdan geldi:
+1. **Giriş cephesi cam** (kullanıcı bana bıraktı, S6/②'de ERTELENDİ): maket v13'te cephe camdı.
+   Ölçüm değer diyor — cephe salonun **en görünür ikinci şeridi** (%8–15, §V). Ertelenme sebebi
+   kapsam: kapı bloğuna (söve · lento · alınlık) ve duvar temasına dokunuyor, kendi turunu ister.
+2. **WC kabin kapıları** düz kutu (`1,36 × 1,95 × 0,06`, tek renk kahve) ve kullanıcı *"kötü"*
+   dedi. Karşılığı diskte: `door_A` · `door_B` · `wall_doorway` · `wall_half` + `pillar_A/B`.
+   S6/②'den devreden: lavabolar ve ayna artık gri KayKit — kapılar onunla aynı dilde olmalı.
+   Klozet karşılığı üç pakette de YOK (S5'in çöp kovası dersi), elle çizim kalacak.
 
 **KULLANICI KARARI BEKLEYEN ÜÇ ŞEY** (hiçbiri S7'yi bloklamıyor):
 1. **Ses kaynağı** (S8) — asset panosu §7, dört kol. D-096'yı kısmen geri alır.
@@ -76,6 +61,9 @@ bölme için `wall_half` + `pillar_A/B`. **S6'dan devreden:** lavabolar artık K
   sert çıktı. Geri dönüş kolu F4 hazır ve ölçülü: dikey tabela 0,34 → 0,72, sınır üst kenar 1,97.
 - **KayKit `bench` düz bir plaka gibi okunuyor** (0,36 br boyunda, sırtlıksız). Model bu; sokak
   kadrajında turuncu bir set gibi duruyor. Değişecekse başka paket ister.
+- **WC ÇÖP KUTUSU elle çizim kalıyor** — üç pakette karşılığı YOK ve bu İKİNCİ kez ölçüldü
+  (S5 + S6/②). `trash_A/B` 18 üçgenlik yer çöpü, `dumpster` konteyner. Kullanıcı istedi, yok.
+  Yeni paket gelirse ilk bakılacak kalem.
 - **`npm run lint` 31 hata veriyor** (hepsi ESKİ `tools/olcum-*.ts` dosyalarında, kullanılmayan
   değişkenler). S5'in dosyaları temiz; lint kapanış protokolünde olmadığı için birikmiş.
 - **G-01 çay/bulaşık toplama masanın her tarafından olmuyor · G-02 çay ocağından alma güvenilmez ·

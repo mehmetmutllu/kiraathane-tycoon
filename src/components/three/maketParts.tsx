@@ -19,11 +19,13 @@
  */
 import { BAND, BAND_SHELL, LAVABO } from '../../game/store';
 import { Model } from './Model';
-import { AYNA_H, AYNA_T, AYNA_Y, AYNA_Z, LAVABO_SCALE } from './wcLook';
+import { AYNA_GOZ, AYNA_S, AYNA_Y, AYNA_Z, LAVABO_DUVAR_PAYI, LAVABO_DZ, LAVABO_GOZ, LAVABO_SCALE } from './wcLook';
 import { STEP_D, STEP_H, STEP_N } from './wallLook';
 
 /** KayKit restaurant-bits kökü — `Kitchen.tsx` ile aynı yol. */
 const KAY_REST = '/assets/models/kaykit-restaurant-bits/';
+/** KayKit furniture-bits kökü — ayna oradan (`Decor.tsx` ile aynı yol). */
+const KAY_FURN = '/assets/models/kaykit-furniture-bits/';
 
 /** Maketin `C` paleti — yalnız bu dosyanın kullandığı girdiler, maketteki hex değerleriyle. */
 const MC = {
@@ -110,18 +112,35 @@ export function MaketSink({ pos, rot = 0 }: { pos: [number, number, number]; rot
   return (
     <group position={pos} rotation={[0, rot, 0]}>
       <Model
-        src={`${KAY_REST}kitchentable_sink.gltf`}
+        src={`${KAY_REST}kitchencounter_sink.gltf`}
         scale={LAVABO_SCALE}
-        position={[0, 0, 0]}
+        position={[0, 0, LAVABO_DZ]}
+        esleme={LAVABO_GOZ}
         fallback={<MaketSinkGovde />}
       />
-      {/* AYNA — maketin kendi ölçüleri; modelde karşılığı yok. */}
-      <mesh position={[0, AYNA_Y, AYNA_Z]}>
-        <boxGeometry args={[0.9, AYNA_H, AYNA_T - 0.01]} />
+      {/* AYNA — pakette "mirror" modeli yok; `pictureframe_medium`in TUVALİ cam mavisine
+          taşınıyor (gerekçe ve ölçü `wcLook.ts`te). Sırtı duvarın yüzünde. */}
+      <Model
+        src={`${KAY_FURN}pictureframe_medium.gltf`}
+        scale={AYNA_S}
+        position={[0, AYNA_Y, AYNA_Z]}
+        esleme={AYNA_GOZ}
+        fallback={<MaketAyna />}
+      />
+    </group>
+  );
+}
+
+/** Maketin aynası — model yüklenmezse çizilen yedek (çerçeve + cam). */
+function MaketAyna() {
+  return (
+    <group position={[0, AYNA_Y, AYNA_Z]}>
+      <mesh position={[0, 0, 0.02]}>
+        <boxGeometry args={[0.9, 0.7, 0.04]} />
         <meshStandardMaterial color={MC.boardFrame} />
       </mesh>
-      <mesh position={[0, AYNA_Y, AYNA_Z + 0.005]}>
-        <boxGeometry args={[0.8, AYNA_H - 0.1, AYNA_T]} />
+      <mesh position={[0, 0, 0.045]}>
+        <boxGeometry args={[0.8, 0.6, 0.05]} />
         <meshStandardMaterial color={MC.mirror} />
       </mesh>
     </group>
@@ -255,10 +274,8 @@ export function MaketLavaboBlock() {
       {/* ön duvar, kapı boşluğunun iki yanı + lento */}
       <MaketWall x1={x1} z1={zFront} x2={doorX - 0.7} z2={zFront} h={H} />
       <MaketWall x1={doorX + 0.7} z1={zFront} x2={x2} z2={zFront} h={H} />
-      <mesh position={[doorX, H - 0.06, zFront]}>
-        <boxGeometry args={[1.6, 0.12, 0.3]} />
-        <meshStandardMaterial color={MC.doorWood} />
-      </mesh>
+      {/* S6/②: kapının üstündeki koyu LENTO ŞERİDİ kaldırıldı (kullanıcı: "lavabo girişindeki
+          üstteki şeridi kaldır"). Kapı boşluğunu iki yandaki duvar parçaları zaten tanımlıyor. */}
 
       {/* fayans zemin (maketin floorPatch'i: 0,2 kalınlığında kutu, üstü y'de) */}
       <mesh position={[(x1 + x2) / 2, 0.012 - 0.1, (zBack + zFront) / 2]}>
@@ -285,10 +302,8 @@ export function MaketLavaboBlock() {
               <boxGeometry args={[1.36, 1.95, 0.06]} />
               <meshStandardMaterial color={MC.doorWood} flatShading />
             </mesh>
-            <mesh position={[cx + 0.5, 0.95, zd + 0.05]}>
-              <sphereGeometry args={[0.03, 10, 8]} />
-              <meshStandardMaterial color={MC.brass} />
-            </mesh>
+            {/* S6/②: pirinç kapı düğmeleri kaldırıldı (kullanıcı: "üzerindeki sarılıkları da
+                kaldır"). Kabin kapıları S7'de KayKit `door_A/B`ye geçecek, düğme onunla gelir. */}
             {ajar && (
               <group>
                 <mesh position={[cx, 0.2, zBack + 0.65]}>
@@ -308,7 +323,7 @@ export function MaketLavaboBlock() {
       {/* doğu duvarı boyunca üç lavabo + ortadakinin yanında sabunluk */}
       {[-1.7, 0, 1.7].map((dz, k) => (
         <group key={`s${k}`}>
-          <MaketSink pos={[x2 - 0.45, 0, zBack + 2.4 + dz]} rot={-Math.PI / 2} />
+          <MaketSink pos={[x2 - LAVABO_DUVAR_PAYI, 0, zBack + 2.4 + dz]} rot={-Math.PI / 2} />
           {k === 1 && (
             <mesh position={[x2 - 1.0, 0.9, zBack + 2.4 + dz]}>
               <cylinderGeometry args={[0.05, 0.05, 0.14, 8]} />

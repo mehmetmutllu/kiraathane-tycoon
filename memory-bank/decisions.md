@@ -3078,3 +3078,56 @@ Sabitler `wallLook.ts`e geçti.
 
 Ölçüm `docs/olcum-dis-cephe.txt` · rapor `docs/dis-cephe-raporu-s6.md` · bekçiler
 `tests/street-look.test.ts` (19) + `tests/pencere-nis.test.ts` (19), **16 mutasyonla doğrulandı.**
+
+## D-103 — "Duvardan ayrı duruyor" tek bir sayıydı; pencere sadeleşti, lavabo dolaplı-griye geçti (S6/②, 2026-09-10)
+
+Kullanıcı S6'yı ekranda gördü ve dokuz kalem verdi. Turun bulgusu: **şikâyetlerin çoğu ayrı ayrı
+kusur değil, TEK bir tahmini sayının farklı yerlerdeki yansımasıydı.**
+
+**KÖK — `WALL_FACE` bir tahmindi.** `FLOOR_HALF + 0.32` = 17,32 yazıyordu; gerekçesi *"krem
+gövdenin yüzünün ~0,1 önü (tüm profilleri geçer)"*di. Duvarın gövde yüzü ise **17,41**. Yani
+duvara asılan HER ŞEY 0,09 br havada duruyordu. Kullanıcı bunu iki ayrı parçada gördü:
+*"sağ en altta bir raf … o duvardan ayrı duruyo"* ve *"alttaki kalorifer duvardan uzakta"*
+(petek `WALL_BACK` = 17,15'teydi, üstüne kendi yerelinde 0,04 daha → **0,30 boşluk**).
+Sayı artık duvarın kendi kalınlığından TÜRÜYOR (`FLOOR_HALF + WALL_M − WALL_T_BODY/2`) ve
+`WALL_BACK` de aynı hat. Bir kalem düzeltildi, altı parça düzeldi.
+Aynı kök **lavabolarda da vardı ve kimse bakmamıştı**: maketin `x2 − 0,45`'i gövde 0,66 derin
+olduğu için sırtı duvarın 0,12 önünde bırakıyordu → pay da türetildi.
+
+**PENCERE SADELEŞTİ.** S6/E3 boşluğu duvarda açmıştı ama eski çözümün süsleri de taşınmıştı.
+Kullanıcı: *"altlarındaki o şerit olmasın, üzerlerindeki kaktüslere de gerek yok, düz cam ve
+ışıklar yeter."* Kalktı: derin denizlik · altındaki koyu konsol · orta kayıt · `denizlikSaksi`
+(tür listeden tamamen çıktı). Kalan: cam · dış aydınlık panel · ince kasa.
+**GÖLGE KAPANDI** — *"gölgeleri havadalarmış gibi duruyo."* Haklıydı: kasa `castShadow`
+taşıyordu ve odaya düşen dikdörtgen gölgelerin dayanacağı bir kütle yoktu. Aynı artefaktın
+küçük ölçeklisi apliklerde de vardı (zeminde kopuk kahverengi lekeler) → o da kapandı.
+
+**LAVABO — "gri hali" ayrı bir MODEL değil ayrı bir GÖZ.** Kullanıcı: *"dolaplı ama gri olan
+var; mutfaktaki turuncular var ya, onların gri halleri olsun."* 238 model tarandı, `*_grey`
+varyantı YOK. Ama `kitchencounter_sink` **zaten %70 gri**; turuncu olan yalnız %16'lık [3,6]
+gözü — mutfağın tezgâhlarını da turuncu yapan göz. `atlasUV.gozDegistir` ile [3,6] → [0,3]:
+yalnız bu modelin geometrisi değişir, mutfak turuncu kalır. (`recolor.ts` seçilseydi aynı gözü
+paylaştıkları için mutfak da grileşirdi — D-100'ün "göz ortaktır" dersi.) `Model` bileşenine
+`esleme` kolu eklendi. Ayaklı `kitchentable_sink` (S6/G1) bu yüzden geri alındı.
+
+**AYNA KayKit'ten, ÇÖP KUTUSU YOK.** Üç pakette "mirror" modeli yok; `pictureframe_medium`in
+TUVALİ ([0,7], 4 köşe, z = 0,150) cam mavisine, ÇERÇEVESİ ([0,3], 84 köşe, turuncuya çalan
+kiremit) lavabonun grisine taşındı. **Çöp kutusu ölçüldü ve YOK** (S5'te de ölçülmüştü):
+`trash_A/B` 18 üçgenlik yer çöpü, `dumpster` konteyner, biçim oranı tutmuyor → elle çizim kaldı.
+
+**WC girişi:** kapının üstündeki koyu lento şeridi ve kabin kapılarındaki pirinç düğmeler
+kaldırıldı (kullanıcı: *"üstteki şeridi ve üzerindeki sarılıkları da kaldır"*).
+
+**GİRİŞ DUVARI CAM — kullanıcı bana bıraktı, ERTELENDİ.** Ölçüm cephenin görünür olduğunu
+söylüyor (§V: %8–15, salonun en görünür ikinci şeridi) ve maket de camdı, yani DEĞER. Ama
+kapı bloğuna, alınlığa ve duvar temasına dokunuyor; bu turdaki yedi kalemin yanına sıkıştırmak
+yerine S7'nin başlığı oldu.
+
+**İki mutasyon KAÇTI ve ikisi de gerçek zayıflık gösterdi.** ① Ayna bekçisi bir ARALIK
+denetliyordu ("−0,45 < ön yüz < 0"); aynayı havaya geri asan mutasyon aralıktan geçti → ölçüt
+eşitliğe çevrildi ve pay türetildi. ② Gölge kararı `Decor.tsx`teydi, yani vitest'te import
+edilemiyordu → karar ölçü katmanına (`PENCERE_GOLGE` · `DUVAR_GOLGE`) çıktı ve bekçilendi.
+
+Bekçi `tests/pencere-nis.test.ts` 29 test · toplam **26 mutasyon** (S6 + S6/②) ·
+vitest **864** · duman **42/42** · `tsc -b` temiz · lint taban seviyesinde · beş kadraj gözle
+doğrulandı (`docs/gorsel/ss/s6-*.png`).
