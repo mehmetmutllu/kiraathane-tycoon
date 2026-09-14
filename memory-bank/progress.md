@@ -8,7 +8,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
 ## İLERLEME PANOSU — oturum sayacı
-`docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
+`docs/pano/ilerleme-panosu.html` · https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
 **Oturum bütçesi (TOPLAM 106 · YAPILAN 96 · %91):**

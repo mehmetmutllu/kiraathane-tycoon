@@ -85,7 +85,7 @@ bakıyor · mutfağın kuşbakışı karesi OYUNDAN çekilemez (tepeden kamera o
 **S13 paketler:** https://claude.ai/code/artifact/dcbaaee3-8889-4665-83b2-feff02a60c13
 **S12 arayüz:** https://claude.ai/code/artifact/a83eade2-32f6-4a64-ae34-6743a93922a3
 **Mor arayüz maketi:** https://claude.ai/code/artifact/6cc7a95e-c0a3-4802-8ea3-99398d637981
-**İlerleme panosu (v41 · 95/106):** https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
+**İlerleme panosu (v42 · 96/106):** https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs
 
 ---
 
