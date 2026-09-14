@@ -43,8 +43,10 @@
   // ise bugün Player.tsx'te zaten elle çizili olan kasket + bıyık + önlükten geliyor.
   const boya = q.get('boya') === '1';
   const P = { skin: '#e0ac69', shirt: '#f3ecd9', pants: '#3e3a36', apron: '#7a2230', cap: '#4a3728', mustache: '#3a2a1d', shoe: '#2e2a26' };
+  // Baş BİLEREK listede yok: Adventurer gövdelerinde saç ve sakal BAŞ MESH'İNİN dokusundan
+  // geliyor; teni düz boyayınca saç da ten oluyor (ilk vitrin koşusunda birebir bu oldu).
+  // Mankenin başı ayrı ele alınır — onun dokusu zaten manken dokusu, kimse için bir şey anlatmıyor.
   const PARCA_RENK = [
-    [/head/i, P.skin],
     [/arm/i, P.shirt],
     [/body|torso/i, P.shirt],
     [/leg/i, P.pants],
@@ -70,7 +72,7 @@
    * bir KEMİĞE bağlı olmaları — yani yürüme/oturma klibi onları da taşıyor.
    * Ölçüler ham rig birimindedir (gövde 2,20 ham = 1,75 dünya).
    */
-  function kiyafetTak(kok, rol = 'cayci') {
+  function kiyafetTak(kok, rol = 'cayci', yuzGerek = true) {
     const kemikler = {};
     kok.traverse((n) => {
       if (n.isBone) kemikler[n.name] = n;
@@ -90,7 +92,7 @@
     // YÜZ: manken boş kafayla geliyor. Göz ve burun bugün `Player.tsx`'te zaten küre olarak
     // çizili (r 0,022 göz · r 0,032 burun, 1,29'luk gövdede) — burada aynı parçalar ham rig
     // ölçeğine çevrilip BAŞ KEMİĞİNE takılıyor.
-    if (rol !== 'yalin') {
+    if (yuzGerek) {
       for (const yan of [-1, 1]) {
         const goz = new THREE.Mesh(new THREE.SphereGeometry(0.058, 10, 8), mat('#2b2118'));
         tak('head', goz, new THREE.Vector3(yan * 0.17, 1.79, 0.48));
@@ -106,7 +108,9 @@
       kasket.add(vizor);
       tak('head', kasket, new THREE.Vector3(0, 2.06, 0));
     }
-    if (rol === 'cayci' || rol === 'musteri') {
+    // Bıyık da yalnız mankende: Adventurer'ın kendi bıyığı/sakalı dokusunda var,
+    // üstüne ikincisini koymak iki bıyık demek.
+    if (yuzGerek && (rol === 'cayci' || rol === 'musteri')) {
       const biyik = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.07, 0.07), mat(P.mustache));
       tak('head', biyik, new THREE.Vector3(0, 1.55, 0.5));
     }
@@ -197,10 +201,13 @@
     if (boya) {
       o.traverse((n) => {
         if (!n.isMesh || !n.visible) return;
-        const e = PARCA_RENK.find(([d]) => d.test(n.name ?? ''));
+        const manken = /mannequin/i.test(n.name ?? '');
+        const e = manken && /head/i.test(n.name ?? '')
+          ? [null, P.skin]
+          : PARCA_RENK.find(([d]) => d.test(n.name ?? ''));
         if (e) n.material = new THREE.MeshStandardMaterial({ color: e[1], roughness: 0.85 });
       });
-      kiyafetTak(o, rol);
+      kiyafetTak(o, rol, /Mannequin/i.test(ad));
     }
     const poz = pozDosya ? pozUygula(o) : null;
     o.updateWorldMatrix(true, true);
@@ -270,11 +277,25 @@
   grid.position.y = 0.001;
   scene.add(grid);
 
+  // VİTRİN KİPİ (`izgara=1`): aday SEÇERKEN soru "mobilyaya göre ne kadar" değil "bu KİM".
+  // Tek sıra on adayı 40 px'lik lekeye düşürüyor (S13'te model-bak'ta birebir aynı ders);
+  // ızgarada kadraj karakterin üstüne kapanır, mobilya ve insan çubuğu çizilmez.
   const genislik = x + 3.4;
   const cam = new THREE.PerspectiveCamera(30, innerWidth / innerHeight, 0.1, 200);
   const merkez = new THREE.Vector3(x / 2 - 0.9, 0.95, 0);
-  cam.position.set(merkez.x, 1.55, genislik * 1.25);
-  cam.lookAt(merkez);
+  if (q.get('izgara') === '1') {
+    masa.visible = false;
+    tabure.visible = false;
+    insan.visible = false;
+    cam.fov = 30;
+    const ortaX = x / 2 - 0.5;
+    // Uzaklık eni kapsasın: yarı-en / tan(yatay yarı-açı). Aspect çarpanı unutulunca kesiyor.
+    const yariYatay = Math.atan(Math.tan((30 * Math.PI) / 360) * (innerWidth / innerHeight));
+    cam.position.set(ortaX, 1.2, (x / 2 + 0.8) / Math.tan(yariYatay) + 1.2);
+    cam.lookAt(ortaX, 0.95, 0);
+    cam.updateProjectionMatrix();
+  } else cam.position.set(merkez.x, 1.55, genislik * 1.25);
+  if (q.get('izgara') !== '1') cam.lookAt(merkez);
   renderer.render(scene, cam);
 
   // etiketler — DOM (üç.js metin yükü olmasın)
