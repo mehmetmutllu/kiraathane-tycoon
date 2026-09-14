@@ -87,6 +87,17 @@
     const mat = (renk) => new THREE.MeshStandardMaterial({ color: renk, roughness: 0.85 });
 
     // Ham rig ölçüleri (ölçülmüş): baş mesh'i y 1,10…2,20 · gövde 0,38…1,24 · baş eni 0,86.
+    // YÜZ: manken boş kafayla geliyor. Göz ve burun bugün `Player.tsx`'te zaten küre olarak
+    // çizili (r 0,022 göz · r 0,032 burun, 1,29'luk gövdede) — burada aynı parçalar ham rig
+    // ölçeğine çevrilip BAŞ KEMİĞİNE takılıyor.
+    if (rol !== 'yalin') {
+      for (const yan of [-1, 1]) {
+        const goz = new THREE.Mesh(new THREE.SphereGeometry(0.058, 10, 8), mat('#2b2118'));
+        tak('head', goz, new THREE.Vector3(yan * 0.17, 1.79, 0.48));
+      }
+      const burun = new THREE.Mesh(new THREE.SphereGeometry(0.075, 10, 8), mat('#d49a55'));
+      tak('head', burun, new THREE.Vector3(0, 1.67, 0.52));
+    }
     if (rol === 'cayci') {
       const kasket = new THREE.Group();
       kasket.add(new THREE.Mesh(new THREE.CylinderGeometry(0.44, 0.47, 0.16, 14), mat(P.cap)));
@@ -158,7 +169,10 @@
   let x = 0;
   const roller = (q.get('roller') ?? '').split(',').filter(Boolean);
   const liste = roller.length
-    ? roller.map((r) => ({ ad: adlar[0], zorla: 0, rol: r }))
+    ? roller.map((r) => {
+        const [a, b] = r.includes(':') ? r.split(':') : [adlar[0], r];
+        return { ad: a, zorla: 0, rol: b };
+      })
     : olcekler.length
       ? olcekler.map((k) => ({ ad: adlar[0], zorla: k, rol: 'cayci' }))
       : adlar.map((ad) => ({ ad, zorla: 0, rol: 'cayci' }));
@@ -270,7 +284,7 @@
     el.style.cssText =
       'position:fixed;transform:translate(-50%,0);font:11px/1.35 system-ui;text-align:center;' +
       'color:#263238;background:#ffffffd9;padding:2px 6px;border-radius:4px;white-space:nowrap';
-    el.innerHTML = `<b>${kt.rol ?? kt.ad}</b><br>×${kt.olcek} → boy ${kt.boy}<br>en ${kt.en}` +
+    el.innerHTML = `<b>${kt.rol ? `${kt.rol}` : kt.ad}</b><br><span style="color:#78909c">${kt.ad}</span><br>×${kt.olcek} → boy ${kt.boy}<br>en ${kt.en}` +
       (kt.gizlenen ? `<br><span style="color:#c62828">−${kt.gizlenen} ekipman</span>` : '') +
       (kt.poz ? `<br><span style="color:${kt.poz.tuttu ? '#2e7d32' : '#c62828'}">poz ${kt.poz.eslesen ?? 0}/${kt.poz.iz ?? 0} kemik</span>` : '') +
       (kt.kalca != null ? `<br><span style="color:#5d4037">ayaktan asılınca kalça ${kt.kalca}<br>montaj kaldırması +${(0.45 - kt.kalca).toFixed(3)}</span>` : '');
