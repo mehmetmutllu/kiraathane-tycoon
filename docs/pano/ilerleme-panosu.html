@@ -214,14 +214,14 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum — Faz S · 12/14 — S13 kapandı (D-111)",
-  "baslik": "Altı paket indi, <b>553 modelin 117'si</b> repoya girdi; panonun üç görevi <b>çürüdü</b>",
-  "aciklama": "Bu tur iki engeli aynı anda kaldırdı. Birincisi teknikti: indirme betiği aylardır son adımda 404 veriyordu. Sebep ölçüldü — istek <b>süreli indirme sayfasına</b> gidiyordu, oysa itch <b>oyun sayfasını</b> istiyor. Tek satırlık düzeltmeyle <b>altı paketin altısı da indi</b> (72,4 MB, 553 model, hepsi CC0).<br><br><b>İkincisi bir karardı: “her asseti çek” indirmeyi serbest bırakır, repoyu değil.</b> Paketler oyunun içine girince telefona kurulan dosyaya da giriyor. Altısını da tam almak asset ağırlığını <b>5,9 MB’den 27,2 MB’ye</b> çıkarıyordu ve 553 modelin <b>436’sı</b> bugün hiçbir işe bakmıyordu — madenî külçe, Noel süsü, voxel küpü. Kullanıcı <b>yalnız gerekenleri</b> almayı seçti; tek istisna okey/tavla paketi oldu, çünkü Kat 2 açılırken hangi taşın lazım olacağı bugün belli değil. Sonuç: <b>17,2 MB</b>.<br><br><b>Asıl bilgi paketlerin içinden çıktı: altı paketten üçü beklenen işi yapmıyor.</b> Süs paketi süs değil <b>mobilya</b> veriyor (dört renkte koltuk, tabure, halı, fener). Prototip paketinin okları yok ama <b>itme barsız bir kapısı</b> var. Blok paketi mekân hacmi değil Minecraft küpü — repoya hiç girmedi.<br><br><b>O kapı aylardır bekleyen bir kalemi kapattı.</b> WC kabin kapıları bugüne kadar yangın çıkışı kapısıydı: üstünde pencere, ortasında itme barı. Yeni kapı düz panel ve <b>tokmaklı</b>. Ayak izi eskisiyle birebir aynı çıktı, yani yer değişimi hiçbir ölçüyü bozmadı.<br><br><b>Bir sayı da yanlış çıktı ve kayda geçti:</b> karar sunulurken “grisi gider” denmişti, ölçüm gri gözün yerinde kaldığını gösterdi — giden <b>yeşildi</b>. Yeşil de bir kullanıcı kararıydı (“WC tek kahve kütle, yeşil onu kırıyor”), o yüzden itiraz kapatılmadı, açık kalem olarak yazıldı.<br><br>Bekçi <code>tests/yeni-paketler.test.ts</code>: 8 denetim, <b>11 mutasyon</b>, kaçan yok. Paketi bir daha tam indirmek ya da budanmışa model sızdırmak artık kırmızı yakıyor."
+  "etiket": "Bu oturum — Faz S · 13/15 — S14 personel bitti (D-112)",
+  "baslik": "Panonun <b>üç hükmü çürüdü</b>; personel KayKit gövdelerine geçti, fantezi <b>sökülebilir</b> çıktı",
+  "aciklama": "Karakter kalemi bir yıl boyunca “KayKit’in hepsi fantezi, sivilleştirmek birkaç oturum mesh işi” hükmüyle bekliyordu. O hüküm <b>hiçbir paket indirilmeden</b> yazılmıştı; indirilip ölçülünce üç parçası birden çürüdü. <b>Ekipman ayrı düğüm:</b> pelerin, miğfer, şapka gövdeye kaynamamış — Rogue’da sökülecek tek düğüm var ve 84 üçgen. Yani sivilleştirme mesh düzenleme değil, <b>bir satır</b>. <b>Klipler retarget istemiyor:</b> başka bir pakette duran animasyonlar gövdeye <b>69/69 kemik</b> tuttu; üstelik o paket panoda hiç yazmıyordu ve içinde <b>139 klip</b> var — oturma, tepsi tutma, tezgâhta çalışma dahil. Oyunun kodu “gerçek oturuş pozu Faz 6’da gelir” diye not düşmüştü; geldi ve bedava. <b>Quaternius kolu ölçülünce elendi:</b> panonun yazdığı altı gövde ücretsiz katmanda <b>iki</b>, modüler kıyafet paketinin adı <i>fantasy</i>, ve doku hattı PBR — tek bir normal haritası <b>13,8 MB</b>, tek sivil karakterin repo bedeli <b>≈22 MB</b> iken bütün <code>models/</code> klasörü 17,2 MB.<br><br><b>Kullanıcı oranı onayladı, konsepti reddetti</b> — <i>“yapısı boyutu proporsiyonu çok iyi ama bunlar savaş karakteri”</i> — ve haklıydı: şapka sökülünce altından <b>kemer, bilek bandı, deri askı</b> çıkıyor. Aranan şey (KayKit oranında, modern, sivil, CC0) hiçbir kaynakta yok; KayKit’in kendi ücretli serilerinde bile 14 karakterde 2-3 sivil var. Çözüm başka pakette değil <b>dokuda</b> çıktı: gövde ve bacak oyunun paletine boyanıyor, <b>baş boyanmıyor</b> — yüz, saç ve sakal başın kendi dokusundan geliyor. Bu kural bir kareden doğdu: ilk denemede baş da boyanmıştı ve Barbarian’ın ak sakalı ten rengine dönmüştü. Kasket ve önlük bizim ve artık <b>kemiğe takılı</b>, yani yürüme ve oturma klipleri onları da taşıyor.<br><br><b>Ölçek kolu ayrı ölçüldü ve ucuz olan seçildi:</b> KayKit gövdesinde baş boyun <b>%50</b>’si (bugünkü gövdede %33), ama omuz eni <b>0,58</b> ↔ kapsülün 0,60’ı — genişlik sınırı aşılmıyor, kayan şey düşey oran. Toplam boyu 1,75’e çekmek masayı göğse çıkarıyor, gövdeyi mobilyaya hizalamak ise boyu 2,21’e taşıyıp <code>ACTOR_HEIGHT</code>’tan türeyen <b>her sayıyı</b> yeniden açıyordu. İlk kol seçildi: bu turda yarıçaplar, kamera, baloncuk, erişim ve nav ızgarası <b>hiç kıpırdamadı</b>, denge dosyaları da açılmadı."
  },
  "siradaki": {
-  "etiket": "Sırada S14 — karakterler",
-  "baslik": "Faz S’de iki kalem kaldı ve biri <b>kullanıcı seçimi bekliyor</b>",
-  "aciklama": "<b>S14 — karakterler:</b> ana karakter, garson, bulaşıkçı ve müşteriler bugün hâlâ parçalı ilkel gövde. Altı kol bedeliyle asset panosunda duruyor ve <b>seçilmeden tur açılamaz</b> — KayKit’in karakter paketlerinin hepsi fantezi temalı, kıraathaneye sivil müşteri lazım, yani temiz bir yol yok ve her kolun bir bedeli var.<br><br><b>S9 — ses</b> ayrı bir tur: kaynak kararı yazılı, yalnız kullanılacak dosyalar künyesiyle girecek. <b>İndirme artık engel değil</b> — betik bu turda dört adımın dördünü de yapar hâle geldi.<br><br>Bu turdan <b>devreden iş</b> de var: repoya giren 117 modelin 114’ü henüz sahneye konmadı (koltuk, tabure, halı, fener, çalı, depo yığını) — her biri kendi yerleşim turunu istiyor. Ayrıca yeni kapının <b>kahve rengi</b> bir açık kalem: yeşili götürdü ve o yeşil bir kullanıcı kararıydı.<br><br>Ardından <b>Faz H</b>: üç oynanış hatası, yükseltme sırası ve masa aralığı. İkisi denge kalemi ve <b>ölçülmeden uygulanmayacak</b>."
+  "etiket": "Sırada S15 — müşteriler",
+  "baslik": "Personel skinned oldu; <b>müşteriler bilerek kapsül kaldı</b> ve bedeli ölçülü",
+  "aciklama": "<b>Tur ikiye bölündü</b> (kullanıcının kendi kuralı: görevi en fazla ikiye böl) ve kesme çizgisi <b>yeşil bir ara durum</b>: sahip, garson, bulaşıkçı ve çaycı artık gerçek gövdeler, müşteriler ise çalışmaya devam eden kapsüller.<br><br><b>Sebep bir sayı:</b> müşteriler bugün <b>tek InstancedMesh</b> — kaç kişi olursa olsun <b>1 çizim çağrısı</b>. Skinned gövde instance edilemez, her biri kendi iskeletini taşır: 24 müşteri <b>192 çizim</b> demek ve mobil bütçe tipik olarak 100-200. Kullanıcı “hepsinde skinned çok iyi olur” dedi, o yüzden kol kapanmadı <b>ertelendi</b>: azaltma yolu da ölçüldü — her gövdenin <b>tek materyali</b> var, sekiz parça birleştirilince karakter başına 1 çizim, yani 24 müşteri <b>24 çağrı</b>. Aynı turda oturma klibi bugünkü numaranın (gövdeyi 45 cm aşağı indirme) yerini alacak ve gömlek rengi müşteri başına paletten seçilecek.<br><br>Ardından <b>S9 ses</b> (kaynak kararı yazılı), sonra <b>Faz H</b>: üç oynanış hatası, yükseltme sırası ve masa aralığı — son ikisi denge kalemi ve <b>ölçülmeden uygulanmayacak</b>."
  },
  "donemler": [
   {
@@ -378,6 +378,20 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "14.09.2026",
+   "etiket": "Faz S · 13. oturum (S14 — karakterler: personel — D-112)",
+   "baslik": "Fantezi <b>sökülebilir</b> çıktı: personel KayKit gövdelerine geçti, üç hüküm çürüdü",
+   "govde": "Tur, bir yıldır bekleyen karakter kalemini açtı ve ilk iş panonun hükmünü sınamak oldu — çünkü o hüküm paketler indirilmeden yazılmıştı ve bir önceki tur aynı panonun altı görevinden üçünü çürütmüştü. Sekiz ücretsiz paket indirildi ve dosyadan ölçüldü. <b>Ekipman ayrı düğüm:</b> pelerin ve miğfer gövdeye kaynamamış, gizlemek bir satır. <b>Klipler retarget istemiyor:</b> ayrı paketteki animasyonlar gövdeye 69/69 kemik tuttu. <b>Panonun bilmediği bir paket bulundu:</b> 139 klip, içinde oturma, tepsi tutma ve tezgâhta çalışma — oyunun kodunun “Faz 6’da gelir” diye not düştüğü poz bedavaya geldi. <b>Quaternius kolu sayıyla elendi:</b> ücretsiz katmanda iki gövde, kıyafet paketi fantezi, ve PBR doku hattı tek karakter için ≈22 MB — bütün model klasörü 17,2 MB iken.<br><br>Kullanıcı kareye baktı, <b>oranı onayladı ama konsepti reddetti</b>: şapka sökülünce altından ortaçağ derisi çıkıyordu ve o deri renkte değil dokuda. Aranan şey hiçbir CC0 kaynakta yok. Çözüm dokudan çıktı: gövde ve bacak oyunun paletine boyanıyor, <b>baş boyanmıyor</b> — yüz, saç ve sakal oradan geliyor. Bu kural bir hatadan doğdu: ilk denemede baş da boyanmış ve ak sakal ten rengine dönmüştü. Kasket ve önlük artık kemiğe takılı, klipler onları da taşıyor; kasket de sabit yükseklikte duramadığı için (her gövdenin saçı farklı yükseliyor) başın <b>kendi ölçülen tepesine</b> oturuyor.<br><br><b>Bekçi iki kez yazıldı.</b> İlk turda on beş mutasyonun ikisi kaçtı ve ikisi de gerçek zayıflıktı: ekipman kuralı <b>iki ayrı yerde</b> yazılıydı (ölçüm aracı ve oyun kodu) ve test, tuzağı taşımayan modellerde koşuyordu; klon denetimi ise dizgeye bakıyordu, ifadeye değil. İkisi de kapatıldı, kaçan sıfıra indi. Bir önceki turun model-klasörü tavanı da düzeltildi: ölçüm artığı bir klasörü sayıyordu ve kırmızı yanan şey repo değildi.",
+   "maddeler": [
+    "<b>D-112:</b> personel KayKit gövdelerinden, palete boyalı, <b>baş boyanmaz</b> · kasket/önlük kemiğe takılı",
+    "<b>Üç hüküm çürüdü:</b> ekipman ayrı düğüm · klipler <b>69/69</b> iz tuttu · Quaternius ücretsizde <b>2</b> gövde + <b>80 MB</b> doku",
+    "<b>Ölçek Ö1:</b> toplam boy 1,75 — <code>ACTOR_HEIGHT</code>’tan türeyen hiçbir sayı kıpırdamadı",
+    "<b>Repo:</b> 6 gövde + 4 klip dosyası, +5,9 MB → <code>models/</code> 23,1 MB · dövüş klipleri alınmadı",
+    "<b>Tur ikiye bölündü:</b> müşteriler kapsül kaldı — skinned’de 24 müşteri <b>192 çizim</b> (bugün 1)",
+    "<b>Bekçi:</b> 11 denetim, <b>15 mutasyon, kaçan 0</b> · vitest 943 · duman 42/42"
+   ]
+  },
   {
    "tarih": "14.09.2026",
    "etiket": "Faz S · 12. oturum (S13 — yeni asset paketleri — D-111)",
@@ -1127,6 +1141,24 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "riskler": [
+  {
+   "sev": "Görsel",
+   "renk": "now",
+   "b": "Karakter paneli hâlâ <b>eski ilkel gövdeyi</b> çiziyor — panel ile sahne ayrıştı",
+   "p": "S14 personeli KayKit gövdelerine geçirdi (D-112) ama <code>Player.tsx</code>&rsquo;in eski parçalı gövdesi (<code>OwnerBody</code>) export olarak duruyor ve <b>karakter paneli</b> onu çiziyor. Yani oyunda bıyıklı, kasketli, animasyonlu bir sahip var; panelde ise küre başlı ilkel gövde. Bu bir kusur değil <b>yarım bir geçiş</b>: panelin mini Canvas&rsquo;ı skinned gövdeyi ve bir klibi taşımak zorunda, o da kendi turunu ister. Eski gövde bilerek silinmedi — panel ona bağlı olduğu için silmek paneli kırardı. <b>Yan kalem:</b> S12&rsquo;den beri açık duran &ldquo;karakter ekranı altta boş kalıyor&rdquo; maddesi de buraya bakıyor: tek karakter varken doldurulacak içerik yoktu, artık gövde ve klip var."
+  },
+  {
+   "sev": "Perf",
+   "renk": "wait",
+   "b": "Müşteriler hâlâ kapsül — skinned&rsquo;e geçiş <b>192 çizim çağrısı</b> demek, ölçüldü",
+   "p": "Kullanıcı <i>&ldquo;hepsinde skinned çok iyi olur&rdquo;</i> dedi ve tur bilerek ikiye bölündü: personel geçti, müşteriler <b>tek InstancedMesh</b> olarak çalışmaya devam ediyor (<code>NPC_CAP</code> 128 → <b>1 çizim çağrısı</b>). Sebep ölçülmüş bir sayı: skinned gövde instance <b>edilemez</b> — her biri kendi iskeletini ve kendi <code>AnimationMixer</code>&rsquo;ını taşır. Masaüstü GPU&rsquo;sunda ölçüldü (ANGLE/D3D11; <b>mutlak sayı telefona taşınmaz, oran taşınır</b>): 5 gövde 40 çizim · 12 gövde 96 · <b>24 gövde 192</b> · 48 gövde 384. Mobil çizim bütçesi tipik olarak 100-200. <b>Azaltma kolu ölçüldü ama denenmedi:</b> her gövdenin <b>tek materyali</b> var, yani sekiz parça mesh birleştirilebilir → karakter başına <b>1 çizim</b>, 24 müşteri <b>24 çağrı</b>. Aynı turda oturma klibi (<code>Sit_Chair_*</code>, repoda) bugünkü <code>SEATED_DROP</code> numarasının (gövdeyi 0,45 aşağı indirme) yerini alabilir ve gömlek rengi müşteri başına paletten seçilecek. <b>Kalem: S15.</b>"
+  },
+  {
+   "sev": "Ölçüm",
+   "renk": "wait",
+   "b": "Klip dosyaları <b>mankenin gövdesini de taşıyor</b> — dosya başına ~6.900 üçgen ölü yük",
+   "p": "KayKit animasyonları gövdeden ayrı dosyalarda tutuyor ve bu iyi bir düzen — ama o dosyalar &ldquo;yalnız klip&rdquo; değil: her biri mankenin altı parça mesh&rsquo;ini de içinde taşıyor (<b>6.916 üçgen</b>). Repoya dört klip dosyası girdi, yani <b>~27 bin üçgenlik</b> geometri hiç çizilmeden ayrıştırılıyor. Oyun bunları sahneye <b>eklemiyor</b> (yalnız <code>animations</code> dizisi okunuyor), dolayısıyla çizim maliyeti sıfır; maliyet <b>indirme ve ayrıştırma</b> tarafında. Mesh&rsquo;i atan bir araç ≈ <b>0,5-1,5 MB</b> kazandırır. Bugün zararı ölçülmedi, o yüzden kalem <b>bekliyor</b> — APK boyutu Faz F&rsquo;de okunacak ve karar orada verilecek."
+  },
   {
    "sev": "Tasarım",
    "renk": "now",
