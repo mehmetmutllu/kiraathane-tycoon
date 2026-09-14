@@ -59,9 +59,9 @@ G-03 kamera kayıyor · G-06 tepsi ilk yükseltme 75 → ~50 · G-07 dwell para-
 DENGE, varyant kapısına tabi) · masalar geçilmiyor (açıklık 0,68 br, geçiş 0,94 ister — 20 masanın
 12'si).
 
-**Altyapı:** **pano ARTIFACT'i İKİ tur geride** — `docs/pano/ilerleme-panosu.html` güncel ve
-push'lu (denetim temiz, 94/104), ama yayınlama canlı sürümün tamamının okunmasını istiyor
-(~128k token) ve S19a'da da S19b'de de atlandı; sonraki turda `Artifact action:"read"` + republish ·
+**Altyapı:** ~~pano ARTIFACT'i iki tur geride~~ → **S19b'de KAPANDI:** pano v40 olarak yayınlandı
+(94/104). Yayının bedeli yazılı: canlı sürümün **1611 satırının tamamı** okunmadan publish
+reddediliyor (~130k token) — yani atlanırsa borç büyüyor, her turda kapatmak ucuz. ·
 `npm run lint` 31 hata (hepsi eski `tools/olcum-*.ts`) · `.gitattributes` YOK
 (`core.autocrlf` her checkout'ta CRLF'e çeviriyor) · `npm run pano` günlük uyarısı yalnız TARİHE
 bakıyor · **oyuncuda 2,0× artık kayma** · **panel dönüşünde T-poz temiz koşuda ÜRETİLEMEDİ**
