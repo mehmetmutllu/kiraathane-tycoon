@@ -144,7 +144,7 @@
   <div class="kunye">
     <span><b>Ham çıktı</b> docs/olcum-yuruyus.json</span>
     <span><b>Rapor</b> docs/karakter-raporu-s15.md</span>
-    <span><b>Commit</b> c2d6201 · ölçüm 93282ae</span>
+    <span><b>Commit</b> 719296b · ölçüm 93282ae</span>
     <span><b>Tarih</b> 14 Eylül 2026</span>
   </div>
 </header>
@@ -355,8 +355,20 @@
 </section>
 
 <section class="kol">
-  <h3>Sonraki oturumda ilk soracağım</h3>
-  <p><strong>Geç oyunda müşteri tavanı.</strong> 24 masa tam açıkken müşteri 70’i geçebilir ve tavanı aşanlar yine kapsül olarak görünür. İki kol ölçüldü ama seçilmedi: tavanı <strong>80</strong>’e çıkarmak (1,57 ms / 112 çizim) ya da uzaktakini kapsüle düşürmek (<strong>LOD</strong>, kare başı sıralama ister). Soru turu dolduğu için bu tura sığmadı.</p>
+  <div class="kol-bas"><span class="harf">2</span><h2>İkinci tur</h2></div>
+  <p class="soru">Aynı gün iki geri bildirim daha geldi; ikisi de yapıldı.</p>
+
+  <h3>“Tavanı 80’e çıkar, kapsül hiç görünmesin”</h3>
+  <p><strong>Kapsül</strong>, S15’ten önce müşterilerin çizildiği şeydi: kolsuz-bacaksız-yüzsüz, renkli bir hap şekli. Ucuzdu ama cansızdı. Gerçek karakter pahalı olduğu için bir bütçe var — “en fazla N tanesi gerçek karakter olsun”; bütçeyi aşan müşteri eski kapsüle düşüyordu, yani salonda karakterlerin arasında renkli haplar beliriyordu.</p>
+  <p>Tavan <strong>48 → 80</strong>. 24 masa tam açıkken müşteri 70’i geçebiliyor; 80 o tepenin üstünde kalıyor, yani kapsüle düşme yaşanmaz. Bedeli <strong>1,57 ms/kare</strong>. Kapsül kolu yine de silinmedi: tavan bir gün aşılırsa müşteri sessizce kaybolmasın, kapsüle düşsün.</p>
+
+  <h3>“Oturmalar sıkıntı, masaya dönük değiller”</h3>
+  <p>Gerçek hataydı. Yön <strong>hareketten</strong> türüyordu: müşteri oturunca hareket bitiyor ve <strong>geldiği yöne bakakalıyordu</strong>. Koltuk masanın çevresinde herhangi bir yönde olabildiği için sabit bir açı işe yaramaz — yön artık koltuktan <strong>masa merkezine</strong> bakıyor. Ayrıca yuva el değiştirince açı anında oturuyor, yeni müşteri öncekinin yönünden dönerek gelmiyor.</p>
+  <figure>
+    <img src="gorsel/ss/s15-oturus-yakin.png" alt="Yakın kadraj: her oturan müşteri kendi masasına dönük">
+    <figcaption>Her oturan müşteri kendi masasına bakıyor. Soldaki turuncu sağa, ortadaki mavi sola dönmüş.</figcaption>
+  </figure>
+  <p class="not"><strong>Bekçi:</strong> 21 → <strong>23 denetim</strong>, 18 → <strong>21 mutasyon</strong>, kaçan 0. vitest 966 ✓ · duman 42/42 ✓ · <code>719296b</code></p>
 </section>
 
 <section class="kol" style="border-bottom:none">
