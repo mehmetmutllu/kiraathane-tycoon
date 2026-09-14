@@ -3248,3 +3248,20 @@ elmas #7FD9FF · para #FFD45E. **Tek aksan amber**; yeşil yalnız ilerleme, mav
 **Ölçek de bu kararla kilitlendi:** punto 17 → 6 basamak · gölge 27 → 3 kademe · yarıçap 9 → 3.
 Maket beş ekranı gerçek metin ve bugünkü denge sayılarıyla gösteriyor (G-06 bilerek değiştirilmedi):
 `docs/mor-arayuz-maketi.html`. Rapor: `docs/ui-ses-raporu-s9s10.md` §MOR ARAYÜZ.
+
+## D-108 — İkon seti tek gramerde yeniden çizildi; Kenney paketi ikon KAYNAĞI olmadı (2026-09-14)
+
+Kullanıcı: *"ikonların bazıları anlaşılır değil gibi… sağ en üstteki ayarlar kötü duruyor."*
+**Kural yazıldı:** 24×24 ızgara · kontur 2,2 · hiçbir detay 2 br'den ince değil · düz dolgu ·
+**aksan her ikonda YALNIZ bir yerde**. Çark dişleri elle değil hesaplanarak çizildi (8 diş,
+dış 10,4 / iç 7,8); eski çark çok dişli bir yıldızdı, 21 px'te lekeye dönüyordu.
+**D-106'nın "ikonlar hazır paketten" maddesi bu turda UYGULANMADI ve gerekçesi ölçümün kendisinde:**
+aynı ölçüm Kenney UI Pack için *"kalın koyu kontur yok, chunky hissin asıl kaynağı o"* demişti —
+paketin ikonları bu gramere girmek için zaten yeniden konturlanacaktı. Ayrıca indirilen paketler
+bu makinede yok (repoya hiç girmemişlerdi). Paket S11'de **şekil kaynağı** olarak açık kalıyor;
+bu bir geri alma değil, sıralama: önce gramer, sonra gerekirse paketten şekil.
+**Gerçek boyda sınandı, üç ikon düzeltildi:** Hedefler (üç ince halka 26 px'te birbirine giriyordu
+→ disk + koyu iç disk + aksan gözbebeği) · Para (orta çubuk 17 px'te yarık gibi okunuyordu → iç
+elips) · Elmas (çapraz kesim çizgileri 16 px'te tırtık yapıyordu → yalnız kuşak çizgisi).
+**Maket artık bir ikon sayfası taşıyor:** her ikon hem 64 px'te hem oyundaki gerçek boyunda,
+mor gövdenin üstünde. Sayılar/gerekçe: `docs/ui-ses-raporu-s9s10.md` §İkon seti.

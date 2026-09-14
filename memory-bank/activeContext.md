@@ -17,6 +17,7 @@ KARAR           : D-106 — ses S-C (Kenney; coin = RPG Audio handleCoins) + ser
                   dosyaları alma) · G-18 masanın kendi noktası vurgulanır ·
                   alt gezinme GEOMETRİSİ bugünküyle aynı (A/B/C elendi)
                   D-107 — arayüzün TAMAMI mor, 3B dünya sıcak kalır (palet + ölçek kilitli)
+                  D-108 — ikon seti tek gramerde yeniden çizildi (çark hesaplanarak)
 UYGULAMA        : YOK — S10 tanımı gereği kod yazmaz. Uygulama S11 (UI) + S9 (ses).
 BEKÇİ           : (uygulama turunda)
 ```
@@ -32,6 +33,9 @@ https://claude.ai/code/artifact/6cc7a95e-c0a3-4802-8ea3-99398d637981
 - Palet ve ölçek `index.css`'e token olarak girer (D-107'deki dokuz renk + punto 6 basamak +
   gölge 3 kademe + yarıçap 3 kademe). **Sayı koda gömülmez, token olur.**
 - `button{font-family:inherit}` — 13 öğe Arial'a düşüyor, biri görev şeridi (B5).
+- **İkon seti D-108'de çizildi ve maketin ikon sayfasında duruyor** — `icons.tsx`'e o gramer
+  girer (24×24 · kontur 2,2 · detay ≥ 2 br · aksan ikon başına tek yerde). Kenney paketi ikon
+  kaynağı OLMADI (konturu yok, zaten yeniden çizilecekti); S11'de şekil kaynağı olarak açık.
 - 🔒 emoji → SVG; ✕ → ↺ ₺ metin glifleri de (17 adet, B6).
 - Beş ekran **K3 tam ekran** + tek kabuk (geri · başlık · cüzdan); alt sayfa kabuğu kalkar.
 - Mağaza **M2** düzeni · pad **Y2** · alt bar geometrisi AYNI, dili mor.

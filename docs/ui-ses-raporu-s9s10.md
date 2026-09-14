@@ -449,3 +449,29 @@ ilerleme `#7BD46A`→`#4FA83E` · elmas `#7FD9FF` · para `#FFD45E`.
 rengiyle** örtüldü (sol 178,161,125 · orta 188,169,130 · sağ 173,153,116 — kareden ölçüldü).
 Sahnenin kendisine dokunulmadı. Denge sayıları da bugünkü oyundan: tepsi 75 · mıknatıs 200 ·
 hız 400 · günlük ödül 3/4 💎 · İtibar 0/60. **G-06 (tepsi 75 → ~50) bilerek değiştirilmedi.**
+
+### İkon seti yeniden çizildi (aynı tur, kullanıcı isteği)
+
+> *"ikonların bazıları anlaşılır değil gibi… mesela sağ en üstteki ayarlar kötü duruyor"*
+
+**Tek gramer:** 24×24 ızgara · kontur **2,2** · hiçbir detay **2 birimden ince değil** · düz dolgu ·
+**aksan her ikonda yalnız bir yerde**. Çarkın dişleri elle değil **hesaplanarak** çizildi
+(8 diş, dış yarıçap 10,4, iç 7,8) — eski çark çok dişli bir yıldızdı ve 21 pikselde lekeye dönüyordu.
+
+**Gerçek boyda sınandı ve üçü düzeltildi** (maketteki ikon sayfası her ikonu hem 64 px'te hem
+oyundaki gerçek boyunda gösteriyor):
+
+| İkon | Kusur | Düzeltme |
+|---|---|---|
+| Hedefler | 26 px'te üç ince halka birbirine giriyordu | disk + koyu iç disk + aksan gözbebeği |
+| Para | ortadaki düz çubuk 17 px'te **yarık** gibi okunuyordu | iç elips (madenî para kenarı) |
+| Elmas | iki çapraz kesim çizgisi 16 px'te tırtık yapıyordu | yalnız kuşak çizgisi |
+
+**Kenney paketi neden kullanılmadı:** D-106 ikonların hazır CC0 paketten geleceğini söylüyordu,
+ama aynı ölçüm Kenney UI Pack için *"kalın koyu kontur yok, chunky hissin asıl kaynağı o"* demişti.
+Yani paketin ikonları bu gramere girmek için zaten yeniden konturlanacaktı; üstelik paketler bu
+makinede yok (repoya hiç girmemişlerdi). Set doğrudan bu gramerde çizildi, paket S11'de **şekil
+kaynağı** olarak açık kalıyor.
+
+**Aynı turda düzelen iki şey daha:** değer yığını üstteki duvar şeridini aşıyordu (82 px'e sığdı) ·
+görev çubuğundaki `0/1` sayacı geri geldi.

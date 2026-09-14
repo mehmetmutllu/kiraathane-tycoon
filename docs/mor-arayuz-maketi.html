@@ -103,7 +103,10 @@ li{margin:5px 0}
 .band .gov{flex:1;min-width:0}
 .band .gov b{display:block;color:var(--tx);font-size:15px;font-weight:900;line-height:1.15}
 .band .bar{height:11px;border-radius:999px;background:var(--oyuk);border:2px solid var(--ot);margin-top:4px;overflow:hidden}
+.band .bar{position:relative}
 .band .bar i{display:block;height:100%;width:0%;background:var(--ok)}
+.band .bar em{position:absolute;inset:0;display:grid;place-items:center;font-style:normal;
+  font-family:var(--f-num);font-size:9px;line-height:1;font-weight:800;color:var(--tx2);letter-spacing:.03em}
 .band .odul{display:flex;align-items:center;gap:4px;color:var(--txa);background:var(--ac);border:2.5px solid var(--ot);
   border-radius:999px;padding:3px 9px 4px;font-family:var(--f-num);font-size:13px;font-weight:800}
 
@@ -216,6 +219,16 @@ li{margin:5px 0}
 .olcek b{font-weight:900}
 .golge{width:60px;height:38px;border-radius:12px;background:linear-gradient(180deg,var(--kart),var(--kart2));
   border:2.5px solid var(--ot)}
+/* ── ikon sayfası: her ikon hem GERÇEK boyunda hem büyütülmüş, mor gövdenin üstünde ── */
+.ikonlar{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:12px;margin-top:18px}
+.ik{border-radius:14px;border:1px solid var(--rule);background:var(--surface);overflow:hidden}
+.ik .sahne-ik{background:linear-gradient(180deg,var(--g1),var(--g2));padding:14px 10px 12px;
+  display:flex;flex-direction:column;align-items:center;gap:10px;color:var(--tx)}
+.ik .buyuk{display:grid;place-items:center;height:72px}
+.ik .gercek{display:flex;align-items:center;gap:7px;height:30px}
+.ik .ad{font-family:var(--f-disp);font-size:11.5px;padding:7px 10px 8px;color:var(--ink);
+  border-top:1px solid var(--rule);display:flex;justify-content:space-between;gap:6px}
+.ik .ad span{color:var(--mid);font-family:var(--f-num)}
 @media (max-width:760px){ .box{height:540px} .ph{transform:scale(.64)} }
 </style>
 
@@ -255,6 +268,24 @@ tek satın alma.</p>
 
 <div class="sistem" id="sis"></div>
 
+<div class="sec"><span class="sec-tag ok">ikon</span><h2>İkonlar — hepsi yeniden çizildi</h2></div>
+<p>Eskiler üç ayrı aileden geliyordu ve küçüldükçe dağılıyordu; ayar çarkı en kötüsüydü — çok dişli
+bir yıldız 21 pikselde lekeye dönüyordu. Yeni set <b>tek gramerde</b>: 24×24 ızgara · kontur <b>2,2</b> ·
+hiçbir detay <b>2 birimden ince değil</b> · düz dolgu · <b>aksan her ikonda yalnız bir yerde</b>
+(sarı nokta gözü nereye çekeceğini söylüyor). Çarkın dişleri elle değil <b>hesaplanarak</b> çizildi:
+8 diş, dış yarıçap 10,4, iç 7,8.</p>
+<p>Aşağıda her ikon <b>üstte büyütülmüş, altta oyundaki gerçek boyunda</b> — mor gövdenin üstünde,
+yani gerçekten görüneceği zeminde.</p>
+<div class="ikonlar" id="ikonlar"></div>
+
+<div class="note">
+<p style="margin:0"><b class="q">Kenney paketi neden kullanılmadı:</b> D-106 ikonların hazır CC0
+paketten geleceğini söylüyordu, ama aynı ölçüm Kenney UI Pack için şunu da yazmıştı —
+<b>“kalın koyu kontur yok, chunky hissin asıl kaynağı o.”</b> Yani paketin ikonları bu gramere
+girmek için zaten yeniden konturlanacaktı. Set o yüzden doğrudan bu gramerde çizildi; paket
+S11&rsquo;de <b>şekil kaynağı</b> olarak açık kalıyor.</p>
+</div>
+
 <div class="sec"><span class="sec-tag">not</span><h2>Bu makette görünen diğer kararlar</h2></div>
 <div class="tw">
 <table>
@@ -277,30 +308,31 @@ oyundan alındı (tepsi 75 · mıknatıs 200 · hız 400 · günlük ödüller 3
 
 <script>
 var IC = {
- gorev:'<svg width="26" height="26" viewBox="0 0 24 24"><rect x="4.6" y="3.4" width="14.8" height="17.4" rx="3.2" fill="currentColor" stroke="var(--ot)" stroke-width="2"/><rect x="8.6" y="1.9" width="6.8" height="3.8" rx="1.6" fill="var(--ac)" stroke="var(--ot)" stroke-width="2"/><path d="M8.3 12.1l2 2 3.4-3.7M8.3 17.1h7.4" stroke="var(--ot)" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>',
- hedef:'<svg width="26" height="26" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.7" fill="currentColor" stroke="var(--ot)" stroke-width="2"/><circle cx="12" cy="12" r="5" fill="none" stroke="var(--ot)" stroke-width="2"/><circle cx="12" cy="12" r="1.9" fill="var(--ac)" stroke="var(--ot)" stroke-width="1.6"/></svg>',
- magaza:'<svg width="26" height="26" viewBox="0 0 24 24"><rect x="4.4" y="10.4" width="15.2" height="10.4" rx="2.4" fill="currentColor" stroke="var(--ot)" stroke-width="2"/><path d="M3.2 10.4l1.9-5.1h13.8l1.9 5.1z" fill="var(--ac)" stroke="var(--ot)" stroke-width="2" stroke-linejoin="round"/><rect x="9.6" y="13.8" width="4.8" height="7" rx="1.2" fill="var(--ot)"/></svg>',
- karakter:'<svg width="26" height="26" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4.4" fill="currentColor" stroke="var(--ot)" stroke-width="2"/><path d="M4.6 20.6c0-4 3.3-6.4 7.4-6.4s7.4 2.4 7.4 6.4z" fill="currentColor" stroke="var(--ot)" stroke-width="2" stroke-linejoin="round"/></svg>',
- geri:'<svg width="20" height="20" viewBox="0 0 24 24"><path d="M14.6 5.2L7.8 12l6.8 6.8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
- ayar:'<svg width="21" height="21" viewBox="0 0 24 24"><path d="M12 2.6l2.1 1.5 2.5-.5 1 2.4 2.3 1.1-.4 2.5 1.6 2-1.6 2 .4 2.5-2.3 1.1-1 2.4-2.5-.5L12 21.4l-2.1-1.5-2.5.5-1-2.4-2.3-1.1.4-2.5-1.6-2 1.6-2-.4-2.5 2.3-1.1 1-2.4 2.5.5z" fill="currentColor" stroke="var(--ot)" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.3" fill="var(--oyuk)" stroke="var(--ot)" stroke-width="2"/></svg>',
- para:function(s){s=s||17;return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24"><ellipse cx="12" cy="15" rx="8.4" ry="4.1" fill="#D17D0A"/><ellipse cx="12" cy="10.4" rx="8.4" ry="4.4" fill="var(--para)" stroke="var(--ot)" stroke-width="1.7"/><ellipse cx="12" cy="10.4" rx="4.2" ry="2" fill="none" stroke="var(--ot)" stroke-width="1.3"/></svg>';},
- elmas:function(s){s=s||16;return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24"><path d="M7.2 3.6h9.6l4.2 5.1L12 20.6 3 8.7z" fill="var(--elmas)" stroke="var(--ot)" stroke-width="2" stroke-linejoin="round"/><path d="M3 8.7h18M9.4 3.6l-1.6 5.1L12 20.6l4.2-11.9-1.6-5.1" fill="none" stroke="var(--ot)" stroke-width="1.4"/></svg>';},
- cay:'<svg width="26" height="26" viewBox="0 0 24 24"><path d="M8.1 4.4h7.8l-1 12.5a2.9 2.9 0 0 1-2.9 2.6 2.9 2.9 0 0 1-2.9-2.6z" fill="#E8DCC2" stroke="var(--ot)" stroke-width="1.9" stroke-linejoin="round"/><path d="M8.7 11.2h6.6l-.6 5.7a2.3 2.3 0 0 1-2.7 2 2.3 2.3 0 0 1-2.7-2z" fill="#B1361F"/></svg>',
- masa:'<svg width="120" height="120" viewBox="0 0 24 24"><ellipse cx="12" cy="17.9" rx="7.6" ry="1.7" fill="rgba(0,0,0,.3)"/><rect x="10.8" y="10" width="2.4" height="7.2" fill="#8A5A2B" stroke="var(--ot)" stroke-width="1.1"/><ellipse cx="12" cy="9.4" rx="8.2" ry="3.2" fill="#2E7D4F" stroke="var(--ot)" stroke-width="1.5"/><ellipse cx="12" cy="8.9" rx="5.6" ry="2" fill="#3C9660"/><rect x="10.9" y="5.4" width="2.2" height="3.4" rx=".7" fill="#F0E4CE" stroke="var(--ot)" stroke-width="1.1"/></svg>',
- caycı:'<svg width="126" height="126" viewBox="0 0 24 24"><ellipse cx="12" cy="21.4" rx="6" ry="1.4" fill="rgba(0,0,0,.3)"/><rect x="8.6" y="12.4" width="6.8" height="7.6" rx="1.4" fill="#8E2F2A" stroke="var(--ot)" stroke-width="1.2"/><rect x="7.4" y="8.6" width="9.2" height="4.6" rx="1.6" fill="#F2EDE3" stroke="var(--ot)" stroke-width="1.2"/><circle cx="12" cy="6" r="3.1" fill="#E8B98C" stroke="var(--ot)" stroke-width="1.2"/><path d="M8.5 4.9h7v-.7a3.5 3.5 0 0 0-7 0z" fill="#4A3320" stroke="var(--ot)" stroke-width="1.1" stroke-linejoin="round"/><rect x="14.6" y="9.1" width="6.6" height="1.5" rx=".5" fill="#A9702F" stroke="var(--ot)" stroke-width="1"/><rect x="16" y="6.6" width="1.7" height="2.5" fill="#C0392B"/><rect x="18.4" y="6.6" width="1.7" height="2.5" fill="#C0392B"/></svg>',
- tepsi:'<svg width="22" height="22" viewBox="0 0 24 24"><rect x="2.6" y="15.4" width="18.8" height="2.6" rx="1" fill="#A9702F" stroke="var(--ot)" stroke-width="1.5"/><rect x="5.4" y="8.4" width="3.6" height="6.6" rx=".8" fill="#C0392B" stroke="var(--ot)" stroke-width="1.4"/><rect x="10.2" y="8.4" width="3.6" height="6.6" rx=".8" fill="#C0392B" stroke="var(--ot)" stroke-width="1.4"/><rect x="15" y="8.4" width="3.6" height="6.6" rx=".8" fill="#C0392B" stroke="var(--ot)" stroke-width="1.4"/></svg>',
- miknatis:'<svg width="22" height="22" viewBox="0 0 24 24"><path d="M5.4 4.6h4.2v8.2a2.4 2.4 0 0 0 4.8 0V4.6h4.2v8.2a6.6 6.6 0 0 1-13.2 0z" fill="#C0392B" stroke="var(--ot)" stroke-width="1.6" stroke-linejoin="round"/><rect x="5.4" y="4.6" width="4.2" height="3.2" fill="#ECECEC" stroke="var(--ot)" stroke-width="1.4"/><rect x="14.4" y="4.6" width="4.2" height="3.2" fill="#ECECEC" stroke="var(--ot)" stroke-width="1.4"/></svg>',
- ayakkabi:'<svg width="22" height="22" viewBox="0 0 24 24"><path d="M3.4 16.4V9.2h3.9l2.2 2.4h5.1a5.4 5.4 0 0 1 5.4 4.8z" fill="#4A3320" stroke="var(--ot)" stroke-width="1.6" stroke-linejoin="round"/><rect x="3.4" y="16.4" width="16.6" height="2.4" rx="1" fill="#2A1C10" stroke="var(--ot)" stroke-width="1.4"/></svg>',
- kilit:'<svg width="46" height="46" viewBox="0 0 24 24"><path d="M7.6 10.4V7.8a4.4 4.4 0 0 1 8.8 0v2.6" fill="none" stroke="var(--tx2)" stroke-width="2.4" stroke-linecap="round"/><rect x="4.6" y="10.4" width="14.8" height="10.4" rx="3" fill="var(--ac)" stroke="var(--ot)" stroke-width="2.2"/><circle cx="12" cy="15" r="1.9" fill="var(--ot)"/><rect x="11.1" y="15" width="1.8" height="3.4" rx=".9" fill="var(--ot)"/></svg>',
- madalya:'<svg width="26" height="26" viewBox="0 0 24 24"><circle cx="12" cy="13.6" r="7.2" fill="var(--ac)" stroke="var(--ot)" stroke-width="2"/><circle cx="12" cy="13.6" r="4.4" fill="none" stroke="var(--ot)" stroke-width="1.5"/><path d="M12 10.6l.9 1.9 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2-1.5-1.4 2-.3z" fill="var(--ot)"/></svg>'
+ // 24x24 izgara · kontur 2,2 · hicbir detay 2 br'den ince degil · aksan ikon basina TEK yerde
+ gorev:function(s){s=s||26;return sv(s,'<rect x="4" y="3.6" width="16" height="17.2" rx="3" fill="currentColor" stroke="var(--ot)" stroke-width="2.2"/><rect x="8.4" y="1.5" width="7.2" height="4.2" rx="1.9" fill="var(--ac)" stroke="var(--ot)" stroke-width="2.2"/><path d="M7.9 12.5l2.5 2.5 4.1-4.5" fill="none" stroke="var(--ot)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 18h8" stroke="var(--ot)" stroke-width="2.4" stroke-linecap="round"/>');},
+ hedef:function(s){s=s||26;return sv(s,'<circle cx="12" cy="12" r="9" fill="currentColor" stroke="var(--ot)" stroke-width="2.2"/><circle cx="12" cy="12" r="4.8" fill="var(--ot)"/><circle cx="12" cy="12" r="2.1" fill="var(--ac)"/>');},
+ magaza:function(s){s=s||26;return sv(s,'<rect x="4" y="10.6" width="16" height="10.4" rx="2.4" fill="currentColor" stroke="var(--ot)" stroke-width="2.2"/><path d="M2.6 10.6l2.1-5.5h14.6l2.1 5.5z" fill="var(--ac)" stroke="var(--ot)" stroke-width="2.2" stroke-linejoin="round"/><rect x="9.4" y="13.9" width="5.2" height="7.1" rx="1.3" fill="var(--ot)"/>');},
+ karakter:function(s){s=s||26;return sv(s,'<circle cx="12" cy="7.8" r="4.6" fill="currentColor" stroke="var(--ot)" stroke-width="2.2"/><path d="M4.2 21c0-4.3 3.5-6.9 7.8-6.9s7.8 2.6 7.8 6.9z" fill="currentColor" stroke="var(--ot)" stroke-width="2.2" stroke-linejoin="round"/>');},
+ ayar:function(s){s=s||22;return sv(s,'<path d="M10.2 4.4 L10.3 1.7 L13.7 1.7 L13.8 4.4 L16.1 5.3 L18.0 3.5 L20.5 6.0 L18.7 7.9 L19.6 10.2 L22.3 10.3 L22.3 13.7 L19.6 13.8 L18.7 16.1 L20.5 18.0 L18.0 20.5 L16.1 18.7 L13.8 19.6 L13.7 22.3 L10.3 22.3 L10.2 19.6 L7.9 18.7 L6.0 20.5 L3.5 18.0 L5.3 16.1 L4.4 13.8 L1.7 13.7 L1.7 10.3 L4.4 10.2 L5.3 7.9 L3.5 6.0 L6.0 3.5 Z" fill="currentColor" stroke="var(--ot)" stroke-width="2.2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.7" fill="var(--oyuk)" stroke="var(--ot)" stroke-width="2.2"/>');},
+ geri:function(s){s=s||20;return sv(s,'<path d="M14.8 4.8L7.4 12l7.4 7.2" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>');},
+ para:function(s){s=s||17;return sv(s,'<ellipse cx="12" cy="14.8" rx="8.6" ry="4.2" fill="#C77A08" stroke="var(--ot)" stroke-width="1.9"/><ellipse cx="12" cy="10" rx="8.6" ry="4.5" fill="var(--para)" stroke="var(--ot)" stroke-width="1.9"/><ellipse cx="12" cy="10" rx="4.1" ry="2" fill="none" stroke="var(--ot)" stroke-width="1.8"/>');},
+ elmas:function(s){s=s||16;return sv(s,'<path d="M7.4 3.4h9.2l4.2 5.4L12 20.6 3.2 8.8z" fill="var(--elmas)" stroke="var(--ot)" stroke-width="2.2" stroke-linejoin="round"/><path d="M3.2 8.8h17.6" fill="none" stroke="var(--ot)" stroke-width="1.9"/>');},
+ cay:function(s){s=s||26;return sv(s,'<path d="M7.7 3.8h8.6l-1.1 12.4a3.2 3.2 0 0 1-6.4 0z" fill="#F0E6D2" stroke="var(--ot)" stroke-width="2.1" stroke-linejoin="round"/><path d="M8.7 11h6.6l-.7 5.2a2.6 2.6 0 0 1-5.2 0z" fill="#B1361F"/><path d="M8.2 20.2h7.6" stroke="var(--ot)" stroke-width="2.2" stroke-linecap="round"/>');},
+ tepsi:function(s){s=s||22;return sv(s,'<rect x="5.4" y="7.4" width="5.4" height="7.8" rx="1.3" fill="#C0392B" stroke="var(--ot)" stroke-width="1.9"/><rect x="13.2" y="7.4" width="5.4" height="7.8" rx="1.3" fill="#C0392B" stroke="var(--ot)" stroke-width="1.9"/><rect x="2.2" y="15.2" width="19.6" height="3.4" rx="1.6" fill="#A9702F" stroke="var(--ot)" stroke-width="1.9"/>');},
+ miknatis:function(s){s=s||22;return sv(s,'<path d="M4.4 4.2h5.2v8.6a2.4 2.4 0 0 0 4.8 0V4.2h5.2v8.6a7.6 7.6 0 0 1-15.2 0z" fill="#C0392B" stroke="var(--ot)" stroke-width="2" stroke-linejoin="round"/><rect x="4.4" y="4.2" width="5.2" height="3.6" fill="#EAEAEA" stroke="var(--ot)" stroke-width="1.9"/><rect x="14.4" y="4.2" width="5.2" height="3.6" fill="#EAEAEA" stroke="var(--ot)" stroke-width="1.9"/>');},
+ hiz:function(s){s=s||22;return sv(s,'<path d="M6.4 18.4V9.2h3.8l2.4 2.6h2.2a6.2 6.2 0 0 1 6.2 6.2v.4z" fill="#6B4A28" stroke="var(--ot)" stroke-width="2" stroke-linejoin="round"/><rect x="6.4" y="18.4" width="14.6" height="2.8" rx="1.3" fill="#2A1C10" stroke="var(--ot)" stroke-width="1.9"/><path d="M3.4 11.4h-2.2M4 15.4H1.2" stroke="var(--ac)" stroke-width="2.2" stroke-linecap="round"/>');},
+ kilit:function(s){s=s||46;return sv(s,'<path d="M7.4 10.6V7.9a4.6 4.6 0 0 1 9.2 0v2.7" fill="none" stroke="var(--tx2)" stroke-width="2.6" stroke-linecap="round"/><rect x="4.4" y="10.6" width="15.2" height="10.6" rx="3" fill="var(--ac)" stroke="var(--ot)" stroke-width="2.2"/><circle cx="12" cy="15" r="2" fill="var(--ot)"/><rect x="11" y="15" width="2" height="3.6" rx="1" fill="var(--ot)"/>');},
+ masa:function(s){s=s||120;return sv(s,'<ellipse cx="12" cy="18" rx="7.6" ry="1.7" fill="rgba(0,0,0,.3)"/><rect x="10.7" y="9.8" width="2.6" height="7.6" fill="#8A5A2B" stroke="var(--ot)" stroke-width="1.2"/><ellipse cx="12" cy="9.4" rx="8.2" ry="3.2" fill="#2E7D4F" stroke="var(--ot)" stroke-width="1.5"/><ellipse cx="12" cy="8.9" rx="5.6" ry="2" fill="#3C9660"/><rect x="10.9" y="5.3" width="2.2" height="3.5" rx=".7" fill="#F0E4CE" stroke="var(--ot)" stroke-width="1.1"/>');},
+ caycı:function(s){s=s||126;return sv(s,'<ellipse cx="12" cy="21.5" rx="6" ry="1.3" fill="rgba(0,0,0,.3)"/><rect x="8.6" y="12.4" width="6.8" height="7.6" rx="1.4" fill="#8E2F2A" stroke="var(--ot)" stroke-width="1.2"/><rect x="7.4" y="8.6" width="9.2" height="4.6" rx="1.6" fill="#F2EDE3" stroke="var(--ot)" stroke-width="1.2"/><circle cx="12" cy="6" r="3.1" fill="#E8B98C" stroke="var(--ot)" stroke-width="1.2"/><path d="M8.5 4.9h7v-.7a3.5 3.5 0 0 0-7 0z" fill="#4A3320" stroke="var(--ot)" stroke-width="1.1" stroke-linejoin="round"/><rect x="14.6" y="9.1" width="6.8" height="1.6" rx=".6" fill="#A9702F" stroke="var(--ot)" stroke-width="1"/><rect x="16" y="6.5" width="1.8" height="2.6" rx=".4" fill="#C0392B"/><rect x="18.5" y="6.5" width="1.8" height="2.6" rx=".4" fill="#C0392B"/>');}
 };
+function sv(s, ic){ return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" aria-hidden="true">'+ic+'</svg>'; }
 
 var SEK = [['gorev','Görevler',2],['hedef','Hedefler',1],['magaza','Mağaza',0],['karakter','Karakter',0]];
 function altBar(aktif){
   var t='';
   for (var i=0;i<SEK.length;i++){
     var b = SEK[i][2] ? '<span class="bang">'+SEK[i][2]+'</span>' : '';
-    t += '<div class="tab'+(i===aktif?' on':'')+'"><span class="ic">'+IC[SEK[i][0]]+b+'</span><span class="lb">'+SEK[i][1]+'</span></div>';
+    t += '<div class="tab'+(i===aktif?' on':'')+'"><span class="ic">'+IC[SEK[i][0]]()+b+'</span><span class="lb">'+SEK[i][1]+'</span></div>';
   }
   return '<div class="bar-alt">'+t+'</div>';
 }
@@ -312,20 +344,20 @@ function ustHud(){
       '<div class="xp"><i></i></div></div>'+
     '</div>'+
     '<div class="sag">'+
-      '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:7px;padding-top:1px">'+
-        '<div class="deger">'+IC.para(26)+'<span class="cikti" style="font-size:25px">5K</span></div>'+
-        '<div class="deger">'+IC.elmas(24)+'<span class="cikti" style="font-size:25px">0</span></div>'+
+      '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">'+
+        '<div class="deger">'+IC.para(23)+'<span class="cikti" style="font-size:22px">5K</span></div>'+
+        '<div class="deger">'+IC.elmas(21)+'<span class="cikti" style="font-size:22px">0</span></div>'+
       '</div>'+
-      '<div class="dis k2">'+IC.ayar+'</div>'+
+      '<div class="dis k2">'+IC.ayar()+'</div>'+
     '</div></div>';
 }
 function govBand(){
-  return '<div class="band"><div class="pic">'+IC.cay+'</div>'+
-    '<div class="gov"><b>Ocaktan çay al</b><div class="bar"><i></i></div></div>'+
+  return '<div class="band"><div class="pic">'+IC.cay()+'</div>'+
+    '<div class="gov"><b>Ocaktan çay al</b><div class="bar"><i></i><em>0/1</em></div></div>'+
     '<div class="odul">'+IC.para(15)+'+3</div></div>';
 }
 function ekTop(baslik){
-  return '<div class="ek-top"><div class="geri">'+IC.geri+'</div><div class="ek-ttl">'+baslik+'</div>'+
+  return '<div class="ek-top"><div class="geri">'+IC.geri()+'</div><div class="ek-ttl">'+baslik+'</div>'+
     '<div class="cuzdan">'+IC.para(16)+'<span>5K</span></div></div>';
 }
 
@@ -353,7 +385,7 @@ function ekGorevler(){
       '<div class="kart-alt"><span>Her gün yenilenir</span><div class="rozet-sat">'+IC.elmas(15)+'4</div></div></div>'+
     '<div class="etiket">Kıraathane</div>'+
     '<div class="kart hazir" style="display:flex;align-items:center;gap:10px">'+
-      '<div class="band-pic" style="width:44px;height:44px;flex:none;border-radius:14px;border:2.5px solid var(--ot);background:linear-gradient(180deg,#C7503C,#8E3124);display:grid;place-items:center">'+IC.cay+'</div>'+
+      '<div class="band-pic" style="width:44px;height:44px;flex:none;border-radius:14px;border:2.5px solid var(--ot);background:linear-gradient(180deg,#C7503C,#8E3124);display:grid;place-items:center">'+IC.cay()+'</div>'+
       '<div style="flex:1;min-width:0"><div class="etiket" style="margin:0">Şu an</div>'+
       '<b style="display:block;color:var(--tx);font-size:15px;font-weight:900">Ocaktan çay al</b>'+
       '<div class="ilerle" style="margin:5px 0 0"><i style="width:0%"></i></div></div>'+
@@ -389,10 +421,10 @@ function ekHedefler(){
 function ekMagaza(){
   var cips='';
   var adlar=['on','','','kilit','kilit'];
-  for (var i=0;i<5;i++) cips += '<div class="cip '+adlar[i]+'">'+(adlar[i]==='kilit'?IC.kilit.replace('46','26').replace('46','26'):'')+'</div>';
+  for (var i=0;i<5;i++) cips += '<div class="cip '+adlar[i]+'">'+(adlar[i]==='kilit'?IC.kilit(26):'')+'</div>';
   return '<div class="ek">'+ekTop('Mağaza')+'<div class="ek-govde">'+
     '<div class="sekmeler"><div class="sekme on">Masa</div><div class="sekme">Zemin</div><div class="sekme">Duvar</div></div>'+
-    '<div class="onizleme"><span class="rozetcik">Masa teması</span>'+IC.masa+'</div>'+
+    '<div class="onizleme"><span class="rozetcik">Masa teması</span>'+IC.masa()+'</div>'+
     '<div class="ad-sat"><b>Yeşil Çuha</b><span>Klasik okey masası</span></div>'+
     '<div class="serit">'+cips+'</div>'+
     '<div style="flex:1"></div>'+
@@ -404,7 +436,7 @@ function ekMagaza(){
 function ekMagazaKilitli(){
   return '<div class="ek">'+ekTop('Mağaza')+'<div class="ek-govde">'+
     '<div class="sekmeler"><div class="sekme on">Masa</div><div class="sekme">Zemin</div><div class="sekme">Duvar</div></div>'+
-    '<div class="kilitli">'+IC.kilit+'<b>Masa temaları kilitli</b>'+
+    '<div class="kilitli">'+IC.kilit()+'<b>Masa temaları kilitli</b>'+
       '<p>Tüm salonları aç ve bütün masaları son seviyeye getir; sonra masalarını renklendirebilirsin.</p>'+
       '<div class="kosul"><span>Salon 1/3</span><span>Max masa 0/1</span></div></div>'+
     '</div></div>';
@@ -412,19 +444,19 @@ function ekMagazaKilitli(){
 function ekKarakter(){
   var sat = [['tepsi','Tepsi','2 → <i>3</i> bardak','75'],
              ['miknatis','Para Mıknatısı','2.6 → <i>3.4</i> alan','200'],
-             ['ayakkabi','Hareket Hızı','4.5 → <i>4.8</i> hız','400']];
+             ['hiz','Hareket Hızı','4.5 → <i>4.8</i> hız','400']];
   var s='';
   for (var i=0;i<sat.length;i++){
-    s += '<div class="satir"><div class="sim">'+IC[sat[i][0]]+'</div>'+
+    s += '<div class="satir"><div class="sim">'+IC[sat[i][0]]()+'</div>'+
       '<div class="gov"><b>'+sat[i][1]+'</b><span>'+sat[i][2]+'</span></div>'+
       '<div class="fiyat">'+IC.para(15)+sat[i][3]+'</div></div>';
   }
   return '<div class="ek">'+ekTop('Çaycı')+'<div class="ek-govde" style="gap:11px">'+
     '<div style="display:flex;align-items:center;gap:8px;flex:none">'+
-      '<div class="sim" style="width:36px;height:36px;border-radius:12px;border:2.5px solid var(--ot);background:linear-gradient(180deg,var(--ac),var(--ac2));display:grid;place-items:center">'+IC.tepsi+'</div>'+
+      '<div class="sim" style="width:36px;height:36px;border-radius:12px;border:2.5px solid var(--ot);background:linear-gradient(180deg,var(--ac),var(--ac2));display:grid;place-items:center">'+IC.tepsi()+'</div>'+
       '<b style="color:var(--tx);font-size:14px;font-weight:900">Seviye 0</b>'+
       '<span style="color:var(--tx2);font-size:12px">· üç yükseltme açık</span></div>'+
-    '<div class="vitrin">'+IC.caycı+'</div>'+s+
+    '<div class="vitrin">'+IC.caycı()+'</div>'+s+
     '<div style="flex:1"></div>'+
     '<div class="kart" style="flex:none;padding:9px 13px;background:var(--oyuk)">'+
       '<span style="color:var(--tx2);font-size:11.5px;line-height:1.4;display:block">Her yükseltme <b style="color:var(--tx)">kalıcı</b>; tepsi büyüdükçe tek seferde daha çok çay taşırsın.</span></div>'+
@@ -441,6 +473,22 @@ var EK = [
 var h='';
 for (var i=0;i<EK.length;i++) h += '<div class="slot"><div class="box"><div class="ph">'+EK[i][0]+'</div></div><p class="cap">'+EK[i][1]+'</p></div>';
 document.getElementById('r2').innerHTML = h;
+
+/* ── ikon sayfası ── */
+var IKON = [['gorev','Görevler','26'],['hedef','Hedefler','26'],['magaza','Mağaza','26'],
+            ['karakter','Karakter','26'],['ayar','Ayarlar','22'],['geri','Geri','20'],
+            ['para','Para','17'],['elmas','Elmas','16'],['cay','Çay','26'],
+            ['tepsi','Tepsi','22'],['miknatis','Mıknatıs','22'],['hiz','Hareket hızı','22'],
+            ['kilit','Kilit','26']];
+var ih='';
+for (var j=0;j<IKON.length;j++){
+  var k=IKON[j];
+  ih += '<div class="ik"><div class="sahne-ik">'+
+        '<div class="buyuk">'+IC[k[0]](64)+'</div>'+
+        '<div class="gercek">'+IC[k[0]](Number(k[2]))+'</div></div>'+
+        '<div class="ad">'+k[1]+'<span>'+k[2]+' px</span></div></div>';
+}
+document.getElementById('ikonlar').innerHTML = ih;
 
 /* ── sistem şeridi ── */
 document.getElementById('sis').innerHTML =
