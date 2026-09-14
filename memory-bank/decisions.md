@@ -3328,3 +3328,42 @@ ekranın 0'i de alt sayfa" diyordu (tablo tam ekran gösterirken), §U2 ölçtü
 boy+tek jest · `mor-dil.test.ts` 6'daki glif listesi).
 
 Sayılar: `docs/ui-ses-raporu-s9s10.md` §S12 · ham `docs/olcum-ui-ekran.json`.
+
+## D-111 — Altı yeni KayKit paketi: kol B (yalnız gereken modeller), board-game istisnası; WC kapısının itme barı gitti (2026-09-14)
+
+**İndirme engeli kalktı ve sebebi ölçüldü:** `indir-itch.ps1`in 4. adımı süreli **indirme
+sayfasına** POST atıyordu (404); itch **oyun sayfasını** istiyor —
+`{oyun}/file/{id}?source=game_download`. Üç uç nokta denendi, üçü de raporda. Altı paketin
+altısı indi (72,4 MB zip · 553 model · 6 atlas · hepsi CC0; Holiday'in künyesi pakette değil
+itch sayfasının lisans alanında).
+
+**Kol B + tek istisna.** Kullanıcı repoya yalnız bir açık kaleme bakan modellerin girmesini
+seçti; **board-game-bits TAM** alındı (Kat 2'de hangi taş/jeton/zar lazım olacağı belli değil).
+`models/` **5,9 → 17,2 MB**; kol A olsaydı **27,2 MB** (×4,6) ve 553 modelin **436'sı** hiçbir
+işe bakmıyordu. **Block Bits repoya girmedi** — voxel küpü, mekân hacmi için parça değil.
+Desen tablosu `tools/olcum-yeni-paketler.mjs → GEREKEN`; manifest `public/assets/README.md`.
+
+**Panonun altı görevinden ÜÇÜ çürüdü** ve bu turun asıl bilgisi bu: Holiday süs değil **mobilya**
+veriyor (4 renk koltuk · puf · tabure · halı · fener), Prototype ok değil **itme barsız kapı**,
+Block hacim değil voxel. İkisi beklenmedik biçimde işe yaradı, biri hiç.
+
+**WC kabin kapısı değişti:** `restaurant/door_A` → `prototype/Door_A`. S7'de "tek mesh,
+sökülemiyor" diye kabul edilen itme barı gitti. Ayak izi **birebir** (1,600 × 2,800, menteşe
+x = 0, z simetrik) → `KABIN_KUTU`/`KABIN_SCALE`/`KABIN_DZ` hiç oynamadı. Kalınlık ölçüldü:
+gövde her dilimde **0,200**, kutuyu 0,546 yapan tek şey **y 0,80…1,20'deki tokmak** — eski
+kapıda aynı bandı bar dolduruyordu.
+
+**Karar paketinde verdiğim sayı yanlıştı, uygulamadan önce ölçüm düzeltti:** "gri gider"
+demiştim; ölçülen gözler `[0,2] #828c91` gri ×194 (lavabo/aynanın **aynı** gözü) + `[0,6]`
+kahve ×212. Giden gri değil **yeşil** — yani D-104'ün *"WC tek kahve kütle, yeşil onu kırıyor"*
+gerekçesine ters düşüyor. Karar (bar gitsin) uygulandı, **renk itirazı kapatılmadı**: tur
+kartında açık kalem. Kodla kapatmak `KABIN_GOZ`e bir çift yazmak ama o D-099'u (atlas boyanmaz,
+renk TEMA kalemidir) deler → kendi turu.
+
+**Üçüncü kez ölçülen iki kalem kapandı:** WC çöp kutusunun **dokuz pakette** karşılığı yok
+(elle çizim kesin) · Forest'ın ücretsiz katmanında **çiçek yok** ve olan her şey tek yeşil.
+
+**Bekçi:** `tests/yeni-paketler.test.ts` (8 denetim) + `wc-odasi.test.ts`in dört denetimi,
+**11 mutasyon, kaçan 0.** Sayılar: `docs/yeni-paketler-raporu-s13.md` · ham
+`docs/olcum-yeni-paketler.json` · görsel `docs/gorsel/s13-*.png` ·
+önizleme https://claude.ai/code/artifact/dcbaaee3-8889-4665-83b2-feff02a60c13

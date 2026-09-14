@@ -193,7 +193,7 @@ h2{font-size:21px;font-weight:800}
 <script type="application/json" id="durum">
 {
  "guncelleme": "14.09.2026",
- "yapilan": 86,
+ "yapilan": 87,
  "toplam": 98,
  "kilometre": [
   {
@@ -214,14 +214,14 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum — Faz S · 11/14 — S12 kapandı (D-110)",
-  "baslik": "Beş ekran <b>dört ayrı yükseklikten</b> tek tam ekrana indi; okunamayan metin <b>12’den 0</b>’a",
-  "aciklama": "S11 arayüzün <b>dilini</b> kurmuştu — renk, ölçek, ikon. Bu tur <b>yapısını</b> aldı. Kullanıcının bir tur önce seçtiği <b>T2</b> kolu da bu turda uygulandı.<br><br><b>Şikâyet “ekranlar tutarsız”dı ve ölçüm kaynağını göstermişti: kabuk tipi değil BOY.</b> Beş ekranın beşi de alt sayfaydı ama dört farklı yükseklikte açılıyordu (675 · 675 · 473 · 538 · 431 px) — panelin üst kenarı her sekmede başka yere zıplıyordu. Tam ekranda yükseklik bir seçim olmaktan çıkar: şimdi <b>5/5 tam ekran, tek yükseklik, tek çıkış jesti</b>. Ekranın payı %51-80’den <b>%100</b>’e çıktı, ✕ ile arkaya tıklama gitti, yerine sol üstte tek bir <b>geri</b> düğmesi geldi.<br><br><b>Erişilebilirlik kalemi kapandı.</b> Bir tur önce eşiğin altındaki 12 metnin hepsinin tek bir sebebi vardı: ikincil metin kartsız zeminde duruyordu. Kullanıcı rengi değiştirmeyen kolu seçti (T2) ve o satırlar kart ya da gömülü zemine alındı — <b>12/177 → 0/184</b>. Bölüm başlıkları bu sırada gömülü birer kuşak oldu, yani ekranlar aynı hamlede iskelet de kazandı.<br><br><b>Mağaza M2’ye geçti.</b> Ürün önizlemesi 150 pikselden <b>230’a</b> çıktı ve ekranın boş payını yutarak yaklaşık <b>460</b> piksele ulaşıyor; satın alma üç ayrı bileşene dağılmış düğmelerden <b>tek büyük düğmeye</b> indi. Salon seçimi de satın alma olmaktan çıkıp seçim oldu — üç salon üç ayrı alma noktası demekti.<br><br><b>S11’in kazanımlarına dokunulmadı ve bu ölçüldü:</b> punto 5, gölge 3, font 2, metin glifi 13, arayüzün kapladığı alan %23,2 — hepsi sabit. Yarıçap dizgesi <b>6’dan 5’e düştü</b>, çünkü alt sayfanın köşe yazımı ortadan kalktı.<br><br>Kilidi yine bir bekçi tutuyor: <code>tests/ekran-kabugu.test.ts</code>, 8 denetim, <b>8 mutasyonla</b> doğrulandı. Kontrast denetimi metin eşleştirmiyor, renk değerlerini okuyup <b>oranı hesaplıyor</b> — palet ileride değişirse de yakalar."
+  "etiket": "Bu oturum — Faz S · 12/14 — S13 kapandı (D-111)",
+  "baslik": "Altı paket indi, <b>553 modelin 117'si</b> repoya girdi; panonun üç görevi <b>çürüdü</b>",
+  "aciklama": "Bu tur iki engeli aynı anda kaldırdı. Birincisi teknikti: indirme betiği aylardır son adımda 404 veriyordu. Sebep ölçüldü — istek <b>süreli indirme sayfasına</b> gidiyordu, oysa itch <b>oyun sayfasını</b> istiyor. Tek satırlık düzeltmeyle <b>altı paketin altısı da indi</b> (72,4 MB, 553 model, hepsi CC0).<br><br><b>İkincisi bir karardı: “her asseti çek” indirmeyi serbest bırakır, repoyu değil.</b> Paketler oyunun içine girince telefona kurulan dosyaya da giriyor. Altısını da tam almak asset ağırlığını <b>5,9 MB’den 27,2 MB’ye</b> çıkarıyordu ve 553 modelin <b>436’sı</b> bugün hiçbir işe bakmıyordu — madenî külçe, Noel süsü, voxel küpü. Kullanıcı <b>yalnız gerekenleri</b> almayı seçti; tek istisna okey/tavla paketi oldu, çünkü Kat 2 açılırken hangi taşın lazım olacağı bugün belli değil. Sonuç: <b>17,2 MB</b>.<br><br><b>Asıl bilgi paketlerin içinden çıktı: altı paketten üçü beklenen işi yapmıyor.</b> Süs paketi süs değil <b>mobilya</b> veriyor (dört renkte koltuk, tabure, halı, fener). Prototip paketinin okları yok ama <b>itme barsız bir kapısı</b> var. Blok paketi mekân hacmi değil Minecraft küpü — repoya hiç girmedi.<br><br><b>O kapı aylardır bekleyen bir kalemi kapattı.</b> WC kabin kapıları bugüne kadar yangın çıkışı kapısıydı: üstünde pencere, ortasında itme barı. Yeni kapı düz panel ve <b>tokmaklı</b>. Ayak izi eskisiyle birebir aynı çıktı, yani yer değişimi hiçbir ölçüyü bozmadı.<br><br><b>Bir sayı da yanlış çıktı ve kayda geçti:</b> karar sunulurken “grisi gider” denmişti, ölçüm gri gözün yerinde kaldığını gösterdi — giden <b>yeşildi</b>. Yeşil de bir kullanıcı kararıydı (“WC tek kahve kütle, yeşil onu kırıyor”), o yüzden itiraz kapatılmadı, açık kalem olarak yazıldı.<br><br>Bekçi <code>tests/yeni-paketler.test.ts</code>: 8 denetim, <b>11 mutasyon</b>, kaçan yok. Paketi bir daha tam indirmek ya da budanmışa model sızdırmak artık kırmızı yakıyor."
  },
  "siradaki": {
-  "etiket": "Sırada S13 · S14 — asset paketleri ve karakterler",
-  "baslik": "Arayüz bitti; kalan iki sanat kalemi <b>dünyanın</b> içinde",
-  "aciklama": "Arayüzün dili (S11) ve yapısı (S12) kapandı. Faz S’de üç kalem kaldı ve üçü de ekran değil <b>sahne</b> işi.<br><br><b>S13 — yeni ücretsiz asset paketleri:</b> okey ve tavla için Board Game Bits, çiçek için Forest Nature, ayrıca Holiday · Resource · Prototype · Block. İndirme engeli kalktı: komut satırının ağı yok ama PowerShell’in var ve indirme betiği akışın dörtte üçünü yapıyor.<br><br><b>S14 — karakterler:</b> ana karakter, garson, bulaşıkçı ve müşteriler. Altı kol bedeliyle asset panosunda duruyor ve <b>kullanıcı seçimi bekliyor</b> — seçilmeden tur açılamaz.<br><br><b>S9 — ses</b> hâlâ ayrı bir tur: kaynak kararı yazılı, paketler indirildi ama repoya girmedi; yalnız kullanılacak dosyalar künyesiyle girecek.<br><br>Ardından <b>Faz H</b> geliyor: üç oynanış hatası, yükseltme sırası ve masa aralığı. İkisi denge kalemi ve <b>ölçülmeden uygulanmayacak</b>."
+  "etiket": "Sırada S14 — karakterler",
+  "baslik": "Faz S’de iki kalem kaldı ve biri <b>kullanıcı seçimi bekliyor</b>",
+  "aciklama": "<b>S14 — karakterler:</b> ana karakter, garson, bulaşıkçı ve müşteriler bugün hâlâ parçalı ilkel gövde. Altı kol bedeliyle asset panosunda duruyor ve <b>seçilmeden tur açılamaz</b> — KayKit’in karakter paketlerinin hepsi fantezi temalı, kıraathaneye sivil müşteri lazım, yani temiz bir yol yok ve her kolun bir bedeli var.<br><br><b>S9 — ses</b> ayrı bir tur: kaynak kararı yazılı, yalnız kullanılacak dosyalar künyesiyle girecek. <b>İndirme artık engel değil</b> — betik bu turda dört adımın dördünü de yapar hâle geldi.<br><br>Bu turdan <b>devreden iş</b> de var: repoya giren 117 modelin 114’ü henüz sahneye konmadı (koltuk, tabure, halı, fener, çalı, depo yığını) — her biri kendi yerleşim turunu istiyor. Ayrıca yeni kapının <b>kahve rengi</b> bir açık kalem: yeşili götürdü ve o yeşil bir kullanıcı kararıydı.<br><br>Ardından <b>Faz H</b>: üç oynanış hatası, yükseltme sırası ve masa aralığı. İkisi denge kalemi ve <b>ölçülmeden uygulanmayacak</b>."
  },
  "donemler": [
   {
@@ -353,7 +353,7 @@ h2{font-size:21px;font-weight:800}
      "k": "S",
      "t": "Sanat ve arayüz geçişi",
      "d": "Kullanıcı oynadı ve dört tur geri bildirim verdi. HER KALEM ≈ 1 OTURUM, 10 oturum kaldı. Bitti: pad dili ✓ · pad/modal etkileşimi ✓. Sırada: mutfak → duvar ve zemin → dekor takası → dış cephe ve tente → lavabo kabin kapıları → ses assetleri → UI dili (araştırma+maket) → UI dili (uygulama) → yeni ücretsiz paketler → karakterler. İlk beşi indirme ve onay istemiyor: hepsi diskte duran 185 KayKit modeliyle yapılacak iş.",
-     "yapilan": 11,
+     "yapilan": 12,
      "toplam": 14,
      "durum": "now",
      "kapi": "185 kullanılmayan KayKit modeli oyuna bağlanır + UI dili maketle onaylanır"
@@ -378,6 +378,22 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "14.09.2026",
+   "etiket": "Faz S · 12. oturum (S13 — yeni asset paketleri — D-111)",
+   "baslik": "İndirme engeli kalktı; <b>553 modelin 117’si</b> repoya girdi, üç görev çürüdü",
+   "govde": "Tur bir tamir işiyle açıldı: indirme betiği son adımda 404 veriyordu. Üç uç nokta denendi ve doğrusu ölçüldü — istek indirme sayfasına değil <b>oyun sayfasına</b> gidiyor. Altı paketin altısı indi.<br><br>Sonra asıl soru geldi: <b>repoya ne girer?</b> “Her asseti çek” indirmeyi serbest bırakır, repoyu değil — ve fark bir sayıydı: hepsi 27,2 MB, gerekenler 8,4 MB. Kullanıcı gerekenleri seçti, okey/tavla paketini istisna tuttu.<br><br><b>Paketlerin içi beklentiyi çürüttü:</b> süs paketinden mobilya, prototip paketinden <b>itme barsız kapı</b>, blok paketinden ise hiçbir şey çıktı. O kapı S7’den beri açık duran bir kalemi kapattı ve ayak izi birebir aynı olduğu için tek bir ölçüyü bile bozmadı.<br><br>Turun dürüstlük notu: karar paketinde verilen bir sayı yanlıştı. “Kapının grisi gider” denmişti; ölçüm gri gözün yerinde kaldığını, gidenin <b>yeşil</b> olduğunu gösterdi. Yeşil de bir kullanıcı kararı olduğu için itiraz sessizce kapatılmadı, açık kalem olarak yazıldı.",
+   "maddeler": [
+    "<b>D-111:</b> kol B — yalnız bir işe bakan modeller girdi · board-game tam · <b>Block girmedi</b>",
+    "<b>İndirme engeli kalktı:</b> 4. adım oyun sayfasına gidiyor · <b>6/6 paket</b> · 72,4 MB · hepsi CC0",
+    "<b>models/ 5,9 → 17,2 MB</b> (hepsini almak 27,2 olurdu — 553 modelin 436’sı işe bakmıyordu)",
+    "<b>Panonun 6 görevinden 3’ü çürüdü:</b> Holiday mobilya · Prototype kapı · Block kullanılmaz",
+    "<b>WC kapısının itme barı gitti</b> — ayak izi birebir, gövde kalınlığı ölçüldü (0,200)",
+    "<b>Üç kez ölçülen iki kalem kapandı:</b> çöp kutusu 9 pakette yok · Forest’ta çiçek yok",
+    "<b>Bekçi:</b> <code>tests/yeni-paketler.test.ts</code> 8 denetim · <b>11 mutasyon</b> · kaçan 0",
+    "<b>Açık kaldı:</b> yeni kapı yeşili götürüp kahve getirdi — D-104’ün gerekçesine ters"
+   ]
+  },
   {
    "tarih": "14.09.2026",
    "etiket": "Faz S · 11. oturum (S12 — arayüzün yapısı — D-110)",

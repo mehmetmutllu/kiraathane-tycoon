@@ -23,6 +23,12 @@ const DOKU = {
   'kaykit-restaurant-bits': 'restaurantbits_texture.png',
   'kaykit-furniture-bits': 'furniturebits_texture.png',
   'kaykit-city-builder-bits': 'citybits_texture.png',
+  // S13 (D-111) ile gelen paketler
+  'kaykit-board-game-bits': 'boardgame_bits_texture.png',
+  'kaykit-forest-nature': 'forest_texture.png',
+  'kaykit-holiday-bits': 'holiday_bits_texture.png',
+  'kaykit-resource-bits': 'resource_bits_texture.png',
+  'kaykit-prototype-bits': 'prototypebits_texture.png',
 };
 
 /** Minimal PNG çözücü → { w, h, px: Uint8Array (RGBA) }. */

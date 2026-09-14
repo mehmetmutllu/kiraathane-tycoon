@@ -8,17 +8,32 @@
  *   - eşleşen ALT KÜME (aşağıdaki GEREKEN listesi) adedi ve KB'ı
  *   - toplam: bugünkü models/ ağırlığı → her kolun ağırlığı
  *
- * Çıktı: docs/olcum-yeni-paketler.json (ham) + ekrana özet tablo.
- * Kullanım: node tools/olcum-yeni-paketler.mjs
+ * Çıktı: ekrana özet tablo. Ham dosya (`docs/olcum-yeni-paketler.json`) KARAR ÖNCESİ durumun
+ * damgası olduğu için ancak `OLCUM_YAZ=1` verilince üzerine yazılır — budama sonrası bir koşu
+ * onu sessizce silmesin.
+ * Kullanım: node tools/olcum-yeni-paketler.mjs   ·   OLCUM_YAZ=1 node tools/olcum-yeni-paketler.mjs
+ *
+ * Bu dosya aynı zamanda KARAR TABLOSUNU dışa verir (GEREKEN · TAM_ALINAN · REDDEDILEN) ve
+ * `tests/yeni-paketler.test.ts` onu içe aktarır; o yüzden ölçüm gövdesi yalnız DOĞRUDAN
+ * çalıştırıldığında koşar (import ederken yan etki yok).
  */
 import { readdirSync, statSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const KOK = 'public/assets/models';
 
-// Aday alt kümeler — her satır bir AÇIK KALEME karşılık gelir (docs/asset-secim-panosu.html §1-2,
+// Alt kümeler — her satır bir AÇIK KALEME karşılık gelir (docs/asset-secim-panosu.html §1-2,
 // activeContext açık kalemler). Desen: tam ad ya da `*` ile biten önek.
-const GEREKEN = {
+//
+// KARAR D-111 (2026-09-14): kol B — repoya yalnız bu desenlere uyan modeller girdi.
+// TEK İSTİSNA board-game-bits: kullanıcı onu TAM aldı, gerekçesi Kat 2 — okey/tavla masası
+// açılırken hangi taş/jeton/zar lazım olacağı bugün belli değil (`tamAlinan`).
+// Bu tablo hem ölçümün hem `tests/yeni-paketler.test.ts` bekçisinin kaynağıdır; buradan
+// silinen bir desen o modelin repoda durmasını bekçide KIRMIZI yapar.
+export const TAM_ALINAN = ['kaykit-board-game-bits'];
+export const REDDEDILEN = ['kaykit-block-bits']; // voxel küpü — mekân hacmi için parça değil
+export const GEREKEN = {
   'kaykit-board-game-bits': {
     gerekce: 'okey/tavla masası (Kat 2 kimliği)',
     desen: ['playerstand', 'playerstand_*', 'domino_tile_*', 'D6_A', 'D6_B', 'tile_blue', 'tile_red', 'container_A'],
@@ -43,7 +58,7 @@ const GEREKEN = {
 };
 
 const kb = (b) => Math.round(b / 1024);
-const esles = (ad, desenler) =>
+export const esles = (ad, desenler) =>
   desenler.some((d) => (d.endsWith('*') ? ad.startsWith(d.slice(0, -1)) : ad === d));
 
 function paketOlc(paket) {
@@ -72,37 +87,46 @@ function paketOlc(paket) {
   };
 }
 
-const YENI = Object.keys(GEREKEN);
-const MEVCUT = readdirSync(KOK).filter((d) => statSync(path.join(KOK, d)).isDirectory() && !YENI.includes(d));
+const DOGRUDAN = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (DOGRUDAN) {
+  const YENI = Object.keys(GEREKEN);
+  const MEVCUT = readdirSync(KOK).filter((d) => statSync(path.join(KOK, d)).isDirectory() && !YENI.includes(d));
 
-const mevcutKB = MEVCUT.reduce(
-  (s, p) => s + readdirSync(path.join(KOK, p)).reduce((t, f) => t + statSync(path.join(KOK, p, f)).size, 0),
-  0,
-);
-const satirlar = YENI.map(paketOlc);
+  const mevcutKB = MEVCUT.reduce(
+    (s, p) => s + readdirSync(path.join(KOK, p)).reduce((t, f) => t + statSync(path.join(KOK, p, f)).size, 0),
+    0,
+  );
+  const satirlar = YENI.filter((p) => existsSync(path.join(KOK, p))).map(paketOlc);
 
-const kollar = {
-  taban: { ad: 'bugünkü models/', kb: kb(mevcutKB) },
-  A_tumu: { ad: 'altı paket TAM', kb: kb(mevcutKB) + satirlar.reduce((s, r) => s + r.tumKB, 0) },
-  B_gerekenler: { ad: 'yalnız eşleşen modeller', kb: kb(mevcutKB) + satirlar.reduce((s, r) => s + r.seciliKB, 0) },
-};
+  const kollar = {
+    taban: { ad: 'bugünkü models/', kb: kb(mevcutKB) },
+    A_tumu: { ad: 'altı paket TAM', kb: kb(mevcutKB) + satirlar.reduce((s, r) => s + r.tumKB, 0) },
+    B_gerekenler: { ad: 'yalnız eşleşen modeller', kb: kb(mevcutKB) + satirlar.reduce((s, r) => s + r.seciliKB, 0) },
+  };
 
-const cikti = { tarih: new Date().toISOString().slice(0, 10), mevcutPaketler: MEVCUT, satirlar, kollar };
-writeFileSync('docs/olcum-yeni-paketler.json', JSON.stringify(cikti, null, 2) + '\n');
+  if (process.env.OLCUM_YAZ === '1') {
+    const cikti = { tarih: new Date().toISOString().slice(0, 10), mevcutPaketler: MEVCUT, satirlar, kollar };
+    writeFileSync('docs/olcum-yeni-paketler.json', `${JSON.stringify(cikti, null, 2)}\n`);
+  }
 
-console.log('paket'.padEnd(26), 'model'.padStart(6), 'tamKB'.padStart(7), 'atlasKB'.padStart(8), 'seçili'.padStart(7), 'seçiliKB'.padStart(9));
-for (const r of satirlar) {
+  console.log('paket'.padEnd(26), 'model'.padStart(6), 'tamKB'.padStart(7), 'atlasKB'.padStart(8), 'seçili'.padStart(7), 'seçiliKB'.padStart(9));
+  for (const r of satirlar) {
+    console.log(
+      r.paket.padEnd(26),
+      String(r.model).padStart(6),
+      String(r.tumKB).padStart(7),
+      String(r.atlasKB).padStart(8),
+      String(r.seciliModel).padStart(7),
+      String(r.seciliKB).padStart(9),
+    );
+  }
+  console.log('');
+  for (const [k, v] of Object.entries(kollar)) {
+    console.log(`${k.padEnd(14)} ${v.ad.padEnd(26)} ${String(v.kb).padStart(7)} KB  (${(v.kb / 1024).toFixed(1)} MB)`);
+  }
   console.log(
-    r.paket.padEnd(26),
-    String(r.model).padStart(6),
-    String(r.tumKB).padStart(7),
-    String(r.atlasKB).padStart(8),
-    String(r.seciliModel).padStart(7),
-    String(r.seciliKB).padStart(9),
+    process.env.OLCUM_YAZ === '1'
+      ? '\nham → docs/olcum-yeni-paketler.json (üzerine yazıldı)'
+      : '\n(ham dosya korundu — yazmak için OLCUM_YAZ=1)',
   );
 }
-console.log('');
-for (const [k, v] of Object.entries(kollar)) {
-  console.log(`${k.padEnd(14)} ${v.ad.padEnd(26)} ${String(v.kb).padStart(7)} KB  (${(v.kb / 1024).toFixed(1)} MB)`);
-}
-console.log('\nham → docs/olcum-yeni-paketler.json');

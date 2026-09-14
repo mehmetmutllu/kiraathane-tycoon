@@ -5,8 +5,8 @@ indirme: `tools/indir-itch.ps1` · görsel: `docs/gorsel/s13-*.png`
 (`tools/model-bak.mjs <paket> <modeller> <çıktı> vitrin`)
 Tarih: 2026-09-14 · karakter boyu **1,75** · dünya birimi = **metre**
 
-> Bu rapor **ölçüm commit'iyle** yazıldı; **§Karar bölümü bilerek BOŞ.** Karar paketi kullanıcıya
-> sunulur, seçilen kol ikinci commit'te uygulanır (D-084 varyant kapısı).
+> Bu raporun §Bulgular bölümü **ölçüm commit'iyle** yazıldı ve §Karar o commit'te BOŞTU
+> (D-084 varyant kapısı). Karar paketi sunuldu, kullanıcı seçti, §Karar ikinci commit'te doldu.
 
 ---
 
@@ -163,6 +163,53 @@ KB'ları atlası içeriyor. Asıl ağırlık modellerin `.bin`lerinde.
 
 ---
 
-## §Karar
+## §Karar — D-111 (2026-09-14)
 
-*(BOŞ — karar paketi kullanıcıya sunulacak, seçilen kol ikinci commit'te uygulanacak.)*
+**Kullanıcı iki kolu da seçti:**
+
+1. **Repo bedeli: kol B + board-game istisnası.** Yalnız eşleşen modeller girer; board-game-bits
+   TAM alınır. Gerekçe kullanıcının kendi cümlesi değil sorunun kendisi: Kat 2 açılırken hangi
+   taş/jeton/zar lazım olacağı bugün belli değil. **Block Bits repoya hiç girmedi.**
+   Sonuç ölçüldü: `models/` **5,9 → 17,2 MB** (kol A olsaydı 27,2). Paket dökümü
+   `public/assets/README.md` manifestinde.
+2. **Uygulama: paketler + kapı değişimi.** WC kabin kapısı `restaurant/door_A` →
+   `prototype/Door_A`. Diğer eşleşmeler (koltuk, tabure, halı, fener, çalı, depo yığını) repoda
+   duruyor ama **sahneye girmedi** — her biri kendi yerleşim turunu ister.
+
+### Karar paketinde verdiğim bir sayı YANLIŞTI, ölçüm düzeltti
+
+Karar paketinde *"WC'nin %73 grisi gider, kapı kahve panel olur"* yazmıştım. Uygulamadan önce
+atlas gözleri ölçüldü ve **gri gitmiyor**:
+
+| | gözler | 
+|---|---|
+| eski `restaurant/door_A` | %73 gri + %25 kanat yeşili `[1,2] #21a489` |
+| yeni `prototype/Door_A` | **`[0,2] #828c91` gri ×194** (lavabo/aynanın taşıdığı AYNI göz) + `[0,6] #995842` kahve ×212 |
+
+Yani giden şey gri değil **yeşil**. Uygulamadan sonra alınan kare bunu bir kez daha inceltiyor
+(`docs/gorsel/ss/s7-seviye-L3.png`): vertex sayısı griyi baskın gösteriyor ama ekranda gri
+**tokmakta ve kasa kenarında** duruyor, kapının KÜTLESİ kahve okunuyor. Bu fark önemsiz değil: D-104'te kullanıcı `door_A`yı
+`door_B`ye tercih ederken gerekçesi *"WC tek bir kahve kütle, yeşil onu kırıyor"* idi
+(`feedback_color_variety`). Yeni kapı o yeşili götürüp yerine kahve koyuyor — **yani D-104'ün
+gerekçesine ters düşüyor.**
+
+Kararın kendisi (itme barı gitsin) bundan etkilenmiyor ve uygulandı. Renk itirazı ise
+**kapatılmadı**: tur kartına açık kalem olarak yazıldı. Kodla kapatmak bir satır işi
+(`KABIN_GOZ`e bir göz çifti) ama o hamle D-099'un *"atlas boyanmaz, renk varyantı TEMA
+kalemidir"* kararını deler — iki karara birden dokunur, dolayısıyla kendi turunu ister.
+
+### Kapı: ölçülen, tahmin edilmeyen
+
+Değişim ölçü istemedi (ayak izi birebir), ama kalınlık **ölçüldü**: y dilimi başına z aralığı
+bakıldığında gövde **her dilimde 0,200**; kutuyu 0,546'ya çıkaran tek şey **y 0,80…1,20'deki
+tokmak**. Eski kapıda aynı bandı itme barı dolduruyordu — kutu aynı yerden şişiyor, ama şişiren
+şey artık WC kabininde **yeri olan** bir parça.
+
+### Bekçi
+
+`tests/yeni-paketler.test.ts` (8 denetim) + `tests/wc-odasi.test.ts`in güncellenen dört denetimi.
+**11 mutasyonla doğrulandı, kaçan 0:** reddedilen paketin geri gelmesi · budanmış pakete desen
+dışı model sızması · board-game istisnasının sessizce budanması · `.bin`siz model · atlassız
+paket · prototype'tan kapı ailesi dışına çıkma · itme barlı kapının çizime dönmesi · derinliğin
+0,771'e dönmesi · `govdeD`nin ölçülmeden yazılması · göz taşımasının açılması · desen tablosundan
+satır silinmesi.

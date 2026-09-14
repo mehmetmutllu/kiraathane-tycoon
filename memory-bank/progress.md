@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 98 · YAPILAN 86 · %88):**
+**Oturum bütçesi (TOPLAM 98 · YAPILAN 87 · %89):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -24,10 +24,10 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
 | | D meta katman | 9/9 ✅ |
 | | E arayüz ve cila | 4/5 🔧 |
-| | **S sanat ve arayüz geçişi** | **11/14 🔧** |
+| | **S sanat ve arayüz geçişi** | **12/14 🔧** |
 | | H oynanış düzeltmeleri | 0/3 ⏳ |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **58/70** |
+| **Program toplam** | | **59/70** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -245,7 +245,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   değil; kendi turunu ister.
 - ⏳ **E5 — hareketli onboarding**
 
-## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (11/14) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
+## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (12/14) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
 - ✅ **S1 — pad ve yükseltme dili yeniden yazıldı** · çember → **köşe parantezli kare** (kenar
   ortaları boş), dolum büyüyen disk → **alttan üste dolan kare**, "Masa"/"Çay Yükselt"/"Usta"
   → hepsinde **YÜKSELT** + solunda düz yukarı ok, yazı 700 → 800, 💎 pulu "mavi kare" → gerçek
@@ -424,9 +424,16 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   `docs/ui-ses-raporu-s9s10.md` §S12. **Denge sayısı DEĞİŞMEDİ** (`economy.config.ts`e yalnız metin).
   **Araç düzeltildi:** ölçümün üç anlatı paragrafı S10'da donmuştu ve ölçtüğünün tersini
   söylüyordu; hüküm artık eşikten türüyor.
-- ⏳ **S13 — yeni ücretsiz KayKit paketleri** — Board Game Bits (okey/tavla) · Forest Nature
-  (çiçek) · Holiday · Resource · Prototype · Block. **İndirme engeli KALKTI:** Bash'in ağı yok
-  ama PowerShell'in var; `tools/indir-itch.ps1` itch akışının 3/4 adımını yapıyor, son adım 404.
+- ✅ **S13 — yeni ücretsiz KayKit paketleri (D-111)** — indirme engeli kalktı (4. adım oyun
+  sayfasına gidiyor), **6/6 paket indi** (72,4 MB · 553 model · hepsi CC0). Kullanıcı **kol B**'yi
+  seçti: repoya yalnız bir açık kaleme bakan modeller girdi, board-game-bits tek istisna olarak
+  TAM alındı, **Block Bits girmedi** → `models/` **5,9 → 17,2 MB** (kol A 27,2 idi, ×4,6).
+  Panonun 6 görevinden **3'ü çürüdü** (Holiday süs değil mobilya · Prototype ok değil **itme
+  barsız kapı** · Block hacim değil voxel). **WC kabin kapısı değişti**, S7'nin itme barı gitti:
+  ayak izi birebir, gövde kalınlığı ölçüldü (0,200; kutuyu şişiren tek şey tokmak).
+  Üç kez ölçülen iki kalem kapandı: çöp kutusu 9 pakette yok · Forest'ta çiçek yok.
+  Bekçi `tests/yeni-paketler.test.ts` (8 denetim, **11 mutasyon**) · vitest 932 · duman 42/42.
+  **Açık kaldı:** yeni kapı yeşili götürüp kahve getiriyor — D-104'ün gerekçesine ters, tur kartında.
 - ⏳ **S14 — karakterler** — ana karakter · garson · bulaşıkçı · müşteriler. Altı kol bedeliyle
   asset panosunda; **kullanıcı seçimi bekliyor**, seçilmeden tur açılamaz.
 

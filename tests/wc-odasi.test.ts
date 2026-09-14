@@ -2,7 +2,8 @@
  * wc-odasi.test.ts — S7'nin BEKÇİSİ (D-104).
  *
  * **Bu paketin bekçilik ettiği asıl değişmez üç tane ve üçü de bir KULLANICI KARARI:**
- *   K  kabin kapısı KayKit `door_A` (gri kasa + yeşil kanat), bugünkü kabin gözünü BOZMADAN.
+ *   K  kabin kapısı bir KayKit modelidir ve bugünkü kabin gözünü BOZMAZ. S13'te (D-111) model
+ *      `restaurant/door_A`dan `prototype/Door_A`ya geçti — itme barı gitti, ayak izi aynı kaldı.
  *   L  lavabo seviyesi MEKÂNSAL okunur ve her seviye tam bir şeyi büyütür (G-36).
  *   M  müşteri kapı eşiğinde buharlaşmaz; içeri yürüyüp görünmez bir noktada kaybolur (G-35).
  *
@@ -47,11 +48,12 @@ const Z_BACK = BAND_SHELL.innerBack;
 const Z_FRONT = BAND.front;
 const KAPI_YARI = 0.7;
 
-describe('S7/K — kabin kapısı KayKit door_A', () => {
-  it('ham ölçüler modelin kendi gltf sayılarıdır (node tools/model-olc.mjs ... door_A)', () => {
+describe('S7/K — kabin kapısı KayKit Door_A (S13/D-111: itme barsız)', () => {
+  it('ham ölçüler modelin kendi gltf sayılarıdır (node tools/model-olc.mjs ... Door_A)', () => {
+    // Ayak izi S7'dekiyle BİREBİR aynı: yer değişimi ölçü istemedi, yalnız derinlik inceldi.
     expect(KABIN_NATIVE.w).toBe(1.6);
     expect(KABIN_NATIVE.h).toBe(2.8);
-    expect(KABIN_NATIVE.d).toBeCloseTo(0.771, 3);
+    expect(KABIN_NATIVE.d).toBeCloseTo(0.546, 3);
     // Menteşe SOL kenarda: kapı origin'i etrafında açılabiliyor. Bu sayı bozulursa aralık kapı
     // yine havada kayar (eski kutunun kusuru).
     expect(KABIN_NATIVE.minX).toBe(0);
@@ -59,10 +61,14 @@ describe('S7/K — kabin kapısı KayKit door_A', () => {
     expect(KABIN_NATIVE.minZ + KABIN_NATIVE.maxZ).toBeCloseTo(0, 6);
   });
 
-  it('bbox derinliği modelin kalınlığı DEĞİL — bar hariç gövde çok daha ince', () => {
-    // Ölçüldü: y<0,80 ve y>1,30 dilimlerinde kalınlık 0,300; bar (y 0,80…1,20) 0,771'e çıkıyor.
+  it('bbox derinliği modelin kalınlığı DEĞİL — tokmak hariç gövde çok daha ince', () => {
+    // Ölçüldü (y dilimi başına z aralığı): gövde her dilimde tam 0,200; kutuyu 0,546'ya
+    // çıkaran tek şey y 0,80…1,20'deki tokmak. Eski kapıda aynı bandı İTME BARI dolduruyordu.
+    expect(KABIN_NATIVE.govdeD).toBeCloseTo(0.2, 3);
     expect(KABIN_NATIVE.govdeD).toBeLessThan(KABIN_NATIVE.d / 2);
-    expect(KABIN_NATIVE.bar.min).toBeLessThan(KABIN_NATIVE.bar.max);
+    expect(KABIN_NATIVE.tokmak.min).toBeLessThan(KABIN_NATIVE.tokmak.max);
+    // İTME BARI GERİ GELEMEZ: eski modelin kutusu 0,771'di, yenisi ondan belirgin ince.
+    expect(KABIN_NATIVE.d).toBeLessThan(0.771 - 0.2);
   });
 
   it('kabin gözü DEĞİŞMEDİ — yerleşim, nav ve yürüme açıklığı bu turda oynamadı', () => {
@@ -94,9 +100,10 @@ describe('S7/K — kabin kapısı KayKit door_A', () => {
     expect((KABIN_NATIVE.h * KABIN_KUTU.w) / KABIN_NATIVE.w).toBeGreaterThan(2.0);
   });
 
-  it('GÖZ TAŞIMASI YOK — kanadın yeşili kullanıcı kararıdır, sessizce grileştirilemez', () => {
-    // door_A zaten %73 [0,3] #828c91 = lavabo/ayna grisi. Kalan %25 kanadın yeşili ve kullanıcı
-    // kahve bloğu kırılsın diye A'yı seçti (feedback_color_variety). Liste dolarsa karar döner.
+  it('GÖZ TAŞIMASI YOK — atlas boyama TEMA kalemidir (D-099), kapıda sessizce yapılamaz', () => {
+    // Yeni kapının gözleri ölçüldü: [0,2] #828c91 gri (194 vertex, lavabo/aynanın taşıdığı
+    // AYNI göz) + [0,6] #995842 kahve (212). Kahveyi yeşile çevirmek bu listeye bir çift
+    // yazmak kadar kolay ama D-099'u deler; itiraz kodda değil tur kartında duruyor.
     expect(KABIN_GOZ).toHaveLength(0);
   });
 
@@ -257,9 +264,11 @@ describe('S7 — çizim ölçü katmanını gerçekten okuyor mu (kaynak denetim
   const kaynak = readFileSync(new URL('../src/components/three/maketParts.tsx', import.meta.url), 'utf8');
 
   it('kabin kapısı KayKit modelidir, elle çizilmiş kutu DEĞİL', () => {
-    // METNİ değil KULLANIMI ara: `door_A.gltf` bu dosyada bir YORUMDA da geçiyor ve düz
+    // METNİ değil KULLANIMI ara: model adı bu dosyada bir YORUMDA da geçiyor ve düz
     // `toContain` mutasyonu kaçırıyordu (M13). Ölçüt artık gerçek `src=` ifadesi.
-    expect(kaynak).toMatch(/src=\{`\$\{KAY_REST\}door_A\.gltf`\}/);
+    expect(kaynak).toMatch(/src=\{`\$\{KAY_PROTO\}Door_A\.gltf`\}/);
+    // İTME BARLI eski kapı geri konursa bu satır kırmızı yanar (S7 açık kalemi D-111'de kapandı).
+    expect(kaynak).not.toMatch(/src=\{`\$\{KAY_REST\}door_[AB]\.gltf`\}/);
     expect(kaynak).toContain('scale={KABIN_SCALE}');
     expect(kaynak).toContain('KABIN_MENTESE_ORTA');
   });

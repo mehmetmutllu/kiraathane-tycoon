@@ -5,41 +5,49 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-14 — **S13 ÖLÇÜM BİTTİ, KARAR BEKLİYOR** · Faz S 11/14 · 86/98)
+## ŞU AN (2026-09-14 — **S13 BİTTİ: ALTI PAKET İNDİ, KOL B REPOYA GİRDİ, D-111** · Faz S 12/14 · 87/98)
 
 ```
-SORU            : Altı ücretsiz KayKit paketi indirilebilir mi, içlerinde ne var ve repoya
-                  NE girer? ("her asseti çek" indirmeyi serbest bırakır, repoyu değil.)
-ÖLÇÜLECEK KOLLAR: A hepsi TAM · B yalnız eşleşen modeller — ikisi de MB olarak.
-                  Yan sorular: door_A itme barı · WC çöp kutusu · çiçek karşılığı var mı?
+SORU            : Altı ücretsiz KayKit paketi indirilebilir mi, içlerinde ne var, repoya NE girer?
+ÖLÇÜLECEK KOLLAR: A hepsi TAM · B yalnız eşleşen modeller (ikisi de MB).
 SAYILAR         : docs/yeni-paketler-raporu-s13.md · ham docs/olcum-yeni-paketler.json
-                  indirme engeli KALKTI (4. adım oyun sayfasına gidiyor) · 6/6 paket indi 72,4 MB
-                  553 model · 6 atlas · lisans 5'i pakette CC0, Holiday itch sayfasında CC0
-                  models/ 5,9 MB → kol A 27,2 MB (×4,6) · kol B 8,4 MB (117 model, ×1,4)
-                  door_A: Prototype Door_A itme barsız, ayak izi BİREBİR (1,600×2,800),
-                          derinlik 0,771→0,546 · üçgen 188→296 · WC'nin %73 grisi gider
-                  çöp kutusu: 9 pakette YOK (üçüncü ölçüm) · çiçek: Forest'ta YOK, hepsi tek yeşil
-                  panonun 6 görevinden 3'ü ÇÜRÜDÜ (Holiday süs değil mobilya · Prototype ok değil
-                  kapı · Block hacim değil voxel küpü)
-KARAR           : (BOŞ — karar paketi sunuldu, kullanıcı seçecek)
-UYGULAMA        : (kararın kolu)
-BEKÇİ           : (test dosyası + mutasyon)
+                  indirme engeli KALKTI · 6/6 paket · 72,4 MB zip · 553 model · hepsi CC0
+                  models/ 5,9 MB → kol A 27,2 (×4,6) · kol B 8,4 · SEÇİLEN 17,2 (B + board-game tam)
+                  panonun 6 görevinden 3'ü ÇÜRÜDÜ · çöp kutusu 9 pakette yok · Forest'ta çiçek yok
+                  kapı: ayak izi birebir · gövde 0,200 (kutuyu şişiren tokmak) · üçgen 188→296
+KARAR           : D-111 — kol B + board-game istisnası; Block girmedi. Uygulama: paketler + kapı.
+UYGULAMA        : models/ budandı · public/assets/README.md manifesti · wcLook KABIN_NATIVE ·
+                  maketParts KAY_PROTO/Door_A · atlas-renk.mjs beş yeni dokuyu tanıyor
+BEKÇİ           : tests/yeni-paketler.test.ts — 8 denetim + wc-odasi'nin 4 denetimi,
+                  **11 mutasyonla** doğrulandı, kaçan 0
+                  vitest 932 ✓ · duman 42/42 ✓ · tsc -b ✓
 ```
 
 ## SIRADAKİ TAM ADIM
 
-**S13 — yeni ücretsiz KayKit paketleri.** Arayüz kalemi bitti (S10 maket → S11 dil → S12 yapı);
-Faz S'de kalan üç kalem sahne işi:
-- **S13** Board Game Bits (okey/tavla) · Forest Nature (çiçek) · Holiday · Resource · Prototype ·
-  Block. İndirme engeli kalktı: `tools/indir-itch.ps1` itch akışının 3/4 adımını yapıyor,
-  son adım 404 (`project_network_powershell`).
+**S14 — karakterler.** Faz S'de iki kalem kaldı:
 - **S14 karakterler** — ana karakter · garson · bulaşıkçı · müşteriler. Altı kol bedeliyle asset
   panosunda; **kullanıcı seçimi bekliyor, seçilmeden tur açılamaz.**
 - **S9 ses** (dosyalar + seri ivmesi) ayrı tur; kaynak kararı yazılı (D-106 · S-C), paketler
   indirildi ama repoya GİRMEDİ — yalnız kullanılacak dosyalar künyesiyle girecek.
+  **İndirme artık engel değil:** `pwsh tools/indir-itch.ps1 -Sayfa <adres> -Hedef <klasör>`
+  dört adımın dördünü de yapıyor (S13'te düzeltildi).
 
 Ardından **Faz H** (H1 üç hata · H2 yükseltme sırası · H3 masa aralığı). H2 ve H3 DENGE
 kalemleri — varyant kapısına tabi, ölçülmeden uygulanmaz.
+
+### S13'ten DEVREDEN (ölçüldü, bilerek yapılmadı)
+
+- **Yeni WC kapısı YEŞİLİ götürüp KAHVE getiriyor** — D-104'te kullanıcı `door_A`yı seçerken
+  gerekçesi *"WC tek bir kahve kütle, yeşil onu kırıyor"* idi (`feedback_color_variety`).
+  Ölçüldü: yeni kapı `[0,2] #828c91` gri ×194 (lavabo/aynanın AYNI gözü) + `[0,6] #995842`
+  kahve ×212 — yani **gri kaldı, giden yeşil.** Kodla kapatmak `KABIN_GOZ`e bir göz çifti
+  yazmak ama o D-099'u (atlas boyanmaz, renk TEMA kalemidir) deler → **kendi turu.**
+- **Repoya giren 117 modelin 114'ü sahneye GİRMEDİ** — koltuk ×4 renk · puf ×4 · tabure · halı ·
+  fener · tabak · çalı/çim/ağaç · kereste/palet/tuğla/kumaş yığını · board-game'in 162 modeli.
+  Her biri kendi yerleşim turunu ister; repoda duruyorlar ve manifestte künyeleri var.
+- **Çiçek hâlâ yok** (Forest'ın ücretsiz katmanında yok, olan her şey tek yeşil `_Color1`).
+  İstenirse ya ücretli katman ya başka CC0 kaynak — kullanıcı kararı.
 
 ### S12'den DEVREDEN (ölçüldü/görüldü, bilerek yapılmadı)
 
@@ -66,8 +74,6 @@ kalemleri — varyant kapısına tabi, ölçülmeden uygulanmaz.
 
 ### S7'den DEVREDEN (ölçüldü, bilerek yapılmadı)
 
-- **`door_A`nın İTME BARI duruyor** — tek mesh (188 üçgen), sökülemiyor. Başka paket gelirse
-  ilk bakılacak kalem.
 - **WC odasının ORTASI hâlâ boş + TAVAN IŞIĞI yok** (`feedback_room_volume`). Zemin %2 görünür:
   dolgu zemine değil duvar kenarına/yüksekliğe gitmeli. Kendi turu.
 
@@ -77,8 +83,10 @@ kalemleri — varyant kapısına tabi, ölçülmeden uygulanmaz.
 - **`tsc -b` kapanışa girmeli** — dört turdur elle yakalanıyor, kural olmadıkça yine kaçar.
 - **Tente kapıyı tamamen örtüyor (F1, kullanıcı kararı).** Geri dönüş kolu F4 hazır ve ölçülü:
   dikey tabela 0,34 → 0,72, sınır üst kenar 1,97.
-- **KayKit `bench` düz bir plaka gibi okunuyor** (0,36 br, sırtlıksız). Değişecekse başka paket ister.
-- **WC ÇÖP KUTUSU elle çizim kalıyor** — üç pakette karşılığı YOK, İKİNCİ kez ölçüldü (S5 + S6/②).
+- **KayKit `bench` düz bir plaka gibi okunuyor** (0,36 br, sırtlıksız). Değişecekse başka paket
+  ister — S13'ten sonra elde aday var: Holiday'in `chair_large_*` koltuğu (4 renk) ve `stool`ü.
+- **WC ÇÖP KUTUSU elle çizim KESİN** — S13'te ÜÇÜNCÜ kez ölçüldü: **dokuz pakette** karşılığı yok
+  (Prototype'ın `Can_A/B`si kola kutusu). Kalem artık "geçici" değil kapandı.
 - **`npm run lint` 31 hata veriyor** (hepsi ESKİ `tools/olcum-*.ts`, kullanılmayan değişkenler).
 - **G-01 çay/bulaşık toplama masanın her tarafından olmuyor · G-02 çay ocağından alma güvenilmez ·
   G-03 2. masa görevinde kamera kendiliğinden kayıyor** — üçü de HATA. (H1.)

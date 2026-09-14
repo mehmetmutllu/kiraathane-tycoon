@@ -30,6 +30,8 @@ import { STEP_D, STEP_H, STEP_N } from './wallLook';
 const KAY_REST = '/assets/models/kaykit-restaurant-bits/';
 /** KayKit furniture-bits kökü — ayna oradan (`Decor.tsx` ile aynı yol). */
 const KAY_FURN = '/assets/models/kaykit-furniture-bits/';
+/** KayKit prototype-bits kökü — S13'te yalnız İTME BARSIZ KAPI için alındı (D-111). */
+const KAY_PROTO = '/assets/models/kaykit-prototype-bits/';
 
 /** Maketin `C` paleti — yalnız bu dosyanın kullandığı girdiler, maketteki hex değerleriyle. */
 const MC = {
@@ -328,13 +330,14 @@ export function MaketLavaboBlock() {
         const ajar = i === Math.min(2, kabinN - 1); // maket: bir kapı aralık, içeride klozet görünür
         return (
           <group key={`c${i}`}>
-            {/* S7/K2 (D-104) — KayKit `door_A`: gri kasa + kapalı kanat + üstte cam + itme barı.
-                Menteşe modelin SOL kenarında (bbox x 0 → 1,60), o yüzden kapı artık gerçek bir
-                MENTEŞE etrafında açılıyor; eski kutu merkezinden dönüp havada kayıyordu.
+            {/* S13 (D-111) — Prototype Bits `Door_A`: gri kasa + kahve panel + TOKMAK.
+                S7'nin `door_A`sının itme barı gitti; ayak izi birebir aynı olduğu için ölçek,
+                menteşe ve z telafisi hiç oynamadı. Menteşe modelin SOL kenarında (bbox x 0 →
+                1,60): kapı gerçek bir MENTEŞE etrafında açılıyor.
                 Ölçü/ölçek/gerekçe `wcLook.ts`te; burada tek sayı yok. */}
             <group position={[cx - KABIN_MENTESE_ORTA, 0, zd]} rotation={[0, ajar ? KABIN_ARALIK_ACI : 0, 0]}>
               <Model
-                src={`${KAY_REST}door_A.gltf`}
+                src={`${KAY_PROTO}Door_A.gltf`}
                 scale={KABIN_SCALE}
                 position={[0, 0, KABIN_DZ]}
                 esleme={KABIN_GOZ}

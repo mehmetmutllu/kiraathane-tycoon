@@ -175,32 +175,42 @@ export const muslukAynaPayi = (): number => muslukZ().max - aynaOnZ();
 //  KABİN KAPISI — S7/K2 (D-104). Kullanıcı: bugünkü düz kutu **"kötü"**.
 // =============================================================================================
 /**
- * `door_A` SEÇİLDİ ve seçimi bir SAYI değil, modelin ÇİZİLMİŞ HÂLİ yaptı.
+ * KAPI S13'TE DEĞİŞTİ: `kaykit-restaurant-bits/door_A` → `kaykit-prototype-bits/Door_A` (D-111).
  *
- * **Bu turun dersi:** `door_A`nın köşe histogramı x'te 0,48…1,12 arasında hiç köşe göstermiyor
- * ve ilk okumam *"ortası boş, demek ki bu bir kapı KASASI"* oldu. **Yanlıştı** — orası düz bir
- * panelin içi; düşük-poli modelde düz yüzün ortasında vertex yoktur. Aynı ders S4'te öğrenilmiş
- * ve `docs/dis-cephe-raporu-s6.md` §Yöntem'de yazılıydı, yine de ısırdı. Modeli ÇİZDİREN araç
- * (`tools/model-bak.mjs`) o yüzden bu turda doğdu: ekran ile sayı birbirinin yerine geçmiyor.
+ * S7'nin dersi duruyor — model SEÇİMİNİ sayı değil ÇİZİLMİŞ HÂL yapar; `tools/model-bak.mjs`
+ * o yüzden doğmuştu ve bu tur ona `vitrin` kipini ekledi. Değişen şey ders değil, ELDEKİ paket:
+ * S7'de "tek mesh, sökülemiyor" diye kabul edilen **itme barı** artık kabul edilmek zorunda değil,
+ * çünkü Prototype Bits barsız bir panel kapı getirdi (`docs/yeni-paketler-raporu-s13.md` §B4).
  *
- * Modelin gerçek hâli: **gri kasa + kapalı kanat + kanadın üstünde küçük cam + iki yüzde itme
- * barı.** `door_B` ile tek farkı kanat gözü — A yeşil, B kahve. Kullanıcı **A**'yı seçti:
- * WC bugün tek bir kahve kütle olarak okunuyor ve yeşil onu kırıyor (`feedback_color_variety`).
+ * Yer değişimi ÖLÇÜ İSTEMEDİ: iki modelin ayak izi ve ankrajı birebir aynı (1,600 × 2,800,
+ * menteşe x = 0, z'de simetrik). `KABIN_KUTU` · `KABIN_SCALE` · `KABIN_DZ` hiç oynamadı.
+ *
+ * **Kalınlık ölçüldü, tahmin edilmedi** (y dilimi başına z aralığı): gövde her yerde **0,200**;
+ * kutuyu 0,546'ya çıkaran tek şey **y 0,80…1,20'deki tokmak**. Eskiden aynı bandı itme barı
+ * dolduruyordu — yani kutu aynı yerden şişiyor, ama şişiren şey artık **WC kabininde yeri OLAN**
+ * bir parça. Barın gidişi bu turun asıl kazancı.
+ *
+ * **BEDELİ RENK ve yazılı bir kullanıcı kararına dokunuyor:** D-104'te kullanıcı `door_A`yı
+ * `door_B`ye tercih ederken gerekçe *"WC tek bir kahve kütle, yeşil onu kırıyor"* idi
+ * (`feedback_color_variety`). Yeni kapıda o **yeşil yok**: gözleri [0,6] #995842 kahve (212 vertex)
+ * + [0,2] #828c91 gri (194). Gri KALDI — hem de lavabo/aynanın taşıdığı aynı göz — giden yalnız
+ * yeşil. Kahve kütle itirazı bu yüzden AÇIK bir kalem olarak tur kartında duruyor; sessizce
+ * kapatılmadı.
  */
 export const KABIN_NATIVE = {
   w: 1.6,
   h: 2.8,
-  /** Ham kutu derinliği — modelin KALINLIĞI DEĞİL, itme barının taşması. */
-  d: 0.771,
-  /** Bar hariç gövde kalınlığı (ölçüldü: y < 0,80 ve y > 1,30 dilimleri). */
-  govdeD: 0.3,
+  /** Ham kutu derinliği — modelin KALINLIĞI DEĞİL, tokmağın iki yüzdeki taşması. */
+  d: 0.546,
+  /** Tokmak hariç gövde kalınlığı (ölçüldü: y 0,80…1,20 dışındaki her dilim tam 0,200). */
+  govdeD: 0.2,
   /** Menteşe modelin SOL kenarında: bbox x 0 → 1,60. Kapı origin'i etrafında AÇILIR. */
   minX: 0,
-  /** z'de SİMETRİK (−0,386 … +0,386) → lavabodaki gibi bir telafi GEREKMEZ. */
-  minZ: -0.386,
-  maxZ: 0.386,
-  /** İtme barının y aralığı — WC kabininde yeri yok ama tek mesh olduğu için SÖKÜLEMEZ. */
-  bar: { min: 0.8, max: 1.2 },
+  /** z'de SİMETRİK (−0,273 … +0,273) → lavabodaki gibi bir telafi GEREKMEZ. */
+  minZ: -0.273,
+  maxZ: 0.273,
+  /** Tokmağın y aralığı — eski kapıda aynı bandı itme barı dolduruyordu (S7: 0,80…1,20). */
+  tokmak: { min: 0.8, max: 1.2 },
 } as const;
 
 /** Bugünkü kabin gözü. DEĞİŞMEDİ: yerleşim, nav ve yürüme açıklığı bu turda hiç oynamadı. */
@@ -234,13 +244,17 @@ export const KABIN_MENTESE_ORTA = KABIN_KUTU.w / 2;
 export const KABIN_ARALIK_ACI = 0.55;
 
 /**
- * GÖZ TAŞIMASI YOK — ve bu bir KARAR, eksiklik değil.
+ * GÖZ TAŞIMASI YOK — ve bu hâlâ bir KARAR, eksiklik değil.
  *
- * `door_A`nın **%73'ü `[0,3] #828c91`**, yani S6/②'de lavabonun ve aynanın taşındığı gri.
- * Kapı WC'nin diline hiçbir şey taşımadan oturuyor. Geri kalan %25 kanadın **yeşili**
- * (`[1,2] #21a489`) ve o **bilerek duruyor**: kullanıcı kahve bloğu kırılsın diye A'yı seçti.
- * Bir sonraki tur bunu "gri yapalım" diye taşırsa kararı sessizce geri almış olur — bekçi
- * bu listenin BOŞ kalmasını denetler.
+ * Yeni kapının gözleri ölçüldü: **[0,2] #828c91 gri** (194 vertex) — S6/②'de lavabonun ve
+ * aynanın taşındığı **aynı göz** — ve **[0,6] #995842 kahve** (212). Ama vertex sayısı yanıltır:
+ * ekranda (`docs/gorsel/ss/s7-seviye-L3.png`) gri **tokmakta ve kasa kenarında** duruyor, KÜTLE
+ * kahve okunuyor. Yani atlas düzeyinde taşınacak bir şey yok; itiraz renk düzeyinde ve aşağıda.
+ *
+ * Kahveyi yeşile çevirmek teknik olarak BİR SATIR (bu listeye bir çift yazmak) ama o hamle
+ * D-099'un *"atlas boyanmaz, renk varyantı TEMA kalemidir"* kararını sessizce deler. Kahve
+ * kütle itirazı bu yüzden kod yerine **tur kartında** duruyor. Bekçi listenin boş kalmasını
+ * denetler: bir sonraki tur burayı doldurursa iki karara birden dokunduğunu bilerek yapsın.
  */
 export const KABIN_GOZ: readonly (readonly [Goz, Goz])[] = [];
 

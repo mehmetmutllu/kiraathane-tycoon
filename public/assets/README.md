@@ -17,10 +17,30 @@ servis eder → URL: `/assets/models/<paket>/<isim>.gltf`. Loader: `components/t
 | `kaykit-furniture-bits/` | 53 model (gltf+bin) + `furniturebits_texture.png` (ortak atlas) | KayKit Furniture Bits 1.0 — Kay Lousberg (kaylousberg.com) | **CC0** (kredi opsiyonel) | ✅ eklendi (entegrasyon ⏳) |
 | `kaykit-restaurant-bits/` | 144 model (gltf+bin) + `restaurantbits_texture.png` | KayKit Restaurant Bits 1.0 — Kay Lousberg | **CC0** (kredi opsiyonel) | ✅ eklendi 2026-09-06 · **entegre edildi 2026-09-09 (S3: mutfak)** |
 | `kaykit-city-builder-bits/` | 41 model (gltf+bin) + `citybits_texture.png` | KayKit City Builder Bits 1.0 — Kay Lousberg | **CC0** (kredi opsiyonel) | ✅ eklendi 2026-09-06 (entegrasyon ⏳ Faz G5) |
+| `kaykit-board-game-bits/` | **162 model** (paketin tamamı) + `boardgame_bits_texture.png` + 16 rozet png | KayKit Board Game Bits 1.0 — Kay Lousberg | **CC0** (pakette `License.txt`) | ✅ eklendi 2026-09-14 (S13) · entegrasyon ⏳ **Kat 2** |
+| `kaykit-forest-nature/` | 33 model (paketin 105'inden) + `forest_texture.png` | KayKit Forest Nature Pack 1.0 — Kay Lousberg | **CC0** (pakette `License.txt`) | ✅ eklendi 2026-09-14 (S13) · entegrasyon ⏳ |
+| `kaykit-holiday-bits/` | 21 model (paketin 98'inden) + `holiday_bits_texture.png` | KayKit Holiday Bits 1.0 — Kay Lousberg | **CC0** — pakette `License.txt` YOK, lisans itch sayfasının kendi alanından: *Creative Commons Zero v1.0 Universal* | ✅ eklendi 2026-09-14 (S13) · entegrasyon ⏳ |
+| `kaykit-resource-bits/` | 21 model (paketin 76'sından) + `resource_bits_texture.png` | KayKit Resource Bits 1.0 — Kay Lousberg | **CC0** (pakette `License.txt`) | ✅ eklendi 2026-09-14 (S13) · entegrasyon ⏳ |
+| `kaykit-prototype-bits/` | **3 model** (paketin 72'sinden: `Door_A` · `Door_A_Decorated` · `Door_B`) + `prototypebits_texture.png` | KayKit Prototype Bits 1.1 — Kay Lousberg | **CC0** (pakette `License.txt`) | ✅ eklendi 2026-09-14 (S13) · **entegre edildi aynı gün** (WC kabin kapısı) |
 
 > Not: Pakette gelen fbx / fbx(unity) / obj+mtl / ekstra png (sample, contents) ve License.txt/url
 > dosyaları silindi — yalnız glTF iş hattı tutuluyor (boyut + tekillik). CC0 olduğu için lisans
 > dosyasını saklama zorunluluğu yok; künye bu manifestte.
+
+### S13'ten beri: paket = KLASÖR DEĞİL, SEÇİLMİŞ MODELLER (D-111)
+
+İlk üç paket olduğu gibi girmişti. S13'te altı yeni paket indirildi ve kullanıcı **kol B**'yi
+seçti: repoya yalnız bir açık kaleme bakan modeller girer. Sebep bir sayı — altısını da tam almak
+`models/`i **5,9 → 27,2 MB** yapıyordu (×4,6) ve 553 modelin **436'sı** hiçbir işe bakmıyordu.
+Seçilenle ağırlık **17,2 MB**. Tek istisna **board-game-bits**: TAM alındı, gerekçesi Kat 2 —
+okey/tavla masası açılırken hangi taş/jeton/zar lazım olacağı bugün belli değil.
+**Reddedilen:** Block Bits (voxel küpü; mekân hacmi için parça değil, paleti de uyumsuz) —
+indirildi, ölçüldü, repoya girmedi.
+
+Hangi modelin hangi desenle girdiği `tools/olcum-yeni-paketler.mjs` içindeki `GEREKEN` tablosunda;
+bekçisi `tests/yeni-paketler.test.ts` (desen dışı model sızarsa kırmızı yanar).
+İndirme: `pwsh tools/indir-itch.ps1 -Sayfa <itch adresi> -Hedef <klasör>`.
+Sayılar: `docs/yeni-paketler-raporu-s13.md`.
 
 ### kaykit-restaurant-bits — **S3'te kullanıma girdi (2026-09-09)**
 Yerleşimin tek kaynağı `src/components/three/kitchenLook.ts`, çizim `Kitchen.tsx`,
