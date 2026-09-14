@@ -601,6 +601,9 @@ tanımının yanına `kicker` metni). Bu bir DENGE değişikliği değil: hiçbi
 da ödül değişmiyor. Varyant kapısı sayıya bakar; yine de sıra kilidi gereği ölçüm bu commit'te,
 kod bir sonrakinde.
 
+**Önizleme (altı ekran önce/sonra + M2 + ölçüm tablosu):**
+`docs/s12-onizleme.html` · https://claude.ai/code/artifact/a83eade2-32f6-4a64-ae34-6743a93922a3
+
 ### KARAR — D-110
 
 **T2 seçildi** (kullanıcı, 2026-09-14): ikincil metinler kart/oyuk zeminine alınır; `--tx2`
