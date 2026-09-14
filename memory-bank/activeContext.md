@@ -72,7 +72,10 @@ G-03 kamera kayıyor · G-06 tepsi ilk yükseltme 75 → ~50 · G-07 dwell para-
 DENGE, varyant kapısına tabi) · masalar geçilmiyor (açıklık 0,68 br, geçiş 0,94 ister — 20 masanın
 12'si).
 
-**Altyapı:** `npm run lint` 31 hata (hepsi eski `tools/olcum-*.ts`) · `.gitattributes` YOK
+**Altyapı:** **pano ARTIFACT'i bir tur geride** — `docs/pano/ilerleme-panosu.html` güncel ve
+push'lu (denetim temiz, 93/104), ama yayınlama canlı sürümün tamamının okunmasını istiyor
+(~128k token) ve S19a'da atlandı; sonraki turda `Artifact action:"read"` + republish ·
+`npm run lint` 31 hata (hepsi eski `tools/olcum-*.ts`) · `.gitattributes` YOK
 (`core.autocrlf` her checkout'ta CRLF'e çeviriyor) · `npm run pano` günlük uyarısı yalnız TARİHE
 bakıyor · **oyuncuda 2,0× artık kayma** · **panel dönüşünde T-poz temiz koşuda ÜRETİLEMEDİ**
 (repro aracı `tools/olcum-panel-donusu.mjs`).
