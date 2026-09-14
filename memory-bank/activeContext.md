@@ -16,19 +16,30 @@ KARAR           : D-106 — ses S-C (Kenney; coin = RPG Audio handleCoins) + ser
                   ekran K3 tam ekran · mağaza içi M2 · pad Y2 · kit YOLU 2 (biçimi al,
                   dosyaları alma) · G-18 masanın kendi noktası vurgulanır ·
                   alt gezinme GEOMETRİSİ bugünküyle aynı (A/B/C elendi)
+                  D-107 — arayüzün TAMAMI mor, 3B dünya sıcak kalır (palet + ölçek kilitli)
 UYGULAMA        : YOK — S10 tanımı gereği kod yazmaz. Uygulama S11 (UI) + S9 (ses).
 BEKÇİ           : (uygulama turunda)
 ```
 
 ## SIRADAKİ TAM ADIM
 
-**Kullanıcı maketten palet seçecek** — turun tek açık kalemi:
-https://claude.ai/code/artifact/7e1aded9-9387-4f51-a95c-25787fbe95fb
-`P1` ceviz (Δh 2°, bugünkü kimlik) · `P2` gece nötr (Δh 128°, doygunluk %11, **öneri**) ·
-`P3` mor-lacivert (Δh 136°, ΔL −10). Üçü de WCAG AA geçiyor → seçimi yalnız Δh belirliyor.
+**PALET SEÇİLDİ — MOR (D-107).** Kullanıcı P3'ü seçmekle kalmadı, kapsamı büyüttü:
+*"mor bayağı iyiymiş, direkt oyun temasını o kahverengiden mora çevirsek?"* →
+**arayüzün TAMAMI mor, 3B dünya sıcak kalır.** Beş ekranın maketi onaylanmayı bekliyor:
+https://claude.ai/code/artifact/6cc7a95e-c0a3-4802-8ea3-99398d637981
 
-Seçim gelince **S11 açılır** (UI uygulaması): ölçek 17 punto → 6 basamak · 27 gölge → 3 kademe ·
-`button{font-family:inherit}` · 🔒 → SVG · kabuk boyu tek kural · K3 + M2 · pad Y2 · G-05.
+**Sıradaki tur = S11 (UI uygulaması).** Kapsamı D-106 + D-107 birlikte belirliyor:
+- Palet ve ölçek `index.css`'e token olarak girer (D-107'deki dokuz renk + punto 6 basamak +
+  gölge 3 kademe + yarıçap 3 kademe). **Sayı koda gömülmez, token olur.**
+- `button{font-family:inherit}` — 13 öğe Arial'a düşüyor, biri görev şeridi (B5).
+- 🔒 emoji → SVG; ✕ → ↺ ₺ metin glifleri de (17 adet, B6).
+- Beş ekran **K3 tam ekran** + tek kabuk (geri · başlık · cüzdan); alt sayfa kabuğu kalkar.
+- Mağaza **M2** düzeni · pad **Y2** · alt bar geometrisi AYNI, dili mor.
+- Chip'siz üst şerit: değerler sahnenin üstünde, okunabilirliği **kontur** taşır.
+- G-05 görev metinleri (altta net hedef, üstte kısa lakap).
+**Bekçi:** ekran kabuğu + token sayısı testi, en az 2 mutasyonla.
+**Denge dosyalarına DOKUNULMAZ** — G-06 (tepsi 75 → ~50) bu turun işi değil.
+
 **S9** (ses dosyaları + seri ivmesi) ayrı tur; kaynak kararı yazılı, paketler indirildi ama
 repoya GİRMEDİ — yalnız kullanılacak dosyalar künyesiyle girecek.
 

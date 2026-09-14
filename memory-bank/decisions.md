@@ -3229,3 +3229,22 @@ gibi" şikâyetinin sayısı, B2'nin (R = 0,91) barda görünen hâli. Kollar P1
 **üçü de WCAG AA geçiyor** (en düşük 6,66) → seçimi okunabilirlik değil yalnız Δh belirliyor.
 **Palet AÇIK** (P1/P2/P3), uygulama S11. Sayılar: `docs/ui-ses-raporu-s9s10.md` ·
 ham `docs/olcum-altnav.txt` · maket `docs/alt-gezinme-maketi.html`.
+
+## D-107 — Arayüzün TAMAMI mor; 3B dünya sıcak kalır (2026-09-14)
+
+Kullanıcı alt gezinme maketini gördü ve kolu seçmek yerine kapsamı büyüttü: *"mor bayağı iyiymiş,
+direkt oyun temasını o kahverengiden mora çevirsek?"* **Seçilen kol: mor = ARAYÜZÜN dili.**
+**Gerekçe — D-106'nın "ikinci renk kütlesi" itirazı bu kararla ÇÖZÜLÜYOR, çürütülmüyor:** o itiraz
+morun tek bir bileşende (alt bar) durmasına aitti; mor arayüzün tamamına yayılınca kaçak leke
+olmaktan çıkıp **katman** oluyor — sıcak ahşap dünyanın kimliği, mor arayüzün kimliği. Bugünkü
+kusur zaten tersiydi: arayüz sahneyle AYNI renkti (Δh 2°).
+**3B dünya ELENDİ, üç yazılı sebeple:** ① dünyanın rengi bizim değil KayKit'in paleti — S3'te tam
+tersi denendi ve kullanıcı reddetti (*"her şey çok kahve kalıyor"*), karar renk varyantının TEMA
+olarak satılması olmuştu (D-099) ② mor bir kıraathane kıraathane gibi okunmuyor (projectBrief'in
+çekirdek hissi) ③ 185 model + doku atlası, S12/S13'ün önünü tıkar.
+**Palet (S11 uygular):** gövde #463C86→#221B52 · kart #3A3178/#2E2764 · oyuk #1B1443 ·
+kontur #100B2E · aksan #FFC24B→#E09415 · metin #EAE3FF/#A99FD8 · ilerleme #7BD46A→#4FA83E ·
+elmas #7FD9FF · para #FFD45E. **Tek aksan amber**; yeşil yalnız ilerleme, mavi yalnız elmas anlamında.
+**Ölçek de bu kararla kilitlendi:** punto 17 → 6 basamak · gölge 27 → 3 kademe · yarıçap 9 → 3.
+Maket beş ekranı gerçek metin ve bugünkü denge sayılarıyla gösteriyor (G-06 bilerek değiştirilmedi):
+`docs/mor-arayuz-maketi.html`. Rapor: `docs/ui-ses-raporu-s9s10.md` §MOR ARAYÜZ.

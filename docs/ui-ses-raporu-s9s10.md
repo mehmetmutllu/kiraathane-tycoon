@@ -398,3 +398,54 @@ ile sahneden açık kalıyor. P2 aynı ayrışmayı (128°) **renk kurmadan** ya
 gerçekten istenirse yeri mağaza gibi tam ekranlar, sürekli görünen bar değil.
 
 **AÇIK:** palet seçimi (P1 / P2 / P3) — kullanıcı maketi görüp seçecek, uygulama S11'in turu.
+
+---
+
+## MOR ARAYÜZ — kapsam kararı (2026-09-14, aynı tur)
+
+Kullanıcı alt gezinme maketini gördü ve kolu seçmek yerine **kapsamı büyüttü**:
+
+> *"mor bayağı iyiymiş, direkt oyun temasını o kahverengiden mora çevirsek?"*
+
+**Karar: mor = ARAYÜZÜN dili, 3B dünya sıcak kalır.**
+
+Maket: `docs/mor-arayuz-maketi.html` · https://claude.ai/code/artifact/6cc7a95e-c0a3-4802-8ea3-99398d637981
+
+### Neden dünya değil
+
+Alt gezinme ölçümü P3'e "tek leke çözülür ama yerine **ikinci bir renk kütlesi** kurulur" demişti.
+Bu bir *mor* sorunu değil bir **yalnızlık** sorunu: mor tek bir bileşende durduğunda kaçak leke.
+Arayüzün tamamına yayılınca leke olmaktan çıkıp **katman** oluyor — sıcak ahşap dünyanın kimliği,
+mor arayüzün kimliği. Bugünkü kusur zaten tersiydi: arayüz sahneyle **aynı** renkti (Δh 2°).
+
+3B dünyanın mora çevrilmesi üç yazılı sebeple elendi:
+- Dünyanın rengi bizim değil **KayKit'in paleti**. S3'te tam tersi denenmişti (modelleri kıraathane
+  tonuna boyayan varyant üretildi ve kullanıcı reddetti: *"her şey çok kahve kalıyor"*); karar
+  paketin kendi canlı paleti kalsın, renk varyantı **tema olarak satılsın** oldu (D-099).
+- Mor bir kıraathane artık kıraathane gibi okunmuyor — `projectBrief`in çekirdek hedef hissi.
+- 185 model + doku atlası; S12/S13'ün önünü tıkar.
+
+### Maketin gösterdikleri (beş ekran, gerçek içerikle)
+
+Tek sayfada: oyun ekranı (gerçek kare üstünde) · Görevler · Hedefler · Mağaza M2 · Mağaza kilitli ·
+Çaycı. Hepsi **bugünkü gerçek metin ve sayılarla** çizildi.
+
+| Karar | Makette görünen hâli |
+|---|---|
+| **K3** tam ekran | Dört ekranın dördü; alt sayfa kabuğu kalktı, tek kabuk (geri · başlık · cüzdan) |
+| **M2** mağaza | Önizleme 230 px + seçim şeridi + tek büyük satın alma |
+| **Kit yolu 2** | Kalın kontur · katı kaydırılmış gölge · iki taraflı kabartma · 17 px yarıçap — PNG kullanılmadan |
+| **Chip'siz üst** | Para/elmas/seviye doğrudan sahnenin üstünde; okunabilirliği **kontur** taşıyor |
+| **Alt bar** | Geometri bugünküyle birebir; yalnız dili değişti |
+| **B6** 🔒 emoji | Çizilmiş asma kilide döndü |
+| **B1** 108 karar | Punto 17 → **6** · gölge 27 → **3** · yarıçap 9 → **3** |
+| Tek aksan | Amber; yeşil yalnız **ilerleme** anlamında, mavi yalnız **elmas** |
+
+**Palet (S11'in uygulayacağı):** gövde `#463C86`→`#221B52` · kart `#3A3178`/`#2E2764` ·
+oyuk `#1B1443` · kontur `#100B2E` · aksan `#FFC24B`→`#E09415` · metin `#EAE3FF`/`#A99FD8` ·
+ilerleme `#7BD46A`→`#4FA83E` · elmas `#7FD9FF` · para `#FFD45E`.
+
+**Maketin dürüstlük notu:** oyun ekranı karesinde eski HUD'ın chip'leri, karenin **kendi duvar
+rengiyle** örtüldü (sol 178,161,125 · orta 188,169,130 · sağ 173,153,116 — kareden ölçüldü).
+Sahnenin kendisine dokunulmadı. Denge sayıları da bugünkü oyundan: tepsi 75 · mıknatıs 200 ·
+hız 400 · günlük ödül 3/4 💎 · İtibar 0/60. **G-06 (tepsi 75 → ~50) bilerek değiştirilmedi.**

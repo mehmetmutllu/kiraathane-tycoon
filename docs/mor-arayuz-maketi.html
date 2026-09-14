@@ -1,0 +1,463 @@
+<title>Mor Arayüz Dili</title>
+<style>
+:root{
+  --paper:#f4efe6; --surface:#fffdf9; --ink:#241a11; --mid:#6c5b49; --rule:#e0d5c4;
+  --sunken:#efe7da; --accent:#b4552a; --accent-w:#fbf1ea; --good:#2e7d4f;
+  --r-s:5px; --r-m:12px;
+  --f-body:'Iowan Old Style','Palatino Linotype',Georgia,serif;
+  --f-disp:'Trebuchet MS','Segoe UI',system-ui,sans-serif;
+  --f-num:'DIN Alternate','Segoe UI',system-ui,sans-serif;
+  --f-game:'Trebuchet MS','Segoe UI',system-ui,sans-serif;
+  --hud:url("gorsel/ss/s10-hud.png");
+
+  /* ── OYUNUN MOR ARAYÜZ PALETİ (maketin konusu) ── */
+  --g1:#463C86; --g2:#221B52;      /* gövde gradyanı */
+  --ot:#100B2E;                    /* kontur — her şeyin kenarı */
+  --kart:#3A3178; --kart2:#2E2764; /* kart yüzeyi */
+  --oyuk:#1B1443;                  /* oyuk (ilerleme yatağı, sayaç zemini) */
+  --ac:#FFC24B; --ac2:#E09415;     /* tek aksan: amber */
+  --tx:#EAE3FF; --tx2:#A99FD8;     /* metin · ikincil metin */
+  --txa:#3A2206;                   /* aksan üstü metin */
+  --ok:#7BD46A; --ok2:#4FA83E;     /* ilerleme — anlam rengi, aksan değil */
+  --elmas:#7FD9FF; --para:#FFD45E;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --paper:#17130f; --surface:#201a15; --ink:#f0e7db; --mid:#a89681;
+  --rule:#362c22; --sunken:#241d17; --accent-w:#2a1c14;
+}}
+:root[data-theme="dark"]{
+  --paper:#17130f; --surface:#201a15; --ink:#f0e7db; --mid:#a89681;
+  --rule:#362c22; --sunken:#241d17; --accent-w:#2a1c14;
+}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.62;
+  -webkit-font-smoothing:antialiased;padding-block:34px 64px;padding-left:20px;padding-right:20px}
+.wrap{max-width:1180px;margin:0 auto}
+h1{font-family:var(--f-disp);font-size:30px;line-height:1.18;margin:0 0 6px;letter-spacing:-.01em}
+h2{font-family:var(--f-disp);font-size:21px;margin:0;letter-spacing:-.005em}
+h3{font-family:var(--f-disp);font-size:16px;margin:28px 0 2px}
+p{margin:10px 0}
+.lede{color:var(--mid);font-size:18px;margin:0 0 4px}
+.sec{display:flex;align-items:center;gap:10px;margin:52px 0 2px;flex-wrap:wrap}
+.sec-tag{font-family:var(--f-disp);font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--surface);background:var(--ink);padding:4px 8px;border-radius:var(--r-s)}
+.sec-tag.ask{background:var(--accent)}
+.sec-tag.ok{background:var(--good)}
+code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.84em;background:var(--sunken);padding:1px 5px;border-radius:var(--r-s)}
+table{border-collapse:collapse;width:100%;font-size:15px;margin:14px 0;min-width:560px}
+th,td{border-bottom:1px solid var(--rule);padding:8px 10px;text-align:left;vertical-align:top}
+th{font-family:var(--f-disp);font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--mid)}
+td.n{font-family:var(--f-num);text-align:right;white-space:nowrap}
+.tw{overflow-x:auto}
+.note{border:1px solid var(--rule);border-left:3px solid var(--accent);border-radius:var(--r-m);
+  padding:14px 18px;background:var(--surface);margin:16px 0}
+.note.ok{border-left-color:var(--good)}
+.note b.q{font-family:var(--f-disp)}
+ul{margin:10px 0;padding-left:22px}
+li{margin:5px 0}
+
+/* ── telefon rafı ── */
+.rack{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;margin:18px 0 0}
+.slot{flex:0 0 auto;max-width:100%}
+.cap{font-family:var(--f-disp);font-size:12.5px;color:var(--mid);margin:8px 0 0;max-width:281px;line-height:1.5}
+.cap b{color:var(--ink)}
+.box{width:281px;max-width:100%;height:608px;overflow:hidden;border-radius:20px;border:1px solid var(--rule);
+  box-shadow:0 8px 26px rgba(0,0,0,.18)}
+.ph{width:390px;height:844px;transform:scale(.7205);transform-origin:top left;position:relative;overflow:hidden;
+  font-family:var(--f-game);background:linear-gradient(180deg,var(--g1),var(--g2))}
+.ph.sahne{background-image:var(--hud);background-size:390px 844px;background-repeat:no-repeat}
+
+/* ═══ oyun arayüzü — mor dil ═══ */
+/* Ölçek: 11 / 13 / 15 / 18 / 22 / 30  ·  Gölge: k1 / k2 / k3  ·  Yarıçap: 10 / 17 / 22 */
+.u1{font-size:11px} .u2{font-size:13px} .u3{font-size:15px} .u4{font-size:18px} .u5{font-size:22px} .u6{font-size:30px}
+.k1{box-shadow:0 2px 0 var(--ot)}
+.k2{box-shadow:inset 0 2px 0 rgba(255,255,255,.45), 0 3px 0 var(--ot)}
+.k3{box-shadow:inset 0 3px 0 rgba(255,255,255,.5), 0 5px 0 var(--ot), 0 10px 18px rgba(0,0,0,.3)}
+
+/* chip'siz üst: değerler doğrudan sahnenin üstünde, işi KONTUR taşıyor */
+.top{position:absolute;left:0;right:0;top:0;display:flex;align-items:flex-start;justify-content:space-between;
+  gap:10px;padding:12px 12px 0}
+.cikti{font-family:var(--f-num);font-weight:800;color:#fff;
+  -webkit-text-stroke:4px var(--ot);paint-order:stroke fill;letter-spacing:.02em}
+.rozet{width:44px;height:44px;border-radius:50%;background:linear-gradient(180deg,var(--ac),var(--ac2));
+  border:3px solid var(--ot);display:grid;place-items:center;color:var(--txa);font-family:var(--f-num);
+  font-weight:800;font-size:17px}
+.xp{width:88px;height:10px;border-radius:999px;background:var(--oyuk);border:2.5px solid var(--ot);margin-top:4px;overflow:hidden}
+.xp i{display:block;height:100%;width:34%;background:var(--ac)}
+.sag{display:flex;align-items:flex-start;gap:10px}
+.deger{display:flex;align-items:center;gap:5px}
+/* Eski HUD'in chip'leri karenin icinde duruyor; ustune yeni HUD cizilince ust uste binerdi.
+   Bu serit onlari sahnenin KENDI duvar rengiyle ortuyor — renk kareden olculdu, uydurulmadi
+   (sol 178,161,125 · orta 188,169,130 · sag 173,153,116; CSS y 0..80 duz duvar). */
+.maske{position:absolute;left:0;right:0;top:0;height:82px;
+  background:linear-gradient(90deg,rgb(178,161,125),rgb(188,169,130) 45%,rgb(173,153,116))}
+.dis{width:40px;height:40px;border-radius:14px;background:linear-gradient(180deg,var(--kart),var(--kart2));
+  border:3px solid var(--ot);display:grid;place-items:center;color:var(--tx)}
+
+/* görev şeridi */
+.band{position:absolute;left:12px;right:12px;bottom:84px;display:flex;align-items:center;gap:10px;
+  padding:9px 11px;border-radius:20px;border:3px solid var(--ot);
+  background:linear-gradient(180deg,var(--kart),var(--kart2));box-shadow:0 4px 0 var(--ot),0 10px 20px rgba(0,0,0,.34)}
+.band .pic{width:42px;height:42px;flex:none;border-radius:14px;border:2.5px solid var(--ot);
+  background:linear-gradient(180deg,#C7503C,#8E3124);display:grid;place-items:center}
+.band .gov{flex:1;min-width:0}
+.band .gov b{display:block;color:var(--tx);font-size:15px;font-weight:900;line-height:1.15}
+.band .bar{height:11px;border-radius:999px;background:var(--oyuk);border:2px solid var(--ot);margin-top:4px;overflow:hidden}
+.band .bar i{display:block;height:100%;width:0%;background:var(--ok)}
+.band .odul{display:flex;align-items:center;gap:4px;color:var(--txa);background:var(--ac);border:2.5px solid var(--ot);
+  border-radius:999px;padding:3px 9px 4px;font-family:var(--f-num);font-size:13px;font-weight:800}
+
+/* alt gezinme — GEOMETRİ BUGÜNKÜ (tam genişlik, 4 etiketli sekme, 72 px) */
+.bar-alt{position:absolute;left:0;right:0;bottom:0;height:72px;display:flex;gap:6px;padding:7px 10px 8px;
+  background:linear-gradient(180deg,var(--g1),var(--g2));border-top:3px solid var(--ot);
+  box-shadow:0 -3px 0 rgba(0,0,0,.22),0 -14px 22px rgba(0,0,0,.32)}
+.bar-alt::before{content:'';position:absolute;left:0;right:0;top:0;height:2px;background:rgba(255,255,255,.34)}
+.tab{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  color:var(--tx);border-radius:17px;padding:2px}
+.tab .ic{display:grid;place-items:center;height:27px;position:relative}
+.tab .lb{font-size:11px;font-weight:800;white-space:nowrap}
+.tab.on{background:linear-gradient(180deg,var(--ac),var(--ac2));color:var(--txa);border:2.5px solid var(--ot);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.5),0 3px 0 var(--ot);transform:translateY(-4px)}
+.tab.on .lb{font-weight:900}
+.bang{position:absolute;top:-5px;right:-9px;min-width:17px;height:17px;display:grid;place-items:center;
+  border-radius:9px;background:#E0402C;border:2.5px solid var(--ot);color:#fff;
+  font-family:var(--f-num);font-size:10.5px;font-weight:700;line-height:1;padding:0 3px}
+
+/* TAM EKRAN (K3) — tek kabuk, tek yükseklik kuralı */
+.ek{position:absolute;inset:0;display:flex;flex-direction:column;background:linear-gradient(180deg,var(--g1),var(--g2))}
+.ek-top{display:flex;align-items:center;gap:10px;padding:14px 14px 10px;flex:none}
+.geri{width:40px;height:40px;flex:none;border-radius:14px;display:grid;place-items:center;
+  background:linear-gradient(180deg,var(--ac),var(--ac2));border:2.5px solid var(--ot);color:var(--txa);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.5),0 3px 0 var(--ot)}
+.ek-ttl{flex:1;font-size:22px;font-weight:900;color:var(--tx);letter-spacing:.005em}
+.cuzdan{display:flex;align-items:center;gap:6px;padding:6px 11px 7px;border-radius:999px;background:var(--oyuk);
+  border:2.5px solid var(--ot);color:var(--tx);font-family:var(--f-num);font-size:14px;font-weight:800}
+.ek-govde{flex:1;min-height:0;overflow:hidden;padding:2px 14px 14px;display:flex;flex-direction:column;gap:9px}
+.etiket{font-family:var(--f-disp);font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--tx2);margin-top:3px}
+.kart{border-radius:18px;border:3px solid var(--ot);background:linear-gradient(180deg,var(--kart),var(--kart2));
+  padding:11px 13px;box-shadow:0 3px 0 var(--ot)}
+.kart.hazir{border-color:var(--ac);box-shadow:0 3px 0 var(--ac2),0 0 0 3px rgba(255,194,75,.18)}
+.kart-ust{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.kart-ust b{color:var(--tx);font-size:15px;font-weight:900}
+.sayac{font-family:var(--f-num);font-size:15px;font-weight:800;color:var(--ac)}
+.sayac small{color:var(--tx2);font-size:12px}
+.ilerle{height:12px;border-radius:999px;background:var(--oyuk);border:2px solid var(--ot);margin:7px 0 6px;overflow:hidden}
+.ilerle i{display:block;height:100%;background:linear-gradient(180deg,var(--ok),var(--ok2))}
+.kart-alt{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.kart-alt span{color:var(--tx2);font-size:12px}
+.dugme{border-radius:14px;border:2.5px solid var(--ot);background:linear-gradient(180deg,var(--ac),var(--ac2));
+  color:var(--txa);font-size:13px;font-weight:900;padding:6px 13px 7px;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.5),0 3px 0 var(--ot)}
+.rozet-sat{display:flex;align-items:center;gap:4px;font-family:var(--f-num);font-size:13px;font-weight:800;color:var(--elmas)}
+.buyuk-dugme{flex:none;height:58px;border-radius:20px;display:flex;align-items:center;justify-content:center;gap:9px;
+  background:linear-gradient(180deg,var(--ac),var(--ac2));border:3px solid var(--ot);color:var(--txa);
+  font-size:19px;font-weight:900;box-shadow:inset 0 3px 0 rgba(255,255,255,.5),0 5px 0 var(--ot)}
+
+/* itibar başlığı */
+.itibar{display:flex;align-items:center;gap:11px;border-radius:18px;border:3px solid var(--ot);
+  background:linear-gradient(180deg,var(--oyuk),#140E36);padding:11px 13px;box-shadow:0 3px 0 var(--ot)}
+.itibar .gov{flex:1;min-width:0}
+.itibar .gov b{color:var(--tx);font-size:15px;font-weight:900}
+.itibar .gov p{margin:5px 0 0;color:var(--tx2);font-size:11.5px;line-height:1.35}
+
+/* mağaza M2 */
+.onizleme{flex:none;height:230px;border-radius:22px;border:3px solid var(--ot);
+  background:radial-gradient(120% 100% at 50% 12%,#5B4FA6,#221B52);position:relative;display:grid;place-items:center;
+  box-shadow:inset 0 3px 0 rgba(255,255,255,.22),inset 0 -14px 26px rgba(0,0,0,.34)}
+.onizleme .rozetcik{position:absolute;left:12px;top:12px;font-size:11px;font-weight:800;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--txa);background:var(--ac);border:2.5px solid var(--ot);border-radius:10px;padding:3px 8px}
+.sekmeler{display:flex;gap:7px;flex:none}
+.sekme{flex:1;text-align:center;border-radius:14px;border:2.5px solid var(--ot);padding:7px 4px 8px;
+  background:linear-gradient(180deg,var(--kart),var(--kart2));color:var(--tx);font-size:13px;font-weight:800}
+.sekme.on{background:linear-gradient(180deg,var(--ac),var(--ac2));color:var(--txa);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.5),0 3px 0 var(--ot)}
+.serit{display:flex;gap:8px;flex:none}
+.cip{width:58px;height:58px;flex:none;border-radius:16px;border:2.5px solid var(--ot);display:grid;place-items:center;
+  background:linear-gradient(180deg,var(--kart),var(--kart2));position:relative}
+.cip.on{box-shadow:inset 0 2px 0 rgba(255,255,255,.4),0 0 0 3px var(--ac)}
+.cip.kilit{opacity:.62}
+.ad-sat{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex:none}
+.ad-sat b{color:var(--tx);font-size:18px;font-weight:900}
+.ad-sat span{color:var(--tx2);font-size:12.5px}
+
+/* karakter */
+.vitrin{flex:none;height:196px;border-radius:22px;border:3px solid var(--ot);
+  background:radial-gradient(120% 100% at 50% 14%,#5B4FA6,#221B52);display:grid;place-items:center;
+  box-shadow:inset 0 3px 0 rgba(255,255,255,.22),inset 0 -14px 26px rgba(0,0,0,.34)}
+.satir{display:flex;align-items:center;gap:10px;border-radius:16px;border:2.5px solid var(--ot);
+  background:linear-gradient(180deg,var(--kart),var(--kart2));padding:8px 10px;box-shadow:0 3px 0 var(--ot)}
+.satir .sim{width:40px;height:40px;flex:none;border-radius:12px;border:2.5px solid var(--ot);background:var(--oyuk);
+  display:grid;place-items:center}
+.satir .gov{flex:1;min-width:0}
+.satir .gov b{display:block;color:var(--tx);font-size:14px;font-weight:900}
+.satir .gov span{color:var(--tx2);font-size:11.5px}
+.satir .gov span i{font-style:normal;color:var(--ok);font-weight:800}
+.fiyat{display:flex;align-items:center;gap:5px;border-radius:999px;border:2.5px solid var(--ot);
+  background:linear-gradient(180deg,var(--ac),var(--ac2));color:var(--txa);font-family:var(--f-num);
+  font-size:14px;font-weight:800;padding:5px 11px 6px;box-shadow:inset 0 2px 0 rgba(255,255,255,.5),0 3px 0 var(--ot)}
+
+/* kilitli durum — emoji DEĞİL, SVG */
+.kilitli{flex:1;min-height:0;border-radius:20px;border:3px dashed rgba(255,255,255,.24);display:flex;
+  flex-direction:column;align-items:center;justify-content:center;gap:9px;padding:18px;text-align:center}
+.kilitli b{color:var(--tx);font-size:16px;font-weight:900}
+.kilitli p{margin:0;color:var(--tx2);font-size:12.5px;line-height:1.45;max-width:230px}
+.kosul{display:flex;gap:7px;margin-top:3px}
+.kosul span{font-family:var(--f-num);font-size:11.5px;font-weight:700;color:var(--tx2);background:var(--oyuk);
+  border:2px solid var(--ot);border-radius:999px;padding:3px 9px}
+
+/* sistem şeridi */
+.sistem{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:18px}
+.sis{border:1px solid var(--rule);border-radius:var(--r-m);background:var(--surface);padding:14px 16px}
+.sis h4{font-family:var(--f-disp);font-size:13px;margin:0 0 9px;letter-spacing:.06em;text-transform:uppercase;color:var(--mid)}
+.orn{display:flex;flex-wrap:wrap;gap:7px;align-items:flex-end}
+.pul{width:38px;height:38px;border-radius:10px;border:2.5px solid var(--ot)}
+.olcek{display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;font-family:var(--f-game);color:var(--ink)}
+.olcek b{font-weight:900}
+.golge{width:60px;height:38px;border-radius:12px;background:linear-gradient(180deg,var(--kart),var(--kart2));
+  border:2.5px solid var(--ot)}
+@media (max-width:760px){ .box{height:540px} .ph{transform:scale(.64)} }
+</style>
+
+<div class="wrap">
+
+<h1>Mor arayüz dili — beş ekran</h1>
+<p class="lede">S10 eki · 2026-09-14 · kod hâlâ yazılmadı. Kullanıcı: <i>“mor bayağı iyiymiş, direkt oyun
+temasını o kahverengiden mora çevirsek?”</i> — kapsam: <b>arayüzün tamamı mor, 3B dünya sıcak kalır.</b></p>
+
+<div class="note">
+<p style="margin-top:0"><b class="q">Neden dünya değil de yalnız arayüz:</b> alt gezinme ölçümü morun tek
+bir yerde durduğunda <b>ikinci bir renk kütlesi</b> kurduğunu söylüyordu. Bu bir mor sorunu değil, bir
+<b>yalnızlık</b> sorunu — mor arayüzün <b>tamamına</b> yayılınca kaçak leke olmaktan çıkıp arayüzün dili olur:
+<b>sıcak ahşap = dünyanın kimliği, mor = arayüzün kimliği.</b> İkisi yarışmaz, çünkü artık iki ayrı katman.</p>
+<p style="margin-bottom:0">Bugünkü sorun zaten tersiydi: arayüz sahneyle <b>aynı</b> renkteydi (Δh 2°) ve
+üst üste binip tek bir kahverengi lekeye düşüyordu.</p>
+</div>
+
+<div class="sec"><span class="sec-tag">1</span><h2>Oyun ekranı — chip’siz üst, aynı geometride alt bar</h2></div>
+<p>Solda bugünkü kare (dokunulmamış), sağda aynı kare mor arayüzle. Üstteki değerler <b>kutu içinde değil</b>
+— senin istediğin gibi doğrudan sahnenin üstünde; kutunun görünmeyen işini (okunabilirlik) artık <b>kontur</b>
+taşıyor. Alt barın <b>geometrisi değişmedi</b>: tam genişlik, dört etiketli sekme, 72 px.</p>
+
+<div class="rack" id="r1"></div>
+
+<div class="sec"><span class="sec-tag">2</span><h2>Dört ekran — hepsi tam ekran (K3), hepsi aynı kabuk</h2></div>
+<p>Bugün beş ekran <b>dört farklı yükseklikte</b> alt sayfa olarak açılıyor (430 · 471 · 530 · 675 · 675 px) —
+“ekranlar tutarsız” hissinin ölçülen kaynağı buydu. Artık hepsi tam ekran ve <b>tek kabuk</b>:
+sol üstte geri, ortada başlık, sağ üstte cüzdan. Mağaza <b>M2</b> düzeninde: büyük önizleme + seçim şeridi +
+tek satın alma.</p>
+
+<div class="rack" id="r2"></div>
+
+<div class="sec"><span class="sec-tag ok">sistem</span><h2>108 karar → 29</h2></div>
+<p>“Çalışılmış” hissi rengin değil <b>tekrarın</b> işi. Bugün ekranda 17 punto, 27 gölge, 9 yarıçap, 29 zemin
+çiziliyor — yani neredeyse her bileşen kendi kararını veriyor. Mor dil bunları sabit basamaklara indiriyor:</p>
+
+<div class="sistem" id="sis"></div>
+
+<div class="sec"><span class="sec-tag">not</span><h2>Bu makette görünen diğer kararlar</h2></div>
+<div class="tw">
+<table>
+<tr><th>Karar</th><th>Nerede görünüyor</th></tr>
+<tr><td><b>K3</b> tam ekran</td><td>Dört ekranın dördü de; alt sayfa kabuğu tamamen kalktı</td></tr>
+<tr><td><b>M2</b> mağaza</td><td>Önizleme 230 px + altında seçim şeridi + tek büyük satın alma</td></tr>
+<tr><td><b>Kit yolu 2</b></td><td>Kalın koyu kontur · katı kaydırılmış gölge · iki taraflı kabartma · 17 px yarıçap — kitin PNG’si kullanılmadan</td></tr>
+<tr><td><b>Chip’siz üst</b></td><td>Para, elmas ve seviye doğrudan sahnenin üstünde; okunabilirliği kontur taşıyor</td></tr>
+<tr><td><b>Alt bar geometrisi</b></td><td>Bugünküyle birebir aynı — yalnız dili değişti</td></tr>
+<tr><td><b>🔒 emoji → SVG</b></td><td>Mağazanın kilitli durumu artık çizilmiş bir asma kilit</td></tr>
+<tr><td><b>Tek aksan</b></td><td>Amber; yeşil yalnız <b>ilerleme</b> anlamında, aksan olarak değil</td></tr>
+</table>
+</div>
+
+<div class="note ok">
+<p style="margin:0"><b class="q">Değişmeyen sayılar:</b> makette görünen bütün denge değerleri bugünkü
+oyundan alındı (tepsi 75 · mıknatıs 200 · hız 400 · günlük ödüller 3/4 💎 · İtibar 0/60). <b>G-06</b>
+(tepsi 75 → ~50) hâlâ ölçülmemiş bir denge kalemi ve bu makette <b>bilerek değiştirilmedi</b>.</p>
+</div>
+
+<script>
+var IC = {
+ gorev:'<svg width="26" height="26" viewBox="0 0 24 24"><rect x="4.6" y="3.4" width="14.8" height="17.4" rx="3.2" fill="currentColor" stroke="var(--ot)" stroke-width="2"/><rect x="8.6" y="1.9" width="6.8" height="3.8" rx="1.6" fill="var(--ac)" stroke="var(--ot)" stroke-width="2"/><path d="M8.3 12.1l2 2 3.4-3.7M8.3 17.1h7.4" stroke="var(--ot)" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>',
+ hedef:'<svg width="26" height="26" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.7" fill="currentColor" stroke="var(--ot)" stroke-width="2"/><circle cx="12" cy="12" r="5" fill="none" stroke="var(--ot)" stroke-width="2"/><circle cx="12" cy="12" r="1.9" fill="var(--ac)" stroke="var(--ot)" stroke-width="1.6"/></svg>',
+ magaza:'<svg width="26" height="26" viewBox="0 0 24 24"><rect x="4.4" y="10.4" width="15.2" height="10.4" rx="2.4" fill="currentColor" stroke="var(--ot)" stroke-width="2"/><path d="M3.2 10.4l1.9-5.1h13.8l1.9 5.1z" fill="var(--ac)" stroke="var(--ot)" stroke-width="2" stroke-linejoin="round"/><rect x="9.6" y="13.8" width="4.8" height="7" rx="1.2" fill="var(--ot)"/></svg>',
+ karakter:'<svg width="26" height="26" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4.4" fill="currentColor" stroke="var(--ot)" stroke-width="2"/><path d="M4.6 20.6c0-4 3.3-6.4 7.4-6.4s7.4 2.4 7.4 6.4z" fill="currentColor" stroke="var(--ot)" stroke-width="2" stroke-linejoin="round"/></svg>',
+ geri:'<svg width="20" height="20" viewBox="0 0 24 24"><path d="M14.6 5.2L7.8 12l6.8 6.8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+ ayar:'<svg width="21" height="21" viewBox="0 0 24 24"><path d="M12 2.6l2.1 1.5 2.5-.5 1 2.4 2.3 1.1-.4 2.5 1.6 2-1.6 2 .4 2.5-2.3 1.1-1 2.4-2.5-.5L12 21.4l-2.1-1.5-2.5.5-1-2.4-2.3-1.1.4-2.5-1.6-2 1.6-2-.4-2.5 2.3-1.1 1-2.4 2.5.5z" fill="currentColor" stroke="var(--ot)" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.3" fill="var(--oyuk)" stroke="var(--ot)" stroke-width="2"/></svg>',
+ para:function(s){s=s||17;return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24"><ellipse cx="12" cy="15" rx="8.4" ry="4.1" fill="#D17D0A"/><ellipse cx="12" cy="10.4" rx="8.4" ry="4.4" fill="var(--para)" stroke="var(--ot)" stroke-width="1.7"/><ellipse cx="12" cy="10.4" rx="4.2" ry="2" fill="none" stroke="var(--ot)" stroke-width="1.3"/></svg>';},
+ elmas:function(s){s=s||16;return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24"><path d="M7.2 3.6h9.6l4.2 5.1L12 20.6 3 8.7z" fill="var(--elmas)" stroke="var(--ot)" stroke-width="2" stroke-linejoin="round"/><path d="M3 8.7h18M9.4 3.6l-1.6 5.1L12 20.6l4.2-11.9-1.6-5.1" fill="none" stroke="var(--ot)" stroke-width="1.4"/></svg>';},
+ cay:'<svg width="26" height="26" viewBox="0 0 24 24"><path d="M8.1 4.4h7.8l-1 12.5a2.9 2.9 0 0 1-2.9 2.6 2.9 2.9 0 0 1-2.9-2.6z" fill="#E8DCC2" stroke="var(--ot)" stroke-width="1.9" stroke-linejoin="round"/><path d="M8.7 11.2h6.6l-.6 5.7a2.3 2.3 0 0 1-2.7 2 2.3 2.3 0 0 1-2.7-2z" fill="#B1361F"/></svg>',
+ masa:'<svg width="120" height="120" viewBox="0 0 24 24"><ellipse cx="12" cy="17.9" rx="7.6" ry="1.7" fill="rgba(0,0,0,.3)"/><rect x="10.8" y="10" width="2.4" height="7.2" fill="#8A5A2B" stroke="var(--ot)" stroke-width="1.1"/><ellipse cx="12" cy="9.4" rx="8.2" ry="3.2" fill="#2E7D4F" stroke="var(--ot)" stroke-width="1.5"/><ellipse cx="12" cy="8.9" rx="5.6" ry="2" fill="#3C9660"/><rect x="10.9" y="5.4" width="2.2" height="3.4" rx=".7" fill="#F0E4CE" stroke="var(--ot)" stroke-width="1.1"/></svg>',
+ caycı:'<svg width="126" height="126" viewBox="0 0 24 24"><ellipse cx="12" cy="21.4" rx="6" ry="1.4" fill="rgba(0,0,0,.3)"/><rect x="8.6" y="12.4" width="6.8" height="7.6" rx="1.4" fill="#8E2F2A" stroke="var(--ot)" stroke-width="1.2"/><rect x="7.4" y="8.6" width="9.2" height="4.6" rx="1.6" fill="#F2EDE3" stroke="var(--ot)" stroke-width="1.2"/><circle cx="12" cy="6" r="3.1" fill="#E8B98C" stroke="var(--ot)" stroke-width="1.2"/><path d="M8.5 4.9h7v-.7a3.5 3.5 0 0 0-7 0z" fill="#4A3320" stroke="var(--ot)" stroke-width="1.1" stroke-linejoin="round"/><rect x="14.6" y="9.1" width="6.6" height="1.5" rx=".5" fill="#A9702F" stroke="var(--ot)" stroke-width="1"/><rect x="16" y="6.6" width="1.7" height="2.5" fill="#C0392B"/><rect x="18.4" y="6.6" width="1.7" height="2.5" fill="#C0392B"/></svg>',
+ tepsi:'<svg width="22" height="22" viewBox="0 0 24 24"><rect x="2.6" y="15.4" width="18.8" height="2.6" rx="1" fill="#A9702F" stroke="var(--ot)" stroke-width="1.5"/><rect x="5.4" y="8.4" width="3.6" height="6.6" rx=".8" fill="#C0392B" stroke="var(--ot)" stroke-width="1.4"/><rect x="10.2" y="8.4" width="3.6" height="6.6" rx=".8" fill="#C0392B" stroke="var(--ot)" stroke-width="1.4"/><rect x="15" y="8.4" width="3.6" height="6.6" rx=".8" fill="#C0392B" stroke="var(--ot)" stroke-width="1.4"/></svg>',
+ miknatis:'<svg width="22" height="22" viewBox="0 0 24 24"><path d="M5.4 4.6h4.2v8.2a2.4 2.4 0 0 0 4.8 0V4.6h4.2v8.2a6.6 6.6 0 0 1-13.2 0z" fill="#C0392B" stroke="var(--ot)" stroke-width="1.6" stroke-linejoin="round"/><rect x="5.4" y="4.6" width="4.2" height="3.2" fill="#ECECEC" stroke="var(--ot)" stroke-width="1.4"/><rect x="14.4" y="4.6" width="4.2" height="3.2" fill="#ECECEC" stroke="var(--ot)" stroke-width="1.4"/></svg>',
+ ayakkabi:'<svg width="22" height="22" viewBox="0 0 24 24"><path d="M3.4 16.4V9.2h3.9l2.2 2.4h5.1a5.4 5.4 0 0 1 5.4 4.8z" fill="#4A3320" stroke="var(--ot)" stroke-width="1.6" stroke-linejoin="round"/><rect x="3.4" y="16.4" width="16.6" height="2.4" rx="1" fill="#2A1C10" stroke="var(--ot)" stroke-width="1.4"/></svg>',
+ kilit:'<svg width="46" height="46" viewBox="0 0 24 24"><path d="M7.6 10.4V7.8a4.4 4.4 0 0 1 8.8 0v2.6" fill="none" stroke="var(--tx2)" stroke-width="2.4" stroke-linecap="round"/><rect x="4.6" y="10.4" width="14.8" height="10.4" rx="3" fill="var(--ac)" stroke="var(--ot)" stroke-width="2.2"/><circle cx="12" cy="15" r="1.9" fill="var(--ot)"/><rect x="11.1" y="15" width="1.8" height="3.4" rx=".9" fill="var(--ot)"/></svg>',
+ madalya:'<svg width="26" height="26" viewBox="0 0 24 24"><circle cx="12" cy="13.6" r="7.2" fill="var(--ac)" stroke="var(--ot)" stroke-width="2"/><circle cx="12" cy="13.6" r="4.4" fill="none" stroke="var(--ot)" stroke-width="1.5"/><path d="M12 10.6l.9 1.9 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2-1.5-1.4 2-.3z" fill="var(--ot)"/></svg>'
+};
+
+var SEK = [['gorev','Görevler',2],['hedef','Hedefler',1],['magaza','Mağaza',0],['karakter','Karakter',0]];
+function altBar(aktif){
+  var t='';
+  for (var i=0;i<SEK.length;i++){
+    var b = SEK[i][2] ? '<span class="bang">'+SEK[i][2]+'</span>' : '';
+    t += '<div class="tab'+(i===aktif?' on':'')+'"><span class="ic">'+IC[SEK[i][0]]+b+'</span><span class="lb">'+SEK[i][1]+'</span></div>';
+  }
+  return '<div class="bar-alt">'+t+'</div>';
+}
+function ustHud(){
+  return '<div class="top">'+
+    '<div style="display:flex;gap:10px;align-items:center">'+
+      '<div class="rozet k2">1</div>'+
+      '<div><div class="cikti" style="font-size:17px;line-height:1.1">0/60</div>'+
+      '<div class="xp"><i></i></div></div>'+
+    '</div>'+
+    '<div class="sag">'+
+      '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:7px;padding-top:1px">'+
+        '<div class="deger">'+IC.para(26)+'<span class="cikti" style="font-size:25px">5K</span></div>'+
+        '<div class="deger">'+IC.elmas(24)+'<span class="cikti" style="font-size:25px">0</span></div>'+
+      '</div>'+
+      '<div class="dis k2">'+IC.ayar+'</div>'+
+    '</div></div>';
+}
+function govBand(){
+  return '<div class="band"><div class="pic">'+IC.cay+'</div>'+
+    '<div class="gov"><b>Ocaktan çay al</b><div class="bar"><i></i></div></div>'+
+    '<div class="odul">'+IC.para(15)+'+3</div></div>';
+}
+function ekTop(baslik){
+  return '<div class="ek-top"><div class="geri">'+IC.geri+'</div><div class="ek-ttl">'+baslik+'</div>'+
+    '<div class="cuzdan">'+IC.para(16)+'<span>5K</span></div></div>';
+}
+
+/* ── 1) oyun ekranı ── */
+document.getElementById('r1').innerHTML =
+  '<div class="slot"><div class="box"><div class="ph sahne"></div></div>'+
+   '<p class="cap"><b>Bugün</b> — arayüz ile sahne aynı renk ailesinde (Δh 2°), değerler chip’lerin içinde, '+
+   'aktif sekme okunmuyor.</p></div>'+
+  '<div class="slot"><div class="box"><div class="ph sahne"><div class="maske"></div>'+ustHud()+govBand()+altBar(2)+'</div></div>'+
+   '<p class="cap"><b>Mor arayüz</b> — değerler doğrudan sahnenin üstünde (kontur taşıyor), görev şeridi '+
+   'aynı dilde, alt bar <b>aynı geometride</b>. Sahne hiç değişmedi — üstteki şerit, eski chip&rsquo;ler görünmesin diye karenin <b>kendi duvar rengiyle</b> örtüldü (renk kareden ölçüldü).</p></div>';
+
+/* ── 2) dört tam ekran ── */
+function ekGorevler(){
+  return '<div class="ek">'+ekTop('Görevler')+'<div class="ek-govde">'+
+    '<div class="etiket">Bugün · 1 ödül hazır</div>'+
+    '<div class="kart hazir"><div class="kart-ust"><b>520 ₺ kazan</b><span class="sayac">520<small>/520</small></span></div>'+
+      '<div class="ilerle"><i style="width:100%"></i></div>'+
+      '<div class="kart-alt"><span>Her gün yenilenir</span><div class="dugme">Ödülü al</div></div></div>'+
+    '<div class="kart"><div class="kart-ust"><b>23 para topla</b><span class="sayac">0<small>/23</small></span></div>'+
+      '<div class="ilerle"><i style="width:0%"></i></div>'+
+      '<div class="kart-alt"><span>Her gün yenilenir</span><div class="rozet-sat">'+IC.elmas(15)+'3</div></div></div>'+
+    '<div class="kart"><div class="kart-ust"><b>5 kirli bardak yıka</b><span class="sayac">0<small>/5</small></span></div>'+
+      '<div class="ilerle"><i style="width:0%"></i></div>'+
+      '<div class="kart-alt"><span>Her gün yenilenir</span><div class="rozet-sat">'+IC.elmas(15)+'4</div></div></div>'+
+    '<div class="etiket">Kıraathane</div>'+
+    '<div class="kart hazir" style="display:flex;align-items:center;gap:10px">'+
+      '<div class="band-pic" style="width:44px;height:44px;flex:none;border-radius:14px;border:2.5px solid var(--ot);background:linear-gradient(180deg,#C7503C,#8E3124);display:grid;place-items:center">'+IC.cay+'</div>'+
+      '<div style="flex:1;min-width:0"><div class="etiket" style="margin:0">Şu an</div>'+
+      '<b style="display:block;color:var(--tx);font-size:15px;font-weight:900">Ocaktan çay al</b>'+
+      '<div class="ilerle" style="margin:5px 0 0"><i style="width:0%"></i></div></div>'+
+      '<div class="rozet-sat" style="color:var(--para)">'+IC.para(15)+'+3</div></div>'+
+    '<div class="etiket">Sırada</div>'+
+    '<div class="kart" style="opacity:.72;padding:8px 13px"><b style="color:var(--tx2);font-size:13.5px;font-weight:800">Çayı müşteriye götür</b></div>'+
+    '</div></div>';
+}
+function ekHedefler(){
+  return '<div class="ek">'+ekTop('Hedefler')+'<div class="ek-govde">'+
+    '<div class="itibar"><div class="rozet k2" style="width:46px;height:46px">1</div>'+
+      '<div class="gov"><b>İtibar 1</b><div class="ilerle" style="margin:6px 0 0"><i style="width:0%"></i></div>'+
+      '<p>Her hedef itibarını yükseltir · bonus +%0 servis hızı</p></div></div>'+
+    '<div class="kart" style="display:flex;align-items:center;gap:10px;border-color:var(--elmas)">'+
+      '<span class="sayac" style="color:var(--elmas);font-size:20px">0<small>/1</small></span>'+
+      '<div style="flex:1;min-width:0"><b style="display:block;color:var(--tx);font-size:14.5px;font-weight:900">Usta masalar</b>'+
+      '<span style="color:var(--tx2);font-size:11.5px">Masayı ₺ tavanına çıkarınca Usta noktası açılır</span></div>'+
+      '<div class="rozet-sat">'+IC.elmas(15)+'25</div></div>'+
+    '<div class="etiket">Kategoriler · 1 ödül hazır</div>'+
+    '<div class="kart"><div class="kart-ust"><b>Servis <span style="color:var(--tx2);font-size:12px">1/5</span></b><span class="sayac">0<small>/25</small></span></div>'+
+      '<div class="ilerle"><i style="width:0%"></i></div>'+
+      '<div class="kart-alt"><span>Elden ve garsonla toplam servis</span><div class="rozet-sat">'+IC.elmas(15)+'3</div></div></div>'+
+    '<div class="kart"><div class="kart-ust"><b>Mekân <span style="color:var(--tx2);font-size:12px">1/5</span></b><span class="sayac">0<small>/3</small></span></div>'+
+      '<div class="ilerle"><i style="width:0%"></i></div>'+
+      '<div class="kart-alt"><span>Açılan masa · salon · personel</span><div class="rozet-sat">'+IC.elmas(15)+'3</div></div></div>'+
+    '<div class="kart hazir"><div class="kart-ust"><b>Kazanç <span style="color:var(--tx2);font-size:12px">1/5</span></b><span class="sayac">5.000<small>/1.000</small></span></div>'+
+      '<div class="ilerle"><i style="width:100%"></i></div>'+
+      '<div class="kart-alt"><span>Toplam kazanılan ₺</span><div class="dugme">Ödülü al</div></div></div>'+
+    '<div class="kart"><div class="kart-ust"><b>Temizlik <span style="color:var(--tx2);font-size:12px">1/5</span></b><span class="sayac">0<small>/3</small></span></div>'+
+      '<div class="ilerle"><i style="width:0%"></i></div></div>'+
+    '</div></div>';
+}
+function ekMagaza(){
+  var cips='';
+  var adlar=['on','','','kilit','kilit'];
+  for (var i=0;i<5;i++) cips += '<div class="cip '+adlar[i]+'">'+(adlar[i]==='kilit'?IC.kilit.replace('46','26').replace('46','26'):'')+'</div>';
+  return '<div class="ek">'+ekTop('Mağaza')+'<div class="ek-govde">'+
+    '<div class="sekmeler"><div class="sekme on">Masa</div><div class="sekme">Zemin</div><div class="sekme">Duvar</div></div>'+
+    '<div class="onizleme"><span class="rozetcik">Masa teması</span>'+IC.masa+'</div>'+
+    '<div class="ad-sat"><b>Yeşil Çuha</b><span>Klasik okey masası</span></div>'+
+    '<div class="serit">'+cips+'</div>'+
+    '<div style="flex:1"></div>'+
+    '<div class="kart" style="flex:none;padding:9px 13px;background:var(--oyuk);margin-bottom:2px">'+
+      '<span style="color:var(--tx2);font-size:11.5px;line-height:1.4;display:block">Kilitli iki tema için: <b style="color:var(--tx)">Salon 2/3</b> · <b style="color:var(--tx)">Max masa 0/1</b></span></div>'+
+    '<div class="buyuk-dugme">'+IC.para(21)+'<span>1.200</span></div>'+
+    '</div></div>';
+}
+function ekMagazaKilitli(){
+  return '<div class="ek">'+ekTop('Mağaza')+'<div class="ek-govde">'+
+    '<div class="sekmeler"><div class="sekme on">Masa</div><div class="sekme">Zemin</div><div class="sekme">Duvar</div></div>'+
+    '<div class="kilitli">'+IC.kilit+'<b>Masa temaları kilitli</b>'+
+      '<p>Tüm salonları aç ve bütün masaları son seviyeye getir; sonra masalarını renklendirebilirsin.</p>'+
+      '<div class="kosul"><span>Salon 1/3</span><span>Max masa 0/1</span></div></div>'+
+    '</div></div>';
+}
+function ekKarakter(){
+  var sat = [['tepsi','Tepsi','2 → <i>3</i> bardak','75'],
+             ['miknatis','Para Mıknatısı','2.6 → <i>3.4</i> alan','200'],
+             ['ayakkabi','Hareket Hızı','4.5 → <i>4.8</i> hız','400']];
+  var s='';
+  for (var i=0;i<sat.length;i++){
+    s += '<div class="satir"><div class="sim">'+IC[sat[i][0]]+'</div>'+
+      '<div class="gov"><b>'+sat[i][1]+'</b><span>'+sat[i][2]+'</span></div>'+
+      '<div class="fiyat">'+IC.para(15)+sat[i][3]+'</div></div>';
+  }
+  return '<div class="ek">'+ekTop('Çaycı')+'<div class="ek-govde" style="gap:11px">'+
+    '<div style="display:flex;align-items:center;gap:8px;flex:none">'+
+      '<div class="sim" style="width:36px;height:36px;border-radius:12px;border:2.5px solid var(--ot);background:linear-gradient(180deg,var(--ac),var(--ac2));display:grid;place-items:center">'+IC.tepsi+'</div>'+
+      '<b style="color:var(--tx);font-size:14px;font-weight:900">Seviye 0</b>'+
+      '<span style="color:var(--tx2);font-size:12px">· üç yükseltme açık</span></div>'+
+    '<div class="vitrin">'+IC.caycı+'</div>'+s+
+    '<div style="flex:1"></div>'+
+    '<div class="kart" style="flex:none;padding:9px 13px;background:var(--oyuk)">'+
+      '<span style="color:var(--tx2);font-size:11.5px;line-height:1.4;display:block">Her yükseltme <b style="color:var(--tx)">kalıcı</b>; tepsi büyüdükçe tek seferde daha çok çay taşırsın.</span></div>'+
+    '</div></div>';
+}
+
+var EK = [
+ [ekGorevler(),'<b>Görevler</b> — günlük üçlü + kıraathane hattı. Hazır ödül kartı amber konturla ayrışıyor; ilerleme yeşili <b>anlam</b> rengi, aksan değil.'],
+ [ekHedefler(),'<b>Hedefler</b> — İtibar başlıkta oyuk bir kart; Usta masalar elmas kimliğiyle. Bugün buradaki tek mavi kart “başka uygulamadan yapıştırılmış” duruyordu, artık sisteme ait.'],
+ [ekMagaza(),'<b>Mağaza · M2</b> — hedef durum (tema açıkken): önizleme 230 px, altında seçim şeridi, tek büyük satın alma.'],
+ [ekMagazaKilitli(),'<b>Mağaza · kilitli durum</b> — bugünkü gerçek hâl. 🔒 emojisi gitti, yerine çizilmiş asma kilit; koşullar sayaç pullarında.'],
+ [ekKarakter(),'<b>Çaycı</b> — vitrin + üç yükseltme satırı. Fiyatlar bugünkü oyundan; G-06 (tepsi 75 → ~50) bilerek değiştirilmedi.']
+];
+var h='';
+for (var i=0;i<EK.length;i++) h += '<div class="slot"><div class="box"><div class="ph">'+EK[i][0]+'</div></div><p class="cap">'+EK[i][1]+'</p></div>';
+document.getElementById('r2').innerHTML = h;
+
+/* ── sistem şeridi ── */
+document.getElementById('sis').innerHTML =
+ '<div class="sis"><h4>Punto · 17 → 6</h4><div class="olcek">'+
+   '<span class="u1">11</span><span class="u2">13</span><span class="u3">15</span>'+
+   '<b class="u4">18</b><b class="u5">22</b><b class="u6">30</b></div>'+
+   '<p style="font-size:13px;color:var(--mid);margin:10px 0 0">Yarım piksel adımlar (10,5 → 11 → 11,5) bir ölçek değildi; göz o farkı seçmiyor.</p></div>'+
+ '<div class="sis"><h4>Gölge · 27 → 3</h4><div class="orn">'+
+   '<div class="golge k1"></div><div class="golge k2"></div><div class="golge k3"></div></div>'+
+   '<p style="font-size:13px;color:var(--mid);margin:12px 0 0">Düz · basılabilir · yüzen. Her bileşen kendi gölgesini uydurmuyor.</p></div>'+
+ '<div class="sis"><h4>Palet · tek aksan</h4><div class="orn">'+
+   '<div class="pul" style="background:linear-gradient(180deg,#463C86,#221B52)"></div>'+
+   '<div class="pul" style="background:linear-gradient(180deg,#3A3178,#2E2764)"></div>'+
+   '<div class="pul" style="background:#1B1443"></div>'+
+   '<div class="pul" style="background:linear-gradient(180deg,#FFC24B,#E09415)"></div>'+
+   '<div class="pul" style="background:linear-gradient(180deg,#7BD46A,#4FA83E)"></div>'+
+   '<div class="pul" style="background:#7FD9FF"></div></div>'+
+   '<p style="font-size:13px;color:var(--mid);margin:12px 0 0">Gövde · kart · oyuk · <b>aksan</b> · ilerleme · elmas. Yeşil ve mavi anlam taşır, aksan yarışmaz.</p></div>';
+</script>
+</div>
