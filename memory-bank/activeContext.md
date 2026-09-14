@@ -5,23 +5,20 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-14 — **S11 BİTTİ: MOR DİL KODA GİRDİ, D-109** · Faz S 10/14 · 85/98)
+## ŞU AN (2026-09-14 — **S12 AÇILDI: UI YAPISI (K3 kabuğu)** · Faz S 10/14 · 85/98)
 
 ```
-SORU            : D-107'nin mor dili ve D-108'in ikon grameri koda nasıl girer — ekranların
-                  YAPISINA (K3/M2/Y2) dokunmadan?
-ÖLÇÜLECEK KOLLAR: YOK — karar zaten yazılıydı (D-106/107/108). Bu tur doğrudan adım 4 UYGULA.
-SAYILAR         : docs/ui-ses-raporu-s9s10.md §S11 · ham docs/olcum-ui-ekran.json
-                  punto 17→5 (tanımlı 6) · gölge 27→3 · yarıçap 9→6 dizge (=3 basamak+hap+
-                  daire+köşe-başı) · font 3→2 · zemin 29→10 · metin 23→8 · glif 17→13 ·
-                  AA altı 45/184 → 12/177
-KARAR           : D-109 — mor dil koda girdi; DURUM gölgeyle değil KENARLIKLA anlatılır
-                  (maket dördüncü bir gölge yazıyordu, D-107 "3 kademe" dedi → halka kenara).
-                  Dört token eklendi (vitrin·perde·parilti·uyari) · --uyari ölçümle koyulaştı.
-UYGULAMA        : index.css + hud.css token katmanı · icons.tsx D-108 gramerinde yeniden ·
-                  🔒✕↺✓•→ SVG'ye · button{font:inherit} · S11 ikiye bölündü (S12 = YAPI)
-BEKÇİ           : tests/mor-dil.test.ts — 9 denetim, **8 mutasyonla** doğrulandı
-                  vitest 916 ✓ · duman 42/42 ✓ · tsc -b ✓ · tam koşu ölçümü ✓
+SORU            : D-106'nın YAPI kararları (K3 · M2 · Y2 · chip'siz şerit · G-05 · G-18) koda
+                  nasıl girer — S11'in mor DİLİNE ve denge sayılarına dokunmadan?
+ÖLÇÜLECEK KOLLAR: YOK — kararlar yazılıydı (D-106) ve son açık kol T2 kullanıcı tarafından
+                  seçildi (2026-09-14). Bu tur doğrudan adım 4 UYGULA.
+SAYILAR         : TABAN tam koşu (commit #1) — docs/olcum-ui-ses.txt · ham docs/olcum-ui-ekran.json
+                  kabuk boyu 5 ekran / 4 farklı yükseklik (675 · 675 · 473 · 538 · 431 px) ·
+                  ekran payı %51,1…%80,0 · AA altı 12/177 (5 sınıf, hepsi --tx2 gövde üstünde
+                  3,84) · punto 5 · gölge 3 · yarıçap 6 dizge · font 2 · glif 13 · SVG 35
+KARAR           : (adım 3 — kullanıcı T2'yi seçti; kalan kalemler D-106'da zaten yazılı)
+UYGULAMA        : (adım 4 — commit #2)
+BEKÇİ           : (adım 4 — tests/ekran-kabugu.test.ts)
 ```
 
 ## SIRADAKİ TAM ADIM

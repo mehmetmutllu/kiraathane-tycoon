@@ -567,3 +567,40 @@ o yüzden ölçüldü ama uygulanmadı:
 
 Etkilenen: `sheet-sec` (4) · `qrow-title` (3) · `char-stat-val` (3) · `sheet-foot-note` (1) ·
 `shop-locked-desc` (1). **Öneri: T2** — S12 o ekranları zaten elden geçirecek, palete dokunmadan çözülür.
+
+---
+
+## S12 — UI YAPISI: TABAN ÖLÇÜMÜ (2026-09-14, commit #1)
+
+S11 **dili** değiştirdi, yapıya dokunmadı. Bu tur yapıyı alıyor: **K3** tam ekran tek kabuk ·
+**M2** mağaza · **Y2** pad · chip'siz üst şerit · **G-05** görev metni · **G-18** masa noktası.
+Kararların hepsi D-106'da yazılı; son açık kol (**T1/T2**) kullanıcı tarafından **T2** seçildi.
+Bu bölüm kod yazılmadan ÖNCEKİ hâli damgalar — sonrası aynı araçla ölçülüp altına yazılacak.
+
+### §Bulgular — TABAN (tam koşu, `tools/shot-ui-s10.mjs` + `OLCUM=tam tools/olcum-ui.ts`, 390×844)
+
+| Ölçü | Taban (S12 öncesi) | Hedef (D-106) |
+|---|---:|---|
+| kabuk tipi | 5/5 alt sayfa | 5/5 **tam ekran** |
+| farklı kabuk yüksekliği | **4** (675 · 675 · 473 · 538 · 431 px) | **1** |
+| kabuğun ekran payı | %51,1…%80,0 | %100 |
+| geri jesti (`.sheet-back`) | 0/5 ekran | 5/5 |
+| mağaza önizleme yüksekliği | 150 px | **230 px** |
+| AA altı metin | **12/177** (%6,8) | 0 |
+| AA altı SINIF | 5 — `sheet-sec`×4 · `qrow-title`×3 · `char-stat-val`×3 · `sheet-foot-note`×1 · `shop-locked-desc`×1 | 0 |
+| en düşük kontrast | **3,84** (hepsi `--tx2` / `--g1` gövde gradyanı) | ≥ 4,5 |
+| punto · gölge · yarıçap dizgesi | 5 · 3 · 6 | **değişmemeli** (S11 kazanımı) |
+| font ailesi · SVG · glif | 2 · 35 · 13 | **değişmemeli** |
+
+**Damga:** kabuk tipi tutarlı ama BOY tutarsız — bu, S10'un G-17 için bulduğu kök sebebin
+aynısı ve dört turdur aynı sayıda duruyor. AA ihlalinin 12'sinin de tek sebebi var: ikincil
+metnin kartsız gövde zemininde durması (kart üstünde aynı renk 4,57 ile geçiyor).
+
+**Denge dosyası uyarısı:** bu tur `economy.config.ts`e dokunacak (**G-05 lakapları** — görev
+tanımının yanına `kicker` metni). Bu bir DENGE değişikliği değil: hiçbir sayı, eşik, maliyet ya
+da ödül değişmiyor. Varyant kapısı sayıya bakar; yine de sıra kilidi gereği ölçüm bu commit'te,
+kod bir sonrakinde.
+
+### KARAR
+
+(BOŞ — adım 3)
