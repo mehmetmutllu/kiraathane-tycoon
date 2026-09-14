@@ -55,6 +55,15 @@ yükseltme sırası · H3 masa aralığı — son ikisi DENGE, varyant kapısın
 - **Klip dosyaları mankenin gövdesini de taşıyor** (dosya başına 6.916 üçgen ölü yük, 4 dosya).
   Yüklenirken sahneye eklenmiyor ama ayrıştırılıyor. Mesh'i atan bir araç ≈ 0,5-1,5 MB kazandırır.
 
+**Önizlemeler**
+**S14 karakter turu (dokuz kare · vitrin · oyun içi):** https://claude.ai/code/artifact/e2034137-d5c6-4afb-9896-9bee43cd30c7
+**S13 paketler (altı paket · altı hüküm):** https://claude.ai/code/artifact/dcbaaee3-8889-4665-83b2-feff02a60c13
+**S12 arayüz (altı ekran önce/sonra):** https://claude.ai/code/artifact/a83eade2-32f6-4a64-ae34-6743a93922a3
+**S11 arayüz dili:** https://claude.ai/code/artifact/f82648fa-18dd-4e21-a3a2-8f252efd2210
+**Mor arayüz maketi:** https://claude.ai/code/artifact/6cc7a95e-c0a3-4802-8ea3-99398d637981
+**Asset panosu:** https://claude.ai/code/artifact/2e7f92c0-15b6-4f72-814d-753cf79d74e0
+**İlerleme panosu:** https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
+
 ## AÇIK KALEMLER (bilinen, bilerek duruyor)
 
 ### S8'den DEVREDEN (ölçüldü, bilerek yapılmadı)
