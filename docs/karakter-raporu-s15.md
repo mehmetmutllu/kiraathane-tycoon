@@ -253,6 +253,62 @@ alınmaması · başın gövde materyaliyle boyanması · oturan müşteriye kap
    SNAP ediyor — yeni müşteri önceki müşterinin yönünden dönerek gelmiyor.
    Kare: `docs/gorsel/ss/s15-oturus-yakin.png`.
 
+## §Üçüncü tur — S16: elde tepsi tutma
+
+**Geri bildirim (kullanıcı, aynı gün):** *"şu an elde tepsi tutma falan sorun ama ya"*.
+
+Kare kusuru gösterdi (`docs/gorsel/ss/s16-tepsi-yakin.png` ilk sürümü): tepsi **göğse yapışık**
+duruyor, kollar **aşağıda sarkıyor**, eller tepsiye değmiyor. Kodda sebep açıktı: tepsi ele değil,
+gövdenin yanında **dünya-uzayında sabit bir noktaya** asılıydı ve taşırken normal yürüme/durma
+klibi oynuyordu. Rig'in `handslot.l/r` kemikleri (KayKit'in kendi eşya çapaları) ve `Holding_A/B/C`
+klipleri repoda duruyor, ikisi de kullanılmıyordu.
+
+### Ölçüm (`tools/olcum-tepsi.mjs` → `docs/olcum-tepsi.json`)
+
+| klip | el yüksekliği | el z (önde mi) | eller arası | el oynaması |
+|---|---:|---:|---:|---:|
+| **Holding_A** | 0,661 | **0,423 önde** | 0,498 | **0,002** |
+| Holding_B | 0,635 | 0,367 önde | 0,391 | 0,002 |
+| Holding_C | 0,661 | 0,244 önde | 0,386 | 0,002 |
+| Walking_A (taşırken oynayan) | 0,650 | 0,104 | 0,799 | 0,411 |
+| Walking_B (kodda "taşıma" yazıyordu) | 0,478 | **−0,050 ARKADA** | 0,770 | 0,306 |
+
+Üç okuma: ① bugünkü çapa **y 0,953**, eller **0,66** — tepsi ellerin **29 cm üstünde**.
+② `Walking_B`'nin "taşıma" etiketi **yanlış**, elleri gövdenin arkasında. ③ `Holding_*` klipleri
+elleri önde ve **kıpırdamadan** tutuyor (oynama 0,002 ↔ yürüyüşte 0,3-0,5).
+
+### Uygulama
+
+- **Tepsi ELE bağlandı:** `KayActor` taşınan eşyanın grubunu her kare iki `handslot` kemiğinin
+  ORTASINA taşıyor. KONUM takip edilir, DÖNÜŞ edilmez — tepsi düz kalmalı, elin eğimiyle
+  yalpalamamalı. `KAY_TEPSI_KAYMA` / `KAY_GARSON_TEPSI_KAYMA` artık yalnız bileşenin **iç
+  çapasını sıfırlıyor** (eski görevleri düştü), `KAY_EL_Y` / `KAY_EL_Z` kalktı.
+- **Üst/alt gövde katmanlaması:** KayKit'te "yürürken taşıma" klibi YOK. Klipler kemik kümesine
+  bölündü — alt gövde (10 kemik) yürür, üst gövde (13 kemik) `Holding_A` oynar; ikisi aynı anda,
+  tam ağırlıkta. Bölüşüm rigi tam ikiye ayırıyor, kesişim boş.
+- Taşınan eşya `Player` · `Waiter` · `Dishwasher`'da artık `KayActor`ün **çocuğu**.
+
+### Uygulamada çıkan İKİ SESSİZ HATA
+
+1. **three, glTF düğüm adlarındaki NOKTAYI siliyor.** Dosyada `handslot.l` yazıyor, sahnede adı
+   `handslotl` (`PropertyBinding.sanitizeNodeName`; nokta ayrılmış karakter). Noktalı yazılan
+   kemik kümesi **hiçbir kolu yakalamıyordu** — yalnız noktasız `spine`/`chest`/`head` tutuyordu —
+   ve `getObjectByName('handslot.l')` null dönüyordu, yani tepsi sessizce karakterin
+   **ayaklarında** kalıyordu. Konsol hatası YOK. Bekçi bu yüzden artık adları kaynak metninden
+   değil **gerçek GLB'den** okuyup aynı kuralla sterilize ederek karşılaştırıyor.
+2. **`useGLTF`e her render yeni yol dizisi veriliyordu.** `useMusteriHavuzu` yol dizisini
+   memoize etmiyordu (`useKayKlipler` ediyor); yükleyici sürekli sorgulanınca drei'nin
+   `useProgress`i döngüye giriyor ve açılışta `SplashScreen` **"Maximum update depth exceeded"**
+   ile patlıyordu — duman testi canvas'ı hiç göremiyordu. Kusur aralıklıydı, o yüzden ilk tanıda
+   havuz kurulumu sanıldı; hata mesajı yakalanınca gerçek sebep çıktı.
+
+Ayrıca havuz artık **tembel büyüyor** (kare başına en çok 2 yuva): tavan 80'e çıkınca hepsini
+mount'ta kurmak ana iş parçacığını kilitliyordu. Ve duman tezgâhının canvas beklemesi 15 → 40 sn
+çıktı: bu bir ÜRÜN bütçesi değil, soğuk başlangıç payı (asset yükü S14'ten beri belirgin büyüdü).
+
+**Bekçi:** `tests/karakter-senkron.test.ts` **32 denetim**, `tools/mutasyon-karakter.mjs` ile
+**32 mutasyon, kaçan 0**. `tsc -b` ✓ · vitest **975 ✓** · `npm run duman` 42/42 ✓ (dört koşu).
+
 ## §Açık kalemler (bu turdan devreden)
 
 - ~~Geç oyunda tavan yine aşılabilir.~~ **KAPANDI (kullanıcı, aynı gün):** tavan **80** —

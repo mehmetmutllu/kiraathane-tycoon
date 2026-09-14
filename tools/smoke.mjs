@@ -27,7 +27,12 @@ page.on('pageerror', (e) => consoleErrors.push('pageerror: ' + e.message));
 
 try {
   await page.goto(URL, { waitUntil: 'networkidle', timeout: 30000 });
-  await page.waitForSelector('canvas', { timeout: 15000 });
+  // 15 sn → 40 sn (S16): açılışta yüklenen asset yükü S14'ten beri belirgin büyüdü — dört klip
+  // dosyası + beş müşteri gövdesi + personel gövdeleri, hepsi vite dev sunucusunun İLK derlemesiyle
+  // birlikte. Soğuk başlangıçta (disk meşgulken) 15 sn yetmiyordu ve test ürün hatası olmadığı
+  // hâlde kırmızı dönüyordu. Bu bir ÜRÜN bütçesi değil, tezgâhın bekleme payıdır; gerçek yükleme
+  // süresi `SplashScreen`in MAX_MS'i (6 sn) ile ayrıca sınırlı.
+  await page.waitForSelector('canvas', { timeout: 40000 });
   pass('Sahne yüklendi (canvas mevcut)');
 
   await page.waitForFunction(() => typeof window.__game === 'function', { timeout: 10000 });

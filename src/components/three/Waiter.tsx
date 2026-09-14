@@ -61,15 +61,17 @@ function WaiterUnit({ index, tea, food, dirty, dirtyFood }: {
           Artık merkez boyun tam yarısında: taban 0, tepe `AUTHORED_HEIGHT.waiter`. Mount ölçeği
           bunu 1,75'e taşır; yarıçap ölçekten SONRA 0,30 (kapsül enine şişmez, bkz. actor.ts). */}
       <group ref={ref}>
-        <KayActor kind="waiter" />
         {/* D-083: boşta kalan garson bulaşık toplar. Taşıdığı kirli, BULAŞIKÇIYLA AYNI çizimle
             görünür (`carriedDirty.tsx`) — elinde ne olduğu tepsisinden okunur. Ürün ile kirli
             AYNI ANDA taşınmaz: garson elinde kirli varken tezgâha yüklemeye gitmez, önce leğene
-            boşaltır (tick.ts'teki yükleme dalının koşulu). Bu yüzden iki tepsi üst üste binmez. */}
-        <group position={KAY_GARSON_TEPSI_KAYMA}>
-          <WaiterTray tea={tea} food={food} />
-          <CarriedDirty cups={dirty} plates={dirtyFood} />
-        </group>
+            boşaltır (tick.ts'teki yükleme dalının koşulu). Bu yüzden iki tepsi üst üste binmez.
+            S16: tepsi ELE takılı, taşırken üst gövde `Holding_A` oynar. */}
+        <KayActor kind="waiter" tasiyor={tea + food + dirty + dirtyFood > 0}>
+          <group position={KAY_GARSON_TEPSI_KAYMA}>
+            <WaiterTray tea={tea} food={food} />
+            <CarriedDirty cups={dirty} plates={dirtyFood} />
+          </group>
+        </KayActor>
       </group>
     </group>
   );

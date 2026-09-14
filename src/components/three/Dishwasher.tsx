@@ -19,10 +19,12 @@ function DishwasherUnit({ cups, plates }: { cups: number; plates: number }) {
     <group ref={outerRef}>
       {/* D-076: garsonunkiyle aynı kapsül, aynı düzeltme (taban 0,07 gömülüydü) + aynı ölçek. */}
       <group ref={ref}>
-        <KayActor kind="dishwasher" />
-        <group position={KAY_GARSON_TEPSI_KAYMA}>
-          <CarriedDirty cups={cups} plates={plates} />
-        </group>
+        {/* S16: taşınan kirli ELE takılı, taşırken üst gövde `Holding_A` oynar. */}
+        <KayActor kind="dishwasher" tasiyor={cups + plates > 0}>
+          <group position={KAY_GARSON_TEPSI_KAYMA}>
+            <CarriedDirty cups={cups} plates={plates} />
+          </group>
+        </KayActor>
       </group>
     </group>
   );

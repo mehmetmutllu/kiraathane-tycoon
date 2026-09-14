@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { useGLTF, useAnimations } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import {
@@ -13,7 +13,7 @@ import {
   SkinnedMesh,
   type Object3D,
   type Bone,
-  type AnimationAction,
+  type AnimationClip,
 } from 'three';
 import { clone as skinKlon } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { PALETTE } from '../../config/palette';
@@ -75,6 +75,7 @@ export const KLIP = {
   tasi: 'Walking_B',
   calis: 'Working_A',
   otur: 'Sit_Chair_Idle',
+  tut: 'Holding_A',
 } as const;
 export type KayHal = keyof typeof KLIP;
 
@@ -112,6 +113,48 @@ export function lokomosyonSec(adaylar: readonly string[], hiz: number): { klip: 
   }
   const ham = hiz / KLIP_HIZI[enIyi];
   return { klip: enIyi, timeScale: Math.min(TIMESCALE_TAVAN, Math.max(TIMESCALE_TABAN, ham)) };
+}
+
+/**
+ * ÜST ↔ ALT GÖVDE BÖLÜŞÜMÜ (S16). KayKit'te "yürürken taşıma" klibi YOK: `Holding_*` ayakta
+ * duran bir poz, `Walking_*` ise kolları sallıyor. İkisini aynı anda oynatmanın yolu klipleri
+ * KEMİK KÜMESİNE göre bölmek — alt gövde yürür, üst gövde tepsiyi tutar.
+ *
+ * Bölüşüm rig'in 23 kemiğini TAM olarak ikiye ayırır (13 üst + 10 alt); kesişim boş olduğu için
+ * iki eylem aynı özelliğe yazmaz ve ikisi de tam ağırlıkta çalışabilir.
+ */
+const UST_KEMIKLER = new Set([
+  'spine', 'chest', 'head',
+  'upperarml', 'upperarmr', 'lowerarml', 'lowerarmr',
+  'wristl', 'wristr', 'handl', 'handr', 'handslotl', 'handslotr',
+]);
+
+/**
+ * ADLAR NEDEN NOKTASIZ: dosyada kemik `upperarm.l` yazıyor ama three'nin `GLTFLoader`ı düğüm
+ * adlarını `PropertyBinding.sanitizeNodeName` ile geçiriyor ve NOKTA ayrılmış karakter olduğu
+ * için **siliniyor** — sahnedeki ad `upperarml`, animasyon izi de `upperarml.quaternion`.
+ *
+ * Bu sessiz bir tuzak: noktalı adlarla yazılan küme HİÇBİR kolu yakalamıyor, yalnız noktasız
+ * `spine`/`chest`/`head` tutuyordu. Sonuç konsol hatası vermiyor — kollar alt gövde klibinde
+ * kalıyor ve taşıma pozu yarım çalışıyordu. `tests/karakter-senkron.test.ts` adları artık
+ * GERÇEK dosyadan okuyup aynı kuralla sterilize ederek karşılaştırıyor.
+ */
+const STERIL = (ad: string) => ad.replace(/\s/g, '_').replace(/[[\].:/]/g, '');
+
+/** İzin adından kemiği çıkarır: `upperarml.quaternion` → `upperarml`. */
+const izKemigi = (izAdi: string) => izAdi.slice(0, izAdi.lastIndexOf('.'));
+
+/** Klibin yalnız üst (veya yalnız alt) gövde izlerini taşıyan kopyası. Sonuç ÖNBELLEKLENİR. */
+const suzulmusKlipler = new Map<string, AnimationClip>();
+function govdeYarisi(klip: AnimationClip, yari: 'ust' | 'alt'): AnimationClip {
+  const anahtar = `${klip.name}|${yari}`;
+  const onbellek = suzulmusKlipler.get(anahtar);
+  if (onbellek) return onbellek;
+  const kopya = klip.clone();
+  kopya.name = anahtar;
+  kopya.tracks = klip.tracks.filter((t) => UST_KEMIKLER.has(izKemigi(t.name)) === (yari === 'ust'));
+  suzulmusKlipler.set(anahtar, kopya);
+  return kopya;
 }
 
 function mat(renk: string) {
@@ -201,11 +244,32 @@ export function useKayKlipler() {
       klip.tracks = klip.tracks.filter((t) => t.name !== 'head.scale');
       damga.__kafaIziSokuldu = true;
     }
-    return hepsi;
+    // TAŞIMA için bölünmüş kopyalar da listeye girer ki `useAnimations` onlara da eylem kursun:
+    // alt gövde yürür (lokomosyon klipleri), üst gövde tepsiyi tutar (`KLIP.tut`).
+    const bolunmus: AnimationClip[] = [];
+    for (const ad of [...LOKOMOSYON.yuru, ...LOKOMOSYON.tasi, KLIP.dur]) {
+      const k = hepsi.find((c) => c.name === ad);
+      if (k) bolunmus.push(govdeYarisi(k, 'alt'));
+    }
+    const tutKlip = hepsi.find((c) => c.name === KLIP.tut);
+    if (tutKlip) bolunmus.push(govdeYarisi(tutKlip, 'ust'));
+    return [...hepsi, ...bolunmus];
   }, [dosyalar]);
 }
 
-export function KayActor({ kind, hal }: { kind: ActorKind; hal?: KayHal }) {
+export function KayActor({
+  kind,
+  hal,
+  tasiyor = false,
+  children,
+}: {
+  kind: ActorKind;
+  hal?: KayHal;
+  /** Elinde bir şey var mı — üst gövde `KLIP.tut`a geçer, `children` ELE takılır. */
+  tasiyor?: boolean;
+  /** Taşınan eşya (tepsi, kirli bardak). Gövde ölçeğinin DIŞINDA, ama ELİ takip eder. */
+  children?: ReactNode;
+}) {
   const { scene } = useGLTF(`${KAY_KOK}${KAY_MODEL[kind]}.glb`);
   const klipler = useKayKlipler();
   const ref = useRef<Group>(null);
@@ -232,7 +296,7 @@ export function KayActor({ kind, hal }: { kind: ActorKind; hal?: KayHal }) {
   const { actions } = useAnimations(klipler, ref);
 
   // Başlangıç: dur. (Eylemler ilk karede hazır olur; hal değişimi useFrame'de yürür.)
-  const suAn = useRef<string>(KLIP.dur);
+  const suAn = useRef<string[]>([KLIP.dur]);
   useEffect(() => {
     const a = actions[KLIP.dur];
     a?.reset().play();
@@ -264,22 +328,68 @@ export function KayActor({ kind, hal }: { kind: ActorKind; hal?: KayHal }) {
     const secim = hareket ? lokomosyonSec(LOKOMOSYON[hedefHal], hiz) : null;
     const hedefKlip = secim ? secim.klip : KLIP[hedefHal];
 
-    const yeni: AnimationAction | null = actions[hedefKlip] ?? null;
-    if (!yeni) return;
-    // Katsayı HER KARE yazılır (hız yükseltmeyle veya ivmeyle değişir), klip değişmese bile.
-    yeni.timeScale = secim ? secim.timeScale : 1;
+    // TAŞIMA (S16): elinde tepsi varken üst gövde `KLIP.tut`, alt gövde yürüyüş oynar.
+    // KayKit'te "yürürken taşıma" klibi yok; iki yarım klip aynı anda, tam ağırlıkta çalar.
+    const hedefler = tasiyor
+      ? [`${hedefKlip}|alt`, `${KLIP.tut}|ust`]
+      : [hedefKlip];
 
-    if (hedefKlip === suAn.current) return;
-    const eski: AnimationAction | null = actions[suAn.current] ?? null;
-    yeni.reset().play();
-    if (eski && eski !== yeni) eski.crossFadeTo(yeni, 0.18, false);
-    suAn.current = hedefKlip;
+    // Katsayı HER KARE yazılır (hız yükseltmeyle veya ivmeyle değişir), klip değişmese bile.
+    // Yalnız LOKOMOSYON yarısına uygulanır — tutuş pozu hızlanmaz.
+    const lokomosyon = actions[hedefler[0]];
+    if (lokomosyon) lokomosyon.timeScale = secim ? secim.timeScale : 1;
+
+    if (hedefler.length === suAn.current.length && hedefler.every((a, i) => a === suAn.current[i])) return;
+    for (const ad of hedefler) {
+      const a = actions[ad];
+      if (!a || a.isRunning()) continue;
+      a.reset().fadeIn(0.18).play();
+    }
+    for (const ad of suAn.current) {
+      if (hedefler.includes(ad)) continue;
+      actions[ad]?.fadeOut(0.18);
+    }
+    suAn.current = hedefler;
+  });
+
+  // TAŞINAN EŞYA ELİ TAKİP EDER (S16). Eskiden gövdenin yanında SABİT bir noktaya asılıydı
+  // (`KAY_TEPSI_KAYMA`) ve ölçüm kusuru gösterdi: çapa y 0,953'te, eller 0,66'da — tepsi
+  // ellerin 29 cm üstünde, göğse yapışık duruyordu (`docs/gorsel/ss/s16-tepsi-yakin.png`).
+  // Çapa artık iki `handslot` kemiğinin ORTASI. KONUM takip edilir, DÖNÜŞ edilmez: tepsi
+  // düz kalmalı, elin eğimiyle yalpalamamalı.
+  const tepsiRef = useRef<Group>(null);
+  const eller = useRef<[Object3D | null, Object3D | null]>([null, null]);
+  const solP = useRef(new Vector3());
+  const sagP = useRef(new Vector3());
+  useFrame(() => {
+    const t = tepsiRef.current;
+    const g = ref.current;
+    if (!t || !g) return;
+    if (!eller.current[0]) {
+      eller.current = [
+        govde.getObjectByName(STERIL('handslot.l')) ?? null,
+        govde.getObjectByName(STERIL('handslot.r')) ?? null,
+      ];
+    }
+    const [sol, sag] = eller.current;
+    if (!sol || !sag) return;
+    sol.getWorldPosition(solP.current);
+    sag.getWorldPosition(sagP.current);
+    solP.current.add(sagP.current).multiplyScalar(0.5);
+    // Dünya → bu bileşenin ebeveyn uzayı (gövde ölçeğinin DIŞI).
+    t.parent?.worldToLocal(solP.current);
+    t.position.copy(solP.current);
   });
 
   return (
-    <group ref={ref} scale={KAY_SCALE}>
-      <primitive object={govde} />
-    </group>
+    <>
+      <group ref={ref} scale={KAY_SCALE}>
+        <primitive object={govde} />
+      </group>
+      {/* Gövde ölçeğinin DIŞINDA: bardaklar dünya ölçüsünde yazılı (yarıçap 0,05 = 5 cm) ve
+          gövde ölçeğine bağlanırsa onunla küçülürdü. Konumu her kare elden alınır. */}
+      <group ref={tepsiRef}>{children}</group>
+    </>
   );
 }
 

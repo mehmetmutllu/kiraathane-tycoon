@@ -15,6 +15,7 @@ import {
   Box3,
   Vector3,
   type AnimationAction,
+  type AnimationClip,
   type InstancedMesh,
 } from 'three';
 import { clone as skinKlon } from 'three/examples/jsm/utils/SkeletonUtils.js';
@@ -88,111 +89,135 @@ type Yuva = {
 };
 
 /**
- * Havuzu bir kez kurar: her yuvaya bir gövde, iki mesh, bir mixer ve dört eylem.
- * Gövdeler sırayla dağıtılır — salonda tek tip müşteri olmasın.
+ * TEK YUVA KURAR: bir gövde, iki mesh (baş dokulu + gövde köşe renkli), bir mixer, dört eylem.
  */
-function useMusteriHavuzu(): { grup: Group; yuvalar: Yuva[]; govdeBoy: number } {
-  const dosyalar = useGLTF(KAY_MUSTERI_GOVDE.map((g) => `${KAY_KOK}${g}.glb`));
+function yuvaKur(kaynak: Group, klipler: AnimationClip[], faz: number): Yuva {
+  const kok = skinKlon(kaynak) as Group;
+
+  // Ekipmanı (pelerin/miğfer) at, parçaları baş ↔ gövde diye ikiye ayır.
+  const parcalar: SkinnedMesh[] = [];
+  kok.traverse((n) => {
+    const m = n as SkinnedMesh;
+    if (m.isSkinnedMesh) parcalar.push(m);
+  });
+  const sivil = parcalar.filter((p) => !ekipmanMi(p.name));
+  const bas = sivil.filter((p) => basMi(p.name));
+  const govde = sivil.filter((p) => !basMi(p.name));
+  const ana = sivil[0] ?? parcalar[0];
+  const ust = ana.parent ?? kok;
+  parcalar.forEach((p) => p.parent?.remove(p));
+
+  // Gövde rengi KÖŞE RENGİNDEN gelir: gömlek ve pantolon tek mesh'te, ayrı renkte.
+  // `govdeMat` yuvaya ait — müşteri değişince `color` yeniden yazılır ve gömlek onunla döner.
+  const govdeMat = new MeshStandardMaterial({ color: '#ffffff', roughness: 0.85, vertexColors: true });
+  if (bas.length) {
+    const geo = mergeGeometries(bas.map((p) => p.geometry.clone()), false);
+    if (geo) {
+      const mesh = new SkinnedMesh(geo, ana.material);
+      mesh.bind(ana.skeleton, ana.bindMatrix);
+      mesh.castShadow = true;
+      mesh.frustumCulled = false;
+      ust.add(mesh);
+    }
+  }
+  if (govde.length) {
+    const geolar = govde.map((p) => {
+      const g = p.geometry.clone();
+      // Pantolon KOYU, gömlek AÇIK: renk köşeye yazılır, materyal tek kalır.
+      const renk = new Color(/leg/i.test(p.name) ? PALETTE.pants : '#ffffff');
+      const say = g.attributes.position.count;
+      const dizi = new Float32Array(say * 3);
+      for (let v = 0; v < say; v++) {
+        dizi[v * 3] = renk.r;
+        dizi[v * 3 + 1] = renk.g;
+        dizi[v * 3 + 2] = renk.b;
+      }
+      g.setAttribute('color', new BufferAttribute(dizi, 3));
+      return g;
+    });
+    const geo = mergeGeometries(geolar, false);
+    if (geo) {
+      const mesh = new SkinnedMesh(geo, govdeMat);
+      mesh.bind(ana.skeleton, ana.bindMatrix);
+      mesh.castShadow = true;
+      mesh.frustumCulled = false;
+      ust.add(mesh);
+    }
+  }
+
+  kafaKucult(kok);
+  kok.scale.setScalar(KAY_SCALE);
+  kok.visible = false;
+
+  const mixer = new AnimationMixer(kok);
+  const eylemler: Record<string, AnimationAction> = {};
+  for (const ad of [KLIP.dur, KLIP.otur, ...LOKOMOSYON.yuru]) {
+    const klip = klipler.find((c) => c.name === ad);
+    if (klip) eylemler[ad] = mixer.clipAction(klip);
+  }
+  eylemler[KLIP.dur]?.play();
+  mixer.setTime(faz * 0.17); // faz kaydır: müşteriler aynı karede nefes alıp adım atmasın
+
+  return {
+    kok, mixer, eylemler, govdeMat,
+    npcId: -1, suAnKlip: KLIP.dur, hedefAci: 0, aci: 0, sonX: 0, sonZ: 0, yeniYuva: true,
+  };
+}
+
+type Havuz = {
+  grup: Group;
+  yuvalar: Yuva[];
+  govdeBoy: number;
+  /** Havuzu `hedef` yuvaya kadar büyütür; bir karede en çok `YUVA_BASINA_KARE` tane kurar. */
+  buyut: (hedef: number) => void;
+};
+
+/**
+ * Bir karede en çok kaç yuva kurulur. Havuz TEMBEL büyür: erken oyunda salonda 5 müşteri varken
+ * 80 gövde kurmanın anlamı yok ve o kurulum MOUNT'u kilitliyordu — tavan 80'e çıkınca duman
+ * testi üç koşudan birinde canvas'ı 15 sn'de göremedi. Yuvalar müşteri geldikçe, kare kare
+ * ekleniyor; henüz yuvası olmayan müşteri o birkaç kare boyunca kapsül kolunda çizilir.
+ */
+const YUVA_BASINA_KARE = 2;
+
+function useMusteriHavuzu(): Havuz {
+  // YOL DİZİSİ MEMOIZE EDİLİR: `useGLTF`e her render yeni bir dizi verilirse yükleyici yeniden
+  // sorgulanıyor ve drei'nin `useProgress`i sürekli güncelleniyor — açılışta `SplashScreen`
+  // "Maximum update depth exceeded" ile patlıyordu ve duman testi canvas'ı hiç göremiyordu.
+  // (`useKayKlipler` aynı memoyu zaten taşıyor; burada eksikti.)
+  const yollar = useMemo(() => KAY_MUSTERI_GOVDE.map((g) => `${KAY_KOK}${g}.glb`), []);
+  const dosyalar = useGLTF(yollar);
   const klipler = useKayKlipler();
 
-  // Havuz TAM BİR KEZ kurulur (`useMemo` değil `useRef`): `NPC_SKIN_CAP` gövde ve iki katı
-  // geometri kaynağı pahalı bir iştir ve memo bağımlılığının kimliği kaydığı anda baştan koşar —
-  // ilk denemede birebir bu oldu ve duman testi canvas'ı 15 sn'de göremedi.
-  const havuz = useRef<{ grup: Group; yuvalar: Yuva[]; govdeBoy: number } | null>(null);
+  const havuz = useRef<Havuz | null>(null);
   if (!havuz.current) {
-    havuz.current = ((): { grup: Group; yuvalar: Yuva[]; govdeBoy: number } => {
     const grup = new Group();
     const yuvalar: Yuva[] = [];
-    for (let i = 0; i < NPC_SKIN_CAP; i++) {
-      const kaynak = dosyalar[i % dosyalar.length].scene;
-      const kok = skinKlon(kaynak) as Group;
-
-      // Ekipmanı (pelerin/miğfer) at, parçaları baş ↔ gövde diye ikiye ayır.
-      const parcalar: SkinnedMesh[] = [];
-      kok.traverse((n) => {
-        const m = n as SkinnedMesh;
-        if (m.isSkinnedMesh) parcalar.push(m);
-      });
-      const sivil = parcalar.filter((p) => !ekipmanMi(p.name));
-      const bas = sivil.filter((p) => basMi(p.name));
-      const govde = sivil.filter((p) => !basMi(p.name));
-      const ana = sivil[0] ?? parcalar[0];
-      const ust = ana.parent ?? kok;
-      parcalar.forEach((p) => p.parent?.remove(p));
-
-      // Gövde rengi KÖŞE RENGİNDEN gelir: gömlek ve pantolon tek mesh'te, ayrı renkte.
-      // `govdeMat` yuvaya ait — müşteri değişince `color` yeniden yazılır ve gömlek onunla döner.
-      const govdeMat = new MeshStandardMaterial({ color: '#ffffff', roughness: 0.85, vertexColors: true });
-      if (bas.length) {
-        const geo = mergeGeometries(bas.map((p) => p.geometry.clone()), false);
-        if (geo) {
-          const mesh = new SkinnedMesh(geo, ana.material);
-          mesh.bind(ana.skeleton, ana.bindMatrix);
-          mesh.castShadow = true;
-          mesh.frustumCulled = false;
-          ust.add(mesh);
-        }
-      }
-      if (govde.length) {
-        const geolar = govde.map((p) => {
-          const g = p.geometry.clone();
-          // Pantolon KOYU, gömlek AÇIK: renk köşeye yazılır, materyal tek kalır.
-          const renk = new Color(/leg/i.test(p.name) ? PALETTE.pants : '#ffffff');
-          const say = g.attributes.position.count;
-          const dizi = new Float32Array(say * 3);
-          for (let v = 0; v < say; v++) {
-            dizi[v * 3] = renk.r;
-            dizi[v * 3 + 1] = renk.g;
-            dizi[v * 3 + 2] = renk.b;
+    const h: Havuz = {
+      grup,
+      yuvalar,
+      govdeBoy: ACTOR_HEIGHT,
+      buyut: (hedef: number) => {
+        const sinir = Math.min(hedef, NPC_SKIN_CAP);
+        let kurulan = 0;
+        while (yuvalar.length < sinir && kurulan < YUVA_BASINA_KARE) {
+          const y = yuvaKur(dosyalar[yuvalar.length % dosyalar.length].scene as Group, klipler, yuvalar.length);
+          grup.add(y.kok);
+          yuvalar.push(y);
+          kurulan++;
+          // BALONCUK YÜKSEKLİĞİ gövdeden TÜRETİLİR, elle yazılmaz: baş `KAY_KAFA_OLCEK` ile
+          // küçüldüğü için siluetin tepesi 1,75 değil (~1,52) ve o sayı ölçek değişince kayar.
+          if (yuvalar.length === 1) {
+            y.kok.visible = true;
+            y.kok.updateMatrixWorld(true);
+            const boy = new Box3().setFromObject(y.kok).getSize(new Vector3()).y;
+            if (boy > 0.1) h.govdeBoy = boy;
+            y.kok.visible = false;
           }
-          g.setAttribute('color', new BufferAttribute(dizi, 3));
-          return g;
-        });
-        const geo = mergeGeometries(geolar, false);
-        if (geo) {
-          const mesh = new SkinnedMesh(geo, govdeMat);
-          mesh.bind(ana.skeleton, ana.bindMatrix);
-          mesh.castShadow = true;
-          mesh.frustumCulled = false;
-          ust.add(mesh);
         }
-      }
-
-      kafaKucult(kok);
-      kok.scale.setScalar(KAY_SCALE);
-      kok.visible = false;
-      grup.add(kok);
-
-      const mixer = new AnimationMixer(kok);
-      const eylemler: Record<string, AnimationAction> = {};
-      for (const ad of [KLIP.dur, KLIP.otur, ...LOKOMOSYON.yuru]) {
-        const klip = klipler.find((c) => c.name === ad);
-        if (klip) eylemler[ad] = mixer.clipAction(klip);
-      }
-      eylemler[KLIP.dur]?.play();
-      mixer.setTime(i * 0.17); // faz kaydır: müşteriler aynı karede nefes alıp adım atmasın
-
-      yuvalar.push({
-        kok, mixer, eylemler, govdeMat,
-        npcId: -1, suAnKlip: KLIP.dur, hedefAci: 0, aci: 0, sonX: 0, sonZ: 0, yeniYuva: true,
-      });
-    }
-
-    // BALONCUK YÜKSEKLİĞİ gövdeden TÜRETİLİR, elle yazılmaz: baş `KAY_KAFA_OLCEK` ile küçüldüğü
-    // için siluetin tepesi 1,75 değil (ölçüm: ×0,75'te ~1,52) ve o sayı ölçek değişince kayar.
-    // `BUBBLE_Y` kapsül kolunun sabiti olarak yerinde kalıyor — o gövde küçülmedi.
-    const ilk = yuvalar[0];
-    let govdeBoy = ACTOR_HEIGHT;
-    if (ilk) {
-      ilk.kok.visible = true;
-      ilk.kok.updateMatrixWorld(true);
-      const kutu = new Box3().setFromObject(ilk.kok);
-      const h = kutu.getSize(new Vector3()).y;
-      if (h > 0.1) govdeBoy = h;
-      ilk.kok.visible = false;
-    }
-    return { grup, yuvalar, govdeBoy };
-    })();
+      },
+    };
+    havuz.current = h;
   }
   return havuz.current;
 }
@@ -202,7 +227,8 @@ export function Customers() {
   const bubbleRef = useRef<InstancedMesh>(null);
   const dummy = useMemo(() => new Object3D(), []);
   const col = useMemo(() => new Color(), []);
-  const { grup, yuvalar, govdeBoy } = useMusteriHavuzu();
+  const havuz = useMusteriHavuzu();
+  const { grup, yuvalar } = havuz;
 
   useFrame((st, dt) => {
     const bubble = bubbleRef.current;
@@ -210,6 +236,7 @@ export function Customers() {
     if (!bubble || !kapsul) return;
     const npcs = useGame.getState().npcs;
     const n = Math.min(npcs.length, NPC_CAP);
+    havuz.buyut(n); // havuz müşteri geldikçe büyür (gerekçe: YUVA_BASINA_KARE)
     const t = st.clock.elapsedTime;
     let bubbleCount = 0;
     let kapsulCount = 0;
@@ -300,7 +327,7 @@ export function Customers() {
         const skinned = i < yuvalar.length;
         dummy.position.set(
           x,
-          skinned ? govdeBoy + 0.15 + (oturan ? KAY_OTURMA_KALDIRMA - 0.3 : 0) : BUBBLE_Y + SEATED_DROP,
+          skinned ? havuz.govdeBoy + 0.15 + (oturan ? KAY_OTURMA_KALDIRMA - 0.3 : 0) : BUBBLE_Y + SEATED_DROP,
           z,
         );
         dummy.rotation.set(0, 0, 0);
@@ -332,3 +359,5 @@ export function Customers() {
     </>
   );
 }
+
+KAY_MUSTERI_GOVDE.forEach((g) => useGLTF.preload(`${KAY_KOK}${g}.glb`));

@@ -28,7 +28,6 @@ import {
   KAY_KOK,
   KAY_MODEL,
   KAY_SCALE,
-  KAY_EL_Y,
   KAY_TEPSI_KAYMA,
   KAY_GARSON_TEPSI_KAYMA,
 } from '../src/config/actor';
@@ -125,17 +124,21 @@ describe('S14 — karakter gövdeleri (D-112)', () => {
     expect(KAY_AUTHORED).toBeLessThan(2.7);
   });
 
-  it('⑦ taşınan eşya gövde ölçeğinin DIŞINDA ve el hizasında', () => {
-    // CupTray çapası [0, 1,00, 0,45] · WaiterTray [0, 0,95, 0,40]; kaymalar ikisini de ele taşır.
-    expect(KAY_TEPSI_KAYMA[1] + 1.0).toBeCloseTo(KAY_EL_Y, 6);
-    expect(KAY_GARSON_TEPSI_KAYMA[1] + 0.95).toBeCloseTo(KAY_EL_Y, 6);
-    // El hizası belden yüksek, baştan alçak olmalı (1,75'lik gövdede 0,7…1,3).
-    expect(KAY_EL_Y).toBeGreaterThan(0.7);
-    expect(KAY_EL_Y).toBeLessThan(1.3);
+  it('⑦ taşınan eşya gövde ölçeğinin DIŞINDA ve ELE takılı (S16 ile güncellendi)', () => {
+    // S16'ya kadar tepsi SABİT bir dünya noktasına asılıydı ve kaymalar onu oraya taşıyordu.
+    // Ölçüm o tasarımın kusurunu gösterdi (`docs/olcum-tepsi.json`): eller 0,66'da, çapa
+    // 0,953'te — tepsi ellerin 29 cm üstünde. Artık grup ELİ takip ediyor; kaymaların TEK işi
+    // bileşenin İÇİNDEKİ çapayı sıfırlamak (`CupTray` [0,1,00,0,45] · `WaiterTray` [0,0,95,0,40]).
+    expect(KAY_TEPSI_KAYMA[1] + 1.0).toBeCloseTo(0, 6);
+    expect(KAY_TEPSI_KAYMA[2] + 0.45).toBeCloseTo(0, 6);
+    expect(KAY_GARSON_TEPSI_KAYMA[1] + 0.95).toBeCloseTo(0, 6);
+    expect(KAY_GARSON_TEPSI_KAYMA[2] + 0.4).toBeCloseTo(0, 6);
     // Tepsi bileşenleri artık gövde ölçeğinin altında DURMAMALI.
     for (const dosya of ['Player.tsx', 'Waiter.tsx', 'Dishwasher.tsx']) {
       const s = readFileSync(path.join('src/components/three', dosya), 'utf8');
       expect(s.includes('scale={actorScale('), `${dosya}: eşya hâlâ gövde ölçeğinin içinde`).toBe(false);
+      // Taşınan eşya `KayActor`ün ÇOCUĞU olmalı — kardeş kalırsa eli takip edemez.
+      expect(s, `${dosya}: taşınan eşya KayActor'ün çocuğu değil`).toMatch(/<KayActor[\s\S]*?<\/KayActor>/);
     }
   });
 

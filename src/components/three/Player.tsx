@@ -199,6 +199,8 @@ export function Player() {
   const trayTier = useGame((s) => s.charUpgrades.tray);
   const outerRef = useRef<Group>(null);
   const ref = useRef<Group>(null);
+  /** Elinde bir şey var mı: temiz ürün ya da toplanmış kirli. Taşıma pozunu bu tetikler. */
+  const eldeVar = tray + trayFood + carriedDirty + carriedDirtyFood > 0;
   // P0 perf: oyuncu konumu store'dan her karede OKUNUR, React'e prop olarak girmez — eskiden
   // `useGame((s) => s.player)` yürürken her kare Player alt ağacını yeniden render ediyordu.
   useActorTransform(outerRef, ref, readPlayerXZ);
@@ -209,10 +211,15 @@ export function Player() {
           ölçüsünde yazılı (yarıçap 0,05 = 5 cm) ve gövde ölçeğine bağlanırsa onunla büyür.
           `KAY_TEPSI_KAYMA` CupTray'in kendi çapasını KayKit elinin yerine taşır. */}
       <group ref={ref}>
-        <KayActor kind="owner" />
-        <group position={KAY_TEPSI_KAYMA}>
-          <CupTray tea={tray} food={trayFood} dirty={carriedDirty} dirtyFood={carriedDirtyFood} cap={trayCapacityFor(trayTier)} />
-        </group>
+        {/* S16: tepsi artık ELE takılı — `KayActor` çapayı her kare iki `handslot` kemiğinin
+            ortasından alır ve taşırken üst gövde `Holding_A`ya geçer. Eskiden tepsi gövdenin
+            yanında SABİT bir noktadaydı ve kollar boşta sallanıyordu (ölçüm: çapa y 0,953,
+            eller 0,66 — tepsi ellerin 29 cm üstünde, göğse yapışık). */}
+        <KayActor kind="owner" tasiyor={eldeVar}>
+          <group position={KAY_TEPSI_KAYMA}>
+            <CupTray tea={tray} food={trayFood} dirty={carriedDirty} dirtyFood={carriedDirtyFood} cap={trayCapacityFor(trayTier)} />
+          </group>
+        </KayActor>
       </group>
     </group>
   );

@@ -1,0 +1,98 @@
+{
+  "damga": "2026-09-14T16:28:11.864Z",
+  "bugunku": {
+    "y": 0.953,
+    "z": 0.437
+  },
+  "KAY_SCALE": 0.794,
+  "adaylar": [
+    {
+      "dosya": "Rig_Medium_General",
+      "klip": "Idle_A",
+      "sure": 1.067,
+      "ortaY": 0.424,
+      "ortaZ": 0.066,
+      "ortaX": 0.001,
+      "ellerArasi": 0.675,
+      "elOynamasi": 0.005,
+      "ellerOnde": false
+    },
+    {
+      "dosya": "Rig_Medium_MovementBasic",
+      "klip": "Walking_A",
+      "sure": 1.067,
+      "ortaY": 0.65,
+      "ortaZ": 0.104,
+      "ortaX": 0,
+      "ellerArasi": 0.799,
+      "elOynamasi": 0.411,
+      "ellerOnde": false
+    },
+    {
+      "dosya": "Rig_Medium_MovementBasic",
+      "klip": "Walking_B",
+      "sure": 1.067,
+      "ortaY": 0.478,
+      "ortaZ": -0.05,
+      "ortaX": 0.001,
+      "ellerArasi": 0.77,
+      "elOynamasi": 0.306,
+      "ellerOnde": false
+    },
+    {
+      "dosya": "Rig_Medium_MovementBasic",
+      "klip": "Running_A",
+      "sure": 0.8,
+      "ortaY": 0.567,
+      "ortaZ": 0.188,
+      "ortaX": 0,
+      "ellerArasi": 0.802,
+      "elOynamasi": 0.48,
+      "ellerOnde": true
+    },
+    {
+      "dosya": "Rig_Medium_Tools",
+      "klip": "Holding_A",
+      "sure": 1,
+      "ortaY": 0.661,
+      "ortaZ": 0.423,
+      "ortaX": 0,
+      "ellerArasi": 0.498,
+      "elOynamasi": 0.002,
+      "ellerOnde": true
+    },
+    {
+      "dosya": "Rig_Medium_Tools",
+      "klip": "Holding_B",
+      "sure": 1,
+      "ortaY": 0.635,
+      "ortaZ": 0.367,
+      "ortaX": -0.037,
+      "ellerArasi": 0.391,
+      "elOynamasi": 0.002,
+      "ellerOnde": true
+    },
+    {
+      "dosya": "Rig_Medium_Tools",
+      "klip": "Holding_C",
+      "sure": 1,
+      "ortaY": 0.661,
+      "ortaZ": 0.244,
+      "ortaX": 0.169,
+      "ellerArasi": 0.386,
+      "elOynamasi": 0.002,
+      "ellerOnde": true
+    },
+    {
+      "dosya": "Rig_Medium_Tools",
+      "klip": "Working_A",
+      "sure": 1.5,
+      "ortaY": 0.659,
+      "ortaZ": 0.354,
+      "ortaX": -0.023,
+      "ellerArasi": 0.717,
+      "elOynamasi": 0.281,
+      "ellerOnde": true
+    }
+  ]
+}

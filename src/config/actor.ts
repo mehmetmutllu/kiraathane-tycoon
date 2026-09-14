@@ -252,19 +252,21 @@ export const NPC_SKIN_CAP = 80;
 export const KAY_MUSTERI_GOVDE = ['Knight', 'Rogue', 'Mage', 'Barbarian', 'Ranger'] as const;
 
 /**
- * TAŞINAN EŞYANIN (tepsi · kirli bardak) dünya-uzayı mount noktası. Gövde ölçeğinin DIŞINDA
- * durur: tepsi ve bardaklar dünya ölçüsünde yazıldı (bardak yarıçapı 0,05 = 5 cm) ve gövdenin
- * ölçeğine bağlanırsa o ölçek değiştiğinde eşya da büyüyüp küçülür. Ham elin y'si 0,98…1,27,
- * yani dünyada 0,78…1,01; tepsi kavrama hattı bunun üstü.
+ * TAŞINAN EŞYANIN ÇAPASI (S16'dan beri ELE BAĞLI).
+ *
+ * ESKİDEN: tepsi gövdenin yanında SABİT bir dünya noktasına asılıydı (`KAY_EL_Y` 0,953 /
+ * `KAY_EL_Z` 0,437). Ölçüm kusuru gösterdi (`docs/olcum-tepsi.json`): taşırken oynayan klipte
+ * eller **0,66**'da duruyor, yani tepsi ellerin **29 cm üstünde** ve göğse yapışık kalıyordu;
+ * üstelik kollar boşta sallanıyordu (kullanıcı 2026-09-14: *"elde tepsi tutma falan sorun"*).
+ *
+ * ŞİMDİ: `KayActor` taşınan eşyanın grubunu her kare **iki `handslot` kemiğinin ORTASINA**
+ * taşıyor (KayKit'in kendi eşya çapaları) ve taşırken üst gövde `Holding_A` oynuyor — eller
+ * önde, kıpırdamadan (ölçüldü: el oynaması 0,002).
+ *
+ * Aşağıdaki kaymaların TEK işi, taşınan bileşenlerin İÇLERİNDEKİ çapayı sıfırlamaktır:
+ * `CupTray` kendini [0, 1,00, 0,45]'te, `WaiterTray` ve `CarriedDirty` [0, 0,95, 0,40]'ta
+ * çiziyor ve o sayılara dokunulamıyor — aynı bileşenleri karakter paneli de kullanıyor.
+ * Negatifleri, bileşeni grubun orijinine (yani ELE) getirir.
  */
-export const KAY_EL_Y = round2(1.2 * KAY_SCALE);
-export const KAY_EL_Z = round2(0.55 * KAY_SCALE);
-
-/**
- * Taşınan eşya bileşenleri kendi çapalarını İÇLERİNDE taşıyor (`CupTray` [0, 1,00, 0,45] ·
- * `WaiterTray` [0, 0,95, 0,40]) ve o sayılar eski ilkel gövdeye göre yazılmıştı. Bu kaymalar
- * çapayı KayKit elinin yerine taşır — bileşenlerin içindeki sayıya dokunmadan, çünkü aynı
- * bileşenleri karakter paneli de kullanıyor.
- */
-export const KAY_TEPSI_KAYMA: Vec3 = [0, KAY_EL_Y - 1.0, KAY_EL_Z - 0.45];
-export const KAY_GARSON_TEPSI_KAYMA: Vec3 = [0, KAY_EL_Y - 0.95, KAY_EL_Z - 0.4];
+export const KAY_TEPSI_KAYMA: Vec3 = [0, -1.0, -0.45];
+export const KAY_GARSON_TEPSI_KAYMA: Vec3 = [0, -0.95, -0.4];

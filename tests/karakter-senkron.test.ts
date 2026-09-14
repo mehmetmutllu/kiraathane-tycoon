@@ -34,14 +34,30 @@ import {
   TIMESCALE_TABAN,
   KAY_OTURMA_KALDIRMA,
   NPC_SKIN_CAP,
+  KAY_TEPSI_KAYMA,
+  KAY_GARSON_TEPSI_KAYMA,
   SEATED_DROP,
   BUBBLE_Y,
   PLAYER_RADIUS,
   CAMERA_LOOK_Y,
 } from '../src/config/actor';
 import { lokomosyonSec, LOKOMOSYON } from '../src/components/three/KayActor';
+// @ts-expect-error — ölçüm aracı düz .mjs; tip yok, glTF okuyucu var.
+import { gltfOku } from '../tools/olcum-karakter.mjs';
 
 const OLCUM = JSON.parse(readFileSync('docs/olcum-yuruyus.json', 'utf8'));
+const OLCUM_TEPSI = JSON.parse(readFileSync('docs/olcum-tepsi.json', 'utf8'));
+/** Karakter dosyasının GERÇEK kemik adları (glTF düğümleri) — ölçüm aracının okuyucusuyla. */
+function rigKemikleri(): string[] {
+  const { j } = gltfOku('public/assets/models/kaykit-characters/Knight.glb') as {
+    j: { nodes: { name: string }[]; skins?: { joints: number[] }[] };
+  };
+  const joints = j.skins?.[0]?.joints ?? [];
+  return joints.map((i) => j.nodes[i].name);
+}
+
+/** Kodun seçtiği taşıma klibi — kaynaktan okunur ki test ile kod tek yerden beslensin. */
+const KLIP_TUT = /tut: '([^']+)'/.exec(readFileSync('src/components/three/KayActor.tsx', 'utf8'))?.[1] ?? '';
 const KAYNAK_ACTOR = readFileSync('src/components/three/KayActor.tsx', 'utf8');
 const KAYNAK_MUSTERI = readFileSync('src/components/three/Customers.tsx', 'utf8');
 
@@ -104,11 +120,88 @@ describe('S15 · yürüme senkronu (D-113)', () => {
   });
 
   it('katsayı KOD içinde her kare yazılır — yalnız klip değişince yazılsa hız yükseltmesi tutmazdı', () => {
-    expect(KAYNAK_ACTOR).toMatch(/yeni\.timeScale = secim \? secim\.timeScale : 1;/);
-    // Atama, "klip değişti mi" kontrolünden ÖNCE gelmeli.
-    expect(KAYNAK_ACTOR.indexOf('yeni.timeScale =')).toBeLessThan(
-      KAYNAK_ACTOR.indexOf('if (hedefKlip === suAn.current) return;'),
+    expect(KAYNAK_ACTOR).toMatch(/lokomosyon\.timeScale = secim \? secim\.timeScale : 1;/);
+    // Atama, "klip kümesi değişti mi" erken dönüşünden ÖNCE gelmeli.
+    expect(KAYNAK_ACTOR.indexOf('lokomosyon.timeScale =')).toBeLessThan(
+      KAYNAK_ACTOR.indexOf('if (hedefler.length === suAn.current.length'),
     );
+  });
+
+  it('katsayı YALNIZ lokomosyon yarısına uygulanır — tutuş pozu hızlanmamalı', () => {
+    // Taşırken iki yarım klip aynı anda çalıyor; `Holding_A` hızlandırılırsa tepsi titrer.
+    expect(KAYNAK_ACTOR).toMatch(/const lokomosyon = actions\[hedefler\[0\]\];/);
+  });
+});
+
+describe('S16 · taşıma pozu ve tepsi çapası', () => {
+  it('ÜST - ALT gövde bölüşümü GERÇEK kemik adlarıyla rigi TAM ikiye ayırır', () => {
+    // İki yarım klip aynı anda tam ağırlıkta çalıyor. Bir kemik İKİ kümede de olsaydı iki eylem
+    // aynı özelliğe yazar ve poz bozulurdu; hiçbirinde olmasaydı o kemik donardı.
+    //
+    // TUZAK (S16'da birebir yaşandı): dosyada kemik `upperarm.l` yazıyor ama three'nin
+    // `GLTFLoader`ı adı `sanitizeNodeName` ile geçiriyor ve NOKTAYI SİLİYOR → sahnede
+    // `upperarml`. Noktalı yazılan küme hiçbir kolu yakalamıyordu ve KONSOL HATASI VERMİYORDU.
+    // Bu yüzden adlar burada GERÇEK dosyadan okunup aynı kuralla sterilize ediliyor — kaynak
+    // metnine değil, gövdenin gerçekten taşıdığı kemiklere bakılır.
+    const ust = [...KAYNAK_ACTOR.slice(
+      KAYNAK_ACTOR.indexOf('const UST_KEMIKLER'),
+      KAYNAK_ACTOR.indexOf('* ADLAR NEDEN NOKTASIZ'),
+    ).matchAll(/'([A-Za-z0-9_.]+)'/g)].map((m) => m[1]);
+
+    const steril = (ad: string) => ad.replace(/\s/g, '_').replace(/[[\].:/]/g, '');
+    const kemikler = rigKemikleri().map(steril);
+
+    expect(kemikler).toHaveLength(23); // Rig_Medium — S14'te ölçüldü
+    // Kümedeki her ad gövdede GERÇEKTEN var mı (noktalı yazılsaydı burada patlardı).
+    for (const k of ust) expect(kemikler, `${k} gövdede yok — steril ad mı?`).toContain(k);
+    expect(ust).toHaveLength(13);
+    expect(kemikler.filter((k) => !ust.includes(k))).toHaveLength(10);
+  });
+
+  it('el çapası GERÇEK kemik adıyla aranır — noktalı ad sessizce bulunamaz', () => {
+    const steril = (ad: string) => ad.replace(/\s/g, '_').replace(/[[\].:/]/g, '');
+    const kemikler = rigKemikleri().map(steril);
+    expect(kemikler).toContain(steril('handslot.l'));
+    expect(kemikler).toContain(steril('handslot.r'));
+    // Kod adı STERIL()'den geçirmeli; düz 'handslot.l' yazılırsa `getObjectByName` null döner
+    // ve tepsi sessizce karakterin AYAKLARINDA kalır (S16'da birebir bu oldu).
+    expect(KAYNAK_ACTOR).toMatch(/getObjectByName\(STERIL\('handslot\.l'\)\)/);
+    expect(KAYNAK_ACTOR).toMatch(/getObjectByName\(STERIL\('handslot\.r'\)\)/);
+  });
+
+  it('taşıma pozu eller ÖNDE ve KIPIRDAMAYAN bir klipten gelir', () => {
+    const olculen = OLCUM_TEPSI.adaylar.find((a) => a.klip === KLIP_TUT);
+    expect(olculen).toBeDefined();
+    expect(olculen.ellerOnde).toBe(true);
+    // Eller klip boyunca oynarsa tepsi titrer: yürüme 0,3-0,5 oynuyor, tutuş 0,002.
+    expect(olculen.elOynamasi).toBeLessThan(0.05);
+  });
+
+  it('taşıma klibi, yürüme kliplerinden BELİRGİN daha sabit el verir', () => {
+    const tut = OLCUM_TEPSI.adaylar.find((a) => a.klip === KLIP_TUT);
+    for (const ad of ['Walking_A', 'Running_A']) {
+      const y = OLCUM_TEPSI.adaylar.find((a) => a.klip === ad);
+      expect(tut.elOynamasi).toBeLessThan(y.elOynamasi);
+    }
+  });
+
+  it('Walking_B taşıma klibi DEĞİLDİR — ölçüldü, elleri ARKADA', () => {
+    // Kod S14'te onu "tasi" diye etiketlemişti; ölçüm çürüttü (orta z negatif).
+    const wb = OLCUM_TEPSI.adaylar.find((a) => a.klip === 'Walking_B');
+    expect(wb.ellerOnde).toBe(false);
+    expect(wb.ortaZ).toBeLessThan(0);
+  });
+
+  it('taşınan eşya ELİ takip eder — sabit dünya noktasına asılı DEĞİL', () => {
+    expect(KAYNAK_ACTOR).toMatch(/eller\.current = \[/);
+    // Konum takip edilir, DÖNÜŞ edilmez: tepsi düz kalmalı, elin eğimiyle yalpalamamalı.
+    expect(KAYNAK_ACTOR).toMatch(/t\.position\.copy\(solP\.current\)/);
+    expect(KAYNAK_ACTOR).not.toMatch(/t\.quaternion\.copy/);
+  });
+
+  it('kaymalar bileşenin İÇ çapasını sıfırlar — eşya elin ORİJİNİNE otursun', () => {
+    expect(KAY_TEPSI_KAYMA[1] + 1.0).toBeCloseTo(0, 6);
+    expect(KAY_GARSON_TEPSI_KAYMA[1] + 0.95).toBeCloseTo(0, 6);
   });
 });
 
@@ -172,9 +265,22 @@ describe('S15 · müşteri skinned (D-113)', () => {
     expect(KAYNAK_MUSTERI).toMatch(/i < yuvalar\.length/);
   });
 
-  it('havuz TAM BİR KEZ kurulur — useMemo kimliği kayarsa 48 gövde her render yeniden kurulur', () => {
+  it('havuz TAM BİR KEZ kurulur — useMemo kimliği kayarsa gövdeler her render yeniden kurulur', () => {
     expect(KAYNAK_MUSTERI).toMatch(/const havuz = useRef</);
     expect(KAYNAK_MUSTERI).toMatch(/if \(!havuz\.current\)/);
+  });
+
+  it('havuz TEMBEL büyür — mount anında tavan kadar gövde kurulmaz', () => {
+    // Tavan 80'e çıkınca hepsini mount'ta kurmak ana iş parçacığını kilitliyordu: duman testi
+    // üç koşudan birinde canvas'ı 15 sn'de göremedi. Yuvalar müşteri geldikçe, kare başına
+    // en çok `YUVA_BASINA_KARE` tane ekleniyor.
+    expect(KAYNAK_MUSTERI).toMatch(/const YUVA_BASINA_KARE = \d+;/);
+    expect(KAYNAK_MUSTERI).toMatch(/havuz\.buyut\(n\)/);
+    // Kurulum döngüsü kare başına SINIRLI olmalı.
+    expect(KAYNAK_MUSTERI).toMatch(/kurulan < YUVA_BASINA_KARE/);
+    const adet = Number(/const YUVA_BASINA_KARE = (\d+);/.exec(KAYNAK_MUSTERI)?.[1] ?? '999');
+    expect(adet).toBeGreaterThan(0);
+    expect(adet, 'kare başına kurulum tavana yakınsa tembellik anlamını yitirir').toBeLessThan(10);
   });
 
   it('oturan müşteri GERÇEK oturuş klibinde; kapsülün SEATED_DROP numarası ona uygulanmaz', () => {

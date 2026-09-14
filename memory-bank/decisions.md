@@ -3457,3 +3457,33 @@ artık koltuktan **masa merkezine** bakıyor ve yuva el değiştirince açı SNA
 Sayılar: `docs/karakter-raporu-s15.md` · ham `docs/olcum-yuruyus.json` · kareler
 `docs/gorsel/ss/s15-*.png` · karar paketi
 https://claude.ai/code/artifact/1cad1b62-df57-4ffb-b00b-32f0b9be9565
+
+---
+
+## D-114 — Tepsi ELE bağlandı, taşıma pozu üst/alt gövde katmanıyla geldi (S16)
+
+**Soru:** kullanıcı *"şu an elde tepsi tutma falan sorun ama ya"* dedi.
+
+**Ölçüldü** (`docs/olcum-tepsi.json`): taşırken çapa **y 0,953**'te, eller **0,66**'da — tepsi
+ellerin **29 cm üstünde**, göğse yapışık; kollar boşta sallanıyor. `Holding_A` elleri önde
+(z 0,423) ve **kıpırdamadan** (oynama 0,002) tutuyor; kodda "taşıma" diye etiketlenen
+`Walking_B`'nin elleri ise **arkada** (z −0,05) — etiket yanlışmış.
+
+**Uygulandı:** tepsi artık iki `handslot` kemiğinin ORTASINA bağlı (konum takip edilir, dönüş
+edilmez — tepsi düz kalır). KayKit'te "yürürken taşıma" klibi olmadığı için klipler **kemik
+kümesine bölündü**: alt gövde (10 kemik) yürür, üst gövde (13 kemik) `Holding_A` oynar, ikisi
+aynı anda tam ağırlıkta. Bölüşüm rigi tam ikiye ayırır, kesişim boştur.
+
+**İKİ SESSİZ HATA çıktı ve ikisi de konsol hatası vermiyordu:**
+① three, glTF düğüm adlarındaki **noktayı siliyor** (`handslot.l` → `handslotl`); noktalı yazılan
+kemik kümesi hiçbir kolu yakalamıyor, el araması null dönüyor ve tepsi karakterin ayaklarında
+kalıyordu. ② `useGLTF`e her render **yeni yol dizisi** veriliyordu; drei'nin `useProgress`i döngüye
+girip açılışta `SplashScreen`i "Maximum update depth exceeded" ile patlatıyordu (duman aralıklı
+kırmızıydı). İkincisi ancak hata mesajı yakalanınca bulundu — ilk tanı yanlıştı.
+
+**Bekçi:** `tests/karakter-senkron.test.ts` (32 denetim), **32 mutasyon, kaçan 0.** Kemik adları
+artık kaynak metninden değil GERÇEK GLB'den okunup sterilize edilerek karşılaştırılıyor; nokta
+tuzağı mutasyon listesinde.
+
+Sayılar: `docs/karakter-raporu-s15.md` §Üçüncü tur · ham `docs/olcum-tepsi.json` ·
+kare `docs/gorsel/ss/s16-tepsi-yakin.png`

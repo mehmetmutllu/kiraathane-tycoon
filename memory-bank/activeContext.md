@@ -5,38 +5,40 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-14 — **S15 BİTTİ: KAFA KÜÇÜLDÜ · YÜRÜYÜŞ SENKRON · MÜŞTERİ SKINNED, D-113** · Faz S 14/15 · 89/99)
+## ŞU AN (2026-09-14 — **S16: TEPSİ ELE BAĞLANDI, TAŞIMA POZU GELDİ, D-114** · Faz S 14/15 · 89/99)
 
 ```
-SORU            : Müşteriler skinned'e geçerken üç görsel kusur aynı turda kapanır — kafa/gövde
-                  oranı, yürüyüş ↔ ilerleme senkronu, sahibin kasketi.
-ÖLÇÜLECEK KOLLAR: Ç çizim · K kafa ölçeği · Ö gövde boyu · S senkron · (kasket ölçümsüz)
-SAYILAR         : docs/karakter-raporu-s15.md · ham docs/olcum-yuruyus.json · commit #1 93282ae
-                  S  Walking_A 0,571 br/sn icin cizilmis; kok kaymasi 5 klipte de 0 (yerinde)
-                     oyuncu 4,5-5,4 -> ayak 7,9-9,5x kayiyordu
-                  K  bas payi %42-52 (ilkel govdede %33) · TELAFILI ×0,80'de blob kirilir
-                     (omuz 0,616 > 0,60) · TELAFISIZ omuz 0,552 sabit, boy 1,75→1,57/1,48/1,39
-                  Ö  1,75 gercek orandan +%6 · 1,60 +%16 · 1,50 +%24 (gercek bozulma)
-                  Ç  kapsul 0,04 ms/1 cizim · 6 parca 1,78 ms/216 · SEVK (bas+govde) 0,52 ms/48
-                     48 musteri 1,00 ms/96 · 80 musteri 1,57 ms/112 · oyunda 38 esZamanli olculdu
-                  Oturus  Sit_Chair_Idle kalca dunyada 0,382 → kok kaldirma +0,068
-KARAR           : D-113 — K-B telafisiz ×0,75 · S3 (klip hizdan secilir + tavan 1,80) ·
-                  Ö1 (ACTOR_HEIGHT 1,75 KALIR) · Ç2 birlesik skinned · kasket yalniz sahipten.
-                  IKINCI TUR: tavan 80 ("kapsul hic gorunmesin") + oturan musteri MASAYA doner.
-                  Paket: https://claude.ai/code/artifact/1cad1b62-df57-4ffb-b00b-32f0b9be9565
-UYGULAMA        : actor.ts (KAY_KAFA_OLCEK · KLIP_HIZI · TIMESCALE_TAVAN/TABAN ·
-                  KAY_OTURMA_KALDIRMA · NPC_SKIN_CAP 80 · KAY_MUSTERI_GOVDE · owner.kasket=false)
-                  KayActor.tsx (kafaKucult · head.scale izi sokuldu · lokomosyonSec) ·
-                  Customers.tsx (48 yuvali skinned havuz, govde basina iki mesh) ·
-                  tools/olcum-yuruyus.mjs · skin-perf sevk kolu · karakter-bak kafa kolu ·
-                  tools/shot-s15.mjs · tools/mutasyon-s15.mjs
-BEKÇİ           : tests/karakter-senkron.test.ts — 23 denetim, **21 mutasyonla** dogrulandi,
-                  kacan 0 · tsc -b ✓ · vitest 966 ✓ · duman 42/42 ✓ · sira ✓
+SORU            : "Elde tepsi tutma sorun" — tepsi nereye bagli, tasirken hangi klip oynuyor?
+SAYILAR         : docs/olcum-tepsi.json · rapor docs/karakter-raporu-s15.md §Ucuncu tur
+                  capa y 0,953 · eller 0,66 -> tepsi ellerin 29 cm USTUNDE, gogse yapisik
+                  Holding_A: eller onde (z 0,423), oynama 0,002 (sabit)
+                  Walking_A (tasirken oynayan): oynama 0,411 (sallaniyor)
+                  Walking_B (kodda "tasima" yaziyordu): eller ARKADA (z -0,05) -> etiket YANLIS
+KARAR           : D-114 — tepsi iki handslot ORTASINA bagli (konum takip, DONUS yok) +
+                  ust/alt govde katmani (alt 10 kemik yurur, ust 13 kemik Holding_A oynar)
+UYGULAMA        : KayActor (UST_KEMIKLER · govdeYarisi · tasiyor prop · children ele takili) ·
+                  actor.ts (KAY_EL_Y/Z kalkti, kaymalar artik IC capayi sifirliyor) ·
+                  Player/Waiter/Dishwasher (tepsi KayActor'un COCUGU) · tools/olcum-tepsi.mjs ·
+                  tools/shot-tepsi.mjs · Customers havuzu TEMBEL buyur + yol dizisi memoize
+BEKÇİ           : tests/karakter-senkron.test.ts — 32 denetim, **32 mutasyonla** dogrulandi,
+                  kacan 0 · tsc -b ✓ · vitest 975 ✓ · duman 42/42 ✓ (dort kosu)
 ```
+
+**S16'da cikan IKI SESSIZ HATA (ikisi de konsol hatasi vermiyordu):**
+1. **three, glTF dugum adindaki NOKTAYI siliyor** — `handslot.l` sahnede `handslotl`. Noktali
+   yazilan kemik kumesi hicbir kolu yakalamiyor, el aramasi null donuyor ve tepsi karakterin
+   AYAKLARINDA kaliyordu. Bekci artik adlari GERCEK GLB'den okuyup sterilize ederek karsilastiriyor.
+2. **`useGLTF`e her render yeni yol dizisi** veriliyordu (`useKayKlipler` memoize ediyor, musteri
+   havuzu etmiyordu) → drei `useProgress` donguye girip acilista SplashScreen'i "Maximum update
+   depth exceeded" ile patlatiyordu. Duman araliklı kirmiziydi; ILK TANI YANLISTI (havuz kurulumu
+   sanildi), hata mesaji yakalaninca gercek sebep cikti.
+
+Ayrica: musteri havuzu TEMBEL buyuyor (kare basina 2 yuva) · duman tezgahinin canvas beklemesi
+15 → 40 sn (URUN butcesi degil, soguk baslangic payi).
 
 ## SIRADAKİ TAM ADIM
 
-**S16 — Faz S'in son kalemi: S9 ses** (kaynak karari yazili, D-106 · S-C). Ardindan **Faz H**
+**S17 — Faz S'in son kalemi: S9 ses** (kaynak karari yazili, D-106 · S-C). Ardindan **Faz H**
 (H1 uc hata · H2 yukseltme sirasi · H3 masa araligi — son ikisi DENGE, varyant kapisina tabi).
 
 ### S15'ten DEVREDEN (ölçüldü/görüldü, bilerek yapılmadı)
