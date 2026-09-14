@@ -1248,6 +1248,12 @@ h2{font-size:21px;font-weight:800}
  ],
  "riskler": [
   {
+   "sev": "Tasarım",
+   "renk": "now",
+   "b": "Mutfak <b>seviyeyle büyümüyor</b>: tezgâh 6 kademe, oda her seviyede aynı 19 ünite",
+   "p": "S21&rsquo;in ölçümü sorulmayan bir soruyu açtı. <code>Kitchen.tsx</code> yalnız <code>kitchenTheme</code> okuyor; <code>KITCHEN_UNITS</code> <b>sabit bir liste</b> ve <code>KitchenUnit</code>&rsquo;te seviye alanı <b>0</b> (kıyas: seviye okuyan 14 <code>src</code> dosyası var). Yani servis noktası <b>6 kademe</b> büyürken arkasındaki oda hiç değişmiyor — mutfak bir kademe değil, tek seferde kurulmuş dekor. Bu doğrudan kullanıcının kendi kuralına ters: <i>&ldquo;objeler küçük doğup yerinde büyür; modüler olmak varyant değil KADEME demektir&rdquo;</i>. Ve yer var: odanın <b>%42&rsquo;si</b> (39,91 br², 8,96 × 4,46) boş ve o boşluk oyuncunun <b>%100</b> duruşundan görünür — doluluk arka duvara yapışmış (%99), orta şerit %22, çaycı koridoru %0. Boşluğu <b>dekorla</b> doldurma kolu (D1) bilerek reddedildi: en görünür alanı sabit süse harcardı ve aynı hatayı ikinci kez yapardı. Seçilen yol aynı alanı bir <b>ödül yüzeyine</b> çevirmek. <b>S22</b> kalemi; tur kod yazmadan önce kademeleri tasarlar."
+  },
+  {
    "sev": "Görsel",
    "renk": "now",
    "b": "Karakter paneli hâlâ <b>eski ilkel gövdeyi</b> çiziyor — panel ile sahne ayrıştı",

@@ -60,8 +60,7 @@ G-03 kamera kayıyor · G-06 tepsi ilk yükseltme 75 → ~50 · G-07 dwell para-
 DENGE, varyant kapısına tabi) · masalar geçilmiyor (açıklık 0,68 br, geçiş 0,94 ister — 20 masanın
 12'si).
 
-**Altyapı:** ~~pano ARTIFACT'i iki tur geride~~ → **S19b'de KAPANDI:** pano v40 olarak yayınlandı
-(94/104). Yayının bedeli yazılı: canlı sürümün **1611 satırının tamamı** okunmadan publish
+**Altyapı:** pano ARTIFACT'i **bu turda da kapatıldı** (v41 · 95/106) — borç birikmedi. Yayının bedeli yazılı: canlı sürümün **1611 satırının tamamı** okunmadan publish
 reddediliyor (~130k token) — yani atlanırsa borç büyüyor, her turda kapatmak ucuz. ·
 `npm run lint` 31 hata (hepsi eski `tools/olcum-*.ts`) · `.gitattributes` YOK
 (`core.autocrlf` her checkout'ta CRLF'e çeviriyor) · `npm run pano` günlük uyarısı yalnız TARİHE
@@ -79,7 +78,7 @@ bakıyor · **oyuncuda 2,0× artık kayma** · **panel dönüşünde T-poz temiz
 **S13 paketler:** https://claude.ai/code/artifact/dcbaaee3-8889-4665-83b2-feff02a60c13
 **S12 arayüz:** https://claude.ai/code/artifact/a83eade2-32f6-4a64-ae34-6743a93922a3
 **Mor arayüz maketi:** https://claude.ai/code/artifact/6cc7a95e-c0a3-4802-8ea3-99398d637981
-**İlerleme panosu:** https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
+**İlerleme panosu (v41 · 95/106):** https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 
 ---
 
