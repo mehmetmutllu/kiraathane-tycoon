@@ -138,13 +138,13 @@
 <div class="sar">
 
 <header>
-  <span class="goz">S15 · adım 3 · karar paketi</span>
+  <span class="goz">S15 · uygulandı · D-113</span>
   <h1>Kafa, senkron<br>ve müşteri gövdesi</h1>
-  <p class="alt">Üç görsel geri bildirimin sayısı çıktı. Dört kolda seçim senin; her kolun altında ölçülen rakam ve önerim duruyor.</p>
+  <p class="alt">Üç görsel geri bildirimin sayısı çıktı, dört kol seçildi ve kodlandı. Ölçülen rakamlar, seçilen kollar ve oyun içi sonuç.</p>
   <div class="kunye">
     <span><b>Ham çıktı</b> docs/olcum-yuruyus.json</span>
     <span><b>Rapor</b> docs/karakter-raporu-s15.md</span>
-    <span><b>Commit</b> 93282ae</span>
+    <span><b>Commit</b> c2d6201 · ölçüm 93282ae</span>
     <span><b>Tarih</b> 14 Eylül 2026</span>
   </div>
 </header>
@@ -314,8 +314,53 @@
   <p><strong>Rogue’un (bulaşıkçı) omzu 0,709</strong> — blob sınırı 0,60’ı kafa koluna bakmaksızın <em>bugün de</em> aşıyor. S14’ün “omuz 0,58, sınır aşılmıyor” satırı başka gövdeden alınmış. Bu turun kolu değil; ya sınır ya gövde seçimi kendi turunda gözden geçmeli — açık kalemlere yazdım.</p>
 </section>
 
+<!-- ═══════════ sonuç ═══════════ -->
+<section class="kol">
+  <div class="kol-bas"><span class="harf">✓</span><h2>Uygulandı</h2></div>
+  <p class="soru">Dört kol da onaylandığı gibi kodlandı. Oyun içi kareler — 38 müşteri, hepsi skinned.</p>
+
+  <figure>
+    <img src="gorsel/ss/s15-oyun-genis.png" alt="Kıraathane salonu: 38 müşteri, hepsi skinned karakter, tabureler üzerinde oturuyor">
+    <figcaption>Kapsül kalmadı: 38 eşzamanlı müşterinin hepsi skinned. Gömlek renkleri müşteri başına paletten; kafalar ×0,75, siluet ~1,52.</figcaption>
+  </figure>
+  <figure>
+    <img src="gorsel/ss/s15-oturus-yakin.png" alt="Yakın kadraj: müşteriler gerçek oturuş klibinde tabureye oturmuş, sahibin kasketi yok">
+    <figcaption>Gerçek <code>Sit_Chair_Idle</code> klibi: kalça taburenin oturağında (kök kaldırma +0,068). Sahibin kasketi kalktı — sağ altta, tepsiyle.</figcaption>
+  </figure>
+
+  <div class="kaydir">
+  <table>
+    <thead><tr><th>ne değişti</th><th>önce</th><th>sonra</th></tr></thead>
+    <tbody>
+      <tr><td>oyuncunun ayak kayması</td><td>7,9×</td><td class="ok">2,0×</td></tr>
+      <tr><td>garsonun ayak kayması</td><td>2,6×</td><td class="ok">1,00× (tam senkron)</td></tr>
+      <tr><td>müşterinin ayak kayması</td><td>4,6×</td><td class="ok">1,16×</td></tr>
+      <tr><td>baş payı</td><td>%42,3</td><td class="ok">~%36</td></tr>
+      <tr><td>omuz (blob sınırı 0,60)</td><td>0,552</td><td class="ok">0,552 (değişmedi)</td></tr>
+      <tr><td>müşteri gövdesi</td><td>instanced kapsül</td><td class="ok">48 yuvalı skinned</td></tr>
+      <tr><td>sahibin kasketi</td><td>var</td><td class="ok">yok</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="oneri">
+    <span class="goz">Ölçüm turunda söylediğimden sapan iki sayı</span>
+    <p><strong>“Tek materyal → 24 çizim”</strong> uygulamada çakıştı: başın dokusunu korumak (yüz ve saç oradan geliyor) tek çizimle bağdaşmıyor. Sevk edilen biçim gövde başına iki mesh — <strong>48 çizim / 0,52 ms</strong>, yeniden ölçüldü.</p>
+    <p><strong>“Personel ve müşteride süzülme tamamen biter”</strong> tam doğru değildi: kelepçe 1,80’de durduğu için müşteri (2,6 br/sn) ve bulaşıkçı kademe 2 (2,8) 1,16–1,25× artık kaymayla kalıyor. Garsonda tam sıfır.</p>
+    <p><strong>Bütçe 24 → 48</strong>: oyunda ölçünce 12 masada bile 38 eşzamanlı müşteri çıktı ve tavanı aşanlar kapsül olarak görünüyordu.</p>
+  </div>
+
+  <p class="not"><strong>Bekçi:</strong> <code>tests/karakter-senkron.test.ts</code> — 21 denetim, 18 mutasyonla doğrulandı, kaçan 0. <code>tsc -b</code> ✓ · vitest 964 ✓ · duman 42/42 ✓</p>
+  <p class="not"><strong>Commit:</strong> <code>c2d6201</code> (ölçüm: <code>93282ae</code>)</p>
+</section>
+
+<section class="kol">
+  <h3>Sonraki oturumda ilk soracağım</h3>
+  <p><strong>Geç oyunda müşteri tavanı.</strong> 24 masa tam açıkken müşteri 70’i geçebilir ve tavanı aşanlar yine kapsül olarak görünür. İki kol ölçüldü ama seçilmedi: tavanı <strong>80</strong>’e çıkarmak (1,57 ms / 112 çizim) ya da uzaktakini kapsüle düşürmek (<strong>LOD</strong>, kare başı sıralama ister). Soru turu dolduğu için bu tura sığmadı.</p>
+</section>
+
 <section class="kol" style="border-bottom:none">
-  <h3>Özet — dördüne birden “evet” dersen</h3>
+  <h3>Özet — seçilen kollar</h3>
   <ul class="sade">
     <li><strong>S3</strong> · koş/yürü klip seçimi + hıza bağlı timeScale, tavan 1,80</li>
     <li><strong>K-B ×0,75</strong> · kafa kemiği küçülür, gövde sabit, boy ~1,52</li>
@@ -323,7 +368,7 @@
     <li><strong>Ç2</strong> · müşteriler birleşik skinned</li>
     <li><strong>Kasket</strong> · sahipten kalkar, mutfak elemanında kalır</li>
   </ul>
-  <p class="not">Onaylayınca yalnız seçilen kollar kodlanır, bekçi testi yazılır, en az iki mutasyonla doğrulanır ve final tam koşu alınır.</p>
+  <p class="not">Dördü de uygulandı, test edildi ve push’landı.</p>
 </section>
 
 </div>
