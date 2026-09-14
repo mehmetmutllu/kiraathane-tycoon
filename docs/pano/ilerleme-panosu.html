@@ -1128,6 +1128,18 @@ h2{font-size:21px;font-weight:800}
  ],
  "riskler": [
   {
+   "sev": "Tasarım",
+   "renk": "now",
+   "b": "Yeni WC kapısı <b>yeşili götürdü, kahve getirdi</b> — D-104&rsquo;ün gerekçesine ters",
+   "p": "S13&rsquo;te kabin kapısı itme barlı yangın kapısından <b>itme barsız panel kapıya</b> geçti (D-111) ve bu, S7&rsquo;den beri açık duran bir kalemi kapattı. Ama bedeli renk oldu ve bir <b>kullanıcı kararına</b> dokunuyor: D-104&rsquo;te iki kapı arasından <code>door_A</code> seçilirken gerekçe <i>&ldquo;WC tek bir kahve kütle, yeşil onu kırıyor&rdquo;</i> idi (<code>feedback_color_variety</code>). <b>Karar paketinde verilen sayı yanlıştı ve uygulamadan önce ölçüm düzeltti:</b> &ldquo;grisi gider&rdquo; denmişti, oysa yeni kapının gözleri <code>[0,2] #828c91</code> gri (194 vertex — lavabo ve aynanın taşıdığı <b>aynı göz</b>) + <code>[0,6] #995842</code> kahve (212). Yani gri <b>yerinde kaldı</b>, giden <b>yeşil</b>. Uygulama sonrası kare bunu bir kez daha inceltti: vertex sayısı griyi baskın gösteriyor ama ekranda gri <b>tokmakta ve kasa kenarında</b> duruyor, kapının kütlesi kahve okunuyor. <b>Kodla kapatmak bir satır</b> (<code>KABIN_GOZ</code>&rsquo;e bir göz çifti yazmak) <b>ama o hamle D-099&rsquo;u deler</b> — &ldquo;atlas boyanmaz, renk varyantı TEMA kalemidir&rdquo;. İki karara birden dokunduğu için kendi turunu ister; bekçi bu listenin boş kalmasını denetliyor, yani sessizce yapılamaz."
+  },
+  {
+   "sev": "İçerik",
+   "renk": "wait",
+   "b": "Repoya giren <b>117 modelin 114&rsquo;ü</b> henüz sahneye konmadı",
+   "p": "S13 altı paketi indirdi ve kullanıcı <b>kol B</b>&rsquo;yi seçti: repoya yalnız bir açık kaleme bakan modeller girdi (<code>models/</code> 5,9 → <b>17,2 MB</b>; hepsini almak 27,2 olurdu ve 553 modelin 436&rsquo;sı hiçbir işe bakmıyordu). Ama <b>giren ile kullanılan aynı şey değil</b>: bu turda sahneye yalnız kapı girdi. Repoda duran ve henüz yeri olmayanlar: dört renkte <b>koltuk</b> ve puf, ahşap <b>tabure</b>, yuvarlak <b>halı</b>, sokak <b>feneri</b> ve mini fener, sekiz <b>tabak</b>, 33 <b>çalı/çim/ağaç/kaya</b>, kereste-palet-tuğla-kumaş <b>yığınları</b> (kilitli objenin &ldquo;tadilat hâli&rdquo; için), ve board-game paketinin <b>162 modeli</b> (okey ıstakası, domino taşı, zar, tepsi — <b>Kat 2</b> işi). Her biri kendi yerleşim turunu istiyor; künyeleri <code>public/assets/README.md</code> manifestinde, hangi desenle girdikleri <code>tools/olcum-yeni-paketler.mjs</code>&rsquo;te ve bekçisi <code>tests/yeni-paketler.test.ts</code>. <b>Yan kalem:</b> Forest&rsquo;ın ücretsiz katmanında <b>çiçek yok</b> ve olan her şey tek yeşil — &ldquo;kendi çizdiğin çiçekler yerine&rdquo; isteği bu paketle karşılanmadı, ücretli katman ya da başka bir CC0 kaynak <b>kullanıcı kararı</b>."
+  },
+  {
    "sev": "Oynanış",
    "renk": "now",
    "b": "Arka salonda <b>12 masa arasından geçilemiyor</b> — ölçüldü, düzeltme kullanıcı kararı bekliyor",
