@@ -3,6 +3,7 @@
 import { Suspense, Component, useMemo, useReducer, useEffect, type ReactNode } from 'react';
 import { useGLTF } from '@react-three/drei';
 import { Mesh, MeshStandardMaterial, type Object3D } from 'three';
+import { clone as skinKlon } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { gozDegistir, type Goz } from './atlasUV';
 import type { Vec3 } from '../../game/types';
 import { recoloredAtlas, atlasReady, onAtlasReady } from './recolor';
@@ -41,7 +42,15 @@ function Glb({ src, scale, position, rotation, recolor, esleme }: { src: string 
   useEffect(() => (recolor ? onAtlasReady(bump) : undefined), [recolor]);
   const ready = atlasReady();
   const obj = useMemo(() => {
-    const clone = scene.clone(true);
+    // S14: `scene.clone(true)` SKINNED mesh'te kemikleri ÖZGÜN iskelete bağlı bırakır — bütün
+    // kopyalar tek iskeleti paylaşır ve aynı anda aynı pozu alır. `SkeletonUtils.clone` iskeleti
+    // de kopyalayıp bağları yeniden kurar. Skinned olmayan modellerde ikisi aynı sonucu verir,
+    // o yüzden ayrım mesh'in kendisinden okunur, çağıranın bilmesine gerek yok.
+    let skinned = false;
+    scene.traverse((o: Object3D) => {
+      if ((o as Mesh & { isSkinnedMesh?: boolean }).isSkinnedMesh) skinned = true;
+    });
+    const clone = skinned ? skinKlon(scene) : scene.clone(true);
     if (esleme?.length)
       clone.traverse((o: Object3D) => {
         const m = o as Mesh;

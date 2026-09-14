@@ -1,11 +1,11 @@
 import { useRef } from 'react';
 import type { Group } from 'three';
 import { useGame } from '../../game/store';
-import { Model } from './Model';
 import { useActorTransform } from './actorTransform';
 import { PALETTE } from '../../config/palette';
 import { trayCapacityFor } from '../../config/economy.config';
-import { actorScale } from '../../config/actor';
+import { KAY_TEPSI_KAYMA } from '../../config/actor';
+import { KayActor } from './KayActor';
 
 // Çaycı karakter v2 (2026-06-11 kullanıcı isteği: "kollar bacaklar falan güzel olsun"): PARÇALI
 // gövde (Faz 6 animasyon iskeletine hazırlık — her uzuv ayrı mesh). AYRI bacaklar + ayakkabılar,
@@ -204,12 +204,15 @@ export function Player() {
   useActorTransform(outerRef, ref, readPlayerXZ);
   return (
     <group ref={outerRef}>
-      {/* D-076: gövde 1,29 yazılı, mount'ta 1,75'e ölçeklenir. Ölçek BURADA (OwnerBody'nin
-          içinde değil) çünkü karakter paneli aynı gövdeyi kendi kadrajında kullanır. Tepsi de
-          bu grubun içinde → ellerde kalır, ayrıca hizalamak gerekmez. */}
-      <group ref={ref} scale={actorScale('owner')}>
-        <Model fallback={<OwnerBody />} />
-        <CupTray tea={tray} food={trayFood} dirty={carriedDirty} dirtyFood={carriedDirtyFood} cap={trayCapacityFor(trayTier)} />
+      {/* S14/D-112: gövde artık KayKit karakteri — kendi ölçeğini `KayActor` taşır (iskelet
+          sabit, gövdeler aynı ölçekte). Tepsi gövdenin ÖLÇEĞİNİN DIŞINDA: bardaklar dünya
+          ölçüsünde yazılı (yarıçap 0,05 = 5 cm) ve gövde ölçeğine bağlanırsa onunla büyür.
+          `KAY_TEPSI_KAYMA` CupTray'in kendi çapasını KayKit elinin yerine taşır. */}
+      <group ref={ref}>
+        <KayActor kind="owner" />
+        <group position={KAY_TEPSI_KAYMA}>
+          <CupTray tea={tray} food={trayFood} dirty={carriedDirty} dirtyFood={carriedDirtyFood} cap={trayCapacityFor(trayTier)} />
+        </group>
       </group>
     </group>
   );

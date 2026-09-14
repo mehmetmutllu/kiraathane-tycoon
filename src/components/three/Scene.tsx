@@ -25,6 +25,7 @@ import {
   propX,
 } from './streetLook';
 import { PALETTE, FLOOR_THEMES, WALL_THEMES, LIGHTING } from '../../config/palette';
+import { KayActor } from './KayActor';
 import { Player } from './Player';
 import { Waiter } from './Waiter';
 import { Dishwasher } from './Dishwasher';
@@ -55,7 +56,7 @@ import { perf } from '../../game/perf';
 import { devCam, devTimeScale, devTopDown, useSandbox } from '../../game/devSandbox';
 import { screenPointer } from '../../game/screenPointer';
 import { activeStep } from '../../game/activeStep';
-import { actorScale, CAMERA_LOOK_Y } from '../../config/actor';
+import { CAMERA_LOOK_Y } from '../../config/actor';
 
 /** GEÇİCİ (2026-09-07 ölçümü): maketle aynı ton eşlemesi (kapalı) — bkz. Canvas'taki not. */
 // Simülasyonu her karede ilerlet (tek kaynak; __advanceTime aynı tick'i çağırır).
@@ -292,8 +293,6 @@ function KitchenHand({ service }: { service: number }) {
   // useMemo: her render yeni dizi üretirse aşağıdaki kayıt effect'i boşuna yeniden koşar.
   const start = useMemo(() => [wa[0], 0, wa[2]] as const, [wa]);
   // B2: "tost ustası" ayrı bir kişi değil — kat tek servisten döndüğü için tek çaycı var.
-  const apron = PALETTE.apron;
-  const cap = PALETTE.cap;
   useFrame((st) => {
     const grp = ref.current;
     if (!grp) return;
@@ -311,29 +310,11 @@ function KitchenHand({ service }: { service: number }) {
     grp.position.y = speed < 0.25 ? -0.04 + Math.sin(st.clock.elapsedTime * 3) * 0.02 : Math.abs(Math.sin(st.clock.elapsedTime * 7)) * 0.04;
   });
   return (
-    <group ref={ref} position={[start[0], 0, start[2]]} scale={actorScale('kitchenHand')}>
-      {/* bacaklar + gövde + önlük + baş (low-poly; palette = tek renk kaynağı).
-          D-076: gövde 1,08 yazılı (beş aktörün en kısasıydı), mount'ta 1,75'e ölçeklenir. */}
-      <mesh castShadow position={[0, 0.25, 0]}>
-        <boxGeometry args={[0.26, 0.5, 0.18]} />
-        <meshStandardMaterial color={PALETTE.pants} />
-      </mesh>
-      <mesh castShadow position={[0, 0.66, 0]}>
-        <boxGeometry args={[0.3, 0.34, 0.2]} />
-        <meshStandardMaterial color={PALETTE.shirt} />
-      </mesh>
-      <mesh position={[0, 0.6, 0.105]}>
-        <boxGeometry args={[0.26, 0.4, 0.02]} />
-        <meshStandardMaterial color={apron} />
-      </mesh>
-      <mesh castShadow position={[0, 0.95, 0]}>
-        <sphereGeometry args={[0.13, 10, 10]} />
-        <meshStandardMaterial color={PALETTE.skin} />
-      </mesh>
-      <mesh position={[0, 1.04, 0]}>
-        <cylinderGeometry args={[0.135, 0.14, 0.06, 10]} />
-        <meshStandardMaterial color={cap} />
-      </mesh>
+    <group ref={ref} position={[start[0], 0, start[2]]}>
+      {/* S14/D-112: ilkel kutu gövde yerine KayKit karakteri (ak sakallı usta). Ölçeği
+          `KayActor` kendi taşır; `hal="calis"` tezgâh başında çalışma klibini sürer —
+          bu aktör bir yol boyunca gidip geliyor ama işi tezgâhta, yürüyüş klibi yanıltırdı. */}
+      <KayActor kind="kitchenHand" hal="calis" />
     </group>
   );
 }

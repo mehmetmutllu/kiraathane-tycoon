@@ -1,13 +1,10 @@
 import { useCallback, useRef } from 'react';
 import type { Group } from 'three';
 import { useGame } from '../../game/store';
-import { Model } from './Model';
 import { useActorTransform } from './actorTransform';
 import { CarriedDirty } from './carriedDirty';
-import { actorScale, AUTHORED_HEIGHT, authoredRadius } from '../../config/actor';
-
-const DW_R = authoredRadius('dishwasher');
-const DW_CAP: [number, number, number, number] = [DW_R, AUTHORED_HEIGHT.dishwasher - 2 * DW_R, 6, 12];
+import { KAY_GARSON_TEPSI_KAYMA } from '../../config/actor';
+import { KayActor } from './KayActor';
 
 // Tek bulaşıkçı gövdesi (hook'lar per-unit kalsın diye ayrı bileşen).
 function DishwasherUnit({ cups, plates }: { cups: number; plates: number }) {
@@ -21,16 +18,11 @@ function DishwasherUnit({ cups, plates }: { cups: number; plates: number }) {
   return (
     <group ref={outerRef}>
       {/* D-076: garsonunkiyle aynı kapsül, aynı düzeltme (taban 0,07 gömülüydü) + aynı ölçek. */}
-      <group ref={ref} scale={actorScale('dishwasher')}>
-        <Model
-          fallback={
-            <mesh castShadow position={[0, AUTHORED_HEIGHT.dishwasher / 2, 0]}>
-              <capsuleGeometry args={DW_CAP} />
-              <meshStandardMaterial color="#4a6b82" />
-            </mesh>
-          }
-        />
-        <CarriedDirty cups={cups} plates={plates} />
+      <group ref={ref}>
+        <KayActor kind="dishwasher" />
+        <group position={KAY_GARSON_TEPSI_KAYMA}>
+          <CarriedDirty cups={cups} plates={plates} />
+        </group>
       </group>
     </group>
   );

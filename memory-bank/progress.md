@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 98 · YAPILAN 87 · %89):**
+**Oturum bütçesi (TOPLAM 99 · YAPILAN 88 · %89):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -24,10 +24,10 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
 | | D meta katman | 9/9 ✅ |
 | | E arayüz ve cila | 4/5 🔧 |
-| | **S sanat ve arayüz geçişi** | **12/14 🔧** |
+| | **S sanat ve arayüz geçişi** | **13/15 🔧** |
 | | H oynanış düzeltmeleri | 0/3 ⏳ |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **59/70** |
+| **Program toplam** | | **60/71** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -40,7 +40,7 @@ kendi turunu aldı (D9) → Faz D 8 → 9, toplam 79 → 80. **Aynı gün:** E3 
 kararıyla SİSTEM (E3) ve DOSYALAR (E4) olarak ikiye bölündü, onboarding E5 oldu → Faz E 4 → 5,
 toplam 80 → 81. **2026-09-09 (ikinci oturum):** kullanıcı oynadı, 25 kalemlik geri bildirim verdi (`docs/geribildirim-oyun-testi-2026-09-09.md`); sanat/arayüz işi **Faz S** olarak açıldı (6 kalem, `docs/plan-faz-s-sanat.md`) → toplam 81 → 87. Faz adı S, çünkü defterde zaten bir Faz G (görsel taban) var; `G-0x` numaraları geri bildirimin, fazın kalemleri `S1…S6`. **Aynı gün:** kullanıcı S1'i oynadı ve dokuz kalem daha verdi (G-26…G-34); pad/modal düzeltmeleri **S2** olarak kendi kalemini aldı → Faz S 6 → 7, toplam 87 → 88. **Aynı gün, üçüncü tur:** kullanıcı lavabo kabin kapılarını ve ses assetlerini (ortam uğultusu + gerçekçi para sesi) istedi, ikisi de ayrı kalem oldu; UI araştırması da kendi kalemine ayrıldı → Faz S 7 → 10, toplam 88 → 91. **Aynı gün, dördüncü tur:** kullanıcı *"paketleme ve yayın öncesi oyun assetlerle hazır olsun"* dedi ve **oturum sayısı** istedi. Sayım dürüstçe yapıldı: UI dili tek oturuma sığmaz (araştırma+maket ile uygulama ayrı), karakterler kendi turunu ister → Faz S 10 → 12. Ayrıca bekleyen üç oynanış işi (hatalar · yükseltme sırası · masa aralığı) sanat kalemi değil; **Faz H** olarak ayrıldı (3 kalem). Toplam 91 → 96. **2026-09-10:** S6/②'de ertelenip S7'de kullanıcı kararıyla ayrılan **giriş cephesi camı** kendi
 turunu aldı ve bitti → Faz S 12 → 13 kalem (yeni kalem **S8**, sonrakiler bir kaydı), toplam
-96 → 97. **2026-09-14:** S11 (UI uygulaması) kullanıcının "görevi en fazla ikiye böl" kuralıyla DİL (**S11**) ve YAPI (yeni kalem **S12**, sonrakiler bir kaydı) olarak ikiye bölündü — ölçek/palet/ikon ile ekran kabuğu ayrı işler, kesme çizgisi yeşil ara durum (D-109) → Faz S 13 → 14, toplam 97 → 98. **E4 kapsamı ölçümle değişti ama kalem sayısı değişmedi:** tur "dosya bırak"
+96 → 97. **2026-09-14 (S14):** karakter kalemi kullanıcının *"görevi en fazla ikiye böl"* kuralıyla PERSONEL (**S14**) ve MÜŞTERİ (yeni kalem **S15**) olarak ikiye bölündü — kesme çizgisi yeşil ara durum: personel skinned, müşteriler kapsül olarak çalışmaya devam ediyor (D-112) → Faz S 14 → 15, toplam 98 → 99. **2026-09-14:** S11 (UI uygulaması) kullanıcının "görevi en fazla ikiye böl" kuralıyla DİL (**S11**) ve YAPI (yeni kalem **S12**, sonrakiler bir kaydı) olarak ikiye bölündü — ölçek/palet/ikon ile ekran kabuğu ayrı işler, kesme çizgisi yeşil ara durum (D-109) → Faz S 13 → 14, toplam 97 → 98. **E4 kapsamı ölçümle değişti ama kalem sayısı değişmedi:** tur "dosya bırak"
 olarak açılmıştı, ölçüm "dosya alma, motoru büyüt" dedi (D-096); ortam sesi + `settings.music`
 kablosu E4'ün dışında kaldı ve **henüz kendi kalemi olmadı** — açık kalemler listesinde duruyor.
 
@@ -245,7 +245,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   değil; kendi turunu ister.
 - ⏳ **E5 — hareketli onboarding**
 
-## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (12/14) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
+## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (13/15) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
 - ✅ **S1 — pad ve yükseltme dili yeniden yazıldı** · çember → **köşe parantezli kare** (kenar
   ortaları boş), dolum büyüyen disk → **alttan üste dolan kare**, "Masa"/"Çay Yükselt"/"Usta"
   → hepsinde **YÜKSELT** + solunda düz yukarı ok, yazı 700 → 800, 💎 pulu "mavi kare" → gerçek
@@ -434,8 +434,19 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   Üç kez ölçülen iki kalem kapandı: çöp kutusu 9 pakette yok · Forest'ta çiçek yok.
   Bekçi `tests/yeni-paketler.test.ts` (8 denetim, **11 mutasyon**) · vitest 932 · duman 42/42.
   **Açık kaldı:** yeni kapı yeşili götürüp kahve getiriyor — D-104'ün gerekçesine ters, tur kartında.
-- ⏳ **S14 — karakterler** — ana karakter · garson · bulaşıkçı · müşteriler. Altı kol bedeliyle
-  asset panosunda; **kullanıcı seçimi bekliyor**, seçilmeden tur açılamaz.
+- ✅ **S14 — karakterler: PERSONEL (D-112)** — pano §3'ün üç hükmü çürüdü: ekipman **ayrı
+  düğüm** (sivilleştirme = `visible=false`) · klipler gövdeye **69/69 iz** tutuyor (retarget yok) ·
+  Quaternius ücretsiz katmanı 2 gövde + **80 MB PBR doku** (tek sivil karakter ≈22 MB). Panonun
+  bilmediği paket bulundu: **Character Animations**, 139 klip, `Sit_Chair_*` dahil.
+  Kullanıcı oranı onayladı konsepti reddetti (*"bunlar savaş karakteri"*) → çözüm dokuda: gövde ve
+  bacak palete boyanır, **baş boyanmaz** (yüz/saç/sakal oradan gelir), kasket ve önlük kemiğe takılı.
+  Repoya **6 gövde + 4 klip** girdi (+5,9 MB → 23,1). Sahip · garson · bulaşıkçı · çaycı skinned;
+  **müşteriler kapsül** (kendi turunda: skinned + parça birleştirme + gömlek rengi).
+  Bekçi `tests/karakter.test.ts` (11 denetim, **15 mutasyon, kaçan 0**) · vitest 943 · duman 42/42.
+- ⏳ **S15 — müşteriler skinned'e geçer** *(tur kartında `S14b` adıyla açılacak — S14 ikiye
+  bölündü; defter numarası S15.)* Kullanıcı isteği. Ölçüldü: karakter başına **8 çizim çağrısı**,
+  24 müşteri = **192** (bugün InstancedMesh ile **1**). Tek materyal → parça birleştirme 24'e
+  indirir. Ayrıca gömlek rengi müşteri başına palet renginden seçilecek (`feedback_color_variety`).
 
 **Faz S kapısı:** 185 kullanılmayan KayKit modeli oyuna bağlı + UI dili maketle onaylanmış +
 ses kaynağı kararı yazılı. Ondan sonra Faz F'e (paketleme) geçilir.

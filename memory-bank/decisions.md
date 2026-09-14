@@ -3367,3 +3367,51 @@ renk TEMA kalemidir) deler → kendi turu.
 **11 mutasyon, kaçan 0.** Sayılar: `docs/yeni-paketler-raporu-s13.md` · ham
 `docs/olcum-yeni-paketler.json` · görsel `docs/gorsel/s13-*.png` ·
 önizleme https://claude.ai/code/artifact/dcbaaee3-8889-4665-83b2-feff02a60c13
+
+
+## D-112 — Personel gövdeleri KayKit karakterlerine geçti (S14/①, 2026-09-14)
+
+**Soru:** beş karakter (sahip · garson · bulaşıkçı · çaycı · müşteri) hangi kaynaktan gelir?
+`asset-secim-panosu` §3 altı kol yazmıştı ve hepsi tek hükme dayanıyordu: *"KayKit'in karakter
+paketleri hepsi fantezi; sivil görünüm için mesh düzenleme + yeniden dokulama, birkaç oturum."*
+O pano **indirilmeden** yazılmıştı; S13 aynı panonun altı görevinden üçünü çürütmüştü.
+
+**Ölçüm üç hükmü çürüttü:** ① ekipman **ayrı düğüm** — sivilleştirme mesh düzenleme değil
+`visible=false` (Rogue'da tek düğüm, 84 üçgen). ② "Mixamo uyumlu" yetersiz övgü: ayrı paketteki
+klipler gövdeye **69/69 iz** tutuyor, retarget yok. ③ Quaternius'un ücretsiz katmanı 6 değil
+**2** gövde, kıyafet paketi `...-outfits-fantasy`, doku hattı PBR ve **80 MB** (tek normal
+haritası 13,8 MB) — tek sivil karakterin bedeli ≈22 MB, `models/`in TAMAMI 17,2 MB'ken.
+Panonun hiç bilmediği paket bulundu: **Character Animations** (ücretsiz, 139 klip; içinde
+`Sit_Chair_*` — `actor.ts`in *"gerçek oturuş pozu Faz 6'da gelir"* notunun karşılığı).
+
+**Kullanıcı oranı onayladı, konsepti reddetti** (*"yapısı boyutu proporsiyonu çok iyi ama bunlar
+savaş karakteri"*) — ve haklıydı: ekipman sökülünce altından **kemer/bilek bandı/deri askı**
+çıkıyor, o da GEOMETRİDE değil dokuda. Aranan şey (KayKit oranı + modern sivil + CC0) hiçbir
+kaynakta yok; KayKit'in kendi ücretli serilerinde bile 14 karakterde 2-3 sivil var.
+
+**Çözüm dokuda çıktı:** gövde ve bacak oyunun paletine boyanır, **baş boyanmaz** — yüz, saç ve
+sakal başın kendi dokusundan gelir. İlk denemede baş da boyanmıştı ve Barbarian'ın ak sakalı ten
+rengine döndü; kural o kareden doğdu. Kasket ve önlük bizim ve `head`/`chest` KEMİĞİNE takılı,
+yani klipler onları da taşıyor. Kasket sabit yükseklikte duramıyor (her gövdenin saçı farklı
+yükseliyor) — başın kendi kutusundan ölçülüyor.
+
+**Seçilen:** kadro **sakallı/saçlı Adventurer gövdelerinden**, palete boyalı (kullanıcı
+*"en kalitelisi nasıl olacaksa öyle olsun"* dedi; manken kolu boş yüzüyle vitrinde belirgin
+şekilde geride kaldı ve yüzü elle doldurmak kendi cila turunu isterdi). Ölçek **Ö1**: toplam boy
+1,75, `ACTOR_HEIGHT` ve ondan türeyen hiçbir sayı kıpırdamadı. Repoya 6 gövde + 4 klip dosyası
+girdi (**+5,9 MB** → 23,1); dövüş/büyü klipleri alınmadı.
+
+**Tur ikiye bölündü** (`feedback_task_splitting`): bu tur **personel**, müşteriler kapsül olarak
+çalışmaya devam ediyor. Sonraki tur: müşteri skinned + parça birleştirme (ölçüldü: karakter başına
+8 çizim çağrısı, 24 müşteri = 192; tek materyal olduğu için birleştirme 24'e indirir) + gömlek
+rengi çeşitliliği.
+
+**Bekçi:** `tests/karakter.test.ts` (11 denetim), **15 mutasyon, kaçan 0.** İlk turda 2 mutasyon
+kaçtı ve ikisi de gerçek zayıflıktı: ekipman kuralı **iki yerde** yazılıydı (araç + çalışma
+zamanı) ve test tuzağı taşımayan modellerde koşuyordu; klon denetimi dizgeye bakıyordu, ifadeye
+değil. İkisi de kapatıldı. Ayrıca S13'ün `models/` tavanı **ölçüm artığı klasörü sayıyordu**
+(63 MB'lık aday indirmesi bekçiyi kırmızı yaptı, repo değil) — `_` ile başlayan klasörler artık
+sayılmıyor, tavan D-112'nin gerekçesiyle 24'e çıktı.
+
+Sayılar: `docs/karakter-raporu-s14.md` · ham `docs/olcum-karakter.json` · `docs/olcum-skin-perf.txt` ·
+kareler `docs/gorsel/ss/s14-*.png` · önizleme https://claude.ai/code/artifact/e2034137-d5c6-4afb-9896-9bee43cd30c7

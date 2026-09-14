@@ -252,14 +252,49 @@ KayKit'in iskeleti ve onaylanmış oranı üstünde.**
 
 ---
 
-## §Karar
+## §Karar — D-112
 
-*(BOŞ — karar paketi kullanıcıya sunulacak, seçim buraya ve `decisions.md`'ye D-1xx olarak yazılacak.)*
+Karar paketi iki turda sunuldu. **Birinci tur:** kullanıcı oranı onayladı, konsepti reddetti
+(*"yapısı boyutu proporsiyonu çok iyi ama bunlar savaş karakteri, başka bir şey araştırıp
+bulamaz mıyız bunun gibi"*) → §B11 ölçümü açıldı. **İkinci tur:** vitrin sunuldu (12 aday,
+§8 önizleme), kullanıcı *"en kalitelisi nasıl olacaksa öyle olsun"* dedi.
+
+| kol | seçilen | gerekçe |
+|---|---|---|
+| kaynak | **A · KayKit Adventurers, palete boyalı** | Manken kolu vitrinde geride kaldı: boş yüzü elle doldurmak kendi cila turunu ister, Adventurer'da yüz/saç/sakal **hazır** geliyor |
+| ölçek | **Ö1 · toplam boy 1,75 (×0,794)** | `ACTOR_HEIGHT` ve ondan türeyen hiçbir sayı kıpırdamıyor (yarıçaplar · kamera · baloncuk · erişim · nav) |
+| kapsam | **6 gövde + 4 klip (+5,9 MB → 23,1)** | Tools dosyası dahil (`Holding_*` garsonun tepsi pozu); dövüş/büyü klipleri alınmadı |
+| müşteri | **skinned (kullanıcı istedi) — ama SONRAKİ tur** | 192 çizim çağrısı riski parça birleştirmeyle çözülecek; tur ikiye bölündü |
 
 ## §Uygulama
 
-*(BOŞ)*
+- `public/assets/models/kaykit-characters/` — 6 gövde + 4 klip + iki lisans künyesi; manifest yazıldı.
+- `src/config/actor.ts` — `KAY_MODEL` · `KAY_KIYAFET` · `KAY_KLIPLER` · `KAY_SCALE` (tek ölçek,
+  iskeletten türüyor) · `KAY_EL_Y/Z` ve tepsi kaymaları.
+- `src/components/three/KayActor.tsx` (yeni) — SkeletonUtils klonu · ekipman gizleme · parça
+  boyama (**baş hariç**) · kasket/önlük kemiğe takma (kasket başın ÖLÇÜLEN tepesine) · klip
+  seçimi `useFrame` içinde hızdan, React'ten geçmeden.
+- `src/components/three/Model.tsx` — skinned modelde `SkeletonUtils.clone`; düz klon bütün
+  kopyaları tek iskelete bağlıyordu.
+- `Player` · `Waiter` · `Dishwasher` · `Scene.KitchenHand` — gövde `KayActor`, taşınan eşya
+  gövde ölçeğinin **dışında** (bardaklar dünya ölçüsünde yazılı).
+
+**Denge sayısı DEĞİŞMEDİ** — `economy.config.ts`, `tick.ts`, `rules.ts` bu turda açılmadı.
 
 ## §Bekçi
 
-*(BOŞ)*
+`tests/karakter.test.ts` — **11 denetim**, **15 mutasyon, kaçan 0**.
+
+İlk turda **2 mutasyon kaçtı** ve ikisi de gerçek zayıflıktı:
+- **M4** ekipman kuralı **iki yerde** yazılı (ölçüm aracı + `KayActor`) ve test yalnız role
+  atanmış modellerde koşuyordu; tuzağı taşıyan `Rogue_Hooded` hiçbir role atanmamış → kural
+  bozulunca test yeşil kalıyordu. Test artık **repodaki her gövdeyi** deniyor ve iki kopyanın
+  aynı olduğunu ayrıca doğruluyor (⑪).
+- **M8** klon denetimi `SkeletonUtils` dizgesini arıyordu; import dururken klon satırı düz klona
+  dönebiliyordu. Artık **ifadenin kendisi** aranıyor.
+
+**S13'ün bekçisi de düzeltildi:** `models/` tavanı ölçüm artığı klasörünü sayıyordu — 63 MB'lık
+aday indirmesi testi kırmızı yaptı ve kırmızı yanan şey repo değildi. `_` ile başlayan klasörler
+artık sayılmıyor; tavan D-112'nin gerekçesiyle 20 → 24 MB.
+
+Kapanış: `tsc -b` ✓ · vitest **943** ✓ · duman **42/42** ✓.

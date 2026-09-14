@@ -21,6 +21,7 @@ servis eder → URL: `/assets/models/<paket>/<isim>.gltf`. Loader: `components/t
 | `kaykit-forest-nature/` | 33 model (paketin 105'inden) + `forest_texture.png` | KayKit Forest Nature Pack 1.0 — Kay Lousberg | **CC0** (pakette `License.txt`) | ✅ eklendi 2026-09-14 (S13) · entegrasyon ⏳ |
 | `kaykit-holiday-bits/` | 21 model (paketin 98'inden) + `holiday_bits_texture.png` | KayKit Holiday Bits 1.0 — Kay Lousberg | **CC0** — pakette `License.txt` YOK, lisans itch sayfasının kendi alanından: *Creative Commons Zero v1.0 Universal* | ✅ eklendi 2026-09-14 (S13) · entegrasyon ⏳ |
 | `kaykit-resource-bits/` | 21 model (paketin 76'sından) + `resource_bits_texture.png` | KayKit Resource Bits 1.0 — Kay Lousberg | **CC0** (pakette `License.txt`) | ✅ eklendi 2026-09-14 (S13) · entegrasyon ⏳ |
+| `kaykit-characters/` | **6 gövde** (Barbarian · Knight · Mage · Ranger · Rogue · Rogue_Hooded; doku gövdenin İÇİNDE gömülü) + **4 klip dosyası** (`Rig_Medium_General/MovementBasic/Simulation/Tools` — 69 klip) + iki `License-*.txt` | KayKit Adventurers 2.0 FREE + KayKit Character Animations 1.1 — Kay Lousberg | **CC0** (ikisinin de `License.txt`'i klasörde tutuldu) | ✅ eklendi 2026-09-14 (S14) · **personel entegre edildi aynı gün** (sahip · garson · bulaşıkçı · çaycı) · müşteriler ⏳ sonraki tur |
 | `kaykit-prototype-bits/` | **3 model** (paketin 72'sinden: `Door_A` · `Door_A_Decorated` · `Door_B`) + `prototypebits_texture.png` | KayKit Prototype Bits 1.1 — Kay Lousberg | **CC0** (pakette `License.txt`) | ✅ eklendi 2026-09-14 (S13) · **entegre edildi aynı gün** (WC kabin kapısı) |
 
 > Not: Pakette gelen fbx / fbx(unity) / obj+mtl / ekstra png (sample, contents) ve License.txt/url
@@ -80,10 +81,24 @@ lisans CC0 olarak `LICENSE.txt`ten doğrulandı, künye bu manifestte.
 - **Kullanılmaz (kıraathane dışı):** `bed_*`
 - Mevcut kancalar: `seatsByLevel` / `tableLevels` / `tableclothByLevel` — model eşlemesi bunlara takılır.
 
-## Karakterler — KALDIRILDI (2026-06-11 kullanıcı kararı)
-WP3'te eklenen Quaternius Modular Men/Women glb'leri kullanıcı feedback'iyle geri alındı
-("konsepte uygun değil; My Hotel tarzı olmalı"). Karakterler primitive (parçalı gövde) stile döndü.
-Yeni karakter paketi seçimi kullanıcıyla birlikte yapılacak (aday: Synty POLYGON / Quaternius UAL).
+## Karakterler — KayKit gövdeleri (2026-09-14 · S14 · D-112)
+
+**Geçmiş:** WP3'te eklenen Quaternius Modular Men/Women glb'leri kullanıcı geri bildirimiyle
+geri alınmıştı ("konsepte uygun değil; My Hotel tarzı olmalı") ve karakterler ilkel parçalı
+gövdeye dönmüştü. S14'te ölçülerek yeniden açıldı.
+
+**Neden Quaternius DEĞİL (ölçüldü, `docs/karakter-raporu-s14.md` §B7):** ücretsiz katmanda 2 taban
+gövde var (panonun yazdığı 6 değil), modüler kıyafet paketinin adı `...-outfits-**fantasy**`, ve
+doku hattı PBR: taban karakterlerin Godot/UE doku klasörü **80 MB**, tek bir normal haritası
+13,8 MB. Tek sivil karakterin repo bedeli ≈ **22 MB**; KayKit'in karşılığı **334-529 KB**,
+doku gövdenin içinde gömülü.
+
+**Ne alındı:** KayKit Adventurers'ın altı gövdesi + Character Animations'ın dört klip dosyası.
+Gövdeler fantezi paketinden geliyor ama fantezi **sökülebilir**: ekipman (pelerin/miğfer/şapka)
+ayrı düğüm, gizlemek bir satır; ortaçağ derisi gövdenin DOKUSUNDAydı, gövde ve bacak oyunun
+paletine boyanıyor. **Baş boyanmaz** — yüz, saç ve sakal başın kendi dokusundan gelir.
+Kasket ve önlük bizim ve `head`/`chest` kemiğine takılı, yani klipler onları da taşıyor.
+Kod: `src/components/three/KayActor.tsx` · kayıt `src/config/actor.ts` · bekçi `tests/karakter.test.ts`.
 
 ## Türk'e özel modeller (henüz yok — greybox/ilkel kullanılıyor)
 KayKit pakette OLMAYAN, kıraathaneye özgü objeler. Gerektiğinde AI üretimi (Meshy/Tripo) veya

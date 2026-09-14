@@ -70,16 +70,22 @@ describe('S13/A — kol B: repoya yalnız bir işe bakan model girdi', () => {
 
   it('models/ ağırlığı ölçülen kolun içinde kalıyor (kol A 27,2 MB idi ve ELENDİ)', () => {
     const toplam = readdirSync(KOK)
+      // `_` ile başlayan klasörler ÖLÇÜM ARTIĞI (aday indirmeleri), `.gitignore`'da ve repoda
+      // değiller — ama diskte duruyorlarsa bu bekçiyi şişiriyorlar. S14'te birebir bu oldu:
+      // 63 MB'lık aday klasörü yüzünden tavan aşıldı ve kırmızı yanan şey repo değildi.
+      .filter((d) => !d.startsWith('_'))
       .filter((d) => statSync(path.join(KOK, d)).isDirectory())
       .reduce(
         (s, p) => s + readdirSync(path.join(KOK, p)).reduce((t, f) => t + statSync(path.join(KOK, p, f)).size, 0),
         0,
       );
     const mb = toplam / 1024 / 1024;
-    // Ölçülen: 17,2 MB (kol B 8,4 + board-game'in tamamı). Taban 5,9'un altına düşerse eski
-    // paketlerden biri silinmiş demektir; 20'yi aşarsa elenen kol A geri sızmış demektir.
+    // Ölçülen: S13 sonunda 17,2 MB (kol B 8,4 + board-game'in tamamı). S14/D-112 buna
+    // **bilerek** 5,9 MB ekledi (6 karakter gövdesi + 4 klip dosyası) → 23,1 MB. Taban 5,9'un
+    // altına düşerse eski paketlerden biri silinmiş demektir; tavanı aşarsa elenen kol A ya da
+    // alınmayan dövüş klipleri geri sızmış demektir. Tavan = 23,1 + bir gövdelik pay.
     expect(mb).toBeGreaterThan(5.9);
-    expect(mb).toBeLessThan(20);
+    expect(mb).toBeLessThan(24);
   });
 });
 

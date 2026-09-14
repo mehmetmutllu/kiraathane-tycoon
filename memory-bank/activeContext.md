@@ -5,72 +5,55 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-14 — **S14 KARAKTERLER · ölçüm turu açık** · Faz S 12/14 · 87/98)
+## ŞU AN (2026-09-14 — **S14 BİTTİ: PERSONEL SKINNED'E GEÇTİ, D-112** · Faz S 13/15 · 88/99)
 
 ```
-SORU            : Beş karakter gövdesi (sahip · garson · bulaşıkçı · müşteri · çaycı) hangi
-                  kaynaktan gelir — ve skinned'e geçmenin KOD bedeli nedir?
-                  Panonun A…F kolları 2026-09-09'da **indirilmeden** yazıldı; S13 aynı panonun
-                  6 görevinden 3'ünün çürüdüğünü gösterdi → kollar yeniden ölçülüyor.
-ÖLÇÜLECEK KOLLAR: A  KayKit Adventurers (ücretsiz) — ekipman AYRI node mu (sökülebilir mi),
-                     rig/animasyon var mı, boy·omuz oranı vs ACTOR_HEIGHT 1,75, repo bedeli
-                  A2 KayKit'in diğer ücretsiz karakter paketleri — envanter (pano yalnız
-                     "hepsi fantezi" diyor, sayısı yok)
-                  D  Quaternius UBC + Modular Outfits (ücretsiz) — 2026-06-11 reddi GÖRSELdi,
-                     oran farkı hiç sayıya çevrilmedi
-                  F  ilkel kalsın + iyileşsin — bugünkü 5 gövdenin sayısı TABAN
-                  B/C/E ücretli (Mystery Monthly $19,99 · Complete $150 · Synty $20-40) →
-                     indirilemez, fiyat + risk satırı olarak kalır
-                  KOD BEDELİ ayrı kol: Model.tsx skinned klon (scene.clone(true) skinned'de
-                     bozulur) · Customers.tsx **InstancedMesh** (128 NPC tek çizim; kodun kendi
-                     notu "skinned mesh instancing farklı" diyor) → personel ile MÜŞTERİ ayrı
-                     bedel taşıyor, tek kol değil.
-SAYILAR         : (adım 2'den sonra dolar — docs/karakter-raporu-s14.md §Bulgular)
-KARAR           : (adım 3 — kullanıcı seçer)
-UYGULAMA        : (adım 4 — yalnız kararın kolu)
-BEKÇİ           : (test dosyası + mutasyon sayısı)
+SORU            : Beş karakter gövdesi hangi kaynaktan gelir, skinned'in KOD bedeli ne?
+ÖLÇÜLECEK KOLLAR: A KayKit · A2 diğer ücretsiz KayKit paketleri · D Quaternius · F ilkel kalsın ·
+                  B/C/E ücretli (fiyat satırı) · KOD BEDELİ personel ↔ müşteri ayrı
+SAYILAR         : docs/karakter-raporu-s14.md · ham docs/olcum-karakter.json · olcum-skin-perf.txt
+                  12 ücretsiz gövde, 11'i TEK rig (Rig_Medium, 23 kemik) · 259-529 KB · doku gömülü
+                  ekipman AYRI düğüm (Rogue'da 1 düğüm/84 üçgen) · klipler 69/69 iz → retarget YOK
+                  139 klip ücretsiz, Sit_Chair_* dahil · baş boyun %50'si (bugünkü gövdede %33)
+                  omuz 0,58 ↔ kapsül 0,60 (blob sınırı aşılmıyor)
+                  perf: 24 skinned = 192 çizim / 2,2 ms · instanced kapsül 1 çizim / 0,05 ms
+                  Quaternius: 2 gövde (6 değil) · kıyafet paketi FANTASY · doku 80 MB
+KARAR           : D-112 — kadro Adventurer gövdelerinden, palete boyalı, BAŞ boyanmaz.
+                  Ölçek Ö1 (toplam 1,75 — türeyen hiçbir sayı kıpırdamadı). 6 gövde + 4 klip
+                  (+5,9 MB → 23,1). Tur İKİYE bölündü: personel bu tur, müşteriler S15.
+UYGULAMA        : KayActor.tsx (yeni) · actor.ts kaydı · Model.tsx SkeletonUtils · Player ·
+                  Waiter · Dishwasher · Scene.KitchenHand · manifest künyesi
+BEKÇİ           : tests/karakter.test.ts — 11 denetim, **15 mutasyonla** doğrulandı, kaçan 0
+                  (ilk turda 2 kaçtı: kural İKİ yerde yazılıydı + klon denetimi dizgeye bakıyordu)
+                  vitest 943 ✓ · duman 42/42 ✓ · tsc -b ✓
 ```
 
 ## SIRADAKİ TAM ADIM
 
-**S14 — karakterler.** Faz S'de iki kalem kaldı:
-- **S14 karakterler** — ana karakter · garson · bulaşıkçı · müşteriler. Altı kol bedeliyle asset
-  panosunda; **kullanıcı seçimi bekliyor, seçilmeden tur açılamaz.**
-- **S9 ses** (dosyalar + seri ivmesi) ayrı tur; kaynak kararı yazılı (D-106 · S-C), paketler
-  indirildi ama repoya GİRMEDİ — yalnız kullanılacak dosyalar künyesiyle girecek.
-  **İndirme artık engel değil:** `pwsh tools/indir-itch.ps1 -Sayfa <adres> -Hedef <klasör>`
-  dört adımın dördünü de yapıyor (S13'te düzeltildi).
+**S15 — müşteriler skinned'e geçer** (tur kartında `S14b`). Kullanıcı "hepsinde skinned çok iyi
+olur" dedi; bedel ölçülü ve kol hazır:
+- Bugün `Customers.tsx` **tek InstancedMesh** (NPC_CAP 128 → 1 çizim çağrısı).
+- Skinned'de karakter başına **8 çizim** (gövde 8 parça mesh) → 24 müşteri = **192**; mobil bütçe
+  tipik 100-200. **Azaltma kolu ölçüldü ama denenmedi:** her gövdenin TEK materyali var, parçalar
+  birleştirilebilir → karakter başına 1 çizim, 24 müşteri = 24.
+- `Sit_Chair_Down/Idle/StandUp` klipleri repoda: bugünkü `SEATED_DROP` numarası (gövdeyi 0,45
+  aşağı indirme) gerçek oturuş poziyle değişebilir. Montaj kaldırması ölçüldü (§B10).
+- Gömlek rengi müşteri başına palet renginden seçilecek (`feedback_color_variety`).
 
-Ardından **Faz H** (H1 üç hata · H2 yükseltme sırası · H3 masa aralığı). H2 ve H3 DENGE
-kalemleri — varyant kapısına tabi, ölçülmeden uygulanmaz.
+Ardından **S9 ses** (kaynak kararı yazılı, D-106 · S-C), sonra **Faz H** (H1 üç hata · H2
+yükseltme sırası · H3 masa aralığı — son ikisi DENGE, varyant kapısına tabi).
 
-### S13'ten DEVREDEN (ölçüldü, bilerek yapılmadı)
+### S14'ten DEVREDEN (ölçüldü/görüldü, bilerek yapılmadı)
 
-- **Yeni WC kapısı YEŞİLİ götürüp KAHVE getiriyor** — D-104'te kullanıcı `door_A`yı seçerken
-  gerekçesi *"WC tek bir kahve kütle, yeşil onu kırıyor"* idi (`feedback_color_variety`).
-  Ölçüldü: yeni kapı `[0,2] #828c91` gri ×194 (lavabo/aynanın AYNI gözü) + `[0,6] #995842`
-  kahve ×212 — yani **gri kaldı, giden yeşil.** Kodla kapatmak `KABIN_GOZ`e bir göz çifti
-  yazmak ama o D-099'u (atlas boyanmaz, renk TEMA kalemidir) deler → **kendi turu.**
-- **Repoya giren 117 modelin 114'ü sahneye GİRMEDİ** — koltuk ×4 renk · puf ×4 · tabure · halı ·
-  fener · tabak · çalı/çim/ağaç · kereste/palet/tuğla/kumaş yığını · board-game'in 162 modeli.
-  Her biri kendi yerleşim turunu ister; repoda duruyorlar ve manifestte künyeleri var.
-- **Çiçek hâlâ yok** (Forest'ın ücretsiz katmanında yok, olan her şey tek yeşil `_Color1`).
-  İstenirse ya ücretli katman ya başka CC0 kaynak — kullanıcı kararı.
-
-### S12'den DEVREDEN (ölçüldü/görüldü, bilerek yapılmadı)
-
-- **Karakter ekranı tam ekranda altta boş kalıyor** — tek karakter varken doldurulacak içerik yok.
-  Mağaza vitrini boşluğu yutuyor, Görevler/Hedefler zaten doluyor. Bu bir İÇERİK kalemi (S14),
-  yerleşim kalemi değil.
-- **`DEV` rozeti K3'ün üstüne biniyor** (`devSandbox.css` z-index). Yalnız `npm run dev`'de çizilir,
-  oyuncuya gitmez; bekçinin kapsamı dışında bırakıldı.
-
-**Asset panosu:** https://claude.ai/code/artifact/2e7f92c0-15b6-4f72-814d-753cf79d74e0
-**Paketten çıkanlar:** https://claude.ai/code/artifact/e2917b1e-64c9-4f9f-96e6-7d3ba5a719a9
-**Mor arayüz maketi:** https://claude.ai/code/artifact/6cc7a95e-c0a3-4802-8ea3-99398d637981
-**S11 önizlemesi:** https://claude.ai/code/artifact/f82648fa-18dd-4e21-a3a2-8f252efd2210
-**S12 önizlemesi (altı ekran önce/sonra + M2 + sayılar):** https://claude.ai/code/artifact/a83eade2-32f6-4a64-ae34-6743a93922a3
-**S13 ölçüm önizlemesi (altı paket · altı hüküm · bedel kolları):** https://claude.ai/code/artifact/dcbaaee3-8889-4665-83b2-feff02a60c13
+- **Karakter paneli hâlâ ESKİ ilkel gövdeyi gösteriyor** (`Player.tsx`'in `OwnerBody`'si export
+  olarak duruyor ve `CharacterPanel` onu çiziyor). Oyunda sahip artık KayKit gövdesi — panel ile
+  sahne ayrıştı. Kendi turu (panelin mini Canvas'ı skinned gövdeyi ve klibi taşımalı).
+- **Önlük düz bir plaka** — göğse asılı bir dikdörtgen; gövdeyi sarmıyor. Oyun kamerasından
+  okunuyor ama yakın kadrajda plaka gibi duruyor. Cila kalemi.
+- **Rogue_Hooded'ın yeşil kapüşonu ekipman süzgecine takılmıyor** (mesh adı `_Cape`/`_Mask`
+  değil). O gövde şu an hiçbir role atanmadı; müşteri turunda kullanılacaksa süzgeç genişler.
+- **Klip dosyaları mankenin gövdesini de taşıyor** (dosya başına 6.916 üçgen ölü yük, 4 dosya).
+  Yüklenirken sahneye eklenmiyor ama ayrıştırılıyor. Mesh'i atan bir araç ≈ 0,5-1,5 MB kazandırır.
 
 ## AÇIK KALEMLER (bilinen, bilerek duruyor)
 

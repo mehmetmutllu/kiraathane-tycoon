@@ -21,6 +21,7 @@
  * mount noktasında `actorScale()` ile hedef boya çekilir. Gövde geometrisini düzenleyen kişi
  * `AUTHORED_HEIGHT`'taki sayıyı da günceller — başka hiçbir yerde boy yazmaz.
  */
+import type { Vec3 } from '../game/types';
 
 /**
  * HEDEF BOY (dünya birimi = metre). Maketin insanı 1,80; oyun 1,75'te duruyor çünkü kabul
@@ -109,3 +110,69 @@ export const ACTOR_RADIUS = 0.28;
 function round2(v: number): number {
   return Math.round(v * 100) / 100;
 }
+
+// ───────────────────────────────────────────────────────────────────────────────
+// KAYKIT KARAKTERLERİ (S14 · D-112) — ölçüm: `docs/karakter-raporu-s14.md`
+// ───────────────────────────────────────────────────────────────────────────────
+
+/** Karakter dosyalarının kökü. Hepsi CC0; künye `public/assets/README.md`. */
+export const KAY_KOK = '/assets/models/kaykit-characters/';
+
+/**
+ * Klip dosyaları. KayKit klipleri gövdeden AYRI dosyalarda tutuyor ve hepsi aynı `Rig_Medium`
+ * iskeletine (23 kemik) bağlı — ölçüldü: klipler gövdeye **69/69 iz** tutuyor, retarget yok.
+ * Dövüş/büyü dosyaları bilerek ALINMADI (repo bedeli §B9).
+ */
+export const KAY_KLIPLER = [
+  'Rig_Medium_General', // Idle_A/B · Interact · PickUp · Use_Item
+  'Rig_Medium_MovementBasic', // Walking_A/B/C · Running_A/B
+  'Rig_Medium_Simulation', // Sit_Chair_Down/Idle/StandUp · Waving
+  'Rig_Medium_Tools', // Holding_A/B/C · Working_A/B/C
+] as const;
+
+/**
+ * TEK ÖLÇEK, bütün gövdeler için. Gövdeler farklı ham yüksekliklerde ÖLÇÜLÜYOR (2,16…2,63) ama
+ * fark **saç/sakal geometrisinden** geliyor: hepsi aynı iskeleti paylaşıyor ve bacak mesh'i
+ * hepsinde 0,00…0,53. Ölçek bu yüzden gövdeye göre değil İSKELETE göre sabitlenir — yoksa uzun
+ * saçlı karakter kısa boylu çizilirdi. Referans manken gövdesi: ham 2,204 → `ACTOR_HEIGHT`.
+ */
+export const KAY_AUTHORED = 2.204;
+export const KAY_SCALE = ACTOR_HEIGHT / KAY_AUTHORED;
+
+/**
+ * Rolden gövdeye eşleme. Gövdeler KayKit Adventurers'tan; **ekipman düğümleri gizlenir**
+ * (pelerin/miğfer/şapka ayrı mesh — ölçüldü, §B3) ve gövde/bacak oyunun paletine boyanır.
+ * BAŞ boyanmaz: yüz, saç ve sakal başın kendi dokusundan gelir (boyanınca saç da ten oluyordu).
+ */
+export const KAY_MODEL = {
+  owner: 'Ranger', // bıyıklı — kasket + bordo önlükle çaycı
+  waiter: 'Knight', // sarışın genç — önlüklü garson
+  dishwasher: 'Rogue', // kadın — önlüklü
+  kitchenHand: 'Barbarian', // ak sakallı usta — kasket + önlük
+} as const;
+
+/** Rolün üstüne takılan kimlik parçaları (kasket/önlük). Gövdede yok, bizim. */
+export const KAY_KIYAFET: Record<ActorKind, { kasket: boolean; onluk: boolean }> = {
+  owner: { kasket: true, onluk: true },
+  waiter: { kasket: false, onluk: true },
+  dishwasher: { kasket: false, onluk: true },
+  kitchenHand: { kasket: true, onluk: true },
+};
+
+/**
+ * TAŞINAN EŞYANIN (tepsi · kirli bardak) dünya-uzayı mount noktası. Gövde ölçeğinin DIŞINDA
+ * durur: tepsi ve bardaklar dünya ölçüsünde yazıldı (bardak yarıçapı 0,05 = 5 cm) ve gövdenin
+ * ölçeğine bağlanırsa o ölçek değiştiğinde eşya da büyüyüp küçülür. Ham elin y'si 0,98…1,27,
+ * yani dünyada 0,78…1,01; tepsi kavrama hattı bunun üstü.
+ */
+export const KAY_EL_Y = round2(1.2 * KAY_SCALE);
+export const KAY_EL_Z = round2(0.55 * KAY_SCALE);
+
+/**
+ * Taşınan eşya bileşenleri kendi çapalarını İÇLERİNDE taşıyor (`CupTray` [0, 1,00, 0,45] ·
+ * `WaiterTray` [0, 0,95, 0,40]) ve o sayılar eski ilkel gövdeye göre yazılmıştı. Bu kaymalar
+ * çapayı KayKit elinin yerine taşır — bileşenlerin içindeki sayıya dokunmadan, çünkü aynı
+ * bileşenleri karakter paneli de kullanıyor.
+ */
+export const KAY_TEPSI_KAYMA: Vec3 = [0, KAY_EL_Y - 1.0, KAY_EL_Z - 0.45];
+export const KAY_GARSON_TEPSI_KAYMA: Vec3 = [0, KAY_EL_Y - 0.95, KAY_EL_Z - 0.4];
