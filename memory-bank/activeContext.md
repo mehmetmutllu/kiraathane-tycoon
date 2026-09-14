@@ -77,6 +77,8 @@ S18'de ölçüldü) · **panel dönüşünde T-poz temiz koşuda ÜRETİLEMEDİ*
 görmüş olabilir, repro aracı hazır (`tools/olcum-panel-donusu.mjs`).
 
 **Önizlemeler**
+**S19a KARAR PAKETİ:** https://claude.ai/code/artifact/a8d02997-974d-4f2a-a00c-f916820a69c7
+**S19a kareler:** `ss/s19-oturus.png` · `ss/s19-patron.png` · `ss/s19-glif.png`
 **S18 patron adayları (sekiz kart):** `docs/gorsel/ss/s18-patron.png`
 **S18 son durum:** `docs/gorsel/ss/s18-son.png` · **HUD'lu:** `docs/gorsel/ss/s18-durum-hud.png`
 **S15 karar paketi:** https://claude.ai/code/artifact/1cad1b62-df57-4ffb-b00b-32f0b9be9565

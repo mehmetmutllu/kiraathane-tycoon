@@ -1,0 +1,306 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>yemek-bak</title>
+<style>
+  body { margin: 0; background: #efece5; font: 13px/1.4 system-ui; color: #2b2118; }
+  h1 { font: 600 15px system-ui; margin: 14px 0 2px 16px; }
+  p.not { margin: 0 0 10px 16px; color: #6a5c4c; }
+  .satir { display: flex; flex-wrap: wrap; gap: 10px; padding: 0 12px; }
+  .kart { background: #fff; border-radius: 10px; padding: 8px; text-align: center; }
+  .kart b { display: block; font: 600 12px system-ui; margin-bottom: 4px; }
+  .cift { display: flex; align-items: flex-end; gap: 8px; justify-content: center; }
+  .alt { font: 11px system-ui; color: #6a5c4c; margin-top: 3px; }
+</style>
+<script type="module">
+  /**
+   * yemek-bak.html — SİPARİŞ BALONUNUN İÇİNE GERÇEK ASSET (S19a, ikinci tur).
+   *
+   * NEDEN: kullanıcı elle çizilen glifleri bir kez daha reddetti — *"o svgler hâlâ güzel değil,
+   * biraz daha açıklayıcı olabilir ve tostu da internette araştırıp asset olarak bulsana"*.
+   * KayKit paketlerinde (repoda dokuz tane var) tost/sandviç YOK; Kenney **Food Kit 2.0** (CC0,
+   * 201 model) içinde `sandwich` · `bread` · `sub` · `cup-tea` · `cup-saucer` · `glass` var.
+   *
+   * BU SAYFA BİR KARAR KARESİ, ENTEGRASYON DEĞİL: modeller `public/_aday/`de GEÇİCİ duruyor,
+   * repoya girmediler. Stil kilidi (KayKit tek sanatçı) Kenney'yi ikinci sanatçı yapıyor ve bu
+   * kullanıcının kararı — kare tam olarak onu sormak için var. Bu yüzden her aday KayKit bir
+   * objeyle (tabak) AYNI kadrajda duruyor: iki paket yan yana durunca ayrışıyor mu?
+   *
+   * GLİF NEDEN 3B RENDER: balon 2B bir levha ama içine giren çizim elle SVG olmak zorunda değil.
+   * Modeli bir kez karede pişirip doku olarak kullanmak, oyunun ışığını ve paletini birebir
+   * taşır — "açıklayıcı" olması istenen şey de tam bu: göz onu dünyada gördüğü nesneyle eşliyor.
+   *
+   * Kullanım (sunucuyu `tools/yemek-bak.mjs` kaldırır): /tools/yemek-bak.html
+   */
+  import * as THREE from 'three';
+  import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+
+  /** Bayat sunucu damgası — gerekçe `tools/olcum-oturus.html`. */
+  const SURUM = 6;
+
+  const ADAY = '/_aday/';
+  const KAYKIT = '/assets/models/kaykit-restaurant-bits/';
+  const BOY = 256;
+  const GERCEK = 44; // oyundaki balon boyu
+
+  const KENNEY = [
+    ['sandwich', 'TOST adayı — sandwich'],
+    ['bread', 'bread (tek dilim)'],
+    ['sub', 'sub'],
+    ['cup-tea', 'ÇAY adayı — cup-tea'],
+    ['cup-saucer', 'cup-saucer'],
+    ['glass', 'glass'],
+  ];
+  /** KayKit karşılaştırması: aynı kadrajda, aynı ışıkta — iki paket ayrışıyor mu? */
+  const KAY = [
+    ['food_burger', 'KayKit food_burger'],
+    ['food_dinner', 'KayKit food_dinner'],
+    ['food_ingredient_bun_bottom', 'KayKit bun_bottom'],
+    ['food_ingredient_cheese_slice', 'KayKit cheese_slice'],
+    ['plate_small', 'KayKit plate_small'],
+  ];
+
+  const loader = new GLTFLoader();
+
+  /**
+   * Model kareye SIĞDIRILARAK çizilir: her adayın kendi ham ölçüsü farklı (sandviç 0,3 br,
+   * baget 0,9 br) ve ham ölçüde çizmek büyük modeli haksız yere daha okunur gösterirdi.
+   */
+  function sahneKur(nesne) {
+    const sahne = new THREE.Scene();
+    sahne.background = new THREE.Color('#f6efe0'); // balonun iç rengi
+    sahne.add(new THREE.HemisphereLight('#ffffff', '#8d8272', 1.6));
+    const gunes = new THREE.DirectionalLight('#fff6e0', 2.1);
+    gunes.position.set(3, 5, 4);
+    sahne.add(gunes);
+    sahne.add(nesne);
+    const kutu = new THREE.Box3().setFromObject(nesne);
+    const merkez = kutu.getCenter(new THREE.Vector3());
+    const olcu = kutu.getSize(new THREE.Vector3());
+    const kamera = new THREE.PerspectiveCamera(30, 1, 0.01, 100);
+    // MESAFE FOV'DAN TÜRER. İlk koşuda köşegenin 1,25 katı kullanılıyordu ve uzun modeller
+    // (bardak, cam) kareden TAŞIYORDU — aday kırpılmış hâliyle yargılanamaz. En büyük kenar
+    // görüş açısına oturtulur, üstüne %18 nefes payı.
+    const enBuyuk = Math.max(olcu.x, olcu.y, olcu.z);
+    const cap = ((enBuyuk / 2) / Math.tan((kamera.fov * Math.PI) / 360)) * 1.18;
+    // Çeyrek üstten bakış: hacim okunur, siluet düz kalmaz.
+    // Daha ÖNDEN bir çeyrek açı: ilk koşuda yön (0,75 · 0,55 · 1) idi ve sandviç neredeyse
+    // kenardan görünüyordu — üçgen dilim ince bir şerit gibi okundu, yani kare adayı haksız
+    // yere eledi. Yükseklik de düştü: tabak gibi yassı modeller tepeden bakınca daire oluyor.
+    const yon = new THREE.Vector3(0.42, 0.38, 1).normalize();
+    kamera.position.copy(merkez).add(yon.multiplyScalar(cap * 1.25));
+    kamera.lookAt(merkez);
+    return { sahne, kamera };
+  }
+
+  const r = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+  r.setPixelRatio(1);
+  r.setSize(BOY * 2, BOY * 2, false);
+  const hedef = new THREE.WebGLRenderTarget(BOY * 2, BOY * 2, { samples: 4 });
+  hedef.texture.colorSpace = THREE.SRGBColorSpace;
+  const tampon = new Uint8Array(BOY * 2 * BOY * 2 * 4);
+
+  /** Render target'tan okuyup 2B tuvale yazar (kompozisyona bağlı kalmaz). */
+  function kareAl(sahne, kamera) {
+    r.setRenderTarget(hedef);
+    r.render(sahne, kamera);
+    r.readRenderTargetPixels(hedef, 0, 0, BOY * 2, BOY * 2, tampon);
+    r.setRenderTarget(null);
+    const cv = document.createElement('canvas');
+    cv.width = BOY * 2;
+    cv.height = BOY * 2;
+    const c = cv.getContext('2d');
+    const im = c.createImageData(BOY * 2, BOY * 2);
+    for (let y = 0; y < BOY * 2; y++) {
+      const kaynak = (BOY * 2 - 1 - y) * BOY * 2 * 4;
+      im.data.set(tampon.subarray(kaynak, kaynak + BOY * 2 * 4), y * BOY * 2 * 4);
+    }
+    c.putImageData(im, 0, 0);
+    return cv;
+  }
+
+  async function kart(yol, ad, etiket) {
+    const g = await loader.loadAsync(`${yol}${ad}`);
+    const { sahne, kamera } = sahneKur(g.scene);
+    const cv = kareAl(sahne, kamera);
+    cv.style.cssText = 'width:200px;height:200px;border-radius:8px;';
+
+    const kucuk = document.createElement('canvas');
+    kucuk.width = GERCEK;
+    kucuk.height = GERCEK;
+    const kc = kucuk.getContext('2d');
+    kc.imageSmoothingQuality = 'high';
+    kc.drawImage(cv, 0, 0, GERCEK, GERCEK);
+    kucuk.style.cssText = `width:${GERCEK}px;height:${GERCEK}px;border-radius:4px;`;
+
+    const k = document.createElement('div');
+    k.className = 'kart';
+    const b = document.createElement('b');
+    b.textContent = etiket;
+    const cift = document.createElement('div');
+    cift.className = 'cift';
+    cift.append(cv, kucuk);
+    const alt = document.createElement('div');
+    alt.className = 'alt';
+    alt.textContent = `200 px · ${GERCEK} px (oyundaki boy)`;
+    k.append(b, cift, alt);
+    return k;
+  }
+
+  const h1 = document.createElement('h1');
+  h1.textContent = 'KENNEY FOOD KIT 2.0 (CC0) — aday modeller';
+  const n1 = document.createElement('p');
+  n1.className = 'not';
+  n1.textContent = 'sagdaki kucuk kopya balonun oyundaki gercek boyu — karar orada verilir';
+  const s1 = document.createElement('div');
+  s1.className = 'satir';
+  document.body.append(h1, n1, s1);
+  for (const [ad, etiket] of KENNEY) s1.appendChild(await kart(ADAY, `${ad}.glb`, etiket));
+
+  /**
+   * TOST = İKİ DİLİM + KAŞAR, elle kurulmuş bileşim. Kenney'de "tost" diye bir model yok;
+   * `sandwich` üçgen kesilmiş bir sandviç, `bread` ise tek dilim. Türk tostu iki dilimin
+   * arasında kaşar — pakette o hâliyle yok ama parçaları var. Bu kart, asseti OLDUĞU GİBİ
+   * almak yerine paketten KURMANIN karşılığını gösteriyor.
+   */
+  async function tostBilesimi() {
+    const g = new THREE.Group();
+    const dilim1 = (await loader.loadAsync(`${ADAY}bread.glb`)).scene;
+    const dilim2 = dilim1.clone(true);
+    const kasar = (await loader.loadAsync(`${ADAY}cheese-cut.glb`)).scene;
+    const kutu = new THREE.Box3().setFromObject(dilim1);
+    const kalinlik = kutu.getSize(new THREE.Vector3()).y;
+    kasar.scale.setScalar(0.52);
+    kasar.position.y = kalinlik * 0.85;
+    dilim2.position.y = kalinlik * 1.5;
+    dilim2.rotation.y = 0.12; // ikinci dilim hafif kaykık: üst üste iki plaka gibi durmasın
+    g.add(dilim1, kasar, dilim2);
+    return g;
+  }
+  {
+    const { sahne, kamera } = sahneKur(await tostBilesimi());
+    const cv = kareAl(sahne, kamera);
+    cv.style.cssText = 'width:200px;height:200px;border-radius:8px;';
+    const kucuk = document.createElement('canvas');
+    kucuk.width = GERCEK; kucuk.height = GERCEK;
+    kucuk.getContext('2d').drawImage(cv, 0, 0, GERCEK, GERCEK);
+    kucuk.style.cssText = `width:${GERCEK}px;height:${GERCEK}px;border-radius:4px;`;
+    const k = document.createElement('div');
+    k.className = 'kart';
+    const b = document.createElement('b');
+    b.textContent = 'TOST bilesimi — 2 dilim + kasar';
+    const cift = document.createElement('div');
+    cift.className = 'cift';
+    cift.append(cv, kucuk);
+    const alt = document.createElement('div');
+    alt.className = 'alt';
+    alt.textContent = `200 px · ${GERCEK} px (oyundaki boy)`;
+    k.append(b, cift, alt);
+    s1.appendChild(k);
+  }
+
+  const h2 = document.createElement('h1');
+  h2.textContent = 'KAYKIT (repodaki stil kilidi) — ayni kadraj, ayni isik';
+  const n2 = document.createElement('p');
+  n2.className = 'not';
+  n2.textContent = 'ikinci sanatci gerekmeden: paketin kendi gidalari ve onlardan kurulan tost';
+  const s2 = document.createElement('div');
+  s2.className = 'satir';
+  document.body.append(h2, n2, s2);
+  for (const [ad, etiket] of KAY) s2.appendChild(await kart(KAYKIT, `${ad}.gltf`, etiket));
+
+  /** Tek kart yapan yardımcı — üç bölüm de aynı biçimi paylaşsın. */
+  async function ozelKart(etiket, nesne, hedefSatir) {
+    const { sahne, kamera } = sahneKur(nesne);
+    const cv = kareAl(sahne, kamera);
+    cv.style.cssText = 'width:200px;height:200px;border-radius:8px;';
+    const kucuk = document.createElement('canvas');
+    kucuk.width = GERCEK;
+    kucuk.height = GERCEK;
+    const kc = kucuk.getContext('2d');
+    kc.imageSmoothingQuality = 'high';
+    kc.drawImage(cv, 0, 0, GERCEK, GERCEK);
+    kucuk.style.cssText = `width:${GERCEK}px;height:${GERCEK}px;border-radius:4px;`;
+    const k = document.createElement('div');
+    k.className = 'kart';
+    const b = document.createElement('b');
+    b.textContent = etiket;
+    const cift = document.createElement('div');
+    cift.className = 'cift';
+    cift.append(cv, kucuk);
+    const alt = document.createElement('div');
+    alt.className = 'alt';
+    alt.textContent = `200 px · ${GERCEK} px (oyundaki boy)`;
+    k.append(b, cift, alt);
+    hedefSatir.appendChild(k);
+  }
+
+  /** KayKit'in KENDİ parçalarından tost: alt ekmek + kaşar dilimi + üst ekmek. */
+  async function kayTost() {
+    const g = new THREE.Group();
+    const alt = (await loader.loadAsync(`${KAYKIT}food_ingredient_bun_bottom.gltf`)).scene;
+    const ust = (await loader.loadAsync(`${KAYKIT}food_ingredient_bun_top.gltf`)).scene;
+    const kasar = (await loader.loadAsync(`${KAYKIT}food_ingredient_cheese_slice.gltf`)).scene;
+    const y = new THREE.Box3().setFromObject(alt).getSize(new THREE.Vector3()).y;
+    kasar.position.y = y * 0.95;
+    kasar.rotation.y = 0.5; // kaşarın köşeleri ekmeğin dışına çıksın: tost olduğunu o söylüyor
+    ust.position.y = y * 1.25;
+    g.add(alt, kasar, ust);
+    return g;
+  }
+  await ozelKart('KAYKIT TOST — ekmek + kasar + ekmek', await kayTost(), s2);
+
+  /**
+   * İNCE BELLİ BARDAK — BİZİM, ilkelden (D-013: primitive = nihai sanat stili).
+   *
+   * Ne Kenney'de ne KayKit'te Türk çay bardağı var: Kenney'nin `cup-tea`si bir fincan, `glass`i
+   * düz bir bardak. Oysa oyunun çekirdek imgesi ince belli bardak (projectBrief). Siluet dönel
+   * bir yüzey olduğu için `LatheGeometry` ile tam çizilebiliyor: profil eğrisi yazılır, gövde
+   * ondan doğar. Lisans yüzeyi sıfır, palet bizim.
+   */
+  function inceBelliBardak() {
+    const g = new THREE.Group();
+    // Profil (x = yarıçap, y = yükseklik): taban dar, bel ince, ağız geniş.
+    // Gerçek ince belli bardağın sırası: dar TABAN → KARIN şişkinliği → BEL daralması → ağız
+    // açılması. İlk profilde karın yoktu, silüet tek yönlü genişliyordu ve bardak vazoya benzedi.
+    const profil = [
+      [0.0, 0.0], [0.028, 0.0], [0.030, 0.005],
+      [0.037, 0.022], [0.038, 0.034], // karın
+      [0.030, 0.058], [0.028, 0.066], // bel
+      [0.034, 0.090], [0.040, 0.112], [0.042, 0.118], // agiz
+    ].map(([x, y]) => new THREE.Vector2(x, y));
+    const cam = new THREE.Mesh(
+      new THREE.LatheGeometry(profil, 14),
+      new THREE.MeshStandardMaterial({
+        // Cam KREM ve %55 opak iken çayın rengini yutuyordu (bardak pembemsi çıkıyordu);
+        // düşük opaklıkta beyaz cam, rengi çayın kendisine bırakır.
+        color: '#ffffff', roughness: 0.15, transparent: true, opacity: 0.14, side: THREE.DoubleSide, depthWrite: false,
+      }),
+    );
+    // Çay: aynı profilin bir tık içi — bardağın dolu olduğunu hacim söyler, çizgi değil.
+    const cayProfil = profil.slice(1, -1).map((q) => new THREE.Vector2(Math.max(q.x - 0.004, 0.001), q.y));
+    cayProfil.push(new THREE.Vector2(0.001, 0.104));
+    const cay = new THREE.Mesh(
+      new THREE.LatheGeometry(cayProfil, 14),
+      new THREE.MeshStandardMaterial({ color: '#b8430a', roughness: 0.35, emissive: '#5a1d02', emissiveIntensity: 0.55 }),
+    );
+    const tabak = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.062, 0.05, 0.01, 14),
+      new THREE.MeshStandardMaterial({ color: '#e9e2d2', roughness: 0.7 }),
+    );
+    tabak.position.y = -0.006;
+    g.add(tabak, cay, cam);
+    return g;
+  }
+  const h3 = document.createElement('h1');
+  h3.textContent = 'BIZIM — ince belli bardak (ilkel, D-013)';
+  const n3 = document.createElement('p');
+  n3.className = 'not';
+  n3.textContent = 'iki pakette de Turk cay bardagi yok; siluet donel oldugu icin ilkelden tam cizilebiliyor';
+  const s3 = document.createElement('div');
+  s3.className = 'satir';
+  document.body.append(h3, n3, s3);
+  await ozelKart('INCE BELLI BARDAK + tabak', inceBelliBardak(), s3);
+
+  window.__surum = SURUM;
+  window.__hazir = true;
+</script>

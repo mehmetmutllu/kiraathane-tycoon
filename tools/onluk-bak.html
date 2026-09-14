@@ -1,0 +1,240 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>onluk-bak</title>
+<style>
+  body { margin: 0; background: #e9e4dc; font: 13px system-ui; color: #2b2118; }
+  canvas { display: block; }
+</style>
+<script type="module">
+  /**
+   * onluk-bak.html — ÖNLÜK "KALAS GİBİ" OLMASIN (S19a, kullanıcı geri bildirimi).
+   *
+   * KUSUR NE: bugünkü önlük göğse takılan **0,58 × 0,72 × 0,08 bir kutu** ve kalçada bir halka.
+   * Kutu gövdeyi sarmıyor, önünde duruyor; kullanıcı 2026-09-14: *"önlük öyle önünde kalas gibi
+   * olmasın düzgün olsun"*. Aynı kusur açık kalemlerde de "önlük düz plaka" olarak duruyordu.
+   *
+   * ÇÖZÜMÜN YÖNÜ: önlük bir LEVHA değil bir YÜZEY. Göğüslük gövdenin kavisini takip eden bir
+   * silindir dilimi (`CylinderGeometry`nin açılı parçası), etek aşağı doğru genişleyen açık uçlu
+   * bir koni, ikisi arasında bel bağı ve boyundan askı. Aynı üç parça hem personelin tam
+   * önlüğünü hem patronun bel önlüğünü veriyor.
+   *
+   * KADRAJ BİLEREK YAKIN: önlük bel ile omuz arasında yaşıyor; tam boy karede 40 piksel kalıyor
+   * ve kusur görünmüyor. Kartlar göğüs hizasından çerçeveleniyor.
+   *
+   * Kullanım (sunucuyu `tools/onluk-bak.mjs` kaldırır): /tools/onluk-bak.html
+   */
+  import * as THREE from 'three';
+  import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+  import { clone as skinKlon } from 'three/examples/jsm/utils/SkeletonUtils.js';
+
+  /** Bayat sunucu damgası — gerekçe `tools/olcum-oturus.html`. */
+  const SURUM = 4;
+
+  const KOK = '/assets/models/kaykit-characters/';
+  const P = { shirt: '#f3ecd9', pants: '#3e3a36', apron: '#7a2230', bag: '#5e1a26', cep: '#8f3040' };
+  const KAY_AUTHORED = 2.204, ACTOR_HEIGHT = 1.75;
+  const OLCEK = ACTOR_HEIGHT / KAY_AUTHORED;
+  const KAFA = 0.75;
+
+  const EKIPMAN = ['cape', 'cloak', 'helmet', 'visor', 'hood', 'hat', 'crown', 'shoulder', 'pauldron',
+    'pauldrons', 'armor', 'sword', 'shield', 'staff', 'wand', 'bow', 'quiver', 'dagger', 'axe',
+    'spellbook', 'horn', 'backpack', 'mask'];
+  const ekipmanMi = (ad) => {
+    const rol = ad.split('_').pop()?.toLowerCase() ?? '';
+    return EKIPMAN.some((k) => rol.startsWith(k) || rol.endsWith(k));
+  };
+  const mat = (renk) => new THREE.MeshStandardMaterial({ color: renk, roughness: 0.85, side: THREE.DoubleSide });
+
+  const loader = new GLTFLoader();
+  const onbellek = new Map();
+  async function yuk(ad) {
+    if (!onbellek.has(ad)) onbellek.set(ad, await loader.loadAsync(`${KOK}${ad}.glb`));
+    return skinKlon(onbellek.get(ad).scene);
+  }
+
+  /**
+   * ÖNLÜK PARÇALARI — hepsi gövdeyi SARAN yüzeyler.
+   *
+   * `CylinderGeometry(ustR, altR, yukseklik, dilim, 1, true, baslangicAci, yayAci)`: açık uçlu ve
+   * yalnız bir yay kadar çizilen silindir, gövdenin önünü saran bir kumaş gibi durur. Yay 0'dan
+   * başlamaz — gövdenin ÖNÜ +z olduğu için yay +z'de ortalanır.
+   */
+  function yayliYuzey(ustR, altR, yukseklik, yayDerece, renk) {
+    const yay = (yayDerece * Math.PI) / 180;
+    // YAY +Z'DE ORTALANIR. `CylinderGeometry`de theta 0 zaten **+z** yönündedir (x = r·sinθ,
+    // z = r·cosθ); ilk koşuda merkez `Math.PI/2`ye kaydırılmıştı ve önlük gövdenin YANINA,
+    // kolun arkasına düştü — karede göğüslük hiç görünmedi.
+    const g = new THREE.CylinderGeometry(ustR, altR, yukseklik, 20, 1, true, -yay / 2, yay);
+    return new THREE.Mesh(g, mat(renk));
+  }
+
+  /**
+   * Önlük kurulumu. `tip`:
+   *   kalas  — BUGÜNKÜ hâl (kutu + halka), referans
+   *   saran  — göğüslük + etek + bel bağı + askı
+   *   cepli  — saran + göğüs cebi + bel bağı düğümü
+   *   bel    — göğüslük yok, yalnız etek + bel bağı (patron kolu)
+   *   uzun   — saran, eteği dize kadar
+   */
+  function onlukKur(tip, tak, kemikler) {
+    if (tip === 'kalas') {
+      tak('chest', new THREE.Mesh(new THREE.BoxGeometry(0.58, 0.72, 0.08), mat(P.apron)), new THREE.Vector3(0, 0.78, 0.3));
+      tak('hips', new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.07, 14), mat(P.apron)), new THREE.Vector3(0, 0.48, 0));
+      return;
+    }
+
+    // ETEK: belden aşağı, hafif genişleyerek. Yay 230° — yanları da kapatır, arkası açık kalır.
+    // Ham rig ölçüsü: gövde 0,38…1,24 · bacak 0,00…0,53 · bel ~0,50. İlk koşuda etek 0,46 idi ve
+    // bacakları tamamen örtüp CÜBBEYE dönüyordu; boy bele göre yeniden seçildi.
+    const etekBoy = tip === 'uzun' ? 0.46 : 0.32;
+    const etek = yayliYuzey(0.315, 0.40, etekBoy, 220, P.apron);
+    const g1 = new THREE.Group();
+    g1.add(etek);
+    tak('hips', g1, new THREE.Vector3(0, 0.50 - etekBoy / 2, 0.02));
+
+    // BEL BAĞI: eteğin üstünde, gövdeyi tam saran ince bir kuşak (koyu ton — hattı ayırır).
+    const bag = yayliYuzey(0.305, 0.305, 0.075, 320, P.bag);
+    tak('hips', bag, new THREE.Vector3(0, 0.52, 0));
+
+    if (tip === 'bel') {
+      // Bel önlüğünde bağın uçları önde düğümlenir: tek işaret, göğsü boş bırakır.
+      const dugum = new THREE.Mesh(new THREE.BoxGeometry(0.10, 0.09, 0.07), mat(P.bag));
+      tak('hips', dugum, new THREE.Vector3(0.10, 0.51, 0.30));
+      return;
+    }
+
+    // GÖĞÜSLÜK: göğsün kavisini takip eden dar bir yay. Kutunun aksine yanlardan gövdeye giriyor.
+    // Yarıçap GÖVDENİN YÜZEYİNİN DIŞINDA olmalı: 0,255-0,285 gömlek kabarıklığının içinde
+    // kalıyordu ve göğüslük karede hiç görünmedi (yalnız yakadaki askı uçları çıkıyordu).
+    const gogusluk = yayliYuzey(0.335, 0.365, 0.40, 110, P.apron);
+    tak('chest', gogusluk, new THREE.Vector3(0, 0.82, 0.02));
+
+    // ASKI: boyundan göğüslüğe iki ince şerit. Önlüğü havada duran bir levha olmaktan çıkarır.
+    for (const yan of [-1, 1]) {
+      const aski = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.30, 0.035), mat(P.apron));
+      aski.rotation.z = yan * 0.22;
+      tak('chest', aski, new THREE.Vector3(yan * 0.13, 1.07, 0.27));
+    }
+
+    if (tip === 'cepli') {
+      const cep = new THREE.Mesh(new THREE.BoxGeometry(0.20, 0.13, 0.03), mat(P.cep));
+      tak('chest', cep, new THREE.Vector3(0, 0.76, 0.37));
+    }
+  }
+
+  function govdeKur(tip) {
+    return (async () => {
+      const o = await yuk('Knight');
+      o.traverse((n) => {
+        if (n.isMesh && ekipmanMi(n.name)) { n.visible = false; return; }
+        if (!n.isMesh) return;
+        if (/head|skull/i.test(n.name)) return;
+        if (/arm|body|torso/i.test(n.name)) n.material = mat(P.shirt);
+        else if (/leg/i.test(n.name)) n.material = mat(P.pants);
+      });
+      o.traverse((n) => { if (n.isBone && n.name === 'head') n.scale.setScalar(KAFA); if (n.isSkinnedMesh) n.boundingBox = null; });
+      o.updateMatrixWorld(true);
+
+      const kemikler = new Map();
+      o.traverse((n) => { if (n.isBone) kemikler.set(n.name, n); });
+      const q = new THREE.Quaternion();
+      const tak = (kemikAd, mesh, nokta) => {
+        const k = kemikler.get(kemikAd);
+        if (!k) return;
+        k.add(mesh);
+        mesh.position.copy(k.worldToLocal(nokta.clone()));
+        mesh.quaternion.copy(k.getWorldQuaternion(q).invert());
+      };
+      onlukKur(tip, tak, kemikler);
+      o.scale.setScalar(OLCEK);
+      return o;
+    })();
+  }
+
+  const KOLLAR = [
+    ['kalas', 'A1 BUGUN (kutu + halka)'],
+    ['saran', 'A2 SARAN onluk'],
+    ['cepli', 'A3 saran + cep'],
+    ['bel', 'A4 BEL onlugu (patron)'],
+    ['uzun', 'A5 saran, uzun etek'],
+  ];
+
+  // Poz: oyunun duruş klibi.
+  const pozG = await loader.loadAsync(`${KOK}Rig_Medium_General.glb`);
+  const idle = pozG.animations.find((c) => c.name === 'Idle_A');
+  const pozla = (kok) => {
+    if (!idle) return;
+    const m = new THREE.AnimationMixer(kok);
+    const klip = idle.clone();
+    klip.tracks = klip.tracks.filter((t) => t.name !== 'head.scale');
+    m.clipAction(klip).play();
+    m.update(klip.duration * 0.5);
+  };
+
+  const sahne = new THREE.Scene();
+  sahne.background = new THREE.Color('#e9e4dc');
+  sahne.add(new THREE.HemisphereLight('#ffffff', '#8d8272', 1.5));
+  const gunes = new THREE.DirectionalLight('#fff6e0', 2.0);
+  gunes.position.set(3, 6, 4);
+  sahne.add(gunes);
+  const zemin = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), new THREE.MeshStandardMaterial({ color: '#c89a68' }));
+  zemin.rotation.x = -Math.PI / 2;
+  sahne.add(zemin);
+
+  // Kollar x ekseninde GENİŞ aralıkla: her kolun kamerası komşusunun içine düşmesin
+  // (bu tuzak `tools/olcum-oturus.html`de bir kez yaşandı ve kareyi bozdu).
+  const ARA = 20;
+  for (let i = 0; i < KOLLAR.length; i++) {
+    const o = await govdeKur(KOLLAR[i][0]);
+    o.position.set(i * ARA, 0, 0);
+    o.rotation.y = 0.34; // çeyrek açı: göğüslüğün YAN kavisi de kareye girsin
+    pozla(o);
+    sahne.add(o);
+  }
+
+  const G = Math.floor(innerWidth / KOLLAR.length);
+  const OL = Math.min(devicePixelRatio, 2);
+  const PW = Math.floor(G * OL), PH = Math.floor(innerHeight * OL);
+  const r = new THREE.WebGLRenderer({ antialias: true });
+  r.setPixelRatio(1);
+  r.setSize(PW, PH, false);
+  const hedef = new THREE.WebGLRenderTarget(PW, PH, { samples: 4 });
+  hedef.texture.colorSpace = THREE.SRGBColorSpace;
+  const tuval = document.createElement('canvas');
+  tuval.width = PW * KOLLAR.length;
+  tuval.height = PH;
+  tuval.style.cssText = `width:${G * KOLLAR.length}px;height:${innerHeight}px;display:block;`;
+  const ctx = tuval.getContext('2d');
+  document.body.appendChild(tuval);
+  const tampon = new Uint8Array(PW * PH * 4);
+
+  for (let i = 0; i < KOLLAR.length; i++) {
+    const gx = i * ARA;
+    const k = new THREE.PerspectiveCamera(30, PW / PH, 0.1, 100);
+    // Göğüs hizasından, hafif yukarıdan: önlük kadrajın ortasında.
+    k.position.set(gx + 1.15, 1.30, 3.9);
+    k.lookAt(gx, 0.88, 0);
+    r.setRenderTarget(hedef);
+    r.render(sahne, k);
+    r.readRenderTargetPixels(hedef, 0, 0, PW, PH, tampon);
+    const im = ctx.createImageData(PW, PH);
+    for (let y = 0; y < PH; y++) {
+      const kaynak = (PH - 1 - y) * PW * 4;
+      im.data.set(tampon.subarray(kaynak, kaynak + PW * 4), y * PW * 4);
+    }
+    ctx.putImageData(im, i * PW, 0);
+  }
+  r.setRenderTarget(null);
+
+  for (let i = 0; i < KOLLAR.length; i++) {
+    const d = document.createElement('div');
+    d.textContent = KOLLAR[i][1];
+    d.style.cssText = `position:fixed;left:${i * G + G / 2}px;bottom:22px;transform:translateX(-50%);
+      font:600 13px system-ui;color:#2b2118;background:#ffffffdd;padding:4px 10px;border-radius:6px;
+      white-space:nowrap;`;
+    document.body.appendChild(d);
+  }
+
+  window.__surum = SURUM;
+  window.__hazir = true;
+</script>
