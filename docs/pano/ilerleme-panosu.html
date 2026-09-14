@@ -193,8 +193,8 @@ h2{font-size:21px;font-weight:800}
 <script type="application/json" id="durum">
 {
  "guncelleme": "14.09.2026",
- "yapilan": 90,
- "toplam": 100,
+ "yapilan": 92,
+ "toplam": 102,
  "kilometre": [
   {
    "at": 28,
@@ -209,19 +209,19 @@ h2{font-size:21px;font-weight:800}
    "etiket": "Model ve denge oturdu"
   },
   {
-   "at": 100,
+   "at": 102,
    "etiket": "v1.0 App Store"
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum — Faz S · 15/16 — S15 müşteriler skinned, S16 tepsi ele bağlandı (D-113 · D-114)",
-  "baslik": "Kullanıcının <b>beş görsel şikâyeti</b> sayıya çevrildi; beşi de aynı oturumda kapandı",
-  "aciklama": "Oturum bir ölçüm turu olarak açıldı ama kullanıcı üç şey birden söyledi: <i>“karakterler havada süzülüyor gibi”</i>, <i>“ana karakterdeki kasketi çıkar”</i>, <i>“kafalar çok büyük duruyo baya küçült”</i>. Üçü de görsel yargıydı ve üçünün de <b>sayısı vardı</b>.<br><br><b>Süzülme bir ölçüyle kapandı:</b> bir yürüme klibi belli bir <b>yer hızı</b> için çizilir — basılı ayak, gövde sabitken geriye kayar ve kaydığı mesafe o döngünün ilerlemesidir. Klip dosyadan örneklenince çıktı: <code>Walking_A</code> <b>0,571 br/sn</b> için çizilmiş, oyuncu ise <b>4,5-5,4</b> br/sn gidiyor. Yani ayak <b>7,9-9,5 katı</b> kayıyordu ve bu bir his değil, bir orandı. Artık klip hızdan seçiliyor (yavaş yürür, hızlı koşar), katsayı hızdan türüyor ve tavan gerçek sprint kadansında (4,5 adım/sn) duruyor. Garsonda kayma <b>tam sıfır</b>; oyuncuda 2,0×’a iniyor ama sıfırlanmıyor — hızı klibin taşıyabileceğinin iki katı ve onu düşürmek bir <b>denge</b> kararı, ölçülmeden dokunulmadı.<br><br><b>Kafa kolunda asıl iş takası bulmaktı.</b> KayKit başı gövde boyunun <b>%42-52</b>’si (eski ilkel gövdede %33). Boyu 1,75’te sabit tutup kafayı küçültünce gövde o boyu doldurmak için şişiyor ve ×0,80’de <b>blob kuralı kırılıyor</b> (omuz 0,616 > 0,60) — karede kardan adama dönüyorlar. Telafi edilmezse gövde ölçeği hiç değişmiyor (omuz beş kolda da 0,552) ve karakter kısalıyor. Kritik okuma şuydu: telafisiz kolun mobilya bedeli <b>aritmetik, görsel değil</b> — bacak, gövde ve kalça kıpırdamadığı için masayla, tabureyle, tepsiyle ilişkinin tamamı birebir aynı kalıyor, kısalan tek şey siluetin tepesi. Yani <i>“kafalar küçülsün”</i> ile <i>“garsonlar küçülsün”</i> tek hamlede, bedelsiz karşılandı.<br><br><b>Müşteriler de skinned oldu</b> ve burada ölçüm turunun bir hükmü uygulamada çürüdü: “tek materyal → tek çizim” kolu, <b>başın dokusunu korumakla</b> bağdaşmadı (yüz ve saç oradan geliyor). Sevk edilen biçim gövde başına iki mesh — 24 müşteri <b>48 çizim / 0,52 ms</b>. Bütçe de yanlış seçilmişti: oyunda ölçünce 12 masa açıkken bile <b>38 eşzamanlı müşteri</b> çıktı ve tavanı aşanlar kapsül olarak beliriyordu. Kullanıcı <i>“kapsül hiç görünmesin”</i> dedi, tavan <b>80</b>’e çıktı."
+  "etiket": "Bu oturum — Faz S · 17/18 — S17 hatalar + hareket, S18 arayüz dokunuşları (D-115 · D-115b)",
+  "baslik": "Kullanıcı oyunu oynadı; <b>üç sessiz hata</b> ölçümle çıktı, biri “kapandı” denmiş olanın geri gelişiydi",
+  "aciklama": "Oturum ses turu olarak açıldı ama kullanıcı oynayıp üç şey söyledi: <i>“tüm karakterlerin elleri sağa açık”</i>, <i>“misafirler iç içe yürüyo”</i>, <i>“müşteriler koşmasın yürüsün”</i>. Üçü de görsel yargıydı; üçünün de sayısı çıktı — ve ikisi tahminle çözülemeyecek cinstendi.<br><br><b>Eller mesele bir T-pozdu ve sebebi bir yarıştı.</b> Ölçüm donuk gövdede el oynamasını <b>tam 0</b> buldu: o aktörde hiçbir klip hiç başlamamıştı. Kancası mount anında <code>actions</code> henüz boşken çalışıyor, <code>useFrame</code>’in erken dönüşü de “hedef değişmedi” diye her karede vuruyordu — yani kaçan başlatma bir daha asla onarılmıyordu. Erken dönüş artık <b>iki koşula</b> bağlı: hedef değişmemiş <i>ve</i> gerçekten çalıyor olmalı.<br><br><b>Yolda S16’nın “kapandı” dediği hata geri geldi.</b> Açılışta React <i>“Maximum update depth exceeded”</i> ile patlıyordu ve bu <b>üç açılışın ikisinde</b> oluyordu — ilk, soğuk açılış temiz olduğu için geliştirirken görünmüyordu. Asıl yol hiç kapatılmamıştı: açılış ekranı yükleme ilerlemesine <b>abone</b>ydi, yani her dosya bir render; önbellek sıcakken hepsi aynı karede bitiyor ve iç içe güncelleme sınırı aşılıyordu. Abonelik okumaya çevrildi; render sayısı artık dosya sayısından bağımsız.<br><br><b>“Koşmasın yürüsün” bir hız sorusu değil rol sorusu çıktı.</b> Klip seçici bozulmayı logaritmik ölçüyor ve iki klibin geometrik ortası <b>0,844 br/sn</b> — bunun üstündeki <i>her</i> hızda koşu kazanıyordu, yani müşteriyi yavaşlatmak tek başına yürütmüyordu. Koşu klibi müşteri ve personelin aday listesinden çıkarıldı, ana karakterde kaldı. Hız 2,60 → <b>1,40</b> (ayak kayması 1,36×) ve bedeli ölçüldü: müşteri ömrünün %40’ı yürümekle geçiyor, döngü 1,342 kat uzuyor.<br><br><b>İç içe yürüme ayar değil eksik kuvvetti:</b> müşteri-müşteri ayrışma çağrısı kodda hiç yoktu. Eklendi; aynı hızda A/B çakışmayı <b>%1,40 → %0,60</b>, en kısa arayı <b>0,046 → 0,413</b> br yaptı."
  },
  "siradaki": {
-  "etiket": "Sırada S17 — ses",
-  "baslik": "Faz S’in <b>son kalemi</b>; ardından oynanış hataları ve iki denge kolu",
-  "aciklama": "Karakter hattı kapandı: personel ve müşteriler gerçek gövdeler, yürüyüş hızla senkron, tepsi elde. Faz S’te geriye <b>tek kalem</b> kaldı — <b>ses</b> (kaynak kararı yazılı).<br><br>Ardından <b>Faz H</b> açılıyor ve içinde üç oynanış hatası var: çay/bulaşık toplama masanın her tarafından olmuyor, çay ocağından alma güvenilmez, ikinci masa görevinde kamera kendiliğinden kayıyor. Aynı fazın diğer iki kalemi <b>denge</b>: tepsinin ilk yükseltme fiyatı ve yükseltme bekleme süresi, bir de masa aralığı (ölçüldü: arka salonda açıklık <b>0,68 br</b>, geçiş 0,94 istiyor → 20 masanın 12’si geçilemiyor). İkisi de <b>varyant kapısına tabi</b> ve ölçülmeden uygulanmayacak.<br><br>Karakter tarafında bilerek açık bırakılan cila kalemleri var: <b>önlük hâlâ düz bir plaka</b> (göğse asılı dikdörtgen, gövdeyi sarmıyor), karakter paneli hâlâ eski ilkel gövdeyi çiziyor, ve bulaşıkçı gövdesinin omzu <b>0,709</b> ile blob sınırını bugün de aşıyor."
+  "etiket": "Sırada S19 — yedi arayüz/görsel kalem",
+  "baslik": "Kullanıcının gece verdiği liste: <b>patron dokunuşu, oturma pozu, balon glifleri, karakter menüsü</b>",
+  "aciklama": "Oturum kapanırken kullanıcı yedi kalem daha verdi ve hepsi görsel/arayüz: <b>(1)</b> patronun lacivert gömleği geri alınacak — <i>“beyaz daha ayırt ediciydi”</i>, ayırt edici sinyal başka bir dokunuş olacak; <b>(2)</b> oturan karakterlerin kalçası taburenin dışında kalıyor — <code>Sit_Chair_Idle</code> klibinde z ekseni çapası ölçülmedi; <b>(3)</b> sipariş balonundaki bardak ve tost gliflerinin çizimi zayıf; <b>(4)</b> karakter menüsü hâlâ <b>eski ilkel gövdeyi</b> gösteriyor (S15’ten beri açık kalem); <b>(5)</b> paneller ekranı tam kullanmıyor; <b>(6)</b> yükseltme tetiği pad’in <b>tam üstünde</b> olsun, yanında değil — bu yarıçapa dokunursa <b>varyant kapısına</b> girer; <b>(7)</b> yükseltme kartının solundaki ok çerçeveye değiyor.<br><br>Ardından <b>S9 ses</b> var ve orada iş yarım değil: ölçüm bitti, karar paketi sunulmadı. 9 CC0 Kenney paketi (706 ses) indirildi, 36 aday oyunun kendi çözücüsüyle PCM’e çevrildi ve <b>dosyalı dokuzlu sentezle aynı hükmü</b> geçti (36/36 ayrı). Kalan açık sorular sayıyla duruyor: dosyalar sentezden <b>16,6 dB yüksek</b>, <b>7/9</b> seçilen dosya kendi aralık kelepçesini taşıyor, akan sıvı ve ortam uğultusu için <b>0 aday</b> var.<br><br>Sonra <b>Faz H</b>: üç oynanış hatası ve iki denge kolu."
  },
  "donemler": [
   {
@@ -353,8 +353,8 @@ h2{font-size:21px;font-weight:800}
      "k": "S",
      "t": "Sanat ve arayüz geçişi",
      "d": "Kullanıcı oynadı ve dört tur geri bildirim verdi. HER KALEM ≈ 1 OTURUM, 10 oturum kaldı. Bitti: pad dili ✓ · pad/modal etkileşimi ✓. Sırada: mutfak → duvar ve zemin → dekor takası → dış cephe ve tente → lavabo kabin kapıları → ses assetleri → UI dili (araştırma+maket) → UI dili (uygulama) → yeni ücretsiz paketler → karakterler. İlk beşi indirme ve onay istemiyor: hepsi diskte duran 185 KayKit modeliyle yapılacak iş.",
-     "yapilan": 15,
-     "toplam": 16,
+     "yapilan": 17,
+     "toplam": 18,
      "durum": "now",
      "kapi": "185 kullanılmayan KayKit modeli oyuna bağlanır + UI dili maketle onaylanır"
     },
@@ -378,6 +378,34 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "14.09.2026",
+   "etiket": "Faz S · 17. oturum (S18 — arayüz dokunuşları — D-115b)",
+   "baslik": "Sıra <b>genişletilemedi</b>, patronun yeleği <b>karede elendi</b>, tavan hız <b>bedava</b> çıktı",
+   "govde": "Bu tur dört küçük iş gibi başladı, üçü de “yap geç” değil çıktı.<br><br><b>Garsonlar duvar dibinde kuyruk gibi duruyordu</b> ve aralığı açmak akla yatkın çözümdü. Tarama onu çürüttü: gövde çapı 0,56, aralık 0,70, yani arada 0,14 br — ama <b>0,90</b>’da üçüncü garson bir masanın yükseltme noktasına, <b>1,00</b>’da bir pad’e, <b>1,10</b>’dan sonra katı engele giriyor. O koridorda sıraya yer yok. Noktalar bu yüzden formülle değil <b>aramayla</b> seçildi: alan ızgarası tarandı, üç dönemde birden kısıtları geçen adaylar süzüldü, tezgâha yakın olanlar arasından birbirine en uzak üçlü alındı. Postalar arası en kısa mesafe <b>3,55 br</b>.<br><br><b>Patron farkı sekiz adayla soruldu</b> ve kare iki kolu eledi: yelek de pelerin de önlükten ayrışmıyor, çünkü ikisi de göğse asılı düz levha. Kalan iki sinyal uygulandı — patron önlük takmaz, gömleği koyu. (Kullanıcı sonra gömlek rengini geri istedi; ayırt edici dokunuş S19’a kaldı.)<br><br><b>Oyuncu hızında bir yanlış okuma aracın kendi damgası tarafından yakalandı.</b> İlk ölçüm “her indirim D-087’nin 20 dk güvencesini kırıyor” diyordu; harness meta katmanın kancaları <b>kapalı</b> kurulmuştu ve o dünyada taban kol bile kırık çıkıyordu. Damga kurulumu reddetti (<i>“bugünkü denge zaten kırıkmış — kıyas geçersiz”</i>), testin kurulumu kopyalanınca tablo tersine döndü: hüküm 3,90’a kadar temiz, kırılan 3,60. Asıl kısıt daha erken geliyordu — taban 0,10 inse <b>gözlem bandı 2→3</b> oynuyor. Tavan ise ekonomiye hiç dokunmuyor: seçilen kol bugünkü üç kolonu birebir koruyor. Kullanıcı zaten “max” demişti.",
+   "maddeler": [
+    "<b>D-115b:</b> sipariş balonu — sarı küre yerine ürüne göre dokulu billboard (çay · tost)",
+    "<b>Sıra → posta:</b> 0,90’da masa noktası · 1,00’da pad · 1,10’da katı engel → aramayla seçildi",
+    "<b>Postalar arası:</b> 3,55 br (erken) · 2,69 br (geç) — eskiden 0,70",
+    "<b>Patron:</b> yelek ve pelerin kolları karede ELENDİ; kalan sinyal önlüksüzlük + renk",
+    "<b>Tavan hız</b> 5,40 → 4,95 (kayma 2,41× → 2,21×) · taban 4,50 sabit, üç kolon birebir aynı",
+    "<b>Damga bir yanlış okumayı reddetti:</b> harness kancaları kapalıydı, taban kol bile kırıktı"
+   ]
+  },
+  {
+   "tarih": "14.09.2026",
+   "etiket": "Faz S · 16. oturum (S17 — hatalar ve hareket — D-115)",
+   "baslik": "<b>T-poz</b> bir yarıştı, açılış hatası <b>geri gelmişti</b>, görünüm takasını <b>başkasının çıkışı</b> tetikliyordu",
+   "govde": "Üç şikâyetin üçü de ölçümle başka bir yere çıktı.<br><br><b>“Eller sağa açık”</b> bir T-pozdu: donuk gövdede el oynaması <b>tam 0</b>, yani o aktörde hiçbir klip hiç başlamamıştı. Mount kancası <code>actions</code> boşken çalışıyor, kare döngüsünün erken dönüşü de “hedef değişmedi” diye vuruyordu. Yarış olduğu için seyrekti — dört personelin bir ikisi, müşteriler hiç.<br><br><b>Açılıştaki “Maximum update depth exceeded” S16’da kapandı sanılmıştı; kapanmamıştı.</b> Üç açılışın ikisinde çıkıyor, ilk (soğuk) açılışta çıkmıyordu. Sebep memoize edilmemiş bir dizi değil, <b>aboneliğin kendisiydi</b>: açılış ekranı ilerleme store’una abone olduğu için her dosya bir render doğuruyordu ve önbellek sıcakken hepsi aynı karede bitiyordu.<br><br><b>“Saç rengi kıyafet değişiyor” temasla ilgili değildi.</b> Müşteri gövdeleri dizi sırasına göre veriliyordu; ortadan biri kalkınca dizi kayıyor ve sonraki her müşteri bir alttaki gövdeye düşüyordu. Yani oturduğu yerde duran müşterinin görünümünü <b>başkasının salondan çıkması</b> değiştiriyordu. Eşleme kimliğe bağlandı.<br><br><b>“Koşmasın yürüsün”</b> ise hız değil rol sorusuydu: 0,844 br/sn üstündeki her hızda seçici koşuyu seçiyor. Koşu, müşteri ve personelin listesinden çıkarıldı; hız 2,60 → 1,40 indi ve bedeli (%40 yürüme payı, döngü ×1,342) ölçülüp kullanıcı tarafından seçildi.",
+   "maddeler": [
+    "<b>D-115:</b> erken dönüş iki koşullu — hedef değişmemiş <i>ve</i> çalıyor olmalı",
+    "<b>Açılış:</b> abonelik → yoklama; render sayısı dosya sayısından bağımsız · 3/3 temiz",
+    "<b>Görünüm takası:</b> yuva dizi sırası → npc KİMLİĞİ",
+    "<b>Ayrışma:</b> müşteri-müşteri kuvvet KODDA YOKTU · %1,40 → %0,60 · 0,046 → 0,413 br",
+    "<b>Tepsi:</b> el kemikleri gövdeyle tazeleniyor; el yoksa tepsi gizleniyor",
+    "<b>8 mutasyon, kaçan 0</b> — biri önce kaçtı: test iki oturan kullanıyordu, senaryo düzeltildi"
+   ]
+  },
   {
    "tarih": "14.09.2026",
    "etiket": "Faz S · 15. oturum (S16 — elde tepsi tutma — D-114)",
@@ -1187,7 +1215,7 @@ h2{font-size:21px;font-weight:800}
    "sev": "Görsel",
    "renk": "wait",
    "b": "Oyuncuda <b>2,0× artık ayak kayması</b> ve bulaşıkçının omzu blob sınırını aşıyor",
-   "p": "S15 <i>&ldquo;havada süzülüyor&rdquo;</i> kusurunu kapattı: klip artık hızdan seçiliyor ve katsayı hızdan türüyor. Ama <b>oyuncuda sıfırlanmadı</b> ve sebebi ölçülü: <code>Running_A</code> 1,247 br/sn için çizilmiş, oyuncu <b>4,5-5,4</b> gidiyor. Katsayı gerçek sprint kadansında (4,5 adım/sn → <code>timeScale</code> 1,80) kelepçelendiği için klip en çok 2,24 br/sn taşıyor; geriye <b>2,0×</b> kayma kalıyor — bugünkü 7,9×&rsquo;ın dörtte biri, ama sıfır değil. Kelepçeyi açmak bacakları <b>9 adım/sn</b>&rsquo;ye çıkarır (gerçek sprintin iki katı, pervane gibi okunur). Sıfırlamanın tek yolu <b>oyuncu hızını düşürmek</b> — o <code>economy.config.ts</code>&rsquo;e dokunur, <b>varyant kapısına tabidir</b> ve ölçülmedi; kendi turunu ister. <b>İkinci kalem:</b> bulaşıkçı gövdesinin (Rogue) omzu <b>0,709</b> ölçüldü ve D-076&rsquo;nın blob sınırı <b>0,60</b> — yani sınır kafa koluna bakılmaksızın <b>bugün de</b> aşılıyor. S14&rsquo;ün <i>&ldquo;omuz 0,58, sınır aşılmıyor&rdquo;</i> satırı başka bir gövdeden alınmış. Ya sınırın kendisi gözden geçmeli (kapsül çağından kalma bir sayı) ya da o rol başka gövdeye taşınmalı."
+   "p": "S15 <i>&ldquo;havada süzülüyor&rdquo;</i> kusurunu kapattı; S18 bir taksit daha ödedi. <b>TAVAN hız 5,40 → 4,95</b> (kayma 2,41× → <b>2,21×</b>) ve ölçüm tavanın ekonomiye <b>hiç dokunmadığını</b> gösterdi: seçilen merdiven bugünkü üç kolonu birebir koruyor (20 dk aşan 0 · en uzun 1079 sn · Normal bant 2 · şerit 406,3 dk). <b>TABAN 4,50 duruyor</b> ve artık sebebi ölçülü: 4,40&rsquo;a inince Normal gözlem bandı 2 → 3 oynuyor, 3,60&rsquo;ta da D-087&rsquo;nin 20 dk hükmü düşüyor (1203 sn). Yani tabanı indirmek <b>ayrı bir denge turudur</b> ve D-095 yeniden okunmalıdır. Kalan 2,00×&rsquo;lık taban kayması kabul edilmiş durumda. <b>İkinci kalem duruyor:</b> bulaşıkçı gövdesinin (Rogue) omzu <b>0,709</b> ve D-076&rsquo;nın blob sınırı <b>0,60</b> — sınır bugün de aşılıyor. Ya sınır (kapsül çağından kalma bir sayı) gözden geçmeli ya da rol başka gövdeye taşınmalı."
   },
   {
    "sev": "Ölçüm",
