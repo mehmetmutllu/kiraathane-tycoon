@@ -3538,3 +3538,42 @@ test iki OTURAN kullanıyordu, iç döngünün bekçisi dıştakini örtüyordu;
 kapanışta karma commit uyarısı çıktı; iki commit'e ayrılarak kapatıldı (#1 ölçüm, #2 kod).
 
 Sayılar: `docs/olcum-musteri.txt` · `docs/olcum-kol.json` · `docs/olcum-panel-donusu.json`
+
+---
+
+## D-115b — S18 ikinci tur: sipariş balonu, garson postaları, patron kimliği, oyuncu tavan hızı (2026-09-14)
+
+**SİPARİŞ BALONU.** Gösterge sarı bir küreydi ve yalnız "bekliyor" diyordu; ne beklediğini
+söylemiyordu. Artık ürüne göre dokulu, kameraya dönen levha (çay = ince belli bardak, tost =
+üçgen) — çizim `siparisBalonu.ts`te Canvas2D ile, kalın koyu kontur gramerinde. Ürün başına tek
+`InstancedMesh`, yani iki çizim çağrısı; müşteri sayısından bağımsız. İlk koşuda glif balonun
+%18'iydi ve uzaktan "I" harfi gibi okunuyordu — kare görülüp %45'e çıkarıldı.
+
+**GARSON POSTALARI — sıra genişletilemedi, ÖLÇÜLDÜ.** Bekleme noktaları `waiterHome`dan 0,70
+aralıkla dizilen bir SIRAYDI; gövde çapı 0,56, yani arada 0,14 br. Aralığı açmak denendi:
+**0,90'da masa yükseltme noktası, 1,00'da `z3table2` pad'i, 1,10'dan sonra katı engel** —
+koridorda sıraya yer yok. Noktalar bu yüzden formülle değil ARAMAYLA seçildi (ızgara taraması +
+üç dönemde birden geçen adaylar + tezgâha 1,4-3,5 br). Postalar arası en kısa mesafe **3,55 br**
+(erken) ve **2,69 br** (geç).
+
+**PATRON KİMLİĞİ.** Sekiz aday çizildi (`docs/gorsel/ss/s18-patron.png`, her kartta yanında
+değişmeyen garson). **Yelek ve pelerin kolları ELENDİ:** göğse takılan plaka önlükten ayrışmıyor,
+ikisi de düz levha. Kalan iki sinyal uygulandı — patron **önlük takmaz** (önlük personelin
+üniforması) ve gömleği **koyu lacivert** (`ownerShirt`); salonun sıcak paletinde tek soğuk kütle.
+
+**OYUNCU HIZI: TAVAN 5,40 → 4,95, TABAN 4,50 DEĞİŞMEDİ.** Ayak kayması tavanda 2,41× → 2,21×.
+Ölçüm (`docs/olcum-oyuncu-hizi.txt`): seçilen kol bugünkü üç kolonu BİREBİR koruyor (1079 sn ·
+Normal bant 2 · şerit 406,3). Taban 0,10 inse Normal bant 2→3 oynuyor; 20 dk hükmü ancak
+3,60'ta düşüyor. Yani tavan bedava, taban değil.
+
+**BİR YANLIŞ OKUMA DÜZELTİLDİ ve düzelten şey aracın kendi damgasıydı.** Kullanıcıya önce "her
+indirim D-087'yi kırıyor" dendi; yanlıştı. Sebep: ölçüm harness'ı H/R/E kancaları KAPALI
+kurulmuştu ve o dünyada taban kol bile kırık çıkıyordu. Damga ("bugunku denge zaten kirikmis —
+kiyas gecersiz") kurulumu reddetti; testin `kur(true,true,true)` kurulumu kopyalanınca tablo
+tersine döndü.
+
+**Bekçi:** `tests/musteri-ayrisma.test.ts` · `yukleme-dongusu.test.ts` · `layout-b6a`ın posta
+testi (sıra ritmi → AYRIKLIK) · `karakter-senkron`a patron ayrışması (renk mesafesi > 120 RGB +
+önlük yokluğu, iki sinyal birden). vitest **996** ✓ · duman **42/42** ✓ · `tsc -b` ✓.
+
+Sayılar: `docs/olcum-oyuncu-hizi.txt` · `docs/olcum-musteri.txt` · kare `docs/gorsel/ss/s18-son.png`

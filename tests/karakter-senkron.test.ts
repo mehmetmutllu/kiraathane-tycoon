@@ -45,6 +45,7 @@ import {
   lokomosyonSec, LOKOMOSYON, LOKOMOSYON_YURUYUS, KOSABILIR, lokomosyonAdaylari,
 } from '../src/components/three/KayActor';
 import { NPC_SPEED } from '../src/game/layout';
+import { PALETTE } from '../src/config/palette';
 // @ts-expect-error — ölçüm aracı düz .mjs; tip yok, glTF okuyucu var.
 import { gltfOku } from '../tools/olcum-karakter.mjs';
 
@@ -304,8 +305,14 @@ describe('S15 · sahibin kasketi kalktı (kullanıcı kararı)', () => {
     expect(KAY_KIYAFET.kitchenHand.kasket).toBe(true);
   });
 
-  it('önlük dört rolde de duruyor — kalkan yalnız kasketti', () => {
-    for (const rol of ['owner', 'waiter', 'dishwasher', 'kitchenHand'] as const) {
+  /**
+   * S15'te bu bekçi "önlük DÖRT rolde de duruyor" diyordu ve o gün doğruydu. S18'de kullanıcı
+   * patronu personelden ayırmak isteyince önlük ÜNİFORMA rolüne geçti: personel takar, patron
+   * takmaz. Bekçi kaldırılmadı, DARALTILDI — personelin önlüğü hâlâ korunuyor, patronunki
+   * bilerek yok. (Aynı şeyi tersten denetleyen yeni test: "S18 · patron ile personel ayrışır".)
+   */
+  it('önlük PERSONELİN üniforması — üç rolde de duruyor', () => {
+    for (const rol of ['waiter', 'dishwasher', 'kitchenHand'] as const) {
       expect(KAY_KIYAFET[rol].onluk, `${rol} önlüğü kayboldu`).toBe(true);
     }
   });
@@ -419,5 +426,33 @@ describe('S18 · koşu klibi rol bazlı', () => {
     const s = lokomosyonSec(LOKOMOSYON_YURUYUS.yuru, NPC_SPEED);
     expect(s.klip).toBe('Walking_A');
     expect(NPC_SPEED / (KLIP_HIZI[s.klip] * s.timeScale)).toBeCloseTo(1.36, 1);
+  });
+});
+
+/**
+ * S18 — PATRON GARSONDAN AYRILIR (kullanıcı: *"ben garsonlarla aynı olmuyim bi farkım olsun
+ * tasarımsal olarak"*).
+ *
+ * Aday karesi (`docs/gorsel/ss/s18-patron.png`) yelek ve pelerin kollarını ELEDİ: göğse takılan
+ * plaka önlükten ayrışmıyor, ikisi de düz levha. Ayıran iki şey kaldı — RENK ve ÖNLÜĞÜN YOKLUĞU.
+ * İkisi birden bekçilenir: biri tek başına kalırsa sinyal zayıflar ve kimse fark etmez
+ * (`feedback_upgrade_legibility`: tek sinyal yetmez).
+ */
+describe('S18 · patron ile personel ayrışır', () => {
+  it('ÖNLÜK personelin üniforması — patron takmaz', () => {
+    expect(KAY_KIYAFET.owner.onluk).toBe(false);
+    expect(KAY_KIYAFET.waiter.onluk).toBe(true);
+    expect(KAY_KIYAFET.dishwasher.onluk).toBe(true);
+    expect(KAY_KIYAFET.kitchenHand.onluk).toBe(true);
+  });
+
+  it('GÖMLEK rengi patronda farklı ve fark GÖZLE seçilecek kadar büyük', () => {
+    expect(PALETTE.ownerShirt).not.toBe(PALETTE.shirt);
+    // Sayısal pay: iki rengin RGB mesafesi. Yakın iki krem "farklı renk" sayılırdı ama
+    // ekranda ayrışmazdı; eşik, paletteki en yakın iki kıyafet renginden geniş tutuldu.
+    const rgb = (h: string) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+    const [a, b] = [rgb(PALETTE.ownerShirt), rgb(PALETTE.shirt)];
+    const uzaklik = Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+    expect(uzaklik).toBeGreaterThan(120);
   });
 });

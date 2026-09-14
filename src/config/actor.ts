@@ -155,7 +155,9 @@ export const KAY_MODEL = {
 export const KAY_KIYAFET: Record<ActorKind, { kasket: boolean; onluk: boolean }> = {
   // Sahibin kasketi S15'te KALKTI (kullanıcı 2026-09-14: "ana karakterdeki kasketi çıkar").
   // Mutfak elemanında duruyor — usta kimliğini o taşıyor.
-  owner: { kasket: false, onluk: true },
+  // PATRON ONLUK TAKMAZ (S18): onluk personelin UNIFORMASI, patronun degil. Ayirt edici
+  // isaret bu yoklukla koyu lacivert gomlegin birlesimi — gerekce `KayActor.parcaRenk`.
+  owner: { kasket: false, onluk: false },
   waiter: { kasket: false, onluk: true },
   dishwasher: { kasket: false, onluk: true },
   kitchenHand: { kasket: true, onluk: true },

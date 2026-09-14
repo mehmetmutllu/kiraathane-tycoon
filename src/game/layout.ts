@@ -457,7 +457,10 @@ export interface ServicePlace {
   dish: Vec3;
   dishRot: number;
   dishHalf: readonly [number, number];
+  /** Boşta bekleyen garsonun DURDUĞU nokta — sıranın başı DEĞİL, i. garsonun kendi postası. */
   waiterHome: Vec3;
+  /** Garson POSTALARI (gerekçe `waiterHomeAt`): aramayla seçildi, formülle üretilmiyor. */
+  waiterPosts: readonly Vec3[];
   dishwasherHome: Vec3;
   /** Çaycının tezgâh boyunca gidip geldiği doğru parçası + iş yaparken baktığı yön (Scene). */
   staffWalk: { a: Vec3; b: Vec3; face: number };
@@ -479,6 +482,7 @@ const PLACE_LEFT_WALL: ServicePlace = {
   dishRot: Math.PI / 2,
   dishHalf: [0.5, 1.0],
   waiterHome: [-14.4, 0, 8.6],
+  waiterPosts: [[-15, 0, 5], [-14.5, 0, 9.75], [-11.75, 0, 7.5]] as const,
   dishwasherHome: [-14.4, 0, 12.6],
   staffWalk: { a: [-15.1, 0, 4.9], b: [-15.1, 0, 11.4], face: Math.PI / 2 },
 };
@@ -523,6 +527,7 @@ const PLACE_BACK_BAND: ServicePlace = {
      Bekçi: `tests/layout-b6a.test.ts` — personel bekleme noktaları AÇIK hiçbir masanın
      yükseltme noktasına 1,4 br'den yakın olamaz. */
   waiterHome: [-14.6, 0, -6.6],
+  waiterPosts: [[-14, 0, -8.3], [-9.5, 0, -9.3], [-16.5, 0, -9.3]] as const,
   dishwasherHome: [-6.9, 0, -7.75],
   staffWalk: { a: [-14.6, 0, -11.3], b: [-11.4, 0, -11.3], face: 0 },
 };
@@ -562,14 +567,36 @@ export const servicePlaceArea = (areasOpen: number): number => servicePlace(area
  * de aynı aritmetiği dördüncü kez yazmak zorunda kalıyordu. Yerleşim sorusunun cevabı burada
  * durur, çağıranlar okur.
  */
-// D-076 notu: bu ritim `actorRadius`'a bağlı (testi öyle bekçiliyor). Kapsül gövdeler boyuna
-// uzayıp enine şişmediği için yarıçap 0,28'de kaldı ve 0,7 yerinde durdu.
+/**
+ * SIRA DEĞİL **POSTA** (S18, kullanıcı 2026-09-14: *"garsonlar iç içe veya çok dip dibe başlıyor
+ * başlangıçta … her birinin istasyonu olsun"*).
+ *
+ * ESKİ HÂLİ bir SIRAYDI: `waiterHome`dan başlayıp 0,70 aralıkla doğuya dizilen üç nokta. Gövde
+ * çapı 2 × 0,28 = **0,56** olduğu için aralarında yalnız **0,14 br** kalıyordu — teknik olarak
+ * çakışma yok ama ekranda duvar dibinde omuz omuza kuyruk.
+ *
+ * SIRAYI GENİŞLETMEK DENENDİ VE OLMADI — bu bir tercih değil ÖLÇÜLMÜŞ bir sonuç: aralık 0,90'a
+ * çıkınca üçüncü garson bir masanın yükseltme noktasına, 1,00'da ayrıca `z3table2` pad'ine,
+ * 1,10'dan sonra da katı bir engele giriyor. Bekleme hattı dar bir koridorda; orada sıraya
+ * sığacak yer YOK. (Tarama: `gap ∈ [0,7…1,5] × stagger ∈ [0…0,85]`, tek temiz kol 0,70/0,40.)
+ *
+ * O yüzden noktalar formülle değil TEK TEK seçildi. Seçim de elle değil aramayla yapıldı: alan
+ * ızgarası tarandı, katı engel / masa yükseltme noktası / pad / servis noktası kısıtlarını ÜÇ
+ * dönemde birden geçen adaylar süzüldü, tezgâha 1,4-3,5 br mesafedekiler arasından birbirine EN
+ * UZAK üçlü seçildi. Sonuç: postalar arası en kısa mesafe **3,55 br** (erken) ve **2,69 br**
+ * (geç) — gövde çapının altı-beş katı, yani artık dizi değil yerleşim.
+ *
+ * TEZGÂHA YAKINLIK KISIT: garson çayı oradan alıyor. Postalar salona dağıtılsaydı boşta bekleme
+ * güzel görünür ama her servis turu uzardı — bu bir DENGE etkisi olurdu ve bu turda istenmedi.
+ */
+export const waiterHomeAt = (place: ServicePlace, i: number): Vec3 => {
+  const p = place.waiterPosts[i];
+  // Havuz posta sayısını aşarsa (ileride `maxWaiters` büyürse) eski SIRA ritmi yedek kalır.
+  return p ? ([...p] as Vec3) : [place.waiterHome[0] + i * WAITER_HOME_GAP, 0, place.waiterHome[2]];
+};
+
+/** Yedek sıra ritmi — yalnız posta listesi tükendiğinde kullanılır (gerekçe `waiterHomeAt`). */
 export const WAITER_HOME_GAP = 0.7;
-export const waiterHomeAt = (place: ServicePlace, i: number): Vec3 => [
-  place.waiterHome[0] + i * WAITER_HOME_GAP,
-  0,
-  place.waiterHome[2],
-];
 
 /** Havuz tamamen doluyken sahnede olabilecek TÜM personel bekleme noktaları (bekçi testi bunu tarar). */
 export const staffIdleSpots = (place: ServicePlace): Vec3[] => [

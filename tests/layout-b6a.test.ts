@@ -75,14 +75,37 @@ describe('B6a — personelin bekleme noktası yükseltme işaretini kapatmaz', (
     }
   });
 
-  it('TEK KAYNAK: sıra ritmi `waiterHomeAt` — havuz kadar nokta üretir, gövdeler üst üste binmez', () => {
-    const place = servicePlace(3);
-    expect(staffIdleSpots(place)).toHaveLength(MAX_WAITERS + 1);
-    for (let i = 0; i < MAX_WAITERS; i++) {
-      expect(waiterHomeAt(place, i)[0]).toBeCloseTo(place.waiterHome[0] + i * WAITER_HOME_GAP, 6);
-      expect(waiterHomeAt(place, i)[2]).toBeCloseTo(place.waiterHome[2], 6);
+  /**
+   * S18: SIRA → POSTA. Kullanıcı *"garsonlar iç içe veya çok dip dibe başlıyor … her birinin
+   * istasyonu olsun"* dedi. Eski bekçi "ritim formülü doğru mu" diye soruyordu; formül artık yok
+   * (sıra 0,90'a bile açılmıyor, ölçüldü) ve o soru da anlamını yitirdi. Yeni bekçinin sorduğu
+   * şey kullanıcının gördüğü şey: **postalar birbirinden AYRI mı.**
+   */
+  it('TEK KAYNAK: `waiterHomeAt` havuz kadar POSTA üretir ve postalar birbirinden ayrıktır', () => {
+    for (const areasOpen of [1, 2, 3]) {
+      const place = servicePlace(areasOpen);
+      expect(staffIdleSpots(place)).toHaveLength(MAX_WAITERS + 1);
+      const postalar = Array.from({ length: MAX_WAITERS }, (_, i) => waiterHomeAt(place, i));
+      // Her posta ServicePlace'in kendi listesinden gelmeli — formüle düşülmemeli.
+      for (let i = 0; i < MAX_WAITERS; i++) {
+        expect(place.waiterPosts[i], `alan ${areasOpen} · ${i}. postanın karşılığı yok`).toBeDefined();
+        expect(postalar[i][0]).toBeCloseTo(place.waiterPosts[i][0], 6);
+        expect(postalar[i][2]).toBeCloseTo(place.waiterPosts[i][2], 6);
+      }
+      // AYRIKLIK: en yakın iki posta, iki gövdenin çapının en az İKİ KATI kadar uzak olmalı.
+      // "Çakışmıyor" yetmiyordu — 0,70'lik eski sıra da çakışmıyordu ama kuyruk gibi duruyordu.
+      for (let i = 0; i < MAX_WAITERS; i++) {
+        for (let j = i + 1; j < MAX_WAITERS; j++) {
+          expect(
+            dist2D(postalar[i], postalar[j]),
+            `alan ${areasOpen} · posta ${i} ↔ ${j} çok yakın`,
+          ).toBeGreaterThan(4 * LAYOUT.actorRadius);
+        }
+      }
+      // TEZGÂHA YAKINLIK: posta salonun öbür ucuna kaçarsa servis turu uzar (denge etkisi).
+      for (const p of postalar) expect(dist2D(p, place.pickup)).toBeLessThan(4.0);
     }
-    // Ritim iki gövdenin çapından (2 × actorRadius) geniş: garsonlar yan yana durur, iç içe değil.
+    // Yedek sıra ritmi hâlâ iki gövdenin çapından geniş olmalı (posta listesi tükenirse devreye girer).
     expect(WAITER_HOME_GAP).toBeGreaterThan(2 * LAYOUT.actorRadius);
     // TABLE_UP_RADIUS bu testin CLEAR payının tabanı; birlikte değişsinler diye burada bağlanıyor.
     expect(CLEAR).toBeGreaterThan(TABLE_UP_RADIUS);

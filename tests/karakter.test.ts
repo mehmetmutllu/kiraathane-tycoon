@@ -146,8 +146,10 @@ describe('S14 — karakter gövdeleri (D-112)', () => {
     for (const kind of Object.keys(AUTHORED_HEIGHT) as (keyof typeof AUTHORED_HEIGHT)[]) {
       expect(KAY_KIYAFET[kind], `${kind} kıyafeti yazılmamış`).toBeTruthy();
     }
-    // Önlük personelin tamamında var; kasket yalnız çaycı hattında (sahip + usta).
-    expect(Object.values(KAY_KIYAFET).every((k) => k.onluk)).toBe(true);
+    // S18: önlük ÜNİFORMA oldu — personelin tamamında var, PATRONDA yok (patron garsondan
+    // renk + önlüksüzlükle ayrılıyor; `karakter-senkron.test.ts` → "patron ile personel ayrışır").
+    expect(Object.entries(KAY_KIYAFET).filter(([r]) => r !== 'owner').every(([, k]) => k.onluk)).toBe(true);
+    expect(KAY_KIYAFET.owner.onluk).toBe(false);
     expect(Object.values(KAY_KIYAFET).filter((k) => k.kasket).length).toBeGreaterThan(0);
     expect(existsSync(path.join(DIZIN, 'License-Adventurers.txt'))).toBe(true);
     expect(existsSync(path.join(DIZIN, 'License-CharacterAnimations.txt'))).toBe(true);
@@ -158,7 +160,8 @@ describe('S14 — karakter gövdeleri (D-112)', () => {
     // Ölçüm turunda gövdeyi düz boyamak saçı da yutmuştu: Barbarian'ın ak sakalı ten rengine
     // döndü. Kural o günden kaldı ve tek satırlık bir regex'e bağlı — bekçisi olmazsa
     // "tutarlılık olsun" diye baş listeye geri eklenir ve kimse fark etmez.
-    const blok = KAYNAK.slice(KAYNAK.indexOf('const PARCA_RENK'), KAYNAK.indexOf('];', KAYNAK.indexOf('const PARCA_RENK')));
+    // S18: liste sabit degil FONKSIYON oldu (gomlek role bagli). Capa adi guncellendi; kural ayni.
+    const blok = KAYNAK.slice(KAYNAK.indexOf('const parcaRenk'), KAYNAK.indexOf('};', KAYNAK.indexOf('const parcaRenk')));
     expect(blok).toContain('/arm/i');
     expect(blok).toContain('/leg/i');
     expect(/head|skull/i.test(blok), 'baş boyama listesine girmiş — saç ten rengine döner').toBe(false);

@@ -1852,8 +1852,10 @@ describe('karakter yükseltmeleri (v20) — eğri, satın alma, migrasyon, göre
     expect(attractRadiusFor(0)).toBeCloseTo(2.6);
     expect(attractRadiusFor(3)).toBeCloseTo(5.0);
     expect(playerSpeedFor(0)).toBeCloseTo(4.5);
-    expect(playerSpeedFor(3)).toBeCloseTo(5.4); // tavan +%20 (bilinçli düşük)
-    expect(charValue('speed', 99)).toBeCloseTo(5.4); // kelepçe
+    // TAVAN 5,40 → 4,95 (S18 · D-115b): ayak kayması 2,41× → 2,21×. TABAN 4,50'de KALDI —
+    // indirmek D-087'nin 20 dk güvencesini kırıyor (ölçüldü; `economy.config.ts` → speed notu).
+    expect(playerSpeedFor(3)).toBeCloseTo(4.95);
+    expect(charValue('speed', 99)).toBeCloseTo(4.95); // kelepçe
   });
 
   it('buyCharUpgrade: para yetmezse false; yeterliyse kademe+1, ₺ düşer, XP verir; max\'ta false', () => {

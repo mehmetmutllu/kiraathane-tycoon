@@ -3,8 +3,9 @@ import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import {
   CapsuleGeometry,
-  SphereGeometry,
+  PlaneGeometry,
   MeshStandardMaterial,
+  MeshBasicMaterial,
   Object3D,
   Color,
   MathUtils,
@@ -37,6 +38,7 @@ import {
   ekipmanMi, basMi, kafaKucult, useKayKlipler, KLIP, LOKOMOSYON_YURUYUS, lokomosyonSec, YURUME_ESIGI,
 } from './KayActor';
 import { WC_GECIS, wcOlcek, LAYOUT } from '../../game/layout';
+import { siparisDokusu } from './siparisBalonu';
 
 /**
  * Customers — müşteri gövdeleri (S15 · D-113: skinned).
@@ -67,8 +69,16 @@ import { WC_GECIS, wcOlcek, LAYOUT } from '../../game/layout';
 const BODY_GEO = new CapsuleGeometry(CAPSULE_RADIUS, ACTOR_HEIGHT - 2 * CAPSULE_RADIUS, 6, 10)
   .translate(0, ACTOR_HEIGHT / 2, 0);
 const BODY_MAT = new MeshStandardMaterial({ color: '#ffffff' }); // gerçek renk per-instance
-const BUBBLE_GEO = new SphereGeometry(0.14, 10, 10);
-const BUBBLE_MAT = new MeshStandardMaterial({ color: '#ffd54f', emissive: '#ffb300', emissiveIntensity: 0.4 });
+/**
+ * SİPARİŞ BALONU (S18) — eskiden sarı bir KÜREYDİ ve yalnız "bekliyor" diyordu; ne beklediğini
+ * söylemiyordu. Artık ürüne göre ayrı dokulu, KAMERAYA DÖNEN düz levha (billboard).
+ * Çizim `siparisBalonu.ts`te; burada yalnızca yerleştirilir.
+ *
+ * ÜRÜN BAŞINA AYRI `InstancedMesh`: bir instanced mesh tek materyal (tek doku) taşıyabilir, o
+ * yüzden çay ve tost ayrı geçiş. İki ürün = iki çizim çağrısı, müşteri sayısından bağımsız.
+ */
+const BUBBLE_GEO = new PlaneGeometry(0.62, 0.62);
+const URUNLER = ['tea', 'tost'] as const;
 const NPC_CAP = 128; // baloncuk + kapsül kolunun tavanı (npcCount tipik ~10-30); ucuz.
 
 /** Müşterinin durumu OTURUYOR mu — gerçek oturuş klibi ve kök kaldırması buna bağlı. */
@@ -272,21 +282,38 @@ function useMusteriHavuzu(): Havuz {
 
 export function Customers() {
   const bodyRef = useRef<InstancedMesh>(null);
-  const bubbleRef = useRef<InstancedMesh>(null);
+  /** Ürün başına bir instanced mesh — sıra `URUNLER` ile aynı. */
+  const bubbleRefs = useRef<(InstancedMesh | null)[]>([]);
+  /**
+   * Dokular ilk çizimde üretilip önbelleklenir; materyal bileşen ömrü boyunca sabit kalır.
+   *
+   * `depthWrite` KAPALI: saydam levhaların birbirini kırpmasını engeller — yan yana oturan iki
+   * müşterinin balonları kenarlarını yiyordu. Derinlik TESTİ açık kalır, yani balon duvarın
+   * arkasına geçince kaybolur; istenen davranış budur.
+   */
+  const bubbleMats = useMemo(
+    () => URUNLER.map((u) => new MeshBasicMaterial({
+      map: siparisDokusu(u) ?? null,
+      transparent: true,
+      depthWrite: false,
+      toneMapped: false,
+    })),
+    [],
+  );
   const dummy = useMemo(() => new Object3D(), []);
   const col = useMemo(() => new Color(), []);
   const havuz = useMusteriHavuzu();
   const { grup, yuvalar } = havuz;
 
   useFrame((st, dt) => {
-    const bubble = bubbleRef.current;
     const kapsul = bodyRef.current;
-    if (!bubble || !kapsul) return;
+    if (!kapsul) return;
     const npcs = useGame.getState().npcs;
     const n = Math.min(npcs.length, NPC_CAP);
     havuz.buyut(n); // havuz müşteri geldikçe büyür (gerekçe: YUVA_BASINA_KARE)
     const t = st.clock.elapsedTime;
-    let bubbleCount = 0;
+    /** Ürün başına ayrı sayaç — her instanced mesh kendi `count`unu taşır. */
+    const bubbleCount = URUNLER.map(() => 0);
     let kapsulCount = 0;
 
     for (let i = 0; i < n; i++) {
@@ -371,19 +398,27 @@ export function Customers() {
         kapsulCount++;
       }
 
-      // "çay bekliyor" baloncuğu — baş üstünde, dönmez.
+      // SİPARİŞ BALONU — baş üstünde, KAMERAYA DÖNER (billboard).
       if (npc.state === 'waitingForTea') {
-        const skinned = yuvaIdx >= 0;
-        dummy.position.set(
-          x,
-          skinned ? havuz.govdeBoy + 0.15 + (oturan ? KAY_OTURMA_KALDIRMA - 0.3 : 0) : BUBBLE_Y + SEATED_DROP,
-          z,
-        );
-        dummy.rotation.set(0, 0, 0);
-        dummy.scale.setScalar(1);
-        dummy.updateMatrix();
-        bubble.setMatrixAt(bubbleCount, dummy.matrix);
-        bubbleCount++;
+        const u = URUNLER.indexOf(npc.product as (typeof URUNLER)[number]);
+        const mesh = u >= 0 ? bubbleRefs.current[u] : null;
+        if (mesh) {
+          const skinned = yuvaIdx >= 0;
+          dummy.position.set(
+            x,
+            // Balon KÜREDEN BÜYÜK: eski 0,15'lik pay balonun alt kuyruğunu başın içine
+            // sokuyordu. Pay balonun yarı yüksekliği kadar açıldı.
+            (skinned ? havuz.govdeBoy + 0.15 + (oturan ? KAY_OTURMA_KALDIRMA - 0.3 : 0) : BUBBLE_Y + SEATED_DROP) + 0.22,
+            z,
+          );
+          // Kameranın dönüşü kopyalanır: levha her açıdan tam karşıdan görünür. Sabit dönüşlü
+          // bir levha, kamera yana kayınca kâğıt gibi incelip kaybolurdu.
+          dummy.quaternion.copy(st.camera.quaternion);
+          dummy.scale.setScalar(1);
+          dummy.updateMatrix();
+          mesh.setMatrixAt(bubbleCount[u], dummy.matrix);
+          bubbleCount[u]++;
+        }
       }
     }
 
@@ -404,15 +439,28 @@ export function Customers() {
     kapsul.count = kapsulCount;
     kapsul.instanceMatrix.needsUpdate = true;
     if (kapsul.instanceColor) kapsul.instanceColor.needsUpdate = true;
-    bubble.count = bubbleCount;
-    bubble.instanceMatrix.needsUpdate = true;
+    for (let u = 0; u < URUNLER.length; u++) {
+      const m = bubbleRefs.current[u];
+      if (!m) continue;
+      m.count = bubbleCount[u];
+      m.instanceMatrix.needsUpdate = true;
+    }
   });
 
   return (
     <>
       <primitive object={grup} />
       <instancedMesh ref={bodyRef} args={[BODY_GEO, BODY_MAT, NPC_CAP]} castShadow frustumCulled={false} />
-      <instancedMesh ref={bubbleRef} args={[BUBBLE_GEO, BUBBLE_MAT, NPC_CAP]} frustumCulled={false} />
+      {URUNLER.map((u, i) => (
+        <instancedMesh
+          key={u}
+          ref={(m) => { bubbleRefs.current[i] = m; }}
+          args={[BUBBLE_GEO, bubbleMats[i], NPC_CAP]}
+          frustumCulled={false}
+          // Balon SON çizilir: saydam levhanın arkasındaki gövde önce yazılmış olmalı.
+          renderOrder={10}
+        />
+      ))}
     </>
   );
 }

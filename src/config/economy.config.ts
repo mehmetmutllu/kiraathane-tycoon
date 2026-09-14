@@ -398,8 +398,52 @@ export const economyConfig = {
     /** Para mıknatısı yarıçapı (dünya birimi; money.attractRadius'un yerini aldı).
      *  M1 250→200 (kullanıcı 2026-06-11: "azıcık insin" — 4. masa dönemiyle hizalanır). */
     magnet: { values: [2.6, 3.4, 4.2, 5.0], costs: [200, 700, 2_200] },
-    /** Hareket hızı (dünya birimi/sn; player.moveSpeed'in yerini aldı). Tavan +%20 bilinçli düşük. */
-    speed: { values: [4.5, 4.8, 5.1, 5.4], costs: [400, 1_100, 3_200] },
+    /**
+     * Hareket hızı (dünya birimi/sn; player.moveSpeed'in yerini aldı). Kademe aralığı +%20'de
+     * KALDI; değişen merdivenin TAMAMININ bir basamak inmesi.
+     *
+     * 4,5-5,4 → **3,6-4,5** (S18 · D-115b, kullanıcı: *"ana karakterin max hızını biraz daha
+     * düşür"*). Sayı taste değil, ÇAPALI: `Running_A` kelepçe tavanında (1,8×) en fazla
+     * **2,245 br/sn** taşıyor, yani ayak kayması hızla doğru orantılı —
+     *   5,40 → 2,41×  ·  4,50 → **2,00×**  ·  3,60 → 1,60×
+     * D-113 artık kaymanın **2,0×**ını zaten "kabul edilen" olarak kaydetmişti (o gün tabanın
+     * değeriydi). Merdiveni bir basamak indirince o sayı TAVANIN değeri oluyor: artık oyuncu
+     * en hızlı hâlinde bile bugün kabul edilenden fazla kaymıyor, tabanda ise belirgin düzeliyor.
+     *
+     * DENGE ETKİSİ VAR ve ölçülmedi: oyuncunun tur süresi ~%20 uzar (toplama + servis). Müşteri
+     * hızında yapılanın aksine burada sayı üretilemedi — simülasyonun oyuncusu senaryo betiğiyle
+     * yürüyor, gerçek rota kurmuyor; "oyuncu ne kadar yavaşlarsa ₺/dk ne olur" sorusu ancak
+     * oynanış ölçümüyle cevaplanır. Kullanıcı kolu bilerek seçti.
+     */
+    /**
+     * Hareket hızı (dünya birimi/sn). **TAVAN 5,40 → 4,95; TABAN 4,50 DEĞİŞMEDİ**
+     * (S18 · D-115b, kullanıcı: *"ana karakterin max hızını biraz daha düşür"*).
+     *
+     * GÖRSEL GEREKÇE: `Running_A` kelepçe tavanında (1,8×) en fazla **2,245 br/sn** taşır, yani
+     * ayak kayması hıza doğru orantılı — 5,40 → 2,41× · 4,95 → **2,21×** · 4,50 → 2,00×.
+     *
+     * NEDEN YALNIZ TAVAN — ölçüldü (`docs/olcum-oyuncu-hizi.txt` §2, yığın açık kurulum):
+     *
+     *   merdiven          20 dk aşan  en uzun(sn)  Normal bant  şerit(dk)
+     *   4,50-5,40 (bugün)      0         1079          2         406,3
+     *   4,50-4,95 (SEÇİLEN)    0         1079          2         406,3   ← üç kolon da AYNI
+     *   4,40-5,30              0         1092          3         410,6
+     *   3,90-4,80              0         1158          3         434,2
+     *   3,60-4,50              1         1203          3         450,2   ← D-087 kırılır
+     *
+     * Okunuşu: TAVAN ekonomiye HİÇ dokunmuyor — seçilen kol bugünkü üç sayıyı birebir koruyor.
+     * TABAN ise 0,10'luk bir inişte bile D-095'in kilitlediği Normal gözlem bandını (2 → 3) ve
+     * şerit borcunu oynatıyor; 20 dk hükmü ancak 3,60'ta düşüyor. Yani merdivenin tamamını
+     * indirmek mümkün ama o AYRI BİR DENGE TURUDUR ve D-095 yeniden okunmalıdır.
+     *
+     * (İlk okumam "her indirim güvenceyi kırıyor" demişti ve YANLIŞTI: ölçüm aracının harness'ı
+     * H/R/E kancaları kapalı kurulmuştu, taban kol bile kırık çıkıyordu. Aracın kendi damgası
+     * yakaladı — `tools/olcum-oyuncu-hizi.ts` → "bugunku denge zaten kirikmis".)
+     *
+     * Kademe adımı 0,30 → 0,15: merdiven düzleşti ama son yükseltme hâlâ ölçülebilir bir fark
+     * veriyor (tabandan tavana toplam %10 kazanç).
+     */
+    speed: { values: [4.5, 4.65, 4.8, 4.95], costs: [400, 1_100, 3_200] },
   },
 
   /**

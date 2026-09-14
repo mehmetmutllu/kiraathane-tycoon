@@ -5,6 +5,12 @@
  * Varyant denemek için SADECE bu dosya değişir (kullanıcı ilkesi: görsel işte geri dönüş kolay olsun).
  */
 export const PALETTE = {
+  /**
+   * KONTUR — arayüz gramerinin taşıyıcısı (D-107/S11: "chunky hissin asıl kaynağı kalın koyu
+   * kontur"). `--ot` ile AYNI değer (`src/index.css`); sahnede çizilen arayüz öğeleri
+   * (sipariş balonu) CSS değişkenini okuyamadığı için tek kaynak burada da duruyor.
+   */
+  outline: "#100b2e",
   // Zemin (kilim 2026-06-11 kullanıcı isteğiyle KALDIRILDI: "halıya gerek yok, soft zemin")
   floorWood: '#b98a5a', // dış/taban ahşap zemin (düz renk)
   // Duvar
@@ -71,6 +77,14 @@ export const PALETTE = {
   pants: '#3e3a36', // koyu pantolon
   apron: '#7a2230', // bordo çaycı önlüğü
   cap: '#4a3728', // kasket
+  /**
+   * PATRONUN GÖMLEĞİ (S18) — kullanıcı: *"ben garsonlarla aynı olmuyim bi farkım olsun"*.
+   * Personel ÜNİFORMA giyer (krem gömlek + bordo önlük); patron giymez. Ayıran şey bilerek
+   * RENK ve ÖNLÜĞÜN YOKLUĞU: aday karesi (`docs/gorsel/ss/s18-patron.png`) yelek kolunun
+   * işe yaramadığını gösterdi — göğse takılan plaka önlükten ayrışmıyor, ikisi de düz levha.
+   * Lacivert, salonun sıcak ahşap paletinde tek soğuk kütle: kalabalıkta gözle bulunuyor.
+   */
+  ownerShirt: '#31405c',
   mustache: '#3a2a1d',
   // Sokak
   awning: '#2e6b4f', // kıraathane tentesi (koyu yeşil)

@@ -61,12 +61,22 @@ export const ekipmanMi = (ad: string) => {
 /** Baş parçası: boyanmaz, dokusunu korur (yüz/saç/sakal oradan gelir — D-112). */
 export const basMi = (ad: string) => /head|skull/i.test(ad);
 
-/** Hangi parça hangi renge boyanır. Baş listede YOK (yukarıdaki gerekçe). */
-const PARCA_RENK: readonly (readonly [RegExp, string])[] = [
-  [/arm/i, PALETTE.shirt],
-  [/body|torso/i, PALETTE.shirt],
-  [/leg/i, PALETTE.pants],
-];
+/**
+ * Hangi parça hangi renge boyanır. Baş listede YOK (yukarıdaki gerekçe).
+ *
+ * GÖMLEK ARTIK ROLE BAĞLI (S18): personel üniforma giyer (krem gömlek + bordo önlük), PATRON
+ * giymez — koyu lacivert gömlek, önlük yok. Kullanıcı: *"ben garsonlarla aynı olmuyim bi farkım
+ * olsun tasarımsal olarak"*. Aday karesi yelek/pelerin kollarını eledi: göğse takılan plaka
+ * önlükten ayrışmıyor. Ayıran iki şey RENK ve ÖNLÜĞÜN YOKLUĞU.
+ */
+const parcaRenk = (kind: ActorKind): readonly (readonly [RegExp, string])[] => {
+  const gomlek = kind === 'owner' ? PALETTE.ownerShirt : PALETTE.shirt;
+  return [
+    [/arm/i, gomlek],
+    [/body|torso/i, gomlek],
+    [/leg/i, PALETTE.pants],
+  ];
+};
 
 /** Klip adları — dosya değil KLİP; hangi durumda hangisi çalar. */
 export const KLIP = {
@@ -315,7 +325,7 @@ export function KayActor({
         return;
       }
       m.castShadow = true;
-      const e = PARCA_RENK.find(([d]) => d.test(m.name));
+      const e = parcaRenk(kind).find(([d]) => d.test(m.name));
       if (e) m.material = mat(e[1]);
     });
     kafaKucult(o);
