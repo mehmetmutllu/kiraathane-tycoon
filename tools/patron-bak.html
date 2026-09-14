@@ -1,0 +1,191 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>patron-bak</title>
+<style>
+  body { margin: 0; background: #e9e4dc; }
+  canvas { display: block; }
+</style>
+<script type="module">
+  // patron-bak.html — "SAHİP, GARSONDAN NASIL AYRILIR" sorusunu KARELE (S18).
+  //
+  // NEDEN GÖRSEL: kullanıcı *"ben garsonlarla aynı olmuyim bi farkım olsun tasarımsal olarak"*
+  // dedi. Bu bir estetik çatal ve kullanıcının kendi kuralı (`feedback_show_dont_ask`) böyle bir
+  // çatalda kolların METİNLE anlatılmasını değil, aynı kadrajda ÇİZİLİP elenmesini istiyor.
+  //
+  // HER KARTTA İKİ GÖVDE VAR: solda SAHİP adayı, sağda bugünkü GARSON (değişmeyen referans).
+  // Tek başına "güzel mi" sorusu yanlış soru — sorulan şey "yan yana durduklarında AYIRT
+  // EDİLİYOR MU". Referanssız kartlar bu soruyu cevaplayamaz.
+  //
+  // Kullanım (sunucuyu `tools/patron-bak.mjs` kaldırır): /tools/patron-bak.html
+  import * as THREE from 'three';
+  import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+
+  const KOK = '/assets/models/kaykit-characters/';
+  // Oyunun paleti (src/config/palette.ts ile aynı değerler — sayfa TS modülü alamıyor).
+  const P = {
+    shirt: '#f4f1ea', pants: '#3f4a5a', apron: '#7a2230', cap: '#2f3b4a',
+    vestKoyu: '#2b3242', vestBordo: '#5e1a26', gomlekLacivert: '#31405c',
+  };
+  const KAY_AUTHORED = 2.204, ACTOR_HEIGHT = 1.75;
+  const OLCEK = ACTOR_HEIGHT / KAY_AUTHORED;
+  const KAFA = 0.75;
+
+  /**
+   * VARYANTLAR. Değişen levye sayısı bilerek AZ: her kart TEK bir fikri sınıyor, yoksa hangi
+   * öğenin işe yaradığı ayrılamaz. Ortak kural: garson HİÇ değişmez.
+   */
+  const VARYANT = [
+    { ad: 'V1 BUGÜN (referans)', model: 'Ranger', gomlek: P.shirt, pantolon: P.pants, onluk: P.apron, kasket: null, yelek: null, pelerin: false },
+    { ad: 'V2 önlüksüz + lacivert gömlek', model: 'Ranger', gomlek: P.gomlekLacivert, pantolon: P.pants, onluk: null, kasket: null, yelek: null, pelerin: false },
+    { ad: 'V3 YELEK (önlük yok)', model: 'Ranger', gomlek: P.shirt, pantolon: P.pants, onluk: null, kasket: null, yelek: P.vestKoyu, pelerin: false },
+    { ad: 'V4 yelek + kasket', model: 'Ranger', gomlek: P.shirt, pantolon: P.pants, onluk: null, kasket: P.cap, yelek: P.vestKoyu, pelerin: false },
+    { ad: 'V5 bordo yelek', model: 'Ranger', gomlek: P.shirt, pantolon: P.pants, onluk: null, kasket: null, yelek: P.vestBordo, pelerin: false },
+    { ad: 'V6 pelerin açık', model: 'Ranger', gomlek: P.shirt, pantolon: P.pants, onluk: null, kasket: null, yelek: null, pelerin: true },
+    { ad: 'V7 ak sakallı usta', model: 'Barbarian', gomlek: P.shirt, pantolon: P.pants, onluk: null, kasket: null, yelek: P.vestKoyu, pelerin: false },
+    { ad: 'V8 koyu takım + önlük', model: 'Ranger', gomlek: P.gomlekLacivert, pantolon: '#2b3242', onluk: P.apron, kasket: null, yelek: null, pelerin: false },
+  ];
+  /** Referans garson — bütün kartlarda AYNI. Bugünkü oyun hâli. */
+  const GARSON = { model: 'Knight', gomlek: P.shirt, pantolon: P.pants, onluk: P.apron, kasket: null, yelek: null, pelerin: false };
+
+  const EKIPMAN = ['cape', 'cloak', 'helmet', 'visor', 'hood', 'hat', 'crown', 'shoulder', 'pauldron',
+    'pauldrons', 'armor', 'sword', 'shield', 'staff', 'wand', 'bow', 'quiver', 'dagger', 'axe',
+    'spellbook', 'horn', 'backpack', 'mask'];
+  const ekipmanMi = (ad) => {
+    const rol = ad.split('_').pop()?.toLowerCase() ?? '';
+    return EKIPMAN.some((k) => rol.startsWith(k) || rol.endsWith(k));
+  };
+  const basMi = (ad) => /head|skull/i.test(ad);
+  const mat = (renk) => new THREE.MeshStandardMaterial({ color: renk, roughness: 0.85 });
+
+  const loader = new GLTFLoader();
+  const onbellek = new Map();
+  async function yuk(ad) {
+    if (!onbellek.has(ad)) onbellek.set(ad, await loader.loadAsync(`${KOK}${ad}.glb`));
+    const g = onbellek.get(ad);
+    const { clone } = await import('three/examples/jsm/utils/SkeletonUtils.js');
+    return clone(g.scene);
+  }
+
+  /** Gövdeyi kur: ekipmanı gizle, boya, kafayı küçült, kıyafeti kemiğe tak. */
+  function govdeKur(o, cfg) {
+    o.traverse((n) => {
+      if (!n.isMesh) return;
+      // PELERİN kolunda `_Cape` bilerek AÇIK bırakılır — sınanan şey tam da o.
+      const pelerinMi = /cape/i.test(n.name);
+      if (ekipmanMi(n.name) && !(cfg.pelerin && pelerinMi)) { n.visible = false; return; }
+      if (cfg.pelerin && pelerinMi) { n.material = mat(cfg.yelek ?? P.vestKoyu); return; }
+      if (basMi(n.name)) return; // baş BOYANMAZ (D-112: yüz/saç kendi dokusundan)
+      if (/arm|body|torso/i.test(n.name)) n.material = mat(cfg.gomlek);
+      else if (/leg/i.test(n.name)) n.material = mat(cfg.pantolon);
+    });
+    // Kafa kemiğinden küçült (KAY_KAFA_OLCEK) — siluet oyundakiyle aynı okunsun.
+    o.traverse((n) => { if (n.isBone && n.name === 'head') n.scale.setScalar(KAFA); if (n.isSkinnedMesh) n.boundingBox = null; });
+    o.updateMatrixWorld(true);
+
+    const kemikler = new Map();
+    o.traverse((n) => { if (n.isBone) kemikler.set(n.name, n); });
+    const q = new THREE.Quaternion();
+    const tak = (kemikAd, mesh, nokta) => {
+      const k = kemikler.get(kemikAd);
+      if (!k) return;
+      k.add(mesh);
+      mesh.position.copy(k.worldToLocal(nokta.clone()));
+      mesh.quaternion.copy(k.getWorldQuaternion(q).invert());
+    };
+    if (cfg.onluk) {
+      tak('chest', new THREE.Mesh(new THREE.BoxGeometry(0.58, 0.72, 0.08), mat(cfg.onluk)), new THREE.Vector3(0, 0.78, 0.3));
+      tak('hips', new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.07, 14), mat(cfg.onluk)), new THREE.Vector3(0, 0.48, 0));
+    }
+    if (cfg.yelek) {
+      // YELEK ÖNLÜKTEN FARKLI OKUNSUN DİYE: daha dar, daha kısa, gövdeyi SARAR (iki yan panel).
+      // Önlük düz bir plaka (activeContext'te cila kalemi olarak duruyor); yelek o kusuru
+      // tekrarlamasın diye üç parçadan kurulur.
+      const y = new THREE.Group();
+      const on = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.60, 0.07), mat(cfg.yelek));
+      on.position.set(0, 0, 0.30);
+      const solYan = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.60, 0.34), mat(cfg.yelek));
+      solYan.position.set(-0.24, 0, 0.12);
+      const sagYan = solYan.clone(); sagYan.position.x = 0.24;
+      y.add(on, solYan, sagYan);
+      tak('chest', y, new THREE.Vector3(0, 0.80, 0));
+    }
+    if (cfg.kasket) {
+      const bas = new THREE.Box3();
+      o.traverse((n) => { if (n.isMesh && n.visible && basMi(n.name)) bas.union(new THREE.Box3().setFromObject(n)); });
+      const tepe = bas.isEmpty() ? 2.2 : bas.max.y;
+      const yaricap = bas.isEmpty() ? 0.44 : ((bas.max.x - bas.min.x) / 2) * 0.98;
+      const kasket = new THREE.Group();
+      kasket.add(new THREE.Mesh(new THREE.CylinderGeometry(yaricap * 0.94, yaricap, 0.16, 14), mat(cfg.kasket)));
+      const vizor = new THREE.Mesh(new THREE.BoxGeometry(yaricap * 1.15, 0.045, yaricap * 0.7), mat(cfg.kasket));
+      vizor.position.set(0, -0.06, yaricap * 0.95);
+      kasket.add(vizor);
+      tak('head', kasket, new THREE.Vector3(0, tepe - 0.05, 0));
+    }
+    o.scale.setScalar(OLCEK);
+    return o;
+  }
+
+  // --- sahne ---------------------------------------------------------------
+  const SUTUN = 4;
+  const ARA_X = 3.4, ARA_Z = 3.6;
+  const sahne = new THREE.Scene();
+  sahne.background = new THREE.Color('#e9e4dc');
+  sahne.add(new THREE.HemisphereLight('#ffffff', '#8d8272', 1.5));
+  const gunes = new THREE.DirectionalLight('#fff6e0', 2.0);
+  gunes.position.set(3, 6, 4);
+  sahne.add(gunes);
+
+  // Poz: oyunun duruş klibi — T-poz değil gerçek siluet.
+  const pozG = await loader.loadAsync(`${KOK}Rig_Medium_General.glb`);
+  const idle = pozG.animations.find((c) => c.name === 'Idle_A');
+  const pozla = (kok) => {
+    if (!idle) return;
+    const m = new THREE.AnimationMixer(kok);
+    m.clipAction(idle).play();
+    m.update(idle.duration * 0.5);
+  };
+
+  const etiketler = [];
+  for (let i = 0; i < VARYANT.length; i++) {
+    const v = VARYANT[i];
+    const gx = (i % SUTUN) * ARA_X - ((SUTUN - 1) * ARA_X) / 2;
+    const gz = Math.floor(i / SUTUN) * ARA_Z;
+    const patron = govdeKur(await yuk(v.model), v);
+    patron.position.set(gx - 0.62, 0, gz);
+    patron.rotation.y = 0.30; // hafif ceyrek acı: yelegin YAN panelleri ve pelerin kareye girsin
+    pozla(patron);
+    const garson = govdeKur(await yuk(GARSON.model), GARSON);
+    garson.position.set(gx + 0.62, 0, gz);
+    garson.rotation.y = -0.30;
+    pozla(garson);
+    sahne.add(patron, garson);
+    etiketler.push({ ad: v.ad, x: gx, z: gz });
+  }
+
+  // Zemin — oyunun ahşap tonuna yakın, siluetler havada durmasın.
+  const zemin = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.MeshStandardMaterial({ color: '#c89a68' }));
+  zemin.rotation.x = -Math.PI / 2;
+  sahne.add(zemin);
+
+  const kamera = new THREE.PerspectiveCamera(34, innerWidth / innerHeight, 0.1, 100);
+  kamera.position.set(0, 5.6, 15.5);
+  kamera.lookAt(0, 0.55, 1.9);
+
+  const r = new THREE.WebGLRenderer({ antialias: true });
+  r.setSize(innerWidth, innerHeight);
+  r.setPixelRatio(Math.min(devicePixelRatio, 2));
+  document.body.appendChild(r.domElement);
+  r.render(sahne, kamera);
+
+  // Etiketler DOM'da: kareye yazı gömmek için ayrı bir geçiş gerekmiyor.
+  for (const e of etiketler) {
+    const v = new THREE.Vector3(e.x, 0.02, e.z + 1.05).project(kamera);
+    const d = document.createElement('div');
+    d.textContent = e.ad;
+    d.style.cssText = `position:fixed;left:${((v.x + 1) / 2) * innerWidth}px;top:${((-v.y + 1) / 2) * innerHeight}px;
+      transform:translate(-50%,0);font:600 13px system-ui;color:#2b2118;background:#ffffffcc;
+      padding:2px 7px;border-radius:5px;white-space:nowrap;`;
+    document.body.appendChild(d);
+  }
+  window.__hazir = true;
+</script>
