@@ -1,15 +1,62 @@
-/* Köşe Kıraathanesi — UI redesign 2026-06-10 (gerçek tycoon HUD grameri; referans: My Perfect Hotel).
-   Fontlar YEREL bundle (main.tsx @fontsource importları; CDN yok — D-018 dersi). */
+/* Köşe Kıraathanesi — ARAYÜZ DİLİ (S11a, 2026-09-14).
+   Fontlar YEREL bundle (main.tsx @fontsource importları; CDN yok — D-018 dersi).
+
+   D-107: ARAYÜZÜN TAMAMI MOR, 3B DÜNYA SICAK KALIR. Bu blok arayüzün TEK renk kaynağıdır;
+   sahnenin rengi buraya bakmaz (o `src/config/palette.ts` — KayKit'in kendi paleti).
+   Mor = arayüzün kimliği, sıcak ahşap = dünyanın kimliği; iki ayrı KATMAN, yarışmazlar.
+   Bugünkü kusur zaten tersiydi: arayüz sahneyle AYNI renkti (Δh 2°, docs/olcum-altnav.txt).
+
+   D-107 ölçek kilidi: 17 punto → 6 basamak · 27 gölge → 3 kademe · 9 yarıçap → 3 kademe.
+   "Çalışılmış" hissi rengin değil TEKRARIN işi — bileşen kendi sayısını UYDURMAZ, basamak seçer.
+   Bekçi: `tests/mor-dil.test.ts` (ham renk/punto/yarıçap sızarsa kırmızı yanar). */
 
 :root {
   --font-game: 'Baloo 2', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-num: 'Lilita One', 'Baloo 2', system-ui, sans-serif;
-  --ink: #4a2c12; /* koyu kahve kontur/metin */
-  --cream: #fdf3e3;
-  --gold-1: #ffd54f;
-  --gold-2: #ffb300;
-  --green-1: #9ccc65;
-  --green-2: #689f38;
+
+  /* ── PALET (D-107) ── */
+  --g1: #463c86; /* gövde gradyanı üst — ekran/alt bar zemini */
+  --g2: #221b52; /* gövde gradyanı alt */
+  --ot: #100b2e; /* kontur: her şeyin kenarı + yazı konturu */
+  --kart: #3a3178; /* kart yüzeyi üst */
+  --kart2: #2e2764; /* kart yüzeyi alt */
+  --oyuk: #1b1443; /* oyuk: ilerleme yatağı, sayaç zemini, gömülü alan */
+  --ac: #ffc24b; /* TEK aksan: amber (üst) */
+  --ac2: #e09415; /* aksan (alt) */
+  --txa: #3a2206; /* aksanın ÜSTÜNDEKİ yazı */
+  --tx: #eae3ff; /* metin */
+  --tx2: #a99fd8; /* ikincil metin */
+  --ok: #7bd46a; /* ilerleme — ANLAM rengi, aksan değil */
+  --ok2: #4fa83e;
+  --elmas: #7fd9ff; /* yalnız elmas anlamında */
+  --para: #ffd45e; /* yalnız para anlamında */
+  /* Rozet/sayaç/tehlike — anlam rengi. Maketteki #e0402c ile BEYAZ yazı 4,25 veriyordu (AA 4,5
+     ister) ve rozet 12 ölçümün hepsinde eşiğin altında kaldı; bir tık koyulaştı, 4,74 oldu.
+     Bu D-107'nin dokuz renginden biri DEĞİL (maketin `.bang`ından geldi) — ölçüm düzeltebilir. */
+  --uyari: #d43a26;
+  --vitrin: #5b4fa6; /* önizleme/vitrin sahne zemini (maketten) */
+  --perde: rgba(8, 6, 22, 0.6); /* modal perdesi — tek alfa (eskiden 0,55 ve 0,62 vardı) */
+  --parilti: rgba(255, 194, 75, 0.32); /* aksan parıltısı (splash + ödül halesi) */
+
+  /* ── ÖLÇEK (D-107) ── */
+  --p1: 11px; /* etiket · sayaç içi · kicker */
+  --p2: 13px; /* ikincil metin · satır · küçük buton */
+  --p3: 15px; /* gövde metni · ana buton */
+  --p4: 18px; /* kart/ekran başlığı */
+  --p5: 22px; /* büyük sayı */
+  --p6: 30px; /* kahraman sayı (ödül tutarı) */
+
+  --r1: 10px;
+  --r2: 17px;
+  --r3: 22px;
+  --rr: 999px; /* hap — ölçek basamağı DEĞİL, biçim */
+
+  /* Üç kabartma kademesi. Kaydırılmış katı gölge = kitin grameri (D-106 "kit yolu 2":
+     biçimi al, PNG'sini alma). Dördüncü bir gölge yazılmaz; durum rengi KENARLIKLA anlatılır. */
+  --k1: 0 2px 0 var(--ot);
+  --k2: inset 0 2px 0 rgba(255, 255, 255, 0.45), 0 3px 0 var(--ot);
+  --k3: inset 0 3px 0 rgba(255, 255, 255, 0.5), 0 5px 0 var(--ot), 0 10px 18px rgba(0, 0, 0, 0.3);
+
   --sat: env(safe-area-inset-top, 0px);
   --sal: env(safe-area-inset-left, 0px);
   --sar: env(safe-area-inset-right, 0px);
@@ -17,6 +64,15 @@
 
 * {
   box-sizing: border-box;
+}
+
+/* B5: 13 öğe Arial'a düşüyordu (biri görev şeridi) — form öğeleri font'u MİRAS ALMAZ.
+   Tek satırlık kusur, en görünür yerde; ölçüm `fontOge 3` diye gösterdi. */
+button,
+input,
+select,
+textarea {
+  font: inherit;
 }
 
 html,
@@ -27,7 +83,7 @@ body,
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #1f2933;
+  background: var(--g2);
   font-family: var(--font-game);
   -webkit-user-select: none;
   user-select: none;
@@ -50,10 +106,11 @@ body,
   position: absolute;
   inset: 0;
   pointer-events: none;
-  color: #fff;
+  color: var(--tx);
 }
 
-/* Konturlu oyun yazısı (şeker stil): beyaz dolgu + koyu stroke, stroke dolgunun ALTINDA kalır. */
+/* Konturlu oyun yazısı: beyaz dolgu + koyu kontur, kontur dolgunun ALTINDA kalır.
+   Chip'siz üst şeridin (D-106) görünmeyen işini bu taşır — kutunun değil KONTURUN okunabilirliği. */
 .cur-val,
 .lvl-num,
 .quest-count,
@@ -62,13 +119,12 @@ body,
   font-weight: 400;
   color: #fff;
   paint-order: stroke fill;
-  -webkit-text-stroke: 4px var(--ink);
+  -webkit-text-stroke: 4px var(--ot);
   letter-spacing: 0.02em;
 }
 
-/* ---- ÜST SIRA ORTAK DİL: ceviz-kahve hap (pill) ailesi — level / para / elmas / görev kartı
-   aynı malzemeden → "ayrı ayrı duran parçalar" hissi biter (kullanıcı feedback 2026-06-10).
-   Hepsi AYNI top hizasında (--top-row) ve touch-layer'ın (z:5) ÜSTÜNDE (z:10 — tıklanabilirlik!). */
+/* ---- ÜST SIRA ORTAK DİL: hap (pill) ailesi — level / para / elmas / görev kartı aynı
+   malzemeden. Hepsi AYNI top hizasında (--top-row) ve touch-layer'ın (z:5) ÜSTÜNDE (z:10). */
 .hud {
   --top-row: calc(12px + var(--sat));
   --pill-h: 32px;
@@ -79,10 +135,10 @@ body,
   height: var(--pill-h);
   display: flex;
   align-items: center;
-  border-radius: 999px;
-  background: linear-gradient(180deg, rgba(78, 52, 46, 0.94), rgba(56, 36, 30, 0.94));
-  border: 2.5px solid rgba(255, 255, 255, 0.95);
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35), inset 0 -3px 0 rgba(0, 0, 0, 0.25);
+  border-radius: var(--rr);
+  background: linear-gradient(180deg, var(--kart), var(--kart2));
+  border: 2.5px solid var(--ot);
+  box-shadow: var(--k2);
 }
 
 /* ---- SOL-ÜST: seviye ünitesi = TEK parça (yıldız hapın kenarına gömülü + içinde XP barı) ---- */
@@ -114,16 +170,16 @@ body,
   display: grid;
   place-items: center;
   padding-top: 3px;
-  font-size: 19px;
-  -webkit-text-stroke: 4px #8a5a00;
+  font-size: var(--p4);
+  -webkit-text-stroke: 4px var(--ot);
 }
 
 .lvl-bar {
   position: relative;
   height: 16px;
   width: 84px;
-  border-radius: 9px;
-  background: rgba(20, 10, 4, 0.7);
+  border-radius: var(--rr);
+  background: var(--oyuk);
   overflow: hidden;
 }
 
@@ -132,9 +188,8 @@ body,
   left: 0;
   top: 0;
   bottom: 0;
-  border-radius: 9px;
-  background: linear-gradient(var(--green-1), var(--green-2));
-  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.35);
+  border-radius: var(--rr);
+  background: linear-gradient(var(--ok), var(--ok2));
   transition: width 0.25s ease;
 }
 
@@ -142,9 +197,9 @@ body,
   position: relative;
   display: block;
   text-align: center;
-  font-size: 10.5px;
-  line-height: 14px;
-  -webkit-text-stroke: 3px #33401d;
+  font-size: var(--p1);
+  line-height: 16px;
+  -webkit-text-stroke: 3px var(--ot);
 }
 
 /* ---- SOL-ÜST ALTI: ayar/posta/dekor/KARAKTER — YATAY TEK SIRA (v20, kullanıcı revizyonu):
@@ -163,10 +218,11 @@ body,
   pointer-events: auto;
   width: 32px;
   height: 32px;
-  border: 2.5px solid rgba(255, 255, 255, 0.95);
+  border: 2.5px solid var(--ot);
   border-radius: 50%;
-  background: linear-gradient(180deg, rgba(78, 52, 46, 0.94), rgba(56, 36, 30, 0.94));
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35), inset 0 -3px 0 rgba(0, 0, 0, 0.25);
+  background: linear-gradient(180deg, var(--kart), var(--kart2));
+  color: var(--tx);
+  box-shadow: var(--k2);
   display: grid;
   place-items: center;
   cursor: pointer;
@@ -180,25 +236,33 @@ body,
   transform: translateY(2px) scale(0.96);
 }
 
-/* ---- Karakter butonu dikkat efekti (v20 §6): görev aktifken altın nabız + "!" rozeti ---- */
+/* ---- Karakter butonu dikkat efekti (v20 §6): görev aktifken aksan nabzı + "!" rozeti.
+   NABIZ BOX-SHADOW DEĞİL: halka ayrı bir katmanda (::after) büyüyüp sönüyor. Gölge basamağı
+   üç tane (k1/k2/k3) ve bir animasyon dördüncüsünü açamaz — D-107'nin sayısı budur. ---- */
 .char-btn {
   position: relative;
 }
-.char-btn.pulse {
+.char-btn.pulse::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 3px solid var(--ac);
+  pointer-events: none;
   animation: charPulse 1.4s ease-out infinite;
 }
 @keyframes charPulse {
   0% {
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35), inset 0 -3px 0 rgba(0, 0, 0, 0.25),
-      0 0 0 0 rgba(255, 200, 60, 0.85);
+    transform: scale(1);
+    opacity: 0.85;
   }
   70% {
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35), inset 0 -3px 0 rgba(0, 0, 0, 0.25),
-      0 0 0 11px rgba(255, 200, 60, 0);
+    transform: scale(1.7);
+    opacity: 0;
   }
   100% {
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35), inset 0 -3px 0 rgba(0, 0, 0, 0.25),
-      0 0 0 0 rgba(255, 200, 60, 0);
+    transform: scale(1.7);
+    opacity: 0;
   }
 }
 .char-bang {
@@ -208,11 +272,11 @@ body,
   width: 15px;
   height: 15px;
   border-radius: 50%;
-  background: linear-gradient(180deg, #ffd54f, #ff9800);
-  border: 1.5px solid #fff;
-  color: #4a2c02;
+  background: linear-gradient(180deg, var(--ac), var(--ac2));
+  border: 1.5px solid var(--ot);
+  color: var(--txa);
   font-family: var(--font-game);
-  font-size: 11px;
+  font-size: var(--p1);
   font-weight: 800;
   line-height: 12px;
   text-align: center;
@@ -225,7 +289,7 @@ body,
   inset: 0;
   z-index: 30;
   pointer-events: auto;
-  background: rgba(8, 10, 16, 0.62);
+  background: var(--perde);
   animation: spotIn 0.35s ease-out both;
 }
 @keyframes spotIn {
@@ -269,7 +333,7 @@ body,
 }
 
 /* ---- KAMERA GENEL-BAKIŞ toggle (2026-06-13): sağ-alt, tepsi butonlarının altında sabit;
-   açıkken mavi halka. ---- */
+   açıkken aksan kenarlık (halka DEĞİL — gölge basamağı üç tane). ---- */
 .icon-btn.cam-btn {
   position: absolute;
   right: calc(14px + var(--sar));
@@ -283,7 +347,9 @@ body,
   height: 32px;
 }
 .icon-btn.cam-btn.on {
-  box-shadow: 0 0 0 3px rgba(100, 181, 246, 0.55);
+  border-color: var(--ac);
+  background: linear-gradient(180deg, var(--ac), var(--ac2));
+  color: var(--txa);
 }
 .tray-count {
   position: absolute;
@@ -292,29 +358,28 @@ body,
   min-width: 19px;
   height: 19px;
   padding: 0 4px;
-  border-radius: 10px;
-  background: linear-gradient(180deg, #ef5350, #b71c1c);
-  border: 1.5px solid #fff;
+  border-radius: var(--rr);
+  background: var(--uyari);
+  border: 1.5px solid var(--ot);
   color: #fff;
   font-family: var(--font-game);
-  font-size: 12px;
+  font-size: var(--p1);
   font-weight: 800;
   line-height: 16px;
   text-align: center;
 }
 .tray-tip {
   max-width: 215px;
-  background: linear-gradient(180deg, var(--cream), #f3e0bf);
-  color: var(--ink);
-  border: 2px solid #e6c896;
-  border-bottom-width: 4px;
-  border-radius: 14px;
+  background: linear-gradient(180deg, var(--kart), var(--kart2));
+  color: var(--tx);
+  border: 2.5px solid var(--ot);
+  border-radius: var(--r2);
   padding: 8px 12px;
   font-family: var(--font-game);
-  font-size: 13.5px;
+  font-size: var(--p2);
   font-weight: 800;
   line-height: 1.3;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.38);
+  box-shadow: var(--k3);
   animation: trayTipUp 0.38s cubic-bezier(0.18, 0.9, 0.3, 1.2) both;
 }
 @keyframes trayTipUp {
@@ -354,7 +419,7 @@ body,
 }
 
 .cur-val {
-  font-size: 16px;
+  font-size: var(--p3);
 }
 
 /* ---- SAĞ-ÜST ALTI: görev kartı ---- */
@@ -369,10 +434,10 @@ body,
   gap: 8px;
   width: min(208px, 58vw);
   padding: 6px 10px 6px 6px;
-  border: 2.5px solid rgba(255, 255, 255, 0.95);
-  border-radius: 16px;
-  background: linear-gradient(180deg, rgba(78, 52, 46, 0.94), rgba(56, 36, 30, 0.94));
-  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4), inset 0 -3px 0 rgba(0, 0, 0, 0.25);
+  border: 2.5px solid var(--ot);
+  border-radius: var(--r2);
+  background: linear-gradient(180deg, var(--kart), var(--kart2));
+  box-shadow: var(--k2);
   cursor: pointer;
   font-family: var(--font-game);
   text-align: left;
@@ -381,28 +446,29 @@ body,
 .quest-card:active {
   transform: scale(0.96);
 }
-/* ③ → (a): spotlight karartması (z:30) aktifken görev kartı ÜSTTE + altın halka ile okunur kalsın. */
+/* ③ → (a): spotlight karartması (z:30) aktifken görev kartı ÜSTTE + aksan kenarla okunur kalsın. */
 .quest-card.lit {
   z-index: 35;
-  box-shadow: 0 0 0 2.5px var(--gold-1), 0 8px 24px rgba(0, 0, 0, 0.5);
+  border-color: var(--ac);
 }
-/* A paketi: görev tamamlanınca (completing/gap) kart yeşil onay flash'ı + bar %100 yeşil dolar. */
+/* A paketi: görev tamamlanınca (completing/gap) kart yeşil onay flash'ı + bar %100 yeşil dolar.
+   Flash artık KENARLIK rengiyle anlatılıyor (dördüncü gölge açılmasın diye). */
 .quest-card.done {
-  border-color: var(--green-1);
+  border-color: var(--ok);
   animation: questDoneFlash 0.5s ease-out;
 }
 .quest-card.done .quest-fill {
-  background: linear-gradient(var(--green-1), var(--green-2));
+  background: linear-gradient(var(--ok), var(--ok2));
 }
 @keyframes questDoneFlash {
   0% {
-    box-shadow: 0 0 0 0 rgba(156, 204, 101, 0), 0 5px 12px rgba(0, 0, 0, 0.4);
+    border-color: var(--ot);
   }
   35% {
-    box-shadow: 0 0 0 5px rgba(156, 204, 101, 0.85), 0 6px 16px rgba(0, 0, 0, 0.45);
+    border-color: var(--ok);
   }
   100% {
-    box-shadow: 0 0 0 2px rgba(156, 204, 101, 0.5), 0 5px 12px rgba(0, 0, 0, 0.4);
+    border-color: var(--ok);
   }
 }
 
@@ -433,9 +499,9 @@ body,
 }
 
 .quest-title {
-  font-size: 13px;
+  font-size: var(--p2);
   font-weight: 800;
-  color: #ffe9c7;
+  color: var(--tx);
   line-height: 1.15;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -447,8 +513,8 @@ body,
 .quest-track {
   position: relative;
   height: 15px;
-  border-radius: 8px;
-  background: rgba(20, 10, 4, 0.7);
+  border-radius: var(--rr);
+  background: var(--oyuk);
   overflow: hidden;
 }
 
@@ -457,9 +523,8 @@ body,
   left: 0;
   top: 0;
   bottom: 0;
-  border-radius: 8px;
-  background: linear-gradient(var(--green-1), var(--green-2));
-  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.35);
+  border-radius: var(--rr);
+  background: linear-gradient(var(--ok), var(--ok2));
   transition: width 0.25s ease;
 }
 
@@ -467,9 +532,9 @@ body,
   position: relative;
   display: block;
   text-align: center;
-  font-size: 10.5px;
-  line-height: 13px;
-  -webkit-text-stroke: 3px #33401d;
+  font-size: var(--p1);
+  line-height: 15px;
+  -webkit-text-stroke: 3px var(--ot);
 }
 
 .quest-cost {
@@ -477,9 +542,8 @@ body,
   align-items: center;
   gap: 4px;
   font-family: var(--font-num);
-  font-size: 13px;
-  color: var(--gold-1);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  font-size: var(--p2);
+  color: var(--ac);
 }
 /* Görev ödül rozeti (M1): başlığın yanında küçük coin + tutar */
 .quest-reward {
@@ -488,9 +552,9 @@ body,
   gap: 2px;
   margin-left: 6px;
   font-family: var(--font-num);
-  font-size: 11px;
+  font-size: var(--p1);
   font-weight: 800;
-  color: var(--gold-1);
+  color: var(--para);
   vertical-align: middle;
   white-space: nowrap;
 }
@@ -504,18 +568,18 @@ body,
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(8, 12, 18, 0.55);
+  background: var(--perde);
   backdrop-filter: blur(3px);
 }
 
 .modal-card {
   width: min(80vw, 320px);
-  background: linear-gradient(180deg, #fdf6e9, #f6e3c2);
-  border: 3px solid #fff;
-  border-radius: 22px;
+  background: linear-gradient(180deg, var(--g1), var(--g2));
+  border: 3px solid var(--ot);
+  border-radius: var(--r3);
   padding: 22px 20px 18px;
   text-align: center;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55), inset 0 -5px 0 rgba(150, 100, 40, 0.25);
+  box-shadow: var(--k3);
   animation: cardIn 0.35s cubic-bezier(0.18, 0.9, 0.3, 1.25) both;
 }
 
@@ -530,22 +594,24 @@ body,
   }
 }
 
+/* B6: burada bir zamanlar emoji vardı. Artık çizilmiş SVG (icons.tsx) — bu kutu onun yeri. */
 .modal-emoji {
-  font-size: 40px;
+  display: grid;
+  place-items: center;
   margin-bottom: 6px;
 }
 
 .modal-title {
-  font-size: 19px;
+  font-size: var(--p4);
   font-weight: 800;
-  color: var(--ink);
+  color: var(--tx);
   margin-bottom: 12px;
 }
 
 .modal-sub {
-  font-size: 13px;
+  font-size: var(--p2);
   font-weight: 600;
-  color: #8a6a48;
+  color: var(--tx2);
   margin-bottom: 14px;
 }
 
@@ -555,9 +621,10 @@ body,
   justify-content: center;
   gap: 8px;
   font-family: var(--font-num);
-  font-size: 26px;
-  color: #f59f00;
-  text-shadow: 0 1px 0 #fff;
+  font-size: var(--p6);
+  color: var(--para);
+  paint-order: stroke fill;
+  -webkit-text-stroke: 4px var(--ot);
   margin-bottom: 16px;
 }
 
@@ -565,19 +632,19 @@ body,
   pointer-events: auto;
   min-width: 140px;
   padding: 11px 22px;
-  border: 2.5px solid #fff;
-  border-radius: 999px;
-  background: linear-gradient(180deg, var(--gold-1), var(--gold-2));
-  color: #4a2c02;
+  border: 2.5px solid var(--ot);
+  border-radius: var(--rr);
+  background: linear-gradient(180deg, var(--ac), var(--ac2));
+  color: var(--txa);
   font-family: var(--font-game);
-  font-size: 16px;
+  font-size: var(--p3);
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 4px 0 #b87400, 0 6px 10px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--k2);
 }
 .modal-btn:active {
   transform: translateY(2px);
-  box-shadow: 0 2px 0 #b87400, 0 4px 8px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--k1);
 }
 
 /* ---- Karakter paneli (v20): 3/4 açı mini Canvas + canlı tepsi önizleme + 3 özellik kartı ---- */
@@ -605,14 +672,14 @@ body,
   min-width: 15px;
   height: 15px;
   padding: 0 3px;
-  border-radius: 8px;
-  background: #6d4c41;
-  border: 1.5px solid #fff;
-  color: #fff;
+  border-radius: var(--rr);
+  background: var(--oyuk);
+  border: 1.5px solid var(--ot);
+  color: var(--tx);
   font-family: var(--font-num);
   font-style: normal;
-  font-size: 10px;
-  line-height: 12px;
+  font-size: var(--p1);
+  line-height: 13px;
   text-align: center;
 }
 /* Y3 sekmeleri: Oyuncu | Çay Garsonu | Tostçu */
@@ -625,42 +692,41 @@ body,
   pointer-events: auto;
   flex: 1;
   padding: 7px 4px;
-  border: 2px solid rgba(150, 100, 40, 0.35);
-  border-radius: 12px;
-  background: rgba(150, 100, 40, 0.12);
-  color: #6d4c41;
+  border: 2.5px solid var(--ot);
+  border-radius: var(--r1);
+  background: linear-gradient(180deg, var(--kart), var(--kart2));
+  color: var(--tx);
   font-family: var(--font-game);
-  font-size: 12.5px;
+  font-size: var(--p2);
   font-weight: 800;
 }
 .char-tab.active {
-  border-color: #fff;
-  background: linear-gradient(180deg, var(--gold-1), var(--gold-2));
-  color: #4a2c02;
-  box-shadow: 0 2px 0 #b87400;
+  background: linear-gradient(180deg, var(--ac), var(--ac2));
+  color: var(--txa);
+  box-shadow: var(--k2);
 }
 .char-note {
   margin-top: 8px;
-  color: rgba(109, 76, 65, 0.85);
-  font-size: 11.5px;
+  color: var(--tx2);
+  font-size: var(--p1);
   line-height: 1.35;
   text-align: center;
 }
 .char-canvas {
   height: 168px;
   margin: 10px 0 12px;
-  border-radius: 16px;
+  border-radius: var(--r3);
   overflow: hidden;
-  background: linear-gradient(180deg, #b98a5e, #8a5f3c);
-  border: 2.5px solid rgba(255, 255, 255, 0.8);
-  box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.18);
+  background: radial-gradient(120% 100% at 50% 14%, var(--vitrin), var(--g2));
+  border: 3px solid var(--ot);
+  box-shadow: var(--k1);
 }
 .char-stat {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 7px 2px;
-  border-bottom: 1.5px solid rgba(150, 100, 40, 0.18);
+  border-bottom: 1.5px solid var(--oyuk);
 }
 .char-stat-icon {
   flex: 0 0 auto;
@@ -674,18 +740,18 @@ body,
   flex-direction: column;
 }
 .char-stat-name {
-  font-size: 13.5px;
+  font-size: var(--p2);
   font-weight: 800;
-  color: var(--ink);
+  color: var(--tx);
 }
 .char-stat-val {
-  font-size: 12px;
+  font-size: var(--p2);
   font-weight: 700;
-  color: #8a6a48;
+  color: var(--tx2);
 }
 .char-stat-val i {
   font-style: normal;
-  color: #2e7d32;
+  color: var(--ok);
 }
 .char-buy {
   pointer-events: auto;
@@ -693,19 +759,19 @@ body,
   align-items: center;
   gap: 4px;
   padding: 7px 12px;
-  border: 2px solid #fff;
-  border-radius: 999px;
-  background: linear-gradient(180deg, var(--gold-1), var(--gold-2));
-  color: #4a2c02;
+  border: 2.5px solid var(--ot);
+  border-radius: var(--rr);
+  background: linear-gradient(180deg, var(--ac), var(--ac2));
+  color: var(--txa);
   font-family: var(--font-game);
-  font-size: 13px;
+  font-size: var(--p2);
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 3px 0 #b87400, 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--k2);
 }
 .char-buy:active {
   transform: translateY(2px);
-  box-shadow: 0 1px 0 #b87400, 0 3px 6px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--k1);
 }
 .char-buy:disabled {
   filter: grayscale(0.7) brightness(0.85);
@@ -714,10 +780,10 @@ body,
 }
 .char-max {
   padding: 6px 12px;
-  border-radius: 999px;
-  background: rgba(109, 76, 65, 0.18);
-  color: #6d4c41;
-  font-size: 12.5px;
+  border-radius: var(--rr);
+  background: var(--oyuk);
+  color: var(--tx2);
+  font-size: var(--p2);
   font-weight: 800;
 }
 .char-card .modal-btn {
@@ -734,13 +800,13 @@ body,
   align-items: center;
   justify-content: space-between;
   padding: 9px 4px;
-  border-bottom: 1.5px solid rgba(150, 100, 40, 0.18);
+  border-bottom: 1.5px solid var(--oyuk);
 }
 
 .setting-label {
-  font-size: 15px;
+  font-size: var(--p3);
   font-weight: 800;
-  color: var(--ink);
+  color: var(--tx);
 }
 
 .switch {
@@ -748,57 +814,59 @@ body,
   position: relative;
   width: 54px;
   height: 30px;
-  border: none;
-  border-radius: 999px;
-  background: linear-gradient(#b0a395, #8d8275);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  border: 2.5px solid var(--ot);
+  border-radius: var(--rr);
+  background: var(--oyuk);
   cursor: pointer;
   transition: background 0.15s ease;
   padding: 0;
 }
 .switch.on {
-  background: linear-gradient(var(--green-1), var(--green-2));
+  background: linear-gradient(var(--ok), var(--ok2));
 }
 
 .switch-knob {
   position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 24px;
-  height: 24px;
+  top: 2px;
+  left: 2px;
+  width: 21px;
+  height: 21px;
   border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+  background: var(--tx);
+  border: 2px solid var(--ot);
   transition: left 0.15s ease;
 }
 .switch.on .switch-knob {
-  left: 27px;
+  left: 26px;
 }
 
 .danger-btn {
   pointer-events: auto;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
   width: 100%;
   margin: 14px 0 10px;
   padding: 10px 16px;
-  border: 2.5px solid #fff;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #ef5350, #c62828);
+  border: 2.5px solid var(--ot);
+  border-radius: var(--rr);
+  background: var(--uyari);
   color: #fff;
   font-family: var(--font-game);
-  font-size: 15px;
+  font-size: var(--p3);
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 4px 0 #8e1c1c, 0 6px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--k2);
 }
 .danger-btn:active {
   transform: translateY(2px);
-  box-shadow: 0 2px 0 #8e1c1c;
+  box-shadow: var(--k1);
 }
 
 /* ---- Yeni-özellik / görev / seviye toast'u (ALT-orta; 2026-06-11 redesign — üstteki görev
-   kartına biniyordu + eski turuncu hap "çirkin" bulundu. Krem kart + sol SVG madalyon, alttan
-   yumuşak yükselme; alt ekran joystick-görünmez olduğundan boş ve güvenli.) ---- */
+   kartına biniyordu. Kart + sol SVG madalyon, alttan yumuşak yükselme; alt ekran
+   joystick-görünmez olduğundan boş ve güvenli.) ---- */
 .notice {
   position: absolute;
   left: 50%;
@@ -809,16 +877,15 @@ body,
   align-items: center;
   gap: 9px;
   max-width: min(86vw, 380px);
-  background: linear-gradient(180deg, var(--cream), #f3e0bf);
-  color: var(--ink);
-  border: 2px solid #e6c896;
-  border-bottom-width: 4px; /* hafif "kabarık kart" hissi (HUD pill diliyle aynı) */
+  background: linear-gradient(180deg, var(--kart), var(--kart2));
+  color: var(--tx);
+  border: 3px solid var(--ot);
   padding: 8px 16px 8px 10px;
-  border-radius: 16px;
+  border-radius: var(--r2);
   font-family: var(--font-game);
-  font-size: 15px;
+  font-size: var(--p3);
   font-weight: 800;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.38);
+  box-shadow: var(--k3);
   pointer-events: none;
   animation: noticeUp 0.38s cubic-bezier(0.18, 0.9, 0.3, 1.2) both;
 }
@@ -839,9 +906,9 @@ body,
   align-items: center;
   gap: 3px;
   font-family: var(--font-num);
-  font-size: 14px;
+  font-size: var(--p2);
   font-weight: 800;
-  color: #9a6a00;
+  color: var(--para);
 }
 
 @keyframes noticeUp {
@@ -855,15 +922,17 @@ body,
   }
 }
 
-/* ---- Toplanınca yükselip solan "+₺" (Coins.tsx juice) ---- */
+/* ---- Toplanınca yükselip solan "+₺" (Coins.tsx juice) ----
+   DÜNYANIN üstünde yüzer, arayüz kabuğunun içinde değil: rengi PARA anlamını taşır, konturu
+   sahneden ayırır. Mor gövde buraya girmez (D-107: dünya sıcak kalır). */
 .floater {
   pointer-events: none;
   white-space: nowrap;
   font-family: var(--font-num);
-  font-size: 20px;
-  color: var(--gold-1);
+  font-size: var(--p5);
+  color: var(--para);
   paint-order: stroke fill;
-  -webkit-text-stroke: 4px var(--ink);
+  -webkit-text-stroke: 4px var(--ot);
   animation: floatUp 0.9s ease-out forwards;
 }
 
@@ -892,26 +961,26 @@ body,
 }
 .shop-section {
   margin: 10px 0 6px;
-  font-size: 13px;
+  font-size: var(--p1);
   font-weight: 800;
-  color: #b07a2a;
+  color: var(--tx2);
   text-transform: uppercase;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.12em;
 }
 .shop-row {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 7px 0;
-  border-bottom: 1px solid rgba(78, 52, 46, 0.15);
+  border-bottom: 1.5px solid var(--oyuk);
 }
 .shop-swatch {
   display: flex;
   width: 40px;
   height: 28px;
-  border-radius: 6px;
+  border-radius: var(--r1);
   overflow: hidden;
-  border: 2px solid rgba(255, 255, 255, 0.85);
+  border: 2.5px solid var(--ot);
   flex: none;
 }
 .shop-swatch i {
@@ -924,17 +993,17 @@ body,
   gap: 2px;
 }
 .shop-name {
-  font-size: 14px;
+  font-size: var(--p3);
   font-weight: 800;
-  color: #4e342e;
+  color: var(--tx);
 }
 .shop-cost {
   display: flex;
   align-items: center;
   gap: 4px;
   font-family: var(--font-num);
-  font-size: 11.5px;
-  color: #7a5230;
+  font-size: var(--p1);
+  color: var(--tx2);
 }
 .shop-zones {
   display: flex;
@@ -943,22 +1012,22 @@ body,
 .shop-zone-btn {
   min-width: 44px;
   padding: 7px 9px;
-  border: 2px solid rgba(255, 255, 255, 0.9);
-  border-radius: 10px;
-  background: linear-gradient(180deg, var(--green-1, #66bb6a), var(--green-2, #388e3c));
+  border: 2.5px solid var(--ot);
+  border-radius: var(--r1);
+  background: linear-gradient(180deg, var(--ok), var(--ok2));
   color: #fff;
-  font-size: 13px;
+  font-size: var(--p2);
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.25);
+  box-shadow: var(--k1);
 }
 .shop-zone-btn:disabled {
   opacity: 0.55;
   box-shadow: none;
 }
 .shop-zone-btn.sel {
-  background: linear-gradient(180deg, var(--gold-1, #ffd54f), var(--gold-2, #f9a825));
-  color: #4e342e;
+  background: linear-gradient(180deg, var(--ac), var(--ac2));
+  color: var(--txa);
   opacity: 1;
 }
 
@@ -970,25 +1039,29 @@ body,
 }
 .shop-tab {
   flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
   padding: 9px 6px;
-  border: 2px solid rgba(78, 52, 46, 0.18);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.4);
-  color: #8a6a4a;
+  border: 2.5px solid var(--ot);
+  border-radius: var(--r1);
+  background: linear-gradient(180deg, var(--kart), var(--kart2));
+  color: var(--tx);
   font-family: var(--font-game);
-  font-size: 14px;
+  font-size: var(--p2);
   font-weight: 800;
   cursor: pointer;
 }
 .shop-tab.active {
-  background: linear-gradient(180deg, var(--gold-1, #ffd54f), var(--gold-2, #f9a825));
-  border-color: rgba(255, 255, 255, 0.9);
-  color: #4e342e;
-  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.18);
+  background: linear-gradient(180deg, var(--ac), var(--ac2));
+  color: var(--txa);
+  box-shadow: var(--k2);
 }
+/* B6: 🔒 emoji gitti — bu kutu çizilmiş asma kilidin (icons.tsx LockIcon) yeri. */
 .shop-tab-lock {
-  margin-left: 4px;
-  font-size: 11px;
+  display: inline-flex;
+  margin-left: 2px;
   opacity: 0.85;
 }
 .shop-locked {
@@ -998,24 +1071,24 @@ body,
   gap: 8px;
   padding: 22px 16px;
   margin: 4px 0 6px;
-  border: 2px dashed rgba(78, 52, 46, 0.25);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.45);
+  border: 3px dashed var(--oyuk);
+  border-radius: var(--r3);
   text-align: center;
 }
 .shop-locked-icon {
-  font-size: 30px;
+  display: grid;
+  place-items: center;
 }
 .shop-locked-title {
   font-family: var(--font-game);
   font-weight: 800;
-  font-size: 15px;
-  color: #4e342e;
+  font-size: var(--p3);
+  color: var(--tx);
 }
 .shop-locked-desc {
-  font-size: 12.5px;
+  font-size: var(--p2);
   line-height: 1.45;
-  color: #6f553f;
+  color: var(--tx2);
   max-width: 240px;
 }
 .shop-locked-reqs {
@@ -1026,17 +1099,17 @@ body,
   justify-content: center;
 }
 .shop-locked-reqs .req {
-  font-family: var(--font-game);
+  font-family: var(--font-num);
   font-weight: 800;
-  font-size: 12px;
+  font-size: var(--p1);
   padding: 5px 10px;
-  border-radius: 999px;
-  background: rgba(78, 52, 46, 0.1);
-  color: #8a6a4a;
+  border-radius: var(--rr);
+  background: var(--oyuk);
+  border: 2px solid var(--ot);
+  color: var(--tx2);
 }
 .shop-locked-reqs .req.done {
-  background: rgba(76, 175, 80, 0.2);
-  color: #2e7d32;
+  color: var(--ok);
 }
 .shop-list {
   min-height: 120px;
@@ -1056,22 +1129,20 @@ body,
   align-items: center;
   gap: 6px;
   padding: 10px 8px;
-  border: 2px solid rgba(78, 52, 46, 0.16);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.45);
+  border: 2.5px solid var(--ot);
+  border-radius: var(--r2);
+  background: linear-gradient(180deg, var(--kart), var(--kart2));
   cursor: pointer;
 }
 .shop-vcard.sel {
-  border-color: var(--gold-2, #f9a825);
-  background: rgba(255, 213, 79, 0.25);
+  border-color: var(--ac);
 }
 .shop-vcard-swatch {
   position: relative;
   width: 64px;
   height: 48px;
-  border-radius: 10px;
-  border: 2px solid rgba(255, 255, 255, 0.9);
-  box-shadow: inset 0 -6px 10px rgba(0, 0, 0, 0.18);
+  border-radius: var(--r1);
+  border: 2.5px solid var(--ot);
 }
 .shop-vcard-badge {
   position: absolute;
@@ -1080,22 +1151,22 @@ body,
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: var(--gold-2, #f9a825);
-  color: #fff;
-  font-size: 12px;
+  background: var(--ac);
+  color: var(--txa);
+  font-size: var(--p1);
   font-weight: 800;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #fff;
+  border: 2px solid var(--ot);
 }
 .shop-vcard-badge.owned {
-  background: #8bc34a;
+  background: var(--ok);
 }
 .shop-vcard-name {
-  font-size: 12.5px;
+  font-size: var(--p2);
   font-weight: 800;
-  color: #4e342e;
+  color: var(--tx);
   text-align: center;
   line-height: 1.1;
 }
@@ -1104,8 +1175,8 @@ body,
   align-items: center;
   gap: 3px;
   font-family: var(--font-num);
-  font-size: 11px;
-  color: #7a5230;
+  font-size: var(--p1);
+  color: var(--tx2);
 }
 /* Sayfa-içi önizleme (modal yok): kompakt oyun-anı SS hissi, kartların üstünde */
 .shop-preview {
@@ -1117,22 +1188,23 @@ body,
   width: 100%;
   height: 150px;
   margin: 0 0 8px;
-  border-radius: 14px;
+  border-radius: var(--r3);
   overflow: hidden;
-  background: radial-gradient(120% 100% at 50% 25%, #6b4a2c 0%, #4a2c12 70%, #341d0c 100%);
+  border: 3px solid var(--ot);
+  background: radial-gradient(120% 100% at 50% 12%, var(--vitrin), var(--g2));
 }
 .preview-buy {
   width: 100%;
   padding: 11px;
-  border: 2px solid rgba(255, 255, 255, 0.9);
-  border-radius: 14px;
-  background: linear-gradient(180deg, var(--green-1, #66bb6a), var(--green-2, #388e3c));
+  border: 3px solid var(--ot);
+  border-radius: var(--r2);
+  background: linear-gradient(180deg, var(--ok), var(--ok2));
   color: #fff;
   font-family: var(--font-game);
-  font-size: 16px;
+  font-size: var(--p3);
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.25);
+  box-shadow: var(--k2);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1143,8 +1215,8 @@ body,
   box-shadow: none;
 }
 .preview-buy.sel {
-  background: linear-gradient(180deg, var(--gold-1, #ffd54f), var(--gold-2, #f9a825));
-  color: #4e342e;
+  background: linear-gradient(180deg, var(--ac), var(--ac2));
+  color: var(--txa);
 }
 /* Diorama (zemin/duvar) önizleme: per-salon satın al + fiyat */
 .preview-zones {
@@ -1163,8 +1235,8 @@ body,
   gap: 5px;
   margin-top: 10px;
   font-family: var(--font-num);
-  font-size: 13px;
-  color: #7a5230;
+  font-size: var(--p2);
+  color: var(--tx2);
 }
 
 /* ---- Drag-anywhere dokunmatik kontrol ---- */
@@ -1202,7 +1274,9 @@ body,
   border: 2px solid rgba(255, 255, 255, 0.55);
 }
 
-/* ---- Responsive (portrait birincil, landscape destekli) ---- */
+/* ---- Responsive (portrait birincil, landscape destekli) ----
+   Dar ekranda ÖLÇEK BASAMAĞI DEĞİŞMEZ, bir basamak aşağı inilir (p3 → p2): "responsive" diye
+   yeni punto uydurmak B1'in ta kendisiydi (17 punto). */
 
 /* Dar dikey ekran: ölçek küçült, görev kartı daralt, taşma imkânsız */
 @media (max-width: 400px) {
@@ -1218,7 +1292,7 @@ body,
     left: -12px;
   }
   .lvl-num {
-    font-size: 16px;
+    font-size: var(--p3);
   }
   .lvl-bar {
     width: 68px;
@@ -1236,14 +1310,14 @@ body,
     height: 28px;
   }
   .cur-val {
-    font-size: 14px;
+    font-size: var(--p2);
   }
   .quest-card {
     width: min(180px, 54vw);
     top: calc(50px + var(--sat));
   }
   .quest-title {
-    font-size: 12px;
+    font-size: var(--p1);
   }
   /* pill ≈ 40+68+8 = 116px → 4×28 + 3×1.3 ≈ 116 (4-buton sıra pill'i aşmaz) */
   .icon-btn {
@@ -1277,15 +1351,15 @@ body,
     left: -11px;
   }
   .lvl-num {
-    font-size: 14px;
+    font-size: var(--p2);
   }
   .lvl-bar {
     width: 64px;
     height: 13px;
   }
   .lvl-text {
-    font-size: 9.5px;
-    line-height: 11px;
+    font-size: var(--p1);
+    line-height: 13px;
   }
   .cur-item {
     min-width: 60px;
@@ -1296,7 +1370,7 @@ body,
     height: 26px;
   }
   .cur-val {
-    font-size: 13px;
+    font-size: var(--p2);
   }
   .quest-card {
     width: 178px;
@@ -1309,7 +1383,7 @@ body,
     height: 38px;
   }
   .quest-title {
-    font-size: 11px;
+    font-size: var(--p1);
   }
   /* pill ≈ 38+64+8 = 110px → 4×26 + 3×2 = 110 */
   .side-btns {
@@ -1334,7 +1408,8 @@ body,
   }
 }
 
-/* Açılış yükleme ekranı (SplashScreen) — asset preload bitene kadar sahneyi örter. */
+/* Açılış yükleme ekranı (SplashScreen) — asset preload bitene kadar sahneyi örter.
+   Arayüzün İLK karesi: mor dil burada başlar. */
 .splash {
   position: fixed;
   inset: 0;
@@ -1344,7 +1419,7 @@ body,
   align-items: center;
   justify-content: center;
   gap: 22px;
-  background: radial-gradient(120% 90% at 50% 38%, #4a2c12 0%, #341d0c 55%, #201207 100%);
+  background: radial-gradient(120% 90% at 50% 38%, var(--g1) 0%, var(--g2) 55%, var(--ot) 100%);
   opacity: 1;
   transition: opacity 0.45s ease;
   padding: calc(var(--sat) + 16px) 24px;
@@ -1359,7 +1434,7 @@ body,
   width: 280px;
   height: 280px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 197, 79, 0.35) 0%, rgba(255, 197, 79, 0) 70%);
+  background: radial-gradient(circle, var(--parilti) 0%, transparent 70%);
   filter: blur(4px);
   animation: splash-pulse 2.4s ease-in-out infinite;
 }
@@ -1367,33 +1442,33 @@ body,
   position: relative;
   font-family: var(--font-game);
   font-weight: 800;
-  font-size: clamp(28px, 8vw, 44px);
-  color: var(--cream);
-  text-shadow: 0 3px 0 rgba(0, 0, 0, 0.35);
-  letter-spacing: 0.5px;
+  font-size: var(--p6);
+  line-height: 1.15;
+  color: var(--tx);
+  letter-spacing: 0.01em;
   text-align: center;
 }
 .splash__bar {
   position: relative;
   width: min(60%, 260px);
   height: 12px;
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.35);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+  border-radius: var(--rr);
+  background: var(--oyuk);
+  border: 2.5px solid var(--ot);
   overflow: hidden;
 }
 .splash__fill {
   height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--gold-1), var(--gold-2));
+  border-radius: var(--rr);
+  background: linear-gradient(90deg, var(--ac), var(--ac2));
   transition: width 0.3s ease;
 }
 .splash__hint {
   position: relative;
   font-family: var(--font-game);
   font-weight: 600;
-  font-size: 15px;
-  color: rgba(253, 243, 227, 0.7);
+  font-size: var(--p3);
+  color: var(--tx2);
 }
 @keyframes splash-pulse {
   0%,

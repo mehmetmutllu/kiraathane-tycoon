@@ -27,6 +27,11 @@ import {
   ChevronIcon,
   ReputationIcon,
   PlayAdIcon,
+  LockIcon,
+  CloseIcon,
+  ResetIcon,
+  TickIcon,
+  DotIcon,
 } from './icons';
 import { Sheet } from './Sheet';
 import { CharacterPanel } from './CharacterPanel';
@@ -364,7 +369,7 @@ export function HUD() {
               testid="set-showfps"
             />
             <button className="danger-btn" data-testid="reset" onClick={onReset}>
-              ↺ Oyunu Sıfırla
+              <ResetIcon size={17} /> Oyunu Sıfırla
             </button>
             <button className="sheet-cta" data-testid="settings-ok" onClick={() => setSheet(null)}>
               Tamam
@@ -485,7 +490,7 @@ function UstaModal({ id, onClose }: { id: string; onClose: () => void }) {
     <div className="usta-backdrop" data-testid="master-bar" data-master={id} onClick={onClose}>
       <div className="usta-card" onClick={(e) => e.stopPropagation()}>
         <button className="sheet-x usta-x" onClick={onClose} aria-label="Kapat">
-          ✕
+          <CloseIcon size={16} />
         </button>
         <span className="usta-badge">
           <GemIcon size={34} />
@@ -756,7 +761,7 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
           <small>
             {ustaBekleyen > 0
               ? `${ustaBekleyen} masa hazır — yanındaki mavi noktaya git`
-              : 'Masayı ₺ tavanına çıkarınca Usta noktası açılır'}
+              : 'Masayı para tavanına çıkarınca Usta noktası açılır'}
           </small>
         </span>
         <span className="usta-price" data-testid="usta-price">
@@ -925,7 +930,13 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
           onClick={() => setSel((p) => ({ ...p, table: t.id }))}
         >
           <span className="shop-vcard-swatch" style={{ background: t.color }}>
-            {applied ? <span className="shop-vcard-badge">✓</span> : owned ? <span className="shop-vcard-badge owned" /> : null}
+            {applied ? (
+              <span className="shop-vcard-badge">
+                <TickIcon size={12} />
+              </span>
+            ) : owned ? (
+              <span className="shop-vcard-badge owned" />
+            ) : null}
           </span>
           <span className="shop-vcard-name">{t.label}</span>
           <span className="shop-vcard-cost">
@@ -963,7 +974,11 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
             className="shop-vcard-swatch"
             style={{ background: `linear-gradient(135deg, ${cols[0]} 0 50%, ${cols[1]} 50% 100%)` }}
           >
-            {applied ? <span className="shop-vcard-badge">✓</span> : null}
+            {applied ? (
+              <span className="shop-vcard-badge">
+                <TickIcon size={12} />
+              </span>
+            ) : null}
           </span>
           <span className="shop-vcard-name">{t.label}</span>
           <span className="shop-vcard-cost">
@@ -998,23 +1013,31 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
               onClick={() => setTab(k)}
             >
               {label}
-              {k === 'table' && !tableUnlocked ? <span className="shop-tab-lock">🔒</span> : null}
+              {k === 'table' && !tableUnlocked ? (
+                <span className="shop-tab-lock">
+                  <LockIcon size={13} />
+                </span>
+              ) : null}
             </button>
           ))}
         </div>
         {tab === 'table' && !tableUnlocked ? (
           <div className="shop-locked" data-testid="shop-table-locked">
-            <div className="shop-locked-icon">🔒</div>
+            <div className="shop-locked-icon">
+              <LockIcon size={46} />
+            </div>
             <div className="shop-locked-title">Masa temaları kilitli</div>
             <div className="shop-locked-desc">
               Tüm salonları aç ve bütün masaları son seviyeye getir; sonra masalarını renklendirebilirsin.
             </div>
             <div className="shop-locked-reqs">
               <span className={areasOpen >= MAX_AREAS ? 'req done' : 'req'}>
-                {areasOpen >= MAX_AREAS ? '✓' : '•'} Salon {areasOpen}/{MAX_AREAS}
+                {areasOpen >= MAX_AREAS ? <TickIcon size={12} /> : <DotIcon size={12} />} Salon{' '}
+                {areasOpen}/{MAX_AREAS}
               </span>
               <span className={maxedTables >= tables && tables > 0 ? 'req done' : 'req'}>
-                {maxedTables >= tables && tables > 0 ? '✓' : '•'} Max masa {maxedTables}/{tables}
+                {maxedTables >= tables && tables > 0 ? <TickIcon size={12} /> : <DotIcon size={12} />} Max
+                masa {maxedTables}/{tables}
               </span>
             </div>
           </div>

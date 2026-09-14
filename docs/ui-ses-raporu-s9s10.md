@@ -475,3 +475,95 @@ kaynağı** olarak açık kalıyor.
 
 **Aynı turda düzelen iki şey daha:** değer yığını üstteki duvar şeridini aşıyordu (82 px'e sığdı) ·
 görev çubuğundaki `0/1` sayacı geri geldi.
+
+---
+
+## S11 — MOR DİL KODA GİRDİ (2026-09-14, uygulama turu)
+
+D-107/D-108 **kod yazılmadan** alınmış kararlardı; bu tur onları uyguladı. Görev kullanıcının
+kuralı gereği ikiye bölündü: **S11 = DİL** (token · palet · font · ikon), **S12 = YAPI**
+(K3 tam ekran · M2 mağaza · Y2 pad · chip'siz üst şerit). Ekranların yapısına DOKUNULMADI —
+sayfalar hâlâ alttan açılıyor; değişen yalnız neyle çizildikleri.
+
+### §Bulgular — taban ↔ sonra (ikisi de `tools/shot-ui-s10.mjs` tam koşusu, 390×844)
+
+| Ölçü | Taban (S10) | S11 | Hedef (D-107) |
+|---|---:|---:|---|
+| punto (ekranda çizilen) | 17 | **5** | 6 basamak |
+| gölge (box-shadow) | 27 | **3** | 3 kademe |
+| yarıçap (hesaplanan dizge) | 9 | **6** | 3 kademe |
+| font ailesi | 3 | **2** | 2 (oyun + rakam) |
+| zemin rengi | 29 | **10** | — |
+| metin rengi | 23 | **8** | — |
+| SVG simge | 33 | **35** | — |
+| metin glifi | 17 | **13** | 0 (ikon yerine geçen) |
+| AA altı metin | 45/184 | **12/177** | 0 |
+
+**Üç sayı olduğu gibi okunmamalı, künyesi var:**
+
+- **punto 5, çünkü altıncı basamak (30 px) ölçülen ekranlarda çizilmiyor.** `--p6` yalnız ödül
+  tutarında kullanılıyor (`.modal-amount` · `.reward-amount`) ve ölçüm ödül ekranını açmıyor.
+  Tanımlı 6, çizilen 5 — bekçi testi tanımı sayar (`4b`), ölçüm ekranı.
+- **yarıçap 6, çünkü ölçüm HESAPLANAN DİZGEYİ sayıyor, basamağı değil.** Altısı şunlar:
+  `10px` · `17px` · `22px` (üç basamak) + `999px` (hap) + `50%` (daire) + `22px 22px 0 0`
+  (sayfanın yalnız üst köşeleri). Hap ve daire bir ölçek basamağı değil BİÇİMDİR; sayfanın
+  köşe-başı yazımı da aynı `--r3`ün kendisi. Yani D-107'nin "3 kademe"si tutuyor, ölçümün
+  sayacı ondan başka bir şey sayıyor.
+- **glif 13, ve ikisi bilerek kalıyor.** Kalanların örnekleri `+` ve `₺` — biri `+%0,4`
+  (gelir bonusu), öteki `400 ₺ kazan` (günlük görev metni, `economy.config.ts`). İkisi de bir
+  simgenin yerine geçmiyor, cümlenin kendisi; SVG'ye çevirmek metni bozar. B6'nın adını koyduğu
+  glifler — `🔒` `✕` `↺` `✓` `→` `•` — gitti. Bekçi bu ayrımı liste olarak taşıyor.
+
+### Uygulanan
+
+| Kalem | Ne yapıldı |
+|---|---|
+| **Palet** | `index.css :root` = arayüzün TEK renk kaynağı. D-107'nin dokuz rengi + dört tane daha (aşağıda). Eski `--ink` `--cream` `--gold-*` `--green-*` `--w-*` `--br-*` `--paper-*` `--leaf*` SİLİNDİ, kullanımları yeni tokenlara taşındı. |
+| **Ölçek** | `--p1…--p6` · `--r1…--r3` + `--rr` · `--k1…--k3`. `hud.css` ve `index.css`te **ham punto/yarıçap/gölge kalmadı**. |
+| **B5 Arial** | `button, input, select, textarea { font: inherit }` → font ailesi 3 → 2, `fontOge` 3 → 2. |
+| **B6 glif** | `🔒`→`LockIcon` · `✕`→`CloseIcon` · `↺`→`ResetIcon` · `✓`→`TickIcon` · `•`→`DotIcon` · `→`→`ToIcon`. |
+| **D-108 ikonlar** | `icons.tsx` tek gramerde yeniden yazıldı: 24 ızgara, kontur 2,2, aksan ikon başına tek yerde, ham renk yok (hepsi `var(--…)`). |
+| **Görev fotoğrafı** | Kutu mor kart diline döndü (oyuk zemin + kontur); içindeki çizim artık yükseltme simgeleriyle AYNI 24-ızgara çizimden geliyor, `scale` ile büyütülüyor. Eskiden üç ayrı aileden geliyordu. |
+| **Karakter madalyonu** | 48'lik kutuya 24 ızgaralı tepsi çiziliyordu ve köşeye sıkışmıştı — aksan disk + karakter silüetine döndü. |
+
+### Kararın DIŞINA çıkılan dört yer (hepsi burada, sessiz değil)
+
+1. **Dört token eklendi.** `--vitrin` (önizleme sahne zemini — maketin kendi `radial-gradient`inden),
+   `--perde` (modal perdesi; eskiden 0,55 ve 0,62 iki ayrı alfaydı, tek alfaya indi),
+   `--parilti` (aksan halesi), `--uyari` (rozet/sayaç). Dördü de D-107'nin dokuz renginde yoktu
+   ama maket bunları zaten çiziyordu; adı konmadan CSS'e sızmasınlar diye token oldular.
+2. **`--uyari` maketteki `#e0402c`ten `#d43a26`ya koyulaştı.** Sebep ölçüm: beyaz yazıyla 4,25
+   veriyordu (AA 4,5 ister) ve rozet 12 ölçümün **hepsinde** eşiğin altındaydı → 4,74. Bu renk
+   D-107'nin dokuzundan biri değil, o yüzden ölçümle düzeltildi.
+3. **Durum artık gölgeyle değil KENARLIKLA anlatılıyor.** Maket `.kart.hazir` için dördüncü bir
+   `box-shadow` yazıyordu (altın halka). D-107 "3 kademe" dediği için halka kenarlığa taşındı;
+   aynı sebeple `charPulse` ve `navPulse` nabızları `box-shadow` yerine `::after` halkasına geçti.
+   Sonuç maketten **daha katı**: ekranda tam 3 gölge.
+4. **`splash__title` `clamp(28px, 8vw, 44px)`ten `--p6`ya (30 px) indi.** Ölçek altı basamak;
+   yedincisini açmaktansa açılış başlığı basamağa oturdu.
+
+### Bekçi
+
+`tests/mor-dil.test.ts` — 9 denetim: token dışı kromatik ham renk (stil + bileşen) · punto ·
+yarıçap · gölge · ölçek sayısı · `button` font mirası · ikon-yerine-glif · ikon ızgarası.
+**8 mutasyonla doğrulandı, sekizi de kırmızı yaktı:** ham renk (CSS) · ham punto · dördüncü gölge ·
+geri gelen emoji · ham yarıçap · ikona sızan renk · bileşene sızan renk · geri gelen tik glifi.
+
+İki gerekçeli istisna testte YAZILI: `meshStandardMaterial`/`WALL_THEMES`/`floorSwatch` (bunlar
+**dünyanın** rengi — D-107 dünyayı bilerek dışarıda bıraktı, D-099) ve FPS sayacı (isteğe bağlı
+tanı aracı; eşik renkleri palet değil ÖLÇÜ). `DevSandbox` hiç kapsamda değil — oyuncuya gitmez.
+
+### Kullanıcı kararı bekleyen tek kalem
+
+**Kalan 12 AA ihlalinin hepsi aynı yerden:** `--tx2` (#a99fd8) **gövde gradyanının** (`--g1`)
+üstünde **3,84** veriyor; kart (`--kart`) üstünde 4,57 ile geçiyor. Yani sorun rengin kendisi değil,
+ikincil metnin kartsız zeminde durması. İki kol var ve **ikisi de D-107'nin yazdığı renge dokunuyor**,
+o yüzden ölçüldü ama uygulanmadı:
+
+| Kol | Ne yapar | Sayı |
+|---|---|---:|
+| **T1** `--tx2` bir tık açılır (#bfb6e6) | palet kararına dokunur, tek satır | 3,84 → **4,91** |
+| **T2** ikincil metinler kart zeminine alınır | S12'nin K3 kabuğu zaten bu satırları yeniden diziyor | 3,84 → 4,57 |
+
+Etkilenen: `sheet-sec` (4) · `qrow-title` (3) · `char-stat-val` (3) · `sheet-foot-note` (1) ·
+`shop-locked-desc` (1). **Öneri: T2** — S12 o ekranları zaten elden geçirecek, palete dokunmadan çözülür.

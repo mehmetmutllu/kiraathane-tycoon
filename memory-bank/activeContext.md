@@ -5,53 +5,58 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-14 — **S9+S10 KAPANDI, D-106** · Faz S 9/13 · 84/97)
+## ŞU AN (2026-09-14 — **S11 BİTTİ: MOR DİL KODA GİRDİ, D-109** · Faz S 10/14 · 85/98)
 
 ```
-SORU            : (S9+S10) Ses hangi kaynaktan gelecek, UI hangi tasarım dilini konuşacak?
-ÖLÇÜLECEK KOLLAR: ses S-A…S-D · UI palet/ekran modeli/pad · (tur içinde eklendi) alt gezinme paleti
-SAYILAR         : docs/ui-ses-raporu-s9s10.md §Bulgular + §ALT GEZİNME
-                  ham: docs/olcum-ui-ses.txt · docs/olcum-altnav.txt
-KARAR           : D-106 — ses S-C (Kenney; coin = RPG Audio handleCoins) + seri ivmesi ·
-                  ekran K3 tam ekran · mağaza içi M2 · pad Y2 · kit YOLU 2 (biçimi al,
-                  dosyaları alma) · G-18 masanın kendi noktası vurgulanır ·
-                  alt gezinme GEOMETRİSİ bugünküyle aynı (A/B/C elendi)
-                  D-107 — arayüzün TAMAMI mor, 3B dünya sıcak kalır (palet + ölçek kilitli)
-                  D-108 — ikon seti tek gramerde yeniden çizildi (çark hesaplanarak)
-UYGULAMA        : YOK — S10 tanımı gereği kod yazmaz. Uygulama S11 (UI) + S9 (ses).
-BEKÇİ           : (uygulama turunda)
+SORU            : D-107'nin mor dili ve D-108'in ikon grameri koda nasıl girer — ekranların
+                  YAPISINA (K3/M2/Y2) dokunmadan?
+ÖLÇÜLECEK KOLLAR: YOK — karar zaten yazılıydı (D-106/107/108). Bu tur doğrudan adım 4 UYGULA.
+SAYILAR         : docs/ui-ses-raporu-s9s10.md §S11 · ham docs/olcum-ui-ekran.json
+                  punto 17→5 (tanımlı 6) · gölge 27→3 · yarıçap 9→6 dizge (=3 basamak+hap+
+                  daire+köşe-başı) · font 3→2 · zemin 29→10 · metin 23→8 · glif 17→13 ·
+                  AA altı 45/184 → 12/177
+KARAR           : D-109 — mor dil koda girdi; DURUM gölgeyle değil KENARLIKLA anlatılır
+                  (maket dördüncü bir gölge yazıyordu, D-107 "3 kademe" dedi → halka kenara).
+                  Dört token eklendi (vitrin·perde·parilti·uyari) · --uyari ölçümle koyulaştı.
+UYGULAMA        : index.css + hud.css token katmanı · icons.tsx D-108 gramerinde yeniden ·
+                  🔒✕↺✓•→ SVG'ye · button{font:inherit} · S11 ikiye bölündü (S12 = YAPI)
+BEKÇİ           : tests/mor-dil.test.ts — 9 denetim, **8 mutasyonla** doğrulandı
+                  vitest 916 ✓ · duman 42/42 ✓ · tsc -b ✓ · tam koşu ölçümü ✓
 ```
 
 ## SIRADAKİ TAM ADIM
 
-**PALET SEÇİLDİ — MOR (D-107).** Kullanıcı P3'ü seçmekle kalmadı, kapsamı büyüttü:
-*"mor bayağı iyiymiş, direkt oyun temasını o kahverengiden mora çevirsek?"* →
-**arayüzün TAMAMI mor, 3B dünya sıcak kalır.** Beş ekranın maketi onaylanmayı bekliyor:
-https://claude.ai/code/artifact/6cc7a95e-c0a3-4802-8ea3-99398d637981
+**S12 — UI YAPISI (K3 kabuğu).** Dil hazır, sıra ekranların iskeletinde. Kapsam D-106:
+- **K3 tam ekran + TEK kabuk** (sol üstte geri · ortada başlık · sağ üstte cüzdan); alt sayfa
+  kabuğu kalkar. Bugün beş ekran **dört farklı yükseklikte** açılıyor (430 · 471 · 530 · 675 ·
+  675 px) — *"ekranlar tutarsız"* hissinin ölçülen kaynağı bu. `BackIcon` hazır, kullanılmıyor.
+- **Mağaza M2**: önizleme 74 → **230 px** + seçim şeridi + tek büyük satın alma.
+- **Pad Y2** (köşe-parantezli kare) · **G-18** masanın kendi mekânsal noktası vurgulanır.
+- **Chip'siz üst şerit**: para/elmas/seviye doğrudan sahnenin üstünde, okunabilirliği KONTUR
+  taşır (`.cur-val` sınıfı bunu zaten yapıyor, kutuları kaldırmak kalıyor).
+- **G-05** görev metinleri (altta net hedef, üstte kısa lakap).
+**Denge dosyalarına DOKUNULMAZ** — G-06 (tepsi 75 → ~50) bu turun da işi değil.
 
-**Sıradaki tur = S11 (UI uygulaması).** Kapsamı D-106 + D-107 birlikte belirliyor:
-- Palet ve ölçek `index.css`'e token olarak girer (D-107'deki dokuz renk + punto 6 basamak +
-  gölge 3 kademe + yarıçap 3 kademe). **Sayı koda gömülmez, token olur.**
-- `button{font-family:inherit}` — 13 öğe Arial'a düşüyor, biri görev şeridi (B5).
-- **İkon seti D-108'de çizildi ve maketin ikon sayfasında duruyor** — `icons.tsx`'e o gramer
-  girer (24×24 · kontur 2,2 · detay ≥ 2 br · aksan ikon başına tek yerde). Kenney paketi ikon
-  kaynağı OLMADI (konturu yok, zaten yeniden çizilecekti); S11'de şekil kaynağı olarak açık.
-- 🔒 emoji → SVG; ✕ → ↺ ₺ metin glifleri de (17 adet, B6).
-- Beş ekran **K3 tam ekran** + tek kabuk (geri · başlık · cüzdan); alt sayfa kabuğu kalkar.
-- Mağaza **M2** düzeni · pad **Y2** · alt bar geometrisi AYNI, dili mor.
-- Chip'siz üst şerit: değerler sahnenin üstünde, okunabilirliği **kontur** taşır.
-- G-05 görev metinleri (altta net hedef, üstte kısa lakap).
-**Bekçi:** ekran kabuğu + token sayısı testi, en az 2 mutasyonla.
-**Denge dosyalarına DOKUNULMAZ** — G-06 (tepsi 75 → ~50) bu turun işi değil.
+### S12'nin başında sorulacak TEK soru (ölçüldü, uygulanmadı)
 
-**S9** (ses dosyaları + seri ivmesi) ayrı tur; kaynak kararı yazılı, paketler indirildi ama
-repoya GİRMEDİ — yalnız kullanılacak dosyalar künyesiyle girecek.
+Kalan **12 AA ihlalinin hepsi** aynı yerden: `--tx2` (#a99fd8) **gövde gradyanı** üstünde
+**3,84** veriyor (AA 4,5 ister); **kart** üstünde 4,57 ile geçiyor. Yani sorun renk değil,
+ikincil metnin kartsız zeminde durması. **T1** = `--tx2` bir tık açılır (#bfb6e6 → 4,91; ama
+D-107'nin yazdığı renge dokunur) · **T2** = ikincil metinler kart zeminine alınır (K3 kabuğu
+o satırları zaten yeniden diziyor). **Öneri: T2.**
+Etkilenen: sheet-sec (4) · qrow-title (3) · char-stat-val (3) · sheet-foot-note (1) ·
+shop-locked-desc (1).
 
-**Bu turun DIŞINDA bekleyen:** karakter kolu (S13, asset panosu §3) · H2 yükseltme sırası ·
+**S9** (ses dosyaları + seri ivmesi) hâlâ ayrı tur; kaynak kararı yazılı (D-106 · S-C), paketler
+indirildi ama repoya GİRMEDİ — yalnız kullanılacak dosyalar künyesiyle girecek.
+
+**Bu turun DIŞINDA bekleyen:** karakter kolu (S14, asset panosu §3) · H2 yükseltme sırası ·
 H3 masa aralığı.
 
 **Asset panosu:** https://claude.ai/code/artifact/2e7f92c0-15b6-4f72-814d-753cf79d74e0
 **Paketten çıkanlar:** https://claude.ai/code/artifact/e2917b1e-64c9-4f9f-96e6-7d3ba5a719a9
+**Mor arayüz maketi:** https://claude.ai/code/artifact/6cc7a95e-c0a3-4802-8ea3-99398d637981
+
 
 ## AÇIK KALEMLER (bilinen, bilerek duruyor)
 

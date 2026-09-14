@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { CloseIcon } from './icons';
 
 /** Ortak alt sayfa kabuğu: başlık + kapat + kaydırılabilir gövde. Tüm paneller bunu paylaşır. */
 export function Sheet({
@@ -18,7 +19,7 @@ export function Sheet({
         <div className="sheet-head">
           <span className="sheet-title">{title}</span>
           <button className="sheet-x" onClick={onClose} aria-label="Kapat">
-            ✕
+            <CloseIcon size={16} />
           </button>
         </div>
         <div className="sheet-body">{children}</div>

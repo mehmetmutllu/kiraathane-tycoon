@@ -3,7 +3,7 @@ import { useGame } from '../../game/store';
 import { economyConfig } from '../../config/economy.config';
 import { Model } from '../three/Model';
 import { PREVIEW_GL } from '../../config/palette';
-import { CoinIcon } from './icons';
+import { CoinIcon, TickIcon } from './icons';
 import { FixedCam, SalonLights, FloorPatch, WallBack } from './SalonSlice';
 
 const KAY = '/assets/models/kaykit-furniture-bits/';
@@ -64,7 +64,9 @@ export function TableThemePreview({ id }: { id: string }) {
         onClick={() => buyCosmetic('table', id, 0)}
       >
         {isSel ? (
-          '✓ Seçili'
+          <>
+            <TickIcon size={16} /> Seçili
+          </>
         ) : owned ? (
           'Uygula'
         ) : (

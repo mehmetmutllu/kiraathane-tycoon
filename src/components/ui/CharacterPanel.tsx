@@ -23,7 +23,7 @@ import { PALETTE } from '../../config/palette';
 import { OwnerBody, CupTray } from '../three/Player';
 import { SceneLights } from '../three/lights';
 import { PREVIEW_GL } from '../../config/palette';
-import { CoinIcon, TrayIcon, BasinIcon, MagnetIcon, BootIcon } from './icons';
+import { CoinIcon, TrayIcon, BasinIcon, MagnetIcon, BootIcon, ToIcon } from './icons';
 import { Sheet } from './Sheet';
 
 /**
@@ -207,7 +207,7 @@ function WaiterTab() {
           <span className="char-stat-val" data-testid="waiter-val">
             {cost != null ? (
               <>
-                {cap} <i>→ {cap + 1}</i> {unit}
+                {cap} <i><ToIcon /> {cap + 1}</i> {unit}
               </>
             ) : (
               <>
@@ -239,7 +239,7 @@ function WaiterTab() {
           <span className="char-stat-val" data-testid="waiter-speed-val">
             {spdCost != null ? (
               <>
-                {spd} <i>→ {spdNext}</i> hız
+                {spd} <i><ToIcon /> {spdNext}</i> hız
               </>
             ) : (
               <>{spd} hız</>
@@ -291,7 +291,7 @@ function DishTab() {
           <span className="char-stat-val" data-testid="waiter-val-dish">
             {cost != null ? (
               <>
-                {cap} <i>→ {cap + 2}</i> bardak
+                {cap} <i><ToIcon /> {cap + 2}</i> bardak
               </>
             ) : (
               <>{cap} bardak</>
@@ -321,7 +321,7 @@ function DishTab() {
           <span className="char-stat-val" data-testid="waiter-speed-val-dish">
             {spdCost != null ? (
               <>
-                {spd} <i>→ {spdNext}</i> hız
+                {spd} <i><ToIcon /> {spdNext}</i> hız
               </>
             ) : (
               <>{spd} hız</>
@@ -380,9 +380,14 @@ export function CharacterPanel({ onClose }: { onClose: () => void }) {
       <div className="char-card">
         <div className="char-head">
           <span className="char-lvl" data-testid="char-level" title="Karakter seviyesi">
-            <svg width="30" height="30" viewBox="0 0 48 48" aria-hidden>
-              <circle cx="24" cy="24" r="22" fill="#ffd54f" stroke="#fff" strokeWidth="3" />
-              <TrayIcon />
+            {/* Karakter madalyonu — D-108: aksan disk + koyu kontur + içinde karakter.
+                Eskiden 48'lik kutuya 24 ızgaralı bir tepsi çiziliyordu ve köşeye sıkışıyordu. */}
+            <svg width="34" height="34" viewBox="0 0 24 24" aria-hidden>
+              <circle cx="12" cy="12" r="10.4" fill="var(--ac)" stroke="var(--ot)" strokeWidth="2.2" />
+              <g color="var(--txa)" transform="translate(12 12) scale(0.62) translate(-12 -12)">
+                <circle cx="12" cy="7.8" r="4.6" fill="currentColor" />
+                <path d="M4.2 21c0-4.3 3.5-6.9 7.8-6.9s7.8 2.6 7.8 6.9z" fill="currentColor" />
+              </g>
             </svg>
             <i>{lvl}</i>
           </span>
@@ -443,7 +448,7 @@ export function CharacterPanel({ onClose }: { onClose: () => void }) {
                     <span className="char-stat-val" data-testid={`char-val-${stat}`}>
                       {next != null ? (
                         <>
-                          {cur} <i>→ {next}</i> {unit}
+                          {cur} <i><ToIcon /> {next}</i> {unit}
                         </>
                       ) : (
                         <>

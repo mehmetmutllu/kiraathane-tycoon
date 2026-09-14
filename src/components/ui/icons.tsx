@@ -1,603 +1,541 @@
 /**
- * HUD ikon seti — elle çizilmiş SVG (UI redesign 2026-06-10, kullanıcı onayı).
- * Emoji/CSS-circle yerine gerçek ikonografi; gradyan + parlama ile "şeker" tycoon stili
- * (referans: My Perfect Hotel / Burger Please ikon dili). Hepsi vektör → her DPI'da net.
+ * HUD ikon seti — D-108 GRAMERİ (S10'da çizildi, S11a'da koda girdi).
+ *
+ * TEK GRAMER, beş kural:
+ *   · 24×24 ızgara (görev "fotoğrafları" 48'lik kalır — onlar simge değil KÜÇÜK RESİM)
+ *   · kontur 2,2 · hiçbir detay 2 birimden ince değil · düz dolgu (gradyan yok)
+ *   · AKSAN HER İKONDA YALNIZ BİR YERDE — sarı nokta gözün nereye gideceğini söyler
+ *
+ * NEDEN YENİDEN ÇİZİLDİ: eskiler üç ayrı aileden geliyordu ve küçüldükçe dağılıyordu.
+ * Çark en kötüsüydü — çok dişli bir yıldız 21 pikselde lekeye dönüyordu; dişleri artık elle
+ * değil HESAPLANARAK duruyor (8 diş, dış yarıçap 10,4, iç 7,8).
+ * Gerçek boyda sınandı ve üçü düzeltildi: Hedefler (üç ince halka 26 px'te birbirine giriyordu
+ * → disk + koyu iç disk + aksan gözbebeği) · Para (orta çubuk 17 px'te yarık gibi okunuyordu
+ * → iç elips) · Elmas (çapraz kesim çizgileri 16 px'te tırtık yapıyordu → yalnız kuşak çizgisi).
+ *
+ * Kenney UI Pack ikon KAYNAĞI olmadı: aynı ölçüm o paket için *"kalın koyu kontur yok"* demişti,
+ * yani zaten bu gramere girmek için yeniden konturlanacaktı (D-108). Paket şekil kaynağı olarak
+ * açık kalıyor — bu bir geri alma değil, SIRALAMA: önce gramer, sonra gerekirse paketten şekil.
+ *
+ * Renkler `var(--…)` ile index.css'ten okunur; burada ham renk YOKTUR (bekçi: tests/mor-dil).
+ * `currentColor` = ikonun bulunduğu yerin metin rengi — aynı ikon aksan üstünde de okunur.
  */
+import type { ReactNode } from 'react';
 import type { QuestTarget } from '../../config/economy.config';
 import { TOST_LEVEL } from '../../game/world';
 
-/** Altın para destesi (yumuşak para birimi — ₺ sembolü kullanılmaz, jenerik pul). */
+const OT = 'var(--ot)';
+const AC = 'var(--ac)';
+
+/** D-108 kabuğu: 24 ızgara, `size` piksel. */
+function Ic({ size, children }: { size: number; children: ReactNode }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
+      {children}
+    </svg>
+  );
+}
+
+/* ══════════════ PARA BİRİMLERİ ══════════════ */
+
+/** Para — madenî pul. Ortadaki düz çubuk 17 px'te YARIK gibi okunuyordu, iç elipse döndü. */
 export function CoinIcon({ size = 28 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
-      <defs>
-        <linearGradient id="ic-coin" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#ffe082" />
-          <stop offset="1" stopColor="#f9a825" />
-        </linearGradient>
-      </defs>
-      <ellipse cx="22" cy="35" rx="16" ry="7.5" fill="#b26a00" />
-      <ellipse cx="22" cy="32" rx="16" ry="7.5" fill="url(#ic-coin)" stroke="#8d5b00" strokeWidth="1.6" />
-      <ellipse cx="26" cy="23" rx="16" ry="7.5" fill="#b26a00" />
-      <ellipse cx="26" cy="20" rx="16" ry="7.5" fill="url(#ic-coin)" stroke="#8d5b00" strokeWidth="1.6" />
-      <ellipse cx="26" cy="18.6" rx="9.5" ry="3.8" fill="rgba(255,255,255,.5)" />
-    </svg>
+    <Ic size={size}>
+      <ellipse cx="12" cy="14.8" rx="8.6" ry="4.2" fill="var(--ac2)" stroke={OT} strokeWidth="1.9" />
+      <ellipse cx="12" cy="10" rx="8.6" ry="4.5" fill="var(--para)" stroke={OT} strokeWidth="1.9" />
+      <ellipse cx="12" cy="10" rx="4.1" ry="2" fill="none" stroke={OT} strokeWidth="1.8" />
+    </Ic>
   );
 }
 
-/** Mavi elmas (sert para birimi). */
+/** Elmas — iki çapraz kesim çizgisi 16 px'te tırtık yapıyordu, yalnız KUŞAK çizgisi kaldı. */
 export function GemIcon({ size = 28 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
-      <defs>
-        <linearGradient id="ic-gem" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#81d4fa" />
-          <stop offset="1" stopColor="#0277bd" />
-        </linearGradient>
-      </defs>
-      <path d="M14 10h20l9 11-19 19L5 21l9-11z" fill="url(#ic-gem)" stroke="#01579b" strokeWidth="1.8" strokeLinejoin="round" />
-      <path d="M14 10l10 11L34 10M5 21h38M24 40l-7-19M24 40l7-19" stroke="rgba(255,255,255,.75)" strokeWidth="1.5" fill="none" />
-      <path d="M14 10h9l-7 9-9 2 7-11z" fill="rgba(255,255,255,.45)" />
-    </svg>
+    <Ic size={size}>
+      <path d="M7.4 3.4h9.2l4.2 5.4L12 20.6 3.2 8.8z" fill="var(--elmas)" stroke={OT} strokeWidth="2.2" strokeLinejoin="round" />
+      <path d="M3.2 8.8h17.6" fill="none" stroke={OT} strokeWidth="1.9" />
+    </Ic>
   );
 }
 
-/** Altın yıldız rozeti — içine seviye rakamı oturur (CSS .lvl-num). */
-export function StarBadge({ size = 54 }: { size?: number }) {
+/* ══════════════ ALT GEZİNME (geometri D-106'da kilitli; değişen yalnız DİL) ══════════════ */
+
+/** Görevler — pano + onay. Aksan yalnız üstteki mandalda. */
+export function QuestListIcon({ size = 26 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden>
-      <defs>
-        <linearGradient id="ic-star" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#ffd54f" />
-          <stop offset="1" stopColor="#ff9800" />
-        </linearGradient>
-      </defs>
-      <path
-        d="M32 3l8.6 17.4 19.2 2.8-13.9 13.5 3.3 19.1L32 46.8 14.8 55.8l3.3-19.1L4.2 23.2l19.2-2.8L32 3z"
-        fill="url(#ic-star)"
-        stroke="#fff"
-        strokeWidth="4"
-        strokeLinejoin="round"
-      />
-      <path d="M32 9.5l6.2 12.6 13.9 2-10 9.8 2.4 13.8L32 41.2" fill="rgba(255,255,255,.3)" />
-    </svg>
+    <Ic size={size}>
+      <rect x="4" y="3.6" width="16" height="17.2" rx="3" fill="currentColor" stroke={OT} strokeWidth="2.2" />
+      <rect x="8.4" y="1.5" width="7.2" height="4.2" rx="1.9" fill={AC} stroke={OT} strokeWidth="2.2" />
+      <path d="M7.9 12.5l2.5 2.5 4.1-4.5" fill="none" stroke={OT} strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M8 18h8" stroke={OT} strokeWidth="2.4" strokeLinecap="round" />
+    </Ic>
   );
 }
 
-/** Yeşil onay madalyonu (görev-tamam toast'u). */
-export function CheckBadge({ size = 30 }: { size?: number }) {
+/** Hedefler — disk + koyu iç disk + aksan gözbebeği (üç ince halka 26 px'te birbirine giriyordu). */
+export function TargetIcon({ size = 26 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
-      <defs>
-        <linearGradient id="ic-check" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#9ccc65" />
-          <stop offset="1" stopColor="#558b2f" />
-        </linearGradient>
-      </defs>
-      <circle cx="24" cy="24" r="20" fill="url(#ic-check)" stroke="#fff" strokeWidth="3.5" />
-      <path d="M14.5 24.5l6.5 6.5 12.5-13" stroke="#fff" strokeWidth="5.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M10 17a15 15 0 0 1 11-8.5" stroke="rgba(255,255,255,.45)" strokeWidth="3" fill="none" strokeLinecap="round" />
-    </svg>
+    <Ic size={size}>
+      <circle cx="12" cy="12" r="9" fill="currentColor" stroke={OT} strokeWidth="2.2" />
+      <circle cx="12" cy="12" r="4.8" fill={OT} />
+      <circle cx="12" cy="12" r="2.1" fill={AC} />
+    </Ic>
   );
 }
 
-/** Altın ünlem madalyonu (yeni-özellik reveal toast'u). */
-export function BangBadge({ size = 30 }: { size?: number }) {
+/** Mağaza — tenteli vitrin. Aksan yalnız tentede. */
+export function ShopAwningIcon({ size = 26 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
-      <defs>
-        <linearGradient id="ic-bang" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#ffd54f" />
-          <stop offset="1" stopColor="#f57c00" />
-        </linearGradient>
-      </defs>
-      <circle cx="24" cy="24" r="20" fill="url(#ic-bang)" stroke="#fff" strokeWidth="3.5" />
-      <rect x="20.8" y="11" width="6.4" height="17" rx="3.2" fill="#fff" />
-      <circle cx="24" cy="35" r="3.6" fill="#fff" />
-      <path d="M10 17a15 15 0 0 1 11-8.5" stroke="rgba(255,255,255,.45)" strokeWidth="3" fill="none" strokeLinecap="round" />
-    </svg>
+    <Ic size={size}>
+      <rect x="4" y="10.6" width="16" height="10.4" rx="2.4" fill="currentColor" stroke={OT} strokeWidth="2.2" />
+      <path d="M2.6 10.6l2.1-5.5h14.6l2.1 5.5z" fill={AC} stroke={OT} strokeWidth="2.2" strokeLinejoin="round" />
+      <rect x="9.4" y="13.9" width="5.2" height="7.1" rx="1.3" fill={OT} />
+    </Ic>
   );
 }
 
-/** Tepsi + geri oku (tepsiyi boşalt butonu, v23): kahve tepsi üstünde çay bardağı, sol-üstte geri oku.
- *  (TrayIcon'dan AYRI: o, karakter tepsi yükseltmesinin görev fotoğrafı.) */
-export function TrayEmptyIcon({ size = 28 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
-      <defs>
-        <linearGradient id="ic-tray" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#a1887f" />
-          <stop offset="1" stopColor="#5d4037" />
-        </linearGradient>
-        <linearGradient id="ic-tray-tea" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#ef5350" />
-          <stop offset="1" stopColor="#b71c1c" />
-        </linearGradient>
-      </defs>
-      {/* tepsi */}
-      <ellipse cx="24" cy="36" rx="18" ry="6.5" fill="#3e2723" />
-      <ellipse cx="24" cy="34" rx="18" ry="6.5" fill="url(#ic-tray)" stroke="#fff" strokeWidth="2" />
-      {/* ince belli çay bardağı */}
-      <path d="M19.5 18c0 3 1.4 4.6 1.4 7.2 0 2.4-1 3.8-1 5.8h8.2c0-2-1-3.4-1-5.8 0-2.6 1.4-4.2 1.4-7.2h-9z"
-        fill="url(#ic-tray-tea)" stroke="#fff" strokeWidth="1.8" strokeLinejoin="round" />
-      {/* geri oku (çaylar ocağa/rafa döner) */}
-      <path d="M11 14a8.5 8.5 0 0 1 14.5-3.5" stroke="#fff" strokeWidth="3.4" fill="none" strokeLinecap="round" />
-      <path d="M11 7.5V14h6.4" stroke="#fff" strokeWidth="3.4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-/** Tepsi + tost + geri oku (TOST-boşalt butonu, Y1): çay butonundan AYRI — tepside üçgen tost dilimi
- *  (ızgara izli), sol-üstte aynı geri oku dili (tabaklar temiz rafa döner). Kendi SVG'miz. */
-export function TostEmptyIcon({ size = 28 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
-      <defs>
-        <linearGradient id="ic-tray2" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#a1887f" />
-          <stop offset="1" stopColor="#5d4037" />
-        </linearGradient>
-        <linearGradient id="ic-tost" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#e8b35c" />
-          <stop offset="1" stopColor="#b06a24" />
-        </linearGradient>
-      </defs>
-      {/* tepsi */}
-      <ellipse cx="24" cy="36" rx="18" ry="6.5" fill="#3e2723" />
-      <ellipse cx="24" cy="34" rx="18" ry="6.5" fill="url(#ic-tray2)" stroke="#fff" strokeWidth="2" />
-      {/* üçgen tost dilimi (yarıya kesilmiş) + ızgara izleri */}
-      <path d="M14.5 31.5L24 13.5l9.5 18h-19z" fill="url(#ic-tost)" stroke="#fff" strokeWidth="1.8" strokeLinejoin="round" />
-      <path d="M19.2 27l4.8-9 4.8 9" stroke="#7a4413" strokeWidth="1.6" fill="none" strokeLinecap="round" />
-      <path d="M17.6 30l6.4-12 6.4 12" stroke="#7a4413" strokeWidth="1.6" fill="none" strokeLinecap="round" opacity="0.65" />
-      {/* geri oku (tabaklar rafa döner) */}
-      <path d="M11 14a8.5 8.5 0 0 1 14.5-3.5" stroke="#fff" strokeWidth="3.4" fill="none" strokeLinecap="round" />
-      <path d="M11 7.5V14h6.4" stroke="#fff" strokeWidth="3.4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-/** Üçgen tost dilimi (quest fotoğrafı içi, v27 — TostEmptyIcon'daki dilimin yalın hali, kendi SVG'miz). */
-function TostSlice() {
-  return (
-    <g>
-      <path d="M14.5 35L24 16l9.5 19h-19z" fill="#e8b35c" stroke="#7a4413" strokeWidth="1.6" strokeLinejoin="round" />
-      <path d="M19.2 30.5l4.8-9.5 4.8 9.5" stroke="#7a4413" strokeWidth="1.6" fill="none" strokeLinecap="round" />
-      <path d="M17.6 33.5l6.4-13 6.4 13" stroke="#7a4413" strokeWidth="1.6" fill="none" strokeLinecap="round" opacity="0.65" />
-    </g>
-  );
-}
-
-/** Ayarlar dişlisi (beyaz). */
-export function GearIcon({ size = 22 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
-      <path
-        fill="#fff"
-        d="M19.4 13c.04-.32.1-.65.1-1s-.06-.68-.1-1l2.1-1.65a.5.5 0 0 0 .12-.64l-2-3.46a.5.5 0 0 0-.6-.22l-2.49 1a7.3 7.3 0 0 0-1.73-1l-.38-2.65A.5.5 0 0 0 13.93 2h-4a.5.5 0 0 0-.5.42l-.37 2.65c-.63.26-1.2.6-1.74 1l-2.48-1a.5.5 0 0 0-.61.22l-2 3.46a.5.5 0 0 0 .12.64L4.45 11c-.04.32-.07.65-.07 1s.03.68.07 1l-2.1 1.65a.5.5 0 0 0-.12.64l2 3.46c.14.24.42.33.6.22l2.5-1c.53.42 1.1.76 1.73 1l.37 2.66c.04.24.25.41.5.41h4c.25 0 .46-.17.5-.41l.37-2.66c.63-.25 1.2-.59 1.74-1l2.48 1c.23.1.47 0 .61-.22l2-3.46a.5.5 0 0 0-.12-.64L19.4 13Zm-7.47 2.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Z"
-      />
-    </svg>
-  );
-}
-
-/** Boya fırçası (kozmetik dekor mağazası, WP6). */
-export function BrushIcon({ size = 22 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
-      <path
-        d="M19.6 3.2c.9-.6 2.1-.5 2.8.3.7.8.6 2-.2 2.8l-8.4 8.2-3-3 8.8-8.3z"
-        fill="#fff"
-      />
-      <path
-        d="M9.8 12.6l2.8 2.8c-.5 1.7-1.5 3-3.1 3.8-1.6.8-3.6 1-5.9.6 1-.9 1.4-1.9 1.5-3 .1-1.6.9-3.1 2.5-3.9.7-.35 1.5-.45 2.2-.3z"
-        fill="#ffca6e"
-      />
-    </svg>
-  );
-}
-
-/** Çaycı portresi (karakter paneli butonu, v20): kasket + bıyık — oyundaki sahip karakterin yüzü. */
+/** Karakter — omuz + baş. Tek kütle; 21 px'te yüz detayı zaten okunmuyordu. */
 export function CharIcon({ size = 22 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
-      {/* yüz */}
-      <circle cx="12" cy="13" r="6.4" fill="#ffcc80" stroke="#e0a96d" strokeWidth="1.1" />
-      {/* kasket: tepe + vizör */}
-      <path d="M5.6 10.2c0-3.6 2.9-5.8 6.4-5.8s6.4 2.2 6.4 5.8H5.6z" fill="#5d4037" />
-      <rect x="4.4" y="9.4" width="15.2" height="2" rx="1" fill="#4e342e" />
-      {/* bıyık */}
-      <path d="M8.6 15.4c1 .9 2.2 1.2 3.4 1.2s2.4-.3 3.4-1.2c-.6 1.8-1.9 2.6-3.4 2.6s-2.8-.8-3.4-2.6z" fill="#4e342e" />
-      {/* gözler */}
-      <circle cx="9.7" cy="13.2" r="0.8" fill="#3e2723" />
-      <circle cx="14.3" cy="13.2" r="0.8" fill="#3e2723" />
-    </svg>
+    <Ic size={size}>
+      <circle cx="12" cy="7.8" r="4.6" fill="currentColor" stroke={OT} strokeWidth="2.2" />
+      <path d="M4.2 21c0-4.3 3.5-6.9 7.8-6.9s7.8 2.6 7.8 6.9z" fill="currentColor" stroke={OT} strokeWidth="2.2" strokeLinejoin="round" />
+    </Ic>
   );
 }
 
-/* ---------- Görev "fotoğrafı" ikonları (quest kartı solunda; hedef tipine göre) ---------- */
+/* ══════════════ KABUK DÜĞMELERİ ══════════════ */
 
-function TeaGlass() {
-  // İnce belli Türk çay bardağı + kırmızı çay.
+/** Ayarlar — 8 diş, dış yarıçap 10,4 · iç 7,8. HESAPLANARAK çizildi: eskisi çok dişli bir
+ *  yıldızdı ve 21 pikselde lekeye dönüyordu (kullanıcı: *"sağ en üstteki ayarlar kötü duruyor"*). */
+export function GearIcon({ size = 22 }: { size?: number }) {
+  return (
+    <Ic size={size}>
+      <path
+        d="M10.2 4.4 L10.3 1.7 L13.7 1.7 L13.8 4.4 L16.1 5.3 L18.0 3.5 L20.5 6.0 L18.7 7.9 L19.6 10.2 L22.3 10.3 L22.3 13.7 L19.6 13.8 L18.7 16.1 L20.5 18.0 L18.0 20.5 L16.1 18.7 L13.8 19.6 L13.7 22.3 L10.3 22.3 L10.2 19.6 L7.9 18.7 L6.0 20.5 L3.5 18.0 L5.3 16.1 L4.4 13.8 L1.7 13.7 L1.7 10.3 L4.4 10.2 L5.3 7.9 L3.5 6.0 L6.0 3.5 Z"
+        fill="currentColor"
+        stroke={OT}
+        strokeWidth="2.2"
+        strokeLinejoin="round"
+      />
+      <circle cx="12" cy="12" r="3.7" fill="var(--oyuk)" stroke={OT} strokeWidth="2.2" />
+    </Ic>
+  );
+}
+
+/** Geri (sol chevron) — tek kabuğun sol üst köşesi. */
+export function BackIcon({ size = 20 }: { size?: number }) {
+  return (
+    <Ic size={size}>
+      <path d="M14.8 4.8L7.4 12l7.4 7.2" fill="none" stroke="currentColor" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" />
+    </Ic>
+  );
+}
+
+/** Sağ ok (alt bant → "hedefe götür"). Geri okunun aynası — tek gramer. */
+export function ChevronIcon({ size = 20 }: { size?: number }) {
+  return (
+    <Ic size={size}>
+      <path d="M9.2 4.8l7.4 7.2-7.4 7.2" fill="none" stroke="currentColor" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" />
+    </Ic>
+  );
+}
+
+/** Kapat (✕) — B6: metin glifi değil çizim. Kontur 2,2 değil 3,0: iki çizgi 21 px'te ince kalıyordu. */
+export function CloseIcon({ size = 18 }: { size?: number }) {
+  return (
+    <Ic size={size}>
+      <path d="M6.4 6.4l11.2 11.2M17.6 6.4L6.4 17.6" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+    </Ic>
+  );
+}
+
+/** Sıfırla (↺) — B6: metin glifi değil çizim. Ok başı dolu üçgen, 2 birimden ince değil. */
+export function ResetIcon({ size = 18 }: { size?: number }) {
+  return (
+    <Ic size={size}>
+      <path d="M19.4 12a7.4 7.4 0 1 1-2.6-5.6" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" />
+      <path d="M18.2 1.9v5.6h-5.6z" fill="currentColor" />
+    </Ic>
+  );
+}
+
+/** Asma kilit — B6: `🔒` emojisinin yerini alan çizim. Aksan yalnız GÖVDEDE, kol ikincil metin
+ *  renginde: kilit "kapalı" değil "HENÜZ" demeli, uyarı gibi durmamalı. */
+export function LockIcon({ size = 46 }: { size?: number }) {
+  return (
+    <Ic size={size}>
+      <path d="M7.4 10.6V7.9a4.6 4.6 0 0 1 9.2 0v2.7" fill="none" stroke="var(--tx2)" strokeWidth="2.6" strokeLinecap="round" />
+      <rect x="4.4" y="10.6" width="15.2" height="10.6" rx="3" fill={AC} stroke={OT} strokeWidth="2.2" />
+      <circle cx="12" cy="15" r="2" fill={OT} />
+      <rect x="11" y="15" width="2" height="3.6" rx="1" fill={OT} />
+    </Ic>
+  );
+}
+
+/** Reklam izle — ekran + oynat üçgeni. Aksan yalnız üçgende. */
+export function PlayAdIcon({ size = 20 }: { size?: number }) {
+  return (
+    <Ic size={size}>
+      <rect x="2.4" y="4.4" width="19.2" height="15.2" rx="3.4" fill="currentColor" stroke={OT} strokeWidth="2.2" />
+      <path d="M9.8 8.4l6.4 3.6-6.4 3.6z" fill={AC} stroke={OT} strokeWidth="1.9" strokeLinejoin="round" />
+    </Ic>
+  );
+}
+
+/** Onay tiki (satır içi) — `✓` metin glifinin yerine. Kendi rengini alır. */
+export function TickIcon({ size = 14 }: { size?: number }) {
+  return (
+    <Ic size={size}>
+      <path d="M4.4 12.6l4.6 4.6 10.6-11.4" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
+    </Ic>
+  );
+}
+
+/** Boş madde işareti — `•` yerine; tikle AYNI kutuda durur ki liste zıplamasın. */
+export function DotIcon({ size = 14 }: { size?: number }) {
+  return (
+    <Ic size={size}>
+      <circle cx="12" cy="12" r="4.6" fill="none" stroke="currentColor" strokeWidth="3" />
+    </Ic>
+  );
+}
+
+/** "Şuna çıkar" oku — `→` metin glifinin yerine (karakter panelindeki 4 → 5 gösterimi). */
+export function ToIcon({ size = 13 }: { size?: number }) {
+  return (
+    <Ic size={size}>
+      <path d="M3.4 12h14.2" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+      <path d="M14.6 5.8L21.4 12l-6.8 6.2z" fill="currentColor" />
+    </Ic>
+  );
+}
+
+/* ══════════════ ROZETLER ══════════════ */
+
+/** Seviye rozeti — içine seviye rakamı oturur (CSS .lvl-num). Yıldız 5 uçlu ve kalın:
+ *  eski 10 köşeli yıldız küçük boyda dişli bir lekeydi. */
+export function StarBadge({ size = 54 }: { size?: number }) {
+  return (
+    <Ic size={size}>
+      <path
+        d="M12 1.8l3.2 6.5 7.2 1-5.2 5.1 1.2 7.2L12 18.2l-6.4 3.4 1.2-7.2L1.6 9.3l7.2-1z"
+        fill={AC}
+        stroke={OT}
+        strokeWidth="2.2"
+        strokeLinejoin="round"
+      />
+    </Ic>
+  );
+}
+
+/** Onay madalyonu (görev-tamam). Yeşil burada aksan değil İLERLEME anlamı (D-107). */
+export function CheckBadge({ size = 30 }: { size?: number }) {
+  return (
+    <Ic size={size}>
+      <circle cx="12" cy="12" r="9.4" fill="var(--ok)" stroke={OT} strokeWidth="2.2" />
+      <path d="M7.4 12.4l3 3 6.2-6.6" fill="none" stroke={OT} strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" />
+    </Ic>
+  );
+}
+
+/** Ünlem madalyonu (yeni-özellik). Aksan zemin + koyu ünlem — tek aksan kuralı. */
+export function BangBadge({ size = 30 }: { size?: number }) {
+  return (
+    <Ic size={size}>
+      <circle cx="12" cy="12" r="9.4" fill={AC} stroke={OT} strokeWidth="2.2" />
+      <rect x="10.4" y="5.6" width="3.2" height="8.4" rx="1.6" fill={OT} />
+      <circle cx="12" cy="17.4" r="1.8" fill={OT} />
+    </Ic>
+  );
+}
+
+/** İtibar madalyonu — çelenk + yıldız. Aksan yalnız yıldızda, çelenk ilerleme yeşili. */
+export function ReputationIcon({ size = 26 }: { size?: number }) {
+  return (
+    <Ic size={size}>
+      <circle cx="12" cy="12" r="8.4" fill="currentColor" stroke={OT} strokeWidth="2.2" />
+      <path d="M12 6.4l1.9 3.9 4.3.6-3.1 3 .7 4.3L12 16.2l-3.8 2 .7-4.3-3.1-3 4.3-.6z" fill={AC} stroke={OT} strokeWidth="1.9" strokeLinejoin="round" />
+    </Ic>
+  );
+}
+
+/* ══════════════ YÜKSELTME SİMGELERİ ══════════════
+   Bunlar hem karakter panelinde (24 ızgara) hem görev fotoğrafında (48 kutu, ×2 ölçekli)
+   çizilir — TEK çizim iki yerde. Ölçek `QuestPhoto` içinde `scale(2)` ile verilir. */
+
+/** Çay bardağı — ince belli, kırmızı çay. */
+function CayGlyph() {
   return (
     <g>
-      <path d="M17 12h14l-1.6 8.5c-.5 2.2-.6 3.5-.6 5 0 1.5.1 2.8.6 5L31 36H17l1.6-5.5c.5-2.2.6-3.5.6-5 0-1.5-.1-2.8-.6-5L17 12z" fill="#e3f2fd" fillOpacity="0.55" stroke="#90a4ae" strokeWidth="1.4" />
-      <path d="M18.4 17h11.2l-1 5.5c-.4 2-.5 3.2-.5 4.5 0 1.3.1 2.5.5 4.5l.7 3.5H18.7l.7-3.5c.4-2 .5-3.2.5-4.5 0-1.3-.1-2.5-.5-4.5l-1-5.5z" fill="#c62828" />
-      <ellipse cx="24" cy="17.6" rx="5.6" ry="1.6" fill="#ef5350" />
-      <rect x="14.5" y="36" width="19" height="3.4" rx="1.7" fill="#eceff1" stroke="#90a4ae" strokeWidth="1.2" />
+      <path d="M7.7 3.8h8.6l-1.1 12.4a3.2 3.2 0 0 1-6.4 0z" fill="var(--tx)" stroke={OT} strokeWidth="2.1" strokeLinejoin="round" />
+      <path d="M8.7 11h6.6l-.7 5.2a2.6 2.6 0 0 1-5.2 0z" fill="var(--uyari)" />
+      <path d="M8.2 20.2h7.6" stroke={OT} strokeWidth="2.2" strokeLinecap="round" />
     </g>
   );
 }
 
-function CoinSmall() {
+/** Tepsi + iki bardak. */
+function TepsiGlyph() {
   return (
     <g>
-      <ellipse cx="24" cy="30" rx="13" ry="6" fill="#b26a00" />
-      <ellipse cx="24" cy="27" rx="13" ry="6" fill="#ffd54f" stroke="#8d5b00" strokeWidth="1.4" />
-      <ellipse cx="24" cy="25.8" rx="7.5" ry="3" fill="rgba(255,255,255,.5)" />
+      <rect x="5.4" y="7.4" width="5.4" height="7.8" rx="1.3" fill="var(--uyari)" stroke={OT} strokeWidth="1.9" />
+      <rect x="13.2" y="7.4" width="5.4" height="7.8" rx="1.3" fill="var(--uyari)" stroke={OT} strokeWidth="1.9" />
+      <rect x="2.2" y="15.2" width="19.6" height="3.4" rx="1.6" fill={AC} stroke={OT} strokeWidth="1.9" />
     </g>
   );
 }
 
-function TableIcon() {
+/** Mıknatıs — at nalı, uçları açık. */
+function MiknatisGlyph() {
   return (
     <g>
-      <ellipse cx="24" cy="18" rx="15" ry="6.5" fill="#8d6e63" stroke="#5d4037" strokeWidth="1.4" />
-      <ellipse cx="24" cy="16.6" rx="15" ry="6.5" fill="#a1887f" stroke="#5d4037" strokeWidth="1.4" />
-      <rect x="21.6" y="22" width="4.8" height="14" rx="2" fill="#6d4c41" />
-      <rect x="12" y="33.5" width="24" height="3.6" rx="1.8" fill="#5d4037" />
+      <path d="M4.4 4.2h5.2v8.6a2.4 2.4 0 0 0 4.8 0V4.2h5.2v8.6a7.6 7.6 0 0 1-15.2 0z" fill="var(--uyari)" stroke={OT} strokeWidth="2" strokeLinejoin="round" />
+      <rect x="4.4" y="4.2" width="5.2" height="3.6" fill="var(--tx)" stroke={OT} strokeWidth="1.9" />
+      <rect x="14.4" y="4.2" width="5.2" height="3.6" fill="var(--tx)" stroke={OT} strokeWidth="1.9" />
     </g>
   );
 }
 
-function PersonIcon({ color = '#43a047', dark = '#2e7d32' }: { color?: string; dark?: string }) {
+/** Hız — bot + hareket çizgileri. Aksan yalnız hareket çizgilerinde. */
+function HizGlyph() {
   return (
     <g>
-      <circle cx="24" cy="14.5" r="7" fill="#ffcc80" stroke="#e0a96d" strokeWidth="1.2" />
-      <path d="M11 40c0-8 5.8-13 13-13s13 5 13 13v1H11v-1z" fill={color} stroke={dark} strokeWidth="1.4" />
+      <path d="M6.4 18.4V9.2h3.8l2.4 2.6h2.2a6.2 6.2 0 0 1 6.2 6.2v.4z" fill="currentColor" stroke={OT} strokeWidth="2" strokeLinejoin="round" />
+      <rect x="6.4" y="18.4" width="14.6" height="2.8" rx="1.3" fill={OT} />
+      <path d="M3.4 11.4H1.2M4 15.4H1.2" stroke={AC} strokeWidth="2.2" strokeLinecap="round" />
     </g>
   );
 }
 
-function WashIcon() {
+/** Leğen — bulaşık. Aksan yalnız köpükte. */
+function LeganGlyph() {
   return (
     <g>
-      <path d="M10 22h28v6a10 10 0 0 1-10 10h-8a10 10 0 0 1-10-10v-6z" fill="#78909c" stroke="#546e7a" strokeWidth="1.4" />
-      <rect x="13" y="19" width="22" height="4" rx="2" fill="#90a4ae" />
-      <circle cx="18" cy="13" r="3.2" fill="#b3e5fc" stroke="#81d4fa" strokeWidth="1.2" />
-      <circle cx="26" cy="9.5" r="2.4" fill="#b3e5fc" stroke="#81d4fa" strokeWidth="1.2" />
-      <circle cx="31" cy="14.5" r="2.8" fill="#b3e5fc" stroke="#81d4fa" strokeWidth="1.2" />
+      <path d="M3.4 10.6h17.2v3.6a6.2 6.2 0 0 1-6.2 6.2h-4.8a6.2 6.2 0 0 1-6.2-6.2z" fill="currentColor" stroke={OT} strokeWidth="2.2" strokeLinejoin="round" />
+      <circle cx="8.4" cy="6.2" r="2.4" fill={AC} stroke={OT} strokeWidth="1.9" />
+      <circle cx="14.6" cy="4.8" r="2" fill="currentColor" stroke={OT} strokeWidth="1.9" />
     </g>
   );
 }
 
-/** Tepsi + çay bardakları (karakter tepsi yükseltmesi — quest fotoğrafı + panel kartı). */
+/** Tost dilimi — üçgen + ızgara izi. */
+function TostGlyph() {
+  return (
+    <g>
+      <path d="M4.6 19.4L12 5.2l7.4 14.2z" fill={AC} stroke={OT} strokeWidth="2.1" strokeLinejoin="round" />
+      <path d="M9 15.4l3-5.6 3 5.6" fill="none" stroke={OT} strokeWidth="2" strokeLinecap="round" />
+    </g>
+  );
+}
+
+/** Masa — tabla + ayak + üstünde bardak. */
+function MasaGlyph() {
+  return (
+    <g>
+      <rect x="10.7" y="10.4" width="2.6" height="7.4" fill="currentColor" stroke={OT} strokeWidth="1.9" />
+      <ellipse cx="12" cy="9.6" rx="8.2" ry="3.2" fill="currentColor" stroke={OT} strokeWidth="2.1" />
+      <rect x="10.9" y="5.3" width="2.2" height="3.8" rx="0.8" fill={AC} stroke={OT} strokeWidth="1.9" />
+      <rect x="6.6" y="18.4" width="10.8" height="2.6" rx="1.2" fill={OT} />
+    </g>
+  );
+}
+
+/** Kapı (lavabo odası) — kanat + kol. Aksan yalnız kolda. */
+function KapiGlyph() {
+  return (
+    <g>
+      <rect x="5.4" y="2.6" width="13.2" height="18.8" rx="2.4" fill="currentColor" stroke={OT} strokeWidth="2.2" />
+      <rect x="8.2" y="5.6" width="7.6" height="7.2" rx="1.6" fill={OT} />
+      <circle cx="15.8" cy="16.4" r="1.8" fill={AC} stroke={OT} strokeWidth="1.6" />
+    </g>
+  );
+}
+
+/** Kişi (garson/bulaşıkçı fotoğrafı) — karakter ikonunun aynısı, gövde rengi rolü söyler. */
+function KisiGlyph({ fill = 'currentColor' }: { fill?: string }) {
+  return (
+    <g>
+      <circle cx="12" cy="7.8" r="4.6" fill="var(--tx)" stroke={OT} strokeWidth="2.2" />
+      <path d="M4.2 21c0-4.3 3.5-6.9 7.8-6.9s7.8 2.6 7.8 6.9z" fill={fill} stroke={OT} strokeWidth="2.2" strokeLinejoin="round" />
+    </g>
+  );
+}
+
+/* ── Panel/buton dışa açımları: aynı çizim, kendi kutusunda ── */
+
 export function TrayIcon({ size, food = false }: { size?: number; food?: boolean }) {
-  // food (turu-4 SVG tutarlılığı): TOST tepsisi görevleri/paneli çay bardağı değil tost dilimi gösterir.
-  const inner = (
-    <g>
-      <rect x="8" y="28" width="32" height="4.5" rx="2.2" fill="#8d6e63" stroke="#5d4037" strokeWidth="1.3" />
-      {[15, 24, 33].map((x) =>
-        food ? (
-          <g key={x}>
-            <path d={`M${x - 4.4} 27.5L${x} 17l4.4 10.5h-8.8z`} fill="#e0a050" stroke="#9c6420" strokeWidth="1.1" strokeLinejoin="round" />
-            <path d={`M${x - 1.6} 24.6l1.6-3.8 1.6 3.8`} fill="none" stroke="#9c6420" strokeWidth="0.9" strokeLinecap="round" />
-          </g>
-        ) : (
-          <g key={x}>
-            <path d={`M${x - 3.6} 16h7.2l-1 5.5c-.2 1.2-.2 2.2 0 3.4l.6 3.1h-6.4l.6-3.1c.2-1.2.2-2.2 0-3.4l-1-5.5z`} fill="#c62828" stroke="#8e1c1c" strokeWidth="1" />
-            <ellipse cx={x} cy="16.6" rx="3.4" ry="1.1" fill="#ef5350" />
-          </g>
-        ),
-      )}
-    </g>
-  );
+  const inner = food ? <TostGlyph /> : <TepsiGlyph />;
   if (size == null) return inner;
-  return (
-    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
-      {inner}
-    </svg>
-  );
+  return <Ic size={size}>{inner}</Ic>;
 }
 
-/** Leğen (bulaşıkçı sekmesi, v28): WashIcon'un boyutlu dışa açımı — çay tepsisiyle karışmasın. */
 export function BasinIcon({ size }: { size?: number }) {
-  const inner = <WashIcon />;
+  const inner = <LeganGlyph />;
   if (size == null) return inner;
-  return (
-    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
-      {inner}
-    </svg>
-  );
+  return <Ic size={size}>{inner}</Ic>;
 }
 
-/** Para mıknatısı (karakter mıknatıs yükseltmesi — quest fotoğrafı + panel kartı). */
 export function MagnetIcon({ size }: { size?: number }) {
-  const inner = (
-    <g>
-      <path
-        d="M14 10v12a10 10 0 0 0 20 0V10h-7v12a3 3 0 0 1-6 0V10h-7z"
-        fill="#e53935"
-        stroke="#9c1f1c"
-        strokeWidth="1.6"
-        strokeLinejoin="round"
-      />
-      <rect x="14" y="10" width="7" height="6" fill="#eceff1" stroke="#9c1f1c" strokeWidth="1.4" />
-      <rect x="27" y="10" width="7" height="6" fill="#eceff1" stroke="#9c1f1c" strokeWidth="1.4" />
-      <ellipse cx="24" cy="40" rx="8" ry="3.4" fill="#ffd54f" stroke="#8d5b00" strokeWidth="1.2" />
-    </g>
-  );
+  const inner = <MiknatisGlyph />;
   if (size == null) return inner;
-  return (
-    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
-      {inner}
-    </svg>
-  );
+  return <Ic size={size}>{inner}</Ic>;
 }
 
-/** Koşu/hız botu (karakter hız yükseltmesi — panel kartı). */
 export function BootIcon({ size }: { size?: number }) {
-  const inner = (
-    <g>
-      <path
-        d="M16 8h9v14c0 2 1.5 3.5 3.5 4l7 1.8c2.4.6 4 2.2 4 4.7V36H12v-8.5L16 22V8z"
-        fill="#6d4c41"
-        stroke="#4e342e"
-        strokeWidth="1.6"
-        strokeLinejoin="round"
-      />
-      <rect x="12" y="33" width="27.5" height="4.5" rx="2.2" fill="#3e2723" />
-      <path d="M4 16h8M2 22h8M4 28h8" stroke="#90caf9" strokeWidth="2.4" strokeLinecap="round" />
-    </g>
-  );
+  const inner = <HizGlyph />;
   if (size == null) return inner;
-  return (
-    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
-      {inner}
-    </svg>
-  );
+  return <Ic size={size}>{inner}</Ic>;
 }
 
-/** ODA: lavabo kapısı (B4) — görev fotoğrafı. Kapı kanadı + kol + üstünde fayans şeridi. */
 export function DoorIcon({ size }: { size?: number }) {
-  const inner = (
-    <g>
-      <rect x="11" y="7" width="26" height="34" rx="2.5" fill="#8d6e63" stroke="#5d4037" strokeWidth="1.8" />
-      <rect x="15" y="11" width="18" height="19" rx="1.6" fill="#a1887f" />
-      <rect x="15" y="32" width="18" height="5" rx="1.4" fill="#cfd8dc" />
-      <circle cx="31.5" cy="24" r="1.9" fill="#ffce54" />
-    </g>
-  );
+  const inner = <KapiGlyph />;
   if (size == null) return inner;
+  return <Ic size={size}>{inner}</Ic>;
+}
+
+/** Boya fırçası (kozmetik dekor mağazası, WP6). Aksan yalnız boyada. */
+export function BrushIcon({ size = 22 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
-      {inner}
-    </svg>
+    <Ic size={size}>
+      <path d="M19.6 2.6l2.2 2.2-8.6 8.6-2.2-2.2z" fill="currentColor" stroke={OT} strokeWidth="2.1" strokeLinejoin="round" />
+      <path d="M10.4 11.6l2.6 2.6c-.5 2.2-2 3.9-4.2 4.6-1.8.6-3.8.6-5.6.2 1.2-1 1.8-2 1.9-3.4.1-2 1.2-3.5 3-4.1.8-.2 1.6-.2 2.3.1z" fill={AC} stroke={OT} strokeWidth="2.1" strokeLinejoin="round" />
+    </Ic>
   );
 }
 
+/** Tepsiyi boşalt (çay) — tepsi + geri oku. Aksan tepside, ok konturda. */
+export function TrayEmptyIcon({ size = 28 }: { size?: number }) {
+  return (
+    <Ic size={size}>
+      <TepsiGlyph />
+      <path d="M2.6 6.4a6.4 6.4 0 0 1 9.6-2.4" fill="none" stroke={OT} strokeWidth="2.4" strokeLinecap="round" />
+      <path d="M1.6 1.9v5h5z" fill={OT} />
+    </Ic>
+  );
+}
+
+/** Tepsiyi boşalt (tost) — çayınkinden AYRI: tepside üçgen dilim. */
+export function TostEmptyIcon({ size = 28 }: { size?: number }) {
+  return (
+    <Ic size={size}>
+      <path d="M6.4 15.2L12 4.6l5.6 10.6z" fill={AC} stroke={OT} strokeWidth="2.1" strokeLinejoin="round" />
+      <rect x="2.2" y="15.2" width="19.6" height="3.4" rx="1.6" fill="currentColor" stroke={OT} strokeWidth="1.9" />
+      <path d="M2.6 6.4a6.4 6.4 0 0 1 9.6-2.4" fill="none" stroke={OT} strokeWidth="2.4" strokeLinecap="round" />
+      <path d="M1.6 1.9v5h5z" fill={OT} />
+    </Ic>
+  );
+}
+
+/** Kamera genel-bakış: out=false → içe oklar (yakınlaş), out=true → dışa oklar (uzaklaş). */
+export function CamZoomIcon({ size = 28, out = false }: { size?: number; out?: boolean }) {
+  return (
+    <Ic size={size}>
+      <rect x="2.6" y="2.6" width="18.8" height="18.8" rx="4.4" fill="currentColor" stroke={OT} strokeWidth="2.2" />
+      {out ? (
+        <g stroke={OT} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" fill="none">
+          <path d="M10 10L6 6M10 10V6.6M10 10H6.6" />
+          <path d="M14 14l4 4M14 14v3.4M14 14h3.4" />
+        </g>
+      ) : (
+        <g stroke={OT} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" fill="none">
+          <path d="M6 6l4 4M6 6h3.4M6 6v3.4" />
+          <path d="M18 18l-4-4M18 18h-3.4M18 18v-3.4" />
+        </g>
+      )}
+      <circle cx="12" cy="12" r="1.8" fill={AC} />
+    </Ic>
+  );
+}
+
+/* ══════════════ GÖREV "FOTOĞRAFI" ══════════════
+   Bunlar simge değil KÜÇÜK RESİM: kartın solunda duran, konusunu tek bakışta söyleyen bir kare.
+   Kutu artık mor kart dilinde (oyuk zemin + kontur); içindeki çizim yükseltme simgeleriyle
+   AYNI gramerden geliyor — eskiden üç ayrı aileden geliyordu ve her görev başka bir oyundandı. */
+
+/** Yükseltme işareti: fotoğrafın sağ üstünde küçük yukarı ok (ilerleme yeşili — aksan değil). */
 function UpArrowOverlay() {
   return (
-    <g>
-      <path d="M37 6l6 7h-3.6v6h-4.8v-6H31l6-7z" fill="#aed581" stroke="#558b2f" strokeWidth="1.3" strokeLinejoin="round" />
+    <g transform="translate(30 2)">
+      <path d="M8 0l7 8h-4v6H5V8H1z" fill="var(--ok)" stroke={OT} strokeWidth="2.2" strokeLinejoin="round" />
     </g>
   );
 }
 
 /**
- * Görev hedef tipine göre "fotoğraf" (quest kartının solundaki rozet).
- * Arka plan rengi tipe göre değişir → görevler birbirinden tek bakışta ayrılır.
+ * Görev hedef tipine göre "fotoğraf" (quest kartının solundaki kare).
+ * İçerideki çizim 24 ızgarada; kare 48 → `scale(2)`. Tek çizim, iki boy.
  */
 export function QuestPhoto({ target, size = 44 }: { target: QuestTarget; size?: number }) {
-  let bg = '#8d6e63';
-  let inner: React.ReactNode = <TeaGlass />;
+  let inner: ReactNode = <CayGlyph />;
   let up = false;
   switch (target.type) {
     case 'pickupTea':
-      bg = '#bf6b3f';
-      inner = <TeaGlass />;
+      inner = <CayGlyph />;
       break;
     case 'serveTea':
-      // Tost alanı görevi (v27): bardak değil TOST dilimi — "tost görevinde çay ikonu" karmaşası bitti.
-      if (target.area === 2) {
-        bg = '#a8682a';
-        inner = <TostSlice />;
-      } else {
-        bg = '#bf6b3f';
-        inner = <TeaGlass />;
-      }
+      // Tost alanı görevi (v27): bardak değil TOST dilimi.
+      inner = target.area === 2 ? <TostGlyph /> : <CayGlyph />;
       break;
     case 'collectCoin':
-      bg = '#8a7430';
-      inner = <CoinSmall />;
+      inner = (
+        <g>
+          <ellipse cx="12" cy="15" rx="8.6" ry="4.2" fill="var(--ac2)" stroke={OT} strokeWidth="1.9" />
+          <ellipse cx="12" cy="10.2" rx="8.6" ry="4.5" fill="var(--para)" stroke={OT} strokeWidth="1.9" />
+          <ellipse cx="12" cy="10.2" rx="4.1" ry="2" fill="none" stroke={OT} strokeWidth="1.8" />
+        </g>
+      );
       break;
     case 'washDish':
-      bg = '#4a6572';
-      inner = <WashIcon />;
+      inner = <LeganGlyph />;
       break;
     case 'pad':
-      // turu-4 SVG tutarlılığı: z2waiter/z3waiter/waiter2... yalnız 'waiter' İD'siyle eşleşmediği
-      // için MASA ikonu alıyordu → tüm garson/bulaşıkçı pad'leri KİŞİ ikonu (tostçu hardal tonla).
+      // turu-4 SVG tutarlılığı: z2waiter/z3waiter/waiter2… yalnız 'waiter' İD'siyle eşleşmediği
+      // için MASA ikonu alıyordu → tüm garson/bulaşıkçı pad'leri KİŞİ ikonu.
       if (target.id.includes('waiter')) {
-        const food = target.id.startsWith('z3');
-        bg = food ? '#a8682a' : '#33691e';
-        inner = food ? <PersonIcon color="#d4a017" dark="#9c6420" /> : <PersonIcon />;
+        inner = <KisiGlyph fill={target.id.startsWith('z3') ? AC : 'var(--ok)'} />;
       } else if (target.id.includes('dishwasher')) {
-        bg = '#1565c0';
-        inner = <PersonIcon color="#42a5f5" dark="#1976d2" />;
+        inner = <KisiGlyph fill="var(--elmas)" />;
       } else {
-        bg = '#6d4c41';
-        inner = <TableIcon />;
+        inner = <MasaGlyph />;
       }
       break;
     case 'stationLevel':
       // B2: tek servis merdiveni — L5 (tost) hedefi tost dilimiyle, altı çay bardağıyla anlatılır.
-      if (target.level >= TOST_LEVEL) {
-        bg = '#a8682a';
-        inner = <TostSlice />;
-      } else {
-        bg = '#bf6b3f';
-        inner = <TeaGlass />;
-      }
+      inner = target.level >= TOST_LEVEL ? <TostGlyph /> : <CayGlyph />;
       up = true;
       break;
     case 'waiterSpeed':
-      bg = '#33691e';
-      inner = <PersonIcon />;
+      inner = <KisiGlyph fill="var(--ok)" />;
       up = true;
       break;
     case 'lavaboLevel':
-      // ODA (B4): lavabo yükseltmesi — fayans mavisi + kapı fotoğrafı.
-      bg = '#37718e';
-      inner = <DoorIcon />;
+      inner = <KapiGlyph />;
       up = true;
       break;
     case 'tableLevel':
     case 'tablesAtLevel':
-      bg = '#6d4c41';
-      inner = <TableIcon />;
+      inner = <MasaGlyph />;
       up = true;
       break;
     case 'waiterTray':
-      // Garson tepsi görevi (Y3). B2: tek havuz → tek görsel.
-      bg = '#33691e';
-      inner = <TrayIcon />;
+      inner = <TepsiGlyph />;
       up = true;
       break;
     case 'charStat':
-      // Karakter görevleri (v20): tepsi/mıknatıs/hız fotoğrafı (3D hedef yok — buton efekti yönlendirir).
-      bg = '#7b4a2d';
-      inner = target.stat === 'tray' ? <TrayIcon /> : target.stat === 'magnet' ? <MagnetIcon /> : <BootIcon />;
+      inner =
+        target.stat === 'tray' ? <TepsiGlyph /> : target.stat === 'magnet' ? <MiknatisGlyph /> : <HizGlyph />;
       up = true;
       break;
   }
   return (
     <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
-      <rect x="1.5" y="1.5" width="45" height="45" rx="11" fill={bg} stroke="rgba(255,255,255,.85)" strokeWidth="3" />
-      {inner}
+      <rect x="1.6" y="1.6" width="44.8" height="44.8" rx="14" fill="var(--oyuk)" stroke={OT} strokeWidth="3.2" />
+      <g transform="translate(3 3) scale(1.75)" color="var(--tx)">
+        {inner}
+      </g>
       {up && <UpArrowOverlay />}
-    </svg>
-  );
-}
-
-/** Kamera genel-bakış toggle ikonu: out=false → dışa oklar (uzaklaş), out=true → içe oklar (geri yakınlaş). */
-export function CamZoomIcon({ size = 28, out = false }: { size?: number; out?: boolean }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
-      <defs>
-        <linearGradient id="ic-camzoom" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#64b5f6" />
-          <stop offset="1" stopColor="#1565c0" />
-        </linearGradient>
-      </defs>
-      <rect x="6" y="6" width="36" height="36" rx="9" fill="url(#ic-camzoom)" stroke="#fff" strokeWidth="2" />
-      {out ? (
-        <g stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" fill="none">
-          <path d="M19.5 19.5L13 13M19.5 19.5v-5.4M19.5 19.5h-5.4" />
-          <path d="M28.5 19.5L35 13M28.5 19.5v-5.4M28.5 19.5h5.4" />
-          <path d="M19.5 28.5L13 35M19.5 28.5v5.4M19.5 28.5h-5.4" />
-          <path d="M28.5 28.5L35 35M28.5 28.5v5.4M28.5 28.5h5.4" />
-        </g>
-      ) : (
-        <g stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" fill="none">
-          <path d="M13 13l6.7 6.7M13 13v5.4M13 13h5.4" />
-          <path d="M35 13l-6.7 6.7M35 13v5.4M35 13h-5.4" />
-          <path d="M13 35l6.7-6.7M13 35v-5.4M13 35h5.4" />
-          <path d="M35 35l-6.7-6.7M35 35v-5.4M35 35h-5.4" />
-        </g>
-      )}
-    </svg>
-  );
-}
-
-/* ── ALT NAV İKONLARI (arayüz v2, plan §9: "Emoji ve CSS ikon yok") ─────────────────────────
-   Hepsi 48'lik viewBox, dolgu + koyu kontur + üstte açık parlama — mevcut şeker dilinin devamı. */
-
-/** Görevler: parşömen listesi + onay işaretleri. */
-export function QuestListIcon({ size = 26 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
-      <defs>
-        <linearGradient id="ic-qlist" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#fff6e0" />
-          <stop offset="1" stopColor="#e8d3a8" />
-        </linearGradient>
-      </defs>
-      <rect x="9" y="5" width="30" height="38" rx="5" fill="url(#ic-qlist)" stroke="#6d4a22" strokeWidth="2.6" />
-      <rect x="17" y="2.5" width="14" height="7" rx="3.5" fill="#c98a2e" stroke="#6d4a22" strokeWidth="2.2" />
-      <path d="M15 20l3.4 3.4 6-6.4" fill="none" stroke="#4f8f3d" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M15 31l3.4 3.4 6-6.4" fill="none" stroke="#4f8f3d" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" />
-      <rect x="27" y="19" width="8" height="2.8" rx="1.4" fill="#9a7b4e" />
-      <rect x="27" y="30" width="8" height="2.8" rx="1.4" fill="#9a7b4e" />
-    </svg>
-  );
-}
-
-/** Hedefler: hedef tahtası + saplanmış dart. */
-export function TargetIcon({ size = 26 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
-      <circle cx="22" cy="26" r="17" fill="#f4e3c4" stroke="#6d4a22" strokeWidth="2.6" />
-      <circle cx="22" cy="26" r="11" fill="#e06a4e" stroke="#6d4a22" strokeWidth="2.2" />
-      <circle cx="22" cy="26" r="5" fill="#f4e3c4" stroke="#6d4a22" strokeWidth="2" />
-      <circle cx="22" cy="26" r="1.8" fill="#e06a4e" />
-      <path d="M22 26l16-16" stroke="#6d4a22" strokeWidth="4.4" strokeLinecap="round" />
-      <path d="M22 26l16-16" stroke="#d9b45c" strokeWidth="2.2" strokeLinecap="round" />
-      <path d="M36 6h8v8z" fill="#5d97c9" stroke="#6d4a22" strokeWidth="2" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-/** Mağaza: çizgili tente + vitrin (kıraathane cephesinin kendisi — maket v15 dili). */
-export function ShopAwningIcon({ size = 26 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
-      <rect x="8" y="20" width="32" height="23" rx="3" fill="#f2e2c4" stroke="#6d4a22" strokeWidth="2.6" />
-      <rect x="14" y="26" width="9" height="17" rx="1.5" fill="#8ec5e8" stroke="#6d4a22" strokeWidth="2" />
-      <rect x="27" y="26" width="7" height="9" rx="1.5" fill="#8ec5e8" stroke="#6d4a22" strokeWidth="2" />
-      <path d="M5 20l4-11h30l4 11z" fill="#c2432f" stroke="#6d4a22" strokeWidth="2.6" strokeLinejoin="round" />
-      <path d="M13.6 9l-2.7 11M22 9v11M30.4 9l2.7 11" stroke="#f7ead2" strokeWidth="3.2" />
-    </svg>
-  );
-}
-
-/** Sağ ok (alt bant → "hedefe götür"). */
-export function ChevronIcon({ size = 20 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
-      <path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-/** İtibar: defne çelenkli pirinç madalyon (XP/seviye barının yeni kimliği). */
-export function ReputationIcon({ size = 26 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
-      <defs>
-        <linearGradient id="ic-rep" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#ffe9a8" />
-          <stop offset="1" stopColor="#c99327" />
-        </linearGradient>
-      </defs>
-      <circle cx="24" cy="24" r="15" fill="url(#ic-rep)" stroke="#7a5312" strokeWidth="2.6" />
-      <path
-        d="M24 13l3.2 6.6 7.2 1-5.2 5.1 1.2 7.2L24 29.5l-6.4 3.4 1.2-7.2-5.2-5.1 7.2-1z"
-        fill="#fff8e2"
-        stroke="#7a5312"
-        strokeWidth="1.6"
-        strokeLinejoin="round"
-      />
-      <path d="M9 22a12 12 0 0 0 3 12" fill="none" stroke="#4f8f3d" strokeWidth="3" strokeLinecap="round" />
-      <path d="M39 22a12 12 0 0 1-3 12" fill="none" stroke="#4f8f3d" strokeWidth="3" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-/** Reklam izle (ödül modali ikinci butonu). */
-export function PlayAdIcon({ size = 20 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
-      <rect x="2" y="4" width="20" height="16" rx="4" fill="#2b1a12" stroke="#f0d79a" strokeWidth="2" />
-      <path d="M10 9l6 3-6 3z" fill="#f0d79a" />
     </svg>
   );
 }

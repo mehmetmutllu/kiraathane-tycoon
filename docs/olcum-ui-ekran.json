@@ -57,9 +57,9 @@
       },
       "kart": {
         "x": 0,
-        "y": 372.6,
+        "y": 371.5,
         "w": 390,
-        "h": 471.4
+        "h": 472.5
       },
       "yaricap": "22px",
       "zemin": "rgba(0, 0, 0, 0)",
@@ -70,7 +70,7 @@
       },
       "ad": "magaza",
       "oranW": 1,
-      "oranH": 0.559,
+      "oranH": 0.56,
       "tip": "alt sayfa"
     },
     {
@@ -80,9 +80,9 @@
       },
       "kart": {
         "x": 0,
-        "y": 314,
+        "y": 306,
         "w": 390,
-        "h": 530
+        "h": 538
       },
       "yaricap": "22px",
       "zemin": "rgba(0, 0, 0, 0)",
@@ -93,7 +93,7 @@
       },
       "ad": "karakter",
       "oranW": 1,
-      "oranH": 0.628,
+      "oranH": 0.637,
       "tip": "alt sayfa"
     },
     {
@@ -103,9 +103,9 @@
       },
       "kart": {
         "x": 0,
-        "y": 414,
+        "y": 413,
         "w": 390,
-        "h": 430
+        "h": 431
       },
       "yaricap": "22px",
       "zemin": "rgba(0, 0, 0, 0)",
@@ -116,132 +116,58 @@
       },
       "ad": "ayarlar",
       "oranW": 1,
-      "oranH": 0.509,
+      "oranH": 0.511,
       "tip": "alt sayfa"
     }
   ],
   "palet": {
     "metin": {
-      "rgb(255, 255, 255)": 47,
-      "rgb(253, 244, 226)": 12,
-      "rgb(255, 215, 122)": 6,
-      "rgb(189, 161, 131)": 20,
-      "rgb(255, 243, 220)": 4,
-      "rgb(240, 211, 145)": 5,
-      "rgb(162, 130, 90)": 8,
-      "rgb(74, 44, 18)": 18,
-      "rgb(154, 106, 0)": 15,
-      "rgb(179, 154, 114)": 13,
-      "rgb(156, 124, 82)": 8,
-      "rgb(58, 42, 16)": 2,
-      "rgb(176, 138, 78)": 1,
-      "rgb(200, 171, 134)": 1,
-      "rgb(10, 77, 115)": 2,
-      "rgb(109, 149, 172)": 1,
-      "rgb(86, 121, 141)": 1,
-      "rgb(78, 52, 46)": 3,
-      "rgb(138, 106, 74)": 4,
-      "rgb(111, 85, 63)": 1,
-      "rgb(74, 44, 2)": 6,
-      "rgb(138, 106, 72)": 3,
-      "rgb(46, 125, 50)": 3
+      "rgb(255, 255, 255)": 46,
+      "rgb(234, 227, 255)": 53,
+      "rgb(255, 212, 94)": 13,
+      "rgb(58, 34, 6)": 13,
+      "rgb(169, 159, 216)": 39,
+      "rgb(255, 194, 75)": 8,
+      "rgb(127, 217, 255)": 2,
+      "rgb(123, 212, 106)": 3
     },
     "zemin": {
-      "grad:linear-gradient(rgb(27, 17, 11), rgb(58, 39, 26))": 14,
-      "grad:linear-gradient(rgb(74, 51, 35), rgb(45, 30, 20))": 36,
-      "grad:linear-gradient(rgb(240, 211, 145), rgb(198, 155, 70))": 12,
-      "grad:linear-gradient(rgb(106, 74, 44), rgb(59, 39, 22))": 6,
-      "rgba(0, 0, 0, 0.32)": 6,
-      "grad:linear-gradient(rgba(45, 30, 20, 0.94), rgba(20, 13, 8, 0.98": 6,
-      "grad:linear-gradient(rgb(255, 138, 92), rgb(224, 59, 28))": 12,
-      "grad:linear-gradient(rgba(214, 165, 88, 0.32), rgba(120, 82, 34, ": 4,
-      "rgba(8, 12, 18, 0.55)": 5,
-      "grad:linear-gradient(rgb(253, 244, 226) 0px, rgb(253, 244, 226) 6": 5,
-      "rgba(0, 0, 0, 0.28)": 5,
-      "grad:linear-gradient(rgb(255, 250, 240), rgb(246, 233, 208))": 8,
-      "rgb(227, 211, 180)": 8,
-      "grad:linear-gradient(rgb(168, 224, 106), rgb(78, 140, 38))": 2,
-      "grad:linear-gradient(rgb(245, 214, 138), rgb(216, 172, 74))": 2,
-      "grad:linear-gradient(rgb(255, 250, 240), rgb(245, 230, 200))": 1,
-      "grad:linear-gradient(rgb(240, 220, 180), rgb(226, 199, 149))": 1,
-      "rgba(120, 80, 30, 0.04)": 3,
-      "grad:linear-gradient(rgb(244, 251, 255), rgb(220, 240, 251))": 1,
-      "grad:linear-gradient(rgb(255, 213, 79), rgb(255, 179, 0))": 7,
-      "rgba(255, 255, 255, 0.4)": 2,
-      "rgba(255, 255, 255, 0.45)": 1,
-      "rgba(78, 52, 46, 0.1)": 2,
-      "rgb(109, 76, 65)": 1,
-      "grad:linear-gradient(rgb(185, 138, 94), rgb(138, 95, 60))": 1,
-      "grad:linear-gradient(rgb(156, 204, 101), rgb(104, 159, 56))": 3,
-      "rgb(255, 255, 255)": 4,
-      "grad:linear-gradient(rgb(176, 163, 149), rgb(141, 130, 117))": 1,
-      "grad:linear-gradient(rgb(239, 83, 80), rgb(198, 40, 40))": 1
+      "rgb(27, 20, 67)": 44,
+      "grad:linear-gradient(rgb(58, 49, 120), rgb(46, 39, 100))": 47,
+      "grad:linear-gradient(rgb(255, 194, 75), rgb(224, 148, 21))": 25,
+      "grad:linear-gradient(rgb(70, 60, 134), rgb(34, 27, 82))": 11,
+      "rgb(212, 58, 38)": 13,
+      "rgba(8, 6, 22, 0.6)": 5,
+      "grad:linear-gradient(rgb(123, 212, 106), rgb(79, 168, 62))": 5,
+      "grad:linear-gradient(rgb(27, 20, 67), rgb(34, 27, 82))": 1,
+      "grad:radial-gradient(120% 100% at 50% 14%, rgb(91, 79, 166), rgb(": 1,
+      "rgb(234, 227, 255)": 4
     }
   },
   "olcek": {
     "yaricap": {
-      "999px 999px 999px 999px": 57,
+      "999px 999px 999px 999px": 70,
       "50% 50% 50% 50%": 36,
-      "16px 16px 16px 16px": 9,
-      "12px 12px 12px 12px": 9,
-      "13px 13px 13px 13px": 24,
-      "8px 8px 8px 8px": 13,
+      "17px 17px 17px 17px": 48,
       "22px 22px 0px 0px": 5,
-      "14px 14px 14px 14px": 11,
-      "11px 11px 11px 11px": 3
+      "10px 10px 10px 10px": 6,
+      "22px 22px 22px 22px": 2
     },
     "golge": {
-      "rgba(0, 0, 0, 0.6) 0px 2px 3px 0px inset, rgba(255, 255, 255, 0.12) 0px 1px 0px 0px": 7,
-      "rgba(255, 224, 170, 0.28) 0px 1.5px 0px 0px inset, rgba(0, 0, 0, 0.45) 0px -3px 6px 0px in": 12,
-      "rgba(255, 224, 170, 0.25) 0px 1.5px 0px 0px inset, rgba(0, 0, 0, 0.4) 0px 3px 6px 0px": 12,
-      "rgba(0, 0, 0, 0.5) 0px 3px 10px 0px": 6,
-      "rgba(255, 224, 170, 0.26) 0px 1.5px 0px 0px inset, rgba(0, 0, 0, 0.4) 0px -4px 8px 0px ins": 6,
-      "rgba(0, 0, 0, 0.5) 0px 2px 4px 0px inset": 6,
-      "rgba(0, 0, 0, 0.65) 0px 2px 3px 0px inset": 7,
-      "rgba(0, 0, 0, 0.4) 0px 2px 4px 0px": 6,
-      "rgba(0, 0, 0, 0.5) 0px -6px 18px 0px": 6,
-      "rgba(255, 226, 170, 0.45) 0px 1.5px 0px 0px inset, rgba(214, 165, 88, 0.22) 0px 0px 14px 0": 4,
-      "rgba(0, 0, 0, 0.6) 0px -14px 44px 0px": 5,
-      "rgb(142, 101, 32) 0px -2px 0px 0px inset": 5,
-      "rgb(216, 186, 118) 0px 2px 0px 0px, rgba(199, 155, 59, 0.35) 0px 0px 16px 0px": 2,
-      "rgba(120, 80, 30, 0.3) 0px 2px 3px 0px inset": 8,
-      "rgb(169, 127, 43) 0px 2px 0px 0px": 2,
-      "rgb(229, 211, 174) 0px 2px 0px 0px": 6,
-      "rgb(224, 203, 162) 0px 3px 0px 0px, rgba(120, 80, 30, 0.16) 0px 6px 14px 0px": 1,
-      "rgba(120, 80, 30, 0.25) 0px 2px 4px 0px inset": 1,
-      "rgba(255, 224, 170, 0.25) 0px 1.5px 0px 0px inset": 1,
-      "rgb(198, 226, 240) 0px 2px 0px 0px": 1,
-      "rgba(0, 0, 0, 0.18) 0px 3px 0px 0px": 1,
-      "rgb(184, 116, 0) 0px 4px 0px 0px, rgba(0, 0, 0, 0.25) 0px 6px 10px 0px": 3,
-      "rgba(0, 0, 0, 0.18) 0px -4px 0px 0px inset": 1,
-      "rgb(184, 116, 0) 0px 3px 0px 0px, rgba(0, 0, 0, 0.2) 0px 4px 8px 0px": 3,
-      "rgba(0, 0, 0, 0.3) 0px 2px 4px 0px inset": 4,
-      "rgba(0, 0, 0, 0.3) 0px 2px 3px 0px": 4,
-      "rgb(142, 28, 28) 0px 4px 0px 0px, rgba(0, 0, 0, 0.2) 0px 6px 10px 0px": 1
+      "rgba(255, 255, 255, 0.45) 0px 2px 0px 0px inset, rgb(16, 11, 46) 0px 3px 0px 0px": 41,
+      "rgba(255, 255, 255, 0.5) 0px 3px 0px 0px inset, rgb(16, 11, 46) 0px 5px 0px 0px, rgba(0, 0": 14,
+      "rgb(16, 11, 46) 0px 2px 0px 0px": 12
     },
     "punto": {
-      "21px": 6,
-      "13.5px": 13,
-      "17px": 17,
-      "14.5px": 15,
-      "10.5px": 34,
-      "12px": 20,
-      "11px": 13,
-      "14px": 17,
-      "11.5px": 24,
-      "12.5px": 4,
-      "9.5px": 1,
-      "16px": 4,
-      "22px": 2,
-      "15px": 7,
-      "13px": 5,
-      "30px": 1,
-      "10px": 1
+      "22px": 8,
+      "13px": 40,
+      "18px": 17,
+      "15px": 26,
+      "11px": 86
     },
     "font": {
-      "Lilita One": 83,
-      "Arial": 13,
-      "Baloo 2": 88
+      "Lilita One": 85,
+      "Baloo 2": 92
     },
     "fontOge": {
       "Lilita One": [
@@ -311,6 +237,8 @@
         "span.band-reward",
         "span.navtab-bang",
         "span.navtab-bang",
+        "span.req",
+        "span.req",
         "i.rep-num",
         "span.rep-text",
         "span.cur-val",
@@ -329,26 +257,13 @@
         "span.navtab-bang",
         "span.navtab-bang"
       ],
-      "Arial": [
-        "span.band-title",
-        "span.band-title",
-        "button.sheet-x",
-        "span.qbig-kicker",
-        "span.qbig-title",
-        "span.band-title",
-        "button.sheet-x",
-        "span.band-title",
-        "button.sheet-x",
-        "span.band-title",
-        "button.sheet-x",
-        "span.band-title",
-        "button.sheet-x"
-      ],
       "Baloo 2": [
+        "span.band-title",
         "span.navtab-label",
         "span.navtab-label",
         "span.navtab-label",
         "span.navtab-label",
+        "span.band-title",
         "span.navtab-label",
         "span.navtab-label",
         "span.navtab-label",
@@ -364,10 +279,13 @@
         "span.goal-note",
         "div.sheet-foot-note",
         "div.sheet-sec",
+        "span.qbig-kicker",
+        "span.qbig-title",
         "div.sheet-sec",
         "span.qrow-title",
         "span.qrow-title",
         "span.qrow-title",
+        "span.band-title",
         "span.navtab-label",
         "span.navtab-label",
         "span.navtab-label",
@@ -389,21 +307,19 @@
         "span.goal-note",
         "b.",
         "span.goal-note",
+        "span.band-title",
         "span.navtab-label",
         "span.navtab-label",
         "span.navtab-label",
         "span.navtab-label",
         "span.sheet-title",
         "button.shop-tab active",
-        "span.shop-tab-lock",
         "button.shop-tab",
         "button.shop-tab",
-        "div.shop-locked-icon",
         "div.shop-locked-title",
         "div.shop-locked-desc",
-        "span.req",
-        "span.req",
         "button.sheet-cta",
+        "span.band-title",
         "span.navtab-label",
         "span.navtab-label",
         "span.navtab-label",
@@ -422,6 +338,7 @@
         "i.",
         "button.char-buy",
         "button.sheet-cta",
+        "span.band-title",
         "span.navtab-label",
         "span.navtab-label",
         "span.navtab-label",
@@ -438,1111 +355,1069 @@
     "kontrast": [
       {
         "ad": "i.rep-num",
-        "px": 21,
-        "oran": 14.76,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.rep-text",
-        "px": 13.5,
-        "oran": 18.56,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.cur-val",
-        "px": 17,
-        "oran": 11.74,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.cur-val",
-        "px": 17,
-        "oran": 11.74,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.band-title",
-        "px": 14.5,
-        "oran": 10.74,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.band-count",
-        "px": 10.5,
-        "oran": 18.56,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.band-reward",
-        "px": 12,
-        "oran": 8.53,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.navtab-bang",
-        "px": 11,
-        "oran": 2.32,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.navtab-label",
-        "px": 10.5,
-        "oran": 6.57,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.navtab-bang",
-        "px": 11,
-        "oran": 2.32,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.navtab-label",
-        "px": 10.5,
-        "oran": 6.57,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.navtab-label",
-        "px": 10.5,
-        "oran": 6.57,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.navtab-label",
-        "px": 10.5,
-        "oran": 6.57,
-        "esik": 4.5
-      },
-      {
-        "ad": "i.rep-num",
-        "px": 21,
-        "oran": 14.76,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.rep-text",
-        "px": 13.5,
-        "oran": 18.56,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.cur-val",
-        "px": 17,
-        "oran": 11.74,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.cur-val",
-        "px": 17,
-        "oran": 11.74,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.band-title",
-        "px": 14.5,
-        "oran": 10.74,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.band-count",
-        "px": 10.5,
-        "oran": 18.56,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.band-reward",
-        "px": 12,
-        "oran": 8.53,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.navtab-bang",
-        "px": 11,
-        "oran": 2.32,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.navtab-label",
-        "px": 10.5,
-        "oran": 14.61,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.navtab-bang",
-        "px": 11,
-        "oran": 2.32,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.navtab-label",
-        "px": 10.5,
-        "oran": 6.57,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.navtab-label",
-        "px": 10.5,
-        "oran": 6.57,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.navtab-label",
-        "px": 10.5,
-        "oran": 6.57,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.sheet-title",
-        "px": 17,
-        "oran": 10.74,
-        "esik": 4.5
-      },
-      {
-        "ad": "button.sheet-x",
-        "px": 14,
-        "oran": 8.07,
-        "esik": 4.5
-      },
-      {
-        "ad": "div.sheet-sec",
-        "px": 10.5,
-        "oran": 3.27,
-        "esik": 4.5
-      },
-      {
-        "ad": "b.",
-        "px": 14.5,
-        "oran": 12.16,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.goal-num",
-        "px": 14,
-        "oran": 4.55,
-        "esik": 4.5
-      },
-      {
-        "ad": "i.",
-        "px": 11.5,
-        "oran": 2.59,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.goal-note",
-        "px": 11.5,
-        "oran": 3.73,
-        "esik": 4.5
-      },
-      {
-        "ad": "button.goal-claim",
-        "px": 12.5,
-        "oran": 9.79,
-        "esik": 4.5
-      },
-      {
-        "ad": "b.",
-        "px": 14.5,
-        "oran": 12.16,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.goal-num",
-        "px": 14,
-        "oran": 4.55,
-        "esik": 4.5
-      },
-      {
-        "ad": "i.",
-        "px": 11.5,
-        "oran": 2.59,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.goal-note",
-        "px": 11.5,
-        "oran": 3.73,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.goal-reward",
-        "px": 12,
-        "oran": 4.55,
-        "esik": 4.5
-      },
-      {
-        "ad": "b.",
-        "px": 14.5,
-        "oran": 12.16,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.goal-num",
-        "px": 14,
-        "oran": 4.55,
-        "esik": 4.5
-      },
-      {
-        "ad": "i.",
-        "px": 11.5,
-        "oran": 2.59,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.goal-note",
-        "px": 11.5,
-        "oran": 3.73,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.goal-reward",
-        "px": 12,
-        "oran": 4.55,
-        "esik": 4.5
-      },
-      {
-        "ad": "div.sheet-foot-note",
-        "px": 11.5,
-        "oran": 3.27,
-        "esik": 4.5
-      },
-      {
-        "ad": "div.sheet-sec",
-        "px": 10.5,
-        "oran": 3.27,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.qbig-kicker",
-        "px": 9.5,
-        "oran": 3.06,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.qbig-title",
-        "px": 16,
-        "oran": 12.16,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.band-count",
-        "px": 12.5,
-        "oran": 18.56,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.qbig-reward",
-        "px": 14,
-        "oran": 4.55,
-        "esik": 4.5
-      },
-      {
-        "ad": "div.sheet-sec",
-        "px": 10.5,
-        "oran": 3.27,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.qrow-title",
-        "px": 13.5,
-        "oran": 3.27,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.qrow-title",
-        "px": 13.5,
-        "oran": 3.27,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.qrow-title",
-        "px": 13.5,
-        "oran": 3.27,
-        "esik": 4.5
-      },
-      {
-        "ad": "i.rep-num",
-        "px": 21,
-        "oran": 14.76,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.rep-text",
-        "px": 13.5,
-        "oran": 18.56,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.cur-val",
-        "px": 17,
-        "oran": 11.74,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.cur-val",
-        "px": 17,
-        "oran": 11.74,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.band-title",
-        "px": 14.5,
-        "oran": 10.74,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.band-count",
-        "px": 10.5,
-        "oran": 18.56,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.band-reward",
-        "px": 12,
-        "oran": 8.53,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.navtab-bang",
-        "px": 11,
-        "oran": 2.32,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.navtab-label",
-        "px": 10.5,
-        "oran": 6.57,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.navtab-bang",
-        "px": 11,
-        "oran": 2.32,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.navtab-label",
-        "px": 10.5,
-        "oran": 14.61,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.navtab-label",
-        "px": 10.5,
-        "oran": 6.57,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.navtab-label",
-        "px": 10.5,
-        "oran": 6.57,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.sheet-title",
-        "px": 17,
-        "oran": 10.74,
-        "esik": 4.5
-      },
-      {
-        "ad": "button.sheet-x",
-        "px": 14,
-        "oran": 8.07,
-        "esik": 4.5
-      },
-      {
-        "ad": "i.",
         "px": 22,
-        "oran": 11.74,
+        "oran": 15.59,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.rep-text",
+        "px": 13,
+        "oran": 17.1,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.cur-val",
+        "px": 18,
+        "oran": 11.11,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.cur-val",
+        "px": 18,
+        "oran": 11.11,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.band-title",
+        "px": 15,
+        "oran": 8.96,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.band-count",
+        "px": 11,
+        "oran": 17.1,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.band-reward",
+        "px": 11,
+        "oran": 12.08,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.navtab-bang",
+        "px": 11,
+        "oran": 4.74,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.navtab-label",
+        "px": 11,
+        "oran": 7.52,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.navtab-bang",
+        "px": 11,
+        "oran": 4.74,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.navtab-label",
+        "px": 11,
+        "oran": 7.52,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.navtab-label",
+        "px": 11,
+        "oran": 7.52,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.navtab-label",
+        "px": 11,
+        "oran": 7.52,
+        "esik": 4.5
+      },
+      {
+        "ad": "i.rep-num",
+        "px": 22,
+        "oran": 15.59,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.rep-text",
+        "px": 13,
+        "oran": 17.1,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.cur-val",
+        "px": 18,
+        "oran": 11.11,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.cur-val",
+        "px": 18,
+        "oran": 11.11,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.band-title",
+        "px": 15,
+        "oran": 8.96,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.band-count",
+        "px": 11,
+        "oran": 17.1,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.band-reward",
+        "px": 11,
+        "oran": 12.08,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.navtab-bang",
+        "px": 11,
+        "oran": 4.74,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.navtab-label",
+        "px": 11,
+        "oran": 9.26,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.navtab-bang",
+        "px": 11,
+        "oran": 4.74,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.navtab-label",
+        "px": 11,
+        "oran": 7.52,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.navtab-label",
+        "px": 11,
+        "oran": 7.52,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.navtab-label",
+        "px": 11,
+        "oran": 7.52,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.sheet-title",
+        "px": 18,
+        "oran": 13.79,
+        "esik": 4.5
+      },
+      {
+        "ad": "div.sheet-sec",
+        "px": 11,
+        "oran": 3.84,
         "esik": 4.5
       },
       {
         "ad": "b.",
         "px": 15,
-        "oran": 10.74,
+        "oran": 8.96,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.goal-num",
+        "px": 13,
+        "oran": 6.91,
+        "esik": 4.5
+      },
+      {
+        "ad": "i.",
+        "px": 11,
+        "oran": 4.57,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.goal-note",
+        "px": 11,
+        "oran": 4.57,
+        "esik": 4.5
+      },
+      {
+        "ad": "button.goal-claim",
+        "px": 13,
+        "oran": 9.26,
+        "esik": 4.5
+      },
+      {
+        "ad": "b.",
+        "px": 15,
+        "oran": 8.96,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.goal-num",
+        "px": 13,
+        "oran": 6.91,
+        "esik": 4.5
+      },
+      {
+        "ad": "i.",
+        "px": 11,
+        "oran": 4.57,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.goal-note",
+        "px": 11,
+        "oran": 4.57,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.goal-reward",
+        "px": 11,
+        "oran": 7.85,
+        "esik": 4.5
+      },
+      {
+        "ad": "b.",
+        "px": 15,
+        "oran": 8.96,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.goal-num",
+        "px": 13,
+        "oran": 6.91,
+        "esik": 4.5
+      },
+      {
+        "ad": "i.",
+        "px": 11,
+        "oran": 4.57,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.goal-note",
+        "px": 11,
+        "oran": 4.57,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.goal-reward",
+        "px": 11,
+        "oran": 7.85,
+        "esik": 4.5
+      },
+      {
+        "ad": "div.sheet-foot-note",
+        "px": 11,
+        "oran": 3.84,
+        "esik": 4.5
+      },
+      {
+        "ad": "div.sheet-sec",
+        "px": 11,
+        "oran": 3.84,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.qbig-kicker",
+        "px": 11,
+        "oran": 4.57,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.qbig-title",
+        "px": 15,
+        "oran": 8.96,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.band-count",
+        "px": 13,
+        "oran": 17.1,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.qbig-reward",
+        "px": 13,
+        "oran": 7.85,
+        "esik": 4.5
+      },
+      {
+        "ad": "div.sheet-sec",
+        "px": 11,
+        "oran": 3.84,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.qrow-title",
+        "px": 13,
+        "oran": 3.84,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.qrow-title",
+        "px": 13,
+        "oran": 3.84,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.qrow-title",
+        "px": 13,
+        "oran": 3.84,
+        "esik": 4.5
+      },
+      {
+        "ad": "i.rep-num",
+        "px": 22,
+        "oran": 15.59,
         "esik": 4.5
       },
       {
         "ad": "span.rep-text",
-        "px": 13.5,
-        "oran": 18.56,
+        "px": 13,
+        "oran": 17.1,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.cur-val",
+        "px": 18,
+        "oran": 11.11,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.cur-val",
+        "px": 18,
+        "oran": 11.11,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.band-title",
+        "px": 15,
+        "oran": 8.96,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.band-count",
+        "px": 11,
+        "oran": 17.1,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.band-reward",
+        "px": 11,
+        "oran": 12.08,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.navtab-bang",
+        "px": 11,
+        "oran": 4.74,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.navtab-label",
+        "px": 11,
+        "oran": 7.52,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.navtab-bang",
+        "px": 11,
+        "oran": 4.74,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.navtab-label",
+        "px": 11,
+        "oran": 9.26,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.navtab-label",
+        "px": 11,
+        "oran": 7.52,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.navtab-label",
+        "px": 11,
+        "oran": 7.52,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.sheet-title",
+        "px": 18,
+        "oran": 13.79,
+        "esik": 4.5
+      },
+      {
+        "ad": "i.",
+        "px": 22,
+        "oran": 17.1,
+        "esik": 4.5
+      },
+      {
+        "ad": "b.",
+        "px": 15,
+        "oran": 13.79,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.rep-text",
+        "px": 13,
+        "oran": 17.1,
         "esik": 4.5
       },
       {
         "ad": "small.",
-        "px": 11.5,
-        "oran": 5.38,
+        "px": 11,
+        "oran": 7.04,
         "esik": 4.5
       },
       {
         "ad": "b.",
         "px": 22,
-        "oran": 8.65,
+        "oran": 7.02,
         "esik": 3
       },
       {
         "ad": "i.",
         "px": 13,
-        "oran": 3.07,
+        "oran": 4.57,
         "esik": 4.5
       },
       {
         "ad": "b.",
-        "px": 14.5,
-        "oran": 12.1,
+        "px": 15,
+        "oran": 8.96,
         "esik": 4.5
       },
       {
         "ad": "small.",
-        "px": 11.5,
-        "oran": 4.45,
+        "px": 11,
+        "oran": 4.57,
         "esik": 4.5
       },
       {
         "ad": "span.usta-price",
         "px": 13,
-        "oran": 8.65,
+        "oran": 7.02,
         "esik": 4.5
       },
       {
         "ad": "div.sheet-sec",
-        "px": 10.5,
-        "oran": 3.27,
+        "px": 11,
+        "oran": 3.84,
         "esik": 4.5
       },
       {
         "ad": "b.",
-        "px": 14.5,
-        "oran": 12.16,
+        "px": 15,
+        "oran": 8.96,
         "esik": 4.5
       },
       {
         "ad": "i.goal-tier",
-        "px": 11.5,
-        "oran": 2.59,
+        "px": 11,
+        "oran": 4.57,
         "esik": 4.5
       },
       {
         "ad": "span.goal-num",
-        "px": 14,
-        "oran": 4.55,
+        "px": 13,
+        "oran": 6.91,
         "esik": 4.5
       },
       {
         "ad": "i.",
-        "px": 11.5,
-        "oran": 2.59,
+        "px": 11,
+        "oran": 4.57,
         "esik": 4.5
       },
       {
         "ad": "span.goal-note",
-        "px": 11.5,
-        "oran": 3.73,
+        "px": 11,
+        "oran": 4.57,
         "esik": 4.5
       },
       {
         "ad": "span.goal-reward",
-        "px": 12,
-        "oran": 4.55,
+        "px": 11,
+        "oran": 7.85,
         "esik": 4.5
       },
       {
         "ad": "b.",
-        "px": 14.5,
-        "oran": 12.16,
+        "px": 15,
+        "oran": 8.96,
         "esik": 4.5
       },
       {
         "ad": "i.goal-tier",
-        "px": 11.5,
-        "oran": 2.59,
+        "px": 11,
+        "oran": 4.57,
         "esik": 4.5
       },
       {
         "ad": "span.goal-num",
-        "px": 14,
-        "oran": 4.55,
+        "px": 13,
+        "oran": 6.91,
         "esik": 4.5
       },
       {
         "ad": "i.",
-        "px": 11.5,
-        "oran": 2.59,
+        "px": 11,
+        "oran": 4.57,
         "esik": 4.5
       },
       {
         "ad": "span.goal-note",
-        "px": 11.5,
-        "oran": 3.73,
+        "px": 11,
+        "oran": 4.57,
         "esik": 4.5
       },
       {
         "ad": "span.goal-reward",
-        "px": 12,
-        "oran": 4.55,
+        "px": 11,
+        "oran": 7.85,
         "esik": 4.5
       },
       {
         "ad": "b.",
-        "px": 14.5,
-        "oran": 12.16,
+        "px": 15,
+        "oran": 8.96,
         "esik": 4.5
       },
       {
         "ad": "i.goal-tier",
-        "px": 11.5,
-        "oran": 2.59,
+        "px": 11,
+        "oran": 4.57,
         "esik": 4.5
       },
       {
         "ad": "span.goal-num",
-        "px": 14,
-        "oran": 4.55,
+        "px": 13,
+        "oran": 6.91,
         "esik": 4.5
       },
       {
         "ad": "i.",
-        "px": 11.5,
-        "oran": 2.59,
+        "px": 11,
+        "oran": 4.57,
         "esik": 4.5
       },
       {
         "ad": "span.goal-note",
-        "px": 11.5,
-        "oran": 3.73,
+        "px": 11,
+        "oran": 4.57,
         "esik": 4.5
       },
       {
         "ad": "button.goal-claim",
-        "px": 12.5,
-        "oran": 9.79,
+        "px": 13,
+        "oran": 9.26,
         "esik": 4.5
       },
       {
         "ad": "b.",
-        "px": 14.5,
-        "oran": 12.16,
+        "px": 15,
+        "oran": 8.96,
         "esik": 4.5
       },
       {
         "ad": "i.goal-tier",
-        "px": 11.5,
-        "oran": 2.59,
+        "px": 11,
+        "oran": 4.57,
         "esik": 4.5
       },
       {
         "ad": "span.goal-num",
-        "px": 14,
-        "oran": 4.55,
+        "px": 13,
+        "oran": 6.91,
         "esik": 4.5
       },
       {
         "ad": "i.",
-        "px": 11.5,
-        "oran": 2.59,
+        "px": 11,
+        "oran": 4.57,
         "esik": 4.5
       },
       {
         "ad": "span.goal-note",
-        "px": 11.5,
-        "oran": 3.73,
+        "px": 11,
+        "oran": 4.57,
         "esik": 4.5
       },
       {
         "ad": "span.goal-reward",
-        "px": 12,
-        "oran": 4.55,
+        "px": 11,
+        "oran": 7.85,
         "esik": 4.5
       },
       {
         "ad": "b.",
-        "px": 14.5,
-        "oran": 12.16,
+        "px": 15,
+        "oran": 8.96,
         "esik": 4.5
       },
       {
         "ad": "i.goal-tier",
-        "px": 11.5,
-        "oran": 2.59,
+        "px": 11,
+        "oran": 4.57,
         "esik": 4.5
       },
       {
         "ad": "span.goal-num",
-        "px": 14,
-        "oran": 4.55,
+        "px": 13,
+        "oran": 6.91,
         "esik": 4.5
       },
       {
         "ad": "i.",
-        "px": 11.5,
-        "oran": 2.59,
+        "px": 11,
+        "oran": 4.57,
         "esik": 4.5
       },
       {
         "ad": "span.goal-note",
-        "px": 11.5,
-        "oran": 3.73,
+        "px": 11,
+        "oran": 4.57,
         "esik": 4.5
       },
       {
         "ad": "span.goal-reward",
-        "px": 12,
-        "oran": 4.55,
+        "px": 11,
+        "oran": 7.85,
         "esik": 4.5
       },
       {
         "ad": "i.rep-num",
-        "px": 21,
-        "oran": 14.76,
+        "px": 22,
+        "oran": 15.59,
         "esik": 4.5
       },
       {
         "ad": "span.rep-text",
-        "px": 13.5,
-        "oran": 18.56,
+        "px": 13,
+        "oran": 17.1,
         "esik": 4.5
       },
       {
         "ad": "span.cur-val",
-        "px": 17,
-        "oran": 11.74,
+        "px": 18,
+        "oran": 11.11,
         "esik": 4.5
       },
       {
         "ad": "span.cur-val",
-        "px": 17,
-        "oran": 11.74,
+        "px": 18,
+        "oran": 11.11,
         "esik": 4.5
       },
       {
         "ad": "span.band-title",
-        "px": 14.5,
-        "oran": 10.74,
+        "px": 15,
+        "oran": 8.96,
         "esik": 4.5
       },
       {
         "ad": "span.band-count",
-        "px": 10.5,
-        "oran": 18.56,
+        "px": 11,
+        "oran": 17.1,
         "esik": 4.5
       },
       {
         "ad": "span.band-reward",
-        "px": 12,
-        "oran": 8.53,
+        "px": 11,
+        "oran": 12.08,
         "esik": 4.5
       },
       {
         "ad": "span.navtab-bang",
         "px": 11,
-        "oran": 2.32,
+        "oran": 4.74,
         "esik": 4.5
       },
       {
         "ad": "span.navtab-label",
-        "px": 10.5,
-        "oran": 6.57,
+        "px": 11,
+        "oran": 7.52,
         "esik": 4.5
       },
       {
         "ad": "span.navtab-bang",
         "px": 11,
-        "oran": 2.32,
+        "oran": 4.74,
         "esik": 4.5
       },
       {
         "ad": "span.navtab-label",
-        "px": 10.5,
-        "oran": 6.57,
+        "px": 11,
+        "oran": 7.52,
         "esik": 4.5
       },
       {
         "ad": "span.navtab-label",
-        "px": 10.5,
-        "oran": 14.61,
+        "px": 11,
+        "oran": 9.26,
         "esik": 4.5
       },
       {
         "ad": "span.navtab-label",
-        "px": 10.5,
-        "oran": 6.57,
+        "px": 11,
+        "oran": 7.52,
         "esik": 4.5
       },
       {
         "ad": "span.sheet-title",
-        "px": 17,
-        "oran": 10.74,
-        "esik": 4.5
-      },
-      {
-        "ad": "button.sheet-x",
-        "px": 14,
-        "oran": 8.07,
+        "px": 18,
+        "oran": 13.79,
         "esik": 4.5
       },
       {
         "ad": "button.shop-tab active",
-        "px": 14,
-        "oran": 8.02,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.shop-tab-lock",
-        "px": 11,
-        "oran": 8.02,
+        "px": 13,
+        "oran": 9.26,
         "esik": 4.5
       },
       {
         "ad": "button.shop-tab",
-        "px": 14,
-        "oran": 4.53,
+        "px": 13,
+        "oran": 8.96,
         "esik": 4.5
       },
       {
         "ad": "button.shop-tab",
-        "px": 14,
-        "oran": 4.53,
+        "px": 13,
+        "oran": 8.96,
         "esik": 4.5
-      },
-      {
-        "ad": "div.shop-locked-icon",
-        "px": 30,
-        "oran": 11.57,
-        "esik": 3
       },
       {
         "ad": "div.shop-locked-title",
         "px": 15,
-        "oran": 10.36,
+        "oran": 7.52,
         "esik": 4.5
       },
       {
         "ad": "div.shop-locked-desc",
-        "px": 12.5,
-        "oran": 6.31,
+        "px": 13,
+        "oran": 3.84,
         "esik": 4.5
       },
       {
         "ad": "span.req",
-        "px": 12,
-        "oran": 4.53,
+        "px": 11,
+        "oran": 7.04,
         "esik": 4.5
       },
       {
         "ad": "span.req",
-        "px": 12,
-        "oran": 4.53,
+        "px": 11,
+        "oran": 7.04,
         "esik": 4.5
       },
       {
         "ad": "button.sheet-cta",
-        "px": 16,
-        "oran": 9.01,
+        "px": 15,
+        "oran": 9.26,
         "esik": 4.5
       },
       {
         "ad": "i.rep-num",
-        "px": 21,
-        "oran": 14.76,
+        "px": 22,
+        "oran": 15.59,
         "esik": 4.5
       },
       {
         "ad": "span.rep-text",
-        "px": 13.5,
-        "oran": 18.56,
+        "px": 13,
+        "oran": 17.1,
         "esik": 4.5
       },
       {
         "ad": "span.cur-val",
-        "px": 17,
-        "oran": 11.74,
+        "px": 18,
+        "oran": 11.11,
         "esik": 4.5
       },
       {
         "ad": "span.cur-val",
-        "px": 17,
-        "oran": 11.74,
+        "px": 18,
+        "oran": 11.11,
         "esik": 4.5
       },
       {
         "ad": "span.band-title",
-        "px": 14.5,
-        "oran": 10.74,
+        "px": 15,
+        "oran": 8.96,
         "esik": 4.5
       },
       {
         "ad": "span.band-count",
-        "px": 10.5,
-        "oran": 18.56,
+        "px": 11,
+        "oran": 17.1,
         "esik": 4.5
       },
       {
         "ad": "span.band-reward",
-        "px": 12,
-        "oran": 8.53,
+        "px": 11,
+        "oran": 12.08,
         "esik": 4.5
       },
       {
         "ad": "span.navtab-bang",
         "px": 11,
-        "oran": 2.32,
+        "oran": 4.74,
         "esik": 4.5
       },
       {
         "ad": "span.navtab-label",
-        "px": 10.5,
-        "oran": 6.57,
+        "px": 11,
+        "oran": 7.52,
         "esik": 4.5
       },
       {
         "ad": "span.navtab-bang",
         "px": 11,
-        "oran": 2.32,
+        "oran": 4.74,
         "esik": 4.5
       },
       {
         "ad": "span.navtab-label",
-        "px": 10.5,
-        "oran": 6.57,
+        "px": 11,
+        "oran": 7.52,
         "esik": 4.5
       },
       {
         "ad": "span.navtab-label",
-        "px": 10.5,
-        "oran": 6.57,
+        "px": 11,
+        "oran": 7.52,
         "esik": 4.5
       },
       {
         "ad": "span.navtab-label",
-        "px": 10.5,
-        "oran": 14.61,
+        "px": 11,
+        "oran": 9.26,
         "esik": 4.5
       },
       {
         "ad": "span.sheet-title",
-        "px": 17,
-        "oran": 10.74,
-        "esik": 4.5
-      },
-      {
-        "ad": "button.sheet-x",
-        "px": 14,
-        "oran": 8.07,
+        "px": 18,
+        "oran": 13.79,
         "esik": 4.5
       },
       {
         "ad": "i.",
-        "px": 10,
-        "oran": 7.61,
+        "px": 11,
+        "oran": 13.79,
         "esik": 4.5
       },
       {
         "ad": "span.char-stat-name",
-        "px": 13.5,
-        "oran": 11.57,
+        "px": 13,
+        "oran": 7.52,
         "esik": 4.5
       },
       {
         "ad": "span.char-stat-val",
-        "px": 12,
-        "oran": 4.54,
+        "px": 13,
+        "oran": 3.84,
         "esik": 4.5
       },
       {
         "ad": "i.",
-        "px": 12,
-        "oran": 4.69,
+        "px": 13,
+        "oran": 5.09,
         "esik": 4.5
       },
       {
         "ad": "button.char-buy",
         "px": 13,
-        "oran": 9.01,
+        "oran": 9.26,
         "esik": 4.5
       },
       {
         "ad": "span.char-stat-name",
-        "px": 13.5,
-        "oran": 11.57,
+        "px": 13,
+        "oran": 7.52,
         "esik": 4.5
       },
       {
         "ad": "span.char-stat-val",
-        "px": 12,
-        "oran": 4.54,
+        "px": 13,
+        "oran": 3.84,
         "esik": 4.5
       },
       {
         "ad": "i.",
-        "px": 12,
-        "oran": 4.69,
+        "px": 13,
+        "oran": 5.09,
         "esik": 4.5
       },
       {
         "ad": "button.char-buy",
         "px": 13,
-        "oran": 9.01,
+        "oran": 9.26,
         "esik": 4.5
       },
       {
         "ad": "span.char-stat-name",
-        "px": 13.5,
-        "oran": 11.57,
+        "px": 13,
+        "oran": 7.52,
         "esik": 4.5
       },
       {
         "ad": "span.char-stat-val",
-        "px": 12,
-        "oran": 4.54,
+        "px": 13,
+        "oran": 3.84,
         "esik": 4.5
       },
       {
         "ad": "i.",
-        "px": 12,
-        "oran": 4.69,
+        "px": 13,
+        "oran": 5.09,
         "esik": 4.5
       },
       {
         "ad": "button.char-buy",
         "px": 13,
-        "oran": 9.01,
+        "oran": 9.26,
         "esik": 4.5
       },
       {
         "ad": "button.sheet-cta",
-        "px": 16,
-        "oran": 9.01,
+        "px": 15,
+        "oran": 9.26,
         "esik": 4.5
       },
       {
         "ad": "i.rep-num",
-        "px": 21,
-        "oran": 14.76,
+        "px": 22,
+        "oran": 15.59,
         "esik": 4.5
       },
       {
         "ad": "span.rep-text",
-        "px": 13.5,
-        "oran": 18.56,
+        "px": 13,
+        "oran": 17.1,
         "esik": 4.5
       },
       {
         "ad": "span.cur-val",
-        "px": 17,
-        "oran": 11.74,
+        "px": 18,
+        "oran": 11.11,
         "esik": 4.5
       },
       {
         "ad": "span.cur-val",
-        "px": 17,
-        "oran": 11.74,
+        "px": 18,
+        "oran": 11.11,
         "esik": 4.5
       },
       {
         "ad": "span.band-title",
-        "px": 14.5,
-        "oran": 10.74,
+        "px": 15,
+        "oran": 8.96,
         "esik": 4.5
       },
       {
         "ad": "span.band-count",
-        "px": 10.5,
-        "oran": 18.56,
+        "px": 11,
+        "oran": 17.1,
         "esik": 4.5
       },
       {
         "ad": "span.band-reward",
-        "px": 12,
-        "oran": 8.53,
+        "px": 11,
+        "oran": 12.08,
         "esik": 4.5
       },
       {
         "ad": "span.navtab-bang",
         "px": 11,
-        "oran": 2.32,
+        "oran": 4.74,
         "esik": 4.5
       },
       {
         "ad": "span.navtab-label",
-        "px": 10.5,
-        "oran": 6.57,
+        "px": 11,
+        "oran": 7.52,
         "esik": 4.5
       },
       {
         "ad": "span.navtab-bang",
         "px": 11,
-        "oran": 2.32,
+        "oran": 4.74,
         "esik": 4.5
       },
       {
         "ad": "span.navtab-label",
-        "px": 10.5,
-        "oran": 6.57,
+        "px": 11,
+        "oran": 7.52,
         "esik": 4.5
       },
       {
         "ad": "span.navtab-label",
-        "px": 10.5,
-        "oran": 6.57,
+        "px": 11,
+        "oran": 7.52,
         "esik": 4.5
       },
       {
         "ad": "span.navtab-label",
-        "px": 10.5,
-        "oran": 6.57,
+        "px": 11,
+        "oran": 7.52,
         "esik": 4.5
       },
       {
         "ad": "span.sheet-title",
-        "px": 17,
-        "oran": 10.74,
-        "esik": 4.5
-      },
-      {
-        "ad": "button.sheet-x",
-        "px": 14,
-        "oran": 8.07,
+        "px": 18,
+        "oran": 13.79,
         "esik": 4.5
       },
       {
         "ad": "span.setting-label",
         "px": 15,
-        "oran": 11.57,
+        "oran": 7.52,
         "esik": 4.5
       },
       {
         "ad": "span.setting-label",
         "px": 15,
-        "oran": 11.57,
+        "oran": 7.52,
         "esik": 4.5
       },
       {
         "ad": "span.setting-label",
         "px": 15,
-        "oran": 11.57,
+        "oran": 7.52,
         "esik": 4.5
       },
       {
         "ad": "span.setting-label",
         "px": 15,
-        "oran": 11.57,
+        "oran": 7.52,
         "esik": 4.5
       },
       {
         "ad": "button.danger-btn",
         "px": 15,
-        "oran": 3.49,
+        "oran": 4.74,
         "esik": 4.5
       },
       {
         "ad": "button.sheet-cta",
-        "px": 16,
-        "oran": 9.01,
+        "px": 15,
+        "oran": 9.26,
         "esik": 4.5
       }
     ],
-    "gorunurOge": 233,
-    "toplamOge": 135
+    "gorunurOge": 193,
+    "toplamOge": 92
   },
   "kaplama": {
     "kutular": [
@@ -1556,9 +1431,9 @@
       {
         "sec": ".botnav",
         "x": 0,
-        "y": 774,
+        "y": 772,
         "w": 390,
-        "h": 70
+        "h": 72
       },
       {
         "sec": ".band",
@@ -1575,25 +1450,21 @@
         "h": 38
       }
     ],
-    "kromPiksel": 76104,
+    "kromPiksel": 76884,
     "ekranPiksel": 329160
   },
   "simge": {
-    "svg": 33,
-    "glif": 17,
+    "svg": 35,
+    "glif": 13,
     "ornek": [
       "+",
-      "✕",
-      "₺",
-      "🔒",
-      "→",
-      "↺"
+      "₺"
     ]
   },
   "katman": {
     "temel": {
-      "gorunurOge": 109,
-      "zemin": 7
+      "gorunurOge": 87,
+      "zemin": 5
     }
   }
 }

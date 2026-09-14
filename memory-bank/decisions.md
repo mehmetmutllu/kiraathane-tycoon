@@ -3265,3 +3265,25 @@ bu bir geri alma değil, sıralama: önce gramer, sonra gerekirse paketten şeki
 elips) · Elmas (çapraz kesim çizgileri 16 px'te tırtık yapıyordu → yalnız kuşak çizgisi).
 **Maket artık bir ikon sayfası taşıyor:** her ikon hem 64 px'te hem oyundaki gerçek boyunda,
 mor gövdenin üstünde. Sayılar/gerekçe: `docs/ui-ses-raporu-s9s10.md` §İkon seti.
+
+## D-109 — Mor dil koda girdi; durum gölgeyle değil kenarlıkla anlatılır (2026-09-14)
+
+**S11 ikiye bölündü** (kullanıcının "görevi en fazla ikiye böl" kuralı): **S11 = DİL** (token ·
+palet · font · ikon), **S12 = YAPI** (K3 · M2 · Y2 · chip'siz üst; eski S12/S13 birer kaydı). S11 bitti, ekranların
+YAPISINA dokunulmadı. Ölçüm (tam koşu, `tools/shot-ui-s10.mjs`): punto 17 → **5** (tanımlı 6;
+altıncı yalnız ödül ekranında) · gölge 27 → **3** · yarıçap 9 → **6 dizge = 3 basamak + hap +
+daire + köşe-başı** · font 3 → **2** (B5 Arial gitti) · zemin 29 → **10** · metin 23 → **8** ·
+glif 17 → **13** (kalan ikisi `+` ve `₺`, ikisi de gerçek METİN — simge yerine geçmiyor) ·
+**AA altı 45/184 → 12/177**.
+**Karar bölümü dışına çıkılan dört yer** (hepsi raporda): ① dört token eklendi (`--vitrin`
+`--perde` `--parilti` `--uyari`) — maket zaten çiziyordu, adsız sızmasınlar diye ② `--uyari`
+`#e0402c` → `#d43a26`, çünkü beyaz yazıyla 4,25 veriyordu ve rozet 12 ölçümün hepsinde AA altındaydı
+③ **durum (seçili/hazır/tamam) artık KENARLIK rengi** — maket dördüncü bir gölge yazıyordu, D-107
+"3 kademe" dediği için halka kenarlığa taşındı; nabızlar da `::after` halkasına geçti, sonuç
+maketten daha katı ④ açılış başlığı `clamp(28,8vw,44)` → `--p6`, yedinci basamak açılmasın diye.
+**Bekçi:** `tests/mor-dil.test.ts`, 9 denetim, **8 mutasyonla** doğrulandı. İki istisna testte
+yazılı ve gerekçeli: 3B malzeme renkleri (dünya D-107'nin dışında, D-099) ve FPS sayacı.
+**AÇIK, kullanıcıya sorulacak:** kalan 12 AA ihlalinin hepsi `--tx2`nin GÖVDE gradyanı üstünde
+durmasından (3,84; kart üstünde 4,57 ile geçiyor). T1 = `--tx2` açılır (4,91, palete dokunur) ·
+T2 = ikincil metinler kart zeminine alınır (S12 zaten o ekranları diziyor). **Öneri T2.**
+Sayılar: `docs/ui-ses-raporu-s9s10.md` §S11 · ham `docs/olcum-ui-ekran.json`.

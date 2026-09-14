@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 97 · YAPILAN 84 · %87):**
+**Oturum bütçesi (TOPLAM 98 · YAPILAN 85 · %87):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -24,10 +24,10 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
 | | D meta katman | 9/9 ✅ |
 | | E arayüz ve cila | 4/5 🔧 |
-| | **S sanat ve arayüz geçişi** | **9/13 🔧** |
+| | **S sanat ve arayüz geçişi** | **10/14 🔧** |
 | | H oynanış düzeltmeleri | 0/3 ⏳ |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **56/69** |
+| **Program toplam** | | **57/70** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -40,7 +40,7 @@ kendi turunu aldı (D9) → Faz D 8 → 9, toplam 79 → 80. **Aynı gün:** E3 
 kararıyla SİSTEM (E3) ve DOSYALAR (E4) olarak ikiye bölündü, onboarding E5 oldu → Faz E 4 → 5,
 toplam 80 → 81. **2026-09-09 (ikinci oturum):** kullanıcı oynadı, 25 kalemlik geri bildirim verdi (`docs/geribildirim-oyun-testi-2026-09-09.md`); sanat/arayüz işi **Faz S** olarak açıldı (6 kalem, `docs/plan-faz-s-sanat.md`) → toplam 81 → 87. Faz adı S, çünkü defterde zaten bir Faz G (görsel taban) var; `G-0x` numaraları geri bildirimin, fazın kalemleri `S1…S6`. **Aynı gün:** kullanıcı S1'i oynadı ve dokuz kalem daha verdi (G-26…G-34); pad/modal düzeltmeleri **S2** olarak kendi kalemini aldı → Faz S 6 → 7, toplam 87 → 88. **Aynı gün, üçüncü tur:** kullanıcı lavabo kabin kapılarını ve ses assetlerini (ortam uğultusu + gerçekçi para sesi) istedi, ikisi de ayrı kalem oldu; UI araştırması da kendi kalemine ayrıldı → Faz S 7 → 10, toplam 88 → 91. **Aynı gün, dördüncü tur:** kullanıcı *"paketleme ve yayın öncesi oyun assetlerle hazır olsun"* dedi ve **oturum sayısı** istedi. Sayım dürüstçe yapıldı: UI dili tek oturuma sığmaz (araştırma+maket ile uygulama ayrı), karakterler kendi turunu ister → Faz S 10 → 12. Ayrıca bekleyen üç oynanış işi (hatalar · yükseltme sırası · masa aralığı) sanat kalemi değil; **Faz H** olarak ayrıldı (3 kalem). Toplam 91 → 96. **2026-09-10:** S6/②'de ertelenip S7'de kullanıcı kararıyla ayrılan **giriş cephesi camı** kendi
 turunu aldı ve bitti → Faz S 12 → 13 kalem (yeni kalem **S8**, sonrakiler bir kaydı), toplam
-96 → 97. **E4 kapsamı ölçümle değişti ama kalem sayısı değişmedi:** tur "dosya bırak"
+96 → 97. **2026-09-14:** S11 (UI uygulaması) kullanıcının "görevi en fazla ikiye böl" kuralıyla DİL (**S11**) ve YAPI (yeni kalem **S12**, sonrakiler bir kaydı) olarak ikiye bölündü — ölçek/palet/ikon ile ekran kabuğu ayrı işler, kesme çizgisi yeşil ara durum (D-109) → Faz S 13 → 14, toplam 97 → 98. **E4 kapsamı ölçümle değişti ama kalem sayısı değişmedi:** tur "dosya bırak"
 olarak açılmıştı, ölçüm "dosya alma, motoru büyüt" dedi (D-096); ortam sesi + `settings.music`
 kablosu E4'ün dışında kaldı ve **henüz kendi kalemi olmadı** — açık kalemler listesinde duruyor.
 
@@ -245,7 +245,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   değil; kendi turunu ister.
 - ⏳ **E5 — hareketli onboarding**
 
-## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (9/13) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
+## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (10/14) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
 - ✅ **S1 — pad ve yükseltme dili yeniden yazıldı** · çember → **köşe parantezli kare** (kenar
   ortaları boş), dolum büyüyen disk → **alttan üste dolan kare**, "Masa"/"Çay Yükselt"/"Usta"
   → hepsinde **YÜKSELT** + solunda düz yukarı ok, yazı 700 → 800, 💎 pulu "mavi kare" → gerçek
@@ -403,14 +403,25 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   **İkon seti de bu turda çizildi (D-108)** — tek gramer (24×24 · kontur 2,2 · detay ≥ 2 br ·
   aksan tek yerde), çark hesaplanarak; gerçek boyda sınandı, üç ikon düzeltildi. Kenney paketi
   ikon kaynağı olmadı (konturu yok) — S11'de şekil kaynağı olarak açık.
-- ⏳ **S11 — UI tasarım dili: UYGULAMA** — D-106'nın dili koda geçer: ölçek (17 punto → 6 basamak,
-  27 gölge → 3 kademe), `button{font-family:inherit}` (13 Arial öğesi), 🔒 emoji → SVG, kabuk boyu
-  tek kural, K3 + M2, pad Y2, alt bar seçilen palette, G-05 görev metinleri. **Palet seçimi bu
-  turun kapısı.**
-- ⏳ **S12 — yeni ücretsiz KayKit paketleri** — Board Game Bits (okey/tavla) · Forest Nature
+- ✅ **S11 — UI tasarım dili: DİL koda girdi (D-109)** — token katmanı `index.css :root`'ta tek
+  kaynak; iki CSS'te ham renk/punto/yarıçap/gölge KALMADI. Tam koşu: punto 17 → **5** (tanımlı 6) ·
+  gölge 27 → **3** · yarıçap 9 → **6 dizge = 3 basamak + hap + daire + köşe-başı** · font 3 → **2**
+  (B5 Arial gitti) · zemin 29 → **10** · metin 23 → **8** · glif 17 → **13** (kalan `+` ve `₺`,
+  ikisi de gerçek metin) · **AA altı 45/184 → 12/177**. İkonlar D-108 gramerinde yeniden yazıldı;
+  görev fotoğrafı artık aynı 24-ızgara çizimden ölçeklenerek geliyor. Durum gölgeyle değil
+  KENARLIKLA anlatılıyor (maketten daha katı). Bekçi `tests/mor-dil.test.ts` (9 denetim,
+  **8 mutasyon**) · vitest 916 · duman 42/42 · `docs/ui-ses-raporu-s9s10.md` §S11a.
+  **Açık:** kalan 12 AA ihlalinin hepsi `--tx2`nin gövde gradyanı üstünde durmasından — T1/T2
+  kolları ölçüldü, kullanıcı seçecek (öneri T2, S11b'de).
+- ⏳ **S12 — UI tasarım dili: YAPI** — ekranların kabuğu: **K3** tam ekran + tek kabuk
+  (geri · başlık · cüzdan), alt sayfa kabuğu kalkar · mağaza **M2** (önizleme 74 → 230 px) ·
+  pad **Y2** · chip'siz üst şerit (değerler sahnenin üstünde, okunabilirliği kontur taşır) ·
+  G-05 görev metinleri · G-18 masanın kendi noktası. Bugün beş ekran **dört farklı yükseklikte**
+  açılıyor (430 · 471 · 530 · 675 · 675 px) — "ekranlar tutarsız" hissinin ölçülen kaynağı bu.
+- ⏳ **S13 — yeni ücretsiz KayKit paketleri** — Board Game Bits (okey/tavla) · Forest Nature
   (çiçek) · Holiday · Resource · Prototype · Block. **İndirme engeli KALKTI:** Bash'in ağı yok
   ama PowerShell'in var; `tools/indir-itch.ps1` itch akışının 3/4 adımını yapıyor, son adım 404.
-- ⏳ **S13 — karakterler** — ana karakter · garson · bulaşıkçı · müşteriler. Altı kol bedeliyle
+- ⏳ **S14 — karakterler** — ana karakter · garson · bulaşıkçı · müşteriler. Altı kol bedeliyle
   asset panosunda; **kullanıcı seçimi bekliyor**, seçilmeden tur açılamaz.
 
 **Faz S kapısı:** 185 kullanılmayan KayKit modeli oyuna bağlı + UI dili maketle onaylanmış +

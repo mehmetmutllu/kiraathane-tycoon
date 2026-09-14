@@ -3,7 +3,7 @@ import { useGame } from '../../game/store';
 import { economyConfig } from '../../config/economy.config';
 import { PREVIEW_GL } from '../../config/palette';
 import { Table } from '../three/Tables';
-import { CoinIcon } from './icons';
+import { CoinIcon, TickIcon } from './icons';
 import { FixedCam, SalonLights, FloorPatch, WallBack } from './SalonSlice';
 
 /** Zemin/Duvar SAYFA-İÇİ önizleme: oyunun kamera açısı/duruşu/uzaklığıyla salon köşesinden bir kesit
@@ -48,7 +48,7 @@ export function DioramaPreview({ kind, id }: { kind: 'floor' | 'wall'; id: strin
               disabled={isSel || !afford}
               onClick={() => buyCosmetic(kind, id, z)}
             >
-              {isSel ? '✓ ' : ''}Salon {z + 1}
+              {isSel ? <TickIcon size={12} /> : null} Salon {z + 1}
             </button>
           );
         })}
