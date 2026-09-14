@@ -1,0 +1,36 @@
+============================================================================================
+S18 — OYUNCU HIZI: ayak kaymasi (gorsel) ile D-087 20 dk guvencesi (denge) arasinda
+============================================================================================
+
+§1 AYAK KAYMASI — hizdan turer, olcum gerekmez
+`Running_A` kelepce tavaninda (1.8×) tasidigi yer hizi: 2.245 br/sn
+
+hiz(br/sn)  secilen klip  timeScale  kelepce  AYAK KAYMASI
+      5.40  Running_A        1.800  TAVAN           2.41x
+      5.10  Running_A        1.800  TAVAN           2.27x
+      4.95  Running_A        1.800  TAVAN           2.21x
+      4.80  Running_A        1.800  TAVAN           2.14x
+      4.65  Running_A        1.800  TAVAN           2.07x
+      4.50  Running_A        1.800  TAVAN           2.00x
+      4.20  Running_A        1.800  TAVAN           1.87x
+      3.90  Running_A        1.800  TAVAN           1.74x
+      3.60  Running_A        1.800  TAVAN           1.60x
+      2.25  Running_A        1.800  TAVAN           1.00x
+
+§2 D-087 GUVENCESI (idealize profil, sinir 1200 sn = 20 dk)
+kol                  taban  tavan  20dk ASAN  en uzun(sn)  hukum  Normal ASAN  serit(dk)
+BUGUN 4,50-5,40       4.50   5.40          0         1079  TEMIZ            2      406.3
+tavan 5,20            4.50   5.20          0         1079  TEMIZ            2      406.3
+SECILEN 4,50-4,95     4.50   4.95          0         1079  TEMIZ            2      406.3
+taban -0,1 (4,40)     4.40   5.30          0         1092  TEMIZ            3      410.6
+taban -0,2 (4,30)     4.30   5.20          0         1105  TEMIZ            3      415.1
+hepsi -0,6 (3,90)     3.90   4.80          0         1158  TEMIZ            3      434.2
+hepsi -0,9 (3,60)     3.60   4.50          1         1203  KIRIK            3      450.2
+
+-> ILK OKUMA YANLISTI ve damga yakaladi. "Her indirim 20 dk hukmunu kirar" DEGIL:
+   hukum 3,90-4,80e kadar TEMIZ (1158 sn), ancak 3,60-4,50te kiriliyor (1203 sn).
+   ASIL KISIT DAHA ERKEN GELIYOR: taban 4,50den 4,40a inince Normal gozlem bandi
+   2 -> 3 oynuyor ve serit 406 -> 411 dk uzuyor; ikisi de D-095in KILITLEDIGI sayi.
+   YALNIZ TAVAN inince (secilen kol) UC KOLON DA birebir ayni kaliyor: 1079 sn,
+   Normal 2, serit 406,3. Yani TAVAN BEDAVA, TABAN DEGIL — merdivenin tamami
+   inecekse o ayri bir DENGE TURUDUR ve D-095 yeniden okunmalidir.
