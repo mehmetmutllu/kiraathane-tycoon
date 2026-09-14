@@ -193,8 +193,8 @@ h2{font-size:21px;font-weight:800}
 <script type="application/json" id="durum">
 {
  "guncelleme": "14.09.2026",
- "yapilan": 89,
- "toplam": 99,
+ "yapilan": 90,
+ "toplam": 100,
  "kilometre": [
   {
    "at": 28,
@@ -209,19 +209,19 @@ h2{font-size:21px;font-weight:800}
    "etiket": "Model ve denge oturdu"
   },
   {
-   "at": 99,
+   "at": 100,
    "etiket": "v1.0 App Store"
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum — Faz S · 13/15 — S14 personel bitti (D-112)",
-  "baslik": "Panonun <b>üç hükmü çürüdü</b>; personel KayKit gövdelerine geçti, fantezi <b>sökülebilir</b> çıktı",
-  "aciklama": "Karakter kalemi bir yıl boyunca “KayKit’in hepsi fantezi, sivilleştirmek birkaç oturum mesh işi” hükmüyle bekliyordu. O hüküm <b>hiçbir paket indirilmeden</b> yazılmıştı; indirilip ölçülünce üç parçası birden çürüdü. <b>Ekipman ayrı düğüm:</b> pelerin, miğfer, şapka gövdeye kaynamamış — Rogue’da sökülecek tek düğüm var ve 84 üçgen. Yani sivilleştirme mesh düzenleme değil, <b>bir satır</b>. <b>Klipler retarget istemiyor:</b> başka bir pakette duran animasyonlar gövdeye <b>69/69 kemik</b> tuttu; üstelik o paket panoda hiç yazmıyordu ve içinde <b>139 klip</b> var — oturma, tepsi tutma, tezgâhta çalışma dahil. Oyunun kodu “gerçek oturuş pozu Faz 6’da gelir” diye not düşmüştü; geldi ve bedava. <b>Quaternius kolu ölçülünce elendi:</b> panonun yazdığı altı gövde ücretsiz katmanda <b>iki</b>, modüler kıyafet paketinin adı <i>fantasy</i>, ve doku hattı PBR — tek bir normal haritası <b>13,8 MB</b>, tek sivil karakterin repo bedeli <b>≈22 MB</b> iken bütün <code>models/</code> klasörü 17,2 MB.<br><br><b>Kullanıcı oranı onayladı, konsepti reddetti</b> — <i>“yapısı boyutu proporsiyonu çok iyi ama bunlar savaş karakteri”</i> — ve haklıydı: şapka sökülünce altından <b>kemer, bilek bandı, deri askı</b> çıkıyor. Aranan şey (KayKit oranında, modern, sivil, CC0) hiçbir kaynakta yok; KayKit’in kendi ücretli serilerinde bile 14 karakterde 2-3 sivil var. Çözüm başka pakette değil <b>dokuda</b> çıktı: gövde ve bacak oyunun paletine boyanıyor, <b>baş boyanmıyor</b> — yüz, saç ve sakal başın kendi dokusundan geliyor. Bu kural bir kareden doğdu: ilk denemede baş da boyanmıştı ve Barbarian’ın ak sakalı ten rengine dönmüştü. Kasket ve önlük bizim ve artık <b>kemiğe takılı</b>, yani yürüme ve oturma klipleri onları da taşıyor.<br><br><b>Ölçek kolu ayrı ölçüldü ve ucuz olan seçildi:</b> KayKit gövdesinde baş boyun <b>%50</b>’si (bugünkü gövdede %33), ama omuz eni <b>0,58</b> ↔ kapsülün 0,60’ı — genişlik sınırı aşılmıyor, kayan şey düşey oran. Toplam boyu 1,75’e çekmek masayı göğse çıkarıyor, gövdeyi mobilyaya hizalamak ise boyu 2,21’e taşıyıp <code>ACTOR_HEIGHT</code>’tan türeyen <b>her sayıyı</b> yeniden açıyordu. İlk kol seçildi: bu turda yarıçaplar, kamera, baloncuk, erişim ve nav ızgarası <b>hiç kıpırdamadı</b>, denge dosyaları da açılmadı."
+  "etiket": "Bu oturum — Faz S · 15/16 — S15 müşteriler skinned, S16 tepsi ele bağlandı (D-113 · D-114)",
+  "baslik": "Kullanıcının <b>beş görsel şikâyeti</b> sayıya çevrildi; beşi de aynı oturumda kapandı",
+  "aciklama": "Oturum bir ölçüm turu olarak açıldı ama kullanıcı üç şey birden söyledi: <i>“karakterler havada süzülüyor gibi”</i>, <i>“ana karakterdeki kasketi çıkar”</i>, <i>“kafalar çok büyük duruyo baya küçült”</i>. Üçü de görsel yargıydı ve üçünün de <b>sayısı vardı</b>.<br><br><b>Süzülme bir ölçüyle kapandı:</b> bir yürüme klibi belli bir <b>yer hızı</b> için çizilir — basılı ayak, gövde sabitken geriye kayar ve kaydığı mesafe o döngünün ilerlemesidir. Klip dosyadan örneklenince çıktı: <code>Walking_A</code> <b>0,571 br/sn</b> için çizilmiş, oyuncu ise <b>4,5-5,4</b> br/sn gidiyor. Yani ayak <b>7,9-9,5 katı</b> kayıyordu ve bu bir his değil, bir orandı. Artık klip hızdan seçiliyor (yavaş yürür, hızlı koşar), katsayı hızdan türüyor ve tavan gerçek sprint kadansında (4,5 adım/sn) duruyor. Garsonda kayma <b>tam sıfır</b>; oyuncuda 2,0×’a iniyor ama sıfırlanmıyor — hızı klibin taşıyabileceğinin iki katı ve onu düşürmek bir <b>denge</b> kararı, ölçülmeden dokunulmadı.<br><br><b>Kafa kolunda asıl iş takası bulmaktı.</b> KayKit başı gövde boyunun <b>%42-52</b>’si (eski ilkel gövdede %33). Boyu 1,75’te sabit tutup kafayı küçültünce gövde o boyu doldurmak için şişiyor ve ×0,80’de <b>blob kuralı kırılıyor</b> (omuz 0,616 > 0,60) — karede kardan adama dönüyorlar. Telafi edilmezse gövde ölçeği hiç değişmiyor (omuz beş kolda da 0,552) ve karakter kısalıyor. Kritik okuma şuydu: telafisiz kolun mobilya bedeli <b>aritmetik, görsel değil</b> — bacak, gövde ve kalça kıpırdamadığı için masayla, tabureyle, tepsiyle ilişkinin tamamı birebir aynı kalıyor, kısalan tek şey siluetin tepesi. Yani <i>“kafalar küçülsün”</i> ile <i>“garsonlar küçülsün”</i> tek hamlede, bedelsiz karşılandı.<br><br><b>Müşteriler de skinned oldu</b> ve burada ölçüm turunun bir hükmü uygulamada çürüdü: “tek materyal → tek çizim” kolu, <b>başın dokusunu korumakla</b> bağdaşmadı (yüz ve saç oradan geliyor). Sevk edilen biçim gövde başına iki mesh — 24 müşteri <b>48 çizim / 0,52 ms</b>. Bütçe de yanlış seçilmişti: oyunda ölçünce 12 masa açıkken bile <b>38 eşzamanlı müşteri</b> çıktı ve tavanı aşanlar kapsül olarak beliriyordu. Kullanıcı <i>“kapsül hiç görünmesin”</i> dedi, tavan <b>80</b>’e çıktı."
  },
  "siradaki": {
-  "etiket": "Sırada S15 — müşteriler",
-  "baslik": "Personel skinned oldu; <b>müşteriler bilerek kapsül kaldı</b> ve bedeli ölçülü",
-  "aciklama": "<b>Tur ikiye bölündü</b> (kullanıcının kendi kuralı: görevi en fazla ikiye böl) ve kesme çizgisi <b>yeşil bir ara durum</b>: sahip, garson, bulaşıkçı ve çaycı artık gerçek gövdeler, müşteriler ise çalışmaya devam eden kapsüller.<br><br><b>Sebep bir sayı:</b> müşteriler bugün <b>tek InstancedMesh</b> — kaç kişi olursa olsun <b>1 çizim çağrısı</b>. Skinned gövde instance edilemez, her biri kendi iskeletini taşır: 24 müşteri <b>192 çizim</b> demek ve mobil bütçe tipik olarak 100-200. Kullanıcı “hepsinde skinned çok iyi olur” dedi, o yüzden kol kapanmadı <b>ertelendi</b>: azaltma yolu da ölçüldü — her gövdenin <b>tek materyali</b> var, sekiz parça birleştirilince karakter başına 1 çizim, yani 24 müşteri <b>24 çağrı</b>. Aynı turda oturma klibi bugünkü numaranın (gövdeyi 45 cm aşağı indirme) yerini alacak ve gömlek rengi müşteri başına paletten seçilecek.<br><br>Ardından <b>S9 ses</b> (kaynak kararı yazılı), sonra <b>Faz H</b>: üç oynanış hatası, yükseltme sırası ve masa aralığı — son ikisi denge kalemi ve <b>ölçülmeden uygulanmayacak</b>."
+  "etiket": "Sırada S17 — ses",
+  "baslik": "Faz S’in <b>son kalemi</b>; ardından oynanış hataları ve iki denge kolu",
+  "aciklama": "Karakter hattı kapandı: personel ve müşteriler gerçek gövdeler, yürüyüş hızla senkron, tepsi elde. Faz S’te geriye <b>tek kalem</b> kaldı — <b>ses</b> (kaynak kararı yazılı).<br><br>Ardından <b>Faz H</b> açılıyor ve içinde üç oynanış hatası var: çay/bulaşık toplama masanın her tarafından olmuyor, çay ocağından alma güvenilmez, ikinci masa görevinde kamera kendiliğinden kayıyor. Aynı fazın diğer iki kalemi <b>denge</b>: tepsinin ilk yükseltme fiyatı ve yükseltme bekleme süresi, bir de masa aralığı (ölçüldü: arka salonda açıklık <b>0,68 br</b>, geçiş 0,94 istiyor → 20 masanın 12’si geçilemiyor). İkisi de <b>varyant kapısına tabi</b> ve ölçülmeden uygulanmayacak.<br><br>Karakter tarafında bilerek açık bırakılan cila kalemleri var: <b>önlük hâlâ düz bir plaka</b> (göğse asılı dikdörtgen, gövdeyi sarmıyor), karakter paneli hâlâ eski ilkel gövdeyi çiziyor, ve bulaşıkçı gövdesinin omzu <b>0,709</b> ile blob sınırını bugün de aşıyor."
  },
  "donemler": [
   {
@@ -353,8 +353,8 @@ h2{font-size:21px;font-weight:800}
      "k": "S",
      "t": "Sanat ve arayüz geçişi",
      "d": "Kullanıcı oynadı ve dört tur geri bildirim verdi. HER KALEM ≈ 1 OTURUM, 10 oturum kaldı. Bitti: pad dili ✓ · pad/modal etkileşimi ✓. Sırada: mutfak → duvar ve zemin → dekor takası → dış cephe ve tente → lavabo kabin kapıları → ses assetleri → UI dili (araştırma+maket) → UI dili (uygulama) → yeni ücretsiz paketler → karakterler. İlk beşi indirme ve onay istemiyor: hepsi diskte duran 185 KayKit modeliyle yapılacak iş.",
-     "yapilan": 14,
-     "toplam": 15,
+     "yapilan": 15,
+     "toplam": 16,
      "durum": "now",
      "kapi": "185 kullanılmayan KayKit modeli oyuna bağlanır + UI dili maketle onaylanır"
     },
@@ -378,6 +378,36 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "14.09.2026",
+   "etiket": "Faz S · 15. oturum (S16 — elde tepsi tutma — D-114)",
+   "baslik": "Tepsi <b>ele bağlı değilmiş</b>; kollar sallanırken havada asılı duruyordu",
+   "govde": "Kullanıcı kısa söyledi: <i>“şu an elde tepsi tutma falan sorun ama ya”</i>. Yakın kadraj kusuru gösterdi, kod sebebini: tepsi ele değil, gövdenin yanında <b>dünya-uzayında sabit bir noktaya</b> asılıydı ve taşırken normal yürüme klibi oynuyordu — yani kollar boşta sallanırken tepsi önde duruyordu. Ölçüm farkı sayıya çevirdi: çapa <b>y 0,953</b>’te, eller <b>0,66</b>’da; tepsi ellerin <b>29 cm üstünde</b>. Aynı ölçüm kodun bir etiketini de çürüttü — <code>Walking_B</code> “taşıma klibi” diye işaretliydi ama o klipte eller gövdenin <b>arkasında</b>.<br><br>Rig’in kendi eşya çapaları (<code>handslot</code> kemikleri) ve <code>Holding</code> klipleri repoda duruyor, ikisi de kullanılmıyordu. Tepsi artık iki <code>handslot</code>’un ortasına bağlı: konumu takip ediyor ama <b>dönüşü almıyor</b>, yani elin eğimiyle yalpalamıyor. KayKit’te “yürürken taşıma” klibi olmadığı için klipler <b>kemik kümesine bölündü</b> — alt gövde (10 kemik) yürüyor, üst gövde (13 kemik) tutuyor, ikisi aynı anda tam ağırlıkta.<br><br><b>Yolda iki sessiz hata çıktı ve ikisi de konsol hatası vermiyordu.</b> Birincisi: three, glTF düğüm adlarındaki <b>noktayı siliyor</b> — dosyada <code>handslot.l</code> yazıyor, sahnede adı <code>handslotl</code>. Noktalı yazılan kemik kümesi hiçbir kolu yakalamıyordu ve el araması boş dönüyordu, yani tepsi karakterin <b>ayaklarında</b> kalıyordu. Üstelik ilk yazılan bekçi bunu yakalamadı, çünkü <b>niyeti</b> doğruluyordu, gerçeği değil; test artık adları kaynak metninden değil gerçek dosyadan okuyup karşılaştırıyor. İkincisi: yükleyiciye her karede yeni yol listesi veriliyordu ve bu açılış ekranını <i>“Maximum update depth exceeded”</i> ile patlatıp duman testini aralıklı kırmızıya düşürüyordu. İlk tanı yanlıştı — havuz kurulumu sanıldı ve o da düzeltildi ama kararsızlık sürdü; ancak hata mesajı yakalanınca gerçek sebep çıktı.",
+   "maddeler": [
+    "<b>D-114:</b> tepsi iki <code>handslot</code> kemiğinin ortasına bağlı — konum takip edilir, <b>dönüş edilmez</b>",
+    "<b>Ölçüm:</b> çapa 0,953 ↔ eller 0,66 · <code>Holding_A</code> elleri önde ve <b>kıpırdamıyor</b> (0,002)",
+    "<b>Etiket çürüdü:</b> <code>Walking_B</code> “taşıma” değil — eller <b>arkada</b> (z −0,05)",
+    "<b>Kemik katmanı:</b> alt gövde yürür (10 kemik) · üst gövde tutar (13 kemik) · kesişim boş",
+    "<b>Sessiz hata 1:</b> three glTF adındaki <b>noktayı siliyor</b> → tepsi ayaklarda kalıyordu",
+    "<b>Sessiz hata 2:</b> her render yeni yol dizisi → açılışta sonsuz güncelleme döngüsü",
+    "<b>Bekçi:</b> 32 denetim, <b>32 mutasyon, kaçan 0</b> · vitest 975 · duman 42/42"
+   ]
+  },
+  {
+   "tarih": "14.09.2026",
+   "etiket": "Faz S · 14. oturum (S15 — müşteriler skinned + üç görsel kusur — D-113)",
+   "baslik": "“Havada süzülüyor” bir <b>orandı</b>: klip 0,571 için çizilmiş, oyuncu 4,5 gidiyordu",
+   "govde": "Tur müşterileri skinned’e geçirmek için açıldı ama kullanıcı üç şey birden söyledi ve üçü de ölçülebilir çıktı. <b>Süzülmenin sayısı:</b> bir yürüme klibi belli bir yer hızı için çizilir — basılı ayak geriye kayar ve kaydığı mesafe o döngünün ilerlemesidir. Klipler dosyadan örneklenince <code>Walking_A</code>’nın <b>0,571 br/sn</b> için çizildiği çıktı; oyuncu 4,5-5,4 gidiyor, yani ayak <b>7,9-9,5 katı</b> kayıyordu. Beş klipte de kök kayması sıfırdı, yani senkronlamanın önünde engel yoktu. Artık klip hızdan seçiliyor ve katsayı hızdan türüyor; garsonda kayma tam sıfırlanıyor, oyuncuda 2,0× kalıyor çünkü hızı klibin taşıyabileceğinin iki katı — onu düşürmek denge kararı ve ölçülmedi.<br><br><b>Kafa kolunda takas bulundu.</b> KayKit başı gövde boyunun %42-52’si (eski gövdede %33). Boyu sabit tutup kafayı küçültmek gövdeyi şişiriyor ve ×0,80’de blob kuralını kırıyor; telafi edilmezse gövde hiç değişmiyor, karakter kısalıyor. Telafisiz kolun mobilya bedeli <b>aritmetik, görsel değil</b> — gövde kıpırdamadığı için masayla ilişki birebir aynı, kısalan tek şey siluetin tepesi. Böylece “kafa küçülsün” ve “karakterler küçülsün” tek hamlede karşılandı, <code>ACTOR_HEIGHT</code>’a hiç dokunulmadı.<br><br><b>Müşteri kolunda ölçümün bir hükmü uygulamada çürüdü:</b> “tek materyal → tek çizim”, başın dokusunu korumakla bağdaşmadı; sevk edilen biçim gövde başına iki mesh oldu (24 müşteri 48 çizim / 0,52 ms) ve sayı tahmin edilmeyip yeniden ölçüldü. Bütçe de yanlıştı — oyunda 12 masa açıkken <b>38 eşzamanlı müşteri</b> çıktı ve tavanı aşanlar kapsül olarak beliriyordu. Kullanıcı “kapsül hiç görünmesin” deyince tavan 80’e çıktı. İkinci turda bir hata daha kapandı: <b>oturan müşteriler masaya dönük değildi</b> — yön hareketten türüyordu ve müşteri oturunca geldiği yöne bakakalıyordu; artık koltuktan masa merkezine bakıyor.",
+   "maddeler": [
+    "<b>D-113:</b> kafa telafisiz ×0,75 · klip hızdan seçilir (tavan 1,80) · <code>ACTOR_HEIGHT</code> 1,75 <b>kaldı</b>",
+    "<b>Süzülme:</b> 7,9× → garsonda <b>tam sıfır</b>, müşteride 1,16×, oyuncuda 2,0×",
+    "<b>Kafa:</b> baş payı %42 → ~%36 · omuz 0,552’de <b>sabit</b> (blob sınırı 0,60 sağlam)",
+    "<b>Müşteriler:</b> instanced kapsülden <b>skinned havuza</b> · 48 çizim / 0,52 ms · tavan <b>80</b>",
+    "<b>Ölçüm uygulamada düzeltildi:</b> “tek materyal → 1 çizim” çürüdü → gövde başına iki mesh",
+    "<b>İkinci tur:</b> oturan müşteri <b>masaya döner</b> (yön hareketten türüyordu)",
+    "<b>Bekçi:</b> 23 denetim, <b>21 mutasyon, kaçan 0</b> · vitest 966 · duman 42/42"
+   ]
+  },
   {
    "tarih": "14.09.2026",
    "etiket": "Faz S · 13. oturum (S14 — karakterler: personel — D-112)",
@@ -1148,10 +1178,16 @@ h2{font-size:21px;font-weight:800}
    "p": "S14 personeli KayKit gövdelerine geçirdi (D-112) ama <code>Player.tsx</code>&rsquo;in eski parçalı gövdesi (<code>OwnerBody</code>) export olarak duruyor ve <b>karakter paneli</b> onu çiziyor. Yani oyunda bıyıklı, kasketli, animasyonlu bir sahip var; panelde ise küre başlı ilkel gövde. Bu bir kusur değil <b>yarım bir geçiş</b>: panelin mini Canvas&rsquo;ı skinned gövdeyi ve bir klibi taşımak zorunda, o da kendi turunu ister. Eski gövde bilerek silinmedi — panel ona bağlı olduğu için silmek paneli kırardı. <b>Yan kalem:</b> S12&rsquo;den beri açık duran &ldquo;karakter ekranı altta boş kalıyor&rdquo; maddesi de buraya bakıyor: tek karakter varken doldurulacak içerik yoktu, artık gövde ve klip var."
   },
   {
-   "sev": "Perf",
+   "sev": "Çözüldü",
+   "renk": "done",
+   "b": "Müşteriler kapsüldü — <b>ÇÖZÜLDÜ (D-113):</b> skinned havuz, 80 yuva, kapsül görünmüyor",
+   "p": "S14 personeli skinned&rsquo;e geçirmiş, müşterileri bilerek kapsül bırakmıştı; ölçülen bedel <i>&ldquo;24 müşteri = 192 çizim&rdquo;</i>di. S15&rsquo;te kol kapandı ama <b>ölçümün hükmü uygulamada çürüdü:</b> &ldquo;tek materyal → tek çizim&rdquo; başın dokusunu korumakla (D-112) bağdaşmadı — yüz, saç ve sakal başın kendi dokusundan geliyor, kıyafet ise düz boyanıyor ve tek materyal ikisini birden yapamıyor. Sevk edilen biçim <b>gövde başına iki mesh</b> oldu ve sayı tahmin edilmeyip yeniden ölçüldü: 24 müşteri <b>48 çizim / 0,52 ms</b> (aynı sayıda 6 parçalı gövde 216 çizim / 1,78 ms). <b>Bütçe de yanlış seçilmişti:</b> tavan önce 24 kondu, oyunda ölçülünce yalnız 12 masa açıkken <b>38 eşzamanlı müşteri</b> çıktı ve tavanı aşanlar salonda kapsül olarak beliriyordu. Kullanıcı <i>&ldquo;kapsül hiç görünmesin&rdquo;</i> deyince tavan <b>80</b>&rsquo;e çıktı (1,57 ms / 112 çizim; 24 masa tam açıkken müşteri 70&rsquo;i geçebiliyor). Kapsül kolu yine de silinmedi — tavan bir gün aşılırsa müşteri sessizce kaybolmasın, kapsüle düşsün. Aynı turda <b>oturan müşteri masaya döndürüldü</b> (yön hareketten türüyordu, oturunca geldiği yöne bakakalıyordu) ve gövde rengi müşteri başına paletten geliyor. <b>Mobilde ölçülmedi:</b> bunlar masaüstü sayıları, telefonda tipik 4-6 katı — APK turu ister."
+  },
+  {
+   "sev": "Görsel",
    "renk": "wait",
-   "b": "Müşteriler hâlâ kapsül — skinned&rsquo;e geçiş <b>192 çizim çağrısı</b> demek, ölçüldü",
-   "p": "Kullanıcı <i>&ldquo;hepsinde skinned çok iyi olur&rdquo;</i> dedi ve tur bilerek ikiye bölündü: personel geçti, müşteriler <b>tek InstancedMesh</b> olarak çalışmaya devam ediyor (<code>NPC_CAP</code> 128 → <b>1 çizim çağrısı</b>). Sebep ölçülmüş bir sayı: skinned gövde instance <b>edilemez</b> — her biri kendi iskeletini ve kendi <code>AnimationMixer</code>&rsquo;ını taşır. Masaüstü GPU&rsquo;sunda ölçüldü (ANGLE/D3D11; <b>mutlak sayı telefona taşınmaz, oran taşınır</b>): 5 gövde 40 çizim · 12 gövde 96 · <b>24 gövde 192</b> · 48 gövde 384. Mobil çizim bütçesi tipik olarak 100-200. <b>Azaltma kolu ölçüldü ama denenmedi:</b> her gövdenin <b>tek materyali</b> var, yani sekiz parça mesh birleştirilebilir → karakter başına <b>1 çizim</b>, 24 müşteri <b>24 çağrı</b>. Aynı turda oturma klibi (<code>Sit_Chair_*</code>, repoda) bugünkü <code>SEATED_DROP</code> numarasının (gövdeyi 0,45 aşağı indirme) yerini alabilir ve gömlek rengi müşteri başına paletten seçilecek. <b>Kalem: S15.</b>"
+   "b": "Oyuncuda <b>2,0× artık ayak kayması</b> ve bulaşıkçının omzu blob sınırını aşıyor",
+   "p": "S15 <i>&ldquo;havada süzülüyor&rdquo;</i> kusurunu kapattı: klip artık hızdan seçiliyor ve katsayı hızdan türüyor. Ama <b>oyuncuda sıfırlanmadı</b> ve sebebi ölçülü: <code>Running_A</code> 1,247 br/sn için çizilmiş, oyuncu <b>4,5-5,4</b> gidiyor. Katsayı gerçek sprint kadansında (4,5 adım/sn → <code>timeScale</code> 1,80) kelepçelendiği için klip en çok 2,24 br/sn taşıyor; geriye <b>2,0×</b> kayma kalıyor — bugünkü 7,9×&rsquo;ın dörtte biri, ama sıfır değil. Kelepçeyi açmak bacakları <b>9 adım/sn</b>&rsquo;ye çıkarır (gerçek sprintin iki katı, pervane gibi okunur). Sıfırlamanın tek yolu <b>oyuncu hızını düşürmek</b> — o <code>economy.config.ts</code>&rsquo;e dokunur, <b>varyant kapısına tabidir</b> ve ölçülmedi; kendi turunu ister. <b>İkinci kalem:</b> bulaşıkçı gövdesinin (Rogue) omzu <b>0,709</b> ölçüldü ve D-076&rsquo;nın blob sınırı <b>0,60</b> — yani sınır kafa koluna bakılmaksızın <b>bugün de</b> aşılıyor. S14&rsquo;ün <i>&ldquo;omuz 0,58, sınır aşılmıyor&rdquo;</i> satırı başka bir gövdeden alınmış. Ya sınırın kendisi gözden geçmeli (kapsül çağından kalma bir sayı) ya da o rol başka gövdeye taşınmalı."
   },
   {
    "sev": "Ölçüm",

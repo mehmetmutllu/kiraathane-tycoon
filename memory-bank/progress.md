@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 99 · YAPILAN 89 · %90):**
+**Oturum bütçesi (TOPLAM 100 · YAPILAN 90 · %90):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -24,10 +24,10 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
 | | D meta katman | 9/9 ✅ |
 | | E arayüz ve cila | 4/5 🔧 |
-| | **S sanat ve arayüz geçişi** | **14/15 🔧** |
+| | **S sanat ve arayüz geçişi** | **15/16 🔧** |
 | | H oynanış düzeltmeleri | 0/3 ⏳ |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **61/71** |
+| **Program toplam** | | **62/72** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -40,7 +40,7 @@ kendi turunu aldı (D9) → Faz D 8 → 9, toplam 79 → 80. **Aynı gün:** E3 
 kararıyla SİSTEM (E3) ve DOSYALAR (E4) olarak ikiye bölündü, onboarding E5 oldu → Faz E 4 → 5,
 toplam 80 → 81. **2026-09-09 (ikinci oturum):** kullanıcı oynadı, 25 kalemlik geri bildirim verdi (`docs/geribildirim-oyun-testi-2026-09-09.md`); sanat/arayüz işi **Faz S** olarak açıldı (6 kalem, `docs/plan-faz-s-sanat.md`) → toplam 81 → 87. Faz adı S, çünkü defterde zaten bir Faz G (görsel taban) var; `G-0x` numaraları geri bildirimin, fazın kalemleri `S1…S6`. **Aynı gün:** kullanıcı S1'i oynadı ve dokuz kalem daha verdi (G-26…G-34); pad/modal düzeltmeleri **S2** olarak kendi kalemini aldı → Faz S 6 → 7, toplam 87 → 88. **Aynı gün, üçüncü tur:** kullanıcı lavabo kabin kapılarını ve ses assetlerini (ortam uğultusu + gerçekçi para sesi) istedi, ikisi de ayrı kalem oldu; UI araştırması da kendi kalemine ayrıldı → Faz S 7 → 10, toplam 88 → 91. **Aynı gün, dördüncü tur:** kullanıcı *"paketleme ve yayın öncesi oyun assetlerle hazır olsun"* dedi ve **oturum sayısı** istedi. Sayım dürüstçe yapıldı: UI dili tek oturuma sığmaz (araştırma+maket ile uygulama ayrı), karakterler kendi turunu ister → Faz S 10 → 12. Ayrıca bekleyen üç oynanış işi (hatalar · yükseltme sırası · masa aralığı) sanat kalemi değil; **Faz H** olarak ayrıldı (3 kalem). Toplam 91 → 96. **2026-09-10:** S6/②'de ertelenip S7'de kullanıcı kararıyla ayrılan **giriş cephesi camı** kendi
 turunu aldı ve bitti → Faz S 12 → 13 kalem (yeni kalem **S8**, sonrakiler bir kaydı), toplam
-96 → 97. **2026-09-14 (S14):** karakter kalemi kullanıcının *"görevi en fazla ikiye böl"* kuralıyla PERSONEL (**S14**) ve MÜŞTERİ (yeni kalem **S15**) olarak ikiye bölündü — kesme çizgisi yeşil ara durum: personel skinned, müşteriler kapsül olarak çalışmaya devam ediyor (D-112) → Faz S 14 → 15, toplam 98 → 99. **2026-09-14:** S11 (UI uygulaması) kullanıcının "görevi en fazla ikiye böl" kuralıyla DİL (**S11**) ve YAPI (yeni kalem **S12**, sonrakiler bir kaydı) olarak ikiye bölündü — ölçek/palet/ikon ile ekran kabuğu ayrı işler, kesme çizgisi yeşil ara durum (D-109) → Faz S 13 → 14, toplam 97 → 98. **E4 kapsamı ölçümle değişti ama kalem sayısı değişmedi:** tur "dosya bırak"
+96 → 97. **2026-09-14 (S14):** karakter kalemi kullanıcının *"görevi en fazla ikiye böl"* kuralıyla PERSONEL (**S14**) ve MÜŞTERİ (yeni kalem **S15**) olarak ikiye bölündü — kesme çizgisi yeşil ara durum: personel skinned, müşteriler kapsül olarak çalışmaya devam ediyor (D-112) → Faz S 14 → 15, toplam 98 → 99. **2026-09-14 (S16):** kullanıcının *"elde tepsi tutma falan sorun"* geri bildirimi kendi turunu istedi (ölçüm + kemik katmanlaması + iki sessiz hata) → Faz S 15 → 16, toplam 99 → 100. **2026-09-14:** S11 (UI uygulaması) kullanıcının "görevi en fazla ikiye böl" kuralıyla DİL (**S11**) ve YAPI (yeni kalem **S12**, sonrakiler bir kaydı) olarak ikiye bölündü — ölçek/palet/ikon ile ekran kabuğu ayrı işler, kesme çizgisi yeşil ara durum (D-109) → Faz S 13 → 14, toplam 97 → 98. **E4 kapsamı ölçümle değişti ama kalem sayısı değişmedi:** tur "dosya bırak"
 olarak açılmıştı, ölçüm "dosya alma, motoru büyüt" dedi (D-096); ortam sesi + `settings.music`
 kablosu E4'ün dışında kaldı ve **henüz kendi kalemi olmadı** — açık kalemler listesinde duruyor.
 
@@ -245,7 +245,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   değil; kendi turunu ister.
 - ⏳ **E5 — hareketli onboarding**
 
-## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (14/15) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
+## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (15/16) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
 - ✅ **S1 — pad ve yükseltme dili yeniden yazıldı** · çember → **köşe parantezli kare** (kenar
   ortaları boş), dolum büyüyen disk → **alttan üste dolan kare**, "Masa"/"Çay Yükselt"/"Usta"
   → hepsinde **YÜKSELT** + solunda düz yukarı ok, yazı 700 → 800, 💎 pulu "mavi kare" → gerçek
@@ -454,6 +454,15 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   1,57 ms) ve **oturan müşteri masaya döndürüldü** (yön hareketten türüyordu, oturunca geldiği
   yöne bakakalıyordu). Bekçi `tests/karakter-senkron.test.ts` 23 denetim, **21 mutasyon, kaçan 0**.
   Devreden: oyuncuda 2,0× artık kayma (hız düşürmek DENGE, ölçülmedi) · Rogue'un omzu 0,709.
+- ✅ **S16 — elde tepsi tutma (D-114)** — tepsi ele değil, gövdenin yanında **sabit bir dünya
+  noktasına** asılıydı ve taşırken yürüme klibi oynuyordu (çapa y 0,953 ↔ eller 0,66: tepsi
+  ellerin 29 cm üstünde). Artık iki `handslot` kemiğinin ortasına bağlı ve klipler **kemik
+  kümesine bölündü** — alt gövde yürür, üst gövde `Holding_A` oynar. Kodun `Walking_B`'yi
+  "taşıma" diye etiketlemesi de ölçümle çürüdü (eller arkada). Yolda **iki sessiz hata** çıktı:
+  three glTF düğüm adındaki **noktayı siliyor** (kemik kümesi hiçbir kolu yakalamıyordu, tepsi
+  ayaklarda kalıyordu) ve `useGLTF`e her render **yeni yol dizisi** veriliyordu (açılışta
+  "Maximum update depth exceeded" → duman aralıklı kırmızı). Bekçi
+  `tests/karakter-senkron.test.ts` 32 denetim, **32 mutasyon, kaçan 0** · vitest 975 · duman 42/42.
 
 **Faz S kapısı:** 185 kullanılmayan KayKit modeli oyuna bağlı + UI dili maketle onaylanmış +
 ses kaynağı kararı yazılı. Ondan sonra Faz F'e (paketleme) geçilir.
