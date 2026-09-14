@@ -144,7 +144,7 @@
   <div class="kunye">
     <span><b>Ham çıktı</b> docs/olcum-yuruyus.json</span>
     <span><b>Rapor</b> docs/karakter-raporu-s15.md</span>
-    <span><b>Commit</b> 719296b · ölçüm 93282ae</span>
+    <span><b>Commit</b> 5fe2b0e · ölçüm 93282ae</span>
     <span><b>Tarih</b> 14 Eylül 2026</span>
   </div>
 </header>
@@ -369,6 +369,43 @@
     <figcaption>Her oturan müşteri kendi masasına bakıyor. Soldaki turuncu sağa, ortadaki mavi sola dönmüş.</figcaption>
   </figure>
   <p class="not"><strong>Bekçi:</strong> 21 → <strong>23 denetim</strong>, 18 → <strong>21 mutasyon</strong>, kaçan 0. vitest 966 ✓ · duman 42/42 ✓ · <code>719296b</code></p>
+</section>
+
+<!-- ═══════════ S16 ═══════════ -->
+<section class="kol">
+  <div class="kol-bas"><span class="harf">3</span><h2>Elde tepsi tutma</h2></div>
+  <p class="soru">“Şu an elde tepsi tutma falan sorun ama ya” — kare kusuru gösterdi, kod sebebini.</p>
+
+  <p>Tepsi <strong>ele değil</strong>, gövdenin yanında dünya-uzayında sabit bir noktaya asılıydı; taşırken de normal yürüme klibi oynuyordu. Yani <strong>kollar sallanırken tepsi havada asılı</strong> duruyordu. Rig’in kendi eşya çapaları (<code>handslot</code> kemikleri) ve <code>Holding</code> klipleri repoda duruyor, ikisi de kullanılmıyordu.</p>
+
+  <div class="kaydir">
+  <table>
+    <thead><tr><th>klip</th><th>el yüksekliği</th><th>el önde mi</th><th>el oynaması</th></tr></thead>
+    <tbody>
+      <tr class="vurgu"><td>Holding_A <span class="not">seçilen</span></td><td>0,661</td><td class="ok">0,423 önde</td><td class="ok">0,002 sabit</td></tr>
+      <tr><td>Holding_B</td><td>0,635</td><td>0,367 önde</td><td>0,002</td></tr>
+      <tr><td>Walking_A <span class="not">taşırken oynuyordu</span></td><td>0,650</td><td class="kir">0,104</td><td class="kir">0,411 sallanıyor</td></tr>
+      <tr><td>Walking_B <span class="not">kodda “taşıma” yazıyordu</span></td><td>0,478</td><td class="kir">−0,050 ARKADA</td><td class="kir">0,306</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>Bugünkü çapa <strong>y 0,953</strong>, eller ise <strong>0,66</strong> — tepsi ellerin <strong>29 cm üstündeymiş</strong>. Bir de kodun <code>Walking_B</code>’yi “taşıma” diye etiketlemesi yanlışmış: o klipte eller <strong>arkada</strong>.</p>
+
+  <p>Artık tepsi iki <code>handslot</code> kemiğinin ortasına bağlı — konumu takip ediyor ama dönüşü almıyor, yani elin eğimiyle yalpalamıyor. KayKit’te “yürürken taşıma” klibi olmadığı için klipleri <strong>kemik kümesine böldüm</strong>: alt gövde yürüyor, üst gövde tepsiyi tutuyor, ikisi aynı anda.</p>
+
+  <figure>
+    <img src="gorsel/ss/s16-tepsi-yakin.png" alt="Yakın kadraj: sahip tepsiyi iki eliyle önünde tutuyor, çay bardakları görünüyor">
+    <figcaption>Tepsi ellerde, kollar tepsiyi sarıyor. Arkadaki bordo dikdörtgen önlük plakası — ayrı bir cila kalemi.</figcaption>
+  </figure>
+
+  <div class="oneri">
+    <span class="goz">Yolda çıkan iki sessiz hata</span>
+    <p><strong>three, glTF düğüm adındaki noktayı siliyor.</strong> Dosyada <code>handslot.l</code> yazıyor, sahnede adı <code>handslotl</code>. Noktalı yazdığım kemik kümesi hiçbir kolu yakalamıyordu ve el araması boş dönüyordu — tepsi sessizce karakterin <em>ayaklarında</em> kalıyordu. Konsol hatası yok. Bekçi artık adları kaynak metninden değil <strong>gerçek dosyadan</strong> okuyup karşılaştırıyor.</p>
+    <p><strong>Yükleyiciye her karede yeni yol listesi veriliyordu.</strong> Bu, açılış ekranını “Maximum update depth exceeded” ile patlatıyor ve duman testini aralıklı kırmızıya düşürüyordu. İlk tanım yanlıştı (havuz kurulumu sandım); hata mesajını yakalayınca gerçek sebep çıktı.</p>
+  </div>
+
+  <p class="not"><strong>Bekçi:</strong> 23 → <strong>32 denetim</strong>, 21 → <strong>32 mutasyon</strong>, kaçan 0. vitest 975 ✓ · duman 42/42 ✓ (dört koşu) · <code>5fe2b0e</code></p>
 </section>
 
 <section class="kol" style="border-bottom:none">
