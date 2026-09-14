@@ -6,6 +6,7 @@ import { gozDegistir } from './atlasUV';
 import { Model } from './Model';
 import { PALETTE } from '../../config/palette';
 import { useGame } from '../../game/store';
+import { THE_SERVICE } from '../../game/world';
 import {
   BACK_Z,
   KITCHEN_S,
@@ -20,6 +21,12 @@ import {
   zeminEsleme,
   kayGovde,
   modulX,
+  ADA_UNITS,
+  adaModeli,
+  adaZ,
+  mutfakSeviyesi,
+  uniteModeli,
+  uniteY,
   type KitchenKey,
   type KitchenUnit,
 } from './kitchenLook';
@@ -63,15 +70,23 @@ function Kutu({ model, renk, olcek = KITCHEN_S }: { model: KitchenKey; renk: str
   );
 }
 
-/** Modeli olmayan/yüklenmeyen ünitenin yerine ne çizilir. */
+/**
+ * Modeli olmayan/yüklenmeyen ünitenin yerine ne çizilir.
+ * S22: kademe zincirlerinin ALT üyeleri de buraya düşebilir — greybox-first kuralı seviyeye
+ * bağlı değil, her basamakta geçerli.
+ */
 function yedek(key: KitchenKey, olcek = KITCHEN_S) {
   switch (key) {
     case 'kitchencounter_straight_A_backsplash':
     case 'kitchencounter_straight_B_backsplash':
+    case 'kitchencounter_straight_A':
+    case 'kitchencounter_straight_B':
       return <MaketCounter len={MODULE_W} pos={[0, 0, 0]} />;
     case 'kitchencounter_sink_backsplash':
+    case 'kitchencounter_sink':
       return <MaketDishSink pos={[0, 0, 0]} />;
     case 'stove_multi':
+    case 'stove_single':
       return <MaketCezveStation pos={[0, 0, 0]} />;
     case 'crate':
     case 'crate_potatoes':
@@ -85,6 +100,10 @@ function yedek(key: KitchenKey, olcek = KITCHEN_S) {
     case 'oven':
       return <Kutu model={key} renk={PALETTE.griddleLid} olcek={olcek} />;
     case 'kitchencabinet':
+    case 'kitchencabinet_half':
+    case 'kitchentable_A':
+    case 'kitchentable_A_large':
+    case 'kitchentable_A_large_decorated':
       return <Kutu model={key} renk={PALETTE.tableWood} olcek={olcek} />;
     default:
       return <Kutu model={key} renk={PALETTE.plate} olcek={olcek} />;
@@ -94,16 +113,48 @@ function yedek(key: KitchenKey, olcek = KITCHEN_S) {
 /** Damacana rafının KayKit karşılığı yok — o ünite hep yedeğiyle (elle çizili) gelir. */
 const src = (key: KitchenKey): string | undefined => (key === 'waterRack' ? undefined : `${KAY}${key}.gltf`);
 
-function Unite({ u }: { u: KitchenUnit }) {
+/**
+ * Bir ünite — S22'den beri SEVİYEYE bağlı.
+ *
+ * Çizilen gövde `uniteModeli(u, i, level)`, düşey ankrajı `uniteY(u, model)`. İkisi de
+ * `kitchenLook`ta; buraya ne model adı ne koordinat yazılır. `i` ünitenin `KITCHEN_UNITS`
+ * içindeki index'idir — merdiven (`KADEME_MERDIVENI`) üniteleri onunla adresliyor.
+ */
+function Unite({ u, i, level }: { u: KitchenUnit; i: number; level: number }) {
   const olcek = u.olcek ?? KITCHEN_S;
+  const model = uniteModeli(u, i, level);
   return (
     <group position={[u.x, 0, u.z]} rotation={[0, (u.ceyrek * Math.PI) / 2, 0]}>
       <Model
-        src={src(u.key)}
+        src={src(model)}
         scale={olcek}
-        position={[0, u.y ?? 0, 0]}
-        fallback={yedek(u.key, olcek)}
+        position={[0, uniteY(u, model), 0]}
+        fallback={yedek(model, olcek)}
       />
+    </group>
+  );
+}
+
+/**
+ * ADALAR (S22 · Y1 · D-119) — odanın görünür boşluğunda geç basamaklarda doğan hazırlık
+ * masaları. Doğdukları yerde kendi zincirlerinde büyürler; kurulmamış ada hiç çizilmez
+ * (kilitli ALAN çizilmez kuralı — burada kilitli bir OBJE değil, henüz var olmayan bir şey).
+ * Konum `kitchenLook`tan: x modül ritminden, z çaycının koridorundan türüyor.
+ */
+function Adalar({ level }: { level: number }) {
+  const areasOpen = useGame((s) => s.areasOpen);
+  const z = adaZ(areasOpen);
+  return (
+    <group>
+      {ADA_UNITS.map((a, s) => {
+        const model = adaModeli(s, level);
+        if (!model) return null;
+        return (
+          <group key={s} position={[modulX(a.modul), 0, z]}>
+            <Model src={src(model)} scale={KITCHEN_S} fallback={yedek(model)} />
+          </group>
+        );
+      })}
     </group>
   );
 }
@@ -224,14 +275,21 @@ function Fayans() {
 }
 
 export function Kitchen() {
+  /**
+   * S22 (D-119): oda artık SERVİS NOKTASININ seviyesiyle büyüyor. S20 ölçümü bu okumanın
+   * 0 olduğunu saymıştı (`Kitchen.tsx` seviye okuması 0, seviye okuyan `src` dosyası 14).
+   * Okuma SALT GÖRSEL: mutfak hiçbir sayı üretmez, hiçbir sayı tüketmez.
+   */
+  const level = useGame((s) => mutfakSeviyesi(s.stationLevels[THE_SERVICE] ?? 0));
   return (
     <group>
       {/* Zemin DUVAR KİPİNDEN BAĞIMSIZ: duvar denemesi reddedildi ama karo zemin kullanıcı
           tarafından beğenildi (2026-09-09) — ikisi ayrı karar, ayrı anahtar. */}
       <Fayans />
       {KITCHEN_UNITS.map((u, i) => (
-        <Unite key={`${u.key}-${i}`} u={u} />
+        <Unite key={`${u.key}-${i}`} u={u} i={i} level={level} />
       ))}
+      <Adalar level={level} />
       <Raflar />
     </group>
   );

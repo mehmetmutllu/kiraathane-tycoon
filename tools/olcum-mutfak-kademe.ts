@@ -31,7 +31,7 @@
  * Kullanım: npx tsx tools/olcum-mutfak-kademe.ts                                       (kısa)
  *           OLCUM=tam npx tsx tools/olcum-mutfak-kademe.ts > docs/olcum-mutfak-kademe.txt
  */
-import { readdirSync } from 'node:fs';
+import { readdirSync, writeFileSync } from 'node:fs';
 import { CAMERA_LOOK_Y, PLAYER_RADIUS } from '../src/config/actor';
 import { CAMERA_DIST, CAMERA_FOV } from '../src/config/camera';
 import { BAND, WAITER_STATION, servicePlace } from '../src/game/layout';
@@ -131,6 +131,14 @@ function kokAyir(ad: string): { kok: string; olcek: number; donanim: number } {
   }
   return { kok: k, olcek, donanim };
 }
+/** Bir modelin GERÇEK sınır kutusu — .gltf accessor'larından, tahmin yok. */
+const bboxOnbellek = new Map<string, { mn: number[]; mx: number[]; boyut: number[] }>();
+function bboxHam(ad: string) {
+  if (!bboxOnbellek.has(ad)) bboxOnbellek.set(ad, bbox(`${PAKET}${ad}.gltf`) as { mn: number[]; mx: number[]; boyut: number[] });
+  return bboxOnbellek.get(ad)!;
+}
+const ham = bboxHam;
+
 const aileler = new Map<string, { ad: string; olcek: number; donanim: number }[]>();
 for (const m of modeller) {
   const { kok, olcek, donanim } = kokAyir(m);
@@ -139,6 +147,34 @@ for (const m of modeller) {
 }
 // Sıra ÖNCE ölçek, SONRA donanım: gövde büyür, sonra üstü donanır.
 for (const [, uyeler] of aileler) uyeler.sort((a, b) => (a.olcek - b.olcek) || (a.donanim - b.donanim));
+
+/**
+ * PARÇA SÜZGECİ — ad benzerliği "aynı ailedendir" demeye yetmiyor.
+ *
+ * `stove_single_countertop` adı ocağın bir kademesi gibi okunuyor ama model bağımsız bir
+ * gövde DEĞİL: yüksekliği 0,278 ve tabanı y = 0,930'da, yani tezgâhın içine gömülen ocak
+ * GÖZÜ. Zincire kademe diye girseydi oyunda ocak ortadan kalkıp havada ince bir plaka
+ * kalırdı — ve sınır kutusu ölçen bir araç bunu asla yakalayamazdı, çünkü kutu geçerli.
+ *
+ * Türetilmiş kural (elle liste değil): bir üye, ailenin EN YÜKSEK üyesinin
+ *   · yüksekliğinin %40'ından kısaysa VE
+ *   · tabanı o yüksekliğin yarısından yukarıdaysa
+ * o bir PARÇADIR, kademe değil. Kural duvar dolabını (h %50, ikisi de asılı) ve
+ * bulaşıklığı (h %55) elemiyor; yalnız gömme gözleri eliyor.
+ */
+const PARCA_ORAN = 0.4;
+let elenenParca = 0;
+for (const [kok, uyeler] of aileler) {
+  if (uyeler.length < 2) continue;
+  const enYuksek = Math.max(...uyeler.map((u) => bboxHam(u.ad).boyut[1]));
+  const kalan = uyeler.filter((u) => {
+    const b = bboxHam(u.ad);
+    const parca = b.boyut[1] < enYuksek * PARCA_ORAN && b.mn[1] > enYuksek * 0.5;
+    if (parca) elenenParca++;
+    return !parca;
+  });
+  aileler.set(kok, kalan);
+}
 const cokluAile = [...aileler.entries()].filter(([, u]) => u.length >= 2);
 const enUzun = Math.max(...cokluAile.map(([, u]) => u.length));
 yaz(`≥2 üyeli kademe ailesi             ${cokluAile.length}`);
@@ -164,12 +200,6 @@ yaz();
 damga('paket kademe ailesi veriyor', cokluAile.length >= 10, `${cokluAile.length} aile`);
 damga('en uzun zincir merdiveni taşır', enUzun >= 3, `${enUzun} kademe`);
 
-/** Bir modelin GERÇEK sınır kutusu — .gltf accessor'larından, tahmin yok. */
-const bboxOnbellek = new Map<string, { mn: number[]; mx: number[]; boyut: number[] }>();
-function ham(ad: string) {
-  if (!bboxOnbellek.has(ad)) bboxOnbellek.set(ad, bbox(`${PAKET}${ad}.gltf`) as { mn: number[]; mx: number[]; boyut: number[] });
-  return bboxOnbellek.get(ad)!;
-}
 
 yaz('ZİNCİRLERİN GERÇEK BÜYÜMESİ — ayak izi (ham birim; dünya için ×' + KITCHEN_S + ')');
 yaz('  zincir'.padEnd(52) + 'en'.padStart(12) + 'derinlik'.padStart(12) + 'yükseklik'.padStart(12) + '  hacim');
@@ -380,7 +410,10 @@ yaz();
  * ADA SLOTLARI (Y1) — hattın KENDİ ritmine (MODULE_W) oturan, boşluğun içinde duran modüller.
  * Her slot için: çakışma · çaycı koridorunu daraltma · görünürlük ölçülür.
  */
-const ADA_DERINLIK = NATIVE.kitchencounter_straight_A.maxZ - NATIVE.kitchencounter_straight_A.minZ;
+// Ada derinliği ADANIN KENDİ gövdesinden (zincirin üç üyesi de z'de −1,0…+1,0): 2,00 ham.
+// Başka bir modelin derinliğiyle hesaplanırsa araç ile oyun 0,02 br ayrışır ve bekçi
+// hangisinin doğru olduğunu söyleyemez.
+const ADA_DERINLIK = 2.0;
 const adaD = ADA_DERINLIK * KITCHEN_S;
 const adaZ = (BOS.z0 + BOS.z1) / 2;
 yaz('ADA SLOTLARI (Y1) — modül ritmine oturan, boşluğun ortasına dizilen gövdeler');
@@ -656,12 +689,22 @@ const ADA_ZINCIR = ['kitchentable_A', 'kitchentable_A_large', 'kitchentable_A_la
 /** Adanın z ekseni — §Y'de ölçülen, çaycıya tam koridor bırakan eksen (elle yazılmaz). */
 const ADA_Z_GERCEK = gerekenAdaZ;
 /**
- * Ada gövdeleri §Y'nin ÇAKIŞMASIZ slotlarına doğar, pahalı basamaklardan başlayarak geriye:
- * son slot L6'ya, bir önceki L5'e, bir önceki L4'e. Dördüncü temiz slot bilerek BOŞ kalır —
- * odanın dolaşım payı (S20'nin "boşluk tam da en görünür şeritte" bulgusu tümden kapanmasın).
+ * ADA SAYISI ÜÇ DEĞİL İKİ — çakışma denetiminin kararı.
+ *
+ * §Y dört temiz slot ölçtü ve ilk taslak bitişik üç slota ada koydu. Ama ada da YERİNDE
+ * büyüyor: `kitchentable_A_large` 3,0 ham = **2,70 br**, slot aralığı ise **1,80 br**.
+ * Yani büyüyen iki komşu ada birbirinin içine 0,45 br giriyordu (§Ç yakaladı). Bitişik slot
+ * ancak büyümeyen ada taşır; büyüyen ada BİR slot atlamalı. İkisi k=2 ve k=4'te, aralık
+ * 3,60 br → en büyük hâllerinde bile 0,90 br ayrı duruyorlar.
+ *
+ * Kalan iki slot bilerek boş: oda tıkanmasın, S20'nin "boşluk tam da en görünür şeritte"
+ * bulgusu tümden kapanmasın, ve çaycının koridoru 0,94'te kalsın.
  */
-const ADA_PLAN: { slotX: number; dogus: number }[] = TEMIZ_SLOTLAR.slice(0, 3)
-  .map((x, s) => ({ slotX: x, dogus: MAXL - 2 + s }));
+const ADA_PLAN: { slotX: number; asama: readonly number[] }[] = [
+  // asama[L−1]: −1 = henüz yok · 0,1,2 = zincir üyesi
+  { slotX: TEMIZ_SLOTLAR[0], asama: [-1, -1, -1, 0, 0, 2] },
+  { slotX: TEMIZ_SLOTLAR[2], asama: [-1, -1, -1, -1, 0, 1] },
+];
 function adaKutu(slotX: number, z: number, modelAd: string): AABB {
   const h = ham(modelAd);
   const S = KITCHEN_S;
@@ -688,16 +731,87 @@ const K5 = (L: number): Cizim[] => {
   });
   // Geç basamaklar: ada gövdeleri doğar (L4, L5, L6) ve doğduktan sonra zincirinde tırmanır.
   ADA_PLAN.forEach((a, s) => {
-    if (L < a.dogus) return;
-    const asama = Math.min(L - a.dogus, ADA_ZINCIR.length - 1);
-    const onceAsama = Math.min(Math.max(0, L - 1 - a.dogus), ADA_ZINCIR.length - 1);
-    const yeniDogdu = L === a.dogus;
+    const asama = a.asama[L - 1];
+    if (asama < 0) return;
+    const once = L > 1 ? a.asama[L - 2] : -1;
+    const yeniDogdu = once < 0;
     govdeler.push({
       ad: `ada${s}:${ADA_ZINCIR[asama]}`,
       kutu: adaKutu(a.slotX, ADA_Z_GERCEK, ADA_ZINCIR[asama]),
-      degisti: yeniDogdu || asama !== onceAsama,
+      degisti: yeniDogdu || asama !== once,
       tur: yeniDogdu ? ('dogus' as Tur) : ('takas' as Tur),
-      once: yeniDogdu ? undefined : adaKutu(a.slotX, ADA_Z_GERCEK, ADA_ZINCIR[onceAsama]),
+      once: yeniDogdu ? undefined : adaKutu(a.slotX, ADA_Z_GERCEK, ADA_ZINCIR[once]),
+    });
+  });
+  return govdeler;
+};
+
+/**
+ * K5y — K5'in YAZILMIŞ MERDİVENİ (uygulanan kol).
+ *
+ * NEDEN: K5'in dağıtımı türetilmişti (havuzun ilk yarısı L2-L3'e sırayla) ve ocağın **5
+ * kademelik** zincirinin dördünü birden L2'ye yığıyordu — odanın en görünür gövdesi tek
+ * adımda `stove_single`'dan `stove_multi_decorated`'a atlıyor, L3'e üç küçük takas kalıyordu.
+ * Bu kolun kendi kusuru değil, raporun K3 için zaten yazdığı şeyin aynısı: **yerinde büyüme
+ * elle yazılmış bir merdiven ister.** Kol (K5 + Y1) değişmedi; değişen, aynı malzemenin
+ * basamaklara dağıtımı.
+ *
+ * MERDİVEN OYUNUN KENDİ KİMLİĞİNE OTURUR (`economy.config.service`) — ama basamakları
+ * ADIM KÜTLESİ tablosu belirledi, cümle değil: ocağın `stove_single → stove_multi` adımı
+ * kulağa büyük geliyor, ölçüsü **×0,01** (göz sayısı değişiyor, siluet değil). Tek başına
+ * bir basamağı taşıyamaz — yanına gövde büyüten adımlar konur.
+ *   L1  derme çatma: ocak tek gözlü, hat sırtlıksız, dolaplar yarım, bulaşıklık boş
+ *   L2  ocak çoğalır + bulaşıklık dolar + doğu tezgâhı sırtlanır
+ *   L3  batı tezgâhı sırtlanır + ilk duvar dolabı tam boya çıkar
+ *   L4  TEZGÂH kimliği: hazırlık tezgâhları + lavabo sırtlanır, ilk ADA kurulur
+ *   L5  TOST: ocak tam donanımına geçer · ikinci dolap · peçetelik rafı · ikinci ada
+ *   L6  son basamak: iki hazırlık tezgâhı donanır · soğutucu dolar · üçüncü ada,
+ *       öncekiler kendi zincirlerinde büyür
+ * Dördüncü temiz slot BİLEREK boş: oda tıkanmasın, çaycının koridoru 0,94'te kalsın.
+ */
+interface YaziliAdim { u: number; asama: number }
+const K5Y_MERDIVEN: readonly (readonly YaziliAdim[])[] = [
+  [], // L1 — başlangıç, hepsi zincirin ilk üyesinde
+  [{ u: 3, asama: 1 }, { u: 6, asama: 1 }, { u: 5, asama: 1 }],   // L2 ocak çoğalır · bulaşıklık dolar · doğu tezgâhı
+  [{ u: 11, asama: 1 }, { u: 2, asama: 1 }],                      // L3 batı tezgâhı · ilk duvar dolabı tam boya
+  [{ u: 1, asama: 1 }, { u: 7, asama: 1 }, { u: 8, asama: 1 }],   // L4 TEZGÂH: hazırlık + lavabo sırtlanır (+ ada0 kurulur)
+  [{ u: 9, asama: 1 }],                                           // L5 TOST: ikinci duvar dolabı (+ ada1 kurulur)
+  [{ u: 17, asama: 1 }],                                          // L6 peçetelik rafı donanır (+ ada0 tam, ada1 büyür)
+];
+/**
+ * SOĞUTUCU ZİNCİRİ ÇIKARILDI — bekçi testinin kararı, ölçümün değil.
+ * İlk yazımda `fridge_A → fridge_A_decorated` vardı; `tests/mutfak-kademe-s22.test.ts`
+ * yakaladı: o zincir L6'yı `KITCHEN_UNITS`in ilan ettiği gövdenin ÖTESİNE taşıyor, yani oda
+ * iki ayrı yerde tanımlanmış oluyordu. Kural artık yazılı: **zincirin son üyesi = ünitenin
+ * kendi anahtarı**, yani L6 tam olarak bugünkü odadır. Kaybedilen kütle ×0,00 (kutu aynı).
+ */
+const K5Y_ZINCIR_HARIC: readonly string[] = ['fridge_A'];
+/** L'de i. ünitenin ulaştığı zincir aşaması (merdiven kümülatif okunur). */
+function k5yAsama(i: number, L: number): number {
+  let a = 0;
+  for (let s = 0; s < L && s < K5Y_MERDIVEN.length; s++)
+    for (const adim of K5Y_MERDIVEN[s]) if (adim.u === i) a = Math.max(a, adim.asama);
+  return a;
+}
+const K5y = (L: number): Cizim[] => {
+  const govdeler: Cizim[] = KITCHEN_UNITS.map((u, i) => {
+    const z = K5Y_ZINCIR_HARIC.includes(u.key as string) ? [] : (zincirler.get(u.key as string) ?? []);
+    const ad = (n: number) => (z.length >= 2 ? z[Math.min(n, z.length - 1)] : (u.key as string));
+    const simdi = ad(k5yAsama(i, L));
+    const onceAd = ad(k5yAsama(i, Math.max(1, L - 1)));
+    return { ad: `${simdi}#${i}`, kutu: kutuGovdeyle(u, simdi), degisti: L > 1 && simdi !== onceAd, tur: 'takas' as Tur, once: kutuGovdeyle(u, onceAd) };
+  });
+  ADA_PLAN.forEach((a, s) => {
+    const asama = a.asama[L - 1];
+    if (asama < 0) return;
+    const once = L > 1 ? a.asama[L - 2] : -1;
+    const yeniDogdu = once < 0;
+    govdeler.push({
+      ad: `ada${s}:${ADA_ZINCIR[asama]}`,
+      kutu: adaKutu(a.slotX, ADA_Z_GERCEK, ADA_ZINCIR[asama]),
+      degisti: yeniDogdu || asama !== once,
+      tur: yeniDogdu ? ('dogus' as Tur) : ('takas' as Tur),
+      once: yeniDogdu ? undefined : adaKutu(a.slotX, ADA_Z_GERCEK, ADA_ZINCIR[once]),
     });
   });
   return govdeler;
@@ -711,6 +825,7 @@ const KOLLAR: { ad: string; baslik: string; plan: (L: number) => Cizim[] }[] = [
   { ad: 'K3b', baslik: 'YERİNDE BÜYÜME — geçişler havuzlanıp EŞİT dağıtılır', plan: K3b },
   { ad: 'K4', baslik: 'YERİNDE BÜYÜME — geçişler BEDEL PAYINA orantılı dağıtılır', plan: K4 },
   { ad: 'K5', baslik: 'KARMA — erken takas, geç basamakta adada yeni gövde doğar', plan: K5 },
+  { ad: 'K5y', baslik: 'KARMA · YAZILMIŞ MERDİVEN — uygulanan kol (D-119)', plan: K5y },
 ];
 
 /** Zemine düşen ayak izi alanı (odaya kırpılmış, ızgarayla — üst üste binen gövde iki kez sayılmaz). */
@@ -724,6 +839,25 @@ function doluAlan(cizimler: Cizim[]): number {
     }
   return (hucre / toplam) * ODA_ALAN;
 }
+
+/**
+ * MERDİVENİN HAM MALZEMESİ — hangi ünite hangi adımda ne kadar kütle değiştiriyor?
+ * Merdiven elle yazılacaksa (K5y) yazan kişinin elinde bu tablo olmalı; aksi hâlde
+ * "ocak büyüsün" gibi bir cümle, ekranda 0,04 br³'lük bir değişime karşılık gelebilir.
+ */
+yaz('ZİNCİR ADIMLARININ DÜNYA KÜTLESİ — merdiveni yazan tablo (× ortalama ünite)');
+yaz('  #'.padEnd(5) + 'ünite'.padEnd(40) + 'adım'.padStart(6) + 'geçiş'.padStart(52) + 'delta'.padStart(11));
+const ORT_UNITE_ON = KITCHEN_UNITS.reduce((a, u) => a + hacim(unitBox(u)), 0) / KITCHEN_UNITS.length;
+KITCHEN_UNITS.forEach((u, i) => {
+  const z = zincirler.get(u.key as string) ?? [];
+  for (let a = 1; a < z.length; a++) {
+    const d = Math.abs(hacim(kutuGovdeyle(u, z[a])) - hacim(kutuGovdeyle(u, z[a - 1])));
+    yaz('  ' + String(i).padEnd(3) + (u.key as string).padEnd(40) + `${a - 1}→${a}`.padStart(6)
+      + `${z[a - 1]} → ${z[a]}`.slice(0, 50).padStart(52)
+      + `×${(d / ORT_UNITE_ON).toFixed(2)}`.padStart(11));
+  }
+});
+yaz();
 
 yaz('KOL KOL — her seviyede kaç gövde, ne kadar dolu, ve O BASAMAĞIN DELTASI görünüyor mu?');
 yaz();
@@ -793,6 +927,54 @@ yaz('       (S20: 0/19 görünmez), o yüzden görünürlük tek başına hiçbi
 yaz('       ayıran sayı, en zayıf basamağın kaç ünite kadar kütle değiştirdiği.');
 yaz();
 damga('K0 kör (taban doğrulaması)', kolOzet.K0.korAdim === MAXL - 1, `K0 ${kolOzet.K0.korAdim} kör basamak — taban zaten kademesiz olmalı`);
+
+// ---------------------------------------------------------------------------------------------
+// §Ç — ÇAKIŞMA: uygulanacak kol eski gövdelerin içine giriyor mu?
+// ---------------------------------------------------------------------------------------------
+//
+// Zincirin üst üyeleri her zaman alt üyeyle AYNI kutuda değil: `stove_multi_decorated` x'te
+// simetrik yazılmamış (minX −1,00 · maxX +1,20), yani doğu komşusunun üstüne taşıyor. Kutu
+// ölçen bir kol tablosu bunu göstermez — ayrı sorulmalı. Bugün zaten kasıtlı iç içe duran
+// çiftler var (kasa + kapak, tezgâh + bulaşıklık), o yüzden TABANDAKİ çakışmalar düşülür:
+// yalnız kolun GETİRDİĞİ çakışma rapor edilir.
+cizgi();
+yaz('§Ç — ÇAKIŞMA: uygulanacak kolun getirdiği YENİ iç içe geçmeler');
+cizgi();
+yaz();
+const kesisen = (a: AABB, b: AABB): boolean =>
+  a.minX < b.maxX - 1e-6 && a.maxX > b.minX + 1e-6 &&
+  a.minZ < b.maxZ - 1e-6 && a.maxZ > b.minZ + 1e-6 &&
+  a.minY < b.maxY - 1e-6 && a.maxY > b.minY + 1e-6;
+function ciftler(c: Cizim[]): Map<string, number> {
+  const m = new Map<string, number>();
+  for (let i = 0; i < c.length; i++)
+    for (let j = i + 1; j < c.length; j++)
+      if (kesisen(c[i].kutu, c[j].kutu)) {
+        const ort = Math.min(c[i].kutu.maxX, c[j].kutu.maxX) - Math.max(c[i].kutu.minX, c[j].kutu.minX);
+        m.set(`${i}|${j}`, ort);
+      }
+  return m;
+}
+const TABAN_CIFT = ciftler(K0());
+yaz(`tabandaki (kasıtlı) iç içe çift: ${TABAN_CIFT.size}`);
+yaz();
+yaz('  L'.padEnd(6) + 'yeni çakışma'.padStart(14) + '   ayrıntı');
+let yeniCakisma = 0;
+const UYG = KOLLAR.find((k) => k.ad === 'K5y')!;
+for (let L = 1; L <= MAXL; L++) {
+  const c = UYG.plan(L);
+  const cift = ciftler(c);
+  const yeni = [...cift.entries()].filter(([k]) => !TABAN_CIFT.has(k));
+  yeniCakisma += yeni.length;
+  const ayrinti = yeni.map(([k, ort]) => {
+    const [i, j] = k.split('|').map(Number);
+    return `${c[i].ad.split('#')[0]} ∩ ${c[j].ad.split('#')[0]} (${ort.toFixed(2)} br)`;
+  }).join(' · ');
+  yaz('  L' + L + '   ' + String(yeni.length).padStart(12) + '   ' + (ayrinti || '—'));
+}
+yaz();
+damga('uygulanan kol yeni çakışma getirmiyor', yeniCakisma === 0, `${yeniCakisma} yeni iç içe geçme`);
+yaz();
 damga('kollar ayrışıyor', new Set(KOLLAR.map((k) => kolOzet[k.ad].enDusukKutle.toFixed(2))).size >= 3,
   'kolların en zayıf basamak kütlesi birbirinden ayrışmıyor — ölçüm ayırt etmiyor');
 
@@ -824,4 +1006,43 @@ yaz();
 yaz('  Y — büyümenin yeri: Y0 arka hat KAPALI (kalan ' + hatBosluk.toFixed(2) + ' br, modül 1,80 istiyor)');
 yaz(`      Y1 ada: ${slotSayisi - slotCakisma} temiz slot · boşluk ${BOS.alan.toFixed(2)} br² · çaycı payı ${enDarPay.toFixed(2)} → ${KORIDOR.toFixed(2)} için ada ${kaydirma.toFixed(2)} br geri`);
 yaz();
+
+// =============================================================================================
+// PLAN DIŞA AKTARIMI — karar paketi kolları ANLATMAZ, GÖSTERİR (`feedback_show_dont_ask`)
+// =============================================================================================
+//
+// Karar paketi kuşbakışı bir oda planı çizecek; o planın koordinatları BURADAN gelir, elle
+// yazılmaz. Aksi hâlde paket ölçümden ayrı bir gerçeklik anlatır.
+if (process.env.PLAN_JSON) {
+  const dis = {
+    oda: ODA,
+    odaAlan: ODA_ALAN,
+    maliyet: MALIYET,
+    cayciYolu: { x0: yol.a[0], x1: yol.b[0], z: yolZ },
+    onHat: ON_HAT.map((k) => ({ minX: k.x - k.w / 2, maxX: k.x + k.w / 2, minZ: k.z - k.d / 2, maxZ: k.z + k.d / 2 })),
+    bosluk: BOS,
+    kollar: Object.fromEntries(KOLLAR.map((kol) => [kol.ad, {
+      baslik: kol.baslik,
+      ozet: kolOzet[kol.ad],
+      seviyeler: Array.from({ length: MAXL }, (_, i) => {
+        const L = i + 1;
+        const c = kol.plan(L);
+        return {
+          L,
+          dolu: doluAlan(c),
+          // Basamağın ÖLÇÜLEN delta kütlesi — karar paftası bunu çiziyor; gövde SAYISI değil.
+          delta: c.filter((x) => x.degisti).reduce((a, x) => a + deltaHacim(x), 0),
+          ortUnite: ORT_UNITE,
+          govdeler: c.map((x) => ({
+            ad: x.ad.split('#')[0], degisti: x.degisti, tur: x.tur,
+            minX: x.kutu.minX, maxX: x.kutu.maxX, minZ: x.kutu.minZ, maxZ: x.kutu.maxZ, maxY: x.kutu.maxY,
+          })),
+        };
+      }),
+    }])),
+  };
+  writeFileSync(process.env.PLAN_JSON, JSON.stringify(dis), 'utf8');
+  console.error(`✓ plan JSON yazıldı: ${process.env.PLAN_JSON}`);
+}
+
 damgaOzeti();

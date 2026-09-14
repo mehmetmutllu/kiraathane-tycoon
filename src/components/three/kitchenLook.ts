@@ -60,7 +60,16 @@ export type KitchenKey =
   | 'cuttingboard'
   | 'knife'
   | 'food_ingredient_ham'
-  | 'waterRack';
+  | 'waterRack'
+  // S22 (D-119) — KADEME ZİNCİRLERİNİN alt/üst üyeleri. Oda artık servis noktasının
+  // seviyesiyle büyüyor; bu gövdeler yalnız o merdivende çiziliyor (`KADEME_ZINCIR`).
+  | 'stove_single'
+  | 'kitchencabinet_half'
+  | 'shelf_papertowel'
+  // ADA — odanın ortasındaki hazırlık masası, geç basamaklarda doğup yerinde büyür.
+  | 'kitchentable_A'
+  | 'kitchentable_A_large'
+  | 'kitchentable_A_large_decorated';
 
 /**
  * MODELLERİN HAM SINIR KUTUSU — `tools/model-olc.mjs` çıktısı, birebir.
@@ -109,6 +118,23 @@ export const NATIVE: Record<KitchenKey, { w: number; h: number; minY: number; mi
   knife: { w: 0.25, h: 1.15, minY: -0.211, minZ: -0.05, maxZ: 0.05 },
   // Sucuk: origin ORTADA (minY −0,415) — kasanın içine koyarken taban değil merkez hizalanır.
   food_ingredient_ham: { w: 1.391, h: 0.83, minY: -0.415, minZ: -0.415, maxZ: 0.415 },
+  // S22 (D-119) — kademe zincirlerinin öbür üyeleri. Hepsi `node tools/model-olc.mjs
+  // kaykit-restaurant-bits <ad>` çıktısı, birebir; tek bir sayı elle yazılmadı.
+  //
+  // DİKKAT — ZİNCİRE GİRMEYEN İKİ MODEL: `stove_single_countertop` ve `stove_multi_countertop`
+  // adları ocağın kademesi gibi okunuyor ama gövde değil, tezgâha gömülen OCAK GÖZÜ
+  // (yükseklik 0,278 · tabanı y = 0,930). Zincire alınsaydı ocak kaybolup havada bir plaka
+  // kalırdı. Ölçüm aracı bunları türetilmiş bir "parça süzgeci" ile eliyor
+  // (`tools/olcum-mutfak-kademe.ts` §S); burada da yoklar.
+  stove_single: { w: 2.0, h: 1.208, minY: 0, minZ: -1.03, maxZ: 1.258 },
+  // Yarım dolap: native 3→4 arası, yani tepesi TAM dolapla aynı hizada (ikisi de 4,0'da biter).
+  // Üst hiza korunur, dolap aşağı doğru büyür — `asiliY` bunu türetiyor.
+  kitchencabinet_half: { w: 2.0, h: 1.0, minY: 3.0, minZ: 0, maxZ: 1.042 },
+  shelf_papertowel: { w: 2.0, h: 1.06, minY: -0.91, minZ: 0, maxZ: 0.6 },
+  // ADA ZİNCİRİ — üçü de z'de −1,0…+1,0 (derinlik 2,00); `ADA_Z` bu sayıdan türüyor.
+  kitchentable_A: { w: 2.0, h: 1.004, minY: -0.004, minZ: -1.0, maxZ: 1.0 },
+  kitchentable_A_large: { w: 3.0, h: 1.004, minY: -0.004, minZ: -1.0, maxZ: 1.0 },
+  kitchentable_A_large_decorated: { w: 3.0, h: 1.928, minY: -0.004, minZ: -1.0, maxZ: 1.0 },
   // MaketWaterRack (elle çizili): 1,3 en × 1,5 yükseklik × 0,5 derinlik, origin ortada.
   // Ham sayı olarak yazılır ki `unitBox` ölçeği herkese aynı uygulasın.
   waterRack: {
@@ -286,10 +312,172 @@ export const KITCHEN_UNITS: readonly KitchenUnit[] = [
  * Bu listede OLMAYAN duvar üniteleri (havluluk) kendi yüksekliğinde asılır — bekçi ikisini
  * ayrı denetler. Liste burada durur ki kural ile çizim tek kaynaktan okusun.
  */
-export const UST_HIZALI: readonly KitchenKey[] = ['kitchencabinet', 'extractorhood', 'shelf_papertowel_decorated'];
+export const UST_HIZALI: readonly KitchenKey[] = [
+  'kitchencabinet', 'extractorhood', 'shelf_papertowel_decorated',
+  // S22: zincirin alt üyeleri de asılı — ve ankrajları KENDİ ölçülerinden türemeli,
+  // ünitenin donmuş `y`'sinden değil (`asiliY`).
+  'kitchencabinet_half', 'shelf_papertowel',
+];
+
+/**
+ * ASILI ÜNİTENİN ANKRAJI — ÜST HİZA, çizilen ÜYEYE göre.
+ *
+ * `WALL_UNIT_Y` ve `RAF_Y` tek bir modelden türetilmişti; oda kademelendiğinde aynı ünite
+ * seviyeye göre BAŞKA bir gövdeyle çiziliyor ve o gövdenin tepesi artık duvarın tepesinde
+ * durmuyor. Örnek: sade peçetelik rafı (`minY + h` = 0,15) süslü hâlin ankrajıyla (0,80)
+ * çizilseydi duvarın tepesinden 0,59 br aşağıda asılı kalırdı. Kural değişmedi — tepesi
+ * duvarın tepesinde; değişen, kuralın hangi modelin sayısına uygulandığı.
+ */
+export const asiliY = (key: KitchenKey): number =>
+  WALL_H - (NATIVE[key].minY + NATIVE[key].h) * KITCHEN_S;
 
 /** Duvar rafının (çay bardakları) asıldığı modüller — hattın ortası. */
 export const RAF_MODULLERI = [3, 4] as const;
+
+// =============================================================================================
+//  KADEMELİ MUTFAK — S22 · D-119  (ölçüm: `docs/mutfak-kademe-raporu-s22.md`)
+// =============================================================================================
+/**
+ * MUTFAK ARTIK SERVİS NOKTASININ SEVİYESİYLE BÜYÜYOR.
+ *
+ * S20 sayıyı vermişti: tezgâh 6 kademe çıkarken oda altısında da aynı 19 üniteyi çiziyordu,
+ * seviye okuması 0'dı. S22 yedi büyüme kalıbını varyant olarak ölçtü; seçilen kol **K5 + Y1**
+ * (D-119): erken basamaklarda gövdeler YERİNDE büyür, geç ve pahalı basamaklarda odanın
+ * görünür boşluğunda ADA doğar. Kullanıcı kuralı: *"objeler küçük doğup yerinde büyür."*
+ *
+ * MERDİVEN ELLE YAZILIR, TÜRETİLMEZ — ve bu bir ölçüm bulgusu (raporun §K'sı):
+ * "her gövde kendi zincirini altı basamağa yaysın" kuralı kısa zincirleri son basamağa yığıp
+ * L2'yi KÖR bırakıyordu. WC'nin `LAVABO_SAYI_BY_LEVEL`'i de aynı sebeple elle yazılı (D-104).
+ *
+ * BASAMAKLARI CÜMLE DEĞİL SAYI BELİRLEDİ: "ocak büyüsün" kulağa büyük geliyor ama
+ * `stove_single → stove_multi` adımının ölçüsü ×0,01 ünite (göz sayısı değişiyor, siluet
+ * değil), o yüzden L2'de yanına iki gövde daha kondu. Basamak kütleleri (× ortalama ünite):
+ * L2 ×0,40 · L3 ×0,75 · L4 ×1,46 · L5 ×1,80 · L6 ×2,47 — tek yönlü artıyor ve bedel
+ * merdiveniyle uyumlu (r = 0,87). Kör basamak 0, yalnız-detay basamağı 0.
+ */
+export const KADEME_ZINCIR: Partial<Record<KitchenKey, readonly KitchenKey[]>> = {
+  stove_multi: ['stove_single', 'stove_multi'],
+  kitchencounter_straight_A_backsplash: ['kitchencounter_straight_A', 'kitchencounter_straight_A_backsplash'],
+  kitchencounter_straight_B_backsplash: ['kitchencounter_straight_B', 'kitchencounter_straight_B_backsplash'],
+  kitchencounter_sink_backsplash: ['kitchencounter_sink', 'kitchencounter_sink_backsplash'],
+  kitchencabinet: ['kitchencabinet_half', 'kitchencabinet'],
+  dishrack_plates: ['dishrack', 'dishrack_plates'],
+  shelf_papertowel_decorated: ['shelf_papertowel', 'shelf_papertowel_decorated'],
+};
+
+/**
+ * ZİNCİRİN SON ÜYESİ = ÜNİTENİN KENDİ ANAHTARI. Yani **L6 tam olarak bugünkü odadır**;
+ * merdiven odayı büyütmez, oraya NASIL varıldığını anlatır. `KITCHEN_UNITS` bitmiş mekânın
+ * tek kaynağı olarak kalır (`feedback_single_source_of_truth`) ve `tests/kitchen-look.test.ts`
+ * hâlâ "son hâli" bekçiliyor demektir.
+ *
+ * İlk yazımda soğutucuya `fridge_A → fridge_A_decorated` zinciri konmuştu ve bekçi yakaladı:
+ * o zincir L6'yı ünitenin ilan ettiği gövdenin ÖTESİNE taşıyordu — oda iki ayrı yerde
+ * tanımlanmış oluyordu. Zincir kaldırıldı; kütlesi zaten ×0,00'dı (kutu değişmiyor).
+ */
+
+/**
+ * ZİNCİRLER NEDEN `_decorated`'TE BİTMİYOR: arka hattın DÜŞEY boşluğu dolu.
+ * Süslü tezgâh 2,095 ham (1,89 br) boyunda; hattın her modülünün üstünde ya duvar dolabı
+ * (alt yüzü 1,40) ya çay bardağı rafı (alt kolu 1,40) var. Süslü ocak da davlumbazın içine
+ * giriyor. Ölçüm bunları tek tek saydı (§Ç, 17 yeni iç içe geçme) — bu yüzden geç
+ * basamakların kütlesi duvardan değil ADADAN geliyor.
+ */
+
+/** Bir basamakta hangi ünite zincirinin kaçıncı üyesine geçer. `u` = `KITCHEN_UNITS` index'i. */
+export interface KademeAdimi { readonly u: number; readonly asama: number }
+
+/**
+ * MERDİVEN — index = seviye − 1. Oyunun kendi kimliğine oturur
+ * (`economy.config.service`: L4 TEZGÂH · L5 TOST):
+ *   L1 derme çatma: ocak tek gözlü · hat sırtlıksız · dolaplar yarım · bulaşıklık boş
+ *   L2 ocak çoğalır · bulaşıklık dolar · doğu tezgâhı sırtlanır
+ *   L3 batı tezgâhı sırtlanır · ilk duvar dolabı tam boya çıkar
+ *   L4 TEZGÂH: iki hazırlık tezgâhı + lavabo sırtlanır, İLK ADA kurulur
+ *   L5 TOST: ikinci dolap · peçetelik rafı donanır, İKİNCİ ADA kurulur
+ *   L6 soğutucu dolar · ilk ada tam donanımına geçer · ikinci ada büyür
+ */
+export const KADEME_MERDIVENI: readonly (readonly KademeAdimi[])[] = [
+  [],
+  [{ u: 3, asama: 1 }, { u: 6, asama: 1 }, { u: 5, asama: 1 }],
+  [{ u: 11, asama: 1 }, { u: 2, asama: 1 }],
+  [{ u: 1, asama: 1 }, { u: 7, asama: 1 }, { u: 8, asama: 1 }],
+  [{ u: 9, asama: 1 }],
+  [{ u: 17, asama: 1 }],
+];
+
+/** Merdivenin taşıdığı en yüksek seviye — `economy.config` tavanıyla bekçi karşılaştırır. */
+export const KADEME_MAX = KADEME_MERDIVENI.length;
+
+/**
+ * ODANIN ETKİN SEVİYESİ — `wcSeviye`nin kardeşi (`feedback_single_source_of_truth`).
+ * Mutfak salonun kendisiyle birlikte hep çiziliyor; servis noktası ise L0'dan başlıyor.
+ * Oda çiziliyorsa seviye tanım gereği en az 1'dir, yoksa L0'da hiçbir gövdesi olmayan bir
+ * mutfak çizilirdi. Tavan merdivenin uzunluğudur.
+ */
+export const mutfakSeviyesi = (stationLevel: number): number =>
+  Math.min(Math.max(1, stationLevel), KADEME_MAX);
+
+/** i. ünitenin L seviyesinde ulaştığı zincir aşaması (merdiven kümülatif okunur). */
+export function uniteAsamasi(i: number, level: number): number {
+  const L = mutfakSeviyesi(level);
+  let a = 0;
+  for (let s = 0; s < L && s < KADEME_MERDIVENI.length; s++)
+    for (const adim of KADEME_MERDIVENI[s]) if (adim.u === i) a = Math.max(a, adim.asama);
+  return a;
+}
+
+/** i. ünitenin L seviyesinde ÇİZİLECEK gövdesi. Zinciri olmayan ünite hep kendisidir. */
+export function uniteModeli(u: KitchenUnit, i: number, level: number): KitchenKey {
+  const z = KADEME_ZINCIR[u.key];
+  if (!z) return u.key;
+  return z[Math.min(uniteAsamasi(i, level), z.length - 1)];
+}
+
+/** Ünitenin L seviyesindeki düşey ankrajı — asılıysa ÇİZİLEN üyenin üst hizasından. */
+export function uniteY(u: KitchenUnit, model: KitchenKey): number {
+  return UST_HIZALI.includes(model) ? asiliY(model) : u.y ?? 0;
+}
+
+// ---- ADA (Y1): odanın görünür boşluğunda doğup yerinde büyüyen hazırlık masası ----
+/**
+ * ADANIN Z EKSENİ — elle yazılmaz, ÇAYCININ KORİDORUNDAN türer.
+ *
+ * S20 çaycının yolunu ölçmüştü (`staffWalk`, z sabit). Ada o yolun önüne taşarsa çaycı
+ * kendi mutfağında sıkışır. Eksen, yolun tam `PLAYER_RADIUS × 2` (geçiş açıklığı) gerisine
+ * adanın yarı derinliği eklenerek konur: koridor tanım gereği tam açıklıkta kalır.
+ */
+export const ADA_DERINLIK = (NATIVE.kitchentable_A.maxZ - NATIVE.kitchentable_A.minZ) * KITCHEN_S;
+export const ADA_KORIDOR = PLAYER_RADIUS * 2;
+export const adaZ = (areasOpen: number): number =>
+  servicePlace(areasOpen).staffWalk.a[2] - ADA_KORIDOR - ADA_DERINLIK / 2;
+
+/** Adanın kendi kademe zinciri — doğduğu yerde büyür. */
+export const ADA_ZINCIR: readonly KitchenKey[] = ['kitchentable_A', 'kitchentable_A_large', 'kitchentable_A_large_decorated'];
+
+/**
+ * ADA SAYISI İKİ, ÜÇ DEĞİL — çakışma ölçümünün kararı.
+ * Ölçüm modül ritmine oturan DÖRT temiz slot buldu (k = 2·3·4·5) ve ilk taslak üçünü bitişik
+ * kullandı. Ama ada da büyüyor: `kitchentable_A_large` 3,0 ham = **2,70 br**, slot aralığı
+ * 1,80 br → büyüyen iki komşu birbirinin içine 0,45 br giriyordu. Büyüyen ada BİR slot
+ * atlamalı: k = 2 ve k = 4, aralık 3,60 br, en büyük hâllerinde bile 0,90 br ayrı.
+ * Kalan iki slot bilerek boş — oda tıkanmasın (S20'nin "boşluk en görünür şeritte" bulgusu
+ * tümden kapanmasın) ve dolaşım payı kalsın.
+ *
+ * `asama[L−1]`: −1 henüz yok · 0/1/2 zincir üyesi.
+ */
+export const ADA_UNITS: readonly { readonly modul: number; readonly asama: readonly number[] }[] = [
+  { modul: 2, asama: [-1, -1, -1, 0, 0, 2] },
+  { modul: 4, asama: [-1, -1, -1, -1, 0, 1] },
+];
+
+/** Adanın L seviyesinde çizilecek gövdesi — `null` ise o ada henüz kurulmamıştır. */
+export function adaModeli(s: number, level: number): KitchenKey | null {
+  const a = ADA_UNITS[s];
+  if (!a) return null;
+  const i = a.asama[mutfakSeviyesi(level) - 1];
+  return i < 0 ? null : ADA_ZINCIR[Math.min(i, ADA_ZINCIR.length - 1)];
+}
 
 /** Ünitenin dünya AABB'si (çeyrek dönüş uygulanmış). */
 export function unitBox(u: KitchenUnit): {

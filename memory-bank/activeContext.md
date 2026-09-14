@@ -5,38 +5,35 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-15 — **S22 tur açıldı: KADEMELİ MUTFAK** · Faz S 21/22 · 95/106)
+## ŞU AN (2026-09-15 — **S22 BİTTİ: mutfak 6 kademeyle büyüyor, bekçili** · Faz S 21/22 · 96/106)
 
 ```
 SORU            : Mutfak servis noktasının 6 kademesiyle nasıl büyür — hangi kalıp HER
-                  yükseltmede ekranda okunan bir değişim bırakır, ve o değişim odanın
-                  %42'lik (39,91 br²) görünür boşluğunu mu doldurur?
-ÖLÇÜLECEK KOLLAR: §K kademe kalıbı — K0 taban (19 sabit ünite) · K1 AÇILIM (ünite sayısı
-                  seviyeyle artar, bugünkü oda = L6) · K2 TADİLAT (19 ünite hep çizilir,
-                  kilitliler tahta perde hâlinde) · K3 YERİNDE BÜYÜME (sayı sabit, ünite
-                  kendi içinde model takasıyla kademe atlar)
-                  §Y büyümenin YERİ — Y0 arka hatta kalsın · Y1 orta boşlukta ada (MODULE_W
-                  1,80 ritmi) · Y2 ikisi karışık
-SAYILAR         : (adım 2'den sonra dolar — docs/mutfak-kademe-raporu-s22.md §Bulgular)
-KARAR           : (adım 3 — kullanıcı seçer, D-119)
-UYGULAMA        : (adım 4 — yalnız kararın kolu)
-BEKÇİ           : (test dosyası + mutasyon sayısı)
+                  yükseltmede ekranda okunan bir değişim bırakır?
+SAYILAR         : docs/mutfak-kademe-raporu-s22.md §Bulgular · ham: docs/olcum-mutfak-kademe.txt
+                  sekiz kalıp · görünürlük hiçbirini elemedi · ayıran sayı DELTA KÜTLE + BEDEL UYUMU
+KARAR           : D-119 — K5 + Y1 (erken yerinde büyüme, geç basamakta adada doğuş)
+UYGULAMA        : merdiven ELLE yazıldı (K5y) · ×0,40 → 0,75 → 1,46 → 1,58 → 2,69 · r = +0,92
+                  ada 3 → 2 (bitişik slotta çakışıyordu) · zincirler gömme gözlerden arındı
+BEKÇİ           : tests/mutfak-kademe-s22.test.ts — 24 denetim, 4 MUTASYON kırmızı yandı
+FINAL           : vitest 1075 ✓ · duman 42/42 ✓ · yeni çakışma 0/6 seviye · konsol hatası YOK
 ```
 
-**Kesici sayı:** her L→L+1 deltasının **görünürlüğü**. S7/D-104'ün WC kuralı burada da geçerli:
-*"her seviye tam bir şeyi büyütür — hiçbir yükseltme 'ekranda hiçbir şey değişmedi' hissi
-bırakmaz."* %0 görünür deltası olan kol elenir.
+**Turun kalıcı iki dersi:**
+1. **Sezgisel kalıp merdiveni ters akıtıyor** (r = −0,95): "üniteler tek tek belirsin" dendiğinde
+   delta L1'de ×5,61, L6'da ×0,16 — merdivenin %73'ünü ödeten basamakta değişen bir kasa kapağı.
+2. **Arka hattın DÜŞEY boşluğu dolu.** Her modülün üstünde dolap ya da bardak rafı var (altı 1,40);
+   süslü tezgâh 1,89 boyunda. Geç basamakların kütlesi duvardan gelemez, **adadan gelir**.
 
 ## SIRADAKİ TAM ADIM
 
-**S22 — KADEMELİ MUTFAK (tur adı S21, D-118’in D2 kolu).** Ölçüm sayıyı verdi: tezgâh **6 kademe** büyürken oda her seviyede
-aynı **19 sabit** üniteyi çiziyor (`KitchenUnit`'te seviye alanı 0), ve odanın **%42'si**
-(39,91 br²) **%100 görünür** boş. Tur ÖNCE ilerleme adımlarını tasarlar (kullanıcı kuralı:
-"objeler küçük doğup yerinde büyür"), sonra çizer.
+**S19'un kalan dört kalemi** (Faz S'in son kalemi): (1) karakter menüsü KayKit gövdesine ·
+(2) paneller tam ekran · (3) yükseltme tetiği pad'in üstünde — **varyant kapısı, `rules.ts`** ·
+(4) yükseltmenin solundaki ok. Kullanıcı kuralı "görevi en fazla ikiye böl" burada geçerli:
+mantık (3) ile görsel (1·2·4) ayrı parçalar olabilir.
 
-**Sonra:** S19'un kalan dört kalemi (1) karakter menüsü KayKit gövdesine · (2) paneller tam ekran ·
-(3) yükseltme tetiği pad'in üstünde — **varyant kapısı, `rules.ts`** · (4) yükseltmenin solundaki ok
-· sonra S9 SES karar paketi · sonra **Faz H** (E1 yürünebilir mutfak orada, nav ızgarasıyla birlikte).
+**Sonra:** S9 SES karar paketi (ölçüm hazır) · sonra **Faz H** (E1 yürünebilir mutfak orada,
+nav ızgarasıyla birlikte).
 
 ### S19b'DEN KALAN KÜÇÜK KUSUR
 
@@ -72,10 +69,12 @@ DENGE, varyant kapısına tabi) · masalar geçilmiyor (açıklık 0,68 br, geç
 reddediliyor (~130k token) — yani atlanırsa borç büyüyor, her turda kapatmak ucuz. ·
 `npm run lint` 31 hata (hepsi eski `tools/olcum-*.ts`) · `.gitattributes` YOK
 (`core.autocrlf` her checkout'ta CRLF'e çeviriyor) · `npm run pano` günlük uyarısı yalnız TARİHE
-bakıyor · **oyuncuda 2,0× artık kayma** · **panel dönüşünde T-poz temiz koşuda ÜRETİLEMEDİ**
+bakıyor · mutfağın kuşbakışı karesi OYUNDAN çekilemez (tepeden kamera oyuncunun üstünde, oyuncu mutfağa giremiyor) — plan ölçüm aracının işi · **oyuncuda 2,0× artık kayma** · **panel dönüşünde T-poz temiz koşuda ÜRETİLEMEDİ**
 (repro aracı `tools/olcum-panel-donusu.mjs`).
 
 **Önizlemeler**
+**S22 KARAR PAKETİ + UYGULANAN MERDİVEN (v2):** https://claude.ai/artifact/QXhU6FVWtETAzdAvY8qby1
+**S22 kareler:** ss/s22-kademe-L{1..6}.png (altı basamak, tek kadraj) · ss/s22-ada-L{4,6}.png
 **S20 KARAR PAKETİ:** https://claude.ai/artifact/NzUs9PeHqzj48bekL78fqm
 **S20 kareler:** önce `ss/s20-mutfak-{taban,npc,plan}.png` · sonra `ss/s20-mutfak-{taban,npc,plan}-son.png`
 **S19b kareler:** `ss/s19b-kiyafet.png` (önlük + patron) · `ss/s19b-oyun-yakin.png` · `ss/s19b-oturus-yakin.png`

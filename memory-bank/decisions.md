@@ -3660,3 +3660,45 @@ dokunulmadı, denge sayısı değişmedi.
 **Bekçi:** `tests/mutfak-s20.test.ts` — 17 denetim, **3 mutasyonla** doğrulandı (bölme üretimini
 kapat · yük yokken çaycıyı yürüt · dar dikişleri de kapat; üçü de kırmızı yandı).
 **Final:** vitest 1051 ✓ · duman 42/42 ✓ · tam ölçüm koşusu 17 damga yeşil · konsol hatası YOK.
+
+---
+
+## D-119 — Mutfak seviyeyle büyüyor: erken yerinde, geç adada (S22, 2026-09-15)
+
+**KARAR:** Kullanıcı **K5 + Y1** kolunu seçti. Oda artık servis noktasının 6 kademesiyle büyüyor:
+erken basamaklarda gövdeler paketin kendi kademe ailesinde **yerinde** büyür, geç ve pahalı
+basamaklarda odanın görünür boşluğunda **ada** doğup orada büyür. Rapor:
+`docs/mutfak-kademe-raporu-s22.md` · ham çıktı `docs/olcum-mutfak-kademe.txt`.
+
+**KOLU SAYI SEÇTİ, İKİ SÜZGEÇLE.** Görünürlük tek başına hiçbir kolu elemedi (S20: odada 0/19
+görünmez) — ayıran sayı **delta kütle** ve **bedel–değişim uyumu** oldu. Sezgisel kalıp
+("üniteler tek tek belirsin") merdiveni **ters akıtıyordu**: delta L1'de ×5,61 ünite, L6'da
+×0,16 — yani merdivenin **%73'ünü** ödeten basamakta ekranda değişen şey bir kasa kapağı.
+
+**MERDİVEN ELLE YAZILIR** (D-104'ün WC'de öğrendiğinin aynısı). Türetilmiş dağıtımlar üç kez
+çöktü: kısa zincirleri son basamağa yığıp L2'yi **kör** bıraktı (K3), ocağın 5 kademesini tek
+basamağa sıkıştırdı (K5). Kol doğru, dağıtım ayrı bir iş.
+
+**AD BENZERLİĞİ KADEME DEMEK DEĞİL.** `stove_single_countertop` ocağın kademesi gibi okunuyor
+ama tezgâha **gömülen göz** (h 0,278 · taban y 0,930); zincire girseydi ocak kaybolup havada
+bir plaka kalırdı — ve sınır kutusu ölçen araç bunu asla yakalayamazdı, çünkü kutu geçerli.
+Türetilmiş **parça süzgeci** eledi; ocak zinciri 5 → 3.
+
+**ARKA HATTIN DÜŞEY BOŞLUĞU DOLU** — turun kalıcı bulgusu. Süslü tezgâh 1,89 br boyunda, hattın
+her modülünün üstünde ya duvar dolabı ya bardak rafı var (ikisinin de altı 1,40). Süslü ocak da
+davlumbaza giriyor. Yani **geç basamakların kütlesi duvardan gelemez, adadan gelir**: Y1 kolu
+yalnız tercih değil, zorunluluk. Ada sayısı da 3 → **2**'ye düştü (büyüyen ada bitişik slotta
+komşusuna 0,45 br giriyor; bir slot atlamalı).
+
+**ZİNCİRİN SON ÜYESİ = ÜNİTENİN KENDİ ANAHTARI.** Yani **L6 tam olarak bugünkü odadır**;
+merdiven odayı büyütmez, oraya nasıl varıldığını anlatır. `KITCHEN_UNITS` bitmiş mekânın tek
+kaynağı olarak kalır. Bu kuralı bekçi testi dayattı: ilk yazımdaki `fridge_A → fridge_A_decorated`
+zinciri odayı iki ayrı yerde tanımlıyordu.
+
+**VARYANT KAPISI DEVREDE DEĞİL:** `economy.config.ts` / `tick.ts` / `rules.ts` dosyalarına
+dokunulmadı; seviye zaten vardı, yalnız okunmuyordu. Okuma SALT GÖRSEL (D-023 deseni).
+
+**Bekçi:** `tests/mutfak-kademe-s22.test.ts` — 24 denetim, **4 mutasyonla** doğrulandı (L2'yi
+boşalt · adaları bitişik slota koy · asılı üniteye donmuş y ver · zinciri anahtarın ötesine taşı).
+**Final:** vitest 1075 ✓ · duman 42/42 ✓ · tam ölçüm damgaları temiz · yeni çakışma 0/6 seviye.
+Basamaklar: ×0,40 → 0,75 → 1,46 → 1,58 → 2,69 · bedel uyumu r = **+0,92** · doluluk %32 → %42.

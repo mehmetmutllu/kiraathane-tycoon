@@ -156,12 +156,103 @@ dokunmuyor. Hepsi çizim katmanında; seviye zaten var, okunmuyor. Bu turda deng
 
 ---
 
-## §Karar
+## §Karar — **D-119** (kullanıcı, 2026-09-15)
 
-*(D-084 adım 3 — karar paketi kullanıcıya sunulacak, bu bölüm commit #1'de BOŞ kalır.)*
+Karar paketi: https://claude.ai/artifact/QXhU6FVWtETAzdAvY8qby1
+
+| kol | karar |
+|---|---|
+| **K5 + Y1** | ✅ **SEÇİLDİ** — erken basamaklar yerinde büyür, geç basamaklarda orta boşlukta ada doğar |
+| K0 | reddedildi — 5/5 kör basamak, bugünkü hâl |
+| K1 · K2 | reddedildi — kör basamağı yok ama merdiven **ters akıyor** (r = −0,95) |
+| K3 · K4 | elendi — kör basamak (türetilmiş dağıtım L2'yi boş bırakıyor) |
+| K3b | reddedildi — kör basamağı yok ama bedelle ilgisiz (r = −0,30) ve odanın boşluğunu kapatmıyor |
+| L1 doluluk | bugünkü hâlinde (%32) — "gözle seyrek başlasın" (%11) reddedildi |
+| ada sayısı | üç ada + bir boş slot istendi; **uygulamada ikiye düştü** (aşağıya bak) |
+
+---
+
+## §Uygulama — kararın kolu, ama merdiven ELLE yazıldı
+
+Karar kolu seçti; **basamakları ölçüm yazdı.** Uygulama sırasında K5'in türetilmiş dağıtımı
+üç ayrı yerde çöktü ve üçü de ölçülerek düzeltildi — her biri rapora, çünkü üçü de
+"kol iyi ama merdiven yazımı ayrı bir iş" tezinin kanıtı.
+
+| # | ne çıktı | nasıl bulundu | ne yapıldı |
+|---|---|---|---|
+| 1 | K5 ocağın **5 kademelik** zincirinin dördünü birden L2'ye yığıyordu | K5y varyantı ölçüldü | merdiven elle yazıldı (**K5y**) |
+| 2 | `stove_single_countertop` ocağın kademesi değil, tezgâha **gömülen göz** (h 0,278 · taban y 0,930) — zincire girse ocak kaybolup havada plaka kalırdı | türetilmiş **parça süzgeci** (§S) | iki `_countertop` modeli zincirden düştü; ocak zinciri 5 → **3** |
+| 3 | `stove_multi_decorated` davlumbazın içine, `..._A_decorated` duvar dolabının içine, büyüyen komşu adalar birbirine giriyordu | **§Ç çakışma denetimi** — 17 yeni iç içe geçme | süslü gövdeler zincirden düştü · ada sayısı **3 → 2** (bir slot atlayarak) |
+
+**Arka hattın düşey boşluğu dolu** — turun ikinci bulgusu. Süslü tezgâh 2,095 ham (1,89 br)
+boyunda; hattın her modülünün üstünde ya duvar dolabı (alt yüzü 1,40) ya çay bardağı rafı
+(alt kolu 1,40) var. Yani **geç basamakların kütlesi duvardan gelemez, adadan gelir** —
+kullanıcının seçtiği Y1 kolu bu yüzden yalnız güzel değil, zorunlu.
+
+**Bekçinin uygulamayı düzelttiği bir yer daha:** ilk yazımda soğutucuya
+`fridge_A → fridge_A_decorated` zinciri konmuştu. Test yakaladı: o zincir L6'yı
+`KITCHEN_UNITS`'in ilan ettiği gövdenin **ötesine** taşıyor, yani oda iki ayrı yerde
+tanımlanmış oluyordu. Kural artık yazılı ve bekçili: **zincirin son üyesi = ünitenin kendi
+anahtarı**, yani **L6 tam olarak bugünkü odadır.** Merdiven odayı büyütmez, oraya nasıl
+varıldığını anlatır.
+
+### Uygulanan merdiven
+
+| seviye | bedel | ne değişir | delta |
+|---|---|---|---|
+| **L1** | 20 ₺ | derme çatma: ocak tek gözlü · hat sırtlıksız · dolaplar yarım · bulaşıklık boş | — |
+| **L2** | 30 ₺ | ocak çoğalır · bulaşıklık dolar · doğu tezgâhı sırtlanır | ×0,40 |
+| **L3** | 45 ₺ | batı tezgâhı sırtlanır · ilk duvar dolabı tam boya çıkar | ×0,75 |
+| **L4** | 800 ₺ | **TEZGÂH**: iki hazırlık tezgâhı + lavabo sırtlanır · **ilk ada kurulur** | ×1,46 |
+| **L5** | 2400 ₺ | **TOST**: ikinci duvar dolabı tam boya çıkar · **ikinci ada kurulur** | ×1,58 |
+| **L6** | 9000 ₺ | peçetelik rafı donanır · **ilk ada tam donanımına geçer, ikincisi büyür** | ×2,69 |
+
+Basamaklar cümleyle değil **adım kütlesi tablosuyla** yazıldı (§K'daki yeni tablo): "ocak
+büyüsün" kulağa büyük geliyor ama `stove_single → stove_multi` adımının ölçüsü **×0,01**
+(göz sayısı değişiyor, siluet değil) — o yüzden L2'de yanına iki gövde daha kondu.
 
 ---
 
 ## §Final koşu (uygulamadan sonra)
 
-*(D-084 adım 4 — bekçi + mutasyon + final tam koşu burada raporlanacak.)*
+| ölçüt | K5 (ölçülen kol) | **K5y (uygulanan)** |
+|---|---|---|
+| kör basamak | 0 / 5 | **0 / 5** |
+| yalnız-detay basamağı | 0 | **0** |
+| en zayıf basamağın kütlesi | ×0,80 ünite | ×0,40 ünite |
+| basamaklar tek yönlü artıyor mu | hayır | **evet** (×0,40 → 0,75 → 1,46 → 1,58 → 2,69) |
+| bedel–değişim uyumu | r = +0,89 | **r = +0,92** |
+| yeni çakışma | ölçülmemişti | **0 / 6 seviye** |
+| doluluk L1 → L6 | %32 → %43 | **%32 → %42** |
+
+En zayıf basamak K5'ten düşük (×0,40 vs ×0,80) ve bu bir bedel: karşılığında merdiven tek
+yönlü akıyor, çakışma sıfır ve gövdelerin hepsi gerçek. ×0,40'lık basamak **L2**, yani
+merdivenin **%0,24**'ünü ödeten adım — zayıflığı bedeliyle orantılı.
+
+**Bekçi:** `tests/mutfak-kademe-s22.test.ts` — **24 denetim**, **4 mutasyonla** doğrulandı:
+
+| mutasyon | ne yapıldı | sonuç |
+|---|---|---|
+| M1 | L2 basamağı boşaltıldı | **3 test kırmızı** (kör basamak · L6 = bugünkü oda · L6 kutuları) |
+| M2 | adalar bitişik slota kondu | **2 test kırmızı** (adalar çakışıyor · slot atlama kuralı) |
+| M3 | asılı ünite donmuş `y`'sini kullandı | **1 test kırmızı** (üst hiza) |
+| M4 | zincir ünitenin kendi anahtarını aştı | **1 test kırmızı** (zincirin son üyesi) |
+
+**Final:** vitest **1075 ✓** · duman **42/42 ✓** · tam ölçüm koşusu **damgalar temiz** ·
+konsol hatası **YOK**.
+
+**Kareler:** `docs/gorsel/ss/s22-kademe-L{1..6}.png` (altı basamak, tek kadraj) ·
+`s22-ada-L{4,6}.png` (adaların doğuşu ve tam donanımı).
+L1'de tek gözlü ocak · yarım dolaplar · boş bulaşıklık · sade raf · boş orta;
+L6'da dört gözlü ocak · tam boy dolaplar · dolu bulaşıklık · donanmış raf · iki ada.
+
+### Aracın kendi kusurları (koşu sırasında yakalandı, ikisi de sayıyı değiştirirdi)
+
+| # | kusur | belirti | düzeltme |
+|---|---|---|---|
+| 1 | gövde kendi kendini örtüyordu | **bütün** deltalar %0 görünür çıktı — S20 aynı odada 0/19 görünmez ölçmüştü | eleme referansla değil GEOMETRİYLE |
+| 2 | çok ekli adlar ayrı köke düşüyordu | ocak zinciri **2** kademe göründü (gerçekte 5, süzgeçten sonra 3) | ekler tükenene kadar soyulur |
+
+Bir de **tepeden kare alınamadı** ve bu araç kusuru değil: tepeden kamera oyuncunun üstünde
+duruyor, oyuncu da `clampToOpenAreas` yüzünden mutfağın 0,05 br önünde kalıyor (S20 §E).
+Mutfağın kuşbakışı planı oyunun içinden çekilemez — o, ölçüm aracının işi.

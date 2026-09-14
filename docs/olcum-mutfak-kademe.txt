@@ -24,7 +24,7 @@ son BİR basamağın payı             9000 ₺ = %73.20
 
 pakette model sayısı               144
 ≥2 üyeli kademe ailesi             24
-en uzun zincir                     5 kademe
+en uzun zincir                     4 kademe
 
 BUGÜNKÜ ÜNİTELERİN AİLESİ — "bu gövde yerinde büyüyebilir mi?"
   ünite                                 zincir (küçük → büyük)
@@ -41,7 +41,7 @@ BUGÜNKÜ ÜNİTELERİN AİLESİ — "bu gövde yerinde büyüyebilir mi?"
   kitchencounter_straight_B_backsplash  2: kitchencounter_straight_B → kitchencounter_straight_B_backsplash
   oven                                  1: — tek üye (yerinde büyüyemez)
   shelf_papertowel_decorated            2: shelf_papertowel → shelf_papertowel_decorated
-  stove_multi                           5: stove_single → stove_single_countertop → stove_multi → stove_multi_countertop → stove_multi_decorated
+  stove_multi                           3: stove_single → stove_multi → stove_multi_decorated
   towelrail                             1: — tek üye (yerinde büyüyemez)
 
 bugünkü 15 gövdenin 8 tanesinin ailesi VAR.
@@ -82,19 +82,19 @@ boşluğun ortasının görünürlüğü  100%
 koridor payı (çaycı geçsin)    0.94 br
 
 ADA SLOTLARI (Y1) — modül ritmine oturan, boşluğun ortasına dizilen gövdeler
-  ada derinliği 1.84 br · ada z ekseni  -13.03 · modül eni 1.80 br
+  ada derinliği 1.80 br · ada z ekseni  -13.03 · modül eni 1.80 br
   slot     x merkez   çakışma   çaycı payı   görünürlük
-  k=0        -16.51         3      0.82 br         100%
-  k=1        -14.71         1      0.82 br         100%
-  k=2        -12.91         0      0.82 br         100%
-  k=3        -11.11         0      0.82 br         100%
-  k=4         -9.31         0      0.82 br         100%
-  k=5         -7.51         0      0.82 br         100%
-  k=6         -5.71         5      0.82 br         100%
+  k=0        -16.51         3      0.83 br         100%
+  k=1        -14.71         1      0.83 br         100%
+  k=2        -12.91         0      0.83 br         100%
+  k=3        -11.11         0      0.83 br         100%
+  k=4         -9.31         0      0.83 br         100%
+  k=5         -7.51         0      0.83 br         100%
+  k=6         -5.71         5      0.83 br         100%
 
   ada slotu toplam 7 · çakışan 3 · temiz 4
-  temiz slotların çaycıya bıraktığı EN DAR pay: 0.82 br (gereken 0.94)
-  koridoru 0.94 br'ye çıkaran ada ekseni: z  -13.16 (bugünkünden 0.12 br geride)
+  temiz slotların çaycıya bıraktığı EN DAR pay: 0.83 br (gereken 0.94)
+  koridoru 0.94 br'ye çıkaran ada ekseni: z  -13.14 (bugünkünden 0.11 br geride)
   o eksen boşluğun içinde kalıyor mu: EVET (boşluğun arka kenarı z  -15.26)
 
 Y0 — ARKA HAT: hattın doğu ucu x   -4.81 · ara duvar x   -4.60 · kalan 0.21 br
@@ -127,6 +127,23 @@ K1/K2 AÇILIŞ SIRASI (türetilmiş — ocaktan dışa):
   L6  17. crate_lid                                     k=6   tezgah
   L6  18. food_ingredient_ham                           k=6   tezgah
   L6  19. crate                                         k=6   tezgah
+
+ZİNCİR ADIMLARININ DÜNYA KÜTLESİ — merdiveni yazan tablo (× ortalama ünite)
+  #  ünite                                     adım                                               geçiş      delta
+  0  fridge_A                                   0→1                       fridge_A → fridge_A_decorated      ×0.00
+  1  kitchencounter_straight_A_backsplash       0→1  kitchencounter_straight_A → kitchencounter_straigh      ×0.21
+  1  kitchencounter_straight_A_backsplash       1→2  kitchencounter_straight_A_backsplash → kitchencoun      ×1.19
+  2  kitchencabinet                             0→1                kitchencabinet_half → kitchencabinet      ×0.54
+  3  stove_multi                                0→1                          stove_single → stove_multi      ×0.01
+  3  stove_multi                                1→2                 stove_multi → stove_multi_decorated      ×0.81
+  5  kitchencounter_straight_B_backsplash       0→1  kitchencounter_straight_B → kitchencounter_straigh      ×0.21
+  6  dishrack_plates                            0→1                          dishrack → dishrack_plates      ×0.18
+  7  kitchencounter_straight_A_backsplash       0→1  kitchencounter_straight_A → kitchencounter_straigh      ×0.21
+  7  kitchencounter_straight_A_backsplash       1→2  kitchencounter_straight_A_backsplash → kitchencoun      ×1.19
+  8  kitchencounter_sink_backsplash             0→1  kitchencounter_sink → kitchencounter_sink_backspla      ×0.00
+  9  kitchencabinet                             0→1                kitchencabinet_half → kitchencabinet      ×0.54
+  11 kitchencounter_straight_B_backsplash       0→1  kitchencounter_straight_B → kitchencounter_straigh      ×0.21
+  17 shelf_papertowel_decorated                 0→1       shelf_papertowel → shelf_papertowel_decorated      ×0.22
 
 KOL KOL — her seviyede kaç gövde, ne kadar dolu, ve O BASAMAĞIN DELTASI görünüyor mu?
 
@@ -169,45 +186,56 @@ kıyas — ortalama ünite kütlesi 2.82 br³ (delta bunun yanında okunur)
     L    gövde   dolu br²   dolu %  değişen  görünürlük  delta kütle  ünite eşd.   basamak
     L1        19      30.51      32%        0           —     0.00 br³       ×0.00   (başlangıç)
     L2        19      30.51      32%        0           —     0.00 br³       ×0.00   ** KÖR **
-    L3        19      29.83      31%        1        100%     3.41 br³       ×1.21   okunur
-    L4        19      30.51      32%        3        100%     4.58 br³       ×1.62   okunur
-    L5        19      29.83      31%        1        100%     3.40 br³       ×1.21   okunur
-    L6        19      31.25      33%       11        100%    17.80 br³       ×6.31   okunur
-    → KÖR BASAMAK 1/5 · en zayıf delta görünürlüğü    0% · EN ZAYIF BASAMAĞIN KÜTLESİ 0.00 br³ (×0.00 ünite)
-      L1 doluluk   32% · merdivenin toplam değişimi 29.20 br³ · BEDEL–DEĞİŞİM UYUMU r = 0.96
+    L3        19      30.51      32%        0           —     0.00 br³       ×0.00   ** KÖR **
+    L4        19      30.51      32%        3        100%     1.22 br³       ×0.43   okunur
+    L5        19      30.51      32%        0           —     0.00 br³       ×0.00   ** KÖR **
+    L6        19      31.25      33%       11        100%    14.40 br³       ×5.10   okunur
+    → KÖR BASAMAK 3/5 · en zayıf delta görünürlüğü    0% · EN ZAYIF BASAMAĞIN KÜTLESİ 0.00 br³ (×0.00 ünite)
+      L1 doluluk   32% · merdivenin toplam değişimi 15.62 br³ · BEDEL–DEĞİŞİM UYUMU r = 0.96
 
   K3b — YERİNDE BÜYÜME — geçişler havuzlanıp EŞİT dağıtılır
     L    gövde   dolu br²   dolu %  değişen  görünürlük  delta kütle  ünite eşd.   basamak
     L1        19      30.51      32%        0           —     0.00 br³       ×0.00   (başlangıç)
-    L2        19      30.55      32%        1        100%     2.27 br³       ×0.80   okunur
-    L3        19      30.89      33%        2        100%     4.55 br³       ×1.61   okunur
-    L4        19      30.89      33%        3        100%     2.04 br³       ×0.72   okunur
-    L5        19      31.25      33%        2        100%     4.55 br³       ×1.61   okunur
-    L6        19      31.25      33%        3        100%     2.15 br³       ×0.76   okunur
-    → KÖR BASAMAK 0/5 · en zayıf delta görünürlüğü  100% · EN ZAYIF BASAMAĞIN KÜTLESİ 2.04 br³ (×0.72 ünite)
-      L1 doluluk   32% · merdivenin toplam değişimi 15.57 br³ · BEDEL–DEĞİŞİM UYUMU r = -0.30
+    L2        19      30.55      32%        2        100%     2.86 br³       ×1.01   okunur
+    L3        19      30.89      33%        3        100%     4.48 br³       ×1.59   okunur
+    L4        19      30.89      33%        3        100%     2.12 br³       ×0.75   okunur
+    L5        19      31.25      33%        2        100%     4.59 br³       ×1.63   okunur
+    L6        19      31.25      33%        2        100%     1.52 br³       ×0.54   okunur
+    → KÖR BASAMAK 0/5 · en zayıf delta görünürlüğü  100% · EN ZAYIF BASAMAĞIN KÜTLESİ 1.52 br³ (×0.54 ünite)
+      L1 doluluk   32% · merdivenin toplam değişimi 15.57 br³ · BEDEL–DEĞİŞİM UYUMU r = -0.55
 
   K4 — YERİNDE BÜYÜME — geçişler BEDEL PAYINA orantılı dağıtılır
     L    gövde   dolu br²   dolu %  değişen  görünürlük  delta kütle  ünite eşd.   basamak
     L1        19      30.51      32%        0           —     0.00 br³       ×0.00   (başlangıç)
     L2        19      30.51      32%        0           —     0.00 br³       ×0.00   ** KÖR **
-    L3        19      30.51      32%        2        100%     0.00 br³       ×0.00   detay (siluet aynı)
-    L4        19      30.51      32%        3        100%     1.82 br³       ×0.65   okunur
-    L5        19      30.87      33%        4        100%     6.00 br³       ×2.12   okunur
-    L6        19      31.25      33%        3        100%     7.74 br³       ×2.74   okunur
-    → KÖR BASAMAK 1/5 · en zayıf delta görünürlüğü    0% · EN ZAYIF BASAMAĞIN KÜTLESİ 0.00 br³ (×0.00 ünite)
-      L1 doluluk   32% · merdivenin toplam değişimi 15.57 br³ · BEDEL–DEĞİŞİM UYUMU r = 0.88
+    L3        19      30.51      32%        0           —     0.00 br³       ×0.00   ** KÖR **
+    L4        19      30.51      32%        2        100%     1.19 br³       ×0.42   okunur
+    L5        19      30.51      32%        6        100%     2.78 br³       ×0.98   okunur
+    L6        19      31.25      33%        6        100%    11.65 br³       ×4.13   okunur
+    → KÖR BASAMAK 2/5 · en zayıf delta görünürlüğü    0% · EN ZAYIF BASAMAĞIN KÜTLESİ 0.00 br³ (×0.00 ünite)
+      L1 doluluk   32% · merdivenin toplam değişimi 15.62 br³ · BEDEL–DEĞİŞİM UYUMU r = 1.00
 
   K5 — KARMA — erken takas, geç basamakta adada yeni gövde doğar
     L    gövde   dolu br²   dolu %  değişen  görünürlük  delta kütle  ünite eşd.   basamak
     L1        19      30.51      32%        0           —     0.00 br³       ×0.00   (başlangıç)
-    L2        19      30.55      32%        1        100%     2.27 br³       ×0.80   okunur
-    L3        19      30.89      33%        3        100%     5.07 br³       ×1.80   okunur
+    L2        19      30.89      33%        2        100%     6.22 br³       ×2.21   okunur
+    L3        19      30.89      33%        3        100%     2.63 br³       ×0.93   okunur
     L4        20      34.14      36%        1        100%     2.93 br³       ×1.04   okunur
-    L5        21      38.20      40%        2        100%     4.39 br³       ×1.56   okunur
-    L6        22      41.44      44%        3        100%     8.43 br³       ×2.99   okunur
-    → KÖR BASAMAK 0/5 · en zayıf delta görünürlüğü  100% · EN ZAYIF BASAMAĞIN KÜTLESİ 2.27 br³ (×0.80 ünite)
-      L1 doluluk   32% · merdivenin toplam değişimi 23.09 br³ · BEDEL–DEĞİŞİM UYUMU r = 0.89
+    L5        21      37.38      39%        1        100%     2.93 br³       ×1.04   okunur
+    L6        21      40.63      43%        2        100%     6.97 br³       ×2.47   okunur
+    → KÖR BASAMAK 0/5 · en zayıf delta görünürlüğü  100% · EN ZAYIF BASAMAĞIN KÜTLESİ 2.63 br³ (×0.93 ünite)
+      L1 doluluk   32% · merdivenin toplam değişimi 21.68 br³ · BEDEL–DEĞİŞİM UYUMU r = 0.61
+
+  K5y — KARMA · YAZILMIŞ MERDİVEN — uygulanan kol (D-119)
+    L    gövde   dolu br²   dolu %  değişen  görünürlük  delta kütle  ünite eşd.   basamak
+    L1        19      30.51      32%        0           —     0.00 br³       ×0.00   (başlangıç)
+    L2        19      30.51      32%        3        100%     1.14 br³       ×0.40   okunur
+    L3        19      30.51      32%        2        100%     2.11 br³       ×0.75   okunur
+    L4        20      33.76      36%        4        100%     4.12 br³       ×1.46   okunur
+    L5        21      37.00      39%        2        100%     4.45 br³       ×1.58   okunur
+    L6        21      40.25      42%        3        100%     7.60 br³       ×2.69   okunur
+    → KÖR BASAMAK 0/5 · en zayıf delta görünürlüğü  100% · EN ZAYIF BASAMAĞIN KÜTLESİ 1.14 br³ (×0.40 ünite)
+      L1 doluluk   32% · merdivenin toplam değişimi 19.42 br³ · BEDEL–DEĞİŞİM UYUMU r = 0.92
 
   OKUMA — İKİ AYRI SÜZGEÇ, ikisi de geçilmeli:
     1) KÖR BASAMAK: o yükseltmede ekranda hiçbir şey değişmiyor ya da değişen şey hiçbir
@@ -217,6 +245,21 @@ kıyas — ortalama ünite kütlesi 2.82 br³ (delta bunun yanında okunur)
        ayıran sayı, en zayıf basamağın kaç ünite kadar kütle değiştirdiği.
 
 ================================================================================================================
+§Ç — ÇAKIŞMA: uygulanacak kolun getirdiği YENİ iç içe geçmeler
+================================================================================================================
+
+tabandaki (kasıtlı) iç içe çift: 4
+
+  L     yeni çakışma   ayrıntı
+  L1              0   —
+  L2              0   —
+  L3              0   —
+  L4              0   —
+  L5              0   —
+  L6              0   —
+
+
+================================================================================================================
 ÖZET — karar paketine giden satırlar
 ================================================================================================================
 
@@ -224,10 +267,11 @@ kıyas — ortalama ünite kütlesi 2.82 br³ (delta bunun yanında okunur)
   K0      5/5      0         0.00 br³       ×0.00       r 0.00         32%         32%   taban (kademesiz)
   K1      0/5      0         0.45 br³       ×0.16      r -0.95         11%         32%   GEÇER
   K2      0/5      0         0.45 br³       ×0.16      r -0.95         32%         32%   GEÇER
-  K3      1/5      0         0.00 br³       ×0.00       r 0.96         32%         33%   ELENİR (kör basamak)
-  K3b     0/5      0         2.04 br³       ×0.72      r -0.30         32%         33%   GEÇER
-  K4      1/5      1         0.00 br³       ×0.00       r 0.88         32%         33%   ELENİR (kör basamak)
-  K5      0/5      0         2.27 br³       ×0.80       r 0.89         32%         44%   GEÇER
+  K3      3/5      0         0.00 br³       ×0.00       r 0.96         32%         33%   ELENİR (kör basamak)
+  K3b     0/5      0         1.52 br³       ×0.54      r -0.55         32%         33%   GEÇER
+  K4      2/5      0         0.00 br³       ×0.00       r 1.00         32%         33%   ELENİR (kör basamak)
+  K5      0/5      0         2.63 br³       ×0.93       r 0.61         32%         43%   GEÇER
+  K5y     0/5      0         1.14 br³       ×0.40       r 0.92         32%         42%   GEÇER
 
   kör       = o yükseltmede ekranda hiçbir şey değişmiyor / değişen görünmüyor → kol ELENİR
   detay     = değişiyor ve görünüyor ama SİLUET aynı (yalnız üstüne eşya kondu)
@@ -235,5 +279,5 @@ kıyas — ortalama ünite kütlesi 2.82 br³ (delta bunun yanında okunur)
               r < 0 → merdiven TERS akıyor: en ucuz basamak en çok, en pahalısı en az değişiyor.
 
   Y — büyümenin yeri: Y0 arka hat KAPALI (kalan 0.21 br, modül 1,80 istiyor)
-      Y1 ada: 4 temiz slot · boşluk 39.83 br² · çaycı payı 0.82 → 0.94 için ada 0.12 br geri
+      Y1 ada: 4 temiz slot · boşluk 39.83 br² · çaycı payı 0.83 → 0.94 için ada 0.11 br geri
 

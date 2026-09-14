@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 106 · YAPILAN 95 · %90):**
+**Oturum bütçesi (TOPLAM 106 · YAPILAN 96 · %91):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -24,10 +24,10 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
 | | D meta katman | 9/9 ✅ |
 | | E arayüz ve cila | 4/5 🔧 |
-| | **S sanat ve arayüz geçişi** | **20/22 🔧** |
+| | **S sanat ve arayüz geçişi** | **21/22 🔧** |
 | | H oynanış düzeltmeleri | 0/3 ⏳ |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **67/78** |
+| **Program toplam** | | **68/78** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -245,7 +245,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   değil; kendi turunu ister.
 - ⏳ **E5 — hareketli onboarding**
 
-## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (20/22) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
+## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (21/22) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
 - ✅ **S1 — pad ve yükseltme dili yeniden yazıldı** · çember → **köşe parantezli kare** (kenar
   ortaları boş), dolum büyüyen disk → **alttan üste dolan kare**, "Masa"/"Çay Yükselt"/"Usta"
   → hepsinde **YÜKSELT** + solunda düz yukarı ok, yazı 700 → 800, 💎 pulu "mavi kare" → gerçek
@@ -418,10 +418,18 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   (0 / 0,60 / 2,00 — boş↔dolu **3,33×**), D-023 bozulmadı (okur, yazmaz).
   Bekçi `tests/mutfak-s20.test.ts` **17 denetim / 3 mutasyon**. `docs/mutfak-raporu-s20.md`.
   vitest 1051 ✓ · duman 42/42 ✓.
-- ⏳ **S22 — KADEMELİ MUTFAK (tur adı S21, D-118'in ertelenen D2 kolu)** — ölçüm gösterdi: tezgâh
-  **6 kademe** büyürken oda her seviyede aynı **19 sabit** üniteyi çiziyor (`KitchenUnit`'te
-  seviye alanı 0), ve odanın **%42'si** (39,91 br²) **%100 görünür** boş. Tur ÖNCE ilerleme
-  adımlarını tasarlar, sonra çizer.
+- ✅ **S22 — KADEMELİ MUTFAK: oda 6 kademeyle büyüyor (tur adı S21) · D-119** — sekiz kalıp
+  varyant olarak ölçüldü; görünürlük hiçbirini elemedi (S20: 0/19 görünmez), ayıran sayı
+  **delta kütle** ve **bedel–değişim uyumu** oldu. Sezgisel kalıp merdiveni TERS akıtıyordu
+  (r = −0,95: %73'ünü ödeten basamakta değişen şey bir kasa kapağı). Seçilen **K5 + Y1**;
+  merdiven elle yazıldı (türetilmiş dağıtım L2'yi kör bırakıyor). Uygulama üç şey öğretti:
+  `_countertop` modelleri ocağın kademesi değil **gömme göz** (parça süzgeci eledi, zincir 5 → 3) ·
+  **arka hattın düşey boşluğu dolu** (her modülün üstünde dolap ya da raf var, altı 1,40) — yani
+  geç basamakların kütlesi zorunlu olarak ADADAN gelir · büyüyen ada bitişik slotta komşusuna
+  giriyor (ada 3 → 2, bir slot atlar). Kural bekçili: **zincirin son üyesi = ünitenin kendi
+  anahtarı**, yani L6 tam olarak bugünkü oda. Basamaklar ×0,40 → 0,75 → 1,46 → 1,58 → 2,69,
+  r = +0,92, yeni çakışma 0/6, doluluk %32 → %42. Bekçi `tests/mutfak-kademe-s22.test.ts`
+  **24 denetim / 4 mutasyon**. `docs/mutfak-kademe-raporu-s22.md`. vitest 1075 ✓ · duman 42/42 ✓.
 - 🔧 **S9 — SES ASSETLERİ — ÖLÇÜM BİTTİ, KARAR BEKLİYOR (D-096'nın kapsam sınırı açılıyor)** — kullanıcı ortam uğultusu
   ("kalabalık sesi") ve **daha gerçekçi para sesi** istedi. **Bu karar D-096'yı kısmen geri
   alır:** sentez "nihai" seçilmişti ve `public/assets/audio/` bilerek boştu (lisans yüzeyi sıfır).
