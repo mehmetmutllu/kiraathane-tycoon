@@ -223,6 +223,33 @@ yapıştırılmaz. Çıkan fark doğrudan **montaj kaldırmasıdır** (+0,257 / 
 `SEATED_DROP`un (−0,45) skinned karşılığıdır. **Ölçek kolu bu sayıya göre seçilmez;** ayakta
 ölçülen ilişkiye (§B5) göre seçilir.
 
+### B11 — İkinci tur (kullanıcı yönlendirmesi): "bunlar savaş karakteri, benzerini bulalım"
+
+Karar paketine cevap: *"karakter tipleri yapısı boyutu proporsiyonu çok iyi ama bunlar savaş
+karakteri, başka bir şey araştırıp bulamaz mıyız bunun gibi"*. Yani **oran onaylandı, konsept
+reddedildi** — ve B3'ün hükmü bu noktada eksik kalıyor: ekipman düğümü sökülüyor ama altındaki
+**kemer, bilek bandı, deri askı GEOMETRİDE** duruyor, renk değil.
+
+| aranan | bulunan |
+|---|---|
+| CC0 + KayKit oranı + modern/sivil | **yok.** itch CC0/low-poly/rigged taramaları ya gerçekçi oran ya PSX/voxel veriyor |
+| KayKit Mystery Monthly 4/5/6 ($19,99/paket) | aynı sanatçı, aynı rig, **hâlâ fantezi**: 14 karakterde sivil olan Series 6 *Farmers*, Series 5 *Hiker · Protagonists · Helpers* — paket başına 2-3, kıraathane değil |
+| **Manken gövde** (ücretsiz, Character Animations içinde) | **ekipman 0 · deri 0 · aynı rig · 410 KB · 6 düz parça** |
+
+**Parça = kıyafet.** `tools/olcum-karakter-goz.mjs` (yeni) UV gözlerini parça parça ölçtü:
+Ranger'ın bacağı %87 tek göz (2,3 = pantolon) + %13 (1,7 = çizme), gövdesi 6 göze yayılı (tunik +
+kemer + askı). Yani **renk taşınabilir, geometri taşınmaz** — mankende taşınacak geometri yok.
+
+Mankenin gövdesi altı ayrı mesh olduğu için kıyafet doğrudan **parça rengi** oluyor ve bu, D-013'ün
+(flat-shaded low-poly = nihai stil) tam istediği şey. Kimlik parçaları — **kasket · bıyık · önlük** —
+bugün `Player.tsx`'te **zaten elle çizili**; tek fark artık `head` ve `chest` KEMİKLERİNE takılmaları,
+yani yürüme/oturma klibi onları da taşıyor. Denendi ve çalıştı (`docs/gorsel/ss/s14-roller.png`,
+üç rol: çaycı · garson · müşteri).
+
+**Eksik kalan tek şey yüz:** manken boş kafayla geliyor. Göz/burun bugün `Player.tsx`'te çizili
+(2 küre + 1 küre), aynı yolla başa takılır. Yani bu bir asset seçimi değil — **bizim karakterimiz,
+KayKit'in iskeleti ve onaylanmış oranı üstünde.**
+
 ---
 
 ## §Karar

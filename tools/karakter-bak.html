@@ -34,6 +34,21 @@
   // gövdesinin başı boyun %50'si olduğu için TOPLAM BOYU 1,75'e çekmek masayı göğse çıkarıyor;
   // gövdeyi mobilyaya hizalamak ise toplam boyu 1,75'in üstüne taşıyor. Kol seçimi görselle olur.
   const olcekler = (q.get('olcekler') ?? '').split(',').filter(Boolean).map(Number);
+  // `boya=1` → PARÇA BAŞINA düz renk + oyunun kendi kasket/bıyık/önlüğü kemiğe takılır.
+  //
+  // NEDEN (2026-09-14, kullanıcı): *"yapısı boyutu proporsiyonu çok iyi ama bunlar savaş
+  // karakteri"*. Ekipmanı sökmek yetmiyor — altından ortaçağ derisi çıkıyor, ve o deri
+  // GEOMETRİDE. Manken gövdede o geometri hiç yok: 6 düz parça, ekipman sıfır. Parçalar ayrı
+  // mesh olduğu için kıyafet = PARÇA RENGİ (D-013 flat-shaded'in tam da istediği şey), kimlik
+  // ise bugün Player.tsx'te zaten elle çizili olan kasket + bıyık + önlükten geliyor.
+  const boya = q.get('boya') === '1';
+  const P = { skin: '#e0ac69', shirt: '#f3ecd9', pants: '#3e3a36', apron: '#7a2230', cap: '#4a3728', mustache: '#3a2a1d', shoe: '#2e2a26' };
+  const PARCA_RENK = [
+    [/head/i, P.skin],
+    [/arm/i, P.shirt],
+    [/body|torso/i, P.shirt],
+    [/leg/i, P.pants],
+  ];
   const H = 1.75; // ACTOR_HEIGHT (src/config/actor.ts)
   const TABLE_TOP_Y = 0.795; // tableLook.ts — donmuş
   const STOOL_SEAT_Y = 0.45; // tableLook.ts — donmuş
@@ -48,6 +63,49 @@
     const rol = (ad ?? '').split('_').pop().toLowerCase();
     return EKIPMAN.some((k) => rol.startsWith(k) || rol.endsWith(k));
   };
+
+  /**
+   * Oyunun KENDİ kimlik parçalarını (kasket · bıyık · önlük) rig'in kemiklerine takar.
+   * Bugün bunlar `Player.tsx`'te ilkel şekil olarak zaten çizili; buradaki tek fark artık
+   * bir KEMİĞE bağlı olmaları — yani yürüme/oturma klibi onları da taşıyor.
+   * Ölçüler ham rig birimindedir (gövde 2,20 ham = 1,75 dünya).
+   */
+  function kiyafetTak(kok, rol = 'cayci') {
+    const kemikler = {};
+    kok.traverse((n) => {
+      if (n.isBone) kemikler[n.name] = n;
+    });
+    kok.updateWorldMatrix(true, true);
+    const q = new THREE.Quaternion();
+    const tak = (kemikAd, mesh, nokta) => {
+      const k = kemikler[kemikAd];
+      if (!k) return;
+      k.add(mesh);
+      mesh.position.copy(k.worldToLocal(nokta.clone()));
+      mesh.quaternion.copy(k.getWorldQuaternion(q).invert()); // kemiğin dönüşünü geri al
+    };
+    const mat = (renk) => new THREE.MeshStandardMaterial({ color: renk, roughness: 0.85 });
+
+    // Ham rig ölçüleri (ölçülmüş): baş mesh'i y 1,10…2,20 · gövde 0,38…1,24 · baş eni 0,86.
+    if (rol === 'cayci') {
+      const kasket = new THREE.Group();
+      kasket.add(new THREE.Mesh(new THREE.CylinderGeometry(0.44, 0.47, 0.16, 14), mat(P.cap)));
+      const vizor = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.045, 0.3), mat(P.cap));
+      vizor.position.set(0, -0.06, 0.42);
+      kasket.add(vizor);
+      tak('head', kasket, new THREE.Vector3(0, 2.06, 0));
+    }
+    if (rol === 'cayci' || rol === 'musteri') {
+      const biyik = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.07, 0.07), mat(P.mustache));
+      tak('head', biyik, new THREE.Vector3(0, 1.55, 0.5));
+    }
+    if (rol === 'cayci' || rol === 'garson') {
+      const onluk = new THREE.Mesh(new THREE.BoxGeometry(0.58, 0.72, 0.08), mat(P.apron));
+      tak('chest', onluk, new THREE.Vector3(0, 0.78, 0.3));
+      const bel = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.07, 14), mat(P.apron));
+      tak('hips', bel, new THREE.Vector3(0, 0.48, 0));
+    }
+  }
 
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(innerWidth, innerHeight);
@@ -98,8 +156,13 @@
   // --- adaylar: toplam boy 1,75'e çekilir, ekipman istenirse gizlenir ---
   const kartlar = [];
   let x = 0;
-  const liste = olcekler.length ? olcekler.map((k) => ({ ad: adlar[0], zorla: k })) : adlar.map((ad) => ({ ad, zorla: 0 }));
-  for (const { ad, zorla } of liste) {
+  const roller = (q.get('roller') ?? '').split(',').filter(Boolean);
+  const liste = roller.length
+    ? roller.map((r) => ({ ad: adlar[0], zorla: 0, rol: r }))
+    : olcekler.length
+      ? olcekler.map((k) => ({ ad: adlar[0], zorla: k, rol: 'cayci' }))
+      : adlar.map((ad) => ({ ad, zorla: 0, rol: 'cayci' }));
+  for (const { ad, zorla, rol } of liste) {
     const uzanti = ad.startsWith('Male_') || ad.startsWith('Superhero_') ? 'gltf' : 'glb';
     let o;
     try {
@@ -116,6 +179,14 @@
           gizlenen++;
         }
       });
+    }
+    if (boya) {
+      o.traverse((n) => {
+        if (!n.isMesh || !n.visible) return;
+        const e = PARCA_RENK.find(([d]) => d.test(n.name ?? ''));
+        if (e) n.material = new THREE.MeshStandardMaterial({ color: e[1], roughness: 0.85 });
+      });
+      kiyafetTak(o, rol);
     }
     const poz = pozDosya ? pozUygula(o) : null;
     o.updateWorldMatrix(true, true);
@@ -150,7 +221,7 @@
     }
     kartlar.push({
       kalca,
-      ad, x, hamBoy: +b.y.toFixed(2), olcek: +k.toFixed(3), gizlenen, poz,
+      ad, rol, x, hamBoy: +b.y.toFixed(2), olcek: +k.toFixed(3), gizlenen, poz,
       en: +(b.x * k).toFixed(2),
       boy: +(b.y * k).toFixed(2),
     });
@@ -199,7 +270,7 @@
     el.style.cssText =
       'position:fixed;transform:translate(-50%,0);font:11px/1.35 system-ui;text-align:center;' +
       'color:#263238;background:#ffffffd9;padding:2px 6px;border-radius:4px;white-space:nowrap';
-    el.innerHTML = `<b>${kt.ad}</b><br>×${kt.olcek} → boy ${kt.boy}<br>en ${kt.en}` +
+    el.innerHTML = `<b>${kt.rol ?? kt.ad}</b><br>×${kt.olcek} → boy ${kt.boy}<br>en ${kt.en}` +
       (kt.gizlenen ? `<br><span style="color:#c62828">−${kt.gizlenen} ekipman</span>` : '') +
       (kt.poz ? `<br><span style="color:${kt.poz.tuttu ? '#2e7d32' : '#c62828'}">poz ${kt.poz.eslesen ?? 0}/${kt.poz.iz ?? 0} kemik</span>` : '') +
       (kt.kalca != null ? `<br><span style="color:#5d4037">ayaktan asılınca kalça ${kt.kalca}<br>montaj kaldırması +${(0.45 - kt.kalca).toFixed(3)}</span>` : '');
