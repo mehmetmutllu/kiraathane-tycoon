@@ -90,10 +90,9 @@ H3 masa aralığı.
 - **Masalar geçilmiyor (ÖLÇÜLDÜ, uygulanmadı):** arka salonda açıklık **0,68 br**, geçiş 0,94
   ister → 20 masanın 12'si geçilemez. İki kol
   `docs/geribildirim-oyun-testi-2026-09-09.md` sonunda. (H3.)
-- **Pano ARTIFACT'ı yayında 4 oturum geride (80/96).** Yerel `docs/pano/ilerleme-panosu.html`
-  güncel (84/97) ve commit'te; yeniden yayın kapısı yayındaki sürümün TAMAMININ okunmasını
-  şart koşuyor (114k token) ve diff kaybolacak içerik olmadığını gösterdi. Bir sonraki oturumda
-  ilk iş olarak yapılabilir; link: /artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
+- ✅ **Pano artifact'ı KAPANDI (2026-09-14).** Beş oturumdur geride duruyordu; yayındaki sürümün
+  1420 satırı okundu, yerelin **üst küme** olduğu doğrulandı (46 → 49 günlük kart, risk ve ölçüt
+  listeleri birebir) ve v34 olarak yayınlandı — 85/98. Kapanış protokolü adım 3 artık gerçekten işliyor.
 - **`.gitattributes` YOK** — `core.autocrlf=true` her checkout'ta metin dosyalarını CRLF'e çeviriyor.
 - **`npm run pano`'nun günlük uyarısı yalnız TARİHE bakıyor** — aynı gün ikinci oturumda sessiz
   kalıyor; kural "sayaç arttıysa kart da artmalı" olmalı.
