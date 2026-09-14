@@ -5,29 +5,32 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-14 — **S19b BİTTİ: D-116 koda girdi, bekçili** · Faz S 19/20 · 94/104)
+## ŞU AN (2026-09-15 — **S20 ÖLÇÜM: MUTFAK** · Faz S 20/21 · 94/105)
 
 ```
-SORU            : S19a'da olculen ve secilen bes kol koda girer.
-SAYILAR         : docs/kiyafet-raporu-s19b.md §Bulgular · olcum-onluk.json · olcum-patron.json
-KARAR           : D-116 (S19a) uygulandi; uygulama 3 sayiyi curuttu → D-117
-UYGULAMA        : capa 0,26 · onluk GOVDE PROFILINDEN · patron havlu+sivali kol ·
-                  balon model render'i · Kenney Food Kit manifeste
-BEKCI           : tests/oturus-kiyafet.test.ts — 38 denetim, 18 MUTASYON kirmizi yandi
-FINAL           : vitest 1030 ✓ · duman 42/42 ✓ · konsol hatasi YOK
+SORU            : Mutfak odası oyuna ne veriyor — girilemeyen, mekaniğe bağlanmamış ve ortası
+                  boş bir vitrin mi, yoksa kazanılacak bir alan mı?
+ÖLÇÜLECEK KOLLAR: E (erişim)   E0 kapalı kalsın · E1 açıklık + yürünebilir alan
+                  Ç (çaycı)    Ç0 salt görsel kalsın · Ç1 servise görsel olarak bağlansın
+                  D (doluluk)  D0 orta boş kalsın · D1 ada/istif ile dolsun
+                  Üçü de aynı GÖRÜNÜRLÜK süzgecinden geçer (S6 dersi: görünmeyen iş yapılmaz).
+SAYILAR         : (boş — adım 2'den sonra `docs/mutfak-raporu-s20.md` §Bulgular)
+KARAR           : (boş — adım 3, tek karar paketi)
+UYGULAMA        : (boş)
+BEKÇİ           : (boş)
 ```
+
+**Elektrik kesintisi notu:** 2026-09-15 01:19'da taban kareleri alınmış, rapor/commit yazılamadan
+oturum kesilmişti. Kurtarılan: `tools/shot-s20-mutfak.mjs` + `ss/s20-mutfak-{taban,npc,plan}.png`.
 
 ## SIRADAKİ TAM ADIM
 
-**S19'un kalan dört kalemi** (kullanıcının 2026-09-14 gecesi verdiği yedi kalemden geri kalanlar):
+Adım 2 (ÖLÇ): `tools/olcum-mutfak.ts` → `docs/olcum-mutfak.txt` → `docs/mutfak-raporu-s20.md`
+§Bulgular → **commit #1 (karar bölümü BOŞ)** → karar paketi.
 
-1. **Karakter menüsü KayKit gövdesine** — menüdeki önizleme hâlâ eski ilkel gövde.
-2. **Paneller tam ekran** — D-110'un tam ekran kuralı bütün panellere uygulanmadı.
-3. **Yükseltme tetiği pad'in üstünde** → **VARYANT KAPISI**: `rules.ts`'e dokunuyor, ölçülmeden
-   uygulanmaz (ölç → sor → uygula).
-4. **Yükseltmenin solundaki ok** — S1'de eklenen ok kullanıcıya göre yanlış yerde.
-
-**Sonra:** S9 SES karar paketi (ölçüm hazır, aşağıda) · sonra **Faz H**.
+**S20'den sonra:** S19'un kalan dört kalemi (1) karakter menüsü KayKit gövdesine ·
+(2) paneller tam ekran · (3) yükseltme tetiği pad'in üstünde — **varyant kapısı, `rules.ts`** ·
+(4) yükseltmenin solundaki ok · sonra S9 SES karar paketi · sonra **Faz H**.
 
 ### S19b'DEN KALAN KÜÇÜK KUSUR
 
