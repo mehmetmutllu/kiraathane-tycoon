@@ -237,14 +237,16 @@ export const KAY_OTURMA_KALDIRMA = 0.068;
  *   |      48 |    1,00 |    96 |
  *   |      80 |    1,57 |   112 |   (frustum culling devrede)
  *
- * 48 ölçülen oyun durumunu (38) paylı kapsar. TAVANI AŞAN müşteri yine ESKİ instanced kapsülle
- * çizilir — kapsül kolu bu yüzden silinmedi. AÇIK KALEM: 24 masa tam açıkken müşteri 70'i
- * geçebilir ve o durumda kapsüller yine görünür; tavanı 80'e çıkarmak mı yoksa uzaktakini
- * kapsüle düşürmek mi (LOD) — kullanıcıya sorulacak, ölçüldü ama seçilmedi.
+ * TAVAN 80 (kullanıcı kararı, 2026-09-14): **kapsül hiç görünmesin.** `maxConcurrent` geç oyunda
+ * `totalSeats + 2`ye çıkıyor ve 24 masa tam açıkken müşteri 70'i geçebiliyor; 48'lik tavanda o
+ * durumda kapsüller yine belirirdi. 80, oyunun üretebildiği en yüksek sayının üstünde kalır.
+ *
+ * Kapsül kolu yine de SİLİNMEDİ: tavan bir gün aşılırsa müşteri kaybolmasın, kapsüle düşsün.
+ * Sessizce yok olmak, çirkin çizilmekten kötüdür.
  *
  * MOBİLDE ÖLÇÜLMEDİ: bunlar masaüstü sayısıdır, telefonda tipik 4-6 katı. APK turu ister.
  */
-export const NPC_SKIN_CAP = 48;
+export const NPC_SKIN_CAP = 80;
 
 /** Müşteri gövdeleri. Kapüşonlu Rogue bilerek YOK: kapüşonu ekipman süzgecine takılmıyor (S14). */
 export const KAY_MUSTERI_GOVDE = ['Knight', 'Rogue', 'Mage', 'Barbarian', 'Ranger'] as const;

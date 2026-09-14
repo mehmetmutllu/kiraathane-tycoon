@@ -160,8 +160,11 @@ describe('S15 · sahibin kasketi kalktı (kullanıcı kararı)', () => {
 });
 
 describe('S15 · müşteri skinned (D-113)', () => {
-  it('bütçe oyunda ÖLÇÜLEN eşzamanlı müşteriyi kapsar (12 masada 38 görüldü)', () => {
-    expect(NPC_SKIN_CAP).toBeGreaterThanOrEqual(38);
+  it('bütçe oyunun üretebildiği EN YÜKSEK müşteri sayısını kapsar — kapsül görünmemeli', () => {
+    // `maxConcurrent = max(8, totalSeats + 2)`; 24 masa tam açıkken müşteri 70'i geçebiliyor.
+    // Oyunda ölçüldü: yalnız 12 masada 38 eşzamanlı müşteri. Kullanıcı kararı: kapsül hiç
+    // görünmesin (2026-09-14) → tavan o tepenin üstünde kalmalı.
+    expect(NPC_SKIN_CAP).toBeGreaterThanOrEqual(80);
   });
 
   it('tavanı aşan müşteri için kapsül kolu DURUYOR — silinirse geç oyunda müşteri kaybolur', () => {
@@ -192,5 +195,22 @@ describe('S15 · müşteri skinned (D-113)', () => {
 
   it('gömlek rengi müşteriden gelir — yuva el değiştirince yeniden yazılır', () => {
     expect(KAYNAK_MUSTERI).toMatch(/y\.govdeMat\.color\.set\(npc\.color\)/);
+  });
+
+  it('OTURAN müşteri MASAYA döner — yön hareketten değil masa merkezinden gelir', () => {
+    // Yön normalde hareketten türüyor; oturunca hareket bitiyor ve müşteri geldiği yöne
+    // bakakalıyordu (kullanıcı 2026-09-14: "oturmalar sıkıntı, masaya dönük değiller").
+    expect(KAYNAK_MUSTERI).toMatch(/LAYOUT\.tables\[npc\.tableIndex\]\?\.table/);
+    expect(KAYNAK_MUSTERI).toMatch(/Math\.atan2\(masa\[0\] - x, masa\[2\] - z\)/);
+    // Oturan koluna, hareket kolundan ÖNCE bakılmalı; sonra bakılsa hareket yönü kazanırdı.
+    const oturanDal = KAYNAK_MUSTERI.indexOf('if (oturan) {');
+    const hareketDal = KAYNAK_MUSTERI.indexOf('} else if (dx * dx + dz * dz > 1e-5) {');
+    expect(oturanDal).toBeGreaterThan(-1);
+    expect(oturanDal).toBeLessThan(hareketDal);
+  });
+
+  it('yuva el değiştirince açı SNAP eder — önceki müşterinin yönünden dönmez', () => {
+    expect(KAYNAK_MUSTERI).toMatch(/y\.yeniYuva = true;/);
+    expect(KAYNAK_MUSTERI).toMatch(/y\.aci = y\.yeniYuva \? y\.hedefAci : MathUtils\.damp/);
   });
 });

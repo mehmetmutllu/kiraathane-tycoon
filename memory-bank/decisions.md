@@ -3447,7 +3447,12 @@ korumakla (D-112) bağdaşmadı; sevk biçimi gövde başına **iki mesh** (48 �
 ② `NPC_SKIN_CAP` 24 seçilmişti; oyunda ölçülünce 12 masada bile **38 eşzamanlı müşteri** çıktı
 ve tavanı aşanlar kapsül olarak görünüyordu → tavan **48**.
 
-**Bekçi:** `tests/karakter-senkron.test.ts` (21 denetim), **18 mutasyon, kaçan 0.**
+**İkinci tur (kullanıcı, aynı gün):** ① tavan **80** — *"kapsül hiç görünmesin"* (1,57 ms /
+112 çizim); kapsül kolu yine de duruyor ki tavan aşılırsa müşteri kaybolmasın. ② **oturan müşteri
+masaya dönmüyordu** — yön hareketten türüyordu, oturunca hareket bitince geldiği yöne bakakalıyordu;
+artık koltuktan **masa merkezine** bakıyor ve yuva el değiştirince açı SNAP ediyor.
+
+**Bekçi:** `tests/karakter-senkron.test.ts` (23 denetim), **21 mutasyon, kaçan 0.**
 
 Sayılar: `docs/karakter-raporu-s15.md` · ham `docs/olcum-yuruyus.json` · kareler
 `docs/gorsel/ss/s15-*.png` · karar paketi

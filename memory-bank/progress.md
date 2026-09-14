@@ -450,9 +450,10 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   **telafisiz** kolla ×0,75'e indi — gövde ölçeği kıpırdamadı (omuz 0,552 sabit), siluet ~1,52,
   `ACTOR_HEIGHT` ve türeyenleri dokunulmadı. Sahibin kasketi kalktı. Müşteriler **48 yuvalı
   skinned havuza** geçti (gövde başına iki mesh: 48 çizim / 0,52 ms; oyunda ölçülen 38 eşzamanlı
-  müşteriyi paylı kapsar). Bekçi `tests/karakter-senkron.test.ts` 21 denetim, **18 mutasyon,
-  kaçan 0**. Devreden: geç oyunda tavan yine aşılabilir (LOD ↔ tavan 80 ölçüldü, seçilmedi) ·
-  oyuncuda 2,0× artık kayma (hız düşürmek DENGE, ölçülmedi) · Rogue'un omzu 0,709.
+  müşteriyi paylı kapsar). **İkinci turda kullanıcı isteğiyle tavan 80** ("kapsül hiç görünmesin",
+  1,57 ms) ve **oturan müşteri masaya döndürüldü** (yön hareketten türüyordu, oturunca geldiği
+  yöne bakakalıyordu). Bekçi `tests/karakter-senkron.test.ts` 23 denetim, **21 mutasyon, kaçan 0**.
+  Devreden: oyuncuda 2,0× artık kayma (hız düşürmek DENGE, ölçülmedi) · Rogue'un omzu 0,709.
 
 **Faz S kapısı:** 185 kullanılmayan KayKit modeli oyuna bağlı + UI dili maketle onaylanmış +
 ses kaynağı kararı yazılı. Ondan sonra Faz F'e (paketleme) geçilir.

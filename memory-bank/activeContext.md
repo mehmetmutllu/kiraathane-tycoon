@@ -22,27 +22,22 @@ SAYILAR         : docs/karakter-raporu-s15.md · ham docs/olcum-yuruyus.json · 
                   Oturus  Sit_Chair_Idle kalca dunyada 0,382 → kok kaldirma +0,068
 KARAR           : D-113 — K-B telafisiz ×0,75 · S3 (klip hizdan secilir + tavan 1,80) ·
                   Ö1 (ACTOR_HEIGHT 1,75 KALIR) · Ç2 birlesik skinned · kasket yalniz sahipten.
+                  IKINCI TUR: tavan 80 ("kapsul hic gorunmesin") + oturan musteri MASAYA doner.
                   Paket: https://claude.ai/code/artifact/1cad1b62-df57-4ffb-b00b-32f0b9be9565
 UYGULAMA        : actor.ts (KAY_KAFA_OLCEK · KLIP_HIZI · TIMESCALE_TAVAN/TABAN ·
-                  KAY_OTURMA_KALDIRMA · NPC_SKIN_CAP 48 · KAY_MUSTERI_GOVDE · owner.kasket=false)
+                  KAY_OTURMA_KALDIRMA · NPC_SKIN_CAP 80 · KAY_MUSTERI_GOVDE · owner.kasket=false)
                   KayActor.tsx (kafaKucult · head.scale izi sokuldu · lokomosyonSec) ·
                   Customers.tsx (48 yuvali skinned havuz, govde basina iki mesh) ·
                   tools/olcum-yuruyus.mjs · skin-perf sevk kolu · karakter-bak kafa kolu ·
                   tools/shot-s15.mjs · tools/mutasyon-s15.mjs
-BEKÇİ           : tests/karakter-senkron.test.ts — 21 denetim, **18 mutasyonla** dogrulandi,
-                  kacan 0 · tsc -b ✓ · vitest 964 ✓ · duman 42/42 ✓ · sira ✓
+BEKÇİ           : tests/karakter-senkron.test.ts — 23 denetim, **21 mutasyonla** dogrulandi,
+                  kacan 0 · tsc -b ✓ · vitest 966 ✓ · duman 42/42 ✓ · sira ✓
 ```
 
 ## SIRADAKİ TAM ADIM
 
 **S16 — Faz S'in son kalemi: S9 ses** (kaynak karari yazili, D-106 · S-C). Ardindan **Faz H**
 (H1 uc hata · H2 yukseltme sirasi · H3 masa araligi — son ikisi DENGE, varyant kapisina tabi).
-
-**İLK SORULACAK (S15'ten kaldi, soru turu doldugu icin sorulmadi):**
-**Gec oyunda musteri tavani.** 24 masa tam acikken musteri 70'i gecebilir ve tavani asanlar
-kapsul olarak gorunur. Iki kol OLCULDU ama secilmedi:
-- tavani 80'e cikar → 1,57 ms / 112 cizim (frustum culling devrede)
-- uzaktakini kapsule dusur (LOD) → yakindaki 48 skinned, uzak kapsul; kare basi siralama ister
 
 ### S15'ten DEVREDEN (ölçüldü/görüldü, bilerek yapılmadı)
 

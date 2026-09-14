@@ -16,7 +16,7 @@ const MUTASYONLAR = [
   ['ölçek kafayı TELAFİ ediyor', A, 'export const KAY_SCALE = ACTOR_HEIGHT / KAY_AUTHORED;', 'export const KAY_SCALE = ACTOR_HEIGHT / (KAY_AUTHORED * KAY_KAFA_OLCEK);'],
   ['sahibin kasketi geri geldi', A, '  owner: { kasket: false, onluk: true },', '  owner: { kasket: true, onluk: true },'],
   ['önlük düşürüldü', A, '  waiter: { kasket: false, onluk: true },', '  waiter: { kasket: false, onluk: false },'],
-  ['müşteri bütçesi eski tavana döndü', A, 'export const NPC_SKIN_CAP = 48;', 'export const NPC_SKIN_CAP = 24;'],
+  ['müşteri bütçesi düşürüldü (kapsül görünür)', A, 'export const NPC_SKIN_CAP = 80;', 'export const NPC_SKIN_CAP = 48;'],
   ['oturuş kaldırması kapsül numarasına döndü', A, 'export const KAY_OTURMA_KALDIRMA = 0.068;', 'export const KAY_OTURMA_KALDIRMA = -0.45;'],
   ['koşu klibi aday listesinden çıktı', K, "  yuru: ['Walking_A', 'Running_A'],", "  yuru: ['Walking_A'],"],
   ['head ölçek izi sökülmüyor', K, "klip.tracks = klip.tracks.filter((t) => t.name !== 'head.scale');", 'void klip;'],
@@ -28,6 +28,9 @@ const MUTASYONLAR = [
   ['gömlek rengi müşteriden alınmıyor', C, 'y.govdeMat.color.set(npc.color);', 'y.govdeMat.color.set("#cccccc");'],
   ['baş da gövde materyaliyle boyanıyor', C, '          const mesh = new SkinnedMesh(geo, ana.material);', '          const mesh = new SkinnedMesh(geo, govdeMat);'],
   ['oturan müşteriye kapsül numarası uygulanıyor', C, 'y.kok.position.set(x, oturan ? KAY_OTURMA_KALDIRMA : 0, z);', 'y.kok.position.set(x, oturan ? SEATED_DROP : 0, z);'],
+  ['oturan müşteri masaya DÖNMÜYOR', C, '          if (masa) y.hedefAci = Math.atan2(masa[0] - x, masa[2] - z);', '          void masa;'],
+  ['oturuş yönü hareket yönüne yeniliyor', C, '        if (oturan) {', '        if (false) {'],
+  ['yuva devrinde açı SNAP etmiyor', C, 'y.aci = y.yeniYuva ? y.hedefAci : MathUtils.damp(y.aci, tg, 9, dt);', 'y.aci = MathUtils.damp(y.aci, tg, 9, dt);'],
 ];
 
 const yedek = new Map();

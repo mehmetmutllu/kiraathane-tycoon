@@ -163,9 +163,9 @@ eşzamanlı müşteri** vardı ve tavanı aşanlar kapsül olarak duruyordu — 
 kapsüller yan yana (`docs/gorsel/ss/s15-oyun-genis.png` ilk sürümü). Tavan **48**'e çekildi;
 ölçülen durumu paylı kapsıyor ve yeni karede kapsül kalmadı.
 
-**AÇIK KALEM:** 24 masa tam açıkken müşteri 70'i geçebilir ve kapsüller yine görünür. İki kol
-ölçüldü ama SEÇİLMEDİ — tavanı 80'e çıkarmak (1,57 ms) ya da uzaktakini kapsüle düşürmek (LOD).
-Soru turu dolduğu için sonraki oturuma yazıldı.
+İkinci tur (kullanıcı, aynı gün): **tavan 80** — *"kapsül hiç görünmesin"*. 24 masa tam açıkken
+müşteri 70'i geçebiliyor; 80 o tepenin üstünde kalır. Bedeli **1,57 ms / 112 çizim**. Kapsül kolu
+silinmedi: tavan bir gün aşılırsa müşteri sessizce kaybolmasın, kapsüle düşsün.
 
 ### Oturuş çapası — `SEATED_DROP`un skinned karşılığı
 
@@ -228,7 +228,7 @@ Dört kolda da önerilen kol seçildi.
 
 ## §Bekçi
 
-`tests/karakter-senkron.test.ts` — **21 denetim**, `tools/mutasyon-s15.mjs` ile **18 mutasyonla**
+`tests/karakter-senkron.test.ts` — **23 denetim**, `tools/mutasyon-s15.mjs` ile **21 mutasyonla**
 doğrulandı, **kaçan 0**.
 
 Yakaladığı mutasyonlar: klip hızının elle ayarlanması · koşu hızının bozulması · kelepçe tavanının
@@ -237,16 +237,27 @@ etmesi · sahibin kasketinin geri gelmesi · önlüğün düşmesi · bütçenin
 oturuş kaldırmasının kapsül numarasına dönmesi · koşu klibinin aday listesinden çıkması ·
 `head` ölçek izinin sökülmemesi · kafanın kıyafetten SONRA küçültülmesi · katsayının yalnız klip
 değişince yazılması · müşteri havuzunun her render kurulması · gömlek renginin müşteriden
-alınmaması · başın gövde materyaliyle boyanması · oturan müşteriye kapsül numarasının uygulanması.
+alınmaması · başın gövde materyaliyle boyanması · oturan müşteriye kapsül numarasının uygulanması · **oturan müşterinin masaya dönmemesi** ·
+**oturuş yönünün hareket yönüne yenilmesi** · **yuva devrinde açının snap etmemesi**.
 
-**Final tam koşu:** `tsc -b` ✓ · vitest **964 ✓** (40 dosya) · `npm run duman` **42/42 ✓** ·
+**Final tam koşu:** `tsc -b` ✓ · vitest **966 ✓** (40 dosya) · `npm run duman` **42/42 ✓** ·
 `npm run sira` ✓ · oyun içi kare `docs/gorsel/ss/s15-oyun-genis.png` (38 müşteri, kapsül yok).
+
+## §İkinci tur (kullanıcı geri bildirimi, aynı gün)
+
+1. **Tavan 80** — *"kapsül hiç görünmesin"*. `NPC_SKIN_CAP` 48 → 80 (1,57 ms / 112 çizim).
+2. **Oturan müşteri masaya dönmüyordu** — *"oturmalar sıkıntı, masaya dönük değiller"*. Yön
+   HAREKETTEN türüyordu; müşteri oturunca hareket bitiyor ve **geldiği yöne bakakalıyordu**.
+   Koltuk masanın çevresinde herhangi bir yönde olabildiği için sabit açı işe yaramaz: yön artık
+   koltuktan **masa merkezine** bakar (`LAYOUT.tables[i].table`). Ayrıca yuva el değiştirince açı
+   SNAP ediyor — yeni müşteri önceki müşterinin yönünden dönerek gelmiyor.
+   Kare: `docs/gorsel/ss/s15-oturus-yakin.png`.
 
 ## §Açık kalemler (bu turdan devreden)
 
-- **Geç oyunda tavan yine aşılabilir.** 24 masa tam açıkken müşteri 70'i geçebilir; iki kol
-  ölçüldü ama seçilmedi (tavan 80 → 1,57 ms · uzaktakini kapsüle düşüren LOD). Soru turu dolduğu
-  için sonraki oturuma bırakıldı.
+- ~~Geç oyunda tavan yine aşılabilir.~~ **KAPANDI (kullanıcı, aynı gün):** tavan **80** —
+  "kapsül hiç görünmesin". Bedeli 1,57 ms/kare. Kapsül kolu yine de silinmedi: tavan bir gün
+  aşılırsa müşteri kaybolmasın, kapsüle düşsün.
 - **Oyuncuda 2,0× artık kayma.** Sıfırlamanın tek yolu oyuncu hızını düşürmek — DENGE, varyant
   kapısına tabi, ölçülmedi.
 - **Rogue'un omzu 0,709** — blob sınırı 0,60'ı bugün de aşıyor (S14'ün 0,58'i başka gövdeden).

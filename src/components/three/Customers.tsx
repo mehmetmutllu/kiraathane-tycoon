@@ -33,7 +33,7 @@ import {
 } from '../../config/actor';
 import { PALETTE } from '../../config/palette';
 import { ekipmanMi, basMi, kafaKucult, useKayKlipler, KLIP, LOKOMOSYON, lokomosyonSec, YURUME_ESIGI } from './KayActor';
-import { WC_GECIS, wcOlcek } from '../../game/layout';
+import { WC_GECIS, wcOlcek, LAYOUT } from '../../game/layout';
 
 /**
  * Customers — müşteri gövdeleri (S15 · D-113: skinned).
@@ -48,13 +48,13 @@ import { WC_GECIS, wcOlcek } from '../../game/layout';
  * müşteriler bu yuvalara oturur; yuva boşalınca bir sonraki müşteri aynı gövdeyi devralır
  * (renk ve klip yeniden yazılır). Müşteri gelip gitmesi mesh kurmaz.
  *
- * TAVANI AŞAN MÜŞTERİ eski instanced kapsülle çizilir — `maxConcurrent` geç oyunda 80'in
- * üstüne çıkabiliyor ve o kadar skinned gövde ölçülen bütçenin üç katı. Kapsül kolu bu yüzden
- * silinmedi; gerekçe ve sayılar `actor.ts` → `NPC_SKIN_CAP`.
+ * TAVAN 80 — kullanıcı "kapsül hiç görünmesin" dedi, yani bütçe oyunun üretebildiği en yüksek
+ * müşteri sayısının üstünde. Kapsül kolu yine de duruyor: tavan bir gün aşılırsa müşteri
+ * kaybolmasın, kapsüle düşsün. Gerekçe ve sayılar `actor.ts` → `NPC_SKIN_CAP`.
  *
  * GÖVDE BAŞINA İKİ MESH: baş dokusunu korur (yüz/saç boyanmaz — D-112), kol+gövde+bacak tek
  * geometriye kaynar ve rengini KÖŞE RENGİNDEN alır. Ölçüldü: 24 müşteri = 48 çizim / 0,52 ms;
- * aynı sayıda 6 parçalı gövde 216 çizim / 1,78 ms.
+ * aynı sayıda 6 parçalı gövde 216 çizim / 1,78 ms. 80 müşteri = 1,57 ms.
  *
  * P0 perf: `npcs` abonelikle DEĞİL `getState()` ile okunur — NPC dizisi her karede yeniden
  * üretiliyor (konum) ve abonelik bu bileşeni her kare render ederdi.
@@ -83,6 +83,8 @@ type Yuva = {
   aci: number;
   sonX: number;
   sonZ: number;
+  /** Yuva yeni el değiştirdi — açı yumuşatılmadan SNAP edilir. */
+  yeniYuva: boolean;
 };
 
 /**
@@ -93,8 +95,8 @@ function useMusteriHavuzu(): { grup: Group; yuvalar: Yuva[]; govdeBoy: number } 
   const dosyalar = useGLTF(KAY_MUSTERI_GOVDE.map((g) => `${KAY_KOK}${g}.glb`));
   const klipler = useKayKlipler();
 
-  // Havuz TAM BİR KEZ kurulur (`useMemo` değil `useRef`): 24 skinned gövde + 48 geometri
-  // kaynağı pahalı bir iştir ve memo bağımlılığının kimliği kaydığı anda baştan koşar —
+  // Havuz TAM BİR KEZ kurulur (`useMemo` değil `useRef`): `NPC_SKIN_CAP` gövde ve iki katı
+  // geometri kaynağı pahalı bir iştir ve memo bağımlılığının kimliği kaydığı anda baştan koşar —
   // ilk denemede birebir bu oldu ve duman testi canvas'ı 15 sn'de göremedi.
   const havuz = useRef<{ grup: Group; yuvalar: Yuva[]; govdeBoy: number } | null>(null);
   if (!havuz.current) {
@@ -168,11 +170,11 @@ function useMusteriHavuzu(): { grup: Group; yuvalar: Yuva[]; govdeBoy: number } 
         if (klip) eylemler[ad] = mixer.clipAction(klip);
       }
       eylemler[KLIP.dur]?.play();
-      mixer.setTime(i * 0.17); // faz kaydır: yirmi dört müşteri aynı karede nefes almasın
+      mixer.setTime(i * 0.17); // faz kaydır: müşteriler aynı karede nefes alıp adım atmasın
 
       yuvalar.push({
         kok, mixer, eylemler, govdeMat,
-        npcId: -1, suAnKlip: KLIP.dur, hedefAci: 0, aci: 0, sonX: 0, sonZ: 0,
+        npcId: -1, suAnKlip: KLIP.dur, hedefAci: 0, aci: 0, sonX: 0, sonZ: 0, yeniYuva: true,
       });
     }
 
@@ -234,17 +236,28 @@ export function Customers() {
           y.govdeMat.color.set(npc.color);
           y.sonX = x;
           y.sonZ = z;
+          y.yeniYuva = true; // açı SNAP etsin: önceki müşterinin yönünden dönerek gelmesin
         }
         const dx = x - y.sonX;
         const dz = z - y.sonZ;
         const hiz = dt > 0 ? Math.sqrt(dx * dx + dz * dz) / dt : 0;
-        if (dx * dx + dz * dz > 1e-5) y.hedefAci = Math.atan2(dx, dz);
+        if (oturan) {
+          // OTURAN MÜŞTERİ MASAYA DÖNER. Yön normalde HAREKETTEN türüyor; oturunca hareket
+          // bitiyor ve müşteri **geldiği yöne** bakakalıyordu (kullanıcı 2026-09-14: "oturmalar
+          // sıkıntı, masaya dönük değiller"). Koltuk masanın çevresinde herhangi bir yönde
+          // olabildiği için sabit bir açı işe yaramaz — yön koltuktan MASA MERKEZİNE bakar.
+          const masa = LAYOUT.tables[npc.tableIndex]?.table;
+          if (masa) y.hedefAci = Math.atan2(masa[0] - x, masa[2] - z);
+        } else if (dx * dx + dz * dz > 1e-5) {
+          y.hedefAci = Math.atan2(dx, dz);
+        }
         y.sonX = x;
         y.sonZ = z;
         let tg = y.hedefAci;
         while (tg - y.aci > Math.PI) tg -= Math.PI * 2;
         while (tg - y.aci < -Math.PI) tg += Math.PI * 2;
-        y.aci = MathUtils.damp(y.aci, tg, 9, dt);
+        y.aci = y.yeniYuva ? y.hedefAci : MathUtils.damp(y.aci, tg, 9, dt);
+        y.yeniYuva = false;
 
         // Oturan müşteri GERÇEK oturuş klibindedir; kök `KAY_OTURMA_KALDIRMA` kadar kalkar ki
         // kalça taburenin oturağına gelsin (ölçüm §Oturus). Eski `SEATED_DROP` bir kapsül
