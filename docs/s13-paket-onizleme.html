@@ -1,0 +1,516 @@
+<title>Altı Paket, Altı Hüküm</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Lilita+One&display=swap">
+<style>
+  :root {
+    --font-game: 'Baloo 2', system-ui, 'Segoe UI', Roboto, sans-serif;
+    --font-num: 'Lilita One', 'Baloo 2', system-ui, sans-serif;
+
+    /* D-107 paleti — oyunun kendi arayüz dili (src/index.css ile birebir) */
+    --g1: #463c86;
+    --g2: #221b52;
+    --ot: #100b2e;
+    --kart: #3a3178;
+    --kart2: #2e2764;
+    --oyuk: #1b1443;
+    --ac: #ffc24b;
+    --ac2: #e09415;
+    --txa: #3a2206;
+    --tx: #eae3ff;
+    --tx2: #a99fd8;
+    --ok: #7bd46a;
+    --ok2: #4fa83e;
+    --uyari: #d43a26;
+    --vitrin: #5b4fa6;
+
+    --p1: 11px;
+    --p2: 13px;
+    --p3: 15px;
+    --p4: 18px;
+    --p5: 22px;
+    --p6: 30px;
+
+    --r1: 10px;
+    --r2: 17px;
+    --r3: 22px;
+    --rr: 999px;
+
+    --k1: 0 2px 0 var(--ot);
+    --k2: inset 0 2px 0 rgba(255, 255, 255, 0.45), 0 3px 0 var(--ot);
+    --k3: inset 0 3px 0 rgba(255, 255, 255, 0.5), 0 5px 0 var(--ot), 0 10px 18px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Tek dünyaya bağlanmış sayfa: oyunun mor arayüz katmanı. Zemin açıkça boyanır. */
+  body {
+    background: linear-gradient(180deg, var(--g1) 0%, var(--g2) 62%, #191140 100%);
+    background-attachment: fixed;
+    color: var(--tx);
+    font-family: var(--font-game);
+    font-size: var(--p3);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .sayfa {
+    max-width: 1020px;
+    margin: 0 auto;
+    padding-inline: 18px;
+    padding-block: 30px 60px;
+  }
+
+  h1, h2, h3 { text-wrap: balance; margin: 0; }
+
+  .kicker {
+    font-size: var(--p1);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--tx2);
+    font-weight: 700;
+  }
+
+  h1 {
+    font-family: var(--font-num);
+    font-size: clamp(30px, 7vw, 46px);
+    line-height: 1.06;
+    letter-spacing: 0.01em;
+    color: var(--ac);
+    text-shadow: 0 3px 0 var(--ot);
+    margin-block: 8px 10px;
+  }
+
+  .girus { color: var(--tx2); max-width: 62ch; font-size: var(--p3); }
+  .girus b { color: var(--tx); font-weight: 700; }
+
+  /* ── hüküm şeridi ── */
+  .hukumler {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin-block: 26px;
+  }
+  .hukum {
+    background: linear-gradient(180deg, var(--kart), var(--kart2));
+    border: 2px solid var(--ot);
+    border-radius: var(--r1);
+    box-shadow: var(--k1);
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .hukum .ad { font-weight: 700; font-size: var(--p2); }
+  .hukum .durum {
+    font-family: var(--font-num);
+    font-size: var(--p2);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .hukum.tutuyor { border-left: 6px solid var(--ok); }
+  .hukum.tutuyor .durum { color: var(--ok); }
+  .hukum.yarim { border-left: 6px solid var(--ac); }
+  .hukum.yarim .durum { color: var(--ac); }
+  .hukum.curudu { border-left: 6px solid var(--uyari); }
+  .hukum.curudu .durum { color: #ff8f7e; }
+  .hukum .not { font-size: var(--p1); color: var(--tx2); line-height: 1.35; }
+
+  /* ── bölümler ── */
+  section { margin-block: 40px 0; }
+  h2 {
+    font-family: var(--font-num);
+    font-size: var(--p6);
+    color: var(--tx);
+    text-shadow: 0 2px 0 var(--ot);
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  h2 .no {
+    font-size: var(--p2);
+    color: var(--ac);
+    letter-spacing: 0.1em;
+  }
+  .altbaslik { color: var(--tx2); margin-block: 6px 18px; max-width: 68ch; }
+
+  /* ── paket kartı ── */
+  .paket {
+    border: 2px solid var(--ot);
+    border-radius: var(--r2);
+    background: linear-gradient(180deg, var(--kart), var(--kart2));
+    box-shadow: var(--k3);
+    overflow: hidden;
+    margin-block: 18px;
+  }
+  .paket > figure { margin: 0; background: var(--vitrin); }
+  .paket img { display: block; width: 100%; height: auto; }
+  .paket .govde { padding: 16px 18px 18px; display: grid; gap: 12px; }
+  .paket h3 {
+    font-family: var(--font-num);
+    font-size: var(--p5);
+    letter-spacing: 0.01em;
+  }
+  .paket .ust { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .rozet {
+    font-family: var(--font-num);
+    font-size: var(--p1);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: var(--rr);
+    border: 2px solid var(--ot);
+    box-shadow: var(--k1);
+    white-space: nowrap;
+  }
+  .rozet.tutuyor { background: linear-gradient(180deg, var(--ok), var(--ok2)); color: #0e2a09; }
+  .rozet.yarim { background: linear-gradient(180deg, var(--ac), var(--ac2)); color: var(--txa); }
+  .rozet.curudu { background: var(--uyari); color: #fff; }
+
+  .cift { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .kutu {
+    background: var(--oyuk);
+    border-radius: var(--r1);
+    padding: 10px 12px;
+    border: 2px solid var(--ot);
+  }
+  .kutu .et {
+    font-size: var(--p1);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--tx2);
+    font-weight: 700;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .kutu.iyi .et { color: var(--ok); }
+  .kutu.kotu .et { color: #ff8f7e; }
+  .kutu p { margin: 0; font-size: var(--p2); line-height: 1.45; }
+  code {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.88em;
+    background: rgba(0, 0, 0, 0.28);
+    padding: 1px 5px;
+    border-radius: 5px;
+    color: var(--ac);
+  }
+
+  /* ── sayı tablosu ── */
+  .tablo-sar { overflow-x: auto; border-radius: var(--r1); border: 2px solid var(--ot); }
+  table { border-collapse: collapse; width: 100%; font-size: var(--p2); background: var(--oyuk); }
+  th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+  th {
+    font-family: var(--font-num);
+    font-size: var(--p1);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--tx2);
+    background: rgba(0, 0, 0, 0.22);
+  }
+  td.sayi, th.sayi { text-align: right; font-family: var(--font-num); font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+  tbody tr:last-child td { border-bottom: 0; }
+
+  /* ── kol karşılaştırma ── */
+  .kollar { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 16px; }
+  .kol {
+    border: 2px solid var(--ot);
+    border-radius: var(--r2);
+    background: linear-gradient(180deg, var(--kart), var(--kart2));
+    box-shadow: var(--k2);
+    padding: 16px 18px;
+    display: grid;
+    gap: 10px;
+    align-content: start;
+  }
+  .kol .harf {
+    font-family: var(--font-num);
+    font-size: var(--p1);
+    letter-spacing: 0.14em;
+    color: var(--ac);
+    text-transform: uppercase;
+  }
+  .kol h3 { font-family: var(--font-num); font-size: var(--p4); }
+  .agirlik { font-family: var(--font-num); font-size: var(--p6); line-height: 1; color: var(--tx); }
+  .agirlik small { font-size: var(--p2); color: var(--tx2); display: block; font-family: var(--font-game); letter-spacing: 0; }
+  .cubuk { height: 14px; border-radius: var(--rr); background: var(--oyuk); border: 2px solid var(--ot); overflow: hidden; }
+  .cubuk span { display: block; height: 100%; background: linear-gradient(180deg, var(--ac), var(--ac2)); }
+  .cubuk.yesil span { background: linear-gradient(180deg, var(--ok), var(--ok2)); }
+  .kol ul { margin: 0; padding-left: 18px; font-size: var(--p2); color: var(--tx2); line-height: 1.5; }
+  .kol ul b { color: var(--tx); }
+
+  /* ── açık kalem satırları ── */
+  .kalemler { display: grid; gap: 10px; }
+  .kalem {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 12px;
+    align-items: start;
+    background: linear-gradient(180deg, var(--kart), var(--kart2));
+    border: 2px solid var(--ot);
+    border-radius: var(--r1);
+    box-shadow: var(--k1);
+    padding: 12px 14px;
+  }
+  .mhr {
+    font-family: var(--font-num);
+    font-size: var(--p1);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 9px;
+    border-radius: var(--rr);
+    border: 2px solid var(--ot);
+    white-space: nowrap;
+  }
+  .mhr.cozuldu { background: linear-gradient(180deg, var(--ok), var(--ok2)); color: #0e2a09; }
+  .mhr.kapandi { background: var(--oyuk); color: var(--tx2); }
+  .mhr.yok { background: var(--uyari); color: #fff; }
+  .kalem .ic p { margin: 4px 0 0; font-size: var(--p2); color: var(--tx2); }
+  .kalem .ic b { color: var(--tx); }
+
+  .dipnot {
+    margin-top: 42px;
+    padding-top: 16px;
+    border-top: 2px solid rgba(255, 255, 255, 0.1);
+    font-size: var(--p2);
+    color: var(--tx2);
+  }
+  .dipnot code { color: var(--tx2); }
+</style>
+
+<div class="sayfa">
+  <p class="kicker">S13 · ölçüm turu · 14 Eylül 2026</p>
+  <h1>Altı paket, altı hüküm</h1>
+  <p class="girus">
+    İndirme engeli kalktı: <b>altı ücretsiz KayKit paketinin altısı da indi</b> — 72,4 MB zip,
+    553 model, 6 atlas, hepsi CC0. Ama asset panosu her pakete bir görev yazmıştı ve ölçüm
+    o görevlerin <b>üçünü çürüttü</b>. Aşağıda her paketin gerçekte ne verdiği, üç açık kalemin
+    ne olduğu ve repoya giriş bedelinin iki kolu var.
+  </p>
+
+  <div class="hukumler">
+    <div class="hukum tutuyor">
+      <span class="ad">Board Game</span><span class="durum">tutuyor</span>
+      <span class="not">Okey/tavla masası kurulabilir</span>
+    </div>
+    <div class="hukum tutuyor">
+      <span class="ad">Resource</span><span class="durum">tutuyor</span>
+      <span class="not">Depo + “tadilat hâli” malzemesi</span>
+    </div>
+    <div class="hukum yarim">
+      <span class="ad">Forest Nature</span><span class="durum">yarısı</span>
+      <span class="not">Dış yeşil var, <b>çiçek yok</b></span>
+    </div>
+    <div class="hukum curudu">
+      <span class="ad">Holiday</span><span class="durum">çürüdü</span>
+      <span class="not">Süs değil — koltuk, halı, fener</span>
+    </div>
+    <div class="hukum curudu">
+      <span class="ad">Prototype</span><span class="durum">çürüdü</span>
+      <span class="not">Ok değil — <b>itme barsız kapı</b></span>
+    </div>
+    <div class="hukum curudu">
+      <span class="ad">Block</span><span class="durum">çürüdü</span>
+      <span class="not">Hacim değil, voxel küpü</span>
+    </div>
+  </div>
+
+  <section>
+    <h2><span class="no">§1</span> Paketlerin içinden ne çıktı</h2>
+    <p class="altbaslik">
+      Kareler <code>model-bak.mjs</code>’in bu turda eklenen <b>vitrin kipiyle</b> alındı: her model
+      en büyük kenarı 1 br olacak şekilde normalize edildi, <b>gerçek ölçü etiketlerde duruyor</b>.
+      Sebebi ölçümün kendisi: bu parçalar 0,20–0,38 br ve insan çubuğunun yanında 20 px’lik lekeye
+      düşüyorlardı. Seçim turunun sorusu “ne kadar büyük” değil <b>“bu ne”</b>.
+    </p>
+
+    <article class="paket">
+      <figure><img src="{{IMG:s13-oyun-adaylari}}" alt="Board Game Bits adayları: playerstand, domino taşı, zar, jeton, kum saati, meeple, tepsi"></figure>
+      <div class="govde">
+        <div class="ust"><h3>Board Game Bits · 162 model</h3><span class="rozet tutuyor">tutuyor</span></div>
+        <div class="cift">
+          <div class="kutu iyi">
+            <span class="et">çıkan</span>
+            <p><code>playerstand</code> beş renkte <b>taş rafı</b> — okey ıstakasının karşılığı. 28 domino taşı, dört renkte zar, jeton, kum saati, ve <code>container_A</code>: gerçek bir <b>tepsi</b>.</p>
+          </div>
+          <div class="kutu kotu">
+            <span class="et">çıkmayan</span>
+            <p>Okey taşı <b>rakamlı</b> değil noktalı (domino). Tavla tahtası yok. Paket ayrıca en ağırı: tek başına 9,5 MB.</p>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="paket">
+      <figure><img src="{{IMG:s13-holiday-adaylari}}" alt="Holiday Bits adayları: yuvarlak halı, koltuk, puf, tabure, fener, tabak, kupa, çelenk"></figure>
+      <div class="govde">
+        <div class="ust"><h3>Holiday Bits · 98 model</h3><span class="rozet curudu">görev çürüdü</span></div>
+        <div class="cift">
+          <div class="kutu iyi">
+            <span class="et">çıkan (beklenmiyordu)</span>
+            <p><b>Dört renkte koltuk</b> ve puf, ahşap tabure, yuvarlak halı, 3,94 br sokak feneri, mini fener, sekiz tabak, kulplu kupa. Renk çeşitliliği paketin kendinden geliyor.</p>
+          </div>
+          <div class="kutu kotu">
+            <span class="et">çıkmayan (bekleniyordu)</span>
+            <p>Askı süsü, ışık dizisi, flama <b>yok</b>. Noel’e ait olanlar (çam, çelenk, hediye, kardan adam) kıraathaneye girmez.</p>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="paket">
+      <figure><img src="{{IMG:s13-resource-adaylari}}" alt="Resource Bits adayları: kereste yığını, palet, taş tuğla yığını, kumaş balyası, kütük, dişli yığını, varil"></figure>
+      <div class="govde">
+        <div class="ust"><h3>Resource Bits · 76 model</h3><span class="rozet tutuyor">tutuyor</span></div>
+        <div class="cift">
+          <div class="kutu iyi">
+            <span class="et">çıkan</span>
+            <p>Kereste yığını, palet (örtülü/örtüsüz), taş tuğla yığını, kumaş balyası, kütük. <b>Kilitli objenin “tadilat hâli”</b> ve depo odası için doğrudan malzeme.</p>
+          </div>
+          <div class="kutu kotu">
+            <span class="et">çıkmayan</span>
+            <p>Çuval yok (yerine kumaş balyası). Madenî çubuk/külçe ailesi (36 model) kıraathaneye ait değil — paketin yarısı kullanılmaz.</p>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="paket">
+      <figure><img src="{{IMG:s13-doga-adaylari}}" alt="Forest Nature adayları: dört çalı, iki çim, iki ağaç, bir kaya — hepsi tek yeşil"></figure>
+      <div class="govde">
+        <div class="ust"><h3>Forest Nature · 105 model</h3><span class="rozet yarim">yarısı</span></div>
+        <div class="cift">
+          <div class="kutu iyi">
+            <span class="et">çıkan</span>
+            <p>22 çalı, 20 çim, 40 kaya, 23 ağaç. En küçük çalı <b>0,27 br</b> — saksıya girer. Dışarısının yeşili buradan gelir.</p>
+          </div>
+          <div class="kutu kotu">
+            <span class="et">çıkmayan</span>
+            <p><b>Tek bir çiçek yok.</b> Üstelik model adlarının hepsi <code>_Color1</code>: ücretsiz katman <b>tek yeşil</b>, renk varyantları ücretli katmanda.</p>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="paket">
+      <figure><img src="{{IMG:s13-prototype-adaylari}}" alt="Prototype Bits adayları: iki kapı, duvar, pencereli duvar, kapı boşluğu, varil, kutu, altın, masa"></figure>
+      <div class="govde">
+        <div class="ust"><h3>Prototype Bits · 72 model</h3><span class="rozet curudu">görev çürüdü</span></div>
+        <div class="cift">
+          <div class="kutu iyi">
+            <span class="et">çıkan (beklenmiyordu)</span>
+            <p><code>Door_A</code>: <b>itme barsız, tokmaklı panel kapı</b> — ayak izi bugünküyle birebir aynı (1,600 × 2,800). Ayrıca <code>Primitive_*</code> duvar/rampa/merdiven ailesi.</p>
+          </div>
+          <div class="kutu kotu">
+            <span class="et">çıkmayan (bekleniyordu)</span>
+            <p>G-12’nin <b>yukarı oku yok</b>, pad çerçevesi yok, hiçbir işaret geometrisi yok. Paketin “prototip” paleti sarı-gri, sahneye girmez.</p>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="paket">
+      <figure><img src="{{IMG:s13-block-adaylari}}" alt="Block Bits: çim, toprak, taş, ahşap, su, tuğla, cam, ağaç, metal voxel küpleri"></figure>
+      <div class="govde">
+        <div class="ust"><h3>Block Bits · 40 model</h3><span class="rozet curudu">görev çürüdü</span></div>
+        <div class="cift">
+          <div class="kutu kotu">
+            <span class="et">çıkan</span>
+            <p>2,00 br’lik <b>voxel küpleri</b> (çim, toprak, taş, lav, su). Mekân hacmi için parça değil; palet de doymuş Minecraft yeşili, KayKit’in yumuşak tonuyla yan yana durmuyor.</p>
+          </div>
+          <div class="kutu iyi">
+            <span class="et">yerine</span>
+            <p>“Mekân hacim olmalı” kalemi için doğru kaynak Prototype’ın <code>Primitive_Wall</code> ailesi — Block değil.</p>
+          </div>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <section>
+    <h2><span class="no">§2</span> Üç açık kalem</h2>
+    <p class="altbaslik">Paketler yalnız yeni iş getirmedi; defterde bekleyen üç kalemi de yanıtladı.</p>
+    <div class="kalemler">
+      <div class="kalem">
+        <span class="mhr cozuldu">çözüldü</span>
+        <div class="ic">
+          <b><code>door_A</code>’nın itme barı</b>
+          <p>Prototype’ın <code>Door_A</code>’sı itme barsız ve ankrajı birebir: <b>1,600 × 2,800</b>, aynı taban, aynı merkez. Derinlik 0,771 → <b>0,546</b> (barın payı 0,225 br), üçgen 188 → 296. Bedeli renk: bugünkü WC kimliği <code>door_A</code>’nın <b>%73 grisine</b> dayanıyor, panel kapıda o gri kasa yok.</p>
+        </div>
+      </div>
+      <div class="kalem">
+        <span class="mhr kapandi">kapandı</span>
+        <div class="ic">
+          <b>WC çöp kutusu</b>
+          <p>Üçüncü kez ölçüldü. Prototype’ın <code>Can_A/B</code>’si <b>kola kutusu</b>, varil fıçı. <b>Dokuz paketin hiçbirinde</b> kapaklı çöp kutusu yok — elle çizim artık “geçici” değil, kesin.</p>
+        </div>
+      </div>
+      <div class="kalem">
+        <span class="mhr yok">karşılığı yok</span>
+        <div class="ic">
+          <b>Çiçek</b>
+          <p>Forest Nature’ın ücretsiz katmanında <b>çiçek yok</b> ve olan her şey tek yeşil. “Kendi çizdiğin çiçekler yerine” isteği bu paketle karşılanmıyor; en yakını 0,27 br’lik çalı.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="no">§3</span> Repoya giriş bedeli</h2>
+    <p class="altbaslik">
+      “Ücretsiz olduğu sürece her asseti çek” kararı <b>indirmeyi</b> serbest bırakır, <b>repoyu</b>
+      değil: <code>public/assets/models/</code> APK’ya giriyor. Bugünkü ağırlık <b>5,9 MB</b>.
+    </p>
+
+    <div class="tablo-sar">
+      <table>
+        <thead>
+          <tr>
+            <th>paket</th><th class="sayi">model</th><th class="sayi">tamamı</th>
+            <th class="sayi">seçili</th><th class="sayi">seçili KB</th><th>ne için</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>board-game-bits</td><td class="sayi">162</td><td class="sayi">9 564 KB</td><td class="sayi">39</td><td class="sayi">590</td><td>okey/tavla masası</td></tr>
+          <tr><td>forest-nature</td><td class="sayi">105</td><td class="sayi">1 567 KB</td><td class="sayi">33</td><td class="sayi">472</td><td>saksı bitkisi + dış yeşil</td></tr>
+          <tr><td>holiday-bits</td><td class="sayi">98</td><td class="sayi">4 431 KB</td><td class="sayi">21</td><td class="sayi">490</td><td>koltuk · tabure · halı · fener</td></tr>
+          <tr><td>resource-bits</td><td class="sayi">76</td><td class="sayi">3 542 KB</td><td class="sayi">21</td><td class="sayi">962</td><td>depo + tadilat hâli</td></tr>
+          <tr><td>prototype-bits</td><td class="sayi">72</td><td class="sayi">1 027 KB</td><td class="sayi">3</td><td class="sayi">81</td><td>itme barsız kapı</td></tr>
+          <tr><td>block-bits</td><td class="sayi">40</td><td class="sayi">1 709 KB</td><td class="sayi">0</td><td class="sayi">0</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="kollar">
+      <div class="kol">
+        <span class="harf">kol A</span>
+        <h3>Hepsi girsin</h3>
+        <p class="agirlik">27,2 MB<small>553 model · 6 atlas · bugünkünün 4,6 katı</small></p>
+        <div class="cubuk"><span style="width: 100%"></span></div>
+        <ul>
+          <li><b>Artısı:</b> ileride hangi model lazım olursa elde; paket bütünlüğü bozulmaz.</li>
+          <li><b>Eksisi:</b> 553 modelin <b>436’sı</b> bugün hiçbir işe bakmıyor — madenî külçe, Noel süsü, voxel küpü, fantezi oyun kartı.</li>
+          <li>APK ağırlığı Faz F’nin (paketleme) konusu; bugün ölçülmedi.</li>
+        </ul>
+      </div>
+      <div class="kol">
+        <span class="harf">kol B</span>
+        <h3>Yalnız gerekenler</h3>
+        <p class="agirlik">8,4 MB<small>117 model · 5 atlas · bugünkünün 1,4 katı</small></p>
+        <div class="cubuk yesil"><span style="width: 31%"></span></div>
+        <ul>
+          <li><b>Artısı:</b> repoda duran her model bir açık kaleme bakıyor; <b>Block hiç girmiyor.</b></li>
+          <li><b>Eksisi:</b> sonradan bir model lazım olursa paket yeniden indirilir (artık bir komut).</li>
+          <li>Seçim desenleri araçta yazılı: <code>tools/olcum-yeni-paketler.mjs → GEREKEN</code>.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <p class="dipnot">
+    Sayılar: <code>docs/yeni-paketler-raporu-s13.md</code> · ham <code>docs/olcum-yeni-paketler.json</code> ·
+    indirme <code>tools/indir-itch.ps1</code> (4. adım bu turda düzeltildi) ·
+    kareler <code>tools/model-bak.mjs … vitrin</code>.
+    Lisans: beş pakette <code>License.txt</code> CC0; Holiday’de dosya yok, lisans itch sayfasının
+    kendi alanından doğrulandı (Creative Commons Zero v1.0). Raporun §Karar bölümü <b>bilerek boş</b> —
+    kol seçilince ikinci commit’te uygulanacak.
+  </p>
+</div>

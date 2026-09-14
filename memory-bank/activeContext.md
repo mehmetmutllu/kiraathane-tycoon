@@ -54,6 +54,7 @@ kalemleri — varyant kapısına tabi, ölçülmeden uygulanmaz.
 **Mor arayüz maketi:** https://claude.ai/code/artifact/6cc7a95e-c0a3-4802-8ea3-99398d637981
 **S11 önizlemesi:** https://claude.ai/code/artifact/f82648fa-18dd-4e21-a3a2-8f252efd2210
 **S12 önizlemesi (altı ekran önce/sonra + M2 + sayılar):** https://claude.ai/code/artifact/a83eade2-32f6-4a64-ae34-6743a93922a3
+**S13 ölçüm önizlemesi (altı paket · altı hüküm · bedel kolları):** https://claude.ai/code/artifact/dcbaaee3-8889-4665-83b2-feff02a60c13
 
 ## AÇIK KALEMLER (bilinen, bilerek duruyor)
 
