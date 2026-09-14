@@ -1,0 +1,445 @@
+<title>Karakter Kolları</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Lilita+One&display=swap">
+<style>
+  :root {
+    --font-game: 'Baloo 2', system-ui, 'Segoe UI', Roboto, sans-serif;
+    --font-num: 'Lilita One', 'Baloo 2', system-ui, sans-serif;
+
+    /* D-107 paleti — oyunun kendi arayüz dili (src/index.css ile birebir) */
+    --g1: #463c86;
+    --g2: #221b52;
+    --ot: #100b2e;
+    --kart: #3a3178;
+    --kart2: #2e2764;
+    --oyuk: #1b1443;
+    --ac: #ffc24b;
+    --ac2: #e09415;
+    --txa: #3a2206;
+    --tx: #eae3ff;
+    --tx2: #a99fd8;
+    --ok: #7bd46a;
+    --ok2: #4fa83e;
+    --uyari: #d43a26;
+    --vitrin: #5b4fa6;
+
+    --p1: 11px;
+    --p2: 13px;
+    --p3: 15px;
+    --p4: 18px;
+    --p5: 22px;
+    --p6: 30px;
+
+    --r1: 10px;
+    --r2: 17px;
+    --r3: 22px;
+    --rr: 999px;
+
+    --k1: 0 2px 0 var(--ot);
+    --k2: inset 0 2px 0 rgba(255, 255, 255, 0.45), 0 3px 0 var(--ot);
+    --k3: inset 0 3px 0 rgba(255, 255, 255, 0.5), 0 5px 0 var(--ot), 0 10px 18px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Tek dünyaya bağlanmış sayfa: oyunun mor arayüz katmanı. Zemin açıkça boyanır. */
+  body {
+    background: linear-gradient(180deg, var(--g1) 0%, var(--g2) 62%, #191140 100%);
+    background-attachment: fixed;
+    color: var(--tx);
+    font-family: var(--font-game);
+    font-size: var(--p3);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .sayfa {
+    max-width: 1020px;
+    margin: 0 auto;
+    padding-inline: 18px;
+    padding-block: 30px 60px;
+  }
+
+  h1, h2, h3 { text-wrap: balance; margin: 0; }
+
+  .kicker {
+    font-size: var(--p1);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--tx2);
+    font-weight: 700;
+  }
+
+  h1 {
+    font-family: var(--font-num);
+    font-size: clamp(30px, 7vw, 46px);
+    line-height: 1.06;
+    letter-spacing: 0.01em;
+    color: var(--ac);
+    text-shadow: 0 3px 0 var(--ot);
+    margin-block: 8px 10px;
+  }
+
+  .girus { color: var(--tx2); max-width: 62ch; font-size: var(--p3); }
+  .girus b { color: var(--tx); font-weight: 700; }
+
+  /* ── hüküm şeridi ── */
+  .hukumler {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin-block: 26px;
+  }
+  .hukum {
+    background: linear-gradient(180deg, var(--kart), var(--kart2));
+    border: 2px solid var(--ot);
+    border-radius: var(--r1);
+    box-shadow: var(--k1);
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .hukum .ad { font-weight: 700; font-size: var(--p2); }
+  .hukum .durum {
+    font-family: var(--font-num);
+    font-size: var(--p2);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .hukum.tutuyor { border-left: 6px solid var(--ok); }
+  .hukum.tutuyor .durum { color: var(--ok); }
+  .hukum.yarim { border-left: 6px solid var(--ac); }
+  .hukum.yarim .durum { color: var(--ac); }
+  .hukum.curudu { border-left: 6px solid var(--uyari); }
+  .hukum.curudu .durum { color: #ff8f7e; }
+  .hukum .not { font-size: var(--p1); color: var(--tx2); line-height: 1.35; }
+
+  /* ── bölümler ── */
+  section { margin-block: 40px 0; }
+  h2 {
+    font-family: var(--font-num);
+    font-size: var(--p6);
+    color: var(--tx);
+    text-shadow: 0 2px 0 var(--ot);
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  h2 .no {
+    font-size: var(--p2);
+    color: var(--ac);
+    letter-spacing: 0.1em;
+  }
+  .altbaslik { color: var(--tx2); margin-block: 6px 18px; max-width: 68ch; }
+
+  /* ── paket kartı ── */
+  .paket {
+    border: 2px solid var(--ot);
+    border-radius: var(--r2);
+    background: linear-gradient(180deg, var(--kart), var(--kart2));
+    box-shadow: var(--k3);
+    overflow: hidden;
+    margin-block: 18px;
+  }
+  .paket > figure { margin: 0; background: var(--vitrin); }
+  .paket img { display: block; width: 100%; height: auto; }
+  .paket .govde { padding: 16px 18px 18px; display: grid; gap: 12px; }
+  .paket h3 {
+    font-family: var(--font-num);
+    font-size: var(--p5);
+    letter-spacing: 0.01em;
+  }
+  .paket .ust { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .rozet {
+    font-family: var(--font-num);
+    font-size: var(--p1);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: var(--rr);
+    border: 2px solid var(--ot);
+    box-shadow: var(--k1);
+    white-space: nowrap;
+  }
+  .rozet.tutuyor { background: linear-gradient(180deg, var(--ok), var(--ok2)); color: #0e2a09; }
+  .rozet.yarim { background: linear-gradient(180deg, var(--ac), var(--ac2)); color: var(--txa); }
+  .rozet.curudu { background: var(--uyari); color: #fff; }
+
+  .cift { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .kutu {
+    background: var(--oyuk);
+    border-radius: var(--r1);
+    padding: 10px 12px;
+    border: 2px solid var(--ot);
+  }
+  .kutu .et {
+    font-size: var(--p1);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--tx2);
+    font-weight: 700;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .kutu.iyi .et { color: var(--ok); }
+  .kutu.kotu .et { color: #ff8f7e; }
+  .kutu p { margin: 0; font-size: var(--p2); line-height: 1.45; }
+  code {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.88em;
+    background: rgba(0, 0, 0, 0.28);
+    padding: 1px 5px;
+    border-radius: 5px;
+    color: var(--ac);
+  }
+
+  /* ── sayı tablosu ── */
+  .tablo-sar { overflow-x: auto; border-radius: var(--r1); border: 2px solid var(--ot); }
+  table { border-collapse: collapse; width: 100%; font-size: var(--p2); background: var(--oyuk); }
+  th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+  th {
+    font-family: var(--font-num);
+    font-size: var(--p1);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--tx2);
+    background: rgba(0, 0, 0, 0.22);
+  }
+  td.sayi, th.sayi { text-align: right; font-family: var(--font-num); font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+  tbody tr:last-child td { border-bottom: 0; }
+
+  /* ── kol karşılaştırma ── */
+  .kollar { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 16px; }
+  .kol {
+    border: 2px solid var(--ot);
+    border-radius: var(--r2);
+    background: linear-gradient(180deg, var(--kart), var(--kart2));
+    box-shadow: var(--k2);
+    padding: 16px 18px;
+    display: grid;
+    gap: 10px;
+    align-content: start;
+  }
+  .kol .harf {
+    font-family: var(--font-num);
+    font-size: var(--p1);
+    letter-spacing: 0.14em;
+    color: var(--ac);
+    text-transform: uppercase;
+  }
+  .kol h3 { font-family: var(--font-num); font-size: var(--p4); }
+  .agirlik { font-family: var(--font-num); font-size: var(--p6); line-height: 1; color: var(--tx); }
+  .agirlik small { font-size: var(--p2); color: var(--tx2); display: block; font-family: var(--font-game); letter-spacing: 0; }
+  .cubuk { height: 14px; border-radius: var(--rr); background: var(--oyuk); border: 2px solid var(--ot); overflow: hidden; }
+  .cubuk span { display: block; height: 100%; background: linear-gradient(180deg, var(--ac), var(--ac2)); }
+  .cubuk.yesil span { background: linear-gradient(180deg, var(--ok), var(--ok2)); }
+  .kol ul { margin: 0; padding-left: 18px; font-size: var(--p2); color: var(--tx2); line-height: 1.5; }
+  .kol ul b { color: var(--tx); }
+
+  /* ── açık kalem satırları ── */
+  .kalemler { display: grid; gap: 10px; }
+  .kalem {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 12px;
+    align-items: start;
+    background: linear-gradient(180deg, var(--kart), var(--kart2));
+    border: 2px solid var(--ot);
+    border-radius: var(--r1);
+    box-shadow: var(--k1);
+    padding: 12px 14px;
+  }
+  .mhr {
+    font-family: var(--font-num);
+    font-size: var(--p1);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 9px;
+    border-radius: var(--rr);
+    border: 2px solid var(--ot);
+    white-space: nowrap;
+  }
+  .mhr.cozuldu { background: linear-gradient(180deg, var(--ok), var(--ok2)); color: #0e2a09; }
+  .mhr.kapandi { background: var(--oyuk); color: var(--tx2); }
+  .mhr.yok { background: var(--uyari); color: #fff; }
+  .kalem .ic p { margin: 4px 0 0; font-size: var(--p2); color: var(--tx2); }
+  .kalem .ic b { color: var(--tx); }
+
+  .dipnot {
+    margin-top: 42px;
+    padding-top: 16px;
+    border-top: 2px solid rgba(255, 255, 255, 0.1);
+    font-size: var(--p2);
+    color: var(--tx2);
+  }
+  .dipnot code { color: var(--tx2); }
+</style>
+<div class="sayfa">
+  <p class="kicker">S14 · ölçüm turu · 14 Eylül 2026</p>
+  <h1>Karakterler: pano ne dedi, dosya ne dedi</h1>
+  <p class="girus">
+    Asset panosu §3 altı kol yazmıştı ve hepsi tek bir hükme dayanıyordu:
+    <b>“KayKit’in karakter paketlerinin hepsi fantezi; sivil görünüm için mesh düzenleme +
+    yeniden dokulama gerekir, birkaç oturum.”</b> O pano <b>hiçbir paket indirilmeden</b> yazıldı.
+    Bu tur sekiz ücretsiz paket indi ve kollar dosyadan ölçüldü. Üç hüküm çürüdü.
+  </p>
+
+  <div class="hukumler">
+    <div class="hukum curudu">
+      <span class="ad">“Sivilleştirme = mesh düzenleme”</span><span class="durum">çürüdü</span>
+      <span class="not">Ekipman <b>ayrı düğüm</b>: 1–3 mesh gizlenir, iş biter</span>
+    </div>
+    <div class="hukum curudu">
+      <span class="ad">“Rigged, Mixamo uyumlu”</span><span class="durum">daha iyi</span>
+      <span class="not">Klipler <b>69/69 kemik</b> doğrudan tuttu — Mixamo gereksiz</span>
+    </div>
+    <div class="hukum curudu">
+      <span class="ad">Quaternius “6 gövde + sivil kıyafet”</span><span class="durum">çürüdü</span>
+      <span class="not"><b>2</b> gövde, kıyafet paketi <b>fantasy</b>, doku <b>80 MB</b></span>
+    </div>
+    <div class="hukum tutuyor">
+      <span class="ad">Panonun bilmediği paket</span><span class="durum">bulundu</span>
+      <span class="not">Character Animations: <b>139 klip</b>, oturma dahil, ücretsiz</span>
+    </div>
+  </div>
+
+  <section>
+    <h2><span class="no">1</span> Ham hâlleriyle: hepsi 1,75’e çekildi</h2>
+    <p class="altbaslik">
+      Soldaki masa ve tabure <b>oyunun kendi donmuş ölçüleri</b> (tabla üstü 0,795 · oturak 0,45).
+      Mavi çizgi masa tablası, yeşil çizgi tabure oturağı, sağdaki kırmızı kütle 1,75 m insan.
+    </p>
+    <div class="paket">
+      <figure><img src="gorsel/ss/s14-kaykit-ham.png" alt="Altı KayKit karakteri ham hâlleriyle" /></figure>
+      <div class="govde">
+        <div class="ust"><h3>Kutudan çıktığı gibi</h3><span class="rozet curudu">fantezi okuyor</span></div>
+        <p>Miğfer, pelerin, ayı başlığı, cadı şapkası. Panonun gördüğü şey bu — ve doğru gördü.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="no">2</span> Ekipman düğümleri gizlenince</h2>
+    <p class="altbaslik">
+      Tek fark: <code>visible = false</code>. Ayrıca hepsine <b>başka bir dosyadaki</b>
+      <code>Idle_A</code> klibi uygulandı — poz tutuyorsa iskelet aynı demektir.
+    </p>
+    <div class="paket">
+      <figure><img src="gorsel/ss/s14-sivil-idle.png" alt="Ekipmanı sökülmüş, Idle pozunda" /></figure>
+      <div class="govde">
+        <div class="ust"><h3>Sivil kip · Idle_A pozu · 69/69 kemik</h3><span class="rozet tutuyor">sivil okuyor</span></div>
+        <div class="cift">
+          <div class="kutu iyi"><span class="et">ne çıktı</span>
+            <p>Gri tunikli adam · sakallı kel adam · mor paltolu biri · atkılı adam ·
+            yeşil tunikli kadın. <b>Hiçbiri kılıç/zırh okumuyor.</b></p></div>
+          <div class="kutu iyi"><span class="et">bedel</span>
+            <p>Knight 3 düğüm · Mage 2 · Ranger 2 · Barbarian 1 · Rogue <b>1</b>.
+            Sökülen 84–1030 üçgen. Mesh düzenleme <b>yok</b>.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="no">3</span> Tek gerçek pürüz: baş, boyun yarısı</h2>
+    <p class="altbaslik">
+      Bugünkü gövdede baş boyun <b>%33</b>’ü; KayKit’te <b>%50</b>. Omuz eni birebir tutuyor
+      (0,58 ↔ kapsül 0,60) ama düşey oran kayıyor: aynı adam üç ölçekte, aynı masanın yanında.
+    </p>
+    <div class="paket">
+      <figure><img src="gorsel/ss/s14-olcek-kollari.png" alt="Üç ölçek kolu" /></figure>
+      <div class="govde">
+        <div class="tablo-sar">
+          <table>
+            <thead><tr><th>kol</th><th class="sayi">ölçek</th><th class="sayi">boy</th><th>masa tablası nereye geliyor</th></tr></thead>
+            <tbody>
+              <tr><td><b>Ö1</b> toplam-boy</td><td class="sayi">×0,794</td><td class="sayi">1,79</td><td>göğüs — mobilya büyük okunur</td></tr>
+              <tr><td><b>Ö2</b> ara</td><td class="sayi">×0,88</td><td class="sayi">1,98</td><td>göğüs altı</td></tr>
+              <tr><td><b>Ö3</b> gövde-hizası</td><td class="sayi">×0,98</td><td class="sayi">2,21</td><td><b>bel — gerçek insan oranı</b></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="cift">
+          <div class="kutu iyi"><span class="et">Ö1 ucuz</span><p><code>ACTOR_HEIGHT</code> 1,75 yerinde kalır, türeyen hiçbir sayı değişmez.</p></div>
+          <div class="kutu kotu"><span class="et">Ö3 doğru ama pahalı</span><p>1,75’ten türeyen her şey yeniden ölçülür: yarıçaplar, kamera bakış yüksekliği, baloncuk, oturma kayması, masaya erişim, nav ızgarası.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="no">4</span> Klip kütüphanesi bedava geldi</h2>
+    <p class="altbaslik">Dövüş klipleri ayrı dosyalarda — alınmaz. Kıraathanenin fiilleri:</p>
+    <div class="tablo-sar">
+      <table>
+        <thead><tr><th>dosya</th><th class="sayi">KB</th><th class="sayi">klip</th><th>işe yarayan</th></tr></thead>
+        <tbody>
+          <tr><td><code>General</code></td><td class="sayi">809</td><td class="sayi">15</td><td>Idle · <b>Interact · PickUp · Use_Item</b></td></tr>
+          <tr><td><code>MovementBasic</code></td><td class="sayi">673</td><td class="sayi">11</td><td>Walking A/B/C · Running A/B</td></tr>
+          <tr><td><code>Simulation</code></td><td class="sayi">836</td><td class="sayi">14</td><td><b>Sit_Chair_Down / Idle / StandUp</b> · Waving</td></tr>
+          <tr><td><code>Tools</code></td><td class="sayi">1427</td><td class="sayi">29</td><td><b>Holding A/B/C · Working A/B/C</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="kalemler" style="margin-top:14px">
+      <div class="kalem"><span class="mhr cozuldu">açık kalem</span><div class="ic">
+        <b>Oturan müşteri artık numara olmaktan çıkabilir.</b>
+        <p>Bugün gövde <code>SEATED_DROP</code> ile 0,45 aşağı indiriliyor; <code>actor.ts</code>
+        kendi yorumunda “gerçek oturuş pozu Faz 6’da skinned modelle gelir” diye yazmış. <b>Geldi.</b></p></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="no">5</span> Asıl bedel perfte, ve iki ayrı karar</h2>
+    <p class="altbaslik">
+      Müşteriler bugün <b>tek InstancedMesh</b> (1 çizim çağrısı, 128 kapasite). Skinned gövde
+      instance edilemez. Ölçüm masaüstü GPU’sunda; <b>mutlak sayı telefona taşınmaz, oran taşınır</b>.
+    </p>
+    <div class="tablo-sar">
+      <table>
+        <thead><tr><th class="sayi">N</th><th>bugün (instanced)</th><th>skinned</th><th class="sayi">kare ×</th><th class="sayi">çizim ×</th></tr></thead>
+        <tbody>
+          <tr><td class="sayi">5</td><td>0,04 ms · 1 çizim</td><td>0,60 ms · 40 çizim</td><td class="sayi">15</td><td class="sayi">40</td></tr>
+          <tr><td class="sayi">12</td><td>0,04 ms · 1 çizim</td><td>1,11 ms · 96 çizim</td><td class="sayi">28</td><td class="sayi">96</td></tr>
+          <tr><td class="sayi">24</td><td>0,05 ms · 1 çizim</td><td>2,20 ms · 192 çizim</td><td class="sayi">44</td><td class="sayi">192</td></tr>
+          <tr><td class="sayi">48</td><td>0,04 ms · 1 çizim</td><td>4,02 ms · 384 çizim</td><td class="sayi">101</td><td class="sayi">384</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="cift" style="margin-top:12px">
+      <div class="kutu iyi"><span class="et">personel ucuz</span><p>5 kişi = <b>40 çizim</b>. Sahip, garson, bulaşıkçı, çaycı zaten tekil çiziliyor.</p></div>
+      <div class="kutu kotu"><span class="et">müşteri pahalı</span><p>24 müşteri = <b>192 çizim</b>; mobil bütçe tipik 100–200. Gövde 8 parçaya bölük olduğu için karakter başına 8 çağrı.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="no">6</span> Repo bedeli</h2>
+    <p class="altbaslik"><code>public/assets/models/</code> bugün <b>17,2 MB</b>. İndirilen 8 paketin hiçbiri repoya girmedi.</p>
+    <div class="kollar">
+      <div class="kol"><span class="harf">A-dar</span><h3>1 gövde + 2 klip</h3>
+        <div class="agirlik">19,1 MB<small>+1,9</small></div>
+        <div class="cubuk yesil"><span style="width:49%"></span></div>
+        <ul><li>Tek karakter herkese, renk farkıyla</li></ul></div>
+      <div class="kol"><span class="harf">A-orta</span><h3>5 gövde + 3 klip</h3>
+        <div class="agirlik">21,4 MB<small>+4,2</small></div>
+        <div class="cubuk yesil"><span style="width:55%"></span></div>
+        <ul><li>Her role ayrı yüz + <b>oturma</b> klibi</li></ul></div>
+      <div class="kol"><span class="harf">A-tam</span><h3>12 gövde + 8 klip</h3>
+        <div class="agirlik">28,7 MB<small>+11,5</small></div>
+        <div class="cubuk"><span style="width:73%"></span></div>
+        <ul><li>Dövüş klipleri dahil — <b>kullanılmayacak</b></li></ul></div>
+      <div class="kol"><span class="harf">D</span><h3>Quaternius · 1 karakter</h3>
+        <div class="agirlik">39,2 MB<small>+22,0</small></div>
+        <div class="cubuk"><span style="width:100%;background:var(--uyari)"></span></div>
+        <ul><li>PBR doku hattı: tek normal haritası <b>13,8 MB</b></li></ul></div>
+    </div>
+  </section>
+
+  <p class="dipnot">
+    Ölçüm turu · karar kullanıcıya bırakıldı. Araçlar <code>tools/olcum-karakter.mjs</code> ·
+    <code>tools/karakter-bak.mjs</code> · <code>tools/skin-perf.mjs</code>; ham çıktı
+    <code>docs/olcum-karakter.json</code> · <code>docs/olcum-skin-perf.txt</code>; rapor
+    <code>docs/karakter-raporu-s14.md</code> (§Karar bölümü ölçüm commit’inde <b>boş</b>).
+  </p>
+</div>
