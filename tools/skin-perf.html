@@ -19,6 +19,7 @@
   import * as THREE from 'three';
   import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
   import { clone as skinKlon } from 'three/examples/jsm/utils/SkeletonUtils.js';
+  import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
   const q = new URLSearchParams(location.search);
   const N = Number(q.get('n') ?? 24);
@@ -70,8 +71,8 @@
 
   // --- KOL 2: N adet skinned karakter, her biri kendi mixer'ıyla ---
   const loader = new GLTFLoader();
-  const g = await loader.loadAsync(`/assets/models/_aday-karakter/${model}.glb`);
-  const klipler = (await loader.loadAsync('/assets/models/_aday-karakter/Rig_Medium_MovementBasic.glb')).animations;
+  const g = await loader.loadAsync(`/assets/models/kaykit-characters/${model}.glb`);
+  const klipler = (await loader.loadAsync('/assets/models/kaykit-characters/Rig_Medium_MovementBasic.glb')).animations;
   const yuru = klipler.find((c) => c.name === 'Walking_A') ?? klipler[0];
   const s2 = new THREE.Scene();
   const mixerler = [];
@@ -92,12 +93,54 @@
   }
   const g2 = (dt) => mixerler.forEach((m) => m.update(dt));
 
-  const sonuc = [await kos('instanced kapsül (bugün)', s1, g1), await kos(`${N}× skinned ${model}`, s2, g2)];
-  const [a, b] = sonuc;
+  // --- KOL 3 (S15): BİRLEŞTİRİLMİŞ skinned — gövdenin 6 parçası tek geometriye kaynar ---
+  //
+  // NEDEN ÖLÇÜLÜYOR: S15 ölçümü gövdenin 6 sivil mesh'inin TEK materyali olduğunu gösterdi
+  // (`docs/olcum-yuruyus.json` §C_cizim). Tek materyal = tek çizimde toplanabilir; kol 2'de
+  // karakter başına 6 çizim varken burada 1 olmalı. ÜÇGEN SAYISI DEĞİŞMEZ — kazanç yalnız
+  // çizim çağrısında, ve o kazancın ms karşılığı bilinmeden müşteri kolu seçilemez.
+  const s3 = new THREE.Scene();
+  const mixerler3 = [];
+  for (let i = 0; i < N; i++) {
+    const o = skinKlon(g.scene);
+    const parcalar = [];
+    o.traverse((n) => {
+      if (n.isSkinnedMesh) parcalar.push(n);
+    });
+    const birlesik = mergeGeometries(
+      parcalar.map((p) => p.geometry.clone()),
+      false,
+    );
+    const kaynasmis = new THREE.SkinnedMesh(birlesik, parcalar[0].material);
+    const ana = parcalar[0];
+    kaynasmis.bind(ana.skeleton, ana.bindMatrix);
+    const ust = ana.parent ?? o;
+    parcalar.forEach((p) => p.parent?.remove(p));
+    ust.add(kaynasmis);
+    const kutu = new THREE.Box3().setFromObject(o);
+    const k = H / kutu.getSize(new THREE.Vector3()).y;
+    o.scale.multiplyScalar(k);
+    o.position.set(yerler[i][0], 0, yerler[i][1]);
+    s3.add(o);
+    const m = new THREE.AnimationMixer(o);
+    m.clipAction(yuru).play();
+    m.setTime(i * 0.17);
+    mixerler3.push(m);
+  }
+  const g3 = (dt) => mixerler3.forEach((m) => m.update(dt));
+
+  const sonuc = [
+    await kos('instanced kapsül (bugün)', s1, g1),
+    await kos(`${N}× skinned ${model} (6 parça)`, s2, g2),
+    await kos(`${N}× skinned ${model} (BİRLEŞİK)`, s3, g3),
+  ];
+  const [a, b, c] = sonuc;
   document.getElementById('out').textContent =
     `N = ${N} müşteri · 120 kare ortalaması\n\n` +
-    sonuc.map((r) => `${r.ad.padEnd(26)} ${String(r.msKare).padStart(6)} ms/kare  ${String(r.cizim).padStart(4)} çizim  ${r.ucgen} üçgen`).join('\n') +
-    `\n\nkare süresi ×${(b.msKare / a.msKare).toFixed(1)} · çizim çağrısı ×${(b.cizim / a.cizim).toFixed(0)}`;
+    sonuc.map((r) => `${r.ad.padEnd(32)} ${String(r.msKare).padStart(6)} ms/kare  ${String(r.cizim).padStart(4)} çizim  ${r.ucgen} üçgen`).join('\n') +
+    `\n\nkapsüle göre: 6 parça ×${(b.msKare / a.msKare).toFixed(1)} kare · birleşik ×${(c.msKare / a.msKare).toFixed(1)} kare` +
+    `\nbirleştirmenin kazancı: çizim ${b.cizim} → ${c.cizim} · kare ${b.msKare} → ${c.msKare} ms ` +
+    `(${(((b.msKare - c.msKare) / b.msKare) * 100).toFixed(0)}%)`;
   // HANGİ SÜRÜCÜ: başsız Chromium GPU bulamazsa SwiftShader'a (yazılım) düşer ve mutlak
   // sayı telefonla ilgisiz olur. Sürücü adı çıktının yanında durur ki sayı yanlış okunmasın.
   const dbg = renderer.getContext().getExtension('WEBGL_debug_renderer_info');

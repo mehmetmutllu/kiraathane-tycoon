@@ -1,0 +1,592 @@
+{
+  "damga": "2026-09-14T13:46:21.806Z",
+  "kaynak": {
+    "ACTOR_HEIGHT": 1.75,
+    "KAY_AUTHORED": 2.204,
+    "KAY_SCALE": 0.794,
+    "hizlar": {
+      "oyuncu k0": 4.5,
+      "oyuncu k3": 5.4,
+      "garson k0": 1.5,
+      "garson k1": 2,
+      "bulasikci k0": 2,
+      "bulasikci k2": 2.8,
+      "musteri": 2.6
+    }
+  },
+  "S_senkron": {
+    "Running_A": {
+      "sure": 0.8,
+      "ileriEksen": "z",
+      "solAdim": 0.626,
+      "sagAdim": 0.631,
+      "donguYolu": 1.257,
+      "kokKayma": 0,
+      "kalcaSalinim": 0.1026,
+      "hamHiz": 1.571,
+      "dunyaHizi": 1.247,
+      "adimSn": 2.5,
+      "gerekenTimeScale": {
+        "oyuncu k0": 3.61,
+        "oyuncu k3": 4.33,
+        "garson k0": 1.2,
+        "garson k1": 1.6,
+        "bulasikci k0": 1.6,
+        "bulasikci k2": 2.25,
+        "musteri": 2.09
+      },
+      "olusanKadans": {
+        "oyuncu k0": 9,
+        "oyuncu k3": 10.8,
+        "garson k0": 3,
+        "garson k1": 4,
+        "bulasikci k0": 4,
+        "bulasikci k2": 5.6,
+        "musteri": 5.2
+      },
+      "kelepceTavan": 1.8,
+      "kelepcedeHiz": 2.24
+    },
+    "Running_B": {
+      "sure": 0.8,
+      "ileriEksen": "z",
+      "solAdim": 0.632,
+      "sagAdim": 0.632,
+      "donguYolu": 1.264,
+      "kokKayma": 0,
+      "kalcaSalinim": 0.1394,
+      "hamHiz": 1.58,
+      "dunyaHizi": 1.254,
+      "adimSn": 2.5,
+      "gerekenTimeScale": {
+        "oyuncu k0": 3.59,
+        "oyuncu k3": 4.31,
+        "garson k0": 1.2,
+        "garson k1": 1.59,
+        "bulasikci k0": 1.59,
+        "bulasikci k2": 2.23,
+        "musteri": 2.07
+      },
+      "olusanKadans": {
+        "oyuncu k0": 9,
+        "oyuncu k3": 10.8,
+        "garson k0": 3,
+        "garson k1": 4,
+        "bulasikci k0": 4,
+        "bulasikci k2": 5.6,
+        "musteri": 5.2
+      },
+      "kelepceTavan": 1.8,
+      "kelepcedeHiz": 2.26
+    },
+    "Walking_A": {
+      "sure": 1.067,
+      "ileriEksen": "z",
+      "solAdim": 0.383,
+      "sagAdim": 0.383,
+      "donguYolu": 0.766,
+      "kokKayma": 0,
+      "kalcaSalinim": 0.0545,
+      "hamHiz": 0.719,
+      "dunyaHizi": 0.571,
+      "adimSn": 1.87,
+      "gerekenTimeScale": {
+        "oyuncu k0": 7.88,
+        "oyuncu k3": 9.46,
+        "garson k0": 2.63,
+        "garson k1": 3.5,
+        "bulasikci k0": 3.5,
+        "bulasikci k2": 4.9,
+        "musteri": 4.55
+      },
+      "olusanKadans": {
+        "oyuncu k0": 14.7,
+        "oyuncu k3": 17.7,
+        "garson k0": 4.9,
+        "garson k1": 6.5,
+        "bulasikci k0": 6.5,
+        "bulasikci k2": 9.2,
+        "musteri": 8.5
+      },
+      "kelepceTavan": 2.41,
+      "kelepcedeHiz": 1.37
+    },
+    "Walking_B": {
+      "sure": 1.067,
+      "ileriEksen": "z",
+      "solAdim": 0.44,
+      "sagAdim": 0.44,
+      "donguYolu": 0.88,
+      "kokKayma": 0,
+      "kalcaSalinim": 0.0545,
+      "hamHiz": 0.825,
+      "dunyaHizi": 0.655,
+      "adimSn": 1.87,
+      "gerekenTimeScale": {
+        "oyuncu k0": 6.87,
+        "oyuncu k3": 8.24,
+        "garson k0": 2.29,
+        "garson k1": 3.05,
+        "bulasikci k0": 3.05,
+        "bulasikci k2": 4.27,
+        "musteri": 3.97
+      },
+      "olusanKadans": {
+        "oyuncu k0": 12.8,
+        "oyuncu k3": 15.4,
+        "garson k0": 4.3,
+        "garson k1": 5.7,
+        "bulasikci k0": 5.7,
+        "bulasikci k2": 8,
+        "musteri": 7.4
+      },
+      "kelepceTavan": 2.41,
+      "kelepcedeHiz": 1.58
+    },
+    "Walking_C": {
+      "sure": 1.6,
+      "ileriEksen": "z",
+      "solAdim": 0.395,
+      "sagAdim": 0.395,
+      "donguYolu": 0.79,
+      "kokKayma": 0,
+      "kalcaSalinim": 0.0545,
+      "hamHiz": 0.493,
+      "dunyaHizi": 0.392,
+      "adimSn": 1.25,
+      "gerekenTimeScale": {
+        "oyuncu k0": 11.48,
+        "oyuncu k3": 13.78,
+        "garson k0": 3.83,
+        "garson k1": 5.1,
+        "bulasikci k0": 5.1,
+        "bulasikci k2": 7.14,
+        "musteri": 6.63
+      },
+      "olusanKadans": {
+        "oyuncu k0": 14.3,
+        "oyuncu k3": 17.2,
+        "garson k0": 4.8,
+        "garson k1": 6.4,
+        "bulasikci k0": 6.4,
+        "bulasikci k2": 8.9,
+        "musteri": 8.3
+      },
+      "kelepceTavan": 3.6,
+      "kelepcedeHiz": 1.41
+    }
+  },
+  "K_kafa": [
+    {
+      "dosya": "Knight.glb",
+      "hamBoy": 2.284,
+      "basYuksekligi": 1.068,
+      "basTabani": 1.216,
+      "basEni": 1.086,
+      "kollar": {
+        "1.00": {
+          "basPayi": 46.8,
+          "hamBoy": 2.284,
+          "telafiOlcek": 1,
+          "basEni": 1.086
+        },
+        "0.85": {
+          "basPayi": 42.8,
+          "hamBoy": 2.124,
+          "telafiOlcek": 1.0754,
+          "basEni": 0.923
+        },
+        "0.75": {
+          "basPayi": 39.7,
+          "hamBoy": 2.017,
+          "telafiOlcek": 1.1324,
+          "basEni": 0.815
+        },
+        "0.65": {
+          "basPayi": 36.4,
+          "hamBoy": 1.91,
+          "telafiOlcek": 1.1957,
+          "basEni": 0.706
+        }
+      }
+    },
+    {
+      "dosya": "Rogue.glb",
+      "hamBoy": 2.18,
+      "basYuksekligi": 1.126,
+      "basTabani": 1.052,
+      "basEni": 1.141,
+      "kollar": {
+        "1.00": {
+          "basPayi": 51.7,
+          "hamBoy": 2.178,
+          "telafiOlcek": 1.0009,
+          "basEni": 1.141
+        },
+        "0.85": {
+          "basPayi": 47.6,
+          "hamBoy": 2.009,
+          "telafiOlcek": 1.0851,
+          "basEni": 0.97
+        },
+        "0.75": {
+          "basPayi": 44.5,
+          "hamBoy": 1.897,
+          "telafiOlcek": 1.1495,
+          "basEni": 0.856
+        },
+        "0.65": {
+          "basPayi": 41,
+          "hamBoy": 1.784,
+          "telafiOlcek": 1.2221,
+          "basEni": 0.742
+        }
+      }
+    },
+    {
+      "dosya": "Ranger.glb",
+      "hamBoy": 2.275,
+      "basYuksekligi": 1.08,
+      "basTabani": 1.193,
+      "basEni": 1.085,
+      "kollar": {
+        "1.00": {
+          "basPayi": 47.5,
+          "hamBoy": 2.273,
+          "telafiOlcek": 1.0009,
+          "basEni": 1.085
+        },
+        "0.85": {
+          "basPayi": 43.5,
+          "hamBoy": 2.111,
+          "telafiOlcek": 1.0777,
+          "basEni": 0.923
+        },
+        "0.75": {
+          "basPayi": 40.4,
+          "hamBoy": 2.003,
+          "telafiOlcek": 1.1358,
+          "basEni": 0.814
+        },
+        "0.65": {
+          "basPayi": 37.1,
+          "hamBoy": 1.895,
+          "telafiOlcek": 1.2006,
+          "basEni": 0.705
+        }
+      }
+    },
+    {
+      "dosya": "Barbarian.glb",
+      "hamBoy": 2.186,
+      "basYuksekligi": 1.052,
+      "basTabani": 1.135,
+      "basEni": 1.085,
+      "kollar": {
+        "1.00": {
+          "basPayi": 48.1,
+          "hamBoy": 2.186,
+          "telafiOlcek": 1,
+          "basEni": 1.085
+        },
+        "0.85": {
+          "basPayi": 44.1,
+          "hamBoy": 2.029,
+          "telafiOlcek": 1.0778,
+          "basEni": 0.923
+        },
+        "0.75": {
+          "basPayi": 41,
+          "hamBoy": 1.923,
+          "telafiOlcek": 1.1367,
+          "basEni": 0.814
+        },
+        "0.65": {
+          "basPayi": 37.6,
+          "hamBoy": 1.818,
+          "telafiOlcek": 1.2025,
+          "basEni": 0.705
+        }
+      }
+    },
+    {
+      "dosya": "Mage.glb",
+      "hamBoy": 2.162,
+      "basYuksekligi": 1.076,
+      "basTabani": 1.084,
+      "basEni": 1.14,
+      "kollar": {
+        "1.00": {
+          "basPayi": 49.8,
+          "hamBoy": 2.16,
+          "telafiOlcek": 1.0009,
+          "basEni": 1.14
+        },
+        "0.85": {
+          "basPayi": 45.8,
+          "hamBoy": 1.999,
+          "telafiOlcek": 1.0818,
+          "basEni": 0.969
+        },
+        "0.75": {
+          "basPayi": 42.7,
+          "hamBoy": 1.891,
+          "telafiOlcek": 1.1434,
+          "basEni": 0.855
+        },
+        "0.65": {
+          "basPayi": 39.2,
+          "hamBoy": 1.783,
+          "telafiOlcek": 1.2124,
+          "basEni": 0.741
+        }
+      }
+    },
+    {
+      "dosya": "Rogue_Hooded.glb",
+      "hamBoy": 2.173,
+      "basYuksekligi": 1.123,
+      "basTabani": 1.048,
+      "basEni": 1.044,
+      "kollar": {
+        "1.00": {
+          "basPayi": 51.7,
+          "hamBoy": 2.171,
+          "telafiOlcek": 1.0009,
+          "basEni": 1.044
+        },
+        "0.85": {
+          "basPayi": 47.7,
+          "hamBoy": 2.002,
+          "telafiOlcek": 1.0851,
+          "basEni": 0.888
+        },
+        "0.75": {
+          "basPayi": 44.6,
+          "hamBoy": 1.89,
+          "telafiOlcek": 1.1496,
+          "basEni": 0.783
+        },
+        "0.65": {
+          "basPayi": 41.1,
+          "hamBoy": 1.778,
+          "telafiOlcek": 1.2222,
+          "basEni": 0.679
+        }
+      }
+    }
+  ],
+  "O_boy": [
+    {
+      "boy": 1.75,
+      "oranlar": {
+        "masa": 45.4,
+        "tabure": 25.7,
+        "tezgah": 54.3
+      },
+      "sapma": {
+        "masa": 6,
+        "tabure": 0,
+        "tezgah": 5.6
+      },
+      "kaykitOlcek": 0.794,
+      "seatedDrop": -0.45,
+      "playerRadius": 0.47,
+      "bubbleY": 1.9,
+      "cameraLookY": 0.8
+    },
+    {
+      "boy": 1.65,
+      "oranlar": {
+        "masa": 48.2,
+        "tabure": 27.3,
+        "tezgah": 57.6
+      },
+      "sapma": {
+        "masa": 12.4,
+        "tabure": 6.1,
+        "tezgah": 12
+      },
+      "kaykitOlcek": 0.7486,
+      "seatedDrop": -0.35,
+      "playerRadius": 0.45,
+      "bubbleY": 1.8,
+      "cameraLookY": 0.75
+    },
+    {
+      "boy": 1.6,
+      "oranlar": {
+        "masa": 49.7,
+        "tabure": 28.1,
+        "tezgah": 59.4
+      },
+      "sapma": {
+        "masa": 15.9,
+        "tabure": 9.4,
+        "tezgah": 15.5
+      },
+      "kaykitOlcek": 0.726,
+      "seatedDrop": -0.3,
+      "playerRadius": 0.43,
+      "bubbleY": 1.75,
+      "cameraLookY": 0.73
+    },
+    {
+      "boy": 1.5,
+      "oranlar": {
+        "masa": 53,
+        "tabure": 30,
+        "tezgah": 63.3
+      },
+      "sapma": {
+        "masa": 23.7,
+        "tabure": 16.7,
+        "tezgah": 23.1
+      },
+      "kaykitOlcek": 0.6806,
+      "seatedDrop": -0.2,
+      "playerRadius": 0.41,
+      "bubbleY": 1.65,
+      "cameraLookY": 0.69
+    },
+    {
+      "boy": 1.4,
+      "oranlar": {
+        "masa": 56.8,
+        "tabure": 32.1,
+        "tezgah": 67.9
+      },
+      "sapma": {
+        "masa": 32.5,
+        "tabure": 25,
+        "tezgah": 31.9
+      },
+      "kaykitOlcek": 0.6352,
+      "seatedDrop": -0.1,
+      "playerRadius": 0.38,
+      "bubbleY": 1.55,
+      "cameraLookY": 0.64
+    }
+  ],
+  "C_cizim": [
+    {
+      "dosya": "Knight.glb",
+      "kb": 334,
+      "parcaToplam": 9,
+      "sivilParca": 6,
+      "malzeme": 1,
+      "sivilMalzeme": 1,
+      "birlestirilmisCizim": 1,
+      "sivilUcgen": 4870,
+      "parcaAdlari": [
+        "Knight_ArmLeft",
+        "Knight_ArmRight",
+        "Knight_Body",
+        "Knight_Head",
+        "Knight_LegLeft",
+        "Knight_LegRight"
+      ]
+    },
+    {
+      "dosya": "Rogue.glb",
+      "kb": 400,
+      "parcaToplam": 7,
+      "sivilParca": 6,
+      "malzeme": 1,
+      "sivilMalzeme": 1,
+      "birlestirilmisCizim": 1,
+      "sivilUcgen": 7478,
+      "parcaAdlari": [
+        "Rogue_ArmLeft",
+        "Rogue_ArmRight",
+        "Rogue_Body",
+        "Rogue_Head",
+        "Rogue_LegLeft",
+        "Rogue_LegRight"
+      ]
+    },
+    {
+      "dosya": "Ranger.glb",
+      "kb": 473,
+      "parcaToplam": 8,
+      "sivilParca": 6,
+      "malzeme": 1,
+      "sivilMalzeme": 1,
+      "birlestirilmisCizim": 1,
+      "sivilUcgen": 8561,
+      "parcaAdlari": [
+        "Ranger_ArmLeft",
+        "Ranger_ArmRight",
+        "Ranger_Body",
+        "Ranger_Head",
+        "Ranger_LegLeft",
+        "Ranger_LegRight"
+      ]
+    },
+    {
+      "dosya": "Barbarian.glb",
+      "kb": 378,
+      "parcaToplam": 7,
+      "sivilParca": 6,
+      "malzeme": 1,
+      "sivilMalzeme": 1,
+      "birlestirilmisCizim": 1,
+      "sivilUcgen": 6093,
+      "parcaAdlari": [
+        "Barbarian_ArmLeft",
+        "Barbarian_ArmRight",
+        "Barbarian_Body",
+        "Barbarian_Head",
+        "Barbarian_LegLeft",
+        "Barbarian_LegRight"
+      ]
+    },
+    {
+      "dosya": "Mage.glb",
+      "kb": 344,
+      "parcaToplam": 8,
+      "sivilParca": 6,
+      "malzeme": 1,
+      "sivilMalzeme": 1,
+      "birlestirilmisCizim": 1,
+      "sivilUcgen": 6188,
+      "parcaAdlari": [
+        "Mage_ArmLeft",
+        "Mage_ArmRight",
+        "Mage_Body",
+        "Mage_Head",
+        "Mage_LegLeft",
+        "Mage_LegRight"
+      ]
+    },
+    {
+      "dosya": "Rogue_Hooded.glb",
+      "kb": 372,
+      "parcaToplam": 8,
+      "sivilParca": 6,
+      "malzeme": 1,
+      "sivilMalzeme": 1,
+      "birlestirilmisCizim": 1,
+      "sivilUcgen": 6797,
+      "parcaAdlari": [
+        "RogueHooded_ArmLeft",
+        "RogueHooded_ArmRight",
+        "RogueHooded_Body",
+        "RogueHooded_Head",
+        "RogueHooded_LegLeft",
+        "RogueHooded_LegRight"
+      ]
+    }
+  ],
+  "C_ozet": {
+    "sivilParca": 6,
+    "ortUcgen": 6665,
+    "npc24": {
+      "asIsCizim": 144,
+      "birlesikCizim": 24,
+      "kapsulCizim": 1,
+      "ucgen": 159960,
+      "kapsulUcgen": 6240
+    }
+  }
+}

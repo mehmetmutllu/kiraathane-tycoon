@@ -5,28 +5,30 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-14 — **S14 BİTTİ: PERSONEL SKINNED'E GEÇTİ, D-112** · Faz S 13/15 · 88/99)
+## ŞU AN (2026-09-14 — **S15 AÇILDI: MÜŞTERİ SKINNED + ÜÇ GÖRSEL KUSUR** · Faz S 13/15 · 88/99)
 
 ```
-SORU            : Beş karakter gövdesi hangi kaynaktan gelir, skinned'in KOD bedeli ne?
-ÖLÇÜLECEK KOLLAR: A KayKit · A2 diğer ücretsiz KayKit paketleri · D Quaternius · F ilkel kalsın ·
-                  B/C/E ücretli (fiyat satırı) · KOD BEDELİ personel ↔ müşteri ayrı
-SAYILAR         : docs/karakter-raporu-s14.md · ham docs/olcum-karakter.json · olcum-skin-perf.txt
-                  12 ücretsiz gövde, 11'i TEK rig (Rig_Medium, 23 kemik) · 259-529 KB · doku gömülü
-                  ekipman AYRI düğüm (Rogue'da 1 düğüm/84 üçgen) · klipler 69/69 iz → retarget YOK
-                  139 klip ücretsiz, Sit_Chair_* dahil · baş boyun %50'si (bugünkü gövdede %33)
-                  omuz 0,58 ↔ kapsül 0,60 (blob sınırı aşılmıyor)
-                  perf: 24 skinned = 192 çizim / 2,2 ms · instanced kapsül 1 çizim / 0,05 ms
-                  Quaternius: 2 gövde (6 değil) · kıyafet paketi FANTASY · doku 80 MB
-KARAR           : D-112 — kadro Adventurer gövdelerinden, palete boyalı, BAŞ boyanmaz.
-                  Ölçek Ö1 (toplam 1,75 — türeyen hiçbir sayı kıpırdamadı). 6 gövde + 4 klip
-                  (+5,9 MB → 23,1). Tur İKİYE bölündü: personel bu tur, müşteriler S15.
-UYGULAMA        : KayActor.tsx (yeni) · actor.ts kaydı · Model.tsx SkeletonUtils · Player ·
-                  Waiter · Dishwasher · Scene.KitchenHand · manifest künyesi
-BEKÇİ           : tests/karakter.test.ts — 11 denetim, **15 mutasyonla** doğrulandı, kaçan 0
-                  (ilk turda 2 kaçtı: kural İKİ yerde yazılıydı + klon denetimi dizgeye bakıyordu)
-                  vitest 943 ✓ · duman 42/42 ✓ · tsc -b ✓
+SORU            : Müşteriler skinned'e geçerken üç görsel kusur aynı turda kapanır — kafa/gövde
+                  oranı, yürüyüş ↔ ilerleme senkronu, sahibin kasketi. Hangi ölçek, hangi katsayı?
+ÖLÇÜLECEK KOLLAR: Ç çizim bedeli  · Ç1 8 parça as-is · Ç2 parça birleştirme (tek materyal) · Ç3 karışık
+                  K kafa ölçeği   · K1 1,00 (bugün, baş = boyun %50) · K2 0,85 · K3 0,75 · K4 0,65
+                  Ö gövde boyu    · Ö1 1,75 (D-076 donmuş) · Ö2 1,60 · Ö3 1,50 — mobilya oran satırıyla
+                  S senkron       · klibin YAZILI adım hızı (br/sn) → S1 sabit 1 (bugün) ·
+                                    S2 timeScale = hız/adımHızı · S3 S2 + klip seçimi (yürü↔koş)
+                  KASKET          : ölçüm yok — kullanıcı kararı verdi (sahipten kalkar), uygulamaya gider
+SAYILAR         : (adım 2'den sonra dolar → docs/karakter-raporu-s15.md §Bulgular)
+KARAR           : (adım 3 — kullanıcı seçer)
+UYGULAMA        : (adım 4 — yalnız kararın kolu)
+BEKÇİ           : (test dosyası + kaç mutasyon)
 ```
+
+**Turu açan geri bildirim (2026-09-14, kullanıcı):** "karakterler havada süzülüyor gibi, yürüme
+efekti ile ilerleme senkron değil · ana karakterdeki kasketi çıkar · garsonlar falan küçülsün,
+kafalar çok büyük duruyo baya küçült".
+
+**Süzülmenin ilk sayısı (koddan, ölçüm öncesi):** hareket hızları **1,5…5,4 br/sn** aralığında
+(garson 1,5-2,0 · bulaşıkçı 2,0-2,8 · müşteri 2,6 · oyuncu 4,5-5,4) ama `Walking_A` herkeste
+`timeScale = 1`. Tek klip bu aralığı tutamaz; `Running_A/B` repoda ve kullanılmıyor.
 
 ## SIRADAKİ TAM ADIM
 

@@ -19,7 +19,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const KOK = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const [modeller = 'Knight', cikti = 'docs/gorsel/ss/karakter-bak.png', sivil = '0', poz = '', olcekler = '', boya = '0', roller = '', izgara = '0'] = process.argv.slice(2);
+const [modeller = 'Knight', cikti = 'docs/gorsel/ss/karakter-bak.png', sivil = '0', poz = '', olcekler = '', boya = '0', roller = '', izgara = '0', kafalar = '', kafaTelafi = '1'] = process.argv.slice(2);
 const PORT = Number(process.env.BAK_PORT ?? 5198);
 
 const sunucu = spawn(
@@ -45,7 +45,7 @@ const bekle = async () => {
 
 try {
   if (!(await bekle())) throw new Error('vite ayağa kalkmadı');
-  const url = `http://127.0.0.1:${PORT}/tools/karakter-bak.html?m=${modeller}&sivil=${sivil}&poz=${encodeURIComponent(poz)}&olcekler=${olcekler}&boya=${boya}&roller=${roller}&izgara=${izgara}`;
+  const url = `http://127.0.0.1:${PORT}/tools/karakter-bak.html?m=${modeller}&sivil=${sivil}&poz=${encodeURIComponent(poz)}&olcekler=${olcekler}&boya=${boya}&roller=${roller}&izgara=${izgara}&kafalar=${kafalar}&kafaTelafi=${kafaTelafi}`;
   const tarayici = await chromium.launch();
   const sayfa = await tarayici.newPage({ viewport: { width: 1600, height: 900 }, deviceScaleFactor: 2 });
   const hatalar = [];

@@ -54,7 +54,7 @@
   const H = 1.75; // ACTOR_HEIGHT (src/config/actor.ts)
   const TABLE_TOP_Y = 0.795; // tableLook.ts — donmuş
   const STOOL_SEAT_Y = 0.45; // tableLook.ts — donmuş
-  const ADAY = '/assets/models/_aday-karakter/';
+  const ADAY = '/assets/models/kaykit-characters/';
   const KAY = '/assets/models/kaykit-furniture-bits/';
 
   // olcum-karakter.mjs'deki EKİPMAN listesinin aynısı; rol = adın SON bölümü.
@@ -169,6 +169,15 @@
   };
 
   // --- adaylar: toplam boy 1,75'e çekilir, ekipman istenirse gizlenir ---
+  // `kafalar=1,0.85,0.75,0.65` → TEK gövdeyi baş KEMİĞİ şu ölçeklerde yan yana çizer (S15).
+  //
+  // NEDEN AYRI KOL: ölçüm KayKit başının gövde boyunun **%47-52**'si olduğunu söylüyor
+  // (`docs/olcum-yuruyus.json` §K_kafa); bugünkü ilkel gövdede %33'tü. Kullanıcı "kafalar
+  // çok büyük" dedi ama KAÇ küçüleceği sayıyla kapanmaz — siluet kararı, kareyle sorulur.
+  // Her kart aynı TOPLAM boya (1,75) çekilir: değişen yalnız başın gövdedeki payı, yani
+  // karşılaştırma "küçük karakter mi" değil "küçük kafa mı" sorusunu sorar.
+  const kafalar = (q.get('kafalar') ?? '').split(',').filter(Boolean).map(Number);
+  const kafaTelafi = q.get('kafaTelafi') !== '0';
   const kartlar = [];
   let x = 0;
   const roller = (q.get('roller') ?? '').split(',').filter(Boolean);
@@ -177,10 +186,12 @@
         const [a, b] = r.includes(':') ? r.split(':') : [adlar[0], r];
         return { ad: a, zorla: 0, rol: b };
       })
-    : olcekler.length
+    : kafalar.length
+      ? kafalar.flatMap((kf) => adlar.map((a) => ({ ad: a, kafa: kf, rol: 'cayci' })))
+      : olcekler.length
       ? olcekler.map((k) => ({ ad: adlar[0], zorla: k, rol: 'cayci' }))
       : adlar.map((ad) => ({ ad, zorla: 0, rol: 'cayci' }));
-  for (const { ad, zorla, rol } of liste) {
+  for (const { ad, zorla, rol, kafa } of liste) {
     const uzanti = ad.startsWith('Male_') || ad.startsWith('Superhero_') ? 'gltf' : 'glb';
     let o;
     try {
@@ -210,10 +221,47 @@
       kiyafetTak(o, rol, /Mannequin/i.test(ad));
     }
     const poz = pozDosya ? pozUygula(o) : null;
+    // KAFA KOLU — poz UYGULANDIKTAN sonra: klip `head`in scale izini taşıyorsa mixer bizim
+    // ölçeğimizin üstüne yazar, o yüzden sıra bu. Kasket zaten `head`in çocuğu, onunla küçülür.
+    //
+    // İKİ ALT KOL, ve aradaki fark bu turun asıl takası:
+    //   TELAFİLİ (`kafaTelafi=1`)  — toplam boy 1,75'te KALIR. Baş küçülünce gövde o boyu
+    //     doldurmak için büyür: omuz genişler, karakter tıknazlaşır (blob sınırı 0,60'a dayanır).
+    //   TELAFİSİZ (`kafaTelafi=0`) — gövde ölçeği DEĞİŞMEZ, karakter KISALIR. Omuz aynı kalır,
+    //     ama mobilya oranı bozulur (D-076'nın kabul kriteri).
+    // Kullanıcı hem "kafalar küçülsün" hem "garsonlar küçülsün" dedi; telafisiz kol ikisini
+    // birden verir, bedeli mobilya oranıdır. Karar kareyle verilir.
     o.updateWorldMatrix(true, true);
+    const kutuOnce = new THREE.Box3().setFromObject(o);
+    const boyOnce = kutuOnce.max.y - kutuOnce.min.y;
+    let basPayi = null;
+    if (kafa && kafa !== 1) {
+      o.traverse((n) => {
+        if (n.isBone && n.name === 'head') n.scale.setScalar(kafa);
+      });
+    }
+    // SkinnedMesh sınır kutusunu NESNE düzeyinde önbelleğe alır (`Box3.expandByObject`
+    // `object.boundingBox`a bakar ve `computeBoundingBox` bir kez koşar; o hesap kemik
+    // dönüşümünü uygular). Yukarıdaki ön-ölçüm bu önbelleği kafa küçülmeden doldurdu —
+    // temizlenmezse bütün kartlar aynı sayıyı gösterir (ilk koşuda beş kart da "%42,3" dedi).
+    // GEOMETRİ düzeyindeki kutuya DOKUNULMAZ: o bind pozundadır ve null'lanınca çöküyor.
+    o.traverse((n) => {
+      if (n.isSkinnedMesh) n.boundingBox = null;
+    });
+    o.updateWorldMatrix(true, true);
+    if (kafa) {
+      const tum = new THREE.Box3().setFromObject(o);
+      const bas = new THREE.Box3();
+      o.traverse((n) => {
+        if (n.isMesh && n.visible && /head|skull/i.test(n.name ?? '')) bas.union(new THREE.Box3().setFromObject(n));
+      });
+      const toplam = tum.max.y - tum.min.y;
+      if (!bas.isEmpty() && toplam > 0) basPayi = +(((bas.max.y - bas.min.y) / toplam) * 100).toFixed(1);
+    }
     const kutu = new THREE.Box3().setFromObject(o);
     const b = kutu.getSize(new THREE.Vector3());
-    const k = zorla || H / b.y;
+    // Telafisiz kolda ölçek baş KÜÇÜLMEDEN ÖNCEKİ boydan alınır: gövde aynı kalır, boy düşer.
+    const k = zorla || (kafa && !kafaTelafi ? H / boyOnce : H / b.y);
     o.scale.multiplyScalar(k);
     o.position.set(x - kutu.min.x * k, -kutu.min.y * k, 0);
     o.traverse((n) => {
@@ -240,8 +288,18 @@
         }
       });
     }
+    // OMUZ ENİ — blob kuralının (D-076: 2×CAPSULE_RADIUS = 0,60) baktığı sayı. Kart eni
+    // A-poz KOL AÇIKLIĞI, omuz değil; telafili kolun bedeli ancak bu sayıda görünür.
+    let omuz = null;
+    o.updateWorldMatrix(true, true);
+    o.traverse((n) => {
+      if (n.isMesh && n.visible && /body|torso/i.test(n.name ?? '')) {
+        const kb = new THREE.Box3().setFromObject(n);
+        omuz = +(kb.max.x - kb.min.x).toFixed(3);
+      }
+    });
     kartlar.push({
-      kalca,
+      kalca, kafa, basPayi, omuz,
       ad, rol, x, hamBoy: +b.y.toFixed(2), olcek: +k.toFixed(3), gizlenen, poz,
       en: +(b.x * k).toFixed(2),
       boy: +(b.y * k).toFixed(2),
@@ -305,7 +363,12 @@
     el.style.cssText =
       'position:fixed;transform:translate(-50%,0);font:11px/1.35 system-ui;text-align:center;' +
       'color:#263238;background:#ffffffd9;padding:2px 6px;border-radius:4px;white-space:nowrap';
-    el.innerHTML = `<b>${kt.rol ? `${kt.rol}` : kt.ad}</b><br><span style="color:#78909c">${kt.ad}</span><br>×${kt.olcek} → boy ${kt.boy}<br>en ${kt.en}` +
+    el.innerHTML = (kt.kafa
+      ? `<b style="font-size:14px">kafa ×${String(kt.kafa).replace('.', ',')}</b><br><span style="color:#78909c">${kt.ad}</span>` +
+        `<br><b style="color:#00695c">baş payı %${String(kt.basPayi ?? '?').replace('.', ',')}</b>` +
+        `<br>BOY ${String(kt.boy).replace('.', ',')}` +
+        `<br><span style="color:${kt.omuz > 0.6 ? '#c62828' : '#2e7d32'}">omuz ${String(kt.omuz ?? '?').replace('.', ',')}${kt.omuz > 0.6 ? ' ✗ blob' : ' ✓'}</span>`
+      : `<b>${kt.rol ? `${kt.rol}` : kt.ad}</b><br><span style="color:#78909c">${kt.ad}</span><br>×${kt.olcek} → boy ${kt.boy}<br>en ${kt.en}`) +
       (kt.gizlenen ? `<br><span style="color:#c62828">−${kt.gizlenen} ekipman</span>` : '') +
       (kt.poz ? `<br><span style="color:${kt.poz.tuttu ? '#2e7d32' : '#c62828'}">poz ${kt.poz.eslesen ?? 0}/${kt.poz.iz ?? 0} kemik</span>` : '') +
       (kt.kalca != null ? `<br><span style="color:#5d4037">ayaktan asılınca kalça ${kt.kalca}<br>montaj kaldırması +${(0.45 - kt.kalca).toFixed(3)}</span>` : '');
