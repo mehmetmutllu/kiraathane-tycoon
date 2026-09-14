@@ -430,6 +430,8 @@ export function questTargetMet(target: QuestTarget, ctx: QuestCtx): boolean {
 /** HUD görev barı görünümü (transient; her tick türetilir). */
 export interface QuestView {
   id: string;
+  /** G-05: bandın üstündeki kısa lakap ("İLK ÇAY"). Net hedef `title`da. */
+  kicker: string;
   title: string;
   /** Görev hedefi (HUD görev fotoğrafı hedef tipine göre seçilir). */
   target: QuestTarget;
@@ -462,6 +464,7 @@ export function questView(q: QuestDef, ctx: QuestCtx): QuestView {
           : null;
   return {
     id: q.id,
+    kicker: q.kicker,
     title: q.title,
     target: q.target,
     cur: counter != null && count != null ? Math.max(0, Math.min(count, counter - ctx.questBase)) : null,

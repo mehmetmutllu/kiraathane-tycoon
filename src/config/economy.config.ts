@@ -226,6 +226,9 @@ export interface DailyQuestDef {
 /** Sıralı görev (tek aktif; üst görev barında gösterilir, kamera hedefe yönlendirilebilir). */
 export interface QuestDef {
   id: string;
+  /** G-05 LAKAP: bandın üstündeki kısa başlık ("İLK ÇAY"). Hedefin KENDİSİ değil, o hedefin
+   *  hangi bölümde olduğunu söyleyen etiket — `title` net hedefi yazar, lakap yerini. */
+  kicker: string;
   title: string;
   target: QuestTarget;
   /** Hedefin ALANI (kamera odağı doğru salona baksın; yoksa 0). */
@@ -688,73 +691,73 @@ export const economyConfig = {
     // servisin KENDİ merdiveni geldi — ocak L1/L2/L3, **TEZGÂH (L4)** ve **TOST (L5)** artık birer
     // görev. Kayıt v31 temiz sıfırlama olduğu için id/sıra eşleme listesi gerekmedi.
     // Karakter görevlerinin yeri korundu (docs/character-upgrades-design.md §5).
-    { id: 'q_pickup', title: 'Ocaktan çay al', target: { type: 'pickupTea', count: 1 }, reward: 3 },
-    { id: 'q_serve1', title: 'Çayı müşteriye götür', target: { type: 'serveTea', count: 1 }, reward: 3 },
-    { id: 'q_coin', title: 'Yere düşen parayı topla', target: { type: 'collectCoin', count: 1 }, reward: 5 },
-    { id: 'q_table2', title: '2. Masayı aç', target: { type: 'pad', id: 'table2' }, reward: 10 },
-    { id: 'q_charTray1', title: 'Tepsini büyüt', target: { type: 'charStat', stat: 'tray', tier: 1 }, reward: 15 },
-    { id: 'q_serve5', title: '5 çay servis et', target: { type: 'serveTea', count: 5 }, reward: 15 },
-    { id: 'q_station1', title: 'Çay ocağını yükselt', target: { type: 'stationLevel', level: 1 }, reward: 10 },
+    { id: 'q_pickup', kicker: 'İLK ÇAY', title: 'Ocaktan çay al', target: { type: 'pickupTea', count: 1 }, reward: 3 },
+    { id: 'q_serve1', kicker: 'İLK SERVİS', title: 'Çayı müşteriye götür', target: { type: 'serveTea', count: 1 }, reward: 3 },
+    { id: 'q_coin', kicker: 'İLK KAZANÇ', title: 'Yere düşen parayı topla', target: { type: 'collectCoin', count: 1 }, reward: 5 },
+    { id: 'q_table2', kicker: 'İKİNCİ MASA', title: '2. Masayı aç', target: { type: 'pad', id: 'table2' }, reward: 10 },
+    { id: 'q_charTray1', kicker: 'TEPSİ', title: "Tepsini 3 bardağa çıkar", target: { type: 'charStat', stat: 'tray', tier: 1 }, reward: 15 },
+    { id: 'q_serve5', kicker: 'İŞLER AÇILIYOR', title: '5 çay servis et', target: { type: 'serveTea', count: 5 }, reward: 15 },
+    { id: 'q_station1', kicker: 'OCAK', title: 'Çay ocağını yükselt', target: { type: 'stationLevel', level: 1 }, reward: 10 },
     // Bulaşık MEKANİĞİ burada öğrenilir (kirli bardak bu görevden itibaren çıkar — WASH_QUEST_INDEX).
     // Personeli devralması ÇOK sonra (Bölüm 2): önce elle yıkarsın, sonra otomasyonu alırsın.
-    { id: 'q_wash', title: '3 kirli bardak yıka', target: { type: 'washDish', count: 3 }, reward: 15 },
-    { id: 'q_table3', title: '3. Masayı aç', target: { type: 'pad', id: 'table3' }, reward: 25 },
-    { id: 'q_charTray2', title: "Tepsini 4'e çıkar", target: { type: 'charStat', stat: 'tray', tier: 2 }, reward: 30 },
-    { id: 'q_waiter', title: 'Garson tut', target: { type: 'pad', id: 'waiter' }, reward: 30 },
-    { id: 'q_station2', title: "Ocağı Seviye 2'ye çıkar", target: { type: 'stationLevel', level: 2 }, reward: 40 },
-    { id: 'q_table4', title: '4. Masayı aç', target: { type: 'pad', id: 'table4' }, reward: 60 },
-    { id: 'q_charMagnet', title: 'Para mıknatısını güçlendir', target: { type: 'charStat', stat: 'magnet', tier: 1 }, reward: 50 },
+    { id: 'q_wash', kicker: 'BULAŞIK', title: '3 kirli bardak yıka', target: { type: 'washDish', count: 3 }, reward: 15 },
+    { id: 'q_table3', kicker: 'ÜÇÜNCÜ MASA', title: '3. Masayı aç', target: { type: 'pad', id: 'table3' }, reward: 25 },
+    { id: 'q_charTray2', kicker: 'TEPSİ', title: "Tepsini 4'e çıkar", target: { type: 'charStat', stat: 'tray', tier: 2 }, reward: 30 },
+    { id: 'q_waiter', kicker: 'İLK GARSON', title: 'Garson tut', target: { type: 'pad', id: 'waiter' }, reward: 30 },
+    { id: 'q_station2', kicker: 'OCAK', title: "Ocağı Seviye 2'ye çıkar", target: { type: 'stationLevel', level: 2 }, reward: 40 },
+    { id: 'q_table4', kicker: 'SALON DOLDU', title: '4. Masayı aç', target: { type: 'pad', id: 'table4' }, reward: 60 },
+    { id: 'q_charMagnet', kicker: 'MIKNATIS', title: 'Para mıknatısını güçlendir', target: { type: 'charStat', stat: 'magnet', tier: 1 }, reward: 50 },
     // --- BÖLÜM 2 · 2. Alan: alan ocak GETİRMEZ → sekiz masa tek ocağa yüklenir.
-    { id: 'q_zone2', title: '2. Salonu aç', target: { type: 'pad', id: 'zone2' }, reward: 150 },
-    { id: 'q_z2table2', title: 'Salon 2: 2. Masayı aç', target: { type: 'pad', id: 'z2table2' }, area: 1, reward: 50 },
-    { id: 'q_station3', title: "Ocağı Seviye 3'e çıkar", target: { type: 'stationLevel', level: 3 }, reward: 80 },
-    { id: 'q_waiterL2', title: 'Garsonu hızlandır', target: { type: 'waiterSpeed', tier: 1 }, reward: 50 },
-    { id: 'q_tableL2', title: 'Bir masayı yükselt', target: { type: 'tableLevel', level: 1 }, reward: 30 },
-    { id: 'q_z2table3', title: 'Salon 2: 3. Masayı aç', target: { type: 'pad', id: 'z2table3' }, area: 1, reward: 100 },
-    { id: 'q_waiterTray1', title: 'Garsonun tepsisini büyüt', target: { type: 'waiterTray', tier: 1 }, reward: 80 },
-    { id: 'q_dish', title: 'Bulaşıkçı tut', target: { type: 'pad', id: 'dishwasher' }, area: 1, reward: 120 },
-    { id: 'q_z2table4', title: 'Salon 2: 4. Masayı aç', target: { type: 'pad', id: 'z2table4' }, area: 1, reward: 200 },
-    { id: 'q_tableL2x2', title: "2 masayı Seviye 2'ye çıkar", target: { type: 'tablesAtLevel', level: 2, count: 2 }, reward: 120 },
+    { id: 'q_zone2', kicker: 'YENİ SALON', title: '2. Salonu aç', target: { type: 'pad', id: 'zone2' }, reward: 150 },
+    { id: 'q_z2table2', kicker: 'SALON 2', title: 'Salon 2: 2. Masayı aç', target: { type: 'pad', id: 'z2table2' }, area: 1, reward: 50 },
+    { id: 'q_station3', kicker: 'OCAK', title: "Ocağı Seviye 3'e çıkar", target: { type: 'stationLevel', level: 3 }, reward: 80 },
+    { id: 'q_waiterL2', kicker: 'GARSON', title: 'Garsonu hızlandır', target: { type: 'waiterSpeed', tier: 1 }, reward: 50 },
+    { id: 'q_tableL2', kicker: 'MASA SEVİYESİ', title: 'Bir masayı yükselt', target: { type: 'tableLevel', level: 1 }, reward: 30 },
+    { id: 'q_z2table3', kicker: 'SALON 2', title: 'Salon 2: 3. Masayı aç', target: { type: 'pad', id: 'z2table3' }, area: 1, reward: 100 },
+    { id: 'q_waiterTray1', kicker: 'GARSON TEPSİSİ', title: 'Garsonun tepsisini büyüt', target: { type: 'waiterTray', tier: 1 }, reward: 80 },
+    { id: 'q_dish', kicker: 'BULAŞIKÇI', title: 'Bulaşıkçı tut', target: { type: 'pad', id: 'dishwasher' }, area: 1, reward: 120 },
+    { id: 'q_z2table4', kicker: 'SALON 2', title: 'Salon 2: 4. Masayı aç', target: { type: 'pad', id: 'z2table4' }, area: 1, reward: 200 },
+    { id: 'q_tableL2x2', kicker: 'MASA SEVİYESİ', title: "2 masayı Seviye 2'ye çıkar", target: { type: 'tablesAtLevel', level: 2, count: 2 }, reward: 120 },
     // --- BÖLÜM 3 · 3. Alan + TEZGÂH: mekânın kimliği değişir (derme çatma ocak gider, tezgâh gelir).
-    { id: 'q_zone3', title: '3. Salonu aç', target: { type: 'pad', id: 'zone3' }, area: 2, reward: 400 },
-    { id: 'q_z3table2', title: 'Salon 3: 2. Masayı aç', target: { type: 'pad', id: 'z3table2' }, area: 2, reward: 100 },
-    { id: 'q_counter', title: 'Tezgâhı kur', target: { type: 'stationLevel', level: 4 }, reward: 300 },
-    { id: 'q_waiter2', title: '2. Garsonu tut', target: { type: 'pad', id: 'waiter2' }, reward: 250 },
-    { id: 'q_z3table3', title: 'Salon 3: 3. Masayı aç', target: { type: 'pad', id: 'z3table3' }, area: 2, reward: 200 },
+    { id: 'q_zone3', kicker: 'ÜÇÜNCÜ SALON', title: '3. Salonu aç', target: { type: 'pad', id: 'zone3' }, area: 2, reward: 400 },
+    { id: 'q_z3table2', kicker: 'SALON 3', title: 'Salon 3: 2. Masayı aç', target: { type: 'pad', id: 'z3table2' }, area: 2, reward: 100 },
+    { id: 'q_counter', kicker: 'TEZGÂH', title: 'Tezgâhı kur', target: { type: 'stationLevel', level: 4 }, reward: 300 },
+    { id: 'q_waiter2', kicker: 'İKİNCİ GARSON', title: '2. Garsonu tut', target: { type: 'pad', id: 'waiter2' }, reward: 250 },
+    { id: 'q_z3table3', kicker: 'SALON 3', title: 'Salon 3: 3. Masayı aç', target: { type: 'pad', id: 'z3table3' }, area: 2, reward: 200 },
     // TOST: bir salondan değil, tezgâhın L5'inden gelir.
-    { id: 'q_tost', title: 'Tost sacını kur', target: { type: 'stationLevel', level: 5 }, reward: 500 },
-    { id: 'q_tost5', title: '5 tost servis et', target: { type: 'serveTost', count: 5 }, reward: 300 },
-    { id: 'q_z3table4', title: 'Salon 3: 4. Masayı aç', target: { type: 'pad', id: 'z3table4' }, area: 2, reward: 350 },
-    { id: 'q_waiterTray2', title: "Garsonun tepsisini 3'e çıkar", target: { type: 'waiterTray', tier: 2 }, reward: 300 },
-    { id: 'q_z1allL4', title: 'Salonun 4 masasını Seviye 4 yap', target: { type: 'tablesAtLevel', level: 4, count: 4, area: 0 }, reward: 400 },
+    { id: 'q_tost', kicker: 'TOST SACI', title: 'Tost sacını kur', target: { type: 'stationLevel', level: 5 }, reward: 500 },
+    { id: 'q_tost5', kicker: 'TOST', title: '5 tost servis et', target: { type: 'serveTost', count: 5 }, reward: 300 },
+    { id: 'q_z3table4', kicker: 'SALON 3', title: 'Salon 3: 4. Masayı aç', target: { type: 'pad', id: 'z3table4' }, area: 2, reward: 350 },
+    { id: 'q_waiterTray2', kicker: 'GARSON TEPSİSİ', title: "Garsonun tepsisini 3'e çıkar", target: { type: 'waiterTray', tier: 2 }, reward: 300 },
+    { id: 'q_z1allL4', kicker: 'SALON 1 BAKIMI', title: 'Salonun 4 masasını Seviye 4 yap', target: { type: 'tablesAtLevel', level: 4, count: 4, area: 0 }, reward: 400 },
     // --- BÖLÜM 3b · ŞERİDİ DOLDUR (B5a): banketlerin kalan sekiz birimi ---
     // ÖNCE TEZGÂHIN SON BASAMAĞI. Bu görev B5a'da eklendi ve sırası tesadüf değil: şeridin masaları
     // ARZ tavana dayalıyken hiçbir şey hızlandırmaz (B2'nin dersi — kat tek noktadan beslenir), o
     // yüzden L6 masalardan ÖNCE gelir. Hat bittiğinde simülatör zaten bu sırayı seçiyordu (serbest
     // oyun "darboğaz varsa önce servis" der); görev hattı onu görünür kılıyor, değiştirmiyor.
-    { id: 'q_stationMax', title: 'Tezgâhı son seviyeye çıkar', target: { type: 'stationLevel', level: 6 }, reward: 800 },
+    { id: 'q_stationMax', kicker: 'TEZGÂH', title: 'Tezgâhı son seviyeye çıkar', target: { type: 'stationLevel', level: 6 }, reward: 800 },
     // ARZ tavana dayandığı anda darboğaz TAŞIMAYA geçer (Ö5 ölçümü) — bu görev tam o anda gelir.
-    { id: 'q_waiter3', title: '3. Garsonu tut', target: { type: 'pad', id: 'waiter3' }, area: 0, reward: 600 },
+    { id: 'q_waiter3', kicker: 'ÜÇÜNCÜ GARSON', title: '3. Garsonu tut', target: { type: 'pad', id: 'waiter3' }, area: 0, reward: 600 },
     // Hattın SONUNA eklendiler, araya değil: önlerindeki her görev B5a öncesiyle birebir aynı sırada
     // kalsın (ölçülen altı tempo bandı bu sıraya bağlı). Her zorunlu pad'in bir görevi olması
     // değişmez kural — pad'i görevsiz bırakmak HUD'da "görev bitti ama ekranda pad var" hâli olurdu.
     // ODA + ŞERİT DÖNÜŞÜMLÜ (B4): bir masa → bir lavabo seviyesi → bir masa ... Ölçüm bu sırayı
     // seçti: lavabo seviyeleri şeridin masalarının ARASINA girmezse gelir yine donuyor ve şeridin
     // kuyruğu sabit hızda akıyor (plato 1,42 sa). Dönüşümlü alınınca en uzun düz aralık ~13 dk.
-    { id: 'q_lavabo', title: 'Lavaboyu aç', target: { type: 'pad', id: 'lavabo' }, area: 2, reward: 400 },
-    { id: 'q_z3table5', title: 'Şerit: 5. Masayı aç', target: { type: 'pad', id: 'z3table5' }, area: 2, reward: 450 },
-    { id: 'q_lavabo2', title: 'Lavaboyu büyüt (L2)', target: { type: 'lavaboLevel', level: 2 }, area: 2, reward: 450 },
-    { id: 'q_z3table6', title: 'Şerit: 6. Masayı aç', target: { type: 'pad', id: 'z3table6' }, area: 2, reward: 550 },
-    { id: 'q_lavabo3', title: 'Lavaboyu büyüt (L3)', target: { type: 'lavaboLevel', level: 3 }, area: 2, reward: 550 },
-    { id: 'q_z3table7', title: 'Şerit: 7. Masayı aç', target: { type: 'pad', id: 'z3table7' }, area: 2, reward: 700 },
-    { id: 'q_lavabo4', title: 'Lavaboyu büyüt (L4)', target: { type: 'lavaboLevel', level: 4 }, area: 2, reward: 700 },
-    { id: 'q_z3table8', title: 'Şerit: 8. Masayı aç', target: { type: 'pad', id: 'z3table8' }, area: 2, reward: 850 },
-    { id: 'q_lavabo5', title: 'Lavaboyu büyüt (L5)', target: { type: 'lavaboLevel', level: 5 }, area: 2, reward: 850 },
-    { id: 'q_z3table9', title: 'Şerit: 9. Masayı aç', target: { type: 'pad', id: 'z3table9' }, area: 2, reward: 1050 },
-    { id: 'q_lavabo6', title: 'Lavaboyu büyüt (L6)', target: { type: 'lavaboLevel', level: 6 }, area: 2, reward: 1050 },
-    { id: 'q_z3table10', title: 'Şerit: 10. Masayı aç', target: { type: 'pad', id: 'z3table10' }, area: 2, reward: 1300 },
-    { id: 'q_z3table11', title: 'Şerit: 11. Masayı aç', target: { type: 'pad', id: 'z3table11' }, area: 2, reward: 1600 },
-    { id: 'q_z3table12', title: 'Şerit: 12. Masayı aç', target: { type: 'pad', id: 'z3table12' }, area: 2, reward: 2000 },
+    { id: 'q_lavabo', kicker: 'LAVABO', title: 'Lavaboyu aç', target: { type: 'pad', id: 'lavabo' }, area: 2, reward: 400 },
+    { id: 'q_z3table5', kicker: 'ŞERİT', title: 'Şerit: 5. Masayı aç', target: { type: 'pad', id: 'z3table5' }, area: 2, reward: 450 },
+    { id: 'q_lavabo2', kicker: 'LAVABO', title: 'Lavaboyu büyüt (L2)', target: { type: 'lavaboLevel', level: 2 }, area: 2, reward: 450 },
+    { id: 'q_z3table6', kicker: 'ŞERİT', title: 'Şerit: 6. Masayı aç', target: { type: 'pad', id: 'z3table6' }, area: 2, reward: 550 },
+    { id: 'q_lavabo3', kicker: 'LAVABO', title: 'Lavaboyu büyüt (L3)', target: { type: 'lavaboLevel', level: 3 }, area: 2, reward: 550 },
+    { id: 'q_z3table7', kicker: 'ŞERİT', title: 'Şerit: 7. Masayı aç', target: { type: 'pad', id: 'z3table7' }, area: 2, reward: 700 },
+    { id: 'q_lavabo4', kicker: 'LAVABO', title: 'Lavaboyu büyüt (L4)', target: { type: 'lavaboLevel', level: 4 }, area: 2, reward: 700 },
+    { id: 'q_z3table8', kicker: 'ŞERİT', title: 'Şerit: 8. Masayı aç', target: { type: 'pad', id: 'z3table8' }, area: 2, reward: 850 },
+    { id: 'q_lavabo5', kicker: 'LAVABO', title: 'Lavaboyu büyüt (L5)', target: { type: 'lavaboLevel', level: 5 }, area: 2, reward: 850 },
+    { id: 'q_z3table9', kicker: 'ŞERİT', title: 'Şerit: 9. Masayı aç', target: { type: 'pad', id: 'z3table9' }, area: 2, reward: 1050 },
+    { id: 'q_lavabo6', kicker: 'LAVABO', title: 'Lavaboyu büyüt (L6)', target: { type: 'lavaboLevel', level: 6 }, area: 2, reward: 1050 },
+    { id: 'q_z3table10', kicker: 'ŞERİT', title: 'Şerit: 10. Masayı aç', target: { type: 'pad', id: 'z3table10' }, area: 2, reward: 1300 },
+    { id: 'q_z3table11', kicker: 'ŞERİT', title: 'Şerit: 11. Masayı aç', target: { type: 'pad', id: 'z3table11' }, area: 2, reward: 1600 },
+    { id: 'q_z3table12', kicker: 'ŞERİT SONU', title: 'Şerit: 12. Masayı aç', target: { type: 'pad', id: 'z3table12' }, area: 2, reward: 2000 },
   ] as readonly QuestDef[],
 
   // Oyuncu hareket hızı v20'de character.speed kademesinden türetilir (playerSpeed()).

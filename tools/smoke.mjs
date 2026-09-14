@@ -2,6 +2,8 @@
 // Çalışan dev sunucusuna bağlanır: önce `npm run dev`, sonra `node tools/smoke.mjs`.
 import { chromium } from 'playwright';
 
+// K3 (D-106, S12): ekranlar TAM EKRAN — perde kalmadı, tek çıkış sol üstteki `.sheet-back`.
+
 const URL = process.env.SMOKE_URL || 'http://localhost:5173/';
 const results = [];
 const fail = (m) => {
@@ -142,7 +144,7 @@ try {
   // Backdrop'un ÜST şeridine tıkla (kartın dışı). Merkeze tıklamak kırılgandı: panel açılış
   // animasyonu bitince kart backdrop'un merkezini kaplıyor ve tıklama "intercepted" oluyor —
   // test bugüne dek yalnız animasyon henüz tamamlanmadığı için geçiyordu (D3'te ortaya çıktı).
-  await page.click('[data-testid="char-panel"]', { position: { x: 450, y: 40 } });
+  await page.click('[data-testid="char-panel"] .sheet-back');
 
   // HEDEFLER paneli (D3/D-089 · ödül kalıbı D3b/D-090): beş kategori + ödül toplama. Ödülü CONFIG
   // verir, HUD çizer — burada sınanan şey "panel açıldı mı" değil, ödülün GERÇEKTEN işlemesi:
@@ -181,7 +183,7 @@ try {
       else fail(`Hedef toplandı ama gelir çarpanı 1 kaldı (×${mult})`);
     }
     // Backdrop'un ÜST şeridi (kartın dışı) — merkez kartın altında kalıyor.
-    await page.click('[data-testid="goals-panel"]', { position: { x: 450, y: 40 } });
+    await page.click('[data-testid="goals-panel"] .sheet-back');
   }
 
   // GÜNLÜK GÖREVLER (D8): kartlar Görevler panelinde çıkıyor mu ve ödül GERÇEKTEN 💎 veriyor mu?
@@ -218,7 +220,7 @@ try {
       if (!tekrar) pass('Toplanan günlük görev ikinci kez toplanamıyor');
       else fail('Toplanan günlük görevin "Ödülü al" butonu duruyor');
     }
-    await page.click('[data-testid="quests-panel"]', { position: { x: 450, y: 40 } });
+    await page.click('[data-testid="quests-panel"] .sheet-back');
   }
 
   // Bardak döngüsü (Faz 2e): garson servis ederken kirli bardak üretilir → oyuncu toplar → bulaşıkta yıkar.
@@ -322,7 +324,7 @@ try {
     const sayac = await page.textContent('[data-testid="usta-owned"]');
     if (sayac.trim() === '1') pass('Hedefler panelinde Usta sayacı 1');
     else fail(`Usta sayacı yanlış: "${sayac}"`);
-    await page.click('[data-testid="goals-panel"]', { position: { x: 450, y: 40 } });
+    await page.click('[data-testid="goals-panel"] .sheet-back');
   }
 
 

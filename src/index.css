@@ -721,12 +721,19 @@ body,
   border: 3px solid var(--ot);
   box-shadow: var(--k1);
 }
+/* T2 (2026-09-14): satır artık KART. Eskiden yalnız alt çizgisi vardı ve gövde gradyanının
+   üstünde duruyordu — `.char-stat-val` orada 3,84 veriyordu (AA 4,5 ister), kartta 4,57.
+   Maketin `.satir`ıyla aynı gramer: ikon kutusu + gövde + fiyat. */
 .char-stat {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 7px 2px;
-  border-bottom: 1.5px solid var(--oyuk);
+  margin-bottom: 7px;
+  padding: 8px 10px;
+  border: 2.5px solid var(--ot);
+  border-radius: var(--r2);
+  background: linear-gradient(180deg, var(--kart), var(--kart2));
+  box-shadow: var(--k1);
 }
 .char-stat-icon {
   flex: 0 0 auto;
@@ -967,68 +974,30 @@ body,
   text-transform: uppercase;
   letter-spacing: 0.12em;
 }
-.shop-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 7px 0;
-  border-bottom: 1.5px solid var(--oyuk);
-}
-.shop-swatch {
-  display: flex;
-  width: 40px;
-  height: 28px;
-  border-radius: var(--r1);
-  overflow: hidden;
-  border: 2.5px solid var(--ot);
-  flex: none;
-}
-.shop-swatch i {
-  flex: 1;
-}
-.shop-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.shop-name {
-  font-size: var(--p3);
-  font-weight: 800;
-  color: var(--tx);
-}
-.shop-cost {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-family: var(--font-num);
-  font-size: var(--p1);
-  color: var(--tx2);
-}
+/* Salon şeridi — zemin/duvar salon-başı satılır; bu bir SEÇİM, satın alma değil. Eskiden
+   her salon yeşil bir "satın al" düğmesiydi (üç salon = üç alma noktası); M2 almayı tek
+   düğmeye topladı, burası yalnız "hangi salona bakıyorum"u söylüyor. */
 .shop-zones {
   display: flex;
-  gap: 6px;
+  gap: 7px;
+  margin: 0 0 8px;
 }
 .shop-zone-btn {
+  flex: 1;
   min-width: 44px;
   padding: 7px 9px;
   border: 2.5px solid var(--ot);
   border-radius: var(--r1);
-  background: linear-gradient(180deg, var(--ok), var(--ok2));
-  color: #fff;
+  background: linear-gradient(180deg, var(--kart), var(--kart2));
+  color: var(--tx);
   font-size: var(--p2);
   font-weight: 800;
   cursor: pointer;
-  box-shadow: var(--k1);
-}
-.shop-zone-btn:disabled {
-  opacity: 0.55;
-  box-shadow: none;
 }
 .shop-zone-btn.sel {
   background: linear-gradient(180deg, var(--ac), var(--ac2));
   color: var(--txa);
-  opacity: 1;
+  box-shadow: var(--k2);
 }
 
 /* ---- Tema mağazası sekmeleri + çeşit kartları + 3D önizleme (5b) ---- */
@@ -1064,15 +1033,20 @@ body,
   margin-left: 2px;
   opacity: 0.85;
 }
+/* T2: kilit paneli GÖMÜLÜ bir alan — kesik kenarlık "henüz yok" der, zemin okunabilirliği
+   taşır (`.shop-locked-desc` gövde gradyanında 3,84 veriyordu, oyukta 7,12). */
 .shop-locked {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   padding: 22px 16px;
   margin: 4px 0 6px;
-  border: 3px dashed var(--oyuk);
+  border: 3px dashed var(--kart);
   border-radius: var(--r3);
+  background: var(--oyuk);
   text-align: center;
 }
 .shop-locked-icon {
@@ -1111,40 +1085,40 @@ body,
 .shop-locked-reqs .req.done {
   color: var(--ok);
 }
-.shop-list {
-  min-height: 120px;
-}
-.shop-cards {
+/* ── M2 SEÇİM ŞERİDİ (D-106) ──────────────────────────────────────────────────
+   Eskiden 96 px'lik dikey kartlardı: pul + ad + fiyat, her kartta üç bilgi. Ad ve fiyat artık
+   şeridin ALTINDAKİ tek satırda duruyor (aynı bilgi iki yerde yazılmıyor), şerit de yalnız
+   RENGİ gösteriyor — böylece pul büyüdü ve vitrine 230 px kaldı. */
+.shop-strip {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   overflow-x: auto;
-  padding: 4px 2px 10px;
+  padding: 4px 2px 8px;
   -webkit-overflow-scrolling: touch;
 }
-.shop-vcard {
+.shop-chip {
+  position: relative;
   flex: 0 0 auto;
-  width: 96px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 8px;
+  width: 58px;
+  height: 58px;
+  padding: 4px;
   border: 2.5px solid var(--ot);
   border-radius: var(--r2);
   background: linear-gradient(180deg, var(--kart), var(--kart2));
   cursor: pointer;
 }
-.shop-vcard.sel {
+/* Seçili hâl KENARLIKLA anlatılır — dördüncü bir gölge basamağı açılmaz (D-107). */
+.shop-chip.sel {
   border-color: var(--ac);
 }
-.shop-vcard-swatch {
-  position: relative;
-  width: 64px;
-  height: 48px;
+.shop-chip-swatch {
+  display: block;
+  width: 100%;
+  height: 100%;
   border-radius: var(--r1);
-  border: 2.5px solid var(--ot);
 }
-.shop-vcard-badge {
+/* Rozet yalnız UYGULANMIŞ çeşitte: "sahip" bilgisini ad satırı taşıyor. */
+.shop-chip-badge {
   position: absolute;
   top: -6px;
   right: -6px;
@@ -1153,90 +1127,87 @@ body,
   border-radius: 50%;
   background: var(--ac);
   color: var(--txa);
-  font-size: var(--p1);
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--ot);
+}
+/* Ad + durum: vitrinin künyesi. Kart zemininde — `--tx2` burada 4,57 (T2). */
+.shop-name-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 11px 9px;
+  border: 2.5px solid var(--ot);
+  border-radius: var(--r2);
+  background: linear-gradient(180deg, var(--kart), var(--kart2));
+}
+.shop-name-row b {
+  font-size: var(--p4);
   font-weight: 800;
+  color: var(--tx);
+}
+.shop-name-row span {
+  flex: none;
+  font-family: var(--font-num);
+  font-size: var(--p2);
+  color: var(--tx2);
+}
+/* TEK BÜYÜK SATIN ALMA — ekranın altında, kaydırılan gövdeden bağımsız yükseklikte. */
+.shop-buy {
+  flex: none;
+  width: 100%;
+  height: 56px;
+  margin-top: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid var(--ot);
-}
-.shop-vcard-badge.owned {
-  background: var(--ok);
-}
-.shop-vcard-name {
-  font-size: var(--p2);
-  font-weight: 800;
-  color: var(--tx);
-  text-align: center;
-  line-height: 1.1;
-}
-.shop-vcard-cost {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  font-family: var(--font-num);
-  font-size: var(--p1);
-  color: var(--tx2);
-}
-/* Sayfa-içi önizleme (modal yok): kompakt oyun-anı SS hissi, kartların üstünde */
-.shop-preview {
-  margin: 2px 0 10px;
-  text-align: center;
-}
-.preview-canvas {
-  position: relative;
-  width: 100%;
-  height: 150px;
-  margin: 0 0 8px;
-  border-radius: var(--r3);
-  overflow: hidden;
-  border: 3px solid var(--ot);
-  background: radial-gradient(120% 100% at 50% 12%, var(--vitrin), var(--g2));
-}
-.preview-buy {
-  width: 100%;
-  padding: 11px;
+  gap: 8px;
   border: 3px solid var(--ot);
   border-radius: var(--r2);
   background: linear-gradient(180deg, var(--ok), var(--ok2));
   color: #fff;
   font-family: var(--font-game);
-  font-size: var(--p3);
+  font-size: var(--p4);
   font-weight: 800;
   cursor: pointer;
-  box-shadow: var(--k2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
+  box-shadow: var(--k3);
 }
-.preview-buy:disabled {
+.shop-buy:active {
+  transform: translateY(2px);
+  box-shadow: var(--k1);
+}
+.shop-buy:disabled {
   opacity: 0.7;
   box-shadow: none;
 }
-.preview-buy.sel {
+.shop-buy.sel {
   background: linear-gradient(180deg, var(--ac), var(--ac2));
   color: var(--txa);
 }
-/* Diorama (zemin/duvar) önizleme: per-salon satın al + fiyat */
-.preview-zones {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-}
-.preview-zones .shop-zone-btn {
+
+/* Sayfa-içi önizleme (modal yok): kompakt oyun-anı SS hissi, kartların üstünde */
+/* Vitrin ekranın BOŞ kalan payını yutar: M2'nin amacı "satın alınan şey görünür olsun" ve
+   tam ekranda tek ürün varken aradaki ölü bant ürüne verilir. 230 px TABANDIR, tavan değil. */
+.shop-preview {
   flex: 1;
-  min-width: 0;
-}
-.preview-price {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  margin-top: 10px;
-  font-family: var(--font-num);
-  font-size: var(--p2);
-  color: var(--tx2);
+  flex-direction: column;
+  margin: 2px 0 10px;
+  text-align: center;
+}
+/* M2 (D-106): satın alınan şey GÖRÜNÜR olmalı. Tam ekran kabuğu bu boyu taşıyor;
+   alt sayfa taşımıyordu (mağaza ekranın yalnız %56'sıydı). */
+.preview-canvas {
+  position: relative;
+  flex: 1 0 auto;
+  width: 100%;
+  height: 230px;
+  margin: 0 0 8px;
+  border-radius: var(--r3);
+  overflow: hidden;
+  border: 3px solid var(--ot);
+  background: radial-gradient(120% 100% at 50% 12%, var(--vitrin), var(--g2));
 }
 
 /* ---- Drag-anywhere dokunmatik kontrol ---- */

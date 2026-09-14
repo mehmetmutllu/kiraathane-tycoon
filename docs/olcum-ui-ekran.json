@@ -11,21 +11,21 @@
       },
       "kart": {
         "x": 0,
-        "y": 168.8,
+        "y": 0,
         "w": 390,
-        "h": 675.2
+        "h": 844
       },
-      "yaricap": "22px",
+      "yaricap": "0px",
       "zemin": "rgba(0, 0, 0, 0)",
       "kapat": {
-        "carpi": true,
-        "geri": false,
-        "arkaTikla": true
+        "carpi": false,
+        "geri": true,
+        "arkaTikla": false
       },
       "ad": "gorevler",
       "oranW": 1,
-      "oranH": 0.8,
-      "tip": "alt sayfa"
+      "oranH": 1,
+      "tip": "tam ekran"
     },
     {
       "arka": {
@@ -34,21 +34,21 @@
       },
       "kart": {
         "x": 0,
-        "y": 168.8,
+        "y": 0,
         "w": 390,
-        "h": 675.2
+        "h": 844
       },
-      "yaricap": "22px",
+      "yaricap": "0px",
       "zemin": "rgba(0, 0, 0, 0)",
       "kapat": {
-        "carpi": true,
-        "geri": false,
-        "arkaTikla": true
+        "carpi": false,
+        "geri": true,
+        "arkaTikla": false
       },
       "ad": "hedefler",
       "oranW": 1,
-      "oranH": 0.8,
-      "tip": "alt sayfa"
+      "oranH": 1,
+      "tip": "tam ekran"
     },
     {
       "arka": {
@@ -57,21 +57,21 @@
       },
       "kart": {
         "x": 0,
-        "y": 371.5,
+        "y": 0,
         "w": 390,
-        "h": 472.5
+        "h": 844
       },
-      "yaricap": "22px",
+      "yaricap": "0px",
       "zemin": "rgba(0, 0, 0, 0)",
       "kapat": {
-        "carpi": true,
-        "geri": false,
-        "arkaTikla": true
+        "carpi": false,
+        "geri": true,
+        "arkaTikla": false
       },
       "ad": "magaza",
       "oranW": 1,
-      "oranH": 0.56,
-      "tip": "alt sayfa"
+      "oranH": 1,
+      "tip": "tam ekran"
     },
     {
       "arka": {
@@ -80,21 +80,21 @@
       },
       "kart": {
         "x": 0,
-        "y": 306,
+        "y": 0,
         "w": 390,
-        "h": 538
+        "h": 844
       },
-      "yaricap": "22px",
+      "yaricap": "0px",
       "zemin": "rgba(0, 0, 0, 0)",
       "kapat": {
-        "carpi": true,
-        "geri": false,
-        "arkaTikla": true
+        "carpi": false,
+        "geri": true,
+        "arkaTikla": false
       },
       "ad": "karakter",
       "oranW": 1,
-      "oranH": 0.637,
-      "tip": "alt sayfa"
+      "oranH": 1,
+      "tip": "tam ekran"
     },
     {
       "arka": {
@@ -103,41 +103,41 @@
       },
       "kart": {
         "x": 0,
-        "y": 413,
+        "y": 0,
         "w": 390,
-        "h": 431
+        "h": 844
       },
-      "yaricap": "22px",
+      "yaricap": "0px",
       "zemin": "rgba(0, 0, 0, 0)",
       "kapat": {
-        "carpi": true,
-        "geri": false,
-        "arkaTikla": true
+        "carpi": false,
+        "geri": true,
+        "arkaTikla": false
       },
       "ad": "ayarlar",
       "oranW": 1,
-      "oranH": 0.511,
-      "tip": "alt sayfa"
+      "oranH": 1,
+      "tip": "tam ekran"
     }
   ],
   "palet": {
     "metin": {
-      "rgb(255, 255, 255)": 46,
-      "rgb(234, 227, 255)": 53,
+      "rgb(255, 255, 255)": 40,
+      "rgb(169, 159, 216)": 45,
+      "rgb(234, 227, 255)": 63,
       "rgb(255, 212, 94)": 13,
-      "rgb(58, 34, 6)": 13,
-      "rgb(169, 159, 216)": 39,
+      "rgb(58, 34, 6)": 10,
       "rgb(255, 194, 75)": 8,
       "rgb(127, 217, 255)": 2,
       "rgb(123, 212, 106)": 3
     },
     "zemin": {
-      "rgb(27, 20, 67)": 44,
-      "grad:linear-gradient(rgb(58, 49, 120), rgb(46, 39, 100))": 47,
-      "grad:linear-gradient(rgb(255, 194, 75), rgb(224, 148, 21))": 25,
+      "rgb(27, 20, 67)": 53,
+      "grad:linear-gradient(rgb(58, 49, 120), rgb(46, 39, 100))": 33,
+      "grad:linear-gradient(rgb(255, 194, 75), rgb(224, 148, 21))": 27,
       "grad:linear-gradient(rgb(70, 60, 134), rgb(34, 27, 82))": 11,
       "rgb(212, 58, 38)": 13,
-      "rgba(8, 6, 22, 0.6)": 5,
+      "rgb(34, 27, 82)": 5,
       "grad:linear-gradient(rgb(123, 212, 106), rgb(79, 168, 62))": 5,
       "grad:linear-gradient(rgb(27, 20, 67), rgb(34, 27, 82))": 1,
       "grad:radial-gradient(120% 100% at 50% 14%, rgb(91, 79, 166), rgb(": 1,
@@ -146,33 +146,31 @@
   },
   "olcek": {
     "yaricap": {
-      "999px 999px 999px 999px": 70,
-      "50% 50% 50% 50%": 36,
-      "17px 17px 17px 17px": 48,
-      "22px 22px 0px 0px": 5,
-      "10px 10px 10px 10px": 6,
+      "999px 999px 999px 999px": 60,
+      "50% 50% 50% 50%": 31,
+      "17px 17px 17px 17px": 56,
+      "10px 10px 10px 10px": 11,
       "22px 22px 22px 22px": 2
     },
     "golge": {
-      "rgba(255, 255, 255, 0.45) 0px 2px 0px 0px inset, rgb(16, 11, 46) 0px 3px 0px 0px": 41,
-      "rgba(255, 255, 255, 0.5) 0px 3px 0px 0px inset, rgb(16, 11, 46) 0px 5px 0px 0px, rgba(0, 0": 14,
-      "rgb(16, 11, 46) 0px 2px 0px 0px": 12
+      "rgba(255, 255, 255, 0.45) 0px 2px 0px 0px inset, rgb(16, 11, 46) 0px 3px 0px 0px": 34,
+      "rgba(255, 255, 255, 0.5) 0px 3px 0px 0px inset, rgb(16, 11, 46) 0px 5px 0px 0px, rgba(0, 0": 6,
+      "rgb(16, 11, 46) 0px 2px 0px 0px": 15
     },
     "punto": {
-      "22px": 8,
-      "13px": 40,
-      "18px": 17,
-      "15px": 26,
-      "11px": 86
+      "22px": 19,
+      "18px": 6,
+      "11px": 92,
+      "15px": 23,
+      "13px": 44
     },
     "font": {
-      "Lilita One": 85,
-      "Baloo 2": 92
+      "Lilita One": 89,
+      "Baloo 2": 95
     },
     "fontOge": {
       "Lilita One": [
         "i.rep-num",
-        "span.rep-text",
         "span.cur-val",
         "span.cur-val",
         "span.band-count",
@@ -180,13 +178,14 @@
         "span.navtab-bang",
         "span.navtab-bang",
         "i.rep-num",
-        "span.rep-text",
         "span.cur-val",
         "span.cur-val",
         "span.band-count",
         "span.band-reward",
         "span.navtab-bang",
         "span.navtab-bang",
+        "b.",
+        "b.",
         "span.goal-num",
         "i.",
         "span.goal-num",
@@ -198,13 +197,14 @@
         "span.band-count",
         "span.qbig-reward",
         "i.rep-num",
-        "span.rep-text",
         "span.cur-val",
         "span.cur-val",
         "span.band-count",
         "span.band-reward",
         "span.navtab-bang",
         "span.navtab-bang",
+        "b.",
+        "b.",
         "i.",
         "span.rep-text",
         "b.",
@@ -230,45 +230,50 @@
         "i.",
         "span.goal-reward",
         "i.rep-num",
-        "span.rep-text",
         "span.cur-val",
         "span.cur-val",
         "span.band-count",
         "span.band-reward",
         "span.navtab-bang",
         "span.navtab-bang",
+        "b.",
+        "b.",
         "span.req",
         "span.req",
         "i.rep-num",
-        "span.rep-text",
         "span.cur-val",
         "span.cur-val",
         "span.band-count",
         "span.band-reward",
         "span.navtab-bang",
         "span.navtab-bang",
+        "b.",
+        "b.",
         "i.",
         "i.rep-num",
-        "span.rep-text",
         "span.cur-val",
         "span.cur-val",
         "span.band-count",
         "span.band-reward",
         "span.navtab-bang",
-        "span.navtab-bang"
+        "span.navtab-bang",
+        "b.",
+        "b."
       ],
       "Baloo 2": [
+        "span.band-kicker",
         "span.band-title",
         "span.navtab-label",
         "span.navtab-label",
         "span.navtab-label",
         "span.navtab-label",
+        "span.band-kicker",
         "span.band-title",
         "span.navtab-label",
         "span.navtab-label",
         "span.navtab-label",
         "span.navtab-label",
-        "span.sheet-title",
+        "span.screen-title",
         "div.sheet-sec",
         "b.",
         "span.goal-note",
@@ -285,12 +290,13 @@
         "span.qrow-title",
         "span.qrow-title",
         "span.qrow-title",
+        "span.band-kicker",
         "span.band-title",
         "span.navtab-label",
         "span.navtab-label",
         "span.navtab-label",
         "span.navtab-label",
-        "span.sheet-title",
+        "span.screen-title",
         "b.",
         "small.",
         "b.",
@@ -307,24 +313,25 @@
         "span.goal-note",
         "b.",
         "span.goal-note",
+        "span.band-kicker",
         "span.band-title",
         "span.navtab-label",
         "span.navtab-label",
         "span.navtab-label",
         "span.navtab-label",
-        "span.sheet-title",
+        "span.screen-title",
         "button.shop-tab active",
         "button.shop-tab",
         "button.shop-tab",
         "div.shop-locked-title",
         "div.shop-locked-desc",
-        "button.sheet-cta",
+        "span.band-kicker",
         "span.band-title",
         "span.navtab-label",
         "span.navtab-label",
         "span.navtab-label",
         "span.navtab-label",
-        "span.sheet-title",
+        "span.screen-title",
         "span.char-stat-name",
         "span.char-stat-val",
         "i.",
@@ -337,19 +344,18 @@
         "span.char-stat-val",
         "i.",
         "button.char-buy",
-        "button.sheet-cta",
+        "span.band-kicker",
         "span.band-title",
         "span.navtab-label",
         "span.navtab-label",
         "span.navtab-label",
         "span.navtab-label",
-        "span.sheet-title",
+        "span.screen-title",
         "span.setting-label",
         "span.setting-label",
         "span.setting-label",
         "span.setting-label",
-        "button.danger-btn",
-        "button.sheet-cta"
+        "button.danger-btn"
       ]
     },
     "kontrast": [
@@ -360,21 +366,21 @@
         "esik": 4.5
       },
       {
-        "ad": "span.rep-text",
-        "px": 13,
-        "oran": 17.1,
+        "ad": "span.cur-val",
+        "px": 22,
+        "oran": 15.59,
         "esik": 4.5
       },
       {
         "ad": "span.cur-val",
         "px": 18,
-        "oran": 11.11,
+        "oran": 15.59,
         "esik": 4.5
       },
       {
-        "ad": "span.cur-val",
-        "px": 18,
-        "oran": 11.11,
+        "ad": "span.band-kicker",
+        "px": 11,
+        "oran": 4.57,
         "esik": 4.5
       },
       {
@@ -438,21 +444,21 @@
         "esik": 4.5
       },
       {
-        "ad": "span.rep-text",
-        "px": 13,
-        "oran": 17.1,
+        "ad": "span.cur-val",
+        "px": 22,
+        "oran": 15.59,
         "esik": 4.5
       },
       {
         "ad": "span.cur-val",
         "px": 18,
-        "oran": 11.11,
+        "oran": 15.59,
         "esik": 4.5
       },
       {
-        "ad": "span.cur-val",
-        "px": 18,
-        "oran": 11.11,
+        "ad": "span.band-kicker",
+        "px": 11,
+        "oran": 4.57,
         "esik": 4.5
       },
       {
@@ -510,15 +516,27 @@
         "esik": 4.5
       },
       {
-        "ad": "span.sheet-title",
-        "px": 18,
+        "ad": "span.screen-title",
+        "px": 22,
+        "oran": 7.52,
+        "esik": 3
+      },
+      {
+        "ad": "b.",
+        "px": 13,
+        "oran": 13.79,
+        "esik": 4.5
+      },
+      {
+        "ad": "b.",
+        "px": 13,
         "oran": 13.79,
         "esik": 4.5
       },
       {
         "ad": "div.sheet-sec",
         "px": 11,
-        "oran": 3.84,
+        "oran": 7.04,
         "esik": 4.5
       },
       {
@@ -614,13 +632,13 @@
       {
         "ad": "div.sheet-foot-note",
         "px": 11,
-        "oran": 3.84,
+        "oran": 7.04,
         "esik": 4.5
       },
       {
         "ad": "div.sheet-sec",
         "px": 11,
-        "oran": 3.84,
+        "oran": 7.04,
         "esik": 4.5
       },
       {
@@ -650,25 +668,25 @@
       {
         "ad": "div.sheet-sec",
         "px": 11,
-        "oran": 3.84,
+        "oran": 7.04,
         "esik": 4.5
       },
       {
         "ad": "span.qrow-title",
         "px": 13,
-        "oran": 3.84,
+        "oran": 7.04,
         "esik": 4.5
       },
       {
         "ad": "span.qrow-title",
         "px": 13,
-        "oran": 3.84,
+        "oran": 7.04,
         "esik": 4.5
       },
       {
         "ad": "span.qrow-title",
         "px": 13,
-        "oran": 3.84,
+        "oran": 7.04,
         "esik": 4.5
       },
       {
@@ -678,21 +696,21 @@
         "esik": 4.5
       },
       {
-        "ad": "span.rep-text",
-        "px": 13,
-        "oran": 17.1,
+        "ad": "span.cur-val",
+        "px": 22,
+        "oran": 15.59,
         "esik": 4.5
       },
       {
         "ad": "span.cur-val",
         "px": 18,
-        "oran": 11.11,
+        "oran": 15.59,
         "esik": 4.5
       },
       {
-        "ad": "span.cur-val",
-        "px": 18,
-        "oran": 11.11,
+        "ad": "span.band-kicker",
+        "px": 11,
+        "oran": 4.57,
         "esik": 4.5
       },
       {
@@ -750,8 +768,20 @@
         "esik": 4.5
       },
       {
-        "ad": "span.sheet-title",
-        "px": 18,
+        "ad": "span.screen-title",
+        "px": 22,
+        "oran": 7.52,
+        "esik": 3
+      },
+      {
+        "ad": "b.",
+        "px": 13,
+        "oran": 13.79,
+        "esik": 4.5
+      },
+      {
+        "ad": "b.",
+        "px": 13,
         "oran": 13.79,
         "esik": 4.5
       },
@@ -812,7 +842,7 @@
       {
         "ad": "div.sheet-sec",
         "px": 11,
-        "oran": 3.84,
+        "oran": 7.04,
         "esik": 4.5
       },
       {
@@ -1002,21 +1032,21 @@
         "esik": 4.5
       },
       {
-        "ad": "span.rep-text",
-        "px": 13,
-        "oran": 17.1,
+        "ad": "span.cur-val",
+        "px": 22,
+        "oran": 15.59,
         "esik": 4.5
       },
       {
         "ad": "span.cur-val",
         "px": 18,
-        "oran": 11.11,
+        "oran": 15.59,
         "esik": 4.5
       },
       {
-        "ad": "span.cur-val",
-        "px": 18,
-        "oran": 11.11,
+        "ad": "span.band-kicker",
+        "px": 11,
+        "oran": 4.57,
         "esik": 4.5
       },
       {
@@ -1074,8 +1104,20 @@
         "esik": 4.5
       },
       {
-        "ad": "span.sheet-title",
-        "px": 18,
+        "ad": "span.screen-title",
+        "px": 22,
+        "oran": 7.52,
+        "esik": 3
+      },
+      {
+        "ad": "b.",
+        "px": 13,
+        "oran": 13.79,
+        "esik": 4.5
+      },
+      {
+        "ad": "b.",
+        "px": 13,
         "oran": 13.79,
         "esik": 4.5
       },
@@ -1100,18 +1142,12 @@
       {
         "ad": "div.shop-locked-title",
         "px": 15,
-        "oran": 7.52,
+        "oran": 13.79,
         "esik": 4.5
       },
       {
         "ad": "div.shop-locked-desc",
         "px": 13,
-        "oran": 3.84,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.req",
-        "px": 11,
         "oran": 7.04,
         "esik": 4.5
       },
@@ -1122,9 +1158,9 @@
         "esik": 4.5
       },
       {
-        "ad": "button.sheet-cta",
-        "px": 15,
-        "oran": 9.26,
+        "ad": "span.req",
+        "px": 11,
+        "oran": 7.04,
         "esik": 4.5
       },
       {
@@ -1134,21 +1170,21 @@
         "esik": 4.5
       },
       {
-        "ad": "span.rep-text",
-        "px": 13,
-        "oran": 17.1,
+        "ad": "span.cur-val",
+        "px": 22,
+        "oran": 15.59,
         "esik": 4.5
       },
       {
         "ad": "span.cur-val",
         "px": 18,
-        "oran": 11.11,
+        "oran": 15.59,
         "esik": 4.5
       },
       {
-        "ad": "span.cur-val",
-        "px": 18,
-        "oran": 11.11,
+        "ad": "span.band-kicker",
+        "px": 11,
+        "oran": 4.57,
         "esik": 4.5
       },
       {
@@ -1206,8 +1242,20 @@
         "esik": 4.5
       },
       {
-        "ad": "span.sheet-title",
-        "px": 18,
+        "ad": "span.screen-title",
+        "px": 22,
+        "oran": 7.52,
+        "esik": 3
+      },
+      {
+        "ad": "b.",
+        "px": 13,
+        "oran": 13.79,
+        "esik": 4.5
+      },
+      {
+        "ad": "b.",
+        "px": 13,
         "oran": 13.79,
         "esik": 4.5
       },
@@ -1220,19 +1268,19 @@
       {
         "ad": "span.char-stat-name",
         "px": 13,
-        "oran": 7.52,
+        "oran": 8.96,
         "esik": 4.5
       },
       {
         "ad": "span.char-stat-val",
         "px": 13,
-        "oran": 3.84,
+        "oran": 4.57,
         "esik": 4.5
       },
       {
         "ad": "i.",
         "px": 13,
-        "oran": 5.09,
+        "oran": 6.07,
         "esik": 4.5
       },
       {
@@ -1244,19 +1292,19 @@
       {
         "ad": "span.char-stat-name",
         "px": 13,
-        "oran": 7.52,
+        "oran": 8.96,
         "esik": 4.5
       },
       {
         "ad": "span.char-stat-val",
         "px": 13,
-        "oran": 3.84,
+        "oran": 4.57,
         "esik": 4.5
       },
       {
         "ad": "i.",
         "px": 13,
-        "oran": 5.09,
+        "oran": 6.07,
         "esik": 4.5
       },
       {
@@ -1268,30 +1316,24 @@
       {
         "ad": "span.char-stat-name",
         "px": 13,
-        "oran": 7.52,
+        "oran": 8.96,
         "esik": 4.5
       },
       {
         "ad": "span.char-stat-val",
         "px": 13,
-        "oran": 3.84,
+        "oran": 4.57,
         "esik": 4.5
       },
       {
         "ad": "i.",
         "px": 13,
-        "oran": 5.09,
+        "oran": 6.07,
         "esik": 4.5
       },
       {
         "ad": "button.char-buy",
         "px": 13,
-        "oran": 9.26,
-        "esik": 4.5
-      },
-      {
-        "ad": "button.sheet-cta",
-        "px": 15,
         "oran": 9.26,
         "esik": 4.5
       },
@@ -1302,21 +1344,21 @@
         "esik": 4.5
       },
       {
-        "ad": "span.rep-text",
-        "px": 13,
-        "oran": 17.1,
+        "ad": "span.cur-val",
+        "px": 22,
+        "oran": 15.59,
         "esik": 4.5
       },
       {
         "ad": "span.cur-val",
         "px": 18,
-        "oran": 11.11,
+        "oran": 15.59,
         "esik": 4.5
       },
       {
-        "ad": "span.cur-val",
-        "px": 18,
-        "oran": 11.11,
+        "ad": "span.band-kicker",
+        "px": 11,
+        "oran": 4.57,
         "esik": 4.5
       },
       {
@@ -1374,8 +1416,20 @@
         "esik": 4.5
       },
       {
-        "ad": "span.sheet-title",
-        "px": 18,
+        "ad": "span.screen-title",
+        "px": 22,
+        "oran": 7.52,
+        "esik": 3
+      },
+      {
+        "ad": "b.",
+        "px": 13,
+        "oran": 13.79,
+        "esik": 4.5
+      },
+      {
+        "ad": "b.",
+        "px": 13,
         "oran": 13.79,
         "esik": 4.5
       },
@@ -1408,15 +1462,9 @@
         "px": 15,
         "oran": 4.74,
         "esik": 4.5
-      },
-      {
-        "ad": "button.sheet-cta",
-        "px": 15,
-        "oran": 9.26,
-        "esik": 4.5
       }
     ],
-    "gorunurOge": 193,
+    "gorunurOge": 204,
     "toplamOge": 92
   },
   "kaplama": {
@@ -1426,7 +1474,7 @@
         "x": 10,
         "y": 8,
         "w": 370,
-        "h": 70
+        "h": 69
       },
       {
         "sec": ".botnav",
@@ -1450,11 +1498,11 @@
         "h": 38
       }
     ],
-    "kromPiksel": 76884,
+    "kromPiksel": 76514,
     "ekranPiksel": 329160
   },
   "simge": {
-    "svg": 35,
+    "svg": 39,
     "glif": 13,
     "ornek": [
       "+",

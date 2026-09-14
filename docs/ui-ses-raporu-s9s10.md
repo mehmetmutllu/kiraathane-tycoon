@@ -601,6 +601,90 @@ tanımının yanına `kicker` metni). Bu bir DENGE değişikliği değil: hiçbi
 da ödül değişmiyor. Varyant kapısı sayıya bakar; yine de sıra kilidi gereği ölçüm bu commit'te,
 kod bir sonrakinde.
 
-### KARAR
+### KARAR — D-110
 
-(BOŞ — adım 3)
+**T2 seçildi** (kullanıcı, 2026-09-14): ikincil metinler kart/oyuk zeminine alınır; `--tx2`
+rengine DOKUNULMAZ. Kalan beş yapı kalemi D-106'da zaten yazılıydı, bu tur onları uyguladı.
+
+### §Bulgular — TABAN ↔ SONRA (ikisi de tam koşu, `tools/shot-ui-s10.mjs`, 390×844)
+
+| Ölçü | Taban | S12 | Hedef |
+|---|---:|---:|---|
+| kabuk tipi | 5/5 alt sayfa | **5/5 tam ekran** | tam ekran |
+| farklı kabuk yüksekliği | 4 (675·675·473·538·431) | **1** (844) | 1 |
+| kabuğun ekran payı | %51,1…%80,0 | **%100** | %100 |
+| çıkış jesti | ✕ + arkaya tıklama | **tek jest: geri** | tek |
+| mağaza vitrini | 150 px (ürün ~74 px) | **230 px taban, boşluğu yutarak ~460** | ≥ 230 |
+| mağazada satın alma düğmesi | 3 bileşende dağınık (salon-başı N düğme) | **1** | 1 |
+| AA altı metin | **12/177** (%6,8) | **0/184** (%0,0) | 0 |
+| AA altı sınıf | 5 | **0** | 0 |
+| en düşük kontrast | 3,84 | **≥ 4,5** (band 4,57 · oyuk 7,12) | ≥ 4,5 |
+| punto · gölge · font | 5 · 3 · 2 | **5 · 3 · 2** | değişmemeli ✓ |
+| yarıçap dizgesi | 6 | **5** | değişmemeli (düştü) |
+| metin glifi · SVG | 13 · 35 | **13 · 39** | glif artmamalı ✓ |
+| krom kaplaması | %23,2 | **%23,2** | büyümemeli ✓ |
+
+**Yarıçap 6 → 5, çünkü bir DİZGE kalktı:** alt sayfanın `22px 22px 0 0` köşe-başı yazımı.
+Basamak sayısı (üç) değişmedi; tam ekranın köşesi yok.
+
+**SVG 35 → 39, glif 13 → 13:** artan dördü kabuğun kendi parçaları (geri oku + cüzdanın para ve
+elmas pulu + satın alma düğmesinin parası). Metin glifi ARTMADI — mağazanın fiyat satırı `₺`
+kullanıyor ama ölçüm aynı sayıda kalıyor, çünkü kalkan eski kart-başı fiyatlar onu dengeliyor.
+
+### Uygulanan
+
+| Kalem | Ne yapıldı |
+|---|---|
+| **K3 kabuğu** | `Sheet.tsx` tam ekran TEK kabuk: sol üstte geri · ortada başlık · sağ üstte cüzdan. Beş ekranın beşi de bundan geçiyor. Alt sayfanın başlık kuşağı, ✕ düğmesi, alttan açılma animasyonu ve perdesi SİLİNDİ. |
+| **Cüzdan kabukta** | Tam ekran sahneyi örtüyor; üst şeridin parası görünmez oluyordu. Satın alma ekranında paranı göremezsen ekran yarım kalır. |
+| **M2 mağaza** | Vitrin 150 → 230 px (ve boşluğu yutuyor) · çeşit kartları 58 px'lik SEÇİM ŞERİDİNE indi · ad+fiyat tek satırda · satın alma TEK büyük düğme. Salon seçimi de satın alma olmaktan çıkıp seçim oldu (3 salon = 3 düğme idi). |
+| **Satın alma tek sahipte** | `buyCosmetic` çağrısı önizleme bileşenlerinden çıktı, `ShopPanel`e geçti. Vitrinler artık yalnız VİTRİN. |
+| **Chip'siz üst şerit** | `.cur` kutusu (zemin+kenar+gölge) kalktı; okunabilirliği `-webkit-text-stroke` taşıyor. İtibar hapı da madalyonun ALTINDA 50×10'luk çubuğa indi. **D-023'ün chip maddesi geri alındı.** |
+| **G-05 lakap** | 50 görevin hepsine `kicker` eklendi ("İLK ÇAY" · "GARSON TEPSİSİ" · "ŞERİT SONU"). Band artık üstte lakap, altında net hedef çiziyor; Görevler ekranındaki sabit "ŞU AN" da görevin kendi lakabına döndü. `q_charTray1`in hedefi somutlaştı ("Tepsini büyüt" → "Tepsini 3 bardağa çıkar"). |
+| **G-18 masa seviyesi** | Masanın yükseltme noktası `YÜKSELT` yerine `SV 3` yazıyor. Dünyaya yüzen yeni öğe girmedi; yukarı ok zaten "yükselt" diyordu, yazı artık NEREDEN yükselttiğini söylüyor. |
+| **T2** | `.sheet-sec` ve `.sheet-foot-note` gömülü kuşak oldu (7,12) · `.qrow.next` zeminini geri aldı (7,12) · `.char-stat` KART satırına döndü (4,57) · `.shop-locked` gömülü alan oldu (7,12). |
+| **"Tamam" düğmeleri** | Ayarlar ve Karakter ekranlarından kalktı — K3'te tek çıkış geri düğmesi; iki çıkış iki farklı jest demekti. |
+
+### Y2 zaten koddaydı
+
+D-106 pad için **Y2** (köşe-parantezli kare) seçmişti. `GroundMarker` bunu **2026-09-09'da**
+(G-10, kullanıcı *"yuvarlak yapma, direkt yükseltme gibi olsun"*) zaten uygulamıştı: dış köşesi
+yuvarlatılmış L parantezleri, kenar ortaları boş, dolum alttan üste. Bu tur pad'e DOKUNMADI ve
+dokunmamalıydı — yazılı karar ile koddaki durumu karşılaştırmadan "uygula" demek, çalışan bir
+şeyi yeniden yazmak olurdu.
+
+### Araç düzeltmeleri (ölçüm kendi anlatısıyla çelişiyordu)
+
+Aracın kendi kuralı §U2'nin başında yazılı: *"sayı ile anlatı birbirini denetler."* S11 ve S12
+sayıları değiştirdi, üç paragraf S10'da dondu ve ölçtükleri şeyin **tersini** söyler oldu:
+
+1. **§U3** "beş ekranın **0**'i de alt sayfa, hepsinde ✕ + arkaya tıklama var" diyordu — ölçtüğü
+   tablo tam ekran gösterirken. Hüküm artık tip/jest/boy sayısından türüyor.
+2. **§U2** ölçtüğü yayın yerine sabit "216°" yazıyor, paleti "kahverengi leke" ilan ediyordu.
+   Hüküm artık R'den türüyor (eşik 0,70) ve ton merkez açıdan okunuyor: bugün **R 0,42, mor**.
+3. **§U4 ve §B6** S11'de silinmiş bir emojiyi (`🔒`) rapor ediyordu. Glif hükmü artık
+   `mor-dil.test.ts` 6'daki **aynı listeyle** kıyaslanıyor: ikonun yerine geçen glif mi, yoksa
+   cümlenin kendisi mi (`₺` · `+`).
+
+Bir dördüncüsü gerçek bir ÖLÇÜM HATASIYDI ve bu turda doğdu: kök listesine `.screen` eklenince
+`.modal-backdrop` ile aynı ağaç iki kez yürünüyor ve simge sayacı ikiye katlanıyordu (SVG 35 →
+52, glif 13 → 19). `.screen` zaten `.modal-backdrop`un içinde; kök listesi geri alındı.
+
+### Bekçi
+
+`tests/ekran-kabugu.test.ts` — 8 denetim: tek kabuk · tam ekran (+ alt sayfanın izleri yok) ·
+üç bölge ve sırası · M2 (vitrin ≥ 230, tek satın alma, vitrinler satın almaz) · chip'siz kese ·
+G-05 lakapları · G-18 seviye · T2 kontrastı. **8 mutasyonla doğrulandı, sekizi de kırmızı yaktı.**
+
+T2 denetimi string eşleştirmiyor: `:root` token'larını okuyup **WCAG oranını hesaplıyor**. Yani
+`--tx2` ya da `--kart` ileride değişirse de yakalar — S11'in `--uyari` dersi buydu.
+
+### Bu turun DIŞINDA bırakılanlar (bilerek)
+
+- **Ekranların ortasındaki boşluk.** Mağaza vitrini boşluğu yutuyor; Görevler/Hedefler zaten
+  doluyor. Karakter ekranı tek karakterken altta boş kalıyor — içerik kalemi (S14 karakterler),
+  yerleşim kalemi değil.
+- **`DEV` rozeti K3'ün üstüne biniyor** (`devSandbox.css`, z-index). Yalnız `npm run dev`'de
+  çizilir, oyuncuya gitmez; bekçinin kapsamı dışında.
+- **Denge sayısına dokunulmadı.** `economy.config.ts` değişti ama yalnız METİN: 50 `kicker`
+  alanı + bir başlık netleştirmesi. Hiçbir eşik, maliyet, ödül ya da kademe değişmedi.

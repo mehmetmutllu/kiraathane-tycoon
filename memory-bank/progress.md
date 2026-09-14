@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 98 · YAPILAN 85 · %87):**
+**Oturum bütçesi (TOPLAM 98 · YAPILAN 86 · %88):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -24,10 +24,10 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
 | | D meta katman | 9/9 ✅ |
 | | E arayüz ve cila | 4/5 🔧 |
-| | **S sanat ve arayüz geçişi** | **10/14 🔧** |
+| | **S sanat ve arayüz geçişi** | **11/14 🔧** |
 | | H oynanış düzeltmeleri | 0/3 ⏳ |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **57/70** |
+| **Program toplam** | | **58/70** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -245,7 +245,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   değil; kendi turunu ister.
 - ⏳ **E5 — hareketli onboarding**
 
-## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (10/14) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
+## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (11/14) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
 - ✅ **S1 — pad ve yükseltme dili yeniden yazıldı** · çember → **köşe parantezli kare** (kenar
   ortaları boş), dolum büyüyen disk → **alttan üste dolan kare**, "Masa"/"Çay Yükselt"/"Usta"
   → hepsinde **YÜKSELT** + solunda düz yukarı ok, yazı 700 → 800, 💎 pulu "mavi kare" → gerçek
@@ -413,11 +413,17 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   **8 mutasyon**) · vitest 916 · duman 42/42 · `docs/ui-ses-raporu-s9s10.md` §S11a.
   **Açık:** kalan 12 AA ihlalinin hepsi `--tx2`nin gövde gradyanı üstünde durmasından — T1/T2
   kolları ölçüldü, kullanıcı seçecek (öneri T2, S11b'de).
-- ⏳ **S12 — UI tasarım dili: YAPI** — ekranların kabuğu: **K3** tam ekran + tek kabuk
-  (geri · başlık · cüzdan), alt sayfa kabuğu kalkar · mağaza **M2** (önizleme 74 → 230 px) ·
-  pad **Y2** · chip'siz üst şerit (değerler sahnenin üstünde, okunabilirliği kontur taşır) ·
-  G-05 görev metinleri · G-18 masanın kendi noktası. Bugün beş ekran **dört farklı yükseklikte**
-  açılıyor (430 · 471 · 530 · 675 · 675 px) — "ekranlar tutarsız" hissinin ölçülen kaynağı bu.
+- ✅ **S12 — UI tasarım dili: YAPI koda girdi (D-110)** — beş ekran tek **tam ekran** kabukta
+  (geri · başlık · cüzdan); alt sayfa kalktı. Tam koşu: kabuk **5/5 tam ekran** · farklı yükseklik
+  **4 → 1** (675·675·473·538·431 → 844) · ekran payı %51,1…%80,0 → **%100** · çıkış jesti
+  "✕ + arka" → **tek jest: geri** · mağaza vitrini 150 → **230 px taban** (boşluğu yutarak ~460) ·
+  satın alma **3 bileşende dağınık → 1 düğme** · **AA altı 12/177 → 0/184**. S11'in dil sayıları
+  korundu (punto 5 · gölge 3 · font 2 · glif 13 · krom %23,2); yarıçap dizgesi 6 → **5** düştü.
+  G-05: 50 görevin hepsine lakap · G-18: masa noktası `SV 3` yazıyor · Y2 zaten koddaydı (G-10).
+  Bekçi `tests/ekran-kabugu.test.ts` (8 denetim, **8 mutasyon**) · vitest 924 · duman 42/42 ·
+  `docs/ui-ses-raporu-s9s10.md` §S12. **Denge sayısı DEĞİŞMEDİ** (`economy.config.ts`e yalnız metin).
+  **Araç düzeltildi:** ölçümün üç anlatı paragrafı S10'da donmuştu ve ölçtüğünün tersini
+  söylüyordu; hüküm artık eşikten türüyor.
 - ⏳ **S13 — yeni ücretsiz KayKit paketleri** — Board Game Bits (okey/tavla) · Forest Nature
   (çiçek) · Holiday · Resource · Prototype · Block. **İndirme engeli KALKTI:** Bash'in ağı yok
   ama PowerShell'in var; `tools/indir-itch.ps1` itch akışının 3/4 adımını yapıyor, son adım 404.

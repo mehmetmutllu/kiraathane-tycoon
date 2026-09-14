@@ -3287,3 +3287,44 @@ yazılı ve gerekçeli: 3B malzeme renkleri (dünya D-107'nin dışında, D-099)
 durmasından (3,84; kart üstünde 4,57 ile geçiyor). T1 = `--tx2` açılır (4,91, palete dokunur) ·
 T2 = ikincil metinler kart zeminine alınır (S12 zaten o ekranları diziyor). **Öneri T2.**
 Sayılar: `docs/ui-ses-raporu-s9s10.md` §S11 · ham `docs/olcum-ui-ekran.json`.
+
+## D-110 — Ekranlar tek tam-ekran kabuğa indi; T2 seçildi (2026-09-14)
+
+**S12 = YAPI.** D-106'nın yapı kararları (K3 · M2 · Y2 · chip'siz üst şerit · G-05 · G-18) koda
+girdi; S11'in mor DİLİNE ve hiçbir denge sayısına dokunulmadı. Açık kalan tek kol **T2** olarak
+kullanıcı tarafından seçildi: ikincil metinler kart/oyuk zeminine alınır, `--tx2` rengine
+dokunulmaz. **Taban ↔ sonra (ikisi de tam koşu):** kabuk 5/5 alt sayfa → **5/5 tam ekran** ·
+farklı yükseklik **4 → 1** (675·675·473·538·431 → 844) · ekran payı %51,1…%80,0 → **%100** ·
+çıkış jesti "✕ + arkaya tıklama" → **tek jest: geri** · mağaza vitrini 150 → **230 px taban**
+(boşluğu yutarak ~460) · mağazada satın alma düğmesi **3 bileşende dağınık → 1** ·
+**AA altı 12/177 → 0/184.** S11'in kazanımları korundu: punto 5 · gölge 3 · font 2 · glif 13 ·
+krom %23,2 değişmedi; yarıçap DİZGESİ 6 → 5 düştü (alt sayfanın köşe-başı yazımı kalktı).
+
+**Karar bölümü dışına çıkılan üç yer:**
+① **Cüzdan kabuğa girdi.** D-106 "sağ üstte para" diyordu; tam ekran sahneyi örtünce üst şeridin
+parası görünmez oluyor ve satın alma ekranında paranı göremezsen ekran yarım kalıyor.
+② **"Tamam" düğmeleri Ayarlar ve Karakter ekranlarından kalktı.** K3'te tek çıkış geri düğmesi;
+iki çıkış iki farklı jest demekti ve ölçüm "tek jest"i şart koşuyor.
+③ **Salon seçimi satın alma olmaktan çıktı.** Zemin/duvar salon-başı satılıyor ve her salon ayrı
+bir yeşil düğmeydi (3 salon = 3 alma noktası); M2 "tek büyük satın alma" diyor, salon artık SEÇİM.
+
+**Y2'ye DOKUNULMADI ve bu doğruydu:** `GroundMarker` köşe-parantezli kare pad'i 2026-09-09'da
+(G-10) zaten uygulamıştı. Yazılı kararı koddaki durumla karşılaştırmadan "uygula" demek çalışan
+bir şeyi yeniden yazmak olurdu.
+
+**`economy.config.ts`e dokunuldu ama DENGE DEĞİŞMEDİ:** 50 göreve `kicker` (lakap) metni eklendi
+ve bir hedef somutlaştı. Hiçbir eşik, maliyet, ödül ya da kademe değişmedi; sıra kilidi gereği
+ölçüm commit #1'de, kod commit #2'de.
+
+**Bekçi:** `tests/ekran-kabugu.test.ts`, 8 denetim, **8 mutasyonla** doğrulandı. T2 denetimi
+string eşleştirmiyor, `:root` token'larından **WCAG oranını hesaplıyor** — renkler ileride
+değişirse de yakalar.
+
+**ÖLÇÜM ARACI KENDİ ANLATISIYLA ÇELİŞİYORDU, üç paragraf sayıdan türetilir yapıldı.** §U3 "beş
+ekranın 0'i de alt sayfa" diyordu (tablo tam ekran gösterirken), §U2 ölçtüğü 223°nin yerine sabit
+"216°" yazıp paleti "kahverengi leke" ilan ediyordu (bugün R 0,42, mor), §U4/§B6 S11'de silinmiş
+`🔒` emojisini rapor ediyordu. **Ders D-084'ün aynısı:** araç bir hükmü METNE gömerse, ölçtüğü
+şey değişince yalan söyler ve kimse fark etmez. Hüküm eşikten türemeli (R ≥ 0,70 · tek tip+tek
+boy+tek jest · `mor-dil.test.ts` 6'daki glif listesi).
+
+Sayılar: `docs/ui-ses-raporu-s9s10.md` §S12 · ham `docs/olcum-ui-ekran.json`.

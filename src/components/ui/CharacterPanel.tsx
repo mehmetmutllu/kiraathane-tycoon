@@ -480,10 +480,6 @@ export function CharacterPanel({ onClose }: { onClose: () => void }) {
 
         {tab === 'waiter' && <WaiterTab />}
         {tab === 'dish' && <DishTab />}
-
-        <button className="sheet-cta" data-testid="char-ok" onClick={onClose}>
-          Tamam
-        </button>
       </div>
     </Sheet>
   );

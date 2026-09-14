@@ -207,8 +207,13 @@ async function kabukOlc(ad, panelSec, ss) {
       kapat: {
         carpi: !!arka.querySelector('.sheet-x, .modal-x'),
         geri: !!arka.querySelector('.sheet-back, .modal-back'),
-        // Arka plana tıklayınca kapanıyor mu — React onClick DOM'dan okunamaz, KABUK SINIFI belirler.
-        arkaTikla: arka.classList.contains('modal-backdrop') || arka.classList.contains('sheet-backdrop'),
+        // Arka plana tıklayınca kapanıyor mu — React onClick DOM'dan okunamaz. Eskiden KABUK
+        // SINIFI belirliyordu; K3 (tam ekran) bunu yalancı yaptı: kart perdeyi tamamen örtünce
+        // `modal-backdrop` sınıfı duruyor ama tıklanacak arka KALMIYOR. Ölçü artık kaplamaya
+        // bakıyor — kart ekranı doldurmuyorsa arka var, dolduruyorsa yok.
+        arkaTikla:
+          (arka.classList.contains('modal-backdrop') || arka.classList.contains('sheet-backdrop')) &&
+          !(kr.width >= ar.width - 2 && kr.height >= ar.height - 2),
       },
     };
   }, panelSec);
@@ -235,7 +240,11 @@ for (const e of EKRANLAR) {
   sonuc.simge.svg = Math.max(sonuc.simge.svg, sm.svg);
   sonuc.simge.glif = Math.max(sonuc.simge.glif, sm.glif);
   sonuc.simge.ornek = [...new Set([...sonuc.simge.ornek, ...sm.ornek])];
-  await sayfa.mouse.click(EKRAN.width / 2, 6);
+  // K3'te tek çıkış GERİ düğmesi (perde yok). Eski perde tıklaması yedek olarak duruyor —
+  // kabuk değişirse ölçüm sessizce yarım kalmasın, ekran gerçekten kapansın.
+  const geri = await sayfa.$(`${e.panel} .sheet-back`);
+  if (geri) await geri.click();
+  else await sayfa.mouse.click(EKRAN.width / 2, 6);
   await sayfa.waitForTimeout(400);
 }
 

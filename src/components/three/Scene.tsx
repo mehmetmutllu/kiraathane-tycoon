@@ -570,7 +570,12 @@ function TableUpgradeMarkers() {
           <GroundMarker
             key={i}
             pos={t.upgradeSpot}
-            label="YÜKSELT"
+            /* G-18 (kullanıcı kararı 2026-09-14): "masaya tıklayınca seviye görünsün mü?"
+               sorusunun cevabı HAYIR — dünyaya yüzen yeni bir arayüz öğesi girmiyor
+               (`feedback_interaction_model`). Seviye masanın KENDİ mekânsal noktasında
+               okunuyor: yukarı ok zaten "yükselt" diyor, yazı artık nereden yükselttiğini
+               söylüyor. `feedback_upgrade_legibility`in istediği ÇOKLU sinyalin sayı kanalı. */
+            label={`SV ${lvl + 1}`}
             arrow
             sub={String(remaining)}
             pip="coin"

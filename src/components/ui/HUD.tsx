@@ -152,21 +152,21 @@ export function HUD() {
               {lvl.level}
             </i>
           </span>
+          {/* Chip'siz şerit: çubuk madalyonun ALTINDA ve onun genişliğinde. İçindeki
+              "3/8" yazısı kalktı — 10 px'lik yatağa sığmıyordu ve sayıyı madalyon taşıyor. */}
           <span className="rep-bar">
             <span className="rep-fill" style={{ width: `${Math.min(100, (lvl.cur / lvl.need) * 100)}%` }} />
-            <span className="rep-text">
-              {lvl.cur}/{lvl.need}
-            </span>
           </span>
         </button>
 
+        {/* KUTUSUZ kese (D-106): değerler doğrudan sahnenin üstünde, okunabilirliği KONTUR taşır. */}
         <div className="purse">
           <div className="cur" data-testid="wallet">
-            <CoinIcon size={30} />
+            <CoinIcon size={34} />
             <span className="cur-val">{fmt(wallet)}</span>
           </div>
           <div className="cur gem" data-testid="diamonds">
-            <GemIcon size={27} />
+            <GemIcon size={26} />
             <span className="cur-val">{fmt(diamonds)}</span>
           </div>
         </div>
@@ -270,6 +270,9 @@ export function HUD() {
             {quest.done ? <CheckBadge size={26} /> : <QuestPhoto target={quest.target} size={38} />}
           </span>
           <span className="band-body">
+            {/* G-05: üstte kısa LAKAP (bu hedefin hangi bölüm olduğu), altında NET hedef.
+                Eskiden yalnız hedef vardı ve oyuncu "neredeyim"i okuyamıyordu. */}
+            <span className="band-kicker">{quest.kicker}</span>
             <span className="band-title">{quest.title}</span>
             {/* G-04: tamamlanma bandın KENDİ hâlidir — ayrı bir toast yok. */}
             {quest.done ? (
@@ -370,9 +373,6 @@ export function HUD() {
             />
             <button className="danger-btn" data-testid="reset" onClick={onReset}>
               <ResetIcon size={17} /> Oyunu Sıfırla
-            </button>
-            <button className="sheet-cta" data-testid="settings-ok" onClick={() => setSheet(null)}>
-              Tamam
             </button>
           </div>
         </Sheet>
@@ -617,7 +617,7 @@ function QuestsSheet({ onClose }: { onClose: () => void }) {
             <QuestPhoto target={quest.target} size={62} />
           </span>
           <span className="qbig-body">
-            <span className="qbig-kicker">ŞU AN</span>
+            <span className="qbig-kicker">{quest.kicker}</span>
             <span className="qbig-title">{quest.title}</span>
             {quest.total != null ? (
               <span className="band-track big">
@@ -894,8 +894,17 @@ function RewardModal({
   );
 }
 
-/** Dekor mağazası (WP6 — feedback §D19): tema satırı = renk önizleme + ad + fiyat + alan uygula
- *  butonları (yalnız AÇIK alanlar). İlk satın alma ₺ düşer; sahip olunan tema ücretsiz seçilir. */
+/**
+ * DEKOR MAĞAZASI — M2 düzeni (D-106, S12).
+ *
+ * **Neden M1 ızgara elendi:** ölçüm ürün önizlemesini ~74 px saydı; oyuncu satın aldığı şeyi
+ * göremiyordu. M2 bunu 230 px'e çıkarıyor (3,1×) ve bedeli dürüst: ekranda tek seferde tek ürün.
+ *
+ * Ekranın sırası SABİT ve üç sekmede de aynı: sekme → **vitrin** → (zemin/duvarda salon şeridi)
+ * → **seçim şeridi** → ad + fiyat satırı → **tek büyük satın alma**. Alma eylemi artık tek
+ * yerde; eskiden üç ayrı önizleme bileşeninin içindeydi ve hangi düğmenin neyi aldığı ekrandan
+ * okunmuyordu. Salon seçimi de bir SEÇİM oldu — üç salon üç ayrı satın alma düğmesi değil.
+ */
 function ShopPanel({ onClose }: { onClose: () => void }) {
   const areasOpen = useGame((s) => s.areasOpen);
   const tables = useGame((s) => s.tables);
@@ -904,102 +913,95 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
   const wallThemeByArea = useGame((s) => s.wallThemeByArea);
   const tableTheme = useGame((s) => s.tableTheme);
   const ownedCosmetics = useGame((s) => s.ownedCosmetics);
+  const wallet = useGame((s) => s.wallet);
+  const buyCosmetic = useGame((s) => s.buyCosmetic);
   const [tab, setTab] = useState<'table' | 'floor' | 'wall'>('table');
+  // Zemin/duvar salon-başı satılır: hangi salona bakıldığı bir SEÇİM, ayrı bir satın alma değil.
+  const [zone, setZone] = useState(0);
   // Masa teması kilidi: 3 salon + tüm açık masalar max (kullanıcı kararı). Kilitliyse Masa sekmesi
   // satın alma yerine koşulu açıklayan kilit panelini gösterir.
   const tableUnlocked = tableThemeUnlocked({ areasOpen, tables, tableLevels });
   const maxedTables = tableLevels.slice(0, tables).filter((l) => l >= tableSoftMaxLevel()).length;
-  // Sekme başına ÖNİZLENEN çeşit (sayfa-içi önizleme bunu gösterir). Varsayılan = o an uygulanmış tema.
+  // Sekme başına ÖNİZLENEN çeşit (vitrin bunu gösterir). Varsayılan = o an uygulanmış tema.
   const [sel, setSel] = useState<{ table: string; floor: string; wall: string }>(() => ({
     table: tableTheme,
     floor: floorThemeByArea[0] ?? economyConfig.cosmetics.floorThemes[0].id,
     wall: wallThemeByArea[0] ?? economyConfig.cosmetics.wallThemes[0].id,
   }));
 
-  // MASA çeşitleri kaydırılabilir KART şeridi; karta tıkla → üstteki sayfa-içi önizlemeyi günceller.
-  const renderTableCards = () =>
-    economyConfig.cosmetics.tableThemes.map((t) => {
-      const applied = tableTheme === t.id;
-      const previewing = sel.table === t.id;
-      const owned = t.cost === 0 || ownedCosmetics.includes(`table:${t.id}`);
-      return (
-        <button
-          className={`shop-vcard${previewing ? ' sel' : ''}`}
-          key={t.id}
-          data-testid={`shop-card-table-${t.id}`}
-          onClick={() => setSel((p) => ({ ...p, table: t.id }))}
-        >
-          <span className="shop-vcard-swatch" style={{ background: t.color }}>
-            {applied ? (
-              <span className="shop-vcard-badge">
-                <TickIcon size={12} />
-              </span>
-            ) : owned ? (
-              <span className="shop-vcard-badge owned" />
-            ) : null}
-          </span>
-          <span className="shop-vcard-name">{t.label}</span>
-          <span className="shop-vcard-cost">
-            {t.cost > 0 ? (
-              <>
-                <CoinIcon size={12} /> {t.cost.toLocaleString('tr-TR')}
-              </>
-            ) : (
-              'Ücretsiz'
-            )}
-          </span>
-        </button>
-      );
-    });
-
-  // ZEMİN/DUVAR çeşitleri: çift-renk swatch'lı kartlar; karta tıkla → üstteki diorama önizlemeyi günceller.
-  const renderThemeCards = (kind: 'floor' | 'wall') => {
-    const themes = kind === 'floor' ? economyConfig.cosmetics.floorThemes : economyConfig.cosmetics.wallThemes;
-    const selected = kind === 'floor' ? floorThemeByArea : wallThemeByArea;
-    return themes.map((t) => {
-      const cols =
-        kind === 'floor'
-          ? floorSwatch(t.id)
-          : [WALL_THEMES[t.id]?.cream ?? '#999', WALL_THEMES[t.id]?.wainscot ?? '#777'];
-      const applied = selected.slice(0, areasOpen).includes(t.id);
-      const previewing = sel[kind] === t.id;
-      return (
-        <button
-          className={`shop-vcard${previewing ? ' sel' : ''}`}
-          key={t.id}
-          data-testid={`shop-card-${kind}-${t.id}`}
-          onClick={() => setSel((p) => ({ ...p, [kind]: t.id }))}
-        >
-          <span
-            className="shop-vcard-swatch"
-            style={{ background: `linear-gradient(135deg, ${cols[0]} 0 50%, ${cols[1]} 50% 100%)` }}
-          >
-            {applied ? (
-              <span className="shop-vcard-badge">
-                <TickIcon size={12} />
-              </span>
-            ) : null}
-          </span>
-          <span className="shop-vcard-name">{t.label}</span>
-          <span className="shop-vcard-cost">
-            {t.cost > 0 ? (
-              <>
-                <CoinIcon size={12} /> {t.cost.toLocaleString('tr-TR')}
-              </>
-            ) : (
-              'Ücretsiz'
-            )}
-          </span>
-        </button>
-      );
-    });
-  };
-
   const TABS: { k: 'table' | 'floor' | 'wall'; label: string }[] = [
     { k: 'table', label: 'Masa' },
     { k: 'floor', label: 'Zemin' },
     { k: 'wall', label: 'Duvar' },
   ];
+
+  const kilitli = tab === 'table' && !tableUnlocked;
+  const zn = Math.min(zone, Math.max(0, areasOpen - 1));
+
+  // Seçili çeşidin künyesi — üç sekmenin ORTAK dili (ad · fiyat · sahip mi · uygulanmış mı).
+  // Tek yerde çözülüyor ki ad satırı ile satın alma düğmesi asla ayrı şey söylemesin.
+  const secili = (() => {
+    const id = sel[tab];
+    if (tab === 'table') {
+      const t = economyConfig.cosmetics.tableThemes.find((x) => x.id === id);
+      if (!t) return null;
+      const owned = t.cost === 0 || ownedCosmetics.includes(`table:${id}`);
+      return { id, label: t.label, cost: t.cost, owned, applied: tableTheme === id, alan: 0 };
+    }
+    const themes = tab === 'floor' ? economyConfig.cosmetics.floorThemes : economyConfig.cosmetics.wallThemes;
+    const t = themes.find((x) => x.id === id);
+    if (!t) return null;
+    const applied = (tab === 'floor' ? floorThemeByArea : wallThemeByArea)[zn] === id;
+    const owned = t.cost === 0 || ownedCosmetics.includes(`${tab}:${id}:z${zn}`);
+    return { id, label: t.label, cost: t.cost, owned, applied, alan: zn };
+  })();
+  const afford = !!secili && (secili.owned || wallet.toNumber() >= secili.cost);
+
+  // Seçim şeridi: renk pulu + "uygulanmış" rozeti. Ad ve fiyat şeritte DEĞİL, altındaki satırda —
+  // aynı bilgiyi iki yere yazmak şeridi kalabalıklaştırıyor ve pulu küçültüyordu.
+  const chip = (
+    key: string,
+    testid: string,
+    bg: string,
+    isSel: boolean,
+    applied: boolean,
+    onClick: () => void,
+  ) => (
+    <button key={key} className={`shop-chip${isSel ? ' sel' : ''}`} data-testid={testid} onClick={onClick}>
+      <span className="shop-chip-swatch" style={{ background: bg }} />
+      {applied && (
+        <span className="shop-chip-badge">
+          <TickIcon size={11} />
+        </span>
+      )}
+    </button>
+  );
+
+  const renderStrip = () => {
+    if (tab === 'table') {
+      return economyConfig.cosmetics.tableThemes.map((t) =>
+        chip(t.id, `shop-card-table-${t.id}`, t.color, sel.table === t.id, tableTheme === t.id, () =>
+          setSel((p) => ({ ...p, table: t.id })),
+        ),
+      );
+    }
+    const themes = tab === 'floor' ? economyConfig.cosmetics.floorThemes : economyConfig.cosmetics.wallThemes;
+    const selected = tab === 'floor' ? floorThemeByArea : wallThemeByArea;
+    return themes.map((t) => {
+      const cols =
+        tab === 'floor'
+          ? floorSwatch(t.id)
+          : [WALL_THEMES[t.id]?.cream ?? '#999', WALL_THEMES[t.id]?.wainscot ?? '#777'];
+      return chip(
+        t.id,
+        `shop-card-${tab}-${t.id}`,
+        `linear-gradient(135deg, ${cols[0]} 0 50%, ${cols[1]} 50% 100%)`,
+        sel[tab] === t.id,
+        selected[zn] === t.id,
+        () => setSel((p) => ({ ...p, [tab]: t.id })),
+      );
+    });
+  };
 
   return (
     <Sheet title="Dekor Mağazası" testid="shop-panel" onClose={onClose}>
@@ -1021,7 +1023,8 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
             </button>
           ))}
         </div>
-        {tab === 'table' && !tableUnlocked ? (
+
+        {kilitli ? (
           <div className="shop-locked" data-testid="shop-table-locked">
             <div className="shop-locked-icon">
               <LockIcon size={46} />
@@ -1041,18 +1044,65 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
               </span>
             </div>
           </div>
-        ) : tab === 'table' ? (
-          <TableThemePreview id={sel.table} />
         ) : (
-          <DioramaPreview kind={tab} id={sel[tab]} />
+          <>
+            {tab === 'table' ? <TableThemePreview id={sel.table} /> : <DioramaPreview kind={tab} id={sel[tab]} />}
+
+            {/* Salon şeridi — zemin/duvar salon-başı satılır; hangi salona baktığın bir SEÇİM. */}
+            {tab !== 'table' && areasOpen > 1 && (
+              <div className="shop-zones" data-testid="shop-zones">
+                {Array.from({ length: areasOpen }, (_, z) => (
+                  <button
+                    key={z}
+                    className={`shop-zone-btn${zn === z ? ' sel' : ''}`}
+                    data-testid={`shop-zone-${z}`}
+                    onClick={() => setZone(z)}
+                  >
+                    Salon {z + 1}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <div className="shop-strip">{renderStrip()}</div>
+
+            {secili && (
+              <div className="shop-name-row">
+                <b data-testid="shop-sel-name">{secili.label}</b>
+                <span>
+                  {secili.applied
+                    ? 'Şu an uygulanmış'
+                    : secili.owned
+                      ? 'Sahipsin'
+                      : `${secili.cost.toLocaleString('tr-TR')} ₺`}
+                </span>
+              </div>
+            )}
+          </>
         )}
-        {tab === 'table' && !tableUnlocked ? null : (
-          <div className="shop-cards">{tab === 'table' ? renderTableCards() : renderThemeCards(tab)}</div>
-        )}
-        <button className="sheet-cta" data-testid="shop-ok" onClick={onClose}>
-          Tamam
-        </button>
       </div>
+
+      {/* TEK BÜYÜK SATIN ALMA — M2'nin hem kazancı hem bedeli bu düğmede. */}
+      {!kilitli && secili && (
+        <button
+          className={`shop-buy${secili.applied ? ' sel' : ''}`}
+          data-testid="shop-buy"
+          disabled={secili.applied || !afford}
+          onClick={() => buyCosmetic(tab, secili.id, secili.alan)}
+        >
+          {secili.applied ? (
+            <>
+              <TickIcon size={18} /> Uygulandı
+            </>
+          ) : secili.owned ? (
+            'Uygula'
+          ) : (
+            <>
+              Satın Al · {secili.cost.toLocaleString('tr-TR')} <CoinIcon size={18} />
+            </>
+          )}
+        </button>
+      )}
     </Sheet>
   );
 }

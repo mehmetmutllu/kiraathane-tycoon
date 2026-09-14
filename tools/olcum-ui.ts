@@ -28,6 +28,11 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { SES_KATALOG, sesSure, type SesId } from '../src/game/audio';
 import { damga, damgaOzeti, kipBandi } from './olcum-lib';
 
+/** İKONUN YERİNE GEÇEN glifler — kusur bunlar. Cümlenin KENDİSİ olan işaret (₺ · + · ×)
+ *  kusur değildir. Liste `tests/mor-dil.test.ts` 6'dakiyle AYNI: iki yer aynı şeyi kusur saysın. */
+const IKON_YERINE = ['\u{1F512}', '✕', '✖', '↺', '↻', '✓', '✔', '→', '←', '▶', '◀', '★', '☆', '⭐',
+  '\u{1F48E}', '\u{1F3C6}', '\u{1F381}', '⚡', '\u{1F514}', '⚙', '•'];
+
 const cikti: string[] = [];
 const yaz = (s = '') => { cikti.push(s); };
 const n2 = (v: number) => v.toFixed(2).padStart(7);
@@ -308,15 +313,23 @@ if (ek) {
     yaz(`   ${String(v).padStart(3)}× ${h ? `h ${h.h.toFixed(0).padStart(3)}°  s ${yz(h.s).padStart(6)}  l ${yz(h.l).padStart(6)}` : '—'}   ${k.slice(0, 46)}`);
   }
   yaz('');
-  yaz(`  OKUMA (sayıdan türetildi): şikâyet DOĞRULANDI. Zeminlerin ${yz(yog.icinde)}'i h ${yog.merkez.toFixed(0)}°`);
-  yaz(`  çevresindeki ${yog.pencere}°'lik TEK dilimde, R = ${yog.R.toFixed(2)}. Ekranda hiçbir yüzey bir başkasından`);
-  yaz('  renkle AYRILMIYOR; ayrım yalnız açıklıkla yapılıyor ve ortalama açıklık da düşük');
-  yaz(`  (${yz(ortL)}). Sonuç: her şey tek bir kahverengi lekeye düşüyor — "iç karartıcı" tam bu.`);
-  yaz('  DİKKAT: uç yay 216° çıkıyor ama bu YANILTICI — tek bir yeşil rozet ve tek bir mavi ipucu');
-  yaz('  yayı açıyor, kütle hâlâ tek dilimde. Yayına bakıp "palet zaten geniş" denemez.');
-  yaz('  Çözüm ille MAVİ değil (kullanıcı: "mavi şart değil"): KÜTLEYİ dağıtmak yeter — nötr bir');
-  yaz('  gövde + tek doygun aksan, sıcak kimliği KORUYARAK da R\'yi düşürür.');
-
+  // HÜKÜM SAYIDAN TÜRER, metne gömülmez. S10'da bu paragraf sabit yazılmıştı ("kahverengi
+  // leke", "uç yay 216°") ve S11 paleti değiştirince ölçtüğü şeyin TERSİNİ söyler oldu.
+  // Eşikler: R ≥ 0,70 = kütle tek yöne bakıyor · ortalama açıklık < %40 = koyu okunur.
+  const ton = yog.merkez < 40 || yog.merkez >= 330 ? 'kırmızı' : yog.merkez < 70 ? 'turuncu-kahve'
+    : yog.merkez < 160 ? 'yeşil' : yog.merkez < 260 ? 'mavi-mor' : 'mor';
+  const sikisik = yog.R >= 0.7;
+  yaz(`  OKUMA (sayıdan türetildi): zeminlerin ${yz(yog.icinde)}'i h ${yog.merkez.toFixed(0)}° (${ton})`);
+  yaz(`  çevresindeki ${yog.pencere}°'lik dilimde, R = ${yog.R.toFixed(2)}; ortalama açıklık ${yz(ortL)}.`);
+  if (sikisik) {
+    yaz('  HÜKÜM: G-16 DOĞRULANDI — kütle tek yöne bakıyor (R ≥ 0,70). Ekranda hiçbir yüzey bir');
+    yaz('  başkasından renkle ayrılmıyor; ayrım yalnız açıklıkla yapılıyor. "İç karartıcı" tam bu.');
+  } else {
+    yaz('  HÜKÜM: kütle DAĞILDI (R < 0,70) — arayüz artık tek bir lekeye düşmüyor. Gövde tek');
+    yaz('  ailede duruyor ama aksan ve anlam renkleri kütleyi kendi yönlerine çekiyor.');
+  }
+  yaz(`  DİKKAT: uç yay ${yay.toFixed(0)}° çıkıyor ve TEK BAŞINA yanıltır — birkaç rozet rengi yayı`);
+  yaz('  açar, kütle yine tek dilimde kalabilir. Yaya bakıp "palet zaten geniş" denemez; ölçü R.');
   // ── §U3 KABUK — G-17'nin gerçek hâli.
   yaz('');
   yaz('§U3 KABUK — "ekranlar tutarsız" (G-17) gerçekte NE?');
@@ -331,11 +344,23 @@ if (ek) {
   const boylar = ek.kabuklar.filter((k: { tip?: string }) => k.tip).map((k: { kart: { h: number } }) => k.kart.h);
   const farkliBoy = new Set(boylar).size;
   yaz('');
-  yaz(`  BULGU: kabuk TİPİ zaten tutarlı — beş ekranın ${ek.kabuklar.filter((k: { tip?: string }) => k.tip === 'alt sayfa').length}'i de alt sayfa, hepsinde ✕ + arkaya`);
-  yaz(`  tıklama var. Tutarsız olan BOY: ${boylar.length} ekranda ${farkliBoy} farklı yükseklik`);
-  yaz(`  (${boylar.map((b: number) => b.toFixed(0)).join(' · ')} px) → ekranın ${yz(Math.min(...boylar) / ek.ekran.height)}…${yz(Math.max(...boylar) / ek.ekran.height)}'i.`);
-  yaz('  Her sekmede panelin üst kenarı BAŞKA yere zıplıyor; "tutarsız" hissi buradan geliyor,');
-  yaz('  modal/tam-ekran seçiminden değil. G-17 bu yüzden yanlış sorulmuş bir soru.');
+  // G-17'nin ("ekranlar tutarsız") ölçülen karşılığı TİP değil BOYdu. Hüküm bu yüzden iki
+  // sayıdan türetilir: kaç farklı kabuk tipi çiziliyor, kaç farklı yükseklik açılıyor.
+  const tipler = [...new Set(ek.kabuklar.filter((k: { tip?: string }) => k.tip).map((k: { tip: string }) => k.tip))];
+  const jestler = [...new Set(ek.kabuklar.filter((k: { tip?: string }) => k.tip).map((k: { kapat: { carpi: boolean; geri: boolean; arkaTikla: boolean } }) =>
+    [k.kapat.carpi && '✕', k.kapat.geri && 'geri', k.kapat.arkaTikla && 'arka'].filter(Boolean).join('+')))];
+  yaz(`  KABUK TİPİ : ${tipler.length === 1 ? `tek tip — ${boylar.length}/${boylar.length} ${tipler[0]}` : `${tipler.length} FARKLI tip (${tipler.join(' · ')})`}`);
+  yaz(`  ÇIKIŞ JESTİ: ${jestler.length === 1 ? `tek jest — ${jestler[0]}` : `${jestler.length} FARKLI jest (${jestler.join(' · ')})`}`);
+  yaz(`  KABUK BOYU : ${boylar.length} ekranda ${farkliBoy} farklı yükseklik`);
+  yaz(`               (${boylar.map((b: number) => b.toFixed(0)).join(' · ')} px) → ekranın ${yz(Math.min(...boylar) / ek.ekran.height)}…${yz(Math.max(...boylar) / ek.ekran.height)}'i.`);
+  if (farkliBoy === 1 && tipler.length === 1 && jestler.length === 1) {
+    yaz('  HÜKÜM: G-17 KAPANDI — tek tip, tek yükseklik, tek çıkış. Panelin üst kenarı artık');
+    yaz('  hiçbir sekmede zıplamıyor; "tutarsız" hissinin ölçülen kaynağı buydu.');
+  } else {
+    yaz(`  HÜKÜM: tutarsızlık SÜRÜYOR — ${farkliBoy} yükseklik · ${tipler.length} tip · ${jestler.length} çıkış jesti.`);
+    yaz('  Her sekmede panelin üst kenarı başka yere zıplıyor; hissin kaynağı modal/tam-ekran');
+    yaz('  seçimi değil, boyun her ekranda yeniden kararlaştırılması.');
+  }
 
   // ── §U4 KONTRAST + FONT + SİMGE — okunabilirlik ve kendi kuralımızın denetimi.
   const kon = (ek.olcek.kontrast ?? []) as { ad: string; px: number; oran: number; esik: number }[];
@@ -372,8 +397,10 @@ if (ek) {
   }
   yaz('');
   yaz(`  SİMGE: ${ek.simge.svg} SVG · ${ek.simge.glif} METİN GLİFİ — örnekler: ${ek.simge.ornek.join(' ')}`);
-  yaz('  Plan §9 ve `feedback_ui_game_feel`: "emoji ve CSS ikon YOK, her simge SVG". Bugün');
-  yaz('  mağaza panelinde 🔒 EMOJİ çiziliyor (HUD.tsx:1001, 1007) ve ✕ · → · ↺ · ₺ metin glifi.');
+  yaz('  Plan §9 ve `feedback_ui_game_feel`: "emoji ve CSS ikon YOK, her simge SVG".');
+  const kacak = (ek.simge.ornek as string[]).filter((g) => IKON_YERINE.includes(g));
+  if (kacak.length) yaz(`  ⚠ İKONUN YERİNE GEÇEN GLİF: ${kacak.join(' ')} — bunlar SVG olmalı (B6).`);
+  else yaz(`  ✓ İkonun yerine geçen glif YOK. Kalanlar cümlenin kendisi: ${ek.simge.ornek.join(' ')}`);
 
   // ── §U5 KAPLAMA — sahne ne kadar görünüyor.
   const pay = ek.kaplama.kromPiksel / ek.kaplama.ekranPiksel;
@@ -412,7 +439,11 @@ if (ek) {
     ['B3  kabuk boyu', `5 ekran, ${new Set(boylar).size} farklı yükseklik (${Math.min(...boylar).toFixed(0)}…${Math.max(...boylar).toFixed(0)} px)`],
     ['B4  kontrast', `${dusuk}/${kon.length} metin öğesi WCAG AA altında (${yz(dusuk / Math.max(1, kon.length))})`],
     ['B5  font sızıntısı', `${(ek.olcek.fontOge?.Arial ?? []).length} öğe Arial — button font-family mirası yok`],
-    ['B6  kendi kuralımız', `${ek.simge.glif} metin glifi + 🔒 emoji (plan §9: yalnız SVG)`],
+    // B6 de ÖLÇÜLENden türer. Eskiden satırda sabit "🔒 emoji" yazıyordu; S11 o emojiyi
+    // sildi ve satır bir tur boyunca olmayan bir kusuru rapor etti.
+    ['B6  kendi kuralımız', `${ek.simge.svg} SVG · ${ek.simge.glif} metin glifi (${ek.simge.ornek.join(' ')}) · ikon-yerine glif: ${
+      (ek.simge.ornek as string[]).filter((g) => IKON_YERINE.includes(g)).join(' ') || 'YOK'
+    }`],
     ['B7  krom kaplaması', `${yz(ek.kaplama.kromPiksel / ek.kaplama.ekranPiksel)} — sağlıklı, büyütülmemeli`],
     ['B8  coin sesi', `${coin.sure.toFixed(3)} sn · ${coin.katman} katman · çoklu toplamada perde basamağı YOK`],
     ['B9  ortam sesi', `katalogda 9/9 tek atış; döngü YOK · settings.music hiçbir sese bağlı değil`],
