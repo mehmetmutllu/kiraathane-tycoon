@@ -4,7 +4,7 @@
 // Kullanım: node tools/model-olc.mjs <paket> <model...>   (uzantısız ad)
 import { readFileSync } from 'node:fs';
 
-const KOK = 'public/assets/models/';
+const KOK = process.env.MODEL_KOK ?? 'public/assets/models/';
 
 function mul(a, b) {
   const o = new Array(16).fill(0);

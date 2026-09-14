@@ -8,7 +8,11 @@
  *
  * Sunucuyu kendi kaldırır (duman.mjs deseni: npx değil, vite'ın giriş dosyası + strictPort).
  * Kullanım: node tools/model-bak.mjs kaykit-restaurant-bits door_A,door_B,wall_half
- *           node tools/model-bak.mjs <paket> <modeller> [çıktı.png] [on|yan|ust]
+ *           node tools/model-bak.mjs <paket> <modeller> [çıktı.png] [on|yan|ust|vitrin]
+ *
+ * `vitrin` (S13): her model en büyük kenarı 1 br olacak şekilde normalize edilip ızgaraya
+ * dizilir, insan çubuğu çizilmez, gerçek ölçü her modelin altında yazar. Küçük parçaları
+ * (0,20…0,40 br) SEÇERKEN kullanılır — orada soru "ne kadar büyük" değil "bu NE".
  */
 import { spawn } from 'node:child_process';
 import { chromium } from 'playwright';

@@ -37,6 +37,64 @@
   const loader = new GLTFLoader();
   const yerlestir = [];
   let x = 0;
+
+  // VİTRİN KİPİ (S13): bir paketten aday SEÇERKEN soru "ne kadar büyük" değil "bu NE".
+  // Ölçüldü: board-game/holiday parçaları 0,20…0,38 br; 1,75 m insan çubuğunun yanında
+  // 20 px'lik lekeye düşüyor ve biçimleri ayırt edilemiyor. Vitrinde her model en büyük
+  // kenarı 1 br olacak şekilde normalize edilir (gerçek ölçü etikette durur), ızgaraya
+  // dizilir, insan çubuğu çizilmez — karşılaştırma BİÇİM üzerinden yapılır.
+  if ((q.get('kip') ?? 'on') === 'vitrin') {
+    const sutun = Math.ceil(Math.sqrt(adlar.length));
+    const adim = 1.6;
+    const hucreler = [];
+    for (let i = 0; i < adlar.length; i++) {
+      const ad = adlar[i];
+      const g = await loader.loadAsync(`/assets/models/${paket}/${ad}.gltf`);
+      const o = g.scene;
+      const kutu = new THREE.Box3().setFromObject(o);
+      const b = kutu.getSize(new THREE.Vector3());
+      const k = 1 / Math.max(b.x, b.y, b.z);
+      o.scale.setScalar(k);
+      o.position.set(-(kutu.min.x + b.x / 2) * k, -kutu.min.y * k, -(kutu.min.z + b.z / 2) * k);
+      const hucre = new THREE.Group();
+      hucre.add(o);
+      const cx = (i % sutun) * adim;
+      const cz = Math.floor(i / sutun) * adim;
+      hucre.position.set(cx, 0, cz);
+      scene.add(hucre);
+      hucreler.push({ ad, b, cx, cz });
+    }
+    const en = (sutun - 1) * adim;
+    const boy = (Math.ceil(adlar.length / sutun) - 1) * adim;
+    const merkez = new THREE.Vector3(en / 2, 0.35, boy / 2);
+    const uzaklik = Math.max(en, boy) + 4.2;
+    const cam = new THREE.PerspectiveCamera(32, innerWidth / innerHeight, 0.1, 200);
+    cam.position.set(merkez.x, merkez.y + uzaklik * 0.62, merkez.z + uzaklik * 0.78);
+    cam.lookAt(merkez);
+    const zemin = new THREE.GridHelper(Math.max(en, boy) + 4, Math.max(4, Math.round((Math.max(en, boy) + 4) / adim)) * 2, '#b0bec5', '#dde4e8');
+    zemin.position.copy(merkez).setY(0);
+    scene.add(zemin);
+    renderer.render(scene, cam);
+
+    // etiketler: hücre merkezini ekrana yansıt, adı + GERÇEK ölçüyü modelin altına yaz
+    for (const h of hucreler) {
+      const p = new THREE.Vector3(h.cx, 0, h.cz).project(cam);
+      const el = document.createElement('div');
+      el.style.cssText =
+        'position:fixed;transform:translate(-50%,0);font:11px/1.35 system-ui;text-align:center;' +
+        'color:#263238;background:#ffffffcc;padding:2px 6px;border-radius:4px;white-space:nowrap';
+      el.innerHTML = `<b>${h.ad}</b><br>${h.b.x.toFixed(2)}×${h.b.y.toFixed(2)}×${h.b.z.toFixed(2)} br`;
+      el.style.left = `${((p.x + 1) / 2) * innerWidth}px`;
+      el.style.top = `${((-p.y + 1) / 2) * innerHeight + 6}px`;
+      document.body.appendChild(el);
+    }
+    const ust = document.createElement('div');
+    ust.style.cssText = 'position:fixed;left:0;top:0;font:12px system-ui;background:#fff;padding:6px 10px;color:#263238';
+    ust.textContent = `${paket} · VİTRİN — her model en büyük kenarı 1 br olacak şekilde normalize edildi; gerçek ölçü etiketlerde`;
+    document.body.appendChild(ust);
+    document.title = 'hazir';
+  } else {
+
   for (const ad of adlar) {
     const g = await loader.loadAsync(`/assets/models/${paket}/${ad}.gltf`);
     const o = g.scene;
@@ -77,4 +135,5 @@
   bar.textContent = `${paket} · ${yerlestir.map((y) => `${y.ad} ${y.b.x.toFixed(2)}×${y.b.y.toFixed(2)}×${y.b.z.toFixed(2)}`).join('  |  ')}  ·  kırmızı çubuk = 1,75 m insan`;
   document.body.appendChild(bar);
   document.title = 'hazir';
+  }
 </script>

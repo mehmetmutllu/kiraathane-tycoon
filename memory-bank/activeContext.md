@@ -5,25 +5,25 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-14 — **S12 BİTTİ: EKRANLAR TEK TAM-EKRAN KABUKTA, D-110** · Faz S 11/14 · 86/98)
+## ŞU AN (2026-09-14 — **S13 ÖLÇÜM BİTTİ, KARAR BEKLİYOR** · Faz S 11/14 · 86/98)
 
 ```
-SORU            : D-106'nın YAPI kararları (K3 · M2 · Y2 · chip'siz şerit · G-05 · G-18) koda
-                  nasıl girer — S11'in mor DİLİNE ve denge sayılarına dokunmadan?
-ÖLÇÜLECEK KOLLAR: YOK — kararlar yazılıydı; açık tek kol T2 kullanıcı tarafından seçildi.
-SAYILAR         : docs/ui-ses-raporu-s9s10.md §S12 · ham docs/olcum-ui-ekran.json
-                  kabuk 5/5 alt sayfa → 5/5 TAM EKRAN · farklı yükseklik 4 → 1 (844) ·
-                  ekran payı %51,1…%80,0 → %100 · çıkış "✕+arka" → tek jest: geri ·
-                  mağaza vitrini 150 → 230 px taban (~460 gerçek) · satın alma 3 → 1 düğme ·
-                  AA altı 12/177 → 0/184 · yarıçap dizgesi 6 → 5
-                  KORUNDU: punto 5 · gölge 3 · font 2 · glif 13 · krom %23,2
-KARAR           : D-110 — T2 uygulandı (renk değil ZEMİN değişti). Karar dışına üç çıkış,
-                  hepsi yazılı: cüzdan kabuğa girdi · "Tamam" düğmeleri kalktı ·
-                  salon seçimi satın alma olmaktan çıktı.
-UYGULAMA        : Sheet.tsx K3 kabuğu · hud.css + index.css · ShopPanel M2 · 50 göreve lakap ·
-                  Scene.tsx masa noktası "SV n" · smoke + shot araçları geri düğmesine geçti
-BEKÇİ           : tests/ekran-kabugu.test.ts — 8 denetim, **8 mutasyonla** doğrulandı
-                  vitest 924 ✓ · duman 42/42 ✓ · tsc -b ✓ · tam koşu ölçümü ✓
+SORU            : Altı ücretsiz KayKit paketi indirilebilir mi, içlerinde ne var ve repoya
+                  NE girer? ("her asseti çek" indirmeyi serbest bırakır, repoyu değil.)
+ÖLÇÜLECEK KOLLAR: A hepsi TAM · B yalnız eşleşen modeller — ikisi de MB olarak.
+                  Yan sorular: door_A itme barı · WC çöp kutusu · çiçek karşılığı var mı?
+SAYILAR         : docs/yeni-paketler-raporu-s13.md · ham docs/olcum-yeni-paketler.json
+                  indirme engeli KALKTI (4. adım oyun sayfasına gidiyor) · 6/6 paket indi 72,4 MB
+                  553 model · 6 atlas · lisans 5'i pakette CC0, Holiday itch sayfasında CC0
+                  models/ 5,9 MB → kol A 27,2 MB (×4,6) · kol B 8,4 MB (117 model, ×1,4)
+                  door_A: Prototype Door_A itme barsız, ayak izi BİREBİR (1,600×2,800),
+                          derinlik 0,771→0,546 · üçgen 188→296 · WC'nin %73 grisi gider
+                  çöp kutusu: 9 pakette YOK (üçüncü ölçüm) · çiçek: Forest'ta YOK, hepsi tek yeşil
+                  panonun 6 görevinden 3'ü ÇÜRÜDÜ (Holiday süs değil mobilya · Prototype ok değil
+                  kapı · Block hacim değil voxel küpü)
+KARAR           : (BOŞ — karar paketi sunuldu, kullanıcı seçecek)
+UYGULAMA        : (kararın kolu)
+BEKÇİ           : (test dosyası + mutasyon)
 ```
 
 ## SIRADAKİ TAM ADIM

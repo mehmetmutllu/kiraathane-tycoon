@@ -6,7 +6,8 @@
 #   1) oyun sayfasını çek → gizli `csrf_token`
 #   2) POST /download_url        → süreli indirme sayfasının adresi
 #   3) indirme sayfası           → dosya listesi (`upload_id`)
-#   4) POST /file/<upload_id>    → gerçek dosya adresi (CDN)
+#   4) POST {oyun sayfası}/file/<upload_id>?source=game_download → gerçek dosya adresi (CDN)
+#      (2026-09-14/S13'te düzeltildi: 4. adım indirme sayfasına atılınca 404 dönüyordu.)
 #
 # KULLANIM
 #   pwsh tools/indir-itch.ps1 -Sayfa https://kaylousberg.itch.io/board-game-bits -Hedef indirilen
@@ -68,15 +69,24 @@ $indirmeSayfasi = $indirmeSayfasi.TrimEnd('/')
 
 foreach ($d in $dosyalar) {
   Write-Host "4/4  indiriliyor: $($d.Ad)"
-  $j = (Getir "$indirmeSayfasi/file/$($d.Id)" 'POST' @{ csrf_token = $tok }).Content
+  # 4. adım İNDİRME SAYFASINA DEĞİL OYUN SAYFASINA gider (2026-09-14, S13'te ölçüldü):
+  #   {indirme sayfası}/file/{id}          → 404
+  #   {oyun sayfası}/file/{id}?key={...}   → 200 {"errors":["invalid key"]}
+  #   {oyun sayfası}/file/{id}?source=game_download → 200 {"url": ...}   ← bu
+  # Süreli indirme sayfası yine de gerekli: upload_id yalnız orada duruyor.
+  $j = (Getir "$Sayfa/file/$($d.Id)?source=game_download" 'POST' @{ csrf_token = $tok }).Content
   if ($j -notmatch '"url"\s*:\s*"([^"]+)"') { Write-Warning "  adres alınamadı: $j"; continue }
   $dosyaUrl = ($Matches[1] -replace '\\/', '/')
-  # Ad sayfadan okunamadıysa (itch dosya adını her zaman listede vermiyor) CDN adresinin son
-  # parçasından türet — gerçek dosya adı orada duruyor.
+  # Ad sayfadan okunamadıysa (itch dosya adını her zaman listede vermiyor) imzalı CDN adresinin
+  # `response-content-disposition` alanından türet; son çare adresin son parçası (upload id).
   $ad = $d.Ad
   if ($ad -like 'upload_*') {
-    $son = [System.Uri]::UnescapeDataString(([System.Uri]$dosyaUrl).Segments[-1])
-    if ($son -and $son -ne '/') { $ad = $son }
+    if ($dosyaUrl -match 'filename%3D(?:%22)?([^%&]+)') { $ad = [System.Uri]::UnescapeDataString($Matches[1]) }
+    elseif ($dosyaUrl -match 'filename="?([^"&]+)') { $ad = [System.Uri]::UnescapeDataString($Matches[1]) }
+    else {
+      # CDN adresi de ad taşımıyor (KayKit paketlerinde durum bu): oyun sayfasının slug'ı + id.
+      $ad = "$(([System.Uri]$Sayfa).Segments[-1].TrimEnd('/'))_$($d.Id).zip"
+    }
   }
   $cikti = Join-Path $Hedef $ad
   Invoke-WebRequest -Uri $dosyaUrl -OutFile $cikti -UseBasicParsing -WebSession $oturum -TimeoutSec 600
