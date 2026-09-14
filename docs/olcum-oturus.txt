@@ -1,0 +1,89 @@
+OLCUM — OTURUS CAPASI (S19a)   damga: 2026-09-14T19:12:04.417Z
+
+TABURE (chair_stool_wood x 0,9): oturak ustu 0,45 br · kenar yaricapi 0,437 br · kose yaricapi 0,45 br · 12 kenarli cokgen (30 tepe)
+MASA ACIKLIGI: tabure merkezi -> tabla kenari 0,61 br (capa bu sayiyi yemez)
+GOVDE: KAY_SCALE 0,794 · dusey capa KAY_OTURMA_KALDIRMA 0,068 · temas bandi ±0,04 br
+
+=== KALCA KEMIGI: oturus klibinde kokten NE KADAR ILERIDE (z) ===
+govde       kalca x     kalca y     kalca z    deri z araligi
+Knight            0        0,45      -0,315    -0,649 … 0,154
+Rogue             0        0,45      -0,315    -0,664 … 0,132
+Mage              0        0,45      -0,315    -0,62 … 0,132
+Barbarian         0        0,45      -0,315    -0,613 … 0,132
+Ranger            0        0,45      -0,315    -0,61 … 0,132
+
+=== TEMAS: oturak bandindaki deri oturak COKGENinin icinde mi ===
+(ARKA tasma = kalcanin sarkmasi — sorulan kusur bu · ON tasma = uyluk, oturusun dogasi)
+govde       kol                            dz    temas   ARKA tasma   on tasma   yan tasma   deri z ileri ucu
+Knight      O1 BUGUN (capa yok)             0   0,823       0,247          0           0             0,154
+Knight      O2 kalca merkezli           0,315   0,873           0      0,131           0             0,469
+Knight      O3 kalca oturur (en kucuk)   0,25   0,919           0      0,066           0             0,404
+Rogue       O1 BUGUN (capa yok)             0   0,847       0,256          0           0             0,132
+Rogue       O2 kalca merkezli           0,315   0,835           0      0,123           0             0,447
+Rogue       O3 kalca oturur (en kucuk)   0,26     0,9           0      0,068           0             0,392
+Mage        O1 BUGUN (capa yok)             0   0,936       0,171          0       0,009             0,132
+Mage        O2 kalca merkezli           0,315   0,794           0      0,123       0,009             0,447
+Mage        O3 kalca oturur (en kucuk)   0,17   0,992       0,001          0       0,009             0,302
+Barbarian   O1 BUGUN (capa yok)             0   0,938        0,24          0           0             0,132
+Barbarian   O2 kalca merkezli           0,315   0,802           0      0,123           0             0,447
+Barbarian   O3 kalca oturur (en kucuk)   0,24   0,918           0      0,048           0             0,372
+Ranger      O1 BUGUN (capa yok)             0   0,821       0,258          0       0,094             0,132
+Ranger      O2 kalca merkezli           0,315   0,777           0      0,123       0,058             0,447
+Ranger      O3 kalca oturur (en kucuk)   0,26   0,836           0      0,068       0,058             0,392
+(Knight: arka tasma 0,25 … 0,45 araliginda SIFIR — tolerans 0,2 br)
+
+=== SUPURME (Knight): dz -0,30 … +0,45 ===
+dz       temas   ARKA tasma   on tasma   yan tasma
+  -0,3   0,209       0,547          0           0
+ -0,28   0,251       0,527          0           0
+ -0,26   0,278       0,507          0           0
+ -0,24   0,299       0,487          0           0
+ -0,22   0,326       0,467          0           0
+  -0,2    0,38       0,447          0           0
+ -0,18    0,43       0,427          0           0
+ -0,16   0,547       0,407          0           0
+ -0,14   0,625       0,387          0           0
+ -0,12   0,684       0,367          0           0
+  -0,1   0,732       0,347          0           0
+ -0,08   0,739       0,327          0           0
+ -0,06   0,747       0,307          0           0
+ -0,04   0,772       0,287          0           0
+ -0,02   0,808       0,267          0           0
+     0   0,823       0,247          0           0
+  0,02   0,823       0,227          0           0
+  0,04   0,839       0,207          0           0
+  0,06   0,856       0,187          0           0
+  0,08   0,856       0,167          0           0
+   0,1   0,866       0,147          0           0
+  0,12   0,878       0,127          0           0
+  0,14   0,902       0,107          0           0
+  0,16   0,915       0,087          0           0
+  0,18   0,942       0,067          0           0
+   0,2   0,929       0,047      0,016           0
+  0,22   0,925       0,027      0,036           0
+  0,24   0,927       0,007      0,056           0
+  0,26   0,905           0      0,076           0
+  0,28   0,891           0      0,096           0
+   0,3   0,878           0      0,116           0
+  0,32   0,866           0      0,136           0
+  0,34   0,825           0      0,156           0
+  0,36   0,757           0      0,176           0
+  0,38   0,727           0      0,196           0
+   0,4   0,708           0      0,216           0
+  0,42   0,691           0      0,236           0
+  0,44   0,647           0      0,256           0
+
+=== TEK SAYI KOLLARI: bir dz bes govdeyi birden oturtuyor mu ===
+(kod tek sabit yazar; bu tablo o sabitin BES govdedeki EN KOTU degerini gosterir)
+dz       en kotu ARKA   en kotu ON   en ileri deri   masa acikligi 0,61
+     0         0,258            0           0,154   TEMIZ
+  0,17         0,088            0           0,324   TEMIZ
+   0,2         0,058        0,016           0,354   TEMIZ
+  0,22         0,038        0,036           0,374   TEMIZ
+  0,24         0,018        0,056           0,394   TEMIZ
+  0,26             0        0,076           0,414   TEMIZ
+  0,28             0        0,096           0,434   TEMIZ
+  0,32             0        0,136           0,474   TEMIZ
+
+kare: docs/gorsel/ss/s19-oturus.png
+konsol hatasi: yok

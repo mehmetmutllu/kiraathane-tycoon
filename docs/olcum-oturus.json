@@ -1,0 +1,5452 @@
+{
+  "surum": 8,
+  "damga": "2026-09-14T19:12:04.417Z",
+  "kaynak": {
+    "ACTOR_HEIGHT": 1.75,
+    "KAY_SCALE": 0.794,
+    "KAY_OTURMA_KALDIRMA": 0.068,
+    "STOOL_S": 0.9,
+    "BANT": 0.04
+  },
+  "tabure": {
+    "oturakUstu": 0.45,
+    "cokgen": [
+      [
+        -0.324,
+        -0.293
+      ],
+      [
+        -0.318,
+        -0.318
+      ],
+      [
+        -0.292,
+        -0.324
+      ],
+      [
+        0.293,
+        -0.324
+      ],
+      [
+        0.318,
+        -0.318
+      ],
+      [
+        0.324,
+        -0.293
+      ],
+      [
+        0.324,
+        0.292
+      ],
+      [
+        0.318,
+        0.318
+      ],
+      [
+        0.293,
+        0.324
+      ],
+      [
+        -0.292,
+        0.324
+      ],
+      [
+        -0.318,
+        0.318
+      ],
+      [
+        -0.324,
+        0.292
+      ]
+    ],
+    "koseYaricapi": 0.45,
+    "kenarYaricapi": 0.437,
+    "bantTepe": 30
+  },
+  "govdeler": [
+    {
+      "govde": "Knight",
+      "kalcaKemigi": {
+        "x": 0,
+        "y": 0.45,
+        "z": -0.315
+      },
+      "ayakZ": -0.098,
+      "dizZ": null,
+      "kemikAdlari": [
+        "root",
+        "hips",
+        "spine",
+        "chest",
+        "upperarml",
+        "lowerarml",
+        "wristl",
+        "handl",
+        "handslotl",
+        "upperarmr",
+        "lowerarmr",
+        "wristr",
+        "handr",
+        "handslotr",
+        "head",
+        "upperlegr",
+        "lowerlegr",
+        "footr",
+        "toesr",
+        "upperlegl",
+        "lowerlegl",
+        "footl",
+        "toesl"
+      ],
+      "govdeKutu": {
+        "zMin": -0.649,
+        "zMax": 0.154,
+        "yMin": 0.245,
+        "yMax": 1.733
+      },
+      "masaAcikligi": 0.61,
+      "O1_bugun": {
+        "dz": 0,
+        "bantTepe": 589,
+        "temasOrani": 0.823,
+        "arkaTasma": 0.247,
+        "onTasma": 0,
+        "yanTasma": 0,
+        "zAraligi": [
+          -0.571,
+          0.14
+        ],
+        "zMerkez": -0.215
+      },
+      "O2_kalcaMerkezli": {
+        "dz": 0.315,
+        "bantTepe": 589,
+        "temasOrani": 0.873,
+        "arkaTasma": 0,
+        "onTasma": 0.131,
+        "yanTasma": 0,
+        "zAraligi": [
+          -0.256,
+          0.455
+        ],
+        "zMerkez": 0.1
+      },
+      "O3_enIyiTemas": {
+        "bantTepe": 589,
+        "temasOrani": 0.919,
+        "arkaTasma": 0,
+        "onTasma": 0.066,
+        "yanTasma": 0,
+        "zAraligi": [
+          -0.321,
+          0.39
+        ],
+        "zMerkez": 0.035,
+        "dz": 0.25,
+        "oturanAralik": [
+          0.25,
+          0.45
+        ]
+      },
+      "supurme": [
+        {
+          "dz": -0.3,
+          "bantTepe": 589,
+          "temasOrani": 0.209,
+          "arkaTasma": 0.547,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.871,
+            -0.16
+          ],
+          "zMerkez": -0.515
+        },
+        {
+          "dz": -0.29,
+          "bantTepe": 589,
+          "temasOrani": 0.243,
+          "arkaTasma": 0.537,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.861,
+            -0.15
+          ],
+          "zMerkez": -0.505
+        },
+        {
+          "dz": -0.28,
+          "bantTepe": 589,
+          "temasOrani": 0.251,
+          "arkaTasma": 0.527,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.851,
+            -0.14
+          ],
+          "zMerkez": -0.495
+        },
+        {
+          "dz": -0.27,
+          "bantTepe": 589,
+          "temasOrani": 0.273,
+          "arkaTasma": 0.517,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.841,
+            -0.13
+          ],
+          "zMerkez": -0.485
+        },
+        {
+          "dz": -0.26,
+          "bantTepe": 589,
+          "temasOrani": 0.278,
+          "arkaTasma": 0.507,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.831,
+            -0.12
+          ],
+          "zMerkez": -0.475
+        },
+        {
+          "dz": -0.25,
+          "bantTepe": 589,
+          "temasOrani": 0.292,
+          "arkaTasma": 0.497,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.821,
+            -0.11
+          ],
+          "zMerkez": -0.465
+        },
+        {
+          "dz": -0.24,
+          "bantTepe": 589,
+          "temasOrani": 0.299,
+          "arkaTasma": 0.487,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.811,
+            -0.1
+          ],
+          "zMerkez": -0.455
+        },
+        {
+          "dz": -0.23,
+          "bantTepe": 589,
+          "temasOrani": 0.304,
+          "arkaTasma": 0.477,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.801,
+            -0.09
+          ],
+          "zMerkez": -0.445
+        },
+        {
+          "dz": -0.22,
+          "bantTepe": 589,
+          "temasOrani": 0.326,
+          "arkaTasma": 0.467,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.791,
+            -0.08
+          ],
+          "zMerkez": -0.435
+        },
+        {
+          "dz": -0.21,
+          "bantTepe": 589,
+          "temasOrani": 0.346,
+          "arkaTasma": 0.457,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.781,
+            -0.07
+          ],
+          "zMerkez": -0.425
+        },
+        {
+          "dz": -0.2,
+          "bantTepe": 589,
+          "temasOrani": 0.38,
+          "arkaTasma": 0.447,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.771,
+            -0.06
+          ],
+          "zMerkez": -0.415
+        },
+        {
+          "dz": -0.19,
+          "bantTepe": 589,
+          "temasOrani": 0.411,
+          "arkaTasma": 0.437,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.761,
+            -0.05
+          ],
+          "zMerkez": -0.405
+        },
+        {
+          "dz": -0.18,
+          "bantTepe": 589,
+          "temasOrani": 0.43,
+          "arkaTasma": 0.427,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.751,
+            -0.04
+          ],
+          "zMerkez": -0.395
+        },
+        {
+          "dz": -0.17,
+          "bantTepe": 589,
+          "temasOrani": 0.486,
+          "arkaTasma": 0.417,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.741,
+            -0.03
+          ],
+          "zMerkez": -0.385
+        },
+        {
+          "dz": -0.16,
+          "bantTepe": 589,
+          "temasOrani": 0.547,
+          "arkaTasma": 0.407,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.731,
+            -0.02
+          ],
+          "zMerkez": -0.375
+        },
+        {
+          "dz": -0.15,
+          "bantTepe": 589,
+          "temasOrani": 0.604,
+          "arkaTasma": 0.397,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.721,
+            -0.01
+          ],
+          "zMerkez": -0.365
+        },
+        {
+          "dz": -0.14,
+          "bantTepe": 589,
+          "temasOrani": 0.625,
+          "arkaTasma": 0.387,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.711,
+            0
+          ],
+          "zMerkez": -0.355
+        },
+        {
+          "dz": -0.13,
+          "bantTepe": 589,
+          "temasOrani": 0.65,
+          "arkaTasma": 0.377,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.701,
+            0.01
+          ],
+          "zMerkez": -0.345
+        },
+        {
+          "dz": -0.12,
+          "bantTepe": 589,
+          "temasOrani": 0.684,
+          "arkaTasma": 0.367,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.691,
+            0.02
+          ],
+          "zMerkez": -0.335
+        },
+        {
+          "dz": -0.11,
+          "bantTepe": 589,
+          "temasOrani": 0.725,
+          "arkaTasma": 0.357,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.681,
+            0.03
+          ],
+          "zMerkez": -0.325
+        },
+        {
+          "dz": -0.1,
+          "bantTepe": 589,
+          "temasOrani": 0.732,
+          "arkaTasma": 0.347,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.671,
+            0.04
+          ],
+          "zMerkez": -0.315
+        },
+        {
+          "dz": -0.09,
+          "bantTepe": 589,
+          "temasOrani": 0.739,
+          "arkaTasma": 0.337,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.661,
+            0.05
+          ],
+          "zMerkez": -0.305
+        },
+        {
+          "dz": -0.08,
+          "bantTepe": 589,
+          "temasOrani": 0.739,
+          "arkaTasma": 0.327,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.651,
+            0.06
+          ],
+          "zMerkez": -0.295
+        },
+        {
+          "dz": -0.07,
+          "bantTepe": 589,
+          "temasOrani": 0.744,
+          "arkaTasma": 0.317,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.641,
+            0.07
+          ],
+          "zMerkez": -0.285
+        },
+        {
+          "dz": -0.06,
+          "bantTepe": 589,
+          "temasOrani": 0.747,
+          "arkaTasma": 0.307,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.631,
+            0.08
+          ],
+          "zMerkez": -0.275
+        },
+        {
+          "dz": -0.05,
+          "bantTepe": 589,
+          "temasOrani": 0.759,
+          "arkaTasma": 0.297,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.621,
+            0.09
+          ],
+          "zMerkez": -0.265
+        },
+        {
+          "dz": -0.04,
+          "bantTepe": 589,
+          "temasOrani": 0.772,
+          "arkaTasma": 0.287,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.611,
+            0.1
+          ],
+          "zMerkez": -0.255
+        },
+        {
+          "dz": -0.03,
+          "bantTepe": 589,
+          "temasOrani": 0.8,
+          "arkaTasma": 0.277,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.601,
+            0.11
+          ],
+          "zMerkez": -0.245
+        },
+        {
+          "dz": -0.02,
+          "bantTepe": 589,
+          "temasOrani": 0.808,
+          "arkaTasma": 0.267,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.591,
+            0.12
+          ],
+          "zMerkez": -0.235
+        },
+        {
+          "dz": -0.01,
+          "bantTepe": 589,
+          "temasOrani": 0.817,
+          "arkaTasma": 0.257,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.581,
+            0.13
+          ],
+          "zMerkez": -0.225
+        },
+        {
+          "dz": 0,
+          "bantTepe": 589,
+          "temasOrani": 0.823,
+          "arkaTasma": 0.247,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.571,
+            0.14
+          ],
+          "zMerkez": -0.215
+        },
+        {
+          "dz": 0.01,
+          "bantTepe": 589,
+          "temasOrani": 0.823,
+          "arkaTasma": 0.237,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.561,
+            0.15
+          ],
+          "zMerkez": -0.205
+        },
+        {
+          "dz": 0.02,
+          "bantTepe": 589,
+          "temasOrani": 0.823,
+          "arkaTasma": 0.227,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.551,
+            0.16
+          ],
+          "zMerkez": -0.195
+        },
+        {
+          "dz": 0.03,
+          "bantTepe": 589,
+          "temasOrani": 0.837,
+          "arkaTasma": 0.217,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.541,
+            0.17
+          ],
+          "zMerkez": -0.185
+        },
+        {
+          "dz": 0.04,
+          "bantTepe": 589,
+          "temasOrani": 0.839,
+          "arkaTasma": 0.207,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.531,
+            0.18
+          ],
+          "zMerkez": -0.175
+        },
+        {
+          "dz": 0.05,
+          "bantTepe": 589,
+          "temasOrani": 0.846,
+          "arkaTasma": 0.197,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.521,
+            0.19
+          ],
+          "zMerkez": -0.165
+        },
+        {
+          "dz": 0.06,
+          "bantTepe": 589,
+          "temasOrani": 0.856,
+          "arkaTasma": 0.187,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.511,
+            0.2
+          ],
+          "zMerkez": -0.155
+        },
+        {
+          "dz": 0.07,
+          "bantTepe": 589,
+          "temasOrani": 0.856,
+          "arkaTasma": 0.177,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.501,
+            0.21
+          ],
+          "zMerkez": -0.145
+        },
+        {
+          "dz": 0.08,
+          "bantTepe": 589,
+          "temasOrani": 0.856,
+          "arkaTasma": 0.167,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.491,
+            0.22
+          ],
+          "zMerkez": -0.135
+        },
+        {
+          "dz": 0.09,
+          "bantTepe": 589,
+          "temasOrani": 0.862,
+          "arkaTasma": 0.157,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.481,
+            0.23
+          ],
+          "zMerkez": -0.125
+        },
+        {
+          "dz": 0.1,
+          "bantTepe": 589,
+          "temasOrani": 0.866,
+          "arkaTasma": 0.147,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.471,
+            0.24
+          ],
+          "zMerkez": -0.115
+        },
+        {
+          "dz": 0.11,
+          "bantTepe": 589,
+          "temasOrani": 0.866,
+          "arkaTasma": 0.137,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.461,
+            0.25
+          ],
+          "zMerkez": -0.105
+        },
+        {
+          "dz": 0.12,
+          "bantTepe": 589,
+          "temasOrani": 0.878,
+          "arkaTasma": 0.127,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.451,
+            0.26
+          ],
+          "zMerkez": -0.095
+        },
+        {
+          "dz": 0.13,
+          "bantTepe": 589,
+          "temasOrani": 0.895,
+          "arkaTasma": 0.117,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.441,
+            0.27
+          ],
+          "zMerkez": -0.085
+        },
+        {
+          "dz": 0.14,
+          "bantTepe": 589,
+          "temasOrani": 0.902,
+          "arkaTasma": 0.107,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.431,
+            0.28
+          ],
+          "zMerkez": -0.075
+        },
+        {
+          "dz": 0.15,
+          "bantTepe": 589,
+          "temasOrani": 0.902,
+          "arkaTasma": 0.097,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.421,
+            0.29
+          ],
+          "zMerkez": -0.065
+        },
+        {
+          "dz": 0.16,
+          "bantTepe": 589,
+          "temasOrani": 0.915,
+          "arkaTasma": 0.087,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.411,
+            0.3
+          ],
+          "zMerkez": -0.055
+        },
+        {
+          "dz": 0.17,
+          "bantTepe": 589,
+          "temasOrani": 0.925,
+          "arkaTasma": 0.077,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.401,
+            0.31
+          ],
+          "zMerkez": -0.045
+        },
+        {
+          "dz": 0.18,
+          "bantTepe": 589,
+          "temasOrani": 0.942,
+          "arkaTasma": 0.067,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.391,
+            0.32
+          ],
+          "zMerkez": -0.035
+        },
+        {
+          "dz": 0.19,
+          "bantTepe": 589,
+          "temasOrani": 0.942,
+          "arkaTasma": 0.057,
+          "onTasma": 0.006,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.381,
+            0.33
+          ],
+          "zMerkez": -0.025
+        },
+        {
+          "dz": 0.2,
+          "bantTepe": 589,
+          "temasOrani": 0.929,
+          "arkaTasma": 0.047,
+          "onTasma": 0.016,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.371,
+            0.34
+          ],
+          "zMerkez": -0.015
+        },
+        {
+          "dz": 0.21,
+          "bantTepe": 589,
+          "temasOrani": 0.925,
+          "arkaTasma": 0.037,
+          "onTasma": 0.026,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.361,
+            0.35
+          ],
+          "zMerkez": -0.005
+        },
+        {
+          "dz": 0.22,
+          "bantTepe": 589,
+          "temasOrani": 0.925,
+          "arkaTasma": 0.027,
+          "onTasma": 0.036,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.351,
+            0.36
+          ],
+          "zMerkez": 0.005
+        },
+        {
+          "dz": 0.23,
+          "bantTepe": 589,
+          "temasOrani": 0.919,
+          "arkaTasma": 0.017,
+          "onTasma": 0.046,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.341,
+            0.37
+          ],
+          "zMerkez": 0.015
+        },
+        {
+          "dz": 0.24,
+          "bantTepe": 589,
+          "temasOrani": 0.927,
+          "arkaTasma": 0.007,
+          "onTasma": 0.056,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.331,
+            0.38
+          ],
+          "zMerkez": 0.025
+        },
+        {
+          "dz": 0.25,
+          "bantTepe": 589,
+          "temasOrani": 0.919,
+          "arkaTasma": 0,
+          "onTasma": 0.066,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.321,
+            0.39
+          ],
+          "zMerkez": 0.035
+        },
+        {
+          "dz": 0.26,
+          "bantTepe": 589,
+          "temasOrani": 0.905,
+          "arkaTasma": 0,
+          "onTasma": 0.076,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.311,
+            0.4
+          ],
+          "zMerkez": 0.045
+        },
+        {
+          "dz": 0.27,
+          "bantTepe": 589,
+          "temasOrani": 0.903,
+          "arkaTasma": 0,
+          "onTasma": 0.086,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.301,
+            0.41
+          ],
+          "zMerkez": 0.055
+        },
+        {
+          "dz": 0.28,
+          "bantTepe": 589,
+          "temasOrani": 0.891,
+          "arkaTasma": 0,
+          "onTasma": 0.096,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.291,
+            0.42
+          ],
+          "zMerkez": 0.065
+        },
+        {
+          "dz": 0.29,
+          "bantTepe": 589,
+          "temasOrani": 0.888,
+          "arkaTasma": 0,
+          "onTasma": 0.106,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.281,
+            0.43
+          ],
+          "zMerkez": 0.075
+        },
+        {
+          "dz": 0.3,
+          "bantTepe": 589,
+          "temasOrani": 0.878,
+          "arkaTasma": 0,
+          "onTasma": 0.116,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.271,
+            0.44
+          ],
+          "zMerkez": 0.085
+        },
+        {
+          "dz": 0.31,
+          "bantTepe": 589,
+          "temasOrani": 0.874,
+          "arkaTasma": 0,
+          "onTasma": 0.126,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.261,
+            0.45
+          ],
+          "zMerkez": 0.095
+        },
+        {
+          "dz": 0.32,
+          "bantTepe": 589,
+          "temasOrani": 0.866,
+          "arkaTasma": 0,
+          "onTasma": 0.136,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.251,
+            0.46
+          ],
+          "zMerkez": 0.105
+        },
+        {
+          "dz": 0.33,
+          "bantTepe": 589,
+          "temasOrani": 0.846,
+          "arkaTasma": 0,
+          "onTasma": 0.146,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.241,
+            0.47
+          ],
+          "zMerkez": 0.115
+        },
+        {
+          "dz": 0.34,
+          "bantTepe": 589,
+          "temasOrani": 0.825,
+          "arkaTasma": 0,
+          "onTasma": 0.156,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.231,
+            0.48
+          ],
+          "zMerkez": 0.125
+        },
+        {
+          "dz": 0.35,
+          "bantTepe": 589,
+          "temasOrani": 0.784,
+          "arkaTasma": 0,
+          "onTasma": 0.166,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.221,
+            0.49
+          ],
+          "zMerkez": 0.135
+        },
+        {
+          "dz": 0.36,
+          "bantTepe": 589,
+          "temasOrani": 0.757,
+          "arkaTasma": 0,
+          "onTasma": 0.176,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.211,
+            0.5
+          ],
+          "zMerkez": 0.145
+        },
+        {
+          "dz": 0.37,
+          "bantTepe": 589,
+          "temasOrani": 0.749,
+          "arkaTasma": 0,
+          "onTasma": 0.186,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.201,
+            0.51
+          ],
+          "zMerkez": 0.155
+        },
+        {
+          "dz": 0.38,
+          "bantTepe": 589,
+          "temasOrani": 0.727,
+          "arkaTasma": 0,
+          "onTasma": 0.196,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.191,
+            0.52
+          ],
+          "zMerkez": 0.165
+        },
+        {
+          "dz": 0.39,
+          "bantTepe": 589,
+          "temasOrani": 0.715,
+          "arkaTasma": 0,
+          "onTasma": 0.206,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.181,
+            0.53
+          ],
+          "zMerkez": 0.175
+        },
+        {
+          "dz": 0.4,
+          "bantTepe": 589,
+          "temasOrani": 0.708,
+          "arkaTasma": 0,
+          "onTasma": 0.216,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.171,
+            0.54
+          ],
+          "zMerkez": 0.185
+        },
+        {
+          "dz": 0.41,
+          "bantTepe": 589,
+          "temasOrani": 0.701,
+          "arkaTasma": 0,
+          "onTasma": 0.226,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.161,
+            0.55
+          ],
+          "zMerkez": 0.195
+        },
+        {
+          "dz": 0.42,
+          "bantTepe": 589,
+          "temasOrani": 0.691,
+          "arkaTasma": 0,
+          "onTasma": 0.236,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.151,
+            0.56
+          ],
+          "zMerkez": 0.205
+        },
+        {
+          "dz": 0.43,
+          "bantTepe": 589,
+          "temasOrani": 0.669,
+          "arkaTasma": 0,
+          "onTasma": 0.246,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.141,
+            0.57
+          ],
+          "zMerkez": 0.215
+        },
+        {
+          "dz": 0.44,
+          "bantTepe": 589,
+          "temasOrani": 0.647,
+          "arkaTasma": 0,
+          "onTasma": 0.256,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.131,
+            0.58
+          ],
+          "zMerkez": 0.225
+        },
+        {
+          "dz": 0.45,
+          "bantTepe": 589,
+          "temasOrani": 0.616,
+          "arkaTasma": 0,
+          "onTasma": 0.266,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.121,
+            0.59
+          ],
+          "zMerkez": 0.235
+        }
+      ]
+    },
+    {
+      "govde": "Rogue",
+      "kalcaKemigi": {
+        "x": 0,
+        "y": 0.45,
+        "z": -0.315
+      },
+      "ayakZ": -0.098,
+      "dizZ": null,
+      "kemikAdlari": [
+        "root",
+        "hips",
+        "upperlegl",
+        "lowerlegl",
+        "footl",
+        "toesl",
+        "upperlegr",
+        "lowerlegr",
+        "footr",
+        "toesr",
+        "spine",
+        "chest",
+        "upperarmr",
+        "lowerarmr",
+        "wristr",
+        "handr",
+        "handslotr",
+        "head",
+        "upperarml",
+        "lowerarml",
+        "wristl",
+        "handl",
+        "handslotl"
+      ],
+      "govdeKutu": {
+        "zMin": -0.664,
+        "zMax": 0.132,
+        "yMin": 0.252,
+        "yMax": 1.668
+      },
+      "masaAcikligi": 0.61,
+      "O1_bugun": {
+        "dz": 0,
+        "bantTepe": 799,
+        "temasOrani": 0.847,
+        "arkaTasma": 0.256,
+        "onTasma": 0,
+        "yanTasma": 0,
+        "zAraligi": [
+          -0.58,
+          0.132
+        ],
+        "zMerkez": -0.224
+      },
+      "O2_kalcaMerkezli": {
+        "dz": 0.315,
+        "bantTepe": 799,
+        "temasOrani": 0.835,
+        "arkaTasma": 0,
+        "onTasma": 0.123,
+        "yanTasma": 0,
+        "zAraligi": [
+          -0.265,
+          0.447
+        ],
+        "zMerkez": 0.091
+      },
+      "O3_enIyiTemas": {
+        "bantTepe": 799,
+        "temasOrani": 0.9,
+        "arkaTasma": 0,
+        "onTasma": 0.068,
+        "yanTasma": 0,
+        "zAraligi": [
+          -0.32,
+          0.392
+        ],
+        "zMerkez": 0.036,
+        "dz": 0.26,
+        "oturanAralik": [
+          0.26,
+          0.45
+        ]
+      },
+      "supurme": [
+        {
+          "dz": -0.3,
+          "bantTepe": 799,
+          "temasOrani": 0.278,
+          "arkaTasma": 0.556,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.88,
+            -0.168
+          ],
+          "zMerkez": -0.524
+        },
+        {
+          "dz": -0.29,
+          "bantTepe": 799,
+          "temasOrani": 0.334,
+          "arkaTasma": 0.546,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.87,
+            -0.158
+          ],
+          "zMerkez": -0.514
+        },
+        {
+          "dz": -0.28,
+          "bantTepe": 799,
+          "temasOrani": 0.373,
+          "arkaTasma": 0.536,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.86,
+            -0.148
+          ],
+          "zMerkez": -0.504
+        },
+        {
+          "dz": -0.27,
+          "bantTepe": 799,
+          "temasOrani": 0.422,
+          "arkaTasma": 0.526,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.85,
+            -0.138
+          ],
+          "zMerkez": -0.494
+        },
+        {
+          "dz": -0.26,
+          "bantTepe": 799,
+          "temasOrani": 0.454,
+          "arkaTasma": 0.516,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.84,
+            -0.128
+          ],
+          "zMerkez": -0.484
+        },
+        {
+          "dz": -0.25,
+          "bantTepe": 799,
+          "temasOrani": 0.474,
+          "arkaTasma": 0.506,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.83,
+            -0.118
+          ],
+          "zMerkez": -0.474
+        },
+        {
+          "dz": -0.24,
+          "bantTepe": 799,
+          "temasOrani": 0.493,
+          "arkaTasma": 0.496,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.82,
+            -0.108
+          ],
+          "zMerkez": -0.464
+        },
+        {
+          "dz": -0.23,
+          "bantTepe": 799,
+          "temasOrani": 0.513,
+          "arkaTasma": 0.486,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.81,
+            -0.098
+          ],
+          "zMerkez": -0.454
+        },
+        {
+          "dz": -0.22,
+          "bantTepe": 799,
+          "temasOrani": 0.531,
+          "arkaTasma": 0.476,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.8,
+            -0.088
+          ],
+          "zMerkez": -0.444
+        },
+        {
+          "dz": -0.21,
+          "bantTepe": 799,
+          "temasOrani": 0.557,
+          "arkaTasma": 0.466,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.79,
+            -0.078
+          ],
+          "zMerkez": -0.434
+        },
+        {
+          "dz": -0.2,
+          "bantTepe": 799,
+          "temasOrani": 0.571,
+          "arkaTasma": 0.456,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.78,
+            -0.068
+          ],
+          "zMerkez": -0.424
+        },
+        {
+          "dz": -0.19,
+          "bantTepe": 799,
+          "temasOrani": 0.576,
+          "arkaTasma": 0.446,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.77,
+            -0.058
+          ],
+          "zMerkez": -0.414
+        },
+        {
+          "dz": -0.18,
+          "bantTepe": 799,
+          "temasOrani": 0.596,
+          "arkaTasma": 0.436,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.76,
+            -0.048
+          ],
+          "zMerkez": -0.404
+        },
+        {
+          "dz": -0.17,
+          "bantTepe": 799,
+          "temasOrani": 0.608,
+          "arkaTasma": 0.426,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.75,
+            -0.038
+          ],
+          "zMerkez": -0.394
+        },
+        {
+          "dz": -0.16,
+          "bantTepe": 799,
+          "temasOrani": 0.628,
+          "arkaTasma": 0.416,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.74,
+            -0.028
+          ],
+          "zMerkez": -0.384
+        },
+        {
+          "dz": -0.15,
+          "bantTepe": 799,
+          "temasOrani": 0.663,
+          "arkaTasma": 0.406,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.73,
+            -0.018
+          ],
+          "zMerkez": -0.374
+        },
+        {
+          "dz": -0.14,
+          "bantTepe": 799,
+          "temasOrani": 0.697,
+          "arkaTasma": 0.396,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.72,
+            -0.008
+          ],
+          "zMerkez": -0.364
+        },
+        {
+          "dz": -0.13,
+          "bantTepe": 799,
+          "temasOrani": 0.727,
+          "arkaTasma": 0.386,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.71,
+            0.002
+          ],
+          "zMerkez": -0.354
+        },
+        {
+          "dz": -0.12,
+          "bantTepe": 799,
+          "temasOrani": 0.751,
+          "arkaTasma": 0.376,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.7,
+            0.012
+          ],
+          "zMerkez": -0.344
+        },
+        {
+          "dz": -0.11,
+          "bantTepe": 799,
+          "temasOrani": 0.767,
+          "arkaTasma": 0.366,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.69,
+            0.022
+          ],
+          "zMerkez": -0.334
+        },
+        {
+          "dz": -0.1,
+          "bantTepe": 799,
+          "temasOrani": 0.77,
+          "arkaTasma": 0.356,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.68,
+            0.032
+          ],
+          "zMerkez": -0.324
+        },
+        {
+          "dz": -0.09,
+          "bantTepe": 799,
+          "temasOrani": 0.78,
+          "arkaTasma": 0.346,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.67,
+            0.042
+          ],
+          "zMerkez": -0.314
+        },
+        {
+          "dz": -0.08,
+          "bantTepe": 799,
+          "temasOrani": 0.787,
+          "arkaTasma": 0.336,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.66,
+            0.052
+          ],
+          "zMerkez": -0.304
+        },
+        {
+          "dz": -0.07,
+          "bantTepe": 799,
+          "temasOrani": 0.791,
+          "arkaTasma": 0.326,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.65,
+            0.062
+          ],
+          "zMerkez": -0.294
+        },
+        {
+          "dz": -0.06,
+          "bantTepe": 799,
+          "temasOrani": 0.793,
+          "arkaTasma": 0.316,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.64,
+            0.072
+          ],
+          "zMerkez": -0.284
+        },
+        {
+          "dz": -0.05,
+          "bantTepe": 799,
+          "temasOrani": 0.802,
+          "arkaTasma": 0.306,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.63,
+            0.082
+          ],
+          "zMerkez": -0.274
+        },
+        {
+          "dz": -0.04,
+          "bantTepe": 799,
+          "temasOrani": 0.822,
+          "arkaTasma": 0.296,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.62,
+            0.092
+          ],
+          "zMerkez": -0.264
+        },
+        {
+          "dz": -0.03,
+          "bantTepe": 799,
+          "temasOrani": 0.83,
+          "arkaTasma": 0.286,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.61,
+            0.102
+          ],
+          "zMerkez": -0.254
+        },
+        {
+          "dz": -0.02,
+          "bantTepe": 799,
+          "temasOrani": 0.836,
+          "arkaTasma": 0.276,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.6,
+            0.112
+          ],
+          "zMerkez": -0.244
+        },
+        {
+          "dz": -0.01,
+          "bantTepe": 799,
+          "temasOrani": 0.842,
+          "arkaTasma": 0.266,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.59,
+            0.122
+          ],
+          "zMerkez": -0.234
+        },
+        {
+          "dz": 0,
+          "bantTepe": 799,
+          "temasOrani": 0.847,
+          "arkaTasma": 0.256,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.58,
+            0.132
+          ],
+          "zMerkez": -0.224
+        },
+        {
+          "dz": 0.01,
+          "bantTepe": 799,
+          "temasOrani": 0.851,
+          "arkaTasma": 0.246,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.57,
+            0.142
+          ],
+          "zMerkez": -0.214
+        },
+        {
+          "dz": 0.02,
+          "bantTepe": 799,
+          "temasOrani": 0.855,
+          "arkaTasma": 0.236,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.56,
+            0.152
+          ],
+          "zMerkez": -0.204
+        },
+        {
+          "dz": 0.03,
+          "bantTepe": 799,
+          "temasOrani": 0.866,
+          "arkaTasma": 0.226,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.55,
+            0.162
+          ],
+          "zMerkez": -0.194
+        },
+        {
+          "dz": 0.04,
+          "bantTepe": 799,
+          "temasOrani": 0.869,
+          "arkaTasma": 0.216,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.54,
+            0.172
+          ],
+          "zMerkez": -0.184
+        },
+        {
+          "dz": 0.05,
+          "bantTepe": 799,
+          "temasOrani": 0.869,
+          "arkaTasma": 0.206,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.53,
+            0.182
+          ],
+          "zMerkez": -0.174
+        },
+        {
+          "dz": 0.06,
+          "bantTepe": 799,
+          "temasOrani": 0.871,
+          "arkaTasma": 0.196,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.52,
+            0.192
+          ],
+          "zMerkez": -0.164
+        },
+        {
+          "dz": 0.07,
+          "bantTepe": 799,
+          "temasOrani": 0.871,
+          "arkaTasma": 0.186,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.51,
+            0.202
+          ],
+          "zMerkez": -0.154
+        },
+        {
+          "dz": 0.08,
+          "bantTepe": 799,
+          "temasOrani": 0.875,
+          "arkaTasma": 0.176,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.5,
+            0.212
+          ],
+          "zMerkez": -0.144
+        },
+        {
+          "dz": 0.09,
+          "bantTepe": 799,
+          "temasOrani": 0.884,
+          "arkaTasma": 0.166,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.49,
+            0.222
+          ],
+          "zMerkez": -0.134
+        },
+        {
+          "dz": 0.1,
+          "bantTepe": 799,
+          "temasOrani": 0.886,
+          "arkaTasma": 0.156,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.48,
+            0.232
+          ],
+          "zMerkez": -0.124
+        },
+        {
+          "dz": 0.11,
+          "bantTepe": 799,
+          "temasOrani": 0.896,
+          "arkaTasma": 0.146,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.47,
+            0.242
+          ],
+          "zMerkez": -0.114
+        },
+        {
+          "dz": 0.12,
+          "bantTepe": 799,
+          "temasOrani": 0.9,
+          "arkaTasma": 0.136,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.46,
+            0.252
+          ],
+          "zMerkez": -0.104
+        },
+        {
+          "dz": 0.13,
+          "bantTepe": 799,
+          "temasOrani": 0.91,
+          "arkaTasma": 0.126,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.45,
+            0.262
+          ],
+          "zMerkez": -0.094
+        },
+        {
+          "dz": 0.14,
+          "bantTepe": 799,
+          "temasOrani": 0.91,
+          "arkaTasma": 0.116,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.44,
+            0.272
+          ],
+          "zMerkez": -0.084
+        },
+        {
+          "dz": 0.15,
+          "bantTepe": 799,
+          "temasOrani": 0.915,
+          "arkaTasma": 0.106,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.43,
+            0.282
+          ],
+          "zMerkez": -0.074
+        },
+        {
+          "dz": 0.16,
+          "bantTepe": 799,
+          "temasOrani": 0.925,
+          "arkaTasma": 0.096,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.42,
+            0.292
+          ],
+          "zMerkez": -0.064
+        },
+        {
+          "dz": 0.17,
+          "bantTepe": 799,
+          "temasOrani": 0.93,
+          "arkaTasma": 0.086,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.41,
+            0.302
+          ],
+          "zMerkez": -0.054
+        },
+        {
+          "dz": 0.18,
+          "bantTepe": 799,
+          "temasOrani": 0.937,
+          "arkaTasma": 0.076,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.4,
+            0.312
+          ],
+          "zMerkez": -0.044
+        },
+        {
+          "dz": 0.19,
+          "bantTepe": 799,
+          "temasOrani": 0.95,
+          "arkaTasma": 0.066,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.39,
+            0.322
+          ],
+          "zMerkez": -0.034
+        },
+        {
+          "dz": 0.2,
+          "bantTepe": 799,
+          "temasOrani": 0.936,
+          "arkaTasma": 0.056,
+          "onTasma": 0.008,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.38,
+            0.332
+          ],
+          "zMerkez": -0.024
+        },
+        {
+          "dz": 0.21,
+          "bantTepe": 799,
+          "temasOrani": 0.935,
+          "arkaTasma": 0.046,
+          "onTasma": 0.018,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.37,
+            0.342
+          ],
+          "zMerkez": -0.014
+        },
+        {
+          "dz": 0.22,
+          "bantTepe": 799,
+          "temasOrani": 0.932,
+          "arkaTasma": 0.036,
+          "onTasma": 0.028,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.36,
+            0.352
+          ],
+          "zMerkez": -0.004
+        },
+        {
+          "dz": 0.23,
+          "bantTepe": 799,
+          "temasOrani": 0.92,
+          "arkaTasma": 0.026,
+          "onTasma": 0.038,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.35,
+            0.362
+          ],
+          "zMerkez": 0.006
+        },
+        {
+          "dz": 0.24,
+          "bantTepe": 799,
+          "temasOrani": 0.906,
+          "arkaTasma": 0.016,
+          "onTasma": 0.048,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.34,
+            0.372
+          ],
+          "zMerkez": 0.016
+        },
+        {
+          "dz": 0.25,
+          "bantTepe": 799,
+          "temasOrani": 0.9,
+          "arkaTasma": 0.006,
+          "onTasma": 0.058,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.33,
+            0.382
+          ],
+          "zMerkez": 0.026
+        },
+        {
+          "dz": 0.26,
+          "bantTepe": 799,
+          "temasOrani": 0.9,
+          "arkaTasma": 0,
+          "onTasma": 0.068,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.32,
+            0.392
+          ],
+          "zMerkez": 0.036
+        },
+        {
+          "dz": 0.27,
+          "bantTepe": 799,
+          "temasOrani": 0.89,
+          "arkaTasma": 0,
+          "onTasma": 0.078,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.31,
+            0.402
+          ],
+          "zMerkez": 0.046
+        },
+        {
+          "dz": 0.28,
+          "bantTepe": 799,
+          "temasOrani": 0.882,
+          "arkaTasma": 0,
+          "onTasma": 0.088,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.3,
+            0.412
+          ],
+          "zMerkez": 0.056
+        },
+        {
+          "dz": 0.29,
+          "bantTepe": 799,
+          "temasOrani": 0.88,
+          "arkaTasma": 0,
+          "onTasma": 0.098,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.29,
+            0.422
+          ],
+          "zMerkez": 0.066
+        },
+        {
+          "dz": 0.3,
+          "bantTepe": 799,
+          "temasOrani": 0.872,
+          "arkaTasma": 0,
+          "onTasma": 0.108,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.28,
+            0.432
+          ],
+          "zMerkez": 0.076
+        },
+        {
+          "dz": 0.31,
+          "bantTepe": 799,
+          "temasOrani": 0.847,
+          "arkaTasma": 0,
+          "onTasma": 0.118,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.27,
+            0.442
+          ],
+          "zMerkez": 0.086
+        },
+        {
+          "dz": 0.32,
+          "bantTepe": 799,
+          "temasOrani": 0.825,
+          "arkaTasma": 0,
+          "onTasma": 0.128,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.26,
+            0.452
+          ],
+          "zMerkez": 0.096
+        },
+        {
+          "dz": 0.33,
+          "bantTepe": 799,
+          "temasOrani": 0.76,
+          "arkaTasma": 0,
+          "onTasma": 0.138,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.25,
+            0.462
+          ],
+          "zMerkez": 0.106
+        },
+        {
+          "dz": 0.34,
+          "bantTepe": 799,
+          "temasOrani": 0.735,
+          "arkaTasma": 0,
+          "onTasma": 0.148,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.24,
+            0.472
+          ],
+          "zMerkez": 0.116
+        },
+        {
+          "dz": 0.35,
+          "bantTepe": 799,
+          "temasOrani": 0.712,
+          "arkaTasma": 0,
+          "onTasma": 0.158,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.23,
+            0.482
+          ],
+          "zMerkez": 0.126
+        },
+        {
+          "dz": 0.36,
+          "bantTepe": 799,
+          "temasOrani": 0.658,
+          "arkaTasma": 0,
+          "onTasma": 0.168,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.22,
+            0.492
+          ],
+          "zMerkez": 0.136
+        },
+        {
+          "dz": 0.37,
+          "bantTepe": 799,
+          "temasOrani": 0.616,
+          "arkaTasma": 0,
+          "onTasma": 0.178,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.21,
+            0.502
+          ],
+          "zMerkez": 0.146
+        },
+        {
+          "dz": 0.38,
+          "bantTepe": 799,
+          "temasOrani": 0.569,
+          "arkaTasma": 0,
+          "onTasma": 0.188,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.2,
+            0.512
+          ],
+          "zMerkez": 0.156
+        },
+        {
+          "dz": 0.39,
+          "bantTepe": 799,
+          "temasOrani": 0.543,
+          "arkaTasma": 0,
+          "onTasma": 0.198,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.19,
+            0.522
+          ],
+          "zMerkez": 0.166
+        },
+        {
+          "dz": 0.4,
+          "bantTepe": 799,
+          "temasOrani": 0.526,
+          "arkaTasma": 0,
+          "onTasma": 0.208,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.18,
+            0.532
+          ],
+          "zMerkez": 0.176
+        },
+        {
+          "dz": 0.41,
+          "bantTepe": 799,
+          "temasOrani": 0.504,
+          "arkaTasma": 0,
+          "onTasma": 0.218,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.17,
+            0.542
+          ],
+          "zMerkez": 0.186
+        },
+        {
+          "dz": 0.42,
+          "bantTepe": 799,
+          "temasOrani": 0.487,
+          "arkaTasma": 0,
+          "onTasma": 0.228,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.16,
+            0.552
+          ],
+          "zMerkez": 0.196
+        },
+        {
+          "dz": 0.43,
+          "bantTepe": 799,
+          "temasOrani": 0.467,
+          "arkaTasma": 0,
+          "onTasma": 0.238,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.15,
+            0.562
+          ],
+          "zMerkez": 0.206
+        },
+        {
+          "dz": 0.44,
+          "bantTepe": 799,
+          "temasOrani": 0.443,
+          "arkaTasma": 0,
+          "onTasma": 0.248,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.14,
+            0.572
+          ],
+          "zMerkez": 0.216
+        },
+        {
+          "dz": 0.45,
+          "bantTepe": 799,
+          "temasOrani": 0.429,
+          "arkaTasma": 0,
+          "onTasma": 0.258,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.13,
+            0.582
+          ],
+          "zMerkez": 0.226
+        }
+      ]
+    },
+    {
+      "govde": "Mage",
+      "kalcaKemigi": {
+        "x": 0,
+        "y": 0.45,
+        "z": -0.315
+      },
+      "ayakZ": -0.098,
+      "dizZ": null,
+      "kemikAdlari": [
+        "root",
+        "hips",
+        "upperlegr",
+        "lowerlegr",
+        "footr",
+        "toesr",
+        "spine",
+        "chest",
+        "upperarml",
+        "lowerarml",
+        "wristl",
+        "handl",
+        "handslotl",
+        "head",
+        "upperarmr",
+        "lowerarmr",
+        "wristr",
+        "handr",
+        "handslotr",
+        "upperlegl",
+        "lowerlegl",
+        "footl",
+        "toesl"
+      ],
+      "govdeKutu": {
+        "zMin": -0.62,
+        "zMax": 0.132,
+        "yMin": 0.252,
+        "yMax": 1.657
+      },
+      "masaAcikligi": 0.61,
+      "O1_bugun": {
+        "dz": 0,
+        "bantTepe": 659,
+        "temasOrani": 0.936,
+        "arkaTasma": 0.171,
+        "onTasma": 0,
+        "yanTasma": 0.009,
+        "zAraligi": [
+          -0.495,
+          0.132
+        ],
+        "zMerkez": -0.181
+      },
+      "O2_kalcaMerkezli": {
+        "dz": 0.315,
+        "bantTepe": 659,
+        "temasOrani": 0.794,
+        "arkaTasma": 0,
+        "onTasma": 0.123,
+        "yanTasma": 0.009,
+        "zAraligi": [
+          -0.18,
+          0.447
+        ],
+        "zMerkez": 0.134
+      },
+      "O3_enIyiTemas": {
+        "bantTepe": 659,
+        "temasOrani": 0.992,
+        "arkaTasma": 0.001,
+        "onTasma": 0,
+        "yanTasma": 0.009,
+        "zAraligi": [
+          -0.325,
+          0.302
+        ],
+        "zMerkez": -0.011,
+        "dz": 0.17,
+        "oturanAralik": [
+          0.17,
+          0.45
+        ]
+      },
+      "supurme": [
+        {
+          "dz": -0.3,
+          "bantTepe": 659,
+          "temasOrani": 0.337,
+          "arkaTasma": 0.471,
+          "onTasma": 0,
+          "yanTasma": 0.231,
+          "zAraligi": [
+            -0.795,
+            -0.168
+          ],
+          "zMerkez": -0.481
+        },
+        {
+          "dz": -0.29,
+          "bantTepe": 659,
+          "temasOrani": 0.405,
+          "arkaTasma": 0.461,
+          "onTasma": 0,
+          "yanTasma": 0.221,
+          "zAraligi": [
+            -0.785,
+            -0.158
+          ],
+          "zMerkez": -0.471
+        },
+        {
+          "dz": -0.28,
+          "bantTepe": 659,
+          "temasOrani": 0.452,
+          "arkaTasma": 0.451,
+          "onTasma": 0,
+          "yanTasma": 0.211,
+          "zAraligi": [
+            -0.775,
+            -0.148
+          ],
+          "zMerkez": -0.461
+        },
+        {
+          "dz": -0.27,
+          "bantTepe": 659,
+          "temasOrani": 0.511,
+          "arkaTasma": 0.441,
+          "onTasma": 0,
+          "yanTasma": 0.201,
+          "zAraligi": [
+            -0.765,
+            -0.138
+          ],
+          "zMerkez": -0.451
+        },
+        {
+          "dz": -0.26,
+          "bantTepe": 659,
+          "temasOrani": 0.551,
+          "arkaTasma": 0.431,
+          "onTasma": 0,
+          "yanTasma": 0.191,
+          "zAraligi": [
+            -0.755,
+            -0.128
+          ],
+          "zMerkez": -0.441
+        },
+        {
+          "dz": -0.25,
+          "bantTepe": 659,
+          "temasOrani": 0.566,
+          "arkaTasma": 0.421,
+          "onTasma": 0,
+          "yanTasma": 0.182,
+          "zAraligi": [
+            -0.745,
+            -0.118
+          ],
+          "zMerkez": -0.431
+        },
+        {
+          "dz": -0.24,
+          "bantTepe": 659,
+          "temasOrani": 0.586,
+          "arkaTasma": 0.411,
+          "onTasma": 0,
+          "yanTasma": 0.172,
+          "zAraligi": [
+            -0.735,
+            -0.108
+          ],
+          "zMerkez": -0.421
+        },
+        {
+          "dz": -0.23,
+          "bantTepe": 659,
+          "temasOrani": 0.607,
+          "arkaTasma": 0.401,
+          "onTasma": 0,
+          "yanTasma": 0.162,
+          "zAraligi": [
+            -0.725,
+            -0.098
+          ],
+          "zMerkez": -0.411
+        },
+        {
+          "dz": -0.22,
+          "bantTepe": 659,
+          "temasOrani": 0.616,
+          "arkaTasma": 0.391,
+          "onTasma": 0,
+          "yanTasma": 0.152,
+          "zAraligi": [
+            -0.715,
+            -0.088
+          ],
+          "zMerkez": -0.401
+        },
+        {
+          "dz": -0.21,
+          "bantTepe": 659,
+          "temasOrani": 0.64,
+          "arkaTasma": 0.381,
+          "onTasma": 0,
+          "yanTasma": 0.142,
+          "zAraligi": [
+            -0.705,
+            -0.078
+          ],
+          "zMerkez": -0.391
+        },
+        {
+          "dz": -0.2,
+          "bantTepe": 659,
+          "temasOrani": 0.649,
+          "arkaTasma": 0.371,
+          "onTasma": 0,
+          "yanTasma": 0.133,
+          "zAraligi": [
+            -0.695,
+            -0.068
+          ],
+          "zMerkez": -0.381
+        },
+        {
+          "dz": -0.19,
+          "bantTepe": 659,
+          "temasOrani": 0.649,
+          "arkaTasma": 0.361,
+          "onTasma": 0,
+          "yanTasma": 0.123,
+          "zAraligi": [
+            -0.685,
+            -0.058
+          ],
+          "zMerkez": -0.371
+        },
+        {
+          "dz": -0.18,
+          "bantTepe": 659,
+          "temasOrani": 0.668,
+          "arkaTasma": 0.351,
+          "onTasma": 0,
+          "yanTasma": 0.113,
+          "zAraligi": [
+            -0.675,
+            -0.048
+          ],
+          "zMerkez": -0.361
+        },
+        {
+          "dz": -0.17,
+          "bantTepe": 659,
+          "temasOrani": 0.672,
+          "arkaTasma": 0.341,
+          "onTasma": 0,
+          "yanTasma": 0.103,
+          "zAraligi": [
+            -0.665,
+            -0.038
+          ],
+          "zMerkez": -0.351
+        },
+        {
+          "dz": -0.16,
+          "bantTepe": 659,
+          "temasOrani": 0.697,
+          "arkaTasma": 0.331,
+          "onTasma": 0,
+          "yanTasma": 0.094,
+          "zAraligi": [
+            -0.655,
+            -0.028
+          ],
+          "zMerkez": -0.341
+        },
+        {
+          "dz": -0.15,
+          "bantTepe": 659,
+          "temasOrani": 0.725,
+          "arkaTasma": 0.321,
+          "onTasma": 0,
+          "yanTasma": 0.084,
+          "zAraligi": [
+            -0.645,
+            -0.018
+          ],
+          "zMerkez": -0.331
+        },
+        {
+          "dz": -0.14,
+          "bantTepe": 659,
+          "temasOrani": 0.766,
+          "arkaTasma": 0.311,
+          "onTasma": 0,
+          "yanTasma": 0.074,
+          "zAraligi": [
+            -0.635,
+            -0.008
+          ],
+          "zMerkez": -0.321
+        },
+        {
+          "dz": -0.13,
+          "bantTepe": 659,
+          "temasOrani": 0.795,
+          "arkaTasma": 0.301,
+          "onTasma": 0,
+          "yanTasma": 0.065,
+          "zAraligi": [
+            -0.625,
+            0.002
+          ],
+          "zMerkez": -0.311
+        },
+        {
+          "dz": -0.12,
+          "bantTepe": 659,
+          "temasOrani": 0.81,
+          "arkaTasma": 0.291,
+          "onTasma": 0,
+          "yanTasma": 0.055,
+          "zAraligi": [
+            -0.615,
+            0.012
+          ],
+          "zMerkez": -0.301
+        },
+        {
+          "dz": -0.11,
+          "bantTepe": 659,
+          "temasOrani": 0.821,
+          "arkaTasma": 0.281,
+          "onTasma": 0,
+          "yanTasma": 0.045,
+          "zAraligi": [
+            -0.605,
+            0.022
+          ],
+          "zMerkez": -0.291
+        },
+        {
+          "dz": -0.1,
+          "bantTepe": 659,
+          "temasOrani": 0.824,
+          "arkaTasma": 0.271,
+          "onTasma": 0,
+          "yanTasma": 0.035,
+          "zAraligi": [
+            -0.595,
+            0.032
+          ],
+          "zMerkez": -0.281
+        },
+        {
+          "dz": -0.09,
+          "bantTepe": 659,
+          "temasOrani": 0.835,
+          "arkaTasma": 0.261,
+          "onTasma": 0,
+          "yanTasma": 0.026,
+          "zAraligi": [
+            -0.585,
+            0.042
+          ],
+          "zMerkez": -0.271
+        },
+        {
+          "dz": -0.08,
+          "bantTepe": 659,
+          "temasOrani": 0.85,
+          "arkaTasma": 0.251,
+          "onTasma": 0,
+          "yanTasma": 0.017,
+          "zAraligi": [
+            -0.575,
+            0.052
+          ],
+          "zMerkez": -0.261
+        },
+        {
+          "dz": -0.07,
+          "bantTepe": 659,
+          "temasOrani": 0.857,
+          "arkaTasma": 0.241,
+          "onTasma": 0,
+          "yanTasma": 0.013,
+          "zAraligi": [
+            -0.565,
+            0.062
+          ],
+          "zMerkez": -0.251
+        },
+        {
+          "dz": -0.06,
+          "bantTepe": 659,
+          "temasOrani": 0.863,
+          "arkaTasma": 0.231,
+          "onTasma": 0,
+          "yanTasma": 0.011,
+          "zAraligi": [
+            -0.555,
+            0.072
+          ],
+          "zMerkez": -0.241
+        },
+        {
+          "dz": -0.05,
+          "bantTepe": 659,
+          "temasOrani": 0.874,
+          "arkaTasma": 0.221,
+          "onTasma": 0,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.545,
+            0.082
+          ],
+          "zMerkez": -0.231
+        },
+        {
+          "dz": -0.04,
+          "bantTepe": 659,
+          "temasOrani": 0.883,
+          "arkaTasma": 0.211,
+          "onTasma": 0,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.535,
+            0.092
+          ],
+          "zMerkez": -0.221
+        },
+        {
+          "dz": -0.03,
+          "bantTepe": 659,
+          "temasOrani": 0.888,
+          "arkaTasma": 0.201,
+          "onTasma": 0,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.525,
+            0.102
+          ],
+          "zMerkez": -0.211
+        },
+        {
+          "dz": -0.02,
+          "bantTepe": 659,
+          "temasOrani": 0.903,
+          "arkaTasma": 0.191,
+          "onTasma": 0,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.515,
+            0.112
+          ],
+          "zMerkez": -0.201
+        },
+        {
+          "dz": -0.01,
+          "bantTepe": 659,
+          "temasOrani": 0.927,
+          "arkaTasma": 0.181,
+          "onTasma": 0,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.505,
+            0.122
+          ],
+          "zMerkez": -0.191
+        },
+        {
+          "dz": 0,
+          "bantTepe": 659,
+          "temasOrani": 0.936,
+          "arkaTasma": 0.171,
+          "onTasma": 0,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.495,
+            0.132
+          ],
+          "zMerkez": -0.181
+        },
+        {
+          "dz": 0.01,
+          "bantTepe": 659,
+          "temasOrani": 0.938,
+          "arkaTasma": 0.161,
+          "onTasma": 0,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.485,
+            0.142
+          ],
+          "zMerkez": -0.171
+        },
+        {
+          "dz": 0.02,
+          "bantTepe": 659,
+          "temasOrani": 0.942,
+          "arkaTasma": 0.151,
+          "onTasma": 0,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.475,
+            0.152
+          ],
+          "zMerkez": -0.161
+        },
+        {
+          "dz": 0.03,
+          "bantTepe": 659,
+          "temasOrani": 0.944,
+          "arkaTasma": 0.141,
+          "onTasma": 0,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.465,
+            0.162
+          ],
+          "zMerkez": -0.151
+        },
+        {
+          "dz": 0.04,
+          "bantTepe": 659,
+          "temasOrani": 0.944,
+          "arkaTasma": 0.131,
+          "onTasma": 0,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.455,
+            0.172
+          ],
+          "zMerkez": -0.141
+        },
+        {
+          "dz": 0.05,
+          "bantTepe": 659,
+          "temasOrani": 0.945,
+          "arkaTasma": 0.121,
+          "onTasma": 0,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.445,
+            0.182
+          ],
+          "zMerkez": -0.131
+        },
+        {
+          "dz": 0.06,
+          "bantTepe": 659,
+          "temasOrani": 0.945,
+          "arkaTasma": 0.111,
+          "onTasma": 0,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.435,
+            0.192
+          ],
+          "zMerkez": -0.121
+        },
+        {
+          "dz": 0.07,
+          "bantTepe": 659,
+          "temasOrani": 0.945,
+          "arkaTasma": 0.101,
+          "onTasma": 0,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.425,
+            0.202
+          ],
+          "zMerkez": -0.111
+        },
+        {
+          "dz": 0.08,
+          "bantTepe": 659,
+          "temasOrani": 0.947,
+          "arkaTasma": 0.091,
+          "onTasma": 0,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.415,
+            0.212
+          ],
+          "zMerkez": -0.101
+        },
+        {
+          "dz": 0.09,
+          "bantTepe": 659,
+          "temasOrani": 0.947,
+          "arkaTasma": 0.081,
+          "onTasma": 0,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.405,
+            0.222
+          ],
+          "zMerkez": -0.091
+        },
+        {
+          "dz": 0.1,
+          "bantTepe": 659,
+          "temasOrani": 0.95,
+          "arkaTasma": 0.071,
+          "onTasma": 0,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.395,
+            0.232
+          ],
+          "zMerkez": -0.081
+        },
+        {
+          "dz": 0.11,
+          "bantTepe": 659,
+          "temasOrani": 0.953,
+          "arkaTasma": 0.061,
+          "onTasma": 0,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.385,
+            0.242
+          ],
+          "zMerkez": -0.071
+        },
+        {
+          "dz": 0.12,
+          "bantTepe": 659,
+          "temasOrani": 0.959,
+          "arkaTasma": 0.051,
+          "onTasma": 0,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.375,
+            0.252
+          ],
+          "zMerkez": -0.061
+        },
+        {
+          "dz": 0.13,
+          "bantTepe": 659,
+          "temasOrani": 0.968,
+          "arkaTasma": 0.041,
+          "onTasma": 0,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.365,
+            0.262
+          ],
+          "zMerkez": -0.051
+        },
+        {
+          "dz": 0.14,
+          "bantTepe": 659,
+          "temasOrani": 0.977,
+          "arkaTasma": 0.031,
+          "onTasma": 0,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.355,
+            0.272
+          ],
+          "zMerkez": -0.041
+        },
+        {
+          "dz": 0.15,
+          "bantTepe": 659,
+          "temasOrani": 0.98,
+          "arkaTasma": 0.021,
+          "onTasma": 0,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.345,
+            0.282
+          ],
+          "zMerkez": -0.031
+        },
+        {
+          "dz": 0.16,
+          "bantTepe": 659,
+          "temasOrani": 0.989,
+          "arkaTasma": 0.011,
+          "onTasma": 0,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.335,
+            0.292
+          ],
+          "zMerkez": -0.021
+        },
+        {
+          "dz": 0.17,
+          "bantTepe": 659,
+          "temasOrani": 0.992,
+          "arkaTasma": 0.001,
+          "onTasma": 0,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.325,
+            0.302
+          ],
+          "zMerkez": -0.011
+        },
+        {
+          "dz": 0.18,
+          "bantTepe": 659,
+          "temasOrani": 0.994,
+          "arkaTasma": 0,
+          "onTasma": 0,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.315,
+            0.312
+          ],
+          "zMerkez": -0.001
+        },
+        {
+          "dz": 0.19,
+          "bantTepe": 659,
+          "temasOrani": 0.994,
+          "arkaTasma": 0,
+          "onTasma": 0,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.305,
+            0.322
+          ],
+          "zMerkez": 0.009
+        },
+        {
+          "dz": 0.2,
+          "bantTepe": 659,
+          "temasOrani": 0.973,
+          "arkaTasma": 0,
+          "onTasma": 0.008,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.295,
+            0.332
+          ],
+          "zMerkez": 0.019
+        },
+        {
+          "dz": 0.21,
+          "bantTepe": 659,
+          "temasOrani": 0.954,
+          "arkaTasma": 0,
+          "onTasma": 0.018,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.285,
+            0.342
+          ],
+          "zMerkez": 0.029
+        },
+        {
+          "dz": 0.22,
+          "bantTepe": 659,
+          "temasOrani": 0.939,
+          "arkaTasma": 0,
+          "onTasma": 0.028,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.275,
+            0.352
+          ],
+          "zMerkez": 0.039
+        },
+        {
+          "dz": 0.23,
+          "bantTepe": 659,
+          "temasOrani": 0.921,
+          "arkaTasma": 0,
+          "onTasma": 0.038,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.265,
+            0.362
+          ],
+          "zMerkez": 0.049
+        },
+        {
+          "dz": 0.24,
+          "bantTepe": 659,
+          "temasOrani": 0.9,
+          "arkaTasma": 0,
+          "onTasma": 0.048,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.255,
+            0.372
+          ],
+          "zMerkez": 0.059
+        },
+        {
+          "dz": 0.25,
+          "bantTepe": 659,
+          "temasOrani": 0.877,
+          "arkaTasma": 0,
+          "onTasma": 0.058,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.245,
+            0.382
+          ],
+          "zMerkez": 0.069
+        },
+        {
+          "dz": 0.26,
+          "bantTepe": 659,
+          "temasOrani": 0.873,
+          "arkaTasma": 0,
+          "onTasma": 0.068,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.235,
+            0.392
+          ],
+          "zMerkez": 0.079
+        },
+        {
+          "dz": 0.27,
+          "bantTepe": 659,
+          "temasOrani": 0.86,
+          "arkaTasma": 0,
+          "onTasma": 0.078,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.225,
+            0.402
+          ],
+          "zMerkez": 0.089
+        },
+        {
+          "dz": 0.28,
+          "bantTepe": 659,
+          "temasOrani": 0.851,
+          "arkaTasma": 0,
+          "onTasma": 0.088,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.215,
+            0.412
+          ],
+          "zMerkez": 0.099
+        },
+        {
+          "dz": 0.29,
+          "bantTepe": 659,
+          "temasOrani": 0.848,
+          "arkaTasma": 0,
+          "onTasma": 0.098,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.205,
+            0.422
+          ],
+          "zMerkez": 0.109
+        },
+        {
+          "dz": 0.3,
+          "bantTepe": 659,
+          "temasOrani": 0.839,
+          "arkaTasma": 0,
+          "onTasma": 0.108,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.195,
+            0.432
+          ],
+          "zMerkez": 0.119
+        },
+        {
+          "dz": 0.31,
+          "bantTepe": 659,
+          "temasOrani": 0.809,
+          "arkaTasma": 0,
+          "onTasma": 0.118,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.185,
+            0.442
+          ],
+          "zMerkez": 0.129
+        },
+        {
+          "dz": 0.32,
+          "bantTepe": 659,
+          "temasOrani": 0.781,
+          "arkaTasma": 0,
+          "onTasma": 0.128,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.175,
+            0.452
+          ],
+          "zMerkez": 0.139
+        },
+        {
+          "dz": 0.33,
+          "bantTepe": 659,
+          "temasOrani": 0.703,
+          "arkaTasma": 0,
+          "onTasma": 0.138,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.165,
+            0.462
+          ],
+          "zMerkez": 0.149
+        },
+        {
+          "dz": 0.34,
+          "bantTepe": 659,
+          "temasOrani": 0.672,
+          "arkaTasma": 0,
+          "onTasma": 0.148,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.155,
+            0.472
+          ],
+          "zMerkez": 0.159
+        },
+        {
+          "dz": 0.35,
+          "bantTepe": 659,
+          "temasOrani": 0.645,
+          "arkaTasma": 0,
+          "onTasma": 0.158,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.145,
+            0.482
+          ],
+          "zMerkez": 0.169
+        },
+        {
+          "dz": 0.36,
+          "bantTepe": 659,
+          "temasOrani": 0.58,
+          "arkaTasma": 0,
+          "onTasma": 0.168,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.135,
+            0.492
+          ],
+          "zMerkez": 0.179
+        },
+        {
+          "dz": 0.37,
+          "bantTepe": 659,
+          "temasOrani": 0.528,
+          "arkaTasma": 0,
+          "onTasma": 0.178,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.125,
+            0.502
+          ],
+          "zMerkez": 0.189
+        },
+        {
+          "dz": 0.38,
+          "bantTepe": 659,
+          "temasOrani": 0.472,
+          "arkaTasma": 0,
+          "onTasma": 0.188,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.115,
+            0.512
+          ],
+          "zMerkez": 0.199
+        },
+        {
+          "dz": 0.39,
+          "bantTepe": 659,
+          "temasOrani": 0.44,
+          "arkaTasma": 0,
+          "onTasma": 0.198,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.105,
+            0.522
+          ],
+          "zMerkez": 0.209
+        },
+        {
+          "dz": 0.4,
+          "bantTepe": 659,
+          "temasOrani": 0.428,
+          "arkaTasma": 0,
+          "onTasma": 0.208,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.095,
+            0.532
+          ],
+          "zMerkez": 0.219
+        },
+        {
+          "dz": 0.41,
+          "bantTepe": 659,
+          "temasOrani": 0.405,
+          "arkaTasma": 0,
+          "onTasma": 0.218,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.085,
+            0.542
+          ],
+          "zMerkez": 0.229
+        },
+        {
+          "dz": 0.42,
+          "bantTepe": 659,
+          "temasOrani": 0.387,
+          "arkaTasma": 0,
+          "onTasma": 0.228,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.075,
+            0.552
+          ],
+          "zMerkez": 0.239
+        },
+        {
+          "dz": 0.43,
+          "bantTepe": 659,
+          "temasOrani": 0.375,
+          "arkaTasma": 0,
+          "onTasma": 0.238,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.065,
+            0.562
+          ],
+          "zMerkez": 0.249
+        },
+        {
+          "dz": 0.44,
+          "bantTepe": 659,
+          "temasOrani": 0.354,
+          "arkaTasma": 0,
+          "onTasma": 0.248,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.055,
+            0.572
+          ],
+          "zMerkez": 0.259
+        },
+        {
+          "dz": 0.45,
+          "bantTepe": 659,
+          "temasOrani": 0.344,
+          "arkaTasma": 0,
+          "onTasma": 0.258,
+          "yanTasma": 0.009,
+          "zAraligi": [
+            -0.045,
+            0.582
+          ],
+          "zMerkez": 0.269
+        }
+      ]
+    },
+    {
+      "govde": "Barbarian",
+      "kalcaKemigi": {
+        "x": 0,
+        "y": 0.45,
+        "z": -0.315
+      },
+      "ayakZ": -0.098,
+      "dizZ": null,
+      "kemikAdlari": [
+        "root",
+        "hips",
+        "spine",
+        "chest",
+        "upperarml",
+        "lowerarml",
+        "wristl",
+        "handl",
+        "handslotl",
+        "head",
+        "upperarmr",
+        "lowerarmr",
+        "wristr",
+        "handr",
+        "handslotr",
+        "upperlegl",
+        "lowerlegl",
+        "footl",
+        "toesl",
+        "upperlegr",
+        "lowerlegr",
+        "footr",
+        "toesr"
+      ],
+      "govdeKutu": {
+        "zMin": -0.613,
+        "zMax": 0.132,
+        "yMin": 0.248,
+        "yMax": 1.674
+      },
+      "masaAcikligi": 0.61,
+      "O1_bugun": {
+        "dz": 0,
+        "bantTepe": 789,
+        "temasOrani": 0.938,
+        "arkaTasma": 0.24,
+        "onTasma": 0,
+        "yanTasma": 0,
+        "zAraligi": [
+          -0.564,
+          0.132
+        ],
+        "zMerkez": -0.216
+      },
+      "O2_kalcaMerkezli": {
+        "dz": 0.315,
+        "bantTepe": 789,
+        "temasOrani": 0.802,
+        "arkaTasma": 0,
+        "onTasma": 0.123,
+        "yanTasma": 0,
+        "zAraligi": [
+          -0.249,
+          0.447
+        ],
+        "zMerkez": 0.099
+      },
+      "O3_enIyiTemas": {
+        "bantTepe": 789,
+        "temasOrani": 0.918,
+        "arkaTasma": 0,
+        "onTasma": 0.048,
+        "yanTasma": 0,
+        "zAraligi": [
+          -0.324,
+          0.372
+        ],
+        "zMerkez": 0.024,
+        "dz": 0.24,
+        "oturanAralik": [
+          0.24,
+          0.45
+        ]
+      },
+      "supurme": [
+        {
+          "dz": -0.3,
+          "bantTepe": 789,
+          "temasOrani": 0.347,
+          "arkaTasma": 0.54,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.864,
+            -0.168
+          ],
+          "zMerkez": -0.516
+        },
+        {
+          "dz": -0.29,
+          "bantTepe": 789,
+          "temasOrani": 0.42,
+          "arkaTasma": 0.53,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.854,
+            -0.158
+          ],
+          "zMerkez": -0.506
+        },
+        {
+          "dz": -0.28,
+          "bantTepe": 789,
+          "temasOrani": 0.477,
+          "arkaTasma": 0.52,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.844,
+            -0.148
+          ],
+          "zMerkez": -0.496
+        },
+        {
+          "dz": -0.27,
+          "bantTepe": 789,
+          "temasOrani": 0.506,
+          "arkaTasma": 0.51,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.834,
+            -0.138
+          ],
+          "zMerkez": -0.486
+        },
+        {
+          "dz": -0.26,
+          "bantTepe": 789,
+          "temasOrani": 0.522,
+          "arkaTasma": 0.5,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.824,
+            -0.128
+          ],
+          "zMerkez": -0.476
+        },
+        {
+          "dz": -0.25,
+          "bantTepe": 789,
+          "temasOrani": 0.539,
+          "arkaTasma": 0.49,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.814,
+            -0.118
+          ],
+          "zMerkez": -0.466
+        },
+        {
+          "dz": -0.24,
+          "bantTepe": 789,
+          "temasOrani": 0.556,
+          "arkaTasma": 0.48,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.804,
+            -0.108
+          ],
+          "zMerkez": -0.456
+        },
+        {
+          "dz": -0.23,
+          "bantTepe": 789,
+          "temasOrani": 0.572,
+          "arkaTasma": 0.47,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.794,
+            -0.098
+          ],
+          "zMerkez": -0.446
+        },
+        {
+          "dz": -0.22,
+          "bantTepe": 789,
+          "temasOrani": 0.592,
+          "arkaTasma": 0.46,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.784,
+            -0.088
+          ],
+          "zMerkez": -0.436
+        },
+        {
+          "dz": -0.21,
+          "bantTepe": 789,
+          "temasOrani": 0.611,
+          "arkaTasma": 0.45,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.774,
+            -0.078
+          ],
+          "zMerkez": -0.426
+        },
+        {
+          "dz": -0.2,
+          "bantTepe": 789,
+          "temasOrani": 0.634,
+          "arkaTasma": 0.44,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.764,
+            -0.068
+          ],
+          "zMerkez": -0.416
+        },
+        {
+          "dz": -0.19,
+          "bantTepe": 789,
+          "temasOrani": 0.662,
+          "arkaTasma": 0.43,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.754,
+            -0.058
+          ],
+          "zMerkez": -0.406
+        },
+        {
+          "dz": -0.18,
+          "bantTepe": 789,
+          "temasOrani": 0.682,
+          "arkaTasma": 0.42,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.744,
+            -0.048
+          ],
+          "zMerkez": -0.396
+        },
+        {
+          "dz": -0.17,
+          "bantTepe": 789,
+          "temasOrani": 0.716,
+          "arkaTasma": 0.41,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.734,
+            -0.038
+          ],
+          "zMerkez": -0.386
+        },
+        {
+          "dz": -0.16,
+          "bantTepe": 789,
+          "temasOrani": 0.749,
+          "arkaTasma": 0.4,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.724,
+            -0.028
+          ],
+          "zMerkez": -0.376
+        },
+        {
+          "dz": -0.15,
+          "bantTepe": 789,
+          "temasOrani": 0.814,
+          "arkaTasma": 0.39,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.714,
+            -0.018
+          ],
+          "zMerkez": -0.366
+        },
+        {
+          "dz": -0.14,
+          "bantTepe": 789,
+          "temasOrani": 0.842,
+          "arkaTasma": 0.38,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.704,
+            -0.008
+          ],
+          "zMerkez": -0.356
+        },
+        {
+          "dz": -0.13,
+          "bantTepe": 789,
+          "temasOrani": 0.845,
+          "arkaTasma": 0.37,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.694,
+            0.002
+          ],
+          "zMerkez": -0.346
+        },
+        {
+          "dz": -0.12,
+          "bantTepe": 789,
+          "temasOrani": 0.856,
+          "arkaTasma": 0.36,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.684,
+            0.012
+          ],
+          "zMerkez": -0.336
+        },
+        {
+          "dz": -0.11,
+          "bantTepe": 789,
+          "temasOrani": 0.867,
+          "arkaTasma": 0.35,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.674,
+            0.022
+          ],
+          "zMerkez": -0.326
+        },
+        {
+          "dz": -0.1,
+          "bantTepe": 789,
+          "temasOrani": 0.869,
+          "arkaTasma": 0.34,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.664,
+            0.032
+          ],
+          "zMerkez": -0.316
+        },
+        {
+          "dz": -0.09,
+          "bantTepe": 789,
+          "temasOrani": 0.877,
+          "arkaTasma": 0.33,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.654,
+            0.042
+          ],
+          "zMerkez": -0.306
+        },
+        {
+          "dz": -0.08,
+          "bantTepe": 789,
+          "temasOrani": 0.885,
+          "arkaTasma": 0.32,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.644,
+            0.052
+          ],
+          "zMerkez": -0.296
+        },
+        {
+          "dz": -0.07,
+          "bantTepe": 789,
+          "temasOrani": 0.888,
+          "arkaTasma": 0.31,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.634,
+            0.062
+          ],
+          "zMerkez": -0.286
+        },
+        {
+          "dz": -0.06,
+          "bantTepe": 789,
+          "temasOrani": 0.891,
+          "arkaTasma": 0.3,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.624,
+            0.072
+          ],
+          "zMerkez": -0.276
+        },
+        {
+          "dz": -0.05,
+          "bantTepe": 789,
+          "temasOrani": 0.9,
+          "arkaTasma": 0.29,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.614,
+            0.082
+          ],
+          "zMerkez": -0.266
+        },
+        {
+          "dz": -0.04,
+          "bantTepe": 789,
+          "temasOrani": 0.91,
+          "arkaTasma": 0.28,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.604,
+            0.092
+          ],
+          "zMerkez": -0.256
+        },
+        {
+          "dz": -0.03,
+          "bantTepe": 789,
+          "temasOrani": 0.92,
+          "arkaTasma": 0.27,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.594,
+            0.102
+          ],
+          "zMerkez": -0.246
+        },
+        {
+          "dz": -0.02,
+          "bantTepe": 789,
+          "temasOrani": 0.926,
+          "arkaTasma": 0.26,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.584,
+            0.112
+          ],
+          "zMerkez": -0.236
+        },
+        {
+          "dz": -0.01,
+          "bantTepe": 789,
+          "temasOrani": 0.933,
+          "arkaTasma": 0.25,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.574,
+            0.122
+          ],
+          "zMerkez": -0.226
+        },
+        {
+          "dz": 0,
+          "bantTepe": 789,
+          "temasOrani": 0.938,
+          "arkaTasma": 0.24,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.564,
+            0.132
+          ],
+          "zMerkez": -0.216
+        },
+        {
+          "dz": 0.01,
+          "bantTepe": 789,
+          "temasOrani": 0.938,
+          "arkaTasma": 0.23,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.554,
+            0.142
+          ],
+          "zMerkez": -0.206
+        },
+        {
+          "dz": 0.02,
+          "bantTepe": 789,
+          "temasOrani": 0.938,
+          "arkaTasma": 0.22,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.544,
+            0.152
+          ],
+          "zMerkez": -0.196
+        },
+        {
+          "dz": 0.03,
+          "bantTepe": 789,
+          "temasOrani": 0.947,
+          "arkaTasma": 0.21,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.534,
+            0.162
+          ],
+          "zMerkez": -0.186
+        },
+        {
+          "dz": 0.04,
+          "bantTepe": 789,
+          "temasOrani": 0.947,
+          "arkaTasma": 0.2,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.524,
+            0.172
+          ],
+          "zMerkez": -0.176
+        },
+        {
+          "dz": 0.05,
+          "bantTepe": 789,
+          "temasOrani": 0.952,
+          "arkaTasma": 0.19,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.514,
+            0.182
+          ],
+          "zMerkez": -0.166
+        },
+        {
+          "dz": 0.06,
+          "bantTepe": 789,
+          "temasOrani": 0.952,
+          "arkaTasma": 0.18,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.504,
+            0.192
+          ],
+          "zMerkez": -0.156
+        },
+        {
+          "dz": 0.07,
+          "bantTepe": 789,
+          "temasOrani": 0.952,
+          "arkaTasma": 0.17,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.494,
+            0.202
+          ],
+          "zMerkez": -0.146
+        },
+        {
+          "dz": 0.08,
+          "bantTepe": 789,
+          "temasOrani": 0.952,
+          "arkaTasma": 0.16,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.484,
+            0.212
+          ],
+          "zMerkez": -0.136
+        },
+        {
+          "dz": 0.09,
+          "bantTepe": 789,
+          "temasOrani": 0.954,
+          "arkaTasma": 0.15,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.474,
+            0.222
+          ],
+          "zMerkez": -0.126
+        },
+        {
+          "dz": 0.1,
+          "bantTepe": 789,
+          "temasOrani": 0.957,
+          "arkaTasma": 0.14,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.464,
+            0.232
+          ],
+          "zMerkez": -0.116
+        },
+        {
+          "dz": 0.11,
+          "bantTepe": 789,
+          "temasOrani": 0.957,
+          "arkaTasma": 0.13,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.454,
+            0.242
+          ],
+          "zMerkez": -0.106
+        },
+        {
+          "dz": 0.12,
+          "bantTepe": 789,
+          "temasOrani": 0.961,
+          "arkaTasma": 0.12,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.444,
+            0.252
+          ],
+          "zMerkez": -0.096
+        },
+        {
+          "dz": 0.13,
+          "bantTepe": 789,
+          "temasOrani": 0.963,
+          "arkaTasma": 0.11,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.434,
+            0.262
+          ],
+          "zMerkez": -0.086
+        },
+        {
+          "dz": 0.14,
+          "bantTepe": 789,
+          "temasOrani": 0.963,
+          "arkaTasma": 0.1,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.424,
+            0.272
+          ],
+          "zMerkez": -0.076
+        },
+        {
+          "dz": 0.15,
+          "bantTepe": 789,
+          "temasOrani": 0.963,
+          "arkaTasma": 0.09,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.414,
+            0.282
+          ],
+          "zMerkez": -0.066
+        },
+        {
+          "dz": 0.16,
+          "bantTepe": 789,
+          "temasOrani": 0.973,
+          "arkaTasma": 0.08,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.404,
+            0.292
+          ],
+          "zMerkez": -0.056
+        },
+        {
+          "dz": 0.17,
+          "bantTepe": 789,
+          "temasOrani": 0.976,
+          "arkaTasma": 0.07,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.394,
+            0.302
+          ],
+          "zMerkez": -0.046
+        },
+        {
+          "dz": 0.18,
+          "bantTepe": 789,
+          "temasOrani": 0.985,
+          "arkaTasma": 0.06,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.384,
+            0.312
+          ],
+          "zMerkez": -0.036
+        },
+        {
+          "dz": 0.19,
+          "bantTepe": 789,
+          "temasOrani": 0.985,
+          "arkaTasma": 0.05,
+          "onTasma": 0,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.374,
+            0.322
+          ],
+          "zMerkez": -0.026
+        },
+        {
+          "dz": 0.2,
+          "bantTepe": 789,
+          "temasOrani": 0.967,
+          "arkaTasma": 0.04,
+          "onTasma": 0.008,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.364,
+            0.332
+          ],
+          "zMerkez": -0.016
+        },
+        {
+          "dz": 0.21,
+          "bantTepe": 789,
+          "temasOrani": 0.959,
+          "arkaTasma": 0.03,
+          "onTasma": 0.018,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.354,
+            0.342
+          ],
+          "zMerkez": -0.006
+        },
+        {
+          "dz": 0.22,
+          "bantTepe": 789,
+          "temasOrani": 0.947,
+          "arkaTasma": 0.02,
+          "onTasma": 0.028,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.344,
+            0.352
+          ],
+          "zMerkez": 0.004
+        },
+        {
+          "dz": 0.23,
+          "bantTepe": 789,
+          "temasOrani": 0.932,
+          "arkaTasma": 0.01,
+          "onTasma": 0.038,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.334,
+            0.362
+          ],
+          "zMerkez": 0.014
+        },
+        {
+          "dz": 0.24,
+          "bantTepe": 789,
+          "temasOrani": 0.918,
+          "arkaTasma": 0,
+          "onTasma": 0.048,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.324,
+            0.372
+          ],
+          "zMerkez": 0.024
+        },
+        {
+          "dz": 0.25,
+          "bantTepe": 789,
+          "temasOrani": 0.902,
+          "arkaTasma": 0,
+          "onTasma": 0.058,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.314,
+            0.382
+          ],
+          "zMerkez": 0.034
+        },
+        {
+          "dz": 0.26,
+          "bantTepe": 789,
+          "temasOrani": 0.899,
+          "arkaTasma": 0,
+          "onTasma": 0.068,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.304,
+            0.392
+          ],
+          "zMerkez": 0.044
+        },
+        {
+          "dz": 0.27,
+          "bantTepe": 789,
+          "temasOrani": 0.891,
+          "arkaTasma": 0,
+          "onTasma": 0.078,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.294,
+            0.402
+          ],
+          "zMerkez": 0.054
+        },
+        {
+          "dz": 0.28,
+          "bantTepe": 789,
+          "temasOrani": 0.873,
+          "arkaTasma": 0,
+          "onTasma": 0.088,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.284,
+            0.412
+          ],
+          "zMerkez": 0.064
+        },
+        {
+          "dz": 0.29,
+          "bantTepe": 789,
+          "temasOrani": 0.863,
+          "arkaTasma": 0,
+          "onTasma": 0.098,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.274,
+            0.422
+          ],
+          "zMerkez": 0.074
+        },
+        {
+          "dz": 0.3,
+          "bantTepe": 789,
+          "temasOrani": 0.843,
+          "arkaTasma": 0,
+          "onTasma": 0.108,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.264,
+            0.432
+          ],
+          "zMerkez": 0.084
+        },
+        {
+          "dz": 0.31,
+          "bantTepe": 789,
+          "temasOrani": 0.815,
+          "arkaTasma": 0,
+          "onTasma": 0.118,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.254,
+            0.442
+          ],
+          "zMerkez": 0.094
+        },
+        {
+          "dz": 0.32,
+          "bantTepe": 789,
+          "temasOrani": 0.777,
+          "arkaTasma": 0,
+          "onTasma": 0.128,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.244,
+            0.452
+          ],
+          "zMerkez": 0.104
+        },
+        {
+          "dz": 0.33,
+          "bantTepe": 789,
+          "temasOrani": 0.729,
+          "arkaTasma": 0,
+          "onTasma": 0.138,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.234,
+            0.462
+          ],
+          "zMerkez": 0.114
+        },
+        {
+          "dz": 0.34,
+          "bantTepe": 789,
+          "temasOrani": 0.689,
+          "arkaTasma": 0,
+          "onTasma": 0.148,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.224,
+            0.472
+          ],
+          "zMerkez": 0.124
+        },
+        {
+          "dz": 0.35,
+          "bantTepe": 789,
+          "temasOrani": 0.643,
+          "arkaTasma": 0,
+          "onTasma": 0.158,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.214,
+            0.482
+          ],
+          "zMerkez": 0.134
+        },
+        {
+          "dz": 0.36,
+          "bantTepe": 789,
+          "temasOrani": 0.57,
+          "arkaTasma": 0,
+          "onTasma": 0.168,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.204,
+            0.492
+          ],
+          "zMerkez": 0.144
+        },
+        {
+          "dz": 0.37,
+          "bantTepe": 789,
+          "temasOrani": 0.52,
+          "arkaTasma": 0,
+          "onTasma": 0.178,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.194,
+            0.502
+          ],
+          "zMerkez": 0.154
+        },
+        {
+          "dz": 0.38,
+          "bantTepe": 789,
+          "temasOrani": 0.487,
+          "arkaTasma": 0,
+          "onTasma": 0.188,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.184,
+            0.512
+          ],
+          "zMerkez": 0.164
+        },
+        {
+          "dz": 0.39,
+          "bantTepe": 789,
+          "temasOrani": 0.471,
+          "arkaTasma": 0,
+          "onTasma": 0.198,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.174,
+            0.522
+          ],
+          "zMerkez": 0.174
+        },
+        {
+          "dz": 0.4,
+          "bantTepe": 789,
+          "temasOrani": 0.459,
+          "arkaTasma": 0,
+          "onTasma": 0.208,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.164,
+            0.532
+          ],
+          "zMerkez": 0.184
+        },
+        {
+          "dz": 0.41,
+          "bantTepe": 789,
+          "temasOrani": 0.442,
+          "arkaTasma": 0,
+          "onTasma": 0.218,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.154,
+            0.542
+          ],
+          "zMerkez": 0.194
+        },
+        {
+          "dz": 0.42,
+          "bantTepe": 789,
+          "temasOrani": 0.426,
+          "arkaTasma": 0,
+          "onTasma": 0.228,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.144,
+            0.552
+          ],
+          "zMerkez": 0.204
+        },
+        {
+          "dz": 0.43,
+          "bantTepe": 789,
+          "temasOrani": 0.403,
+          "arkaTasma": 0,
+          "onTasma": 0.238,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.134,
+            0.562
+          ],
+          "zMerkez": 0.214
+        },
+        {
+          "dz": 0.44,
+          "bantTepe": 789,
+          "temasOrani": 0.387,
+          "arkaTasma": 0,
+          "onTasma": 0.248,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.124,
+            0.572
+          ],
+          "zMerkez": 0.224
+        },
+        {
+          "dz": 0.45,
+          "bantTepe": 789,
+          "temasOrani": 0.362,
+          "arkaTasma": 0,
+          "onTasma": 0.258,
+          "yanTasma": 0,
+          "zAraligi": [
+            -0.114,
+            0.582
+          ],
+          "zMerkez": 0.234
+        }
+      ]
+    },
+    {
+      "govde": "Ranger",
+      "kalcaKemigi": {
+        "x": 0,
+        "y": 0.45,
+        "z": -0.315
+      },
+      "ayakZ": -0.098,
+      "dizZ": null,
+      "kemikAdlari": [
+        "root",
+        "hips",
+        "upperlegl",
+        "lowerlegl",
+        "footl",
+        "toesl",
+        "upperlegr",
+        "lowerlegr",
+        "footr",
+        "toesr",
+        "spine",
+        "chest",
+        "head",
+        "upperarmr",
+        "lowerarmr",
+        "wristr",
+        "handr",
+        "handslotr",
+        "upperarml",
+        "lowerarml",
+        "wristl",
+        "handl",
+        "handslotl"
+      ],
+      "govdeKutu": {
+        "zMin": -0.61,
+        "zMax": 0.132,
+        "yMin": 0.252,
+        "yMax": 1.725
+      },
+      "masaAcikligi": 0.61,
+      "O1_bugun": {
+        "dz": 0,
+        "bantTepe": 889,
+        "temasOrani": 0.821,
+        "arkaTasma": 0.258,
+        "onTasma": 0,
+        "yanTasma": 0.094,
+        "zAraligi": [
+          -0.582,
+          0.132
+        ],
+        "zMerkez": -0.225
+      },
+      "O2_kalcaMerkezli": {
+        "dz": 0.315,
+        "bantTepe": 889,
+        "temasOrani": 0.777,
+        "arkaTasma": 0,
+        "onTasma": 0.123,
+        "yanTasma": 0.058,
+        "zAraligi": [
+          -0.267,
+          0.447
+        ],
+        "zMerkez": 0.09
+      },
+      "O3_enIyiTemas": {
+        "bantTepe": 889,
+        "temasOrani": 0.836,
+        "arkaTasma": 0,
+        "onTasma": 0.068,
+        "yanTasma": 0.058,
+        "zAraligi": [
+          -0.322,
+          0.392
+        ],
+        "zMerkez": 0.035,
+        "dz": 0.26,
+        "oturanAralik": [
+          0.26,
+          0.45
+        ]
+      },
+      "supurme": [
+        {
+          "dz": -0.3,
+          "bantTepe": 889,
+          "temasOrani": 0.25,
+          "arkaTasma": 0.558,
+          "onTasma": 0,
+          "yanTasma": 0.384,
+          "zAraligi": [
+            -0.882,
+            -0.168
+          ],
+          "zMerkez": -0.525
+        },
+        {
+          "dz": -0.29,
+          "bantTepe": 889,
+          "temasOrani": 0.3,
+          "arkaTasma": 0.548,
+          "onTasma": 0,
+          "yanTasma": 0.375,
+          "zAraligi": [
+            -0.872,
+            -0.158
+          ],
+          "zMerkez": -0.515
+        },
+        {
+          "dz": -0.28,
+          "bantTepe": 889,
+          "temasOrani": 0.335,
+          "arkaTasma": 0.538,
+          "onTasma": 0,
+          "yanTasma": 0.365,
+          "zAraligi": [
+            -0.862,
+            -0.148
+          ],
+          "zMerkez": -0.505
+        },
+        {
+          "dz": -0.27,
+          "bantTepe": 889,
+          "temasOrani": 0.379,
+          "arkaTasma": 0.528,
+          "onTasma": 0,
+          "yanTasma": 0.355,
+          "zAraligi": [
+            -0.852,
+            -0.138
+          ],
+          "zMerkez": -0.495
+        },
+        {
+          "dz": -0.26,
+          "bantTepe": 889,
+          "temasOrani": 0.411,
+          "arkaTasma": 0.518,
+          "onTasma": 0,
+          "yanTasma": 0.345,
+          "zAraligi": [
+            -0.842,
+            -0.128
+          ],
+          "zMerkez": -0.485
+        },
+        {
+          "dz": -0.25,
+          "bantTepe": 889,
+          "temasOrani": 0.422,
+          "arkaTasma": 0.508,
+          "onTasma": 0,
+          "yanTasma": 0.335,
+          "zAraligi": [
+            -0.832,
+            -0.118
+          ],
+          "zMerkez": -0.475
+        },
+        {
+          "dz": -0.24,
+          "bantTepe": 889,
+          "temasOrani": 0.444,
+          "arkaTasma": 0.498,
+          "onTasma": 0,
+          "yanTasma": 0.325,
+          "zAraligi": [
+            -0.822,
+            -0.108
+          ],
+          "zMerkez": -0.465
+        },
+        {
+          "dz": -0.23,
+          "bantTepe": 889,
+          "temasOrani": 0.469,
+          "arkaTasma": 0.488,
+          "onTasma": 0,
+          "yanTasma": 0.315,
+          "zAraligi": [
+            -0.812,
+            -0.098
+          ],
+          "zMerkez": -0.455
+        },
+        {
+          "dz": -0.22,
+          "bantTepe": 889,
+          "temasOrani": 0.49,
+          "arkaTasma": 0.478,
+          "onTasma": 0,
+          "yanTasma": 0.305,
+          "zAraligi": [
+            -0.802,
+            -0.088
+          ],
+          "zMerkez": -0.445
+        },
+        {
+          "dz": -0.21,
+          "bantTepe": 889,
+          "temasOrani": 0.511,
+          "arkaTasma": 0.468,
+          "onTasma": 0,
+          "yanTasma": 0.295,
+          "zAraligi": [
+            -0.792,
+            -0.078
+          ],
+          "zMerkez": -0.435
+        },
+        {
+          "dz": -0.2,
+          "bantTepe": 889,
+          "temasOrani": 0.534,
+          "arkaTasma": 0.458,
+          "onTasma": 0,
+          "yanTasma": 0.286,
+          "zAraligi": [
+            -0.782,
+            -0.068
+          ],
+          "zMerkez": -0.425
+        },
+        {
+          "dz": -0.19,
+          "bantTepe": 889,
+          "temasOrani": 0.553,
+          "arkaTasma": 0.448,
+          "onTasma": 0,
+          "yanTasma": 0.276,
+          "zAraligi": [
+            -0.772,
+            -0.058
+          ],
+          "zMerkez": -0.415
+        },
+        {
+          "dz": -0.18,
+          "bantTepe": 889,
+          "temasOrani": 0.574,
+          "arkaTasma": 0.438,
+          "onTasma": 0,
+          "yanTasma": 0.266,
+          "zAraligi": [
+            -0.762,
+            -0.048
+          ],
+          "zMerkez": -0.405
+        },
+        {
+          "dz": -0.17,
+          "bantTepe": 889,
+          "temasOrani": 0.586,
+          "arkaTasma": 0.428,
+          "onTasma": 0,
+          "yanTasma": 0.256,
+          "zAraligi": [
+            -0.752,
+            -0.038
+          ],
+          "zMerkez": -0.395
+        },
+        {
+          "dz": -0.16,
+          "bantTepe": 889,
+          "temasOrani": 0.604,
+          "arkaTasma": 0.418,
+          "onTasma": 0,
+          "yanTasma": 0.246,
+          "zAraligi": [
+            -0.742,
+            -0.028
+          ],
+          "zMerkez": -0.385
+        },
+        {
+          "dz": -0.15,
+          "bantTepe": 889,
+          "temasOrani": 0.632,
+          "arkaTasma": 0.408,
+          "onTasma": 0,
+          "yanTasma": 0.237,
+          "zAraligi": [
+            -0.732,
+            -0.018
+          ],
+          "zMerkez": -0.375
+        },
+        {
+          "dz": -0.14,
+          "bantTepe": 889,
+          "temasOrani": 0.667,
+          "arkaTasma": 0.398,
+          "onTasma": 0,
+          "yanTasma": 0.227,
+          "zAraligi": [
+            -0.722,
+            -0.008
+          ],
+          "zMerkez": -0.365
+        },
+        {
+          "dz": -0.13,
+          "bantTepe": 889,
+          "temasOrani": 0.692,
+          "arkaTasma": 0.388,
+          "onTasma": 0,
+          "yanTasma": 0.217,
+          "zAraligi": [
+            -0.712,
+            0.002
+          ],
+          "zMerkez": -0.355
+        },
+        {
+          "dz": -0.12,
+          "bantTepe": 889,
+          "temasOrani": 0.705,
+          "arkaTasma": 0.378,
+          "onTasma": 0,
+          "yanTasma": 0.207,
+          "zAraligi": [
+            -0.702,
+            0.012
+          ],
+          "zMerkez": -0.345
+        },
+        {
+          "dz": -0.11,
+          "bantTepe": 889,
+          "temasOrani": 0.721,
+          "arkaTasma": 0.368,
+          "onTasma": 0,
+          "yanTasma": 0.198,
+          "zAraligi": [
+            -0.692,
+            0.022
+          ],
+          "zMerkez": -0.335
+        },
+        {
+          "dz": -0.1,
+          "bantTepe": 889,
+          "temasOrani": 0.726,
+          "arkaTasma": 0.358,
+          "onTasma": 0,
+          "yanTasma": 0.188,
+          "zAraligi": [
+            -0.682,
+            0.032
+          ],
+          "zMerkez": -0.325
+        },
+        {
+          "dz": -0.09,
+          "bantTepe": 889,
+          "temasOrani": 0.735,
+          "arkaTasma": 0.348,
+          "onTasma": 0,
+          "yanTasma": 0.178,
+          "zAraligi": [
+            -0.672,
+            0.042
+          ],
+          "zMerkez": -0.315
+        },
+        {
+          "dz": -0.08,
+          "bantTepe": 889,
+          "temasOrani": 0.741,
+          "arkaTasma": 0.338,
+          "onTasma": 0,
+          "yanTasma": 0.168,
+          "zAraligi": [
+            -0.662,
+            0.052
+          ],
+          "zMerkez": -0.305
+        },
+        {
+          "dz": -0.07,
+          "bantTepe": 889,
+          "temasOrani": 0.759,
+          "arkaTasma": 0.328,
+          "onTasma": 0,
+          "yanTasma": 0.159,
+          "zAraligi": [
+            -0.652,
+            0.062
+          ],
+          "zMerkez": -0.295
+        },
+        {
+          "dz": -0.06,
+          "bantTepe": 889,
+          "temasOrani": 0.777,
+          "arkaTasma": 0.318,
+          "onTasma": 0,
+          "yanTasma": 0.149,
+          "zAraligi": [
+            -0.642,
+            0.072
+          ],
+          "zMerkez": -0.285
+        },
+        {
+          "dz": -0.05,
+          "bantTepe": 889,
+          "temasOrani": 0.784,
+          "arkaTasma": 0.308,
+          "onTasma": 0,
+          "yanTasma": 0.139,
+          "zAraligi": [
+            -0.632,
+            0.082
+          ],
+          "zMerkez": -0.275
+        },
+        {
+          "dz": -0.04,
+          "bantTepe": 889,
+          "temasOrani": 0.789,
+          "arkaTasma": 0.298,
+          "onTasma": 0,
+          "yanTasma": 0.13,
+          "zAraligi": [
+            -0.622,
+            0.092
+          ],
+          "zMerkez": -0.265
+        },
+        {
+          "dz": -0.03,
+          "bantTepe": 889,
+          "temasOrani": 0.791,
+          "arkaTasma": 0.288,
+          "onTasma": 0,
+          "yanTasma": 0.12,
+          "zAraligi": [
+            -0.612,
+            0.102
+          ],
+          "zMerkez": -0.255
+        },
+        {
+          "dz": -0.02,
+          "bantTepe": 889,
+          "temasOrani": 0.802,
+          "arkaTasma": 0.278,
+          "onTasma": 0,
+          "yanTasma": 0.112,
+          "zAraligi": [
+            -0.602,
+            0.112
+          ],
+          "zMerkez": -0.245
+        },
+        {
+          "dz": -0.01,
+          "bantTepe": 889,
+          "temasOrani": 0.81,
+          "arkaTasma": 0.268,
+          "onTasma": 0,
+          "yanTasma": 0.103,
+          "zAraligi": [
+            -0.592,
+            0.122
+          ],
+          "zMerkez": -0.235
+        },
+        {
+          "dz": 0,
+          "bantTepe": 889,
+          "temasOrani": 0.821,
+          "arkaTasma": 0.258,
+          "onTasma": 0,
+          "yanTasma": 0.094,
+          "zAraligi": [
+            -0.582,
+            0.132
+          ],
+          "zMerkez": -0.225
+        },
+        {
+          "dz": 0.01,
+          "bantTepe": 889,
+          "temasOrani": 0.832,
+          "arkaTasma": 0.248,
+          "onTasma": 0,
+          "yanTasma": 0.086,
+          "zAraligi": [
+            -0.572,
+            0.142
+          ],
+          "zMerkez": -0.215
+        },
+        {
+          "dz": 0.02,
+          "bantTepe": 889,
+          "temasOrani": 0.832,
+          "arkaTasma": 0.238,
+          "onTasma": 0,
+          "yanTasma": 0.079,
+          "zAraligi": [
+            -0.562,
+            0.152
+          ],
+          "zMerkez": -0.205
+        },
+        {
+          "dz": 0.03,
+          "bantTepe": 889,
+          "temasOrani": 0.839,
+          "arkaTasma": 0.228,
+          "onTasma": 0,
+          "yanTasma": 0.072,
+          "zAraligi": [
+            -0.552,
+            0.162
+          ],
+          "zMerkez": -0.195
+        },
+        {
+          "dz": 0.04,
+          "bantTepe": 889,
+          "temasOrani": 0.839,
+          "arkaTasma": 0.218,
+          "onTasma": 0,
+          "yanTasma": 0.065,
+          "zAraligi": [
+            -0.542,
+            0.172
+          ],
+          "zMerkez": -0.185
+        },
+        {
+          "dz": 0.05,
+          "bantTepe": 889,
+          "temasOrani": 0.839,
+          "arkaTasma": 0.208,
+          "onTasma": 0,
+          "yanTasma": 0.06,
+          "zAraligi": [
+            -0.532,
+            0.182
+          ],
+          "zMerkez": -0.175
+        },
+        {
+          "dz": 0.06,
+          "bantTepe": 889,
+          "temasOrani": 0.843,
+          "arkaTasma": 0.198,
+          "onTasma": 0,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.522,
+            0.192
+          ],
+          "zMerkez": -0.165
+        },
+        {
+          "dz": 0.07,
+          "bantTepe": 889,
+          "temasOrani": 0.845,
+          "arkaTasma": 0.188,
+          "onTasma": 0,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.512,
+            0.202
+          ],
+          "zMerkez": -0.155
+        },
+        {
+          "dz": 0.08,
+          "bantTepe": 889,
+          "temasOrani": 0.864,
+          "arkaTasma": 0.178,
+          "onTasma": 0,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.502,
+            0.212
+          ],
+          "zMerkez": -0.145
+        },
+        {
+          "dz": 0.09,
+          "bantTepe": 889,
+          "temasOrani": 0.88,
+          "arkaTasma": 0.168,
+          "onTasma": 0,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.492,
+            0.222
+          ],
+          "zMerkez": -0.135
+        },
+        {
+          "dz": 0.1,
+          "bantTepe": 889,
+          "temasOrani": 0.88,
+          "arkaTasma": 0.158,
+          "onTasma": 0,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.482,
+            0.232
+          ],
+          "zMerkez": -0.125
+        },
+        {
+          "dz": 0.11,
+          "bantTepe": 889,
+          "temasOrani": 0.882,
+          "arkaTasma": 0.148,
+          "onTasma": 0,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.472,
+            0.242
+          ],
+          "zMerkez": -0.115
+        },
+        {
+          "dz": 0.12,
+          "bantTepe": 889,
+          "temasOrani": 0.884,
+          "arkaTasma": 0.138,
+          "onTasma": 0,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.462,
+            0.252
+          ],
+          "zMerkez": -0.105
+        },
+        {
+          "dz": 0.13,
+          "bantTepe": 889,
+          "temasOrani": 0.885,
+          "arkaTasma": 0.128,
+          "onTasma": 0,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.452,
+            0.262
+          ],
+          "zMerkez": -0.095
+        },
+        {
+          "dz": 0.14,
+          "bantTepe": 889,
+          "temasOrani": 0.888,
+          "arkaTasma": 0.118,
+          "onTasma": 0,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.442,
+            0.272
+          ],
+          "zMerkez": -0.085
+        },
+        {
+          "dz": 0.15,
+          "bantTepe": 889,
+          "temasOrani": 0.888,
+          "arkaTasma": 0.108,
+          "onTasma": 0,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.432,
+            0.282
+          ],
+          "zMerkez": -0.075
+        },
+        {
+          "dz": 0.16,
+          "bantTepe": 889,
+          "temasOrani": 0.888,
+          "arkaTasma": 0.098,
+          "onTasma": 0,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.422,
+            0.292
+          ],
+          "zMerkez": -0.065
+        },
+        {
+          "dz": 0.17,
+          "bantTepe": 889,
+          "temasOrani": 0.893,
+          "arkaTasma": 0.088,
+          "onTasma": 0,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.412,
+            0.302
+          ],
+          "zMerkez": -0.055
+        },
+        {
+          "dz": 0.18,
+          "bantTepe": 889,
+          "temasOrani": 0.899,
+          "arkaTasma": 0.078,
+          "onTasma": 0,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.402,
+            0.312
+          ],
+          "zMerkez": -0.045
+        },
+        {
+          "dz": 0.19,
+          "bantTepe": 889,
+          "temasOrani": 0.902,
+          "arkaTasma": 0.068,
+          "onTasma": 0,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.392,
+            0.322
+          ],
+          "zMerkez": -0.035
+        },
+        {
+          "dz": 0.2,
+          "bantTepe": 889,
+          "temasOrani": 0.886,
+          "arkaTasma": 0.058,
+          "onTasma": 0.008,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.382,
+            0.332
+          ],
+          "zMerkez": -0.025
+        },
+        {
+          "dz": 0.21,
+          "bantTepe": 889,
+          "temasOrani": 0.875,
+          "arkaTasma": 0.048,
+          "onTasma": 0.018,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.372,
+            0.342
+          ],
+          "zMerkez": -0.015
+        },
+        {
+          "dz": 0.22,
+          "bantTepe": 889,
+          "temasOrani": 0.871,
+          "arkaTasma": 0.038,
+          "onTasma": 0.028,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.362,
+            0.352
+          ],
+          "zMerkez": -0.005
+        },
+        {
+          "dz": 0.23,
+          "bantTepe": 889,
+          "temasOrani": 0.859,
+          "arkaTasma": 0.028,
+          "onTasma": 0.038,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.352,
+            0.362
+          ],
+          "zMerkez": 0.005
+        },
+        {
+          "dz": 0.24,
+          "bantTepe": 889,
+          "temasOrani": 0.852,
+          "arkaTasma": 0.018,
+          "onTasma": 0.048,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.342,
+            0.372
+          ],
+          "zMerkez": 0.015
+        },
+        {
+          "dz": 0.25,
+          "bantTepe": 889,
+          "temasOrani": 0.836,
+          "arkaTasma": 0.008,
+          "onTasma": 0.058,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.332,
+            0.382
+          ],
+          "zMerkez": 0.025
+        },
+        {
+          "dz": 0.26,
+          "bantTepe": 889,
+          "temasOrani": 0.836,
+          "arkaTasma": 0,
+          "onTasma": 0.068,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.322,
+            0.392
+          ],
+          "zMerkez": 0.035
+        },
+        {
+          "dz": 0.27,
+          "bantTepe": 889,
+          "temasOrani": 0.827,
+          "arkaTasma": 0,
+          "onTasma": 0.078,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.312,
+            0.402
+          ],
+          "zMerkez": 0.045
+        },
+        {
+          "dz": 0.28,
+          "bantTepe": 889,
+          "temasOrani": 0.82,
+          "arkaTasma": 0,
+          "onTasma": 0.088,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.302,
+            0.412
+          ],
+          "zMerkez": 0.055
+        },
+        {
+          "dz": 0.29,
+          "bantTepe": 889,
+          "temasOrani": 0.818,
+          "arkaTasma": 0,
+          "onTasma": 0.098,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.292,
+            0.422
+          ],
+          "zMerkez": 0.065
+        },
+        {
+          "dz": 0.3,
+          "bantTepe": 889,
+          "temasOrani": 0.811,
+          "arkaTasma": 0,
+          "onTasma": 0.108,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.282,
+            0.432
+          ],
+          "zMerkez": 0.075
+        },
+        {
+          "dz": 0.31,
+          "bantTepe": 889,
+          "temasOrani": 0.789,
+          "arkaTasma": 0,
+          "onTasma": 0.118,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.272,
+            0.442
+          ],
+          "zMerkez": 0.085
+        },
+        {
+          "dz": 0.32,
+          "bantTepe": 889,
+          "temasOrani": 0.768,
+          "arkaTasma": 0,
+          "onTasma": 0.128,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.262,
+            0.452
+          ],
+          "zMerkez": 0.095
+        },
+        {
+          "dz": 0.33,
+          "bantTepe": 889,
+          "temasOrani": 0.71,
+          "arkaTasma": 0,
+          "onTasma": 0.138,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.252,
+            0.462
+          ],
+          "zMerkez": 0.105
+        },
+        {
+          "dz": 0.34,
+          "bantTepe": 889,
+          "temasOrani": 0.687,
+          "arkaTasma": 0,
+          "onTasma": 0.148,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.242,
+            0.472
+          ],
+          "zMerkez": 0.115
+        },
+        {
+          "dz": 0.35,
+          "bantTepe": 889,
+          "temasOrani": 0.667,
+          "arkaTasma": 0,
+          "onTasma": 0.158,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.232,
+            0.482
+          ],
+          "zMerkez": 0.125
+        },
+        {
+          "dz": 0.36,
+          "bantTepe": 889,
+          "temasOrani": 0.619,
+          "arkaTasma": 0,
+          "onTasma": 0.168,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.222,
+            0.492
+          ],
+          "zMerkez": 0.135
+        },
+        {
+          "dz": 0.37,
+          "bantTepe": 889,
+          "temasOrani": 0.58,
+          "arkaTasma": 0,
+          "onTasma": 0.178,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.212,
+            0.502
+          ],
+          "zMerkez": 0.145
+        },
+        {
+          "dz": 0.38,
+          "bantTepe": 889,
+          "temasOrani": 0.539,
+          "arkaTasma": 0,
+          "onTasma": 0.188,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.202,
+            0.512
+          ],
+          "zMerkez": 0.155
+        },
+        {
+          "dz": 0.39,
+          "bantTepe": 889,
+          "temasOrani": 0.513,
+          "arkaTasma": 0,
+          "onTasma": 0.198,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.192,
+            0.522
+          ],
+          "zMerkez": 0.165
+        },
+        {
+          "dz": 0.4,
+          "bantTepe": 889,
+          "temasOrani": 0.504,
+          "arkaTasma": 0,
+          "onTasma": 0.208,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.182,
+            0.532
+          ],
+          "zMerkez": 0.175
+        },
+        {
+          "dz": 0.41,
+          "bantTepe": 889,
+          "temasOrani": 0.479,
+          "arkaTasma": 0,
+          "onTasma": 0.218,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.172,
+            0.542
+          ],
+          "zMerkez": 0.185
+        },
+        {
+          "dz": 0.42,
+          "bantTepe": 889,
+          "temasOrani": 0.453,
+          "arkaTasma": 0,
+          "onTasma": 0.228,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.162,
+            0.552
+          ],
+          "zMerkez": 0.195
+        },
+        {
+          "dz": 0.43,
+          "bantTepe": 889,
+          "temasOrani": 0.433,
+          "arkaTasma": 0,
+          "onTasma": 0.238,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.152,
+            0.562
+          ],
+          "zMerkez": 0.205
+        },
+        {
+          "dz": 0.44,
+          "bantTepe": 889,
+          "temasOrani": 0.412,
+          "arkaTasma": 0,
+          "onTasma": 0.248,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.142,
+            0.572
+          ],
+          "zMerkez": 0.215
+        },
+        {
+          "dz": 0.45,
+          "bantTepe": 889,
+          "temasOrani": 0.385,
+          "arkaTasma": 0,
+          "onTasma": 0.258,
+          "yanTasma": 0.058,
+          "zAraligi": [
+            -0.132,
+            0.582
+          ],
+          "zMerkez": 0.225
+        }
+      ]
+    }
+  ],
+  "kaynakDosyalar": {
+    "ACTOR_HEIGHT": 1.75,
+    "KAY_AUTHORED": 2.204,
+    "KAY_KAFA_OLCEK": 0.75,
+    "KAY_OTURMA_KALDIRMA": 0.068,
+    "STOOL_S": 0.9
+  },
+  "sabitSapmasi": []
+}

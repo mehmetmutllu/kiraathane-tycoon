@@ -5,18 +5,20 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-14 — **S18 BİTTİ (D-115b)** · Faz S 17/18 · 92/102)
+## ŞU AN (2026-09-14 — **S19a ÖLÇÜM** · Faz S 18/19 · 92/103)
 
 ```
-SORU            : Kullanıcı oyunu oynadı; üç sessiz hata + altı görsel/oynanış kalemi.
-SAYILAR         : docs/olcum-musteri.txt · docs/olcum-oyuncu-hizi.txt · docs/olcum-kol.json
-KARAR           : D-115 (hareket + hatalar) · D-115b (balon · posta · patron · tavan hız)
-UYGULAMA        : KayActor (T-poz erken dönüşü · tepsi useMemo · rol bazlı koşu/gömlek) ·
-                  SplashScreen (abonelik → yoklama) · Tables (yol listesi modül sabiti) ·
-                  Customers (yuva KİMLİĞE bağlı · sipariş balonu) · tick (npcAyristir) ·
-                  layout (NPC_SPEED 1,40 · garson POSTALARI) · economy (tavan hız 4,95)
-BEKÇİ           : musteri-ayrisma (6) · yukleme-dongusu (5) · karakter-senkron +8 · layout-b6a
-                  **8 mutasyon, kaçan 0** · vitest 996 ✓ · duman 42/42 ✓ · tsc -b ✓
+SORU            : Kullanicinin yedi kaleminin ilk ucu — patron ayirt edici dokunusu (lacivert
+                  gomlek GERI) · oturus capasi ("gotleri disarda") · siparis balonu glifleri.
+OLCULECEK KOLLAR: P) patron dokunusu — sekiz aday, garson referansiyla ayni kadrajda
+                  O) oturus — klipte kalcanin ILERI ekseni (z); bugun capa YOK, kok tabure
+                     merkezinde; kollar: O1 bugun · O2 kalca-merkezli capa · O3 kismi capa
+                  G) glif — bardak ve tost icin aday cizimler, bugunkusu referans kartta
+SAYILAR         : docs/olcum-oturus.txt · docs/patron-oturus-glif-raporu-s19a.md §Bulgular
+                  kareler: ss/s19-oturus.png · ss/s19-patron.png · ss/s19-glif.png
+KARAR           : (adim 3 — kullanici secer)
+UYGULAMA        : (adim 4 — yalniz kararin kolu)
+BEKCI           : (adim 4)
 ```
 
 ## SIRADAKİ TAM ADIM

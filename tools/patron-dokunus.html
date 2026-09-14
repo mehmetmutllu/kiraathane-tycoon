@@ -1,0 +1,248 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>patron-dokunus</title>
+<style>
+  body { margin: 0; background: #e9e4dc; }
+  canvas { display: block; }
+</style>
+<script type="module">
+  /**
+   * patron-dokunus.html — "PATRONUN KİŞİSEL DOKUNUŞU" karesi (S19a).
+   *
+   * NEDEN İKİNCİ TUR: S18'de patron koyu lacivert gömlekle ayrıldı. Kullanıcı 2026-09-14 gecesi
+   * geri aldı: *"üstü garip olmuş, beyaz daha ayırt ediciydi o kalabilir ama diğerlerinde olmayan
+   * farklı bir dokunuş yap"*. Yani ayıran şey RENK olmayacak; gömlek personelinkiyle aynı krem
+   * kalacak ve patronu tek bir KİŞİSEL PARÇA ayıracak.
+   *
+   * KOLLAR BİLEREK DAR: S18'in karesinde göğse takılan levhalar (yelek/plaka) elendi — önlükten
+   * ayrışmıyorlar. Bu turun adayları o yüzden göğsü kullanmıyor: omuz · bel · kol.
+   *
+   * HER KARTTA İKİ GÖVDE: solda SAHİP adayı, sağda bugünkü GARSON (değişmez referans). Sorulan
+   * şey "güzel mi" değil, "yan yana durduklarında AYIRT EDİLİYOR MU".
+   *
+   * Kullanım (sunucuyu `tools/patron-dokunus.mjs` kaldırır): /tools/patron-dokunus.html
+   */
+  import * as THREE from 'three';
+  import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+
+  /** Bayat sunucu damgası — gerekçe `tools/olcum-oturus.html` (aynı tuzağa iki kez düşülmesin). */
+  const SURUM = 4;
+
+  const KOK = '/assets/models/kaykit-characters/';
+  // Oyunun paleti (src/config/palette.ts ile aynı değerler — sayfa TS modülü alamıyor).
+  const P = {
+    shirt: '#f3ecd9', pants: '#3e3a36', apron: '#7a2230', skin: '#e8c4aa', // ten: KayKit'in KENDİ yüz tonuna yakın (paletin #e0ac69'u turuncu düşüyor)
+    gomlekLacivert: '#31405c', havlu: '#a83232', kusak: '#7a2230', // havlu BORDO: krem havlu krem gömlekte kayboluyordu (ilk koşu)
+  };
+  const KAY_AUTHORED = 2.204, ACTOR_HEIGHT = 1.75;
+  const OLCEK = ACTOR_HEIGHT / KAY_AUTHORED;
+  const KAFA = 0.75;
+
+  /**
+   * VARYANTLAR — her kart TEK bir fikri sınar (levye sayısı bilerek az), son iki kart en güçlü
+   * iki fikri birleştirir. Garson HİÇ değişmez.
+   *   havlu     : omuza atılmış servis havlusu (kıraathanecinin klasik parçası)
+   *   belOnluk  : BEL önlüğü — garsonunki göğüsten başlar, patronunki belden. Aynı bordo.
+   *   sivali    : kolları sıvalı gömlek (alt kol + el ten rengine döner, kemik ağırlığından)
+   *   kusak     : bele dolanmış bordo kuşak
+   */
+  const VARYANT = [
+    { ad: 'P1 BUGUN: lacivert gomlek', gomlek: P.gomlekLacivert },
+    { ad: 'P2 yalin: krem + onluksuz', gomlek: P.shirt },
+    { ad: 'P3 OMUZ HAVLUSU', gomlek: P.shirt, havlu: true },
+    { ad: 'P4 BEL ONLUGU', gomlek: P.shirt, belOnluk: true },
+    { ad: 'P5 KOLLARI SIVALI', gomlek: P.shirt, sivali: true },
+    { ad: 'P6 BEL KUSAGI', gomlek: P.shirt, kusak: true },
+    { ad: 'P7 havlu + sivali', gomlek: P.shirt, havlu: true, sivali: true },
+    { ad: 'P8 bel onlugu + sivali', gomlek: P.shirt, belOnluk: true, sivali: true },
+  ];
+  /** Referans garson — bütün kartlarda AYNI. Bugünkü oyun hâli (krem gömlek + bordo önlük). */
+  const GARSON = { model: 'Knight', gomlek: P.shirt, tamOnluk: true };
+
+  const EKIPMAN = ['cape', 'cloak', 'helmet', 'visor', 'hood', 'hat', 'crown', 'shoulder', 'pauldron',
+    'pauldrons', 'armor', 'sword', 'shield', 'staff', 'wand', 'bow', 'quiver', 'dagger', 'axe',
+    'spellbook', 'horn', 'backpack', 'mask'];
+  const ekipmanMi = (ad) => {
+    const rol = ad.split('_').pop()?.toLowerCase() ?? '';
+    return EKIPMAN.some((k) => rol.startsWith(k) || rol.endsWith(k));
+  };
+  const basMi = (ad) => /head|skull/i.test(ad);
+  const mat = (renk) => new THREE.MeshStandardMaterial({ color: renk, roughness: 0.85 });
+
+  const loader = new GLTFLoader();
+  const onbellek = new Map();
+  async function yuk(ad) {
+    if (!onbellek.has(ad)) onbellek.set(ad, await loader.loadAsync(`${KOK}${ad}.glb`));
+    const g = onbellek.get(ad);
+    const { clone } = await import('three/examples/jsm/utils/SkeletonUtils.js');
+    return clone(g.scene);
+  }
+
+  /**
+   * KOLLARI SIVALI — mesh BÖLÜNMEDEN, KEMİK AĞIRLIĞINDAN boyanır.
+   *
+   * KayKit gövdesinde kol TEK mesh (`*_ArmLeft` / `*_ArmRight`); "dirseğe kadar krem, sonrası ten"
+   * demek için geometriyi kesmek gerekmez: her tepe noktasının hangi kemiklere bağlı olduğu zaten
+   * dosyada yazılı. Alt kol/bilek/el kemiklerine ağırlığı yarıdan fazla olan tepe noktaları ten
+   * rengine, kalanlar gömlek rengine boyanır ve renk bir VERTEX COLOR katmanı olarak yazılır.
+   * Malzeme tek kalır (çizim sayısı artmaz), sınır da kemiğin kendi geçişini izlediği için
+   * dirsekte doğal duruyor.
+   */
+  const TEN_KEMIKLERI = ['lowerarml', 'lowerarmr', 'wristl', 'wristr', 'handl', 'handr'];
+  function sivaliBoya(mesh, gomlekRenk) {
+    const g = mesh.geometry;
+    const si = g.attributes.skinIndex, sw = g.attributes.skinWeight;
+    if (!si || !sw) return false;
+    const kemikAdi = (k) => mesh.skeleton.bones[k]?.name?.toLowerCase() ?? '';
+    const ten = new THREE.Color(P.skin).convertSRGBToLinear();
+    const gomlek = new THREE.Color(gomlekRenk).convertSRGBToLinear();
+    const renkler = new Float32Array(si.count * 3);
+    for (let i = 0; i < si.count; i++) {
+      let agirlik = 0;
+      for (let k = 0; k < 4; k++) {
+        const ad = kemikAdi(si.getComponent(i, k));
+        if (TEN_KEMIKLERI.includes(ad)) agirlik += sw.getComponent(i, k);
+      }
+      const c = agirlik > 0.5 ? ten : gomlek;
+      renkler[i * 3] = c.r;
+      renkler[i * 3 + 1] = c.g;
+      renkler[i * 3 + 2] = c.b;
+    }
+    g.setAttribute('color', new THREE.BufferAttribute(renkler, 3));
+    mesh.material = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.85, vertexColors: true });
+    return true;
+  }
+
+  /** Gövdeyi kur: ekipmanı gizle, boya, kafayı küçült, kimlik parçalarını kemiğe tak. */
+  function govdeKur(o, cfg) {
+    o.traverse((n) => {
+      if (!n.isMesh) return;
+      if (ekipmanMi(n.name)) { n.visible = false; return; }
+      if (basMi(n.name)) return; // baş BOYANMAZ (D-112: yüz/saç kendi dokusundan)
+      if (/arm/i.test(n.name)) {
+        // Kol geometrisi paylaşılıyor olabilir (klon aynı BufferGeometry'yi taşır) — sıvalı kolda
+        // kopyalanır, yoksa aynı karedeki diğer gövdelerin kolları da boyanırdı.
+        if (cfg.sivali) { n.geometry = n.geometry.clone(); sivaliBoya(n, cfg.gomlek); }
+        else n.material = mat(cfg.gomlek);
+      } else if (/body|torso/i.test(n.name)) n.material = mat(cfg.gomlek);
+      else if (/leg/i.test(n.name)) n.material = mat(P.pants);
+    });
+    o.traverse((n) => { if (n.isBone && n.name === 'head') n.scale.setScalar(KAFA); if (n.isSkinnedMesh) n.boundingBox = null; });
+    o.updateMatrixWorld(true);
+
+    const kemikler = new Map();
+    o.traverse((n) => { if (n.isBone) kemikler.set(n.name, n); });
+    const q = new THREE.Quaternion();
+    const tak = (kemikAd, mesh, nokta) => {
+      const k = kemikler.get(kemikAd);
+      if (!k) return;
+      k.add(mesh);
+      mesh.position.copy(k.worldToLocal(nokta.clone()));
+      mesh.quaternion.copy(k.getWorldQuaternion(q).invert());
+    };
+
+    if (cfg.tamOnluk) {
+      // Bugünkü personel önlüğü (KayActor.kiyafetTak ile birebir aynı ölçüler).
+      tak('chest', new THREE.Mesh(new THREE.BoxGeometry(0.58, 0.72, 0.08), mat(P.apron)), new THREE.Vector3(0, 0.78, 0.3));
+      tak('hips', new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.07, 14), mat(P.apron)), new THREE.Vector3(0, 0.48, 0));
+    }
+    if (cfg.belOnluk) {
+      // BEL ÖNLÜĞÜ: göğse hiç çıkmaz, belden dize doğru iner. Garsonun önlüğüyle aynı bordo ama
+      // farklı YER — ayrım renkten değil hattan geliyor.
+      const g = new THREE.Group();
+      const etek = new THREE.Mesh(new THREE.CylinderGeometry(0.33, 0.36, 0.34, 16, 1, true), mat(P.apron));
+      etek.material.side = THREE.DoubleSide;
+      const bant = new THREE.Mesh(new THREE.CylinderGeometry(0.335, 0.335, 0.08, 16), mat(P.apron));
+      bant.position.y = 0.19;
+      g.add(etek, bant);
+      tak('hips', g, new THREE.Vector3(0, 0.44, 0));
+    }
+    if (cfg.kusak) {
+      tak('hips', new THREE.Mesh(new THREE.CylinderGeometry(0.335, 0.335, 0.16, 16), mat(P.kusak)), new THREE.Vector3(0, 0.52, 0));
+    }
+    if (cfg.havlu) {
+      // OMUZ HAVLUSU: omzun üstünden önden ve arkadan sarkan iki dilim. Tek plakadan kaçınıldı —
+      // S18'in dersi: gövdeye yapışık düz levha önlükten ayrışmıyor, hacim gerekiyor.
+      const g = new THREE.Group();
+      // Sarkan diliмler GÖVDENİN DIŞINDA durmalı: ilk koşuda z ±0,17 idi ve havlu gövdenin
+      // içinde kaldı (karede hiç görünmedi). Gövde yarı derinliği ~0,22; dilimler 0,26'ya alındı.
+      const on = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.50, 0.05), mat(P.havlu));
+      on.position.set(0, -0.24, 0.26);
+      const arka = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.42, 0.05), mat(P.havlu));
+      arka.position.set(0, -0.20, -0.26);
+      const ust = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.06, 0.57), mat(P.havlu));
+      g.add(on, arka, ust);
+      // Çapa SABİT sayı değil, omuz KEMİĞİNİN kendi dünya konumu: gövdeden gövdeye omuz yüksekliği
+      // değişiyor ve sabit nokta havluyu gövdenin içinde bırakıyordu (ilk koşuda hiç görünmedi).
+      const omuz = kemikler.get('upperarml');
+      if (omuz) tak('upperarml', g, omuz.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, 0.10, 0)));
+    }
+    o.scale.setScalar(OLCEK);
+    return o;
+  }
+
+  // --- sahne ---------------------------------------------------------------
+  const SUTUN = 4;
+  const ARA_X = 3.4, ARA_Z = 5.2; // satirlar ust uste binmesin (S18 kadraji 8 kart icin dardi)
+  const sahne = new THREE.Scene();
+  sahne.background = new THREE.Color('#e9e4dc');
+  sahne.add(new THREE.HemisphereLight('#ffffff', '#8d8272', 1.5));
+  const gunes = new THREE.DirectionalLight('#fff6e0', 2.0);
+  gunes.position.set(3, 6, 4);
+  sahne.add(gunes);
+
+  // Poz: oyunun duruş klibi — T-poz değil gerçek siluet.
+  const pozG = await loader.loadAsync(`${KOK}Rig_Medium_General.glb`);
+  const idle = pozG.animations.find((c) => c.name === 'Idle_A');
+  const pozla = (kok) => {
+    if (!idle) return;
+    const m = new THREE.AnimationMixer(kok);
+    const klip = idle.clone();
+    klip.tracks = klip.tracks.filter((t) => t.name !== 'head.scale');
+    m.clipAction(klip).play();
+    m.update(klip.duration * 0.5);
+  };
+
+  const etiketler = [];
+  for (let i = 0; i < VARYANT.length; i++) {
+    const v = VARYANT[i];
+    const gx = (i % SUTUN) * ARA_X - ((SUTUN - 1) * ARA_X) / 2;
+    const gz = Math.floor(i / SUTUN) * ARA_Z;
+    const patron = govdeKur(await yuk('Ranger'), v); // sahip gövdesi: bıyıklı Ranger (KAY_MODEL)
+    patron.position.set(gx - 0.62, 0, gz);
+    patron.rotation.y = 0.3; // hafif çeyrek açı: bel/omuz parçaları kareye girsin
+    pozla(patron);
+    const garson = govdeKur(await yuk(GARSON.model), GARSON);
+    garson.position.set(gx + 0.62, 0, gz);
+    garson.rotation.y = -0.3;
+    pozla(garson);
+    sahne.add(patron, garson);
+    etiketler.push({ ad: v.ad, x: gx, z: gz });
+  }
+
+  const zemin = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.MeshStandardMaterial({ color: '#c89a68' }));
+  zemin.rotation.x = -Math.PI / 2;
+  sahne.add(zemin);
+
+  const kamera = new THREE.PerspectiveCamera(34, innerWidth / innerHeight, 0.1, 100);
+  kamera.position.set(0, 7.4, 16.5);
+  kamera.lookAt(0, 0.55, 2.6);
+
+  const r = new THREE.WebGLRenderer({ antialias: true });
+  r.setSize(innerWidth, innerHeight);
+  r.setPixelRatio(Math.min(devicePixelRatio, 2));
+  document.body.appendChild(r.domElement);
+  r.render(sahne, kamera);
+
+  for (const e of etiketler) {
+    const v = new THREE.Vector3(e.x, 0.02, e.z + 1.05).project(kamera);
+    const d = document.createElement('div');
+    d.textContent = e.ad;
+    d.style.cssText = `position:fixed;left:${((v.x + 1) / 2) * innerWidth}px;top:${((-v.y + 1) / 2) * innerHeight}px;
+      transform:translate(-50%,0);font:600 13px system-ui;color:#2b2118;background:#ffffffcc;
+      padding:2px 7px;border-radius:5px;white-space:nowrap;`;
+    document.body.appendChild(d);
+  }
+  window.__surum = SURUM;
+  window.__hazir = true;
+</script>

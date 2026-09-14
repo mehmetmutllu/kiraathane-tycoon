@@ -1,0 +1,449 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>olcum-oturus</title>
+<style>
+  body { margin: 0; background: #eceae4; font: 13px system-ui; }
+  canvas { display: block; }
+</style>
+<script type="module">
+  /**
+   * olcum-oturus.html — "GÖTLERİ BİRAZ DIŞARDA KALIYOR" kusurunun SAYISI (S19a).
+   *
+   * NEDEN KEMİK YETMİYOR: `KAY_OTURMA_KALDIRMA` (0,068) S15'te kalça KEMİĞİNİN yüksekliğinden
+   * türetildi ve düşey ekseni doğru kapattı. Kullanıcının şikâyeti ise YATAY: gövde taburenin
+   * üstünde ileri/geri kaymış duruyor. Kemik bir nokta; taşan şey ise kalçanın HACMİ. Bu yüzden
+   * ölçüm kemikte değil DERİDE yapılır: oturuş klibi çalınır, her tepe noktası
+   * `applyBoneTransform` ile gerçekten deforme edilir ve taburenin oturak diskiyle karşılaştırılır.
+   *
+   * ÖLÇÜLEN: oturak yüksekliğindeki temas bandındaki tepe noktalarının kaçı diskin İÇİNDE, en çok
+   * taşan nokta kaç birim dışarda, ve bu iki sayı kök z çapası (dz) süpürüldüğünde nereye gidiyor.
+   *
+   * KOLLAR: O1 dz = 0 (BUGÜN, çapa yok) · O2 dz = −kalça z (kalça diskin merkezine) ·
+   *         O3 dz = temas oranını en yükseğe çıkaran değer (süpürmeden).
+   *
+   * Kullanım (sunucuyu `tools/olcum-oturus.mjs` kaldırır): /tools/olcum-oturus.html
+   */
+  import * as THREE from 'three';
+  import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+  import { clone as skinKlon } from 'three/examples/jsm/utils/SkeletonUtils.js';
+
+  /**
+   * SÜRÜM DAMGASI — BAYAT SAYFA TUZAĞI. Ölçüm üç kez yeniden yazıldı ve üçünde de kare BİREBİR
+   * aynı çıktı: sebep kod değil, portta asılı kalmış ESKİ bir vite sunucusuydu. `--strictPort`
+   * ile yeni sunucu doğamıyor, yoklama ise eski sunucuya "ayakta" diyor ve sayfanın ilk hâli
+   * servis ediliyordu. Bu sayı her anlamlı değişiklikte artırılır; `olcum-oturus.mjs` sayfadan
+   * okuduğunu dosyadakiyle karşılaştırır ve tutmazsa ÖLÇÜMÜ DURDURUR.
+   */
+  const SURUM = 8;
+
+  const KOK = '/assets/models/kaykit-characters/';
+  const MOB = '/assets/models/kaykit-furniture-bits/';
+  // src/config/actor.ts + tableLook.ts ile AYNI sayılar (sayfa TS modülü alamıyor; `olcum-oturus.mjs`
+  // bu sayıları kaynak dosyalardan okuyup karşılaştırır — sapma olursa ölçüm kırmızı yanar).
+  const ACTOR_HEIGHT = 1.75, KAY_AUTHORED = 2.204;
+  const KAY_SCALE = ACTOR_HEIGHT / KAY_AUTHORED;
+  const KAFA = 0.75;
+  const KAY_OTURMA_KALDIRMA = 0.068;
+  const STOOL_S = 0.9;
+  const GOVDELER = ['Knight', 'Rogue', 'Mage', 'Barbarian', 'Ranger'];
+
+  const EKIPMAN = ['cape', 'cloak', 'helmet', 'visor', 'hood', 'hat', 'crown', 'shoulder', 'pauldron',
+    'pauldrons', 'armor', 'sword', 'shield', 'staff', 'wand', 'bow', 'quiver', 'dagger', 'axe',
+    'spellbook', 'horn', 'backpack', 'mask'];
+  const ekipmanMi = (ad) => {
+    const rol = ad.split('_').pop()?.toLowerCase() ?? '';
+    return EKIPMAN.some((k) => rol.startsWith(k) || rol.endsWith(k));
+  };
+
+  const loader = new GLTFLoader();
+  const onbellek = new Map();
+  async function yuk(ad) {
+    if (!onbellek.has(ad)) onbellek.set(ad, await loader.loadAsync(`${KOK}${ad}.glb`));
+    return skinKlon(onbellek.get(ad).scene);
+  }
+
+  /** Oyundaki gövdeyle AYNI kurulum: ekipman gizli, kafa kemiği küçük, ölçek KAY_SCALE. */
+  function govdeKur(o) {
+    o.traverse((n) => {
+      if (n.isMesh && ekipmanMi(n.name)) n.visible = false;
+      if (n.isBone && n.name === 'head') n.scale.setScalar(KAFA);
+      if (n.isSkinnedMesh) n.boundingBox = null;
+    });
+    o.scale.setScalar(KAY_SCALE);
+    o.updateMatrixWorld(true);
+    return o;
+  }
+
+  // ─────────────── TABURE: oturak YÜZEYİ asset'ten, DİSK olarak değil ───────────────
+  /**
+   * Yarıçapı elle yazmak iki kaynak demekti: greybox yedeği (minder yarıçapı 0,25 × 0,811 = 0,203)
+   * ile asset (native en 0,75 × 0,90 = 0,675 → 0,338) BİRBİRİNİ TUTMUYOR ve hangisinin ekranda
+   * olduğu koda bakarak anlaşılmıyor. Oyunda çizilen `chair_stool_wood`; ölçü onun ÜST bandının
+   * tepe noktalarından çıkar.
+   *
+   * DİSK DEĞİL ÇOKGEN: ilk koşuda oturak daire sayıldı ve yarıçap **0,45** ölçüldü — o sayı
+   * oturağın KÖŞEGENİ, kenarı değil (native en 0,675, yarısı 0,338). Daire varsayımı köşelerin
+   * arasını da "oturak" sayar ve taşmayı olduğundan KÜÇÜK gösterir. Oturak dışbükey olduğu için
+   * üst bandın XZ dışbükey kabuğu tam olarak oturağın kendi hattıdır; içerik testi o çokgende
+   * yapılır.
+   */
+  function ilkMesh(o) {
+    let m = null;
+    o.traverse((n) => { if (!m && n.isMesh) m = n; });
+    return m;
+  }
+
+  /** XZ dışbükey kabuk (Andrew monotone chain). Nokta: {x, z}. */
+  function kabuk(noktalar) {
+    const p = noktalar.map((q) => [q.x, q.z]).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    const capraz = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+    const yari = (dizi) => {
+      const y = [];
+      for (const q of dizi) {
+        while (y.length >= 2 && capraz(y[y.length - 2], y[y.length - 1], q) <= 0) y.pop();
+        y.push(q);
+      }
+      y.pop();
+      return y;
+    };
+    return [...yari(p), ...yari([...p].reverse())];
+  }
+
+  /** Nokta çokgenin içinde mi (ışın atma) + kenara olan en kısa uzaklık. */
+  function icinde(cokgen, x, z) {
+    let ic = false;
+    for (let i = 0, j = cokgen.length - 1; i < cokgen.length; j = i++) {
+      const [xi, zi] = cokgen[i], [xj, zj] = cokgen[j];
+      if ((zi > z) !== (zj > z) && x < ((xj - xi) * (z - zi)) / (zj - zi) + xi) ic = !ic;
+    }
+    return ic;
+  }
+  function kenarUzakligi(cokgen, x, z) {
+    let en = Infinity;
+    for (let i = 0, j = cokgen.length - 1; i < cokgen.length; j = i++) {
+      const [xi, zi] = cokgen[i], [xj, zj] = cokgen[j];
+      const dx = xj - xi, dz = zj - zi;
+      const t = Math.max(0, Math.min(1, ((x - xi) * dx + (z - zi) * dz) / (dx * dx + dz * dz || 1)));
+      en = Math.min(en, Math.hypot(x - (xi + t * dx), z - (zi + t * dz)));
+    }
+    return en;
+  }
+
+  function tabureOlc(gltf) {
+    // OYUNDAKİ HÂLİ BİREBİR: `Tables.tsx` `firstMesh`in GEOMETRİSİNİ `Merged` ile çiziyor —
+    // düğümün kendi matrisi uygulanmıyor, tek dönüşüm instance ölçeği (STOOL_S). Aynısı burada.
+    const mesh = ilkMesh(gltf.scene);
+    const p = mesh.geometry.attributes.position;
+    const v = new THREE.Vector3();
+    const nokta = [];
+    let tepe = -Infinity;
+    for (let i = 0; i < p.count; i++) {
+      v.fromBufferAttribute(p, i).multiplyScalar(STOOL_S);
+      nokta.push(v.clone());
+      if (v.y > tepe) tepe = v.y;
+    }
+    // Oturak bandı: en üst yüzeyin 3 cm altına kadar. Ayaklar bu banda giremez (oturak altı boş).
+    const band = nokta.filter((q) => q.y >= tepe - 0.03);
+    const cokgen = kabuk(band);
+    return {
+      oturakUstu: +tepe.toFixed(3),
+      cokgen: cokgen.map(([x, z]) => [+x.toFixed(3), +z.toFixed(3)]),
+      koseYaricapi: +Math.max(...band.map((q) => Math.hypot(q.x, q.z))).toFixed(3),
+      kenarYaricapi: +Math.min(...cokgen.map(([x, z]) => Math.hypot(x, z))).toFixed(3),
+      bantTepe: band.length,
+    };
+  }
+
+  // ─────────────── Oturan gövdenin DERİSİ ───────────────
+  /**
+   * Klip çalınmış hâlde her tepe noktasının DÜNYA konumu. `applyBoneTransform` tepe noktasına
+   * kemik ağırlıklarını gerçekten uygular — yani ölçülen şey bind pozu değil, ekranda görünen
+   * deforme olmuş gövdedir.
+   */
+  function deriNoktalari(kok) {
+    const v = new THREE.Vector3();
+    const out = [];
+    kok.updateMatrixWorld(true);
+    kok.traverse((n) => {
+      if (!n.isSkinnedMesh || !n.visible) return;
+      const p = n.geometry.attributes.position;
+      for (let i = 0; i < p.count; i++) {
+        v.fromBufferAttribute(p, i);
+        n.applyBoneTransform(i, v);
+        v.applyMatrix4(n.matrixWorld);
+        out.push(v.clone());
+      }
+    });
+    return out;
+  }
+
+  /**
+   * TEMAS BANDI: oturak üstünün hemen altındaki/üstündeki deri. Kalçanın taburede duran kısmı bu.
+   * Bant ±4 cm: altında bacak/ayak, üstünde gövde başlıyor.
+   */
+  const BANT = 0.04;
+
+  /** Çokgenin verilen x'teki z açıklığı. x çokgenin dışındaysa null (o nokta YANDAN taşıyor). */
+  function zAcikligi(cokgen, x) {
+    let alt = Infinity, ust = -Infinity;
+    for (let i = 0, j = cokgen.length - 1; i < cokgen.length; j = i++) {
+      const [xi, zi] = cokgen[i], [xj, zj] = cokgen[j];
+      if ((xi <= x && xj >= x) || (xj <= x && xi >= x)) {
+        if (xi === xj) { alt = Math.min(alt, zi, zj); ust = Math.max(ust, zi, zj); continue; }
+        const z = zi + ((x - xi) / (xj - xi)) * (zj - zi);
+        alt = Math.min(alt, z);
+        ust = Math.max(ust, z);
+      }
+    }
+    return alt === Infinity ? null : [alt, ust];
+  }
+
+  /**
+   * TAŞMA ÜÇ AYRI ŞEYDİR, TEK SAYI DEĞİL.
+   *   ARKA — kalça oturağın arka hattından sarkıyor. Kullanıcının gördüğü kusur bu, ve z çapası
+   *          TAM OLARAK bunu kapatır.
+   *   ÖN   — uyluk oturağın ön hattını aşıyor. Oturan insanda bu doğaldır, kusur değil; çapa
+   *          fazla itilirse bu büyür ve gövde masaya girer.
+   *   YAN  — nokta oturağın x açıklığının tamamen dışında (kalça oturaktan geniş). z çapası bunu
+   *          HİÇ düzeltmez; ayrı sayılmazsa çapayı boşuna öne iter (ilk koşuda Ranger'da tam bu
+   *          oldu: yan taşma "arka" sayıldığı için kol hiç çözüm bulamadı).
+   */
+  function temasOlc(noktalar, oturakY, cokgen, dz) {
+    const bant = noktalar.filter((q) => Math.abs(q.y - oturakY) <= BANT);
+    if (!bant.length) return null;
+    let ic = 0, arka = 0, on = 0, yan = 0, zMin = Infinity, zMax = -Infinity;
+    for (const q of bant) {
+      const z = q.z + dz;
+      const acik = zAcikligi(cokgen, q.x);
+      if (!acik) yan = Math.max(yan, kenarUzakligi(cokgen, q.x, z));
+      else if (z < acik[0]) arka = Math.max(arka, acik[0] - z);
+      else if (z > acik[1]) on = Math.max(on, z - acik[1]);
+      else ic++;
+      zMin = Math.min(zMin, z);
+      zMax = Math.max(zMax, z);
+    }
+    return {
+      bantTepe: bant.length,
+      temasOrani: +(ic / bant.length).toFixed(3),
+      arkaTasma: +arka.toFixed(3),
+      onTasma: +on.toFixed(3),
+      yanTasma: +yan.toFixed(3),
+      zAraligi: [+zMin.toFixed(3), +zMax.toFixed(3)],
+      zMerkez: +((zMin + zMax) / 2).toFixed(3),
+    };
+  }
+
+  // ─────────────── ölçüm ───────────────
+  const simG = await loader.loadAsync(`${KOK}Rig_Medium_Simulation.glb`);
+  const otur = simG.animations.find((c) => c.name === 'Sit_Chair_Idle');
+  const tabureG = await loader.loadAsync(`${MOB}chair_stool_wood.gltf`);
+  const tabure = tabureOlc(tabureG);
+  const OTURAK_Y = tabure.oturakUstu; // asset'in kendi oturak yüksekliği (0,45 bekleniyor)
+  const COKGEN = tabure.cokgen;
+
+  /**
+   * MASA AÇIKLIĞI: çapa gövdeyi masaya doğru iter (yerel +z masaya bakar). Koltuk masanın
+   * merkezinden 1,45 br ötede, en büyük tabla eni 1,68 (yarısı 0,84) → tabure merkeziyle tabla
+   * kenarı arası **0,61**. Gövdenin en ileri derisi bu sayıyı geçerse diz masaya girer.
+   */
+  const MASA_ACIKLIGI = +(1.45 - 1.68 / 2).toFixed(3);
+
+  const sonuc = [];
+  for (const ad of GOVDELER) {
+    const o = govdeKur(await yuk(ad));
+    const m = new THREE.AnimationMixer(o);
+    // `head.scale` izi sökülür — oyundaki `useKayKlipler` de bunu yapıyor (kafa küçültme kalsın).
+    const klip = otur.clone();
+    klip.tracks = klip.tracks.filter((t) => t.name !== 'head.scale');
+    m.clipAction(klip).play();
+    m.update(klip.duration * 0.5);
+    o.position.y = KAY_OTURMA_KALDIRMA; // bugünkü düşey çapa
+    o.updateMatrixWorld(true);
+
+    // Kalça KEMİĞİ nerede (S15'te ölçülen sayının yatay kardeşi).
+    const kemik = {};
+    o.traverse((n) => {
+      if (n.isBone) kemik[n.name] = n.getWorldPosition(new THREE.Vector3());
+    });
+    const kalca = kemik['hips'];
+
+    const noktalar = deriNoktalari(o);
+    const govdeKutu = new THREE.Box3().setFromPoints(noktalar);
+
+    // dz SÜPÜRMESİ: −0,30…+0,30, 1 cm adım. En yüksek temas oranı O3 kolu.
+    const supurme = [];
+    for (let dz = -0.3; dz <= 0.4501; dz += 0.01) {
+      const t = temasOlc(noktalar, OTURAK_Y, COKGEN, +dz.toFixed(2));
+      if (t) supurme.push({ dz: +dz.toFixed(2), ...t });
+    }
+    /**
+     * O3 = KALÇAYI OTURAĞA OTURTAN EN KÜÇÜK ÇAPA. Ölçüt "en yüksek temas oranı" değil ARKA
+     * TAŞMANIN SIFIRLANMASI: sorulan soru kalçanın sarkması, uyluğun öne taşması değil. En
+     * küçüğü seçilir çünkü fazlası gövdeyi bedava masaya doğru iter (`masaAcikligi`).
+     */
+    const oturanlar = supurme.filter((s) => s.arkaTasma <= 0.005);
+    const esik = oturanlar.length ? Math.min(...oturanlar.map((s) => s.dz)) : null;
+    const ustSinir = oturanlar.length ? Math.max(...oturanlar.map((s) => s.dz)) : null;
+    const enIyi = esik === null
+      ? { dz: null }
+      : { ...temasOlc(noktalar, OTURAK_Y, COKGEN, esik), dz: esik, oturanAralik: [esik, ustSinir] };
+    const O1 = supurme.find((s) => s.dz === 0);
+    const kalcaDz = +(-kalca.z).toFixed(3);
+    const O2 = temasOlc(noktalar, OTURAK_Y, COKGEN, kalcaDz);
+
+    sonuc.push({
+      govde: ad,
+      kalcaKemigi: { x: +kalca.x.toFixed(3), y: +kalca.y.toFixed(3), z: +kalca.z.toFixed(3) },
+      ayakZ: kemik['footl'] ? +kemik['footl'].z.toFixed(3) : null,
+      dizZ: kemik['shinl'] ? +kemik['shinl'].z.toFixed(3) : null,
+      kemikAdlari: Object.keys(kemik),
+      govdeKutu: {
+        zMin: +govdeKutu.min.z.toFixed(3),
+        zMax: +govdeKutu.max.z.toFixed(3),
+        yMin: +govdeKutu.min.y.toFixed(3),
+        yMax: +govdeKutu.max.y.toFixed(3),
+      },
+      masaAcikligi: MASA_ACIKLIGI,
+      O1_bugun: O1,
+      O2_kalcaMerkezli: { dz: kalcaDz, ...O2 },
+      O3_enIyiTemas: enIyi,
+      supurme,
+    });
+  }
+
+  window.__olcum = {
+    surum: SURUM,
+    damga: new Date().toISOString(),
+    kaynak: { ACTOR_HEIGHT, KAY_SCALE: +KAY_SCALE.toFixed(4), KAY_OTURMA_KALDIRMA, STOOL_S, BANT },
+    tabure,
+    govdeler: sonuc,
+  };
+
+  // ─────────────── görsel: üç kol, her biri KENDİ YAN BAKIŞINDA ───────────────
+  /**
+   * NEDEN ÜÇ AYRI BAKIŞ: sorulan şey ileri/geri kaymadır, yani DERİNLİK. Tek bir önden kamerada
+   * derinlik okunmuyordu (ilk koşunun karesi bu yüzden işe yaramadı). Kollar x ekseninde yan yana
+   * durur ama her biri kendi kesme penceresinde TAM YANDAN çizilir — kayma ekranda yatay mesafe
+   * olarak görünür. Ayrıca oturağın orta ekseni ince bir çizgiyle işaretlenir: "göt nerede bitiyor"
+   * sorusu gözle de ölçülebilsin.
+   */
+  const sahne = new THREE.Scene();
+  sahne.background = new THREE.Color('#eceae4');
+  sahne.add(new THREE.HemisphereLight('#ffffff', '#8d8272', 1.6));
+  const gunes = new THREE.DirectionalLight('#fff6e0', 1.9);
+  gunes.position.set(4, 7, 5);
+  sahne.add(gunes);
+
+  // KOLLAR ARASI MESAFE: kameralar x ekseninde +6,2 ötede duruyor. Aralık 6'yken her kamera BİR
+  // SONRAKİ kolun tam içine düşüyordu ve kare koyu bir yakın plan oluyordu (üç render kolu da
+  // "bozuk" sanıldı; kusur mesafedeydi). 20, kamera ile komşu kol arasında 13+ birim bırakır.
+  const ARA = 20;
+  const kn = sonuc.find((g) => g.govde === 'Knight');
+  const KOLLAR = [
+    { ad: 'O1 BUGUN (capa yok)', dz: 0, t: kn.O1_bugun },
+    { ad: 'O2 kalca merkezli', dz: kn.O2_kalcaMerkezli.dz, t: kn.O2_kalcaMerkezli },
+    { ad: 'O3 kalca oturur (en kucuk)', dz: kn.O3_enIyiTemas.dz, t: kn.O3_enIyiTemas },
+  ];
+  const tm = ilkMesh(tabureG.scene);
+  for (let i = 0; i < KOLLAR.length; i++) {
+    const gx = i * ARA;
+    const t = new THREE.Mesh(tm.geometry, tm.material);
+    t.scale.setScalar(STOOL_S);
+    t.position.set(gx, 0, 0);
+    sahne.add(t);
+    const o = govdeKur(await yuk('Knight'));
+    const m = new THREE.AnimationMixer(o);
+    const klip = otur.clone();
+    klip.tracks = klip.tracks.filter((tr) => tr.name !== 'head.scale');
+    m.clipAction(klip).play();
+    m.update(klip.duration * 0.5);
+    o.position.set(gx, KAY_OTURMA_KALDIRMA, KOLLAR[i].dz);
+    sahne.add(o);
+    // Oturağın ÖN ve ARKA hattı: taşma bu iki çizgiye göre okunur.
+    for (const zk of [tabure.kenarYaricapi, -tabure.kenarYaricapi]) {
+      const c = new THREE.Mesh(
+        new THREE.BoxGeometry(0.9, 0.006, 0.006),
+        new THREE.MeshBasicMaterial({ color: '#c02b2b' }),
+      );
+      c.position.set(gx, OTURAK_Y + 0.001, zk);
+      sahne.add(c);
+    }
+  }
+  const zemin = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: '#c89a68' }));
+  zemin.rotation.x = -Math.PI / 2;
+  zemin.position.x = ARA; // uc kolun hepsini ortalar
+  sahne.add(zemin);
+
+  /**
+   * ÜÇ BAKIŞ, ÜÇ AYRI TUVAL. Önce tek renderer + `setScissor` denendi, sonra tek renderer +
+   * `drawImage` ile kopyalama: ikisinde de karede yalnız SON pencere doluydu. Sebep aynı —
+   * ekran görüntüsü alınırken WebGL çizim tamponunun geçmiş içeriği korunmuyor. Her kolun kendi
+   * tuvali olunca böyle bir paylaşım hiç kurulmuyor; üç bağlam bu tek seferlik araç için ucuz.
+   */
+  /**
+   * ÜÇ BAKIŞ, TEK BAĞLAM, PİKSELİ DOĞRUDAN OKUYARAK.
+   *
+   * Sahne bir `WebGLRenderTarget`a çizilir, pikselleri `readRenderTargetPixels` ile okunur ve 2B
+   * tuvale yazılır. Ekranda görünen şey sıradan bir bitmap olur — ekran görüntüsü tarayıcının
+   * WebGL kompozisyonuna hiç bağlı kalmaz.
+   *
+   * NOT (tuzak kaydı): bu yol, karede "yalnız son pencere dolu" kusurunu ARAŞTIRIRKEN yazıldı ve
+   * kusuru O ÇÖZMEDİ. Gerçek sebep kolların x aralığıydı (yukarıda `ARA`): kameralar komşu kolun
+   * içine düşüyordu. Üç ayrı render uygulamasının birebir aynı PNG'yi üretmesi "sunum bozuk"
+   * sanılmasına yol açtı; oysa üçü de DOĞRU çalışıyordu ve aynı yanlış kadrajı çiziyordu.
+   */
+  const G = Math.floor(innerWidth / 3);
+  const OL = Math.min(devicePixelRatio, 2);
+  const PW = Math.floor(G * OL), PH = Math.floor(innerHeight * OL);
+  const r = new THREE.WebGLRenderer({ antialias: true });
+  r.setPixelRatio(1);
+  r.setSize(PW, PH, false);
+  const hedef = new THREE.WebGLRenderTarget(PW, PH, { samples: 4 });
+  hedef.texture.colorSpace = THREE.SRGBColorSpace; // aksi hâlde doğrusal okunur, kare sönük çıkar
+
+  const tuval = document.createElement('canvas');
+  tuval.width = PW * 3;
+  tuval.height = PH;
+  tuval.style.cssText = `width:${G * 3}px;height:${innerHeight}px;display:block;`;
+  const ctx = tuval.getContext('2d');
+  document.body.appendChild(tuval);
+
+  const tampon = new Uint8Array(PW * PH * 4);
+  for (let i = 0; i < 3; i++) {
+    const gx = i * ARA;
+    const k = new THREE.PerspectiveCamera(22, PW / PH, 0.1, 100);
+    // TAM YANDAN, +x'ten bakar. Bakış yönü (−1,0,0) ve yukarı (0,1,0) olduğu için ekranın SAĞI
+    // −z olur: yani müşterinin ÖNÜ ekranda SOLDA kalır. (İlk koşuda etiket bunu ters yazıyordu.)
+    k.position.set(gx + 6.2, 1.05, 0);
+    k.lookAt(gx, 0.7, 0);
+    r.setRenderTarget(hedef);
+    r.render(sahne, k);
+    r.readRenderTargetPixels(hedef, 0, 0, PW, PH, tampon);
+    // WebGL satırları ALTTAN başlar, ImageData ÜSTTEN: kopyalarken ters çevrilir.
+    const im = ctx.createImageData(PW, PH);
+    for (let y = 0; y < PH; y++) {
+      const kaynak = (PH - 1 - y) * PW * 4;
+      im.data.set(tampon.subarray(kaynak, kaynak + PW * 4), y * PW * 4);
+    }
+    ctx.putImageData(im, i * PW, 0);
+  }
+  r.setRenderTarget(null);
+
+  for (let i = 0; i < KOLLAR.length; i++) {
+    const K = KOLLAR[i];
+    const d = document.createElement('div');
+    d.innerHTML = `<b>${K.ad}</b>  dz=${String(K.dz).replace('.', ',')}<br>` +
+      `ARKA tasma ${String(K.t.arkaTasma).replace('.', ',')} br · on tasma ${String(K.t.onTasma).replace('.', ',')} br`;
+    d.style.cssText = `position:fixed;left:${i * G + G / 2}px;bottom:26px;transform:translateX(-50%);
+      font:13px/1.45 system-ui;color:#2b2118;background:#ffffffdd;padding:5px 10px;border-radius:6px;
+      text-align:center;white-space:nowrap;`;
+    document.body.appendChild(d);
+  }
+  const yon = document.createElement('div');
+  yon.textContent = 'SOL = musterinin ONU (masa bu yonde) · SAG = arkasi · kirmizi cizgiler oturagin on/arka hatti';
+  yon.style.cssText = `position:fixed;left:50%;top:14px;transform:translateX(-50%);font:12px system-ui;
+    color:#5a4a3a;background:#ffffffcc;padding:4px 10px;border-radius:6px;`;
+  document.body.appendChild(yon);
+
+  document.title = 'hazir';
+</script>

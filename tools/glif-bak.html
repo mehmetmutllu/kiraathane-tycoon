@@ -1,0 +1,373 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>glif-bak</title>
+<style>
+  body { margin: 0; background: #efece5; font: 13px/1.4 system-ui; color: #2b2118; }
+  h1 { font: 600 15px system-ui; margin: 14px 0 4px 16px; }
+  p.not { margin: 0 0 10px 16px; color: #6a5c4c; }
+  .satir { display: flex; flex-wrap: wrap; gap: 10px; padding: 0 12px; }
+  .kart { background: #fff; border-radius: 10px; padding: 8px 8px 6px; text-align: center; }
+  .kart b { display: block; font: 600 12px system-ui; margin-bottom: 4px; }
+  .cift { display: flex; align-items: flex-end; gap: 8px; justify-content: center; }
+  .gercek { align-self: flex-end; }
+  .alt { font: 11px system-ui; color: #6a5c4c; margin-top: 3px; }
+</style>
+<script type="module">
+  /**
+   * glif-bak.html — SİPARİŞ BALONUNUN İÇİNDEKİ ÇİZİM adayları (S19a).
+   *
+   * NEDEN: kullanıcı 2026-09-14 gecesi *"sipariş balonu glifleri yeterince iyi değil"* dedi.
+   * Balonun ÖLÇÜSÜ ve GRAMERİ (kalın koyu kontur, krem gövde, kuyruk) S18'de kabul edildi;
+   * yeniden çizilecek olan yalnız içerideki bardak ve tost.
+   *
+   * KARENİN İKİ SÜTUNU VAR — ve ikincisi asıl karar sütunu: solda glif 200 px, sağda oyunda
+   * göründüğü GERÇEK BOY (~44 px). D-108'in kuralı bu: ikon gerçek boyda sınanmadan seçilmez;
+   * 200 px'te zarif duran detay 44 px'te gri bir lekeye dönüyor.
+   *
+   * BUGÜNKÜ ÇİZİM KAYNAKTAN GELİR: `siparisDokusu()` doğrudan import edilir, yani referans kart
+   * oyunun o anki hâlidir — elle kopyalanmış bir taklidi değil.
+   *
+   * Kullanım (sunucuyu `tools/glif-bak.mjs` kaldırır): /tools/glif-bak.html
+   */
+  import { siparisDokusu } from '/src/components/three/siparisBalonu.ts';
+
+  /** Bayat sunucu damgası — gerekçe `tools/olcum-oturus.html`. */
+  const SURUM = 2;
+
+  const KONTUR_RENK = '#100b2e'; // PALETTE.outline
+  const BOY = 256;
+  const GERCEK = 44; // balonun oyunda ekranda kapladığı yaklaşık boy (0,5 br, tipik kamera)
+
+  // ─────────────── ortak balon (S18'den, DEĞİŞMİYOR) ───────────────
+  const KONTUR = 12;
+  function balonYolu(c, x, y, g, y2, r) {
+    const kx = x + g / 2;
+    const kg = g * 0.16;
+    c.beginPath();
+    c.moveTo(x + r, y);
+    c.lineTo(x + g - r, y);
+    c.quadraticCurveTo(x + g, y, x + g, y + r);
+    c.lineTo(x + g, y + y2 - r);
+    c.quadraticCurveTo(x + g, y + y2, x + g - r, y + y2);
+    c.lineTo(kx + kg, y + y2);
+    c.lineTo(kx, y + y2 + g * 0.17);
+    c.lineTo(kx - kg, y + y2);
+    c.lineTo(x + r, y + y2);
+    c.quadraticCurveTo(x, y + y2, x, y + y2 - r);
+    c.lineTo(x, y + r);
+    c.quadraticCurveTo(x, y, x + r, y);
+    c.closePath();
+  }
+  function balonCiz(c) {
+    const pay = KONTUR;
+    const g = BOY - pay * 2;
+    const y2 = BOY * 0.72 - pay;
+    c.lineWidth = KONTUR * 1.6;
+    c.lineJoin = 'round';
+    c.strokeStyle = KONTUR_RENK;
+    balonYolu(c, pay, pay, g, y2, 34);
+    c.fillStyle = '#f6efe0';
+    c.fill();
+    c.stroke();
+    return { mx: BOY / 2, my: pay + y2 / 2 };
+  }
+
+  // ─────────────── ÇAY adayları ───────────────
+  /**
+   * C2 — İNCE BELLİ BARDAK, HATLARI KESKİNLEŞTİRİLMİŞ.
+   * Bugünkü çizimin kusuru siluet: bel kıvrımı çok yumuşak (ağız ile taban neredeyse aynı
+   * genişlikte) ve tabak bardaktan geniş olduğu için gözü tabak çekiyor. Burada ağız AÇILIR,
+   * bel DARALIR, tabak küçülür: uzaktan bakınca "kum saati" hattı okunur.
+   */
+  function cayC2(c, mx, my, o) {
+    const agiz = 112 * o, bel = 52 * o, taban = 74 * o, y = 128 * o;
+    const ust = my - y / 2, alt = my + y / 2;
+    c.lineWidth = 14 * o;
+    c.lineJoin = 'round';
+    c.strokeStyle = KONTUR_RENK;
+    c.beginPath();
+    c.moveTo(mx - agiz / 2, ust);
+    c.quadraticCurveTo(mx - bel / 2, my - 4 * o, mx - taban / 2, alt);
+    c.lineTo(mx + taban / 2, alt);
+    c.quadraticCurveTo(mx + bel / 2, my - 4 * o, mx + agiz / 2, ust);
+    c.closePath();
+    c.fillStyle = '#c96a18';
+    c.fill();
+    c.stroke();
+    // Çayın yüzeyi: ağza oturan elips — bardağın DOLU olduğunu tek hamlede söyler.
+    c.beginPath();
+    c.ellipse(mx, ust + 5 * o, agiz / 2 - 5 * o, 11 * o, 0, 0, Math.PI * 2);
+    c.fillStyle = '#f0a955';
+    c.fill();
+    c.lineWidth = 11 * o;
+    c.stroke();
+    // Tabak: bardaktan DAR değil ama alçak ve ince — göz bardakta kalsın.
+    c.beginPath();
+    c.ellipse(mx, alt + 15 * o, taban * 0.92, 12 * o, 0, 0, Math.PI * 2);
+    c.fillStyle = '#e9e2d2';
+    c.fill();
+    c.lineWidth = 13 * o;
+    c.stroke();
+  }
+
+  /**
+   * C3 — BARDAK + KAŞIK + BUHAR. Aynı bardak hattı, üstüne iki anlatı parçası: tabağa yaslanmış
+   * kaşık ve iki kıvrım buhar. Sıcaklığı söyler; bedeli 44 px'te detayın birbirine girmesi.
+   */
+  function cayC3(c, mx, my, o) {
+    // buhar (önce, bardağın arkasında kalsın)
+    c.lineWidth = 10 * o;
+    c.lineCap = 'round';
+    c.strokeStyle = KONTUR_RENK;
+    for (const dx of [-26 * o, 20 * o]) {
+      c.beginPath();
+      c.moveTo(mx + dx, my - 78 * o);
+      c.quadraticCurveTo(mx + dx + 14 * o, my - 96 * o, mx + dx, my - 112 * o);
+      c.stroke();
+    }
+    cayC2(c, mx, my + 8 * o, o * 0.92);
+    // kaşık: tabağın sağına yaslı
+    c.lineWidth = 11 * o;
+    c.beginPath();
+    c.moveTo(mx + 52 * o, my + 66 * o);
+    c.lineTo(mx + 78 * o, my + 18 * o);
+    c.stroke();
+    c.beginPath();
+    c.ellipse(mx + 82 * o, my + 8 * o, 11 * o, 15 * o, 0.3, 0, Math.PI * 2);
+    c.fillStyle = '#d9d2c2';
+    c.fill();
+    c.stroke();
+  }
+
+  /**
+   * C4 — YALIN BARDAK, TABAK YOK, DAHA BÜYÜK. En yüksek okunurluk kolu: tek bir hacim, tek
+   * kontur. "Ne bekliyor" sorusuna en hızlı cevap, ama kıraathane tabağı kayboluyor.
+   */
+  function cayC4(c, mx, my, o) {
+    const agiz = 130 * o, bel = 60 * o, taban = 86 * o, y = 156 * o;
+    const ust = my - y / 2, alt = my + y / 2;
+    c.lineWidth = 16 * o;
+    c.lineJoin = 'round';
+    c.strokeStyle = KONTUR_RENK;
+    c.beginPath();
+    c.moveTo(mx - agiz / 2, ust);
+    c.quadraticCurveTo(mx - bel / 2, my - 6 * o, mx - taban / 2, alt);
+    c.lineTo(mx + taban / 2, alt);
+    c.quadraticCurveTo(mx + bel / 2, my - 6 * o, mx + agiz / 2, ust);
+    c.closePath();
+    c.fillStyle = '#c96a18';
+    c.fill();
+    c.stroke();
+    c.beginPath();
+    c.ellipse(mx, ust + 6 * o, agiz / 2 - 6 * o, 13 * o, 0, 0, Math.PI * 2);
+    c.fillStyle = '#f0a955';
+    c.fill();
+    c.lineWidth = 12 * o;
+    c.stroke();
+  }
+
+  // ─────────────── TOST adayları ───────────────
+  /**
+   * T2 — İKİ ÜÇGEN DİLİM, BİRİ ÖNDE. Bugünkü tek üçgenin kusuru: tost mu peynir mi piramit mi
+   * belli değil. İki dilim üst üste konunca "kesilmiş sandviç" hattı doğuyor ve iç dolgu
+   * kesiğin yüzünde görünüyor — gerçek bir tostun okunma biçimi bu.
+   */
+  function tostT2(c, mx, my, o) {
+    const s = 86 * o;
+    c.lineJoin = 'round';
+    c.lineWidth = 13 * o;
+    c.strokeStyle = KONTUR_RENK;
+    const dilim = (ox, oy, olcek) => {
+      c.beginPath();
+      c.moveTo(mx + ox - s * 0.92 * olcek, my + oy + s * 0.58 * olcek);
+      c.lineTo(mx + ox + s * 0.92 * olcek, my + oy + s * 0.58 * olcek);
+      c.lineTo(mx + ox, my + oy - s * 0.74 * olcek);
+      c.closePath();
+      c.fillStyle = '#d99a44';
+      c.fill();
+      c.stroke();
+      // iç dolgu: kesik yüzeyin ortasında bir kaşar şeridi
+      c.beginPath();
+      c.moveTo(mx + ox - s * 0.46 * olcek, my + oy + s * 0.1 * olcek);
+      c.lineTo(mx + ox + s * 0.46 * olcek, my + oy + s * 0.1 * olcek);
+      c.lineWidth = 15 * o * olcek;
+      c.strokeStyle = '#e8b43a';
+      c.stroke();
+      c.lineWidth = 13 * o;
+      c.strokeStyle = KONTUR_RENK;
+    };
+    dilim(-34 * o, -14 * o, 0.82);
+    dilim(18 * o, 16 * o, 1);
+  }
+
+  /**
+   * T3 — DİKDÖRTGEN TOST, IZGARA İZLİ. Üçgen yerine tost makinesinden çıkmış dikdörtgen: iki
+   * çapraz ızgara izi kimliği taşıyor. Silueti en sade olan kol; üçgenle karışma riski yok.
+   */
+  function tostT3(c, mx, my, o) {
+    const g = 168 * o, y = 104 * o, r = 14 * o;
+    c.lineJoin = 'round';
+    c.lineWidth = 14 * o;
+    c.strokeStyle = KONTUR_RENK;
+    c.beginPath();
+    c.roundRect(mx - g / 2, my - y / 2, g, y, r);
+    c.fillStyle = '#d99a44';
+    c.fill();
+    c.stroke();
+    c.save();
+    c.beginPath();
+    c.roundRect(mx - g / 2, my - y / 2, g, y, r);
+    c.clip();
+    c.lineWidth = 12 * o;
+    c.strokeStyle = '#a8632a';
+    for (const k of [-1, 0, 1]) {
+      c.beginPath();
+      c.moveTo(mx + k * 52 * o - 34 * o, my + y / 2);
+      c.lineTo(mx + k * 52 * o + 34 * o, my - y / 2);
+      c.stroke();
+    }
+    c.restore();
+    // kenardan taşan kaşar: tost olduğunu söyleyen tek detay
+    c.beginPath();
+    c.moveTo(mx - g / 2 + 16 * o, my + y / 2);
+    c.quadraticCurveTo(mx - g / 2 + 34 * o, my + y / 2 + 22 * o, mx - g / 2 + 54 * o, my + y / 2);
+    c.closePath();
+    c.fillStyle = '#e8b43a';
+    c.fill();
+    c.lineWidth = 11 * o;
+    c.strokeStyle = KONTUR_RENK;
+    c.stroke();
+  }
+
+  /**
+   * T4 — TABAKTA İKİ ÜÇGEN. Çayın tabağıyla aynı dil: ürün bir tabağın üstünde duruyor, yani
+   * iki glif aynı aileye ait oluyor. Bedeli kalabalık.
+   */
+  function tostT4(c, mx, my, o) {
+    const s = 66 * o;
+    c.lineJoin = 'round';
+    c.lineWidth = 13 * o;
+    c.strokeStyle = KONTUR_RENK;
+    c.beginPath();
+    c.ellipse(mx, my + 52 * o, 96 * o, 18 * o, 0, 0, Math.PI * 2);
+    c.fillStyle = '#e9e2d2';
+    c.fill();
+    c.stroke();
+    for (const ox of [-42 * o, 42 * o]) {
+      c.beginPath();
+      c.moveTo(mx + ox - s * 0.86, my + 42 * o);
+      c.lineTo(mx + ox + s * 0.86, my + 42 * o);
+      c.lineTo(mx + ox, my - s * 0.86);
+      c.closePath();
+      c.fillStyle = '#d99a44';
+      c.fill();
+      c.stroke();
+    }
+    c.beginPath();
+    c.moveTo(mx - 78 * o, my + 6 * o);
+    c.lineTo(mx - 10 * o, my + 6 * o);
+    c.lineWidth = 14 * o;
+    c.strokeStyle = '#e8b43a';
+    c.stroke();
+  }
+
+  // ─────────────── kartlar ───────────────
+  const ADAYLAR = [
+    { grup: 'CAY', ad: 'C1 BUGUN (kaynaktan)', bugun: 'cay' },
+    { grup: 'CAY', ad: 'C2 keskin ince bel', ciz: cayC2 },
+    { grup: 'CAY', ad: 'C3 kasik + buhar', ciz: cayC3 },
+    { grup: 'CAY', ad: 'C4 yalin buyuk bardak', ciz: cayC4 },
+    { grup: 'TOST', ad: 'T1 BUGUN (kaynaktan)', bugun: 'tost' },
+    { grup: 'TOST', ad: 'T2 iki ucgen dilim', ciz: tostT2 },
+    { grup: 'TOST', ad: 'T3 dikdortgen + izgara', ciz: tostT3 },
+    { grup: 'TOST', ad: 'T4 tabakta iki ucgen', ciz: tostT4 },
+  ];
+
+  /**
+   * GLİF BALONUN İÇİNE SIĞDIRILIR — adaylar aynı kutuyu paylaşsın diye.
+   *
+   * İlk koşuda her aday kendi yazdığı ham ölçüde çizildi ve üçü de balonun dışına taştı (büyük
+   * bardak kuyruğun içine giriyordu). Üstelik böyle bir karede adaylar EŞİT AĞIRLIKTA olmuyor:
+   * daha büyük çizen kol haksız yere daha okunur görünüyor. Çizim artık ayrı bir tuvale yapılır,
+   * gerçek sınırları alfa kanalından ölçülür ve balonun iç dikdörtgenine ortalanarak sığdırılır.
+   */
+  const IC_PAY = 26; // balonun iç kenarından bırakılan boşluk (kontur kalınlığı dahil)
+  function glifSigdir(hedef, ciz, mx, my, icG, icY) {
+    const ara = document.createElement('canvas');
+    ara.width = BOY;
+    ara.height = BOY;
+    const ac = ara.getContext('2d');
+    ciz(ac, BOY / 2, BOY / 2, BOY / 256);
+    const d = ac.getImageData(0, 0, BOY, BOY).data;
+    let x0 = BOY, y0 = BOY, x1 = -1, y1 = -1;
+    for (let y = 0; y < BOY; y++) {
+      for (let x = 0; x < BOY; x++) {
+        if (d[(y * BOY + x) * 4 + 3] > 8) {
+          if (x < x0) x0 = x;
+          if (x > x1) x1 = x;
+          if (y < y0) y0 = y;
+          if (y > y1) y1 = y;
+        }
+      }
+    }
+    if (x1 < 0) return;
+    const g = x1 - x0 + 1, y = y1 - y0 + 1;
+    const olcek = Math.min(icG / g, icY / y, 1.6);
+    hedef.drawImage(ara, x0, y0, g, y, mx - (g * olcek) / 2, my - (y * olcek) / 2, g * olcek, y * olcek);
+  }
+
+  function kartYap(aday) {
+    const cv = document.createElement('canvas');
+    cv.width = BOY;
+    cv.height = BOY;
+    const c = cv.getContext('2d');
+    if (aday.bugun) {
+      const t = siparisDokusu(aday.bugun);
+      c.drawImage(t.image, 0, 0);
+    } else {
+      const { mx, my } = balonCiz(c);
+      const icG = BOY - KONTUR * 2 - IC_PAY * 2;
+      const icY = BOY * 0.72 - KONTUR - IC_PAY * 2;
+      glifSigdir(c, aday.ciz, mx, my, icG, icY);
+    }
+    cv.style.cssText = 'width:200px;height:200px;image-rendering:auto;';
+
+    // GERÇEK BOY: aynı bitmap, oyundaki piksel ölçüsünde. Karar bu sütunda veriliyor.
+    const kucuk = document.createElement('canvas');
+    kucuk.width = GERCEK;
+    kucuk.height = GERCEK;
+    const kc = kucuk.getContext('2d');
+    kc.imageSmoothingQuality = 'high';
+    kc.drawImage(cv, 0, 0, GERCEK, GERCEK);
+    kucuk.style.cssText = `width:${GERCEK}px;height:${GERCEK}px;`;
+    kucuk.className = 'gercek';
+
+    const k = document.createElement('div');
+    k.className = 'kart';
+    const b = document.createElement('b');
+    b.textContent = aday.ad;
+    const cift = document.createElement('div');
+    cift.className = 'cift';
+    cift.append(cv, kucuk);
+    const alt = document.createElement('div');
+    alt.className = 'alt';
+    alt.textContent = `200 px  ·  ${GERCEK} px (oyundaki boy)`;
+    k.append(b, cift, alt);
+    return k;
+  }
+
+  for (const grup of ['CAY', 'TOST']) {
+    const h = document.createElement('h1');
+    h.textContent = grup === 'CAY' ? 'CAY BARDAGI' : 'TOST';
+    const not = document.createElement('p');
+    not.className = 'not';
+    not.textContent = 'sagdaki kucuk kopya oyundaki gercek boy — karar orada verilir';
+    const satir = document.createElement('div');
+    satir.className = 'satir';
+    for (const a of ADAYLAR.filter((x) => x.grup === grup)) satir.appendChild(kartYap(a));
+    document.body.append(h, not, satir);
+  }
+
+  window.__surum = SURUM;
+  window.__hazir = true;
+</script>
