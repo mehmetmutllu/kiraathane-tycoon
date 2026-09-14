@@ -30,7 +30,7 @@ import { damga, damgaOzeti } from './olcum-lib';
 import { useGame } from '../src/game/store';
 import { LAYOUT, NPC_SPEED } from '../src/game/layout';
 import { KLIP_HIZI, TIMESCALE_TAVAN, TIMESCALE_TABAN, ACTOR_HEIGHT } from '../src/config/actor';
-import { LOKOMOSYON, lokomosyonSec } from '../src/components/three/KayActor';
+import { LOKOMOSYON, LOKOMOSYON_YURUYUS, lokomosyonSec } from '../src/components/three/KayActor';
 
 const kip = process.env.OLCUM === 'tam' ? 'tam' : 'kisa';
 /** Kısa kipte 6 dk, tam kipte 30 dk simüle edilir (D-084 koşu kipi). */
@@ -52,7 +52,9 @@ const ADAYLAR = [NPC_SPEED, 2.0, 1.6, 1.4, 1.2, 1.0, 0.9];
 for (const h of ADAYLAR) {
   const bozW = Math.abs(Math.log(h / KLIP_HIZI.Walking_A));
   const bozR = Math.abs(Math.log(h / KLIP_HIZI.Running_A));
-  const s = lokomosyonSec(LOKOMOSYON.yuru, h);
+  // MUSTERININ GERCEK LISTESI olculur (S18: kosu klibi musteride yok). Aracin eski hali
+  // `LOKOMOSYON.yuru`ya bakiyordu, yani kodda OLMAYAN bir kolu olcuyordu.
+  const s = lokomosyonSec(LOKOMOSYON_YURUYUS.yuru, h);
   const ham = h / KLIP_HIZI[s.klip];
   const kelepce = ham > TIMESCALE_TAVAN ? 'TAVAN' : ham < TIMESCALE_TABAN ? 'TABAN' : '-';
   // ARTIK KAYMA: klip kelepceli timeScale ile ne kadar yer tasiyor, aktor ne kadar gidiyor.
@@ -159,7 +161,12 @@ damga('musteri uretildi', s.stats.teasServed + s.stats.waiterServed > 0, 'hic ca
 damga('cift taramasi calisti', cift > 0, 'hicbir karede iki musteri ayni anda yurumedi');
 damga('cakisma esigi pozitif', CAKISMA > 0);
 // Bugun kosu klibi seciliyor mu? Sikayetin makine karsiligi bu satir.
-damga('bugunku hizda KOSU seciliyor',
-  lokomosyonSec(LOKOMOSYON.yuru, NPC_SPEED).klip === 'Running_A',
-  'sikayet dogrulanamadi — secilen klip: ' + lokomosyonSec(LOKOMOSYON.yuru, NPC_SPEED).klip);
+// S18 SONRASI BEKLENTI TERSINE DONDU: musteri artik KOSMAMALI. Damga da tersine cevrildi —
+// eski hali "kosu seciliyor mu" diye soruyordu ve duzeltmeden sonra kirmizi yanardi.
+damga('musteri YURUYUS klibinde',
+  lokomosyonSec(LOKOMOSYON_YURUYUS.yuru, NPC_SPEED).klip === 'Walking_A',
+  'musteri hala kosu klibinde: ' + lokomosyonSec(LOKOMOSYON_YURUYUS.yuru, NPC_SPEED).klip);
+damga('ana karakter KOSABILIYOR',
+  lokomosyonSec(LOKOMOSYON.yuru, 4.5).klip === 'Running_A',
+  'oyuncu kosu klibini kaybetti — kol listesi yanlis daraltilmis');
 damgaOzeti();
