@@ -400,6 +400,9 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   **Palet SEÇİLDİ: MOR (D-107)** — kullanıcı kolu seçmekle kalmadı, kapsamı büyüttü: arayüzün
   TAMAMI mor, 3B dünya sıcak kalır (dünyanın rengi KayKit'in paleti; D-099 zaten boyamayı
   reddetmişti). Beş ekranın maketi + palet/ölçek token listesi hazır → S11.
+  **İkon seti de bu turda çizildi (D-108)** — tek gramer (24×24 · kontur 2,2 · detay ≥ 2 br ·
+  aksan tek yerde), çark hesaplanarak; gerçek boyda sınandı, üç ikon düzeltildi. Kenney paketi
+  ikon kaynağı olmadı (konturu yok) — S11'de şekil kaynağı olarak açık.
 - ⏳ **S11 — UI tasarım dili: UYGULAMA** — D-106'nın dili koda geçer: ölçek (17 punto → 6 basamak,
   27 gölge → 3 kademe), `button{font-family:inherit}` (13 Arial öğesi), 🔒 emoji → SVG, kabuk boyu
   tek kural, K3 + M2, pad Y2, alt bar seçilen palette, G-05 görev metinleri. **Palet seçimi bu
