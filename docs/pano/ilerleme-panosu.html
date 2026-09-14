@@ -193,8 +193,8 @@ h2{font-size:21px;font-weight:800}
 <script type="application/json" id="durum">
 {
  "guncelleme": "15.09.2026",
- "yapilan": 94,
- "toplam": 104,
+ "yapilan": 95,
+ "toplam": 106,
  "kilometre": [
   {
    "at": 28,
@@ -209,19 +209,19 @@ h2{font-size:21px;font-weight:800}
    "etiket": "Model ve denge oturdu"
   },
   {
-   "at": 104,
+   "at": 106,
    "etiket": "v1.0 App Store"
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum — Faz S · 19/20 — S19b: D-116 koda girdi (D-117)",
-  "baslik": "Uygulama, ölçümün <b>üç sayısını çürüttü</b>: açık 2 mm değil <b>8,8 cm</b>’di",
-  "aciklama": "Bu tur bir karar turu değildi — S19a ölçmüş, kullanıcı seçmişti, geriye yalnız <b>uygula</b> kalmıştı. Ama uygulama üç yerde durdu ve yeniden ölçtürdü; üçünde de S19a’nın bıraktığı sayı yanlış yerden alınmıştı.<br><br><b>“Rozet önlükten çıkıyor” kusurunun iki kolu da düştü.</b> Tur kartı şöyle yazmıştı: süs ayrı düğümse gizle, değilse önlüğü 1-2 mm öne al. Dört gövdenin meshli düğümleri sayıldı — <b>gizlenebilecek bir süs düğümü yok</b>, göğüs gövde mesh’inin kendisi. İkinci kol da yetmedi, ama sebebi ölçülen sayı değil <b>ölçülen yer</b>di: önlük bir silindir dilimi olduğu için doğru soru “gövde ne kadar ileri” (z) değil, “gövde önlüğün <b>ekseninden</b> ne kadar uzakta” (yarıçap). İkisi yayın ortasında aynı, <b>kenarında</b> ayrışıyor — gövde yassı, silindir yuvarlak. Göğüslüğün 110°’lik yayında gövde Rogue’da <b>0,4526</b>, Barbarian’da 0,4069 yarıçapa çıkıyor; seçilen sabit <b>0,365</b>’ti. Açık 2 mm değil <b>8,8 cm</b>, ve delinme tam da yayın kenarında — kullanıcının <i>“önlük parçalanmış gibi”</i> dediği görüntünün kalıbı bu.<br><br><b>Sonuç yapısal:</b> yarıçap artık sayı olarak yazılmıyor. Önlük <b>gövdenin kendi profilinden</b> türüyor (yükseklik halkası × açı dilimi ızgarasında en büyük yarıçap + sabit pay), yani bugün olmayan bir gövde eklense de sarar. Tek sayı payın kendisi.<br><br><b>Ten de paletten değil dokudan çıktı.</b> Sıvalı kol ilk koşuda <b>turuncu eldiven</b> gibi göründü: kullanılan ton oyunun kendi paletindendi, oysa gövde KayKit’in dokusundan geliyor. Doku okundu (<b>#f4b690</b>) ama yolda üç ölçüm hatası çıktı ve üçü de <b>yanlış hüküm</b> üretiyordu — UV’ler VEC3 adımıyla okunduğu için “eller eldivenli” sanıldı, V ekseni WebGL alışkanlığıyla çevrildiği için yüz dokunun taş bölgesine düştü, örnek tepe noktasından alındığı için iki yamanın karışımı okundu. Aynı aileden dördüncü tuzak kemik adındaydı: dosyada <code>lowerarm.r</code>, çalışma zamanında <code>lowerarmr</code> — noktalı yazılsaydı sıvama <b>sıfır tepe noktası</b> seçecek ve kol sessizce hiç sıvanmayacaktı.<br><br><b>Yüzeyin kendisi de kareye bakılarak iki kez düzeltildi:</b> ham ızgara testere gibi çıktığı için önlük yırtık pırtık göründü; 3×3 genişletme çukuru doldurdu ama eteği <b>tütüye</b> çevirdi, iki geçiş yumuşatma (ham değerin altına inmeden) doğru cevap oldu. Balonun içi model render’ına geçti ve arayüzün kalın koyu kontur grameri nesnede de korundu — <b>ters kabuk</b> ile."
+  "etiket": "Bu oturum — Faz S · 20/22 — S20: mutfağın sınırı + çaycının temposu (D-118)",
+  "baslik": "Mutfağı kapatan şey bir <b>duvar</b> değil, bir <b>kelepçeymiş</b>",
+  "aciklama": "Tur bir elektrik kesintisinden devralındı: önceki gece üç taban karesi alınmış, rapor yazılamadan oturum kesilmişti. Ölçüm tamamlandı ve üç sorunun üçü de beklenenden başka yere çıktı.<br><br><b>Önce süzgeç:</b> S6'da karşı binalar üç kamera kipinde de %0 görünür çıkmış ve 10.389 üçgenlik iş iptal edilmişti. Aynı süzgeç mutfakta <b>tersini</b> söyledi — odanın ortası baş hizasında <b>%99</b> görünür, hiçbir duruştan görünmeyen ünite <b>0/19</b>. Yani burada yapılan iş görülüyor; hiçbir kol “görünmüyor” diye elenemedi.<br><br><b>Erişim sorusunun cevabı bir yanlış vaatti.</b> Oyuncunun odaya erişimi <b>0/37.846</b> hücre — ama onu durduran geometri değil, açık alanlara bağlayan kelepçe. Ön hattın iki ucunda <b>2,81</b> ve <b>1,70 br</b> açıklık duruyordu ve ikisi de geçiş eşiğinin (0,94) üstündeydi: oyuncu odanın <b>5 cm</b> yanında durup, gözle açık duran bir boşluktan içeri giremiyordu. Bölmeler o vaadi kaldırdı — <b>salt görsel</b>, collision eklenmedi, çünkü bulgu bir geçiş değil bir <b>okunabilirlik</b> sorunuydu. İçerideki 0,20'lik dikişler bilerek açık bırakıldı: kapatmak üç tezgâhı tek kütleye çevirir ve çay ocağı / garson istasyonu / bulaşık ayrımını silerdi.<br><br><b>Odanın en görünür kişisi oyunu hiç bilmiyordu.</b> Çaycının başı oyuncunun <b>234 duruşunun %100'ünde</b> görünüyor; buna karşılık mekanik okuması <b>0</b>, klibi sabit, yolu <code>sin(t·0,3)</code> ile yükten bağımsızdı — boş salonda da tıklım salonda da aynı tempo. Tempo artık çay bekleyen müşteri sayısından geliyor: yük yokken çarpan <b>0</b> (yavaşlatmak yetmezdi, çaycı durup tezgâha dönüyor), doyumda 2,00 — <b>3,33× fark</b>. Faz <b>biriktiriliyor</b>, çünkü çarpanı doğrudan geçen zamanla çarpsaydık salon dolduğu anda çaycı yolun ortasında ışınlanırdı.<br><br><b>Ve ölçüm, sorulmayan bir soruyu açtı:</b> tezgâh <b>6 kademe</b> büyürken arkasındaki oda her seviyede aynı <b>19 sabit</b> üniteyi çiziyor — <code>KitchenUnit</code>'te seviye alanı yok. Odanın <b>%42'si</b> (39,91 br²) boş ve o boşluk <b>%100 görünür</b>. Kullanıcının kendi kuralı “objeler küçük doğup yerinde büyür” diyor; mutfakta hiç uygulanmamış. Bu kol kendi turunu aldı."
  },
  "siradaki": {
-  "etiket": "Sırada S19’un kalan dört kalemi",
-  "baslik": "Biri <b>varyant kapısına</b> tabi: yükseltme tetiği <code>rules.ts</code>’e dokunuyor",
-  "aciklama": "Karakter menüsü hâlâ eski ilkel gövdeyi gösteriyor; paneller tam ekran kuralına uymuyor; yükseltmenin solundaki ok yanlış yerde. Dördüncüsü — yükseltme tetiğinin pad’in üstüne alınması — denge kurallarına dokunuyor, yani <b>ölçülmeden uygulanmaz</b>: raporun bulgular tablosunda o kolun sayı satırı olmadan koda girmez. Ardından S9 ses karar paketi (ölçüm hazır bekliyor), sonra Faz H."
+  "etiket": "Sırada S22 — kademeli mutfak",
+  "baslik": "Önce <b>ilerleme adımları</b> tasarlanır, sonra çizilir",
+  "aciklama": "Ölçüm sayıyı verdi: oda 19 sabit ünite, seviye okuması 0, tezgâh 6 kademe; boş alan 39,91 br² ve %100 görünür. Boşluğu dekorla doldurmak (D1 kolu) reddedildi — en görünür alanı sabit süse harcardı. Seçilen yol, aynı alanı bir <b>ödül yüzeyine</b> çevirmek: seviye atladıkça mutfak gözle büyüsün. Tur kod yazmadan önce kademeleri tasarlar. Ardından S19'un kalan dört kalemi (biri <code>rules.ts</code>'e dokunduğu için <b>varyant kapısına</b> tabi), S9 ses karar paketi, sonra Faz H — yürünebilir mutfak (E1) orada, nav ızgarasıyla <b>birlikte</b> yapılacak."
  },
  "donemler": [
   {
@@ -352,9 +352,9 @@ h2{font-size:21px;font-weight:800}
     {
      "k": "S",
      "t": "Sanat ve arayüz geçişi",
-     "d": "Kullanıcı oynadı ve dört tur geri bildirim verdi. HER KALEM ≈ 1 OTURUM, 10 oturum kaldı. Bitti: pad dili ✓ · pad/modal etkileşimi ✓. Sırada: mutfak → duvar ve zemin → dekor takası → dış cephe ve tente → lavabo kabin kapıları → ses assetleri → UI dili (araştırma+maket) → UI dili (uygulama) → yeni ücretsiz paketler → karakterler. İlk beşi indirme ve onay istemiyor: hepsi diskte duran 185 KayKit modeliyle yapılacak iş.",
-     "yapilan": 19,
-     "toplam": 20,
+     "d": "Kullanıcı oynadı ve altı tur geri bildirim verdi. HER KALEM ≈ 1 OTURUM. Sanat hattı bitti: pad dili · mutfak · zemin · dekor · dış cephe · cam · WC · UI dili (ölçüm → maket → dil → yapı) · yeni paketler · karakterler (personel + müşteri) · tepsi · hatalar · kıyafet. <b>S21</b> mutfağın sınırını okunur kıldı ve çaycıyı salonun yüküne bağladı (D-118). Kalan: <b>S22</b> kademeli mutfak · <b>S9</b> ses assetleri (ölçüm hazır, karar bekliyor).",
+     "yapilan": 20,
+     "toplam": 22,
      "durum": "now",
      "kapi": "185 kullanılmayan KayKit modeli oyuna bağlanır + UI dili maketle onaylanır"
     },
@@ -378,6 +378,23 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "15.09.2026",
+   "etiket": "Faz S · 20. oturum (S21 — mutfak: sınır + çaycı, tur adı S20 — D-118)",
+   "baslik": "Elektrik kesintisinden devralındı; ölçüm <b>üç soruya</b> baktı, <b>dördüncüsünü</b> açtı",
+   "govde": "Önceki gece 01:19'da üç taban karesi alınmış, rapor ve commit yazılamadan oturum kesilmişti. Çalışma ağacında duran ölçüm aracı ve kareler kurtarıldı, tur kaldığı yerden sürdü.<br><br><b>Süzgeç önce çalıştırıldı ve S6'nın tersini söyledi.</b> Odanın ortası baş hizasında <b>%99</b> görünür, görünmeyen ünite <b>0/19</b> — mutfakta yapılan iş görülüyor, hiçbir kol “görünmüyor” diye elenemedi.<br><br><b>Erişim:</b> oyuncu odaya <b>hiç</b> giremiyor (0/37.846 hücre) ama sebebi duvar değil kelepçe; iki uçta <b>2,81</b> ve <b>1,70 br</b> açıklık gözle açık duruyordu ve oyuncu odanın <b>5 cm</b> yanında bekliyordu. Bölmeler bu yanlış vaadi kaldırdı.<br><br><b>Çaycı:</b> başı 234 duruşun <b>%100'ünde</b> görünürken mekanik okuması <b>0</b>'dı. Tempo artık çay bekleyenden geliyor — boş salonda çaycı <b>duruyor</b>, dolu salonda <b>3,33×</b> hızlı.<br><br><b>Ve dördüncü soru:</b> tezgâh 6 kademe büyürken oda hep aynı 19 üniteyi çiziyor. Kademeli mutfak kendi turunu aldı (S22).",
+   "maddeler": [
+    "<b>D-118:</b> E2 + Ç1 uygulandı · D2 → S22 · <b>E1 (yürünebilir mutfak) Faz H'ye</b> — nav ızgarası orada zaten açılacak, sınırı iki kez taşımak gereksiz",
+    "<b>Kapalılık kelepçeymiş:</b> <code>BAND.front</code> 19 yerden okunuyor — E1'in bedeli ölçüldü, ertelendi",
+    "<b>Bölmeler salt görsel:</b> collision yok; dar 0,20'lik dikişler <b>bilerek</b> açık (üç tezgâhın ayrımı korunsun)",
+    "<b>Çaycı okur, yazmaz:</b> D-023 bozulmadı — durum okuması 2, yazma <b>0</b>",
+    "<b>Faz biriktiriliyor:</b> <code>elapsedTime × çarpan</code> yazılsaydı salon dolduğu an çaycı ışınlanırdı",
+    "<b>Kısa koşu bir ölçüm hatası yakaladı:</b> ön hattın üç tezgâhı fayansın üstünde ama doluluk ızgarasına girmiyordu — boş dikdörtgen 49,08 yerine <b>39,91 br²</b>",
+    "<b>Taban damgası doğru şekilde kırıldı:</b> “çaycı mekaniğe bağlı değil” (okuma 1) Ç1'den sonra yanlıştı; damga sayıyı değil <b>kuralı</b> koruyacak şekilde yeniden yazıldı",
+    "<b>Bekçi:</b> <code>tests/mutfak-s20.test.ts</code> — 17 denetim, <b>3 mutasyon</b>, üçü de kırmızı · vitest <b>1051</b> ✓ · duman 42/42 ✓"
+   ],
+   "not": "<b>Numara kayması yazıldı.</b> Defterdeki KALEM numarası ile TUR ADI S19'dan beri ayrı yürüyor (kalem S20 = tur S19b). Bu turun dosyaları <code>s20</code> adını taşıyor ama kalem numarası <b>S21</b>; yeni kalemler tur adını parantezde taşıyor ki kayma sessiz kalmasın."
+  },
   {
    "tarih": "15.09.2026",
    "etiket": "Faz S · 19. oturum (S19b — D-116’nın uygulaması — D-117)",

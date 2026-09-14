@@ -1,8 +1,8 @@
 # S20 — Mutfak odası: erişim · çaycı · doluluk (ÖLÇÜM RAPORU)
 
-**Tarih:** 2026-09-15 · **Faz:** S 20/21 · **Sıra:** D-084 adım 2 (ÖLÇ) tamamlandı, adım 3 (KARAR) bekliyor
+**Tarih:** 2026-09-15 · **Faz:** S 20/22 (kalem S21, tur adı S20) · **Sıra:** D-084 tamamlandı (ÖLÇ → KARAR → UYGULA → bekçi → final)
 
-**Ham çıktı:** `docs/olcum-mutfak.txt` (TAM koşu damgalı, 13 damga yeşil)
+**Ham çıktı:** `docs/olcum-mutfak.txt` (TAM koşu damgalı, 17 damga yeşil — final hâli)
 **Araç:** `tools/olcum-mutfak.ts` — hiçbir şeyi değiştirmez, ölçer
 **Taban kareleri:** `docs/gorsel/ss/s20-mutfak-taban.png` · `-npc.png` · `-plan.png`
 (2026-09-15 01:19'da alındı; elektrik kesintisi raporu değil kareleri bıraktı)
@@ -170,12 +170,50 @@ dokunmuyor. E1 `layout.ts`'in alan dikdörtgenine dokunur (denge değil yerleşi
 
 ---
 
-## §Karar
+## §Karar — **D-118** (kullanıcı, 2026-09-15)
 
-*(BOŞ — D-084 adım 3. Kullanıcı karar paketinden seçecek; seçilmeyen kol koda girmez.)*
+Karar paketi: https://claude.ai/artifact/NzUs9PeHqzj48bekL78fqm
+
+| kol | karar |
+|---|---|
+| **E2** | ✅ **SEÇİLDİ** — kapalılık okunur kılındı, iki uçtaki açıklık bölmeyle kapandı |
+| **Ç1** | ✅ **SEÇİLDİ** — çaycının temposu çay bekleyen müşteri sayısından geliyor |
+| **D2** | ⏭ **S21'e** — mutfak seviyeyle büyüsün; önce ilerleme adımları tasarlanacak |
+| E0 · E1 | E1 elenmedi, **Faz H'ye** bırakıldı: nav ızgarası orada zaten açılacak |
+| Ç0 · Ç2 | Ç2 Ç1'den sonra anlamlı; bu turda alınmadı |
+| D0 · D1 | D1 reddedildi — en görünür alanı sabit süse harcardı |
 
 ---
 
 ## §Final koşu (uygulamadan sonra)
 
-*(BOŞ — adım 4'ten sonra doldurulur: bekçi testi + en az 2 mutasyon + final TAM koşu.)*
+**Araç güncellendi:** §E-3b ve §Ç-3 blokları karar SONRASINDA eklendi; final koşunun kanıtı bunlar.
+
+| ölçüt | sonuç |
+|---|---|
+| üretilen bölme | **2** — batı x −17,41…−14,60 (2,81 br) · doğu x −6,40…−4,70 (1,70 br) |
+| bölmelerin z / derinliği | −10,30 / 1,00 — ön hattın kendi hizası (banko tek çizgi okunur) |
+| **geriye kalan geçişe yeten açıklık** | **YOK** |
+| dar dikişler | açık bırakıldı (0,20 br < 0,94) — üç tezgâhın ayrımı korundu |
+| çaycı çarpanı 0 / 1 / 2 / 3 / 4+ bekleyen | **0,00 / 0,60 / 1,07 / 1,53 / 2,00** — boş↔dolu **3,33×** |
+| çaycı klibi | yük yok → `dur` · yük var → `calis` |
+| çaycının duruma YAZMASI | **0** — D-023 bozulmadı (okur, yazmaz) |
+
+**Bekçi:** `tests/mutfak-s20.test.ts` — 17 denetim, **3 mutasyonla** doğrulandı:
+
+| mutasyon | ne yapıldı | sonuç |
+|---|---|---|
+| M1 | bölme üretimi kapatıldı (eşik 100) | **5 test kırmızı** |
+| M2 | yük yokken çaycı yine yürüsün (`0` → `azCarpan`) | **1 test kırmızı** |
+| M3 | dar dikişler de kapatılsın (eşik 0,01) | **5 test kırmızı** |
+
+**Final:** vitest **1051 ✓** · duman **42/42 ✓** · tam ölçüm koşusu **17 damga yeşil** · konsol hatası YOK.
+
+**Kareler:** önce `ss/s20-mutfak-{taban,npc,plan}.png` · sonra `ss/s20-mutfak-{taban,npc,plan}-son.png`
+
+### Uygulamanın yakaladığı bir kusur
+
+Taban koşusundaki **“çaycı mekaniğe bağlı DEĞİL”** damgası (`useGame okuması 1`) Ç1 uygulanınca
+kırıldı — doğru davrandı. Korunması gereken şey o sayı değil, altındaki kuraldı: çaycı durumu
+**okuyabilir, yazamaz**. Damga yeniden yazıldı (okuma 2 · yazma 0). Sayıyı bekçileyen damga,
+kuralı bekçileyen damgadan daha kırılgan.

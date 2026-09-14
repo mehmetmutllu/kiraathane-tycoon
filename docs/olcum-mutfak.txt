@@ -87,6 +87,13 @@ E-3 ÖN HATTIN BOŞLUKLARI — collision gövdeleri arasında yürünebilir bir 
   en geniş boşluk    2.81 br — ama KELEPÇE bunların hepsini kapatıyor (E-1).
   YANİ: mutfağın kapalılığı bir DUVAR değil, `clampToOpenAreas` kelepçesidir.
 
+E-3b UYGULAMADAN SONRA — sınır bölmeleri eklendi, geriye ne kaldı?
+  üretilen bölme: 2
+    bati  x  -17.41 …  -14.60   en    2.81 br · z  -10.30 · derinlik    1.00
+    dogu  x   -6.40 …   -4.70   en    1.70 br · z  -10.30 · derinlik    1.00
+  geriye kalan GEÇİŞE YETEN açıklık: YOK
+  (dar dikişler bilerek açık: 0,20 br < 0,94 — kapatmak üç tezgâhı tek kütleye çevirirdi)
+
 E-4 E1 KOLUNUN BEDELİ — `BAND.front` kaç yerden okunuyor? (E1 seçilirse dokunulacak yüzey)
   toplam 19 okuma · 10 dosya:
     src/components/three/kitchenLook.ts (1)
@@ -129,11 +136,23 @@ E-4 E1 KOLUNUN BEDELİ — `BAND.front` kaç yerden okunuyor? (E1 seçilirse dok
   çaycının BAŞI (1,60) ortalama  100% duruşta görünür · gövdesi 1.75 br boyunda
 
 Ç-2 MEKANİĞE BAĞLILIK — kaynaktan sayım (Scene.KitchenHand):
-  useGame() çağrısı           1  (okuduğu tek alan: areasOpen)
+  useGame() okuması           2  (areasOpen + çay bekleyen sayısı)
   kullanılmadan void edilen   1  (service parametresi)
   sipariş/servis/kuyruk okuması  0
-  klip                        sabit hal="calis" (yürürken de aynı klip)
-  yol denklemi                sin(t*0.3) — oyun hızından, sipariş yükünden BAĞIMSIZ
+  duruma YAZMA                0  (0 olmalı — D-023: mekaniğe dokunmaz)
+  klip                        yüke bağlı: dur (yük yok) / calis (yük var)
+  yol denklemi                faz biriktirilir; temel hız 0.3
+
+Ç-3 UYGULAMADAN SONRA (S20 · Ç1 · D-118) — tempo salonun yükünden geliyor mu?
+  çay bekleyen     hız çarpanı   klip
+  0                       0.00   dur   << yük yok: faz donar, çaycı tezgâha dönüp dinlenir
+  1                       0.60   calis
+  2                       1.07   calis
+  3                       1.53   calis
+  4                       2.00   calis
+  7                       2.00   calis
+
+  boş ↔ dolu farkı: 2.00 / 0.60 = 3.33x · mekaniğe dokunmaz (salt görsel)
 
 ================================================================================================================
 §D — DOLULUK: odanın zemini ne kadar dolu, boşluk NEREDE?

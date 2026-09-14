@@ -26,8 +26,8 @@ import { ACTOR_HEIGHT, CAMERA_LOOK_Y, PLAYER_RADIUS } from '../src/config/actor'
 import { CAMERA_DIST, CAMERA_FOV } from '../src/config/camera';
 import { BAND, BAND_SHELL, FLOOR_HALF, LAYOUT, WAITER_STATION, clampToOpenAreas, servicePlace } from '../src/game/layout';
 import {
-  BACK_Z, COUNTER_TOP_Y, FAYANS, FRONT_Z, FRONT_TOP_Y, KITCHEN_S, KITCHEN_UNITS, LEFT_X, MODULE_W, NATIVE,
-  RIGHT_X, unitBox,
+  BACK_Z, CAYCI_TEMPO, COUNTER_TOP_Y, FAYANS, FRONT_Z, FRONT_TOP_Y, KITCHEN_S, KITCHEN_UNITS, LEFT_X, MODULE_W,
+  NATIVE, RIGHT_X, cayciHali, cayciHizCarpani, sinirBolmeleri, unitBox,
 } from '../src/components/three/kitchenLook';
 import { KIP, damga, damgaOzeti, kipBandi } from './olcum-lib';
 
@@ -297,6 +297,33 @@ yaz(`  en geniş boşluk ${n2(engenisBosluk)} br — ama KELEPÇE bunların heps
 yaz('  YANİ: mutfağın kapalılığı bir DUVAR değil, `clampToOpenAreas` kelepçesidir.');
 yaz();
 
+/**
+ * E-3b — UYGULAMADAN SONRA (S20 · E2 · D-118). Bölmeler eklendikten sonra ön yüzde geçişe
+ * yeten aralık kalmamalı. Bu blok kararın ÖNCESİNDE yoktu; final koşunun kanıtı budur.
+ */
+yaz('E-3b UYGULAMADAN SONRA — sınır bölmeleri eklendi, geriye ne kaldı?');
+const bolmeler = sinirBolmeleri(3);
+yaz(`  üretilen bölme: ${bolmeler.length}`);
+for (const b of bolmeler)
+  yaz(`    ${b.uc.padEnd(5)} x ${n2(b.x - b.w / 2)} … ${n2(b.x + b.w / 2)}   en ${n2(b.w)} br · z ${n2(b.z)} · derinlik ${n2(b.d)}`);
+const kalanAciklik = (() => {
+  const govdeler = [
+    ...hatX.map((g) => ({ x0: g.x0, x1: g.x1 })),
+    ...bolmeler.map((b) => ({ x0: b.x - b.w / 2, x1: b.x + b.w / 2 })),
+  ].sort((a, b) => a.x0 - b.x0);
+  const out: number[] = [];
+  let uc = ODA.x0;
+  for (const g of govdeler) {
+    if (g.x0 - uc >= PLAYER_RADIUS * 2) out.push(g.x0 - uc);
+    uc = Math.max(uc, g.x1);
+  }
+  if (ODA.x1 - uc >= PLAYER_RADIUS * 2) out.push(ODA.x1 - uc);
+  return out;
+})();
+yaz(`  geriye kalan GEÇİŞE YETEN açıklık: ${kalanAciklik.length === 0 ? 'YOK' : kalanAciklik.map((w) => w.toFixed(2)).join(', ')}`);
+yaz('  (dar dikişler bilerek açık: 0,20 br < 0,94 — kapatmak üç tezgâhı tek kütleye çevirirdi)');
+yaz();
+
 /** E1 kolunun bedeli: `BAND.front` kaç yerden okunuyor? (tahmin değil, sayım.) */
 function kaynakDosyalari(kok: string): string[] {
   const out: string[] = [];
@@ -367,11 +394,23 @@ const khSon = sceneSrc.indexOf('function KitchenStaff');
 const kh = sceneSrc.slice(khBas, khSon);
 const storeOkuma = (kh.match(/useGame\(/g) ?? []).length;
 const voidEdilen = (kh.match(/void\s+\w+;/g) ?? []).length;
-yaz(`  useGame() çağrısı           ${storeOkuma}  (okuduğu tek alan: areasOpen)`);
+yaz(`  useGame() okuması           ${storeOkuma}  (areasOpen + çay bekleyen sayısı)`);
 yaz(`  kullanılmadan void edilen   ${voidEdilen}  (service parametresi)`);
+const kitchenHandYazma = (kh.match(/setState|\.set\(|dispatch|push\(|splice\(/g) ?? []).length;
 yaz(`  sipariş/servis/kuyruk okuması  ${(kh.match(/orders|queue|tables|wallet|serve/gi) ?? []).length}`);
-yaz(`  klip                        sabit hal="calis" (yürürken de aynı klip)`);
-yaz(`  yol denklemi                sin(t*0.3) — oyun hızından, sipariş yükünden BAĞIMSIZ`);
+yaz(`  duruma YAZMA                ${kitchenHandYazma}  (0 olmalı — D-023: mekaniğe dokunmaz)`);
+yaz(`  klip                        yüke bağlı: ${cayciHali(0)} (yük yok) / ${cayciHali(1)} (yük var)`);
+yaz(`  yol denklemi                faz biriktirilir; temel hız ${CAYCI_TEMPO.temelHiz}`);
+yaz();
+yaz('Ç-3 UYGULAMADAN SONRA (S20 · Ç1 · D-118) — tempo salonun yükünden geliyor mu?');
+yaz('  çay bekleyen'.padEnd(16) + 'hız çarpanı'.padStart(14) + '   klip');
+for (const n of [0, 1, 2, 3, CAYCI_TEMPO.doyum, CAYCI_TEMPO.doyum + 3]) {
+  yaz('  ' + String(n).padEnd(14) + cayciHizCarpani(n).toFixed(2).padStart(14) + '   ' + cayciHali(n) +
+      (n === 0 ? '   << yük yok: faz donar, çaycı tezgâha dönüp dinlenir' : ''));
+}
+yaz();
+yaz(`  boş ↔ dolu farkı: ${cayciHizCarpani(CAYCI_TEMPO.doyum).toFixed(2)} / ${cayciHizCarpani(1).toFixed(2)} = ` +
+    `${(cayciHizCarpani(CAYCI_TEMPO.doyum) / cayciHizCarpani(1)).toFixed(2)}x · mekaniğe dokunmaz (salt görsel)`);
 yaz();
 
 // =============================================================================================
@@ -538,7 +577,20 @@ damga('kadraj süzgeci çalışıyor',
   !kadrajda(0, FLOOR_HALF - 1, [0, 1, FLOOR_HALF + 5], CAMERA_DIST),
   'kameranın ARKASINDAKİ nokta kadrajda çıktı');
 damga('çaycının yolu odanın içinde', W.a[2] < FRONT_Z && W.a[2] > BACK_Z, `yol z ${W.a[2]} · oda z ${BACK_Z}…${FRONT_Z}`);
-damga('çaycı mekaniğe bağlı DEĞİL', storeOkuma === 1 && voidEdilen === 1, `useGame ${storeOkuma} · void ${voidEdilen}`);
+/**
+ * D-023 DEĞİŞMEZİ, Ç1'den SONRAKİ HÂLİYLE. Taban koşusunda bu damga "useGame okuması 1" diyordu
+ * ve Ç1 onu kırdı — doğru davrandı. Korunan kural sayı değil KURAL: çaycı oyunun durumunu
+ * OKUYABİLİR, ama hiçbir şeyini YAZAMAZ. Salt görsel olmak budur.
+ */
+damga('çaycı hâlâ SALT GÖRSEL (okur, yazmaz)',
+  storeOkuma === 2 && kitchenHandYazma === 0 && voidEdilen === 1,
+  `useGame okuması ${storeOkuma} · yazma ${kitchenHandYazma} · void ${voidEdilen}`);
+damga('E2 — geçişe yeten açıklık KALMADI', kalanAciklik.length === 0,
+  `kalan: ${kalanAciklik.map((w) => w.toFixed(2)).join(', ')} — bölmeler açıklığı kapatmıyor demektir`);
+damga('E2 — dar dikişler açık bırakıldı', bolmeler.length === 2, `bölme sayısı ${bolmeler.length}, 2 bekleniyordu`);
+damga('Ç1 — yük yokken çaycı duruyor', cayciHizCarpani(0) === 0 && cayciHali(0) === 'dur');
+damga('Ç1 — dolu salon boştan hızlı', cayciHizCarpani(CAYCI_TEMPO.doyum) > cayciHizCarpani(1),
+  `${cayciHizCarpani(CAYCI_TEMPO.doyum)} vs ${cayciHizCarpani(1)}`);
 damga('boş dikdörtgen bulundu', bos.alan > 0, `${bos.alan.toFixed(2)} br²`);
 damga('BAND.front okumaları sayıldı', bandFrontOkuma > 0, `${bandFrontOkuma} okuma`);
 damga('mutfak seviyeden BAĞIMSIZ', kitchenSeviyeOkuma === 0 && unitSeviyeAlani === 0,

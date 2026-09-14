@@ -3622,3 +3622,41 @@ grameri ters kabukla korundu. Çerçeve/kuyruk Canvas2D kaldı — reddedilen o 
 **S18'in RENK BEKÇİSİ DÜŞTÜ.** `PALETTE.ownerShirt` kalktı; yerine olumsuz bekçi (geri eklenirse
 kırmızı yanar). Bekçi `tests/oturus-kiyafet.test.ts` — 38 denetim, **18 mutasyon**.
 Sayılar: `docs/kiyafet-raporu-s19b.md`.
+
+## D-118 — S20: mutfağın sınırı okunur oldu, çaycı salonun yükünü anlatıyor (2026-09-15)
+
+**ÖLÇÜM ÖNCE, KARAR SONRA.** Üç soru ölçüldü (`docs/olcum-mutfak.txt`, tam koşu), kullanıcı
+karar paketinden **E2 + Ç1**'i seçti; **D2 (mutfak seviyeyle büyüsün) S21'e ayrıldı** çünkü önce
+ilerleme adımları tasarlanmalı. E1 (yürünebilir mutfak) elenmedi, **Faz H'ye** bırakıldı: nav
+ızgarası orada zaten açılacak, sınırı iki kez taşımak gereksiz.
+
+**GÖRÜNÜRLÜK S6'NIN TERSİ ÇIKTI.** Odanın ortası baş hizasında **%99**, hiçbir duruştan
+görünmeyen ünite **0/19**. Yani mutfakta yapılan iş görülüyor; üç kolun hiçbiri "görünmüyor"
+gerekçesiyle elenemedi. S6'da karşı binalar %0 çıkmış ve iş iptal edilmişti — aynı süzgeç bu kez
+yeşil yandı.
+
+**E2 — KAPALILIK BİR DUVAR DEĞİL, BİR KELEPÇEYMİŞ.** Oyuncu erişimi **0/37.846** hücre, ama onu
+durduran `clampToOpenAreas`. Ön hattın iki ucunda **2,81** (batı) ve **1,70 br** (doğu) açıklık
+duruyordu ve ikisi de geçiş eşiğinin (0,94) üstündeydi: oyuncu odanın **0,05 br** yanında durup
+gözle açık duran boşluktan giremiyordu — yanlış vaat. Bölmeler o vaadi kaldırdı. **Salt görsel:
+collision eklenmedi**, çünkü bulgu geçiş değil OKUNABİLİRLİK sorunuydu. İçerideki 0,20'lik
+dikişler bilerek açık — kapatmak üç tezgâhı tek kütleye çevirir, çay ocağı/garson/bulaşık ayrımı
+silinirdi.
+
+**Ç1 — ODANIN EN GÖRÜNÜR KİŞİSİ OYUNU BİLMİYORDU.** Çaycının başı oyuncunun **234 duruşunun
+%100'ünde** görünüyor, buna karşılık mekanik okuması **0**, klibi sabit, yolu `sin(t·0,3)` ile
+yükten bağımsızdı. Tempo artık çay bekleyen müşteri sayısından geliyor: yük yokken çarpan **0**
+(yavaşlamak yetmezdi — boş salonda koşturan beden yanlış anlatır, çaycı durup tezgâha dönüyor),
+tek müşteride 0,60, doyumda (4) 2,00 → **3,33× fark**. **Faz biriktirilir**, `elapsedTime ×
+çarpan` değil: yoksa salon dolduğu anda çaycı yolun ortasında ışınlanırdı.
+
+**D-023 BOZULMADI.** Çaycı durumu OKUR, hiçbir şey YAZMAZ. Taban koşusunun "useGame okuması 1"
+damgası Ç1'i doğru şekilde kırdı; damga sayıyı değil KURALI koruyacak şekilde yeniden yazıldı
+(okuma 2 · yazma 0).
+
+**VARYANT KAPISI DEVREDE DEĞİL:** `economy.config.ts` / `tick.ts` / `rules.ts` dosyalarına
+dokunulmadı, denge sayısı değişmedi.
+
+**Bekçi:** `tests/mutfak-s20.test.ts` — 17 denetim, **3 mutasyonla** doğrulandı (bölme üretimini
+kapat · yük yokken çaycıyı yürüt · dar dikişleri de kapat; üçü de kırmızı yandı).
+**Final:** vitest 1051 ✓ · duman 42/42 ✓ · tam ölçüm koşusu 17 damga yeşil · konsol hatası YOK.

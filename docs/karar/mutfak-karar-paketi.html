@@ -1,0 +1,507 @@
+<title>Mutfak Karar Paketi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Asap:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap&subset=latin,latin-ext">
+<style>
+  :root {
+    --zemin: #F7F3EC;
+    --yuzey: #FFFFFF;
+    --yuzey-2: #F1EBE1;
+    --murekkep: #1E1A16;
+    --soluk: #6B6157;
+    --cizgi: #DDD4C6;
+    --cizgi-koyu: #C6BAA8;
+    --ates: #C55A17;
+    --ates-zemin: #FAE9DC;
+    --tas: #3C5B74;
+    --tas-zemin: #E5EBF0;
+    --nane: #1E7557;
+    --nane-zemin: #E0F0E8;
+    --dama-a: #E8E1D5;
+    --dama-b: #F7F3EC;
+
+    --olcu-govde: 1.0625rem;
+    --radius: 3px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --zemin: #141210;
+      --yuzey: #1C1916;
+      --yuzey-2: #231F1B;
+      --murekkep: #F1EAE0;
+      --soluk: #9B8F82;
+      --cizgi: #322C25;
+      --cizgi-koyu: #473E34;
+      --ates: #EE8842;
+      --ates-zemin: #32210F;
+      --tas: #91B5CF;
+      --tas-zemin: #17212A;
+      --nane: #52C79B;
+      --nane-zemin: #10261E;
+      --dama-a: #231F1B;
+      --dama-b: #141210;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --zemin: #141210;
+    --yuzey: #1C1916;
+    --yuzey-2: #231F1B;
+    --murekkep: #F1EAE0;
+    --soluk: #9B8F82;
+    --cizgi: #322C25;
+    --cizgi-koyu: #473E34;
+    --ates: #EE8842;
+    --ates-zemin: #32210F;
+    --tas: #91B5CF;
+    --tas-zemin: #17212A;
+    --nane: #52C79B;
+    --nane-zemin: #10261E;
+    --dama-a: #231F1B;
+    --dama-b: #141210;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--zemin);
+    color: var(--murekkep);
+    font-family: 'Asap', 'Segoe UI', system-ui, sans-serif;
+    font-size: var(--olcu-govde);
+    line-height: 1.6;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .sayfa {
+    max-width: 62rem;
+    margin: 0 auto;
+    padding-inline: 20px;
+    padding-block: 2.5rem 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.75rem;
+  }
+
+  h1, h2, h3 { font-family: 'Archivo', 'Segoe UI', system-ui, sans-serif; text-wrap: balance; margin: 0; }
+
+  .etiket {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--soluk);
+  }
+
+  .sayi { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+
+  /* ---------- başlık ---------- */
+
+  header { display: flex; flex-direction: column; gap: 0.75rem; }
+
+  header h1 {
+    font-size: clamp(2rem, 6vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.05;
+  }
+
+  .ozet { color: var(--soluk); max-width: 60ch; margin: 0; }
+
+  /* mutfağın damalı zemini — tek yerde, sessiz */
+  .dama {
+    height: 10px;
+    background-image:
+      conic-gradient(var(--dama-a) 90deg, var(--dama-b) 90deg 180deg, var(--dama-a) 180deg 270deg, var(--dama-b) 270deg);
+    background-size: 20px 20px;
+    border-block: 1px solid var(--cizgi);
+  }
+
+  .kunye-ust { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; align-items: baseline; }
+  .kunye-ust a { color: var(--ates); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+
+  /* ---------- künye sayıları ---------- */
+
+  .kunye {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+    gap: 1px;
+    background: var(--cizgi);
+    border: 1px solid var(--cizgi);
+  }
+
+  .kunye div { background: var(--yuzey); padding: 0.95rem 1rem; display: flex; flex-direction: column; gap: 0.2rem; }
+  .kunye b {
+    font-family: 'Archivo', system-ui, sans-serif;
+    font-variant-numeric: tabular-nums;
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--tas);
+  }
+  .kunye span { font-size: 0.8125rem; color: var(--soluk); line-height: 1.35; }
+
+  /* ---------- plan ---------- */
+
+  .plan-sarmal { display: flex; flex-direction: column; gap: 1rem; }
+  .plan-kutu { overflow-x: auto; background: var(--yuzey); border: 1px solid var(--cizgi); padding: 0.5rem; }
+  .plan-kutu svg { display: block; min-width: 34rem; max-width: 100%; height: auto; }
+
+  .anahtar { display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem; font-size: 0.8125rem; color: var(--soluk); }
+  .anahtar span { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .anahtar i { width: 14px; height: 10px; border: 1px solid var(--cizgi-koyu); flex: none; }
+
+  /* ---------- karar bölümleri ---------- */
+
+  section { display: flex; flex-direction: column; gap: 1rem; }
+
+  .bolum-bas { display: flex; flex-direction: column; gap: 0.35rem; border-top: 2px solid var(--murekkep); padding-top: 0.8rem; }
+  .bolum-bas h2 { font-size: 1.35rem; font-weight: 600; letter-spacing: -0.015em; }
+  .bolum-bas p { margin: 0; color: var(--soluk); max-width: 62ch; }
+
+  .cerceve { font-size: 0.9375rem; padding: 0.55rem 0.8rem; background: var(--tas-zemin); border-left: 3px solid var(--tas); }
+  .cerceve strong { font-family: 'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums; font-weight: 600; }
+
+  .kollar { display: flex; flex-direction: column; gap: 0.5rem; }
+
+  .kol {
+    display: grid;
+    grid-template-columns: 3.25rem 1fr;
+    gap: 0 0.9rem;
+    align-items: start;
+    background: var(--yuzey);
+    border: 1px solid var(--cizgi);
+    padding: 0.85rem 1rem 0.9rem;
+  }
+
+  .kol--oneri { border-color: var(--nane); box-shadow: inset 3px 0 0 var(--nane); }
+
+  .kol-ad {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    color: var(--murekkep);
+    background: var(--yuzey-2);
+    border: 1px solid var(--cizgi);
+    text-align: center;
+    padding: 0.1rem 0;
+  }
+  .kol--oneri .kol-ad { background: var(--nane-zemin); border-color: var(--nane); color: var(--nane); }
+
+  .kol-govde { display: flex; flex-direction: column; gap: 0.45rem; min-width: 0; }
+  .kol-basi { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem 0.75rem; }
+  .kol-basi h3 { font-size: 1.0625rem; font-weight: 600; letter-spacing: -0.01em; }
+
+  .rozet {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.625rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.15rem 0.45rem;
+    border: 1px solid currentColor;
+    color: var(--nane);
+  }
+  .rozet--bugun { color: var(--soluk); }
+
+  .veri { display: grid; grid-template-columns: 5.5rem 1fr; gap: 0.2rem 0.75rem; font-size: 0.9375rem; }
+  .veri dt { color: var(--soluk); font-family: 'IBM Plex Mono', monospace; font-size: 0.6875rem; letter-spacing: 0.1em; text-transform: uppercase; padding-top: 0.28rem; }
+  .veri dd { margin: 0; }
+  .veri .rakam { font-family: 'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums; color: var(--tas); font-weight: 500; }
+
+  .neden { font-size: 0.9375rem; color: var(--nane); border-top: 1px dashed var(--cizgi-koyu); padding-top: 0.45rem; }
+
+  /* ---------- kapanış ---------- */
+
+  .paket { background: var(--ates-zemin); border: 1px solid var(--ates); padding: 1.25rem 1.4rem; display: flex; flex-direction: column; gap: 0.6rem; }
+  .paket h2 { font-size: 1.15rem; font-weight: 600; color: var(--ates); }
+  .paket ol { margin: 0; padding-left: 1.2rem; display: flex; flex-direction: column; gap: 0.35rem; }
+  .paket p { margin: 0; }
+
+  .not { font-size: 0.9375rem; color: var(--soluk); border-top: 1px solid var(--cizgi); padding-top: 1rem; }
+  .not strong { color: var(--murekkep); }
+  code { font-family: 'IBM Plex Mono', monospace; font-size: 0.875em; background: var(--yuzey-2); padding: 0.05em 0.3em; border: 1px solid var(--cizgi); }
+
+  @media (max-width: 34rem) {
+    .kol { grid-template-columns: 1fr; gap: 0.6rem; }
+    .kol-ad { justify-self: start; padding-inline: 0.7rem; }
+    .veri { grid-template-columns: 1fr; gap: 0.1rem; }
+    .veri dt { padding-top: 0.4rem; }
+  }
+</style>
+
+<div class="sayfa">
+
+  <header>
+    <div class="kunye-ust etiket">
+      <span>S20 · ölçüm raporu</span>
+      <span>commit 046072b</span>
+      <span>2026-09-15</span>
+      <span>tam koşu · 13 damga yeşil</span>
+    </div>
+    <h1>Mutfak Karar Paketi</h1>
+    <p class="ozet">
+      Üç soru ölçüldü: mutfağa girilebiliyor mu, çaycı ne yapıyor, oda ne kadar dolu.
+      Ölçüm dördüncü bir soruyu kendiliğinden açtı — oda seviyeyle büyüyor mu.
+      Aşağıdaki her kolun arkasında tam koşudan gelen bir sayı var; sayısı olmayan kol pakete girmedi.
+    </p>
+  </header>
+
+  <div class="dama" aria-hidden="true"></div>
+
+  <div class="kunye">
+    <div>
+      <b>%99</b>
+      <span>odanın ortası, baş hizasında görünür — S6'nın “görünmüyor” itirazı burada geçmiyor</span>
+    </div>
+    <div>
+      <b>0 / 37.846</b>
+      <span>oyuncunun erişebildiği zemin hücresi</span>
+    </div>
+    <div>
+      <b>0,05 br</b>
+      <span>oyuncunun durabildiği çizgi ile odanın fayans kenarı arası</span>
+    </div>
+    <div>
+      <b>39,91 br²</b>
+      <span>en büyük boş dikdörtgen — odanın %42'si, %100 görünür</span>
+    </div>
+    <div>
+      <b>0 / 6</b>
+      <span>mutfağın kademesi / tezgâhın kademesi</span>
+    </div>
+  </div>
+
+  <div class="plan-sarmal">
+    <div class="etiket">Plan — gerçek koordinatlardan, 1 br = 40 px</div>
+    <div class="plan-kutu">
+      <svg viewBox="0 0 580 400" role="img" aria-label="Mutfak odasının tepeden planı: dolu arka duvar hattı, ortadaki boş dikdörtgen, çaycının yolu, ön hattın üç tezgâhı ve iki uçtaki açıklık">
+        <!-- oda zemini -->
+        <rect x="36" y="30" width="508.4" height="298.4" fill="var(--yuzey-2)" stroke="var(--cizgi-koyu)" stroke-width="1"/>
+
+        <!-- en büyük boş dikdörtgen: x -15,56…-6,60 · z -15,26…-10,80 -->
+        <rect x="110" y="112" width="358.4" height="178.4" fill="var(--ates-zemin)" stroke="var(--ates)" stroke-width="1.5" stroke-dasharray="6 4"/>
+        <text x="289" y="205" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="15" font-weight="600" fill="var(--ates)">39,91 br²</text>
+        <text x="289" y="224" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--ates)">8,96 × 4,46 — boş, %100 görünür</text>
+
+        <!-- arka duvar hattı: dolu üniteler (z -17,31…-16,10) -->
+        <rect x="36" y="30" width="508.4" height="48.4" fill="var(--tas)" opacity="0.85"/>
+        <text x="290" y="60" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--yuzey)">arka duvar hattı — %99 dolu, 11 ünite</text>
+
+        <!-- batı duvarı tezgâhı (z -14,0 civarı) -->
+        <rect x="36" y="96" width="34" height="72" fill="var(--tas)" opacity="0.85"/>
+
+        <!-- depo kasaları (x -6,16 / -5,26 · z -13,90) -->
+        <rect x="468" y="150" width="34" height="34" fill="var(--tas)" opacity="0.85"/>
+        <rect x="504" y="150" width="34" height="34" fill="var(--tas)" opacity="0.85"/>
+        <text x="503" y="143" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--soluk)">depo</text>
+
+        <!-- çaycının yolu: x -14,60…-11,40 · z -11,30 -->
+        <line x1="148.4" y1="270.4" x2="276.4" y2="270.4" stroke="var(--nane)" stroke-width="3"/>
+        <circle cx="148.4" cy="270.4" r="5" fill="var(--nane)"/>
+        <circle cx="276.4" cy="270.4" r="5" fill="var(--nane)"/>
+        <text x="212" y="262" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--nane)">çaycı 3,20 br — odanın eninin %25'i</text>
+
+        <!-- ön hattın üç gövdesi: z -10,80…-9,80 -->
+        <rect x="148.4" y="290.4" width="128" height="40" fill="var(--murekkep)" opacity="0.82"/>
+        <rect x="284.4" y="290.4" width="104" height="40" fill="var(--murekkep)" opacity="0.82"/>
+        <rect x="396.4" y="290.4" width="80" height="40" fill="var(--murekkep)" opacity="0.82"/>
+        <text x="212" y="315" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--yuzey)">çay tezgâhı</text>
+        <text x="336" y="315" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--yuzey)">garson ist.</text>
+        <text x="436" y="315" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--yuzey)">bulaşık</text>
+
+        <!-- iki açıklık -->
+        <rect x="36" y="290.4" width="112.4" height="40" fill="none" stroke="var(--ates)" stroke-width="2"/>
+        <text x="92" y="315" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="var(--ates)">2,81 br</text>
+        <rect x="476.4" y="290.4" width="68" height="40" fill="none" stroke="var(--ates)" stroke-width="2"/>
+        <text x="510" y="315" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="var(--ates)">1,70 br</text>
+
+        <!-- oyuncunun kelepçe çizgisi: z -9,80 -->
+        <line x1="20" y1="332.4" x2="560" y2="332.4" stroke="var(--ates)" stroke-width="2.5" stroke-dasharray="2 5"/>
+        <text x="290" y="352" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="var(--ates)">KELEPÇE — oyuncu bu çizgiyi geçemiyor (z = −9,80)</text>
+        <text x="290" y="370" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--soluk)">açıklıklar geçişe yetiyor (gereken 0,94 br) — durduran şey duvar değil, kelepçe</text>
+
+        <!-- ölçek -->
+        <line x1="36" y1="388" x2="116" y2="388" stroke="var(--soluk)" stroke-width="1.5"/>
+        <line x1="36" y1="384" x2="36" y2="392" stroke="var(--soluk)" stroke-width="1.5"/>
+        <line x1="116" y1="384" x2="116" y2="392" stroke="var(--soluk)" stroke-width="1.5"/>
+        <text x="124" y="392" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--soluk)">2 br</text>
+        <text x="544.4" y="392" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--soluk)">oda 12,71 × 7,46 br = 94,82 br²</text>
+      </svg>
+    </div>
+    <div class="anahtar">
+      <span><i style="background:var(--tas);opacity:.85"></i> dolu ünite</span>
+      <span><i style="background:var(--ates-zemin);border-color:var(--ates)"></i> en büyük boşluk</span>
+      <span><i style="background:var(--nane);height:3px"></i> çaycının yolu</span>
+      <span><i style="background:var(--murekkep);opacity:.82"></i> ön hattın tezgâhları</span>
+      <span><i style="border-color:var(--ates);border-width:2px"></i> geçişe yeten açıklık</span>
+    </div>
+  </div>
+
+  <!-- ================= E ================= -->
+  <section>
+    <div class="bolum-bas">
+      <span class="etiket">Soru 1 · erişim</span>
+      <h2>Mutfağa girilebilen bir açıklık var mı?</h2>
+      <p>Var — ama oyuncu yine de giremiyor. Odanın kapalılığı bir duvardan değil, oyuncuyu açık alanlara bağlayan <code>clampToOpenAreas</code> kelepçesinden geliyor.</p>
+    </div>
+    <p class="cerceve">Oyuncu odanın <strong>0,05 br</strong> yanında duruyor, gözle açık duran <strong>2,81 br</strong>'lik boşluktan içeri giremiyor. Erişilen hücre: <strong>0 / 37.846</strong>.</p>
+
+    <div class="kollar">
+      <div class="kol">
+        <span class="kol-ad">E0</span>
+        <div class="kol-govde">
+          <div class="kol-basi"><h3>Kapalı kalsın</h3><span class="rozet rozet--bugun">bugünkü hâl</span></div>
+          <dl class="veri">
+            <dt>Dayanak</dt><dd>Bugün öyle çalışıyor; erişim <span class="rakam">%0</span>.</dd>
+            <dt>Takas</dt><dd>Ölçülen okunabilirlik kusuru duruyor: açık görünen boşluk giriş vaat edip vermiyor.</dd>
+            <dt>Maliyet</dt><dd><span class="rakam">0</span></dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="kol">
+        <span class="kol-ad">E1</span>
+        <div class="kol-govde">
+          <div class="kol-basi"><h3>Mutfak yürünebilir olsun</h3></div>
+          <dl class="veri">
+            <dt>Dayanak</dt><dd>İki uçtaki <span class="rakam">2,81</span> ve <span class="rakam">1,70 br</span> açıklık geçişe fazlasıyla yetiyor (gereken <span class="rakam">0,94</span>).</dd>
+            <dt>Takas</dt><dd><span class="rakam">94,82 br²</span> gerçek alan açılır; ama nav ızgarası, müşteri yolu ve kamera da bu sınırdan besleniyor.</dd>
+            <dt>Maliyet</dt><dd><code>BAND.front</code> <span class="rakam">19</span> okuma / <span class="rakam">10</span> dosya + nav işi. Faz H'de zaten nav düzeltmesi var.</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="kol kol--oneri">
+        <span class="kol-ad">E2</span>
+        <div class="kol-govde">
+          <div class="kol-basi"><h3>Kapalılık okunur olsun</h3><span class="rozet">öneri</span></div>
+          <dl class="veri">
+            <dt>Dayanak</dt><dd>İki açıklık ölçüldü: <span class="rakam">2,81</span> ve <span class="rakam">1,70 br</span>. İkisi de bölmeyle kapanır.</dd>
+            <dt>Takas</dt><dd>Oda “arkası görünen ama girilmeyen mutfak” olarak okunur; yanlış vaat biter. Alan açılmaz.</dd>
+            <dt>Maliyet</dt><dd><span class="rakam">2</span> gövde, kural değişikliği yok.</dd>
+          </dl>
+          <p class="neden">Neden bu: E1 doğru iş ama yanlış tur. Nav ızgarası Faz H'de zaten açılacak; sınırı iki kez değil bir kez taşımak ucuz. E2 bugünkü kusuru <em>bugün</em> kapatır ve E1'in önünü kesmez.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= Ç ================= -->
+  <section>
+    <div class="bolum-bas">
+      <span class="etiket">Soru 2 · çaycı</span>
+      <h2>Çaycı ne yapıyor gibi duruyor?</h2>
+      <p>Ekranda her an duran karakter, oyunun durumundan hiçbir şey bilmiyor.</p>
+    </div>
+    <p class="cerceve">Çaycının başı <strong>234 duruşun %100'ünde</strong> görünür. Mekanik okuması: <strong>0</strong>. Klip sabit <strong>calis</strong>, yol denklemi <strong>sin(t·0,3)</strong> — sipariş yükünden bağımsız.</p>
+
+    <div class="kollar">
+      <div class="kol">
+        <span class="kol-ad">Ç0</span>
+        <div class="kol-govde">
+          <div class="kol-basi"><h3>Salt görsel kalsın</h3><span class="rozet rozet--bugun">bugünkü hâl</span></div>
+          <dl class="veri">
+            <dt>Dayanak</dt><dd>Mekaniğe dokunmama kararı (D-023) hâlâ geçerli.</dd>
+            <dt>Takas</dt><dd>Boş salonda da tıklım salonda da aynı tempo — odanın en görünür kişisi oyunu yalanlıyor.</dd>
+            <dt>Maliyet</dt><dd><span class="rakam">0</span></dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="kol kol--oneri">
+        <span class="kol-ad">Ç1</span>
+        <div class="kol-govde">
+          <div class="kol-basi"><h3>Yüke göre hızlansın, boşta dinlensin</h3><span class="rozet">öneri</span></div>
+          <dl class="veri">
+            <dt>Dayanak</dt><dd>Görünürlük <span class="rakam">%100</span>, mekanik okuması <span class="rakam">0</span> — kazanç en yüksek, mesafe en kısa.</dd>
+            <dt>Takas</dt><dd>Hâlâ salt görsel: hiçbir sayı üretmez, hiçbir sayıyı tüketmez. Yalnız <em>anlatır</em>.</dd>
+            <dt>Maliyet</dt><dd><code>KitchenHand</code> bir alan daha okur. <code>rules.ts</code> / <code>tick.ts</code> / <code>economy</code> <strong>dışında</strong> — varyant kapısı devreye girmez.</dd>
+          </dl>
+          <p class="neden">Neden bu: oyunun durumunu ekrana taşıyan en ucuz cümle. Mutfağı “canlı” yapan şey doluluk değil, yükü gösteren bir beden.</p>
+        </div>
+      </div>
+
+      <div class="kol">
+        <span class="kol-ad">Ç2</span>
+        <div class="kol-govde">
+          <div class="kol-basi"><h3>Yol uzasın / ikinci personel</h3></div>
+          <dl class="veri">
+            <dt>Dayanak</dt><dd>Yol <span class="rakam">3,20 br</span> = odanın eninin <span class="rakam">%25</span>'i; doğu yarısı (bulaşık–fırın–depo) personelsiz.</dd>
+            <dt>Takas</dt><dd>Oda genişler gibi olur, ama iki figür de aynı boş klibi sürer — Ç1 olmadan gürültü.</dd>
+            <dt>Maliyet</dt><dd><code>staffWalk</code> + yol tanımı; Ç1'den sonra anlamlı.</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= D ================= -->
+  <section>
+    <div class="bolum-bas">
+      <span class="etiket">Soru 3 · doluluk ve kademe</span>
+      <h2>Oda içi ne kadar dolu?</h2>
+      <p>%39 dolu — ve boşluk tam olarak en görünür şeritte. Ölçüm bunu sorarken dördüncü soruyu açtı: tezgâh 6 kademe büyürken oda hiç büyümüyor.</p>
+    </div>
+    <p class="cerceve">Doluluk arka duvara yapışmış (<strong>%99</strong>), orta şerit <strong>%22</strong>, çaycı koridoru <strong>%0</strong>. Mutfak ünitesi <strong>19 sabit</strong>, seviye alanı <strong>0</strong>, tezgâhın kademesi <strong>6</strong>.</p>
+
+    <div class="kollar">
+      <div class="kol">
+        <span class="kol-ad">D0</span>
+        <div class="kol-govde">
+          <div class="kol-basi"><h3>Orta boş kalsın</h3><span class="rozet rozet--bugun">bugünkü hâl</span></div>
+          <dl class="veri">
+            <dt>Dayanak</dt><dd>Bir mutfakta çalışma boşluğu gerçekçi.</dd>
+            <dt>Takas</dt><dd><span class="rakam">39,91 br²</span>'lik %100 görünür boşluk — WC odasının açık duran kusurunun aynısı.</dd>
+            <dt>Maliyet</dt><dd><span class="rakam">0</span></dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="kol">
+        <span class="kol-ad">D1</span>
+        <div class="kol-govde">
+          <div class="kol-basi"><h3>Dekor ada / istif konsun</h3></div>
+          <dl class="veri">
+            <dt>Dayanak</dt><dd>Boşluk <span class="rakam">8,96 × 4,46</span>; bir hazırlık adası <code>MODULE_W</code> <span class="rakam">1,80</span> ritmine oturur.</dd>
+            <dt>Takas</dt><dd>Delik kapanır, ama oda ikinci kez “tek seferde kurulmuş dekor” olur — en görünür alan sabit süse gider.</dd>
+            <dt>Maliyet</dt><dd>Ünite listesi uzar; kademe sorusu açık kalır.</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="kol kol--oneri">
+        <span class="kol-ad">D2</span>
+        <div class="kol-govde">
+          <div class="kol-basi"><h3>Orta boşluk kademeli dolsun</h3><span class="rozet">öneri · kendi turu</span></div>
+          <dl class="veri">
+            <dt>Dayanak</dt><dd>Oda <span class="rakam">19</span> sabit ünite, seviye okuması <span class="rakam">0</span>, tezgâh <span class="rakam">6</span> kademe. Boşluk <span class="rakam">%100</span> görünür.</dd>
+            <dt>Takas</dt><dd>Aynı alan süs değil ödül yüzeyi olur: seviye atladıkça mutfak gözle büyür.</dd>
+            <dt>Maliyet</dt><dd><code>KitchenUnit</code>'e seviye alanı + <code>Kitchen.tsx</code> seviye okuması. Yalnız çizim katmanı.</dd>
+          </dl>
+          <p class="neden">Neden bu: senin kendi kuralın — “objeler küçük doğup yerinde büyür, modüler olmak varyant değil kademe demektir”. Ölçüm o kuralın mutfakta hiç uygulanmadığını sayıyla gösterdi.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="paket">
+    <h2>Önerilen paket</h2>
+    <p>“Görevi en fazla ikiye böl” kuralı gereği bu tur iki parça; D2 kendi turunu istiyor çünkü önce ilerleme adımları tasarlanmalı.</p>
+    <ol>
+      <li><strong>S20 (bu tur):</strong> E2 + Ç1 — ikisi de ölçülen bir kusuru kapatıyor, ikisi de denge dosyalarının dışında.</li>
+      <li><strong>S21 (sonraki tur):</strong> D2 — mutfağın 6 kademesi tasarlanır, sonra çizilir.</li>
+    </ol>
+    <p>Başka bir bileşim seçersen de olur; tek şart, seçilmeyen kolun koda girmemesi.</p>
+  </div>
+
+  <p class="not">
+    <strong>Bu turda kararı olmayan şeyler.</strong> Kolların hiçbiri <code>economy.config.ts</code>,
+    <code>tick.ts</code> veya <code>rules.ts</code>'e dokunmuyor — varyant kapısı bu turda devreye girmiyor,
+    denge sayısı değişmiyor. E1 <code>layout.ts</code>'in alan dikdörtgenine dokunurdu (yerleşim, denge değil).
+    Ham çıktı <code>docs/olcum-mutfak.txt</code>, rapor <code>docs/mutfak-raporu-s20.md</code>;
+    §Karar bölümü seçim gelene kadar bilerek boş.
+  </p>
+
+</div>

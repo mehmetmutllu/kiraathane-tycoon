@@ -40,6 +40,8 @@ import { Kitchen, KayTezgah } from './Kitchen';
 import { onHatGovdeleri } from './kitchenLook';
 import { DishSink } from './DishSink';
 import { FRONT_TOP_Y } from './kitchenLook';
+// S20 · D-118 — E2 (mutfağın sınırı) ve Ç1 (çaycının temposu) ölçü katmanından okunur.
+import { CAYCI_TEMPO, cayBekleyenSayisi, cayciHali, cayciHizCarpani, sinirBolmeleri } from './kitchenLook';
 import {
   MaketCrates,
   MaketDuba,
@@ -292,11 +294,25 @@ function KitchenHand({ service }: { service: number }) {
   const wb = place.staffWalk.b;
   // useMemo: her render yeni dizi üretirse aşağıdaki kayıt effect'i boşuna yeniden koşar.
   const start = useMemo(() => [wa[0], 0, wa[2]] as const, [wa]);
+  /**
+   * Ç1 (S20 · D-118) — ÇAYCININ YÜKÜ: çay bekleyen müşteri sayısı. Ölçüm çaycının başının
+   * oyuncunun 234 duruşunun %100'ünde göründüğünü, buna karşılık mekanik okumasının 0
+   * olduğunu gösterdi (`docs/olcum-mutfak.txt` §Ç). Okuma SALT GÖRSEL: hiçbir sayı üretmez,
+   * hiçbir sayı tüketmez — D-023'ün "mekaniğe dokunmaz" kuralı yerinde duruyor.
+   */
+  const bekleyen = useGame((s) => cayBekleyenSayisi(s.npcs));
+  /**
+   * FAZ BİRİKTİRİLİR, `elapsedTime × çarpan` DEĞİL. Çarpanı doğrudan geçen zamanla çarpsaydık
+   * salon dolduğu anda `t` sıçrar, çaycı yolun ortasında ışınlanırdı.
+   */
+  const faz = useRef(0);
   // B2: "tost ustası" ayrı bir kişi değil — kat tek servisten döndüğü için tek çaycı var.
-  useFrame((st) => {
+  useFrame((st, dt) => {
     const grp = ref.current;
     if (!grp) return;
-    const t = st.clock.elapsedTime * 0.3;
+    const calisiyor = bekleyen > 0;
+    faz.current += dt * CAYCI_TEMPO.temelHiz * cayciHizCarpani(bekleyen);
+    const t = faz.current;
     const u = (Math.sin(t) + 1) / 2;
     // Yol = staffWalk doğru parçası; yürüme yönü parçanın kendi ekseninden okunur.
     grp.position.x = wa[0] + u * (wb[0] - wa[0]);
@@ -305,16 +321,22 @@ function KitchenHand({ service }: { service: number }) {
       ? (Math.cos(t) > 0 ? Math.PI / 2 : -Math.PI / 2)
       : (Math.cos(t) > 0 ? 0 : Math.PI);
     // Rota ucunda durup tezgâha dönüp "iş yapar" (eğilme); arada yürür (hafif zıplama).
-    const speed = Math.abs(Math.cos(t));
-    grp.rotation.y = speed < 0.25 ? faceIn : walkRot;
-    grp.position.y = speed < 0.25 ? -0.04 + Math.sin(st.clock.elapsedTime * 3) * 0.02 : Math.abs(Math.sin(st.clock.elapsedTime * 7)) * 0.04;
+    // Yük yokken faz donduğu için çaycı olduğu yerde kalır ve tezgâha döner: dinleniyor.
+    const duruyor = !calisiyor || Math.abs(Math.cos(t)) < 0.25;
+    grp.rotation.y = duruyor ? faceIn : walkRot;
+    grp.position.y = !calisiyor
+      ? -0.04
+      : duruyor
+        ? -0.04 + Math.sin(st.clock.elapsedTime * 3) * 0.02
+        : Math.abs(Math.sin(st.clock.elapsedTime * 7)) * 0.04;
   });
   return (
     <group ref={ref} position={[start[0], 0, start[2]]}>
       {/* S14/D-112: ilkel kutu gövde yerine KayKit karakteri (ak sakallı usta). Ölçeği
-          `KayActor` kendi taşır; `hal="calis"` tezgâh başında çalışma klibini sürer —
-          bu aktör bir yol boyunca gidip geliyor ama işi tezgâhta, yürüyüş klibi yanıltırdı. */}
-      <KayActor kind="kitchenHand" hal="calis" />
+          `KayActor` kendi taşır. S20/Ç1: klip artık sabit değil — yük varken `calis`
+          (tezgâh başında iş), yük yokken `dur`. Yürüyüş klibi hâlâ kullanılmıyor: bu aktör
+          bir yol boyunca gidip geliyor ama işi tezgâhta, yürüyüş klibi yanıltırdı. */}
+      <KayActor kind="kitchenHand" hal={cayciHali(bekleyen)} />
     </group>
   );
 }
@@ -946,6 +968,27 @@ function BackBand({ areasOpen }: { areasOpen: number }) {
       {/* SERVİS KÖŞESİ (S3) — arka duvarda 7 modüllük KayKit hattı, doğu ucunda depo.
           Yerleşimin TEK kaynağı `kitchenLook.KITCHEN_UNITS`; buraya koordinat yazılmaz. */}
       <Kitchen />
+
+      {/* MUTFAĞIN SINIRI (S20 · E2 · D-118) — ön hattın İKİ UCUNDAKİ açıklığı kapatır.
+          Ölçüm batıda 2,81 br, doğuda 1,70 br boşluk buldu; ikisi de geçiş eşiğinin (0,94)
+          üstünde ve oyuncu odanın 0,05 br yanında durup oradan giremiyordu — yanlış vaat.
+          SALT GÖRSEL: collision yok, kelepçe zaten geçirmiyor. Ölçü `sinirBolmeleri`nden. */}
+      {sinirBolmeleri(areasOpen).map((b) => (
+        <group key={b.uc} position={[b.x, 0, b.z]}>
+          <KayTezgah
+            model="kitchencounter_straight_B"
+            w={b.w}
+            d={b.d}
+            topY={FRONT_TOP_Y}
+            fallback={
+              <mesh castShadow receiveShadow position={[0, FRONT_TOP_Y / 2, 0]}>
+                <boxGeometry args={[b.w, FRONT_TOP_Y, b.d]} />
+                <meshStandardMaterial color={PALETTE.counterWood} />
+              </mesh>
+            }
+          />
+        </group>
+      ))}
 
       {/* MERDİVEN KOVASI — yıkık merdiven + uyarı şeridi + dubalar (hepsi bandın İÇİNDE:
           oyuncu z = −9,8'de duruyor, salona taşan hiçbir parça olmasın diye maketin

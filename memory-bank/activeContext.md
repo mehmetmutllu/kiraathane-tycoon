@@ -5,32 +5,30 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-15 — **S20 ÖLÇÜM: MUTFAK** · Faz S 20/21 · 94/105)
+## ŞU AN (2026-09-15 — **S20 BİTTİ: E2 + Ç1 koda girdi, bekçili** · Faz S 20/22 · 95/106)
 
 ```
 SORU            : Mutfak odası oyuna ne veriyor — girilemeyen, mekaniğe bağlanmamış ve ortası
                   boş bir vitrin mi, yoksa kazanılacak bir alan mı?
-ÖLÇÜLECEK KOLLAR: E (erişim)   E0 kapalı kalsın · E1 açıklık + yürünebilir alan
-                  Ç (çaycı)    Ç0 salt görsel kalsın · Ç1 servise görsel olarak bağlansın
-                  D (doluluk)  D0 orta boş kalsın · D1 ada/istif ile dolsun
-                  Üçü de aynı GÖRÜNÜRLÜK süzgecinden geçer (S6 dersi: görünmeyen iş yapılmaz).
-SAYILAR         : (boş — adım 2'den sonra `docs/mutfak-raporu-s20.md` §Bulgular)
-KARAR           : (boş — adım 3, tek karar paketi)
-UYGULAMA        : (boş)
-BEKÇİ           : (boş)
+SAYILAR         : docs/mutfak-raporu-s20.md §Bulgular · ham: docs/olcum-mutfak.txt (tam, 17 damga)
+                  görünürlük %99 orta · erişim 0/37.846 · çaycı %100 görünür · boşluk 39,91 br²
+KARAR           : D-118 — E2 + Ç1 uygulandı · D2 → S21 · E1 → Faz H (nav ızgarasıyla birlikte)
+UYGULAMA        : E2 iki sınır bölmesi (2,81 + 1,70 br, salt görsel) ·
+                  Ç1 çaycı temposu çay bekleyenden (0 / 0,60 / 2,00 — boş↔dolu 3,33×)
+BEKÇİ           : tests/mutfak-s20.test.ts — 17 denetim, 3 MUTASYON kırmızı yandı
+FINAL           : vitest 1051 ✓ · duman 42/42 ✓ · konsol hatası YOK
 ```
-
-**Elektrik kesintisi notu:** 2026-09-15 01:19'da taban kareleri alınmış, rapor/commit yazılamadan
-oturum kesilmişti. Kurtarılan: `tools/shot-s20-mutfak.mjs` + `ss/s20-mutfak-{taban,npc,plan}.png`.
 
 ## SIRADAKİ TAM ADIM
 
-Adım 2 (ÖLÇ): `tools/olcum-mutfak.ts` → `docs/olcum-mutfak.txt` → `docs/mutfak-raporu-s20.md`
-§Bulgular → **commit #1 (karar bölümü BOŞ)** → karar paketi.
+**S22 — KADEMELİ MUTFAK (tur adı S21, D-118’in D2 kolu).** Ölçüm sayıyı verdi: tezgâh **6 kademe** büyürken oda her seviyede
+aynı **19 sabit** üniteyi çiziyor (`KitchenUnit`'te seviye alanı 0), ve odanın **%42'si**
+(39,91 br²) **%100 görünür** boş. Tur ÖNCE ilerleme adımlarını tasarlar (kullanıcı kuralı:
+"objeler küçük doğup yerinde büyür"), sonra çizer.
 
-**S20'den sonra:** S19'un kalan dört kalemi (1) karakter menüsü KayKit gövdesine ·
-(2) paneller tam ekran · (3) yükseltme tetiği pad'in üstünde — **varyant kapısı, `rules.ts`** ·
-(4) yükseltmenin solundaki ok · sonra S9 SES karar paketi · sonra **Faz H**.
+**Sonra:** S19'un kalan dört kalemi (1) karakter menüsü KayKit gövdesine · (2) paneller tam ekran ·
+(3) yükseltme tetiği pad'in üstünde — **varyant kapısı, `rules.ts`** · (4) yükseltmenin solundaki ok
+· sonra S9 SES karar paketi · sonra **Faz H** (E1 yürünebilir mutfak orada, nav ızgarasıyla birlikte).
 
 ### S19b'DEN KALAN KÜÇÜK KUSUR
 
@@ -71,6 +69,8 @@ bakıyor · **oyuncuda 2,0× artık kayma** · **panel dönüşünde T-poz temiz
 (repro aracı `tools/olcum-panel-donusu.mjs`).
 
 **Önizlemeler**
+**S20 KARAR PAKETİ:** https://claude.ai/artifact/NzUs9PeHqzj48bekL78fqm
+**S20 kareler:** önce `ss/s20-mutfak-{taban,npc,plan}.png` · sonra `ss/s20-mutfak-{taban,npc,plan}-son.png`
 **S19b kareler:** `ss/s19b-kiyafet.png` (önlük + patron) · `ss/s19b-oyun-yakin.png` · `ss/s19b-oturus-yakin.png`
 **S19a KARAR PAKETİ (v2):** https://claude.ai/code/artifact/a8d02997-974d-4f2a-a00c-f916820a69c7
 **S19a kareler:** `ss/s19-oturus.png` · `ss/s19-onluk.png` · `ss/s19-patron.png` · `ss/s19-glif.png` · `ss/s19-yemek.png`

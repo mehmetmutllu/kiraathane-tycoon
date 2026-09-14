@@ -10,6 +10,8 @@ import path from 'node:path';
 
 const KOK = 'C:/xampp/htdocs/kiraathane';
 const OUT = `${KOK}/docs/gorsel/ss`;
+// Taban kareleri commit'te duruyor; uygulamadan sonraki kareler EK ile ayrı dosyaya yazılır.
+const EK = process.env.EK ?? '';
 const PORT = 5421;
 const PADS = 'table2 table3 waiter table4 zone2 z2table2 z2table3 dishwasher z2table4 zone3 z3table2 waiter2 z3table3 z3table4 waiter3 lavabo'.split(' ');
 
@@ -50,17 +52,17 @@ try {
   // 1) Oyuncu mutfağın önündeki koridora — tezgâhın batı ucundaki açıklığın hizası.
   await p.evaluate(() => { window.__devPlan({ topDown: false, zoom: 1 }); window.__teleport(-15.6, -8.6); });
   await p.waitForTimeout(2000);
-  await p.screenshot({ path: `${OUT}/s20-mutfak-taban.png` });
+  await p.screenshot({ path: `${OUT}/s20-mutfak-taban${EK}.png` });
 
   // 2) Mutfağın içi — çaycının hattı (x −14,6…−11,4 · z −11,3).
   await p.evaluate(() => { window.__devPlan({ topDown: false, zoom: 2.4 }); window.__teleport(-13.0, -8.6); });
   await p.waitForTimeout(2000);
-  await p.screenshot({ path: `${OUT}/s20-mutfak-npc.png` });
+  await p.screenshot({ path: `${OUT}/s20-mutfak-npc${EK}.png` });
 
   // 3) Tepeden plan: mutfak bloğunun ayak izi ve açıklıklar.
   await p.evaluate(() => { window.__devPlan({ topDown: true, zoom: 1.5, gridStep: 1 }); window.__teleport(-11, -8.6); });
   await p.waitForTimeout(2000);
-  await p.screenshot({ path: `${OUT}/s20-mutfak-plan.png` });
+  await p.screenshot({ path: `${OUT}/s20-mutfak-plan${EK}.png` });
 
   console.log('konsol hatalari:', hatalar.length ? hatalar.slice(0, 5) : 'YOK');
   await b.close();

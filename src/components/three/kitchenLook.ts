@@ -19,6 +19,7 @@
  * Mobilya insana göre ölçeklenir, duvar odaya göre; ikisi tek sayıya zorlanmadı. Duvara asılan
  * üniteler bu farkı ÜST HİZADAN kapatır: `WALL_UNIT_Y` aşağıda türetiliyor.
  */
+import { PLAYER_RADIUS } from '../../config/actor';
 import { BAND, BAND_SHELL, WAITER_STATION, servicePlace, waiterStationOpen } from '../../game/layout';
 import type { Goz } from './atlasUV';
 import { WALL_H } from './wallPanel';
@@ -563,3 +564,116 @@ export function onHatGovdeleri(areasOpen: number): { station: OnHatGovde; waiter
   const [station, waiter, dish] = onHat(parcalar);
   return { station, waiter, dish };
 }
+
+// ---- E2: MUTFAĞIN SINIRI (S20 · D-118) ----
+//
+// ÖLÇÜM NE DEDİ (`docs/olcum-mutfak.txt` §E): oyuncu mutfağa GİREMİYOR — erişim 0/37.846 hücre —
+// ama onu durduran şey bir duvar değil, `clampToOpenAreas` kelepçesi. Ön hattın İKİ UCUNDA
+// 2,81 br (batı) ve 1,70 br (doğu) açıklık duruyor ve ikisi de geçiş eşiğinin üstünde. Oyuncu
+// odanın 0,05 br yanında durup, gözle açık duran bir boşluktan içeri giremiyor: yanlış vaat.
+//
+// E2 o vaadi kaldırır. Bölmeler SALT GÖRSEL — collision eklenmez, çünkü ölçüm bir geçiş sorunu
+// değil bir OKUNABİLİRLİK sorunu buldu; kelepçe zaten geçirmiyor. Gövdeler ön hattın kendi
+// ölçüsünden türer (aynı z, aynı derinlik, aynı tabla) ki banko boydan boya tek çizgi okunsun.
+//
+// İÇERİDEKİ 0,20'LİK DİKİŞLER BİLEREK AÇIK: ölçüm onları "geçmez" diye işaretledi (0,20 < 0,94).
+// Kapatmak üç tezgâhı tek kütleye çevirir ve çay ocağı · garson istasyonu · bulaşık ayrımını
+// siler. Yalnız ölçümün işaretlediği yer kapanır.
+
+/** Oyuncunun bir açıklıktan geçebilmesi için gereken en küçük genişlik (iki oyuncu yarıçapı). */
+export const GECIS_ESIGI = PLAYER_RADIUS * 2;
+
+export interface SinirBolmesi {
+  /** Bölmenin dünya merkezi. */
+  x: number;
+  z: number;
+  w: number;
+  d: number;
+  /** Hangi uç — çizim tarafı anahtar olarak kullanır. */
+  uc: 'bati' | 'dogu';
+}
+
+/** Ön hattın üç gövdesinin x aralıkları — `onHatGovdeleri`nin birleştirmesi DEĞİL, ham collision. */
+function onHatAraliklari(areasOpen: number): { x0: number; x1: number }[] {
+  const p = servicePlace(areasOpen);
+  return [
+    { x0: p.station[0] - p.half[0], x1: p.station[0] + p.half[0] },
+    { x0: WAITER_STATION.pos[0] - WAITER_STATION.half[0], x1: WAITER_STATION.pos[0] + WAITER_STATION.half[0] },
+    { x0: p.dish[0] - p.dishHalf[0], x1: p.dish[0] + p.dishHalf[0] },
+  ];
+}
+
+/**
+ * Mutfağın ön yüzünde geçişe YETEN açıklıklar — E2 öncesi hâl. Bekçi bunu kullanır: bölmeler
+ * eklendikten sonra bu listenin BOŞ kalması gerekir.
+ */
+export function onHatAcikliklari(areasOpen: number): { x0: number; x1: number; w: number }[] {
+  if (!waiterStationOpen(areasOpen)) return [];
+  const parcalar = onHatAraliklari(areasOpen).sort((a, b) => a.x0 - b.x0);
+  const out: { x0: number; x1: number; w: number }[] = [];
+  let uc = FAYANS.x0;
+  for (const g of parcalar) {
+    if (g.x0 - uc >= GECIS_ESIGI) out.push({ x0: uc, x1: g.x0, w: g.x0 - uc });
+    uc = Math.max(uc, g.x1);
+  }
+  if (FAYANS.x1 - uc >= GECIS_ESIGI) out.push({ x0: uc, x1: FAYANS.x1, w: FAYANS.x1 - uc });
+  return out;
+}
+
+/**
+ * Açıklıkları kapatan bölmeler. Servis hâlâ sol duvardayken (areasOpen < 3) ön hat yoktur —
+ * kapatılacak bir şey de yoktur, boş döner.
+ */
+export function sinirBolmeleri(areasOpen: number): SinirBolmesi[] {
+  if (!waiterStationOpen(areasOpen)) return [];
+  const p = servicePlace(areasOpen);
+  const z = p.station[2];
+  const d = p.half[1] * 2;
+  const orta = (FAYANS.x0 + FAYANS.x1) / 2;
+  return onHatAcikliklari(areasOpen).map((g) => ({
+    x: (g.x0 + g.x1) / 2,
+    z,
+    w: g.w,
+    d,
+    uc: (g.x0 + g.x1) / 2 < orta ? ('bati' as const) : ('dogu' as const),
+  }));
+}
+
+// ---- Ç1: ÇAYCININ TEMPOSU (S20 · D-118) ----
+//
+// ÖLÇÜM NE DEDİ (`docs/olcum-mutfak.txt` §Ç): çaycının başı oyuncunun 234 duruşunun %100'ünde
+// görünür — odanın en çok görülen kişisi o. Buna karşılık mekanik okuması 0, klibi sabit ve
+// yol denklemi `sin(t·0,3)` sipariş yükünden bağımsız. Yani boş salonda da tıklım salonda da
+// aynı tempoyla gidip geliyordu.
+//
+// Ç1 bunu düzeltir ve SALT GÖRSEL kalır: hiçbir sayı üretmez, hiçbir sayı tüketmez (D-023).
+// `rules.ts` / `tick.ts` / `economy.config.ts` dosyalarına dokunulmadı — varyant kapısı devrede
+// değil. Çaycı yalnız salonun yükünü ANLATIR.
+
+export const CAYCI_TEMPO = {
+  /** Eski sabit: `sin(t · 0,3)`. Çarpan bunun ÜSTÜNE biner. */
+  temelHiz: 0.3,
+  /** Yükün doyduğu bekleyen sayısı — bunun üstünde tempo artmaz. */
+  doyum: 4,
+  /** Tek müşteri beklerken. */
+  azCarpan: 0.6,
+  /** Doyum ve üstünde. */
+  cokCarpan: 2.0,
+} as const;
+
+/** Çay bekleyen müşteri sayısı — çaycının YÜKÜ. Diğer durumlar (içiyor, WC, gidiyor) sayılmaz. */
+export const cayBekleyenSayisi = (npcs: readonly { state: string }[]): number =>
+  npcs.reduce((a, n) => a + (n.state === 'waitingForTea' ? 1 : 0), 0);
+
+/**
+ * Yürüyüş hızı çarpanı. Yük yokken **0**: çaycı yolun neresindeyse orada durur ve dinlenir —
+ * yavaşlatmak yetmezdi, boş salonda hâlâ "koşturan" bir beden yanlış anlatır.
+ */
+export function cayciHizCarpani(bekleyen: number): number {
+  if (bekleyen <= 0) return 0;
+  const k = Math.min(1, (bekleyen - 1) / Math.max(1, CAYCI_TEMPO.doyum - 1));
+  return CAYCI_TEMPO.azCarpan + k * (CAYCI_TEMPO.cokCarpan - CAYCI_TEMPO.azCarpan);
+}
+
+/** Hangi klip çalar: yük varsa tezgâh başında çalışıyor, yoksa duruyor. */
+export const cayciHali = (bekleyen: number): 'dur' | 'calis' => (bekleyen > 0 ? 'calis' : 'dur');
