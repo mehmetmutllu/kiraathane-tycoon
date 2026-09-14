@@ -5,48 +5,34 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-14 — **S19a BİTTİ: ölçüldü + karar alındı, KOD YAZILMADI** · Faz S 18/20 · 93/104)
+## ŞU AN (2026-09-14 — **S19b BİTTİ: D-116 koda girdi, bekçili** · Faz S 19/20 · 94/104)
 
 ```
-SORU            : Kullanicinin yedi kaleminden ilk uc + ikinci turda gelen uc yeni yon.
-OLCULEN KOLLAR  : O oturus capasi · P patron dokunusu · G glif · A onluk · Y yemek asseti
-SAYILAR         : docs/olcum-oturus.txt · docs/patron-oturus-glif-raporu-s19a.md §Bulgular
-KARAR (D-116)   : O3 capa 0,26 · A2 saran onluk · P7 havlu + kollari sivali ·
-                  Y1 Kenney Food Kit (STIL KILIDI ACILIYOR) · B1 ince belli bardak (bizim)
-UYGULAMA        : S19b — kullanici bilerek sonraki oturuma birakti
-BEKCI           : S19b'de (kod bu turda yazilmadi)
+SORU            : S19a'da olculen ve secilen bes kol koda girer.
+SAYILAR         : docs/kiyafet-raporu-s19b.md §Bulgular · olcum-onluk.json · olcum-patron.json
+KARAR           : D-116 (S19a) uygulandi; uygulama 3 sayiyi curuttu → D-117
+UYGULAMA        : capa 0,26 · onluk GOVDE PROFILINDEN · patron havlu+sivali kol ·
+                  balon model render'i · Kenney Food Kit manifeste
+BEKCI           : tests/oturus-kiyafet.test.ts — 38 denetim, 18 MUTASYON kirmizi yandi
+FINAL           : vitest 1030 ✓ · duman 42/42 ✓ · konsol hatasi YOK
 ```
 
 ## SIRADAKİ TAM ADIM
 
-**S19b — D-116'nın kolları koda girer.** Sıra: ölçüm bitti, karar alındı, geriye yalnız uygulama
-+ bekçi kaldı. Dokunulacak yerler ve bilinen tuzaklar:
+**S19'un kalan dört kalemi** (kullanıcının 2026-09-14 gecesi verdiği yedi kalemden geri kalanlar):
 
-1. **Oturuş çapası** — `actor.ts`'e tek sabit (`KAY_OTURMA_ILERI = 0.26`), `Customers.tsx` onu
-   koltuk açısıyla döndürerek uygular (yerel **+z** ileri; dünya ofseti `sin/cos(aci) × dz`).
-   Kapsül kolu dokunulmaz. Bekçi: çapa uygulanmazsa/ters uygulanırsa kırmızı yanan test.
-2. **Önlük A2** — `KayActor.kiyafetTak` kutudan yüzeye: göğüslük yay 110° / yarıçap 0,335-0,365 /
-   boy 0,40, çapa `chest` (0, 0,82, 0,02) · etek yay 220° / 0,315→0,40 / boy 0,32, çapa `hips`
-   (0, 0,50−boy/2, 0,02) · bel bağı yay 320° / 0,305 / 0,075 · iki askı (±0,13 · 1,07 · 0,27).
-   **Yay +z'de ortalanır** (`thetaStart = −yay/2`) — `Math.PI/2` yanlış eksen.
-   **AÇIK KUSUR (kullanıcı 2026-09-14):** gövdenin göğsündeki **rozet süsü önlüğün içinden
-   çıkıyor**, önlük parçalanmış gibi duruyor. Önce ölç: süs ayrı düğüm mü, gövde mesh'inin
-   parçası mı → ayrıysa önlüklü aktörde gizle, değilse önlüğü 1-2 mm öne al.
-3. **Patron P7** — omuz havlusu (bordo `#a83232`, omuz kemiğinin kendi dünya konumundan çapa,
-   dilimler z ±0,26) + kolları sıvalı (mesh BÖLÜNMEZ: alt kol/bilek/el kemiklerine ağırlığı > 0,5
-   olan tepe noktaları ten rengine, **vertex color** katmanı). Lacivert gömlek geri alınır
-   (`PALETTE.ownerShirt` kalkar, `parcaRenk` sadeleşir).
-4. **Balonun içi** — `siparisBalonu.ts` Canvas2D çiziminden **model render'ına** geçer
-   (`WebGLRenderTarget` → `readRenderTargetPixels` → `CanvasTexture`; balon çerçevesi/kuyruğu
-   aynen kalır, glif ortak iç dikdörtgene sığdırılır). Tost = Kenney `sandwich`/`sub`,
-   çay = bizim ince belli bardak (Lathe profili raporda).
-5. **Asset girişi** — `public/_aday/`deki Kenney modelleri seçilenle birlikte
-   `public/assets/models/kenney-food-kit/`e taşınır, `public/assets/README.md` manifestine künye
-   + **stil kilidinin bilerek açıldığı** notu, `.gitignore`dan `public/_aday/` satırı kalkar.
+1. **Karakter menüsü KayKit gövdesine** — menüdeki önizleme hâlâ eski ilkel gövde.
+2. **Paneller tam ekran** — D-110'un tam ekran kuralı bütün panellere uygulanmadı.
+3. **Yükseltme tetiği pad'in üstünde** → **VARYANT KAPISI**: `rules.ts`'e dokunuyor, ölçülmeden
+   uygulanmaz (ölç → sor → uygula).
+4. **Yükseltmenin solundaki ok** — S1'de eklenen ok kullanıcıya göre yanlış yerde.
 
-**Sonra:** S19'un kalan dört kalemi (karakter menüsü KayKit gövdesine · paneller tam ekran ·
-yükseltme tetiği pad'in üstünde → **varyant kapısı** · yükseltmenin solundaki ok) · S9 SES karar
-paketi · sonra **Faz H**.
+**Sonra:** S9 SES karar paketi (ölçüm hazır, aşağıda) · sonra **Faz H**.
+
+### S19b'DEN KALAN KÜÇÜK KUSUR
+
+Bel bağının ucu çeyrek açıdan ince bir dudak bırakıyor (`docs/gorsel/ss/s19b-kiyafet.png`).
+Ölçü değil biçim; pay 0,035 → 0,012 ile küçültüldü, sıfırlanmadı. Bir sonraki sanat turunda.
 
 ### S9 SES — ÖLÇÜM BİTTİ, KARAR PAKETİ BEKLİYOR
 
@@ -57,7 +43,8 @@ hüküm) · dosyalar sentezden **16,6 dB yüksek** (normalizasyon gerek) · **7/
 
 ## AÇIK KALEMLER (ölçüldü/görüldü, bilerek duruyor — tam listesi `memory-bank/arsiv/`de)
 
-**Karakter/sanat:** **rozet süsü önlükten çıkıyor (S19b'de çözülecek)** · Rogue'un omzu 0,709
+**Karakter/sanat:** ~~rozet süsü önlükten çıkıyor~~ → **S19b'de KAPANDI (D-117):** süs ayrı düğüm
+değilmiş, önlük gövdenin profilinden türeyerek onun önüne geçti · Rogue'un omzu 0,709
 (blob sınırı 0,60) · **Ranger'ın kalçası taburenin kendisinden geniş (yan taşma 0,094 — çapa
 sorunu değil, gövde/mobilya oranı)** · klip dosyaları mankenin gövdesini de taşıyor (dosya başına
 6.916 üçgen ölü yük) · müşteri gövdeleri personelle aynı · `Rogue_Hooded` süzgece takılmıyor.
@@ -72,15 +59,16 @@ G-03 kamera kayıyor · G-06 tepsi ilk yükseltme 75 → ~50 · G-07 dwell para-
 DENGE, varyant kapısına tabi) · masalar geçilmiyor (açıklık 0,68 br, geçiş 0,94 ister — 20 masanın
 12'si).
 
-**Altyapı:** **pano ARTIFACT'i bir tur geride** — `docs/pano/ilerleme-panosu.html` güncel ve
-push'lu (denetim temiz, 93/104), ama yayınlama canlı sürümün tamamının okunmasını istiyor
-(~128k token) ve S19a'da atlandı; sonraki turda `Artifact action:"read"` + republish ·
+**Altyapı:** **pano ARTIFACT'i İKİ tur geride** — `docs/pano/ilerleme-panosu.html` güncel ve
+push'lu (denetim temiz, 94/104), ama yayınlama canlı sürümün tamamının okunmasını istiyor
+(~128k token) ve S19a'da da S19b'de de atlandı; sonraki turda `Artifact action:"read"` + republish ·
 `npm run lint` 31 hata (hepsi eski `tools/olcum-*.ts`) · `.gitattributes` YOK
 (`core.autocrlf` her checkout'ta CRLF'e çeviriyor) · `npm run pano` günlük uyarısı yalnız TARİHE
 bakıyor · **oyuncuda 2,0× artık kayma** · **panel dönüşünde T-poz temiz koşuda ÜRETİLEMEDİ**
 (repro aracı `tools/olcum-panel-donusu.mjs`).
 
 **Önizlemeler**
+**S19b kareler:** `ss/s19b-kiyafet.png` (önlük + patron) · `ss/s19b-oyun-yakin.png` · `ss/s19b-oturus-yakin.png`
 **S19a KARAR PAKETİ (v2):** https://claude.ai/code/artifact/a8d02997-974d-4f2a-a00c-f916820a69c7
 **S19a kareler:** `ss/s19-oturus.png` · `ss/s19-onluk.png` · `ss/s19-patron.png` · `ss/s19-glif.png` · `ss/s19-yemek.png`
 **S18 son durum:** `docs/gorsel/ss/s18-son.png` · **HUD'lu:** `docs/gorsel/ss/s18-durum-hud.png`

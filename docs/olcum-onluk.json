@@ -1,0 +1,772 @@
+{
+ "damga": "2026-09-14T20:18:33.699Z",
+ "birim": "ham rig",
+ "govdeler": [
+  {
+   "govde": "Knight",
+   "onlukTakar": true,
+   "ayriSusDugumu": [
+    "Knight_Cape",
+    "Knight_Helmet",
+    "Knight_HelmetVisor"
+   ],
+   "parca": {
+    "gogus": {
+     "gerekenYaricap": 0.3529,
+     "enUstDilim": 0.3498,
+     "enAltDilim": 0.3468
+    },
+    "etek": {
+     "gerekenYaricap": 0.4033,
+     "enUstDilim": 0.3978,
+     "enAltDilim": 0.3919
+    }
+   },
+   "dilimler": [
+    {
+     "y": 0.34,
+     "adet": 6,
+     "rOrta": 0.0316,
+     "rGogusYayi": 0.0316,
+     "rEtekYayi": 0.097
+    },
+    {
+     "y": 0.38,
+     "adet": 84,
+     "rOrta": 0.1345,
+     "rGogusYayi": 0.3114,
+     "rEtekYayi": 0.3919
+    },
+    {
+     "y": 0.42,
+     "adet": 101,
+     "rOrta": 0.2288,
+     "rGogusYayi": 0.2695,
+     "rEtekYayi": 0.4033
+    },
+    {
+     "y": 0.46,
+     "adet": 68,
+     "rOrta": 0.3149,
+     "rGogusYayi": 0.3188,
+     "rEtekYayi": 0.3188
+    },
+    {
+     "y": 0.5,
+     "adet": 111,
+     "rOrta": 0.3159,
+     "rGogusYayi": 0.3436,
+     "rEtekYayi": 0.3879
+    },
+    {
+     "y": 0.54,
+     "adet": 30,
+     "rOrta": 0.3148,
+     "rGogusYayi": 0.3536,
+     "rEtekYayi": 0.3536
+    },
+    {
+     "y": 0.58,
+     "adet": 78,
+     "rOrta": 0.3296,
+     "rGogusYayi": 0.3314,
+     "rEtekYayi": 0.3978
+    },
+    {
+     "y": 0.62,
+     "adet": 81,
+     "rOrta": 0.3218,
+     "rGogusYayi": 0.3468,
+     "rEtekYayi": 0.3904
+    },
+    {
+     "y": 0.66,
+     "adet": 44,
+     "rOrta": 0.3318,
+     "rGogusYayi": 0.3457,
+     "rEtekYayi": 0.3457
+    },
+    {
+     "y": 0.7,
+     "adet": 20,
+     "rOrta": null,
+     "rGogusYayi": null,
+     "rEtekYayi": 0.39
+    },
+    {
+     "y": 0.74,
+     "adet": 11,
+     "rOrta": null,
+     "rGogusYayi": 0.3427,
+     "rEtekYayi": 0.3806
+    },
+    {
+     "y": 0.78,
+     "adet": 28,
+     "rOrta": null,
+     "rGogusYayi": 0.3522,
+     "rEtekYayi": 0.3792
+    },
+    {
+     "y": 0.82,
+     "adet": 58,
+     "rOrta": 0.3456,
+     "rGogusYayi": 0.3529,
+     "rEtekYayi": 0.3838
+    },
+    {
+     "y": 0.86,
+     "adet": 11,
+     "rOrta": null,
+     "rGogusYayi": 0.3451,
+     "rEtekYayi": 0.3451
+    },
+    {
+     "y": 0.9,
+     "adet": 31,
+     "rOrta": null,
+     "rGogusYayi": 0.3339,
+     "rEtekYayi": 0.3439
+    },
+    {
+     "y": 0.94,
+     "adet": 96,
+     "rOrta": 0.3093,
+     "rGogusYayi": 0.3498,
+     "rEtekYayi": 0.3498
+    },
+    {
+     "y": 0.98,
+     "adet": 34,
+     "rOrta": 0.269,
+     "rGogusYayi": 0.3467,
+     "rEtekYayi": 0.3467
+    },
+    {
+     "y": 1.02,
+     "adet": 53,
+     "rOrta": null,
+     "rGogusYayi": 0.3287,
+     "rEtekYayi": 0.3287
+    },
+    {
+     "y": 1.06,
+     "adet": 36,
+     "rOrta": 0.2014,
+     "rGogusYayi": 0.3059,
+     "rEtekYayi": 0.3059
+    }
+   ]
+  },
+  {
+   "govde": "Rogue",
+   "onlukTakar": true,
+   "ayriSusDugumu": [
+    "Rogue_Cape"
+   ],
+   "parca": {
+    "gogus": {
+     "gerekenYaricap": 0.4526,
+     "enUstDilim": 0.3225,
+     "enAltDilim": 0.4526
+    },
+    "etek": {
+     "gerekenYaricap": 0.5146,
+     "enUstDilim": 0.5146,
+     "enAltDilim": 0.3561
+    }
+   },
+   "dilimler": [
+    {
+     "y": 0.34,
+     "adet": 18,
+     "rOrta": 0.2581,
+     "rGogusYayi": 0.2643,
+     "rEtekYayi": 0.2643
+    },
+    {
+     "y": 0.38,
+     "adet": 98,
+     "rOrta": 0.2992,
+     "rGogusYayi": 0.3474,
+     "rEtekYayi": 0.3561
+    },
+    {
+     "y": 0.42,
+     "adet": 96,
+     "rOrta": 0.3024,
+     "rGogusYayi": 0.3908,
+     "rEtekYayi": 0.391
+    },
+    {
+     "y": 0.46,
+     "adet": 146,
+     "rOrta": 0.3124,
+     "rGogusYayi": 0.431,
+     "rEtekYayi": 0.431
+    },
+    {
+     "y": 0.5,
+     "adet": 126,
+     "rOrta": 0.3159,
+     "rGogusYayi": 0.4505,
+     "rEtekYayi": 0.4746
+    },
+    {
+     "y": 0.54,
+     "adet": 155,
+     "rOrta": 0.3148,
+     "rGogusYayi": 0.4616,
+     "rEtekYayi": 0.5146
+    },
+    {
+     "y": 0.58,
+     "adet": 115,
+     "rOrta": 0.3296,
+     "rGogusYayi": 0.4558,
+     "rEtekYayi": 0.5146
+    },
+    {
+     "y": 0.62,
+     "adet": 116,
+     "rOrta": 0.3218,
+     "rGogusYayi": 0.4526,
+     "rEtekYayi": 0.5011
+    },
+    {
+     "y": 0.66,
+     "adet": 55,
+     "rOrta": null,
+     "rGogusYayi": 0.3603,
+     "rEtekYayi": 0.4517
+    },
+    {
+     "y": 0.7,
+     "adet": 44,
+     "rOrta": 0.3152,
+     "rGogusYayi": 0.3258,
+     "rEtekYayi": 0.3258
+    },
+    {
+     "y": 0.74,
+     "adet": 55,
+     "rOrta": 0.3212,
+     "rGogusYayi": 0.3501,
+     "rEtekYayi": 0.3945
+    },
+    {
+     "y": 0.78,
+     "adet": 26,
+     "rOrta": 0.3174,
+     "rGogusYayi": 0.3174,
+     "rEtekYayi": 0.3174
+    },
+    {
+     "y": 0.82,
+     "adet": 75,
+     "rOrta": 0.3121,
+     "rGogusYayi": 0.3301,
+     "rEtekYayi": 0.3731
+    },
+    {
+     "y": 0.86,
+     "adet": 3,
+     "rOrta": 0.2749,
+     "rGogusYayi": 0.2749,
+     "rEtekYayi": 0.2749
+    },
+    {
+     "y": 0.9,
+     "adet": 4,
+     "rOrta": 0.3059,
+     "rGogusYayi": 0.3059,
+     "rEtekYayi": 0.3059
+    },
+    {
+     "y": 0.94,
+     "adet": 30,
+     "rOrta": 0.3225,
+     "rGogusYayi": 0.3225,
+     "rEtekYayi": 0.3445
+    },
+    {
+     "y": 0.98,
+     "adet": 4,
+     "rOrta": null,
+     "rGogusYayi": 0.3104,
+     "rEtekYayi": 0.3104
+    },
+    {
+     "y": 1.06,
+     "adet": 21,
+     "rOrta": null,
+     "rGogusYayi": 0.2457,
+     "rEtekYayi": 0.2821
+    }
+   ]
+  },
+  {
+   "govde": "Barbarian",
+   "onlukTakar": true,
+   "ayriSusDugumu": [
+    "Barbarian_BearHat"
+   ],
+   "parca": {
+    "gogus": {
+     "gerekenYaricap": 0.3848,
+     "enUstDilim": 0.2901,
+     "enAltDilim": 0.3848
+    },
+    "etek": {
+     "gerekenYaricap": 0.4144,
+     "enUstDilim": 0.4006,
+     "enAltDilim": 0.2998
+    }
+   },
+   "dilimler": [
+    {
+     "y": 0.34,
+     "adet": 6,
+     "rOrta": 0.0316,
+     "rGogusYayi": 0.0316,
+     "rEtekYayi": 0.097
+    },
+    {
+     "y": 0.38,
+     "adet": 26,
+     "rOrta": 0.1345,
+     "rGogusYayi": 0.2998,
+     "rEtekYayi": 0.2998
+    },
+    {
+     "y": 0.42,
+     "adet": 60,
+     "rOrta": 0.3328,
+     "rGogusYayi": 0.3328,
+     "rEtekYayi": 0.3465
+    },
+    {
+     "y": 0.46,
+     "adet": 94,
+     "rOrta": 0.2522,
+     "rGogusYayi": 0.3458,
+     "rEtekYayi": 0.3917
+    },
+    {
+     "y": 0.5,
+     "adet": 106,
+     "rOrta": 0.3347,
+     "rGogusYayi": 0.3871,
+     "rEtekYayi": 0.4144
+    },
+    {
+     "y": 0.54,
+     "adet": 66,
+     "rOrta": 0.3395,
+     "rGogusYayi": 0.3724,
+     "rEtekYayi": 0.4003
+    },
+    {
+     "y": 0.58,
+     "adet": 27,
+     "rOrta": 0.3452,
+     "rGogusYayi": 0.3749,
+     "rEtekYayi": 0.3749
+    },
+    {
+     "y": 0.62,
+     "adet": 66,
+     "rOrta": 0.3395,
+     "rGogusYayi": 0.3719,
+     "rEtekYayi": 0.4006
+    },
+    {
+     "y": 0.66,
+     "adet": 96,
+     "rOrta": 0.3347,
+     "rGogusYayi": 0.3848,
+     "rEtekYayi": 0.4153
+    },
+    {
+     "y": 0.7,
+     "adet": 34,
+     "rOrta": null,
+     "rGogusYayi": 0.3383,
+     "rEtekYayi": 0.3424
+    },
+    {
+     "y": 0.74,
+     "adet": 65,
+     "rOrta": 0.3333,
+     "rGogusYayi": 0.3722,
+     "rEtekYayi": 0.4176
+    },
+    {
+     "y": 0.78,
+     "adet": 34,
+     "rOrta": null,
+     "rGogusYayi": 0.337,
+     "rEtekYayi": 0.3649
+    },
+    {
+     "y": 0.82,
+     "adet": 13,
+     "rOrta": 0.2868,
+     "rGogusYayi": 0.2868,
+     "rEtekYayi": 0.2868
+    },
+    {
+     "y": 0.86,
+     "adet": 6,
+     "rOrta": null,
+     "rGogusYayi": null,
+     "rEtekYayi": null
+    },
+    {
+     "y": 0.9,
+     "adet": 22,
+     "rOrta": 0.2378,
+     "rGogusYayi": 0.2978,
+     "rEtekYayi": 0.3103
+    },
+    {
+     "y": 0.94,
+     "adet": 73,
+     "rOrta": 0.2789,
+     "rGogusYayi": 0.2901,
+     "rEtekYayi": 0.3406
+    },
+    {
+     "y": 0.98,
+     "adet": 33,
+     "rOrta": 0.2663,
+     "rGogusYayi": 0.2887,
+     "rEtekYayi": 0.314
+    },
+    {
+     "y": 1.02,
+     "adet": 172,
+     "rOrta": 0.2523,
+     "rGogusYayi": 0.4069,
+     "rEtekYayi": 0.4069
+    },
+    {
+     "y": 1.06,
+     "adet": 188,
+     "rOrta": 0.2044,
+     "rGogusYayi": 0.4084,
+     "rEtekYayi": 0.4084
+    }
+   ]
+  },
+  {
+   "govde": "Ranger",
+   "onlukTakar": false,
+   "ayriSusDugumu": [
+    "Ranger_Cape",
+    "Ranger_Quiver"
+   ],
+   "parca": {
+    "gogus": {
+     "gerekenYaricap": 0.3783,
+     "enUstDilim": 0.3059,
+     "enAltDilim": 0.3781
+    },
+    "etek": {
+     "gerekenYaricap": 0.5112,
+     "enUstDilim": 0.4995,
+     "enAltDilim": 0.4578
+    }
+   },
+   "dilimler": [
+    {
+     "y": 0.3,
+     "adet": 9,
+     "rOrta": 0.2978,
+     "rGogusYayi": 0.2978,
+     "rEtekYayi": 0.2978
+    },
+    {
+     "y": 0.34,
+     "adet": 55,
+     "rOrta": 0.3067,
+     "rGogusYayi": 0.3405,
+     "rEtekYayi": 0.3405
+    },
+    {
+     "y": 0.38,
+     "adet": 105,
+     "rOrta": 0.2352,
+     "rGogusYayi": 0.3471,
+     "rEtekYayi": 0.4578
+    },
+    {
+     "y": 0.42,
+     "adet": 155,
+     "rOrta": 0.2877,
+     "rGogusYayi": 0.3377,
+     "rEtekYayi": 0.4833
+    },
+    {
+     "y": 0.46,
+     "adet": 159,
+     "rOrta": 0.3222,
+     "rGogusYayi": 0.3369,
+     "rEtekYayi": 0.4857
+    },
+    {
+     "y": 0.5,
+     "adet": 350,
+     "rOrta": 0.3272,
+     "rGogusYayi": 0.3499,
+     "rEtekYayi": 0.5086
+    },
+    {
+     "y": 0.54,
+     "adet": 439,
+     "rOrta": 0.3262,
+     "rGogusYayi": 0.3672,
+     "rEtekYayi": 0.5112
+    },
+    {
+     "y": 0.58,
+     "adet": 389,
+     "rOrta": 0.3302,
+     "rGogusYayi": 0.3615,
+     "rEtekYayi": 0.4995
+    },
+    {
+     "y": 0.62,
+     "adet": 695,
+     "rOrta": 0.3194,
+     "rGogusYayi": 0.3357,
+     "rEtekYayi": 0.4767
+    },
+    {
+     "y": 0.66,
+     "adet": 304,
+     "rOrta": 0.3309,
+     "rGogusYayi": 0.3781,
+     "rEtekYayi": 0.4604
+    },
+    {
+     "y": 0.7,
+     "adet": 43,
+     "rOrta": null,
+     "rGogusYayi": 0.3783,
+     "rEtekYayi": 0.3783
+    },
+    {
+     "y": 0.78,
+     "adet": 28,
+     "rOrta": 0.3092,
+     "rGogusYayi": 0.3604,
+     "rEtekYayi": 0.3604
+    },
+    {
+     "y": 0.86,
+     "adet": 28,
+     "rOrta": 0.2847,
+     "rGogusYayi": 0.3389,
+     "rEtekYayi": 0.3389
+    },
+    {
+     "y": 0.9,
+     "adet": 6,
+     "rOrta": 0.2866,
+     "rGogusYayi": 0.2866,
+     "rEtekYayi": 0.2866
+    },
+    {
+     "y": 0.94,
+     "adet": 29,
+     "rOrta": 0.2857,
+     "rGogusYayi": 0.2879,
+     "rEtekYayi": 0.2879
+    },
+    {
+     "y": 0.98,
+     "adet": 34,
+     "rOrta": 0.2776,
+     "rGogusYayi": 0.3059,
+     "rEtekYayi": 0.3059
+    },
+    {
+     "y": 1.02,
+     "adet": 26,
+     "rOrta": 0.1964,
+     "rGogusYayi": 0.2961,
+     "rEtekYayi": 0.2961
+    },
+    {
+     "y": 1.06,
+     "adet": 58,
+     "rOrta": 0.2606,
+     "rGogusYayi": 0.3056,
+     "rEtekYayi": 0.3056
+    }
+   ]
+  },
+  {
+   "govde": "Mage",
+   "onlukTakar": false,
+   "ayriSusDugumu": [
+    "Mage_Cape",
+    "Mage_Hat"
+   ],
+   "parca": {
+    "gogus": {
+     "gerekenYaricap": 0.4616,
+     "enUstDilim": 0.3036,
+     "enAltDilim": 0.4616
+    },
+    "etek": {
+     "gerekenYaricap": 0.4595,
+     "enUstDilim": 0.4595,
+     "enAltDilim": 0.4353
+    }
+   },
+   "dilimler": [
+    {
+     "y": 0.34,
+     "adet": 50,
+     "rOrta": 0.0315,
+     "rGogusYayi": 0.3478,
+     "rEtekYayi": 0.4353
+    },
+    {
+     "y": 0.38,
+     "adet": 50,
+     "rOrta": 0.1345,
+     "rGogusYayi": 0.3886,
+     "rEtekYayi": 0.3886
+    },
+    {
+     "y": 0.42,
+     "adet": 60,
+     "rOrta": 0.2817,
+     "rGogusYayi": 0.383,
+     "rEtekYayi": 0.4297
+    },
+    {
+     "y": 0.46,
+     "adet": 94,
+     "rOrta": 0.3193,
+     "rGogusYayi": 0.3638,
+     "rEtekYayi": 0.3879
+    },
+    {
+     "y": 0.5,
+     "adet": 27,
+     "rOrta": 0.3186,
+     "rGogusYayi": 0.3503,
+     "rEtekYayi": 0.3946
+    },
+    {
+     "y": 0.54,
+     "adet": 54,
+     "rOrta": 0.2856,
+     "rGogusYayi": 0.4514,
+     "rEtekYayi": 0.4514
+    },
+    {
+     "y": 0.58,
+     "adet": 88,
+     "rOrta": 0.3262,
+     "rGogusYayi": 0.4417,
+     "rEtekYayi": 0.4417
+    },
+    {
+     "y": 0.62,
+     "adet": 174,
+     "rOrta": 0.3266,
+     "rGogusYayi": 0.4595,
+     "rEtekYayi": 0.4595
+    },
+    {
+     "y": 0.66,
+     "adet": 55,
+     "rOrta": 0.3206,
+     "rGogusYayi": 0.4616,
+     "rEtekYayi": 0.4616
+    },
+    {
+     "y": 0.7,
+     "adet": 135,
+     "rOrta": 0.328,
+     "rGogusYayi": 0.4526,
+     "rEtekYayi": 0.4526
+    },
+    {
+     "y": 0.74,
+     "adet": 102,
+     "rOrta": 0.3187,
+     "rGogusYayi": 0.4445,
+     "rEtekYayi": 0.4445
+    },
+    {
+     "y": 0.78,
+     "adet": 40,
+     "rOrta": 0.3143,
+     "rGogusYayi": 0.4527,
+     "rEtekYayi": 0.4527
+    },
+    {
+     "y": 0.82,
+     "adet": 44,
+     "rOrta": 0.3017,
+     "rGogusYayi": 0.4327,
+     "rEtekYayi": 0.4327
+    },
+    {
+     "y": 0.86,
+     "adet": 18,
+     "rOrta": 0.2967,
+     "rGogusYayi": 0.2967,
+     "rEtekYayi": 0.2967
+    },
+    {
+     "y": 0.9,
+     "adet": 13,
+     "rOrta": 0.296,
+     "rGogusYayi": 0.296,
+     "rEtekYayi": 0.296
+    },
+    {
+     "y": 0.94,
+     "adet": 27,
+     "rOrta": 0.278,
+     "rGogusYayi": 0.3036,
+     "rEtekYayi": 0.3445
+    },
+    {
+     "y": 0.98,
+     "adet": 18,
+     "rOrta": 0.2643,
+     "rGogusYayi": 0.2643,
+     "rEtekYayi": 0.2643
+    },
+    {
+     "y": 1.02,
+     "adet": 13,
+     "rOrta": 0.2637,
+     "rGogusYayi": 0.2637,
+     "rEtekYayi": 0.2637
+    },
+    {
+     "y": 1.06,
+     "adet": 46,
+     "rOrta": 0.2456,
+     "rGogusYayi": 0.2464,
+     "rEtekYayi": 0.2821
+    }
+   ]
+  }
+ ],
+ "hukum": {
+  "eksenZ": 0.02,
+  "ayriSusDugumuVarMi": false,
+  "gogusGereken": 0.4526,
+  "etekGereken": 0.5146
+ }
+}

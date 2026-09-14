@@ -72,19 +72,24 @@ export const PALETTE = {
   tvScreen: '#7ec8a9', // açık ekran (maç yeşili)
   tvStand: '#4e342e',
   // Sahip karakteri (çaycı — gece 6/7 prototip)
+  /**
+   * İLKEL gövdenin ten rengi (`Player.tsx` yedek çizimi). KayKit gövdesinde KULLANILMAZ —
+   * onun teni dokunun kendisinden gelir ve başka bir ton (`kayTen`).
+   */
   skin: '#e0ac69',
+  /**
+   * KAYKIT GÖVDESİNİN TEN TONU — ÖLÇÜLDÜ, seçilmedi (`docs/olcum-patron.json` → `ten.ortak`).
+   *
+   * Patronun sıvalı kolu (D-116 · P7) bu renge dönüyor. İlk uygulama `skin`i (#e0ac69) kullandı
+   * ve kol karede TURUNCU eldiven gibi çıktı: o sayı oyunun kendi paletinden, gövde ise KayKit'in
+   * dokusundan geliyor. Doğru ton, dört başın da PAYLAŞTIĞI doku yaması olarak okundu — saç her
+   * gövdede farklı, ten aynı.
+   */
+  kayTen: '#f4b690',
   shirt: '#f3ecd9', // krem gömlek
   pants: '#3e3a36', // koyu pantolon
   apron: '#7a2230', // bordo çaycı önlüğü
   cap: '#4a3728', // kasket
-  /**
-   * PATRONUN GÖMLEĞİ (S18) — kullanıcı: *"ben garsonlarla aynı olmuyim bi farkım olsun"*.
-   * Personel ÜNİFORMA giyer (krem gömlek + bordo önlük); patron giymez. Ayıran şey bilerek
-   * RENK ve ÖNLÜĞÜN YOKLUĞU: aday karesi (`docs/gorsel/ss/s18-patron.png`) yelek kolunun
-   * işe yaramadığını gösterdi — göğse takılan plaka önlükten ayrışmıyor, ikisi de düz levha.
-   * Lacivert, salonun sıcak ahşap paletinde tek soğuk kütle: kalabalıkta gözle bulunuyor.
-   */
-  ownerShirt: '#31405c',
   mustache: '#3a2a1d',
   // Sokak
   awning: '#2e6b4f', // kıraathane tentesi (koyu yeşil)

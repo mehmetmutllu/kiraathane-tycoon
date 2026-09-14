@@ -3600,3 +3600,25 @@ seçildi — yani **stil kilidi bilerek açıldı** (tek sanatçı kuralı, ilk 
 
 Uygulama S19b'ye bırakıldı (kullanıcı kararı). Sayılar ve tuzaklar:
 `docs/patron-oturus-glif-raporu-s19a.md` · `docs/olcum-oturus.txt`.
+
+## D-117 — S19b: D-116 koda girdi; üç sayı uygulama sırasında çürüdü (2026-09-14)
+
+**ÖNLÜK.** A2 uygulandı ama **sabit yarıçapla değil**: ölçüm (`tools/olcum-onluk.mjs`) gösterdi ki
+göğüslüğün 110°'lik yayı içinde gövde Rogue'da **0,4526**, Barbarian'da 0,4069 yarıçapa çıkıyor —
+S19a'nın 0,365'i üç gövdenin ikisini deliyor ve delinme yayın KENARINDA oluyor. Önlüğün yarıçapı
+artık yazılmıyor, gövdenin kendi profilinden türüyor (`onluk.ts`); tek sayı pay (0,02).
+**Rozet gizlenemedi:** dört gövdede de ayrı süs düğümü YOK, göğüs `*_Body`'nin parçası.
+
+**TEN.** Sıvalı kol `PALETTE.skin` ile turuncu eldiven gibi çıktı. Ten dokudan okundu:
+**#f4b690** (`PALETTE.kayTen`). Yolda üç ölçüm hatası düzeltildi — VEC2 adımı 8 bayt, glTF'te V
+çevrilmez, örnek üçgenin ağırlık merkezinden alınır.
+
+**KEMİK ADI.** Dosyada `lowerarm.r`, çalışma zamanında `lowerarmr`. Sıvama regex'i noktasız
+yazılır; noktalıyla 0 tepe noktası seçiliyor ve kol sessizce sıvanmıyor.
+
+**BALON.** İçi artık model: tost = Kenney `sandwich`, çay = bizim dönel bardağımız. Kontur
+grameri ters kabukla korundu. Çerçeve/kuyruk Canvas2D kaldı — reddedilen o değildi.
+
+**S18'in RENK BEKÇİSİ DÜŞTÜ.** `PALETTE.ownerShirt` kalktı; yerine olumsuz bekçi (geri eklenirse
+kırmızı yanar). Bekçi `tests/oturus-kiyafet.test.ts` — 38 denetim, **18 mutasyon**.
+Sayılar: `docs/kiyafet-raporu-s19b.md`.

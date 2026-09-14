@@ -192,8 +192,8 @@ h2{font-size:21px;font-weight:800}
      ══════════════════════════════════════════════════════════════════════ -->
 <script type="application/json" id="durum">
 {
- "guncelleme": "14.09.2026",
- "yapilan": 93,
+ "guncelleme": "15.09.2026",
+ "yapilan": 94,
  "toplam": 104,
  "kilometre": [
   {
@@ -214,14 +214,14 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum — Faz S · 18/20 — S19a: ölçüm + karar turu, kod yazılmadı (D-116)",
-  "baslik": "Kullanıcı <b>kol seçmedi, yön verdi</b>; “kalas gibi önlük” bir <b>kutuydu</b>, tost ise dokuz pakette <b>hiç yoktu</b>",
-  "aciklama": "Tur üç görsel kalemle açıldı ve kullanıcının cevabı onu ikiye katladı: sunulan kolları seçmek yerine <i>“önlük öyle önünde kalas gibi olmasın”</i>, <i>“o svgler hâlâ güzel değil, biraz daha açıklayıcı olabilir”</i> ve <i>“tostu da internette araştırıp asset olarak bulsana”</i> dedi. Beş kol ölçüldü, beş kare çıktı, <b>kod tek satır değişmedi</b>.<br><br><b>“Götleri dışarda” bir poz kusuru değil, eksik bir çapaydı.</b> Ölçüm kemikte değil <b>deride</b> yapıldı: oturuş klibi çalınıp her tepe noktası gerçekten deforme edildi ve taburenin oturak yüzeyiyle karşılaştırıldı — üstelik tabure <b>daire değil 12 kenarlı çokgen</b> alındı, çünkü daire varsayımı köşelerin arasını da “oturak” sayıp taşmayı küçük gösteriyordu. Kök sebep tek sayıda: klipte kalça kemiği kökün <b>0,315 br arkasında</b>, oyun ise kökü taburenin merkezine koyuyor. Bugünkü arka taşma <b>0,258 br</b>; <b>0,26</b>’lık bir ileri çapada beş gövdede de sıfır ve masaya 0,20 br pay kalıyor.<br><br><b>Önlük kusuru koda bakınca bir satırdı:</b> göğse takılı <code>0,58 × 0,72 × 0,08</code> bir <b>kutu</b>. Kutu gövdeyi sarmıyor, önünde duruyor — benzetme birebir doğruydu. Yeni önlük levha değil <b>yüzey</b>: göğüslük gövdenin kavisini izleyen silindir dilimi, etek aşağı genişleyen açık uçlu koni, arada bel bağı ve askılar. Kullanıcı <b>A2</b>’yi seçti ve yeni bir kusur gösterdi: gövdedeki rozet süsü önlüğün içinden çıkıyor.<br><br><b>Glif turu kapandı, yerine nesne geldi.</b> Elle çizim iki turdur tutmadığı için yön değişti: balona çizim değil <b>model</b> giriyor, bir kez karede pişirilip doku oluyor. Araştırma net: repodaki <b>dokuz KayKit paketinin hiçbirinde tost yok</b>. Kenney Food Kit 2.0 (CC0, 201 model) indirildi ve seçildi — yani <b>stil kilidi ilk kez bilerek açıldı</b>. Çay bardağı ise iki pakette de yok: Türk ince belli bardağı <b>bizim ilkelimizden</b>, dönel bir yüzey olarak çizildi.<br><br><b>Araç tarafında iki tuzak kayda geçti:</b> kare üç ayrı render uygulamasında <b>birebir aynı PNG</b>’yi üretti — sebep kolların x aralığıydı (her kamera bir sonraki kolun içine düşüyordu) ve yolun başında portta asılı kalmış eski bir vite sunucusu bayat sayfa servis ediyordu. Araçlar artık boş port tarıyor ve sayfanın sürüm damgasını denetliyor."
+  "etiket": "Bu oturum — Faz S · 19/20 — S19b: D-116 koda girdi (D-117)",
+  "baslik": "Uygulama, ölçümün <b>üç sayısını çürüttü</b>: açık 2 mm değil <b>8,8 cm</b>’di",
+  "aciklama": "Bu tur bir karar turu değildi — S19a ölçmüş, kullanıcı seçmişti, geriye yalnız <b>uygula</b> kalmıştı. Ama uygulama üç yerde durdu ve yeniden ölçtürdü; üçünde de S19a’nın bıraktığı sayı yanlış yerden alınmıştı.<br><br><b>“Rozet önlükten çıkıyor” kusurunun iki kolu da düştü.</b> Tur kartı şöyle yazmıştı: süs ayrı düğümse gizle, değilse önlüğü 1-2 mm öne al. Dört gövdenin meshli düğümleri sayıldı — <b>gizlenebilecek bir süs düğümü yok</b>, göğüs gövde mesh’inin kendisi. İkinci kol da yetmedi, ama sebebi ölçülen sayı değil <b>ölçülen yer</b>di: önlük bir silindir dilimi olduğu için doğru soru “gövde ne kadar ileri” (z) değil, “gövde önlüğün <b>ekseninden</b> ne kadar uzakta” (yarıçap). İkisi yayın ortasında aynı, <b>kenarında</b> ayrışıyor — gövde yassı, silindir yuvarlak. Göğüslüğün 110°’lik yayında gövde Rogue’da <b>0,4526</b>, Barbarian’da 0,4069 yarıçapa çıkıyor; seçilen sabit <b>0,365</b>’ti. Açık 2 mm değil <b>8,8 cm</b>, ve delinme tam da yayın kenarında — kullanıcının <i>“önlük parçalanmış gibi”</i> dediği görüntünün kalıbı bu.<br><br><b>Sonuç yapısal:</b> yarıçap artık sayı olarak yazılmıyor. Önlük <b>gövdenin kendi profilinden</b> türüyor (yükseklik halkası × açı dilimi ızgarasında en büyük yarıçap + sabit pay), yani bugün olmayan bir gövde eklense de sarar. Tek sayı payın kendisi.<br><br><b>Ten de paletten değil dokudan çıktı.</b> Sıvalı kol ilk koşuda <b>turuncu eldiven</b> gibi göründü: kullanılan ton oyunun kendi paletindendi, oysa gövde KayKit’in dokusundan geliyor. Doku okundu (<b>#f4b690</b>) ama yolda üç ölçüm hatası çıktı ve üçü de <b>yanlış hüküm</b> üretiyordu — UV’ler VEC3 adımıyla okunduğu için “eller eldivenli” sanıldı, V ekseni WebGL alışkanlığıyla çevrildiği için yüz dokunun taş bölgesine düştü, örnek tepe noktasından alındığı için iki yamanın karışımı okundu. Aynı aileden dördüncü tuzak kemik adındaydı: dosyada <code>lowerarm.r</code>, çalışma zamanında <code>lowerarmr</code> — noktalı yazılsaydı sıvama <b>sıfır tepe noktası</b> seçecek ve kol sessizce hiç sıvanmayacaktı.<br><br><b>Yüzeyin kendisi de kareye bakılarak iki kez düzeltildi:</b> ham ızgara testere gibi çıktığı için önlük yırtık pırtık göründü; 3×3 genişletme çukuru doldurdu ama eteği <b>tütüye</b> çevirdi, iki geçiş yumuşatma (ham değerin altına inmeden) doğru cevap oldu. Balonun içi model render’ına geçti ve arayüzün kalın koyu kontur grameri nesnede de korundu — <b>ters kabuk</b> ile."
  },
  "siradaki": {
-  "etiket": "Sırada S19b — D-116’nın uygulaması",
-  "baslik": "Ölçüm bitti, karar alındı: geriye <b>yalnız kod + bekçi</b> kaldı",
-  "aciklama": "Çapa <code>actor.ts</code>’e tek sabit olarak girer ve koltuk açısıyla döndürülerek uygulanır; önlük kutudan yüzeye döner (rozet kusuru önce ölçülür: süs ayrı düğüm mü, gövdenin parçası mı); patron omuz havlusu + sıvalı kol alır; balonun içi model render’ına geçer; Kenney Food Kit künyesiyle manifeste girer. Ardından S19’un kalan dört kalemi — karakter menüsü, panellerin tam ekranı, yükseltme tetiği (bu <b>varyant kapısına</b> tabi) ve yükseltmenin solundaki ok."
+  "etiket": "Sırada S19’un kalan dört kalemi",
+  "baslik": "Biri <b>varyant kapısına</b> tabi: yükseltme tetiği <code>rules.ts</code>’e dokunuyor",
+  "aciklama": "Karakter menüsü hâlâ eski ilkel gövdeyi gösteriyor; paneller tam ekran kuralına uymuyor; yükseltmenin solundaki ok yanlış yerde. Dördüncüsü — yükseltme tetiğinin pad’in üstüne alınması — denge kurallarına dokunuyor, yani <b>ölçülmeden uygulanmaz</b>: raporun bulgular tablosunda o kolun sayı satırı olmadan koda girmez. Ardından S9 ses karar paketi (ölçüm hazır bekliyor), sonra Faz H."
  },
  "donemler": [
   {
@@ -353,7 +353,7 @@ h2{font-size:21px;font-weight:800}
      "k": "S",
      "t": "Sanat ve arayüz geçişi",
      "d": "Kullanıcı oynadı ve dört tur geri bildirim verdi. HER KALEM ≈ 1 OTURUM, 10 oturum kaldı. Bitti: pad dili ✓ · pad/modal etkileşimi ✓. Sırada: mutfak → duvar ve zemin → dekor takası → dış cephe ve tente → lavabo kabin kapıları → ses assetleri → UI dili (araştırma+maket) → UI dili (uygulama) → yeni ücretsiz paketler → karakterler. İlk beşi indirme ve onay istemiyor: hepsi diskte duran 185 KayKit modeliyle yapılacak iş.",
-     "yapilan": 18,
+     "yapilan": 19,
      "toplam": 20,
      "durum": "now",
      "kapi": "185 kullanılmayan KayKit modeli oyuna bağlanır + UI dili maketle onaylanır"
@@ -378,6 +378,22 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "15.09.2026",
+   "etiket": "Faz S · 19. oturum (S19b — D-116’nın uygulaması — D-117)",
+   "baslik": "Beş kol da koda girdi — ve uygulama, ölçümün <b>üç sayısını çürüttü</b>",
+   "govde": "S19a ölçmüş, kullanıcı seçmişti; bu tur yalnız <b>uygula</b> adımıydı. Ama uygulama üç yerde durdu ve yeniden ölçtürdü.<br><br>Kullanıcının bildirdiği “rozet önlükten çıkıyor” kusurunun iki kolu vardı: süsü gizle ya da önlüğü 1-2 mm öne al. <b>İkisi de düştü.</b> Dört gövdede gizlenebilecek bir süs düğümü yok — göğüs, gövde mesh’inin kendisi. Ve açık 2 mm değil <b>8,8 cm</b>: önlük bir silindir dilimi olduğu için doğru soru “gövde ne kadar ileri” değil “<b>eksenden ne kadar uzakta</b>”ydı; yayın ortasında ikisi aynı, <b>kenarında</b> ayrışıyor. Göğüslüğün yayında gövde Rogue’da <b>0,4526</b> yarıçapa çıkıyor, seçilen sabit 0,365’ti. Yarıçap artık yazılmıyor: önlük <b>gövdenin kendi profilinden</b> türüyor, tek sayı payın kendisi.<br><br>Patronun sıvalı kolu ilk koşuda <b>turuncu eldiven</b> gibi çıktı — ten oyunun paletinden alınmıştı, oysa gövde KayKit’in dokusundan geliyor. Ten dokudan okundu (<b>#f4b690</b>); yolda üç ölçüm hatası düzeltildi, üçü de yanlış hüküm üretiyordu.",
+   "maddeler": [
+    "<b>Önlük:</b> sabit yarıçap → <b>gövde profili</b>; sıvı testere gibi çıkan yüzey iki geçiş yumuşatmayla kumaşa döndü (3×3 genişletme denendi, eteği tütüye çevirdi, elendi)",
+    "<b>Oturuş çapası 0,26</b> uygulandı — yerel +z, gövdenin kendi açısıyla döner (dünya eksenine sabit yazılsa masanın bir yanı düzelir, öteki iki kat bozulurdu)",
+    "<b>Patron P7:</b> omuz havlusu + sıvalı kol; <code>PALETTE.ownerShirt</code> kalktı, S18’in renk bekçisi <b>olumsuz bekçiye</b> dönüştü",
+    "<b>Ten dokudan:</b> #f4b690 — UV adımı 8 bayt, glTF’te V çevrilmez, örnek üçgenin ağırlık merkezinden alınır",
+    "<b>Kemik adı tuzağı:</b> dosyada <code>lowerarm.r</code>, çalışma zamanında <code>lowerarmr</code> — noktalı yazılsa kol sessizce hiç sıvanmazdı",
+    "<b>Balonun içi model:</b> Kenney <code>sandwich</code> + bizim dönel bardağımız, kontur grameri <b>ters kabukla</b> korundu",
+    "<b>Kenney Food Kit</b> künyesiyle manifeste girdi; paketten <b>yalnız 1 model</b> alındı, stil kilidi istisnası genişletilmedi",
+    "Bekçi <code>tests/oturus-kiyafet.test.ts</code>: <b>38 denetim, 18 mutasyon</b> · vitest 1030 ✓ · duman 42/42 ✓"
+   ]
+  },
   {
    "tarih": "14.09.2026",
    "etiket": "Faz S · 18. oturum (S19a — ölçüm + karar turu — D-116)",

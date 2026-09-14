@@ -1,0 +1,830 @@
+{
+ "damga": "2026-09-14T20:25:10.066Z",
+ "birim": "ham rig",
+ "altKolKemikleri": [
+  "lowerarm.l",
+  "lowerarm.r",
+  "wrist.l",
+  "wrist.r",
+  "hand.l",
+  "hand.r"
+ ],
+ "govdeler": [
+  {
+   "govde": "Ranger",
+   "omuzKemikleri": {
+    "upperarmr": [
+     -0.212,
+     1.1068,
+     0
+    ],
+    "upperarml": [
+     0.212,
+     1.1068,
+     0
+    ]
+   },
+   "omuzYuzeyi": {
+    "ustY": 1.2287,
+    "zAraligi": [
+     -0.147,
+     0.147
+    ],
+    "enDisX": 0.3384
+   },
+   "kolTepesi": 1336,
+   "sivananTepe": 772,
+   "sivananOran": 0.578,
+   "sivananYAraligi": [
+    0.9683,
+    1.2439
+   ],
+   "sivananXAraligi": [
+    0.528,
+    0.9713
+   ]
+  },
+  {
+   "govde": "Knight",
+   "omuzKemikleri": {
+    "upperarml": [
+     0.212,
+     1.1068,
+     0
+    ],
+    "upperarmr": [
+     -0.212,
+     1.1068,
+     0
+    ]
+   },
+   "omuzYuzeyi": {
+    "ustY": 1.2472,
+    "zAraligi": [
+     -0.1357,
+     0.1357
+    ],
+    "enDisX": 0.2849
+   },
+   "kolTepesi": 1028,
+   "sivananTepe": 680,
+   "sivananOran": 0.661,
+   "sivananYAraligi": [
+    0.9753,
+    1.2343
+   ],
+   "sivananXAraligi": [
+    0.4624,
+    0.9713
+   ]
+  },
+  {
+   "govde": "Rogue",
+   "omuzKemikleri": {
+    "upperarmr": [
+     -0.212,
+     1.1068,
+     0
+    ],
+    "upperarml": [
+     0.212,
+     1.1068,
+     0
+    ]
+   },
+   "omuzYuzeyi": {
+    "ustY": 1.2316,
+    "zAraligi": [
+     -0.1486,
+     0.1486
+    ],
+    "enDisX": 0.3299
+   },
+   "kolTepesi": 1306,
+   "sivananTepe": 740,
+   "sivananOran": 0.567,
+   "sivananYAraligi": [
+    0.9797,
+    1.233
+   ],
+   "sivananXAraligi": [
+    0.528,
+    0.9724
+   ]
+  },
+  {
+   "govde": "Barbarian",
+   "omuzKemikleri": {
+    "upperarml": [
+     0.212,
+     1.1068,
+     0
+    ],
+    "upperarmr": [
+     -0.212,
+     1.1068,
+     0
+    ]
+   },
+   "omuzYuzeyi": {
+    "ustY": 1.2406,
+    "zAraligi": [
+     -0.1432,
+     0.1432
+    ],
+    "enDisX": 0.3265
+   },
+   "kolTepesi": 1178,
+   "sivananTepe": 830,
+   "sivananOran": 0.705,
+   "sivananYAraligi": [
+    0.9731,
+    1.2429
+   ],
+   "sivananXAraligi": [
+    0.4624,
+    0.9713
+   ]
+  }
+ ],
+ "ten": {
+  "ortak": {
+   "renk": "#f4b690",
+   "enKucukAlan": 0.0637
+  },
+  "govdeBasi": {
+   "Ranger": {
+    "dokuBoyu": [
+     1024,
+     1024
+    ],
+    "tepeRenkler": [
+     {
+      "renk": "#9f5e47",
+      "alan": 0.2255
+     },
+     {
+      "renk": "#a4624a",
+      "alan": 0.2195
+     },
+     {
+      "renk": "#a26149",
+      "alan": 0.1881
+     },
+     {
+      "renk": "#f4b38b",
+      "alan": 0.1841
+     },
+     {
+      "renk": "#9e5d47",
+      "alan": 0.1781
+     },
+     {
+      "renk": "#955440",
+      "alan": 0.1762
+     },
+     {
+      "renk": "#995843",
+      "alan": 0.1733
+     },
+     {
+      "renk": "#a4634a",
+      "alan": 0.1629
+     },
+     {
+      "renk": "#9b5a45",
+      "alan": 0.162
+     },
+     {
+      "renk": "#a16048",
+      "alan": 0.152
+     },
+     {
+      "renk": "#a6654b",
+      "alan": 0.1515
+     },
+     {
+      "renk": "#94533f",
+      "alan": 0.147
+     },
+     {
+      "renk": "#9c5b46",
+      "alan": 0.1435
+     },
+     {
+      "renk": "#f4b58f",
+      "alan": 0.1326
+     },
+     {
+      "renk": "#f4b38c",
+      "alan": 0.1243
+     },
+     {
+      "renk": "#a5644b",
+      "alan": 0.1205
+     },
+     {
+      "renk": "#9a5944",
+      "alan": 0.1125
+     },
+     {
+      "renk": "#f4b48d",
+      "alan": 0.1065
+     },
+     {
+      "renk": "#985742",
+      "alan": 0.0984
+     },
+     {
+      "renk": "#f4b68f",
+      "alan": 0.0939
+     },
+     {
+      "renk": "#a05f48",
+      "alan": 0.0932
+     },
+     {
+      "renk": "#f5bb95",
+      "alan": 0.0928
+     },
+     {
+      "renk": "#f5b892",
+      "alan": 0.0909
+     },
+     {
+      "renk": "#92513d",
+      "alan": 0.0878
+     },
+     {
+      "renk": "#90503c",
+      "alan": 0.0868
+     },
+     {
+      "renk": "#a16049",
+      "alan": 0.0835
+     },
+     {
+      "renk": "#a6644b",
+      "alan": 0.0781
+     },
+     {
+      "renk": "#f6be99",
+      "alan": 0.0773
+     },
+     {
+      "renk": "#f5bc97",
+      "alan": 0.0752
+     },
+     {
+      "renk": "#9d5c46",
+      "alan": 0.0747
+     },
+     {
+      "renk": "#975642",
+      "alan": 0.0735
+     },
+     {
+      "renk": "#f4b690",
+      "alan": 0.0714
+     },
+     {
+      "renk": "#f5b993",
+      "alan": 0.0665
+     },
+     {
+      "renk": "#f6c09c",
+      "alan": 0.0616
+     },
+     {
+      "renk": "#f6bf9b",
+      "alan": 0.0616
+     },
+     {
+      "renk": "#f6c29e",
+      "alan": 0.0562
+     },
+     {
+      "renk": "#9a5945",
+      "alan": 0.0555
+     },
+     {
+      "renk": "#f6c19d",
+      "alan": 0.0534
+     },
+     {
+      "renk": "#965541",
+      "alan": 0.0487
+     },
+     {
+      "renk": "#9f5e48",
+      "alan": 0.0449
+     }
+    ]
+   },
+   "Knight": {
+    "dokuBoyu": [
+     1024,
+     1024
+    ],
+    "tepeRenkler": [
+     {
+      "renk": "#e2bc8d",
+      "alan": 0.2104
+     },
+     {
+      "renk": "#e3be8f",
+      "alan": 0.2085
+     },
+     {
+      "renk": "#f5b892",
+      "alan": 0.204
+     },
+     {
+      "renk": "#f4b38c",
+      "alan": 0.1841
+     },
+     {
+      "renk": "#deb585",
+      "alan": 0.1643
+     },
+     {
+      "renk": "#e1ba8b",
+      "alan": 0.163
+     },
+     {
+      "renk": "#f4b48d",
+      "alan": 0.1533
+     },
+     {
+      "renk": "#e0b989",
+      "alan": 0.1524
+     },
+     {
+      "renk": "#dbb07f",
+      "alan": 0.1517
+     },
+     {
+      "renk": "#f4b690",
+      "alan": 0.1401
+     },
+     {
+      "renk": "#dfb687",
+      "alan": 0.1363
+     },
+     {
+      "renk": "#f5ba95",
+      "alan": 0.1336
+     },
+     {
+      "renk": "#f4b58f",
+      "alan": 0.1238
+     },
+     {
+      "renk": "#dcb281",
+      "alan": 0.1238
+     },
+     {
+      "renk": "#f6bd99",
+      "alan": 0.1142
+     },
+     {
+      "renk": "#f6bf9a",
+      "alan": 0.1136
+     },
+     {
+      "renk": "#f5bb96",
+      "alan": 0.113
+     },
+     {
+      "renk": "#f5b891",
+      "alan": 0.0944
+     },
+     {
+      "renk": "#e4bf90",
+      "alan": 0.081
+     },
+     {
+      "renk": "#e4bf91",
+      "alan": 0.0737
+     },
+     {
+      "renk": "#e3bd8e",
+      "alan": 0.0703
+     },
+     {
+      "renk": "#e3bf90",
+      "alan": 0.065
+     },
+     {
+      "renk": "#e4c091",
+      "alan": 0.0647
+     },
+     {
+      "renk": "#f6c19d",
+      "alan": 0.0626
+     },
+     {
+      "renk": "#f4b48c",
+      "alan": 0.0554
+     },
+     {
+      "renk": "#f5bc97",
+      "alan": 0.053
+     },
+     {
+      "renk": "#daae7d",
+      "alan": 0.0518
+     },
+     {
+      "renk": "#f5bb95",
+      "alan": 0.0506
+     },
+     {
+      "renk": "#d09d69",
+      "alan": 0.047
+     },
+     {
+      "renk": "#e2bd8e",
+      "alan": 0.0465
+     },
+     {
+      "renk": "#f5b993",
+      "alan": 0.0431
+     },
+     {
+      "renk": "#f4b790",
+      "alan": 0.0337
+     },
+     {
+      "renk": "#daad7c",
+      "alan": 0.0327
+     },
+     {
+      "renk": "#f4b58e",
+      "alan": 0.0323
+     },
+     {
+      "renk": "#f5b893",
+      "alan": 0.0322
+     },
+     {
+      "renk": "#daaf7e",
+      "alan": 0.0275
+     },
+     {
+      "renk": "#f5ba94",
+      "alan": 0.0254
+     },
+     {
+      "renk": "#ddb484",
+      "alan": 0.0227
+     },
+     {
+      "renk": "#e3be90",
+      "alan": 0.0225
+     },
+     {
+      "renk": "#f6c09c",
+      "alan": 0.0224
+     }
+    ]
+   },
+   "Rogue": {
+    "dokuBoyu": [
+     1024,
+     1024
+    ],
+    "tepeRenkler": [
+     {
+      "renk": "#9d5c46",
+      "alan": 0.2757
+     },
+     {
+      "renk": "#a05f48",
+      "alan": 0.2642
+     },
+     {
+      "renk": "#955440",
+      "alan": 0.2414
+     },
+     {
+      "renk": "#a26149",
+      "alan": 0.2162
+     },
+     {
+      "renk": "#9b5a45",
+      "alan": 0.2108
+     },
+     {
+      "renk": "#9a5944",
+      "alan": 0.1763
+     },
+     {
+      "renk": "#94533f",
+      "alan": 0.1711
+     },
+     {
+      "renk": "#9c5b46",
+      "alan": 0.1706
+     },
+     {
+      "renk": "#f4b58e",
+      "alan": 0.1702
+     },
+     {
+      "renk": "#92513d",
+      "alan": 0.1596
+     },
+     {
+      "renk": "#f5b993",
+      "alan": 0.1472
+     },
+     {
+      "renk": "#a16048",
+      "alan": 0.1433
+     },
+     {
+      "renk": "#a26049",
+      "alan": 0.1395
+     },
+     {
+      "renk": "#93523e",
+      "alan": 0.1354
+     },
+     {
+      "renk": "#965541",
+      "alan": 0.1325
+     },
+     {
+      "renk": "#9e5d47",
+      "alan": 0.1279
+     },
+     {
+      "renk": "#f5b892",
+      "alan": 0.1269
+     },
+     {
+      "renk": "#9f5e47",
+      "alan": 0.1238
+     },
+     {
+      "renk": "#90503c",
+      "alan": 0.1084
+     },
+     {
+      "renk": "#f6c19d",
+      "alan": 0.1065
+     },
+     {
+      "renk": "#f6be9a",
+      "alan": 0.1042
+     },
+     {
+      "renk": "#f4b690",
+      "alan": 0.1016
+     },
+     {
+      "renk": "#a36149",
+      "alan": 0.0897
+     },
+     {
+      "renk": "#f5bc97",
+      "alan": 0.0886
+     },
+     {
+      "renk": "#9f5d47",
+      "alan": 0.0874
+     },
+     {
+      "renk": "#f6c09b",
+      "alan": 0.0874
+     },
+     {
+      "renk": "#f4b68f",
+      "alan": 0.0849
+     },
+     {
+      "renk": "#a16049",
+      "alan": 0.0832
+     },
+     {
+      "renk": "#91503d",
+      "alan": 0.081
+     },
+     {
+      "renk": "#995843",
+      "alan": 0.0781
+     },
+     {
+      "renk": "#975642",
+      "alan": 0.0736
+     },
+     {
+      "renk": "#91513d",
+      "alan": 0.0734
+     },
+     {
+      "renk": "#985743",
+      "alan": 0.069
+     },
+     {
+      "renk": "#f6c3a0",
+      "alan": 0.0678
+     },
+     {
+      "renk": "#f6c29e",
+      "alan": 0.0678
+     },
+     {
+      "renk": "#92513e",
+      "alan": 0.0657
+     },
+     {
+      "renk": "#f5bb96",
+      "alan": 0.0642
+     },
+     {
+      "renk": "#a15f48",
+      "alan": 0.0635
+     },
+     {
+      "renk": "#9f5e48",
+      "alan": 0.0629
+     },
+     {
+      "renk": "#8f4e3b",
+      "alan": 0.0598
+     }
+    ]
+   },
+   "Barbarian": {
+    "dokuBoyu": [
+     1024,
+     1024
+    ],
+    "tepeRenkler": [
+     {
+      "renk": "#f6bf9b",
+      "alan": 0.3399
+     },
+     {
+      "renk": "#f7c4a1",
+      "alan": 0.3296
+     },
+     {
+      "renk": "#f6c09d",
+      "alan": 0.3197
+     },
+     {
+      "renk": "#f4b18a",
+      "alan": 0.1859
+     },
+     {
+      "renk": "#f6c29e",
+      "alan": 0.1587
+     },
+     {
+      "renk": "#f6c3a0",
+      "alan": 0.1563
+     },
+     {
+      "renk": "#f6c29f",
+      "alan": 0.1471
+     },
+     {
+      "renk": "#f7c5a2",
+      "alan": 0.1468
+     },
+     {
+      "renk": "#f7c3a0",
+      "alan": 0.1401
+     },
+     {
+      "renk": "#f5ba95",
+      "alan": 0.1373
+     },
+     {
+      "renk": "#f5bd98",
+      "alan": 0.1221
+     },
+     {
+      "renk": "#f5bc97",
+      "alan": 0.1181
+     },
+     {
+      "renk": "#f5b891",
+      "alan": 0.0831
+     },
+     {
+      "renk": "#f7c4a2",
+      "alan": 0.0826
+     },
+     {
+      "renk": "#f4b38b",
+      "alan": 0.0791
+     },
+     {
+      "renk": "#80756f",
+      "alan": 0.0774
+     },
+     {
+      "renk": "#f5b994",
+      "alan": 0.074
+     },
+     {
+      "renk": "#9d968e",
+      "alan": 0.0674
+     },
+     {
+      "renk": "#f4b690",
+      "alan": 0.0637
+     },
+     {
+      "renk": "#a49e98",
+      "alan": 0.0598
+     },
+     {
+      "renk": "#f4b48d",
+      "alan": 0.0565
+     },
+     {
+      "renk": "#f5bb96",
+      "alan": 0.056
+     },
+     {
+      "renk": "#8d847c",
+      "alan": 0.0471
+     },
+     {
+      "renk": "#a19a93",
+      "alan": 0.0452
+     },
+     {
+      "renk": "#80766f",
+      "alan": 0.0371
+     },
+     {
+      "renk": "#f4b791",
+      "alan": 0.0357
+     },
+     {
+      "renk": "#999188",
+      "alan": 0.0345
+     },
+     {
+      "renk": "#a09992",
+      "alan": 0.0342
+     },
+     {
+      "renk": "#f4b38c",
+      "alan": 0.0288
+     },
+     {
+      "renk": "#968e85",
+      "alan": 0.0277
+     },
+     {
+      "renk": "#f5b791",
+      "alan": 0.0273
+     },
+     {
+      "renk": "#877e76",
+      "alan": 0.0262
+     },
+     {
+      "renk": "#817670",
+      "alan": 0.0223
+     },
+     {
+      "renk": "#f4b58e",
+      "alan": 0.0217
+     },
+     {
+      "renk": "#a09a93",
+      "alan": 0.0199
+     },
+     {
+      "renk": "#897f78",
+      "alan": 0.0198
+     },
+     {
+      "renk": "#f6be99",
+      "alan": 0.0188
+     },
+     {
+      "renk": "#989088",
+      "alan": 0.0188
+     },
+     {
+      "renk": "#999189",
+      "alan": 0.0186
+     },
+     {
+      "renk": "#958d84",
+      "alan": 0.0185
+     }
+    ]
+   }
+  }
+ }
+}

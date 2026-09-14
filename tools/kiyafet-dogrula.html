@@ -1,0 +1,181 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>kiyafet-dogrula</title>
+<style>
+  body { margin: 0; background: #e9e4dc; font: 13px system-ui; color: #2b2118; }
+  canvas { display: block; }
+</style>
+<script type="module">
+  /**
+   * kiyafet-dogrula.html — S19b'nin GÖZLE doğrulaması (önlük + patron dokunuşu).
+   *
+   * S19a'nın `onluk-bak.html`inden farkı: orada önlük ADAY olduğu için kod karta KOPYALANMIŞTI.
+   * Burada önlük ARTIK OYUNUN KENDİSİNDE, o yüzden kart oyunun modülünü (`src/.../onluk.ts`)
+   * doğrudan çağırır. Kopya çizim, kodu değil kendini doğrulardı.
+   *
+   * SORULAN: kullanıcının bildirdiği kusur ("göğüsteki rozet önlüğün içinden çıkıyor, önlük
+   * parçalanmış gibi") üç önlüklü gövdede de kapandı mı. Kadraj bilerek YAKIN ve iki açı var:
+   * kusur yayın ORTASINDA değil KENARINDA oluşuyordu, karşıdan bakan tek kare onu göstermez.
+   *
+   * Kullanım (sunucuyu `tools/onluk-dogrula.mjs` kaldırır): /tools/onluk-dogrula.html
+   */
+  import * as THREE from 'three';
+  import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+  import { clone as skinKlon } from 'three/examples/jsm/utils/SkeletonUtils.js';
+  import { govdeProfili, onlukParcasi, kumas, ONLUK_PARCALARI } from '/src/components/three/onluk.ts';
+  import { kollariSiva, omuzHavlusu, HAVLU_KAYMA } from '/src/components/three/patron.ts';
+
+  /** Bayat sunucu damgası — gerekçe `tools/olcum-oturus.html`. */
+  const SURUM = 6;
+
+  const KOK = '/assets/models/kaykit-characters/';
+  const P = { shirt: '#f3ecd9', pants: '#3e3a36', apron: '#7a2230' };
+  const KAY_AUTHORED = 2.204, ACTOR_HEIGHT = 1.75;
+  const OLCEK = ACTOR_HEIGHT / KAY_AUTHORED;
+  const KAFA = 0.75;
+
+  const EKIPMAN = ['cape', 'cloak', 'helmet', 'visor', 'hood', 'hat', 'crown', 'shoulder', 'pauldron',
+    'pauldrons', 'armor', 'sword', 'shield', 'staff', 'wand', 'bow', 'quiver', 'dagger', 'axe',
+    'spellbook', 'horn', 'backpack', 'mask'];
+  const ekipmanMi = (ad) => {
+    const rol = ad.split('_').pop()?.toLowerCase() ?? '';
+    return EKIPMAN.some((k) => rol.startsWith(k) || rol.endsWith(k));
+  };
+  const mat = (renk) => new THREE.MeshStandardMaterial({ color: renk, roughness: 0.85 });
+
+  const loader = new GLTFLoader();
+  const onbellek = new Map();
+  async function yuk(ad) {
+    if (!onbellek.has(ad)) onbellek.set(ad, await loader.loadAsync(`${KOK}${ad}.glb`));
+    return skinKlon(onbellek.get(ad).scene);
+  }
+
+  async function govdeKur(govdeAd, rol) {
+    const o = await yuk(govdeAd);
+    o.traverse((n) => {
+      if (n.isMesh && ekipmanMi(n.name)) { n.visible = false; return; }
+      if (!n.isMesh) return;
+      if (/head|skull/i.test(n.name)) return;
+      if (/arm|body|torso/i.test(n.name)) n.material = mat(P.shirt);
+      else if (/leg/i.test(n.name)) n.material = mat(P.pants);
+    });
+    o.traverse((n) => { if (n.isBone && n.name === 'head') n.scale.setScalar(KAFA); if (n.isSkinnedMesh) n.boundingBox = null; });
+    o.updateMatrixWorld(true);
+
+    const kemikler = new Map();
+    o.traverse((n) => { if (n.isBone) kemikler.set(n.name, n); });
+    const q = new THREE.Quaternion();
+    const tak = (kemikAd, mesh, nokta) => {
+      const k = kemikler.get(kemikAd);
+      if (!k) return;
+      k.add(mesh);
+      mesh.position.copy(k.worldToLocal(nokta.clone()));
+      mesh.quaternion.copy(k.getWorldQuaternion(q).invert());
+    };
+
+    // OYUNUN KENDİ KODU — `KayActor.kiyafetTak` ile birebir aynı çağrı dizisi.
+    if (rol === 'personel') {
+      const profil = govdeProfili(o);
+      const sifir = new THREE.Vector3(0, 0, 0);
+      for (const p of Object.values(ONLUK_PARCALARI)) {
+        const yay = (p.yayDerece * Math.PI) / 180;
+        const merkez = (p.merkezDerece * Math.PI) / 180;
+        tak(p.kemik, new THREE.Mesh(onlukParcasi(profil, p.yAlt, p.yUst, yay, p.genisleme, p.payEk, merkez), kumas(P.apron)), sifir);
+      }
+    } else {
+      const omuz = kemikler.get('upperarml');
+      if (omuz) tak('upperarml', omuzHavlusu(), omuz.getWorldPosition(new THREE.Vector3()).add(HAVLU_KAYMA));
+      kollariSiva(o);
+    }
+    o.scale.setScalar(OLCEK);
+    return o;
+  }
+
+  /** Önlük takan üç gövde (KAY_MODEL: waiter · dishwasher · kitchenHand), iki açıdan. */
+  /** Önlüklü üç personel + PATRON (Ranger, havlu + sıvalı kol), karşıdan ve çeyrek açıdan. */
+  const KOLLAR = [
+    ['Knight', 'personel', 0.0, 'Knight (garson) — karsidan'],
+    ['Knight', 'personel', 0.9, 'Knight — ceyrek aci'],
+    ['Rogue', 'personel', 0.0, 'Rogue (bulasikci) — karsidan'],
+    ['Barbarian', 'personel', 0.0, 'Barbarian (usta) — karsidan'],
+    ['Ranger', 'patron', 0.0, 'PATRON — karsidan'],
+    ['Ranger', 'patron', 0.9, 'PATRON — ceyrek aci'],
+    ['Ranger', 'patron', 2.6, 'PATRON — arkadan'],
+  ];
+
+  const pozG = await loader.loadAsync(`${KOK}Rig_Medium_General.glb`);
+  const idle = pozG.animations.find((c) => c.name === 'Idle_A');
+  const pozla = (kok) => {
+    if (!idle) return;
+    const m = new THREE.AnimationMixer(kok);
+    const klip = idle.clone();
+    klip.tracks = klip.tracks.filter((t) => t.name !== 'head.scale');
+    m.clipAction(klip).play();
+    m.update(klip.duration * 0.5);
+  };
+
+  const sahne = new THREE.Scene();
+  sahne.background = new THREE.Color('#e9e4dc');
+  sahne.add(new THREE.HemisphereLight('#ffffff', '#8d8272', 1.5));
+  const gunes = new THREE.DirectionalLight('#fff6e0', 2.0);
+  gunes.position.set(3, 6, 4);
+  sahne.add(gunes);
+  const zemin = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), new THREE.MeshStandardMaterial({ color: '#c89a68' }));
+  zemin.rotation.x = -Math.PI / 2;
+  sahne.add(zemin);
+
+  // Kollar GENİŞ aralıkla: her kolun kamerası komşusunun içine düşmesin (olcum-oturus tuzağı).
+  const ARA = 20;
+  for (let i = 0; i < KOLLAR.length; i++) {
+    const o = await govdeKur(KOLLAR[i][0], KOLLAR[i][1]);
+    o.position.set(i * ARA, 0, 0);
+    o.rotation.y = KOLLAR[i][2];
+    pozla(o);
+    sahne.add(o);
+  }
+
+  const G = Math.floor(innerWidth / KOLLAR.length);
+  const OL = Math.min(devicePixelRatio, 2);
+  const PW = Math.floor(G * OL), PH = Math.floor(innerHeight * OL);
+  const r = new THREE.WebGLRenderer({ antialias: true });
+  r.setPixelRatio(1);
+  r.setSize(PW, PH, false);
+  const hedef = new THREE.WebGLRenderTarget(PW, PH, { samples: 4 });
+  hedef.texture.colorSpace = THREE.SRGBColorSpace;
+  const tuval = document.createElement('canvas');
+  tuval.width = PW * KOLLAR.length;
+  tuval.height = PH;
+  tuval.style.cssText = `width:${G * KOLLAR.length}px;height:${innerHeight}px;display:block;`;
+  const ctx = tuval.getContext('2d');
+  document.body.appendChild(tuval);
+  const tampon = new Uint8Array(PW * PH * 4);
+
+  for (let i = 0; i < KOLLAR.length; i++) {
+    const gx = i * ARA;
+    const k = new THREE.PerspectiveCamera(30, PW / PH, 0.1, 100);
+    k.position.set(gx + 0.75, 1.35, 4.6);
+    k.lookAt(gx, 0.80, 0);
+    r.setRenderTarget(hedef);
+    r.render(sahne, k);
+    r.readRenderTargetPixels(hedef, 0, 0, PW, PH, tampon);
+    const im = ctx.createImageData(PW, PH);
+    for (let y = 0; y < PH; y++) {
+      const kaynak = (PH - 1 - y) * PW * 4;
+      im.data.set(tampon.subarray(kaynak, kaynak + PW * 4), y * PW * 4);
+    }
+    ctx.putImageData(im, i * PW, 0);
+  }
+  r.setRenderTarget(null);
+
+  for (let i = 0; i < KOLLAR.length; i++) {
+    const d = document.createElement('div');
+    d.textContent = KOLLAR[i][3];
+    d.style.cssText = `position:fixed;left:${i * G + G / 2}px;bottom:22px;transform:translateX(-50%);
+      font:600 12px system-ui;color:#2b2118;background:#ffffffdd;padding:4px 10px;border-radius:6px;
+      white-space:nowrap;`;
+    document.body.appendChild(d);
+  }
+
+  window.__surum = SURUM;
+  window.__hazir = true;
+</script>

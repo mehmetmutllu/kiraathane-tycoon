@@ -1,5 +1,5 @@
-import { useMemo, useRef } from 'react';
-import { useFrame } from '@react-three/fiber';
+import { useEffect, useMemo, useRef } from 'react';
+import { useFrame, useThree } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import {
   CapsuleGeometry,
@@ -31,6 +31,7 @@ import {
   KAY_SCALE,
   KAY_MUSTERI_GOVDE,
   KAY_OTURMA_KALDIRMA,
+  KAY_OTURMA_ILERI,
   NPC_SKIN_CAP,
 } from '../../config/actor';
 import { PALETTE } from '../../config/palette';
@@ -79,6 +80,12 @@ const BODY_MAT = new MeshStandardMaterial({ color: '#ffffff' }); // gerçek renk
  */
 const BUBBLE_GEO = new PlaneGeometry(0.62, 0.62);
 const URUNLER = ['tea', 'tost'] as const;
+/**
+ * Tostun modeli — Kenney Food Kit (CC0). Dokuz KayKit paketinde tost YOK; stil kilidi bu tek
+ * model için bilerek açıldı (D-116 · Y1, künye `public/assets/README.md`).
+ */
+const TOST_MODELI = '/assets/models/kenney-food-kit/sandwich.glb';
+
 const NPC_CAP = 128; // baloncuk + kapsül kolunun tavanı (npcCount tipik ~10-30); ucuz.
 
 /** Müşterinin durumu OTURUYOR mu — gerçek oturuş klibi ve kök kaldırması buna bağlı. */
@@ -292,14 +299,34 @@ export function Customers() {
    * arkasına geçince kaybolur; istenen davranış budur.
    */
   const bubbleMats = useMemo(
-    () => URUNLER.map((u) => new MeshBasicMaterial({
-      map: siparisDokusu(u) ?? null,
+    () => URUNLER.map(() => new MeshBasicMaterial({
+      map: null,
       transparent: true,
       depthWrite: false,
       toneMapped: false,
     })),
     [],
   );
+  /**
+   * BALONUN İÇİ MODELDEN PİŞİYOR (S19b · D-116) — doku artık `gl`e ve tost modeline bağlı.
+   *
+   * Neden efekt, neden `useMemo` değil: pişirme sahnenin `WebGLRenderer`ını bir kare boyunca
+   * başka bir hedefe yönlendiriyor. React'in render'ı sırasında yapılırsa (ki `useMemo` orada
+   * koşar) çizgi dışı bir yan etki olur; efekt, ilk karenin dışında güvenle çalışır.
+   *
+   * Model gelmeden de çalışır: `siparisDokusu` o durumda BOŞ ÇERÇEVE döndürür ve önbelleğe
+   * almaz, model yüklenince efekt yeniden koşup dolusunu ister. Bekleyen müşterinin başında
+   * gösterge hiç olmamasındansa boş balon dursun.
+   */
+  const gl = useThree((st) => st.gl);
+  const { scene: tostSahnesi } = useGLTF(TOST_MODELI);
+  useEffect(() => {
+    URUNLER.forEach((u, i) => {
+      const doku = siparisDokusu(u, gl, tostSahnesi);
+      if (doku) bubbleMats[i].map = doku;
+      bubbleMats[i].needsUpdate = true;
+    });
+  }, [gl, tostSahnesi, bubbleMats]);
   const dummy = useMemo(() => new Object3D(), []);
   const col = useMemo(() => new Color(), []);
   const havuz = useMusteriHavuzu();
@@ -328,6 +355,11 @@ export function Customers() {
         : npc.state === 'wcGiris' ? wcOlcek(1 - npc.timer / WC_GECIS)
         : npc.state === 'wcCikis' ? wcOlcek(npc.timer / WC_GECIS)
         : 1;
+
+      // Oturuş çapasının DÜNYA karşılığı (gerekçe actor.ts → KAY_OTURMA_ILERI). Skinned kolda
+      // gövdenin açısı belli olunca doldurulur; kapsül kolunda 0 kalır (kapsül oturmaz, iner).
+      let capaX = 0;
+      let capaZ = 0;
 
       const yuvaIdx = havuz.yuvaVer(npc.id);
       if (yuvaIdx >= 0) {
@@ -365,8 +397,16 @@ export function Customers() {
         // Oturan müşteri GERÇEK oturuş klibindedir; kök `KAY_OTURMA_KALDIRMA` kadar kalkar ki
         // kalça taburenin oturağına gelsin (ölçüm §Oturus). Eski `SEATED_DROP` bir kapsül
         // numarasıydı ve skinned gövdede kullanılmaz.
+        // OTURUŞ ÇAPASI (S19b · D-116). Klipte kalça kökün 0,315 br arkasında; kök taburenin
+        // merkezindeyken kalça oturağın arka kenarından sarkıyordu. Çapa gövdenin KENDİ yönünde
+        // (yerel +z) uygulanır — dünya eksenine sabit yazılsa masanın yalnız bir yanı düzelirdi.
+        if (oturan) {
+          capaX = Math.sin(y.aci) * KAY_OTURMA_ILERI;
+          capaZ = Math.cos(y.aci) * KAY_OTURMA_ILERI;
+        }
+
         y.kok.visible = gorunurluk > 0;
-        y.kok.position.set(x, oturan ? KAY_OTURMA_KALDIRMA : 0, z);
+        y.kok.position.set(x + capaX, oturan ? KAY_OTURMA_KALDIRMA : 0, z + capaZ);
         y.kok.rotation.y = y.aci;
         y.kok.scale.setScalar(KAY_SCALE * gorunurluk);
 
@@ -405,11 +445,13 @@ export function Customers() {
         if (mesh) {
           const skinned = yuvaIdx >= 0;
           dummy.position.set(
-            x,
+            // Balon gövdeyle birlikte kayar: çapa uygulanıp balon yerinde kalsaydı, oturan
+            // müşterinin balonu başının arkasında asılı dururdu.
+            x + capaX,
             // Balon KÜREDEN BÜYÜK: eski 0,15'lik pay balonun alt kuyruğunu başın içine
             // sokuyordu. Pay balonun yarı yüksekliği kadar açıldı.
             (skinned ? havuz.govdeBoy + 0.15 + (oturan ? KAY_OTURMA_KALDIRMA - 0.3 : 0) : BUBBLE_Y + SEATED_DROP) + 0.22,
-            z,
+            z + capaZ,
           );
           // Kameranın dönüşü kopyalanır: levha her açıdan tam karşıdan görünür. Sabit dönüşlü
           // bir levha, kamera yana kayınca kâğıt gibi incelip kaybolurdu.
@@ -466,3 +508,4 @@ export function Customers() {
 }
 
 KAY_MUSTERI_GOVDE.forEach((g) => useGLTF.preload(`${KAY_KOK}${g}.glb`));
+useGLTF.preload(TOST_MODELI);

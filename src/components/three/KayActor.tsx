@@ -17,6 +17,8 @@ import {
 } from 'three';
 import { clone as skinKlon } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { PALETTE } from '../../config/palette';
+import { govdeProfili, onlukParcasi, kumas, ONLUK_PARCALARI } from './onluk';
+import { kollariSiva, omuzHavlusu, HAVLU_KAYMA } from './patron';
 import {
   KAY_KOK,
   KAY_KLIPLER,
@@ -64,19 +66,15 @@ export const basMi = (ad: string) => /head|skull/i.test(ad);
 /**
  * Hangi parça hangi renge boyanır. Baş listede YOK (yukarıdaki gerekçe).
  *
- * GÖMLEK ARTIK ROLE BAĞLI (S18): personel üniforma giyer (krem gömlek + bordo önlük), PATRON
- * giymez — koyu lacivert gömlek, önlük yok. Kullanıcı: *"ben garsonlarla aynı olmuyim bi farkım
- * olsun tasarımsal olarak"*. Aday karesi yelek/pelerin kollarını eledi: göğse takılan plaka
- * önlükten ayrışmıyor. Ayıran iki şey RENK ve ÖNLÜĞÜN YOKLUĞU.
+ * GÖMLEK HERKESTE AYNI (S19b · D-116): S18 patronu koyu lacivertle ayırmıştı, kullanıcı geri
+ * aldı (*"beyaz daha ayırt ediciydi o kalabilir"*). Patronu ayıran şey artık renk değil, omuz
+ * havlusu + sıvalı kol — gerekçe `patron.ts`.
  */
-const parcaRenk = (kind: ActorKind): readonly (readonly [RegExp, string])[] => {
-  const gomlek = kind === 'owner' ? PALETTE.ownerShirt : PALETTE.shirt;
-  return [
-    [/arm/i, gomlek],
-    [/body|torso/i, gomlek],
-    [/leg/i, PALETTE.pants],
-  ];
-};
+const PARCA_RENK: readonly (readonly [RegExp, string])[] = [
+  [/arm/i, PALETTE.shirt],
+  [/body|torso/i, PALETTE.shirt],
+  [/leg/i, PALETTE.pants],
+];
 
 /** Klip adları — dosya değil KLİP; hangi durumda hangisi çalar. */
 export const KLIP = {
@@ -201,6 +199,7 @@ function mat(renk: string) {
   return new MeshStandardMaterial({ color: renk, roughness: 0.85 });
 }
 
+
 /**
  * Kimlik parçalarını kemiğe takar. Ölçüler HAM rig biriminde (gövde 2,204 ham = 1,75 dünya);
  * ölçülen hatlar: baş mesh'i y 1,10…2,20 · gövde 0,38…1,24 · baş eni 0,86.
@@ -240,9 +239,28 @@ function kiyafetTak(kok: Object3D, kind: ActorKind) {
     tak('head', kasket, new Vector3(0, tepe - 0.05, 0));
   }
   if (kiyafet.onluk) {
-    tak('chest', new Mesh(new BoxGeometry(0.58, 0.72, 0.08), mat(PALETTE.apron)), new Vector3(0, 0.78, 0.3));
-    tak('hips', new Mesh(new CylinderGeometry(0.35, 0.35, 0.07, 14), mat(PALETTE.apron)), new Vector3(0, 0.48, 0));
+    // Önlük gövdenin PROFİLİNDEN üretilir (gerekçe: `onlukParcasi`). Geometri model uzayında
+    // mutlak koordinat taşıdığı için kemiğe DÜNYA SIFIRINDAN takılır — `tak` orada mesh'in
+    // dönüşünü de sıfırlar, yani yerel koordinatlar model koordinatlarıyla çakışır.
+    const profil = govdeProfili(kok);
+    const sifir = new Vector3(0, 0, 0);
+    for (const p of Object.values(ONLUK_PARCALARI)) {
+      const yay = (p.yayDerece * Math.PI) / 180;
+      const merkez = (p.merkezDerece * Math.PI) / 180;
+      const g = onlukParcasi(profil, p.yAlt, p.yUst, yay, p.genisleme, p.payEk, merkez);
+      tak(p.kemik, new Mesh(g, kumas(PALETTE.apron)), sifir);
+    }
   }
+
+  if (kiyafet.havlu) {
+    // Havlunun çapası SABİT DEĞİL, omuz kemiğinin kendi dünya konumu (gerekçe `patron.ts`).
+    const omuz = kemikler.get('upperarml');
+    if (omuz) {
+      const nokta = omuz.getWorldPosition(new Vector3()).add(HAVLU_KAYMA);
+      tak('upperarml', omuzHavlusu(), nokta);
+    }
+  }
+  if (kiyafet.sivaliKol) kollariSiva(kok);
 }
 
 /**
@@ -325,7 +343,7 @@ export function KayActor({
         return;
       }
       m.castShadow = true;
-      const e = parcaRenk(kind).find(([d]) => d.test(m.name));
+      const e = PARCA_RENK.find(([d]) => d.test(m.name));
       if (e) m.material = mat(e[1]);
     });
     kafaKucult(o);

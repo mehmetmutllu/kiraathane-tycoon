@@ -152,15 +152,20 @@ export const KAY_MODEL = {
 } as const;
 
 /** Rolün üstüne takılan kimlik parçaları (kasket/önlük). Gövdede yok, bizim. */
-export const KAY_KIYAFET: Record<ActorKind, { kasket: boolean; onluk: boolean }> = {
+export const KAY_KIYAFET: Record<
+  ActorKind,
+  { kasket: boolean; onluk: boolean; havlu: boolean; sivaliKol: boolean }
+> = {
   // Sahibin kasketi S15'te KALKTI (kullanıcı 2026-09-14: "ana karakterdeki kasketi çıkar").
   // Mutfak elemanında duruyor — usta kimliğini o taşıyor.
-  // PATRON ONLUK TAKMAZ (S18): onluk personelin UNIFORMASI, patronun degil. Ayirt edici
-  // isaret bu yoklukla koyu lacivert gomlegin birlesimi — gerekce `KayActor.parcaRenk`.
-  owner: { kasket: false, onluk: false },
-  waiter: { kasket: false, onluk: true },
-  dishwasher: { kasket: false, onluk: true },
-  kitchenHand: { kasket: true, onluk: true },
+  // PATRON ONLUK TAKMAZ (S18): önlük personelin ÜNİFORMASI, patronun değil.
+  // PATRONU AYIRAN İŞARET S19b'de DEĞİŞTİ (D-116 · P7): koyu lacivert gömlek geri alındı
+  // (kullanıcı: "beyaz daha ayırt ediciydi o kalabilir"), yerine omuz havlusu + sıvalı kol.
+  // İKİ işaret birden, çünkü tek işaret ekranda zayıf kalıyor (`feedback_upgrade_legibility`).
+  owner: { kasket: false, onluk: false, havlu: true, sivaliKol: true },
+  waiter: { kasket: false, onluk: true, havlu: false, sivaliKol: false },
+  dishwasher: { kasket: false, onluk: true, havlu: false, sivaliKol: false },
+  kitchenHand: { kasket: true, onluk: true, havlu: false, sivaliKol: false },
 };
 
 /**
@@ -222,6 +227,39 @@ export const TIMESCALE_TABAN = 0.6;
  * (Aynı klipte ayak 0,322'de duruyor: KayKit oturuşu ayakları toplayan bir poz, yere basmıyor.)
  */
 export const KAY_OTURMA_KALDIRMA = 0.068;
+
+/**
+ * OTURAN GÖVDENİN İLERİ ÇAPASI (S19b · D-116) — `KAY_OTURMA_KALDIRMA`nın YATAY eşi.
+ *
+ * Kullanıcı 2026-09-14: *"götleri biraz dışarda kalıyor"*. S15 yalnız DÜŞEY ekseni kapatmıştı;
+ * yatay eksen hiç ölçülmemişti. Kök sebep tek sayıda: `Sit_Chair_Idle` klibinde kalça kemiği
+ * kökün **0,315 br ARKASINDA** (beş gövdede de aynı — hepsi aynı rig). Oyun kökü taburenin
+ * MERKEZİNE koyuyor, yani gövde oturağın arka kenarına yaslanmış oturuyor ve kalça sarkıyor.
+ *
+ * ÖLÇÜM deride yapıldı (`docs/olcum-oturus.txt`): klip çalınıp her tepe noktası
+ * `applyBoneTransform` ile gerçekten deforme edildi, sonra taburenin oturak ÇOKGENİYLE
+ * (daire değil — 12 kenarlı, kenar yarıçapı 0,437) karşılaştırıldı. Sütunlar beş müşteri
+ * gövdesinin EN KÖTÜSÜ; kod tek sabit yazdığı için karar o sayıyla verilir:
+ *
+ *   | dz   | arka taşma | ön taşma | en ileri deri |
+ *   |-----:|-----------:|---------:|--------------:|
+ *   | 0    |  **0,258** |    0     | 0,154         |  ← bugünkü kusur
+ *   | 0,20 |      0,058 |    0,016 | 0,354         |
+ *   | 0,26 |  **0**     |    0,076 | 0,414         |  ← O3, SEÇİLEN
+ *   | 0,32 |      0     |    0,136 | 0,474         |  kalça merkezli, gereğinden ileri
+ *
+ * NEDEN 0,26 VE DAHA BÜYÜĞÜ DEĞİL: arka taşmayı sıfırlayan EN KÜÇÜK çapa bu. Ön taşma (uyluk)
+ * oturuşun doğasıdır, sıfırlanmaz; büyüyen tek risk gövdenin masaya girmesi ve orada pay var —
+ * en ileri deri 0,414, tabure merkezi ile tabla kenarı arası **0,61**.
+ *
+ * YÖN: yerel **+z** ileri, yani koltuğun masaya bakan yönü. `Customers.tsx` çapayı gövdenin
+ * kendi açısıyla döndürerek uygular (`sin/cos(açı) × dz`); dünya eksenine sabit yazılırsa
+ * masanın yalnız bir yanındaki müşteri düzelir, diğerleri daha da dışarı çıkar.
+ *
+ * KAPSAM DIŞI: Ranger'ın YAN taşması 0,094 — kalçası oturaktan geniş, z çapası bunu kapatmaz
+ * (gövde/mobilya oranı; açık kalem).
+ */
+export const KAY_OTURMA_ILERI = 0.26;
 
 /**
  * SKINNED MÜŞTERİ BÜTÇESİ. Ölçüldü (`tools/skin-perf.mjs 24 Knight`, RTX 3060):

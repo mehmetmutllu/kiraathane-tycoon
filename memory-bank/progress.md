@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 104 · YAPILAN 93 · %89):**
+**Oturum bütçesi (TOPLAM 104 · YAPILAN 94 · %90):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -24,10 +24,10 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
 | | D meta katman | 9/9 ✅ |
 | | E arayüz ve cila | 4/5 🔧 |
-| | **S sanat ve arayüz geçişi** | **18/20 🔧** |
+| | **S sanat ve arayüz geçişi** | **19/20 🔧** |
 | | H oynanış düzeltmeleri | 0/3 ⏳ |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **65/76** |
+| **Program toplam** | | **66/76** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -245,7 +245,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   değil; kendi turunu ister.
 - ⏳ **E5 — hareketli onboarding**
 
-## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (18/20) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
+## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (19/20) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
 - ✅ **S1 — pad ve yükseltme dili yeniden yazıldı** · çember → **köşe parantezli kare** (kenar
   ortaları boş), dolum büyüyen disk → **alttan üste dolan kare**, "Masa"/"Çay Yükselt"/"Usta"
   → hepsinde **YÜKSELT** + solunda düz yukarı ok, yazı 700 → 800, 💎 pulu "mavi kare" → gerçek
@@ -400,8 +400,14 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   (bugünkü önlük göğse takılı bir KUTU), patron dokunuşu (havlu + sıvalı kol), balonun içine
   çizim yerine NESNE + Kenney Food Kit (stil kilidi bilerek açıldı), ince belli bardak bizim
   ilkelimizden. Beş kare · üç yeni araç · `docs/patron-oturus-glif-raporu-s19a.md`.
-- ⏳ **S20 — D-116'nın UYGULAMASI (tur adı S19b)** (sıradaki tur): çapa · önlük + rozet kusuru · patron P7 ·
-  balon model render'ı · Kenney künyesi manifeste.
+- ✅ **S20 — D-116'nın UYGULAMASI (tur adı S19b) · D-117** — beş kol da koda girdi: oturuş çapası
+  0,26 (yerel +z) · saran önlük **gövdenin profilinden** (sabit yarıçap üç gövdenin ikisini
+  deliyordu — Rogue 0,4526 vs A2'nin 0,365; rozet gizlenemedi, ayrı düğüm değilmiş) · patron
+  havlu + sıvalı kol (ten DOKUDAN ölçüldü: #f4b690, `PALETTE.ownerShirt` kalktı) · balonun içi
+  model render'ı (Kenney `sandwich` + bizim dönel bardağımız) · Kenney Food Kit künyesiyle
+  manifeste, `_aday` temizlendi. İki yeni modül (`onluk.ts` · `patron.ts`), iki yeni ölçüm aracı,
+  bekçi `tests/oturus-kiyafet.test.ts` **38 denetim / 18 mutasyon**.
+  `docs/kiyafet-raporu-s19b.md`. vitest 1030 ✓ · duman 42/42 ✓.
 - 🔧 **S9 — SES ASSETLERİ — ÖLÇÜM BİTTİ, KARAR BEKLİYOR (D-096'nın kapsam sınırı açılıyor)** — kullanıcı ortam uğultusu
   ("kalabalık sesi") ve **daha gerçekçi para sesi** istedi. **Bu karar D-096'yı kısmen geri
   alır:** sentez "nihai" seçilmişti ve `public/assets/audio/` bilerek boştu (lisans yüzeyi sıfır).

@@ -433,12 +433,14 @@ describe('S18 · koşu klibi rol bazlı', () => {
  * S18 — PATRON GARSONDAN AYRILIR (kullanıcı: *"ben garsonlarla aynı olmuyim bi farkım olsun
  * tasarımsal olarak"*).
  *
- * Aday karesi (`docs/gorsel/ss/s18-patron.png`) yelek ve pelerin kollarını ELEDİ: göğse takılan
- * plaka önlükten ayrışmıyor, ikisi de düz levha. Ayıran iki şey kaldı — RENK ve ÖNLÜĞÜN YOKLUĞU.
- * İkisi birden bekçilenir: biri tek başına kalırsa sinyal zayıflar ve kimse fark etmez
- * (`feedback_upgrade_legibility`: tek sinyal yetmez).
+ * **S19b'DE KOL DEĞİŞTİ (D-116).** S18 ayırt edici işaret olarak RENGİ seçmişti (koyu lacivert
+ * gömlek + önlüğün yokluğu) ve burada rengin farkı sayıyla bekçilenmişti. Kullanıcı rengi geri
+ * aldı: *"üstü garip olmuş, beyaz daha ayırt ediciydi o kalabilir ama diğerlerinde olmayan
+ * farklı bir dokunuş yap"*. `PALETTE.ownerShirt` kalktı, yani renk bekçisi artık YANLIŞ bir
+ * şeyi koruyordu — silinmedi, YERİ DEĞİŞTİ: P7'nin iki işareti `tests/oturus-kiyafet.test.ts`te
+ * bekçileniyor. Burada yalnız DEĞİŞMEYEN yarısı kalıyor.
  */
-describe('S18 · patron ile personel ayrışır', () => {
+describe('S18 · patron ile personel ayrışır (renk kanadı D-116 ile düştü)', () => {
   it('ÖNLÜK personelin üniforması — patron takmaz', () => {
     expect(KAY_KIYAFET.owner.onluk).toBe(false);
     expect(KAY_KIYAFET.waiter.onluk).toBe(true);
@@ -446,13 +448,8 @@ describe('S18 · patron ile personel ayrışır', () => {
     expect(KAY_KIYAFET.kitchenHand.onluk).toBe(true);
   });
 
-  it('GÖMLEK rengi patronda farklı ve fark GÖZLE seçilecek kadar büyük', () => {
-    expect(PALETTE.ownerShirt).not.toBe(PALETTE.shirt);
-    // Sayısal pay: iki rengin RGB mesafesi. Yakın iki krem "farklı renk" sayılırdı ama
-    // ekranda ayrışmazdı; eşik, paletteki en yakın iki kıyafet renginden geniş tutuldu.
-    const rgb = (h: string) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
-    const [a, b] = [rgb(PALETTE.ownerShirt), rgb(PALETTE.shirt)];
-    const uzaklik = Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
-    expect(uzaklik).toBeGreaterThan(120);
+  it('GÖMLEK ayırt edici işaret DEĞİL — patronun ayrı gömlek rengi kalmadı', () => {
+    // Olumsuz bekçi: `ownerShirt` geri eklenirse S18'in elenen kolu sessizce diriliyor demektir.
+    expect('ownerShirt' in PALETTE).toBe(false);
   });
 });

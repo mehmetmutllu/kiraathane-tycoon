@@ -6,6 +6,13 @@
 Stil kilidi: **KayKit (Kay Lousberg, CC0)** low-poly. Türk objeleri gerekirse AI üretimi (Meshy/Tripo).
 Detay: `docs/assets.md`.
 
+> **STİL KİLİDİ BİR KEZ, BİLEREK AÇILDI (2026-09-14 · S19b · D-116).** Sipariş balonunun içine
+> çizim değil NESNE koyma kararı tostu gerektirdi; repodaki **dokuz KayKit paketinde tost YOK**
+> (en yakını yuvarlak hamburger ekmeği — ölçüldü, `docs/patron-oturus-glif-raporu-s19a.md` §G/Y).
+> İkinci sanatçı olarak **Kenney Food Kit 2.0** (CC0) alındı. Kural silinmedi: kilit hâlâ KayKit,
+> bu bir İSTİSNA ve kullanıcı kararı. Çay bardağı iki pakette de yoktu, o bizim ilkelimizden
+> (ince belli bardak) çizildi — yani Kenney'ye "olur da lazım olur" diye genişletilmedi.
+
 ## Modüler model yapısı (`public/assets/models/<paket>/`)
 Her asset paketi **kendi klasöründe**, self-contained (gltf + bin + texture göreli yolla bağlı).
 Yeni paket eklemek = yeni klasör bırak; mevcut paketlere dokunma. Vite `public/`'i kökten
@@ -22,6 +29,7 @@ servis eder → URL: `/assets/models/<paket>/<isim>.gltf`. Loader: `components/t
 | `kaykit-holiday-bits/` | 21 model (paketin 98'inden) + `holiday_bits_texture.png` | KayKit Holiday Bits 1.0 — Kay Lousberg | **CC0** — pakette `License.txt` YOK, lisans itch sayfasının kendi alanından: *Creative Commons Zero v1.0 Universal* | ✅ eklendi 2026-09-14 (S13) · entegrasyon ⏳ |
 | `kaykit-resource-bits/` | 21 model (paketin 76'sından) + `resource_bits_texture.png` | KayKit Resource Bits 1.0 — Kay Lousberg | **CC0** (pakette `License.txt`) | ✅ eklendi 2026-09-14 (S13) · entegrasyon ⏳ |
 | `kaykit-characters/` | **6 gövde** (Barbarian · Knight · Mage · Ranger · Rogue · Rogue_Hooded; doku gövdenin İÇİNDE gömülü) + **4 klip dosyası** (`Rig_Medium_General/MovementBasic/Simulation/Tools` — 69 klip) + iki `License-*.txt` | KayKit Adventurers 2.0 FREE + KayKit Character Animations 1.1 — Kay Lousberg | **CC0** (ikisinin de `License.txt`'i klasörde tutuldu) | ✅ eklendi 2026-09-14 (S14) · **personel entegre edildi aynı gün** (sahip · garson · bulaşıkçı · çaycı) · müşteriler ⏳ sonraki tur |
+| `kenney-food-kit/` | **1 model** (paketin 201'inden: `sandwich`) + `Textures/colormap.png` (ortak atlas) | Kenney Food Kit 2.0 — kenney.nl | **CC0** (Kenney'nin tüm paketleri CC0; künye bu manifestte) | ✅ eklendi 2026-09-14 (S19b) · **entegre edildi aynı gün** (sipariş balonundaki tost) · **stil kilidi istisnası** |
 | `kaykit-prototype-bits/` | **3 model** (paketin 72'sinden: `Door_A` · `Door_A_Decorated` · `Door_B`) + `prototypebits_texture.png` | KayKit Prototype Bits 1.1 — Kay Lousberg | **CC0** (pakette `License.txt`) | ✅ eklendi 2026-09-14 (S13) · **entegre edildi aynı gün** (WC kabin kapısı) |
 
 > Not: Pakette gelen fbx / fbx(unity) / obj+mtl / ekstra png (sample, contents) ve License.txt/url

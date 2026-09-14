@@ -161,7 +161,9 @@ describe('S14 — karakter gövdeleri (D-112)', () => {
     // döndü. Kural o günden kaldı ve tek satırlık bir regex'e bağlı — bekçisi olmazsa
     // "tutarlılık olsun" diye baş listeye geri eklenir ve kimse fark etmez.
     // S18: liste sabit degil FONKSIYON oldu (gomlek role bagli). Capa adi guncellendi; kural ayni.
-    const blok = KAYNAK.slice(KAYNAK.indexOf('const parcaRenk'), KAYNAK.indexOf('};', KAYNAK.indexOf('const parcaRenk')));
+    // S19b (D-116): gömlek yeniden HERKESTE AYNI olduğu için liste tekrar sabit — `PARCA_RENK`.
+    // Patronu ayıran şey artık renk değil (omuz havlusu + sıvalı kol, `patron.ts`).
+    const blok = KAYNAK.slice(KAYNAK.indexOf('const PARCA_RENK'), KAYNAK.indexOf('];', KAYNAK.indexOf('const PARCA_RENK')));
     expect(blok).toContain('/arm/i');
     expect(blok).toContain('/leg/i');
     expect(/head|skull/i.test(blok), 'baş boyama listesine girmiş — saç ten rengine döner').toBe(false);

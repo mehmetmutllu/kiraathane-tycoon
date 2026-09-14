@@ -145,7 +145,11 @@ bunları yaparsın"*.
 
 ## Uygulama
 
-Sonraki tur (**S19b**). Dokunulacak yerler:
+Sonraki tur (**S19b**) — **YAPILDI, sayıları `docs/kiyafet-raporu-s19b.md`'de.** Uygulama
+üç yerde bu raporun sayılarını AŞTI: rozet ayrı düğüm değilmiş (gizleme kolu düştü), A2'nin
+sabit yarıçapı üç gövdenin ikisini deliyormuş, ten paletten değil dokudan okunmalıymış.
+
+Dokunulacak yerler (o turda planlandığı hâliyle):
 - `actor.ts` → `KAY_OTURMA_ILERI = 0.26` (tek sabit) · `Customers.tsx` çapayı koltuk açısıyla
   döndürerek uygular (yerel +z ileri).
 - `KayActor.kiyafetTak` → önlük kutudan yüzeye; `KAY_KIYAFET`e patron parçaları (havlu + sıvalı
