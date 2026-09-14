@@ -34,7 +34,21 @@ export function moveToward(pos: Vec3, target: RVec3, step: number): boolean {
   return false;
 }
 
-export const NPC_SPEED = 2.6;
+/**
+ * MÜŞTERİ YÜRÜME HIZI (br/sn). 2,60 → **1,40** (S18, kullanıcı kararı 2026-09-14).
+ *
+ * NEDEN DEĞİŞTİ: kullanıcı *"müşteriler koşmasın yürüsün"* dedi. Klip listesinden koşuyu çıkarmak
+ * tek başına yetmiyor — `Walking_A` kelepçe tavanında (1,8×) en fazla **1,028 br/sn** taşıyor;
+ * 2,60'ta ayak **2,53 kat** kayardı ("buz üstünde yürüme"). Ölçüm: `docs/olcum-musteri.txt`.
+ *
+ * 1,40 SEÇİLDİ, kusursuz 1,03 DEĞİL: aktör 1,75 br ≈ 1,75 m boyunda, yani 1,40 br/sn insanın
+ * gerçek yürüme hızıdır. Artık kayma 1,36× — bugün oyuncuda kabul edilen 2,0×'ın altında.
+ *
+ * DENGE BEDELİ ÖLÇÜLDÜ VE BİLEREK ÖDENDİ: müşteri ömrünün **%40,0'ı** yürümekle geçiyor (tam
+ * koşu, 30 dk), yani döngü 1,342 kat uzuyor → ürün kaybı TAVANI %25,5. Tavan, koltuğun her an
+ * darboğaz olduğu varsayımıdır; boş masa varken gerçek kayıp bundan küçüktür.
+ */
+export const NPC_SPEED = 1.4;
 export const PAD_RADIUS = 1.3;
 // Masa-başı yükseltme noktasının yarıçapı (Faz 2h). Pad'lerden küçük → komşu masanın noktasını tetiklemez.
 export const TABLE_UP_RADIUS = 1.0;

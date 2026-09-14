@@ -3487,3 +3487,54 @@ tuzağı mutasyon listesinde.
 
 Sayılar: `docs/karakter-raporu-s15.md` §Üçüncü tur · ham `docs/olcum-tepsi.json` ·
 kare `docs/gorsel/ss/s16-tepsi-yakin.png`
+
+---
+
+## D-115 — S18: müşteriler yürür (1,40 br/sn), koşu ana karakterin; ayrışma eklendi; üç sessiz hata kapandı (2026-09-14)
+
+**Kullanıcı üç şey bildirdi:** ① *"tüm karakterlerin elleri sağa açık garsonlar için vs"*
+② *"misafirler baya yan yana iç içe yürüyo"* ③ *"müşteriler koşmasın yürüsün"*; sonra
+④ *"saç rengi stili kıyafet falan değişiyorlar"* ve ⑤ *"etrafta tepsiler geziyo"*.
+
+**T-POZ (①).** Klipleri geç çözülen aktörde mount kancası `actions` boşken çalışıyor, `useFrame`in
+erken dönüşü de "hedef değişmedi" diye vuruyordu → o aktörde hiçbir klip hiç çalmıyor, kemikler
+bind pozunda (T-poz) kalıyordu. Erken dönüş artık **iki koşullu**: hedef değişmemiş VE çalıyor
+olmalı. Ölçüm `docs/olcum-kol.json`: donuk gövdede el oynaması **tam 0**.
+
+**KOŞU (③) — hız eşiği çözüm DEĞİLDİ.** İki klibin yazılı hızlarının geometrik ortası
+**0,844 br/sn**; üstündeki her hızda seçici koşuyu seçiyor, yani müşteri 0,9'a inse bile koşardı.
+Kim koşar sorusu hız değil **rol** sorusu: koşu klibi müşteri ve personelin aday listesinden
+çıkarıldı, ana karakterde kaldı (kullanıcı: *"ana karakter dışında kimse koşma efekti ile
+hareket etmeyecek"*). **`NPC_SPEED` 2,60 → 1,40** (kullanıcı seçti): `Walking_A` kelepçe
+tavanında 1,028 br/sn taşıyor, 2,60'ta ayak 2,53 kat kayardı; 1,40'ta kayma **1,36×**.
+**Denge bedeli bilerek ödendi:** müşteri ömrünün %40,0'ı yürümekle geçiyor → döngü 1,342 kat
+uzuyor, ürün kaybı TAVANI %25,5 (koltuk her an darboğaz sayılırsa; değilse daha az).
+
+**AYRIŞMA (②) — ayar değil EKSİK KUVVET.** `navStep`in separation'ı yalnız personele, oyuncudan
+kaçmak için veriliyordu; müşteri-müşteri çağrısı kodda hiç yoktu. `npcAyristir` eklendi (simetrik,
+`dt` kelepçeli, oturan hariç). Aynı hızda A/B: çakışan çift **%1,40 → %0,60**, en kısa ara
+**0,046 → 0,413** (eşik 2r = 0,560). `AYRISMA_HIZ` 2,4 — 4,0 hiçbir şey eklemiyor.
+
+**GÖRÜNÜM DEĞİŞİMİ (④).** Yuva DİZİ SIRASINA göre veriliyordu; ortadan biri kalkınca `npcs`
+kayıyor ve sonraki her müşteri bir alttaki gövdeye düşüyordu — oturduğu yerde saçı/kıyafeti
+değişiyordu. Tetikleyen temas değil, **başkasının salondan çıkmasıydı.** Eşleme artık npc
+kimliğine bağlı; müşteri geldiği yuvada ölür.
+
+**TEPSİ (⑤).** El kemikleri bir `useRef`e tembel yazılıp bir daha yenilenmiyordu; `govde` yeniden
+kurulunca ref eski iskeleti tutuyor, tepsi kopup sahnede asılı kalıyordu. Artık `useMemo([govde])`
+ve el bulunamazsa tepsi **gizleniyor**, yerinde bırakılmıyor.
+
+**AÇILIŞ DÖNGÜSÜ (bonus, S16'da "kapandı" denmişti).** `SplashScreen` drei'nin ilerleme store'una
+ABONEYDİ: her dosya bir render; önbellek sıcakken hepsi aynı karede bitip React'i patlatıyordu
+(3 açılışın 2'sinde). Artık abone olunmuyor, 100 ms'de bir okunuyor; `Tables.tsx`in yol listesi
+de modül sabiti oldu. 3/3 açılış temiz.
+
+**Bekçi:** `tests/musteri-ayrisma.test.ts` (6, davranış) · `tests/yukleme-dongusu.test.ts` (5) ·
+`karakter-senkron.test.ts`e 8 denetim. **8 mutasyon, kaçan 0** — biri (oturanı itme) önce kaçtı:
+test iki OTURAN kullanıyordu, iç döngünün bekçisi dıştakini örtüyordu; senaryo karışık çifte
+çevrildi. vitest **994** ✓ · duman **42/42** ✓ · `tsc -b` ✓.
+
+**SIRA KİLİDİ UYARISI, sebebi:** ölçüm aracı ile denge kodu aynı çalışma ağacında biriktiği için
+kapanışta karma commit uyarısı çıktı; iki commit'e ayrılarak kapatıldı (#1 ölçüm, #2 kod).
+
+Sayılar: `docs/olcum-musteri.txt` · `docs/olcum-kol.json` · `docs/olcum-panel-donusu.json`

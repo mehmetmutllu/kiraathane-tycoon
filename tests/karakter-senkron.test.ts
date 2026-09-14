@@ -41,7 +41,10 @@ import {
   PLAYER_RADIUS,
   CAMERA_LOOK_Y,
 } from '../src/config/actor';
-import { lokomosyonSec, LOKOMOSYON } from '../src/components/three/KayActor';
+import {
+  lokomosyonSec, LOKOMOSYON, LOKOMOSYON_YURUYUS, KOSABILIR, lokomosyonAdaylari,
+} from '../src/components/three/KayActor';
+import { NPC_SPEED } from '../src/game/layout';
 // @ts-expect-error — ölçüm aracı düz .mjs; tip yok, glTF okuyucu var.
 import { gltfOku } from '../tools/olcum-karakter.mjs';
 
@@ -59,6 +62,12 @@ function rigKemikleri(): string[] {
 /** Kodun seçtiği taşıma klibi — kaynaktan okunur ki test ile kod tek yerden beslensin. */
 const KLIP_TUT = /tut: '([^']+)'/.exec(readFileSync('src/components/three/KayActor.tsx', 'utf8'))?.[1] ?? '';
 const KAYNAK_ACTOR = readFileSync('src/components/three/KayActor.tsx', 'utf8');
+/**
+ * YORUMSUZ KOD. Bir kusuru anlatan yorum, o kusurun KALIBINI da icerir ("Eskiden
+ * `if (!eller.current[0])` yaziyordu…") ve olumsuz bir bekci o aciklamayla eslesip DOGRU kodu
+ * yanlis diye bildirir. Mutasyonla degil, bu testin kendisiyle yakalandi.
+ */
+const KOD_ACTOR = KAYNAK_ACTOR.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
 const KAYNAK_MUSTERI = readFileSync('src/components/three/Customers.tsx', 'utf8');
 
 /** Oyunun hareket hızları — ölçüm dosyasının damgaladığı takım. */
@@ -222,10 +231,31 @@ describe('S16 · taşıma pozu ve tepsi çapası', () => {
   });
 
   it('taşınan eşya ELİ takip eder — sabit dünya noktasına asılı DEĞİL', () => {
-    expect(KAYNAK_ACTOR).toMatch(/eller\.current = \[/);
+    // Çapa iki `handslot` kemiğinden okunur (S16 · D-114).
+    expect(KAYNAK_ACTOR).toMatch(/getObjectByName\(STERIL\('handslot\.l'\)\)/);
+    expect(KAYNAK_ACTOR).toMatch(/getObjectByName\(STERIL\('handslot\.r'\)\)/);
     // Konum takip edilir, DÖNÜŞ edilmez: tepsi düz kalmalı, elin eğimiyle yalpalamamalı.
     expect(KAYNAK_ACTOR).toMatch(/t\.position\.copy\(solP\.current\)/);
     expect(KAYNAK_ACTOR).not.toMatch(/t\.quaternion\.copy/);
+  });
+
+  /**
+   * TEPSİNİN KOPMASI (S18) — kullanıcı: *"etrafta tepsiler geziyo"*.
+   *
+   * El kemikleri eskiden bir `useRef`e TEMBEL yazılıyordu (`if (!eller.current[0])`) ve bir daha
+   * yenilenmiyordu; `govde` yeniden kurulunca (rol değişimi, HMR, yeni sahne) ref ESKİ iskeleti
+   * tutuyor, tepsi taşıyanından kopup sahnede asılı kalıyordu. İki bekçi, iki ayrı yolu kapatır.
+   */
+  it('TEPSİ: el kemikleri gövdeyle birlikte tazelenir (tembel ref DEĞİL)', () => {
+    expect(KAYNAK_ACTOR).toMatch(/const eller = useMemo<\[Object3D \| null, Object3D \| null\]>\(/);
+    // `[govde]` bağı şart: bağ kopar ya da `[]` olursa hata sessizce geri gelir.
+    expect(KAYNAK_ACTOR).toMatch(/\], \[govde\]\);/);
+    expect(KOD_ACTOR).not.toMatch(/eller\.current/);
+  });
+
+  it('TEPSİ: el bulunamazsa tepsi GİZLENİR, yerinde bırakılmaz', () => {
+    expect(KAYNAK_ACTOR).toMatch(/if \(!sol \|\| !sag\) \{\s*\n\s*t\.visible = false;\s*\n\s*return;/);
+    expect(KAYNAK_ACTOR).toMatch(/t\.visible = true;/);
   });
 
   it('kaymalar bileşenin İÇ çapasını sıfırlar — eşya elin ORİJİNİNE otursun', () => {
@@ -347,5 +377,47 @@ describe('S15 · müşteri skinned (D-113)', () => {
   it('yuva el değiştirince açı SNAP eder — önceki müşterinin yönünden dönmez', () => {
     expect(KAYNAK_MUSTERI).toMatch(/y\.yeniYuva = true;/);
     expect(KAYNAK_MUSTERI).toMatch(/y\.aci = y\.yeniYuva \? y\.hedefAci : MathUtils\.damp/);
+  });
+});
+
+/**
+ * S18 — KOŞU YALNIZ ANA KARAKTERİN (kullanıcı kararı 2026-09-14:
+ * *"ana karakter dışında kimse koşma efekti ile hareket etmeyecek"*).
+ *
+ * Bekçi DAVRANIŞI denetler, kaynak metnini değil: aday listesi neyi döndürüyor.
+ * Kaynak metni denetimi burada zayıf olurdu — listeyi kim kullanıyor sorusunu cevaplamaz.
+ */
+describe('S18 · koşu klibi rol bazlı', () => {
+  it('koşamayan rolde koşu klibi listede HİÇ YOK', () => {
+    expect(lokomosyonAdaylari('yuru', false)).not.toContain('Running_A');
+    expect(lokomosyonAdaylari('tasi', false)).not.toContain('Running_A');
+    expect(lokomosyonAdaylari('yuru', false)).toContain('Walking_A');
+  });
+
+  it('ana karakter koşabilir, personel koşamaz', () => {
+    expect(KOSABILIR.owner).toBe(true);
+    expect(KOSABILIR.waiter).toBe(false);
+    expect(KOSABILIR.dishwasher).toBe(false);
+    expect(KOSABILIR.kitchenHand).toBe(false);
+  });
+
+  /**
+   * ASIL SAYI BU: hız eşiği çözüm DEĞİLDİ. İki klibin yazılı hızlarının geometrik ortası
+   * √(0,571 × 1,247) = 0,844 br/sn; bunun üstündeki HER hızda seçici koşuyu seçiyordu.
+   * Yani "müşteriyi yavaşlatınca yürür" yanlıştı — 0,9'a insa bile koşardı.
+   */
+  it('hızı düşürmek tek başına yürütmezdi — liste daraltmak şarttı', () => {
+    const esik = Math.sqrt(KLIP_HIZI.Walking_A * KLIP_HIZI.Running_A);
+    expect(esik).toBeCloseTo(0.844, 2);
+    // Tam listeyle: eşiğin üstünde koşu kazanır (müşterinin eski hâli).
+    expect(lokomosyonSec(LOKOMOSYON.yuru, esik + 0.05).klip).toBe('Running_A');
+    // Daraltılmış listeyle: aynı hızda yürüyüş.
+    expect(lokomosyonSec(LOKOMOSYON_YURUYUS.yuru, esik + 0.05).klip).toBe('Walking_A');
+  });
+
+  it('müşteri hızında yürüyüş seçilir ve ayak kayması 1,36×', () => {
+    const s = lokomosyonSec(LOKOMOSYON_YURUYUS.yuru, NPC_SPEED);
+    expect(s.klip).toBe('Walking_A');
+    expect(NPC_SPEED / (KLIP_HIZI[s.klip] * s.timeScale)).toBeCloseTo(1.36, 1);
   });
 });

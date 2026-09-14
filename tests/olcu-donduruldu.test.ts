@@ -187,7 +187,10 @@ const NAV: Record<string, Donmus> = {
   'pad.yaricap': { deger: 1.3, karar: 'Faz 2', canli: () => PAD_RADIUS },
   'masa.yukseltmeYaricapi': { deger: 1.0, karar: 'Faz 2h (padden küçük → komşu masayı tetiklemez)', canli: () => TABLE_UP_RADIUS },
   'personel.beklemeAraligi': { deger: 0.7, karar: 'B6a (garson sırasının ritmi)', canli: () => WAITER_HOME_GAP },
-  'npc.hiz': { deger: 2.6, karar: 'Faz 2', canli: () => NPC_SPEED },
+  // 2,6 → 1,40 (S18 · D-115, kullanıcı kararı 2026-09-14). Müşteriler koşu klibinden yürüyüşe
+  // geçti; `Walking_A` kelepçe tavanında en fazla 1,028 br/sn taşıdığı için 2,6'da ayak 2,53 kat
+  // kayıyordu. Ölçüm ve kolların tam tablosu: `docs/olcum-musteri.txt` §1-§2.
+  'npc.hiz': { deger: 1.4, karar: 'S18 · D-115 (yürüyüş klibi + ayak kayması 1,36×)', canli: () => NPC_SPEED },
 };
 
 // ---------------------------------------------------------------------------

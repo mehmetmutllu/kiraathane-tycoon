@@ -556,9 +556,94 @@ function npcSystem(c: TickCtx): void {
     }
   }
   const liveNpcs = removed.length ? npcs.filter((n) => !removed.includes(n.id)) : npcs;
+  npcAyristir(liveNpcs, dt);
   c.cleanCups = cleanCups;
   c.nextId = nextId;
   c.liveNpcs = liveNpcs;
+}
+
+/** Ayrışmanın dokunmadığı durumlar: oturanın yeri koltuktur, WC'dekinin gövdesi çizilmez. */
+const AYRISMASIZ = new Set(['waitingForTea', 'drinking', 'inWc', 'wcGiris', 'wcCikis']);
+
+/**
+ * MÜŞTERİ-MÜŞTERİ AYRIŞMASI (S18, kullanıcı: *"gelen misafirler baya yan yana iç içe yürüyo"*).
+ *
+ * NEDEN YENİ BİR KUVVET, NEDEN AYAR DEĞİL: ölçüm (`docs/olcum-musteri.txt` §3) yürüyen çiftlerin
+ * **%1,51'inin** iç içe olduğunu, görülen en kısa aranın **0,056 br** (çakışma eşiği 2r = 0,560)
+ * olduğunu gösterdi — gövdeler neredeyse tamamen üst üste. Sebep bir eşiğin küçük olması değil:
+ * `navStep`in ayrışma parametresi YALNIZ personele, oyuncudan kaçmak için veriliyordu; müşteriler
+ * arasında böyle bir çağrı kodda HİÇ YOKTU. Yani ayarlanacak bir sayı değil, eksik bir kuvvet.
+ *
+ * KUVVET DEĞİL KONUM DÜZELTMESİ: hedefe gidiş `moveToward`/`navStep`in işi; burası yalnız
+ * ÇAKIŞMAYI açar. İki gövde birbirine girerse ikisi de yarı yarıya, aralarındaki eksende
+ * itilir — simetrik olduğu için hangi müşterinin önce işlendiği sonucu DEĞİŞTİRMEZ (dizi
+ * sırasına bağlı bir sapma doğmaz, `tick-fingerprint` tekrarlanabilir kalır).
+ *
+ * `dt` İLE KELEPÇELİ: düzeltme bir karede en fazla `AYRISMA_HIZ × dt` kadar. Kelepçesiz tam
+ * ayırma, kalabalıkta müşterileri birbirinden fırlatır (zincirleme itme); yumuşak düzeltme
+ * birkaç karede aynı sonucu verir ama görsel olarak yürüyüş gibi durur.
+ *
+ * HEDEFE VARMA BOZULMAZ: oturan müşteri (`waitingForTea`/`drinking`) ayrışmaya GİRMEZ — yeri
+ * koltuktur, itilirse masadan kalkmış görünür. WC geçişindekiler de çizilmediği için dışarıda.
+ */
+/**
+ * AYRISMA DUZELTMESININ KARE BASI TAVANI (br/sn). Suprunlerek olculdu (kisa kosu, ayni tohum):
+ *
+ *   AYRISMA_HIZ | cakisan cift | en kisa ara | servis
+ *   ------------|--------------|-------------|-------
+ *   0 (kapali)  |       %1,40  |      0,046  |  22
+ *   1,2         |       %0,79  |      0,342  |  21
+ *   2,4         |       %0,60  |      0,413  |  20     <- SECILEN
+ *   4,0         |       %0,60  |      0,413  |  20
+ *
+ * KIYAS AYNI HIZDA YAPILDI (NPC_SPEED 1,40). Ilk yazdigim tablo "S18 oncesi %1,51" diyordu ve
+ * o satir GECERSIZDI: 2,60 br/sn'deki bir kosudan aliniyordu, oysa hiz dusunce ayni anda yuruyen
+ * musteri sayisi ~3 kat artiyor ve yuzde tabani degisiyor. Kontrollu A/B yukaridaki tablodur.
+ *
+ * 2,4te DIZ var: ustune cikmak hicbir sey eklemiyor, cunku kelepce artik baglayici degil —
+ * kalan cakisma KAPI HUNISINDEN geliyor. Orada iki musteri ayni noktaya yuruyor; ayrisma iter,
+ * hedefe gidis geri toplar ve denge 0,413te kuruluyor. Bu bir kusur degil dar gecidin kendisi:
+ * 0,560 (2r) tam temas, 0,056 ise neredeyse tam ic ice demekti.
+ *
+ * SERVIS SAYISI DEGISMIYOR (21 -> 20, tohum gurultusu): ayrisma hedefe varmayi bozmuyor.
+ */
+const AYRISMA_HIZ = 2.4;
+
+function npcAyristir(npcs: Npc[], dt: number): void {
+  const r2 = LAYOUT.actorRadius * 2;
+  const enFazla = AYRISMA_HIZ * dt;
+  for (let i = 0; i < npcs.length; i++) {
+    const a = npcs[i];
+    if (AYRISMASIZ.has(a.state)) continue;
+    for (let j = i + 1; j < npcs.length; j++) {
+      const b = npcs[j];
+      if (AYRISMASIZ.has(b.state)) continue;
+      const dx = b.pos[0] - a.pos[0];
+      const dz = b.pos[2] - a.pos[2];
+      const d2 = dx * dx + dz * dz;
+      if (d2 >= r2 * r2) continue;
+      // TAM ÜST ÜSTE hâli: yön yok, bölme sıfıra düşer. Kimliğe bağlı sabit bir eksen seçilir
+      // (rastgele DEĞİL — tohumlu koşu tekrarlanabilir kalmalı).
+      let ux: number;
+      let uz: number;
+      let d: number;
+      if (d2 < 1e-8) {
+        const aci = ((a.id * 2654435761) % 1000) / 1000 * Math.PI * 2;
+        ux = Math.cos(aci);
+        uz = Math.sin(aci);
+        d = 0;
+      } else {
+        d = Math.sqrt(d2);
+        ux = dx / d;
+        uz = dz / d;
+      }
+      const itme = Math.min(enFazla, (r2 - d) * 0.5);
+      a.pos[0] -= ux * itme;
+      a.pos[2] -= uz * itme;
+      b.pos[0] += ux * itme;
+      b.pos[2] += uz * itme;
+    }
+  }
 }
 
 /**

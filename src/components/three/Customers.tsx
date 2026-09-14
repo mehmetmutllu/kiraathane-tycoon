@@ -33,7 +33,9 @@ import {
   NPC_SKIN_CAP,
 } from '../../config/actor';
 import { PALETTE } from '../../config/palette';
-import { ekipmanMi, basMi, kafaKucult, useKayKlipler, KLIP, LOKOMOSYON, lokomosyonSec, YURUME_ESIGI } from './KayActor';
+import {
+  ekipmanMi, basMi, kafaKucult, useKayKlipler, KLIP, LOKOMOSYON_YURUYUS, lokomosyonSec, YURUME_ESIGI,
+} from './KayActor';
 import { WC_GECIS, wcOlcek, LAYOUT } from '../../game/layout';
 
 /**
@@ -151,7 +153,11 @@ function yuvaKur(kaynak: Group, klipler: AnimationClip[], faz: number): Yuva {
 
   const mixer = new AnimationMixer(kok);
   const eylemler: Record<string, AnimationAction> = {};
-  for (const ad of [KLIP.dur, KLIP.otur, ...LOKOMOSYON.yuru]) {
+  // MUSTERI KOSMAZ (S18): eylem kumesine kosu klibi HIC kurulmaz — kullanici karari
+  // "ana karakter disinda kimse kosma efekti ile hareket etmeyecek". Gerekce ve sayilar
+  // `KayActor.LOKOMOSYON_YURUYUS`ta; kisaca 0,844 br/sn ustundeki her hizda secici kosuyu
+  // secerdi, yani yavaslatmak tek basina yetmiyordu.
+  for (const ad of [KLIP.dur, KLIP.otur, ...LOKOMOSYON_YURUYUS.yuru]) {
     const klip = klipler.find((c) => c.name === ad);
     if (klip) eylemler[ad] = mixer.clipAction(klip);
   }
@@ -170,6 +176,26 @@ type Havuz = {
   govdeBoy: number;
   /** Havuzu `hedef` yuvaya kadar büyütür; bir karede en çok `YUVA_BASINA_KARE` tane kurar. */
   buyut: (hedef: number) => void;
+  /** npc id → yuva indeksi. Bir müşteri ömrü boyunca AYNI yuvada kalır (gerekçe: `yuvaVer`). */
+  eslesme: Map<number, number>;
+  /** Bu karede hangi yuvalar kullanıldı — sahipsiz kalanlar kare sonunda serbest bırakılır. */
+  kullanilan: Set<number>;
+  /** Yuva indeksi → sahip npc id (−1 = boş). Sahiplik AÇIK tutulur; gerekçe `yuvaVer`. */
+  sahip: number[];
+  /**
+   * Müşteriye yuva verir; yoksa boş yuvadan birini ayırır. Yuva kalmadıysa −1 (kapsül kolu).
+   *
+   * BU EŞLEME NEDEN VAR (S18 — kullanıcı: *"saç rengi stili kıyafet falan değişiyorlar"*):
+   * yuva eskiden DİZİ SIRASINA göre veriliyordu (`yuvalar[i]` ↔ `npcs[i]`). Ortadaki bir müşteri
+   * kalkınca `npcs` dizisi kayıyor ve ondan SONRAKİ her müşteri bir alttaki yuvaya düşüyordu:
+   * gövde dosyası yuvaya sabit (`Knight/Rogue/Mage/Barbarian/Ranger` sırayla dağıtılıyor), renk
+   * de yuva el değiştirince yeniden yazılıyor — yani oturduğu yerde duran müşterinin SAÇI,
+   * GÖVDESİ ve KIYAFETİ bir anda değişiyordu. Temasla ya da çarpışmayla ilgisi yoktu; tetikleyen
+   * şey başka birinin salondan ÇIKMASIYDI.
+   *
+   * Kimliğe bağlı eşleme bunu yapısal olarak kapatır: müşteri geldiği yuvada ölür.
+   */
+  yuvaVer: (npcId: number) => number;
 };
 
 /**
@@ -197,6 +223,27 @@ function useMusteriHavuzu(): Havuz {
       grup,
       yuvalar,
       govdeBoy: ACTOR_HEIGHT,
+      eslesme: new Map<number, number>(),
+      kullanilan: new Set<number>(),
+      sahip: [],
+      yuvaVer: (npcId: number) => {
+        const mevcut = h.eslesme.get(npcId);
+        if (mevcut != null) {
+          h.kullanilan.add(mevcut);
+          return mevcut;
+        }
+        // SAHİPLİK `sahip` dizisinde AÇIKÇA tutulur. İlk hâli boşluğu `yuvalar[k].npcId`den
+        // çıkarmaya çalışıyordu ve yanlıştı: o alan kare gövdesinde güncelleniyor, yani aynı
+        // karede gelen İKİ yeni müşteri aynı yuvayı kapabiliyordu (biri diğerinin üstüne binerdi).
+        for (let k = 0; k < yuvalar.length; k++) {
+          if (h.sahip[k] !== -1) continue;
+          h.sahip[k] = npcId;
+          h.eslesme.set(npcId, k);
+          h.kullanilan.add(k);
+          return k;
+        }
+        return -1; // yuva kalmadı → kapsül kolu (gerekçe: NPC_SKIN_CAP)
+      },
       buyut: (hedef: number) => {
         const sinir = Math.min(hedef, NPC_SKIN_CAP);
         let kurulan = 0;
@@ -204,6 +251,7 @@ function useMusteriHavuzu(): Havuz {
           const y = yuvaKur(dosyalar[yuvalar.length % dosyalar.length].scene as Group, klipler, yuvalar.length);
           grup.add(y.kok);
           yuvalar.push(y);
+          h.sahip.push(-1);
           kurulan++;
           // BALONCUK YÜKSEKLİĞİ gövdeden TÜRETİLİR, elle yazılmaz: baş `KAY_KAFA_OLCEK` ile
           // küçüldüğü için siluetin tepesi 1,75 değil (~1,52) ve o sayı ölçek değişince kayar.
@@ -254,9 +302,10 @@ export function Customers() {
         : npc.state === 'wcCikis' ? wcOlcek(npc.timer / WC_GECIS)
         : 1;
 
-      if (i < yuvalar.length) {
+      const yuvaIdx = havuz.yuvaVer(npc.id);
+      if (yuvaIdx >= 0) {
         // ---- SKINNED YUVA ----
-        const y = yuvalar[i];
+        const y = yuvalar[yuvaIdx];
         if (y.npcId !== npc.id) {
           // Yuva el değiştirdi: gömlek rengi yeni müşteriden gelir (`feedback_color_variety`).
           y.npcId = npc.id;
@@ -294,7 +343,7 @@ export function Customers() {
         y.kok.rotation.y = y.aci;
         y.kok.scale.setScalar(KAY_SCALE * gorunurluk);
 
-        const secim = !oturan && hiz > YURUME_ESIGI ? lokomosyonSec(LOKOMOSYON.yuru, hiz) : null;
+        const secim = !oturan && hiz > YURUME_ESIGI ? lokomosyonSec(LOKOMOSYON_YURUYUS.yuru, hiz) : null;
         const hedefKlip = oturan ? KLIP.otur : secim ? secim.klip : KLIP.dur;
         const yeni = y.eylemler[hedefKlip];
         if (yeni) {
@@ -324,7 +373,7 @@ export function Customers() {
 
       // "çay bekliyor" baloncuğu — baş üstünde, dönmez.
       if (npc.state === 'waitingForTea') {
-        const skinned = i < yuvalar.length;
+        const skinned = yuvaIdx >= 0;
         dummy.position.set(
           x,
           skinned ? havuz.govdeBoy + 0.15 + (oturan ? KAY_OTURMA_KALDIRMA - 0.3 : 0) : BUBBLE_Y + SEATED_DROP,
@@ -338,11 +387,19 @@ export function Customers() {
       }
     }
 
-    // Kullanılmayan yuvaları gizle (müşteri azalınca sahnede hayalet kalmasın).
-    for (let i = n; i < yuvalar.length; i++) {
-      yuvalar[i].kok.visible = false;
-      yuvalar[i].npcId = -1;
+    // SAHİPSİZ YUVALARI SERBEST BIRAK. Eskiden "n'den sonrakiler" gizleniyordu; eşleme kimliğe
+    // bağlandığı için kullanılan yuvalar artık dizinin sonunda TOPLU durmuyor — bu karede
+    // dokunulmayan her yuva boşalmış demektir. Eşleme de burada temizlenir, yoksa `Map`
+    // salondan çıkan her müşteriyle büyümeye devam ederdi (oturum boyu sızıntı).
+    for (let i = 0; i < yuvalar.length; i++) {
+      if (havuz.kullanilan.has(i)) continue;
+      const y = yuvalar[i];
+      y.kok.visible = false;
+      if (havuz.sahip[i] >= 0) havuz.eslesme.delete(havuz.sahip[i]);
+      havuz.sahip[i] = -1;
+      y.npcId = -1;
     }
+    havuz.kullanilan.clear();
 
     kapsul.count = kapsulCount;
     kapsul.instanceMatrix.needsUpdate = true;

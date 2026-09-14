@@ -94,6 +94,36 @@ export const LOKOMOSYON: Record<'yuru' | 'tasi', readonly string[]> = {
 };
 
 /**
+ * KOŞU YALNIZ ANA KARAKTERİN (S18, kullanıcı kararı 2026-09-14):
+ * *"ana karakter dışında kimse koşma efekti ile hareket etmeyecek"*.
+ *
+ * NEDEN KOL LİSTESİ, NEDEN HIZ EŞİĞİ DEĞİL: `lokomosyonSec` bozulmayı logaritmik ölçtüğü için
+ * **0,844 br/sn'nin üstündeki her hızda `Running_A` kazanıyor** (iki klibin yazılı hızlarının
+ * geometrik ortası orası). Yani "yavaşlarsa yürür" doğru değildi — müşteri 0,9'a inse bile
+ * koşardı. Kim koşabilir sorusu bir HIZ sorusu değil, bir ROL sorusudur; aday listesinden
+ * çözülür. Ölçüm: `docs/olcum-musteri.txt` §1.
+ *
+ * Ana karakter listede kalıyor çünkü oyuncu 4,5-5,4 br/sn gidiyor; onu yürütmek 7,9× ayak
+ * kayması demekti (D-113'te ölçüldü) ve zaten oyuncunun koşması istenen şey.
+ */
+export const LOKOMOSYON_YURUYUS: Record<'yuru' | 'tasi', readonly string[]> = {
+  yuru: ['Walking_A'],
+  tasi: ['Walking_B'],
+};
+
+/** Rolün koşu klibi kullanma izni. Müşterilerin karşılığı `Customers.tsx`te (her zaman yürür). */
+export const KOSABILIR: Record<ActorKind, boolean> = {
+  owner: true,
+  waiter: false,
+  dishwasher: false,
+  kitchenHand: false,
+};
+
+/** Rolün hareket klibi adayları — koşamayan rolde koşu klibi listeye hiç girmez. */
+export const lokomosyonAdaylari = (hal: 'yuru' | 'tasi', kosabilir: boolean): readonly string[] =>
+  (kosabilir ? LOKOMOSYON : LOKOMOSYON_YURUYUS)[hal];
+
+/**
  * Hızı EN AZ BOZARAK taşıyan klibi seç ve gereken `timeScale`i ver.
  *
  * Bozulma logaritmik ölçülür: 2 kat hızlandırmak ile 2 kat yavaşlatmak aynı ağırlıktadır,
@@ -341,7 +371,7 @@ export function KayActor({
     // SENKRON (S15 · D-113): hareket halinde klip HIZDAN seçilir ve hıza göre hızlandırılır.
     // Duruş/çalışma/oturma klipleri yerinde çalar, `timeScale` 1 kalır.
     const hareket = hedefHal === 'yuru' || hedefHal === 'tasi';
-    const secim = hareket ? lokomosyonSec(LOKOMOSYON[hedefHal], hiz) : null;
+    const secim = hareket ? lokomosyonSec(lokomosyonAdaylari(hedefHal, KOSABILIR[kind]), hiz) : null;
     const hedefKlip = secim ? secim.klip : KLIP[hedefHal];
 
     // TAŞIMA (S16): elinde tepsi varken üst gövde `KLIP.tut`, alt gövde yürüyüş oynar.
@@ -390,21 +420,35 @@ export function KayActor({
   // Çapa artık iki `handslot` kemiğinin ORTASI. KONUM takip edilir, DÖNÜŞ edilmez: tepsi
   // düz kalmalı, elin eğimiyle yalpalamamalı.
   const tepsiRef = useRef<Group>(null);
-  const eller = useRef<[Object3D | null, Object3D | null]>([null, null]);
+  /**
+   * EL KEMİKLERİ `govde` İLE BİRLİKTE TAZELENİR (S18).
+   *
+   * Eskiden bir `useRef` içinde TEMBEL dolduruluyordu (`if (!eller.current[0])`) ve bir daha
+   * hiç yenilenmiyordu. `govde` ise `useMemo([scene, kind])` — yani gövde yeniden kurulduğunda
+   * (rol değişimi, HMR, `useGLTF`in yeni sahne döndürmesi) ref ESKİ iskeletin kemiklerini
+   * tutmaya devam ediyordu. Eski iskelet artık sahnede olmadığı için dünya konumu donuyor ve
+   * tepsi, taşıyanından kopup salonda bir yerde ASILI kalıyordu — kullanıcı 2026-09-14:
+   * *"etrafta tepsiler geziyo"*. `useMemo` bağı kurunca kemikler gövdeyle birlikte tazeleniyor.
+   */
+  const eller = useMemo<[Object3D | null, Object3D | null]>(() => [
+    govde.getObjectByName(STERIL('handslot.l')) ?? null,
+    govde.getObjectByName(STERIL('handslot.r')) ?? null,
+  ], [govde]);
   const solP = useRef(new Vector3());
   const sagP = useRef(new Vector3());
   useFrame(() => {
     const t = tepsiRef.current;
     const g = ref.current;
     if (!t || !g) return;
-    if (!eller.current[0]) {
-      eller.current = [
-        govde.getObjectByName(STERIL('handslot.l')) ?? null,
-        govde.getObjectByName(STERIL('handslot.r')) ?? null,
-      ];
+    const [sol, sag] = eller;
+    // EL BULUNAMAZSA TEPSİ GİZLENİR, yerinde BIRAKILMAZ. Bırakmak sessiz bir kusurdu: tepsi
+    // konum alamayınca son konumunda kalıyor ve sahnede sahipsiz duruyordu. Görünmemek,
+    // yanlış yerde görünmekten iyidir.
+    if (!sol || !sag) {
+      t.visible = false;
+      return;
     }
-    const [sol, sag] = eller.current;
-    if (!sol || !sag) return;
+    t.visible = true;
     sol.getWorldPosition(solP.current);
     sag.getWorldPosition(sagP.current);
     solP.current.add(sagP.current).multiplyScalar(0.5);
