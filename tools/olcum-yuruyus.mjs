@@ -204,6 +204,35 @@ function adimHizi(j, bin, klip) {
 /** Gerçek insanın sprint kadansı — `timeScale` kelepçesinin üst sınırı bu sayıdan türer. */
 const SPRINT_ADIM_SN = 4.5;
 
+// ───────────────────────── Oturuş: SEATED_DROP'un skinned karşılığı ─────────────────────────
+
+/**
+ * `Sit_Chair_Idle` klibinde kalça ve ayak kemiğinin KÖK'e göre yüksekliği.
+ *
+ * NEDEN: bugünkü `SEATED_DROP` (−0,45) bir NUMARAdır — kapsül oturamadığı için gövde aşağı
+ * indiriliyordu. Gerçek oturuş klibi gelince gövde zaten oturuyor; sorulacak sayı "rig kökü
+ * hangi yükseklikten asılacak ki kalça taburenin oturağına (0,45) gelsin".
+ */
+function oturusOlc(dosyaAd, klipAd) {
+  const { j, bin } = glbOku(path.join(KAY, `${dosyaAd}.glb`));
+  const klip = j.animations.find((a) => a.name === klipAd);
+  if (!klip) return null;
+  const { izler } = klipOrnekle(j, bin, klip, ['hips', 'foot.l', 'root'], 60);
+  const [kalca, ayak] = izler;
+  const ort = (iz) => iz.reduce((s, p) => s + p.y, 0) / iz.length;
+  const kalcaHam = ort(kalca);
+  const ayakHam = ort(ayak);
+  return {
+    klip: klipAd,
+    kalcaHam: +kalcaHam.toFixed(3),
+    ayakHam: +ayakHam.toFixed(3),
+    kalcaDunya: +(kalcaHam * KAY_SCALE).toFixed(3),
+    ayakDunya: +(ayakHam * KAY_SCALE).toFixed(3),
+    /** Kök bu kadar kaldırılırsa kalça taburenin oturağına (0,45) gelir. */
+    kokKaldirma: +(0.45 - kalcaHam * KAY_SCALE).toFixed(3),
+  };
+}
+
 // ───────────────────────── K kolu: kafa oranı ─────────────────────────
 
 const EKIPMAN = ['cape', 'cloak', 'helmet', 'visor', 'hood', 'hat', 'crown', 'shoulder', 'pauldron', 'pauldrons', 'armor', 'sword', 'shield', 'staff', 'wand', 'bow', 'quiver', 'dagger', 'axe', 'spellbook', 'horn', 'backpack', 'mask'];
@@ -347,6 +376,9 @@ const rapor = {
   K_kafa: GOVDELER.map((g) => kafaOrani(path.join(KAY, `${g}.glb`))),
   O_boy: boyKollari(),
   C_cizim: GOVDELER.map((g) => cizimBedeli(path.join(KAY, `${g}.glb`))),
+  Oturus: ['Sit_Chair_Idle', 'Sit_Chair_Down', 'Sit_Chair_StandUp']
+    .map((k) => oturusOlc('Rig_Medium_Simulation', k))
+    .filter(Boolean),
 };
 
 const yz = (v) => String(v).replace('.', ',');
@@ -415,6 +447,15 @@ rapor.C_ozet = {
   ortUcgen,
   npc24: { asIsCizim: 24 * tipik.sivilParca, birlesikCizim: 24 * tipik.birlestirilmisCizim, kapsulCizim: 1, ucgen: 24 * ortUcgen, kapsulUcgen: 24 * KAPSUL_UCGEN },
 };
+
+console.log('\n=== OTURUS: gercek oturus klibinde kalca nerede ===');
+console.log('klip                kalca(ham)  kalca(dunya)  ayak(dunya)  KOK KALDIRMA (0,45 icin)');
+for (const o of rapor.Oturus) {
+  console.log(
+    `${o.klip.padEnd(19)} ${yz(o.kalcaHam).padStart(10)}  ${yz(o.kalcaDunya).padStart(12)}  ${yz(o.ayakDunya).padStart(11)}  ${yz(o.kokKaldirma).padStart(23)}`,
+  );
+}
+console.log(`bugunku SEATED_DROP numarasi: ${yz(+(1.3 - ACTOR_HEIGHT).toFixed(2))}`);
 
 if (process.env.OLCUM_YAZ === '1') {
   const cikti = path.join(KOK, 'docs/olcum-yuruyus.json');

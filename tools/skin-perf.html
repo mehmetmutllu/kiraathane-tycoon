@@ -93,12 +93,19 @@
   }
   const g2 = (dt) => mixerler.forEach((m) => m.update(dt));
 
-  // --- KOL 3 (S15): BİRLEŞTİRİLMİŞ skinned — gövdenin 6 parçası tek geometriye kaynar ---
+  // --- KOL 3 (S15): SEVK EDİLECEK BİÇİM — baş ayrı, gövde birleşik (gövde başına 2 çizim) ---
   //
-  // NEDEN ÖLÇÜLÜYOR: S15 ölçümü gövdenin 6 sivil mesh'inin TEK materyali olduğunu gösterdi
-  // (`docs/olcum-yuruyus.json` §C_cizim). Tek materyal = tek çizimde toplanabilir; kol 2'de
-  // karakter başına 6 çizim varken burada 1 olmalı. ÜÇGEN SAYISI DEĞİŞMEZ — kazanç yalnız
-  // çizim çağrısında, ve o kazancın ms karşılığı bilinmeden müşteri kolu seçilemez.
+  // NEDEN İKİ MESH, NEDEN BİR DEĞİL: ilk ölçüm gövdenin 6 sivil mesh'inin TEK materyali
+  // olduğunu gösterdi (`docs/olcum-yuruyus.json` §C_cizim) ve "hepsi tek çizime iner" dedi.
+  // UYGULAMADA ÇAKIŞTI: oyunun kuralı başı BOYAMAmak (yüz, saç ve sakal başın kendi
+  // dokusundan gelir — boyanınca saç da ten oluyor, D-112), kıyafeti ise düz boyamak. Tek
+  // materyal ikisini birden yapamaz: ya doku herkese uygulanır ya kimseye. O yüzden sevk
+  // edilen biçim İKİ mesh — baş dokulu materyalini korur, kol+gövde+bacak tek geometriye
+  // kaynar ve rengini KÖŞE RENGİNDEN alır (gömlek ve pantolon aynı mesh'te, ayrı renkte).
+  //
+  // Kol 2 (6 parça) ile kol 4 (tek mesh) arasındaki gerçek yer burasıdır; sayı tahmin
+  // edilmeyip ölçülür, çünkü müşteri bütçesi (`NPC_SKIN_CAP`) bu sayıdan türüyor.
+  const basMi = (ad) => /head|skull/i.test(ad ?? '');
   const s3 = new THREE.Scene();
   const mixerler3 = [];
   for (let i = 0; i < N; i++) {
@@ -107,16 +114,18 @@
     o.traverse((n) => {
       if (n.isSkinnedMesh) parcalar.push(n);
     });
-    const birlesik = mergeGeometries(
-      parcalar.map((p) => p.geometry.clone()),
-      false,
-    );
-    const kaynasmis = new THREE.SkinnedMesh(birlesik, parcalar[0].material);
+    const bas = parcalar.filter((p) => basMi(p.name));
+    const govde = parcalar.filter((p) => !basMi(p.name));
     const ana = parcalar[0];
-    kaynasmis.bind(ana.skeleton, ana.bindMatrix);
     const ust = ana.parent ?? o;
     parcalar.forEach((p) => p.parent?.remove(p));
-    ust.add(kaynasmis);
+    for (const kume of [bas, govde]) {
+      if (!kume.length) continue;
+      const geo = mergeGeometries(kume.map((p) => p.geometry.clone()), false);
+      const mesh = new THREE.SkinnedMesh(geo, kume[0].material);
+      mesh.bind(ana.skeleton, ana.bindMatrix);
+      ust.add(mesh);
+    }
     const kutu = new THREE.Box3().setFromObject(o);
     const k = H / kutu.getSize(new THREE.Vector3()).y;
     o.scale.multiplyScalar(k);
@@ -132,7 +141,7 @@
   const sonuc = [
     await kos('instanced kapsül (bugün)', s1, g1),
     await kos(`${N}× skinned ${model} (6 parça)`, s2, g2),
-    await kos(`${N}× skinned ${model} (BİRLEŞİK)`, s3, g3),
+    await kos(`${N}× skinned ${model} (baş+gövde, SEVK)`, s3, g3),
   ];
   const [a, b, c] = sonuc;
   document.getElementById('out').textContent =

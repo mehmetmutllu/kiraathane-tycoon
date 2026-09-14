@@ -1,0 +1,329 @@
+<title>S15 Karar Paketi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --ink: #1c1614;
+    --paper: #f7f3ee;
+    --yuzey: #fffdfa;
+    --cizgi: #e2d8cd;
+    --sis: #7d6c61;
+    --bordo: #8a2433;
+    --bordo-sis: #f0e0e1;
+    --yesil: #23685a;
+    --ocak: #ab6310;
+    --golge: 0 1px 2px #1c161408, 0 8px 24px #1c16140a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #f2ece5;
+      --paper: #16120f;
+      --yuzey: #1f1a16;
+      --cizgi: #362d26;
+      --sis: #a2938a;
+      --bordo: #e07686;
+      --bordo-sis: #33191d;
+      --yesil: #5fc0aa;
+      --ocak: #e0a154;
+      --golge: 0 1px 2px #0005, 0 8px 24px #0004;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #f2ece5;
+    --paper: #16120f;
+    --yuzey: #1f1a16;
+    --cizgi: #362d26;
+    --sis: #a2938a;
+    --bordo: #e07686;
+    --bordo-sis: #33191d;
+    --yesil: #5fc0aa;
+    --ocak: #e0a154;
+    --golge: 0 1px 2px #0005, 0 8px 24px #0004;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font: 400 16px/1.6 "IBM Plex Sans", system-ui, sans-serif;
+    padding-block: 0 5rem;
+    padding-left: max(20px, calc(50vw - 560px));
+    padding-right: max(20px, calc(50vw - 560px));
+    -webkit-font-smoothing: antialiased;
+  }
+  .sar { max-width: 1120px; margin: 0 auto; }
+  p, li { max-width: 66ch; }
+
+  h1, h2, h3 { font-family: "Bricolage Grotesque", "IBM Plex Sans", sans-serif; text-wrap: balance; margin: 0; }
+  h1 { font-weight: 800; font-size: clamp(2rem, 5.5vw, 3.1rem); line-height: 1.05; letter-spacing: -0.02em; }
+  h2 { font-weight: 800; font-size: clamp(1.4rem, 3.6vw, 1.9rem); line-height: 1.15; letter-spacing: -0.015em; }
+  h3 { font-weight: 600; font-size: 1.05rem; letter-spacing: -0.005em; }
+
+  .goz {
+    font: 600 11px/1 "IBM Plex Mono", monospace;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--sis);
+  }
+
+  /* ---- başlık ---- */
+  header { padding-block: 3.5rem 2.5rem; border-bottom: 2px solid var(--ink); }
+  header p.alt { font-size: 1.05rem; color: var(--sis); margin: 1rem 0 0; }
+  .kunye {
+    display: flex; flex-wrap: wrap; gap: 0.4rem 1.5rem; margin-top: 1.6rem;
+    font: 400 12px/1.5 "IBM Plex Mono", monospace; color: var(--sis);
+  }
+  .kunye b { color: var(--ink); font-weight: 600; }
+
+  /* ---- kol bölümü ---- */
+  section.kol { padding-block: 3rem; border-bottom: 1px solid var(--cizgi); }
+  .kol-bas { display: flex; align-items: baseline; gap: 0.9rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+  .harf {
+    font-family: "Bricolage Grotesque", sans-serif; font-weight: 800;
+    font-size: 2.4rem; line-height: 0.8; color: var(--bordo); letter-spacing: -0.03em;
+  }
+  .soru { color: var(--sis); margin: 0.6rem 0 1.8rem; }
+
+  /* ---- veri tablosu ---- */
+  .kaydir { overflow-x: auto; margin: 1.5rem 0; }
+  table { border-collapse: collapse; width: 100%; min-width: 480px; font-size: 14px; }
+  th, td { text-align: right; padding: 0.55rem 0.7rem; border-bottom: 1px solid var(--cizgi); }
+  th:first-child, td:first-child { text-align: left; }
+  thead th {
+    font: 600 11px/1.3 "IBM Plex Mono", monospace; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--sis); border-bottom: 1px solid var(--ink);
+  }
+  tbody td { font-variant-numeric: tabular-nums; font-family: "IBM Plex Mono", monospace; }
+  tbody td:first-child { font-family: "IBM Plex Sans", sans-serif; }
+  tr.vurgu td { background: var(--bordo-sis); font-weight: 600; }
+  .ok { color: var(--yesil); font-weight: 600; }
+  .kir { color: var(--bordo); font-weight: 600; }
+
+  /* ---- kayma çubuğu ---- */
+  .cubuklar { display: grid; gap: 0.5rem; margin: 1.5rem 0; }
+  .cubuk { display: grid; grid-template-columns: minmax(96px, 130px) 1fr auto; gap: 0.8rem; align-items: center; }
+  .cubuk .ad { font-size: 13px; color: var(--sis); }
+  .ray { height: 20px; background: var(--yuzey); border: 1px solid var(--cizgi); position: relative; border-radius: 2px; overflow: hidden; }
+  .dolgu { position: absolute; inset-block: 0; left: 0; background: var(--bordo); opacity: 0.85; }
+  .dolgu.iyi { background: var(--yesil); }
+  .tavan { position: absolute; inset-block: -3px; width: 2px; background: var(--ink); }
+  .cubuk .sayi { font: 600 13px/1 "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; min-width: 4.2em; text-align: right; }
+
+  /* ---- kare ---- */
+  figure { margin: 1.8rem 0; }
+  figure img { display: block; width: 100%; max-width: 100%; border: 1px solid var(--cizgi); border-radius: 3px; background: var(--yuzey); }
+  figcaption { font-size: 13px; color: var(--sis); margin-top: 0.6rem; max-width: 66ch; }
+
+  /* ---- öneri ---- */
+  .oneri {
+    margin: 1.8rem 0 0; padding: 1.2rem 1.4rem; background: var(--yuzey);
+    border-left: 4px solid var(--bordo); border-radius: 0 3px 3px 0; box-shadow: var(--golge);
+  }
+  .oneri .goz { color: var(--bordo); }
+  .oneri p { margin: 0.5rem 0 0; }
+  .oneri p:last-child { margin-bottom: 0; }
+
+  .not { font-size: 14px; color: var(--sis); }
+  .not strong { color: var(--ink); }
+  code { font: 400 0.88em/1 "IBM Plex Mono", monospace; background: var(--yuzey); border: 1px solid var(--cizgi); padding: 0.1em 0.35em; border-radius: 3px; }
+
+  ul.sade { padding-left: 1.1rem; }
+  ul.sade li { margin-bottom: 0.5rem; }
+
+  @media (max-width: 560px) {
+    .cubuk { grid-template-columns: 1fr; gap: 0.2rem; }
+    .cubuk .sayi { text-align: left; }
+  }
+</style>
+
+<div class="sar">
+
+<header>
+  <span class="goz">S15 · adım 3 · karar paketi</span>
+  <h1>Kafa, senkron<br>ve müşteri gövdesi</h1>
+  <p class="alt">Üç görsel geri bildirimin sayısı çıktı. Dört kolda seçim senin; her kolun altında ölçülen rakam ve önerim duruyor.</p>
+  <div class="kunye">
+    <span><b>Ham çıktı</b> docs/olcum-yuruyus.json</span>
+    <span><b>Rapor</b> docs/karakter-raporu-s15.md</span>
+    <span><b>Commit</b> 93282ae</span>
+    <span><b>Tarih</b> 14 Eylül 2026</span>
+  </div>
+</header>
+
+<!-- ═══════════ S ═══════════ -->
+<section class="kol">
+  <div class="kol-bas"><span class="harf">S</span><h2>Yürüme senkronu</h2></div>
+  <p class="soru">“Havada süzülüyor gibi” — klip hangi hız için çizilmiş, karakter hangi hızda gidiyor?</p>
+
+  <p>Bir yürüme klibi belli bir <strong>yer hızı</strong> için çizilir: basılı ayak, gövde sabitken geriye kayar. O kaymanın uzunluğu, karakterin o döngüde gitmesi gereken yoldur. Klipleri dosyadan örnekleyip ölçtüm — beşinde de <strong>kök kayması sıfır</strong>, yani klipler “yerinde”, senkronlamanın önünde engel yok.</p>
+
+  <div class="kaydir">
+  <table>
+    <thead><tr><th>klip</th><th>süre</th><th>döngü yolu</th><th>yazılı hız</th><th>kadans</th></tr></thead>
+    <tbody>
+      <tr class="vurgu"><td>Walking_A <span class="not">bugün</span></td><td>1,067 sn</td><td>0,766</td><td>0,571 br/sn</td><td>1,87</td></tr>
+      <tr><td>Walking_B</td><td>1,067 sn</td><td>0,880</td><td>0,655 br/sn</td><td>1,87</td></tr>
+      <tr><td>Running_A</td><td>0,800 sn</td><td>1,257</td><td>1,247 br/sn</td><td>2,50</td></tr>
+      <tr><td>Running_B</td><td>0,800 sn</td><td>1,264</td><td>1,254 br/sn</td><td>2,50</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Bugün ayak kaç katı kayıyor</h3>
+  <p class="not">Gerçek hız ÷ klibin yazılı hızı. <strong>1,0 = kayma yok.</strong> Siyah çizgi, klibi hızlandırarak gidilebilecek sınır (sprint kadansı 4,5 adım/sn).</p>
+  <div class="cubuklar">
+    <div class="cubuk"><span class="ad">garson k0</span><div class="ray"><div class="dolgu iyi" style="width:26%"></div><div class="tavan" style="left:42%"></div></div><span class="sayi">2,6×</span></div>
+    <div class="cubuk"><span class="ad">garson k1</span><div class="ray"><div class="dolgu iyi" style="width:35%"></div><div class="tavan" style="left:42%"></div></div><span class="sayi">3,5×</span></div>
+    <div class="cubuk"><span class="ad">bulaşıkçı k2</span><div class="ray"><div class="dolgu iyi" style="width:49%"></div><div class="tavan" style="left:42%"></div></div><span class="sayi">4,9×</span></div>
+    <div class="cubuk"><span class="ad">müşteri</span><div class="ray"><div class="dolgu iyi" style="width:46%"></div><div class="tavan" style="left:42%"></div></div><span class="sayi">4,6×</span></div>
+    <div class="cubuk"><span class="ad">oyuncu k0</span><div class="ray"><div class="dolgu" style="width:79%"></div><div class="tavan" style="left:42%"></div></div><span class="sayi">7,9×</span></div>
+    <div class="cubuk"><span class="ad">oyuncu k3</span><div class="ray"><div class="dolgu" style="width:95%"></div><div class="tavan" style="left:42%"></div></div><span class="sayi">9,5×</span></div>
+  </div>
+
+  <p><strong>Personel ve müşteride süzülme tamamen biter.</strong> <code>Running_A</code>’ya geçip hıza bağlı <code>timeScale</code> verilince katsayı 1,20–2,25 arasında kalıyor, oluşan kadans 3,0–5,6 adım/sn — gerçek koşu bandı.</p>
+  <p><strong>Oyuncuda bitmez.</strong> Hızı (4,5–5,4 br/sn) klibin taşıyabileceğinin iki katı. Sprint kadansına kelepçelenirse klip 2,24 br/sn taşır, <strong>2,0× artık kayma kalır</strong> — bugünkü 7,9×’ın dörtte biri. Sıfırlamanın tek yolu oyuncu hızını düşürmek; o <code>economy.config.ts</code>’e dokunur, varyant kapısına tabidir ve bu turda <em>ölçülmedi</em>.</p>
+
+  <div class="oneri">
+    <span class="goz">Önerim · S3</span>
+    <p><strong>Klip seçimi + hıza bağlı timeScale + sprint kelepçesi.</strong> Yavaş giden yürür, hızlı giden koşar; katsayı hızdan türer, tavan 1,80’de durur. Personel ve müşteri birebir senkron olur, oyuncuda kayma 7,9× → 2,0×’a iner.</p>
+    <p class="not">Oyuncu hızını düşürme kolu kendi turuna yazılır — denge sayısı, ölçülmeden dokunulmaz.</p>
+  </div>
+</section>
+
+<!-- ═══════════ K ═══════════ -->
+<section class="kol">
+  <div class="kol-bas"><span class="harf">K</span><h2>Kafa boyu</h2></div>
+  <p class="soru">“Kafalar çok büyük duruyo, baya küçült” + “garsonlar falan küçülsün” — ikisi tek kolda buluşuyor.</p>
+
+  <p>KayKit başı gövde boyunun <strong>%42–52</strong>’si. Bugüne kadarki ilkel gövdede %33’tü; gördüğün fark bu. Başı <code>head</code> kemiğinden küçültmenin iki yolu var ve aralarındaki fark bu turun asıl takası.</p>
+
+  <h3>K-A · Telafili — boy 1,75’te kalır</h3>
+  <figure>
+    <img src="gorsel/ss/s15-kafa-telafili.png" alt="Beş Knight gövdesi, kafa ölçeği 1,0’dan 0,6’ya; hepsi 1,75 boyunda, gövdeler giderek genişliyor">
+    <figcaption>Baş küçülünce gövde o boyu doldurmak için büyüyor. Omuz 0,552 → 0,696.</figcaption>
+  </figure>
+  <div class="kaydir">
+  <table>
+    <thead><tr><th>kafa</th><th>boy</th><th>baş payı</th><th>omuz</th><th>blob sınırı 0,60</th></tr></thead>
+    <tbody>
+      <tr><td>×1,00 bugün</td><td>1,75</td><td>%42,3</td><td>0,552</td><td class="ok">✓</td></tr>
+      <tr><td>×0,90</td><td>1,75</td><td>%40,2</td><td>0,582</td><td class="ok">✓</td></tr>
+      <tr><td>×0,80</td><td>1,75</td><td>%37,8</td><td>0,616</td><td class="kir">✗ aşıyor</td></tr>
+      <tr><td>×0,70</td><td>1,75</td><td>%35,1</td><td>0,653</td><td class="kir">✗</td></tr>
+      <tr><td>×0,60</td><td>1,75</td><td>%32,0</td><td>0,696</td><td class="kir">✗</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="not">×0,80’den itibaren D-076’nın blob kuralı kırılıyor — karede kardan adama dönüyorlar.</p>
+
+  <h3>K-B · Telafisiz — gövde sabit, karakter kısalır</h3>
+  <figure>
+    <img src="gorsel/ss/s15-kafa-telafisiz.png" alt="Beş Knight gövdesi, kafa ölçeği 1,0’dan 0,6’ya; gövdeler aynı kalıyor, boy 1,75’ten 1,39’a iniyor">
+    <figcaption>Gövde ölçeği hiç değişmiyor: omuz beşinde de 0,552. Kısalan tek şey siluetin tepesi.</figcaption>
+  </figure>
+  <div class="kaydir">
+  <table>
+    <thead><tr><th>kafa</th><th>boy</th><th>baş payı</th><th>omuz</th><th>blob sınırı 0,60</th></tr></thead>
+    <tbody>
+      <tr><td>×1,00 bugün</td><td>1,75</td><td>%42,3</td><td>0,552</td><td class="ok">✓</td></tr>
+      <tr><td>×0,90</td><td>1,66</td><td>%40,2</td><td>0,552</td><td class="ok">✓</td></tr>
+      <tr><td>×0,80</td><td>1,57</td><td>%37,8</td><td>0,552</td><td class="ok">✓</td></tr>
+      <tr class="vurgu"><td>×0,75 <span class="not">ara değer</span></td><td>~1,52</td><td>~%36,4</td><td>0,552</td><td class="ok">✓</td></tr>
+      <tr><td>×0,70</td><td>1,48</td><td>%35,1</td><td>0,552</td><td class="ok">✓</td></tr>
+      <tr><td>×0,60</td><td>1,39</td><td>%32,0</td><td>0,552</td><td class="ok">✓</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p><strong>Telafisiz kolun mobilya bedeli aritmetik, görsel değil.</strong> Gövde ölçeği kıpırdamadığı için bacak, gövde, kalça — ve dolayısıyla masayla, tabureyle, tepsiyle olan ilişkinin tamamı — birebir aynı kalıyor. Aşağıdaki Ö tablosunda “masa yüzdesi yükseliyor” satırı bu koldan geçildiğinde gerçek bir bozulma anlatmıyor: payda kısalan kafadan küçülüyor, mobilya gövdeye göre yerinde duruyor.</p>
+
+  <figure>
+    <img src="gorsel/ss/s15-kafa-iki-govde.png" alt="Knight ve Rogue gövdeleri kafa ölçeği 1,0 / 0,8 / 0,7’de yan yana">
+    <figcaption>Gövdeler arası fark büyük: Knight ×1’de baş %42,3, Rogue ×1’de <strong>%52,3</strong> (saç hacmi). Tek küresel kafa ölçeği her gövdede farklı sonuç verir.</figcaption>
+  </figure>
+
+  <div class="oneri">
+    <span class="goz">Önerim · K-B telafisiz, ×0,75</span>
+    <p>Baş payı %42 → ~%36, siluet 1,75 → ~1,52. Omuz kıpırdamıyor, blob kuralı sağlam, mobilya ilişkisi aynı. <strong>Tek hamlede iki isteğini birden karşılıyor:</strong> kafa küçülüyor <em>ve</em> karakterler küçülüyor.</p>
+    <p class="not">Daha sert istersen ×0,70 (boy 1,48 · baş %35,1) da ölçüldü ve blob açısından temiz. Ölçek tek sayı — sonradan oynatması ucuz.</p>
+  </div>
+</section>
+
+<!-- ═══════════ Ö ═══════════ -->
+<section class="kol">
+  <div class="kol-bas"><span class="harf">Ö</span><h2>Gövde boyu</h2></div>
+  <p class="soru">ACTOR_HEIGHT 1,75 düşsün mü? — “küçülsün”ün diğer, pahalı okuması.</p>
+
+  <div class="kaydir">
+  <table>
+    <thead><tr><th>boy</th><th>masa payı</th><th>gerçekten sapma</th><th>tabure payı</th><th>sapma</th><th>SEATED_DROP</th></tr></thead>
+    <tbody>
+      <tr class="vurgu"><td>1,75 <span class="not">bugün, D-076</span></td><td>%45,4</td><td class="ok">+6,0</td><td>%25,7</td><td class="ok">0,0</td><td>−0,45</td></tr>
+      <tr><td>1,65</td><td>%48,2</td><td>+12,4</td><td>%27,3</td><td>+6,1</td><td>−0,35</td></tr>
+      <tr><td>1,60</td><td>%49,7</td><td class="kir">+15,9</td><td>%28,1</td><td>+9,4</td><td>−0,30</td></tr>
+      <tr><td>1,50</td><td>%53,0</td><td class="kir">+23,7</td><td>%30,0</td><td class="kir">+16,7</td><td>−0,20</td></tr>
+      <tr><td>1,40</td><td>%56,8</td><td class="kir">+32,5</td><td>%32,1</td><td class="kir">+25,0</td><td>−0,10</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>K-B’nin aksine burada <em>gövde de</em> küçülüyor, yani bozulma gerçek. 1,75 bugün gerçek orandan %6 sapıyor; 1,60’ta %16, 1,50’de %24. Kendi kuralın (<em>referans ölçek tuzağı</em>) tam bu yöne karşı: oranı mobilyayı kısarak kovalama. Üstelik bu kol <code>SEATED_DROP</code>, <code>PLAYER_RADIUS</code>, <code>BUBBLE_Y</code>, <code>CAMERA_LOOK_Y</code> ve nav ızgarasını birlikte oynatır.</p>
+
+  <div class="oneri">
+    <span class="goz">Önerim · Ö1 — dokunma</span>
+    <p>1,75 kalsın. “Küçülsün” isteğini K-B bedava karşılıyor; boya dokunmak aynı hissi çok daha pahalıya alır ve donmuş mobilya ölçülerini bozar.</p>
+  </div>
+</section>
+
+<!-- ═══════════ Ç ═══════════ -->
+<section class="kol">
+  <div class="kol-bas"><span class="harf">Ç</span><h2>Müşteri gövdesi</h2></div>
+  <p class="soru">Müşteriler de skinned olacak — çizim bedeli ne, düşürülebilir mi?</p>
+
+  <p>Gövde başına <strong>6 sivil mesh ama tek materyal</strong> — yani parçalar tek çizimde toplanabilir. Üç kolu aynı tarayıcıda, 24 müşteriyle, 120 kare ortalamasıyla ölçtüm.</p>
+
+  <div class="kaydir">
+  <table>
+    <thead><tr><th>kol</th><th>ms / kare</th><th>çizim</th><th>üçgen</th></tr></thead>
+    <tbody>
+      <tr><td>instanced kapsül <span class="not">bugün</span></td><td>0,04</td><td>1</td><td>6.240</td></tr>
+      <tr><td>skinned, 6 parça</td><td>3,44</td><td>216</td><td>139.200</td></tr>
+      <tr class="vurgu"><td>skinned, <strong>birleşik</strong></td><td>1,01</td><td>24</td><td>139.200</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>Birleştirme <strong>çizimi 216 → 24’e, kare süresini %71 aşağı</strong> çekiyor. Üçgen sayısı değişmiyor — birleştirme çizim çağrısını toplar, geometriyi azaltmaz.</p>
+  <p class="not"><strong>Açık risk:</strong> 24 müşteri ≈ 140 bin üçgen demek; bugünkü kapsül 6.240. Masaüstünde (RTX 3060) 1,01 ms, mobilde tipik 4–6 katı. Bu sayı telefonda ölçülmedi — APK turu ister.</p>
+
+  <div class="oneri">
+    <span class="goz">Önerim · Ç2 birleşik</span>
+    <p>Müşteriler skinned’e geçsin, gövdeler tek geometriye kaynatılsın. Gömlek rengi müşteri başına paletten seçilir; <code>Sit_Chair_*</code> klipleri gerçek oturuş pozunu getirir.</p>
+  </div>
+</section>
+
+<!-- ═══════════ kasket ═══════════ -->
+<section class="kol">
+  <div class="kol-bas"><span class="harf">·</span><h2>Kasket</h2></div>
+  <p class="soru">Ölçüm yok — kararı verdin, doğrudan uygulamaya gidiyor.</p>
+  <p>Sahibin kasketi kalkıyor. <strong>Tek sorum:</strong> mutfak elemanının (ak sakallı usta) kasketi de kalksın mı, yoksa onda kalsın mı? “Ana karakterdeki” dediğin için varsayılanım <em>sadece sahipten kaldırmak</em>.</p>
+</section>
+
+<!-- ═══════════ devreden ═══════════ -->
+<section class="kol" style="border-bottom:none">
+  <div class="kol-bas"><span class="harf">!</span><h2>Ölçerken çıkan ayrı bulgu</h2></div>
+  <p><strong>Rogue’un (bulaşıkçı) omzu 0,709</strong> — blob sınırı 0,60’ı kafa koluna bakmaksızın <em>bugün de</em> aşıyor. S14’ün “omuz 0,58, sınır aşılmıyor” satırı başka gövdeden alınmış. Bu turun kolu değil; ya sınır ya gövde seçimi kendi turunda gözden geçmeli — açık kalemlere yazdım.</p>
+</section>
+
+<section class="kol" style="border-bottom:none">
+  <h3>Özet — dördüne birden “evet” dersen</h3>
+  <ul class="sade">
+    <li><strong>S3</strong> · koş/yürü klip seçimi + hıza bağlı timeScale, tavan 1,80</li>
+    <li><strong>K-B ×0,75</strong> · kafa kemiği küçülür, gövde sabit, boy ~1,52</li>
+    <li><strong>Ö1</strong> · ACTOR_HEIGHT 1,75 kalır</li>
+    <li><strong>Ç2</strong> · müşteriler birleşik skinned</li>
+    <li><strong>Kasket</strong> · sahipten kalkar, mutfak elemanında kalır</li>
+  </ul>
+  <p class="not">Onaylayınca yalnız seçilen kollar kodlanır, bekçi testi yazılır, en az iki mutasyonla doğrulanır ve final tam koşu alınır.</p>
+</section>
+
+</div>

@@ -2,7 +2,8 @@
 
 **Tur:** S15 · **Tarih:** 2026-09-14 · **Kural:** `docs/oturum-akisi-mantik.md` (D-084)
 **Ham çıktı:** `docs/olcum-yuruyus.json` · **Araç:** `tools/olcum-yuruyus.mjs` · `tools/skin-perf.html` (kol 3)
-**Kareler:** `docs/gorsel/ss/s15-kafa-telafili.png` · `s15-kafa-telafisiz.png` · `s15-kafa-iki-govde.png`
+**Kareler:** `docs/gorsel/ss/s15-kafa-telafili.png` · `s15-kafa-telafisiz.png` · `s15-kafa-iki-govde.png` ·
+`s15-oturus.png` · `s15-oturus-yakin.png` · `s15-oyun-genis.png` · `s15-oyun-yakin.png`
 
 ## Soru
 
@@ -51,8 +52,11 @@ Gerçek insan kadansı: yürüyüş ~2,0 · koşu ~2,8 · **sprint ~4,5 adım/sn
 **Okuma:**
 1. **Bugün `Walking_A` timeScale 1'de çalıyor.** Oyuncu 4,5-5,4 br/sn gidiyor, klip 0,571 için
    çizilmiş → **ayak 7,9-9,5 katı kayıyor.** Kullanıcının gördüğü tam olarak budur.
-2. **Personel ve müşteri için süzülme tamamen çözülür.** `Running_A` + hıza bağlı `timeScale`
-   1,20-2,25 arası kalır; oluşan kadans 3,0-5,6 adım/sn — gerçek koşu bandı.
+2. **Personel ve müşteride süzülme pratik olarak biter.** `Running_A` + hıza bağlı `timeScale`
+   1,20-2,25 arası ister. Kelepçe 1,80'de durduğu için garsonda (1,5 ve 2,0 br/sn) kayma TAM
+   sıfırlanır; **müşteri (2,6) ve bulaşıkçı kademe 2 (2,8) kelepçeye çarpar** ve geriye
+   1,16× ile 1,25× artık kayma kalır — bugünkü 4,6× ve 4,9×'a göre görünmez mertebede.
+   (Karar paketinde "tamamen biter" demiştim; kelepçe uygulanınca bu iki aktörde tam değil.)
 3. **Oyuncuda çözülmez.** Hızı (4,5-5,4) klibin taşıyabileceğinin iki katı. Sprint kadansına
    kelepçelenirse (`timeScale` tavan 1,80) klip 2,24 br/sn taşır → **2,0× artık kayma kalır.**
    Bugünkü 7,9×'a göre dörtte bire iner ama sıfırlanmaz.
@@ -124,21 +128,60 @@ farklı olarak burada gövde de küçülüyor). 1,75 bugün gerçek orandan +%6 
 
 ### Ç — ÇİZİM: müşteri skinned'e geçerse bedel
 
-Gövde başına **6 sivil mesh, TEK materyal** → birleştirme tek çizime iner.
+Gövde başına **6 sivil mesh, TEK materyal**. İlk okuma "hepsi tek çizime iner" dedi;
+**uygulamada çakıştı ve kol düzeltildi** (aşağıda).
 
-Ölçüm (`tools/skin-perf.mjs 24 Knight`, ANGLE/RTX 3060, 120 kare ortalaması):
+#### Ölçüm kolu ile SEVK EDİLEN biçim neden farklı
 
-| kol | ms/kare | çizim | üçgen |
-|---|---:|---:|---:|
-| instanced kapsül (bugün) | **0,04** | 1 | 6.240 |
-| 24× skinned, 6 parça | 3,44 | 216 | 139.200 |
-| 24× skinned, **BİRLEŞİK** | **1,01** | **24** | 139.200 |
+Tek materyal, başı boyamamakla bağdaşmıyor. Oyunun kuralı (D-112) başın dokusunu korumak
+— yüz, saç ve sakal oradan geliyor — kıyafeti ise düz boyamak. Tek materyal ikisini birden
+yapamaz: ya doku herkese uygulanır ya kimseye. Sevk edilen biçim bu yüzden **gövde başına iki
+mesh**: baş dokulu materyalini korur, kol+gövde+bacak tek geometriye kaynar ve rengini
+**köşe renginden** alır (gömlek ve pantolon aynı mesh'te, ayrı renkte).
 
-**Birleştirmenin kazancı: çizim 216 → 24, kare süresi 3,44 → 1,01 ms (%71).** Üçgen sayısı
-değişmiyor — birleştirme çizim çağrısını toplar, geometriyi azaltmaz.
+Ölçüm (`tools/skin-perf.mjs`, ANGLE/RTX 3060, 120 kare ortalaması):
 
-**Açık risk:** 24 müşteri **139-160 bin üçgen** demek; bugünkü kapsül 6.240. Masaüstünde 1,01 ms,
-mobilde tipik 4-6×. Bu sayı telefonda ölçülmedi (APK turu gerekir).
+| müşteri | kol | ms/kare | çizim | üçgen |
+|---:|---|---:|---:|---:|
+| 24 | instanced kapsül (bugün) | 0,04 | 1 | 6.240 |
+| 24 | skinned, 6 parça | 1,78 | 216 | 139.200 |
+| 24 | skinned, **baş+gövde (sevk)** | **0,52** | **48** | 139.200 |
+| 48 | skinned, baş+gövde | **1,00** | 96 | 278.400 |
+| 80 | skinned, baş+gövde | **1,57** | 112 | 324.800 |
+
+**Birleştirmenin kazancı %71** (çizim 216 → 48). Üçgen sayısı değişmiyor — birleştirme çizim
+çağrısını toplar, geometriyi azaltmaz. 80 müşteride çizim 160 değil 112: frustum culling devrede.
+
+**MUTLAK ms KOŞULAR ARASI OYNUYOR** — "6 parça" kolu iki koşuda 3,44 ve 1,78 ms verdi (sürücü
+durumu/termal). **Oran ikisinde de aynı (%71).** Bu sayılar kol karşılaştırmasıdır, mobil
+öngörüsü değil; telefonda ölçülmedi (APK turu gerekir).
+
+#### Bütçe oyunda ölçüldü
+
+`NPC_SKIN_CAP` önce 24 seçildi. Oyun içinde ölçünce yanlış çıktı: **yalnız 12 masa açıkken 38
+eşzamanlı müşteri** vardı ve tavanı aşanlar kapsül olarak duruyordu — salonda karakterlerle
+kapsüller yan yana (`docs/gorsel/ss/s15-oyun-genis.png` ilk sürümü). Tavan **48**'e çekildi;
+ölçülen durumu paylı kapsıyor ve yeni karede kapsül kalmadı.
+
+**AÇIK KALEM:** 24 masa tam açıkken müşteri 70'i geçebilir ve kapsüller yine görünür. İki kol
+ölçüldü ama SEÇİLMEDİ — tavanı 80'e çıkarmak (1,57 ms) ya da uzaktakini kapsüle düşürmek (LOD).
+Soru turu dolduğu için sonraki oturuma yazıldı.
+
+### Oturuş çapası — `SEATED_DROP`un skinned karşılığı
+
+Bugünkü `SEATED_DROP` (−0,45) bir NUMARAydı: kapsül oturamadığı için gövde aşağı indiriliyordu.
+Gerçek `Sit_Chair_Idle` klibinde gövde zaten oturuyor.
+
+| klip | kalça (ham) | kalça (dünya) | ayak (dünya) | kök kaldırma (0,45 için) |
+|---|---:|---:|---:|---:|
+| Sit_Chair_Idle | 0,481 | 0,382 | 0,322 | **+0,068** |
+| Sit_Chair_Down | 0,457 | 0,363 | 0,241 | +0,087 |
+| Sit_Chair_StandUp | 0,434 | 0,344 | 0,192 | +0,106 |
+
+**Ölçüm yöntemi uyarısı:** bu rig'de `hips`/`head` kemikleri anatomik yerlerinde DEĞİL (baş kemiği
+boyun değil, baş mesh'inin tabanında; `hips` kalça değil, ona yakın alt bir düğüm). Kemikten
+türetilen ilk sayı bu yüzden yanıltıcıydı; kabul, kareyle verildi
+(`docs/gorsel/ss/s15-oturus-yakin.png`) — +0,068'de kalça taburenin oturağına oturuyor.
 
 ### Devreden bulgu (bu turda ölçüldü, kolun parçası değil)
 
@@ -148,14 +191,63 @@ gövde seçimi gözden geçmeli; bu turun kolu değil.
 
 ---
 
-## §Karar
+## §Karar — D-113 (kullanıcı, 2026-09-14)
 
-*(boş — karar paketi kullanıcıya sunulacak, D-084 adım 3)*
+Karar paketi: https://claude.ai/code/artifact/1cad1b62-df57-4ffb-b00b-32f0b9be9565
+Dört kolda da önerilen kol seçildi.
+
+| kol | seçim | gerekçe |
+|---|---|---|
+| **K** kafa | **K-B telafisiz ×0,75** | baş payı %42 → ~%36, siluet ~1,52; omuz 0,552'de kalır, blob sağlam, mobilya ilişkisi aynı. Kullanıcının iki isteğini (kafa küçülsün + karakterler küçülsün) tek hamlede karşılar. |
+| **S** senkron | **S3** | klip hızdan seçilir, katsayı hızdan türer, tavan 1,80 (sprint kadansı). |
+| **Ö** boy | **Ö1 — dokunma** | 1,75 kalır; gövdeyi kısaltmak mobilya oranını gerçekten bozar ve K-B "küçülsün"ü bedavaya verir. |
+| **Ç** müşteri | **Ç2 birleşik skinned** | çizim toplanır; bütçe ölçülür. |
+| kasket | **yalnız sahipten kalkar** | mutfak elemanının kasketi usta kimliğini taşıyor. |
 
 ## §Uygulama
 
-*(boş)*
+- `src/config/actor.ts` — `KAY_KAFA_OLCEK` 0,75 · `KLIP_HIZI` (ölçüm sayıları) · `TIMESCALE_TAVAN`
+  1,80 / `TABAN` 0,60 · `KAY_OTURMA_KALDIRMA` +0,068 · `NPC_SKIN_CAP` 48 · `KAY_MUSTERI_GOVDE` ·
+  `KAY_KIYAFET.owner.kasket` → false.
+- `src/components/three/KayActor.tsx` — `kafaKucult()` (kıyafetten ÖNCE) · `head.scale` izinin
+  sökülmesi · `lokomosyonSec()` + `LOKOMOSYON` aday tabloları · `useFrame`'de klip seçimi ve
+  her kare `timeScale` yazımı · paylaşılan yardımcıların dışa açılması.
+- `src/components/three/Customers.tsx` — instanced kapsülden **skinned havuza**: 48 yuva, gövde
+  başına iki mesh (baş dokulu + gövde köşe renkli), kendi mixer'ı, gerçek oturuş klibi, WC sönmesi,
+  tavanı aşan müşteri için kapsül kolu korunur.
+- `tools/olcum-yuruyus.mjs` (yeni) · `tools/skin-perf.html` (sevk biçimi kolu) ·
+  `tools/karakter-bak.html` (kafa kolu, telafili/telafisiz) · `tools/shot-s15.mjs` ·
+  `tools/mutasyon-s15.mjs`.
+
+### Uygulamada ortaya çıkan ve ÖLÇÜMÜ DEĞİŞTİREN iki şey
+
+1. **Tek materyal kolu bölündü** — başın dokusunu korumak tek çizimle bağdaşmadı; sevk biçimi
+   gövde başına iki mesh (48 çizim / 0,52 ms). Yukarıda §Ç'de yeniden ölçüldü.
+2. **`NPC_SKIN_CAP` 24 → 48** — oyunda ölçülünce 12 masada bile 38 eşzamanlı müşteri çıktı ve
+   24'lük tavanı aşanlar kapsül olarak görünüyordu.
 
 ## §Bekçi
 
-*(boş)*
+`tests/karakter-senkron.test.ts` — **21 denetim**, `tools/mutasyon-s15.mjs` ile **18 mutasyonla**
+doğrulandı, **kaçan 0**.
+
+Yakaladığı mutasyonlar: klip hızının elle ayarlanması · koşu hızının bozulması · kelepçe tavanının
+gevşetilmesi · tabanın kaldırılması · kafa ölçeğinin etkisizleştirilmesi · ölçeğin kafayı TELAFİ
+etmesi · sahibin kasketinin geri gelmesi · önlüğün düşmesi · bütçenin eski tavana dönmesi ·
+oturuş kaldırmasının kapsül numarasına dönmesi · koşu klibinin aday listesinden çıkması ·
+`head` ölçek izinin sökülmemesi · kafanın kıyafetten SONRA küçültülmesi · katsayının yalnız klip
+değişince yazılması · müşteri havuzunun her render kurulması · gömlek renginin müşteriden
+alınmaması · başın gövde materyaliyle boyanması · oturan müşteriye kapsül numarasının uygulanması.
+
+**Final tam koşu:** `tsc -b` ✓ · vitest **964 ✓** (40 dosya) · `npm run duman` **42/42 ✓** ·
+`npm run sira` ✓ · oyun içi kare `docs/gorsel/ss/s15-oyun-genis.png` (38 müşteri, kapsül yok).
+
+## §Açık kalemler (bu turdan devreden)
+
+- **Geç oyunda tavan yine aşılabilir.** 24 masa tam açıkken müşteri 70'i geçebilir; iki kol
+  ölçüldü ama seçilmedi (tavan 80 → 1,57 ms · uzaktakini kapsüle düşüren LOD). Soru turu dolduğu
+  için sonraki oturuma bırakıldı.
+- **Oyuncuda 2,0× artık kayma.** Sıfırlamanın tek yolu oyuncu hızını düşürmek — DENGE, varyant
+  kapısına tabi, ölçülmedi.
+- **Rogue'un omzu 0,709** — blob sınırı 0,60'ı bugün de aşıyor (S14'ün 0,58'i başka gövdeden).
+- **Karakter paneli hâlâ eski ilkel gövdeyi çiziyor** (S14'ten devreden, bu turda dokunulmadı).

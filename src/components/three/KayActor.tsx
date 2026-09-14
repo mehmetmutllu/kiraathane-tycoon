@@ -10,13 +10,25 @@ import {
   BoxGeometry,
   CylinderGeometry,
   Box3,
+  SkinnedMesh,
   type Object3D,
   type Bone,
   type AnimationAction,
 } from 'three';
 import { clone as skinKlon } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { PALETTE } from '../../config/palette';
-import { KAY_KOK, KAY_KLIPLER, KAY_MODEL, KAY_KIYAFET, KAY_SCALE, type ActorKind } from '../../config/actor';
+import {
+  KAY_KOK,
+  KAY_KLIPLER,
+  KAY_MODEL,
+  KAY_KIYAFET,
+  KAY_SCALE,
+  KAY_KAFA_OLCEK,
+  KLIP_HIZI,
+  TIMESCALE_TAVAN,
+  TIMESCALE_TABAN,
+  type ActorKind,
+} from '../../config/actor';
 
 /**
  * KayActor — personel gövdesi: KayKit karakteri + ayrı dosyadaki klip + oyunun kıyafeti.
@@ -41,10 +53,13 @@ const EKIPMAN = [
   'pauldrons', 'armor', 'sword', 'shield', 'staff', 'wand', 'bow', 'quiver', 'dagger',
   'axe', 'spellbook', 'horn', 'backpack', 'mask',
 ];
-const ekipmanMi = (ad: string) => {
+export const ekipmanMi = (ad: string) => {
   const rol = ad.split('_').pop()?.toLowerCase() ?? '';
   return EKIPMAN.some((k) => rol.startsWith(k) || rol.endsWith(k));
 };
+
+/** Baş parçası: boyanmaz, dokusunu korur (yüz/saç/sakal oradan gelir — D-112). */
+export const basMi = (ad: string) => /head|skull/i.test(ad);
 
 /** Hangi parça hangi renge boyanır. Baş listede YOK (yukarıdaki gerekçe). */
 const PARCA_RENK: readonly (readonly [RegExp, string])[] = [
@@ -54,7 +69,7 @@ const PARCA_RENK: readonly (readonly [RegExp, string])[] = [
 ];
 
 /** Klip adları — dosya değil KLİP; hangi durumda hangisi çalar. */
-const KLIP = {
+export const KLIP = {
   dur: 'Idle_A',
   yuru: 'Walking_A',
   tasi: 'Walking_B',
@@ -64,7 +79,40 @@ const KLIP = {
 export type KayHal = keyof typeof KLIP;
 
 /** Yürüyor sayılma eşiği (birim/sn). Altında `dur`, üstünde `yuru`. */
-const YURUME_ESIGI = 0.25;
+export const YURUME_ESIGI = 0.25;
+
+/**
+ * HAREKET HALİNİN KLİP ADAYLARI (S15 · D-113). Hız hangi klibi en az bozarak taşıyorsa o çalar:
+ * yavaş giden yürür, hızlı giden koşar. `tasi` halinde de koşu adayı var — garson kademe 1'de
+ * 2,0 br/sn gidiyor ve `Walking_B` o hızda 3,05 kat hızlanmak zorunda kalırdı (5,7 adım/sn,
+ * sprintin üstü).
+ */
+export const LOKOMOSYON: Record<'yuru' | 'tasi', readonly string[]> = {
+  yuru: ['Walking_A', 'Running_A'],
+  tasi: ['Walking_B', 'Running_A'],
+};
+
+/**
+ * Hızı EN AZ BOZARAK taşıyan klibi seç ve gereken `timeScale`i ver.
+ *
+ * Bozulma logaritmik ölçülür: 2 kat hızlandırmak ile 2 kat yavaşlatmak aynı ağırlıktadır,
+ * yoksa seçim hep hızlı klibe kayar. Katsayı sonra kelepçelenir (gerekçe `actor.ts`).
+ */
+export function lokomosyonSec(adaylar: readonly string[], hiz: number): { klip: string; timeScale: number } {
+  let enIyi = adaylar[0];
+  let enAzBozulma = Infinity;
+  for (const ad of adaylar) {
+    const yazili = KLIP_HIZI[ad];
+    if (!yazili) continue;
+    const bozulma = Math.abs(Math.log(hiz / yazili));
+    if (bozulma < enAzBozulma) {
+      enAzBozulma = bozulma;
+      enIyi = ad;
+    }
+  }
+  const ham = hiz / KLIP_HIZI[enIyi];
+  return { klip: enIyi, timeScale: Math.min(TIMESCALE_TAVAN, Math.max(TIMESCALE_TABAN, ham)) };
+}
 
 function mat(renk: string) {
   return new MeshStandardMaterial({ color: renk, roughness: 0.85 });
@@ -114,11 +162,47 @@ function kiyafetTak(kok: Object3D, kind: ActorKind) {
   }
 }
 
-/** Klip dosyalarının hepsini yükle ve tek listede topla (hepsi aynı rig'e bağlı). */
-function useKayKlipler() {
+/**
+ * Başı `head` KEMİĞİNDEN küçültür (S15 · D-113, gerekçe `actor.ts` → `KAY_KAFA_OLCEK`).
+ * Kasket bu kemiğin çocuğu olduğu için onunla küçülür — o yüzden kıyafetten ÖNCE çağrılır.
+ */
+export function kafaKucult(kok: Object3D) {
+  if (KAY_KAFA_OLCEK === 1) return;
+  kok.traverse((n) => {
+    if ((n as Bone).isBone && n.name === 'head') n.scale.setScalar(KAY_KAFA_OLCEK);
+    // SkinnedMesh sınır kutusunu NESNE düzeyinde önbelleğe alır ve `kiyafetTak` kasketi o
+    // kutudan konumlandırır; temizlenmezse kasket KÜÇÜLMEDEN ÖNCEKİ başın tepesine oturur.
+    const sm = n as SkinnedMesh;
+    if (sm.isSkinnedMesh) sm.boundingBox = null as unknown as Box3;
+  });
+  kok.updateMatrixWorld(true);
+}
+
+/**
+ * Klip dosyalarının hepsini yükle ve tek listede topla (hepsi aynı rig'e bağlı).
+ *
+ * `head`in ÖLÇEK izi sökülür: KayKit her klipte her kemiğin ölçeğini de yazıyor, yani mixer
+ * bizim `KAY_KAFA_OLCEK`imizin üstüne her karede 1,0 yazardı. İz sökmek güvenli çünkü ölçüldü —
+ * kullandığımız dört dosyanın kliplerinde ölçek değeri **tam 1,0**; 1,0'dan sapan tek yer
+ * `Spawn_Air`/`Spawn_Ground` (sıfırdan büyüyen doğuş efekti) ve o klipler kullanılmıyor.
+ */
+export function useKayKlipler() {
   const yollar = useMemo(() => KAY_KLIPLER.map((f) => `${KAY_KOK}${f}.glb`), []);
   const dosyalar = useGLTF(yollar);
-  return useMemo(() => dosyalar.flatMap((d) => d.animations), [dosyalar]);
+  return useMemo(() => {
+    const hepsi = dosyalar.flatMap((d) => d.animations);
+    // İz YERİNDE sökülür, klip KLONLANMAZ. Klonlamak iki şeyi birden bozuyordu: 139 klip her
+    // render'da yeniden üretiliyor (pahalı) ve yeni kimlik dönüyordu — müşteri havuzunun
+    // `useMemo`su bu kimliğe bağlı olduğu için 24 skinned gövde her render'da baştan kuruluyordu.
+    // `useGLTF` ayrıştırılmış dosyayı zaten global önbellekte tutuyor; bir kez sökmek yeter.
+    for (const klip of hepsi) {
+      const damga = klip as unknown as { __kafaIziSokuldu?: boolean };
+      if (damga.__kafaIziSokuldu) continue;
+      klip.tracks = klip.tracks.filter((t) => t.name !== 'head.scale');
+      damga.__kafaIziSokuldu = true;
+    }
+    return hepsi;
+  }, [dosyalar]);
 }
 
 export function KayActor({ kind, hal }: { kind: ActorKind; hal?: KayHal }) {
@@ -140,6 +224,7 @@ export function KayActor({ kind, hal }: { kind: ActorKind; hal?: KayHal }) {
       const e = PARCA_RENK.find(([d]) => d.test(m.name));
       if (e) m.material = mat(e[1]);
     });
+    kafaKucult(o);
     kiyafetTak(o, kind);
     return o;
   }, [scene, kind]);
@@ -147,7 +232,7 @@ export function KayActor({ kind, hal }: { kind: ActorKind; hal?: KayHal }) {
   const { actions } = useAnimations(klipler, ref);
 
   // Başlangıç: dur. (Eylemler ilk karede hazır olur; hal değişimi useFrame'de yürür.)
-  const suAn = useRef<KayHal>('dur');
+  const suAn = useRef<string>(KLIP.dur);
   useEffect(() => {
     const a = actions[KLIP.dur];
     a?.reset().play();
@@ -171,14 +256,24 @@ export function KayActor({ kind, hal }: { kind: ActorKind; hal?: KayHal }) {
     sonKonum.current.copy(dunya.current);
 
     // `hal` verilmişse o kazanır (oturan müşteri, tezgâhta çalışan çaycı); yoksa hız karar verir.
-    const hedef: KayHal = hal ?? (hiz > YURUME_ESIGI ? 'yuru' : 'dur');
-    if (hedef === suAn.current) return;
-    const yeni: AnimationAction | null = actions[KLIP[hedef]] ?? null;
-    const eski: AnimationAction | null = actions[KLIP[suAn.current]] ?? null;
+    const hedefHal: KayHal = hal ?? (hiz > YURUME_ESIGI ? 'yuru' : 'dur');
+
+    // SENKRON (S15 · D-113): hareket halinde klip HIZDAN seçilir ve hıza göre hızlandırılır.
+    // Duruş/çalışma/oturma klipleri yerinde çalar, `timeScale` 1 kalır.
+    const hareket = hedefHal === 'yuru' || hedefHal === 'tasi';
+    const secim = hareket ? lokomosyonSec(LOKOMOSYON[hedefHal], hiz) : null;
+    const hedefKlip = secim ? secim.klip : KLIP[hedefHal];
+
+    const yeni: AnimationAction | null = actions[hedefKlip] ?? null;
     if (!yeni) return;
+    // Katsayı HER KARE yazılır (hız yükseltmeyle veya ivmeyle değişir), klip değişmese bile.
+    yeni.timeScale = secim ? secim.timeScale : 1;
+
+    if (hedefKlip === suAn.current) return;
+    const eski: AnimationAction | null = actions[suAn.current] ?? null;
     yeni.reset().play();
     if (eski && eski !== yeni) eski.crossFadeTo(yeni, 0.18, false);
-    suAn.current = hedef;
+    suAn.current = hedefKlip;
   });
 
   return (

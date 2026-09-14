@@ -153,11 +153,101 @@ export const KAY_MODEL = {
 
 /** Rolün üstüne takılan kimlik parçaları (kasket/önlük). Gövdede yok, bizim. */
 export const KAY_KIYAFET: Record<ActorKind, { kasket: boolean; onluk: boolean }> = {
-  owner: { kasket: true, onluk: true },
+  // Sahibin kasketi S15'te KALKTI (kullanıcı 2026-09-14: "ana karakterdeki kasketi çıkar").
+  // Mutfak elemanında duruyor — usta kimliğini o taşıyor.
+  owner: { kasket: false, onluk: true },
   waiter: { kasket: false, onluk: true },
   dishwasher: { kasket: false, onluk: true },
   kitchenHand: { kasket: true, onluk: true },
 };
+
+/**
+ * KAFA KEMİĞİ ÖLÇEĞİ (S15 · D-113) — "kafalar çok büyük duruyo, baya küçült".
+ *
+ * ÖLÇÜM (`docs/karakter-raporu-s15.md` §K): KayKit başı gövde boyunun **%42-52**'si; bugüne
+ * kadarki ilkel gövdede %33'tü. Başı `head` kemiğinden küçültmenin iki yolu ölçüldü:
+ *
+ *   TELAFİLİ   — toplam boy 1,75'te tutulur, gövde o boyu doldurmak için büyür. ×0,80'de
+ *                omuz 0,616'ya çıkıyor ve D-076'nın blob kuralını (0,60) KIRIYOR.
+ *   TELAFİSİZ  — gövde ölçeği (`KAY_SCALE`) hiç değişmez, karakter kısalır. Omuz beş kolda da
+ *                0,552; bacak/gövde/kalça kıpırdamadığı için masa, tabure ve tepsiyle olan
+ *                ilişkinin tamamı BİREBİR aynı kalır. Kısalan tek şey siluetin tepesi.
+ *
+ * Seçilen: TELAFİSİZ ×0,75 → baş payı %42 → ~%36, siluet 1,75 → ~1,52. Bu sayı `KAY_SCALE`'i
+ * ETKİLEMEZ; o yüzden `ACTOR_HEIGHT` ve ondan türeyen hiçbir şey (SEATED_DROP, PLAYER_RADIUS,
+ * BUBBLE_Y, CAMERA_LOOK_Y, nav) kıpırdamaz — kol bilerek bu yüzden seçildi.
+ */
+export const KAY_KAFA_OLCEK: number = 0.75;
+
+/**
+ * KLİPLERİN YAZILI YER HIZI (br/sn) — `docs/olcum-yuruyus.json` §S_senkron'dan, tam koşu damgalı.
+ *
+ * Bir yürüme klibi belli bir yer hızı için çizilir: basılı ayak, gövde sabitken geriye kayar ve
+ * kaydığı mesafe o döngünün ilerlemesidir. Karakter bundan hızlı giderse ayak kayar — kullanıcının
+ * 2026-09-14'te bildirdiği "havada süzülüyor" kusuru budur. Ölçüldü: `Walking_A` **0,571** br/sn
+ * için çizilmiş, oyuncu 4,5-5,4 br/sn gidiyor → ayak **7,9-9,5 katı** kayıyordu.
+ *
+ * Sayılar HAM rig hızının `KAY_SCALE` ile çarpılmışıdır; `KAY_SCALE` değişirse bunlar da değişir
+ * (`tests/karakter.test.ts` bu bağı denetler).
+ */
+export const KLIP_HIZI: Record<string, number> = {
+  Walking_A: 0.571,
+  Walking_B: 0.655,
+  Running_A: 1.247,
+};
+
+/**
+ * `timeScale` KELEPÇESİ. Tavan, gerçek insanın sprint kadansından (4,5 adım/sn) türer:
+ * `Running_A` 2,50 adım/sn çalıyor → 4,5 / 2,50 = **1,80**. Üstünde bacak değil pervane olur.
+ * Taban, çok yavaş aktörün yerinde tepinmemesi için; altında klip donuk görünür.
+ *
+ * Tavan yüzünden oyuncunun (4,5-5,4 br/sn) kayması SIFIRLANMAZ: kelepçede klip 2,24 br/sn taşır,
+ * geriye **2,0×** artık kayma kalır — bugünkü 7,9×'ın dörtte biri. Sıfırlamanın tek yolu oyuncu
+ * hızını düşürmek; o `economy.config.ts`'e dokunur, varyant kapısına tabidir ve ÖLÇÜLMEDİ.
+ */
+export const TIMESCALE_TAVAN = 1.8;
+export const TIMESCALE_TABAN = 0.6;
+
+/**
+ * OTURAN SKINNED GÖVDENİN KÖK KALDIRMASI (S15 · D-113) — `SEATED_DROP`un gerçek karşılığı.
+ *
+ * `SEATED_DROP` (−0,45) bir NUMARAydı: kapsül oturamadığı için gövde aşağı indirilip taburenin
+ * üstünde yalnız üst gövde bırakılıyordu. Gerçek `Sit_Chair_Idle` klibinde gövde ZATEN oturuyor;
+ * sorulacak sayı "rig kökü hangi yükseklikten asılsın ki kalça taburenin oturağına gelsin".
+ *
+ * ÖLÇÜM (`docs/olcum-yuruyus.json` §Oturus): klipte kalça ham 0,481 → dünyada **0,382**.
+ * Tabure oturağı 0,45 (donmuş, D-073) → kaldırma = 0,45 − 0,382 = **0,068**.
+ * (Aynı klipte ayak 0,322'de duruyor: KayKit oturuşu ayakları toplayan bir poz, yere basmıyor.)
+ */
+export const KAY_OTURMA_KALDIRMA = 0.068;
+
+/**
+ * SKINNED MÜŞTERİ BÜTÇESİ. Ölçüldü (`tools/skin-perf.mjs 24 Knight`, RTX 3060):
+ * 24 birleşik skinned = **1,01 ms/kare · 24 çizim · 140 bin üçgen**; aynı sayıda 6 parçalı
+ * gövde 3,44 ms ve 216 çizim tutuyordu, bugünkü instanced kapsül ise 0,04 ms ve 1 çizim.
+ *
+ * TAVAN NEDEN 48: `maxConcurrent` geç oyunda `totalSeats + 2`ye çıkıyor. Oyun içinde ÖLÇÜLDÜ —
+ * yalnız 12 masa açıkken **38 eşzamanlı müşteri** vardı (`docs/gorsel/ss/s15-oyun-genis.png`),
+ * yani ilk seçilen 24'lük tavan normal oyunda aşılıyor ve aşanlar kapsül olarak duruyordu.
+ * Ölçülen bedel (RTX 3060, 120 kare ortalaması, baş+gövde biçimi):
+ *
+ *   | müşteri | ms/kare | çizim |
+ *   |--------:|--------:|------:|
+ *   |      24 |    0,52 |    48 |
+ *   |      48 |    1,00 |    96 |
+ *   |      80 |    1,57 |   112 |   (frustum culling devrede)
+ *
+ * 48 ölçülen oyun durumunu (38) paylı kapsar. TAVANI AŞAN müşteri yine ESKİ instanced kapsülle
+ * çizilir — kapsül kolu bu yüzden silinmedi. AÇIK KALEM: 24 masa tam açıkken müşteri 70'i
+ * geçebilir ve o durumda kapsüller yine görünür; tavanı 80'e çıkarmak mı yoksa uzaktakini
+ * kapsüle düşürmek mi (LOD) — kullanıcıya sorulacak, ölçüldü ama seçilmedi.
+ *
+ * MOBİLDE ÖLÇÜLMEDİ: bunlar masaüstü sayısıdır, telefonda tipik 4-6 katı. APK turu ister.
+ */
+export const NPC_SKIN_CAP = 48;
+
+/** Müşteri gövdeleri. Kapüşonlu Rogue bilerek YOK: kapüşonu ekipman süzgecine takılmıyor (S14). */
+export const KAY_MUSTERI_GOVDE = ['Knight', 'Rogue', 'Mage', 'Barbarian', 'Ranger'] as const;
 
 /**
  * TAŞINAN EŞYANIN (tepsi · kirli bardak) dünya-uzayı mount noktası. Gövde ölçeğinin DIŞINDA

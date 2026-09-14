@@ -1,5 +1,5 @@
 {
-  "damga": "2026-09-14T13:46:21.806Z",
+  "damga": "2026-09-14T13:55:42.068Z",
   "kaynak": {
     "ACTOR_HEIGHT": 1.75,
     "KAY_AUTHORED": 2.204,
@@ -576,6 +576,32 @@
         "RogueHooded_LegLeft",
         "RogueHooded_LegRight"
       ]
+    }
+  ],
+  "Oturus": [
+    {
+      "klip": "Sit_Chair_Idle",
+      "kalcaHam": 0.481,
+      "ayakHam": 0.405,
+      "kalcaDunya": 0.382,
+      "ayakDunya": 0.322,
+      "kokKaldirma": 0.068
+    },
+    {
+      "klip": "Sit_Chair_Down",
+      "kalcaHam": 0.457,
+      "ayakHam": 0.304,
+      "kalcaDunya": 0.363,
+      "ayakDunya": 0.241,
+      "kokKaldirma": 0.087
+    },
+    {
+      "klip": "Sit_Chair_StandUp",
+      "kalcaHam": 0.434,
+      "ayakHam": 0.242,
+      "kalcaDunya": 0.344,
+      "ayakDunya": 0.192,
+      "kokKaldirma": 0.106
     }
   ],
   "C_ozet": {

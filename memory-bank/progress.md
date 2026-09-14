@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 99 · YAPILAN 88 · %89):**
+**Oturum bütçesi (TOPLAM 99 · YAPILAN 89 · %90):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -24,10 +24,10 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
 | | D meta katman | 9/9 ✅ |
 | | E arayüz ve cila | 4/5 🔧 |
-| | **S sanat ve arayüz geçişi** | **13/15 🔧** |
+| | **S sanat ve arayüz geçişi** | **14/15 🔧** |
 | | H oynanış düzeltmeleri | 0/3 ⏳ |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **60/71** |
+| **Program toplam** | | **61/71** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -245,7 +245,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   değil; kendi turunu ister.
 - ⏳ **E5 — hareketli onboarding**
 
-## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (13/15) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
+## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (14/15) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
 - ✅ **S1 — pad ve yükseltme dili yeniden yazıldı** · çember → **köşe parantezli kare** (kenar
   ortaları boş), dolum büyüyen disk → **alttan üste dolan kare**, "Masa"/"Çay Yükselt"/"Usta"
   → hepsinde **YÜKSELT** + solunda düz yukarı ok, yazı 700 → 800, 💎 pulu "mavi kare" → gerçek
@@ -443,10 +443,16 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   Repoya **6 gövde + 4 klip** girdi (+5,9 MB → 23,1). Sahip · garson · bulaşıkçı · çaycı skinned;
   **müşteriler kapsül** (kendi turunda: skinned + parça birleştirme + gömlek rengi).
   Bekçi `tests/karakter.test.ts` (11 denetim, **15 mutasyon, kaçan 0**) · vitest 943 · duman 42/42.
-- ⏳ **S15 — müşteriler skinned'e geçer** *(tur kartında `S14b` adıyla açılacak — S14 ikiye
-  bölündü; defter numarası S15.)* Kullanıcı isteği. Ölçüldü: karakter başına **8 çizim çağrısı**,
-  24 müşteri = **192** (bugün InstancedMesh ile **1**). Tek materyal → parça birleştirme 24'e
-  indirir. Ayrıca gömlek rengi müşteri başına palet renginden seçilecek (`feedback_color_variety`).
+- ✅ **S15 — müşteriler skinned + üç görsel kusur (D-113)** — kullanıcının üç geri bildirimi
+  sayıya çevrildi ve aynı turda kapandı. `Walking_A` **0,571 br/sn** için çizilmiş, oyuncu 4,5-5,4
+  gidiyordu → ayak **7,9-9,5 katı** kayıyordu ("havada süzülüyor"); artık klip hızdan seçiliyor,
+  katsayı hızdan türüyor, tavan 1,80. KayKit başı gövde boyunun %42-52'siydi (ilkel gövdede %33):
+  **telafisiz** kolla ×0,75'e indi — gövde ölçeği kıpırdamadı (omuz 0,552 sabit), siluet ~1,52,
+  `ACTOR_HEIGHT` ve türeyenleri dokunulmadı. Sahibin kasketi kalktı. Müşteriler **48 yuvalı
+  skinned havuza** geçti (gövde başına iki mesh: 48 çizim / 0,52 ms; oyunda ölçülen 38 eşzamanlı
+  müşteriyi paylı kapsar). Bekçi `tests/karakter-senkron.test.ts` 21 denetim, **18 mutasyon,
+  kaçan 0**. Devreden: geç oyunda tavan yine aşılabilir (LOD ↔ tavan 80 ölçüldü, seçilmedi) ·
+  oyuncuda 2,0× artık kayma (hız düşürmek DENGE, ölçülmedi) · Rogue'un omzu 0,709.
 
 **Faz S kapısı:** 185 kullanılmayan KayKit modeli oyuna bağlı + UI dili maketle onaylanmış +
 ses kaynağı kararı yazılı. Ondan sonra Faz F'e (paketleme) geçilir.

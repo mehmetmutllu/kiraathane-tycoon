@@ -5,59 +5,63 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-14 — **S15 AÇILDI: MÜŞTERİ SKINNED + ÜÇ GÖRSEL KUSUR** · Faz S 13/15 · 88/99)
+## ŞU AN (2026-09-14 — **S15 BİTTİ: KAFA KÜÇÜLDÜ · YÜRÜYÜŞ SENKRON · MÜŞTERİ SKINNED, D-113** · Faz S 14/15 · 89/99)
 
 ```
 SORU            : Müşteriler skinned'e geçerken üç görsel kusur aynı turda kapanır — kafa/gövde
-                  oranı, yürüyüş ↔ ilerleme senkronu, sahibin kasketi. Hangi ölçek, hangi katsayı?
-ÖLÇÜLECEK KOLLAR: Ç çizim bedeli  · Ç1 8 parça as-is · Ç2 parça birleştirme (tek materyal) · Ç3 karışık
-                  K kafa ölçeği   · K1 1,00 (bugün, baş = boyun %50) · K2 0,85 · K3 0,75 · K4 0,65
-                  Ö gövde boyu    · Ö1 1,75 (D-076 donmuş) · Ö2 1,60 · Ö3 1,50 — mobilya oran satırıyla
-                  S senkron       · klibin YAZILI adım hızı (br/sn) → S1 sabit 1 (bugün) ·
-                                    S2 timeScale = hız/adımHızı · S3 S2 + klip seçimi (yürü↔koş)
-                  KASKET          : ölçüm yok — kullanıcı kararı verdi (sahipten kalkar), uygulamaya gider
-SAYILAR         : (adım 2'den sonra dolar → docs/karakter-raporu-s15.md §Bulgular)
-KARAR           : (adım 3 — kullanıcı seçer)
-UYGULAMA        : (adım 4 — yalnız kararın kolu)
-BEKÇİ           : (test dosyası + kaç mutasyon)
+                  oranı, yürüyüş ↔ ilerleme senkronu, sahibin kasketi.
+ÖLÇÜLECEK KOLLAR: Ç çizim · K kafa ölçeği · Ö gövde boyu · S senkron · (kasket ölçümsüz)
+SAYILAR         : docs/karakter-raporu-s15.md · ham docs/olcum-yuruyus.json · commit #1 93282ae
+                  S  Walking_A 0,571 br/sn icin cizilmis; kok kaymasi 5 klipte de 0 (yerinde)
+                     oyuncu 4,5-5,4 -> ayak 7,9-9,5x kayiyordu
+                  K  bas payi %42-52 (ilkel govdede %33) · TELAFILI ×0,80'de blob kirilir
+                     (omuz 0,616 > 0,60) · TELAFISIZ omuz 0,552 sabit, boy 1,75→1,57/1,48/1,39
+                  Ö  1,75 gercek orandan +%6 · 1,60 +%16 · 1,50 +%24 (gercek bozulma)
+                  Ç  kapsul 0,04 ms/1 cizim · 6 parca 1,78 ms/216 · SEVK (bas+govde) 0,52 ms/48
+                     48 musteri 1,00 ms/96 · 80 musteri 1,57 ms/112 · oyunda 38 esZamanli olculdu
+                  Oturus  Sit_Chair_Idle kalca dunyada 0,382 → kok kaldirma +0,068
+KARAR           : D-113 — K-B telafisiz ×0,75 · S3 (klip hizdan secilir + tavan 1,80) ·
+                  Ö1 (ACTOR_HEIGHT 1,75 KALIR) · Ç2 birlesik skinned · kasket yalniz sahipten.
+                  Paket: https://claude.ai/code/artifact/1cad1b62-df57-4ffb-b00b-32f0b9be9565
+UYGULAMA        : actor.ts (KAY_KAFA_OLCEK · KLIP_HIZI · TIMESCALE_TAVAN/TABAN ·
+                  KAY_OTURMA_KALDIRMA · NPC_SKIN_CAP 48 · KAY_MUSTERI_GOVDE · owner.kasket=false)
+                  KayActor.tsx (kafaKucult · head.scale izi sokuldu · lokomosyonSec) ·
+                  Customers.tsx (48 yuvali skinned havuz, govde basina iki mesh) ·
+                  tools/olcum-yuruyus.mjs · skin-perf sevk kolu · karakter-bak kafa kolu ·
+                  tools/shot-s15.mjs · tools/mutasyon-s15.mjs
+BEKÇİ           : tests/karakter-senkron.test.ts — 21 denetim, **18 mutasyonla** dogrulandi,
+                  kacan 0 · tsc -b ✓ · vitest 964 ✓ · duman 42/42 ✓ · sira ✓
 ```
-
-**Turu açan geri bildirim (2026-09-14, kullanıcı):** "karakterler havada süzülüyor gibi, yürüme
-efekti ile ilerleme senkron değil · ana karakterdeki kasketi çıkar · garsonlar falan küçülsün,
-kafalar çok büyük duruyo baya küçült".
-
-**Süzülmenin ilk sayısı (koddan, ölçüm öncesi):** hareket hızları **1,5…5,4 br/sn** aralığında
-(garson 1,5-2,0 · bulaşıkçı 2,0-2,8 · müşteri 2,6 · oyuncu 4,5-5,4) ama `Walking_A` herkeste
-`timeScale = 1`. Tek klip bu aralığı tutamaz; `Running_A/B` repoda ve kullanılmıyor.
 
 ## SIRADAKİ TAM ADIM
 
-**S15 — müşteriler skinned'e geçer** (tur kartında `S14b`). Kullanıcı "hepsinde skinned çok iyi
-olur" dedi; bedel ölçülü ve kol hazır:
-- Bugün `Customers.tsx` **tek InstancedMesh** (NPC_CAP 128 → 1 çizim çağrısı).
-- Skinned'de karakter başına **8 çizim** (gövde 8 parça mesh) → 24 müşteri = **192**; mobil bütçe
-  tipik 100-200. **Azaltma kolu ölçüldü ama denenmedi:** her gövdenin TEK materyali var, parçalar
-  birleştirilebilir → karakter başına 1 çizim, 24 müşteri = 24.
-- `Sit_Chair_Down/Idle/StandUp` klipleri repoda: bugünkü `SEATED_DROP` numarası (gövdeyi 0,45
-  aşağı indirme) gerçek oturuş poziyle değişebilir. Montaj kaldırması ölçüldü (§B10).
-- Gömlek rengi müşteri başına palet renginden seçilecek (`feedback_color_variety`).
+**S16 — Faz S'in son kalemi: S9 ses** (kaynak karari yazili, D-106 · S-C). Ardindan **Faz H**
+(H1 uc hata · H2 yukseltme sirasi · H3 masa araligi — son ikisi DENGE, varyant kapisina tabi).
 
-Ardından **S9 ses** (kaynak kararı yazılı, D-106 · S-C), sonra **Faz H** (H1 üç hata · H2
-yükseltme sırası · H3 masa aralığı — son ikisi DENGE, varyant kapısına tabi).
+**İLK SORULACAK (S15'ten kaldi, soru turu doldugu icin sorulmadi):**
+**Gec oyunda musteri tavani.** 24 masa tam acikken musteri 70'i gecebilir ve tavani asanlar
+kapsul olarak gorunur. Iki kol OLCULDU ama secilmedi:
+- tavani 80'e cikar → 1,57 ms / 112 cizim (frustum culling devrede)
+- uzaktakini kapsule dusur (LOD) → yakindaki 48 skinned, uzak kapsul; kare basi siralama ister
 
-### S14'ten DEVREDEN (ölçüldü/görüldü, bilerek yapılmadı)
+### S15'ten DEVREDEN (ölçüldü/görüldü, bilerek yapılmadı)
 
-- **Karakter paneli hâlâ ESKİ ilkel gövdeyi gösteriyor** (`Player.tsx`'in `OwnerBody`'si export
-  olarak duruyor ve `CharacterPanel` onu çiziyor). Oyunda sahip artık KayKit gövdesi — panel ile
-  sahne ayrıştı. Kendi turu (panelin mini Canvas'ı skinned gövdeyi ve klibi taşımalı).
-- **Önlük düz bir plaka** — göğse asılı bir dikdörtgen; gövdeyi sarmıyor. Oyun kamerasından
-  okunuyor ama yakın kadrajda plaka gibi duruyor. Cila kalemi.
-- **Rogue_Hooded'ın yeşil kapüşonu ekipman süzgecine takılmıyor** (mesh adı `_Cape`/`_Mask`
-  değil). O gövde şu an hiçbir role atanmadı; müşteri turunda kullanılacaksa süzgeç genişler.
+- **Oyuncuda 2,0× artık kayma.** Hizi klibin tasiyabileceginin iki kati; kelepcede sifirlanmiyor
+  (bugunku 7,9×'in dortte biri). Sifirlamak oyuncu hizini dusurmeyi ister — DENGE, olculmedi.
+- **Rogue'un (bulasikci) omzu 0,709** — blob siniri 0,60'i BUGUN de asiyor; S14'un "omuz 0,58"
+  satiri baska govdeden alinmis. Ya sinir ya govde secimi gozden gecmeli.
+- **Karakter paneli hâlâ ESKİ ilkel gövdeyi gösteriyor** (`Player.tsx`'in `OwnerBody`'si). Oyunda
+  sahip KayKit gövdesi — panel ile sahne ayrisik. Kendi turu.
+- **Önlük düz bir plaka** — göğse asılı dikdörtgen, gövdeyi sarmıyor. Cila kalemi.
+- **Rogue_Hooded** musteri kadrosunda YOK: kapusonu ekipman suzgecine takilmiyor (mesh adi
+  `_Cape`/`_Mask` degil). Kullanilacaksa suzgec genisler.
 - **Klip dosyaları mankenin gövdesini de taşıyor** (dosya başına 6.916 üçgen ölü yük, 4 dosya).
-  Yüklenirken sahneye eklenmiyor ama ayrıştırılıyor. Mesh'i atan bir araç ≈ 0,5-1,5 MB kazandırır.
+  Mesh'i atan bir araç ≈ 0,5-1,5 MB kazandırır.
+- **Musteri gövdeleri personelle ayni** (Knight/Rogue/Mage/Barbarian/Ranger) — renk cesitliligi
+  tasiyor ama govde tekrari var. Yeni gövde paketi kendi turunu ister.
 
 **Önizlemeler**
+**S15 karar paketi (kafa · senkron · çizim):** https://claude.ai/code/artifact/1cad1b62-df57-4ffb-b00b-32f0b9be9565
 **S14 karakter turu (dokuz kare · vitrin · oyun içi):** https://claude.ai/code/artifact/e2034137-d5c6-4afb-9896-9bee43cd30c7
 **S13 paketler (altı paket · altı hüküm):** https://claude.ai/code/artifact/dcbaaee3-8889-4665-83b2-feff02a60c13
 **S12 arayüz (altı ekran önce/sonra):** https://claude.ai/code/artifact/a83eade2-32f6-4a64-ae34-6743a93922a3

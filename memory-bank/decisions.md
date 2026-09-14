@@ -3415,3 +3415,40 @@ sayılmıyor, tavan D-112'nin gerekçesiyle 24'e çıktı.
 
 Sayılar: `docs/karakter-raporu-s14.md` · ham `docs/olcum-karakter.json` · `docs/olcum-skin-perf.txt` ·
 kareler `docs/gorsel/ss/s14-*.png` · önizleme https://claude.ai/code/artifact/e2034137-d5c6-4afb-9896-9bee43cd30c7
+
+---
+
+## D-113 — Kafa telafisiz küçülür · yürüyüş hızdan senkronlanır · müşteriler skinned (S15)
+
+**Soru:** kullanıcı üç şey söyledi — "havada süzülüyor gibi, yürüme efekti ilerlemeyle senkron
+değil" · "ana karakterdeki kasketi çıkar" · "garsonlar falan küçülsün, kafalar çok büyük duruyo".
+
+**Ölçüldü:** `Walking_A` **0,571 br/sn** için çizilmiş, oyuncu 4,5-5,4 gidiyor → ayak **7,9-9,5
+katı** kayıyordu; beş klipte de kök kayması 0 (yerinde). KayKit başı gövde boyunun **%42-52**'si
+(ilkel gövdede %33). Kafayı küçültmenin iki kolu var ve ayrıldıkları yer şu: **telafili** kolda
+boy 1,75'te tutulur ve gövde şişer — ×0,80'de omuz 0,616 ile **blob kuralını kırar**;
+**telafisiz** kolda gövde ölçeği hiç değişmez (omuz 0,552 sabit), karakter kısalır.
+
+**Seçilen (kullanıcı, dört kolda da öneri):** **K-B telafisiz ×0,75** (baş payı ~%36, siluet
+~1,52) · **S3** klip hızdan seçilir + katsayı hızdan türer + tavan 1,80 (sprint kadansı) ·
+**Ö1** `ACTOR_HEIGHT` 1,75 KALIR · **Ç2** müşteriler birleşik skinned · kasket yalnız sahipten.
+
+**Telafisiz kolun kilit gerekçesi:** mobilya bedeli **aritmetik, görsel değil**. Gövde ölçeği
+kıpırdamadığı için masa/tabure/tepsi ile gövdenin ilişkisi birebir aynı kalır; kısalan tek şey
+siluetin tepesi. `ACTOR_HEIGHT` ve ondan türeyen hiçbir sayı (SEATED_DROP, PLAYER_RADIUS,
+BUBBLE_Y, CAMERA_LOOK_Y, nav) dokunulmadı — kol bilerek bu yüzden seçildi.
+
+**Oyuncuda süzülme SIFIRLANMADI:** hızı klibin taşıyabileceğinin iki katı; kelepçede **2,0×**
+artık kayma kalıyor (bugünkü 7,9×'ın dörtte biri). Sıfırlamak oyuncu hızını düşürmeyi ister —
+DENGE, varyant kapısına tabi, ölçülmedi.
+
+**Uygulamada ölçümü DEĞİŞTİREN iki şey:** ① "tek materyal → 1 çizim" kolu, başın dokusunu
+korumakla (D-112) bağdaşmadı; sevk biçimi gövde başına **iki mesh** (48 çizim / 0,52 ms).
+② `NPC_SKIN_CAP` 24 seçilmişti; oyunda ölçülünce 12 masada bile **38 eşzamanlı müşteri** çıktı
+ve tavanı aşanlar kapsül olarak görünüyordu → tavan **48**.
+
+**Bekçi:** `tests/karakter-senkron.test.ts` (21 denetim), **18 mutasyon, kaçan 0.**
+
+Sayılar: `docs/karakter-raporu-s15.md` · ham `docs/olcum-yuruyus.json` · kareler
+`docs/gorsel/ss/s15-*.png` · karar paketi
+https://claude.ai/code/artifact/1cad1b62-df57-4ffb-b00b-32f0b9be9565
