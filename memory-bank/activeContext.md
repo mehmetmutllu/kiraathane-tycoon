@@ -5,19 +5,27 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-15 — **S20 BİTTİ: E2 + Ç1 koda girdi, bekçili** · Faz S 20/22 · 95/106)
+## ŞU AN (2026-09-15 — **S22 tur açıldı: KADEMELİ MUTFAK** · Faz S 21/22 · 95/106)
 
 ```
-SORU            : Mutfak odası oyuna ne veriyor — girilemeyen, mekaniğe bağlanmamış ve ortası
-                  boş bir vitrin mi, yoksa kazanılacak bir alan mı?
-SAYILAR         : docs/mutfak-raporu-s20.md §Bulgular · ham: docs/olcum-mutfak.txt (tam, 17 damga)
-                  görünürlük %99 orta · erişim 0/37.846 · çaycı %100 görünür · boşluk 39,91 br²
-KARAR           : D-118 — E2 + Ç1 uygulandı · D2 → S21 · E1 → Faz H (nav ızgarasıyla birlikte)
-UYGULAMA        : E2 iki sınır bölmesi (2,81 + 1,70 br, salt görsel) ·
-                  Ç1 çaycı temposu çay bekleyenden (0 / 0,60 / 2,00 — boş↔dolu 3,33×)
-BEKÇİ           : tests/mutfak-s20.test.ts — 17 denetim, 3 MUTASYON kırmızı yandı
-FINAL           : vitest 1051 ✓ · duman 42/42 ✓ · konsol hatası YOK
+SORU            : Mutfak servis noktasının 6 kademesiyle nasıl büyür — hangi kalıp HER
+                  yükseltmede ekranda okunan bir değişim bırakır, ve o değişim odanın
+                  %42'lik (39,91 br²) görünür boşluğunu mu doldurur?
+ÖLÇÜLECEK KOLLAR: §K kademe kalıbı — K0 taban (19 sabit ünite) · K1 AÇILIM (ünite sayısı
+                  seviyeyle artar, bugünkü oda = L6) · K2 TADİLAT (19 ünite hep çizilir,
+                  kilitliler tahta perde hâlinde) · K3 YERİNDE BÜYÜME (sayı sabit, ünite
+                  kendi içinde model takasıyla kademe atlar)
+                  §Y büyümenin YERİ — Y0 arka hatta kalsın · Y1 orta boşlukta ada (MODULE_W
+                  1,80 ritmi) · Y2 ikisi karışık
+SAYILAR         : (adım 2'den sonra dolar — docs/mutfak-kademe-raporu-s22.md §Bulgular)
+KARAR           : (adım 3 — kullanıcı seçer, D-119)
+UYGULAMA        : (adım 4 — yalnız kararın kolu)
+BEKÇİ           : (test dosyası + mutasyon sayısı)
 ```
+
+**Kesici sayı:** her L→L+1 deltasının **görünürlüğü**. S7/D-104'ün WC kuralı burada da geçerli:
+*"her seviye tam bir şeyi büyütür — hiçbir yükseltme 'ekranda hiçbir şey değişmedi' hissi
+bırakmaz."* %0 görünür deltası olan kol elenir.
 
 ## SIRADAKİ TAM ADIM
 
