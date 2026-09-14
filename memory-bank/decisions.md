@@ -3208,3 +3208,24 @@ zayıf yeri gösterdi: söve/köşe paylarını YER DEĞİŞTİREN mutasyon hat 
 (0,60 + 0,20 iki yönde de aynı), gözler yalnız 0,40 kayıyor ve bina köşesinde payanda kalmıyordu
 → "hangi uçta hangi pay" denetimi eklendi. vitest **907** · duman **42/42** · `tsc -b` temiz.
 Sayılar: `docs/cephe-cami-raporu-s6b.md` · ham `docs/olcum-cephe-cami.txt` · görsel `s6b-*.png`.
+
+## D-106 — S9+S10 karar paketi: ses S-C, ekranlar K3+M2, kit "biçimi al dosyaları alma"; alt gezinme geometrisi kalır, palet ölçüldü (2026-09-14)
+
+**Ses S-C** (tek CC0 sanatçı, Kenney) + kaynaktan bağımsız **seri ivmesi**. İndirme turu içini
+netleştirdi: coin = **RPG Audio `handleCoins`** (gerçek madenî para), Casino Audio coin'e uymadı
+(plastik jeton) ama **Kat 2 okey/tavla** için birebir; `pour` hiçbir pakette yok, sentezde kalır.
+**Bu D-096'nın "sentez nihaidir" kararını geri alır** — gerekçe: kullanıcı sentezi oyunda duydu ve
+reddetti; "ölçülmemişle değiştirme" itirazı, ölçülenin beğenilmediği durumda geçerliliğini yitirir.
+**Ekranlar K3** tam ekran (kullanıcı sahne görünürlüğü yerine "gerçek ekran" hissini seçti),
+**mağaza içi M2**: ürün önizlemesi 74 → **230 px**. **Pad Y2** köşe-parantezli kare.
+**Kit yolu 2:** şekil grameri 300Mind kitinden, **dosyaları alınmaz** (PNG = palet kilidi, maket
+gösterdi: mor arayüz ile ahşap sahne iki ayrı ürün gibi duruyor); ikonlar Kenney'in 434 CC0 SVG'si.
+Unity EULA üç yolu da engellemiyordu — seçim hukuki değil **renk özgürlüğü** gerekçeli.
+**G-18:** masaya dokununca havada kart AÇILMAZ, masanın kendi mekânsal noktası vurgulanır.
+**Alt gezinme:** A/B/C elendi — kullanıcı kolu seçmedi, **soruyu düzeltti** ("bugünki gibi ama
+tasarımı daha güzel"). Geometri (tam genişlik, 4 etiketli sekme, 72 px, %8,3) **kilitlendi**;
+açılan biçim + palet. Ölçü: bugünkü bar sahnenin baskın renginden **Δh 2°** — "bar sahnenin devamı
+gibi" şikâyetinin sayısı, B2'nin (R = 0,91) barda görünen hâli. Kollar P1 2° · P2 128° · P3 136°,
+**üçü de WCAG AA geçiyor** (en düşük 6,66) → seçimi okunabilirlik değil yalnız Δh belirliyor.
+**Palet AÇIK** (P1/P2/P3), uygulama S11. Sayılar: `docs/ui-ses-raporu-s9s10.md` ·
+ham `docs/olcum-altnav.txt` · maket `docs/alt-gezinme-maketi.html`.

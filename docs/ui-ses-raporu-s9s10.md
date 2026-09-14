@@ -171,7 +171,12 @@ kuralı · B4 kontrast · B5 Arial · B6 emoji/glif. Bunlar S11'in işi.
 
 ## KARAR
 
-*(KISMEN DOLU — aşağıdaki DÜZELTME bölümüne bakın. İki kol hâlâ açık.)*
+**DOLU** (2026-09-14) — turun bütün kararları en alttaki *ALT GEZİNME* bölümünde toplandı:
+ses **S-C** (Kenney tek sanatçı; coin = RPG Audio `handleCoins`) + seri ivmesi · ekran **K3** tam ekran ·
+mağaza içi **M2** · pad **Y2** · kit **yolu 2** (biçimi al, dosyaları alma) · **G-18** masanın kendi
+noktası vurgulanır · alt gezinme **geometrisi bugünküyle aynı kalır** (A/B/C elendi).
+Tek açık kalem: alt gezinme **paleti** (P1/P2/P3 ölçüldü, kullanıcı seçecek → S11).
+Karar künyesi: `decisions.md` **D-106**.
 
 ---
 
@@ -339,3 +344,57 @@ olamaz (bizde UI kromu, sorun değil). Yani üç yol da hukuken açık.
 **Gerekçe:** kitin değerli kısmı dosyaları değil **şekil dili**; onu kopyalamak için indirmeye
 gerek yok ve indirirsek renk özgürlüğünü kaybediyoruz. İkon başka mesele — orada hazır asset
 gerçekten kazandırıyor.
+
+---
+
+## ALT GEZİNME — geometri kapandı, palet ölçüldü (2026-09-14, turun kapanışı)
+
+Karar paketi sunuldu (kol | sayı | takas | öneri). **Üç kalem kapandı, dördüncüsü soruyu değiştirdi.**
+
+### Kapanan kararlar
+
+| Soru | Seçilen | Elenen | Gerekçe |
+|---|---|---|---|
+| Mağaza içi | **M2** — büyük önizleme + seçim şeridi + tek satın alma | M1 ızgara | Ürün önizlemesi ~74 → **~230 px** (3,1×). Satın alınan şey görünür hâle geliyor; bedeli tek seferde tek ürün. |
+| Kit yolu | **2** — biçimi al, dosyaları alma | 1 doğrudan entegre · 3 sadece ikon | Kitin değerli kısmı şekil dili; PNG entegrasyonu **palet kilidi** getiriyor. İkonlar Kenney'in **434 CC0 SVG**'sinden. |
+| G-18 masa seviyesi | **Masanın kendi noktası vurgulanır** | havada seviye kartı · hiçbir şey | Dünyaya yeni yüzen arayüz öğesi girmiyor (`feedback_interaction_model`); seviye zaten mekânsal noktanın yanında okunuyor. |
+
+### Dördüncü kalem: soru A/B/C değildi
+
+Kullanıcı alt gezinme kollarını seçmedi, **soruyu düzeltti**:
+
+> *"bugünki gibi ama tasarımı daha güzel olsun şu an kötü. renkler de bilemedim — mağaza açılınca
+> mor iyi ama olduğu yerde iyi mi bilmiyorum."*
+
+İki şey birden söylüyor ve ikisi ayrı: **geometri kapandı** (bugünkü tam-genişlik levha kalıyor;
+kompakt hap B ve yüzen düğme C elendi), **biçim + palet açıldı**. Bu, `feedback_ui_form_not_color`
+kuralının üçüncü kez doğrulanması: kullanıcının cümlesindeki isimler doğrudan kola çevrilir.
+
+### Yeni ölçüm: bar, sahnenin karşısında
+
+Araç `tools/olcum-altnav.mjs` · ham çıktı `docs/olcum-altnav.txt` ·
+maket `docs/alt-gezinme-maketi.html` · https://claude.ai/code/artifact/7e1aded9-9387-4f51-a95c-25787fbe95fb
+
+Ölçünün fikri: bir barın rengi tek başına değil, **arkasındaki sahneye karşı** yargılanır. Gerçek
+oyun karesinin (`s10-hud.png`) barın hemen üstündeki 72 px'lik şeridi okundu — sahnenin baskın rengi
+**h 23°**, doygunluk %36, açıklık %20.
+
+| Kol | Gövde | Δh sahneden | Doygunluk | ΔL | Etiket | Aktif | Ne ödüyor |
+|---|---|---|---|---|---|---|---|
+| **Bugün** | rgb(38,27,19) | **2°** | %33 | 8 | — | — | Bar sahnenin renk diliminde; ayrım yalnız açıklıkla. Aktif sekme okunmuyor. |
+| **P1** ceviz | rgb(58,35,18) | **2°** | %53 | 5 | 11,22 | 6,66 | Biçim düzelir, **renk bulgusu barda aynen durur**. |
+| **P2** gece nötr | rgb(36,34,42) | **128°** | **%11** | 5 | **13,25** | 6,66 | Gövde renkten çıkar, sıcaklık **tek aksana** iner — B2'nin reçetesi. |
+| **P3** mor-lacivert | rgb(52,44,108) | **136°** | %42 | **−10** | 9,83 | 7,49 | Tek leke çözülür ama yerine **ikinci renk kütlesi** kurulur; bar sahneden açık kalıyor. |
+
+**Bugünkü barın Δh'ı 2°.** "Bar sahnenin devamı gibi duruyor" şikâyetinin sayısı budur ve B2'nin
+(R = 0,91) barda görünen hâlidir.
+
+**Üçü de WCAG AA geçiyor** (en düşük 6,66) — yani okunabilirlik seçimi belirlemiyor; B4'ün 45/184'ü
+biçim gramerinin kendisiyle kapanıyor. Seçimi belirleyen tek sayı **Δh**.
+
+**"Mor olduğu yerde iyi mi?" sorusunun cevabı:** mağaza tam ekranda mor **tek başına** — karşısında
+kıraathane yok. Sahnenin üstünde ahşabın yanında **ikinci bir kimlik** kuruyor (Δh 136°) ve ΔL −10
+ile sahneden açık kalıyor. P2 aynı ayrışmayı (128°) **renk kurmadan** yapıyor. **Öneri P2**; mor
+gerçekten istenirse yeri mağaza gibi tam ekranlar, sürekli görünen bar değil.
+
+**AÇIK:** palet seçimi (P1 / P2 / P3) — kullanıcı maketi görüp seçecek, uygulama S11'in turu.

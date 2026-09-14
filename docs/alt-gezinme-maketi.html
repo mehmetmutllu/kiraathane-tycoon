@@ -1,0 +1,250 @@
+<title>Alt Gezinme Paleti</title>
+<style>
+:root{
+  --paper:#f4efe6; --surface:#fffdf9; --ink:#241a11; --mid:#6c5b49; --rule:#e0d5c4;
+  --sunken:#efe7da; --accent:#b4552a; --accent-w:#fbf1ea; --bad:#b23b2e; --good:#2e7d4f;
+  --r-s:5px; --r-m:12px;
+  --f-body:'Iowan Old Style','Palatino Linotype',Georgia,serif;
+  --f-disp:'Trebuchet MS','Segoe UI',system-ui,sans-serif;
+  --f-num:'DIN Alternate','Segoe UI',system-ui,sans-serif;
+  --f-game:'Trebuchet MS','Segoe UI',system-ui,sans-serif;
+  --hud:url("gorsel/ss/s10-hud.png");
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --paper:#17130f; --surface:#201a15; --ink:#f0e7db; --mid:#a89681;
+  --rule:#362c22; --sunken:#241d17; --accent-w:#2a1c14;
+}}
+:root[data-theme="dark"]{
+  --paper:#17130f; --surface:#201a15; --ink:#f0e7db; --mid:#a89681;
+  --rule:#362c22; --sunken:#241d17; --accent-w:#2a1c14;
+}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.62;
+  -webkit-font-smoothing:antialiased;padding-block:34px 64px;padding-left:20px;padding-right:20px}
+.wrap{max-width:1120px;margin:0 auto}
+h1{font-family:var(--f-disp);font-size:30px;line-height:1.18;margin:0 0 6px;letter-spacing:-.01em}
+h2{font-family:var(--f-disp);font-size:21px;margin:0;letter-spacing:-.005em}
+h3{font-family:var(--f-disp);font-size:16px;margin:30px 0 2px}
+p{margin:10px 0}
+.lede{color:var(--mid);font-size:18px;margin:0 0 4px}
+.sec{display:flex;align-items:center;gap:10px;margin:50px 0 2px;flex-wrap:wrap}
+.sec-tag{font-family:var(--f-disp);font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--surface);background:var(--ink);padding:4px 8px;border-radius:var(--r-s)}
+.sec-tag.ask{background:var(--accent)}
+.sec-tag.ok{background:var(--good)}
+code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.84em;background:var(--sunken);padding:1px 5px;border-radius:var(--r-s)}
+table{border-collapse:collapse;width:100%;font-size:15px;margin:14px 0;min-width:640px}
+th,td{border-bottom:1px solid var(--rule);padding:8px 10px;text-align:left;vertical-align:top}
+th{font-family:var(--f-disp);font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--mid)}
+td.n{font-family:var(--f-num);text-align:right;white-space:nowrap}
+tr.rec td{background:var(--accent-w)}
+.tw{overflow-x:auto}
+
+.rack{display:flex;gap:26px;flex-wrap:wrap;align-items:flex-start;margin:16px 0 0}
+.slot{flex:0 0 auto;max-width:100%}
+.cap{font-family:var(--f-disp);font-size:12.5px;color:var(--mid);margin:8px 0 0;max-width:351px;line-height:1.5}
+.cap b{color:var(--ink)}
+.box{width:302px;max-width:100%;height:654px;overflow:hidden;border-radius:20px;border:1px solid var(--rule);
+  box-shadow:0 8px 26px rgba(0,0,0,.16)}
+/* Sahne karesi KIRPILIR: barın asıl işi ekranın alt 400 pikselinde geçiyor, üstteki boş zemin
+   maketi küçültmekten başka bir şey yapmıyor. Mağaza karesi tam kalır (orada ekranın tamamı iş görüyor). */
+.box.alt{width:351px;height:378px;border-radius:16px}
+.ph.alt{transform:scale(.9) translateY(-424px)}
+.ph{width:390px;height:844px;transform:scale(.7746);transform-origin:top left;position:relative;overflow:hidden;
+  background-image:var(--hud);background-size:390px 844px;background-repeat:no-repeat}
+.ph.plain{background-image:none;background:linear-gradient(180deg,var(--g1),var(--g2))}
+
+.bar{position:absolute;left:0;right:0;bottom:0;height:72px;display:flex;align-items:stretch;
+  gap:6px;padding:7px 10px 8px;
+  background:linear-gradient(180deg,var(--g1),var(--g2));
+  border-top:3px solid var(--ot);
+  box-shadow:0 -3px 0 rgba(0,0,0,.22), 0 -14px 22px rgba(0,0,0,.32);
+  font-family:var(--f-game)}
+.bar::before{content:'';position:absolute;left:0;right:0;top:0;height:2px;background:var(--emb)}
+.tab{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  border:0;background:none;color:var(--tx);padding:2px;border-radius:17px}
+.tab .ic{display:grid;place-items:center;height:27px;position:relative}
+.tab .ic svg{display:block}
+.tab .lb{font-size:11px;font-weight:800;letter-spacing:.005em;white-space:nowrap}
+.tab.on{background:linear-gradient(180deg,var(--ac),var(--ac2));color:var(--txa);
+  border:2.5px solid var(--ot);box-shadow:inset 0 2px 0 rgba(255,255,255,.5), 0 3px 0 var(--ot);
+  transform:translateY(-4px)}
+.tab.on .lb{font-weight:900}
+.bang{position:absolute;top:-5px;right:-9px;min-width:17px;height:17px;display:grid;place-items:center;
+  border-radius:9px;background:#e0402c;border:2.5px solid var(--ot);color:#fff;
+  font-family:var(--f-num);font-size:10.5px;font-weight:700;line-height:1;padding:0 3px}
+
+.st{position:absolute;inset:0;display:flex;flex-direction:column;font-family:var(--f-game)}
+.st-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 14px 10px}
+.st-back{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;
+  background:linear-gradient(180deg,var(--ac),var(--ac2));border:2.5px solid var(--ot);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.5),0 3px 0 var(--ot);color:var(--txa)}
+.st-ttl{font-size:19px;font-weight:900;color:var(--tx);letter-spacing:.01em}
+.st-money{display:flex;align-items:center;gap:6px;padding:6px 12px 7px;border-radius:999px;
+  background:rgba(0,0,0,.3);border:2.5px solid var(--ot);color:var(--tx);
+  font-family:var(--f-num);font-size:15px;font-weight:700}
+.st-prev{margin:2px 14px 0;height:230px;border-radius:22px;border:3px solid var(--ot);
+  background:radial-gradient(120% 100% at 50% 12%,var(--pv1),var(--pv2));
+  box-shadow:inset 0 3px 0 rgba(255,255,255,.22),inset 0 -14px 26px rgba(0,0,0,.3);
+  position:relative;overflow:hidden;display:grid;place-items:center}
+.st-prev .tag{position:absolute;left:12px;top:12px;font-size:11px;font-weight:800;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--txa);background:var(--ac);border:2.5px solid var(--ot);
+  border-radius:10px;padding:3px 8px}
+.st-name{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:12px 16px 2px}
+.st-name b{font-size:18px;font-weight:900;color:var(--tx)}
+.st-name span{font-size:12.5px;color:var(--tx);opacity:.72}
+.st-strip{display:flex;gap:8px;padding:10px 14px 4px;overflow:hidden}
+.st-chip{width:58px;height:58px;flex:none;border-radius:16px;border:2.5px solid var(--ot);
+  background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(0,0,0,.26))}
+.st-chip.on{background:linear-gradient(180deg,var(--ac),var(--ac2));box-shadow:inset 0 2px 0 rgba(255,255,255,.5),0 3px 0 var(--ot)}
+.st-buy{margin:auto 14px 16px;height:60px;border-radius:20px;display:flex;align-items:center;justify-content:center;gap:9px;
+  background:linear-gradient(180deg,var(--ac),var(--ac2));border:3px solid var(--ot);
+  box-shadow:inset 0 3px 0 rgba(255,255,255,.5),0 5px 0 var(--ot);
+  color:var(--txa);font-size:19px;font-weight:900;letter-spacing:.01em}
+.st-buy .p{font-family:var(--f-num)}
+
+.note{border:1px solid var(--rule);border-left:3px solid var(--accent);border-radius:var(--r-m);
+  padding:14px 18px;background:var(--surface);margin:16px 0}
+.note.ok{border-left-color:var(--good)}
+.note b.q{font-family:var(--f-disp)}
+ul{margin:10px 0;padding-left:22px}
+li{margin:5px 0}
+@media (max-width:760px){ .box{height:560px} .ph{transform:scale(.663)} .box.alt{width:100%;height:324px} .ph.alt{transform:scale(.771) translateY(-424px)} }
+</style>
+
+<div class="wrap">
+
+<h1>Alt gezinme — biçim kilitli, soru palette</h1>
+<p class="lede">S10 · 2026-09-14 · kod yazılmadı. Kullanıcı: <i>“bugünkü gibi ama tasarımı daha güzel
+olsun, şu an kötü. renkler de bilemedim — mağaza açılınca mor iyi ama olduğu yerde iyi mi bilmiyorum.”</i></p>
+
+<div class="note">
+<p style="margin-top:0"><b class="q">Bu sayfa neyi SORMUYOR:</b> barın boyunu ve yerleşimini. O kapandı —
+<b>bugünkü geometri kalıyor</b>: tam genişlik, dört etiketli sekme, 72 px, ekranın %8,3’ü. Kompakt hap (B)
+ve yüzen düğme (C) kolları elendi.</p>
+<p style="margin-bottom:0"><b class="q">Bu sayfa neyi SORUYOR:</b> aynı geometri hangi <b>palette</b> çizilsin.
+Üç kol da aynı <b>biçim grameriyle</b> çizildi (kit yolu 2: kalın koyu kontur · katı kaydırılmış gölge ·
+iki taraflı kabartma · 17 px yarıçap · tek aileden ikonlar), böylece aradaki tek fark renk.</p>
+</div>
+
+<div class="sec"><span class="sec-tag">bugün</span><h2>Ölçülen kusur önce biçim, sonra renk</h2></div>
+<p>Aşağıdaki kare gerçek oyun karesi (<code>docs/gorsel/ss/s10-hud.png</code>), dokunulmadı. Bugünkü bar
+kahverengi düz bir levha ve <b>sahnenin zeminiyle aynı renk ailesinde</b> — B2 ölçümü bunu sayıya bağlamıştı:
+arayüz zeminlerinin %92,7’si h 31° çevresindeki 60°’lik tek dilimde, bileşke R = 0,91. Bar “biten bir çubuk”
+gibi değil, sahnenin devamı gibi okunuyor. İkonlar üç ayrı aileden: çizgisel pano · halka hedef · kırmızı
+çatılı dükkân · yüz. Aktif sekme hiç belli değil.</p>
+
+<div class="rack" id="rack-bugun"></div>
+
+<div class="sec"><span class="sec-tag ask">soru</span><h2>Üç palet — aynı biçim, aynı ikonlar</h2></div>
+<p>Her kolun solunda <b>sahnenin üstünde</b> hâli, sağında <b>mağaza tam ekranı</b> (K3 + M2, bu turda seçildi).
+Sorduğun karşılaştırma tam olarak budur: bir palet mağaza ekranını <b>kaplarken</b> iyi durabilir ama sahnenin
+üstünde <b>ince bir şerit</b> olarak bambaşka davranır.</p>
+
+<div id="kollar-dom"></div>
+
+<div class="sec"><span class="sec-tag ok">ölçü</span><h2>Sayılar</h2></div>
+<p>Ölçen: <code>tools/olcum-altnav.mjs</code> · ham çıktı <code>docs/olcum-altnav.txt</code>. Sahne rengi
+gerçek oyun karesinin barın hemen üstündeki şeridinden (y 700–772 px) okundu.</p>
+<p>Sahnenin barla yan yana duran şeridi: baskın renk <b>h 23°</b>, doygunluk %36, açıklık %20.
+Bugünkü bar <b>h 25°</b> — yani sahneden <b>2 derece</b> uzakta. “Bar sahnenin devamı gibi duruyor”
+hissinin sayısı budur.</p>
+
+<div class="tw">
+<table>
+<tr><th>Kol</th><th>Gövde</th><th>Δh sahneden</th><th>Doygunluk</th><th>ΔL</th><th>Etiket</th><th>Aktif</th><th>Ne ödüyor</th></tr>
+<tr><td><b>Bugün</b></td><td>rgb(38,27,19)</td><td class="n">2°</td><td class="n">%33</td><td class="n">8</td><td class="n">—</td><td class="n">—</td><td>Bar sahnenin renk diliminde; ayrım yalnız açıklıkla. Aktif sekme okunmuyor.</td></tr>
+<tr><td><b>P1</b> ceviz</td><td>rgb(58,35,18)</td><td class="n">2°</td><td class="n">%53</td><td class="n">5</td><td class="n">11,22</td><td class="n">6,66</td><td>Biçim düzelir, <b>renk bulgusu barda aynen durur</b> — gövde sahnenin diliminde kalıyor.</td></tr>
+<tr class="rec"><td><b>P2</b> gece nötr</td><td>rgb(36,34,42)</td><td class="n">128°</td><td class="n">%11</td><td class="n">5</td><td class="n">13,25</td><td class="n">6,66</td><td>Gövde renkten çıkar, sıcaklık <b>tek aksana</b> iner. En yüksek etiket kontrastı (13,25).</td></tr>
+<tr><td><b>P3</b> mor-lacivert</td><td>rgb(52,44,108)</td><td class="n">136°</td><td class="n">%42</td><td class="n">−10</td><td class="n">9,83</td><td class="n">7,49</td><td>Tek leke çözülür ama yerine <b>ikinci bir renk kütlesi</b> kurulur. ΔL negatif: bar sahneden açık, kenarını yalnız kontur taşıyor.</td></tr>
+</table>
+</div>
+
+<p><b>Üç kolun üçü de WCAG AA’yı geçiyor</b> (en düşük 6,66). Yani okunabilirlik bu seçimi belirlemiyor —
+B4’ün 45/184 sorunu biçim grameriyle zaten kapanıyor. Seçimi belirleyen tek şey <b>Δh</b>: bar sahneden
+ne kadar ayrışsın.</p>
+
+<div class="note ok">
+<p style="margin-top:0"><b class="q">Sorunun cevabı:</b> “mor mağazada iyi ama olduğu yerde iyi mi?”
+Mağaza tam ekranda mor <b>tek başına</b> — karşısında kıraathane yok, o yüzden güçlü duruyor.
+Sahnenin üstünde ise ahşabın yanında <b>ikinci bir kimlik</b> kuruyor (Δh 136°) ve ΔL −10 ile sahneden
+<b>açık</b> kalıyor: bar zeminden kopuyor ama yukarı doğru da yapışmıyor.</p>
+<p style="margin-bottom:0">P2 aynı ayrışmayı (128°) <b>renk kurmadan</b> yapıyor: gövde nötr, sahne sıcak,
+aksan pirinç. Kıraathanenin sıcaklığı sahnede kalır, arayüz ona rakip olmaz. <b>Önerim P2.</b>
+Mor gerçekten istenirse yeri mağaza gibi <b>tam ekranlar</b>, sürekli görünen bar değil.</p>
+</div>
+
+<script type="application/json" id="kollar">
+[
+ {"id":"P1","ad":"CEVİZ — bugünkü kimlik, kit gramerinde",
+  "g1":"#4A2E1B","g2":"#2A1709","ot":"#150B04","emb":"rgba(255,226,170,.42)",
+  "ac":"#F0BC62","ac2":"#C98A2C","tx":"#F4DEBE","txa":"#3A2206",
+  "pv1":"#6B4426","pv2":"#2A1709",
+  "not":"Kimlik korunur, yalnız biçim düzelir — en düşük riskli kol. Karşılığında B2’nin “her şey tek kahverengi lekede” bulgusuna EN AZ dokunan kol da bu: bar hâlâ sahnenin renk ailesinde."},
+ {"id":"P2","ad":"GECE NÖTR — nötr gövde + tek pirinç aksan",
+  "g1":"#2F2C33","g2":"#191820","ot":"#0A090E","emb":"rgba(255,255,255,.30)",
+  "ac":"#F0BC62","ac2":"#C98A2C","tx":"#EFEAF2","txa":"#3A2206",
+  "pv1":"#43404C","pv2":"#191820",
+  "not":"Gövde renkten çıkar, sıcaklık TEK aksanda toplanır. B2’nin reçetesi buydu: kütleyi dağıt, aksanı tekleştir. Pirinç bu zeminde ekranın en parlak yeri olur; kıraathanenin sıcaklığı sahnede kalır, arayüzde aksana iner."},
+ {"id":"P3","ad":"MOR-LACİVERT — kitin kendi dili",
+  "g1":"#463C86","g2":"#221B52","ot":"#100B2E","emb":"rgba(255,255,255,.34)",
+  "ac":"#FFC24B","ac2":"#E09415","tx":"#EAE3FF","txa":"#3A2206",
+  "pv1":"#5B4FA6","pv2":"#221B52",
+  "not":"Sorduğun kol. Mağaza tam ekranda güçlü ve “çalışılmış” duruyor; sahnenin üstünde ince şeritken ahşapla aynı karede yaşamak zorunda. Sağdaki ve soldaki telefon aynı paletin iki farklı işi."}
+]
+</script>
+
+<script>
+const IC = {
+  gorev:'<svg width="26" height="26" viewBox="0 0 24 24"><rect x="4.6" y="3.4" width="14.8" height="17.4" rx="3.2" fill="currentColor" stroke="var(--ot)" stroke-width="2"/><rect x="8.6" y="1.9" width="6.8" height="3.8" rx="1.6" fill="var(--ac)" stroke="var(--ot)" stroke-width="2"/><path d="M8.3 12.1l2 2 3.4-3.7M8.3 17.1h7.4" stroke="var(--ot)" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>',
+  hedef:'<svg width="26" height="26" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.7" fill="currentColor" stroke="var(--ot)" stroke-width="2"/><circle cx="12" cy="12" r="5" fill="none" stroke="var(--ot)" stroke-width="2"/><circle cx="12" cy="12" r="1.9" fill="var(--ac)" stroke="var(--ot)" stroke-width="1.6"/></svg>',
+  magaza:'<svg width="26" height="26" viewBox="0 0 24 24"><rect x="4.4" y="10.4" width="15.2" height="10.4" rx="2.4" fill="currentColor" stroke="var(--ot)" stroke-width="2"/><path d="M3.2 10.4l1.9-5.1h13.8l1.9 5.1z" fill="var(--ac)" stroke="var(--ot)" stroke-width="2" stroke-linejoin="round"/><rect x="9.6" y="13.8" width="4.8" height="7" rx="1.2" fill="var(--ot)"/></svg>',
+  karakter:'<svg width="26" height="26" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4.4" fill="currentColor" stroke="var(--ot)" stroke-width="2"/><path d="M4.6 20.6c0-4 3.3-6.4 7.4-6.4s7.4 2.4 7.4 6.4z" fill="currentColor" stroke="var(--ot)" stroke-width="2" stroke-linejoin="round"/></svg>',
+  geri:'<svg width="20" height="20" viewBox="0 0 24 24"><path d="M14.6 5.2L7.8 12l6.8 6.8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  para:'<svg width="17" height="17" viewBox="0 0 24 24"><ellipse cx="12" cy="15" rx="8.4" ry="4.1" fill="#D17D0A"/><ellipse cx="12" cy="10.4" rx="8.4" ry="4.4" fill="#FFD45E" stroke="var(--ot)" stroke-width="1.7"/></svg>',
+  masa:'<svg width="118" height="118" viewBox="0 0 24 24"><ellipse cx="12" cy="17.6" rx="7.4" ry="1.7" fill="rgba(0,0,0,.28)"/><rect x="10.8" y="10" width="2.4" height="7" fill="#8A5A2B" stroke="var(--ot)" stroke-width="1.1"/><ellipse cx="12" cy="9.4" rx="8" ry="3.1" fill="#2E7D4F" stroke="var(--ot)" stroke-width="1.5"/><rect x="10.9" y="5.6" width="2.2" height="3.2" rx=".7" fill="#F0E4CE" stroke="var(--ot)" stroke-width="1.1"/></svg>'
+};
+const SEK = [['gorev','Görevler',2],['hedef','Hedefler',1],['magaza','Mağaza',0],['karakter','Karakter',0]];
+
+function bar(aktif){
+  const t = SEK.map(function(s,i){
+    const bang = s[2] ? '<span class="bang">'+s[2]+'</span>' : '';
+    return '<div class="tab'+(i===aktif?' on':'')+'"><span class="ic">'+IC[s[0]]+bang+
+           '</span><span class="lb">'+s[1]+'</span></div>';
+  }).join('');
+  return '<div class="bar">'+t+'</div>';
+}
+function stil(k){
+  return '--g1:'+k.g1+';--g2:'+k.g2+';--ot:'+k.ot+';--emb:'+k.emb+';--ac:'+k.ac+';--ac2:'+k.ac2+
+         ';--tx:'+k.tx+';--txa:'+k.txa+';--pv1:'+k.pv1+';--pv2:'+k.pv2;
+}
+function sahne(k){ return '<div class="box alt"><div class="ph alt" style="'+stil(k)+'">'+bar(2)+'</div></div>'; }
+function magaza(k){
+  let chips = '';
+  for (let i=0;i<5;i++) chips += '<div class="st-chip'+(i===0?' on':'')+'"></div>';
+  return '<div class="box"><div class="ph plain" style="'+stil(k)+'"><div class="st">'+
+    '<div class="st-top"><div class="st-back">'+IC.geri+'</div><div class="st-ttl">Mağaza</div>'+
+    '<div class="st-money">'+IC.para+'<span>5K</span></div></div>'+
+    '<div class="st-prev"><span class="tag">Masa teması</span>'+IC.masa+'</div>'+
+    '<div class="st-name"><b>Yeşil Çuha</b><span>Klasik okey masası</span></div>'+
+    '<div class="st-strip">'+chips+'</div>'+
+    '<div class="st-buy"><span>SATIN AL</span><span class="p">1,2K</span></div>'+
+    '</div></div></div>';
+}
+
+const KOLLAR = JSON.parse(document.getElementById('kollar').textContent);
+
+document.getElementById('rack-bugun').innerHTML =
+  '<div class="slot"><div class="box alt"><div class="ph alt"></div></div>'+
+  '<p class="cap"><b>Bugün — dokunulmamış oyun karesi.</b> Bar sahnenin zeminiyle aynı renk ailesinde; '+
+  'ikonlar üç ayrı aileden; hangi sekmede olduğun okunmuyor.</p></div>';
+
+document.getElementById('kollar-dom').innerHTML = KOLLAR.map(function(k){
+  return '<h3>'+k.id+' · '+k.ad+'</h3><div class="rack">'+
+    '<div class="slot">'+sahne(k)+'<p class="cap"><b>Sahnenin üstünde</b> — barın asıl yaşadığı yer.</p></div>'+
+    '<div class="slot">'+magaza(k)+'<p class="cap"><b>Mağaza tam ekran</b> (K3 + M2) — aynı paletin kapladığı hâli.</p></div>'+
+    '<div class="slot" style="flex:1;min-width:230px;max-width:340px"><p class="cap" style="max-width:none">'+k.not+'</p></div>'+
+    '</div>';
+}).join('');
+</script>
+</div>

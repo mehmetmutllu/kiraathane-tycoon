@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 97 · YAPILAN 83 · %86):**
+**Oturum bütçesi (TOPLAM 97 · YAPILAN 84 · %87):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -24,10 +24,10 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
 | | D meta katman | 9/9 ✅ |
 | | E arayüz ve cila | 4/5 🔧 |
-| | **S sanat ve arayüz geçişi** | **8/13 🔧** |
+| | **S sanat ve arayüz geçişi** | **9/13 🔧** |
 | | H oynanış düzeltmeleri | 0/3 ⏳ |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **55/69** |
+| **Program toplam** | | **56/69** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -245,7 +245,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   değil; kendi turunu ister.
 - ⏳ **E5 — hareketli onboarding**
 
-## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (8/13) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
+## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (9/13) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
 - ✅ **S1 — pad ve yükseltme dili yeniden yazıldı** · çember → **köşe parantezli kare** (kenar
   ortaları boş), dolum büyüyen disk → **alttan üste dolan kare**, "Masa"/"Çay Yükselt"/"Usta"
   → hepsinde **YÜKSELT** + solunda düz yukarı ok, yazı 700 → 800, 💎 pulu "mavi kare" → gerçek
@@ -386,13 +386,22 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   alır:** sentez "nihai" seçilmişti ve `public/assets/audio/` bilerek boştu (lisans yüzeyi sıfır).
   Motor dosya üstüne yazmayı zaten destekliyor (`Model.tsx` deseninin tersi) — yani kablo hazır,
   açılan tek şey **lisans yüzeyi ve tek-stil kilidi**. Ayrıca `settings.music` hâlâ hiçbir şeye
-  bağlı değil; ortam sesi o kabloyu da kapatır. Aday kaynaklar asset panosunda.
-- ⏳ **S10 — UI tasarım dili: ARAŞTIRMA + MAKET** — kullanıcı: *"hâlâ genel olarak UI çok kötü"*.
-  Piyasa tycoon'larının HUD/modal dili + ücretsiz UI kit araştırması → maket → **onay**.
-  Mavi palet (G-16), ekran modeli (G-17, Subway Surfers) ve pad'in son hâli (G-10) burada sorulur.
-  **Kod YAZILMAZ** — `feedback_workflow_plan_approve`: tasarım-hassas çatalda önce maket, sonra onay.
-- ⏳ **S11 — UI tasarım dili: UYGULAMA** — onaylanan dil koda geçer; görev metinleri (G-05) ve
-  ekranların tek kabuğa oturması da burada.
+  bağlı değil; ortam sesi o kabloyu da kapatır. **KAYNAK KARARI VERİLDİ (D-106): S-C** — Kenney tek
+  sanatçı; coin = RPG Audio `handleCoins`, semaver = `metalPot`, bardak = Interface `glass_00x`,
+  Casino Audio Kat 2'ye; `pour` sentezde kalır. Kalan iş dosyaları künyesiyle repoya almak +
+  kaynaktan bağımsız **seri ivmesi** (perde basamağı) kodu. Paketler indirildi, repoya girmedi.
+- ✅ **S10 — UI tasarım dili: ARAŞTIRMA + MAKET (D-106)** — kod yazılmadı (tanımı gereği). Ölçüm
+  108 görsel karar · palet kütlesi R 0,91 · 13 öğe Arial · 45/184 metin AA altı; sekiz CC0 paket
+  indirildi; beş maket. **Kararlar:** ekran K3 tam ekran · mağaza içi M2 (önizleme 74 → 230 px) ·
+  pad Y2 · kit **yolu 2** (biçimi al, dosyaları alma; ikonlar 434 CC0 SVG) · G-18 masanın kendi
+  noktası · alt gezinme **geometrisi bugünküyle aynı** (A/B/C elendi, kullanıcı soruyu düzeltti).
+  Yeni ölçü `tools/olcum-altnav.mjs`: bugünkü bar sahnenin baskın renginden **Δh 2°** — "bar
+  sahnenin devamı gibi" şikâyetinin sayısı. Kollar P1 2° · P2 128° · P3 136°, üçü de WCAG AA.
+  **Tek açık kalem: palet seçimi** (maket yayında, kullanıcı seçecek) → S11.
+- ⏳ **S11 — UI tasarım dili: UYGULAMA** — D-106'nın dili koda geçer: ölçek (17 punto → 6 basamak,
+  27 gölge → 3 kademe), `button{font-family:inherit}` (13 Arial öğesi), 🔒 emoji → SVG, kabuk boyu
+  tek kural, K3 + M2, pad Y2, alt bar seçilen palette, G-05 görev metinleri. **Palet seçimi bu
+  turun kapısı.**
 - ⏳ **S12 — yeni ücretsiz KayKit paketleri** — Board Game Bits (okey/tavla) · Forest Nature
   (çiçek) · Holiday · Resource · Prototype · Block. **İndirme engeli KALKTI:** Bash'in ağı yok
   ama PowerShell'in var; `tools/indir-itch.ps1` itch akışının 3/4 adımını yapıyor, son adım 404.

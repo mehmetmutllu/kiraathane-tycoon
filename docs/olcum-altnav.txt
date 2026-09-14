@@ -1,0 +1,65 @@
+==============================================================================================
+ALT GEZİNME — palet kolları, barın gerçekten yaşadığı yere karşı ölçüldü
+==============================================================================================
+
+  kare      : docs/gorsel/ss/s10-hud.png  (780×1688 px = 390×844 CSS)
+  maket     : docs/alt-gezinme-maketi.html  (3 kol)
+  sahne şeridi : CSS y 700…772 — barın hemen üstü, 112320 piksel
+
+§1  SAHNE — barın karşısındaki zemin
+----------------------------------------------------------------------------------------------
+  baskın renk      rgb(68, 46, 32)   h 23°  s %36  L %20
+  şeridin ortalaması  açıklık %29.3 · doygunluk %35.5 · kromatik pay %91.2
+  BUGÜNKÜ BAR      rgb(38, 27, 19)   h 25°  s %33  L %11
+                   Δh sahneden 2°  ·  ΔL 8 puan
+
+  OKUMA: bugünkü bar sahnenin baskın renginden 2° uzakta. B2 (R = 0,91)
+  tam olarak bunu ölçmüştü: arayüz sahnenin renk dilimini terk etmiyor, ayrım yalnız açıklıkla
+  yapılıyor. Bir palet kolunun bu bulguya dokunup dokunmadığı §2'deki Δh sütununda görünür.
+
+§2  KOLLAR — ayrışma ve okunabilirlik
+----------------------------------------------------------------------------------------------
+
+  kol   gövde(orta)      h      s      L      Δh     ΔL   etiket  aktif   min
+  ------------------------------------------------------------------------------------------
+  BUGÜN rgb( 38, 27, 19)    25°  % 33  % 11       2°       8       —       —    —
+  P1    rgb( 58, 35, 18)    26°  % 53  % 15       2°       5   11.22    6.66  AA ✓
+  P2    rgb( 36, 34, 42)   255°  % 11  % 15     128°       5   13.25    6.66  AA ✓
+  P3    rgb( 52, 44,108)   248°  % 42  % 30     136°     -10    9.83    7.49  AA ✓
+
+  Δh = gövdenin sahne baskın renginden açı farkı (büyük = bar sahneden ayrışıyor)
+  ΔL = sahne açıklığı − gövde açıklığı, puan (büyük = bar sahneden koyu, kenarı net)
+  etiket = pasif sekme yazısı / gövde · aktif = aktif sekme yazısı / aksan · eşik WCAG AA 4,5
+
+§3  KOLLARIN KARŞILAŞTIRMASI
+----------------------------------------------------------------------------------------------
+
+  P1 — CEVİZ — bugünkü kimlik, kit gramerinde
+     ayrışma  : Δh 2°  (bugün 2° → +0°)
+     doygunluk: %53  (bugün %33) — gövde daha DOYGUN ve sahnenin DİLİMİNDE — B2 bulgusu barda aynen durur
+     kenar    : ΔL 5 puan — bar sahneden KOYU, üst kenarı kendiliğinden çiziliyor
+     okunur   : etiket 11.22 · aktif 6.66 → ikisi de AA geçer
+
+  P2 — GECE NÖTR — nötr gövde + tek pirinç aksan
+     ayrışma  : Δh 128°  (bugün 2° → +126°)
+     doygunluk: %11  (bugün %33) — gövde renkten ÇIKIYOR — kütle nötre iner, sıcaklık tek aksanda toplanır (B2'nin reçetesi)
+     kenar    : ΔL 5 puan — bar sahneden KOYU, üst kenarı kendiliğinden çiziliyor
+     okunur   : etiket 13.25 · aktif 6.66 → ikisi de AA geçer
+
+  P3 — MOR-LACİVERT — kitin kendi dili
+     ayrışma  : Δh 136°  (bugün 2° → +134°)
+     doygunluk: %42  (bugün %33) — gövde doygun ama BAŞKA dilimde — tek leke çözülür, yerine ikinci bir renk kütlesi kurulur
+     kenar    : ΔL -10 puan — bar sahneden AÇIK, kenarı yalnız kontur taşıyor
+     okunur   : etiket 9.83 · aktif 7.49 → ikisi de AA geçer
+
+==============================================================================================
+SONUÇ
+==============================================================================================
+
+  Sahneden EN ÇOK ayrışan kol : P3 (Δh 136°)
+  Gövdesi EN NÖTR kol         : P2 (doygunluk %11)
+  WCAG AA'yı geçemeyen kol    : yok
+
+  Bu sayılar bir kolu SEÇMEZ — hangi bedelin ödendiğini söyler. Δh büyüdükçe bar sahneden
+  ayrışır ama kıraathanenin sıcak kimliğinden de uzaklaşır; karar kullanıcınındır.
+

@@ -192,8 +192,8 @@ h2{font-size:21px;font-weight:800}
      ══════════════════════════════════════════════════════════════════════ -->
 <script type="application/json" id="durum">
 {
- "guncelleme": "10.09.2026",
- "yapilan": 83,
+ "guncelleme": "14.09.2026",
+ "yapilan": 84,
  "toplam": 97,
  "kilometre": [
   {
@@ -214,14 +214,14 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum — Faz S · 5/12 — dekor KayKit'e geçti (D-101)",
-  "baslik": "Aday listesi model ADINA yazılmıştı; ölçüm iki maddesini eledi",
-  "aciklama": "Faz S planı dekor için sekiz aday saymıştı ve o liste <b>dosya adlarına bakılarak</b> yazılmıştı. Ölçüm modelin kendi geometrisine baktı ve ikisi düştü.<br><br><b>Birincisi: <code>trash_A/B</code> bir çöp kovası değil.</b> Ham ölçüsü 0,127 × <b>0,052</b> — enden geniş, boydan beş santim; mesh'i 18 üçgenlik bir ikosfer. Yani yerde duran buruşuk bir çöp. Paketin gerçek konteyneri <code>dumpster</code> ise iç mekân kovası değil: kova oranı 0,46 (boydan uzun), konteyner 1,78 (enden geniş) — <b>3,9 kat</b> fark. Üç paket tarandı, iç mekân kovası hiçbirinde yok. Elle çizilen kova ölçüsüyle zaten doğruydu (gerçeğin ×1,02'si) ve <b>asıl</b> olarak kaldı.<br><br><b>İkincisi: <code>cactus_*</code> bir yaprak bitkisi değil.</b> Biçim oranı 0,91–1,06, saksı bitkisininki 0,37 — 2,4 ile 2,8 kat sapma. Bu bir ölçü sorunu değil <b>kimlik</b> sorunu, o yüzden karar kullanıcıya soruldu: <i>&ldquo;kaktüs geçsin, kıraathanede kaktüs olur&rdquo;</i>.<br><br><b>Ölçek kuralı yazıldı: mobilya 0,90, aydınlatma gerçek boy.</b> S3 bunu kasa için bulmuştu; dekorda iki kez daha ısırdı. <code>lamp_standing</code> 0,90'da 2,27 birim — <b>karakterin %130'u</b>, yani insandan uzun bir direk. <code>lamp_table</code> aynı ölçekte 0,90 × 0,92: masa lambası değil yer lambası. Artık bir kural ve bekçi 0,90'a dönüşü yasaklıyor.<br><br><b>Ölçüm aracı kendi iki hatasını düzeltti.</b> Düz parçada (paspas) boy karşılaştırması %650'lik sahte bir sapma üretiyordu — düz parçada ölçek <b>enden</b> türer. Ve <b>biçim oranı hiç ölçülmüyordu</b>: ölçek her zaman ayarlanabilir, biçim ayarlanamaz. O sütun eklenince iki aday elendi."
+  "etiket": "Bu oturum — Faz S · 9/13 — S9+S10 kapandı (D-106)",
+  "baslik": "“UI kötü” bir renk şikâyeti değildi; barın sahneden uzaklığı <b>2 derece</b> çıktı",
+  "aciklama": "Ses kaynağı ve UI dili tek turda ölçüldü, tek karar paketinde karara bağlandı ve <b>hiç kod yazılmadı</b> — S10’un tanımı buydu.<br><br><b>Ses:</b> kaynak <b>S-C</b>, tek CC0 sanatçı (Kenney). Sekiz paket gerçekten indirilip içine bakıldı ve ölçümün iki iddiası <b>çürüdü</b>: Casino Audio’nun “jeton foley’i” plastik poker jetonu çıktı, madenî para yok — ama boşa gitmedi, <b>Kat 2 okey/tavlaya</b> birebir uyuyor. Gerçek para sesi beklenmedik yerden geldi: <b>RPG Audio</b> <code>handleCoins</code>. Semaver <code>metalPot</code>, bardak <code>glass_00x</code>, kapı ve adım sesleri — bugün hiç yok — aynı sanatçıdan geliyor, yani <b>stil kilidi korunuyor</b>. Çay dökme sesi hiçbir pakette yok, sentezde kalıyor.<br><br><b>UI:</b> şikâyetin sebebi renk değil <b>sistemsizlik</b>ti — 390 piksellik bir ekranda <b>17 punto, 27 gölge, 29 zemin</b> çiziliyor. Kullanıcı 300Mind kitini paylaştı; kitin PNG’leri <b>alınmadı</b>, şekil grameri alındı (“yol 2”). Gerekçe maketle gösterildi: kitin moru boyanamıyor ve arayüz ile 3B sahne iki ayrı üründen gibi duruyor.<br><br><b>Turun son sorusu kolları değil sorunun kendisini değiştirdi.</b> Alt gezinme için üç boy kolu sunulmuştu; kullanıcı hiçbirini seçmedi: <i>“bugünki gibi ama tasarımı daha güzel olsun”</i>. Yani <b>geometri kilitlendi</b>, biçim ve palet açıldı. Yeni ölçü barı tek başına değil <b>arkasındaki sahneye karşı</b> tarttı: bugünkü barın gövdesi sahnenin baskın renginden yalnızca <b>2°</b> uzakta. “Bar sahnenin devamı gibi duruyor” hissinin sayısı budur."
  },
  "siradaki": {
-  "etiket": "Sırada S6 — dış cephe, pencere ve tente",
-  "baslik": "Şehir paketi AYRI ölçekte: 0,90 oraya uygulanamaz",
-  "aciklama": "S5 kapanırken S6'nın en riskli sayısı da ölçüldü ve devredildi. İki mobilya paketi (restaurant-bits ve furniture-bits) <b>aynı ham ölçekte</b> yazılmış — <code>chair_A</code> ikisinde de 0,750 geniş, o yüzden 0,90 ikisinde de geçerli. Ama <b>city-builder-bits başka bir ölçekte</b>: <code>bench</code> 0,400 birim ↔ gerçek 1,50 m, <code>firehydrant</code> 0,135 ↔ 0,32, <code>dumpster</code> 0,566 ↔ 1,80. Sokak mobilyası gerçeğin kabaca dörtte biri yazılmış.<br><br>Yani binalar, yollar, <code>streetlight</code> ve <code>bench</code> için 0,90 kullanılamaz; o paketin kendi çarpanı hesaplanmalı. Araç hazır: <code>npx tsx tools/olcum-dekor.ts</code> §0 bu sağlamayı basıyor. S6'nın ikinci işi kullanıcının <i>&ldquo;pencere duvardan ayrı duruyor&rdquo;</i> şikâyeti — karşılığı <code>wall_window_open</code>, duvarı gerçekten delen model."
+  "etiket": "Sırada: palet seçimi → S11 (UI uygulaması)",
+  "baslik": "Üç kol da okunuyor; seçimi belirleyen tek sayı Δh",
+  "aciklama": "Maket üç paleti aynı biçim grameriyle çizdi, böylece aradaki tek fark renk kaldı: <b>P1 ceviz</b> (Δh 2°) · <b>P2 gece nötr</b> (Δh 128°, doygunluk %11) · <b>P3 mor-lacivert</b> (Δh 136°, ΔL −10). <b>Üçü de WCAG AA geçiyor</b> (en düşük 6,66) — yani okunabilirlik seçimi belirlemiyor; onu biçim gramerinin kendisi zaten kapatıyor.<br><br><b>“Mor olduğu yerde iyi mi?”</b> sorusunun cevabı iki telefonu yan yana koyunca görünüyor: mağaza tam ekranda mor <b>tek başına</b>, karşısında kıraathane yok. Sahnenin üstünde ise ahşabın yanında <b>ikinci bir kimlik</b> kuruyor. P2 aynı ayrışmayı <b>renk kurmadan</b> yapıyor.<br><br>Seçim gelince S11 açılıyor: 17 punto → 6 basamak, 27 gölge → 3 kademe, 13 Arial öğesi, kilit emojisi → SVG, kabuk boyu tek kural, K3 + M2, pad Y2."
  },
  "donemler": [
   {
@@ -353,7 +353,7 @@ h2{font-size:21px;font-weight:800}
      "k": "S",
      "t": "Sanat ve arayüz geçişi",
      "d": "Kullanıcı oynadı ve dört tur geri bildirim verdi. HER KALEM ≈ 1 OTURUM, 10 oturum kaldı. Bitti: pad dili ✓ · pad/modal etkileşimi ✓. Sırada: mutfak → duvar ve zemin → dekor takası → dış cephe ve tente → lavabo kabin kapıları → ses assetleri → UI dili (araştırma+maket) → UI dili (uygulama) → yeni ücretsiz paketler → karakterler. İlk beşi indirme ve onay istemiyor: hepsi diskte duran 185 KayKit modeliyle yapılacak iş.",
-     "yapilan": 8,
+     "yapilan": 9,
      "toplam": 13,
      "durum": "now",
      "kapi": "185 kullanılmayan KayKit modeli oyuna bağlanır + UI dili maketle onaylanır"
@@ -378,6 +378,21 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "14.09.2026",
+   "etiket": "Faz S · 9. oturum (S9+S10 — ses kaynağı + UI dili — D-106)",
+   "baslik": "Dört soru soruldu, üçü karara bağlandı; dördüncüsü sorunun kendisini düzeltti",
+   "govde": "Bu tur <b>hiç kod yazmadı</b> ve yazmaması gerekiyordu: S10’un tanımı araştırma + maket + onay. Karar paketi dört kalem sundu.<br><br><b>Mağaza içi M2 seçildi:</b> ürün önizlemesi 74 pikselden <b>230 piksele</b> çıkıyor (3,1×). Bedeli dürüstçe yazıldı: bir seferde tek ürün görünüyor.<br><br><b>Kit “yol 2”:</b> 300Mind kitinin <b>biçimi alınır, dosyaları alınmaz</b>. Önceki turda kitin kendi önizleme görseli bizim ekrana giydirilmişti ve bulgu netti: kitin PNG’leri <b>mor</b> taşıyor ve boyanamıyor — doğrudan entegrasyon ya kıraathaneyi mora çevirir ya her PNG’yi elle yeniden renklendirmeyi gerektirir, ki bu kiti kullanmanın anlamını bitirir. Unity EULA üç yolu da <b>engellemiyordu</b>; seçim hukuki değil <b>renk özgürlüğü</b> gerekçeli. İkonlar Kenney’in <b>434 CC0 SVG</b>’sinden gelecek.<br><br><b>G-18:</b> masaya dokununca havada kart açılmıyor; masanın kendi mekânsal noktası vurgulanıyor. Dünyaya yeni bir yüzen arayüz öğesi girmedi.<br><br><b>Dördüncü kalem bir kol seçimi değil, bir soru düzeltmesi oldu.</b> Alt gezinme için üç boy kolu sunulmuştu (bugünkü levha %8,3 · kompakt hap %5,5 · yüzen düğme %4,1). Kullanıcı hiçbirini seçmedi: <i>“bugünki gibi ama tasarımı daha güzel olsun şu an kötü. renkler de bilemedim — mağaza açılınca mor iyi ama olduğu yerde iyi mi bilmiyorum.”</i> Yani <b>geometri kapandı</b> (bugünkü tam-genişlik levha kalıyor) ve <b>biçim + palet açıldı</b>. Bu, aynı kuralın üçüncü kez doğrulanması: kullanıcının cümlesindeki isimler doğrudan kola çevrilir.<br><br><b>Yeni ölçü, ve fikri basit:</b> bir barın rengi tek başına değil <b>arkasındaki sahneye karşı</b> yargılanır. Gerçek oyun karesinin barın hemen üstündeki 72 pikseli okundu: sahnenin baskın rengi h 23°, bugünkü bar h 25° — aradaki fark <b>2 derece</b>. “Bar sahnenin devamı gibi duruyor” şikâyetinin sayısı bu; B2’nin (R = 0,91) barda görünen hâli. Üç palet kolu aynı biçim grameriyle çizildi ki aradaki tek fark renk olsun — P1 2°, P2 128°, P3 136° — ve <b>üçü de WCAG AA geçti</b> (en düşük 6,66). Yani okunabilirlik seçimi belirlemiyor: onu biçim gramerinin kendisi zaten kapatıyor, geriye yalnız Δh kalıyor.",
+   "maddeler": [
+    "<b>Ses S-C:</b> tek CC0 sanatçı (Kenney) · coin = RPG Audio <code>handleCoins</code> · Casino Audio Kat 2’ye · <code>pour</code> sentezde kalıyor",
+    "<b>Mağaza içi M2:</b> ürün önizlemesi 74 → 230 px",
+    "<b>Kit yolu 2:</b> biçimi al, dosyaları alma — PNG = palet kilidi; ikonlar 434 CC0 SVG",
+    "<b>G-18:</b> masanın kendi noktası vurgulanır, havada kart yok",
+    "<b>Alt gezinme geometrisi KİLİTLENDİ</b> — A/B/C elendi, kullanıcı soruyu düzeltti",
+    "<b>Bugünkü bar sahneden Δh 2°</b> — şikâyetin sayısı; kollar 2° / 128° / 136°, üçü de AA",
+    "<b>Açık tek kalem:</b> palet seçimi — maket yayında, uygulama S11"
+   ]
+  },
   {
    "tarih": "10.09.2026",
    "etiket": "Faz S · 5. oturum (S5 — dekor KayKit'e geçti — D-101)",
