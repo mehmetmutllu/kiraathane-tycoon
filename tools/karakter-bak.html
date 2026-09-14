@@ -1,0 +1,195 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>karakter-bak</title>
+<style>
+  body { margin: 0; background: #eceff1; }
+  canvas { display: block; }
+</style>
+<script type="module">
+  // karakter-bak.html — KARAKTER ADAYINI OYUNUN DONMUŞ MOBİLYASIYLA AYNI SAHNEDE ÇİZ.
+  //
+  // NEDEN (S14): `olcum-karakter.mjs` sayıyı veriyor — KayKit karakterinin BAŞI boyun %50'si,
+  // bugünkü sahip gövdesinde %33. Bu farkı sayı anlatmıyor: 1,75'e çekilmiş bir gövdenin
+  // masanın (tabla üstü 0,795) ve taburenin (oturak 0,45) yanında NASIL okunduğu görülmeden
+  // karara götürülemez — `feedback_reference_scale_trap`: maketten ölçü almadan önce İNSAN
+  // boyunu karşılaştır.
+  //
+  // `sivil=1` verilince EKİPMAN düğümleri (pelerin/miğfer/şapka) gizlenir — panonun
+  // "sivilleştirme mesh düzenleme ister" hükmünün doğru olup olmadığı ekranda görülür.
+  //
+  // Kullanım (sunucuyu `tools/karakter-bak.mjs` kaldırır):
+  //   /tools/karakter-bak.html?m=Knight,Rogue,Mannequin_Medium&sivil=1
+  import * as THREE from 'three';
+  import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+
+  const q = new URLSearchParams(location.search);
+  const adlar = (q.get('m') ?? 'Knight').split(',').filter(Boolean);
+  const sivil = q.get('sivil') === '1';
+  // `poz=Rig_Medium_Simulation:Sit_Chair_Idle` → BAŞKA bir dosyadaki klibi bu gövdeye uygular.
+  // Bu yalnız güzel kare için değil ÖLÇÜMÜN kendisi: klip dosyası ile karakter dosyası ayrı
+  // paketlerden geliyor; üç.js parçaları KEMİK ADIYLA eşler. Poz tutuyorsa "aynı rig" hükmü
+  // kanıtlanmış olur, tutmuyorsa retarget bedeli kola yazılır.
+  const [pozDosya, pozKlip] = (q.get('poz') ?? '').split(':');
+  // `olcekler=0.794,0.85,0.95` → TEK modeli birden çok ölçekte yan yana çizer. Soru: KayKit
+  // gövdesinin başı boyun %50'si olduğu için TOPLAM BOYU 1,75'e çekmek masayı göğse çıkarıyor;
+  // gövdeyi mobilyaya hizalamak ise toplam boyu 1,75'in üstüne taşıyor. Kol seçimi görselle olur.
+  const olcekler = (q.get('olcekler') ?? '').split(',').filter(Boolean).map(Number);
+  const H = 1.75; // ACTOR_HEIGHT (src/config/actor.ts)
+  const TABLE_TOP_Y = 0.795; // tableLook.ts — donmuş
+  const STOOL_SEAT_Y = 0.45; // tableLook.ts — donmuş
+  const ADAY = '/assets/models/_aday-karakter/';
+  const KAY = '/assets/models/kaykit-furniture-bits/';
+
+  // olcum-karakter.mjs'deki EKİPMAN listesinin aynısı; rol = adın SON bölümü.
+  const EKIPMAN = ['cape', 'cloak', 'helmet', 'visor', 'hood', 'hat', 'crown', 'shoulder',
+    'pauldron', 'pauldrons', 'armor', 'sword', 'shield', 'staff', 'wand', 'bow', 'quiver',
+    'dagger', 'axe', 'spellbook', 'horn', 'backpack', 'mask'];
+  const ekipmanMi = (ad) => {
+    const rol = (ad ?? '').split('_').pop().toLowerCase();
+    return EKIPMAN.some((k) => rol.startsWith(k) || rol.endsWith(k));
+  };
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.setClearColor('#eceff1');
+  renderer.shadowMap.enabled = true;
+  document.body.appendChild(renderer.domElement);
+
+  const scene = new THREE.Scene();
+  scene.add(new THREE.HemisphereLight('#ffffff', '#8d99a6', 2.2));
+  const dir = new THREE.DirectionalLight('#fff6e0', 1.6);
+  dir.position.set(4, 8, 6);
+  scene.add(dir);
+
+  const loader = new GLTFLoader();
+  const yuk = async (yol) => (await loader.loadAsync(yol)).scene;
+
+  // --- donmuş mobilya: masa (tabla üstü 0,795) + tabure (oturak 0,45) ---
+  const masa = await yuk(`${KAY}table_small.gltf`);
+  masa.scale.set(1.05, 0.75, 1.05);
+  masa.position.set(-1.9, 0, 0);
+  scene.add(masa);
+  const tabure = await yuk(`${KAY}chair_stool.gltf`);
+  tabure.scale.setScalar(0.9);
+  tabure.position.set(-1.0, 0, 0.35);
+  scene.add(tabure);
+
+  // --- poz kaynağı: klipler ayrı bir dosyadan gelir (KayKit'in kendi düzeni) ---
+  let klipler = [];
+  if (pozDosya) {
+    const g = await loader.loadAsync(`${ADAY}${pozDosya}.glb`);
+    klipler = g.animations;
+  }
+  const pozUygula = (kok) => {
+    const klip = klipler.find((c) => c.name === pozKlip);
+    if (!klip) return { tuttu: false, sebep: 'klip yok' };
+    const mixer = new THREE.AnimationMixer(kok);
+    mixer.clipAction(klip).play();
+    mixer.update(klip.duration * 0.5); // klibin ortası — idle'ın nötr karesi
+    // Poz gerçekten OTURDU mu: iskeletin kökünden bir kemik, klibin izlerinden biriyle
+    // eşleşti mi? (üç.js sessizce atlar; "hiç uymadı" ile "uydu" ancak böyle ayrılır.)
+    const adlar = new Set();
+    kok.traverse((n) => adlar.add(n.name));
+    const izler = klip.tracks.map((t) => t.name.split('.')[0]);
+    const eslesen = izler.filter((n) => adlar.has(n)).length;
+    return { tuttu: eslesen > 0, eslesen, iz: izler.length };
+  };
+
+  // --- adaylar: toplam boy 1,75'e çekilir, ekipman istenirse gizlenir ---
+  const kartlar = [];
+  let x = 0;
+  const liste = olcekler.length ? olcekler.map((k) => ({ ad: adlar[0], zorla: k })) : adlar.map((ad) => ({ ad, zorla: 0 }));
+  for (const { ad, zorla } of liste) {
+    const uzanti = ad.startsWith('Male_') || ad.startsWith('Superhero_') ? 'gltf' : 'glb';
+    let o;
+    try {
+      o = await yuk(`${ADAY}${ad}.${uzanti}`);
+    } catch (e) {
+      console.error('yüklenemedi', ad, e);
+      continue;
+    }
+    let gizlenen = 0;
+    if (sivil) {
+      o.traverse((n) => {
+        if (n.isMesh && ekipmanMi(n.name)) {
+          n.visible = false;
+          gizlenen++;
+        }
+      });
+    }
+    const poz = pozDosya ? pozUygula(o) : null;
+    o.updateWorldMatrix(true, true);
+    const kutu = new THREE.Box3().setFromObject(o);
+    const b = kutu.getSize(new THREE.Vector3());
+    const k = zorla || H / b.y;
+    o.scale.multiplyScalar(k);
+    o.position.set(x - kutu.min.x * k, -kutu.min.y * k, 0);
+    o.traverse((n) => {
+      if (n.isMesh) n.castShadow = true;
+    });
+    scene.add(o);
+    kartlar.push({
+      ad, x, hamBoy: +b.y.toFixed(2), olcek: +k.toFixed(3), gizlenen, poz,
+      en: +(b.x * k).toFixed(2),
+      boy: +(b.y * k).toFixed(2),
+    });
+    x += Math.max(0.95, b.x * k + 0.35);
+  }
+
+  // 1,75 referans çubuğu (kırmızı) — kadrajın sağ ucunda
+  const insan = new THREE.Mesh(
+    new THREE.BoxGeometry(0.36, H, 0.22),
+    new THREE.MeshStandardMaterial({ color: '#d32f2f', transparent: true, opacity: 0.5 }),
+  );
+  insan.position.set(x + 0.35, H / 2, 0);
+  scene.add(insan);
+
+  // donmuş yüksekliklerin çizgileri: tabla üstü 0,795 · oturak 0,45
+  for (const [y, renk] of [[TABLE_TOP_Y, '#1565c0'], [STOOL_SEAT_Y, '#2e7d32']]) {
+    const g = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(-2.6, y, 0.6),
+      new THREE.Vector3(x + 0.8, y, 0.6),
+    ]);
+    scene.add(new THREE.Line(g, new THREE.LineBasicMaterial({ color: renk })));
+  }
+
+  const zemin = new THREE.Mesh(
+    new THREE.PlaneGeometry(40, 40),
+    new THREE.MeshStandardMaterial({ color: '#dde4e8' }),
+  );
+  zemin.rotation.x = -Math.PI / 2;
+  zemin.receiveShadow = true;
+  scene.add(zemin);
+  const grid = new THREE.GridHelper(40, 80, '#b0bec5', '#d3dbe0');
+  grid.position.y = 0.001;
+  scene.add(grid);
+
+  const genislik = x + 3.4;
+  const cam = new THREE.PerspectiveCamera(30, innerWidth / innerHeight, 0.1, 200);
+  const merkez = new THREE.Vector3(x / 2 - 0.9, 0.95, 0);
+  cam.position.set(merkez.x, 1.55, genislik * 1.25);
+  cam.lookAt(merkez);
+  renderer.render(scene, cam);
+
+  // etiketler — DOM (üç.js metin yükü olmasın)
+  for (const kt of kartlar) {
+    const p = new THREE.Vector3(kt.x, 0, 0).project(cam);
+    const el = document.createElement('div');
+    el.style.cssText =
+      'position:fixed;transform:translate(-50%,0);font:11px/1.35 system-ui;text-align:center;' +
+      'color:#263238;background:#ffffffd9;padding:2px 6px;border-radius:4px;white-space:nowrap';
+    el.innerHTML = `<b>${kt.ad}</b><br>×${kt.olcek} → boy ${kt.boy}<br>en ${kt.en}` +
+      (kt.gizlenen ? `<br><span style="color:#c62828">−${kt.gizlenen} ekipman</span>` : '') +
+      (kt.poz ? `<br><span style="color:${kt.poz.tuttu ? '#2e7d32' : '#c62828'}">poz ${kt.poz.eslesen ?? 0}/${kt.poz.iz ?? 0} kemik</span>` : '');
+    el.style.left = `${((p.x + 1) / 2) * innerWidth}px`;
+    el.style.top = `${((-p.y + 1) / 2) * innerHeight + 8}px`;
+    document.body.appendChild(el);
+  }
+  const bar = document.createElement('div');
+  bar.style.cssText = 'position:fixed;left:0;top:0;font:12px system-ui;background:#fff;padding:6px 10px;color:#263238';
+  bar.textContent =
+    `hepsi toplam boy 1,75'e çekildi · mavi çizgi = masa tabla üstü 0,795 · yeşil = tabure oturağı 0,45 · ` +
+    `kırmızı kütle = 1,75 m insan${sivil ? ' · SİVİL kip: ekipman düğümleri gizli' : ''}`;
+  document.body.appendChild(bar);
+  document.title = 'hazir';
+</script>

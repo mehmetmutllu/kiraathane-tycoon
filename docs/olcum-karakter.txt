@@ -1,0 +1,167 @@
+
+=== KARAKTERLER (indirilen, hepsi ücretsiz) ===
+dosya                         KB   üçgen  parça  kemik iskelet         ölçek   omuz  baş%  ekip
+Barbarian.glb                378    7123      7     23 Rig_Medium       0.73  0.652  43.9     1
+Knight.glb                   334    5800      9     23 Rig_Medium      0.688  0.544    42     3
+Mage.glb                     344    6668      8     23 Rig_Medium      0.659  0.562  40.5     2
+Ranger.glb                   473    8900      8     23 Rig_Medium      0.769  0.782  47.5     2
+Rogue.glb                    400    7562      7     23 Rig_Medium      0.803   0.71  51.6     1
+Rogue_Hooded.glb             372    7185      8     23 Rig_Medium      0.805  0.744  51.7     2
+Mannequin_Large.glb          529    9148      6     23 Rig_Large        0.44  0.856  23.3     0
+Mannequin_Medium.glb         410    6916      6     21 Rig_Medium      0.794   0.58  50.1     0
+Skeleton_Mage.glb            259    4588      9     23 Rig_Medium      0.665  0.574  32.4     1
+Skeleton_Minion.glb          311    5288      9     23 Rig_Medium      0.808  0.596  39.3     1
+Skeleton_Rogue.glb           323    5278     10     23 Rig_Medium      0.758  0.592  36.8     2
+Skeleton_Warrior.glb         359    5934     10     23 Rig_Medium      0.676  0.532  33.3     2
+Eyebrows_Female.gltf          24    1480      1     65 Armature       46.528      —     —     0
+Eyebrows_Regular.gltf         23     984      1     65 Armature       57.175      —     —     0
+Female_Peasant.gltf           29   13568      4     65 Armature        1.147  0.395     —     0
+Female_Peasant_Arms.gltf      23    6848      1     65 Armature       14.295      —     —     0
+Female_Peasant_Feet.gltf      24    2588      1     65 Armature         3.76      —     —     0
+Female_Peasant_Legs.gltf      23    1944      1     65 Armature        2.672      —     —     0
+Female_Ranger.gltf            44   26966      9     65 Armature        0.973   0.37     —     2
+Female_Ranger_Acc_Pauldrons.gltf    24    1376      1     65 Armature       14.133      —     —     1
+Female_Ranger_Arms.gltf       29    8508      2     65 Armature       12.932      —     —     0
+Female_Ranger_Body.gltf       29    4570      3     65 Armature        2.812  1.068     —     0
+Female_Ranger_Feet.gltf       24    9172      1     65 Armature        3.123      —     —     0
+Female_Ranger_Head_Hood.gltf    24    2136      1     65 Armature        5.462      —     —     1
+Female_Ranger_Legs.gltf       24    1204      1     65 Armature        2.691      —     —     0
+Hair_Beard.gltf               23    1034      1     65 Armature       12.516      —     —     0
+Hair_Buns.gltf                23    3284      1     65 Armature        7.025      —     —     0
+Hair_Buzzed.gltf              23     830      1     65 Armature       10.333      —     —     0
+Hair_BuzzedFemale.gltf        23     830      1     65 Armature       10.285      —     —     0
+Hair_Long.gltf                23    2906      1     65 Armature        6.332      —     —     0
+Hair_SimpleParted.gltf        23    1301      1     65 Armature        9.768      —     —     0
+Male_Peasant.gltf             32   12894      4     65 Armature         1.12  0.837     —     0
+Male_Peasant_Arms.gltf        26    5338      1     65 Armature       10.685      —     —     0
+Male_Peasant_Body.gltf        23    3856      1     65 Armature        2.746  2.051     —     0
+Male_Peasant_Feet.gltf        23    2588      1     65 Armature         3.87      —     —     0
+Male_Peasant_Legs.gltf        23    1112      1     65 Armature         2.69      —     —     0
+Male_Ranger.gltf              40   26982      9     65 Armature        0.936  0.402     —     2
+Male_Ranger_Acc_Pauldron.gltf    23    1376      1     65 Armature       12.758      —     —     1
+Male_Ranger_Arms.gltf         26    4928      1     65 Armature       10.685      —     —     0
+Male_Ranger_Body.gltf         26    4606      3     65 Armature        2.532  1.086     —     0
+Male_Ranger_Feet_Boots.gltf    23    9172      1     65 Armature        3.123      —     —     0
+Male_Ranger_Head_Hood.gltf    23    2136      1     65 Armature        5.151      —     —     1
+Male_Ranger_Legs.gltf         23    1128      1     65 Armature        2.783      —     —     0
+Superhero_Female_FullBody.gltf    31   15060      3     65 Armature        0.986      —     —     0
+Superhero_Male_FullBody.gltf    30   14318      3     65 Armature        0.962      —     —     0
+(iskeletsiz ama meshli 181 dosya — silah/prop/mini-oyun maskotu, karakter sayılmadı)
+
+--- parça adları (sivilleştirme = düğüm silme mi, mesh düzenleme mi) ---
+Barbarian.glb  [ArmLeft:702 ArmRight:702 BearHat*:1030 Body:1840 Head:1021 LegLeft:914 LegRight:914]
+   EKİPMAN(*) 1 düğüm / 1030 üçgen → sökülünce sivil gövde 6093 üçgen
+Knight.glb  [ArmLeft:622 ArmRight:622 Body:1288 Cape*:84 Head:1082 Helmet*:418 HelmetVisor*:428 LegLeft:628 LegRight:628]
+   EKİPMAN(*) 3 düğüm / 930 üçgen → sökülünce sivil gövde 4870 üçgen
+Mage.glb  [ArmLeft:468 ArmRight:468 Body:1230 Cape*:84 Hat*:396 Head:2162 LegLeft:930 LegRight:930]
+   EKİPMAN(*) 2 düğüm / 480 üçgen → sökülünce sivil gövde 6188 üçgen
+Ranger.glb  [ArmLeft:820 ArmRight:820 Body:3461 Cape*:84 Head:1600 LegLeft:930 LegRight:930 Quiver*:255]
+   EKİPMAN(*) 2 düğüm / 339 üçgen → sökülünce sivil gövde 8561 üçgen
+Rogue.glb  [ArmLeft:788 ArmRight:788 Body:1436 Cape*:84 Head:2606 LegLeft:930 LegRight:930]
+   EKİPMAN(*) 1 düğüm / 84 üçgen → sökülünce sivil gövde 7478 üçgen
+Rogue_Hooded.glb  [ArmLeft:788 ArmRight:788 Body:1784 Cape*:84 Head:1577 LegLeft:930 LegRight:930 Mask*:304]
+   EKİPMAN(*) 2 düğüm / 388 üçgen → sökülünce sivil gövde 6797 üçgen
+Mannequin_Large.glb  [ArmLeft:1698 ArmRight:1698 Body:1710 Head:966 LegLeft:1538 LegRight:1538]
+Mannequin_Medium.glb  [Medium_ArmLeft:954 Medium_ArmRight:954 Medium_Body:1106 Medium_Head:966 Medium_LegLeft:1468 Medium_LegRight:1468]
+Skeleton_Mage.glb  [Mage_Hat*:308 Mage_ArmLeft:748 Mage_ArmRight:748 Mage_Body:990 Mage_Eyes:132 Mage_Jaw:124 Mage_LegLeft:558 Mage_LegRight:558 Mage_Skull:422]
+   EKİPMAN(*) 1 düğüm / 308 üçgen → sökülünce sivil gövde 4280 üçgen
+Skeleton_Minion.glb  [Minion_ArmLeft:644 Minion_ArmRight:644 Minion_Body:1768 Minion_Cloak*:348 Minion_Eyes:132 Minion_Head:442 Minion_Jaw:106 Minion_LegLeft:602 Minion_LegRight:602]
+   EKİPMAN(*) 1 düğüm / 348 üçgen → sökülünce sivil gövde 4940 üçgen
+Skeleton_Rogue.glb  [Rogue_Hood*:490 Rogue_Cape*:84 Rogue_ArmLeft:692 Rogue_ArmRight:692 Rogue_Body:1250 Rogue_Eyes:132 Rogue_Head:414 Rogue_Jaw:124 Rogue_LegLeft:700 Rogue_LegRight:700]
+   EKİPMAN(*) 2 düğüm / 574 üçgen → sökülünce sivil gövde 4704 üçgen
+Skeleton_Warrior.glb  [Warrior_Helmet*:830 Warrior_ArmLeft:692 Warrior_ArmRight:692 Warrior_Body:1130 Warrior_Cloak*:348 Warrior_Eyes:132 Warrior_Head:394 Warrior_Jaw:124 Warrior_LegLeft:892 Warrior_LegRight:700]
+   EKİPMAN(*) 2 düğüm / 1178 üçgen → sökülünce sivil gövde 4756 üçgen
+Eyebrows_Female.gltf  [Female:1480]
+Eyebrows_Regular.gltf  [Cube.001:984]
+Female_Peasant.gltf  [Peasant_Arms:6848 Peasant_Body:2188 Peasant_Feet:2588 Peasant_Legs:1944]
+Female_Peasant_Arms.gltf  [Peasant_Arms:6848]
+Female_Peasant_Feet.gltf  [Peasant_Feet:2588]
+Female_Peasant_Legs.gltf  [Peasant_Legs:1944]
+Female_Ranger.gltf  [Ranger_Acc_Pauldrons*:1376 Ranger_Arms:4872 Ranger_Arms_Bracer:3636 Ranger_Body:2962 Ranger_Body_Belt_1:804 Ranger_Body_Belt_2:804 Ranger_Feet:9172 Ranger_Head_Hood*:2136 Ranger_Legs:1204]
+   EKİPMAN(*) 2 düğüm / 3512 üçgen → sökülünce sivil gövde 23454 üçgen
+Female_Ranger_Acc_Pauldrons.gltf  [Ranger_Acc_Pauldrons*:1376]
+   EKİPMAN(*) 1 düğüm / 1376 üçgen → sökülünce sivil gövde 0 üçgen
+Female_Ranger_Arms.gltf  [Ranger_Arms:4872 Ranger_Arms_Bracer:3636]
+Female_Ranger_Body.gltf  [Ranger_Body:2962 Ranger_Body_Belt_1:804 Ranger_Body_Belt_2:804]
+Female_Ranger_Feet.gltf  [Ranger_Feet:9172]
+Female_Ranger_Head_Hood.gltf  [Ranger_Head_Hood*:2136]
+   EKİPMAN(*) 1 düğüm / 2136 üçgen → sökülünce sivil gövde 0 üçgen
+Female_Ranger_Legs.gltf  [Ranger_Legs:1204]
+Hair_Beard.gltf  [Plane.006:1034]
+Hair_Buns.gltf  [Buns:3284]
+Hair_Buzzed.gltf  [Cylinder.002:830]
+Hair_BuzzedFemale.gltf  [BuzzedFemale:830]
+Hair_Long.gltf  [Long:2906]
+Hair_SimpleParted.gltf  [Plane.002:1301]
+Male_Peasant.gltf  [Peasant_Arms:5338 Peasant_Body:3856 Peasant_Feet:2588 Peasant_Legs:1112]
+Male_Peasant_Arms.gltf  [Peasant_Arms:5338]
+Male_Peasant_Body.gltf  [Peasant_Body:3856]
+Male_Peasant_Feet.gltf  [Peasant_Feet:2588]
+Male_Peasant_Legs.gltf  [Peasant_Legs:1112]
+Male_Ranger.gltf  [Ranger_Acc_Pauldron*:1376 Ranger_Arms:4928 Ranger_Arms_Bracer:3636 Ranger_Body:2998 Ranger_Body_Belt_1:804 Ranger_Body_Belt_1.001:804 Ranger_Feet_Boots:9172 Ranger_Head_Hood*:2136 Ranger_Legs:1128]
+   EKİPMAN(*) 2 düğüm / 3512 üçgen → sökülünce sivil gövde 23470 üçgen
+Male_Ranger_Acc_Pauldron.gltf  [Ranger_Acc_Pauldron*:1376]
+   EKİPMAN(*) 1 düğüm / 1376 üçgen → sökülünce sivil gövde 0 üçgen
+Male_Ranger_Arms.gltf  [Ranger_Arms:4928]
+Male_Ranger_Body.gltf  [Ranger_Body:2998 Ranger_Body_Belt_1:804 Ranger_Body_Belt_1.001:804]
+Male_Ranger_Feet_Boots.gltf  [Ranger_Feet_Boots:9172]
+Male_Ranger_Head_Hood.gltf  [Ranger_Head_Hood*:2136]
+   EKİPMAN(*) 1 düğüm / 2136 üçgen → sökülünce sivil gövde 0 üçgen
+Male_Ranger_Legs.gltf  [Ranger_Legs:1128]
+Superhero_Female_FullBody.gltf  [Eyebrows:1480 Eyes:768 Female:12812]
+Superhero_Male_FullBody.gltf  [Face:984 Face.001:768 Retopology.004:12566]
+
+=== ANİMASYON PAKETLERİ ===
+Rig_Medium_General.glb             809 KB  rig=Rig_Medium kemik=23 klip=15  +gövde 6916 üçgen
+   Death_A, Death_A_Pose, Death_B, Death_B_Pose, Hit_A, Hit_B, Idle_A, Idle_B, Interact, PickUp, Spawn_Air, Spawn_Ground, T-Pose, Throw, Use_Item
+Rig_Medium_MovementBasic.glb       673 KB  rig=Rig_Medium kemik=23 klip=11  +gövde 6916 üçgen
+   Jump_Full_Long, Jump_Full_Short, Jump_Idle, Jump_Land, Jump_Start, Running_A, Running_B, T-Pose, Walking_A, Walking_B, Walking_C
+KayKit_AnimatedCharacter_v1.2.glb   449 KB  rig=KayKit Animated Charac kemik=6 klip=30  +gövde 4879 üçgen
+   Attack(1h), AttackCombo, AttackSpinning, BasePose, Block, Cheer, Climbing, Dance, DashBack, DashFront, DashLeft, DashRight, Defeat, HeavyAttack, Hop, Idle, Interact, Jump, LayingDownIdle, PickUp, Roll, Run, Shoot(1h), Shoot(2h), Shoot(2h)Bow, Shooting(1h), Shooting(2h), Throw, Walk, Wave
+Rig_Large_CombatMelee.glb         1001 KB  rig=Rig_Large kemik=23 klip=16  +gövde 9148 üçgen
+   Melee_1H_Slash, Melee_1H_Stab, Melee_2H_Attack, Melee_2H_Idle, Melee_2H_Slam, Melee_Block, Melee_Block_Attack, Melee_Block_Hit, Melee_Blocking, Melee_Dualwield_Slash, Melee_Dualwield_SlashCombo, Melee_Unarmed_Idle, Melee_Unarmed_Kick, Melee_Unarmed_Punch, Melee_Unarmed_Smash, T-Pose
+Rig_Large_General.glb              684 KB  rig=Rig_Large kemik=23 klip=6  +gövde 9148 üçgen
+   Death_A, Death_A_Pose, Hit_A, Idle_A, Idle_B, T-Pose
+Rig_Large_MovementAdvanced.glb     588 KB  rig=Rig_Large kemik=23 klip=5  +gövde 9148 üçgen
+   Dodge_Backwards, Dodge_Forward, Dodge_Left, Dodge_Right, T-Pose
+Rig_Large_MovementBasic.glb        571 KB  rig=Rig_Large kemik=23 klip=3  +gövde 9148 üçgen
+   Running_A, T-Pose, Walking_A
+Rig_Large_Simulation.glb           576 KB  rig=Rig_Large kemik=23 klip=2  +gövde 9148 üçgen
+   Flexing, T-Pose
+Rig_Large_Special.glb              562 KB  rig=Rig_Large kemik=23 klip=2  +gövde 9148 üçgen
+   EXPERIMENTAL_Large_Transform, T-Pose
+Rig_Medium_CombatMelee.glb         976 KB  rig=Rig_Medium kemik=23 klip=22  +gövde 6916 üçgen
+   Melee_1H_Attack_Chop, Melee_1H_Attack_Jump_Chop, Melee_1H_Attack_Slice_Diagonal, Melee_1H_Attack_Slice_Horizontal, Melee_1H_Attack_Stab, Melee_2H_Attack_Chop, Melee_2H_Attack_Slice, Melee_2H_Attack_Spin, Melee_2H_Attack_Spinning, Melee_2H_Attack_Stab, Melee_2H_Idle, Melee_Block, Melee_Block_Attack, Melee_Block_Hit, Melee_Blocking, Melee_Dualwield_Attack_Chop, Melee_Dualwield_Attack_Slice, Melee_Dualwield_Attack_Stab, Melee_Unarmed_Attack_Kick, Melee_Unarmed_Attack_Punch_A, Melee_Unarmed_Idle, T-Pose
+Rig_Medium_CombatRanged.glb        991 KB  rig=Rig_Medium kemik=23 klip=20  +gövde 6916 üçgen
+   Ranged_1H_Aiming, Ranged_1H_Reload, Ranged_1H_Shoot, Ranged_1H_Shooting, Ranged_2H_Aiming, Ranged_2H_Reload, Ranged_2H_Shoot, Ranged_2H_Shooting, Ranged_Bow_Aiming_Idle, Ranged_Bow_Draw, Ranged_Bow_Draw_Up, Ranged_Bow_Idle, Ranged_Bow_Release, Ranged_Bow_Release_Up, Ranged_Magic_Raise, Ranged_Magic_Shoot, Ranged_Magic_Spellcasting, Ranged_Magic_Spellcasting_Long, Ranged_Magic_Summon, T-Pose
+Rig_Medium_General.glb             809 KB  rig=Rig_Medium kemik=23 klip=15  +gövde 6916 üçgen
+   Death_A, Death_A_Pose, Death_B, Death_B_Pose, Hit_A, Hit_B, Idle_A, Idle_B, Interact, PickUp, Spawn_Air, Spawn_Ground, T-Pose, Throw, Use_Item
+Rig_Medium_MovementAdvanced.glb    703 KB  rig=Rig_Medium kemik=23 klip=13  +gövde 6916 üçgen
+   Crawling, Crouching, Dodge_Backward, Dodge_Forward, Dodge_Left, Dodge_Right, Running_HoldingBow, Running_HoldingRifle, Running_Strafe_Left, Running_Strafe_Right, Sneaking, T-Pose, Walking_Backwards
+Rig_Medium_MovementBasic.glb       673 KB  rig=Rig_Medium kemik=23 klip=11  +gövde 6916 üçgen
+   Jump_Full_Long, Jump_Full_Short, Jump_Idle, Jump_Land, Jump_Start, Running_A, Running_B, T-Pose, Walking_A, Walking_B, Walking_C
+Rig_Medium_Simulation.glb          836 KB  rig=Rig_Medium kemik=23 klip=14  +gövde 6916 üçgen
+   Cheering, Lie_Down, Lie_Idle, Lie_StandUp, Push_Ups, Sit_Chair_Down, Sit_Chair_Idle, Sit_Chair_StandUp, Sit_Floor_Down, Sit_Floor_Idle, Sit_Floor_StandUp, Sit_Ups, T-Pose, Waving
+Rig_Medium_Special.glb             903 KB  rig=Rig_Medium kemik=23 klip=15  +gövde 6916 üçgen
+   EXPERIMENTAL_Medium_Transform, Skeletons_Awaken_Floor, Skeletons_Awaken_Floor_Long, Skeletons_Awaken_Standing, Skeletons_Death, Skeletons_Death_Pose, Skeletons_Death_Resurrect, Skeletons_Idle, Skeletons_Inactive_Floor_Pose, Skeletons_Inactive_Standing_Pose, Skeletons_Spawn_Ground, Skeletons_Taunt, Skeletons_Taunt_Longer, Skeletons_Walking, T-Pose
+Rig_Medium_Tools.glb              1427 KB  rig=Rig_Medium kemik=23 klip=29  +gövde 6916 üçgen
+   Chop, Chopping, Dig, Digging, Fishing_Bite, Fishing_Cast, Fishing_Catch, Fishing_Idle, Fishing_Reeling, Fishing_Struggling, Fishing_Tug, Hammer, Hammering, Holding_A, Holding_B, Holding_C, Lockpick, Lockpicking, Pickaxe, Pickaxing, Saw, Sawing, T-Pose, Work_A, Work_B, Work_C, Working_A, Working_B, Working_C
+Rig_Medium_General.glb             809 KB  rig=Rig_Medium kemik=23 klip=15  +gövde 6916 üçgen
+   Death_A, Death_A_Pose, Death_B, Death_B_Pose, Hit_A, Hit_B, Idle_A, Idle_B, Interact, PickUp, Spawn_Air, Spawn_Ground, T-Pose, Throw, Use_Item
+Rig_Medium_MovementBasic.glb       673 KB  rig=Rig_Medium kemik=23 klip=11  +gövde 6916 üçgen
+   Jump_Full_Long, Jump_Full_Short, Jump_Idle, Jump_Land, Jump_Start, Running_A, Running_B, T-Pose, Walking_A, Walking_B, Walking_C
+Female_Peasant_Body.gltf            87 KB  rig=Armature kemik=65 klip=1  +gövde 2188 üçgen
+   Jog_Fwd_Loop
+UAL1_Standard.glb                 7440 KB  rig=Armature kemik=65 klip=43  +gövde 13744 üçgen
+   A_TPose, Crouch_Fwd_Loop, Crouch_Idle_Loop, Dance_Loop, Death01, Driving_Loop, Fixing_Kneeling, Hit_Chest, Hit_Head, Idle_Loop, Idle_Talking_Loop, Idle_Torch_Loop, Interact, Jog_Fwd_Loop, Jump_Land, Jump_Loop, Jump_Start, PickUp_Table, Pistol_Aim_Down, Pistol_Aim_Neutral, Pistol_Aim_Up, Pistol_Idle_Loop, Pistol_Reload, Pistol_Shoot, Punch_Cross, Punch_Jab, Push_Loop, Roll, Sitting_Enter, Sitting_Exit, Sitting_Idle_Loop, Sitting_Talking_Loop, Spell_Simple_Enter, Spell_Simple_Exit, Spell_Simple_Idle_Loop, Spell_Simple_Shoot, Sprint_Loop, Swim_Fwd_Loop, Swim_Idle_Loop, Sword_Attack, Sword_Idle, Walk_Formal_Loop, Walk_Loop
+UAL1_Standard_RM.glb              7442 KB  rig=Armature kemik=65 klip=43  +gövde 13744 üçgen
+   A_TPose, Crouch_Fwd_Loop, Crouch_Idle_Loop, Dance_Loop, Death01, Driving_Loop, Fixing_Kneeling, Hit_Chest, Hit_Head, Idle_Loop, Idle_Talking_Loop, Idle_Torch_Loop, Interact, Jog_Fwd_Loop, Jump_Land, Jump_Loop, Jump_Start, PickUp_Table, Pistol_Aim_Down, Pistol_Aim_Neutral, Pistol_Aim_Up, Pistol_Idle_Loop, Pistol_Reload, Pistol_Shoot, Punch_Cross, Punch_Jab, Push_Loop, Roll, Sitting_Enter, Sitting_Exit, Sitting_Idle_Loop, Sitting_Talking_Loop, Spell_Simple_Enter, Spell_Simple_Exit, Spell_Simple_Idle_Loop, Spell_Simple_Shoot, Sprint_Loop, Swim_Fwd_Loop, Swim_Idle_Loop, Sword_Attack, Sword_Idle, Walk_Formal_Loop, Walk_Loop
+
+=== BUGÜNKÜ (kol F tabanı) ===
+müşteri kapsülü 260 üçgen · baloncuk 180 · InstancedMesh: 24 müşteri = 1 çizim, 6240 üçgen
+   Player.tsx          20 adet <mesh>
+   Waiter.tsx           4 adet <mesh>
+   Dishwasher.tsx       1 adet <mesh>
+   Customers.tsx        0 adet <mesh>
+
+ham → docs/olcum-karakter.json (üzerine yazıldı)

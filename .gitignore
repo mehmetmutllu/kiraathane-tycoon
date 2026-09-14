@@ -38,3 +38,7 @@ coverage
 
 # Rapor artifact kopyalari (tools/embed-rapor.mjs uretir; kareler data URI olarak gomulu)
 *.artifact.html
+
+# S14 ölçüm turunda indirilen karakter ADAYLARI (repoya girmez; karar D-1xx ile seçilen
+# dosyalar manifestle birlikte girer)
+public/assets/models/_aday-karakter/

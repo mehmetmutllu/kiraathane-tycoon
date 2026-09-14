@@ -1,0 +1,110 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>skin-perf</title>
+<style>
+  body { margin: 0; background: #10141a; color: #e8eef4; font: 13px/1.6 system-ui; }
+  #out { position: fixed; left: 12px; top: 12px; background: #0008; padding: 10px 14px; white-space: pre; }
+</style>
+<div id="out">ölçülüyor…</div>
+<script type="module">
+  // skin-perf.html — S14: "skinned karakter mobilde kaça patlar" sorusunu SAYIYA çevirir.
+  //
+  // NEDEN: bugün müşteriler TEK InstancedMesh (Customers.tsx, NPC_CAP 128 → 1 çizim çağrısı).
+  // Kodun kendi notu "Faz 6'da .glb gelince o ayrı bir karar (skinned mesh instancing farklı)"
+  // diyor ve o karar hiç ölçülmedi. Skinned mesh instance EDİLEMEZ: her gövde kendi iskeletini
+  // ve kendi AnimationMixer'ını taşır. Bu sayfa iki kolu aynı tarayıcıda, aynı kadraj yükünde
+  // koşturur ve KARE SÜRESİNİ ölçer.
+  //
+  //   /tools/skin-perf.html?n=24&model=Ranger
+  import * as THREE from 'three';
+  import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+  import { clone as skinKlon } from 'three/examples/jsm/utils/SkeletonUtils.js';
+
+  const q = new URLSearchParams(location.search);
+  const N = Number(q.get('n') ?? 24);
+  const model = q.get('model') ?? 'Ranger';
+  const H = 1.75, R = 0.3;
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(innerWidth, innerHeight);
+  document.body.appendChild(renderer.domElement);
+  const cam = new THREE.PerspectiveCamera(35, innerWidth / innerHeight, 0.1, 200);
+  cam.position.set(0, 6, 14);
+  cam.lookAt(0, 0.9, 0);
+
+  const yerler = Array.from({ length: N }, (_, i) => [((i % 8) - 3.5) * 1.3, Math.floor(i / 8) * 1.6 - 1.6]);
+
+  /** Bir kolu 120 kare koştur, ortalama kare süresini ve çizim çağrısını döndür. */
+  async function kos(ad, sahne, guncelle) {
+    sahne.add(new THREE.HemisphereLight('#ffffff', '#7a8896', 2.4));
+    for (let i = 0; i < 30; i++) { guncelle(1 / 60); renderer.render(sahne, cam); } // ısınma
+    renderer.info.reset();
+    const t0 = performance.now();
+    const KARE = 120;
+    for (let i = 0; i < KARE; i++) {
+      guncelle(1 / 60);
+      renderer.render(sahne, cam);
+    }
+    await new Promise((r) => requestAnimationFrame(r));
+    const sure = (performance.now() - t0) / KARE;
+    return { ad, msKare: +sure.toFixed(2), cizim: renderer.info.render.calls, ucgen: renderer.info.render.triangles };
+  }
+
+  // --- KOL 1: bugünkü InstancedMesh kapsül (Customers.tsx'in birebir geometrisi) ---
+  const s1 = new THREE.Scene();
+  const geo = new THREE.CapsuleGeometry(R, H - 2 * R, 6, 10).translate(0, H / 2, 0);
+  const inst = new THREE.InstancedMesh(geo, new THREE.MeshStandardMaterial({ color: '#c9a227' }), N);
+  s1.add(inst);
+  const kukla = new THREE.Object3D();
+  let t1 = 0;
+  const g1 = (dt) => {
+    t1 += dt;
+    for (let i = 0; i < N; i++) {
+      kukla.position.set(yerler[i][0], Math.sin(t1 * 2 + i) * 0.02, yerler[i][1]);
+      kukla.rotation.y = t1 + i;
+      kukla.updateMatrix();
+      inst.setMatrixAt(i, kukla.matrix);
+    }
+    inst.instanceMatrix.needsUpdate = true;
+  };
+
+  // --- KOL 2: N adet skinned karakter, her biri kendi mixer'ıyla ---
+  const loader = new GLTFLoader();
+  const g = await loader.loadAsync(`/assets/models/_aday-karakter/${model}.glb`);
+  const klipler = (await loader.loadAsync('/assets/models/_aday-karakter/Rig_Medium_MovementBasic.glb')).animations;
+  const yuru = klipler.find((c) => c.name === 'Walking_A') ?? klipler[0];
+  const s2 = new THREE.Scene();
+  const mixerler = [];
+  for (let i = 0; i < N; i++) {
+    // SkeletonUtils.clone ŞART: scene.clone(true) skinned mesh'te kemikleri ÖZGÜN iskelete
+    // bağlı bırakır → bütün kopyalar tek bir iskeleti paylaşır ve aynı anda aynı pozu alır.
+    // Model.tsx bugün düz `scene.clone(true)` kullanıyor; skinned'e geçerken değişmesi gereken yer.
+    const o = skinKlon(g.scene);
+    const kutu = new THREE.Box3().setFromObject(o);
+    const k = H / kutu.getSize(new THREE.Vector3()).y;
+    o.scale.multiplyScalar(k);
+    o.position.set(yerler[i][0], 0, yerler[i][1]);
+    s2.add(o);
+    const m = new THREE.AnimationMixer(o);
+    m.clipAction(yuru).play();
+    m.setTime(i * 0.17); // faz kaydır: hepsi aynı karede olmasın
+    mixerler.push(m);
+  }
+  const g2 = (dt) => mixerler.forEach((m) => m.update(dt));
+
+  const sonuc = [await kos('instanced kapsül (bugün)', s1, g1), await kos(`${N}× skinned ${model}`, s2, g2)];
+  const [a, b] = sonuc;
+  document.getElementById('out').textContent =
+    `N = ${N} müşteri · 120 kare ortalaması\n\n` +
+    sonuc.map((r) => `${r.ad.padEnd(26)} ${String(r.msKare).padStart(6)} ms/kare  ${String(r.cizim).padStart(4)} çizim  ${r.ucgen} üçgen`).join('\n') +
+    `\n\nkare süresi ×${(b.msKare / a.msKare).toFixed(1)} · çizim çağrısı ×${(b.cizim / a.cizim).toFixed(0)}`;
+  // HANGİ SÜRÜCÜ: başsız Chromium GPU bulamazsa SwiftShader'a (yazılım) düşer ve mutlak
+  // sayı telefonla ilgisiz olur. Sürücü adı çıktının yanında durur ki sayı yanlış okunmasın.
+  const dbg = renderer.getContext().getExtension('WEBGL_debug_renderer_info');
+  const surucu = dbg ? renderer.getContext().getParameter(dbg.UNMASKED_RENDERER_WEBGL) : 'bilinmiyor';
+  document.getElementById('out').textContent += `
+
+sürücü: ${surucu}`;
+  window.__sonuc = { sonuc, surucu };
+  document.title = 'hazir';
+</script>

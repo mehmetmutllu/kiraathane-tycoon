@@ -1,0 +1,43 @@
+# olcum-skin-perf — S14 ham çıktı (node tools/skin-perf.mjs <N> Ranger)
+# 2026-09-14 · masaüstü ölçümü; sürücü satırı telefonla karşılaştırmayı yasaklar
+
+### N=5
+N = 5 müşteri · 120 kare ortalaması
+
+instanced kapsül (bugün)     0.04 ms/kare     1 çizim  1300 üçgen
+5× skinned Ranger             0.6 ms/kare    40 çizim  44500 üçgen
+
+kare süresi ×15.0 · çizim çağrısı ×40
+
+sürücü: ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 (0x00002503) Direct3D11 vs_5_0 ps_5_0, D3D11)
+
+### N=12
+N = 12 müşteri · 120 kare ortalaması
+
+instanced kapsül (bugün)     0.04 ms/kare     1 çizim  3120 üçgen
+12× skinned Ranger           1.11 ms/kare    96 çizim  106800 üçgen
+
+kare süresi ×27.8 · çizim çağrısı ×96
+
+sürücü: ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 (0x00002503) Direct3D11 vs_5_0 ps_5_0, D3D11)
+
+### N=24
+N = 24 müşteri · 120 kare ortalaması
+
+instanced kapsül (bugün)     0.05 ms/kare     1 çizim  6240 üçgen
+24× skinned Ranger            2.2 ms/kare   192 çizim  213600 üçgen
+
+kare süresi ×44.0 · çizim çağrısı ×192
+
+sürücü: ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 (0x00002503) Direct3D11 vs_5_0 ps_5_0, D3D11)
+
+### N=48
+N = 48 müşteri · 120 kare ortalaması
+
+instanced kapsül (bugün)     0.04 ms/kare     1 çizim  12480 üçgen
+48× skinned Ranger           4.02 ms/kare   384 çizim  427200 üçgen
+
+kare süresi ×100.5 · çizim çağrısı ×384
+
+sürücü: ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 (0x00002503) Direct3D11 vs_5_0 ps_5_0, D3D11)
+

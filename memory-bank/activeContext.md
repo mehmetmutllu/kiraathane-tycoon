@@ -5,22 +5,30 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-14 — **S13 BİTTİ: ALTI PAKET İNDİ, KOL B REPOYA GİRDİ, D-111** · Faz S 12/14 · 87/98)
+## ŞU AN (2026-09-14 — **S14 KARAKTERLER · ölçüm turu açık** · Faz S 12/14 · 87/98)
 
 ```
-SORU            : Altı ücretsiz KayKit paketi indirilebilir mi, içlerinde ne var, repoya NE girer?
-ÖLÇÜLECEK KOLLAR: A hepsi TAM · B yalnız eşleşen modeller (ikisi de MB).
-SAYILAR         : docs/yeni-paketler-raporu-s13.md · ham docs/olcum-yeni-paketler.json
-                  indirme engeli KALKTI · 6/6 paket · 72,4 MB zip · 553 model · hepsi CC0
-                  models/ 5,9 MB → kol A 27,2 (×4,6) · kol B 8,4 · SEÇİLEN 17,2 (B + board-game tam)
-                  panonun 6 görevinden 3'ü ÇÜRÜDÜ · çöp kutusu 9 pakette yok · Forest'ta çiçek yok
-                  kapı: ayak izi birebir · gövde 0,200 (kutuyu şişiren tokmak) · üçgen 188→296
-KARAR           : D-111 — kol B + board-game istisnası; Block girmedi. Uygulama: paketler + kapı.
-UYGULAMA        : models/ budandı · public/assets/README.md manifesti · wcLook KABIN_NATIVE ·
-                  maketParts KAY_PROTO/Door_A · atlas-renk.mjs beş yeni dokuyu tanıyor
-BEKÇİ           : tests/yeni-paketler.test.ts — 8 denetim + wc-odasi'nin 4 denetimi,
-                  **11 mutasyonla** doğrulandı, kaçan 0
-                  vitest 932 ✓ · duman 42/42 ✓ · tsc -b ✓
+SORU            : Beş karakter gövdesi (sahip · garson · bulaşıkçı · müşteri · çaycı) hangi
+                  kaynaktan gelir — ve skinned'e geçmenin KOD bedeli nedir?
+                  Panonun A…F kolları 2026-09-09'da **indirilmeden** yazıldı; S13 aynı panonun
+                  6 görevinden 3'ünün çürüdüğünü gösterdi → kollar yeniden ölçülüyor.
+ÖLÇÜLECEK KOLLAR: A  KayKit Adventurers (ücretsiz) — ekipman AYRI node mu (sökülebilir mi),
+                     rig/animasyon var mı, boy·omuz oranı vs ACTOR_HEIGHT 1,75, repo bedeli
+                  A2 KayKit'in diğer ücretsiz karakter paketleri — envanter (pano yalnız
+                     "hepsi fantezi" diyor, sayısı yok)
+                  D  Quaternius UBC + Modular Outfits (ücretsiz) — 2026-06-11 reddi GÖRSELdi,
+                     oran farkı hiç sayıya çevrilmedi
+                  F  ilkel kalsın + iyileşsin — bugünkü 5 gövdenin sayısı TABAN
+                  B/C/E ücretli (Mystery Monthly $19,99 · Complete $150 · Synty $20-40) →
+                     indirilemez, fiyat + risk satırı olarak kalır
+                  KOD BEDELİ ayrı kol: Model.tsx skinned klon (scene.clone(true) skinned'de
+                     bozulur) · Customers.tsx **InstancedMesh** (128 NPC tek çizim; kodun kendi
+                     notu "skinned mesh instancing farklı" diyor) → personel ile MÜŞTERİ ayrı
+                     bedel taşıyor, tek kol değil.
+SAYILAR         : (adım 2'den sonra dolar — docs/karakter-raporu-s14.md §Bulgular)
+KARAR           : (adım 3 — kullanıcı seçer)
+UYGULAMA        : (adım 4 — yalnız kararın kolu)
+BEKÇİ           : (test dosyası + mutasyon sayısı)
 ```
 
 ## SIRADAKİ TAM ADIM

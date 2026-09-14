@@ -1,0 +1,3098 @@
+{
+  "tarih": "2026-09-14",
+  "ACTOR_HEIGHT": 1.75,
+  "CAPSULE_RADIUS": 0.3,
+  "NPC_TIPIK": 24,
+  "karakterler": [
+    {
+      "dosya": "Barbarian.glb",
+      "kb": 378,
+      "ucgen": 7123,
+      "parca": 7,
+      "skinned": true,
+      "iskelet": "Rig_Medium",
+      "kemik": 23,
+      "doku": [
+        "barbarian_texture"
+      ],
+      "hamBoy": 2.398,
+      "hamEn": 1.943,
+      "hamDerinlik": 1.264,
+      "olcek": 0.73,
+      "enOlcekli": 1.418,
+      "derinlikOlcekli": 0.922,
+      "basOrani": 43.9,
+      "omuzOlcekli": 0.652,
+      "parcalar": [
+        {
+          "ad": "Barbarian_ArmLeft",
+          "ucgen": 702,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.274,
+          "xBoy": 0.882
+        },
+        {
+          "ad": "Barbarian_ArmRight",
+          "ucgen": 702,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.274,
+          "xBoy": 0.882
+        },
+        {
+          "ad": "Barbarian_BearHat",
+          "ucgen": 1030,
+          "skinned": true,
+          "ekipman": true,
+          "yBoy": 0.988,
+          "xBoy": 1.109
+        },
+        {
+          "ad": "Barbarian_Body",
+          "ucgen": 1840,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 1.018,
+          "xBoy": 0.893
+        },
+        {
+          "ad": "Barbarian_Head",
+          "ucgen": 1021,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 1.052,
+          "xBoy": 1.085
+        },
+        {
+          "ad": "Barbarian_LegLeft",
+          "ucgen": 914,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.529,
+          "xBoy": 0.245
+        },
+        {
+          "ad": "Barbarian_LegRight",
+          "ucgen": 914,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.529,
+          "xBoy": 0.245
+        }
+      ],
+      "ekipmanParca": [
+        "Barbarian_BearHat"
+      ],
+      "ekipmanUcgen": 1030,
+      "sivilUcgen": 6093
+    },
+    {
+      "dosya": "Knight.glb",
+      "kb": 334,
+      "ucgen": 5800,
+      "parca": 9,
+      "skinned": true,
+      "iskelet": "Rig_Medium",
+      "kemik": 23,
+      "doku": [
+        "knight_texture"
+      ],
+      "hamBoy": 2.543,
+      "hamEn": 1.943,
+      "hamDerinlik": 1.308,
+      "olcek": 0.688,
+      "enOlcekli": 1.337,
+      "derinlikOlcekli": 0.9,
+      "basOrani": 42,
+      "omuzOlcekli": 0.544,
+      "parcalar": [
+        {
+          "ad": "Knight_ArmLeft",
+          "ucgen": 622,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.297,
+          "xBoy": 0.919
+        },
+        {
+          "ad": "Knight_ArmRight",
+          "ucgen": 622,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.297,
+          "xBoy": 0.919
+        },
+        {
+          "ad": "Knight_Body",
+          "ucgen": 1288,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.924,
+          "xBoy": 0.79
+        },
+        {
+          "ad": "Knight_Cape",
+          "ucgen": 84,
+          "skinned": true,
+          "ekipman": true,
+          "yBoy": 1.142,
+          "xBoy": 0.971
+        },
+        {
+          "ad": "Knight_Head",
+          "ucgen": 1082,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 1.068,
+          "xBoy": 1.086
+        },
+        {
+          "ad": "Knight_Helmet",
+          "ucgen": 418,
+          "skinned": true,
+          "ekipman": true,
+          "yBoy": 1.299,
+          "xBoy": 1.139
+        },
+        {
+          "ad": "Knight_HelmetVisor",
+          "ucgen": 428,
+          "skinned": true,
+          "ekipman": true,
+          "yBoy": 0.891,
+          "xBoy": 1.217
+        },
+        {
+          "ad": "Knight_LegLeft",
+          "ucgen": 628,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.529,
+          "xBoy": 0.246
+        },
+        {
+          "ad": "Knight_LegRight",
+          "ucgen": 628,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.529,
+          "xBoy": 0.246
+        }
+      ],
+      "ekipmanParca": [
+        "Knight_Cape",
+        "Knight_Helmet",
+        "Knight_HelmetVisor"
+      ],
+      "ekipmanUcgen": 930,
+      "sivilUcgen": 4870
+    },
+    {
+      "dosya": "Mage.glb",
+      "kb": 344,
+      "ucgen": 6668,
+      "parca": 8,
+      "skinned": true,
+      "iskelet": "Rig_Medium",
+      "kemik": 23,
+      "doku": [
+        "mage_texture"
+      ],
+      "hamBoy": 2.655,
+      "hamEn": 1.943,
+      "hamDerinlik": 1.966,
+      "olcek": 0.659,
+      "enOlcekli": 1.281,
+      "derinlikOlcekli": 1.296,
+      "basOrani": 40.5,
+      "omuzOlcekli": 0.562,
+      "parcalar": [
+        {
+          "ad": "Mage_ArmLeft",
+          "ucgen": 468,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.295,
+          "xBoy": 0.882
+        },
+        {
+          "ad": "Mage_ArmRight",
+          "ucgen": 468,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.295,
+          "xBoy": 0.882
+        },
+        {
+          "ad": "Mage_Body",
+          "ucgen": 1230,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.955,
+          "xBoy": 0.852
+        },
+        {
+          "ad": "Mage_Cape",
+          "ucgen": 84,
+          "skinned": true,
+          "ekipman": true,
+          "yBoy": 1.181,
+          "xBoy": 0.971
+        },
+        {
+          "ad": "Mage_Hat",
+          "ucgen": 396,
+          "skinned": true,
+          "ekipman": true,
+          "yBoy": 1.346,
+          "xBoy": 1.863
+        },
+        {
+          "ad": "Mage_Head",
+          "ucgen": 2162,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 1.076,
+          "xBoy": 1.14
+        },
+        {
+          "ad": "Mage_LegLeft",
+          "ucgen": 930,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.531,
+          "xBoy": 0.245
+        },
+        {
+          "ad": "Mage_LegRight",
+          "ucgen": 930,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.531,
+          "xBoy": 0.245
+        }
+      ],
+      "ekipmanParca": [
+        "Mage_Cape",
+        "Mage_Hat"
+      ],
+      "ekipmanUcgen": 480,
+      "sivilUcgen": 6188
+    },
+    {
+      "dosya": "Ranger.glb",
+      "kb": 473,
+      "ucgen": 8900,
+      "parca": 8,
+      "skinned": true,
+      "iskelet": "Rig_Medium",
+      "kemik": 23,
+      "doku": [
+        "ranger_texture"
+      ],
+      "hamBoy": 2.275,
+      "hamEn": 1.943,
+      "hamDerinlik": 1.049,
+      "olcek": 0.769,
+      "enOlcekli": 1.494,
+      "derinlikOlcekli": 0.807,
+      "basOrani": 47.5,
+      "omuzOlcekli": 0.782,
+      "parcalar": [
+        {
+          "ad": "Ranger_ArmLeft",
+          "ucgen": 820,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.295,
+          "xBoy": 0.882
+        },
+        {
+          "ad": "Ranger_ArmRight",
+          "ucgen": 820,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.295,
+          "xBoy": 0.882
+        },
+        {
+          "ad": "Ranger_Body",
+          "ucgen": 3461,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.99,
+          "xBoy": 1.017
+        },
+        {
+          "ad": "Ranger_Cape",
+          "ucgen": 84,
+          "skinned": true,
+          "ekipman": true,
+          "yBoy": 1.142,
+          "xBoy": 0.971
+        },
+        {
+          "ad": "Ranger_Head",
+          "ucgen": 1600,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 1.08,
+          "xBoy": 1.085
+        },
+        {
+          "ad": "Ranger_LegLeft",
+          "ucgen": 930,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.531,
+          "xBoy": 0.245
+        },
+        {
+          "ad": "Ranger_LegRight",
+          "ucgen": 930,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.531,
+          "xBoy": 0.245
+        },
+        {
+          "ad": "Ranger_Quiver",
+          "ucgen": 255,
+          "skinned": true,
+          "ekipman": true,
+          "yBoy": 0.757,
+          "xBoy": 0.76
+        }
+      ],
+      "ekipmanParca": [
+        "Ranger_Cape",
+        "Ranger_Quiver"
+      ],
+      "ekipmanUcgen": 339,
+      "sivilUcgen": 8561
+    },
+    {
+      "dosya": "Rogue.glb",
+      "kb": 400,
+      "ucgen": 7562,
+      "parca": 7,
+      "skinned": true,
+      "iskelet": "Rig_Medium",
+      "kemik": 23,
+      "doku": [
+        "rogue_texture"
+      ],
+      "hamBoy": 2.18,
+      "hamEn": 1.945,
+      "hamDerinlik": 1.144,
+      "olcek": 0.803,
+      "enOlcekli": 1.561,
+      "derinlikOlcekli": 0.918,
+      "basOrani": 51.6,
+      "omuzOlcekli": 0.71,
+      "parcalar": [
+        {
+          "ad": "Rogue_ArmLeft",
+          "ucgen": 788,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.295,
+          "xBoy": 0.884
+        },
+        {
+          "ad": "Rogue_ArmRight",
+          "ucgen": 788,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.295,
+          "xBoy": 0.884
+        },
+        {
+          "ad": "Rogue_Body",
+          "ucgen": 1436,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.873,
+          "xBoy": 0.884
+        },
+        {
+          "ad": "Rogue_Cape",
+          "ucgen": 84,
+          "skinned": true,
+          "ekipman": true,
+          "yBoy": 1.142,
+          "xBoy": 0.971
+        },
+        {
+          "ad": "Rogue_Head",
+          "ucgen": 2606,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 1.126,
+          "xBoy": 1.141
+        },
+        {
+          "ad": "Rogue_LegLeft",
+          "ucgen": 930,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.531,
+          "xBoy": 0.245
+        },
+        {
+          "ad": "Rogue_LegRight",
+          "ucgen": 930,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.531,
+          "xBoy": 0.245
+        }
+      ],
+      "ekipmanParca": [
+        "Rogue_Cape"
+      ],
+      "ekipmanUcgen": 84,
+      "sivilUcgen": 7478
+    },
+    {
+      "dosya": "Rogue_Hooded.glb",
+      "kb": 372,
+      "ucgen": 7185,
+      "parca": 8,
+      "skinned": true,
+      "iskelet": "Rig_Medium",
+      "kemik": 23,
+      "doku": [
+        "rogue_texture"
+      ],
+      "hamBoy": 2.173,
+      "hamEn": 1.945,
+      "hamDerinlik": 1.099,
+      "olcek": 0.805,
+      "enOlcekli": 1.566,
+      "derinlikOlcekli": 0.885,
+      "basOrani": 51.7,
+      "omuzOlcekli": 0.744,
+      "parcalar": [
+        {
+          "ad": "RogueHooded_ArmLeft",
+          "ucgen": 788,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.295,
+          "xBoy": 0.884
+        },
+        {
+          "ad": "RogueHooded_ArmRight",
+          "ucgen": 788,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.295,
+          "xBoy": 0.884
+        },
+        {
+          "ad": "RogueHooded_Body",
+          "ucgen": 1784,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.972,
+          "xBoy": 0.924
+        },
+        {
+          "ad": "RogueHooded_Cape",
+          "ucgen": 84,
+          "skinned": true,
+          "ekipman": true,
+          "yBoy": 1.142,
+          "xBoy": 0.971
+        },
+        {
+          "ad": "RogueHooded_Head",
+          "ucgen": 1577,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 1.123,
+          "xBoy": 1.044
+        },
+        {
+          "ad": "RogueHooded_LegLeft",
+          "ucgen": 930,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.531,
+          "xBoy": 0.245
+        },
+        {
+          "ad": "RogueHooded_LegRight",
+          "ucgen": 930,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.531,
+          "xBoy": 0.245
+        },
+        {
+          "ad": "RogueHooded_Mask",
+          "ucgen": 304,
+          "skinned": true,
+          "ekipman": true,
+          "yBoy": 0.42,
+          "xBoy": 0.887
+        }
+      ],
+      "ekipmanParca": [
+        "RogueHooded_Cape",
+        "RogueHooded_Mask"
+      ],
+      "ekipmanUcgen": 388,
+      "sivilUcgen": 6797
+    },
+    {
+      "dosya": "Mannequin_Large.glb",
+      "kb": 529,
+      "ucgen": 9148,
+      "parca": 6,
+      "skinned": true,
+      "iskelet": "Rig_Large",
+      "kemik": 23,
+      "doku": [
+        "mannequin_texture"
+      ],
+      "hamBoy": 3.981,
+      "hamEn": 5.638,
+      "hamDerinlik": 1.395,
+      "olcek": 0.44,
+      "enOlcekli": 2.478,
+      "derinlikOlcekli": 0.613,
+      "basOrani": 23.3,
+      "omuzOlcekli": 0.856,
+      "parcalar": [
+        {
+          "ad": "MannequinLarge_ArmLeft",
+          "ucgen": 1698,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.813,
+          "xBoy": 2.338
+        },
+        {
+          "ad": "MannequinLarge_ArmRight",
+          "ucgen": 1698,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.813,
+          "xBoy": 2.338
+        },
+        {
+          "ad": "MannequinLarge_Body",
+          "ucgen": 1710,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 2.455,
+          "xBoy": 1.948
+        },
+        {
+          "ad": "MannequinLarge_Head",
+          "ucgen": 966,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.928,
+          "xBoy": 0.692
+        },
+        {
+          "ad": "MannequinLarge_LegLeft",
+          "ucgen": 1538,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 1.288,
+          "xBoy": 0.477
+        },
+        {
+          "ad": "MannequinLarge_LegRight",
+          "ucgen": 1538,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 1.288,
+          "xBoy": 0.477
+        }
+      ],
+      "ekipmanParca": [],
+      "ekipmanUcgen": 0,
+      "sivilUcgen": 9148
+    },
+    {
+      "dosya": "Mannequin_Medium.glb",
+      "kb": 410,
+      "ucgen": 6916,
+      "parca": 6,
+      "skinned": true,
+      "iskelet": "Rig_Medium",
+      "kemik": 21,
+      "doku": [
+        "mannequin_texture"
+      ],
+      "hamBoy": 2.204,
+      "hamEn": 1.978,
+      "hamDerinlik": 1.006,
+      "olcek": 0.794,
+      "enOlcekli": 1.571,
+      "derinlikOlcekli": 0.799,
+      "basOrani": 50.1,
+      "omuzOlcekli": 0.58,
+      "parcalar": [
+        {
+          "ad": "Mannequin_Medium_ArmLeft",
+          "ucgen": 954,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.246,
+          "xBoy": 0.9
+        },
+        {
+          "ad": "Mannequin_Medium_ArmRight",
+          "ucgen": 954,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.246,
+          "xBoy": 0.9
+        },
+        {
+          "ad": "Mannequin_Medium_Body",
+          "ucgen": 1106,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.867,
+          "xBoy": 0.731
+        },
+        {
+          "ad": "Mannequin_Medium_Head",
+          "ucgen": 966,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 1.105,
+          "xBoy": 0.865
+        },
+        {
+          "ad": "Mannequin_Medium_LegLeft",
+          "ucgen": 1468,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.529,
+          "xBoy": 0.239
+        },
+        {
+          "ad": "Mannequin_Medium_LegRight",
+          "ucgen": 1468,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.529,
+          "xBoy": 0.239
+        }
+      ],
+      "ekipmanParca": [],
+      "ekipmanUcgen": 0,
+      "sivilUcgen": 6916
+    },
+    {
+      "dosya": "Skeleton_Mage.glb",
+      "kb": 259,
+      "ucgen": 4588,
+      "parca": 9,
+      "skinned": true,
+      "iskelet": "Rig_Medium",
+      "kemik": 23,
+      "doku": [
+        "skeleton_texture"
+      ],
+      "hamBoy": 2.63,
+      "hamEn": 1.938,
+      "hamDerinlik": 1.735,
+      "olcek": 0.665,
+      "enOlcekli": 1.29,
+      "derinlikOlcekli": 1.155,
+      "basOrani": 32.4,
+      "omuzOlcekli": 0.574,
+      "parcalar": [
+        {
+          "ad": "Skeleton_Mage_Hat",
+          "ucgen": 308,
+          "skinned": false,
+          "ekipman": true,
+          "yBoy": 1.268,
+          "xBoy": 1.79
+        },
+        {
+          "ad": "Skeleton_Mage_ArmLeft",
+          "ucgen": 748,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.327,
+          "xBoy": 0.832
+        },
+        {
+          "ad": "Skeleton_Mage_ArmRight",
+          "ucgen": 748,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.327,
+          "xBoy": 0.832
+        },
+        {
+          "ad": "Skeleton_Mage_Body",
+          "ucgen": 990,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 1.094,
+          "xBoy": 0.862
+        },
+        {
+          "ad": "Skeleton_Mage_Eyes",
+          "ucgen": 132,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.126,
+          "xBoy": 0.46
+        },
+        {
+          "ad": "Skeleton_Mage_Jaw",
+          "ucgen": 124,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.323,
+          "xBoy": 0.455
+        },
+        {
+          "ad": "Skeleton_Mage_LegLeft",
+          "ucgen": 558,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.529,
+          "xBoy": 0.238
+        },
+        {
+          "ad": "Skeleton_Mage_LegRight",
+          "ucgen": 558,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.529,
+          "xBoy": 0.238
+        },
+        {
+          "ad": "Skeleton_Mage_Skull",
+          "ucgen": 422,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.852,
+          "xBoy": 0.871
+        }
+      ],
+      "ekipmanParca": [
+        "Skeleton_Mage_Hat"
+      ],
+      "ekipmanUcgen": 308,
+      "sivilUcgen": 4280
+    },
+    {
+      "dosya": "Skeleton_Minion.glb",
+      "kb": 311,
+      "ucgen": 5288,
+      "parca": 9,
+      "skinned": true,
+      "iskelet": "Rig_Medium",
+      "kemik": 23,
+      "doku": [
+        "skeleton_texture"
+      ],
+      "hamBoy": 2.166,
+      "hamEn": 1.938,
+      "hamDerinlik": 0.912,
+      "olcek": 0.808,
+      "enOlcekli": 1.566,
+      "derinlikOlcekli": 0.737,
+      "basOrani": 39.3,
+      "omuzOlcekli": 0.596,
+      "parcalar": [
+        {
+          "ad": "Skeleton_Minion_ArmLeft",
+          "ucgen": 644,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.197,
+          "xBoy": 0.833
+        },
+        {
+          "ad": "Skeleton_Minion_ArmRight",
+          "ucgen": 644,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.197,
+          "xBoy": 0.833
+        },
+        {
+          "ad": "Skeleton_Minion_Body",
+          "ucgen": 1768,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 1.048,
+          "xBoy": 0.738
+        },
+        {
+          "ad": "Skeleton_Minion_Cloak",
+          "ucgen": 348,
+          "skinned": true,
+          "ekipman": true,
+          "yBoy": 0.514,
+          "xBoy": 0.871
+        },
+        {
+          "ad": "Skeleton_Minion_Eyes",
+          "ucgen": 132,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.126,
+          "xBoy": 0.46
+        },
+        {
+          "ad": "Skeleton_Minion_Head",
+          "ucgen": 442,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.852,
+          "xBoy": 0.871
+        },
+        {
+          "ad": "Skeleton_Minion_Jaw",
+          "ucgen": 106,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.323,
+          "xBoy": 0.455
+        },
+        {
+          "ad": "Skeleton_Minion_LegLeft",
+          "ucgen": 602,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.529,
+          "xBoy": 0.238
+        },
+        {
+          "ad": "Skeleton_Minion_LegRight",
+          "ucgen": 602,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.529,
+          "xBoy": 0.238
+        }
+      ],
+      "ekipmanParca": [
+        "Skeleton_Minion_Cloak"
+      ],
+      "ekipmanUcgen": 348,
+      "sivilUcgen": 4940
+    },
+    {
+      "dosya": "Skeleton_Rogue.glb",
+      "kb": 323,
+      "ucgen": 5278,
+      "parca": 10,
+      "skinned": true,
+      "iskelet": "Rig_Medium",
+      "kemik": 23,
+      "doku": [
+        "skeleton_texture"
+      ],
+      "hamBoy": 2.308,
+      "hamEn": 1.943,
+      "hamDerinlik": 1.153,
+      "olcek": 0.758,
+      "enOlcekli": 1.473,
+      "derinlikOlcekli": 0.874,
+      "basOrani": 36.8,
+      "omuzOlcekli": 0.592,
+      "parcalar": [
+        {
+          "ad": "Skeleton_Rogue_Hood",
+          "ucgen": 490,
+          "skinned": false,
+          "ekipman": true,
+          "yBoy": 1.156,
+          "xBoy": 1.161
+        },
+        {
+          "ad": "Skeleton_Rogue_Cape",
+          "ucgen": 84,
+          "skinned": false,
+          "ekipman": true,
+          "yBoy": 1.142,
+          "xBoy": 0.971
+        },
+        {
+          "ad": "Skeleton_Rogue_ArmLeft",
+          "ucgen": 692,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.232,
+          "xBoy": 0.835
+        },
+        {
+          "ad": "Skeleton_Rogue_ArmRight",
+          "ucgen": 692,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.232,
+          "xBoy": 0.835
+        },
+        {
+          "ad": "Skeleton_Rogue_Body",
+          "ucgen": 1250,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 1.043,
+          "xBoy": 0.781
+        },
+        {
+          "ad": "Skeleton_Rogue_Eyes",
+          "ucgen": 132,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.126,
+          "xBoy": 0.46
+        },
+        {
+          "ad": "Skeleton_Rogue_Head",
+          "ucgen": 414,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.85,
+          "xBoy": 0.871
+        },
+        {
+          "ad": "Skeleton_Rogue_Jaw",
+          "ucgen": 124,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.323,
+          "xBoy": 0.455
+        },
+        {
+          "ad": "Skeleton_Rogue_LegLeft",
+          "ucgen": 700,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.529,
+          "xBoy": 0.262
+        },
+        {
+          "ad": "Skeleton_Rogue_LegRight",
+          "ucgen": 700,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.529,
+          "xBoy": 0.262
+        }
+      ],
+      "ekipmanParca": [
+        "Skeleton_Rogue_Hood",
+        "Skeleton_Rogue_Cape"
+      ],
+      "ekipmanUcgen": 574,
+      "sivilUcgen": 4704
+    },
+    {
+      "dosya": "Skeleton_Warrior.glb",
+      "kb": 359,
+      "ucgen": 5934,
+      "parca": 10,
+      "skinned": true,
+      "iskelet": "Rig_Medium",
+      "kemik": 23,
+      "doku": [
+        "skeleton_texture"
+      ],
+      "hamBoy": 2.59,
+      "hamEn": 1.943,
+      "hamDerinlik": 1.459,
+      "olcek": 0.676,
+      "enOlcekli": 1.312,
+      "derinlikOlcekli": 0.985,
+      "basOrani": 33.3,
+      "omuzOlcekli": 0.532,
+      "parcalar": [
+        {
+          "ad": "Skeleton_Warrior_Helmet",
+          "ucgen": 830,
+          "skinned": false,
+          "ekipman": true,
+          "yBoy": 1.337,
+          "xBoy": 1.519
+        },
+        {
+          "ad": "Skeleton_Warrior_ArmLeft",
+          "ucgen": 692,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.232,
+          "xBoy": 0.835
+        },
+        {
+          "ad": "Skeleton_Warrior_ArmRight",
+          "ucgen": 692,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.232,
+          "xBoy": 0.835
+        },
+        {
+          "ad": "Skeleton_Warrior_Body",
+          "ucgen": 1130,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.872,
+          "xBoy": 0.787
+        },
+        {
+          "ad": "Skeleton_Warrior_Cloak",
+          "ucgen": 348,
+          "skinned": true,
+          "ekipman": true,
+          "yBoy": 0.514,
+          "xBoy": 0.871
+        },
+        {
+          "ad": "Skeleton_Warrior_Eyes",
+          "ucgen": 132,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.126,
+          "xBoy": 0.46
+        },
+        {
+          "ad": "Skeleton_Warrior_Head",
+          "ucgen": 394,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.862,
+          "xBoy": 0.842
+        },
+        {
+          "ad": "Skeleton_Warrior_Jaw",
+          "ucgen": 124,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.325,
+          "xBoy": 0.457
+        },
+        {
+          "ad": "Skeleton_Warrior_LegLeft",
+          "ucgen": 892,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.619,
+          "xBoy": 0.294
+        },
+        {
+          "ad": "Skeleton_Warrior_LegRight",
+          "ucgen": 700,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.529,
+          "xBoy": 0.262
+        }
+      ],
+      "ekipmanParca": [
+        "Skeleton_Warrior_Helmet",
+        "Skeleton_Warrior_Cloak"
+      ],
+      "ekipmanUcgen": 1178,
+      "sivilUcgen": 4756
+    },
+    {
+      "dosya": "Eyebrows_Female.gltf",
+      "kb": 24,
+      "ucgen": 1480,
+      "parca": 1,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Hair_2_Normal",
+        "T_Hair_2_BaseColor"
+      ],
+      "hamBoy": 0.038,
+      "hamEn": 0.126,
+      "hamDerinlik": 0.04,
+      "olcek": 46.528,
+      "enOlcekli": 5.862,
+      "derinlikOlcekli": 1.874,
+      "basOrani": null,
+      "omuzOlcekli": null,
+      "parcalar": [
+        {
+          "ad": "Eyebrows_Female",
+          "ucgen": 1480,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.038,
+          "xBoy": 0.126
+        }
+      ],
+      "ekipmanParca": [],
+      "ekipmanUcgen": 0,
+      "sivilUcgen": 1480
+    },
+    {
+      "dosya": "Eyebrows_Regular.gltf",
+      "kb": 23,
+      "ucgen": 984,
+      "parca": 1,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Hair_1_Normal",
+        "T_Hair_1_BaseColor"
+      ],
+      "hamBoy": 0.031,
+      "hamEn": 0.125,
+      "hamDerinlik": 0.038,
+      "olcek": 57.175,
+      "enOlcekli": 7.129,
+      "derinlikOlcekli": 2.147,
+      "basOrani": null,
+      "omuzOlcekli": null,
+      "parcalar": [
+        {
+          "ad": "Cube.001",
+          "ucgen": 984,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.031,
+          "xBoy": 0.125
+        }
+      ],
+      "ekipmanParca": [],
+      "ekipmanUcgen": 0,
+      "sivilUcgen": 984
+    },
+    {
+      "dosya": "Female_Peasant.gltf",
+      "kb": 29,
+      "ucgen": 13568,
+      "parca": 4,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Peasant_Normal",
+        "T_Peasant_BaseColor",
+        "T_Peasant_ORM"
+      ],
+      "hamBoy": 1.525,
+      "hamEn": 1.664,
+      "hamDerinlik": 0.335,
+      "olcek": 1.147,
+      "enOlcekli": 1.909,
+      "derinlikOlcekli": 0.384,
+      "basOrani": null,
+      "omuzOlcekli": 0.395,
+      "parcalar": [
+        {
+          "ad": "Female_Peasant_Arms",
+          "ucgen": 6848,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.122,
+          "xBoy": 1.664
+        },
+        {
+          "ad": "Female_Peasant_Body",
+          "ucgen": 2188,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.531,
+          "xBoy": 0.344
+        },
+        {
+          "ad": "Female_Peasant_Feet",
+          "ucgen": 2588,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.465,
+          "xBoy": 0.403
+        },
+        {
+          "ad": "Female_Peasant_Legs",
+          "ucgen": 1944,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.655,
+          "xBoy": 0.376
+        }
+      ],
+      "ekipmanParca": [],
+      "ekipmanUcgen": 0,
+      "sivilUcgen": 13568
+    },
+    {
+      "dosya": "Female_Peasant_Arms.gltf",
+      "kb": 23,
+      "ucgen": 6848,
+      "parca": 1,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Peasant_Normal",
+        "T_Peasant_BaseColor",
+        "T_Peasant_ORM"
+      ],
+      "hamBoy": 0.122,
+      "hamEn": 1.664,
+      "hamDerinlik": 0.131,
+      "olcek": 14.295,
+      "enOlcekli": 23.785,
+      "derinlikOlcekli": 1.871,
+      "basOrani": null,
+      "omuzOlcekli": null,
+      "parcalar": [
+        {
+          "ad": "Female_Peasant_Arms",
+          "ucgen": 6848,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.122,
+          "xBoy": 1.664
+        }
+      ],
+      "ekipmanParca": [],
+      "ekipmanUcgen": 0,
+      "sivilUcgen": 6848
+    },
+    {
+      "dosya": "Female_Peasant_Feet.gltf",
+      "kb": 24,
+      "ucgen": 2588,
+      "parca": 1,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Peasant_Normal",
+        "T_Peasant_BaseColor",
+        "T_Peasant_ORM"
+      ],
+      "hamBoy": 0.465,
+      "hamEn": 0.403,
+      "hamDerinlik": 0.335,
+      "olcek": 3.76,
+      "enOlcekli": 1.516,
+      "derinlikOlcekli": 1.259,
+      "basOrani": null,
+      "omuzOlcekli": null,
+      "parcalar": [
+        {
+          "ad": "Female_Peasant_Feet",
+          "ucgen": 2588,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.465,
+          "xBoy": 0.403
+        }
+      ],
+      "ekipmanParca": [],
+      "ekipmanUcgen": 0,
+      "sivilUcgen": 2588
+    },
+    {
+      "dosya": "Female_Peasant_Legs.gltf",
+      "kb": 23,
+      "ucgen": 1944,
+      "parca": 1,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Peasant_Normal",
+        "T_Peasant_BaseColor",
+        "T_Peasant_ORM"
+      ],
+      "hamBoy": 0.655,
+      "hamEn": 0.376,
+      "hamDerinlik": 0.229,
+      "olcek": 2.672,
+      "enOlcekli": 1.004,
+      "derinlikOlcekli": 0.613,
+      "basOrani": null,
+      "omuzOlcekli": null,
+      "parcalar": [
+        {
+          "ad": "Female_Peasant_Legs",
+          "ucgen": 1944,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.655,
+          "xBoy": 0.376
+        }
+      ],
+      "ekipmanParca": [],
+      "ekipmanUcgen": 0,
+      "sivilUcgen": 1944
+    },
+    {
+      "dosya": "Female_Ranger.gltf",
+      "kb": 44,
+      "ucgen": 26966,
+      "parca": 9,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Ranger_Normal",
+        "T_Ranger_BaseColor",
+        "T_Ranger_ORM",
+        "T_Regular_Female_Normal",
+        "T_Regular_Female_Dark_BaseColor",
+        "T_Regular_Female_Roughness"
+      ],
+      "hamBoy": 1.798,
+      "hamEn": 1.664,
+      "hamDerinlik": 0.377,
+      "olcek": 0.973,
+      "enOlcekli": 1.619,
+      "derinlikOlcekli": 0.367,
+      "basOrani": null,
+      "omuzOlcekli": 0.37,
+      "parcalar": [
+        {
+          "ad": "Female_Ranger_Acc_Pauldrons",
+          "ucgen": 1376,
+          "skinned": true,
+          "ekipman": true,
+          "yBoy": 0.124,
+          "xBoy": 0.211
+        },
+        {
+          "ad": "Female_Ranger_Arms",
+          "ucgen": 4872,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.135,
+          "xBoy": 1.664
+        },
+        {
+          "ad": "Female_Ranger_Arms_Bracer",
+          "ucgen": 3636,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.12,
+          "xBoy": 1.379
+        },
+        {
+          "ad": "Female_Ranger_Body",
+          "ucgen": 2962,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.622,
+          "xBoy": 0.38
+        },
+        {
+          "ad": "Female_Ranger_Body_Belt_1",
+          "ucgen": 804,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.046,
+          "xBoy": 0.248
+        },
+        {
+          "ad": "Female_Ranger_Body_Belt_2",
+          "ucgen": 804,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.059,
+          "xBoy": 0.248
+        },
+        {
+          "ad": "Female_Ranger_Feet",
+          "ucgen": 9172,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.56,
+          "xBoy": 0.402
+        },
+        {
+          "ad": "Female_Ranger_Head_Hood",
+          "ucgen": 2136,
+          "skinned": true,
+          "ekipman": true,
+          "yBoy": 0.32,
+          "xBoy": 0.327
+        },
+        {
+          "ad": "Female_Ranger_Legs",
+          "ucgen": 1204,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.65,
+          "xBoy": 0.411
+        }
+      ],
+      "ekipmanParca": [
+        "Female_Ranger_Acc_Pauldrons",
+        "Female_Ranger_Head_Hood"
+      ],
+      "ekipmanUcgen": 3512,
+      "sivilUcgen": 23454
+    },
+    {
+      "dosya": "Female_Ranger_Acc_Pauldrons.gltf",
+      "kb": 24,
+      "ucgen": 1376,
+      "parca": 1,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Ranger_Normal",
+        "T_Ranger_BaseColor",
+        "T_Ranger_ORM"
+      ],
+      "hamBoy": 0.124,
+      "hamEn": 0.211,
+      "hamDerinlik": 0.189,
+      "olcek": 14.133,
+      "enOlcekli": 2.976,
+      "derinlikOlcekli": 2.675,
+      "basOrani": null,
+      "omuzOlcekli": null,
+      "parcalar": [
+        {
+          "ad": "Female_Ranger_Acc_Pauldrons",
+          "ucgen": 1376,
+          "skinned": true,
+          "ekipman": true,
+          "yBoy": 0.124,
+          "xBoy": 0.211
+        }
+      ],
+      "ekipmanParca": [
+        "Female_Ranger_Acc_Pauldrons"
+      ],
+      "ekipmanUcgen": 1376,
+      "sivilUcgen": 0
+    },
+    {
+      "dosya": "Female_Ranger_Arms.gltf",
+      "kb": 29,
+      "ucgen": 8508,
+      "parca": 2,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Ranger_Normal",
+        "T_Ranger_BaseColor",
+        "T_Ranger_ORM",
+        "T_Regular_Female_Normal",
+        "T_Regular_Female_Dark_BaseColor",
+        "T_Regular_Female_Roughness"
+      ],
+      "hamBoy": 0.135,
+      "hamEn": 1.664,
+      "hamDerinlik": 0.137,
+      "olcek": 12.932,
+      "enOlcekli": 21.517,
+      "derinlikOlcekli": 1.766,
+      "basOrani": null,
+      "omuzOlcekli": null,
+      "parcalar": [
+        {
+          "ad": "Female_Ranger_Arms",
+          "ucgen": 4872,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.135,
+          "xBoy": 1.664
+        },
+        {
+          "ad": "Female_Ranger_Arms_Bracer",
+          "ucgen": 3636,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.12,
+          "xBoy": 1.379
+        }
+      ],
+      "ekipmanParca": [],
+      "ekipmanUcgen": 0,
+      "sivilUcgen": 8508
+    },
+    {
+      "dosya": "Female_Ranger_Body.gltf",
+      "kb": 29,
+      "ucgen": 4570,
+      "parca": 3,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Ranger_Normal",
+        "T_Ranger_BaseColor",
+        "T_Ranger_ORM"
+      ],
+      "hamBoy": 0.622,
+      "hamEn": 0.38,
+      "hamDerinlik": 0.345,
+      "olcek": 2.812,
+      "enOlcekli": 1.069,
+      "derinlikOlcekli": 0.97,
+      "basOrani": null,
+      "omuzOlcekli": 1.068,
+      "parcalar": [
+        {
+          "ad": "Female_Ranger_Body",
+          "ucgen": 2962,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.622,
+          "xBoy": 0.38
+        },
+        {
+          "ad": "Female_Ranger_Body_Belt_1",
+          "ucgen": 804,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.046,
+          "xBoy": 0.248
+        },
+        {
+          "ad": "Female_Ranger_Body_Belt_2",
+          "ucgen": 804,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.059,
+          "xBoy": 0.248
+        }
+      ],
+      "ekipmanParca": [],
+      "ekipmanUcgen": 0,
+      "sivilUcgen": 4570
+    },
+    {
+      "dosya": "Female_Ranger_Feet.gltf",
+      "kb": 24,
+      "ucgen": 9172,
+      "parca": 1,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Ranger_Normal",
+        "T_Ranger_BaseColor",
+        "T_Ranger_ORM"
+      ],
+      "hamBoy": 0.56,
+      "hamEn": 0.402,
+      "hamDerinlik": 0.337,
+      "olcek": 3.123,
+      "enOlcekli": 1.256,
+      "derinlikOlcekli": 1.053,
+      "basOrani": null,
+      "omuzOlcekli": null,
+      "parcalar": [
+        {
+          "ad": "Female_Ranger_Feet",
+          "ucgen": 9172,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.56,
+          "xBoy": 0.402
+        }
+      ],
+      "ekipmanParca": [],
+      "ekipmanUcgen": 0,
+      "sivilUcgen": 9172
+    },
+    {
+      "dosya": "Female_Ranger_Head_Hood.gltf",
+      "kb": 24,
+      "ucgen": 2136,
+      "parca": 1,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Ranger_Normal",
+        "T_Ranger_BaseColor",
+        "T_Ranger_ORM"
+      ],
+      "hamBoy": 0.32,
+      "hamEn": 0.327,
+      "hamDerinlik": 0.342,
+      "olcek": 5.462,
+      "enOlcekli": 1.784,
+      "derinlikOlcekli": 1.867,
+      "basOrani": null,
+      "omuzOlcekli": null,
+      "parcalar": [
+        {
+          "ad": "Female_Ranger_Head_Hood",
+          "ucgen": 2136,
+          "skinned": true,
+          "ekipman": true,
+          "yBoy": 0.32,
+          "xBoy": 0.327
+        }
+      ],
+      "ekipmanParca": [
+        "Female_Ranger_Head_Hood"
+      ],
+      "ekipmanUcgen": 2136,
+      "sivilUcgen": 0
+    },
+    {
+      "dosya": "Female_Ranger_Legs.gltf",
+      "kb": 24,
+      "ucgen": 1204,
+      "parca": 1,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Ranger_Normal",
+        "T_Ranger_BaseColor",
+        "T_Ranger_ORM"
+      ],
+      "hamBoy": 0.65,
+      "hamEn": 0.411,
+      "hamDerinlik": 0.24,
+      "olcek": 2.691,
+      "enOlcekli": 1.107,
+      "derinlikOlcekli": 0.646,
+      "basOrani": null,
+      "omuzOlcekli": null,
+      "parcalar": [
+        {
+          "ad": "Female_Ranger_Legs",
+          "ucgen": 1204,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.65,
+          "xBoy": 0.411
+        }
+      ],
+      "ekipmanParca": [],
+      "ekipmanUcgen": 0,
+      "sivilUcgen": 1204
+    },
+    {
+      "dosya": "Hair_Beard.gltf",
+      "kb": 23,
+      "ucgen": 1034,
+      "parca": 1,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Hair_1_Normal",
+        "T_Hair_1_BaseColor"
+      ],
+      "hamBoy": 0.14,
+      "hamEn": 0.162,
+      "hamDerinlik": 0.105,
+      "olcek": 12.516,
+      "enOlcekli": 2.021,
+      "derinlikOlcekli": 1.313,
+      "basOrani": null,
+      "omuzOlcekli": null,
+      "parcalar": [
+        {
+          "ad": "Plane.006",
+          "ucgen": 1034,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.14,
+          "xBoy": 0.162
+        }
+      ],
+      "ekipmanParca": [],
+      "ekipmanUcgen": 0,
+      "sivilUcgen": 1034
+    },
+    {
+      "dosya": "Hair_Buns.gltf",
+      "kb": 23,
+      "ucgen": 3284,
+      "parca": 1,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Hair_2_Normal",
+        "T_Hair_2_BaseColor"
+      ],
+      "hamBoy": 0.249,
+      "hamEn": 0.302,
+      "hamDerinlik": 0.237,
+      "olcek": 7.025,
+      "enOlcekli": 2.118,
+      "derinlikOlcekli": 1.663,
+      "basOrani": null,
+      "omuzOlcekli": null,
+      "parcalar": [
+        {
+          "ad": "Hair_Buns",
+          "ucgen": 3284,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.249,
+          "xBoy": 0.302
+        }
+      ],
+      "ekipmanParca": [],
+      "ekipmanUcgen": 0,
+      "sivilUcgen": 3284
+    },
+    {
+      "dosya": "Hair_Buzzed.gltf",
+      "kb": 23,
+      "ucgen": 830,
+      "parca": 1,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Hair_1_Normal",
+        "T_Hair_1_BaseColor"
+      ],
+      "hamBoy": 0.169,
+      "hamEn": 0.155,
+      "hamDerinlik": 0.191,
+      "olcek": 10.333,
+      "enOlcekli": 1.597,
+      "derinlikOlcekli": 1.973,
+      "basOrani": null,
+      "omuzOlcekli": null,
+      "parcalar": [
+        {
+          "ad": "Cylinder.002",
+          "ucgen": 830,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.169,
+          "xBoy": 0.155
+        }
+      ],
+      "ekipmanParca": [],
+      "ekipmanUcgen": 0,
+      "sivilUcgen": 830
+    },
+    {
+      "dosya": "Hair_BuzzedFemale.gltf",
+      "kb": 23,
+      "ucgen": 830,
+      "parca": 1,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Hair_1_Normal",
+        "T_Hair_1_BaseColor"
+      ],
+      "hamBoy": 0.17,
+      "hamEn": 0.159,
+      "hamDerinlik": 0.198,
+      "olcek": 10.285,
+      "enOlcekli": 1.632,
+      "derinlikOlcekli": 2.033,
+      "basOrani": null,
+      "omuzOlcekli": null,
+      "parcalar": [
+        {
+          "ad": "Hair_BuzzedFemale",
+          "ucgen": 830,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.17,
+          "xBoy": 0.159
+        }
+      ],
+      "ekipmanParca": [],
+      "ekipmanUcgen": 0,
+      "sivilUcgen": 830
+    },
+    {
+      "dosya": "Hair_Long.gltf",
+      "kb": 23,
+      "ucgen": 2906,
+      "parca": 1,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Hair_2_Normal",
+        "T_Hair_2_BaseColor"
+      ],
+      "hamBoy": 0.276,
+      "hamEn": 0.245,
+      "hamDerinlik": 0.27,
+      "olcek": 6.332,
+      "enOlcekli": 1.55,
+      "derinlikOlcekli": 1.713,
+      "basOrani": null,
+      "omuzOlcekli": null,
+      "parcalar": [
+        {
+          "ad": "Hair_Long",
+          "ucgen": 2906,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.276,
+          "xBoy": 0.245
+        }
+      ],
+      "ekipmanParca": [],
+      "ekipmanUcgen": 0,
+      "sivilUcgen": 2906
+    },
+    {
+      "dosya": "Hair_SimpleParted.gltf",
+      "kb": 23,
+      "ucgen": 1301,
+      "parca": 1,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Hair_1_Normal",
+        "T_Hair_1_BaseColor"
+      ],
+      "hamBoy": 0.179,
+      "hamEn": 0.175,
+      "hamDerinlik": 0.187,
+      "olcek": 9.768,
+      "enOlcekli": 1.713,
+      "derinlikOlcekli": 1.826,
+      "basOrani": null,
+      "omuzOlcekli": null,
+      "parcalar": [
+        {
+          "ad": "Plane.002",
+          "ucgen": 1301,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.179,
+          "xBoy": 0.175
+        }
+      ],
+      "ekipmanParca": [],
+      "ekipmanUcgen": 0,
+      "sivilUcgen": 1301
+    },
+    {
+      "dosya": "Male_Peasant.gltf",
+      "kb": 32,
+      "ucgen": 12894,
+      "parca": 4,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Peasant_Normal",
+        "T_Peasant_BaseColor",
+        "T_Peasant_ORM",
+        "T_Regular_Male_Normal",
+        "T_Regular_Male_Dark_BaseColor",
+        "T_Regular_Male_Roughness"
+      ],
+      "hamBoy": 1.563,
+      "hamEn": 1.799,
+      "hamDerinlik": 0.352,
+      "olcek": 1.12,
+      "enOlcekli": 2.015,
+      "derinlikOlcekli": 0.394,
+      "basOrani": null,
+      "omuzOlcekli": 0.837,
+      "parcalar": [
+        {
+          "ad": "Male_Peasant_Arms",
+          "ucgen": 5338,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.164,
+          "xBoy": 1.799
+        },
+        {
+          "ad": "Male_Peasant_Body",
+          "ucgen": 3856,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.637,
+          "xBoy": 0.747
+        },
+        {
+          "ad": "Male_Peasant_Feet",
+          "ucgen": 2588,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.452,
+          "xBoy": 0.351
+        },
+        {
+          "ad": "Male_Peasant_Legs",
+          "ucgen": 1112,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.651,
+          "xBoy": 0.423
+        }
+      ],
+      "ekipmanParca": [],
+      "ekipmanUcgen": 0,
+      "sivilUcgen": 12894
+    },
+    {
+      "dosya": "Male_Peasant_Arms.gltf",
+      "kb": 26,
+      "ucgen": 5338,
+      "parca": 1,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Peasant_Normal",
+        "T_Peasant_BaseColor",
+        "T_Peasant_ORM",
+        "T_Regular_Male_Normal",
+        "T_Regular_Male_Dark_BaseColor",
+        "T_Regular_Male_Roughness"
+      ],
+      "hamBoy": 0.164,
+      "hamEn": 1.799,
+      "hamDerinlik": 0.169,
+      "olcek": 10.685,
+      "enOlcekli": 19.22,
+      "derinlikOlcekli": 1.805,
+      "basOrani": null,
+      "omuzOlcekli": null,
+      "parcalar": [
+        {
+          "ad": "Male_Peasant_Arms",
+          "ucgen": 5338,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.164,
+          "xBoy": 1.799
+        }
+      ],
+      "ekipmanParca": [],
+      "ekipmanUcgen": 0,
+      "sivilUcgen": 5338
+    },
+    {
+      "dosya": "Male_Peasant_Body.gltf",
+      "kb": 23,
+      "ucgen": 3856,
+      "parca": 1,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Peasant_Normal",
+        "T_Peasant_BaseColor",
+        "T_Peasant_ORM"
+      ],
+      "hamBoy": 0.637,
+      "hamEn": 0.747,
+      "hamDerinlik": 0.31,
+      "olcek": 2.746,
+      "enOlcekli": 2.051,
+      "derinlikOlcekli": 0.851,
+      "basOrani": null,
+      "omuzOlcekli": 2.051,
+      "parcalar": [
+        {
+          "ad": "Male_Peasant_Body",
+          "ucgen": 3856,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.637,
+          "xBoy": 0.747
+        }
+      ],
+      "ekipmanParca": [],
+      "ekipmanUcgen": 0,
+      "sivilUcgen": 3856
+    },
+    {
+      "dosya": "Male_Peasant_Feet.gltf",
+      "kb": 23,
+      "ucgen": 2588,
+      "parca": 1,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Peasant_Normal",
+        "T_Peasant_BaseColor",
+        "T_Peasant_ORM"
+      ],
+      "hamBoy": 0.452,
+      "hamEn": 0.351,
+      "hamDerinlik": 0.33,
+      "olcek": 3.87,
+      "enOlcekli": 1.357,
+      "derinlikOlcekli": 1.277,
+      "basOrani": null,
+      "omuzOlcekli": null,
+      "parcalar": [
+        {
+          "ad": "Male_Peasant_Feet",
+          "ucgen": 2588,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.452,
+          "xBoy": 0.351
+        }
+      ],
+      "ekipmanParca": [],
+      "ekipmanUcgen": 0,
+      "sivilUcgen": 2588
+    },
+    {
+      "dosya": "Male_Peasant_Legs.gltf",
+      "kb": 23,
+      "ucgen": 1112,
+      "parca": 1,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Peasant_Normal",
+        "T_Peasant_BaseColor",
+        "T_Peasant_ORM"
+      ],
+      "hamBoy": 0.651,
+      "hamEn": 0.423,
+      "hamDerinlik": 0.229,
+      "olcek": 2.69,
+      "enOlcekli": 1.137,
+      "derinlikOlcekli": 0.615,
+      "basOrani": null,
+      "omuzOlcekli": null,
+      "parcalar": [
+        {
+          "ad": "Male_Peasant_Legs",
+          "ucgen": 1112,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.651,
+          "xBoy": 0.423
+        }
+      ],
+      "ekipmanParca": [],
+      "ekipmanUcgen": 0,
+      "sivilUcgen": 1112
+    },
+    {
+      "dosya": "Male_Ranger.gltf",
+      "kb": 40,
+      "ucgen": 26982,
+      "parca": 9,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Ranger_Normal",
+        "T_Ranger_BaseColor",
+        "T_Ranger_ORM",
+        "T_Regular_Male_Normal",
+        "T_Regular_Male_Dark_BaseColor",
+        "T_Regular_Male_Roughness"
+      ],
+      "hamBoy": 1.869,
+      "hamEn": 1.799,
+      "hamDerinlik": 0.373,
+      "olcek": 0.936,
+      "enOlcekli": 1.684,
+      "derinlikOlcekli": 0.35,
+      "basOrani": null,
+      "omuzOlcekli": 0.402,
+      "parcalar": [
+        {
+          "ad": "Male_Ranger_Acc_Pauldron",
+          "ucgen": 1376,
+          "skinned": true,
+          "ekipman": true,
+          "yBoy": 0.137,
+          "xBoy": 0.233
+        },
+        {
+          "ad": "Male_Ranger_Arms",
+          "ucgen": 4928,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.164,
+          "xBoy": 1.799
+        },
+        {
+          "ad": "Male_Ranger_Arms_Bracer",
+          "ucgen": 3636,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.133,
+          "xBoy": 1.508
+        },
+        {
+          "ad": "Male_Ranger_Body",
+          "ucgen": 2998,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.691,
+          "xBoy": 0.429
+        },
+        {
+          "ad": "Male_Ranger_Body_Belt_1",
+          "ucgen": 804,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.052,
+          "xBoy": 0.293
+        },
+        {
+          "ad": "Male_Ranger_Body_Belt_1.001",
+          "ucgen": 804,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.054,
+          "xBoy": 0.303
+        },
+        {
+          "ad": "Male_Ranger_Feet_Boots",
+          "ucgen": 9172,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.56,
+          "xBoy": 0.356
+        },
+        {
+          "ad": "Male_Ranger_Head_Hood",
+          "ucgen": 2136,
+          "skinned": true,
+          "ekipman": true,
+          "yBoy": 0.34,
+          "xBoy": 0.303
+        },
+        {
+          "ad": "Male_Ranger_Legs",
+          "ucgen": 1128,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.629,
+          "xBoy": 0.366
+        }
+      ],
+      "ekipmanParca": [
+        "Male_Ranger_Acc_Pauldron",
+        "Male_Ranger_Head_Hood"
+      ],
+      "ekipmanUcgen": 3512,
+      "sivilUcgen": 23470
+    },
+    {
+      "dosya": "Male_Ranger_Acc_Pauldron.gltf",
+      "kb": 23,
+      "ucgen": 1376,
+      "parca": 1,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Ranger_Normal",
+        "T_Ranger_BaseColor",
+        "T_Ranger_ORM"
+      ],
+      "hamBoy": 0.137,
+      "hamEn": 0.233,
+      "hamDerinlik": 0.21,
+      "olcek": 12.758,
+      "enOlcekli": 2.976,
+      "derinlikOlcekli": 2.675,
+      "basOrani": null,
+      "omuzOlcekli": null,
+      "parcalar": [
+        {
+          "ad": "Male_Ranger_Acc_Pauldron",
+          "ucgen": 1376,
+          "skinned": true,
+          "ekipman": true,
+          "yBoy": 0.137,
+          "xBoy": 0.233
+        }
+      ],
+      "ekipmanParca": [
+        "Male_Ranger_Acc_Pauldron"
+      ],
+      "ekipmanUcgen": 1376,
+      "sivilUcgen": 0
+    },
+    {
+      "dosya": "Male_Ranger_Arms.gltf",
+      "kb": 26,
+      "ucgen": 4928,
+      "parca": 1,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Ranger_Normal",
+        "T_Ranger_BaseColor",
+        "T_Ranger_ORM",
+        "T_Regular_Male_Normal",
+        "T_Regular_Male_Dark_BaseColor",
+        "T_Regular_Male_Roughness"
+      ],
+      "hamBoy": 0.164,
+      "hamEn": 1.799,
+      "hamDerinlik": 0.16,
+      "olcek": 10.685,
+      "enOlcekli": 19.22,
+      "derinlikOlcekli": 1.711,
+      "basOrani": null,
+      "omuzOlcekli": null,
+      "parcalar": [
+        {
+          "ad": "Male_Ranger_Arms",
+          "ucgen": 4928,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.164,
+          "xBoy": 1.799
+        }
+      ],
+      "ekipmanParca": [],
+      "ekipmanUcgen": 0,
+      "sivilUcgen": 4928
+    },
+    {
+      "dosya": "Male_Ranger_Body.gltf",
+      "kb": 26,
+      "ucgen": 4606,
+      "parca": 3,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Ranger_Normal",
+        "T_Ranger_BaseColor",
+        "T_Ranger_ORM"
+      ],
+      "hamBoy": 0.691,
+      "hamEn": 0.429,
+      "hamDerinlik": 0.343,
+      "olcek": 2.532,
+      "enOlcekli": 1.087,
+      "derinlikOlcekli": 0.867,
+      "basOrani": null,
+      "omuzOlcekli": 1.086,
+      "parcalar": [
+        {
+          "ad": "Male_Ranger_Body",
+          "ucgen": 2998,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.691,
+          "xBoy": 0.429
+        },
+        {
+          "ad": "Male_Ranger_Body_Belt_1",
+          "ucgen": 804,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.052,
+          "xBoy": 0.293
+        },
+        {
+          "ad": "Male_Ranger_Body_Belt_1.001",
+          "ucgen": 804,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.054,
+          "xBoy": 0.303
+        }
+      ],
+      "ekipmanParca": [],
+      "ekipmanUcgen": 0,
+      "sivilUcgen": 4606
+    },
+    {
+      "dosya": "Male_Ranger_Feet_Boots.gltf",
+      "kb": 23,
+      "ucgen": 9172,
+      "parca": 1,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Ranger_Normal",
+        "T_Ranger_BaseColor",
+        "T_Ranger_ORM"
+      ],
+      "hamBoy": 0.56,
+      "hamEn": 0.356,
+      "hamDerinlik": 0.337,
+      "olcek": 3.123,
+      "enOlcekli": 1.113,
+      "derinlikOlcekli": 1.053,
+      "basOrani": null,
+      "omuzOlcekli": null,
+      "parcalar": [
+        {
+          "ad": "Male_Ranger_Feet_Boots",
+          "ucgen": 9172,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.56,
+          "xBoy": 0.356
+        }
+      ],
+      "ekipmanParca": [],
+      "ekipmanUcgen": 0,
+      "sivilUcgen": 9172
+    },
+    {
+      "dosya": "Male_Ranger_Head_Hood.gltf",
+      "kb": 23,
+      "ucgen": 2136,
+      "parca": 1,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Ranger_Normal",
+        "T_Ranger_BaseColor",
+        "T_Ranger_ORM"
+      ],
+      "hamBoy": 0.34,
+      "hamEn": 0.303,
+      "hamDerinlik": 0.335,
+      "olcek": 5.151,
+      "enOlcekli": 1.562,
+      "derinlikOlcekli": 1.723,
+      "basOrani": null,
+      "omuzOlcekli": null,
+      "parcalar": [
+        {
+          "ad": "Male_Ranger_Head_Hood",
+          "ucgen": 2136,
+          "skinned": true,
+          "ekipman": true,
+          "yBoy": 0.34,
+          "xBoy": 0.303
+        }
+      ],
+      "ekipmanParca": [
+        "Male_Ranger_Head_Hood"
+      ],
+      "ekipmanUcgen": 2136,
+      "sivilUcgen": 0
+    },
+    {
+      "dosya": "Male_Ranger_Legs.gltf",
+      "kb": 23,
+      "ucgen": 1128,
+      "parca": 1,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Ranger_Normal",
+        "T_Ranger_BaseColor",
+        "T_Ranger_ORM"
+      ],
+      "hamBoy": 0.629,
+      "hamEn": 0.363,
+      "hamDerinlik": 0.227,
+      "olcek": 2.783,
+      "enOlcekli": 1.011,
+      "derinlikOlcekli": 0.633,
+      "basOrani": null,
+      "omuzOlcekli": null,
+      "parcalar": [
+        {
+          "ad": "Male_Ranger_Legs",
+          "ucgen": 1128,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.629,
+          "xBoy": 0.363
+        }
+      ],
+      "ekipmanParca": [],
+      "ekipmanUcgen": 0,
+      "sivilUcgen": 1128
+    },
+    {
+      "dosya": "Superhero_Female_FullBody.gltf",
+      "kb": 31,
+      "ucgen": 15060,
+      "parca": 3,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Hair_2_Normal",
+        "T_Hair_2_BaseColor",
+        "T_Eye_Normal.png",
+        "T_Eye_Brown",
+        "T_Superhero_Female_Normal",
+        "T_Superhero_Female_Dark_BaseColor",
+        "T_Superhero_Female_Roughness"
+      ],
+      "hamBoy": 1.775,
+      "hamEn": 1.669,
+      "hamDerinlik": 0.303,
+      "olcek": 0.986,
+      "enOlcekli": 1.645,
+      "derinlikOlcekli": 0.298,
+      "basOrani": null,
+      "omuzOlcekli": null,
+      "parcalar": [
+        {
+          "ad": "Eyebrows",
+          "ucgen": 1480,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.038,
+          "xBoy": 0.126
+        },
+        {
+          "ad": "Eyes",
+          "ucgen": 768,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.033,
+          "xBoy": 0.102
+        },
+        {
+          "ad": "Superhero_Female",
+          "ucgen": 12812,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 1.775,
+          "xBoy": 1.669
+        }
+      ],
+      "ekipmanParca": [],
+      "ekipmanUcgen": 0,
+      "sivilUcgen": 15060
+    },
+    {
+      "dosya": "Superhero_Male_FullBody.gltf",
+      "kb": 30,
+      "ucgen": 14318,
+      "parca": 3,
+      "skinned": true,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "doku": [
+        "T_Hair_1_Normal.png",
+        "T_Hair_1_BaseColor",
+        "T_Eye_Normal.png",
+        "T_Eye_Brown",
+        "T_Superhero_Male_Normal",
+        "T_Superhero_Male_Dark",
+        "T_Superhero_Male_Roughness"
+      ],
+      "hamBoy": 1.82,
+      "hamEn": 1.859,
+      "hamDerinlik": 0.291,
+      "olcek": 0.962,
+      "enOlcekli": 1.788,
+      "derinlikOlcekli": 0.28,
+      "basOrani": null,
+      "omuzOlcekli": null,
+      "parcalar": [
+        {
+          "ad": "Face",
+          "ucgen": 984,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.031,
+          "xBoy": 0.125
+        },
+        {
+          "ad": "Face.001",
+          "ucgen": 768,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 0.03,
+          "xBoy": 0.097
+        },
+        {
+          "ad": "Sphere.005_Retopology.004",
+          "ucgen": 12566,
+          "skinned": true,
+          "ekipman": false,
+          "yBoy": 1.82,
+          "xBoy": 1.859
+        }
+      ],
+      "ekipmanParca": [],
+      "ekipmanUcgen": 0,
+      "sivilUcgen": 14318
+    }
+  ],
+  "animler": [
+    {
+      "dosya": "Rig_Medium_General.glb",
+      "kb": 809,
+      "iskelet": "Rig_Medium",
+      "kemik": 23,
+      "meshUcgen": 6916,
+      "klip": [
+        "Death_A",
+        "Death_A_Pose",
+        "Death_B",
+        "Death_B_Pose",
+        "Hit_A",
+        "Hit_B",
+        "Idle_A",
+        "Idle_B",
+        "Interact",
+        "PickUp",
+        "Spawn_Air",
+        "Spawn_Ground",
+        "T-Pose",
+        "Throw",
+        "Use_Item"
+      ]
+    },
+    {
+      "dosya": "Rig_Medium_MovementBasic.glb",
+      "kb": 673,
+      "iskelet": "Rig_Medium",
+      "kemik": 23,
+      "meshUcgen": 6916,
+      "klip": [
+        "Jump_Full_Long",
+        "Jump_Full_Short",
+        "Jump_Idle",
+        "Jump_Land",
+        "Jump_Start",
+        "Running_A",
+        "Running_B",
+        "T-Pose",
+        "Walking_A",
+        "Walking_B",
+        "Walking_C"
+      ]
+    },
+    {
+      "dosya": "KayKit_AnimatedCharacter_v1.2.glb",
+      "kb": 449,
+      "iskelet": "KayKit Animated Character",
+      "kemik": 6,
+      "meshUcgen": 4879,
+      "klip": [
+        "Attack(1h)",
+        "AttackCombo",
+        "AttackSpinning",
+        "BasePose",
+        "Block",
+        "Cheer",
+        "Climbing",
+        "Dance",
+        "DashBack",
+        "DashFront",
+        "DashLeft",
+        "DashRight",
+        "Defeat",
+        "HeavyAttack",
+        "Hop",
+        "Idle",
+        "Interact",
+        "Jump",
+        "LayingDownIdle",
+        "PickUp",
+        "Roll",
+        "Run",
+        "Shoot(1h)",
+        "Shoot(2h)",
+        "Shoot(2h)Bow",
+        "Shooting(1h)",
+        "Shooting(2h)",
+        "Throw",
+        "Walk",
+        "Wave"
+      ]
+    },
+    {
+      "dosya": "Rig_Large_CombatMelee.glb",
+      "kb": 1001,
+      "iskelet": "Rig_Large",
+      "kemik": 23,
+      "meshUcgen": 9148,
+      "klip": [
+        "Melee_1H_Slash",
+        "Melee_1H_Stab",
+        "Melee_2H_Attack",
+        "Melee_2H_Idle",
+        "Melee_2H_Slam",
+        "Melee_Block",
+        "Melee_Block_Attack",
+        "Melee_Block_Hit",
+        "Melee_Blocking",
+        "Melee_Dualwield_Slash",
+        "Melee_Dualwield_SlashCombo",
+        "Melee_Unarmed_Idle",
+        "Melee_Unarmed_Kick",
+        "Melee_Unarmed_Punch",
+        "Melee_Unarmed_Smash",
+        "T-Pose"
+      ]
+    },
+    {
+      "dosya": "Rig_Large_General.glb",
+      "kb": 684,
+      "iskelet": "Rig_Large",
+      "kemik": 23,
+      "meshUcgen": 9148,
+      "klip": [
+        "Death_A",
+        "Death_A_Pose",
+        "Hit_A",
+        "Idle_A",
+        "Idle_B",
+        "T-Pose"
+      ]
+    },
+    {
+      "dosya": "Rig_Large_MovementAdvanced.glb",
+      "kb": 588,
+      "iskelet": "Rig_Large",
+      "kemik": 23,
+      "meshUcgen": 9148,
+      "klip": [
+        "Dodge_Backwards",
+        "Dodge_Forward",
+        "Dodge_Left",
+        "Dodge_Right",
+        "T-Pose"
+      ]
+    },
+    {
+      "dosya": "Rig_Large_MovementBasic.glb",
+      "kb": 571,
+      "iskelet": "Rig_Large",
+      "kemik": 23,
+      "meshUcgen": 9148,
+      "klip": [
+        "Running_A",
+        "T-Pose",
+        "Walking_A"
+      ]
+    },
+    {
+      "dosya": "Rig_Large_Simulation.glb",
+      "kb": 576,
+      "iskelet": "Rig_Large",
+      "kemik": 23,
+      "meshUcgen": 9148,
+      "klip": [
+        "Flexing",
+        "T-Pose"
+      ]
+    },
+    {
+      "dosya": "Rig_Large_Special.glb",
+      "kb": 562,
+      "iskelet": "Rig_Large",
+      "kemik": 23,
+      "meshUcgen": 9148,
+      "klip": [
+        "EXPERIMENTAL_Large_Transform",
+        "T-Pose"
+      ]
+    },
+    {
+      "dosya": "Rig_Medium_CombatMelee.glb",
+      "kb": 976,
+      "iskelet": "Rig_Medium",
+      "kemik": 23,
+      "meshUcgen": 6916,
+      "klip": [
+        "Melee_1H_Attack_Chop",
+        "Melee_1H_Attack_Jump_Chop",
+        "Melee_1H_Attack_Slice_Diagonal",
+        "Melee_1H_Attack_Slice_Horizontal",
+        "Melee_1H_Attack_Stab",
+        "Melee_2H_Attack_Chop",
+        "Melee_2H_Attack_Slice",
+        "Melee_2H_Attack_Spin",
+        "Melee_2H_Attack_Spinning",
+        "Melee_2H_Attack_Stab",
+        "Melee_2H_Idle",
+        "Melee_Block",
+        "Melee_Block_Attack",
+        "Melee_Block_Hit",
+        "Melee_Blocking",
+        "Melee_Dualwield_Attack_Chop",
+        "Melee_Dualwield_Attack_Slice",
+        "Melee_Dualwield_Attack_Stab",
+        "Melee_Unarmed_Attack_Kick",
+        "Melee_Unarmed_Attack_Punch_A",
+        "Melee_Unarmed_Idle",
+        "T-Pose"
+      ]
+    },
+    {
+      "dosya": "Rig_Medium_CombatRanged.glb",
+      "kb": 991,
+      "iskelet": "Rig_Medium",
+      "kemik": 23,
+      "meshUcgen": 6916,
+      "klip": [
+        "Ranged_1H_Aiming",
+        "Ranged_1H_Reload",
+        "Ranged_1H_Shoot",
+        "Ranged_1H_Shooting",
+        "Ranged_2H_Aiming",
+        "Ranged_2H_Reload",
+        "Ranged_2H_Shoot",
+        "Ranged_2H_Shooting",
+        "Ranged_Bow_Aiming_Idle",
+        "Ranged_Bow_Draw",
+        "Ranged_Bow_Draw_Up",
+        "Ranged_Bow_Idle",
+        "Ranged_Bow_Release",
+        "Ranged_Bow_Release_Up",
+        "Ranged_Magic_Raise",
+        "Ranged_Magic_Shoot",
+        "Ranged_Magic_Spellcasting",
+        "Ranged_Magic_Spellcasting_Long",
+        "Ranged_Magic_Summon",
+        "T-Pose"
+      ]
+    },
+    {
+      "dosya": "Rig_Medium_General.glb",
+      "kb": 809,
+      "iskelet": "Rig_Medium",
+      "kemik": 23,
+      "meshUcgen": 6916,
+      "klip": [
+        "Death_A",
+        "Death_A_Pose",
+        "Death_B",
+        "Death_B_Pose",
+        "Hit_A",
+        "Hit_B",
+        "Idle_A",
+        "Idle_B",
+        "Interact",
+        "PickUp",
+        "Spawn_Air",
+        "Spawn_Ground",
+        "T-Pose",
+        "Throw",
+        "Use_Item"
+      ]
+    },
+    {
+      "dosya": "Rig_Medium_MovementAdvanced.glb",
+      "kb": 703,
+      "iskelet": "Rig_Medium",
+      "kemik": 23,
+      "meshUcgen": 6916,
+      "klip": [
+        "Crawling",
+        "Crouching",
+        "Dodge_Backward",
+        "Dodge_Forward",
+        "Dodge_Left",
+        "Dodge_Right",
+        "Running_HoldingBow",
+        "Running_HoldingRifle",
+        "Running_Strafe_Left",
+        "Running_Strafe_Right",
+        "Sneaking",
+        "T-Pose",
+        "Walking_Backwards"
+      ]
+    },
+    {
+      "dosya": "Rig_Medium_MovementBasic.glb",
+      "kb": 673,
+      "iskelet": "Rig_Medium",
+      "kemik": 23,
+      "meshUcgen": 6916,
+      "klip": [
+        "Jump_Full_Long",
+        "Jump_Full_Short",
+        "Jump_Idle",
+        "Jump_Land",
+        "Jump_Start",
+        "Running_A",
+        "Running_B",
+        "T-Pose",
+        "Walking_A",
+        "Walking_B",
+        "Walking_C"
+      ]
+    },
+    {
+      "dosya": "Rig_Medium_Simulation.glb",
+      "kb": 836,
+      "iskelet": "Rig_Medium",
+      "kemik": 23,
+      "meshUcgen": 6916,
+      "klip": [
+        "Cheering",
+        "Lie_Down",
+        "Lie_Idle",
+        "Lie_StandUp",
+        "Push_Ups",
+        "Sit_Chair_Down",
+        "Sit_Chair_Idle",
+        "Sit_Chair_StandUp",
+        "Sit_Floor_Down",
+        "Sit_Floor_Idle",
+        "Sit_Floor_StandUp",
+        "Sit_Ups",
+        "T-Pose",
+        "Waving"
+      ]
+    },
+    {
+      "dosya": "Rig_Medium_Special.glb",
+      "kb": 903,
+      "iskelet": "Rig_Medium",
+      "kemik": 23,
+      "meshUcgen": 6916,
+      "klip": [
+        "EXPERIMENTAL_Medium_Transform",
+        "Skeletons_Awaken_Floor",
+        "Skeletons_Awaken_Floor_Long",
+        "Skeletons_Awaken_Standing",
+        "Skeletons_Death",
+        "Skeletons_Death_Pose",
+        "Skeletons_Death_Resurrect",
+        "Skeletons_Idle",
+        "Skeletons_Inactive_Floor_Pose",
+        "Skeletons_Inactive_Standing_Pose",
+        "Skeletons_Spawn_Ground",
+        "Skeletons_Taunt",
+        "Skeletons_Taunt_Longer",
+        "Skeletons_Walking",
+        "T-Pose"
+      ]
+    },
+    {
+      "dosya": "Rig_Medium_Tools.glb",
+      "kb": 1427,
+      "iskelet": "Rig_Medium",
+      "kemik": 23,
+      "meshUcgen": 6916,
+      "klip": [
+        "Chop",
+        "Chopping",
+        "Dig",
+        "Digging",
+        "Fishing_Bite",
+        "Fishing_Cast",
+        "Fishing_Catch",
+        "Fishing_Idle",
+        "Fishing_Reeling",
+        "Fishing_Struggling",
+        "Fishing_Tug",
+        "Hammer",
+        "Hammering",
+        "Holding_A",
+        "Holding_B",
+        "Holding_C",
+        "Lockpick",
+        "Lockpicking",
+        "Pickaxe",
+        "Pickaxing",
+        "Saw",
+        "Sawing",
+        "T-Pose",
+        "Work_A",
+        "Work_B",
+        "Work_C",
+        "Working_A",
+        "Working_B",
+        "Working_C"
+      ]
+    },
+    {
+      "dosya": "Rig_Medium_General.glb",
+      "kb": 809,
+      "iskelet": "Rig_Medium",
+      "kemik": 23,
+      "meshUcgen": 6916,
+      "klip": [
+        "Death_A",
+        "Death_A_Pose",
+        "Death_B",
+        "Death_B_Pose",
+        "Hit_A",
+        "Hit_B",
+        "Idle_A",
+        "Idle_B",
+        "Interact",
+        "PickUp",
+        "Spawn_Air",
+        "Spawn_Ground",
+        "T-Pose",
+        "Throw",
+        "Use_Item"
+      ]
+    },
+    {
+      "dosya": "Rig_Medium_MovementBasic.glb",
+      "kb": 673,
+      "iskelet": "Rig_Medium",
+      "kemik": 23,
+      "meshUcgen": 6916,
+      "klip": [
+        "Jump_Full_Long",
+        "Jump_Full_Short",
+        "Jump_Idle",
+        "Jump_Land",
+        "Jump_Start",
+        "Running_A",
+        "Running_B",
+        "T-Pose",
+        "Walking_A",
+        "Walking_B",
+        "Walking_C"
+      ]
+    },
+    {
+      "dosya": "Female_Peasant_Body.gltf",
+      "kb": 87,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "meshUcgen": 2188,
+      "klip": [
+        "Jog_Fwd_Loop"
+      ]
+    },
+    {
+      "dosya": "UAL1_Standard.glb",
+      "kb": 7440,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "meshUcgen": 13744,
+      "klip": [
+        "A_TPose",
+        "Crouch_Fwd_Loop",
+        "Crouch_Idle_Loop",
+        "Dance_Loop",
+        "Death01",
+        "Driving_Loop",
+        "Fixing_Kneeling",
+        "Hit_Chest",
+        "Hit_Head",
+        "Idle_Loop",
+        "Idle_Talking_Loop",
+        "Idle_Torch_Loop",
+        "Interact",
+        "Jog_Fwd_Loop",
+        "Jump_Land",
+        "Jump_Loop",
+        "Jump_Start",
+        "PickUp_Table",
+        "Pistol_Aim_Down",
+        "Pistol_Aim_Neutral",
+        "Pistol_Aim_Up",
+        "Pistol_Idle_Loop",
+        "Pistol_Reload",
+        "Pistol_Shoot",
+        "Punch_Cross",
+        "Punch_Jab",
+        "Push_Loop",
+        "Roll",
+        "Sitting_Enter",
+        "Sitting_Exit",
+        "Sitting_Idle_Loop",
+        "Sitting_Talking_Loop",
+        "Spell_Simple_Enter",
+        "Spell_Simple_Exit",
+        "Spell_Simple_Idle_Loop",
+        "Spell_Simple_Shoot",
+        "Sprint_Loop",
+        "Swim_Fwd_Loop",
+        "Swim_Idle_Loop",
+        "Sword_Attack",
+        "Sword_Idle",
+        "Walk_Formal_Loop",
+        "Walk_Loop"
+      ]
+    },
+    {
+      "dosya": "UAL1_Standard_RM.glb",
+      "kb": 7442,
+      "iskelet": "Armature",
+      "kemik": 65,
+      "meshUcgen": 13744,
+      "klip": [
+        "A_TPose",
+        "Crouch_Fwd_Loop",
+        "Crouch_Idle_Loop",
+        "Dance_Loop",
+        "Death01",
+        "Driving_Loop",
+        "Fixing_Kneeling",
+        "Hit_Chest",
+        "Hit_Head",
+        "Idle_Loop",
+        "Idle_Talking_Loop",
+        "Idle_Torch_Loop",
+        "Interact",
+        "Jog_Fwd_Loop",
+        "Jump_Land",
+        "Jump_Loop",
+        "Jump_Start",
+        "PickUp_Table",
+        "Pistol_Aim_Down",
+        "Pistol_Aim_Neutral",
+        "Pistol_Aim_Up",
+        "Pistol_Idle_Loop",
+        "Pistol_Reload",
+        "Pistol_Shoot",
+        "Punch_Cross",
+        "Punch_Jab",
+        "Push_Loop",
+        "Roll",
+        "Sitting_Enter",
+        "Sitting_Exit",
+        "Sitting_Idle_Loop",
+        "Sitting_Talking_Loop",
+        "Spell_Simple_Enter",
+        "Spell_Simple_Exit",
+        "Spell_Simple_Idle_Loop",
+        "Spell_Simple_Shoot",
+        "Sprint_Loop",
+        "Swim_Fwd_Loop",
+        "Swim_Idle_Loop",
+        "Sword_Attack",
+        "Sword_Idle",
+        "Walk_Formal_Loop",
+        "Walk_Loop"
+      ]
+    }
+  ],
+  "taban": {
+    "kapsulUcgen": 260,
+    "baloncukUcgen": 180,
+    "ilkel": {
+      "Player.tsx": 20,
+      "Waiter.tsx": 4,
+      "Dishwasher.tsx": 1,
+      "Customers.tsx": 0
+    }
+  }
+}
