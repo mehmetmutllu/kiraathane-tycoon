@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/code/artifact/04588e2c-0761-4e69-82d4-2f068ca5750a
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 102 · YAPILAN 92 · %90):**
+**Oturum bütçesi (TOPLAM 104 · YAPILAN 93 · %89):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -24,10 +24,10 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
 | | D meta katman | 9/9 ✅ |
 | | E arayüz ve cila | 4/5 🔧 |
-| | **S sanat ve arayüz geçişi** | **17/18 🔧** |
+| | **S sanat ve arayüz geçişi** | **18/20 🔧** |
 | | H oynanış düzeltmeleri | 0/3 ⏳ |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **64/74** |
+| **Program toplam** | | **65/76** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -40,7 +40,7 @@ kendi turunu aldı (D9) → Faz D 8 → 9, toplam 79 → 80. **Aynı gün:** E3 
 kararıyla SİSTEM (E3) ve DOSYALAR (E4) olarak ikiye bölündü, onboarding E5 oldu → Faz E 4 → 5,
 toplam 80 → 81. **2026-09-09 (ikinci oturum):** kullanıcı oynadı, 25 kalemlik geri bildirim verdi (`docs/geribildirim-oyun-testi-2026-09-09.md`); sanat/arayüz işi **Faz S** olarak açıldı (6 kalem, `docs/plan-faz-s-sanat.md`) → toplam 81 → 87. Faz adı S, çünkü defterde zaten bir Faz G (görsel taban) var; `G-0x` numaraları geri bildirimin, fazın kalemleri `S1…S6`. **Aynı gün:** kullanıcı S1'i oynadı ve dokuz kalem daha verdi (G-26…G-34); pad/modal düzeltmeleri **S2** olarak kendi kalemini aldı → Faz S 6 → 7, toplam 87 → 88. **Aynı gün, üçüncü tur:** kullanıcı lavabo kabin kapılarını ve ses assetlerini (ortam uğultusu + gerçekçi para sesi) istedi, ikisi de ayrı kalem oldu; UI araştırması da kendi kalemine ayrıldı → Faz S 7 → 10, toplam 88 → 91. **Aynı gün, dördüncü tur:** kullanıcı *"paketleme ve yayın öncesi oyun assetlerle hazır olsun"* dedi ve **oturum sayısı** istedi. Sayım dürüstçe yapıldı: UI dili tek oturuma sığmaz (araştırma+maket ile uygulama ayrı), karakterler kendi turunu ister → Faz S 10 → 12. Ayrıca bekleyen üç oynanış işi (hatalar · yükseltme sırası · masa aralığı) sanat kalemi değil; **Faz H** olarak ayrıldı (3 kalem). Toplam 91 → 96. **2026-09-10:** S6/②'de ertelenip S7'de kullanıcı kararıyla ayrılan **giriş cephesi camı** kendi
 turunu aldı ve bitti → Faz S 12 → 13 kalem (yeni kalem **S8**, sonrakiler bir kaydı), toplam
-96 → 97. **2026-09-14 (S14):** karakter kalemi kullanıcının *"görevi en fazla ikiye böl"* kuralıyla PERSONEL (**S14**) ve MÜŞTERİ (yeni kalem **S15**) olarak ikiye bölündü — kesme çizgisi yeşil ara durum: personel skinned, müşteriler kapsül olarak çalışmaya devam ediyor (D-112) → Faz S 14 → 15, toplam 98 → 99. **2026-09-14 (S16):** kullanıcının *"elde tepsi tutma falan sorun"* geri bildirimi kendi turunu istedi (ölçüm + kemik katmanlaması + iki sessiz hata) → Faz S 15 → 16, toplam 99 → 100. **2026-09-14 (S17+S18):** kullanıcı oyunu oynadı ve iki tur geri bildirim verdi; ölçüm üç sessiz hata çıkardı (T-poz · açılış yükleme döngüsü · müşteri görünüm takası) → iki yeni kalem **S17** (oynanış/görsel hata turu) ve **S18** (müşteri hareketi + arayüz dokunuşları) → Faz S 16 → 18, toplam 100 → 102. **2026-09-14:** S11 (UI uygulaması) kullanıcının "görevi en fazla ikiye böl" kuralıyla DİL (**S11**) ve YAPI (yeni kalem **S12**, sonrakiler bir kaydı) olarak ikiye bölündü — ölçek/palet/ikon ile ekran kabuğu ayrı işler, kesme çizgisi yeşil ara durum (D-109) → Faz S 13 → 14, toplam 97 → 98. **E4 kapsamı ölçümle değişti ama kalem sayısı değişmedi:** tur "dosya bırak"
+96 → 97. **2026-09-14 (S14):** karakter kalemi kullanıcının *"görevi en fazla ikiye böl"* kuralıyla PERSONEL (**S14**) ve MÜŞTERİ (yeni kalem **S15**) olarak ikiye bölündü — kesme çizgisi yeşil ara durum: personel skinned, müşteriler kapsül olarak çalışmaya devam ediyor (D-112) → Faz S 14 → 15, toplam 98 → 99. **2026-09-14 (S16):** kullanıcının *"elde tepsi tutma falan sorun"* geri bildirimi kendi turunu istedi (ölçüm + kemik katmanlaması + iki sessiz hata) → Faz S 15 → 16, toplam 99 → 100. **2026-09-14 (S17+S18):** kullanıcı oyunu oynadı ve iki tur geri bildirim verdi; ölçüm üç sessiz hata çıkardı (T-poz · açılış yükleme döngüsü · müşteri görünüm takası) → iki yeni kalem **S17** (oynanış/görsel hata turu) ve **S18** (müşteri hareketi + arayüz dokunuşları) → Faz S 16 → 18, toplam 100 → 102. **2026-09-14 (S19):** kullanıcının yedi kalemi kendi turunu istedi ve "görevi en fazla ikiye böl" kuralıyla ÖLÇÜM+KARAR (**S19a**) ile UYGULAMA (**S19b**) olarak ikiye bölündü — kesme çizgisi kullanıcının kendi sözü: *"önce oturumu kaydet, sonraki chatte bunları yaparsın"* (D-116) → Faz S 18 → 20, toplam 102 → 104. **2026-09-14:** S11 (UI uygulaması) kullanıcının "görevi en fazla ikiye böl" kuralıyla DİL (**S11**) ve YAPI (yeni kalem **S12**, sonrakiler bir kaydı) olarak ikiye bölündü — ölçek/palet/ikon ile ekran kabuğu ayrı işler, kesme çizgisi yeşil ara durum (D-109) → Faz S 13 → 14, toplam 97 → 98. **E4 kapsamı ölçümle değişti ama kalem sayısı değişmedi:** tur "dosya bırak"
 olarak açılmıştı, ölçüm "dosya alma, motoru büyüt" dedi (D-096); ortam sesi + `settings.music`
 kablosu E4'ün dışında kaldı ve **henüz kendi kalemi olmadı** — açık kalemler listesinde duruyor.
 
@@ -245,7 +245,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   değil; kendi turunu ister.
 - ⏳ **E5 — hareketli onboarding**
 
-## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (17/18) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
+## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (18/20) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
 - ✅ **S1 — pad ve yükseltme dili yeniden yazıldı** · çember → **köşe parantezli kare** (kenar
   ortaları boş), dolum büyüyen disk → **alttan üste dolan kare**, "Masa"/"Çay Yükselt"/"Usta"
   → hepsinde **YÜKSELT** + solunda düz yukarı ok, yazı 700 → 800, 💎 pulu "mavi kare" → gerçek
@@ -395,6 +395,13 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   kimliği (önlüksüz + koyu gömlek; yelek/pelerin kolları karede elendi) · oyuncu TAVAN hızı
   5,40 → 4,95 (taban 4,50 sabit — ölçüm tavanın ekonomiye hiç dokunmadığını gösterdi).
   docs/olcum-oyuncu-hizi.txt · vitest **996**.
+- ✅ **S19 — ÖLÇÜM + KARAR TURU (tur adı S19a), kod yazılmadı (D-116)** — oturuş çapası (klipte kalça kökün
+  0,315 br arkasında; bugünkü arka taşma 0,258 → seçilen çapa 0,26'da sıfır), saran önlük
+  (bugünkü önlük göğse takılı bir KUTU), patron dokunuşu (havlu + sıvalı kol), balonun içine
+  çizim yerine NESNE + Kenney Food Kit (stil kilidi bilerek açıldı), ince belli bardak bizim
+  ilkelimizden. Beş kare · üç yeni araç · `docs/patron-oturus-glif-raporu-s19a.md`.
+- ⏳ **S20 — D-116'nın UYGULAMASI (tur adı S19b)** (sıradaki tur): çapa · önlük + rozet kusuru · patron P7 ·
+  balon model render'ı · Kenney künyesi manifeste.
 - 🔧 **S9 — SES ASSETLERİ — ÖLÇÜM BİTTİ, KARAR BEKLİYOR (D-096'nın kapsam sınırı açılıyor)** — kullanıcı ortam uğultusu
   ("kalabalık sesi") ve **daha gerçekçi para sesi** istedi. **Bu karar D-096'yı kısmen geri
   alır:** sentez "nihai" seçilmişti ve `public/assets/audio/` bilerek boştu (lisans yüzeyi sıfır).

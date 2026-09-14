@@ -3577,3 +3577,26 @@ testi (sıra ritmi → AYRIKLIK) · `karakter-senkron`a patron ayrışması (ren
 önlük yokluğu, iki sinyal birden). vitest **996** ✓ · duman **42/42** ✓ · `tsc -b` ✓.
 
 Sayılar: `docs/olcum-oyuncu-hizi.txt` · `docs/olcum-musteri.txt` · kare `docs/gorsel/ss/s18-son.png`
+
+## D-116 — S19a: oturuş çapası, saran önlük, patron dokunuşu, balonun içine NESNE (2026-09-14)
+
+**OTURUŞ.** `Sit_Chair_Idle` klibinde kalça kemiği kökün **0,315 br arkasında**; oyun kökü
+taburenin merkezine koyuyor ve yatay çapa yok — kullanıcının *"götleri dışarda"* dediği kusur bu.
+Ölçüm deride yapıldı (klip çalınıp tepe noktaları `applyBoneTransform` ile deforme edildi) ve
+tabure daire değil **12 kenarlı çokgen** alındı. Bugün en kötü arka taşma **0,258 br**; seçilen
+çapa **0,26**'da beş gövdede de sıfır, en ileri deri 0,414 (masa açıklığı 0,61 — temiz).
+
+**ÖNLÜK.** Göğse takılı `0,58 × 0,72 × 0,08` kutu gövdeyi sarmıyordu (*"önünde kalas gibi"*).
+Önlük artık **yüzey**: göğüslük silindir dilimi (yay 110°) + genişleyen etek (yay 220°) + bel bağı
++ askı. Seçilen kol **A2**. Açık kusur: gövdedeki rozet süsü önlüğün içinden çıkıyor.
+
+**PATRON.** Lacivert gömlek geri alındı (krem kaldı); ayırt edici sinyal **P7 = omuz havlusu
+(bordo) + kolları sıvalı**. Sıvalı kol mesh bölmeden, kemik ağırlığından vertex color ile.
+
+**BALONUN İÇİ.** Elle çizim iki turdur tutmadı → balona çizim değil **nesne** giriyor (model bir
+kez karede pişip doku oluyor). Dokuz KayKit paketinde tost YOK; **Kenney Food Kit 2.0** (CC0)
+seçildi — yani **stil kilidi bilerek açıldı** (tek sanatçı kuralı, ilk kez ikinci sanatçı).
+Çay bardağı iki pakette de yok: **ince belli bardak bizim ilkelimizden** (dönel yüzey).
+
+Uygulama S19b'ye bırakıldı (kullanıcı kararı). Sayılar ve tuzaklar:
+`docs/patron-oturus-glif-raporu-s19a.md` · `docs/olcum-oturus.txt`.

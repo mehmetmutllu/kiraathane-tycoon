@@ -193,8 +193,8 @@ h2{font-size:21px;font-weight:800}
 <script type="application/json" id="durum">
 {
  "guncelleme": "14.09.2026",
- "yapilan": 92,
- "toplam": 102,
+ "yapilan": 93,
+ "toplam": 104,
  "kilometre": [
   {
    "at": 28,
@@ -209,19 +209,19 @@ h2{font-size:21px;font-weight:800}
    "etiket": "Model ve denge oturdu"
   },
   {
-   "at": 102,
+   "at": 104,
    "etiket": "v1.0 App Store"
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum — Faz S · 17/18 — S17 hatalar + hareket, S18 arayüz dokunuşları (D-115 · D-115b)",
-  "baslik": "Kullanıcı oyunu oynadı; <b>üç sessiz hata</b> ölçümle çıktı, biri “kapandı” denmiş olanın geri gelişiydi",
-  "aciklama": "Oturum ses turu olarak açıldı ama kullanıcı oynayıp üç şey söyledi: <i>“tüm karakterlerin elleri sağa açık”</i>, <i>“misafirler iç içe yürüyo”</i>, <i>“müşteriler koşmasın yürüsün”</i>. Üçü de görsel yargıydı; üçünün de sayısı çıktı — ve ikisi tahminle çözülemeyecek cinstendi.<br><br><b>Eller mesele bir T-pozdu ve sebebi bir yarıştı.</b> Ölçüm donuk gövdede el oynamasını <b>tam 0</b> buldu: o aktörde hiçbir klip hiç başlamamıştı. Kancası mount anında <code>actions</code> henüz boşken çalışıyor, <code>useFrame</code>’in erken dönüşü de “hedef değişmedi” diye her karede vuruyordu — yani kaçan başlatma bir daha asla onarılmıyordu. Erken dönüş artık <b>iki koşula</b> bağlı: hedef değişmemiş <i>ve</i> gerçekten çalıyor olmalı.<br><br><b>Yolda S16’nın “kapandı” dediği hata geri geldi.</b> Açılışta React <i>“Maximum update depth exceeded”</i> ile patlıyordu ve bu <b>üç açılışın ikisinde</b> oluyordu — ilk, soğuk açılış temiz olduğu için geliştirirken görünmüyordu. Asıl yol hiç kapatılmamıştı: açılış ekranı yükleme ilerlemesine <b>abone</b>ydi, yani her dosya bir render; önbellek sıcakken hepsi aynı karede bitiyor ve iç içe güncelleme sınırı aşılıyordu. Abonelik okumaya çevrildi; render sayısı artık dosya sayısından bağımsız.<br><br><b>“Koşmasın yürüsün” bir hız sorusu değil rol sorusu çıktı.</b> Klip seçici bozulmayı logaritmik ölçüyor ve iki klibin geometrik ortası <b>0,844 br/sn</b> — bunun üstündeki <i>her</i> hızda koşu kazanıyordu, yani müşteriyi yavaşlatmak tek başına yürütmüyordu. Koşu klibi müşteri ve personelin aday listesinden çıkarıldı, ana karakterde kaldı. Hız 2,60 → <b>1,40</b> (ayak kayması 1,36×) ve bedeli ölçüldü: müşteri ömrünün %40’ı yürümekle geçiyor, döngü 1,342 kat uzuyor.<br><br><b>İç içe yürüme ayar değil eksik kuvvetti:</b> müşteri-müşteri ayrışma çağrısı kodda hiç yoktu. Eklendi; aynı hızda A/B çakışmayı <b>%1,40 → %0,60</b>, en kısa arayı <b>0,046 → 0,413</b> br yaptı."
+  "etiket": "Bu oturum — Faz S · 18/20 — S19a: ölçüm + karar turu, kod yazılmadı (D-116)",
+  "baslik": "Kullanıcı <b>kol seçmedi, yön verdi</b>; “kalas gibi önlük” bir <b>kutuydu</b>, tost ise dokuz pakette <b>hiç yoktu</b>",
+  "aciklama": "Tur üç görsel kalemle açıldı ve kullanıcının cevabı onu ikiye katladı: sunulan kolları seçmek yerine <i>“önlük öyle önünde kalas gibi olmasın”</i>, <i>“o svgler hâlâ güzel değil, biraz daha açıklayıcı olabilir”</i> ve <i>“tostu da internette araştırıp asset olarak bulsana”</i> dedi. Beş kol ölçüldü, beş kare çıktı, <b>kod tek satır değişmedi</b>.<br><br><b>“Götleri dışarda” bir poz kusuru değil, eksik bir çapaydı.</b> Ölçüm kemikte değil <b>deride</b> yapıldı: oturuş klibi çalınıp her tepe noktası gerçekten deforme edildi ve taburenin oturak yüzeyiyle karşılaştırıldı — üstelik tabure <b>daire değil 12 kenarlı çokgen</b> alındı, çünkü daire varsayımı köşelerin arasını da “oturak” sayıp taşmayı küçük gösteriyordu. Kök sebep tek sayıda: klipte kalça kemiği kökün <b>0,315 br arkasında</b>, oyun ise kökü taburenin merkezine koyuyor. Bugünkü arka taşma <b>0,258 br</b>; <b>0,26</b>’lık bir ileri çapada beş gövdede de sıfır ve masaya 0,20 br pay kalıyor.<br><br><b>Önlük kusuru koda bakınca bir satırdı:</b> göğse takılı <code>0,58 × 0,72 × 0,08</code> bir <b>kutu</b>. Kutu gövdeyi sarmıyor, önünde duruyor — benzetme birebir doğruydu. Yeni önlük levha değil <b>yüzey</b>: göğüslük gövdenin kavisini izleyen silindir dilimi, etek aşağı genişleyen açık uçlu koni, arada bel bağı ve askılar. Kullanıcı <b>A2</b>’yi seçti ve yeni bir kusur gösterdi: gövdedeki rozet süsü önlüğün içinden çıkıyor.<br><br><b>Glif turu kapandı, yerine nesne geldi.</b> Elle çizim iki turdur tutmadığı için yön değişti: balona çizim değil <b>model</b> giriyor, bir kez karede pişirilip doku oluyor. Araştırma net: repodaki <b>dokuz KayKit paketinin hiçbirinde tost yok</b>. Kenney Food Kit 2.0 (CC0, 201 model) indirildi ve seçildi — yani <b>stil kilidi ilk kez bilerek açıldı</b>. Çay bardağı ise iki pakette de yok: Türk ince belli bardağı <b>bizim ilkelimizden</b>, dönel bir yüzey olarak çizildi.<br><br><b>Araç tarafında iki tuzak kayda geçti:</b> kare üç ayrı render uygulamasında <b>birebir aynı PNG</b>’yi üretti — sebep kolların x aralığıydı (her kamera bir sonraki kolun içine düşüyordu) ve yolun başında portta asılı kalmış eski bir vite sunucusu bayat sayfa servis ediyordu. Araçlar artık boş port tarıyor ve sayfanın sürüm damgasını denetliyor."
  },
  "siradaki": {
-  "etiket": "Sırada S19 — yedi arayüz/görsel kalem",
-  "baslik": "Kullanıcının gece verdiği liste: <b>patron dokunuşu, oturma pozu, balon glifleri, karakter menüsü</b>",
-  "aciklama": "Oturum kapanırken kullanıcı yedi kalem daha verdi ve hepsi görsel/arayüz: <b>(1)</b> patronun lacivert gömleği geri alınacak — <i>“beyaz daha ayırt ediciydi”</i>, ayırt edici sinyal başka bir dokunuş olacak; <b>(2)</b> oturan karakterlerin kalçası taburenin dışında kalıyor — <code>Sit_Chair_Idle</code> klibinde z ekseni çapası ölçülmedi; <b>(3)</b> sipariş balonundaki bardak ve tost gliflerinin çizimi zayıf; <b>(4)</b> karakter menüsü hâlâ <b>eski ilkel gövdeyi</b> gösteriyor (S15’ten beri açık kalem); <b>(5)</b> paneller ekranı tam kullanmıyor; <b>(6)</b> yükseltme tetiği pad’in <b>tam üstünde</b> olsun, yanında değil — bu yarıçapa dokunursa <b>varyant kapısına</b> girer; <b>(7)</b> yükseltme kartının solundaki ok çerçeveye değiyor.<br><br>Ardından <b>S9 ses</b> var ve orada iş yarım değil: ölçüm bitti, karar paketi sunulmadı. 9 CC0 Kenney paketi (706 ses) indirildi, 36 aday oyunun kendi çözücüsüyle PCM’e çevrildi ve <b>dosyalı dokuzlu sentezle aynı hükmü</b> geçti (36/36 ayrı). Kalan açık sorular sayıyla duruyor: dosyalar sentezden <b>16,6 dB yüksek</b>, <b>7/9</b> seçilen dosya kendi aralık kelepçesini taşıyor, akan sıvı ve ortam uğultusu için <b>0 aday</b> var.<br><br>Sonra <b>Faz H</b>: üç oynanış hatası ve iki denge kolu."
+  "etiket": "Sırada S19b — D-116’nın uygulaması",
+  "baslik": "Ölçüm bitti, karar alındı: geriye <b>yalnız kod + bekçi</b> kaldı",
+  "aciklama": "Çapa <code>actor.ts</code>’e tek sabit olarak girer ve koltuk açısıyla döndürülerek uygulanır; önlük kutudan yüzeye döner (rozet kusuru önce ölçülür: süs ayrı düğüm mü, gövdenin parçası mı); patron omuz havlusu + sıvalı kol alır; balonun içi model render’ına geçer; Kenney Food Kit künyesiyle manifeste girer. Ardından S19’un kalan dört kalemi — karakter menüsü, panellerin tam ekranı, yükseltme tetiği (bu <b>varyant kapısına</b> tabi) ve yükseltmenin solundaki ok."
  },
  "donemler": [
   {
@@ -353,8 +353,8 @@ h2{font-size:21px;font-weight:800}
      "k": "S",
      "t": "Sanat ve arayüz geçişi",
      "d": "Kullanıcı oynadı ve dört tur geri bildirim verdi. HER KALEM ≈ 1 OTURUM, 10 oturum kaldı. Bitti: pad dili ✓ · pad/modal etkileşimi ✓. Sırada: mutfak → duvar ve zemin → dekor takası → dış cephe ve tente → lavabo kabin kapıları → ses assetleri → UI dili (araştırma+maket) → UI dili (uygulama) → yeni ücretsiz paketler → karakterler. İlk beşi indirme ve onay istemiyor: hepsi diskte duran 185 KayKit modeliyle yapılacak iş.",
-     "yapilan": 17,
-     "toplam": 18,
+     "yapilan": 18,
+     "toplam": 20,
      "durum": "now",
      "kapi": "185 kullanılmayan KayKit modeli oyuna bağlanır + UI dili maketle onaylanır"
     },
@@ -378,6 +378,21 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "14.09.2026",
+   "etiket": "Faz S · 18. oturum (S19a — ölçüm + karar turu — D-116)",
+   "baslik": "Beş kol ölçüldü, <b>kod yazılmadı</b>: çapa 0,26 · saran önlük · havlu + sıvalı kol · balona nesne",
+   "govde": "Bu tur bilerek yarıda kesildi: <b>ölç → sor</b> yapıldı, <b>uygula</b> sonraki tura bırakıldı — kullanıcının kendi sözüyle <i>“önce oturumu kaydet, sonraki chatte bunları yaparsın”</i>.<br><br>Oturuş kusurunun sayısı deriden çıktı: klipte kalça kökün <b>0,315 br arkasında</b>, bugünkü arka taşma <b>0,258 br</b>, seçilen <b>0,26</b> çapada beş gövdede de sıfır. Önlüğün “kalas” hâli koda bakınca bir kutuydu ve yerine gövdeyi saran bir yüzey kuruldu. Balonun içi ise elle çizimden <b>nesneye</b> geçti: dokuz KayKit paketinde tost olmadığı ölçüldü, Kenney Food Kit (CC0) seçildi ve <b>stil kilidi ilk kez bilerek açıldı</b>; çay bardağı iki pakette de olmadığı için ince belli bardak bizim ilkelimizden çizildi.",
+   "maddeler": [
+    "<b>D-116:</b> oturuş çapası <b>0,26</b> — arka taşma 0,258 → 0, masaya 0,20 br pay",
+    "<b>Önlük A2:</b> göğse takılı kutu → gövdeyi saran yüzey (göğüslük + etek + bel bağı + askı)",
+    "<b>Patron P7:</b> lacivert gömlek geri alındı; omuz havlusu + kolları sıvalı (vertex color, mesh bölünmez)",
+    "<b>Balonun içi:</b> Canvas2D çizim → model render’ı; tost Kenney Food Kit, çay bizim ince belli bardağımız",
+    "<b>Stil kilidi açıldı:</b> tek sanatçı (KayKit) kuralı ilk kez ikinci bir pakete yer verdi — kullanıcı kararı",
+    "Üç yeni araç: <code>olcum-oturus</code> · <code>onluk-bak</code> · <code>yemek-bak</code> (+ <code>patron-dokunus</code>, <code>glif-bak</code>)",
+    "Araç tuzağı: portta asılı eski vite sunucusu bayat sayfa servis ediyordu → boş port taraması + sürüm damgası"
+   ]
+  },
   {
    "tarih": "14.09.2026",
    "etiket": "Faz S · 17. oturum (S18 — arayüz dokunuşları — D-115b)",

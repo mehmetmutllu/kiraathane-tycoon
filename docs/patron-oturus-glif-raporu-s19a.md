@@ -98,10 +98,61 @@ sunucusu** bayat sayfa servis etti (`--strictPort` ile yeni sunucu doğamıyor, 
 "ayakta" sayıyor). İkisi de kalıcı olarak kapatıldı: araçlar artık **boş port tarıyor** ve sayfanın
 **SURUM damgasını** denetleyip tutmazsa ölçümü durduruyor.
 
-## Karar
+## İkinci tur — kullanıcı kol seçmedi, yön verdi
 
-<!-- adım 3'te kullanıcı seçer — D-0xx -->
+Karar paketine gelen cevap bir kol değil üç yeni istekti: *"önlük öyle önünde kalas gibi olmasın
+düzgün olsun · o svgler hâlâ güzel değil, biraz daha açıklayıcı olabilir · tostu da internette
+araştırıp asset olarak bulsana"*. Üçü de ölçülüp karelendi (commit #2), kod yine yazılmadı.
+
+### A — önlük (kare: `s19-onluk.png`)
+
+Kusurun sebebi kodda tek satır: önlük göğse takılan **`0,58 × 0,72 × 0,08` bir kutu** + kalçada
+bir halka. Kutu gövdeyi sarmıyor. Yeni kol önlüğü **yüzey** olarak kuruyor: göğüslük = gövdenin
+kavisini izleyen silindir dilimi (yay 110°, yarıçap 0,335-0,365) · etek = aşağı genişleyen açık
+uçlu koni (yay 220°, boy 0,32) · bel bağı (yay 320°) · boyundan iki askı. Beş kart: bugünkü ·
+saran · saran+cep · bel önlüğü (patron) · saran uzun etek.
+
+**Ölçü tuzağı:** ilk koşuda göğüslüğün yarıçapı 0,255-0,285'ti ve gömlek kabarıklığının İÇİNDE
+kaldı — karede hiç görünmedi. İkinci tuzak: `CylinderGeometry`de θ=0 zaten **+z**; yay
+`Math.PI/2`de ortalanınca önlük gövdenin YANINA düştü.
+
+### G/Y — balonun içi: çizim değil NESNE (kare: `s19-yemek.png`)
+
+Elle çizim iki turdur tutmadığı için yön değişti: model bir kez karede pişirilip doku olarak
+kullanılır. Araştırma sonucu:
+
+| kaynak | tost | çay |
+|---|---|---|
+| repodaki dokuz KayKit paketi | **yok** (en yakını yuvarlak hamburger ekmeği) | yok |
+| Kenney Food Kit 2.0 (CC0, 201 model, indirildi) | `sandwich` · `bread` · `sub` | `cup-tea` (fincan) · `glass` (düz bardak) |
+| bizim ilkelimiz | çizilebilir | **ince belli bardak** (dönel yüzey: karın → bel → ağız) |
+
+Kenney'yi almak **stil kilidini** (tek sanatçı = KayKit) açar; lisans sorunu yok (CC0), sorun
+stil. Modeller `public/_aday/`de geçici, `.gitignore`da.
+
+## Karar (kullanıcı, 2026-09-14 — D-116)
+
+| kol | seçim | not |
+|---|---|---|
+| A (önlük) | **A2 saran önlük** | *"en iyisi a2"* — ama gövdenin göğsündeki **rozet önlüğün içinden çıkıyor**, önlük parçalanmış gibi duruyor. Uygulamada kapatılacak. |
+| O (oturuş) | **O3 — çapa 0,26** | öneri kabul |
+| P (patron) | **P7 — omuz havlusu + kolları sıvalı** | öneri kabul |
+| Y (tost) | **Y1 — Kenney Food Kit** | öneri kabul; stil kilidi bilerek açılıyor, paket manifeste künyesiyle girer |
+| B (çay) | **B1 — bizim ince belli bardağımız** | öneri kabul |
+
+Kullanıcı ayrıca uygulamayı **sonraki oturuma** bıraktı: *"önce oturumu kaydet, sonraki chatte
+bunları yaparsın"*.
 
 ## Uygulama
 
-<!-- adım 4: yalnız kararın kolu -->
+Sonraki tur (**S19b**). Dokunulacak yerler:
+- `actor.ts` → `KAY_OTURMA_ILERI = 0.26` (tek sabit) · `Customers.tsx` çapayı koltuk açısıyla
+  döndürerek uygular (yerel +z ileri).
+- `KayActor.kiyafetTak` → önlük kutudan yüzeye; `KAY_KIYAFET`e patron parçaları (havlu + sıvalı
+  kol). Sıvalı kol mesh bölmeden, kemik ağırlığından vertex color ile.
+- **Rozet:** Knight/Ranger gövdesinde göğüste duran süs mesh'i önlüğün içinden çıkıyor — önlük
+  takılan aktörde gizlenecek (ekipman süzgecine benzer bir kural) ya da önlük 1-2 mm öne alınacak.
+  Hangisi olduğu ölçülür: süs ayrı düğüm mü, gövde mesh'inin parçası mı.
+- `siparisBalonu.ts` → Canvas2D çizim yerine model render'ı (Kenney sandviç + bizim bardak).
+- `public/assets/README.md` → Kenney Food Kit künyesi + seçilen modeller; `.gitignore`dan
+  `public/_aday/` temizlenir.
