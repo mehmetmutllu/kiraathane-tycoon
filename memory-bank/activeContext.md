@@ -56,6 +56,7 @@ H3 masa aralığı.
 **Asset panosu:** https://claude.ai/code/artifact/2e7f92c0-15b6-4f72-814d-753cf79d74e0
 **Paketten çıkanlar:** https://claude.ai/code/artifact/e2917b1e-64c9-4f9f-96e6-7d3ba5a719a9
 **Mor arayüz maketi:** https://claude.ai/code/artifact/6cc7a95e-c0a3-4802-8ea3-99398d637981
+**S11 önizlemesi (altı ekran + ölçüm + T1/T2 kararı):** https://claude.ai/code/artifact/f82648fa-18dd-4e21-a3a2-8f252efd2210
 
 
 ## AÇIK KALEMLER (bilinen, bilerek duruyor)
