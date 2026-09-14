@@ -213,6 +213,16 @@ takılmaz.
 
 Klip dosyalarındaki ölü manken gövdesi çıkarılırsa A kollarından ≈ 0,5–1,5 MB daha düşer (§B4).
 
+### B10 — Oturma klibi çalışıyor; "tabureye oturuyor mu" bir ÖLÇEK sorusu değil, montaj parametresi
+
+`Rig_Medium_Simulation:Sit_Chair_Idle` üç ölçekte de uygulandı (`docs/gorsel/ss/s14-oturma.png`),
+**50/50 iz** tuttu. İlk okuma yanlıştı ve düzeltildi: gövde ayağı zemine yapışacak şekilde
+konumlanınca kalça 0,193 / 0,213 / 0,238'e düşüyor, yani taburenin 0,45'inin **altında** kalıyor.
+Bu modelin kusuru değil — oturma klibi gövdeyi **rig köküne** göre kurar, ayak zemine
+yapıştırılmaz. Çıkan fark doğrudan **montaj kaldırmasıdır** (+0,257 / +0,237 / +0,212) ve bugünkü
+`SEATED_DROP`un (−0,45) skinned karşılığıdır. **Ölçek kolu bu sayıya göre seçilmez;** ayakta
+ölçülen ilişkiye (§B5) göre seçilir.
+
 ---
 
 ## §Karar

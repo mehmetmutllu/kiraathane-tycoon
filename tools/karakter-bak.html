@@ -128,7 +128,28 @@
       if (n.isMesh) n.castShadow = true;
     });
     scene.add(o);
+    // Ölçek kolunda her gövdenin ALTINA bir tabure koy: oturma pozunun kabul kriteri
+    // "kalça oturağa geliyor mu" ve o ancak aynı karede görülür.
+    let kalca = null;
+    if (olcekler.length) {
+      const t = tabure.clone(true);
+      t.position.set(x, 0, 0);
+      scene.add(t);
+      // KALÇA YÜKSEKLİĞİ — ve bu sayı ÖLÇEK KOLUNUN kriteri DEĞİL, montaj parametresinin
+      // ölçüsü. Oturma klibi gövdeyi rig KÖKÜNE göre yerleştirir; buradaki gövde ise ayağı
+      // zemine yapışacak şekilde konumlanıyor (ayakta duran kolun kuralı). Yani çıkan fark
+      // modelin kusuru değil, "oturan aktör hangi yükseklikten asılacak" sorusunun cevabı —
+      // bugünkü `SEATED_DROP`un skinned karşılığı. Kol seçimi AYAKTA ölçülen ilişkiye bakar.
+      o.updateWorldMatrix(true, true);
+      o.traverse((n) => {
+        if (n.isMesh && /body|torso/i.test(n.name ?? '') && n.visible) {
+          const kb = new THREE.Box3().setFromObject(n);
+          kalca = +kb.min.y.toFixed(3);
+        }
+      });
+    }
     kartlar.push({
+      kalca,
       ad, x, hamBoy: +b.y.toFixed(2), olcek: +k.toFixed(3), gizlenen, poz,
       en: +(b.x * k).toFixed(2),
       boy: +(b.y * k).toFixed(2),
@@ -180,7 +201,8 @@
       'color:#263238;background:#ffffffd9;padding:2px 6px;border-radius:4px;white-space:nowrap';
     el.innerHTML = `<b>${kt.ad}</b><br>×${kt.olcek} → boy ${kt.boy}<br>en ${kt.en}` +
       (kt.gizlenen ? `<br><span style="color:#c62828">−${kt.gizlenen} ekipman</span>` : '') +
-      (kt.poz ? `<br><span style="color:${kt.poz.tuttu ? '#2e7d32' : '#c62828'}">poz ${kt.poz.eslesen ?? 0}/${kt.poz.iz ?? 0} kemik</span>` : '');
+      (kt.poz ? `<br><span style="color:${kt.poz.tuttu ? '#2e7d32' : '#c62828'}">poz ${kt.poz.eslesen ?? 0}/${kt.poz.iz ?? 0} kemik</span>` : '') +
+      (kt.kalca != null ? `<br><span style="color:#5d4037">ayaktan asılınca kalça ${kt.kalca}<br>montaj kaldırması +${(0.45 - kt.kalca).toFixed(3)}</span>` : '');
     el.style.left = `${((p.x + 1) / 2) * innerWidth}px`;
     el.style.top = `${((-p.y + 1) / 2) * innerHeight + 8}px`;
     document.body.appendChild(el);
