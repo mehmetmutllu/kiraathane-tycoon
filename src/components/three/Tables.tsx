@@ -209,7 +209,21 @@ const FURNITURE = [
   'chair_C',
 ] as const;
 type FKey = (typeof FURNITURE)[number];
-FURNITURE.forEach((k) => useGLTF.preload(`${KAY}${k}.gltf`));
+
+/**
+ * YOL LİSTESİ MODÜL SABİTİ — `useGLTF`e her render yeni bir DİZİ verilirse drei yükleyiciyi
+ * yeniden sorguluyor, `LoadingManager.itemEnd` → `useProgress` zustand store'unu güncelliyor ve
+ * React "Maximum update depth exceeded" ile patlıyor (yığın: `DefaultLoadingManager.onProgress`
+ * → `forceStoreRerender`). Hata SESSİZ değil ama SEYREK: yalnız dosyalar önbellekte SICAKken
+ * çıkıyor — ilk (soğuk) açılış temiz, sonrakiler patlıyor. Üç açılışın ikisinde ölçüldü.
+ *
+ * S16 aynı hatayı `Customers.tsx`te `useMemo` ile kapatmıştı ve burası GÖZDEN KAÇMIŞTI; S16'nın
+ * "kapandı" satırı bu yüzden erkendi. Burada `useMemo` değil MODÜL SABİTİ kullanılıyor: liste
+ * tamamen durağan, bileşenin dışında bir kez kurulur ve bir daha hiçbir render'a bağlı olmaz —
+ * yani aynı hata bu dosyada bir daha doğamaz. `preload` da aynı listeden beslenir.
+ */
+const FURNITURE_URL = FURNITURE.map((k) => `${KAY}${k}.gltf`);
+FURNITURE_URL.forEach((u) => useGLTF.preload(u));
 
 function firstMesh(o: Object3D): Mesh | null {
   let found: Mesh | null = null;
@@ -269,7 +283,7 @@ class FurnitureBoundary extends Component<{ fallback: ReactNode; children: React
 function InstancedTables({ tables, tableLevels }: { tables: number; tableLevels: number[] }) {
   const tableTheme = useGame((s) => s.tableTheme);
   const themeColor = tableThemeColor(tableTheme);
-  const gltfs = useGLTF(FURNITURE.map((k) => `${KAY}${k}.gltf`));
+  const gltfs = useGLTF(FURNITURE_URL);
   const meshes = useMemo(() => {
     const o: Record<string, Mesh> = {};
     FURNITURE.forEach((k, i) => {

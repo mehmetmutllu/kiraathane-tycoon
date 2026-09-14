@@ -295,7 +295,23 @@ export function KayActor({
 
   const { actions } = useAnimations(klipler, ref);
 
-  // Başlangıç: dur. (Eylemler ilk karede hazır olur; hal değişimi useFrame'de yürür.)
+  /**
+   * Başlangıç: dur. Eylem HENÜZ YOKSA bu kanca sessizce hiçbir şey yapmaz — ve düzeltmesi
+   * aşağıda, `useFrame` içindedir (T-POZ HATASI, S18).
+   *
+   * KUSUR NEYDİ: `useAnimations` `actions` nesnesini YERİNDE doldurur; klipler geç çözülen bir
+   * aktörde bu kanca çalıştığında `actions[KLIP.dur]` hâlâ `undefined` oluyordu ve kanca
+   * `[actions]`e bağlı olduğu için —nesne kimliği değişmediğinden— BİR DAHA çalışmıyordu.
+   * `useFrame` de kurtaramıyordu: `suAn` zaten `['Idle_A']` yazıyordu, hedef de `['Idle_A']`
+   * çıkıyor ve erken dönüş her karede vuruyordu. Sonuç: o aktörde hiçbir klip HİÇ başlamıyor,
+   * kemikler bind pozunda kalıyor — KayKit'in bind pozu T-POZ, yani kollar iki yana açık.
+   * Kullanıcı 2026-09-14: *"tüm karakterlerin elleri sağa açık garsonlar için vs"*.
+   *
+   * Yarış olduğu için de SEYREKTİ: dört personelin yalnız bir-ikisi donuyordu, müşteriler hiç
+   * donmuyordu (onların eylemleri yuva kurulurken, klipler ELDEYKEN başlıyor). Ölçüm:
+   * `docs/olcum-kol.json` — donuk gövdede el oynaması **tam 0**, yan açıklık 1,574 (oynayan
+   * personelde 0,92-0,96).
+   */
   const suAn = useRef<string[]>([KLIP.dur]);
   useEffect(() => {
     const a = actions[KLIP.dur];
@@ -339,7 +355,23 @@ export function KayActor({
     const lokomosyon = actions[hedefler[0]];
     if (lokomosyon) lokomosyon.timeScale = secim ? secim.timeScale : 1;
 
-    if (hedefler.length === suAn.current.length && hedefler.every((a, i) => a === suAn.current[i])) return;
+    /**
+     * ERKEN DÖNÜŞ İKİ KOŞULA BAĞLI: hedef DEĞİŞMEMİŞ **ve** hedef gerçekten ÇALIYOR olmalı.
+     *
+     * Eskiden yalnız birinci koşul vardı ve "hedef değişmedi" ile "hedef çalıyor" aynı şey
+     * sanılıyordu. Değiller: mount anında klipleri hazır olmayan bir aktörde hiçbir eylem
+     * başlamıyor, `suAn` yine de `['Idle_A']` yazıyor ve hedef de `['Idle_A']` çıktığı için
+     * erken dönüş ebediyen vuruyordu — aktör T-pozunda kalıyordu. İkinci koşulla kare döngüsü
+     * TEK OTORİTE oluyor: mount'ta kaçan başlatma bir sonraki karede kendiliğinden onarılıyor.
+     *
+     * `varOlan` süzgeci şart: her hedefin eylemi OLMAYABİLİR (örn. `Working_A|alt` bölünmüş
+     * klipler listesinde yok). Var olmayanı beklemek, koşulu ebediyen yanlış tutup her karede
+     * yeniden başlatma denemesi yaptırırdı.
+     */
+    const varOlan = hedefler.filter((ad) => actions[ad]);
+    if (varOlan.length === 0) return;
+    const ayniHedef = hedefler.length === suAn.current.length && hedefler.every((a, i) => a === suAn.current[i]);
+    if (ayniHedef && varOlan.every((ad) => actions[ad]!.isRunning())) return;
     for (const ad of hedefler) {
       const a = actions[ad];
       if (!a || a.isRunning()) continue;

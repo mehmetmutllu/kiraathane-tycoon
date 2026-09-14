@@ -1,0 +1,656 @@
+{
+  "tepsiDolu": [
+    {
+      "personel": true,
+      "ustKolQ": [
+        -0.597,
+        -0.4142,
+        -0.5942,
+        0.3449
+      ],
+      "yanAcikligi": 0.923,
+      "elYuksekligi": -0.013,
+      "elOynama": 0.217,
+      "ayakZ": -0.007
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.632,
+        -0.2628,
+        -0.6183,
+        0.3862
+      ],
+      "yanAcikligi": 1.066,
+      "elYuksekligi": -0.145,
+      "elOynama": 0.239,
+      "ayakZ": -0.126
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.632,
+        -0.2628,
+        -0.6183,
+        0.3862
+      ],
+      "yanAcikligi": 5.977,
+      "elYuksekligi": 2.17,
+      "elOynama": 13.352,
+      "ayakZ": 14.554
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.632,
+        -0.2628,
+        -0.6183,
+        0.3862
+      ],
+      "yanAcikligi": 3.083,
+      "elYuksekligi": -0.472,
+      "elOynama": 1.752,
+      "ayakZ": -2.783
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.632,
+        -0.2628,
+        -0.6183,
+        0.3862
+      ],
+      "yanAcikligi": 24.589,
+      "elYuksekligi": 1.438,
+      "elOynama": 5.063,
+      "ayakZ": 7.185
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.632,
+        -0.2628,
+        -0.6183,
+        0.3862
+      ],
+      "yanAcikligi": 45.857,
+      "elYuksekligi": -1.454,
+      "elOynama": 1.985,
+      "ayakZ": -2.632
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.632,
+        -0.2628,
+        -0.6183,
+        0.3862
+      ],
+      "yanAcikligi": 13.003,
+      "elYuksekligi": -0.649,
+      "elOynama": 1.854,
+      "ayakZ": -0.646
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.632,
+        -0.2628,
+        -0.6183,
+        0.3862
+      ],
+      "yanAcikligi": 45.901,
+      "elYuksekligi": 0.213,
+      "elOynama": 2.244,
+      "ayakZ": -0.805
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.632,
+        -0.2628,
+        -0.6183,
+        0.3862
+      ],
+      "yanAcikligi": 13.024,
+      "elYuksekligi": -0.444,
+      "elOynama": 1.709,
+      "ayakZ": -2.799
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.632,
+        -0.2628,
+        -0.6183,
+        0.3862
+      ],
+      "yanAcikligi": 29.779,
+      "elYuksekligi": 0.268,
+      "elOynama": 1.916,
+      "ayakZ": -0.785
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.632,
+        -0.2628,
+        -0.6183,
+        0.3862
+      ],
+      "yanAcikligi": 3.196,
+      "elYuksekligi": -0.18,
+      "elOynama": 1.911,
+      "ayakZ": 7.361
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.632,
+        -0.2628,
+        -0.6183,
+        0.3862
+      ],
+      "yanAcikligi": 45.822,
+      "elYuksekligi": -0.907,
+      "elOynama": 2.108,
+      "ayakZ": 5.376
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.632,
+        -0.2628,
+        -0.6183,
+        0.3862
+      ],
+      "yanAcikligi": 3.1,
+      "elYuksekligi": -0.433,
+      "elOynama": 1.816,
+      "ayakZ": -0.656
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.632,
+        -0.2628,
+        -0.6183,
+        0.3862
+      ],
+      "yanAcikligi": 45.944,
+      "elYuksekligi": 0.887,
+      "elOynama": 1.744,
+      "ayakZ": 7.262
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.632,
+        -0.2628,
+        -0.6183,
+        0.3862
+      ],
+      "yanAcikligi": 12.938,
+      "elYuksekligi": -0.196,
+      "elOynama": 1.95,
+      "ayakZ": 7.418
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.632,
+        -0.2628,
+        -0.6183,
+        0.3862
+      ],
+      "yanAcikligi": 29.757,
+      "elYuksekligi": -1.048,
+      "elOynama": 2.052,
+      "ayakZ": -2.694
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.632,
+        -0.2628,
+        -0.6183,
+        0.3862
+      ],
+      "yanAcikligi": 0.998,
+      "elYuksekligi": -0.932,
+      "elOynama": 3.172,
+      "ayakZ": -2.447
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.632,
+        -0.2628,
+        -0.6183,
+        0.3862
+      ],
+      "yanAcikligi": 16.746,
+      "elYuksekligi": 2.474,
+      "elOynama": 2.936,
+      "ayakZ": 9.5
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.632,
+        -0.2628,
+        -0.6183,
+        0.3862
+      ],
+      "yanAcikligi": 16.473,
+      "elYuksekligi": 2.731,
+      "elOynama": 4.251,
+      "ayakZ": 14.86
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.632,
+        -0.2628,
+        -0.6183,
+        0.3862
+      ],
+      "yanAcikligi": 10.791,
+      "elYuksekligi": 2.855,
+      "elOynama": 1.868,
+      "ayakZ": 11.936
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.632,
+        -0.2628,
+        -0.6183,
+        0.3862
+      ],
+      "yanAcikligi": 3.463,
+      "elYuksekligi": 4.313,
+      "elOynama": 1.737,
+      "ayakZ": 16.789
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.632,
+        -0.2628,
+        -0.6183,
+        0.3862
+      ],
+      "yanAcikligi": 18.434,
+      "elYuksekligi": 1.125,
+      "elOynama": 1.83,
+      "ayakZ": 15.324
+    },
+    {
+      "personel": true,
+      "ustKolQ": [
+        -0.4716,
+        -0.4393,
+        -0.7642,
+        0.0235
+      ],
+      "yanAcikligi": 0.728,
+      "elYuksekligi": -0.133,
+      "elOynama": 0.002,
+      "ayakZ": -0.035
+    },
+    {
+      "personel": true,
+      "ustKolQ": [
+        -0.4714,
+        -0.4396,
+        -0.7641,
+        0.0261
+      ],
+      "yanAcikligi": 0.728,
+      "elYuksekligi": -0.131,
+      "elOynama": 0.012,
+      "ayakZ": 0.037
+    },
+    {
+      "personel": true,
+      "ustKolQ": [
+        -0.5336,
+        -0.1167,
+        -0.7717,
+        0.3257
+      ],
+      "yanAcikligi": 0.957,
+      "elYuksekligi": -0.326,
+      "elOynama": 0.01,
+      "ayakZ": -0.004
+    }
+  ],
+  "tepsiBos": [
+    {
+      "personel": true,
+      "ustKolQ": [
+        -0.5282,
+        -0.4724,
+        -0.6551,
+        0.2622
+      ],
+      "yanAcikligi": 0.947,
+      "elYuksekligi": -0.044,
+      "elOynama": 0.202,
+      "ayakZ": -0.052
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.6075,
+        0.0735,
+        -0.5311,
+        0.5861
+      ],
+      "yanAcikligi": 1.003,
+      "elYuksekligi": -0.148,
+      "elOynama": 0.61,
+      "ayakZ": 0.373
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.6075,
+        0.0735,
+        -0.5311,
+        0.5861
+      ],
+      "yanAcikligi": 20.979,
+      "elYuksekligi": 0.86,
+      "elOynama": 1.289,
+      "ayakZ": 4.625
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.6075,
+        0.0735,
+        -0.5311,
+        0.5861
+      ],
+      "yanAcikligi": 2.323,
+      "elYuksekligi": -0.266,
+      "elOynama": 1.476,
+      "ayakZ": 0.731
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.6075,
+        0.0735,
+        -0.5311,
+        0.5861
+      ],
+      "yanAcikligi": 19.384,
+      "elYuksekligi": -0.385,
+      "elOynama": 1.742,
+      "ayakZ": 0.269
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.6075,
+        0.0735,
+        -0.5311,
+        0.5861
+      ],
+      "yanAcikligi": 40.499,
+      "elYuksekligi": -0.357,
+      "elOynama": 1.609,
+      "ayakZ": 0.78
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.6075,
+        0.0735,
+        -0.5311,
+        0.5861
+      ],
+      "yanAcikligi": 18.455,
+      "elYuksekligi": -0.558,
+      "elOynama": 1.824,
+      "ayakZ": -4.14
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.6075,
+        0.0735,
+        -0.5311,
+        0.5861
+      ],
+      "yanAcikligi": 40.486,
+      "elYuksekligi": -0.382,
+      "elOynama": 1.656,
+      "ayakZ": -4.22
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.6075,
+        0.0735,
+        -0.5311,
+        0.5861
+      ],
+      "yanAcikligi": 18.45,
+      "elYuksekligi": 0.042,
+      "elOynama": 1.479,
+      "ayakZ": 0.704
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.6075,
+        0.0735,
+        -0.5311,
+        0.5861
+      ],
+      "yanAcikligi": 24.364,
+      "elYuksekligi": -0.376,
+      "elOynama": 1.718,
+      "ayakZ": -4.217
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.6075,
+        0.0735,
+        -0.5311,
+        0.5861
+      ],
+      "yanAcikligi": 2.29,
+      "elYuksekligi": -0.104,
+      "elOynama": 1.554,
+      "ayakZ": 3.885
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.6075,
+        0.0735,
+        -0.5311,
+        0.5861
+      ],
+      "yanAcikligi": 40.449,
+      "elYuksekligi": 0.103,
+      "elOynama": 1.539,
+      "ayakZ": 8.854
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.6075,
+        0.0735,
+        -0.5311,
+        0.5861
+      ],
+      "yanAcikligi": 2.331,
+      "elYuksekligi": -0.482,
+      "elOynama": 1.534,
+      "ayakZ": -4.173
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.6075,
+        0.0735,
+        -0.5311,
+        0.5861
+      ],
+      "yanAcikligi": 40.533,
+      "elYuksekligi": 0.735,
+      "elOynama": 1.739,
+      "ayakZ": 3.739
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.6075,
+        0.0735,
+        -0.5311,
+        0.5861
+      ],
+      "yanAcikligi": 18.418,
+      "elYuksekligi": -0.296,
+      "elOynama": 1.557,
+      "ayakZ": 3.88
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.6075,
+        0.0735,
+        -0.5311,
+        0.5861
+      ],
+      "yanAcikligi": 24.377,
+      "elYuksekligi": -0.347,
+      "elOynama": 1.559,
+      "ayakZ": 0.769
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.6075,
+        0.0735,
+        -0.5311,
+        0.5861
+      ],
+      "yanAcikligi": 7.398,
+      "elYuksekligi": -2.968,
+      "elOynama": 18.225,
+      "ayakZ": -10.014
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.6075,
+        0.0735,
+        -0.5311,
+        0.5861
+      ],
+      "yanAcikligi": 11.158,
+      "elYuksekligi": 0.644,
+      "elOynama": 3.015,
+      "ayakZ": 2.301
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.6075,
+        0.0735,
+        -0.5311,
+        0.5861
+      ],
+      "yanAcikligi": 20.043,
+      "elYuksekligi": -0.298,
+      "elOynama": 8.902,
+      "ayakZ": -1.18
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.6075,
+        0.0735,
+        -0.5311,
+        0.5861
+      ],
+      "yanAcikligi": 8.757,
+      "elYuksekligi": 1.92,
+      "elOynama": 12.126,
+      "ayakZ": 7.721
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.6075,
+        0.0735,
+        -0.5311,
+        0.5861
+      ],
+      "yanAcikligi": 1.136,
+      "elYuksekligi": 3.354,
+      "elOynama": 1.511,
+      "ayakZ": 12.61
+    },
+    {
+      "personel": false,
+      "ustKolQ": [
+        -0.6075,
+        0.0735,
+        -0.5311,
+        0.5861
+      ],
+      "yanAcikligi": 12.649,
+      "elYuksekligi": 0.934,
+      "elOynama": 1.695,
+      "ayakZ": 12.041
+    },
+    {
+      "personel": true,
+      "ustKolQ": [
+        -0.535,
+        -0.1134,
+        -0.7697,
+        0.3293
+      ],
+      "yanAcikligi": 0.957,
+      "elYuksekligi": -0.325,
+      "elOynama": 0.001,
+      "ayakZ": -0.005
+    },
+    {
+      "personel": true,
+      "ustKolQ": [
+        -0.4722,
+        -0.4386,
+        -0.7645,
+        0.0137
+      ],
+      "yanAcikligi": 0.73,
+      "elYuksekligi": -0.14,
+      "elOynama": 0.71,
+      "ayakZ": -0.247
+    },
+    {
+      "personel": true,
+      "ustKolQ": [
+        -0.5353,
+        -0.1126,
+        -0.7693,
+        0.3301
+      ],
+      "yanAcikligi": 0.957,
+      "elYuksekligi": -0.325,
+      "elOynama": 0.012,
+      "ayakZ": -0.006
+    }
+  ]
+}

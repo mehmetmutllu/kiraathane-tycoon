@@ -121,9 +121,38 @@ describe('S15 · yürüme senkronu (D-113)', () => {
 
   it('katsayı KOD içinde her kare yazılır — yalnız klip değişince yazılsa hız yükseltmesi tutmazdı', () => {
     expect(KAYNAK_ACTOR).toMatch(/lokomosyon\.timeScale = secim \? secim\.timeScale : 1;/);
-    // Atama, "klip kümesi değişti mi" erken dönüşünden ÖNCE gelmeli.
+    // Atama, erken dönüşten ÖNCE gelmeli. Çapa `varOlan` süzgeci: erken dönüş bloğunun
+    // ilk satırı odur (S18'de iki koşullu hâle geldi, bkz. "T-POZ" testleri).
     expect(KAYNAK_ACTOR.indexOf('lokomosyon.timeScale =')).toBeLessThan(
-      KAYNAK_ACTOR.indexOf('if (hedefler.length === suAn.current.length'),
+      KAYNAK_ACTOR.indexOf('const varOlan = hedefler.filter('),
+    );
+  });
+
+  /**
+   * T-POZ HATASI (S18) — kullanıcı: *"tüm karakterlerin elleri sağa açık garsonlar için vs"*.
+   *
+   * Klipleri geç çözülen bir aktörde mount kancası hiçbir eylem başlatamıyordu (`actions` henüz
+   * boş) ve `useFrame`in erken dönüşü "hedef değişmedi" diye her karede vuruyordu → o aktörde
+   * HİÇBİR klip hiç çalmıyor, kemikler KayKit'in bind pozunda (T-poz) kalıyordu. Ölçüm:
+   * `docs/olcum-kol.json` — donuk gövdede el oynaması TAM 0.
+   *
+   * Bekçi, erken dönüşün İKİ koşula birden bağlı kalmasını denetler. Tek koşula geri dönerse
+   * hata sessizce geri gelir; sahne görsel olarak doğrulanamadığı için bunu yakalayacak başka
+   * bir şey yok.
+   */
+  it('T-POZ: erken dönüş "hedef değişmedi" ile yetinmez, hedefin ÇALDIĞINI da arar', () => {
+    expect(KAYNAK_ACTOR).toMatch(/const ayniHedef = hedefler\.length === suAn\.current\.length/);
+    // İkinci koşul: var olan eylemlerin HEPSİ gerçekten çalıyor olmalı.
+    expect(KAYNAK_ACTOR).toMatch(/if \(ayniHedef && varOlan\.every\(\(ad\) => actions\[ad\]!\.isRunning\(\)\)\) return;/);
+  });
+
+  it('T-POZ: erken dönüş yalnız VAR OLAN eylemlere bakar — olmayanı beklemek sonsuz yeniden başlatır', () => {
+    expect(KAYNAK_ACTOR).toMatch(/const varOlan = hedefler\.filter\(\(ad\) => actions\[ad\]\);/);
+    // Hiç eylem yoksa çıkılır: yoksa her kare yeniden başlatma denenirdi.
+    expect(KAYNAK_ACTOR).toMatch(/if \(varOlan\.length === 0\) return;/);
+    // Sıra: `varOlan` süzgeci, "çalıyor mu" denetiminden ÖNCE gelmeli.
+    expect(KAYNAK_ACTOR.indexOf('const varOlan = hedefler.filter(')).toBeLessThan(
+      KAYNAK_ACTOR.indexOf('varOlan.every((ad) => actions[ad]!.isRunning())'),
     );
   });
 

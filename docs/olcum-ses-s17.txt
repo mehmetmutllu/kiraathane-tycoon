@@ -1,0 +1,203 @@
+============================================================================================
+S17 — SES ASSETLERI: dosya mi sentez mi (K) · seri ivmesi (I) · ortam ugultusu (O)
+ANALITIK ARAC · deterministik · adaylar Chromium decodeAudioData ile cozuldu (taklit yok)
+============================================================================================
+
+§1 ENVANTER — indirilen CC0 paketler (kenney.nl, hepsi CC0, tek sanatci = S-C)
+paket sayisi          : 9 — casino-audio · digital-audio · impact-sounds · interface-sounds · music-jingles · rpg-audio · sci-fi-sounds · ui-audio · voiceover-pack
+toplam .ogg           : 706
+toplam boyut          : 14.28 MB
+AKAN SIVI adayi       : 0 — YOK
+ORTAM/DONGU adayi     : 0 — YOK
+  -> iki KALICI BOSLUK ad taramasiyla dogrulandi; O kolunun adayi dosya DEGIL (bkz §6).
+
+§2 ADAY OLCULERI (36 aday · 9 olay) — hepsi Chromium cozucusunden, 44100 mono
+aday                        dosya(KB) sure(sn) etkin(sn) kuyruk(sn)  RMS    tepe   duzluk  merkez(Hz)
+coin_handleCoins                24.8    0.855     0.755      0.100  0.0343  1.023   0.041       8692
+coin_handleCoins2               12.8    0.351     0.320      0.031  0.0186  0.250   0.036       7637
+coin_metalClick                 13.3    0.457     0.373      0.084  0.0175  0.391   0.050       6287
+coin_metalLatch                 10.0    0.276     0.209      0.067  0.0819  1.095   0.099       7814
+pour_metalPot1                  30.9    1.468     1.390      0.078  0.1557  1.067   0.000       2693
+pour_metalPot2                  21.9    0.953     0.939      0.014  0.1978  1.089   0.001       3216
+pour_metalPot3                  22.6    0.908     0.797      0.111  0.2516  1.222   0.008       4068
+serve_glass_001                  6.0    0.292     0.269      0.022  0.0967  0.889   0.000       1918
+serve_glass_003                  5.6    0.126     0.126      0.000  0.1506  0.897   0.000       2062
+serve_glass_005                  6.1    0.132     0.070      0.062  0.0936  0.898   0.000       2905
+serve_impactGlass_light_000      6.4    0.231     0.146      0.085  0.0815  0.835   0.000       1655
+serve_impactGlass_light_002      6.4    0.210     0.192      0.018  0.0999  0.873   0.000       2222
+purchase_confirmation_001        8.8    0.295     0.287      0.008  0.2697  0.898   0.000        400
+purchase_drop_002                6.3    0.202     0.191      0.010  0.0993  0.885   0.000        788
+purchase_bookPlace1              9.7    0.295     0.207      0.087  0.1148  1.029   0.002       3061
+purchase_close_002              14.4    0.327     0.310      0.016  0.1490  0.888   0.249      12058
+padFill_maximize_003            11.5    0.212     0.212      0.000  0.0971  0.897   0.116       8166
+padFill_maximize_006            11.3    0.387     0.369      0.018  0.1932  0.899   0.000        315
+padFill_maximize_009             7.5    0.228     0.208      0.020  0.2923  0.899   0.000       1171
+padFill_open_002                14.6    0.316     0.316      0.000  0.1518  0.899   0.251      12030
+quest_confirmation_002          13.8    0.562     0.528      0.034  0.1766  0.896   0.000       1183
+quest_PIZZI05                   10.0    0.538     0.538      0.000  0.1580  0.526   0.000        915
+quest_STEEL03                   18.7    1.389     1.389      0.000  0.1873  0.846   0.000        870
+quest_pluck_002                  6.8    0.181     0.126      0.055  0.0772  0.948   0.001       4373
+level_STEEL08                   13.6    0.814     0.803      0.011  0.1332  0.811   0.000       1220
+level_SAX03                     19.3    1.139     1.084      0.055  0.0991  0.297   0.000       1157
+level_PIZZI10                   13.7    0.803     0.802      0.001  0.1700  0.592   0.000       1357
+level_STEEL16                   15.1    0.930     0.909      0.021  0.1132  0.739   0.000       1293
+master_impactBell_001           15.2    1.763     1.556      0.207  0.0587  0.875   0.000        606
+master_impactBell_003            9.2    0.672     0.624      0.047  0.0583  0.890   0.000        758
+master_bong_001                  4.7    0.132     0.125      0.007  0.1476  0.903   0.000        229
+master_STEEL13                  16.7    1.072     1.054      0.018  0.1372  0.760   0.000        925
+reward_pluck_001                 6.2    0.112     0.093      0.019  0.0898  1.050   0.002       4427
+reward_HIT07                     8.5    0.289     0.252      0.037  0.1491  0.604   0.000       2318
+reward_confirmation_003          9.3    0.324     0.317      0.007  0.1729  0.893   0.000       2355
+reward_HIT12                     8.5    0.286     0.250      0.036  0.1645  0.628   0.000       1240
+
+§2b SENTEZ KARSILIGI (bugunku katalog, ayni olculer)
+olay        sure(sn) etkin(sn)   RMS    tepe   duzluk  merkez(Hz)  aralik(sn)
+coin          0.111     0.090  0.0187  0.171   0.001       8131        0.06
+pour          0.430     0.379  0.0046  0.049   0.097       5719        0.20
+serve         0.101     0.087  0.0312  0.226   0.047       6285        0.10
+purchase      0.255     0.221  0.0263  0.104   0.000       4231        0.20
+padFill       0.350     0.284  0.0185  0.117   0.000       2332        0.30
+quest         0.304     0.254  0.0206  0.127   0.000       1067        0.30
+level         0.454     0.375  0.0203  0.145   0.000       1063        0.45
+master        0.552     0.460  0.0134  0.107   0.000       2021        0.35
+reward        0.263     0.213  0.0208  0.149   0.000       2795        0.25
+
+§2c YUKSEKLIK FARKI (normalizasyon gerekiyor mu?)
+sentez RMS ortalamasi : 0.0194
+dosya  RMS ortalamasi : 0.1317
+fark                  : 16.6 dB  (dosyalar sentezden bu kadar YUKSEK)
+tepesi 0,99 ustu aday : 7/36 — coin_handleCoins · coin_metalLatch · pour_metalPot1 · pour_metalPot2 · pour_metalPot3 · purchase_bookPlace1 · reward_pluck_001
+
+§3 K KOLU — DOSYALI KATALOG, sentezin cetveliyle
+Kalibrasyon: MUTLAK TABAN sentez tarafinda olculur (ayni ses, 1 yarim ses tiz) —
+dosyanin "1 yarim ses tizi" yok, o yuzden taban ORTAK ve sentezden gelir.
+MUTLAK TABAN = 1.65 dB
+
+§3b ADAY SIRALAMASI — "en yakin yabanci" mesafesi (buyuk = daha ayirt edilebilir)
+olay        aday                        enYakinYabanci(dB)  o yabanci          senteze mesafe(dB)
+coin       coin_handleCoins2                    10.64      reward_confirmation_003    9.97   <- ONERI
+           coin_metalClick                       9.05      quest_confirmation_002    9.00
+           coin_metalLatch                       7.09      purchase_bookPlace1     7.96
+           coin_handleCoins                      5.15      serve_glass_005         6.66
+pour       pour_metalPot3                        9.94      level_PIZZI10           7.32   <- ONERI
+           pour_metalPot2                        7.02      serve_glass_003        11.87
+           pour_metalPot1                        6.95      purchase_bookPlace1     8.37
+serve      serve_glass_003                       7.02      pour_metalPot2         12.50   <- ONERI
+           serve_impactGlass_light_002           4.38      purchase_drop_002      10.78
+           serve_glass_001                       3.84      quest_confirmation_002   12.63
+           serve_impactGlass_light_000           3.70      purchase_drop_002      12.06
+           serve_glass_005                       2.91      reward_confirmation_003   11.43
+purchase   purchase_close_002                   11.21      padFill_open_002       14.85   <- ONERI
+           purchase_confirmation_001             7.44      padFill_maximize_006   12.49
+           purchase_bookPlace1                   6.95      pour_metalPot1          7.50
+           purchase_drop_002                     3.70      serve_impactGlass_light_000   11.35
+padFill    padFill_maximize_003                 12.62      purchase_close_002     17.61   <- ONERI
+           padFill_open_002                     11.21      purchase_close_002     19.08
+           padFill_maximize_006                  5.06      master_bong_001        10.51
+           padFill_maximize_009                  4.43      serve_impactGlass_light_000    9.25
+quest      quest_pluck_002                       6.92      reward_pluck_001        9.44   <- ONERI
+           quest_PIZZI05                         5.42      level_STEEL08          11.78
+           quest_STEEL03                         4.84      level_STEEL08          12.52
+           quest_confirmation_002                3.84      serve_glass_001         7.09
+level      level_SAX03                           8.63      reward_HIT12           18.41   <- ONERI
+           level_PIZZI10                         6.05      quest_STEEL03          11.27
+           level_STEEL16                         5.52      master_impactBell_003    8.27
+           level_STEEL08                         4.64      master_STEEL13         10.99
+master     master_impactBell_001                 5.75      level_STEEL16          10.85   <- ONERI
+           master_impactBell_003                 5.52      level_STEEL16           9.46
+           master_bong_001                       5.06      padFill_maximize_006    9.29
+           master_STEEL13                        4.64      level_STEEL08          13.90
+reward     reward_HIT07                          9.34      level_SAX03            22.21   <- ONERI
+           reward_HIT12                          8.63      level_SAX03            20.54
+           reward_pluck_001                      6.92      quest_pluck_002        12.13
+           reward_confirmation_003               2.91      serve_glass_005         7.26
+
+§3c SECILEN DOKUZLU ile 36 CIFT (sentezin 36/36 AYRI olcusuyle ayni cetvel)
+NOT: JEST kanali KATMAN tanimli (transpoze gerekir) — dosyada yok. Dosya hukmu
+     MUTLAK + SURE(JND) ile verilir; sentezin ucuncu kanali bu satirlarda bilerek bos.
+cift                                        mutlak(dB) sure(JND) hukum      mutlak/taban
+level_SAX03 <-> reward_HIT07                   9.34      10.4  AYRI       x5.66
+serve_glass_003 <-> master_impactBell_001     10.03      18.0  AYRI       x6.08
+serve_glass_003 <-> quest_pluck_002           10.85       0.0  AYRI       x6.57
+pour_metalPot3 <-> serve_glass_003            11.17      13.2  AYRI       x6.77
+pour_metalPot3 <-> reward_HIT07               11.41       8.2  AYRI       x6.91
+quest_pluck_002 <-> master_impactBell_001     12.52      18.0  AYRI       x7.58
+purchase_close_002 <-> padFill_maximize_003   12.62       2.7  AYRI       x7.65
+coin_handleCoins2 <-> purchase_close_002      12.67       0.2  AYRI       x7.68
+pour_metalPot3 <-> level_SAX03                12.70       2.2  AYRI       x7.69
+pour_metalPot3 <-> quest_pluck_002            12.92      13.2  AYRI       x7.83
+pour_metalPot3 <-> purchase_close_002         13.54       6.8  AYRI       x8.20
+coin_handleCoins2 <-> pour_metalPot3          13.92       6.5  AYRI       x8.43
+  ... (en yakin 12 satir basildi, toplam 36)
+OZET: KARISIR 0/36  ·  AYRI 36/36   [sentez tabani: 0/36 KARISIR]
+EN YAKIN CIFT: level_SAX03 <-> reward_HIT07 (9.34 dB = x5.66 taban)
+
+§3d SURE BUTCESI — secilen dosya, olayin `aralik` kelepcesine siger mi?
+olay        aralik(sn)  sentez(sn)  dosya sure(sn)  dosya etkin(sn)  tasma?
+coin             0.06       0.111          0.351            0.320  TASIYOR
+pour             0.20       0.430          0.908            0.797  TASIYOR
+serve            0.10       0.101          0.126            0.126  TASIYOR
+purchase         0.20       0.255          0.327            0.310  TASIYOR
+padFill          0.30       0.350          0.212            0.212  -
+quest            0.30       0.304          0.181            0.126  -
+level            0.45       0.454          1.139            1.084  TASIYOR
+master           0.35       0.552          1.763            1.556  TASIYOR
+reward           0.25       0.263          0.289            0.252  TASIYOR
+tasan: 7/9  -> tasan seste iki calis USTUSTE biner; `aralik` buyumeli ya da dosya kirpilmali.
+
+§4 DOSYA BUTCESI (APK payi)
+secilen 9 dosya : 116.7 KB
+sentez karsiligi  : 0 KB (kod)
+havuzun tamami    : 440.0 KB (36 aday)
+
+§5 I KOLU — SERI IVMESI (perde basamagi). KAYNAKTAN BAGIMSIZ: dosyada
+   `playbackRate`, sentezde frekans carpani; ikisi de ayni orani uygular.
+
+kol                        tavan perde(Hz)  tavan orani  adim<->adim(dB)  ilk<->tavan(dB)  tavana varis(sn)
+I1 basamak yok (BUGUNKU)            2200        1.000             0.00             0.00              0.00
+I2 +1 yarim ses, tavan 5            2937        1.335             2.82             5.90              0.30
+I3 +2 yarim ses, tavan 8            5544        2.520             4.53             3.18              0.48
+
+MUTLAK TABAN = 1.65 dB  -> "adim<->adim" bunun ALTINDAYSA iki ardisik
+toplama KULAKTAN AYNI perdede duyulur, yani basamak bosa gider.
+
+§5c TAVANDA KISMILER NEREYE GIDIYOR (coin kismileri: 1 · 2.76 · 5.4 · 8.93 x temel)
+kol                        temel(Hz)  2.kismi(Hz)  3.kismi(Hz)  4.kismi(Hz)  12kHz ustu  16kHz ustu
+I1 basamak yok (BUGUNKU)          2200        6072       11880       19646         1/4         1/4
+I2 +1 yarim ses, tavan 5          2937        8105       15858       26224         2/4         1/4
+I3 +2 yarim ses, tavan 8          5544       15300       29936       49505         3/4         2/4
+  -> 12 kHz ustundeki kismi METRIKTE yok; 16 kHz ustundeki KULAKTA da yok.
+
+§5b SERI KIRPILMASI — bes toplama, 0,16 sn arayla ust uste
+(Karisim `tools/ses-taslak.ts`ten — PANODA DUYULAN tamponun ta kendisi.)
+I1 basamak yok (BUGUNKU)    ham tepe 0.171  ·  sinirlayici sonrasi tepe 0.169  ·  RMS 0.0161  ·  kirpilma yok
+I2 +1 yarim ses, tavan 5    ham tepe 0.199  ·  sinirlayici sonrasi tepe 0.196  ·  RMS 0.0165  ·  kirpilma yok
+I3 +2 yarim ses, tavan 8    ham tepe 0.190  ·  sinirlayici sonrasi tepe 0.188  ·  RMS 0.0166  ·  kirpilma yok
+
+§6 O KOLU — ORTAM UGULTUSU
+O2 (Kenney icinden dongu adayi): §1'e gore 0 aday -> KOL DUSTU, dosya yok.
+Geriye O1 (sentez uğultu) ile O3 (tek-dosya CC0 istisnasi, S-C stil kilidini deler) kaliyor.
+
+MOTOR NE ISTIYOR (O1 secilirse): audioSynth bugun yalnizca TEK ATIS uretiyor —
+her katmanin bir atak + sonme zarfi var, surekli/donen kaynak YOK. Sayi: katalogda
+9/9 ses tek atis, dongu alani 0. O1 motora "dongu" kabiliyeti ekler (S16 sonrasi ilk
+motor genislemesi); O3 eklemez ama lisans yuzeyini 1 sanatcidan 2'ye cikarir.
+
+§6b MASKELEME — BANT-SINIRLI (her ses kendi baskin bandinda yarisir)
+(Yatak olcum taslagi: 300-900 Hz agirlikli, yavas dalgalanan gurultu. Oyun kodu DEGIL.)
+birim yatak RMS: 0.0925  (asagidaki "yatak/ses RMS" bunun katidir)
+
+ses         baskin bant  o bantta yatak payi   yatak/ses RMS orani -> o bantta +12 dB pay icin
+coin                15              -5.5 dB                0.0440  (yatak RMS bunun ALTINDA kalmali)
+pour                12              -1.1 dB                0.0263  (yatak RMS bunun ALTINDA kalmali)
+serve               18             -11.8 dB                0.0903  (yatak RMS bunun ALTINDA kalmali)
+purchase             8               7.7 dB                0.0095  (yatak RMS bunun ALTINDA kalmali)
+padFill              8               6.7 dB                0.0107  (yatak RMS bunun ALTINDA kalmali)
+quest                8               7.0 dB                0.0104  (yatak RMS bunun ALTINDA kalmali)
+level                8               5.5 dB                0.0124  (yatak RMS bunun ALTINDA kalmali)
+master              11              -3.1 dB                0.0333  (yatak RMS bunun ALTINDA kalmali)
+reward              10               2.7 dB                0.0170  (yatak RMS bunun ALTINDA kalmali)
+
+EN KISITLAYICI ses: purchase  -> yatak RMS <= 0.0095  (bu, dokuz sesin HEPSINI +12 dB uzerde tutan tavan)
+  -> 12 dB kural disi degil: kisa bir gecis sesinin surekli bir yatagin ustunde
+     kalmasi icin gereken kaba pay. Kesin deger kulakla secilir (pano).

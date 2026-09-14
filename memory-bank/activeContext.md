@@ -5,41 +5,39 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-14 — **S16: TEPSİ ELE BAĞLANDI, TAŞIMA POZU GELDİ, D-114** · Faz S 14/15 · 89/99)
+## ŞU AN (2026-09-14 — **S17: SES ASSETLERİ · ÖLÇÜM TURU AÇIK** · Faz S 15/16 · 90/100)
 
 ```
-SORU            : "Elde tepsi tutma sorun" — tepsi nereye bagli, tasirken hangi klip oynuyor?
-SAYILAR         : docs/olcum-tepsi.json · rapor docs/karakter-raporu-s15.md §Ucuncu tur
-                  capa y 0,953 · eller 0,66 -> tepsi ellerin 29 cm USTUNDE, gogse yapisik
-                  Holding_A: eller onde (z 0,423), oynama 0,002 (sabit)
-                  Walking_A (tasirken oynayan): oynama 0,411 (sallaniyor)
-                  Walking_B (kodda "tasima" yaziyordu): eller ARKADA (z -0,05) -> etiket YANLIS
-KARAR           : D-114 — tepsi iki handslot ORTASINA bagli (konum takip, DONUS yok) +
-                  ust/alt govde katmani (alt 10 kemik yurur, ust 13 kemik Holding_A oynar)
-UYGULAMA        : KayActor (UST_KEMIKLER · govdeYarisi · tasiyor prop · children ele takili) ·
-                  actor.ts (KAY_EL_Y/Z kalkti, kaymalar artik IC capayi sifirliyor) ·
-                  Player/Waiter/Dishwasher (tepsi KayActor'un COCUGU) · tools/olcum-tepsi.mjs ·
-                  tools/shot-tepsi.mjs · Customers havuzu TEMBEL buyur + yol dizisi memoize
-BEKÇİ           : tests/karakter-senkron.test.ts — 32 denetim, **32 mutasyonla** dogrulandi,
-                  kacan 0 · tsc -b ✓ · vitest 975 ✓ · duman 42/42 ✓ (dort kosu)
+SORU            : S9 kapanıyor — Kenney dosyaları repoya künyesiyle girsin; seri ivmesinin
+                  PERDE BASAMAĞI ne olsun ve ortam uğultusu HANGİ kaynaktan gelsin?
+ÖLÇÜLECEK KOLLAR:
+  K — dosya mı sentez mi (ses ses, 9 olayın her biri için ayrı hüküm)
+    K1 sentez kalsın (bugünkü)  |  K2 Kenney dosyası üstüne yazsın
+    ölçü: dosyalar aynı 36-çift ayırt matrisine sokulur (`olcum-ses-ayirt`) + süre/RMS/tepe
+    + dosya↔sentez yükseklik farkı (normalizasyon gerekiyor mu)
+  İ — seri ivmesi (perde basamağı) · KAYNAKTAN BAĞIMSIZ, D-106'nın ikinci yarısı
+    İ1 basamak yok (bugünkü)  |  İ2 +1 yarım ses, tavan 5  |  İ3 +2 yarım ses, tavan 8
+    ölçü: tavana varma süresi · tavan perdesi · basamak JND · sıfırlama penceresi
+  O — ortam uğultusu (`settings.music` bugün HİÇBİR ŞEYE bağlı değil, B9)
+    O1 sentez uğultu (lisans yüzeyi 0)  |  O2 Kenney içinden döngülenebilir aday
+    O3 tek-dosya CC0 istisnası (stil kilidi S-C'yi kırar mı)
+    ölçü: Kenney envanterinde döngü adayı sayısı · maskeleme (ambient gain coin'i hangi
+    seviyede bastırıyor) · döngü dikişi
+SAYILAR         : (adım 2 — `docs/ses-raporu-s17.md` §Bulgular)
+KARAR           : (adım 3 — kullanıcı seçer, D-0xx)
+UYGULAMA        : (adım 4 — yalnız kararın kolu)
+BEKÇİ           : (adım 4 — manifest ↔ dosya ↔ katalog üçlüsü + seri ivmesi saf fonksiyonu)
 ```
 
-**S16'da cikan IKI SESSIZ HATA (ikisi de konsol hatasi vermiyordu):**
-1. **three, glTF dugum adindaki NOKTAYI siliyor** — `handslot.l` sahnede `handslotl`. Noktali
-   yazilan kemik kumesi hicbir kolu yakalamiyor, el aramasi null donuyor ve tepsi karakterin
-   AYAKLARINDA kaliyordu. Bekci artik adlari GERCEK GLB'den okuyup sterilize ederek karsilastiriyor.
-2. **`useGLTF`e her render yeni yol dizisi** veriliyordu (`useKayKlipler` memoize ediyor, musteri
-   havuzu etmiyordu) → drei `useProgress` donguye girip acilista SplashScreen'i "Maximum update
-   depth exceeded" ile patlatiyordu. Duman araliklı kirmiziydi; ILK TANI YANLISTI (havuz kurulumu
-   sanildi), hata mesaji yakalaninca gercek sebep cikti.
-
-Ayrica: musteri havuzu TEMBEL buyuyor (kare basina 2 yuva) · duman tezgahinin canvas beklemesi
-15 → 40 sn (URUN butcesi degil, soguk baslangic payi).
+**Turun girdiği yerde bilinen durum:** `public/assets/audio/` **YOK** (D-096 bilerek boş
+bırakmıştı) · paketler indirilmişti ama repoya hiç girmedi ve bu makinede de yok → turun ilk
+işi **yeniden indirme** (PowerShell) · `pour` **kalıcı boşluk**, hiçbir pakette akan sıvı yok,
+sentezde kalıyor · Casino Audio D-106 ile **Kat 2'ye** ayrıldı, bu tura girmez.
 
 ## SIRADAKİ TAM ADIM
 
-**S17 — Faz S'in son kalemi: S9 ses** (kaynak karari yazili, D-106 · S-C). Ardindan **Faz H**
-(H1 uc hata · H2 yukseltme sirasi · H3 masa araligi — son ikisi DENGE, varyant kapisina tabi).
+**Bu tur (S17) Faz S'in SON kalemi.** Bitince **Faz H** (H1 üç hata · H2 yükseltme sırası ·
+H3 masa aralığı — son ikisi DENGE, varyant kapısına tabi).
 
 ### S15'ten DEVREDEN (ölçüldü/görüldü, bilerek yapılmadı)
 

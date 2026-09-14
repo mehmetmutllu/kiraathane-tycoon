@@ -4119,3 +4119,19 @@ Servis testi: ocağa ışınla (`__game().stationPos`) → tick → tepsi dolar;
 ## Hızlı komutlar
 - `npm run dev` · `npm run build` · `npm run test` · `npm run sim`
 - Duman testi: `npm run dev` (ayrı) → `node tools/smoke.mjs`
+
+---
+
+## S16 (2026-09-14) — tepsi ele bağlandı, iki sessiz hata
+
+**İKİ SESSİZ HATA (ikisi de konsol hatası vermiyordu):**
+1. **three, glTF düğüm adındaki NOKTAYI siliyor** — `handslot.l` sahnede `handslotl`. Noktalı
+   yazılan kemik kümesi hiçbir kolu yakalamıyor, el araması null dönüyor ve tepsi karakterin
+   AYAKLARINDA kalıyordu. Bekçi artık adları GERÇEK GLB'den okuyup sterilize ederek karşılaştırıyor.
+2. **`useGLTF`e her render yeni yol dizisi** veriliyordu (`useKayKlipler` memoize ediyor, müşteri
+   havuzu etmiyordu) → drei `useProgress` döngüye girip açılışta SplashScreen'i "Maximum update
+   depth exceeded" ile patlatıyordu. Duman aralıklı kırmızıydı; İLK TANI YANLIŞTI (havuz kurulumu
+   sanıldı), hata mesajı yakalanınca gerçek sebep çıktı.
+
+Ayrıca: müşteri havuzu TEMBEL büyüyor (kare başına 2 yuva) · duman tezgâhının canvas beklemesi
+15 → 40 sn (ÜRÜN bütçesi değil, soğuk başlangıç payı).

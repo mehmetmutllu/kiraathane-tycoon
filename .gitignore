@@ -42,3 +42,7 @@ coverage
 # S14 ölçüm turunda indirilen karakter ADAYLARI (repoya girmez; karar D-1xx ile seçilen
 # dosyalar manifestle birlikte girer)
 public/assets/models/_aday-karakter/
+
+# S17 ses turunda indirilen Kenney PAKETLERI (repoya girmez; karar D-1xx ile secilen
+# dosyalar kunyesiyle public/assets/audio/ altina girer)
+indirilen/

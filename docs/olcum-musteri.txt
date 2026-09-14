@@ -1,0 +1,51 @@
+============================================================================================
+S18 — MUSTERI HAREKETI: ayrisma (ic ice yurume) + yurume/kosma klibi
+GERCEK tick kosusu (store) · tohumlu · 1800 sn
+============================================================================================
+
+§1 KLIP SECIMI — "musteriler kosmasin yurusun" sikayetinin SAYISI
+Bugunku NPC_SPEED = 2.60 br/sn   (aktor boyu 1.75 br)
+Klip yazili hizlari: Walking_A 0.571 · Walking_B 0.655 · Running_A 1.247
+`lokomosyonSec` bozulmayi LOGARITMIK olcer: |ln(hiz / klip hizi)| en kucuk olan kazanir.
+
+hiz(br/sn)  Walking_A bozulma  Running_A bozulma  SECILEN     timeScale  kelepce  ARTIK KAYMA
+      2.60             1.516              0.735  Running_A      1.800  TAVAN        1.16x   <- BUGUN
+      2.00             1.254              0.472  Running_A      1.604  -            1.00x
+      1.60             1.030              0.249  Running_A      1.283  -            1.00x
+      1.40             0.897              0.116  Running_A      1.123  -            1.00x
+      1.20             0.743              0.038  Running_A      0.962  -            1.00x
+      1.00             0.560              0.221  Running_A      0.802  -            1.00x
+      0.90             0.455              0.326  Running_A      0.722  -            1.00x
+
+ARTIK KAYMA 1,00x = ayak yere basili gibi durur; buyudukce "havada suzulme" artar.
+Walking_A ile kelepce ustunde kalan en yuksek hiz: 1.028 br/sn (yani bu hizin ustunde YURUYUS KAYAR).
+
+§2 DONGU PAYI — musteri omrunun ne kadari YURUMEKLE geciyor?
+yuruyen musteri-kare : 70014
+oturan musteri-kare  : 105230
+YURUME PAYI          : %40.0 (musteri omrunun bu kadari ayakta)
+servis edilen cay    : 0 (oyuncu) + 99 (garson)
+
+HIZ YAVASLATMANIN BEDELI — dongu suresi (1 + (k-1) x yurume payi) kat uzar:
+kol            hiz(br/sn)  k (yavaslama)  dongu uzamasi  kabaca urun kaybi
+hiz 2.60             2.60           1.00          1.000  %   0.0   <- BUGUN
+hiz 2.00             2.00           1.30          1.120  %  10.7
+hiz 1.60             1.60           1.63          1.250  %  20.0
+hiz 1.40             1.40           1.86          1.342  %  25.5
+hiz 1.20             1.20           2.17          1.466  %  31.8
+hiz 1.00             1.00           2.60          1.639  %  39.0
+hiz 0.90             0.90           2.89          1.755  %  43.0
+  -> "urun kaybi" TAVAN bir tahmindir: koltuk doluluk darbogaz degilse (bos masa varsa)
+     gercek kayip daha KUCUK olur. Alt sinir 0, ust sinir bu sutun.
+
+§3 IC ICELIK — "yan yana ic ice yuruyo" sikayetinin SAYISI
+aktor yaricapi       : 0.280  -> cakisma esigi (2r) = 0.560
+taranan yuruyen cift : 14516
+CAKISAN cift         : 219  (%1.51)
+gorulen EN KISA ara  : 0.056  <- 2r ALTINDA: siluetler ic ice
+yakin-komsu ort.     : 4.273
+
+KOD TARAFI: `npcSystem` (tick.ts) musteriyi hedefe `moveToward`/`navStep` ile tasiyor.
+`navStep`in ayrisma (separation) parametresi YALNIZ personel icin veriliyor (avoid =
+oyuncu). Musteri-musteri ayrisma cagrisi KODDA HIC YOK — yani cakisma bir ayar
+degeri degil, EKSIK BIR KUVVET. Bu yuzden "esigi buyut" diye bir kol yok.
