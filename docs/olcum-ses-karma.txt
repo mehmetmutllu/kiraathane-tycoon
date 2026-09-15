@@ -1,0 +1,81 @@
+============================================================================================
+S17-EK — KARMA KATALOG: dosya ile sentez AYNI katalogda durabilir mi?
+ANALITIK ARAC · deterministik · S17 ile AYNI metrik ve AYNI hukum esigi
+============================================================================================
+
+§A SECILEN DOKUZLU (S17 §3b ile ayni kuraldan TURETILDI)
+olay        secilen dosya                 KB   etkin(sn)  aralik(sn)  sentez etkin(sn)
+coin       coin_handleCoins2              12.8      0.320        0.06            0.090
+pour       pour_metalPot3                 22.6      0.797        0.20            0.379
+serve      serve_glass_003                 5.6      0.126        0.10            0.087
+purchase   purchase_close_002             14.4      0.310        0.20            0.221
+padFill    padFill_maximize_003           11.5      0.212        0.30            0.284
+quest      quest_pluck_002                 6.8      0.126        0.30            0.254
+level      level_SAX03                    19.3      1.084        0.45            0.375
+master     master_impactBell_001          15.2      1.556        0.35            0.460
+reward     reward_HIT07                    8.5      0.252        0.25            0.213
+
+§B CAPRAZ MATRIS — secilen DOSYA (satir) ile SENTEZ (sutun) arasi mesafe, dB
+Kosegen = "ayni olayin iki hali" (kaynak takasinin kendisi), karara GIRMEZ.
+Kritik olan KOSEGEN DISI: karma katalogta bir dosya, BASKA bir olayin sentezine
+ne kadar yakin? Bu satirlar S17 cikitisinda hic yoktu.
+MUTLAK TABAN = 1.65 dB  (bunun altinda + sure < 2 JND => KARISIR)
+
+dosya \ sentez       coin     pour    serve purchase  padFill    quest    level   master   reward
+coin               [9.97]    15.07    11.85    12.38    13.70    14.08    14.16    12.45    14.05
+pour                16.52   [7.32]    11.52    11.43    12.82    15.88    14.87    15.62    15.76
+serve               11.90    12.11  [12.50]    10.71     9.86    11.04    10.92    11.04    11.34
+purchase            18.04    11.47    13.05  [14.85]    15.81    18.83    18.13    19.13    18.43
+padFill             19.22    17.30    17.45    16.79  [17.61]    19.09    19.25    19.55    19.48
+quest                9.13     8.80    10.74     9.44     8.23   [9.44]     8.10     9.63     8.41
+level               22.78    14.83    18.44    17.15    17.09    18.94  [18.41]    20.07    19.35
+master              14.31    13.20    12.69    10.69     8.16     8.50     8.92  [10.85]     9.80
+reward              23.54    14.33    17.54    17.72    19.14    21.93    21.29    22.36  [22.21]
+
+KOSEGEN DISI EN YAKIN: dosya:quest <-> sentez:level = 8.10 dB (x4.91 taban)
+
+§C BOLUSUMLER — her kolun ortaya cikardigi DOKUZLU katalog, ayni cetvelle
+kol  ne                                       KARISIR  enYakin(dB) x taban  ortMin(dB)   KB  aralik tasan
+K1   Sentez kalsin (BUGUNKU)                     0/36         4.06    x2.46        6.41    0.0           0/0
+K2   Dokuzu da dosya                             0/36         9.34    x5.66       10.97  116.7           7/9
+K3   FIZIKSEL aile dosya, ilerleme sentez        0/36         4.06    x2.46        7.28   41.0           3/3
+K4   Yalniz coin dosya                           0/36         4.06    x2.46        6.87   12.8           1/1
+K5   ILERLEME dosya, fiziksel sentez (K3 tersi)   0/36         8.80    x5.33       10.10   75.7           4/6
+
+K1 en yakin cift : sentez:quest <-> sentez:level  (4.06 dB)
+K2 en yakin cift : level_SAX03 <-> reward_HIT07  (9.34 dB)
+K3 en yakin cift : sentez:quest <-> sentez:level  (4.06 dB)
+K4 en yakin cift : sentez:quest <-> sentez:level  (4.06 dB)
+K5 en yakin cift : sentez:pour <-> quest_pluck_002  (8.80 dB)
+
+K2 aralik tasan   : coin · pour · serve · purchase · level · master · reward
+K3 aralik tasan   : coin · pour · serve
+K4 aralik tasan   : coin
+K5 aralik tasan   : purchase · level · master · reward
+
+§D NORMALIZASYON — dosya seti hangi kazancla sentezin seviyesine iner?
+(Karma katalogta iki kaynak AYNI katalogta calar; seviye farki en cok BURADA duyulur.)
+olay        dosya RMS  sentez RMS  gereken kazanc(dB)  kazanc sonrasi tepe
+coin          0.0186      0.0187                 0.1                0.252
+pour          0.2516      0.0046               -34.8                0.022
+serve         0.1506      0.0312               -13.7                0.186
+purchase      0.1490      0.0263               -15.1                0.157
+padFill       0.0971      0.0185               -14.4                0.171
+quest         0.0772      0.0206               -11.5                0.253
+level         0.0991      0.0203               -13.8                0.061
+master        0.0587      0.0134               -12.8                0.200
+reward        0.1491      0.0208               -17.1                0.084
+ortalama gereken kazanc : -14.8 dB
+  -> TEK kazanc mi, ses basina mi? Yayilim: -34.8 … 0.1 dB (34.9 dB fark)
+
+§E ARALIK KELEPCESI — tasan dosya icin iki cikis yolu, sayiyla
+olay        aralik(sn)  dosya etkin(sn)  A: aralik buyusun  B: dosya kirpilsin(kesilen sn)
+coin             0.06            0.320               0.32                         0.260
+pour             0.20            0.797               0.80                         0.597
+serve            0.10            0.126               0.13                         0.026
+purchase         0.20            0.310               0.31                         0.110
+level            0.45            1.084               1.08                         0.634
+master           0.35            1.556               1.56                         1.206
+reward           0.25            0.252               0.25                         0.002
+NOT: `aralik` `audio.ts`te durur — DENGE dosyasi degil (sira-kilidi: economy.config /
+     tick / rules). Yani bu secim varyant kapisina tabi DEGIL, ama yine de olculdu.
