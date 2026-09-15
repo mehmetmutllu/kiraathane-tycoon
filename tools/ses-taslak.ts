@@ -11,8 +11,7 @@
  * `src/game/audioSynth.ts`e taşınacak DAVRANIŞIN önizlemesidir — motor bugün ne döngü ne de
  * perde basamağı biliyor. Karar verilmeden oyun koduna hiçbir şey girmez (D-084 varyant kapısı).
  */
-import { ORNEKLEME, seslendir, type Katman } from '../src/game/audioSynth.ts';
-import { YARIM_SES } from './ses-metrik.ts';
+import { ORNEKLEME, perdele, seslendir, type Katman } from '../src/game/audioSynth.ts';
 
 /** Float32 [-1,1] → 16-bit PCM WAV. Tarayıcı hiçbir kütüphane olmadan çalar. */
 export function wav(ornekler: Float32Array, hz = ORNEKLEME): Buffer {
@@ -38,10 +37,6 @@ export function wav(ornekler: Float32Array, hz = ORNEKLEME): Buffer {
   return Buffer.concat([bas, veri]);
 }
 
-/** Bütün frekansları `k` ile ölçekler — perde basamağı bunun üstünde kurulur. */
-const olcekle = (katmanlar: readonly Katman[], k: number): Katman[] =>
-  katmanlar.map((kat) => ({ ...kat, hz: kat.hz.map((h) => h * k) }));
-
 /**
  * SERİ KARIŞIMI — `adet` kadar toplama, her biri bir öncekinden `basamak` yarım ses yukarıda,
  * `tavan` basamakta durur. `tavan: 0` = basamak yok (bugünkü hâl).
@@ -61,7 +56,9 @@ export function seriKarisim(
   const parca: Float32Array[] = [];
   for (let i = 0; i < adet; i++) {
     const adim = Math.min(i, tavan) * basamak;
-    parca.push(seslendir(olcekle(katmanlar, Math.pow(YARIM_SES, adim))));
+    // Perdeleme oyun kodunun KENDI fonksiyonundan (D-122): panoda duyulan basamak, oyunda
+    // calan basamagin ta kendisi — taslak artik kendi kopyasini tasimiyor.
+    parca.push(seslendir(perdele(katmanlar, adim)));
   }
   const boy = ARA * (adet - 1) + parca[adet - 1].length;
   const karisim = new Float32Array(boy);

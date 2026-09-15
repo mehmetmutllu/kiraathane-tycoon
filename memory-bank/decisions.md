@@ -3795,3 +3795,78 @@ bu makinede açık ve S23'te `git stash pop` src'yi CRLF'e çevirip mutasyon ara
 kalıplarını sessizce bulunamaz yapmıştı (dört mutasyon "KALIP BULUNAMADI", ilk koşu YALANCI
 12/12). Artık `* text=auto eol=lf` autocrlf'i eziyor; `.bat`/`.ps1` CRLF, ikililer `binary`.
 `git add --renormalize .` 0 dosya bozdu — depo zaten LF'ti, kilitlenen çalışma ağacı.
+
+---
+
+## D-122 — SES: kaynak SENTEZDE kalır, ivme koda girer, uğultu yerine MÜZİK (2026-09-16 · S9)
+
+**Kol: K1 + I2 + A3 + O4, artı yeni kol O5 (arka plan müziği) — kullanıcı kararı.**
+
+**K1 (sentez kalır) — ve gerekçesi tablonun DIŞINDAN geldi.** Ölçüm K2'yi öneriyordu: dosyalı
+dokuzlu kataloğun en zayıf çiftini 4,06 → 9,34 dB'ye taşıyor, ortalama okunabilirlik 6,41 →
+10,97 dB, bedeli 116,7 KB. Kullanıcı reddetti ve sebebi tek bir ses oldu:
+*"k2 değil çünkü ocaktan çay alma kötü bence sentez kalsın yani k1"*. Yani `pour` dosyası
+(`metalPot3`) KULAKTA düştü ve tek bir sesin düşmesi bütün kaynağı geri çevirdi.
+
+**Bu, D-106'yı kısmen geri alır ve D-096'yı geri getirir.** S-C (Kenney tek sanatçı) kaynak
+kararıydı; bugün kapsamı **sıfır** oldu — `public/assets/audio/` bilerek boş kalıyor, lisans
+yüzeyi yine sıfır. Ölçülen okunabilirlik kazancı **bilerek ödenmedi**; kayıt açık:
+K5 (ilerleme ailesi dosya) 10,10 dB'yi 75,7 KB'a veriyordu ve coin'e hiç dokunmuyordu — kullanıcı
+coin'i de istemedi, çünkü asıl itiraz `pour`daydı. Kol geri alınabilir: `dosya` üstüne yazma
+yolu duruyor ve **seri ivmesini de taşıyor**.
+
+**Dersi:** ölçüm kolları AYIRDI ama SEÇMEDİ. Dokuz sesin dokuzu bir pakette gelir; bir tanesi
+beğenilmezse paketin tamamı düşer. Kaynak kolu bu yüzden "en iyi ortalama" sorusu değil,
+"en kötü üyesi ne" sorusudur — bir sonraki asset turu bunu baştan sorabilir.
+
+**I2 (+1 yarım ses, tavan 5, pencere 1,2 sn) KODA GİRDİ.** Ölçülen gerekçe: bugünkü hâlde (I1)
+ardışık iki toplama arasındaki fark **0,00 dB**, mutlak tabanın (1,65) altında — kullanıcının
+istediği *"fazla topladığını sezgisel hissettir"* hiç doğmuyordu. I2'de adım farkı **2,82 dB**
+(tabanın 1,7 katı). I3 elendi: adımı daha büyük ama tavanda ilk↔tavan farkı 5,90 → **3,18 dB**'ye
+DÜŞÜYOR, çünkü kısmilerin 3/4'ü 12 kHz üstüne taşıyor — merdiven yükseldikçe DUYULAN azalıyor.
+
+**Kaynaktan bağımsız yazıldı:** sentezde frekans çarpanı (`perdele`), dosyada `playbackRate`.
+Sayaç motorda durur, arka uçta değil — basamak "hangi tampon" sorusunun cevabı değil, oyunun
+durumu. Aralık kelepçesine takılan çağrı seriyi **ne ilerletir ne kırar**: duyulmayan bir ses
+basamak yiyemez.
+
+**A3 (coin'de yığılmaya izin) = bugünkü hâl korunur.** `aralik` 0,06 bilerek gevşek; A1 (kelepçeyi
+dosyanın boyuna çıkarmak) seriyi seyrekleştirip I2'nin merdivenini görünmez yapardı. Ölçüldü:
+beş çakışmada sınırlayıcı sonrası tepe 0,196, **kırpılma yok**.
+
+**O4 (ortam yok) — ve O2 zaten ölçümde düşmüştü.** Dokuz CC0 pakette ortam/döngü adayı **0**.
+Kullanıcı O1 (sentez uğultu) ve O3'ü de reddetti: *"uğultu da hiç olmasın"*. Yani motorun
+döngü kabiliyeti bu turda AÇILMADI; 9/9 ses hâlâ tek atış.
+
+**O5 — YENİ KOL: arka plan müziği.** Kullanıcının kendi sözü: *"daha farklı bir tycoon oyun
+arka planı bulmayı dene"*. Kaynak **Abstraction / Tallbeard "Music Loop Bundle"** (CC0, 253
+parça, künyesi paketin kendi `song_browser`ında). Eleme künyeden yapıldı (`chiptune`/`spooky`
+elendi, `acoustic`/`jazz` kaldı, enerji 2-4, besteci puanı ≥ 4) → 24 aday; 23'ü indirilip
+oyunun kendi çözücüsünden geçirildi.
+
+**Ölçüt: TAVAN KAZANÇ** — dokuz olay sesini kendi baskın bandında +12 dB üstte tutan en yüksek
+müzik seviyesi (S17 §6b'nin kuralı). Kısıtlayan ses neredeyse hep `level` (bant 9) ya da `pour`
+(bant 10). **Ölçüm sezgiyi çürüttü:** kataloğun en "doğru" adayı — *Interior Birdecorator*,
+gerçek bir dekorasyon oyununun müziği, besteci puanı 5 — **sonuncu** çıktı (−36,1 dB, kalan RMS
+0,00200). Kazanan bir **lavta** parçası: *Troubadeck 04*, −18,0 dB, kalan RMS 0,01149 (dokuz
+sesin ortalama RMS'inin %59'u). **Parça seçimi kullanıcıda; karar paketi dinlenebilir.**
+
+**Kapsam sınırı yazılı:** `2024-q4` paketi indirilmedi → profili tutan 2 aday ölçülmedi. Ve
+**temiz CC0 Türkçe/Anadolu tınısı bulunamadı** (saz/bağlama/ud aramaları abonelikli kütüphanelere
+ya lisansı belirsiz kullanıcı yüklemelerine çıkıyor) — bu, ince belli bardağı ve damacana rafını
+kendimiz çizdiren gerekçenin (D-099) **sesteki karşılığı**.
+
+**"Müzik" anahtarı hâlâ bağlı değil** ve bilerek: bağlanacağı şey seçilen parçadır. Çalışmayan
+anahtar bırakmak seçenek değil — parça seçilince bağlanır.
+
+**BEKÇİ:** `tests/seri-ivmesi-s9.test.ts` (24 denetim) · `tools/mutasyon-seri-s9.mjs`
+**16/16 kırmızı**. Kaçan mutasyon yine zayıf yeri gösterdi (D-085): M16 (taslak kendi perdeleme
+kopyasını geri alıyor) ilk turda KAÇTI, çünkü denetim `import`un ADINA bakıyordu, KULLANIMINA
+değil — S23'ün `toMatch(/FloorPatch/)` kusurunun aynısı. Denetim çağrının kendisine bağlandı.
+
+**TEK KAYNAK:** `YARIM_SES` ve `perdele` artık `audioSynth.ts`te; `ses-metrik.ts` ve
+`ses-taslak.ts` oradan alıyor. Panoda DUYULAN basamak ile oyunda ÇALAN basamak ayrışamaz.
+
+**Final:** tsc temiz · vitest 1126 ✓ · duman 42/42 ✓ · `economy.config.ts` 0 satır. Ölçüm
+çıktıları yeniden alındı: `olcum-ses-ayirt.txt` BİREBİR aynı, `olcum-ses-s17.txt`in tek farkı
+düzeltilen kapsam satırı (model paketi `food-kit` ses paketi sayılıyordu — 706 `.ogg` değişmedi).

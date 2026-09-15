@@ -36,13 +36,27 @@ const ile = (y: Partial<SesKesit>): SesKesit => ({ ...TABAN, ...y });
 
 /** Sahte arka uç: neyin çalınmaya ÇALIŞILDIĞINI kaydeder. Saat elle ilerletilir. */
 function sahteArkaUc(opts: { dosyaVar?: boolean } = {}) {
-  const kayit = { dosyalar: [] as string[], sentezler: [] as SesId[], kilitAcildi: 0 };
+  const kayit = {
+    dosyalar: [] as string[],
+    sentezler: [] as SesId[],
+    /** Her çalmanın seri basamağı (yarım ses) — D-122 · I2'nin bekçisi bunu okur. */
+    basamaklar: [] as number[],
+    kilitAcildi: 0,
+  };
   let t = 0;
   const arkaUc: SesArkaUc = {
     simdi: () => t,
     kilidiAc: () => { kayit.kilitAcildi += 1; },
-    dosyaCal: (yol) => { if (!opts.dosyaVar) return false; kayit.dosyalar.push(yol); return true; },
-    sentezCal: (id) => { kayit.sentezler.push(id); },
+    dosyaCal: (yol, _gain, yarimSes) => {
+      if (!opts.dosyaVar) return false;
+      kayit.dosyalar.push(yol);
+      kayit.basamaklar.push(yarimSes);
+      return true;
+    },
+    sentezCal: (id, _katmanlar, yarimSes) => {
+      kayit.sentezler.push(id);
+      kayit.basamaklar.push(yarimSes);
+    },
   };
   return { arkaUc, kayit, ilerlet: (sn: number) => { t += sn; } };
 }

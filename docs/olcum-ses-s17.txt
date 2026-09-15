@@ -5,6 +5,7 @@ ANALITIK ARAC · deterministik · adaylar Chromium decodeAudioData ile cozuldu (
 
 §1 ENVANTER — indirilen CC0 paketler (kenney.nl, hepsi CC0, tek sanatci = S-C)
 paket sayisi          : 9 — casino-audio · digital-audio · impact-sounds · interface-sounds · music-jingles · rpg-audio · sci-fi-sounds · ui-audio · voiceover-pack
+  (ses DISI paket, sayilmadi: food-kit)
 toplam .ogg           : 706
 toplam boyut          : 14.28 MB
 AKAN SIVI adayi       : 0 — YOK

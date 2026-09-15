@@ -5,7 +5,7 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-16 — **S9 SES: ölçüm tam, karar paketi yayında** · Faz S 23/24 · 98/108)
+## ŞU AN (2026-09-16 — **S9 SES: D-122 uygulandı, açık kalan tek şey PARÇA** · Faz S 23/24 · 98/108)
 
 ```
 SORU            : D-106 kaynağı Kenney'e bağladı ama KAPSAMINI söylemedi. Hangi olay dosyadan
@@ -13,36 +13,37 @@ SORU            : D-106 kaynağı Kenney'e bağladı ama KAPSAMINI söylemedi. H
 ÖLÇÜLECEK KOLLAR: K1…K5 bölüşüm · I1/I2/I3 basamak · O1/O2/O3/O4 ortam · A1/A2/A3 kelepçe
 SAYILAR         : docs/ses-raporu-s17.md §Bulgular (15 satır) · ham: docs/olcum-ses-s17.txt +
                   docs/olcum-ses-karma.txt (ikisi de TAM koşu damgalı)
-KARAR           : ⏳ BEKLİYOR — karar paketi kullanıcıda, kod YAZILMADI
-UYGULAMA        : (karar sonrası) — önerilen K2 + I2 + A3 + O1
-BEKÇİ           : (karar sonrası)
+KARAR           : D-122 — K1 (sentez kalır) + I2 + A3 + O4 · yeni kol O5 (arka plan müziği)
+UYGULAMA        : I2 koda girdi — audio.ts `seri` alanı · audioSynth.ts `perdele`/`YARIM_SES` ·
+                  audioWeb.ts basamak başına tampon; O5 için 23 aday ölçüldü, PARÇA SEÇİMİ AÇIK
+BEKÇİ           : tests/seri-ivmesi-s9.test.ts — 24 denetim, 16 MUTASYON kırmızı, kaçan 0
+FINAL           : vitest 1126 ✓ · duman 42/42 ✓ · tsc temiz · denge dosyasına dokunulmadı
 ```
 
-**Bu turda yapılan: eksik kolun sayısı üretildi.** S17 iki UÇ hâli ölçmüştü (dokuzu sentez /
-dokuzu dosya); **karma** katalog sayısızdı — dosya↔sentez çapraz mesafeleri matriste yoktu.
-Sayısı olmayan kol karar paketine girmez (D-084), o yüzden `tools/olcum-ses-karma.ts` yazıldı.
-Seçim mantığı `tools/ses-secim.ts`'e çıkarıldı (üçüncü kopya doğmasın) ve çıktı **birebir aynı**
-kaldı — refactor'ün kanıtı bu.
+**Turun kalıcı üç dersi:**
+1. **Ölçüm kolları AYIRDI ama SEÇMEDİ — ve seçen şey tek bir sesin kulakta düşmesi oldu.**
+   Beş bölüşümün beşinde de karışan çift **0/36**; kimlik bu kararı seçemiyordu. Tablo K2'yi
+   öneriyordu (6,41 → **10,97 dB**). Kullanıcı reddetti: *"ocaktan çay alma kötü"*. Dokuz sesin
+   dokuzu bir pakette gelir; **bir tanesi beğenilmezse paketin tamamı düşer**. Yani kaynak
+   sorusu "en iyi ortalama" değil, **"en kötü üyesi ne"**ydi — tablo bunu hiç göstermiyordu.
+2. **Kataloğun en dar yeri kullanıcının işaret ettiği ses DEĞİLDİ.** En zayıf çift
+   `quest`↔`level` = **4,06 dB** ve K1/K3/K4'te aynı kalıyor. Şikâyet coin'deydi; kazanç
+   ilerleme ailesindeydi. İkisi hiç kesişmedi.
+3. **Ölçüm müzikte de sezgiyi çürüttü.** Kataloğun en "doğru" adayı — gerçek bir dekorasyon
+   oyununun müziği — **sonuncu** çıktı (−36,1 dB kısılmak zorunda). Kazanan adı hiçbir şey vaat
+   etmeyen bir **lavta** parçası (−18,0 dB). Bir asset'in KONUSU, o asset'in ölçüsü değil.
 
-**Turun iki bulgusu, ikisi de turun kendi varsayımını çürüttü:**
-1. **Kimlik bu kararı SEÇMİYOR.** Beş bölüşümün beşinde de karışan çift **0/36**; çapraz en
-   yakın **8,10 dB** = tabanın 4,9 katı. Eleme aracı boşa çıktı — seçen şey okunabilirlik payı,
-   APK bedeli, süre kelepçesi ve **kulak**.
-2. **Kataloğun en dar yeri coin DEĞİL.** En zayıf çift `quest`↔`level` = **4,06 dB** ve
-   K1/K3/K4'te **aynı kalıyor**. Yalnız coin'i dosyaya çevirmek (kullanıcının harfi şikâyeti)
-   o dar yere hiç dokunmuyor: ort. en-yakın 6,41 → 6,87. Kazanç **ilerleme ailesinde**
-   (K5 10,10 · K2 **10,97 dB**).
-
-**Karar paketi DUYULABİLİR** (`feedback_show_dont_ask` — ses metinle sorulmaz):
-dokuz olayın sentez/dosya hâli, beş bölüşümün katalogları, üç ivme kolu, ortam yatağı ve
-kelepçe kolları çalınıyor. Panonun sayıları da elle yazılmadı, ölçümden türetildi
-(`tools/ses-karar-paketi.ts`).
+**Ayrıca:** `perdele` ve `YARIM_SES` `audioSynth.ts`e çıkarıldı; `ses-metrik` ve `ses-taslak`
+oradan alıyor — panoda DUYULAN basamak ile oyunda ÇALAN basamak artık ayrışamaz.
 
 ## SIRADAKİ TAM ADIM
 
-**S9 kol seçimi** — kullanıcı karar paketinden kombinasyonu seçer (örn. `K2 + I2 + A3 + O1`),
-karar `decisions.md`'ye **D-122** olarak yazılır, yalnız o kol koda girer + bekçi + mutasyon +
-final tam koşu → commit #2. Faz E 4/5 → 5/5, Faz S 23/24 → 24/24.
+**O5 — arka plan müziği PARÇA SEÇİMİ.** 8 aday karar panosunda dikişinden dinlenebiliyor;
+kullanıcı adı söyleyince: parça künyesiyle `public/assets/README.md` manifestine girer,
+**"Müzik" anahtarı ona bağlanır** (bugün hâlâ hiçbir şeye bağlı değil) ve motora ilk **döngü**
+kabiliyeti gelir. Ölçümün önerisi *Troubadeck 04* (−18,0 dB), en dengelisi
+*Sketchbook 2024-01-24_02* (dikiş sıçraması 0,0077 · baş/son farkı +0,2 dB).
+Bununla Faz E 4/5 → 5/5 ve Faz S 23/24 → 24/24 kapanır.
 
 **Sonra:** **Faz H** (oynanış düzeltmeleri — G-01…G-07; E1 yürünebilir mutfak orada).
 

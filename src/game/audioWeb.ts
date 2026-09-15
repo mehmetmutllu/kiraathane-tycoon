@@ -14,12 +14,17 @@
  * diye işaretler ve BİR DAHA denemez — yoksa her para toplamada başarısız bir ağ isteği çıkardı.
  */
 import type { SesArkaUc, SesId } from './audio';
-import { ORNEKLEME, seslendir, type Katman } from './audioSynth';
+import { ORNEKLEME, perdele, seslendir, type Katman } from './audioSynth';
 
 /** Yüklenmiş dosya tamponları. `null` = denendi ve YOK (bir daha denenmez). */
 const dosyaTamponlari = new Map<string, AudioBuffer | null>();
-/** Sentezlenmiş tamponlar — ses başına BİR KEZ üretilir, sonra hep aynısı çalınır. */
-const sentezTamponlari = new Map<SesId, AudioBuffer>();
+/**
+ * Sentezlenmiş tamponlar. Anahtar `id:yarimSes` — seri ivmesinin (D-122 · I2) her basamağı
+ * AYRI bir tampondur, çünkü perdeleme örnek düzeyinde yapılır (frekans çarpanı), çalma hızıyla
+ * değil: `playbackRate` kullanılsaydı perdeyle birlikte SÜRE de kısalır ve merdiven tırmandıkça
+ * madenî tık giderek "cık"a dönerdi. Basamak sayısı küçük (tavan 5 → en çok 6 tampon/ses).
+ */
+const sentezTamponlari = new Map<string, AudioBuffer>();
 
 export function webSesArkaUcu(): SesArkaUc {
   let ctx: AudioContext | null = null;
@@ -34,9 +39,10 @@ export function webSesArkaUcu(): SesArkaUc {
   };
 
   /** Tamponu çal. Kazanç katmanlarda zaten var, burada 1'de bırakılır. */
-  const calTampon = (c: AudioContext, tampon: AudioBuffer): void => {
+  const calTampon = (c: AudioContext, tampon: AudioBuffer, hiz = 1): void => {
     const src = c.createBufferSource();
     src.buffer = tampon;
+    if (hiz !== 1) src.playbackRate.value = hiz;
     src.connect(c.destination);
     src.start();
   };
@@ -62,7 +68,7 @@ export function webSesArkaUcu(): SesArkaUc {
       if (c && c.state === 'suspended') void c.resume();
     },
 
-    dosyaCal(yol) {
+    dosyaCal(yol, _gain, yarimSes) {
       const c = baglam();
       if (!c) return false;
       const buf = dosyaTamponlari.get(yol);
@@ -70,22 +76,25 @@ export function webSesArkaUcu(): SesArkaUc {
         yukle(yol);
         return false; // bu sefer sentez çalacak
       }
-      calTampon(c, buf);
+      // Dosyada perdeleme ancak çalma hızıyla yapılabilir (örnekler hazır, katman yok).
+      // Sentezdeki `perdele` ile AYNI oranı uygular — S17 §5: basamak kaynaktan bağımsızdır.
+      calTampon(c, buf, Math.pow(2, yarimSes / 12));
       return true;
     },
 
-    sentezCal(id: SesId, katmanlar: readonly Katman[]) {
+    sentezCal(id: SesId, katmanlar: readonly Katman[], yarimSes: number) {
       const c = baglam();
       if (!c) return;
-      let tampon = sentezTamponlari.get(id);
+      const anahtar = `${id}:${yarimSes}`;
+      let tampon = sentezTamponlari.get(anahtar);
       if (!tampon) {
-        const ornekler = seslendir(katmanlar);
+        const ornekler = seslendir(perdele(katmanlar, yarimSes));
         // Bağlamın örnekleme hızı cihazdan cihaza değişir (44100/48000). Tampon KENDİ hızıyla
         // yaratılır; WebAudio çalarken yeniden örnekler. Sesin perdesi böylece cihaza göre
         // kaymaz — sabit hız yazılsaydı 48 kHz'lik bir cihazda her ses tizleşirdi.
         tampon = c.createBuffer(1, ornekler.length, ORNEKLEME);
         tampon.getChannelData(0).set(ornekler);
-        sentezTamponlari.set(id, tampon);
+        sentezTamponlari.set(anahtar, tampon);
       }
       calTampon(c, tampon);
     },

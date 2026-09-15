@@ -53,3 +53,7 @@ indirilen/
 # yorum sayar, sonrasında yazılan her şey kalıbın parçası olur.
 # S24'te bu dosya kökte belirdi ve Vite'ın dosya izleyicisi ona EBUSY ile takılıp çöktü.
 *.stackdump
+
+# S9 ses turunda indirilen MUZIK adaylari (repoya girmez; secilen parca kunyesiyle
+# public/assets/audio/ altina girer)
+indirilen-muzik/

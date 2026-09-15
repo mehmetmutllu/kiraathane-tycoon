@@ -124,7 +124,15 @@ const tara = (d: string): void => {
   }
 };
 for (const p of paketler) tara(path.join(KOK, p));
-console.log('paket sayisi          : ' + paketler.length + ' — ' + paketler.map((p) => p.replace('kenney_', '')).join(' · '));
+// SES paketi = icinde en az bir .ogg olan paket. `indirilen/` altinda MODEL paketleri de var
+// (S19a'da inen `kenney_food-kit`) ve ad kalibi onlari da yakaliyordu: "paket sayisi" 10 diyordu
+// ama .ogg sayisi degismiyordu. Bir sayinin neyi KAPSAMADIGI degeri kadar onemli (S24'un dersi).
+const sesPaketleri = paketler.filter((p) => oggListesi.some((f) => f.startsWith(path.join(KOK, p) + path.sep)));
+const modelPaketleri = paketler.filter((p) => !sesPaketleri.includes(p));
+console.log('paket sayisi          : ' + sesPaketleri.length + ' — ' + sesPaketleri.map((p) => p.replace('kenney_', '')).join(' · '));
+if (modelPaketleri.length) {
+  console.log('  (ses DISI paket, sayilmadi: ' + modelPaketleri.map((p) => p.replace('kenney_', '')).join(' · ') + ')');
+}
 console.log('toplam .ogg           : ' + oggListesi.length);
 const toplamBayt = oggListesi.reduce((a, f) => a + statSync(f).size, 0);
 console.log('toplam boyut          : ' + (toplamBayt / 1024 / 1024).toFixed(2) + ' MB');

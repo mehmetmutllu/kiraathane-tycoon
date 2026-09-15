@@ -1,0 +1,127 @@
+============================================================================================
+S9 — ARKA PLAN MUZIGI: hangi parca dokuz sesi ORTMEDEN duyulur kalir?
+ANALITIK ARAC · deterministik · adaylar oyunun kendi cozucusunden (Chromium)
+============================================================================================
+
+§1 OLAY SESLERININ BASKIN BANDI — yatak/muzik bu bantlarda yarisir
+ses         baskin bant  o banttaki guc
+coin                 15        6.146e-4
+pour                 10        5.336e-4
+serve                 4        7.968e-2
+purchase              8        7.053e-2
+padFill               8        1.640e-2
+quest                 9        6.326e-3
+level                 9        4.565e-3
+master               11        1.330e-1
+reward               10        7.769e-3
+
+§2 ADAYLAR — sure · boyut · RMS · tepe · dinamik yayilim
+aday                              paket        sure(sn)  KB    RMS     tepe   dinamik(dB)
+Interior_Birdecorator_Decorate    2024-q3         87.3  3285  0.1269  0.889         7.4
+Sketchbook_2024-07-03             2024-q3         60.9  2230  0.1466  0.877        11.9
+Sketchbook_2024-01-24_02          2024-q1         56.0  1740  0.1138  0.532         5.5
+Troubadeck_12_Good_King           troubadeck      40.4  3424  0.0795  0.680        16.2
+Week_21_-_Freefall                2026-q2         30.0  2980  0.1665  0.892         3.6
+Week_15_-_Sunburn                 2026-q2         21.8  2719  0.1482  0.823         4.2
+Week_17_-_Alley_Cat               2026-q2         17.0  2408  0.1555  0.897         9.1
+Sketchbook_2024-04-10             2024-q2        101.7  3189  0.1475  0.845        12.7
+Patreon_Challenge_07              pre2023         76.8  2104  0.0789  0.535        17.8
+Sketchbook_2024-06-19             2024-q2         61.5  1930  0.1407  0.872         9.4
+Sketchbook_2024-05-15             2024-q2         56.5  1927  0.1268  0.901         8.0
+Sketchbook_2024-09-18             2024-q3         54.9  1807  0.1013  0.737        12.6
+Troubadeck_04_Guinea_Pig_Jig      troubadeck      40.4  3422  0.0909  0.677        16.4
+Troubadeck_08_The_Fanciest_Mud    troubadeck      40.4  3424  0.0779  0.660        13.4
+Troubadeck_25_Deep_Dark_Sea       troubadeck      40.4  3420  0.0884  0.698        14.9
+Troubadeck_30_Bandit_s_Ballad     troubadeck      40.4  3415  0.0864  0.667        19.0
+Troubadeck_36_End_of_the_Rainbow  troubadeck      40.4  3413  0.0931  0.656        15.6
+Troubadeck_39_Flightless_Dragon   troubadeck      40.4  3419  0.0807  0.671        10.8
+Troubadeck_42_Round_and_Round     troubadeck      40.4  3430  0.0656  0.561        17.7
+Interior_Birdecorator_Menu        2024-q3         32.7  1578  0.0998  0.718         6.2
+Week_18_-_Distant_Skyline         2026-q2         24.3  2629  0.1640  0.879         2.8
+VGMA_Challenge_25                 pre2023         24.0   754  0.1714  0.900         4.7
+Week_16_-_Vacation_Day            2026-q2         12.8  2087  0.1745  0.873         5.1
+
+§3 TAVAN KAZANC — dokuz sesin HEPSINI kendi bandinda +12 dB ustte tutan en yuksek muzik seviyesi
+(S17 §6b ile ayni 12 dB payi: kisa bir gecis sesinin surekli bir katmanin ustunde kalmasi icin gereken kaba pay.)
+aday                              tavan kazanc(dB)  o kazancta RMS  kisitlayan ses  kisitlayan bant
+Troubadeck_04_Guinea_Pig_Jig                 -18.0         0.01149  level                        9
+VGMA_Challenge_25                            -24.5         0.01017  pour                        10
+Week_17_-_Alley_Cat                          -24.5         0.00924  coin                        15
+Troubadeck_30_Bandit_s_Ballad                -19.8         0.00888  level                        9
+Sketchbook_2024-01-24_02                     -22.4         0.00865  level                        9
+Week_15_-_Sunburn                            -25.5         0.00789  pour                        10
+Interior_Birdecorator_Menu                   -22.1         0.00786  pour                        10
+Troubadeck_39_Flightless_Dragon              -20.8         0.00737  level                        9
+Sketchbook_2024-09-18                        -23.1         0.00706  level                        9
+Troubadeck_12_Good_King                      -21.0         0.00706  level                        9
+Sketchbook_2024-04-10                        -27.3         0.00634  level                        9
+Troubadeck_36_End_of_the_Rainbow             -23.7         0.00605  level                        9
+Week_16_-_Vacation_Day                       -29.4         0.00588  pour                        10
+Sketchbook_2024-06-19                        -28.0         0.00562  pour                        10
+Troubadeck_42_Round_and_Round                -21.9         0.00529  level                        9
+Week_18_-_Distant_Skyline                    -30.9         0.00470  level                        9
+Sketchbook_2024-07-03                        -30.4         0.00443  pour                        10
+Troubadeck_08_The_Fanciest_Mud               -25.1         0.00431  level                        9
+Troubadeck_25_Deep_Dark_Sea                  -26.3         0.00428  level                        9
+Week_21_-_Freefall                           -32.2         0.00408  pour                        10
+Patreon_Challenge_07                         -26.5         0.00373  level                        9
+Sketchbook_2024-05-15                        -32.1         0.00316  pour                        10
+Interior_Birdecorator_Decorate               -36.1         0.00200  pour                        10
+
+-> "o kazancta RMS" BUYUK olan, kisilmaya en dayanikli parcadir: dokuz sesi ortmeden
+   kendisi en cok duyulur kalan. Kucuk olan, sigmak icin neredeyse yok olmak zorunda.
+KIYAS: dokuz olay sesinin ortalama RMS'i 0.0194  (muzik bunun ~%59'i kadar kalabiliyor, en iyi adayda)
+
+§4 DIKIS — parca basa sardiginda tik/kopma duyulur mu?
+aday                              ornek sicramasi  bas/son RMS orani(dB)  spektral fark
+Interior_Birdecorator_Decorate             0.1053                   0.2            4.1 dB
+Sketchbook_2024-07-03                      0.0002                  -1.4            4.8 dB
+Sketchbook_2024-01-24_02                   0.0077                   0.2            3.7 dB
+Troubadeck_12_Good_King                    0.0058                 -14.5            8.1 dB
+Week_21_-_Freefall                         0.0415                  -0.5            5.0 dB
+Week_15_-_Sunburn                          0.0197                  -3.5            3.9 dB
+Week_17_-_Alley_Cat                        0.2907                  -0.5            3.1 dB
+Sketchbook_2024-04-10                      0.1351                  -1.3            4.5 dB
+Patreon_Challenge_07                       0.0311                  -6.5           11.3 dB
+Sketchbook_2024-06-19                      0.1601                   1.6            5.0 dB
+Sketchbook_2024-05-15                      0.0117                  -6.6            7.2 dB
+Sketchbook_2024-09-18                      0.0545                  -7.8            8.3 dB
+Troubadeck_04_Guinea_Pig_Jig               0.0041                  -7.4            4.6 dB
+Troubadeck_08_The_Fanciest_Mud             0.0083                  -5.9            4.1 dB
+Troubadeck_25_Deep_Dark_Sea                0.0041                  -9.6            4.9 dB
+Troubadeck_30_Bandit_s_Ballad              0.0225                 -13.5            7.6 dB
+Troubadeck_36_End_of_the_Rainbow           0.0534                   0.2            4.0 dB
+Troubadeck_39_Flightless_Dragon            0.0144                  -7.5            5.1 dB
+Troubadeck_42_Round_and_Round              0.0245                 -10.5            6.8 dB
+Interior_Birdecorator_Menu                 0.0447                   2.6            5.6 dB
+Week_18_-_Distant_Skyline                  0.0456                   0.6            4.2 dB
+VGMA_Challenge_25                          0.1024                   2.2            2.7 dB
+Week_16_-_Vacation_Day                     0.0027                   0.9            3.8 dB
+-> ornek sicramasi < 0,05 ise tik duyulmaz · bas/son RMS orani |x| < 3 dB ise seviye tutuyor
+   · spektral fark kucukse parca ayni dokuyla basliyor ve bitiyor (dikis gizlenir).
+
+§5 APK PAYI
+  Troubadeck_04_Guinea_Pig_Jig       3422 KB  · Abstraction / Tallbeard — CC0 · acoustic · besteci puanı 4
+  VGMA_Challenge_25                   754 KB  · Abstraction / Tallbeard — CC0 · jazz · besteci puanı 4
+  Week_17_-_Alley_Cat                2408 KB  · Abstraction / Tallbeard — CC0 · jazz|silly · besteci puanı 5
+  Troubadeck_30_Bandit_s_Ballad      3415 KB  · Abstraction / Tallbeard — CC0 · acoustic · besteci puanı 4
+  Sketchbook_2024-01-24_02           1740 KB  · Abstraction / Tallbeard — CC0 · jazz · besteci puanı 5
+  Week_15_-_Sunburn                  2719 KB  · Abstraction / Tallbeard — CC0 · jazz · besteci puanı 5
+  Interior_Birdecorator_Menu         1578 KB  · Abstraction / Tallbeard — CC0 · jazz · besteci puanı 4
+  Troubadeck_39_Flightless_Dragon    3419 KB  · Abstraction / Tallbeard — CC0 · acoustic · besteci puanı 4
+  Sketchbook_2024-09-18              1807 KB  · Abstraction / Tallbeard — CC0 · jazz · besteci puanı 4
+  Troubadeck_12_Good_King            3424 KB  · Abstraction / Tallbeard — CC0 · acoustic · besteci puanı 5
+  Sketchbook_2024-04-10              3189 KB  · Abstraction / Tallbeard — CC0 · jazz · besteci puanı 4
+  Troubadeck_36_End_of_the_Rainbow   3413 KB  · Abstraction / Tallbeard — CC0 · acoustic · besteci puanı 4
+  Week_16_-_Vacation_Day             2087 KB  · Abstraction / Tallbeard — CC0 · jazz · besteci puanı 4
+  Sketchbook_2024-06-19              1930 KB  · Abstraction / Tallbeard — CC0 · desert · besteci puanı 4
+  Troubadeck_42_Round_and_Round      3430 KB  · Abstraction / Tallbeard — CC0 · acoustic · besteci puanı 4
+  Week_18_-_Distant_Skyline          2629 KB  · Abstraction / Tallbeard — CC0 · jazz · besteci puanı 4
+  Sketchbook_2024-07-03              2230 KB  · Abstraction / Tallbeard — CC0 · jazz · besteci puanı 5
+  Troubadeck_08_The_Fanciest_Mud     3424 KB  · Abstraction / Tallbeard — CC0 · acoustic · besteci puanı 4
+  Troubadeck_25_Deep_Dark_Sea        3420 KB  · Abstraction / Tallbeard — CC0 · acoustic · besteci puanı 4
+  Week_21_-_Freefall                 2980 KB  · Abstraction / Tallbeard — CC0 · jazz|electronic · besteci puanı 5
+  Patreon_Challenge_07               2104 KB  · Abstraction / Tallbeard — CC0 · jazz · besteci puanı 4
+  Sketchbook_2024-05-15              1927 KB  · Abstraction / Tallbeard — CC0 · silly|jazz · besteci puanı 4
+  Interior_Birdecorator_Decorate     3285 KB  · Abstraction / Tallbeard — CC0 · jazz|dynamic · besteci puanı 5
+KIYAS: dokuz olay sesinin sentezi 0 KB (kod) · secilen dosyali dokuzlu olsaydi 116,7 KB

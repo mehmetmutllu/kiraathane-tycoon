@@ -44,6 +44,27 @@ export type SesId =
   | 'master'    // 💎 ile Usta alındı
   | 'reward';   // hedef ya da günlük görev ödülü toplandı
 
+/**
+ * SERİ İVMESİ (S9 · D-122 kol I2) — art arda gelen aynı olayda perde basamak basamak yükselir.
+ *
+ * NEDEN: kullanıcının cümlesi *"fazla para topladıkça ses de ivme almalı, fazla topladığını
+ * sezgisel olarak hissettirmek için"*. Ölçüm bunun bugün HİÇ olmadığını sayıyla gösterdi
+ * (`docs/ses-raporu-s17.md` B6): basamaksız hâlde ardışık iki toplama arasındaki spektral fark
+ * **0,00 dB**, mutlak tabanın (1,65 dB) altında — yani iki ses kulakta AYNI perdede.
+ *
+ * KAYNAKTAN BAĞIMSIZ: sentezde frekans çarpanı (`perdele`), dosyada `playbackRate`. Bu yüzden
+ * kaynak kolu (K) ne seçilirse seçilsin basamak aynı kalır; D-122'de K1 (sentez) seçildi ama
+ * `dosya` üstüne yazma yolu da basamağı taşıyor, yani karar geri alınabilir kalıyor.
+ */
+export interface SeriTanim {
+  /** İki çalma arasında bu süreden (sn) uzun boşluk olursa seri KESİLİR ve perde tabana döner. */
+  pencere: number;
+  /** Her adımda kaç yarım ses yükselir. */
+  basamak: number;
+  /** Kaçıncı adımda durur (tavan dahil). */
+  tavan: number;
+}
+
 /** Bir sesin tanımı: sentez katmanları + (varsa) üstüne yazan dosya. */
 export interface SesTanim {
   /** `public/` altındaki yol. Dosya VARSA sentezin yerine o çalar (opsiyonel üstüne yazma). */
@@ -52,6 +73,8 @@ export interface SesTanim {
   katmanlar: Katman[];
   /** Aynı sesin iki çalınışı arasındaki EN AZ süre (sn) — yığılmayı keser. */
   aralik: number;
+  /** Varsa bu ses SERİ ivmesi taşır. Yoksa her çalınışı aynı perdededir. */
+  seri?: SeriTanim;
 }
 
 /**
@@ -84,6 +107,13 @@ export const SES_KATALOG: Record<SesId, SesTanim> = {
       { kaynak: 'gurultu', hz: [7000], q: 3, atak: 0.0005, sonme: 0.025, gain: 0.06 },
     ],
     aralik: 0.06,
+    // D-122 · I2: +1 yarım ses, tavan 5, pencere 1,2 sn. Ölçülen adım farkı 2,82 dB = mutlak
+    // tabanın 1,7 katı, yani basamak GERÇEKTEN duyuluyor. I3 (+2, tavan 8) elendi: adımı daha
+    // büyük ama tavanda kısmilerinin 3/4'ü 12 kHz üstüne taşıyor ve ilk↔tavan farkı 5,90 → 3,18
+    // dB'ye DÜŞÜYOR — merdiven yükseldikçe duyulan azalıyor, madenî tını tepede kayboluyor.
+    // Kelepçe (0,06) bilerek gevşek bırakıldı (kol A3): seri üst üste binebilsin, yığılma
+    // "ivme"nin taşıyıcısı olsun. Ölçüldü: beş çakışmada tepe 0,196, kırpılma YOK.
+    seri: { pencere: 1.2, basamak: 1, tavan: 5 },
   },
   // FİZİKSEL — çay dökme: bant merkezi YÜKSELEN süzülmüş gürültü (bardak doldukça tizleşen akış)
   // + altta yavaş bir fokurdama. Bu ses tam olarak "merkez frekansın yükselmesi"dir; sabit
@@ -224,10 +254,16 @@ export function sesOlaylari(onceki: SesKesit | null, simdiki: SesKesit): SesId[]
  * olsaydı bile "duyuldu mu" doğrulanamazdı; doğrulanan şey motorun ne ÇALMAYA ÇALIŞTIĞI.
  */
 export interface SesArkaUc {
-  /** Dosyayı çal. Dosya yoksa/çalamazsa `false` döner → motor sentezi çalar. */
-  dosyaCal(yol: string, gain: number): boolean;
-  /** Sentezi çal. Arka uç katmanları bir kez tampona çevirip önbellekler (`id` önbellek anahtarı). */
-  sentezCal(id: SesId, katmanlar: readonly Katman[]): void;
+  /**
+   * Dosyayı çal. Dosya yoksa/çalamazsa `false` döner → motor sentezi çalar.
+   * `yarimSes` seri ivmesinin basamağıdır; dosya tarafında `playbackRate` ile uygulanır.
+   */
+  dosyaCal(yol: string, gain: number, yarimSes: number): boolean;
+  /**
+   * Sentezi çal. Arka uç katmanları bir kez tampona çevirip önbellekler.
+   * Önbellek anahtarı `id` DEĞİL `id + yarimSes`: aynı sesin her basamağı ayrı tampondur.
+   */
+  sentezCal(id: SesId, katmanlar: readonly Katman[], yarimSes: number): void;
   /** Tarayıcı ses kilidini açar (mobilde ilk dokunuşta). */
   kilidiAc(): void;
   /** Şu anki zaman (sn) — aralık kelepçesi bunu kullanır (testte sahte saat). */
@@ -251,11 +287,18 @@ export interface SesMotoru {
  *     yapılan çağrılar SESSİZCE düşer (kuyruğa alınmaz: birikip sonra hep birden patlamasın).
  *  3. ARALIK — aynı ses `aralik` saniyesinden sık çalınmaz. Para toplama bir karede birden çok
  *     kez olabiliyor; kelepçe olmasa tek bir mıknatıs turunda onlarca ses üst üste binerdi.
+ *
+ * DÖRDÜNCÜSÜ KELEPÇE DEĞİL, SAYAÇ: seri ivmesi (D-122 · I2). `seri` tanımı olan ses art arda
+ * çalınırken perdesi basamak basamak yükselir; ara `pencere`den uzun olursa tabana döner.
+ * Sayaç motorda durur, arka uçta değil — basamak "hangi tampon" sorusunun cevabı değil,
+ * OYUNUN durumu: aynı hesap dosya yoluna da sentez yoluna da aynı sayıyı veriyor.
  */
 export function sesMotoruKur(arkaUc: SesArkaUc, acik: boolean): SesMotoru {
   let aktif = acik;
   let kilitli = true;
   const sonCalma = new Map<SesId, number>();
+  /** Sesin o anki seri adımı (kaç basamak yukarıda). Seri kesilince 0'a döner. */
+  const seriAdim = new Map<SesId, number>();
 
   return {
     get acik() { return aktif; },
@@ -271,9 +314,23 @@ export function sesMotoruKur(arkaUc: SesArkaUc, acik: boolean): SesMotoru {
       const t = arkaUc.simdi();
       const son = sonCalma.get(id);
       if (son != null && t - son < tanim.aralik) return false;
+
+      // SERİ: aralık kelepçesini GEÇEN çalmalar sayılır. Kelepçeye takılan çalma yukarıda
+      // döndüğü için seriyi ne ilerletir ne kırar — duyulmayan bir ses basamak yiyemez.
+      let yarimSes = 0;
+      if (tanim.seri) {
+        const surdu = son != null && t - son <= tanim.seri.pencere;
+        const adim = surdu ? Math.min((seriAdim.get(id) ?? 0) + 1, tanim.seri.tavan) : 0;
+        seriAdim.set(id, adim);
+        yarimSes = adim * tanim.seri.basamak;
+      }
+
       sonCalma.set(id, t);
       // Dosya bırakılmışsa o üstüne yazar; yoksa NİHAİ ses olan sentez çalar (E4 · karar 3).
-      if (!arkaUc.dosyaCal(tanim.dosya, 1)) arkaUc.sentezCal(id, tanim.katmanlar);
+      // D-122'de K1 seçildi (sentez kalır) ama dosya yolu basamağı taşımaya devam ediyor.
+      if (!arkaUc.dosyaCal(tanim.dosya, 1, yarimSes)) {
+        arkaUc.sentezCal(id, tanim.katmanlar, yarimSes);
+      }
       return true;
     },
   };

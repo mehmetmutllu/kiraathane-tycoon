@@ -165,12 +165,59 @@ kaydediliyor, okuyan yok — S10 · B9). Ortam kolu ne olursa olsun bu anahtar y
 
 ---
 
-## §Karar
+## §Karar — D-122
 
-*(BOŞ — kullanıcı seçecek. D-084 adım 3: tek karar paketi.)*
+**K1 + I2 + A3 + O4**, artı yeni kol **O5** (arka plan müziği). Künye: `decisions.md` **D-122**.
+
+| Kol | Seçilen | Ölçümün önerisi | Fark neden |
+|---|---|---|---|
+| **K** | **K1** sentez kalır | K2 (dokuzu da dosya) | Kullanıcı `pour` dosyasını KULAKTA reddetti: *"ocaktan çay alma kötü"*. Tek sesin düşmesi bütün paketi düşürdü. |
+| **İ** | **I2** +1 yarım ses, tavan 5 | I2 | — |
+| **A** | **A3** yığılmaya izin | A3 | — |
+| **O** | **O4** ortam yok | O1 | *"uğultu da hiç olmasın"* |
+| **O5** | *(açık)* arka plan müziği | Troubadeck 04 | Parça seçimi kullanıcıda |
+
+**Kaynak kolunun dersi:** ölçüm kolları **ayırdı ama seçmedi**. Dokuz sesin dokuzu bir pakette
+gelir; bir tanesi beğenilmezse paketin tamamı düşer. Yani kaynak sorusu "en iyi ortalama" değil,
+**"en kötü üyesi ne"** sorusuydu — tablo bunu göstermiyordu. Bir sonraki asset turu kolu böyle
+kurmalı.
+
+**Ödenmeyen kazanç yazılı:** K1'de katalog 6,41 dB'lik okunabilirlikte kalıyor, en zayıf çift
+`quest`↔`level` = **4,06 dB**. K2 bunu 9,34'e taşıyordu. Bedel bilerek ödenmedi ve kol geri
+alınabilir: `dosya` üstüne yazma yolu duruyor, **seri ivmesini de taşıyor**.
+
+---
+
+## §Bulgular — O5 (arka plan müziği, `docs/olcum-muzik-s9.txt`)
+
+| # | Bulgu | Sayı |
+|---|---|---|
+| **B16** | **Künyeden eleme** — bundle kendi verisini taşıyor | **253 parça** · profil süzgecini geçen **24** · indirilip çözülen **23** |
+| **B17** | **Tavan kazanç dar** — müzik kısılmak zorunda | **−18,0 … −36,1 dB** · kısıtlayan ses hep `level` (bant 9) ya da `pour` (bant 10) |
+| **B18** | **En "doğru" aday ölçümde SONUNCU** | Interior Birdecorator (gerçek oyun müziği, puan 5) → **−36,1 dB**, kalan RMS **0,00200** |
+| **B19** | **Kazanan bir lavta parçası** | Troubadeck 04 → **−18,0 dB**, kalan RMS **0,01149** = dokuz sesin ort. RMS'inin **%59'u** |
+| **B20** | **Dikiş kalitesi paket içinde bile değişiyor** | sıçrama 0,0027 … **0,2907** · baş/son seviye farkı +2,6 … **−14,5 dB** |
+| **B21** | **Türkçe/Anadolu tınısı: temiz CC0 YOK** | saz/bağlama/ud → abonelikli kütüphane ya da lisansı belirsiz kullanıcı yüklemesi · en yakın komşu tek `desert` parçası |
+
+**Kapsam sınırı:** `2024-q4` paketi indirilmedi → profili tutan **2 aday ölçülmedi** (biri
+besteci puanı 5, 75,8 sn jazz).
 
 ---
 
 ## §Bekçi
 
-*(Karar sonrası doldurulur.)*
+`tests/seri-ivmesi-s9.test.ts` — **24 denetim**, sekiz blok: katalog · merdiven · kesilme ·
+kelepçe etkileşimi · kaynaktan bağımsızlık · perdelemenin gerçekten uygulanması · tek kaynak ·
+kol A3.
+
+`tools/mutasyon-seri-s9.mjs` — **16/16 kırmızı, kaçan 0**. Mutasyon listesi bilerek iki ayrı
+parçayı hedefliyor: sayacı (M1-M5, M12-M15) ve perdelemeyi (M6-M11). Biri doğru olup diğeri hiç
+çalışmayabilirdi — motor basamağı doğru sayıp `perdele` hiçbir şey yapmasa bütün çalmalar aynı
+perdeden çıkar ve "sayaç" testleri yine yeşil kalırdı.
+
+**Kaçan mutasyon zayıf yeri gösterdi (D-085):** M16 (taslak kendi perdeleme kopyasını geri
+alıyor) ilk turda KAÇTI — denetim `import`un **adına** bakıyordu, **kullanımına** değil. Bu,
+S23'ün `toMatch(/FloorPatch/)` kusurunun birebir aynısı: import satırı yerinde dururken çağrı
+satır içi bir kopyayla değiştirilebiliyordu. Denetim çağrının kendisine bağlandı.
+
+**Final:** tsc temiz · vitest **1126** ✓ · duman 42/42 ✓ · `economy.config.ts` 0 satır.

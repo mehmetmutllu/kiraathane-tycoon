@@ -446,7 +446,15 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   taban ×4,9), ② kataloğun en dar yeri **coin değil**: `quest`↔`level` 4,06 dB ve K1/K3/K4'te
   aynı kalıyor — kazanç ilerleme ailesinde (ort. en-yakın 6,41 → K5 10,10 → K2 **10,97 dB**).
   Karar paketi **dinlenebilir** (`feedback_show_dont_ask`): https://claude.ai/artifact/49KsxE368xVHWbw4wHdkSy
-  — kol seçimi kullanıcıda, **kod yazılmadı**.
+  **KARAR VERİLDİ (D-122): K1 + I2 + A3 + O4.** Kullanıcı K2'yi tek bir sesin kulakta düşmesiyle
+  reddetti (*"ocaktan çay alma kötü"*) — ölçülen okunabilirlik kazancı (6,41 → 10,97 dB) bilerek
+  ödenmedi, kaynak sentezde kaldı ve lisans yüzeyi yine sıfır. **I2 koda girdi** (bekçi
+  `tests/seri-ivmesi-s9.test.ts`, 24 denetim / **16 mutasyon, kaçan 0**); `perdele` + `YARIM_SES`
+  `audioSynth.ts`e çıkarıldı, ölçüm araçları oradan alıyor. Uğultu tümüyle kalktı.
+  **Yeni kol O5 — arka plan müziği:** Abstraction/Tallbeard bundle (CC0, 253 parça) künyesinden
+  elenip 23 aday ölçüldü; ölçüt **tavan kazanç** (dokuz sesi +12 dB üstte tutan en yüksek müzik
+  seviyesi). Sezgi yine çürüdü: gerçek bir dekorasyon oyununun müziği **sonuncu** (−36,1 dB),
+  kazanan bir **lavta** parçası (−18,0 dB). **Parça seçimi kullanıcıda** — kalem o seçimle kapanır.
 - ✅ **S10 — UI tasarım dili: ARAŞTIRMA + MAKET (D-106)** — kod yazılmadı (tanımı gereği). Ölçüm
   108 görsel karar · palet kütlesi R 0,91 · 13 öğe Arial · 45/184 metin AA altı; sekiz CC0 paket
   indirildi; beş maket. **Kararlar:** ekran K3 tam ekran · mağaza içi M2 (önizleme 74 → 230 px) ·

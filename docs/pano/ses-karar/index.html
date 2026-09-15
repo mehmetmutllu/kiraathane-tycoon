@@ -1,4 +1,4 @@
-<title>Hangi Ses Dosyadan Gelsin</title>
+<title>Kıraathanenin Sesi</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
@@ -164,6 +164,33 @@ table.matris td.kos{color:var(--ink-3);font-style:italic}
 
 .uyari{margin-top:16px;font-size:13px;color:var(--ink-2);background:var(--now-soft);border:1px solid var(--now);border-radius:10px;padding:11px 14px}
 
+/* ── verilen karar: sayfanın en üstünde, kapanmış kollar ── */
+.verildi{margin-top:24px;border:1px solid color-mix(in srgb, var(--done) 40%, transparent);background:var(--done-soft);border-radius:12px;padding:18px 20px}
+.verildi h2{font-size:18px;color:var(--done)}
+.verildi p{font-size:14px;color:var(--ink-2);margin-top:8px;max-width:68ch}
+.kollar{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.kollar b{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;background:var(--surface);border:1px solid color-mix(in srgb, var(--done) 40%, transparent);color:var(--done);padding:4px 10px;border-radius:100px}
+.kollar b.red{border-color:color-mix(in srgb, var(--stop) 40%, transparent);color:var(--stop);text-decoration:line-through}
+
+/* ── müzik adayları ── */
+.muzik{margin-top:18px;border:1px solid var(--line);border-radius:12px;background:var(--surface);box-shadow:var(--shadow);overflow:hidden}
+.mz{display:grid;grid-template-columns:1fr 210px 168px;align-items:center;gap:16px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.mz:last-child{border-bottom:none}
+.mz.iyi{background:var(--done-soft)}
+.mz-ad{font-size:14.5px;font-weight:600}
+.mz-alt{font-size:12.5px;color:var(--ink-2);margin-top:3px}
+.mz-tag{font-family:"IBM Plex Mono",monospace;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:100px;background:var(--surface-2);color:var(--ink-3);margin-left:7px}
+.mz-tag.desert{background:var(--now-soft);color:var(--now)}
+.mz-tag.oyun{background:var(--brand-soft);color:var(--brand-ink)}
+.mz-say{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-size:12px;color:var(--ink-2);text-align:right;line-height:1.5}
+.mz-say b{color:var(--ink)}
+.mz-say .kot{color:var(--stop)}
+.mz-cal{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+/* Dikiş göstergesi: klibin ortası döngü noktasıdır. */
+.dikis{position:relative;height:5px;border-radius:100px;background:var(--surface-3);margin-top:9px;overflow:hidden;max-width:330px}
+.dikis i{position:absolute;inset:0 auto 0 0;width:0;background:var(--sinyal)}
+.dikis u{position:absolute;top:-3px;bottom:-3px;left:50%;width:2px;background:var(--stop)}
+
 @media (max-width:760px){
   .satir{grid-template-columns:1fr auto;row-gap:8px}
   .satir .dalga-kutu{grid-column:1 / -1}
@@ -200,6 +227,27 @@ table.matris td.kos{color:var(--ink-3);font-style:italic}
     <div class="uyari" id="baslat-uyari">
       Ses için bir kez dokunman gerekiyor (tarayıcı kuralı). Herhangi bir <b>▶</b> düğmesi
       çalışmaya başlatır. Kulaklık öneririm: farkların bir kısmı 200 ms'lik kuyruklarda.
+    </div>
+
+    <div class="verildi">
+      <h2>Karar verildi — D-122</h2>
+      <p>
+        Kullanıcı <b>K1</b>'i seçti ve gerekçesini kol tablosunun dışından verdi:
+        <i>"ocaktan çay alma kötü"</i> — yani <code>pour</code> dosyası (<code>metalPot3</code>)
+        kulakta düştü ve tek bir sesin düşmesi bütün kaynağı geri çevirdi. Ölçümün
+        okunabilirlik kazancı (K2 ile 6,41 → 10,97 dB) <b>bilerek ödenmedi</b>.
+        Uğultu da tamamen kalktı; yerine <b>müzik</b> istendi.
+      </p>
+      <div class="kollar">
+        <b>K1 sentez kalır</b><b>I2 +1 yarım ses, tavan 5</b><b>A3 yığılmaya izin</b>
+        <b class="red">O1 uğultu</b><b class="red">O3 tek dosya</b>
+        <b>O5 arka plan müziği ↓</b>
+      </div>
+      <p style="margin-top:14px">
+        <b>I2 koda girdi</b> ve bekçisi yazıldı (<code>tests/seri-ivmesi-s9.test.ts</code>,
+        <b>16 mutasyon, kaçan 0</b>). Aşağıdaki <b>İ</b> bölümünde artık oyunun gerçek hâli
+        duyuluyor. Açık kalan tek soru en altta: <b>hangi parça</b>.
+      </p>
     </div>
   </header>
 
@@ -338,6 +386,65 @@ table.matris td.kos{color:var(--ink-3);font-style:italic}
     </p>
   </section>
 
+  <!-- ══ O5 — ARKA PLAN MÜZİĞİ ══ -->
+  <section>
+    <div class="sec-head">
+      <h2>O5 — arka plan müziği: hangi parça?</h2>
+      <span class="sec-note">docs/olcum-muzik-s9.txt · yeni kol</span>
+    </div>
+    <p class="sec-sub">
+      Uğultu kalktı, yerine müzik geldi. Kaynak <b>Abstraction / Tallbeard "Music Loop Bundle"</b>
+      (CC0, 253 parça). Hepsini indirmek 538 MB, o yüzden eleme paketin <b>kendi künye
+      verisinden</b> yapıldı: etiket, süre, enerji, parlaklık, hız, karmaşıklık ve bestecinin
+      kendi puanı. <code>chiptune</code> ve <code>spooky</code> elendi (flat-shaded low-poly bir
+      salonla 8-bit döngü çelişir), <code>acoustic</code> ve <code>jazz</code> kaldı —
+      <b>24 aday</b>, artı süzgece takılmayan tek <code>desert</code> parçası.
+    </p>
+
+    <div class="cevir" style="border-color:var(--sinyal)">
+      <p><b>Ölçüm sezgiyi yine çürüttü.</b> Kataloğun en "doğru" adayı
+        <b>Interior Birdecorator</b> — gerçek bir <i>dekorasyon oyununun</i> müziği, bestecinin
+        kendi puanı 5, 87 sn, düşük enerji. Ölçümde <b>sonuncu</b>: dokuz olay sesini örtmemek
+        için <b>−36,1 dB</b> kısılması gerekiyor ve o seviyede kendisi neredeyse yok oluyor
+        (RMS 0,00200). Kazanan, adı hiçbir şey vaat etmeyen bir <b>lavta</b> parçası:
+        <b>Troubadeck 04</b>, yalnız <b>−18,0 dB</b> kısılıyor.</p>
+      <p><b>Ölçüt neden bu:</b> arka plan müziği iki ateş arasındadır. Yeterince kısılmazsa
+        oyuncu parasını topladığını duymaz; fazla kısılırsa APK'da boşuna durur. Bu yüzden her
+        aday tek bir sayıya iniyor — <b>tavan kazanç</b>: dokuz sesin hepsini kendi baskın
+        bandında <b>+12 dB</b> üstte tutan en yüksek müzik seviyesi (S17 §6b'nin kuralı).
+        Kısıtlayan ses neredeyse hep aynı ikisi: <code>level</code> (bant 9) ve
+        <code>pour</code> (bant 10) — müziğin de yaşadığı orta bant.</p>
+    </div>
+
+    <p class="sec-sub" style="margin-top:16px">
+      <b>Her düğme klibi DİKİŞTEN çalar:</b> parçanın son 8 saniyesi + ilk 8 saniyesi, arka
+      arkaya. Yani tek dinleyişte hem parçayı hem <b>başa sardığında ne olduğunu</b> duyuyorsun —
+      oyuncu o dikişi bir oturumda onlarca kez duyacak. Çubuktaki <span style="color:var(--stop)">kırmızı
+      çizgi</span> döngü noktası.
+    </p>
+
+    <div class="seg" role="group" aria-label="Müzik seviyesi" style="margin-top:14px">
+      <button type="button" id="mz-tam" aria-pressed="true">Tam seviye</button>
+      <button type="button" id="mz-oyun" aria-pressed="false">Oyundaki seviye (tavan kazanç)</button>
+    </div>
+
+    <div class="muzik" id="muzik-liste"></div>
+
+    <p class="sec-sub" style="margin-top:14px">
+      <b>Sesle sına</b> parçayı oyundaki seviyesinde döngüye alır ve üstüne beş para toplama
+      (I2 merdiveniyle) + bir seviye atlama çalar. Asıl soru bu: <b>müzik çalarken parayı
+      topladığını duyuyor musun?</b>
+    </p>
+
+    <div class="uyari" style="background:var(--surface-2);border-color:var(--line-strong)">
+      <b>Ölçümün kapsamı:</b> 253 parçanın künyesi okundu ama yalnız <b>9 paket indirildi</b>;
+      <code>2024-q4</code> paketi alınmadı, yani profili tutan <b>2 aday</b> (biri besteci puanı 5,
+      75,8 sn jazz) ölçülmedi. Ayrıca Türkçe/Anadolu tınısı için <b>temiz CC0 kaynak bulunamadı</b>
+      — saz/bağlama/ud aramaları ya abonelikli kütüphanelere ya lisansı belirsiz kullanıcı
+      yüklemelerine çıkıyor. En yakın komşu, bundle'ın tek <code>desert</code> parçası.
+    </div>
+  </section>
+
   <!-- ══ ÖNERİ ══ -->
   <section>
     <div class="sec-head">
@@ -345,34 +452,35 @@ table.matris td.kos{color:var(--ink-3);font-style:italic}
       <span class="sec-note">gerekçesi sayıyla · son söz senin</span>
     </div>
     <div class="karar">
-      <h3>K2 + I2 + A3 + O1 — ve "Müzik" anahtarı bağlanır</h3>
+      <h3>Açık kalan tek soru: hangi parça çalacak</h3>
       <p>
-        Dördü de aynı sebepten: <b>ölçüm eleme yapamadı, o yüzden seçen şey bedel oldu</b> — ve
-        bedellerin hepsi küçük çıktı.
+        K · İ · A · O kolları <b>kapandı</b> (D-122, sayfanın başında). Geriye tek seçim kaldı ve
+        onu da ölçüm <b>tek başına çözemiyor</b> — tıpkı S17'nin kaynak kolunda olduğu gibi.
+        Tablo eleme yapıyor, ayırmıyor.
       </p>
       <ul>
-        <li><b>K2 (dokuzu da dosya).</b> En zayıf çifti 4,06 → <b>9,34 dB</b>'ye taşıyan tek kol.
-          Bedeli <b>116,7 KB</b> — model klasörü 17,2 MB'ken APK'da ölçülemez. K5 ucuza çok yakın
-          sonuç veriyor (10,10 · 75,7 KB) ama o kol coin'i sentezde bırakır ve
-          <b>kullanıcının şikâyet ettiği tek sesi düzeltmez</b>.</li>
-        <li><b>I2 (+1 yarım ses, tavan 5).</b> Adım farkı <b>2,82 dB</b> = tabanın 1,7 katı, yani
-          basamak gerçekten duyuluyor. I3 daha dik ama tepede kısmilerinin 3/4'ünü kulak
-          bandının dışına atıyor.</li>
-        <li><b>A3 (coin'de yığılmaya izin).</b> Kelepçeyi 0,32'ye çekmek seriyi seyrekleştirir ve
-          I2'nin merdivenini görünmez yapar; kırpmak sesin gövdesini keser. Üst üste binme
-          ölçüldü: beş çakışmada tepe <b>0,196</b>, <b>kırpılma yok</b>. Yığılma burada kusur
-          değil, "ivme" hissinin taşıyıcısı.</li>
-        <li><b>O1 (sentez uğultu).</b> Stil kilidini korur, lisans yüzeyi 0 kalır. Bedeli motorun
-          ilk <b>döngü kabiliyeti</b> — bugün 9/9 ses tek atış. O3 bu işi yapmaz ama tek
-          sanatçıyı ikiye çıkarır; stil kilidi S19a'da bir kez açıldı, ikinciyi ucuza açmayalım.</li>
-        <li><b>Normalizasyon ses başına yazılır</b> — kol değil, ölçümün dayattığı biçim: gereken
-          kazanç yayılımı <b>−34,8 … +0,1 dB</b>. Tek çarpan bunu kapatamaz.</li>
+        <li><b>Ölçümün önerisi: Troubadeck 04.</b> Kısılmaya en dayanıklı (<b>−18,0 dB</b>),
+          dikişi temiz (sıçrama 0,0041) ve akustik lavta, sıcak ahşap salonla aynı dili konuşuyor.
+          <b>Ama</b> baş/son seviye farkı <b>−7,4 dB</b>: parça sonunda soluyor, döngüde bu
+          duyulabilir. Ve 40,4 sn — Troubadeck'in <b>54 parçasının hepsi aynı boyda ve aynı
+          enstrümanla</b>, yalnız akorları farklı; yani bir parça değil, <b>zincirlenebilir bir
+          deste</b> seçmiş oluyorsun.</li>
+        <li><b>En dengeli: Sketchbook 2024-01-24_02.</b> Tavan −22,4 dB, sıçrama 0,0077,
+          baş/son farkı <b>+0,2 dB</b> (kataloğun en tutarlısı), 56 sn jazz, besteci puanı 5.
+          Dikişi duyulmayan tek uzun parça bu.</li>
+        <li><b>En ucuz: VGMA Challenge 25</b> — <b>754 KB</b>, ötekilerin dörtte biri, ve baş/son
+          dokusu en yakın (spektral fark 2,7 dB). Bedeli 24 sn: kısa döngü, tekrar yorgunluğu.</li>
+        <li><b>Anadolu için tek komşu: Sketchbook 2024-06-19</b> (<code>desert</code>). Temiz CC0
+          saz/ud bulunamadı — bu, kendi modelimizi çizdiren gerekçenin (ince belli bardak,
+          damacana rafı) <b>sesteki karşılığı</b>: kıraathanenin kimliğini taşıyan şey hazır
+          pakette yok.</li>
       </ul>
     </div>
     <div class="uyari" style="background:var(--brand-soft);border-color:var(--brand)">
-      <b>Kolu sen seçersin.</b> Yukarıdaki her kol dinlenebilir; önerimi değil <em>kulağını</em>
-      dinle. Seçtiğin kombinasyonu söyle (örn. <code>K5 + I2 + A1 + O4</code>), karar
-      <code>decisions.md</code>'ye D-122 olarak yazılır ve yalnız o kol koda girer.
+      <b>Parçayı sen seçersin.</b> Sekizini de dikişinden dinle, sonra <b>Sesle sına</b> ile
+      oyundaki seviyesinde para toplarken duy. Adı söylemen yeter; seçilen parça künyesiyle
+      manifeste girer (<code>public/assets/README.md</code>) ve <b>"Müzik" anahtarı</b> ona
+      bağlanır — bugün hâlâ hiçbir şeye bağlı değil.
     </div>
   </section>
 
@@ -387,6 +495,7 @@ table.matris td.kos{color:var(--ink-3);font-style:italic}
 </div>
 
 <script src="sesler.js"></script>
+<script src="muzik.js"></script>
 <script>
 (function(){
   "use strict";
@@ -764,6 +873,123 @@ table.matris td.kos{color:var(--ink-3);font-style:italic}
     var mq = window.matchMedia('(prefers-color-scheme: dark)');
     if (mq.addEventListener) mq.addEventListener('change', zarflariCiz);
   }
+
+  // ── O5: arka plan müziği ──
+  var M = window.MUZIK;
+  var mzKip = 'tam';                 // 'tam' | 'oyun'
+  var mzCalan = null;                // { src, gain, raf, btn, cubuk }
+  var mzTampon = {};                 // ad → AudioBuffer
+
+  function mzDurdur() {
+    if (!mzCalan) return;
+    try { mzCalan.src.stop(); } catch (e) { /* zaten bitti */ }
+    cancelAnimationFrame(mzCalan.raf);
+    mzCalan.btn.classList.remove('calar');
+    mzCalan.cubuk.style.width = '0';
+    mzCalan = null;
+    yaz('hazır', false);
+  }
+
+  function mzCoz(a) {
+    if (mzTampon[a.ad]) return Promise.resolve(mzTampon[a.ad]);
+    return new Promise(function (res) {
+      ctx.decodeAudioData(b64buf(a.veri), function (b) { mzTampon[a.ad] = b; res(b); }, function () { res(null); });
+    });
+  }
+
+  /** Klibi çal. `dongu` true ise sesle sınama kipi: klip döner ve üstüne olay sesleri biner. */
+  function mzCal(a, btn, cubuk, dongu) {
+    return baglam().then(function () { return mzCoz(a); }).then(function (buf) {
+      if (!buf) return;
+      mzDurdur();
+      var src = ctx.createBufferSource();
+      src.buffer = buf;
+      src.loop = !!dongu;
+      var g = ctx.createGain();
+      // 'oyun' kipinde ölçülen TAVAN KAZANÇ uygulanır; üstteki 3× pano kazancı sesler için de
+      // geçerli olduğundan iki taraf aynı ölçekte kalır.
+      g.gain.value = (mzKip === 'oyun' || dongu) ? a.tavanKazanc * OYUN_USTU : 1.0;
+      src.connect(g); g.connect(ctx.destination);
+      var t0 = ctx.currentTime;
+      src.start();
+      btn.classList.add('calar');
+      var sure = buf.duration;
+      var izle = function () {
+        if (!mzCalan) return;
+        var gecen = (ctx.currentTime - t0) % sure;
+        cubuk.style.width = (100 * gecen / sure).toFixed(1) + '%';
+        mzCalan.raf = requestAnimationFrame(izle);
+      };
+      mzCalan = { src, gain: g, btn, cubuk, raf: 0 };
+      mzCalan.raf = requestAnimationFrame(izle);
+      src.onended = function () { if (mzCalan && mzCalan.src === src) mzDurdur(); };
+      yaz(dongu ? 'sesle sınama' : a.ad.slice(0, 14), true);
+    });
+  }
+
+  document.getElementById('mz-tam').addEventListener('click', function () {
+    mzKip = 'tam';
+    this.setAttribute('aria-pressed', 'true');
+    document.getElementById('mz-oyun').setAttribute('aria-pressed', 'false');
+  });
+  document.getElementById('mz-oyun').addEventListener('click', function () {
+    mzKip = 'oyun';
+    this.setAttribute('aria-pressed', 'true');
+    document.getElementById('mz-tam').setAttribute('aria-pressed', 'false');
+  });
+
+  var mzListe = document.getElementById('muzik-liste');
+  var enIyiRms = Math.max.apply(null, M.adaylar.map(function (a) { return a.rmsSonra; }));
+  M.adaylar.forEach(function (a) {
+    var row = document.createElement('div');
+    row.className = 'mz' + (a.rmsSonra === enIyiRms ? ' iyi' : '');
+    var etiketler = '';
+    var ozel = /desert/.test(a.etiket);
+    if (ozel) etiketler += '<span class="mz-tag desert">desert</span>';
+    if (/Birdecorator/.test(a.ad)) etiketler += '<span class="mz-tag oyun">oyun müziği</span>';
+    // Özel rozet zaten etiketi söylüyorsa ikinci kez yazma.
+    if (a.etiket && !ozel) etiketler += '<span class="mz-tag">' + a.etiket + '</span>';
+    var sicramaKotu = a.sicrama > 0.05;
+    row.innerHTML =
+      '<div><div class="mz-ad">' + a.baslik + etiketler + '</div>' +
+      '<div class="mz-alt">' + a.paket + ' · ' + a.sure + ' sn döngü · ' + a.kb + ' KB · ' +
+        'enerji ' + a.enerji + ' · parlaklık ' + a.parlaklik + ' · besteci puanı ' + a.puan + '</div>' +
+      '<div class="dikis"><i></i><u></u></div></div>' +
+      '<div class="mz-say">tavan <b>' + a.tavanDb.toFixed(1).replace('.', ',') + ' dB</b>' +
+        ' · kısıt <code>' + a.kisit + '</code><br>' +
+        'kalan RMS <b>' + a.rmsSonra.toFixed(5).replace('.', ',') + '</b> · sıçrama ' +
+        '<span class="' + (sicramaKotu ? 'kot' : '') + '">' + a.sicrama.toFixed(4).replace('.', ',') + '</span></div>' +
+      '<div class="mz-cal"></div>';
+    var cubuk = row.querySelector('.dikis i');
+    var kutu = row.querySelector('.mz-cal');
+
+    var b1 = document.createElement('button');
+    b1.type = 'button'; b1.className = 'cal';
+    b1.textContent = '▶ dikiş';
+    b1.addEventListener('click', function () {
+      if (mzCalan && mzCalan.btn === b1) { mzDurdur(); return; }
+      mzCal(a, b1, cubuk, false);
+    });
+
+    var b2 = document.createElement('button');
+    b2.type = 'button'; b2.className = 'cal dosya';
+    b2.textContent = '▶ sesle sına';
+    b2.addEventListener('click', function () {
+      if (mzCalan && mzCalan.btn === b2) { mzDurdur(); return; }
+      mzCal(a, b2, cubuk, true).then(function () {
+        // I2 merdiveni ÖNCEDEN ÜRETİLMİŞ seri klibinden çalınır, `playbackRate` ile taklit
+        // edilmez: sentezde basamak FREKANS çarpanıdır ve süreyi değiştirmez. Taklit edilseydi
+        // panoda duyulan merdiven oyundakinden kısa olurdu.
+        cal('seri:I2', { gecikme: 1.2 });
+        cal('sentez:pour', { gecikme: 3.2 });
+        cal('sentez:level', { gecikme: 4.6 });
+        cal('sentez:purchase', { gecikme: 6.2 });
+      });
+    });
+
+    kutu.appendChild(b1); kutu.appendChild(b2);
+    mzListe.appendChild(row);
+  });
 
   // Sayfa DURURKEN zarflar çizili olsun: çözme bir dokunuş beklemez, yalnız ÇALMA bekler.
   hazirla();

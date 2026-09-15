@@ -14,10 +14,15 @@
  * Çıkarma işlemi DAVRANIŞI DEĞİŞTİRMEDİ: `olcum-ses-ayirt.ts`in çıktısı çıkarmadan önce ve sonra
  * bayt bayt aynı (`docs/olcum-ses-ayirt.txt` diff'i boş). Refactor'ün kanıtı budur.
  */
-import { ORNEKLEME, seslendir, type Katman } from '../src/game/audioSynth.ts';
+import { ORNEKLEME, YARIM_SES, seslendir, type Katman } from '../src/game/audioSynth.ts';
 
 // --- Sabitler --------------------------------------------------------------
-export const YARIM_SES = Math.pow(2, 1 / 12);
+/**
+ * Yarim sesin orani. S9'a kadar burada TANIMLIYDI; D-122 seri ivmesini oyun koduna soktugunda
+ * ayni sabit `audioSynth.ts`te de gerekti ve iki kopya demek OLCULEN basamak ile DUYULAN
+ * basamagin sessizce ayrisabilmesi demekti. Tek kaynak orasi; burada yalniz yeniden yayinlanir.
+ */
+export { YARIM_SES };
 /** Süre JND'si ~%15 (kısa seslerde Weber oranı) — 1 JND = 1,15 kat. */
 export const SURE_WEBER = 1.15;
 

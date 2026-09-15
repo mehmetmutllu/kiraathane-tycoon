@@ -29,6 +29,29 @@
 /** Örnekleme hızı. Hem çalınan tampon hem ölçüm bu hızda üretilir. */
 export const ORNEKLEME = 44100;
 
+/**
+ * Bir yarım sesin frekans oranı. TEK KAYNAK: ölçüm aracı (`tools/ses-metrik.ts`) ve dinleme
+ * taslağı (`tools/ses-taslak.ts`) bunu buradan alır — üç ayrı kopya olsaydı seri ivmesinin
+ * ÖLÇÜLEN basamağı ile DUYULAN basamağı sessizce ayrışabilirdi.
+ */
+export const YARIM_SES = Math.pow(2, 1 / 12);
+
+/**
+ * PERDELEME: bütün katmanların bütün frekanslarını `yarimSes` kadar öteler.
+ *
+ * Neden çarpan değil YARIM SES: seri ivmesinin basamağı müzikal bir aralıktır ve kulak perdeyi
+ * oransal duyar. Aynı işlem dosya tarafında `playbackRate` ile yapılır (`audioWeb.ts`) — ikisi
+ * de aynı oranı uygular, yani kaynak değişince basamak değişmez (S17 §5: "kaynaktan bağımsız").
+ *
+ * `gurultu` katmanlarının `hz`i bant MERKEZİdir ve o da ötelenir: metalik tıkın üstündeki tiz
+ * geçiş perdeyle birlikte yükselmezse merdiven tırmandıkça ses iki parçaya ayrılır.
+ */
+export const perdele = (katmanlar: readonly Katman[], yarimSes: number): Katman[] => {
+  if (yarimSes === 0) return katmanlar as Katman[];
+  const k = Math.pow(YARIM_SES, yarimSes);
+  return katmanlar.map((kat) => ({ ...kat, hz: kat.hz.map((h) => h * k) }));
+};
+
 export type Dalga = 'sine' | 'triangle' | 'square';
 
 /**
