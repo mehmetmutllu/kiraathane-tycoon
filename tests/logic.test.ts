@@ -3613,12 +3613,16 @@ describe('Faz B1 — kayıt v31: TEMİZ SIFIRLAMA, migrasyon yok (D-058 karar 3)
     expect(r.xp).toBe(0);
   });
 
-  it('resetKeepingSettings: AYARLAR korunur (ses · müzik · bildirim · FPS)', () => {
+  it('resetKeepingSettings: AYARLAR korunur (ses · müzik · bildirim · FPS · SEVİYELER)', () => {
     const r = resetKeepingSettings({
       saveVersion: 28,
-      settings: { sound: false, music: false, notifications: false, showFps: true },
+      settings: { sound: false, music: false, notifications: false, showFps: true, soundVolume: 0.3 },
     });
-    expect(r.settings).toEqual({ sound: false, music: false, notifications: false, showFps: true });
+    expect(r.settings).toEqual({
+      sound: false, music: false, notifications: false, showFps: true,
+      // S9 · D-122: seviyeler de ayar; sıfırlama onları da korumak zorunda.
+      soundVolume: 0.3, musicVolume: 1,
+    });
   });
 
   it('resetKeepingSettings: eksik/bozuk ayar alanı defaulta düşer (kısmi de olsa)', () => {

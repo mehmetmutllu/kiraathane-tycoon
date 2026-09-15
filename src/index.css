@@ -826,6 +826,100 @@ body,
   color: var(--tx);
 }
 
+/* ---- Seviye kaydırıcısı (S9 · D-122) ----
+   Anahtarın ALTINDA ayrı bir satır: "kapat" ile "kıs" farklı isteklerdir. Kendi kutusu yok —
+   kartın içinde kart olmasın; ayıran şey girinti ve ince bir sol çizgi. */
+.setting-slider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 4px 10px 14px;
+  border-bottom: 1.5px solid var(--oyuk);
+  border-left: 3px solid var(--oyuk);
+  margin-left: 4px;
+}
+
+.setting-slider.kapali {
+  opacity: 0.4;
+}
+
+.setting-slider .setting-label {
+  font-size: var(--p2);
+  font-weight: 700;
+  color: var(--tx2);
+  white-space: nowrap;
+}
+
+.setting-slider input[type='range'] {
+  pointer-events: auto;
+  flex: 1;
+  min-width: 90px;
+  height: 22px;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* DOLU KISIM görünür: oyunun kendi dili dolan bar (pad dolumu, ilerleme şeridi). Dolmayan bir
+   çubukta oranı yalnız topuzun YERİ anlatır ve o da bir bakışta okunmuyor. Oran React'ten
+   `--dolu` olarak geliyor — CSS değeri kendi başına bilemez. */
+.setting-slider input[type='range']::-webkit-slider-runnable-track {
+  height: 10px;
+  border-radius: var(--rr);
+  border: 2.5px solid var(--ot);
+  background: linear-gradient(
+    to right,
+    var(--ok) 0 var(--dolu, 100%),
+    var(--oyuk) var(--dolu, 100%) 100%
+  );
+}
+
+.setting-slider input[type='range']::-moz-range-track {
+  height: 10px;
+  border-radius: var(--rr);
+  border: 2.5px solid var(--ot);
+  background: linear-gradient(
+    to right,
+    var(--ok) 0 var(--dolu, 100%),
+    var(--oyuk) var(--dolu, 100%) 100%
+  );
+}
+
+.setting-slider input[type='range']::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: -8px;
+  border-radius: 50%;
+  background: var(--tx);
+  border: 2.5px solid var(--ot);
+}
+
+.setting-slider input[type='range']::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--tx);
+  border: 2.5px solid var(--ot);
+}
+
+.setting-slider input[type='range']:focus-visible {
+  outline: 2px solid var(--ok);
+  outline-offset: 3px;
+}
+
+/* Sayı SABİT GENİŞLİKTE: sürüklerken 5 ↔ 100 arası zıplayıp kaydırıcıyı oynatmasın. */
+.setting-val {
+  font-size: var(--p2);
+  font-weight: 800;
+  color: var(--tx2);
+  font-variant-numeric: tabular-nums;
+  min-width: 46px;
+  text-align: right;
+}
+
 .switch {
   pointer-events: auto;
   position: relative;

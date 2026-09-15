@@ -26,24 +26,44 @@ const dosyaTamponlari = new Map<string, AudioBuffer | null>();
  */
 const sentezTamponlari = new Map<string, AudioBuffer>();
 
+/**
+ * TEK BAĞLAM, modül düzeyinde. Müzik döngüsü (`musicWeb.ts`) da bunu kullanıyor: her
+ * `AudioContext` mobilde kendi donanım akışını tutar ve ikinci bir bağlam açmanın gerçek bir
+ * pil maliyeti var. Bağlam ilk çağrıda kurulur — import anında DEĞİL, çünkü kurulum bir
+ * kullanıcı jesti beklemeyen tarayıcılarda uyarı basar.
+ */
+let ctx: AudioContext | null = null;
+
+export function sesBaglami(): AudioContext | null {
+  if (ctx) return ctx;
+  if (typeof window === 'undefined') return null;
+  const Ctor = (window as unknown as { AudioContext?: typeof AudioContext; webkitAudioContext?: typeof AudioContext })
+    .AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+  if (!Ctor) return null;
+  ctx = new Ctor();
+  return ctx;
+}
+
 export function webSesArkaUcu(): SesArkaUc {
-  let ctx: AudioContext | null = null;
+  const baglam = sesBaglami;
 
-  const baglam = (): AudioContext | null => {
-    if (ctx) return ctx;
-    const Ctor = (window as unknown as { AudioContext?: typeof AudioContext; webkitAudioContext?: typeof AudioContext })
-      .AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-    if (!Ctor) return null;
-    ctx = new Ctor();
-    return ctx;
-  };
-
-  /** Tamponu çal. Kazanç katmanlarda zaten var, burada 1'de bırakılır. */
-  const calTampon = (c: AudioContext, tampon: AudioBuffer, hiz = 1): void => {
+  /**
+   * Tamponu çal. Sesin KENDİ kazancı katmanlarda zaten var; buradaki `gain` oyuncunun ayardan
+   * seçtiği SEVİYE (0..1). Ayrı bir düğümle uygulanıyor, tamponu yeniden üretmeden — aksi
+   * halde her seviye değişiminde bütün önbellek çöpe giderdi.
+   */
+  const calTampon = (c: AudioContext, tampon: AudioBuffer, hiz = 1, gain = 1): void => {
     const src = c.createBufferSource();
     src.buffer = tampon;
     if (hiz !== 1) src.playbackRate.value = hiz;
-    src.connect(c.destination);
+    if (gain >= 1) {
+      src.connect(c.destination);
+    } else {
+      const g = c.createGain();
+      g.gain.value = gain;
+      src.connect(g);
+      g.connect(c.destination);
+    }
     src.start();
   };
 
@@ -68,7 +88,7 @@ export function webSesArkaUcu(): SesArkaUc {
       if (c && c.state === 'suspended') void c.resume();
     },
 
-    dosyaCal(yol, _gain, yarimSes) {
+    dosyaCal(yol, gain, yarimSes) {
       const c = baglam();
       if (!c) return false;
       const buf = dosyaTamponlari.get(yol);
@@ -78,11 +98,11 @@ export function webSesArkaUcu(): SesArkaUc {
       }
       // Dosyada perdeleme ancak çalma hızıyla yapılabilir (örnekler hazır, katman yok).
       // Sentezdeki `perdele` ile AYNI oranı uygular — S17 §5: basamak kaynaktan bağımsızdır.
-      calTampon(c, buf, Math.pow(2, yarimSes / 12));
+      calTampon(c, buf, Math.pow(2, yarimSes / 12), gain);
       return true;
     },
 
-    sentezCal(id: SesId, katmanlar: readonly Katman[], yarimSes: number) {
+    sentezCal(id: SesId, katmanlar: readonly Katman[], yarimSes: number, gain: number) {
       const c = baglam();
       if (!c) return;
       const anahtar = `${id}:${yarimSes}`;
@@ -96,7 +116,7 @@ export function webSesArkaUcu(): SesArkaUc {
         tampon.getChannelData(0).set(ornekler);
         sentezTamponlari.set(anahtar, tampon);
       }
-      calTampon(c, tampon);
+      calTampon(c, tampon, 1, gain);
     },
   };
 }

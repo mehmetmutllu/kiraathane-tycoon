@@ -390,7 +390,8 @@ export interface GameState {
   toggleCamZoomOut: () => void;
   setKabuk: (kip: KabukKipi) => void;
   /** Ayar değiştir (ayarlar modalı) — anında kaydedilir. */
-  setSetting: (key: keyof SaveSettings, value: boolean) => void;
+  /** Ayar yaz. Değer tipi anahtara göre: anahtarlar boolean, SEVİYELER sayı (0..1 — D-122). */
+  setSetting: <K extends keyof SaveSettings>(key: K, value: SaveSettings[K]) => void;
   /**
    * Kozmetik tema satın al/uygula (WP6): ALAN AÇIK olmalı; ilk satın alma ₺ düşer (cüzdan yetmezse
    * false), sahip olunan tema ücretsiz yeniden seçilir. Başarıda anında kaydedilir.

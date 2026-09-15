@@ -193,7 +193,7 @@ h2{font-size:21px;font-weight:800}
 <script type="application/json" id="durum">
 {
  "guncelleme": "16.09.2026",
- "yapilan": 98,
+ "yapilan": 99,
  "toplam": 108,
  "kilometre": [
   {
@@ -214,14 +214,14 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum — Faz S · 23/24 — S24: yükseltme tetiği (D-121)",
-  "baslik": "Sayı doğruydu; <b>aynı şey iki kez tanımlanmıştı</b> — tetiğin <b>%50,4</b>'ü çerçevenin dışındaydı",
-  "aciklama": "Kullanıcı sözü: <i>“yanında falan değil, çerçeve içinde olayım.”</i> Ölçüm cümleyi doğruladı ve sebebini S23'ünkinden <b>ayırdı</b>.<br><br><b>Bu S23'ün tekrarı değil.</b> Orada ölçü yanlış yazılmıştı (gizli bir √3 çarpanı). Burada ölçü doğru: çizilen çerçeve yazanla <b>birebir aynı</b>, sapma <b>0,0000 br</b>, 13 işaretin 13'ünde. Kusur şuydu: dolum bir <b>daire</b> testine bağlıydı (<code>dist2D &lt; TABLE_UP_RADIUS | PAD_RADIUS</code>) ama ekranda <b>dikdörtgen</b> çiziliyordu ve ikisi birbirinden hiç türemiyordu. Ölçülen: tetikleyen alanın <b>%50,4'ü</b> çerçeve dışında (masa %51,9 · servis %33,2), ölü bölge %0,0 — çerçeve tamamen dairenin içinde, daire her yönde taşıyor.<br><br><b>Geometri iki değil üçtü.</b> Araca aday <b>olmayan</b> bir kol (G) eklendi ve bulgu oradan çıktı: işaretin “üstündesin” kabarması da kendi dairesini kuruyordu (<code>hw × 1,35</code>), onun da <b>%34,3'ü</b> çerçeve dışındaydı. Yani “buradasın” diyen sınır, parayı akıtan sınır ve gözle görülen çerçeve üç ayrı şeydi.<br><br><b>Daireyi daraltmak kusuru taşır, kapatmaz.</b> A1 (tek yarıçap 0,600) ölü bölge <b>%28,5</b>, serviste <b>%68,2</b>; A2 (işaret başına) %26,0. Sebep çerçevelerin kare olmaması — masa 0,630 × 0,600, servis <b>1,047 × 0,850</b>. Kullanıcı <b>B + G</b>'yi seçti. Yeni <code>src/game/markerFrame.ts</code> ile çizim, tetik ve kabarma <b>tek fonksiyondan</b> okuyor; <code>tick.ts</code>'ten iki yarıçap sabiti tamamen çıktı."
+  "etiket": "Bu oturum — Faz S · 24/24 KAPANDI — S9: ses (D-122)",
+  "baslik": "Ölçüm kolları <b>ayırdı ama seçmedi</b> — seçen şey <b>tek bir sesin</b> kulakta düşmesi oldu",
+  "aciklama": "Tablo <b>K2</b>'yi öneriyordu: dosyalı dokuzlu kataloğun okunabilirliğini 6,41 → <b>10,97 dB</b>'ye çıkarıyor, bedeli 116,7 KB. Kullanıcı reddetti ve gerekçesi tablonun dışından geldi: <i>“ocaktan çay alma kötü.”</i> Yani <code>pour</code> dosyası kulakta düştü ve <b>dokuz sesin dokuzu bir pakette geldiği için paketin tamamı düştü</b>. Kaynak sorusu “en iyi ortalama” değil, <b>“en kötü üyesi ne”</b>ymiş — tablo bunu hiç göstermiyordu. Ölçülen kazanç <b>bilerek ödenmedi</b>, kaynak sentezde kaldı, lisans yüzeyi yine sıfır.<br><br><b>Kataloğun en dar yeri de şikâyet edilen ses değildi:</b> en zayıf çift <code>quest</code>↔<code>level</code> = <b>4,06 dB</b> ve K1/K3/K4'te aynı kalıyor. Şikâyet coin'deydi, kazanç ilerleme ailesindeydi; ikisi hiç kesişmedi.<br><br><b>İvme koda girdi (I2).</b> Bugünkü hâlde ardışık iki toplama arasındaki fark <b>0,00 dB</b>'ydi — mutlak tabanın altında, yani kulakta yok. Artık her toplama perdeyi bir yarım ses yükseltiyor, 5 basamakta duruyor, 1,2 sn ara verilince tabana dönüyor. Kelepçeye takılan çağrı seriyi <b>ne ilerletir ne kırar</b>: duyulmayan ses basamak yiyemez.<br><br><b>Uğultu tamamen kalktı</b> (<i>“uğultu da hiç olmasın”</i>) ve yerine gerçek bir <b>arka plan müziği</b> geldi — motorun <b>ilk döngü kaynağı</b>. 253 parçalık CC0 bundle künyesinden elenip 23 aday ölçüldü; ölçüt <b>tavan kazanç</b> (dokuz sesi +12 dB üstte tutan en yüksek müzik seviyesi). Sezgi yine çürüdü: gerçek bir <i>dekorasyon oyununun</i> müziği <b>sonuncu</b> (−36,1 dB), ölçümün birincisi bir <b>lavta</b> parçası (−18,0 dB). Seçilen ise üçüncü bir sayıya bakıyor — <b>dikiş</b>: <code>Sketchbook 2024-01-24_02</code>, baş/son farkı <b>+0,2 dB</b>, kataloğun en tutarlısı. Lavtanın sonu başından 7,4 dB alçaktı; bir kerelik 4,4 dB'lik kısma payı, <b>her 40 saniyede tekrarlayan</b> bir kusura tercih edildi.<br><br><b>Ve S10'dan beri boşa dönen “Müzik” anahtarı bağlandı</b>, yanına kullanıcının istediği <b>ses/müzik seviye kaydırıcıları</b> kondu — “kapat” ile “kıs” ayrı isteklerdir. Müziğinki <b>ölçülen tavanın altını</b> gezer, üstüne çıkamaz."
  },
  "siradaki": {
-  "etiket": "Sırada — Faz S'in son kalemi",
-  "baslik": "S9 — ses assetleri: <b>karar paketi yayında</b>, kol seçimi bekliyor",
-  "aciklama": "<b>Dinlenebilir karar paketi:</b> <a href=\"https://claude.ai/artifact/49KsxE368xVHWbw4wHdkSy\">Hangi Ses Dosyadan Gelsin</a> — dokuz olayın sentez ve dosya hâli yan yana çalınıyor, beş bölüşüm ve üç ivme kolu dinlenebiliyor. Ses kararı metinle sorulmaz (<i>feedback_show_dont_ask</i>).<br><br>Bu turda <b>eksik bir kol ölçüldü</b>: S17 iki UÇ hâli ölçmüştü (dokuzu sentez / dokuzu dosya), <b>karma</b> katalog sayısızdı — dosya↔sentez çapraz mesafeleri matriste yoktu. Yeni araç <code>tools/olcum-ses-karma.ts</code> o çaprazı üretti ve <b>turun iki varsayımını çürüttü</b>. ① <b>Kimlik bu kararı seçmiyor:</b> beş bölüşümün beşinde de karışan çift <b>0/36</b>; eleme aracı boşa çıktı, seçen şey okunabilirlik payı ve bedel oldu. ② <b>Kataloğun en dar yeri coin değil:</b> en zayıf çift <code>quest</code>↔<code>level</code> = <b>4,06 dB</b> ve K1/K3/K4'te <b>aynı kalıyor</b> — yalnız coin'i dosyaya çevirmek o dar yere hiç dokunmuyor. Kazanç <b>ilerleme ailesinde</b>: ort. en-yakın-komşu 6,41 → <b>10,97 dB</b> (K2). Öneri <b>K2 + I2 + A3 + O1</b>; son söz kullanıcının.<br><br>Ardından <b>Faz H</b>: bilinen üç oynanış hatası, tepsi yükseltme sırası ve masa aralığı — yürünebilir mutfak (E1) da orada."
+  "etiket": "Sırada — Faz H (oynanış düzeltmeleri)",
+  "baslik": "Sanat hattı bitti; sıra <b>oynanışın kendisinde</b>",
+  "aciklama": "Faz S <b>24/24 kapandı</b>. Kalan işler sanat değil oynanış: <b>G-01</b> masa her taraftan toplanmıyor · <b>G-02</b> ocaktan alma güvenilmez · <b>G-03</b> kamera kayıyor · <b>masa aralığı</b> (arka salonda 0,68 br boşluk, geçiş 0,94 br istiyor — 20 masanın 12'si arasından geçilemiyor) · <b>E1 yürünebilir mutfak</b> (nav ızgarası orada zaten açılacak). İkisi DENGE dosyasına dokunuyor ve varyant kapısına tabi: <b>G-06</b> tepsi ilk yükseltme 75 → ~50 · <b>G-07</b> dwell'in paradan bağımsızlaşması.<br><br><b>S9'un bıraktığı iki açık uç:</b> müziğin telefondaki gerçek maliyeti ölçülmedi (1740 KB indirme + sürekli çözme — APK turunda okunacak), ve bundle'ın <code>2024-q4</code> paketi indirilmediği için profili tutan 2 aday hiç ölçülmedi."
  },
  "donemler": [
   {
@@ -338,8 +338,7 @@ h2{font-size:21px;font-weight:800}
      "d": "Görev kimlikleri · Hedefler ödülü · İtibar · günlük görev · elmas ekonomisi · Usta katmanı. <b>D1</b> geç-oyun eğrisi ölçüldü: dokuz kol elendi, düzeltilen şey eğri değil <b>tempo ölçütünün profili</b> oldu (D-087) ✓ · <b>D2</b> hattın kimliği sıra numarası olmaktan çıktı, kayıt v32 + gerçek göç (D-088) ✓ · <b>D3</b> Hedefler (5 kategori × 5 kademe) kuruldu — ödül YOĞUNLUKTAN geliyor, büyüklükten değil (D-089) ✓ · <b>D4</b> ödülün KALIBI değişti: sabit para kalktı, yerine <b>kalıcı gelir çarpanı</b> geldi; gelire oranlı para ölçülerek elendi (D-090) ✓ · <b>D5</b> oyuncunun yürüdüğü dünya ile rotaların kurulduğu dünya aynı değildi: içerik kilitli çıkmadı ama rotaların <b>%74</b>'ü geçersizdi — oyuncuya kendi ızgarası verildi (D-091) ✓ · <b>D6</b> İtibarın ödülü ölçüldü: planın <b>talep</b> kolu atıl çıktı, tıkanıklığın %93'ü <b>taşımada</b>; seviye başına +%2 taşıma hızı geldi ve en uzun bekleme 41,2 → 33,8 dk'ya indi (D-092) ✓ · <b>D7</b> Usta katmanı kuruldu — elmasın ilk harcaması; planın <b>servis</b> kolu ölçümde atıl çıktı (%0,0, tıkanıklığın %91,5'i taşımada) ve ödeyen tek kanal <b>masa bahşişi</b> oldu; fiyat 15 → <b>25 💎</b> (15'te kuyruğun %62'si ilk gün bitiyordu) (D-093) ✓ · <b>D8</b> Usta ve günlük görevin <b>etkileşimi</b> kuruldu: planın “yaklaşınca panel açılır”ı elendi, masanın mevcut yükseltme noktası <b>elmas kimliğine</b> dönüşüyor ve onayı alt bant alıyor; günlük görev sistemi kuruldu (D-094) ✓ · <b>D9</b> üç ödül kanadı ilk kez <b>aynı koşuda</b> ölçüldü: yığın açıkken yirmi dakika ölçütü <b>geçiyor</b> (aşan 0 · en uzunu 18,0 dk) ve kapatan katman&rsquo;ın <b>İtibar</b> olduğu çıktı — hedefler ve Usta tek başlarına kımıldatmıyor; katmanlar <b>toplanıyor</b> (ihlalde fark tam sıfır), bedeli içerik ömründe 8,5 → 6,8 saat ve <b>kabul edildi</b> (D-095) ✓",
      "yapilan": 9,
      "toplam": 9,
-     "kapi": "Elmas kazanılıp harcanabiliyor, Usta panelden alınabiliyor",
-     "durum": "now"
+     "kapi": "Elmas kazanılıp harcanabiliyor, Usta panelden alınabiliyor"
     },
     {
      "k": "E",
@@ -353,7 +352,7 @@ h2{font-size:21px;font-weight:800}
      "k": "S",
      "t": "Sanat ve arayüz geçişi",
      "d": "Kullanıcı oynadı ve altı tur geri bildirim verdi. HER KALEM ≈ 1 OTURUM. Sanat hattı bitti: pad dili · mutfak · zemin · dekor · dış cephe · cam · WC · UI dili · yeni paketler · karakterler (personel + müşteri) · tepsi · hatalar · kıyafet · kademeli mutfak · arayüz (ok/panel/doluluk). <b>S24</b> yükseltme tetiğini çizilen çerçeveye bağladı ve üç ayrı geometriyi teke indirdi (D-121). Kalan: <b>S9</b> ses assetleri — ölçüm hazır, <b>karar bekliyor</b>.",
-     "yapilan": 23,
+     "yapilan": 24,
      "toplam": 24,
      "durum": "now",
      "kapi": "185 kullanılmayan KayKit modeli oyuna bağlanır + UI dili maketle onaylanır"
@@ -378,6 +377,23 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "16.09.2026",
+   "etiket": "Faz S · 24. oturum (S9 — ses assetleri — D-122) — Faz S KAPANDI",
+   "baslik": "Ölçüm <b>ayırdı ama seçmedi</b>; seçen şey tek bir sesin kulakta düşmesi oldu",
+   "govde": "Tur ölçümün eksik kolunu kapatarak açıldı: S17 iki UÇ hâli ölçmüştü (dokuzu sentez / dokuzu dosya) ama <b>karma</b> katalog sayısızdı — dosya↔sentez çapraz mesafeleri matriste yoktu. Sayısı olmayan kol karar paketine girmez, o yüzden önce çapraz matris üretildi. İki bulgu çıktı ve ikisi de turun kendi varsayımını çürüttü: <b>kimlik bu kararı seçmiyordu</b> (beş bölüşümün beşi de 0/36 KARIŞIR) ve <b>kataloğun en dar yeri şikâyet edilen ses değildi</b> (<code>quest</code>↔<code>level</code> 4,06 dB).<br><br><b>Karar tabloyu astı.</b> Ölçüm K2'yi öneriyordu; kullanıcı <i>“ocaktan çay alma kötü”</i> dedi ve bütün paketi geri çevirdi. Dokuz sesin dokuzu bir pakette gelir — <b>biri beğenilmezse paketin tamamı düşer</b>. Yani kaynak sorusu “en iyi ortalama” değil <b>“en kötü üyesi ne”</b>ymiş; tablo o sütunu hiç taşımıyordu. Bir sonraki asset turu kolu böyle kurmalı.<br><br><b>Ses kararı metinle sorulmadı, DUYURULARAK soruldu.</b> Karar paketi çalan bir pano olarak yayınlandı: dokuz olayın iki hâli yan yana, beş bölüşümün katalogları, üç ivme kolu. Panonun sayıları da elle yazılmadı — aynı ölçüm kodundan türetildi.<br><br><b>Uğultu düştü, müzik geldi.</b> Kullanıcı <i>“daha farklı bir tycoon oyun arka planı bulmayı dene”</i> deyince 253 parçalık CC0 bundle künyesinden elendi ve 23 aday oyunun kendi çözücüsünden geçirildi. Ölçüt tek sayıya indi: <b>tavan kazanç</b>. Ve sezgi yine çürüdü — adında “oyun” yazan tek aday <b>sonuncu</b> çıktı.<br><br><b>Yolda sessiz bir kayıt hatası bulundu.</b> <code>loadSave</code> yüzeysel yayılım yapıyordu: <code>parsed.settings</code> varsayılan ayar nesnesinin TAMAMINI eziyordu, alan alan birleştirmiyordu. Yani ayarlara eklenen her yeni alan, <b>güncel sürümlü</b> eski bir kayıtta <code>undefined</code> kalırdı ve göç bile çalışmazdı. Bir ses çarpanı için bu, oyunun tamamen susması demekti. Bu bir alan hatası değil <b>ALAN SINIFI</b> hatasıydı; birleştirme tek yere alındı.",
+   "maddeler": [
+    "<b>D-122:</b> K1 (sentez kalır) + I2 + A3 + O4 · O5 = <code>Sketchbook 2024-01-24_02</code> (Abstraction/Tallbeard, <b>CC0</b>)",
+    "<b>Ödenmeyen kazanç yazılı:</b> K2 okunabilirliği 6,41 → <b>10,97 dB</b> yapıyordu, 116,7 KB'a — bilerek alınmadı",
+    "<b>İvme:</b> adım farkı 0,00 → <b>2,82 dB</b> (tabanın 1,7 katı) · I3 elendi, tavanda kısmilerin 3/4'ü 12 kHz üstüne taşıyor",
+    "<b>Müzik dikişle seçildi:</b> baş/son farkı <b>+0,2 dB</b> · ölçümün birincisi (lavta, −18,0 dB) sonu başından <b>7,4 dB alçak</b>",
+    "<b>Motorun İLK DÖNGÜSÜ:</b> <code>music.ts</code> + <code>musicWeb.ts</code> · S10'dan beri boşa dönen <b>“Müzik” anahtarı bağlandı</b>",
+    "<b>Seviye kaydırıcıları</b> (kullanıcı isteği): “kapat” ile “kıs” ayrı · müziğinki <b>ölçülen tavanın</b> altını gezer",
+    "<b>Sessiz kayıt hatası kapandı:</b> yüzeysel yayılım ayar nesnesini eziyordu → <code>ayarlariBirlestir</code>",
+    "<b>Bekçi:</b> iki dosya, 51 denetim, <b>32 mutasyon, kaçan 0</b> · vitest <b>1154</b> ✓ · duman 42 → <b>45/45</b> ✓"
+   ],
+   "not": "<b>Kaçan mutasyonlar yine kodun değil BEKÇİNİN zayıf yerini gösterdi — dört kez.</b> Seri turunda M16: denetim <code>import</code>un ADINA bakıyordu, KULLANIMINA değil (S23'ün <code>toMatch(/FloorPatch/)</code> kusurunun aynısı). Seviye turunda üç tane: sahte arka uç dosya yolunu hiç sınamıyordu · test yalnız KURULUŞ yolunu sınıyordu, oysa oyuncu kaydırıcıyı <code>ayarla</code> ile oynatıyor · motor kuruluşta zaten eşitleme çağırmadığı için tarayıcı-kilidi şartı silinse de test yeşil kalıyordu. Dördü de kapatıldı.<br><br><b>Ve iki bekçi daha iş başında yakaladı:</b> mor dilin punto kilidi CSS'e sızan ham bir <code>13px</code>'i (D-107), pano denetimi de Faz E'yi yanlışlıkla kapattığımı — E5 ses değil <b>hareketli onboarding</b>."
+  },
   {
    "tarih": "16.09.2026",
    "etiket": "Faz S · 23. oturum (S24 — yükseltme tetiği — D-121)",

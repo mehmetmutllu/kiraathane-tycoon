@@ -3870,3 +3870,60 @@ değil — S23'ün `toMatch(/FloorPatch/)` kusurunun aynısı. Denetim çağrın
 **Final:** tsc temiz · vitest 1126 ✓ · duman 42/42 ✓ · `economy.config.ts` 0 satır. Ölçüm
 çıktıları yeniden alındı: `olcum-ses-ayirt.txt` BİREBİR aynı, `olcum-ses-s17.txt`in tek farkı
 düzeltilen kapsam satırı (model paketi `food-kit` ses paketi sayılıyordu — 706 `.ogg` değişmedi).
+
+---
+
+### D-122 EKİ — parça seçildi, seviye ayarı geldi, "Müzik" anahtarı BAĞLANDI (aynı tur)
+
+**O5 kapandı: `Sketchbook 2024-01-24_02`** (Abstraction / Tallbeard, **CC0 1.0**, 56 sn, 1740 KB).
+Kullanıcı *"önerinle devam et"* dedi; öneri ölçümün birincisi DEĞİL, **dikişin** birincisiydi.
+Gerekçe tek sayıda: Troubadeck 04 daha az kısılıyordu (−18,0 dB) ama sonu başından **7,4 dB
+alçak** — her 40 saniyede duyulur bir sıçrama. Seçilen parçanın baş/son farkı **+0,2 dB**,
+kataloğun en tutarlısı. **Bir kerelik 4,4 dB'lik kısma payı, tekrarlayan bir kusura tercih
+edildi.** Yan kazanç: dosya yarı boyda ve döngü 40,4 → 56 sn (tekrar yorgunluğu daha az).
+
+**Motorun İLK DÖNGÜ kaynağı geldi** (`music.ts` + `musicWeb.ts`). Olay motorundan AYRI dosya,
+çünkü hiçbir özelliğini paylaşmıyor: bir olaydan doğmuyor, sürekli çalıyor, kendi ayarı ve kendi
+tavanı var. `AudioContext` paylaşılıyor — ikinci bir bağlam mobilde gerçek pil maliyeti.
+
+**"Müzik" anahtarı S10'dan (B9) beri kayıtta duruyor ve hiçbir şeye bağlı değildi — bağlandı.**
+
+**SEVİYE AYARI (kullanıcı isteği: *"ayarlara ses kıs falan koy"*).** İki kaydırıcı: ses ve müzik.
+Tasarım kararı şu: **"kapat" ile "kıs" AYRI isteklerdir**, o yüzden kaydırıcı anahtarın yerine
+geçmiyor, altında duruyor. Seviye 0'a inse anahtar açık kalır; anahtar kapansa seviye korunur.
+
+**Müziğin kaydırıcısı ÖLÇÜLEN tavanın altını gezer:** %100 = `tavan 0.0759` (**−22,4 dB**), yani
+dokuz olay sesini kendi bandında +12 dB üstte tutan en yüksek seviye. Üstüne çıkılamıyor —
+o an müzik oyuncunun kendi eyleminin geri bildirimini örtmeye başlar. Bu bir zevk ayarı değil,
+ölçümün koda geçmiş hâli.
+
+**YOLDA BULUNAN SESSİZ HATA — ve bu turun asıl kazancı.** `loadSave` yüzeysel yayılım yapıyordu:
+`{ ...defaultSave(), ...parsed }` içinde `parsed.settings` varsayılan ayar NESNESİNİN TAMAMINI
+eziyor, alan alan birleştirmiyordu. Yani ayarlara eklenen her yeni alan, **güncel sürümlü** eski
+bir kayıtta `undefined` kalırdı ve göç bile çalışmazdı (sürüm zaten güncel). `showFps` bu tuzağa
+düşmemişti çünkü kimse eski kayıtla sınamadı; ses seviyesi düşerdi ve `undefined` bir çarpan
+**oyunu tamamen susturur**. Birleştirme `ayarlariBirlestir` ile tek yere alındı ve her yükleme
+yolundan geçiyor. Bu, alan eklemenin değil, ALAN SINIFININ hatasıydı — bir daha doğmaz.
+
+**Kayıt sürümü ARTMADI:** alanlar additive ve varsayılanları bugünkü davranış (1 = tam ses),
+yani eski kayıt hiçbir şey kaybetmiyor (`showFps`/`lavaboLevel` deseni).
+
+**GÖRSEL:** kaydırıcının **dolu kısmı** çiziliyor. İlk hâlinde çubuk tümüyle koyuydu ve oranı
+yalnız topuzun yeri anlatıyordu; oyunun kendi dili dolan bar (pad dolumu, ilerleme şeridi) —
+ekran karesine bakılınca görüldü ve düzeltildi (`feedback_visual_polish`: mantık yeşil ≠ bitti).
+Mor dilin punto bekçisi de bir kusur yakaladı: CSS'e `var(--p4, 13px)` yazmıştım, yani ölçek
+dışı ham bir punto; D-107'nin bekçisi kırmızı yandı ve değer `--p2`ye çekildi.
+
+**BEKÇİ:** `tests/ses-seviye-s9.test.ts` (27 denetim) · `tools/mutasyon-seviye-s9.mjs`
+**16/16 kırmızı**. ÜÇ mutasyon ilk turda kaçtı ve üçü de bekçinin gerçek deliğiydi:
+M6 (dosya yolu seviyeyi yutuyor — sahte arka uç `dosyaCal`da hep `false` dönüyordu, o yol hiç
+sınanmıyordu) · M8 (seviye 0 anahtarı da kapatıyor — test yalnız KURULUŞ yolunu sınıyordu, oysa
+oyuncu kaydırıcıyı `ayarla` ile oynatıyor) · M11 (tarayıcı kilidi yok sayılıyor — motor kuruluşta
+zaten `esitle()` çağırmıyor, dolayısıyla şart silinse de test yeşil kalıyordu). Üçü de kapatıldı.
+
+**Duman testi 42 → 45:** kaydırıcılar DOM'da mı · oynatınca KAYDA yazılıyor mu · anahtar
+kapanınca devre dışı kalıp SEVİYEYİ koruyor mu. Mantık testi bunları göremez — kaydırıcı hiç
+render edilmese de motor testleri yeşil kalırdı.
+
+**Final:** tsc temiz · vitest **1154** ✓ · duman **45/45** ✓ · `economy.config.ts` 0 satır ·
+kayıt sürümü 33'te kaldı.

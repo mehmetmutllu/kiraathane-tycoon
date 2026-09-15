@@ -263,7 +263,7 @@ export interface SesArkaUc {
    * Sentezi çal. Arka uç katmanları bir kez tampona çevirip önbellekler.
    * Önbellek anahtarı `id` DEĞİL `id + yarimSes`: aynı sesin her basamağı ayrı tampondur.
    */
-  sentezCal(id: SesId, katmanlar: readonly Katman[], yarimSes: number): void;
+  sentezCal(id: SesId, katmanlar: readonly Katman[], yarimSes: number, gain: number): void;
   /** Tarayıcı ses kilidini açar (mobilde ilk dokunuşta). */
   kilidiAc(): void;
   /** Şu anki zaman (sn) — aralık kelepçesi bunu kullanır (testte sahte saat). */
@@ -273,8 +273,10 @@ export interface SesArkaUc {
 export interface SesMotoru {
   cal(id: SesId): boolean;
   kilidiAc(): void;
-  ayarla(acik: boolean): void;
+  /** Ayar ve SEVİYE birlikte yansıtılır — ikisi de kayıttan gelir ve panelden değişebilir. */
+  ayarla(acik: boolean, seviye?: number): void;
   readonly acik: boolean;
+  readonly seviye: number;
 }
 
 /**
@@ -293,8 +295,11 @@ export interface SesMotoru {
  * Sayaç motorda durur, arka uçta değil — basamak "hangi tampon" sorusunun cevabı değil,
  * OYUNUN durumu: aynı hesap dosya yoluna da sentez yoluna da aynı sayıyı veriyor.
  */
-export function sesMotoruKur(arkaUc: SesArkaUc, acik: boolean): SesMotoru {
+export function sesMotoruKur(arkaUc: SesArkaUc, acik: boolean, seviye = 1): SesMotoru {
   let aktif = acik;
+  // 0..1 arası kazanç. ANAHTARDAN AYRI: "kapat" ile "kıs" farklı isteklerdir — seviye 0'a
+  // inse bile anahtar açık kalır ve oyuncu kaldığı yerden geri açar (D-122).
+  let ses = Math.min(1, Math.max(0, seviye));
   let kilitli = true;
   const sonCalma = new Map<SesId, number>();
   /** Sesin o anki seri adımı (kaç basamak yukarıda). Seri kesilince 0'a döner. */
@@ -302,14 +307,20 @@ export function sesMotoruKur(arkaUc: SesArkaUc, acik: boolean): SesMotoru {
 
   return {
     get acik() { return aktif; },
-    ayarla(v: boolean) { aktif = v; },
+    get seviye() { return ses; },
+    ayarla(v: boolean, yeniSeviye?: number) {
+      aktif = v;
+      if (yeniSeviye !== undefined) ses = Math.min(1, Math.max(0, yeniSeviye));
+    },
     kilidiAc() {
       if (!kilitli) return;
       kilitli = false;
       arkaUc.kilidiAc();
     },
     cal(id: SesId): boolean {
-      if (!aktif || kilitli) return false;
+      // Seviye 0 = sessiz. Kelepçe ve seri sayacı da ÇALIŞMAZ: çalınmayan ses ne yığılır ne
+      // basamak yer — kısık sesle oynayıp açan oyuncu merdivenin ortasında bulmaz kendini.
+      if (!aktif || kilitli || ses <= 0) return false;
       const tanim = SES_KATALOG[id];
       const t = arkaUc.simdi();
       const son = sonCalma.get(id);
@@ -328,8 +339,8 @@ export function sesMotoruKur(arkaUc: SesArkaUc, acik: boolean): SesMotoru {
       sonCalma.set(id, t);
       // Dosya bırakılmışsa o üstüne yazar; yoksa NİHAİ ses olan sentez çalar (E4 · karar 3).
       // D-122'de K1 seçildi (sentez kalır) ama dosya yolu basamağı taşımaya devam ediyor.
-      if (!arkaUc.dosyaCal(tanim.dosya, 1, yarimSes)) {
-        arkaUc.sentezCal(id, tanim.katmanlar, yarimSes);
+      if (!arkaUc.dosyaCal(tanim.dosya, ses, yarimSes)) {
+        arkaUc.sentezCal(id, tanim.katmanlar, yarimSes, ses);
       }
       return true;
     },

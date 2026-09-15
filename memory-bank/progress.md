@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 108 · YAPILAN 98 · %91):**
+**Oturum bütçesi (TOPLAM 108 · YAPILAN 99 · %92):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -24,10 +24,10 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
 | | D meta katman | 9/9 ✅ |
 | | E arayüz ve cila | 4/5 🔧 |
-| | **S sanat ve arayüz geçişi** | **23/24 🔧** |
+| | **S sanat ve arayüz geçişi** | **24/24 ✅** |
 | | H oynanış düzeltmeleri | 0/3 ⏳ |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **70/80** |
+| **Program toplam** | | **71/80** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -245,7 +245,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   değil; kendi turunu ister.
 - ⏳ **E5 — hareketli onboarding**
 
-## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (23/24) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
+## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (24/24) ✅ — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
 - ✅ **S1 — pad ve yükseltme dili yeniden yazıldı** · çember → **köşe parantezli kare** (kenar
   ortaları boş), dolum büyüyen disk → **alttan üste dolan kare**, "Masa"/"Çay Yükselt"/"Usta"
   → hepsinde **YÜKSELT** + solunda düz yukarı ok, yazı 700 → 800, 💎 pulu "mavi kare" → gerçek
@@ -430,7 +430,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   anahtarı**, yani L6 tam olarak bugünkü oda. Basamaklar ×0,40 → 0,75 → 1,46 → 1,58 → 2,69,
   r = +0,92, yeni çakışma 0/6, doluluk %32 → %42. Bekçi `tests/mutfak-kademe-s22.test.ts`
   **24 denetim / 4 mutasyon**. `docs/mutfak-kademe-raporu-s22.md`. vitest 1075 ✓ · duman 42/42 ✓.
-- 🔧 **S9 — SES ASSETLERİ — ÖLÇÜM BİTTİ, KARAR BEKLİYOR (D-096'nın kapsam sınırı açılıyor)** — kullanıcı ortam uğultusu
+- ✅ **S9 — SES ASSETLERİ — BİTTİ (D-122) (D-096'nın kapsam sınırı açılıyor)** — kullanıcı ortam uğultusu
   ("kalabalık sesi") ve **daha gerçekçi para sesi** istedi. **Bu karar D-096'yı kısmen geri
   alır:** sentez "nihai" seçilmişti ve `public/assets/audio/` bilerek boştu (lisans yüzeyi sıfır).
   Motor dosya üstüne yazmayı zaten destekliyor (`Model.tsx` deseninin tersi) — yani kablo hazır,
@@ -454,7 +454,16 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   **Yeni kol O5 — arka plan müziği:** Abstraction/Tallbeard bundle (CC0, 253 parça) künyesinden
   elenip 23 aday ölçüldü; ölçüt **tavan kazanç** (dokuz sesi +12 dB üstte tutan en yüksek müzik
   seviyesi). Sezgi yine çürüdü: gerçek bir dekorasyon oyununun müziği **sonuncu** (−36,1 dB),
-  kazanan bir **lavta** parçası (−18,0 dB). **Parça seçimi kullanıcıda** — kalem o seçimle kapanır.
+  kazanan bir **lavta** parçası (−18,0 dB). **SEÇİLEN: `Sketchbook 2024-01-24_02`** (Abstraction /
+  Tallbeard, CC0, 56 sn, 1740 KB) — ölçümün birincisi değil **dikişin** birincisi: baş/son farkı
+  +0,2 dB (Troubadeck'in sonu başından 7,4 dB alçaktı, her 40 sn'de duyulur sıçrama).
+  **Motorun İLK DÖNGÜSÜ geldi** (`music.ts` + `musicWeb.ts`) ve S10'dan beri boşa dönen **"Müzik"
+  anahtarı BAĞLANDI**. Kullanıcı isteğiyle **ses/müzik seviye kaydırıcıları** eklendi ("kapat" ile
+  "kıs" ayrı istekler); müziğinki ÖLÇÜLEN tavanın (−22,4 dB) altını gezer. Yolda `loadSave`'de
+  **sessiz bir kayıt hatası** bulundu ve kapandı: yüzeysel yayılım ayar nesnesinin tamamını
+  eziyordu, yeni bir ayar alanı güncel sürümlü eski kayıtta `undefined` kalırdı (bir ses çarpanı
+  için bu = oyun tamamen sessiz). Bekçi: 2 dosya, 51 denetim, **32 mutasyon, kaçan 0** ·
+  duman 42 → **45/45** · vitest **1154** ✓.
 - ✅ **S10 — UI tasarım dili: ARAŞTIRMA + MAKET (D-106)** — kod yazılmadı (tanımı gereği). Ölçüm
   108 görsel karar · palet kütlesi R 0,91 · 13 öğe Arial · 45/184 metin AA altı; sekiz CC0 paket
   indirildi; beş maket. **Kararlar:** ekran K3 tam ekran · mağaza içi M2 (önizleme 74 → 230 px) ·

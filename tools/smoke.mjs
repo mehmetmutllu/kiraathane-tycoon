@@ -379,6 +379,43 @@ try {
     else fail(`Görev barı DOM'da yok ama aktif görev var: ${JSON.stringify(qNow.quest)}`);
   }
 
+  // AYARLAR — SES/MÜZİK SEVİYESİ (S9 · D-122). Mantık bekçisi motoru sınıyor
+  // (`tests/ses-seviye-s9.test.ts`); burada sınanan şey KABLONUN gerçek tarayıcıda uçtan uca
+  // bağlı olduğu: kaydırıcı DOM'da mı, oynatınca kayda yazılıyor mu, anahtar kapanınca devre
+  // dışı kalıyor mu. Bunlar mantık testinin göremeyeceği yerler — kaydırıcı hiç render
+  // edilmese de motor testleri yeşil kalırdı.
+  await page.click('[data-testid="gear"]');
+  await page.waitForSelector('[data-testid="menu"]', { timeout: 3000 });
+  const sesKaydirici = await page.$('[data-testid="set-sound-vol"]');
+  const muzikKaydirici = await page.$('[data-testid="set-music-vol"]');
+  if (sesKaydirici && muzikKaydirici) pass('Ayarlarda ses ve müzik SEVİYE kaydırıcıları var');
+  else fail(`Seviye kaydırıcısı eksik (ses=${!!sesKaydirici}, müzik=${!!muzikKaydirici})`);
+
+  if (sesKaydirici) {
+    await sesKaydirici.fill('40');
+    await page.waitForTimeout(150);
+    const kayitli = await page.evaluate(() => {
+      try { return JSON.parse(localStorage.getItem('kiraathane.save')).settings; } catch { return null; }
+    });
+    if (kayitli && Math.abs(kayitli.soundVolume - 0.4) < 1e-6)
+      pass(`Ses seviyesi KAYDA yazıldı (${kayitli.soundVolume})`);
+    else fail(`Ses seviyesi kayda geçmedi: ${JSON.stringify(kayitli)}`);
+
+    // Anahtar kapanınca kaydırıcı devre dışı — ama SEVİYE korunur ("kapat" ≠ "kıs").
+    await page.click('[data-testid="set-sound"]');
+    await page.waitForTimeout(150);
+    const kapali = await page.$eval('[data-testid="set-sound-vol"]', (el) => el.disabled);
+    const sonra = await page.evaluate(() => {
+      try { return JSON.parse(localStorage.getItem('kiraathane.save')).settings; } catch { return null; }
+    });
+    if (kapali && sonra && Math.abs(sonra.soundVolume - 0.4) < 1e-6)
+      pass('Ses kapanınca kaydırıcı devre dışı ama SEVİYE korunuyor');
+    else fail(`Kapalı durum yanlış (disabled=${kapali}, seviye=${sonra && sonra.soundVolume})`);
+    await page.click('[data-testid="set-sound"]'); // geri aç
+  }
+  await page.click('[data-testid="menu"] .sheet-back');
+  await page.waitForTimeout(200);
+
   // Dikey (portrait) orana çevir → responsive kamera/HUD hatasız mı
   await page.setViewportSize({ width: 412, height: 915 });
   await page.waitForTimeout(500);

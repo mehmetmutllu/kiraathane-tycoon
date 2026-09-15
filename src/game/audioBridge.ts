@@ -11,7 +11,9 @@
  */
 import { levelProgress } from '../config/economy.config';
 import { sesOlaylari, sesMotoruKur, type SesKesit, type SesMotoru } from './audio';
-import { webSesArkaUcu } from './audioWeb';
+import { sesBaglami, webSesArkaUcu } from './audioWeb';
+import { muzikMotoruKur, SALON_MUZIGI, type MuzikMotoru } from './music';
+import { webMuzikArkaUcu } from './musicWeb';
 import { useGame } from './store';
 
 type Durum = ReturnType<typeof useGame.getState>;
@@ -49,12 +51,17 @@ export function kesitAl(s: Durum): SesKesit {
  * İlk kesit KIYAS NOKTASI olarak alınır ve HİÇBİR ses çalmaz — yoksa yükleme anında oyuncunun
  * bütün geçmişi bir anda çalardı (`sesOlaylari`in `onceki === null` kuralı).
  */
-export function sesiBagla(motor?: SesMotoru): () => void {
-  const m = motor ?? sesMotoruKur(webSesArkaUcu(), useGame.getState().settings.sound);
+export function sesiBagla(motor?: SesMotoru, muzik?: MuzikMotoru): () => void {
+  const ayar = useGame.getState().settings;
+  const m = motor ?? sesMotoruKur(webSesArkaUcu(), ayar.sound, ayar.soundVolume);
+  // MÜZİK ayrı motor: olaylardan doğmuyor, sürekli çalıyor, kendi ayarı ve kendi tavanı var
+  // (`music.ts` başlığı). İkisi yalnız TARAYICI KİLİDİNİ paylaşıyor.
+  const mz = muzik ?? muzikMotoruKur(
+    webMuzikArkaUcu(sesBaglami), SALON_MUZIGI, ayar.music, ayar.musicVolume);
   let onceki: SesKesit | null = null;
 
   // Mobil tarayıcı kullanıcı dokunmadan ses çalmaz; ilk dokunuş/tuş kilidi açar.
-  const ac = () => m.kilidiAc();
+  const ac = () => { m.kilidiAc(); mz.kilidiAc(); };
   if (typeof window !== 'undefined') {
     window.addEventListener('pointerdown', ac, { passive: true });
     window.addEventListener('keydown', ac, { passive: true });
@@ -63,7 +70,10 @@ export function sesiBagla(motor?: SesMotoru): () => void {
   const cikar = useGame.subscribe((s: Durum) => {
     // Ayar KAYITTAN geliyor ve panelden değişebiliyor — her karede motora yansıtılır.
     // (Bu satır olmadan ayar kayıtta durur ama hiçbir şeye bağlı olmazdı; E3a'dan önceki hâli.)
-    m.ayarla(s.settings.sound);
+    m.ayarla(s.settings.sound, s.settings.soundVolume);
+    // "Müzik" anahtarı S10'dan beri kayıtta duruyor ve hiçbir şeye bağlı DEĞİLDİ — bağlandığı
+    // satır bu (D-122). Seviye de aynı yerden geliyor; motor değişmediyse hiçbir şey yapmıyor.
+    mz.ayarla(s.settings.music, s.settings.musicVolume);
     const simdi = kesitAl(s);
     for (const id of sesOlaylari(onceki, simdi)) m.cal(id);
     onceki = simdi;

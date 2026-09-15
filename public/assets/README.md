@@ -155,11 +155,47 @@ doğrulayamaz; oradaki tek koruma bu tablodur. **Bırakılacak her dosya lisans 
 | level_up.ogg | `level` | İtibar seviyesi atladı | 4 notalı fanfar (+7,+5,+4) + oktav üstü parlaklık | ✅ sentez |
 | master.ogg | `master` | 💎 ile Usta alındı | ÇAN — inharmonik kısmiler, uzun sönme (+5,+5) | ✅ sentez |
 | reward.ogg | `reward` | Hedef / günlük görev ödülü toplandı | oktav sıçraması (+12) + kısa parıltı | ✅ sentez |
-| ambience_loop.ogg | *(olay değil)* | Ortam uğultusu | **YOK** — `settings.music` kablosu çekilmedi, kendi turunu ister | ⏳ |
+| **muzik_salon.ogg** | *(olay değil)* | **Arka plan müziği — DÖNGÜ** | **DOSYA** (sentez karşılığı yok) | ✅ **girdi** |
+| ~~ambience_loop.ogg~~ | — | ~~Ortam uğultusu~~ | **KALKTI (D-122):** kullanıcı *"uğultu da hiç olmasın"* dedi | ✖ |
 | okey_tile.ogg | *(olay değil)* | Okey pulu | **YOK** — okey masası v1.1 | ⏳ |
 
 **Ölçüldü:** 36 çiftin 36'sı ayrı (KARIŞIR 0 · AYNI JEST 0 · ikiz 0 grup) ·
 `docs/olcum-ses-ayirt.txt` · araç `tools/olcum-ses-ayirt.ts` · bekçi `tests/ses.test.ts` +
 `tests/ses-sentez.test.ts`.
+
+---
+
+## Arka plan müziği (S9 · D-122)
+
+**Klasör artık boş değil ve gerekçesi ölçülü.** D-096 "kaynak dosya değil KOD" demişti ve olay
+sesleri için bu karar **duruyor** (D-122'de K1 seçildi: dokuz sesin dokuzu hâlâ sentez). Ama
+müziğin sentez karşılığı yok — arka plan uğultusu kolu (O1) kullanıcı tarafından reddedildi ve
+yerine gerçek bir parça istendi. Yani dosyalı olan tek ses budur.
+
+| Dosya | Eser | Sanatçı | Lisans | Boyut | Döngü |
+|---|---|---|---|---|---|
+| `muzik_salon.ogg` | *Sketchbook 2024-01-24_02* | **Abstraction** (Tallbeard Studios) | **CC0 1.0** — atıf zorunlu değil | 1740 KB | 56 sn |
+
+**Kaynak:** [Music Loop Bundle](https://tallbeard.itch.io/music-loop-bundle) · paketin içindeki
+`_LICENSE.txt` CC0'ı açıkça yazıyor ("has waived all copyright and related or neighboring
+rights"). Ticari kullanım serbest, değiştirilebilir. Sanatçının **istek** olarak belirttiği tek
+sınır NFT / AI eğitimi / değiştirilmeden yeniden satış — üçü de bizim kullanımımızın dışında.
+
+**Neden bu parça:** 253 parçalık bundle künyesinden elenip **23 aday** oyunun kendi çözücüsünden
+geçirildi (`docs/olcum-muzik-s9.txt`). Seçim **dikişle** yapıldı: baş/son seviye farkı **+0,2 dB**,
+kataloğun en tutarlısı. Ölçümün birincisi (Troubadeck 04) daha az kısılıyordu (−18,0 dB) ama
+sonu başından **7,4 dB alçak** — her 40 saniyede duyulur bir sıçrama.
+
+**Seviyesi ölçülmüş, zevk değil:** `music.ts`teki `tavan: 0.0759` (**−22,4 dB**) dokuz olay
+sesinin HEPSİNİ kendi baskın bandında +12 dB üstte tutan en yüksek müzik seviyesi. Oyuncunun
+"Müzik seviyesi" kaydırıcısı bu tavanın **altını** gezer; üstüne çıkamaz.
+
+**Stil kilidi:** bu paket KayKit/Kenney değil, üçüncü bir sanatçı — ama görsel stil kilidini
+delmiyor, çünkü ses sanat yönüne görsel gibi bağlanmıyor. Lisans yüzeyi: CC0, künye gerekmez.
+
+**Bulunamayan:** temiz CC0 **Türkçe/Anadolu** tınısı (saz · bağlama · ud). Aramalar ya abonelikli
+kütüphanelere ya lisansı belirsiz kullanıcı yüklemelerine çıkıyor. Bu, ince belli bardağı ve
+damacana rafını kendimiz çizdiren gerekçenin (D-099) sesteki karşılığı — kıraathanenin kimliğini
+taşıyan şey hazır pakette yok.
 
 Durum: ⏳ greybox (model/ses yok, ilkel/ton kullanılıyor) · ✅ eklendi (lisans doğrulanmış).

@@ -61,17 +61,57 @@ export function defaultStats(): SaveStats {
   };
 }
 
-/** Oyuncu ayarları (v17 persist). Ses/müzik Faz 6'da, bildirimler Capacitor'da (Faz 5/7) okunur. */
+/** Oyuncu ayarları (v17 persist). Bildirimler Capacitor'da (Faz 5/7) okunur. */
 export interface SaveSettings {
   sound: boolean;
   music: boolean;
   notifications: boolean;
   /** Dev/teşhis: ekran-üstü FPS + draw-call sayacı (default kapalı; additive — sürüm artmadı). */
   showFps: boolean;
+  /**
+   * Olay seslerinin seviyesi, 0..1 (S9 · D-122). Anahtarın yanında AYRI durur: "kapat" ile
+   * "kıs" farklı isteklerdir — oyuncu sesi tamamen kapatmadan mekânı sessizleştirebilmeli.
+   * 1 = bugüne kadarki davranış, yani eski kayıt hiçbir şey kaybetmez.
+   */
+  soundVolume: number;
+  /**
+   * Müziğin seviyesi, 0..1. TAVANI ölçülmüş: 1 = `music.ts`teki kazanç, yani dokuz olay sesini
+   * kendi bandında +12 dB üstte tutan EN YÜKSEK müzik seviyesi. Slider bu tavanın altını gezer;
+   * üstüne çıkamaz, çünkü o an müzik oyunun kendi geri bildirimini örtmeye başlar.
+   */
+  musicVolume: number;
 }
 
 export function defaultSettings(): SaveSettings {
-  return { sound: true, music: true, notifications: true, showFps: false };
+  return { sound: true, music: true, notifications: true, showFps: false, soundVolume: 1, musicVolume: 1 };
+}
+
+/**
+ * KAYITTAN GELEN AYARLARI VARSAYILANLARLA BİRLEŞTİRİR — ve bu, `loadSave`daki sessiz bir
+ * açığı kapatıyor.
+ *
+ * `{ ...defaultSave(), ...parsed }` yüzeysel bir yayılımdır: `parsed.settings` varsa
+ * varsayılan ayar nesnesinin TAMAMINI değiştirir, alan alan birleştirmez. Yani ayarlara
+ * eklenen her yeni alan, GÜNCEL SÜRÜMLÜ eski bir kayıtta `undefined` kalırdı — göç bile
+ * çalışmazdı, çünkü sürüm zaten güncel. `showFps` bu tuzağa düşmemişti (kimse eski kayıtla
+ * sınamadı) ama ses seviyesi düşerdi: `undefined` bir çarpan sesi tamamen susturur.
+ *
+ * Buradaki birleştirme alan başına değil NESNE düzeyinde yapılıyor ve bu bilerek: kayıt bir
+ * alanı taşımıyorsa varsayılanı geçer, taşıyorsa oyuncunun seçimi geçer.
+ */
+export function ayarlariBirlestir(ham: unknown): SaveSettings {
+  const s = (ham && typeof ham === 'object' ? ham : {}) as Partial<SaveSettings>;
+  const d = defaultSettings();
+  const oran = (v: unknown, varsayilan: number): number =>
+    typeof v === 'number' && Number.isFinite(v) ? Math.min(1, Math.max(0, v)) : varsayilan;
+  return {
+    sound: typeof s.sound === 'boolean' ? s.sound : d.sound,
+    music: typeof s.music === 'boolean' ? s.music : d.music,
+    notifications: typeof s.notifications === 'boolean' ? s.notifications : d.notifications,
+    showFps: typeof s.showFps === 'boolean' ? s.showFps : d.showFps,
+    soundVolume: oran(s.soundVolume, d.soundVolume),
+    musicVolume: oran(s.musicVolume, d.musicVolume),
+  };
 }
 
 export interface SaveData {
@@ -191,17 +231,7 @@ export function defaultSave(): SaveData {
  * andan itibaren bağlayıcı; o gün geldiğinde buraya düşen kayıt kalmamalı.
  */
 export function resetKeepingSettings(raw: Record<string, unknown>): SaveData {
-  const def = defaultSave();
-  const s = (raw.settings && typeof raw.settings === 'object' ? raw.settings : {}) as Partial<SaveSettings>;
-  return {
-    ...def,
-    settings: {
-      sound: typeof s.sound === 'boolean' ? s.sound : def.settings.sound,
-      music: typeof s.music === 'boolean' ? s.music : def.settings.music,
-      notifications: typeof s.notifications === 'boolean' ? s.notifications : def.settings.notifications,
-      showFps: typeof s.showFps === 'boolean' ? s.showFps : def.settings.showFps,
-    },
-  };
+  return { ...defaultSave(), settings: ayarlariBirlestir(raw.settings) };
 }
 
 /**
@@ -255,9 +285,15 @@ export function loadSave(): SaveData {
     const raw = localStorage.getItem(KEY);
     if (!raw) return defaultSave();
     const parsed = JSON.parse(raw) as Record<string, unknown>;
-    if (parsed.saveVersion === SAVE_VERSION) return { ...defaultSave(), ...(parsed as object) } as SaveData;
+    // Ayarlar HER yolda birleştirilir: yüzeysel yayılım eski kaydın eksik ayar alanlarını
+    // `undefined` bırakırdı ve göç bunu yakalayamazdı (sürüm zaten güncel). Bkz. `ayarlariBirlestir`.
+    const ayarla = (d: SaveData): SaveData => ({ ...d, settings: ayarlariBirlestir(d.settings) });
+    if (parsed.saveVersion === SAVE_VERSION) {
+      return ayarla({ ...defaultSave(), ...(parsed as object) } as SaveData);
+    }
     // Göç zinciri YENİDEN ESKİYE: v32 → v33, sonra v31 → v33.
-    return migrateV32(parsed) ?? migrateV31(parsed) ?? resetKeepingSettings(parsed);
+    const gocmus = migrateV32(parsed) ?? migrateV31(parsed);
+    return gocmus ? ayarla(gocmus) : resetKeepingSettings(parsed);
   } catch {
     return defaultSave();
   }

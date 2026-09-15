@@ -5,7 +5,7 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-16 — **S9 SES: D-122 uygulandı, açık kalan tek şey PARÇA** · Faz S 23/24 · 98/108)
+## ŞU AN (2026-09-16 — **S9 SES BİTTİ: parça seçildi, seviye ayarı geldi** · Faz S 24/24 · 99/108)
 
 ```
 SORU            : D-106 kaynağı Kenney'e bağladı ama KAPSAMINI söylemedi. Hangi olay dosyadan
@@ -13,11 +13,12 @@ SORU            : D-106 kaynağı Kenney'e bağladı ama KAPSAMINI söylemedi. H
 ÖLÇÜLECEK KOLLAR: K1…K5 bölüşüm · I1/I2/I3 basamak · O1/O2/O3/O4 ortam · A1/A2/A3 kelepçe
 SAYILAR         : docs/ses-raporu-s17.md §Bulgular (15 satır) · ham: docs/olcum-ses-s17.txt +
                   docs/olcum-ses-karma.txt (ikisi de TAM koşu damgalı)
-KARAR           : D-122 — K1 (sentez kalır) + I2 + A3 + O4 · yeni kol O5 (arka plan müziği)
-UYGULAMA        : I2 koda girdi — audio.ts `seri` alanı · audioSynth.ts `perdele`/`YARIM_SES` ·
-                  audioWeb.ts basamak başına tampon; O5 için 23 aday ölçüldü, PARÇA SEÇİMİ AÇIK
-BEKÇİ           : tests/seri-ivmesi-s9.test.ts — 24 denetim, 16 MUTASYON kırmızı, kaçan 0
-FINAL           : vitest 1126 ✓ · duman 42/42 ✓ · tsc temiz · denge dosyasına dokunulmadı
+KARAR           : D-122 — K1 (sentez kalır) + I2 + A3 + O4 · O5 = Sketchbook 2024-01-24_02 (CC0)
+UYGULAMA        : I2 seri ivmesi · music.ts + musicWeb.ts (motorun İLK DÖNGÜSÜ) · "Müzik" anahtarı
+                  BAĞLANDI · ses/müzik SEVİYE kaydırıcıları (kullanıcı isteği) · save.ts'te
+                  ayar birleştirme hatası kapandı
+BEKÇİ           : seri-ivmesi-s9 (24 den. · 16 mut.) + ses-seviye-s9 (27 den. · 16 mut.) · kaçan 0
+FINAL           : vitest 1154 ✓ · duman 45/45 ✓ · tsc temiz · denge dosyasına dokunulmadı
 ```
 
 **Turun kalıcı üç dersi:**
@@ -29,21 +30,30 @@ FINAL           : vitest 1126 ✓ · duman 42/42 ✓ · tsc temiz · denge dosya
 2. **Kataloğun en dar yeri kullanıcının işaret ettiği ses DEĞİLDİ.** En zayıf çift
    `quest`↔`level` = **4,06 dB** ve K1/K3/K4'te aynı kalıyor. Şikâyet coin'deydi; kazanç
    ilerleme ailesindeydi. İkisi hiç kesişmedi.
-3. **Ölçüm müzikte de sezgiyi çürüttü.** Kataloğun en "doğru" adayı — gerçek bir dekorasyon
-   oyununun müziği — **sonuncu** çıktı (−36,1 dB kısılmak zorunda). Kazanan adı hiçbir şey vaat
-   etmeyen bir **lavta** parçası (−18,0 dB). Bir asset'in KONUSU, o asset'in ölçüsü değil.
+3. **Ölçüm müzikte de sezgiyi çürüttü — ama SEÇEN sayı yine başkası oldu.** Kataloğun en
+   "doğru" adayı (gerçek bir dekorasyon oyununun müziği) **sonuncu** çıktı (−36,1 dB). Ölçümün
+   birincisi bir **lavta** parçasıydı (−18,0 dB). Seçilen ise üçüncü bir sayıya bakan parça:
+   **dikiş**. Troubadeck'in sonu başından 7,4 dB alçak — bir kerelik 4,4 dB'lik kısma payı,
+   her 40 saniyede tekrarlayan bir kusura tercih edildi.
+
+**Yolda bulunan sessiz hata (turun asıl kazancı):** `loadSave` yüzeysel yayılım yapıyordu ve
+`parsed.settings` varsayılan ayar NESNESİNİN tamamını eziyordu — ayarlara eklenen her yeni alan
+**güncel sürümlü** eski bir kayıtta `undefined` kalırdı, göç bile çalışmazdı. `undefined` bir ses
+çarpanı oyunu tamamen susturur. `ayarlariBirlestir` ile tek yere alındı; bu, alan eklemenin değil
+ALAN SINIFININ hatasıydı.
 
 **Ayrıca:** `perdele` ve `YARIM_SES` `audioSynth.ts`e çıkarıldı; `ses-metrik` ve `ses-taslak`
 oradan alıyor — panoda DUYULAN basamak ile oyunda ÇALAN basamak artık ayrışamaz.
 
 ## SIRADAKİ TAM ADIM
 
-**O5 — arka plan müziği PARÇA SEÇİMİ.** 8 aday karar panosunda dikişinden dinlenebiliyor;
-kullanıcı adı söyleyince: parça künyesiyle `public/assets/README.md` manifestine girer,
-**"Müzik" anahtarı ona bağlanır** (bugün hâlâ hiçbir şeye bağlı değil) ve motora ilk **döngü**
-kabiliyeti gelir. Ölçümün önerisi *Troubadeck 04* (−18,0 dB), en dengelisi
-*Sketchbook 2024-01-24_02* (dikiş sıçraması 0,0077 · baş/son farkı +0,2 dB).
-Bununla Faz E 4/5 → 5/5 ve Faz S 23/24 → 24/24 kapanır.
+**Faz H** — oynanış düzeltmeleri. Sırada bekleyen kalemler: G-01 masa her taraftan toplanmıyor ·
+G-02 ocaktan alma güvenilmez · G-03 kamera kayıyor · masa aralığı (0,68 br, geçiş 0,94 ister —
+20 masanın 12'si) · E1 yürünebilir mutfak. G-06 ve G-07 DENGE, varyant kapısına tabi.
+
+**S9'un bıraktığı iki açık uç:** ① müziğin telefonda gerçek maliyeti ölçülmedi (1740 KB indirme +
+sürekli çözme; APK turunda okunacak) · ② `2024-q4` paketi indirilmedi, profili tutan 2 aday
+ölçülmedi — parça değiştirilmek istenirse orası ilk bakılacak yer.
 
 **Sonra:** **Faz H** (oynanış düzeltmeleri — G-01…G-07; E1 yürünebilir mutfak orada).
 

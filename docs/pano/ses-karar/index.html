@@ -68,6 +68,10 @@ code{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.87em;backgrou
 .seg button[aria-pressed="true"]{background:var(--sinyal);color:var(--surface)}
 .toggle{font:inherit;font-size:12.5px;font-weight:600;border:1px solid var(--line-strong);background:var(--surface-2);color:var(--ink-2);padding:6px 13px;border-radius:100px;cursor:pointer;white-space:nowrap}
 .toggle[aria-pressed="true"]{background:var(--sinyal-soft);border-color:var(--sinyal);color:var(--sinyal)}
+a.toggle.git{text-decoration:none;background:var(--brand);border-color:var(--brand);color:var(--surface)}
+a.toggle.git:hover{background:var(--brand-ink);border-color:var(--brand-ink)}
+/* Yapışkan şerit bölüm başlığını yemesin. */
+#muzik{scroll-margin-top:calc(70px + env(safe-area-inset-top,0px))}
 .simdi{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3);min-width:96px;text-align:right}
 .simdi.aktif{color:var(--sinyal)}
 
@@ -209,6 +213,7 @@ table.matris td.kos{color:var(--ink-3);font-style:italic}
       <button type="button" id="kip-oyun" aria-pressed="false">Oyun seviyesi</button>
     </div>
     <button type="button" class="toggle" id="ortam-ac" aria-pressed="false">Ortam yatağı</button>
+    <a class="toggle git" href="#muzik">♪ Parçayı seç ↓</a>
     <span class="simdi mono" id="simdi">hazır</span>
   </div>
 </div>
@@ -246,7 +251,12 @@ table.matris td.kos{color:var(--ink-3);font-style:italic}
       <p style="margin-top:14px">
         <b>I2 koda girdi</b> ve bekçisi yazıldı (<code>tests/seri-ivmesi-s9.test.ts</code>,
         <b>16 mutasyon, kaçan 0</b>). Aşağıdaki <b>İ</b> bölümünde artık oyunun gerçek hâli
-        duyuluyor. Açık kalan tek soru en altta: <b>hangi parça</b>.
+        duyuluyor.
+      </p>
+      <p style="margin-top:12px;font-size:15px;color:var(--ink)">
+        <b>Senden istenen tek şey:</b> <a href="#muzik" style="color:var(--brand-ink)">arka plan
+        müziği bölümüne</a> (ya da üstteki <b>♪ Parçayı seç</b> düğmesine) git, sekiz parçayı
+        <b>▶ dikiş</b> ile dinle, beğendiğinin <b>adını söyle</b>. Hepsi bu.
       </p>
     </div>
   </header>
@@ -387,7 +397,7 @@ table.matris td.kos{color:var(--ink-3);font-style:italic}
   </section>
 
   <!-- ══ O5 — ARKA PLAN MÜZİĞİ ══ -->
-  <section>
+  <section id="muzik">
     <div class="sec-head">
       <h2>O5 — arka plan müziği: hangi parça?</h2>
       <span class="sec-note">docs/olcum-muzik-s9.txt · yeni kol</span>

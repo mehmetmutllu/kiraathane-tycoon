@@ -363,7 +363,21 @@ export function HUD() {
         <Sheet title="Ayarlar" testid="menu" onClose={() => setSheet(null)}>
           <div className="sheet-pad">
             <SettingRow label="Ses" value={settings.sound} onChange={(v) => setSetting('sound', v)} testid="set-sound" />
+            <SettingSlider
+              label="Ses seviyesi"
+              value={settings.soundVolume}
+              disabled={!settings.sound}
+              onChange={(v) => setSetting('soundVolume', v)}
+              testid="set-sound-vol"
+            />
             <SettingRow label="Müzik" value={settings.music} onChange={(v) => setSetting('music', v)} testid="set-music" />
+            <SettingSlider
+              label="Müzik seviyesi"
+              value={settings.musicVolume}
+              disabled={!settings.music}
+              onChange={(v) => setSetting('musicVolume', v)}
+              testid="set-music-vol"
+            />
             <SettingRow
               label="Bildirimler"
               value={settings.notifications}
@@ -1179,6 +1193,51 @@ function FpsOverlay() {
     >
       <span style={{ color }}>{snap.fps} FPS</span>
       {`\n${snap.calls} draw\n${(snap.tris / 1000).toFixed(1)}k tri`}
+    </div>
+  );
+}
+
+/**
+ * SEVİYE KAYDIRICISI (S9 · D-122). Anahtarın ALTINDA ayrı satır — "kapat" ile "kıs" farklı
+ * isteklerdir ve tek bir anahtar ikisini birden karşılamıyordu.
+ *
+ * Anahtar kapalıyken kaydırıcı SÖNÜKLEŞİR ama KALDIRILMAZ: yeri sabit kalsın, panel açılıp
+ * kapanırken satırlar zıplamasın. Devre dışı olması zaten `disabled` ile yazılı.
+ *
+ * Adım 5: kulak 100 kademeyi ayırt etmiyor, 20 kademe sürüklemeyi de rahat bırakıyor.
+ */
+function SettingSlider({
+  label,
+  value,
+  onChange,
+  disabled,
+  testid,
+}: {
+  label: string;
+  value: number;
+  onChange: (v: number) => void;
+  disabled?: boolean;
+  testid: string;
+}) {
+  const yuzde = Math.round(value * 100);
+  return (
+    <div className={`setting-slider${disabled ? ' kapali' : ''}`}>
+      <span className="setting-label">{label}</span>
+      <input
+        type="range"
+        min={0}
+        max={100}
+        step={5}
+        value={yuzde}
+        // Dolu kısmın oranı CSS'e buradan geçiyor: `input[type=range]` kendi değerini bir
+        // arka plana çeviremez, oran JS'ten verilmek zorunda.
+        style={{ '--dolu': `${yuzde}%` } as React.CSSProperties}
+        disabled={disabled}
+        data-testid={testid}
+        aria-label={label}
+        onChange={(e) => onChange(Number(e.target.value) / 100)}
+      />
+      <span className="setting-val">%{yuzde}</span>
     </div>
   );
 }

@@ -122,10 +122,10 @@
   ],
   "palet": {
     "metin": {
-      "rgb(255, 255, 255)": 40,
-      "rgb(169, 159, 216)": 45,
-      "rgb(234, 227, 255)": 63,
-      "rgb(255, 212, 94)": 13,
+      "rgb(255, 255, 255)": 34,
+      "rgb(169, 159, 216)": 54,
+      "rgb(234, 227, 255)": 68,
+      "rgb(255, 212, 94)": 14,
       "rgb(58, 34, 6)": 10,
       "rgb(255, 194, 75)": 8,
       "rgb(127, 217, 255)": 2,
@@ -133,40 +133,47 @@
     },
     "zemin": {
       "rgb(27, 20, 67)": 53,
-      "grad:linear-gradient(rgb(58, 49, 120), rgb(46, 39, 100))": 33,
+      "grad:linear-gradient(rgb(58, 49, 120), rgb(46, 39, 100))": 39,
       "grad:linear-gradient(rgb(255, 194, 75), rgb(224, 148, 21))": 27,
       "grad:linear-gradient(rgb(70, 60, 134), rgb(34, 27, 82))": 11,
-      "rgb(212, 58, 38)": 13,
+      "rgb(212, 58, 38)": 7,
       "rgb(34, 27, 82)": 5,
-      "grad:linear-gradient(rgb(123, 212, 106), rgb(79, 168, 62))": 5,
       "grad:linear-gradient(rgb(27, 20, 67), rgb(34, 27, 82))": 1,
+      "grad:linear-gradient(rgb(123, 212, 106), rgb(79, 168, 62))": 4,
+      "grad:radial-gradient(120% 100% at 50% 12%, rgb(91, 79, 166), rgb(": 1,
+      "grad:linear-gradient(135deg, rgb(185, 138, 90) 0px, rgb(185, 138,": 1,
+      "rgb(255, 194, 75)": 1,
+      "grad:linear-gradient(135deg, rgb(227, 218, 198) 0px, rgb(227, 218": 1,
+      "grad:linear-gradient(135deg, rgb(232, 220, 200) 0px, rgb(232, 220": 1,
+      "grad:linear-gradient(135deg, rgb(236, 230, 218) 0px, rgb(236, 230": 1,
+      "grad:linear-gradient(135deg, rgb(138, 90, 59) 0px, rgb(138, 90, 5": 1,
       "grad:radial-gradient(120% 100% at 50% 14%, rgb(91, 79, 166), rgb(": 1,
       "rgb(234, 227, 255)": 4
     }
   },
   "olcek": {
     "yaricap": {
-      "999px 999px 999px 999px": 60,
-      "50% 50% 50% 50%": 31,
-      "17px 17px 17px 17px": 56,
-      "10px 10px 10px 10px": 11,
+      "999px 999px 999px 999px": 50,
+      "50% 50% 50% 50%": 32,
+      "17px 17px 17px 17px": 63,
+      "10px 10px 10px 10px": 19,
       "22px 22px 22px 22px": 2
     },
     "golge": {
-      "rgba(255, 255, 255, 0.45) 0px 2px 0px 0px inset, rgb(16, 11, 46) 0px 3px 0px 0px": 34,
+      "rgba(255, 255, 255, 0.45) 0px 2px 0px 0px inset, rgb(16, 11, 46) 0px 3px 0px 0px": 33,
       "rgba(255, 255, 255, 0.5) 0px 3px 0px 0px inset, rgb(16, 11, 46) 0px 5px 0px 0px, rgba(0, 0": 6,
       "rgb(16, 11, 46) 0px 2px 0px 0px": 15
     },
     "punto": {
       "22px": 19,
-      "18px": 6,
-      "11px": 92,
-      "15px": 23,
-      "13px": 44
+      "18px": 8,
+      "11px": 87,
+      "15px": 22,
+      "13px": 57
     },
     "font": {
-      "Lilita One": 89,
-      "Baloo 2": 95
+      "Lilita One": 88,
+      "Baloo 2": 105
     },
     "fontOge": {
       "Lilita One": [
@@ -176,18 +183,17 @@
         "span.band-count",
         "span.band-reward",
         "span.navtab-bang",
-        "span.navtab-bang",
         "i.rep-num",
         "span.cur-val",
         "span.cur-val",
         "span.band-count",
         "span.band-reward",
         "span.navtab-bang",
-        "span.navtab-bang",
         "b.",
         "b.",
         "span.goal-num",
         "i.",
+        "span.goal-reward",
         "span.goal-num",
         "i.",
         "span.goal-reward",
@@ -201,7 +207,6 @@
         "span.cur-val",
         "span.band-count",
         "span.band-reward",
-        "span.navtab-bang",
         "span.navtab-bang",
         "b.",
         "b.",
@@ -235,17 +240,14 @@
         "span.band-count",
         "span.band-reward",
         "span.navtab-bang",
-        "span.navtab-bang",
         "b.",
         "b.",
-        "span.req",
-        "span.req",
+        "span.",
         "i.rep-num",
         "span.cur-val",
         "span.cur-val",
         "span.band-count",
         "span.band-reward",
-        "span.navtab-bang",
         "span.navtab-bang",
         "b.",
         "b.",
@@ -256,7 +258,11 @@
         "span.band-count",
         "span.band-reward",
         "span.navtab-bang",
-        "span.navtab-bang",
+        "b.",
+        "b.",
+        "b.",
+        "b.",
+        "b.",
         "b.",
         "b."
       ],
@@ -277,7 +283,6 @@
         "div.sheet-sec",
         "b.",
         "span.goal-note",
-        "button.goal-claim",
         "b.",
         "span.goal-note",
         "b.",
@@ -320,11 +325,11 @@
         "span.navtab-label",
         "span.navtab-label",
         "span.screen-title",
+        "button.shop-tab",
         "button.shop-tab active",
         "button.shop-tab",
-        "button.shop-tab",
-        "div.shop-locked-title",
-        "div.shop-locked-desc",
+        "b.",
+        "button.shop-buy sel",
         "span.band-kicker",
         "span.band-title",
         "span.navtab-label",
@@ -353,8 +358,19 @@
         "span.screen-title",
         "span.setting-label",
         "span.setting-label",
+        "span.setting-val",
         "span.setting-label",
         "span.setting-label",
+        "span.setting-val",
+        "span.setting-label",
+        "span.setting-label",
+        "div.sheet-sec",
+        "span.",
+        "span.",
+        "span.",
+        "span.",
+        "span.",
+        "div.sheet-foot-note",
         "button.danger-btn"
       ]
     },
@@ -402,12 +418,6 @@
         "esik": 4.5
       },
       {
-        "ad": "span.navtab-bang",
-        "px": 11,
-        "oran": 4.74,
-        "esik": 4.5
-      },
-      {
         "ad": "span.navtab-label",
         "px": 11,
         "oran": 7.52,
@@ -477,12 +487,6 @@
         "ad": "span.band-reward",
         "px": 11,
         "oran": 12.08,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.navtab-bang",
-        "px": 11,
-        "oran": 4.74,
         "esik": 4.5
       },
       {
@@ -564,9 +568,9 @@
         "esik": 4.5
       },
       {
-        "ad": "button.goal-claim",
-        "px": 13,
-        "oran": 9.26,
+        "ad": "span.goal-reward",
+        "px": 11,
+        "oran": 7.85,
         "esik": 4.5
       },
       {
@@ -729,12 +733,6 @@
         "ad": "span.band-reward",
         "px": 11,
         "oran": 12.08,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.navtab-bang",
-        "px": 11,
-        "oran": 4.74,
         "esik": 4.5
       },
       {
@@ -1068,12 +1066,6 @@
         "esik": 4.5
       },
       {
-        "ad": "span.navtab-bang",
-        "px": 11,
-        "oran": 4.74,
-        "esik": 4.5
-      },
-      {
         "ad": "span.navtab-label",
         "px": 11,
         "oran": 7.52,
@@ -1119,6 +1111,12 @@
         "ad": "b.",
         "px": 13,
         "oran": 13.79,
+        "esik": 4.5
+      },
+      {
+        "ad": "button.shop-tab",
+        "px": 13,
+        "oran": 8.96,
         "esik": 4.5
       },
       {
@@ -1134,33 +1132,21 @@
         "esik": 4.5
       },
       {
-        "ad": "button.shop-tab",
-        "px": 13,
+        "ad": "b.",
+        "px": 18,
         "oran": 8.96,
         "esik": 4.5
       },
       {
-        "ad": "div.shop-locked-title",
-        "px": 15,
-        "oran": 13.79,
-        "esik": 4.5
-      },
-      {
-        "ad": "div.shop-locked-desc",
+        "ad": "span.",
         "px": 13,
-        "oran": 7.04,
+        "oran": 4.57,
         "esik": 4.5
       },
       {
-        "ad": "span.req",
-        "px": 11,
-        "oran": 7.04,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.req",
-        "px": 11,
-        "oran": 7.04,
+        "ad": "button.shop-buy sel",
+        "px": 18,
+        "oran": 9.26,
         "esik": 4.5
       },
       {
@@ -1203,12 +1189,6 @@
         "ad": "span.band-reward",
         "px": 11,
         "oran": 12.08,
-        "esik": 4.5
-      },
-      {
-        "ad": "span.navtab-bang",
-        "px": 11,
-        "oran": 4.74,
         "esik": 4.5
       },
       {
@@ -1380,12 +1360,6 @@
         "esik": 4.5
       },
       {
-        "ad": "span.navtab-bang",
-        "px": 11,
-        "oran": 4.74,
-        "esik": 4.5
-      },
-      {
         "ad": "span.navtab-label",
         "px": 11,
         "oran": 7.52,
@@ -1441,8 +1415,32 @@
       },
       {
         "ad": "span.setting-label",
+        "px": 13,
+        "oran": 3.84,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.setting-val",
+        "px": 13,
+        "oran": 3.84,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.setting-label",
         "px": 15,
         "oran": 7.52,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.setting-label",
+        "px": 13,
+        "oran": 3.84,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.setting-val",
+        "px": 13,
+        "oran": 3.84,
         "esik": 4.5
       },
       {
@@ -1455,6 +1453,78 @@
         "ad": "span.setting-label",
         "px": 15,
         "oran": 7.52,
+        "esik": 4.5
+      },
+      {
+        "ad": "div.sheet-sec",
+        "px": 11,
+        "oran": 7.04,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.",
+        "px": 13,
+        "oran": 7.04,
+        "esik": 4.5
+      },
+      {
+        "ad": "b.",
+        "px": 13,
+        "oran": 13.79,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.",
+        "px": 13,
+        "oran": 7.04,
+        "esik": 4.5
+      },
+      {
+        "ad": "b.",
+        "px": 13,
+        "oran": 13.79,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.",
+        "px": 13,
+        "oran": 7.04,
+        "esik": 4.5
+      },
+      {
+        "ad": "b.",
+        "px": 13,
+        "oran": 13.79,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.",
+        "px": 13,
+        "oran": 7.04,
+        "esik": 4.5
+      },
+      {
+        "ad": "b.",
+        "px": 13,
+        "oran": 13.79,
+        "esik": 4.5
+      },
+      {
+        "ad": "span.",
+        "px": 13,
+        "oran": 7.04,
+        "esik": 4.5
+      },
+      {
+        "ad": "b.",
+        "px": 13,
+        "oran": 13.79,
+        "esik": 4.5
+      },
+      {
+        "ad": "div.sheet-foot-note",
+        "px": 11,
+        "oran": 7.04,
         "esik": 4.5
       },
       {
@@ -1464,8 +1534,8 @@
         "esik": 4.5
       }
     ],
-    "gorunurOge": 204,
-    "toplamOge": 92
+    "gorunurOge": 203,
+    "toplamOge": 91
   },
   "kaplama": {
     "kutular": [
@@ -1511,7 +1581,7 @@
   },
   "katman": {
     "temel": {
-      "gorunurOge": 87,
+      "gorunurOge": 86,
       "zemin": 5
     }
   }
