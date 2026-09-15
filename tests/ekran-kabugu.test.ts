@@ -26,6 +26,7 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { economyConfig } from '../src/config/economy.config';
+import { masaEtiketi } from '../src/game/markerFrame';
 
 const INDEX = 'src/index.css';
 const HUD_CSS = 'src/components/ui/hud.css';
@@ -158,8 +159,14 @@ describe('ekran kabuğu — K3 (D-106)', () => {
   });
 
   it('7 · G-18: masanın yükseltme noktası SEVİYEYİ yazar (havada kart yok)', () => {
+    // S24 (D-121): etiket artık Scene'de düz metin değil — `masaEtiketi` üretiyor, çünkü AYNI
+    // metni `tick.ts` de okuyor (etiket uzunluğu çerçeve genişliğine, o da tetiğe giriyor).
+    // Bu yüzden denetim kaynak metnine değil DAVRANIŞA bakar: üretilen yazı seviyeyi taşıyor mu
+    // ve Scene gerçekten o üreticiyi mi çağırıyor.
+    expect(masaEtiketi(0)).toBe('SV 1');
+    expect(masaEtiketi(11)).toBe('SV 12');
     const kod = yorumsuz(oku(SCENE));
-    expect(kod, 'masa noktası seviyeyi taşımalı').toMatch(/label=\{`SV \$\{lvl \+ 1\}`\}/);
+    expect(kod, 'masa noktası seviyeyi taşımalı').toMatch(/label=\{masaEtiketi\(lvl\)\}/);
   });
 
   it('8 · T2: ikincil metin (--tx2) kartsız gövde zemininde DURMAZ (WCAG AA ≥ 4,5)', () => {

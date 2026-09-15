@@ -5,6 +5,15 @@ import { MathUtils, MeshBasicMaterial, Shape, type Group, type Mesh } from 'thre
 import { activeStep, markerTier } from '../../game/activeStep';
 import { dwellState } from '../../game/dwell';
 import { useGame } from '../../game/store';
+import {
+  ETIKET_PUNTO,
+  ISARET_R,
+  KENAR_PAYI,
+  OK_BOSLUK,
+  OK_GENIS,
+  inFrame,
+  markerFrame,
+} from '../../game/markerFrame';
 import type { Vec3 } from '../../game/types';
 
 /** Oyun fontu (Baloo 2, OFL) — YEREL bundle; troika'nın CDN default fontu kullanılmaz
@@ -19,8 +28,15 @@ const GAME_FONT_3D = '/assets/fonts/Baloo2.ttf';
  * devam ediyor: uzaktaki işaret hâlâ yazısız çizilir.
  */
 const UZERINDE_BUYUME = 1.12;
-/** Oyuncu bu yarıçapın içindeyse "üzerinde" sayılır (işaretin kendi ölçüsüne oranlı). */
-const UZERINDE_PAYI = 1.35;
+/**
+ * "ÜZERİNDE" ARTIK ÇERÇEVENİN KENDİSİ — daire değil (S24 · D-121).
+ *
+ * Eskiden bu test kendi dairesini kuruyordu (`hw × 1,35`) ve ölçüm onun da **%34,3**'ünün
+ * çerçeve dışında olduğunu gösterdi: ekran *"buradasın"* diye kabarırken dolum başlamıyor,
+ * ya da tersi oluyordu. Artık kabarma ile dolum AYNI kutuya bakıyor; geriye küçük bir pay
+ * kalıyor, o da yalnızca kenarda duran oyuncunun kabarmayı kırpık görmemesi için.
+ */
+const UZERINDE_PAYI = 0.06;
 /** Nabız: aktif adımın işareti yalnızca bu kadar oynar (hafif — `feedback_visual_polish`). */
 const PULSE_AMP = 0.04;
 const PULSE_HZ = 0.52;
@@ -30,33 +46,15 @@ const SAY_DAMP = 14;
 const TEXT_ON = 0.55;
 
 /**
- * ÇERÇEVENİN GENİŞLİĞİ YAZIDAN ÇÖZÜLÜR, TAHMİN EDİLMEZ.
+ * ÇERÇEVE ÖLÇÜSÜ ARTIK BURADA DEĞİL — `src/game/markerFrame.ts`te (S24 · D-121).
  *
- * İlk hâlde çerçeve `radius`tan türüyordu ve yazı ortalanıyordu; küçük işaretlerde (masa/Usta,
- * r = 0,6) "YÜKSELT" ile solundaki ok **üst üste biniyordu** (kullanıcı 2026-09-09). Sebep
- * ikisinin aynı genişlik için yarışması ve kimsenin ölçmemesiydi. Artık genişlik
- * `ok bloğu + boşluk + yazının gerçek genişliği` olarak kuruluyor. Baloo 2 Bold'da ortalama
- * harf ilerlemesi ≈ 0,58 em; kısa büyük-harf etiketlerde yeterli yaklaşım — ve `maxWidth` üst
- * sınırı ayrıca kilitliyor, yani hata payı taşmaya değil sarmaya gider.
+ * S24 ölçümü çerçevenin ikinci bir tüketicisi olduğunu gösterdi: `tick.ts` oyuncunun dolum
+ * başlatıp başlatmadığına karar verirken AYRI bir geometri (daire) kullanıyordu ve tetikleyen
+ * alanın **%50,4'ü** bu çerçevenin dışında kalıyordu. Ölçü buraya ait olmaktan çıktı, çünkü
+ * artık yalnız çizimin değil KURALIN da parçası. Sabitler aşağıda yeniden dışa aktarılıyor:
+ * S23'ün bekçisi (`tests/arayuz-s23.test.ts`) onları bu modülden okuyor ve okumaya devam etsin.
  */
-export const HARF_EM = 0.58;
-export const ETIKET_PUNTO = 0.38;
-/**
- * OKUN AYRILAN BLOĞU — ve **çizilen okun eni bu sayıdan TÜRER** (S23 · D-120).
- *
- * S23 ölçümü kusurun yerini buldu: blok 0,340 r yazılıyken çizilen uç 0,554 r idi, yani ok
- * kendi bloğundan %63 geniş. Sebep uçun `circleGeometry(r·0,32, 3)` olmasıydı — 3 kenarlı
- * çemberin KENARI yarıçapın √3 katıdır ve bu çarpan hiçbir yerde yazmıyordu. Sonuç ölçüldü:
- * sol kenar payının %59'u yeniyor (0,180 → 0,073 r), yazıya kalan açıklık amaçlananın üçte
- * biri (0,160 → 0,053 r), parantezle arası 0,006 birim — kullanıcının *"çerçeveye değiyor"*
- * cümlesi buydu. Beş işaretin beşinde de aynı üç sayı çıktı: yerleşim kazası değil, geometri.
- *
- * Yapısal kapatma (`feedback_single_source_of_truth`): artık okun eni ayrı bir sayı DEĞİL,
- * `OK_GENIS`in kendisi. İkisi bir daha ayrışamaz — bekçi testi de bunu denetler.
- */
-export const OK_GENIS = 0.4;
-export const OK_BOSLUK = 0.16;
-export const KENAR_PAYI = 0.18;
+export { HARF_EM, ETIKET_PUNTO, OK_GENIS, OK_BOSLUK, KENAR_PAYI } from '../../game/markerFrame';
 /** Okun boyu ve çizgi kalınlığı — ENİNE oranla (aday karesi O7'nin oranları). */
 export const OK_YUKSEKLIK_ORAN = 0.75;
 export const OK_KALINLIK_ORAN = 0.275;
@@ -172,7 +170,7 @@ export function GroundMarker({
   tint,
   progress = 0,
   afford = false,
-  radius = 0.85,
+  radius = ISARET_R,
   arrow = false,
   dwellId,
 }: {
@@ -194,10 +192,9 @@ export function GroundMarker({
   const p = Math.max(0, Math.min(1, progress));
   const r = radius;
   const punto = r * ETIKET_PUNTO;
-  const yaziGen = label.length * HARF_EM * punto;
   const okBlok = arrow ? (OK_GENIS + OK_BOSLUK) * r : 0;
-  const hw = Math.max(r * 1.05, (okBlok + yaziGen) / 2 + KENAR_PAYI * r);
-  const hh = r;
+  // ÇERÇEVE TEK YERDEN GELİR (D-121): burada yeniden hesaplanmaz, `tick.ts` de aynısını çağırır.
+  const { hw, hh } = markerFrame(label, r, arrow);
   const yaziSol = -hw + KENAR_PAYI * r + okBlok;
   const okX = -hw + KENAR_PAYI * r + (OK_GENIS * r) / 2;
 
@@ -245,7 +242,7 @@ export function GroundMarker({
         ? 1 + PULSE_AMP * Math.sin(state.clock.elapsedTime * PULSE_HZ * Math.PI * 2)
         : 1;
       const pl = useGame.getState().player;
-      const uzerinde = (pl[0] - pos[0]) ** 2 + (pl[2] - pos[2]) ** 2 <= (hw * UZERINDE_PAYI) ** 2;
+      const uzerinde = inFrame(pl[0], pl[2], pos, { hw, hh }, UZERINDE_PAYI);
       buyume.current = MathUtils.damp(buyume.current, uzerinde ? UZERINDE_BUYUME : 1, 12, dt);
       scaleRef.current.scale.setScalar(buyume.current * pulse);
     }

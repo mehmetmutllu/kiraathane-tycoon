@@ -49,14 +49,13 @@ import {
   type World,
 } from './world';
 import type { SaveStats } from './save';
+import { inFrame, lavaboCercevesi, masaCercevesi, padCercevesi, servisCercevesi } from './markerFrame';
 import {
   LAYOUT,
   LAVABO,
   WC_GECIS,
   wcYol,
-  PAD_RADIUS,
   NPC_SPEED,
-  TABLE_UP_RADIUS,
   REACH_TABLE,
   REACH_PICKUP,
   reachWash,
@@ -1132,7 +1131,7 @@ function revealSystem(c: TickCtx): void {
   let onFillId: string | null = null;
   for (const pad of activePads) {
     const pp = LAYOUT.padPos[pad.id];
-    if (pp && dist2D(player, pp) < PAD_RADIUS) { onFillId = pad.id; break; }
+    if (pp && inFrame(player[0], player[2], pp, padCercevesi(pad.label))) { onFillId = pad.id; break; }
   }
   // GUARD (gece fix 2026-06-10): oyuncu AÇIK bir ocağın pickup yarıçapındaysa niyeti ÇAY ALMAK'tır —
   // yükseltme dolumu kesinlikle başlamaz (mekânsal ayrımın yanında ikinci emniyet).
@@ -1142,7 +1141,7 @@ function revealSystem(c: TickCtx): void {
     !inPickupRange &&
     stationUpgradeUnlocked(padGate) &&
     stationLevels[THE_SERVICE] < stationSoftMaxLevel() &&
-    dist2D(player, c.place.upgradeSpot) < PAD_RADIUS
+    inFrame(player[0], player[2], c.place.upgradeSpot, servisCercevesi())
   ) {
     onFillId = FILL_TEA + THE_SERVICE;
   }
@@ -1151,12 +1150,22 @@ function revealSystem(c: TickCtx): void {
       // v21: her masanın yükseltmesi KENDİ zone'unun gate'ine bağlı (o salonun 4 masası açık mı).
       if (!tableUpgradeUnlockedIn(areaOfTable(i), padGate)) continue;
       if (tableLevels[i] >= tableSoftMaxLevel()) continue;
-      if (dist2D(player, LAYOUT.tables[i].upgradeSpot) < TABLE_UP_RADIUS) { onFillId = FILL_TABLE + i; break; }
+      // Çerçeve ÇİZİLEN etiketten türer, o da seviyeyi taşır (`SV 2` / `SV 12`) — bugün ikisi de
+      // `r * 1,05` tabanına kelepçeleniyor, ama bağ kurulu: yazı büyürse tetik de büyür.
+      if (inFrame(player[0], player[2], LAYOUT.tables[i].upgradeSpot, masaCercevesi(tableLevels[i] ?? 0))) {
+        onFillId = FILL_TABLE + i;
+        break;
+      }
     }
   }
   // ODA (B4): lavabonun yükseltme noktası pad'iyle AYNI yerde durur — oda açılınca pad listeden
   // düşer, nokta onun yerini alır. İkisi aynı anda etkin olamaz, o yüzden çakışma da olamaz.
-  if (!onFillId && c.lavaboLevel >= 1 && c.lavaboLevel < lavaboMaxLevel() && dist2D(player, LAVABO.spot) < PAD_RADIUS) {
+  if (
+    !onFillId &&
+    c.lavaboLevel >= 1 &&
+    c.lavaboLevel < lavaboMaxLevel() &&
+    inFrame(player[0], player[2], LAVABO.spot, lavaboCercevesi())
+  ) {
     onFillId = FILL_LAVABO;
   }
   c.notice = notice;

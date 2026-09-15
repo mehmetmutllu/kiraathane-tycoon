@@ -8,6 +8,10 @@ import { masterId, masterCost, masterUnlockedForTable } from '../../game/rules';
 import { SceneLights } from './lights';
 import { dwellState } from '../../game/dwell';
 import { GroundMarker } from './GroundMarker';
+// Etiketler ve işaret yarıçapı `markerFrame`ten gelir: çerçeve genişliği YAZIDAN çözülüyor
+// ve aynı çerçeveyi `tick.ts` tetik olarak test ediyor (D-121). Buraya düz metin yazmak
+// çizilen kutu ile tetikleyen kutuyu sessizce ayırır — S24'ün kapattığı kusur tam buydu.
+import { ETIKET_LAVABO, ETIKET_SERVIS, MASA_ISARET_R, masaEtiketi } from '../../game/markerFrame';
 import { FloorPattern } from './floorPattern';
 import { DOOR, SOVE_W, WALL_H, WALL_T_BODY, WallPanels, type WallSlab } from './wallPanel';
 import { BAND_SHELL_RUNS, WALL_M, WALL_RUNS, pencereBosluklari, wallPieces } from './wallLook';
@@ -526,7 +530,7 @@ function StationUpgradeSpots() {
       pos={upPos}
       // G-11 (2026-09-09): her yükseltme noktası AYNI sözü söyler; hangi obje olduğunu metin değil
       // KONUM anlatır (mekânsal tycoon). Eskiden 'Çay Yükselt' / 'Tezgâhı Yükselt' ayrımı vardı.
-      label="YÜKSELT"
+      label={ETIKET_SERVIS}
       arrow
       sub={String(remaining)}
       pip="coin"
@@ -578,12 +582,12 @@ function TableUpgradeMarkers() {
                (`feedback_interaction_model`). Seviye masanın KENDİ mekânsal noktasında
                okunuyor: yukarı ok zaten "yükselt" diyor, yazı artık nereden yükselttiğini
                söylüyor. `feedback_upgrade_legibility`in istediği ÇOKLU sinyalin sayı kanalı. */
-            label={`SV ${lvl + 1}`}
+            label={masaEtiketi(lvl)}
             arrow
             sub={String(remaining)}
             pip="coin"
             tint="#ffce54"
-            radius={0.6}
+            radius={MASA_ISARET_R}
             progress={(tableUpgradeFills[i] ?? 0) / cost}
             afford={cash >= remaining}
           />
@@ -1068,7 +1072,7 @@ function LavaboFront() {
       {open && cost != null && (
         <GroundMarker
           pos={LAVABO.spot}
-          label="Lavaboyu Büyüt"
+          label={ETIKET_LAVABO}
           sub={String(remaining)}
           pip="coin"
           tint="#ffce54"

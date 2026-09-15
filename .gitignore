@@ -49,3 +49,7 @@ indirilen/
 
 # S19a yemek turunda indirilen Kenney Food Kit ADAYLARI (repoya girmez; kullanici modeli
 # secerse manifestle birlikte `public/assets/models/`e tasinir — stil kilidi karari onun).
+# git bash çökme dökümü. Satır-içi yorum YAZILMAZ: .gitignore yalnız satır BAŞINDAKİ # ile
+# yorum sayar, sonrasında yazılan her şey kalıbın parçası olur.
+# S24'te bu dosya kökte belirdi ve Vite'ın dosya izleyicisi ona EBUSY ile takılıp çöktü.
+*.stackdump

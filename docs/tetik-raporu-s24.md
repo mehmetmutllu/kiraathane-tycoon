@@ -85,8 +85,46 @@ oyuncu bugünkünden ortalama **~0,4 br daha yakına** yürümek zorunda. Bu bir
 
 ## §Karar
 
-_(boş — karar paketi kullanıcıya sunulacak, D-084 adım 3)_
+**D-121 — kol B + G:** tetik ÇİZİLEN ÇERÇEVE olur **ve** "üstündesin" kabarması da aynı
+çerçeveden türer. Kullanıcı karar paketinden bunu seçti (önerilen kol):
+https://claude.ai/artifact/84hN6nieCHVXHMcBS81d4u
+
+Gerekçe tabloda duruyor: B tek başına `disarı %0,0` ve `ölü %0,0` veren kol; A1/A2 "yanında"yı
+kapatıyor ama yerine %26-28 ölü bölge açıyor (serviste %68,2). G kolunun ayrı bırakılması
+kusuru kapatmaz, biçim değiştirtir — ekran "buradasın" derken dolum başlamayabilir.
 
 ## §Uygulama
 
-_(boş — yalnız seçilen kol uygulanacak, D-084 adım 4)_
+**Yeni modül `src/game/markerFrame.ts`** — çerçeve artık burada BİR KEZ hesaplanır; çizim
+(`GroundMarker`), tetik (`tick.ts`) ve kabarma üçü de aynı fonksiyondan okur. Etiketler de
+buraya taşındı (`ETIKET_SERVIS` · `ETIKET_LAVABO` · `masaEtiketi`), çünkü etiketin UZUNLUĞU
+çerçeve genişliğine giriyor: metni bileşende düz yazmak iki kutuyu sessizce ayırırdı.
+
+- `tick.ts`: dört dolum noktasının dördü de `inFrame(...)`. `PAD_RADIUS` / `TABLE_UP_RADIUS`
+  dosyadan tamamen çıktı (yerleşim ayrıklığı için `layout.ts` ve yerleşim testlerinde kalıyorlar).
+- `GroundMarker.tsx`: `hw`/`hh` artık `markerFrame()`ten; `UZERINDE_PAYI` 1,35'lik daire çarpanı
+  olmaktan çıkıp 0,06 br'lik kenar payına indi ve test `inFrame` oldu.
+- `Scene.tsx`: üç etiket ve masa yarıçapı paylaşılan sabitlerden.
+
+**Uygulamadan önce kapatılan açık:** ölçümdeki 13 işaretin hiçbiri PAD değildi (hepsi servis +
+masa), yani B kolunun "çakışma 0" satırı pad'leri kapsamıyordu. Pad etiketleri uzun
+("Bulaşıkçı Tut" → hw 1,371; "Lavaboyu Büyüt" → hw 1,464). 48 işaretin tamamı analitik olarak
+tarandı: **tek gerçek çakışma** `zone3` pad'i ↔ masa 6 yükseltme noktası (0,382 × 0,100 br).
+Kasıtlı bırakıldı ve bekçiye yazıldı — bugünkü daire testinde aynı çift çok daha fazla
+örtüşüyordu (2,3 br yarıçap toplamına karşı 1,773 br mesafe), yani çerçeveye geçmek bu çakışmayı
+YARATMIYOR, küçültüyor; üstelik `tick.ts` pad'leri masalardan önce tarayıp ilk eşleşmede durduğu
+için sonuç belirsiz değil.
+
+**Bekçi:** `tests/tetik-s24.test.ts` — 14 denetim. Üçü GERÇEK TICK'i sürüyor (oyuncuyu koy, dolum
+ilerledi mi bak), kalanı saf geometri ve tek-kaynak denetimi.
+`tools/mutasyon-tetik-s24.mjs` ile **15 mutasyon, 15'i kırmızı, kaçan 0.**
+
+**Kaçan mutasyonun gösterdiği zayıf yer (D-085):** ilk turda M8 (`inFrame` iki ekseni de `hw`
+ile ölçüyor) KAÇTI — 14 denetimin 14'ü yeşil kaldı, çünkü hiçbiri `hw ≫ hh` olan bir kutuda
+dikey taşmayı sınamıyordu. Gerçek işaretlerde fark büyük (lavabo 1,464 × 0,850). İki satır
+eklendi, mutasyon kırmızıya döndü.
+
+**Final:** `tsc -b` temiz · vitest **1105 ✓** · duman **42/42 ✓** · mutasyon **15/15** ·
+tam ölçüm koşusu yeniden alındı (`docs/olcum-tetik-s24-son.txt`) ve önceki koşuyla **birebir
+aynı** çıktı — yani çerçeve hesabını modüle taşımak çizilen kutuyu bir birim bile oynatmadı.
+`economy.config.ts`e DOKUNULMADI; denge sayısı değişmedi.

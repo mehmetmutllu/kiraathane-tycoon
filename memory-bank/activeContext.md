@@ -5,43 +5,40 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-16 — **S24 AÇILDI: yükseltme tetiği pad'in TAM ÜSTÜNDE** · Faz S 23/24 · 97/108)
+## ŞU AN (2026-09-16 — **S24 BİTTİ: tetik artık çizilen çerçeve** · Faz S 23/24 · 98/108)
 
 ```
-SORU            : Yükseltme tetiği neden "yanında" çalışıyor? Çizilen ÇERÇEVE (dikdörtgen
-                  hw×hh) ile tetikleyen ALAN (daire r) aynı şey değil — S23'ün "iki ayrı
-                  doğru" deseninin üçüncüsü mü, yoksa sadece sayı mı büyük?
-ÖLÇÜLECEK KOLLAR: T  taban — bugünkü daire (TABLE_UP_RADIUS 1,0 · PAD_RADIUS 1,3)
-                  A1 daire daraltma — tek küresel yarıçap, çerçevenin içine sığan en büyüğü
-                  A2 daire daraltma — işaret BAŞINA yarıçap (hw/hh'den türetilmiş)
-                  B  ÇERÇEVE testi — çizilen dikdörtgenin kendisi (tek doğru kaynağı)
-                  Her kol için: çerçeve DIŞINDA tetikleyen alan %'si ("yanında") · çerçeve
-                  İÇİNDE tetiklemeyen alan %'si (ölü bölge) · komşu işaretle çakışma ·
-                  oyuncunun fiziksel ERİŞEBİLDİĞİ alan (actorRadius + katılar)
+SORU            : Yükseltme tetiği neden "yanında" çalışıyor? Çizilen ÇERÇEVE ile tetikleyen
+                  ALAN aynı şey değil — S23'ün "iki ayrı doğru" deseninin üçüncüsü mü?
 SAYILAR         : docs/tetik-raporu-s24.md §Bulgular · ham: docs/olcum-tetik-s24.txt (tam koşu)
                   13 işaret × 5 kol · 0,01 br ızgara · çizilen/yazan sapma 0,0000
-KARAR           : (adım 3, kullanıcı seçer — D-121)
-UYGULAMA        : (adım 4, yalnız kararın kolu)
-BEKÇİ           : (test dosyası + kaç mutasyonla doğrulandı)
+KARAR           : D-121 — kol B + G: tetik çizilen çerçeve OLUR ve kabarma da aynı çerçeveden
+UYGULAMA        : yeni src/game/markerFrame.ts — çizim + tetik + kabarma TEK fonksiyondan ·
+                  tick.ts'ten PAD_RADIUS/TABLE_UP_RADIUS tamamen çıktı · etiketler de paylaşıldı
+BEKÇİ           : tests/tetik-s24.test.ts — 14 denetim, 15 MUTASYON kırmızı yandı, kaçan 0
+FINAL           : vitest 1105 ✓ · duman 42/42 ✓ · tsc -b temiz · denge dosyasına dokunulmadı
 ```
 
-**VARYANT KAPISI AÇIK:** tetik `tick.ts`'te, yarıçaplar `layout.ts`'te — denge dosyasına
-dokunuyor, yani rapor §Bulgular'da o kolun **sayı satırı olmadan uygulanmaz**.
-
-**Araya sıkıştırıldı (S23'ün altyapı borcu):** `.gitattributes` eklendi — `core.autocrlf=true`
-bu makinede açık ve S23'te `git stash pop` src'yi CRLF'e çevirip mutasyon aracının çok satırlı
-kalıplarını sessizce bulunamaz yapmıştı (dört mutasyon "KALIP BULUNAMADI", ilk koşu YALANCI
-12/12). Artık `* text=auto eol=lf` autocrlf'i eziyor; `.bat`/`.ps1` CRLF, ikililer `binary`.
-`git add --renormalize .` **0 dosya** bozdu — depo zaten LF'ti, kilitlenen çalışma ağacı.
+**Turun kalıcı üç dersi:**
+1. **Kusur ölçüde değil, AYNI ŞEYİN İKİ KEZ TANIMLANMASINDAydı.** S23'te sayı yanlış yazılmıştı
+   (gizli √3). Burada sayı doğruydu — çizilen çerçeve yazanla birebir aynı, sapma 0,0000. Kusur,
+   tetiğin hiç o çerçeveden türememesiydi. Bu yüzden düzeltme de "sayıyı değiştirmek" değil,
+   **ikisini tek fonksiyona bağlamak** oldu. Aynı desenin iki farklı yüzü.
+2. **Geometri sandığımdan bir fazlaydı.** İki geometri ararken üçüncüsü çıktı: "üstündesin"
+   kabarması da kendi dairesini kuruyordu (%34,3 dışarıda). Ölçüm aracına aday OLMAYAN bir kol
+   (G) eklemek bunu görünür yaptı — ölçüm yalnız seçenekleri değil, MEVCUT HÂLİN parçalarını da
+   ölçmeli.
+3. **Ölçümün kapsamı da bir bulgudur.** 13 işaretin hiçbiri PAD değildi; "çakışma 0" satırı
+   pad'leri hiç görmemişti. Uygulamadan önce 48 işaret analitik tarandı ve tek gerçek çakışma
+   çıktı. Bir sayının neyi KAPSAMADIĞI, değerinin kendisi kadar önemli.
 
 ## SIRADAKİ TAM ADIM
 
-**S24 — yükseltme tetiği pad'in TAM ÜSTÜNDE** (S19'un kalan dört kaleminin mantık yarısı).
-Kullanıcı sözü: *"yanında falan değil, çerçeve içinde olayım."* Bugün `TABLE_UP_RADIUS` 1,0 /
-`PAD_RADIUS` 1,3 **daire**; istenen ÇERÇEVE İÇİ. `rules.ts`'e dokunur → **VARYANT KAPISI**:
-iki kol ölçülmeden uygulanmaz (daire yarıçapını daraltmak · kare/çerçeve testine geçmek).
+**S9 SES karar paketi** — ölçüm bitti ve tam-koşu damgalı (`docs/olcum-ses-s17.txt`), kullanıcının
+kol seçimini bekliyor. Kısa tur: yeni ölçüm gerekmiyor, doğrudan adım 3'ten başlanır.
 
-**Sonra:** S9 SES karar paketi (ölçüm hazır) · sonra **Faz H** (E1 yürünebilir mutfak orada).
+**Sonra:** **Faz H** (oynanış düzeltmeleri — G-01…G-07; E1 yürünebilir mutfak orada).
+
 ### S19b'DEN KALAN KÜÇÜK KUSUR
 
 Bel bağının ucu çeyrek açıdan ince bir dudak bırakıyor (`docs/gorsel/ss/s19b-kiyafet.png`).
@@ -67,21 +64,22 @@ ORTASI boş + tavan ışığı yok · banket masası `table_round_A_small`e geç
 gerçek render'ı yok · KayKit `bench` düz plaka gibi · bulaşık gövdesi kutusundan geniş çizilemiyor
 · WC çöp kutusu elle çizim KESİN (dokuz pakette karşılığı yok).
 
-**Oynanış (Faz H):** G-01 masa her taraftan toplanmıyor · G-02 ocaktan alma güvenilmez ·
+**Oynanış (Faz H):** ~~yükseltme tetiği "yanında"~~ → S24'te KAPANDI (D-121) · G-01 masa her taraftan toplanmıyor · G-02 ocaktan alma güvenilmez ·
 G-03 kamera kayıyor · G-06 tepsi ilk yükseltme 75 → ~50 · G-07 dwell para-bağımsız (son ikisi
 DENGE, varyant kapısına tabi) · masalar geçilmiyor (açıklık 0,68 br, geçiş 0,94 ister — 20 masanın
 12'si).
 
 **Altyapı:** pano ARTIFACT'i **bu turda da kapatıldı** (v43 · 97/107) — borç birikmedi. Yayının bedeli yazılı: canlı sürümün **1611 satırının tamamı** okunmadan publish
 reddediliyor (~130k token) — yani atlanırsa borç büyüyor, her turda kapatmak ucuz. ·
-`npm run lint` 31 hata (hepsi eski `tools/olcum-*.ts`) · **`.gitattributes` YOK — S23'te SOMUT
-ZARAR VERDİ:** `git stash pop` src'yi CRLF'e çevirdi ve mutasyon aracının çok satırlı kalıpları
-sessizce bulunamadı (dört mutasyon birden "KALIP BULUNAMADI" düştü; araç satır-sonu bağımsız
-yapıldı ama asıl eksik duruyor) · `npm run pano` günlük uyarısı yalnız TARİHE
+`npm run lint` 31 hata (hepsi eski `tools/olcum-*.ts`) · ~~`.gitattributes` YOK~~ → **S24'te
+KAPANDI:** `* text=auto eol=lf` autocrlf'i eziyor, `.bat`/`.ps1` CRLF, ikililer `binary`;
+`git add --renormalize .` 0 dosya bozdu (depo zaten LF'ti, kilitlenen çalışma ağacı) ·
+`npm run pano` günlük uyarısı yalnız TARİHE
 bakıyor · mutfağın kuşbakışı karesi OYUNDAN çekilemez (tepeden kamera oyuncunun üstünde, oyuncu mutfağa giremiyor) — plan ölçüm aracının işi · **oyuncuda 2,0× artık kayma** · **panel dönüşünde T-poz temiz koşuda ÜRETİLEMEDİ**
 (repro aracı `tools/olcum-panel-donusu.mjs`).
 
 **Önizlemeler**
+**S24 KARAR PAKETİ:** https://claude.ai/artifact/84hN6nieCHVXHMcBS81d4u
 **S23 KARAR PAKETİ:** https://claude.ai/artifact/Cysj2inCDguC4gQxuu3X2o
 **S23 kareler:** `ss/s23-ok-adaylari.png` (sekiz aday, gerçek çerçeve) ·
 `ss/s23b-{player,waiter,dish}.png` (uygulanan vitrin) · `ss/s23-panel-*.png` (panel doluluğu)
@@ -97,7 +95,7 @@ bakıyor · mutfağın kuşbakışı karesi OYUNDAN çekilemez (tepeden kamera o
 **S13 paketler:** https://claude.ai/code/artifact/dcbaaee3-8889-4665-83b2-feff02a60c13
 **S12 arayüz:** https://claude.ai/code/artifact/a83eade2-32f6-4a64-ae34-6743a93922a3
 **Mor arayüz maketi:** https://claude.ai/code/artifact/6cc7a95e-c0a3-4802-8ea3-99398d637981
-**İlerleme panosu (v43 · 97/107):** https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs
+**İlerleme panosu (v44 · 98/108):** https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs
 
 ---
 

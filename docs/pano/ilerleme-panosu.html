@@ -193,8 +193,8 @@ h2{font-size:21px;font-weight:800}
 <script type="application/json" id="durum">
 {
  "guncelleme": "16.09.2026",
- "yapilan": 97,
- "toplam": 107,
+ "yapilan": 98,
+ "toplam": 108,
  "kilometre": [
   {
    "at": 28,
@@ -209,19 +209,19 @@ h2{font-size:21px;font-weight:800}
    "etiket": "Model ve denge oturdu"
   },
   {
-   "at": 107,
+   "at": 108,
    "etiket": "v1.0 App Store"
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum — Faz S · 22/23 — S23: ok · panel · doluluk (D-120)",
-  "baslik": "Kusur “ölçü” değil <b>iki ayrı doğru</b>ydu: blok 0,34 r, çizilen ok <b>0,554 r</b>",
-  "aciklama": "S19'un kalan dört kaleminin <b>görsel üçü</b>. Dördüncüsü <code>rules.ts</code>'e dokunduğu için varyant kapısına tabi ve ayrı tura bırakıldı.<br><br><b>Ok.</b> Kullanıcı <i>“çerçeveye değiyor”</i> demişti; ölçüm cümleyi doğruladı ve sebebini buldu. Okun ucu <code>circleGeometry(r·0,32, 3)</code> idi — 3 kenarlı çemberin <b>kenarı</b> yarıçapın <b>√3</b> katıdır, yani gerçek en 0,554 r. Ayrılan blok 0,340 r. O √3 çarpanı <b>hiçbir yerde yazmıyordu</b>: blok bir yerde yazılıyor, ok başka türlü çiziliyordu. Sonuç beş işaretin beşinde aynı — sol kenar payının %59'u yeniyor, yazıya açıklık amaçlananın üçte biri, parantezle arası <b>0,006 birim</b>. Sekiz biçim adayı gerçek çerçeve ve gerçek boyda render edildi, kullanıcı <b>O7</b>'yi (kalın tek chevron) seçti — ama asıl iş biçim değil <b>yapı</b>: çizilen en artık <code>OK_GENIS</code>'in kendisi, ikisi bir daha ayrışamaz. Üç sayı da yazılı hedefine oturdu; parantez açıklığı <b>22 katına</b> çıktı.<br><br><b>Panel oyunda olmayan bir adamı gösteriyordu.</b> Dört kimlik işaretinin <b>dördü de</b> tersti: kasket ve önlük panelde vardı oyunda yoktu (S15/S18'de kalkmışlardı), omuz havlusu ve sıvalı kol oyunda vardı panelde yoktu (D-116). Kök neden panelin gövdeyi <b>kendi çizmesiydi</b>. Üç önizleme modeli tek bileşene indi, içinde <code>KayActor</code>; kimlik artık <code>KAY_KIYAFET</code>'ten geliyor ve panel ile salon <b>aynı satırı</b> okuyor. Vitrin de mağaza önizlemelerinin diline katıldı — karakter boşlukta değil kendi kıraathanesinin zemininde duruyor.<br><br><b>Doluluk.</b> Kabuk zaten tam ekrandı; kırık olan içerikti — beş ekranın <b>üçünde</b> içerik ekranın yarısında bitiyordu. Mağazanınki bir içerik eksikliği bile değildi: ekran her açılışta <b>kilitli</b> sekmede açılıyor, yani oyuncu mağazayı açtığında satın alınabilir hiçbir şey görmüyordu."
+  "etiket": "Bu oturum — Faz S · 23/24 — S24: yükseltme tetiği (D-121)",
+  "baslik": "Sayı doğruydu; <b>aynı şey iki kez tanımlanmıştı</b> — tetiğin <b>%50,4</b>'ü çerçevenin dışındaydı",
+  "aciklama": "Kullanıcı sözü: <i>“yanında falan değil, çerçeve içinde olayım.”</i> Ölçüm cümleyi doğruladı ve sebebini S23'ünkinden <b>ayırdı</b>.<br><br><b>Bu S23'ün tekrarı değil.</b> Orada ölçü yanlış yazılmıştı (gizli bir √3 çarpanı). Burada ölçü doğru: çizilen çerçeve yazanla <b>birebir aynı</b>, sapma <b>0,0000 br</b>, 13 işaretin 13'ünde. Kusur şuydu: dolum bir <b>daire</b> testine bağlıydı (<code>dist2D &lt; TABLE_UP_RADIUS | PAD_RADIUS</code>) ama ekranda <b>dikdörtgen</b> çiziliyordu ve ikisi birbirinden hiç türemiyordu. Ölçülen: tetikleyen alanın <b>%50,4'ü</b> çerçeve dışında (masa %51,9 · servis %33,2), ölü bölge %0,0 — çerçeve tamamen dairenin içinde, daire her yönde taşıyor.<br><br><b>Geometri iki değil üçtü.</b> Araca aday <b>olmayan</b> bir kol (G) eklendi ve bulgu oradan çıktı: işaretin “üstündesin” kabarması da kendi dairesini kuruyordu (<code>hw × 1,35</code>), onun da <b>%34,3'ü</b> çerçeve dışındaydı. Yani “buradasın” diyen sınır, parayı akıtan sınır ve gözle görülen çerçeve üç ayrı şeydi.<br><br><b>Daireyi daraltmak kusuru taşır, kapatmaz.</b> A1 (tek yarıçap 0,600) ölü bölge <b>%28,5</b>, serviste <b>%68,2</b>; A2 (işaret başına) %26,0. Sebep çerçevelerin kare olmaması — masa 0,630 × 0,600, servis <b>1,047 × 0,850</b>. Kullanıcı <b>B + G</b>'yi seçti. Yeni <code>src/game/markerFrame.ts</code> ile çizim, tetik ve kabarma <b>tek fonksiyondan</b> okuyor; <code>tick.ts</code>'ten iki yarıçap sabiti tamamen çıktı."
  },
  "siradaki": {
   "etiket": "Sırada — Faz S'in son kalemi",
-  "baslik": "S24 — yükseltme tetiği pad'in <b>tam üstünde</b> (varyant kapısı)",
-  "aciklama": "S19'un kalan dört kaleminin <b>mantık</b> yarısı. Kullanıcı sözü: <i>“yanında falan değil, çerçeve içinde olayım.”</i> Bugün <code>TABLE_UP_RADIUS</code> 1,0 / <code>PAD_RADIUS</code> 1,3 <b>daire</b>; istenen çerçeve içi. <code>rules.ts</code>'e dokunduğu için <b>varyant kapısı</b> devreye girer: iki kol (daire yarıçapını daraltmak · kare/çerçeve testine geçmek) raporun §Bulgular tablosuna sayı satırı düşmeden uygulanamaz. Ardından <b>S9</b> ses karar paketi (ölçüm hazır bekliyor), sonra <b>Faz H</b>: yürünebilir mutfak (E1) orada, nav ızgarasıyla birlikte."
+  "baslik": "S9 — ses assetleri: <b>ölçüm bitti</b>, karar paketi bekliyor",
+  "aciklama": "Yeni ölçüm gerekmiyor; <code>docs/olcum-ses-s17.txt</code> tam koşu damgalı hazır. 9 CC0 Kenney paketi · 706 <code>.ogg</code> · 36 aday oyunun kendi çözücüsüyle PCM'e çevrildi. <b>Bulgular:</b> dosyalı dokuzlu <b>36/36 ayrı</b> (sentezle aynı hüküm) · dosyalar sentezden <b>16,6 dB yüksek</b> (normalizasyon gerek) · 7/9 seçilen dosya <code>aralik</code> kelepçesini taşıyor · akan sıvı <b>0 aday</b> · ortam/döngü <b>0 aday</b> (O2 kolu düştü). Tur doğrudan adım 3'ten başlar. Ardından <b>Faz H</b>: bilinen üç oynanış hatası, tepsi yükseltme sırası ve masa aralığı — yürünebilir mutfak (E1) da orada."
  },
  "donemler": [
   {
@@ -352,9 +352,9 @@ h2{font-size:21px;font-weight:800}
     {
      "k": "S",
      "t": "Sanat ve arayüz geçişi",
-     "d": "Kullanıcı oynadı ve altı tur geri bildirim verdi. HER KALEM ≈ 1 OTURUM. Sanat hattı bitti: pad dili · mutfak · zemin · dekor · dış cephe · cam · WC · UI dili (ölçüm → maket → dil → yapı) · yeni paketler · karakterler (personel + müşteri) · tepsi · hatalar · kıyafet. <b>S21</b> mutfağın sınırını okunur kıldı ve çaycıyı salonun yüküne bağladı (D-118). Kalan: <b>S22</b> kademeli mutfak · <b>S9</b> ses assetleri (ölçüm hazır, karar bekliyor).",
-     "yapilan": 22,
-     "toplam": 23,
+     "d": "Kullanıcı oynadı ve altı tur geri bildirim verdi. HER KALEM ≈ 1 OTURUM. Sanat hattı bitti: pad dili · mutfak · zemin · dekor · dış cephe · cam · WC · UI dili · yeni paketler · karakterler (personel + müşteri) · tepsi · hatalar · kıyafet · kademeli mutfak · arayüz (ok/panel/doluluk). <b>S24</b> yükseltme tetiğini çizilen çerçeveye bağladı ve üç ayrı geometriyi teke indirdi (D-121). Kalan: <b>S9</b> ses assetleri — ölçüm hazır, <b>karar bekliyor</b>.",
+     "yapilan": 23,
+     "toplam": 24,
      "durum": "now",
      "kapi": "185 kullanılmayan KayKit modeli oyuna bağlanır + UI dili maketle onaylanır"
     },
@@ -378,6 +378,23 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "16.09.2026",
+   "etiket": "Faz S · 23. oturum (S24 — yükseltme tetiği — D-121)",
+   "baslik": "Ölçü <b>doğruydu</b>; kusur aynı şeyin <b>iki kez tanımlanmasıydı</b>",
+   "govde": "S23'ün ayırdığı mantık yarısı. Ölçüm ilk iş olarak turun kendi varsayımını çürüttü: bu, S23'ün üçüncü nüshası <b>değil</b>. Orada çizilen ok yazılı bloğundan %63 genişti; burada çizilen çerçeve yazanla birebir aynı — sapma <b>0,0000 br</b>, 13/13. Yani düzeltilecek bir sayı yoktu. Düzeltilecek olan <b>yapıydı</b>: tetik bir daire, çizim bir dikdörtgendi ve hiçbiri diğerinden türemiyordu.<br><br><b>Araca aday olmayan bir kol eklendi ve bulgu oradan çıktı.</b> Beş kol ölçüldü ama biri (G) aday değildi — bugünkü görsel “üstündesin” kabarmasının sınırı. O satır geometrinin iki değil <b>üç</b> olduğunu gösterdi: kabarma da kendi dairesini kuruyordu ve %34,3'ü çerçeve dışındaydı. Ölçüm yalnız seçenekleri değil, <b>mevcut hâlin parçalarını</b> da ölçmeli.<br><br><b>Ölçümün kapsamı da bir bulguydu.</b> Tam koşudaki 13 işaretin hiçbiri <b>pad</b> değildi — hepsi servis ve masa. Yani raporun “çakışma 0” satırı pad'leri hiç görmemişti, oysa pad etiketleri uzun (“Bulaşıkçı Tut” → hw 1,371). Uygulamadan önce 48 işaret analitik tarandı: tek gerçek çakışma <code>zone3</code> ↔ masa 6 (0,382 × 0,100 br), bilerek bırakıldı ve bekçiye yazıldı — daire testinde aynı çift <b>çok daha fazla</b> örtüşüyordu.<br><br><b>Kaçan mutasyon yine zayıf yeri gösterdi.</b> M8 (<code>inFrame</code> iki ekseni de <code>hw</code> ile ölçüyor) ilk turda kaçtı: 14 denetimin 14'ü yeşil kaldı, çünkü hiçbiri <code>hw ≫ hh</code> olan bir kutuda dikey taşmayı sınamıyordu. Gerçek işaretlerde fark büyük (lavabo 1,464 × 0,850). İki satır eklendi, 15/15 kırmızıya döndü.",
+   "maddeler": [
+    "<b>D-121:</b> kol <b>B + G</b> — tetik çizilen çerçevenin kendisi <b>ve</b> kabarma da aynı çerçeveden",
+    "<b>Taban:</b> dışarı <b>%50,4</b> · ölü %0,0 · menzil 1,023 br (çerçeve 0,662 / 0,619)",
+    "<b>Uygulanan:</b> dışarı <b>%0,0</b> · ölü <b>%0,0</b> · erişim %94,1 → <b>%97,6</b> · durakR 0,605 (oyuncu 0,47)",
+    "<b>Elenen kollar:</b> A1 ölü %28,5 (serviste <b>%68,2</b>) · A2 %26,0 — çerçeveler kare değil",
+    "<b>Bedel yazılı:</b> tetik alanı 3,309 → 1,669 br² (<b>−%49,6</b>); noktaya ~0,4 br daha yakına yürünüyor",
+    "<b>Yapısal kapatma:</b> yeni <code>src/game/markerFrame.ts</code> — <code>tick.ts</code>'ten <code>PAD_RADIUS</code>/<code>TABLE_UP_RADIUS</code> tamamen çıktı",
+    "<b>Etiketler de paylaşıldı:</b> etiketin uzunluğu çerçeve genişliğine giriyor — bileşende düz metin iki kutuyu sessizce ayırırdı",
+    "<b>Bekçi:</b> <code>tests/tetik-s24.test.ts</code> 14 denetim, <b>15 mutasyon, kaçan 0</b> · vitest <b>1105</b> ✓ · duman 42/42 ✓ · denge sayısı değişmedi"
+   ],
+   "not": "<b>S23'ün altyapı borcu kapandı:</b> <code>.gitattributes</code> eklendi. <code>core.autocrlf=true</code> bu makinede açık ve S23'te <code>git stash pop</code> src'yi CRLF'e çevirip mutasyon aracının çok satırlı kalıplarını sessizce bulunamaz yapmıştı (dört mutasyon “KALIP BULUNAMADI”, ilk koşu yalancı 12/12). <code>git add --renormalize .</code> <b>0 dosya</b> bozdu — depo zaten LF'ti, kilitlenen çalışma ağacı."
+  },
   {
    "tarih": "15.09.2026",
    "etiket": "Faz S · 22. oturum (S23 — ok · panel · doluluk, tur adı S19c — D-120)",
@@ -1281,6 +1298,12 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "riskler": [
+  {
+   "sev": "Çözüldü",
+   "renk": "done",
+   "b": "Yükseltme tetiği <b>&ldquo;yanında&rdquo;</b> çalışıyordu — <b>ÇÖZÜLDÜ (D-121):</b> tetik artık çizilen ÇERÇEVE",
+   "p": "Kullanıcı <i>&ldquo;yanında falan değil, çerçeve içinde olayım&rdquo;</i> demişti. S24 cümleyi doğruladı ve sebebini S23&rsquo;ünkinden <b>ayırdı</b>. <b>Bu S23&rsquo;ün tekrarı değil:</b> orada ölçü yanlış yazılmıştı (gizli √3), burada ölçü doğru — çizilen çerçeve yazanla <b>birebir aynı</b>, sapma <b>0,0000 br</b>, 13 işaretin 13&rsquo;ünde. Kusur şuydu: dolum bir <b>daire</b> testine bağlıydı (<code>dist2D &lt; TABLE_UP_RADIUS | PAD_RADIUS</code>) ama ekranda <b>dikdörtgen</b> çiziliyordu ve ikisi birbirinden hiç türemiyordu. Ölçülen: tetikleyen alanın <b>%50,4&rsquo;ü</b> çerçeve dışında (masa %51,9 · servis %33,2), ölü bölge <b>%0,0</b> — yani çerçeve tamamen dairenin içinde, daire her yönde taşıyor; menzil 1,023 br, çerçeve 0,662 / 0,619. <b>Geometri iki değil ÜÇTÜ:</b> araca aday <b>olmayan</b> bir kol (G) eklendi ve bulgu oradan çıktı — işaretin &ldquo;üstündesin&rdquo; kabarması da kendi dairesini kuruyordu (<code>hw × 1,35</code>), onun da <b>%34,3&rsquo;ü</b> çerçeve dışındaydı; yani &ldquo;buradasın&rdquo; diyen sınır, parayı akıtan sınır ve gözle görülen çerçeve üç ayrı şeydi. <b>Daireyi daraltmak kusuru taşır, kapatmaz:</b> A1 (tek yarıçap 0,600) ölü bölge <b>%28,5</b>, serviste <b>%68,2</b>; A2 (işaret başına min(hw,hh)) %26,0, serviste %36,1 — sebep çerçevelerin kare olmaması (masa 0,630 × 0,600, servis <b>1,047 × 0,850</b>). Kullanıcı <b>B + G</b>&rsquo;yi seçti. <b>Yapısal kapatma:</b> yeni <code>src/game/markerFrame.ts</code> — çerçeve orada bir kez hesaplanır, çizim + tetik + kabarma üçü de aynı fonksiyondan okur; etiketler de oraya taşındı (etiketin UZUNLUĞU çerçeve genişliğine giriyor, bileşende düz metin iki kutuyu sessizce ayırırdı) ve <code>tick.ts</code>&rsquo;ten iki yarıçap sabiti tamamen çıktı. <b>Bedel yazılı:</b> tetik alanı 3,309 → 1,669 br² (<b>−%49,6</b>), noktaya ~0,4 br daha yakına yürünüyor; buna karşılık erişim %94,1 → <b>%97,6</b> (daire katıların içine taşıyordu) ve durakR 0,605 (oyuncu yarıçapı 0,47). <b>Ölçümün kapsamı da bir bulguydu:</b> 13 işaretin hiçbiri PAD değildi, yani &ldquo;çakışma 0&rdquo; satırı pad&rsquo;leri hiç görmemişti — uygulamadan önce 48 işaret analitik tarandı, tek gerçek çakışma <code>zone3</code> ↔ masa 6 (0,382 × 0,100 br) bilerek bırakıldı ve bekçiye yazıldı (daire testinde aynı çift çok daha fazla örtüşüyordu, üstelik tick pad&rsquo;leri önce tarıyor). Bekçi <code>tests/tetik-s24.test.ts</code> <b>14 denetim / 15 mutasyon, kaçan 0</b>; kaçan M8 bekçinin zayıf yerini gösterdi — hiçbir denetim <code>hw ≫ hh</code> olan bir kutuda dikey taşmayı sınamıyormuş."
+  },
   {
    "sev": "Çözüldü",
    "renk": "done",

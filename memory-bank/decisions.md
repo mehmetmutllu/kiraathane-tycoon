@@ -3742,3 +3742,56 @@ geçersiz çıkıp elendi (`OK_GENIS`i küçültmek kusur değil, ok ondan tür�
 eski panel 7112 ms / 377,9 ms-kare, yeni panel 6488 ms / 382,3 — fark gürültüde.
 **Yan bulgu:** `.gitattributes` eksiği somut zarar verdi — `git stash pop` src'yi CRLF'e çevirdi,
 mutasyon aracının çok satırlı kalıpları sessizce bulunamadı (dört mutasyon birden düştü).
+
+## D-121 — S24: yükseltme tetiği artık ÇİZİLEN ÇERÇEVE (2026-09-16)
+
+**KARAR:** kullanıcı karar paketinden **B + G**'yi seçti (önerilen kol) — tetik çizilen
+dikdörtgenin kendisi olur VE "üstündesin" kabarması da aynı çerçeveden türer.
+Sayılar: `docs/tetik-raporu-s24.md` · ham `docs/olcum-tetik-s24.txt` (tam koşu, damgalar temiz).
+Karar paketi: https://claude.ai/artifact/84hN6nieCHVXHMcBS81d4u
+
+**KUSUR ÖLÇÜDE DEĞİL, AYNI ŞEYİN İKİ KEZ TANIMLANMASINDAYDI.** S23'te çizilen ok yazılı
+bloğundan %63 genişti (gizli √3). Burada öyle bir şey YOK: çizilen çerçeve yazanla birebir aynı,
+**sapma 0,0000 br**, 13 işaretin 13'ünde. Kusur şuydu: dolum bir DAİRE testine bağlıydı
+(`dist2D < TABLE_UP_RADIUS | PAD_RADIUS`) ama ekranda DİKDÖRTGEN çiziliyordu ve ikisi birbirinden
+türemiyordu. Ölçülen: tetikleyen alanın **%50,4'ü** çerçevenin dışında (masa %51,9 · servis
+%33,2), ölü bölge %0,0 — yani çerçeve tamamen dairenin içinde, daire her yönde taşıyor.
+Kullanıcının *"yanında falan değil, çerçeve içinde olayım"* cümlesinin sayısı budur.
+
+**GEOMETRİ İKİ DEĞİL ÜÇTÜ.** İşaretin "üstündesin" kabarması da kendi dairesini kuruyordu
+(`hw × 1,35`); onun da **%34,3'ü** çerçeve dışındaydı. Yani "buradasın" diyen sınır, parayı
+akıtan sınır ve gözle görülen çerçeve üç ayrı şeydi. Bu yüzden G tek başına bırakılmadı.
+
+**DAİREYİ DARALTMAK KUSURU TAŞIR, KAPATMAZ:** A1 (tek yarıçap 0,600) ölü bölge %28,5, serviste
+**%68,2**; A2 (işaret başına min(hw,hh)) %26,0, serviste %36,1. Sebep çerçevelerin kare
+olmaması (masa 0,630 × 0,600, servis 1,047 × 0,850).
+
+**YAPISAL KAPATMA:** yeni `src/game/markerFrame.ts`. Çerçeve orada BİR KEZ hesaplanır; çizim,
+tetik ve kabarma üçü de aynı fonksiyondan okur. Etiketler de oraya taşındı — etiketin UZUNLUĞU
+çerçeve genişliğine giriyor, metni bileşende düz yazmak iki kutuyu sessizce ayırırdı.
+`tick.ts`ten `PAD_RADIUS`/`TABLE_UP_RADIUS` tamamen çıktı (yerleşim ayrıklığı için `layout.ts`te
+kalıyorlar, artık tetik değil YERLEŞİM sabitiler).
+
+**BEDELİ YAZILI:** tetik alanı 3,309 → 1,669 br² (−%49,6), menzil 1,023 → 0,662/0,619. Oyuncu
+noktaya ~0,4 br daha yakına yürüyor. Erişim %94,1 → %97,6 (daire katıların içine taşıyordu),
+duracak yer 0,605 (oyuncu yarıçapı 0,47).
+
+**ÖLÇÜMÜN AÇIĞI UYGULAMADAN ÖNCE KAPATILDI:** 13 işaretin hiçbiri PAD değildi, yani "çakışma 0"
+satırı pad'leri kapsamıyordu. 48 işaret analitik tarandı; tek gerçek çakışma `zone3` ↔ masa 6
+(0,382 × 0,100 br), bilerek bırakıldı ve bekçiye yazıldı: daire testinde aynı çift çok daha
+fazla örtüşüyordu, üstelik tick pad'leri önce tarıyor (sonuç belirsiz değil).
+
+**BEKÇİ:** `tests/tetik-s24.test.ts` (14 denetim, üçü gerçek tick'i sürüyor) ·
+`tools/mutasyon-tetik-s24.mjs` **15/15 kırmızı**. Kaçan mutasyon zayıf yeri gösterdi (D-085):
+M8 (`inFrame` iki ekseni de `hw` ile ölçüyor) ilk turda KAÇTI, çünkü hiçbir denetim `hw ≫ hh`
+olan bir kutuda dikey taşmayı sınamıyordu. İki satır eklendi.
+
+**Final:** tsc temiz · vitest 1105 ✓ · duman 42/42 ✓ · `economy.config.ts` 0 satır (denge
+sayısı değişmedi) · tam ölçüm koşusu yeniden alındı ve öncekiyle BİREBİR aynı çıktı — çerçeve
+hesabını modüle taşımak çizilen kutuyu bir birim oynatmadı.
+
+**Ayrıca (araya sıkıştırılan altyapı borcu):** `.gitattributes` eklendi. `core.autocrlf=true`
+bu makinede açık ve S23'te `git stash pop` src'yi CRLF'e çevirip mutasyon aracının çok satırlı
+kalıplarını sessizce bulunamaz yapmıştı (dört mutasyon "KALIP BULUNAMADI", ilk koşu YALANCI
+12/12). Artık `* text=auto eol=lf` autocrlf'i eziyor; `.bat`/`.ps1` CRLF, ikililer `binary`.
+`git add --renormalize .` 0 dosya bozdu — depo zaten LF'ti, kilitlenen çalışma ağacı.

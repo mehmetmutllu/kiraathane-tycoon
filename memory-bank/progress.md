@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 107 · YAPILAN 97 · %91):**
+**Oturum bütçesi (TOPLAM 108 · YAPILAN 98 · %91):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -24,10 +24,10 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | İA iş akışı hızlandırma (D-084) | 3/3 ✅ |
 | | D meta katman | 9/9 ✅ |
 | | E arayüz ve cila | 4/5 🔧 |
-| | **S sanat ve arayüz geçişi** | **22/23 🔧** |
+| | **S sanat ve arayüz geçişi** | **23/24 🔧** |
 | | H oynanış düzeltmeleri | 0/3 ⏳ |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **69/79** |
+| **Program toplam** | | **70/80** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -40,7 +40,7 @@ kendi turunu aldı (D9) → Faz D 8 → 9, toplam 79 → 80. **Aynı gün:** E3 
 kararıyla SİSTEM (E3) ve DOSYALAR (E4) olarak ikiye bölündü, onboarding E5 oldu → Faz E 4 → 5,
 toplam 80 → 81. **2026-09-09 (ikinci oturum):** kullanıcı oynadı, 25 kalemlik geri bildirim verdi (`docs/geribildirim-oyun-testi-2026-09-09.md`); sanat/arayüz işi **Faz S** olarak açıldı (6 kalem, `docs/plan-faz-s-sanat.md`) → toplam 81 → 87. Faz adı S, çünkü defterde zaten bir Faz G (görsel taban) var; `G-0x` numaraları geri bildirimin, fazın kalemleri `S1…S6`. **Aynı gün:** kullanıcı S1'i oynadı ve dokuz kalem daha verdi (G-26…G-34); pad/modal düzeltmeleri **S2** olarak kendi kalemini aldı → Faz S 6 → 7, toplam 87 → 88. **Aynı gün, üçüncü tur:** kullanıcı lavabo kabin kapılarını ve ses assetlerini (ortam uğultusu + gerçekçi para sesi) istedi, ikisi de ayrı kalem oldu; UI araştırması da kendi kalemine ayrıldı → Faz S 7 → 10, toplam 88 → 91. **Aynı gün, dördüncü tur:** kullanıcı *"paketleme ve yayın öncesi oyun assetlerle hazır olsun"* dedi ve **oturum sayısı** istedi. Sayım dürüstçe yapıldı: UI dili tek oturuma sığmaz (araştırma+maket ile uygulama ayrı), karakterler kendi turunu ister → Faz S 10 → 12. Ayrıca bekleyen üç oynanış işi (hatalar · yükseltme sırası · masa aralığı) sanat kalemi değil; **Faz H** olarak ayrıldı (3 kalem). Toplam 91 → 96. **2026-09-10:** S6/②'de ertelenip S7'de kullanıcı kararıyla ayrılan **giriş cephesi camı** kendi
 turunu aldı ve bitti → Faz S 12 → 13 kalem (yeni kalem **S8**, sonrakiler bir kaydı), toplam
-96 → 97. **2026-09-14 (S14):** karakter kalemi kullanıcının *"görevi en fazla ikiye böl"* kuralıyla PERSONEL (**S14**) ve MÜŞTERİ (yeni kalem **S15**) olarak ikiye bölündü — kesme çizgisi yeşil ara durum: personel skinned, müşteriler kapsül olarak çalışmaya devam ediyor (D-112) → Faz S 14 → 15, toplam 98 → 99. **2026-09-14 (S16):** kullanıcının *"elde tepsi tutma falan sorun"* geri bildirimi kendi turunu istedi (ölçüm + kemik katmanlaması + iki sessiz hata) → Faz S 15 → 16, toplam 99 → 100. **2026-09-14 (S17+S18):** kullanıcı oyunu oynadı ve iki tur geri bildirim verdi; ölçüm üç sessiz hata çıkardı (T-poz · açılış yükleme döngüsü · müşteri görünüm takası) → iki yeni kalem **S17** (oynanış/görsel hata turu) ve **S18** (müşteri hareketi + arayüz dokunuşları) → Faz S 16 → 18, toplam 100 → 102. **2026-09-14 (S19):** kullanıcının yedi kalemi kendi turunu istedi ve "görevi en fazla ikiye böl" kuralıyla ÖLÇÜM+KARAR (**S19a**) ile UYGULAMA (**S19b**) olarak ikiye bölündü — kesme çizgisi kullanıcının kendi sözü: *"önce oturumu kaydet, sonraki chatte bunları yaparsın"* (D-116) → Faz S 18 → 20, toplam 102 → 104. **2026-09-15 (kalem S21, tur adı S20):** elektrik kesintisinde yarım kalan mutfak turu ölçümle kapandı ve **iki** yeni kalem doğurdu: turun kendisi (S21) ve ölçümün açtığı kademeli mutfak (**S22**). Ölçüm mutfağın SEVİYEYLE BÜYÜMEDİĞİNİ gösterdi (19 sabit ünite, tezgâh 6 kademe); kesme çizgisi kullanıcının "görevi en fazla ikiye böl" kuralı — sınır+tempo ile ilerleme tasarımı ayrı işler (D-118) → Faz S 20 → 22, toplam 104 → 106. **2026-09-15 (kalem S23, tur adı S19c):** S19'un kalan dört kalemi kullanıcı kararıyla GÖRSEL (S23) ve MANTIK (yükseltme tetiği, ayrı tur) olarak ikiye bölündü — kesme çizgisi varyant kapısı: üç görsel kalem denge dosyasına dokunmuyor, dördüncüsü `rules.ts`'e dokunuyor (D-120) → Faz S 22 → 23, toplam 106 → 107. **NOT — numara kayması:** defterdeki KALEM numarası ile TUR ADI S19'dan beri ayrı yürüyor (kalem S20 = tur S19b); yeni kalemler tur adını parantezde taşıyor. **2026-09-14:** S11 (UI uygulaması) kullanıcının "görevi en fazla ikiye böl" kuralıyla DİL (**S11**) ve YAPI (yeni kalem **S12**, sonrakiler bir kaydı) olarak ikiye bölündü — ölçek/palet/ikon ile ekran kabuğu ayrı işler, kesme çizgisi yeşil ara durum (D-109) → Faz S 13 → 14, toplam 97 → 98. **E4 kapsamı ölçümle değişti ama kalem sayısı değişmedi:** tur "dosya bırak"
+96 → 97. **2026-09-14 (S14):** karakter kalemi kullanıcının *"görevi en fazla ikiye böl"* kuralıyla PERSONEL (**S14**) ve MÜŞTERİ (yeni kalem **S15**) olarak ikiye bölündü — kesme çizgisi yeşil ara durum: personel skinned, müşteriler kapsül olarak çalışmaya devam ediyor (D-112) → Faz S 14 → 15, toplam 98 → 99. **2026-09-14 (S16):** kullanıcının *"elde tepsi tutma falan sorun"* geri bildirimi kendi turunu istedi (ölçüm + kemik katmanlaması + iki sessiz hata) → Faz S 15 → 16, toplam 99 → 100. **2026-09-14 (S17+S18):** kullanıcı oyunu oynadı ve iki tur geri bildirim verdi; ölçüm üç sessiz hata çıkardı (T-poz · açılış yükleme döngüsü · müşteri görünüm takası) → iki yeni kalem **S17** (oynanış/görsel hata turu) ve **S18** (müşteri hareketi + arayüz dokunuşları) → Faz S 16 → 18, toplam 100 → 102. **2026-09-14 (S19):** kullanıcının yedi kalemi kendi turunu istedi ve "görevi en fazla ikiye böl" kuralıyla ÖLÇÜM+KARAR (**S19a**) ile UYGULAMA (**S19b**) olarak ikiye bölündü — kesme çizgisi kullanıcının kendi sözü: *"önce oturumu kaydet, sonraki chatte bunları yaparsın"* (D-116) → Faz S 18 → 20, toplam 102 → 104. **2026-09-15 (kalem S21, tur adı S20):** elektrik kesintisinde yarım kalan mutfak turu ölçümle kapandı ve **iki** yeni kalem doğurdu: turun kendisi (S21) ve ölçümün açtığı kademeli mutfak (**S22**). Ölçüm mutfağın SEVİYEYLE BÜYÜMEDİĞİNİ gösterdi (19 sabit ünite, tezgâh 6 kademe); kesme çizgisi kullanıcının "görevi en fazla ikiye böl" kuralı — sınır+tempo ile ilerleme tasarımı ayrı işler (D-118) → Faz S 20 → 22, toplam 104 → 106. **2026-09-15 (kalem S23, tur adı S19c):** S19'un kalan dört kalemi kullanıcı kararıyla GÖRSEL (S23) ve MANTIK (yükseltme tetiği, ayrı tur) olarak ikiye bölündü — kesme çizgisi varyant kapısı: üç görsel kalem denge dosyasına dokunmuyor, dördüncüsü `rules.ts`'e dokunuyor (D-120) → Faz S 22 → 23, toplam 106 → 107. **2026-09-16 (kalem S24):** S23'te ayrılan MANTIK yarısı kendi turunu aldı ve bitti — yükseltme tetiği (D-121) → Faz S 23 → 24, toplam 107 → 108. **NOT — numara kayması:** defterdeki KALEM numarası ile TUR ADI S19'dan beri ayrı yürüyor (kalem S20 = tur S19b); yeni kalemler tur adını parantezde taşıyor. **2026-09-14:** S11 (UI uygulaması) kullanıcının "görevi en fazla ikiye böl" kuralıyla DİL (**S11**) ve YAPI (yeni kalem **S12**, sonrakiler bir kaydı) olarak ikiye bölündü — ölçek/palet/ikon ile ekran kabuğu ayrı işler, kesme çizgisi yeşil ara durum (D-109) → Faz S 13 → 14, toplam 97 → 98. **E4 kapsamı ölçümle değişti ama kalem sayısı değişmedi:** tur "dosya bırak"
 olarak açılmıştı, ölçüm "dosya alma, motoru büyüt" dedi (D-096); ortam sesi + `settings.music`
 kablosu E4'ün dışında kaldı ve **henüz kendi kalemi olmadı** — açık kalemler listesinde duruyor.
 
@@ -245,7 +245,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   değil; kendi turunu ister.
 - ⏳ **E5 — hareketli onboarding**
 
-## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (22/23) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
+## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (23/24) 🔧 — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
 - ✅ **S1 — pad ve yükseltme dili yeniden yazıldı** · çember → **köşe parantezli kare** (kenar
   ortaları boş), dolum büyüyen disk → **alttan üste dolan kare**, "Masa"/"Çay Yükselt"/"Usta"
   → hepsinde **YÜKSELT** + solunda düz yukarı ok, yazı 700 → 800, 💎 pulu "mavi kare" → gerçek
@@ -513,6 +513,20 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   "Maximum update depth exceeded" → duman aralıklı kırmızı). Bekçi
   `tests/karakter-senkron.test.ts` 32 denetim, **32 mutasyon, kaçan 0** · vitest 975 · duman 42/42.
 
+- ✅ **S24 — YÜKSELTME TETİĞİ ARTIK ÇİZİLEN ÇERÇEVE · D-121** — S19'un kalan dördüncü kalemi
+  (mantık yarısı). Kullanıcı **B + G**'yi seçti. Kusur ölçüde değil AYNI ŞEYİN İKİ KEZ
+  TANIMLANMASINDAydı: çizilen çerçeve yazanla birebir aynıydı (sapma **0,0000**, 13/13) ama dolum
+  ayrı bir DAİRE testine bağlıydı — tetikleyen alanın **%50,4'ü** çerçeve dışında. Geometri iki
+  değil ÜÇTÜ: "üstündesin" kabarması da kendi dairesini kuruyordu (%34,3 dışarıda). Daireyi
+  daraltmak kusuru taşıyor: A1 ölü bölge %28,5 (serviste **%68,2**), A2 %26,0. Yapısal kapatma:
+  yeni `src/game/markerFrame.ts` — çizim, tetik ve kabarma tek fonksiyondan okuyor; `tick.ts`ten
+  `PAD_RADIUS`/`TABLE_UP_RADIUS` tamamen çıktı. Bedel yazılı: tetik alanı −%49,6, menzil
+  1,023 → 0,662/0,619; erişim %94,1 → **%97,6**. Ölçümün açığı uygulamadan önce kapatıldı
+  (13 işaretin hiçbiri PAD değildi; 48 işaret tarandı, tek çakışma bilerek bırakıldı).
+  Bekçi `tests/tetik-s24.test.ts` **14 denetim / 15 mutasyon, kaçan 0** — kaçan M8 bekçinin zayıf
+  yerini gösterdi (hw ≫ hh kutusunda dikey taşma sınanmıyormuş). `docs/tetik-raporu-s24.md`.
+  vitest 1105 ✓ · duman 42/42 ✓ · denge sayısı değişmedi.
+  **Ayrıca:** `.gitattributes` eklendi (S23'ün CRLF borcu; `git add --renormalize` 0 dosya bozdu).
 - ✅ **S23 — OK KENDİ BLOĞUNA GİRDİ, PANEL OYUNUN GÖVDESİNİ GÖSTERİYOR (tur adı S19c) · D-120** —
   S19'un kalan dört kaleminin GÖRSEL üçü; dördüncüsü (yükseltme tetiği) `rules.ts`'e dokunduğu
   için ayrı tura bırakıldı. Kullanıcı **O7 + K3 + E3**'ü seçti. **Ok:** kusur ölçü değil İKİ AYRI
