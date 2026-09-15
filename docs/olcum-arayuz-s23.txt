@@ -1,25 +1,28 @@
 S23 ÖLÇÜM — arayüz: karakter menüsü (K) · panel doluluğu (E) · yükseltme oku (O)
-damga: 2026-09-15T19:46:16.828Z · kip: TAM · hata: 0
+damga: 2026-09-15T20:42:13.412Z · kip: TAM · hata: 0
 araç: tools/olcum-arayuz-s23.mjs · ham: docs/olcum-arayuz-s23.json
 
 §E — PANEL DOLULUĞU (kabuk zaten tam ekran; ölçülen İÇERİĞİN ekranı doldurması)
 kadraj   ekran     kart(w@x)  govdeH icerikH  dikDol  yatDol kartDol enBosluk altKuyruk solPay sagPay kaydirma
 telefon  gorevler  390@0         782     708   0.905   0.928   1.000       36        58     14     14   782/782
 telefon  hedefler  390@0         782     757   0.968   0.928   1.000       40         8     14     14   801/782
-telefon  magaza    390@0         782     428   0.548   0.772   1.000      224       342     75     14   782/782
-telefon  karakter  390@0         782     425   0.543   0.928   1.000       37       353     14     14   782/782
-telefon  ayarlar   390@0         782     243   0.311   0.895   1.000       48       525     18     23   782/782
+telefon  magaza    390@0         782     690   0.883   0.921   1.000       44        80     17     14   782/782
+telefon  karakter  390@0         782     739   0.945   0.928   1.000       37        39     14     14   782/782
+telefon  ayarlar   390@0         782     576   0.737   0.928   1.000       39       192     14     14   782/782
 masaustu gorevler  520@380       738     708   0.959   0.384   0.406       36        14     14     14   748/738
 masaustu hedefler  520@380       738     739   1.001   0.384   0.406       40         0     14     14   783/738
-masaustu magaza    520@380       738     411   0.557   0.311   0.406      207       315    108     14   738/738
-masaustu karakter  520@380       738     453   0.614   0.384   0.406       37       281     14     14   738/738
-masaustu ayarlar   520@380       738     243   0.330   0.374   0.406       48       481     18     23   738/738
+masaustu magaza    520@380       738     656   0.889   0.382   0.406       44        70     17     14   738/738
+masaustu karakter  520@380       738     695   0.941   0.384   0.406       37        39     14     14   738/738
+masaustu ayarlar   520@380       738     558   0.756   0.384   0.406       39       166     14     14   738/738
 
-§K — ÖNİZLEME GÖVDESİ (kroma zeminli karede piksel silüeti; kutu 356×134 CSS)
-sekme    siluet(px)  dikDol  yatDol merkezY  altKirpik
-player   167x221       0.825   0.235   0.537       true
-waiter   153x199       0.743   0.215   0.578       true
-dish     162x200       0.746   0.228   0.576       true
+§K — ÖNİZLEME KUTUSU (kroma zeminli karede piksel silüeti)
+  NOT: K3 sonrası kutuda GÖVDE + ZEMİN + DUVAR var; silüet artık yalnız gövde değil
+  ÇİZİLENİN tamamıdır. Bu yüzden doluluk sayıları K3 ÖNCESİYLE birebir kıyaslanamaz —
+  kıyaslanabilir olan KUTUNUN kendi boyudur (altta).
+sekme    kutu(CSS)  siluet(px)  dikDol  yatDol merkezY  altKirpik
+player   356x448    640x824       0.920   0.899   0.499       true
+waiter   356x494    640x918       0.927   0.899   0.499       true
+dish     356x494    640x916       0.927   0.899   0.499       true
 
 §K — SALONDAKİ GERÇEK GÖVDE (rol başına bedel; panelin geçeceği gövde budur)
   kitchenHand  Barbarian  mesh  7 · ucgen  7123
@@ -28,22 +31,23 @@ dish     162x200       0.746   0.228   0.576       true
   TOPLAM sahnede: 28 skinned mesh · 34171 ucgen
 
 §K — KİMLİK: panelin çaycısı ile oyunun çaycısı (kaynak okundu, yeniden yazılmadı)
-  panel import : import { OwnerBody, CupTray } from '../three/Player'
-  panel KayActor kullaniyor mu : false · salon: true
-  panelde kapsul onizleme sayisi: 2
+  panel import : import { CupTray } from '../three/Player'
+  panel KayActor kullaniyor mu : true · salon: true
+  panelde kapsul onizleme sayisi: 0
   oyunun satiri: owner: { kasket: false, onluk: false, havlu: true, sivaliKol: true }
-  isaret        panelde  oyunda  tutuyor mu
-  kasket        true     false   HAYIR
-  onluk         true     false   HAYIR
-  havlu         false    true    HAYIR
-  sivaliKol     false    true    HAYIR
+  gövde TEK KAYNAKTAN mi: true
+  isaret        oyunda  tutuyor mu  kaynak
+  kasket        false   EVET        KAY_KIYAFET (panel ve salon aynı)
+  onluk         false   EVET        KAY_KIYAFET (panel ve salon aynı)
+  havlu         true    EVET        KAY_KIYAFET (panel ve salon aynı)
+  sivaliKol     true    EVET        KAY_KIYAFET (panel ve salon aynı)
 
 §O — YÜKSELTME OKU (gerçek sahne, üçgen üçgene; ölçü birimi işaretin kendi r yarıçapı)
-  kaynaktaki ayrilan blok: OK_GENIS 0,340 r · OK_BOSLUK 0,160 r · KENAR_PAYI 0,180 r
-etiket    r      okEn_r  ucEn_r govdeEn_r solPay_r yaziAcik_r parantezAcik_r  (br)   enYakin
-YÜKSELT    0.85   0.554   0.554     0.200    0.073      0.053          0.010  0.0085   parantez3
-SV 2       0.60   0.554   0.554     0.200    0.073      0.053          0.010  0.0060   parantez3
-SV 2       0.60   0.554   0.554     0.200    0.073      0.053          0.010  0.0060   parantez3
-SV 2       0.60   0.554   0.554     0.200    0.073      0.053          0.010  0.0060   parantez3
-YÜKSELT    0.60   0.554   0.554     0.200    0.073      0.053          0.010  0.0060   parantez3
+  kaynaktaki ayrilan blok: OK_GENIS 0.4 r · OK_BOSLUK 0.16 r · KENAR_PAYI 0.18 r
+etiket    r      okEn_r  parca solPay_r yaziAcik_r parantezAcik_r  (br)   enYakin
+YÜKSELT    0.85   0.400     1    0.180      0.160          0.225  0.1910   parantez3
+SV 2       0.60   0.400     1    0.180      0.160          0.225  0.1348   parantez3
+SV 2       0.60   0.400     1    0.180      0.160          0.225  0.1348   parantez3
+SV 2       0.60   0.400     1    0.180      0.160          0.225  0.1348   parantez3
+YÜKSELT    0.60   0.400     1    0.180      0.160          0.225  0.1348   parantez3
 

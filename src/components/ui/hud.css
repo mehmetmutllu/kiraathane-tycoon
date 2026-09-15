@@ -669,6 +669,35 @@
   font-weight: 700;
   color: var(--tx2);
 }
+/* KÜNYE — Ayarlar ekranının alt bloğu (E3 · S23 · D-120). Gömülü zemin, etiket solda değer
+   sağda: `sheet-sec` kuşağının altındaki tek bir liste, yeni bir kart grameri açmaz. */
+.kunye {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--r1);
+  background: var(--oyuk);
+  overflow: hidden;
+}
+.kunye > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 12px;
+}
+.kunye > div + div {
+  border-top: 2px solid var(--g2);
+}
+.kunye span {
+  font-size: var(--p2);
+  color: var(--tx2);
+}
+.kunye b {
+  font-family: var(--font-num);
+  font-size: var(--p2);
+  font-weight: 400;
+  color: var(--tx);
+}
 /* T2: alt not da gömülü zemine oturur (3,84 → 7,12). */
 .sheet-foot-note {
   margin: 12px 0 4px;

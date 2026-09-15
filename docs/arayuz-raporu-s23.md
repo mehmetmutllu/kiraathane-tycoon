@@ -155,8 +155,112 @@ panel ortada dar bir sütun.
 
 ## Karar
 
-*(bu bölüm bilerek boştur — karar paketi kullanıcıya sunulacak, seçilen kol buraya yazılacak)*
+Kullanıcı karar paketinden (https://claude.ai/artifact/Cysj2inCDguC4gQxuu3X2o) üç kolu seçti:
+**O7 + K3 + E3** — hepsi önerilen kol. Gerekçe `memory-bank/decisions.md` **D-120**.
 
 ## Uygulama
 
-*(karar sonrası)*
+### §O — kalın tek chevron, eni bloğundan TÜRÜYOR
+
+Biçim değişti ama asıl iş yapısal: **çizilen okun eni artık ayrı bir sayı değil, `OK_GENIS`in
+kendisi** (`okShape(OK_GENIS * r)`). Kusurun kökü iki ayrı doğru olmasıydı — blok yazılıyor,
+ok başka türlü çiziliyordu ve aradaki √3 çarpanı hiçbir yerde durmuyordu. Ayrıca chevron kendi
+orijininde **ortalı** kuruluyor: eski ok tabanından yukarı büyüyüp üst parantezin bandına
+giriyordu. `OK_GENIS` 0,34 → **0,40** (aday karesindeki O7'nin oranı korunsun ve blok çizilenle
+birebir eşitlensin diye).
+
+**Final tam koşu — üç sayı da yazılı hedefine oturdu:**
+
+| ölçü | önce | sonra | hedef |
+|---|---|---|---|
+| okun gerçek eni | 0,554 r | **0,400 r** | `OK_GENIS` 0,400 |
+| sol kenar payı | 0,073 r | **0,180 r** | `KENAR_PAYI` 0,180 |
+| yazıya açıklık | 0,053 r | **0,160 r** | `OK_BOSLUK` 0,160 |
+| parantez açıklığı | 0,010 r (0,006 br) | **0,225 r** (0,135 br) | — |
+
+Parantez açıklığı **22 katına** çıktı; "değiyor sayılır" hâli gitti. Ok iki mesh'ten (gövde +
+üçgen uç) **tek** mesh'e indi.
+
+### §K — panel oyunun gövdesini gösteriyor, vitrinde
+
+Üç önizleme modeli (`PreviewModel` · `WaiterPreviewModel` · `DishwasherPreviewModel`) **tek**
+bileşene indi: `Onizleme`, içinde `KayActor`. Rol doğrudan `kind` olarak veriliyor, yani kimlik
+işaretleri `KAY_KIYAFET`ten geliyor ve **panel ile salon aynı satırı okuyor** — dört işaret bir
+daha ayrışamaz. Kapsül önizleme sayısı 2 → **0**. Tepsi `KAY_TEPSI_KAYMA` ile ele takılı kaldı
+(S16 · D-114 bozulmadı).
+
+Vitrin `SalonSlice`e katıldı: `FixedCam` (oyunun 45° duruşu, fov 50) + `SalonLights` +
+`FloorPatch` + `WallBack`, ve zemin/duvar **oyuncunun kendi satın aldığı tema**. Kadraj gözle
+ayarlandı (`tools/shot-s23-panel.mjs`, üç tur): `d` 2,05 → 3,1 → 2,6 ve `ty` 0,86 → 0,72 →
+**1,02**. İlk iki denemede gövde tepeden bakılıyor ve baldırlar eziliyordu; son değerde gövde
+kadraja oturuyor, duvar üstte floor altta dengeli.
+
+**Önizleme kutusu** sabit yükseklikten (168 px) **esneğe** geçti: `flex: 1 1 auto` +
+`min-height: 230px`, kart da `flex: 1` ile gövdenin boyunu alıyor. Ölçülen kutu artık
+**356×448** (Oyuncu) ve **356×494** (Garson/Bulaşıkçı) — eskiden 356×134.
+
+> **Ölçüm notu:** K3 sonrası kutuda gövde + zemin + duvar var, yani piksel silüeti artık yalnız
+> gövdeyi değil ÇİZİLENİN tamamını ölçüyor. Doluluk yüzdeleri bu yüzden K3 öncesiyle birebir
+> kıyaslanamaz; kıyaslanabilir olan kutunun kendi boyudur. Ham çıktı bu uyarıyı kendi başlığında
+> taşıyor.
+
+### §E — boşluk içerikle doldu, satır boyu bozulmadı
+
+Üç ayrı kök neden, üç ayrı düzeltme (E2'nin "satırlar ekrana yayılsın" kolu bilerek seçilmedi —
+doluluk sayısını kurtarır, biçimi bozardı):
+
+- **Karakter:** kart gövdenin boyunu alıyor, artan yeri vitrin yiyor (yukarıdaki §K).
+- **Mağaza:** ekran her açılışta `table` sekmesinde açılıyordu ve o sekme erken oyunda **kilitli**
+  — oyuncu mağazayı açtığında satın alınabilir hiçbir şey görmüyordu. Varsayılan sekme artık
+  satılabilir olana kayıyor; kilitli sekme duruyor (koşulu anlatması gerekiyor) ama kartı
+  `flex: 1` yerine `flex: none`, yani gövdeye yayılıp 224 px'lik iç delik açmıyor.
+- **Ayarlar:** altına **künye** bloğu girdi (kayıt şeması · toplam kazanç · servis · bulaşık ·
+  açılan nokta) + kayıt notu. Yıkıcı düğme de anahtarların dibinden ekranın sonuna indi.
+
+**Final tam koşu — telefon 390×844:**
+
+| ekran | dikey doluluk (önce → sonra) | altta ölü alan (önce → sonra) | en büyük iç boşluk |
+|---|---|---|---|
+| Görevler | 0,905 → 0,905 | 58 → 58 | 36 |
+| Hedefler | 0,968 → 0,968 | 8 → 8 | 40 |
+| **Mağaza** | 0,548 → **0,883** | 342 → **80** | 224 → **44** |
+| **Karakter** | 0,543 → **0,945** | 353 → **39** | 37 |
+| **Ayarlar** | 0,311 → **0,737** | 525 → **192** | 48 → 39 |
+
+Masaüstü kart kilidi (520 px) **değişmedi** — kullanıcı E3'ü seçti, M2 kolunu değil.
+
+## Bekçi
+
+`tests/arayuz-s23.test.ts` — **16 denetim**, `tools/mutasyon-arayuz-s23.mjs` ile **12 mutasyon,
+kaçan 0**. Mutasyon turu bekçinin iki gerçek zaafını buldu ve ikisi de kapandı:
+
+1. **`toMatch(/FloorPatch/)` kaldırılmış bir bileşende bile yeşil kalıyordu** — adı `import`
+   satırında duruyor. Denetimler artık KULLANIMA bakıyor (`/<FloorPatch[\s/>]/`).
+2. **İlk mutasyon koşusu YALANCI 12/12 verdi.** Testteki dört regex'e kaçış hatasıyla birer
+   `backspace` karakteri girmişti; o testler zaten kırmızıydı, mutasyonlar da "tuttu" sayılıyordu.
+   Regex'ler onarıldı, mutasyon yeniden koşuldu — **gerçek** 12/12.
+
+Bir mutasyon da **geçersiz çıktı ve elendi**: `OK_GENIS`i küçültmek kusur değil, çünkü ok artık
+ondan türüyor ve bütün açıklıklar korunuyor. Yerine anlamlısı kondu (okun BOYUNU bloktan bağımsız
+uzatmak — chevron parantezin bandına girer).
+
+## Final
+
+vitest **1091 ✓** · duman **42/42 ✓** · `tsc -b` temiz · ölçüm tam koşu **hata 0** ·
+**denge dosyasına dokunulmadı** (`economy.config.ts` · `tick.ts` · `rules.ts`).
+
+**Gerileme var mı — A/B ölçüldü.** Vitrin masaüstünde ağırlaştı mı diye bakıldı (bir koşuda
+geri düğmesi tıklaması 5 sn'lik payı aştı): eski panelle açılış **7112 ms** / **377,9 ms-kare**,
+yeni panelle **6488 ms** / **382,3 ms-kare** — fark gürültü içinde, yavaşlık headless
+Chromium'un yazılım render'ının kendi tabanı. Dar olan payın kendisiydi, 15 sn'ye çıkarıldı.
+
+**Yol boyunca çıkan üç yan bulgu:**
+
+1. `.gitattributes` eksiği somut zarar verdi: `git stash pop` src/ dosyalarını CRLF'e çevirdi ve
+   mutasyon aracının çok satırlı kalıpları sessizce bulunamaz oldu — dört mutasyon birden
+   "KALIP BULUNAMADI" düştü. Araç satır-sonu bağımsız yapıldı; **asıl eksik duruyor.**
+2. Ham çıktının §O başlığı hedefleri ELLE yazıyordu; ok düzeldikten sonra satır hâlâ "0,340"
+   diyordu, yani ölçüm kendi ölçtüğü şeyle çelişiyordu. Hedefler artık kaynaktan okunuyor.
+3. Aynı hata sınıfı §K kimlik tablosunda da vardı: kod düzeldikten sonra tablo artık ÇİZİLMEYEN
+   `OwnerBody`yi ölçüp "HAYIR ×4" basıyordu. Tablo artık gövdenin tek kaynaktan gelip gelmediğini
+   söylüyor.

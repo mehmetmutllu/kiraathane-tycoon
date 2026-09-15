@@ -310,16 +310,33 @@ function panelKaynagi(okuKok) {
      * işaretin kaçının tuttuğu olur.
      */
     kimlik: (() => {
-      const govde = (sahne.match(/export function OwnerBody[\s\S]*?\n}/) ?? [''])[0];
       const cfg = oku('src/config/actor.ts');
       const ownerSatir = (cfg.match(/^\s*owner:\s*\{[^}]*\}/m) ?? [''])[0];
       const oyunda = (ad) => new RegExp(ad + ':\\s*true').test(ownerSatir);
+      const tekKaynak = /<KayActor\b/.test(panel) && !/<OwnerBody\b/.test(panel);
+      /*
+       * PANEL KENDİ GÖVDESİNİ ÇİZİYORSA dört işaret AYRI AYRI sayılır — S23 öncesi hâl buydu
+       * ve dördü de tersti. KayActor'e geçtiyse sayılacak bir şey KALMAZ: işaretler
+       * `KAY_KIYAFET`ten gelir, panel ile salon aynı satırı okur, kimlik YAPI GEREĞİ tutar.
+       * Ölçüm bunu böyle yazar; yoksa artık çizilmeyen `OwnerBody`yi ölçüp "HAYIR" basıyordu
+       * (final koşuda birebir bu oldu: kod düzeldi, rapor hâlâ kusuru gösteriyordu).
+       */
+      const govde = tekKaynak ? '' : (sahne.match(/export function OwnerBody[\s\S]*?\n}/) ?? [''])[0];
+      const isaret = (ad, re) => (tekKaynak
+        ? { kaynak: 'KAY_KIYAFET (panel ve salon aynı)', oyunda: oyunda(ad), tutuyor: true }
+        : {
+          kaynak: 'OwnerBody (panel kendi çiziyor)',
+          panelde: re.test(govde),
+          oyunda: oyunda(ad),
+          tutuyor: re.test(govde) === oyunda(ad),
+        });
       return {
+        tekKaynak,
         ownerSatir: ownerSatir.replace(/\s+/g, ' ').trim(),
-        kasket: { panelde: /kasket/i.test(govde), oyunda: oyunda('kasket') },
-        onluk: { panelde: /PALETTE\.apron/.test(govde), oyunda: oyunda('onluk') },
-        havlu: { panelde: /havlu/i.test(govde), oyunda: oyunda('havlu') },
-        sivaliKol: { panelde: /siva/i.test(govde), oyunda: oyunda('sivaliKol') },
+        kasket: isaret('kasket', /kasket/i),
+        onluk: isaret('onluk', /PALETTE\.apron/),
+        havlu: isaret('havlu', /havlu/i),
+        sivaliKol: isaret('sivaliKol', /siva/i),
       };
     })(),
   };
@@ -409,7 +426,7 @@ async function okOlc(sayfa) {
     // "Konuşan" katman uzaktayken görünmez (TEXT_ON) — ölçüm için geçici olarak AÇILIR.
     const gizliler = [];
     t.scene.traverse((n) => {
-      if (n.name === 'ok-govde' || n.name === 'ok-uc' || n.name === 'etiket') {
+      if (n.name?.startsWith('ok-') || n.name === 'etiket') {
         let p = n.parent;
         while (p) { if (p.visible === false) { gizliler.push(p); p.visible = true; } p = p.parent; }
       }
@@ -421,23 +438,29 @@ async function okOlc(sayfa) {
       if (!kok.name?.startsWith('isaret:')) return;
       const o = kok.userData?.olcum;
       if (!o?.arrow) return;
-      let govde = null, uc = null, etiket = null;
+      // OK TEK MESH OLABİLİR DE OLMAYABİLİR DE. S23 öncesi iki parçaydı (`ok-govde` gövde +
+      // `ok-uc` üçgen uç), D-120 sonrası tek chevron (`ok-uc`). Araç parça SAYISINA bağlanmaz:
+      // adı `ok-` ile başlayan ne varsa okun parçasıdır ve hepsinin birleşimi ölçülür.
+      const okParca = [];
+      let etiket = null;
       const parantez = [];
       kok.traverse((n) => {
-        if (n.name === 'ok-govde') govde = n;
-        else if (n.name === 'ok-uc') uc = n;
+        if (n.name?.startsWith('ok-')) okParca.push(n);
         else if (n.name === 'etiket') etiket = n;
         else if (n.name?.startsWith('parantez')) parantez.push(n);
       });
-      if (!govde || !uc) return;
-      const bg = dunyaKutusu(govde), bu = dunyaKutusu(uc), be = etiket ? dunyaKutusu(etiket) : null;
-      if (!bg || !bu) return;
+      if (!okParca.length) return;
+      const kutular = okParca.map(dunyaKutusu).filter(Boolean);
+      const be = etiket ? dunyaKutusu(etiket) : null;
+      if (!kutular.length) return;
       const r = o.r;
-      const okSol = Math.min(bg.min.x, bu.min.x);
-      const okSag = Math.max(bg.max.x, bu.max.x);
+      const okSol = Math.min(...kutular.map((b) => b.min.x));
+      const okSag = Math.max(...kutular.map((b) => b.max.x));
+      const okOn = Math.min(...kutular.map((b) => b.min.z));
+      const okArka = Math.max(...kutular.map((b) => b.max.z));
       const cerceveSol = kok.position.x - o.hw;
 
-      const okTri = [...ucgenler(govde), ...ucgenler(uc)];
+      const okTri = okParca.flatMap(ucgenler);
       let enYakin = Infinity, hangi = null;
       for (let i = 0; i < parantez.length; i++) {
         const d = kumeUzak(okTri, ucgenler(parantez[i]));
@@ -446,9 +469,8 @@ async function okOlc(sayfa) {
 
       satirlar.push({
         etiketAdi: o.label, r: +r.toFixed(3), hw: +o.hw.toFixed(4),
+        okParcaSayisi: okParca.length,
         okGercekEn_r: +((okSag - okSol) / r).toFixed(4),
-        ucEn_r: +((bu.max.x - bu.min.x) / r).toFixed(4),
-        govdeEn_r: +((bg.max.x - bg.min.x) / r).toFixed(4),
         solPay_r: +((okSol - cerceveSol) / r).toFixed(4),
         yaziVar: !!etiket,
         yaziKutusu: be ? { solX: +be.min.x.toFixed(4), sagX: +be.max.x.toFixed(4) } : null,
@@ -456,7 +478,7 @@ async function okOlc(sayfa) {
         parantezAciklik_r: Number.isFinite(enYakin) ? +(enYakin / r).toFixed(4) : null,
         parantezAciklik_br: Number.isFinite(enYakin) ? +enYakin.toFixed(4) : null,
         enYakinParantez: hangi,
-        okDikeyEn_r: +((Math.max(bg.max.z, bu.max.z) - Math.min(bg.min.z, bu.min.z)) / r).toFixed(4),
+        okDikeyEn_r: +((okArka - okOn) / r).toFixed(4),
       });
     });
     for (const p of gizliler) p.visible = false;
@@ -559,12 +581,15 @@ for (const e of rapor.E) {
   ].join(' '));
 }
 y('');
-y('§K — ÖNİZLEME GÖVDESİ (kroma zeminli karede piksel silüeti; kutu 356×134 CSS)');
-y('sekme    siluet(px)  dikDol  yatDol merkezY  altKirpik');
+y('§K — ÖNİZLEME KUTUSU (kroma zeminli karede piksel silüeti)');
+y('  NOT: K3 sonrası kutuda GÖVDE + ZEMİN + DUVAR var; silüet artık yalnız gövde değil');
+y('  ÇİZİLENİN tamamıdır. Bu yüzden doluluk sayıları K3 ÖNCESİYLE birebir kıyaslanamaz —');
+y('  kıyaslanabilir olan KUTUNUN kendi boyudur (altta).');
+y('sekme    kutu(CSS)  siluet(px)  dikDol  yatDol merkezY  altKirpik');
 for (const k of ['player', 'waiter', 'dish']) {
   const v = rapor.K[k];
   if (!v || v.bos) { y(`${k.padEnd(8)} — okunamadi`); continue; }
-  y([k.padEnd(8), `${v.siluetPx.w}x${v.siluetPx.h}`.padEnd(11),
+  y([k.padEnd(8), `${v.kutu.w}x${v.kutu.h}`.padEnd(10), `${v.siluetPx.w}x${v.siluetPx.h}`.padEnd(11),
     n(v.dikeyDoluluk).padStart(7), n(v.yatayDoluluk).padStart(7), n(v.merkezY).padStart(7),
     String(v.kirpik.alt).padStart(10)].join(' '));
 }
@@ -580,18 +605,27 @@ y(`  panel import : ${rapor.K.kaynak?.panelImport}`);
 y(`  panel KayActor kullaniyor mu : ${rapor.K.kaynak?.panelKayActorKullaniyor} · salon: ${rapor.K.kaynak?.sahneKayActorKullaniyor}`);
 y(`  panelde kapsul onizleme sayisi: ${rapor.K.kaynak?.panelKapsulOnizleme}`);
 y(`  oyunun satiri: ${rapor.K.kaynak?.kimlik?.ownerSatir}`);
-y('  isaret        panelde  oyunda  tutuyor mu');
+y(`  gövde TEK KAYNAKTAN mi: ${rapor.K.kaynak?.kimlik?.tekKaynak}`);
+y('  isaret        oyunda  tutuyor mu  kaynak');
 for (const [ad, v] of Object.entries(rapor.K.kaynak?.kimlik ?? {})) {
-  if (ad === 'ownerSatir') continue;
-  y(`  ${ad.padEnd(13)} ${String(v.panelde).padEnd(8)} ${String(v.oyunda).padEnd(7)} ${v.panelde === v.oyunda ? 'EVET' : 'HAYIR'}`);
+  if (ad === 'ownerSatir' || ad === 'tekKaynak') continue;
+  y(`  ${ad.padEnd(13)} ${String(v.oyunda).padEnd(7)} ${(v.tutuyor ? 'EVET' : 'HAYIR').padEnd(11)} ${v.kaynak}`);
 }
 y('');
 y('§O — YÜKSELTME OKU (gerçek sahne, üçgen üçgene; ölçü birimi işaretin kendi r yarıçapı)');
-y('  kaynaktaki ayrilan blok: OK_GENIS 0,340 r · OK_BOSLUK 0,160 r · KENAR_PAYI 0,180 r');
-y('etiket    r      okEn_r  ucEn_r govdeEn_r solPay_r yaziAcik_r parantezAcik_r  (br)   enYakin');
+// Hedef sayılar KAYNAKTAN okunur, buraya YAZILMAZ — ok düzeltildikten sonra bu satır hâlâ
+// "0,340" diyordu, yani ham çıktı kendi ölçtüğü şeyle çelişiyordu.
+{
+  const src = readFileSync(path.join(KOK, 'src/components/three/GroundMarker.tsx'), 'utf8');
+  // `\\d` ÇİFT ters bölü: şablon dizisinde tek `\d` yalnızca `d` harfine iner ve kalıp
+  // `([d.]+)` olur — sayı hiç yakalanmaz, satır "?" basar (bir koşuda birebir bu oldu).
+  const sabit = (ad) => (src.match(new RegExp(`export const ${ad} = ([\\d.]+)`)) ?? [, '?'])[1];
+  y(`  kaynaktaki ayrilan blok: OK_GENIS ${sabit('OK_GENIS')} r · OK_BOSLUK ${sabit('OK_BOSLUK')} r · KENAR_PAYI ${sabit('KENAR_PAYI')} r`);
+}
+y('etiket    r      okEn_r  parca solPay_r yaziAcik_r parantezAcik_r  (br)   enYakin');
 for (const s of rapor.O?.satirlar ?? []) {
   y([s.etiketAdi.padEnd(9), n(s.r, 2).padStart(5),
-    n(s.okGercekEn_r).padStart(7), n(s.ucEn_r).padStart(7), n(s.govdeEn_r).padStart(9),
+    n(s.okGercekEn_r).padStart(7), String(s.okParcaSayisi).padStart(5),
     n(s.solPay_r).padStart(8), n(s.yaziyaAciklik_r).padStart(10), n(s.parantezAciklik_r).padStart(14),
     n(s.parantezAciklik_br, 4).padStart(7), String(s.enYakinParantez).padStart(11)].join(' '));
 }

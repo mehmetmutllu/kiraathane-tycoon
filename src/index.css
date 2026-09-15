@@ -648,8 +648,17 @@ body,
 }
 
 /* ---- Karakter paneli (v20): 3/4 açı mini Canvas + canlı tepsi önizleme + 3 özellik kartı ---- */
+/* E3 + K3 (S23 · D-120): kart gövdenin BOYUNU alır ve vitrin artan yeri yer.
+   Ölçüm: karakter ekranında içerik 782 px'lik gövdenin %54'ünü dolduruyor, altta 353 px ölü
+   alan kalıyordu; aynı turda vitrindeki gövde de kutunun eninin yalnız %22-24'ünü kullanıyor
+   ve ayağı alt kenara dayanıyordu. İki kusur tek düzeltmeyle kapanır: satırlar doğal boyunda
+   kalır (E2'nin "satırlar devleşsin" kolu bilerek seçilmedi), artan yeri VİTRİN alır. */
 .char-card {
   padding-top: 14px;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 .char-head {
   display: flex;
@@ -713,7 +722,8 @@ body,
   text-align: center;
 }
 .char-canvas {
-  height: 168px;
+  flex: 1 1 auto;
+  min-height: 230px;
   margin: 10px 0 12px;
   border-radius: var(--r3);
   overflow: hidden;
@@ -1035,8 +1045,11 @@ body,
 }
 /* T2: kilit paneli GÖMÜLÜ bir alan — kesik kenarlık "henüz yok" der, zemin okunabilirliği
    taşır (`.shop-locked-desc` gövde gradyanında 3,84 veriyordu, oyukta 7,12). */
+/* Kilitli kart KENDİ BOYUNDA durur (E3 · S23). `flex: 1` iken kart gövdenin tamamına
+   yayılıyor, içerik ortada asılı kalıyor ve üstünde/altında 224 px'lik bir delik açılıyordu —
+   ölçümün "en büyük iç boşluk" sütunundaki en kötü sayı buydu. */
 .shop-locked {
-  flex: 1;
+  flex: none;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1304,7 +1317,7 @@ body,
     gap: 1.3px;
   }
   .char-canvas {
-    height: 140px;
+    min-height: 190px;
   }
 }
 
@@ -1371,7 +1384,7 @@ body,
     height: 16px;
   }
   .char-canvas {
-    height: 120px;
+    min-height: 120px;
   }
   .char-card {
     max-height: 86vh;

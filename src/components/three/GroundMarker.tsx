@@ -41,16 +41,32 @@ const TEXT_ON = 0.55;
  */
 export const HARF_EM = 0.58;
 export const ETIKET_PUNTO = 0.38;
-export const OK_GENIS = 0.34;
+/**
+ * OKUN AYRILAN BLOĞU — ve **çizilen okun eni bu sayıdan TÜRER** (S23 · D-120).
+ *
+ * S23 ölçümü kusurun yerini buldu: blok 0,340 r yazılıyken çizilen uç 0,554 r idi, yani ok
+ * kendi bloğundan %63 geniş. Sebep uçun `circleGeometry(r·0,32, 3)` olmasıydı — 3 kenarlı
+ * çemberin KENARI yarıçapın √3 katıdır ve bu çarpan hiçbir yerde yazmıyordu. Sonuç ölçüldü:
+ * sol kenar payının %59'u yeniyor (0,180 → 0,073 r), yazıya kalan açıklık amaçlananın üçte
+ * biri (0,160 → 0,053 r), parantezle arası 0,006 birim — kullanıcının *"çerçeveye değiyor"*
+ * cümlesi buydu. Beş işaretin beşinde de aynı üç sayı çıktı: yerleşim kazası değil, geometri.
+ *
+ * Yapısal kapatma (`feedback_single_source_of_truth`): artık okun eni ayrı bir sayı DEĞİL,
+ * `OK_GENIS`in kendisi. İkisi bir daha ayrışamaz — bekçi testi de bunu denetler.
+ */
+export const OK_GENIS = 0.4;
 export const OK_BOSLUK = 0.16;
 export const KENAR_PAYI = 0.18;
+/** Okun boyu ve çizgi kalınlığı — ENİNE oranla (aday karesi O7'nin oranları). */
+export const OK_YUKSEKLIK_ORAN = 0.75;
+export const OK_KALINLIK_ORAN = 0.275;
 
 /** Köşe parantezi: kol uzunluğu · kalınlık · DIŞ KÖŞE YARIÇAPI (yarı-yüksekliğe oran). */
 export const KOL = 0.46;
 export const KALINLIK = 0.17;
 export const KOSE_R = 0.3;
 /** İç zeminin çerçeveden içeri kaçtığı pay — parantez çizgilerinin DIŞINA taşmasın. */
-const ZEMIN_ICE = 0.055;
+export const ZEMIN_ICE = 0.055;
 
 /* İşaretin zemin düzlemindeki YEREL ekseni: `rotation=[-PI/2,0,0]` sonrası yerel +Y dünyada
    −Z'ye bakar; yani "yukarı" = kameradan uzağa. Yazı, ok ve dolum bu eksende kurulur. */
@@ -89,6 +105,32 @@ function roundedRectShape(w: number, h: number, r: number): Shape {
   s.quadraticCurveTo(-hw, hh, -hw, hh - rr);
   s.lineTo(-hw, -hh + rr);
   s.quadraticCurveTo(-hw, -hh, -hw + rr, -hh);
+  s.closePath();
+  return s;
+}
+
+/**
+ * YÜKSELTME OKU — kalın tek chevron (S23 · D-120, aday karesinde O7).
+ *
+ * Kullanıcı sekiz adayı gerçek çerçeve ve gerçek boyda gördü (`docs/gorsel/ss/s23-ok-adaylari.png`)
+ * ve bunu seçti: r = 0,60'lık küçük işarette dolu üçgenli ok bir lekeye dönüyor, tek kalın "^"
+ * ise okunuyor ve sade kalıyor.
+ *
+ * ŞEKİL KENDİ ORİJİNİNDE ORTALIDIR — eski ok tabanından kuruluyordu ve yukarı doğru büyüyerek
+ * üst parantezin bandına giriyordu. Ortalı şekil etiketin kendi dikey bandında kalır, yani
+ * parantezlerle hiç karşılaşmaz.
+ */
+function okShape(en: number): Shape {
+  const h = en * OK_YUKSEKLIK_ORAN;
+  const k = en * OK_KALINLIK_ORAN;
+  const s = new Shape();
+  const alt = -h / 2;
+  s.moveTo(-en / 2, alt);
+  s.lineTo(0, alt + h);
+  s.lineTo(en / 2, alt);
+  s.lineTo(en / 2 - k, alt);
+  s.lineTo(0, alt + h - k * 1.9);
+  s.lineTo(-en / 2 + k, alt);
   s.closePath();
   return s;
 }
@@ -176,6 +218,7 @@ export function GroundMarker({
   useEffect(() => () => { bracketMat.dispose(); plateMat.dispose(); }, [bracketMat, plateMat]);
 
   const gem = useMemo(gemShape, []);
+  const ok = useMemo(() => okShape(OK_GENIS * r), [r]);
   const bracket = useMemo(() => bracketShape(hh * KOL, hh * KALINLIK, hh * KOSE_R), [hh]);
   // Zemin çerçeveden ZEMIN_ICE kadar içeride ve köşeleri parantezle AYNI yarıçapta.
   const zeminW = 2 * (hw - hh * ZEMIN_ICE);
@@ -255,17 +298,12 @@ export function GroundMarker({
         {/* KONUŞAN katman: yazı + maliyet. Sessizken hiç çizilmez. */}
         <group ref={speakRef} visible={false}>
           {arrow && (
-            <group position={[okX, 0.05, -hh * 0.3]} rotation={[-Math.PI / 2, 0, 0]}>
-              <mesh name="ok-govde" position={[0, -r * 0.13, 0]}>
-                <planeGeometry args={[r * 0.2, r * 0.4]} />
-                <meshBasicMaterial color="#ffffff" transparent opacity={0.95} depthWrite={false} />
-              </mesh>
-              {/* uç: 3 kenarlı çember = üçgen; +90° döndürülünce yukarı bakar */}
-              <mesh name="ok-uc" position={[0, r * 0.2, 0]} rotation={[0, 0, Math.PI / 2]}>
-                <circleGeometry args={[r * 0.32, 3]} />
-                <meshBasicMaterial color="#ffffff" transparent opacity={0.95} depthWrite={false} />
-              </mesh>
-            </group>
+            /* Ok, YAZININ dikey bandında durur (ikisi de -hh·0,3'te ortalı). Eski hâl tabandan
+               yukarı büyüyordu ve üst parantezin bandına 0,006 birim kalıyordu. */
+            <mesh name="ok-uc" position={[okX, 0.05, -hh * 0.3]} rotation={[-Math.PI / 2, 0, 0]}>
+              <shapeGeometry args={[ok]} />
+              <meshBasicMaterial color="#ffffff" transparent opacity={0.95} depthWrite={false} />
+            </mesh>
           )}
           <Text
             name="etiket"

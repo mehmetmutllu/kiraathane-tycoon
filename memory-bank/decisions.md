@@ -3702,3 +3702,43 @@ dokunulmadı; seviye zaten vardı, yalnız okunmuyordu. Okuma SALT GÖRSEL (D-02
 boşalt · adaları bitişik slota koy · asılı üniteye donmuş y ver · zinciri anahtarın ötesine taşı).
 **Final:** vitest 1075 ✓ · duman 42/42 ✓ · tam ölçüm damgaları temiz · yeni çakışma 0/6 seviye.
 Basamaklar: ×0,40 → 0,75 → 1,46 → 1,58 → 2,69 · bedel uyumu r = **+0,92** · doluluk %32 → %42.
+
+## D-120 — S23: ok kendi bloğuna girdi, panel oyunun gövdesini gösteriyor (2026-09-15)
+
+**KARAR:** kullanıcı karar paketinden **O7 + K3 + E3**'ü seçti (üçü de önerilen kol).
+Sayılar: `docs/arayuz-raporu-s23.md` · ham `docs/olcum-arayuz-s23.txt` (tam koşu, hata 0).
+
+**OK — KUSUR ÖLÇÜ DEĞİL, İKİ AYRI DOĞRUYDU.** Blok `OK_GENIS = 0,34 r` yazılıyken çizilen uç
+**0,554 r**: uç `circleGeometry(r·0,32, 3)` idi ve 3 kenarlı çemberin kenarı yarıçapın **√3**
+katıdır — o çarpan hiçbir yerde yazmıyordu. Sonuç beş işaretin beşinde aynı: sol kenar payının
+%59'u yeniyor, yazıya açıklık amaçlananın üçte biri, parantezle arası **0,006 birim**
+(kullanıcının *"çerçeveye değiyor"*ı bu). Biçim O7'ye (kalın tek chevron) geçti ama asıl iş
+yapısal: **çizilen en artık `OK_GENIS`in kendisi** (`okShape(OK_GENIS * r)`), ve chevron kendi
+orijininde ortalı — eski ok tabandan yukarı büyüyüp üst parantezin bandına giriyordu.
+Üç sayı da yazılı hedefine oturdu (0,400 / 0,180 / 0,160); parantez açıklığı **22 katına** çıktı.
+
+**PANEL — OYUNDA OLMAYAN BİR ADAMI GÖSTERİYORDU.** Dört kimlik işaretinin dördü de tersti:
+kasket ve önlük PANELDE vardı oyunda yoktu (S15/S18'de kalkmışlardı), omuz havlusu ve sıvalı
+kol OYUNDA vardı panelde yoktu (D-116). Kök neden panelin gövdeyi KENDİ çizmesiydi. Üç önizleme
+modeli tek `Onizleme`ye indi, içinde `KayActor`; rol `kind` olarak veriliyor, kimlik
+`KAY_KIYAFET`ten geliyor — panel ve salon aynı satırı okuyor, bir daha ayrışamaz. Vitrin
+`SalonSlice`e katıldı (mağaza önizlemelerinin dili), zemin/duvar oyuncunun kendi teması.
+Kadraj üç turda gözle ayarlandı: `d` 2,05 → 3,1 → **2,6**, `ty` 0,86 → 0,72 → **1,02**.
+
+**DOLULUK — BOŞLUK İÇERİKLE DOLDU, SATIR BOYU BOZULMADI.** E2 (satırlar yayılsın) bilerek
+seçilmedi: doluluk sayısını kurtarır, biçimi bozardı. Üç kök neden ayrı ayrı kapandı — karakter
+kartı gövdenin boyunu alıyor (vitrin artan yeri yiyor) · **mağaza her açılışta KİLİTLİ sekmede
+açılıyordu**, artık satılabilir olana kayıyor ve kilitli kart `flex: none` · Ayarların altına
+künye bloğu girdi, yıkıcı düğme anahtarların dibinden ekranın sonuna indi.
+Telefonda: mağaza %55 → **%88**, karakter %54 → **%95**, ayarlar %31 → **%74**.
+
+**Bekçi:** `tests/arayuz-s23.test.ts` — 16 denetim, **12 mutasyon, kaçan 0**. Mutasyon turu
+bekçinin iki zaafını buldu: `toMatch(/FloorPatch/)` import satırını görüp yeşil kalıyordu
+(denetimler KULLANIMA çevrildi), ve **ilk mutasyon koşusu yalancı 12/12 verdi** — testteki dört
+regex'e kaçış hatasıyla `backspace` karakteri girmişti, o testler zaten kırmızıydı. Bir mutasyon
+geçersiz çıkıp elendi (`OK_GENIS`i küçültmek kusur değil, ok ondan türüyor).
+
+**Final:** vitest 1091 ✓ · duman 42/42 ✓ · denge dosyasına dokunulmadı. Gerileme A/B ölçüldü:
+eski panel 7112 ms / 377,9 ms-kare, yeni panel 6488 ms / 382,3 — fark gürültüde.
+**Yan bulgu:** `.gitattributes` eksiği somut zarar verdi — `git stash pop` src'yi CRLF'e çevirdi,
+mutasyon aracının çok satırlı kalıpları sessizce bulunamadı (dört mutasyon birden düştü).

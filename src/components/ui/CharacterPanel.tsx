@@ -19,9 +19,10 @@ import {
   dishSpeedNextCost,
   type CharStat,
 } from '../../config/economy.config';
-import { PALETTE } from '../../config/palette';
-import { OwnerBody, CupTray } from '../three/Player';
-import { SceneLights } from '../three/lights';
+import { CupTray } from '../three/Player';
+import { KayActor } from '../three/KayActor';
+import { KAY_TEPSI_KAYMA } from '../../config/actor';
+import { FixedCam, SalonLights, FloorPatch, WallBack } from './SalonSlice';
 import { PREVIEW_GL } from '../../config/palette';
 import { CoinIcon, TrayIcon, BasinIcon, MagnetIcon, BootIcon, ToIcon } from './icons';
 import { Sheet } from './Sheet';
@@ -32,8 +33,32 @@ import { Sheet } from './Sheet';
  * yükseltmesi satar (çay garsonları z0+z1 ORTAK eğri; tostçu kendi eğrisi) — garson tutulmadan kilitli.
  */
 
-// Yavaş idle salınımı + tepsi pop'u (satın alma anında kapasite artar → tepsi 1.3'ten 1'e söner).
-function PreviewModel({ cap }: { cap: number }) {
+/**
+ * ÖNİZLEME — TEK BİLEŞEN, ÜÇ ROL (S23 · D-120 · kol K3).
+ *
+ * NEDEN DEĞİŞTİ: S23 ölçümü paneldeki adamın oyundaki adam OLMADIĞINI saydı. Panel
+ * `OwnerBody`yi (eski ilkel gövde) çiziyordu, salon `KayActor`ü; dört kimlik işaretinin
+ * DÖRDÜ de tersti — kasket ve önlük PANELDE vardı oyunda yoktu (S15 ve S18'de kalkmışlardı),
+ * omuz havlusu ve sıvalı kol OYUNDA vardı panelde yoktu (D-116 · P7). Garson ve bulaşıkçı
+ * ise hâlâ kapsüldü. Yani panel, oyunda iki turdur var olmayan birini gösteriyordu.
+ *
+ * Artık gövde tek kaynaktan gelir: `KayActor`. Rol eşlemesi `KAY_MODEL`/`KAY_KIYAFET`in
+ * kendisi olduğu için kimlik bir daha ayrışamaz — panel ne eklerse salon da onu ekler.
+ *
+ * VİTRİN (kullanıcı kararı, K3): karakter boşlukta değil ZEMİNDE durur. Yeni bir dil
+ * açılmıyor — mağaza önizlemeleri (`SalonSlice` · `DioramaPreview` · `TableThemePreview`)
+ * zaten "salondan kes-yapıştır"; karakter paneli bu dilin dışında kalan tek ekrandı.
+ *
+ * TEPSİ ELE TAKILI: `tasiyor` ile üst gövde `Holding_A`ya geçer ve `KayActor` çapayı iki
+ * `handslot` kemiğinin ortasından alır (S16 · D-114). Panelde satılan şey tepsi kapasitesi
+ * olduğu için tepsinin GÖRÜNMESİ ekranın işi.
+ */
+function Onizleme({ kind, cap, dirty = 0, food = false }: {
+  kind: 'owner' | 'waiter' | 'dishwasher';
+  cap: number;
+  dirty?: number;
+  food?: boolean;
+}) {
   const sway = useRef<Group>(null);
   const trayG = useRef<Group>(null);
   const prevCap = useRef(cap);
@@ -43,8 +68,9 @@ function PreviewModel({ cap }: { cap: number }) {
   useFrame((st, dt) => {
     const t = st.clock.elapsedTime;
     if (sway.current) {
+      // Hafif salınım (`feedback_visual_polish`: animasyon hafif olsun) — gövdenin KENDİ
+      // idle klibi zaten çalıyor, bu yalnız 3/4 duruşu canlı tutan bir kıpırtı.
       sway.current.rotation.y = -0.38 + Math.sin(t * 0.6) * 0.1;
-      sway.current.position.y = Math.sin(t * 1.6) * 0.015;
     }
     if (trayG.current) {
       pop.current = Math.max(0, pop.current - dt * 2.2);
@@ -53,119 +79,11 @@ function PreviewModel({ cap }: { cap: number }) {
   });
   return (
     <group ref={sway}>
-      <OwnerBody />
-      <group ref={trayG}>
-        <CupTray tea={cap} dirty={0} cap={cap} />
-      </group>
-    </group>
-  );
-}
-
-// Garson önizlemesi (Y3): sahnedeki WaiterUnit greybox diliyle aynı — kapsül + elde tepsi,
-// tepside MEVCUT kapasite kadar birim; tostçu hardal gövde + beyaz kep.
-function WaiterPreviewModel({ cap, food }: { cap: number; food: boolean }) {
-  const sway = useRef<Group>(null);
-  const trayG = useRef<Group>(null);
-  const prevCap = useRef(cap);
-  const pop = useRef(0);
-  if (cap > prevCap.current) pop.current = 1;
-  prevCap.current = cap;
-  useFrame((st, dt) => {
-    const t = st.clock.elapsedTime;
-    if (sway.current) {
-      sway.current.rotation.y = -0.38 + Math.sin(t * 0.6) * 0.1;
-      sway.current.position.y = Math.sin(t * 1.6) * 0.015;
-    }
-    if (trayG.current) {
-      pop.current = Math.max(0, pop.current - dt * 2.2);
-      trayG.current.scale.setScalar(1 + 0.3 * pop.current);
-    }
-  });
-  const w = Math.max(0.3, 0.14 + cap * 0.13);
-  return (
-    <group ref={sway}>
-      <mesh castShadow position={[0, 0.55, 0]}>
-        <capsuleGeometry args={[0.32, 0.6, 6, 12]} />
-        <meshStandardMaterial color={food ? PALETTE.foodApron : '#2e8b57'} />
-      </mesh>
-      {food && (
-        <mesh castShadow position={[0, 1.24, 0]}>
-          <cylinderGeometry args={[0.16, 0.18, 0.14, 10]} />
-          <meshStandardMaterial color={PALETTE.foodCap} />
-        </mesh>
-      )}
-      <group ref={trayG} position={[0, 0.95, 0.4]}>
-        <mesh castShadow>
-          <boxGeometry args={[w, 0.04, 0.24]} />
-          <meshStandardMaterial color="#6d4c41" />
-        </mesh>
-        {Array.from({ length: cap }, (_, i) => {
-          const x = (i - (cap - 1) / 2) * 0.13;
-          return food ? (
-            <mesh key={i} castShadow position={[x, 0.06, 0]}>
-              <boxGeometry args={[0.11, 0.05, 0.12]} />
-              <meshStandardMaterial color={PALETTE.toast} roughness={0.7} />
-            </mesh>
-          ) : (
-            <mesh key={i} castShadow position={[x, 0.1, 0]}>
-              <cylinderGeometry args={[0.045, 0.036, 0.13, 8]} />
-              <meshStandardMaterial color="#c0392b" emissive="#7a1f17" emissiveIntensity={0.25} />
-            </mesh>
-          );
-        })}
-      </group>
-    </group>
-  );
-}
-
-// Bulaşıkçı önizlemesi (v28): sahnedeki DishwasherUnit greybox diliyle aynı — gri-mavi kapsül +
-// leğende kapasite kadar kirli bardak (4'lük sıralar; sahnedeki CarriedDirty ile aynı yerleşim).
-function DishwasherPreviewModel({ cap }: { cap: number }) {
-  const sway = useRef<Group>(null);
-  const trayG = useRef<Group>(null);
-  const prevCap = useRef(cap);
-  const pop = useRef(0);
-  if (cap > prevCap.current) pop.current = 1;
-  prevCap.current = cap;
-  useFrame((st, dt) => {
-    const t = st.clock.elapsedTime;
-    if (sway.current) {
-      sway.current.rotation.y = -0.38 + Math.sin(t * 0.6) * 0.1;
-      sway.current.position.y = Math.sin(t * 1.6) * 0.015;
-    }
-    if (trayG.current) {
-      pop.current = Math.max(0, pop.current - dt * 2.2);
-      trayG.current.scale.setScalar(1 + 0.3 * pop.current);
-    }
-  });
-  const perRow = Math.min(cap, 4);
-  const w = Math.max(0.3, 0.14 + perRow * 0.13);
-  const depth = cap > 4 ? 0.38 : 0.24;
-  return (
-    <group ref={sway}>
-      <mesh castShadow position={[0, 0.55, 0]}>
-        <capsuleGeometry args={[0.32, 0.6, 6, 12]} />
-        <meshStandardMaterial color="#4a6b82" />
-      </mesh>
-      <group ref={trayG} position={[0, 0.95, 0.4]}>
-        <mesh castShadow>
-          <boxGeometry args={[w, 0.04, depth]} />
-          <meshStandardMaterial color="#6d4c41" />
-        </mesh>
-        {Array.from({ length: cap }, (_, i) => {
-          const col = i % 4;
-          const row = Math.floor(i / 4);
-          const rowCount = Math.min(cap - row * 4, 4);
-          const x = (col - (rowCount - 1) / 2) * 0.13;
-          const z = cap > 4 ? (row === 0 ? -0.08 : 0.08) : 0;
-          return (
-            <mesh key={i} castShadow position={[x, 0.1, z]}>
-              <cylinderGeometry args={[0.045, 0.036, 0.13, 8]} />
-              <meshStandardMaterial color="#8d8276" roughness={0.9} />
-            </mesh>
-          );
-        })}
-      </group>
+      <KayActor kind={kind} tasiyor>
+        <group ref={trayG} position={KAY_TEPSI_KAYMA}>
+          <CupTray tea={food ? 0 : cap - dirty} food={food ? cap : 0} dirty={dirty} cap={cap} />
+        </group>
+      </KayActor>
     </group>
   );
 }
@@ -357,6 +275,12 @@ export function CharacterPanel({ onClose }: { onClose: () => void }) {
   const waiterUpgrades = useGame((s) => s.waiterUpgrades);
   const buyCharUpgrade = useGame((s) => s.buyCharUpgrade);
   const padsDone = useGame((s) => s.padsDone);
+  // Vitrin OYUNCUNUN KENDİ salonunu gösterir: satın aldığı zemin ve duvar teması burada da
+  // geçerli (mağaza önizlemeleriyle aynı kaynak). Karakter, kendi kıraathanesinde duruyor.
+  const floorThemeByArea = useGame((s) => s.floorThemeByArea);
+  const wallThemeByArea = useGame((s) => s.wallThemeByArea);
+  const floorId = floorThemeByArea[0] ?? 'parke';
+  const wallId = wallThemeByArea[0] ?? 'krem';
   const [tab, setTab] = useState<Tab>('player');
   const cash = wallet.toNumber();
   const cap = trayCapacityFor(charUpgrades.tray);
@@ -409,24 +333,32 @@ export function CharacterPanel({ onClose }: { onClose: () => void }) {
           </div>
         )}
 
-        {/* TEK Canvas (3/4 yukarı-çapraz açı): sekme MODELİ değiştirir, context'i değil —
-            sekme başına yeni WebGL context tarayıcı limitine takılıp boş kalıyordu (2026-06-12). */}
+        {/* TEK Canvas: sekme MODELİ değiştirir, context'i değil — sekme başına yeni WebGL
+            context tarayıcı limitine takılıp önizlemeyi karartıyordu (2026-06-12).
+
+            KAMERA ARTIK OYUNUN KAMERASI (`FixedCam`, 45° · fov 50) — eski (0,75 · 1,45 · 2,05)
+            fov 36 duruşu ne salonun açısıydı ne de mağaza önizlemelerininki. Ölçüm kutunun da
+            yanlış olduğunu saydı: gövde 356×134'lük kutunun eninin yalnız %22-24'ünü
+            kullanıyordu ve üç sekmede de ayak alt kenara dayanıyordu. Kutu portreye büyüdü
+            (`hud.css` .char-canvas), duruş salonunkiyle eşitlendi. */}
         <div className="char-canvas">
-          <Canvas
-            dpr={[1, 1.5]}
-            gl={PREVIEW_GL}
-            camera={{ position: [0.75, 1.45, 2.05], fov: 36 }}
-            onCreated={({ camera }) => camera.lookAt(0, 0.78, 0.1)}
-          >
-            {/* Işık SAHNEYLE aynı (tek tanım `three/lights.tsx`): panelde gördüğün kıyafet rengi
-                salonda göreceğinle birebir. Eskiden burada ayrı beyaz ambient 0.85 vardı. */}
-            <SceneLights />
-            {tab === 'player' && <PreviewModel cap={cap} />}
+          <Canvas dpr={[1, 1.5]} gl={PREVIEW_GL}>
+            <FixedCam d={2.6} ty={1.02} />
+            {/* Işık ve zemin/duvar SAHNEYLE aynı bileşenlerden: panelde gördüğün kıyafet rengi
+                salonda göreceğinle birebir (tek tanım `three/lights.tsx`). */}
+            <SalonLights />
+            <FloorPatch floorId={floorId} checkerHalf={2} />
+            <WallBack wallId={wallId} z={-1.55} width={7} />
+            {tab === 'player' && <Onizleme kind="owner" cap={cap} />}
             {tab === 'waiter' && waiterHired && (
-              <WaiterPreviewModel cap={waiterTrayCapacityFor(waiterUpgrades.tray)} food={false} />
+              <Onizleme kind="waiter" cap={waiterTrayCapacityFor(waiterUpgrades.tray)} />
             )}
             {tab === 'dish' && dishHired && (
-              <DishwasherPreviewModel cap={dishCarryCapacityFor(waiterUpgrades.dishCarry)} />
+              <Onizleme
+                kind="dishwasher"
+                cap={dishCarryCapacityFor(waiterUpgrades.dishCarry)}
+                dirty={dishCarryCapacityFor(waiterUpgrades.dishCarry)}
+              />
             )}
           </Canvas>
         </div>

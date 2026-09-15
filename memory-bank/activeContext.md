@@ -5,34 +5,38 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-15 — **S23 ÖLÇÜM açıldı: S19'un kalan görsel üçlüsü** · Faz S 22/23 · 96/107)
+## ŞU AN (2026-09-15 — **S23 BİTTİ: ok bloğuna girdi, panel oyunun gövdesini gösteriyor** · Faz S 22/23 · 97/107)
 
 ```
 SORU            : S19'un kalan dört kaleminin GÖRSEL üçü — (K) karakter menüsü hangi gövdeyi
-                  gösteriyor · (E) paneller telefon ekranını gerçekten ne kadar dolduruyor ·
-                  (O) yükseltme okunun bugünkü hâli çakışıyor mu, hangi biçim?
-ÖLÇÜLECEK KOLLAR: K — panelde çizilen ile salonda çizilen gövde YAN YANA (parça, kıyafet
-                      katmanı, baş payı, silüet) üç sekme için ayrı; kadraj/poz adayları karede.
-                  E — 5 ekran × telefon kadrajı: gövde doluluk %, en büyük boş bant, kart eni
-                      vs ekran eni, kaydırma gerekiyor mu.
-                  O — okun kutusu vs çerçeve/yazı (çakışma sayısı) + biçim adayları GERÇEK boyda.
-SAYILAR         : (adım 2'den sonra dolar)
-KARAR           : (adım 3 — kullanıcı seçer)
-UYGULAMA        : (adım 4 — yalnız kararın kolu)
-BEKÇİ           : (test dosyası + mutasyon sayısı)
+                  gösteriyor · (E) paneller ekranı ne kadar dolduruyor · (O) ok çakışıyor mu?
+SAYILAR         : docs/arayuz-raporu-s23.md §Bulgular · ham: docs/olcum-arayuz-s23.txt (tam koşu)
+                  sekiz ok adayı gerçek çerçevede · 10 panel satırı × 2 kadraj · 3 sekme silüeti
+KARAR           : D-120 — O7 (kalın tek chevron) + K3 (gövde + salon dilimi) + E3 (boşluk işe yarasın)
+UYGULAMA        : ok eni artık OK_GENIS'in KENDİSİ (0,554 → 0,400 r) · üç açıklık hedefine oturdu ·
+                  üç önizleme modeli tek Onizleme+KayActor'e indi · vitrin SalonSlice'a katıldı ·
+                  mağaza satılabilir sekmede açılıyor · Ayarlar'a künye bloğu
+BEKÇİ           : tests/arayuz-s23.test.ts — 16 denetim, 12 MUTASYON kırmızı yandı, kaçan 0
+FINAL           : vitest 1091 ✓ · duman 42/42 ✓ · tsc -b temiz · denge dosyasına dokunulmadı
 ```
 
-**Kalem 6 (yükseltme tetiği pad'in üstünde) BU TURDA DEĞİL** — `rules.ts`'e dokunur, varyant
-kapısına tabi; kullanıcı kararıyla mantık yarımı ayrı tura ayrıldı ("görevi en fazla ikiye böl").
-Dört kalemin ASIL metni git'te: `git show 67aeca2:memory-bank/activeContext.md` satır 24-44.
+**Turun kalıcı iki dersi:**
+1. **Kusur "ölçü" değil İKİ AYRI DOĞRU'ydu.** Blok 0,34 r yazılıyken ok 0,554 r çiziliyordu;
+   arada 3 kenarlı çemberin √3 çarpanı vardı ve **hiçbir yerde yazmıyordu**. Sayıyı düzeltmek
+   kusuru kapatmazdı — çizilen eni bloğun KENDİSİNDEN türetmek kapattı.
+2. **Mutasyon turu bekçiyi de yakalar.** İlk koşu YALANCI 12/12 verdi: testteki dört regex'e
+   kaçış hatasıyla `backspace` karakteri girmişti, o testler zaten kırmızıydı ve mutasyonlar
+   "tuttu" sayılıyordu. Ayrıca `toMatch(/FloorPatch/)` kaldırılmış bir bileşende bile yeşildi —
+   adı import satırında duruyor. **Bekçi KULLANIMA bakar, isme değil.**
 
 ## SIRADAKİ TAM ADIM
 
-S23 adım 2: ölçüm aracı → ham çıktı → rapor §Bulgular (KARAR BÖLÜMÜ BOŞ) → commit #1.
+**S24 — yükseltme tetiği pad'in TAM ÜSTÜNDE** (S19'un kalan dört kaleminin mantık yarısı).
+Kullanıcı sözü: *"yanında falan değil, çerçeve içinde olayım."* Bugün `TABLE_UP_RADIUS` 1,0 /
+`PAD_RADIUS` 1,3 **daire**; istenen ÇERÇEVE İÇİ. `rules.ts`'e dokunur → **VARYANT KAPISI**:
+iki kol ölçülmeden uygulanmaz (daire yarıçapını daraltmak · kare/çerçeve testine geçmek).
 
-**Sonra:** S24 = yükseltme tetiği (mantık yarım, varyant kapısı) · S9 SES karar paketi
-(ölçüm hazır) · sonra **Faz H** (E1 yürünebilir mutfak orada, nav ızgarasıyla birlikte).
-
+**Sonra:** S9 SES karar paketi (ölçüm hazır) · sonra **Faz H** (E1 yürünebilir mutfak orada).
 ### S19b'DEN KALAN KÜÇÜK KUSUR
 
 Bel bağının ucu çeyrek açıdan ince bir dudak bırakıyor (`docs/gorsel/ss/s19b-kiyafet.png`).
@@ -63,14 +67,19 @@ G-03 kamera kayıyor · G-06 tepsi ilk yükseltme 75 → ~50 · G-07 dwell para-
 DENGE, varyant kapısına tabi) · masalar geçilmiyor (açıklık 0,68 br, geçiş 0,94 ister — 20 masanın
 12'si).
 
-**Altyapı:** pano ARTIFACT'i **bu turda da kapatıldı** (v41 · 95/106) — borç birikmedi. Yayının bedeli yazılı: canlı sürümün **1611 satırının tamamı** okunmadan publish
+**Altyapı:** pano ARTIFACT'i **bu turda da kapatıldı** (v43 · 97/107) — borç birikmedi. Yayının bedeli yazılı: canlı sürümün **1611 satırının tamamı** okunmadan publish
 reddediliyor (~130k token) — yani atlanırsa borç büyüyor, her turda kapatmak ucuz. ·
-`npm run lint` 31 hata (hepsi eski `tools/olcum-*.ts`) · `.gitattributes` YOK
-(`core.autocrlf` her checkout'ta CRLF'e çeviriyor) · `npm run pano` günlük uyarısı yalnız TARİHE
+`npm run lint` 31 hata (hepsi eski `tools/olcum-*.ts`) · **`.gitattributes` YOK — S23'te SOMUT
+ZARAR VERDİ:** `git stash pop` src'yi CRLF'e çevirdi ve mutasyon aracının çok satırlı kalıpları
+sessizce bulunamadı (dört mutasyon birden "KALIP BULUNAMADI" düştü; araç satır-sonu bağımsız
+yapıldı ama asıl eksik duruyor) · `npm run pano` günlük uyarısı yalnız TARİHE
 bakıyor · mutfağın kuşbakışı karesi OYUNDAN çekilemez (tepeden kamera oyuncunun üstünde, oyuncu mutfağa giremiyor) — plan ölçüm aracının işi · **oyuncuda 2,0× artık kayma** · **panel dönüşünde T-poz temiz koşuda ÜRETİLEMEDİ**
 (repro aracı `tools/olcum-panel-donusu.mjs`).
 
 **Önizlemeler**
+**S23 KARAR PAKETİ:** https://claude.ai/artifact/Cysj2inCDguC4gQxuu3X2o
+**S23 kareler:** `ss/s23-ok-adaylari.png` (sekiz aday, gerçek çerçeve) ·
+`ss/s23b-{player,waiter,dish}.png` (uygulanan vitrin) · `ss/s23-panel-*.png` (panel doluluğu)
 **S22 KARAR PAKETİ + UYGULANAN MERDİVEN (v2):** https://claude.ai/artifact/QXhU6FVWtETAzdAvY8qby1
 **S22 kareler:** ss/s22-kademe-L{1..6}.png (altı basamak, tek kadraj) · ss/s22-ada-L{4,6}.png
 **S20 KARAR PAKETİ:** https://claude.ai/artifact/NzUs9PeHqzj48bekL78fqm
@@ -83,7 +92,7 @@ bakıyor · mutfağın kuşbakışı karesi OYUNDAN çekilemez (tepeden kamera o
 **S13 paketler:** https://claude.ai/code/artifact/dcbaaee3-8889-4665-83b2-feff02a60c13
 **S12 arayüz:** https://claude.ai/code/artifact/a83eade2-32f6-4a64-ae34-6743a93922a3
 **Mor arayüz maketi:** https://claude.ai/code/artifact/6cc7a95e-c0a3-4802-8ea3-99398d637981
-**İlerleme panosu (v42 · 96/106):** https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs
+**İlerleme panosu (v43 · 97/107):** https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs
 
 ---
 

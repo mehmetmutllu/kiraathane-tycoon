@@ -1,0 +1,311 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>S23 Karar Paketi</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<style>
+  :root {
+    --ka: #ffffff; --ze: #f3f1ec; --tx: #241c14; --tx2: #6b5b49; --ln: #ddd6ca;
+    --ac: #b8472f; --ok: #2e7d5b; --uy: #b8860b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ka: #1b1714; --ze: #120f0d; --tx: #f2ece3; --tx2: #a8988a; --ln: #362e27;
+      --ac: #ef7a5e; --ok: #5fc79a; --uy: #e0b64a;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ka: #1b1714; --ze: #120f0d; --tx: #f2ece3; --tx2: #a8988a; --ln: #362e27;
+    --ac: #ef7a5e; --ok: #5fc79a; --uy: #e0b64a;
+  }
+  body { background: var(--ze); color: var(--tx); font: 15px/1.6 system-ui, -apple-system, sans-serif; }
+  .sar { max-width: 1120px; margin: 0 auto; padding-block: 28px; padding-left: 16px; padding-right: 16px; }
+  h1 { font-size: 27px; line-height: 1.2; margin: 0 0 6px; letter-spacing: -0.01em; }
+  h2 { font-size: 21px; margin: 40px 0 4px; padding-top: 18px; border-top: 2px solid var(--ln); }
+  h3 { font-size: 15px; margin: 22px 0 6px; text-transform: uppercase; letter-spacing: 0.09em; color: var(--tx2); }
+  p { margin: 8px 0; }
+  .ust { color: var(--tx2); margin-bottom: 20px; }
+  .kutu { background: var(--ka); border: 1px solid var(--ln); border-radius: 12px; padding: 14px 16px; margin: 14px 0; }
+  .say { font-variant-numeric: tabular-nums; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  .kaydir { overflow-x: auto; margin: 10px 0; }
+  th, td { text-align: left; padding: 7px 9px; border-bottom: 1px solid var(--ln); vertical-align: top; }
+  th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--tx2); font-weight: 700; }
+  td.n { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .kotu { color: var(--ac); font-weight: 700; }
+  .iyi { color: var(--ok); font-weight: 700; }
+  .oner { display: inline-block; background: var(--ok); color: #fff; border-radius: 99px; padding: 1px 9px; font-size: 12px; font-weight: 700; margin-left: 6px; }
+  .kod { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; background: var(--ze); padding: 1px 5px; border-radius: 5px; }
+  img { max-width: 100%; border-radius: 10px; border: 1px solid var(--ln); display: block; }
+  figcaption { color: var(--tx2); font-size: 13px; margin-top: 6px; }
+  figure { margin: 14px 0; }
+  .maketler { display: flex; flex-wrap: wrap; gap: 16px; margin: 14px 0; }
+  .mkart { flex: 1 1 210px; min-width: 0; }
+  .mkart > b { display: block; font-size: 13px; margin-bottom: 6px; }
+  .tel { width: 100%; max-width: 210px; aspect-ratio: 390 / 844; background: #3a2f63; border: 3px solid var(--ln);
+         border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; font-size: 8px; color: #fff; }
+  .tbar { flex: none; height: 9%; background: #2b2352; display: flex; align-items: center; justify-content: space-between; padding: 0 6px; font-weight: 700; }
+  .tgov { flex: 1; min-height: 0; padding: 5px; display: flex; flex-direction: column; gap: 4px; }
+  .blok { background: #4a3d7d; border-radius: 5px; }
+  .blok.vitrin { background: #5a4a92; display: grid; place-items: center; font-size: 7px; color: #cfc3ff; }
+  .blok.satir { height: 13%; flex: none; }
+  .blok.bos { background: repeating-linear-gradient(45deg, #392f60, #392f60 4px, #322953 4px, #322953 8px); }
+  .esnek { flex: 1; }
+  .nav { flex: none; height: 7%; background: #2b2352; }
+  .olcu { color: var(--tx2); font-size: 12px; margin-top: 5px; }
+  ul { margin: 6px 0; padding-left: 20px; }
+  li { margin: 3px 0; }
+</style>
+
+<div class="sar">
+
+<h1>S23 karar paketi — karakter menüsü · panel doluluğu · yükseltme oku</h1>
+<p class="ust">
+  S19'un kalan dört kaleminin <b>görsel üçü</b>. Dördüncüsü (yükseltme tetiği pad'in tam üstünde)
+  <span class="kod">rules.ts</span>'e dokunuyor, varyant kapısına tabi ve ayrı tura bırakıldı.
+  Bütün sayılar tam koşu damgalı: <span class="kod">docs/olcum-arayuz-s23.txt</span> ·
+  rapor <span class="kod">docs/arayuz-raporu-s23.md</span>. Kod yazılmadı — karar bölümü boş commit'lendi.
+</p>
+
+<!-- ══════════════════════════════════════════════════════════════════ O -->
+<h2>O — yükseltmenin solundaki ok</h2>
+
+<p>
+  Senin cümlen: <i>"ya kalkacak ya düzeltilecek; şu an çerçeveye değiyor/içinde kalıyor."</i>
+  Ölçüm cümleyi doğruladı ve sebebini buldu: <b>okun ucu, kendisine ayrılan bloktan %63 geniş.</b>
+  Uç bir üçgen (<span class="kod">circleGeometry(r·0,32, 3)</span>) ve 3 kenarlı çemberin kenarı
+  yarıçapın √3 katı — yani <b>0,554 r</b>. Ayrılan blok <b>0,340 r</b>. Blok, ok yazıyla yarışmasın
+  diye konmuştu; ok o bloğa hiç sorulmadan çiziliyor.
+</p>
+
+<div class="kaydir"><table class="say">
+  <tr><th>işaret</th><th>r</th><th>okun gerçek eni</th><th>ayrılan blok</th><th>sol kenar payı</th><th>yazıya açıklık</th><th>parantez açıklığı</th></tr>
+  <tr><td>YÜKSELT (servis)</td><td class="n">0,85</td><td class="n kotu">0,554 r</td><td class="n">0,340 r</td><td class="n kotu">0,073 r</td><td class="n kotu">0,053 r</td><td class="n kotu">0,010 r = 0,0085 br</td></tr>
+  <tr><td>SV 2 (masa ×3)</td><td class="n">0,60</td><td class="n kotu">0,554 r</td><td class="n">0,340 r</td><td class="n kotu">0,073 r</td><td class="n kotu">0,053 r</td><td class="n kotu">0,010 r = 0,0060 br</td></tr>
+  <tr><td>YÜKSELT (Usta)</td><td class="n">0,60</td><td class="n kotu">0,554 r</td><td class="n">0,340 r</td><td class="n kotu">0,073 r</td><td class="n kotu">0,053 r</td><td class="n kotu">0,010 r = 0,0060 br</td></tr>
+  <tr><td colspan="7" style="color:var(--tx2)">yazılı hedef: blok 0,340 r · yazı boşluğu 0,160 r · kenar payı 0,180 r</td></tr>
+</table></div>
+
+<div class="kutu">
+  <b>Üç cümlede kusur:</b>
+  <ul>
+    <li>Sol kenar payının <b>%59'unu</b> ok yiyor (0,180 → 0,073 r).</li>
+    <li>Yazıya kalan açıklık amaçlananın <b>üçte biri</b> (0,160 → 0,053 r).</li>
+    <li>Parantezle arasında <b>0,006 birim</b> kalıyor — girmiyor ama <b>değiyor sayılır</b>.
+      Beş işaretin beşinde de aynı üç sayı: bu bir yerleşim kazası değil, geometrinin kendisi.</li>
+  </ul>
+</div>
+
+<h3>Sekiz biçim adayı — gerçek çerçeve, gerçek boy</h3>
+<figure>
+  <img src="gorsel/ss/s23-ok-adaylari.png" alt="Yükseltme okunun sekiz biçim adayı, gerçek GroundMarker çerçevesi üzerinde" />
+  <figcaption>
+    Her kartta <b>gerçek</b> <span class="kod">GroundMarker</span> çizilidir — çerçeve, yazı, dolum,
+    para pulu hepsi oyunun kendisi; aday olan yalnız ok. Kırmızı çerçeveli kart bugünkü hâl.
+    İşaret yarıçapı r = 0,60 (masa ve Usta noktası — <b>dar</b> olanı, sınav budur), kamera oyunun
+    45° açısı ve fov 50. O1 kartında çerçeve hâlâ geniş çizilidir çünkü blok rezerve; gerçek
+    uygulamada O1 çerçeveyi de daraltır.
+  </figcaption>
+</figure>
+
+<div class="kaydir"><table>
+  <tr><th>kol</th><th>ne</th><th>takas</th></tr>
+  <tr><td><b>O0</b></td><td>bugün</td><td>yukarıdaki üç sayı; kusur duruyor</td></tr>
+  <tr><td><b>O1</b></td><td>ok YOK</td><td>en sade, çerçeve daralır. Ama "yukarı" sinyali gider — <span class="kod">feedback_upgrade_legibility</span> çoklu sinyal ister, geriye yalnız yazı kalır</td></tr>
+  <tr><td><b>O2</b></td><td>aynı ok, bloğa sığmış</td><td>en küçük iş; biçim aynı kalır. Kusur <i>sadece</i> ölçüyse yeter — ama G-12'nin "nitro" isteği karşılanmaz</td></tr>
+  <tr><td><b>O3</b></td><td>ince uzun ok</td><td>dikey vurgu, yazıyla yarışmaz. Küçük işarette şaft inceldiği için zayıflayabilir</td></tr>
+  <tr><td><b>O4</b></td><td>NİTRO, altı kesikli</td><td>G-12'nin birebir tarifi; hareket hissi. Üç dilim küçük işarette merdiven gibi okunabilir</td></tr>
+  <tr><td><b>O5</b></td><td>çift chevron</td><td>en hafif kol, çerçeveye hiç değmez. Ok değil yön işareti — "yükselt" vurgusu azalır</td></tr>
+  <tr><td><b>O6</b></td><td>üç chevron (dar)</td><td>nitroya en yakın, dolu üçgen yok. O4'ün hareketi + O5'in hafifliği</td></tr>
+  <tr><td><b>O7</b></td><td>kalın tek chevron <span class="oner">öneri</span></td><td>r = 0,60'ta en okunaklı: tek, iri, kalın. Sade kalır, çerçeveye değmez, "yukarı" sinyali güçlü durur</td></tr>
+</table></div>
+
+<!-- ══════════════════════════════════════════════════════════════════ K -->
+<h2>K — karakter menüsü</h2>
+
+<p>
+  <b>Panelin çaycısı, oyunun çaycısı değil.</b> Panel <span class="kod">OwnerBody</span>yi (eski ilkel
+  gövde) çiziyor, salon <span class="kod">KayActor</span>ü. Dört kimlik işaretinin <b>dördü de</b> ters:
+</p>
+
+<div class="kaydir"><table>
+  <tr><th>kimlik işareti</th><th>panelde</th><th>oyunda</th><th>tutuyor mu</th></tr>
+  <tr><td>kasket</td><td>var</td><td>yok — S15'te kaldırıldı</td><td class="kotu">HAYIR</td></tr>
+  <tr><td>önlük</td><td>var</td><td>yok — önlük personelin, patronun değil (S18)</td><td class="kotu">HAYIR</td></tr>
+  <tr><td>omuz havlusu</td><td>yok</td><td>var (D-116 · P7)</td><td class="kotu">HAYIR</td></tr>
+  <tr><td>sıvalı kol</td><td>yok</td><td>var (D-116 · P7)</td><td class="kotu">HAYIR</td></tr>
+</table></div>
+
+<p>
+  Garson ve bulaşıkçı sekmeleri daha geride: ikisi de hâlâ <b>kapsül</b>. Panel, oyunda iki turdur
+  var olmayan bir adamı ve hiç var olmamış iki kapsülü gösteriyor.
+</p>
+
+<h3>Önizleme kutusu da boş duruyor</h3>
+<div class="kaydir"><table class="say">
+  <tr><th>sekme</th><th>silüet</th><th>dikey doluluk</th><th>yatay doluluk</th><th>ayak kırpık mı</th></tr>
+  <tr><td>Oyuncu</td><td class="n">167×221 px</td><td class="n">0,825</td><td class="n kotu">0,235</td><td class="kotu">EVET</td></tr>
+  <tr><td>Garson</td><td class="n">153×199 px</td><td class="n">0,743</td><td class="n kotu">0,215</td><td class="kotu">EVET</td></tr>
+  <tr><td>Bulaşıkçı</td><td class="n">162×200 px</td><td class="n">0,746</td><td class="n kotu">0,228</td><td class="kotu">EVET</td></tr>
+</table></div>
+<p>
+  Kutu 356×134 CSS — geniş ve basık. Gövde eninin yalnız <b>%22-24'ünü</b> kullanıyor, yani kutunun
+  yaklaşık <b>dörtte üçü boş</b>; üçünde de ayak alt kenara dayanıyor. <b>Bedel:</b> owner (Ranger)
+  8.900 üçgen · waiter (Knight) 5.800 · kitchenHand (Barbarian) 7.123. Panel aynı anda tek gövde
+  çiziyor, ek yük en çok bir rolün üçgeni kadar.
+</p>
+
+<h3>Üç kol</h3>
+<div class="maketler">
+  <div class="mkart">
+    <b>K1 — gövde geçsin, kutu aynı</b>
+    <div class="tel">
+      <div class="tbar"><span>‹</span><span>Çaycı</span><span>5M</span></div>
+      <div class="tgov">
+        <div class="blok satir" style="height:8%"></div>
+        <div class="blok vitrin" style="height:17%">KayKit gövde</div>
+        <div class="blok satir"></div><div class="blok satir"></div><div class="blok satir"></div>
+        <div class="blok bos esnek"></div>
+      </div>
+      <div class="nav"></div>
+    </div>
+    <div class="olcu">En küçük iş. Kimlik düzelir; kutunun ¾'ü boş kalmaya devam eder, alt kuyruk 353 px durur.</div>
+  </div>
+
+  <div class="mkart">
+    <b>K2 — gövde geçsin + kutu portreye büyüsün</b>
+    <div class="tel">
+      <div class="tbar"><span>‹</span><span>Çaycı</span><span>5M</span></div>
+      <div class="tgov">
+        <div class="blok satir" style="height:8%"></div>
+        <div class="blok vitrin" style="height:38%">KayKit gövde<br />(tam boy)</div>
+        <div class="blok satir"></div><div class="blok satir"></div><div class="blok satir"></div>
+        <div class="blok bos" style="height:9%"></div>
+      </div>
+      <div class="nav"></div>
+    </div>
+    <div class="olcu">Kutu 134 → ~300 px. Gövde kırpılmaz, silüet doluluğu artar, boş kuyruğun çoğu yenir.</div>
+  </div>
+
+  <div class="mkart">
+    <b>K3 — gövde + salon dilimi (vitrin)</b>
+    <div class="tel">
+      <div class="tbar"><span>‹</span><span>Çaycı</span><span>5M</span></div>
+      <div class="tgov">
+        <div class="blok satir" style="height:8%"></div>
+        <div class="blok vitrin" style="height:38%; background:linear-gradient(180deg,#6b5aa8,#8a6f4e)">zemin + duvar<br />+ gövde</div>
+        <div class="blok satir"></div><div class="blok satir"></div><div class="blok satir"></div>
+        <div class="blok bos" style="height:9%"></div>
+      </div>
+      <div class="nav"></div>
+    </div>
+    <div class="olcu">
+      K2 + karakter boşlukta değil <b>zeminde</b> durur. Yeni dil değil: mağaza önizlemeleri
+      (<span class="kod">SalonSlice</span> · <span class="kod">DioramaPreview</span>) zaten
+      "salondan kes-yapıştır" — karakter paneli bu dilin dışında kalan tek ekran.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════ E -->
+<h2>E — paneller ekranı tam ve düzgün kullansın</h2>
+
+<p>
+  Kabuk <b>zaten tam ekran</b> (D-106, S12'de geçildi). Ölçülen şey içeriğin o ekranı doldurup
+  doldurmadığı — ve <b>beş ekranın üçünde içerik ekranın yarısında bitiyor</b>:
+</p>
+
+<div class="kaydir"><table class="say">
+  <tr><th>ekran (telefon 390×844)</th><th>içerik yüksekliği</th><th>dikey doluluk</th><th>en büyük iç boşluk</th><th>altta ölü alan</th></tr>
+  <tr><td>Görevler</td><td class="n">708</td><td class="n iyi">0,905</td><td class="n">36</td><td class="n">58</td></tr>
+  <tr><td>Hedefler</td><td class="n">757</td><td class="n iyi">0,968</td><td class="n">40</td><td class="n">8</td></tr>
+  <tr><td>Mağaza</td><td class="n">428</td><td class="n kotu">0,548</td><td class="n kotu">224</td><td class="n kotu">342</td></tr>
+  <tr><td>Karakter</td><td class="n">425</td><td class="n kotu">0,543</td><td class="n">37</td><td class="n kotu">353</td></tr>
+  <tr><td>Ayarlar</td><td class="n">243</td><td class="n kotu">0,311</td><td class="n">48</td><td class="n kotu">525</td></tr>
+</table></div>
+
+<p>
+  Ayarlar ekranında içerik 782 px'lik gövdenin yalnız <b>%31'ini</b> dolduruyor. Mağazanın ayrıca
+  <b>224 px'lik bir iç deliği</b> ve asimetrik kenarı var (sol 75 px, sağ 14 px).
+  <b>Masaüstünde (1280×800)</b> kart 520 px ve ortada: ekranın <b>%40,6'sı</b> panel, %59'u perde.
+</p>
+
+<h3>Dört kol</h3>
+<div class="maketler">
+  <div class="mkart">
+    <b>E1 — bugün (boşluk kabul)</b>
+    <div class="tel">
+      <div class="tbar"><span>‹</span><span>Ayarlar</span><span>5M</span></div>
+      <div class="tgov">
+        <div class="blok satir"></div><div class="blok satir"></div><div class="blok satir"></div>
+        <div class="blok bos esnek"></div>
+      </div>
+      <div class="nav"></div>
+    </div>
+    <div class="olcu">Hiçbir şey yapılmaz. Ayarlar %31 dolu kalır.</div>
+  </div>
+
+  <div class="mkart">
+    <b>E2 — satırlar ekrana yayılsın</b>
+    <div class="tel">
+      <div class="tbar"><span>‹</span><span>Ayarlar</span><span>5M</span></div>
+      <div class="tgov">
+        <div class="blok esnek"></div><div class="blok esnek"></div><div class="blok esnek"></div>
+      </div>
+      <div class="nav"></div>
+    </div>
+    <div class="olcu">
+      Doluluk sayısı %100 olur ama <b>üç satır devleşir</b>. Boşluğu içerik değil hava doldurur;
+      ölçüyü kurtarır, biçimi bozar.
+    </div>
+  </div>
+
+  <div class="mkart">
+    <b>E3 — boşluk İŞE yarasın <span class="oner">öneri</span></b>
+    <div class="tel">
+      <div class="tbar"><span>‹</span><span>Ayarlar</span><span>5M</span></div>
+      <div class="tgov">
+        <div class="blok satir"></div><div class="blok satir"></div><div class="blok satir"></div>
+        <div class="blok vitrin esnek">o ekrana ait<br />kuyruk bloğu</div>
+      </div>
+      <div class="nav"></div>
+    </div>
+    <div class="olcu">
+      Boşluk içerikle dolar, satır boyu değişmez: Karakter'de önizleme büyür (K2/K3 ile aynı iş),
+      Mağaza'da iç delik kapanır + kart görünür, Ayarlar'da künye/sürüm/veri bloğu.
+    </div>
+  </div>
+
+  <div class="mkart">
+    <b>E4 — panel içerik kadar yüksek olsun</b>
+    <div class="tel" style="justify-content:center; background:#241c3f">
+      <div style="margin:0 5px; background:#3a2f63; border-radius:8px; padding:5px; display:flex; flex-direction:column; gap:4px">
+        <div class="blok satir" style="height:22px"></div>
+        <div class="blok satir" style="height:22px"></div>
+        <div class="blok satir" style="height:22px"></div>
+      </div>
+    </div>
+    <div class="olcu">
+      Tam ekran kalkar, merkezî kart gelir. <b>D-106'yı geri alır</b> — S12 ölçümü tam ekrana tam da
+      bu yüzden geçmişti: beş ekran dört farklı yükseklikte açılıyor ve üst kenar her sekmede
+      zıplıyordu. Önerilmez; listede duruyor çünkü ölçüldü.
+    </div>
+  </div>
+</div>
+
+<div class="kutu">
+  <b>Masaüstü ayrı bir soru.</b> Kart <span class="kod">min(100%, 520px)</span> ile kilitli.
+  Telefonda doğru (ekranın tamamı), masaüstünde ekranın %40,6'sı. Üç seçenek:
+  <b>M1</b> kilit kalsın (oyun mobil-öncelikli, PC geliştirme kadrajı) ·
+  <b>M2</b> kilit 520 → 720 px (perde azalır, telefon etkilenmez) ·
+  <b>M3</b> masaüstünde iki sütun (en çok iş, en az acil).
+</div>
+
+<h2>Özet — üç seçim bekliyor</h2>
+<div class="kaydir"><table>
+  <tr><th>kalem</th><th>öneri</th><th>gerekçe</th></tr>
+  <tr><td><b>O</b> ok</td><td>O7 — kalın tek chevron</td><td>r = 0,60'ta en okunaklı; çerçeveye değmez, "yukarı" sinyali güçlü kalır. Kusur ölçü DEĞİL biçimdi</td></tr>
+  <tr><td><b>K</b> karakter menüsü</td><td>K3 — gövde + salon dilimi</td><td>kimliği düzeltir, kutuyu doldurur ve mağazanın zaten kullandığı dile katılır — yeni dil açılmaz</td></tr>
+  <tr><td><b>E</b> panel doluluğu</td><td>E3 — boşluk işe yarasın (+ M2)</td><td>doluluğu içerikle çözer, satır boyunu bozmaz; K3 zaten Karakter ekranının kuyruğunu yiyor</td></tr>
+</table></div>
+
+</div>

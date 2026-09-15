@@ -7,6 +7,7 @@ import { masterCost } from '../../game/rules';
 import { perf } from '../../game/perf';
 import { screenPointer } from '../../game/screenPointer';
 import { fmt } from '../../game/decimal';
+import { SAVE_VERSION } from '../../game/save';
 import { levelProgress, reputationCarryMult, economyConfig, MAX_AREAS } from '../../config/economy.config';
 import { floorSwatch, WALL_THEMES } from '../../config/palette';
 import {
@@ -99,6 +100,10 @@ export function HUD() {
   const toggleCamZoomOut = useGame((s) => s.toggleCamZoomOut);
   const [offlineSeen, setOfflineSeen] = useState(false);
   const [sheet, setSheet] = useState<Sheet>(null);
+  // Ayarlar künyesi (E3 · S23) — oyuncunun kendi geçmişi, ekranın boş kalan altını doldurur.
+  const stats = useGame((s) => s.stats);
+  const lifetime = useGame((s) => s.lifetime);
+  const padsDone = useGame((s) => s.padsDone);
   // D3: alt nav'daki Hedefler sekmesi, toplanabilir ödül varsa işaretlenir. Sahnede işaret
   // ÇIKMAZ — Tek Odak (D-080) aktif adımın işaretini tek tutar; hedefler panelde bekler.
   const goalsReady = useGame((s) => claimableGoals(goalMetricsOf(s), s.goalsClaimed).length > 0);
@@ -371,6 +376,27 @@ export function HUD() {
               onChange={(v) => setSetting('showFps', v)}
               testid="set-showfps"
             />
+            {/* E3 (S23 · D-120): ekranın altındaki 525 px'lik ölü alan İÇERİKLE kapanıyor.
+                Ölçüm: içerik 782 px'lik gövdenin yalnız %31'ini dolduruyordu — beş ekranın
+                en boşu buydu. Seçilmeyen kol E2 idi (satırlar ekrana yayılsın): doluluk
+                sayısını %100 yapardı ama dört anahtarı devleştirirdi, yani boşluğu içerik
+                değil hava doldururdu.
+
+                KÜNYE bu ekrana ait: kayıt bu cihazda duruyor (backend yok), şema sürümü
+                migrasyonun sözleşmesi ve sayaçlar oyuncunun kendi geçmişi. Ayrıca yıkıcı
+                düğme artık anahtarların DİBİNDE değil ekranın sonunda — eskiden "FPS Sayacı"
+                ile "Oyunu Sıfırla" arasında bir parmak boşluk vardı. */}
+            <div className="sheet-sec">KÜNYE</div>
+            <div className="kunye" data-testid="kunye">
+              <div><span>Kayıt şeması</span><b>v{SAVE_VERSION}</b></div>
+              <div><span>Toplam kazanç</span><b>{fmt(lifetime)} ₺</b></div>
+              <div><span>Servis edilen çay</span><b>{stats.teasServed + stats.waiterServed}</b></div>
+              <div><span>Yıkanan bulaşık</span><b>{stats.dishesWashed}</b></div>
+              <div><span>Açılan nokta</span><b>{padsDone.length}</b></div>
+            </div>
+            <div className="sheet-foot-note">
+              Kayıt bu cihazda tutulur — sunucu yok. Oyunu sıfırlarsan geri alınamaz.
+            </div>
             <button className="danger-btn" data-testid="reset" onClick={onReset}>
               <ResetIcon size={17} /> Oyunu Sıfırla
             </button>
@@ -915,12 +941,21 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
   const ownedCosmetics = useGame((s) => s.ownedCosmetics);
   const wallet = useGame((s) => s.wallet);
   const buyCosmetic = useGame((s) => s.buyCosmetic);
-  const [tab, setTab] = useState<'table' | 'floor' | 'wall'>('table');
-  // Zemin/duvar salon-başı satılır: hangi salona bakıldığı bir SEÇİM, ayrı bir satın alma değil.
-  const [zone, setZone] = useState(0);
   // Masa teması kilidi: 3 salon + tüm açık masalar max (kullanıcı kararı). Kilitliyse Masa sekmesi
   // satın alma yerine koşulu açıklayan kilit panelini gösterir.
   const tableUnlocked = tableThemeUnlocked({ areasOpen, tables, tableLevels });
+  /**
+   * MAĞAZA SATILACAK BİR ŞEYİN ÜSTÜNDE AÇILIR (E3 · S23 · D-120).
+   *
+   * Ölçüm mağazayı beş ekranın en boşlarından biri buldu: dikey doluluk %55, altta 342 px ölü
+   * alan, içinde 224 px'lik bir delik. Sebep ekranın içeriksiz olması DEĞİLDİ — ekran her
+   * açılışta `table` sekmesinde açılıyor ve o sekme erken oyunda KİLİTLİ, yani oyuncu
+   * mağazayı açtığında satın alınabilir hiçbir şey görmüyordu. Kilitli sekme duruyor
+   * (koşulu anlatması gerekiyor), yalnız varsayılan sekme satılabilir olana kayıyor.
+   */
+  const [tab, setTab] = useState<'table' | 'floor' | 'wall'>(tableUnlocked ? 'table' : 'floor');
+  // Zemin/duvar salon-başı satılır: hangi salona bakıldığı bir SEÇİM, ayrı bir satın alma değil.
+  const [zone, setZone] = useState(0);
   const maxedTables = tableLevels.slice(0, tables).filter((l) => l >= tableSoftMaxLevel()).length;
   // Sekme başına ÖNİZLENEN çeşit (vitrin bunu gösterir). Varsayılan = o an uygulanmış tema.
   const [sel, setSel] = useState<{ table: string; floor: string; wall: string }>(() => ({
