@@ -439,6 +439,14 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
   sanatçı; coin = RPG Audio `handleCoins`, semaver = `metalPot`, bardak = Interface `glass_00x`,
   Casino Audio Kat 2'ye; `pour` sentezde kalır. Kalan iş dosyaları künyesiyle repoya almak +
   kaynaktan bağımsız **seri ivmesi** (perde basamağı) kodu. Paketler indirildi, repoya girmedi.
+  **2026-09-16 — ölçüm TAMAMLANDI ve karar paketi yayınlandı** (`docs/ses-raporu-s17.md`; ham:
+  `olcum-ses-s17.txt` + bu turda eklenen `olcum-ses-karma.txt`). Eksik kol ölçüldü: S17 iki UÇ
+  hâli ölçmüştü, **karma** katalog sayısızdı (dosya↔sentez çaprazı matriste yoktu). Bulgu ikili —
+  ① kimlik bu kararı **seçmiyor** (beş bölüşümün beşi de 0/36 KARIŞIR; çapraz en yakın 8,10 dB =
+  taban ×4,9), ② kataloğun en dar yeri **coin değil**: `quest`↔`level` 4,06 dB ve K1/K3/K4'te
+  aynı kalıyor — kazanç ilerleme ailesinde (ort. en-yakın 6,41 → K5 10,10 → K2 **10,97 dB**).
+  Karar paketi **dinlenebilir** (`feedback_show_dont_ask`): https://claude.ai/artifact/49KsxE368xVHWbw4wHdkSy
+  — kol seçimi kullanıcıda, **kod yazılmadı**.
 - ✅ **S10 — UI tasarım dili: ARAŞTIRMA + MAKET (D-106)** — kod yazılmadı (tanımı gereği). Ölçüm
   108 görsel karar · palet kütlesi R 0,91 · 13 öğe Arial · 45/184 metin AA altı; sekiz CC0 paket
   indirildi; beş maket. **Kararlar:** ekran K3 tam ekran · mağaza içi M2 (önizleme 74 → 230 px) ·

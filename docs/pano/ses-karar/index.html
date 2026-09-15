@@ -1,0 +1,771 @@
+<title>Hangi Ses Dosyadan Gelsin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+
+<style>
+/* Palet PROJENİN KENDİ pano sisteminden (docs/pano/ilerleme-panosu.html) —
+   tek ek rol: --sinyal, yalnız SES VERİSİ için (dalga, dB cetveli, matris). */
+:root{
+  --ground:#f4f2ed; --surface:#fdfcfa; --surface-2:#edeae3; --surface-3:#e4e0d7;
+  --ink:#23211d; --ink-2:#5c584f; --ink-3:#8c887e;
+  --line:#e2ded5; --line-strong:#c9c4b9;
+
+  --brand:#96651f; --brand-ink:#7a5314; --brand-soft:#eeeadf;
+  --done:#4c7f24; --done-soft:#e6eedc;
+  --now:#bf6f1a; --now-soft:#f7ead9;
+  --stop:#a83a24; --stop-soft:#f4e2dc;
+
+  --sinyal:#2a6b74; --sinyal-2:#4d8d95; --sinyal-soft:#e0eaea;
+
+  --shadow:0 1px 2px rgba(35,33,29,.05), 0 10px 24px -18px rgba(35,33,29,.45);
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#1a1917; --surface:#232220; --surface-2:#2c2b27; --surface-3:#34332e;
+    --ink:#eceae4; --ink-2:#b3b0a8; --ink-3:#89867e;
+    --line:#35342f; --line-strong:#4a4842;
+    --brand:#d8ab63; --brand-ink:#ebcb92; --brand-soft:#2b2820;
+    --done:#8fc457; --done-soft:#1f2718;
+    --now:#e09a45; --now-soft:#2e2619;
+    --stop:#e2745a; --stop-soft:#2e1f1a;
+    --sinyal:#77bcc5; --sinyal-2:#5b9aa2; --sinyal-soft:#1d2626;
+    --shadow:0 1px 2px rgba(0,0,0,.45), 0 12px 28px -20px rgba(0,0,0,.9);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#1a1917; --surface:#232220; --surface-2:#2c2b27; --surface-3:#34332e;
+  --ink:#eceae4; --ink-2:#b3b0a8; --ink-3:#89867e;
+  --line:#35342f; --line-strong:#4a4842;
+  --brand:#d8ab63; --brand-ink:#ebcb92; --brand-soft:#2b2820;
+  --done:#8fc457; --done-soft:#1f2718;
+  --now:#e09a45; --now-soft:#2e2619;
+  --stop:#e2745a; --stop-soft:#2e1f1a;
+  --sinyal:#77bcc5; --sinyal-2:#5b9aa2; --sinyal-soft:#1d2626;
+  --shadow:0 1px 2px rgba(0,0,0,.45), 0 12px 28px -20px rgba(0,0,0,.9);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;margin:0}
+h1,h2,h3{font-family:"Baloo 2","Trebuchet MS",system-ui,sans-serif;font-weight:700;margin:0;line-height:1.15;text-wrap:balance}
+p{margin:0}
+b,strong{font-weight:600}
+i{font-style:italic}
+code{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.87em;background:var(--surface-2);padding:1px 5px;border-radius:4px}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:4px}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.wrap{max-width:1020px;margin:0 auto;padding-inline:20px}
+
+/* ── üst şerit: çalma kipleri hep elin altında ── */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--surface);border-bottom:1px solid var(--line)}
+.bar-in{display:flex;align-items:center;gap:12px;min-height:52px;flex-wrap:wrap;padding-block:7px}
+.mark{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--brand);white-space:nowrap;margin-right:auto}
+.seg{display:inline-flex;border:1px solid var(--line-strong);border-radius:100px;overflow:hidden;background:var(--surface-2)}
+.seg button{font:inherit;font-size:12.5px;font-weight:600;border:0;background:transparent;color:var(--ink-2);padding:6px 13px;cursor:pointer;white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--sinyal);color:var(--surface)}
+.toggle{font:inherit;font-size:12.5px;font-weight:600;border:1px solid var(--line-strong);background:var(--surface-2);color:var(--ink-2);padding:6px 13px;border-radius:100px;cursor:pointer;white-space:nowrap}
+.toggle[aria-pressed="true"]{background:var(--sinyal-soft);border-color:var(--sinyal);color:var(--sinyal)}
+.simdi{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3);min-width:96px;text-align:right}
+.simdi.aktif{color:var(--sinyal)}
+
+header{padding-block:40px 30px}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--brand)}
+h1{font-size:clamp(30px,5vw,44px);font-weight:800;letter-spacing:-.015em;margin-top:10px}
+.lede{color:var(--ink-2);margin-top:14px;max-width:64ch;font-size:16px}
+.lede em{font-style:italic;color:var(--ink)}
+
+section{padding-block:32px;border-top:1px solid var(--line)}
+.sec-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+h2{font-size:22px;font-weight:800}
+.sec-note{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3)}
+.sec-sub{color:var(--ink-2);font-size:14.5px;margin-top:10px;max-width:70ch}
+
+/* ── ölçümün çürüttüğü şey: iki satırlık vurgu, kart değil ── */
+.cevir{margin-top:22px;border-left:3px solid var(--stop);padding:4px 0 4px 18px;display:grid;gap:10px}
+.cevir p{font-size:15px;color:var(--ink-2);max-width:68ch}
+.cevir b{color:var(--ink)}
+
+/* ── dB cetveli: sayfanın tekrar eden yapısal aracı ── */
+.cetvel{margin-top:18px;position:relative;height:56px;border-bottom:1px solid var(--line-strong)}
+.cetvel .tik{position:absolute;bottom:0;width:1px;height:7px;background:var(--line-strong)}
+.cetvel .tik span{position:absolute;top:9px;left:50%;transform:translateX(-50%);font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-3)}
+.cetvel .taban{position:absolute;top:0;bottom:0;width:2px;background:var(--stop)}
+.cetvel .taban span{position:absolute;top:-2px;left:6px;font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--stop);white-space:nowrap}
+.cetvel .nokta{position:absolute;top:22px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:3px}
+.cetvel .nokta i{display:block;width:11px;height:11px;border-radius:100px;background:var(--sinyal);border:2px solid var(--surface)}
+.cetvel .nokta u{font-family:"IBM Plex Mono",monospace;font-size:10.5px;text-decoration:none;color:var(--sinyal)}
+
+/* ── satır listesi: A/B ve kollar aynı ritimde ── */
+.satirlar{margin-top:18px;border:1px solid var(--line);border-radius:12px;background:var(--surface);box-shadow:var(--shadow);overflow:hidden}
+.satir{display:grid;grid-template-columns:104px 132px 1fr auto;align-items:center;gap:14px;padding:11px 16px;border-bottom:1px solid var(--line)}
+.satir:last-child{border-bottom:none}
+.satir.bas{background:var(--surface-2);font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);padding-block:8px}
+.olay{font-weight:600;font-size:14.5px}
+.olay small{display:block;font-weight:400;font-size:11.5px;color:var(--ink-3);font-family:"IBM Plex Mono",monospace}
+.cift{display:flex;gap:6px}
+.dalga{width:100%;height:30px;display:block}
+.sayi{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-size:12px;color:var(--ink-2);white-space:nowrap;text-align:right}
+.sayi b{color:var(--ink)}
+.sayi .tas{color:var(--stop)}
+
+button.cal{font:inherit;font-family:"IBM Plex Mono",monospace;font-size:11.5px;font-weight:600;border:1px solid var(--line-strong);background:var(--surface-2);color:var(--ink-2);padding:5px 11px;border-radius:7px;cursor:pointer;white-space:nowrap}
+button.cal:hover{border-color:var(--sinyal);color:var(--sinyal)}
+button.cal.calar{background:var(--sinyal);border-color:var(--sinyal);color:var(--surface)}
+button.cal.dosya{border-color:var(--sinyal-2)}
+button.cal:disabled{opacity:.45;cursor:default}
+
+/* ── kollar: her kol bir satır + kendi katalog düğmesi ── */
+.kol{display:grid;grid-template-columns:52px 1fr 176px 108px;align-items:center;gap:16px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.kol:last-child{border-bottom:none}
+.kol.onerilen{background:var(--done-soft)}
+.kod{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:14px;color:var(--brand)}
+/* O kolu kodları mono'da "O1" ile "01" ayırt edilemiyordu — harf tarafı sans kalır. */
+.kod.harf{font-family:"IBM Plex Sans",system-ui,sans-serif;font-weight:700;letter-spacing:.02em}
+.cetvel .nokta.alt{top:34px}
+.cetvel .nokta.alt i{order:2}
+.cetvel .nokta.alt u{order:1}
+.kol.onerilen .kod{color:var(--done)}
+.kol-ad{font-size:14.5px;font-weight:600}
+.kol-alt{font-size:12.5px;color:var(--ink-2);margin-top:2px}
+.kol-alt .tas{color:var(--stop)}
+.bar-oku{height:6px;border-radius:100px;background:var(--surface-3);overflow:hidden;margin-top:7px;max-width:320px}
+.bar-oku i{display:block;height:100%;background:var(--sinyal)}
+.rozet{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:2px 7px;border-radius:100px;background:var(--done-soft);color:var(--done);margin-left:8px}
+.rozet.dus{background:var(--stop-soft);color:var(--stop)}
+
+/* ── çapraz matris: kanıt, taşma kendi kutusunda ── */
+.matris-kutu{margin-top:18px;overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table.matris{border-collapse:collapse;font-family:"IBM Plex Mono",monospace;font-size:11.5px;font-variant-numeric:tabular-nums;min-width:620px;width:100%}
+table.matris th{font-weight:600;color:var(--ink-3);padding:8px 6px;text-align:center;font-size:10.5px;letter-spacing:.04em;white-space:nowrap}
+table.matris th.yan{text-align:right;padding-right:12px;color:var(--ink-2)}
+table.matris td{padding:6px;text-align:center;color:var(--ink-2)}
+table.matris td.kos{color:var(--ink-3);font-style:italic}
+
+/* ── karar bloğu ── */
+.karar{margin-top:22px;border:1px solid var(--line);border-left:3px solid var(--brand);border-radius:0 12px 12px 0;background:var(--surface);padding:20px 22px;box-shadow:var(--shadow)}
+.karar h3{font-size:17px}
+.karar p{font-size:14.5px;color:var(--ink-2);margin-top:8px;max-width:68ch}
+.karar ul{margin:12px 0 0;padding:0;list-style:none;display:grid;gap:7px}
+.karar li{font-size:14px;color:var(--ink-2);padding-left:18px;position:relative}
+.karar li::before{content:"→";position:absolute;left:0;color:var(--brand);font-family:"IBM Plex Mono",monospace;font-size:12px}
+.karar li b{color:var(--ink)}
+
+.ikili{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:18px}
+.ikili>div{border:1px solid var(--line);border-radius:11px;background:var(--surface);padding:16px 18px}
+.ikili h3{font-size:15.5px}
+.ikili p{font-size:13.5px;color:var(--ink-2);margin-top:6px}
+.ikili .alt{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+.foot{padding-block:28px 56px;border-top:1px solid var(--line);color:var(--ink-3);font-size:12.5px}
+.foot p+p{margin-top:6px}
+
+.uyari{margin-top:16px;font-size:13px;color:var(--ink-2);background:var(--now-soft);border:1px solid var(--now);border-radius:10px;padding:11px 14px}
+
+@media (max-width:760px){
+  .satir{grid-template-columns:1fr auto;row-gap:8px}
+  .satir .dalga-kutu{grid-column:1 / -1}
+  .satir.bas{display:none}
+  .kol{grid-template-columns:44px 1fr;row-gap:6px}
+  .kol .sayi,.kol .kol-cal{grid-column:2;justify-self:start;text-align:left}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="bar">
+  <div class="wrap bar-in">
+    <span class="mark">S9 · Ses · Karar paketi</span>
+    <div class="seg" role="group" aria-label="Seviye kipi">
+      <button type="button" id="kip-es" aria-pressed="true">Eşit seviye</button>
+      <button type="button" id="kip-oyun" aria-pressed="false">Oyun seviyesi</button>
+    </div>
+    <button type="button" class="toggle" id="ortam-ac" aria-pressed="false">Ortam yatağı</button>
+    <span class="simdi mono" id="simdi">hazır</span>
+  </div>
+</div>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Faz E · son kalem · ölçüm bitti, kod yazılmadı</p>
+    <h1>Hangi ses dosyadan gelsin?</h1>
+    <p class="lede">
+      D-106 kaynağı <b>Kenney</b>'e bağladı ama <em>kapsamını</em> söylemedi. 9 CC0 paket,
+      706 <code>.ogg</code>, 36 aday oyunun kendi çözücüsünden geçti. Aşağıdaki her sayı
+      <code>docs/olcum-ses-s17.txt</code> ve <code>docs/olcum-ses-karma.txt</code>'ten
+      <b>türetildi</b>, elle yazılmadı — ve her ses, ölçülen tamponun ta kendisi.
+      <b>Önce dinle, sonra seç.</b>
+    </p>
+    <div class="uyari" id="baslat-uyari">
+      Ses için bir kez dokunman gerekiyor (tarayıcı kuralı). Herhangi bir <b>▶</b> düğmesi
+      çalışmaya başlatır. Kulaklık öneririm: farkların bir kısmı 200 ms'lik kuyruklarda.
+    </div>
+  </header>
+
+  <!-- ══ ÖLÇÜMÜN ÇÜRÜTTÜĞÜ İKİ ŞEY ══ -->
+  <section>
+    <div class="sec-head">
+      <h2>Ölçüm turun iki varsayımını çürüttü</h2>
+      <span class="sec-note">rapor §Bulgular B3 · B11 · B12 · B13</span>
+    </div>
+    <div class="cevir">
+      <p><b>① Kimlik bu kararı seçmiyor.</b> Tur şu varsayımla kuruldu: hazır dosyalar
+        kataloğun ayırt matrisini bozarsa giremezler. Bozmuyorlar — beş bölüşümün
+        <b>beşinde de karışan çift 0/36</b>. Yani eleme aracı boşa çıktı; seçen şeyler geriye
+        kalanlar: <b>okunabilirlik payı, APK bedeli, süre kelepçesi ve kulak</b>.</p>
+      <p><b>② Kataloğun en dar yeri coin değil.</b> Şikâyet <code>coin</code> üzerineydi. En zayıf
+        çift <b><code>quest</code> ↔ <code>level</code>, 4,06 dB</b> ve bu çift K1'de de, K3'te de,
+        K4'te de <b>aynı kalıyor</b> — çünkü üçünde de o iki ses sentezden geliyor. Yalnız coin'i
+        dosyaya çevirmek kataloğun en dar yerine <b>hiç dokunmuyor</b>.</p>
+    </div>
+  </section>
+
+  <!-- ══ A/B ══ -->
+  <section>
+    <div class="sec-head">
+      <h2>Dokuz olay, iki hâl</h2>
+      <span class="sec-note">sol: bugünkü sentez · sağ: seçilen Kenney dosyası</span>
+    </div>
+    <p class="sec-sub">
+      Seçim <b>estetik değil geometrik</b>: her olay için aday, diğer sekiz olayın tüm adaylarına
+      olan <em>en kısa</em> mesafesine göre sıralandı, en ayrığı alındı. Dalga çizimi iki hâli üst
+      üste koyar — <span style="color:var(--ink-3)">gri sentez</span>,
+      <span style="color:var(--sinyal)">mavi dosya</span>.
+    </p>
+    <div class="satirlar" id="ab-liste">
+      <div class="satir bas">
+        <span>Olay</span><span>Dinle</span><span>Zarf (sentez ↔ dosya)</span><span style="text-align:right">Süre · <code>aralik</code> · KB</span>
+      </div>
+    </div>
+    <p class="sec-sub" style="margin-top:14px">
+      <b>Kırmızı süre</b> = dosya, olayın <code>aralik</code> kelepçesini taşıyor (7/9). En sert yer
+      coin: kelepçe <b>0,06 sn</b>, dosya <b>0,320 sn</b> — beş katı. Ne yapılacağı aşağıda, §Kelepçe.
+    </p>
+  </section>
+
+  <!-- ══ K KOLU ══ -->
+  <section>
+    <div class="sec-head">
+      <h2>K — hangi olay dosyadan çalar</h2>
+      <span class="sec-note">docs/olcum-ses-karma.txt §C</span>
+    </div>
+    <p class="sec-sub">
+      Cetvel <b>kataloğun en zayıf çiftini</b> gösterir: iki ses birbirine ne kadar yakınsa oyuncu
+      onları o kadar karıştırır. Kırmızı çizgi karışma tabanı (<b>1,65 dB</b>) — altı "aynı ses".
+      Hiçbir kol oraya yaklaşmıyor; asıl fark <b>payın büyüklüğünde</b>.
+    </p>
+    <div class="cetvel" id="cetvel" aria-hidden="true"></div>
+    <div class="satirlar" id="kol-liste"></div>
+    <p class="sec-sub" style="margin-top:14px">
+      <b>Katalogu dinle</b> o kolun dokuz sesini sırayla çalar — kimliği kulakla sınamanın yolu bu.
+      Mavi çubuk ortalama en-yakın-komşu mesafesi (uzun = katalog daha okunur).
+    </p>
+  </section>
+
+  <!-- ══ KANIT: ÇAPRAZ MATRİS ══ -->
+  <section>
+    <div class="sec-head">
+      <h2>Karma katalog neden tutuyor</h2>
+      <span class="sec-note">S17 çıktısında olmayan sayı — bu tur eklendi</span>
+    </div>
+    <p class="sec-sub">
+      Karma kolda bir <b>dosya</b>, <em>başka</em> bir olayın <b>sentezine</b> yaklaşırsa kimlik
+      bozulur. S17 bu çaprazı hiç ölçmemişti. Dokuz satır × dokuz sütun: köşegen dışı en yakın
+      hücre <b>8,10 dB</b>, tabanın <b>4,9 katı</b>. Köşegen (köşeli) aynı olayın iki hâli —
+      kaynak takasının kendisi, karara girmez.
+    </p>
+    <div class="matris-kutu"><table class="matris" id="matris"></table></div>
+  </section>
+
+  <!-- ══ İ KOLU ══ -->
+  <section>
+    <div class="sec-head">
+      <h2>İ — seri ivmesi</h2>
+      <span class="sec-note">docs/olcum-ses-s17.txt §5 · kaynaktan bağımsız</span>
+    </div>
+    <p class="sec-sub">
+      Kullanıcının cümlesi: <i>"fazla para topladıkça ses de ivme almalı."</i> Her düğme
+      <b>beş toplama</b> çalar, 0,16 sn arayla. Bugünkü hâl (I1) bir basamak <em>değil</em>:
+      adım farkı <b>0,00 dB</b>, karışma tabanının altında — yani kulakta hiç yok.
+    </p>
+    <div class="ikili" id="seri-liste"></div>
+    <p class="sec-sub" style="margin-top:16px">
+      <b>I3'ün tuzağı sayıda görünmüyor, kulakta görünüyor:</b> adım farkı en büyük onda (4,53 dB)
+      ama tavanda ilk↔tavan farkı <b>3,18 dB</b>'ye <em>düşüyor</em>, çünkü kısmilerin
+      <b>3/4'ü 12 kHz üstüne</b>, <b>2/4'ü 16 kHz üstüne</b> taşıyor. Merdiven yükseldikçe
+      <em>duyulan</em> azalıyor — madenî tını tepede kendini kaybediyor. Kırpılma üçünde de yok.
+    </p>
+  </section>
+
+  <!-- ══ KELEPÇE ══ -->
+  <section>
+    <div class="sec-head">
+      <h2>Kelepçe — coin dosyası beş kat uzun</h2>
+      <span class="sec-note">docs/olcum-ses-karma.txt §E</span>
+    </div>
+    <p class="sec-sub">
+      <code>aralik</code>, aynı sesin iki çalınışı arasındaki en az süre. Coin'de <b>0,06 sn</b>;
+      seçilen dosya <b>0,320 sn</b>. Üç çıkış yolu var ve <b>ikisi duyulabilir</b> — sekiz ardışık
+      para toplama:
+    </p>
+    <div class="ikili" id="aralik-liste"></div>
+    <p class="sec-sub" style="margin-top:16px">
+      <code>aralik</code> <code>audio.ts</code>'te durur — <b>denge dosyası değil</b>
+      (<code>sira-kilidi</code>: economy.config · tick · rules). Yani bu seçim varyant kapısına
+      tabi değil; yine de ölçüldü.
+    </p>
+  </section>
+
+  <!-- ══ O KOLU ══ -->
+  <section>
+    <div class="sec-head">
+      <h2>O — ortam uğultusu</h2>
+      <span class="sec-note">bir kol ölçümde düştü</span>
+    </div>
+    <p class="sec-sub">
+      Dokuz paketin <b>hiçbiri</b> ortam/döngü paketi değil (ad taraması: 0 eşleşme) —
+      <b>O2 düştü</b>. Üstteki <b>Ortam yatağı</b> düğmesi O1 taslağını döngüye alır; açıkken
+      yukarıdaki her sesi tekrar çal ve <em>yatak onları örtüyor mu</em> diye dinle. Yatak,
+      ölçülen tavanda: dokuz sesin hepsini +12 dB üstte tutmak için <b>RMS ≤ 0,0095</b>
+      (en kısıtlayıcı ses <code>purchase</code>).
+    </p>
+    <div class="satirlar" id="o-liste"></div>
+    <p class="sec-sub" style="margin-top:14px">
+      Ayrıca: ayarlardaki <b>"Müzik" anahtarı bugün hiçbir şeye bağlı değil</b>
+      (<code>settings.music</code> kaydediliyor, okuyan yok). Hangi kol seçilirse seçilsin bu
+      anahtar ya <b>bağlanır</b> ya <b>kaldırılır</b> — çalışmayan anahtar bırakmak seçenek değil.
+    </p>
+  </section>
+
+  <!-- ══ ÖNERİ ══ -->
+  <section>
+    <div class="sec-head">
+      <h2>Önerim</h2>
+      <span class="sec-note">gerekçesi sayıyla · son söz senin</span>
+    </div>
+    <div class="karar">
+      <h3>K2 + I2 + A3 + O1 — ve "Müzik" anahtarı bağlanır</h3>
+      <p>
+        Dördü de aynı sebepten: <b>ölçüm eleme yapamadı, o yüzden seçen şey bedel oldu</b> — ve
+        bedellerin hepsi küçük çıktı.
+      </p>
+      <ul>
+        <li><b>K2 (dokuzu da dosya).</b> En zayıf çifti 4,06 → <b>9,34 dB</b>'ye taşıyan tek kol.
+          Bedeli <b>116,7 KB</b> — model klasörü 17,2 MB'ken APK'da ölçülemez. K5 ucuza çok yakın
+          sonuç veriyor (10,10 · 75,7 KB) ama o kol coin'i sentezde bırakır ve
+          <b>kullanıcının şikâyet ettiği tek sesi düzeltmez</b>.</li>
+        <li><b>I2 (+1 yarım ses, tavan 5).</b> Adım farkı <b>2,82 dB</b> = tabanın 1,7 katı, yani
+          basamak gerçekten duyuluyor. I3 daha dik ama tepede kısmilerinin 3/4'ünü kulak
+          bandının dışına atıyor.</li>
+        <li><b>A3 (coin'de yığılmaya izin).</b> Kelepçeyi 0,32'ye çekmek seriyi seyrekleştirir ve
+          I2'nin merdivenini görünmez yapar; kırpmak sesin gövdesini keser. Üst üste binme
+          ölçüldü: beş çakışmada tepe <b>0,196</b>, <b>kırpılma yok</b>. Yığılma burada kusur
+          değil, "ivme" hissinin taşıyıcısı.</li>
+        <li><b>O1 (sentez uğultu).</b> Stil kilidini korur, lisans yüzeyi 0 kalır. Bedeli motorun
+          ilk <b>döngü kabiliyeti</b> — bugün 9/9 ses tek atış. O3 bu işi yapmaz ama tek
+          sanatçıyı ikiye çıkarır; stil kilidi S19a'da bir kez açıldı, ikinciyi ucuza açmayalım.</li>
+        <li><b>Normalizasyon ses başına yazılır</b> — kol değil, ölçümün dayattığı biçim: gereken
+          kazanç yayılımı <b>−34,8 … +0,1 dB</b>. Tek çarpan bunu kapatamaz.</li>
+      </ul>
+    </div>
+    <div class="uyari" style="background:var(--brand-soft);border-color:var(--brand)">
+      <b>Kolu sen seçersin.</b> Yukarıdaki her kol dinlenebilir; önerimi değil <em>kulağını</em>
+      dinle. Seçtiğin kombinasyonu söyle (örn. <code>K5 + I2 + A1 + O4</code>), karar
+      <code>decisions.md</code>'ye D-122 olarak yazılır ve yalnız o kol koda girer.
+    </div>
+  </section>
+
+  <div class="foot">
+    <p><b>Duyulan = ölçülen.</b> Sentez tamponları <code>audioSynth.seslendir()</code>'in çıktısı;
+      dosya tamponları oyunun kendi çözücüsünden geçmiş PCM. Seçilen dokuzlu
+      <code>tools/ses-secim.ts</code>'ten — raporla aynı kaynak, kopya yok.</p>
+    <p>Araçlar: <code>tools/olcum-ses-s17.ts</code> · <code>tools/olcum-ses-karma.ts</code> ·
+      <code>tools/ses-karar-paketi.ts</code>. Rapor: <code>docs/ses-raporu-s17.md</code>.
+      Tüm sesler CC0 (Kenney) — tek sanatçı, stil kilidi korunur.</p>
+  </div>
+</div>
+
+<script src="sesler.js"></script>
+<script>
+(function(){
+  "use strict";
+  var S = window.SESLER;
+  var ID_AD = {
+    coin:'Para toplandı', pour:'Ocaktan çay alındı', serve:'Masaya bırakıldı',
+    purchase:'Yükseltme alındı', padFill:'Pad açıldı', quest:'Görev bitti',
+    level:'İtibar seviyesi', master:'💎 Usta alındı', reward:'Ödül toplandı'
+  };
+  var KOL_AD = {
+    K1:['Sentez kalsın','bugünkü hâl · D-096'],
+    K2:['Dokuzu da dosya','S-C harfiyen · D-106'],
+    K3:['Fiziksel aile dosya','coin · pour · serve'],
+    K4:['Yalnız coin dosya','kullanıcının harfi şikâyeti'],
+    K5:['İlerleme ailesi dosya','K3’ün tersi']
+  };
+  var ONERILEN = 'K2';
+
+  var ctx = null, tamponlar = {}, rmsler = {}, kip = 'es', ortamKaynak = null, cozuldu = false;
+  var HEDEF_RMS = 0.06, OYUN_USTU = 3.0;
+  var simdi = document.getElementById('simdi');
+
+  function yaz(t, aktif){ simdi.textContent = t; simdi.classList.toggle('aktif', !!aktif); }
+
+  function b64buf(dataUri){
+    var s = atob(dataUri.slice(dataUri.indexOf(',') + 1));
+    var u = new Uint8Array(s.length);
+    for (var i = 0; i < s.length; i++) u[i] = s.charCodeAt(i);
+    return u.buffer;
+  }
+  function rms(buf){
+    var d = buf.getChannelData(0), t = 0;
+    for (var i = 0; i < d.length; i++) t += d[i] * d[i];
+    return Math.sqrt(t / d.length) || 1e-6;
+  }
+  function tepe(buf){
+    var d = buf.getChannelData(0), m = 0;
+    for (var i = 0; i < d.length; i++){ var v = Math.abs(d[i]); if (v > m) m = v; }
+    return m || 1e-6;
+  }
+
+  function coz(){
+    if (cozuldu) return Promise.resolve();
+    cozuldu = true;
+    var isler = [];
+    function ekle(anahtar, uri){
+      isler.push(new Promise(function(res){
+        ctx.decodeAudioData(b64buf(uri), function(b){
+          tamponlar[anahtar] = b; rmsler[anahtar] = rms(b); res();
+        }, function(){ res(); });
+      }));
+    }
+    S.idler.forEach(function(id){ ekle('sentez:' + id, S.sentez[id]); ekle('dosya:' + id, S.dosya[id]); });
+    Object.keys(S.seri).forEach(function(k){ ekle('seri:' + k, S.seri[k]); });
+    ekle('ortam', S.ortam);
+    return Promise.all(isler).then(function(){ zarflariCiz(); });
+  }
+
+  /** Bağlamı kurar ve tamponları çözer. Dokunmadan da çağrılır: sayfa DURURKEN zarflar çizili olsun. */
+  function hazirla(){
+    if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+    return coz();
+  }
+
+  /** Çalmadan önce: tarayıcı kuralı gereği bağlam ancak bir dokunuşla uyanır. */
+  function baglam(){
+    var p = hazirla();
+    if (ctx.state === 'suspended') ctx.resume();
+    var u = document.getElementById('baslat-uyari');
+    if (u) u.hidden = true;
+    return p;
+  }
+
+  /** Kazanç: 'es' her tamponu ortak RMS'e getirir (adil A/B); 'oyun' ölçülen normalizasyonu uygular. */
+  function kazanc(anahtar){
+    var buf = tamponlar[anahtar]; if (!buf) return 0;
+    var g;
+    if (kip === 'es'){
+      g = HEDEF_RMS / rmsler[anahtar];
+    } else if (anahtar.indexOf('dosya:') === 0){
+      var id = anahtar.slice(6);
+      g = (rmsler['sentez:' + id] || rmsler[anahtar]) / rmsler[anahtar] * OYUN_USTU;
+    } else {
+      g = OYUN_USTU;
+    }
+    var t = tepe(buf) * g;
+    if (t > 0.95) g *= 0.95 / t;
+    return g;
+  }
+
+  function cal(anahtar, opt){
+    opt = opt || {};
+    var buf = tamponlar[anahtar]; if (!buf || !ctx) return 0;
+    var src = ctx.createBufferSource(); src.buffer = buf;
+    if (opt.rate) src.playbackRate.value = opt.rate;
+    var g = ctx.createGain();
+    g.gain.value = kazanc(anahtar) * (opt.ekGain === undefined ? 1 : opt.ekGain);
+    src.connect(g); g.connect(ctx.destination);
+    src.start(ctx.currentTime + (opt.gecikme || 0));
+    return buf.duration / (opt.rate || 1);
+  }
+
+  function basildi(btn, sn){
+    btn.classList.add('calar');
+    setTimeout(function(){ btn.classList.remove('calar'); }, Math.max(140, sn * 1000));
+  }
+
+  // ── Ortam yatağı: döngü, her şeyin altında ──
+  var ortamBtn = document.getElementById('ortam-ac');
+  ortamBtn.addEventListener('click', function(){
+    baglam().then(function(){
+      if (ortamKaynak){
+        ortamKaynak.stop(); ortamKaynak = null;
+        ortamBtn.setAttribute('aria-pressed','false'); yaz('hazır', false); return;
+      }
+      var buf = tamponlar['ortam']; if (!buf) return;
+      var src = ctx.createBufferSource(); src.buffer = buf; src.loop = true;
+      var g = ctx.createGain(); g.gain.value = kip === 'es' ? 2.4 : OYUN_USTU;
+      src.connect(g); g.connect(ctx.destination); src.start();
+      ortamKaynak = src;
+      ortamBtn.setAttribute('aria-pressed','true');
+      yaz('ortam açık', true);
+    });
+  });
+
+  // ── Seviye kipi ──
+  function kipSec(yeni){
+    kip = yeni;
+    document.getElementById('kip-es').setAttribute('aria-pressed', String(yeni === 'es'));
+    document.getElementById('kip-oyun').setAttribute('aria-pressed', String(yeni === 'oyun'));
+  }
+  document.getElementById('kip-es').addEventListener('click', function(){ kipSec('es'); });
+  document.getElementById('kip-oyun').addEventListener('click', function(){ kipSec('oyun'); });
+
+  // ── A/B satırları ──
+  var abListe = document.getElementById('ab-liste');
+  S.idler.forEach(function(id){
+    var k = S.kunye[id], ar = S.aralik[id], tasar = k.etkin > ar;
+    var row = document.createElement('div');
+    row.className = 'satir';
+    row.innerHTML =
+      '<div class="olay">' + ID_AD[id] + '<small>' + id + '</small></div>' +
+      '<div class="cift"></div>' +
+      '<div class="dalga-kutu"><canvas class="dalga" data-id="' + id + '" width="520" height="60"></canvas></div>' +
+      '<div class="sayi"><b class="' + (tasar ? 'tas' : '') + '">' + k.etkin.toFixed(3) + ' sn</b>' +
+      ' · aralık ' + ar.toFixed(2) + '<br>' + k.ad + ' · ' + k.kb + ' KB</div>';
+    var cift = row.querySelector('.cift');
+    [['sentez','▶ sentez'],['dosya','▶ dosya']].forEach(function(p){
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'cal' + (p[0] === 'dosya' ? ' dosya' : '');
+      b.textContent = p[1];
+      b.addEventListener('click', function(){
+        baglam().then(function(){ basildi(b, cal(p[0] + ':' + id)); yaz(id + ' · ' + p[0], true); });
+      });
+      cift.appendChild(b);
+    });
+    abListe.appendChild(row);
+  });
+
+  function zarflariCiz(){
+    document.querySelectorAll('canvas.dalga').forEach(function(cv){
+      var id = cv.getAttribute('data-id');
+      var g = cv.getContext('2d');
+      var st = getComputedStyle(document.body);
+      var W = cv.width, H = cv.height;
+      g.clearRect(0,0,W,H);
+      [['sentez:' + id, st.getPropertyValue('--ink-3').trim(), 1],
+       ['dosya:' + id,  st.getPropertyValue('--sinyal').trim(), 1.6]].forEach(function(p){
+        var buf = tamponlar[p[0]]; if (!buf) return;
+        var d = buf.getChannelData(0), n = 130, adim = Math.max(1, Math.floor(d.length / n));
+        g.beginPath();
+        for (var i = 0; i < n; i++){
+          var m = 0;
+          for (var j = i * adim; j < Math.min(d.length, (i + 1) * adim); j++){
+            var v = Math.abs(d[j]); if (v > m) m = v;
+          }
+          var norm = Math.min(1, m / (tepe(buf)));
+          var x = (i / (n - 1)) * W, y = H - norm * (H - 4) - 2;
+          if (i === 0) g.moveTo(x, y); else g.lineTo(x, y);
+        }
+        g.strokeStyle = p[1]; g.lineWidth = p[2]; g.stroke();
+      });
+      g.strokeStyle = st.getPropertyValue('--line').trim();
+      g.lineWidth = 1; g.beginPath(); g.moveTo(0, H - 1.5); g.lineTo(W, H - 1.5); g.stroke();
+    });
+  }
+
+  // ── dB cetveli + kol satırları ──
+  var CET_MAX = 12;
+  var cetvel = document.getElementById('cetvel');
+  function yuzde(db){ return Math.max(0, Math.min(100, (db / CET_MAX) * 100)); }
+  [0,2,4,6,8,10,12].forEach(function(v){
+    var t = document.createElement('span');
+    t.className = 'tik'; t.style.left = yuzde(v) + '%';
+    t.innerHTML = '<span>' + v + (v === 12 ? ' dB' : '') + '</span>';
+    cetvel.appendChild(t);
+  });
+  var tb = document.createElement('span');
+  tb.className = 'taban'; tb.style.left = yuzde(S.taban) + '%';
+  tb.innerHTML = '<span>karışma tabanı ' + S.taban.toFixed(2).replace('.', ',') + ' dB</span>';
+  cetvel.appendChild(tb);
+
+  var yerlesim = {}, sira = 0;
+  S.kollar.forEach(function(k){
+    var anahtar = k.enYakin.toFixed(2);
+    if (yerlesim[anahtar]) { yerlesim[anahtar].push(k.kod); return; }
+    yerlesim[anahtar] = [k.kod];
+    var n = document.createElement('span');
+    // Komşu noktaların etiketleri çakışmasın: sırayla üst/alt bantta dururlar.
+    n.className = 'nokta' + (sira++ % 2 ? ' alt' : '');
+    n.style.left = yuzde(k.enYakin) + '%';
+    n.innerHTML = '<i></i><u data-db="' + anahtar + '"></u>';
+    cetvel.appendChild(n);
+  });
+  Object.keys(yerlesim).forEach(function(db){
+    var u = cetvel.querySelector('u[data-db="' + db + '"]');
+    if (u) u.textContent = yerlesim[db].join('·') + ' ' + db.replace('.', ',');
+  });
+
+  var kolListe = document.getElementById('kol-liste');
+  var enBuyukOrt = Math.max.apply(null, S.kollar.map(function(k){ return k.ortMin; }));
+  S.kollar.forEach(function(k){
+    var ad = KOL_AD[k.kod];
+    var row = document.createElement('div');
+    row.className = 'kol' + (k.kod === ONERILEN ? ' onerilen' : '');
+    var tasMetin = k.tasan.length
+      ? '<span class="tas">' + k.tasan.length + '/' + k.dosyadan.length + ' ses <code>aralik</code> taşıyor</span>'
+      : 'kelepçe sorunu yok';
+    row.innerHTML =
+      '<div class="kod">' + k.kod + (k.kod === ONERILEN ? '' : '') + '</div>' +
+      '<div><div class="kol-ad">' + ad[0] +
+        (k.kod === ONERILEN ? '<span class="rozet">önerilen</span>' : '') + '</div>' +
+        '<div class="kol-alt">' + ad[1] + ' · ' + tasMetin + '</div>' +
+        '<div class="bar-oku"><i style="width:' + (k.ortMin / enBuyukOrt * 100).toFixed(1) + '%"></i></div></div>' +
+      '<div class="sayi">en zayıf <b>' + k.enYakin.toFixed(2).replace('.', ',') + ' dB</b><br>' +
+        'ort. ' + k.ortMin.toFixed(2).replace('.', ',') + ' dB · <b>' + k.kb + ' KB</b></div>' +
+      '<div class="kol-cal"></div>';
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'cal';
+    b.textContent = '▶ katalog';
+    b.addEventListener('click', function(){
+      baglam().then(function(){
+        var t = 0, kume = {};
+        k.dosyadan.forEach(function(id){ kume[id] = 1; });
+        S.idler.forEach(function(id){
+          var anahtar = (kume[id] ? 'dosya:' : 'sentez:') + id;
+          cal(anahtar, { gecikme: t });
+          t += 0.52;
+        });
+        basildi(b, t);
+        yaz(k.kod + ' katalogu', true);
+      });
+    });
+    row.querySelector('.kol-cal').appendChild(b);
+    kolListe.appendChild(row);
+  });
+
+  // ── Çapraz matris ──
+  var mt = document.getElementById('matris');
+  var basSatir = '<tr><th class="yan">dosya \\ sentez</th>' +
+    S.idler.map(function(i){ return '<th>' + i + '</th>'; }).join('') + '</tr>';
+  var govde = S.idler.map(function(a, i){
+    return '<tr><th class="yan">' + a + '</th>' + S.idler.map(function(b, j){
+      var v = S.capraz[i][j];
+      if (i === j) return '<td class="kos">[' + v.toFixed(2).replace('.', ',') + ']</td>';
+      var t = Math.min(1, Math.max(0, (v - 7) / 12));
+      return '<td style="background:color-mix(in srgb, var(--sinyal) ' + (6 + t * 26).toFixed(0) +
+        '%, transparent)">' + v.toFixed(2).replace('.', ',') + '</td>';
+    }).join('') + '</tr>';
+  }).join('');
+  mt.innerHTML = '<thead>' + basSatir + '</thead><tbody>' + govde + '</tbody>';
+
+  // ── İ kolu ──
+  var SERI = [
+    ['I1','Basamak yok','bugünkü hâl','0,00 dB','—','1/4'],
+    ['I2','+1 yarım ses, tavan 5','adım kulakta ayrı','2,82 dB','5,90 dB','2/4'],
+    ['I3','+2 yarım ses, tavan 8','tavan banttan taşıyor','4,53 dB','3,18 dB','3/4']
+  ];
+  var seriListe = document.getElementById('seri-liste');
+  SERI.forEach(function(s){
+    var d = document.createElement('div');
+    d.innerHTML = '<h3>' + s[0] + ' — ' + s[1] +
+      (s[0] === 'I2' ? '<span class="rozet">önerilen</span>' : '') + '</h3>' +
+      '<p>' + s[2] + '</p>' +
+      '<p class="mono" style="font-size:12.5px;margin-top:8px">adım↔adım <b>' + s[3] +
+      '</b> · ilk↔tavan <b>' + s[4] + '</b> · 12 kHz üstü kısmi <b>' + s[5] + '</b></p>' +
+      '<div class="alt"></div>';
+    var alt = d.querySelector('.alt');
+    var b1 = document.createElement('button');
+    b1.type = 'button'; b1.className = 'cal'; b1.textContent = '▶ sentez coin';
+    b1.addEventListener('click', function(){
+      baglam().then(function(){ basildi(b1, cal('seri:' + s[0])); yaz(s[0] + ' · sentez', true); });
+    });
+    var b2 = document.createElement('button');
+    b2.type = 'button'; b2.className = 'cal dosya'; b2.textContent = '▶ dosya coin';
+    b2.addEventListener('click', function(){
+      baglam().then(function(){
+        var basamak = s[0] === 'I1' ? 0 : (s[0] === 'I2' ? 1 : 2);
+        var tavan = s[0] === 'I1' ? 0 : (s[0] === 'I2' ? 5 : 8);
+        for (var i = 0; i < 5; i++){
+          var adim = Math.min(i, tavan) * basamak;
+          cal('dosya:coin', { gecikme: i * 0.16, rate: Math.pow(2, adim / 12), ekGain: 0.6 });
+        }
+        basildi(b2, 1.1); yaz(s[0] + ' · dosya', true);
+      });
+    });
+    alt.appendChild(b1); alt.appendChild(b2);
+    seriListe.appendChild(d);
+  });
+
+  // ── Kelepçe kolları ──
+  var ARALIK = [
+    ['A1','<code>aralik</code> dosyaya çıkar','0,06 → 0,32 sn. Yığılma yok; sekiz toplama 2,24 sn sürer ve merdiven seyrekleşir.', 0.32, 1],
+    ['A2','Dosya kırpılır','Coin’den 0,26 sn kesilir — kalan 0,06 sn, sesin gövdesi gider. <b>Duyulmaz, dinletilmiyor.</b>', 0, 0],
+    ['A3','Yığılmaya izin verilir','0,16 sn arayla üst üste biner. Ölçüldü: beş çakışmada tepe 0,196, <b>kırpılma yok</b>.', 0.16, 1]
+  ];
+  var aralikListe = document.getElementById('aralik-liste');
+  ARALIK.forEach(function(a){
+    var d = document.createElement('div');
+    d.innerHTML = '<h3>' + a[0] + ' — ' + a[1] +
+      (a[0] === 'A3' ? '<span class="rozet">önerilen</span>' : '') +
+      (a[0] === 'A2' ? '<span class="rozet dus">gövdeyi keser</span>' : '') + '</h3>' +
+      '<p>' + a[2] + '</p><div class="alt"></div>';
+    if (a[4]){
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'cal dosya'; b.textContent = '▶ sekiz toplama';
+      b.addEventListener('click', function(){
+        baglam().then(function(){
+          for (var i = 0; i < 8; i++){
+            var adim = a[0] === 'A3' ? Math.min(i, 5) : 0;
+            cal('dosya:coin', { gecikme: i * a[3], rate: Math.pow(2, adim / 12), ekGain: 0.55 });
+          }
+          basildi(b, 8 * a[3]); yaz(a[0] + ' · sekiz coin', true);
+        });
+      });
+      d.querySelector('.alt').appendChild(b);
+    }
+    aralikListe.appendChild(d);
+  });
+
+  // ── O kolu satırları ──
+  var O = [
+    ['O2','Kenney içinden döngü','ad taraması: <b>0 aday</b> — dokuz pakette ortam sesi yok','dus','KOL DÜŞTÜ'],
+    ['O1','Sentez uğultu','stil kilidi korunur · lisans yüzeyi 0 · <b>motora döngü kabiliyeti eklenir</b> (bugün 9/9 tek atış)','','önerilen'],
+    ['O3','Tek dosya CC0 istisnası','motor işi yok · <b>tek sanatçı 1 → 2</b> olur (stil kilidi ikinci kez açılır)','',''],
+    ['O4','Bu turda ortam yok','"Müzik" anahtarı <b>kaldırılır</b> · ortam Faz F’ye kalır','','']
+  ];
+  var oListe = document.getElementById('o-liste');
+  O.forEach(function(o){
+    var row = document.createElement('div');
+    row.className = 'satir';
+    row.style.gridTemplateColumns = '52px 1fr auto';
+    row.innerHTML = '<div class="kod harf">' + o[0] + '</div>' +
+      '<div><div class="kol-ad">' + o[1] +
+        (o[4] ? '<span class="rozet ' + o[3] + '">' + o[4] + '</span>' : '') + '</div>' +
+        '<div class="kol-alt">' + o[2] + '</div></div><div class="o-cal"></div>';
+    if (o[0] === 'O1'){
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'cal dosya'; b.textContent = '▶ yatak + purchase';
+      b.addEventListener('click', function(){
+        baglam().then(function(){
+          if (!ortamKaynak) ortamBtn.click();
+          setTimeout(function(){ cal('sentez:purchase'); }, 900);
+          setTimeout(function(){ cal('dosya:purchase'); }, 2100);
+          basildi(b, 3); yaz('maskeleme sınaması', true);
+        });
+      });
+      row.querySelector('.o-cal').appendChild(b);
+    }
+    oListe.appendChild(row);
+  });
+
+  // Tema değişince dalga renkleri tazelensin.
+  if (window.matchMedia){
+    var mq = window.matchMedia('(prefers-color-scheme: dark)');
+    if (mq.addEventListener) mq.addEventListener('change', zarflariCiz);
+  }
+
+  // Sayfa DURURKEN zarflar çizili olsun: çözme bir dokunuş beklemez, yalnız ÇALMA bekler.
+  hazirla();
+})();
+</script>

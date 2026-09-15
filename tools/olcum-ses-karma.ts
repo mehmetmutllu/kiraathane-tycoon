@@ -23,22 +23,11 @@
  * Çalıştır:
  *   OLCUM=tam npx tsx tools/olcum-ses-karma.ts > docs/olcum-ses-karma.txt
  */
-import { readFileSync, statSync } from 'node:fs';
-import path from 'node:path';
 import { SES_KATALOG, sesSure, type SesId } from '../src/game/audio.ts';
-import { ORNEKLEME, seslendir } from '../src/game/audioSynth.ts';
+import { seslendir } from '../src/game/audioSynth.ts';
 import { SURE_WEBER, YARIM_SES, etkinSure, izParmak, izParmakPcm, mesafe, transpoze } from './ses-metrik.ts';
-import { HAVUZ } from './ses-adaylari.ts';
+import { IDLER, pcmOku, secilenDokuzlu } from './ses-secim.ts';
 import { damga, damgaOzeti } from './olcum-lib';
-
-const PCM_KLASOR = 'indirilen/_pcm';
-
-function pcmOku(ad: string): Float32Array {
-  const b = readFileSync(path.join(PCM_KLASOR, `${ad}.f32`));
-  return new Float32Array(b.buffer, b.byteOffset, b.byteLength / 4);
-}
-
-const IDLER = Object.keys(SES_KATALOG) as SesId[];
 const kip = process.env.OLCUM === 'tam' ? 'tam' : 'kisa';
 
 console.log('='.repeat(92));
@@ -63,34 +52,12 @@ for (const id of IDLER) {
 }
 
 /**
- * SECIM S17 ILE BIREBIR AYNI KURALLA yeniden uretilir (kopyalanmaz, TURETILIR): her olay icin
- * adaylar, DIGER olaylarin TUM adaylarina olan en kisa mesafesine gore siralanir, ilki secilir.
- * Boylece bu arac S17'nin secimini dogrular; ayrisirsa asagidaki damga kirilir.
+ * SECIM `ses-secim.ts`ten gelir — S17 §3b ile BIREBIR ayni kural, TEK KAYNAK. Kopyalanmadigi
+ * icin karar panosunda DINLENEN dosya ile burada OLCULEN dosya ayrisamaz; yine de S17'nin
+ * commit'li ciktisina karsi damgayla siniyoruz (asagida).
  */
-const havuzIz = new Map<string, { iz: number[][]; olay: SesId; etkin: number; kb: number }>();
-for (const olay of IDLER) {
-  for (const a of HAVUZ[olay] ?? []) {
-    const pcm = pcmOku(a.ad);
-    havuzIz.set(a.ad, { iz: izParmakPcm(pcm), olay, etkin: etkinSure(pcm), kb: statSync(a.yol).size / 1024 });
-  }
-}
-for (const olay of IDLER) {
-  const havuz = (HAVUZ[olay] ?? []).map((a) => a.ad);
-  if (havuz.length === 0) continue;
-  let enIyi = '';
-  let enIyiPuan = -Infinity;
-  for (const ad of havuz) {
-    const A = havuzIz.get(ad)!;
-    let enKisa = Infinity;
-    for (const [bAd, B] of havuzIz) {
-      if (B.olay === olay) continue;
-      const d = mesafe(A.iz, B.iz);
-      if (d < enKisa) { enKisa = d; void bAd; }
-    }
-    if (enKisa > enIyiPuan) { enIyiPuan = enKisa; enIyi = ad; }
-  }
-  const S = havuzIz.get(enIyi)!;
-  dosyaYan.set(olay, { iz: S.iz, etkin: S.etkin, kb: S.kb, ad: enIyi });
+for (const [olay, S] of secilenDokuzlu()) {
+  dosyaYan.set(olay, { iz: S.iz, etkin: S.etkin, kb: S.kb, ad: S.ad });
 }
 
 console.log('\n§A SECILEN DOKUZLU (S17 §3b ile ayni kuraldan TURETILDI)');

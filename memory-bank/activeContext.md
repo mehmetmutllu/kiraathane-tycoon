@@ -5,37 +5,44 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-16 — **S24 BİTTİ: tetik artık çizilen çerçeve** · Faz S 23/24 · 98/108)
+## ŞU AN (2026-09-16 — **S9 SES: ölçüm tam, karar paketi yayında** · Faz S 23/24 · 98/108)
 
 ```
-SORU            : Yükseltme tetiği neden "yanında" çalışıyor? Çizilen ÇERÇEVE ile tetikleyen
-                  ALAN aynı şey değil — S23'ün "iki ayrı doğru" deseninin üçüncüsü mü?
-SAYILAR         : docs/tetik-raporu-s24.md §Bulgular · ham: docs/olcum-tetik-s24.txt (tam koşu)
-                  13 işaret × 5 kol · 0,01 br ızgara · çizilen/yazan sapma 0,0000
-KARAR           : D-121 — kol B + G: tetik çizilen çerçeve OLUR ve kabarma da aynı çerçeveden
-UYGULAMA        : yeni src/game/markerFrame.ts — çizim + tetik + kabarma TEK fonksiyondan ·
-                  tick.ts'ten PAD_RADIUS/TABLE_UP_RADIUS tamamen çıktı · etiketler de paylaşıldı
-BEKÇİ           : tests/tetik-s24.test.ts — 14 denetim, 15 MUTASYON kırmızı yandı, kaçan 0
-FINAL           : vitest 1105 ✓ · duman 42/42 ✓ · tsc -b temiz · denge dosyasına dokunulmadı
+SORU            : D-106 kaynağı Kenney'e bağladı ama KAPSAMINI söylemedi. Hangi olay dosyadan
+                  çalar (K) · seri ivmesinin basamağı ne (İ) · ortam uğultusu nereden (O)?
+ÖLÇÜLECEK KOLLAR: K1…K5 bölüşüm · I1/I2/I3 basamak · O1/O2/O3/O4 ortam · A1/A2/A3 kelepçe
+SAYILAR         : docs/ses-raporu-s17.md §Bulgular (15 satır) · ham: docs/olcum-ses-s17.txt +
+                  docs/olcum-ses-karma.txt (ikisi de TAM koşu damgalı)
+KARAR           : ⏳ BEKLİYOR — karar paketi kullanıcıda, kod YAZILMADI
+UYGULAMA        : (karar sonrası) — önerilen K2 + I2 + A3 + O1
+BEKÇİ           : (karar sonrası)
 ```
 
-**Turun kalıcı üç dersi:**
-1. **Kusur ölçüde değil, AYNI ŞEYİN İKİ KEZ TANIMLANMASINDAydı.** S23'te sayı yanlış yazılmıştı
-   (gizli √3). Burada sayı doğruydu — çizilen çerçeve yazanla birebir aynı, sapma 0,0000. Kusur,
-   tetiğin hiç o çerçeveden türememesiydi. Bu yüzden düzeltme de "sayıyı değiştirmek" değil,
-   **ikisini tek fonksiyona bağlamak** oldu. Aynı desenin iki farklı yüzü.
-2. **Geometri sandığımdan bir fazlaydı.** İki geometri ararken üçüncüsü çıktı: "üstündesin"
-   kabarması da kendi dairesini kuruyordu (%34,3 dışarıda). Ölçüm aracına aday OLMAYAN bir kol
-   (G) eklemek bunu görünür yaptı — ölçüm yalnız seçenekleri değil, MEVCUT HÂLİN parçalarını da
-   ölçmeli.
-3. **Ölçümün kapsamı da bir bulgudur.** 13 işaretin hiçbiri PAD değildi; "çakışma 0" satırı
-   pad'leri hiç görmemişti. Uygulamadan önce 48 işaret analitik tarandı ve tek gerçek çakışma
-   çıktı. Bir sayının neyi KAPSAMADIĞI, değerinin kendisi kadar önemli.
+**Bu turda yapılan: eksik kolun sayısı üretildi.** S17 iki UÇ hâli ölçmüştü (dokuzu sentez /
+dokuzu dosya); **karma** katalog sayısızdı — dosya↔sentez çapraz mesafeleri matriste yoktu.
+Sayısı olmayan kol karar paketine girmez (D-084), o yüzden `tools/olcum-ses-karma.ts` yazıldı.
+Seçim mantığı `tools/ses-secim.ts`'e çıkarıldı (üçüncü kopya doğmasın) ve çıktı **birebir aynı**
+kaldı — refactor'ün kanıtı bu.
+
+**Turun iki bulgusu, ikisi de turun kendi varsayımını çürüttü:**
+1. **Kimlik bu kararı SEÇMİYOR.** Beş bölüşümün beşinde de karışan çift **0/36**; çapraz en
+   yakın **8,10 dB** = tabanın 4,9 katı. Eleme aracı boşa çıktı — seçen şey okunabilirlik payı,
+   APK bedeli, süre kelepçesi ve **kulak**.
+2. **Kataloğun en dar yeri coin DEĞİL.** En zayıf çift `quest`↔`level` = **4,06 dB** ve
+   K1/K3/K4'te **aynı kalıyor**. Yalnız coin'i dosyaya çevirmek (kullanıcının harfi şikâyeti)
+   o dar yere hiç dokunmuyor: ort. en-yakın 6,41 → 6,87. Kazanç **ilerleme ailesinde**
+   (K5 10,10 · K2 **10,97 dB**).
+
+**Karar paketi DUYULABİLİR** (`feedback_show_dont_ask` — ses metinle sorulmaz):
+dokuz olayın sentez/dosya hâli, beş bölüşümün katalogları, üç ivme kolu, ortam yatağı ve
+kelepçe kolları çalınıyor. Panonun sayıları da elle yazılmadı, ölçümden türetildi
+(`tools/ses-karar-paketi.ts`).
 
 ## SIRADAKİ TAM ADIM
 
-**S9 SES karar paketi** — ölçüm bitti ve tam-koşu damgalı (`docs/olcum-ses-s17.txt`), kullanıcının
-kol seçimini bekliyor. Kısa tur: yeni ölçüm gerekmiyor, doğrudan adım 3'ten başlanır.
+**S9 kol seçimi** — kullanıcı karar paketinden kombinasyonu seçer (örn. `K2 + I2 + A3 + O1`),
+karar `decisions.md`'ye **D-122** olarak yazılır, yalnız o kol koda girer + bekçi + mutasyon +
+final tam koşu → commit #2. Faz E 4/5 → 5/5, Faz S 23/24 → 24/24.
 
 **Sonra:** **Faz H** (oynanış düzeltmeleri — G-01…G-07; E1 yürünebilir mutfak orada).
 
@@ -43,13 +50,6 @@ kol seçimini bekliyor. Kısa tur: yeni ölçüm gerekmiyor, doğrudan adım 3't
 
 Bel bağının ucu çeyrek açıdan ince bir dudak bırakıyor (`docs/gorsel/ss/s19b-kiyafet.png`).
 Ölçü değil biçim; pay 0,035 → 0,012 ile küçültüldü, sıfırlanmadı. Bir sonraki sanat turunda.
-
-### S9 SES — ÖLÇÜM BİTTİ, KARAR PAKETİ BEKLİYOR
-
-`docs/olcum-ses-s17.txt` hazır (tam koşu damgalı). 9 CC0 Kenney paketi · 706 .ogg · 36 aday
-Chromium `decodeAudioData` ile çözüldü. **Bulgular:** dosyalı dokuzlu 36/36 AYRI (sentezle aynı
-hüküm) · dosyalar sentezden **16,6 dB yüksek** (normalizasyon gerek) · **7/9** seçilen dosya
-`aralik` kelepçesini taşıyor · akan sıvı **0 aday** · ortam/döngü **0 aday** (O2 kolu düştü).
 
 ## AÇIK KALEMLER (ölçüldü/görüldü, bilerek duruyor — tam listesi `memory-bank/arsiv/`de)
 
@@ -69,7 +69,7 @@ G-03 kamera kayıyor · G-06 tepsi ilk yükseltme 75 → ~50 · G-07 dwell para-
 DENGE, varyant kapısına tabi) · masalar geçilmiyor (açıklık 0,68 br, geçiş 0,94 ister — 20 masanın
 12'si).
 
-**Altyapı:** pano ARTIFACT'i **bu turda da kapatıldı** (v43 · 97/107) — borç birikmedi. Yayının bedeli yazılı: canlı sürümün **1611 satırının tamamı** okunmadan publish
+**Altyapı:** pano ARTIFACT'i **bu turda da kapatıldı** (v45 · 98/108) — borç birikmedi. Yayının bedeli yazılı: canlı sürümün **1611 satırının tamamı** okunmadan publish
 reddediliyor (~130k token) — yani atlanırsa borç büyüyor, her turda kapatmak ucuz. ·
 `npm run lint` 31 hata (hepsi eski `tools/olcum-*.ts`) · ~~`.gitattributes` YOK~~ → **S24'te
 KAPANDI:** `* text=auto eol=lf` autocrlf'i eziyor, `.bat`/`.ps1` CRLF, ikililer `binary`;
@@ -79,6 +79,7 @@ bakıyor · mutfağın kuşbakışı karesi OYUNDAN çekilemez (tepeden kamera o
 (repro aracı `tools/olcum-panel-donusu.mjs`).
 
 **Önizlemeler**
+**S9 SES KARAR PAKETİ (DİNLENEBİLİR):** https://claude.ai/artifact/49KsxE368xVHWbw4wHdkSy
 **S24 KARAR PAKETİ:** https://claude.ai/artifact/84hN6nieCHVXHMcBS81d4u
 **S23 KARAR PAKETİ:** https://claude.ai/artifact/Cysj2inCDguC4gQxuu3X2o
 **S23 kareler:** `ss/s23-ok-adaylari.png` (sekiz aday, gerçek çerçeve) ·
@@ -95,7 +96,7 @@ bakıyor · mutfağın kuşbakışı karesi OYUNDAN çekilemez (tepeden kamera o
 **S13 paketler:** https://claude.ai/code/artifact/dcbaaee3-8889-4665-83b2-feff02a60c13
 **S12 arayüz:** https://claude.ai/code/artifact/a83eade2-32f6-4a64-ae34-6743a93922a3
 **Mor arayüz maketi:** https://claude.ai/code/artifact/6cc7a95e-c0a3-4802-8ea3-99398d637981
-**İlerleme panosu (v44 · 98/108):** https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs
+**İlerleme panosu (v45 · 98/108):** https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs
 
 ---
 
