@@ -1,0 +1,942 @@
+{
+  "damga": "2026-09-15T21:21:25.679Z",
+  "kip": "tam",
+  "hucre": 0.01,
+  "dunya": {
+    "tables": 12,
+    "areasOpen": 3,
+    "padsDone": [
+      "table2",
+      "table3",
+      "waiter",
+      "table4",
+      "zone2",
+      "z2table2",
+      "z2table3",
+      "dishwasher",
+      "z2table4",
+      "zone3",
+      "z3table2",
+      "waiter2",
+      "z3table3",
+      "z3table4",
+      "lavabo"
+    ]
+  },
+  "A1_R": 0.6,
+  "enBuyukSapma": 0,
+  "konsolHata": [],
+  "isaretler": [
+    {
+      "ad": "YÜKSELT",
+      "kind": "servis",
+      "x": -15.8,
+      "z": -8,
+      "r": 0.85,
+      "yazan": {
+        "hw": 1.04669,
+        "hh": 0.85
+      },
+      "cizilen": {
+        "hw": 1.04669,
+        "hh": 0.85
+      },
+      "olcek": 1,
+      "tabanR": 1.3,
+      "cerceve": {
+        "hw": 1.04669,
+        "hh": 0.85
+      },
+      "kollar": {
+        "T": {
+          "tetikAlan": 5.309,
+          "cerceveAlan": 3.5530000000000004,
+          "disariPay": 0.33247315878696554,
+          "oluPay": 0.0025612158739093723,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 5.309,
+          "durakR": 1.2266666666666668
+        },
+        "A1": {
+          "tetikAlan": 1.1309,
+          "cerceveAlan": 3.5530000000000004,
+          "disariPay": 0,
+          "oluPay": 0.6817056009006474,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 1.1309,
+          "durakR": 0.5700000000000001
+        },
+        "A2": {
+          "tetikAlan": 2.2706,
+          "cerceveAlan": 3.5530000000000004,
+          "disariPay": 0,
+          "oluPay": 0.3609344216155362,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 2.2706,
+          "durakR": 0.8
+        },
+        "G": {
+          "tetikAlan": 6.2746,
+          "cerceveAlan": 3.5530000000000004,
+          "disariPay": 0.4337487648615051,
+          "oluPay": 0,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 6.2746,
+          "durakR": 1.3333333333333335
+        },
+        "B": {
+          "tetikAlan": 3.5530000000000004,
+          "cerceveAlan": 3.5530000000000004,
+          "disariPay": 0,
+          "oluPay": 0,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 3.5530000000000004,
+          "durakR": 0.85
+        }
+      }
+    },
+    {
+      "ad": "SV 2",
+      "kind": "masa",
+      "x": -9.55,
+      "z": 13.85,
+      "r": 0.6,
+      "yazan": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "cizilen": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "olcek": 1,
+      "tabanR": 1,
+      "cerceve": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "kollar": {
+        "T": {
+          "tetikAlan": 3.1419,
+          "cerceveAlan": 1.512,
+          "disariPay": 0.5187625322257233,
+          "oluPay": 0,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 3.1419,
+          "durakR": 0.9466666666666668
+        },
+        "A1": {
+          "tetikAlan": 1.1309,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0.2520502645502645,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 1.1309,
+          "durakR": 0.5700000000000001
+        },
+        "A2": {
+          "tetikAlan": 1.1309,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0.2520502645502645,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 1.1309,
+          "durakR": 0.5700000000000001
+        },
+        "G": {
+          "tetikAlan": 2.2726,
+          "cerceveAlan": 1.512,
+          "disariPay": 0.33534277919563493,
+          "oluPay": 0.000992063492063492,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 2.2726,
+          "durakR": 0.8
+        },
+        "B": {
+          "tetikAlan": 1.512,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 1.512,
+          "durakR": 0.6
+        }
+      }
+    },
+    {
+      "ad": "SV 2",
+      "kind": "masa",
+      "x": -3.15,
+      "z": 13.85,
+      "r": 0.6,
+      "yazan": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "cizilen": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "olcek": 1,
+      "tabanR": 1,
+      "cerceve": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "kollar": {
+        "T": {
+          "tetikAlan": 3.1419,
+          "cerceveAlan": 1.512,
+          "disariPay": 0.5187625322257233,
+          "oluPay": 0,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 3.1419,
+          "durakR": 0.9466666666666668
+        },
+        "A1": {
+          "tetikAlan": 1.1309,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0.2520502645502645,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 1.1309,
+          "durakR": 0.5700000000000001
+        },
+        "A2": {
+          "tetikAlan": 1.1309,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0.2520502645502645,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 1.1309,
+          "durakR": 0.5700000000000001
+        },
+        "G": {
+          "tetikAlan": 2.2726,
+          "cerceveAlan": 1.512,
+          "disariPay": 0.33534277919563493,
+          "oluPay": 0.000992063492063492,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 2.2726,
+          "durakR": 0.8
+        },
+        "B": {
+          "tetikAlan": 1.512,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 1.512,
+          "durakR": 0.6
+        }
+      }
+    },
+    {
+      "ad": "SV 2",
+      "kind": "masa",
+      "x": -9.55,
+      "z": 3.15,
+      "r": 0.6,
+      "yazan": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "cizilen": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "olcek": 1,
+      "tabanR": 1,
+      "cerceve": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "kollar": {
+        "T": {
+          "tetikAlan": 3.1419,
+          "cerceveAlan": 1.512,
+          "disariPay": 0.5187625322257233,
+          "oluPay": 0,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 3.1419,
+          "durakR": 0.9466666666666668
+        },
+        "A1": {
+          "tetikAlan": 1.1309,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0.2520502645502645,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 1.1309,
+          "durakR": 0.5700000000000001
+        },
+        "A2": {
+          "tetikAlan": 1.1309,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0.2520502645502645,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 1.1309,
+          "durakR": 0.5700000000000001
+        },
+        "G": {
+          "tetikAlan": 2.2726,
+          "cerceveAlan": 1.512,
+          "disariPay": 0.33534277919563493,
+          "oluPay": 0.000992063492063492,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 2.2726,
+          "durakR": 0.8
+        },
+        "B": {
+          "tetikAlan": 1.512,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 1.512,
+          "durakR": 0.6
+        }
+      }
+    },
+    {
+      "ad": "SV 2",
+      "kind": "masa",
+      "x": -3.15,
+      "z": 3.15,
+      "r": 0.6,
+      "yazan": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "cizilen": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "olcek": 1,
+      "tabanR": 1,
+      "cerceve": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "kollar": {
+        "T": {
+          "tetikAlan": 3.1419,
+          "cerceveAlan": 1.512,
+          "disariPay": 0.5187625322257233,
+          "oluPay": 0,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 3.1419,
+          "durakR": 0.9466666666666668
+        },
+        "A1": {
+          "tetikAlan": 1.1309,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0.2520502645502645,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 1.1309,
+          "durakR": 0.5700000000000001
+        },
+        "A2": {
+          "tetikAlan": 1.1309,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0.2520502645502645,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 1.1309,
+          "durakR": 0.5700000000000001
+        },
+        "G": {
+          "tetikAlan": 2.2726,
+          "cerceveAlan": 1.512,
+          "disariPay": 0.33534277919563493,
+          "oluPay": 0.000992063492063492,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 2.2726,
+          "durakR": 0.8
+        },
+        "B": {
+          "tetikAlan": 1.512,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 1.512,
+          "durakR": 0.6
+        }
+      }
+    },
+    {
+      "ad": "SV 2",
+      "kind": "masa",
+      "x": 3.15,
+      "z": 13.85,
+      "r": 0.6,
+      "yazan": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "cizilen": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "olcek": 1,
+      "tabanR": 1,
+      "cerceve": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "kollar": {
+        "T": {
+          "tetikAlan": 3.1419,
+          "cerceveAlan": 1.512,
+          "disariPay": 0.5187625322257233,
+          "oluPay": 0,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 3.1419,
+          "durakR": 0.9466666666666668
+        },
+        "A1": {
+          "tetikAlan": 1.1309,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0.2520502645502645,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 1.1309,
+          "durakR": 0.5700000000000001
+        },
+        "A2": {
+          "tetikAlan": 1.1309,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0.2520502645502645,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 1.1309,
+          "durakR": 0.5700000000000001
+        },
+        "G": {
+          "tetikAlan": 2.2726,
+          "cerceveAlan": 1.512,
+          "disariPay": 0.33534277919563493,
+          "oluPay": 0.000992063492063492,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 2.2726,
+          "durakR": 0.8
+        },
+        "B": {
+          "tetikAlan": 1.512,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 1.512,
+          "durakR": 0.6
+        }
+      }
+    },
+    {
+      "ad": "SV 2",
+      "kind": "masa",
+      "x": 9.55,
+      "z": 13.85,
+      "r": 0.6,
+      "yazan": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "cizilen": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "olcek": 1,
+      "tabanR": 1,
+      "cerceve": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "kollar": {
+        "T": {
+          "tetikAlan": 3.1419,
+          "cerceveAlan": 1.512,
+          "disariPay": 0.5187625322257233,
+          "oluPay": 0,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 3.1419,
+          "durakR": 0.9466666666666668
+        },
+        "A1": {
+          "tetikAlan": 1.1309,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0.2520502645502645,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 1.1309,
+          "durakR": 0.5700000000000001
+        },
+        "A2": {
+          "tetikAlan": 1.1309,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0.2520502645502645,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 1.1309,
+          "durakR": 0.5700000000000001
+        },
+        "G": {
+          "tetikAlan": 2.2726,
+          "cerceveAlan": 1.512,
+          "disariPay": 0.33534277919563493,
+          "oluPay": 0.000992063492063492,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 2.2726,
+          "durakR": 0.8
+        },
+        "B": {
+          "tetikAlan": 1.512,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 1.512,
+          "durakR": 0.6
+        }
+      }
+    },
+    {
+      "ad": "SV 2",
+      "kind": "masa",
+      "x": 3.15,
+      "z": 3.15,
+      "r": 0.6,
+      "yazan": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "cizilen": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "olcek": 1,
+      "tabanR": 1,
+      "cerceve": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "kollar": {
+        "T": {
+          "tetikAlan": 3.1419,
+          "cerceveAlan": 1.512,
+          "disariPay": 0.5187625322257233,
+          "oluPay": 0,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 3.1419,
+          "durakR": 0.9466666666666668
+        },
+        "A1": {
+          "tetikAlan": 1.1309,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0.2520502645502645,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 1.1309,
+          "durakR": 0.5700000000000001
+        },
+        "A2": {
+          "tetikAlan": 1.1309,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0.2520502645502645,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 1.1309,
+          "durakR": 0.5700000000000001
+        },
+        "G": {
+          "tetikAlan": 2.2726,
+          "cerceveAlan": 1.512,
+          "disariPay": 0.33534277919563493,
+          "oluPay": 0.000992063492063492,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 2.2726,
+          "durakR": 0.8
+        },
+        "B": {
+          "tetikAlan": 1.512,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 1.512,
+          "durakR": 0.6
+        }
+      }
+    },
+    {
+      "ad": "SV 2",
+      "kind": "masa",
+      "x": 9.55,
+      "z": 3.15,
+      "r": 0.6,
+      "yazan": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "cizilen": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "olcek": 1,
+      "tabanR": 1,
+      "cerceve": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "kollar": {
+        "T": {
+          "tetikAlan": 3.1419,
+          "cerceveAlan": 1.512,
+          "disariPay": 0.5187625322257233,
+          "oluPay": 0,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 3.1419,
+          "durakR": 0.9466666666666668
+        },
+        "A1": {
+          "tetikAlan": 1.1309,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0.2520502645502645,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 1.1309,
+          "durakR": 0.5700000000000001
+        },
+        "A2": {
+          "tetikAlan": 1.1309,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0.2520502645502645,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 1.1309,
+          "durakR": 0.5700000000000001
+        },
+        "G": {
+          "tetikAlan": 2.2726,
+          "cerceveAlan": 1.512,
+          "disariPay": 0.33534277919563493,
+          "oluPay": 0.000992063492063492,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 2.2726,
+          "durakR": 0.8
+        },
+        "B": {
+          "tetikAlan": 1.512,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0,
+          "erisimPay": 1,
+          "tetikErisilirAlan": 1.512,
+          "durakR": 0.6
+        }
+      }
+    },
+    {
+      "ad": "SV 2",
+      "kind": "masa",
+      "x": -11.7,
+      "z": -0.3,
+      "r": 0.6,
+      "yazan": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "cizilen": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "olcek": 1,
+      "tabanR": 1,
+      "cerceve": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "kollar": {
+        "T": {
+          "tetikAlan": 3.1419,
+          "cerceveAlan": 1.512,
+          "disariPay": 0.5187625322257233,
+          "oluPay": 0,
+          "erisimPay": 0.8060409306470607,
+          "tetikErisilirAlan": 2.5325,
+          "durakR": 0.75
+        },
+        "A1": {
+          "tetikAlan": 1.1309,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0.2520502645502645,
+          "erisimPay": 0.9617119108674507,
+          "tetikErisilirAlan": 1.0876000000000001,
+          "durakR": 0.5433333333333333
+        },
+        "A2": {
+          "tetikAlan": 1.1309,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0.2520502645502645,
+          "erisimPay": 0.9617119108674507,
+          "tetikErisilirAlan": 1.0876000000000001,
+          "durakR": 0.5433333333333333
+        },
+        "G": {
+          "tetikAlan": 2.2726,
+          "cerceveAlan": 1.512,
+          "disariPay": 0.33534277919563493,
+          "oluPay": 0.000992063492063492,
+          "erisimPay": 0.8530317697791077,
+          "tetikErisilirAlan": 1.9386,
+          "durakR": 0.68
+        },
+        "B": {
+          "tetikAlan": 1.512,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0,
+          "erisimPay": 0.9166666666666666,
+          "tetikErisilirAlan": 1.3860000000000001,
+          "durakR": 0.55
+        }
+      }
+    },
+    {
+      "ad": "SV 2",
+      "kind": "masa",
+      "x": -11.7,
+      "z": -7.3,
+      "r": 0.6,
+      "yazan": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "cizilen": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "olcek": 1,
+      "tabanR": 1,
+      "cerceve": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "kollar": {
+        "T": {
+          "tetikAlan": 3.1419,
+          "cerceveAlan": 1.512,
+          "disariPay": 0.5187625322257233,
+          "oluPay": 0,
+          "erisimPay": 0.8084280212610204,
+          "tetikErisilirAlan": 2.54,
+          "durakR": 0.76
+        },
+        "A1": {
+          "tetikAlan": 1.1309,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0.2520502645502645,
+          "erisimPay": 0.9645415156070386,
+          "tetikErisilirAlan": 1.0908,
+          "durakR": 0.5433333333333333
+        },
+        "A2": {
+          "tetikAlan": 1.1309,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0.2520502645502645,
+          "erisimPay": 0.9645415156070386,
+          "tetikErisilirAlan": 1.0908,
+          "durakR": 0.5433333333333333
+        },
+        "G": {
+          "tetikAlan": 2.2726,
+          "cerceveAlan": 1.512,
+          "disariPay": 0.33534277919563493,
+          "oluPay": 0.000992063492063492,
+          "erisimPay": 0.8558039250198011,
+          "tetikErisilirAlan": 1.9449,
+          "durakR": 0.68
+        },
+        "B": {
+          "tetikAlan": 1.512,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0,
+          "erisimPay": 0.925,
+          "tetikErisilirAlan": 1.3986,
+          "durakR": 0.56
+        }
+      }
+    },
+    {
+      "ad": "SV 2",
+      "kind": "masa",
+      "x": 11.7,
+      "z": -0.3,
+      "r": 0.6,
+      "yazan": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "cizilen": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "olcek": 1,
+      "tabanR": 1,
+      "cerceve": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "kollar": {
+        "T": {
+          "tetikAlan": 3.1419,
+          "cerceveAlan": 1.512,
+          "disariPay": 0.5187625322257233,
+          "oluPay": 0,
+          "erisimPay": 0.8060409306470607,
+          "tetikErisilirAlan": 2.5325,
+          "durakR": 0.75
+        },
+        "A1": {
+          "tetikAlan": 1.1309,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0.2520502645502645,
+          "erisimPay": 0.9617119108674507,
+          "tetikErisilirAlan": 1.0876000000000001,
+          "durakR": 0.5433333333333333
+        },
+        "A2": {
+          "tetikAlan": 1.1309,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0.2520502645502645,
+          "erisimPay": 0.9617119108674507,
+          "tetikErisilirAlan": 1.0876000000000001,
+          "durakR": 0.5433333333333333
+        },
+        "G": {
+          "tetikAlan": 2.2726,
+          "cerceveAlan": 1.512,
+          "disariPay": 0.33534277919563493,
+          "oluPay": 0.000992063492063492,
+          "erisimPay": 0.8530317697791077,
+          "tetikErisilirAlan": 1.9386,
+          "durakR": 0.68
+        },
+        "B": {
+          "tetikAlan": 1.512,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0,
+          "erisimPay": 0.9166666666666666,
+          "tetikErisilirAlan": 1.3860000000000001,
+          "durakR": 0.55
+        }
+      }
+    },
+    {
+      "ad": "SV 2",
+      "kind": "masa",
+      "x": 11.7,
+      "z": -7.3,
+      "r": 0.6,
+      "yazan": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "cizilen": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "olcek": 1,
+      "tabanR": 1,
+      "cerceve": {
+        "hw": 0.63,
+        "hh": 0.6
+      },
+      "kollar": {
+        "T": {
+          "tetikAlan": 3.1419,
+          "cerceveAlan": 1.512,
+          "disariPay": 0.5187625322257233,
+          "oluPay": 0,
+          "erisimPay": 0.8084280212610204,
+          "tetikErisilirAlan": 2.54,
+          "durakR": 0.76
+        },
+        "A1": {
+          "tetikAlan": 1.1309,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0.2520502645502645,
+          "erisimPay": 0.9645415156070386,
+          "tetikErisilirAlan": 1.0908,
+          "durakR": 0.5433333333333333
+        },
+        "A2": {
+          "tetikAlan": 1.1309,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0.2520502645502645,
+          "erisimPay": 0.9645415156070386,
+          "tetikErisilirAlan": 1.0908,
+          "durakR": 0.5433333333333333
+        },
+        "G": {
+          "tetikAlan": 2.2726,
+          "cerceveAlan": 1.512,
+          "disariPay": 0.33534277919563493,
+          "oluPay": 0.000992063492063492,
+          "erisimPay": 0.8558039250198011,
+          "tetikErisilirAlan": 1.9449,
+          "durakR": 0.68
+        },
+        "B": {
+          "tetikAlan": 1.512,
+          "cerceveAlan": 1.512,
+          "disariPay": 0,
+          "oluPay": 0,
+          "erisimPay": 0.925,
+          "tetikErisilirAlan": 1.3986,
+          "durakR": 0.56
+        }
+      }
+    }
+  ],
+  "cakisma": {
+    "T": {
+      "tetikCift": 0,
+      "cerceveCift": 0,
+      "enYakin": 4.065095324835568
+    },
+    "A1": {
+      "tetikCift": 0,
+      "cerceveCift": 0,
+      "enYakin": 4.065095324835568
+    },
+    "A2": {
+      "tetikCift": 0,
+      "cerceveCift": 0,
+      "enYakin": 4.065095324835568
+    },
+    "G": {
+      "tetikCift": 0,
+      "cerceveCift": 0,
+      "enYakin": 4.065095324835568
+    },
+    "B": {
+      "tetikCift": 0,
+      "cerceveCift": 0,
+      "enYakin": 4.065095324835568
+    }
+  }
+}

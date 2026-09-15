@@ -5,29 +5,34 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-15 — **S23 BİTTİ: ok bloğuna girdi, panel oyunun gövdesini gösteriyor** · Faz S 22/23 · 97/107)
+## ŞU AN (2026-09-16 — **S24 AÇILDI: yükseltme tetiği pad'in TAM ÜSTÜNDE** · Faz S 23/24 · 97/108)
 
 ```
-SORU            : S19'un kalan dört kaleminin GÖRSEL üçü — (K) karakter menüsü hangi gövdeyi
-                  gösteriyor · (E) paneller ekranı ne kadar dolduruyor · (O) ok çakışıyor mu?
-SAYILAR         : docs/arayuz-raporu-s23.md §Bulgular · ham: docs/olcum-arayuz-s23.txt (tam koşu)
-                  sekiz ok adayı gerçek çerçevede · 10 panel satırı × 2 kadraj · 3 sekme silüeti
-KARAR           : D-120 — O7 (kalın tek chevron) + K3 (gövde + salon dilimi) + E3 (boşluk işe yarasın)
-UYGULAMA        : ok eni artık OK_GENIS'in KENDİSİ (0,554 → 0,400 r) · üç açıklık hedefine oturdu ·
-                  üç önizleme modeli tek Onizleme+KayActor'e indi · vitrin SalonSlice'a katıldı ·
-                  mağaza satılabilir sekmede açılıyor · Ayarlar'a künye bloğu
-BEKÇİ           : tests/arayuz-s23.test.ts — 16 denetim, 12 MUTASYON kırmızı yandı, kaçan 0
-FINAL           : vitest 1091 ✓ · duman 42/42 ✓ · tsc -b temiz · denge dosyasına dokunulmadı
+SORU            : Yükseltme tetiği neden "yanında" çalışıyor? Çizilen ÇERÇEVE (dikdörtgen
+                  hw×hh) ile tetikleyen ALAN (daire r) aynı şey değil — S23'ün "iki ayrı
+                  doğru" deseninin üçüncüsü mü, yoksa sadece sayı mı büyük?
+ÖLÇÜLECEK KOLLAR: T  taban — bugünkü daire (TABLE_UP_RADIUS 1,0 · PAD_RADIUS 1,3)
+                  A1 daire daraltma — tek küresel yarıçap, çerçevenin içine sığan en büyüğü
+                  A2 daire daraltma — işaret BAŞINA yarıçap (hw/hh'den türetilmiş)
+                  B  ÇERÇEVE testi — çizilen dikdörtgenin kendisi (tek doğru kaynağı)
+                  Her kol için: çerçeve DIŞINDA tetikleyen alan %'si ("yanında") · çerçeve
+                  İÇİNDE tetiklemeyen alan %'si (ölü bölge) · komşu işaretle çakışma ·
+                  oyuncunun fiziksel ERİŞEBİLDİĞİ alan (actorRadius + katılar)
+SAYILAR         : docs/tetik-raporu-s24.md §Bulgular · ham: docs/olcum-tetik-s24.txt (tam koşu)
+                  13 işaret × 5 kol · 0,01 br ızgara · çizilen/yazan sapma 0,0000
+KARAR           : (adım 3, kullanıcı seçer — D-121)
+UYGULAMA        : (adım 4, yalnız kararın kolu)
+BEKÇİ           : (test dosyası + kaç mutasyonla doğrulandı)
 ```
 
-**Turun kalıcı iki dersi:**
-1. **Kusur "ölçü" değil İKİ AYRI DOĞRU'ydu.** Blok 0,34 r yazılıyken ok 0,554 r çiziliyordu;
-   arada 3 kenarlı çemberin √3 çarpanı vardı ve **hiçbir yerde yazmıyordu**. Sayıyı düzeltmek
-   kusuru kapatmazdı — çizilen eni bloğun KENDİSİNDEN türetmek kapattı.
-2. **Mutasyon turu bekçiyi de yakalar.** İlk koşu YALANCI 12/12 verdi: testteki dört regex'e
-   kaçış hatasıyla `backspace` karakteri girmişti, o testler zaten kırmızıydı ve mutasyonlar
-   "tuttu" sayılıyordu. Ayrıca `toMatch(/FloorPatch/)` kaldırılmış bir bileşende bile yeşildi —
-   adı import satırında duruyor. **Bekçi KULLANIMA bakar, isme değil.**
+**VARYANT KAPISI AÇIK:** tetik `tick.ts`'te, yarıçaplar `layout.ts`'te — denge dosyasına
+dokunuyor, yani rapor §Bulgular'da o kolun **sayı satırı olmadan uygulanmaz**.
+
+**Araya sıkıştırıldı (S23'ün altyapı borcu):** `.gitattributes` eklendi — `core.autocrlf=true`
+bu makinede açık ve S23'te `git stash pop` src'yi CRLF'e çevirip mutasyon aracının çok satırlı
+kalıplarını sessizce bulunamaz yapmıştı (dört mutasyon "KALIP BULUNAMADI", ilk koşu YALANCI
+12/12). Artık `* text=auto eol=lf` autocrlf'i eziyor; `.bat`/`.ps1` CRLF, ikililer `binary`.
+`git add --renormalize .` **0 dosya** bozdu — depo zaten LF'ti, kilitlenen çalışma ağacı.
 
 ## SIRADAKİ TAM ADIM
 

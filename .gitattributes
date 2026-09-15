@@ -1,0 +1,25 @@
+# .gitattributes — SATIR SONU KİLİDİ (S24'te eklendi)
+#
+# NEDEN VAR: bu makinede `core.autocrlf=true`. Bu ayar, çalışma ağacındaki her metin
+# dosyasını checkout sırasında CRLF'e çevirir. S24'e kadar repoda .gitattributes yoktu ve
+# S23 turunda SOMUT ZARAR VERDİ: `git stash pop` src'yi CRLF'e çevirdi, mutasyon aracının
+# çok satırlı kalıpları sessizce bulunamadı (dört mutasyon birden "KALIP BULUNAMADI" düştü)
+# ve ilk koşu YALANCI 12/12 verdi. Sessiz bozulma; test kırmızı bile yanmadı.
+#
+# KURAL: depo LF, çalışma ağacı LF. `eol=lf` autocrlf'i EZER — yani iki makinede de
+# (dizüstü + masaüstü) aynı bayt dizisi durur, araçlar satır-sonu tahmini yapmak zorunda kalmaz.
+* text=auto eol=lf
+
+# Windows'ta CRLF ŞART olanlar — cmd.exe ve PowerShell bu iki türü LF ile güvenilir çalıştırmaz.
+*.bat  text eol=crlf
+*.ps1  text eol=crlf
+
+# İkili dosyalar: dönüşüm YOK, diff YOK. .gltf metin (JSON) olduğu için listede DEĞİL —
+# o `text=auto`ya tabidir; ikizi olan .bin ise ikilidir.
+*.png  binary
+*.jpeg binary
+*.jpg  binary
+*.glb  binary
+*.bin  binary
+*.ttf  binary
+*.jar  binary
