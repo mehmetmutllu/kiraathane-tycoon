@@ -39,6 +39,13 @@ coverage
 # Rapor artifact kopyalari (tools/embed-rapor.mjs uretir; kareler data URI olarak gomulu)
 *.artifact.html
 
+# Karar panolarinin URETILMIS ses yuku (data URI). Ayni gerekce: araclar yeniden uretir
+# (tools/ses-karar-paketi.ts · tools/muzik-karar-paketi.ts), depoda megabaytlarca base64
+# tutmanin karsiligi yok — panonun kendisi (index.html) commit'li ve yayinlanmis durumda.
+# NOT: yeniden uretmek `indirilen/` ve `indirilen-muzik/` altindaki paketleri ister.
+docs/pano/ses-karar/sesler.js
+docs/pano/ses-karar/muzik.js
+
 # S14 ölçüm turunda indirilen karakter ADAYLARI (repoya girmez; karar D-1xx ile seçilen
 # dosyalar manifestle birlikte girer)
 public/assets/models/_aday-karakter/
