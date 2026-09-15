@@ -39,16 +39,16 @@ const TEXT_ON = 0.55;
  * harf ilerlemesi ≈ 0,58 em; kısa büyük-harf etiketlerde yeterli yaklaşım — ve `maxWidth` üst
  * sınırı ayrıca kilitliyor, yani hata payı taşmaya değil sarmaya gider.
  */
-const HARF_EM = 0.58;
-const ETIKET_PUNTO = 0.38;
-const OK_GENIS = 0.34;
-const OK_BOSLUK = 0.16;
-const KENAR_PAYI = 0.18;
+export const HARF_EM = 0.58;
+export const ETIKET_PUNTO = 0.38;
+export const OK_GENIS = 0.34;
+export const OK_BOSLUK = 0.16;
+export const KENAR_PAYI = 0.18;
 
 /** Köşe parantezi: kol uzunluğu · kalınlık · DIŞ KÖŞE YARIÇAPI (yarı-yüksekliğe oran). */
-const KOL = 0.46;
-const KALINLIK = 0.17;
-const KOSE_R = 0.3;
+export const KOL = 0.46;
+export const KALINLIK = 0.17;
+export const KOSE_R = 0.3;
 /** İç zeminin çerçeveden içeri kaçtığı pay — parantez çizgilerinin DIŞINA taşmasın. */
 const ZEMIN_ICE = 0.055;
 
@@ -222,8 +222,8 @@ export function GroundMarker({
   }, [p, fillH]);
 
   return (
-    <group position={[pos[0], 0, pos[2]]}>
-      <group ref={scaleRef}>
+    <group position={[pos[0], 0, pos[2]]} name={`isaret:${label}`} userData={{ olcum: { label, r, hw, hh, arrow } }}>
+      <group ref={scaleRef} name="isaret-olcek">
         {/* şeffaf koyu zemin — yazı ve çerçeve açık ahşabın üstünde okunsun */}
         <mesh position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]} material={plateMat}>
           <shapeGeometry args={[zemin]} />
@@ -246,7 +246,7 @@ export function GroundMarker({
         {/* köşe parantezleri — kenar ortaları BOŞ, dış köşeler YUVARLATILMIŞ */}
         <group position={[0, 0.03, 0]} rotation={[-Math.PI / 2, 0, 0]}>
           {koseler.map((k, i) => (
-            <mesh key={i} position={k.pos} rotation={[0, 0, k.rot]} material={bracketMat}>
+            <mesh key={i} name={`parantez${i}`} position={k.pos} rotation={[0, 0, k.rot]} material={bracketMat}>
               <shapeGeometry args={[bracket]} />
             </mesh>
           ))}
@@ -256,18 +256,19 @@ export function GroundMarker({
         <group ref={speakRef} visible={false}>
           {arrow && (
             <group position={[okX, 0.05, -hh * 0.3]} rotation={[-Math.PI / 2, 0, 0]}>
-              <mesh position={[0, -r * 0.13, 0]}>
+              <mesh name="ok-govde" position={[0, -r * 0.13, 0]}>
                 <planeGeometry args={[r * 0.2, r * 0.4]} />
                 <meshBasicMaterial color="#ffffff" transparent opacity={0.95} depthWrite={false} />
               </mesh>
               {/* uç: 3 kenarlı çember = üçgen; +90° döndürülünce yukarı bakar */}
-              <mesh position={[0, r * 0.2, 0]} rotation={[0, 0, Math.PI / 2]}>
+              <mesh name="ok-uc" position={[0, r * 0.2, 0]} rotation={[0, 0, Math.PI / 2]}>
                 <circleGeometry args={[r * 0.32, 3]} />
                 <meshBasicMaterial color="#ffffff" transparent opacity={0.95} depthWrite={false} />
               </mesh>
             </group>
           )}
           <Text
+            name="etiket"
             font={GAME_FONT_3D}
             fontWeight={800}
             letterSpacing={0.02}

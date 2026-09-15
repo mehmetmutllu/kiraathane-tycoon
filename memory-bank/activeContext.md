@@ -5,35 +5,33 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-15 — **S22 BİTTİ: mutfak 6 kademeyle büyüyor, bekçili** · Faz S 21/22 · 96/106)
+## ŞU AN (2026-09-15 — **S23 ÖLÇÜM açıldı: S19'un kalan görsel üçlüsü** · Faz S 22/23 · 96/107)
 
 ```
-SORU            : Mutfak servis noktasının 6 kademesiyle nasıl büyür — hangi kalıp HER
-                  yükseltmede ekranda okunan bir değişim bırakır?
-SAYILAR         : docs/mutfak-kademe-raporu-s22.md §Bulgular · ham: docs/olcum-mutfak-kademe.txt
-                  sekiz kalıp · görünürlük hiçbirini elemedi · ayıran sayı DELTA KÜTLE + BEDEL UYUMU
-KARAR           : D-119 — K5 + Y1 (erken yerinde büyüme, geç basamakta adada doğuş)
-UYGULAMA        : merdiven ELLE yazıldı (K5y) · ×0,40 → 0,75 → 1,46 → 1,58 → 2,69 · r = +0,92
-                  ada 3 → 2 (bitişik slotta çakışıyordu) · zincirler gömme gözlerden arındı
-BEKÇİ           : tests/mutfak-kademe-s22.test.ts — 24 denetim, 4 MUTASYON kırmızı yandı
-FINAL           : vitest 1075 ✓ · duman 42/42 ✓ · yeni çakışma 0/6 seviye · konsol hatası YOK
+SORU            : S19'un kalan dört kaleminin GÖRSEL üçü — (K) karakter menüsü hangi gövdeyi
+                  gösteriyor · (E) paneller telefon ekranını gerçekten ne kadar dolduruyor ·
+                  (O) yükseltme okunun bugünkü hâli çakışıyor mu, hangi biçim?
+ÖLÇÜLECEK KOLLAR: K — panelde çizilen ile salonda çizilen gövde YAN YANA (parça, kıyafet
+                      katmanı, baş payı, silüet) üç sekme için ayrı; kadraj/poz adayları karede.
+                  E — 5 ekran × telefon kadrajı: gövde doluluk %, en büyük boş bant, kart eni
+                      vs ekran eni, kaydırma gerekiyor mu.
+                  O — okun kutusu vs çerçeve/yazı (çakışma sayısı) + biçim adayları GERÇEK boyda.
+SAYILAR         : (adım 2'den sonra dolar)
+KARAR           : (adım 3 — kullanıcı seçer)
+UYGULAMA        : (adım 4 — yalnız kararın kolu)
+BEKÇİ           : (test dosyası + mutasyon sayısı)
 ```
 
-**Turun kalıcı iki dersi:**
-1. **Sezgisel kalıp merdiveni ters akıtıyor** (r = −0,95): "üniteler tek tek belirsin" dendiğinde
-   delta L1'de ×5,61, L6'da ×0,16 — merdivenin %73'ünü ödeten basamakta değişen bir kasa kapağı.
-2. **Arka hattın DÜŞEY boşluğu dolu.** Her modülün üstünde dolap ya da bardak rafı var (altı 1,40);
-   süslü tezgâh 1,89 boyunda. Geç basamakların kütlesi duvardan gelemez, **adadan gelir**.
+**Kalem 6 (yükseltme tetiği pad'in üstünde) BU TURDA DEĞİL** — `rules.ts`'e dokunur, varyant
+kapısına tabi; kullanıcı kararıyla mantık yarımı ayrı tura ayrıldı ("görevi en fazla ikiye böl").
+Dört kalemin ASIL metni git'te: `git show 67aeca2:memory-bank/activeContext.md` satır 24-44.
 
 ## SIRADAKİ TAM ADIM
 
-**S19'un kalan dört kalemi** (Faz S'in son kalemi): (1) karakter menüsü KayKit gövdesine ·
-(2) paneller tam ekran · (3) yükseltme tetiği pad'in üstünde — **varyant kapısı, `rules.ts`** ·
-(4) yükseltmenin solundaki ok. Kullanıcı kuralı "görevi en fazla ikiye böl" burada geçerli:
-mantık (3) ile görsel (1·2·4) ayrı parçalar olabilir.
+S23 adım 2: ölçüm aracı → ham çıktı → rapor §Bulgular (KARAR BÖLÜMÜ BOŞ) → commit #1.
 
-**Sonra:** S9 SES karar paketi (ölçüm hazır) · sonra **Faz H** (E1 yürünebilir mutfak orada,
-nav ızgarasıyla birlikte).
+**Sonra:** S24 = yükseltme tetiği (mantık yarım, varyant kapısı) · S9 SES karar paketi
+(ölçüm hazır) · sonra **Faz H** (E1 yürünebilir mutfak orada, nav ızgarasıyla birlikte).
 
 ### S19b'DEN KALAN KÜÇÜK KUSUR
 

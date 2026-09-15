@@ -1,0 +1,211 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>ok-bak</title>
+<style>
+  body { margin: 0; background: #efece5; font: 13px/1.45 system-ui; color: #2b2118; }
+  h1 { font: 700 16px system-ui; margin: 14px 0 2px 16px; }
+  p.not { margin: 0 0 12px 16px; color: #6a5c4c; max-width: 1080px; }
+  .satir { display: flex; flex-wrap: wrap; gap: 12px; padding: 0 12px 16px; }
+  .kart { background: #fff; border-radius: 12px; padding: 8px 8px 7px; text-align: center; box-shadow: 0 1px 3px #0002; }
+  .kart b { display: block; font: 700 12px system-ui; margin-bottom: 4px; }
+  .kart .alt { font: 11px/1.3 system-ui; color: #6a5c4c; margin-top: 4px; max-width: 250px; }
+  .kart.bugun { outline: 3px solid #c0392b; }
+</style>
+<div id="kok"></div>
+<script type="module">
+  /**
+   * ok-bak.html — YÜKSELTME OKUNUN BİÇİM ADAYLARI, GERÇEK ÇERÇEVE ÜSTÜNDE (S23).
+   *
+   * NEDEN: kullanıcının kalemi *"yükseltmenin solundaki ok — ya kalkacak ya düzeltilecek"*;
+   * daha eski hâli (G-12) *"altı kesikli nitro tarzı ok"* istiyordu. Bu bir BİÇİM çatalı,
+   * ve biçim çatalı metinle sorulmaz (`feedback_show_dont_ask`): adaylar aynı kadrajda,
+   * GERÇEK BOYDA çizilir, kullanıcı eleyerek seçer.
+   *
+   * ÇERÇEVE VE YAZI TAKLİT DEĞİL: her kart gerçek `<GroundMarker>`ı çizer. Aday olan yalnız
+   * OK; o yüzden referans kart `arrow` ile, aday kartlar `arrow={false}` + üstüne aday oku
+   * ile kurulur ve okun yeri `GroundMarker`ın kendi dışa açılan sabitlerinden hesaplanır
+   * (`OK_GENIS` · `OK_BOSLUK` · `KENAR_PAYI`) — burada ikinci bir yerleşim kararı YOK.
+   *
+   * KADRAJ OYUNUN KADRAJI: kamera 45° (oyun `[p.x, d, p.z + d]` ile kurulu, `CAMERA_DIST`)
+   * ve `CAMERA_FOV`. Yani karttaki piksel boyu oyundakiyle aynı ölçekte okunur — D-108'in
+   * kuralı: bir işaret gerçek boyda sınanmadan seçilmez.
+   *
+   * Kullanım (sunucuyu `tools/ok-bak.mjs` kaldırır): /tools/ok-bak.html
+   */
+  import React from 'react';
+  import { createRoot } from 'react-dom/client';
+  import { Canvas, useThree } from '@react-three/fiber';
+  import { DoubleSide, Shape } from 'three';
+  import { GroundMarker, OK_GENIS, OK_BOSLUK, KENAR_PAYI, HARF_EM, ETIKET_PUNTO } from '/src/components/three/GroundMarker.tsx';
+  import { CAMERA_FOV } from '/src/config/camera.ts';
+  import { useGame } from '/src/game/store.ts';
+
+  /**
+   * OYUNCU İŞARETİN ÜSTÜNE KONUR. İşaretin yazı + ok katmanı ("konuşan" katman) yalnız oyuncu
+   * yakınken çiziliyor (`markerTier` → `TEXT_ON`); ilk karede referans kart BOŞ çıktı — ne ok
+   * vardı ne yazı. Adayları görünmeyen bir şeye karşı kıyaslamak ölçüm değil.
+   */
+  useGame.setState({ player: [0, 0.6, 0] });
+
+  /**
+   * ADAY KARTLARINDA ÇERÇEVE GERÇEK OK GENİŞLİĞİNDE KURULUR, SONRA OK GİZLENİR.
+   *
+   * İlk denemede aday kartları `arrow={false}` ile çizildi ve adaylar çerçevenin DIŞINA taştı:
+   * `hw` okun bloğunu içerdiği için oksuz çerçeve DAHA DAR kuruluyor, oysa gerçek uygulamada
+   * blok yerinde kalacak. Yani oksuz çerçeve yanlış sınav. Artık her kart `arrow` ile kurulur
+   * (çerçeve doğru) ve bugünkü okun iki mesh'i adıyla gizlenir — adlandırma `GroundMarker`da
+   * ölçüm için zaten var (`ok-govde` · `ok-uc`).
+   */
+  function OkuGizle() {
+    const scene = useThree((s) => s.scene);
+    React.useEffect(() => {
+      const gizle = () => scene.traverse((n) => {
+        if (n.name === 'ok-govde' || n.name === 'ok-uc') n.visible = false;
+      });
+      gizle();
+      const t = setInterval(gizle, 200);
+      return () => clearInterval(t);
+    }, [scene]);
+    return null;
+  }
+
+  /** Bayat sunucu damgası — gerekçe `tools/olcum-oturus.html`. */
+  const SURUM = 3;
+  window.__OK_BAK_SURUM = SURUM;
+
+  const h = React.createElement;
+
+  /** İşaretin yarıçapı: oyunda masa/Usta noktası 0,60; servis noktası 0,85. Dar olan sınavdır. */
+  const R = 0.6;
+  const ETIKET = 'SV 2';
+
+  // GroundMarker'ın kendi yerleşimi — sabitler ORADAN geldi, burada yeniden karar yok.
+  const punto = R * ETIKET_PUNTO;
+  const yaziGen = ETIKET.length * HARF_EM * punto;
+  const okBlok = (OK_GENIS + OK_BOSLUK) * R;
+  const hw = Math.max(R * 1.05, (okBlok + yaziGen) / 2 + KENAR_PAYI * R);
+  const okX = -hw + KENAR_PAYI * R + (OK_GENIS * R) / 2;
+
+  /** Dolu çokgen yardımcı: [[x,y], ...] → Shape. */
+  const cokgen = (nok) => {
+    const s = new Shape();
+    nok.forEach(([x, y], i) => (i ? s.lineTo(x, y) : s.moveTo(x, y)));
+    s.closePath();
+    return s;
+  };
+
+  /** Yukarı bakan chevron (kalın "^"): dış üçgenden iç üçgen oyulmuş tek çokgen. */
+  const chevron = (w, yuk, kal) =>
+    cokgen([
+      [-w / 2, 0], [0, yuk], [w / 2, 0],
+      [w / 2 - kal, 0], [0, yuk - kal * 1.9], [-w / 2 + kal, 0],
+    ]);
+
+  /** Bir mesh: verilen Shape'i zemin düzlemine yatırıp beyaz çizer. */
+  const parca = (key, shape, x, y) =>
+    h('mesh', { key, position: [x, 0.055, y], rotation: [-Math.PI / 2, 0, 0] },
+      h('shapeGeometry', { args: [shape] }),
+      h('meshBasicMaterial', { color: '#ffffff', transparent: true, opacity: 0.95, depthWrite: false, side: DoubleSide }));
+
+  /**
+   * ADAYLAR. Hepsi `okX` sütununda ve işaretin dikey ortasına göre kurulu; hiçbiri çerçevenin
+   * ayrılan bloğunu kendi kafasına göre genişletmiyor — genişleyen tek şey BİÇİM.
+   */
+  const ADAYLAR = [
+    {
+      id: 'O0', ad: 'BUGÜN (referans)', bugun: true,
+      not: 'Ölçülen hâli: uç 0,554 r geniş — ayrılan blok 0,340 r. Parantez açıklığı 0,006 br.',
+      ok: null,
+    },
+    {
+      id: 'O1', ad: 'OK YOK',
+      not: 'Ok kalkar, yazı ortalanır. Çerçeve daralır, "YÜKSELT" tek başına konuşur.',
+      ok: 'yok',
+    },
+    {
+      id: 'O2', ad: 'AYNI OK, BLOĞA SIĞMIŞ',
+      not: 'Biçim değişmez; uç 0,554 r yerine 0,340 r olur. Kusur sadece ölçüyse bu yeter.',
+      ciz: () => [
+        parca('g', cokgen([[-0.10 * R, -0.33 * R], [0.10 * R, -0.33 * R], [0.10 * R, 0.05 * R], [-0.10 * R, 0.05 * R]]), okX, -R * 0.3 + R * 0.13),
+        parca('u', cokgen([[-0.17 * R, 0.04 * R], [0.17 * R, 0.04 * R], [0, 0.34 * R]]), okX, -R * 0.3 - R * 0.04),
+      ],
+    },
+    {
+      id: 'O3', ad: 'İNCE UZUN OK',
+      not: 'Şaft uzar, uç daralır: dikey bir vurgu. Dar işarette yazıyla yarışmaz.',
+      ciz: () => [
+        parca('g', cokgen([[-0.055 * R, -0.42 * R], [0.055 * R, -0.42 * R], [0.055 * R, 0.10 * R], [-0.055 * R, 0.10 * R]]), okX, -R * 0.3 + R * 0.16),
+        parca('u', cokgen([[-0.15 * R, 0.08 * R], [0.15 * R, 0.08 * R], [0, 0.42 * R]]), okX, -R * 0.3 - R * 0.10),
+      ],
+    },
+    {
+      id: 'O4', ad: 'NİTRO — ALTI KESİKLİ',
+      not: 'G-12\'nin tarifi: gövde üç dilime bölünür, yukarı doğru büyür. Hareket hissi.',
+      ciz: () => {
+        const dilim = [0.60, 0.78, 1.0];
+        return [
+          parca('u', cokgen([[-0.17 * R, 0], [0.17 * R, 0], [0, 0.30 * R]]), okX, -R * 0.3 - R * 0.20),
+          ...dilim.map((k, i) =>
+            parca('d' + i, cokgen([
+              [-0.10 * R * k, -0.045 * R], [0.10 * R * k, -0.045 * R],
+              [0.10 * R * k, 0.045 * R], [-0.10 * R * k, 0.045 * R],
+            ]), okX, -R * 0.3 + R * (0.02 + i * 0.13)),
+          ),
+        ];
+      },
+    },
+    {
+      id: 'O5', ad: 'ÇİFT CHEVRON',
+      not: 'İki ince "^" üst üste. Ok değil YÖN işareti — çerçeveye hiç değmeyen en hafif kol.',
+      ciz: () => [0, 1].map((i) =>
+        parca('c' + i, chevron(0.34 * R, 0.22 * R, 0.075 * R), okX, -R * 0.3 + R * (0.12 - i * 0.24))),
+    },
+    {
+      id: 'O6', ad: 'ÜÇ CHEVRON (dar)',
+      not: 'Aynı dil, üç kademe: nitroya en yakın ama dolu üçgen yok, kontur hissi.',
+      ciz: () => [0, 1, 2].map((i) =>
+        parca('c' + i, chevron(0.30 * R, 0.18 * R, 0.062 * R), okX, -R * 0.3 + R * (0.20 - i * 0.20))),
+    },
+    {
+      id: 'O7', ad: 'KALIN TEK CHEVRON',
+      not: 'Tek, iri, kalın "^". Küçük işarette en okunaklı olan aday — sade kalır.',
+      ciz: () => [parca('c', chevron(0.40 * R, 0.30 * R, 0.11 * R), okX, -R * 0.3)],
+    },
+  ];
+
+  function Kart({ aday }) {
+    return h('div', { className: 'kart' + (aday.bugun ? ' bugun' : '') },
+      h('b', null, aday.id + ' — ' + aday.ad),
+      h('div', { style: { width: 280, height: 200 } },
+        h(Canvas, {
+          dpr: [1, 2],
+          gl: { antialias: true, alpha: false },
+          camera: { position: [0, 1.35, 1.35], fov: CAMERA_FOV, near: 0.05, far: 50 },
+          onCreated: ({ camera, scene }) => { camera.lookAt(0, 0, 0); scene.background = null; },
+        },
+          h('color', { attach: 'background', args: ['#8a6f4e'] }),
+          h('ambientLight', { intensity: 1.4 }),
+          h(GroundMarker, {
+            pos: [0, 0, 0], label: ETIKET, sub: '48', pip: 'coin',
+            tint: '#ffce54', progress: 0.45, afford: true, radius: R,
+            arrow: true,
+          }),
+          aday.id === 'O0' ? null : h(OkuGizle, null),
+          aday.ciz ? h('group', null, ...aday.ciz()) : null,
+        ),
+      ),
+      h('div', { className: 'alt' }, aday.not),
+    );
+  }
+
+  createRoot(document.getElementById('kok')).render(
+    h(React.Fragment, null,
+      h('h1', null, 'S23 — yükseltme okunun biçim adayları (gerçek çerçeve, gerçek boy)'),
+      h('p', { className: 'not' },
+        'Her kartta GERÇEK GroundMarker çizilidir; aday olan yalnız ok. Kırmızı çerçeveli kart ' +
+        'bugünkü hâl. İşaret yarıçapı r = 0,60 (masa ve Usta noktası — dar olanı, sınav budur). ' +
+        'Kamera oyunun 45° açısı ve fov ' + CAMERA_FOV + '.'),
+      h('div', { className: 'satir' }, ...ADAYLAR.map((a) => h(Kart, { key: a.id, aday: a }))),
+    ),
+  );
+</script>

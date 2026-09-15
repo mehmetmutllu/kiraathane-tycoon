@@ -1,0 +1,583 @@
+{
+ "damga": "2026-09-15T19:46:16.828Z",
+ "kip": "tam",
+ "E": [
+  {
+   "kadraj": "telefon",
+   "ekran": "gorevler",
+   "ekranW": 390,
+   "ekranH": 844,
+   "kart": {
+    "w": 390,
+    "h": 844,
+    "x": 0
+   },
+   "govde": {
+    "w": 390,
+    "h": 782
+   },
+   "icerik": {
+    "w": 362,
+    "h": 708,
+    "solPay": 14,
+    "sagPay": 14
+   },
+   "kaydirma": {
+    "icerik": 782,
+    "gorunur": 782
+   },
+   "enBuyukBosluk": 36,
+   "boslukNerede": 410,
+   "altKuyruk": 58,
+   "yatayDoluluk": 0.928,
+   "dikeyDoluluk": 0.905,
+   "kartDoluluk": 1
+  },
+  {
+   "kadraj": "telefon",
+   "ekran": "hedefler",
+   "ekranW": 390,
+   "ekranH": 844,
+   "kart": {
+    "w": 390,
+    "h": 844,
+    "x": 0
+   },
+   "govde": {
+    "w": 390,
+    "h": 782
+   },
+   "icerik": {
+    "w": 362,
+    "h": 757,
+    "solPay": 14,
+    "sagPay": 14
+   },
+   "kaydirma": {
+    "icerik": 801,
+    "gorunur": 782
+   },
+   "enBuyukBosluk": 40,
+   "boslukNerede": 402,
+   "altKuyruk": 8,
+   "yatayDoluluk": 0.928,
+   "dikeyDoluluk": 0.968,
+   "kartDoluluk": 1
+  },
+  {
+   "kadraj": "telefon",
+   "ekran": "magaza",
+   "ekranW": 390,
+   "ekranH": 844,
+   "kart": {
+    "w": 390,
+    "h": 844,
+    "x": 0
+   },
+   "govde": {
+    "w": 390,
+    "h": 782
+   },
+   "icerik": {
+    "w": 301,
+    "h": 428,
+    "solPay": 75,
+    "sagPay": 14
+   },
+   "kaydirma": {
+    "icerik": 782,
+    "gorunur": 782
+   },
+   "enBuyukBosluk": 224,
+   "boslukNerede": 117,
+   "altKuyruk": 342,
+   "yatayDoluluk": 0.772,
+   "dikeyDoluluk": 0.548,
+   "kartDoluluk": 1
+  },
+  {
+   "kadraj": "telefon",
+   "ekran": "karakter",
+   "ekranW": 390,
+   "ekranH": 844,
+   "kart": {
+    "w": 390,
+    "h": 844,
+    "x": 0
+   },
+   "govde": {
+    "w": 390,
+    "h": 782
+   },
+   "icerik": {
+    "w": 362,
+    "h": 425,
+    "solPay": 14,
+    "sagPay": 14
+   },
+   "kaydirma": {
+    "icerik": 782,
+    "gorunur": 782
+   },
+   "enBuyukBosluk": 37,
+   "boslukNerede": 351,
+   "altKuyruk": 353,
+   "yatayDoluluk": 0.928,
+   "dikeyDoluluk": 0.543,
+   "kartDoluluk": 1
+  },
+  {
+   "kadraj": "telefon",
+   "ekran": "ayarlar",
+   "ekranW": 390,
+   "ekranH": 844,
+   "kart": {
+    "w": 390,
+    "h": 844,
+    "x": 0
+   },
+   "govde": {
+    "w": 390,
+    "h": 782
+   },
+   "icerik": {
+    "w": 349,
+    "h": 243,
+    "solPay": 18,
+    "sagPay": 23
+   },
+   "kaydirma": {
+    "icerik": 782,
+    "gorunur": 782
+   },
+   "enBuyukBosluk": 48,
+   "boslukNerede": 259,
+   "altKuyruk": 525,
+   "yatayDoluluk": 0.895,
+   "dikeyDoluluk": 0.311,
+   "kartDoluluk": 1
+  },
+  {
+   "kadraj": "masaustu",
+   "ekran": "gorevler",
+   "ekranW": 1280,
+   "ekranH": 800,
+   "kart": {
+    "w": 520,
+    "h": 800,
+    "x": 380
+   },
+   "govde": {
+    "w": 520,
+    "h": 738
+   },
+   "icerik": {
+    "w": 492,
+    "h": 708,
+    "solPay": 14,
+    "sagPay": 14
+   },
+   "kaydirma": {
+    "icerik": 748,
+    "gorunur": 738
+   },
+   "enBuyukBosluk": 36,
+   "boslukNerede": 410,
+   "altKuyruk": 14,
+   "yatayDoluluk": 0.384,
+   "dikeyDoluluk": 0.959,
+   "kartDoluluk": 0.406
+  },
+  {
+   "kadraj": "masaustu",
+   "ekran": "hedefler",
+   "ekranW": 1280,
+   "ekranH": 800,
+   "kart": {
+    "w": 520,
+    "h": 800,
+    "x": 380
+   },
+   "govde": {
+    "w": 520,
+    "h": 738
+   },
+   "icerik": {
+    "w": 492,
+    "h": 739,
+    "solPay": 14,
+    "sagPay": 14
+   },
+   "kaydirma": {
+    "icerik": 783,
+    "gorunur": 738
+   },
+   "enBuyukBosluk": 40,
+   "boslukNerede": 384,
+   "altKuyruk": 0,
+   "yatayDoluluk": 0.384,
+   "dikeyDoluluk": 1.001,
+   "kartDoluluk": 0.406
+  },
+  {
+   "kadraj": "masaustu",
+   "ekran": "magaza",
+   "ekranW": 1280,
+   "ekranH": 800,
+   "kart": {
+    "w": 520,
+    "h": 800,
+    "x": 380
+   },
+   "govde": {
+    "w": 520,
+    "h": 738
+   },
+   "icerik": {
+    "w": 398,
+    "h": 411,
+    "solPay": 108,
+    "sagPay": 14
+   },
+   "kaydirma": {
+    "icerik": 738,
+    "gorunur": 738
+   },
+   "enBuyukBosluk": 207,
+   "boslukNerede": 117,
+   "altKuyruk": 315,
+   "yatayDoluluk": 0.311,
+   "dikeyDoluluk": 0.557,
+   "kartDoluluk": 0.406
+  },
+  {
+   "kadraj": "masaustu",
+   "ekran": "karakter",
+   "ekranW": 1280,
+   "ekranH": 800,
+   "kart": {
+    "w": 520,
+    "h": 800,
+    "x": 380
+   },
+   "govde": {
+    "w": 520,
+    "h": 738
+   },
+   "icerik": {
+    "w": 492,
+    "h": 453,
+    "solPay": 14,
+    "sagPay": 14
+   },
+   "kaydirma": {
+    "icerik": 738,
+    "gorunur": 738
+   },
+   "enBuyukBosluk": 37,
+   "boslukNerede": 379,
+   "altKuyruk": 281,
+   "yatayDoluluk": 0.384,
+   "dikeyDoluluk": 0.614,
+   "kartDoluluk": 0.406
+  },
+  {
+   "kadraj": "masaustu",
+   "ekran": "ayarlar",
+   "ekranW": 1280,
+   "ekranH": 800,
+   "kart": {
+    "w": 520,
+    "h": 800,
+    "x": 380
+   },
+   "govde": {
+    "w": 520,
+    "h": 738
+   },
+   "icerik": {
+    "w": 479,
+    "h": 243,
+    "solPay": 18,
+    "sagPay": 23
+   },
+   "kaydirma": {
+    "icerik": 738,
+    "gorunur": 738
+   },
+   "enBuyukBosluk": 48,
+   "boslukNerede": 259,
+   "altKuyruk": 481,
+   "yatayDoluluk": 0.374,
+   "dikeyDoluluk": 0.33,
+   "kartDoluluk": 0.406
+  }
+ ],
+ "K": {
+  "player": {
+   "kutu": {
+    "w": 356,
+    "h": 134
+   },
+   "karePx": {
+    "w": 712,
+    "h": 268
+   },
+   "kenarPayi": 13,
+   "siluetPx": {
+    "w": 167,
+    "h": 221,
+    "ust": 34,
+    "alt": 254,
+    "sol": 249,
+    "sag": 415
+   },
+   "dikeyDoluluk": 0.825,
+   "yatayDoluluk": 0.235,
+   "kirpik": {
+    "ust": false,
+    "alt": true,
+    "sol": false,
+    "sag": false
+   },
+   "pikselOran": 0.1193,
+   "merkezY": 0.537
+  },
+  "waiter": {
+   "kutu": {
+    "w": 356,
+    "h": 134
+   },
+   "karePx": {
+    "w": 712,
+    "h": 268
+   },
+   "kenarPayi": 13,
+   "siluetPx": {
+    "w": 153,
+    "h": 199,
+    "ust": 56,
+    "alt": 254,
+    "sol": 269,
+    "sag": 421
+   },
+   "dikeyDoluluk": 0.743,
+   "yatayDoluluk": 0.215,
+   "kirpik": {
+    "ust": false,
+    "alt": true,
+    "sol": false,
+    "sag": false
+   },
+   "pikselOran": 0.1128,
+   "merkezY": 0.578
+  },
+  "dish": {
+   "kutu": {
+    "w": 356,
+    "h": 134
+   },
+   "karePx": {
+    "w": 712,
+    "h": 268
+   },
+   "kenarPayi": 13,
+   "siluetPx": {
+    "w": 162,
+    "h": 200,
+    "ust": 55,
+    "alt": 254,
+    "sol": 260,
+    "sag": 421
+   },
+   "dikeyDoluluk": 0.746,
+   "yatayDoluluk": 0.228,
+   "kirpik": {
+    "ust": false,
+    "alt": true,
+    "sol": false,
+    "sag": false
+   },
+   "pikselOran": 0.1165,
+   "merkezY": 0.576
+  },
+  "salon": {
+   "skinnedMesh": 28,
+   "ucgenToplam": 34171,
+   "rol": {
+    "kitchenHand": {
+     "govde": "Barbarian",
+     "mesh": 7,
+     "ucgen": 7123,
+     "parca": [
+      "Barbarian_ArmLeft",
+      "Barbarian_ArmRight",
+      "Barbarian_BearHat",
+      "Barbarian_Body",
+      "Barbarian_Head",
+      "Barbarian_LegLeft",
+      "Barbarian_LegRight"
+     ]
+    },
+    "owner": {
+     "govde": "Ranger",
+     "mesh": 8,
+     "ucgen": 8900,
+     "parca": [
+      "Ranger_ArmLeft",
+      "Ranger_ArmRight",
+      "Ranger_Body",
+      "Ranger_Cape",
+      "Ranger_Head",
+      "Ranger_LegLeft",
+      "Ranger_LegRight",
+      "Ranger_Quiver"
+     ]
+    },
+    "waiter": {
+     "govde": "Knight",
+     "mesh": 9,
+     "ucgen": 5800,
+     "parca": [
+      "Knight_ArmLeft",
+      "Knight_ArmRight",
+      "Knight_Body",
+      "Knight_Cape",
+      "Knight_Head",
+      "Knight_Helmet",
+      "Knight_HelmetVisor",
+      "Knight_LegLeft",
+      "Knight_LegRight"
+     ]
+    }
+   }
+  },
+  "kaynak": {
+   "panelImport": "import { OwnerBody, CupTray } from '../three/Player'",
+   "panelKayActorKullaniyor": false,
+   "panelOwnerBodyKullaniyor": true,
+   "panelKapsulOnizleme": 2,
+   "sahneKayActorKullaniyor": true,
+   "kimlik": {
+    "ownerSatir": "owner: { kasket: false, onluk: false, havlu: true, sivaliKol: true }",
+    "kasket": {
+     "panelde": true,
+     "oyunda": false
+    },
+    "onluk": {
+     "panelde": true,
+     "oyunda": false
+    },
+    "havlu": {
+     "panelde": false,
+     "oyunda": true
+    },
+    "sivaliKol": {
+     "panelde": false,
+     "oyunda": true
+    }
+   }
+  }
+ },
+ "O": {
+  "isaret": 5,
+  "satirlar": [
+   {
+    "etiketAdi": "YÜKSELT",
+    "r": 0.85,
+    "hw": 1.0212,
+    "okGercekEn_r": 0.5543,
+    "ucEn_r": 0.5543,
+    "govdeEn_r": 0.2,
+    "solPay_r": 0.0729,
+    "yaziVar": true,
+    "yaziKutusu": {
+     "solX": -15.6432,
+     "sagX": -14.3887
+    },
+    "yaziyaAciklik_r": 0.0529,
+    "parantezAciklik_r": 0.01,
+    "parantezAciklik_br": 0.0085,
+    "enYakinParantez": "parantez3",
+    "okDikeyEn_r": 0.85
+   },
+   {
+    "etiketAdi": "SV 2",
+    "r": 0.6,
+    "hw": 0.63,
+    "okGercekEn_r": 0.5543,
+    "ucEn_r": 0.5543,
+    "govdeEn_r": 0.2,
+    "solPay_r": 0.0729,
+    "yaziVar": true,
+    "yaziKutusu": {
+     "solX": -3.372,
+     "sagX": -2.9475
+    },
+    "yaziyaAciklik_r": 0.0529,
+    "parantezAciklik_r": 0.01,
+    "parantezAciklik_br": 0.006,
+    "enYakinParantez": "parantez3",
+    "okDikeyEn_r": 0.85
+   },
+   {
+    "etiketAdi": "SV 2",
+    "r": 0.6,
+    "hw": 0.63,
+    "okGercekEn_r": 0.5543,
+    "ucEn_r": 0.5543,
+    "govdeEn_r": 0.2,
+    "solPay_r": 0.0729,
+    "yaziVar": true,
+    "yaziKutusu": {
+     "solX": -9.772,
+     "sagX": -9.3475
+    },
+    "yaziyaAciklik_r": 0.0529,
+    "parantezAciklik_r": 0.01,
+    "parantezAciklik_br": 0.006,
+    "enYakinParantez": "parantez3",
+    "okDikeyEn_r": 0.85
+   },
+   {
+    "etiketAdi": "SV 2",
+    "r": 0.6,
+    "hw": 0.63,
+    "okGercekEn_r": 0.5543,
+    "ucEn_r": 0.5543,
+    "govdeEn_r": 0.2,
+    "solPay_r": 0.0729,
+    "yaziVar": true,
+    "yaziKutusu": {
+     "solX": -3.372,
+     "sagX": -2.9475
+    },
+    "yaziyaAciklik_r": 0.0529,
+    "parantezAciklik_r": 0.01,
+    "parantezAciklik_br": 0.006,
+    "enYakinParantez": "parantez3",
+    "okDikeyEn_r": 0.85
+   },
+   {
+    "etiketAdi": "YÜKSELT",
+    "r": 0.6,
+    "hw": 0.7208,
+    "okGercekEn_r": 0.5543,
+    "ucEn_r": 0.5543,
+    "govdeEn_r": 0.2,
+    "solPay_r": 0.0729,
+    "yaziVar": true,
+    "yaziKutusu": {
+     "solX": -9.8628,
+     "sagX": -8.9773
+    },
+    "yaziyaAciklik_r": 0.0529,
+    "parantezAciklik_r": 0.01,
+    "parantezAciklik_br": 0.006,
+    "enYakinParantez": "parantez3",
+    "okDikeyEn_r": 0.85
+   }
+  ]
+ },
+ "hata": []
+}
