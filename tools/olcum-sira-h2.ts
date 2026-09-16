@@ -89,6 +89,12 @@ interface Olcum {
   masaAsan: number;
   /** Toplam alınan masa yükseltmesi. */
   masaAlim: number;
+  /** SESSİZ SALON: kapısı açık, tavan altı masası VAR, ama hiç canlı noktası olmayan alan.
+   *  Dar kapının asıl riski budur — yeni açılan salon "bozuk" görünür. İki sayı birden
+   *  gerekiyor: toplam süre (ne kadar yaşanıyor) ve en uzun kesintisiz blok (bir seferde
+   *  ne kadar dayanılıyor). Toplam küçük ama tek blok saatlerceyse sorun toplamda gizlenir. */
+  sessizSalonSn: number;
+  sessizSalonEnUzun: number;
   /** Koşunun bittiği an (sn). */
   sonT: number;
   iz: string;
@@ -114,6 +120,8 @@ function olc(kol: SiraKol | null, eff: number): Olcum {
   let sureIsaret = 0, sureAlan = 0, sureYarim = 0, sureYayilim = 0;
   let isaretMax = 0, alanMax = 0, yayilimMax = 0;
   let cokIsaretSn = 0, oluParaSn = 0, cokSeviyeSn = 0, sonT = 0;
+  let sessizSalonSn = 0, sessizSalonEnUzun = 0;
+  const sessizSuren = new Map<number, number>();
   let tumTavan: number | undefined;
   let onceki: number[] = [];
   let masaAlim = 0, sonAlimT = 0, masaEnUzunBosluk = 0, masaAsan = 0;
@@ -158,6 +166,22 @@ function olc(kol: SiraKol | null, eff: number): Olcum {
     sureYarim += yarim;
     sureYayilim += yayilim;
     if (yayilim > yayilimMax) yayilimMax = yayilim;
+
+    // Sessiz salon: alanın kapısı açık + tavan altı masası var + o alanda hiç canlı nokta yok.
+    const canliKume = new Set(canli);
+    const alanBekleyen = new Map<number, boolean>();
+    for (let i = 0; i < g.seviyeler.length; i++) {
+      if (!g.kapiAcik[i] || g.seviyeler[i] >= g.tavan) continue;
+      if (!alanBekleyen.has(g.alanlar[i])) alanBekleyen.set(g.alanlar[i], false);
+      if (canliKume.has(i)) alanBekleyen.set(g.alanlar[i], true);
+    }
+    for (const [alan, canliVar] of alanBekleyen) {
+      if (canliVar) { sessizSuren.set(alan, 0); continue; }
+      sessizSalonSn += 1;
+      const s = (sessizSuren.get(alan) ?? 0) + 1;
+      sessizSuren.set(alan, s);
+      if (s > sessizSalonEnUzun) sessizSalonEnUzun = s;
+    }
 
     // Ölü para: parası bir masaya yetiyor ama sıra kapısı o masayı kapatmış.
     if (g.serbestCost != null && g.wallet >= g.serbestCost && (g.hedefCost == null || g.wallet < g.hedefCost)) {
@@ -207,6 +231,7 @@ function olc(kol: SiraKol | null, eff: number): Olcum {
     tumTavan,
     lifetimeAt, koltukAt, bahsisAt,
     masaEnUzunBosluk, masaAsan, masaAlim,
+    sessizSalonSn, sessizSalonEnUzun,
     sonT,
     iz: iz.deger,
   };
@@ -303,6 +328,15 @@ for (const p of KULLANILAN_PROFILLER) {
   for (const k of KOLLAR) {
     const o = m.get(k.kod)!;
     line(`  ${k.kod.padEnd(4)} ${sn(o.oluParaSn).padStart(9)} ${sn(o.masaEnUzunBosluk).padStart(22)} ${String(o.masaAsan).padStart(10)} ${n2(o.yarimOrt).padStart(18)}   ${n2(o.yayilimOrt).padStart(6)} / ${String(o.yayilimMax).padEnd(12)} ${sn(o.cokSeviyeSn).padStart(10)}`);
+  }
+  line();
+  line('--- 4b) SESSİZ SALON — kapısı açık, tavan altı masası var, ama hiç canlı noktası YOK ---');
+  line('      (dar kapının asıl riski: yeni açılan salon "bozuk" görünür. Toplam süre tek başına');
+  line('       yetmez — bir seferde ne kadar dayandığı ayrı sayılır.)');
+  line('  kol   toplam süre   en uzun kesintisiz blok');
+  for (const k of KOLLAR) {
+    const o = m.get(k.kod)!;
+    line(`  ${k.kod.padEnd(4)} ${sn(o.sessizSalonSn).padStart(12)} ${sn(o.sessizSalonEnUzun).padStart(24)}`);
   }
   line();
   const serbest = KOLLAR.filter((k) => ['T', 'D', 'P', 'R'].includes(k.kod)).map((k) => m.get(k.kod)!);

@@ -63,6 +63,17 @@ PROFİL: Normal (verim 0.55)
   A      1.06 sa                3.49 sa          4               0.33     1.57 / 4                  0 sn
   B       5.2 dk                3.49 sa          4               2.58     0.91 / 4                  0 sn
 
+--- 4b) SESSİZ SALON — kapısı açık, tavan altı masası var, ama hiç canlı noktası YOK ---
+      (dar kapının asıl riski: yeni açılan salon "bozuk" görünür. Toplam süre tek başına
+       yetmez — bir seferde ne kadar dayandığı ayrı sayılır.)
+  kol   toplam süre   en uzun kesintisiz blok
+  T            0 sn                     0 sn
+  D            0 sn                     0 sn
+  P            0 sn                     0 sn
+  R            0 sn                     0 sn
+  A         34.7 dk                  27.0 dk
+  B         1.21 sa                  18.1 dk
+
 --- TUZAK ÖLÇÜSÜ (serbest kapıda oyuncunun kendine verebileceği ceza) ---
   6 saatlik lifetime: en iyi politika 58.097 ₺ · en kötü 48.182 ₺ · fark 9.915 ₺ (%20.6)
   ortalama serbest politika: 52.903 ₺
@@ -117,6 +128,17 @@ PROFİL: İdealize (verim 1)
   R       4.0 dk                1.92 sa          4               1.36     0.55 / 4               1.13 sa
   A      35.0 dk                1.92 sa          4               0.18     0.86 / 4                  0 sn
   B       2.8 dk                1.92 sa          4               1.42     0.50 / 4                  0 sn
+
+--- 4b) SESSİZ SALON — kapısı açık, tavan altı masası var, ama hiç canlı noktası YOK ---
+      (dar kapının asıl riski: yeni açılan salon "bozuk" görünür. Toplam süre tek başına
+       yetmez — bir seferde ne kadar dayandığı ayrı sayılır.)
+  kol   toplam süre   en uzun kesintisiz blok
+  T            0 sn                     0 sn
+  D            0 sn                     0 sn
+  P            0 sn                     0 sn
+  R            0 sn                     0 sn
+  A         19.1 dk                  14.9 dk
+  B         39.8 dk                   9.9 dk
 
 --- TUZAK ÖLÇÜSÜ (serbest kapıda oyuncunun kendine verebileceği ceza) ---
   6 saatlik lifetime: en iyi politika 315.993 ₺ · en kötü 287.399 ₺ · fark 28.594 ₺ (%9.9)

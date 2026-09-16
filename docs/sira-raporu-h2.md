@@ -144,6 +144,25 @@ kazandırmıyor: 3,48 → 2,95.**
 | **A** | **1,06 sa** | 3,49 sa | 4 | **0,33** | **1,57** / 4 | 0 sn |
 | B | 5,2 dk | 3,49 sa | 4 | 2,58 | 0,91 / 4 | 0 sn |
 
+### Ö4b — SESSİZ SALON: dar kapının tek gerçek riski (ölçüldü, tahmin edilmedi)
+
+Dar kapının akla gelen riski şu: yeni bir salon açılır, masaları duruyordur ama sıra onlara
+gelmediği için **hiçbirinin noktası canlı değildir** — salon bozuk görünür. Bu tahmin edilmedi,
+sayıldı: "kapısı açık + tavan altı masası var + o alanda hiç canlı nokta yok" durumunun toplam
+süresi ve **en uzun kesintisiz bloğu** (toplam küçük ama tek blok saatlerceyse sorun toplamda
+gizlenir).
+
+| kol | toplam süre | en uzun kesintisiz blok |
+|---|---|---|
+| T · D · P · R (serbest kapı) | **0 sn** | 0 sn |
+| **A** | 34,7 dk | **27,0 dk** |
+| B | 1,21 sa | 18,1 dk |
+
+Serbest kapıda bu durum **yapısal olarak imkânsız** (her masa kendi noktasını taşır). A'da
+oyuncu bir salonu en fazla **27 dakika** boyunca tamamen sessiz görebiliyor; B'de toplam daha
+uzun (1,21 sa) ama bloklar daha kısa. Bu, A'nın ödediği tek gerçek bedeldir ve **ekonomik
+değil görsel** bir bedeldir — sayılar A'nın tempoda ve dikkatte kazandığını zaten söylüyor.
+
 ### Ö5 — A ile D'nin parmak izi BİREBİR AYNI
 
 | profil | T (=taban) | D | A |
@@ -191,6 +210,9 @@ dört masaya bölmekten hızlı büyütüyor. Bu sıranın kendi aritmetiğidir;
    oynaklık ölçülmedi (T ile farkı zaten %0,1 mertebesinde).
 4. Kolların hiçbiri **çevrimdışı gelire** bakmadı; sıra kapısının offline kısıtla etkileşimi
    ölçülmedi.
+5. A kolu **GLOBAL** ölçüldü: tek hedef bütün açık masalar arasında tekil. "Alan başına tek
+   hedef" (her salonun kendi sırası) ayrı bir koldur ve **ölçülmedi** — seçilirse kendi sayı
+   satırını ister (varyant kapısı).
 
 ---
 
