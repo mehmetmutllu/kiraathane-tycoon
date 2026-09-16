@@ -99,29 +99,22 @@ sürekli çözme; APK turunda okunacak) · ② `2024-q4` paketi indirilmedi, pro
 Bel bağının ucu çeyrek açıdan ince bir dudak bırakıyor (`docs/gorsel/ss/s19b-kiyafet.png`).
 Ölçü değil biçim; pay 0,035 → 0,012 ile küçültüldü, sıfırlanmadı. Bir sonraki sanat turunda.
 
-## PANO ARTIFACT BORCU — BİLEREK BIRAKILDI (2026-09-16)
+## PANO — BORÇ KAPANDI, YAPISAL ÇÖZÜM UYGULANDI (2026-09-16)
 
-Pano **HTML dosyası güncel ve commit'li** (`docs/pano/ilerleme-panosu.html`, v50 · 103/111 ·
-R1 kartı + özet + sıradaki + yeni Faz R yazıldı, `npm run pano` denetimi yeşil). **Yayınlanmadı
-— ikinci tur üst üste.**
+Pano yayında: **https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs** (v49 · 103/111 · Faz R eklendi).
 
-**Sebep — ve bu bir kök sebep, tembellik değil:** artifact yayını canlı sürümün TAMAMININ
-okunmasını şart koşuyor. Dosya her turda büyüyor: S23'te 1611 satırdı, bugün **1790**.
-Yayın maliyeti artık ~130k token ve okunanın **neredeyse tamamı eski tur günlük kartları** —
-yani her tur, bir daha asla okunmayacak arşivi baştan okumak için ödeme yapıyoruz. Maliyet
-tur başına ARTIYOR; "her turda kapatmak ucuz" kuralı dosya küçükken yazılmıştı ve artık
-geçerli değil.
+**Kök sebep kapatıldı, borç ödenmedi sadece.** Yayın canlı sürümün TAMAMININ okunmasını şart
+koşuyor ve pano her turda büyüyordu — 67 günlük kartı, 219 KB, toplam 1829 satır; okunanın
+neredeyse tamamı bir daha bakılmayacak arşivdi ve maliyet tur başına ARTIYORDU. Kullanıcı onayıyla
+projenin kendi kuralı (`eski anlatı → arsiv/`) panoya uygulandı:
 
-**Önerilen yapısal çözüm (kullanıcı onayı ister, kod yazılmadı):** `gunluk` listesi panoda
-**son 8 turla sınırlansın**, eskisi `memory-bank/arsiv/pano-gunluk.json`e taşınsın.
-Bu, projenin kendi kuralının (`eski anlatı → arsiv/`) panoya uygulanmış hâli. Pano ~600
-satıra iner, yayın maliyeti onda birine düşer ve borç bir daha birikmez. Arşivlenen kart
-kaybolmaz — git'te ve arşiv dosyasında durur.
-
-**Bu tur ne kaybedildi:** yayınlanmış bağlantı artık **iki tur** bayat (v48 · 101/108
-gösteriyor). Sayıların kendisi depoda güncel. **Öneri hâlâ kullanıcı onayı bekliyor** — R1
-turunda gündeme getirildi, kullanıcı görev şeridine odaklandı ve pano sorusu cevapsız kaldı;
-zorlanmadı çünkü tur bütçesi oynanış düzeltmesine ayrılmıştı.
+- Pano **son 8 turu** gösterir; taşan kart `memory-bank/arsiv/pano-gunluk.json`'a taşınır.
+- Arşivlenen **59 kart** kaybolmadı — arşiv dosyasında ve git'te duruyor; pano altında sayacı var
+  (`gunlukArsiv`), yani kaç kartın nerede olduğu ekranda yazılı.
+- **1829 → 981 satır · 317 → 116 KB.** Sonraki turların yayın maliyeti üçte bire indi ve
+  bir daha birikmez.
+- Defter notu da güncellendi: yeni kart eklerken listeyi 8'de tutmak ve sayacı güncellemek
+  panonun kendi JSON başlığında yazılı.
 
 ## AÇIK KALEMLER (ölçüldü/görüldü, bilerek duruyor — tam listesi `memory-bank/arsiv/`de)
 
@@ -143,7 +136,13 @@ G-07 dwell para-bağımsız · G-39 masa yükseltmeleri sırayla · G-40 para ge
 (son dördü DENGE, varyant kapısına tabi) · ~~masalar geçilmiyor~~ → **H3 ELENDİ (2026-09-16):** banket adası geçişinden sonra
 açıklık 2,15 br (gereken 0,94) — premis düştü, kalem geçersiz. Faz H **3/3 ✅ kapandı.**
 
-**Altyapı:** ~~`npm run apk` kırıktı~~ → **KAPANDI (2026-09-16):** Gradle 8.14.3'ün `gradlew.bat`'ı
+**Altyapı:** **KARARSIZ BEKÇİ (2026-09-16, R1 kapanışı):** `npm run test` bir koşuda
+**1219/1220** verdi, hemen ardından **beş koşu üst üste 1220/1220**. Kırılan testin ADI
+yakalanamadı (çıktı kuyruğu sayıyı gösteriyor, dosyayı değil) ve tekrar üretilemedi. Şüpheli
+ikisi de çevreyi okuyan bekçiler: `sira-kilidi` (git çalışma ağacını okur — o an 3 dosya
+commit'siz) ve `pano-guncelle` (panoyu defterle karşılaştırır — o an pano yeni yazılmıştı).
+**Yazıldı, yutulmadı:** bir daha görülürse önce koşucuya dosya adını bastıracak bir kip
+eklenmeli; kararsız bekçi bekçi değildir. · ~~`npm run apk` kırıktı~~ → **KAPANDI (2026-09-16):** Gradle 8.14.3'ün `gradlew.bat`'ı
 `CLASSPATH`'i boş kurup `-classpath ""` geçiriyordu, Java reddediyordu (*"-classpath requires class
 path specification"*) — kabuk değil BETİK kusuruydu (PowerShell'de de aynı). `-jar` zaten verildiği
 için boş `-classpath` silindi. **APK üretildi: 21,9 MB** (`android/app/build/outputs/apk/debug/`),
