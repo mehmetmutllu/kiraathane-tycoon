@@ -5,53 +5,68 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-16 — **H2 ÖLÇÜM açıldı: yükseltme SIRASI** · Faz H 2/3 · 100/108)
+## ŞU AN (2026-09-16 — **H2 BİTTİ: yükseltme sırası tek hedefli** · Faz H 2/3 · 101/108)
 
 ```
-SORU            : Masa yükseltmelerinin sırası bugün SERBEST (bir alan açılınca o alanın
-                  masalarının hepsi aynı anda ve herhangi bir sırayla yükseltilebiliyor).
-                  Bu serbestlik oyuncuya ne kadar İŞARET ödetiyor, ve yanlış sırayı seçen
-                  oyuncu kendini ne kadar CEZALANDIRABİLİYOR? Sırayı zorunlu kılmak
-                  (A tek hedef / B kuşak) bu iki sayıyı ne yapıyor, tempodan ne götürüyor?
-ÖLÇÜLECEK KOLLAR: kapı × oyuncu politikası, altı kol — hiçbiri uygulanmadan:
-                  T serbest/en-ucuz (TABAN, bugünkü sim) · D serbest/derin ·
-                  P serbest/en-pahalı · R serbest/rastgele (tohumlu) ·
-                  A tek-hedef kapısı · B kuşak kapısı
-SAYILAR         : (adım 2'den sonra dolar — docs/sira-raporu-h2.md §Bulgular)
-KARAR           : (adım 3 — kullanıcı seçer)
-UYGULAMA        : (adım 4 — yalnız kararın kolu)
-BEKÇİ           : (adım 4 — test dosyası + mutasyon sayısı)
+SORU            : Masa yükseltmelerinin sırası serbest. Bu serbestlik oyuncuya ne kadar İŞARET
+                  ödetiyor, ve yanlış sırayı seçen oyuncu kendini ne kadar CEZALANDIRABİLİYOR?
+ÖLÇÜLECEK KOLLAR: T serbest/en-ucuz (taban) · D serbest/derin · P serbest/en-pahalı ·
+                  R serbest/rastgele · A tek-hedef kapısı · B kuşak kapısı (altısı da ölçüldü)
+SAYILAR         : docs/sira-raporu-h2.md §Bulgular · ham: docs/olcum-sira-h2.txt (TAM koşu)
+KARAR           : D-124 — A (tek hedef), GLOBAL kapsam
+UYGULAMA        : rules.ts tableUpgradeTarget (tek kaynak) · tick.ts tetiği · Scene.tsx tek nokta
+                  + gate'e tableLevels · revealKeys canlı masadan türüyor · olcum-tek-odak eşlendi
+BEKÇİ           : sira-h2 (19 den. · 12 mut.) · kaçan 0 (ilk turda 3 kaçtı, üçü de kapatıldı)
+FINAL           : vitest 1189 ✓ · duman 45/45 ✓ · tsc temiz · nokta ort 3,48→0,54 (tepe 12→1)
 ```
 
-**Neden ölçülmeden karar verilemiyor:** `rules.ts`/`economy.config.ts` kapısına dokunuyor
-(varyant kapısı). Ayrıca iki eksen birbirinden bağımsız ve ikisi de bilinmiyor:
-① **dikkat** — tek-odak ölçümü bugün masa işaretini *ort 7,82 · en çok 16* sayıyor
-(`docs/olcum-tek-odak.txt`), ama bu sayı ADIM başına; zaman ağırlıklı hâli ölçülmedi ·
-② **tuzak** — sıra serbestse "en iyi sıra" ile "en kötü sıra" arasındaki tempo farkı
-oyuncunun kendine verebileceği cezadır. Fark küçükse zorlama gereksiz özgürlük alır;
-büyükse serbest sıra bir tuzaktır. B5b (D-066) arzın SABİT tavanını ölçmüştü — koltuk
-kolu orada ölüyse sıranın gelire etkisi sıfıra yakın çıkabilir; bu bir TAHMİN, sayı değil.
+**Turun kalıcı üç dersi:**
+1. **Kapının bedeli, kapının aldığı özgürlükle ölçülmez — kolun parmak iziyle ölçülür.** "Tek
+   hedef oyuncudan seçim alıyor, demek ki bir bedeli var" sezgisi ölçüldü ve sıfır çıktı: A ile
+   kapısız-derin kol BİREBİR aynı dünyayı üretiyor (`fd6d3dfd`). Kapı bir takas değildi, çünkü
+   aldığı seçenek zaten **kaybeden** seçenekti. A'nın 1,06 saatlik "ölü para"sı da kapının değil,
+   kazanan stratejinin kendi maliyeti — D'de kapı hiç yokken aynı sayı çıkıyor. Bir maliyeti
+   kime yazacağını, onu **kapısız kolda da ölçmeden** bilemezsin.
+2. **Mekanizmayı bulmak, hipotezi doğrulamak değildir.** "Derin kol kazanıyor" görülünce sebep
+   hemen bulundu: koltuk merdiveninde L1 ile L2 aynı koltuğu veriyor, yani L2 ölü basamak ve
+   "en ucuzu al" tam orada oyalanıyor. Kulağa kesin geliyordu; karşı-deney **çürüttü** (tuzak
+   %20,6 → yalnız %19,0, koltuk açığının üçte ikisi kapandığı hâlde). Sebep kapasitede değil,
+   bahşiş ortalamasının aritmetiğindeydi. Hipotez kurulduğu turda ölçülmeseydi, "config'i
+   düzeltip sırayı serbest bırakalım" diye üçüncü bir kol karar paketine yanlış girerdi.
+3. **Bekçi neyi ölçmediğini söylemez — mutasyon söyler.** 19 denetim yeşilken üç mutasyon kaçtı
+   ve üçü de aynı boşluğu gösterdi: bekçi TETİĞİ ölçüyordu, ÇİZİMİ hiç. Yani "ekranda 12 nokta
+   var, yalnız biri para alıyor" kusuru serbestti. (M4 ayrıca kurgunun kendi tuzağıydı: denetim
+   `g.tables` sınırının alan kapısını kazara taklit ettiği bir dünyada duruyordu.)
+
+**Yolda bulunan sessiz kusur:** ölçüm penceresi milestone listesiyle kapanıyordu — `runProfile`
+son milestone'da `break` ediyor, masa seviyeleri ise listenin çok ötesinde sürüyor. İlk tam koşu
+"20 masa TAVANDA" için her kolda `—` bastı; okunsa "masa yükseltmeleri hiç bitmiyor" diye rapora
+girecekti. `tamPencere` bayrağı eklendi, sayı `—`'dan 8,69 sa'ya döndü.
 
 ## SIRADAKİ TAM ADIM
 
-**Şimdi:** `tools/olcum-sira-h2.ts` + `tools/sira-kollari.ts` yazılıyor; `simulate.ts`'e
-masa-sırası kancası (`masaSirasiAyarla`) ekleniyor — taban çıktısı BİREBİR korunmak zorunda
-(kanca kapalıyken `enUcuzMasa` davranışı değişmez; damga bunu denetler).
-Sonra: kısa koşu doğrulaması → TAM koşu taban → altı kol → `docs/sira-raporu-h2.md` §Bulgular
-→ **commit #1 (karar bölümü BOŞ)** → karar paketi.
+**H3 — masa aralığı / geçilemeyen açıklıklar** (Faz H 3/3). ÖLÇÜLDÜ ve KULLANICI KARARI BEKLİYOR
+(D-098): geçiş için 2 × playerRadius = **0,94 br** gerekiyor; ön salon 3,50 br (rahat), **arka
+salon 0,68 br** → 20 masanın 12'si geçilemez, çarpışma katılarında eşik altında **52 açıklık**
+(en darı 0,04 br). Onaylı maket düzenine dokunuyor. H1'in tarama aracı hazır:
+`tools/olcum-erisim-h1.ts`in taşma-doldurması "girilemeyen cep" sayısını zaten veriyor (iki
+dünyada da %0 — yani cep yok, **dar geçit** var).
 
-**Sonra H3 — masa aralığı.** ÖLÇÜLDÜ ve KULLANICI KARARI BEKLİYOR (D-098): geçiş için 0,94 br
-gerekiyor, arka salonda 0,68 var → 20 masanın 12'si geçilemez, 52 açıklık eşik altında.
-H1'in tarama aracı bu soruya hazır: `tools/olcum-erisim-h1.ts`in taşma-doldurması "girilemeyen
-cep" sayısını zaten veriyor (bu turda iki dünyada da %0 çıktı — bugün cep yok, dar geçit var).
+**H2'nin bıraktığı iki açık uç:**
+① **`tools/simulate.ts`in taban oyuncu politikası artık oyunun kuralıyla ÇELİŞİYOR:** sim hâlâ
+"en ucuz masayı al" (serbest sıra) oynuyor, oyun tek hedefli. Fark ölçülü: ŞERİT DOLDU 8,48 sa
+(sim tabanı) ↔ 8,00 sa (yeni kural) → model zinciri **%6 uzun** gösteriyor. Tazelenmesi D-087'nin
+yayımlanmış tempo sayılarını oynatır → **kendi turunu ister**, bu turda bilerek dokunulmadı.
+② **Sessiz salon:** yeni açılan bir salon en fazla **27 dk** hiç canlı nokta göstermeyebiliyor
+(serbest kapıda imkânsızdı). Görsel bedel; `feedback_locked_object_renovation` kalıbıyla
+kapatılabilir — sırası gelmemiş masa boş durmaz, "sırada" görünür. Yapılmadı.
 
 **H1'in bıraktığı iki açık uç:** ① kirli kabın saçılma genişliği (0,60) hâlâ `tick.ts` içinde düz
-bir sabit, config'e çıkmadı — ölçüm aracı onu regex'le okuyor ve damgalıyor · ② `cups.collectRadius`
-config'te kaldı ama artık yalnız PERSONELİN varış mesafesi; garson/bulaşıkçı toplaması hâlâ kabın
-noktasına yürüyor, gövdeye geçmedi (oyuncunun şikâyeti onlarda yoktu, ölçülmedi).
+bir sabit, config'e çıkmadı · ② `cups.collectRadius` artık yalnız PERSONELİN varış mesafesi;
+garson/bulaşıkçı toplaması hâlâ kabın noktasına yürüyor, gövdeye geçmedi (ölçülmedi).
 **H1'in bıraktığı sessiz kapı:** `hedefEkranda`'nın derinlik denetimi bugünkü kamera ankrajında
 zemin hedefleri için ölü; y yükselince (Kat 3 çatı terası) kamera ARKASINDAKİ noktayı "ekranda"
-sanıyor (taban kipte 3.773, portrede 862 nokta). Kat 3 geldiğinde kapı ters çalışır.
+sanıyor (taban kipte 3.773, portrede 862 nokta).
 
 **S9'un bıraktığı iki açık uç:** ① müziğin telefonda gerçek maliyeti ölçülmedi (1740 KB indirme +
 sürekli çözme; APK turunda okunacak) · ② `2024-q4` paketi indirilmedi, profili tutan 2 aday
@@ -75,11 +90,11 @@ ORTASI boş + tavan ışığı yok · banket masası `table_round_A_small`e geç
 gerçek render'ı yok · KayKit `bench` düz plaka gibi · bulaşık gövdesi kutusundan geniş çizilemiyor
 · WC çöp kutusu elle çizim KESİN (dokuz pakette karşılığı yok).
 
-**Oynanış (Faz H):** ~~yükseltme tetiği "yanında"~~ → S24'te KAPANDI (D-121) · ~~G-01 masa her
-taraftan toplanmıyor~~ · ~~G-02 ocaktan alma güvenilmez~~ · ~~G-03 kamera kayıyor~~ → **üçü de
-H1'de KAPANDI (D-123)** · G-06 tepsi ilk yükseltme 75 → ~50 · G-07 dwell para-bağımsız (son ikisi
-DENGE, varyant kapısına tabi) · masalar geçilmiyor (açıklık 0,68 br, geçiş 0,94 ister — 20 masanın
-12'si) — **H3, kullanıcı kararı bekliyor.**
+**Oynanış (Faz H):** ~~yükseltme tetiği "yanında"~~ → S24'te KAPANDI (D-121) · ~~G-01/G-02/G-03~~
+→ **H1'de KAPANDI (D-123)** · ~~yükseltme sırası serbest~~ → **H2'de KAPANDI (D-124: tek hedef)**
+· G-06 tepsi ilk yükseltme 75 → ~50 · G-07 dwell para-bağımsız (son ikisi DENGE, varyant kapısına
+tabi) · masalar geçilmiyor (açıklık 0,68 br, geçiş 0,94 ister — 20 masanın 12'si) — **H3,
+kullanıcı kararı bekliyor.**
 
 **Altyapı:** ~~`npm run apk` kırıktı~~ → **KAPANDI (2026-09-16):** Gradle 8.14.3'ün `gradlew.bat`'ı
 `CLASSPATH`'i boş kurup `-classpath ""` geçiriyordu, Java reddediyordu (*"-classpath requires class
@@ -113,7 +128,7 @@ bakıyor · mutfağın kuşbakışı karesi OYUNDAN çekilemez (tepeden kamera o
 **S13 paketler:** https://claude.ai/code/artifact/dcbaaee3-8889-4665-83b2-feff02a60c13
 **S12 arayüz:** https://claude.ai/code/artifact/a83eade2-32f6-4a64-ae34-6743a93922a3
 **Mor arayüz maketi:** https://claude.ai/code/artifact/6cc7a95e-c0a3-4802-8ea3-99398d637981
-**İlerleme panosu (v47 · 100/108):** https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs
+**İlerleme panosu (v48 · 101/108):** https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs
 
 ---
 

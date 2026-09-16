@@ -102,7 +102,7 @@ import {
   revealKeys,
   visiblePads,
   stationUpgradeUnlocked,
-  tableUpgradeUnlockedIn,
+  tableUpgradeTarget,
   questView,
   questTargetMet,
   questCounterValue,
@@ -1107,7 +1107,7 @@ function interactionZoneSystem(c: TickCtx): void {
  * "çay yükselt" reveal'ını ateşliyordu; kamera oraya kayarken spotlight char butonunu gösteriyordu).
  */
 function revealSystem(c: TickCtx): void {
-  const { dt, s, tables, areasOpen, stationLevels, tableLevels, enqueueNotice, questIndex, requestFocus, input, player, padGate, activePads } = c;
+  const { dt, s, areasOpen, stationLevels, tableLevels, enqueueNotice, questIndex, requestFocus, input, player, padGate, activePads } = c;
   let notice = c.notice;
   let revealSeen = c.revealSeen;
   const spotlightPending =
@@ -1167,15 +1167,14 @@ function revealSystem(c: TickCtx): void {
     onFillId = FILL_TEA + THE_SERVICE;
   }
   if (!onFillId) {
-    for (let i = 0; i < tables; i++) {
-      // v21: her masanın yükseltmesi KENDİ zone'unun gate'ine bağlı (o salonun 4 masası açık mı).
-      if (!tableUpgradeUnlockedIn(areaOfTable(i), padGate)) continue;
-      if (tableLevels[i] >= tableSoftMaxLevel()) continue;
+    // D-124: SIRA tek hedeflidir — tetik, ÇİZİLEN tek noktadan türer (Scene.tsx aynı çağrıyı
+    // yapar). Eskiden burada bütün masalar taranıyor ve alan kapısı açık her masa tetikleniyordu.
+    const hedefMasa = tableUpgradeTarget(padGate);
+    if (hedefMasa != null) {
       // Çerçeve ÇİZİLEN etiketten türer, o da seviyeyi taşır (`SV 2` / `SV 12`) — bugün ikisi de
       // `r * 1,05` tabanına kelepçeleniyor, ama bağ kurulu: yazı büyürse tetik de büyür.
-      if (inFrame(player[0], player[2], LAYOUT.tables[i].upgradeSpot, masaCercevesi(tableLevels[i] ?? 0))) {
-        onFillId = FILL_TABLE + i;
-        break;
+      if (inFrame(player[0], player[2], LAYOUT.tables[hedefMasa].upgradeSpot, masaCercevesi(tableLevels[hedefMasa] ?? 0))) {
+        onFillId = FILL_TABLE + hedefMasa;
       }
     }
   }

@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 108 · YAPILAN 100 · %93):**
+**Oturum bütçesi (TOPLAM 108 · YAPILAN 101 · %94):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -25,9 +25,9 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | D meta katman | 9/9 ✅ |
 | | E arayüz ve cila | 4/5 🔧 |
 | | **S sanat ve arayüz geçişi** | **24/24 ✅** |
-| | H oynanış düzeltmeleri | 1/3 🔧 |
+| | H oynanış düzeltmeleri | 2/3 🔧 |
 | | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **72/80** |
+| **Program toplam** | | **73/80** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -568,18 +568,20 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
 **Faz S kapısı:** 185 kullanılmayan KayKit modeli oyuna bağlı + UI dili maketle onaylanmış +
 ses kaynağı kararı yazılı. Ondan sonra Faz F'e (paketleme) geçilir.
 
-## Faz H — OYNANIŞ DÜZELTMELERİ (1/3) 🔧 — her kalem ≈ 1 oturum
+## Faz H — OYNANIŞ DÜZELTMELERİ (2/3) 🔧 — her kalem ≈ 1 oturum
 Sanat kalemi değil; Faz S'ten ayrı tutuldu ki asset işi bunların arkasında beklemesin.
 - ✅ **H1 — oynanış hataları (G-01 · G-02 · G-03)** · **D-123:** üç tetik de çizilen gövdeye
   bağlandı. Masa toplama %42,2 → gövde tetiği (kap kötü köşedeyse %23,8'di) · tezgâhın ölü ön yüzü
   0,72 → 0 br · görev panı 6 → 0, oyuncunun ekran dışı kaldığı süre 11,02 sn → 0,00 sn.
   Pay 0,70 (iki bağımsız kaynak), sızıntı 0. Bekçi `erisim-h1` (16 den. · 16 mut.) · kaçan 0.
   `docs/erisim-raporu-h1.md`. vitest 1170 ✓ · duman 45/45 ✓.
-- ⏳ **H2 — yükseltme SIRASI (ölç → seç → uygula)** · bugün sıra YOK: bir alan açılınca o alandaki
-  4 masanın 4'ü de aynı anda ve serbest sırayla yükseltilebiliyor (`tableUpgradeUnlockedIn` yalnız
-  ALANIN kapısına bakıyor). Kullanıcı sıralı istiyor. **`rules.ts`'e dokunur → varyant kapısı:**
-  iki kol ölçülmeden uygulanmaz — *A: tek hedef* (aynı anda tek masanın noktası canlı, tavana
-  varmadan sonraki açılmaz) · *B: kuşak* (hepsi L'ye varmadan hiçbiri L+1'e çıkamaz).
+- ✅ **H2 — yükseltme SIRASI** · **D-124:** altı kol ölçüldü, kullanıcı **A (tek hedef, global)**
+  seçti. Serbest sıra %20,6'lık tuzaktı (6 sa: 58.097 ₺ derin ↔ 48.182 ₺ "en ucuzu al") ve kapının
+  ekonomik bedeli SIFIR (A ile kapısız-derin kolun parmak izi birebir). B elendi: kaybeden sırayı
+  zorunlu kılıyordu. Ekranda masa noktası ort 3,48 → 0,54, tepe 12 → 1; tek-odak 16 → 3 işaret.
+  Üçüncü yol (ölü basamağı düzelt) ölçülüp çürütüldü (%20,6 → %19,0). Bedel: salon en fazla 27 dk
+  sessiz. Bekçi `sira-h2` (19 den. · 12 mut.) · kaçan 0 (ilk turda 3 kaçtı, kapatıldı).
+  `docs/sira-raporu-h2.md`. vitest 1189 ✓ · duman 45/45 ✓.
 - ⏳ **H3 — masa aralığı / geçilemeyen açıklıklar** · ÖLÇÜLDÜ (D-098): geçiş için
   **2 × playerRadius = 0,94 br** gerekiyor; ön salon **3,50 br** (rahat), **arka salon 0,68 br**
   → 20 masanın 12'si geçilemez, çarpışma katılarında eşik altında **52 açıklık** (en darı 0,04 br).

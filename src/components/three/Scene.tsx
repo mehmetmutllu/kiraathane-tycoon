@@ -2,7 +2,7 @@ import { Suspense, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Vector3, BufferGeometry, BoxGeometry, Float32BufferAttribute, DoubleSide, MeshStandardMaterial, Object3D, type Group, type InstancedMesh, type PerspectiveCamera } from 'three';
 import { cameraViewYaz } from '../../game/cameraView';
-import { useGame, questFocusPos, LAYOUT, LAVABO, BAND, BAND_SHELL, FLOOR_HALF, wallSpans, servicePlace, stationSoftMaxLevel, stationUpgradeCostAt, stationUpgradeUnlocked, tableSoftMaxLevel, tableUpgradeUnlockedIn, tableNextCost, openServices, doorX as doorAt, entranceAt, banketIslands, BANKET, WAITER_STATION, waiterStationOpen } from '../../game/store';
+import { useGame, questFocusPos, LAYOUT, LAVABO, BAND, BAND_SHELL, FLOOR_HALF, wallSpans, servicePlace, stationSoftMaxLevel, stationUpgradeCostAt, stationUpgradeUnlocked, tableSoftMaxLevel, tableUpgradeTarget, tableNextCost, openServices, doorX as doorAt, entranceAt, banketIslands, BANKET, WAITER_STATION, waiterStationOpen } from '../../game/store';
 import { economyConfig, lavaboUpgradeCost } from '../../config/economy.config';
 import { areaOfTable, THE_SERVICE } from '../../game/world';
 import { masterId, masterCost, masterUnlockedForTable } from '../../game/rules';
@@ -567,13 +567,17 @@ function TableUpgradeMarkers() {
   const padsDone = useGame((s) => s.padsDone);
   const stationLevel = useGame((s) => s.stationLevels[0]);
   const lifetime = useGame((s) => s.lifetime);
-  const gate = { padsDone, tables, stationLevel, lifetime: lifetime.toNumber() };
+  // D-124: `tableLevels` gate'e GİRER — tek-hedef kuralı seviyeleri okur. (Eskiden verilmiyordu;
+  // alan kapısı seviyeye bakmadığı için fark etmiyordu.)
+  const gate = { padsDone, tables, stationLevel, lifetime: lifetime.toNumber(), tableLevels };
   const cash = wallet.toNumber();
+  // D-124: aynı anda TEK masanın noktası canlı. Tetik (tick.ts) aynı çağrıyı yapar — çizilen ile
+  // tetiklenen tek kaynaktan türer (H1'in dersi).
+  const hedefMasa = tableUpgradeTarget(gate);
   return (
     <>
       {LAYOUT.tables.slice(0, tables).map((t, i) => {
-        // v21: her masanın işareti KENDİ ALANININ gate'ine bağlı (o alanın 4 masası açık mı).
-        if (!tableUpgradeUnlockedIn(areaOfTable(i), gate)) return null;
+        if (i !== hedefMasa) return null;
         const lvl = tableLevels[i] ?? 0;
         // D8: ₺ tavanında işaret KAYBOLMAZ — `TableMasterSpots` aynı yerde 💎 kimliğiyle devralır.
         if (lvl >= tableSoftMaxLevel()) return null;

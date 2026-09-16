@@ -3979,3 +3979,41 @@ ters çalışırdı. Denetim 16 o sınırı tutuyor.
 
 **Final:** tsc temiz · vitest **1170** ✓ · duman **45/45** ✓ · pan 6 → **0**, oyuncunun ekran
 dışı kaldığı süre 11,02 sn → **0,00 sn** · kayıt sürümü 33'te kaldı (şema değişmedi).
+
+## D-124 — Masa yükseltmelerinin sırası TEK HEDEFLİ (2026-09-16)
+
+**Karar:** Aynı anda yalnız **bir** masanın yükseltme noktası canlıdır; başlanan masa ₺ tavanına
+varmadan sıradaki açılmaz. Sıra "başladığını bitir": yarım kalmış (0 < L < tavan) masalardan en
+küçük indeksli, yoksa el değmemiş ilk masa. Kapsam **global** (alan başına değil). Tek kaynak
+`rules.ts · tableUpgradeTarget`; çizen (Scene), tetikleyen (tick) ve bildiren (revealKeys) onu okur.
+
+**Neden (ölçüm: `docs/sira-raporu-h2.md`, altı kol, TAM koşu):**
+- Serbest sıra bir **%20,6 tuzağıydı**: 6 saatte derin oynayan 58.097 ₺, "en ucuzu al" diyen
+  48.182 ₺. Ceza en doğal içgüdüye kesiliyordu; rastgele oynayan da kaybeden taraftaydı.
+- **Kapının ekonomik bedeli sıfır:** A (kapılı) ile D (kapısız derin oyuncu) parmak izi BİREBİR
+  aynı (`fd6d3dfd`). Kapı yalnız kazanan sırayı zorunlu kılıyor; A'nın 1,06 saatlik "ölü para"sı
+  kapının değil, kazanan stratejinin kendi bekleme maliyeti (D'de kapı yokken de aynı sayı).
+- **B (kuşak) elendi:** kaybeden sırayı zorunlu kılıyor (48.033 ₺ · ŞERİT 8,49 sa — T'den kötü)
+  ve dikkati de kurtarmıyor (3,48 → 2,95, tepe hâlâ 12).
+- Ekranda aynı anda çizilen masa noktası ort **3,48 → 0,54**, tepe **12 → 1**, "birden çok nokta"
+  süre payı %54,5 → **%0,0**. D-038 tek-odak ölçümü: en yoğun durum 16 → **3** işaret.
+
+**Çürütülen üçüncü yol:** "sırayı serbest bırak, ölü basamağı düzelt". Dörtlü masanın koltuk
+merdiveninde L1 ile L2 aynı koltuğu veriyor (`seatsByLevel.four = [1,2,2,4,4]`). Basamak
+canlandırılınca koltuk açığının üçte ikisi kapandı (18 → 26) ama tuzak %20,6 → yalnız **%19,0**.
+Tuzağı kuran kapasite değil, koltuk-ağırlıklı ortalama bahşişin aritmetiği. Yol kapandı.
+
+**Kabul edilen bedel:** bir salon en fazla **27 dk** hiç canlı nokta göstermeyebilir (serbest
+kapıda bu yapısal olarak imkânsızdı). Görsel bedel; bu turda kapatılmadı.
+
+**Bekçi:** `tests/sira-h2.test.ts` 19 denetim · `tools/mutasyon-sira-h2.mjs` **12/12** kırmızı.
+İlk turda üçü kaçtı: M4 (denetimim `g.tables` sınırının kapıyı kazara taklit ettiği kurguda
+duruyordu) · M9/M10 (bekçi tetiği ölçüyor, çizimi hiç ölçmüyordu — "12 nokta çizilir, biri para
+alır" kusuru serbestti). Üçü de kapatıldı.
+
+**Final:** tsc temiz · vitest **1189** ✓ (51 dosya) · duman **45/45** ✓ · kayıt sürümü değişmedi
+(şema aynı; eski kayıtların yarım masaları kuralın kendi sırasıyla kapanıyor).
+
+**Açık uç:** `tools/simulate.ts` hâlâ "en ucuz masayı al" diye oynuyor → model zinciri %6 uzun
+gösteriyor (ŞERİT 8,48 ↔ 8,00 sa). Tazelenmesi D-087'nin yayımlanmış sayılarını oynatır, kendi
+turunu ister.

@@ -7,7 +7,7 @@
  * ve HEPSİ canlı kodun kendi yüklemiyle sorgulanır (ikinci bir doğru kaynak yazılmaz):
  *   1. `Pad.tsx`                     → `visiblePads(questIndex, gate)`
  *   2. `StationUpgradeSpots` (Scene) → `stationUpgradeUnlocked` + seviye < tavan
- *   3. `TableUpgradeMarkers` (Scene) → masa başına `tableUpgradeUnlockedIn` + seviye < tavan
+ *   3. `TableUpgradeMarkers` (Scene) → `tableUpgradeTarget` (D-124: aynı anda TEK masa) + seviye < tavan
  *   4. Lavabo yükseltme noktası      → oda açık + `lavaboUpgradeCost != null`
  *
  * NASIL: zaman/para SİMÜLE EDİLMEZ — işaret sayısı DURUMUN fonksiyonu, sürenin değil. Görev hattı
@@ -30,6 +30,7 @@ import {
   stationUpgradeUnlocked,
   stationSoftMaxLevel,
   tableUpgradeUnlockedIn,
+  tableUpgradeTarget,
   tableSoftMaxLevel,
   visiblePads,
 } from '../src/game/rules.ts';
@@ -75,10 +76,11 @@ function markersOf(w: Walk): Marker[] {
   if (w.stationLevel < stationSoftMaxLevel() && stationUpgradeUnlocked(g)) {
     out.push({ kind: 'servis', label: 'Çay/Tezgâh Yükselt', pos: servicePlace(d.areasOpen).upgradeSpot });
   }
-  for (let i = 0; i < tables; i++) {
-    if (!tableUpgradeUnlockedIn(areaOfTable(i), g)) continue;
-    if ((w.tableLevels[i] ?? 0) >= tableSoftMaxLevel()) continue;
-    out.push({ kind: 'masa', label: `Masa ${i + 1}`, pos: LAYOUT.tables[i].upgradeSpot });
+  // D-124: Scene artık tek nokta çiziyor — ölçüm aracı da aynı kaynağı okur, yoksa tek-odak
+  // sayısı gerçekte olmayan bir kalabalığı raporlamaya devam ederdi.
+  const hedefMasa = tableUpgradeTarget(g);
+  if (hedefMasa != null && (w.tableLevels[hedefMasa] ?? 0) < tableSoftMaxLevel()) {
+    out.push({ kind: 'masa', label: `Masa ${hedefMasa + 1}`, pos: LAYOUT.tables[hedefMasa].upgradeSpot });
   }
   if (w.lavabo >= 1 && lavaboUpgradeCost(w.lavabo) != null) {
     out.push({ kind: 'lavabo', label: 'Lavaboyu Büyüt', pos: LAVABO.spot });
@@ -146,13 +148,12 @@ function applyFree(w: Walk): boolean {
     w.stationLevel += 1;
     return true;
   }
-  const tables = deriveWorld(w.padsDone).tables.length;
-  for (let i = 0; i < tables; i++) {
-    if (!tableUpgradeUnlockedIn(areaOfTable(i), g)) continue;
-    if ((w.tableLevels[i] ?? 0) < tableSoftMaxLevel()) {
-      w.tableLevels[i] = (w.tableLevels[i] ?? 0) + 1;
-      return true;
-    }
+  // D-124: serbest oyun da kuralın izin verdiği tek masayı yükseltir (yoksa yürüyüş, oyunda
+  // ulaşılamayan bir duruma girer ve işaret sayımı o duruma göre çıkar).
+  const hedef = tableUpgradeTarget(g);
+  if (hedef != null && (w.tableLevels[hedef] ?? 0) < tableSoftMaxLevel()) {
+    w.tableLevels[hedef] = (w.tableLevels[hedef] ?? 0) + 1;
+    return true;
   }
   if (w.lavabo >= 1 && w.lavabo < lavaboMaxLevel()) {
     w.lavabo += 1;

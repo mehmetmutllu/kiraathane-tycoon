@@ -216,12 +216,78 @@ dört masaya bölmekten hızlı büyütüyor. Bu sıranın kendi aritmetiğidir;
 
 ---
 
-## §Karar
+## §Karar — D-124
 
-*(boş — karar paketi kullanıcıya sunulacak; D-084 adım 3)*
+**Kullanıcı A kolunu seçti (GLOBAL kapsam).** Aynı anda tek masanın noktası canlıdır; başlanan
+masa ₺ tavanına varmadan sıradaki açılmaz. Tek hedef bütün kat için tekildir (alan başına
+değil — "alan başına tek hedef" ölçülmedi, seçilseydi kendi sayı satırını isterdi).
+
+Gerekçe üç sayıda duruyor: ① serbest sıra %20,6'lık bir tuzaktı ve cezayı en doğal içgüdüye
+("ucuz olanı al") kesiyordu · ② kapının ekonomik bedeli **sıfır** — A ile D'nin parmak izi
+birebir aynı, yani kapı yalnız kazanan sırayı zorunlu kılıyor · ③ B elendi: kaybeden sırayı
+zorunlu kılıyor ve dikkati de kurtarmıyor. Üçüncü yol (ölü basamağı düzeltip sırayı serbest
+bırakmak) Ö6'da ölçüldü ve **kapandı** (%20,6 → yalnız %19,0).
+
+Kabul edilen bedel: bir salon en fazla **27 dakika** tek canlı nokta bile göstermeyebilir
+(Ö4b). Bu görsel bedel bu turda kapatılmadı — bkz. §Uygulama'nın açık ucu.
 
 ---
 
 ## §Uygulama
 
-*(boş — adım 4; yalnız seçilen kol yazılır)*
+**Tek kaynak:** `rules.ts · tableUpgradeTarget(g)`. Çizen (`Scene.tsx`), tetikleyen (`tick.ts`)
+ve bildiren (`revealKeys`) aynı fonksiyonu okur — H1'in dersi ("tetik çizilen şeyden türer")
+burada da uygulandı.
+
+| dosya | ne değişti |
+|---|---|
+| `src/game/rules.ts` | `tableUpgradeTarget` eklendi; `revealKeys` masa bildirimini alan kapısından değil **canlı masadan** türetiyor (pan hedefi de artık gerçek masa, alanın ilk masası değil) |
+| `src/game/tick.ts` | dolum tetiği "bütün masaları tara" döngüsünden tek hedefe indi |
+| `src/components/three/Scene.tsx` | tek nokta çiziliyor; `gate`e `tableLevels` eklendi (kural seviyeleri okur) |
+| `src/game/store.ts` | yeniden dışa aktarım |
+| `tools/olcum-tek-odak.ts` | ölçüm aracı Scene ile aynı kuralı okuyor (yoksa olmayan bir kalabalığı raporlamaya devam ederdi) |
+
+**Kayıt şeması değişmedi → `saveVersion` artmadı.** Eski kayıtların migrasyonu kuralın kendi
+içinde: elinde beş yarım masa olan bir kayıt kilitlenmez, "başladığını bitir" sırası onları
+soldan sağa teker teker kapatır (bekçide ayrı denetim var).
+
+### Yan kazanç — D-038 tek odak ölçümü
+
+`docs/olcum-tek-odak.txt` (aynı araç, uygulamadan sonra):
+
+| | önce | sonra |
+|---|---|---|
+| en yoğun durumda çizilen işaret | **16** | **3** |
+| masa işareti (ort / en çok) | 7,82 / 16 | **0,91 / 1** |
+| birden çok işaret çizilen durum payı | %90 | **%44** |
+| en çok KONUŞAN işaret | 3 | **2** |
+
+### Bekçi ve mutasyon
+
+`tests/sira-h2.test.ts` — **19 denetim**: kural düzeyi (tek hedef · "başladığını bitir" ·
+tavan · alan kapısı · null · eski kayıt) + **gerçek tick** (hedefte dolum akar, hedef olmayanda
+akmaz, tavanda sıra geçer) + çizim tarafının yapı denetimi.
+
+`node tools/mutasyon-sira-h2.mjs` — **12 mutasyon, 12'si de kırmızı yandı.**
+
+**Üç mutasyon ilk turda KAÇTI ve bekçinin zayıf yerini gösterdi** (D-085'in dersi):
+* **M4 (alan kapısı atlanıyor)** kaçtı çünkü denetimim "yalnız 1. salon açık" kurgusundaydı ve
+  orada `g.tables` sınırı kapıyı kazara taklit ediyordu. Kapının gerçekten tek başına iş yaptığı
+  pencere dar: 2. salonun masaları `z2table2/3` ile **açılır**, ama yükseltme kapısı `z2table4`i
+  bekler. Denetim o pencereye taşındı.
+* **M9/M10 (Scene)** kaçtı çünkü bekçi yalnız tetiği ölçüyordu, çizimi hiç. Bu ayrışma tam da
+  en tehlikeli kusuru serbest bırakıyordu: ekranda 12 nokta, para alan bir tane. Çizim tarafı
+  için yapı denetimi eklendi (ve dosyada bunun DAVRANIŞ değil YAPI denetimi olduğu yazıyor).
+
+### Final tam koşu
+
+`npx tsc -b` temiz · `npm run test` **1189/1189 ✓** (51 dosya) · `npm run duman` **45/45 ✓** ·
+`OLCUM=tam` sıra ölçümü damgalar temiz · tek-odak tazelendi.
+
+### Bu turun bıraktığı açık uç
+
+`tools/simulate.ts`in **taban oyuncu politikası artık oyunun kuralıyla çelişiyor**: sim hâlâ
+"en ucuz masayı al" (serbest sıra) diye oynuyor, oyun ise tek hedefli. Farkın büyüklüğü bu
+raporda zaten ölçülü — ŞERİT DOLDU 8,48 sa (sim'in tabanı) ↔ 8,00 sa (oyunun yeni kuralı),
+yani model zinciri **%6 uzun** gösteriyor. Tazelenmesi D-087'nin yayımlanmış tempo sayılarını
+oynatacağı için **kendi turunu ister** (varyant kapısı); bu turda bilerek dokunulmadı.

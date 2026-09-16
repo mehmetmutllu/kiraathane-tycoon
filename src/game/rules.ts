@@ -28,7 +28,7 @@ import {
 } from '../config/economy.config';
 import type { SaveStats } from './save';
 import { LAYOUT, LAVABO, servicePlace, type RVec3 } from './layout';
-import { MAX_AREAS, THE_SERVICE, areaTableStart, tostShare, isCounter } from './world';
+import { MAX_AREAS, THE_SERVICE, areaOfTable, areaTableStart, tostShare, isCounter } from './world';
 
 // DWELL kanonik dolum-noktası id'leri (D-018 §2): pad'ler kendi id'sini kullanır; bunlar yükseltme
 // noktaları. Önek + index biçimindedir ('tea:0' = SERVİS index'i, 'tableUp:5' = GLOBAL masa index'i).
@@ -43,9 +43,44 @@ export function stationUpgradeUnlocked(g: GateState): boolean {
   return requiresMet(C.service.upgradeRequires, g);
 }
 
-/** Alanın masa yükseltmeleri açık mı? (v21: o alanın 4 masası da açılınca — D-019 §3.) */
+/** Alanın masa yükseltmeleri açık mı? (v21: o alanın 4 masası da açılınca — D-019 §3.)
+ *  DİKKAT: bu ALANIN kapısıdır, masanın değil. Hangi masanın noktasının o an CANLI olduğunu
+ *  `tableUpgradeTarget` söyler (D-124) — çizen de, tetikleyen de onu okur. */
 export function tableUpgradeUnlockedIn(area: number, g: GateState): boolean {
   return requiresMet(C.tables.upgradeRequiresByArea[area], g);
+}
+
+/**
+ * H2 / D-124 — MASA YÜKSELTMELERİNİN SIRASI: aynı anda **TEK** masanın noktası canlıdır.
+ * Başlanan masa ₺ tavanına varmadan sıradaki açılmaz.
+ *
+ * NEDEN (ölçüm: `docs/sira-raporu-h2.md`): sıra serbestken oyuncunun seçtiği sıra 6 saatlik
+ * kazancı **%20,6** değiştiriyordu (58.097 ₺ derin · 48.182 ₺ "en ucuzu al") ve ceza tam da en
+ * doğal içgüdüyü — ucuz olanı almayı — vuruyordu. Kapı bunu kapatırken tempodan hiçbir şey
+ * götürmüyor: kapılı kolun parmak izi, kapısız "derin oyuncu" kolununkiyle BİREBİR aynı çıktı
+ * (`fd6d3dfd`), yani kapı yalnız kazanan sırayı zorunlu kılıyor. Yan kazanç ekranda: aynı anda
+ * çizilen masa noktası ort 3,48 → 0,54 (tepe 12 → 1).
+ *
+ * "Ucuz olanı topla" yerine **"başladığını bitir"**: yarım kalmış (0 < L < tavan) bir masa varsa
+ * hedef odur — en küçük indeksli olan. Hiç yarım masa yoksa el değmemiş ilk masa. Bu sıralama
+ * eski kayıtları da tek kuralla karşılar: elinde beş yarım masa olan bir kayıt, kapı geldiğinde
+ * kilitlenmez; masaları soldan sağa teker teker bitirmeye devam eder (şema değişmedi → saveVersion
+ * artmaz).
+ *
+ * Döner: canlı masanın GLOBAL indeksi, ya da alınacak masa yükseltmesi kalmadıysa `null`.
+ */
+export function tableUpgradeTarget(g: GateState): number | null {
+  const levels = g.tableLevels ?? [];
+  const max = tableSoftMaxLevel();
+  let elDegmemis: number | null = null;
+  for (let i = 0; i < g.tables; i++) {
+    if (!tableUpgradeUnlockedIn(areaOfTable(i), g)) continue;
+    const lv = levels[i] ?? 0;
+    if (lv >= max) continue;
+    if (lv > 0) return i; // yarım kalan: "başladığını bitir" (en küçük indeks)
+    if (elDegmemis == null) elDegmemis = i;
+  }
+  return elDegmemis;
 }
 
 // KİMLİK KORUMA (P0 perf, 2026-09-06). `tick()` her karede diziyi/nesneyi kopyalayıp tek `set()`
@@ -326,9 +361,16 @@ export function revealKeys(
 ): [string, string, RVec3 | null][] {
   const out: [string, string, RVec3 | null][] = [];
   const pre = (a: number) => (a === 0 ? '' : `Salon ${a + 1}: `);
-  for (let a = 0; a < areasOpen; a++) {
-    if (tableUpgradeUnlockedIn(a, g))
-      out.push([`tableUp:${a}`, `Yeni: ${pre(a)}Masaları yükseltebilirsin 🪑`, LAYOUT.tables[areaTableStart(a)].upgradeSpot]);
+  // D-124: bildirim de, panın hedefi de O AN CANLI masadan türer. Eskiden alan kapısı açılınca
+  // haber veriliyor ve pan alanın İLK masasına atılıyordu; tek-hedef kuralında ikisi de yalan
+  // söylerdi (salonun kapısı açık olabilir ama sıra henüz o salona gelmemiş olabilir; geldiğinde
+  // de canlı masa alanın ilk masası olmayabilir). H1'in dersi burada da geçerli: tetik de,
+  // bildirim de ÇİZİLEN şeyden türer.
+  const hedefMasa = tableUpgradeTarget(g);
+  if (hedefMasa != null) {
+    const a = areaOfTable(hedefMasa);
+    if (a < areasOpen)
+      out.push([`tableUp:${a}`, `Yeni: ${pre(a)}Masaları yükseltebilirsin 🪑`, LAYOUT.tables[hedefMasa].upgradeSpot]);
   }
   // Servis noktası TEK (B2) → tek reveal anahtarı, alan döngüsünün dışında. Metin seviyeye göre
   // konuşur: L4'e kadar "çay ocağı", sonrası "tezgâh" (tek merdiven, iki kimlik).

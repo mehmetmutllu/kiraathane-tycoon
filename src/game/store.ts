@@ -156,6 +156,7 @@ export {
   stationUpgradeUnlocked,
   tableUpgradeUnlocked,
   tableUpgradeUnlockedIn,
+  tableUpgradeTarget,
   tableSoftMaxLevel,
   tableNextCost,
   tableThemeUnlocked,
