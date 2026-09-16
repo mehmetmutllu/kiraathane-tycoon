@@ -6,6 +6,23 @@
  "gunluk": [
   {
    "tarih": "15.09.2026",
+   "etiket": "Faz S · 21. oturum (S22 — kademeli mutfak, tur adı S21 — D-119)",
+   "baslik": "Ölçüm kolu seçti, <b>bekçi</b> merdiveni düzeltti",
+   "govde": "Sekiz kalıp varyant olarak ölçüldü. Görünürlük hiçbirini elemedi (odada görünmeyen ünite 0/19), o yüzden tur iki yeni ölçüt kurdu: <b>delta kütle</b> ve <b>bedel–değişim uyumu</b>.<br><br><b>Sezgisel kalıp düştü:</b> r = <b>−0,95</b>. Delta L1'de ×5,61 ünite, L6'da ×0,16 — merdivenin %73'ünü ödeten basamakta değişen şey bir kasa kapağı.<br><br><b>Uygulama sırasında üç şey çöktü ve üçü de ölçülerek düzeltildi.</b> Ocağın beş kademesi tek basamağa yığılıyordu; <code>_countertop</code> modelleri ocağın kademesi değil <b>gömme göz</b> çıktı (türetilmiş parça süzgeci eledi, zincir 5 → 3); süslü gövdeler davlumbaza ve duvar dolabına, büyüyen adalar birbirine giriyordu — çakışma denetimi <b>17 yeni iç içe geçme</b> saydı, ada sayısı 3 → 2'ye düştü.<br><br><b>Bekçi testi uygulamayı da düzeltti:</b> ilk yazımda soğutucuya konan zincir L6'yı odanın ilan edilmiş hâlinin ötesine taşıyordu. Kural artık yazılı — <b>zincirin son üyesi = ünitenin kendi anahtarı</b>, yani L6 tam olarak bugünkü oda. Merdiven odayı büyütmez, oraya nasıl varıldığını anlatır.",
+   "maddeler": [
+    "<b>D-119:</b> K5 + Y1 seçildi — erken basamakta yerinde büyüme, geç basamakta adada doğuş",
+    "<b>Merdiven elle yazılır:</b> türetilmiş dağıtım L2'yi kör bırakıyor — D-104'ün WC'de öğrendiğinin aynısı",
+    "<b>Ad benzerliği kademe demek değil:</b> <code>stove_single_countertop</code> gömme göz (h 0,278, taban 0,930) — kutu ölçen araç bunu yakalayamaz, parça süzgeci gerekti",
+    "<b>Arka hattın düşey boşluğu dolu:</b> her modülün üstünde dolap ya da raf var (altı 1,40) → geç kütle <b>zorunlu olarak</b> adadan gelir",
+    "<b>Büyüyen ada bir slot atlar:</b> bitişik slotta komşusuna 0,45 br giriyordu",
+    "<b>Basamaklar tek yönlü:</b> ×0,40 → 0,75 → 1,46 → 1,58 → 2,69 · bedel uyumu <b>r = +0,92</b> · doluluk %32 → %42",
+    "<b>Aracın kendi iki kusuru koşuda yakalandı:</b> gövde kendini örtüyordu (tüm deltalar %0 çıktı) · çok ekli adlar ayrı köke düşüyordu (ocak zinciri 2 görünüyordu)",
+    "<b>Bekçi:</b> <code>tests/mutfak-kademe-s22.test.ts</code> — 24 denetim, <b>4 mutasyon</b>, dördü de kırmızı · vitest <b>1075</b> ✓ · duman 42/42 ✓"
+   ],
+   "not": "<b>Mutfağın kuşbakışı karesi oyundan çekilemiyor</b> ve bu bir araç kusuru değil: tepeden kamera oyuncunun üstünde duruyor, oyuncu da <code>clampToOpenAreas</code> yüzünden mutfağın 0,05 br önünde kalıyor (S20 §E). Odanın planı kameranın değil, <b>ölçüm aracının</b> işi — karar paftasındaki plan çizimi oradan geliyor."
+  },
+  {
+   "tarih": "15.09.2026",
    "etiket": "Faz S · 20. oturum (S21 — mutfak: sınır + çaycı, tur adı S20 — D-118)",
    "baslik": "Elektrik kesintisinden devralındı; ölçüm <b>üç soruya</b> baktı, <b>dördüncüsünü</b> açtı",
    "govde": "Önceki gece 01:19'da üç taban karesi alınmış, rapor ve commit yazılamadan oturum kesilmişti. Çalışma ağacında duran ölçüm aracı ve kareler kurtarıldı, tur kaldığı yerden sürdü.<br><br><b>Süzgeç önce çalıştırıldı ve S6'nın tersini söyledi.</b> Odanın ortası baş hizasında <b>%99</b> görünür, görünmeyen ünite <b>0/19</b> — mutfakta yapılan iş görülüyor, hiçbir kol “görünmüyor” diye elenemedi.<br><br><b>Erişim:</b> oyuncu odaya <b>hiç</b> giremiyor (0/37.846 hücre) ama sebebi duvar değil kelepçe; iki uçta <b>2,81</b> ve <b>1,70 br</b> açıklık gözle açık duruyordu ve oyuncu odanın <b>5 cm</b> yanında bekliyordu. Bölmeler bu yanlış vaadi kaldırdı.<br><br><b>Çaycı:</b> başı 234 duruşun <b>%100'ünde</b> görünürken mekanik okuması <b>0</b>'dı. Tempo artık çay bekleyenden geliyor — boş salonda çaycı <b>duruyor</b>, dolu salonda <b>3,33×</b> hızlı.<br><br><b>Ve dördüncü soru:</b> tezgâh 6 kademe büyürken oda hep aynı 19 üniteyi çiziyor. Kademeli mutfak kendi turunu aldı (S22).",

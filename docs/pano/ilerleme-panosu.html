@@ -195,7 +195,7 @@ h2{font-size:21px;font-weight:800}
 <script type="application/json" id="durum">
 {
  "guncelleme": "16.09.2026",
- "yapilan": 103,
+ "yapilan": 104,
  "toplam": 111,
  "kilometre": [
   {
@@ -216,14 +216,14 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum — Faz R · 1/4 — R1: görev şeridi (D-126)",
-  "baslik": "Bir kullanıcı kararını tek bir <code>if</code> tutuyorsa, derleyici onu silebilir",
-  "aciklama": "Kullanıcı görev bitişini dört ayrı kalemde şikâyet etti (G-41…G-44). Ölçüm dördünün de tek kök olduğunu gösterdi ve sayısını verdi: tebrik toast&#39;ı <b>3,53 sn</b>, yeni kartın gelişi <b>1,33 sn</b> → <b>2,20 sn örtüşme</b>, yedi senaryonun yedisinde, ekranda aynı cümleyi söyleyen iki kutu 8 px arayla.<br><br><b>Kök sebep ölçümden önce koddan çıktı ve ders ölçümden büyük.</b> Bu toast zaten 2026-09-09&#39;da kaldırılmıştı. <code>f4b1a52</code> commit&#39;inde <code>tsc -b</code> onu tutan koşulu &#34;ölü dal&#34; diye işaretledi — ve haklıydı, tip o an daralmıştı. Dal silindi; <b>karar da onunla gitti</b>. Tip sonradan genişledi, toast geri geldi, kimse fark etmedi. Artık kural bir <b>liste</b>: <code>CIZILEN_TOAST = [&#39;level&#39;,&#39;reveal&#39;]</code>. Tip yine daralırsa liste ölü dal olmaz, kısalır — ve 15 mutasyonluk bir bekçi bekliyor; birincisi tam olarak f4b1a52&#39;nin yaptığı silme.<br><br><b>Erken zoom şikâyeti doğru çıktı ama kapsamı daraldı:</b> görev geçişinin kendi panı zaten tam kartla birlikte atılıyor; erken olan tek şey <b>salon açılışının</b> panıydı (−1,30 sn). Silinmedi — kutlama penceresinde <b>ertelendi</b>, çünkü &#34;orada yeni bir dünya var&#34; hissi kullanıcının kendi isteğiydi; yanlış olan varlığı değil sırasıydı.<br><br><b>Ve bir şeyi ölçüm değil KARE söyledi:</b> kullanıcı ekran görüntüsüne bakıp bandın üst kenarındaki gri iç parlamayı kaldırttı. Araç kutuları, süreleri, taşmayı sayıyordu; o şeridi kimse sormamıştı."
+  "etiket": "Bu oturum — Faz R · 2/4 — R2: mutfak yerleşimi ve çarpışma (D-127)",
+  "baslik": "İki dönemden biri doğru çalışıyorsa, kusur <b>ölümsüzdür</b>",
+  "aciklama": "Kullanıcı mutfağı dört kalemde şikâyet etti (G-35…G-38). İlk ikisi tek bir satırdan doğuyordu: ön hattın çizim ölçüsü <b>dünya eksenlerinden</b> türetiliyor, ama iki çağıran da gövdeyi <code>place.rot</code> ile <b>zaten döndürülmüş</b> bir grubun içine çiziyordu.<br><br><b>Kusur S3&#39;ten bugüne yaşadı çünkü yarısı doğruydu.</b> Arka bant döneminde <code>rot = 0</code> — iki eksen aynı, hiçbir şey görünmüyor. Sol duvar döneminde <code>rot = π/2</code> ve gövde kendi çarpışma kutusuna <b>90°</b> dik çiziliyordu: tezgâhta örtüşme <b>IoU 0,19</b>, bulaşıkta <b>0,33</b>. Bedeli iki yönlüydü — çizilen tezgâhın <b>%19,4</b>&#39;ünden gerçekten yürünüyordu (kullanıcının gördüğü), kutusunun <b>%68,7</b>&#39;sinde ise hiçbir gövde yoktu (kullanıcının henüz söylemediği). Tezgâh ayrıca kendi duvarını <b>0,79 br</b> deliyordu.<br><br><b>Kutulara dokunulmadı.</b> Kutular zaten doğruydu; ölçü yanlış eksende teslim ediliyordu. Zıt kol (kutuyu çizime döndür) ölçüldü ve <b>sorulmadan elendi</b> — kullanıcının kendi cümlesi <i>&#34;sol duvara paralel olması gerekir&#34;</i> diyor, o kol tam tersini kalıcılaştırırdı.<br><br><b>Bitişiklikte ucuz yol ölçülüp çürütüldü:</b> mevcut birleştirme boşluğu yalnız <b>çizimle</b> doldurur. Arka bantta doldurduğu boşluk 0,20 br olduğundan zararsızdı; sol duvarda 3,20 br olduğundan aynı kural <b>0,66 br² yürünebilir gövde</b> üretiyordu — yani bir şikâyeti kapatırken diğerini geri getirirdi. Bulaşık kutusuyla birlikte taşındı: hat hem gözle hem çarpışmada kesintisiz."
  },
  "siradaki": {
-  "etiket": "Sırada — Faz R · 2/4",
-  "baslik": "Mutfak yerleşimi ve çarpışma: tezgâh <b>90° yanlış açıda</b> ve içinden geçiliyor",
-  "aciklama": "<b>② Mutfak (G-35…G-38)</b> — kullanıcının sözü: <i>&#34;sol duvara paralel olması gerekirken tam 90 derece açıyla duruyor&#34;</i> ve <i>&#34;biz tezgâhın vs içinden geçiyoruz, öyle olmamalı&#34;</i>. Ayrıca başlangıçta tezgâhlar bitişik olsun ve tezgâh yükseltmeleri belirsiz — S22&#39;nin kademeli mutfağı tezgâha uygulanmamış olabilir, önce ölçülecek.<br><br><b>③ HUD çerçeveleri (G-45…G-49)</b> — seviye rozeti Clash of Clans gibi <b>birleşik</b> (bar yuvarlağın çevresinde, en üst satırda), FPS sayacı kalkacak, iki ödül alt alta + arasına &#34;+&#34;, ayarlar kaydırıcısının kesik çerçevesi ve sağ üstteki elmas/paraya çerçeve.<br><br><b>④ Çevre sanatı (G-50)</b> — <i>&#34;zemin ve duvarlar... yapılmamış asset gibi hissettiriyor&#34;</i>. Kendi tasarım turu: metinle kol anlatılmaz, 6-12 aday aynı kadrajda render edilip eleyerek seçilir. Kullanıcının kendi yönü: bahçe/çimenlik kuşağı.<br><br><b>Faz dışı:</b> G-39 (masa yükseltmeleri sırayla) ve G-40 (para ondalığı) denge dosyalarına dokunuyor — varyant kapısı kendi turunu ister."
+  "etiket": "Sırada — Faz R · 3/4",
+  "baslik": "HUD çerçeveleri: seviye rozeti <b>birleşik</b>, FPS sayacı kalkıyor",
+  "aciklama": "<b>③ HUD çerçeveleri (G-45…G-49)</b> — kullanıcının sözü: seviye göstergesinde <i>&#34;bar ve yuvarlak birleşik olmalı, Clash of Clans&#39;ınki gibi&#34;</i> ve <i>&#34;en üst satırda yan yana&#34;</i>. Yanında dört kalem daha: FPS sayacı kaldırılacak, iki ödül yan yana değil <b>alt alta + arasına &#34;+&#34;</b>, ayarlar kaydırıcısının kesik çerçevesi düzelecek, sağ üstteki elmas ve paraya çerçeve gelecek. G-48 gerçek bir referans karesi ister.<br><br><b>④ Çevre sanatı (G-50)</b> — <i>&#34;zemin ve duvarlar... yapılmamış asset gibi hissettiriyor, çözümler sun&#34;</i>. Kendi tasarım turu: metinle kol anlatılmaz, 6-12 aday aynı kadrajda render edilip eleyerek seçilir. Kullanıcının kendi yönü: bahçe/çimenlik kuşağı.<br><br><b>Faz dışı:</b> G-39 (masa yükseltmeleri sırayla) ve G-40 (para ondalığı) denge dosyalarına dokunuyor — varyant kapısı kendi turunu ister.<br><br><b>R2&#39;nin bıraktığı iş:</b> bir gövdeye bağlı ankraj noktaları (personel postası, yol ucu, pad) hâlâ tek tek türetiliyor; dördüncüsü eklenirse ne araç ne bekçi kendiliğinden görür."
  },
  "donemler": [
   {
@@ -369,8 +369,8 @@ h2{font-size:21px;font-weight:800}
     {
      "k": "R",
      "t": "Geri bildirim turları",
-     "d": "Kullanıcının 2026-09-16 oturumu, 16 kalem (G-35…G-50). <b>R1 kapandı (D-126):</b> görev bitince tebrik toast'ı 3,53 sn yaşarken yeni kart 1,33 sn'de geliyordu — ekranda aynı cümleyi söyleyen <b>2 kutu, 2,20 sn boyunca, 8 px arayla</b>. Kök sebep ölçümden önce koddan çıktı: aynı toast 2026-09-09'da kaldırılmıştı, bir \"ölü dal\" temizliğiyle geri gelmişti. Artık kural olumsuzlama değil LİSTE ve bekçisi var. Salon açılışının panı 1,30 sn erkendi → silinmedi, ertelendi (0,00). Bant sabit yükseklikten içerikten türeyen yüksekliğe geçti (taşma 0,0). Kalan: <b>R2</b> mutfak yerleşimi + çarpışma · <b>R3</b> HUD çerçeveleri · <b>R4</b> çevre sanatı (aday render'ı ister).",
-     "yapilan": 1,
+     "d": "Kullanıcının 2026-09-16 oturumu, 16 kalem (G-35…G-50). <b>R1 (D-126):</b> görev bitince tebrik toast'ı 3,53 sn yaşarken yeni kart 1,33 sn'de geliyordu — ekranda aynı cümleyi söyleyen <b>2 kutu, 2,20 sn, 8 px arayla</b>. Kök sebep koddan çıktı: karar bir \"ölü dal\" temizliğiyle silinmişti. Artık kural LİSTE ve bekçisi var. <b>R2 (D-127):</b> ön hattın ölçüsü DÜNYA ekseninde üretilip YEREL eksende tüketiliyordu; iki dönemden biri (<code>rot = 0</code>) doğru çalıştığı için kusur S3'ten beri görünmemişti. Sol duvarda gövde kutusuna <b>90°</b> dik (IoU <b>0,19</b>), <b>%19,4</b>'ünden yürünüyor, kutusunun <b>%68,7</b>'si görünmez, duvarı <b>0,79 br</b> deliyordu → hepsi <b>0,00</b>. Hat boşluğu 3,20 → <b>0,00 br</b>; seviye sinyali [2 2 2 3 2 <b>0</b>] (hepsi renk) → [3 3 3 3 2 2]. Kalan: <b>R3</b> HUD çerçeveleri · <b>R4</b> çevre sanatı (aday render'ı ister).",
+     "yapilan": 2,
      "toplam": 4,
      "kapi": "Kullanıcının oyun testinde bildirdiği arayüz/oynanış kalemleri kapanmış",
      "durum": "now"
@@ -387,6 +387,23 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "16.09.2026",
+   "etiket": "Faz R · 2. oturum (R2 — mutfak yerleşimi + çarpışma — D-127)",
+   "baslik": "Bir ölçü <b>dünya</b> ekseninde üretilip <b>yerel</b> eksende tüketilirse, hata yalnız dönüşün sıfır olmadığı dönemde görünür",
+   "govde": "Kullanıcı: <i>&#34;sol duvara paralel olması gerekirken tam 90 derece açıyla duruyor&#34;</i> ve <i>&#34;biz tezgahın vs içinden geçiyoruz&#34;</i>. İkisi de tek kök: <code>onHatGovdeleri</code> gövde ölçüsünü çarpışma kutusundan türetiyor ama <b>dünya eksenlerinden</b>; iki çağıran da (<code>Scene.Stations</code> · <code>DishSink</code>) o gövdeyi <code>place.rot</code> ile <b>zaten döndürülmüş</b> bir grubun içine çiziyor.<br><br><b>Kusur S3&#39;ten beri yaşadı çünkü yarısı doğruydu:</b> arka bant döneminde <code>rot = 0</code>, iki eksen aynı. Sol duvarda <code>rot = π/2</code> ve yerel x dünya z&#39;ye gidiyor — gövde kutusuna dik. Bekçinin kuralı bu yüzden &#34;her denetim <b>iki dönemi</b> birden gezer&#34;: tek dönemi denetleyen bekçi, bu kusurun tam olarak kaçtığı bekçidir.<br><br><b>Ve iki mutasyon KAÇTI.</b> Sebebi bekçinin zayıflığı değildi: yanlışladıkları dal canlı kodda <b>ölü</b>ydü — birleştirme yalnız garson istasyonu sahnedeyken, o da yalnız <code>rot = 0</code> döneminde koşuyor. Sözleşme dışarı alınıp doğrudan koşturuldu. Kaçan mutasyon bir delik değil, bir <b>harita</b>.",
+   "maddeler": [
+    "<b>D-127:</b> A1 seçildi (çizim kutuya uyar) — IoU <b>0,19 → 1,00</b>, açı <b>90° → 0°</b>, duvar delme <b>0,79 → 0,00 br</b>. Kutulara dokunulmadı",
+    "<b>İçinden geçme:</b> çizilen tezgâhın <b>%19,4</b>&#39;ünden yürünüyordu → <b>0,00 br²</b>; kutusunun <b>%68,7</b>&#39;si görünmez duvardı → <b>0,00 br²</b>",
+    "<b>Zıt kol sorulmadan elendi:</b> kutuyu çizime döndürmek kullanıcının kendi cümlesinin tersini kalıcılaştırırdı",
+    "<b>Bitişiklikte ucuz yol çürütüldü:</b> birleştirme boşluğu yalnız ÇİZİMLE doldurur → sol duvarda <b>0,66 br²</b> yürünebilir gövde üretiyordu. Bulaşık kutusuyla taşındı: boşluk <b>3,20 → 0,00 br</b>",
+    "<b>Ölçümün kapsamı kararın kapsamı değil:</b> bulaşıkçı pad&#39;i araçta yoktu ve taşınmasaydı boş zemini işaretler kalacaktı",
+    "<b>Yükseltme artık biçimden okunuyor:</b> sinyal dizisi [2 2 2 3 2 <b>0</b>] (hepsi renk) → [3 3 3 3 2 2]; en pahalı basamak (9.000 ₺) ekranda iz bırakmıyordu",
+    "<b>Kodda çizilen ama SAYILMAYAN bir işaret bulundu:</b> L6&#39;nın ikinci tost presi düz bir <code>level >= 6</code> koşuluydu — listeye alındı",
+    "Bekçi: <code>mutfak-r2</code> (25 den. · <b>17 mutasyon</b>, kaçan 0 — ilk turda 2 kaçtı, ölü dal gösterildi ve kapatıldı)",
+    "vitest <b>1245 ✓</b> · duman <b>45/45 ✓</b> · tsc temiz"
+   ]
+  },
   {
    "tarih": "16.09.2026",
    "etiket": "Faz R · 1. oturum (R1 — görev şeridi — D-126)",
@@ -505,26 +522,15 @@ h2{font-size:21px;font-weight:800}
     "<b>Bekçi:</b> <code>tests/arayuz-s23.test.ts</code> 16 denetim, <b>12 mutasyon, kaçan 0</b> · vitest <b>1091</b> ✓ · duman 42/42 ✓"
    ],
    "not": "<b><code>.gitattributes</code> eksiği bu turda somut zarar verdi.</b> <code>git stash pop</code> src'yi CRLF'e çevirdi ve mutasyon aracının çok satırlı kalıpları sessizce bulunamaz oldu — dört mutasyon birden “KALIP BULUNAMADI” düştü. Araç satır-sonu bağımsız yapıldı; <b>asıl eksik duruyor</b>."
-  },
-  {
-   "tarih": "15.09.2026",
-   "etiket": "Faz S · 21. oturum (S22 — kademeli mutfak, tur adı S21 — D-119)",
-   "baslik": "Ölçüm kolu seçti, <b>bekçi</b> merdiveni düzeltti",
-   "govde": "Sekiz kalıp varyant olarak ölçüldü. Görünürlük hiçbirini elemedi (odada görünmeyen ünite 0/19), o yüzden tur iki yeni ölçüt kurdu: <b>delta kütle</b> ve <b>bedel–değişim uyumu</b>.<br><br><b>Sezgisel kalıp düştü:</b> r = <b>−0,95</b>. Delta L1'de ×5,61 ünite, L6'da ×0,16 — merdivenin %73'ünü ödeten basamakta değişen şey bir kasa kapağı.<br><br><b>Uygulama sırasında üç şey çöktü ve üçü de ölçülerek düzeltildi.</b> Ocağın beş kademesi tek basamağa yığılıyordu; <code>_countertop</code> modelleri ocağın kademesi değil <b>gömme göz</b> çıktı (türetilmiş parça süzgeci eledi, zincir 5 → 3); süslü gövdeler davlumbaza ve duvar dolabına, büyüyen adalar birbirine giriyordu — çakışma denetimi <b>17 yeni iç içe geçme</b> saydı, ada sayısı 3 → 2'ye düştü.<br><br><b>Bekçi testi uygulamayı da düzeltti:</b> ilk yazımda soğutucuya konan zincir L6'yı odanın ilan edilmiş hâlinin ötesine taşıyordu. Kural artık yazılı — <b>zincirin son üyesi = ünitenin kendi anahtarı</b>, yani L6 tam olarak bugünkü oda. Merdiven odayı büyütmez, oraya nasıl varıldığını anlatır.",
-   "maddeler": [
-    "<b>D-119:</b> K5 + Y1 seçildi — erken basamakta yerinde büyüme, geç basamakta adada doğuş",
-    "<b>Merdiven elle yazılır:</b> türetilmiş dağıtım L2'yi kör bırakıyor — D-104'ün WC'de öğrendiğinin aynısı",
-    "<b>Ad benzerliği kademe demek değil:</b> <code>stove_single_countertop</code> gömme göz (h 0,278, taban 0,930) — kutu ölçen araç bunu yakalayamaz, parça süzgeci gerekti",
-    "<b>Arka hattın düşey boşluğu dolu:</b> her modülün üstünde dolap ya da raf var (altı 1,40) → geç kütle <b>zorunlu olarak</b> adadan gelir",
-    "<b>Büyüyen ada bir slot atlar:</b> bitişik slotta komşusuna 0,45 br giriyordu",
-    "<b>Basamaklar tek yönlü:</b> ×0,40 → 0,75 → 1,46 → 1,58 → 2,69 · bedel uyumu <b>r = +0,92</b> · doluluk %32 → %42",
-    "<b>Aracın kendi iki kusuru koşuda yakalandı:</b> gövde kendini örtüyordu (tüm deltalar %0 çıktı) · çok ekli adlar ayrı köke düşüyordu (ocak zinciri 2 görünüyordu)",
-    "<b>Bekçi:</b> <code>tests/mutfak-kademe-s22.test.ts</code> — 24 denetim, <b>4 mutasyon</b>, dördü de kırmızı · vitest <b>1075</b> ✓ · duman 42/42 ✓"
-   ],
-   "not": "<b>Mutfağın kuşbakışı karesi oyundan çekilemiyor</b> ve bu bir araç kusuru değil: tepeden kamera oyuncunun üstünde duruyor, oyuncu da <code>clampToOpenAreas</code> yüzünden mutfağın 0,05 br önünde kalıyor (S20 §E). Odanın planı kameranın değil, <b>ölçüm aracının</b> işi — karar paftasındaki plan çizimi oradan geliyor."
   }
  ],
  "riskler": [
+  {
+   "sev": "Yapı",
+   "renk": "now",
+   "b": "Bir gövdeye <b>bağlı noktalar</b> elle türetiliyor — taşınırken biri geride kalabilir",
+   "p": "R2'de bulaşık 1,60 br yanaştırıldı (D-127) ve onunla birlikte <b>dört</b> nokta taşınmak zorunda kaldı: bulaşıkçının postası, çaycının yol ucu (iki uç) ve bulaşıkçı pad'i. Üçü ölçüm aracının listesindeydi; <b>dördüncüsü (pad) değildi</b>, çünkü araç yalnız <code>ServicePlace</code>'in içindeki noktaları geziyordu. Taşınmasaydı pad boş zemini işaretler kalırdı (<code>feedback_spatial_tycoon_ux</code> ihlali) ve ne araç ne bekçi bunu kendiliğinden söylerdi.<br><br>Bugün her ilişki <b>tek tek</b> türetiliyor ve doğruluğu bekçiye elle yazılıyor (<code>tests/mutfak-r2.test.ts</code> dördünü de denetliyor, M10-M12 mutasyonları yarım uygulamayı kırmızıya çeviriyor). Yani bugünkü hâl <b>güvenli ama ölçeklenmiyor</b>: beşinci bir nokta eklendiğinde aynı sessizlik tekrarlanır.<br><br><b>Yapısal çözüm:</b> gövdenin kendi \"bağlı noktalar\" ilanı olsun ve hepsi tek bir yerden türesin — <code>feedback_single_source_of_truth</code>'un yerleşim tarafındaki karşılığı. Kendi turunu ister; bu turda bilerek yapılmadı."
+  },
   {
    "sev": "Çözüldü",
    "renk": "done",
@@ -592,10 +598,10 @@ h2{font-size:21px;font-weight:800}
    "p": "S13 altı paketi indirdi ve kullanıcı <b>kol B</b>&rsquo;yi seçti: repoya yalnız bir açık kaleme bakan modeller girdi (<code>models/</code> 5,9 → <b>17,2 MB</b>; hepsini almak 27,2 olurdu ve 553 modelin 436&rsquo;sı hiçbir işe bakmıyordu). Ama <b>giren ile kullanılan aynı şey değil</b>: bu turda sahneye yalnız kapı girdi. Repoda duran ve henüz yeri olmayanlar: dört renkte <b>koltuk</b> ve puf, ahşap <b>tabure</b>, yuvarlak <b>halı</b>, sokak <b>feneri</b> ve mini fener, sekiz <b>tabak</b>, 33 <b>çalı/çim/ağaç/kaya</b>, kereste-palet-tuğla-kumaş <b>yığınları</b> (kilitli objenin &ldquo;tadilat hâli&rdquo; için), ve board-game paketinin <b>162 modeli</b> (okey ıstakası, domino taşı, zar, tepsi — <b>Kat 2</b> işi). Her biri kendi yerleşim turunu istiyor; künyeleri <code>public/assets/README.md</code> manifestinde, hangi desenle girdikleri <code>tools/olcum-yeni-paketler.mjs</code>&rsquo;te ve bekçisi <code>tests/yeni-paketler.test.ts</code>. <b>Yan kalem:</b> Forest&rsquo;ın ücretsiz katmanında <b>çiçek yok</b> ve olan her şey tek yeşil — &ldquo;kendi çizdiğin çiçekler yerine&rdquo; isteği bu paketle karşılanmadı, ücretli katman ya da başka bir CC0 kaynak <b>kullanıcı kararı</b>."
   },
   {
-   "sev": "Oynanış",
-   "renk": "now",
-   "b": "Arka salonda <b>12 masa arasından geçilemiyor</b> — ölçüldü, düzeltme kullanıcı kararı bekliyor",
-   "p": "Kullanıcı oynarken <i>&ldquo;bir yerde resmen yürüyemiyorum&rdquo;</i> dedi ve ayrıca masaların birbirine çok yakın olup olmadığını sordu. İkisi <b>aynı kök</b> çıktı ve sayıya döküldü: oyuncunun bir açıklıktan geçebilmesi için <b>2 × yarıçap = 0,94 birim</b> gerekiyor. Ön salonun dörtlü masaları arasında boşluk <b>3,50</b> (rahat), ama arka salonun ikili masaları arasında yalnız <b>0,68</b> — yani yirmi masanın <b>on ikisi</b> arasından geçilemiyor. Çarpışma katıları bağımsız olarak tarandığında aynı sonuç çıktı: eşiğin altında <b>52 açıklık</b>, en darı <b>0,04 birim</b>. Yani bu bir his değil <b>geometri</b>. İki kol sayısıyla yazıldı: <b>K1</b> arka salon sütun aralığı 3,20 → 3,80 (boşluk 1,28'e çıkar, oda biraz genişler) · <b>K2</b> oturak ayak izini küçültmek (boşluk aynı yere gelir ama masa görsel olarak küçülür — proje kuralı <i>&ldquo;oranı mobilyayı kısarak kovalama&rdquo;</i> tam bunu yasaklıyor, o yüzden K1 öneriliyor). Düzeltme <b>onaylı maket düzenine</b> dokunduğu için uygulanmadı; Faz H'nin kalemi."
+   "sev": "Çözüldü",
+   "renk": "done",
+   "b": "Arka salonda geçilemeyen masa aralığı — <b>ELENDİ (2026-09-16):</b> premis düştü",
+   "p": "Kullanıcı oynarken <i>&ldquo;bir yerde resmen yürüyemiyorum&rdquo;</i> demişti ve ölçüm 2026-09-09'da arka salonu <b>serbest ikili masa</b> olarak görmüştü: oturak yarıçapı 1,26, merkez arası 3,20 → açıklık <b>0,68 br</b>, gerekense 0,94. Yirmi masanın on ikisi arasından geçilemiyordu.<br><br><b>Ama o ölçümden sonra arka yarı DEĞİŞTİ.</b> B3-2 ile orası <b>banket adası</b> oldu: masa yarı-boyu 0,525, adanın oturağında ayrı koltuk yok ve sandalye çarpışması zaten kaldırılmıştı (D-016; adanın katısı yalnız sırtlık çekirdeği 0,4). Bugünkü açıklık <code>3,2 − 2 × 0,525 = <b>2,15 br</b></code> — gereken 0,94'ün <b>iki katından fazla</b>. Kalem geçersiz; Faz H 3/3 kapandı, toplam 108 → 107.<br><br><b>Ders:</b> bir ölçüm, ölçtüğü dünyanın tarihidir. Yerleşim değişince eski sayı yanlış olmaz — <b>başka bir şeyin</b> doğru sayısı olur. Açık kalem listesindeki her satırın premisi, kapatılmadan önce yeniden okunmalı."
   },
   {
    "sev": "Çözüldü",
@@ -770,7 +776,7 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunlukArsiv": {
-  "kart": 59,
+  "kart": 60,
   "ilk": "05.06 – 17.06.2026",
   "son": "15.09.2026",
   "yer": "memory-bank/arsiv/pano-gunluk.json"

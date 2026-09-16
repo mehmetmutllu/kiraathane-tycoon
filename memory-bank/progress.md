@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 111 · YAPILAN 103 · %93):**
+**Oturum bütçesi (TOPLAM 111 · YAPILAN 104 · %94):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -26,9 +26,9 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | E arayüz ve cila | 4/5 🔧 |
 | | **S sanat ve arayüz geçişi** | **24/24 ✅** |
 | | H oynanış düzeltmeleri | 2/2 ✅ |
-| | **R geri bildirim turları (2026-09-16)** | **1/4** 🔧 |
+| | **R geri bildirim turları (2026-09-16)** | **2/4** 🔧 |
 | | F paketleme ve yayın | 1/5 🔧 |
-| **Program toplam** | | **75/83** |
+| **Program toplam** | | **76/83** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -575,7 +575,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
 **Faz S kapısı:** 185 kullanılmayan KayKit modeli oyuna bağlı + UI dili maketle onaylanmış +
 ses kaynağı kararı yazılı. Ondan sonra Faz F'e (paketleme) geçilir.
 
-## Faz R — GERİ BİLDİRİM TURLARI (1/4) 🔧 — kullanıcının 2026-09-16 oturumu
+## Faz R — GERİ BİLDİRİM TURLARI (2/4) 🔧 — kullanıcının 2026-09-16 oturumu
 Kalemler ve kullanıcının KENDİ cümleleri: `docs/geribildirim-oyun-testi-2026-09-16.md`.
 - ✅ **R1 — görev şeridi (G-41…G-44)** · **D-126:** tebrik toast'ı 3,53 sn yaşarken yeni kart
   1,33 sn'de geliyordu → **2,20 sn örtüşme, 7/7 senaryoda; ekranda 2 kutu, 8 px arayla, aynı
@@ -586,7 +586,16 @@ Kalemler ve kullanıcının KENDİ cümleleri: `docs/geribildirim-oyun-testi-202
   Kök sebep: G-04'ün kararı `f4b1a52`de bir "ölü dal" temizliğiyle silinmişti.
   `docs/serit-raporu-g1.md` · bekçi `gorev-seridi-g1` (14 den. · 15 mut.) · kaçan 0 ·
   vitest 1220 ✓ · duman 45/45 ✓.
-- ⏳ **R2 — mutfak yerleşimi + çarpışma (G-35…G-38)**
+- ✅ **R2 — mutfak yerleşimi + çarpışma (G-35…G-38)** · **D-127:** ön hattın ölçüsü DÜNYA
+  ekseninde üretilip YEREL eksende tüketiliyordu; `rot = 0` olan arka bant doğru çalıştığı için
+  kusur S3'ten beri görünmemişti. Sol duvarda gövde kutusuna **90°** dik (tezgâh IoU **0,19**),
+  **%19,4**'ünden yürünüyor, kutusunun **%68,7**'si görünmez, duvarı **0,79 br** deliyordu →
+  hepsi **1,00 / 0° / 0,00 / 0,00**. Hat boşluğu 3,20 → **0,00** (B2: kutu da taşındı; B1 ölçülüp
+  elendi — boşluğu yalnız çizimle doldurup 0,66 br² yürünebilir gövde üretiyordu). Seviye sinyali
+  [2 2 2 3 2 **0**] (hepsi renk) → [3 3 3 3 2 2], biçim olanı [1 1 1 1 1 2]. Arka bant dönemi
+  değişmedi. İlk turda 2 mutasyon kaçtı ve ölü dalı gösterdi → sözleşme `yerelKutu()` olarak
+  dışarı alındı. `docs/mutfak-raporu-r2.md` · bekçi `mutfak-r2` (25 den. · 17 mut.) · kaçan 0 ·
+  vitest 1245 ✓ · duman 45/45 ✓.
 - ⏳ **R3 — HUD çerçeveleri (G-45…G-49)** · G-48 Clash of Clans referans karesi ister
 - ⏳ **R4 — çevre sanatı (G-50)** · tasarım turu: 6-12 aday aynı kadrajda render edilir
 

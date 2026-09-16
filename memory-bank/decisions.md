@@ -4082,3 +4082,35 @@ turunu ister.
 - **Final:** vitest 1220 ✓ · duman 45/45 ✓ · tsc temiz.
 - **AÇIK:** cihazın kendi yazı-tipi ölçeği (Android "yazı boyutu") ölçülmedi — G-42'nin yönü
   kesin, telefondaki büyüklüğü doğrulanmadı. F1 cihaz turunda bakılacak.
+
+## D-127 — Mutfak yerleşimi: ölçü YEREL eksende teslim edilir; hat bitişik; seviye BİÇİMDEN okunur (Faz R2)
+2026-09-16 · G-35 · G-36 · G-37 · G-38 · `docs/mutfak-raporu-r2.md`
+
+- **Tek kök, iki şikâyet:** `onHatGovdeleri` çizim ölçüsünü DÜNYA ekseninden türetiyordu, iki
+  çağıran da gövdeyi `place.rot` ile ZATEN dönmüş grubun içine çiziyordu. `rot = 0` olan arka
+  bant döneminde fark yok — kusur S3'ten R2'ye kadar bu yüzden yaşadı. Sol duvarda gövde kutusuna
+  **90°** dik: tezgâh IoU **0,19**, bulaşık **0,33**; tezgâhın **%19,4**'ünden yürünüyor, kutusunun
+  **%68,7**'sinde hiçbir şey çizilmiyor, gövde duvarı **0,79 br** deliyor.
+- **A1 seçildi (çizim kutuya uyar), A2 SORULMADAN elendi:** kutuyu çizime döndürmek kullanıcının
+  kendi cümlesinin (*"sol duvara paralel olması gerekir"*) tersini kalıcılaştırırdı. Kutulara
+  dokunulmadı; `activeSolids` R2 öncesiyle birebir. Sonuç 1,00 / 0° / 0,00 / 0,00.
+- **G-37'de B2 seçildi (kutu da taşınır), B1 ölçülüp elendi:** `onHat` boşluğu yalnız ÇİZİMLE
+  doldurur. Arka bantta doldurduğu boşluk 0,20 br olduğu için zararsızdı; sol duvarda 3,20 br
+  olduğundan aynı kural **0,66 br² yürünebilir gövde** üretiyordu — G-37'yi kapatırken G-36'yı
+  geri getirirdi. Bulaşığın z'si artık türemiş (9,00) ve ona bağlı DÖRT nokta onunla taşınıyor.
+  **Dördüncüsü ölçümde yoktu:** bulaşıkçı pad'i; araç yalnız `ServicePlace` içini geziyordu.
+- **G-38'de C2 seçildi:** basamak başına sinyal [2 2 2 3 2 **0**] idi ve hepsi RENK'ti — oyunun en
+  pahalı yükseltmesi (9.000 ₺) ekranda iz bırakmıyordu. Beş biçim işareti listeye bağlandı
+  (biri, `ikinciPres`, kodda ZATEN çiziliyordu ama düz bir `level >= 6` koşuluydu, yani hiçbir
+  yerde sayılmıyordu). Yeni dizi [3 3 3 3 2 2], biçim olanı [1 1 1 1 1 2].
+- **Konumlar da listeye girdi:** ilk yazımda koordinatlar bileşende, bekçinin kopyası testte
+  duruyordu — bir eşyayı kaydırmak bekçiyi uyandırmıyordu. `feedback_single_source_of_truth`.
+- **İKİ MUTASYON KAÇTI ve kodun ölü dalını gösterdi:** eksen sözleşmesinin uzun-eksen koordinatı
+  bugün hiç koşmuyor (birleştirme yalnız `rot = 0` döneminde olur). Sözleşme `yerelKutu()` olarak
+  dışarı alındı ve bekçi onu doğrudan koşturuyor. **Kaçan mutasyon bir delik değil bir harita.**
+- **Bekçi:** `tests/mutfak-r2.test.ts` (25 den., her denetim İKİ DÖNEMİ birden gezer) ·
+  `node tools/mutasyon-mutfak-r2.mjs` **17/17 kırmızı, kaçan 0**.
+- **Final:** vitest 1245 ✓ · duman 45/45 ✓ · tsc temiz.
+- **AÇIK:** ① ankraj listesi hâlâ elle türetiliyor (dördüncüsü ölçümde çıkmadı) · ② semaverin boyu
+  L6'da 1,42 br, karede baskın — R2 öncesinden gelen davranış, sanat turunun kalemi ·
+  ③ C3 (mutfak odasını erken döneme getir) ölçüldü, seçilmedi; kendi turunu ister.

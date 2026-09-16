@@ -59,7 +59,17 @@ await page.evaluate(() => window.__teleport(-13.8, 14.5));
 await page.waitForTimeout(2500);
 await page.screenshot({ path: `${OUT}/${ad}-hat.png` });
 
-// 4) Üstten plan — ayak izleri: çizim ile katının ayrı yerde durduğu buradan okunur.
+// 4) SEVİYE İŞARETLERİ (R2/C2) — aynı kadrajdan L0 · L3 · L6. Yükseltmenin gözle okunup
+//    okunmadığı ancak bu üç kare yan yana konunca anlaşılır (`feedback_show_dont_ask`).
+await page.evaluate(() => { window.__devPlan({ topDown: false, gridStep: 0 }); window.__teleport(-14.6, 6.4); });
+for (const L of [0, 3, 6]) {
+  await page.evaluate((lv) => window.__setState({ stationLevels: [lv] }), L);
+  await page.waitForTimeout(1200);
+  await page.screenshot({ path: `${OUT}/${ad}-seviye-L${L}.png` });
+}
+await page.evaluate(() => window.__setState({ stationLevels: [0] }));
+
+// 5) Üstten plan — ayak izleri: çizim ile katının ayrı yerde durduğu buradan okunur.
 await page.evaluate(() => window.__devPlan({ topDown: true, zoom: 1, gridStep: 0 }));
 await page.waitForTimeout(1800);
 await page.screenshot({ path: `${OUT}/${ad}-plan.png` });

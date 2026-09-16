@@ -149,24 +149,104 @@ biri de (gövde yüksekliği) sayılamayacak kadar küçük.
 
 ## §Kareler
 
-`docs/gorsel/ss/r2-taban-plan.png` (kuşbakışı — ayak izleri) kusuru en açık gösteren kadraj:
-tezgâh ve bulaşık, sol duvara **paralel değil dik** duruyor; ikisi arasında geniş bir boşluk var.
-`r2-taban-hat.png` aynı şeyi oyuncu kamerasından gösteriyor.
+| önce | sonra |
+|---|---|
+| `ss/r2-taban-plan.png` · `ss/r2-taban-hat.png` | `ss/r2-son-plan.png` · `ss/r2-son-hat.png` |
+| `ss/r2-taban-tezgah.png` · `ss/r2-taban-bulasik.png` | `ss/r2-son-tezgah.png` · `ss/r2-son-bulasik.png` |
+| — | `ss/r2-son-seviye-L0.png` · `-L3.png` · `-L6.png` (C2'nin merdiveni, tek kadraj) |
+
+Kuşbakışı kare kusuru en açık gösteren kadraj: önce tezgâh ve bulaşık sol duvara **paralel değil
+dik** duruyor ve aralarında geniş bir boşluk var; sonra ikisi duvara yaslanmış tek bir banko.
 
 ---
 
-## §Karar
+## §Karar — D-127
 
-*(BOŞ — adım 3'te kullanıcı seçer. D-084: kod yalnız seçilen kola yazılır.)*
+Kullanıcı 2026-09-16, karar paketi (https://claude.ai/artifact/WYbL5mcuqcchywVLy3QrFY) üzerinden:
+
+| kalem | seçilen kol | elenen |
+|---|---|---|
+| G-35 · G-36 | **A1** — çizim kutuya uyar (ölçü yerel eksene çevrilir) | **A2** (kutuyu çizime döndür): kullanıcının kendi cümlesi *"sol duvara paralel olması gerekir"* diyor, A2 tam tersini kalıcılaştırırdı. Sorulmadı, gerekçesiyle elendi. |
+| G-37 | **B2** — bulaşık KUTUSUYLA BİRLİKTE tezgâha yanaşır | **A1 tek başına** (1,60 br boşluk kalır) · **B1** (boşluğu yalnız çizimle doldurur, 0,66 br² yürünebilir gövde üretir) |
+| G-38 | **C2** — her basamağa renk DIŞI bir biçim işareti | **C1** (yalnız boş basamağı doldur, sinyal yine tek türden) · **C3** (mutfak odasını erken döneme getir — kendi turunu ister) |
 
 ---
 
 ## §Uygulama
 
-*(BOŞ)*
+**A1 — `kitchenLook.onHatGovdeleri`.** Ölçü artık yerel eksende teslim ediliyor: dönüş eksenleri
+takas ediyorsa yarı-boyutlar da takas edilir ve hattın uzun ekseni yerel x'e çevrilir. Eksen
+sözleşmesi `yerelKutu()` olarak DIŞARI alındı (gerekçe §Bekçi). **Kutulara dokunulmadı** —
+`activeSolids` R2 öncesiyle birebir aynı.
+
+**B2 — `layout.PLACE_LEFT_WALL`.** Bulaşığın z'si elle yazılı 10,60 değil artık TÜREMİŞ:
+`SOL_DUVAR_TEZGAH_Z + SOL_DUVAR_TEZGAH_HZ + SOL_DUVAR_BULASIK_HZ = 9,00`. Yarı-derinlikler
+değişirse bitişiklik kendiliğinden korunur. Bulaşıkla birlikte taşınanlar (hepsi türemiş):
+`dishwasherHome` (bulaşığın 2,0 br kuzeyi) · `staffWalk.a`/`b` (hattın iki ucu) ·
+`LAYOUT.padPos.dishwasher` (bulaşığın tam yanı — pad hedefin konumundadır).
+
+> **Ölçümde olmayan dördüncü ankraj:** karar paketi üç nokta saymıştı (`dishwasherHome` ·
+> `waiterHome` · `staffWalk`); bulaşıkçı PAD'i listede yoktu çünkü araç yalnız `ServicePlace`in
+> içindeki noktaları geziyordu. Pad eski z'sinde bırakılsaydı boş zemini işaretliyor olurdu, o
+> yüzden B2'nin parçası olarak taşındı ve bekçiye kondu. Aracın kapsamı da genişletilmedi —
+> genişletilmesi gereken yer bu değil, **ankraj listesinin nereden türediği**; not §Açık uçlarda.
+
+**C2 — `kitchenLook.SERVIS_ISARETLERI` + `ServicePoint.tsx`.** Dört yeni biçim işareti
+(`tepsi@L1` · `bardakIstifi@L2` · `surahi@L3` · `ikinciSemaver@L6`) ve kodda zaten çizilen ama
+hiçbir yerde SAYILMAYAN bir beşincisi (`ikinciPres@L6`, eskiden düz bir `level >= 6` koşuluydu).
+Liste hem eşiği hem KONUMU taşıyor: ilk yazımda koordinatlar bileşende, bekçinin kopyası testte
+duruyordu — yani bir eşyayı kaydırmak bekçiyi hiç uyandırmıyordu.
+
+Yerleşim karede düzeltildi: üç işaret önce kuzey ucundaki 0,70 br'lik boşluğa sığdırılmıştı ve
+ilerleme gibi değil **kalabalık** gibi okunuyordu; tablanın iki serbest ucuna dağıtıldılar.
+
+### Sonuç (final tam koşu — `docs/olcum-mutfak-r2.txt`)
+
+| ölçü | önce | sonra |
+|---|---|---|
+| sol duvar tezgâh IoU / açı | 0,19 / **90°** | **1,00 / 0°** |
+| sol duvar bulaşık IoU / açı | 0,33 / **90°** | **1,00 / 0°** |
+| çizimin içinde yürünen (tezgâh) | 0,62 br² (%19,4) | **0,00 br²** |
+| görünmez duvar (tezgâh) | 2,20 br² (%68,7) | **0,00 br²** |
+| gövde odanın dışında | 0,80 br² (0,79 br) | **0,00 br²** |
+| hat boşluğu | 3,20 br | **0,00 br** |
+| basamak başına sinyal | 3 · 3 · 3 · 3 · 2 · **0** | 3 · 3 · 3 · 3 · 2 · **2** |
+| bunun BİÇİM olanı | 0 · 0 · 0 · 1 · 1 · **0** | 1 · 1 · 1 · 1 · 1 · **2** |
+| arka bant (üçü) | 0,93-0,97 · geçilen 0,00 | **değişmedi** |
 
 ---
 
 ## §Bekçi
 
-*(BOŞ)*
+`tests/mutfak-r2.test.ts` — **25 denetim**, mutasyonla doğrulandı:
+`node tools/mutasyon-mutfak-r2.mjs` → **17 mutasyon, kaçan 0**.
+
+**Her denetim İKİ DÖNEMİ birden gezer.** Tek dönemi denetleyen bir bekçi, bu kusurun tam olarak
+kaçtığı bekçidir: `rot = 0` tarafı S3'ten R2'ye kadar hep yeşil yandı.
+
+**İlk turda İKİ mutasyon KAÇTI ve kodun zayıf yerini gösterdi.** M2 ve M4 eksen sözleşmesinin
+uzun-eksen koordinatını bozuyordu; ikisi de yakalanmadı çünkü **o dal canlı kodda ölü**:
+birleştirme yalnız garson istasyonu sahnedeyken olur, o da yalnız `rot = 0` döneminde — yani
+"dönmüş hat + birleştirme" bileşimi bugün hiç koşmuyor. Sözleşme `yerelKutu()` olarak dışarı
+alındı ve bekçi onu DOĞRUDAN koşturuyor (iki gövde, bir boşluk, dünyaya geri taşıma): gövdeler
+kendi taraflarında kaldı mı, dış kenarlar yerinde mi, dikiş boşluğun ortasında mı. B1 (erken
+birleşme) bir gün açılırsa kural sessizce yanlış çalışmayacak.
+
+**`tests/olcu-donduruldu.test.ts` iki dondurulmuş ölçüyü yakaladı** (`servis.solDuvar.bulasik` ve
+`pad.bulasikci`) — dondurma testinin işi tam bu: değişikliği bilinçli yapmaya zorlamak. İkisi de
+D-127 referansıyla güncellendi.
+
+---
+
+## §Açık uçlar
+
+1. **Ankraj listesi hâlâ elle:** bulaşığa bağlı noktalar (`dishwasherHome` · `staffWalk` · pad)
+   bugün tek tek türetiliyor. Bir dördüncüsü eklenirse ne araç ne bekçi kendiliğinden görür —
+   pad'in ölçümde çıkmaması bunun küçük provasıydı. Yapısal çözüm: bir gövdeye "bağlı noktalar"
+   ilanı ve hepsinin tek yerden türemesi. Bu turda yapılmadı.
+2. **Semaverin boyu L6'da 1,42 br** (`0,70 + L × 0,12`). Karede (`ss/r2-son-seviye-L6.png`) tezgâhın
+   üstünde baskın duruyor. R2 öncesinden gelen bir davranış, kullanıcı şikâyet etmedi, bilerek
+   dokunulmadı — bir sanat turunun kalemi.
+3. **C3 (mutfak odasını erken döneme getir) duruyor.** Ölçüm sol duvar döneminde odanın hiç
+   çizilmediğini yazdı; kullanıcı C2'yi seçti. C3 bandın erken çizilmesini, dolayısıyla
+   duvar/kamera/kelepçe kararlarını açar — kendi turunu ister.

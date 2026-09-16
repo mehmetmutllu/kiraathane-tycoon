@@ -5,30 +5,49 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-16 — **R2 AÇILDI: mutfak yerleşimi + çarpışma** · Faz R 2/4 · 103/111)
+## ŞU AN (2026-09-16 — **R2 BİTTİ: mutfak yerleşimi + çarpışma** · Faz R 2/4 · 104/111)
 
 ```
-SORU            : İlk salonun SOL DUVARINDAKİ servis tezgâhı ile bulaşık — ÇİZİLEN gövde ile
-                  ÇARPIŞMA kutusu aynı yerde mi, hat bitişik mi okunuyor, tezgâhın seviyesi
-                  gözle kaç sinyalden okunuyor?
-ÖLÇÜLECEK KOLLAR: T  taban (bugünkü hâl, iki dönem: sol duvar ve arka bant)
-                  A1 çizim kutuya uyar — gövde ölçüsü dönüşten SONRAKİ eksene göre türer
-                  A2 kutu çizime uyar — collision gövdenin bugün çizildiği yere döndürülür
-                  B1 erken dönemde de birleştir (`onHat` sol duvar döneminde de koşar)
-                  B2 bulaşık tezgâha yanaşır (koordinat değişir → erişim/tempo bedeli ölçülür)
-                  C1 seviye sinyali sayımı (G-38): L0→L6 arası gözle değişen kaç işaret var
-SAYILAR         : (adım 2'den sonra dolar)
-KARAR           : (adım 3 — kullanıcı seçer)
-UYGULAMA        : (adım 4 — yalnız kararın kolu)
-BEKÇİ           : (test dosyası + mutasyon sayısı)
+SORU            : Sol duvardaki tezgâh ve bulaşık — çizilen gövde ile çarpışma kutusu aynı yerde
+                  mi, hat bitişik mi, seviye gözle kaç sinyalden okunuyor?
+ÖLÇÜLEN KOLLAR  : T taban (İKİ dönem) · A1 çizim döner · A2 kutu döner · B1 erken birleşme ·
+                  B2 bulaşık yanaşır · C2 seviye sinyali (hepsi ETKİLİ doğrulandı)
+SAYILAR         : docs/mutfak-raporu-r2.md §Bulgular · ham: docs/olcum-mutfak-r2.txt (TAM)
+KARAR           : D-127 — A1 + B2 + C2. A2 SORULMADAN elendi (kullanıcının kendi cümlesi zaten
+                  paraleli istiyor); B1 ölçülüp elendi (boşluğu yalnız çizimle doldurur)
+UYGULAMA        : kitchenLook.onHatGovdeleri + yerelKutu + SERVIS_ISARETLERI ·
+                  layout.PLACE_LEFT_WALL (bulaşık z TÜREMİŞ) + padPos.dishwasher ·
+                  ServicePoint.tsx (5 biçim işareti) · olcu-donduruldu 2 ölçü güncellendi
+BEKÇİ           : mutfak-r2 (25 den. · 17 mut.) · kaçan 0 (ilk turda 2 kaçtı, delik kapatıldı)
+FINAL           : vitest 1245 ✓ · duman 45/45 ✓ · tsc temiz · IoU 0,19 → 1,00 · açı 90° → 0° ·
+                  geçilen 0,62 → 0,00 br² · görünmez 2,20 → 0,00 br² · hat boşluğu 3,20 → 0,00 br
 ```
 
-**Kod okumasının bulduğu şüpheli (ÖLÇÜLMEDEN karar değildir):** `onHatGovdeleri` gövde
-ölçüsünü `half[0]`/`half[1]`ten, yani DÜNYA eksenlerinden türetiyor; iki çağıran da (`Stations`
-ve `DishSink`) gövdeyi `place.rot` ile ZATEN dönmüş bir grubun içine çiziyor. `rot = 0` olan
-arka bant döneminde fark yok; sol duvar döneminde (`rot = π/2`) iki eksen yer değiştiriyor.
-Aynı kök hem G-35'i (90° açı) hem G-36'yı (çizilen gövdenin katısı başka yerde) açıklayabilir —
-araç bunu doğrulayacak ya da çürütecek.
+**Turun kalıcı üç dersi:**
+1. **İki dönemden biri doğru çalışıyorsa kusur ölümsüzdür.** Ölçü DÜNYA ekseninde üretilip YEREL
+   eksende tüketiliyordu; `rot = 0` olan arka bant hep doğru göründüğü için hata S3'ten R2'ye
+   kadar yaşadı. Bekçinin kuralı bu yüzden "her denetim İKİ DÖNEMİ birden gezer" — tek dönemi
+   denetleyen bekçi, bu kusurun tam olarak kaçtığı bekçidir.
+2. **Kaçan mutasyon bir delik değil bir HARİTA.** M2 ve M4 yakalanmadı; sebebi bekçinin zayıflığı
+   değil, yanlışladıkları dalın canlı kodda ÖLÜ olmasıydı (birleştirme yalnız `rot = 0` döneminde
+   koşuyor). Sözleşme `yerelKutu()` olarak dışarı alındı ve doğrudan koşturuldu.
+3. **Ölçümün kapsamı, kararın kapsamı değildir.** Araç yalnız `ServicePlace` içindeki noktaları
+   geziyordu; bulaşıkçı PAD'i listede yoktu ve B2 uygulanınca boş zemini işaretler hâlde kalacaktı.
+   Kolun gereği olduğu için taşındı ve bekçiye kondu — ama asıl açık, ankraj listesinin hâlâ elle
+   türetiliyor olması.
+
+**Yolda düzeltilen üç araç kusuru:** "oda dışı" ölçütü arka bantta anlamsızdı (bant tanım gereği
+salon dışı) → kutunun merkezi salonda değilse satır ölçülmüyor · kare aracının dönem damgası
+`window.__game`i ALAN sanıyordu, okunamayan değeri "geçti" sayıyordu (fonksiyon) · düzeltme
+uygulanınca "A1 kolu" adı yalanlaştı → "TAKAS (geri alınsa)" oldu, arm tablosu bekçinin
+karşılaştırma koluna dönüştü.
+
+**KARARSIZ BEKÇİ — yeni veri, teşhis DEĞİŞTİ.** Bu turda bir kez daha görüldü (1242/1243) ve
+hemen ardından **beş koşu üst üste temiz**. İki gözlemin ortak yanı: ikisi de bir dosya
+YAZILDIKTAN hemen sonraki ilk koşuda oldu — yani şüphe artık `sira-kilidi`/`pano-guncelle`de
+değil, koşucunun yazım-zamanlaması. Ayrıca R1'in *"çıktı dosya adını göstermiyor"* notu YANLIŞ
+çıktı: `--reporter=verbose` (ve varsayılan da) kırık testin adını basıyor — R1'de `tail` çıktıyı
+kesmişti. Kip eklemeye gerek yok, `| grep -E '×|FAIL'` yeter.
 
 ## SIRADAKİ TAM ADIM
 
@@ -37,10 +56,9 @@ kullanıcının KENDİ cümleleri: `docs/geribildirim-oyun-testi-2026-09-16.md`.
 Bölünme kullanıcı onayıyla dört tur oldu; **R1 bitti**, sırada **R2**.
 
 1. ~~**Görev şeridi** (G-41…G-44)~~ → **R1'de KAPANDI (D-126).**
-2. **Mutfak yerleşimi + çarpışma** (G-35…G-38) — tezgâh/bulaşık 90° yanlış açıda (sol duvara
-   paralel olmalı) · içinden geçiliyor · başlangıçta tezgâhlar bitişik olsun · tezgâh
-   yükseltmeleri belirsiz. **G-39 (masa yükseltmeleri sırayla) DENGE kapısına tabi, ayrı tutulur.**
-3. **HUD çerçeveleri** (G-45…G-49) — ayarlar kaydırıcı çerçevesi kesik · FPS sayacını KALDIR ·
+2. ~~**Mutfak yerleşimi + çarpışma** (G-35…G-38)~~ → **R2'de KAPANDI (D-127).**
+   **G-39 (masa yükseltmeleri sırayla) hâlâ açık — DENGE kapısına tabi, ayrı tutulur.**
+3. **SIRADAKİ: HUD çerçeveleri** (G-45…G-49) — ayarlar kaydırıcı çerçevesi kesik · FPS sayacını KALDIR ·
    iki ödül alt alta + arasına `+` · seviye rozeti Clash of Clans gibi BİRLEŞİK (bar yuvarlağın
    çevresinde, en üst satırda) · sağ üstteki elmas/paraya çerçeve.
 4. **G-50 — çevre sanatı, KENDİ TASARIM TURU.** Kullanıcı: *"zemin ve duvarlar... yapılmamış
@@ -49,6 +67,14 @@ Bölünme kullanıcı onayıyla dört tur oldu; **R1 bitti**, sırada **R2**.
    **Not:** `kaykit-forest-nature` F2'de silindi; bu kol seçilirse
    `git checkout 13738b5^ -- public/assets/models/kaykit-forest-nature` ile geri gelir ve
    bekçi gereği entegrasyonu AYNI turda yapılır.
+
+**R2'nin bıraktığı üç açık uç:** ① **ankraj listesi elle** — bir gövdeye bağlı noktalar
+(`dishwasherHome` · `staffWalk` · pad) tek tek türetiliyor; dördüncüsü eklenirse ne araç ne bekçi
+kendiliğinden görür (pad'in ölçümde çıkmaması bunun provasıydı). Yapısal çözüm: gövdenin "bağlı
+noktalar" ilanı · ② **semaverin boyu L6'da 1,42 br**, karede tezgâhın üstünde baskın
+(`ss/r2-son-seviye-L6.png`) — R2 öncesinden gelen davranış, sanat turunun kalemi ·
+③ **C3 ölçüldü, seçilmedi:** sol duvar döneminde mutfak odası hiç çizilmiyor
+(`areasOpen < 3 → null`), yani S22 kademe merdiveni L0-L3'te ekranda yok. Kendi turunu ister.
 
 **R1'in bıraktığı açık uç:** cihazın kendi yazı-tipi ölçeği (Android "yazı boyutu" ayarı)
 ölçülmedi. Bant artık içerikten türeyen yükseklikte, yani ölçek büyüse de kesmemeli — ama bu
@@ -89,22 +115,13 @@ sürekli çözme; APK turunda okunacak) · ② `2024-q4` paketi indirilmedi, pro
 Bel bağının ucu çeyrek açıdan ince bir dudak bırakıyor (`docs/gorsel/ss/s19b-kiyafet.png`).
 Ölçü değil biçim; pay 0,035 → 0,012 ile küçültüldü, sıfırlanmadı. Bir sonraki sanat turunda.
 
-## PANO — BORÇ KAPANDI, YAPISAL ÇÖZÜM UYGULANDI (2026-09-16)
+## PANO — v50 YAYINDA (2026-09-16)
 
-Pano yayında: **https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs** (v49 · 103/111 · Faz R eklendi).
-
-**Kök sebep kapatıldı, borç ödenmedi sadece.** Yayın canlı sürümün TAMAMININ okunmasını şart
-koşuyor ve pano her turda büyüyordu — 67 günlük kartı, 219 KB, toplam 1829 satır; okunanın
-neredeyse tamamı bir daha bakılmayacak arşivdi ve maliyet tur başına ARTIYORDU. Kullanıcı onayıyla
-projenin kendi kuralı (`eski anlatı → arsiv/`) panoya uygulandı:
-
-- Pano **son 8 turu** gösterir; taşan kart `memory-bank/arsiv/pano-gunluk.json`'a taşınır.
-- Arşivlenen **59 kart** kaybolmadı — arşiv dosyasında ve git'te duruyor; pano altında sayacı var
-  (`gunlukArsiv`), yani kaç kartın nerede olduğu ekranda yazılı.
-- **1829 → 981 satır · 317 → 116 KB.** Sonraki turların yayın maliyeti üçte bire indi ve
-  bir daha birikmez.
-- Defter notu da güncellendi: yeni kart eklerken listeyi 8'de tutmak ve sayacı güncellemek
-  panonun kendi JSON başlığında yazılı.
+**https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs** · 104/111 (%94) · Faz R 2/4.
+Kart sayısı 8'de tutuldu (taşan S22 kartı `memory-bank/arsiv/pano-gunluk.json`'a gitti, sayaç 60).
+Bu turda ayrıca **bayat bir risk kartı** düzeltildi: "arka salonda 12 masa arasından geçilemiyor"
+hâlâ AÇIK görünüyordu, oysa H3 2026-09-16'da elenmişti (banket adasından sonra açıklık 2,15 br).
+Yerine R2'nin yapısal açık ucu kondu (ankraj listesi elle türetiliyor).
 
 ## AÇIK KALEMLER (ölçüldü/görüldü, bilerek duruyor — tam listesi `memory-bank/arsiv/`de)
 
@@ -126,13 +143,7 @@ G-07 dwell para-bağımsız · G-39 masa yükseltmeleri sırayla · G-40 para ge
 (son dördü DENGE, varyant kapısına tabi) · ~~masalar geçilmiyor~~ → **H3 ELENDİ (2026-09-16):** banket adası geçişinden sonra
 açıklık 2,15 br (gereken 0,94) — premis düştü, kalem geçersiz. Faz H **3/3 ✅ kapandı.**
 
-**Altyapı:** **KARARSIZ BEKÇİ (2026-09-16, R1 kapanışı):** `npm run test` bir koşuda
-**1219/1220** verdi, hemen ardından **beş koşu üst üste 1220/1220**. Kırılan testin ADI
-yakalanamadı (çıktı kuyruğu sayıyı gösteriyor, dosyayı değil) ve tekrar üretilemedi. Şüpheli
-ikisi de çevreyi okuyan bekçiler: `sira-kilidi` (git çalışma ağacını okur — o an 3 dosya
-commit'siz) ve `pano-guncelle` (panoyu defterle karşılaştırır — o an pano yeni yazılmıştı).
-**Yazıldı, yutulmadı:** bir daha görülürse önce koşucuya dosya adını bastıracak bir kip
-eklenmeli; kararsız bekçi bekçi değildir. · ~~`npm run apk` kırıktı~~ → **KAPANDI (2026-09-16):** Gradle 8.14.3'ün `gradlew.bat`'ı
+**Altyapı:** kararsız bekçi → yukarıdaki tur kartına taşındı (teşhis değişti). · ~~`npm run apk` kırıktı~~ → **KAPANDI (2026-09-16):** Gradle 8.14.3'ün `gradlew.bat`'ı
 `CLASSPATH`'i boş kurup `-classpath ""` geçiriyordu, Java reddediyordu (*"-classpath requires class
 path specification"*) — kabuk değil BETİK kusuruydu (PowerShell'de de aynı). `-jar` zaten verildiği
 için boş `-classpath` silindi. **APK üretildi: 21,9 MB** (`android/app/build/outputs/apk/debug/`),
@@ -147,6 +158,9 @@ bakıyor · mutfağın kuşbakışı karesi OYUNDAN çekilemez (tepeden kamera o
 (repro aracı `tools/olcum-panel-donusu.mjs`).
 
 **Önizlemeler**
+**R2 KARAR PAKETİ (mutfak · kareler + sayılar):** https://claude.ai/artifact/WYbL5mcuqcchywVLy3QrFY
+**R2 kareler:** `ss/r2-taban-{plan,hat,tezgah,bulasik}.png` (ÖNCE) ·
+`ss/r2-son-{plan,hat,tezgah,bulasik}.png` + `ss/r2-son-seviye-L{0,3,6}.png` (SONRA)
 **G1 KARAR PAKETİ (görev şeridi · kareler + sayılar):** https://claude.ai/artifact/F2jowE134dyDnzEQPBsAgy
 **G1 kareler:** `ss/g1-serit-normal.png` · `ss/g1-serit-bitti.png` (ikisi de UYGULAMA SONRASI)
 **S9 SES KARAR PAKETİ (DİNLENEBİLİR):** https://claude.ai/artifact/49KsxE368xVHWbw4wHdkSy

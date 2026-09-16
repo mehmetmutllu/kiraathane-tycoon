@@ -734,17 +734,153 @@ export function fayansKarolari(karo: FayansKaro = 'kucuk'): FloorKaro[] {
 }
 
 /**
+ * SERVİS GÖVDESİNİN SEVİYE İŞARETLERİ — renk DEĞİL, BİÇİM (R2 · D-127 · G-38).
+ *
+ * Kullanıcı 2026-09-16: *"tezgah yükseltmeleri de nasıl oluyor bilmiyorum bunları tamamla"*.
+ * Ölçüm (`docs/mutfak-raporu-r2.md` §Bulgular 4) şikâyeti doğruladı ve nedenini de söyledi:
+ * basamak başına ayırt edilir sinyal [2 · 2 · 2 · 3 · 2 · **0**] ve bunların hepsi RENK —
+ * semaverin gövdesi ile tost presinin kapağı. İkisi de aynı objenin aynı bölgesinde.
+ * `feedback_upgrade_legibility` tam bunun tersini istiyor: *"tek sinyal yetmez, çoklu redundant
+ * sinyal"*. Üstelik **L5 → L6 hiçbir şey değiştirmiyordu**: iki renk dizisi de 6 üyeli ve
+ * `Math.min(level, uzunluk − 1)` ile kelepçeli, yani L5 zaten son üyeye varıyor. Oyunun en pahalı
+ * yükseltmesi (9.000 ₺) ekranda iz bırakmıyordu.
+ *
+ * Bağlam bunu daha da ağırlaştırıyor: sol duvar döneminde mutfak odası hiç çizilmiyor
+ * (`Scene.BackBand`: `areasOpen < 3 → null`), yani S22'nin kademe merdiveni L0-L3 boyunca ekranda
+ * YOK. O dönemde oyuncunun gördüğü tek yükseltme yüzeyi bu gövdedir.
+ *
+ * ÇÖZÜM (kullanıcı kararı C2): her basamağa renk dışı bir BİÇİM işareti. Liste burada durur ki
+ * bekçi onu sahneyi çizmeden sayabilsin — `ServicePoint.tsx` yalnız çizer, hangi basamakta neyin
+ * açıldığına karar vermez. L4 (TEZGÂH kimliği) ve L5 (tost sacı) zaten birer biçim işaretiydi;
+ * listeye ALINMADILAR, çünkü onları `world.isCounter`/`sellsTost` söylüyor ve aynı sinyal iki
+ * kaynaktan sayılırsa bekçi kendini kandırır.
+ */
+export interface ServisIsareti {
+  /** Çizim tarafının anahtarı. */
+  readonly ad: 'tepsi' | 'bardakIstifi' | 'surahi' | 'ikinciSemaver' | 'ikinciPres';
+  /** Bu seviyede ve üstünde görünür. */
+  readonly acilir: number;
+  /**
+   * Tabla üstündeki YERİ ve ayak izi yarı-boyutu (yerel eksen). Burada durur, `ServicePoint.tsx`te
+   * değil: ilk yazımda koordinatlar bileşende, bekçinin kopyası testte duruyordu — yani iki ayrı
+   * doğru vardı ve tezgâhtaki bir eşyayı kaydırmak bekçiyi hiç uyandırmıyordu
+   * (`feedback_single_source_of_truth`). Artık ikisi de buradan okuyor.
+   * `acilir: null` = seviyeye bağlı değil, hep orada (semaver gibi) — çakışma denetimine girer.
+   */
+  readonly x: number;
+  readonly z: number;
+  readonly hx: number;
+  readonly hz: number;
+}
+
+/** Tablanın kullanılabilir yarı-ölçüsü (yerel) — en dar dönem 3,20 × 1,00'dir. */
+export const SERVIS_TABLA_HX = 1.6;
+export const SERVIS_TABLA_HZ = 0.5;
+
+/** Seviyeden BAĞIMSIZ, hep tablada duran gövdeler — çakışma denetimi bunları da sayar. */
+export const SERVIS_SABIT_YERLER: readonly { ad: string; x: number; z: number; hx: number; hz: number }[] = [
+  { ad: 'semaver', x: 0.55, z: 0, hx: 0.34, hz: 0.34 },
+];
+
+export const SERVIS_ISARETLERI: readonly ServisIsareti[] = [
+  /* YERLEŞİM TABLAYA YAYILIR, bir uca KÜMELENMEZ. İlk denemede üçü de kuzey ucundaki 0,70 br'lik
+     boşluğa sığdırılmıştı ve karede (ss/r2-son-seviye-L3.png) ilerleme gibi değil KALABALIK gibi
+     okunuyordu — üç küçük nesne semaverin gölgesinde. Tablanın iki serbest ucu var (kuzey 0,90…1,60
+     ve güney −1,60…−1,10; arası tost sacı, hazır çay ve cezve ocağının); basamaklar ikisine
+     dağıtıldı, böylece her yükseltme tezgâhın BAŞKA bir yerini dolduruyor. */
+  { ad: 'tepsi', acilir: 1, x: -1.35, z: 0.25, hx: 0.2, hz: 0.14 },
+  { ad: 'bardakIstifi', acilir: 2, x: 1.12, z: 0.24, hx: 0.07, hz: 0.07 },
+  { ad: 'surahi', acilir: 3, x: 1.42, z: -0.18, hx: 0.14, hz: 0.14 },
+  // L4 = TEZGÂH kimliği · L5 = tost sacı (ikisi de zaten biçim işareti, `world`ten okunur)
+  { ad: 'ikinciSemaver', acilir: 6, x: -1.35, z: -0.25, hx: 0.2, hz: 0.2 },
+  /* İkinci tost presi L6'da ZATEN çiziliyordu ama koşulu `ServicePoint.tsx` içinde düz bir
+     `level >= 6`di: yani bir seviye işaretiydi ve hiçbir yerde öyle SAYILMIYORDU. Listeye
+     alındı — hem bekçi onu görüyor hem de basamak eşiği tek yerden değişiyor. */
+  /* İkinci pres tost SACININ üstünde durur (kendi yeri yok, sacın ayak izinde) — o yüzden
+     çakışma denetimine sıfır ayak iziyle girer. */
+  { ad: 'ikinciPres', acilir: 6, x: -0.6, z: -0.28, hx: 0, hz: 0 },
+];
+
+/** Bir işaretin kaydı — `ServicePoint.tsx` konumu buradan okur, elle yazmaz. */
+export const servisIsareti = (ad: ServisIsareti['ad']): ServisIsareti => {
+  const i = SERVIS_ISARETLERI.find((k) => k.ad === ad);
+  if (!i) throw new Error(`bilinmeyen servis işareti: ${ad}`);
+  return i;
+};
+
+/** L seviyesinde gövdede DURAN biçim işaretleri. */
+export const servisIsaretleri = (level: number): ServisIsareti['ad'][] =>
+  SERVIS_ISARETLERI.filter((i) => level >= i.acilir).map((i) => i.ad);
+
+/** `ad` işareti L seviyesinde çizilir mi. */
+export const servisIsaretiVar = (ad: ServisIsareti['ad'], level: number): boolean =>
+  servisIsaretleri(level).includes(ad);
+
+/**
+ * Ön hattın DÖNÜŞÜ dünya eksenlerini takas ediyor mu (0/π → hayır · ±π/2 → evet).
+ * Ölçüm aracı da (`tools/olcum-mutfak-r2.ts`) bekçi de bu fonksiyondan okur — "dönmüş mü"
+ * sorusunun cevabı tek yerde durur.
+ */
+export const eksenTakasi = (rot: number): boolean => Math.abs(Math.sin(rot)) > 0.5;
+
+/**
+ * Bir gövdenin dünya yerleşiminden YEREL eksendeki ölçüsü ve hattın uzun ekseni boyunca yerel
+ * koordinatı. Ayrı bir fonksiyon, çünkü **bugün hiçbir dönem bu dalın takaslı hâlini
+ * birleştirmeyle birlikte koşmuyor**: birleştirme yalnız garson istasyonu sahnedeyken olur,
+ * o da yalnız `rot = 0` döneminde. Yani takaslı birleştirme yolu canlı kodda ölü — ve mutasyon
+ * denemesi bunu gösterdi (iki mutasyon `onHatGovdeleri` üzerinden bekçiden KAÇTI).
+ * Sözleşmeyi dışarı almak bekçinin onu doğrudan koşturmasını sağlar; B1 (erken birleşme) bir gün
+ * açılırsa kural sessizce yanlış çalışmaz.
+ *
+ * YÖN: three.js'te Y ekseni etrafında +π/2 dönüş yerel (1,0,0) vektörünü dünya (0,0,−1)'e taşır.
+ * Yani yerel +x, dünya **−z**'dir — sıra bu yüzden `-pos[2]` üzerinden kurulur. İşaret ters
+ * yazılsaydı birleştirme gövdeleri birbirinden uzağa uzatırdı.
+ */
+export const yerelKutu = (
+  pos: readonly [number, number, number],
+  h: readonly [number, number],
+  takas: boolean,
+): { x: number; hx: number; hz: number } => ({
+  x: takas ? -pos[2] : pos[0],
+  hx: takas ? h[1] : h[0],
+  hz: takas ? h[0] : h[1],
+});
+
+/**
  * ÖN HATTIN ÜÇ GÖVDESİ — çay ocağı · garson istasyonu · bulaşık, tek kaynaktan.
  *
  * Üçü de kendi COLLISION kutusundan türer (elle yazılı 2,2 / 1,4 / 0,8 sayıları kalktı) ve
  * garson istasyonu sahnedeyken birbirine BİRLEŞİR. Garson istasyonu açılmadan önce (servis hâlâ
  * sol duvardayken) üçü bir sıra oluşturmuyor — o dönemde birleştirme yapılmaz, her gövde kendi
  * kutusunda kalır.
+ *
+ * R2 (D-127 · G-35/G-36) — ÖLÇÜ YEREL EKSENDE DÖNER. Bu fonksiyon ölçüyü çarpışma kutusundan,
+ * yani DÜNYA eksenlerinden (`half[0]` = x · `half[1]` = z) türetiyordu; oysa iki çağıranın
+ * ikisi de gövdeyi `place.rot` ile **zaten döndürülmüş** bir grubun içine çiziyor
+ * (`Scene.Stations` · `DishSink`). `rot = 0` olan arka bant döneminde iki eksen aynı olduğu için
+ * fark görünmüyordu; sol duvar döneminde (`rot = π/2`) yerel x dünya z'ye gidiyor ve gövde kendi
+ * kutusuna DİK çiziliyordu:
+ *
+ *     tezgâh   kutu 1,00 × 3,20   çizim 3,20 × 1,00   IoU 0,19   açı 90°
+ *     bulaşık  kutu 1,00 × 2,00   çizim 2,00 × 1,00   IoU 0,33   açı 90°
+ *
+ * Ölçülen bedeli iki yönlüydü: çizilen tezgâhın %19,4'ünün içinden yürünüyordu (G-36) ve kutusunun
+ * %68,7'sinde hiçbir gövde yoktu. Tezgâh ayrıca duvarı 0,79 br deliyordu.
+ * `docs/mutfak-raporu-r2.md` · ham çıktı `docs/olcum-mutfak-r2.txt`.
+ *
+ * ÇÖZÜM KUTUYA DOKUNMAZ (kullanıcı kararı A1, zıt kol A2 elendi): kutular zaten doğruydu, ölçü
+ * yanlış eksende teslim ediliyordu. Dönüş eksenleri takas ediyorsa yarı-boyutlar da takas edilir
+ * ve hattın uzun ekseni YEREL x'e çevrilir. Yerel +x, `rot = π/2`de dünya −z'dir — birleştirme
+ * sırası da bu yüzden `-pos[2]` üzerinden kurulur, yoksa `dx` ters işaretle uygulanırdı.
  */
 export function onHatGovdeleri(areasOpen: number): { station: OnHatGovde; waiter: OnHatGovde; dish: OnHatGovde } {
   const p = servicePlace(areasOpen);
-  const kutu = (x: number, h: readonly [number, number]) => ({ x, hx: h[0], hz: h[1] });
-  const parcalar = [kutu(p.station[0], p.half), kutu(WAITER_STATION.pos[0], WAITER_STATION.half), kutu(p.dish[0], p.dishHalf)];
+  const takas = eksenTakasi(p.rot);
+  const parcalar = [
+    yerelKutu(p.station, p.half, takas),
+    yerelKutu(WAITER_STATION.pos, WAITER_STATION.half, takas),
+    yerelKutu(p.dish, p.dishHalf, takas),
+  ];
   if (!waiterStationOpen(areasOpen)) {
     const [a, b, c] = parcalar.map((q) => ({ w: q.hx * 2, d: q.hz * 2, dx: 0 }));
     return { station: a, waiter: b, dish: c };

@@ -470,21 +470,48 @@ export interface ServicePlace {
 export const SERVICE_MOVES_AT = 3;
 export const serviceMoved = (areasOpen: number): boolean => areasOpen >= SERVICE_MOVES_AT;
 
-/** ADIM 1-2 — ilk salonun SOL DUVARI. Bulaşık ocağın hemen yanında (D-025: "bulaşık ocağın yanında"). */
+/**
+ * ADIM 1-2 — ilk salonun SOL DUVARI. Bulaşık ocağın hemen yanında (D-025: "bulaşık ocağın yanında").
+ *
+ * R2 (D-127 · G-37) — "YANINDA" ARTIK BİTİŞİK. Kullanıcı 2026-09-16: *"başlangıçta tezgahlar da
+ * bitişik olsun"*. Bulaşığın z'si elle yazılı 10,60 idi ve iki kutu arasında **3,20 br** boşluk
+ * bırakıyordu; ölçüm üç kolu da sayıya çevirdi (`docs/mutfak-raporu-r2.md` §Bulgular 3) ve
+ * kullanıcı B2'yi seçti: gövde değil KUTU yanaşır, yani hat hem gözle hem çarpışmada kesintisiz
+ * olur (birleştirme kolu B1 boşluğu yalnız çizimle doldurup 0,66 br² yürünebilir gövde üretiyordu).
+ *
+ * Sayı artık TÜREMİŞ: iki kutunun yüzü değsin diye merkez, tezgâhın merkezinden iki yarı-derinlik
+ * uzağa konur. Yarı-derinlikler değişirse bitişiklik kendiliğinden korunur — elle güncellenecek
+ * ikinci bir sayı yok.
+ */
+const SOL_DUVAR_TEZGAH_Z = 6.4;
+const SOL_DUVAR_TEZGAH_HZ = 1.6;
+const SOL_DUVAR_BULASIK_HZ = 1.0;
+/** Bulaşığın merkezi — tezgâhın kutusuna BİTİŞİK (boşluk tanım gereği 0,00). */
+const SOL_DUVAR_BULASIK_Z = SOL_DUVAR_TEZGAH_Z + SOL_DUVAR_TEZGAH_HZ + SOL_DUVAR_BULASIK_HZ;
+
 const PLACE_LEFT_WALL: ServicePlace = {
   areaIndex: 0,
-  station: [-16.2, 0, 6.4],
+  station: [-16.2, 0, SOL_DUVAR_TEZGAH_Z],
   rot: Math.PI / 2,
-  half: [0.5, 1.6],
-  pickup: [-15.0, 0, 6.4],
+  half: [0.5, SOL_DUVAR_TEZGAH_HZ],
+  pickup: [-15.0, 0, SOL_DUVAR_TEZGAH_Z],
   upgradeSpot: [-15.2, 0, 2.6],
-  dish: [-16.2, 0, 10.6],
+  dish: [-16.2, 0, SOL_DUVAR_BULASIK_Z],
   dishRot: Math.PI / 2,
-  dishHalf: [0.5, 1.0],
+  dishHalf: [0.5, SOL_DUVAR_BULASIK_HZ],
   waiterHome: [-14.4, 0, 8.6],
   waiterPosts: [[-15, 0, 5], [-14.5, 0, 9.75], [-11.75, 0, 7.5]] as const,
-  dishwasherHome: [-14.4, 0, 12.6],
-  staffWalk: { a: [-15.1, 0, 4.9], b: [-15.1, 0, 11.4], face: Math.PI / 2 },
+  /* Bulaşıkçının postası bulaşığın 2,0 br KUZEYİNDE duruyordu (10,60 → 12,60); bulaşık 1,60
+     yanaşınca aynı ilişki korunsun diye o da türetildi. Elle bırakılsaydı boş zeminin önünde
+     bekleyen bir bulaşıkçı kalırdı. */
+  dishwasherHome: [-14.4, 0, SOL_DUVAR_BULASIK_Z + 2.0],
+  /* Çaycının yolu ÖN HATTIN boyudur: tezgâhın arka ucundan bulaşığın ön ucuna. Uçlardaki 0,1 /
+     0,2 pay, dönüp geri yürürken gövdelerin köşesine girmemesi için. */
+  staffWalk: {
+    a: [-15.1, 0, SOL_DUVAR_TEZGAH_Z - SOL_DUVAR_TEZGAH_HZ + 0.1],
+    b: [-15.1, 0, SOL_DUVAR_BULASIK_Z + SOL_DUVAR_BULASIK_HZ - 0.2],
+    face: Math.PI / 2,
+  },
 };
 
 /**
@@ -638,7 +665,10 @@ export const LAYOUT = {
     table3: ALL_TABLES[2].table,
     table4: ALL_TABLES[3].table,
     waiter: [-12.4, 0, 2.0] as Vec3,
-    dishwasher: [-13.4, 0, 10.6] as Vec3,
+    /* Bulaşıkçı pad'i bulaşığın TAM YANINDA durur (aynı z, 2,8 br doğusunda) — pad hedefin
+       konumundadır (`feedback_spatial_tycoon_ux`). R2/D-127'de bulaşık 1,60 br yanaşınca pad de
+       onunla geldi; elle 10,60'ta bırakılsaydı boş zemini işaretliyor olurdu. */
+    dishwasher: [-13.4, 0, SOL_DUVAR_BULASIK_Z] as Vec3,
     zone2: [-1.6, 0, 8.5] as Vec3,
     z2table2: ALL_TABLES[5].table,
     z2table3: ALL_TABLES[6].table,

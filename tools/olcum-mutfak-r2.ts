@@ -56,7 +56,15 @@ import {
   type ServicePlace,
   type Solid,
 } from '../src/game/layout.ts';
-import { GECIS_ESIGI, onHat, onHatGovdeleri, type OnHatGovde } from '../src/components/three/kitchenLook.ts';
+import {
+  GECIS_ESIGI,
+  SERVIS_ISARETLERI,
+  eksenTakasi,
+  onHat,
+  onHatGovdeleri,
+  servisIsaretleri,
+  type OnHatGovde,
+} from '../src/components/three/kitchenLook.ts';
 import { PLAYER_RADIUS } from '../src/config/actor.ts';
 import { MAX_AREAS, isCounter, sellsTost } from '../src/game/world.ts';
 import { economyConfig as C } from '../src/config/economy.config.ts';
@@ -150,8 +158,8 @@ function odaDisi(c: Kutu, areasOpen: number, adim = 0.02): { alan: number; enFaz
   return { alan, enFazla };
 }
 
-/** Dönüşün eksenleri takas edip etmediği (0/π → hayır · ±π/2 → evet). */
-const eksenTakasi = (rot: number) => Math.abs(Math.sin(rot)) > 0.5;
+// `eksenTakasi` KAYNAKTAN gelir (kitchenLook) — araç ikinci bir tanım yazsaydı, düzeltme
+// uygulandığında araç eski tanımla ölçmeye devam edebilirdi.
 
 // =============================================================================================
 //  DÖNEMLER VE GÖVDELER
@@ -188,17 +196,20 @@ function govdeler(areasOpen: number): GovdeKaydi[] {
 }
 
 /**
- * A1 KOLU — çizim kutuya uyar: gövde ölçüsü YEREL eksene çevrilir.
- * Dönüş eksenleri takas ediyorsa `w` ve `d` de takas edilir, `dx` ise dünyanın hangi ekseninde
- * birleşme yapıldığına bağlı kalır (birleşme hep hattın UZUN ekseninde olur).
+ * TAKAS KOLU — **düzeltme geri alınırsa** ne olur.
+ *
+ * R2 öncesinde `onHatGovdeleri` ölçüyü dünya ekseninde veriyordu ve çağıran onu yerel eksende
+ * tüketiyordu; kol tam olarak o takası geri koyar. D-127 uygulandıktan sonra bu artık bir
+ * "seçenek" değil **bekçinin karşılaştırma kolu**dur: taban ile bu kol aynı sayıyı verirse
+ * düzeltme dünyaya dokunmamış demektir (varyant damgası bunu kontrol eder).
  */
-function a1Govde(k: GovdeKaydi): OnHatGovde {
+function takasliGovde(k: GovdeKaydi): OnHatGovde {
   if (!eksenTakasi(k.rot)) return k.govde;
   return { w: k.govde.d, d: k.govde.w, dx: k.govde.dx };
 }
 
-/** A2 KOLU — kutu çizime uyar: collision yarı-boyutları takas edilir. */
-function a2Half(k: GovdeKaydi): readonly [number, number] {
+/** Aynı takasın KUTU tarafı — elenen A2 kolunun kalıntısı, karşılaştırma için durur. */
+function takasliHalf(k: GovdeKaydi): readonly [number, number] {
   return eksenTakasi(k.rot) ? [k.half[1], k.half[0]] : k.half;
 }
 
@@ -230,13 +241,13 @@ function bolumA(): AKayit[] {
   for (const d of DONEMLER) {
     console.log(`--- ${d.ad} (areasOpen = ${d.areasOpen}) ---`);
     console.log('');
-    console.log('gövde    | rot   takas | kutu en×boy  | çizim en×boy | IoU   | açı     | ODA DIŞI br² (en fazla)');
+    console.log('gövde    | rot   takas | kutu en×boy  | çizim en×boy | IoU   | açı     | ODA DIŞI br² (takas kolu)');
     console.log('---------|-------------|--------------|--------------|-------|---------|------------------------');
     for (const k of govdeler(d.areasOpen)) {
       const kutu = solidKutu({ c: k.merkez, h: k.half });
       const cizim = cizimKutusu(k.merkez, k.rot, k.govde);
-      const a1 = cizimKutusu(k.merkez, k.rot, a1Govde(k));
-      const a2 = solidKutu({ c: k.merkez, h: a2Half(k) });
+      const a1 = cizimKutusu(k.merkez, k.rot, takasliGovde(k));
+      const a2 = solidKutu({ c: k.merkez, h: takasliHalf(k) });
       // Uzun eksen aynı mı: ikisinin de en/boy oranı aynı yöne mi bakıyor.
       const kUzunX = kutuEn(kutu) >= kutuBoy(kutu);
       const cUzunX = kutuEn(cizim) >= kutuBoy(cizim);
@@ -256,23 +267,23 @@ function bolumA(): AKayit[] {
         `${k.ad.padEnd(8)} | ${(k.rot === 0 ? '0' : 'π/2').padEnd(5)} ${(eksenTakasi(k.rot) ? 'EVET' : 'hayır').padEnd(5)} | ` +
           `${f2(kutuEn(kutu))} × ${f2(kutuBoy(kutu))}  | ${f2(kutuEn(cizim))} × ${f2(kutuBoy(cizim))}  | ` +
           `${iou(kutu, cizim).toFixed(2).replace('.', ',')}  | ${aci.padEnd(7)} | ` +
-          `${dis && disA1 ? `${f2(dis.alan)} (${f2(dis.enFazla)})  → A1 ${f2(disA1.alan)} (${f2(disA1.enFazla)})` : '— (bant: salon dışı, ölçüt geçersiz)'}`,
+          `${dis && disA1 ? `${f2(dis.alan)} (${f2(dis.enFazla)})  → takas ${f2(disA1.alan)} (${f2(disA1.enFazla)})` : '— (bant: salon dışı, ölçüt geçersiz)'}`,
       );
       kayitlar.push({ donem: d.ad, ad: k.ad, kutu, cizim, a1, a2 });
     }
     console.log('');
   }
 
-  console.log('--- A1 / A2 KOLLARININ AYNI TABLOSU (taban ile karşılaştırılabilsin) ---');
+  console.log('--- TAKAS KOLU: DÜZELTME GERİ ALINIRSA (D-127 bekçisinin karşılaştırma kolu) ---');
   console.log('');
-  console.log('dönem      gövde    | T IoU | A1 IoU | A2 IoU | T açı   | A1 açı | A2 açı');
-  console.log('---------------------|-------|--------|--------|---------|--------|-------');
+  console.log('dönem      gövde    | T IoU | takas çizim | takas kutu | T açı   | takas açı');
+  console.log('---------------------|-------|-------------|------------|---------|----------');
   for (const r of kayitlar) {
     const ac = (a: Kutu, b: Kutu) => ((kutuEn(a) >= kutuBoy(a)) === (kutuEn(b) >= kutuBoy(b)) ? '0°' : '90°');
     console.log(
       `${r.donem.padEnd(10)} ${r.ad.padEnd(8)} | ${iou(r.kutu, r.cizim).toFixed(2).replace('.', ',')}  | ` +
-        `${iou(r.kutu, r.a1).toFixed(2).replace('.', ',')}   | ${iou(r.a2, r.cizim).toFixed(2).replace('.', ',')}   | ` +
-        `${ac(r.kutu, r.cizim).padEnd(7)} | ${ac(r.kutu, r.a1).padEnd(6)} | ${ac(r.a2, r.cizim)}`,
+        `${iou(r.kutu, r.a1).toFixed(2).replace('.', ',')}        | ${iou(r.a2, r.cizim).toFixed(2).replace('.', ',')}       | ` +
+        `${ac(r.kutu, r.cizim).padEnd(7)} | ${ac(r.kutu, r.a1)}`,
     );
   }
   console.log('');
@@ -390,7 +401,7 @@ function bolumB(): BKayit[] {
     for (const k of gs) {
       hepsi.push(solidKutu({ c: k.merkez, h: k.half }));
       hepsi.push(cizimKutusu(k.merkez, k.rot, k.govde));
-      hepsi.push(cizimKutusu(k.merkez, k.rot, a1Govde(k)));
+      hepsi.push(cizimKutusu(k.merkez, k.rot, takasliGovde(k)));
     }
     const alan: Kutu = {
       minX: Math.min(...hepsi.map((h) => h.minX)) - 3,
@@ -407,11 +418,11 @@ function bolumB(): BKayit[] {
     ERISILEN[d.ad] = erisilir.size;
     console.log(`--- ${d.ad} (areasOpen = ${d.areasOpen} · ${d.tables} masa · erişilebilir ${erisilir.size} hücre) ---`);
     console.log('');
-    console.log('gövde    | çizim br² | GEÇİLEN br² |   %   | GÖRÜNMEZ br² |   %   || A1 geçilen | A1 görünmez');
-    console.log('---------|-----------|-------------|-------|--------------|-------||------------|------------');
+    console.log('gövde    | çizim br² | GEÇİLEN br² |   %   | GÖRÜNMEZ br² |   %   || takas geçilen | takas görünmez');
+    console.log('---------|-----------|-------------|-------|--------------|-------||---------------|---------------');
     for (const k of gs) {
       const cizim = cizimKutusu(k.merkez, k.rot, k.govde);
-      const cizimA1 = cizimKutusu(k.merkez, k.rot, a1Govde(k));
+      const cizimA1 = cizimKutusu(k.merkez, k.rot, takasliGovde(k));
       const kutu = solidKutu({ c: k.merkez, h: k.half });
       const t = gecisSay(cizim, kutu, erisilir);
       const a1 = gecisSay(cizimA1, kutu, erisilir);
@@ -470,7 +481,7 @@ function bolumC(): { tabanBosluk: number; b1Bosluk: number; b2Kayma: number; b2B
     };
     const kollar: CKol[] = [
       { ad: 'T taban', araliklar: gs.map((k) => araligi(k, k.govde)).sort((p, q) => p.a - q.a) },
-      { ad: 'A1 çizim döner', araliklar: gs.map((k) => araligi(k, a1Govde(k))).sort((p, q) => p.a - q.a) },
+      { ad: 'TAKAS (geri alınsa)', araliklar: gs.map((k) => araligi(k, takasliGovde(k))).sort((p, q) => p.a - q.a) },
     ];
     // B1: `onHat` bu dönemde de koşarsa. onHat dünya x bekliyor; sol duvarda uzun eksen z olduğu
     // için parçalar UZUN EKSEN üzerinden verilir (fonksiyonun kendi mantığı eksen-bağımsızdır).
@@ -504,17 +515,23 @@ function bolumC(): { tabanBosluk: number; b1Bosluk: number; b2Kayma: number; b2B
     console.log('');
   }
 
-  // B2 — bulaşığın KOORDİNATI tezgâha yanaşır (kutular değsin). Bedel: erişim noktaları taşınır.
+  /*
+   * B2 — bulaşığın KOORDİNATI tezgâha yanaşır (kutular değsin). D-127'de UYGULANDI; bu bölüm
+   * artık kolu önermiyor, uygulanmış hâli ÖLÇÜYOR ve geri alınmış hâliyle karşılaştırıyor.
+   * `B2_ONCESI_Z` R2 öncesi elle yazılı değerdir ve burada sabit durur: raporun "önce" sütunu
+   * sonradan kaymamalı (H1'in taban-değer deseni).
+   */
+  const B2_ONCESI_Z = 10.6;
   const p = servicePlace(2);
   const tezgahBitis = p.station[2] + p.half[1];
   const hedefMerkez = tezgahBitis + p.dishHalf[1];
-  const kayma = p.dish[2] - hedefMerkez;
-  console.log('--- B2: bulaşığın KOORDİNATI tezgâha yanaşır (yalnız SOL DUVAR dönemi) ---');
+  const kayma = B2_ONCESI_Z - p.dish[2];
+  console.log('--- B2 (UYGULANDI): bulaşığın KOORDİNATI tezgâha yanaştı — SOL DUVAR dönemi ---');
   console.log('');
-  console.log(`bulaşık merkezi bugün z = ${f2(p.dish[2])} · kutular değsin diye z = ${f2(hedefMerkez)}`);
+  console.log(`bulaşık merkezi ÖNCE z = ${f2(B2_ONCESI_Z)} · ŞİMDİ z = ${f2(p.dish[2])} (türemiş: ${f2(hedefMerkez)})`);
   console.log(`KAYMA = ${f2(kayma)} br (kuzeye)`);
   console.log('');
-  console.log('B2 BEDELİ — bulaşıkla birlikte taşınması gereken noktalar:');
+  console.log('B2 BEDELİ — bulaşıkla birlikte taşınan noktalar (uygulanmış hâlleriyle):');
   const bagli = [
     ['dishwasherHome (bulaşıkçının postası)', p.dishwasherHome],
     ['waiterHome (garson sırası başı)', p.waiterHome],
@@ -578,11 +595,11 @@ function bolumC(): { tabanBosluk: number; b1Bosluk: number; b2Kayma: number; b2B
     console.log(`${ad.padEnd(19)} | ${f2(bosluk).padStart(11)} | ${f2(gecilen).padStart(36)} | ${f2(gorunmez).padStart(12)}`);
     return { gecilen, gorunmez };
   };
-  kolBedeli('T taban', (k) => cizimKutusu(k.merkez, k.rot, k.govde), tabanBosluk);
-  const a1Bedel = kolBedeli('A1 (tek başına)', (k) => cizimKutusu(k.merkez, k.rot, a1Govde(k)), 1.6);
+  kolBedeli('T bugün (A1+B2)', (k) => cizimKutusu(k.merkez, k.rot, k.govde), tabanBosluk);
+  const a1Bedel = kolBedeli('A1 geri alınsa', (k) => cizimKutusu(k.merkez, k.rot, takasliGovde(k)), 1.6);
   // B1 = A1 + erken birleşme: gövde uzun eksende boşluğun ortasına kadar uzar.
   const b1Bedel = kolBedeli(
-    'A1 + B1 birleşme',
+    'B1 birleşme eklense',
     (k, i) => {
       const uzunMerkez = k.merkez[2] + birlesik2[i].dx;
       return {
@@ -595,17 +612,20 @@ function bolumC(): { tabanBosluk: number; b1Bosluk: number; b2Kayma: number; b2B
     b1Bosluk,
   );
   // B2 = A1 + bulaşık yanaşır: kutu gövdeyle BİRLİKTE taşınır, boşluk kapanır, katı da kapanır.
-  const b2Kay = (k: GovdeKaydi) => (k.ad === 'bulasik' ? -kayma : 0);
+  // B2 GERİ ALINSA: bulaşık (kutusuyla birlikte) R2 öncesi z'sine döner; A1 yerinde kalır.
+  const b2Kay = (k: GovdeKaydi) => (k.ad === 'bulasik' ? B2_ONCESI_Z - k.merkez[2] : 0);
   const b2Bedel = kolBedeli(
-    'A1 + B2 yanaşma',
-    (k) => cizimKutusu([k.merkez[0], 0, k.merkez[2] + b2Kay(k)], k.rot, a1Govde(k)),
-    0,
+    'B2 geri alınsa',
+    (k) => cizimKutusu([k.merkez[0], 0, k.merkez[2] + b2Kay(k)], k.rot, k.govde),
+    B2_ONCESI_Z - p.dishHalf[1] - tezgahBitis,
     b2Kay,
   );
   console.log('');
-  console.log(`  A1 tek başına: hat boşluğu 1,60 br kalır (oyuncu ${f2(GECIS_ESIGI)} eşiğinden geniş → içinden geçer).`);
-  console.log(`  B1: boşluk 0,00 ama çizimin içinde yürünen alan ${f2(b1Bedel.gecilen)} br² (A1'de ${f2(a1Bedel.gecilen)}).`);
-  console.log(`  B2: boşluk 0,00 ve yürünen alan ${f2(b2Bedel.gecilen)} br² — bedeli 3 ankraj noktasının taşınması.`);
+  console.log(`  A1 geri alınsa: 90° kusuru döner — ${f2(a1Bedel.gecilen)} br² gövdenin içinden yürünür.`);
+  console.log(`  B2 geri alınsa: hat yine ${f2(B2_ONCESI_Z - p.dishHalf[1] - tezgahBitis)} br boşlukla ikiye ayrılır ` +
+    `(oyuncu ${f2(GECIS_ESIGI)} eşiğinden geniş → aradan geçer); yürünen ${f2(b2Bedel.gecilen)} br².`);
+  console.log(`  B1 bugün EKLENSE: boşluk zaten 0,00 olduğu için birleştirmenin yapacağı iş yok ` +
+    `(yürünen ${f2(b1Bedel.gecilen)} br²) — kol gereksiz kaldı, bu yüzden uygulanmadı.`);
   const yeniKutu: Kutu = {
     minX: p.dish[0] - p.dishHalf[0],
     maxX: p.dish[0] + p.dishHalf[0],
@@ -656,7 +676,7 @@ function renkFarki(a: string, b: string): number {
   return Math.sqrt((2 + rm / 256) * (r1 - r2) ** 2 + 4 * (g1 - g2) ** 2 + (2 + (255 - rm) / 256) * (b1 - b2) ** 2);
 }
 
-function bolumD(): { sinyaller: number[]; maxLevel: number } {
+function bolumD(): { sinyaller: number[]; bicimSinyalleri: number[]; maxLevel: number } {
   console.log('');
   console.log('=============================================================================');
   console.log('§D — SEVİYE SİNYALİ (G-38: "tezgah yükseltmeleri de nasıl oluyor bilmiyorum")');
@@ -666,17 +686,21 @@ function bolumD(): { sinyaller: number[]; maxLevel: number } {
   const maxLevel = C.service.upgrade.maxLevel;
   if (!s) {
     console.log('SABİTLER OKUNAMADI — bu bölüm ölçüm değildir.');
-    return { sinyaller: [], maxLevel };
+    return { sinyaller: [], bicimSinyalleri: [], maxLevel };
   }
   console.log(`gövde yüksekliği = ${f2(s.bodyBase)} + L × ${f2(s.bodyStep)}`);
   console.log(`semaver rengi    = ${s.renkler.length} üye · kapak rengi = ${s.kapaklar.length} üye`);
   console.log(`kimlik basamakları: L${C.service.counterLevel} TEZGÂH · L${C.service.tostLevel} TOST`);
   console.log('');
-  console.log('RENK FARKI EŞİĞİ: ~30 altı aynı kadrajda ayırt edilmez (sRGB ağırlıklı öklid).');
+  console.log(`biçim işaretleri (C2): ${SERVIS_ISARETLERI.map((i) => `${i.ad}@L${i.acilir}`).join(' · ')}`);
   console.log('');
-  console.log('L→L+1 | gövde Δ | semaver renk Δ | kapak renk Δ | kimlik | tost | AYIRT EDİLİR SİNYAL');
-  console.log('------|---------|----------------|--------------|--------|------|--------------------');
+  console.log('RENK FARKI EŞİĞİ: ~30 altı aynı kadrajda ayırt edilmez (sRGB ağırlıklı öklid).');
+  console.log('BİÇİM sinyali: o basamakta gövdeye eklenen yeni nesne · kimlik (TEZGÂH) · tost sacı.');
+  console.log('');
+  console.log('L→L+1 | semaver Δ | kapak Δ | kimlik | tost | BİÇİM eklenen | renk | biçim | TOPLAM');
+  console.log('------|-----------|---------|--------|------|---------------|------|-------|-------');
   const sinyaller: number[] = [];
+  const bicimSinyalleri: number[] = [];
   for (let L = 0; L < maxLevel; L++) {
     const dH = s.bodyStep;
     const r0 = s.renkler[Math.min(L, s.renkler.length - 1)];
@@ -687,18 +711,26 @@ function bolumD(): { sinyaller: number[]; maxLevel: number } {
     const dK = renkFarki(k0, k1);
     const kimlik = isCounter(L + 1) && !isCounter(L);
     const tost = sellsTost(L + 1) && !sellsTost(L);
-    // AYIRT EDİLİR: gövde adımı 0,12 br — oyuncu kamerasında ~1 piksellik değişim, tek başına
-    // sayılmaz; renk farkı 30 eşiğinin üstündeyse sayılır; kimlik/tost her zaman sayılır.
-    let n = 0;
-    if (dR >= 30) n++;
-    if (dK >= 30) n++;
-    if (kimlik) n++;
-    if (tost) n++;
-    sinyaller.push(n);
+    /*
+     * SİNYAL SAYIMI — iki tür ayrı sayılır (`feedback_upgrade_legibility`: çoklu REDUNDANT sinyal).
+     *   renk  : semaver ve pres kapağı, 30 eşiğini geçerse
+     *   biçim : o basamakta gövdeye eklenen yeni nesne (C2 listesi) + kimlik (TEZGÂH) + tost sacı
+     * Gövde yüksekliğinin 0,12 br'lik adımı hiçbirinde sayılmaz: oyuncu kamerasında piksel düzeyi.
+     * Kimlik ve tost C2 LİSTESİNE ALINMADI, burada ayrı sayılıyorlar — aynı sinyal iki kaynaktan
+     * sayılsaydı bekçi kendini kandırırdı.
+     */
+    const eklenen = servisIsaretleri(L + 1).filter((a) => !servisIsaretleri(L).includes(a));
+    let renkN = 0;
+    if (dR >= 30) renkN++;
+    if (dK >= 30) renkN++;
+    const bicimN = eklenen.length + (kimlik ? 1 : 0) + (tost ? 1 : 0);
+    sinyaller.push(renkN + bicimN);
+    bicimSinyalleri.push(bicimN);
     console.log(
-      `L${L}→L${L + 1} | ${f2(dH)}    | ${dR.toFixed(0).padStart(3)} ${(dR >= 30 ? '✓' : '✗')}          | ` +
-        `${dK.toFixed(0).padStart(3)} ${(dK >= 30 ? '✓' : '✗')}        | ${(kimlik ? 'TEZGÂH' : '—').padEnd(6)} | ` +
-        `${(tost ? 'TOST' : '—').padEnd(4)} | ${n}`,
+      `L${L}→L${L + 1} | ${dR.toFixed(0).padStart(4)} ${(dR >= 30 ? '✓' : '✗')}    | ` +
+        `${dK.toFixed(0).padStart(3)} ${(dK >= 30 ? '✓' : '✗')}   | ${(kimlik ? 'TEZGÂH' : '—').padEnd(6)} | ` +
+        `${(tost ? 'TOST' : '—').padEnd(4)} | ${(eklenen.join(',') || '—').padEnd(13)} | ` +
+        `${String(renkN).padStart(4)} | ${String(bicimN).padStart(5)} | ${renkN + bicimN}`,
     );
   }
   console.log('');
@@ -706,7 +738,7 @@ function bolumD(): { sinyaller: number[]; maxLevel: number } {
   console.log('Yani L0-L3 boyunca oyuncunun gördüğü TEK yükseltme yüzeyi bu gövdedir; S22 kademe');
   console.log('merdiveni (oda büyümesi) o dönemde ekranda hiç yok.');
   console.log('');
-  return { sinyaller, maxLevel };
+  return { sinyaller, bicimSinyalleri, maxLevel };
 }
 
 // =============================================================================================
@@ -731,9 +763,9 @@ damga(
   solDuvar.length > 0 && arkaBant.length > 0 && solDuvar[0].kutu.minX !== arkaBant[0].kutu.minX,
   'iki dönem aynı kutuyu veriyor — servicePlace okunmamış olabilir',
 );
-// ② A1 kolu ETKİLİ mi: eksen takası olan en az bir gövdede A1 tabandan farklı olmalı.
+// ② TAKAS kolu ETKİLİ mi: eksen takası olan en az bir gövdede tabandan farklı olmalı.
 const takasliVar = a.some((r) => kutuEn(r.cizim).toFixed(3) !== kutuEn(r.a1).toFixed(3));
-damga('A1 varyantı etkili', takasliVar, 'A1 hiçbir gövdede tabandan farklı çıkmadı');
+damga('takas kolu etkili', takasliVar, 'takas kolu hiçbir gövdede tabandan farklı çıkmadı');
 // ③ Taşma-doldurma GERÇEKTEN katın içine yayıldı mı. Tohum katı engelin içine düşerse ya da
 //    kelepçe hemen kesilirse küme küçük kalır ve §B'nin bütün "geçilen" sayıları sahte 0 olur —
 //    sıfır kendini doğrular (R1'in üçüncü dersi). Eşik: katın açık alanının en az yarısı.
@@ -750,6 +782,13 @@ for (const d0 of DONEMLER) {
 damga('gövdeler ölçüldü', b.length > 0, 'hiç gövde ölçülmedi');
 // ④ Seviye sinyali bölümü sayı üretti mi.
 damga('seviye sinyali ölçüldü', d.sinyaller.length > 0, 'ServicePoint sabitleri okunamadı');
+// ⑤ C2'nin kendi şartı: HER basamakta en az bir RENK DIŞI işaret. Bu damga kırılırsa D-127'nin
+//    kararı uygulanmamış demektir — ölçüm değil, kod eksiktir.
+damga(
+  'her basamakta biçim sinyali (C2)',
+  d.bicimSinyalleri.length > 0 && d.bicimSinyalleri.every((n) => n >= 1),
+  `biçim dizisi [${d.bicimSinyalleri.join(' · ')}] — 0 olan basamak var`,
+);
 
 console.log('');
 console.log('=============================================================================');
@@ -767,11 +806,12 @@ console.log('');
 for (const r of b)
   console.log(
     `${r.donem.padEnd(10)} ${r.ad.padEnd(8)} · geçilen ${f2(r.gecilen)} br² (${yuzde(r.gecilen, r.cizimAlan)}) ` +
-      `· görünmez ${f2(r.gorunmez)} br² → A1: ${f2(r.gecilenA1)} / ${f2(r.gorunmezA1)}`,
+      `· görünmez ${f2(r.gorunmez)} br² → takas: ${f2(r.gecilenA1)} / ${f2(r.gorunmezA1)}`,
   );
 console.log('');
 console.log(`SOL DUVAR hat boşluğu: taban ${f2(c.tabanBosluk)} br → B1 ${f2(c.b1Bosluk)} br · B2 kayma ${f2(c.b2Kayma)} br`);
 console.log(`Seviye başına ayırt edilir sinyal: [${d.sinyaller.join(' · ')}] (basamak sayısı ${d.maxLevel})`);
+console.log(`  bunun BİÇİM olanı           : [${d.bicimSinyalleri.join(' · ')}] — hiçbiri 0 olmamalı`);
 console.log('');
 
 damgaOzeti();
