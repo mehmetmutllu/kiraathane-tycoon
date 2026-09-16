@@ -13,8 +13,13 @@
  * Fog/arka plan burada DEĞİL — onlar dünyaya ait; önizleme küçük bir kesit, sisi olmaz.
  */
 import { LIGHTING } from '../../config/palette';
+import { devPerfKol } from '../../game/devPerf';
 
 export function SceneLights({ shadows = false }: { shadows?: boolean } = {}) {
+  // DEV — F2 ölçüm kolu gölge haritasının kenarını değiştirebilir (`?f2golge=512`).
+  // Harita belleği kenarın KARESİYLE büyür: 2048 → 16 MB, 1024 → 4 MB, 512 → 1 MB.
+  // Üretimde `devPerfKol()` çağrılmaz, değer palette.ts'ten gelir.
+  const harita = (import.meta.env.DEV ? devPerfKol()?.golgeHarita : 0) || LIGHTING.shadowMapSize;
   return (
     <>
       <hemisphereLight args={[LIGHTING.skyColor, LIGHTING.groundColor, LIGHTING.hemiIntensity]} />
@@ -23,8 +28,8 @@ export function SceneLights({ shadows = false }: { shadows?: boolean } = {}) {
         color={LIGHTING.sunColor}
         intensity={LIGHTING.sunIntensity}
         castShadow={shadows}
-        shadow-mapSize-width={LIGHTING.shadowMapSize}
-        shadow-mapSize-height={LIGHTING.shadowMapSize}
+        shadow-mapSize-width={harita}
+        shadow-mapSize-height={harita}
         shadow-bias={LIGHTING.shadowBias}
         shadow-normalBias={LIGHTING.shadowNormalBias}
         shadow-camera-left={-LIGHTING.shadowExtent}

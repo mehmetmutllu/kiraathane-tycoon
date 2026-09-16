@@ -5,52 +5,47 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-16 — **H2 BİTTİ: yükseltme sırası tek hedefli** · Faz H 2/3 · 101/108)
+## ŞU AN (2026-09-16 — **F2 turu AÇIK: telefon yükü** · Faz F 0/5 · 101/107)
 
 ```
-SORU            : Masa yükseltmelerinin sırası serbest. Bu serbestlik oyuncuya ne kadar İŞARET
-                  ödetiyor, ve yanlış sırayı seçen oyuncu kendini ne kadar CEZALANDIRABİLİYOR?
-ÖLÇÜLECEK KOLLAR: T serbest/en-ucuz (taban) · D serbest/derin · P serbest/en-pahalı ·
-                  R serbest/rastgele · A tek-hedef kapısı · B kuşak kapısı (altısı da ölçüldü)
-SAYILAR         : docs/sira-raporu-h2.md §Bulgular · ham: docs/olcum-sira-h2.txt (TAM koşu)
-KARAR           : D-124 — A (tek hedef), GLOBAL kapsam
-UYGULAMA        : rules.ts tableUpgradeTarget (tek kaynak) · tick.ts tetiği · Scene.tsx tek nokta
-                  + gate'e tableLevels · revealKeys canlı masadan türüyor · olcum-tek-odak eşlendi
-BEKÇİ           : sira-h2 (19 den. · 12 mut.) · kaçan 0 (ilk turda 3 kaçtı, üçü de kapatıldı)
-FINAL           : vitest 1189 ✓ · duman 45/45 ✓ · tsc temiz · nokta ort 3,48→0,54 (tepe 12→1)
+SORU            : Telefonda ne kadar ağırız ve ağırlığın kaynağı hangi kol — GÖLGE mi, PİKSEL mi,
+                  İNDİRİLEN BAYT mı? 101 tur boyunca ölçülmeyen tek yan bu.
+ÖLÇÜLECEK KOLLAR: §A ölü yük (diskteki ↔ gerçekten yüklenen asset) · §B indirme/ayrıştırma
+                  (dist bayt dökümü, ilk boya, etkileşime hazır) · §C kare süresi kolları:
+                  T taban (soft 2048, dpr bütçesi) · G0 gölge kapalı · G1 harita 1024 ·
+                  G2 harita 512 · P1 dpr tavanı 1 · G0+P1 birleşik
+SAYILAR         : docs/telefon-raporu-f2.md §Bulgular · ham: docs/olcum-telefon-f2.txt
+KARAR           : (boş — adım 3)
+UYGULAMA        : (boş — adım 4)
+BEKÇİ           : (boş)
 ```
 
-**Turun kalıcı üç dersi:**
-1. **Kapının bedeli, kapının aldığı özgürlükle ölçülmez — kolun parmak iziyle ölçülür.** "Tek
-   hedef oyuncudan seçim alıyor, demek ki bir bedeli var" sezgisi ölçüldü ve sıfır çıktı: A ile
-   kapısız-derin kol BİREBİR aynı dünyayı üretiyor (`fd6d3dfd`). Kapı bir takas değildi, çünkü
-   aldığı seçenek zaten **kaybeden** seçenekti. A'nın 1,06 saatlik "ölü para"sı da kapının değil,
-   kazanan stratejinin kendi maliyeti — D'de kapı hiç yokken aynı sayı çıkıyor. Bir maliyeti
-   kime yazacağını, onu **kapısız kolda da ölçmeden** bilemezsin.
-2. **Mekanizmayı bulmak, hipotezi doğrulamak değildir.** "Derin kol kazanıyor" görülünce sebep
-   hemen bulundu: koltuk merdiveninde L1 ile L2 aynı koltuğu veriyor, yani L2 ölü basamak ve
-   "en ucuzu al" tam orada oyalanıyor. Kulağa kesin geliyordu; karşı-deney **çürüttü** (tuzak
-   %20,6 → yalnız %19,0, koltuk açığının üçte ikisi kapandığı hâlde). Sebep kapasitede değil,
-   bahşiş ortalamasının aritmetiğindeydi. Hipotez kurulduğu turda ölçülmeseydi, "config'i
-   düzeltip sırayı serbest bırakalım" diye üçüncü bir kol karar paketine yanlış girerdi.
-3. **Bekçi neyi ölçmediğini söylemez — mutasyon söyler.** 19 denetim yeşilken üç mutasyon kaçtı
-   ve üçü de aynı boşluğu gösterdi: bekçi TETİĞİ ölçüyordu, ÇİZİMİ hiç. Yani "ekranda 12 nokta
-   var, yalnız biri para alıyor" kusuru serbestti. (M4 ayrıca kurgunun kendi tuzağıydı: denetim
-   `g.tables` sınırının alan kapısını kazara taklit ettiği bir dünyada duruyordu.)
+**Turun kapsam damgası (kullanıcı kararı 2026-09-16):** cihaz bağlı DEĞİL (`adb devices` boş).
+Kullanıcı *"şimdi olmaz, sen masaüstünden ölç"* dedi → **§A ve §B sayıları KESİN** (bayt ve
+referans, cihazdan bağımsız), **§C kare süresi VEKİL** (Playwright + CPU kısma, telefon
+çözünürlüğü). Rapora §C satırları *"cihazda doğrulanmadı"* damgasıyla girer ve **cihaz turu
+açık kalır** — kollar arası SIRALAMA için vekil yeterli, mutlak ms için değil.
 
-**Yolda bulunan sessiz kusur:** ölçüm penceresi milestone listesiyle kapanıyordu — `runProfile`
-son milestone'da `break` ediyor, masa seviyeleri ise listenin çok ötesinde sürüyor. İlk tam koşu
-"20 masa TAVANDA" için her kolda `—` bastı; okunsa "masa yükseltmeleri hiç bitmiyor" diye rapora
-girecekti. `tamPencere` bayrağı eklendi, sayı `—`'dan 8,69 sa'ya döndü.
+**Ölçüme girmeden görülen (turun sebebi):** model yolları her bileşende elle yazılı paket
+klasöründen kuruluyor (`KAY = '/assets/models/kaykit-furniture-bits/'`), ortak çözücü YOK →
+kodda adı hiç geçmeyen paket gerçekten erişilemez. Dört paket hiçbir kaynak dosyada geçmiyor:
+`kaykit-board-game-bits` **11 MB** · `kaykit-resource-bits` 1,1 MB · `kaykit-forest-nature`
+664 KB · `kaykit-holiday-bits` 664 KB — 26 MB'lık model yükünün **~13,4 MB'ı**. Bu ön-gözlem;
+sayı §A'da kesinleşecek (kullanılan paketlerin İÇİ de dosya bazında taranacak).
 
 ## SIRADAKİ TAM ADIM
 
-**H3 — masa aralığı / geçilemeyen açıklıklar** (Faz H 3/3). ÖLÇÜLDÜ ve KULLANICI KARARI BEKLİYOR
-(D-098): geçiş için 2 × playerRadius = **0,94 br** gerekiyor; ön salon 3,50 br (rahat), **arka
-salon 0,68 br** → 20 masanın 12'si geçilemez, çarpışma katılarında eşik altında **52 açıklık**
-(en darı 0,04 br). Onaylı maket düzenine dokunuyor. H1'in tarama aracı hazır:
-`tools/olcum-erisim-h1.ts`in taşma-doldurması "girilemeyen cep" sayısını zaten veriyor (iki
-dünyada da %0 — yani cep yok, **dar geçit** var).
+**F2'yi bitir** (ölç → commit #1 → karar paketi → uygula → commit #2), sonra **F1 — Capacitor
+kabuğu + imzalı sürüm**. F1'in keystore kolu kullanıcı kararıyla çözüldü: *"sen üret,
+dev-ortam'a koy"* → keystore `C:\dev-ortam`'a, parola oradaki gizli dosyaya, `android/`'e yalnız
+dosya-dışı referans, `.gitignore` güncellenir. `keytool` bulundu: `C:\Program Files\Java\jdk-17.0.1\bin\keytool.exe`.
+
+**H3 ELENDİ (2026-09-16, kullanıcı kararı):** "masa aralığı / geçilemeyen açıklıklar" kaleminin
+premisi düştü. Ölçüm (2026-09-09) arka salonu *serbest duran `deuce` masa, oturak yarıçapı 1,26,
+merkez arası 3,20 → açıklık 0,68 br* diye ölçmüştü; B3-2'den sonra arka yarı **banket adası**
+oldu: masa yarı-boyu 0,525, koltuk 0 adanın kendi oturağı, sandalyelerin çarpışması zaten yok
+(D-016), adanın katısı yalnız sırtlık çekirdeği (0,4). Masa kenarları arası açıklık
+`3,2 − 2×0,525 = 2,15 br` — gereken 0,94'ün iki katından fazla. Kalem geçersiz, toplam 108 → 107.
 
 **H2'nin bıraktığı iki açık uç:**
 ① **`tools/simulate.ts`in taban oyuncu politikası artık oyunun kuralıyla ÇELİŞİYOR:** sim hâlâ
@@ -93,8 +88,8 @@ gerçek render'ı yok · KayKit `bench` düz plaka gibi · bulaşık gövdesi ku
 **Oynanış (Faz H):** ~~yükseltme tetiği "yanında"~~ → S24'te KAPANDI (D-121) · ~~G-01/G-02/G-03~~
 → **H1'de KAPANDI (D-123)** · ~~yükseltme sırası serbest~~ → **H2'de KAPANDI (D-124: tek hedef)**
 · G-06 tepsi ilk yükseltme 75 → ~50 · G-07 dwell para-bağımsız (son ikisi DENGE, varyant kapısına
-tabi) · masalar geçilmiyor (açıklık 0,68 br, geçiş 0,94 ister — 20 masanın 12'si) — **H3,
-kullanıcı kararı bekliyor.**
+tabi) · ~~masalar geçilmiyor~~ → **H3 ELENDİ (2026-09-16):** banket adası geçişinden sonra
+açıklık 2,15 br (gereken 0,94) — premis düştü, kalem geçersiz. Faz H **3/3 ✅ kapandı.**
 
 **Altyapı:** ~~`npm run apk` kırıktı~~ → **KAPANDI (2026-09-16):** Gradle 8.14.3'ün `gradlew.bat`'ı
 `CLASSPATH`'i boş kurup `-classpath ""` geçiriyordu, Java reddediyordu (*"-classpath requires class

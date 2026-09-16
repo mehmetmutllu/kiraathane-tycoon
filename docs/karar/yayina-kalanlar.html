@@ -1,0 +1,782 @@
+<title>Yayına Kalanlar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Baloo+2:wght@400;500;600;700&display=swap">
+<style>
+  :root {
+    --ground: #EFF2EE;
+    --surface: #FFFFFF;
+    --surface-2: #F7F9F6;
+    --ink: #16211E;
+    --ink-soft: #55635D;
+    --ink-faint: #8A9791;
+    --line: #D8DFD9;
+    --line-soft: #E7ECE7;
+    --brass: #A9711A;
+    --brass-wash: #F6ECD8;
+    --done: #2F7D5C;
+    --done-wash: #E2F0E9;
+    --risk: #BC4630;
+    --risk-wash: #F8E7E2;
+    --shadow: 0 1px 2px rgba(22, 33, 30, .06), 0 8px 20px -12px rgba(22, 33, 30, .18);
+  }
+  :root:not([data-theme="light"]) {
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0F1513;
+      --surface: #171F1C;
+      --surface-2: #1C2522;
+      --ink: #E9EEEA;
+      --ink-soft: #94A39C;
+      --ink-faint: #6D7B75;
+      --line: #28332F;
+      --line-soft: #202B27;
+      --brass: #DFA341;
+      --brass-wash: #2C2416;
+      --done: #52B084;
+      --done-wash: #15291F;
+      --risk: #E0775C;
+      --risk-wash: #2B1713;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 20px -12px rgba(0, 0, 0, .7);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --ground: #0F1513;
+    --surface: #171F1C;
+    --surface-2: #1C2522;
+    --ink: #E9EEEA;
+    --ink-soft: #94A39C;
+    --ink-faint: #6D7B75;
+    --line: #28332F;
+    --line-soft: #202B27;
+    --brass: #DFA341;
+    --brass-wash: #2C2416;
+    --done: #52B084;
+    --done-wash: #15291F;
+    --risk: #E0775C;
+    --risk-wash: #2B1713;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 20px -12px rgba(0, 0, 0, .7);
+  }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "Baloo 2", "Trebuchet MS", system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  * { box-sizing: border-box; }
+
+  .wrap {
+    max-width: 880px;
+    margin: 0 auto;
+    padding-inline: 18px;
+    padding-block: 0 72px;
+  }
+
+  /* ---- başlık ---- */
+  header.top {
+    padding-block: 34px 22px;
+  }
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--brass);
+    font-weight: 600;
+    margin: 0 0 6px;
+  }
+  h1 {
+    font-family: "Lilita One", "Trebuchet MS", system-ui, sans-serif;
+    font-weight: 400;
+    font-size: clamp(34px, 8vw, 50px);
+    line-height: 1.02;
+    letter-spacing: .005em;
+    margin: 0 0 10px;
+    text-wrap: balance;
+  }
+  .lede {
+    margin: 0;
+    max-width: 58ch;
+    color: var(--ink-soft);
+    font-size: 15.5px;
+  }
+
+  /* ---- yayın şeridi ---- */
+  .serit {
+    margin-top: 24px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px 18px 18px;
+    box-shadow: var(--shadow);
+  }
+  .serit-ust {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px 14px;
+    margin-bottom: 12px;
+  }
+  .serit-sayi {
+    font-family: "Lilita One", system-ui, sans-serif;
+    font-size: 30px;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .serit-sayi span { color: var(--ink-faint); font-size: 20px; }
+  .serit-etiket { color: var(--ink-soft); font-size: 13.5px; }
+  .serit-etiket b { color: var(--ink); font-weight: 600; }
+  .bar {
+    display: flex;
+    gap: 3px;
+    height: 12px;
+    align-items: stretch;
+  }
+  .bar i {
+    flex: 1 1 0;
+    border-radius: 2px;
+    background: var(--done);
+    min-width: 2px;
+  }
+  .bar i.bos { background: var(--line); }
+  .bar i.simdi { background: var(--brass); }
+  .bar-alt {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 9px;
+    font-size: 12px;
+    color: var(--ink-faint);
+  }
+
+  /* ---- bölüm başlığı ---- */
+  .bolum {
+    margin-top: 44px;
+    border-top: 2px solid var(--ink);
+    padding-top: 14px;
+  }
+  .bolum h2 {
+    font-family: "Lilita One", system-ui, sans-serif;
+    font-weight: 400;
+    font-size: 23px;
+    margin: 0 0 4px;
+    letter-spacing: .01em;
+  }
+  .bolum p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 14px;
+    max-width: 62ch;
+  }
+
+  /* ---- defter kalemleri ---- */
+  .kalemler {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 20px;
+  }
+  .kalem {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px 18px;
+    box-shadow: var(--shadow);
+    display: grid;
+    grid-template-columns: 58px 1fr;
+    gap: 4px 16px;
+  }
+  .kod {
+    grid-row: 1 / span 3;
+    font-family: "Lilita One", system-ui, sans-serif;
+    font-size: 19px;
+    color: var(--brass);
+    background: var(--brass-wash);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: start;
+    padding: 9px 4px;
+    letter-spacing: .02em;
+  }
+  .kalem.riskli .kod { color: var(--risk); background: var(--risk-wash); }
+  .kalem-bas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px 10px;
+  }
+  .kalem-bas h3 {
+    font-family: "Lilita One", system-ui, sans-serif;
+    font-weight: 400;
+    font-size: 19px;
+    margin: 0;
+    letter-spacing: .01em;
+  }
+  .rozet {
+    font-size: 10.5px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 100px;
+    white-space: nowrap;
+  }
+  .rozet.risk { color: var(--risk); background: var(--risk-wash); }
+  .rozet.hazir { color: var(--done); background: var(--done-wash); }
+  .rozet.notr { color: var(--ink-soft); background: var(--surface-2); border: 1px solid var(--line); }
+
+  .satirlar {
+    list-style: none;
+    margin: 9px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .satirlar li {
+    position: relative;
+    padding-left: 15px;
+    font-size: 14px;
+    color: var(--ink-soft);
+  }
+  .satirlar li::before {
+    content: "";
+    position: absolute;
+    left: 2px;
+    top: .62em;
+    width: 5px;
+    height: 5px;
+    border-radius: 1px;
+    background: var(--line);
+  }
+  .satirlar li.ok::before { background: var(--done); }
+  .satirlar li.uyari::before { background: var(--risk); }
+  .satirlar li b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .satirlar li code {
+    font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+    font-size: 12.5px;
+    background: var(--surface-2);
+    border: 1px solid var(--line-soft);
+    border-radius: 4px;
+    padding: 0 4px;
+    color: var(--ink);
+  }
+  .alinti {
+    margin: 9px 0 0;
+    padding-left: 11px;
+    border-left: 2px solid var(--brass);
+    color: var(--ink);
+    font-size: 14px;
+    font-style: italic;
+  }
+
+  /* ---- işaret çipleri ---- */
+  .isaret {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+    padding-top: 11px;
+    border-top: 1px dashed var(--line);
+  }
+  .isaret .ib {
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 4px 11px;
+    border-radius: 100px;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: background .12s, color .12s, border-color .12s;
+  }
+  .isaret .ib:hover { border-color: var(--ink-faint); color: var(--ink); }
+  .isaret .ib:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+  .isaret .ib[aria-pressed="true"] { color: var(--surface); border-color: transparent; }
+  .isaret .ib[data-m="yap"][aria-pressed="true"] { background: var(--done); }
+  .isaret .ib[data-m="sonra"][aria-pressed="true"] { background: var(--brass); }
+  .isaret .ib[data-m="atla"][aria-pressed="true"] { background: var(--ink-faint); }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .isaret .ib[aria-pressed="true"] { color: #0F1513; }
+  }
+  :root[data-theme="dark"] .isaret .ib[aria-pressed="true"] { color: #0F1513; }
+
+  /* ---- notlar ---- */
+  .notgrup { margin-top: 22px; }
+  .notgrup h3 {
+    font-size: 12px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    margin: 0 0 9px;
+  }
+  .notlar {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: var(--line-soft);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .not {
+    background: var(--surface);
+    padding: 12px 14px 12px 16px;
+    border-left: 3px solid var(--line);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    align-items: flex-start;
+  }
+  .not.yuksek { border-left-color: var(--risk); }
+  .not.orta { border-left-color: var(--brass); }
+  .not-govde { flex: 1 1 260px; min-width: 0; }
+  .not-govde h4 {
+    margin: 0 0 2px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: .005em;
+  }
+  .not-govde p {
+    margin: 0;
+    font-size: 13.5px;
+    color: var(--ink-soft);
+  }
+  .not-govde p b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .not-govde p code {
+    font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+    font-size: 12px;
+    color: var(--ink);
+  }
+  .not .isaret {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+    flex: 0 0 auto;
+  }
+
+  /* ---- alt ---- */
+  .durum {
+    position: sticky;
+    bottom: 0;
+    margin-top: 40px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 13px 16px;
+    padding-bottom: calc(13px + env(safe-area-inset-bottom, 0px));
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+  }
+  .durum-sayac { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+  .durum-sayac span { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  .durum-sayac span b { font-weight: 700; font-family: "Lilita One", system-ui, sans-serif; }
+  .durum-sayac .s-yap b { color: var(--done); }
+  .durum-sayac .s-sonra b { color: var(--brass); }
+  .durum-sayac .s-atla b { color: var(--ink-faint); }
+  #kayit { color: var(--ink-faint); font-size: 12.5px; }
+
+  footer.dip {
+    margin-top: 26px;
+    color: var(--ink-faint);
+    font-size: 12.5px;
+    line-height: 1.6;
+  }
+  footer.dip b { color: var(--ink-soft); }
+
+  @media (max-width: 520px) {
+    .kalem { grid-template-columns: 1fr; gap: 0; }
+    .kod { grid-row: auto; justify-self: start; padding: 4px 12px; margin-bottom: 9px; font-size: 16px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="top">
+    <p class="eyebrow">Köşe Kıraathanesi · 16 Eylül 2026</p>
+    <h1>Yayına Kalanlar</h1>
+    <p class="lede">Mağazaya çıkmak için defterde duran her başlık, gerçek sayılarıyla. Her satırı
+      <b>Yap</b> · <b>Sonra</b> · <b>Atla</b> diye işaretle — işaretler kayıtlı kalır, bir sonraki oturumda okurum.</p>
+
+    <div class="serit">
+      <div class="serit-ust">
+        <div class="serit-sayi">101<span>/107</span></div>
+        <div class="serit-etiket">tur bitti · <b>6 kalem</b> kaldı · H3 elendi (arka salon geometrisi değişti, premis düştü)</div>
+      </div>
+      <div class="bar" id="bar" aria-label="Program ilerlemesi: 107 turun 101'i bitti"></div>
+      <div class="bar-alt">
+        <span>Kuruluş + Faz P·G·A·B·C·İA·D·S·H</span>
+        <span>Faz E · Faz F</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="bolum">
+    <h2>Defterdeki kalemler</h2>
+    <p>Sayılan, planlanan, bütçesi ayrılmış altı iş. Sıra gerçek: E5 Faz E'nin kapısı, F1–F5 paketleme zinciri.</p>
+
+    <div class="kalemler">
+
+      <article class="kalem" data-id="E5">
+        <div class="kod">E5</div>
+        <div class="kalem-bas">
+          <h3>Hareketli onboarding</h3>
+          <span class="rozet notr">Faz E 5/5</span>
+          <span class="rozet notr">tasarım kararı bekliyor</span>
+        </div>
+        <div>
+          <ul class="satirlar">
+            <li>Şu an: <code>onboardingHint(g)</code> saf yardımcı + <code>.coach</code> yeşil <b>statik</b> bant.</li>
+            <li class="uyari">Hangi biçim olacağı seçilmedi: ok · parıltı · animasyonlu el · işaretçi · kamera zoom.</li>
+            <li>Faz E'nin son kalemi — bu bitmeden faz kapanmıyor.</li>
+          </ul>
+          <p class="alinti">"Mevcut onboarding iyi değil" · "onboarding HAREKETLİ olmalı"</p>
+        </div>
+      </article>
+
+      <article class="kalem" data-id="F1">
+        <div class="kod">F1</div>
+        <div class="kalem-bas">
+          <h3>Capacitor kabuğu + imzalı sürüm</h3>
+          <span class="rozet hazir">yarısı bitti</span>
+        </div>
+        <div>
+          <ul class="satirlar">
+            <li class="ok"><code>npm run apk</code> onarıldı (16 Eyl) — APK üretiliyor: <b>21,9 MB</b>.</li>
+            <li class="ok">Kimlik yerinde: <code>com.kosekiraathanesi.game</code> · "Köşe Kıraathanesi".</li>
+            <li>Kalan: release keystore + imzalama · sürüm adı/kodu · uygulama ikonu + açılış ekranı.</li>
+            <li class="uyari">Gradle wrapper güncellenirse boş <code>-classpath</code> kusuru geri gelir.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="kalem riskli" data-id="F2">
+        <div class="kod">F2</div>
+        <div class="kalem-bas">
+          <h3>Telefonda performans</h3>
+          <span class="rozet risk">ölçülmemiş risk</span>
+        </div>
+        <div>
+          <ul class="satirlar">
+            <li class="uyari">Gölgenin telefondaki maliyeti <b>hiç ölçülmedi</b> — defterde "Faz F riski" diye duruyor.</li>
+            <li>JS paketi <b>1,5 MB</b> (three.js), kod-bölme yok.</li>
+            <li>Modeller <b>26 MB</b> · ses <b>1,7 MB</b> · <code>dist</code> toplam <b>30 MB</b> → APK 21,9 MB.</li>
+            <li class="uyari">Müziğin gerçek maliyeti ölçülmedi: <b>1740 KB</b> indirme + sürekli çözme.</li>
+            <li>Oyunun 101 tur boyunca ölçülmeyen tek yanı bu: <b>gerçek cihazda nasıl koştuğu</b>.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="kalem" data-id="F3">
+        <div class="kod">F3</div>
+        <div class="kalem-bas">
+          <h3>Reklam — AdMob</h3>
+          <span class="rozet hazir">kuralları yazılı</span>
+        </div>
+        <div>
+          <ul class="satirlar">
+            <li class="ok">Etik kurallar bağlayıcı ve yazılı (<code>docs/monetization.md</code>): banner altta/opsiyonel · interstitial ≥ 3 dk arayla, eylem ortasında <b>asla</b> · ödüllü hep isteğe bağlı.</li>
+            <li class="ok">Kat 1 ödülü seçili: <b>"Semaver kaynadı"</b> ×2 demleme, 60 sn (D-066) — oyuna kendi darboğazını öğretiyor.</li>
+            <li class="ok">Çocuk-güvenli bayraklar kararlı: <code>tagForChildDirectedTreatment</code> + <code>tagForUnderAgeOfConsent</code>.</li>
+            <li>Kalan: eklenti seçimi (<code>@capgo/capacitor-admob</code> adayı, bakımı doğrulanacak) · entegrasyon · sıklık sayıları config'e.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="kalem" data-id="F4">
+        <div class="kod">F4</div>
+        <div class="kalem-bas">
+          <h3>IAP — RevenueCat</h3>
+          <span class="rozet notr">tasarımı yazılı</span>
+        </div>
+        <div>
+          <ul class="satirlar">
+            <li>Üç ürün: <b>"Reklamları Kaldır"</b> (ödüllüye dokunmaz) · elmas paketleri · başlangıç paketi.</li>
+            <li><code>@revenuecat/purchases-capacitor</code>.</li>
+            <li class="ok">Yasaklar yazılı: gerçek parayla loot-box yok, sahte kıtlık/geri sayım baskısı yok.</li>
+            <li>Kalan: mağaza ürünlerinin tanımı + fiyatlandırma + gerçek satın alma akışı.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="kalem" data-id="F5">
+        <div class="kod">F5</div>
+        <div class="kalem-bas">
+          <h3>Mağaza vitrini ve uyum</h3>
+          <span class="rozet notr">hiç açılmadı</span>
+        </div>
+        <div>
+          <ul class="satirlar">
+            <li>Play Console listelemesi · ekran görüntüleri · tanıtım metni · tanıtım videosu.</li>
+            <li>Gizlilik politikası + veri toplama beyanı.</li>
+            <li class="uyari">Uyum: <b>COPPA</b> (ABD) · <b>GDPR-K</b> (AB çocuk) · mağaza aile politikaları · yaş derecelendirmesi.</li>
+            <li>Oyun içi mağaza kartlarının gerçek render'ı da burada bekliyor (aşağıda not olarak da duruyor).</li>
+          </ul>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="bolum">
+    <h2>Defterde olmayan</h2>
+    <p>Ölçülmüş ya da görülmüş ama kalem yapılmamış işler. Bunlar bütçeye dahil değil — <b>Yap</b> dersen kendi turunu alır ve toplam büyür.</p>
+
+    <div class="notgrup">
+      <h3>İçerik deliği</h3>
+      <div class="notlar">
+        <div class="not yuksek" data-id="N-tepsi">
+          <div class="not-govde">
+            <h4>Garson tepsisi merdiveni tavana varmıyor</h4>
+            <p><code>waiterTray</code> görev hattı kademe 2'de bitiyor, 3. kademe (₺2.500) hatta yok. Ölçüldü (D-093): <b>personel Usta hedefleri 12 saatte hiç açılmıyor</b>. Tutarlılık değil, eksik içerik.</p>
+          </div>
+        </div>
+        <div class="not orta" data-id="N-carpan">
+          <div class="not-govde">
+            <h4>Basamak-başı çıktı çarpanı yok</h4>
+            <p><code>outputMultByLevel</code> yok — servis çıktısı merdiven-geneli. Bu olmadan erken oyuna dokunmadan denge denenemiyor.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="notgrup">
+      <h3>Model ve araç borcu</h3>
+      <div class="notlar">
+        <div class="not orta" data-id="N-sim">
+          <div class="not-govde">
+            <h4>Simülasyon oyunun kuralıyla çelişiyor</h4>
+            <p><code>tools/simulate.ts</code> hâlâ "en ucuz masayı al" oynuyor, oyun ise tek hedefli (D-124). Fark ölçüldü: model zinciri <b>%6 uzun</b> gösteriyor. Tazelemek D-087'nin yayımlanmış tempo sayılarını oynatır.</p>
+          </div>
+        </div>
+        <div class="not" data-id="N-tavan">
+          <div class="not-govde">
+            <h4>Taşıma tavanı 4 masada kötümser</h4>
+            <p>Model <b>6,36</b> &lt; ölçülen <b>7,53</b> müşteri/dk. Elenen <code>k3</code> bardak kolunun önündeki tek engel.</p>
+          </div>
+        </div>
+        <div class="not" data-id="N-nav">
+          <div class="not-govde">
+            <h4>Oyuncu nav ızgarasının tüketicisi yok</h4>
+            <p><code>getPlayerNavGrid</code> D-091'de eklendi, bekçili — ama çağıran yok (oyuncu joystick'le sürülüyor) ve tek doğal tüketici olan sim botunun göçü ölçülüp geri alındı.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="notgrup">
+      <h3>Görsel ve mekân</h3>
+      <div class="notlar">
+        <div class="not orta" data-id="N-sessiz">
+          <div class="not-govde">
+            <h4>Sessiz salon — 27 dk</h4>
+            <p>Tek-hedef kapısının kabul edilmiş bedeli: yeni açılan salon en fazla <b>27 dk</b> hiç canlı nokta göstermiyor. "Tadilat hâli" kalıbıyla kapatılabilir — sırası gelmemiş masa boş durmaz, "sırada" görünür.</p>
+          </div>
+        </div>
+        <div class="not orta" data-id="N-magaza">
+          <div class="not-govde">
+            <h4>Mağaza kartlarının gerçek render'ı yok</h4>
+            <p>Mağaza ekranı boş kutularla duruyor. F5 vitrin turunda ekran görüntüsü çekilecekse bu önce bitmeli.</p>
+          </div>
+        </div>
+        <div class="not" data-id="N-hol">
+          <div class="not-govde">
+            <h4>Giriş holü düzenlenmedi</h4>
+            <p>Vitrin ardındaki hol boş; <b>10 dekor</b> duvar diplerinde bekliyor.</p>
+          </div>
+        </div>
+        <div class="not" data-id="N-wc">
+          <div class="not-govde">
+            <h4>WC odasının ortası boş</h4>
+            <p>Tavan ışığı da yok. "Mekân hacim olmalı" kuralının açık kalan köşesi.</p>
+          </div>
+        </div>
+        <div class="not" data-id="N-karakter">
+          <div class="not-govde">
+            <h4>Karakter kusurları</h4>
+            <p>Ranger'ın kalçası taburesinden geniş (yan taşma <b>0,094</b>) · Rogue'un omzu <b>0,709</b> (blob sınırı 0,60) · klip dosyaları mankenin gövdesini de taşıyor: dosya başına <b>6.916</b> üçgen ölü yük · bel bağı ucunda ince dudak.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="notgrup">
+      <h3>Altyapı</h3>
+      <div class="notlar">
+        <div class="not orta" data-id="N-kayma">
+          <div class="not-govde">
+            <h4>Oyuncuda 2,0× artık kayma</h4>
+            <p>Görülüyor, sebebi bulunmadı. Telefonda joystick'le daha görünür olabilir.</p>
+          </div>
+        </div>
+        <div class="not" data-id="N-tpoz">
+          <div class="not-govde">
+            <h4>Panel dönüşünde T-poz</h4>
+            <p>Temiz koşuda <b>üretilemedi</b> — repro aracı var (<code>tools/olcum-panel-donusu.mjs</code>), hata yakalanamıyor.</p>
+          </div>
+        </div>
+        <div class="not" data-id="N-lint">
+          <div class="not-govde">
+            <h4>Lint 31 hata</h4>
+            <p>Hepsi eski <code>tools/olcum-*.ts</code> dosyalarında — oyun kodunda değil.</p>
+          </div>
+        </div>
+        <div class="not" data-id="N-pano">
+          <div class="not-govde">
+            <h4>Pano günlük uyarısı yalnız tarihe bakıyor</h4>
+            <p>Aynı gün iki oturum kapanınca sessiz kalıyor. Kural "sayaç arttıysa günlük kartı da artmalı" olmalı.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="durum">
+    <div class="durum-sayac">
+      <span class="s-yap"><b id="c-yap">0</b> yap</span>
+      <span class="s-sonra"><b id="c-sonra">0</b> sonra</span>
+      <span class="s-atla"><b id="c-atla">0</b> atla</span>
+      <span><b id="c-bos">20</b> işaretsiz</span>
+    </div>
+    <div id="kayit">yükleniyor…</div>
+  </div>
+
+  <footer class="dip">
+    <b>Yap</b> = v1 yayınına girsin · <b>Sonra</b> = v1.1'e kalsın · <b>Atla</b> = yapılmayacak.
+    Üstteki altı kalem bütçede sayılı; alttaki on dört not sayılı değil — birine <b>Yap</b> dersen toplam 107'nin üstüne çıkar.
+    Sayılar <code>memory-bank/progress.md</code>, <code>docs/monetization.md</code> ve gerçek derleme çıktısından.
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // Yayın şeridi: 107 turun 101'i bitti, 6'sı kaldı.
+  var BITEN = 101, TOPLAM = 107;
+  var bar = document.getElementById("bar");
+  if (bar) {
+    for (var i = 0; i < TOPLAM; i++) {
+      var seg = document.createElement("i");
+      if (i >= BITEN) seg.className = (i === BITEN) ? "simdi" : "bos";
+      bar.appendChild(seg);
+    }
+  }
+
+  var MODLAR = [["yap", "Yap"], ["sonra", "Sonra"], ["atla", "Atla"]];
+  var kutular = Array.prototype.slice.call(document.querySelectorAll("[data-id]"));
+  var isaretler = {};
+  var kayitAlani = document.getElementById("kayit");
+  var dbDoc = null;
+  var yaziliyor = false, bekleyen = false;
+
+  function durumYaz(metin) { if (kayitAlani) kayitAlani.textContent = metin; }
+
+  // Her kaleme/nota üç çip.
+  kutular.forEach(function (kutu) {
+    var id = kutu.getAttribute("data-id");
+    var grup = document.createElement("div");
+    grup.className = "isaret";
+    MODLAR.forEach(function (m) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "ib";
+      b.setAttribute("data-m", m[0]);
+      b.setAttribute("aria-pressed", "false");
+      b.setAttribute("aria-label", m[1] + " — " + id);
+      b.textContent = m[1];
+      b.addEventListener("click", function () {
+        isaretler[id] = (isaretler[id] === m[0]) ? null : m[0];
+        if (!isaretler[id]) delete isaretler[id];
+        boya();
+        kaydet();
+      });
+      grup.appendChild(b);
+    });
+    (kutu.querySelector(".not-govde") ? kutu : kutu.lastElementChild).appendChild(grup);
+  });
+
+  function boya() {
+    var sayac = { yap: 0, sonra: 0, atla: 0 };
+    kutular.forEach(function (kutu) {
+      var secili = isaretler[kutu.getAttribute("data-id")] || null;
+      if (secili && sayac[secili] !== undefined) sayac[secili]++;
+      Array.prototype.forEach.call(kutu.querySelectorAll(".ib"), function (b) {
+        b.setAttribute("aria-pressed", b.getAttribute("data-m") === secili ? "true" : "false");
+      });
+    });
+    document.getElementById("c-yap").textContent = sayac.yap;
+    document.getElementById("c-sonra").textContent = sayac.sonra;
+    document.getElementById("c-atla").textContent = sayac.atla;
+    document.getElementById("c-bos").textContent = kutular.length - sayac.yap - sayac.sonra - sayac.atla;
+  }
+
+  // Yedek: tarayıcı deposu (db yoksa en azından bu cihazda kalsın).
+  function yerelOku() {
+    try {
+      var ham = localStorage.getItem("kiraathane-yayin-isaretleri");
+      if (ham) isaretler = JSON.parse(ham) || {};
+    } catch (e) { /* özel sekme / kapalı depo */ }
+  }
+  function yerelYaz() {
+    try { localStorage.setItem("kiraathane-yayin-isaretleri", JSON.stringify(isaretler)); }
+    catch (e) { /* yok sayılır */ }
+  }
+
+  function kaydet() {
+    yerelYaz();
+    if (!dbDoc) { durumYaz("yalnız bu tarayıcıda kayıtlı"); return; }
+    if (yaziliyor) { bekleyen = true; return; }
+    yaziliyor = true;
+    durumYaz("kaydediliyor…");
+    dbDoc.set({ isaretler: isaretler, guncellendi: new Date().toISOString() }).then(function () {
+      yaziliyor = false;
+      if (bekleyen) { bekleyen = false; kaydet(); }
+      else durumYaz("kaydedildi · Claude okuyabilir");
+    }, function (hata) {
+      yaziliyor = false; bekleyen = false;
+      durumYaz(hata && hata.code === "not_granted" ? "yalnız bu tarayıcıda kayıtlı" : "kaydedilemedi — yerelde duruyor");
+    });
+  }
+
+  yerelOku();
+  boya();
+  durumYaz("yalnız bu tarayıcıda kayıtlı");
+
+  if (window.claude && typeof window.claude.use === "function") {
+    window.claude.use("db").then(function (db) {
+      if (!db) return;
+      dbDoc = db.doc("kararlar/yayin");
+      dbDoc.onSnapshot(function (anlik) {
+        if (anlik.exists && !anlik.metadata.hasPendingWrites) {
+          var gelen = anlik.data().isaretler;
+          if (gelen && typeof gelen === "object") { isaretler = gelen; yerelYaz(); boya(); }
+        }
+        if (!yaziliyor) durumYaz("kaydedildi · Claude okuyabilir");
+      }, function () {
+        dbDoc = null;
+        durumYaz("yalnız bu tarayıcıda kayıtlı");
+      });
+    }, function () { /* db yok — yerel yedek yeter */ });
+  }
+})();
+</script>

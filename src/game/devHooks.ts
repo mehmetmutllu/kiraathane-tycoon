@@ -46,6 +46,7 @@ declare global {
     /** S4 mutfak zemini karşılaştırma kolu: karo boyu × renk. */
     __fayans?: (karo: 'kucuk' | 'buyuk', renk: 'siyahbeyaz' | 'kahve') => string;
     __devCam?: (opts: { fov?: number; distMul?: number }) => void;
+    __zaman?: (kat: number) => number;
   }
 }
 
@@ -276,6 +277,15 @@ export function installDevHooks(): void {
   // BM adım 4 ölçümü: fov 50 ↔ 34 karşılaştırma karesi. `{ fov: 0, distMul: 0 }` üretime döner.
   window.__devCam = ({ fov = 0, distMul = 0 }) => {
     useSandbox.getState().set({ camFov: fov, camDistMul: distMul });
+  };
+
+  // F2 ölçümü: simülasyon hız çarpanı. `__zaman(0)` dünyayı DONDURUR — gölge/dpr kollarının
+  // GPU maliyetini ölçerken sahnenin her karede aynı olması şart, yoksa NPC sayısı oynayınca
+  // üçgen sayısı kollar arasında kayar ve "aynı dünyayı mı ölçtük" denetimi düşer (kısa koşu
+  // tam bunu yakaladı: taban 260.955 ↔ gölge-kapalı 279.797 üçgen).
+  window.__zaman = (kat: number) => {
+    useSandbox.getState().set({ timeScale: Math.max(0, kat) });
+    return kat;
   };
 
   window.__setState = (patch) => {

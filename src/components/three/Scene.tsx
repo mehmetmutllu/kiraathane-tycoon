@@ -7,6 +7,7 @@ import { economyConfig, lavaboUpgradeCost } from '../../config/economy.config';
 import { areaOfTable, THE_SERVICE } from '../../game/world';
 import { masterId, masterCost, masterUnlockedForTable } from '../../game/rules';
 import { SceneLights } from './lights';
+import { devPerfKol } from '../../game/devPerf';
 import { dwellState } from '../../game/dwell';
 import { GroundMarker } from './GroundMarker';
 // Etiketler ve işaret yarıçapı `markerFrame`ten gelir: çerçeve genişliği YAZIDAN çözülüyor
@@ -174,7 +175,13 @@ function AdaptiveResolution() {
   useEffect(() => {
     const area = Math.max(1, width * height);
     const budgetDpr = Math.sqrt(PIXEL_BUDGET / area);
-    setDpr(Math.min(window.devicePixelRatio || 1, 2, Math.max(1, budgetDpr)));
+    let dpr = Math.min(window.devicePixelRatio || 1, 2, Math.max(1, budgetDpr));
+    // DEV — F2 ölçüm kolu piksel tavanını AŞAĞI çekebilir (yukarı asla: bütçe kuralı kalır).
+    if (import.meta.env.DEV) {
+      const tavan = devPerfKol()?.dprTavan;
+      if (tavan) dpr = Math.min(dpr, tavan);
+    }
+    setDpr(dpr);
   }, [width, height, setDpr]);
   return null;
 }
@@ -1266,6 +1273,11 @@ function MeasureGrid() {
 }
 
 export function Scene() {
+  // DEV — F2 ÖLÇÜM KOLU (telefon yükü turu): gölge ve dpr MONTAJ anında sorgu dizesinden
+  // gelebilir (`?f2golge=0&f2dpr=1`). Gerekçe `game/devPerf.ts`te: gölgeyi çalışırken açıp
+  // kapatmak materyal yeniden derlemesini ölçüme sızdırır. Üretimde `devPerfKol()` çağrılmaz.
+  const olcumKolu = import.meta.env.DEV ? devPerfKol() : null;
+  const golgeAcik = !olcumKolu || olcumKolu.golge;
   return (
     // GÖLGE AÇIK (D-073 — D-054 kullanıcı tarafından geri alındı, 2026-09-07): maket üstten
     // görüldü ve *"maketteki ışık ve gölgeler baya iyiymiş, gölgeleri tekrar istiyorum"* dendi.
@@ -1273,7 +1285,7 @@ export function Scene() {
     // 2048 harita · bias/normalBias duvar kalınlığına göre · ortografik ±30. Bedeli ölçülmüştü
     // (kare süresi ~+0,6 ms); Faz 7'de telefonda yeniden ölçülecek.
     <Canvas
-      shadows="soft"
+      shadows={golgeAcik ? 'soft' : false}
       camera={{ position: [0, 9, 11], fov: CAMERA_FOV }}
       gl={{ antialias: true, toneMappingExposure: LIGHTING.exposure }}
       dpr={[1, 2]}
@@ -1287,7 +1299,7 @@ export function Scene() {
       {/* Işık takımı `three/lights.tsx`te TEK tanım — mağaza önizlemeleri de aynı bileşeni
           kullanır, böylece kartta gördüğün renk salondakiyle birebir aynı olur.
           Yönlü ışık gölge DÖKMEZ; yalnız yüzey yönüne göre aydınlatma (hacim hissi) verir. */}
-      <SceneLights shadows />
+      <SceneLights shadows={golgeAcik} />
       <Ground />
       <Street />
       <Walls />

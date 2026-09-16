@@ -1,0 +1,183 @@
+# F2 — TELEFON YUKU OLCUMU
+# kip: TAM · ornek 12000 ms/kol · isinma 5000 ms · CPU kisma 4x
+# telefon taklidi: 412x915 @ dpr 2.625
+# tarih: 2026-09-16T15:06:19.527Z
+
+## §A1 — PAKET ERISILEBILIRLIGI  [KESIN]
+paket                              bayt     kodda gecis
+kaykit-board-game-bits               9,3 MB   YOK  <-- ULASILAMAZ
+kaykit-characters                    5,9 MB   VAR
+kaykit-restaurant-bits               3,4 MB   VAR
+kaykit-city-builder-bits             1,7 MB   VAR
+kaykit-resource-bits                 0,9 MB   YOK  <-- ULASILAMAZ
+kaykit-furniture-bits                0,8 MB   VAR
+kaykit-holiday-bits                  0,5 MB   YOK  <-- ULASILAMAZ
+kaykit-forest-nature                 0,5 MB   YOK  <-- ULASILAMAZ
+kaykit-prototype-bits                0,1 MB   VAR
+kenney-food-kit                      0,0 MB   VAR
+TOPLAM: erisilebilir 11,9 MB · ULASILAMAZ 11,2 MB (%48,5)
+
+## §B1 — URETIM CIKTISI (dist/) BAYT DOKUMU  [KESIN]
+model (glb/gltf/bin)       15,7 MB  %57,4
+doku (png/jpg)              7,5 MB  %27,5
+ses                         1,7 MB  %6,2
+javascript                  1,5 MB  %5,4
+font                        0,9 MB  %3,3
+css                         0,0 MB  %0,2
+diger (md)                  0,0 MB  %0,1
+diger (svg)                 0,0 MB  %0,0
+diger (txt)                 0,0 MB  %0,0
+diger (html)                0,0 MB  %0,0
+TOPLAM                     27,4 MB
+APK (debug, sikistirilmis)  20,9 MB
+
+## §A2 — DUNYA TAM ACIKKEN GERCEKTEN ISTENEN ASSETLER  [KESIN]
+diskte asset      : 1.006 dosya · 25,6 MB
+gercekten istenen : 108 dosya · 7,1 MB
+HIC ISTENMEYEN    : 898 dosya · 18,5 MB (%72,4)
+surucu: ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 (0x00002503) Direct3D11 vs_5_0 ps_5_0, D3D11)
+konsol hatasi: 0
+tuval hazir: 6395 ms (CPU 4x kisik, dev sunucusu)
+acilan pad: 24 · istenen essiz asset listesi:
+  /assets/fonts/Baloo2.ttf
+  /assets/models/kaykit-characters/Barbarian.glb
+  /assets/models/kaykit-characters/Knight.glb
+  /assets/models/kaykit-characters/Mage.glb
+  /assets/models/kaykit-characters/Ranger.glb
+  /assets/models/kaykit-characters/Rig_Medium_General.glb
+  /assets/models/kaykit-characters/Rig_Medium_MovementBasic.glb
+  /assets/models/kaykit-characters/Rig_Medium_Simulation.glb
+  /assets/models/kaykit-characters/Rig_Medium_Tools.glb
+  /assets/models/kaykit-characters/Rogue.glb
+  /assets/models/kaykit-city-builder-bits/bench.bin
+  /assets/models/kaykit-city-builder-bits/bench.gltf
+  /assets/models/kaykit-city-builder-bits/bush.bin
+  /assets/models/kaykit-city-builder-bits/bush.gltf
+  /assets/models/kaykit-city-builder-bits/car_taxi.bin
+  /assets/models/kaykit-city-builder-bits/car_taxi.gltf
+  /assets/models/kaykit-city-builder-bits/citybits_texture.png
+  /assets/models/kaykit-city-builder-bits/firehydrant.bin
+  /assets/models/kaykit-city-builder-bits/firehydrant.gltf
+  /assets/models/kaykit-city-builder-bits/streetlight.bin
+  /assets/models/kaykit-city-builder-bits/streetlight.gltf
+  /assets/models/kaykit-city-builder-bits/trash_A.bin
+  /assets/models/kaykit-city-builder-bits/trash_A.gltf
+  /assets/models/kaykit-city-builder-bits/trash_B.bin
+  /assets/models/kaykit-city-builder-bits/trash_B.gltf
+  /assets/models/kaykit-furniture-bits/cabinet_medium.bin
+  /assets/models/kaykit-furniture-bits/cabinet_medium.gltf
+  /assets/models/kaykit-furniture-bits/cabinet_small.bin
+  /assets/models/kaykit-furniture-bits/cabinet_small.gltf
+  /assets/models/kaykit-furniture-bits/cactus_medium_A.bin
+  /assets/models/kaykit-furniture-bits/cactus_medium_A.gltf
+  /assets/models/kaykit-furniture-bits/cactus_medium_B.bin
+  /assets/models/kaykit-furniture-bits/cactus_medium_B.gltf
+  /assets/models/kaykit-furniture-bits/cactus_small_A.bin
+  /assets/models/kaykit-furniture-bits/cactus_small_A.gltf
+  /assets/models/kaykit-furniture-bits/cactus_small_B.bin
+  /assets/models/kaykit-furniture-bits/cactus_small_B.gltf
+  /assets/models/kaykit-furniture-bits/chair_A.bin
+  /assets/models/kaykit-furniture-bits/chair_A.gltf
+  /assets/models/kaykit-furniture-bits/chair_A_wood.bin
+  /assets/models/kaykit-furniture-bits/chair_A_wood.gltf
+  /assets/models/kaykit-furniture-bits/chair_C.bin
+  /assets/models/kaykit-furniture-bits/chair_C.gltf
+  /assets/models/kaykit-furniture-bits/chair_stool.bin
+  /assets/models/kaykit-furniture-bits/chair_stool.gltf
+  /assets/models/kaykit-furniture-bits/chair_stool_wood.bin
+  /assets/models/kaykit-furniture-bits/chair_stool_wood.gltf
+  /assets/models/kaykit-furniture-bits/furniturebits_texture.png
+  /assets/models/kaykit-furniture-bits/lamp_standing.bin
+  /assets/models/kaykit-furniture-bits/lamp_standing.gltf
+  /assets/models/kaykit-furniture-bits/lamp_table.bin
+  /assets/models/kaykit-furniture-bits/lamp_table.gltf
+  /assets/models/kaykit-furniture-bits/pictureframe_large_A.bin
+  /assets/models/kaykit-furniture-bits/pictureframe_large_A.gltf
+  /assets/models/kaykit-furniture-bits/pictureframe_medium.bin
+  /assets/models/kaykit-furniture-bits/pictureframe_medium.gltf
+  /assets/models/kaykit-furniture-bits/rug_rectangle_B.bin
+  /assets/models/kaykit-furniture-bits/rug_rectangle_B.gltf
+  /assets/models/kaykit-furniture-bits/shelf_B_small_decorated.bin
+  /assets/models/kaykit-furniture-bits/shelf_B_small_decorated.gltf
+  /assets/models/kaykit-furniture-bits/table_medium.bin
+  /assets/models/kaykit-furniture-bits/table_medium.gltf
+  /assets/models/kaykit-furniture-bits/table_medium_long.bin
+  /assets/models/kaykit-furniture-bits/table_medium_long.gltf
+  /assets/models/kaykit-furniture-bits/table_small.bin
+  /assets/models/kaykit-furniture-bits/table_small.gltf
+  /assets/models/kaykit-prototype-bits/Door_A.bin
+  /assets/models/kaykit-prototype-bits/Door_A.gltf
+  /assets/models/kaykit-prototype-bits/prototypebits_texture.png
+  /assets/models/kaykit-restaurant-bits/crate.bin
+  /assets/models/kaykit-restaurant-bits/crate.gltf
+  /assets/models/kaykit-restaurant-bits/crate_lid.bin
+  /assets/models/kaykit-restaurant-bits/crate_lid.gltf
+  /assets/models/kaykit-restaurant-bits/crate_potatoes.bin
+  /assets/models/kaykit-restaurant-bits/crate_potatoes.gltf
+  /assets/models/kaykit-restaurant-bits/dishrack.bin
+  /assets/models/kaykit-restaurant-bits/dishrack.gltf
+  /assets/models/kaykit-restaurant-bits/extractorhood.bin
+  /assets/models/kaykit-restaurant-bits/extractorhood.gltf
+  /assets/models/kaykit-restaurant-bits/floor_kitchen_small.bin
+  /assets/models/kaykit-restaurant-bits/floor_kitchen_small.gltf
+  /assets/models/kaykit-restaurant-bits/food_ingredient_ham.bin
+  /assets/models/kaykit-restaurant-bits/food_ingredient_ham.gltf
+  /assets/models/kaykit-restaurant-bits/fridge_A.bin
+  /assets/models/kaykit-restaurant-bits/fridge_A.gltf
+  /assets/models/kaykit-restaurant-bits/kitchencabinet_half.bin
+  /assets/models/kaykit-restaurant-bits/kitchencabinet_half.gltf
+  /assets/models/kaykit-restaurant-bits/kitchencounter_sink.bin
+  /assets/models/kaykit-restaurant-bits/kitchencounter_sink.gltf
+  /assets/models/kaykit-restaurant-bits/kitchencounter_straight_A.bin
+  /assets/models/kaykit-restaurant-bits/kitchencounter_straight_A.gltf
+  /assets/models/kaykit-restaurant-bits/kitchencounter_straight_B.bin
+  /assets/models/kaykit-restaurant-bits/kitchencounter_straight_B.gltf
+  /assets/models/kaykit-restaurant-bits/kitchentable_sink_large.bin
+  /assets/models/kaykit-restaurant-bits/kitchentable_sink_large.gltf
+  /assets/models/kaykit-restaurant-bits/oven.bin
+  /assets/models/kaykit-restaurant-bits/oven.gltf
+  /assets/models/kaykit-restaurant-bits/restaurantbits_texture.png
+  /assets/models/kaykit-restaurant-bits/shelf_papertowel.bin
+  /assets/models/kaykit-restaurant-bits/shelf_papertowel.gltf
+  /assets/models/kaykit-restaurant-bits/stove_single.bin
+  /assets/models/kaykit-restaurant-bits/stove_single.gltf
+  /assets/models/kaykit-restaurant-bits/towelrail.bin
+  /assets/models/kaykit-restaurant-bits/towelrail.gltf
+  /assets/models/kaykit-restaurant-bits/wall.bin
+  /assets/models/kaykit-restaurant-bits/wall.gltf
+  /assets/models/kenney-food-kit/Textures/colormap.png
+  /assets/models/kenney-food-kit/sandwich.glb
+
+## §C — KARE SURESI KOLLARI  [VEKIL: cihazda dogrulanmadi]
+kol                                 ortanca     p95  enkotu   cagri    ucgen   dpr    tampon px   heap
+T  taban (soft 2048, dpr butcesi)     22,10   24,60   31,10     143   227.167  2,00   1.507.920  110,6
+G0 golge KAPALI                       13,20   14,90   32,50     143   227.167  2,00   1.507.920  110,6
+G1 golge harita 1024                  22,20   25,80   40,50     143   227.167  2,00   1.507.920  110,6
+G2 golge harita 512                   22,00   24,80   31,80     143   227.167  2,00   1.507.920  110,6
+P1 dpr tavani 1                       22,20   25,60   32,20     143   227.167  1,00     376.980  104,0
+G0+P1 golge kapali + dpr 1            14,00   16,30   34,10     143   227.167  1,00     376.980  110,6
+
+surucu (kare suresini ureten donanim): ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 (0x00002503) Direct3D11 vs_5_0 ps_5_0, D3D11)
+
+## §C2 — TABANA GORE FARK (ortanca kare suresi)
+G0 golge KAPALI                     -8,90 ms  (%-40,3)
+G1 golge harita 1024                +0,10 ms  (%+0,5)
+G2 golge harita 512                 -0,10 ms  (%-0,5)
+P1 dpr tavani 1                     +0,10 ms  (%+0,5)
+G0+P1 golge kapali + dpr 1          -8,10 ms  (%-36,7)
+
+## VARYANT ETKI DENETIMI (kol gercekten tuttu mu? — renderer okundu)
+T      golge true  harita 2048 dpr 2,00  (beklenen true/2048/2)  ETKILI
+G0     golge false harita    0 dpr 2,00  (beklenen false/0/2)  ETKILI
+G1     golge true  harita 1024 dpr 2,00  (beklenen true/1024/2)  ETKILI
+G2     golge true  harita  512 dpr 2,00  (beklenen true/512/2)  ETKILI
+P1     golge true  harita 2048 dpr 1,00  (beklenen true/2048/1)  ETKILI
+G0+P1  golge false harita    0 dpr 1,00  (beklenen false/0/1)  ETKILI
+
+## KORUNUM DENETIMI (kollar ayni dunyayi mi olctu?)
+ucgen araligi: 227.167 … 227.167 · sapma %0,0  GECTI
+cizim cagrisi araligi: 143 … 143 (tohumlu rastgele ile ayni dunya bekleniyor)
+NPC sayisi: 31 · 31 · 31 · 31 · 31 · 31  GECTI (ayni nufus)
+tampon piksel: taban 1.507.920 · dpr1 376.980 · oran 4,00x  GECTI
+surucu yazilim mi: hayir (gercek GPU)
+varyant denetimi: ALTI KOL DA ETKILI
