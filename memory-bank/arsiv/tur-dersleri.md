@@ -1,3 +1,34 @@
+## R2 — mutfak yerleşimi + çarpışma (2026-09-16, D-127) — turun kalıcı üç dersi
+
+**Turun kalıcı üç dersi:**
+1. **İki dönemden biri doğru çalışıyorsa kusur ölümsüzdür.** Ölçü DÜNYA ekseninde üretilip YEREL
+   eksende tüketiliyordu; `rot = 0` olan arka bant hep doğru göründüğü için hata S3'ten R2'ye
+   kadar yaşadı. Bekçinin kuralı bu yüzden "her denetim İKİ DÖNEMİ birden gezer" — tek dönemi
+   denetleyen bekçi, bu kusurun tam olarak kaçtığı bekçidir.
+2. **Kaçan mutasyon bir delik değil bir HARİTA.** M2 ve M4 yakalanmadı; sebebi bekçinin zayıflığı
+   değil, yanlışladıkları dalın canlı kodda ÖLÜ olmasıydı (birleştirme yalnız `rot = 0` döneminde
+   koşuyor). Sözleşme `yerelKutu()` olarak dışarı alındı ve doğrudan koşturuldu.
+3. **Ölçümün kapsamı, kararın kapsamı değildir.** Araç yalnız `ServicePlace` içindeki noktaları
+   geziyordu; bulaşıkçı PAD'i listede yoktu ve B2 uygulanınca boş zemini işaretler hâlde kalacaktı.
+   Kolun gereği olduğu için taşındı ve bekçiye kondu — ama asıl açık, ankraj listesinin hâlâ elle
+   türetiliyor olması.
+
+**Yolda düzeltilen üç araç kusuru:** "oda dışı" ölçütü arka bantta anlamsızdı (bant tanım gereği
+salon dışı) → kutunun merkezi salonda değilse satır ölçülmüyor · kare aracının dönem damgası
+`window.__game`i ALAN sanıyordu, okunamayan değeri "geçti" sayıyordu (fonksiyon) · düzeltme
+uygulanınca "A1 kolu" adı yalanlaştı → "TAKAS (geri alınsa)" oldu, arm tablosu bekçinin
+karşılaştırma koluna dönüştü.
+
+**KARARSIZ BEKÇİ — yeni veri, teşhis DEĞİŞTİ.** Bu turda bir kez daha görüldü (1242/1243) ve
+hemen ardından **beş koşu üst üste temiz**. İki gözlemin ortak yanı: ikisi de bir dosya
+YAZILDIKTAN hemen sonraki ilk koşuda oldu — yani şüphe artık `sira-kilidi`/`pano-guncelle`de
+değil, koşucunun yazım-zamanlaması. Ayrıca R1'in *"çıktı dosya adını göstermiyor"* notu YANLIŞ
+çıktı: `--reporter=verbose` (ve varsayılan da) kırık testin adını basıyor — R1'de `tail` çıktıyı
+kesmişti. Kip eklemeye gerek yok, `| grep -E '×|FAIL'` yeter.
+
+
+---
+
 
 ## R1 — görev şeridi (2026-09-16, D-126) — turun kalıcı üç dersi
 

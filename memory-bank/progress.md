@@ -596,7 +596,19 @@ Kalemler ve kullanıcının KENDİ cümleleri: `docs/geribildirim-oyun-testi-202
   değişmedi. İlk turda 2 mutasyon kaçtı ve ölü dalı gösterdi → sözleşme `yerelKutu()` olarak
   dışarı alındı. `docs/mutfak-raporu-r2.md` · bekçi `mutfak-r2` (25 den. · 17 mut.) · kaçan 0 ·
   vitest 1245 ✓ · duman 45/45 ✓.
-- ⏳ **R3 — HUD çerçeveleri (G-45…G-49)** · G-48 Clash of Clans referans karesi ister
+- 🔧 **R3 — HUD çerçeveleri (G-45…G-49)** · **ÖLÇÜM BİTTİ, KARAR BEKLİYOR.** Kaydırıcının
+  çizgisi kesik DEĞİL (45,00/45,0 · oran 1,000); kesik olan KÖŞE — çizgi üstteki ayıraçtan
+  yatayda 4,00 px içeride, dikeyde 4,00 px aşağıda başlıyor ve açıklığın yarısı `.sheet-pad`in
+  `gap: 4px`i, yani panelin kuralı. A1 (topuz sığsın) ölçülüp elendi: topuz dış çapı 20,0 px,
+  yatak 22,0 — zaten sığıyor. FPS katmanı ekranın %1,30'u ama **ayarlar panelinin üstüne
+  biniyor** (telefonda tam "Ses seviyesi" satırını örtüyor) + iki kadrajda joystick'in üstünde.
+  Ödüller AYRI ELEMAN DEĞİL (`.reward-amount`ın 6 düz çocuğu) → "alt alta" bir CSS satırı değil
+  sarmalama işi; satır kartın iç eninin %98'i, pay 6,0 px. Rozet: madalyonla çubuk arası 3,0 px,
+  üst şerit 3 hizaya yayılmış (69,0 px → tek satırda 56,0). Kese kutusuz: geçirme **0,979/0,999**
+  — zemin sahnenin oynamasını bire bir üstleniyor; hap çerçevede 0,317/0,292.
+  `docs/hud-raporu-r3.md` (KARAR BÖLÜMÜ BOŞ) · ham `docs/olcum-hud-r3.txt` ·
+  karar paketi `docs/r3-karar-paketi.html` (rozet 8 + kese 6 aday, gerçek oyundan).
+  **Sonraki oturum: karar paketi sorulur, sonra commit #2 (kod + bekçi).**
 - ⏳ **R4 — çevre sanatı (G-50)** · tasarım turu: 6-12 aday aynı kadrajda render edilir
 
 ## Faz H — OYNANIŞ DÜZELTMELERİ (2/2) ✅ — her kalem ≈ 1 oturum

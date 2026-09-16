@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>R3 Karar Paketi</title>
+<style>
+  :root{
+    --bg:#f6f3ee; --kart:#fff; --tx:#1d1a2e; --tx2:#5d5872; --cizgi:#e2ddd4;
+    --vurgu:#7a4de8; --iyi:#1f7a4d; --kotu:#a33; --sari:#b8860b;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#14121c; --kart:#1d1a29; --tx:#ece8f6; --tx2:#a49fb8; --cizgi:#332e44;
+      --vurgu:#a98bff; --iyi:#5fd39a; --kotu:#ff8b8b; --sari:#e8bf5a;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14121c; --kart:#1d1a29; --tx:#ece8f6; --tx2:#a49fb8; --cizgi:#332e44;
+    --vurgu:#a98bff; --iyi:#5fd39a; --kotu:#ff8b8b; --sari:#e8bf5a;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--tx);
+    font:16px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+    padding:28px 16px 64px;
+  }
+  .kap{max-width:980px;margin:0 auto}
+  h1{font-size:1.5rem;margin:0 0 4px;letter-spacing:-.01em}
+  .alt{color:var(--tx2);font-size:.9rem;margin:0 0 28px}
+  h2{font-size:1.12rem;margin:38px 0 6px;padding-top:18px;border-top:2px solid var(--cizgi)}
+  h2 .g{color:var(--tx2);font-weight:400;font-size:.85rem;margin-left:8px}
+  .soru{color:var(--tx2);font-style:italic;margin:0 0 14px;font-size:.93rem}
+  table{border-collapse:collapse;width:100%;font-size:.86rem;margin:10px 0 16px}
+  th,td{border:1px solid var(--cizgi);padding:6px 9px;text-align:right}
+  th:first-child,td:first-child{text-align:left}
+  th{background:color-mix(in srgb,var(--vurgu) 10%,transparent);font-weight:700}
+  tr.taban td{background:color-mix(in srgb,var(--sari) 12%,transparent)}
+  tr.oneri td{background:color-mix(in srgb,var(--iyi) 13%,transparent)}
+  b.iyi{color:var(--iyi)} b.kotu{color:var(--kotu)}
+  .izgara{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin:14px 0 6px}
+  .aday{background:var(--kart);border:1px solid var(--cizgi);border-radius:12px;overflow:hidden}
+  .aday img{display:block;width:100%;height:auto;background:#cdb488}
+  .aday .ad{padding:8px 10px 10px;font-size:.82rem;line-height:1.4}
+  .aday .ad b{display:block;font-size:.95rem;margin-bottom:2px}
+  .not{background:var(--kart);border:1px solid var(--cizgi);border-left:4px solid var(--vurgu);
+       border-radius:0 10px 10px 0;padding:11px 14px;margin:14px 0;font-size:.9rem}
+  .not b{color:var(--vurgu)}
+  code{background:color-mix(in srgb,var(--tx) 8%,transparent);padding:1px 5px;border-radius:5px;font-size:.86em}
+  @media(max-width:560px){ body{padding:20px 12px 48px} table{font-size:.78rem} th,td{padding:5px 6px} }
+</style>
+</head>
+<body>
+<div class="kap">
+
+<h1>R3 — HUD çerçeveleri · karar paketi</h1>
+<p class="alt">Tam koşu · telefon 390×844 @3× + masaüstü 1280×800 @2× · hata 0 ·
+Ölçüm: <code>tools/olcum-hud-r3.mjs</code> · Adaylar: <code>tools/shot-hud-r3.mjs</code><br>
+Bütün kareler <b>gerçek oyundan</b>; adaylar sayfaya enjekte edilmiş CSS/DOM, uygulama kaynağı değişmedi.</p>
+
+<div class="not">
+<b>Nasıl okunur:</b> §A, §B ve §C sayıyla kapanıyor — önerim tabloda yeşil satır.
+<b>§D ve §E biçim kararı</b>, sayı tek başına seçemez: onlarda kareler var, eleyerek seç.
+</div>
+
+<!-- ══════════════════ §A ══════════════════ -->
+<h2>§A · Ayarlar kaydırıcısının çerçevesi <span class="g">G-45</span></h2>
+<p class="soru">"ses seviyesi ve müzik seviyesi kısımlarının çerçevesini düzenle kesik yerler falan var"</p>
+
+<p><b>Çizgi kesik değil — köşe kesik.</b> Sol çizginin çizilen boyu 45,00 px, satır da 45,0 px
+(oran tam 1,000). Kusur, çizginin üstündeki yatay ayıraçla <b>hiçbir noktada buluşmaması</b>:
+yatayda 4,00 px içeride, dikeyde 4,00 px aşağıda başlıyor. Ayrıca çerçevenin dört kenarından
+yalnız ikisi var ve o ikisi farklı kalınlıkta (3,0 ↔ 1,0 px).</p>
+
+<table>
+<tr><th>kol</th><th>kenar s/a/ü/sağ</th><th>kapalı kenar</th><th>üst köşe açıklığı</th><th>sol hizasızlık</th><th>satır boyu</th></tr>
+<tr class="taban"><td>T — bugün</td><td>3,0 / 1,0 / 0 / 0</td><td>2</td><td><b class="kotu">4,00</b></td><td><b class="kotu">4,00</b></td><td>45,0</td></tr>
+<tr><td>A1 — topuz yatağa sığsın</td><td>3,0 / 1,0 / 0 / 0</td><td>2</td><td>4,00</td><td>4,00</td><td><b class="kotu">51,0</b></td></tr>
+<tr><td>A2 — kapalı dört kenar çerçeve</td><td>2,0 / 2,0 / 2,0 / 2,0</td><td><b class="iyi">4</b></td><td>—<sup>*</sup></td><td>4,00</td><td>46,0</td></tr>
+<tr><td>A3 — hizalı L (yalnız yatay)</td><td>1,0 / 1,0 / 0 / 0</td><td>2</td><td><b class="kotu">4,00</b></td><td><b class="iyi">0,00</b></td><td>45,0</td></tr>
+<tr class="oneri"><td>A4 — hizalı + bitişik L ✓</td><td>1,0 / 1,0 / 0 / 0</td><td>2</td><td><b class="iyi">−1,00</b></td><td><b class="iyi">0,00</b></td><td>49,0</td></tr>
+</table>
+<p style="font-size:.82rem;color:var(--tx2);margin-top:-8px">
+<sup>*</sup> A2'de köşe tanım gereği kapalı (kutunun kendi üst kenarı var); açıklık ölçütü yalnız L biçimi için anlamlı.</p>
+
+<div class="not">
+<b>A1 ölçüldü ve elendi.</b> "Topuz yatağa sığmıyor" hipotezi yanlış: topuzun çizilen dış çapı
+<b>20,0 px</b>, yatak <b>22,0 px</b> — zaten 2,0 px boşlukla sığıyor. A1 satırı %13 büyütüp
+olmayan bir sorunu çözüyordu. Kaynaktan yapılan "25 px" hesabı <code>border-box</code> yüzünden
+yanlıştı; doğruyu ancak çizilen piksel söyledi.
+</div>
+
+<div class="not">
+<b>Açıklığın yarısı kaydırıcının suçu değil.</b> <code>.sheet-pad</code> bir flex kolon ve
+<code>gap: 4px</code> — ayarlar ekranında <b>her satırın</b> arası 4 px hava. Kusur yalnız
+kaydırıcıda göze çarpıyor çünkü orada dikey bir çizgi o boşluğu görünür kılıyor.
+A4 bunu <code>margin-top: -4px</code> ile kapatıyor.
+</div>
+
+<h3 style="font-size:.95rem;margin:18px 0 6px">Kareler</h3>
+<div class="izgara">
+  <figure class="aday" style="margin:0"><img src="gorsel/ss/r3-kaydirici-T.png" alt="T"><figcaption class="ad"><b>T — bugün</b>köşe açık, iki kenar, 3 px ↔ 1 px</figcaption></figure>
+  <figure class="aday" style="margin:0"><img src="gorsel/ss/r3-kaydirici-A2.png" alt="A2"><figcaption class="ad"><b>A2 — kapalı çerçeve</b>satır bir kart olur</figcaption></figure>
+  <figure class="aday" style="margin:0"><img src="gorsel/ss/r3-kaydirici-A4.png" alt="A4"><figcaption class="ad"><b>A4 — bitişik L ✓</b>köşe kapanır, satır kart olmaz</figcaption></figure>
+</div>
+
+<!-- ══════════════════ §B ══════════════════ -->
+<h2>§B · FPS sayacı <span class="g">G-46</span></h2>
+<p class="soru">"fps sayacını kaldır"</p>
+
+<p>Katman ekranın yalnız <b>%1,30</b>'unu kaplıyor (4.268 px²) — ama asıl bulgu çakışmada:
+<b>ayarlar panelinin içeriğinin üstüne biniyor</b> ve telefonda tam olarak "Ses seviyesi"
+kaydırıcısını örtüyor. Her iki kadrajda ayrıca <b>joystick'in</b> üstünde duruyor.</p>
+
+<table>
+<tr><th>kadraj / sahne</th><th>alan</th><th>ekran %</th><th>katmanın ALTINDA kalan</th></tr>
+<tr class="taban"><td>telefon · oyun</td><td>4.268 px²</td><td>1,30</td><td>hud, <b class="kotu">joystick</b></td></tr>
+<tr class="taban"><td>telefon · ayarlar</td><td>4.268 px²</td><td>1,30</td><td>hud, menu, <b class="kotu">setting-row, setting-slider</b>, joystick</td></tr>
+<tr><td>masaüstü · oyun</td><td>4.268 px²</td><td>0,42</td><td>hud, joystick</td></tr>
+<tr><td>masaüstü · ayarlar</td><td>4.268 px²</td><td>0,42</td><td>hud, menu, joystick</td></tr>
+</table>
+
+<div class="not">
+<b>Bu, ölçümün kendi kazasıyla bulundu.</b> §A üç koşu boyunca "Ses seviyesi" satırının sol
+çizgisini 18,00 px / oran 0,400 diye ölçtü; çizgi aslında 45,00 px'ti — <b>üstü örtülüydü</b>.
+Araç, ölçtüğü kusurun üstüne kendi kurduğu bir kusuru koymuştu.
+</div>
+
+<p><b>İki kol var, farkı kapsam:</b></p>
+<table>
+<tr><th>kol</th><th>ne gider</th><th>ayarlar ekranı</th><th>kayıt şeması</th><th>bedel</th></tr>
+<tr><td>B1</td><td>yalnız katman</td><td>"FPS Sayacı" anahtarı <b>kalır</b></td><td>değişmez</td><td>yok</td></tr>
+<tr class="oneri"><td>B2 ✓</td><td>katman + anahtar + <code>showFps</code> alanı</td><td>bir satır kısalır</td><td><b class="iyi">sürüm artmaz</b></td><td>3 yorumda emsal atfı boşa düşer</td></tr>
+</table>
+<p style="font-size:.86rem;color:var(--tx2)">
+<code>showFps</code> bugün <code>save.ts</code>'de üç yorumda "ADDITIVE alan → saveVersion ARTMADI"
+emsali olarak anılıyor. Alan silinince o üç yorum var olmayan bir alana atıf yapar — düzeltilir.
+Kayıt güvenliği açısından bedel yok: <code>ayarlariBirlestir</code> bilinen alanları tek tek
+seçiyor, eski kayıttaki fazla alan sessizce düşüyor.</p>
+
+<!-- ══════════════════ §C ══════════════════ -->
+<h2>§C · İki ödülün dizilimi <span class="g">G-47</span></h2>
+<p class="soru">"2 ödül varsa alt alta olsun ve aralarında + olsun şu an yan yana kötü duruyor"</p>
+
+<p><b>Ödüller "yan yana" bile değil — aynı metin akışında.</b> <code>.reward-amount</code>'ın
+doğrudan çocukları: <code>svg</code>, metin, <code>svg</code>, metin. İki ödül <b>ayrı eleman
+değil</b>, yani "alt alta koy" bir CSS satırı değil, önce sarmalama işi.</p>
+
+<table>
+<tr><th>kol</th><th>çocuk</th><th>dizilim</th><th>satır w×h</th><th>satır / kart iç eni</th><th>ödüller arası açıklık</th><th>"+"</th></tr>
+<tr class="taban"><td>T — bugün (telefon)</td><td>6</td><td>row</td><td>266,0 × 70,0</td><td><b class="kotu">0,980</b></td><td>9,58</td><td>yok</td></tr>
+<tr class="oneri"><td>C1 — alt alta + "+" ✓</td><td>3</td><td>column</td><td>266,0 × <b>92,0</b></td><td>0,980</td><td><b class="iyi">0,00</b></td><td><b class="iyi">var</b></td></tr>
+<tr><td>T — masaüstü</td><td>6</td><td>row</td><td>274,0 × 70,0</td><td>0,980</td><td>12,74</td><td>yok</td></tr>
+</table>
+
+<p>İki sayı kullanıcının "kötü duruyor"unu karşılıyor:</p>
+<ul style="font-size:.93rem">
+<li><b>Satır kartın iç eninin %98'ini dolduruyor</b> (266,0 / 272,0) — taşmanın 6 px uzağında,
+nefes payı yok. Ödül metni bir hane büyürse satır taşar.</li>
+<li><b>Ödülü ödülden ayıran boşluk 9,58 px</b>, bir ödülün kendi parçalarını ayıran boşlukla
+(9,0 px) neredeyse aynı — göz ikisini tek uzun cümle olarak okuyor.</li>
+</ul>
+<p style="font-size:.9rem">C1 kartı 70 → 92 px uzatıyor (+%31); genişlik değişmiyor, çünkü ilk
+ödülün kendi metni ("🪙 +%0,4 kalıcı gelir") zaten 263,7 px.</p>
+
+<div class="izgara">
+  <figure class="aday" style="margin:0"><img src="gorsel/ss/r3-odul-T.png" alt="T"><figcaption class="ad"><b>T — bugün</b>tek satır, iki ödül bitişik akıyor</figcaption></figure>
+  <figure class="aday" style="margin:0"><img src="gorsel/ss/r3-odul-C1.png" alt="C1"><figcaption class="ad"><b>C1 — alt alta + "+" ✓</b></figcaption></figure>
+</div>
+
+<!-- ══════════════════ §D ══════════════════ -->
+<h2>§D · Seviye rozeti — <b>SEÇİM SENİN</b> <span class="g">G-48</span></h2>
+<p class="soru">"yuvarlak etrafı siyah bar da öyle bar ve yuvarlak birleşik olmalı clash of clansınki gibi düşün ve en üst satırda yan yana olmalı"</p>
+
+<p>Cümlen iki ayrı şey istiyor, ikisi de ayrı ölçüldü:</p>
+<table>
+<tr><th>kol</th><th>madalyon–bar arası</th><th>üst şerit boyu</th><th>kaç satıra yayılmış</th><th>ilerleme yolunun boyu</th></tr>
+<tr class="taban"><td>T — bugün</td><td><b class="kotu">3,0 px boşluk</b></td><td>69,0</td><td><b class="kotu">3</b></td><td>50,0</td></tr>
+<tr><td>D1 — halka</td><td>birleşik</td><td>64,0</td><td>2</td><td>halka</td></tr>
+<tr><td>D2 — tek üst satır</td><td>3,0 px boşluk</td><td><b class="iyi">56,0</b></td><td><b class="iyi">1</b></td><td>50,0</td></tr>
+<tr><td>D3 — halka + tek satır</td><td><b class="iyi">birleşik</b></td><td><b class="iyi">56,0</b></td><td><b class="iyi">1</b></td><td>halka</td></tr>
+</table>
+<p style="font-size:.93rem">Bugün çubuk madalyondan <b>dar</b> (50,0 ↔ 56,0) ve arada 3,0 px var.
+Üst şerit 3 ayrı hizaya yayılmış, 69,0 px yer kaplıyor; tek satıra inince 56,0 px
+(<b>−%18,8</b>). Bugünkü çubuğun iç yüksekliği 10,0 px'in 2,5'i kontura gittiği için
+<b>5 px</b> — bir seviye atlamasının hareketi bu yatakta neredeyse görünmüyor.</p>
+
+<p><b>Sekiz aday, hepsi gerçek oyundan, aynı seviyede (%27,1 dolu):</b></p>
+<div class="izgara">
+  <figure class="aday" style="margin:0"><img src="gorsel/ss/r3-aday-rozet-A.png" alt="A"><figcaption class="ad"><b>A — bugünkü</b>madalyon + altında dar bar</figcaption></figure>
+  <figure class="aday" style="margin:0"><img src="gorsel/ss/r3-aday-rozet-B.png" alt="B"><figcaption class="ad"><b>B — ince halka</b>4 px, madalyonun dışında</figcaption></figure>
+  <figure class="aday" style="margin:0"><img src="gorsel/ss/r3-aday-rozet-C.png" alt="C"><figcaption class="ad"><b>C — kalın halka</b>8 px, madalyonun dışında</figcaption></figure>
+  <figure class="aday" style="margin:0"><img src="gorsel/ss/r3-aday-rozet-D.png" alt="D"><figcaption class="ad"><b>D — kalın halka + yuva</b>konturlu yatak (CoC kalıbı)</figcaption></figure>
+  <figure class="aday" style="margin:0"><img src="gorsel/ss/r3-aday-rozet-E.png" alt="E"><figcaption class="ad"><b>E — gömülü halka</b>dış çap büyümez</figcaption></figure>
+  <figure class="aday" style="margin:0"><img src="gorsel/ss/r3-aday-rozet-F.png" alt="F"><figcaption class="ad"><b>F — sağında yatay bar</b>tek satır ama ayrı kutu</figcaption></figure>
+  <figure class="aday" style="margin:0"><img src="gorsel/ss/r3-aday-rozet-G.png" alt="G"><figcaption class="ad"><b>G — kapsül</b>madalyon sola gömülü (Royale kalıbı)</figcaption></figure>
+  <figure class="aday" style="margin:0"><img src="gorsel/ss/r3-aday-rozet-H.png" alt="H"><figcaption class="ad"><b>H — halka + büyük sayı</b></figcaption></figure>
+</div>
+<p style="font-size:.86rem;color:var(--tx2)">Not: B–E ve H "birleşik" istediğini karşılıyor;
+F ve G "yan yana"yı karşılıyor ama bar ayrı kutuda kalıyor. Seçtiğin aday <b>tek üst satır</b>
+(D2) ile birlikte de uygulanabilir — ikisi bağımsız.</p>
+
+<!-- ══════════════════ §E ══════════════════ -->
+<h2>§E · Para ve elmasa çerçeve — <b>SEÇİM SENİN</b> <span class="g">G-49</span></h2>
+<p class="soru">"sağ üstteki elmas ve paraya da çerçeve verebilirsin"</p>
+
+<div class="not">
+<b>Bu, D-106'yı geri alır.</b> Kutu 2026'da <b>bilerek</b> kaldırılmıştı (senin o günkü cümlen:
+<i>"veriler bar içinde değil, direk oyun üstünde olsun"</i>) ve okunabilirlik yazı konturuna
+bırakılmıştı. Aşağıdaki tablo o kararı çürütmüyor, <b>fiyatını yazıyor</b>.
+</div>
+
+<table>
+<tr><th>kadraj / kol</th><th>çerçeve</th><th>arkadaki sahnenin oynaması</th><th>yazının altındaki zeminin oynaması</th><th>geçirme</th></tr>
+<tr class="taban"><td>telefon · T (kutusuz)</td><td>0,0</td><td>5,80</td><td>5,68</td><td><b class="kotu">0,979</b></td></tr>
+<tr><td>telefon · E1 (hap çerçeve)</td><td>2,0</td><td>5,17</td><td><b class="iyi">1,64</b></td><td><b class="iyi">0,317</b></td></tr>
+<tr class="taban"><td>masaüstü · T (kutusuz)</td><td>0,0</td><td>14,54</td><td>14,53</td><td><b class="kotu">0,999</b></td></tr>
+<tr><td>masaüstü · E1 (hap çerçeve)</td><td>2,0</td><td>14,63</td><td><b class="iyi">4,27</b></td><td><b class="iyi">0,292</b></td></tr>
+</table>
+<p style="font-size:.9rem"><i>Oynama</i> = kesenin arkasındaki her pikselin, oyuncu altı durakta
+<b>yürütülürken</b> ölçülen standart sapmasının ortalaması. <i>Geçirme</i> = zeminin oynaması /
+sahnenin oynaması.</p>
+<ul style="font-size:.93rem">
+<li><b>Kutusuz: geçirme 0,979 ve 0,999</b> — yazının zemini sahnenin oynamasını neredeyse
+<b>bire bir</b> üstleniyor. Okunabilirliği gerçekten yalnız kontur taşıyor.</li>
+<li><b>Çerçeveli: 0,317 ve 0,292</b> — oynamanın yaklaşık üçte ikisi sönüyor. (Hap %82 mat
+olduğu için sıfırlamıyor; tam mat dolgu 0,00'a indirirdi.)</li>
+<li><b>Bedeli yer:</b> para kutusu 72,4 × 34,0 → 92,4 × 44,0 (+%27,6 en, +%29,4 boy).</li>
+<li>Masaüstünde sahne telefonun <b>2,5 katı</b> oynuyor — çerçevenin kazancı orada daha büyük.</li>
+</ul>
+
+<p><b>Altı aday:</b></p>
+<div class="izgara">
+  <figure class="aday" style="margin:0"><img src="gorsel/ss/r3-aday-kese-A.png" alt="A"><figcaption class="ad"><b>A — bugünkü</b>kutusuz, kontur taşıyor (D-106)</figcaption></figure>
+  <figure class="aday" style="margin:0"><img src="gorsel/ss/r3-aday-kese-B.png" alt="B"><figcaption class="ad"><b>B — hap</b>her para birimi ayrı hapta</figcaption></figure>
+  <figure class="aday" style="margin:0"><img src="gorsel/ss/r3-aday-kese-C.png" alt="C"><figcaption class="ad"><b>C — tek kese</b>ikisi aynı çerçevede, arada ayıraç</figcaption></figure>
+  <figure class="aday" style="margin:0"><img src="gorsel/ss/r3-aday-kese-D.png" alt="D"><figcaption class="ad"><b>D — ikon dışarı taşar</b>Royale kalıbı</figcaption></figure>
+  <figure class="aday" style="margin:0"><img src="gorsel/ss/r3-aday-kese-E.png" alt="E"><figcaption class="ad"><b>E — cam</b>yalnız ince kontur, dolgu yok</figcaption></figure>
+  <figure class="aday" style="margin:0"><img src="gorsel/ss/r3-aday-kese-F.png" alt="F"><figcaption class="ad"><b>F — renkli kenar</b>altın / buz</figcaption></figure>
+</div>
+
+<h2>Ne bekliyorum</h2>
+<p>§A · §B · §C için tek "tamam" yeter (önerilerim yeşil satırlar: <b>A4</b>, <b>B2</b>, <b>C1</b>).<br>
+§D için <b>bir rozet harfi</b> (+ istersen "tek satır da olsun"), §E için <b>bir kese harfi</b>
+— ya da "kutusuz kalsın".</p>
+
+</div>
+</body>
+</html>

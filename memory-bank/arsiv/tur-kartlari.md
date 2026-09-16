@@ -1,3 +1,23 @@
+## ŞU AN (2026-09-16 — **R2 BİTTİ: mutfak yerleşimi + çarpışma** · Faz R 2/4 · 104/111)
+
+```
+SORU            : Sol duvardaki tezgâh ve bulaşık — çizilen gövde ile çarpışma kutusu aynı yerde
+                  mi, hat bitişik mi, seviye gözle kaç sinyalden okunuyor?
+ÖLÇÜLEN KOLLAR  : T taban (İKİ dönem) · A1 çizim döner · A2 kutu döner · B1 erken birleşme ·
+                  B2 bulaşık yanaşır · C2 seviye sinyali (hepsi ETKİLİ doğrulandı)
+SAYILAR         : docs/mutfak-raporu-r2.md §Bulgular · ham: docs/olcum-mutfak-r2.txt (TAM)
+KARAR           : D-127 — A1 + B2 + C2. A2 SORULMADAN elendi (kullanıcının kendi cümlesi zaten
+                  paraleli istiyor); B1 ölçülüp elendi (boşluğu yalnız çizimle doldurur)
+UYGULAMA        : kitchenLook.onHatGovdeleri + yerelKutu + SERVIS_ISARETLERI ·
+                  layout.PLACE_LEFT_WALL (bulaşık z TÜREMİŞ) + padPos.dishwasher ·
+                  ServicePoint.tsx (5 biçim işareti) · olcu-donduruldu 2 ölçü güncellendi
+BEKÇİ           : mutfak-r2 (25 den. · 17 mut.) · kaçan 0 (ilk turda 2 kaçtı, delik kapatıldı)
+FINAL           : vitest 1245 ✓ · duman 45/45 ✓ · tsc temiz · IoU 0,19 → 1,00 · açı 90° → 0° ·
+                  geçilen 0,62 → 0,00 br² · görünmez 2,20 → 0,00 br² · hat boşluğu 3,20 → 0,00 br
+```
+
+---
+
 ## ŞU AN (2026-09-16 — **F2 BİTTİ: telefon yükü** · Faz F 1/5 · 102/107)
 
 ```

@@ -5,60 +5,66 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-16 — **R2 BİTTİ: mutfak yerleşimi + çarpışma** · Faz R 2/4 · 104/111)
+## ŞU AN (2026-09-17 — **R3 ÖLÇÜM BİTTİ, KARAR BEKLİYOR** · Faz R 3/4 · 104/111)
 
 ```
-SORU            : Sol duvardaki tezgâh ve bulaşık — çizilen gövde ile çarpışma kutusu aynı yerde
-                  mi, hat bitişik mi, seviye gözle kaç sinyalden okunuyor?
-ÖLÇÜLEN KOLLAR  : T taban (İKİ dönem) · A1 çizim döner · A2 kutu döner · B1 erken birleşme ·
-                  B2 bulaşık yanaşır · C2 seviye sinyali (hepsi ETKİLİ doğrulandı)
-SAYILAR         : docs/mutfak-raporu-r2.md §Bulgular · ham: docs/olcum-mutfak-r2.txt (TAM)
-KARAR           : D-127 — A1 + B2 + C2. A2 SORULMADAN elendi (kullanıcının kendi cümlesi zaten
-                  paraleli istiyor); B1 ölçülüp elendi (boşluğu yalnız çizimle doldurur)
-UYGULAMA        : kitchenLook.onHatGovdeleri + yerelKutu + SERVIS_ISARETLERI ·
-                  layout.PLACE_LEFT_WALL (bulaşık z TÜREMİŞ) + padPos.dishwasher ·
-                  ServicePoint.tsx (5 biçim işareti) · olcu-donduruldu 2 ölçü güncellendi
-BEKÇİ           : mutfak-r2 (25 den. · 17 mut.) · kaçan 0 (ilk turda 2 kaçtı, delik kapatıldı)
-FINAL           : vitest 1245 ✓ · duman 45/45 ✓ · tsc temiz · IoU 0,19 → 1,00 · açı 90° → 0° ·
-                  geçilen 0,62 → 0,00 br² · görünmez 2,20 → 0,00 br² · hat boşluğu 3,20 → 0,00 br
+SORU            : Üst şeridin seviye rozeti ile kesesi, ödül ekranının iki ödülü ve ayarlar
+                  kaydırıcısının çerçevesi ekranda GERÇEKTE nasıl çiziliyor — kesik nerede,
+                  hangi kutu hangi kutudan taşıyor, kaç satır kaplıyor?
+ÖLÇÜLEN KOLLAR  : §A T · A1 topuz · A2 kapalı çerçeve · A3 hizalı L · A4 hizalı+bitişik L
+                  §B T(oyun) · T(ayarlar) · B1 yalnız katman · B2 katman+anahtar+alan
+                  §C T · C1 alt alta + "+"   §D T · D1 halka · D2 tek satır · D3 halka+tek satır
+                  §E T kutusuz · E1 hap çerçeve            (hepsi ETKİLİ doğrulandı, hata 0)
+SAYILAR         : docs/hud-raporu-r3.md §Bulgular · ham: docs/olcum-hud-r3.txt (TAM,
+                  telefon 390x844@3 + masaustu 1280x800@2)
+KARAR           : ((BOŞ — kullanıcıya SORULMADI. Karar paketi hazır:
+                  docs/r3-karar-paketi.html · rozet 8 + kese 6 aday, hepsi gerçek oyundan))
+UYGULAMA        : (adım 4 — yalnız kararın kolu)
+BEKÇİ           : (test dosyası + mutasyon sayısı)
+FINAL           : (tam koşu damgası)
 ```
+
+**BU OTURUM COMMIT #1'DE BİTTİ.** Sıra kilidinin istediği yapı budur: araç + ham çıktı + rapor,
+karar bölümü BOŞ. Kod tek satır değişmedi (HUD.tsx / hud.css / index.css'e dokunulmadı);
+bütün kollar sayfaya enjekte edilmiş CSS/DOM olarak ölçüldü.
+
+**SONRAKİ OTURUMUN İLK İŞİ:** `docs/r3-karar-paketi.html`i yayınla (`node tools/embed-rapor.mjs
+docs/r3-karar-paketi.html` → `.artifact.html` → Artifact olarak publish), kullanıcıya TEK karar
+paketi mesajı ver. §A/§B/§C için önerim **A4 + B2 + C1**; §D ve §E biçim kararı, harfle seçilecek.
 
 **Turun kalıcı üç dersi:**
-1. **İki dönemden biri doğru çalışıyorsa kusur ölümsüzdür.** Ölçü DÜNYA ekseninde üretilip YEREL
-   eksende tüketiliyordu; `rot = 0` olan arka bant hep doğru göründüğü için hata S3'ten R2'ye
-   kadar yaşadı. Bekçinin kuralı bu yüzden "her denetim İKİ DÖNEMİ birden gezer" — tek dönemi
-   denetleyen bekçi, bu kusurun tam olarak kaçtığı bekçidir.
-2. **Kaçan mutasyon bir delik değil bir HARİTA.** M2 ve M4 yakalanmadı; sebebi bekçinin zayıflığı
-   değil, yanlışladıkları dalın canlı kodda ÖLÜ olmasıydı (birleştirme yalnız `rot = 0` döneminde
-   koşuyor). Sözleşme `yerelKutu()` olarak dışarı alındı ve doğrudan koşturuldu.
-3. **Ölçümün kapsamı, kararın kapsamı değildir.** Araç yalnız `ServicePlace` içindeki noktaları
-   geziyordu; bulaşıkçı PAD'i listede yoktu ve B2 uygulanınca boş zemini işaretler hâlde kalacaktı.
-   Kolun gereği olduğu için taşındı ve bekçiye kondu — ama asıl açık, ankraj listesinin hâlâ elle
-   türetiliyor olması.
+1. **Bir kolun İLAN ETTİĞİ ölçü, o kolun ölçüsü değildir.** Halka kolu `--kal: 6px` diyordu,
+   çizilen halka ~17 px'ti: `radial-gradient(circle, … 50% …)` yüzdeyi kutunun yarıçapına değil
+   varsayılan `farthest-corner` bitiş şekline (köşegene, ×1,41) göre ölçüyor. Kolun kendi
+   değişkenini rapora yazmak, ölçmeden yazmaktır.
+2. **Ölçüm, ölçtüğü kusurun üstüne kendi kusurunu koyabilir.** §A üç koşu boyunca "Ses seviyesi"
+   satırının sol çizgisini 18,00 px / oran 0,400 ölçtü; çizgi 45,00 px'ti, **üstü FPS katmanıyla
+   örtülüydü** — katmanı §B için ben açmıştım. Sayı üç koşuda birebir aynı çıktığı için gürültü
+   sanılamazdı; tekrarlanabilir yanlış, en ikna edici yanlıştır.
+3. **Aday karesi, sayının denetleyicisidir.** Halkanın yanlış kalınlığını hiçbir sayı yakalamadı;
+   `ss/r3-aday-rozet-D.png`e bakınca bir bakışta görüldü. `feedback_show_dont_ask` yalnız
+   kullanıcıya sormanın değil, kendi ölçümünü çürütmenin de yolu.
 
-**Yolda düzeltilen üç araç kusuru:** "oda dışı" ölçütü arka bantta anlamsızdı (bant tanım gereği
-salon dışı) → kutunun merkezi salonda değilse satır ölçülmüyor · kare aracının dönem damgası
-`window.__game`i ALAN sanıyordu, okunamayan değeri "geçti" sayıyordu (fonksiyon) · düzeltme
-uygulanınca "A1 kolu" adı yalanlaştı → "TAKAS (geri alınsa)" oldu, arm tablosu bekçinin
-karşılaştırma koluna dönüştü.
-
-**KARARSIZ BEKÇİ — yeni veri, teşhis DEĞİŞTİ.** Bu turda bir kez daha görüldü (1242/1243) ve
-hemen ardından **beş koşu üst üste temiz**. İki gözlemin ortak yanı: ikisi de bir dosya
-YAZILDIKTAN hemen sonraki ilk koşuda oldu — yani şüphe artık `sira-kilidi`/`pano-guncelle`de
-değil, koşucunun yazım-zamanlaması. Ayrıca R1'in *"çıktı dosya adını göstermiyor"* notu YANLIŞ
-çıktı: `--reporter=verbose` (ve varsayılan da) kırık testin adını basıyor — R1'de `tail` çıktıyı
-kesmişti. Kip eklemeye gerek yok, `| grep -E '×|FAIL'` yeter.
+**Yolda düzeltilen ON araç kusuru** (hepsi kısa koşuda, rapora sayı girmeden): topuz çapı 194 px
+(üstteki anahtarın topuzunu yakalıyordu) · sol çizgi satırdan uzun (ayıraçları çizgi sanıyordu) ·
+halka yayı NaN (kolun CSS'i çubuğu zaten gizlemişti) · "arka parlaklık" kesenin kendisini
+ölçüyordu · §E kırpması kola göre büyüyordu (kollar aynı dünyayı ölçmüyordu) · sahne/yatak ayrı
+yürüyüşlerde ölçülüyordu · ortanca ölçütü fazla kaba (piksel-başı sapmaya geçildi) · §B çakışma
+denetimi paneli hiç gezmiyordu · topuzun beyaz blobu iç daireydi, dış çap değil ·
+halka kalınlığı sütun taramasıyla 54 → 70,7 px (kırpmanın kenarı arka plan değildi) → halkanın
+KENDİ amber rengiyle ölçülüyor.
 
 ## SIRADAKİ TAM ADIM
 
 **FAZ R — kullanıcının 2026-09-16 geri bildirimi, 16 kalem (G-35…G-50).** Tam liste ve
 kullanıcının KENDİ cümleleri: `docs/geribildirim-oyun-testi-2026-09-16.md`.
-Bölünme kullanıcı onayıyla dört tur oldu; **R1 bitti**, sırada **R2**.
+Bölünme kullanıcı onayıyla dört tur oldu; **R1 ve R2 bitti**, **R3'ün ölçümü bitti**
+(karar bekliyor), sırada R3'ün kararı + kodu, sonra R4.
 
 1. ~~**Görev şeridi** (G-41…G-44)~~ → **R1'de KAPANDI (D-126).**
 2. ~~**Mutfak yerleşimi + çarpışma** (G-35…G-38)~~ → **R2'de KAPANDI (D-127).**
    **G-39 (masa yükseltmeleri sırayla) hâlâ açık — DENGE kapısına tabi, ayrı tutulur.**
-3. **SIRADAKİ: HUD çerçeveleri** (G-45…G-49) — ayarlar kaydırıcı çerçevesi kesik · FPS sayacını KALDIR ·
+3. **ŞU AN: HUD çerçeveleri** (G-45…G-49) — ayarlar kaydırıcı çerçevesi kesik · FPS sayacını KALDIR ·
    iki ödül alt alta + arasına `+` · seviye rozeti Clash of Clans gibi BİRLEŞİK (bar yuvarlağın
    çevresinde, en üst satırda) · sağ üstteki elmas/paraya çerçeve.
 4. **G-50 — çevre sanatı, KENDİ TASARIM TURU.** Kullanıcı: *"zemin ve duvarlar... yapılmamış
@@ -143,7 +149,10 @@ G-07 dwell para-bağımsız · G-39 masa yükseltmeleri sırayla · G-40 para ge
 (son dördü DENGE, varyant kapısına tabi) · ~~masalar geçilmiyor~~ → **H3 ELENDİ (2026-09-16):** banket adası geçişinden sonra
 açıklık 2,15 br (gereken 0,94) — premis düştü, kalem geçersiz. Faz H **3/3 ✅ kapandı.**
 
-**Altyapı:** kararsız bekçi → yukarıdaki tur kartına taşındı (teşhis değişti). · ~~`npm run apk` kırıktı~~ → **KAPANDI (2026-09-16):** Gradle 8.14.3'ün `gradlew.bat`'ı
+**Altyapı:** **kararsız bekçi — teşhis R2'de değişti:** iki gözlemin (1242/1243) ortak yanı,
+ikisinin de bir dosya YAZILDIKTAN sonraki İLK koşuda olması → şüphe `sira-kilidi`/`pano-guncelle`de
+değil, koşucunun yazım-zamanlamasında. R1'in *"çıktı dosya adını göstermiyor"* notu YANLIŞ çıktı:
+varsayılan raportör kırık testin adını basıyor, `tail` kesmişti — `| grep -E '×|FAIL'` yeter. · ~~`npm run apk` kırıktı~~ → **KAPANDI (2026-09-16):** Gradle 8.14.3'ün `gradlew.bat`'ı
 `CLASSPATH`'i boş kurup `-classpath ""` geçiriyordu, Java reddediyordu (*"-classpath requires class
 path specification"*) — kabuk değil BETİK kusuruydu (PowerShell'de de aynı). `-jar` zaten verildiği
 için boş `-classpath` silindi. **APK üretildi: 21,9 MB** (`android/app/build/outputs/apk/debug/`),
