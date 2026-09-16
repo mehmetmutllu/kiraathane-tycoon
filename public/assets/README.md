@@ -24,10 +24,10 @@ servis eder → URL: `/assets/models/<paket>/<isim>.gltf`. Loader: `components/t
 | `kaykit-furniture-bits/` | 53 model (gltf+bin) + `furniturebits_texture.png` (ortak atlas) | KayKit Furniture Bits 1.0 — Kay Lousberg (kaylousberg.com) | **CC0** (kredi opsiyonel) | ✅ eklendi (entegrasyon ⏳) |
 | `kaykit-restaurant-bits/` | 144 model (gltf+bin) + `restaurantbits_texture.png` | KayKit Restaurant Bits 1.0 — Kay Lousberg | **CC0** (kredi opsiyonel) | ✅ eklendi 2026-09-06 · **entegre edildi 2026-09-09 (S3: mutfak)** |
 | `kaykit-city-builder-bits/` | 41 model (gltf+bin) + `citybits_texture.png` | KayKit City Builder Bits 1.0 — Kay Lousberg | **CC0** (kredi opsiyonel) | ✅ eklendi 2026-09-06 (entegrasyon ⏳ Faz G5) |
-| `kaykit-board-game-bits/` | **162 model** (paketin tamamı) + `boardgame_bits_texture.png` + 16 rozet png | KayKit Board Game Bits 1.0 — Kay Lousberg | **CC0** (pakette `License.txt`) | ✅ eklendi 2026-09-14 (S13) · entegrasyon ⏳ **Kat 2** |
-| `kaykit-forest-nature/` | 33 model (paketin 105'inden) + `forest_texture.png` | KayKit Forest Nature Pack 1.0 — Kay Lousberg | **CC0** (pakette `License.txt`) | ✅ eklendi 2026-09-14 (S13) · entegrasyon ⏳ |
-| `kaykit-holiday-bits/` | 21 model (paketin 98'inden) + `holiday_bits_texture.png` | KayKit Holiday Bits 1.0 — Kay Lousberg | **CC0** — pakette `License.txt` YOK, lisans itch sayfasının kendi alanından: *Creative Commons Zero v1.0 Universal* | ✅ eklendi 2026-09-14 (S13) · entegrasyon ⏳ |
-| `kaykit-resource-bits/` | 21 model (paketin 76'sından) + `resource_bits_texture.png` | KayKit Resource Bits 1.0 — Kay Lousberg | **CC0** (pakette `License.txt`) | ✅ eklendi 2026-09-14 (S13) · entegrasyon ⏳ |
+| `kaykit-board-game-bits/` | **162 model** (paketin tamamı) + `boardgame_bits_texture.png` + 16 rozet png | KayKit Board Game Bits 1.0 — Kay Lousberg | **CC0** (pakette `License.txt`) | ❌ **F2de DEPODAN ÇIKARILDI (2026-09-16, D-125)** — 9,3 MB, hiçbir kod yolundan ulaşılamıyordu. Kat 2 gelince geri alınır: `git checkout 13738b5^ -- public/assets/models/kaykit-board-game-bits` |
+| `kaykit-forest-nature/` | 33 model (paketin 105'inden) + `forest_texture.png` | KayKit Forest Nature Pack 1.0 — Kay Lousberg | **CC0** (pakette `License.txt`) | ❌ **F2de DEPODAN ÇIKARILDI (2026-09-16, D-125)** — 0,5 MB, hiçbir kod yolundan ulaşılamıyordu. Kat 2 gelince geri alınır: `git checkout 13738b5^ -- public/assets/models/kaykit-forest-nature` |
+| `kaykit-holiday-bits/` | 21 model (paketin 98'inden) + `holiday_bits_texture.png` | KayKit Holiday Bits 1.0 — Kay Lousberg | **CC0** — pakette `License.txt` YOK, lisans itch sayfasının kendi alanından: *Creative Commons Zero v1.0 Universal* | ❌ **F2de DEPODAN ÇIKARILDI (2026-09-16, D-125)** — 0,5 MB, hiçbir kod yolundan ulaşılamıyordu. Kat 2 gelince geri alınır: `git checkout 13738b5^ -- public/assets/models/kaykit-holiday-bits` |
+| `kaykit-resource-bits/` | 21 model (paketin 76'sından) + `resource_bits_texture.png` | KayKit Resource Bits 1.0 — Kay Lousberg | **CC0** (pakette `License.txt`) | ❌ **F2de DEPODAN ÇIKARILDI (2026-09-16, D-125)** — 0,9 MB, hiçbir kod yolundan ulaşılamıyordu. Kat 2 gelince geri alınır: `git checkout 13738b5^ -- public/assets/models/kaykit-resource-bits` |
 | `kaykit-characters/` | **6 gövde** (Barbarian · Knight · Mage · Ranger · Rogue · Rogue_Hooded; doku gövdenin İÇİNDE gömülü) + **4 klip dosyası** (`Rig_Medium_General/MovementBasic/Simulation/Tools` — 69 klip) + iki `License-*.txt` | KayKit Adventurers 2.0 FREE + KayKit Character Animations 1.1 — Kay Lousberg | **CC0** (ikisinin de `License.txt`'i klasörde tutuldu) | ✅ eklendi 2026-09-14 (S14) · **personel entegre edildi aynı gün** (sahip · garson · bulaşıkçı · çaycı) · müşteriler ⏳ sonraki tur |
 | `kenney-food-kit/` | **1 model** (paketin 201'inden: `sandwich`) + `Textures/colormap.png` (ortak atlas) | Kenney Food Kit 2.0 — kenney.nl | **CC0** (Kenney'nin tüm paketleri CC0; künye bu manifestte) | ✅ eklendi 2026-09-14 (S19b) · **entegre edildi aynı gün** (sipariş balonundaki tost) · **stil kilidi istisnası** |
 | `kaykit-prototype-bits/` | **3 model** (paketin 72'sinden: `Door_A` · `Door_A_Decorated` · `Door_B`) + `prototypebits_texture.png` | KayKit Prototype Bits 1.1 — Kay Lousberg | **CC0** (pakette `License.txt`) | ✅ eklendi 2026-09-14 (S13) · **entegre edildi aynı gün** (WC kabin kapısı) |
@@ -41,6 +41,15 @@ servis eder → URL: `/assets/models/<paket>/<isim>.gltf`. Loader: `components/t
 İlk üç paket olduğu gibi girmişti. S13'te altı yeni paket indirildi ve kullanıcı **kol B**'yi
 seçti: repoya yalnız bir açık kaleme bakan modeller girer. Sebep bir sayı — altısını da tam almak
 `models/`i **5,9 → 27,2 MB** yapıyordu (×4,6) ve 553 modelin **436'sı** hiçbir işe bakmıyordu.
+> **F2 GÜNCELLEMESİ (2026-09-16, D-125):** yukarıdaki dört paket depodan çıkarıldı. F2 ölçümü
+> (`docs/telefon-raporu-f2.md`) model yükünün **%48,5ine (11,2 MB) hiçbir kod yolunun**
+> **ulaşamadığını** gösterdi: model yolları her bileşende elle yazılı klasör sabitinden kurulur,
+> ortak çözücü yoktur, dolayısıyla adı `src/`de geçmeyen paket istenemez. Bu paketler Kat 2 için
+> ÖNDEN alınmıştı; Kat 2 v1 kapsamı dışında (v1.1) olduğu için yayına kadar her oyuncunun
+> indirdiği APKnın içinde ölü gidiyorlardı. **Kaybolmadılar** — git geçmişinde duruyorlar ve
+> yukarıdaki komutla geri gelirler. Bekçi: `tests/asset-olu-yuk.test.ts` (diskteki her paketin
+> kodda karşılığı olmasını şart koşar; beşincisi sessizce eklenemez).
+
 Seçilenle ağırlık **17,2 MB**. Tek istisna **board-game-bits**: TAM alındı, gerekçesi Kat 2 —
 okey/tavla masası açılırken hangi taş/jeton/zar lazım olacağı bugün belli değil.
 **Reddedilen:** Block Bits (voxel küpü; mekân hacmi için parça değil, paleti de uyumsuz) —

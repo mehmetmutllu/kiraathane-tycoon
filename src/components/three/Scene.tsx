@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Vector3, BufferGeometry, BoxGeometry, Float32BufferAttribute, DoubleSide, MeshStandardMaterial, Object3D, type Group, type InstancedMesh, type PerspectiveCamera } from 'three';
 import { cameraViewYaz } from '../../game/cameraView';
@@ -8,6 +8,7 @@ import { areaOfTable, THE_SERVICE } from '../../game/world';
 import { masterId, masterCost, masterUnlockedForTable } from '../../game/rules';
 import { SceneLights } from './lights';
 import { devPerfKol } from '../../game/devPerf';
+import { cihazSinifiOku, cihazSinifiYaz, golgeAcikMi, sinifBelirle, ISINMA_KARE, ORNEK_KARE } from '../../game/cihazSinifi';
 import { dwellState } from '../../game/dwell';
 import { GroundMarker } from './GroundMarker';
 // Etiketler ve işaret yarıçapı `markerFrame`ten gelir: çerçeve genişliği YAZIDAN çözülüyor
@@ -166,6 +167,58 @@ function PerfProbe() {
 // aynı sahne için 1,6-2,25 kat piksel. Burada toplam piksel sayısına tavan konur: küçük tuvalde
 // (telefon, UI önizlemeleri) hiçbir şey değişmez, büyük tuvalde dpr 1'e kadar iner. 1'in ALTINA
 // İNMEZ — bulanıklık görsel bir karardır, ölçüm kararı değil.
+/**
+ * GÖLGE ANAHTARI CANLI ÇEVRİLİNCE MATERYALLERİ TAZELER (F2 · D-125).
+ *
+ * `gl.shadowMap.enabled` değiştiğinde three.js yeni gölge durumuna göre shader programlarını
+ * yeniden derlemek zorundadır; `shadowMap.needsUpdate` yalnız HARİTAYI tazeler, materyalin
+ * derlenmiş programını değil. Bu satır olmadan cihaz "zayıf" ilan edilip gölge kapatıldığında
+ * sahne, gölgesiz ışıkla ama HÂLÂ gölge örnekleyen shader'larla çizilir: maliyet düşmez,
+ * yani ölçümün vaat ettiği %40 gelmez ve kusur ekranda görünmez.
+ */
+function GolgeTazele({ acik }: { acik: boolean }) {
+  const { gl, scene } = useThree();
+  useEffect(() => {
+    gl.shadowMap.enabled = acik;
+    gl.shadowMap.needsUpdate = true;
+    scene.traverse((o) => {
+      const m = (o as { material?: unknown }).material;
+      if (!m) return;
+      for (const mat of Array.isArray(m) ? m : [m]) {
+        (mat as { needsUpdate?: boolean }).needsUpdate = true;
+      }
+    });
+  }, [acik, gl, scene]);
+  return null;
+}
+
+/**
+ * CİHAZ SINIFI ÖLÇER (F2 · D-125). İlk kareleri atar, sonraki pencerede kare süresini
+ * örnekler ve cihazı bir kez sınıflandırıp `localStorage`a yazar. Ölçüm BİR KEZ yapılır:
+ * sınıf yazılıysa bileşen hiç iş yapmaz.
+ *
+ * Neden burada ve neden `perf` singleton'ından okumuyor: `PerfProbe` yarım saniyelik
+ * ORTALAMA FPS tutuyor; sınıflandırma ortancaya bakmalı (tek bir yükleme takılması ortalamayı
+ * bozar, ortancayı bozmaz). İki ölçüm iki soruya bakıyor, ortak sayaç yanlış olurdu.
+ */
+function CihazSinifiOlcer({ onSonuc }: { onSonuc: (zayif: boolean) => void }) {
+  const durum = useRef({ atlanan: 0, ornekler: [] as number[], bitti: cihazSinifiOku() !== 'bilinmiyor' });
+  useFrame((_, dt) => {
+    const d = durum.current;
+    if (d.bitti) return;
+    if (d.atlanan < ISINMA_KARE) { d.atlanan += 1; return; }
+    d.ornekler.push(dt * 1000);
+    if (d.ornekler.length < ORNEK_KARE) return;
+    d.bitti = true;
+    const sinif = sinifBelirle(d.ornekler);
+    if (sinif !== 'bilinmiyor') {
+      cihazSinifiYaz(sinif);
+      onSonuc(sinif === 'zayif');
+    }
+  });
+  return null;
+}
+
 const PIXEL_BUDGET = 2_300_000; // ~1920×1200
 
 function AdaptiveResolution() {
@@ -1277,7 +1330,11 @@ export function Scene() {
   // gelebilir (`?f2golge=0&f2dpr=1`). Gerekçe `game/devPerf.ts`te: gölgeyi çalışırken açıp
   // kapatmak materyal yeniden derlemesini ölçüme sızdırır. Üretimde `devPerfKol()` çağrılmaz.
   const olcumKolu = import.meta.env.DEV ? devPerfKol() : null;
-  const golgeAcik = !olcumKolu || olcumKolu.golge;
+  // GÖLGE (D-125): oyuncunun tercihi + bu cihazın ölçülmüş sınıfı. DEV ölçüm kolu ikisini de
+  // ezer — F2 kolları saf gölge maliyetini ölçebilsin diye.
+  const golgeTercihi = useGame((g) => g.settings.golge);
+  const [zayifCihaz, setZayifCihaz] = useState(() => cihazSinifiOku() === 'zayif');
+  const golgeAcik = olcumKolu ? olcumKolu.golge : golgeAcikMi(golgeTercihi, zayifCihaz ? 'zayif' : 'guclu');
   return (
     // GÖLGE AÇIK (D-073 — D-054 kullanıcı tarafından geri alındı, 2026-09-07): maket üstten
     // görüldü ve *"maketteki ışık ve gölgeler baya iyiymiş, gölgeleri tekrar istiyorum"* dendi.
@@ -1288,12 +1345,14 @@ export function Scene() {
       shadows={golgeAcik ? 'soft' : false}
       camera={{ position: [0, 9, 11], fov: CAMERA_FOV }}
       gl={{ antialias: true, toneMappingExposure: LIGHTING.exposure }}
-      dpr={[1, 2]}
+      dpr={olcumKolu?.dprTavan ? [1, olcumKolu.dprTavan] : [1, 2]}
     >
       {/* IŞIK (G0) — renkler palette.ts LIGHTING'te, gerekçe orada yazılı.
           NOT: tone mapping ZATEN ACESFilmic (r3f varsayılanı, `flat` verilmedi) — bu yüzden
           burada yeniden atanmıyor, yalnız exposure ile değer aralığı açılıyor. */}
       <AdaptiveResolution />
+      <CihazSinifiOlcer onSonuc={setZayifCihaz} />
+      <GolgeTazele acik={golgeAcik} />
       <color attach="background" args={[LIGHTING.background]} />
       <fog attach="fog" args={[LIGHTING.background, LIGHTING.fogNear, LIGHTING.fogFar]} />
       {/* Işık takımı `three/lights.tsx`te TEK tanım — mağaza önizlemeleri de aynı bileşeni

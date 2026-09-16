@@ -17,7 +17,7 @@ import { existsSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { describe, it, expect } from 'vitest';
 // @ts-expect-error — ölçüm aracı düz .mjs; tip yok, tablo var.
-import { GEREKEN, TAM_ALINAN, REDDEDILEN, esles } from '../tools/olcum-yeni-paketler.mjs';
+import { GEREKEN, TAM_ALINAN, REDDEDILEN, CIKARILAN, esles } from '../tools/olcum-yeni-paketler.mjs';
 
 const KOK = 'public/assets/models';
 const DESENLER = GEREKEN as Record<string, { gerekce: string; desen: string[] }>;
@@ -29,7 +29,9 @@ const modelAdlari = (paket: string) =>
 /** S13'ten önce repoda duran üç paket — bu tur onlara hiç dokunmadı. */
 const ESKI_PAKETLER = ['kaykit-restaurant-bits', 'kaykit-furniture-bits', 'kaykit-city-builder-bits'];
 /** Kol B + board-game istisnası ile giren paketler. */
-const YENI_PAKETLER = Object.keys(DESENLER).filter((p) => !(REDDEDILEN as string[]).includes(p));
+const YENI_PAKETLER = Object.keys(DESENLER).filter(
+  (p) => !(REDDEDILEN as string[]).includes(p) && !(CIKARILAN as string[]).includes(p),
+);
 
 describe('S13/A — kol B: repoya yalnız bir işe bakan model girdi', () => {
   it('reddedilen paket repoda YOK (block-bits: voxel küpü, mekân hacmi için parça değil)', () => {
@@ -53,11 +55,15 @@ describe('S13/A — kol B: repoya yalnız bir işe bakan model girdi', () => {
     }
   });
 
-  it('board-game-bits TAM alındı — istisna yazılı, sessizce budanamaz', () => {
+  it('F2de çıkarılan dört paket gerçekten diskte YOK (D-125)', () => {
+    // S13'te board-game-bits TAM alınmıştı (Kat 2 gerekçesiyle, 162 model). F2 ölçümü hiçbir kod
+    // yolunun ona ulaşamadığını gösterdi: 9,3 MB her oyuncunun APK'sında ölü gidiyordu. Kayıt
+    // SİLİNMEDİ, taşındı — istisnanın gerekçesi `TAM_ALINAN`da duruyor ki Kat 2 geldiğinde
+    // "neden tamamı alınmıştı" sorusu cevapsız kalmasın.
     expect(TAM_ALINAN).toEqual(['kaykit-board-game-bits']);
-    // Kat 2 gerekçesi: okey/tavla masası açılırken hangi taş/jeton/zar lazım olacağı belli değil.
-    // 162 modelin hepsi duruyor; budanmış olsaydı 39'a düşerdi (raporun §B6 tablosu).
-    expect(modelAdlari('kaykit-board-game-bits').length).toBe(162);
+    for (const p of CIKARILAN as string[]) {
+      expect(existsSync(path.join(KOK, p)), `${p} diske geri gelmiş`).toBe(false);
+    }
   });
 
   it('her .gltf kendi .bin dosyasıyla birlikte duruyor (yarım kopyalanan paket ölür)', () => {

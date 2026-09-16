@@ -3662,6 +3662,9 @@ describe('Faz B1 — kayıt v31: TEMİZ SIFIRLAMA, migrasyon yok (D-058 karar 3)
       sound: false, music: false, notifications: false, showFps: true,
       // S9 · D-122: seviyeler de ayar; sıfırlama onları da korumak zorunda.
       soundVolume: 0.3, musicVolume: 1,
+      // F2 · D-125: gölge tercihi de ayar. Kayıtta verilmemişti → varsayılan 'oto'ya düşer,
+      // yani sıfırlama oyuncunun gölge tercihini de taşır ama uydurmaz.
+      golge: 'oto',
     });
   });
 

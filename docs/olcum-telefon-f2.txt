@@ -1,43 +1,39 @@
 # F2 — TELEFON YUKU OLCUMU
 # kip: TAM · ornek 12000 ms/kol · isinma 5000 ms · CPU kisma 4x
 # telefon taklidi: 412x915 @ dpr 2.625
-# tarih: 2026-09-16T15:06:19.527Z
+# tarih: 2026-09-16T16:25:08.224Z
 
 ## §A1 — PAKET ERISILEBILIRLIGI  [KESIN]
 paket                              bayt     kodda gecis
-kaykit-board-game-bits               9,3 MB   YOK  <-- ULASILAMAZ
 kaykit-characters                    5,9 MB   VAR
 kaykit-restaurant-bits               3,4 MB   VAR
 kaykit-city-builder-bits             1,7 MB   VAR
-kaykit-resource-bits                 0,9 MB   YOK  <-- ULASILAMAZ
 kaykit-furniture-bits                0,8 MB   VAR
-kaykit-holiday-bits                  0,5 MB   YOK  <-- ULASILAMAZ
-kaykit-forest-nature                 0,5 MB   YOK  <-- ULASILAMAZ
 kaykit-prototype-bits                0,1 MB   VAR
 kenney-food-kit                      0,0 MB   VAR
-TOPLAM: erisilebilir 11,9 MB · ULASILAMAZ 11,2 MB (%48,5)
+TOPLAM: erisilebilir 11,9 MB · ULASILAMAZ 0,0 MB (%0,0)
 
 ## §B1 — URETIM CIKTISI (dist/) BAYT DOKUMU  [KESIN]
-model (glb/gltf/bin)       15,7 MB  %57,4
-doku (png/jpg)              7,5 MB  %27,5
-ses                         1,7 MB  %6,2
-javascript                  1,5 MB  %5,4
-font                        0,9 MB  %3,3
-css                         0,0 MB  %0,2
+model (glb/gltf/bin)       11,8 MB  %73,3
+ses                         1,7 MB  %10,5
+javascript                  1,5 MB  %9,1
+font                        0,9 MB  %5,6
+doku (png/jpg)              0,2 MB  %1,1
+css                         0,0 MB  %0,3
 diger (md)                  0,0 MB  %0,1
-diger (svg)                 0,0 MB  %0,0
+diger (svg)                 0,0 MB  %0,1
 diger (txt)                 0,0 MB  %0,0
 diger (html)                0,0 MB  %0,0
-TOPLAM                     27,4 MB
-APK (debug, sikistirilmis)  20,9 MB
+TOPLAM                     16,1 MB
+APK (debug, sikistirilmis)  11,8 MB
 
 ## §A2 — DUNYA TAM ACIKKEN GERCEKTEN ISTENEN ASSETLER  [KESIN]
-diskte asset      : 1.006 dosya · 25,6 MB
+diskte asset      : 504 dosya · 14,4 MB
 gercekten istenen : 108 dosya · 7,1 MB
-HIC ISTENMEYEN    : 898 dosya · 18,5 MB (%72,4)
+HIC ISTENMEYEN    : 396 dosya · 7,3 MB (%50,8)
 surucu: ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 (0x00002503) Direct3D11 vs_5_0 ps_5_0, D3D11)
 konsol hatasi: 0
-tuval hazir: 6395 ms (CPU 4x kisik, dev sunucusu)
+tuval hazir: 6245 ms (CPU 4x kisik, dev sunucusu)
 acilan pad: 24 · istenen essiz asset listesi:
   /assets/fonts/Baloo2.ttf
   /assets/models/kaykit-characters/Barbarian.glb
@@ -150,21 +146,21 @@ acilan pad: 24 · istenen essiz asset listesi:
 
 ## §C — KARE SURESI KOLLARI  [VEKIL: cihazda dogrulanmadi]
 kol                                 ortanca     p95  enkotu   cagri    ucgen   dpr    tampon px   heap
-T  taban (soft 2048, dpr butcesi)     22,10   24,60   31,10     143   227.167  2,00   1.507.920  110,6
-G0 golge KAPALI                       13,20   14,90   32,50     143   227.167  2,00   1.507.920  110,6
-G1 golge harita 1024                  22,20   25,80   40,50     143   227.167  2,00   1.507.920  110,6
-G2 golge harita 512                   22,00   24,80   31,80     143   227.167  2,00   1.507.920  110,6
-P1 dpr tavani 1                       22,20   25,60   32,20     143   227.167  1,00     376.980  104,0
-G0+P1 golge kapali + dpr 1            14,00   16,30   34,10     143   227.167  1,00     376.980  110,6
+T  taban (soft 2048, dpr butcesi)     22,10   26,00  228,10     143   227.167  2,00   1.507.920  110,6
+G0 golge KAPALI                       13,80   16,20   33,00     143   227.167  2,00   1.507.920   92,9
+G1 golge harita 1024                  22,10   25,70  200,10     143   227.167  2,00   1.507.920  110,6
+G2 golge harita 512                   22,50   26,00  209,90     143   227.167  2,00   1.507.920  104,0
+P1 dpr tavani 1                       22,30   28,40  240,20     143   227.167  1,00     376.980  104,0
+G0+P1 golge kapali + dpr 1            13,80   16,00   33,50     143   227.167  1,00     376.980   92,9
 
 surucu (kare suresini ureten donanim): ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 (0x00002503) Direct3D11 vs_5_0 ps_5_0, D3D11)
 
 ## §C2 — TABANA GORE FARK (ortanca kare suresi)
-G0 golge KAPALI                     -8,90 ms  (%-40,3)
-G1 golge harita 1024                +0,10 ms  (%+0,5)
-G2 golge harita 512                 -0,10 ms  (%-0,5)
-P1 dpr tavani 1                     +0,10 ms  (%+0,5)
-G0+P1 golge kapali + dpr 1          -8,10 ms  (%-36,7)
+G0 golge KAPALI                     -8,30 ms  (%-37,6)
+G1 golge harita 1024                0,00 ms  (%0,0)
+G2 golge harita 512                 +0,40 ms  (%+1,8)
+P1 dpr tavani 1                     +0,20 ms  (%+0,9)
+G0+P1 golge kapali + dpr 1          -8,30 ms  (%-37,6)
 
 ## VARYANT ETKI DENETIMI (kol gercekten tuttu mu? — renderer okundu)
 T      golge true  harita 2048 dpr 2,00  (beklenen true/2048/2)  ETKILI

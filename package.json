@@ -16,7 +16,7 @@
     "sira": "node tools/sira-kilidi.mjs",
     "duman": "node tools/duman.mjs",
     "cap:sync": "npm run build && npx cap sync android",
-    "apk": "npm run build && npx cap sync android && cd android && .\\gradlew.bat assembleDebug"
+    "apk": "npm run build && npx cap sync android && node tools/apk-temizle.mjs && cd android && .\\gradlew.bat assembleDebug"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.0",

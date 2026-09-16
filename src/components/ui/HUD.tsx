@@ -39,6 +39,7 @@ import { CharacterPanel } from './CharacterPanel';
 import { TableThemePreview } from './TableThemePreview';
 import { DioramaPreview } from './DioramaPreview';
 import './hud.css';
+import { cihazSinifiOku, golgeAcikMi } from '../../game/cihazSinifi';
 
 /** Oran → yüzde etiketi (0,004 → "+%0,4"). Gelir bonusu tek biçimde yazılsın diye TEK yerde. */
 const yuzde = (oran: number): string =>
@@ -383,6 +384,17 @@ export function HUD() {
               value={settings.notifications}
               onChange={(v) => setSetting('notifications', v)}
               testid="set-notifications"
+            />
+            {/* GÖLGELER (F2 · D-125). Varsayılan 'oto': cihaz sınıfı karar verir
+                (`game/cihazSinifi.ts`). Anahtara DOKUNULDUĞU an tercih açık hâle gelir ve
+                ölçümü ezer — güçlü telefonda kapatmak da, zayıfta açık tutmak da oyuncunun
+                hakkı. Gölge D-073'te kullanıcı tarafından özellikle geri istendi, o yüzden
+                burada kapatılabilir ama varsayılan olarak kapatılmaz. */}
+            <SettingRow
+              label="Gölgeler"
+              value={golgeAcikMi(settings.golge, cihazSinifiOku())}
+              onChange={(v) => setSetting('golge', v ? 'acik' : 'kapali')}
+              testid="set-golge"
             />
             <SettingRow
               label="FPS Sayacı"

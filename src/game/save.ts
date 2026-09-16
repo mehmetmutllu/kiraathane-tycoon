@@ -80,10 +80,17 @@ export interface SaveSettings {
    * üstüne çıkamaz, çünkü o an müzik oyunun kendi geri bildirimini örtmeye başlar.
    */
   musicVolume: number;
+  /**
+   * GÖLGE TERCİHİ (F2 · D-125). 'oto' = cihaz sınıfı karar verir (`game/cihazSinifi.ts`),
+   * 'acik'/'kapali' = oyuncunun açık tercihi, ölçümü ezer.
+   * ADDITIVE alan → saveVersion ARTMADI (`showFps` emsali): `ayarlariBirlestir` eksik
+   * alanı varsayılanla doldurur, eski kayıt hiçbir şey kaybetmez.
+   */
+  golge: 'oto' | 'acik' | 'kapali';
 }
 
 export function defaultSettings(): SaveSettings {
-  return { sound: true, music: true, notifications: true, showFps: false, soundVolume: 1, musicVolume: 1 };
+  return { sound: true, music: true, notifications: true, showFps: false, soundVolume: 1, musicVolume: 1, golge: 'oto' };
 }
 
 /**
@@ -111,6 +118,7 @@ export function ayarlariBirlestir(ham: unknown): SaveSettings {
     showFps: typeof s.showFps === 'boolean' ? s.showFps : d.showFps,
     soundVolume: oran(s.soundVolume, d.soundVolume),
     musicVolume: oran(s.musicVolume, d.musicVolume),
+    golge: s.golge === 'acik' || s.golge === 'kapali' || s.golge === 'oto' ? s.golge : d.golge,
   };
 }
 

@@ -33,6 +33,14 @@ const KOK = 'public/assets/models';
 // silinen bir desen o modelin repoda durmasını bekçide KIRMIZI yapar.
 export const TAM_ALINAN = ['kaykit-board-game-bits'];
 export const REDDEDILEN = ['kaykit-block-bits']; // voxel küpü — mekân hacmi için parça değil
+
+/**
+ * F2'de (D-125) DEPODAN ÇIKARILAN paketler. Reddedilmiş değiller — S13'te bilerek alındılar,
+ * ama ölçüm hiçbir kod yolunun onlara ULAŞAMADIĞINI gösterdi (11,2 MB, model yükünün %48,5'i)
+ * ve Kat 2 v1 kapsamı dışında. Git geçmişinde duruyorlar; geri getirilirse entegrasyonu da
+ * aynı turda yapılmalı (`tests/asset-olu-yuk.test.ts` kodda karşılığı olmayan paketi geçirmez).
+ */
+export const CIKARILAN = ['kaykit-board-game-bits', 'kaykit-resource-bits', 'kaykit-holiday-bits', 'kaykit-forest-nature'];
 export const GEREKEN = {
   'kaykit-board-game-bits': {
     gerekce: 'okey/tavla masası (Kat 2 kimliği)',

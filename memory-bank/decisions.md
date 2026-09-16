@@ -4017,3 +4017,30 @@ alır" kusuru serbestti). Üçü de kapatıldı.
 **Açık uç:** `tools/simulate.ts` hâlâ "en ucuz masayı al" diye oynuyor → model zinciri %6 uzun
 gösteriyor (ŞERİT 8,48 ↔ 8,00 sa). Tazelenmesi D-087'nin yayımlanmış sayılarını oynatır, kendi
 turunu ister.
+
+## D-125 — F2: ölü asset yükü silindi, gölge cihaz sınıfına bağlandı
+
+**Soru:** telefonda ne kadar ağırız, ağırlığın kaynağı hangi kol?
+**Ölçüm:** `docs/telefon-raporu-f2.md` · ham `docs/olcum-telefon-f2.txt` (TAM koşu).
+
+- **Ölü yük:** model paketlerinin **%48,5'ine (11,2 MB) hiçbir kod yolu ulaşamıyordu.** Model
+  yolları her bileşende elle yazılı klasör sabitinden kurulur, ortak çözücü yok → adı `src/`de
+  geçmeyen paket istenemez. Dünya TAM açıkken 1006 asset dosyasının **898'i (18,5 MB)** hiç
+  istenmedi. Kullanıcı **A1**'i seçti (yalnız ulaşılamaz 4 paket); A2 elendi çünkü kullanılan
+  paketlerin içindeki dosyalar nadir bir kod yolundan istenebilir.
+- **Kazanç (temiz üretimle iki uçta da ölçüldü):** APK **20,93 → 11,84 MB (−9,09 MB, −%43,4)** ·
+  dist 27,4 → 16,1 MB · model dosyası 1002 → 500.
+- **Gölge:** varlığı kare süresinin **−%37,6'sı**, çözünürlüğü **sıfır** (2048→512 farkı %0,4 —
+  bu kol ÖLDÜ). D-073 korunuyor: gölge kendiliğinden kapanmaz, yalnız **ölçülen zayıf cihazda**
+  kapanır. Sınıf `localStorage`ta, kayıtta DEĞİL — "gölge açık olsun" oyuncunun tercihi
+  (cihazdan cihaza taşınır), "bu telefon kaldırıyor" bu cihazın olgusu. Ayar `saveVersion`
+  artırmadan eklendi (`showFps` emsali).
+- **Kod-bölme elendi:** Capacitor'da dosyalar APK içinden yerelden açılır; ağ ve önbellek yok.
+- **Yolda bulunan sessiz kusur:** `npm run apk` **9 MB fazla** raporluyordu — gradle çıktı
+  APK'sını kısaltmadan üzerine yazıyor. `tools/apk-temizle.mjs` zincire takıldı.
+- **Bekçi:** `tests/asset-olu-yuk.test.ts` (4 den. · 3 mut., kaçan 0 — listeye değil İLİŞKİYE
+  bakar: diskteki her paketin kodda karşılığı olmalı, beşincisi sessizce eklenemez) ·
+  `tests/golge-cihaz.test.ts` (12 den. · 5 mut., kaçan 0).
+- **AÇIK:** dpr kolu bu donanımda ölçülemedi (tampon 4× küçüldü, süre değişmedi — RTX 3060'ta
+  fragment bağlayıcı değil). Vekil ölçüm tam orada kör. **Cihaz turu açık**, `ZAYIF_ESIGI_MS`
+  (22 ms) gerçek telefonda doğrulanmalı.

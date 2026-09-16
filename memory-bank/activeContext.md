@@ -5,47 +5,70 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-16 — **F2 turu AÇIK: telefon yükü** · Faz F 0/5 · 101/107)
+## ŞU AN (2026-09-16 — **F2 BİTTİ: telefon yükü** · Faz F 1/5 · 102/107)
 
 ```
 SORU            : Telefonda ne kadar ağırız ve ağırlığın kaynağı hangi kol — GÖLGE mi, PİKSEL mi,
-                  İNDİRİLEN BAYT mı? 101 tur boyunca ölçülmeyen tek yan bu.
-ÖLÇÜLECEK KOLLAR: §A ölü yük (diskteki ↔ gerçekten yüklenen asset) · §B indirme/ayrıştırma
-                  (dist bayt dökümü, ilk boya, etkileşime hazır) · §C kare süresi kolları:
-                  T taban (soft 2048, dpr bütçesi) · G0 gölge kapalı · G1 harita 1024 ·
-                  G2 harita 512 · P1 dpr tavanı 1 · G0+P1 birleşik
-SAYILAR         : docs/telefon-raporu-f2.md §Bulgular · ham: docs/olcum-telefon-f2.txt
-KARAR           : (boş — adım 3)
-UYGULAMA        : (boş — adım 4)
-BEKÇİ           : (boş)
+                  İNDİRİLEN BAYT mı?
+ÖLÇÜLEN KOLLAR  : §A ölü yük · §B bayt dökümü · §C: T taban · G0 gölge kapalı · G1 harita 1024 ·
+                  G2 harita 512 · P1 dpr 1 · G0+P1 (altısı da ETKİLİ doğrulandı)
+SAYILAR         : docs/telefon-raporu-f2.md §Bulgular · ham: docs/olcum-telefon-f2.txt (TAM)
+KARAR           : D-125 — A1 (4 ulaşılamaz paket silinsin) + gölge CİHAZ SINIFINA bağlansın
+UYGULAMA        : 4 paket çıkarıldı · game/cihazSinifi.ts + Ayarlar "Gölgeler" satırı ·
+                  tools/apk-temizle.mjs (bayat APK kusuru) · manifest geri-alma komutuyla
+BEKÇİ           : asset-olu-yuk (4 den. · 3 mut.) + golge-cihaz (12 den. · 5 mut.) · kaçan 0
+FINAL           : vitest 1205 ✓ · duman 45/45 ✓ · tsc temiz · APK 20,93 → 11,84 MB (−%43,4)
 ```
 
-**Turun kapsam damgası (kullanıcı kararı 2026-09-16):** cihaz bağlı DEĞİL (`adb devices` boş).
-Kullanıcı *"şimdi olmaz, sen masaüstünden ölç"* dedi → **§A ve §B sayıları KESİN** (bayt ve
-referans, cihazdan bağımsız), **§C kare süresi VEKİL** (Playwright + CPU kısma, telefon
-çözünürlüğü). Rapora §C satırları *"cihazda doğrulanmadı"* damgasıyla girer ve **cihaz turu
-açık kalır** — kollar arası SIRALAMA için vekil yeterli, mutlak ms için değil.
+**Turun kalıcı üç dersi:**
+1. **Ölçüm aracı, ölçtüğü şeyden önce kendisi çürütülür.** Kısa koşu aracı DÖRT kez düşürdü:
+   yazılım GPU'su (SwiftShader'da kare 233 ms, dpr sahte %64 kazanç) · kollar farklı dünya
+   ölçüyordu (gölge açıkken çizim çağrısı 30, kapalıyken 40 — ters) · sayaçlar tek anlık
+   okunuyordu · tohum kayması (üçgen %17,2 sapma). Bunlardan biri bile kalsaydı rapor sayı
+   değil kanaat basardı. **Tam koşu bir kez daha çürüttü:** `?f2dpr=1` kolu tutmuyordu ve bunu
+   yakalayan şey varyant etki denetimiydi — sorgu dizesi doğruydu, kod yolunda kayboluyordu.
+2. **"Ucuz" ile "ölçülemedi" aynı şey değil.** dpr kolu 4× az piksele rağmen kıpırdamadı;
+   doğru okuma "piksel bedava" değil, **"bu donanımda fragment bağlayıcı değil"**. Vekil ölçüm
+   kendi körlüğünü söylemez — kapsam damgası söyler. Cihaz turu bu yüzden açık bırakıldı.
+3. **En büyük kazanç kodda değil, envanterde çıktı.** 101 tur boyunca kare süresi, zincir,
+   tempo ölçüldü; kimse "ne gönderiyoruz" diye sormadı. Tek soru 9,09 MB getirdi — APK'nın
+   **%43,4'ü**. Gölge (asıl şüpheli) ise D-073 yüzünden zaten dokunulamayan bir koldu.
 
-**Ölçüme girmeden görülen (turun sebebi):** model yolları her bileşende elle yazılı paket
-klasöründen kuruluyor (`KAY = '/assets/models/kaykit-furniture-bits/'`), ortak çözücü YOK →
-kodda adı hiç geçmeyen paket gerçekten erişilemez. Dört paket hiçbir kaynak dosyada geçmiyor:
-`kaykit-board-game-bits` **11 MB** · `kaykit-resource-bits` 1,1 MB · `kaykit-forest-nature`
-664 KB · `kaykit-holiday-bits` 664 KB — 26 MB'lık model yükünün **~13,4 MB'ı**. Bu ön-gözlem;
-sayı §A'da kesinleşecek (kullanılan paketlerin İÇİ de dosya bazında taranacak).
+**Yolda bulunan sessiz kusur:** `npm run apk` **9 MB fazla** raporluyordu — gradle çıktı APK'sını
+KISALTMADAN üzerine yazıyor, 11,66 MB'lık içerik 21,88 MB'lık kabukta duruyordu. Yayın günü
+mağazaya yanlış boyut yazılırdı. `tools/apk-temizle.mjs` zincire takıldı; uçtan uca 11,84 MB.
 
 ## SIRADAKİ TAM ADIM
 
-**F2'yi bitir** (ölç → commit #1 → karar paketi → uygula → commit #2), sonra **F1 — Capacitor
-kabuğu + imzalı sürüm**. F1'in keystore kolu kullanıcı kararıyla çözüldü: *"sen üret,
-dev-ortam'a koy"* → keystore `C:\dev-ortam`'a, parola oradaki gizli dosyaya, `android/`'e yalnız
-dosya-dışı referans, `.gitignore` güncellenir. `keytool` bulundu: `C:\Program Files\Java\jdk-17.0.1\bin\keytool.exe`.
+**Kullanıcının 2026-09-16 geri bildirimi — 16 kalem (G-35…G-50).** Tam liste ve kullanıcının
+KENDİ cümleleri: `docs/geribildirim-oyun-testi-2026-09-16.md`. Kullanıcı *"sonraki chatlerde
+bunları yaparsın"* dedi → bu turda hiçbiri uygulanmadı. Önerilen bölünme (kullanıcı onayı ister):
 
-**H3 ELENDİ (2026-09-16, kullanıcı kararı):** "masa aralığı / geçilemeyen açıklıklar" kaleminin
-premisi düştü. Ölçüm (2026-09-09) arka salonu *serbest duran `deuce` masa, oturak yarıçapı 1,26,
-merkez arası 3,20 → açıklık 0,68 br* diye ölçmüştü; B3-2'den sonra arka yarı **banket adası**
-oldu: masa yarı-boyu 0,525, koltuk 0 adanın kendi oturağı, sandalyelerin çarpışması zaten yok
-(D-016), adanın katısı yalnız sırtlık çekirdeği (0,4). Masa kenarları arası açıklık
-`3,2 − 2×0,525 = 2,15 br` — gereken 0,94'ün iki katından fazla. Kalem geçersiz, toplam 108 → 107.
+1. **Görev şeridi** (G-41…G-44) — dördü tek kök: biten görevin tebriği yeni görevin üstünde
+   kalıyor · çubukta üst yazı kesiliyor · "görev bitti" ayrı yerde (hepsi TEK çubukta olmalı) ·
+   yeni göreve ZOOM erken atılıyor.
+2. **Mutfak yerleşimi + çarpışma** (G-35…G-38) — tezgâh/bulaşık 90° yanlış açıda (sol duvara
+   paralel olmalı) · içinden geçiliyor · başlangıçta tezgâhlar bitişik olsun · tezgâh
+   yükseltmeleri belirsiz. **G-39 (masa yükseltmeleri sırayla) DENGE kapısına tabi, ayrı tutulur.**
+3. **HUD çerçeveleri** (G-45…G-49) — ayarlar kaydırıcı çerçevesi kesik · FPS sayacını KALDIR ·
+   iki ödül alt alta + arasına `+` · seviye rozeti Clash of Clans gibi BİRLEŞİK (bar yuvarlağın
+   çevresinde, en üst satırda) · sağ üstteki elmas/paraya çerçeve.
+4. **G-50 — çevre sanatı, KENDİ TASARIM TURU.** Kullanıcı: *"zemin ve duvarlar... yapılmamış
+   asset gibi hissettiriyor, çözümler sun"*. `feedback_show_dont_ask`: metinle kol anlatılmaz,
+   6-12 aday aynı kadrajda render edilir. Kullanıcının kendi yönü: bahçe/çimenlik kuşağı.
+   **Not:** `kaykit-forest-nature` F2'de silindi; bu kol seçilirse
+   `git checkout 13738b5^ -- public/assets/models/kaykit-forest-nature` ile geri gelir ve
+   bekçi gereği entegrasyonu AYNI turda yapılır.
+
+**Sonra F1 — Capacitor kabuğu + imzalı sürüm.** Kullanıcı kararı alınmış: *"sen üret,
+dev-ortam'a koy"* → keystore `C:\dev-ortam`'a, parola oradaki gizli dosyaya, `android/`'e yalnız
+dosya-dışı referans, `.gitignore` güncellenir. `keytool`: `C:\Program Files\Java\jdk-17.0.1\bin\keytool.exe`.
+Kalan: sürüm adı/kodu, uygulama ikonu, açılış ekranı.
+
+**F2'nin bıraktığı açık uç:** **dpr kolu cihazda ölçülmedi.** Telefon bağlanınca §C yeniden
+koşulmalı ve `ZAYIF_ESIGI_MS` (22 ms) gerçek cihaz dağılımına göre doğrulanmalı. Ayrıca §A2'nin
+18,5 MB'lık üst sınırı (kullanılan paketlerin içindeki istenmeyen dosyalar) **el değmeden duruyor**
+— A2 kolu bilerek elendi, geri açılabilir.
 
 **H2'nin bıraktığı iki açık uç:**
 ① **`tools/simulate.ts`in taban oyuncu politikası artık oyunun kuralıyla ÇELİŞİYOR:** sim hâlâ

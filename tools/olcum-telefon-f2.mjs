@@ -349,7 +349,7 @@ async function main() {
 
     // ---- §C (VEKIL)
     const kollar = [
-      { ad: 'T  taban (soft 2048, dpr butcesi)', sorgu: '' },
+      { ad: 'T  taban (soft 2048, dpr butcesi)', sorgu: '?f2golge=2048&f2ad=T' },
       { ad: 'G0 golge KAPALI', sorgu: '?f2golge=0&f2ad=G0' },
       { ad: 'G1 golge harita 1024', sorgu: '?f2golge=1024&f2ad=G1' },
       { ad: 'G2 golge harita 512', sorgu: '?f2golge=512&f2ad=G2' },

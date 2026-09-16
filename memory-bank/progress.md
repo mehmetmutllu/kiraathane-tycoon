@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 108 · YAPILAN 101 · %94):**
+**Oturum bütçesi (TOPLAM 107 · YAPILAN 102 · %95):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -25,9 +25,9 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | D meta katman | 9/9 ✅ |
 | | E arayüz ve cila | 4/5 🔧 |
 | | **S sanat ve arayüz geçişi** | **24/24 ✅** |
-| | H oynanış düzeltmeleri | 2/3 🔧 |
-| | F paketleme ve yayın | 0/5 ⏳ |
-| **Program toplam** | | **73/80** |
+| | H oynanış düzeltmeleri | 2/2 ✅ |
+| | F paketleme ve yayın | 1/5 🔧 |
+| **Program toplam** | | **74/79** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -568,7 +568,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
 **Faz S kapısı:** 185 kullanılmayan KayKit modeli oyuna bağlı + UI dili maketle onaylanmış +
 ses kaynağı kararı yazılı. Ondan sonra Faz F'e (paketleme) geçilir.
 
-## Faz H — OYNANIŞ DÜZELTMELERİ (2/3) 🔧 — her kalem ≈ 1 oturum
+## Faz H — OYNANIŞ DÜZELTMELERİ (2/2) ✅ — her kalem ≈ 1 oturum
 Sanat kalemi değil; Faz S'ten ayrı tutuldu ki asset işi bunların arkasında beklemesin.
 - ✅ **H1 — oynanış hataları (G-01 · G-02 · G-03)** · **D-123:** üç tetik de çizilen gövdeye
   bağlandı. Masa toplama %42,2 → gövde tetiği (kap kötü köşedeyse %23,8'di) · tezgâhın ölü ön yüzü
@@ -582,10 +582,36 @@ Sanat kalemi değil; Faz S'ten ayrı tutuldu ki asset işi bunların arkasında 
   Üçüncü yol (ölü basamağı düzelt) ölçülüp çürütüldü (%20,6 → %19,0). Bedel: salon en fazla 27 dk
   sessiz. Bekçi `sira-h2` (19 den. · 12 mut.) · kaçan 0 (ilk turda 3 kaçtı, kapatıldı).
   `docs/sira-raporu-h2.md`. vitest 1189 ✓ · duman 45/45 ✓.
-- ⏳ **H3 — masa aralığı / geçilemeyen açıklıklar** · ÖLÇÜLDÜ (D-098): geçiş için
-  **2 × playerRadius = 0,94 br** gerekiyor; ön salon **3,50 br** (rahat), **arka salon 0,68 br**
-  → 20 masanın 12'si geçilemez, çarpışma katılarında eşik altında **52 açıklık** (en darı 0,04 br).
-  Onaylı maket düzenine dokunur → iki kol sayılarıyla yazılı, **kullanıcı kararı bekliyor**.
+> **H3 ELENDİ (2026-09-16, kullanıcı kararı) — kalem sayılmıyor, payda 3 → 2.**
+  "Masa aralığı / geçilemeyen açıklıklar" kaleminin premisi düştü. Ölçüm (2026-09-09) arka salonu *serbest `deuce` masa, oturak yarıçapı 1,26,
+  merkez arası 3,20 → açıklık 0,68 br* diye ölçmüştü; B3-2'den sonra arka yarı **banket adası**
+  oldu (masa yarı-boyu 0,525, koltuk 0 adanın oturağı, sandalye çarpışması zaten yok — D-016,
+  adanın katısı yalnız sırtlık çekirdeği 0,4). Açıklık `3,2 − 2×0,525 = **2,15 br**` — gereken
+  0,94'ün iki katından fazla. Kalem geçersiz → **Faz H 3/3 ✅ kapandı**, toplam 108 → 107.
+
+## Faz F — PAKETLEME VE YAYIN (1/5) 🔧
+- ✅ **F2 — telefon yükü** · **D-125:** ölü asset yükü silindi + gölge cihaz sınıfına bağlandı.
+  Model paketlerinin **%48,5'ine (11,2 MB) hiçbir kod yolu ulaşamıyordu**; dünya TAM açıkken
+  1006 asset dosyasının **898'i (18,5 MB)** hiç istenmiyordu. Kullanıcı A1'i seçti (yalnız
+  ulaşılamaz 4 paket). **APK 20,93 → 11,84 MB (−%43,4)**, dist 27,4 → 16,1 MB, model dosyası
+  1002 → 500. Gölgenin bedeli VARLIĞINDA (−%37,6), çözünürlüğünde değil (2048→512: %0,4 — kol
+  öldü); D-073 korundu, gölge yalnız ölçülen zayıf cihazda kapanır + Ayarlar düğmesi. Kod-bölme
+  elendi (Capacitor'da ağ yok). Yolda: `npm run apk` **9 MB fazla** raporluyordu (gradle çıktıyı
+  kısaltmadan üzerine yazıyor) → `tools/apk-temizle.mjs`. Bekçi `asset-olu-yuk` (4 den. · 3 mut.)
+  + `golge-cihaz` (12 den. · 5 mut.) · kaçan 0. `docs/telefon-raporu-f2.md`.
+  **AÇIK:** dpr kolu bu donanımda ölçülemedi (RTX 3060'ta fragment bağlayıcı değil) → cihaz turu.
+- ⏳ **F1 — Capacitor kabuğu + imzalı sürüm** · APK üretiliyor (11,84 MB), `keytool` bulundu.
+  Kullanıcı kararı: keystore ben üretip `C:\dev-ortam`'a koyacağım.
+- ⏳ **F3 — reklam (AdMob)** · kurallar + Kat 1 ödülü yazılı (D-066), eklenti seçilmedi.
+- ⏳ **F4 — IAP (RevenueCat)** · üç ürün tasarlı, satın alma akışı yok.
+- ⏳ **F5 — mağaza vitrini + uyum** · listeleme, gizlilik, COPPA/GDPR-K, yaş derecelendirmesi.
+
+## Kullanıcı geri bildirimi 2026-09-16 — 16 yeni kalem (G-35…G-50)
+Kullanıcı F2 turunun içinde oyunu açtı ve on iki başlık verdi; *"sonraki chatlerde bunları
+yaparsın"* dedi → bu turda hiçbiri uygulanmadı. Tam liste + kullanıcının kendi cümleleri:
+`docs/geribildirim-oyun-testi-2026-09-16.md`. Önerilen bölünme: ① görev şeridi (G-41…G-44,
+dördü tek kök) · ② mutfak yerleşimi + çarpışma (G-35…G-38) · ③ HUD çerçeveleri (G-45…G-49) ·
+④ G-50 çevre sanatı kendi TASARIM turu (aday render'ı ister, metinle sorulmaz).
 
 ## Bilinen açık kalemler
 - ~~Hedeflerin ₺ kolu bu hâliyle kalsın mı?~~ → **D3b'de kapandı (D-090):** ₺ kolu tamamen kalktı,

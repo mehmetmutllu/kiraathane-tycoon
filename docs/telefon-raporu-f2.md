@@ -120,6 +120,12 @@ Altı kol, birebir aynı dünyada (227.167 üçgen, 143 çizim çağrısı, 31 N
 | **P1** dpr tavanı 1 | 22,20 ms | 25,60 | +0,10 ms (+%0,5) |
 | **G0+P1** gölge kapalı + dpr 1 | 14,00 ms | 16,30 | −8,10 ms (−%36,7) |
 
+> **Bu tablo TABAN koşusudur** (uygulamadan önce). Uygulamadan sonraki final tam koşu
+> gölge kolunu **−8,30 ms / −%37,6** ölçtü (13,80 ms). Fark koşular arası doğal oynama +
+> taban kolunun artık açıkça sabitlenmesi: D-125'ten sonra sorgusuz yükleme 'oto' mantığına
+> giriyor ve CPU 4× kısıkken ölçer cihazı zayıf ilan edip **örnekleme sırasında** gölgeyi
+> kapatabiliyordu — taban kendi kendini kirletirdi. Taban artık `?f2golge=2048` ile pinlenir.
+
 Üç okuma:
 
 1. **Gölgenin bedeli varlığında, çözünürlüğünde değil.** Haritayı 2048 → 512'ye indirmek
@@ -136,10 +142,69 @@ Altı kol, birebir aynı dünyada (227.167 üçgen, 143 çizim çağrısı, 31 N
 
 ---
 
-## §Karar
+## §Karar (D-125 — kullanıcı, 2026-09-16)
 
-*(boş — kullanıcı kararı bekliyor; D-084 adım 3)*
+| Kol | Seçim | Gerekçe |
+|---|---|---|
+| Ölü yük | **A1 — yalnız ulaşılamaz 4 paket silinsin** | 11,2 MB kesin kazanç, risk sıfır. A2 (18,5 MB) elendi: kullanılan paketlerin içindeki dosyalar nadir bir kod yolundan istenebilir. |
+| Gölge | **Cihaz sınıfına göre otomatik + Ayarlar düğmesi** | D-073 korunur (gölge kendiliğinden kapanmaz), ama zayıf cihaz %37,6'yı geri alır. |
+| Gölge haritası | **ELENDİ** | Ölçüldü: 2048 → 512 kare süresine dokunmuyor (−%0,4). Kol ölü. |
+| Kod-bölme | **ELENDİ (araç kararı)** | Capacitor'da her dosya APK'nın içinden yerelden açılır; ağ yok, önbellek yok. Kod-bölmenin kazancı web'e ait, telefona değil. |
 
 ## §Uygulama
 
-*(boş — yalnız kararın kolu; D-084 adım 4)*
+**1 — Dört ulaşılamaz paket depodan çıkarıldı** (`board-game-bits` 9,3 MB · `resource-bits`
+0,9 · `holiday-bits` 0,5 · `forest-nature` 0,5). Manifest (`public/assets/README.md`) geri
+alma komutuyla birlikte güncellendi: paketler Kat 2 için önden alınmıştı, Kat 2 v1.1'de.
+
+**2 — Gölge cihaz sınıfına bağlandı** (`src/game/cihazSinifi.ts`). Sınıf `localStorage`ta
+durur, **kayıtta değil**: "gölge açık olsun" oyuncunun tercihi (cihazdan cihaza taşınır),
+"bu telefon gölgeyi kaldırıyor" ise bu cihazın olgusudur. Tek alanda tutulsalardı güçlü
+telefonda "açık" diyen oyuncu, kaydını zayıf telefona taşıdığında takılırdı. Sınıf
+`deviceMemory`/`hardwareConcurrency` gibi alanlardan DEĞİL, ilk 60 kare atlanıp sonraki 120
+karenin **ortancasından** belirlenir — o alanlar GPU hakkında hiçbir şey söylemez, gölgenin
+maliyeti ise GPU maliyetidir. Ayarlar'a "Gölgeler" satırı eklendi; dokunulduğu an tercih
+açık hâle gelir ve ölçümü ezer. Ayar `saveVersion` **artırmadan** eklendi (`showFps` emsali).
+
+**3 — `npm run apk` bayat boyut raporluyordu** (yolda bulunan sessiz kusur, aşağıda).
+
+### Ölçülen kazanç — APK
+
+Her iki uç da **temiz** üretimle ölçüldü (aşağıdaki kusur yüzünden):
+
+| | Önce | Sonra | Fark |
+|---|---|---|---|
+| APK (debug) | 21.946.678 bayt · **20,93 MB** | 12.416.193 bayt · **11,84 MB** | **−9,09 MB (−%43,4)** |
+| `dist/` | 27,4 MB | **16,1 MB** | −11,3 MB |
+| Model dosyası | 1.002 | **500** | −502 |
+| Doku (dist içinde) | 7,5 MB | **0,2 MB** | silinen paketler dokuların çoğunu taşıyormuş |
+
+### Yolda bulunan sessiz kusur — `npm run apk` 9 MB fazla raporluyordu
+
+Asset'ler silindikten sonra `npm run apk` hâlâ **21,88 MB** dedi. Dosya elle silinip yeniden
+üretilince gerçek boyut **11,84 MB** çıktı: gradle çıktı APK'sının üzerine yazarken dosyayı
+**kısaltmıyor**, 11,66 MB'lık içerik 21,88 MB'lık kabuğun içinde duruyordu (aradaki ~10 MB ölü
+boşluk). Bu, yayın gününde yanlış okunacak türden bir kusur — mağaza için "APK ne kadar"
+sorusuna 9 MB fazla cevap verilir, küçültme çalışması boşa gitmiş görünürdü. `tools/apk-temizle.mjs`
+eklendi ve `npm run apk` zincirine takıldı; artık uçtan uca **11,84 MB** raporluyor.
+
+### Son tam koşu — bekçiler
+
+Altı kolun altısı da **ETKİLİ** (gölge bayrağı ve harita kenarı renderer'dan okunuyor) ·
+üçgen 227.167 sabit (**sapma %0,0**) · çizim çağrısı 143 sabit · NPC nüfusu 31 sabit ·
+sürücü gerçek GPU. Final sayılar: taban **22,10 ms** · gölge kapalı **13,80 ms**
+(**−8,30 ms, −%37,6**) · harita 1024 **%0,0** · harita 512 **+%1,8** · dpr 1 **+%0,9**.
+
+**Aracın kendisi tam koşuda bir kez daha çürüdü:** `?f2dpr=1` kolu "tutmadı" (dpr 1 beklenirken
+2 kaldı). Sebep yarıştı — `AdaptiveResolution`ın `setDpr` efekti ile `<Canvas dpr>` prop'u
+çakışıyor, hangisinin sonra geldiği montaj sırasına bağlı. Kol prop'a taşındı. **Bunu yakalayan
+şey varyant etki denetimidir:** sorgu dizesi doğru yazılmıştı, kod yolunda kayboluyordu; denetim
+olmasaydı rapor "dpr'nin faydası yok" diye YANLIŞ bir sonuç yazacaktı.
+
+### Açık kalan — cihaz turu
+
+**dpr kolu bu donanımda ölçülemedi.** Tampon 4,00× küçüldü, kare süresi değişmedi: RTX 3060'ta
+fragment maliyeti bağlayıcı değil. Bu, dpr'nin ucuz olduğunu **göstermez** — vekil ölçümün tam
+orada kör olduğunu gösterir. Telefon GPU'sunda piksel maliyeti tipik olarak bağlayıcıdır.
+**Cihaz turu açık:** telefon bağlanınca §C yeniden koşulmalı ve `ZAYIF_ESIGI_MS` (22 ms) gerçek
+cihaz dağılımına göre doğrulanmalıdır.
