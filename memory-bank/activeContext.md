@@ -95,6 +95,27 @@ sürekli çözme; APK turunda okunacak) · ② `2024-q4` paketi indirilmedi, pro
 Bel bağının ucu çeyrek açıdan ince bir dudak bırakıyor (`docs/gorsel/ss/s19b-kiyafet.png`).
 Ölçü değil biçim; pay 0,035 → 0,012 ile küçültüldü, sıfırlanmadı. Bir sonraki sanat turunda.
 
+## PANO ARTIFACT BORCU — BİLEREK BIRAKILDI (2026-09-16)
+
+Pano **HTML dosyası güncel ve commit'li** (`docs/pano/ilerleme-panosu.html`, v49 · 102/107 ·
+F2 kartı + özet + sıradaki yazıldı, `npm run pano` denetimi yeşil). **Yayınlanmadı.**
+
+**Sebep — ve bu bir kök sebep, tembellik değil:** artifact yayını canlı sürümün TAMAMININ
+okunmasını şart koşuyor. Dosya her turda büyüyor: S23'te 1611 satırdı, bugün **1790**.
+Yayın maliyeti artık ~130k token ve okunanın **neredeyse tamamı eski tur günlük kartları** —
+yani her tur, bir daha asla okunmayacak arşivi baştan okumak için ödeme yapıyoruz. Maliyet
+tur başına ARTIYOR; "her turda kapatmak ucuz" kuralı dosya küçükken yazılmıştı ve artık
+geçerli değil.
+
+**Önerilen yapısal çözüm (kullanıcı onayı ister, kod yazılmadı):** `gunluk` listesi panoda
+**son 8 turla sınırlansın**, eskisi `memory-bank/arsiv/pano-gunluk.json`e taşınsın.
+Bu, projenin kendi kuralının (`eski anlatı → arsiv/`) panoya uygulanmış hâli. Pano ~600
+satıra iner, yayın maliyeti onda birine düşer ve borç bir daha birikmez. Arşivlenen kart
+kaybolmaz — git'te ve arşiv dosyasında durur.
+
+**Bu tur ne kaybedildi:** yalnız yayınlanmış bağlantının bir tur bayat kalması
+(v48 · 101/108 gösteriyor). Sayıların kendisi depoda güncel.
+
 ## AÇIK KALEMLER (ölçüldü/görüldü, bilerek duruyor — tam listesi `memory-bank/arsiv/`de)
 
 **Karakter/sanat:** ~~rozet süsü önlükten çıkıyor~~ → **S19b'de KAPANDI (D-117):** süs ayrı düğüm

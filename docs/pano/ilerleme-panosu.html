@@ -214,14 +214,14 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum — Faz H · 2/3 — H2: yükseltme sırası (D-124)",
-  "baslik": "Serbest sıra bir <b>tuzaktı</b>: %20,6 — ve cezayı en doğal içgüdüye kesiyordu",
-  "aciklama": "Masa yükseltmelerinin sırası bugüne dek serbestti: bir salon açılınca masalarının hepsi aynı anda ve herhangi bir sırayla yükseltilebiliyordu. Soru iki ayrı şeyi birden soruyordu ve ikisi de bilinmiyordu — <b>ekranda kaç nokta</b>, ve <b>oyuncu yanlış sırayla kendini ne kadar cezalandırabiliyor</b>.<br><br><b>Tuzak %20,6.</b> Aynı oyun, aynı süre: 6 saatte derin oynayan <b>58.097 ₺</b>, “en ucuzu al” diyen <b>48.182 ₺</b> topluyordu. Ceza tam da en doğal içgüdüyü vuruyor; rastgele oynayan da kaybeden taraftaydı.<br><br><b>Kapının bedeli sıfır çıktı.</b> “Tek hedef oyuncudan seçim alıyor, demek ki bir bedeli var” sezgisi ölçüldü: kapılı kol ile <i>kapısız</i> derin oyuncu kolu <b>birebir aynı dünyayı</b> üretiyor (parmak izi <code>fd6d3dfd</code>). Kapı bir takas değildi — aldığı seçenek zaten kaybeden seçenekti.<br><br><b>B (kuşak) elendi:</b> kaybeden sırayı zorunlu kılıyor (48.033 ₺) ve dikkati de kurtarmıyordu (3,48 → 2,95, tepe hâlâ 12).<br><br><b>Karar (D-124): A — tek hedef.</b> Ekranda aynı anda çizilen masa noktası ort <b>3,48 → 0,54</b>, tepe <b>12 → 1</b>. D-038 tek-odak ölçümü: en yoğun durum <b>16 → 3</b> işaret."
+  "etiket": "Bu oturum — Faz F · 1/5 — F2: telefon yükü (D-125)",
+  "baslik": "En büyük kazanç koddan değil <b>envanterden</b> çıktı: APK %43,4 küçüldü",
+  "aciklama": "Oyun 101 tur boyunca ölçüldü — kare süresi, zincir, tempo, denge. Ölçülmeyen tek yanı <b>ne gönderdiğimizdi</b>. Tek soru 9,09 MB getirdi.<br><br><b>Model paketlerinin %48,5&#39;ine hiçbir kod yolu ulaşamıyordu.</b> Model yolları her bileşende elle yazılı klasör sabitinden kurulur (<code>const KAY = &#39;/assets/models/...&#39;</code>), ortak çözücü yok — yani adı kaynakta geçmeyen paket &#34;kullanılmıyor gibi&#34; değil, <b>ulaşılamaz</b>. Dünya TAM açıkken (24 pad, masalar L6, 30 dk oyun) 1006 asset dosyasının <b>898&#39;i hiç istenmedi</b>.<br><br><b>APK 20,93 → 11,84 MB</b> (−9,09 MB, −%43,4). İki uç da temiz üretimle ölçüldü — çünkü <code>npm run apk</code> 9 MB <b>fazla</b> raporluyordu: gradle çıktı dosyasını kısaltmadan üzerine yazıyor, 11,66 MB&#39;lık içerik 21,88 MB&#39;lık kabukta duruyordu. Yayın günü mağazaya yanlış boyut yazılırdı.<br><br><b>Gölgenin bedeli varlığında, çözünürlüğünde değil:</b> gölge kapalı −%37,6, ama harita 2048 → 512 farkı <b>%0,4</b>. &#34;Gölgeyi ucuzlatalım&#34; kolu ölü. D-073 korundu: gölge kendiliğinden kapanmaz, yalnız <b>ölçülen zayıf cihazda</b> kapanır."
  },
  "siradaki": {
-  "etiket": "Sırada — H3 (masa aralığı)",
-  "baslik": "Masaların arasından <b>geçilemiyor</b>: açıklık 0,68 br, geçiş 0,94 br istiyor",
-  "aciklama": "Ölçüm hazır ve <b>kullanıcı kararı bekliyor</b> (D-098): geçiş için <b>2 × playerRadius = 0,94 br</b> gerekiyor. Ön salon 3,50 br ile rahat, ama <b>arka salon 0,68 br</b> → 20 masanın <b>12'si</b> geçilemiyor, çarpışma katılarında eşik altında <b>52 açıklık</b> var (en darı 0,04 br). Onaylı maket düzenine dokunduğu için iki kol sayılarıyla yazılı bekliyor. H1'in tarama aracı bu soruya hazır: taşma-doldurma “girilemeyen cep” sayısını zaten veriyor ve iki dünyada da %0 çıktı — yani <b>cep yok, dar geçit var</b>."
+  "etiket": "Sırada — kullanıcının 16 kalemi (G-35…G-50)",
+  "baslik": "Kullanıcı oyunu açtı: <b>görev şeridi</b>, mutfak açısı, HUD çerçeveleri ve çevre sanatı",
+  "aciklama": "F2 turunun içinde on iki başlık geldi ve hiçbiri bu turda uygulanmadı — kullanıcının kendi sözü: <i>&#34;sonraki chatlerde bunları yaparsın&#34;</i>.<br><br><b>① Görev şeridi (G-41…G-44)</b> — dördü tek kök: biten görevin tebriği yeni görevin üstünde kalıyor, çubukta üst yazı kesiliyor, &#34;görev bitti&#34; ayrı yerde duruyor (hepsi tek çubukta olmalı), ve yeni göreve <b>zoom erken</b> atılıyor.<br><b>② Mutfak (G-35…G-38)</b> — tezgâh ve bulaşık 90° yanlış açıda (sol duvara paralel olmalı) ve <b>içinden geçiliyor</b>.<br><b>③ HUD (G-45…G-49)</b> — seviye rozeti Clash of Clans gibi <b>birleşik</b> olmalı (bar yuvarlağın çevresinde), FPS sayacı kalkacak, iki ödül alt alta + arasına &#34;+&#34;.<br><b>④ G-50 çevre sanatı</b> — <i>&#34;yapılmamış asset gibi hissettiriyor&#34;</i>; kendi tasarım turu, 6-12 aday render edilip eleyerek seçilecek."
  },
  "donemler": [
   {
@@ -377,6 +377,23 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "16.09.2026",
+   "etiket": "Faz F · 1. oturum (F2 — telefon yükü — D-125)",
+   "baslik": "Ölçüm aracı, ölçtüğü şeyden <b>önce kendisi</b> çürütülür",
+   "govde": "Kısa koşu aracı <b>dört kez</b> düşürdü ve dördü de rapora girecek sayıyı bozacaktı. Headless tarayıcı <b>yazılım GPU&#39;suna</b> düşüyordu — orada kare 233 ms, dpr sahte bir %64 &#34;kazanç&#34; gösteriyordu. Kollar <b>farklı dünyaları</b> ölçüyordu: gölge açıkken çizim çağrısı 30, kapalıyken 40 çıktı — gölge çağrı ekler, azaltmaz. Sayaçlar rastgele bir anda okunuyordu, oysa kare başına sıfırlanıyorlar. Ve tohum kayıyordu: yükleme sırası rastgele sayı tüketimini oynatınca üçgen <b>%17,2</b> sapıyordu.<br><br><b>Tam koşu bir kez daha çürüttü.</b> <code>?f2dpr=1</code> kolu tutmuyordu — sorgu dizesi doğruydu ama kod yolunda kayboluyordu (<code>setDpr</code> efekti ile Canvas prop&#39;u yarışıyor). Bunu yakalayan şey <b>varyant etki denetimi</b>: kolun tuttuğu metinden değil <b>renderer&#39;dan</b> okunuyor. Denetim olmasaydı rapor &#34;dpr&#39;nin faydası yok&#34; diye yanlış bir hüküm basacaktı.",
+   "maddeler": [
+    "<b>D-125:</b> A1 — dört ulaşılamaz paket çıkarıldı (board-game-bits 9,3 MB · resource · holiday · forest)",
+    "<b>APK 20,93 → 11,84 MB (−%43,4)</b> · dist 27,4 → 16,1 MB · model dosyası 1002 → 500",
+    "<b>Ölü yük:</b> model paketlerinin %48,5&#39;i ulaşılamaz; dünya TAM açıkken 1006 dosyanın <b>898&#39;i</b> hiç istenmiyor",
+    "<b>Gölge:</b> varlığı −%37,6, çözünürlüğü %0,4 → harita kolu <b>ÖLDÜ</b>; D-073 korundu, yalnız zayıf cihazda kapanır",
+    "<b>Sınıf kayıtta değil localStorage&#39;ta:</b> tercih cihazdan cihaza taşınır, cihazın olgusu taşınmaz",
+    "<b>Sessiz kusur:</b> <code>npm run apk</code> 9 MB fazla raporluyordu (gradle çıktıyı kısaltmıyor) → <code>apk-temizle.mjs</code>",
+    "<b>&#34;Ucuz&#34; ≠ &#34;ölçülemedi&#34;:</b> dpr 4× az piksele rağmen kıpırdamadı — RTX 3060&#39;ta fragment bağlayıcı değil, <b>cihaz turu açık</b>",
+    "<b>H3 ELENDİ:</b> banket adası geçişinden sonra açıklık 2,15 br (gereken 0,94) — premis düştü, toplam 108 → 107",
+    "Bekçi: <code>asset-olu-yuk</code> (4 den. · 3 mut.) listeye değil <b>ilişkiye</b> bakıyor · <code>golge-cihaz</code> (12 den. · 5 mut.) · kaçan 0"
+   ]
+  },
   {
    "tarih": "16.09.2026",
    "etiket": "Faz H · 2. oturum (H2 — yükseltme sırası — D-124)",
