@@ -5,20 +5,22 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-16 — **S9 SES BİTTİ: parça seçildi, seviye ayarı geldi** · Faz S 24/24 · 99/108)
+## ŞU AN (2026-09-16 — **H1 açıldı: üç oynanış hatası ölçülüyor** · Faz H 0/3 · 99/108)
 
 ```
-SORU            : D-106 kaynağı Kenney'e bağladı ama KAPSAMINI söylemedi. Hangi olay dosyadan
-                  çalar (K) · seri ivmesinin basamağı ne (İ) · ortam uğultusu nereden (O)?
-ÖLÇÜLECEK KOLLAR: K1…K5 bölüşüm · I1/I2/I3 basamak · O1/O2/O3/O4 ortam · A1/A2/A3 kelepçe
-SAYILAR         : docs/ses-raporu-s17.md §Bulgular (15 satır) · ham: docs/olcum-ses-s17.txt +
-                  docs/olcum-ses-karma.txt (ikisi de TAM koşu damgalı)
-KARAR           : D-122 — K1 (sentez kalır) + I2 + A3 + O4 · O5 = Sketchbook 2024-01-24_02 (CC0)
-UYGULAMA        : I2 seri ivmesi · music.ts + musicWeb.ts (motorun İLK DÖNGÜSÜ) · "Müzik" anahtarı
-                  BAĞLANDI · ses/müzik SEVİYE kaydırıcıları (kullanıcı isteği) · save.ts'te
-                  ayar birleştirme hatası kapandı
-BEKÇİ           : seri-ivmesi-s9 (24 den. · 16 mut.) + ses-seviye-s9 (27 den. · 16 mut.) · kaçan 0
-FINAL           : vitest 1154 ✓ · duman 45/45 ✓ · tsc temiz · denge dosyasına dokunulmadı
+SORU            : Oyuncu masadaki kirliye ve ocaktaki ürüne, fiziksel olarak DURABİLDİĞİ her
+                  yerden erişebiliyor mu — erişim deliği nerede ve kaç br? (G-01 · G-02)
+                  "2. Masayı aç" görevinde kamera kaç kez / kaç saniye kendiliğinden kayıyor,
+                  oyuncudan kaç br uzaklaşıyor? (G-03)
+ÖLÇÜLECEK KOLLAR: M1 taban (r=1,4 · KİRLİ KABIN rastgele noktasından) · M2 yarıçap süpürmesi
+                  1,4→2,4 · M3 tetik MASANIN çizilen katısından (kutu + pay)
+                  O1 taban (r=1,6 · TEZGÂHIN MERKEZİNDEN) · O2 yarıçap süpürmesi 1,6→2,6 ·
+                  O3 tetik tezgâhın çizilen KUTUSUNDAN (S24/D-120 dersi)
+                  K1 pan kaydı: taban davranışı sayıyla (kaç pan · kaç sn · kaç br)
+SAYILAR         : (adım 2'den sonra dolar — docs/erisim-raporu-h1.md §Bulgular)
+KARAR           : (adım 3 — kullanıcı seçer)
+UYGULAMA        : (adım 4 — yalnız kararın kolu)
+BEKÇİ           : (test + mutasyon)
 ```
 
 **Turun kalıcı üç dersi:**

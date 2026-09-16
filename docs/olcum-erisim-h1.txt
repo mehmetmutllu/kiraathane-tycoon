@@ -1,0 +1,55 @@
+====================================================================================================
+H1 ERİŞİM ÖLÇÜMÜ — TAM koşu · ızgara 0.02 br · 360 yön · 2026-09-16
+gövde yarıçapı 0.47 · collectRadius 1.40 · pickupRadius 1.60 · kap saçılması 0.60 · masa yarısı four 0.84 / deuce 0.53
+====================================================================================================
+
+--- DÜNYA: erken (1 salon · sol duvar) · 4 masa · erişilebilir 244.1 br² (durulabilirin %100.0'i — gerisi girilemeyen cep)
+
+--- DÜNYA: gec (3 salon · arka bant) · 20 masa · erişilebilir 762.4 br² (durulabilirin %100.0'i — gerisi girilemeyen cep)
+
+### G-01 — MASADAKİ KİRLİ KABA ERİŞİM (payda: masaya GÖVDESİYLE yanaşılabilen yön · pay 0.49 br)
+dünya                        | masa | tip   | yanaşık yön | M1 yön% | M1 kör yön | M1 en kötü kap yön% | M2 gereken r | M2 sızıntı yön | M3 sızıntı yön
+erken (1 salon · sol duvar)  |    0 | four  |         231 |    42.2 |          0 |                23.8 |         2.05 |              0 |              0
+erken (1 salon · sol duvar)  |    1 | four  |         231 |    42.2 |          0 |                23.8 |         2.05 |              0 |              0
+erken (1 salon · sol duvar)  |    2 | four  |         231 |    42.2 |          0 |                23.8 |         2.05 |              0 |              0
+erken (1 salon · sol duvar)  |    3 | four  |         231 |    42.2 |          0 |                23.8 |         2.05 |              0 |              0
+gec (3 salon · arka bant)    |    0 | four  |         231 |    42.2 |          0 |                23.8 |         2.05 |              0 |              0
+gec (3 salon · arka bant)    |    1 | four  |         231 |    42.2 |          0 |                23.8 |         2.05 |              0 |              0
+gec (3 salon · arka bant)    |    2 | four  |         231 |    42.2 |          0 |                23.8 |         2.05 |              0 |              0
+gec (3 salon · arka bant)    |    3 | four  |         231 |    42.2 |          0 |                23.8 |         2.05 |              0 |              0
+gec (3 salon · arka bant)    |    4 | four  |         231 |    42.2 |          0 |                23.8 |         2.05 |              0 |              0
+gec (3 salon · arka bant)    |    5 | four  |         231 |    42.2 |          0 |                23.8 |         2.05 |              0 |              0
+gec (3 salon · arka bant)    |    6 | four  |         231 |    42.2 |          0 |                23.8 |         2.05 |              0 |              0
+gec (3 salon · arka bant)    |    7 | four  |         231 |    42.2 |          0 |                23.8 |         2.05 |              0 |              0
+gec (3 salon · arka bant)    |    8 | deuce |         201 |    95.5 |          0 |                79.1 |         1.60 |              0 |              0
+gec (3 salon · arka bant)    |    9 | deuce |         201 |    95.5 |          0 |                79.1 |         1.60 |              0 |              0
+gec (3 salon · arka bant)    |   10 | deuce |         201 |    95.5 |          0 |                79.1 |         1.60 |              0 |              0
+gec (3 salon · arka bant)    |   11 | deuce |         201 |    95.5 |          0 |                79.1 |         1.60 |              0 |              0
+gec (3 salon · arka bant)    |   12 | deuce |         201 |    95.5 |          0 |                79.1 |         1.60 |              0 |              0
+gec (3 salon · arka bant)    |   13 | deuce |         201 |    95.5 |          0 |                79.1 |         1.60 |              0 |              0
+gec (3 salon · arka bant)    |   14 | deuce |         201 |    95.5 |          0 |                79.1 |         1.60 |              0 |              0
+gec (3 salon · arka bant)    |   15 | deuce |         201 |    95.5 |          0 |                79.1 |         1.60 |              0 |              0
+gec (3 salon · arka bant)    |   16 | deuce |         201 |    95.5 |          0 |                79.1 |         1.60 |              0 |              0
+gec (3 salon · arka bant)    |   17 | deuce |         201 |    95.5 |          0 |                79.1 |         1.60 |              0 |              0
+gec (3 salon · arka bant)    |   18 | deuce |         201 |    95.5 |          0 |                79.1 |         1.60 |              0 |              0
+gec (3 salon · arka bant)    |   19 | deuce |         201 |    95.5 |          0 |                79.1 |         1.60 |              0 |              0
+ÖZET: 24 masanın 0'sinde TÜMÜYLE kör yön var · 0'sinde tetik her (yön × kap) çiftini yakalıyor · M1 yön% en kötü 42.2 / medyan 95.5 / en iyi 95.5 · M2 medyan r 2.05 · M2 sızıntılı masa 0 · M3 sızıntılı masa 0
+
+### G-02 — OCAKTAN / TEZGÂHTAN ÜRÜN ALMA (payda: tezgâha gövdesiyle yanaşılabilen yön)
+yer        | yanaşık yön | O1 yön% | O1 kör | ölü ön yüz (br) | canlı ön yüz (br) | O2 gereken r | O2: yükseltme | O3: yükseltme | yükseltme mesafesi
+sol duvar  |         183 |    57.4 |     78 |            0.72 |              2.50 |         2.20 |         yasar |         yasar |               3.93
+arka bant  |         123 |    85.4 |     18 |            0.72 |              2.50 |         2.20 |         yasar |         yasar |               3.62
+
+### G-03 — GÖREV PANI (K1 taban: bugünkü davranış)
+GÖRÜŞ YARIÇAPI (oyuncunun etrafında ekranda duran daire, 8 yön): en dar 4.25 br · en geniş 24.50 br — bu sayının ALTINDAKİ her hedef pan'dan önce zaten ekrandadır.
+görev         | pan oldu | hedef PAN ÖNCESİ ekranda | hedef uzaklık (br) | pan süresi (sn) | oyuncu ekran dışı (sn)
+q_serve1      |     evet |                     EVET |              10.41 |            1.68 |                   2.52
+q_coin        |     evet |                     EVET |               4.90 |            1.70 |                   1.03
+q_table2      |     evet |                     EVET |               3.62 |            1.49 |                   0.00
+q_charTray1   |    HAYIR |                        — |               0.00 |            0.00 |                   0.00
+q_serve5      |     evet |                     EVET |              10.41 |            1.75 |                   2.58
+q_station1    |     evet |                     EVET |              12.71 |            1.65 |                   3.15
+q_wash        |     evet |                     EVET |               8.19 |            1.57 |                   1.74
+ÖZET: 7 görevin 6'inde pan oldu · 6'inde hedef PAN ÖNCESİ zaten ekrandaydı (gürültü) · oyuncu toplam 11.02 sn ekran dışında kaldı
+
+✓ Damgalar temiz (tam koşu).
