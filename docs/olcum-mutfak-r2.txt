@@ -1,0 +1,154 @@
+OLCUM — MUTFAK YERLEŞİMİ VE ÇARPIŞMA (Faz R2 · G-35…G-38)
+kip: tam · ızgara 0,02 br · oyuncu yarıçapı 0,47
+
+=============================================================================
+§A — ÇİZİLEN GÖVDE ↔ ÇARPIŞMA KUTUSU (G-35: "tam 90 derece açıyla duruyor")
+=============================================================================
+
+kutu  = layout.activeSolids (oyuncunun çarptığı şey)
+cizim = kitchenLook.onHatGovdeleri, çağıranın uyguladığı `rot` ile (gözle görülen şey)
+takas = dönüş eksenleri değiştiriyor mu (rot = ±π/2)
+IoU   = 1,00 tam örtüşme · 0,00 hiç örtüşmeme
+
+--- SOL DUVAR (areasOpen = 2) ---
+
+gövde    | rot   takas | kutu en×boy  | çizim en×boy | IoU   | açı     | ODA DIŞI br² (en fazla)
+---------|-------------|--------------|--------------|-------|---------|------------------------
+tezgah   | π/2   EVET  | 1,00 × 3,20  | 3,20 × 1,00  | 0,19  | **90°** | 0,80 (0,79)  → A1 0,00 (0,00)
+bulasik  | π/2   EVET  | 1,00 × 2,00  | 2,00 × 1,00  | 0,33  | **90°** | 0,20 (0,19)  → A1 0,00 (0,00)
+
+--- ARKA BANT (areasOpen = 3) ---
+
+gövde    | rot   takas | kutu en×boy  | çizim en×boy | IoU   | açı     | ODA DIŞI br² (en fazla)
+---------|-------------|--------------|--------------|-------|---------|------------------------
+tezgah   | 0     hayır | 3,20 × 1,00  | 3,30 × 1,00  | 0,97  | 0°      | — (bant: salon dışı, ölçüt geçersiz)
+bulasik  | 0     hayır | 2,00 × 1,00  | 2,10 × 1,00  | 0,95  | 0°      | — (bant: salon dışı, ölçüt geçersiz)
+garson   | 0     hayır | 2,60 × 1,00  | 2,80 × 1,00  | 0,93  | 0°      | — (bant: salon dışı, ölçüt geçersiz)
+
+--- A1 / A2 KOLLARININ AYNI TABLOSU (taban ile karşılaştırılabilsin) ---
+
+dönem      gövde    | T IoU | A1 IoU | A2 IoU | T açı   | A1 açı | A2 açı
+---------------------|-------|--------|--------|---------|--------|-------
+SOL DUVAR  tezgah   | 0,19  | 1,00   | 1,00   | 90°     | 0°     | 0°
+SOL DUVAR  bulasik  | 0,33  | 1,00   | 1,00   | 90°     | 0°     | 0°
+ARKA BANT  tezgah   | 0,97  | 0,97   | 0,97   | 0°      | 0°     | 0°
+ARKA BANT  bulasik  | 0,95  | 0,95   | 0,95   | 0°      | 0°     | 0°
+ARKA BANT  garson   | 0,93  | 0,93   | 0,93   | 0°      | 0°     | 0°
+
+
+=============================================================================
+§B — İÇİNDEN GEÇME (G-36: "biz tezgahın vs içinden geçiyoruz")
+=============================================================================
+
+ızgara 0,02 br · oyuncu yarıçapı 0,47 · taşma-doldurma LAYOUT.player'dan
+gecilen  = ÇİZİLEN gövdenin içinde oyuncunun durabildiği + oraya yürüyebildiği alan
+gorunmez = KATI olup hiçbir gövde çizilmemiş alan (görünmez duvar)
+
+--- SOL DUVAR (areasOpen = 2 · 6 masa · erişilebilir 1289365 hücre) ---
+
+gövde    | çizim br² | GEÇİLEN br² |   %   | GÖRÜNMEZ br² |   %   || A1 geçilen | A1 görünmez
+---------|-----------|-------------|-------|--------------|-------||------------|------------
+tezgah   |      3,20 |        0,62 | %19.4 |         2,20 | %68.7 ||       0,00 |        0,00
+bulasik  |      2,00 |        0,02 |  %1.0 |         1,00 | %50.0 ||       0,00 |        0,00
+
+--- ARKA BANT (areasOpen = 3 · 14 masa · erişilebilir 1964400 hücre) ---
+
+gövde    | çizim br² | GEÇİLEN br² |   %   | GÖRÜNMEZ br² |   %   || A1 geçilen | A1 görünmez
+---------|-----------|-------------|-------|--------------|-------||------------|------------
+tezgah   |      3,30 |        0,00 |  %0.0 |         0,00 |  %0.0 ||       0,00 |        0,00
+bulasik  |      2,10 |        0,00 |  %0.0 |         0,00 |  %0.0 ||       0,00 |        0,00
+garson   |      2,80 |        0,00 |  %0.0 |         0,00 |  %0.0 ||       0,00 |        0,00
+
+
+=============================================================================
+§C — BİTİŞİKLİK (G-37: "başlangıçta tezgahlar da bitişik olsun")
+=============================================================================
+
+Hattın UZUN ekseni sol duvar döneminde z, arka bant döneminde x.
+Geçiş eşiği (oyuncu sığar mı): 0,94 br.
+
+--- SOL DUVAR (uzun eksen: z) ---
+
+kol                | gövde sırası ve aralıkları                       | BOŞLUKLAR (br)
+-------------------|--------------------------------------------------|----------------
+T taban            | tezgah[5,90…6,90] bulasik[10,10…11,10]           | 3,20
+A1 çizim döner     | tezgah[4,80…8,00] bulasik[9,60…11,60]            | 1,60
+B1 erken birleşme  | tezgah[4,80…8,80] bulasik[8,80…11,60]            | 0,00
+
+--- ARKA BANT (uzun eksen: x) ---
+
+kol                | gövde sırası ve aralıkları                       | BOŞLUKLAR (br)
+-------------------|--------------------------------------------------|----------------
+T taban            | tezgah[-14,60…-11,30] garson[-11,30…-8,50] bulasik[-8,50…-6,40] | 0,00 · 0,00
+A1 çizim döner     | tezgah[-14,60…-11,30] garson[-11,30…-8,50] bulasik[-8,50…-6,40] | 0,00 · 0,00
+B1 erken birleşme  | tezgah[-14,60…-11,30] garson[-11,30…-8,50] bulasik[-8,50…-6,40] | 0,00 · 0,00
+
+--- B2: bulaşığın KOORDİNATI tezgâha yanaşır (yalnız SOL DUVAR dönemi) ---
+
+bulaşık merkezi bugün z = 10,60 · kutular değsin diye z = 9,00
+KAYMA = 1,60 br (kuzeye)
+
+B2 BEDELİ — bulaşıkla birlikte taşınması gereken noktalar:
+  dishwasherHome (bulaşıkçının postası)  z = 12,60 · bulaşığa 2,00 br
+  waiterHome (garson sırası başı)        z = 8,60 · bulaşığa 2,00 br
+  staffWalk.b (çaycı yolunun ucu)        z = 11,40 · bulaşığa 0,80 br
+
+  Bulaşığın yeni kutusu: z ∈ [8,00 … 10,00]
+
+--- G-37 KOLLARININ BEDELİ (SOL DUVAR · aynı ızgara, aynı taşma-doldurma) ---
+
+kol                 | hat boşluğu | GEÇİLEN br² (çizimin içinde yürünen) | GÖRÜNMEZ br²
+--------------------|-------------|--------------------------------------|-------------
+T taban             |        3,20 |                                 0,64 |         3,20
+A1 (tek başına)     |        1,60 |                                 0,00 |         0,00
+A1 + B1 birleşme    |        0,00 |                                 0,66 |         0,00
+A1 + B2 yanaşma     |        0,00 |                                 0,00 |         0,00
+
+  A1 tek başına: hat boşluğu 1,60 br kalır (oyuncu 0,94 eşiğinden geniş → içinden geçer).
+  B1: boşluk 0,00 ama çizimin içinde yürünen alan 0,66 br² (A1'de 0,00).
+  B2: boşluk 0,00 ve yürünen alan 0,00 br² — bedeli 3 ankraj noktasının taşınması.
+
+
+=============================================================================
+§D — SEVİYE SİNYALİ (G-38: "tezgah yükseltmeleri de nasıl oluyor bilmiyorum")
+=============================================================================
+
+gövde yüksekliği = 0,70 + L × 0,12
+semaver rengi    = 6 üye · kapak rengi = 6 üye
+kimlik basamakları: L4 TEZGÂH · L5 TOST
+
+RENK FARKI EŞİĞİ: ~30 altı aynı kadrajda ayırt edilmez (sRGB ağırlıklı öklid).
+
+L→L+1 | gövde Δ | semaver renk Δ | kapak renk Δ | kimlik | tost | AYIRT EDİLİR SİNYAL
+------|---------|----------------|--------------|--------|------|--------------------
+L0→L1 | 0,12    |  59 ✓          |  54 ✓        | —      | —    | 2
+L1→L2 | 0,12    |  74 ✓          |  81 ✓        | —      | —    | 2
+L2→L3 | 0,12    |  40 ✓          |  90 ✓        | —      | —    | 2
+L3→L4 | 0,12    | 133 ✓          |  85 ✓        | TEZGÂH | —    | 3
+L4→L5 | 0,12    |  38 ✓          |   0 ✗        | —      | TOST | 2
+L5→L6 | 0,12    |   0 ✗          |   0 ✗        | —      | —    | 0
+
+SOL DUVAR DÖNEMİNDE MUTFAK ODASI ÇİZİLMEZ (Scene.BackBand: areasOpen < 3 → null).
+Yani L0-L3 boyunca oyuncunun gördüğü TEK yükseltme yüzeyi bu gövdedir; S22 kademe
+merdiveni (oda büyümesi) o dönemde ekranda hiç yok.
+
+
+=============================================================================
+ÖZET (karar bölümü BOŞ — rapor §Bulgular doldurulur, kol kullanıcı seçer)
+=============================================================================
+
+SOL DUVAR  tezgah   · taban açı 90° IoU 0.19 → A1 açı 0°  IoU 1.00
+SOL DUVAR  bulasik  · taban açı 90° IoU 0.33 → A1 açı 0°  IoU 1.00
+ARKA BANT  tezgah   · taban açı 0°  IoU 0.97 → A1 açı 0°  IoU 0.97
+ARKA BANT  bulasik  · taban açı 0°  IoU 0.95 → A1 açı 0°  IoU 0.95
+ARKA BANT  garson   · taban açı 0°  IoU 0.93 → A1 açı 0°  IoU 0.93
+
+SOL DUVAR  tezgah   · geçilen 0,62 br² (%19.4) · görünmez 2,20 br² → A1: 0,00 / 0,00
+SOL DUVAR  bulasik  · geçilen 0,02 br² (%1.0) · görünmez 1,00 br² → A1: 0,00 / 0,00
+ARKA BANT  tezgah   · geçilen 0,00 br² (%0.0) · görünmez 0,00 br² → A1: 0,00 / 0,00
+ARKA BANT  bulasik  · geçilen 0,00 br² (%0.0) · görünmez 0,00 br² → A1: 0,00 / 0,00
+ARKA BANT  garson   · geçilen 0,00 br² (%0.0) · görünmez 0,00 br² → A1: 0,00 / 0,00
+
+SOL DUVAR hat boşluğu: taban 3,20 br → B1 0,00 br · B2 kayma 1,60 br
+Seviye başına ayırt edilir sinyal: [2 · 2 · 2 · 3 · 2 · 0] (basamak sayısı 6)
+

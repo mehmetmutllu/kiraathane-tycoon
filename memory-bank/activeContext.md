@@ -5,40 +5,30 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-16 — **R1 BİTTİ: görev şeridi** · Faz R 1/4 · 103/111)
+## ŞU AN (2026-09-16 — **R2 AÇILDI: mutfak yerleşimi + çarpışma** · Faz R 2/4 · 103/111)
 
 ```
-SORU            : Bir görev bittiğinde ekranda kaç ses aynı anda konuşuyor, hangi sırayla —
-                  ve kamera yeni hedefe hangi anda gidiyor?
-ÖLÇÜLEN KOLLAR  : T taban · K KONTROL (tebrik çizilebilir türe çevrilir) · V1 toast yok ·
-                  V2 toast kısa · V3 pencere uzun · V4 kamera kapısı (altısı da ETKİLİ doğrulandı)
-SAYILAR         : docs/serit-raporu-g1.md §Bulgular · ham: docs/olcum-serit-g1.txt (TAM)
-KARAR           : D-126 — V1 + V4 + taban yükseklik (C1); kullanıcı KAREYE bakıp bandın
-                  üstündeki gri iç parlamayı da kaldırttı (ölçümde olmayan kalem)
-UYGULAMA        : rules.ts CIZILEN_TOAST + toastCizilir · tick.ts geçiş kapısı (camBekleyen) ·
-                  hud.css min-height + padding · index.css --k3duz · q_z1allL4 başlığı kısaldı
-BEKÇİ           : gorev-seridi-g1 (14 den. · 15 mut.) + mor-dil 4c (türetme denetimi) · kaçan 0
-FINAL           : vitest 1220 ✓ · duman 45/45 ✓ · tsc temiz · örtüşme 2,20 → 0,00 sn ·
-                  ekrandaki kutu 2 → 1 · pan sapması −1,30 → 0,00 sn · bant taşması 2,0 → 0,0 px
+SORU            : İlk salonun SOL DUVARINDAKİ servis tezgâhı ile bulaşık — ÇİZİLEN gövde ile
+                  ÇARPIŞMA kutusu aynı yerde mi, hat bitişik mi okunuyor, tezgâhın seviyesi
+                  gözle kaç sinyalden okunuyor?
+ÖLÇÜLECEK KOLLAR: T  taban (bugünkü hâl, iki dönem: sol duvar ve arka bant)
+                  A1 çizim kutuya uyar — gövde ölçüsü dönüşten SONRAKİ eksene göre türer
+                  A2 kutu çizime uyar — collision gövdenin bugün çizildiği yere döndürülür
+                  B1 erken dönemde de birleştir (`onHat` sol duvar döneminde de koşar)
+                  B2 bulaşık tezgâha yanaşır (koordinat değişir → erişim/tempo bedeli ölçülür)
+                  C1 seviye sinyali sayımı (G-38): L0→L6 arası gözle değişen kaç işaret var
+SAYILAR         : (adım 2'den sonra dolar)
+KARAR           : (adım 3 — kullanıcı seçer)
+UYGULAMA        : (adım 4 — yalnız kararın kolu)
+BEKÇİ           : (test dosyası + mutasyon sayısı)
 ```
 
-**Turun kalıcı üç dersi:**
-1. **Bekçisi olmayan karar, karar değil yorumdur.** Bu toast 2026-09-09'da kullanıcı kararıyla
-   kaldırılmıştı; `f4b1a52`de `tsc -b` onu tutan koşulu "ölü dal" dedi (tip o an daralmıştı),
-   dal silindi ve **karar da onunla gitti**. Tip genişleyince toast döndü, HUD yorumu bugüne
-   kadar "çizilmez" dedi. Kural artık olumsuzlama değil **liste** (`CIZILEN_TOAST`): tip yine
-   daralırsa ölü dal olmaz, kısalır. Mutasyon M1 tam olarak o silmedir.
-2. **Ölçüm neyi sayacağını bilir; kare neyi sormadığını gösterir.** Araç kutuları, süreleri ve
-   taşmayı saydı — hepsi doğru. Kullanıcı karede bandın üst kenarındaki gri iç parlamayı gördü;
-   ölçümde öyle bir sütun yoktu. Kare gösterilmeseydi tur "G-42 kapandı" diye kapanırdı.
-3. **Düzeltme uygulanınca bekçinin kendisi kör olabilir.** Araç örtüşmeyi türden sayıyordu
-   (`kind === 'quest'`); HUD kapısı devreye girince sıfır basardı ve sıfır kendini doğrulardı.
-   İki kapı: araç artık HUD'un kendi fonksiyonundan okuyor, ve **kontrol kolu K** tebriği
-   çizilebilir türe çevirip 2,20 sn'yi geri getiriyor — parmak izi eski tabanla birebir.
-
-**Yolda düzeltilen dört araç kusuru:** açılış panı ölçüm penceresine sızıyordu (sahte erken pan) ·
-DOM 12 görevin 7'sini İLK görevin kopyası olarak ölçüyordu · kollar aynı dünyayı ölçmüyordu
-(her ölçüm artık kendi taze sayfasında) · V4'ün ölçecek şeyi yoktu (salon senaryosu eklendi).
+**Kod okumasının bulduğu şüpheli (ÖLÇÜLMEDEN karar değildir):** `onHatGovdeleri` gövde
+ölçüsünü `half[0]`/`half[1]`ten, yani DÜNYA eksenlerinden türetiyor; iki çağıran da (`Stations`
+ve `DishSink`) gövdeyi `place.rot` ile ZATEN dönmüş bir grubun içine çiziyor. `rot = 0` olan
+arka bant döneminde fark yok; sol duvar döneminde (`rot = π/2`) iki eksen yer değiştiriyor.
+Aynı kök hem G-35'i (90° açı) hem G-36'yı (çizilen gövdenin katısı başka yerde) açıklayabilir —
+araç bunu doğrulayacak ya da çürütecek.
 
 ## SIRADAKİ TAM ADIM
 
