@@ -5,6 +5,15 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
+> ## ⛔ BU OTURUM KOD YAZMADAN ÖNCE: KARAR SOR
+> R3'ün ölçümü bitti, **karar alınmadı**. Kullanıcının kendi talimatı (2026-09-17):
+> *"kararı sonraki chatte tekrar sor ve o artifact'ı yine ver oradan seçelim"*.
+> **İlk mesajında karar paketi linkini VER ve seçimi sor:**
+> **https://claude.ai/artifact/HRL1fvnWccYwRSZwpVUUKr**
+> §A/§B/§C → önerim **A4 + B2 + C1** (tek "tamam" yeter) · §D rozet → bir harf (A-H) ·
+> §E kese → bir harf (A-F) ya da "kutusuz kalsın".
+> Seçim gelmeden `HUD.tsx` / `hud.css` / `index.css` dosyalarına **dokunma**.
+
 ## ŞU AN (2026-09-17 — **R3 ÖLÇÜM BİTTİ, KARAR BEKLİYOR** · Faz R 3/4 · 104/111)
 
 ```
@@ -28,7 +37,9 @@ FINAL           : (tam koşu damgası)
 karar bölümü BOŞ. Kod tek satır değişmedi (HUD.tsx / hud.css / index.css'e dokunulmadı);
 bütün kollar sayfaya enjekte edilmiş CSS/DOM olarak ölçüldü.
 
-**SONRAKİ OTURUMUN İLK İŞİ: karar paketi YAYINDA, kullanıcıya TEK karar paketi mesajı ver.**
+**SONRAKİ OTURUMUN İLK İŞİ — kullanıcı bunu AÇIKÇA istedi (2026-09-17):** *"kararı sonraki
+chatte tekrar sor ve o artifact'ı yine ver oradan seçelim"*. Karar paketi YAYINDA; linki
+tekrar ver ve TEK karar paketi mesajıyla seçimi sor.
 https://claude.ai/artifact/HRL1fvnWccYwRSZwpVUUKr
 §A/§B/§C için önerim **A4 + B2 + C1** (tek "tamam" yeter); §D rozet ve §E kese biçim kararı,
 kullanıcı harfle seçer. Seçim geldikten sonra commit #2: yalnız seçilen kol + bekçi + mutasyon.
