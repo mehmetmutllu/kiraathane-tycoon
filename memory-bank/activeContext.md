@@ -28,9 +28,10 @@ FINAL           : (tam koşu damgası)
 karar bölümü BOŞ. Kod tek satır değişmedi (HUD.tsx / hud.css / index.css'e dokunulmadı);
 bütün kollar sayfaya enjekte edilmiş CSS/DOM olarak ölçüldü.
 
-**SONRAKİ OTURUMUN İLK İŞİ:** `docs/r3-karar-paketi.html`i yayınla (`node tools/embed-rapor.mjs
-docs/r3-karar-paketi.html` → `.artifact.html` → Artifact olarak publish), kullanıcıya TEK karar
-paketi mesajı ver. §A/§B/§C için önerim **A4 + B2 + C1**; §D ve §E biçim kararı, harfle seçilecek.
+**SONRAKİ OTURUMUN İLK İŞİ: karar paketi YAYINDA, kullanıcıya TEK karar paketi mesajı ver.**
+https://claude.ai/artifact/HRL1fvnWccYwRSZwpVUUKr
+§A/§B/§C için önerim **A4 + B2 + C1** (tek "tamam" yeter); §D rozet ve §E kese biçim kararı,
+kullanıcı harfle seçer. Seçim geldikten sonra commit #2: yalnız seçilen kol + bekçi + mutasyon.
 
 **Turun kalıcı üç dersi:**
 1. **Bir kolun İLAN ETTİĞİ ölçü, o kolun ölçüsü değildir.** Halka kolu `--kal: 6px` diyordu,
@@ -167,6 +168,7 @@ bakıyor · mutfağın kuşbakışı karesi OYUNDAN çekilemez (tepeden kamera o
 (repro aracı `tools/olcum-panel-donusu.mjs`).
 
 **Önizlemeler**
+**R3 KARAR PAKETİ (HUD · rozet 8 + kese 6 aday):** https://claude.ai/artifact/HRL1fvnWccYwRSZwpVUUKr
 **R2 KARAR PAKETİ (mutfak · kareler + sayılar):** https://claude.ai/artifact/WYbL5mcuqcchywVLy3QrFY
 **R2 kareler:** `ss/r2-taban-{plan,hat,tezgah,bulasik}.png` (ÖNCE) ·
 `ss/r2-son-{plan,hat,tezgah,bulasik}.png` + `ss/r2-son-seviye-L{0,3,6}.png` (SONRA)
