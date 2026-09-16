@@ -1,0 +1,155 @@
+=== H2 ÖLÇÜMÜ — MASA YÜKSELTME SIRASI ===
+Model: D-086 (k1b çok duraklı tur + k2 masa kalem kalem) · kol 6 · profil 2
+Kapı = ekranda canlı nokta kümesi · Politika = oyuncunun o kümeden seçimi.
+
+  T  TABAN · serbest kapı + en ucuz
+       kapı    : serbest (bugünkü kural)
+       oyuncu  : en ucuzu al
+  D  serbest kapı + DERİN oyuncu
+       kapı    : serbest (bugünkü kural)
+       oyuncu  : bir masayı tavana çıkar, sonra ötekine geç
+  P  serbest kapı + EN PAHALI oyuncu
+       kapı    : serbest (bugünkü kural)
+       oyuncu  : hep en pahalı yükseltmeyi al
+  R  serbest kapı + RASTGELE oyuncu
+       kapı    : serbest (bugünkü kural)
+       oyuncu  : canlı noktalardan rastgele birini al
+  A  TEK HEDEF kapısı
+       kapı    : aynı anda TEK masa canlı; tavana varmadan sonraki açılmaz
+       oyuncu  : (kapı tek seçenek bırakır)
+  B  KUŞAK kapısı
+       kapı    : yalnız EN DÜŞÜK seviyedeki masalar canlı; hepsi L olmadan L+1 yok
+       oyuncu  : kuşak içinde en ucuzu al
+
+--------------------------------------------------------------------------------------------------------
+PROFİL: Normal (verim 0.55)
+--------------------------------------------------------------------------------------------------------
+
+--- 1) DİKKAT — ekranda aynı anda canlı masa noktası (ZAMAN ağırlıklı) ---
+  kol     ort   tepe   >1 nokta süre payı   en yoğun TEK ALAN (ort/tepe)
+  T       3.48     12                %54.5     2.23 / 8
+  D       1.70      8                %37.5     1.60 / 8
+  P       1.76      8                %38.0     1.59 / 8
+  R       3.47     12                %54.5     2.23 / 8
+  A       0.54      1                 %0.0     0.54 / 1
+  B       2.95     12                %53.3     2.07 / 8
+
+--- 2) TEMPO — sıra hangi kilometre taşını ne zaman veriyor ---
+  kol    masa L1    ŞERİT DOLDU   lifetime 10k   20 masa TAVANDA   masa alımı
+  T       39.0 dk        8.48 sa        2.13 sa           8.69 sa           80
+  D       39.0 dk        8.00 sa        2.09 sa           8.21 sa           80
+  P       39.0 dk        8.05 sa        2.12 sa           8.26 sa           80
+  R       39.0 dk        8.48 sa        2.13 sa           8.68 sa           80
+  A       39.0 dk        8.00 sa        2.09 sa           8.21 sa           80
+  B       39.0 dk        8.49 sa        2.13 sa           8.70 sa           80
+
+--- 3) BİRİKİM — örnek anlarda lifetime ₺ / toplam koltuk / koltuk-ağırlıklı ort. bahşiş ---
+      (gelirin masa ayağı iki çarpandır: KOLTUK talebi, BAHŞİŞ ₺/servisi büyütür.
+       Hangi kolun hangisini büyüttüğü ayrı basılmazsa "şu sıra kazanıyor" açıklamasız kalır.)
+  kol              1 sa                     3 sa                     6 sa
+  T    3.891 ₺ / 8 klt / 0.50 ₺bhş 14.942 ₺ / 18 klt / 3.56 ₺bhş 48.182 ₺ / 40 klt / 8.00 ₺bhş
+  D    3.891 ₺ / 8 klt / 0.50 ₺bhş 17.536 ₺ / 32 klt / 7.25 ₺bhş 58.097 ₺ / 41 klt / 7.80 ₺bhş
+  P    3.891 ₺ / 8 klt / 0.50 ₺bhş 17.361 ₺ / 32 klt / 7.25 ₺bhş 57.117 ₺ / 41 klt / 7.80 ₺bhş
+  R    3.891 ₺ / 8 klt / 0.50 ₺bhş 14.947 ₺ / 18 klt / 3.56 ₺bhş 48.217 ₺ / 40 klt / 8.00 ₺bhş
+  A    3.891 ₺ / 8 klt / 0.50 ₺bhş 17.536 ₺ / 32 klt / 7.25 ₺bhş 58.097 ₺ / 41 klt / 7.80 ₺bhş
+  B    3.891 ₺ / 8 klt / 0.50 ₺bhş 14.942 ₺ / 18 klt / 3.56 ₺bhş 48.033 ₺ / 40 klt / 8.00 ₺bhş
+
+--- 4) KAPININ BEDELİ + OKUNABİLİRLİK ---
+  kol   ölü para   masa bekleme (en uzun)  20dk aşan   yarım masa (ort)   seviye yayılımı (ort/tepe)   çok-seviyeli küme
+  T         0 sn                3.49 sa          4               2.51     0.96 / 4               1.88 sa
+  D      1.06 sa                3.49 sa          4               0.33     1.57 / 4               2.29 sa
+  P      1.19 sa                3.49 sa          4               0.33     1.58 / 4               2.34 sa
+  R       5.8 dk                3.49 sa          4               2.48     0.98 / 4               1.96 sa
+  A      1.06 sa                3.49 sa          4               0.33     1.57 / 4                  0 sn
+  B       5.2 dk                3.49 sa          4               2.58     0.91 / 4                  0 sn
+
+--- TUZAK ÖLÇÜSÜ (serbest kapıda oyuncunun kendine verebileceği ceza) ---
+  6 saatlik lifetime: en iyi politika 58.097 ₺ · en kötü 48.182 ₺ · fark 9.915 ₺ (%20.6)
+  ortalama serbest politika: 52.903 ₺
+
+--- PARMAK İZLERİ (varyant gerçekten etkili mi) ---
+  TABAN (kancasız)  8eddc0d5
+  T                 8eddc0d5
+  D                 fd6d3dfd
+  P                 9150abc5
+  R                 5c28e81d
+  A                 fd6d3dfd
+  B                 aa27574d
+
+--------------------------------------------------------------------------------------------------------
+PROFİL: İdealize (verim 1)
+--------------------------------------------------------------------------------------------------------
+
+--- 1) DİKKAT — ekranda aynı anda canlı masa noktası (ZAMAN ağırlıklı) ---
+  kol     ort   tepe   >1 nokta süre payı   en yoğun TEK ALAN (ort/tepe)
+  T       1.91     12                %30.0     1.23 / 8
+  D       0.94      8                %20.6     0.88 / 8
+  P       0.97      8                %20.9     0.87 / 8
+  R       1.91     12                %30.0     1.23 / 8
+  A       0.30      1                 %0.0     0.30 / 1
+  B       1.62     12                %29.3     1.14 / 8
+
+--- 2) TEMPO — sıra hangi kilometre taşını ne zaman veriyor ---
+  kol    masa L1    ŞERİT DOLDU   lifetime 10k   20 masa TAVANDA   masa alımı
+  T       21.5 dk        4.66 sa        1.17 sa           4.78 sa           80
+  D       21.5 dk        4.40 sa        1.15 sa           4.52 sa           80
+  P       21.5 dk        4.43 sa        1.17 sa           4.54 sa           80
+  R       21.5 dk        4.66 sa        1.17 sa           4.78 sa           80
+  A       21.5 dk        4.40 sa        1.15 sa           4.52 sa           80
+  B       21.5 dk        4.67 sa        1.17 sa           4.78 sa           80
+
+--- 3) BİRİKİM — örnek anlarda lifetime ₺ / toplam koltuk / koltuk-ağırlıklı ort. bahşiş ---
+      (gelirin masa ayağı iki çarpandır: KOLTUK talebi, BAHŞİŞ ₺/servisi büyütür.
+       Hangi kolun hangisini büyüttüğü ayrı basılmazsa "şu sıra kazanıyor" açıklamasız kalır.)
+  kol              1 sa                     3 sa                     6 sa
+  T    7.914 ₺ / 16 klt / 4.00 ₺bhş 40.503 ₺ / 40 klt / 8.00 ₺bhş 287.399 ₺ / 56 klt / 8.00 ₺bhş
+  D    8.001 ₺ / 18 klt / 5.78 ₺bhş 47.278 ₺ / 40 klt / 8.00 ₺bhş 315.993 ₺ / 56 klt / 8.00 ₺bhş
+  P    7.908 ₺ / 17 klt / 5.18 ₺bhş 46.660 ₺ / 40 klt / 8.00 ₺bhş 313.185 ₺ / 56 klt / 8.00 ₺bhş
+  R    7.911 ₺ / 16 klt / 4.00 ₺bhş 40.522 ₺ / 40 klt / 8.00 ₺bhş 287.491 ₺ / 56 klt / 8.00 ₺bhş
+  A    8.001 ₺ / 18 klt / 5.78 ₺bhş 47.278 ₺ / 40 klt / 8.00 ₺bhş 315.993 ₺ / 56 klt / 8.00 ₺bhş
+  B    7.914 ₺ / 16 klt / 4.00 ₺bhş 40.369 ₺ / 40 klt / 8.00 ₺bhş 286.731 ₺ / 56 klt / 8.00 ₺bhş
+
+--- 4) KAPININ BEDELİ + OKUNABİLİRLİK ---
+  kol   ölü para   masa bekleme (en uzun)  20dk aşan   yarım masa (ort)   seviye yayılımı (ort/tepe)   çok-seviyeli küme
+  T         0 sn                1.92 sa          4               1.38     0.53 / 4               1.03 sa
+  D      35.0 dk                1.92 sa          4               0.18     0.86 / 4               1.26 sa
+  P      39.3 dk                1.92 sa          4               0.18     0.87 / 4               1.29 sa
+  R       4.0 dk                1.92 sa          4               1.36     0.55 / 4               1.13 sa
+  A      35.0 dk                1.92 sa          4               0.18     0.86 / 4                  0 sn
+  B       2.8 dk                1.92 sa          4               1.42     0.50 / 4                  0 sn
+
+--- TUZAK ÖLÇÜSÜ (serbest kapıda oyuncunun kendine verebileceği ceza) ---
+  6 saatlik lifetime: en iyi politika 315.993 ₺ · en kötü 287.399 ₺ · fark 28.594 ₺ (%9.9)
+  ortalama serbest politika: 301.017 ₺
+
+--- PARMAK İZLERİ (varyant gerçekten etkili mi) ---
+  TABAN (kancasız)  c00bee2d
+  T                 c00bee2d
+  D                 2cf111cd
+  P                 ab7f63f5
+  R                 2c637a55
+  A                 2cf111cd
+  B                 29908325
+
+--------------------------------------------------------------------------------------------------------
+5) ÖLÜ BASAMAK KARŞI-DENEYİ — tuzağın kaynağı SIRA mı, KOLTUK MERDİVENİ mi?
+--------------------------------------------------------------------------------------------------------
+  Yürürlükteki dörtlü masa koltuk merdiveni: L0..L4 = 1 · 2 · 2 · 4 · 4
+  L1 ve L2 aynı koltuğu veriyor → L2 kapasite açısından ÖLÜ basamak.
+  Karşı-deney merdiveni:                   L0..L4 = 1 · 2 · 3 · 4 · 4  (yalnız koşu anında)
+  Not: bu kol bir ÖNERİ DEĞİL, bir TEŞHİS. Tuzak merdivenden geliyorsa sıra kapısı
+       semptomu örter, sebebi değil. Uygulanması ayrı bir denge kararıdır.
+
+  merdiven          kol   6 sa lifetime    3 sa koltuk   ŞERİT DOLDU   T↔A farkı
+  1·2·2·4·4 (bugün) T          48.182 ₺            18       8.48 sa       %20.6
+  1·2·2·4·4 (bugün) A          58.097 ₺            32       8.00 sa        %0.0
+  1·2·3·4·4 (deney) T          48.597 ₺            26       8.45 sa       %19.0
+  1·2·3·4·4 (deney) A          57.851 ₺            33       8.01 sa        %0.0
+
+  TUZAK (derin sıranın serbest-ucuz sıraya üstünlüğü, 6 sa lifetime):
+    bugünkü merdivende  %20.6
+    deney merdiveninde  %19.0
+
+--------------------------------------------------------------------------------------------------------
+NOT: bu araç yalnız ÖLÇER. Hiçbir kol koda uygulanmadı; `rules.ts` ve `economy.config.ts`
+bu turda DEĞİŞMEDİ. Kol seçimi karar paketinde kullanıcıya aittir (D-084 varyant kapısı).

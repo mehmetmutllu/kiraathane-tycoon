@@ -93,8 +93,8 @@ lifetime 10.000 ₺                  |  1.47 sa |  2.13 sa |  3.35 sa
   8 masa · L3 · garson 1   yol  15.0 br · talep 1.90 · arz 0.41 · taşıma 0.32 → darboğaz TAŞIMA · gelir 2.25 ₺/sn
   12 masa · L6 · garson 2  yol  20.7 br · talep 5.49 · arz 0.78 · taşıma 0.33 → darboğaz TAŞIMA · gelir 6.68 ₺/sn
   12 masa · L6 · garson 3  yol  20.7 br · talep 5.49 · arz 0.78 · taşıma 0.41 → darboğaz TAŞIMA · gelir 8.22 ₺/sn
-  20 masa · L6 · garson 3  yol  18.3 br · talep 7.69 · arz 0.78 · taşıma 0.52 → darboğaz TAŞIMA · gelir 10.45 ₺/sn
-  20 masa · L6 · garson 3 · lavabo L6 yol  18.3 br · talep 7.69 · arz 0.78 · taşıma 0.52 → darboğaz TAŞIMA · gelir 35.15 ₺/sn
+  20 masa · L6 · garson 3  yol  18.3 br · talep 7.69 · arz 0.78 · taşıma 0.50 → darboğaz TAŞIMA · gelir 10.08 ₺/sn
+  20 masa · L6 · garson 3 · lavabo L6 yol  18.3 br · talep 7.69 · arz 0.78 · taşıma 0.50 → darboğaz TAŞIMA · gelir 33.92 ₺/sn
 
 --- Servis kapasitesi (bilgi) ---
 Garson havuzu (ilk ₺130): hız 1.5→2 br/sn (₺250; panel), tepsi 1+kademe (₺400/1200/2500). Servis merdiveni: ₺20/30/45/800/2400/9000 (L4 tezgâh, L5 tost).

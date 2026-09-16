@@ -321,6 +321,63 @@ function personelTavanSayisi(s: State): number {
   }
   return n;
 }
+/* ── H2: MASA SIRASI KANCASI (varyant katmanı; `rules.ts` / `economy.config.ts` DEĞİŞMEZ) ──
+ * Bugün masa yükseltmelerinin SIRASI serbest: bir alanın kapısı açılınca o alanın bütün
+ * masaları aynı anda ve herhangi bir sırayla yükseltilebiliyor (`tableUpgradeUnlockedIn`
+ * yalnız ALANIN kapısına bakar, masanın kendi seviyesine bakmaz). H2 bunu sorguluyor ve
+ * varyant kapısı gereği kolu koda değil BURAYA yazıyor.
+ *
+ * Kanca AYNI anda iki şeyi tarif eder, çünkü soru ikisini birden soruyor:
+ *   KAPI    — hangi masaların noktası o an CANLI (ekranda çizilen işaret kümesi),
+ *   POLİTİKA— oyuncu o kümenin içinden hangisini seçiyor (en ucuz / derin / rastgele...).
+ * Kanca ikisinin bileşkesini, yani TERCİH SIRASI'nı döndürür; sim listenin başındakini
+ * hedefler ve parası yetene kadar biriktirir (taban davranışın aynısı).
+ *
+ * KANCA KAPALIYKEN (`null`) `enUcuzMasa` eski gövdesiyle çalışır → taban çıktısı BİREBİR
+ * korunur. Ayrıca `T` kolu (serbest kapı + en-ucuz politika) tanım gereği tabanın aynısıdır;
+ * ölçüm aracı iki parmak izinin EŞİT çıktığını damgalar — kancanın saydam olduğunun kanıtı
+ * bir yorum satırı değil, bir sayıdır.
+ */
+export interface SiraDurum {
+  /** Açık masaların o anki seviyeleri (index = GLOBAL masa index). */
+  seviyeler: readonly number[];
+  /** Masa index → alan index. */
+  alanlar: readonly number[];
+  /** Masanın ALAN kapısı açık mı (bugünkü `tableUpgradeUnlockedIn` kuralı). */
+  kapiAcik: readonly boolean[];
+  /** ₺ ile çıkılabilen en yüksek masa seviyesi. */
+  tavan: number;
+  /** Masanın BİR SONRAKİ yükseltmesinin ₺'si (alan çarpanı dahil). */
+  maliyet: (i: number) => number;
+}
+/** Tercih sırası: sim listenin İLK öğesini hedefler. Boş liste = bu turda masa alınmaz. */
+export type MasaSirasi = (d: SiraDurum) => readonly number[];
+let siraFabrika: (() => MasaSirasi) | null = null;
+/** Her PROFİL koşusu taze bir sıra ister (rastgele kol kendi tohumunu koşu başına sıfırlar). */
+export const masaSirasiAyarla = (f: (() => MasaSirasi) | null): void => { siraFabrika = f; };
+let siraSimdiki: MasaSirasi | null = null;
+
+/** Kancanın gördüğü anlık görüntü — `enUcuzMasa` ve gözlemci aynı yerden kurar. */
+function siraDurumu(s: State, w: Dunya): SiraDurum {
+  const n = w.tables.length;
+  const g = gateOf(s);
+  const alanlar: number[] = [];
+  const kapiAcik: boolean[] = [];
+  for (let i = 0; i < n; i++) {
+    const alan = w.tables[i].areaIndex;
+    alanlar.push(alan);
+    const kapi = C.tables.upgradeRequiresByArea[alan] ?? C.tables.upgradeRequiresByArea[0];
+    kapiAcik.push(requiresMet(kapi, g));
+  }
+  return {
+    seviyeler: s.tableLevels.slice(0, n),
+    alanlar,
+    kapiAcik,
+    tavan: tableSoftMax(),
+    maliyet: (i) => tableUpgradeCost(s.tableLevels[i], alanlar[i]),
+  };
+}
+
 let ustaFabrika: (() => UstaKol) | null = null;
 export const ustaAyarla = (f: (() => UstaKol) | null): void => { ustaFabrika = f; };
 let ustaSimdiki: UstaEtki = USTA_ETKISIZ;
@@ -758,6 +815,32 @@ function tableUpgradeUnlocked(s: State): boolean {
  */
 function enUcuzMasa(s: State, w: Dunya): { i: number; cost: number } | null {
   seviyeleriEsitle(s, w);
+  // H2: sıra kancası AÇIKSA hedefi o seçer (kapı × politika bileşkesinin ilk öğesi).
+  // Kapalıyken aşağıdaki eski gövde çalışır → taban çıktısı birebir korunur.
+  if (siraSimdiki) {
+    const sira = siraSimdiki(siraDurumu(s, w));
+    const i = sira.length ? sira[0] : -1;
+    if (i < 0 || i >= w.tables.length) return null;
+    return { i, cost: tableUpgradeCost(s.tableLevels[i], w.tables[i].areaIndex) };
+  }
+  let best: { i: number; cost: number } | null = null;
+  for (let i = 0; i < w.tables.length; i++) {
+    const lv = s.tableLevels[i];
+    if (lv >= tableSoftMax()) continue;
+    const alan = w.tables[i].areaIndex;
+    const kapi = C.tables.upgradeRequiresByArea[alan] ?? C.tables.upgradeRequiresByArea[0];
+    if (!requiresMet(kapi, gateOf(s))) continue;
+    const cost = tableUpgradeCost(lv, alan);
+    if (!best || cost < best.cost) best = { i, cost };
+  }
+  return best;
+}
+
+/** Kapı kancasını YOK SAYAN en ucuz masa — yalnız ALAN kapısına bakar (bugünkü kural).
+ *  Gözlemci "ölü para"yı bununla ölçer: oyuncunun parası bir masaya yetiyor ama SIRA
+ *  kapısı o masayı kapatmışsa aradaki saniyeler serbestliğin bedelidir. */
+function enUcuzMasaKapisiz(s: State, w: Dunya): { i: number; cost: number } | null {
+  seviyeleriEsitle(s, w);
   let best: { i: number; cost: number } | null = null;
   for (let i = 0; i < w.tables.length; i++) {
     const lv = s.tableLevels[i];
@@ -966,6 +1049,77 @@ function trySpend(s: State): void {
   if (masaYukseltmeVar(s, d)) masaYukselt(s, d);
 }
 
+/* ── H2: TİK GÖZLEMCİSİ ────────────────────────────────────────────────────────────────
+ * Sıra ölçümünün iki ekseni de ZAMAN ağırlıklı okunmak zorunda: "kaç adımda kaç işaret"
+ * değil "kaç SANİYE boyunca kaç işaret". `olcum-tek-odak.ts` adım başına sayıyor (ort 7,82)
+ * ve bu sayı yanıltıcı: bir adım 3 saniye de sürebilir 40 dakika da. Gözlemci her tick'te
+ * çağrılır, ölçüm aracı ne sayacağına kendi karar verir — sim burada hüküm vermez.
+ *
+ * `hedefCost` kancanın seçtiği masanın ₺'si, `serbestCost` kancayı YOK SAYAN en ucuz masanın
+ * ₺'si. İkisinin arasındaki fark, sıra kapısının oyuncudan aldığı seçeneğin fiyatıdır. */
+export interface TikGozlem {
+  t: number;
+  wallet: number;
+  lifetime: number;
+  /** O tick'in gelir oranı (₺/sn). */
+  oran: number;
+  /** Açık masaların seviyeleri (kopya — araç saklayabilir). */
+  seviyeler: readonly number[];
+  alanlar: readonly number[];
+  kapiAcik: readonly boolean[];
+  tavan: number;
+  /** Bir sonraki yükseltmenin ₺'si (masa başına; tavandakiler için null). */
+  maliyetler: readonly (number | null)[];
+  /** Kancanın hedeflediği masa ve ₺'si (kanca kapalıysa tabanın en ucuzu). */
+  hedef: number | null;
+  hedefCost: number | null;
+  /** SIRA kapısını yok sayan en ucuz masa (yalnız alan kapısı) — ölü para bununla ölçülür. */
+  serbestCost: number | null;
+  /** Açık masaların toplam koltuğu (talep tavanının masa ayağı). */
+  koltuk: number;
+  /** KOLTUK-ağırlıklı ortalama bahşiş (₺/servis) — gelirin masa seviyesine bakan ayağı.
+   *  Sıra neden tempoyu değiştiriyor sorusunun cevabı bu iki sayının (koltuk × bahşiş)
+   *  hangisinin büyüdüğünde saklı; ikisi ayrı ayrı basılmadan "derin kazanıyor" bir
+   *  gözlem olur, açıklama olmaz. */
+  bahsisOrt: number;
+}
+
+function tikGozlemi(s: State, oran: number): TikGozlem {
+  const w = deriveWorld(s.padsDone);
+  seviyeleriEsitle(s, w);
+  const d = siraDurumu(s, w);
+  const hedef = enUcuzMasa(s, w);
+  const serbest = enUcuzMasaKapisiz(s, w);
+  const n = w.tables.length;
+  const maliyetler: (number | null)[] = [];
+  for (let i = 0; i < n; i++) {
+    maliyetler.push(s.tableLevels[i] >= d.tavan || !d.kapiAcik[i] ? null : d.maliyet(i));
+  }
+  return {
+    t: s.t,
+    wallet: s.wallet,
+    lifetime: s.lifetime,
+    oran,
+    seviyeler: s.tableLevels.slice(0, n),
+    alanlar: d.alanlar,
+    kapiAcik: d.kapiAcik,
+    tavan: d.tavan,
+    maliyetler,
+    hedef: hedef ? hedef.i : null,
+    hedefCost: hedef ? hedef.cost : null,
+    serbestCost: serbest ? serbest.cost : null,
+    koltuk: openSeats(w, s),
+    bahsisOrt: ortBahsis(w, s),
+  };
+}
+
+/** Bir profili koştur ve her tick'te gözlemciyi çağır. Milestone haritası döner.
+ *  `tamPencere` = son milestone'da KESME, MAX_T'ye kadar koş (masa seviyeleri listenin
+ *  ötesinde sürüyor; H2 tam pencereyi ister). Taban koşuları bu bayrağı vermez. */
+export function kosuGozle(eff: number, gozlem: (g: TikGozlem) => void, tamPencere = false): Map<string, number> {
+  return runProfile(eff, false, undefined, undefined, gozlem, tamPencere);
+}
+
 interface Milestone { name: string; hit: (s: State) => boolean }
 /* D1: liste eskiden modül yükleme anında kuruluyordu; oysa AD'ları config'ten sayı okuyor
  * (`zone2` ₺'si, servis tavanı). `DENGE` kolu o sayıları değiştirince ad bayatlıyordu.
@@ -1056,7 +1210,7 @@ function boughtLabel(a: Snap, b: Snap): string | null {
 }
 
 /** Bir profili koştur; milestone → saniye haritası döner. `buys` verilirse alım hattı da dolar. */
-function runProfile(eff: number, log = false, buys?: Buy[], darbogaz?: Record<string, number>): Map<string, number> {
+function runProfile(eff: number, log = false, buys?: Buy[], darbogaz?: Record<string, number>, gozlem?: (g: TikGozlem) => void, tamPencere = false): Map<string, number> {
   const s: State = {
     t: 0, wallet: 0, lifetime: 0,
     stationLevels: Array.from({ length: MAX_SERVICES }, () => 0),
@@ -1073,6 +1227,7 @@ function runProfile(eff: number, log = false, buys?: Buy[], darbogaz?: Record<st
   carpanSimdiki = 1; // kanca kapalı olsa bile sıfırlanır: önceki koşunun çarpanı sızmasın
   itibarSimdiki = ITIBAR_ETKISIZ; // aynı gerekçe (C4 tuzağı ②: kol sızması)
   ustaSimdiki = USTA_ETKISIZ; // aynı gerekçe
+  siraSimdiki = siraFabrika ? siraFabrika() : null; // H2: her koşu taze sıra (rastgele kol tohumu)
   const done = new Map<string, number>();
   while (s.t < MAX_T) {
     const inc = rate(s, eff) * DT;
@@ -1080,6 +1235,7 @@ function runProfile(eff: number, log = false, buys?: Buy[], darbogaz?: Record<st
     s.lifetime += inc;
     s.t += DT;
     if (darbogaz) { const k = bindingArm(s); darbogaz[k] = (darbogaz[k] ?? 0) + DT; }
+    if (gozlem) gozlem(tikGozlemi(s, inc / DT));
     const before = buys ? spendSnap(s) : null;
     trySpend(s);
     if (before) {
@@ -1140,7 +1296,10 @@ function runProfile(eff: number, log = false, buys?: Buy[], darbogaz?: Record<st
         }
       }
     }
-    if (done.size === MS().length) break;
+    // Koşu normalde SON MILESTONE'da kesilir (hız). Gözlemli koşular bunu kapatabilir:
+    // milestone listesi oyunun sonu değil, yalnız ölçülen uğrakların sonudur — masa
+    // seviyeleri listenin çok ötesinde sürüyor ve erken kesme o pencereyi gizliyordu.
+    if (!tamPencere && done.size === MS().length) break;
   }
   // D6: kolun çarpanı koşunun DIŞINA sızmamalı. `carryRateOf` koşu bittikten sonra da çağrılıyor
   // (`modelDebisi` → GERÇEK senaryo sapması); sızarsa r6 satırının sapma kolonu sessizce bozulur.
