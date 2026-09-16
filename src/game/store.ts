@@ -364,6 +364,10 @@ export interface GameState {
   questDoneIndex: number;
   /** Kamera odak isteği (transient): görev barına dokununca / yeni şey açılınca hedefe pan. */
   camFocus: CamFocus | null;
+  /** Kutlama penceresinde BEKLETİLEN odak (transient; G-44): yeni görev kartı gelince salınır.
+   *  Alan açılışının panı bitişin kendi tick'inde isteniyor — 1,30 sn erken. Silinmiyor,
+   *  sıraya alınıyor (`tick.ts` geçiş kapısı · docs/serit-raporu-g1.md §Bulgular 4). */
+  camBekleyen: { pos: [number, number, number]; prio: number } | null;
   /** Genel-bakış zoom'u (transient): HUD kamera butonu AÇIKKEN kamera uzaklaşır (salonu görmek için). */
   camZoomOut: boolean;
   offlineEarned: number;
@@ -488,6 +492,7 @@ export const useGame = create<GameState>((set, get) => ({
   trayTipSeen: false,
   quest: null,
   camFocus: null,
+  camBekleyen: null,
   camZoomOut: false,
   offlineEarned: 0,
   spawnTimer: 1,
@@ -670,6 +675,7 @@ export const useGame = create<GameState>((set, get) => ({
               return p0 ? { pos: [p0[0], p0[1], p0[2]] as [number, number, number], ttl: 3 } : null;
             })()
           : null,
+      camBekleyen: null,
       spawnTimer: 1,
       spawnArea: 0,
       saveTimer: SAVE_INTERVAL,
@@ -744,6 +750,7 @@ export const useGame = create<GameState>((set, get) => ({
         xp: c.xp,
         quest: c.quest,
         camFocus: c.camFocus,
+        camBekleyen: c.camBekleyen,
         player: c.player,
         waiters: c.waiters,
         dishwasher: c.dishwasher,

@@ -186,6 +186,10 @@ export interface TickCtx {
   questBase: number;
   camFocus: CamFocus | null;
   camPrio: number;
+  /** Bu tick'te istenen odak (kim istedi) — geçiş kapısı buna bakar. */
+  camIstek: { pos: [number, number, number]; prio: number } | null;
+  /** Kutlama penceresinde bekletilen odak; yeni görev kartı gelince salınır. */
+  camBekleyen: { pos: [number, number, number]; prio: number } | null;
   readonly requestFocus: (pos: RVec3, prio: number) => void;
   nextId: number;
   spawnTimer: number;
@@ -271,6 +275,12 @@ export function createTickCtx(s: GameState, dt: number): TickCtx {
     // Kamera odak tetikleri aynı karede üst üste binebilir (reveal + görev geçişi + alan açılışı) —
     // 2026-06-11 fix: kare-içi ÖNCELİK (reveal 1 < görev 2 < alan 3); düşük öncelik yükseği EZEMEZ.
     camPrio: 0,
+    // GEÇİŞ KAPISI (G-44) — bu tick'te İSTENEN odak, kimin istediğiyle birlikte. questSystem
+    // tick'in SONUNDA koştuğu için, odak isteyen sistemler (reveal prio 1, alan açılışı prio 3)
+    // istediklerinde görevin bitip bitmediği henüz bilinmiyor; istek burada not edilir, kutlama
+    // penceresine düşüp düşmediğine questSystem karar verir.
+    camIstek: null,
+    camBekleyen: s.camBekleyen,
     requestFocus: (pos: RVec3, prio: number) => {
       // H1/K2 KAPISI: hedef ZATEN ekrandaysa pan ATILMAZ. Ölçümde erken zincirdeki 6 panın
       // 6'sında hedef görünürdü — pan bilgi değil yalnız hareket taşıyordu ve oyuncu bu sırada
@@ -283,6 +293,7 @@ export function createTickCtx(s: GameState, dt: number): TickCtx {
       if (prio >= c.camPrio) {
         c.camFocus = { pos: [pos[0], pos[1], pos[2]], ttl: CAM_FOCUS_TTL };
         c.camPrio = prio;
+        c.camIstek = { pos: [pos[0], pos[1], pos[2]], prio };
       }
     },
     nextId: s.nextId,
@@ -1489,6 +1500,28 @@ function questSystem(c: TickCtx): void {
       }
     }
   }
+  // ───── GEÇİŞ KAPISI (G-44, kullanıcı 2026-09-16): *"başarılı işareti gelmeden ve yeni görev
+  // yazılmadan o gelecek yeni göreve zoom atılmasın"*. Ölçüm bunu doğruladı ve KAYNAĞINI daralttı
+  // (docs/serit-raporu-g1.md §Bulgular 4): görev geçişinin KENDİ panı zaten tam yeni kartla
+  // birlikte atılıyor (sapma 0,00); erken olan tek şey ALAN AÇILIŞININ panı — `unlockArea` pad'i
+  // açıldığı tick'te yeni salonun merkezine prio 3 odak kuruyor ve bu, kartın gelmesinden
+  // 1,30 sn ÖNCE oluyor.
+  //
+  // Pan SİLİNMİYOR, ERTELENİYOR: "orada yeni bir dünya var" hissi kullanıcının kendi isteğiydi
+  // (2026-06-09), yalnız sırası yanlıştı. Bu tick'te gelen istek kutlama penceresine düştüyse
+  // beklemeye alınır, bu tick'in odağı İSTEKTEN ÖNCEKİ hâline döner (ekranda zaten süren bir pan
+  // varsa yarıda kesilmesin), ve pencere bitince `requestFocus`tan yeniden geçirilir — öncelik
+  // karşılaştırması ve "hedef zaten ekranda" kapısı (H1) böylece bir kez daha uygulanır.
+  if (questPhase !== 'active' && c.camIstek && c.camIstek.prio !== 2) {
+    c.camBekleyen = c.camIstek;
+    c.camFocus = s.camFocus;
+    c.camPrio = 0;
+  } else if (questPhase === 'active' && c.camBekleyen) {
+    const bekleyen = c.camBekleyen;
+    c.camBekleyen = null;
+    requestFocus(bekleyen.pos, bekleyen.prio);
+  }
+
   // Kamera odağı: joystick/klavye girdisi iptal eder (oyuncu kontrolü üstün); süre dolunca biter.
   // Deadzone 0.25 (2026-06-11 fix: 0.1 joystick titremesinde odağı yanlışlıkla bozuyordu).
   if (c.camFocus) {

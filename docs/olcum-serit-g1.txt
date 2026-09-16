@@ -5,36 +5,36 @@ Senaryolar: q_pickup, q_coin, q_table2, q_serve5, q_station1, q_table3, q_zone2
 
 | kol | ne | yeniKart | toast | ORTÜŞME | ses | panSapma | panKaynak |
 |---|---|---|---|---|---|---|---|
-| **T** | taban (bugünkü kod) | 1,33 | 3,53 | **2,20** | 2 | -0,65 | — (pan atilmadi) · gorev gecisi (prio 2) · reveal/alan — GECIS SIRASINDA (prio 1/3) |
-| **V1** | tebrik toast’ı çizilmez | 1,33 | 0,00 | **0,00** | 1 | -0,65 | — (pan atilmadi) · gorev gecisi (prio 2) · reveal/alan — GECIS SIRASINDA (prio 1/3) |
-| **V2** | toast ttl 3,5 → 1,3 sn | 1,33 | 1,30 | **0,00** | 2 | -0,65 | — (pan atilmadi) · gorev gecisi (prio 2) · reveal/alan — GECIS SIRASINDA (prio 1/3) |
-| **V3** | gap 0,8 → 3,0 sn (yeni kart geç) | 3,58 | 3,53 | **0,00** | 2 | -1,77 | — (pan atilmadi) · gorev gecisi (prio 2) · reveal/alan — GECIS SIRASINDA (prio 1/3) |
-| **V4** | geçişte kamera panı kapısı | 1,33 | 3,53 | **2,20** | 2 | 0,00 | — (pan atilmadi) · gorev gecisi (prio 2) |
+| **T** | taban (bugünkü kod) | 1,33 | 0,00 | **0,00** | 1 | 0,00 | — (pan atilmadi) · gorev gecisi (prio 2) |
+| **K** | KONTROL: tebrik çizilebilir türe çevrilir | 1,33 | 3,53 | **2,20** | 2 | 0,00 | — (pan atilmadi) · gorev gecisi (prio 2) |
+| **V1** | tebrik toast’ı çizilmez | 1,33 | 0,00 | **0,00** | 1 | 0,00 | — (pan atilmadi) · gorev gecisi (prio 2) |
+| **V2** | toast ttl 3,5 → 1,3 sn | 1,33 | 0,00 | **0,00** | 1 | 0,00 | — (pan atilmadi) · gorev gecisi (prio 2) |
+| **V3** | gap 0,8 → 3,0 sn (yeni kart geç) | 3,58 | 0,00 | **0,00** | 1 | 0,00 | — (pan atilmadi) · gorev gecisi (prio 2) |
+| **V4** | geçişte kamera panı kapısı | 1,33 | 0,00 | **0,00** | 1 | 0,00 | — (pan atilmadi) · gorev gecisi (prio 2) |
 
 §A2 — SENARYO KIRILIMI (taban T)
 
 | senaryo | yeniKart | toast | ORTÜŞME | ses | panSapma | panKaynak |
 |---|---|---|---|---|---|---|
-| q_pickup | 1,35 | 3,55 | **2,20** | 2 | — | — (pan atilmadi) |
-| q_coin | 1,35 | 3,55 | **2,20** | 2 | 0,00 | gorev gecisi (prio 2) |
-| q_table2 | 1,30 | 3,50 | **2,20** | 2 | — | — (pan atilmadi) |
-| q_serve5 | 1,35 | 3,55 | **2,20** | 2 | — | — (pan atilmadi) |
-| q_station1 | 1,35 | 3,55 | **2,20** | 2 | — | — (pan atilmadi) |
-| q_table3 | 1,30 | 3,50 | **2,20** | 2 | — | — (pan atilmadi) |
-| q_zone2 | 1,30 | 3,50 | **2,20** | 2 | -1,30 | reveal/alan — GECIS SIRASINDA (prio 1/3) |
+| q_pickup | 1,35 | 0,00 | **0,00** | 1 | — | — (pan atilmadi) |
+| q_coin | 1,35 | 0,00 | **0,00** | 1 | 0,00 | gorev gecisi (prio 2) |
+| q_table2 | 1,30 | 0,00 | **0,00** | 1 | — | — (pan atilmadi) |
+| q_serve5 | 1,35 | 0,00 | **0,00** | 1 | — | — (pan atilmadi) |
+| q_station1 | 1,35 | 0,00 | **0,00** | 1 | — | — (pan atilmadi) |
+| q_table3 | 1,30 | 0,00 | **0,00** | 1 | — | — (pan atilmadi) |
+| q_zone2 | 1,30 | 0,00 | **0,00** | 1 | 0,00 | gorev gecisi (prio 2) |
 
 §B — BANT DOM'U (50 görev tarandı)
 
 | ekran | oyun fontu | taşan kicker | KISALAN başlık | bant iç yükseklik px | gövdenin istediği px | AÇIK px | gövde ÜST/ALT taşması px |
 |---|---|---|---|---|---|---|---|
-| telefon portre 390×844 | yüklü ✓ (Baloo 2/Baloo 2) | 0/50 | 1/50 | 52,0 | 54,0 | -2,0 | 0,9 / 1,0 |
-| masaüstü 1280×800 | yüklü ✓ (Baloo 2/Baloo 2) | 0/50 | 0/50 | 52,0 | 54,0 | -2,0 | 0,9 / 1,0 |
+| telefon portre 390×844 | yüklü ✓ (Baloo 2/Baloo 2) | 0/50 | 0/50 | 53,9 | 54,0 | -0,1 | 0,0 / 0,0 |
+| masaüstü 1280×800 | yüklü ✓ (Baloo 2/Baloo 2) | 0/50 | 0/50 | 53,9 | 54,0 | -0,1 | 0,0 / 0,0 |
 
 §B2 — EN ÇOK TAŞAN ON GÖREV (telefon portre)
 
 | görev | kicker | kicker taşma px | satır | başlıkta kısalan px | başlık |
 |---|---|---|---|---|---|
-| q_z1allL4 | SALON 1 BAKIMI | 0 | 1 | 32 | Salonun 4 masasını Seviye 4 yap |
 | q_pickup | İLK ÇAY | 0 | 1 | 0 | Ocaktan çay al |
 | q_serve1 | İLK SERVİS | 0 | 1 | 0 | Çayı müşteriye götür |
 | q_coin | İLK KAZANÇ | 0 | 1 | 0 | Yere düşen parayı topla |
@@ -44,6 +44,7 @@ Senaryolar: q_pickup, q_coin, q_table2, q_serve5, q_station1, q_table3, q_zone2
 | q_station1 | OCAK | 0 | 1 | 0 | Çay ocağını yükselt |
 | q_wash | BULAŞIK | 0 | 1 | 0 | 3 kirli bardak yıka |
 | q_table3 | ÜÇÜNCÜ MASA | 0 | 1 | 0 | 3. Masayı aç |
+| q_charTray2 | TEPSİ | 0 | 1 | 0 | Tepsini 4'e çıkar |
 
 Kareler: docs/gorsel/ss/g1-serit-normal.png · docs/gorsel/ss/g1-serit-bitti.png
 
@@ -51,10 +52,12 @@ Kareler: docs/gorsel/ss/g1-serit-normal.png · docs/gorsel/ss/g1-serit-bitti.png
 
 | ekran | kutu sayısı | bant [x,y,w,h] | toast [x,y,w,h] | aradaki boşluk px |
 |---|---|---|---|---|
-| telefon portre | 2 | 10, 714, 370, 58 | 82, 659, 226, 47 | 8 |
-| masaüstü | 2 | 10, 666, 1260, 58 | 523, 606, 234, 49 | 11 |
+| telefon portre | 1 | 10, 707, 370, 66 | — | — |
+| masaüstü | 1 | 10, 658, 1260, 66 | — | — |
 
-Parmak izleri (senaryo başına, tam dizi): T=431eba5f/189a8bbb/5c9d3a43/431eba5f/431eba5f/5c9d3a43/83d82637 · V1=5d288b1b/a40b817f/55c1decb/5d288b1b/5d288b1b/55c1decb/6a326c3f · V2=9b3a2613/cc9a8a57/5ef9a253/9b3a2613/9b3a2613/5ef9a253/69499747 · V3=ebbb5b33/80553c3f/7203bf07/ebbb5b33/ebbb5b33/7203bf07/64eb496b · V4=431eba5f/189a8bbb/5c9d3a43/431eba5f/431eba5f/5c9d3a43/1ca7750f
+Kolun etkisi KODA GİRDİ (tabanla aynı çıkması beklenir): V1 · V2 · V4
+
+Parmak izleri (senaryo başına, tam dizi): T=5d288b1b/a40b817f/55c1decb/5d288b1b/5d288b1b/55c1decb/2f62f57 · K=431eba5f/189a8bbb/5c9d3a43/431eba5f/431eba5f/5c9d3a43/1ca7750f · V1=5d288b1b/a40b817f/55c1decb/5d288b1b/5d288b1b/55c1decb/2f62f57 · V2=5d288b1b/a40b817f/55c1decb/5d288b1b/5d288b1b/55c1decb/2f62f57 · V3=654a5047/6417e55b/d7f6179f/654a5047/654a5047/d7f6179f/304b0a8b · V4=5d288b1b/a40b817f/55c1decb/5d288b1b/5d288b1b/55c1decb/2f62f57
 Konsol hatası: 0
 Yüklü yazı tipi yüzleri: Baloo 2 600 · Baloo 2 800 · Lilita One 400
 

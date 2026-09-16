@@ -3,7 +3,7 @@ import { useGame, goalMetricsOf, tableThemeUnlocked, tableSoftMaxLevel } from '.
 import { claimableGoals, collectionBonus, goalViews, type GoalView } from '../../game/goals';
 import { dailyViews, claimableDailyCount, type DailyQuestView } from '../../game/dailyQuests';
 import { dailyCountersOf } from '../../game/store';
-import { masterCost } from '../../game/rules';
+import { masterCost, toastCizilir } from '../../game/rules';
 import { perf } from '../../game/perf';
 import { screenPointer } from '../../game/screenPointer';
 import { fmt } from '../../game/decimal';
@@ -234,12 +234,12 @@ export function HUD() {
       )}
 
       {/* ───────── BİLDİRİM (toast) ─────────
-          G-04 (2026-09-09 kullanıcı): görev tamamlanma toast'ı ARTIK ÇİZİLMEZ. Aynı anda iki yerde
-          konuşuyordu — toast "şu görev bitti" derken alt bant zaten tamamlanma hâlini gösteriyordu
-          ve oyuncu ikisini yeni görev sanıyordu. Tek ses: bant. `tick.ts`e DOKUNULMADI (sunum
-          katmanı kararı, E3/D-096 deseni) — olay hâlâ üretiliyor, yalnız burada çizilmiyor;
-          devHooks anlık görüntüsü ve ona bağlı testler değişmedi. */}
-      {notice && (
+          Hangi türün çizileceği burada DEĞİL, `rules.ts`teki `CIZILEN_TOAST` listesinde durur —
+          görev tamamlanma toast'ının çizilmemesi bir kullanıcı kararı (G-04) ve bir kez zaten
+          bir tip daralmasıyla sessizce geri alındı (f4b1a52). Olay hâlâ üretiliyor, `tick.ts`e
+          DOKUNULMADI (sunum katmanı kararı, E3/D-096 deseni): devHooks anlık görüntüsü ve ona
+          bağlı testler değişmedi. Ölçüm: docs/serit-raporu-g1.md §Bulgular 1. */}
+      {toastCizilir(notice) && (
         <div className="notice" data-testid="notice" key={notice.text}>
           <span className="notice-badge">
             {notice.kind === 'level' ? <StarBadge size={28} /> : <BangBadge size={28} />}

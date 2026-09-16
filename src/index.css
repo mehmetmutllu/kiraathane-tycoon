@@ -56,6 +56,12 @@
   --k1: 0 2px 0 var(--ot);
   --k2: inset 0 2px 0 rgba(255, 255, 255, 0.45), 0 3px 0 var(--ot);
   --k3: inset 0 3px 0 rgba(255, 255, 255, 0.5), 0 5px 0 var(--ot), 0 10px 18px rgba(0, 0, 0, 0.3);
+  /* `--k3`ün ÜST İÇ PARLAMASI OLMAYAN hâli. Kullanıcı 2026-09-16, görev bandı için:
+     *"çerçeve yeşil ya... üstte de gri bir gölge efekti var, onunla birlikte kötü duruyo.
+     aslında iyi ama üstteki griyi kaldır"*. Parlama koyu mor kart üstünde gri bir şerit gibi
+     okunuyor ve yeşil tamamlanma kenarıyla çarpışıyor. Token'ın kendisi DEĞİŞMEDİ — parlama
+     diğer kartların kabartma dilinin parçası; yalnız banda bu düz hâli veriliyor. */
+  --k3duz: 0 5px 0 var(--ot), 0 10px 18px rgba(0, 0, 0, 0.3);
 
   --sat: env(safe-area-inset-top, 0px);
   --sal: env(safe-area-inset-left, 0px);

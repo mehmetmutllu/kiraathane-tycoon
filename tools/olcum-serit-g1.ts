@@ -68,9 +68,14 @@ const ADIM = 0.05;
 /** Bitiş anından sonra kaç sn izlenir (toast 3,5 sn + pay). */
 const IZLEME = 6.0;
 
-type KolAd = 'T' | 'V1' | 'V2' | 'V3' | 'V4';
+type KolAd = 'T' | 'K' | 'V1' | 'V2' | 'V3' | 'V4';
 const KOLLAR: readonly { ad: KolAd; baslik: string }[] = [
   { ad: 'T', baslik: 'taban (bugünkü kod)' },
+  // KONTROL KOLU — kolun kendisi bir öneri değil, ARACIN GÖZÜ. Karar uygulandıktan sonra taban
+  // örtüşmesi 0,00 çıkıyor; ama "0,00" iki ayrı şeyin cevabı olabilir: örtüşme gerçekten yok, ya
+  // da araç artık hiçbir tebriği göremiyor. K, biten görevin tebriğini ÇİZİLEN bir türe çevirir;
+  // burada örtüşme 0 çıkarsa tabanın 0'ı da hiçbir şey kanıtlamaz (F2'nin "ucuz ≠ ölçülemedi" dersi).
+  { ad: 'K', baslik: 'KONTROL: tebrik çizilebilir türe çevrilir' },
   { ad: 'V1', baslik: 'tebrik toast’ı çizilmez' },
   { ad: 'V2', baslik: 'toast ttl 3,5 → 1,3 sn' },
   { ad: 'V3', baslik: 'gap 0,8 → 3,0 sn (yeni kart geç)' },
@@ -198,6 +203,9 @@ const CIZELGE_KODU = `(async ({ kol, sen, ADIM, IZLEME }) => {
     if (G().questIndex > basIndex) bitisT = t;
   }
   if (bitisT === null) return { hata: 'gorev bitmedi (' + sen.id + ')' };
+  // Biten görevin başlığı: tebrik toast'ı bunu yazar. Tür yerine METİN+ÇİZİLİRLİK üzerinden
+  // sayılır, yoksa K kolu türü değiştirdiği an sayaç onu görmez ve kontrol kendini kandırır.
+  const bitenBaslik = (G().quest || {}).title || '';
 
   // --- Bitişten sonra adım adım izle. Kol müdahalesi HER tick'te, örnekten ÖNCE uygulanır:
   //     kaydedilen şey oyuncunun o karede GÖRDÜĞÜ hâldir.
@@ -216,6 +224,9 @@ const CIZELGE_KODU = `(async ({ kol, sen, ADIM, IZLEME }) => {
   const n = Math.round(IZLEME / ADIM);
   for (let i = 0; i <= n; i++) {
     const se = G().serit;
+    if (kol === 'K' && se.noticeKind === 'quest') {
+      S({ notice: Object.assign({}, se.noticeRaw, { kind: 'level' }) });
+    }
     if (kol === 'V1' && se.noticeKind === 'quest') {
       S({ notice: null, noticeQueue: se.noticeQueueRaw.filter((x) => x.kind !== 'quest') });
     }
@@ -231,7 +242,8 @@ const CIZELGE_KODU = `(async ({ kol, sen, ADIM, IZLEME }) => {
     const g2 = G();
     const s2 = g2.serit;
     const yeniKart = s2.questPhase === 'active' && !s2.questDone;
-    const toastVar = s2.noticeKind === 'quest';
+    // EKRANDA olan sayılır, DURUMDA olan değil: noticeCizilir HUD'un kapısının kendisidir.
+    const toastVar = !!s2.noticeCizilir && g2.notice === bitenBaslik;
     const camVar = g2.camFocus != null;
     if (camVar && !oncekiCam && panKaynak === '—') {
       panKaynak = s2.questPhase === 'active' ? 'gorev gecisi (prio 2)' : 'reveal/alan — GECIS SIRASINDA (prio 1/3)';
@@ -630,12 +642,38 @@ for (const d of domlar) {
 const taban = kolun('T');
 damga('bitis gercek (T)', taban.length === SENARYOLAR.length, `${taban.length}/${SENARYOLAR.length} senaryo bitti`);
 const tabanOrtusme = taban.length ? ort(taban.map((x) => x.ortusmeSn)) : 0;
-damga('olcut kor degil (ortusme)', tabanOrtusme > 0, `taban ortüşmesi ${say(tabanOrtusme)} sn — ölçüt hiçbir şey ölçmüyor olabilir`);
+const tabanSes = taban.length ? Math.max(...taban.map((x) => x.sesSayisi)) : 0;
+const tabanPan = Math.min(0, ...taban.map((x) => x.panSapma).filter((x): x is number => x != null));
+
+// ÖLÇÜT KÖR MÜ — taban 0,00 verdiğinde bu soruyu tabanın kendisi cevaplayamaz. Kontrol kolu
+// (K) tebriği çizilebilir türe çevirir: orada da 0 çıkıyorsa araç tebrik göremiyor demektir ve
+// tabandaki 0 bir bulgu değil, bir körlüktür.
+const kontrol = kolun('K');
+const kontrolOrtusme = kontrol.length ? ort(kontrol.map((x) => x.ortusmeSn)) : 0;
+damga('olcut kor degil (kontrol)', kontrolOrtusme > 0, `kontrol kolunda da örtüşme ${say(kontrolOrtusme)} sn — araç tebriği hiç göremiyor`);
+
 const ilkT = olcumler.find((o) => o.kol === 'T' && o.senaryo === SENARYOLAR[0].id);
 damga('tekrarlanabilir', !!ilkT && ilkT.iz === tekrar.iz, `${ilkT?.iz} ≠ ${tekrar.iz} — tohum tutmuyor, kol karşılaştırması anlamsız`);
+
+// VARYANT ETKİLİ Mİ — ama bir kolun etkisi KODA GİRDİYSE tabanla aynı çıkması kusur değil,
+// sonucun ta kendisidir. Ayrım tahminle değil TABANIN SAYISIYLA yapılır: taban zaten o kolun
+// hedeflediği hâldeyse kol "uygulandı" diye basılır, damga aranmaz.
 const izT = izi('T');
+const uygulandi: Record<string, boolean> = {
+  K: false,
+  V1: tabanOrtusme === 0 && tabanSes <= 1,
+  V2: tabanOrtusme === 0,
+  V3: false, // ritmi her hâlükârda değiştirir; tabanla aynı çıkarsa gerçekten etkisizdir
+  V4: tabanPan >= 0,
+};
+const uygulanmis: string[] = [];
 for (const k of KOLLAR.filter((x) => x.ad !== 'T')) {
+  if (uygulandi[k.ad]) { uygulanmis.push(k.ad); continue; }
   damga(`varyant etkili (${k.ad})`, izi(k.ad) !== izT, `parmak izi T ile aynı (${izi(k.ad)})`);
+}
+if (uygulanmis.length) {
+  console.log('');
+  console.log(`Kolun etkisi KODA GİRDİ (tabanla aynı çıkması beklenir): ${uygulanmis.join(' · ')}`);
 }
 const atlanan = domlar[0].s.satirlar.filter((x) => (x as unknown as { yok?: boolean }).yok);
 damga('dom okundu', portre.length > 0, 'bant DOM\'da bulunamadı');

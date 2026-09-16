@@ -348,6 +348,27 @@ export interface GameNotice {
 }
 
 /**
+ * EKRANA ÇİZİLEN bildirim türleri — ve bu liste bir üslup tercihi değil, bir KARARIN gövdesi.
+ *
+ * Kullanıcı 2026-09-09'da görev tamamlanma toast'ını kaldırttı (G-04): toast "şu görev bitti"
+ * derken alt bant zaten tamamlanma hâlini gösteriyordu, oyuncu ikisini iki ayrı görev sanıyordu.
+ * Karar HUD'da tek bir `notice.kind !== 'quest'` koşulu olarak duruyordu ve `f4b1a52`de SİLİNDİ:
+ * o an `kind` tipi `'level' | 'reveal'`e daralmıştı, `tsc -b` koşulu "ölü dal" diye işaretledi,
+ * dal silindi — KARAR da onunla gitti. `'quest'` sonradan tipe geri geldi, toast geri geldi,
+ * kimse fark etmedi; kullanıcı 2026-09-16'da aynı şeyi ikinci kez bildirdi (G-41/G-43) ve
+ * ölçüm bunun 2,20 sn'lik bir ÖRTÜŞME olduğunu gösterdi (`docs/serit-raporu-g1.md`).
+ *
+ * Bu yüzden kural artık bir OLUMSUZLAMA değil, bir LİSTE: "şunlar çizilir". Tip yeniden
+ * daralırsa bu liste ölü dal olmaz, sadece kısalır — yani derleyici kararı bir daha silemez.
+ * Bekçisi: `tests/gorev-seridi-g1.test.ts`.
+ */
+export const CIZILEN_TOAST: readonly GameNotice['kind'][] = ['level', 'reveal'];
+
+/** Bu bildirim ekrana çizilir mi? HUD tek karar noktası olarak bunu çağırır. */
+export const toastCizilir = (n: GameNotice | null | undefined): n is GameNotice =>
+  n != null && CIZILEN_TOAST.includes(n.kind);
+
+/**
  * Şu an açık olan "yeni-özellik" reveal anahtarları (D-019 §4) — v21'den beri ALAN/SERVİS BAŞINA
  * (kullanıcı 2026-06-12: 2. alanın yükseltmeleri de düzenli açılsın + bildirilsin). Bir anahtar
  * revealSeen'de YOKKEN belirirse toast + kamera panı tetiklenir. revealSeen baseline init'te

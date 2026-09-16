@@ -807,7 +807,7 @@ export const economyConfig = {
     { id: 'q_tost5', kicker: 'TOST', title: '5 tost servis et', target: { type: 'serveTost', count: 5 }, reward: 300 },
     { id: 'q_z3table4', kicker: 'SALON 3', title: 'Salon 3: 4. Masayı aç', target: { type: 'pad', id: 'z3table4' }, area: 2, reward: 350 },
     { id: 'q_waiterTray2', kicker: 'GARSON TEPSİSİ', title: "Garsonun tepsisini 3'e çıkar", target: { type: 'waiterTray', tier: 2 }, reward: 300 },
-    { id: 'q_z1allL4', kicker: 'SALON 1 BAKIMI', title: 'Salonun 4 masasını Seviye 4 yap', target: { type: 'tablesAtLevel', level: 4, count: 4, area: 0 }, reward: 400 },
+    { id: 'q_z1allL4', kicker: 'SALON 1 BAKIMI', title: '4 masayı Seviye 4 yap', target: { type: 'tablesAtLevel', level: 4, count: 4, area: 0 }, reward: 400 },
     // --- BÖLÜM 3b · ŞERİDİ DOLDUR (B5a): banketlerin kalan sekiz birimi ---
     // ÖNCE TEZGÂHIN SON BASAMAĞI. Bu görev B5a'da eklendi ve sırası tesadüf değil: şeridin masaları
     // ARZ tavana dayalıyken hiçbir şey hızlandırmaz (B2'nin dersi — kat tek noktadan beslenir), o

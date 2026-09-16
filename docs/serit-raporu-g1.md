@@ -141,7 +141,55 @@ sorusuna **evet** dedi, Baloo 2 için **hayır**. Araç artık soru sormuyor, **
 
 ---
 
-## §Karar
+## §Karar — D-126 (kullanıcı, 2026-09-16)
 
-*(Bu bölüm bilerek BOŞTUR — D-084 §3.2. Karar paketi kullanıcıya sunulacak, seçilen kol bu
-bölüme ve `decisions.md`'ye yazılacak, kod ondan sonra yazılacak.)*
+Karar paketi sunuldu (https://claude.ai/artifact/F2jowE134dyDnzEQPBsAgy). Kullanıcı kareye
+bakarak seçti ve iki kalem EKLEDİ:
+
+| kol | seçim | kullanıcının sözü |
+|---|---|---|
+| **V1** — tebrik toast'ı çizilmez | **SEÇİLDİ** | *"tamamlanınca hâlâ üstte tamamlandı toastı gibi bir şey geliyor, tek yerde olması gerekiyor dedim ya"* |
+| V2 / V3 | elendi | ikisi de kutuyu 2'de bırakıyor, yalnız süresini oynatıyor |
+| **V4** — geçişte kamera kapısı | **SEÇİLDİ** | pakette önerildi, itiraz gelmedi; ölçülen −1,30 sn açıkta kalırdı |
+| **C1** — bant yüksekliği içeriğe uyar | **SEÇİLDİ** | *"işler açılıyor o kadar üste yapışık olmasın"* |
+| **YENİ — bandın üstündeki gri kalksın** | **eklendi** | *"çerçeve yeşil ya... üstte de gri bir gölge efekti var, onunla birlikte kötü duruyo. aslında iyi ama üstteki griyi kaldır"* |
+
+Eklenen kalem ölçümde **yoktu**: araç kutuları, süreleri ve taşmayı sayıyordu; bandın üst
+kenarındaki 3 px'lik iç parlamayı (`--k3`ün `inset` katmanı) kimse sormamıştı. Kare gösterilmeseydi
+bu tur "G-42 kapandı" diye kapanır, kullanıcı aynı bandı üçüncü kez bildirirdi.
+**Ders: ölçüm neyi sayacağını bilir, kare neyi sormadığını gösterir.**
+
+## §Sonuç (uygulama sonrası TAM koşu — `docs/olcum-serit-g1.txt`)
+
+| ölçüt | önce | sonra |
+|---|---|---|
+| tebrik ↔ yeni kart örtüşmesi | **2,20 sn** (7/7 senaryo) | **0,00 sn** (7/7) |
+| "bitti" anında ekrandaki kutu | **2** (8 px arayla) | **1** |
+| salon açılışında pan sapması | **−1,30 sn** (erken) | **0,00 sn** (kartla birlikte) |
+| bandın gövde taşması (üst/alt) | 0,9 / 1,0 px | **0,0 / 0,0 px** |
+| kırpılan başlık | 1/50 (32 px) | **0/50** |
+| bant yüksekliği | 58 px sabit | 66 px (içerikten türer, taban 58) |
+
+**Pan silinmedi, ERTELENDİ.** Salon açılışının "orada yeni bir dünya var" panı kullanıcının kendi
+isteğiydi (2026-06-09); yanlış olan varlığı değil sırasıydı. Artık kutlama penceresinde beklemeye
+alınıyor ve yeni kart gelince `requestFocus`tan yeniden geçiyor — yani öncelik karşılaştırması ve
+H1'in "hedef zaten ekranda" kapısı bir kez daha uygulanıyor.
+
+### Aracın kendi körlüğü — beşinci kusur, uygulamadan SONRA çıktı
+
+Düzeltme uygulanınca araç örtüşmeyi 0,00 diye bastı ve `olcut kor degil` damgası kırıldı: "taban
+sıfır" iki ayrı şeyin cevabı olabilir — örtüşme gerçekten yoktur, ya da **araç artık hiçbir tebriği
+göremiyor**. İlk sürüm bildirimi TÜRÜNDEN sayıyordu (`kind === 'quest'`); HUD'un kapısı devreye
+girdiği an bu sayaç kör kalırdı ve sıfırı kendi kendini doğrulardı.
+
+İki değişiklik: ① araç artık ekranda olanı sayıyor — `devHooks` HUD'un kendi kapısını
+(`toastCizilir`) yayımlıyor, yani ölçüm ile çizim aynı fonksiyondan okuyor; ② **kontrol kolu (K)**
+eklendi: biten görevin tebriğini çizilebilir bir türe çevirir. K'de örtüşme **2,20 sn** ve kutu **2**
+çıkıyor — hem de parmak izi eski tabanla **birebir aynı** (`431eba5f/189a8bbb/…`). Yani araç
+gözünü kaybetmedi; tabandaki sıfır bir bulgu.
+
+Ayrıca `varyant etkili` damgası artık bir kolun etkisi koda girdiğinde tabanın **sayısına bakarak**
+"uygulandı" diyor — yoksa her uygulanan karar, kendi bekçisini kırmızıya düşürürdü.
+
+**Final:** vitest **1220 ✓** · duman **45/45 ✓** · tsc temiz · mutasyon **15/15 kırmızı**
+(`node tools/mutasyon-serit-g1.mjs`).

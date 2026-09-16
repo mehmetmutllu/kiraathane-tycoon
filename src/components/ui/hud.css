@@ -266,12 +266,19 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  height: 58px;
-  padding: 0 10px 0 8px;
+  /* YÜKSEKLİK İÇERİĞE UYAR (G-42). Eskiden `height: 58px` sabitti; ölçüm bandın İÇ yüksekliğinin
+     52,0 px, gövdesinin istediğinin 54,0 px olduğunu gösterdi — içerik üstten 0,9 px, alttan
+     1,0 px taşıyordu ve lakap üst kenara yapışıyordu (kullanıcı 2026-09-16: *"görev çubuğu da
+     üstte yazısı kesiliyor"*, *"işler açılıyor o kadar üste yapışık olmasın"*).
+     Sabit yükseklik yerine TABAN yükseklik: bant hiç küçülmez ama içerik büyürse (cihazın yazı
+     boyutu ayarı) taşmak yerine uzar — ölçemediğimiz durumu da kapatan hâl.
+     Ölçüm: docs/serit-raporu-g1.md §Bulgular 3. */
+  min-height: 58px;
+  padding: 6px 10px 6px 8px;
   border-radius: var(--r2);
   border: 3px solid var(--ot);
   background: linear-gradient(180deg, var(--kart), var(--kart2));
-  box-shadow: var(--k3);
+  box-shadow: var(--k3duz);
   color: var(--tx);
   text-align: left;
   cursor: pointer;

@@ -6,6 +6,7 @@ import { useGame, visiblePads, questCounterValue, LAYOUT, LAVABO, servicePlace, 
 import { THE_SERVICE, sellsTost } from './world';
 import { perf, type PerfSnapshot } from './perf';
 import { collectionMult } from './goals';
+import { toastCizilir } from './rules';
 import { dailyViews } from './dailyQuests';
 import { D } from './decimal';
 import { economyConfig, levelProgress, charLevel, lavaboVisitChance, lavaboFee, lavaboIncomePerCustomer, type CharStat } from '../config/economy.config';
@@ -190,6 +191,10 @@ export function installDevHooks(): void {
         questDoneIndex: s.questDoneIndex,
         questDone: s.quest?.done === true,
         noticeKind: s.notice ? s.notice.kind : null,
+        // ÇİZİLİYOR MU — HUD'un sorduğu sorunun AYNISI, aynı fonksiyondan. Ölçüm aracı buna
+        // bakmazsa "durumda bildirim var" ile "ekranda toast var" karışır ve G-41 düzeltildikten
+        // sonra bile 2,20 sn örtüşme raporlar (olay hâlâ üretiliyor, yalnız çizilmiyor).
+        noticeCizilir: toastCizilir(s.notice),
         noticeTtl: s.notice ? +s.notice.ttl.toFixed(3) : null,
         // Ham nesneler: ölçüm kolu bir bildirimi TÜRÜNE göre eleyip geri yazabilsin diye
         // (`__setState` yazabiliyordu ama okuyamıyordu — kol körlemesine kuyruk siliyordu).

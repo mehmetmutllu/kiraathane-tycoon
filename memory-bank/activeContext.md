@@ -5,40 +5,48 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-16 — **G1 GÖREV ŞERİDİ · ÖLÇÜM** · 102/107)
+## ŞU AN (2026-09-16 — **R1 BİTTİ: görev şeridi** · Faz R 1/4 · 103/111)
 
 ```
 SORU            : Bir görev bittiğinde ekranda kaç ses aynı anda konuşuyor, hangi sırayla —
                   ve kamera yeni hedefe hangi anda gidiyor?
-ÖLÇÜLECEK KOLLAR: T taban · V1 tebrik toast'ı susturulur · V2 toast geçiş penceresine kısılır ·
-                  V3 geçiş penceresi toast'ı kapsar (gap uzar) · V4 geçişte kamera panı kapısı
-                  (hiçbiri uygulanmaz; beşi de ölçülür — varyant kapısı D-084)
-SAYILAR         : (adım 2'den sonra dolar — docs/serit-raporu-g1.md §Bulgular)
-KARAR           : (adım 3, kullanıcı seçer — D-0xx)
-UYGULAMA        : (adım 4, yalnız kararın kolu)
-BEKÇİ           : (test dosyası + kaç mutasyonla doğrulandı)
+ÖLÇÜLEN KOLLAR  : T taban · K KONTROL (tebrik çizilebilir türe çevrilir) · V1 toast yok ·
+                  V2 toast kısa · V3 pencere uzun · V4 kamera kapısı (altısı da ETKİLİ doğrulandı)
+SAYILAR         : docs/serit-raporu-g1.md §Bulgular · ham: docs/olcum-serit-g1.txt (TAM)
+KARAR           : D-126 — V1 + V4 + taban yükseklik (C1); kullanıcı KAREYE bakıp bandın
+                  üstündeki gri iç parlamayı da kaldırttı (ölçümde olmayan kalem)
+UYGULAMA        : rules.ts CIZILEN_TOAST + toastCizilir · tick.ts geçiş kapısı (camBekleyen) ·
+                  hud.css min-height + padding · index.css --k3duz · q_z1allL4 başlığı kısaldı
+BEKÇİ           : gorev-seridi-g1 (14 den. · 15 mut.) + mor-dil 4c (türetme denetimi) · kaçan 0
+FINAL           : vitest 1220 ✓ · duman 45/45 ✓ · tsc temiz · örtüşme 2,20 → 0,00 sn ·
+                  ekrandaki kutu 2 → 1 · pan sapması −1,30 → 0,00 sn · bant taşması 2,0 → 0,0 px
 ```
 
-**Kapsam:** kullanıcının 2026-09-16 geri bildiriminden **G-41…G-44** (dördü tek kök).
-Kendi cümleleri: `docs/geribildirim-oyun-testi-2026-09-16.md`.
+**Turun kalıcı üç dersi:**
+1. **Bekçisi olmayan karar, karar değil yorumdur.** Bu toast 2026-09-09'da kullanıcı kararıyla
+   kaldırılmıştı; `f4b1a52`de `tsc -b` onu tutan koşulu "ölü dal" dedi (tip o an daralmıştı),
+   dal silindi ve **karar da onunla gitti**. Tip genişleyince toast döndü, HUD yorumu bugüne
+   kadar "çizilmez" dedi. Kural artık olumsuzlama değil **liste** (`CIZILEN_TOAST`): tip yine
+   daralırsa ölü dal olmaz, kısalır. Mutasyon M1 tam olarak o silmedir.
+2. **Ölçüm neyi sayacağını bilir; kare neyi sormadığını gösterir.** Araç kutuları, süreleri ve
+   taşmayı saydı — hepsi doğru. Kullanıcı karede bandın üst kenarındaki gri iç parlamayı gördü;
+   ölçümde öyle bir sütun yoktu. Kare gösterilmeseydi tur "G-42 kapandı" diye kapanırdı.
+3. **Düzeltme uygulanınca bekçinin kendisi kör olabilir.** Araç örtüşmeyi türden sayıyordu
+   (`kind === 'quest'`); HUD kapısı devreye girince sıfır basardı ve sıfır kendini doğrulardı.
+   İki kapı: araç artık HUD'un kendi fonksiyonundan okuyor, ve **kontrol kolu K** tebriği
+   çizilebilir türe çevirip 2,20 sn'yi geri getiriyor — parmak izi eski tabanla birebir.
 
-**Ölçüm ÖNCESİ bulunan kök sebep (koda bakarak — sayı değil, bulgu):** G-41/G-43'ün tebrik
-toast'ı 2026-09-09'da kullanıcı kararıyla kaldırılmıştı (G-04). Kaldıran satır `f4b1a52` (S3)
-commit'inde **geri silindi** — `tsc -b` `notice.kind !== 'quest'` dalını "ölü dal" diye
-işaretlemişti, çünkü o an `GameNotice.kind` tipi `'level' | 'reveal'`e daralmıştı. Dal silindi,
-SEBEP silinmedi: `kind: 'quest'` sonradan tipe geri geldi (`rules.ts:345`) ve `tick.ts:1452`
-hâlâ o toast'ı kuyruğa koyuyor. HUD'daki yorum bugün hâlâ *"ARTIK ÇİZİLMEZ"* diyor; **çiziliyor.**
-Ders: derleyicinin "ölü dal" uyarısı, dalın taşıdığı KARARIN da öldüğü anlamına gelmez.
+**Yolda düzeltilen dört araç kusuru:** açılış panı ölçüm penceresine sızıyordu (sahte erken pan) ·
+DOM 12 görevin 7'sini İLK görevin kopyası olarak ölçüyordu · kollar aynı dünyayı ölçmüyordu
+(her ölçüm artık kendi taze sayfasında) · V4'ün ölçecek şeyi yoktu (salon senaryosu eklendi).
 
 ## SIRADAKİ TAM ADIM
 
-**Kullanıcının 2026-09-16 geri bildirimi — 16 kalem (G-35…G-50).** Tam liste ve kullanıcının
-KENDİ cümleleri: `docs/geribildirim-oyun-testi-2026-09-16.md`. Kullanıcı *"sonraki chatlerde
-bunları yaparsın"* dedi → bu turda hiçbiri uygulanmadı. Önerilen bölünme (kullanıcı onayı ister):
+**FAZ R — kullanıcının 2026-09-16 geri bildirimi, 16 kalem (G-35…G-50).** Tam liste ve
+kullanıcının KENDİ cümleleri: `docs/geribildirim-oyun-testi-2026-09-16.md`.
+Bölünme kullanıcı onayıyla dört tur oldu; **R1 bitti**, sırada **R2**.
 
-1. **Görev şeridi** (G-41…G-44) — dördü tek kök: biten görevin tebriği yeni görevin üstünde
-   kalıyor · çubukta üst yazı kesiliyor · "görev bitti" ayrı yerde (hepsi TEK çubukta olmalı) ·
-   yeni göreve ZOOM erken atılıyor.
+1. ~~**Görev şeridi** (G-41…G-44)~~ → **R1'de KAPANDI (D-126).**
 2. **Mutfak yerleşimi + çarpışma** (G-35…G-38) — tezgâh/bulaşık 90° yanlış açıda (sol duvara
    paralel olmalı) · içinden geçiliyor · başlangıçta tezgâhlar bitişik olsun · tezgâh
    yükseltmeleri belirsiz. **G-39 (masa yükseltmeleri sırayla) DENGE kapısına tabi, ayrı tutulur.**
@@ -51,6 +59,10 @@ bunları yaparsın"* dedi → bu turda hiçbiri uygulanmadı. Önerilen bölünm
    **Not:** `kaykit-forest-nature` F2'de silindi; bu kol seçilirse
    `git checkout 13738b5^ -- public/assets/models/kaykit-forest-nature` ile geri gelir ve
    bekçi gereği entegrasyonu AYNI turda yapılır.
+
+**R1'in bıraktığı açık uç:** cihazın kendi yazı-tipi ölçeği (Android "yazı boyutu" ayarı)
+ölçülmedi. Bant artık içerikten türeyen yükseklikte, yani ölçek büyüse de kesmemeli — ama bu
+DOĞRULANMADI, sadece yapısal olarak kapatıldı. F1 cihaz turunda §B yeniden koşulmalı.
 
 **Sonra F1 — Capacitor kabuğu + imzalı sürüm.** Kullanıcı kararı alınmış: *"sen üret,
 dev-ortam'a koy"* → keystore `C:\dev-ortam`'a, parola oradaki gizli dosyaya, `android/`'e yalnız
@@ -89,8 +101,9 @@ Bel bağının ucu çeyrek açıdan ince bir dudak bırakıyor (`docs/gorsel/ss/
 
 ## PANO ARTIFACT BORCU — BİLEREK BIRAKILDI (2026-09-16)
 
-Pano **HTML dosyası güncel ve commit'li** (`docs/pano/ilerleme-panosu.html`, v49 · 102/107 ·
-F2 kartı + özet + sıradaki yazıldı, `npm run pano` denetimi yeşil). **Yayınlanmadı.**
+Pano **HTML dosyası güncel ve commit'li** (`docs/pano/ilerleme-panosu.html`, v50 · 103/111 ·
+R1 kartı + özet + sıradaki + yeni Faz R yazıldı, `npm run pano` denetimi yeşil). **Yayınlanmadı
+— ikinci tur üst üste.**
 
 **Sebep — ve bu bir kök sebep, tembellik değil:** artifact yayını canlı sürümün TAMAMININ
 okunmasını şart koşuyor. Dosya her turda büyüyor: S23'te 1611 satırdı, bugün **1790**.
@@ -105,8 +118,10 @@ Bu, projenin kendi kuralının (`eski anlatı → arsiv/`) panoya uygulanmış h
 satıra iner, yayın maliyeti onda birine düşer ve borç bir daha birikmez. Arşivlenen kart
 kaybolmaz — git'te ve arşiv dosyasında durur.
 
-**Bu tur ne kaybedildi:** yalnız yayınlanmış bağlantının bir tur bayat kalması
-(v48 · 101/108 gösteriyor). Sayıların kendisi depoda güncel.
+**Bu tur ne kaybedildi:** yayınlanmış bağlantı artık **iki tur** bayat (v48 · 101/108
+gösteriyor). Sayıların kendisi depoda güncel. **Öneri hâlâ kullanıcı onayı bekliyor** — R1
+turunda gündeme getirildi, kullanıcı görev şeridine odaklandı ve pano sorusu cevapsız kaldı;
+zorlanmadı çünkü tur bütçesi oynanış düzeltmesine ayrılmıştı.
 
 ## AÇIK KALEMLER (ölçüldü/görüldü, bilerek duruyor — tam listesi `memory-bank/arsiv/`de)
 
@@ -123,8 +138,9 @@ gerçek render'ı yok · KayKit `bench` düz plaka gibi · bulaşık gövdesi ku
 
 **Oynanış (Faz H):** ~~yükseltme tetiği "yanında"~~ → S24'te KAPANDI (D-121) · ~~G-01/G-02/G-03~~
 → **H1'de KAPANDI (D-123)** · ~~yükseltme sırası serbest~~ → **H2'de KAPANDI (D-124: tek hedef)**
-· G-06 tepsi ilk yükseltme 75 → ~50 · G-07 dwell para-bağımsız (son ikisi DENGE, varyant kapısına
-tabi) · ~~masalar geçilmiyor~~ → **H3 ELENDİ (2026-09-16):** banket adası geçişinden sonra
+· ~~G-41…G-44 görev şeridi~~ → **R1'de KAPANDI (D-126)** · G-06 tepsi ilk yükseltme 75 → ~50 ·
+G-07 dwell para-bağımsız · G-39 masa yükseltmeleri sırayla · G-40 para gelirinde fazla ondalık
+(son dördü DENGE, varyant kapısına tabi) · ~~masalar geçilmiyor~~ → **H3 ELENDİ (2026-09-16):** banket adası geçişinden sonra
 açıklık 2,15 br (gereken 0,94) — premis düştü, kalem geçersiz. Faz H **3/3 ✅ kapandı.**
 
 **Altyapı:** ~~`npm run apk` kırıktı~~ → **KAPANDI (2026-09-16):** Gradle 8.14.3'ün `gradlew.bat`'ı
@@ -142,6 +158,8 @@ bakıyor · mutfağın kuşbakışı karesi OYUNDAN çekilemez (tepeden kamera o
 (repro aracı `tools/olcum-panel-donusu.mjs`).
 
 **Önizlemeler**
+**G1 KARAR PAKETİ (görev şeridi · kareler + sayılar):** https://claude.ai/artifact/F2jowE134dyDnzEQPBsAgy
+**G1 kareler:** `ss/g1-serit-normal.png` · `ss/g1-serit-bitti.png` (ikisi de UYGULAMA SONRASI)
 **S9 SES KARAR PAKETİ (DİNLENEBİLİR):** https://claude.ai/artifact/49KsxE368xVHWbw4wHdkSy
 **S24 KARAR PAKETİ:** https://claude.ai/artifact/84hN6nieCHVXHMcBS81d4u
 **S23 KARAR PAKETİ:** https://claude.ai/artifact/Cysj2inCDguC4gQxuu3X2o

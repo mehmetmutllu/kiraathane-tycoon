@@ -4044,3 +4044,41 @@ turunu ister.
 - **AÇIK:** dpr kolu bu donanımda ölçülemedi (tampon 4× küçüldü, süre değişmedi — RTX 3060'ta
   fragment bağlayıcı değil). Vekil ölçüm tam orada kör. **Cihaz turu açık**, `ZAYIF_ESIGI_MS`
   (22 ms) gerçek telefonda doğrulanmalı.
+
+## D-126 — G1: görev şeridi tek ses oldu, kutlama panı ertelendi
+
+**Soru:** görev bitince ekranda kaç ses aynı anda konuşuyor, kamera ne zaman gidiyor?
+**Ölçüm:** `docs/serit-raporu-g1.md` · ham `docs/olcum-serit-g1.txt` (TAM koşu, damgalar temiz).
+
+- **Kök sebep ölçümden önce koddan çıktı:** G-04'ün (2026-09-09) kaldırdığı tebrik toast'ı
+  `f4b1a52`de geri gelmiş. `tsc -b` `notice.kind !== 'quest'` dalını "ölü dal" dedi (tip o an
+  daralmıştı), dal silindi, **karar da silindi**; `'quest'` sonradan tipe döndü, toast döndü,
+  HUD yorumu hâlâ "çizilmez" diyordu. **Bekçisi olmayan karar, karar değil yorumdur.**
+- **Ölçülen:** tebrik 3,53 sn yaşıyor, yeni kart 1,33 sn'de geliyor → **2,20 sn örtüşme**,
+  7/7 senaryoda; "bitti" anında ekranda **2 kutu, 8 px arayla, aynı cümle**.
+- **Kullanıcı V1'i seçti** (toast hiç çizilmez). V2 (ttl kısalt) ve V3 (kartı ertele) elendi:
+  ikisi de kutuyu 2'de bırakıp yalnız süresini oynatıyor, V3 ayrıca ritmi %169 yavaşlatıyor.
+- **Kural artık OLUMSUZLAMA değil LİSTE:** `rules.ts` → `CIZILEN_TOAST = ['level','reveal']` +
+  `toastCizilir()`. Tip yeniden daralırsa liste ölü dal olmaz, kısalır — derleyici kararı bir
+  daha silemez. Olay hâlâ ÜRETİLİYOR (tick'e dokunulmadı, E3/D-096 deseni).
+- **G-44 daraldı:** görev geçişinin kendi panı zaten kartla birlikte (0,00). Erken olan tek şey
+  `unlockArea`ın prio 3 odağı: **−1,30 sn**. Pan silinmedi, **ertelendi** (`camBekleyen`) ve
+  pencere bitince `requestFocus`tan yeniden geçiyor → öncelik ve H1 "hedef ekranda" kapısı
+  yeniden uygulanıyor. Sonuç **0,00 sn**.
+- **G-42'nin sebebi yatay değil DİKEY:** 50 görevin 50'sinde lakap sığıyor; bant `height:58px`
+  sabitken gövdesi 54,0 px istiyordu (iç 52,0) → 0,9/1,0 px taşma. `min-height` + `padding-block`
+  ile bant içerikten türüyor: taşma **0,0/0,0**. Sabit yükseklik cihazın yazı ölçeği büyüyünce
+  yine keserdi; taban yükseklik ölçemediğimizi de kapatıyor.
+- **Kullanıcı kareye bakıp ölçümde OLMAYAN bir kalem ekledi:** bandın üst kenarındaki gri şerit
+  (`--k3`ün inset parlaması) yeşil tamamlanma kenarıyla çarpışıyordu. `--k3duz` eklendi — yeni
+  kabartma basamağı DEĞİL, `--k3`ün insetsiz eşi; `mor-dil` bekçisi bunu regex'le değil
+  **türetmeyle** sınıyor (4c). **Ölçüm neyi sayacağını bilir, kare neyi sormadığını gösterir.**
+- **Aracın beşinci kusuru uygulamadan SONRA çıktı:** düzeltme sonrası "0,00" iki şeyin cevabı
+  olabilirdi (örtüşme yok / araç kör). Araç artık ekranda olanı sayıyor (devHooks HUD'un kendi
+  kapısını yayımlıyor) ve **kontrol kolu K** eklendi: tebriği çizilebilir türe çevirir, orada
+  2,20 sn ve 2 kutu çıkıyor — parmak izi eski tabanla birebir aynı.
+- **Bekçi:** `tests/gorev-seridi-g1.test.ts` (14 den.) · `node tools/mutasyon-serit-g1.mjs`
+  **15/15 kırmızı, kaçan 0** (M1 = f4b1a52'nin aynen tekrarı).
+- **Final:** vitest 1220 ✓ · duman 45/45 ✓ · tsc temiz.
+- **AÇIK:** cihazın kendi yazı-tipi ölçeği (Android "yazı boyutu") ölçülmedi — G-42'nin yönü
+  kesin, telefondaki büyüklüğü doğrulanmadı. F1 cihaz turunda bakılacak.

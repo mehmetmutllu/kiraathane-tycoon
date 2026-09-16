@@ -133,8 +133,11 @@ describe('mor dil — D-107 palet ve ölçek kilidi', () => {
     }
   });
 
-  it('4 · her box-shadow --k1…--k3 (ya da none) — dördüncü kabartma yok', () => {
-    const izin = /^var\(--k[123]\)$|^none$/;
+  it('4 · her box-shadow --k1…--k3 (ya da düz eşleri / none) — dördüncü kabartma yok', () => {
+    // `--k3duz`, YENİ bir kabartma basamağı değil: `--k3`ün üst iç parlaması olmayan eşi
+    // (aşağıdaki 4c bunu sayıyla kanıtlıyor). Kullanıcı 2026-09-16'da görev bandındaki gri
+    // şeridi kaldırttı; basamak sayısı değişmedi, o basamağın parlamasız hâli eklendi.
+    const izin = /^var\(--k[123]\)$|^var\(--k3duz\)$|^none$/;
     for (const p of stiller) {
       const kacak = bildirimler(yorumsuz(oku(p)), 'box-shadow').filter((v) => !izin.test(v));
       expect(kacak, `${p} — durum gölgeyle değil KENARLIKLA anlatılır`).toEqual([]);
@@ -147,6 +150,37 @@ describe('mor dil — D-107 palet ve ölçek kilidi', () => {
     expect(say(/--p[1-6]:\s*\d/g)).toBe(6);
     expect(say(/--r[123]:\s*\d/g)).toBe(3);
     expect(say(/--k[123]:\s/g)).toBe(3);
+  });
+
+  it('4c · düz gölge YENİ basamak değil: --k3 eksi üst parlama', () => {
+    // Bu, 4'ün izin listesini bir bahane olmaktan çıkarır. `--k3duz` serbestçe yazılabilseydi
+    // "dördüncü kabartma yok" kuralı bir istisnayla delinmiş olurdu; burada onun `--k3`ten
+    // TÜREDİĞİ sayıyla sınanıyor — sapan bir değer bu testi kırar.
+    const kok = oku(INDEX);
+    const al = (ad: string) => (kok.match(new RegExp(`--${ad}:\s*([^;]+);`)) ?? [])[1]?.trim() ?? '';
+    const k3 = al('k3');
+    const duz = al('k3duz');
+    expect(k3, '--k3 tanımlı olmalı').not.toBe('');
+    expect(duz, '--k3duz tanımlı olmalı').not.toBe('');
+    // Katmanlar ÜST DÜZEY virgülle ayrılır; `rgba(255, 255, 255, 0.5)`in içindeki virgüller
+    // sayılmaz (düz `split(',')` ilk denemede tam buna düştü).
+    const katmanlar = (v: string): string[] => {
+      const out: string[] = [];
+      let derinlik = 0;
+      let tampon = '';
+      for (const ch of v) {
+        if (ch === '(') derinlik++;
+        else if (ch === ')') derinlik--;
+        if (ch === ',' && derinlik === 0) { out.push(tampon.trim()); tampon = ''; continue; }
+        tampon += ch;
+      }
+      if (tampon.trim()) out.push(tampon.trim());
+      return out;
+    };
+    const tum = katmanlar(k3);
+    expect(tum.some((x) => x.startsWith('inset')), '--k3 üst parlama taşımalı').toBe(true);
+    const insetsiz = tum.filter((x) => !x.startsWith('inset')).join(', ');
+    expect(duz, '--k3duz, --k3ün inset katmanı çıkarılmış hâli olmalı').toBe(insetsiz);
   });
 
   it('5 · form öğeleri font mirası alır (B5: 13 öğe Arial)', () => {
