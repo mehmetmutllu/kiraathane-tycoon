@@ -181,6 +181,21 @@ export function installDevHooks(): void {
       camFocus: s.camFocus ? { pos: s.camFocus.pos, ttl: +s.camFocus.ttl.toFixed(2) } : null,
       // Yeni-özellik bildirimi (D-019 §4): anlık toast metni + bu oturumda bildirilmiş reveal anahtarları.
       notice: s.notice ? s.notice.text : null,
+      // GÖREV ŞERİDİ (G1 ölçümü): geçişin ham hâli. Bant ile toast'ın AYNI ANDA konuşup
+      // konuşmadığı yalnız buradan okunabilir — `notice` metni toast'ın TÜRÜNÜ söylemiyordu ve
+      // hangi fazda olduğumuzu hiç söylemiyordu. Salt-okunur; tick'e dokunmaz.
+      serit: {
+        questPhase: s.questPhase,
+        questPhaseT: +s.questPhaseT.toFixed(3),
+        questDoneIndex: s.questDoneIndex,
+        questDone: s.quest?.done === true,
+        noticeKind: s.notice ? s.notice.kind : null,
+        noticeTtl: s.notice ? +s.notice.ttl.toFixed(3) : null,
+        // Ham nesneler: ölçüm kolu bir bildirimi TÜRÜNE göre eleyip geri yazabilsin diye
+        // (`__setState` yazabiliyordu ama okuyamıyordu — kol körlemesine kuyruk siliyordu).
+        noticeRaw: s.notice ? { ...s.notice } : null,
+        noticeQueueRaw: s.noticeQueue.map((n) => ({ ...n })),
+      },
       revealSeen: [...s.revealSeen],
       upgradeFill: Math.floor(s.upgradeFills[0]),
       upgradeZonePos: place.upgradeSpot,
