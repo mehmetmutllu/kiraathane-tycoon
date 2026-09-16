@@ -1,6 +1,7 @@
 import { Suspense, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Vector3, BufferGeometry, BoxGeometry, Float32BufferAttribute, DoubleSide, MeshStandardMaterial, Object3D, type Group, type InstancedMesh, type PerspectiveCamera } from 'three';
+import { cameraViewYaz } from '../../game/cameraView';
 import { useGame, questFocusPos, LAYOUT, LAVABO, BAND, BAND_SHELL, FLOOR_HALF, wallSpans, servicePlace, stationSoftMaxLevel, stationUpgradeCostAt, stationUpgradeUnlocked, tableSoftMaxLevel, tableUpgradeUnlockedIn, tableNextCost, openServices, doorX as doorAt, entranceAt, banketIslands, BANKET, WAITER_STATION, waiterStationOpen } from '../../game/store';
 import { economyConfig, lavaboUpgradeCost } from '../../config/economy.config';
 import { areaOfTable, THE_SERVICE } from '../../game/world';
@@ -261,6 +262,11 @@ function CameraRig() {
       look.lerp(tmp, a);
     }
     camera.lookAt(look);
+    // H1/K2: görev panı "hedef zaten ekranda mı?" diye soruyor ve bunu ancak GERÇEK izdüşüm
+    // yanıtlayabiliyor (eğik kamerada görüş yarıçapı yöne göre 4,25-24,50 br arasında değişiyor).
+    // Matris burada, kamera yerleştikten SONRA yazılır; `tick` okur.
+    camera.updateMatrixWorld();
+    cameraViewYaz(camera.projectionMatrix.elements, camera.matrixWorldInverse.elements);
   });
   return null;
 }

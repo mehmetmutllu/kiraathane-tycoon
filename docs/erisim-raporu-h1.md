@@ -70,7 +70,7 @@ Payda: masaya **gövdesiyle yanaşılabilen** yön (360 yönden). Kap noktaları
 | **M1 taban** (r = 1,40) | deuce (12 banket) | 201 / 360 | **95,5** | 0 | **79,1** | — | — |
 | **M2 yarıçap** | four | 231 | 100 | 0 | 100 | **2,05** | **0 yön** |
 | **M2 yarıçap** | deuce | 201 | 100 | 0 | 100 | **1,60** | **0 yön** |
-| **M3 kutu** (pay 0,49) | four + deuce | 231 / 201 | 100 (tanım gereği) | 0 | 100 | — | **0 yön** |
+| **M3 kutu** (yanaşma payı 0,49) | four + deuce | 231 / 201 | 100 (tanım gereği) | 0 | 100 | — | **0 yön** |
 
 Okuma:
 
@@ -97,7 +97,7 @@ oyuncunun yanaşabildiği hattın tetiklemeyen kaç br'si.
 | **O1 taban** (r = 1,60) | sol duvar (erken) | 183 | **57,4** | **78** | **0,72 br** | 2,50 br | — | — |
 | **O1 taban** (r = 1,60) | arka bant (geç) | 123 | **85,4** | **18** | **0,72 br** | 2,50 br | — | — |
 | **O2 yarıçap** | her ikisi | 183 / 123 | 100 | 0 | 0 | 3,22 | **2,20** | **yaşar** (3,93 / 3,62) |
-| **O3 kutu** (pay 0,49) | her ikisi | 183 / 123 | 100 | 0 | 0 | 3,22 | — | **yaşar** |
+| **O3 kutu** (yanaşma payı 0,49) | her ikisi | 183 / 123 | 100 | 0 | 0 | 3,22 | — | **yaşar** |
 
 Okuma:
 
@@ -113,6 +113,29 @@ Okuma:
   oyuncu ocağın menzilindeyken servis **yükseltme** dolumu hiç başlamaz. Yükseltme noktası
   tezgâh merkezine **3,93 br** (erken) / **3,62 br** (geç) uzakta; gereken menzil 2,20. İki
   kolda da nokta **yaşıyor**.
+
+### §PAY — kutu tetiğinin payı (M3/O3'ün uygulama parametresi)
+
+M3/O3 satırlarındaki 0,49, "gövdeyle değebiliyor mu" sınavının payıdır; UYGULANACAK pay ayrı bir
+sorudur ve ayrı süpürüldü. Payda burada daha geniş: objeye doğru yürüyüp 0,90 br içinde durabilen
+**her** yön (sandalye arkası duraklar dahil), yani kapsama kasten zor bir sınav.
+
+| pay (br) | masa kapsama% | masa sızıntı | tezgâh kapsama% | tezgâh sızıntı |
+|---|---|---|---|---|
+| 0,45 | 0,0 | 0 | 0,0 | 0 |
+| 0,50 | 72,4 | 0 | 85,6 | 0 |
+| 0,55 | 83,6 | 0 | 91,1 | 0 |
+| 0,60 | 89,6 | 0 | 93,8 | 0 |
+| 0,65 | 96,5 | 0 | 96,6 | 0 |
+| **0,70 ← seçildi** | **99,2** | **0** | **97,9** | **0** |
+| 0,80 | 99,5 | 0 | 99,3 | 0 |
+| 0,90 | 100,0 | 0 | 100,0 | 0 |
+
+- **0,45 satırı aracın kendi kontrolüdür:** gövde standoff'u 0,47, yani payı onun altına indirince
+  hiçbir şey tetiklenmez. Sıfır çıkması taramanın doğru çalıştığını söylüyor.
+- **Sızıntı penceresi 0,90'a kadar açık.** Yani seçim bir takas değil: pay kapsamanın bittiği yerde
+  durdurulabiliyor, komşuya karışma hiçbir değerde başlamıyor.
+- Kalan ~%1 (0,70'te) sandalyenin arkasında kalan duraklar — onların tetiklememesi kusur değil tanım.
 
 ### G-03 — görev panı
 
@@ -145,10 +168,70 @@ Okuma:
 - **Bir kol zaten doğru davranıyor:** `q_charTray1` (charStat) pan atmıyor — tick'te ismiyle
   yazılmış bir istisna. Yani "pan atmama" kodda zaten var olan bir hâl, yeni bir kavram değil.
 
-## §Karar
+## §Karar — D-123
 
-*(BOŞ — karar paketi kullanıcıya sunulacak, D-084 adım 3.)*
+Kullanıcı üç soruda da ölçümün önerdiği kolu seçti: **M3 + O3 + K2.**
+
+| kol | seçilen | seçmenin gerekçesi (sayı) | elenen |
+|---|---|---|---|
+| G-01 | **M3** — tetik masanın gövdesinden | yön% 42,2 → 100 · en kötü kap 23,8 → 100 · sızıntı 0 | M2 (r 2,05): delik kapanır ama tetiği hâlâ `Math.random()` besler |
+| G-02 | **O3** — tetik tezgâhın gövdesinden | ölü ön yüz 0,72 → 0 br · yükseltme noktası yaşar | O2 (r 2,20): merkeze bağlı kalır, tezgâh uzarsa uçlar yine ölür |
+| G-03 | **K2** — hedef ekrandaysa pan yok | 6 pan → 0 · ekran dışı 11,02 sn → 0,00 sn | K3 (pan tamamen kalksın): uzak hedefte tek yönlendirme giderdi · K4 (süre kısalt): sebep durur |
+
+Üç kol tek bir ilkenin üç nüshası: **tetik, ÇİZİLEN ŞEYİN kendisinden türer.** S24'te (D-120/D-121)
+bu yükseltme işareti için yapılmıştı; H1 aynı ilkeyi kirli kaba, tezgâha ve kameraya taşıyor.
+Kamerada "çizilen şey" görüntünün kendisidir — bu yüzden kapı mesafe eşiğiyle değil gerçek
+izdüşümle kuruldu.
 
 ## §Uygulama
 
-*(BOŞ — yalnız kararın kolu, D-084 adım 4.)*
+**Pay değeri tahminle seçilmedi.** Kutu tetiğinin payı ayrı bir süpürmeyle ölçüldü (§PAY,
+`docs/olcum-erisim-h1.txt`): 0,45'te hiçbir şey tetiklenmiyor (gövde standoff'u 0,47), 0,70'te
+masa kapsaması **%99,2**, tezgâh **%97,9**, ve **0,90'a kadar sızıntı 0**. Kalan ~%1 sandalyenin
+arkasında kalan duraklar — onların tetiklememesi kusur değil tanım.
+
+İkinci, bağımsız kaynak aynı sayıyı verdi: yerleşimin kendi `ServicePlace.pickup` noktası (garsonun
+çay aldığı yer) tezgâh gövdesine tam **0,70 br** uzakta. Önce 0,60 denendi ve o noktayı dışarıda
+bıraktı; `logic.test.ts` yakaladı. Oyuncunun tetiği mekânın kendi durak noktasından dar olamaz.
+
+| dosya | ne yapıldı |
+|---|---|
+| `economy.config.ts` | `serving.pickupRadius` → **`pickupReach: 0,70`** · yeni **`cups.collectReach: 0,70`**. `cups.collectRadius` kaldı ama anlamı değişti: artık PERSONELİN varış mesafesi. |
+| `layout.ts` | `boxDist2D` (noktanın kutuya mesafesi) · `atTableBody` · `atServiceBody` · `tableHalfFor` dışa açıldı. Tetik geometrisi collision geometrisiyle AYNI `Solid`'i okuyor. |
+| `tick.ts` | üç çağrı yerinde: ürün alma · yükseltme gardiyanı · kirli toplama. Alma ile gardiyan **aynı yüklemi** çağırıyor (ayrışamazlar). |
+| `cameraView.ts` (yeni) | sahne yazar / tick okur tekili (`dwellState` deseni, D-038). `hedefEkranda` gerçek `projection × matrixWorldInverse` ile çalışır. Kamera yoksa **false** → H1 öncesi davranış (vitest/sim deterministik kalır). |
+| `Scene.tsx` | `CameraRig` her karede, kamera yerleştikten sonra matrisi yazar. |
+| `tick.ts` `requestFocus` | kapı: `if (hedefEkranda(pos)) return;` — **öncelikten bağımsız** (alan açılışı dahil). HUD'un "hedefi göster" düğmesi (`store.focusQuest`) kapıdan GEÇMEZ: orada panı oyuncu istemiştir. |
+
+**Yarıçap modeline yazılmış 10 değişmez** silinmedi, gövde modeline çevrildi (`logic.test.ts`,
+`layout-b31.test.ts`): "park noktası tetiğin dışında", "yükseltme noktası menzilin dışında",
+"hiçbir masa al+servis birleşiğinde değil" hepsi artık kutudan ölçülüyor. Üç bardak-döngüsü
+fikstürü de düzeltildi: oyuncuyu salonun ortasındaki `[1, 1]` noktasına koyup kaba `tableIndex: 0`
+etiketi veriyorlardı — ikisi birbirini tutmuyordu, eski nokta-tetiği bunu göremediği için sorun
+çıkmamıştı.
+
+### Bekçi ve mutasyon
+
+`tests/erisim-h1.test.ts` (16 denetim) · `tools/mutasyon-erisim-h1.mjs` (16 mutasyon) →
+**16/16 kırmızı, kaçan 0.**
+
+Bir mutasyon ilk turda KAÇTI ve kaçması bir şey öğretti: `M15 görüş testi derinliği yok sayıyor`.
+Tarandı — bugünkü kamera ankrajında (8,5 br yukarıdan ~45°) **y = 0,6 düzleminde** kameranın
+arkasında kalıp x/y sınavını geçen **tek bir nokta yok** (160 × 160 br). Yani derinlik satırı zemin
+hedefleri için ölüydü. Ama `hedefEkranda` yükseklik alıyor ve kamera kipleri mesafeyi değiştiriyor:
+y yükselince taban kipte **3.773**, portrede **862** nokta "ekranda" sanılıyor. Kat 3 çatı terası gibi
+yükseltilmiş bir hedef geldiğinde kapı sessizce ters çalışırdı. Denetim 16 o sınırı tutuyor.
+
+### Final tam koşu (uygulamadan sonra)
+
+`docs/olcum-erisim-h1.txt` · damgalar temiz · vitest **1170 ✓** · duman **45/45 ✓** · tsc temiz.
+
+| | önce | sonra |
+|---|---|---|
+| görev panı (7 görevlik erken zincir) | 6 pan · 6'sı gereksiz | **0 pan** |
+| oyuncunun ekran dışı kaldığı süre | 11,02 sn | **0,00 sn** |
+| masa tetiği kapsaması (pay 0,70) | — | **%99,2** · sızıntı 0 |
+| tezgâh tetiği kapsaması (pay 0,70) | — | **%97,9** · sızıntı 0 |
+
+G-01/G-02 tablolarındaki M1/O1 satırları **taban ölçümüdür** (H1 öncesi yarıçaplar araç içinde
+damgalı sabit olarak duruyor) — "önce" sütunu sonradan kaymasın diye.

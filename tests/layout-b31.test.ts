@@ -22,7 +22,7 @@ import {
   THE_SERVICE,
   MAX_SERVICES,
 } from '../src/game/store';
-import { clampToOpenAreas, getNavGrid, REACH_TABLE } from '../src/game/layout';
+import { boxDist2D, clampToOpenAreas, getNavGrid, REACH_TABLE } from '../src/game/layout';
 import { economyConfig } from '../src/config/economy.config';
 import { findNavPath } from '../src/game/nav';
 
@@ -132,10 +132,12 @@ describe('B3-1 — servis 3. Alan açılınca ARKA BANDA taşınır (D-062)', ()
       // OBJE GÖVDELERİ (tezgâh · bulaşık) alana DEĞMEK zorunda, içinde durmak zorunda değil:
       // BM adım 3'te küme mutfağın içine geçti, ön yüzü bandın hattında kaldı — bir tezgâhın
       // gövdesinin duvarın içinde olması normaldir, ERİŞİLEMEZ olması değil. Asıl kural bu:
-      // alanın tezgâha en yakın noktasından tezgâh `serving.pickupRadius` içinde kalmalı.
-      for (const [c, h] of [
-        [sp.station, sp.half],
-        [sp.dish, sp.dishHalf],
+      // alanın tezgâha en yakın noktasından tezgâh ERİŞİLEBİLİR kalmalı.
+      // H1/O3: erişim artık merkeze uzaklık değil GÖVDEYE pay — kutu alanın içine sarkıyorsa
+      // mesafe 0'dır, tamamen dışarı çıkmışsa pay aşılır ve bu değişmez düşer.
+      for (const [c, h, erisim] of [
+        [sp.station, sp.half, economyConfig.serving.pickupReach],
+        [sp.dish, sp.dishHalf, economyConfig.cups.washRadius],
       ] as const) {
         expect(c[0] + h[0]).toBeGreaterThanOrEqual(ab.minX);
         expect(c[0] - h[0]).toBeLessThanOrEqual(ab.maxX);
@@ -143,7 +145,7 @@ describe('B3-1 — servis 3. Alan açılınca ARKA BANDA taşınır (D-062)', ()
         expect(c[2] - h[1]).toBeLessThanOrEqual(ab.maxZ);
         const nx = Math.max(ab.minX, Math.min(ab.maxX, c[0]));
         const nz = Math.max(ab.minZ, Math.min(ab.maxZ, c[2]));
-        expect(Math.hypot(nx - c[0], nz - c[2])).toBeLessThan(economyConfig.serving.pickupRadius);
+        expect(boxDist2D(nx, nz, c, h)).toBeLessThanOrEqual(erisim);
       }
     }
   });

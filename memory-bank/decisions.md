@@ -3927,3 +3927,55 @@ render edilmese de motor testleri yeşil kalırdı.
 
 **Final:** tsc temiz · vitest **1154** ✓ · duman **45/45** ✓ · `economy.config.ts` 0 satır ·
 kayıt sürümü 33'te kaldı.
+
+---
+
+## D-123 — Tetik, ÇİZİLEN ŞEYİN kendisinden türer (H1: masa · tezgâh · kamera)
+
+**SORU (G-01/G-02/G-03).** Kullanıcının üç oynanış şikâyeti de "bazen oluyor bazen olmuyor"
+diliyle yazılmıştı. Ölçüldü (`docs/erisim-raporu-h1.md`): dörtlü masaya gövdesiyle yanaştığın
+yönlerin yalnız **%42,2'sinde** kirli kap alınıyor, kap kötü köşeye düştüyse **%23,8** ·
+ilk tanışılan ocakta yanaşılabilen yönlerin **%42,6'sı ölü**, tezgâhın önündeki 3,22 br'lik
+hattın **0,72 br'si** hiç tetiklemiyor · görev panının **6 koşusunun 6'sında** hedef pan
+başlamadan zaten ekrandaydı ve oyuncu erken zincirde **11,02 sn** kendi karakterini göremiyordu.
+
+**KARAR: M3 + O3 + K2.** Üçü tek ilkenin üç nüshası — tetik, çizilen şeyin kendisinden türer.
+Kirli kap tetiği kabın rastgele noktasından MASANIN gövdesine, ürün alma tetiği tezgâhın
+merkezinden TEZGÂHIN gövdesine taşındı; pan kapısı da hedefin GERÇEK izdüşümüne bağlandı.
+S24 (D-120/D-121) bunu yükseltme işareti için yapmıştı; H1 aynı ilkeyi üç yere daha taşıyor.
+
+**ÜÇ ÖLÇÜM, ÜÇ SEZGİ ÇÜRÜTMESİ.**
+① Hata masada değil MASA TİPİNDEYDİ: banket masası (yarı 0,53) zaten %95,5 temiz, çöken dörtlü
+masa (yarı 0,84). Tetik yarıçapı masanın kendi boyundan küçüktü — yani kusur "yakınlık ayarı"
+değil bir ÖLÇEK uyumsuzluğuydu. ② Genişletmenin korkulan bedeli (yanlış masadan toplama) HİÇ
+YOKTU: pay 0,90'a kadar sızıntı 0. Karar bir takas değildi, bedelsiz bir düzeltmeydi.
+③ Kullanıcının işaret ettiği görev (`q_table2`) panların en masumuydu: hedefi 3,62 br, en dar
+görüş yarıçapının (4,25) bile altında. Şikâyetin sebebi "hedefi kaçırmak" değil hiçbir şey
+kazandırmayan bir hareketti — ve asıl zarar hiç yazılmamış görevlerdeydi (`q_station1` 3,15 sn).
+
+**PAY 0,70 — İKİ BAĞIMSIZ KAYNAK.** ① Süpürmede kapsama 0,70'te masada %99,2 / tezgâhta %97,9,
+sızıntı 0 (0,45'te 0,0 çıkması aracın kendi kontrolü: gövde standoff'u 0,47). ② Yerleşimin kendi
+`ServicePlace.pickup` noktası tezgâh gövdesine tam **0,70 br** uzakta. Önce 0,60 denendi ve
+mekânın kendi durak noktasını dışarıda bıraktı; `logic.test.ts` yakaladı.
+
+**KAPI ÖNCELİKTEN BAĞIMSIZ** (alan açılışı dahil): ekranda duran bir şeye kamerayı kaydırmak
+hangi öncelikle yapılırsa yapılsın aynı şeyi kazandırıyor — hiçbir şey. HUD'un "hedefi göster"
+düğmesi kapıdan GEÇMEZ: orada panı oyuncunun kendisi istemiştir.
+
+**KAMERA YOKSA ESKİ DAVRANIŞ.** `cameraView` tekili (sahne yazar / tick okur, `dwellState`
+deseni D-038) kurulmadıysa `hedefEkranda` **false** döner → pan atılır. Ölçüm aracı olmayan bir
+ortam ölçüye dayanan bir kısıtı uygulayamaz; sessizce pan'ı yutmak yerine eski hâle düşmek doğru.
+
+**YARIÇAP DEĞİŞMEZLERİ SİLİNMEDİ, ÇEVRİLDİ.** 10 test gövde modeline taşındı. Üç bardak-döngüsü
+fikstürü de düzeltildi: oyuncuyu salonun ortasındaki `[1, 1]`e koyup kaba `tableIndex: 0` etiketi
+veriyorlardı — ikisi birbirini tutmuyordu, eski nokta-tetiği bunu göremediği için sorun çıkmamıştı.
+
+**BEKÇİ:** `tests/erisim-h1.test.ts` (16 denetim) · `tools/mutasyon-erisim-h1.mjs` **16/16
+kırmızı**. Bir mutasyon ilk turda kaçtı ve kaçması bir SINIR öğretti: derinlik denetimi (`nz`)
+bugünkü kamera ankrajında **zemin** hedefleri için ölü (160 × 160 br tarandı, 0 nokta). Ama
+`hedefEkranda` yükseklik alıyor: y yükselince taban kipte 3.773, portrede 862 nokta kameranın
+arkasındayken "ekranda" sanılıyor. Kat 3 çatı terası gibi yükseltilmiş bir hedefte kapı sessizce
+ters çalışırdı. Denetim 16 o sınırı tutuyor.
+
+**Final:** tsc temiz · vitest **1170** ✓ · duman **45/45** ✓ · pan 6 → **0**, oyuncunun ekran
+dışı kaldığı süre 11,02 sn → **0,00 sn** · kayıt sürümü 33'te kaldı (şema değişmedi).

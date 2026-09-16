@@ -85,6 +85,14 @@ const YON = KISA ? 120 : 360;
 /** Yön taramasında merkezden en fazla bu kadar uzağa bakılır (br). */
 const EN_UZAK = 4.0;
 
+/**
+ * TABAN DEĞERLER — H1 ÖNCESİ hâl. Uygulama bu ikisini config'ten kaldırdığı (yarıçap → pay)
+ * için burada sabit dururlar: taban satırı raporun "önce" sütunudur ve sonradan kaymamalıdır.
+ * (`cups.collectRadius` config'te kaldı ama anlamı değişti — artık PERSONELİN varış mesafesi.)
+ */
+const MASA_TABAN = 1.4;
+const OCAK_TABAN = 1.6;
+
 const f2 = (n: number) => n.toFixed(2);
 const yuzde = (a: number, b: number) => (b === 0 ? '—' : ((100 * a) / b).toFixed(1));
 
@@ -243,7 +251,7 @@ type MasaSatir = {
 };
 
 function masaOlc(d: Dunya, alan: Alan): MasaSatir[] {
-  const R0 = C.cups.collectRadius;
+  const R0 = MASA_TABAN;
   const satirlar: MasaSatir[] = [];
   for (let i = 0; i < d.tables; i++) {
     const t = LAYOUT.tables[i];
@@ -320,7 +328,7 @@ type OcakSatir = {
 
 function ocakOlc(d: Dunya, alan: Alan): OcakSatir {
   const sp = servicePlace(d.areasOpen);
-  const R0 = C.serving.pickupRadius;
+  const R0 = OCAK_TABAN;
   const basla = Math.min(sp.half[0], sp.half[1]) * 0.5;
   const acik: [number, number][] = [];
   for (let k = 0; k < YON; k++) {
@@ -512,8 +520,8 @@ kipBandi();
 console.log('='.repeat(100));
 console.log(`H1 ERİŞİM ÖLÇÜMÜ — ${KIP.toUpperCase()} koşu · ızgara ${HUCRE} br · ${YON} yön · ${new Date().toISOString().slice(0, 10)}`);
 console.log(
-  `gövde yarıçapı ${f2(LAYOUT.playerRadius)} · collectRadius ${f2(C.cups.collectRadius)} · ` +
-  `pickupRadius ${f2(C.serving.pickupRadius)} · kap saçılması ${f2(SACILMA)} · ` +
+  `gövde yarıçapı ${f2(LAYOUT.playerRadius)} · taban: collect ${f2(MASA_TABAN)} / pickup ${f2(OCAK_TABAN)} · ` +
+  `pickupReach ${f2(C.serving.pickupReach)} · collectReach ${f2(C.cups.collectReach)} · kap saçılması ${f2(SACILMA)} · ` +
   `masa yarısı four ${f2(LAYOUT.tableHalf[0])} / deuce ${f2(LAYOUT.deuceHalf[0])}`,
 );
 console.log('='.repeat(100));
@@ -551,6 +559,65 @@ for (const s of masaSatirlari) {
     `M2 medyan r ${f2(medyan(masaSatirlari.map((s) => (Number.isNaN(s.m2r) ? 2.4 : s.m2r))))} · ` +
     `M2 sızıntılı masa ${masaSatirlari.filter((s) => s.sizintiM2 > 0).length} · M3 sızıntılı masa ${masaSatirlari.filter((s) => s.sizintiM3 > 0).length}`,
   );
+}
+
+// ---------------------------------------------------------------------------------------------
+//  §PAY — kutu tetiğinin payı TAHMİNLE seçilmez (M3/O3 uygulama parametresi)
+// ---------------------------------------------------------------------------------------------
+// Oyuncu gövdesi kutuya en fazla `playerRadius` (0,47) kadar yaklaşabiliyor; KÖŞEDE ise
+// hypot(0,47 · 0,47) = 0,66 br kalıyor (push-out eksen başına çalışıyor, daire değil). Yani pay
+// 0,47 ise köşeden yanaşan oyuncu dışarıda kalır, pay büyüdükçe komşu masanın da tetiklenmesi
+// yaklaşır. İki uç arasındaki pencere burada süpürülür — kapsama ve sızıntı AYNI satırda.
+{
+  console.log('\n### §PAY — kutu tetiğinin payı (kapsama ↔ sızıntı penceresi)');
+  console.log('pay (br) | masa kapsama% (yanaşabilen yönün) | masa sızıntı yön | tezgâh kapsama% | tezgâh sızıntı');
+  const d = dunyalar()[dunyalar().length - 1];
+  const solids = activeSolids(d.tables, d.areasOpen);
+  const alan = new Alan(d, solids);
+  const sp = servicePlace(d.areasOpen);
+  // Yaklaşabilen yön: oyuncunun objeye doğru yürüyüp durabildiği HER yön (köşeler dahil).
+  const duraklarFor = (merkez: readonly number[], half: readonly [number, number]) => {
+    const out: [number, number][] = [];
+    for (let k = 0; k < YON; k++) {
+      const p = alan.yaklas(merkez, (2 * Math.PI * k) / YON, Math.min(half[0], half[1]) * 0.5);
+      if (p && kutuMesafe(p[0], p[1], merkez, half) <= 0.9) out.push(p);
+    }
+    return out;
+  };
+  const masaDuraklar = Array.from({ length: d.tables }, (_, i) => {
+    const t = LAYOUT.tables[i];
+    return duraklarFor(t.table, t.kind === 'deuce' ? LAYOUT.deuceHalf : LAYOUT.tableHalf);
+  });
+  const ocakDuraklar = duraklarFor(sp.station, sp.half);
+  for (let pay = 0.45; pay <= 0.9001; pay += 0.05) {
+    let kapsar = 0, toplam = 0, sizar = 0;
+    for (let i = 0; i < d.tables; i++) {
+      const t = LAYOUT.tables[i];
+      const h = t.kind === 'deuce' ? LAYOUT.deuceHalf : LAYOUT.tableHalf;
+      for (const p of masaDuraklar[i]) {
+        toplam++;
+        if (kutuMesafe(p[0], p[1], t.table, h) <= pay) kapsar++;
+        for (let j = 0; j < d.tables; j++) {
+          if (j === i) continue;
+          const tj = LAYOUT.tables[j];
+          const hj = tj.kind === 'deuce' ? LAYOUT.deuceHalf : LAYOUT.tableHalf;
+          if (kutuMesafe(p[0], p[1], tj.table, hj) <= pay) { sizar++; break; }
+        }
+      }
+    }
+    let oKapsar = 0, oSizar = 0;
+    for (const p of ocakDuraklar) {
+      if (kutuMesafe(p[0], p[1], sp.station, sp.half) <= pay) oKapsar++;
+      if (kutuMesafe(p[0], p[1], sp.dish, sp.dishHalf) <= pay) oSizar++; // bulaşık noktasıyla karışma
+    }
+    const secili = Math.abs(pay - C.cups.collectReach) < 0.001 || Math.abs(pay - C.serving.pickupReach) < 0.001;
+    console.log(
+      `${f2(pay).padStart(8)} | ${yuzde(kapsar, toplam).padStart(33)} | ${String(sizar).padStart(16)} | ` +
+      `${yuzde(oKapsar, ocakDuraklar.length).padStart(15)} | ${String(oSizar).padStart(14)}` +
+      (secili ? '   ← config' : ''),
+    );
+  }
+  console.log(`config: cups.collectReach = ${f2(C.cups.collectReach)} · serving.pickupReach = ${f2(C.serving.pickupReach)}`);
 }
 
 console.log('\n### G-02 — OCAKTAN / TEZGÂHTAN ÜRÜN ALMA (payda: tezgâha gövdesiyle yanaşılabilen yön)');

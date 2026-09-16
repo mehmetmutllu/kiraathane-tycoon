@@ -375,8 +375,23 @@ export const economyConfig = {
     // Tepsi kapasitesi ARTIK karakter yükseltmesinden türetilir (v20: character.tray; trayCapacity()).
     // PAYLAŞIMLI tepsi kuralı aynen: çay + kirli AYNI tepsiyi paylaşır, toplam kapasiteyi aşamaz
     // (eski "eli boşken / tek renk" kısıtı deadlock yaptığı için kaldırılmıştı; karışık taşıma kilit-geçirmez).
-    /** Oyuncunun ocaktan çay alma yakınlığı (dünya birimi). */
-    pickupRadius: 1.6,
+    /**
+     * OYUNCUNUN OCAKTAN ÜRÜN ALMA PAYI — yarıçap DEĞİL, tezgâhın ÇİZİLEN gövdesinden pay (H1/O3).
+     *
+     * Eski hâl `pickupRadius: 1.6`'ydı ve tezgâhın MERKEZİNDEN ölçülüyordu. Tezgâh 3,2 br
+     * uzunluğunda: uçta duran oyuncu merkeze 1,57-2,07 br kalıyor ve hiçbir şey olmuyordu.
+     * Ölçüldü (docs/erisim-raporu-h1.md): tezgâhın önünde durulabilen 3,22 br'lik hattın
+     * 0,72 br'si (%22,4) ÖLÜ; erken kurulumda yanaşılabilen yönlerin %42,6'sı tetiklemiyor.
+     * Pay gövdeye bağlandığı için tezgâh ileride uzasa da kısalsa da tetik onunla birlikte gider.
+     *
+     * DEĞER 0,70: iki bağımsız kaynak aynı sayıyı verdi. ① Pay süpürmesinde tezgâh kapsaması
+     * 0,70'te %100'e çıkıyor, sızıntı 0 kalıyor. ② YERLEŞİMİN KENDİ `pickup` noktası (garsonun
+     * çay aldığı yer, `ServicePlace.pickup`) tezgâh gövdesine tam **0,70 br** uzakta duruyor —
+     * yani mekân zaten "burada durmak tezgâha gelmektir" diyor. 0,60 denendi ve o noktayı
+     * dışarıda bıraktı (`logic.test.ts` yakaladı); oyuncunun tetiği mekânın kendi durak
+     * noktasından dar olamaz.
+     */
+    pickupReach: 0.7,
     /** Oyuncunun masaya çay bırakma yakınlığı. */
     serveRadius: 1.6,
   },
@@ -525,8 +540,27 @@ export const economyConfig = {
     poolBase: 10,
     /** Her ocak seviyesi havuza eklenen bardak. */
     poolPerLevel: 2,
-    /** Oyuncunun masadaki kirli bardağı toplama yakınlığı. */
+    /**
+     * PERSONELİN (garson/bulaşıkçı) kirli kaba VARIŞ mesafesi — rota hedefi, oyuncunun tetiği değil.
+     * Oyuncunun tetiği H1/M3'te kabın noktasından masanın gövdesine taşındı (`collectReach`).
+     */
     collectRadius: 1.4,
+    /**
+     * OYUNCUNUN KİRLİ TOPLAMA PAYI — masanın ÇİZİLEN gövdesinden pay (H1/M3).
+     *
+     * Eski hâl kabın kendi rastgele noktasından 1,4 br'lik daireydi ve kap masa merkezinden
+     * ±0,30 br saçılıyordu. Oyuncu masa kenarından en yakın 0,84 + 0,47 = 1,31 br'de durabildiği
+     * için, kap ters köşeye düştüğünde mesafe 1,61 br > 1,40 oluyordu: ölçümde dörtlü masaya
+     * yanaşılabilen yönlerin yalnız %42,2'si topluyordu, kap en kötü yerdeyse %23,8
+     * (docs/erisim-raporu-h1.md). Yani tetiği RASTGELE BİR SAYI seçiyordu — şikâyetin
+     * "bazen oluyor"unun kaynağı buydu. Artık masaya değen oyuncu O MASANIN kirlilerini alır;
+     * kabın nereye düştüğü tetiği seçmez.
+     *
+     * DEĞER TAHMİN DEĞİL: oyuncu gövdesi kutuya en fazla 0,47 br yaklaşabiliyor (push-out),
+     * köşede 0,66 br. Pay süpürmesi `tools/olcum-erisim-h1.ts` §PAY ile yapıldı; seçilen değerde
+     * komşu masadan yanlış toplama 0 yön.
+     */
+    collectReach: 0.7,
     /** Bulaşık noktasında yıkama yakınlığı (varınca taşınan kirliler temize döner). */
     washRadius: 1.6,
     /**

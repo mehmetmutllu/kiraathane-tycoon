@@ -733,7 +733,7 @@ export function lockedAreaSolids(areasOpen: number): Solid[] {
 
 /** Masanın footprint yarısı — TİPE bağlı (D-073): dörtlü çay masası 1,75, ikili kafe masası 1,00.
  *  Tip masanın global indeksinden (alanın planından) türer, ayrı bir alan tutulmaz. */
-const tableHalfFor = (i: number): readonly [number, number] =>
+export const tableHalfFor = (i: number): readonly [number, number] =>
   LAYOUT.tables[i].kind === 'deuce' ? LAYOUT.deuceHalf : LAYOUT.tableHalf;
 
 /** O an SAHNEDE var olan SABİT katı engeller (açık servislerin ocak+bulaşığı; açık masalar +
@@ -793,6 +793,44 @@ export function hitsSolid(x: number, z: number, solids: Solid[], r: number): boo
   }
   return false;
 }
+
+// ---------------------------------------------------------------------------------------------
+//  GÖVDE TETİKLERİ (H1 · M3/O3) — "objeye DEĞDİYSEN oldu"
+// ---------------------------------------------------------------------------------------------
+/**
+ * Bir noktanın KUTUYA (merkez c, yarı-boyut h) düzlemsel mesafesi. Kutunun içindeyse 0.
+ *
+ * NEDEN BURADA: tetik geometrisi collision geometrisiyle AYNI kutudan türesin diye. S24'ün dersi
+ * (D-120/D-121) çizilen şekil ile tetiğin ayrı hesaplanmasının sessizce yanlış oyun ürettiğiydi;
+ * H1 aynı kusurun kirli kap ve tezgâh nüshalarını kapatıyor. `hitsSolid` "içinde mi", bu "ne
+ * kadar dışında" sorusunu yanıtlar — ikisi de aynı `Solid` tanımını okur.
+ */
+export function boxDist2D(x: number, z: number, c: RVec3, h: readonly [number, number]): number {
+  const dx = Math.max(0, Math.abs(x - c[0]) - h[0]);
+  const dz = Math.max(0, Math.abs(z - c[2]) - h[1]);
+  return Math.hypot(dx, dz);
+}
+
+/**
+ * Oyuncu i. MASANIN gövdesine değiyor mu? (kirli kap toplama tetiği — H1/M3)
+ *
+ * Eski tetik kabın KENDİ rastgele noktasından bir daireydi; kap masa merkezinden ±0,30 br
+ * saçıldığı için masanın hangi yanından toplanacağını rastgele bir sayı seçiyordu (ölçüm:
+ * dörtlü masada yanaşılabilen yönlerin %42,2'si, kap en kötü yerdeyse %23,8 —
+ * `docs/erisim-raporu-h1.md`). Artık masaya değen oyuncu O MASANIN kirlilerini alır.
+ */
+export const atTableBody = (px: number, pz: number, i: number, reach: number): boolean =>
+  boxDist2D(px, pz, LAYOUT.tables[i].table, tableHalfFor(i)) <= reach;
+
+/**
+ * Oyuncu SERVİS TEZGÂHININ gövdesine değiyor mu? (ürün alma tetiği + yükseltme gardiyanı — H1/O3)
+ *
+ * TEK KAYNAK OLMASI ŞART: aynı soruyu iki yerde soruyoruz — `serveSystem` "tepsiyi doldur" derken,
+ * `fillTargetSystem` gardiyanı "o hâlde yükseltme dolumu BAŞLAMASIN" derken. İkisi ayrı yazılsaydı
+ * aralarında, tepsinin dolduğu ama gardiyanın görmediği (ya da tersi) bir bant kalırdı.
+ */
+export const atServiceBody = (px: number, pz: number, place: ServicePlace, reach: number): boolean =>
+  boxDist2D(px, pz, place.station, place.half) <= reach;
 
 // --- Personel yol bulma (nav.ts) ---
 // Garson/bulaşıkçı GERÇEK rota izler (BFS) → eski moveAvoid eksen-kayması bir masayı dolaşamayıp

@@ -38,6 +38,7 @@ import {
   type GateState,
   type ProductId,
 } from '../config/economy.config';
+import { hedefEkranda } from './cameraView';
 import {
   deriveWorld,
   areaOfTable,
@@ -76,6 +77,8 @@ import {
   type RVec3,
   type Solid,
   type ServicePlace,
+  atServiceBody,
+  atTableBody,
 } from './layout';
 import {
   FILL_TEA,
@@ -269,6 +272,14 @@ export function createTickCtx(s: GameState, dt: number): TickCtx {
     // 2026-06-11 fix: kare-içi ÖNCELİK (reveal 1 < görev 2 < alan 3); düşük öncelik yükseği EZEMEZ.
     camPrio: 0,
     requestFocus: (pos: RVec3, prio: number) => {
+      // H1/K2 KAPISI: hedef ZATEN ekrandaysa pan ATILMAZ. Ölçümde erken zincirdeki 6 panın
+      // 6'sında hedef görünürdü — pan bilgi değil yalnız hareket taşıyordu ve oyuncu bu sırada
+      // toplam 11,02 sn kendi karakterini göremiyordu (docs/erisim-raporu-h1.md).
+      // Kural ÖNCELİKTEN BAĞIMSIZ (alan açılışı dahil): ekranda duran bir şeye kamerayı
+      // kaydırmak hangi öncelikle yapılırsa yapılsın aynı şeyi kazandırıyor — hiçbir şey.
+      // HUD'un "hedefi göster" düğmesi (`store.focusQuest`) bu kapıdan GEÇMEZ: orada panı
+      // oyuncunun kendisi istemiştir.
+      if (hedefEkranda(pos[0], pos[2])) return;
       if (prio >= c.camPrio) {
         c.camFocus = { pos: [pos[0], pos[1], pos[2]], ttl: CAM_FOCUS_TTL };
         c.camPrio = prio;
@@ -749,9 +760,12 @@ function serveSystem(c: TickCtx): void {
   // Servise yaklaşınca HAZIR üründen tepsi dolar. PAYLAŞIMLI kapasite (2026-06-09): ürün + kirli
   // aynı tepsiyi paylaşır → toplam trayCap'i aşamaz. Karışık taşıma serbest (deadlock'u engeller).
   // B2: tek noktadan iki ürün alınabilir — çay tepsinin bardak bölmesine, tost tabak bölmesine.
+  // H1/O3: tetik tezgâhın ÇİZİLEN gövdesinden. Eskiden tezgâhın MERKEZİNDEN 1,6 br'lik daireydi
+  // ve tezgâh 3,2 br uzun: uçta duran oyuncu merkeze 1,57-2,07 br kalıyor, semaverin tam önünde
+  // durup hiçbir şey alamıyordu (ölü ön yüz 0,72 br — docs/erisim-raporu-h1.md).
   if (
     tray + trayFood + carriedDirty + carriedDirtyFood < trayCap &&
-    dist2D(player, c.place.station) < C.serving.pickupRadius
+    atServiceBody(player[0], player[2], c.place, C.serving.pickupReach)
   ) {
     for (const prod of ['tea', 'tost'] as const) {
       const free = trayCap - tray - trayFood - carriedDirty - carriedDirtyFood;
@@ -807,7 +821,14 @@ function dishCycleSystem(c: TickCtx): void {
   if (tray + trayFood + carriedDirty + carriedDirtyFood < trayCap && dishes.length) {
     const keep: Dish[] = [];
     for (const d of dishes) {
-      if (tray + trayFood + carriedDirty + carriedDirtyFood < trayCap && dist2D(player, d.pos) < C.cups.collectRadius) {
+      // H1/M3: tetik kabın rastgele düştüğü noktadan değil, kabın DURDUĞU MASANIN gövdesinden.
+      // Eskiden kap masa merkezinden ±0,30 br saçılıyor, oyuncu ise kenardan en yakın 1,31 br'de
+      // durabiliyordu: kap ters köşeye düşünce 1,61 br > 1,40 ve toplama olmuyordu. Yani masanın
+      // hangi yanından toplanacağını RASTGELE BİR SAYI seçiyordu (docs/erisim-raporu-h1.md).
+      if (
+        tray + trayFood + carriedDirty + carriedDirtyFood < trayCap &&
+        atTableBody(player[0], player[2], d.tableIndex, C.cups.collectReach)
+      ) {
         // turu-5 m.11: kirli kabın TÜRÜ tepsi görseline taşınır (tabak ≠ bardak); havuz/yıkama ortak.
         if (d.kind === 'plate') carriedDirtyFood += 1;
         else carriedDirty += 1;
@@ -1135,7 +1156,7 @@ function revealSystem(c: TickCtx): void {
   }
   // GUARD (gece fix 2026-06-10): oyuncu AÇIK bir ocağın pickup yarıçapındaysa niyeti ÇAY ALMAK'tır —
   // yükseltme dolumu kesinlikle başlamaz (mekânsal ayrımın yanında ikinci emniyet).
-  const inPickupRange = dist2D(player, c.place.station) < C.serving.pickupRadius;
+  const inPickupRange = atServiceBody(player[0], player[2], c.place, C.serving.pickupReach);
   if (
     !onFillId &&
     !inPickupRange &&

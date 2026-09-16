@@ -85,6 +85,9 @@ import {
   areaOfTable,
   servicePlace,
   serviceMoved,
+  boxDist2D,
+  atServiceBody,
+  tableHalfFor,
   wallSpans,
   BAND,
   BAND_SHELL,
@@ -446,8 +449,16 @@ describe('garson — quest hattında zorunlu personel (2026-06-09; eski D-014 op
 describe('park noktası (Faz A3) — testlerin "uzağa park et" niyeti YERLEŞİMDEN türetilir', () => {
   it('park noktası her mekanizmanın tetikleme yarıçapının DIŞINDA (yerleşim daralırsa bu test düşer)', () => {
     const clear = parkClearance(1, 4);
-    // Tetikleme yarıçapları: çay alma / servis, pad dolumu, masa yükseltme noktası, para mıknatısı.
-    expect(clear).toBeGreaterThan(economyConfig.serving.pickupRadius);
+    // Tetikleme yarıçapları: servis, pad dolumu, masa yükseltme noktası, para mıknatısı.
+    // H1/O3: çay ALMA artık yarıçap değil gövde payı → park noktası doğrudan tetikle sınanır.
+    for (const areasOpen of [1, 2, 3]) {
+      const sp = servicePlace(areasOpen);
+      const pp = parkSpot(areasOpen, 4);
+      expect(
+        atServiceBody(pp[0], pp[2], sp, economyConfig.serving.pickupReach),
+        `park noktası ${areasOpen} alanda tezgâhın gövde tetiğinde olmamalı`,
+      ).toBe(false);
+    }
     expect(clear).toBeGreaterThan(economyConfig.serving.serveRadius);
     expect(clear).toBeGreaterThan(PAD_RADIUS);
     expect(clear).toBeGreaterThan(attractRadiusFor(0));
@@ -609,6 +620,28 @@ describe('yeni-özellik bildirimi (D-019 §4)', () => {
   });
 });
 
+/**
+ * H1/M3 SONRASI FİKSTÜR: kirli kap tetiği kabın noktasından değil MASANIN gövdesinden ölçülüyor.
+ * Bu yüzden bu bölümdeki denetimler oyuncuyu artık "kabın üstüne" değil MASANIN YANINA koyar —
+ * kabın masada durduğu, oyuncunun da masaya yanaştığı gerçek durum. (Eski fikstür oyuncuyu
+ * salonun ortasındaki [1, 1] noktasına koyuyor ve kaba `tableIndex: 0` etiketi veriyordu:
+ * ikisi birbirini tutmuyordu, eski nokta-tetiği bunu görmediği için sorun çıkmamıştı.)
+ */
+function masaBasi(tableIndex = 0): {
+  masa: readonly [number, number, number];
+  kap: [number, number, number];
+  oyuncu: [number, number, number];
+} {
+  const t = LAYOUT.tables[tableIndex].table;
+  const h = tableHalfFor(tableIndex);
+  return {
+    masa: t as readonly [number, number, number],
+    kap: [t[0], 0.95, t[2]],
+    // Masanın +z yüzüne gövdesiyle yanaşmış oyuncu (collision standoff kadar).
+    oyuncu: [t[0], 0.6, t[2] + h[1] + LAYOUT.playerRadius + 0.02],
+  };
+}
+
 describe('bardak döngüsü (Faz 2e) — demleme temiz harcar, içen kirli bırakır, topla+yıka', () => {
   // Sistemdeki TÜM bardakları say (korunum değişmezi: toplam = havuz kapasitesi).
   function totalCups() {
@@ -714,11 +747,11 @@ describe('bardak döngüsü (Faz 2e) — demleme temiz harcar, içen kirli bıra
   it('temiz çay taşırken masadaki kirli TOPLANIR (karışık taşıma; simetrik)', () => {
     useGame.getState().hardReset();
     // Bir masaya kirli bardak koy, oyuncuyu üstüne park et, elinde temiz çay olsun → kirliyi de alabilmeli.
-    const dishPos: [number, number, number] = [1, 0.95, 1];
+    const { kap, oyuncu } = masaBasi(0);
     useGame.setState({
-      player: [dishPos[0], 0.6, dishPos[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0],
+      player: oyuncu, inputKeyboard: [0, 0], inputJoystick: [0, 0],
       tray: 1, carriedDirty: 0,
-      dishes: [{ id: 9001, pos: dishPos, tableIndex: 0 }],
+      dishes: [{ id: 9001, pos: kap, tableIndex: 0 }],
     });
     useGame.getState().tick(0.1);
     expect(useGame.getState().carriedDirty).toBe(1); // temiz elindeyken kirli toplandı
@@ -743,14 +776,14 @@ describe('bardak döngüsü (Faz 2e) — demleme temiz harcar, içen kirli bıra
 
   it('turu-5 m.11: kirli TABAK ayrı sayılır (carriedDirtyFood) + yıkamada bardakla ortak havuza döner', () => {
     useGame.getState().hardReset();
-    const dishPos: [number, number, number] = [1, 0.95, 1];
-    // Aynı noktada bir tabak (tost bulaşığı) + bir bardak: tür doğru bölmeye gitmeli.
+    const { kap, oyuncu } = masaBasi(0);
+    // Aynı masada bir tabak (tost bulaşığı) + bir bardak: tür doğru bölmeye gitmeli.
     useGame.setState({
-      player: [dishPos[0], 0.6, dishPos[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0],
+      player: oyuncu, inputKeyboard: [0, 0], inputJoystick: [0, 0],
       tray: 0, carriedDirty: 0, carriedDirtyFood: 0,
       dishes: [
-        { id: 9301, pos: dishPos, tableIndex: 0, kind: 'plate' },
-        { id: 9302, pos: dishPos, tableIndex: 0, kind: 'cup' },
+        { id: 9301, pos: kap, tableIndex: 0, kind: 'plate' },
+        { id: 9302, pos: kap, tableIndex: 0, kind: 'cup' },
       ],
     });
     useGame.getState().tick(0.1);
@@ -770,10 +803,10 @@ describe('bardak döngüsü (Faz 2e) — demleme temiz harcar, içen kirli bıra
   it('DEADLOCK YOK: elinde çay + tüm masalar kirli → kirli toplanıp temizlenebilir', () => {
     useGame.getState().hardReset();
     // Elinde 1 çay; bir masada eşik üstü kirli (masa kilitli, bekleyen yok) → eskiden kilitlenirdi.
-    const dishPos: [number, number, number] = [1, 0.95, 1];
-    const dishes = Array.from({ length: 3 }, (_, i) => ({ id: 9100 + i, pos: dishPos, tableIndex: 0 }));
+    const { kap, oyuncu } = masaBasi(0);
+    const dishes = Array.from({ length: 3 }, (_, i) => ({ id: 9100 + i, pos: kap, tableIndex: 0 }));
     useGame.setState({
-      player: [dishPos[0], 0.6, dishPos[2]], inputKeyboard: [0, 0], inputJoystick: [0, 0],
+      player: oyuncu, inputKeyboard: [0, 0], inputJoystick: [0, 0],
       tray: 1, carriedDirty: 0, dishes,
     });
     useGame.getState().tick(0.1);
@@ -1174,8 +1207,10 @@ describe('mekânsal çay yükseltme noktası (zone) + gating', () => {
     for (const areasOpen of [1, 2, 3]) {
       const st = SP(areasOpen).station;
       const up = SP(areasOpen).upgradeSpot;
-      const dist = Math.hypot(st[0] - up[0], st[2] - up[2]);
-      expect(dist).toBeGreaterThanOrEqual(economyConfig.serving.pickupRadius + 0.3);
+      // H1/O3: tetik tezgâhın GÖVDESİNDEN ölçülüyor → değişmez de gövdeden ölçülür.
+      // (Merkezden ölçmek tezgâh uzadıkça sessizce yanlış cevap verirdi.)
+      expect(boxDist2D(up[0], up[2], st, SP(areasOpen).half))
+        .toBeGreaterThanOrEqual(economyConfig.serving.pickupReach + 0.3);
     }
   });
 
@@ -1191,7 +1226,7 @@ describe('mekânsal çay yükseltme noktası (zone) + gating', () => {
     const d = (sp.rot === 0 ? sp.half[1] : sp.half[0]) + LAYOUT.playerRadius + 0.05;
     const front: [number, number, number] =
       sp.rot === 0 ? [st[0], 0.6, st[2] + d] : [st[0] + d, 0.6, st[2]];
-    expect(Math.hypot(front[0] - st[0], front[2] - st[2])).toBeLessThan(economyConfig.serving.pickupRadius);
+    expect(atServiceBody(front[0], front[2], sp, economyConfig.serving.pickupReach)).toBe(true);
     useGame.setState({ player: front, inputKeyboard: [0, 0], inputJoystick: [0, 0], npcs: [], spawnTimer: 999 });
 
     const walletBefore = useGame.getState().wallet.toNumber();
@@ -1251,17 +1286,21 @@ describe('yerleşim — yürüme döngüsü zorlanır (D-017 §1, çakışma yok
     return Math.hypot(a[0] - b[0], a[2] - b[2]);
   }
   it('hiçbir masa ocağın çay-alma + servis dairelerinin BİRLEŞİĞİNDE değil (tek noktada çay-al+servis imkânsız)', () => {
-    const stove = SP().station;
-    const minSep = economyConfig.serving.pickupRadius + economyConfig.serving.serveRadius; // 1.6+1.6 = 3.2 (=2R)
+    // H1/O3: çay alma tetiği tezgâhın GÖVDESİNDEN pay. Tek noktadan hem alıp hem servis
+    // yapılamaması için tezgâh KUTUSUNUN masaya uzaklığı iki menzilin toplamını aşmalı.
+    const sp = SP();
+    const minSep = economyConfig.serving.pickupReach + economyConfig.serving.serveRadius;
     for (const t of LAYOUT.tables) {
-      expect(dist2D(stove, t.table)).toBeGreaterThan(minSep);
+      expect(boxDist2D(t.table[0], t.table[2], sp.station, sp.half)).toBeGreaterThan(minSep);
     }
   });
   it('hiçbir masa bulaşığın yıkama + kirli-toplama dairelerinin BİRLEŞİĞİNDE değil (tek noktada kirli-al+yıka imkânsız)', () => {
+    // H1/M3: kirli toplama tetiği MASANIN gövdesinden pay → değişmez de masanın kutusundan.
     const dish = SP().dish;
-    const minSep = economyConfig.cups.washRadius + economyConfig.cups.collectRadius; // 1.6+1.4 = 3.0
-    for (const t of LAYOUT.tables) {
-      expect(dist2D(dish, t.table)).toBeGreaterThan(minSep);
+    const minSep = economyConfig.cups.washRadius + economyConfig.cups.collectReach;
+    for (let i = 0; i < LAYOUT.tables.length; i++) {
+      const t = LAYOUT.tables[i];
+      expect(boxDist2D(dish[0], dish[2], t.table, tableHalfFor(i))).toBeGreaterThan(minSep);
     }
   });
   it('başlangıç masası (table0) ocaktan hedef ~5 br uzak (yürüme döngüsü en baştan zorlanır)', () => {
@@ -2320,9 +2359,10 @@ describe('SERVİS NOKTASI (B2) — tek nokta, tek yerleşim, tek rota', () => {
     expect(SP(3).rot).toBe(0);
     // Her iki yerde de: pickup ön yüzde, yükseltme noktası çay-alma dairesinin dışında.
     for (const areasOpen of [1, 3]) {
-      const pickup = SP(areasOpen).pickup;
-      const up = SP(areasOpen).upgradeSpot;
-      expect(Math.hypot(pickup[0] - up[0], pickup[2] - up[2])).toBeGreaterThan(economyConfig.serving.pickupRadius);
+      const sp2 = SP(areasOpen);
+      // H1/O3: yükseltme noktası tezgâhın gövde tetiğinin DIŞINDA olmalı (gardiyan onu yutmasın).
+      expect(atServiceBody(sp2.upgradeSpot[0], sp2.upgradeSpot[2], sp2, economyConfig.serving.pickupReach)).toBe(false);
+      expect(boxDist2D(sp2.pickup[0], sp2.pickup[2], sp2.station, sp2.half)).toBeLessThanOrEqual(economyConfig.serving.pickupReach);
     }
   });
 
@@ -3423,7 +3463,7 @@ describe('Faz B1 — dünya modeli: ALAN · SERVİS · MASA · ODA ayrışması'
       // OBJE GÖVDELERİ (tezgâh · bulaşık) alana DEĞMEK zorunda, içinde durmak zorunda değil:
       // BM adım 3'te küme mutfağın içine geçti, ön yüzü bandın hattında kaldı — bir tezgâhın
       // gövdesinin duvarın içinde olması normaldir, ERİŞİLEMEZ olması değil. Asıl kural bu:
-      // alanın tezgâha en yakın noktasından tezgâh `serving.pickupRadius` içinde kalmalı.
+      // alanın tezgâha en yakın noktasından tezgâh ERİŞİLEBİLİR kalmalı (H1/O3: gövdeye pay).
       for (const [c, h] of [
         [sp.station, sp.half],
         [sp.dish, sp.dishHalf],
@@ -3434,7 +3474,7 @@ describe('Faz B1 — dünya modeli: ALAN · SERVİS · MASA · ODA ayrışması'
         expect(c[2] - h[1]).toBeLessThanOrEqual(ab.maxZ);
         const nx = Math.max(ab.minX, Math.min(ab.maxX, c[0]));
         const nz = Math.max(ab.minZ, Math.min(ab.maxZ, c[2]));
-        expect(Math.hypot(nx - c[0], nz - c[2])).toBeLessThan(economyConfig.serving.pickupRadius);
+        expect(boxDist2D(nx, nz, c, h)).toBeLessThanOrEqual(economyConfig.cups.washRadius);
       }
     }
   });
