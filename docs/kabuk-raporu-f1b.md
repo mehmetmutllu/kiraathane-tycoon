@@ -258,6 +258,315 @@ tanım gereği zaten gereksizleşir — ama ikisi de zaten çizilmediği için b
 
 ---
 
+# TUR 2 — AÇILAN EKRANLAR (G-54) · YD REVİZE (G-51/G-52) · TABLET BASAMAĞI (G-55)
+
+**Araç:** `tools/olcum-panel-f1b.mjs` · **Ham çıktı:** `docs/olcum-panel-f1b.txt` (TAM koşu damgalı)
+**Kareler:** `docs/gorsel/ss/f1b-panel-*.png` · `f1b-yd-*.png` · `f1b-tablet-*.png` · `f1b-yerlesim-*.png`
+
+> Tur 1'in ölçümü (§A–§E) yerinde duruyor; bu bölüm onu **genişletiyor**, düzeltmiyor.
+> Tur 2 de KARAR BÖLÜMÜ BOŞ olarak yayımlanır (D-084 sıra kilidi).
+
+## NEDEN İKİNCİ TUR — eksiklik değil, DELİK
+
+Tur 1 karar paketine kadar gitti ve karar **çıkmadı**. Sebebi kullanıcının tek cümlesi:
+
+> *"bana açılan ekranlar nasıl duracak onları da göstermen gerek"*
+
+Bu bir "şunu da ekle" talebi değil. Tur 1 yalnız HUD'u ölçtü; Görevler · Hedefler · Mağaza ·
+Karakter · Ayarlar ekranları yatayda ve tablette **hiç açılmadı bile**. Yön kararı verilirken
+"bu yönde açılan ekranlar ne yapıyor" sorusunun cevabı **yoktu** — yani karar eksik öncüle
+oturacaktı. Kısa ekranda panel yüksekliği en olası kırılma noktasıdır ve tam oraya bakılmamıştı.
+
+## ARACIN KURULUMU — tur 1'in iki dersi koda yazıldı
+
+1. **HUD sayımı artık zemin GÖRSELİNİ de sayıyor.** Tur 1'de `.band`/`.botnav` `linear-gradient`
+   zeminleri yüzünden sayımdan düşmüştü (İYİMSER hata, yalnız gözle yakalandı). Tur 2'nin
+   sayacı `background-color` alfası · `background-image` · görünür kenarlık üçünü birden okur.
+2. **Her hücre DÜNYA İMZASI basıyor** (`t<masa>|s<istasyon>|a<alan>|n<npc>`). Tur 1'de dünyanın
+   hiç kurulmadığı ancak imza satırıyla anlaşılmıştı. İmzasız "ölçtüm", "aynı sahneyi ölçtüm"
+   anlamına gelmiyor.
+
+Kollar yine **gerçek oyunun üstüne CSS katmanı** olarak uygulanıyor (`addStyleTag`); depoya
+hiçbir şey yazılmıyor. Kolun hem karesi hem sayısı karar ÖNCESİ elde ediliyor.
+
+## §F — AÇILAN EKRANLAR (G-54)
+
+Beş ekran × üç kadraj = 15 hücre. Ölçülen şey "güzel mi" değil, **ekranın ne kadarı ilk bakışta
+var**:
+
+| Sütun | Tanımı |
+|---|---|
+| `kaydirma` | gövdenin içeriği ÷ gövdenin yüksekliği. **1,00× = hiç kaydırma gerekmiyor.** |
+| `ilkEkran%` | ilk bakışta görünen içerik oranı (1 ÷ kaydırma) |
+| `dugme(gor/top)` | gövdede TAM görünen düğme ÷ toplam düğme |
+| `gizliOdul` | ilk ekranda **görünmeyen ödül-alma düğmesi** — ekranın asıl işi budur |
+| `yanBos` | kabuğun tek yanındaki boş zemin (px): yatayda bol eksenin kullanılmayan payı |
+| `kesilen` | yatayda ekran dışına taşan öğe |
+
+| Kadraj | Panel | Kabuk | yanBoş | Gövde | İçerik | kaydırma | ilkEkran | düğme gör/top | gizliÖdül | enKüçükYazı | kesilen |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| **P1 portre** | Görevler | 412×915 | 0 | 853 | 853 | **1,00×** | %100 | 1/2 | 0/0 | 11 px | 0 |
+| P1 portre | Hedefler | 412×915 | 0 | 853 | 853 | **1,00×** | %100 | 1/2 | **0/1** | 11 px | 0 |
+| P1 portre | Mağaza | 412×915 | 0 | 853 | 853 | **1,00×** | %100 | 12/13 | 0/1 | 13 px | 0 |
+| P1 portre | Karakter | 412×915 | 0 | 853 | 853 | **1,00×** | %100 | 6/7 | 0/3 | 11 px | 0 |
+| P1 portre | Ayarlar | 412×915 | 0 | 853 | 853 | **1,00×** | %100 | 5/6 | 0/0 | 11 px | 0 |
+| **L1 telefon yatayı** | Görevler | 520×412 | 198 | 350 | 748 | **2,14×** | **%47** | **0/2** | 0/0 | 11 px | 0 |
+| **L1 telefon yatayı** | **Hedefler** | 520×412 | 198 | 350 | 783 | **2,24×** | **%45** | **0/2** | **1/1** | 11 px | 0 |
+| L1 telefon yatayı | Mağaza | 520×412 | 198 | 350 | 403 | 1,15× | %87 | **3/13** | **1/1** | 13 px | 0 |
+| L1 telefon yatayı | Karakter | 520×412 | 198 | 350 | 370 | 1,06× | %94 | 5/7 | **1/3** | 11 px | 0 |
+| L1 telefon yatayı | Ayarlar | 520×412 | 198 | 350 | 713 | **2,04×** | **%49** | 4/6 | 0/0 | 11 px | 0 |
+| T2 tablet yatayı | Görevler | 520×800 | 380 | 738 | 748 | 1,01× | %99 | 1/2 | 0/0 | 11 px | 0 |
+| T2 tablet yatayı | Hedefler | 520×800 | 380 | 738 | 783 | 1,06× | %94 | 1/2 | **0/1** | 11 px | 0 |
+| T2 tablet yatayı | Mağaza | 520×800 | 380 | 738 | 738 | **1,00×** | %100 | 12/13 | 0/1 | 13 px | 0 |
+| T2 tablet yatayı | Karakter | 520×800 | 380 | 738 | 738 | **1,00×** | %100 | 6/7 | 0/3 | 11 px | 0 |
+| T2 tablet yatayı | Ayarlar | 520×800 | 380 | 738 | 738 | **1,00×** | %100 | 5/6 | 0/0 | 11 px | 0 |
+
+**Bulgu — delik kapandı ve cevabı tek cümle: sorun YÖNDE değil, TELEFON YATAYINDA.**
+
+- **Portrede beş ekranın beşi de kusursuz:** 1,00× kaydırma, %100 içerik, gizli ödül düğmesi 0.
+- **Tablet yatayında da sorun yok:** en kötüsü Hedefler 1,06× (bir ödül düğmesi ilk ekranın
+  hemen altında). Kullanıcının tablet endişesi HUD'daydı, panellerde karşılığı çıkmadı.
+- **Telefon yatayı kırılıyor:** Görevler **%47**, Hedefler **%45**, Ayarlar **%49** — yani
+  ekranın yarısından fazlası kaydırma arkasında. Hedefler'de **tek ödül-alma düğmesi ilk
+  ekranda görünmüyor**; Mağaza'da 13 düğmeden **yalnız 3'ü** görünüyor.
+- **Kesilme hiçbir kadrajda yok** (0/15). Yani panel *bozulmuyor*, **gömülüyor**.
+- **Boş yan:** yatayda tek yanda 198 px (iki yan = ekranın **%43'ü**), tablette 380 px
+  (**%59'u**). Kıt eksende gömülürken bol eksen kullanılmıyor — §I bunu ölçtü.
+
+> **UYARI — `kaydırma` sütunu OLDUĞUNDAN İYİ gösteriyor.** Sütun `scrollHeight`tan türüyor ve
+> §I'nin sondası bu değerin taşan çocukları saymadığını kanıtladı (aşağıda). Telefon yatayında
+> gerçek içerik yüksekliği Mağaza'da 403 değil **426 px**, Karakter'de 370 değil **427 px**.
+> Yani yukarıdaki tablonun yönü doğru, **şiddeti eksik**: telefon yatayı tablonun söylediğinden
+> daha kötü. Güvenilir sütunlar `düğme gör/top` ve `gizliÖdül`'dür — ikisi de gerçek kutu
+> geometrisinden sayılıyor.
+
+
+## §G — YD REVİZE (G-51 + G-52)
+
+Kullanıcı YD kolunun **genişliğini onayladı, hizasını reddetti**:
+
+> *"görev neden sola yaslı ortada olamaz mı?"* (G-51)
+> *"bence navbar da görev de ortada daha iyi"* (G-52 — nav zaten ortalıydı, onaylandı)
+
+**YD+**, YD'nin birebir aynısıdır; tek fark şeridin `right:auto` yerine
+`left:50% + translateX(-50%)` ile ortalanması. Sınanan hipotez: HUD yüzdesi ve açık zemin
+**genişlikten** türediği için hizadan bağımsızdır, yani YD+ ile YD'nin sayıları aynı çıkmalı.
+Hipotez ölçülmeden yazılmaz — ölçüldü.
+
+G-51'in tek ölçülebilir büyüklüğü **kaçıklık**: bloğun merkezinin ekran merkezinden sapması (px).
+**0 = tam ortalı.**
+
+| Kadraj | Kol | HUD % | Açık zemin | şerit (genişlik/kaçıklık) | nav (genişlik/kaçıklık) | taşan | hata |
+|---|---|---|---|---|---|---|---|
+| L1 telefon yatayı | Y0 taban | %38,4 | 563,0 br² | 895 / **+0** | 915 / +0 | 0 | 0 |
+| L1 telefon yatayı | YD sola yaslı (tur 1) | **%19,0** | 596,9 br² | 430 / **−233** | 362 / +0 | 0 | 0 |
+| **L1 telefon yatayı** | **YD+ ORTALI (G-51)** | **%19,0** | 596,8 br² | 430 / **+0** | 362 / +0 | 0 | 0 |
+| T2 tablet yatayı | Y0 taban | %19,1 | 507,5 br² | 1260 / +0 | 1280 / +0 | 0 | 0 |
+| T2 tablet yatayı | YD sola yaslı (tur 1) | **%7,1** | 512,2 br² | 430 / **−415** | 362 / +0 | 0 | 0 |
+| **T2 tablet yatayı** | **YD+ ORTALI (G-51)** | **%7,0** | 512,2 br² | 430 / **+0** | 362 / +0 | 0 | 0 |
+
+**Bulgu — hipotez tuttu: G-51 BEDAVA.** YD ile YD+ arasındaki fark yalnız kaçıklıkta:
+telefon yatayında **−233 → 0**, tablette **−415 → 0**. HUD yüzdesi (%19,0 ↔ %19,0 ·
+%7,1 ↔ %7,0) ve açık zemin (596,9 ↔ 596,8 · 512,2 ↔ 512,2) **değişmedi**. Yani şeridi
+ortalamak hiçbir sayıyı bozmuyor — kullanıcının reddettiği hizayı düzeltmenin bedeli yok.
+
+**Gürültü tabanı — bu turda kendiliğinden ölçüldü.** Aynı konfigürasyon (T2 · taban) iki ayrı
+bölümde iki kez koştu: §G'de **507,5 br²**, §H'de **514,4 br²**. Fark **%1,4**. Bu sayıyı
+bilmeden "512,2 ↔ 507,5 farkı" bir bulgu sanılabilirdi; değil. **Açık zemin metriğinde
+%1,5 altı farklar gürültüdür.**
+
+
+## §H — TABLET BASAMAĞI (G-55)
+
+> *"tablette level barını vs biraz daha büyütebilirsin aynı şekilde kaynaklar ve butonları da"*
+
+**Kuralın kendisi `index.css`'te yazılı (D-128):** dar ekranda ölçek basamağı AŞAĞI inilir
+(p3 → p2), *"responsive diye yeni punto uydurulmaz"*. Tabletin doğru hamlesi bunun simetriğidir:
+**mevcut ölçeğin bir basamak YUKARISI**. Kolda kullanılan her sayı ölçekten alınmıştır:
+
+| Jeton | Taban | Bir basamak yukarı |
+|---|---|---|
+| `--p1` etiket | 11 px | `--p2` **13 px** |
+| `--p2` ikincil | 13 px | `--p3` **15 px** |
+| `--p3` gövde | 15 px | `--p4` **18 px** |
+| `--pill-h` | 32 px | **38 px** (dar dalı 28/26; 38 aynı ritmin bir üstü) |
+
+Madalyon (`.lvl-star` 44 → 52), kese ikonu ve yuvarlak düğmeler aynı oranla (×1,18) ölçeklenir —
+oran `--pill-h`in 32 → 38 adımından **türetildi**, ayrıca seçilmedi.
+
+| Kol | HUD % | Açık zemin | en küçük yazı | 44 px altı hedef | taşan | hata |
+|---|---|---|---|---|---|---|
+| T0 tablet taban | %19,1 | 514,4 br² | **11 px** | 2/9 | 0 | 0 |
+| T+ bir basamak yukarı | %19,2 | 497,3 br² | **11 px** | 1/9 | 0 | 0 |
+| T+D basamak + YD+ | %7,5 | 518,2 br² | **11 px** | 1/9 | 0 | 0 |
+
+### §H-1. KOL ÇÜRÜDÜ — ve çürümesi turun en pahalı bulgusunu açtı
+
+**Kol kendi ölçümünde düştü:** HUD yüzdesi %19,1 → %19,2 (değişmedi), en küçük yazı
+**11 px → 11 px**. Kullanıcının şikâyeti tam olarak *"tablette büyüt"* idi; kol büyütmedi.
+
+"11 px değişmedi" bir bulgu değil bir **soru**dur: hangi öğe 11 px'te kaldı? Sonda
+(`tools/olcum-tablet-sonda-f1b.mjs`) bunu sordu ve cevap kolu aşan bir şey çıktı:
+
+```
+## T0                                    ## T+
+  madalyon      null                       madalyon      null
+  seviye çubuğu null                       seviye çubuğu null
+  kaynak rozeti null                       kaynak rozeti null
+  yuvarlak düğme 34×34                     yuvarlak düğme 34×34   ← kol 46 px dedi, olmadı
+```
+
+**Kolun hedeflediği sınıfların çoğu DOM'da YOK.** `.lvl-star` · `.lvl-bar` · `.cur-item`
+üçü de `null` döndü — bu sınıflar bugünkü HUD'da bulunmuyor.
+
+### §H-2. ASIL BULGU — `index.css`'in İKİ RESPONSIVE DALI DA ÖLÜ KOD
+
+Sonda bir kolu çürütmekle kalmadı; kolun neden çürüdüğünü kovalayınca **oyunun bugün fiilen
+hiçbir responsive dalının çalışmadığı** ortaya çıktı.
+
+| Medya sorgusu | Seçici | Canlı | Ölü |
+|---|---|---|---|
+| `@media (max-width: 400px)` | 15 | **2** (`.cur-val` · `.char-canvas`) | **13** |
+| `@media (orientation: landscape) and (max-height: 480px)` | 18 | **3** (`.cur-val` · `.char-canvas` · `.char-card`) | **15** |
+
+Ölü seçiciler: `.lvl-unit` · `.lvl-star` · `.lvl-num` · `.lvl-bar` · `.lvl-text` · `.cur-row` ·
+`.cur-item` · `.icon-btn` · `.side-btns` · `.quest-card` · `.quest-photo` · `.quest-title` —
+**hiçbiri hiçbir TSX dosyasında geçmiyor** (sayım: `className` içinde 0 eşleşme, CSS'te 45 kural).
+
+`--pill-h` jetonu da ölü: onu kullanan tek kural `.pill`, o da TSX'te **0** kez geçiyor.
+
+**Sebep git kaydında duruyor:** `fc061a0` (2026-09-06, *"Arayüz v2 (plan 9) gerçek oyunda"*)
+HUD'u yeniden adlandırdı — `.pill`/`.lvl-*`/`.cur-item` yerine `.band`/`.rep-num`/`.cur`/`.navtab`
+geldi. **Medya sorguları onunla birlikte yeniden adlandırılmadı** ve o gün bugündür kimse
+fark etmedi, çünkü ölü CSS hata vermez: sessizce hiçbir şey yapmaz.
+
+> **Bu, TUR 1'İN B-3 BULGUSUNU AÇIKLIYOR.** Tur 1 *"alt yığın her yönde 186 px SABİT"* diye
+> ölçmüş ve *"kısa ekrana uyum sağlamayan HUD"* demişti. Sebebi şimdi biliniyor: **onu
+> kısaltacak dal çalışmıyor.** Tur 1 semptomu ölçmüş, tur 2 sebebi buldu.
+>
+> Aynı şey D-128 için de geçerli: *"dar ekranda ölçek basamağı AŞAĞI inilir (p3 → p2)"* kuralı
+> `index.css`'te yazılı duruyor ama **bugün fiilen uygulanmıyor.** Kural doğru, uygulaması ölü.
+
+### §H-3. Aracın kusuru — dürüstlük payı
+
+`.round-btn { width: 46px }` kolu uygulanmadı: `hud.css`'teki `.round-btn.gear` (özgüllük 0,2,0)
+benim `.round-btn` seçicimden (0,1,0) güçlü. **Kol kavramsal olarak değil, YAZIM olarak düştü.**
+Bu, §H tablosundaki "1/9" hedef iyileşmesinin de kısmi olduğunu söylüyor — ölçülen şey kolun
+tamamı değil, uygulanabilen kısmı.
+
+
+## §I — PANEL YERLEŞİMİ — bu bölüm ÖLÇÜM SIRASINDA DOĞDU
+
+Planda yoktu. §F'nin ilk karesi (`ss/f1b-panel-goals-L1.png`) sayının söylemediğini gösterdi:
+yatayda panel, 915 px'lik ekranın ortasında **520 px'lik dar bir sütun**; iki yanda boş zemin,
+kıt olan eksende (yükseklik) 2,2× kaydırma ve ödül düğmesi alt kenarda kesiliyor.
+
+**Sayı bunu tek başına söylemiyordu.** `kabuk 520×412` satırı "dar sütun" diye okunmuyor —
+kare okuyor. Turun ikinci dersi (*kare ölçümün denetleyicisidir*) bu turda **üçüncü kez** işledi.
+
+Kolların ortak fikri: **kıt ekseni bol eksene çevirmek.** Hiçbiri yeni punto ya da yeni renk
+getirmiyor; yalnız kabuğun genişliğini ve gövdenin akışını değiştiriyor.
+
+| Kol | Ne yapar |
+|---|---|
+| **P0** | taban — 520 px sütun |
+| **PA** | geniş kabuk (820 px), tek sütun. *Kartlar tam satır olduğu için yüksekliğin düşmeyeceği* beklentisini SINAR; düşmezse kol düşer. |
+| **PB** | iki sütun — geniş kabuk (880 px) + gövde gride akar. Bölüm kuşakları tam satır kalır ki ekranın iskeleti (S12) bozulmasın. |
+| **PC** | tam en — panel kenardan kenara. Kullanıcının *"tüm ekran kaplayınca kötü duruyor"* cümlesi **HUD içindi**; panel için aynı şeyi söyleyip söylemediği BİLİNMİYOR, o yüzden varsayılmadı, ölçüldü. |
+
+| Kol | Kabuk | yanBoş | ORTALAMA kaydırma | gizli ödül düğmesi | kesilen |
+|---|---|---|---|---|---|
+| **P0** taban 520 px | 520×412 | 198 | **1,73×** | 3 | 0 |
+| **PA** geniş kabuk 820 px | 820×412 | 48 | **1,73×** | 3 | 0 |
+| **PB** iki sütun 880 px | 880×412 | 18 | **1,48×** | **2** | 0 |
+| **PC** tam en 915 px | 915×412 | 0 | **1,73×** | 3 | 0 |
+
+Panel panel (telefon yatayı):
+
+| Panel | P0 | PA | **PB** | PC |
+|---|---|---|---|---|
+| Görevler | 2,14× | 2,14× | **2,14×** | 2,14× |
+| Hedefler | 2,24× | 2,24× | **2,24×** | 2,24× |
+| Mağaza | 1,15× | 1,15× | **1,00×** | 1,15× |
+| Karakter | 1,06× | 1,06× | **1,00×** | 1,06× |
+| Ayarlar | 2,04× | 2,04× | **1,00×** | 2,04× |
+
+**Bulgu 1 — GENİŞLİK TEK BAŞINA HİÇBİR ŞEY ÇÖZMÜYOR.** PA kabuğu 520 → 820 px'e çıkardı,
+PC 915 px'e (kenardan kenara) çıkardı: **ikisi de 1,73×'te kaldı, tek hücre bile değişmedi.**
+PA kolu bu beklentiyi sınamak için konmuştu ve **beklenti doğrulandı, kol düştü** — kartlar tam
+satır olduğu için kabuk genişleyince içerik de genişliyor, yükseklik aynı kalıyor.
+
+**Bulgu 2 — İKİ SÜTUN ÇALIŞIYOR, AMA EN ÇOK GEREKEN İKİ EKRANDA TUTMUYOR.** PB, Mağaza ·
+Karakter · Ayarlar'ı **1,00×'e** indirdi (kaydırma tamamen bitti) ama **Görevler 2,14× ve
+Hedefler 2,24× hiç değişmedi** — yani en kötü iki ekran olduğu yerde kaldı. Sebep yapısal:
+iki sütun `.sheet-pad`'e `display: contents` ile açıldı; Görevler ve Hedefler içeriğini `<ul>`
+gibi **tek bir çocukta** taşıyor, o da gride tek hücre olarak giriyor. **PB bugünkü DOM'da
+5 ekranın 3'ünde tutuyor.**
+
+### §I-1. DÖRDÜNCÜ ARAÇ KUSURU — ve PB'nin zaferi buharlaştı
+
+PB'nin karesi (`ss/f1b-yerlesim-PB-shop.png`) tabloyla çelişti: sayı *"Mağaza 1,00× — hiç
+kaydırma gerekmiyor"* diyordu, karede **kartlar alt kenarda kesikti**. Aynı koşunun başka bir
+sütunu da çelişiyordu: `düğme gör/top` PB/Mağaza'da **4/13**, yani dokuz düğme gövdenin dışında.
+*"Kaydırma yok"* ile *"9 düğme dışarıda"* aynı anda doğru olamaz.
+
+Sonda (`tools/olcum-grid-sonda-f1b.mjs`) `scrollHeight` ile çocukların **gerçek en alt kenarını**
+yan yana koydu:
+
+| Kol | Panel | akış | gövde (client) | `scrollHeight` | GERÇEK içerik | dışarıda/toplam | doğru mu? |
+|---|---|---|---|---|---|---|---|
+| P0 | Mağaza | flex | 350 | 403 | **426** | 24/39 | **HAYIR** |
+| P0 | Ayarlar | flex | 350 | 713 | 699 | 23/47 | **HAYIR** |
+| P0 | Karakter | flex | 350 | 370 | **427** | 20/71 | **HAYIR** |
+| PB | Mağaza | grid | 350 | **350** | **426** | 21/39 | **HAYIR** |
+| PB | Ayarlar | grid | 350 | 350 | 352 | **1/46** | EVET |
+| PB | Karakter | grid | 350 | **350** | **427** | 19/71 | **HAYIR** |
+
+**`scrollHeight` altı hücrenin beşinde yanlış.** Kaydırma bölgesine girmeyen (konumlandırılmış,
+dönüştürülmüş, tuval) çocuklar sayıma girmiyor. Grid'e çevrilince hata büyüyor: PB/Mağaza'da
+`scrollHeight` 350 diyor, gerçek içerik **426**.
+
+### §I-2. DÜZELTİLMİŞ SONUÇ — PB yalnız BİR ekranı çözüyor
+
+Güvenilir sütun `dışarıda` (gövdenin alt kenarını aşan öğe sayısı):
+
+| Panel | P0 taban | PB iki sütun | kazanç |
+|---|---|---|---|
+| Ayarlar | 23/47 | **1/46** | **çözüldü** |
+| Mağaza | 24/39 | 21/39 | %13 |
+| Karakter | 20/71 | 19/71 | %5 |
+| **toplam** | **67** | **41** | — |
+
+**PB'nin tek gerçek zaferi Ayarlar.** Mağaza ve Karakter neredeyse hiç iyileşmedi, Görevler ve
+Hedefler hiç değişmedi (2,14× / 2,24×). Yani **iki sütun bugünkü DOM'da 5 ekranın 1'ini
+çözüyor**, ilk okunan "3'ünü" değil.
+
+Yani §I'nin dürüst cevabı: **ölçülen dört kolun hiçbiri telefon yatayını kurtarmıyor.**
+*"Paneli genişletelim"* (PA/PC) hiçbir şey değiştirmiyor; *"iki sütuna akıtalım"* (PB) yalnız
+düz liste taşıyan tek ekranda tutuyor. Panellerin gövde yapısı (Görevler/Hedefler'in `<ul>`i,
+Mağaza'nın önizleme tuvali, Karakter'in canlı sahnesi) düzleştirilmeden bu yol açılmıyor —
+bu, karar paketine bir **kol** olarak değil bir **maliyet** olarak girer.
+
+## §Dünya imzası — BEKÇİ KIRMIZI YANDI, olduğu gibi raporlanıyor
+
+```
+P1: t20|s0|a3|n3
+L1: t20|s0|a3|n3
+T2: t20|s0|a3|n2        <- npcCount 3 degil 2
+DENETIM: *** KIRMIZI: kadrajlar farkli dunya olctu ***
+```
+
+**Yapısal dünya üç kadrajda da aynı** (20 masa · 0 istasyon · 3 alan); ayrışan tek terim canlı
+**NPC sayısı** (3 ↔ 2) ve §F/§G/§H/§I'nin hiçbir büyüklüğü NPC sayısına bağlı değil — panel
+yükseklikleri, HUD dikdörtgenleri ve zemin taraması müşterilerden bağımsız.
+
+**Buna rağmen imza gevşetilmedi.** Kırmızıyı gördükten sonra bekçiyi "yapısal + canlı" diye
+ikiye bölmek, tam olarak D-084'ün yasakladığı şeydir: ölçüm sonucuna göre ölçüm aracını
+yumuşatmak. Kırmızı raporda duruyor; imzanın ayrıştırılması **ayrı bir tur kalemi**dir.
+
+
+---
+
 ## §Karar
 
 <!-- BOŞ — karar paketi sunulacak, kullanıcı seçecek, sonra D-0xx ile doldurulacak (D-084) -->

@@ -5,21 +5,27 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-17 — **F1b ÖLÇÜLDÜ, KARAR AÇIK** · Faz F 2/6 · 107/112)
+## ŞU AN (2026-09-17 — **F1b TUR 2: AÇILAN EKRANLAR ÖLÇÜLÜYOR** · Faz F 2/6 · 107/112)
 
 ```
-SORU            : Kabuğun yüzü — İKON · AÇILIŞ EKRANI · EKRAN YÖNÜ.
-ÖLÇÜLEN KOLLAR  : §A kaynak dökümü · §B yön (2 dünya × 3 nokta × 3 kamera kademesi × 6 kadraj
-                  = 108 hücre) · §C 12 ikon adayı · §D splash adli incelemesi · §E bayt
-SAYILAR         : docs/kabuk-raporu-f1b.md · ham: docs/olcum-kabuk-f1b.txt (TAM · denetim 18/18)
-KARAR           : **VERİLMEDİ.** Üç sorunun üçü de açık — paket sunuldu, kullanıcı premisi
-                  sorguladı ve yedi yeni kalem verdi (G-51…G-57).
-UYGULAMA        : yok (hiçbir kod yazılmadı; kollar CSS katmanı olarak canlı oyuna enjekte edildi)
-BEKÇİ           : yok (karar gelmedi)
-PAKET           : https://claude.ai/artifact/JGzwnM3N9rDXbt8Rbbz4jE
+SORU            : F1b'nin karar paketi neden tamamlanamadı — açılan ekranlar (Görevler ·
+                  Hedefler · Mağaza · Karakter · Ayarlar) yatayda ve tablette HİÇ görülmedi
+                  (G-54). Yön kararı bunlar bilinmeden verilemez.
+ÖLÇÜLECEK KOLLAR: §F açılan ekranlar — 5 panel × 3 kadraj (portre · telefon yatayı · tablet
+                  yatayı) = 15 hücre · kaydırma oranı, ilk ekranda görünen kart, taşma,
+                  dokunma hedefi, en küçük yazı
+                  §G YD REVİZE (G-51+G-52) — şerit ve nav ikisi de DOĞAL GENİŞLİK + ORTALI;
+                  YD (sola yaslı) ile aynı kadrajlarda karşılaştırılır
+                  §H TABLET BASAMAĞI (G-55) — taban ↔ bir basamak yukarı (yeni punto YOK,
+                  mevcut ölçeğin üst basamağı · D-128)
+SAYILAR         : (adım 2'den sonra dolar → docs/kabuk-raporu-f1b.md §F/§G/§H)
+KARAR           : (adım 3 — revize karar paketi: ① yön ② yatay/tablet HUD ③ açılış ekranı)
+UYGULAMA        : (adım 4, yalnız kararın kolu)
+BEKÇİ           : (test dosyası + kaç mutasyonla doğrulandı)
+ÖNCEKİ PAKET    : https://claude.ai/artifact/JGzwnM3N9rDXbt8Rbbz4jE (aynı URL güncellenecek)
 ```
 
-**Turun kalıcı üç dersi:**
+**Tur 1'in (ölçüm, commit `d4c6cac` + `41162b6`) kalıcı üç dersi:**
 1. **Aracın İYİMSER hatası da kaçar — ve onu ancak GÖZ yakalar.** F1a'nın dersi "karamsar hata
    kaçar"dı; bu tur tersini gösterdi. HUD sayımı yalnız `background-color` alfasına bakıyordu,
    oyunun en büyük iki bloğu (`.band`, `.botnav`) zeminini `linear-gradient` ile verdiği için

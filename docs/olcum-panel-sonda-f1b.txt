@@ -1,0 +1,44 @@
+# §I SONDASI — "kaydirma 1,00x" iddiasi vs cocuklarin GERCEK en alt kenari
+
+  kol  panel   akis   govdeClient  govdeScroll  GERCEK icerik  disarida/toplam  scrollHeight dogru mu?
+  P0   shop    flex           350          403            426            24/39  *** HAYIR ***
+  P0   menu    flex           350          713            699            23/47  *** HAYIR ***
+  P0   char    flex           350          370            427            20/71  *** HAYIR ***
+  PB   shop    grid           350          350            426            21/39  *** HAYIR ***
+  PB   menu    grid           350          350            352             1/46  EVET
+  PB   char    grid           350          350            427            19/71  *** HAYIR ***
+# §H SONDASI — tablet yatayi 1280×800 · G-55 kolunun neyi degistirdigi/degistirmedigi
+
+## T0
+  madalyon null · seviye cubugu null · kaynak rozeti null
+  kaynak ikonu null · yuvarlak dugme 34×34 · nav sekmesi 313×57
+  en kucuk 12 yazi:
+     11px  band-kicker                        "İLK ÇAY"
+     11px  band-count                         "0/1"
+     11px  band-reward                        "+3"
+     11px  navtab-label                       "Görevler"
+     11px  navtab-bang                        "!"
+     11px  navtab-label                       "Hedefler"
+     11px  navtab-label                       "Mağaza"
+     11px  navtab-label                       "Karakter"
+     15px  band-title                         "Ocaktan çay al"
+     18px  cur-val                            "1M"
+     22px  rep-num                            "1"
+     22px  cur-val                            "1B"
+
+## T+
+  madalyon null · seviye cubugu null · kaynak rozeti null
+  kaynak ikonu null · yuvarlak dugme 34×34 · nav sekmesi 313×60
+  en kucuk 12 yazi:
+     11px  band-kicker                        "İLK ÇAY"
+     11px  band-reward                        "+3"
+     11px  navtab-bang                        "!"
+     13px  band-count                         "0/1"
+     13px  navtab-label                       "Görevler"
+     13px  navtab-label                       "Hedefler"
+     13px  navtab-label                       "Mağaza"
+     13px  navtab-label                       "Karakter"
+     15px  band-title                         "Ocaktan çay al"
+     18px  cur-val                            "1M"
+     22px  rep-num                            "1"
+     22px  cur-val                            "1B"

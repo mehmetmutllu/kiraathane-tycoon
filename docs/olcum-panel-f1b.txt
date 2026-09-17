@@ -1,0 +1,86 @@
+# F1b TUR 2 — ACILAN EKRANLAR + YD REVIZE + TABLET BASAMAGI   [TAM kosu · 667 sn]
+
+## DUNYA IMZASI (ayni imza = ayni sahne olculdu)
+  P1: t20|s0|a3|n3
+  L1: t20|s0|a3|n3
+  T2: t20|s0|a3|n2
+  DENETIM: *** KIRMIZI: kadrajlar farkli dunya olctu ***
+
+## §F — ACILAN EKRANLAR
+
+  kadraj  panel      ekran      kabuk      yanBos  ust  govde  icerik  kaydirma ilkEkran  dugme(gor/top)  gizliOdul  <44px  enKucukYazi  kesilen
+  P1      quests     412×915    412×915         0   62    853     853        1×     %100             1/2        0/0      1         11px        0
+  P1      goals      412×915    412×915         0   62    853     853        1×     %100             1/2        0/1      2         11px        0
+  P1      shop       412×915    412×915         0   62    853     853        1×     %100           12/13        0/1      7         13px        0
+  P1      char       412×915    412×915         0   62    853     853        1×     %100             6/7        0/3      7         11px        0
+  P1      menu       412×915    412×915         0   62    853     853        1×     %100             5/6        0/0      5         11px        0
+  L1      quests     915×412    520×412       198   62    350     748     2.14×      %47             0/2        0/0      1         11px        0
+  L1      goals      915×412    520×412       198   62    350     783     2.24×      %45             0/2        1/1      2         11px        0
+  L1      shop       915×412    520×412       198   62    350     403     1.15×      %87            3/13        1/1      7         13px        0
+  L1      char       915×412    520×412       198   62    350     370     1.06×      %94             5/7        1/3      7         11px        0
+  L1      menu       915×412    520×412       198   62    350     713     2.04×      %49             4/6        0/0      5         11px        0
+  T2      quests     1280×800   520×800       380   62    738     748     1.01×      %99             1/2        0/0      1         11px        0
+  T2      goals      1280×800   520×800       380   62    738     783     1.06×      %94             1/2        0/1      2         11px        0
+  T2      shop       1280×800   520×800       380   62    738     738        1×     %100           12/13        0/1      7         13px        0
+  T2      char       1280×800   520×800       380   62    738     738        1×     %100             6/7        0/3      7         11px        0
+  T2      menu       1280×800   520×800       380   62    738     738        1×     %100             5/6        0/0      5         11px        0
+
+  kaydirma = icerik / govde (1,00× = hic kaydirma gerekmiyor) · ilkEkran% = ilk bakista gorunen icerik
+  gizliOdul = ilk ekranda GORUNMEYEN odul-alma dugmesi (ekranin asil isi) · kesilen = yatayda ekran disina tasan oge
+  yanBos = kabugun IKI YANINDAKI bos zemin (px, tek yan) — yatayda bol eksenin ne kadari kullanilmiyor
+
+## §G — YD REVIZE (G-51 + G-52)
+
+  kadraj  kol   aciklama                                    HUD%   acik zemin  band(g/kacik)  nav(g/kacik)  tasan  hata
+  L1      Y0    Taban (bugun)                                38.4         563         895/+0        915/+0      0     0
+  L1      YD    Dogal genislik — SOLA YASLI (tur 1)            19       596.9       430/-233        362/+0      0     0
+  L1      YD+   Dogal genislik — ORTALI (G-51 revizesi)        19       596.8         430/+0        362/+0      0     0
+  T2      Y0    Taban (bugun)                                19.1       507.5        1260/+0       1280/+0      0     0
+  T2      YD    Dogal genislik — SOLA YASLI (tur 1)           7.1       512.2       430/-415        362/+0      0     0
+  T2      YD+   Dogal genislik — ORTALI (G-51 revizesi)         7       512.2         430/+0        362/+0      0     0
+
+  kacik = blogun merkezinin ekran merkezinden sapmasi (px). 0 = tam ortali. G-51 tam olarak bu sayidir.
+
+## §H — TABLET BASAMAGI (G-55) — 1280×800
+
+  kol   aciklama                                    HUD%   acik zemin  enKucukYazi  <44px hedef  tasan  hata
+  T0    Tablet TABAN (bugun)                         19.1       514.4         11px          2/9      0     0
+  T+    Tablet BIR BASAMAK YUKARI (G-55)             19.2       497.3         11px          1/9      0     0
+  T+D   Bir basamak yukari + YD+ (birlikte)           7.5       518.2         11px          1/9      0     0
+
+## §I — PANEL YERLESIMI (telefon yatayi 915×412) — kare uzerine dogdu, plandan degil
+
+  kol   panel      kabuk      yanBos  govde  icerik  kaydirma ilkEkran  dugme(gor/top)  gizliOdul  kesilen
+  P0    quests     520×412       198    350     748     2.14×      %47             0/2        0/0        0
+  P0    goals      520×412       198    350     783     2.24×      %45             0/2        1/1        0
+  P0    shop       520×412       198    350     403     1.15×      %87            3/13        1/1        0
+  P0    char       520×412       198    350     370     1.06×      %94             5/7        1/3        0
+  P0    menu       520×412       198    350     713     2.04×      %49             4/6        0/0        0
+  PA    quests     820×412        48    350     748     2.14×      %47             0/2        0/0        0
+  PA    goals      820×412        48    350     783     2.24×      %45             0/2        1/1        0
+  PA    shop       820×412        48    350     403     1.15×      %87            3/13        1/1        0
+  PA    char       820×412        48    350     370     1.06×      %94             5/7        1/3        0
+  PA    menu       820×412        48    350     713     2.04×      %49             4/6        0/0        0
+  PB    quests     880×412        18    350     748     2.14×      %47             0/2        0/0        0
+  PB    goals      880×412        18    350     783     2.24×      %45             0/2        1/1        0
+  PB    shop       880×412        18    350     350        1×     %100            4/13        0/1        0
+  PB    char       880×412        18    350     350        1×     %100             5/7        1/3        0
+  PB    menu       880×412        18    350     350        1×     %100             5/6        0/0        0
+  PC    quests     915×412         0    350     748     2.14×      %47             0/2        0/0        0
+  PC    goals      915×412         0    350     783     2.24×      %45             0/2        1/1        0
+  PC    shop       915×412         0    350     403     1.15×      %87            3/13        1/1        0
+  PC    char       915×412         0    350     370     1.06×      %94             5/7        1/3        0
+  PC    menu       915×412         0    350     713     2.04×      %49             4/6        0/0        0
+
+  P0    ORTALAMA kaydirma 1.73×  ·  gizli odul dugmesi toplam 3  ·  kesilen oge toplam 0
+  PA    ORTALAMA kaydirma 1.73×  ·  gizli odul dugmesi toplam 3  ·  kesilen oge toplam 0
+  PB    ORTALAMA kaydirma 1.48×  ·  gizli odul dugmesi toplam 2  ·  kesilen oge toplam 0
+  PC    ORTALAMA kaydirma 1.73×  ·  gizli odul dugmesi toplam 3  ·  kesilen oge toplam 0
+
+## SAYFA HATASI TOPLAM: 0
+
+## KARELER
+  docs/gorsel/ss/f1b-panel-<panel>-<kadraj>.png   (15 kare)
+  docs/gorsel/ss/f1b-yd-<kol>-<kadraj>.png        (6 kare)
+  docs/gorsel/ss/f1b-tablet-<kol>.png             (3 kare)
+  docs/gorsel/ss/f1b-yerlesim-<kol>-<panel>.png   (8 kare)
