@@ -20,8 +20,10 @@ SORU            : "Zemin, duvarlar ve yan taraflar yapılmamış asset gibi" —
                   Ç3 kaldırım/sokak zenginleştirme · Ç4 ufuk silueti
                   K1 dış kütle (kesik kenarı kapatan bina kabuğu) · K2 sis/vinyet kuşağı
                   >>> §A/§C adayları ELEYEBİLİR: BOŞLUK payı 0 ise Ç4/K1/K2 seçime SUNULMAZ.
-SAYILAR         : (adım 2'den sonra — docs/cevre-raporu-r4.md §Bulgular)
-KARAR           : (adım 3 — kullanıcı seçer, D-129)
+SAYILAR         : docs/cevre-raporu-r4.md §Bulgular · ham: docs/olcum-cevre-r4.txt (TAM · 18
+                  kare · 6.400 ışın/kare) · aday etki tablosu §F
+KARAR           : (adım 3 AÇIK — karar paketi yayında, kullanıcı seçiyor → D-129)
+                  https://claude.ai/artifact/KoKfXtRZ3CAxMsLgcd3f3s
 UYGULAMA        : (adım 4 — yalnız kararın kolu)
 BEKÇİ           : (test dosyası + mutasyon sayısı)
 ```
@@ -150,6 +152,8 @@ bakıyor · mutfağın kuşbakışı karesi OYUNDAN çekilemez (tepeden kamera o
 (repro aracı `tools/olcum-panel-donusu.mjs`).
 
 **Önizlemeler**
+**R4 KARAR PAKETİ (çevre sanatı · 12 aday + ölçüm):** https://claude.ai/artifact/KoKfXtRZ3CAxMsLgcd3f3s
+**R4 kareler:** `ss/r4-taban-*.png` (18 ölçüm karesi) · `ss/r4-aday-{bos,zemin,duvar}-*.png`
 **R3 SONUÇ KARELERİ:** `ss/r3-son-{serit,ayarlar,odul,hedefler}.png` (UYGULAMA SONRASI)
 **R3b KARAR PAKETİ (madalyon 9 + ödül 7 aday + kese ölçümü):** https://claude.ai/artifact/EZbPh6oo7CF8Eeh3jsu36n
 **R3 KARAR PAKETİ (HUD · rozet 8 + kese 6 aday):** https://claude.ai/artifact/HRL1fvnWccYwRSZwpVUUKr

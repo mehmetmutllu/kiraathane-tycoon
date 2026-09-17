@@ -1,0 +1,381 @@
+<title>Çevre Sanatı Kontak Föyü</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;800&family=Newsreader:opsz,wght@6..72,400;6..72,500&family=JetBrains+Mono:wght@400;700&display=swap">
+<style>
+  :root {
+    /* Palet oyunun ÖLÇÜLEN renklerinden: boşluk #1f2933 · duvar #e6d7b8 · zemin #b98a5a · çim #6ea952 */
+    --ground: #1a222a;
+    --panel: #222c35;
+    --panel-2: #29343e;
+    --line: #37434f;
+    --ink: #ece4d6;
+    --dim: #9dab b8;
+    --dim: #9dabb8;
+    --accent: #d79a5f;
+    --accent-soft: #3a2f24;
+    --green: #7cb861;
+    --warn: #e0b64a;
+    --shadow: rgba(0, 0, 0, .34);
+    --display: 'Archivo', 'Segoe UI', system-ui, sans-serif;
+    --body: 'Newsreader', Georgia, serif;
+    --mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', monospace;
+  }
+  :root[data-theme="light"] {
+    --ground: #f2ece0;
+    --panel: #fffdf7;
+    --panel-2: #f8f2e6;
+    --line: #ddd2bd;
+    --ink: #241c14;
+    --dim: #6d6154;
+    --accent: #a85f22;
+    --accent-soft: #f0e2cf;
+    --green: #4a7d36;
+    --warn: #8a6410;
+    --shadow: rgba(60, 45, 25, .13);
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --ground: #f2ece0;
+      --panel: #fffdf7;
+      --panel-2: #f8f2e6;
+      --line: #ddd2bd;
+      --ink: #241c14;
+      --dim: #6d6154;
+      --accent: #a85f22;
+      --accent-soft: #f0e2cf;
+      --green: #4a7d36;
+      --warn: #8a6410;
+      --shadow: rgba(60, 45, 25, .13);
+    }
+  }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.6;
+    padding-block: 0 64px;
+    padding-inline: 20px;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+
+  /* ---- başlık ---- */
+  header { padding-block: 44px 28px; border-bottom: 2px solid var(--line); }
+  .eyebrow {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--accent); margin: 0 0 14px;
+  }
+  h1 {
+    font-family: var(--display); font-weight: 800; font-size: clamp(30px, 5.2vw, 46px);
+    line-height: 1.05; letter-spacing: -.02em; margin: 0 0 18px; text-wrap: balance;
+  }
+  .quote {
+    font-size: clamp(16px, 2.2vw, 19px); font-style: italic; color: var(--ink);
+    border-left: 3px solid var(--accent); padding-left: 16px; margin: 0 0 8px; max-width: 62ch;
+  }
+  .quote cite { display: block; font-style: normal; font-family: var(--mono); font-size: 11px;
+    letter-spacing: .08em; color: var(--dim); margin-top: 8px; }
+
+  /* ---- ölçüm şeridi ---- */
+  .olcum { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1px;
+    background: var(--line); border: 1px solid var(--line); margin-block: 34px; }
+  .olcum div { background: var(--panel); padding: 16px 18px; }
+  .olcum .n { font-family: var(--mono); font-weight: 700; font-size: 26px; color: var(--accent);
+    font-variant-numeric: tabular-nums; display: block; line-height: 1.1; }
+  .olcum .k { font-size: 13.5px; color: var(--dim); font-family: var(--display); font-weight: 500;
+    display: block; margin-top: 6px; }
+
+  h2 {
+    font-family: var(--display); font-weight: 800; font-size: 25px; letter-spacing: -.01em;
+    margin: 56px 0 6px;
+  }
+  h2 .kod { font-family: var(--mono); font-size: 13px; color: var(--accent); font-weight: 700;
+    letter-spacing: .1em; display: block; margin-bottom: 6px; }
+  .altyazi { color: var(--dim); max-width: 68ch; margin: 0 0 6px; }
+  .bulgu { max-width: 68ch; margin: 14px 0 26px; padding: 14px 18px; background: var(--accent-soft);
+    border-left: 3px solid var(--accent); font-size: 15px; }
+  .bulgu b { font-family: var(--display); font-weight: 600; }
+
+  /* ---- kontak föyü ---- */
+  .foy { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 22px; }
+  figure { margin: 0; }
+  figure img { width: 100%; display: block; border-radius: 3px; background: var(--panel-2); }
+  .taban img { outline: 2px dashed var(--dim); outline-offset: -2px; }
+  figcaption { margin-top: 10px; }
+  .kodrozet {
+    font-family: var(--mono); font-weight: 700; font-size: 12px; letter-spacing: .08em;
+    background: var(--accent); color: var(--ground); padding: 2px 7px; border-radius: 2px;
+  }
+  .taban .kodrozet { background: transparent; color: var(--dim); border: 1px solid var(--dim); }
+  .ad { font-family: var(--display); font-weight: 600; font-size: 16px; margin-left: 9px; }
+  .sayilar { font-family: var(--mono); font-size: 12px; color: var(--dim); margin-top: 7px;
+    font-variant-numeric: tabular-nums; }
+  .sayilar b { color: var(--ink); font-weight: 700; }
+  .not { font-size: 14px; color: var(--dim); margin-top: 6px; max-width: 46ch; }
+  .bayrak { color: var(--warn); font-family: var(--display); font-weight: 600; }
+
+  /* ---- elenenler ---- */
+  .elenen { border: 1px solid var(--line); background: var(--panel); margin-top: 26px; }
+  .elenen h3 { font-family: var(--display); font-size: 15px; font-weight: 600; margin: 0;
+    padding: 14px 20px; border-bottom: 1px solid var(--line); letter-spacing: .01em; }
+  .elenen ul { margin: 0; padding: 8px 20px 18px 38px; }
+  .elenen li { margin-top: 12px; font-size: 15px; }
+  .elenen li b { font-family: var(--display); font-weight: 600; }
+  .elenen code { font-family: var(--mono); font-size: 12.5px; color: var(--accent); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 18px; }
+  .tablo-kutu { overflow-x: auto; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+  th { font-family: var(--display); font-weight: 600; font-size: 12px; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--dim); }
+  td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; }
+  td.kod { font-family: var(--mono); font-weight: 700; color: var(--accent); }
+
+  footer { margin-top: 64px; padding-top: 22px; border-top: 2px solid var(--line);
+    color: var(--dim); font-size: 14px; }
+  footer b { color: var(--ink); font-family: var(--display); font-weight: 600; }
+</style>
+
+<div class="wrap">
+<header>
+  <p class="eyebrow">R4 · G-50 · Köşe Kıraathanesi</p>
+  <h1>Zemin, duvar ve yan taraflar:<br>on iki aday, üç kadraj</h1>
+  <p class="quote">
+    “zemin ve duvarlar hep ve yan taraflar hep böyle daha yapılmamış asset gibi hissettiriyor
+    ona da çözümler sun ve öner. mesela etraf bahçe veya çimenlik gibi olabilir vs vs.”
+    <cite>Kullanıcı · 2026-09-16 oyun testi</cite>
+  </p>
+</header>
+
+<div class="olcum">
+  <div><span class="n">%59,6</span><span class="k">karenin ortalaması ZEMİN<br>(en yüksek kare %82,8)</span></div>
+  <div><span class="n">7–10</span><span class="k">duvarın ayrık renk sayısı<br>(yanındaki model: 144–372)</span></div>
+  <div><span class="n">%20,0</span><span class="k">en kötü karede BOŞLUK<br>(koyu arduvaz #1f2933)</span></div>
+  <div><span class="n">%1,6</span><span class="k">boşluğun SOKAK tarafındaki payı<br>(sol+sağ+arka: %98,4)</span></div>
+</div>
+
+<p class="altyazi">
+  Ölçüm 18 kareyi, kare başına 6.400 ışınla taradı; her ışının vurduğu yüzey sınıflandı ve
+  <em>aynı karenin</em> gerçek pikselleriyle eşleştirildi. Aşağıdaki on iki kol gerçek oyunun
+  içinde, aynı ışıkla, aynı kadrajdan çizildi — hiçbiri koda girmedi.
+  Her kolun altındaki iki sayı: <b>taban farkı</b> = kolun karenin yüzde kaçını değiştirdiği,
+  <b>grup içi</b> = grubun ilk koluna göre farkı.
+</p>
+
+<!-- ============================== A · BOŞLUK ============================== -->
+<h2><span class="kod">GRUP A — BOŞLUK / ÇEVRE</span>Binanın kenarı bitiyor, arkası delik</h2>
+<p class="altyazi">
+  Kadraj: açılış salonu, oyuncu (−14, 3). Bu karede boşluk <b>%20,0</b> — ölçülen en büyüğü.
+  Altı kolun <em>hepsi</em> karenin aynı %17,8'ini dolduruyor; fark kapsamda değil içerikte.
+</p>
+
+<div class="foy">
+  <figure class="taban">
+    <img src="gorsel/ss/r4-aday-bos-TABAN.png" alt="Açılış salonu, sol üstte koyu arduvaz boşluk">
+    <figcaption>
+      <span class="kodrozet">ŞU AN</span><span class="ad">Taban</span>
+      <div class="sayilar">boşluk <b>%20,0</b> · boşluk parlaklığı <b>40</b> · zemin parlaklığı <b>153</b></div>
+      <p class="not">Zemin düzlemi bitiyor ve arkasında <code>#1f2933</code> duruyor. Sıcak ahşabın yanında koyu bir delik.</p>
+    </figcaption>
+  </figure>
+
+  <figure>
+    <img src="gorsel/ss/r4-aday-bos-C1.png" alt="Binanın çevresi düz çimenlik kuşağı">
+    <figcaption>
+      <span class="kodrozet">C1</span><span class="ad">Çimenlik kuşağı</span>
+      <div class="sayilar">taban farkı <b>%17,9</b> · delta 88 · 4 nesne</div>
+      <p class="not">Kullanıcının kendi önerisinin en yalın hâli: dört düzlem, sıfır model.</p>
+    </figcaption>
+  </figure>
+
+  <figure>
+    <img src="gorsel/ss/r4-aday-bos-C2.png" alt="Çimenlik üstünde ağaçlar, çalılar ve alçak çit">
+    <figcaption>
+      <span class="kodrozet">C2</span><span class="ad">Bahçe: çim + çit + ağaç</span>
+      <div class="sayilar">taban farkı <b>%17,8</b> · delta 82 · grup içi <b>%2,6</b> · 67 nesne</div>
+      <p class="not">67 nesne, C1'e göre ekranda <b>2,6 puan</b> getiriyor. Bedeli en yüksek, farkı en küçük kol.</p>
+    </figcaption>
+  </figure>
+
+  <figure>
+    <img src="gorsel/ss/r4-aday-bos-C3.png" alt="Binanın çevresi açık taş avlu, saksılarda yeşillik">
+    <figcaption>
+      <span class="kodrozet">C3</span><span class="ad">Taş avlu + saksılar</span>
+      <div class="sayilar">taban farkı <b>%17,9</b> · delta <b>140</b> · grup içi %18,0 · 35 nesne</div>
+      <p class="not">Mekân bahçeye değil <em>avluya</em> açılıyor. Taş, duvarın kremiyle aynı değerde — bina silueti zayıflıyor.</p>
+    </figcaption>
+  </figure>
+
+  <figure>
+    <img src="gorsel/ss/r4-aday-bos-C4.png" alt="Binanın yanında komşu bina kütleleri, dar sokak hissi">
+    <figcaption>
+      <span class="kodrozet">C4</span><span class="ad">Komşu kütleler</span>
+      <div class="sayilar">taban farkı <b>%17,9</b> · delta 57 · grup içi %18,0 · 28 nesne</div>
+      <p class="not">Kıraathane bir mahallenin içine giriyor. En koyu kol — boşluğu kapatıyor ama karanlığı da koruyor.</p>
+    </figcaption>
+  </figure>
+
+  <figure>
+    <img src="gorsel/ss/r4-aday-bos-K1.png" alt="Arka plan koyu arduvaz yerine sıcak krem">
+    <figcaption>
+      <span class="kodrozet">K1</span><span class="ad">Arka planı ısıt</span>
+      <div class="sayilar">taban farkı <b>%17,8</b> · delta <b>154</b> · grup içi %17,9 · <b>0 nesne</b></div>
+      <p class="not">Tek satır: <code>#1f2933</code> → <code>#d9c9a8</code>. En büyük değer değişimi, sıfır çizim maliyeti. Ama kenar hâlâ kenar.</p>
+    </figcaption>
+  </figure>
+
+  <figure>
+    <img src="gorsel/ss/r4-aday-bos-K2.png" alt="Zemin düzlemi ufka kadar uzatılmış">
+    <figcaption>
+      <span class="kodrozet">K2</span><span class="ad">Zemini genişlet</span>
+      <div class="sayilar">taban farkı <b>%17,9</b> · delta 103 · grup içi %17,8 · 1 nesne</div>
+      <p class="not">Kesik yok olur — ama mekân “oda” olmaktan çıkıp sonsuz ahşap bir düzleme oturur.</p>
+    </figcaption>
+  </figure>
+</div>
+
+<div class="bulgu">
+  <b>Ölçümün kullanıcıya itirazı:</b> “etraf bahçe olsun” fikri doğru, ama <b>yeri sokak değil</b>.
+  Boşluğun %53,1'i sol, %27,3'ü sağ, %17,9'u arka kenarda; sokak cephesinde yalnız <b>%1,6</b>.
+  Kuşak kenardan en az <b>11,1 birim</b> dışarı uzamadan boşluk kapanmıyor.
+</div>
+
+<!-- ============================== B · ZEMİN ============================== -->
+<h2><span class="kod">GRUP B — ZEMİN</span>Karenin %59,6'sı, ve kendi rengi tek</h2>
+<p class="altyazi">
+  Kadraj: dolu salon, oyuncu (−6, 4). Bu karede zemin <b>%77,2</b>.
+  Gölge almayan taban düzleminde sapma <b>1,39</b> ve <b>11</b> ayrık renk: yani zeminde görünen
+  bütün ton farkı objelerin gölgesi. Gölge olmasa zemin tek renk.
+</p>
+
+<div class="foy">
+  <figure class="taban">
+    <img src="gorsel/ss/r4-aday-zemin-TABAN.png" alt="Dolu salon, tek düz ahşap zemin">
+    <figcaption>
+      <span class="kodrozet">ŞU AN</span><span class="ad">Taban</span>
+      <div class="sayilar">zemin sapması <b>6,25–8,19</b> · ayrık renk <b>36–77</b> · yanındaki model: <b>144–372</b></div>
+      <p class="not"><code>parke</code> teması D-073'ten beri <code>kind:'flat'</code> — tek renk ahşap.</p>
+    </figcaption>
+  </figure>
+
+  <figure>
+    <img src="gorsel/ss/r4-aday-zemin-Z1.png" alt="Zeminde tahta derzleri, tuğla düzeninde kaydırılmış">
+    <figcaption>
+      <span class="kodrozet">Z1</span><span class="ad">Tahta derzi</span>
+      <div class="sayilar">taban farkı <b>%11,3</b> · delta 19 · 1 instans</div>
+      <p class="not"><span class="bayrak">⚑ D-073'ü geri alır.</span> Senin 2026-09-07'deki cümlen:
+      <em>“zemin kesinlikle parke değil maketteki gibi olmalı”</em> — maketin zemini tek düz ahşap ve
+      G2'nin tahta deseni tam bu yüzden kaldırılmıştı. Bu kol o kararı tersine çevirir.</p>
+    </figcaption>
+  </figure>
+
+  <figure>
+    <img src="gorsel/ss/r4-aday-zemin-Z2.png" alt="Her alanın zemini hafif farklı tonda, kenarlarda koyu bordür">
+    <figcaption>
+      <span class="kodrozet">Z2</span><span class="ad">Alan tonu + bordür</span>
+      <div class="sayilar">taban farkı <b>%77,4</b> · delta <b>8,2</b> · 15 nesne</div>
+      <p class="not">Zeminin <em>tamamına</em> dokunan ama hiçbir yerde bağırmayan tek kol. Salonlar birbirinden
+      ayrışıyor; mekân “bir oda” değil “üç oda” okunuyor. Derz yok, yani D-073 duruyor.</p>
+    </figcaption>
+  </figure>
+
+  <figure>
+    <img src="gorsel/ss/r4-aday-zemin-Z3.png" alt="Zeminde yumuşak, dönük, örtüşen ton lekeleri">
+    <figcaption>
+      <span class="kodrozet">Z3</span><span class="ad">Yıpranma lekesi</span>
+      <div class="sayilar">taban farkı %1,0 · delta <b>28,7</b> · grup içi %18,9 · 46 nesne</div>
+      <p class="not">Desen değil leke: dönük, örtüşen, ±%7,5 ton. Tekrar eden hiçbir birim yok, yani
+      D-073'ün “tahta çizgisi olmasın” kuralını çiğnemiyor — ama ölçek referansı da vermiyor.</p>
+    </figcaption>
+  </figure>
+</div>
+
+<!-- ============================== C · DUVAR ============================== -->
+<h2><span class="kod">GRUP C — DUVAR</span>Karenin %8'i, ama yedi renk</h2>
+<p class="altyazi">
+  Kadraj: açılış salonu, oyuncu (−8,5 / 8) — iki iç duvar yüzü de kadrajda.
+  Duvar karenin ortalama %8'i; buraya harcanan her şey zeminin yedide biri kadar ekran alır.
+</p>
+
+<div class="foy">
+  <figure class="taban">
+    <img src="gorsel/ss/r4-aday-duvar-TABAN.png" alt="Boş salon, iki krem duvar ve koyu lambri">
+    <figcaption>
+      <span class="kodrozet">ŞU AN</span><span class="ad">Taban</span>
+      <div class="sayilar">duvar sapması <b>3,04–9,75</b> · ayrık renk <b>7–10</b></div>
+      <p class="not">Krem badana + koyu lambri. Ölçülen en düşük bilgi yoğunluğu ekranda burada.</p>
+    </figcaption>
+  </figure>
+
+  <figure>
+    <img src="gorsel/ss/r4-aday-duvar-D1.png" alt="Lambri daha yüksek ve daha koyu, üstünde açık çıta">
+    <figcaption>
+      <span class="kodrozet">D1</span><span class="ad">Lambri yükselt + koyult</span>
+      <div class="sayilar">taban farkı <b>%9,4</b> · delta 38 · 12 nesne</div>
+      <p class="not">Var olan dili güçlendirir: lambri 1,25'e çıkar, üstüne açık çıta gelir. Yeni renk ailesi açmaz.</p>
+    </figcaption>
+  </figure>
+
+  <figure>
+    <img src="gorsel/ss/r4-aday-duvar-D2.png" alt="Duvarda göz hizasının üstünde mavi-beyaz çini kuşağı">
+    <figcaption>
+      <span class="kodrozet">D2</span><span class="ad">Çini kuşağı</span>
+      <div class="sayilar">taban farkı %4,4 · delta <b>52</b> · grup içi %12,9 · 210 nesne</div>
+      <p class="not">Mekâna Türk kimliği katan tek kol. Karşılığında palete <em>yeni bir renk ailesi</em> (mavi) giriyor.</p>
+    </figcaption>
+  </figure>
+
+  <figure>
+    <img src="gorsel/ss/r4-aday-duvar-D3.png" alt="Duvarın zeminle birleştiği yerde kademeli koyu gölge">
+    <figcaption>
+      <span class="kodrozet">D3</span><span class="ad">Dip gölgesi</span>
+      <div class="sayilar">taban farkı %4,5 · delta 24 · grup içi %7,6 · 18 nesne</div>
+      <p class="not">Duvarın zeminle birleştiği hat üç kademede koyulaşır. Renk eklemeden hacim ekler —
+      D-073'ten beri ölçek referansını gölge taşıyor, bu kol onu duvara da getirir.</p>
+    </figcaption>
+  </figure>
+</div>
+
+<!-- ============================== ELENENLER ============================== -->
+<div class="elenen">
+  <h3>Ölçümün sunmadan elediği üç kol — sebebiyle</h3>
+  <ul>
+    <li><b>Ufuk silueti / gökyüzü kuşağı.</b> 18 karenin <b>18'inde</b> ufuk üstü boşluk
+      <code>%0,0</code>. Kamera 45°'den bakıyor; gökyüzü ekranda hiç yok. Gökyüzüne konan şey görünmez.</li>
+    <li><b>Sokak cephesine bahçe.</b> Boşluğun yalnız <code>%1,6</code>'sı ön kenarda. S6 aynı kenar
+      için karşı binaları <code>%0</code> görünürlükle zaten silmişti — “etraf”ın görünen kısmı yanlar ve arka.</li>
+    <li><b>Vinyet / sisle yumuşatma.</b> Boşluk 13 karede var ve payı %20'ye çıkıyor; yumuşatma
+      %20'lik bir bölgeyi doldurmaz, bulanıklaştırır. K1 aynı işi tek satırla ve ölçülebilir biçimde yapıyor.</li>
+  </ul>
+</div>
+
+<h2><span class="kod">TAM TABLO</span>On iki kolun sayıları</h2>
+<div class="tablo-kutu">
+<table>
+  <thead><tr><th>Kol</th><th>Ad</th><th>Kadraj</th><th class="num">Taban farkı</th><th class="num">Ort. delta</th><th class="num">Grup içi</th><th class="num">Nesne</th></tr></thead>
+  <tbody>
+    <tr><td class="kod">C1</td><td>Çimenlik kuşağı</td><td>boşluk</td><td class="num">%17,9</td><td class="num">87,7</td><td class="num">referans</td><td class="num">4</td></tr>
+    <tr><td class="kod">C2</td><td>Bahçe: çim + çit + ağaç</td><td>boşluk</td><td class="num">%17,8</td><td class="num">82,3</td><td class="num">%2,6</td><td class="num">67</td></tr>
+    <tr><td class="kod">C3</td><td>Taş avlu + saksılar</td><td>boşluk</td><td class="num">%17,9</td><td class="num">139,9</td><td class="num">%18,0</td><td class="num">35</td></tr>
+    <tr><td class="kod">C4</td><td>Komşu kütleler</td><td>boşluk</td><td class="num">%17,9</td><td class="num">57,2</td><td class="num">%18,0</td><td class="num">28</td></tr>
+    <tr><td class="kod">K1</td><td>Arka planı ısıt</td><td>boşluk</td><td class="num">%17,8</td><td class="num">153,9</td><td class="num">%17,9</td><td class="num">0</td></tr>
+    <tr><td class="kod">K2</td><td>Zemini genişlet</td><td>boşluk</td><td class="num">%17,9</td><td class="num">102,8</td><td class="num">%17,8</td><td class="num">1</td></tr>
+    <tr><td class="kod">Z1</td><td>Tahta derzi ⚑</td><td>zemin</td><td class="num">%11,3</td><td class="num">19,0</td><td class="num">referans</td><td class="num">1</td></tr>
+    <tr><td class="kod">Z2</td><td>Alan tonu + bordür</td><td>zemin</td><td class="num">%77,4</td><td class="num">8,2</td><td class="num">%59,8</td><td class="num">15</td></tr>
+    <tr><td class="kod">Z3</td><td>Yıpranma lekesi</td><td>zemin</td><td class="num">%1,0</td><td class="num">28,7</td><td class="num">%18,9</td><td class="num">46</td></tr>
+    <tr><td class="kod">D1</td><td>Lambri yükselt + koyult</td><td>duvar</td><td class="num">%9,4</td><td class="num">38,2</td><td class="num">referans</td><td class="num">12</td></tr>
+    <tr><td class="kod">D2</td><td>Çini kuşağı</td><td>duvar</td><td class="num">%4,4</td><td class="num">51,6</td><td class="num">%12,9</td><td class="num">210</td></tr>
+    <tr><td class="kod">D3</td><td>Dip gölgesi</td><td>duvar</td><td class="num">%4,5</td><td class="num">23,9</td><td class="num">%7,6</td><td class="num">18</td></tr>
+  </tbody>
+</table>
+</div>
+
+<footer>
+  <p><b>Bu sayfa okuma yüzeyi; seçim sohbette sorulacak.</b> Her gruptan bir kol (ya da “hiçbiri”)
+  seçilir; birden çok kol birleştirilebilir. Seçilen kol karardan sonra gerçek koda yazılır,
+  bekçi testi ve mutasyonla doğrulanır.</p>
+  <p>Ham çıktı: <code>docs/olcum-cevre-r4.txt</code> (TAM koşu · 18 kare · 6.400 ışın/kare) ·
+  Rapor: <code>docs/cevre-raporu-r4.md</code> · Araçlar: <code>tools/olcum-cevre-r4.mjs</code>,
+  <code>tools/shot-cevre-r4.mjs</code></p>
+</footer>
+</div>
