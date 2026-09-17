@@ -5,81 +5,51 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-> ## ⛔ BU OTURUM KOD YAZMADAN ÖNCE: KARAR SOR
-> R3'ün ölçümü bitti, **karar alınmadı**. Kullanıcının kendi talimatı (2026-09-17):
-> *"kararı sonraki chatte tekrar sor ve o artifact'ı yine ver oradan seçelim"*.
-> **İlk mesajında karar paketi linkini VER ve seçimi sor:**
-> **https://claude.ai/artifact/HRL1fvnWccYwRSZwpVUUKr**
-> §A/§B/§C → önerim **A4 + B2 + C1** (tek "tamam" yeter) · §D rozet → bir harf (A-H) ·
-> §E kese → bir harf (A-F) ya da "kutusuz kalsın".
-> Seçim gelmeden `HUD.tsx` / `hud.css` / `index.css` dosyalarına **dokunma**.
-
-## ŞU AN (2026-09-17 — **R3 ÖLÇÜM BİTTİ, KARAR BEKLİYOR** · Faz R 3/4 · 104/111)
+## ŞU AN (2026-09-17 — **R3 KAPANDI (D-128)** · Faz R 3/4 · 105/111)
 
 ```
-SORU            : Üst şeridin seviye rozeti ile kesesi, ödül ekranının iki ödülü ve ayarlar
-                  kaydırıcısının çerçevesi ekranda GERÇEKTE nasıl çiziliyor — kesik nerede,
-                  hangi kutu hangi kutudan taşıyor, kaç satır kaplıyor?
-ÖLÇÜLEN KOLLAR  : §A T · A1 topuz · A2 kapalı çerçeve · A3 hizalı L · A4 hizalı+bitişik L
-                  §B T(oyun) · T(ayarlar) · B1 yalnız katman · B2 katman+anahtar+alan
-                  §C T · C1 alt alta + "+"   §D T · D1 halka · D2 tek satır · D3 halka+tek satır
-                  §E T kutusuz · E1 hap çerçeve            (hepsi ETKİLİ doğrulandı, hata 0)
-SAYILAR         : docs/hud-raporu-r3.md §Bulgular · ham: docs/olcum-hud-r3.txt (TAM,
-                  telefon 390x844@3 + masaustu 1280x800@2)
-KARAR           : ((BOŞ — kullanıcıya SORULMADI. Karar paketi hazır:
-                  docs/r3-karar-paketi.html · rozet 8 + kese 6 aday, hepsi gerçek oyundan))
-UYGULAMA        : (adım 4 — yalnız kararın kolu)
-BEKÇİ           : (test dosyası + mutasyon sayısı)
-FINAL           : (tam koşu damgası)
+SORU            : Üst şeridin rozeti/kesesi, ödül ekranının iki ödülü ve ayarlar kaydırıcısının
+                  çerçevesi ekranda GERÇEKTE nasıl çiziliyor — kesik nerede, ne taşıyor?
+ÖLÇÜLEN KOLLAR  : §A T·A1·A2·A3·A4 · §B T·B1·B2 · §C T·C1 · §D T·D1·D2·D3 + 9 madalyon adayı
+                  §E T·E1 + 3 dizilim × 2 değer · §C3 7 ödül satırı adayı (ikinci tur)
+SAYILAR         : docs/hud-raporu-r3.md §Bulgular + §Karar · ham: docs/olcum-hud-r3.txt (TAM)
+                  + docs/olcum-hud-r3b.txt (aday turu)
+KARAR           : D-128 — A4 + B2 + C1 + K3 + G kapsül + C madalyon + F kese (ALT ALTA)
+UYGULAMA        : index.css · hud.css · icons.tsx · HUD.tsx · save.ts
+BEKÇİ           : tests/hud-r3.test.ts (7 den.) + ekran-kabugu §5 yeniden yazıldı ·
+                  tools/mutasyon-hud-r3.mjs 12/12 kırmızı (M6 ilk turda KAÇTI, bekçi güçlendi)
+FINAL           : vitest 1245 ✓ · konsol hatası 0 · ss/r3-son-{serit,ayarlar,odul,hedefler}.png
 ```
-
-**BU OTURUM COMMIT #1'DE BİTTİ.** Sıra kilidinin istediği yapı budur: araç + ham çıktı + rapor,
-karar bölümü BOŞ. Kod tek satır değişmedi (HUD.tsx / hud.css / index.css'e dokunulmadı);
-bütün kollar sayfaya enjekte edilmiş CSS/DOM olarak ölçüldü.
-
-**SONRAKİ OTURUMUN İLK İŞİ — kullanıcı bunu AÇIKÇA istedi (2026-09-17):** *"kararı sonraki
-chatte tekrar sor ve o artifact'ı yine ver oradan seçelim"*. Karar paketi YAYINDA; linki
-tekrar ver ve TEK karar paketi mesajıyla seçimi sor.
-https://claude.ai/artifact/HRL1fvnWccYwRSZwpVUUKr
-§A/§B/§C için önerim **A4 + B2 + C1** (tek "tamam" yeter); §D rozet ve §E kese biçim kararı,
-kullanıcı harfle seçer. Seçim geldikten sonra commit #2: yalnız seçilen kol + bekçi + mutasyon.
 
 **Turun kalıcı üç dersi:**
-1. **Bir kolun İLAN ETTİĞİ ölçü, o kolun ölçüsü değildir.** Halka kolu `--kal: 6px` diyordu,
-   çizilen halka ~17 px'ti: `radial-gradient(circle, … 50% …)` yüzdeyi kutunun yarıçapına değil
-   varsayılan `farthest-corner` bitiş şekline (köşegene, ×1,41) göre ölçüyor. Kolun kendi
-   değişkenini rapora yazmak, ölçmeden yazmaktır.
-2. **Ölçüm, ölçtüğü kusurun üstüne kendi kusurunu koyabilir.** §A üç koşu boyunca "Ses seviyesi"
-   satırının sol çizgisini 18,00 px / oran 0,400 ölçtü; çizgi 45,00 px'ti, **üstü FPS katmanıyla
-   örtülüydü** — katmanı §B için ben açmıştım. Sayı üç koşuda birebir aynı çıktığı için gürültü
-   sanılamazdı; tekrarlanabilir yanlış, en ikna edici yanlıştır.
-3. **Aday karesi, sayının denetleyicisidir.** Halkanın yanlış kalınlığını hiçbir sayı yakalamadı;
-   `ss/r3-aday-rozet-D.png`e bakınca bir bakışta görüldü. `feedback_show_dont_ask` yalnız
-   kullanıcıya sormanın değil, kendi ölçümünü çürütmenin de yolu.
+1. **Bir kusuru kaldırmak, onun ÜSTÜNDEKİ kusuru kaldırmaz.** Kullanıcı madalyonda *"arkada bir
+   çizgi"* gördü; yıldızı kaldırdığımızda çizgi DURUYORDU. `-webkit-text-stroke` köşeleri MITER
+   birleştiriyor ve Lilita One'ın sivri "4"ünde 5 px kontur ekrana mızrak olarak çıkıyor. Aynı
+   56 px'te iki ayrı kusur üst üste duruyordu; biri diğerini gizliyordu.
+2. **Kullanıcının sorduğu her çatal bir seçim değildir — bazısı ölçümle kapanır.** *"Yan yana mı
+   alt alta mı bilemedim"* bir zevk sorusu gibi duruyordu; ölçüm yan yana kolunun 999.99M'de
+   ekranı 42,7 px aştığını gösterdi. Kol seçime SUNULMADAN elendi ve kullanıcıya sebebi yazıldı.
+3. **Kaçan mutasyon bekçinin zayıf yerinin haritası.** M6 (bonus satırı deltaya döner) kaçtı:
+   bekçi geçişin yalnız SAĞ ucunu tutuyordu, sol uç deltaya dönünce satır "+%0,4 → %3,6" oluyor
+   ve ekran hem artışı hem toplamı vaat ediyordu. İki uç da denetleniyor.
 
-**Yolda düzeltilen ON araç kusuru** (hepsi kısa koşuda, rapora sayı girmeden): topuz çapı 194 px
-(üstteki anahtarın topuzunu yakalıyordu) · sol çizgi satırdan uzun (ayıraçları çizgi sanıyordu) ·
-halka yayı NaN (kolun CSS'i çubuğu zaten gizlemişti) · "arka parlaklık" kesenin kendisini
-ölçüyordu · §E kırpması kola göre büyüyordu (kollar aynı dünyayı ölçmüyordu) · sahne/yatak ayrı
-yürüyüşlerde ölçülüyordu · ortanca ölçütü fazla kaba (piksel-başı sapmaya geçildi) · §B çakışma
-denetimi paneli hiç gezmiyordu · topuzun beyaz blobu iç daireydi, dış çap değil ·
-halka kalınlığı sütun taramasıyla 54 → 70,7 px (kırpmanın kenarı arka plan değildi) → halkanın
-KENDİ amber rengiyle ölçülüyor.
+**Yolda düzeltilen üç araç kusuru** (hepsi rapora sayı girmeden): React metni tek düğüm sanıldı
+(JSX `{yuzde(bonus)} kalıcı gelir` ÜÇ metin düğümü üretiyor → D ve E kolları taban metniyle aynı
+çıktı) · ikinci tur, birinci turun bıraktığı etiketi temizlemiyordu · G madalyon kolu `.rep-num`a
+`position: relative` verip sayıyı diskin dışına düşürüyordu.
 
 ## SIRADAKİ TAM ADIM
 
 **FAZ R — kullanıcının 2026-09-16 geri bildirimi, 16 kalem (G-35…G-50).** Tam liste ve
 kullanıcının KENDİ cümleleri: `docs/geribildirim-oyun-testi-2026-09-16.md`.
-Bölünme kullanıcı onayıyla dört tur oldu; **R1 ve R2 bitti**, **R3'ün ölçümü bitti**
-(karar bekliyor), sırada R3'ün kararı + kodu, sonra R4.
+Bölünme kullanıcı onayıyla dört tur oldu; **R1, R2 ve R3 bitti**, sırada **R4** (G-50 çevre
+sanatı, kendi tasarım turu).
 
 1. ~~**Görev şeridi** (G-41…G-44)~~ → **R1'de KAPANDI (D-126).**
 2. ~~**Mutfak yerleşimi + çarpışma** (G-35…G-38)~~ → **R2'de KAPANDI (D-127).**
    **G-39 (masa yükseltmeleri sırayla) hâlâ açık — DENGE kapısına tabi, ayrı tutulur.**
-3. **ŞU AN: HUD çerçeveleri** (G-45…G-49) — ayarlar kaydırıcı çerçevesi kesik · FPS sayacını KALDIR ·
-   iki ödül alt alta + arasına `+` · seviye rozeti Clash of Clans gibi BİRLEŞİK (bar yuvarlağın
-   çevresinde, en üst satırda) · sağ üstteki elmas/paraya çerçeve.
-4. **G-50 — çevre sanatı, KENDİ TASARIM TURU.** Kullanıcı: *"zemin ve duvarlar... yapılmamış
+3. ~~**HUD çerçeveleri** (G-45…G-49)~~ → **R3'te KAPANDI (D-128).**
+4. **ŞU AN SIRADA: G-50 — çevre sanatı, KENDİ TASARIM TURU.** Kullanıcı: *"zemin ve duvarlar... yapılmamış
    asset gibi hissettiriyor, çözümler sun"*. `feedback_show_dont_ask`: metinle kol anlatılmaz,
    6-12 aday aynı kadrajda render edilir. Kullanıcının kendi yönü: bahçe/çimenlik kuşağı.
    **Not:** `kaykit-forest-nature` F2'de silindi; bu kol seçilirse
@@ -133,9 +103,11 @@ sürekli çözme; APK turunda okunacak) · ② `2024-q4` paketi indirilmedi, pro
 Bel bağının ucu çeyrek açıdan ince bir dudak bırakıyor (`docs/gorsel/ss/s19b-kiyafet.png`).
 Ölçü değil biçim; pay 0,035 → 0,012 ile küçültüldü, sıfırlanmadı. Bir sonraki sanat turunda.
 
-## PANO — v50 YAYINDA (2026-09-16)
+## PANO — v50 YAYINDA (2026-09-16) · **BU TURDA GÜNCELLENMEDİ**
 
-**https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs** · 104/111 (%94) · Faz R 2/4.
+**https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs** · 104/111 (%94) · Faz R 2/4 gösteriyor;
+gerçek durum **105/111 · Faz R 3/4**. Kapanışta `npm run pano` + artifact güncellemesi borç
+olarak kaldı (yayının bedeli yazılı: canlı sürümün tamamı okunmadan publish reddediliyor).
 Kart sayısı 8'de tutuldu (taşan S22 kartı `memory-bank/arsiv/pano-gunluk.json`'a gitti, sayaç 60).
 Bu turda ayrıca **bayat bir risk kartı** düzeltildi: "arka salonda 12 masa arasından geçilemiyor"
 hâlâ AÇIK görünüyordu, oysa H3 2026-09-16'da elenmişti (banket adasından sonra açıklık 2,15 br).
@@ -179,6 +151,8 @@ bakıyor · mutfağın kuşbakışı karesi OYUNDAN çekilemez (tepeden kamera o
 (repro aracı `tools/olcum-panel-donusu.mjs`).
 
 **Önizlemeler**
+**R3 SONUÇ KARELERİ:** `ss/r3-son-{serit,ayarlar,odul,hedefler}.png` (UYGULAMA SONRASI)
+**R3b KARAR PAKETİ (madalyon 9 + ödül 7 aday + kese ölçümü):** https://claude.ai/artifact/EZbPh6oo7CF8Eeh3jsu36n
 **R3 KARAR PAKETİ (HUD · rozet 8 + kese 6 aday):** https://claude.ai/artifact/HRL1fvnWccYwRSZwpVUUKr
 **R2 KARAR PAKETİ (mutfak · kareler + sayılar):** https://claude.ai/artifact/WYbL5mcuqcchywVLy3QrFY
 **R2 kareler:** `ss/r2-taban-{plan,hat,tezgah,bulasik}.png` (ÖNCE) ·

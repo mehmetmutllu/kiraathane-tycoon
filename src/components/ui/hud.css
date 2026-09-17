@@ -33,13 +33,18 @@
   pointer-events: auto;
 }
 
-/* İtibar: madalyon + ALTINDA dar çubuk. Chip'siz üst şeridin (D-106) parçası — madalyonun
-   yanındaki geniş hap kalktı, çubuk madalyonun altına ve onun genişliğine indi. */
+/* İTİBAR KAPSÜLÜ (R3 · D-128 · kullanıcı seçimi "G"). Kullanıcının cümlesi iki şey istiyordu:
+   *"bar ve yuvarlak birleşik olmalı"* + *"en üst satırda yan yana olmalı"*. Ölçüm ikisini de
+   sayıya çevirdi: madalyonla çubuk arasında 3,0 px boşluk vardı ve çubuk madalyondan DARDI
+   (50,0 ↔ 56,0); üst şerit ayrıca ÜÇ ayrı y-merkezine yayılıp 69,0 px kaplıyordu.
+   Kapsülde madalyon çubuğun soluna GÖMÜLÜR (negatif pay), yani boşluk kavramı ortadan kalkar
+   ve şerit tek satıra iner (69,0 → 56,0 px, −%18,8). Halka kolu (D1/D3) bilerek seçilmedi:
+   halka, yanındaki çubukla aynı anlamı iki kez çizerdi. */
 .rep {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 3px;
+  gap: 0;
   padding: 0;
   border: 0;
   background: none;
@@ -47,6 +52,7 @@
 }
 .rep-medal {
   position: relative;
+  z-index: 2; /* madalyon çubuğun ÜSTÜNDE — kapsülün "gömülü" hissi bundan geliyor */
   display: grid;
   place-items: center;
   filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.45));
@@ -66,7 +72,23 @@
   line-height: 1;
   color: #fff;
   paint-order: stroke fill;
-  -webkit-text-stroke: 5px var(--ot);
+  /* 5 px DEĞİL 3 px (R3 · D-128). Kullanıcı madalyonun üstünde *"arkada bir çizgi"* gördü:
+     `-webkit-text-stroke` köşeleri MITER birleştiriyor ve Lilita One'ın "4"ünün sivri tepesinde
+     5 px'lik kontur ekrana bir mızrak olarak çıkıyordu. Kusur yazı tipinin değil kalınlığın;
+     3 px'te uç kayboluyor, konturun işi (sahne üstünde okunurluk) duruyor. */
+  -webkit-text-stroke: 3px var(--ot);
+}
+/* ÇUBUK KAPSÜLÜN GÖVDESİ: madalyonun ardına 26 px girer ve onun boyuna (22 px) çıkar — eski
+   50×10'luk çubukta bir seviye atlaması 50 px'lik yolda 12,4 px çiziliyordu, yani hareket
+   neredeyse görünmüyordu. `.rep .rep-bar` diye KAPSAMLI yazılıyor: aynı sınıf Hedefler
+   ekranının kahraman satırında `.wide` olarak da kullanılıyor, oraya sızmamalı. */
+.rep .rep-bar {
+  width: 112px;
+  height: 22px;
+  margin-left: -26px;
+}
+.rep .rep-fill {
+  inset: 2.5px auto 2.5px 2.5px;
 }
 .rep-bar {
   position: relative;
@@ -101,10 +123,16 @@
   background: linear-gradient(180deg, var(--ac), var(--ac2));
   transition: width 0.35s cubic-bezier(0.2, 0.9, 0.3, 1);
 }
-/* KESE — CHIP'SİZ (D-106, kullanıcı: *"veriler bar içinde değil, direk oyun üstünde olsun"*).
-   Kutunun görünmeyen işi OKUNABİLİRLİKTİ; onu kontur devraldı (`.cur-val`, index.css). Maket
-   dört zeminde sınadı — açık zeminde kontur, koyu zeminde dolgu taşıyor. Bu, D-023'ün
-   "para+elmas AYNI pill ailesinde chip" maddesini bilerek GERİ ALIR. */
+/* KESE — HAP ÇERÇEVE GERİ GELDİ (R3 · D-128, kullanıcı seçimi "F"). D-106 kutuyu kaldırıp
+   okunabilirliği yazı konturuna bırakmıştı; R3 o kararın FİYATINI ölçtü: kutusuz kolda kesenin
+   arkasındaki zemin, sahnenin oynamasını neredeyse BİRE BİR üstleniyordu (geçirme 0,979 telefon
+   / 0,999 masaüstü). Hap çerçeve bu oynamanın üçte ikisini sönümlüyor (0,317 / 0,292); bedeli
+   kutunun +%27,6 en, +%29,4 boy büyümesi. Kenar para birimine göre renkli: altın kese ile buz
+   kesesi bir bakışta ayrılsın (ikon tek başına 26 px'te bunu yapmıyordu).
+
+   DİZİLİM ALT ALTA KALDI ve bu bir zevk kararı değil ÖLÇÜM: yan yana dizilim normal parada
+   çalışıyor ama 999.99M + 12.34K'da kese 262,7 px'e çıkıp ekranı 42,7 px aşıyor — elmas ve
+   dişli kadraj dışında kalıyor. Alt alta her değerde 42,0 px pay bırakıyor. */
 .purse {
   margin-left: auto;
   display: flex;
@@ -113,9 +141,27 @@
   gap: 4px;
 }
 .cur {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 6px;
+  padding: 3px 12px 3px 4px;
+  border: 2.5px solid var(--ot);
+  border-radius: var(--rr);
+  background: var(--oyuk);
+}
+/* İÇ HALKA PSEUDO-ELEMAN, `box-shadow` DEĞİL: dördüncü bir kabartma açmak paletin gölge
+   basamağını (--k1…--k3) delerdi — bu bir yükseklik değil KENAR. (Bekçi: tests/mor-dil §4.) */
+.cur::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--rr);
+  border: 2px solid var(--para);
+  pointer-events: none;
+}
+.cur.gem::before {
+  border-color: var(--elmas);
 }
 .cur > svg {
   flex: none;
@@ -883,7 +929,7 @@
   font-size: var(--p5);
   color: #fff;
   paint-order: stroke fill;
-  -webkit-text-stroke: 4px var(--ot);
+  -webkit-text-stroke: 3px var(--ot); /* üst şeritteki madalyonla aynı gerekçe (D-128 miter ucu) */
 }
 .rep-hero-body {
   flex: 1;
@@ -1009,12 +1055,17 @@
 }
 
 /* ── ORTAK ÖDÜL EKRANI ── */
+/* KART DÖRT KÖŞESİNDEN DE YUVARLAK (R3 · D-128). Üst köşeler yuvarlak, alt köşeler KESKİNDİ:
+   bu, ödül ekranının bir zamanlar ekranın dibine yapışan bir alt-sayfa olmasından kalmıştı —
+   orada alt köşeleri yuvarlatmak ekranın kenarında ince bir hilal bırakırdı. Kart artık
+   `.modal-backdrop` içinde ORTALANMIŞ duruyor (dört yanı boşluk), yani düz alt kenar hiçbir
+   şeye dayanmıyor, yalnız kesik duruyor. Alttaki `--sab` payı da aynı devrin kalıntısı. */
 .reward-card {
   position: relative;
   align-items: center;
-  padding: 26px 20px calc(var(--sab) + 20px);
+  padding: 26px 20px 20px;
   text-align: center;
-  border-radius: var(--r3) var(--r3) 0 0;
+  border-radius: var(--r3);
 }
 .reward-glow {
   position: absolute;
@@ -1032,18 +1083,60 @@
   font-weight: 800;
   color: var(--tx);
 }
+/* ÖDÜL SATIRLARI ALT ALTA (C1 · R3 · D-128) — ayrıntılı gerekçe `HUD.tsx` · `RewardModal`. */
 .reward-amount {
   position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 9px;
+  gap: 2px;
   margin: 12px 0 6px;
   font-family: var(--font-num);
   font-size: var(--p6);
   color: var(--para);
   paint-order: stroke fill;
   -webkit-text-stroke: 4px var(--ot);
+}
+.reward-amount .odul-sat {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+/* K3 satırı iki katman: üstte SESSİZ etiket, altında stat'ın geçişi (D-128). */
+.reward-amount .odul-sat.iki-kat {
+  flex-direction: column;
+  gap: 0;
+  line-height: 1.05;
+}
+.reward-amount .odul-etiket {
+  font-family: var(--font-game);
+  font-size: var(--p2);
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: var(--tx2);
+  -webkit-text-stroke: 0;
+}
+.reward-amount .odul-gecis {
+  display: flex;
+  align-items: center;
+}
+/* ESKİ değer solda ve sönük: göz sağdaki YENİ sayıda durmalı. */
+.reward-amount .odul-eski {
+  opacity: 0.5;
+}
+.reward-amount .odul-ok {
+  display: grid;
+  place-items: center;
+  opacity: 0.55;
+  margin: 0 3px;
+  color: var(--tx);
+}
+/* "+" iki ödülü TOPLAR; kendisi ödül değil — bir punto küçük ve bir tık sessiz. */
+.reward-amount .odul-arti {
+  font-size: var(--p4);
+  line-height: 1;
+  opacity: 0.85;
 }
 .reward-card .sheet-cta {
   width: min(100%, 300px);

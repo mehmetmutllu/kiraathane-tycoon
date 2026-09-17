@@ -4114,3 +4114,30 @@ turunu ister.
 - **AÇIK:** ① ankraj listesi hâlâ elle türetiliyor (dördüncüsü ölçümde çıkmadı) · ② semaverin boyu
   L6'da 1,42 br, karede baskın — R2 öncesinden gelen davranış, sanat turunun kalemi ·
   ③ C3 (mutfak odasını erken döneme getir) ölçüldü, seçilmedi; kendi turunu ister.
+
+## D-128 — R3: HUD çerçeveleri (G-45…G-49) · 2026-09-17
+- **A4 (kaydırıcı):** "çerçeve kesik" olan çizgi değil KÖŞEYDİ (çizgi oranı 1,000). Yatay 4 px
+  `margin-left`ten, DİKEY 4 px `.sheet-pad`in `gap`inden geliyordu — açıklığın yarısı satırın
+  kuralı bile değildi. A2 (kapalı çerçeve) ölçüldü, ELENDİ: köşeyi kapatıyor ama satırı karta
+  çeviriyor; kaydırıcı bir üstteki anahtarın ÇOCUĞU, kardeşi değil.
+- **B2 (FPS):** katman + anahtar + `showFps` alanı gitti. `saveVersion` ARTMADI; birleştirme
+  bilinen alanları tek tek seçtiği için eski kayıttaki fazla alan sessizce düşüyor. Aynı kapı
+  alan EKLEMEYİ de alan SİLMEYİ de karşılıyor — bu turda test edildi.
+- **C1 + K3 (ödül):** ödüller artık ayrı eleman, alt alta, aralarında "+". Bonus satırı DELTA
+  değil TOPLAMIN GEÇİŞİNİ yazıyor ("%3,2 → %3,6") ve ikonsuz. Gerekçe ölçüldü: kalabalığın
+  kaynağı işaret sayısı kadar sayının cılızlığıydı (%0,4 tek başına hiçbir şey hissettirmiyor).
+  Referans: Idle Miner "Double Cash forever", Idle Restaurant "%30 Profit Boost" — sayı kütleli.
+- **G + C (rozet):** madalyon çubuğa gömülü kapsül (üst şerit 69,0 → 56,0 px, tek satır);
+  madalyondan YILDIZ kalktı, disk kendi tokenına açıldı (`--madalyon`, paletin 10. rengi).
+  Halka kolları elendi: halka yanındaki çubukla aynı anlamı iki kez çizer.
+- **F + ALT ALTA (kese):** D-106'nın kutusuzluğu GERİ ALINDI — ölçüm fiyatını yazdı (geçirme
+  0,979/0,999, zemin hiçbir şeyi sabitlemiyordu). Hap oynamanın ⅔'ünü sönümlüyor. Yan yana
+  dizilim kullanıcı sorduğu hâlde seçime SUNULMADI: 999.99M + 12.34K'da ekranı 42,7 px aşıyor.
+- **Kullanıcının gördüğü "arkadaki çizgi" yıldız değilmiş:** `-webkit-text-stroke` MITER
+  birleştiriyor, Lilita One'ın sivri "4"ünde 5 px kontur mızrak yapıyordu. 3 px'te kayboluyor.
+  **Yıldızı kaldırmak o kusuru kapatmıyordu** — iki ayrı kusur aynı 56 px'te üst üste duruyordu.
+- **Bekçi:** `tests/hud-r3.test.ts` (7 den.) + `ekran-kabugu §5` yeni karara göre yeniden yazıldı.
+  `node tools/mutasyon-hud-r3.mjs` **12/12 kırmızı** (ilk koşuda M6 kaçtı: bekçi geçişin yalnız
+  sağ ucunu tutuyordu; sol uç deltaya dönünce ekran hem artışı hem toplamı vaat ediyordu).
+- **Final:** vitest 1245 ✓ · konsol hatası 0.
+

@@ -30,6 +30,11 @@
   --ok2: #4fa83e;
   --elmas: #7fd9ff; /* yalnız elmas anlamında */
   --para: #ffd45e; /* yalnız para anlamında */
+  /* Seviye madalyonunun diski (R3 · D-128). Paletin ONUNCU rengi ve gerekçesi ölçülü: madalyon
+     `--kart`/`--oyuk` tonundayken üstündeki seviye sayısı zeminine gömülüyordu — kullanıcı
+     bunu *"4'ün arkasında yıldız gözükmüyor bile"* diye gördü. Yıldız kalktı, disk açıldı;
+     sayı ilk kez kendi zemininden ayrılıyor. Yalnız madalyon anlamında. */
+  --madalyon: #6b5bd6;
   /* Rozet/sayaç/tehlike — anlam rengi. Maketteki #e0402c ile BEYAZ yazı 4,25 veriyordu (AA 4,5
      ister) ve rozet 12 ölçümün hepsinde eşiğin altında kaldı; bir tık koyulaştı, 4,74 oldu.
      Bu D-107'nin dokuz renginden biri DEĞİL (maketin `.bang`ından geldi) — ölçüm düzeltebilir. */
@@ -832,17 +837,27 @@ body,
   color: var(--tx);
 }
 
-/* ---- Seviye kaydırıcısı (S9 · D-122) ----
+/* ---- Seviye kaydırıcısı (S9 · D-122 · R3 A4 · D-128) ----
    Anahtarın ALTINDA ayrı bir satır: "kapat" ile "kıs" farklı isteklerdir. Kendi kutusu yok —
-   kartın içinde kart olmasın; ayıran şey girinti ve ince bir sol çizgi. */
+   kartın içinde kart olmasın; ayıran şey girinti ve ince bir sol çizgi.
+
+   KULLANICININ "ÇERÇEVE KESİK" DEDİĞİ ŞEY ÇİZGİNİN KISALIĞI DEĞİL, KÖŞEYDİ (R3 §A):
+   sol çizginin çizilen boyu satırın tamamıydı (45,00 / 45,0 → oran 1,000) ama çizgi, üstündeki
+   ayıraçtan hem yatayda 4 px içeride (`margin-left`) hem dikeyde 4 px aşağıda başlıyordu —
+   iki çizgi hiçbir noktada buluşmuyordu. Dikey açıklığın kaynağı kaydırıcı DEĞİL panel:
+   `.sheet-pad` bir flex kolon ve `gap: 4px` her satırın arasına hava koyuyor; `margin-top: -4px`
+   o payı geri alır (üst köşe 4,00 → −1,00, yani çizgiler kesişir).
+   A2 (kapalı dört kenar) ölçüldü ve ELENDİ: köşeyi kapatıyordu ama satırı KARTA çeviriyordu —
+   bu satır bir üstündeki anahtarın ÇOCUĞU, kardeşi değil; girinti + L o bağı taşıyan işaret. */
 .setting-slider {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 8px 4px 10px 14px;
+  padding: 12px 4px 10px 18px;
   border-bottom: 1.5px solid var(--oyuk);
-  border-left: 3px solid var(--oyuk);
-  margin-left: 4px;
+  border-left: 1.5px solid var(--oyuk);
+  margin-left: 0;
+  margin-top: -4px;
 }
 
 .setting-slider.kapali {

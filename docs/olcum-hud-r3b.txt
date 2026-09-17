@@ -1,0 +1,37 @@
+§D2 — MADALYONUN İÇİ (taban: kullanıcının seçtiği G kapsülü)
+  A — bugunku — koyu disk + amber yildiz (sayinin konturu yildizi yiyor)
+  B — YILDIZSIZ: duz koyu disk, ortada sayi
+  C — YILDIZSIZ + ACIK MOR disk (kullanicinin ikinci onerisi)
+  D — ACIK MOR disk + amber yildiz (yildiz kalir, zemin acilir)
+  E — yildiz DISKIN ICINE SIGAR (kucultulmus, ucu kesilmiyor) + ince sayi konturu
+  F — yildiz FILIGRAN: acik mor diskin uzerinde bir ton koyu, sayi one cikar
+  G — YILDIZSIZ + iki tonlu disk (ust acik / alt koyu) — low-poly madalyon
+  H — YILDIZSIZ + acik mor disk + AMBER kontur halkasi (madalyon hissi)
+  I — MADALYON YILDIZIN KENDISI: disk yok, tam yildiz rozet, sayi icinde
+
+§E2 — KESENİN DİZİLİMİ (taban: kullanıcının seçtiği F hapı) · ölçü: şeridin kalan payı
+  kol     | değer     | kese eni | kese boyu | rozet↔kese açıklık | ekrana kalan pay
+  ALT     | normal    |     92.4 |      84.0 |               93.6 |             42.0
+  ALT     | uzun      |    150.2 |      84.0 |               35.8 |             42.0
+  YAN     | normal    |    183.9 |      44.0 |                8.0 |             36.1
+  YAN     | uzun      |    262.7 |      44.0 |                8.0 |            -42.7
+  YANB    | normal    |    179.9 |      44.0 |                8.0 |             40.1
+  YANB    | uzun      |    258.7 |      44.0 |                8.0 |            -38.7
+
+§C2 — ÖDÜL SATIRININ İŞARETLERİ (taban: kodda UYGULANMIŞ C1)
+  A — C1 tabani — ikon + "+%0,4 kalici gelir" (bes isaret) · satır 263.6 / iç en 272.0 = 0.969
+  B — IKONSUZ — "+%0,4 kalici gelir" (ikon gereksiz: "gelir" zaten soyluyor) · satır 224.6 / iç en 272.0 = 0.826
+  C — KISA — ikon + "+%0,4 gelir" (bir kelime dusuyor) · satır 191.2 / iç en 272.0 = 0.703
+  D — YALIN — ikon + "+%0,4" (kelime yok, baslik zaten kademeyi soyluyor) · satır 127.3 / iç en 272.0 = 0.468
+  E — IKI KATMAN — buyuk "+%0,4", altinda kucuk "KALICI GELIR" etiketi · satır 127.3 / iç en 272.0 = 0.468
+
+§C3 — ÖDÜL SATIRI, İKİNCİ TUR (hepsi İKONSUZ; bir kısmı sayının kendisini değiştiriyor)
+  B — IKONSUZ (kullanicinin su anki favorisi): "+%0,4 kalici gelir" · satır 224.6×35.0 / iç en 272.0 = 0.826
+  K1 — KELIME ONDE: "Kalici gelir +%0,4" — once ne, sonra ne kadar · satır 168.7×35.0 / iç en 272.0 = 0.620
+  K2 — IKI KATMAN: buyuk "+%0,4", altinda kucuk "kalici gelir" · satır 88.3×45.1 / iç en 272.0 = 0.325
+  K3 — TOPLAMI GOSTER: "%3,2 → %3,6" (delta degil, statin kendisi oynuyor) · satır 160.8×45.1 / iç en 272.0 = 0.591
+  K4 — HAP ETIKET: kucuk "KALICI" hapi + "+%0,4 gelir" · satır 215.6×35.0 / iç en 272.0 = 0.793
+  K5 — CUMLE: "Artik her satistan %0,4 fazla kazaniyorsun" (sayi degil ETKI) · satır 240.0×37.5 / iç en 272.0 = 0.882
+  K6 — SONSUZA DEK (Idle Miner kalibi): "+%0,4 gelir · sonsuza dek" · satır 152.2×45.1 / iç en 272.0 = 0.560
+
+konsol hatası: 0

@@ -245,4 +245,67 @@ kaydırıcıda göze çarpıyor, çünkü orada dikey bir çizgi o açıklığı
 
 ## §Karar
 
-_(BOŞ — adım 3'te kullanıcı seçer; bu commit karar taşımaz)_
+**Kullanıcı seçti (2026-09-17) — D-128.** Beş kolun hepsi karara bağlandı; ikisi seçim
+sırasında AÇILAN yeni çatallarla ikinci bir ölçüm turu istedi (`docs/olcum-hud-r3b.txt`).
+
+| § | seçilen | elenen | gerekçe |
+|---|---|---|---|
+| A (G-45) | **A4** hizalı + bitişik L | A1 (yanlış hipotez) · A2 · A3 | Kullanıcı *"A2 iyi ama A4 de olabilir, sen seç"* dedi. A2 köşeyi kapatıyor ama satırı KARTA çeviriyor; oysa kaydırıcı bir üstteki anahtarın ÇOCUĞU (D-122: *"kartın içinde kart olmasın"*). Girinti + L o bağı taşıyan işaret. |
+| B (G-46) | **B2** katman + anahtar + alan | B1 | Kayıt güvenliği bedeli yok: `ayarlariBirlestir` bilinen alanları tek tek seçtiği için eski kayıttaki `showFps` sessizce düşer, `saveVersion` artmadı. |
+| C (G-47) | **C1 + K3** | C2…C5 · K1 · K2 · K4 · K5 · K6 | C1 ödülleri ayrı elemanlara böldü; K3 satırın İÇERİĞİNİ değiştirdi (aşağıda). |
+| D (G-48) | **G kapsül + C madalyon içi** | A…F · H · I | Halka kolları (D1/D3) elendi: halka, yanındaki çubukla aynı anlamı iki kez çizerdi. H (amber halka) elendi: gözde "dolmuş bir bar" karşılığı buluyor. |
+| E (G-49) | **F hap + ALT ALTA** | E1 · B · C · D · E · yan yana dizilim | Hap çerçeve sahnenin oynamasının ⅔'ünü sönümlüyor. Yan yana dizilim ÖLÇÜMLE elendi (aşağıda). |
+
+### İkinci turun üç bulgusu (tam koşu, telefon 390×844 @3×, hata 0)
+
+**① Kese YAN YANA dizilemez — zengin oyuncuda ekranı aşıyor.**
+
+| dizilim | değer | kese eni | rozet↔kese | ekrana kalan pay |
+|---|---|---|---|---|
+| ALT ALTA | 5M · 500 | 92,4 | 93,6 | **+42,0** |
+| ALT ALTA | 999.99M · 12.34K | 150,2 | 35,8 | **+42,0** |
+| YAN YANA | 5M · 500 | 183,9 | 8,0 | +36,1 |
+| YAN YANA | 999.99M · 12.34K | 262,7 | 8,0 | **−42,7** |
+| YAN YANA (elmas küçük) | 999.99M · 12.34K | 258,7 | 8,0 | **−38,7** |
+
+Kullanıcının *"yan yana mı alt alta mı bilemedim"* sorusu bir zevk sorusu değilmiş: yan yana
+dizilim normal parada çalışıyor, uzun değerde elmas hapı ve dişli kadraj dışında kalıyor.
+**Kol seçime sunulmadan elendi.**
+
+**② Ödül satırında kalabalığın kaynağı işaret sayısı DEĞİL, sayının cılızlığı.**
+
+| kol | satır eni | oran | işaret |
+|---|---|---|---|
+| taban (ikonlu, tam metin) | 263,6 | 0,969 | 5 |
+| B ikonsuz | 224,6 | 0,826 | 4 |
+| K1 kelime önde | 168,7 | 0,620 | 4 |
+| K2 iki katman | 88,3 | 0,325 | 3 |
+| **K3 toplamı göster** | **160,8** | **0,591** | 3 |
+| K4 hap etiket | 215,6 | 0,793 | 4 |
+| K5 cümle | 240,0 | 0,882 | — |
+| K6 sonsuza dek | 152,2 | 0,560 | 3 |
+
+Dış referanslar aynı yere çıkıyor: Idle Miner Tycoon *"Double Cash forever"*, Idle Restaurant
+Tycoon *"%30 Profit Boost"* — sayı KÜTLELİ, kelime gündelik. Bizim sayımız %0,4: küçük,
+ondalıklı, tek başına hiçbir şey hissettirmiyor. K3 sayıyı kütleleştirmiyor, **stat'ın kendisini
+oynatıyor**: "%3,2 → %3,6". Kullanıcının *"D yalın ama açıklayıcı değil"* itirazının karşılığı bu.
+
+**③ Kullanıcının gördüğü "arkadaki çizgi" yıldız değil, KONTUR MIZRAĞIYMIŞ.**
+`-webkit-text-stroke` köşeleri MITER birleştiriyor; Lilita One'ın "4"ünün sivri tepesinde 5 px'lik
+kontur ekrana bir mızrak olarak çıkıyordu. Dört kalınlık sınandı (5 · 4 · 3 · 2,5): **3 px'te uç
+kayboluyor**, konturun işi (sahne üstünde okunurluk) duruyor. Kusur yıldızda değil kalınlıkta —
+yıldızı kaldırmak bu kusuru KAPATMIYORDU, yalnız görünürlüğünü değiştiriyordu.
+
+### Uygulama + bekçi
+
+`src/index.css` (A4 · `--madalyon` tokenı) · `hud.css` (kapsül · kese hapı · ödül satırları) ·
+`icons.tsx` (yıldız kalktı) · `HUD.tsx` (FPS katmanı gitti · ödül listesi · K3) · `save.ts`
+(`showFps` alanı gitti).
+
+**Bekçi:** `tests/hud-r3.test.ts` (7 denetim) + `tests/ekran-kabugu.test.ts §5` yeni karara
+göre YENİDEN YAZILDI (D-106 → D-128). `node tools/mutasyon-hud-r3.mjs` **12/12 kırmızı**.
+İlk koşuda M6 KAÇTI: bekçi geçişin yalnız SAĞ ucunu tutuyordu, sol uç deltaya çevrilince
+satır "+%0,4 → %3,6" oluyor ve ekran hem artışı hem toplamı vaat ediyordu. İki uç da denetleniyor.
+
+**Final:** vitest 1245 ✓ · konsol hatası 0 · kareler `ss/r3-son-{serit,ayarlar,odul,hedefler}.png`.
+

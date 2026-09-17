@@ -3653,13 +3653,14 @@ describe('Faz B1 — kayıt v31: TEMİZ SIFIRLAMA, migrasyon yok (D-058 karar 3)
     expect(r.xp).toBe(0);
   });
 
-  it('resetKeepingSettings: AYARLAR korunur (ses · müzik · bildirim · FPS · SEVİYELER)', () => {
+  it('resetKeepingSettings: AYARLAR korunur (ses · müzik · bildirim · SEVİYELER)', () => {
     const r = resetKeepingSettings({
       saveVersion: 28,
+      // `showFps` R3'te KALDIRILDI (D-128) ama ESKİ kayıtlar hâlâ taşıyor — sessizce düşmeli.
       settings: { sound: false, music: false, notifications: false, showFps: true, soundVolume: 0.3 },
     });
     expect(r.settings).toEqual({
-      sound: false, music: false, notifications: false, showFps: true,
+      sound: false, music: false, notifications: false,
       // S9 · D-122: seviyeler de ayar; sıfırlama onları da korumak zorunda.
       soundVolume: 0.3, musicVolume: 1,
       // F2 · D-125: gölge tercihi de ayar. Kayıtta verilmemişti → varsayılan 'oto'ya düşer,
@@ -3704,7 +3705,8 @@ describe('Faz B1 — kayıt v31: TEMİZ SIFIRLAMA, migrasyon yok (D-058 karar 3)
       expect(s.wallet).toBe('0');
       expect(s.padsDone).toEqual([]);
       expect(s.settings.sound).toBe(false);
-      expect(s.settings.showFps).toBe(true);
+      // KALDIRILAN ALAN (D-128): eski kayıttaki `showFps` birleştirmeden geçmez, kayıt bozulmaz.
+      expect('showFps' in s.settings).toBe(false);
     });
   });
 

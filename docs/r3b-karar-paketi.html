@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>R3b Karar Paketi</title>
+<style>
+  :root{
+    --bg:#f6f3ee; --kart:#fff; --tx:#1d1a2e; --tx2:#5d5872; --cizgi:#e2ddd4;
+    --vurgu:#7a4de8; --iyi:#1f7a4d; --kotu:#a33; --sari:#b8860b;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#14121c; --kart:#1d1a29; --tx:#ece8f6; --tx2:#a49fb8; --cizgi:#332e44;
+      --vurgu:#a98bff; --iyi:#5fd39a; --kotu:#ff8b8b; --sari:#e8bf5a;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14121c; --kart:#1d1a29; --tx:#ece8f6; --tx2:#a49fb8; --cizgi:#332e44;
+    --vurgu:#a98bff; --iyi:#5fd39a; --kotu:#ff8b8b; --sari:#e8bf5a;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--tx);
+    font:16px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+    padding:28px 16px 64px;
+  }
+  .kap{max-width:980px;margin:0 auto}
+  h1{font-size:1.5rem;margin:0 0 4px;letter-spacing:-.01em}
+  .alt{color:var(--tx2);font-size:.9rem;margin:0 0 28px}
+  h2{font-size:1.12rem;margin:38px 0 6px;padding-top:18px;border-top:2px solid var(--cizgi)}
+  h2 .g{color:var(--tx2);font-weight:400;font-size:.85rem;margin-left:8px}
+  h3{font-size:.95rem;margin:18px 0 6px}
+  .soru{color:var(--tx2);font-style:italic;margin:0 0 14px;font-size:.93rem}
+  table{border-collapse:collapse;width:100%;font-size:.86rem;margin:10px 0 16px}
+  th,td{border:1px solid var(--cizgi);padding:6px 9px;text-align:right}
+  th:first-child,td:first-child{text-align:left}
+  th{background:color-mix(in srgb,var(--vurgu) 10%,transparent);font-weight:700}
+  tr.taban td{background:color-mix(in srgb,var(--sari) 12%,transparent)}
+  tr.oneri td{background:color-mix(in srgb,var(--iyi) 13%,transparent)}
+  tr.elendi td{background:color-mix(in srgb,var(--kotu) 11%,transparent)}
+  b.iyi{color:var(--iyi)} b.kotu{color:var(--kotu)}
+  .izgara{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin:14px 0 6px}
+  .genis{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+  .aday{background:var(--kart);border:1px solid var(--cizgi);border-radius:12px;overflow:hidden}
+  .aday.sec{border:2px solid var(--iyi)}
+  .aday img{display:block;width:100%;height:auto;background:#cdb488}
+  .aday .ad{padding:8px 10px 10px;font-size:.82rem;line-height:1.4}
+  .aday .ad b{display:block;font-size:.95rem;margin-bottom:2px}
+  .not{background:var(--kart);border:1px solid var(--cizgi);border-left:4px solid var(--vurgu);
+       border-radius:0 10px 10px 0;padding:11px 14px;margin:14px 0;font-size:.9rem}
+  .not b{color:var(--vurgu)}
+  .kapandi{border-left-color:var(--iyi)} .kapandi b{color:var(--iyi)}
+  code{background:color-mix(in srgb,var(--tx) 8%,transparent);padding:1px 5px;border-radius:5px;font-size:.86em}
+  .rozet{display:inline-block;padding:1px 8px;border-radius:99px;font-size:.72rem;font-weight:700;
+         background:color-mix(in srgb,var(--iyi) 18%,transparent);color:var(--iyi);vertical-align:middle}
+  @media(max-width:560px){ body{padding:20px 12px 48px} table{font-size:.78rem} th,td{padding:5px 6px} }
+</style>
+</head>
+<body>
+<div class="kap">
+
+<h1>R3b — seçerken açılan üç ince çatal</h1>
+<p class="alt">Telefon 390×844 @3× · konsol hatası 0 · Adaylar: <code>tools/shot-hud-r3b.mjs</code> ·
+Ham çıktı: <code>docs/olcum-hud-r3b.txt</code><br>
+Bütün kareler <b>gerçek oyundan</b>; adaylar sayfaya enjekte edilmiş CSS/DOM, uygulama kaynağı değişmedi.</p>
+
+<div class="not kapandi">
+<b>ÖNCE: SEÇİMİN KAPATTIKLARI UYGULANDI.</b>
+<b>A4</b> kaydırıcının köşesi kapandı (üst köşe 4,00 → −1,00 px, sol hizasızlık 4,00 → 0,00) ·
+<b>B2</b> FPS katmanı + ayardaki anahtar + <code>showFps</code> alanı gitti (kayıt sürümü artmadı,
+eski kayıttaki alan sessizce düşüyor — bekçi testi bunu doğruluyor) ·
+<b>C1</b> ödüller alt alta, aralarında "+" ·
+<b>alt köşe yarıçapı</b> kart artık dört köşesinden de yuvarlak.
+Aşağıdaki üç çatal, senin bu seçimi yaparken açtığın sorular.
+</div>
+
+<div class="not kapandi">
+<b>BU TURDA KAPANANLAR.</b> <b>Kese → ALT ALTA</b> (ölçüm kapattı, aşağıda §E2) ·
+<b>Madalyon → C</b> (yıldızsız + açık mor; senin kendi önerin — B'yi, yani koyu diski istersen
+tek satırlık dönüş). Açık kalan tek soru <b>ödül satırı</b>: ilk turda B'ye yaklaştın ama
+<i>"daha düzgün söylemenin başka bir yolu yok mu, bi araştırsan"</i> dedin. <b>§C3</b> o araştırmanın
+karşılığı.
+</div>
+
+<h2>§C3 · Ödül satırı — ikinci tur <span class="g">araştırma sonrası, hepsi İKONSUZ</span></h2>
+
+<div class="not">
+<b>ARAŞTIRMANIN SÖYLEDİĞİ ŞEY KELİMEYLE İLGİLİ DEĞİL.</b> İki büyük idle tycoon aynı yere çıkıyor:
+<b>Idle Miner Tycoon</b> kalıcı yükseltmeyi <i>"Double Cash <b>forever</b>"</i> diye yazıyor,
+<b>Idle Restaurant Tycoon</b> <i>"%30 Profit Boost"</i>. İkisinde de sayı <b>kütleli ve yuvarlak</b>
+(2×, %30), kelime gündelik. Bizim sayımız ise <b>%0,4</b>: küçük, ondalıklı ve tek başına hiçbir şey
+hissettirmiyor — kalabalık hissinin asıl kaynağı işaret sayısı kadar <b>sayının kendisinin cılız
+olması</b>. Bu yüzden ikinci turda kolların bir kısmı metni değil <b>gösterilen büyüklüğü</b>
+değiştiriyor: deltayı değil <b>toplamı</b> göster (K3), ya da sayıyı bırakıp <b>etkiyi</b> söyle (K5).
+</div>
+
+<table>
+<thead><tr><th>kol</th><th>satır (en×boy)</th><th>oran</th><th>ne yapıyor</th></tr></thead>
+<tbody>
+<tr class="taban"><td>B — "+%0,4 kalıcı gelir" <i>(şu anki favorin)</i></td><td>224,6 × 35,0</td><td>0,826</td><td>yalnız ikonu atar</td></tr>
+<tr><td>K1 — "Kalıcı gelir +%0,4"</td><td>168,7 × 35,0</td><td>0,620</td><td>önce ne, sonra ne kadar</td></tr>
+<tr><td>K2 — büyük "+%0,4" + altında "kalıcı gelir"</td><td>88,3 × 45,1</td><td>0,325</td><td>sayıyı öne alır</td></tr>
+<tr class="oneri"><td>K3 — "%3,2 → %3,6"</td><td>160,8 × 45,1</td><td>0,591</td><td><b class="iyi">stat'ın kendisi oynar</b></td></tr>
+<tr><td>K4 — [KALICI] hapı + "+%0,4 gelir"</td><td>215,6 × 35,0</td><td>0,793</td><td>sıfatı etikete taşır</td></tr>
+<tr><td>K5 — "Artık her satıştan %0,4 fazla kazanıyorsun"</td><td>240,0 × 37,5</td><td>0,882</td><td>sayı yerine etki</td></tr>
+<tr><td>K6 — "+%0,4 gelir" + "sonsuza dek"</td><td>152,2 × 45,1</td><td>0,560</td><td>Idle Miner kalıbı</td></tr>
+</tbody>
+</table>
+
+<div class="izgara genis">
+  <div class="aday"><img src="gorsel/ss/r3b-aday-odul2-B.png" alt="B"><div class="ad"><b>B — ikonsuz</b>Bugünkü cümle, ikon yok. Tanıdık ama hâlâ tek satırda beş bilgi.</div></div>
+  <div class="aday"><img src="gorsel/ss/r3b-aday-odul2-K1.png" alt="K1"><div class="ad"><b>K1 — kelime önde</b>"Kalıcı gelir" küçük ve solda, sayı büyük ve sağda.</div></div>
+  <div class="aday"><img src="gorsel/ss/r3b-aday-odul2-K2.png" alt="K2"><div class="ad"><b>K2 — iki katman</b>En sakin kadraj: sayı büyük, açıklama fısıltı.</div></div>
+  <div class="aday sec"><img src="gorsel/ss/r3b-aday-odul2-K3.png" alt="K3"><div class="ad"><b>K3 — toplamı göster <span class="rozet">önerim</span></b>%0,4 yerine <b>%3,2 → %3,6</b>: küçük sayı büyük sayıyı oynatıyor.</div></div>
+  <div class="aday"><img src="gorsel/ss/r3b-aday-odul2-K4.png" alt="K4"><div class="ad"><b>K4 — hap etiket</b>"KALICI" bir rozet olur, cümleden çıkar.</div></div>
+  <div class="aday"><img src="gorsel/ss/r3b-aday-odul2-K5.png" alt="K5"><div class="ad"><b>K5 — cümle</b>En açıklayıcı. Ama ödül ekranı bir cümle okutmaz, bir sayı gösterir.</div></div>
+  <div class="aday"><img src="gorsel/ss/r3b-aday-odul2-K6.png" alt="K6"><div class="ad"><b>K6 — "sonsuza dek"</b>Idle Miner'ın kalıbı: kalıcılığı sıfat değil <i>zaman</i> anlatıyor.</div></div>
+</div>
+
+<p style="font-size:.9rem"><b>Önerim K3.</b> "D çok güzel yalın ama açıklayıcı değil" dediğin yer tam
+burası: K3 yalın olanın sadeliğini alıyor <b>ama bir şey açıklıyor</b> — oyuncu kendi gelir
+bonusunun <b>%3,2'den %3,6'ya çıktığını</b> görüyor, yani %0,4'ün nereye gittiğini soran kimse
+kalmıyor. Üstelik sayı büyüdükçe ekran daha da iyi çalışır (geç oyunda %28,4 → %28,8).
+Sakin bir kadraj istersen <b>K2</b>, "kalıcı" kelimesini sevdiysen <b>K4</b> ikinci sıradakiler.<br>
+<span style="color:var(--tx2)">Not: K3'ün "önce" sayısı gerçek koddan gelir (<code>collectionBonus</code>);
+karedeki %3,2 örnek bir değerdir.</span></p>
+
+<h2>§D2 · Madalyonun içi <span class="g">"4'ün arkasında yıldız gözükmüyor bile … yıldız yarım, kötü duruyor"</span></h2>
+<p class="soru">Taban her adayda aynı: senin seçtiğin <b>G kapsülü</b> (madalyon sola gömülü, bar
+kapsülün içinde). Değişen yalnız madalyonun içi.</p>
+
+<div class="not">
+<b>ŞİKÂYETİN SEBEBİ ÖLÇÜLEBİLİR.</b> Yıldız "yarım" değil: <code>.rep-num</code>un
+<b>5 px'lik koyu konturu</b> 56 px'lik madalyonun ortasını kaplıyor, yıldızdan geriye yalnız
+uç dilimleri kalıyor. Yani yıldız kayıp değil, sayının altında. Üç çıkış yolu var ve üçü de
+aşağıda: yıldızı <b>kaldır</b> · zemini <b>aç</b> (senin ikinci önerin) · yıldızı <b>madalyonun
+kendisi yap</b>.
+</div>
+
+<div class="izgara">
+  <div class="aday"><img src="gorsel/ss/r3b-aday-madalyon-A.png" alt="A"><div class="ad"><b>A — bugünkü</b>Koyu disk + amber yıldız. Şikâyetin kaynağı: sayının konturu yıldızı yiyor.</div></div>
+  <div class="aday"><img src="gorsel/ss/r3b-aday-madalyon-B.png" alt="B"><div class="ad"><b>B — yıldızsız, koyu disk</b>Yıldız gider, zemin bugünkü koyu ton kalır.</div></div>
+  <div class="aday sec"><img src="gorsel/ss/r3b-aday-madalyon-C.png" alt="C"><div class="ad"><b>C — yıldızsız + açık mor <span class="rozet">önerim</span></b>Senin ikinci önerin. Sayı ilk kez zemininden ayrılıyor.</div></div>
+  <div class="aday"><img src="gorsel/ss/r3b-aday-madalyon-D.png" alt="D"><div class="ad"><b>D — açık mor + yıldız</b>Zemin açılır, yıldız kalır: artık gerçekten görünüyor.</div></div>
+  <div class="aday"><img src="gorsel/ss/r3b-aday-madalyon-E.png" alt="E"><div class="ad"><b>E — yıldız diske sığar</b>Yıldız küçülür (ucu kesilmez) + sayı konturu inceltilir.</div></div>
+  <div class="aday"><img src="gorsel/ss/r3b-aday-madalyon-F.png" alt="F"><div class="ad"><b>F — yıldız filigran</b>Açık mor zeminde bir ton koyu yıldız; süs geri planda.</div></div>
+  <div class="aday"><img src="gorsel/ss/r3b-aday-madalyon-G.png" alt="G"><div class="ad"><b>G — iki tonlu disk</b>Yıldızsız, üstü açık altı koyu: düz değil hacimli.</div></div>
+  <div class="aday"><img src="gorsel/ss/r3b-aday-madalyon-H.png" alt="H"><div class="ad"><b>H — açık mor + amber halka</b>Madalyon hissi güçlü, ama halka "dolu bir bar" gibi de okunabilir.</div></div>
+  <div class="aday"><img src="gorsel/ss/r3b-aday-madalyon-I.png" alt="I"><div class="ad"><b>I — madalyon yıldızın kendisi</b>Disk yok, tam yıldız rozet. Yıldız artık hiç kesilmiyor.</div></div>
+</div>
+
+<p style="font-size:.9rem"><b>Önerim C.</b> Üst şeritteki bilgi <b>seviye sayısı</b>; yıldız o sayıyla
+aynı 56 px'i paylaşan bir süstü ve kavgayı sayı kazanmalı. <b>H</b> güzel duruyor ama amber halka
+gözde "dolmuş bir halka bar" karşılığı bulur — R3'te tam da o kalıbı (D1/D3 halka) ölçmüştük,
+iki anlam çakışır. <b>I</b> en karakterli olan; sayının okunurluğu bir tık düşüyor ama şerit
+kesinlikle "oyun" gibi duruyor — ikinci tercihim bu.</p>
+
+<h2>§C2 · Ödül satırı — İLK tur <span class="g">"+%0,4 yazıyor ya, çok fazla işaret var" · burada B'ye yaklaştın</span></h2>
+<p class="soru">Taban artık C1 (ödüller alt alta). Satırda üst üste binen işaretler:
+ikon · "+" · "%" · ondalık virgül · iki kelime.</p>
+
+<table>
+<thead><tr><th>kol</th><th>satır eni</th><th>kart iç eni</th><th>oran</th><th>işaret</th></tr></thead>
+<tbody>
+<tr class="taban"><td>A — ikon + "+%0,4 kalıcı gelir" <i>(bugünkü)</i></td><td>263,6</td><td>272,0</td><td>0,969</td><td>5</td></tr>
+<tr><td>B — ikonsuz: "+%0,4 kalıcı gelir"</td><td>224,6</td><td>272,0</td><td>0,826</td><td>4</td></tr>
+<tr class="oneri"><td>C — ikon + "+%0,4 gelir"</td><td><b class="iyi">191,2</b></td><td>272,0</td><td><b class="iyi">0,703</b></td><td>4</td></tr>
+<tr><td>D — ikon + "+%0,4" (kelimesiz)</td><td>127,3</td><td>272,0</td><td>0,468</td><td>3</td></tr>
+<tr><td>E — büyük "+%0,4" + altında küçük etiket</td><td>127,3</td><td>272,0</td><td>0,468</td><td>3+etiket</td></tr>
+</tbody>
+</table>
+
+<div class="izgara genis">
+  <div class="aday"><img src="gorsel/ss/r3b-aday-odul-A.png" alt="A"><div class="ad"><b>A — bugünkü</b>Satır kartın iç eninin %97'sini dolduruyor; nefes payı 8 px.</div></div>
+  <div class="aday"><img src="gorsel/ss/r3b-aday-odul-B.png" alt="B"><div class="ad"><b>B — ikonsuz</b>"gelir" kelimesi zaten para demek; ikon fazlalık.</div></div>
+  <div class="aday sec"><img src="gorsel/ss/r3b-aday-odul-C.png" alt="C"><div class="ad"><b>C — kısa <span class="rozet">önerim</span></b>"kalıcı" düşer, anlam durur: bir bakışta okunuyor.</div></div>
+  <div class="aday"><img src="gorsel/ss/r3b-aday-odul-D.png" alt="D"><div class="ad"><b>D — yalın</b>En sade. Ama "%0,4 <i>neyin</i>?" sorusunu başlığa bırakıyor.</div></div>
+  <div class="aday"><img src="gorsel/ss/r3b-aday-odul-E.png" alt="E"><div class="ad"><b>E — iki katman</b>Sayı büyük, açıklama küçük ve sessiz. Ödül vurgusu en güçlü burada.</div></div>
+</div>
+
+<p style="font-size:.9rem"><b>Önerim C.</b> Kalabalığın sebebi işaret sayısı kadar <b>satırın
+enidir</b>: bugünkü satır kartın içine 8 px payla sığıyor, yani göz kaçacak yer bulamıyor.
+C tek kelime atarak oranı 0,969 → 0,703'e indiriyor ve "neyin yüzdesi" sorusunu açıkta
+bırakmıyor. <b>E</b> en gösterişlisi — seçersen küçük etiketi <code>text-transform</code> ile
+büyütmeyeceğim (Türkçe "İ" kayboluyor, karede "KALICI GELIR" yazıyor), harfleri elle yazacağım.</p>
+
+<h2>§E2 · Kese: yan yana mı, alt alta mı? <span class="g">ÖLÇÜM CEVAPLADI — seçmene gerek yok</span></h2>
+<p class="soru">F hapı (kenarı para birimine göre renkli) her iki dizilimde de aynı; soru yalnız
+iki hapın birbirine göre yeri.</p>
+
+<table>
+<thead><tr><th>dizilim</th><th>değer</th><th>kese eni</th><th>kese boyu</th><th>rozet↔kese açıklık</th><th>ekrana kalan pay</th></tr></thead>
+<tbody>
+<tr class="oneri"><td>ALT ALTA</td><td>normal (5M)</td><td>92,4</td><td>84,0</td><td>93,6</td><td><b class="iyi">42,0</b></td></tr>
+<tr class="oneri"><td>ALT ALTA</td><td>uzun (999.99M · 12.34K)</td><td>150,2</td><td>84,0</td><td>35,8</td><td><b class="iyi">42,0</b></td></tr>
+<tr><td>YAN YANA</td><td>normal</td><td>183,9</td><td>44,0</td><td>8,0</td><td>36,1</td></tr>
+<tr class="elendi"><td>YAN YANA</td><td>uzun</td><td>262,7</td><td>44,0</td><td>8,0</td><td><b class="kotu">−42,7</b></td></tr>
+<tr class="elendi"><td>YAN YANA (elmas küçük)</td><td>uzun</td><td>258,7</td><td>44,0</td><td>8,0</td><td><b class="kotu">−38,7</b></td></tr>
+</tbody>
+</table>
+
+<div class="izgara genis">
+  <div class="aday sec"><img src="gorsel/ss/r3b-aday-kese-ALT-uzun.png" alt="ALT"><div class="ad"><b>ALT ALTA · uzun değer <span class="rozet">kalıyor</span></b>Dişli düğmesi bile karede duruyor; 42 px pay artıyor.</div></div>
+  <div class="aday"><img src="gorsel/ss/r3b-aday-kese-YAN-uzun.png" alt="YAN"><div class="ad"><b>YAN YANA · uzun değer</b>Elmas hapı ekranın dışına taşıyor, dişli tamamen kayboluyor.</div></div>
+</div>
+
+<p style="font-size:.9rem">Yan yana dizilim <b>normal parada iyi, zengin oyuncuda kırılıyor</b>:
+999.99M + 12.34K'da kese 262,7 px'e çıkıp ekranı <b>42,7 px aşıyor</b> — elmas ve dişli kadraj
+dışında kalıyor. Bu bir zevk sorusu değil, taşma; bu yüzden <b>alt alta</b> kalıyor ve bu kol
+seçime sunulmuyor. (Yan yana istersen tek yol kesenin değerleri kısaltması — ayrı bir tur.)</p>
+
+<h2>Ne bekliyorum</h2>
+<p style="font-size:.95rem">Tek harf yeter: <b>§C3 ödül satırı</b> → <b>B · K1 · K2 · K3 · K4 · K5 · K6</b>.<br>
+Önerim <b>K3</b>; "tamam" dersen onu uygularım. Kese (alt alta) ve madalyon (C) kapandı —
+madalyonda fikrini değiştirirsen "madalyon B" demen yeterli.<br>
+Harf gelince kod, bekçi testi, mutasyon doğrulaması ve final tam koşu tek commit'te kapanır.</p>
+
+</div>
+</body>
+</html>

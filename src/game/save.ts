@@ -66,8 +66,6 @@ export interface SaveSettings {
   sound: boolean;
   music: boolean;
   notifications: boolean;
-  /** Dev/teşhis: ekran-üstü FPS + draw-call sayacı (default kapalı; additive — sürüm artmadı). */
-  showFps: boolean;
   /**
    * Olay seslerinin seviyesi, 0..1 (S9 · D-122). Anahtarın yanında AYRI durur: "kapat" ile
    * "kıs" farklı isteklerdir — oyuncu sesi tamamen kapatmadan mekânı sessizleştirebilmeli.
@@ -83,14 +81,14 @@ export interface SaveSettings {
   /**
    * GÖLGE TERCİHİ (F2 · D-125). 'oto' = cihaz sınıfı karar verir (`game/cihazSinifi.ts`),
    * 'acik'/'kapali' = oyuncunun açık tercihi, ölçümü ezer.
-   * ADDITIVE alan → saveVersion ARTMADI (`showFps` emsali): `ayarlariBirlestir` eksik
+   * ADDITIVE alan → saveVersion ARTMADI (`lavaboLevel` emsali): `ayarlariBirlestir` eksik
    * alanı varsayılanla doldurur, eski kayıt hiçbir şey kaybetmez.
    */
   golge: 'oto' | 'acik' | 'kapali';
 }
 
 export function defaultSettings(): SaveSettings {
-  return { sound: true, music: true, notifications: true, showFps: false, soundVolume: 1, musicVolume: 1, golge: 'oto' };
+  return { sound: true, music: true, notifications: true, soundVolume: 1, musicVolume: 1, golge: 'oto' };
 }
 
 /**
@@ -100,11 +98,15 @@ export function defaultSettings(): SaveSettings {
  * `{ ...defaultSave(), ...parsed }` yüzeysel bir yayılımdır: `parsed.settings` varsa
  * varsayılan ayar nesnesinin TAMAMINI değiştirir, alan alan birleştirmez. Yani ayarlara
  * eklenen her yeni alan, GÜNCEL SÜRÜMLÜ eski bir kayıtta `undefined` kalırdı — göç bile
- * çalışmazdı, çünkü sürüm zaten güncel. `showFps` bu tuzağa düşmemişti (kimse eski kayıtla
- * sınamadı) ama ses seviyesi düşerdi: `undefined` bir çarpan sesi tamamen susturur.
+ * çalışmazdı, çünkü sürüm zaten güncel. Ses seviyesi bu tuzağa düşerdi: `undefined` bir
+ * çarpan sesi tamamen susturur.
  *
  * Buradaki birleştirme alan başına değil NESNE düzeyinde yapılıyor ve bu bilerek: kayıt bir
  * alanı taşımıyorsa varsayılanı geçer, taşıyorsa oyuncunun seçimi geçer.
+ *
+ * AYNI KAPI, ALAN SİLMEYİ DE KARŞILIYOR (R3 · D-128, `showFps` kaldırıldı): birleştirme
+ * BİLİNEN alanları tek tek seçtiği için, eski kayıttaki fazla alan sessizce düşer —
+ * `saveVersion` bu yüzden artmadı ve eski kayıt hiçbir şey kaybetmedi.
  */
 export function ayarlariBirlestir(ham: unknown): SaveSettings {
   const s = (ham && typeof ham === 'object' ? ham : {}) as Partial<SaveSettings>;
@@ -115,7 +117,6 @@ export function ayarlariBirlestir(ham: unknown): SaveSettings {
     sound: typeof s.sound === 'boolean' ? s.sound : d.sound,
     music: typeof s.music === 'boolean' ? s.music : d.music,
     notifications: typeof s.notifications === 'boolean' ? s.notifications : d.notifications,
-    showFps: typeof s.showFps === 'boolean' ? s.showFps : d.showFps,
     soundVolume: oran(s.soundVolume, d.soundVolume),
     musicVolume: oran(s.musicVolume, d.musicVolume),
     golge: s.golge === 'acik' || s.golge === 'kapali' || s.golge === 'oto' ? s.golge : d.golge,
@@ -132,7 +133,7 @@ export interface SaveData {
   /** Masa-başı yükseltme seviyeleri (Faz 2h; index = GLOBAL masa slotu; bahşiş+sabır). */
   tableLevels: number[];
   /** ODA: lavabo seviyesi (B4; 0 = oda kapalı). ADDITIVE alan → sürüm ARTMADI: `defaultSave()`
-   *  yayılımı eksik alanı 0 ile doldurur, eski v31 kaydı lavabosuz ama sağlam açılır (showFps deseni). */
+   *  yayılımı eksik alanı 0 ile doldurur, eski v31 kaydı lavabosuz ama sağlam açılır (additive alan deseni). */
   lavaboLevel: number;
   padsDone: string[];
   /** Aktif pad'lerin kısmi dolumu (pad id → ₺). Aynı anda birden çok pad doldurulabilir (v5). */
@@ -145,7 +146,7 @@ export interface SaveData {
   /** TOPLANMIŞ hedef kimlikleri (D3/D-089; `<kategori>:<kademe>`). `questsDone` deseni: kademe
    *  index'i SAKLANMAZ, her okumada sayaçtan türetilir (`src/game/goals.ts`). ADDITIVE alan →
    *  sürüm ARTMADI: `defaultSave()` yayılımı eksik alanı `[]` ile doldurur, eski v32 kaydı
-   *  hedefsiz ama sağlam açılır (`lavaboLevel`/`showFps` deseni). */
+   *  hedefsiz ama sağlam açılır (`lavaboLevel` deseni). */
   goalsClaimed: string[];
   /** D-093: USTA olmuş objelerin kimlikleri. Additive — kayıt sürümü ARTMADI; eski kayıtta
    *  alan yoksa boş liste okunur (`goalsClaimed`in v32'deki deseni). */

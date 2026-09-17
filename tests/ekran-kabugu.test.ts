@@ -12,7 +12,8 @@
  *        açılma) geri GELMEZ. Ölçüm sebebi: beş ekran dört farklı yükseklikte açılıyordu.
  *   3  · ÜÇ BÖLGE — sol üstte geri · ortada başlık · sağ üstte cüzdan.
  *   4  · M2 MAĞAZA — vitrin ≥ 230 px, satın alma TEK düğme (eskiden üç bileşende üç düğme).
- *   5  · CHIP'SİZ ÜST ŞERİT — para/elmas kutusuz; okunabilirliği KONTUR taşır.
+ *   5  · KESE HAP ÇERÇEVELİ (D-128) — para/elmas kutulu, iç halka para birimine göre renkli,
+ *        dizilim ALT ALTA (yan yana uzun değerde ekranı aşıyordu).
  *   6  · G-05 — her görevin kısa LAKABI var ve band hem lakabı hem net hedefi çiziyor.
  *   7  · G-18 — masanın yükseltme noktası SEVİYEYİ yazıyor (havada kart YOK).
  *   8  · T2 — ikincil metin (`--tx2`) kartsız gövde zemininde durmaz. Bu test string
@@ -134,13 +135,32 @@ describe('ekran kabuğu — K3 (D-106)', () => {
     }
   });
 
-  it('5 · chip\'siz üst şerit: kese kutusuz, okunabilirliği KONTUR taşır', () => {
-    const cur = kural(yorumsuz(oku(HUD_CSS)), '.cur');
+  /**
+   * D-106'NIN YERİNİ D-128 ALDI ve bu test onunla birlikte döndü. Eski kural *"kese kutusuz,
+   * okunabilirliği KONTUR taşır"* idi; R3 o kararın fiyatını ölçtü: kutusuz kolda kesenin
+   * arkasındaki zemin sahnenin oynamasını neredeyse bire bir üstleniyordu (geçirme 0,979/0,999),
+   * yani zemin hiçbir şeyi sabitlemiyordu. Kullanıcı hap çerçeveyi seçti (kol F).
+   *
+   * Test artık ÜÇ şeyi tutuyor ve üçü de ölçümden geliyor:
+   *   · kesenin kutusu VAR (zemin + kontur) — yoksa geçirme 1,0'a geri döner,
+   *   · iç halka para birimine göre renkli (altın ↔ buz bir bakışta ayrılır),
+   *   · dizilim ALT ALTA kalır — yan yana dizilim 999.99M + 12.34K'da ekranı 42,7 px aşıyordu.
+   */
+  it('5 · kese HAP çerçeveli, kenarı para birimine göre renkli ve ALT ALTA (D-128)', () => {
+    const css = yorumsuz(oku(HUD_CSS));
+    const cur = kural(css, '.cur');
     expect(cur, '.cur kuralı yok').not.toBe('');
-    for (const kutu of ['background', 'border', 'box-shadow']) {
-      expect(cur, `.cur hâlâ chip: ${kutu}`).not.toContain(`${kutu}:`);
+    for (const kutu of ['background', 'border', 'border-radius']) {
+      expect(cur, `.cur kutusunu kaybetti: ${kutu} yok`).toContain(`${kutu}:`);
     }
-    expect(yorumsuz(oku(INDEX)), 'kutu kalkınca okunabilirliği kontur taşır').toMatch(
+    expect(kural(css, '.cur::before'), 'para kesesinin iç halkası --para değil').toContain('var(--para)');
+    expect(kural(css, '.cur.gem::before'), 'elmas kesesinin iç halkası --elmas değil').toContain('var(--elmas)');
+    // Yan yana dizilim ölçümde ekranı aşıyordu; kolon olması bir tercih değil sığma koşulu.
+    expect(kural(css, '.purse'), 'kese yan yana dizildi — uzun değerde ekranı aşar').toContain(
+      'flex-direction: column',
+    );
+    // Kontur da DURUYOR: kutu zemini sabitler, kontur açık zeminde okunurluğu taşır (iki katman).
+    expect(yorumsuz(oku(INDEX)), 'kese yazısının konturu kalkmış').toMatch(
       /\.cur-val[\s\S]{0,400}?-webkit-text-stroke/,
     );
   });

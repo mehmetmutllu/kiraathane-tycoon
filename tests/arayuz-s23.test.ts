@@ -193,8 +193,9 @@ describe('§E — paneller ekranı dolduruyor', () => {
     // Sıra: künye → not → sıfırla. Yıkıcı düğme anahtarların dibinde durmuyor.
     const kunyeIdx = HUD.indexOf('data-testid="kunye"');
     const resetIdx = HUD.indexOf('data-testid="reset"');
-    const fpsIdx = HUD.indexOf('testid="set-showfps"');
-    expect(kunyeIdx).toBeGreaterThan(fpsIdx);
+    // Anahtar kümesinin SONU: FPS satırı R3'te kalktı (D-128), sıranın çapası artık gölge satırı.
+    const anahtarIdx = HUD.indexOf('testid="set-golge"');
+    expect(kunyeIdx).toBeGreaterThan(anahtarIdx);
     expect(resetIdx).toBeGreaterThan(kunyeIdx);
   });
 });

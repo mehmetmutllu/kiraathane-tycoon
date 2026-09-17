@@ -255,8 +255,12 @@ export function BangBadge({ size = 30 }: { size?: number }) {
 export function ReputationIcon({ size = 26 }: { size?: number }) {
   return (
     <Ic size={size}>
-      <circle cx="12" cy="12" r="8.4" fill="currentColor" stroke={OT} strokeWidth="2.2" />
-      <path d="M12 6.4l1.9 3.9 4.3.6-3.1 3 .7 4.3L12 16.2l-3.8 2 .7-4.3-3.1-3 4.3-.6z" fill={AC} stroke={OT} strokeWidth="1.9" strokeLinejoin="round" />
+      {/* YILDIZ KALKTI (R3 · D-128). Madalyonun üstünde HER İKİ kullanımda da seviye sayısı
+          duruyor ve sayının konturu yıldızın ortasını kaplıyordu: 56 px'lik madalyonda yıldızdan
+          geriye yalnız uç dilimleri kalıyor, göz bunu *"yarım yıldız"* olarak okuyordu. Süs ile
+          bilgi aynı 56 px'i paylaşamaz; bilgi (seviye) kazandı. Disk buna karşılık açıldı
+          (`--madalyon`) — sayı artık zeminine gömülmüyor. */}
+      <circle cx="12" cy="12" r="8.4" fill="var(--madalyon)" stroke={OT} strokeWidth="2.2" />
     </Ic>
   );
 }

@@ -4,7 +4,6 @@ import { claimableGoals, collectionBonus, goalViews, type GoalView } from '../..
 import { dailyViews, claimableDailyCount, type DailyQuestView } from '../../game/dailyQuests';
 import { dailyCountersOf } from '../../game/store';
 import { masterCost, toastCizilir } from '../../game/rules';
-import { perf } from '../../game/perf';
 import { screenPointer } from '../../game/screenPointer';
 import { fmt } from '../../game/decimal';
 import { SAVE_VERSION } from '../../game/save';
@@ -42,8 +41,12 @@ import './hud.css';
 import { cihazSinifiOku, golgeAcikMi } from '../../game/cihazSinifi';
 
 /** Oran → yüzde etiketi (0,004 → "+%0,4"). Gelir bonusu tek biçimde yazılsın diye TEK yerde. */
-const yuzde = (oran: number): string =>
-  `+%${(oran * 100).toLocaleString('tr-TR', { maximumFractionDigits: 1 })}`;
+const yuzde = (oran: number): string => `+${oranYuzde(oran)}`;
+
+/** Oran → İŞARETSİZ yüzde (0,036 → "%3,6"). Ödül ekranı ARTIŞI değil TOPLAMI yazıyor (D-128),
+ *  yani oradaki sayının başında "+" olmaz: "+%3,6 → +%4,0" iki kez artış vaat ederdi. */
+const oranYuzde = (oran: number): string =>
+  `%${(oran * 100).toLocaleString('tr-TR', { maximumFractionDigits: 1 })}`;
 
 /**
  * HUD — arayüz v2 (plan §9 bilgi mimarisi; docs/plan-kat1-yayin.html).
@@ -142,8 +145,6 @@ export function HUD() {
 
   return (
     <div className="hud" data-testid="hud">
-      {settings.showFps && <FpsOverlay />}
-
       {/* ───────── ÜST ŞERİT ───────── */}
       <div className="topbar">
         <button
@@ -395,12 +396,6 @@ export function HUD() {
               value={golgeAcikMi(settings.golge, cihazSinifiOku())}
               onChange={(v) => setSetting('golge', v ? 'acik' : 'kapali')}
               testid="set-golge"
-            />
-            <SettingRow
-              label="FPS Sayacı"
-              value={settings.showFps}
-              onChange={(v) => setSetting('showFps', v)}
-              testid="set-showfps"
             />
             {/* E3 (S23 · D-120): ekranın altındaki 525 px'lik ölü alan İÇERİKLE kapanıyor.
                 Ölçüm: içerik 782 px'lik gövdenin yalnız %31'ini dolduruyordu — beş ekranın
@@ -878,6 +873,7 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
           title={`${odul.categoryName} · ${odul.tier + 1}. kademe`}
           amount={0}
           bonus={odul.bonus}
+          bonusBefore={bonus}
           diamonds={odul.diamonds}
           claimTestid="goal-reward-ok"
           onClaim={() => {
@@ -898,6 +894,7 @@ function RewardModal({
   amount,
   diamonds = 0,
   bonus = 0,
+  bonusBefore = 0,
   onClaim,
   claimTestid,
   adReady = false,
@@ -909,31 +906,87 @@ function RewardModal({
   diamonds?: number;
   /** KALICI gelir artışı (oran; D-090). Offline ekranı ₺ verir → varsayılan 0, o ekran değişmedi. */
   bonus?: number;
+  /** Ödül ALINMADAN ÖNCEKİ toplam koleksiyon bonusu (oran). K3 satırı "%3,2 → %3,6" yazabilsin
+   *  diye gerekiyor: ekran artışı değil STAT'IN GEÇİŞİNİ gösteriyor (D-128). */
+  bonusBefore?: number;
   onClaim: () => void;
   claimTestid: string;
   adReady?: boolean;
 }) {
+  /** Ödül SATIRLARI — her ödül kendi elemanı. Liste burada kuruluyor ki "+" ayıracı ancak
+   *  GERÇEKTEN iki ödül varken çizilsin (tek ödüllü offline ekranı sarkık bir artı taşımasın). */
+  const satirlar: { key: string; icerik: React.ReactNode; ikiKat?: boolean }[] = [];
+  if (amount > 0) {
+    satirlar.push({
+      key: 'para',
+      icerik: (
+        <>
+          <CoinIcon size={30} /> +{amount.toLocaleString('tr-TR')}
+        </>
+      ),
+    });
+  }
+  if (bonus > 0) {
+    /* K3 (R3 · D-128) — DELTA DEĞİL, STAT'IN KENDİSİ. Eski satır "🪙 +%0,4 kalıcı gelir"
+       beş işareti üst üste bindiriyordu (ikon · + · % · ondalık · iki kelime) ve kullanıcı
+       *"çok fazla işaret var"* dedi. Ama asıl sorun işaret sayısı değil SAYININ CILIZLIĞIYDI:
+       %0,4 tek başına hiçbir şey hissettirmiyor. Referanslar da bunu söylüyor — Idle Miner
+       "Double Cash forever", Idle Restaurant "%30 Profit Boost": sayı kütleli, kelime gündelik.
+       Bizim sayımızı kütleleştirmenin yolu toplamı göstermek: oyuncu %3,2 → %3,6 geçişini
+       görünce %0,4'ün nereye gittiğini sormuyor. İkon da kalktı (kullanıcı: *"ikon çok karmaşa
+       oluşturuyormuş"*); "gelir" kelimesi zaten parayı söylüyor. */
+    satirlar.push({
+      key: 'bonus',
+      ikiKat: true,
+      icerik: (
+        <>
+          <span className="odul-etiket">Kalıcı gelir</span>
+          <span className="odul-gecis">
+            <span className="odul-eski">{oranYuzde(bonusBefore)}</span>
+            {/* Ok bir GLİF değil çizim (B6): "→" karakteri ikonun yerine oturmaz. */}
+            <span className="odul-ok">
+              <ChevronIcon size={17} />
+            </span>
+            {oranYuzde(bonusBefore + bonus)}
+          </span>
+        </>
+      ),
+    });
+  }
+  if (diamonds > 0) {
+    satirlar.push({
+      key: 'elmas',
+      icerik: (
+        <>
+          <GemIcon size={30} /> +{diamonds}
+        </>
+      ),
+    });
+  }
+
   return (
     <div className="modal-backdrop" data-testid={testid}>
       <div className="modal-card reward-card">
         <div className="reward-glow" />
         <div className="reward-title">{title}</div>
+        {/* C1 (R3 · D-128): ÖDÜLLER ALT ALTA, ARALARINDA "+". Eskiden üç ödül de aynı metin
+            akışındaydı — `.reward-amount`ın doğrudan çocukları svg + metin + svg + metin'di,
+            yani ödül diye bir ELEMAN yoktu. Ölçüm bunu sayıya çevirdi: satır kartın iç eninin
+            %98'ini dolduruyordu (266,0 / 272,0 → kalan pay 6 px) ve iki ödülü ayıran en büyük
+            boşluk 9,58 px'ti — bir ödülün KENDİ parçalarını ayıran 9 px `gap` ile aynı. Göz iki
+            ödülü tek uzun cümle olarak okuyordu. Her ödül artık kendi satırı; "+" ikisini
+            toplama işareti olarak bağlar. */}
         <div className="reward-amount">
-          {amount > 0 && (
-            <>
-              <CoinIcon size={30} /> +{amount.toLocaleString('tr-TR')}
-            </>
-          )}
-          {bonus > 0 && (
-            <>
-              <CoinIcon size={30} /> {yuzde(bonus)} kalıcı gelir
-            </>
-          )}
-          {diamonds > 0 && (
-            <>
-              <GemIcon size={30} /> +{diamonds}
-            </>
-          )}
+          {satirlar.map((satir, i) => [
+            i > 0 ? (
+              <span className="odul-arti" key={`${satir.key}-arti`}>
+                +
+              </span>
+            ) : null,
+            <span className={`odul-sat${satir.ikiKat ? ' iki-kat' : ''}`} key={satir.key}>
+              {satir.icerik}
+            </span>,
+          ])}
         </div>
         <button className="sheet-cta" data-testid={claimTestid} onClick={onClaim}>
           Al
@@ -1168,46 +1221,10 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
   );
 }
 
-/** FPS + draw-call + üçgen overlay'i. perf singleton'unu rAF ile ~4Hz okur (her kare setState YOK;
- *  PerfProbe zaten 0.5sn'de bir yazar). Sol-üst altı, etkileşimsiz; renk FPS'e göre uyarır. */
-function FpsOverlay() {
-  const [snap, setSnap] = useState({ fps: 0, calls: 0, tris: 0 });
-  const raf = useRef(0);
-  useEffect(() => {
-    let last = 0;
-    const loop = (t: number) => {
-      if (t - last >= 250) {
-        last = t;
-        setSnap({ fps: perf.fps, calls: perf.calls, tris: perf.tris });
-      }
-      raf.current = requestAnimationFrame(loop);
-    };
-    raf.current = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(raf.current);
-  }, []);
-  const color = snap.fps >= 50 ? '#7CFC9A' : snap.fps >= 30 ? '#ffce54' : '#ff6b6b';
-  return (
-    <div
-      data-testid="fps-overlay"
-      style={{
-        position: 'absolute',
-        top: 96,
-        left: 12,
-        zIndex: 50,
-        padding: '4px 8px',
-        borderRadius: 8,
-        background: 'rgba(0,0,0,0.55)',
-        font: '700 12px/1.35 ui-monospace, Menlo, Consolas, monospace',
-        color: '#e6edf3',
-        pointerEvents: 'none',
-        whiteSpace: 'pre',
-      }}
-    >
-      <span style={{ color }}>{snap.fps} FPS</span>
-      {`\n${snap.calls} draw\n${(snap.tris / 1000).toFixed(1)}k tri`}
-    </div>
-  );
-}
+/* FPS OVERLAY'İ BURADAYDI — R3'te KALDIRILDI (G-46 · D-128). Ölçüm teşhisi ekranın %1,30'u
+   değil ÇAKIŞMAYDI: katman ayarlar panelinin içeriğine ve joystick'e biniyordu, telefonda tam
+   "Ses seviyesi" kaydırıcısının üstünü örtüyordu (`ss/r3-fps-ayarlar.png`). Oyuncunun ekranında
+   teşhis katmanı yoktur; sayılar hâlâ `window.__perf`te (Scene.tsx yazar), teşhis oradan okunur. */
 
 /**
  * SEVİYE KAYDIRICISI (S9 · D-122). Anahtarın ALTINDA ayrı satır — "kapat" ile "kıs" farklı
