@@ -111,18 +111,14 @@ sürekli çözme; APK turunda okunacak) · ② `2024-q4` paketi indirilmedi, pro
 Bel bağının ucu çeyrek açıdan ince bir dudak bırakıyor (`docs/gorsel/ss/s19b-kiyafet.png`).
 Ölçü değil biçim; pay 0,035 → 0,012 ile küçültüldü, sıfırlanmadı. Bir sonraki sanat turunda.
 
-## PANO — v51 YAYINDA (2026-09-17)
+## PANO — v52 YAYINDA (2026-09-17)
 
-**https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs** · 105/111 (%95) · Faz R 3/4.
-Kart sayısı 8'de tutuldu (taşan S23 kartı arşive gitti, sayaç 60 → **61**). Yolda **arşiv
-dosyasının kendi kusuru** çıktı: kartlar `gunluk` dizisinde duruyor ama ilk yazımda yeni bir
-`kartlar` alanı açılmıştı ve sayaç elle yazılıyordu — sayaç artık **diziden türüyor**
-(`kart = gunluk.length`), pano da onu okuyor. Ayrıca "kalıcı çarpan görünmez bir ödül" risk
-kartının **görünürlük yarısı kapatıldı** (K3), his yarısı telefonda okunacak diye açık kaldı.
-Kart sayısı 8'de tutuldu (taşan S22 kartı `memory-bank/arsiv/pano-gunluk.json`'a gitti, sayaç 60).
-Bu turda ayrıca **bayat bir risk kartı** düzeltildi: "arka salonda 12 masa arasından geçilemiyor"
-hâlâ AÇIK görünüyordu, oysa H3 2026-09-16'da elenmişti (banket adasından sonra açıklık 2,15 br).
-Yerine R2'nin yapısal açık ucu kondu (ankraj listesi elle türetiliyor).
+**https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs** · 106/111 (%95) · **Faz R 4/4 KAPANDI**,
+aktif faz artık **F (paketleme)**. Kart sayısı 8'de tutuldu (taşan S24 kartı arşive gitti,
+sayaç 61 → **62**). Bu turda ayrıca **iki bayat yer** düzeltildi: ① Faz R'nin açıklaması R3 ve
+R4'ü hiç anmıyordu, ② "repoya giren 117 model" risk kartı hâlâ *"33 çalı/çim/ağaç/kaya"* ve
+*"Forest'ta çiçek yok"* diyordu — oysa `kaykit-forest-nature` F2'de silinmişti (D-125) ve R4'te
+bahçe gerektiğinde **geri getirilmedi**, ilkel şekillerle çizildi.
 
 ## AÇIK KALEMLER (ölçüldü/görüldü, bilerek duruyor — tam listesi `memory-bank/arsiv/`de)
 

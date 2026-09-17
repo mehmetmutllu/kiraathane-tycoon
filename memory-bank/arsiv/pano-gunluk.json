@@ -2,8 +2,25 @@
  "not": "İlerleme panosunun ESKİ oturum kartları. Pano her turda büyüyordu (67 kart / 219 KB) ve yayını canlı sürümün tamamının okunmasını şart koştuğu için tur başına maliyeti ARTIYORDU — okunanın neredeyse tamamı bir daha bakılmayacak arşivdi. Projenin kendi kuralı buraya da uygulandı (eski anlatı → arsiv/). Pano son 8 turu gösterir; öncesi burada ve git geçmişinde durur.",
  "kaynak": "docs/pano/ilerleme-panosu.html",
  "tasindi": "2026-09-16 (R1 turu, kullanıcı onayı)",
- "kart": 61,
+ "kart": 62,
  "gunluk": [
+  {
+   "tarih": "16.09.2026",
+   "etiket": "Faz S · 23. oturum (S24 — yükseltme tetiği — D-121)",
+   "baslik": "Ölçü <b>doğruydu</b>; kusur aynı şeyin <b>iki kez tanımlanmasıydı</b>",
+   "govde": "S23'ün ayırdığı mantık yarısı. Ölçüm ilk iş olarak turun kendi varsayımını çürüttü: bu, S23'ün üçüncü nüshası <b>değil</b>. Orada çizilen ok yazılı bloğundan %63 genişti; burada çizilen çerçeve yazanla birebir aynı — sapma <b>0,0000 br</b>, 13/13. Yani düzeltilecek bir sayı yoktu. Düzeltilecek olan <b>yapıydı</b>: tetik bir daire, çizim bir dikdörtgendi ve hiçbiri diğerinden türemiyordu.<br><br><b>Araca aday olmayan bir kol eklendi ve bulgu oradan çıktı.</b> Beş kol ölçüldü ama biri (G) aday değildi — bugünkü görsel “üstündesin” kabarmasının sınırı. O satır geometrinin iki değil <b>üç</b> olduğunu gösterdi: kabarma da kendi dairesini kuruyordu ve %34,3'ü çerçeve dışındaydı. Ölçüm yalnız seçenekleri değil, <b>mevcut hâlin parçalarını</b> da ölçmeli.<br><br><b>Ölçümün kapsamı da bir bulguydu.</b> Tam koşudaki 13 işaretin hiçbiri <b>pad</b> değildi — hepsi servis ve masa. Yani raporun “çakışma 0” satırı pad'leri hiç görmemişti, oysa pad etiketleri uzun (“Bulaşıkçı Tut” → hw 1,371). Uygulamadan önce 48 işaret analitik tarandı: tek gerçek çakışma <code>zone3</code> ↔ masa 6 (0,382 × 0,100 br), bilerek bırakıldı ve bekçiye yazıldı — daire testinde aynı çift <b>çok daha fazla</b> örtüşüyordu.<br><br><b>Kaçan mutasyon yine zayıf yeri gösterdi.</b> M8 (<code>inFrame</code> iki ekseni de <code>hw</code> ile ölçüyor) ilk turda kaçtı: 14 denetimin 14'ü yeşil kaldı, çünkü hiçbiri <code>hw ≫ hh</code> olan bir kutuda dikey taşmayı sınamıyordu. Gerçek işaretlerde fark büyük (lavabo 1,464 × 0,850). İki satır eklendi, 15/15 kırmızıya döndü.",
+   "maddeler": [
+    "<b>D-121:</b> kol <b>B + G</b> — tetik çizilen çerçevenin kendisi <b>ve</b> kabarma da aynı çerçeveden",
+    "<b>Taban:</b> dışarı <b>%50,4</b> · ölü %0,0 · menzil 1,023 br (çerçeve 0,662 / 0,619)",
+    "<b>Uygulanan:</b> dışarı <b>%0,0</b> · ölü <b>%0,0</b> · erişim %94,1 → <b>%97,6</b> · durakR 0,605 (oyuncu 0,47)",
+    "<b>Elenen kollar:</b> A1 ölü %28,5 (serviste <b>%68,2</b>) · A2 %26,0 — çerçeveler kare değil",
+    "<b>Bedel yazılı:</b> tetik alanı 3,309 → 1,669 br² (<b>−%49,6</b>); noktaya ~0,4 br daha yakına yürünüyor",
+    "<b>Yapısal kapatma:</b> yeni <code>src/game/markerFrame.ts</code> — <code>tick.ts</code>'ten <code>PAD_RADIUS</code>/<code>TABLE_UP_RADIUS</code> tamamen çıktı",
+    "<b>Etiketler de paylaşıldı:</b> etiketin uzunluğu çerçeve genişliğine giriyor — bileşende düz metin iki kutuyu sessizce ayırırdı",
+    "<b>Bekçi:</b> <code>tests/tetik-s24.test.ts</code> 14 denetim, <b>15 mutasyon, kaçan 0</b> · vitest <b>1105</b> ✓ · duman 42/42 ✓ · denge sayısı değişmedi"
+   ],
+   "not": "<b>S23'ün altyapı borcu kapandı:</b> <code>.gitattributes</code> eklendi. <code>core.autocrlf=true</code> bu makinede açık ve S23'te <code>git stash pop</code> src'yi CRLF'e çevirip mutasyon aracının çok satırlı kalıplarını sessizce bulunamaz yapmıştı (dört mutasyon “KALIP BULUNAMADI”, ilk koşu yalancı 12/12). <code>git add --renormalize .</code> <b>0 dosya</b> bozdu — depo zaten LF'ti, kilitlenen çalışma ağacı."
+  },
   {
    "tarih": "15.09.2026",
    "etiket": "Faz S · 22. oturum (S23 — ok · panel · doluluk, tur adı S19c — D-120)",
