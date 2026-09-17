@@ -4212,3 +4212,46 @@ turunu ister.
   eklenti 0). **F3/F4 eklenti getirdiğinde kol yeniden ölçülmeli.**
 - **Final:** vitest 1292 ✓ · duman 45/45 ✓ · tsc temiz · imzalı APK 8,58 MB / AAB 8,89 MB.
 - **F1b'ye bırakıldı:** ikon · açılış ekranı · ekran yönü (sayısı yok, gösterilerek sorulacak).
+
+## D-131 — Yatay/geniş ekran: şerit ortalandı, açılan ekranlar ray + iki sütun (F1b tur 2) — 2026-09-17
+
+Ölçüm: `docs/kabuk-raporu-f1b.md` §F–§I · ham `docs/olcum-panel-f1b.txt` (TAM · 44 hücre) +
+`docs/olcum-panel-sonda-f1b.txt` (2 sonda).
+
+- **Seçim `② YD+` + `G-54 uygula`.** Kullanıcı: *"② Görev şeridi ortalansın — bedava kısmı olsun
+  istiyorum ama açılan ekranlar da düzgün olmalı piyasada böyle yatay yapanlar ne yapıyor
+  bilmiyorum öyle bir şeyler olabilir."* **Ekran yönü (①) ve açılış ekranı (③) AÇIK KALDI** —
+  bu iş ikisinden de bağımsız, hangisi seçilirse seçilsin geçerli.
+- **G-51/G-52:** `@media (min-width: 560px)` dalında `.band` ve `.botnav` doğal genişlikte ve
+  ORTALI. Eşik YÖN değil **GENİŞLİK**, çünkü sorunun kendisi gerilme. 560 telefon portresinin
+  (412) üstünde, tablet portresinin (768) altında. Ölçülen: HUD %38,4 → **%19,0** (telefon
+  yatayı), %19,1 → **%7,0** (tablet); kaçıklık −233 → 0 ve −415 → 0. **Takas yok** — YD ile YD+
+  aynı sayıyı verdi, değişen tek şey hiza.
+- **G-54:** `@media (orientation: landscape) and (max-height: 560px)` dalında panel kabuğu yan
+  yana: üst şerit **sol raya** döner (62 px dikey yer geri kazanılır, 412'nin %15'i), gövde
+  **iki sütuna** akar. Piyasa kalıbıyla aynı (master-detail rail). Eşik 560: telefon yatayı
+  (412) girer, tablet yatayı (800) girmez — tablet ölçümde zaten temizdi (1,00–1,06×).
+- **§I'nin üç kolu ölçümde DÜŞTÜ ve düşmeleri çözümü belirledi:** kabuğu genişletmek (820 px) ve
+  tam ene çekmek (915 px) **tek hücre bile** oynatmadı. İki sütun yalnız Ayarlar'ı çözdü; çünkü
+  Görevler/Hedefler içeriğini tek `<ul>`de taşıyor ve o ızgaraya tek hücre giriyor. Uygulanan
+  hâl bu yüzden ara sarmalayıcıları **`display: contents`** ile saydamlaştırıyor.
+- **ÖLÜ KOD BULGUSU — turun en pahalı sonucu.** `index.css`'in iki responsive dalı da ölüydü:
+  dar-ekran dalında 15 seçiciden **2'si**, kısa-yatay dalında 18'den **3'ü** canlıydı; `--pill-h`
+  jetonu tamamen ölüydü. Sebep `fc061a0` (2026-09-06, "Arayüz v2"): HUD yeniden adlandırıldı,
+  medya sorguları onunla gelmedi. **Bu, tur 1'in *"alt bant her yönde 186 px SABİT"* bulgusunun
+  sebebidir** ve D-128'in dar-ekran kuralının bugüne dek fiilen uygulanmadığını gösterir.
+- **İKİNCİ SESSİZ EZİLME, aynı turda:** kurallar önce `index.css`'e yazıldı ve yine işlemedi —
+  `hud.css` sonra yükleniyor, medya sorgusu özgüllük eklemiyor. Canlı ölçüm yakaladı
+  (`transform` uygulanıyor, `left` uygulanmıyordu). **Responsive dallar artık `hud.css`'in
+  sonunda**, değiştirdikleri taban kuralların yanında.
+- **Bekçi:** `tests/responsive-canli.test.ts` (7 denetim) — ① medya sorgularındaki her sınıf
+  hâlâ bir TSX'te geçmeli ② `index.css` medya sorgusu `hud.css` sınıfı hedeflememeli ③ D-131'in
+  kolları CSS'te durmalı. **4/4 mutasyonla doğrulandı** (`tools/mutasyon-responsive-d131.mjs`):
+  sınıf yeniden adlandırma · yanlış dosyaya yazma · eşiği düşürme · `display:contents` düşmesi.
+- **Dört araç kusuru, dördünü de GÖZ yakaladı** (tur 1'de iki, tur 2'de iki). Sonuncusu:
+  `scrollHeight` taşan çocukları saymıyor, altı hücrenin beşinde yanlış. Güvenilir sütun
+  `dışarıda`. Bu yüzden §F'nin `kaydırma` sütunu olduğundan **iyi** gösteriyor.
+- **Bekçi kırmızısı bilerek bırakıldı:** T2 dünya imzası `n2`, diğerleri `n3` (canlı NPC sayısı).
+  Yapısal dünya aynı ve ölçülen hiçbir büyüklük ona bağlı değil — ama sonucu görüp bekçiyi
+  gevşetmek D-084'ün yasakladığı şey. İmzanın yapısal/canlı ayrımı **ayrı bir tur kalemi**.
+

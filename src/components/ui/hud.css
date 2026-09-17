@@ -1337,3 +1337,176 @@
 .sheet-foot-note svg {
   vertical-align: -2px;
 }
+
+/* ═══════════════ RESPONSIVE — D-131'de SIFIRDAN YAZILDI, çünkü eskisi ÖLÜYDÜ ═══════════════
+
+   F1b tur 2 ölçümü bu bölümün iki dalının da **ölü kod** olduğunu buldu: dar-ekran dalında
+   15 seçiciden 2'si, kısa-yatay dalında 18'den 3'ü canlıydı; `--pill-h` jetonu tamamen ölüydü
+   (onu kullanan tek kural `.pill`, o da hiçbir TSX'te geçmiyor). Sebep `fc061a0` (2026-09-06,
+   "Arayüz v2"): HUD yeniden adlandırıldı (`.pill`/`.lvl-*`/`.cur-item` → `.band`/`.rep-*`/
+   `.cur`/`.navtab`), medya sorguları onunla birlikte yeniden adlandırılmadı. Ölü CSS hata
+   vermez — sessizce hiçbir şey yapmaz, o yüzden on bir gün fark edilmedi.
+
+   Bu, tur 1'in *"alt bant her yönde 186 px SABİT"* bulgusunun da sebebiydi: onu kısaltacak dal
+   hiç çalışmıyordu. Ölçüm: `docs/kabuk-raporu-f1b.md` §H-2.
+
+   KURAL AYNEN DURUYOR (D-128): dar ekranda ölçek basamağı AŞAĞI inilir (p3 → p2), "responsive
+   diye yeni punto uydurulmaz". Aşağıdaki her punto mevcut ölçek jetonlarından gelir.
+
+   BEKÇİ: `tests/responsive-canli.test.ts` bu bölümdeki her seçicinin hâlâ bir TSX dosyasında
+   geçtiğini doğrular — aynı hata sessizce geri gelemesin. */
+
+/* ── Dar dikey ekran (küçük telefon portresi) ──────────────────────────────────────────── */
+@media (max-width: 400px) {
+  .cur-val {
+    font-size: var(--p2);
+  }
+  .band {
+    min-height: 52px;
+    padding: 5px 8px 5px 6px;
+  }
+  .band-title {
+    font-size: var(--p2);
+  }
+  .char-canvas {
+    min-height: 190px;
+  }
+}
+
+/* ── GENİŞ EKRAN: şerit ve gezinme GERİLMEZ, doğal genişlikte ve ORTALI (G-51 + G-52, D-131) ──
+
+   Kullanıcının iki cümlesi: *"görev neden sola yaslı ortada olamaz mı?"* ve *"bence navbar da
+   görev de ortada daha iyi"*. Ölçüm (F1b §G) bunun BEDAVA olduğunu gösterdi: ortalamak HUD
+   yüzdesini de açık zemini de değiştirmiyor (%19,0 ↔ %19,0 telefon yatayı, %7,1 ↔ %7,0 tablet),
+   yalnız şeridin merkez kaçıklığını sıfırlıyor (−233 → 0 · −415 → 0).
+
+   EŞİK NEDEN GENİŞLİK, YÖN DEĞİL: sorunun kendisi GERİLME, yani genişlik. 560 px telefon
+   portresinin (412) üstünde, tablet portresinin (800) altında — yani dar ekranlarda bugünkü
+   tam-genişlik davranışı aynen kalır, gerilmenin başladığı her yerde doğal genişliğe döner.
+   Ölçülen kazanç: HUD ekranın %38,4'ünden %19,0'una (telefon yatayı), %19,1'den %7,0'ına (tablet). */
+@media (min-width: 560px) {
+  .band {
+    left: 50%;
+    right: auto;
+    width: min(430px, calc(100% - var(--sal) - var(--sar) - 20px));
+    transform: translateX(-50%);
+  }
+  .botnav {
+    left: 50%;
+    right: auto;
+    width: auto;
+    transform: translateX(-50%);
+    justify-content: center;
+    gap: 10px;
+    padding: 6px 20px calc(var(--sab) + 6px);
+    border: 3px solid var(--ot);
+    border-bottom: none;
+    border-radius: var(--r2) var(--r2) 0 0;
+  }
+  .botnav::before {
+    left: 3px;
+    right: 3px;
+    border-radius: var(--r1) var(--r1) 0 0;
+  }
+  .navtab {
+    flex: 0 0 auto;
+    padding: 4px 14px;
+  }
+}
+
+/* ── KISA YATAY EKRAN: açılan ekranlar YAN RAY + İKİ SÜTUN (G-54, D-131) ──────────────────
+
+   Ölçüm (F1b §F) telefon yatayının tek kırılma noktası olduğunu buldu: portrede beş ekranın
+   beşi de kusursuz (1,00× kaydırma), tablette en kötü 1,06×, telefon yatayında Görevler %47 ·
+   Hedefler %45 · Ayarlar %49 ve Hedefler'in TEK ödül-alma düğmesi ilk ekranda görünmüyor.
+
+   §I dört kol ölçtü ve üçü düştü: kabuğu genişletmek (820 px) ve tam ene çekmek (915 px)
+   **tek hücre bile** oynatmadı — kartlar tam satır olduğu için kabuk genişleyince içerik de
+   genişliyor, yükseklik aynı kalıyor. İki sütun (PB) yalnız Ayarlar'ı çözdü; Görevler ve
+   Hedefler değişmedi çünkü içeriklerini TEK bir `<ul>`de taşıyorlar ve o da ızgaraya tek hücre
+   olarak giriyor.
+
+   Buradaki hâl o ölçümün iki düzeltmesi:
+   ① ÜST ŞERİT SOL RAYA döner — 62 px dikey yer geri kazanılır (412 px'in %15'i). Kıt olan
+      eksen dikey, bol olan yatay; ray bunu takas eder. (Piyasa kalıbı: master-detail rail.)
+   ② ARA SARMALAYICILAR SAYDAMLAŞIR (`display: contents`) — kartlar ızgaraya DOĞRUDAN girer.
+      PB'nin Görevler/Hedefler'de tutmamasının sebebi tam olarak buydu.
+
+   EŞİK 560 px: telefon yatayı (412) girer, tablet yatayı (800) girmez — tablet zaten ölçümde
+   temizdi (1,00–1,06×), oraya dokunmak çalışan bir şeyi bozmak olurdu. */
+@media (orientation: landscape) and (max-height: 560px) {
+  .cur-val {
+    font-size: var(--p2);
+  }
+  .band {
+    min-height: 52px;
+  }
+
+  /* Kabuk yan yana: RAY | GÖVDE */
+  .modal-card.screen {
+    width: 100%;
+    flex-direction: row;
+  }
+
+  /* ① Üst şerit → sol ray. Üç bölgenin SIRASI korunur (geri · başlık · cüzdan), yalnız
+     ekseni döner: K3'ün "sol üstte çıkış, ortada kimlik, cüzdan hep görünür" sözleşmesi aynı. */
+  .screen-top {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: clamp(146px, 21vw, 200px);
+    gap: 12px;
+    padding: calc(var(--sat) + 12px) 12px 12px calc(var(--sal) + 14px);
+    border-right: 3px solid var(--ot);
+  }
+  .screen-title {
+    flex: none;
+    white-space: normal;
+    overflow: visible;
+    font-size: var(--p4);
+    line-height: 1.2;
+  }
+  .screen-purse {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+    margin-top: auto;
+  }
+
+  /* ② Gövde iki sütuna akar. */
+  .sheet-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 14px;
+    align-content: start;
+    padding: 12px 14px calc(var(--sab) + 12px);
+  }
+  /* Ara sarmalayıcılar saydam: kartlar ızgaraya doğrudan girsin. */
+  .sheet-body > .sheet-pad,
+  .sheet-body > .goals,
+  .sheet-body > ul {
+    display: contents;
+  }
+  /* Ekranın İSKELETİ tam satır kalır (S12/T2: bölümler gözle ayrılsın). */
+  .sheet-body > .sheet-sec,
+  .sheet-body > .rep-hero,
+  .sheet-body > .usta-strip,
+  .sheet-body > .sheet-foot-note,
+  .sheet-body > .qbig,
+  .sheet-body > .char-head {
+    grid-column: 1 / -1;
+  }
+  /* Izgara kendi boşluğunu veriyor: listelerin kendi payı iki kez sayılmasın. */
+  .sheet-body > .goal,
+  .goals > .goal {
+    margin: 0;
+  }
+
+  .char-canvas {
+    min-height: 120px;
+  }
+  .char-card {
+    max-height: 86vh;
+    overflow-y: auto;
+  }
+}

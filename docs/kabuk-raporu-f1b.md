@@ -569,21 +569,149 @@ yumuşatmak. Kırmızı raporda duruyor; imzanın ayrıştırılması **ayrı bi
 
 ## §Karar
 
-<!-- BOŞ — karar paketi sunulacak, kullanıcı seçecek, sonra D-0xx ile doldurulacak (D-084) -->
+**D-131 · 2026-09-17.** Kullanıcı ikinci karar paketinde şunu seçti:
 
----
+> *"② Görev şeridi ortalansın — ölçtüm, bedava kısmı olsun istiyorum ama açılan ekranlar da
+> düzgün olmalı piyasada böyle yatay yapanlar ne yapıyor bilmiyorum öyle bir şeyler olabilir.
+> bunları da yap sonra oturumu kaydet sıradan devam ederiz"*
+
+| # | Soru | Karar |
+|---|---|---|
+| ① | Ekran yönü | **AÇIK KALDI** — seçilmedi. Uygulanan iş bu karardan bağımsız: hangi kol seçilirse seçilsin geçerli. |
+| ② | Yatay/tablet HUD | **YD+ — doğal genişlik + ORTALI.** Uygulandı. |
+| — | Açılan ekranlar (G-54) | **DÜZELTİLECEK** — kullanıcı "düzgün olmalı" dedi ve piyasa kalıbına işaret etti. Uygulandı. |
+| ③ | Açılış ekranı | **AÇIK KALDI** — seçilmedi. |
+
+**①'in açık kalması bu turu bloke etmedi ve bu bilinçli:** §F ölçümü sorunun yönde değil telefon
+yatayında olduğunu gösterdi, yani panel düzeltmesi hangi yön seçilirse seçilsin gerekli. Serbest
+bırakılırsa (K0) yataya dönen oyuncu için gerekli; yatay kilitlenirse (K1) zaten şart; portre
+kilitlenirse (K2) dal hiç çalışmaz ama zarar da vermez.
 
 ## §Uygulama
 
-<!-- BOŞ -->
+**Piyasa kalıbı doğrulandı, uydurulmadı.** Yatay mobil oyunlarda kullanılan hâl **master-detail
+rail**: dikey eksen kıt olduğu için üst şerit yanda bir raya döner, içerik kalan genişliğe akar.
+Ölçüm de bağımsız olarak aynı yeri göstermişti (§I: bol eksen yatay, kıt eksen dikey).
 
----
+### 1. `@media (min-width: 560px)` — şerit ve nav doğal genişlikte, ORTALI (G-51 + G-52)
+
+`.band` ve `.botnav` `left:0; right:0` gerilmesinden çıkıp `left:50% + translateX(-50%)` ile
+ortalanıyor; nav hap biçimini alıyor (üst köşeler `var(--r2)`).
+
+**Eşik neden YÖN değil GENİŞLİK:** sorunun kendisi gerilme, yani genişlik. 560 px telefon
+portresinin (412) üstünde, tablet portresinin (768) altında — dar ekranlarda bugünkü tam-genişlik
+davranışı aynen kalıyor.
+
+### 2. `@media (orientation: landscape) and (max-height: 560px)` — panel RAY + İKİ SÜTUN (G-54)
+
+- `.modal-card.screen` → `flex-direction: row` (kabuk yan yana)
+- `.screen-top` → sol ray (`clamp(146px, 21vw, 200px)`), **62 px dikey yer geri kazanılır**
+  (412 px'in %15'i). K3'ün üç bölge sözleşmesi (geri · başlık · cüzdan) korunuyor, yalnız ekseni
+  dönüyor.
+- `.sheet-body` → `grid-template-columns: 1fr 1fr`
+- **Ara sarmalayıcılar `display: contents`** — `.sheet-pad`, `.goals`, `> ul`. **§I'nin PB kolu
+  tam burada tutmamıştı**: Görevler/Hedefler içeriğini tek `<ul>`de taşıyor ve o ızgaraya tek
+  hücre giriyordu.
+- Ekranın iskeleti tam satır kalıyor (`.sheet-sec`, `.rep-hero`, `.usta-strip`, `.qbig`) ki
+  S12/T2'nin bölüm ayrımı bozulmasın.
+
+**Eşik 560 px:** telefon yatayı (412) girer, tablet yatayı (800) girmez — tablet ölçümde zaten
+temizdi (1,00–1,06×), oraya dokunmak çalışan bir şeyi bozmak olurdu.
+
+### 3. Ölü responsive dalların temizlenmesi
+
+İki medya sorgusu da sıfırdan yazıldı; 28 ölü seçici silindi, yerine bugünkü sınıf adlarıyla
+çalışan kurallar kondu.
+
+### 4. YER DÜZELTMESİ — kurallar `index.css`'ten `hud.css`'e taşındı
+
+**İlk uygulama çalışmadı ve sebebi bu turun ikinci sessiz ezilmesiydi.** Kurallar önce
+`index.css`'e yazıldı; canlı ölçüm `transform`un uygulandığını ama `left`in uygulanmadığını
+gösterdi. Sebep kaynak sırası: `hud.css` `HUD.tsx` içinden **sonra** yükleniyor ve medya sorgusu
+özgüllük eklemiyor, yani `index.css`'teki `.botnav { left: 50% }` oradaki `.botnav { left: 0 }`
+tarafından eziliyordu. Responsive dallar artık **değiştirdikleri taban kuralların yanında**.
+
+### 5. Kendi kuralımı çiğnedim, bekçi yakaladı
+
+İlk yazımda `font-size: 10px` (ölçek dışı punto) ve `border-radius: 18px/15px` (ölçek dışı
+yarıçap) vardı — yani **D-128'in tam olarak alıntıladığım kuralını** çiğnemiştim.
+`tests/mor-dil.test.ts` üçünü de yakaladı; punto kaldırıldı, yarıçaplar `var(--r2)`/`var(--r1)`
+oldu. *Kuralı bilmek uymaya yetmiyor; bekçi yetiyor.*
 
 ## §Bekçi
 
-<!-- BOŞ -->
+`tests/responsive-canli.test.ts` — **7 denetim**, üç kolu var:
 
----
+| Kol | Neyi yakalar |
+|---|---|
+| ① **canlılık** | Medya sorgularındaki her sınıf seçicisi hâlâ bir TSX dosyasında geçmeli. `fc061a0`'nın sessiz çürümesi bir daha olamaz. |
+| ② **yer** | `index.css`'in medya sorgusu `hud.css` sınıfı hedefleyemez — kaynak sırası yüzünden sessizce ezilir. |
+| ③ **kollar** | D-131'in kolları CSS'te duruyor mu: ortalama, ray, iki sütun, `display:contents`, ve eşik telefon portresini dışarıda bırakıyor mu. |
+
+**4/4 mutasyonla doğrulandı** (`tools/mutasyon-responsive-d131.mjs`):
+
+```
+  M1  YAKALANDI   sinif yeniden adlandirildi, medya sorgusu guncellenmedi (OLU KOD)
+  M2  YAKALANDI   kural index.css medya sorgusuna yazildi (SESSIZCE EZILIR)
+  M3  YAKALANDI   esik telefon portresini icine aliyor (PORTREYI BOZAR)
+  M4  YAKALANDI   display:contents dustu (Gorevler/Hedefler iki sutuna girmez)
+```
+
+M2 ilk denemede **kalıbı tutmadı** (`index.css`'te artık responsive dal kalmamıştı) ve araç bunu
+"kaçtı" diye kırmızı bastı — mutasyon uygulanamayınca sessizce geçmiyor. Mutasyon, var olan bir
+bloğu bozmak yerine **yeniden açacak** şekilde yazıldı; taklit ettiği hata da tam olarak bu:
+bir sonraki tur *"responsive kuralı index.css'e yazayım"* der ve kural sessizce ezilir.
+
+
+## §Final tam koşu — UYGULAMA SONRASI
+
+Araç aynı, dünya aynı, kadrajlar aynı. **Dünya imzası TEMİZ** (`t20|s0|a3|n2` × 3 kadraj) —
+ölçüm öncesi koşunun kırmızısı bu koşuda tekrarlanmadı, yani kırmızı yapısal değil **canlı NPC
+zamanlamasıydı**. Konsol hatası **0**. Ham çıktı: `docs/olcum-panel-f1b-son.txt` (TAM · 663 sn).
+
+### Telefon yatayı — beş ekranın hepsi (§F)
+
+| Panel | kaydırma ÖNCE → SONRA | ilk ekranda ÖNCE → SONRA | görünen düğme ÖNCE → SONRA | gizli ödül |
+|---|---|---|---|---|
+| Görevler | 2,14× → **1,60×** | %47 → **%63** | 0/2 → **1/2** | 0 → 0 |
+| **Hedefler** | 2,24× → **1,47×** | %45 → **%68** | 0/2 → **2/2** | **1 → 0** ✅ |
+| Mağaza | 1,15× → **1,00×** | %87 → **%100** | 3/13 → **8/13** | **1 → 0** ✅ |
+| Karakter | 1,06× → **1,00×** | %94 → **%100** | 5/7 → **6/7** | 1 → 1 |
+| Ayarlar | 2,04× → **1,00×** | %49 → **%100** | 4/6 → **6/6** | 0 → 0 |
+| **ORTALAMA** | **1,73× → 1,21×** | — | **12/30 → 23/30** | **3 → 1** |
+
+**Üç ekranda kaydırma tamamen bitti** (Mağaza · Karakter · Ayarlar 1,00×). Kullanıcının
+kaybolmuş ödül düğmesi (Hedefler) **geri geldi**. Kesilme hâlâ 0.
+
+### HUD (§G)
+
+| Kadraj | HUD ekranın ÖNCE → SONRA | şeridin kaçıklığı ÖNCE → SONRA |
+|---|---|---|
+| Telefon yatayı | %38,4 → **%19,0** | — → **0 px** |
+| Tablet yatayı | %19,1 → **%7,0** | — → **0 px** |
+
+Şerit ve nav artık **doğal genişlikte ve tam ortalı** (`430/+0` ve `362/+0` her iki kadrajda).
+
+### DEĞİŞMEYENLER — kasıtlı
+
+| Kadraj | Durum |
+|---|---|
+| **Portre (412×915)** | Beş ekran da **1,00× · %100** — dokunulmadı, eşik (560 px) portreyi dışarıda bırakıyor. |
+| **Tablet yatayı panelleri** | 1,00–1,06× — dokunulmadı, eşik (max-height 560) tableti dışarıda bırakıyor. |
+
+### KALAN İKİ EKSİK — dürüstlük payı
+
+1. **Görevler 1,60× ve Hedefler 1,47×** — iyileşti ama **1,00×'e inmedi**. İkisi de en uzun
+   içeriğe sahip ekranlar; iki sütun kaydırmayı yarıya indiriyor, bitirmiyor. Bitirmek için
+   kart yüksekliklerinin kendisi kısalmalı — **sanat turunun kalemi**, CSS dalının değil.
+2. **Karakter'de 3 ödül düğmesinden 1'i hâlâ ilk ekranda değil.** Karakter paneli canlı bir
+   3B önizleme tuvali taşıyor (`.char-canvas`, kısa yatayda 120 px); tuval iki sütuna akmıyor,
+   tam satır kalıyor. Ayrı kalem.
+
+**Ayrıca (dev-only, sevk edilmiyor):** geliştirme rozetinin (`DEV`) ray başlığıyla çakıştığı
+karelerde görülüyor (`ss/f1b-panel-quests-L1.png`). `import.meta.env.DEV` ile korunuyor, üretim
+derlemesinde yok. Rayın orta bölümü de boş duruyor (cüzdan `margin-top:auto` ile dibe yaslı) —
+üç bölge okunaklı ama ray zayıf; **sanat turunun kalemi**.
 
 ## §Aracın kendisinde bulunan kusurlar
 
@@ -620,4 +748,16 @@ denetlenebiliyor.
 
 ## §Açık uçlar
 
-<!-- BOŞ — uygulama sonrası doldurulacak -->
+- **Ekran yönü (①) ve açılış ekranı (③) KARARA BAĞLANMADI.** İkisi de bu turda sunuldu, kullanıcı
+  seçmedi. Uygulanan iş ikisinden de bağımsız.
+- **Görevler/Hedefler 1,00×'e inmedi** (1,60× / 1,47×) — kart yüksekliği kalemi, sanat turu.
+- **Karakter panelinde 1 ödül düğmesi ilk ekranda değil** — `.char-canvas` tam satır kalıyor.
+- **G-55 (tablette büyütme) KARŞILANMADI.** Kol çürüdü çünkü hedeflediği sınıflar yoktu; ölü
+  dallar temizlendi ama kalem **bugünkü sınıf adlarıyla yeniden yazılıp ölçülmeli**. Karede
+  görülen somut hedef: tablette seviye çubuğu uzun ve boş duruyor.
+- **Dünya imzasının yapısal/canlı ayrımı yapılmadı** — bu turda kırmızı yandı (canlı NPC sayısı),
+  final koşusunda temiz çıktı. Ayrıştırma bilerek ertelendi (sonuca göre bekçi gevşetilmez).
+- **`scrollHeight` kusuru araçta duruyor.** `kaydırma` sütunu taşan çocukları saymadığı için
+  olduğundan iyi gösteriyor; güvenilir sütunlar `düğme gör/top` ve `gizliÖdül`. Aracın
+  düzeltilmesi ayrı kalem.
+- **Ray tasarımı ham:** orta bölüm boş. Sanat turunun kalemi.

@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 112 · YAPILAN 107 · %96):**
+**Oturum bütçesi (TOPLAM 112 · YAPILAN 108 · %96):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -27,8 +27,8 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | **S sanat ve arayüz geçişi** | **24/24 ✅** |
 | | H oynanış düzeltmeleri | 2/2 ✅ |
 | | **R geri bildirim turları (2026-09-16)** | **4/4 ✅** |
-| | **F paketleme ve yayın** | **2/6** 🔧 |
-| **Program toplam** | | **79/84** |
+| | **F paketleme ve yayın** | **3/6** 🔧 |
+| **Program toplam** | | **80/84** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -639,7 +639,7 @@ Sanat kalemi değil; Faz S'ten ayrı tutuldu ki asset işi bunların arkasında 
   adanın katısı yalnız sırtlık çekirdeği 0,4). Açıklık `3,2 − 2×0,525 = **2,15 br**` — gereken
   0,94'ün iki katından fazla. Kalem geçersiz → **Faz H 3/3 ✅ kapandı**, toplam 108 → 107.
 
-## Faz F — PAKETLEME VE YAYIN (2/6) 🔧
+## Faz F — PAKETLEME VE YAYIN (3/6) 🔧
 - ✅ **F2 — telefon yükü** · **D-125:** ölü asset yükü silindi + gölge cihaz sınıfına bağlandı.
   Model paketlerinin **%48,5'ine (11,2 MB) hiçbir kod yolu ulaşamıyordu**; dünya TAM açıkken
   1006 asset dosyasının **898'i (18,5 MB)** hiç istenmiyordu. Kullanıcı A1'i seçti (yalnız
@@ -664,7 +664,8 @@ Sanat kalemi değil; Faz S'ten ayrı tutuldu ki asset işi bunların arkasında 
 - ⏳ **F3 — reklam (AdMob)** · kurallar + Kat 1 ödülü yazılı (D-066), eklenti seçilmedi.
 - ⏳ **F4 — IAP (RevenueCat)** · üç ürün tasarlı, satın alma akışı yok.
 - ⏳ **F5 — mağaza vitrini + uyum** · listeleme, gizlilik, COPPA/GDPR-K, yaş derecelendirmesi.
-- 🔧 **F6 — açılış ekranı + ekran yönü + yatay/tablet HUD** (tur adı F1b) · **ÖLÇÜLDÜ, KARAR AÇIK.**
+- ✅ **F6 — açılış ekranı + ekran yönü + yatay/tablet HUD** (tur adı F1b, iki tur) · **D-131.**
+  **TUR 1 — ölçüm (karar çıkmadı):**
   108 hücre (2 dünya × 3 nokta × 3 kamera kademesi × 6 kadraj), denetim 18/18 temiz.
   **Yatay portreden 1,37-3,36× (ort 2,03×) daha fazla açık zemin** gösteriyor; oda merkezinde
   portre 26 ankrajdan 1'ini, yatay 22'sini. Kelepçe kolu ölçüldü: portre 1,75× iyileşiyor ama
@@ -676,8 +677,31 @@ Sanat kalemi değil; Faz S'ten ayrı tutuldu ki asset işi bunların arkasında 
   HUD sayımı gradyan zeminli iki büyük bloğu atlıyordu (%8,5 → gerçek %38,3) ve metrik gerilmeyi
   göremiyordu (tablet). Kullanıcının kendi önerisi **YD kolu** olarak ölçülüp dört kolun üçünü geçti
   (telefon yatayı %38,4 → %19,0 · tablet %18,9 → %7,1). `docs/kabuk-raporu-f1b.md`.
-  **AÇIK:** karar verilmedi; G-51/G-52 (ortala) + G-54 (açılan ekranlar hiç görülmedi) + G-55
-  (tablette büyüt) revizyonu bekliyor.
+  **Tur 1'de karar çıkmadı**; G-51/G-52 + G-54 + G-55 revizyonu tur 2'ye kaldı.
+
+  **TUR 2 — ölçüm + uygulama (D-131):** 44 hücre + 2 sonda,
+  final koşuda dünya imzası TEMİZ, konsol hatası 0.
+  **§F delik kapandı:** sorun yönde değil **telefon yatayında** — portrede 5/5 ekran kusursuz
+  (1,00×), tablette en kötü 1,06×, telefon yatayında Görevler %47 · Hedefler %45 · Ayarlar %49
+  ve Hedefler'in tek ödül düğmesi kayıp.
+  **§G G-51 bedava çıktı:** YD+ (ortalı) ile YD (sola yaslı) aynı sayı, değişen tek şey kaçıklık
+  (−233 → 0 · −415 → 0). Uygulandı: HUD %38,4 → **%19,0** (telefon yatayı), %19,1 → **%7,0** (tablet).
+  **§H G-55 kolu ÇÜRÜDÜ ve turun en pahalı bulgusunu açtı:** `index.css`'in iki responsive dalı da
+  **ölü koddu** (15'te 2 · 18'de 3 canlı seçici; `--pill-h` tamamen ölü). Sebep `fc061a0` — HUD
+  yeniden adlandırıldı, medya sorguları gelmedi. Bu, tur 1'in *"alt bant her yönde 186 px sabit"*
+  bulgusunun SEBEBİ ve D-128'in dar-ekran kuralının bugüne dek uygulanmadığının kanıtı.
+  **§I dört kol, üçü düştü:** kabuğu genişletmek (820/915 px) tek hücre bile oynatmadı.
+  **Uygulanan hâl:** `min-width:560px` → şerit/nav doğal genişlik + ortalı · kısa yatay →
+  panel **sol ray + iki sütun** (piyasa kalıbı: master-detail rail), ara sarmalayıcılar
+  `display:contents`. Ölü dallar silindi, kurallar `hud.css`'e taşındı (ikinci sessiz ezilme:
+  `index.css` sonra yüklenen `hud.css` tarafından eziliyordu).
+  **Sonuç:** telefon yatayında ortalama kaydırma **1,73× → 1,21×**, görünen düğme **12/30 → 23/30**,
+  gizli ödül düğmesi **3 → 1**; üç ekranda kaydırma bitti. Portre ve tablet **değişmedi** (kasıtlı).
+  Bekçi `tests/responsive-canli.test.ts` (7 denetim) **4/4 mutasyonla** doğrulandı.
+  `docs/kabuk-raporu-f1b.md` §F–§I + §Final.
+  **AÇIK KALAN:** ① ekran yönü ve ③ açılış ekranı seçilmedi (kullanıcı yalnız ② + açılan ekranları
+  onayladı) · Görevler 1,60× / Hedefler 1,47× 1,00×'e inmedi (kart yüksekliği, sanat turu) ·
+  G-55 kalemi karşılanmadı, bugünkü sınıf adlarıyla yeniden yazılmalı.
 
 ## Kullanıcı geri bildirimi 2026-09-16 — 16 yeni kalem (G-35…G-50)
 Kullanıcı F2 turunun içinde oyunu açtı ve on iki başlık verdi; *"sonraki chatlerde bunları
