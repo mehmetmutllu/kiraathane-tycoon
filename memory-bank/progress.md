@@ -661,7 +661,11 @@ Sanat kalemi değil; Faz S'ten ayrı tutuldu ki asset işi bunların arkasında 
   `git check-ignore`a soruyor). `docs/paket-raporu-f1.md`.
   **AÇIK:** R8'in cihazda açıldığı doğrulanmadı; F3/F4 eklenti getirince kol yeniden ölçülmeli.
 
-- ⏳ **F3 — reklam (AdMob)** · kurallar + Kat 1 ödülü yazılı (D-066), eklenti seçilmedi.
+- 🔧 **F3 — reklam (AdMob)** · **tur 1 ÖLÇÜM BİTTİ, karar bekliyor** (kod yazılmadı).
+  Eklenti üç adayla tartıldı, R8 beş kolla yeniden ölçüldü, doğal aralar sayıldı.
+  Kullanıcı banner'ı kesin reddetti (B0), geçişliyi istiyor ama ödül ekranı yerleşimini reddetti;
+  **C1′ (soğuma 3 dk + panel kapanışı) önerildi, onay gelmedi.** `docs/reklam-raporu-f3.md` ·
+  ham `docs/olcum-reklam-f3.txt` + `docs/olcum-reklam-f3-b.json` · vitest 1305.
 - ⏳ **F4 — IAP (RevenueCat)** · üç ürün tasarlı, satın alma akışı yok.
 - ⏳ **F5 — mağaza vitrini + uyum** · listeleme, gizlilik, COPPA/GDPR-K, yaş derecelendirmesi.
 - ✅ **F6 — açılış ekranı + ekran yönü + yatay/tablet HUD** (F1b iki tur + tur 3) · **D-131 · D-132.**

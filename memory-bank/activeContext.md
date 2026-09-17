@@ -5,43 +5,71 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-17 — **F3 tur 1: REKLAM ALTYAPISI · ÖLÇÜM** · Faz F 3/6 · 108/112)
+## ŞU AN (2026-09-17 — **F3 tur 1: ÖLÇÜM BİTTİ, KARAR BEKLİYOR** · Faz F 3/6 · 108/112)
 
 ```
-SORU            : F3 (AdMob) — HANGİ eklenti, eklenti gelince R8 hâlâ güvenli mi, ve
-                  interstitial'ın "doğal arası" oyunda GERÇEKTEN nerede?
-                  KAPSAM (benim kararım, feedback_task_splitting): bu tur ALTYAPI
-                  (eklenti + R8 + mock katman + çocuk-güvenliği bayrakları).
-                  Reklamın İÇERİĞİ — G-57 ödüllü video ekonomisi (2 sa'de 4 hak, 1 💎 / 200 ₺,
-                  seviyeyle artar) — `economy.config.ts`e dokunur, VARYANT KAPISINA TABİ,
-                  kendi turunda (F3b) ölçülür. Bu turda tek bir denge sayısı yazılmaz.
-ÖLÇÜLECEK KOLLAR: §A EKLENTİ — 3 aday, hiçbiri önceden seçilmeden:
-                    A1 @capacitor-community/admob · A2 @capgo/capacitor-admob
-                    A3 @admob-plus/capacitor
-                    ölçüt: Capacitor 8 uyumu · bakım tazeliği · altta yatan Google SDK'sı ve
-                    KARARLILIĞI · UMP/rıza yüzeyi · çocuk bayrakları · lisans · APK bedeli
-                  §B R8 — D-130'un gerekçesi ("kurulu eklenti 0, yansıma yüzeyi en dar") düştü.
-                    Her finalist eklenti × {R8 açık, R8 kapalı} = APK/AAB boyutu, dex, derleme
-                    başarısı, ProGuard kuralının AAR'dan gelip gelmediği
-                  §C DOĞAL ARA — interstitial'ın meşru yerleri KODDAN sayılır (D-066 kuralı
-                    "yalnız doğal aralarda" diyor ama o aralar hiç sayılmadı)
-                  §D BAĞLAMA NOKTALARI — bugün pasif duran reklam düğmeleri (D-039 kalıbı)
-SAYILAR         : (adım 2'den sonra dolar → docs/reklam-raporu-f3.md · ham: docs/olcum-reklam-f3.txt)
-KARAR           : (adım 3 — kullanıcı seçer · D-0xx)
-UYGULAMA        : (adım 4 — yalnız kararın kolu)
-BEKÇİ           : (test dosyası + kaç mutasyonla doğrulandı)
+SORU            : F3 (AdMob) — HANGİ eklenti, eklenti gelince R8 hâlâ güvenli mi, interstitial'ın
+                  "doğal arası" oyunda GERÇEKTEN nerede? KAPSAM: altyapı. G-57 ödüllü ekonomisi
+                  economy.config.ts'e dokunur → VARYANT KAPISI → F3b. Bu turda denge sayısı YOK.
+ÖLÇÜLEN KOLLAR  : §A 3 eklenti × 12 ölçüt · §B 5 R8 kolu (gerçek assembleRelease+bundleRelease)
+                  §C doğal ara sayımı · §D bağlama noktaları · §E yansıma yüzeyi (mapping.txt)
+SAYILAR         : docs/reklam-raporu-f3.md · ham: docs/olcum-reklam-f3.txt
+                  + docs/olcum-reklam-f3-b.json (§B/§E kol kayıtları)
+KARAR           : **BEKLİYOR** — kullanıcı B0'ı (banner YOK) kesinleştirdi, geçişliyi İSTİYOR ama
+                  C1'in yerini REDDETTİ (*"ala bastıktan sonra gelmesin çok sinir bozucu"*).
+                  Sayaç sordu (*"90snde 1 veya 3dkda 1 vs"*) → **C1′ önerildi, ONAY GELMEDİ.**
+UYGULAMA        : (yok — karar çıkmadı, kod YAZILMADI)
+BEKÇİ           : (yok)
+KARAR PAKETİ    : https://claude.ai/artifact/AGv4E1NSv3PGGkf5Agvdem
 ```
 
-**YAN İŞ (açık uç ⑤, bir satır):** `tools/sira-kilidi.mjs` ölçüm kanıtı olarak yalnız
-`tools/olcum-*.ts` tanıyor; proje aylardır `.mjs` yazıyor. Bu turun aracı da `.mjs` — yani delik
-bu turda ISIRIR. Kalıp `.ts|.mjs`e genişletilir, bekçisi `tests/sira-kilidi.test.ts`e eklenir.
+**BULGULAR — dördü de raporda, burada tek satır:**
+① §A ayırt eden ölçüt tazelik değil **RIZA**: çocuk bayraklarını üç aday da sunuyor, **UMP yalnız
+A1'de**. A3 kendi kendini eledi (son *kararlı* sürüm 2022-08-14; "en yeni" sütunu alpha gösterip
+yanıltıyordu). A2'nin altında Google'ın **beta** SDK'sı var, UMP yok.
+② §B **D-130'un korkusu ters yönlüymüş** — eklenti R8'i riskli değil DEĞERLİ yaptı: kazanç
+−%18,9 (taban) → **−%22,1** (A1) / **−%28,8** (A2). "R8'i kapat" kolu kendi kendini eledi.
+③ §E **"derlendi" ≠ "yansıma ayakta"** — ayrı ölçüldü: 10.972 sınıfın yeniden adlandırıldığı
+çıktıda köprü sınıfı adını birebir koruyor. D-130'un varsayımı doğruymuş, artık varsayım değil.
+Yan bulgu: ikinci koşuda APK **bayt bayt aynı** (11.818.573) — sayılar tek derlemenin şansı değil.
+④ §D **bekleyen kusur:** `HUD.tsx:994` "İzle, 2× al" düğmesi `onClick={onClaim}` — "Al" ile birebir
+aynı, TEK KAT veriyor. Bugün zararsız (`adReady=false`), ama reklam bağlanınca ilk yapılacak şey
+onu `true` etmek. Çarpan yolu bugüne dek **bir kez bile koşmadı**, hiçbir test tutmuyor.
+
+**C1′ — ÖNERİLEN AMA ONAYLANMAMIŞ KOL:**
+`sayaç: son reklamdan ≥ 3 dk` + `tetik: PANEL KAPANIŞI` (Görevler·Hedefler·Mağaza·Karakter·Ayarlar)
+· ödül ekranlarında ASLA · ilk 5 dk muaf · reklam hazır değilse atla · sayılar `ads.config.ts`
+(yeni dosya — denge değil, varyant kapısına tabi DEĞİL; ödüllünün ÖDÜLLERİ economy.config.ts'e
+gidecek ve kapıya tabi olacak).
+Gerekçe: kendi kuralımız yeri zaten yazmış — `monetization.md` §1 *"menüde değilken çıkmaz"*.
+Saf sayaç Play **Disruptive Ads** politikasını ihlal eder (oyun ortasında beklenmedik tam ekran).
+**Panel kapanış sıklığı ÖLÇÜLMEDİ** — üst sınırı soğuma garanti ediyor, alt sınır oyuncuya bağlı.
+
+**F3b'YE YAZILAN KALEM:** A1 **App Open** formatını da getiriyor (`appopen/AppOpenAdPlugin.kt`),
+A2 getirmiyor. "Oyuna dönüş" anının doğru formatı geçişli değil App Open — kapsam büyütmemek için
+bu tura sokulmadı.
+
+**KULLANICININ YAPMASI GEREKEN:** gerçek AdMob kimliği (`ca-app-pub-…~…`) hesaptan alınır, kod
+üretemez. O gelene kadar Google'ın **resmî test kimlikleri** (gerçek kimlikle test = hesap askıya
+alınma sebebi). Turu bloke ETMİYOR.
+
+**YAN İŞ (D-132 açık uç ⑤, hâlâ yapılmadı):** `tools/sira-kilidi.mjs` ölçüm kanıtı olarak yalnız
+`tools/olcum-*.ts` tanıyor; bu turun aracı `.mjs`. Delik bu turda ISIRMADI (ham çıktı `.txt` ve
+rapor `.md` kalıplara uydu) ama duruyor. Kalıp `.ts|.mjs`e genişletilir + bekçi.
+
+**APK ÇIKARILDI (kullanıcı denesin diye):** `C:\Users\Mehmet Mutlu\Desktop\kose-kiraathanesi-0.9.0.apk`
+8,58 MB imzalı yayın derlemesi = commit #1 hâli, **reklamsız**.
 
 ## SIRADAKİ TAM ADIM
 
-**Tur yukarıdaki kartta.** F6'dan devreden iki kalem — ③ açılış ekranı + ikon — kullanıcı
-kararıyla **ertelendi** (*"ikonu sen sal ben onu chatgptye yaptırıcam"*): ikon geldiğinde
-`mipmap-*` + adaptive foreground olarak takılır ve **açılış ekranı da onunla düzelir**
-(11 splash dosyası ölü, 106,9 KB; Android 12+ sistem splash'ı uygulama ikonunu gösteriyor).
+**F3 tur 2: C1′ onayı → commit #2.** Kullanıcı onaylarsa yazılacaklar: `@capacitor-community/admob`
+kurulumu + `variables.gradle`da `playServicesAdsVersion` sabitlenmesi + rıza (UMP) ve çocuk
+bayrakları + `src/config/ads.config.ts` + `src/game/ads.ts` (tarayıcı mock'u ile) + geçişlinin
+C1′ yerleşimi + §D kusurunun YAPISAL düzeltmesi + bekçi testi (≥ 2 mutasyon) + final tam koşu.
+**Kullanıcı oyunu APK'dan deniyor** — reklamın yeri hakkında fikri değişirse kol ona çekilir.
+
+**KULLANICININ BEKLEYEN GERİ BİLDİRİMİ:** oturum kapanırken *"benim feedbackler de var"* dedi —
+sonraki oturumun İLK işi onları almak; F3 tur 2 ondan sonra planlanır.
 
 **D-132'NİN BIRAKTIĞI BEŞ AÇIK UÇ:**
 ① **`.shop-card` aynı shrink kilidini taşıyor** — ölçümde kirlenmedi (Mağaza dört yön çiftinde de
@@ -54,8 +82,7 @@ sol/sağa geçer ve HUD'u kesebilir. **Cihaz turunun kalemi.**
 ④ **Döndürmenin CANLI denetimi duman testinde yok** — bekçi statik (manifest metni + CSS kuralı),
 bilinen sebebi tutuyor ama başka bir sebep aynı bayatlığı üretirse görmez. Ucuz bir duman
 denetimi (çevir → hata yok + tuval oturuyor) eklenebilir; kapsam büyütmemek için eklenmedi.
-⑤ **`tools/sira-kilidi.mjs` ölçüm kanıtı olarak yalnız `tools/olcum-*.ts` tanıyor**, ama proje
-aylardır `.mjs` araç yazıyor (bu turun üç aracı dahil). Tek satırlık delik.
+⑤ → **tur kartına taşındı** (YAN İŞ).
 
 **D-131'İN BIRAKTIĞI AÇIK UÇLAR (hâlâ geçerli):**
 ① **Görevler 1,60× · Hedefler 1,47×** — 1,00×'e inmedi; bitirmek kart YÜKSEKLİĞİNİ kısaltmayı
