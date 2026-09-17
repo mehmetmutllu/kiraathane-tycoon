@@ -6,20 +6,20 @@
 §J1 — HUD DÖNDÜRME (canli oturum cevrildi; taze ile karsilastirildi)
 
   cift        hedef  HUD%   tasan  tuval dW/dH  tampon WxH     kamSapma  hata  durum  imza
-  P1>L1       L1        19      0          0/0      1830x824         0     0     ok  t20|s0|a3|n3
+  P1>L1       L1        19      0          0/0      1830x824         0     0     ok  t20|s0|a3|n2
   L1>P1       P1      19.7      0          0/0      824x1830         0     0     ok  t20|s0|a3|n3
   T1>T2       T2       6.7      0          0/0     1918x1198         0     0     ok  t20|s0|a3|n2
-  T2>T1       T1       7.1      0          0/0     1198x1918         0     0     ok  t20|s0|a3|n2
+  T2>T1       T1         7      0          0/0     1198x1918         0     0     ok  t20|s0|a3|n2
 
   TAZE ↔ DÖNEREK FARKI (bos = gecis temiz):
     P1>L1       — temiz —
-    L1>P1       — temiz —
+    L1>P1       hudYuzde:19.8→19.7
     T1>T2       hudYuzde:7.1→6.7
-    T2>T1       — temiz —
+    T2>T1       hudYuzde:7.1→7
 
 §J3 — GIDIS-DONUS (A→B→A; basladigi yere donuyor mu)
 
-    P1>L1>P1       hata=  0  — temiz —
+    P1>L1>P1       hata=  0  hudYuzde:19.8→19.7
     L1>P1>L1       hata=  0  — temiz —
     T1>T2>T1       hata=  0  hudYuzde:7.1→7
     T2>T1>T2       hata=  0  hudYuzde:7.1→6.7
@@ -40,7 +40,7 @@
   T1>T2       Gorevler   evet  serit      520x800      520x62            0/7             1/2        0/0        0     0
   T1>T2       Hedefler   evet  serit      520x800      520x62            1/4             1/2        0/1        0     0
   T1>T2       Magaza     evet  serit      520x800      520x62            0/2           12/13        0/1        0     0
-  T1>T2       Karakter   evet  serit      520x800      520x62            0/1             6/7        0/3        0     0
+  T1>T2       Karakter   evet  serit      520x800      520x62            1/1             3/7        3/3        0     0
   T1>T2       Ayarlar    evet  serit      520x800      520x62            0/1             5/6        0/0        0     0
   T2>T1       Gorevler   evet  serit     520x1280      520x62            0/7             1/2        0/0        0     0
   T2>T1       Hedefler   evet  serit     520x1280      520x62            0/4             1/2        0/1        0     0
@@ -62,7 +62,7 @@
     T1>T2       Gorevler   — temiz —
     T1>T2       Hedefler   — temiz —
     T1>T2       Magaza     — temiz —
-    T1>T2       Karakter   — temiz —
+    T1>T2       Karakter   disarida:0→1 · gorunurDugme:6→3 · gizliOdul:0→3
     T1>T2       Ayarlar    — temiz —
     T2>T1       Gorevler   — temiz —
     T2>T1       Hedefler   — temiz —
@@ -79,4 +79,4 @@ OKUMA NOTU
   durum       = wallet/tables/npc/stations/areas dondurmeden sonra ayni mi.
   CENTIK OLCULMEDI: Playwright safe-area taklit edemez, --sal/--sar her kadrajda 0.
 
-  sure: 820 sn
+  sure: 814 sn

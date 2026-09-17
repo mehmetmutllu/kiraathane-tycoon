@@ -664,7 +664,15 @@ Sanat kalemi değil; Faz S'ten ayrı tutuldu ki asset işi bunların arkasında 
 - ⏳ **F3 — reklam (AdMob)** · kurallar + Kat 1 ödülü yazılı (D-066), eklenti seçilmedi.
 - ⏳ **F4 — IAP (RevenueCat)** · üç ürün tasarlı, satın alma akışı yok.
 - ⏳ **F5 — mağaza vitrini + uyum** · listeleme, gizlilik, COPPA/GDPR-K, yaş derecelendirmesi.
-- ✅ **F6 — açılış ekranı + ekran yönü + yatay/tablet HUD** (tur adı F1b, iki tur) · **D-131.**
+- ✅ **F6 — açılış ekranı + ekran yönü + yatay/tablet HUD** (F1b iki tur + tur 3) · **D-131 · D-132.**
+  **TUR 3 — ekran yönü kararı ve döndürme (D-132):** kullanıcı **K0 serbest**i seçti
+  (*"ana tema dikey ama yatayda da kullanılabilir olmalı"*); manifeste `fullUser` olarak YAZILDI.
+  K0'ın tek ölçülmemiş yüzeyi döndürme anıydı: 28 hücrenin 27'si temiz, kalan bir hücre
+  (**tablet P→Y'de Karakter'in üç ödül düğmesi de gövde dışında**) `.char-card`ın shrink
+  kilidinden çıktı; `flex-shrink: 1` ile **20/20 temiz**. Bekçi 6 denetim · **6/6 mutasyon**.
+  İlk tam koşu geçersiz çıkıp iptal edildi (`Escape` panelleri kapatmıyordu → sahte "temiz").
+  İkon + açılış ekranı kullanıcı kararıyla **ertelendi**. `docs/donme-raporu-f6.md`.
+
   **TUR 1 — ölçüm (karar çıkmadı):**
   108 hücre (2 dünya × 3 nokta × 3 kamera kademesi × 6 kadraj), denetim 18/18 temiz.
   **Yatay portreden 1,37-3,36× (ort 2,03×) daha fazla açık zemin** gösteriyor; oda merkezinde

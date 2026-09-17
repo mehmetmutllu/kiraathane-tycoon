@@ -1156,6 +1156,26 @@
   padding: 0;
   text-align: center;
 }
+
+/* ── KARTIN SHRINK KİLİDİ AÇILDI (D-132, F6 §M) ─────────────────────────────────────────
+   Yukarıdaki `flex: 1 0 auto`ın ortadaki hanesi `flex-shrink: 0` demek: kart BÜYÜYEBİLİR ama
+   KÜÇÜLEMEZ. Duran karede bunun bedeli yok — kart en baştan o ekrana göre kurulur. Bedel
+   DÖNDÜRMEDE çıkıyor: Karakter ekranı tablet portresinde (1280 px yüksek) açılınca kart gövdeyi
+   doldurup içindeki canlı 3B tuvali büyütüyor; yatay çevrilince gövde 738 px'e iniyor ama kart
+   küçülmüyor ve **ödül düğmelerinin üçü de** gövdenin altından taşıyor.
+
+   ÖLÇÜLDÜ (`docs/donme-raporu-f6.md` §M · ham: `docs/olcum-kol-donme-f6.txt`):
+     taban   : kartY 722 → 1202 · tuvalY 410 → 890 · gizli ödül 0/3 → 3/3
+     bu kural: kartY 722 → 722  · tuvalY 410 → 410 · gizli ödül 0/3 → 0/3   (taze = dönerek)
+   Üç sonda çiftinde (telefon P→Y, telefon Y→P, tablet Y→P) taban satırlarıyla BİREBİR aynı,
+   yani hiçbir şeyi değiştirmiyor — yalnız küçülmesi gerekenin küçülmesine izin veriyor.
+
+   NEDEN YALNIZ `.char-card`: `.shop-card` aynı kilidi taşıyor ama ölçümde kirlenmedi (§J2'nin
+   yirmi hücresinde Mağaza dört yön çiftinde de temiz). Ölçülmeyen yere dokunulmuyor; mağaza
+   kartı AÇIK KALEM olarak duruyor — içeriği bir gün uzarsa aynı kusuru üretir. */
+.char-card {
+  flex-shrink: 1;
+}
 .shop-card .modal-title,
 .char-card .modal-title {
   margin-bottom: 10px;

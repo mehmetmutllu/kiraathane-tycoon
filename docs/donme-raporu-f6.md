@@ -247,12 +247,79 @@ zaten ayrı bir kalem (G-55) olarak duruyor — bu turda kasıtla uygulanmıyor.
 
 ---
 
-## KARAR
+## KARAR — D-132
 
-<!-- BOŞ — commit #1'de boş yayımlanır (D-084). Karar paketi sunulduktan sonra doldurulur. -->
+**① Ekran yönü: K0 SERBEST.** Kullanıcının kararı (paket v2'de sunulan dört koldan biri; bu turda
+kendi cümlesiyle seçildi). Portre ana tema, dört yön de açık, kilit yok.
+
+**Kusurun kolu: RA.** Bu bir TEKNİK çatal (`feedback_technical_forks`) — "hangi CSS özelliği flex
+kilidini açar" sorusunun kullanıcıya sorulacak tarafı yok ve sayı tek kolu gösteriyor: RA kusuru
+birebir kapatıyor, RB kapatmıyor üstelik çalışan bir hücreyi kirletiyor, RC belirtiyi örtüp
+sebebi bırakıyor. Görünüşü değiştiren tek kol RC'ydi ve o zaten ayrı bir kalem (**G-55**) —
+bir hata düzeltmesinin arkasına saklanmadı.
+
+**③ Açılış ekranı + ikon: ERTELENDİ.** Kullanıcı: *"ikonu da en son hallederiz."*
 
 ---
 
 ## UYGULAMA
 
-<!-- BOŞ -->
+| dosya | değişiklik |
+|---|---|
+| `android/app/src/main/AndroidManifest.xml` | `android:screenOrientation="fullUser"` — K0 artık **yazılı**. Gerekçesi (neden `fullSensor` değil, `configChanges` neden kaldırılamaz) kuralın yanında. |
+| `src/components/ui/hud.css` | `.char-card { flex-shrink: 1 }` — shrink kilidi açıldı. Yalnız `.char-card`; `.shop-card` aynı kilidi taşıyor ama ölçümde kirlenmedi, **ölçülmeyen yere dokunulmadı**. |
+| `tests/ekran-yonu-f6.test.ts` | bekçi, 6 denetim |
+| `tools/mutasyon-yon-f6.mjs` | bekçinin doğrulaması, 6 mutasyon |
+
+### Bekçi — 6/6 mutasyon yakalandı
+
+| mutasyon | taklit ettiği çiğneme |
+|---|---|
+| M1 yön `portrait`e kilitlenir | K0'ın doğrudan ihlali |
+| M2 yön beyanı silinir | karar YAZISIZ kalır (bugüne kadarki hâl) |
+| M3 yön `fullSensor` yapılır | dört yön açık **ama cihaz kilidini ezer** |
+| M4 `orientation` configChanges'ten düşer | her döndürmede oturum sıfırlanır |
+| M5 shrink düzeltmesi geri alınır | **duran karede görünmeyen** kusur geri gelir |
+| M6 yön JS'ten kilitlenir | manifest serbestken arka kapı |
+
+M5 bekçinin varlık sebebi: taklit ettiği kusuru **ne göz ne duman testi** yakalar, çünkü duran
+karede yok.
+
+### FİNAL — tam koşu, düzeltme gerçek kodda
+
+`docs/olcum-donme-f6.txt` (TAM, 820 sn) · önceki hâl karşılaştırma için
+`docs/olcum-donme-f6-once.txt` (TAM, 814 sn).
+
+| | önce | sonra |
+|---|---|---|
+| §J2 açık ekranla döndürme | 19/20 temiz | **20/20 temiz** |
+| T1→T2 Karakter gizli ödül | **3/3** | **0/3** |
+| T1→T2 Karakter kart yüksekliği | 722 → **1202** | 722 → **722** |
+| §J1 HUD döndürme | 4/4, hata 0 | 4/4, hata 0 |
+| §J3 gidiş-dönüş | 4/4, hata 0 | 4/4, hata 0 |
+
+vitest **1305/1305** ✓ · duman **45/45** ✓ · `tsc -b` temiz · dünya imzası her hücrede kuruldu.
+
+---
+
+## BU TURUN BIRAKTIĞI AÇIK UÇLAR
+
+① **`.shop-card` aynı shrink kilidini taşıyor** — ölçümde kirlenmedi (Mağaza dört yön çiftinde de
+temiz), o yüzden dokunulmadı. İçeriği bir gün uzarsa aynı kusuru üretir; bekçi onu denetlemiyor.
+
+② **§L (tablet yatayının DURAN hâli) yarım kaldı.** Aracı var (`tools/olcum-tablet-f6.mjs`,
+kapatma kusuru düzeltilmiş hâlde) ama tam koşusu yok — ilk koşusu `Escape` kusuru yüzünden
+geçersizdi. Bu **G-55**'in turudur: RC kolu kısa koşuda tablet yatayında görünür düğmeyi
+25/30 → 30/30 yapmıştı, ama KISA damgalı sayı rapora girmez.
+
+③ **Çentik ölçülmedi** — Playwright safe-area taklit edemez. Yatayda `env(safe-area-inset-*)`
+sol/sağa geçer ve HUD'u kesebilir. **Cihaz turunun kalemi**, bu rapor o soruya cevap vermiyor.
+
+④ **Döndürmenin canlı denetimi duman testinde yok.** Bekçi statik (manifest metni + CSS kuralı);
+bilinen sebebi tutuyor ama başka bir sebep aynı bayatlığı yeniden üretirse yakalamaz. Ucuz bir
+duman denetimi (çevir → konsol hatası yok + tuval oturuyor) eklenebilir; bu turda kapsam
+büyütmemek için eklenmedi.
+
+⑤ **`tools/sira-kilidi.mjs` ölçüm kanıtı olarak yalnız `tools/olcum-*.ts` tanıyor**, ama proje
+aylardır `.mjs` araç yazıyor (bu turun üç aracı dahil). Yalnız `.mjs` araç taşıyan bir ölçüm
+commit'i sayılmıyor. Tek satırlık delik.

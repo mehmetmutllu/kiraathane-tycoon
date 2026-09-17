@@ -5,118 +5,86 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-17 — **F6 tur 3: EKRAN YÖNÜ K0** · Faz F 3/6 · 108/112)
+## ŞU AN (2026-09-17 — **F6 tur 3 KAPANDI · D-132** · Faz F 3/6 · 108/112)
 
 ```
 SORU            : ① ekran yönü KARARI VERİLDİ — kullanıcı: *"ana tema dikey ama yatayda da
-                  kullanılabilir olmalı; tablette oynarsa yatay gibi tepki verecek"* → **K0
-                  SERBEST**. K0'ın tek ÖLÇÜLMEMİŞ yüzeyi **DÖNDÜRME ANI**: D-131 üç DURAN
-                  kareyi ölçtü (412×915 · 915×412 · 1280×800), canlı oturumu çevirmeyi hiç
-                  denemedi. K0 kilidi kaldırınca yeni olan tam olarak o geçiştir.
-ÖLÇÜLECEK KOLLAR: §J döndürme geçişi — 4 yön çifti × (HUD + 5 açık ekran).
-                  Ana ölçüt: **taze ↔ dönerek** farkı (aynı boyuta DOĞRUDAN açılınca çıkan
-                  sayı ile ÇEVİREREK varılınca çıkan sayı eşit mi). Eşit değilse bayat hâl var.
-SAYILAR         : (adım 2'den sonra dolar)
-KARAR           : (BOŞ)
-UYGULAMA        : (BOŞ)
-BEKÇİ           : (BOŞ)
+                  kullanılabilir olmalı; tablette oynarsa yatay gibi tepki verecek"* → K0 SERBEST.
+                  K0'ın tek ÖLÇÜLMEMİŞ yüzeyi DÖNDÜRME ANIydı (D-131 duran kare ölçmüştü).
+ÖLÇÜLEN KOLLAR  : §J döndürme 4 çift × (HUD + 5 ekran) + gidiş-dönüş = 28 hücre
+                  §M kusurun 4 kolu (R0/RA/RB/RC) × 4 çift × 2 panel, DÖNDÜRME üzerinden
+SAYILAR         : docs/donme-raporu-f6.md · ham: docs/olcum-donme-f6.txt (TAM 820 sn, SONRA)
+                  + olcum-donme-f6-once.txt (TAM 814 sn, ÖNCE) + olcum-kol-donme-f6.txt (TAM)
+KARAR           : D-132 — K0 serbest, manifeste `fullUser` olarak YAZILDI · kusur kolu RA
+                  (teknik çatal, sorulmadı) · ③ ikon + açılış ekranı ERTELENDİ (kullanıcı)
+UYGULAMA        : AndroidManifest.xml (screenOrientation) · hud.css (.char-card flex-shrink)
+BEKÇİ           : tests/ekran-yonu-f6.test.ts — 6 denetim · **6/6 mutasyon** yakalandı
+                  (tools/mutasyon-yon-f6.mjs)
+FİNAL           : §J2 19/20 → **20/20 temiz** · vitest 1305/1305 ✓ · duman 45/45 ✓ · tsc temiz
 ```
 
-**KOL OLMAYAN, GEREKÇELENDİRİLEN SEÇİM (`feedback_technical_forks`):** manifestteki yön beyanı
-teknik çataldır, ürün çatalı değil — sorulmaz, en iyisi seçilir. `fullUser` seçilecek:
-dört yönün tamamına izin verir **ama cihazın kendi döndürme kilidine saygı duyar**.
-`fullSensor` kilidi EZER (kullanıcı kilitlemişken bile döner) — kullanıcının *"kullanıcı
-isterse"* cümlesinin tersi. Beyansız bırakmak (bugünkü hâl) K0'ı **yazısız** bırakır; bu
-projenin iki kez yandığı kalıp tam olarak odur (ölü/yazısız kural sessiz çürür, D-131).
-
-**SONUÇ — telefon yatayı (portre ve tablet KASITLI olarak değişmedi):**
+**SONUÇ — döndürme:**
 
 | | önce | sonra |
 |---|---|---|
-| ortalama kaydırma | 1,73× | **1,21×** |
-| görünen düğme | 12/30 | **23/30** |
-| gizli ödül düğmesi | 3 | **1** |
-| HUD ekranın (telefon yatayı) | %38,4 | **%19,0** |
-| HUD ekranın (tablet) | %19,1 | **%7,0** |
-| şeridin merkez kaçıklığı | −233 / −415 px | **0 / 0** |
+| açık ekranla döndürme | 19/20 temiz | **20/20 temiz** |
+| tablet P→Y, Karakter: gizli ödül | **3/3** | **0/3** |
+| tablet P→Y, Karakter: kart yüksekliği | 722 → **1202** | 722 → **722** |
+| hata · ilerleme kaybı · taşma | 0 · yok · 0 | 0 · yok · 0 |
 
-Mağaza · Karakter · Ayarlar'da kaydırma **tamamen bitti** (1,00×). Hedefler'in kayıp ödül
-düğmesi geri geldi.
+**KUSURUN SEBEBİ — bir "yeniden hesaplama" eksiği değil, bir SHRINK KİLİDİ.**
+`.char-card { flex: 1 0 auto }` → ortadaki hane `flex-shrink: 0`: kart büyüyebiliyor ama
+küçülemiyordu. Tablet portresinde (1280 px) kurulan yüksekliği yatayda (738 px gövde) bırakmıyor,
+ödül düğmeleri gövdenin altından taşıyordu. **Gövde doğru tazeleniyordu, içerik tazelenmiyordu.**
+Duran karede kusur YOK — o yüzden D-131 göremezdi ve o yüzden bu ölçüm yazıldı.
 
-**TURUN KALICI DERSİ — ÖLÜ KOD SESSİZ ÇÜRÜR.** `index.css`'in iki responsive dalı da ölüydü
-(15'te 2 · 18'de 3 canlı seçici); `fc061a0` HUD'u yeniden adlandırdı, medya sorguları gelmedi.
-**Ölü CSS hata vermez** — on bir gün fark edilmedi ve tur 1'in *"alt bant her yönde 186 px
-sabit"* bulgusunun sebebi oydu. D-128'in dar-ekran kuralı bugüne dek fiilen uygulanmıyordu.
-Aynı tur **ikinci sessiz ezilmeyi** de gösterdi: kurallar önce `index.css`'e yazıldı ve
-`hud.css` sonra yüklendiği için yine etkisizdi (`transform` uygulanıyor, `left` uygulanmıyordu).
-**Bekçinin iki kolu tam bu ikisini denetliyor.**
+**TURUN KALICI DERSİ — KANARYA BİR YÜZEYİ KORUR, ARACI DEĞİL.** İlk tam koşu **geçersiz çıktı ve
+iptal edildi**: `Escape` panelleri hiç kapatmıyordu (hiçbir sheet'te klavye kancası yok, yalnız
+`.sheet-back`). Taze referanslar `{yok:true}` kalıyor, `fark()` `undefined` alanları atladığı için
+çıktı **"— temiz —"** yazıyordu — karşılaştırma hiç yapılmadan. HUD kanaryası yeşildi çünkü HUD
+tarafı sağlamdı; kırık olan koymadığım yerdi. **Ölçümün "temiz" demesi, ölçümün çalıştığı anlamına
+gelmiyor.** F1b tur 1'in dersi *"iyimser hata kaçar"*dı ve çaresi kanaryaydı; bu tur kanaryanın
+sınırını gösterdi.
 
-**BİR DERS DAHA — kuralı bilmek uymaya yetmiyor.** İlk yazımda `font-size: 10px` ve
-`border-radius: 18px` vardı: **D-128'in tam olarak alıntıladığım kuralını** çiğnemiştim.
-`tests/mor-dil.test.ts` yakaladı. *Bekçi yetiyor, hafıza yetmiyor.*
-
-**DÖRT ARAÇ KUSURU, DÖRDÜNÜ DE GÖZ YAKALADI** (tur 1'de iki, tur 2'de iki). Tur 2'ninkiler:
-③ tablet kolu var olmayan sınıfları hedefledi · ④ **`scrollHeight` taşan çocukları saymıyor**,
-altı hücrenin beşinde yanlış. Güvenilir sütun `dışarıda`. **Araçtaki bu kusur DURUYOR.**
-
-**BEKÇİ KIRMIZISI ÇÖZÜLDÜ:** ölçüm koşusunda T2 imzası `n2` çıkmıştı (diğerleri `n3`); final
-koşuda üçü de `n2`, **denetim temiz**. Yani kırmızı yapısal değil **canlı NPC zamanlamasıydı**.
-İmza yine de gevşetilmedi.
-
-**Tur 1'in (ölçüm, commit `d4c6cac` + `41162b6`) kalıcı üç dersi:**
-1. **Aracın İYİMSER hatası da kaçar — ve onu ancak GÖZ yakalar.** F1a'nın dersi "karamsar hata
-   kaçar"dı; bu tur tersini gösterdi. HUD sayımı yalnız `background-color` alfasına bakıyordu,
-   oyunun en büyük iki bloğu (`.band`, `.botnav`) zeminini `linear-gradient` ile verdiği için
-   sayımdan düştü → yatayda HUD "%8,5" çıktı. Kullanıcı kareye bakıp *"yatayda ekran çok dolu"*
-   dediğinde **ölçüm ona karşı çıkıyordu.** Gerçek: **%38,3**. Hata sonucun kendisinden
-   anlaşılmıyordu çünkü tutarsızlık üretmiyordu, sadece kolu temiz gösteriyordu.
-2. **Metrik ALAN ölçer, GERİLME ölçmez — ve bu aynı turda ikinci kez oldu.** Tablet yatayı bütün
-   sayılara göre en iyi konfigürasyondu (533 br², karakter 90 px, HUD %18,9). Kullanıcı
-   *"tablette kötü durur"* dedi; kareye bakınca haklıydı — görev şeridi 1280 px'e gerilip
-   ilerleme çubuğunu boş bir çizgiye çeviriyor. Sayı "yeterince küçük" diyordu, göz "yanlış
-   biçimde" dedi. **İki kere aynı ders: kare ölçümün denetleyicisidir, süsü değil.**
-3. **Kullanıcının cümlesi kolun kendisidir.** *"görev normal gerektiği kadar genişlikte
-   kalabilir"* yorum olarak bırakılmayıp **YD kolu** olarak ölçüldü ve **her iki kadrajda da
-   kazandı** (telefon yatayı %38,4 → %19,0 · tablet %18,9 → %7,1). Benim ürettiğim dört koldan
-   üçünü geçti. (`feedback_ui_form_not_color`'ın doğrudan uygulaması.)
-
-**Bu turun en pahalı bulgusu — karar dışı:** on bir splash dosyası (**106,9 KB**) **hiçbir API
-sürümünde çizilmiyor.** Tema yalnız `android:background`ı (`0x010100d4`) eziyor, o bir GÖRÜNÜM
-niteliği; pencereyi çizen `windowBackground`/`windowSplashScreenBackground` androidx'in kendi
-çizimlerinde kalıyor (v31 varyantı dahil denetlendi), `installSplashScreen()` hiç çağrılmıyor.
-Android 12+ sistem splash'ı **uygulama ikonunu** gösteriyor. → **İkonu düzeltmek açılış ekranını
-da düzeltiyor.**
-
-**İKON KALEMİ F1b'DEN ÇIKTI:** kullanıcı kendisi yaptıracak (*"ikonu sen sal ben onu chatgptye
-yaptırıcam"*). Üretilen 12 aday + `tools/ikon-adaylari.html` depoda duruyor; gelen ikon
-`mipmap-*` + adaptive foreground olarak takılır.
+**BEKÇİ TESTİ KENDİ KUSURUYLA KIRMIZI VERDİ** (ve bu iyi oldu): CSS ayrıştırıcısı yorumları
+silmeden seçici okuyordu, düzeltme kuralını hiç görmüyordu. **Karamsar** kusur olduğu için
+anlaşıldı; iyimser olsaydı sessizce yeşil kalırdı.
 
 ## SIRADAKİ TAM ADIM
 
-**SIRADA: ① ekran yönü ve ③ açılış ekranı kararı** — ikisi de paket v2'de sunuldu, kullanıcı
-seçmedi (*"bunları da yap sonra oturumu kaydet sıradan devam ederiz"* → yalnız ② + açılan
-ekranlar onaylandı). Paket duruyor, yeniden ölçüm GEREKMİYOR:
+**SIRADA: F3 (AdMob).** ① ekran yönü **D-132'de kapandı**, ③ açılış ekranı + ikon kullanıcı
+kararıyla **ertelendi** (*"ikonu da en son hallederiz"*) — ikon geldiğinde `mipmap-*` + adaptive
+foreground olarak takılır ve **açılış ekranı da onunla düzelir** (11 splash dosyası ölü, 106,9 KB;
+Android 12+ sistem splash'ı uygulama ikonunu gösteriyor).
 
-1. **Ekran yönü** — K0 serbest · K2 portre kilidi · K1 yatay kilidi · K2+ portre+kelepçe.
-   **D-131 sonrası öneri güncellendi:** yatayın "üç ekran gömülü" bedeli büyük ölçüde ödendi
-   (ortalama kaydırma 1,73× → 1,21×, gizli ödül 3 → 1), yani **K1'in fiyatı düştü.** Kalan
-   bedel Görevler 1,60× / Hedefler 1,47× ve Karakter'deki 1 gizli düğme.
-2. **Açılış ekranı** — çay-dolan-bardak + dile bağlı başlık (11 splash dosyası ölü, 106,9 KB).
+**F3'ün ilk işi R8 kolunu yeniden ölçmek:** eklenti sayısı 0'dan çıkınca D-130'un *"yansıma yüzeyi
+en dar"* gerekçesi düşer. G-57 (ödüllü video) `economy.config.ts`e dokunacağı için **VARYANT
+KAPISINA TABİ** — taslak sayılar karar değildir.
 
-**Ondan sonra F3 (AdMob) → F4 (IAP) → F5 (mağaza vitrini).** F3'ün ilk işi R8 kolunu yeniden
-ölçmek: eklenti sayısı 0'dan çıkınca D-130'un "yansıma yüzeyi en dar" gerekçesi düşer.
+**D-132'NİN BIRAKTIĞI BEŞ AÇIK UÇ:**
+① **`.shop-card` aynı shrink kilidini taşıyor** — ölçümde kirlenmedi (Mağaza dört yön çiftinde de
+temiz), o yüzden dokunulmadı; bekçi onu denetlemiyor. İçeriği uzarsa aynı kusuru üretir.
+② **§L (tablet yatayının DURAN hâli) yarım kaldı** — aracı hazır (`tools/olcum-tablet-f6.mjs`,
+kapatma kusuru düzeltilmiş), tam koşusu yok. Bu **G-55**'in turudur; RC kolu KISA koşuda görünür
+düğmeyi 25/30 → 30/30 yapmıştı ama **KISA damgalı sayı rapora girmez**.
+③ **Çentik ölçülmedi** — Playwright safe-area taklit edemez; yatayda `env(safe-area-inset-*)`
+sol/sağa geçer ve HUD'u kesebilir. **Cihaz turunun kalemi.**
+④ **Döndürmenin CANLI denetimi duman testinde yok** — bekçi statik (manifest metni + CSS kuralı),
+bilinen sebebi tutuyor ama başka bir sebep aynı bayatlığı üretirse görmez. Ucuz bir duman
+denetimi (çevir → hata yok + tuval oturuyor) eklenebilir; kapsam büyütmemek için eklenmedi.
+⑤ **`tools/sira-kilidi.mjs` ölçüm kanıtı olarak yalnız `tools/olcum-*.ts` tanıyor**, ama proje
+aylardır `.mjs` araç yazıyor (bu turun üç aracı dahil). Tek satırlık delik.
 
-**D-131'İN BIRAKTIĞI BEŞ AÇIK UÇ:**
-① **Görevler 1,60× · Hedefler 1,47×** — 1,00×'e inmedi; iki sütun kaydırmayı yarıya indiriyor,
-bitirmiyor. Bitirmek kart YÜKSEKLİĞİNİ kısaltmayı ister → **sanat turu**, CSS dalı değil.
-② **Karakter'de 3 ödül düğmesinden 1'i** hâlâ ilk ekranda değil — `.char-canvas` (canlı 3B
-önizleme) iki sütuna akmıyor, tam satır kalıyor.
-③ **G-55 (tablette büyüt) KARŞILANMADI.** Kol çürüdü çünkü hedeflediği sınıflar yoktu. Ölü
-dallar temizlendi; kalem **bugünkü sınıf adlarıyla yeniden yazılıp ölçülmeli**. Somut hedef
-karede görülüyor: tablette **seviye çubuğu uzun ve boş** (`ss/f1b-yd-YDp-T2.png`).
-④ **`scrollHeight` kusuru araçta duruyor** — `kaydırma` sütunu olduğundan iyi gösteriyor.
-⑤ **Ray tasarımı ham:** orta bölüm boş (cüzdan `margin-top:auto` ile dibe yaslı). Ayrıca
-geliştirme rozeti (`DEV`) ray başlığıyla çakışıyor — **dev-only, üretimde yok**.
+**D-131'İN BIRAKTIĞI AÇIK UÇLAR (hâlâ geçerli):**
+① **Görevler 1,60× · Hedefler 1,47×** — 1,00×'e inmedi; bitirmek kart YÜKSEKLİĞİNİ kısaltmayı
+ister → **sanat turu**, CSS dalı değil.
+② **Karakter'de 3 ödül düğmesinden 1'i** telefon yatayında hâlâ ilk ekranda değil — `.char-canvas`
+iki sütuna akmıyor, tam satır kalıyor. (Tablet yatayındaki 3/3 D-132'de kapandı.)
+③ **G-55 (tablette büyüt) KARŞILANMADI** — yukarıdaki ② ile aynı tur.
+④ **`scrollHeight` kusuru** `tools/olcum-panel-f1b.mjs`te duruyor. **F6'nın üç aracı onu
+kullanmıyor** (`disarida` sayıyorlar), ama eski araç tazelenmedi.
+⑤ **Ray tasarımı ham:** orta bölüm boş (cüzdan dibe yaslı); `DEV` rozeti ray başlığıyla çakışıyor
+— dev-only, üretimde yok.
 
 **Yeni kalemler G-51…G-57:** `docs/geribildirim-oyun-testi-2026-09-17.md` (kullanıcının kendi
 cümleleriyle). G-56 (kaynak rozeti → mağaza sekmesi) ve **G-57 (ödüllü video: 2 sa'de 4 hak,

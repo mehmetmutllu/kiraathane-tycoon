@@ -9,7 +9,27 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <!--
+            EKRAN YÖNÜ — K0 SERBEST (D-132). Kullanıcının kararı: "ana tema dikey ama yatayda da
+            kullanılabilir olmalı; kullanıcı isterse yataya dönebilir veya tablette oynarsa
+            yatay gibi tepki verecek". Yani kilit YOK, dört yön de açık.
+
+            NEDEN YAZILI: bugüne dek burada hiçbir beyan yoktu ve davranış Android'in
+            `unspecified` varsayılanına bırakılmıştı. Karar o varsayılanla aynı sonucu verse de
+            YAZISIZDI — bu projenin iki kez yandığı kalıp tam olarak odur (ölü/yazısız kural
+            sessizce çürür, D-131). Beyan edilince bekçi de denetleyebiliyor.
+
+            NEDEN `fullUser`, `fullSensor` DEĞİL: ikisi de dört yöne izin verir, ama `fullSensor`
+            cihazın kendi döndürme KİLİDİNİ ezer — kullanıcı ekranı kilitlemişken bile döner.
+            Kullanıcının cümlesi "kullanıcı İSTERSE yataya dönebilir"di; `fullUser` tam olarak
+            budur: yönü kullanıcı belirler, uygulama dayatmaz.
+
+            `configChanges` içindeki `orientation|screenSize` KALDIRILMAMALI: onlar olmadan
+            döndürme Activity'yi yeniden kurar, WebView baştan yüklenir ve oturum sıfırlanır.
+            Ölçümde oyun durumunun korunmasının (wallet/tables/npc birebir) sebebi budur.
+        -->
         <activity
+            android:screenOrientation="fullUser"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation|density"
             android:name=".MainActivity"
             android:label="@string/title_activity_main"

@@ -4255,3 +4255,37 @@ turunu ister.
   Yapısal dünya aynı ve ölçülen hiçbir büyüklük ona bağlı değil — ama sonucu görüp bekçiyi
   gevşetmek D-084'ün yasakladığı şey. İmzanın yapısal/canlı ayrımı **ayrı bir tur kalemi**.
 
+
+## D-132 — Ekran yönü K0 SERBEST; döndürmenin tek kusuru kapatıldı (2026-09-17, F6 tur 3)
+
+- **Karar (kullanıcı):** *"ana tema dikey ama yatayda da kullanılabilir olmalı; kullanıcı isterse
+  yataya dönebilir veya tablette oynarsa yatay gibi tepki verecek"* → **K0 serbest**, kilit yok.
+  İkon + açılış ekranı **ertelendi** (*"ikonu da en son hallederiz"*).
+- **K0 artık YAZILI:** `android:screenOrientation="fullUser"`. `fullSensor` değil — o, cihazın
+  kendi döndürme kilidini EZER; kullanıcının cümlesi *"kullanıcı İSTERSE"*ydi. Beyansız bırakmak
+  kararı varsayılana emanet etmekti; bu projenin iki kez yandığı kalıp (yazısız kural çürür).
+- **K0'ın bedeli ölçüldü:** D-131 DURAN kare ölçmüştü, canlı oturumu çevirmek hiç denenmemişti.
+  28 hücrenin **27'si temiz** — hata 0, oyun durumu korunuyor, tuval/kamera tazeleniyor,
+  ray↔şerit takası geçişte doğru, gidiş-dönüş kapanıyor.
+- **Tek kusur ve sebebi:** Karakter ekranı tablet portresinde açıkken yatay çevrilince üç ödül
+  düğmesinin üçü de gövde dışında kalıyordu. Sebep **shrink kilidi**: `.char-card { flex: 1 0 auto }`
+  portrede kurulan yüksekliği bırakmıyor (kartY 722 → **1202**). Gövde doğru tazeleniyordu,
+  içerik tazelenmiyordu. `flex-shrink: 1` ile taze = dönerek, birebir.
+- **Kol seçimi TEKNİK çataldı, sorulmadı** (`feedback_technical_forks`): RB yanlış halkayı tuttu
+  (kusuru hiç oynatmadı, üstelik L1→P1'i kirletti), RC belirtiyi örttü ama kilidi bıraktı ve
+  tablet düzenini değiştirdi — o **G-55**'in kalemi, bir hata düzeltmesinin arkasına saklanmadı.
+- **Yalnız `.char-card` düzeltildi.** `.shop-card` aynı kilidi taşıyor ama ölçümde kirlenmedi;
+  ölçülmeyen yere dokunulmadı → **açık kalem**.
+- **Bekçi:** `tests/ekran-yonu-f6.test.ts` (6 denetim: yön beyanı var · kilitli değil · `fullUser` ·
+  `configChanges` bozulmamış · shrink açık · JS'ten de kilitlenmiyor). **6/6 mutasyonla
+  doğrulandı** (`tools/mutasyon-yon-f6.mjs`). M5 bekçinin varlık sebebi: taklit ettiği kusuru
+  **duran karede ne göz ne duman testi** yakalar.
+- **TURUN KALICI DERSİ — KANARYA BİR YÜZEYİ KORUR, ARACI DEĞİL.** İlk koşu geçersiz çıktı:
+  `Escape` panelleri hiç kapatmıyordu (hiçbir sheet'te klavye kancası yok), taze referanslar boş
+  kalıyordu ve `fark()` `undefined` alanları atladığı için çıktı **"— temiz —"** yazıyordu —
+  karşılaştırma hiç yapılmadan. HUD kanaryası yeşildi çünkü HUD tarafı sağlamdı. **Ölçümün
+  "temiz" demesi, ölçümün çalıştığı anlamına gelmiyor.** Kapatma artık gerçek geri düğmesiyle ve
+  doğrulanıyor; panel karşılaştırıcısı için ikinci kanarya eklendi.
+- **Final:** §J2 19/20 → **20/20 temiz** · vitest 1305/1305 · duman 45/45 · tsc temiz.
+  Sayılar: `docs/donme-raporu-f6.md` · ham: `docs/olcum-donme-f6.txt` (+ `-once`) ·
+  `docs/olcum-kol-donme-f6.txt`.
