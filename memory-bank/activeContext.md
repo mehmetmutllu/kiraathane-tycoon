@@ -5,38 +5,34 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-17 — **R3 KAPANDI (D-128)** · Faz R 3/4 · 105/111)
+## ŞU AN (2026-09-17 — **R4 AÇIK** · G-50 çevre sanatı · Faz R 3/4 · 105/111)
 
 ```
-SORU            : Üst şeridin rozeti/kesesi, ödül ekranının iki ödülü ve ayarlar kaydırıcısının
-                  çerçevesi ekranda GERÇEKTE nasıl çiziliyor — kesik nerede, ne taşıyor?
-ÖLÇÜLEN KOLLAR  : §A T·A1·A2·A3·A4 · §B T·B1·B2 · §C T·C1 · §D T·D1·D2·D3 + 9 madalyon adayı
-                  §E T·E1 + 3 dizilim × 2 değer · §C3 7 ödül satırı adayı (ikinci tur)
-SAYILAR         : docs/hud-raporu-r3.md §Bulgular + §Karar · ham: docs/olcum-hud-r3.txt (TAM)
-                  + docs/olcum-hud-r3b.txt (aday turu)
-KARAR           : D-128 — A4 + B2 + C1 + K3 + G kapsül + C madalyon + F kese (ALT ALTA)
-UYGULAMA        : index.css · hud.css · icons.tsx · HUD.tsx · save.ts
-BEKÇİ           : tests/hud-r3.test.ts (7 den.) + ekran-kabugu §5 yeniden yazıldı ·
-                  tools/mutasyon-hud-r3.mjs 12/12 kırmızı (M6 ilk turda KAÇTI, bekçi güçlendi)
-FINAL           : vitest 1245 ✓ · konsol hatası 0 · ss/r3-son-{serit,ayarlar,odul,hedefler}.png
+SORU            : "Zemin, duvarlar ve yan taraflar yapılmamış asset gibi" — bu his ekranda
+                  HANGİ yüzeyden geliyor, o yüzey karenin yüzde kaçı, ve ne kadar düz?
+ÖLÇÜLECEK KOLLAR: §A piksel bütçesi (hangi yüzey kaç % · BOŞLUK payı) · §B düzlük (yüzey başına
+                  parlaklık sapması + ayrık renk sayısı) · §C kesik hattı (zemin nerede bitiyor,
+                  ardında ne var) — üçü TABAN, kol değil.
+                  ADAYLAR (aynı kadraj, eleyerek seçilecek):
+                  Z1 ahşap tahta derzi · Z2 kilim adacıkları · Z3 alan başına ton + bordür
+                  D1 lambri/kordon güçlendirme · D2 çini kuşağı · D3 süpürgelik + dip gölgesi
+                  Ç1 çimenlik kuşağı (kullanıcının önerisi) · Ç2 bahçe: çim+ağaç+çit
+                  Ç3 kaldırım/sokak zenginleştirme · Ç4 ufuk silueti
+                  K1 dış kütle (kesik kenarı kapatan bina kabuğu) · K2 sis/vinyet kuşağı
+                  >>> §A/§C adayları ELEYEBİLİR: BOŞLUK payı 0 ise Ç4/K1/K2 seçime SUNULMAZ.
+SAYILAR         : (adım 2'den sonra — docs/cevre-raporu-r4.md §Bulgular)
+KARAR           : (adım 3 — kullanıcı seçer, D-129)
+UYGULAMA        : (adım 4 — yalnız kararın kolu)
+BEKÇİ           : (test dosyası + mutasyon sayısı)
 ```
 
-**Turun kalıcı üç dersi:**
-1. **Bir kusuru kaldırmak, onun ÜSTÜNDEKİ kusuru kaldırmaz.** Kullanıcı madalyonda *"arkada bir
-   çizgi"* gördü; yıldızı kaldırdığımızda çizgi DURUYORDU. `-webkit-text-stroke` köşeleri MITER
-   birleştiriyor ve Lilita One'ın sivri "4"ünde 5 px kontur ekrana mızrak olarak çıkıyor. Aynı
-   56 px'te iki ayrı kusur üst üste duruyordu; biri diğerini gizliyordu.
-2. **Kullanıcının sorduğu her çatal bir seçim değildir — bazısı ölçümle kapanır.** *"Yan yana mı
-   alt alta mı bilemedim"* bir zevk sorusu gibi duruyordu; ölçüm yan yana kolunun 999.99M'de
-   ekranı 42,7 px aştığını gösterdi. Kol seçime SUNULMADAN elendi ve kullanıcıya sebebi yazıldı.
-3. **Kaçan mutasyon bekçinin zayıf yerinin haritası.** M6 (bonus satırı deltaya döner) kaçtı:
-   bekçi geçişin yalnız SAĞ ucunu tutuyordu, sol uç deltaya dönünce satır "+%0,4 → %3,6" oluyor
-   ve ekran hem artışı hem toplamı vaat ediyordu. İki uç da denetleniyor.
+**Turun bilinen tuzağı (S6'dan devreden):** kamera oyuncunun +z'sinde durup −z'ye bakar, yani
+z ≳ 20,5'e konan hiçbir şey ekrana girmez (karşı binalar %0 görünürlükle SİLİNMİŞTİ). "Etraf
+bahçe olsun" kolu bu yüzden ÖNCE görünürlükle sınanır — güzel ama görünmeyen kol, kol değildir.
 
-**Yolda düzeltilen üç araç kusuru** (hepsi rapora sayı girmeden): React metni tek düğüm sanıldı
-(JSX `{yuzde(bonus)} kalıcı gelir` ÜÇ metin düğümü üretiyor → D ve E kolları taban metniyle aynı
-çıktı) · ikinci tur, birinci turun bıraktığı etiketi temizlemiyordu · G madalyon kolu `.rep-num`a
-`position: relative` verip sayıyı diskin dışına düşürüyordu.
+**Paket notu:** `kaykit-forest-nature` F2'de silindi (D-125). Ç2 seçilirse
+`git checkout 13738b5^ -- public/assets/models/kaykit-forest-nature` ile döner ve
+`tests/asset-olu-yuk.test.ts` gereği entegrasyonu AYNI turda yapılır.
 
 ## SIRADAKİ TAM ADIM
 

@@ -51,3 +51,23 @@ FINAL           : vitest 1205 ✓ · duman 45/45 ✓ · tsc temiz · APK 20,93 �
 KISALTMADAN üzerine yazıyor, 11,66 MB'lık içerik 21,88 MB'lık kabukta duruyordu. Yayın günü
 mağazaya yanlış boyut yazılırdı. `tools/apk-temizle.mjs` zincire takıldı; uçtan uca 11,84 MB.
 
+
+
+---
+
+
+## R3 — HUD çerçeveleri (2026-09-17, D-128)
+
+```
+SORU            : Üst şeridin rozeti/kesesi, ödül ekranının iki ödülü ve ayarlar kaydırıcısının
+                  çerçevesi ekranda GERÇEKTE nasıl çiziliyor — kesik nerede, ne taşıyor?
+ÖLÇÜLEN KOLLAR  : §A T·A1·A2·A3·A4 · §B T·B1·B2 · §C T·C1 · §D T·D1·D2·D3 + 9 madalyon adayı
+                  §E T·E1 + 3 dizilim × 2 değer · §C3 7 ödül satırı adayı (ikinci tur)
+SAYILAR         : docs/hud-raporu-r3.md §Bulgular + §Karar · ham: docs/olcum-hud-r3.txt (TAM)
+                  + docs/olcum-hud-r3b.txt (aday turu)
+KARAR           : D-128 — A4 + B2 + C1 + K3 + G kapsül + C madalyon + F kese (ALT ALTA)
+UYGULAMA        : index.css · hud.css · icons.tsx · HUD.tsx · save.ts
+BEKÇİ           : tests/hud-r3.test.ts (7 den.) + ekran-kabugu §5 yeniden yazıldı ·
+                  tools/mutasyon-hud-r3.mjs 12/12 kırmızı (M6 ilk turda KAÇTI, bekçi güçlendi)
+FINAL           : vitest 1245 ✓ · konsol hatası 0 · ss/r3-son-{serit,ayarlar,odul,hedefler}.png
+```

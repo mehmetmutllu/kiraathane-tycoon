@@ -1,0 +1,135 @@
+==================================================================================================================
+R4 ÖLÇÜM — ÇEVRE SANATI (G-50): zemin · duvar · yan taraflar ekranda ne kadar yer tutuyor?
+Bu dosya KARAR İÇERMEZ. Kollar `docs/cevre-raporu-r4.md` §Bulgular'da; seçim kullanıcının.
+koşu kipi: TAM · ızgara 80×80 ışın/kare
+==================================================================================================================
+
+[kurulum] yatay/acilis · three modülü: /node_modules/.vite/deps/three.js?v=f10982ac · Raycaster: VAR
+[hiza] yatay/acilis · boşluk ışını kırmızı: 100.0% (706/706) · dolu ışın kırmızı DEĞİL: 98.9% (884/894)
+[kurulum] yatay/tam · three modülü: /node_modules/.vite/deps/three.js?v=f10982ac · Raycaster: VAR
+[hiza] yatay/tam · boşluk ışını kırmızı: 100.0% (604/604) · dolu ışın kırmızı DEĞİL: 100.0% (996/996)
+[kurulum] portre/acilis · three modülü: /node_modules/.vite/deps/three.js?v=f10982ac · Raycaster: VAR
+[hiza] portre/acilis · boşluk ışını kırmızı: 100.0% (547/547) · dolu ışın kırmızı DEĞİL: 99.8% (1051/1053)
+[kurulum] portre/tam · three modülü: /node_modules/.vite/deps/three.js?v=f10982ac · Raycaster: VAR
+[hiza] portre/tam · boşluk ışını kırmızı: 100.0% (493/493) · dolu ışın kırmızı DEĞİL: 100.0% (1107/1107)
+
+§A PİKSEL BÜTÇESİ — ışın ızgarası, kare başına yüzey payı
+------------------------------------------------------------------------------------------------------------------
+kadraj  durum    konum            ZEMIN    DUVAR    TAVAN    SOKAK   ICERIK BOŞ-alti BOŞ-ustu
+yatay   acilis   (-8.5,8)         69.7%    17.2%     0.0%     0.0%    12.2%     0.9%     0.0%
+yatay   acilis   (-14,3)          49.4%    18.5%     0.0%     0.0%    12.1%    20.0%     0.0%
+yatay   acilis   (-4,14)          45.3%     7.0%     0.0%    13.2%    34.5%     0.0%     0.0%
+yatay   acilis   (-8.5,1)         69.8%    17.5%     0.0%     0.0%     8.1%     4.6%     0.0%
+yatay   tam      (-6,4)           77.2%     1.9%     0.0%     0.0%    20.9%     0.0%     0.0%
+yatay   tam      (8,-5)           54.9%     6.1%     0.0%     0.0%    38.4%     0.6%     0.0%
+yatay   tam      (14,8)           56.8%     2.4%     0.0%     0.0%    21.8%    19.1%     0.0%
+yatay   tam      (0,13)           52.8%     0.0%     0.0%     1.1%    46.2%     0.0%     0.0%
+yatay   tam      (-13,-6)         32.9%    11.2%     0.0%     0.0%    44.2%    11.7%     0.0%
+portre  acilis   (-8.5,8)         82.8%    11.3%     0.0%     0.0%     6.0%     0.0%     0.0%
+portre  acilis   (-14,3)          66.7%    12.6%     0.0%     0.0%    13.8%     6.9%     0.0%
+portre  acilis   (-4,14)          40.5%     9.1%     0.0%    20.7%    28.4%     1.3%     0.0%
+portre  acilis   (-8.5,1)         74.3%    12.5%     0.0%     0.0%     7.0%     6.3%     0.0%
+portre  tam      (-6,4)           72.2%     0.0%     0.0%     0.0%    27.8%     0.0%     0.0%
+portre  tam      (8,-5)           49.1%    10.3%     0.0%     0.0%    39.3%     1.3%     0.0%
+portre  tam      (14,8)           76.3%     2.0%     0.0%     0.0%    20.6%     1.1%     0.0%
+portre  tam      (0,13)           54.9%     0.0%     0.0%    12.3%    32.8%     0.0%     0.0%
+portre  tam      (-13,-6)         48.1%     4.6%     0.0%     0.0%    44.8%     2.5%     0.0%
+------------------------------------------------------------------------------------------------------------------
+ORTALAMA                           59.6%     8.0%     0.0%     2.6%    25.5%     4.2%     0.0%
+EN YÜKSEK KARE                     82.8%    18.5%     0.0%    20.7%    46.2%    20.0%     0.0%
+
+§B DÜZLÜK — kova başına gerçek piksel istatistiği (aynı kareden okundu)
+------------------------------------------------------------------------------------------------------------------
+Sapma = parlaklık standart sapması (0-255). DÜŞÜK sapma + AZ ayrık renk = gözün "düz yüzey"
+dediği şey. Gölge ve ışık bile bir yüzeye değer dağılımı verir; 0'a yakın sapma o yüzeyde
+HİÇBİR bilgi olmadığı anlamına gelir.
+
+sınıf|renk|geometri|gövde        kare  ort.pay   parlak  sapma  ayrık   örnek ad
+ZEMIN|#b98a5a|PlaneGeometry|18.1         8    51.3% 153.1   6.25     36   -
+ZEMIN|#b98a5a|PlaneGeometry|17.5         8    41.5% 152.7   7.61     77   -
+ZEMIN|#b98a5a|PlaneGeometry|35.1        10    22.7% 152.7   8.19     44   -
+DUVAR|#e6d7b8|I:BoxGeometry|18.0         9    11.8% 168.3   7.02     10   -
+ZEMIN|#b98a5a|PlaneGeometry|35.2         8    11.0% 153.9   1.39     11   -
+BOSLUK-ufuk-alti                        13     5.9%  40.1   2.99      4   -
+SOKAK|#9e9e9e|PlaneGeometry|40.0         4    10.6% 164.0   9.87     62   -
+ICERIK|#7a2230|BoxGeometry|7.5          10     4.0%  36.9   8.64     12   -
+ICERIK|#6d4c41|I:BoxGeometry|18.0        8     4.7%  45.2   4.85     13   -
+ICERIK|#2e6b4f|BoxGeometry|6.4           4     8.4%  86.4  10.53     10   -
+ICERIK|-|BufferGeometry|1.1             13     1.9% 103.8  34.88    208   -
+ICERIK|#ffffff|BufferGeometry|1.8        4     5.6% 134.4  36.78    372   kitchencounter_straigh
+ICERIK|-|BufferGeometry|0.7             11     2.0% 139.5  39.32    144   -
+ICERIK|-|BufferGeometry|1.7              6     3.2% 113.2  27.55    226   -
+DUVAR|#e6d7b8|I:BoxGeometry|35.0         4     4.7% 169.1   9.75     10   -
+DUVAR|#e6d7b8|I:BoxGeometry|10.8         5     2.7% 159.0   3.04      7   -
+ICERIK|#e6d7b8|BoxGeometry|8.1           4     2.8% 173.0   3.19      2   -
+ICERIK|#5d4037|BoxGeometry|7.7           9     1.2%  58.3   3.77      4   -
+
+§C KESİK HATTI — BOŞLUK ekranın neresinde bitiyor? (0,00 = kare üstü · 1,00 = kare altı)
+------------------------------------------------------------------------------------------------------------------
+kadraj  durum    konum        boş toplam  ufuk altı  boşluğun EN ALT satırı   yorum
+yatay   acilis   (-8.5,8)           0.9%       0.9%                    0.13   UFUK ALTI BOŞLUK — zemin bitiyor, arkası arka plan
+yatay   acilis   (-14,3)           20.0%      20.0%                    0.99   UFUK ALTI BOŞLUK — zemin bitiyor, arkası arka plan
+yatay   acilis   (-4,14)            0.0%       0.0%                       —   kare tamamen dolu
+yatay   acilis   (-8.5,1)           4.6%       4.6%                    0.22   UFUK ALTI BOŞLUK — zemin bitiyor, arkası arka plan
+yatay   tam      (-6,4)             0.0%       0.0%                    0.01   UFUK ALTI BOŞLUK — zemin bitiyor, arkası arka plan
+yatay   tam      (8,-5)             0.6%       0.6%                    0.11   UFUK ALTI BOŞLUK — zemin bitiyor, arkası arka plan
+yatay   tam      (14,8)            19.1%      19.1%                    0.99   UFUK ALTI BOŞLUK — zemin bitiyor, arkası arka plan
+yatay   tam      (0,13)             0.0%       0.0%                       —   kare tamamen dolu
+yatay   tam      (-13,-6)          11.7%      11.7%                    0.73   UFUK ALTI BOŞLUK — zemin bitiyor, arkası arka plan
+portre  acilis   (-8.5,8)           0.0%       0.0%                       —   kare tamamen dolu
+portre  acilis   (-14,3)            6.9%       6.9%                    0.22   UFUK ALTI BOŞLUK — zemin bitiyor, arkası arka plan
+portre  acilis   (-4,14)            1.3%       1.3%                    0.94   UFUK ALTI BOŞLUK — zemin bitiyor, arkası arka plan
+portre  acilis   (-8.5,1)           6.3%       6.3%                    0.06   UFUK ALTI BOŞLUK — zemin bitiyor, arkası arka plan
+portre  tam      (-6,4)             0.0%       0.0%                       —   kare tamamen dolu
+portre  tam      (8,-5)             1.3%       1.3%                    0.01   UFUK ALTI BOŞLUK — zemin bitiyor, arkası arka plan
+portre  tam      (14,8)             1.1%       1.1%                    0.16   UFUK ALTI BOŞLUK — zemin bitiyor, arkası arka plan
+portre  tam      (0,13)             0.0%       0.0%                       —   kare tamamen dolu
+portre  tam      (-13,-6)           2.5%       2.5%                    0.03   UFUK ALTI BOŞLUK — zemin bitiyor, arkası arka plan
+
+§E BOŞLUK NEREYE DÜŞÜYOR — ufuk altı boşluk ışınının y=0 düzlemindeki noktası
+------------------------------------------------------------------------------------------------------------------
+Zemin karesi ±17,6. "Taşma" = o noktanın zemin kenarından DIŞARIDAKİ uzaklığı (dünya br).
+S6 sokağın (ÖN, +z) görünmediğini ölçmüştü — bu tablo boşluğun HANGİ kenarda olduğunu söyler.
+
+kadraj  durum    konum          n     sol     sağ    arka      ön   taşma ORTA    P90   EN UZAK
+yatay   acilis   (-8.5,8)      57  100.0%    0.0%    0.0%    0.0%        6.72   8.67      9.62
+yatay   acilis   (-14,3)     1280  100.0%    0.0%    0.0%    0.0%        4.28   9.16     15.12
+yatay   acilis   (-8.5,1)     297  100.0%    0.0%    0.0%    0.0%        3.21   6.67      9.62
+yatay   tam      (-6,4)         1  100.0%    0.0%    0.0%    0.0%        7.12   7.12      7.12
+yatay   tam      (8,-5)        38    0.0%   97.4%    2.6%    0.0%        6.84   8.19      9.12
+yatay   tam      (14,8)      1224    0.0%  100.0%    0.0%    0.0%        4.43   9.26     15.12
+yatay   tam      (-13,-6)     748   96.4%    0.0%    3.6%    0.0%        5.18   9.44     14.12
+portre  acilis   (-14,3)      442   53.8%    0.0%   46.2%    0.0%        1.04   2.11      3.09
+portre  acilis   (-4,14)       80    0.0%    0.0%    0.0%  100.0%        2.37   2.37      2.37
+portre  acilis   (-8.5,1)     400    0.0%    0.0%  100.0%    0.0%        2.02   4.11      4.11
+portre  tam      (8,-5)        80    0.0%    0.0%  100.0%    0.0%       10.11  10.11     10.11
+portre  tam      (14,8)        73    0.0%  100.0%    0.0%    0.0%        1.94   2.61      3.09
+portre  tam      (-13,-6)     161    0.0%    0.0%  100.0%    0.0%       10.04  11.11     11.11
+------------------------------------------------------------------------------------------------------------------
+TÜM KARELER (kenar dağılımı)         53.1%   27.3%   17.9%    1.6%        P90 11.11 · EN UZAK 15.12
+>>> Bir çevre kuşağı boşluğu KAPATMAK için kenardan en az P90 kadar dışarı uzamalıdır.
+
+§D ÇİZİM TAMPONU — okunan piksel boyutları (dpr tavanı uygulanmış hâli)
+------------------------------------------------------------------------------------------------------------------
+yatay   acilis   (-8.5,8)     1500×950  ışın 6400
+yatay   acilis   (-14,3)      1500×950  ışın 6400
+yatay   acilis   (-4,14)      1500×950  ışın 6400
+yatay   acilis   (-8.5,1)     1500×950  ışın 6400
+yatay   tam      (-6,4)       1500×950  ışın 6400
+yatay   tam      (8,-5)       1500×950  ışın 6400
+yatay   tam      (14,8)       1500×950  ışın 6400
+yatay   tam      (0,13)       1500×950  ışın 6400
+yatay   tam      (-13,-6)     1500×950  ışın 6400
+portre  acilis   (-8.5,8)     412×915  ışın 6400
+portre  acilis   (-14,3)      412×915  ışın 6400
+portre  acilis   (-4,14)      412×915  ışın 6400
+portre  acilis   (-8.5,1)     412×915  ışın 6400
+portre  tam      (-6,4)       412×915  ışın 6400
+portre  tam      (8,-5)       412×915  ışın 6400
+portre  tam      (14,8)       412×915  ışın 6400
+portre  tam      (0,13)       412×915  ışın 6400
+portre  tam      (-13,-6)     412×915  ışın 6400
+
+konsol temiz — 0 hata
+
+KAPSAM DAMGASI: TAM KOŞU · ızgara 80×80 · 18 kare
