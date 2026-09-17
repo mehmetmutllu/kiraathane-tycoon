@@ -1,0 +1,109 @@
+# F1 — KABUK VE IMZA OLCUMU
+# kip: TAM (dort kol) · 2026-09-17T10:59:34.208Z
+# node v24.19.0 · win32
+
+## §A KIMLIK (derleme gerekmez)
+appId (capacitor)      : com.kosekiraathanesi.game
+appName (capacitor)    : Köşe Kıraathanesi
+applicationId (gradle) : com.kosekiraathanesi.game
+namespace (gradle)     : com.kosekiraathanesi.game
+versionCode            : 1
+versionName            : 1.0
+package.json version   : 0.0.0   <- SURUM IKI YERDE, TURETILMIYOR
+minSdk / target / comp : 24 / 36 / 36
+izinler                : android.permission.INTERNET
+screenOrientation      : (YOK — cihaz serbest dondurur)
+allowBackup            : true
+signingConfig (gradle) : YOK — release imzasiz cikiyor
+keystore dosyasi       : YOK
+
+## §B TABAN (debug APK — temiz uretim)
+assembleDebug          : kod 0 · 1,7 sn
+debug APK              : 11,84 MB (12419009 bayt) · android\app\build\outputs\apk\debug\app-debug.apk
+girdi sayisi           : 962
+
+| kova | adet | sikisik | acik | APK payi |
+|---|---:|---:|---:|---:|
+| assets · modeller (.glb) | 500 | 5,00 MB | 11,92 MB | %42,2 |
+| kod (.dex) | 6 | 3,21 MB | 8,35 MB | %27,1 |
+| assets · ses | 1 | 1,70 MB | 1,70 MB | %14,3 |
+| assets · js + css + digerleri | 11 | 0,61 MB | 1,68 MB | %5,2 |
+| res + resources | 380 | 0,61 MB | 0,71 MB | %5,2 |
+| assets · yazi tipleri | 15 | 0,51 MB | 0,90 MB | %4,3 |
+| digerleri | 11 | 0,01 MB | 0,04 MB | %0,1 |
+| META-INF (imza) | 38 | 0,00 MB | 0,00 MB | %0,0 |
+
+apksigner              : C:\Users\Mehmet Mutlu\AppData\Local\Android\Sdk\build-tools\35.0.0\apksigner.bat
+imza dogrulama (debug) : kod 0
+  Signer #1 certificate DN: C=US, O=Android, CN=Android Debug
+  Signer #1 certificate SHA-256 digest: 5c35ac9e522f8d2939d3f2bbe0d6ed13ce8a955d75ee3790870accadeab43d20
+
+## §C KOLLAR (release cikti — BAYT kesin, DAVRANIS olculmedi)
+# SURELER KARSILASTIRILAMAZ: gradle onbellegi kollar arasinda isiniyor, ilk kol soguk
+# derleniyor. Karsilastirilabilir olan BOYUT sutunudur.
+V0 release · kucultme KAPALI (bugunku ayar)
+   cikti  : android\app\build\outputs\apk\release\app-release-unsigned.apk
+   boyut  : 10,58 MB (11093969 bayt) · 960 girdi · 4,0 sn
+   kod    : 2,37 MB dex · res+resources 0,58 MB · native .so 0
+   imzali : HAYIR (imzasiz)
+V1 release · R8 + kaynak budama ACIK
+   cikti  : android\app\build\outputs\apk\release\app-release-unsigned.apk
+   boyut  : 8,58 MB (8992194 bayt) · 930 girdi · 9,4 sn
+   kod    : 0,45 MB dex · res+resources 0,50 MB · native .so 0
+   imzali : HAYIR (imzasiz)
+V2 AAB · kucultme KAPALI
+   cikti  : android\app\build\outputs\bundle\release\app-release.aab
+   boyut  : 10,36 MB (10868142 bayt) · 965 girdi · 4,5 sn
+   kod    : 2,37 MB dex · res+resources 0,38 MB · native .so 0
+   imzali : HAYIR (imzasiz)
+V3 AAB · R8 + kaynak budama ACIK
+   cikti  : android\app\build\outputs\bundle\release\app-release.aab
+   boyut  : 8,83 MB (9263179 bayt) · 936 girdi · 8,8 sn
+   kod    : 0,45 MB dex · res+resources 0,36 MB · native .so 0
+   imzali : HAYIR (imzasiz)
+
+(build.gradle ozgun haline geri yazildi: DOGRULANDI)
+
+| kol | cikti | boyut | V0 farki | dex | sure |
+|---|---|---:|---:|---:|---:|
+| TABAN | debug APK | 11,84 MB | — | — | 1,7 sn |
+| V0 | APK | 10,58 MB | 0,0% | 2,37 MB | 4,0 sn |
+| V1 | APK | 8,58 MB | -18,9% | 0,45 MB | 9,4 sn |
+| V2 | AAB | 10,36 MB | -2,0% | 2,37 MB | 4,5 sn |
+| V3 | AAB | 8,83 MB | -16,5% | 0,45 MB | 8,8 sn |
+
+## §E R8 KOLUNUN RISK KANITI (V1 kolundan)
+R8 uygulanan -keep kurali    : 85
+Capacitor eklenti kurali     : VAR
+CapacitorWebView kurali      : VAR
+@JavascriptInterface kurali  : VAR
+MainActivity kural kokunde   : EVET
+MainActivity ciktida         : EVET
+Bridge ciktida               : EVET
+BridgeActivity ciktida       : EVET
+WebViewLocalServer ciktida   : EVET
+com.getcapacitor TAMAMEN silinen sinif: 15
+com.getcapacitor BUDANAN (duruyor, uyesi atildi): 47
+cekirdek sinif silindi mi    : HAYIR
+tamamen silinenler (denetlenebilsin diye tam liste):
+  com.getcapacitor.AppUUID
+  com.getcapacitor.CapConfig$Builder
+  com.getcapacitor.FileUtils$Type
+  com.getcapacitor.JSExportException
+  com.getcapacitor.PluginCall$PluginCallDataTypeException
+  com.getcapacitor.PluginInvocationException
+  com.getcapacitor.android.R$color
+  com.getcapacitor.android.R$string
+  com.getcapacitor.android.R
+  com.getcapacitor.plugin.util.AssetUtil
+  com.getcapacitor.plugin.util.HttpRequestHandler$ProgressEmitter
+  com.getcapacitor.App$AppRestoredListener
+  com.getcapacitor.App$AppStatusChangeListener
+  com.getcapacitor.ProcessedRoute
+  com.getcapacitor.ServerPath$PathType
+kurulu Capacitor eklentisi   : 0 (yansima yuzeyi bu kadar)
+
+## §D NATIVE KUTUPHANE (Play 16 KB sayfa sarti)
+APK icinde .so YOK → 16 KB sayfa sarti bu projeye DOKUNMUYOR (kol bos).
+
+# toplam sure: 29,0 sn

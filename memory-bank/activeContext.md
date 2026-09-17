@@ -5,51 +5,44 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-17 — **R4 KAPANDI (D-129)** · Faz R **4/4 ✅** · 106/111)
+## ŞU AN (2026-09-17 — **F1a ÖLÇÜM BİTTİ, karar bekliyor** · Faz F · 106/111)
 
 ```
-SORU            : "Zemin, duvarlar ve yan taraflar yapılmamış asset gibi" — bu his ekranda
-                  HANGİ yüzeyden geliyor, o yüzey karenin yüzde kaçı, ve ne kadar düz?
-ÖLÇÜLEN KOLLAR  : §A piksel bütçesi · §B düzlük · §C kesik · §E boşluğun yer karşılığı (TABAN)
-                  + 12 aday: C1-C4 · K1-K2 (boşluk) · Z1-Z3 (zemin) · D1-D3 (duvar)
-SAYILAR         : docs/cevre-raporu-r4.md §Bulgular + §Karar · ham: docs/olcum-cevre-r4.txt
-                  (TAM · 18 kare · 6.400 ışın/kare)
-KARAR           : D-129 — zemin ve duvar grupları TAMAMEN elendi ("şu anki haliyle kalsın").
-                  Tek kol C2, ama KAPSAMI kullanıcı genişletti: bahçe = binanın ayak izinin
-                  TÜMLEYENİ, yani açılmamış her yer (kilitli alanlar dahil), areasOpen ile
-                  geri çekilir.  Paket: https://claude.ai/artifact/KoKfXtRZ3CAxMsLgcd3f3s
-UYGULAMA        : bahceLook.ts + Bahce.tsx (yeni) · Scene.tsx · palette.ts (2 renk) ·
-                  streetLook.ts (kaldırım-asfalt dikişi) · wallPanel.ts (lambri kalınlığı dışa)
-BEKÇİ           : tests/bahce-r4.test.ts (21 den.) · tools/mutasyon-bahce-r4.mjs 23/23 kırmızı
-                  (ilk koşuda 4 kaçtı; ikisi delik DEĞİL ÖLÜ KOD gösterdi)
-FINAL           : vitest 1273 ✓ · duman 45/45 ✓ · tsc temiz · konsol 0 · ss/r4-son-alan*.png
+SORU            : Mağazaya gidecek imzalı sürümü üretirken hangi kol ne kadar BAYT ve ne kadar
+                  RİSK getiriyor — küçültme (R8) mi, çıktı biçimi (APK ↔ AAB) mi, ikisi mi?
+ÖLÇÜLEN KOLLAR  : §A kimlik · §B taban (debug APK dökümü) · §C dört kol V0/V1/V2/V3 ·
+                  §D native (16 KB şartı) · §E R8 risk kanıtı · §F paket adı bedeli
+SAYILAR         : docs/paket-raporu-f1.md §Bulgular · ham: docs/olcum-paket-f1.txt
+                  (TAM · dört gerçek gradle derlemesi)
+KARAR           : (BOŞ — karar paketi sunulacak)
+UYGULAMA        : (boş)
+BEKÇİ           : (boş)
 ```
 
-**Turun kalıcı üç dersi:**
-1. **Kullanıcı bir kolu seçerken kapsamını da değiştirebilir — ve asıl karar orada olur.**
-   Karar paketindeki C2 "binanın dışındaki kuşak"tı; kullanıcı *"alan olarak açmadığım her yer"*
-   dedi. İkisi aynı görünüyor ama farklı: ikincisi bahçeyi `areasOpen`a bağlı, geri çekilen bir
-   yüzeye çeviriyor ve kilitli alanın çıplak ahşabını da kapatıyor. Paketin kolu uygulanmadı,
-   kullanıcının cümlesi uygulandı.
-2. **Yeni yüzey, eski kusuru miras alabilir.** Bu turun bulgusu "düz yüzey bitmemiş okunuyor"du
-   (zemin sapma 1,39 / 11 renk). Düz bir yeşil düzlem şikâyeti yeşile boyardı — çim bu yüzden
-   parça başına tonlanıyor ve bekçi bunu denetliyor (M15).
-3. **Kaçan mutasyon her zaman delik göstermez; bazen ÖLÜ KOD gösterir.** M12 ve M13 birlikte
-   kaçtı, çünkü korudukları "müşteri koridoru" kuralı hiçbir `areasOpen` değerinde
-   ateşlenmiyordu. Aynı kuralın iki farklı mutasyonu birden kaçıyorsa şüphe bekçide değil
-   KURALDA olmalı. Kural silindi, yerine gerçek değişmez kondu.
+**Turun bölünmesi (kullanıcı onayı 2026-09-17):** F1 ikiye ayrıldı — **F1a kabuk + imza**
+(bu tur), **F1b ikon + açılış ekranı** ayrı TASARIM turu (aday render'ı ister, metinle
+sorulmaz — `feedback_show_dont_ask`).
 
-**Yolda kapanan sessiz kusur:** kaldırım 19,90'da bitip asfalt 20,00'de başlıyordu; aradaki
-**0,10 br'lik dikişten** arka plan görünüyordu. §E'nin "ön kenara düşen 80 ışının TAMAMI aynı
-taşmayı veriyor" satırı ele verdi — dağılımı olmayan bir boşluk bölge değil ÇİZGİdir.
+**Ölçüm sırasında aracın kendisinde bulunan üç kusur** (üçü de ham çıktıya yansımadan
+kapatıldı, gerekçeleri araç içinde yazılı):
+1. Node 18.20+ bir `.bat` dosyasını doğrudan `spawn` etmeyi **sessizce** reddediyor
+   (CVE-2024-27980): `status` null, `stderr` boş. Araç "derleme kırıldı" dedi, oysa derleme
+   hiç başlamamıştı. **Çıkış kodu null ise komut ÇALIŞMADI demektir, kırıldı demek değildir.**
+2. `usage.txt`in iki ayrı satır dilbilgisi var — iki nokta ile biten satır sınıfın DURDUĞUNU
+   (üyesi atıldı), bitmeyen satır TAMAMEN silindiğini söyler. Ayırmayan sayaç budanmış her
+   sınıfı "silinmiş" sandı. Üstüne dosya CRLF: `\r` yüzünden iki nokta sınaması hiç tutmadı.
+3. `Bridge$Builder` atılmışken `Bridge` duruyordu; `\b` ile biten kalıp `$`ta sınır bulup **iç
+   sınıfı çekirdek sandı** ve R8 kolunu haksız yere "ölü" ilan etti. Kalıp dize sonuna bağlandı.
 
-**R4'ün bıraktığı açık uçlar:** ① **zemin ve duvar kolları ölçüldü, uygulanmadı** — Z1/Z2/Z3 ve
-D1/D2/D3'ün sayıları raporda duruyor, açılmak istenirse yeniden ölçüm gerekmez (kullanıcı
-*"şimdilik"* dedi) · ② bahçenin telefon üzerindeki maliyeti ölçülmedi: 1 alan 50 çizim çağrısı /
-28.884 üçgen, 3 alan 182 / 77.016 — F1 cihaz turunda okunmalı · ③ **çim TEK ton katmanı**
-(parça başına), zeminin kendisi gibi desensiz; yakın kadrajda geniş düz yeşil kalabilir.
+**Neden önemli:** üç kusurun üçü de aracı DAHA KÖTÜ değil, **daha karamsar** okutuyordu —
+yani "R8 kolu ölü" diye elenecekti ve kimse fark etmeyecekti. Kolu eleyen bir ölçüm, kolu
+seçen ölçüm kadar denetim ister.
 
 ## SIRADAKİ TAM ADIM
+
+**ŞİMDİ: F1a karar paketi.** Ölçüm ve commit #1 bitti; kullanıcıya altı kalemlik karar paketi
+sunulacak (paket adı · R8 · çıktı biçimi · sürüm kimliği · ekran yönü · yedekleme). Karardan
+sonra yalnız seçilen kol uygulanır → keystore + `signingConfig` + bekçi + final tam koşu.
 
 **FAZ R — kullanıcının 2026-09-16 geri bildirimi, 16 kalem (G-35…G-50).** Tam liste ve
 kullanıcının KENDİ cümleleri: `docs/geribildirim-oyun-testi-2026-09-16.md`.
