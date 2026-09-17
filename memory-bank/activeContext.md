@@ -103,11 +103,14 @@ sürekli çözme; APK turunda okunacak) · ② `2024-q4` paketi indirilmedi, pro
 Bel bağının ucu çeyrek açıdan ince bir dudak bırakıyor (`docs/gorsel/ss/s19b-kiyafet.png`).
 Ölçü değil biçim; pay 0,035 → 0,012 ile küçültüldü, sıfırlanmadı. Bir sonraki sanat turunda.
 
-## PANO — v50 YAYINDA (2026-09-16) · **BU TURDA GÜNCELLENMEDİ**
+## PANO — v51 YAYINDA (2026-09-17)
 
-**https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs** · 104/111 (%94) · Faz R 2/4 gösteriyor;
-gerçek durum **105/111 · Faz R 3/4**. Kapanışta `npm run pano` + artifact güncellemesi borç
-olarak kaldı (yayının bedeli yazılı: canlı sürümün tamamı okunmadan publish reddediliyor).
+**https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs** · 105/111 (%95) · Faz R 3/4.
+Kart sayısı 8'de tutuldu (taşan S23 kartı arşive gitti, sayaç 60 → **61**). Yolda **arşiv
+dosyasının kendi kusuru** çıktı: kartlar `gunluk` dizisinde duruyor ama ilk yazımda yeni bir
+`kartlar` alanı açılmıştı ve sayaç elle yazılıyordu — sayaç artık **diziden türüyor**
+(`kart = gunluk.length`), pano da onu okuyor. Ayrıca "kalıcı çarpan görünmez bir ödül" risk
+kartının **görünürlük yarısı kapatıldı** (K3), his yarısı telefonda okunacak diye açık kaldı.
 Kart sayısı 8'de tutuldu (taşan S22 kartı `memory-bank/arsiv/pano-gunluk.json`'a gitti, sayaç 60).
 Bu turda ayrıca **bayat bir risk kartı** düzeltildi: "arka salonda 12 masa arasından geçilemiyor"
 hâlâ AÇIK görünüyordu, oysa H3 2026-09-16'da elenmişti (banket adasından sonra açıklık 2,15 br).

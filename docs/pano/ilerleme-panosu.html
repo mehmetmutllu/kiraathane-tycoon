@@ -195,7 +195,7 @@ h2{font-size:21px;font-weight:800}
 <script type="application/json" id="durum">
 {
  "guncelleme": "17.09.2026",
- "yapilan": 104,
+ "yapilan": 105,
  "toplam": 111,
  "kilometre": [
   {
@@ -216,14 +216,14 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum — Faz R · 2/4 — R2: mutfak yerleşimi ve çarpışma (D-127)",
-  "baslik": "İki dönemden biri doğru çalışıyorsa, kusur <b>ölümsüzdür</b>",
-  "aciklama": "Kullanıcı mutfağı dört kalemde şikâyet etti (G-35…G-38). İlk ikisi tek bir satırdan doğuyordu: ön hattın çizim ölçüsü <b>dünya eksenlerinden</b> türetiliyor, ama iki çağıran da gövdeyi <code>place.rot</code> ile <b>zaten döndürülmüş</b> bir grubun içine çiziyordu.<br><br><b>Kusur S3&#39;ten bugüne yaşadı çünkü yarısı doğruydu.</b> Arka bant döneminde <code>rot = 0</code> — iki eksen aynı, hiçbir şey görünmüyor. Sol duvar döneminde <code>rot = π/2</code> ve gövde kendi çarpışma kutusuna <b>90°</b> dik çiziliyordu: tezgâhta örtüşme <b>IoU 0,19</b>, bulaşıkta <b>0,33</b>. Bedeli iki yönlüydü — çizilen tezgâhın <b>%19,4</b>&#39;ünden gerçekten yürünüyordu (kullanıcının gördüğü), kutusunun <b>%68,7</b>&#39;sinde ise hiçbir gövde yoktu (kullanıcının henüz söylemediği). Tezgâh ayrıca kendi duvarını <b>0,79 br</b> deliyordu.<br><br><b>Kutulara dokunulmadı.</b> Kutular zaten doğruydu; ölçü yanlış eksende teslim ediliyordu. Zıt kol (kutuyu çizime döndür) ölçüldü ve <b>sorulmadan elendi</b> — kullanıcının kendi cümlesi <i>&#34;sol duvara paralel olması gerekir&#34;</i> diyor, o kol tam tersini kalıcılaştırırdı.<br><br><b>Bitişiklikte ucuz yol ölçülüp çürütüldü:</b> mevcut birleştirme boşluğu yalnız <b>çizimle</b> doldurur. Arka bantta doldurduğu boşluk 0,20 br olduğundan zararsızdı; sol duvarda 3,20 br olduğundan aynı kural <b>0,66 br² yürünebilir gövde</b> üretiyordu — yani bir şikâyeti kapatırken diğerini geri getirirdi. Bulaşık kutusuyla birlikte taşındı: hat hem gözle hem çarpışmada kesintisiz."
+  "etiket": "Bu oturum — Faz R · 3/4 — R3: HUD çerçeveleri (D-128)",
+  "baslik": "Kullanıcının gördüğü kusur ile <b>gösterdiği</b> kusur aynı şey olmayabilir",
+  "aciklama": "Beş kalem (G-45…G-49) ölçüldü, kullanıcı seçti, kod tek commit&#39;te girdi. Üçünde teşhis kullanıcının tarif ettiği yerden <b>başka bir yerdeydi</b>.<br><br><b>Kaydırıcı:</b> &#34;çerçeve kesik&#34; denilen çizginin çizilen boyu satırın tamamıydı (oran <b>1,000</b>) — kesik olan <b>köşeydi</b>, ve dikey açıklığın yarısı kaydırıcının değil panelin kuralıydı (<code>.sheet-pad</code> · <code>gap: 4px</code>). <b>Madalyon:</b> &#34;arkadaki çizgi&#34; yıldız değil <b>kontur mızrağıydı</b> — yıldız kalktıktan sonra da duruyordu. <b>Ödül satırı:</b> &#34;çok fazla işaret&#34; kelime kısaltarak kapanmadı; sayının kendisi cılızdı (%0,4) ve ekran artık <b>%3,2 → %3,6</b> yazıyor.<br><br><b>Bir kol seçime hiç sunulmadı.</b> Kullanıcı keseyi &#34;yan yana mı alt alta mı&#34; diye sordu; ölçüm yan yana dizilimin 999.99M + 12.34K&#39;da ekranı <b>42,7 px aştığını</b> gösterdi — elmas ve dişli kadraj dışında kalıyor. Zevk sorusu sanılan çatal bir <b>sığma koşuluydu</b>.<br><br><b>Kese kararı D-106&#39;yı geri aldı</b> ve bunun bekçisi de yeniden yazıldı: eski test &#34;kese kutusuz&#34; kuralını koruyordu. Karar değişince <b>bekçisi de döner</b> — susturulmaz, yeniden yazılır."
  },
  "siradaki": {
-  "etiket": "Sırada — Faz R · 3/4",
-  "baslik": "HUD çerçeveleri: seviye rozeti <b>birleşik</b>, FPS sayacı kalkıyor",
-  "aciklama": "<b>③ HUD çerçeveleri (G-45…G-49)</b> — kullanıcının sözü: seviye göstergesinde <i>&#34;bar ve yuvarlak birleşik olmalı, Clash of Clans&#39;ınki gibi&#34;</i> ve <i>&#34;en üst satırda yan yana&#34;</i>. Yanında dört kalem daha: FPS sayacı kaldırılacak, iki ödül yan yana değil <b>alt alta + arasına &#34;+&#34;</b>, ayarlar kaydırıcısının kesik çerçevesi düzelecek, sağ üstteki elmas ve paraya çerçeve gelecek. G-48 gerçek bir referans karesi ister.<br><br><b>④ Çevre sanatı (G-50)</b> — <i>&#34;zemin ve duvarlar... yapılmamış asset gibi hissettiriyor, çözümler sun&#34;</i>. Kendi tasarım turu: metinle kol anlatılmaz, 6-12 aday aynı kadrajda render edilip eleyerek seçilir. Kullanıcının kendi yönü: bahçe/çimenlik kuşağı.<br><br><b>Faz dışı:</b> G-39 (masa yükseltmeleri sırayla) ve G-40 (para ondalığı) denge dosyalarına dokunuyor — varyant kapısı kendi turunu ister.<br><br><b>R2&#39;nin bıraktığı iş:</b> bir gövdeye bağlı ankraj noktaları (personel postası, yol ucu, pad) hâlâ tek tek türetiliyor; dördüncüsü eklenirse ne araç ne bekçi kendiliğinden görür."
+  "etiket": "Sırada — Faz R · 4/4",
+  "baslik": "Çevre sanatı: <b>zemin ve duvarlar</b> kendi tasarım turunu istiyor",
+  "aciklama": "<b>④ G-50 — çevre sanatı</b>, kullanıcının sözü: <i>&#34;zemin ve duvarlar... yapılmamış asset gibi hissettiriyor, çözümler sun&#34;</i>. Kendi tasarım turu: metinle kol anlatılmaz, <b>6-12 aday aynı kadrajda</b> render edilip eleyerek seçilir. Kullanıcının kendi yönü: bahçe/çimenlik kuşağı. Bu kol seçilirse F2&#39;de silinen <code>kaykit-forest-nature</code> paketi geri alınır ve entegrasyonu <b>aynı turda</b> yapılır.<br><br><b>Sonra Faz F — paketleme:</b> F1 Capacitor kabuğu + imzalı sürüm (keystore <code>C:\\dev-ortam</code>&#39;a, sürüm adı/kodu, uygulama ikonu, açılış ekranı).<br><br><b>Faz dışı bekleyen denge kalemleri:</b> G-39 (masa yükseltmeleri sırayla) · G-06 (tepsi ilk yükseltme 75 → ~50) · G-07 (dwell para-bağımsız) · G-40 (gelirde fazla ondalık) — dördü de <code>economy.config.ts</code>&#39;e dokunuyor, <b>varyant kapısı</b> kendi turunu ister.<br><br><b>R2&#39;nin bıraktığı iş:</b> bir gövdeye bağlı ankraj noktaları hâlâ tek tek türetiliyor; dördüncüsü eklenirse ne araç ne bekçi kendiliğinden görür."
  },
  "donemler": [
   {
@@ -370,7 +370,7 @@ h2{font-size:21px;font-weight:800}
      "k": "R",
      "t": "Geri bildirim turları",
      "d": "Kullanıcının 2026-09-16 oturumu, 16 kalem (G-35…G-50). <b>R1 (D-126):</b> görev bitince tebrik toast'ı 3,53 sn yaşarken yeni kart 1,33 sn'de geliyordu — ekranda aynı cümleyi söyleyen <b>2 kutu, 2,20 sn, 8 px arayla</b>. Kök sebep koddan çıktı: karar bir \"ölü dal\" temizliğiyle silinmişti. Artık kural LİSTE ve bekçisi var. <b>R2 (D-127):</b> ön hattın ölçüsü DÜNYA ekseninde üretilip YEREL eksende tüketiliyordu; iki dönemden biri (<code>rot = 0</code>) doğru çalıştığı için kusur S3'ten beri görünmemişti. Sol duvarda gövde kutusuna <b>90°</b> dik (IoU <b>0,19</b>), <b>%19,4</b>'ünden yürünüyor, kutusunun <b>%68,7</b>'si görünmez, duvarı <b>0,79 br</b> deliyordu → hepsi <b>0,00</b>. Hat boşluğu 3,20 → <b>0,00 br</b>; seviye sinyali [2 2 2 3 2 <b>0</b>] (hepsi renk) → [3 3 3 3 2 2]. Kalan: <b>R3</b> HUD çerçeveleri · <b>R4</b> çevre sanatı (aday render'ı ister).",
-     "yapilan": 2,
+     "yapilan": 3,
      "toplam": 4,
      "kapi": "Kullanıcının oyun testinde bildirdiği arayüz/oynanış kalemleri kapanmış",
      "durum": "now"
@@ -387,6 +387,23 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "17.09.2026",
+   "etiket": "Faz R · 3. oturum (R3 — HUD çerçeveleri — D-128)",
+   "baslik": "Bir kusuru kaldırmak, <b>onun üstündeki</b> kusuru kaldırmaz",
+   "govde": "Kullanıcı seviye madalyonunda iki şey gördü: yıldız <i>&#34;yarım duruyor&#34;</i> ve <i>&#34;arkada bir çizgi var&#34;</i>. Yıldızı kaldırdık — <b>çizgi durdu</b>. Sebep bambaşkaydı: <code>-webkit-text-stroke</code> köşeleri <b>MITER</b> birleştiriyor ve Lilita One&#39;ın sivri &#34;4&#34;ünün tepesinde 5 px&#39;lik kontur ekrana bir <b>mızrak</b> olarak çıkıyordu. Dört kalınlık sınandı (5 · 4 · 3 · 2,5): 3 px&#39;te uç kayboluyor, konturun işi duruyor. Aynı 56 px&#39;te <b>iki ayrı kusur üst üste</b> duruyordu; biri diğerini gizliyordu.<br><br><b>Ödül satırında da kalabalığın adresi yanlış konmuştu.</b> &#34;Çok fazla işaret var&#34; şikâyeti kelimeyi kısaltmakla kapanmadı: asıl sorun sayının <b>cılızlığı</b>ydı — %0,4 tek başına hiçbir şey hissettirmiyor. Dış referanslar da bunu söylüyor (Idle Miner <i>&#34;Double Cash forever&#34;</i>, Idle Restaurant <i>&#34;%30 Profit Boost&#34;</i>: sayı kütleli, kelime gündelik). Çözüm sayıyı büyütmek değil <b>stat&#39;ı oynatmak</b> oldu: ekran artık <b>%3,2 → %3,6</b> yazıyor.<br><br><b>Ve kullanıcının sorduğu her çatal bir seçim değil.</b> <i>&#34;Yan yana mı alt alta mı bilemedim&#34;</i> bir zevk sorusu gibi duruyordu; ölçüm yan yana kolunun 999.99M + 12.34K&#39;da ekranı <b>42,7 px aştığını</b> gösterdi. Kol seçime sunulmadan elendi, sebebi kullanıcıya yazıldı.",
+   "maddeler": [
+    "<b>D-128 · A4:</b> kaydırıcıda kesik olan çizgi değil <b>köşeydi</b> (çizgi oranı 1,000) — üst köşe <b>4,00 → −1,00 px</b>, sol hizasızlık <b>4,00 → 0,00</b>. Açıklığın yarısı satırın değil <code>.sheet-pad</code>&#39;in <code>gap</code>&#39;iydi",
+    "<b>A2 elendi:</b> kapalı çerçeve köşeyi kapatır ama satırı <b>karta</b> çevirir — kaydırıcı bir üstteki anahtarın kardeşi değil <b>çocuğu</b>",
+    "<b>B2:</b> FPS katmanı + anahtarı + <code>showFps</code> alanı gitti; <b>saveVersion artmadı</b>, eski kayıttaki alan sessizce düşüyor (bekçi bunu koşuyor)",
+    "<b>C1 + K3:</b> ödüller ayrı eleman ve alt alta; bonus satırı delta değil <b>toplamın geçişini</b> yazıyor, ikonsuz. Satır oranı <b>0,969 → 0,591</b>",
+    "<b>G + C:</b> rozet kapsüle girdi — üst şerit <b>69,0 → 56,0 px</b> tek satır; madalyondan yıldız kalktı, disk kendi tokenına açıldı (<code>--madalyon</code>)",
+    "<b>F kese:</b> D-106&#39;nın kutusuzluğu geri alındı — kutusuz kolda geçirme <b>0,979/0,999</b> (zemin sahnenin oynamasını bire bir üstleniyordu), hapta <b>0,317/0,292</b>",
+    "Bekçi: <code>hud-r3</code> (7 den.) + <code>ekran-kabugu §5</code> yeni karara göre <b>yeniden yazıldı</b> · <code>mutasyon-hud-r3</code> <b>12/12 kırmızı</b>",
+    "<b>M6 ilk turda KAÇTI:</b> bekçi geçişin yalnız sağ ucunu tutuyordu — sol uç deltaya dönünce ekran hem artışı hem toplamı vaat ediyordu. İki uç da denetleniyor",
+    "vitest <b>1252 ✓</b> · duman <b>45/45 ✓</b> · konsol hatası 0"
+   ]
+  },
   {
    "tarih": "16.09.2026",
    "etiket": "Faz R · 2. oturum (R2 — mutfak yerleşimi + çarpışma — D-127)",
@@ -505,23 +522,6 @@ h2{font-size:21px;font-weight:800}
     "<b>Bekçi:</b> <code>tests/tetik-s24.test.ts</code> 14 denetim, <b>15 mutasyon, kaçan 0</b> · vitest <b>1105</b> ✓ · duman 42/42 ✓ · denge sayısı değişmedi"
    ],
    "not": "<b>S23'ün altyapı borcu kapandı:</b> <code>.gitattributes</code> eklendi. <code>core.autocrlf=true</code> bu makinede açık ve S23'te <code>git stash pop</code> src'yi CRLF'e çevirip mutasyon aracının çok satırlı kalıplarını sessizce bulunamaz yapmıştı (dört mutasyon “KALIP BULUNAMADI”, ilk koşu yalancı 12/12). <code>git add --renormalize .</code> <b>0 dosya</b> bozdu — depo zaten LF'ti, kilitlenen çalışma ağacı."
-  },
-  {
-   "tarih": "15.09.2026",
-   "etiket": "Faz S · 22. oturum (S23 — ok · panel · doluluk, tur adı S19c — D-120)",
-   "baslik": "Bir <b>√3</b> hiçbir yerde yazmıyordu; mutasyon turu <b>bekçiyi de</b> yakaladı",
-   "govde": "Üç kalem de “ekranda gerçekten ne çiziliyor” diye soruldu, çünkü üçünün de kaynaktaki cevabı yalancıydı.<br><br><b>Ok:</b> blok 0,34 r yazılı, çizilen uç <b>0,554 r</b>. Aradaki √3 (3 kenarlı çemberin kenar/yarıçap oranı) hiçbir yerde durmuyordu. Sayıyı düzeltmek kusuru kapatmazdı — <b>çizilen eni bloğun kendisinden türetmek</b> kapattı.<br><br><b>Panel:</b> dört kimlik işaretinin dördü de ters; panel oyunda iki turdur var olmayan bir adamı gösteriyordu. Kök neden panelin gövdeyi kendi çizmesiydi — iki ayrı doğru, yine.<br><br><b>Doluluk:</b> mağazanın boşluğu içerik eksikliği değil, <b>kilitli sekmede açılmaktı</b>.<br><br><b>Ve tur kendi bekçisini de yakaladı.</b> İlk mutasyon koşusu <b>yalancı 12/12</b> verdi: testteki dört regex'e kaçış hatasıyla birer <code>backspace</code> karakteri girmişti, o testler zaten kırmızıydı ve mutasyonlar “tuttu” sayılıyordu. Regex'ler onarılınca üç mutasyon kaçtı ve ikisi gerçek zaaftı — <code>toMatch(/FloorPatch/)</code> kaldırılmış bir bileşende bile yeşil kalıyordu, çünkü adı <b>import satırında</b> duruyor. Bekçi artık kullanıma bakıyor, isme değil.",
-   "maddeler": [
-    "<b>D-120:</b> O7 (kalın tek chevron) + K3 (gövde + salon dilimi) + E3 (boşluk işe yarasın)",
-    "<b>Ok:</b> 0,554 → <b>0,400 r</b> · sol pay 0,073 → <b>0,180</b> · yazı açıklığı 0,053 → <b>0,160</b> · parantez 0,010 → <b>0,225 r</b> (22×)",
-    "<b>Panel:</b> üç önizleme modeli → tek <code>Onizleme</code> + <code>KayActor</code> · kapsül önizleme 2 → <b>0</b>",
-    "<b>Doluluk:</b> mağaza %55 → <b>%88</b> · karakter %54 → <b>%95</b> · ayarlar %31 → <b>%74</b>",
-    "<b>AABB bu soruyu cevaplayamaz:</b> parantez bir <b>L</b> ve kutusu boş iç köşeyi de kaplıyor — dördü de yalancı “çakışıyor” verdi, üçgen üçgene ölçüldü",
-    "<b>Ölçüm iki evreye ayrıldı:</b> tam ilerleme alan kaplaması açıp gezinmeyi kapatıyor (10 satır birden düştü); Usta modali de işaretleri sessizce sıfırlıyordu",
-    "<b>Gerileme A/B ölçüldü:</b> eski panel 7112 ms / 377,9 ms-kare · yeni 6488 / 382,3 — fark gürültüde",
-    "<b>Bekçi:</b> <code>tests/arayuz-s23.test.ts</code> 16 denetim, <b>12 mutasyon, kaçan 0</b> · vitest <b>1091</b> ✓ · duman 42/42 ✓"
-   ],
-   "not": "<b><code>.gitattributes</code> eksiği bu turda somut zarar verdi.</b> <code>git stash pop</code> src'yi CRLF'e çevirdi ve mutasyon aracının çok satırlı kalıpları sessizce bulunamaz oldu — dört mutasyon birden “KALIP BULUNAMADI” düştü. Araç satır-sonu bağımsız yapıldı; <b>asıl eksik duruyor</b>."
   }
  ],
  "riskler": [
@@ -636,8 +636,8 @@ h2{font-size:21px;font-weight:800}
   {
    "sev": "Açık",
    "renk": "now",
-   "b": "Kalıcı çarpan <b>görünmez</b> bir ödül — oyuncu üzerindeki etkisi ölçülmedi",
-   "p": "D-090 ödülü sabit paradan kalıcı gelir çarpanına çevirdi ve bu tempo hanesinde kazandı. Ama kalıbın tek gerçek zayıflığı ölçülemedi: <b>cebe uçan bir sayı yok.</b> \"+%0,4 kalıcı gelir\" bir para ödülü kadar tatmin etmeyebilir — özellikle telefonda ve özellikle erken oyuncuda. Bugünkü karşı önlemler: panelde <b>iki yerde</b> yazılıyor (her hedefin payı ve kümülatif \"koleksiyon bonusu\") ve anlık tatmini <b>💎</b> taşıyor (bedeli ölçülmüş sıfır). Sektörde de ikisi zaten birlikte verilir. <b>Bu simülasyonun ölçebileceği bir şey değil</b>: cevabı telefonda oynanınca okunacak. Kalıp değişmek zorunda kalırsa ölçüm aracı ve elenen kolların kodu hazır duruyor."
+   "b": "Kalıcı çarpan <b>görünmez</b> bir ödüldü — <b>R3'te GÖRÜNÜR oldu (D-128)</b>, hissi hâlâ ölçülmedi",
+   "p": "D-090 ödülü sabit paradan kalıcı gelir çarpanına çevirdi ve bu tempo hanesinde kazandı. Ama kalıbın tek gerçek zayıflığı ölçülemedi: <b>cebe uçan bir sayı yok.</b> \"+%0,4 kalıcı gelir\" bir para ödülü kadar tatmin etmeyebilir — özellikle telefonda ve özellikle erken oyuncuda. Bugünkü karşı önlemler: panelde <b>iki yerde</b> yazılıyor (her hedefin payı ve kümülatif \"koleksiyon bonusu\") ve anlık tatmini <b>💎</b> taşıyor (bedeli ölçülmüş sıfır). Sektörde de ikisi zaten birlikte verilir. <b>Bu simülasyonun ölçebileceği bir şey değil</b>: cevabı telefonda oynanınca okunacak. Kalıp değişmek zorunda kalırsa ölçüm aracı ve elenen kolların kodu hazır duruyor.<br><br><b>R3 bu kalemin görünürlük yarısını kapattı (D-128).</b> Ödül ekranı artık deltayı değil <b>stat'ın geçişini</b> yazıyor: <b>%3,2 → %3,6</b>. Gerekçe ölçüldü — kullanıcının <i>&ldquo;çok fazla işaret var&rdquo;</i> şikâyeti kelime kısaltarak kapanmadı, çünkü sorun işaret sayısı kadar <b>sayının cılızlığıydı</b>; %0,4 tek başına hiçbir şey hissettirmiyor. Dış referanslar da aynı yere çıkıyor (Idle Miner <i>&ldquo;Double Cash forever&rdquo;</i>, Idle Restaurant <i>&ldquo;%30 Profit Boost&rdquo;</i>: sayı kütleli, kelime gündelik). Yedi kol aynı kadrajda render edildi, kullanıcı <b>K3</b>'ü seçti. <b>Açık kalan yarı aynı yerde duruyor:</b> bu, ödülün oyuncuya <i>yeterince</i> geldiğini kanıtlamaz — cebe uçan bir sayı hâlâ yok ve cevabı simülasyonun ölçemediği eksende, <b>telefonda oynanınca</b> okunacak."
   },
   {
    "sev": "Çözüldü",
@@ -776,7 +776,7 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunlukArsiv": {
-  "kart": 60,
+  "kart": 61,
   "ilk": "05.06 – 17.06.2026",
   "son": "15.09.2026",
   "yer": "memory-bank/arsiv/pano-gunluk.json"

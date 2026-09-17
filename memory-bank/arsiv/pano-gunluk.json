@@ -2,8 +2,25 @@
  "not": "İlerleme panosunun ESKİ oturum kartları. Pano her turda büyüyordu (67 kart / 219 KB) ve yayını canlı sürümün tamamının okunmasını şart koştuğu için tur başına maliyeti ARTIYORDU — okunanın neredeyse tamamı bir daha bakılmayacak arşivdi. Projenin kendi kuralı buraya da uygulandı (eski anlatı → arsiv/). Pano son 8 turu gösterir; öncesi burada ve git geçmişinde durur.",
  "kaynak": "docs/pano/ilerleme-panosu.html",
  "tasindi": "2026-09-16 (R1 turu, kullanıcı onayı)",
- "kart": 59,
+ "kart": 61,
  "gunluk": [
+  {
+   "tarih": "15.09.2026",
+   "etiket": "Faz S · 22. oturum (S23 — ok · panel · doluluk, tur adı S19c — D-120)",
+   "baslik": "Bir <b>√3</b> hiçbir yerde yazmıyordu; mutasyon turu <b>bekçiyi de</b> yakaladı",
+   "govde": "Üç kalem de “ekranda gerçekten ne çiziliyor” diye soruldu, çünkü üçünün de kaynaktaki cevabı yalancıydı.<br><br><b>Ok:</b> blok 0,34 r yazılı, çizilen uç <b>0,554 r</b>. Aradaki √3 (3 kenarlı çemberin kenar/yarıçap oranı) hiçbir yerde durmuyordu. Sayıyı düzeltmek kusuru kapatmazdı — <b>çizilen eni bloğun kendisinden türetmek</b> kapattı.<br><br><b>Panel:</b> dört kimlik işaretinin dördü de ters; panel oyunda iki turdur var olmayan bir adamı gösteriyordu. Kök neden panelin gövdeyi kendi çizmesiydi — iki ayrı doğru, yine.<br><br><b>Doluluk:</b> mağazanın boşluğu içerik eksikliği değil, <b>kilitli sekmede açılmaktı</b>.<br><br><b>Ve tur kendi bekçisini de yakaladı.</b> İlk mutasyon koşusu <b>yalancı 12/12</b> verdi: testteki dört regex'e kaçış hatasıyla birer <code>backspace</code> karakteri girmişti, o testler zaten kırmızıydı ve mutasyonlar “tuttu” sayılıyordu. Regex'ler onarılınca üç mutasyon kaçtı ve ikisi gerçek zaaftı — <code>toMatch(/FloorPatch/)</code> kaldırılmış bir bileşende bile yeşil kalıyordu, çünkü adı <b>import satırında</b> duruyor. Bekçi artık kullanıma bakıyor, isme değil.",
+   "maddeler": [
+    "<b>D-120:</b> O7 (kalın tek chevron) + K3 (gövde + salon dilimi) + E3 (boşluk işe yarasın)",
+    "<b>Ok:</b> 0,554 → <b>0,400 r</b> · sol pay 0,073 → <b>0,180</b> · yazı açıklığı 0,053 → <b>0,160</b> · parantez 0,010 → <b>0,225 r</b> (22×)",
+    "<b>Panel:</b> üç önizleme modeli → tek <code>Onizleme</code> + <code>KayActor</code> · kapsül önizleme 2 → <b>0</b>",
+    "<b>Doluluk:</b> mağaza %55 → <b>%88</b> · karakter %54 → <b>%95</b> · ayarlar %31 → <b>%74</b>",
+    "<b>AABB bu soruyu cevaplayamaz:</b> parantez bir <b>L</b> ve kutusu boş iç köşeyi de kaplıyor — dördü de yalancı “çakışıyor” verdi, üçgen üçgene ölçüldü",
+    "<b>Ölçüm iki evreye ayrıldı:</b> tam ilerleme alan kaplaması açıp gezinmeyi kapatıyor (10 satır birden düştü); Usta modali de işaretleri sessizce sıfırlıyordu",
+    "<b>Gerileme A/B ölçüldü:</b> eski panel 7112 ms / 377,9 ms-kare · yeni 6488 / 382,3 — fark gürültüde",
+    "<b>Bekçi:</b> <code>tests/arayuz-s23.test.ts</code> 16 denetim, <b>12 mutasyon, kaçan 0</b> · vitest <b>1091</b> ✓ · duman 42/42 ✓"
+   ],
+   "not": "<b><code>.gitattributes</code> eksiği bu turda somut zarar verdi.</b> <code>git stash pop</code> src'yi CRLF'e çevirdi ve mutasyon aracının çok satırlı kalıpları sessizce bulunamaz oldu — dört mutasyon birden “KALIP BULUNAMADI” düştü. Araç satır-sonu bağımsız yapıldı; <b>asıl eksik duruyor</b>."
+  },
   {
    "tarih": "15.09.2026",
    "etiket": "Faz S · 21. oturum (S22 — kademeli mutfak, tur adı S21 — D-119)",
