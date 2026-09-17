@@ -5,58 +5,71 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-17 — **F1b AÇILDI: kabuğun yüzü** · Faz F **2/6** · 107/112)
+## ŞU AN (2026-09-17 — **F1b ÖLÇÜLDÜ, KARAR AÇIK** · Faz F 2/6 · 107/112)
 
 ```
-SORU            : Mağazaya gidecek kabuğun YÜZÜ — cihazda görünen İKON, açılışta görünen EKRAN
-                  ve oyunun kilitleneceği EKRAN YÖNÜ. Üçü de bugün ya Capacitor varsayılanı ya
-                  kararsız. Hangi kol ne kadar OKUNUYOR, ne kadar BAYT ve ne kadar RİSK getiriyor?
-ÖLÇÜLECEK KOLLAR: §A taban — bugün gerçekten ne çıkıyor (varsayılan X logosu · beyaz splash ·
-                     yön kilidi YOK · mağaza ikonu YOK)
-                  §B EKRAN YÖNÜ — V0 serbest (bugün) · V1 portre kilidi · V2 yatay kilidi ·
-                     V3 sensorPortrait. Gerçek oyundan, telefon oranlarında: kadrajdaki zemin
-                     (br²), görünen masa/pad sayısı, HUD'un yediği ekran yüzdesi, başparmak
-                     erişimi, en küçük yazının px'i, yön değişiminde kırılan var mı
-                  §C İKON adayları — gerçek launcher boyutunda (48 dp) VE mağaza boyutunda (512)
-                     aynı kadrajda; okunabilirlik gözle elenir (`feedback_show_dont_ask`)
-                  §D AÇILIŞ EKRANI — önce ölçüm: targetSdk 36'da on bir splash dosyası cihazda
-                     GERÇEKTEN görünüyor mu; sonra adaylar (native + oyun içi `SplashScreen.tsx`)
-                  §E BAYT + RİSK — port/land drawable ikilisi, adaptive ikon, R8 kaynak budaması
-SAYILAR         : (adım 2'den sonra dolar — `docs/kabuk-raporu-f1b.md` §Bulgular)
-KARAR           : (adım 3 — üç kalem TEK pakette: yön · ikon · açılış ekranı)
-UYGULAMA        : (adım 4, yalnız kararın kolu)
-BEKÇİ           : (test dosyası + kaç mutasyonla doğrulandı)
+SORU            : Kabuğun yüzü — İKON · AÇILIŞ EKRANI · EKRAN YÖNÜ.
+ÖLÇÜLEN KOLLAR  : §A kaynak dökümü · §B yön (2 dünya × 3 nokta × 3 kamera kademesi × 6 kadraj
+                  = 108 hücre) · §C 12 ikon adayı · §D splash adli incelemesi · §E bayt
+SAYILAR         : docs/kabuk-raporu-f1b.md · ham: docs/olcum-kabuk-f1b.txt (TAM · denetim 18/18)
+KARAR           : **VERİLMEDİ.** Üç sorunun üçü de açık — paket sunuldu, kullanıcı premisi
+                  sorguladı ve yedi yeni kalem verdi (G-51…G-57).
+UYGULAMA        : yok (hiçbir kod yazılmadı; kollar CSS katmanı olarak canlı oyuna enjekte edildi)
+BEKÇİ           : yok (karar gelmedi)
+PAKET           : https://claude.ai/artifact/JGzwnM3N9rDXbt8Rbbz4jE
 ```
 
-**Turun girdisi — ölçümden ÖNCE bilinen üç şey (hiçbiri karar değil, hepsi ZEMİN):**
+**Turun kalıcı üç dersi:**
+1. **Aracın İYİMSER hatası da kaçar — ve onu ancak GÖZ yakalar.** F1a'nın dersi "karamsar hata
+   kaçar"dı; bu tur tersini gösterdi. HUD sayımı yalnız `background-color` alfasına bakıyordu,
+   oyunun en büyük iki bloğu (`.band`, `.botnav`) zeminini `linear-gradient` ile verdiği için
+   sayımdan düştü → yatayda HUD "%8,5" çıktı. Kullanıcı kareye bakıp *"yatayda ekran çok dolu"*
+   dediğinde **ölçüm ona karşı çıkıyordu.** Gerçek: **%38,3**. Hata sonucun kendisinden
+   anlaşılmıyordu çünkü tutarsızlık üretmiyordu, sadece kolu temiz gösteriyordu.
+2. **Metrik ALAN ölçer, GERİLME ölçmez — ve bu aynı turda ikinci kez oldu.** Tablet yatayı bütün
+   sayılara göre en iyi konfigürasyondu (533 br², karakter 90 px, HUD %18,9). Kullanıcı
+   *"tablette kötü durur"* dedi; kareye bakınca haklıydı — görev şeridi 1280 px'e gerilip
+   ilerleme çubuğunu boş bir çizgiye çeviriyor. Sayı "yeterince küçük" diyordu, göz "yanlış
+   biçimde" dedi. **İki kere aynı ders: kare ölçümün denetleyicisidir, süsü değil.**
+3. **Kullanıcının cümlesi kolun kendisidir.** *"görev normal gerektiği kadar genişlikte
+   kalabilir"* yorum olarak bırakılmayıp **YD kolu** olarak ölçüldü ve **her iki kadrajda da
+   kazandı** (telefon yatayı %38,4 → %19,0 · tablet %18,9 → %7,1). Benim ürettiğim dört koldan
+   üçünü geçti. (`feedback_ui_form_not_color`'ın doğrudan uygulaması.)
 
-1. **İkon ve açılış ekranı Capacitor varsayılanı.** `mipmap-*/ic_launcher*.png` mavi X logosu;
-   adaptive zemin Android Studio'nun teal ızgara vektörü (`#26A69A`);
-   `drawable-{port,land}-*/splash.png` beyaz zemin + aynı X (11 dosya). Mağaza ikonu
-   (512×512) HİÇ YOK. Yani bu üç kalem "cila" değil **eksik** — bu hâliyle listelenemez.
-2. **Ekran yönü manifestte KİLİTLİ DEĞİL.** `MainActivity`de `screenOrientation` yok; yalnız
-   `configChanges` orientation'ı yutuyor (Android döndürür, Activity yeniden doğmaz). Oyun
-   tarafı portreyi BİRİNCİL varsayıyor: `camera.ts` `CAMERA_PORTRAIT_CLAMP = 1,3` ile portrede
-   kadrajı açıyor, `index.css` *"portrait birincil, landscape destekli"* diyor ve yatayı yalnız
-   `max-height: 480px` dalında kurtarıyor. Karar bu varsayımı ONAYLAYABİLİR de ÇÜRÜTEBİLİR de —
-   **ölçülmeden bilinmiyor**, ve bu yüzden §B'nin kolu "hangisi güzel" değil "hangisi ne kadar
-   oyun gösteriyor".
-3. **targetSdk 36 açılış ekranının kurallarını değiştirdi.** Android 12'den beri açılış ekranını
-   SİSTEM çiziyor; `AppTheme.NoActionBarLaunch` ise hâlâ `android:background="@drawable/splash"`
-   diyor — bu API 31 ÖNCESİNİN yolu. §D'nin İLK sorusu bu yüzden tasarım değil ölçüm: o on bir
-   dosya bugün gerçekten görünüyor mu? Görünmüyorsa kol *"tasarla"* değil *"sil + doğru API'ye geç"*
-   olur ve §E'ye bayt kazancı olarak yazılır.
+**Bu turun en pahalı bulgusu — karar dışı:** on bir splash dosyası (**106,9 KB**) **hiçbir API
+sürümünde çizilmiyor.** Tema yalnız `android:background`ı (`0x010100d4`) eziyor, o bir GÖRÜNÜM
+niteliği; pencereyi çizen `windowBackground`/`windowSplashScreenBackground` androidx'in kendi
+çizimlerinde kalıyor (v31 varyantı dahil denetlendi), `installSplashScreen()` hiç çağrılmıyor.
+Android 12+ sistem splash'ı **uygulama ikonunu** gösteriyor. → **İkonu düzeltmek açılış ekranını
+da düzeltiyor.**
 
-**Turun kapsam çizgisi:** yön kararı splash'ın GİRDİSİDİR (yön kilitlenirse port/land ikilisinin
-bir tarafı tanım gereği ölür), ikon ise yönden bağımsızdır. Bu yüzden üçü tek ölçümde toplanıp
-tek karar paketinde sunulur — *"soru turu en fazla 2"* kuralı korunur, tur bölünmez.
+**İKON KALEMİ F1b'DEN ÇIKTI:** kullanıcı kendisi yaptıracak (*"ikonu sen sal ben onu chatgptye
+yaptırıcam"*). Üretilen 12 aday + `tools/ikon-adaylari.html` depoda duruyor; gelen ikon
+`mipmap-*` + adaptive foreground olarak takılır.
 
 ## SIRADAKİ TAM ADIM
 
-**ŞU ANKİ ADIM: F1b adım 2 — ÖLÇ.** Araç `tools/olcum-kabuk-f1b.mjs`; ham çıktı
-`docs/olcum-kabuk-f1b.txt`; rapor `docs/kabuk-raporu-f1b.md` (karar bölümü BOŞ açılır).
-Ondan sonra adım 3: üç kalemi tek karar paketinde sun. Oyun içi `SplashScreen.tsx` hâlâ tek
-dilde "Köşe Kıraathanesi" yazıyor — D-130'un iki dilli başlık kararıyla birlikte ele alınacak.
+**SIRADA: F1b adım 3'ün DEVAMI — karar paketi revize edilip yeniden sunulacak.** Ölçüm bitti
+(adım 2 ✅, commit #1 `d4c6cac`), karar gelmedi. Sonraki oturumun sırası:
+
+1. **G-54 deliğini kapat — ÖNCE BU.** Açılan ekranlar (Görevler · Hedefler · Mağaza · Karakter
+   panelleri) yatayda ve tablette **hiç görülmedi**. Yön kararı bunlar bilinmeden tamamlanamaz;
+   kısa ekranda panel yüksekliği en olası kırılma noktası. Araç hazır: `shot-yatay-hud-f1b.mjs`
+   kalıbıyla panelleri açıp üç kadrajda kare + ölçü.
+2. **YD kolunu G-51/G-52 ile revize et:** doğal genişlik KALIR, iki blok da ORTALANIR.
+   Sayılar genişlikten geliyor, hizadan değil — yani %19,0 rakamı hizadan bağımsız olarak durur.
+3. **G-55:** tablet dalında `--pill-h`/madalyon/kese/düğmeler bir basamak YUKARI. Yeni punto
+   icat etme — mevcut ölçeğin üst basamağı (D-128 kuralı).
+4. Paketi bu üçüyle güncelle (aynı URL) → kullanıcı seçsin → adım 4 (uygula + bekçi + mutasyon).
+
+**Karar bekleyen üç soru** (hiçbiri kapanmadı): ① ekran yönü K0/K0+/K1/K2 — kullanıcı premisi
+sorguladı (*"neden kilitliyoruz?"*), paket cevabı taşıyor · ② yatay/tablet HUD: YD (revize) ·
+③ açılış ekranı: çay-dolan-bardak animasyonu + dile bağlı başlık.
+
+**Yeni kalemler G-51…G-57:** `docs/geribildirim-oyun-testi-2026-09-17.md` (kullanıcının kendi
+cümleleriyle). G-56 (kaynak rozeti → mağaza sekmesi) ve **G-57 (ödüllü video: 2 sa'de 4 hak,
+video başına 1 💎 / 200 ₺, seviyeyle artar)** **Faz F'nin F3/F4 kalemleri** — G-57 `economy.config.ts`e
+dokunacağı için **VARYANT KAPISINA TABİ**, taslak sayılar karar değildir.
 
 **Ondan sonra F3 (AdMob) → F4 (IAP) → F5 (mağaza vitrini).** F3'ün ilk işi R8 kolunu yeniden
 ölçmek olmalı: eklenti sayısı 0'dan çıkınca D-130'un "yansıma yüzeyi en dar" gerekçesi düşer.

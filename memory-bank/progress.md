@@ -664,8 +664,20 @@ Sanat kalemi değil; Faz S'ten ayrı tutuldu ki asset işi bunların arkasında 
 - ⏳ **F3 — reklam (AdMob)** · kurallar + Kat 1 ödülü yazılı (D-066), eklenti seçilmedi.
 - ⏳ **F4 — IAP (RevenueCat)** · üç ürün tasarlı, satın alma akışı yok.
 - ⏳ **F5 — mağaza vitrini + uyum** · listeleme, gizlilik, COPPA/GDPR-K, yaş derecelendirmesi.
-- ⏳ **F6 — ikon + açılış ekranı + ekran yönü** (tur adı F1b) · TASARIM turu: üçü de metinle
-  sorulamaz, aday render'ı ister (`feedback_show_dont_ask`). F1'den ayrıldı.
+- 🔧 **F6 — açılış ekranı + ekran yönü + yatay/tablet HUD** (tur adı F1b) · **ÖLÇÜLDÜ, KARAR AÇIK.**
+  108 hücre (2 dünya × 3 nokta × 3 kamera kademesi × 6 kadraj), denetim 18/18 temiz.
+  **Yatay portreden 1,37-3,36× (ort 2,03×) daha fazla açık zemin** gösteriyor; oda merkezinde
+  portre 26 ankrajdan 1'ini, yatay 22'sini. Kelepçe kolu ölçüldü: portre 1,75× iyileşiyor ama
+  altı hücrenin altısında da yatayın TABANINI yakalayamıyor, üstelik karakter ikisinde de aynı
+  boyda (48 px) — yani fark geometri (portrede yatay görüş açısı ~24°). **Splash adli incelemesi:
+  11 dosya (106,9 KB) hiçbir API sürümünde çizilmiyor** (tema yalnız `android:background`ı eziyor;
+  API 31+ sistem splash'ı uygulama ikonunu gösteriyor) → ikonu düzeltmek splash'ı da düzeltiyor.
+  **İkon kalemi turdan ÇIKTI** (kullanıcı kendisi yaptıracak). Araç kusuru İKİ KEZ gözle yakalandı:
+  HUD sayımı gradyan zeminli iki büyük bloğu atlıyordu (%8,5 → gerçek %38,3) ve metrik gerilmeyi
+  göremiyordu (tablet). Kullanıcının kendi önerisi **YD kolu** olarak ölçülüp dört kolun üçünü geçti
+  (telefon yatayı %38,4 → %19,0 · tablet %18,9 → %7,1). `docs/kabuk-raporu-f1b.md`.
+  **AÇIK:** karar verilmedi; G-51/G-52 (ortala) + G-54 (açılan ekranlar hiç görülmedi) + G-55
+  (tablette büyüt) revizyonu bekliyor.
 
 ## Kullanıcı geri bildirimi 2026-09-16 — 16 yeni kalem (G-35…G-50)
 Kullanıcı F2 turunun içinde oyunu açtı ve on iki başlık verdi; *"sonraki chatlerde bunları
@@ -673,6 +685,19 @@ yaparsın"* dedi → bu turda hiçbiri uygulanmadı. Tam liste + kullanıcının
 `docs/geribildirim-oyun-testi-2026-09-16.md`. Önerilen bölünme: ① görev şeridi (G-41…G-44,
 dördü tek kök) · ② mutfak yerleşimi + çarpışma (G-35…G-38) · ③ HUD çerçeveleri (G-45…G-49) ·
 ④ G-50 çevre sanatı kendi TASARIM turu (aday render'ı ister, metinle sorulmaz).
+
+## Kullanıcı geri bildirimi 2026-09-17 — 7 yeni kalem (G-51…G-57)
+F1b karar paketi sunulurken geldi; kullanıcı *"bunları da not et hatta istersen şu an oturumu
+kaydet"* dedi → **hiçbiri uygulanmadı.** Tam liste + kullanıcının kendi cümleleri:
+`docs/geribildirim-oyun-testi-2026-09-17.md`.
+**HUD (F1b'nin devamı):** G-51 görev şeridi ortalansın · G-52 navbar da ortada · G-53 tablette
+tam ekranı kaplamasın (YD onaylandı) · **G-54 açılan ekranlar yatay/tablette HİÇ GÖRÜLMEDİ —
+kapsam deliği, yön kararı bunsuz tamamlanamaz** · G-55 tablette level barı/kaynaklar/butonlar
+bir basamak büyüsün.
+**Monetizasyon (F3/F4):** G-56 kaynak rozetine tıklayınca mağazanın ilgili sekmesi açılsın
+("Reklamları Kaldır" da orada) · **G-57 ödüllü video: 2 saatte yenilenen 4 hak, video başına
+1 💎 ya da 200 ₺, seviyeyle artar** — taslak sayı, karar değil; `economy.config.ts`e dokunacağı
+için **VARYANT KAPISINA TABİ**.
 
 ## Bilinen açık kalemler
 - ~~Hedeflerin ₺ kolu bu hâliyle kalsın mı?~~ → **D3b'de kapandı (D-090):** ₺ kolu tamamen kalktı,

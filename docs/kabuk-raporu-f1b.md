@@ -66,24 +66,34 @@ kusurları bölümünde. Aynı ızgara ikinci kez HUD dikdörtgenlerine karşı 
 × **kamera kademesi** (Z0 varsayılan · Z1 HUD "genel bakış" düğmesi · Z2 kelepçe kalkık)
 × **kadraj** (portre/yatay 20:9 · 16:9 · tablet 4:3).
 
-Toplam **90 hücre** ölçüldü (TAM koşu). **Dünya denetimi 18/18 TEMİZ**: her dünya+nokta+zoom
+Toplam **108 hücre** ölçüldü (TAM koşu). **Dünya denetimi 18/18 TEMİZ**: her dünya+nokta+zoom
 hücresinde bütün kadrajlar birebir aynı sahneyi ölçtü (tek imza). Konsol hatası **0**. HUD taşması
-**hiçbir kadrajda yok** (`tasan 0`).
+**hiçbir kadrajda yok** (`tasan 0`). Canlı portre→yatay→portre döndürme sınaması: **0 yeni hata**.
+
+> **ÖLÇÜM DÜZELTMESİ — bu bölümün ilk sürümü YANLIŞTI.** İlk koşuda HUD yalnız `background-color`
+> alfasına bakılarak sayılıyordu; oyunun en büyük iki bloğu (`.band` görev şeridi ve `.botnav`)
+> zeminini `linear-gradient` ile verdiği için ikisi de sayımdan düştü. HUD yatayda "%8,5" çıktı.
+> Kullanıcı kareye bakıp *"yatayda ekran çok dolu görevlerle"* dediğinde **ölçüm ona karşı
+> çıkıyordu ve araç haksızdı.** Hata İYİMSERDİ (kolu olduğundan temiz gösteriyordu), bu yüzden
+> sonucun kendisinden anlaşılmadı — yalnız GÖZLE yakalandı. Artık zemin rengi, zemin görseli
+> (gradyan dahil) ve görünür kenarlık üçü de sayılıyor. **Açık zemin sayıları HUD'dan türediği
+> için onlar da değişti**; aşağıdakiler düzeltilmiş koşudandır.
 
 #### B-1. Taban karşılaştırma — D1 tam açık · N1 oda merkezi · Z0 varsayılan
 
-| Kadraj | CSS px | oran | açık zemin | oda % | ankraj | oyuncu | HUD ekranın |
-|---|---|---|---|---|---|---|---|
-| **P1 portre 20:9** | 412×915 | 0,45 | **187,3 br²** | %16,6 | **1/26** | 84,2 px | %6,5 |
-| **L1 yatay 20:9** | 915×412 | 2,22 | **629,4 br²** | %57,0 | **22/26** | 49,9 px | %8,5 |
-| P2 portre 16:9 (dar) | 360×640 | 0,56 | 222,7 br² | %20,7 | 5/26 | 58,9 px | %10,3 |
-| L2 yatay 16:9 (dar) | 640×360 | 1,78 | 489,6 br² | %50,2 | 17/26 | 44,1 px | %12,3 |
-| T1 tablet portre 4:3 | 800×1280 | 0,63 | 259,7 br² | %22,6 | 5/26 | **120,5 px** | %3,0 |
+| Kadraj | CSS px | oran | açık zemin | oda % | ankraj | oyuncu | HUD ekranın | alt bant |
+|---|---|---|---|---|---|---|---|---|
+| **P1 portre 20:9** | 412×915 | 0,45 | **178,2 br²** | %16,5 | **1/26** | 84,8 px | %19,7 | %20,3 |
+| **L1 yatay 20:9** | 915×412 | 2,22 | **570,8 br²** | %57,8 | **22/26** | 48,4 px | **%38,3** | **%45,2** |
+| P2 portre 16:9 (dar) | 360×640 | 0,56 | 207,4 br² | %20,7 | 5/26 | 58,9 px | %29,2 | %29,1 |
+| L2 yatay 16:9 (dar) | 640×360 | 1,78 | 422,0 br² | %50,2 | 17/26 | 44,0 px | **%45,9** | %40,3 |
+| T1 tablet portre 4:3 | 800×1280 | 0,63 | 246,5 br² | %22,0 | 5/26 | **124,0 px** | %12,6 | %14,5 |
+| T2 tablet yatay 4:3 | 1280×800 | 1,60 | 533,2 br² | %49,2 | 17/26 | 89,9 px | %18,9 | %23,3 |
 
 Oda merkezinde durup etrafa bakınca portre **26 ankrajdan 1'ini**, yatay **22'sini** gösteriyor.
 
-**Oranın dayanıklılığı:** 36 karşılaştırmada yatay/portre açık zemin oranı **1,58× … 3,36×**
-(ortalama **2,31×**). Yön hiçbir dünyada, hiçbir noktada, hiçbir kamera kademesinde tersine dönmüyor.
+**Oranın dayanıklılığı:** 54 karşılaştırmada yatay/portre açık zemin oranı **1,37× … 3,36×**
+(ortalama **2,03×**). Yön hiçbir dünyada, hiçbir noktada, hiçbir kamera kademesinde tersine dönmüyor.
 
 #### B-2. Kelepçe kolu — portre kendi içinde kurtarılabiliyor mu?
 
@@ -95,40 +105,63 @@ D1 tam açık · N1 oda merkezi · portre 20:9:
 
 | Kademe | kamera y | açık zemin | ankraj | oyuncu |
 |---|---|---|---|---|
-| Z0 varsayılan | 11,1 | 187,3 br² (1,00×) | 1 | 84,2 px (1,00×) |
-| Z1 HUD "genel bakış" düğmesi | 14,9 | 258,3 br² (1,38×) | 5 | 61,1 px (0,73×) |
-| Z2 kelepçe kalkık | 18,9 | 336,4 br² (1,80×) | 7 | 47,7 px (**0,57×**) |
+| Z0 varsayılan | 11,0 | 178,2 br² (1,00×) | 1 | 84,8 px (1,00×) |
+| Z1 HUD "genel bakış" düğmesi | 14,8 | 242,2 br² (1,36×) | 5 | 61,5 px (0,73×) |
+| Z2 kelepçe kalkık | 18,8 | 312,1 br² (1,75×) | 7 | 48,0 px (**0,57×**) |
 
-**Bulgu — turun kritik sayısı.** Kelepçeyi açmak portreyi gerçekten iyileştiriyor (1,80×), ama
+**Bulgu — turun kritik sayısı.** Kelepçeyi açmak portreyi gerçekten iyileştiriyor, ama
 **altı dünya+nokta hücresinin altısında da** portrenin EN İYİ hâli yatayın **TABANINI**
 yakalayamıyor:
 
 | Hücre | portrenin en iyisi (Z2) | yatayın tabanı (Z0) | fark | oyuncu (portre ↔ yatay) |
 |---|---|---|---|---|
-| D0 · N0 park | 488,2 br² | 605,3 br² | 1,24× | 47,7 ↔ 50,2 px |
-| D0 · N1 merkez | 337,0 br² | 626,2 br² | 1,86× | 47,7 ↔ 50,4 px |
-| D0 · N2 salon | 437,2 br² | 590,9 br² | 1,35× | 47,7 ↔ 50,4 px |
-| D1 · N0 park | 248,9 br² | 341,2 br² | 1,37× | 47,7 ↔ 50,5 px |
-| D1 · N1 merkez | 336,4 br² | 629,4 br² | 1,87× | 47,7 ↔ 49,9 px |
-| D1 · N2 salon | 437,7 br² | 587,5 br² | 1,34× | 47,7 ↔ 50,3 px |
+| D0 · N0 park | 482,1 br² | 598,8 br² | 1,24× | 47,7 ↔ 50,2 px |
+| D0 · N1 merkez | 316,4 br² | 565,4 br² | 1,79× | 47,7 ↔ 50,5 px |
+| D0 · N2 salon | 419,3 br² | 527,5 br² | 1,26× | 47,7 ↔ 50,4 px |
+| D1 · N0 park | 235,4 br² | 329,6 br² | 1,40× | 48,4 ↔ 50,5 px |
+| D1 · N1 merkez | 312,1 br² | 570,8 br² | 1,83× | 48,0 ↔ 48,4 px |
+| D1 · N2 salon | 413,1 br² | 526,3 br² | 1,27× | 48,9 ↔ 49,9 px |
 
-Son sütun kolun belini kırıyor: **karakter ikisinde de aynı boyda** (47,7 px ↔ ~50 px). Yani
-yatayın avantajı "daha uzaktan bakıyor" değil — **aynı yakınlıkta 1,24–1,87× daha fazla dükkân
-gösteriyor.** Sebep geometrik: portrede dikey görüş açısı 50° ama yatay görüş açısı oran yüzünden
-yalnız ~24° (D-061 bunu portre içinde ölçmüştü; **yatayla karşılaştırmamıştı**).
+Son sütun kolun belini kırıyor: **karakter ikisinde de aynı boyda**. Yani yatayın avantajı
+"daha uzaktan bakıyor" değil — **aynı yakınlıkta 1,24–1,83× daha fazla dükkân gösteriyor.**
+Sebep geometrik: portrede dikey görüş açısı 50° ama yatay görüş açısı oran yüzünden yalnız ~24°
+(D-061 bunu portre içinde ölçmüştü; **yatayla karşılaştırmamıştı**).
 
-#### B-3. Serbest bırakmanın (V0, bugünkü hâl) teknik maliyeti: yok
+#### B-3. Alt bant — kullanıcının şikâyetinin sayısı
 
-- Portre → yatay → portre canlı döndürme sınaması: **yeni konsol hatası 0**.
-- HUD hiçbir kadrajda taşmıyor (`tasan 0`), en küçük yazı her kadrajda **11 px**.
-- Yani V0 **kırık değil**. Maliyeti teknik değil ürünsel: oyuncunun gördüğü dükkân,
-  telefonu nasıl tuttuğuna göre 1,6–3,4× değişiyor ve mağaza görselleri iki yönü de kapsamak zorunda.
+Alt yığın (görev şeridi + alt gezinme) **her yönde 186 px SABİT**:
+
+| Kadraj | alt bant | ekran yüksekliğinin |
+|---|---|---|
+| Portre 20:9 (915 px yüksek) | 186 px | **%20,3** |
+| **Telefon yatayı (412 px yüksek)** | 186 px | **%45,2** |
+| Tablet yatayı (800 px yüksek) | 186 px | %23,3 |
+
+Yani doluluk **yönün değil, kısa ekrana uyum sağlamayan HUD'un** kusuru — ve bu ayrım kararı
+değiştirir, çünkü düzeltilebilir. Kolları `tools/shot-yatay-hud-f1b.mjs` ölçtü
+(telefon yatayı 915×412, gerçek oyunun üstüne CSS katmanı olarak; depoya hiçbir şey yazılmadan):
+
+| Kol | HUD ekranın | açık zemin |
+|---|---|---|
+| Y0 taban (bugün) | %38,4 | 588,4 br² |
+| YA alt gezinme yan raya | %27,1 | −0,1% |
+| YB görev şeridi köşe kartına | %28,2 | +1,9% |
+| **YD doğal genişlik (kullanıcının önerisi)** | **%19,0** | **+3,5%** |
+| YC yan ray + kompakt şerit | %18,1 | +1,0% |
+
+Tablette aynı kural: HUD **%18,9 → %7,1**.
+
+> **İKİNCİ ARAÇ KUSURU, YİNE GÖZLE YAKALANDI.** Metrik tablet yatayını "en iyi konfigürasyon"
+> gösteriyordu (533 br², karakter 89,9 px, HUD %18,9) ve sayıya göre sorun yoktu. Kullanıcı
+> *"tablette oynanırsa oyun çok kötü durur"* dedi; kareye bakınca haklıydı — görev şeridi
+> 1280 px'e geriliyor, ilerleme çubuğu upuzun boş bir çizgiye dönüyor. **Metrik ALAN ölçüyor,
+> GERİLME ölçmüyor.** Aynı turda iki kez: araç, gözün yakaladığını kaçırdı.
 
 #### B-4. Dar telefon cezası
 
-Portre 16:9 (360×640) en dar durum: HUD **ekranın %10,3'ünü**, kadrajdaki **zeminin %21,1'ine
-kadarını** yiyor (20:9'da bu %6,5 / %2,4). Tablet portre (4:3) ise tam tersi — oran 0,63'e
-gevşediği için portre orada sorun değil, karakter **120,5 px** ile en iri hâlinde.
+Portre 16:9 (360×640) ve yatay 16:9 (640×360) en dar durumlar: küçük yatay telefonda HUD
+**ekranın %45,9'unu** yiyor — bütün kadrajların en kötüsü. Tablet portre (4:3) ise tam tersi:
+oran 0,63'e gevşediği için portre orada sorun değil, karakter **124,0 px** ile en iri hâlinde.
 
 ### §C — İkon adayları
 

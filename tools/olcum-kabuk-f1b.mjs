@@ -306,6 +306,16 @@ const KADRAJLAR = [
   { ad: 'P2 portre 16:9 (dar)', w: 360, h: 640, dpr: 3, yon: 'portre', tamKipte: true },
   { ad: 'L2 yatay 16:9 (dar)', w: 640, h: 360, dpr: 3, yon: 'yatay', tamKipte: true },
   { ad: 'T1 tablet portre 4:3', w: 800, h: 1280, dpr: 2, yon: 'portre', tamKipte: true },
+  /*
+   * TABLET YATAY — ilk kurulumda YOKTU ve bu bir kapsam deliğiydi.
+   *
+   * Yön kilitlenirse tabletler de o yönde koşar; tablet portre ölçülmüş ama tablet YATAY hiç
+   * ölçülmemişti. Yani "yatayı kilitleyelim" kolu, tabletlerde ne olacağı BİLİNMEDEN
+   * öneriliyordu. Kullanıcı bunu sordu, araç cevabı taşımıyordu.
+   *
+   * Oran 1,60 — telefon yatayından (2,22) belirgin farklı; HUD'un yüzdesi de, kadraj da başka.
+   */
+  { ad: 'T2 tablet yatay 4:3', w: 1280, h: 800, dpr: 2, yon: 'yatay' },
 ];
 
 /** Odanın yarı ölçüsü — `src/game/layout.ts`ten OKUNUR, elle yazılmaz (bayatlarsa araç kırılır). */
@@ -407,10 +417,30 @@ async function kadrajOlc(page, kadraj, H) {
       if (r.width < 2 || r.height < 2) continue;
       const cs = getComputedStyle(el);
       if (cs.visibility === 'hidden' || cs.display === 'none' || Number.parseFloat(cs.opacity) < 0.05) continue;
-      const bg = cs.backgroundColor;
-      const alfa = /rgba?\(([^)]+)\)/.exec(bg);
-      const a = alfa ? (alfa[1].split(',')[3] !== undefined ? Number.parseFloat(alfa[1].split(',')[3]) : 1) : 0;
-      const boyali = a > 0.05 || el.tagName === 'SVG' || el.tagName === 'svg' || el.tagName === 'IMG';
+      /*
+       * BOYALI OLMAK `background-color` DEMEK DEĞİL — ve bu kusur ölçümün en pahalısıydı.
+       *
+       * İlk kurulum yalnız `backgroundColor` alfasına bakıyordu. Oyunun en büyük iki HUD bloğu
+       * (`.band` görev şeridi ve `.botnav` alt gezinme) zeminlerini `linear-gradient` ile
+       * veriyor, yani `background-color` ŞEFFAF kalıyor. İkisi de sayımdan düştü ve HUD'un
+       * ekranda kapladığı alan yatayda %8,5 çıktı — kullanıcı ekrana bakıp *"yatayda ekran çok
+       * dolu görevlerle"* dediğinde ölçüm ona karşı çıkıyordu. Araç haksızdı.
+       *
+       * Hata İYİMSERDİ (kolu olduğundan temiz gösteriyordu), bu yüzden sonucun tutarsızlığından
+       * anlaşılmadı; ancak GÖZLE yakalandı. Artık zemin rengi, zemin GÖRSELİ (gradyan dahil) ve
+       * görünür kenarlık — üçü de "boyalı" sayılıyor.
+       */
+      const alfasi = (renk) => {
+        const m = /rgba?\(([^)]+)\)/.exec(renk || '');
+        if (!m) return 0;
+        const p = m[1].split(',');
+        return p[3] !== undefined ? Number.parseFloat(p[3]) : 1;
+      };
+      const zeminRengi = alfasi(cs.backgroundColor) > 0.05;
+      const zeminGorseli = cs.backgroundImage && cs.backgroundImage !== 'none';
+      const kenarlik = Number.parseFloat(cs.borderTopWidth) > 0 && alfasi(cs.borderTopColor) > 0.05;
+      const boyali = zeminRengi || zeminGorseli || kenarlik
+        || el.tagName === 'SVG' || el.tagName === 'svg' || el.tagName === 'IMG';
       if (!boyali) continue;
       hudOgeleri.push({
         sinif: el.className && el.className.baseVal !== undefined ? el.className.baseVal : String(el.className || el.tagName),
@@ -435,6 +465,26 @@ async function kadrajOlc(page, kadraj, H) {
       }
     }
     out.hudEkranYuzde = +(100 * kapali / toplam).toFixed(2);
+
+    /*
+     * ALT BANT — şikâyetin tam karşılığı olan ölçü.
+     *
+     * "Ekranın %X'i HUD" sayısı, dağınık küçük öğelerle ekranın ALTINI baştan başa kaplayan bir
+     * yığını aynı gösterir. Oysa oyun zeminini yiyen şey ikincisi: görev şeridi + alt gezinme
+     * ekranın dibinde tam genişlikte bir BANT kuruyor ve o bandın altında oyundan hiçbir şey
+     * kalmıyor. Yatayda ekran kısaldığı için aynı bant, ekranın çok daha büyük bir dilimini alır.
+     *
+     * Ölçü: ekranın alt %40'ına uzanan HUD öğelerinin en YUKARI noktası; bant = oradan aşağısı.
+     */
+    const altKume = hudOgeleri.filter((o) => o.y + o.h > vh * 0.6);
+    const bantUst = altKume.length ? Math.min(...altKume.map((o) => o.y)) : vh;
+    out.hudAltBantPx = +(vh - bantUst).toFixed(1);
+    out.hudAltBantYuzde = +(100 * (vh - bantUst) / vh).toFixed(2);
+    // En büyük tek HUD öğesi — "hangi blok yiyor" sorusunu doğrudan cevaplar.
+    const enBuyuk = hudOgeleri.reduce((a, b) => (b.w * b.h > (a ? a.w * a.h : 0) ? b : a), null);
+    out.enBuyukHud = enBuyuk
+      ? `${enBuyuk.sinif} ${Math.round(enBuyuk.w)}×${Math.round(enBuyuk.h)} (ekranin %${(100 * enBuyuk.w * enBuyuk.h / (vw * vh)).toFixed(1)}'i)`
+      : null;
 
     // --- en küçük GÖRÜNÜR yazı ---
     let enKucuk = Infinity, enKucukSinif = '';
@@ -734,10 +784,17 @@ async function main() {
   yaz('');
 
   yaz('-- KADRAJ TABLOSU (karsilastirma HER ZAMAN ayni dunya+nokta icinde) --');
-  yaz('  dunya            nokta                     zoom                       kadraj                 CSSpx      oran   zemin(br²)  acik(br²)  oda%   HUDyiyen%  HUDekran%  ankraj  oyuncuPx  tasan  yazi');
+  yaz('  dunya            nokta                     zoom                       kadraj                 CSSpx      oran   zemin(br²)  acik(br²)  oda%   HUDyiyen%  HUDekran%  ALTBANT%  ankraj  oyuncuPx  tasan  yazi');
   for (const s of sonuclar) {
     const z = s.zemin || {};
-    yaz(`  ${s.dunya.ad.padEnd(16)} ${s.nokta.ad.padEnd(25)} ${s.zoom.ad.padEnd(26)} ${s.kadraj.ad.padEnd(22)} ${String(s.gorunum.vw + '×' + s.gorunum.vh).padEnd(10)} ${String(s.gorunum.oran).padEnd(6)} ${String(f1(z.kadrajdaBr2 ?? 0)).padStart(10)} ${String(f1(z.acikBr2 ?? 0)).padStart(10)} ${String(f1(z.odaYuzde ?? 0)).padStart(6)} ${String(f1(z.hudYiyen ?? 0)).padStart(10)} ${String(f1(s.hudEkranYuzde)).padStart(10)} ${String(s.ankraj.kadrajda + '/' + s.ankraj.toplam).padStart(7)} ${String(f1(s.oyuncuPx ?? 0)).padStart(9)} ${String(s.tasanOge).padStart(6)}  ${s.enKucukYaziPx}px`);
+    yaz(`  ${s.dunya.ad.padEnd(16)} ${s.nokta.ad.padEnd(25)} ${s.zoom.ad.padEnd(26)} ${s.kadraj.ad.padEnd(22)} ${String(s.gorunum.vw + '×' + s.gorunum.vh).padEnd(10)} ${String(s.gorunum.oran).padEnd(6)} ${String(f1(z.kadrajdaBr2 ?? 0)).padStart(10)} ${String(f1(z.acikBr2 ?? 0)).padStart(10)} ${String(f1(z.odaYuzde ?? 0)).padStart(6)} ${String(f1(z.hudYiyen ?? 0)).padStart(10)} ${String(f1(s.hudEkranYuzde)).padStart(10)} ${String(f1(s.hudAltBantYuzde ?? 0)).padStart(9)} ${String(s.ankraj.kadrajda + '/' + s.ankraj.toplam).padStart(7)} ${String(f1(s.oyuncuPx ?? 0)).padStart(9)} ${String(s.tasanOge).padStart(6)}  ${s.enKucukYaziPx}px`);
+  }
+  yaz('');
+
+  // --- HUD DOLULUGU: kullanicinin "yatayda ekran cok dolu" sikayetinin sayisi ---
+  yaz('-- HUD DOLULUGU (ayni dunya+nokta+zoom icinde, yon basina) --');
+  for (const s of sonuclar.filter((x) => x.zoom.ad.startsWith('Z0') && x.nokta.ad.startsWith('N1') && x.dunya.ad.startsWith('D1'))) {
+    yaz(`  ${s.kadraj.ad.padEnd(22)} ${String(s.gorunum.vw + '×' + s.gorunum.vh).padEnd(10)} HUD ekranin %${String(f1(s.hudEkranYuzde)).padStart(5)}'i · ALT BANT ${String(f1(s.hudAltBantPx)).padStart(6)} px = ekran yuksekliginin %${String(f1(s.hudAltBantYuzde)).padStart(5)}'i · en buyuk blok: ${s.enBuyukHud}`);
   }
   yaz('');
 

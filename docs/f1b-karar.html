@@ -1,0 +1,284 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>F1b Kabuğun Yüzü</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<style>
+  :root {
+    --ka: #ffffff; --ze: #f3f1ec; --tx: #241c14; --tx2: #6b5b49; --ln: #ddd6ca;
+    --ac: #b8472f; --ok: #2e7d5b; --uy: #b8860b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ka: #1b1714; --ze: #120f0d; --tx: #f2ece3; --tx2: #a8988a; --ln: #362e27;
+      --ac: #ef7a5e; --ok: #5fc79a; --uy: #e0b64a;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ka: #1b1714; --ze: #120f0d; --tx: #f2ece3; --tx2: #a8988a; --ln: #362e27;
+    --ac: #ef7a5e; --ok: #5fc79a; --uy: #e0b64a;
+  }
+  body { background: var(--ze); color: var(--tx); font: 15px/1.6 system-ui, -apple-system, sans-serif; }
+  .sar { max-width: 1120px; margin: 0 auto; padding-block: 28px; padding-left: 16px; padding-right: 16px; }
+  h1 { font-size: 27px; line-height: 1.2; margin: 0 0 6px; letter-spacing: -0.01em; }
+  h2 { font-size: 21px; margin: 44px 0 4px; padding-top: 18px; border-top: 2px solid var(--ln); }
+  h3 { font-size: 15px; margin: 24px 0 6px; text-transform: uppercase; letter-spacing: 0.09em; color: var(--tx2); }
+  p { margin: 8px 0; }
+  .ust { color: var(--tx2); margin-bottom: 20px; }
+  .kutu { background: var(--ka); border: 1px solid var(--ln); border-radius: 12px; padding: 14px 16px; margin: 14px 0; }
+  .kutu.vurgu { border-left: 4px solid var(--ac); }
+  .kutu.senin { border-left: 4px solid var(--uy); }
+  .kutu.iyimser { border-left: 4px solid var(--ok); }
+  .rozet { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: .08em;
+           text-transform: uppercase; padding: 2px 8px; border-radius: 99px; margin-bottom: 6px; }
+  .rozet.senin { background: var(--uy); color: #2a1e00; }
+  .rozet.benim { background: var(--tx2); color: var(--ka); }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  .kaydir { overflow-x: auto; margin: 10px 0; }
+  th, td { text-align: left; padding: 7px 9px; border-bottom: 1px solid var(--ln); vertical-align: top; }
+  th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--tx2); font-weight: 700; }
+  td.n { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  tr.sec td { background: color-mix(in srgb, var(--ok) 10%, transparent); }
+  .kotu { color: var(--ac); font-weight: 700; }
+  .iyi { color: var(--ok); font-weight: 700; }
+  .oner { display: inline-block; background: var(--ok); color: #fff; border-radius: 99px; padding: 1px 9px; font-size: 12px; font-weight: 700; margin-left: 6px; vertical-align: middle; }
+  .kod { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; background: var(--ze); padding: 1px 5px; border-radius: 5px; }
+  img { max-width: 100%; border-radius: 10px; border: 1px solid var(--ln); display: block; }
+  figcaption { color: var(--tx2); font-size: 13px; margin-top: 6px; }
+  figure { margin: 16px 0; }
+  .ikili { display: flex; flex-wrap: wrap; gap: 16px; margin: 14px 0; }
+  .ikili > figure { flex: 1 1 280px; min-width: 0; margin: 0; }
+  ul { margin: 6px 0; padding-left: 20px; }
+  li { margin: 4px 0; }
+  .soru { font-size: 19px; font-weight: 700; margin: 2px 0 12px; }
+  .alinti { font-style: italic; color: var(--tx2); border-left: 3px solid var(--uy);
+            padding-left: 12px; margin: 10px 0; }
+</style>
+<div class="sar">
+
+<h1>F1b — Kabuğun Yüzü</h1>
+<p class="ust">
+  Ekran yönü · yatay HUD · açılış ekranı. <b>İkon bu pakette yok</b> — onu sen yaptıracaksın.
+  Sayılar: <span class="kod">docs/olcum-kabuk-f1b.txt</span> (TAM koşu · 108 hücre ·
+  dünya denetimi 18/18 temiz · konsol hatası 0).
+</p>
+
+<div class="kutu vurgu">
+  <b>Önce bir düzeltme — ölçüm sana karşı çıkmıştı, haksızdı.</b><br /><br />
+  İlk pakette <i>"yatayda HUD ekranın %8,5'i"</i> yazıyordu. Sen kareye bakıp
+  <b>"yatayda ekran çok dolu görevlerle"</b> dedin ve haklıydın: araç, oyunun en büyük iki HUD
+  bloğunu (<span class="kod">.band</span> görev şeridi ve <span class="kod">.botnav</span>)
+  <b>hiç saymıyordu</b> — ikisi de zeminini <span class="kod">linear-gradient</span> ile veriyor,
+  yani <span class="kod">background-color</span> şeffaf, filtre de ona bakıyordu.
+  <br /><br />
+  Düzeltilmiş sayı: yatayda HUD <b>ekranın %38,3'ü</b>. Hata iyimser olduğu için sonucun
+  kendisinden anlaşılmıyordu — <b>gözle yakalandı.</b> Aşağıdaki bütün sayılar düzeltilmiş
+  ölçümden.
+</div>
+
+<h2>Senin sorun: ekran yönü neyi değiştirir? Neden kilitliyoruz?</h2>
+<p class="soru">Dürüst cevap: kilitlemek oyunda hiçbir şeyi değiştirmez. Sadece <i>oyuncunun ne göreceğini garanti eder.</i></p>
+
+<div class="kaydir"><table>
+  <tr><th>Kilitlemek şunu DEĞİŞTİRİR</th><th>Kilitlemek şunu DEĞİŞTİRMEZ</th></tr>
+  <tr>
+    <td>
+      <b>① Oyuncunun fiilen hangi yönde oynadığını.</b> Telefonlar uygulamayı portrede açar.
+      Serbest bırakılırsa çoğu oyuncu hiç döndürmez ve <b>178 br²</b> görür; yatay kilitlenirse
+      herkes <b>571 br²</b> görür.
+    </td>
+    <td>
+      <b>Oyunun mantığını, kamera formülünü, asset'leri, dosya boyutunu, performansı.</b>
+      Hiçbiri yöne bağlı değil.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <b>② Kaç düzeni <i>iyi</i> tutmak zorunda olduğumuzu.</b> Serbest = portre + yatay
+      (+ tablet varyantları) hepsi bakımlı kalmalı. Kilitli = bir tanesi.
+    </td>
+    <td>
+      <b>Döndürmenin çalışıp çalışmadığını.</b> Bugün zaten çalışıyor: canlı
+      portre→yatay→portre sınamasında <b>0 konsol hatası</b>, HUD taşması 0.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <b>③ Mağaza görsellerini.</b> Serbest bırakırsak vitrin iki yönü de temsil etmeli.
+    </td>
+    <td>
+      <b class="kotu">HUD doluluğunu.</b> O ayrı bir kalem — ve senin önerin onu zaten çözüyor
+      (aşağıda). Yön kararı beklemeden yapılabilir.
+    </td>
+  </tr>
+</table></div>
+
+<div class="kutu vurgu">
+  <b>Kilitlemenin kapatamayacağı tek şey de şu — ve kararın özü burada:</b>
+  HUD'u ne kadar düzeltirsek düzeltelim <b>yön farkı kapanmıyor.</b> Oda merkezinde durup
+  etrafa bakınca portre 26 ankrajdan <b>1'ini</b>, yatay <b>22'sini</b> gösteriyor. Bu HUD değil
+  <b>geometri</b>: portrede dikey görüş açısı 50°, yatay görüş açısı oran yüzünden yalnız ~24°.
+  Kamerayı geri çekerek denedim (aşağıda) — portre yaklaşıyor ama yetişemiyor.
+</div>
+
+<div class="ikili">
+  <figure>
+    <img src="gorsel/ss/f1b-yon-portre.png" alt="Oyun portre modunda: boş zemin ve merdiven" />
+    <figcaption><b>PORTRE</b> — aynı dünya, aynı nokta (oda merkezi). Boş zemin ve bir merdiven.</figcaption>
+  </figure>
+  <figure>
+    <img src="gorsel/ss/f1b-yon-yatay.png" alt="Oyun yatay modunda: banket masaları, mutfak, personel" />
+    <figcaption><b>YATAY</b> — aynı an, tek fark oran. Banket adaları, mutfak, personel.</figcaption>
+  </figure>
+</div>
+
+<h3>Sayılar — tam açık dünya · oda merkezi · varsayılan kamera</h3>
+<div class="kaydir"><table>
+  <tr><th>Kadraj</th><th>oran</th><th>açık zemin</th><th>görünen ankraj</th><th>oyuncu</th><th>HUD ekranın</th></tr>
+  <tr><td>Portre 20:9 · 412×915</td><td class="n">0,45</td><td class="n kotu">178,2 br²</td><td class="n kotu">1 / 26</td><td class="n">84,8 px</td><td class="n">%19,7</td></tr>
+  <tr><td>Yatay 20:9 · 915×412</td><td class="n">2,22</td><td class="n iyi">570,8 br²</td><td class="n iyi">22 / 26</td><td class="n">48,4 px</td><td class="n kotu">%38,3</td></tr>
+  <tr><td>Portre 16:9 dar · 360×640</td><td class="n">0,56</td><td class="n">207,4 br²</td><td class="n">5 / 26</td><td class="n">58,9 px</td><td class="n">%29,2</td></tr>
+  <tr><td>Yatay 16:9 dar · 640×360</td><td class="n">1,78</td><td class="n">422,0 br²</td><td class="n">17 / 26</td><td class="n">44,0 px</td><td class="n kotu">%45,9</td></tr>
+  <tr><td>Tablet portre 4:3 · 800×1280</td><td class="n">0,63</td><td class="n">246,5 br²</td><td class="n">5 / 26</td><td class="n iyi">124,0 px</td><td class="n">%12,6</td></tr>
+  <tr><td>Tablet yatay 4:3 · 1280×800</td><td class="n">1,60</td><td class="n">533,2 br²</td><td class="n">17 / 26</td><td class="n iyi">89,9 px</td><td class="n">%18,9</td></tr>
+</table></div>
+<p>
+  <b>Dayanıklılık:</b> 54 karşılaştırmada yatay/portre açık zemin oranı <b>1,37× … 3,36×</b>
+  (ortalama <b>2,03×</b>). Yön hiçbir dünyada, noktada, kamera kademesinde tersine dönmüyor.
+</p>
+
+<h3>"Portre kelepçesini açsak?" — denendi</h3>
+<p>
+  Portrede kamera <span class="kod">CAMERA_PORTRAIT_CLAMP = 1,3</span> ile kelepçeli; oranın
+  istediği açılma <span class="kod">2,22</span>. Kelepçeyi açınca portre <b>1,80×</b> iyileşiyor
+  — ama <b>altı ayrı dünya+nokta hücresinin altısında da</b> portrenin EN İYİ hâli yatayın
+  <b>TABANINI</b> yakalayamıyor (1,24× – 1,87× geride). Ve belirleyici olan şu: o noktada
+  <b>karakter ikisinde de aynı boyda</b> (portrede 47,7 px, yatayda ~50 px). Yani yatayın
+  avantajı <i>"daha uzaktan bakmak"</i> değil.
+</p>
+
+<h3>Kollar</h3>
+<div class="kaydir"><table>
+  <tr><th>Kol</th><th>Ne olur</th><th>Bedeli</th></tr>
+  <tr>
+    <td><b>K0 — serbest bırak</b><br /><span style="color:var(--tx2)">bugünkü hâl · D-008</span></td>
+    <td>Oyuncu seçer. Döndürme zaten çalışıyor, ek iş yok.</td>
+    <td>Telefon portrede açıldığı için <b>varsayılan deneyim 178 br²</b> olur. İki düzeni birden bakımlı tutmak gerekir.</td>
+  </tr>
+  <tr>
+    <td><b>K0+ — serbest, ama portrede kelepçe açılır</b></td>
+    <td>Seçim kalır, portre 178 → <b>336 br²</b> çıkar.</td>
+    <td>Karakter portrede 85 → 48 px'e iner (0,57×). <b>D-061'in senin verdiğin kararını</b> (taban B, düğme C) geçersizleştirir.</td>
+  </tr>
+  <tr>
+    <td><b>K1 — yatay kilidi</b></td>
+    <td>Herkes dükkânı görür: <b>571 br² · 22/26 ankraj</b>. Tek düzen bakımlı tutulur.</td>
+    <td>Seçimi elden alır; tek elle oynanış zorlaşır (joystick dinamik olduğu için <b>kırılmaz</b>). <b>D-008 revize edilir.</b></td>
+  </tr>
+  <tr>
+    <td><b>K2 — portre kilidi</b></td>
+    <td>Tek elle oynanış garanti.</td>
+    <td class="kotu">Dükkân görünmüyor (1/26 ankraj). Ölçüm bu kolu desteklemiyor.</td>
+  </tr>
+</table></div>
+
+<div class="kutu">
+  <b>Kararı erteleyebileceğin bir gerçek:</b> yön kararı <b>geri alınabilir</b> — manifestte tek
+  satır (<span class="kod">android:screenOrientation</span>). Kalıcı olan paket kimliğiydi
+  (D-130), bu değil. Yayından sonra da değiştirilebilir. Aşağıdaki HUD kararı ise yön ne olursa
+  olsun gerekli.
+</div>
+
+<h2>Senin önerin: HUD ekranı değil içeriği ölçü alsın</h2>
+<span class="rozet senin">senin cümlen</span>
+<p class="alinti">"görev normal gerektiği kadar genişlikte kalabilir tablette hatta [yata]ydaki nav bile"</p>
+
+<p>
+  Bunu yoruma bırakmayıp <b>ölçülmüş bir kol</b> yaptım (<b>YD</b>) ve gerçek oyunun üstünde
+  koşturdum — maket değil, depoya da hiçbir şey yazılmadı. Kök sebep senin tarif ettiğin şeyin
+  aynısı: bugün hem şerit hem nav <span class="kod">left:0; right:0</span> ile ekranın tamamına
+  geriliyor. <b>Ekran büyüdükçe öğe büyüyor ama içeriği büyümüyor</b> — aradaki boşluk açılıyor.
+</p>
+
+<div class="kaydir"><table>
+  <tr><th>Kol</th><th>HUD ekranın</th><th>açık zemin</th></tr>
+  <tr><td>Y0 — taban (bugün)</td><td class="n kotu">%38,4</td><td class="n">588,4 br²</td></tr>
+  <tr><td>YA — alt gezinme yan raya</td><td class="n">%27,1</td><td class="n">−0,1%</td></tr>
+  <tr><td>YB — görev şeridi köşe kartına</td><td class="n">%28,2</td><td class="n">+1,9%</td></tr>
+  <tr class="sec"><td><b>YD — doğal genişlik (senin önerin)</b><span class="oner">öneri</span></td><td class="n iyi">%19,0</td><td class="n iyi">+3,5%</td></tr>
+  <tr><td>YC — yan ray + kompakt şerit</td><td class="n">%18,1</td><td class="n">+1,0%</td></tr>
+</table></div>
+
+<div class="ikili">
+  <figure>
+    <img src="gorsel/ss/f1b-yhud-Y0.png" alt="Telefon yatayı, bugünkü HUD" />
+    <figcaption><b>Telefon yatayı — BUGÜN.</b> Şerit + nav ekranın dibinde 186 px'lik tam genişlik bant kuruyor: ekran yüksekliğinin <b>%45'i</b>.</figcaption>
+  </figure>
+  <figure>
+    <img src="gorsel/ss/f1b-yhud-YD.png" alt="Telefon yatayı, doğal genişlik kolu" />
+    <figcaption><b>Telefon yatayı — YD.</b> Şerit içeriği kadar, nav ortada serbest bir ada. HUD %38,4 → <b>%19</b>.</figcaption>
+  </figure>
+</div>
+
+<h3>Tablet — senin içgüdün doğruydu, ama sayı onu göremedi</h3>
+<p>
+  <b>"Tablette oynanırsa oyun çok kötü durur"</b> dedin. Sayıya baktım: tablet yatay aslında en
+  iyi konfigürasyon — 533 br² açık zemin, karakter <b>90 px</b> (telefon yatayında 48),
+  HUD %18,9. Sayıya göre sorun yok.
+</p>
+<p>
+  <b>Kareye bakınca sorun var ve metrik onu göremiyor:</b> görev şeridi 1280 px'e kadar geriliyor,
+  içindeki ilerleme çubuğu upuzun boş bir çizgiye dönüyor. Metrik <i>alan</i> ölçüyor,
+  <i>gerilme</i> ölçmüyor. İkinci kez aynı ders bu turda: araç, gözün yakaladığını kaçırdı.
+</p>
+
+<div class="ikili">
+  <figure>
+    <img src="gorsel/ss/f1b-yhud-T-taban.png" alt="Tablet yatayı, bugünkü HUD" />
+    <figcaption><b>Tablet — BUGÜN.</b> Şerit 1280 px'e geriliyor; çubuk boş bir çizgi.</figcaption>
+  </figure>
+  <figure>
+    <img src="gorsel/ss/f1b-yhud-T-YD.png" alt="Tablet yatayı, doğal genişlik kolu" />
+    <figcaption><b>Tablet — YD.</b> Aynı kural gerilmeyi kesiyor. HUD %18,9 → <b>%7,1</b>.</figcaption>
+  </figure>
+</div>
+
+<div class="kutu iyimser">
+  <b>Tek kural iki sorunu birden çözüyor</b> — telefon yatayında doluluğu, tablette gerilmeyi.
+  Ve <b>yön kararından bağımsız</b>: hangi kolu seçersen seç YD kazanıyor. Yani bunu şimdi
+  kararlaştırıp yön kararına ayrı zaman ayırabiliriz.
+</div>
+
+<h2>Açılış ekranı</h2>
+<span class="rozet senin">senin sorun</span>
+<p class="alinti">"daha hareketli bir şeyler olabilir mi acaba? … bence dile göre uygulama adı da olabilir veya öyle kalsın mı acaba"</p>
+
+<h3>Dil — önerim: uygulama adına bağla</h3>
+<p>
+  D-130 cihaz adını zaten dile bağladı (<span class="kod">values</span> /
+  <span class="kod">values-tr</span>). Bugünkü hâlde İngilizce cihazdaki oyuncu ana ekranda
+  <i>Tea House Tycoon</i> görüyor, açılışta <i>Köşe Kıraathanesi</i>. Bu bir tutarsızlık, üstelik
+  <b>"genel kullanıcıya hitap etsin"</b> hedefinin tam karşıtı. Aynı iki dizeyi kullanırım —
+  yeni metin yazmam, tek kaynak kalır.
+</p>
+
+<h3>Hareket — önerim: yükleme çubuğu çayın kendisi olsun</h3>
+<p>
+  Süs animasyonu eklemek yerine <b>çubuğu ortadan kaldırıp yerine anlatıyı koymak</b>:
+  semaverden ince belli bardağa çay akar, <b>bardaktaki seviye = yükleme yüzdesi</b>, dolunca
+  buhar yükselir ve sahneye geçilir. Böylece hareket süs olmaz, <i>"Semaver ısınıyor…"</i>
+  yazısı da doğruyu söyler. Oyunun kendi şekil dilini kullanır, ek asset istemez.
+</p>
+<p style="color:var(--tx2)">
+  Daha sakin bir alternatif: çubuk kalır, sadece semaverden yükselen buhar ve hafif bir ışık
+  nefesi eklenir. Daha ucuz, daha az akılda kalır.
+</p>
+
+<h2>Karar bekleyen üç şey</h2>
+<div class="kaydir"><table>
+  <tr><th>#</th><th>Soru</th><th>Seçenekler</th><th>Önerim</th></tr>
+  <tr><td class="n">1</td><td><b>Ekran yönü</b></td><td>K0 serbest · K0+ serbest+kelepçe · K1 yatay kilidi · K2 portre kilidi</td><td><b>K1</b>, ama bu senin ürün kararın — ölçüm yalnız "yatay 2× daha fazla dükkân gösteriyor" diyor, "yatay daha iyi oyun" demiyor. Geri alınabilir bir karar.</td></tr>
+  <tr><td class="n">2</td><td><b>Yatay/tablet HUD</b></td><td>Y0 · YA · YB · <b>YD</b> · YC</td><td><b>YD — senin önerin.</b> Her iki kadrajda da en iyi, yön kararından bağımsız.</td></tr>
+  <tr><td class="n">3</td><td><b>Açılış ekranı</b></td><td>çay-dolan-bardak · sakin buhar · dokunma</td><td><b>Çay-dolan-bardak + dile bağlı başlık.</b></td></tr>
+</table></div>
+
+</div>
