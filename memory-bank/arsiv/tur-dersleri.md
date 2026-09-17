@@ -1,3 +1,36 @@
+## F1a — kabuk ve imza (2026-09-17, D-130) — turun kalıcı üç dersi
+
+**Turun kalıcı üç dersi:**
+1. **Kullanıcı bir kolu seçerken sorunun KENDİSİNİ değiştirebilir.** Karar paketinde iki kimlik
+   kolu vardı; kullanıcı ikisini de eleyip *"genel kullanıcıya hitap etsin"* dedi — yani kalem
+   kimlik değil **konumlandırma** kalemiymiş. Doğru hamle üçüncü bir kimlik önermek değil,
+   **adı kimlikten ayırmaktı**: mağaza başlığı her sürümde ve dil başına değişir, kalıcı olan
+   yalnız `applicationId`. Böylece "cafe" anahtar kelimesi başlığı feda etmeden içeri girdi.
+   (R4'ün dersinin kardeşi: orada kullanıcı kolun KAPSAMINI, burada SORUSUNU değiştirdi.)
+2. **Kolu eleyen ölçüm, kolu seçen ölçüm kadar denetim ister.** Araç altı kez yanlış okudu ve
+   **altısı da kolu daha KARAMSAR gösteriyordu**; düzeltilmese R8 "ölü" diye sessizce elenirdi.
+   Bir aracın iyimser hatası gözden kaçmaz (sonuç tutmaz), karamsar hatası kaçar.
+3. **Bekçi metne değil ETKİYE bakmalı.** Kaçan iki mutasyon `.gitignore` satırını yorum yaptı:
+   kural öldü, metin bozulmadı, test yeşil kaldı. Düzeltme `git check-ignore`a sormak oldu —
+   üstelik bir **karşı örnekle**: `build.gradle` yok sayılmamalı, yoksa fazla geniş bir kural
+   kabuğu depodan düşürürdü.
+
+**Yolda kapanan sessiz kusur:** sürümün İKİ kaynağı vardı (`build.gradle` "1.0" ↔
+`package.json` "0.0.0") ve ikisi hiçbir yerde karşılaştırılmıyordu. F2'nin "gradle bayat
+dosyanın üzerine yazıyor" kusuruyla aynı cinsten: yalnız yayın günü görülürdü. Ayrıca aynı
+F2 kusurunun **AAB kardeşi** de kapatıldı — `apk-temizle.mjs` artık bundle çıktısını da siliyor.
+
+**F1a'nın bıraktığı açık uçlar:** ① **R8 cihazda doğrulanmadı** — kanıt güçlü ama dolaylı;
+imzalı APK telefona kurulup açılana kadar kol "ölçüldü, denenmedi". Açılmazsa tek satırla geri
+alınır · ② R8'in attığı `ProcessedRoute` ve `ServerPath$PathType` denetlenmedi — cihazda sorun
+çıkarsa ilk bakılacak yer · ③ **F3/F4 bu kolu yeniden açar** (eklenti sayısı 0'dan çıkınca
+"yansıma yüzeyi dar" gerekçesi düşer) · ④ AAB'nin indirilen boyutu ölçülmedi (bundletool yok;
+üst sınır 0,37 MB) · ⑤ **YERELLEŞTİRME PANODA YOK** — "genel kullanıcıya hitap etsin" hedefinin
+gerçek bedeli bu ve ölçülmedi; oyun metninin tamamı Türkçe, kendi turunu ister · ⑥ v3 imza
+şeması kapalı (yalnız v2); Play App Signing yeniden imzaladığı için bugün sonucu yok.
+
+---
+
 ## R2 — mutfak yerleşimi + çarpışma (2026-09-16, D-127) — turun kalıcı üç dersi
 
 **Turun kalıcı üç dersi:**

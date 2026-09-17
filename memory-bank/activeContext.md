@@ -5,65 +5,58 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-17 — **F1a KAPANDI (D-130)** · Faz F **2/6** · 107/112)
+## ŞU AN (2026-09-17 — **F1b AÇILDI: kabuğun yüzü** · Faz F **2/6** · 107/112)
 
 ```
-SORU            : Mağazaya gidecek imzalı sürümü üretirken hangi kol ne kadar BAYT ve ne kadar
-                  RİSK getiriyor — küçültme (R8) mi, çıktı biçimi (APK ↔ AAB) mi, ikisi mi?
-ÖLÇÜLEN KOLLAR  : §A kimlik · §B taban (debug APK dökümü) · §C dört kol V0/V1/V2/V3 ·
-                  §D native (16 KB şartı) · §E R8 risk kanıtı · §F paket adı bedeli
-SAYILAR         : docs/paket-raporu-f1.md · ham: docs/olcum-paket-f1.txt (TAM · dört gerçek
-                  gradle derlemesi). debug 11,84 → release 10,58 → R8 ile 8,58 MB (−%27,5);
-                  kazancın %96'sı .dex'ten. AAB 8,89. native .so 0.
-KARAR           : D-130 — 1C · 2A · 3A. Kimlik com.memedobro.teahousetycoon (Play'de KALICI) ·
-                  R8 + kaynak budama AÇIK · sürüm 0.9.0 (versionCode 900, package.json'dan).
-                  Paket: https://claude.ai/artifact/XFvtNfMyomeqYKw3UT6vaZ
-UYGULAMA        : build.gradle (kimlik + sürüm türetme + signingConfig + R8) · capacitor.config.ts
-                  · MainActivity dizin taşıması · values/ + values-tr/ strings.xml ·
-                  package.json 0.9.0 + `npm run yayin` · .gitignore · apk-temizle (AAB de) ·
-                  dev-ortam topla.ps1/kur.ps1
-BEKÇİ           : tests/paket-f1.test.ts (19 den.) · tools/mutasyon-paket-f1.mjs 18/18 kırmızı
-                  (ilk koşuda 2 kaçtı — bekçi .gitignore'ın METNİNE bakıyordu)
-FINAL           : vitest 1292 ✓ · duman 45/45 ✓ · tsc temiz · imzalı APK 8,58 MB / AAB 8,89 MB
-                  (v2 şeması · CN=Tea House Tycoon, O=memedobro, C=TR · SHA-256 ab2b4f60…c874)
+SORU            : Mağazaya gidecek kabuğun YÜZÜ — cihazda görünen İKON, açılışta görünen EKRAN
+                  ve oyunun kilitleneceği EKRAN YÖNÜ. Üçü de bugün ya Capacitor varsayılanı ya
+                  kararsız. Hangi kol ne kadar OKUNUYOR, ne kadar BAYT ve ne kadar RİSK getiriyor?
+ÖLÇÜLECEK KOLLAR: §A taban — bugün gerçekten ne çıkıyor (varsayılan X logosu · beyaz splash ·
+                     yön kilidi YOK · mağaza ikonu YOK)
+                  §B EKRAN YÖNÜ — V0 serbest (bugün) · V1 portre kilidi · V2 yatay kilidi ·
+                     V3 sensorPortrait. Gerçek oyundan, telefon oranlarında: kadrajdaki zemin
+                     (br²), görünen masa/pad sayısı, HUD'un yediği ekran yüzdesi, başparmak
+                     erişimi, en küçük yazının px'i, yön değişiminde kırılan var mı
+                  §C İKON adayları — gerçek launcher boyutunda (48 dp) VE mağaza boyutunda (512)
+                     aynı kadrajda; okunabilirlik gözle elenir (`feedback_show_dont_ask`)
+                  §D AÇILIŞ EKRANI — önce ölçüm: targetSdk 36'da on bir splash dosyası cihazda
+                     GERÇEKTEN görünüyor mu; sonra adaylar (native + oyun içi `SplashScreen.tsx`)
+                  §E BAYT + RİSK — port/land drawable ikilisi, adaptive ikon, R8 kaynak budaması
+SAYILAR         : (adım 2'den sonra dolar — `docs/kabuk-raporu-f1b.md` §Bulgular)
+KARAR           : (adım 3 — üç kalem TEK pakette: yön · ikon · açılış ekranı)
+UYGULAMA        : (adım 4, yalnız kararın kolu)
+BEKÇİ           : (test dosyası + kaç mutasyonla doğrulandı)
 ```
 
-**Turun kalıcı üç dersi:**
-1. **Kullanıcı bir kolu seçerken sorunun KENDİSİNİ değiştirebilir.** Karar paketinde iki kimlik
-   kolu vardı; kullanıcı ikisini de eleyip *"genel kullanıcıya hitap etsin"* dedi — yani kalem
-   kimlik değil **konumlandırma** kalemiymiş. Doğru hamle üçüncü bir kimlik önermek değil,
-   **adı kimlikten ayırmaktı**: mağaza başlığı her sürümde ve dil başına değişir, kalıcı olan
-   yalnız `applicationId`. Böylece "cafe" anahtar kelimesi başlığı feda etmeden içeri girdi.
-   (R4'ün dersinin kardeşi: orada kullanıcı kolun KAPSAMINI, burada SORUSUNU değiştirdi.)
-2. **Kolu eleyen ölçüm, kolu seçen ölçüm kadar denetim ister.** Araç altı kez yanlış okudu ve
-   **altısı da kolu daha KARAMSAR gösteriyordu**; düzeltilmese R8 "ölü" diye sessizce elenirdi.
-   Bir aracın iyimser hatası gözden kaçmaz (sonuç tutmaz), karamsar hatası kaçar.
-3. **Bekçi metne değil ETKİYE bakmalı.** Kaçan iki mutasyon `.gitignore` satırını yorum yaptı:
-   kural öldü, metin bozulmadı, test yeşil kaldı. Düzeltme `git check-ignore`a sormak oldu —
-   üstelik bir **karşı örnekle**: `build.gradle` yok sayılmamalı, yoksa fazla geniş bir kural
-   kabuğu depodan düşürürdü.
+**Turun girdisi — ölçümden ÖNCE bilinen üç şey (hiçbiri karar değil, hepsi ZEMİN):**
 
-**Yolda kapanan sessiz kusur:** sürümün İKİ kaynağı vardı (`build.gradle` "1.0" ↔
-`package.json` "0.0.0") ve ikisi hiçbir yerde karşılaştırılmıyordu. F2'nin "gradle bayat
-dosyanın üzerine yazıyor" kusuruyla aynı cinsten: yalnız yayın günü görülürdü. Ayrıca aynı
-F2 kusurunun **AAB kardeşi** de kapatıldı — `apk-temizle.mjs` artık bundle çıktısını da siliyor.
+1. **İkon ve açılış ekranı Capacitor varsayılanı.** `mipmap-*/ic_launcher*.png` mavi X logosu;
+   adaptive zemin Android Studio'nun teal ızgara vektörü (`#26A69A`);
+   `drawable-{port,land}-*/splash.png` beyaz zemin + aynı X (11 dosya). Mağaza ikonu
+   (512×512) HİÇ YOK. Yani bu üç kalem "cila" değil **eksik** — bu hâliyle listelenemez.
+2. **Ekran yönü manifestte KİLİTLİ DEĞİL.** `MainActivity`de `screenOrientation` yok; yalnız
+   `configChanges` orientation'ı yutuyor (Android döndürür, Activity yeniden doğmaz). Oyun
+   tarafı portreyi BİRİNCİL varsayıyor: `camera.ts` `CAMERA_PORTRAIT_CLAMP = 1,3` ile portrede
+   kadrajı açıyor, `index.css` *"portrait birincil, landscape destekli"* diyor ve yatayı yalnız
+   `max-height: 480px` dalında kurtarıyor. Karar bu varsayımı ONAYLAYABİLİR de ÇÜRÜTEBİLİR de —
+   **ölçülmeden bilinmiyor**, ve bu yüzden §B'nin kolu "hangisi güzel" değil "hangisi ne kadar
+   oyun gösteriyor".
+3. **targetSdk 36 açılış ekranının kurallarını değiştirdi.** Android 12'den beri açılış ekranını
+   SİSTEM çiziyor; `AppTheme.NoActionBarLaunch` ise hâlâ `android:background="@drawable/splash"`
+   diyor — bu API 31 ÖNCESİNİN yolu. §D'nin İLK sorusu bu yüzden tasarım değil ölçüm: o on bir
+   dosya bugün gerçekten görünüyor mu? Görünmüyorsa kol *"tasarla"* değil *"sil + doğru API'ye geç"*
+   olur ve §E'ye bayt kazancı olarak yazılır.
 
-**F1a'nın bıraktığı açık uçlar:** ① **R8 cihazda doğrulanmadı** — kanıt güçlü ama dolaylı;
-imzalı APK telefona kurulup açılana kadar kol "ölçüldü, denenmedi". Açılmazsa tek satırla geri
-alınır · ② R8'in attığı `ProcessedRoute` ve `ServerPath$PathType` denetlenmedi — cihazda sorun
-çıkarsa ilk bakılacak yer · ③ **F3/F4 bu kolu yeniden açar** (eklenti sayısı 0'dan çıkınca
-"yansıma yüzeyi dar" gerekçesi düşer) · ④ AAB'nin indirilen boyutu ölçülmedi (bundletool yok;
-üst sınır 0,37 MB) · ⑤ **YERELLEŞTİRME PANODA YOK** — "genel kullanıcıya hitap etsin" hedefinin
-gerçek bedeli bu ve ölçülmedi; oyun metninin tamamı Türkçe, kendi turunu ister · ⑥ v3 imza
-şeması kapalı (yalnız v2); Play App Signing yeniden imzaladığı için bugün sonucu yok.
+**Turun kapsam çizgisi:** yön kararı splash'ın GİRDİSİDİR (yön kilitlenirse port/land ikilisinin
+bir tarafı tanım gereği ölür), ikon ise yönden bağımsızdır. Bu yüzden üçü tek ölçümde toplanıp
+tek karar paketinde sunulur — *"soru turu en fazla 2"* kuralı korunur, tur bölünmez.
 
 ## SIRADAKİ TAM ADIM
 
-**SIRADA: F1b — ikon + açılış ekranı + ekran yönü.** TASARIM turu: üçü de metinle sorulamaz
-(`feedback_show_dont_ask`), aday render'ı ister. Ekran yönü şu an manifestte KİLİTLİ DEĞİL;
-kararın girdisi *oyunun yatayda nasıl göründüğü* — telefon oranında iki kadraj ölçülüp
-gösterilecek. Oyun içi `SplashScreen.tsx` hâlâ "Köşe Kıraathanesi" yazıyor, iki dilli başlık
-kararıyla birlikte ele alınacak.
+**ŞU ANKİ ADIM: F1b adım 2 — ÖLÇ.** Araç `tools/olcum-kabuk-f1b.mjs`; ham çıktı
+`docs/olcum-kabuk-f1b.txt`; rapor `docs/kabuk-raporu-f1b.md` (karar bölümü BOŞ açılır).
+Ondan sonra adım 3: üç kalemi tek karar paketinde sun. Oyun içi `SplashScreen.tsx` hâlâ tek
+dilde "Köşe Kıraathanesi" yazıyor — D-130'un iki dilli başlık kararıyla birlikte ele alınacak.
 
 **Ondan sonra F3 (AdMob) → F4 (IAP) → F5 (mağaza vitrini).** F3'ün ilk işi R8 kolunu yeniden
 ölçmek olmalı: eklenti sayısı 0'dan çıkınca D-130'un "yansıma yüzeyi en dar" gerekçesi düşer.

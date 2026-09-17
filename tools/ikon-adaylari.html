@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>F1b — ikon adaylari</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Lilita+One&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#12101c; font-family:'Baloo 2', system-ui, sans-serif; color:#eae3ff; }
+
+  /* Tek aday = 512×512 tam taşma kare. Play magaza ikonu tam olarak bu; launcher ayrica
+     maskeler. Bu yuzden her aday ONCE 512 kare olarak cizilir, maske SONRA uygulanir. */
+  .aday { width:512px; height:512px; position:relative; overflow:hidden; }
+  .aday svg { display:block; width:512px; height:512px; }
+
+  /* ---- Ilerleme sayfasi: 12 aday izgarasi ---- */
+  #tabaka { display:grid; grid-template-columns:repeat(4, 512px); gap:28px; padding:28px; width:max-content; }
+  #tabaka .hucre { display:flex; flex-direction:column; gap:10px; }
+  #tabaka .et { font-size:30px; font-weight:800; letter-spacing:.01em; }
+  #tabaka .et span { opacity:.6; font-weight:700; }
+
+  /* ---- Launcher gercegi: 48 dp (dpr 3 → 144 px) ev ekraninda ---- */
+  #launcher {
+    width:1180px; padding:40px 36px 46px;
+    background:linear-gradient(160deg,#2b3a57 0%,#4a3a5e 55%,#6b4b52 100%);
+  }
+  #launcher h2 { font-size:26px; font-weight:800; margin-bottom:26px; opacity:.85; }
+  .ev { display:grid; grid-template-columns:repeat(6, 1fr); gap:30px 18px; }
+  .uyg { display:flex; flex-direction:column; align-items:center; gap:9px; }
+  /* 48 dp @ dpr3 = 144 px — telefonda ikonun GERCEK pikseli budur. */
+  .kutu { width:144px; height:144px; overflow:hidden; }
+  .kutu.daire { border-radius:50%; }
+  .kutu.kare { border-radius:32px; }
+  .kutu svg { width:144px; height:144px; display:block; }
+  .uyg .ad {
+    font-size:19px; font-weight:700; text-align:center; line-height:1.15;
+    text-shadow:0 1px 3px rgba(0,0,0,.6); max-width:150px;
+  }
+</style>
+</head>
+<body>
+<div id="kok"></div>
+
+<script>
+/* =====================================================================================
+   F1b IKON ADAYLARI
+
+   TASARIM KISITI (uydurma degil, Android'in kurali): adaptive ikon 108 dp tuvale cizilir
+   ama launcher hangi maskeyi uygularsa uygulasin YALNIZ ortadaki 72 dp'nin gorunecegi
+   GARANTIDIR. Yani her sey %66'lik guvenli dairenin icinde durmali. Asagidaki tum adaylar
+   objeyi 512'lik karenin ortadaki ~330 px'ine sigdiriyor; kose maskesi hicbirini kesmiyor.
+
+   STIL KILIDI: sekil dili oyunun KENDI dilinden turuyor, sifirdan uydurulmuyor —
+   `src/components/ui/icons.tsx` icindeki CayGlyph/TepsiGlyph'in ince belli profili ve
+   D-107/S11'in "chunky hissin kaynagi kalin koyu kontur" grameri. Renkler
+   `src/config/palette.ts` + `src/index.css` jetonlarindan BIREBIR alindi.
+   ===================================================================================== */
+
+const R = {
+  ot:        '#100b2e', // kontur — her seyin kenari (PALETTE.outline / --ot)
+  cay:       '#d43a26', // demli cay (--uyari)
+  cam:       '#eae3ff', // bardak cami (--tx)
+  amber:     '#ffc24b', // aksan (--ac)
+  krem:      '#e6d7b8', // krem badana (PALETTE.wallCream)
+  ahsap:     '#b98a5a', // taban ahsap (PALETTE.floorWood)
+  ahsapKoyu: '#6d4c41', // lambri (PALETTE.wainscot)
+  bakir:     '#b87333', // semaver/tepsi bakiri (PALETTE.copper)
+  tente:     '#2e6b4f', // kiraathane tentesi (PALETTE.awning)
+  mavi:      '#5a93cf', // asset native mavisi (PALETTE.defaultTone)
+  altin:     '#e3b24c', // altin tema (PALETTE.goldTone)
+};
+
+/* ---------------------------------------------------------------- zeminler
+   Uc zemin ailesi. Hepsi 512 tuvali TAM doldurur (adaptive ikon zemini tasmali olmali). */
+const ZEMIN = {
+  /* A — duz sicak zemin. En sessiz; objeyi tek basina birakir. */
+  duz: (renk) => `<rect width="512" height="512" fill="${renk}"/>`,
+
+  /* C — tente seridi. Kiraathanenin KENDI motifi (her kapinin ustunde yesil tente,
+     gorsel-kimlik.md). Ikonu bir adim "dukkan"a baglar. */
+  tente: () => `
+    <rect width="512" height="512" fill="${R.krem}"/>
+    <g>
+      ${[0,1,2,3,4,5,6].map((i) => `<rect x="${i*146-140}" y="-60" width="73" height="700" fill="${R.tente}" transform="rotate(-24 256 256)"/>`).join('')}
+    </g>
+    <rect width="512" height="512" fill="rgba(16,11,46,.06)"/>`,
+
+  /* B — rozet. Koyu halka objeyi kesip cikarir; 48 dp'de en yuksek kontrast beklenir. */
+  rozet: (renk) => `
+    <rect width="512" height="512" fill="${renk}"/>
+    <circle cx="256" cy="256" r="176" fill="${R.krem}" stroke="${R.ot}" stroke-width="22"/>`,
+};
+
+/* ---------------------------------------------------------------- objeler
+   Hepsi 512 tuvalinin ortasinda, guvenli daire (r≈169) icinde.
+   Kontur kalinligi 512'de 16-20 px: 48 dp'ye inince ~1,7 px'e denk gelir (gorunur kalir). */
+
+/**
+ * INCE BELLI cay bardagi.
+ *
+ * Ilk cizimde bardak duz konik bir bardakti ve YANLISTI: Turk cay bardaginin kimligi tam
+ * olarak BEL'dir — agiz genis, orta daralir, alt tekrar sisip kucuk bir ayaga oturur. Bel
+ * olmadan cizim "bardak" olur ama "cay bardagi" olmaz, yani ikonun tasidigi tek kulturel
+ * isaret kaybolur. Profil bu yuzden duz cizgiyle degil egriyle kuruldu.
+ */
+/*
+ * PROFIL SAYIYLA KURULDU, elle egri cizilerek degil. Ilk iki deneme (duz koni, sonra huni)
+ * ayni sebepten tutmadi: egrinin nereden gecmesi gerektigi soylenmeden kontrol noktasi
+ * ayarlaniyordu. Bardagin kimligi UC YARICAPIN ORANINDA:
+ *   agiz 86  ·  BEL 46  ·  alt tumsek 62  ·  taban 40      (agiz/bel = 1,87)
+ * Bel varsa ama alt tumsek yoksa cizim huniye doner — ikinci denemede tam bu oldu.
+ */
+const BARDAK_GOVDE =
+  'M170 120C176 190 210 236 210 286C208 320 196 372 216 398L296 398C316 372 304 320 302 286C302 236 336 190 342 120Z';
+
+/**
+ * Cay CLIP ILE doldurulur, ikinci bir govde yolu cizilerek degil.
+ * Elle yazilan ikinci yol, govde profili her degistiginde sessizce bayatliyor ve caya
+ * govdenin disina tasiyordu; clip ise tanim geregi govdeyi takip eder. `n` her ornekte
+ * benzersiz: ayni sayfada 12 aday var, ayni id iki kez gecerse tarayici ilkine baglar.
+ */
+let _bardakNo = 0;
+const bardak = (tabak = true) => {
+  const id = `bclip${++_bardakNo}`;
+  return `
+  ${tabak ? `<ellipse cx="256" cy="424" rx="134" ry="30" fill="${R.krem}" stroke="${R.ot}" stroke-width="18"/>` : ''}
+  <defs><clipPath id="${id}"><path d="${BARDAK_GOVDE}"/></clipPath></defs>
+  <path d="${BARDAK_GOVDE}" fill="${R.cam}"/>
+  <rect x="150" y="222" width="212" height="190" fill="${R.cay}" clip-path="url(#${id})"/>
+  <path d="${BARDAK_GOVDE}" fill="none" stroke="${R.ot}" stroke-width="20" stroke-linejoin="round"/>
+  <rect x="208" y="396" width="96" height="22" rx="9" fill="${R.cam}" stroke="${R.ot}" stroke-width="18"/>`;
+};
+
+/** Bardak + buhar — sicaklik/samimiyet vurgusu (hedef his: "semaver fokurdar"). */
+const bardakBuhar = () => `
+  <g stroke="${R.ot}" stroke-width="17" stroke-linecap="round" fill="none" opacity=".85">
+    <path d="M214 104c-16-18-16-34 0-52"/>
+    <path d="M256 92c-18-21-18-40 0-60"/>
+    <path d="M298 104c-16-18-16-34 0-52"/>
+  </g>
+  ${bardak(true)}`;
+
+/**
+ * Semaver — kiraathanenin kalbi.
+ *
+ * Ilk cizim SIMETRIKTI: iki yanda ayni kulp, govdenin ortasinda koyu bir yarik. Insan gozu
+ * simetrik iki yuvarlak + altinda yatay bir cizgiyi YUZ olarak okur (pareidolia) ve cizim
+ * semavere degil bir robot suratina benziyordu. Duzeltme suslemek degil SIMETRIYI KIRMAK
+ * oldu: musluk saga tek basina cikiyor, kulplar omuz hizasina yukseldi, orta yarik kalkti.
+ * Ustte demlik duruyor — semaveri termostan ayiran ikinci isaret.
+ */
+const SEMAVER_GOVDE =
+  'M198 150C176 186 168 214 168 242C168 300 188 342 204 374L308 374C324 342 344 300 344 242C344 214 336 186 314 150Z';
+
+const semaver = () => {
+  const id = `sclip${++_bardakNo}`;
+  return `
+  <!-- kapak + topuz -->
+  <circle cx="256" cy="72" r="17" fill="${R.cay}" stroke="${R.ot}" stroke-width="16"/>
+  <path d="M256 89v15" stroke="${R.ot}" stroke-width="16" stroke-linecap="round"/>
+  <path d="M202 104h108l10 34H192z" fill="${R.bakir}" stroke="${R.ot}" stroke-width="17" stroke-linejoin="round"/>
+  <!-- govde: URN profili — omuz genis (y≈242'de yariçap 88), tabana dogru daralir.
+       Ilk cizim duz konikti ve termos gibi okunuyordu; semaveri semaver yapan bu sisliktir. -->
+  <defs><clipPath id="${id}"><path d="${SEMAVER_GOVDE}"/></clipPath></defs>
+  <path d="${SEMAVER_GOVDE}" fill="${R.bakir}"/>
+  <rect x="160" y="140" width="80" height="250" fill="${R.altin}" opacity=".45" clip-path="url(#${id})"/>
+  <path d="${SEMAVER_GOVDE}" fill="none" stroke="${R.ot}" stroke-width="20" stroke-linejoin="round"/>
+  <!-- KULPLAR: acik halka (dolu daire degil) ve omuz hizasinda.
+       Ilk cizimde kalin konturlu kapali sekillerdi, iki koyu leke olarak okunuyordu. -->
+  <path d="M170 214c-34 6-34 62 4 68" fill="none" stroke="${R.ot}" stroke-width="18" stroke-linecap="round"/>
+  <path d="M342 214c34 6 34 62-4 68" fill="none" stroke="${R.ot}" stroke-width="18" stroke-linecap="round"/>
+  <!-- MUSLUK: gercek emzik — yatay kol, asagi bakan agiz, ustunde tapa.
+       Simetriyi kiran ve "termos"tan ayiran isaret bu. -->
+  <path d="M332 286h46" stroke="${R.ot}" stroke-width="20" stroke-linecap="round"/>
+  <path d="M370 286v34" stroke="${R.ot}" stroke-width="20" stroke-linecap="round"/>
+  <path d="M370 258v22" stroke="${R.ot}" stroke-width="16" stroke-linecap="round"/>
+  <circle cx="370" cy="250" r="16" fill="${R.cay}" stroke="${R.ot}" stroke-width="15"/>
+  <!-- ayak + taban -->
+  <path d="M214 374l-8 26h100l-8-26z" fill="${R.bakir}" stroke="${R.ot}" stroke-width="17" stroke-linejoin="round"/>
+  <rect x="180" y="398" width="152" height="28" rx="13" fill="${R.ahsapKoyu}" stroke="${R.ot}" stroke-width="18"/>`;
+};
+
+/**
+ * Tepsi + iki bardak — "servis", yani tycoon dongusunun kendisi.
+ * Bardaklar TEK BARDAKLA AYNI bel profilini kullanir (kucultulmus): ikon ailesi icinde iki
+ * farkli bardak dili olmasi, adaylar yan yana gorulunce hemen goze batardi.
+ */
+const kucukBardak = (dx, dy, s) => {
+  const id = `bclip${++_bardakNo}`;
+  return `
+  <g transform="translate(${dx} ${dy}) scale(${s})">
+    <defs><clipPath id="${id}"><path d="${BARDAK_GOVDE}"/></clipPath></defs>
+    <path d="${BARDAK_GOVDE}" fill="${R.cam}"/>
+    <rect x="150" y="222" width="212" height="190" fill="${R.cay}" clip-path="url(#${id})"/>
+    <path d="${BARDAK_GOVDE}" fill="none" stroke="${R.ot}" stroke-width="${Math.round(20 / s)}" stroke-linejoin="round"/>
+  </g>`;
+};
+
+const tepsi = () => `
+  ${kucukBardak(48, 110, 0.5)}
+  ${kucukBardak(208, 110, 0.5)}
+  <rect x="92" y="316" width="328" height="50" rx="23" fill="${R.bakir}" stroke="${R.ot}" stroke-width="20"/>
+  <path d="M118 366c0 28 22 42 46 42h184c24 0 46-14 46-42" fill="none" stroke="${R.ot}" stroke-width="19" stroke-linecap="round"/>`;
+
+/**
+ * DUKKAN CEPHESI — tente + vitrin + kapi.
+ *
+ * Ucuncu bir yon: ikon urunu (cay) degil MEKANI gosterir. Tycoon turunun ikonlari cogunlukla
+ * boyle: oynadigin sey bir isletme. Ilk kurulumda bu yuvada "ustten bardak" vardi ve hedef
+ * tahtasi gibi okunuyordu — ic ice uc daire cayla degil nisanla es anlamli.
+ */
+const dukkan = () => `
+  <rect x="104" y="196" width="304" height="216" rx="16" fill="${R.krem}" stroke="${R.ot}" stroke-width="20"/>
+  <!-- tente: kiraathanenin kendi motifi (gorsel-kimlik.md) -->
+  <path d="M86 196h340l-26 -70H112z" fill="${R.tente}" stroke="${R.ot}" stroke-width="20" stroke-linejoin="round"/>
+  ${[0, 1, 2].map((i) => `<path d="M${168 + i * 76} 126l22 70" stroke="${R.krem}" stroke-width="20"/>`).join('')}
+  <path d="M86 196h340" stroke="${R.ot}" stroke-width="20" stroke-linecap="round"/>
+  <!-- vitrin (solda) + kapi (sagda) -->
+  <rect x="136" y="234" width="122" height="106" rx="10" fill="${R.mavi}" stroke="${R.ot}" stroke-width="18"/>
+  <rect x="290" y="234" width="86" height="178" rx="10" fill="${R.ahsapKoyu}" stroke="${R.ot}" stroke-width="18"/>
+  <circle cx="306" cy="324" r="10" fill="${R.amber}"/>
+  ${kucukBardak(122, 300, 0.32)}`;
+
+/** Okey tasi — oyun salonu (Kat 2) vurgusu; kiraathanenin ikinci yuzu. */
+const okey = () => `
+  <rect x="150" y="104" width="212" height="304" rx="30" fill="${R.krem}" stroke="${R.ot}" stroke-width="22"/>
+  <rect x="150" y="300" width="212" height="108" rx="30" fill="#d9cdb0"/>
+  <path d="M150 300h212" stroke="${R.ot}" stroke-width="14"/>
+  <text x="256" y="268" text-anchor="middle" font-family="'Lilita One', system-ui" font-size="168"
+        fill="${R.cay}" stroke="${R.ot}" stroke-width="14" paint-order="stroke" >7</text>
+  <circle cx="256" cy="356" r="26" fill="${R.mavi}" stroke="${R.ot}" stroke-width="16"/>`;
+
+
+/* ---------------------------------------------------------------- 12 aday
+   Iki eksen: OBJE (6) × ZEMIN (2). Zemin ekseni bilerek "duz" ve "tente":
+   rozet ailesi ucuncu eksen olarak duz'un icinde iki adayda deneniyor, cunku 48 dp'de
+   asil soru kontrast — ve onu 12 adayin hepsinde tekrarlamak kadraji sisirirdi. */
+const ADAYLAR = [
+  { id: 'A1', ad: 'Bardak · krem zemin',      zemin: ZEMIN.duz(R.krem),        obje: bardak() },
+  { id: 'A2', ad: 'Bardak · tente seridi',    zemin: ZEMIN.tente(),            obje: bardak() },
+  { id: 'A3', ad: 'Bardak · koyu rozet',      zemin: ZEMIN.rozet(R.ahsapKoyu), obje: bardak(false) },
+  { id: 'B1', ad: 'Bardak+buhar · krem',      zemin: ZEMIN.duz(R.krem),        obje: bardakBuhar() },
+  { id: 'B2', ad: 'Bardak+buhar · tente',     zemin: ZEMIN.tente(),            obje: bardakBuhar() },
+  { id: 'C1', ad: 'Semaver · krem zemin',     zemin: ZEMIN.duz(R.krem),        obje: semaver() },
+  { id: 'C2', ad: 'Semaver · tente seridi',   zemin: ZEMIN.tente(),            obje: semaver() },
+  { id: 'C3', ad: 'Semaver · koyu rozet',     zemin: ZEMIN.rozet(R.ahsapKoyu), obje: semaver() },
+  { id: 'D1', ad: 'Tepsi · ahsap zemin',      zemin: ZEMIN.duz(R.ahsap),       obje: tepsi() },
+  { id: 'D2', ad: 'Tepsi · tente seridi',     zemin: ZEMIN.tente(),            obje: tepsi() },
+  { id: 'E1', ad: 'Okey tasi · tente',        zemin: ZEMIN.tente(),            obje: okey() },
+  { id: 'F1', ad: 'Dukkan cephesi · ahsap',   zemin: ZEMIN.duz(R.ahsapKoyu),   obje: dukkan() },
+];
+
+const svg = (a) => `<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">${a.zemin}${a.obje}</svg>`;
+
+/* ---------------------------------------------------------------- sayfalar */
+const q = new URLSearchParams(location.search);
+const sayfa = q.get('sayfa') || 'tabaka';
+const kok = document.getElementById('kok');
+
+if (sayfa === 'tabaka') {
+  kok.innerHTML = `<div id="tabaka">${ADAYLAR.map((a) => `
+    <div class="hucre">
+      <div class="aday" data-id="${a.id}">${svg(a)}</div>
+      <div class="et">${a.id} <span>${a.ad}</span></div>
+    </div>`).join('')}</div>`;
+} else if (sayfa === 'launcher') {
+  // 48 dp GERCEGI: iki maske (daire ve squircle) ayri satirlarda, gercek ev ekrani zemininde.
+  const satir = (maske, baslik) => `
+    <h2>${baslik}</h2>
+    <div class="ev">${ADAYLAR.map((a) => `
+      <div class="uyg">
+        <div class="kutu ${maske}">${svg(a)}</div>
+        <div class="ad">${a.id}</div>
+      </div>`).join('')}</div>`;
+  kok.innerHTML = `<div id="launcher">
+    ${satir('daire', '48 dp · DAIRE maskesi (Pixel varsayilani) — ikonun telefondaki gercek boyu')}
+    <div style="height:38px"></div>
+    ${satir('kare', '48 dp · SQUIRCLE maskesi (Samsung/Xiaomi)')}
+  </div>`;
+} else if (sayfa === 'tek') {
+  const a = ADAYLAR.find((x) => x.id === q.get('id')) || ADAYLAR[0];
+  document.body.style.background = 'transparent';
+  kok.innerHTML = `<div class="aday">${svg(a)}</div>`;
+}
+
+window.__adaylar = ADAYLAR.map((a) => ({ id: a.id, ad: a.ad }));
+window.__hazir = true;
+</script>
+</body>
+</html>

@@ -1,3 +1,28 @@
+## ŞU AN (2026-09-17 — **F1a KAPANDI (D-130)** · Faz F **2/6** · 107/112)
+
+```
+SORU            : Mağazaya gidecek imzalı sürümü üretirken hangi kol ne kadar BAYT ve ne kadar
+                  RİSK getiriyor — küçültme (R8) mi, çıktı biçimi (APK ↔ AAB) mi, ikisi mi?
+ÖLÇÜLEN KOLLAR  : §A kimlik · §B taban (debug APK dökümü) · §C dört kol V0/V1/V2/V3 ·
+                  §D native (16 KB şartı) · §E R8 risk kanıtı · §F paket adı bedeli
+SAYILAR         : docs/paket-raporu-f1.md · ham: docs/olcum-paket-f1.txt (TAM · dört gerçek
+                  gradle derlemesi). debug 11,84 → release 10,58 → R8 ile 8,58 MB (−%27,5);
+                  kazancın %96'sı .dex'ten. AAB 8,89. native .so 0.
+KARAR           : D-130 — 1C · 2A · 3A. Kimlik com.memedobro.teahousetycoon (Play'de KALICI) ·
+                  R8 + kaynak budama AÇIK · sürüm 0.9.0 (versionCode 900, package.json'dan).
+                  Paket: https://claude.ai/artifact/XFvtNfMyomeqYKw3UT6vaZ
+UYGULAMA        : build.gradle (kimlik + sürüm türetme + signingConfig + R8) · capacitor.config.ts
+                  · MainActivity dizin taşıması · values/ + values-tr/ strings.xml ·
+                  package.json 0.9.0 + `npm run yayin` · .gitignore · apk-temizle (AAB de) ·
+                  dev-ortam topla.ps1/kur.ps1
+BEKÇİ           : tests/paket-f1.test.ts (19 den.) · tools/mutasyon-paket-f1.mjs 18/18 kırmızı
+                  (ilk koşuda 2 kaçtı — bekçi .gitignore'ın METNİNE bakıyordu)
+FINAL           : vitest 1292 ✓ · duman 45/45 ✓ · tsc temiz · imzalı APK 8,58 MB / AAB 8,89 MB
+                  (v2 şeması · CN=Tea House Tycoon, O=memedobro, C=TR · SHA-256 ab2b4f60…c874)
+```
+
+---
+
 ## ŞU AN (2026-09-16 — **R2 BİTTİ: mutfak yerleşimi + çarpışma** · Faz R 2/4 · 104/111)
 
 ```
