@@ -1,0 +1,376 @@
+<title>Kabuk ve İmza</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&display=swap">
+<style>
+  :root {
+    --ground: #f2f4f2;
+    --panel: #ffffff;
+    --panel-2: #e9ede9;
+    --ink: #17201c;
+    --ink-2: #4a5852;
+    --ink-3: #76847e;
+    --line: #d2dad5;
+    --line-2: #b9c4bd;
+    --accent: #0d6a5f;
+    --accent-soft: #d8ebe6;
+    --warn: #9a4a24;
+    --warn-soft: #f4e2d7;
+    --bar: #9fb4ac;
+    --bar-pick: #0d6a5f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #101513;
+      --panel: #171e1b;
+      --panel-2: #1f2825;
+      --ink: #e7ede9;
+      --ink-2: #a9b7b1;
+      --ink-3: #7d8a85;
+      --line: #2a3531;
+      --line-2: #3a4742;
+      --accent: #4bc0ae;
+      --accent-soft: #10302b;
+      --warn: #e09265;
+      --warn-soft: #33211a;
+      --bar: #3d4c47;
+      --bar-pick: #4bc0ae;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #101513;
+    --panel: #171e1b;
+    --panel-2: #1f2825;
+    --ink: #e7ede9;
+    --ink-2: #a9b7b1;
+    --ink-3: #7d8a85;
+    --line: #2a3531;
+    --line-2: #3a4742;
+    --accent: #4bc0ae;
+    --accent-soft: #10302b;
+    --warn: #e09265;
+    --warn-soft: #33211a;
+    --bar: #3d4c47;
+    --bar-pick: #4bc0ae;
+  }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    padding-inline: 20px;
+    padding-block: 0 72px;
+  }
+  .sayfa { max-width: 860px; margin-inline: auto; }
+  h1, h2, h3 { font-family: Archivo, system-ui, sans-serif; text-wrap: balance; margin: 0; }
+  h1 { font-size: clamp(30px, 6vw, 44px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
+  h2 { font-size: 13px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); }
+  h3 { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; }
+  p { margin: 0; max-width: 66ch; }
+  code, .sayi { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+
+  header { padding-block: 44px 28px; border-bottom: 2px solid var(--ink); display: flex; flex-direction: column; gap: 14px; }
+  .ust-satir { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--ink-3); letter-spacing: 0.04em; }
+  .damga { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border: 1px solid var(--line-2); border-radius: 2px; }
+  .damga.tam { border-color: var(--accent); color: var(--accent); }
+  .damga.uyari { border-color: var(--warn); color: var(--warn); }
+  header p { color: var(--ink-2); }
+
+  section { padding-block: 40px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 20px; }
+  section:last-of-type { border-bottom: none; }
+
+  /* ölçüm tablosu */
+  .kol-liste { display: flex; flex-direction: column; gap: 2px; }
+  .kol {
+    display: grid;
+    grid-template-columns: 34px minmax(150px, 1.4fr) 92px minmax(90px, 2fr) 72px;
+    gap: 14px; align-items: center;
+    padding: 11px 14px; background: var(--panel); border: 1px solid var(--line);
+  }
+  .kol.taban { background: var(--panel-2); }
+  .kol-ad { font-family: "IBM Plex Mono", monospace; font-size: 12px; font-weight: 600; color: var(--ink-3); }
+  .kol-baslik { font-size: 14px; color: var(--ink-2); }
+  .kol-boyut { font-family: "IBM Plex Mono", monospace; font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
+  .cubuk { height: 9px; background: var(--bar); }
+  .kol.secili .cubuk { background: var(--bar-pick); }
+  .kol.secili { border-color: var(--accent); }
+  .kol-fark { font-family: "IBM Plex Mono", monospace; font-size: 12px; text-align: right; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .kol.secili .kol-fark { color: var(--accent); font-weight: 600; }
+  @media (max-width: 640px) {
+    .kol { grid-template-columns: 30px 1fr 80px; }
+    .cubuk-kutu, .kol-fark { display: none; }
+  }
+
+  /* karar bloğu */
+  .karar { background: var(--panel); border: 1px solid var(--line-2); }
+  .karar-bas { padding: 16px 18px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 6px; }
+  .karar-no { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--accent); letter-spacing: 0.1em; font-weight: 600; }
+  .karar-bas p { font-size: 14px; color: var(--ink-2); }
+  .secenek { padding: 16px 18px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 7px; }
+  .secenek:first-of-type { border-top: none; }
+  .secenek.onerilen { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
+  .secenek-bas { display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; }
+  .secenek-harf { font-family: "IBM Plex Mono", monospace; font-weight: 600; font-size: 13px; color: var(--ink); }
+  .secenek-ad { font-weight: 600; font-size: 15px; }
+  .rozet { font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: 0.08em; padding: 2px 7px; border-radius: 2px; background: var(--accent); color: var(--ground); font-weight: 600; }
+  .rozet.kalici { background: var(--warn); }
+  .secenek dl { display: grid; grid-template-columns: 76px 1fr; gap: 4px 14px; margin: 0; font-size: 14px; }
+  .secenek dt { font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); padding-top: 3px; }
+  .secenek dd { margin: 0; color: var(--ink-2); }
+  .secenek dd strong { color: var(--ink); font-weight: 600; }
+
+  .kutu { background: var(--panel-2); border-left: 3px solid var(--line-2); padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+  .kutu.uyari { border-left-color: var(--warn); background: var(--warn-soft); }
+  .kutu h3 { font-size: 15px; }
+  .kutu p, .kutu li { font-size: 14px; color: var(--ink-2); }
+  ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 5px; }
+
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  .kaydir { overflow-x: auto; }
+  th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); }
+  th { font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; }
+  td.sag, th.sag { text-align: right; font-variant-numeric: tabular-nums; font-family: "IBM Plex Mono", monospace; }
+  .evet { color: var(--accent); font-weight: 600; }
+  .hayir { color: var(--warn); font-weight: 600; }
+
+  footer { padding-top: 32px; color: var(--ink-3); font-size: 13px; display: flex; flex-direction: column; gap: 6px; }
+</style>
+
+<div class="sayfa">
+
+  <header>
+    <div class="ust-satir">
+      <span class="damga tam">OLCUM=tam · dört gerçek gradle derlemesi</span>
+      <span class="damga uyari">cihaz bağlı değil</span>
+      <span>2026-09-17 · Faz F · F1a</span>
+    </div>
+    <h1>Kabuk ve İmza</h1>
+    <p>Mağazaya gidecek imzalı sürümü üretirken hangi kol ne kadar <strong>bayt</strong> ve ne kadar
+    <strong>risk</strong> getiriyor? Dört kol derlendi, üç kalem karara kaldı. Sayılar
+    <code>docs/paket-raporu-f1.md</code>, ham çıktı <code>docs/olcum-paket-f1.txt</code>.</p>
+  </header>
+
+  <section>
+    <h2>Ölçülen kollar</h2>
+    <div class="kol-liste">
+      <div class="kol taban">
+        <span class="kol-ad">—</span>
+        <span class="kol-baslik">debug APK <span style="color:var(--ink-3)">(bugüne kadar konuşulan sayı)</span></span>
+        <span class="kol-boyut">11,84 MB</span>
+        <span class="cubuk-kutu"><span class="cubuk" style="width:100%"></span></span>
+        <span class="kol-fark">taban</span>
+      </div>
+      <div class="kol">
+        <span class="kol-ad">V0</span>
+        <span class="kol-baslik">release · küçültme kapalı</span>
+        <span class="kol-boyut">10,58 MB</span>
+        <span class="cubuk-kutu"><span class="cubuk" style="width:89.4%"></span></span>
+        <span class="kol-fark">−10,6%</span>
+      </div>
+      <div class="kol secili">
+        <span class="kol-ad">V1</span>
+        <span class="kol-baslik">release · R8 + kaynak budama</span>
+        <span class="kol-boyut">8,58 MB</span>
+        <span class="cubuk-kutu"><span class="cubuk" style="width:72.5%"></span></span>
+        <span class="kol-fark">−27,5%</span>
+      </div>
+      <div class="kol">
+        <span class="kol-ad">V2</span>
+        <span class="kol-baslik">AAB · küçültme kapalı</span>
+        <span class="kol-boyut">10,36 MB</span>
+        <span class="cubuk-kutu"><span class="cubuk" style="width:87.5%"></span></span>
+        <span class="kol-fark">−12,5%</span>
+      </div>
+      <div class="kol">
+        <span class="kol-ad">V3</span>
+        <span class="kol-baslik">AAB · R8 + kaynak budama</span>
+        <span class="kol-boyut">8,83 MB</span>
+        <span class="cubuk-kutu"><span class="cubuk" style="width:74.6%"></span></span>
+        <span class="kol-fark">−25,4%</span>
+      </div>
+    </div>
+    <div class="kutu">
+      <h3>AAB, APK'dan büyük görünüyor — gerileme değil</h3>
+      <p>AAB tüm ekran yoğunluklarını ve dilleri taşıyan bir <strong>dağıtım kabıdır</strong>;
+      kullanıcı onu indirmez, Play ondan cihaza özel APK üretir. İndirilen boyut ölçülemedi
+      (bundletool kurulu değil), ama <strong>üst sınırı var</strong>: AAB'deki tüm
+      <code>res + resources</code> payı 0,36 MB, yani bölünmeden gelebilecek kazanç bundan azdır.</p>
+    </div>
+    <div class="kutu">
+      <h3>Kazancın %96'sı koddan geliyor</h3>
+      <p>V0 → V1 farkı 1,99 MB. Aynı geçişte <code>.dex</code> 2,37 → 0,45 MB, yani
+      <strong>1,92 MB</strong>. Kaynak budamanın kendi payı 0,08 MB. Oyunun kendi Java'sı tek
+      satır; silinen şey kullanılmayan androidx + Capacitor.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Karar 1 / 3</h2>
+    <div class="karar">
+      <div class="karar-bas">
+        <span class="karar-no">PAKET ADI</span>
+        <h3>Uygulamanın kalıcı kimliği ne olsun?</h3>
+        <p>Kabukta bugün <code>com.kosekiraathanesi.game</code> yazılı; 2026-09-17'de
+        <code>com.memedobro.kosekiraathanesi</code> önerisi onaylandı. İkisi arasındaki fark
+        bugün yedi dosya, yayından sonra <strong>hiç</strong>.</p>
+      </div>
+      <div class="secenek onerilen">
+        <div class="secenek-bas">
+          <span class="secenek-harf">A</span>
+          <span class="secenek-ad"><code>com.kosekiraathanesi.game</code></span>
+          <span class="rozet">ÖNERİ</span>
+        </div>
+        <dl>
+          <dt>Bedel</dt><dd><strong>0 dosya</strong> — kabukta, manifestte ve Java paket dizininde zaten yazılı</dd>
+          <dt>Artı</dt><dd>Oyunun kendi adını taşıyor; ileride ikinci oyun (ortaçağ tycoon) kendi adını alır, seri tek çatıya bağlı kalmaz</dd>
+          <dt>Eksi</dt><dd>Sahiplik adı geçmiyor; <code>.game</code> soneki bir ters-alan adı değil, uydurma</dd>
+        </dl>
+      </div>
+      <div class="secenek">
+        <div class="secenek-bas">
+          <span class="secenek-harf">B</span>
+          <span class="secenek-ad"><code>com.memedobro.kosekiraathanesi</code></span>
+          <span class="rozet kalici">ONAYLANMIŞTI</span>
+        </div>
+        <dl>
+          <dt>Bedel</dt><dd><strong>4 kod dosyası + 1 dizin taşıması + 3 belge</strong> (ölçüldü, yarım saat)</dd>
+          <dt>Artı</dt><dd>Yayıncı adı öne çıkar; sonraki oyunlar <code>com.memedobro.*</code> altında toplanır</dd>
+          <dt>Eksi</dt><dd>Mağaza kimliğinde kullanıcı adı görünür; oyunlar aynı kökten türer</dd>
+        </dl>
+      </div>
+    </div>
+    <div class="kutu uyari">
+      <h3>Bu kalem, ucuz olduğu son turda</h3>
+      <p><code>applicationId</code> Play'de kalıcı kimliktir: uygulama yayımlandıktan sonra
+      <strong>değiştirilemez</strong>. Değiştirmek, yeni bir uygulama listelemek ve yüklemeleri
+      sıfırlamak demektir. Bugün yedi dosya, yarın imkânsız.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Karar 2 / 3</h2>
+    <div class="karar">
+      <div class="karar-bas">
+        <span class="karar-no">KÜÇÜLTME (R8)</span>
+        <h3>1,99 MB için doğrulanmamış bir risk alınsın mı?</h3>
+        <p>Boyut kazancı kesin ölçüldü. Kolun <em>çalıştığı</em> ölçülmedi — bunun için cihaz
+        gerekir. Aşağıdaki kanıt, R8'in kendi çıktısından okundu.</p>
+      </div>
+      <div class="secenek onerilen">
+        <div class="secenek-bas">
+          <span class="secenek-harf">A</span>
+          <span class="secenek-ad">R8 + kaynak budama AÇIK</span>
+          <span class="rozet">ÖNERİ</span>
+        </div>
+        <dl>
+          <dt>Kazanç</dt><dd><strong>−1,99 MB (−%18,9)</strong> → release APK 8,58 MB</dd>
+          <dt>Risk</dt><dd>Cihazda açılış doğrulanmadı. Kanıt güçlü ama dolaylı</dd>
+          <dt>Kapanışı</dt><dd>Aynı turda <strong>imzalı APK telefona kurulup açılır</strong>; açılmazsa kol tek satırla geri alınır</dd>
+        </dl>
+      </div>
+      <div class="secenek">
+        <div class="secenek-bas">
+          <span class="secenek-harf">B</span>
+          <span class="secenek-ad">Küçültme KAPALI (bugünkü ayar)</span>
+        </div>
+        <dl>
+          <dt>Kazanç</dt><dd>Yok — release APK 10,58 MB</dd>
+          <dt>Risk</dt><dd>Sıfır; derlenen kod birebir yazılan kod</dd>
+          <dt>Bedel</dt><dd>Her indirmede <strong>1,99 MB fazla</strong>; F3/F4 eklentileri gelince kol yeniden ölçülmek zorunda kalır</dd>
+        </dl>
+      </div>
+    </div>
+
+    <h2>R8'in kendi çıktısından okunan kanıt</h2>
+    <div class="kaydir">
+      <table>
+        <thead><tr><th>Gösterge</th><th class="sag">Değer</th><th>Ne anlama geliyor</th></tr></thead>
+        <tbody>
+          <tr><td>Capacitor eklenti kuralı</td><td class="sag evet">VAR</td><td>AAR kendi korumasını getiriyor, R8 uyguluyor</td></tr>
+          <tr><td><code>@JavascriptInterface</code> kuralı</td><td class="sag evet">VAR</td><td>Köprü çağrıları korunuyor</td></tr>
+          <tr><td><code>MainActivity</code> çıktıda</td><td class="sag evet">EVET</td><td>Giriş noktası duruyor</td></tr>
+          <tr><td>Bridge · BridgeActivity · WebViewLocalServer</td><td class="sag evet">üçü de</td><td>Çekirdek hayatta</td></tr>
+          <tr><td>Kurulu Capacitor eklentisi</td><td class="sag">0</td><td>Yansıma yüzeyi en dar hâlinde</td></tr>
+          <tr><td>Tamamen silinen <code>com.getcapacitor</code> sınıfı</td><td class="sag">15</td><td>13'ü kullanılmayan istisna/kaynak/iç sınıf</td></tr>
+          <tr><td>Denetlenmemiş tek nokta</td><td class="sag hayir">2</td><td><code>ProcessedRoute</code> ve <code>ServerPath$PathType</code> atıldı — cihazda ilk bakılacak yer</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Karar 3 / 3</h2>
+    <div class="karar">
+      <div class="karar-bas">
+        <span class="karar-no">SÜRÜM ADI</span>
+        <h3>İlk imzalı sürüm hangi numarayı taşısın?</h3>
+        <p>Bugün <code>build.gradle</code> <code>1.0</code>, <code>package.json</code>
+        <code>0.0.0</code> diyor ve ikisi hiçbir yerde karşılaştırılmıyor. Tek kaynağa
+        bağlanacak — soru, o kaynağın <em>değeri</em>.</p>
+      </div>
+      <div class="secenek onerilen">
+        <div class="secenek-bas">
+          <span class="secenek-harf">A</span>
+          <span class="secenek-ad"><code>0.9.0</code> · versionCode 1</span>
+          <span class="rozet">ÖNERİ</span>
+        </div>
+        <dl>
+          <dt>Der ki</dt><dd>Oyun tamam ama <strong>mağaza katmanı değil</strong> — reklam (F3), IAP (F4), vitrin (F5) duruyor</dd>
+          <dt>Sonra</dt><dd>F5 bitince <code>1.0.0</code> gerçek yayın sürümü olur; ilk kilometre taşı boşa harcanmaz</dd>
+        </dl>
+      </div>
+      <div class="secenek">
+        <div class="secenek-bas">
+          <span class="secenek-harf">B</span>
+          <span class="secenek-ad"><code>1.0.0</code> · versionCode 1</span>
+        </div>
+        <dl>
+          <dt>Der ki</dt><dd>Bu sürüm yayına hazır</dd>
+          <dt>Eksi</dt><dd>F3–F5 bitmeden 1.0 denmiş olur; mağaza sürümü <code>1.1</code>'den başlar</dd>
+        </dl>
+      </div>
+      <div class="secenek">
+        <div class="secenek-bas">
+          <span class="secenek-harf">C</span>
+          <span class="secenek-ad"><code>0.1.0</code> · versionCode 1</span>
+        </div>
+        <dl>
+          <dt>Der ki</dt><dd>Erken taslak</dd>
+          <dt>Eksi</dt><dd>Oyun 106/111 kalemde bitmiş durumda; numara olduğundan genç görünür</dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Sorulmayanlar</h2>
+    <div class="kutu">
+      <h3>Teknik çatal — seçildi, gerekçesi yazıldı</h3>
+      <ul>
+        <li><strong>Çıktı biçimi: ikisi de.</strong> Play yeni uygulamalarda AAB istiyor; APK
+        cihaza kurup denemek için gerekiyor. Kol değil, iki ayrı iş.</li>
+        <li><strong>Sürüm tek kaynağa bağlanır:</strong> <code>package.json</code> yazar,
+        <code>build.gradle</code> onu okur; <code>versionCode</code> ondan türer. Bekçi iki
+        değerin ayrışmasını yakalar.</li>
+        <li><strong>Keystore:</strong> RSA 4096, 10.000 gün, alias <code>kiraathane-yukleme</code>;
+        dosya ve parola <code>C:\dev-ortam</code>'da, depoda yalnız dosya-dışı referans.</li>
+        <li><strong><code>allowBackup</code> açık kalır.</strong> Android'in otomatik yedeği
+        oyuncunun ilerlemesini yeni telefona taşır; kapatmak oyuncuyu cezalandırır.</li>
+      </ul>
+    </div>
+    <div class="kutu uyari">
+      <h3>Ekran yönü — bilerek bu pakete alınmadı</h3>
+      <p>Manifestte <code>screenOrientation</code> yok, yani cihaz serbest döndürüyor. Kilit
+      gerekip gerekmediğinin cevabı <em>oyunun yatayda nasıl göründüğü</em>, yani sayısı bu turda
+      yok. <strong>F1b'de ölçülüp gösterilerek sorulacak.</strong> Kalıcı bir kalem değil, her
+      sürümde değiştirilebilir.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>Karar bu sayfada değil, sohbette veriliyor: <strong>1A/1B · 2A/2B · 3A/3B/3C</strong>.</p>
+    <p>Seçilen kol uygulanacak, bekçi testi yazılacak, en az iki mutasyonla doğrulanacak ve final
+    tam koşu yapılacak (D-084).</p>
+  </footer>
+
+</div>

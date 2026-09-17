@@ -27,7 +27,12 @@ bakarak yapılabilir, ama R8 kolunun **çalıştığı** ancak telefonda görül
 
 ## §Bulgular
 
-### §A — Kabuğun bugünkü kimliği
+> **Bu bölüm KARARDAN ÖNCEKİ ölçümdür ve öyle bırakılmıştır** — kararın hangi sayılara bakarak
+> verildiği ancak böyle okunabilir. Uygulamadan sonraki final koşunun sayıları §Uygulama'da.
+> İki koşu arasında release APK 10,58 → 10,59 MB ve AAB 10,36 → 10,42 MB oynadı: aradaki fark
+> **imzanın kendisi** (final koşuda çıktılar artık imzalı). Kolların sıralaması değişmedi.
+
+### §A — Kabuğun ölçüm anındaki kimliği (karar öncesi)
 
 | Alan | Değer | Not |
 |---|---|---|
@@ -164,12 +169,126 @@ olduğu son turdadır**.
 
 ## §Karar
 
-_(boş — karar paketi kullanıcıya sunulacak)_
+**D-130 — kullanıcı seçimi 2026-09-17: `1C · 2A · 3A`.**
+
+| Kalem | Seçilen | Elenen |
+|---|---|---|
+| Paket adı | **`com.memedobro.teahousetycoon`** (1C) | 1A `com.kosekiraathanesi.game` · 1B `com.memedobro.kosekiraathanesi` |
+| Küçültme | **R8 + kaynak budama AÇIK** (V1) | küçültme kapalı |
+| Sürüm | **`0.9.0`** · versionCode 900 | `1.0.0` · `0.1.0` |
+
+**Karar 1 paket sunulduktan SONRA değişti — ve asıl karar orada oldu.** Pakette iki kol vardı
+(mevcut ad ↔ onaylanmış ad); kullanıcı ikisini de eledi ve soruyu büyüttü: *"kosekiraathanesi
+olmayacak, cafe tycoon gibi bir şey düşünüyorum ki genel kullanıcıya hitap etsin."* Yani kalem
+bir **kimlik** kalemi değil bir **konumlandırma** kalemiymiş. Ölçüldü:
+
+- **Jenerik ad rafı dolu:** "Cafe Tycoon" ile neredeyse birebir aynı başlıkta en az beş oyun var
+  (Idle Cafe Tycoon: Coffee Shop · Café Tycoon Idle Coffee Shop · CoffeeAddict · Idle Coffee Shop
+  Tycoon · Idle Burger Shop: Cafe Tycoon). O kelimede sıralanmak indirme hızıyla olur; sıfır
+  indirmeli bir uygulama o başlığı taksa da getirisi **sıfır**, bedeli ayırt ediciliğin tamamı.
+- **Çayhane rafında kelime kalabalık ama MEKÂN boş:** Tsuki Tea House · My Dream TeaHouse ·
+  Little Corner Tea House — üçü de Japon/Çin estetiği. Türk kıraathanesi rafta yok.
+- **Adı İngilizceleştirmek oyunu uluslararası yapmaz:** oyun metninin tamamı Türkçe. Genel
+  kullanıcı hedefinin gerçek bedeli ad değil **yerelleştirme** ve o panoda hiç yok.
+
+**Çözülme biçimi — ad ile kimlik ayrıldı.** Mağaza başlığı her sürümde ve **dil başına** ayrı
+yazılabilir; kalıcı olan yalnız `applicationId`. Bu yüzden kimlik adı taşımayan bir kök aldı
+(`com.memedobro`), başlıklar ise iki dilde ayrı seçildi ve **"cafe" anahtar kelimesi başlığı
+feda etmeden İngilizce başlığın içine kondu**:
+
+| | Başlık | Karakter |
+|---|---|---|
+| İngilizce | **Tea House Tycoon: Idle Cafe** | 27/30 |
+| Türkçe | **Köşe Kıraathanesi: Tycoon** | 25/30 |
+
+Cihazdaki simge adı da dile bağlandı: `values/strings.xml` → *Tea House Tycoon*,
+`values-tr/strings.xml` → *Köşe Kıraathanesi*.
+
+**Sorulmayanlar (teknik çatal — `feedback_technical_forks`):** çıktı biçimi **ikisi de** (Play
+AAB ister, APK cihaz denemesi için) · sürüm **tek kaynağa** bağlandı · keystore RSA 4096 /
+10.000 gün / `C:\dev-ortam` · `allowBackup` açık kaldı.
+
+**Bilerek sorulmayan:** ekran yönü. Cevabı *oyunun yatayda nasıl göründüğü*, yani sayısı bu
+turda yok → **F1b'de ölçülüp gösterilerek sorulacak.** Kalıcı kalem değil.
 
 ## §Uygulama
 
-_(boş)_
+| Dosya | Ne oldu |
+|---|---|
+| `capacitor.config.ts` | `appId` + `appName` yeni kimliğe |
+| `android/app/build.gradle` | kimlik · `package.json`'dan sürüm türetme · `signingConfigs.release` · `minifyEnabled` + `shrinkResources` |
+| `android/app/src/main/java/com/memedobro/teahousetycoon/MainActivity.java` | paket satırı + **dizin taşındı** |
+| `android/app/src/main/res/values/strings.xml` | varsayılan ad İngilizce; kimlik alanları burada |
+| `android/app/src/main/res/values-tr/strings.xml` | **yeni** — Türkçe cihazda "Köşe Kıraathanesi" |
+| `package.json` | `0.0.0` → **`0.9.0`** (tek kaynak) + `npm run yayin` betiği |
+| `.gitignore` | `android/keystore.properties` · `android/*.jks` |
+| `tools/apk-temizle.mjs` | bayat çıktı temizliği **AAB'yi de** kapsıyor |
+| `C:\dev-ortam\topla.ps1` · `kur.ps1` | keystore iki makine arasında senkronlanıyor |
+
+**Üretilen imzalı çıktılar** (`npm run yayin`):
+
+| Çıktı | Boyut | İmza |
+|---|---:|---|
+| `app-release.apk` | **8,58 MB** (9.000.474 bayt) | ✅ doğrulandı — v2 şeması · `CN=Tea House Tycoon, O=memedobro, C=TR` · SHA-256 `ab2b4f60…c874` |
+| `app-release.aab` | **8,89 MB** (9.318.507 bayt) | ✅ imzalı (Play'e giden dosya) |
+
+Debug APK 11,84 MB'dan mağazaya giden APK 8,58 MB'a indi: **−%27,5.**
 
 ## §Bekçi
 
-_(boş)_
+`tests/paket-f1.test.ts` — **19 denetim** · `tools/mutasyon-paket-f1.mjs` — **18 mutasyon,
+18'i de kırmızı.**
+
+Mutasyonlar beş kümede: kimlik (yarım yeniden adlandırma · namespace ayrışması · capacitor ·
+url şeması) · sürüm (elle yazma · sabit kod · bozuk semver · basamak taşıran formül) · imza
+(parola gömme · iki `.gitignore` satırı · koşulsuz kırılma) · küçültme (iki ayar ayrı ayrı) ·
+dil ve kabuk (kimlik sızması · varsayılan ad · yeni izin · `allowBackup`).
+
+**İlk koşuda 2 mutasyon kaçtı (M10 · M11) ve delik gerçekti.** Bekçi `.gitignore`ın METNİNDE
+kalıp arıyordu; satırın başına `#` koyan mutasyon kuralı **öldürdüğü hâlde** metni bozmadığı
+için testi yeşil bıraktı — yani bekçi dosyanın ne YAZDIĞINI denetliyordu, ne YAPTIĞINI değil.
+Artık git'in kendisine soruluyor (`git check-ignore`), üstelik bir **karşı örnekle** birlikte:
+`android/app/build.gradle` yok sayılmamalı, yoksa fazla geniş bir kural kabuğu depodan düşürür.
+
+### Aracın kendisinde bulunan altı kusur
+
+Bu turun en pahalı dersi araçta çıktı. `tools/olcum-paket-f1.mjs` altı kez yanlış okudu ve
+**altısı da kolu daha karamsar gösteriyordu** — yani düzeltilmese, doğru kol sessizce elenirdi:
+
+1. Node 18.20+ bir `.bat`ı doğrudan `spawn` etmeyi reddediyor (CVE-2024-27980), hem de sessizce:
+   `status` null, `stderr` boş. **Çıkış kodu null ise komut çalışmadı demektir, kırıldı demek
+   değildir.**
+2. `usage.txt`in iki satır dilbilgisi var: iki noktayla biten satır sınıfın DURDUĞUNU, bitmeyen
+   satır TAMAMEN silindiğini söyler. Ayırmayan sayaç budanmış her sınıfı "silinmiş" saydı.
+3. Aynı dosya CRLF: satır sonundaki `\r` yüzünden iki nokta sınaması hiç tutmadı.
+4. `Bridge$Builder` atılmışken `Bridge` duruyordu; `\b` ile biten kalıp `$`ta sınır bulup **iç
+   sınıfı çekirdek sandı** ve R8 kolunu "ölü" ilan etti.
+5. **Kol yaması, ölçtüğü dosyanın şeklini varsayıyordu.** D-130 `release` bloğuna `signingConfig`
+   ekleyince yama imza satırını düşürdü ve dört kolun dördü birden "KIRILDI" çıktı. Ders aracın
+   kendi cinsinden: bir ölçüm aracı kaynağın şeklini varsayarsa, kaynak değiştiği gün ölçüm
+   değil ARAÇ kırılır.
+6. **İmza sınaması yanlış katmana bakıyordu.** Zip içinde `META-INF/*.RSA` aramak **v1 (JAR)**
+   imzasını arar; minSdk 24 olduğu için AGP yalnız **v2** ile imzalıyor ve v2 imzası zip girdisi
+   değil, APK İmza Bloğu'nda duruyor. Araç imzalı APK'ya "imzasız" dedi. Kusuru gizleyen şey,
+   iki çıktıdan birinin (AAB jar-imzalı) doğru cevap vermesiydi.
+
+### Final tam koşu
+
+`vitest` **1292 ✓** (58 dosya) · `npm run duman` **45/45 ✓** · `tsc -b` temiz ·
+`OLCUM=tam` ölçüm yeniden koşuldu ve ham çıktı bugünkü kaynakla damgalandı.
+
+## §Açık uçlar
+
+1. **R8 kolu cihazda doğrulanmadı.** §E'nin kanıtı güçlü ama dolaylı; imzalı APK telefona
+   kurulup açılana kadar kol "ölçüldü, denenmedi" durumunda. Açılmazsa tek satırla geri alınır.
+2. **Denetlenmemiş iki sınıf:** `ProcessedRoute` ve `ServerPath$PathType` R8 tarafından atıldı.
+   Cihazda bir sorun çıkarsa ilk bakılacak yer burası.
+3. **F3/F4 bu kolu yeniden açar.** AdMob ve RevenueCat birer Capacitor eklentisi getirir;
+   eklenti sayısı 0'dan çıktığı anda "yansıma yüzeyi en dar" gerekçesi geçersizleşir.
+4. **AAB'nin indirilen boyutu ölçülmedi** (bundletool yok). Üst sınır biliniyor: `res +
+   resources` payı 0,37 MB, kazanç bundan azdır.
+5. **Yerelleştirme panoda yok.** "Genel kullanıcıya hitap etsin" hedefinin gerçek bedeli bu ve
+   ölçülmedi — oyun metninin tamamı Türkçe. Kendi turunu ister.
+6. **v3 imza şeması kapalı** (yalnız v2). Play App Signing paketi yeniden imzaladığı için
+   bugün sonucu yok; anahtar döndürme (key rotation) gündeme gelirse bakılır.
+7. **Ekran yönü** — F1b'ye bırakıldı (§Karar).

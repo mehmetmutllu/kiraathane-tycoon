@@ -14,7 +14,16 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const KOK = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const CIKTI = path.join(KOK, 'android', 'app', 'build', 'outputs', 'apk');
+/*
+ * F1a EKİ: aynı tuzak AAB için de açıktı. Bundle çıktısı ayrı klasöre (`outputs/bundle`) yazılır
+ * ve gradle onu da kısaltmadan üzerine yazar — yani mağazaya giden dosyanın boyutu da yanlış
+ * okunabilirdi. Kusur bir kez debug APK'da görüldüğü için orada kapatılmıştı; kapatılan şey
+ * dosya değil DAVRANIŞ olduğundan, aynı davranışın öteki çıktısı da alınır.
+ */
+const CIKTILAR = [
+  path.join(KOK, 'android', 'app', 'build', 'outputs', 'apk'),
+  path.join(KOK, 'android', 'app', 'build', 'outputs', 'bundle'),
+];
 
 let silinen = 0;
 const gez = (d) => {
@@ -22,8 +31,8 @@ const gez = (d) => {
   for (const g of fs.readdirSync(d, { withFileTypes: true })) {
     const p = path.join(d, g.name);
     if (g.isDirectory()) gez(p);
-    else if (g.name.endsWith('.apk')) { fs.rmSync(p); silinen++; }
+    else if (g.name.endsWith('.apk') || g.name.endsWith('.aab')) { fs.rmSync(p); silinen++; }
   }
 };
-gez(CIKTI);
-console.log(`apk-temizle: ${silinen} bayat APK silindi`);
+for (const d of CIKTILAR) gez(d);
+console.log(`apk-temizle: ${silinen} bayat APK/AAB silindi`);

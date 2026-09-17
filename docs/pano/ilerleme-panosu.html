@@ -195,8 +195,8 @@ h2{font-size:21px;font-weight:800}
 <script type="application/json" id="durum">
 {
  "guncelleme": "17.09.2026",
- "yapilan": 106,
- "toplam": 111,
+ "yapilan": 107,
+ "toplam": 112,
  "kilometre": [
   {
    "at": 28,
@@ -211,19 +211,19 @@ h2{font-size:21px;font-weight:800}
    "etiket": "Model ve denge oturdu"
   },
   {
-   "at": 111,
+   "at": 112,
    "etiket": "v1.0 App Store"
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum — Faz R · 4/4 · KAPANDI — R4: çevre sanatı (D-129)",
-  "baslik": "Kullanıcı bir kolu seçerken <b>kapsamını da</b> değiştirebilir",
-  "aciklama": "<i>&#34;Zemin ve duvarlar ve yan taraflar yapılmamış asset gibi&#34;</i> — üç şey birlikte sayılmıştı, ölçüm üçünün ekranda <b>eşit olmadığını</b> gösterdi: zemin karenin ortalama <b>%59,6&#39;sı</b> (en yüksek %82,8), duvar %8,0, boşluk %4,2 (en yüksek %20,0). Duvarı mükemmelleştirmek karenin %8&#39;ini oynatırdı.<br><br><b>&#34;Bitmemiş&#34; hissinin sayısı bulundu:</b> gölge almayan zemin düzleminde parlaklık sapması <b>1,39</b> ve <b>11 ayrık renk</b>; aynı karede yanında duran gltf yüzeyleri <b>27,6-39,3</b> sapma ve <b>144-372</b> renk taşıyor. Aradaki <b>5-6 kat</b>, gözün &#34;bu yüzey yapılmamış&#34; derken ölçtüğü şey.<br><br><b>Ölçüm üç kolu kullanıcıya SUNMADAN eledi:</b> gökyüzü silueti (ufuk üstü boşluk 18 karenin 18&#39;inde <b>%0,0</b> — kamera 45°&#39;den bakıyor, gökyüzü ekranda yok) · sokak cephesine bahçe (boşluğun yalnız <b>%1,6&#39;sı</b> ön kenarda) · vinyet.<br><br>Kullanıcı zemin ve duvar gruplarının <b>tamamını</b> eledi (<i>&#34;şu anki haliyle kalsın&#34;</i>) ve yalnız bahçeyi seçti — ama kolun <b>kapsamını değiştirdi</b>: <i>&#34;alan olarak açmadığım her yer öyle olsun&#34;</i>. Bahçe artık binanın dışındaki kuşak değil, <b>ayak izinin tümleyeni</b>."
+  "etiket": "Bu oturum — Faz F · 2/6 — F1a: kabuk ve imza (D-130)",
+  "baslik": "Kolu <b>eleyen</b> ölçüm, kolu seçen ölçüm kadar denetim ister",
+  "aciklama": "Mağazaya gidecek paket dört kolla gerçekten derlendi: debug APK <b>11,84 MB</b> → release <b>10,58</b> → R8 ile <b>8,58 MB</b> (<b>−%27,5</b>). Kazancın <b>%96&#39;sı</b> koddan (<code>.dex</code> 2,37 → 0,45 MB); kaynak budamanın payı 0,08 MB. Native <code>.so</code> yok → Play&#39;in 16 KB sayfa şartı bu projeye dokunmuyor.<br><br><b>Turun asıl dersi araçta çıktı.</b> Ölçüm aracı <b>altı kez</b> yanlış okudu ve altısı da kolu <b>daha karamsar</b> gösteriyordu — düzeltilmese R8 &#34;ölü&#34; diye sessizce elenirdi. Node&#39;un <code>.bat</code>&#39;ı sessizce reddetmesi (çıkış kodu null = <i>çalışmadı</i>, <i>kırıldı</i> değil) · <code>usage.txt</code>&#39;in iki satır dilbilgisi · CRLF · iç sınıf adının çekirdek sanılması · kol yamasının kaynağın şeklini varsayması · imza sınamasının yanlış katmana bakması. Bir aracın <b>iyimser</b> hatası gözden kaçmaz (sonuç tutmaz); <b>karamsar</b> hatası kaçar.<br><br><b>Karar paket sunulduktan sonra değişti.</b> Pakette iki kimlik kolu vardı; kullanıcı ikisini de eleyip <i>&#34;genel kullanıcıya hitap etsin&#34;</i> dedi — kalem kimlik değil <b>konumlandırma</b> kalemiymiş. Doğru hamle üçüncü bir kimlik önermek değil, <b>adı kimlikten ayırmaktı</b>."
  },
  "siradaki": {
-  "etiket": "Sırada — Faz F · paketleme ve yayın",
-  "baslik": "<b>F1 — Capacitor kabuğu</b> ve imzalı sürüm",
-  "aciklama": "<b>Faz R bitti (4/4).</b> Sırada mağazaya çıkış hazırlığı: <b>F1 Capacitor kabuğu + imzalı sürüm</b>. Kullanıcı kararı alınmış — keystore <code>C:dev-ortam</code>&#39;a, parola oradaki gizli dosyaya, <code>android/</code>&#39;e yalnız dosya-dışı referans. Kalan: sürüm adı/kodu, uygulama ikonu, açılış ekranı.<br><br><b>Cihazda ölçülecek üç şey birikti:</b> dpr kolu (F2) · yazı-tipi ölçeği (R1) · bahçenin çizim yükü (R4: 1 alan 50 çağrı / 28.884 üçgen, 3 alan 182 / 77.016).<br><br><b>Faz dışı bekleyen denge kalemleri:</b> G-39 (masa yükseltmeleri sırayla) · G-06 (tepsi ilk yükseltme 75 → ~50) · G-07 (dwell para-bağımsız) · G-40 (gelirde fazla ondalık) — dördü de <code>economy.config.ts</code>&#39;e dokunuyor, <b>varyant kapısı</b> kendi turunu ister.<br><br><b>R4&#39;ün bıraktığı iş:</b> zemin ve duvar kolları ölçüldü ama uygulanmadı; sayılar raporda duruyor, açılmak istenirse yeniden ölçüm gerekmez."
+  "etiket": "Sırada — Faz F · F6 (tur adı F1b) — ikon, açılış ekranı, ekran yönü",
+  "baslik": "<b>Tasarım turu:</b> üçü de metinle sorulamaz",
+  "aciklama": "<b>İkon, açılış ekranı ve ekran yönü</b> aday render&#39;ı ister (<code>feedback_show_dont_ask</code>). Ekran yönü şu an manifestte <b>kilitli değil</b>; kararın girdisi <i>oyunun yatayda nasıl göründüğü</i>, yani telefon oranında iki kadraj ölçülüp gösterilecek. Oyun içi açılış ekranı hâlâ &#34;Köşe Kıraathanesi&#34; yazıyor — iki dilli başlık kararıyla birlikte ele alınacak.<br><br><b>Ondan sonra F3 (AdMob) → F4 (IAP) → F5 (mağaza vitrini).</b> F3&#39;ün ilk işi <b>R8 kolunu yeniden ölçmek</b> olmalı: kurulu Capacitor eklentisi bugün <b>0</b> ve D-130&#39;un &#34;yansıma yüzeyi en dar&#34; gerekçesi tam buna dayanıyor; eklenti gelince gerekçe düşer.<br><br><b>Cihazda ölçülecek şeyler birikmeye devam ediyor:</b> R8&#39;in gerçekten açıldığı (F1a) · dpr kolu (F2) · yazı-tipi ölçeği (R1) · bahçenin çizim yükü (R4).<br><br><b>Panoda olmayan yeni iş:</b> <b>yerelleştirme</b>. &#34;Genel kullanıcıya hitap etsin&#34; hedefinin gerçek bedeli ad değil, oyun metninin tamamının Türkçe olması — ölçülmedi, kendi turunu ister.<br><br><b>Faz dışı bekleyen denge kalemleri:</b> G-39 · G-06 · G-07 · G-40 — dördü de <code>economy.config.ts</code>&#39;e dokunuyor, <b>varyant kapısı</b> kendi turunu ister."
  },
  "donemler": [
   {
@@ -377,16 +377,36 @@ h2{font-size:21px;font-weight:800}
     {
      "k": "F",
      "t": "Paketleme ve yayın",
-     "d": "Capacitor iOS · CI derlemesi · AdMob, ATT, SKAdNetwork · RevenueCat · gizlilik manifesti · mağaza materyali",
-     "yapilan": 1,
-     "toplam": 5,
-     "kapi": "TestFlight'ta çalışan sürüm",
+     "d": "Mağazaya çıkışın kabuğu. <b>F2 (D-125):</b> ölü asset yükü silindi, APK 20,93 → 11,84 MB ve gölge cihaz sınıfına bağlandı. <b>F1 (D-130):</b> kabuk ve imza — kalıcı kimlik <code>com.memedobro.teahousetycoon</code>, R8 + kaynak budama açık, sürüm <code>package.json</code>&#39;dan türer; <b>imzalı APK 8,58 MB / AAB 8,89 MB</b> (debug&#39;dan −%27,5), anahtar depoda değil. Ad ile kimlik ayrıldı: başlık dil başına yazılıyor (EN &#34;Tea House Tycoon: Idle Cafe&#34; · TR &#34;Köşe Kıraathanesi: Tycoon&#34;). Kalan: <b>F6</b> ikon + açılış ekranı + ekran yönü (tasarım turu) · <b>F3</b> AdMob · <b>F4</b> RevenueCat · <b>F5</b> mağaza vitrini, gizlilik, yaş derecelendirmesi. <b>Not:</b> F3 eklenti getirdiğinde R8 kolu yeniden ölçülmeli.",
+     "yapilan": 2,
+     "toplam": 6,
+     "kapi": "Mağazaya yüklenebilir imzalı AAB + vitrin materyali",
      "durum": "now"
     }
    ]
   }
  ],
  "gunluk": [
+  {
+   "tarih": "17.09.2026",
+   "etiket": "Faz F · 2. oturum (F1a — kabuk ve imza — D-130)",
+   "baslik": "Kullanıcı bir kolu seçerken <b>sorunun kendisini</b> değiştirebilir",
+   "govde": "Karar paketi üç kalem sordu: paket kimliği, küçültme, sürüm. İlkinde iki kol vardı — kabukta yazılı olan ad ve daha önce onaylanan ad. Kullanıcı <b>ikisini de eledi</b>: <i>&#34;kosekiraathanesi olmayacak, cafe tycoon gibi bir şey düşünüyorum ki genel kullanıcıya hitap etsin.&#34;</i> Yani kalem bir <b>kimlik</b> kalemi değil, bir <b>konumlandırma</b> kalemiymiş.<br><br><b>Jenerik ad ölçüldü ve elendi.</b> &#34;Cafe Tycoon&#34; ile neredeyse birebir aynı başlıkta Play&#39;de en az <b>beş</b> oyun var. O kelimede sıralanmak indirme hızıyla olur; sıfır indirmeli bir uygulama için getirisi <b>sıfır</b>, bedeli ayırt ediciliğin tamamı. Çayhane rafında ise kelime kalabalık ama <b>mekân boş</b> — üç oyun da Japon/Çin estetiği, Türk kıraathanesi rafta yok.<br><br><b>Çözüm üçüncü bir ad değil, bir AYIRMA oldu.</b> Mağaza başlığı her sürümde ve <b>dil başına</b> değişebilir; kalıcı olan yalnız <code>applicationId</code>. Kimlik bu yüzden ad taşımayan bir kök aldı (<code>com.memedobro</code>), başlıklar iki dilde ayrı seçildi ve &#34;cafe&#34; anahtar kelimesi <b>başlığı feda etmeden</b> İngilizce başlığın içine kondu. Cihazdaki simge adı da dile bağlandı: <code>values</code> İngilizce, <code>values-tr</code> Türkçe.<br><br><b>Bekçi metne bakıyordu, etkiye değil.</b> Kaçan iki mutasyon <code>.gitignore</code> satırının başına <code>#</code> koydu: kural <b>öldü</b>, metin bozulmadı, test yeşil kaldı — yani imza anahtarı ilk <code>git add -A</code> ile depoya girebilirdi ve bekçi bunu görmezdi. Düzeltme git&#39;in kendisine sormak oldu (<code>git check-ignore</code>), üstelik bir <b>karşı örnekle</b>: <code>build.gradle</code> yok sayılmamalı, yoksa fazla geniş bir kural kabuğu depodan düşürür.",
+   "maddeler": [
+    "<b>D-130:</b> kimlik <code>com.memedobro.teahousetycoon</code> (Play&#39;de <b>kalıcı</b>) · R8 + kaynak budama <b>açık</b> · sürüm <b>0.9.0</b> (versionCode 900)",
+    "<b>İmzalı çıktı:</b> APK <b>8,58 MB</b> · AAB <b>8,89 MB</b> — debug 11,84&#39;ten <b>−%27,5</b>; <code>npm run yayin</code> ikisini birden üretir",
+    "<b>Kazancın %96&#39;sı koddan:</b> <code>.dex</code> 2,37 → <b>0,45 MB</b>; kaynak budamanın payı yalnız 0,08 MB — tek kol, içindeki iki ayar <b>24 kat</b> farklı",
+    "<b>AAB, APK&#39;dan büyük</b> (8,89 &gt; 8,58) ve bu gerileme değil: AAB dağıtım kabıdır, kullanıcı onu indirmez",
+    "<b>Native <code>.so</code> yok</b> → Play&#39;in 16 KB sayfa şartı bu projeye dokunmuyor (kol boş)",
+    "<b>Sürümün iki kaynağı vardı</b> (gradle &#34;1.0&#34; ↔ package.json &#34;0.0.0&#34;) ve hiçbir yerde karşılaştırılmıyordu — gradle artık <code>package.json</code>&#39;ı okuyor",
+    "<b>Başlıklar iki dilde:</b> EN &#34;Tea House Tycoon: Idle Cafe&#34; (27/30) · TR &#34;Köşe Kıraathanesi: Tycoon&#34; (25/30)",
+    "<b>Anahtar:</b> RSA 4096 · 10.000 gün · depoda <b>değil</b> · <code>C:\\dev-ortam</code> senkronunda; anahtar yoksa derleme <b>kırılmaz</b>, imzasız çıkar",
+    "<b>Araç altı kez yanlış okudu</b> ve altısı da kolu <b>daha karamsar</b> gösteriyordu — R8 bir noktada &#34;ölü&#34; ilan edilmişti",
+    "<b>F2&#39;nin kusurunun AAB kardeşi</b> de kapatıldı: <code>apk-temizle</code> artık bundle çıktısını da siliyor",
+    "Bekçi: <code>paket-f1</code> (19 den.) · <code>mutasyon-paket-f1</code> <b>18/18 kırmızı</b> · ilk koşuda <b>2 kaçtı</b>, delik gerçekti",
+    "vitest <b>1292 ✓</b> · duman <b>45/45 ✓</b> · tsc temiz · imza doğrulandı (v2 · <code>CN=Tea House Tycoon</code>)"
+   ]
+  },
   {
    "tarih": "17.09.2026",
    "etiket": "Faz R · 4. oturum (R4 — çevre sanatı — D-129) — Faz R KAPANDI",
@@ -507,23 +527,6 @@ h2{font-size:21px;font-weight:800}
     "<b>Bekçi:</b> <code>tests/erisim-h1.test.ts</code> 16 denetim · <b>16 mutasyon, kaçan 0</b> · vitest <b>1170</b> ✓ · duman 45/45 ✓"
    ],
    "not": "<b>Yolda yıllardır yeşil yanan üç sahte test bulundu.</b> Bardak döngüsünün üç fikstürü oyuncuyu salonun ortasındaki <code>[1, 1]</code> noktasına koyup kaba <code>tableIndex: 0</code> etiketi veriyordu — ikisi birbirini tutmuyordu ve eski nokta-tetiği bunu göremediği için sorun çıkmamıştı. Gövde tetiği ilk günde yakaladı.<br><br><b>Kaçan mutasyon yine bir SINIR öğretti.</b> <code>hedefEkranda</code>'nın derinlik denetimi bugünkü kamera ankrajında <b>zemin</b> hedefleri için ölü (160 × 160 br tarandı, 0 nokta) — o yüzden silinince hiçbir test kırılmadı. Ama fonksiyon yükseklik alıyor: y yükselince taban kipte <b>3.773</b>, portrede 862 nokta kameranın <b>arkasındayken</b> “ekranda” sanılıyor. <b>Kat 3 çatı terası</b> geldiğinde kapı sessizce ters çalışırdı."
-  },
-  {
-   "tarih": "16.09.2026",
-   "etiket": "Faz S · 24. oturum (S9 — ses assetleri — D-122) — Faz S KAPANDI",
-   "baslik": "Ölçüm <b>ayırdı ama seçmedi</b>; seçen şey tek bir sesin kulakta düşmesi oldu",
-   "govde": "Tur ölçümün eksik kolunu kapatarak açıldı: S17 iki UÇ hâli ölçmüştü (dokuzu sentez / dokuzu dosya) ama <b>karma</b> katalog sayısızdı — dosya↔sentez çapraz mesafeleri matriste yoktu. Sayısı olmayan kol karar paketine girmez, o yüzden önce çapraz matris üretildi. İki bulgu çıktı ve ikisi de turun kendi varsayımını çürüttü: <b>kimlik bu kararı seçmiyordu</b> (beş bölüşümün beşi de 0/36 KARIŞIR) ve <b>kataloğun en dar yeri şikâyet edilen ses değildi</b> (<code>quest</code>↔<code>level</code> 4,06 dB).<br><br><b>Karar tabloyu astı.</b> Ölçüm K2'yi öneriyordu; kullanıcı <i>“ocaktan çay alma kötü”</i> dedi ve bütün paketi geri çevirdi. Dokuz sesin dokuzu bir pakette gelir — <b>biri beğenilmezse paketin tamamı düşer</b>. Yani kaynak sorusu “en iyi ortalama” değil <b>“en kötü üyesi ne”</b>ymiş; tablo o sütunu hiç taşımıyordu. Bir sonraki asset turu kolu böyle kurmalı.<br><br><b>Ses kararı metinle sorulmadı, DUYURULARAK soruldu.</b> Karar paketi çalan bir pano olarak yayınlandı: dokuz olayın iki hâli yan yana, beş bölüşümün katalogları, üç ivme kolu. Panonun sayıları da elle yazılmadı — aynı ölçüm kodundan türetildi.<br><br><b>Uğultu düştü, müzik geldi.</b> Kullanıcı <i>“daha farklı bir tycoon oyun arka planı bulmayı dene”</i> deyince 253 parçalık CC0 bundle künyesinden elendi ve 23 aday oyunun kendi çözücüsünden geçirildi. Ölçüt tek sayıya indi: <b>tavan kazanç</b>. Ve sezgi yine çürüdü — adında “oyun” yazan tek aday <b>sonuncu</b> çıktı.<br><br><b>Yolda sessiz bir kayıt hatası bulundu.</b> <code>loadSave</code> yüzeysel yayılım yapıyordu: <code>parsed.settings</code> varsayılan ayar nesnesinin TAMAMINI eziyordu, alan alan birleştirmiyordu. Yani ayarlara eklenen her yeni alan, <b>güncel sürümlü</b> eski bir kayıtta <code>undefined</code> kalırdı ve göç bile çalışmazdı. Bir ses çarpanı için bu, oyunun tamamen susması demekti. Bu bir alan hatası değil <b>ALAN SINIFI</b> hatasıydı; birleştirme tek yere alındı.",
-   "maddeler": [
-    "<b>D-122:</b> K1 (sentez kalır) + I2 + A3 + O4 · O5 = <code>Sketchbook 2024-01-24_02</code> (Abstraction/Tallbeard, <b>CC0</b>)",
-    "<b>Ödenmeyen kazanç yazılı:</b> K2 okunabilirliği 6,41 → <b>10,97 dB</b> yapıyordu, 116,7 KB'a — bilerek alınmadı",
-    "<b>İvme:</b> adım farkı 0,00 → <b>2,82 dB</b> (tabanın 1,7 katı) · I3 elendi, tavanda kısmilerin 3/4'ü 12 kHz üstüne taşıyor",
-    "<b>Müzik dikişle seçildi:</b> baş/son farkı <b>+0,2 dB</b> · ölçümün birincisi (lavta, −18,0 dB) sonu başından <b>7,4 dB alçak</b>",
-    "<b>Motorun İLK DÖNGÜSÜ:</b> <code>music.ts</code> + <code>musicWeb.ts</code> · S10'dan beri boşa dönen <b>“Müzik” anahtarı bağlandı</b>",
-    "<b>Seviye kaydırıcıları</b> (kullanıcı isteği): “kapat” ile “kıs” ayrı · müziğinki <b>ölçülen tavanın</b> altını gezer",
-    "<b>Sessiz kayıt hatası kapandı:</b> yüzeysel yayılım ayar nesnesini eziyordu → <code>ayarlariBirlestir</code>",
-    "<b>Bekçi:</b> iki dosya, 51 denetim, <b>32 mutasyon, kaçan 0</b> · vitest <b>1154</b> ✓ · duman 42 → <b>45/45</b> ✓"
-   ],
-   "not": "<b>Kaçan mutasyonlar yine kodun değil BEKÇİNİN zayıf yerini gösterdi — dört kez.</b> Seri turunda M16: denetim <code>import</code>un ADINA bakıyordu, KULLANIMINA değil (S23'ün <code>toMatch(/FloorPatch/)</code> kusurunun aynısı). Seviye turunda üç tane: sahte arka uç dosya yolunu hiç sınamıyordu · test yalnız KURULUŞ yolunu sınıyordu, oysa oyuncu kaydırıcıyı <code>ayarla</code> ile oynatıyor · motor kuruluşta zaten eşitleme çağırmadığı için tarayıcı-kilidi şartı silinse de test yeşil kalıyordu. Dördü de kapatıldı.<br><br><b>Ve iki bekçi daha iş başında yakaladı:</b> mor dilin punto kilidi CSS'e sızan ham bir <code>13px</code>'i (D-107), pano denetimi de Faz E'yi yanlışlıkla kapattığımı — E5 ses değil <b>hareketli onboarding</b>."
   }
  ],
  "riskler": [
@@ -778,7 +781,7 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunlukArsiv": {
-  "kart": 62,
+  "kart": 63,
   "ilk": "05.06 – 17.06.2026",
   "son": "16.09.2026",
   "yer": "memory-bank/arsiv/pano-gunluk.json"

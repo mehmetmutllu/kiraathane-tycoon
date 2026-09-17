@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 111 · YAPILAN 106 · %95):**
+**Oturum bütçesi (TOPLAM 112 · YAPILAN 107 · %96):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -27,8 +27,8 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | **S sanat ve arayüz geçişi** | **24/24 ✅** |
 | | H oynanış düzeltmeleri | 2/2 ✅ |
 | | **R geri bildirim turları (2026-09-16)** | **4/4 ✅** |
-| | F paketleme ve yayın | 1/5 🔧 |
-| **Program toplam** | | **78/83** |
+| | **F paketleme ve yayın** | **2/6** 🔧 |
+| **Program toplam** | | **79/84** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -639,7 +639,7 @@ Sanat kalemi değil; Faz S'ten ayrı tutuldu ki asset işi bunların arkasında 
   adanın katısı yalnız sırtlık çekirdeği 0,4). Açıklık `3,2 − 2×0,525 = **2,15 br**` — gereken
   0,94'ün iki katından fazla. Kalem geçersiz → **Faz H 3/3 ✅ kapandı**, toplam 108 → 107.
 
-## Faz F — PAKETLEME VE YAYIN (1/5) 🔧
+## Faz F — PAKETLEME VE YAYIN (2/6) 🔧
 - ✅ **F2 — telefon yükü** · **D-125:** ölü asset yükü silindi + gölge cihaz sınıfına bağlandı.
   Model paketlerinin **%48,5'ine (11,2 MB) hiçbir kod yolu ulaşamıyordu**; dünya TAM açıkken
   1006 asset dosyasının **898'i (18,5 MB)** hiç istenmiyordu. Kullanıcı A1'i seçti (yalnız
@@ -650,11 +650,22 @@ Sanat kalemi değil; Faz S'ten ayrı tutuldu ki asset işi bunların arkasında 
   kısaltmadan üzerine yazıyor) → `tools/apk-temizle.mjs`. Bekçi `asset-olu-yuk` (4 den. · 3 mut.)
   + `golge-cihaz` (12 den. · 5 mut.) · kaçan 0. `docs/telefon-raporu-f2.md`.
   **AÇIK:** dpr kolu bu donanımda ölçülemedi (RTX 3060'ta fragment bağlayıcı değil) → cihaz turu.
-- ⏳ **F1 — Capacitor kabuğu + imzalı sürüm** · APK üretiliyor (11,84 MB), `keytool` bulundu.
-  Kullanıcı kararı: keystore ben üretip `C:\dev-ortam`'a koyacağım.
+- ✅ **F1 — kabuk + imza** (tur adı F1a) · **D-130:** kimlik `com.memedobro.teahousetycoon` (Play'de KALICI),
+  R8 + kaynak budama açık, sürüm `0.9.0` tek kaynaktan (`package.json`). **İmzalı APK 8,58 MB /
+  AAB 8,89 MB** (debug 11,84'ten −%27,5); kazancın %96'sı `.dex`ten. Anahtar RSA 4096/10.000 gün,
+  depoda değil, `C:\dev-ortam` senkronunda. `npm run yayin` imzalı ikisini birden üretir.
+  Karar 1 paket sunulduktan SONRA değişti: kullanıcı kimlik kolunu değil KONUMLANDIRMAYI sordu
+  → ad ile kimlik ayrıldı, başlıklar iki dilde (EN "Tea House Tycoon: Idle Cafe", TR "Köşe
+  Kıraathanesi: Tycoon"), cihaz simge adı `values`/`values-tr` ile dile bağlandı. Bekçi
+  `paket-f1` (19 den. · 18 mut.) · kaçan 2 (`.gitignore` metnine bakıyordu, artık
+  `git check-ignore`a soruyor). `docs/paket-raporu-f1.md`.
+  **AÇIK:** R8'in cihazda açıldığı doğrulanmadı; F3/F4 eklenti getirince kol yeniden ölçülmeli.
+
 - ⏳ **F3 — reklam (AdMob)** · kurallar + Kat 1 ödülü yazılı (D-066), eklenti seçilmedi.
 - ⏳ **F4 — IAP (RevenueCat)** · üç ürün tasarlı, satın alma akışı yok.
 - ⏳ **F5 — mağaza vitrini + uyum** · listeleme, gizlilik, COPPA/GDPR-K, yaş derecelendirmesi.
+- ⏳ **F6 — ikon + açılış ekranı + ekran yönü** (tur adı F1b) · TASARIM turu: üçü de metinle
+  sorulamaz, aday render'ı ister (`feedback_show_dont_ask`). F1'den ayrıldı.
 
 ## Kullanıcı geri bildirimi 2026-09-16 — 16 yeni kalem (G-35…G-50)
 Kullanıcı F2 turunun içinde oyunu açtı ve on iki başlık verdi; *"sonraki chatlerde bunları

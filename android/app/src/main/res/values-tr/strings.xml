@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!--
+  Türkçe cihazlarda görünen adlar (D-130). Yalnız ÇEVRİLEBİLİR metinler burada:
+  `package_name` ve `custom_url_scheme` kimliktir, `values/strings.xml`te kalır.
+-->
+<resources>
+    <string name="app_name">Köşe Kıraathanesi</string>
+    <string name="title_activity_main">Köşe Kıraathanesi</string>
+</resources>

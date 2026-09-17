@@ -2,7 +2,7 @@
  "not": "İlerleme panosunun ESKİ oturum kartları. Pano her turda büyüyordu (67 kart / 219 KB) ve yayını canlı sürümün tamamının okunmasını şart koştuğu için tur başına maliyeti ARTIYORDU — okunanın neredeyse tamamı bir daha bakılmayacak arşivdi. Projenin kendi kuralı buraya da uygulandı (eski anlatı → arsiv/). Pano son 8 turu gösterir; öncesi burada ve git geçmişinde durur.",
  "kaynak": "docs/pano/ilerleme-panosu.html",
  "tasindi": "2026-09-16 (R1 turu, kullanıcı onayı)",
- "kart": 62,
+ "kart": 63,
  "gunluk": [
   {
    "tarih": "16.09.2026",
@@ -921,6 +921,23 @@
     "Ekonomi simülatörü — tempo eğrisi ölçülebiliyor"
    ],
    "not": "Bu dönemin oturum sayısı <b>commit kaydından türetildi</b> (114 commit, 14 çalışma günü); oturum-başı defter tutmak yayın programıyla başladı. Rakam bir tahmindir, geri kalan bütün sayılar sayımdır."
+  },
+  {
+   "tarih": "16.09.2026",
+   "etiket": "Faz S · 24. oturum (S9 — ses assetleri — D-122) — Faz S KAPANDI",
+   "baslik": "Ölçüm <b>ayırdı ama seçmedi</b>; seçen şey tek bir sesin kulakta düşmesi oldu",
+   "govde": "Tur ölçümün eksik kolunu kapatarak açıldı: S17 iki UÇ hâli ölçmüştü (dokuzu sentez / dokuzu dosya) ama <b>karma</b> katalog sayısızdı — dosya↔sentez çapraz mesafeleri matriste yoktu. Sayısı olmayan kol karar paketine girmez, o yüzden önce çapraz matris üretildi. İki bulgu çıktı ve ikisi de turun kendi varsayımını çürüttü: <b>kimlik bu kararı seçmiyordu</b> (beş bölüşümün beşi de 0/36 KARIŞIR) ve <b>kataloğun en dar yeri şikâyet edilen ses değildi</b> (<code>quest</code>↔<code>level</code> 4,06 dB).<br><br><b>Karar tabloyu astı.</b> Ölçüm K2'yi öneriyordu; kullanıcı <i>“ocaktan çay alma kötü”</i> dedi ve bütün paketi geri çevirdi. Dokuz sesin dokuzu bir pakette gelir — <b>biri beğenilmezse paketin tamamı düşer</b>. Yani kaynak sorusu “en iyi ortalama” değil <b>“en kötü üyesi ne”</b>ymiş; tablo o sütunu hiç taşımıyordu. Bir sonraki asset turu kolu böyle kurmalı.<br><br><b>Ses kararı metinle sorulmadı, DUYURULARAK soruldu.</b> Karar paketi çalan bir pano olarak yayınlandı: dokuz olayın iki hâli yan yana, beş bölüşümün katalogları, üç ivme kolu. Panonun sayıları da elle yazılmadı — aynı ölçüm kodundan türetildi.<br><br><b>Uğultu düştü, müzik geldi.</b> Kullanıcı <i>“daha farklı bir tycoon oyun arka planı bulmayı dene”</i> deyince 253 parçalık CC0 bundle künyesinden elendi ve 23 aday oyunun kendi çözücüsünden geçirildi. Ölçüt tek sayıya indi: <b>tavan kazanç</b>. Ve sezgi yine çürüdü — adında “oyun” yazan tek aday <b>sonuncu</b> çıktı.<br><br><b>Yolda sessiz bir kayıt hatası bulundu.</b> <code>loadSave</code> yüzeysel yayılım yapıyordu: <code>parsed.settings</code> varsayılan ayar nesnesinin TAMAMINI eziyordu, alan alan birleştirmiyordu. Yani ayarlara eklenen her yeni alan, <b>güncel sürümlü</b> eski bir kayıtta <code>undefined</code> kalırdı ve göç bile çalışmazdı. Bir ses çarpanı için bu, oyunun tamamen susması demekti. Bu bir alan hatası değil <b>ALAN SINIFI</b> hatasıydı; birleştirme tek yere alındı.",
+   "maddeler": [
+    "<b>D-122:</b> K1 (sentez kalır) + I2 + A3 + O4 · O5 = <code>Sketchbook 2024-01-24_02</code> (Abstraction/Tallbeard, <b>CC0</b>)",
+    "<b>Ödenmeyen kazanç yazılı:</b> K2 okunabilirliği 6,41 → <b>10,97 dB</b> yapıyordu, 116,7 KB'a — bilerek alınmadı",
+    "<b>İvme:</b> adım farkı 0,00 → <b>2,82 dB</b> (tabanın 1,7 katı) · I3 elendi, tavanda kısmilerin 3/4'ü 12 kHz üstüne taşıyor",
+    "<b>Müzik dikişle seçildi:</b> baş/son farkı <b>+0,2 dB</b> · ölçümün birincisi (lavta, −18,0 dB) sonu başından <b>7,4 dB alçak</b>",
+    "<b>Motorun İLK DÖNGÜSÜ:</b> <code>music.ts</code> + <code>musicWeb.ts</code> · S10'dan beri boşa dönen <b>“Müzik” anahtarı bağlandı</b>",
+    "<b>Seviye kaydırıcıları</b> (kullanıcı isteği): “kapat” ile “kıs” ayrı · müziğinki <b>ölçülen tavanın</b> altını gezer",
+    "<b>Sessiz kayıt hatası kapandı:</b> yüzeysel yayılım ayar nesnesini eziyordu → <code>ayarlariBirlestir</code>",
+    "<b>Bekçi:</b> iki dosya, 51 denetim, <b>32 mutasyon, kaçan 0</b> · vitest <b>1154</b> ✓ · duman 42 → <b>45/45</b> ✓"
+   ],
+   "not": "<b>Kaçan mutasyonlar yine kodun değil BEKÇİNİN zayıf yerini gösterdi — dört kez.</b> Seri turunda M16: denetim <code>import</code>un ADINA bakıyordu, KULLANIMINA değil (S23'ün <code>toMatch(/FloorPatch/)</code> kusurunun aynısı). Seviye turunda üç tane: sahte arka uç dosya yolunu hiç sınamıyordu · test yalnız KURULUŞ yolunu sınıyordu, oysa oyuncu kaydırıcıyı <code>ayarla</code> ile oynatıyor · motor kuruluşta zaten eşitleme çağırmadığı için tarayıcı-kilidi şartı silinse de test yeşil kalıyordu. Dördü de kapatıldı.<br><br><b>Ve iki bekçi daha iş başında yakaladı:</b> mor dilin punto kilidi CSS'e sızan ham bir <code>13px</code>'i (D-107), pano denetimi de Faz E'yi yanlışlıkla kapattığımı — E5 ses değil <b>hareketli onboarding</b>."
   }
  ]
 }

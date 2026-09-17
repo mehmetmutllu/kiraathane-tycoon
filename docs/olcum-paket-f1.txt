@@ -1,25 +1,25 @@
 # F1 — KABUK VE IMZA OLCUMU
-# kip: TAM (dort kol) · 2026-09-17T10:59:34.208Z
+# kip: TAM (dort kol) · 2026-09-17T11:24:15.345Z
 # node v24.19.0 · win32
 
 ## §A KIMLIK (derleme gerekmez)
-appId (capacitor)      : com.kosekiraathanesi.game
-appName (capacitor)    : Köşe Kıraathanesi
-applicationId (gradle) : com.kosekiraathanesi.game
-namespace (gradle)     : com.kosekiraathanesi.game
-versionCode            : 1
-versionName            : 1.0
-package.json version   : 0.0.0   <- SURUM IKI YERDE, TURETILMIYOR
+appId (capacitor)      : com.memedobro.teahousetycoon
+appName (capacitor)    : Tea House Tycoon
+applicationId (gradle) : com.memedobro.teahousetycoon
+namespace (gradle)     : com.memedobro.teahousetycoon
+versionCode            : 900 (package.json-dan turedi)
+versionName            : 0.9.0 (package.json-dan turedi)
+package.json version   : 0.9.0   <- TEK KAYNAK
 minSdk / target / comp : 24 / 36 / 36
 izinler                : android.permission.INTERNET
 screenOrientation      : (YOK — cihaz serbest dondurur)
 allowBackup            : true
-signingConfig (gradle) : YOK — release imzasiz cikiyor
-keystore dosyasi       : YOK
+signingConfig (gradle) : VAR
+keystore dosyasi       : android/keystore.properties VAR
 
 ## §B TABAN (debug APK — temiz uretim)
 assembleDebug          : kod 0 · 1,7 sn
-debug APK              : 11,84 MB (12419009 bayt) · android\app\build\outputs\apk\debug\app-debug.apk
+debug APK              : 11,84 MB (12419093 bayt) · android\app\build\outputs\apk\debug\app-debug.apk
 girdi sayisi           : 962
 
 | kova | adet | sikisik | acik | APK payi |
@@ -42,35 +42,35 @@ imza dogrulama (debug) : kod 0
 # SURELER KARSILASTIRILAMAZ: gradle onbellegi kollar arasinda isiniyor, ilk kol soguk
 # derleniyor. Karsilastirilabilir olan BOYUT sutunudur.
 V0 release · kucultme KAPALI (bugunku ayar)
-   cikti  : android\app\build\outputs\apk\release\app-release-unsigned.apk
-   boyut  : 10,58 MB (11093969 bayt) · 960 girdi · 4,0 sn
+   cikti  : android\app\build\outputs\apk\release\app-release.apk
+   boyut  : 10,59 MB (11102261 bayt) · 960 girdi · 3,7 sn
    kod    : 2,37 MB dex · res+resources 0,58 MB · native .so 0
-   imzali : HAYIR (imzasiz)
+   imzali : EVET
 V1 release · R8 + kaynak budama ACIK
-   cikti  : android\app\build\outputs\apk\release\app-release-unsigned.apk
-   boyut  : 8,58 MB (8992194 bayt) · 930 girdi · 9,4 sn
+   cikti  : android\app\build\outputs\apk\release\app-release.apk
+   boyut  : 8,58 MB (9000474 bayt) · 930 girdi · 8,1 sn
    kod    : 0,45 MB dex · res+resources 0,50 MB · native .so 0
-   imzali : HAYIR (imzasiz)
+   imzali : EVET
 V2 AAB · kucultme KAPALI
    cikti  : android\app\build\outputs\bundle\release\app-release.aab
-   boyut  : 10,36 MB (10868142 bayt) · 965 girdi · 4,5 sn
+   boyut  : 10,42 MB (10925195 bayt) · 968 girdi · 4,2 sn
    kod    : 2,37 MB dex · res+resources 0,38 MB · native .so 0
-   imzali : HAYIR (imzasiz)
+   imzali : EVET
 V3 AAB · R8 + kaynak budama ACIK
    cikti  : android\app\build\outputs\bundle\release\app-release.aab
-   boyut  : 8,83 MB (9263179 bayt) · 936 girdi · 8,8 sn
-   kod    : 0,45 MB dex · res+resources 0,36 MB · native .so 0
-   imzali : HAYIR (imzasiz)
+   boyut  : 8,89 MB (9318507 bayt) · 939 girdi · 8,7 sn
+   kod    : 0,45 MB dex · res+resources 0,37 MB · native .so 0
+   imzali : EVET
 
 (build.gradle ozgun haline geri yazildi: DOGRULANDI)
 
 | kol | cikti | boyut | V0 farki | dex | sure |
 |---|---|---:|---:|---:|---:|
 | TABAN | debug APK | 11,84 MB | — | — | 1,7 sn |
-| V0 | APK | 10,58 MB | 0,0% | 2,37 MB | 4,0 sn |
-| V1 | APK | 8,58 MB | -18,9% | 0,45 MB | 9,4 sn |
-| V2 | AAB | 10,36 MB | -2,0% | 2,37 MB | 4,5 sn |
-| V3 | AAB | 8,83 MB | -16,5% | 0,45 MB | 8,8 sn |
+| V0 | APK | 10,59 MB | 0,0% | 2,37 MB | 3,7 sn |
+| V1 | APK | 8,58 MB | -18,9% | 0,45 MB | 8,1 sn |
+| V2 | AAB | 10,42 MB | -1,6% | 2,37 MB | 4,2 sn |
+| V3 | AAB | 8,89 MB | -16,1% | 0,45 MB | 8,7 sn |
 
 ## §E R8 KOLUNUN RISK KANITI (V1 kolundan)
 R8 uygulanan -keep kurali    : 85
@@ -106,4 +106,4 @@ kurulu Capacitor eklentisi   : 0 (yansima yuzeyi bu kadar)
 ## §D NATIVE KUTUPHANE (Play 16 KB sayfa sarti)
 APK icinde .so YOK → 16 KB sayfa sarti bu projeye DOKUNMUYOR (kol bos).
 
-# toplam sure: 29,0 sn
+# toplam sure: 27,7 sn

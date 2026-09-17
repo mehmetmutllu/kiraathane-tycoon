@@ -1,14 +1,61 @@
 apply plugin: 'com.android.application'
 
+/*
+ * SÜRÜM TEK KAYNAKTAN OKUNUR: `package.json`.
+ *
+ * NEDEN: F1a ölçümünde sürümün İKİ kaynağı olduğu görüldü — `build.gradle` "1.0", `package.json`
+ * "0.0.0" diyordu ve ikisi hiçbir yerde karşılaştırılmıyordu. Bu, F2'nin "gradle bayat dosyanın
+ * üzerine yazıyor" kusuruyla aynı cinsten: sessiz, ve ancak yayın anında pahalı. Artık tek yazan
+ * `package.json`; buradaki her şey ondan TÜREK. Elle yazılan bir sürüm numarası kalmadı.
+ *
+ * versionCode = major*10000 + minor*100 + patch. Play sürüm kodunun ASLA azalmamasını ister;
+ * bu formül semver arttıkça artar (minor ve patch 100'ün altında kaldığı sürece, ki kalır).
+ * 0.9.0 → 900.
+ */
+def paket = new groovy.json.JsonSlurper().parseText(file('../../package.json').getText('UTF-8'))
+def surum = (paket.version =~ /^(\d+)\.(\d+)\.(\d+)$/)
+if (!surum.matches()) {
+    throw new GradleException("package.json surumu semver degil: '${paket.version}' (beklenen 'X.Y.Z')")
+}
+def surumKodu = surum.group(1).toInteger() * 10000 + surum.group(2).toInteger() * 100 + surum.group(3).toInteger()
+
+/*
+ * İMZA: anahtar dosyası da parolası da DEPODA DEĞİL.
+ *
+ * `android/keystore.properties` ve `.jks` git'e girmez (`.gitignore`), iki makine arasında
+ * `C:\dev-ortam` ile senkronlanır — wordmaster'da kurulmuş olan kalıbın aynısı. Dosya yoksa
+ * derleme KIRILMAZ, yalnız imzasız çıkar: böylece anahtarı olmayan bir makine (ya da CI)
+ * projeyi yine de derleyebilir. "Anahtar yok" ile "derleme bozuk" ayrı şeylerdir.
+ *
+ * Anahtar KAYBOLURSA uygulama Play'de bir daha güncellenemez.
+ */
+def imzaDosyasi = rootProject.file('keystore.properties')
+def imza = new Properties()
+if (imzaDosyasi.exists()) {
+    imzaDosyasi.withInputStream { imza.load(it) }
+}
+
 android {
-    namespace = "com.kosekiraathanesi.game"
+    namespace = "com.memedobro.teahousetycoon"
     compileSdk = rootProject.ext.compileSdkVersion
+
+    signingConfigs {
+        if (imzaDosyasi.exists()) {
+            release {
+                storeFile rootProject.file(imza['storeFile'])
+                storePassword imza['storePassword']
+                keyAlias imza['keyAlias']
+                keyPassword imza['keyPassword']
+            }
+        }
+    }
+
     defaultConfig {
-        applicationId "com.kosekiraathanesi.game"
+        applicationId "com.memedobro.teahousetycoon"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode surumKodu
+        versionName paket.version
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -18,7 +65,21 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            /*
+             * KÜÇÜLTME AÇIK (D-130 · kol V1). Ölçüldü: APK 10,58 → 8,58 MB (−%18,9); kazancın
+             * %96'sı `.dex`ten (2,37 → 0,45 MB), kaynak budamanın payı 0,08 MB. İkisi TEK koldur:
+             * `shrinkResources` yalnız `minifyEnabled` ile birlikte çalışır.
+             *
+             * Capacitor kendi koruma kurallarını AAR içinde getiriyor ve R8 onları uyguluyor
+             * (eklenti · CapacitorWebView · @JavascriptInterface); kurulu eklenti sayısı 0 olduğu
+             * için yansıma yüzeyi en dar hâlinde. F3 (AdMob) ve F4 (IAP) eklenti getirdiğinde
+             * bu gerekçe geçersizleşir ve kol YENİDEN ölçülmelidir.
+             */
+            minifyEnabled true
+            shrinkResources true
+            if (imzaDosyasi.exists()) {
+                signingConfig signingConfigs.release
+            }
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }

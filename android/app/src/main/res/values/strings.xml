@@ -1,7 +1,16 @@
 <?xml version='1.0' encoding='utf-8'?>
+<!--
+  VARSAYILAN (İngilizce) metinler. Türkçe karşılıkları `values-tr/strings.xml`te.
+
+  Cihazın dili Türkçe ise Android `values-tr`yi seçer ve uygulama simgesinin altında
+  "Köşe Kıraathanesi" yazar; diğer her dilde buradaki ad görünür. Mağaza başlığı bu
+  dosyadan GELMEZ — o Play Console'da, yine dil başına ayrı yazılır (D-130).
+
+  `package_name` ve `custom_url_scheme` birer KİMLİKTİR, çevrilmez: yalnız burada durur.
+-->
 <resources>
-    <string name="app_name">Köşe Kıraathanesi</string>
-    <string name="title_activity_main">Köşe Kıraathanesi</string>
-    <string name="package_name">com.kosekiraathanesi.game</string>
-    <string name="custom_url_scheme">com.kosekiraathanesi.game</string>
+    <string name="app_name">Tea House Tycoon</string>
+    <string name="title_activity_main">Tea House Tycoon</string>
+    <string name="package_name">com.memedobro.teahousetycoon</string>
+    <string name="custom_url_scheme">com.memedobro.teahousetycoon</string>
 </resources>

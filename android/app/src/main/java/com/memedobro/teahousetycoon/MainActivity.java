@@ -1,4 +1,4 @@
-package com.kosekiraathanesi.game;
+package com.memedobro.teahousetycoon;
 
 import com.getcapacitor.BridgeActivity;
 

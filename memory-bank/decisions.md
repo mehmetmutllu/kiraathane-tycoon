@@ -4167,3 +4167,48 @@ turunu ister.
   bırak" kuralı hiçbir `areasOpen` değerinde ateşlenmiyor (kapı her zaman ayak izinin içinde) —
   kural silindi, yerine kapı-sokak hattının çimsiz olduğu gerçek değişmezi kondu.
 - **Final:** vitest 1273 ✓ · duman 45/45 ✓ · konsol hatası 0 · `ss/r4-son-alan{1,2,3}*.png`.
+
+
+## D-130 — Paket kimliği, imza ve küçültme (F1a) — 2026-09-17
+
+Ölçüm: `docs/paket-raporu-f1.md` · ham `docs/olcum-paket-f1.txt` (TAM · dört gerçek gradle derlemesi).
+
+- **Seçim `1C · 2A · 3A`:** kimlik **`com.memedobro.teahousetycoon`** · **R8 + kaynak budama
+  AÇIK** · sürüm **`0.9.0`** (versionCode 900, `package.json`'dan türer).
+- **Kol sayıları:** debug APK 11,84 MB → release 10,58 → **R8 ile 8,58 MB (−%27,5)**. Kazancın
+  **%96'sı `.dex`**ten (2,37 → 0,45 MB); `shrinkResources` payı 0,08 MB. AAB 8,89 MB — APK'dan
+  BÜYÜK olması gerileme değil, AAB dağıtım kabıdır. Native `.so` 0 → Play'in 16 KB sayfa şartı
+  bu projeye dokunmuyor (kol boş).
+- **Karar 1 paket sunulduktan SONRA değişti ve asıl karar orada oldu.** Pakette iki kimlik kolu
+  vardı; kullanıcı ikisini de eledi: *"kosekiraathanesi olmayacak, cafe tycoon gibi bir şey
+  düşünüyorum ki genel kullanıcıya hitap etsin."* Kalem kimlik değil **konumlandırma** kalemiymiş.
+- **Jenerik ad ölçüldü ve elendi:** "Cafe Tycoon" ile neredeyse birebir aynı başlıkta Play'de en
+  az **beş** oyun var. O kelimede sıralanmak indirme hızıyla olur; sıfır indirmeli bir uygulama
+  için getirisi **sıfır**, bedeli ayırt ediciliğin tamamı. Çayhane rafında ise kelime kalabalık
+  ama **mekân boş** (üç oyun da Japon/Çin estetiği; Türk kıraathanesi yok).
+- **Çözüm: ad ile kimlik AYRILDI.** Mağaza başlığı her sürümde ve dil başına değişebilir; kalıcı
+  olan yalnız `applicationId`. Kimlik adı taşımayan bir kök aldı, başlıklar iki dilde ayrı
+  seçildi ve "cafe" anahtar kelimesi **başlığı feda etmeden** İngilizce başlığa kondu:
+  **EN "Tea House Tycoon: Idle Cafe"** (27/30) · **TR "Köşe Kıraathanesi: Tycoon"** (25/30).
+  Cihaz simge adı da dile bağlandı (`values` ↔ `values-tr`).
+- **Sürümün iki kaynağı vardı** (gradle "1.0", package.json "0.0.0") — kapatıldı: gradle artık
+  `package.json`'ı okuyor, elle yazılan sürüm satırı kalmadı.
+- **İmza:** RSA 4096 · 10.000 gün · `CN=Tea House Tycoon, O=memedobro, C=TR` · SHA-256
+  `ab2b4f60…c874`. Anahtar ve parola depoda DEĞİL (`.gitignore`), `C:\dev-ortam` ile senkron
+  (`topla.ps1`/`kur.ps1`'e eklendi) — wordmaster kalıbının aynısı. Anahtar yoksa derleme
+  KIRILMAZ, imzasız çıkar. `npm run yayin` imzalı APK + AAB üretir.
+- **Bekçi:** `tests/paket-f1.test.ts` (19 den.) · `node tools/mutasyon-paket-f1.mjs` **18/18
+  kırmızı**. İlk koşuda 2 kaçtı (M10 · M11) ve delik gerçekti: bekçi `.gitignore`ın METNİNDE
+  kalıp arıyordu, satır başına `#` koyan mutasyon kuralı öldürdüğü hâlde metni bozmuyordu.
+  Artık `git check-ignore`a soruluyor — üstelik karşı örnekle (`build.gradle` yok sayılmamalı).
+- **Turun asıl dersi ARAÇTA:** `olcum-paket-f1.mjs` altı kez yanlış okudu ve **altısı da kolu
+  daha KARAMSAR gösteriyordu** — düzeltilmese R8 kolu "ölü" diye sessizce elenirdi. Node'un
+  `.bat`ı sessizce reddetmesi (çıkış kodu null = çalışmadı, kırıldı değil) · `usage.txt`in iki
+  satır dilbilgisi · CRLF · iç sınıf adının çekirdek sanılması · kol yamasının kaynağın şeklini
+  varsayması (D-130 uygulanınca dört kol birden "KIRILDI" çıktı) · imza sınamasının v1 katmanına
+  bakması (minSdk 24'te yalnız v2 var, imzalı APK'ya "imzasız" dedi).
+- **Kapsam damgası:** cihaz bağlı değil. R8 kolunun BAYTI kesin, ÇALIŞTIĞI ölçülmedi; kanıt
+  dolaylı (Capacitor kendi koruma kurallarını getiriyor, çekirdek sınıflar çıktıda, kurulu
+  eklenti 0). **F3/F4 eklenti getirdiğinde kol yeniden ölçülmeli.**
+- **Final:** vitest 1292 ✓ · duman 45/45 ✓ · tsc temiz · imzalı APK 8,58 MB / AAB 8,89 MB.
+- **F1b'ye bırakıldı:** ikon · açılış ekranı · ekran yönü (sayısı yok, gösterilerek sorulacak).

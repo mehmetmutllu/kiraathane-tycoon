@@ -143,7 +143,8 @@ function apksignerYolu() {
  * geri konur. `shrinkResources` yalnız `minifyEnabled` ile birlikte anlamlıdır (gradle aksi
  * hâlde derlemeyi reddeder) — bu yüzden ikisi TEK kol, ayrı ayrı ölçülmez.
  */
-const RELEASE_VAR = /(\n\s*release\s*\{)([\s\S]*?)(\n\s{8}\})/;
+const KUCULTME_ACIK = '            minifyEnabled true\n            shrinkResources true';
+const KUCULTME_KAPALI = '            minifyEnabled false';
 const KOLLAR = [
   { ad: 'V0', baslik: 'release · kucultme KAPALI (bugunku ayar)', minify: false, aab: false },
   { ad: 'V1', baslik: 'release · R8 + kaynak budama ACIK', minify: true, aab: false },
@@ -151,13 +152,23 @@ const KOLLAR = [
   { ad: 'V3', baslik: 'AAB · R8 + kaynak budama ACIK', minify: true, aab: true },
 ];
 
+/**
+ * Kolu CERRAHİ uygular: yalnız iki satırı değiştirir, `release { }` bloğunun tamamını
+ * yeniden yazmaz.
+ *
+ * İLK HÂLİ BLOĞU KOMPLE DEĞİŞTİRİYORDU ve D-130 uygulanınca sessizce bozuldu: karar bloğa
+ * `signingConfig` satırını ekledi, blok kalıbı kaymadı ama yeniden yazılan gövde imza satırını
+ * DÜŞÜRDÜ — dört kolun dördü de "KIRILDI" çıktı. Ders, aracın kendi cinsinden: bir ölçüm aracı
+ * ölçtüğü dosyanın şeklini varsayarsa, o dosya değiştiği gün ölçüm değil ARAÇ kırılır ve bunu
+ * kolların hepsi birden kırılana kadar kimse görmez.
+ */
 function releaseBloguYaz(ozgun, minify) {
-  const govde = minify
-    ? "\n            minifyEnabled true\n            shrinkResources true\n            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'"
-    : "\n            minifyEnabled false\n            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'";
-  const yeni = ozgun.replace(RELEASE_VAR, (_, a, __, c) => `${a}${govde}${c}`);
-  if (yeni === ozgun && minify) throw new Error('release blogu bulunamadi — kol uygulanamadi');
-  fs.writeFileSync(GRADLE_APP, yeni);
+  const hedef = minify ? KUCULTME_ACIK : KUCULTME_KAPALI;
+  const oteki = minify ? KUCULTME_KAPALI : KUCULTME_ACIK;
+  if (!ozgun.includes(KUCULTME_ACIK) && !ozgun.includes(KUCULTME_KAPALI)) {
+    throw new Error('kucultme satirlari bulunamadi — kol uygulanamadi');
+  }
+  fs.writeFileSync(GRADLE_APP, ozgun.includes(hedef) ? ozgun : ozgun.replace(oteki, hedef));
 }
 
 /**
@@ -175,7 +186,23 @@ function releaseBloguYaz(ozgun, minify) {
  *
  * Bu bölüm kolu GÜVENLİ ilan etmez — riski SAYIYA çevirir. Kararı cihaz koşusu kapatır.
  */
-function r8Kaniti() {
+/**
+ * APK'nın GERÇEKTEN imzalı olup olmadığını `apksigner`a sordurur.
+ *
+ * ÖNCEKİ HÂLİ ZIP İÇİNDE `META-INF/*.RSA` ARIYORDU ve yanlış cevap verdi: o dosya **v1 (JAR)**
+ * imzasının izidir. minSdk 24 olduğu için AGP v1'i hiç kullanmıyor, yalnız **v2** ile imzalıyor
+ * ve v2 imzası zip girdisi değil, APK İmza Bloğu'nda duruyor. Yani araç, imzalı APK'ya
+ * "imzasiz" dedi. (AAB'ler jar-imzalı olduğu için onlarda kalıp tutuyordu — kusuru daha da
+ * gizleyen şey buydu: iki çıktıdan biri doğru cevap veriyordu.)
+ */
+function apkImzali(signer, dosya) {
+  if (!signer) return '(apksigner yok)';
+  const v = kos('cmd.exe', ['/c', signer, 'verify', dosya]);
+  if (v.kod === 0) return 'EVET';
+  return /not signed|No signature/i.test(v.out) ? 'HAYIR (imzasiz)' : `HAYIR (${(v.out.split('\n')[0] || '').trim().slice(0, 60)})`;
+}
+
+function r8Kaniti(paketAdi) {
   const d = path.join(CIKTI, 'mapping', 'release');
   const oku = (ad) => (fs.existsSync(path.join(d, ad)) ? fs.readFileSync(path.join(d, ad), 'utf8') : '');
   const konf = oku('configuration.txt');
@@ -208,8 +235,8 @@ function r8Kaniti() {
     capacitorKurali: /-keep public class \* extends com\.getcapacitor\.Plugin/.test(konf),
     jsArayuzKurali: /@android\.webkit\.JavascriptInterface|JavascriptInterface <methods>/.test(konf),
     webViewKurali: /com\.getcapacitor\.CapacitorWebView/.test(konf),
-    girisNoktasiTutuldu: seeds.includes('com.kosekiraathanesi.game.MainActivity'),
-    girisNoktasiCiktida: ciktida('com.kosekiraathanesi.game.MainActivity'),
+    girisNoktasiTutuldu: seeds.includes(`${paketAdi}.MainActivity`),
+    girisNoktasiCiktida: ciktida(`${paketAdi}.MainActivity`),
     bridgeCiktida: ciktida('com.getcapacitor.Bridge'),
     bridgeActivityCiktida: ciktida('com.getcapacitor.BridgeActivity'),
     webViewSunucusuCiktida: ciktida('com.getcapacitor.WebViewLocalServer'),
@@ -245,11 +272,22 @@ async function main() {
   const al = (metin, kalip) => (metin.match(kalip) || [, '(yok)'])[1];
   yaz(`appId (capacitor)      : ${al(capCfg, /appId:\s*'([^']+)'/)}`);
   yaz(`appName (capacitor)    : ${al(capCfg, /appName:\s*'([^']+)'/)}`);
-  yaz(`applicationId (gradle) : ${al(appGradle, /applicationId\s+"([^"]+)"/)}`);
+  // §E'nin "giriş noktası hayatta mı" sorusu bu ada bağlı. Sabit yazılırsa paket adı
+  // değiştiği gün araç sessizce "HAYIR" der — D-130'da tam bu oldu.
+  const paketAdi = al(appGradle, /applicationId\s+"([^"]+)"/);
+  yaz(`applicationId (gradle) : ${paketAdi}`);
   yaz(`namespace (gradle)     : ${al(appGradle, /namespace\s*=\s*"([^"]+)"/)}`);
-  yaz(`versionCode            : ${al(appGradle, /versionCode\s+(\d+)/)}`);
-  yaz(`versionName            : ${al(appGradle, /versionName\s+"([^"]+)"/)}`);
-  yaz(`package.json version   : ${pkgJson.version}   <- SURUM IKI YERDE, TURETILMIYOR`);
+  /*
+   * Sürüm D-130'dan sonra gradle'da SABİT DEĞİL, `package.json`'dan türüyor. Araç eski hâlinde
+   * sabit değeri arıyordu ve türetmeyi "(yok)" diye okudu — yani düzelen şeyi eksik sandı.
+   * Artık iki hâli de tanıyor ve hangisinde olduğunu açıkça damgalıyor.
+   */
+  const turetilmis = appGradle.includes('versionName paket.version');
+  const semver = pkgJson.version.match(/^(\d+)\.(\d+)\.(\d+)$/);
+  const surumKodu = semver ? Number(semver[1]) * 10000 + Number(semver[2]) * 100 + Number(semver[3]) : null;
+  yaz(`versionCode            : ${turetilmis ? `${surumKodu} (package.json-dan turedi)` : al(appGradle, /versionCode\s+(\d+)/)}`);
+  yaz(`versionName            : ${turetilmis ? `${pkgJson.version} (package.json-dan turedi)` : al(appGradle, /versionName\s+"([^"]+)"/)}`);
+  yaz(`package.json version   : ${pkgJson.version}   <- ${turetilmis ? 'TEK KAYNAK' : 'SURUM IKI YERDE, TURETILMIYOR'}`);
   yaz(`minSdk / target / comp : ${al(degiskenler, /minSdkVersion\s*=\s*(\d+)/)} / ${al(degiskenler, /targetSdkVersion\s*=\s*(\d+)/)} / ${al(degiskenler, /compileSdkVersion\s*=\s*(\d+)/)}`);
   const izinler = [...manifest.matchAll(/uses-permission android:name="([^"]+)"/g)].map((m) => m[1]);
   yaz(`izinler                : ${izinler.length ? izinler.join(', ') : '(yok)'}`);
@@ -318,12 +356,14 @@ async function main() {
       const dex = girdi.filter((g) => g.ad.endsWith('.dex')).reduce((t, g) => t + g.sikisik, 0);
       const res = girdi.filter((g) => /res\//.test(g.ad) || /resources\.(arsc|pb)$/.test(g.ad)).reduce((t, g) => t + g.sikisik, 0);
       sonuc.push({ ...kol, kirik: false, sn: r.sn, boyut, girdi: girdi.length, so: so.length, dex, res, dosya });
-      if (kol.minify && !kol.aab) r8Kanit = r8Kaniti();
+      if (kol.minify && !kol.aab) r8Kanit = r8Kaniti(paketAdi);
       yaz(`${kol.ad} ${kol.baslik}`);
       yaz(`   cikti  : ${path.relative(KOK, dosya)}`);
       yaz(`   boyut  : ${mb(boyut)} (${boyut} bayt) · ${girdi.length} girdi · ${f1(r.sn)} sn`);
       yaz(`   kod    : ${mb(dex)} dex · res+resources ${mb(res)} · native .so ${so.length}`);
-      yaz(`   imzali : ${girdi.some((g) => /^META-INF\/.*\.(RSA|DSA|EC)$/.test(g.ad)) ? 'EVET' : 'HAYIR (imzasiz)'}`);
+      // AAB jar-imzalidir (META-INF izi birakir); APK v2 ile imzalanir ve iz birakmaz — bu
+      // yuzden APK apksigner'a sorulur, AAB zip girdisinden okunur.
+      yaz(`   imzali : ${kol.aab ? (girdi.some((g) => /^META-INF\/.*\.(RSA|DSA|EC)$/.test(g.ad)) ? 'EVET' : 'HAYIR (imzasiz)') : apkImzali(signer, dosya)}`);
     }
   } finally {
     fs.writeFileSync(GRADLE_APP, ozgunGradle);

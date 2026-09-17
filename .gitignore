@@ -64,3 +64,11 @@ indirilen/
 # S9 ses turunda indirilen MUZIK adaylari (repoya girmez; secilen parca kunyesiyle
 # public/assets/audio/ altina girer)
 indirilen-muzik/
+
+# Android release imza anahtari ve parolasi — GIT'E GIRMEZ.
+# KAYBOLURSA uygulama Play'de bir daha GUNCELLENEMEZ: yeni anahtarla imzalanan paket ayri bir
+# uygulama sayilir, mevcut kullanicilar guncelleme alamaz, yorumlar ve kurulumlar sifirlanir.
+# Iki makine arasinda C:\dev-ortam ile senkronlanir (topla.ps1 / kur.ps1) — wordmaster'daki
+# kalibin aynisi. build.gradle bu dosya YOKSA derlemeyi kirmaz, yalniz imzasiz cikar.
+android/keystore.properties
+android/*.jks
