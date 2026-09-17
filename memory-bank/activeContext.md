@@ -5,25 +5,61 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-17 — **F1b TUR 2: AÇILAN EKRANLAR ÖLÇÜLÜYOR** · Faz F 2/6 · 107/112)
+## ŞU AN (2026-09-17 — **F1b TUR 2 ÖLÇÜLDÜ, KARAR BEKLİYOR** · Faz F 2/6 · 107/112)
 
 ```
-SORU            : F1b'nin karar paketi neden tamamlanamadı — açılan ekranlar (Görevler ·
-                  Hedefler · Mağaza · Karakter · Ayarlar) yatayda ve tablette HİÇ görülmedi
-                  (G-54). Yön kararı bunlar bilinmeden verilemez.
-ÖLÇÜLECEK KOLLAR: §F açılan ekranlar — 5 panel × 3 kadraj (portre · telefon yatayı · tablet
-                  yatayı) = 15 hücre · kaydırma oranı, ilk ekranda görünen kart, taşma,
-                  dokunma hedefi, en küçük yazı
-                  §G YD REVİZE (G-51+G-52) — şerit ve nav ikisi de DOĞAL GENİŞLİK + ORTALI;
-                  YD (sola yaslı) ile aynı kadrajlarda karşılaştırılır
-                  §H TABLET BASAMAĞI (G-55) — taban ↔ bir basamak yukarı (yeni punto YOK,
-                  mevcut ölçeğin üst basamağı · D-128)
-SAYILAR         : (adım 2'den sonra dolar → docs/kabuk-raporu-f1b.md §F/§G/§H)
-KARAR           : (adım 3 — revize karar paketi: ① yön ② yatay/tablet HUD ③ açılış ekranı)
-UYGULAMA        : (adım 4, yalnız kararın kolu)
-BEKÇİ           : (test dosyası + kaç mutasyonla doğrulandı)
-ÖNCEKİ PAKET    : https://claude.ai/artifact/JGzwnM3N9rDXbt8Rbbz4jE (aynı URL güncellenecek)
+SORU            : G-54 deliği — açılan ekranlar yatayda/tablette hiç görülmedi; yön kararı
+                  bunlar bilinmeden verilemez. + G-51/G-52 (ortala) + G-55 (tablet basamağı).
+ÖLÇÜLEN KOLLAR  : §F 5 panel × 3 kadraj = 15 hücre · §G Y0/YD/YD+ × 2 kadraj · §H T0/T+/T+D
+                  · §I P0/PA/PB/PC × 5 panel (KAREDEN doğdu) = 44 hücre + 2 sonda
+SAYILAR         : docs/kabuk-raporu-f1b.md §F–§I · ham: docs/olcum-panel-f1b.txt (TAM, 667 sn)
+                  + docs/olcum-panel-sonda-f1b.txt · commit #1 `d4e65b5`
+KARAR           : **BEKLİYOR.** Revize paket sunuldu, üç soru da açık.
+UYGULAMA        : yok (kod yazılmadı; kollar CSS katmanı olarak canlı oyuna enjekte edildi)
+BEKÇİ           : yok (karar gelmedi)
+PAKET (v2)      : https://claude.ai/artifact/JGzwnM3N9rDXbt8Rbbz4jE
 ```
+
+**TUR 2'NİN DÖRT BULGUSU:**
+
+1. **Sorun YÖNDE değil, TELEFON YATAYINDA.** Portrede 5/5 ekran kusursuz (1,00× kaydırma,
+   %100 içerik, gizli ödül düğmesi 0). Tablette en kötü 1,06×. Telefon yatayında Görevler
+   **%47**, Hedefler **%45**, Ayarlar **%49** ve Hedefler'in **tek ödül-alma düğmesi ilk ekranda
+   görünmüyor**. Hiçbir kadrajda kesilme yok (0/15) — panel bozulmuyor, **gömülüyor**.
+   → **Yön kararı artık iki taraflı:** K1 dükkânı 2× gösterir ama üç ekranı gömer.
+
+2. **G-51 BEDAVA.** YD+ (ortalı) ile YD (sola yaslı) aynı sayıyı verdi — HUD %19,0 ↔ %19,0
+   (telefon), %7,1 ↔ %7,0 (tablet), açık zemin 596,9 ↔ 596,8. Değişen tek şey **kaçıklık**:
+   −233 → 0 (telefon), −415 → 0 (tablet). Hipotez "sayı genişlikten gelir, hizadan değil" tuttu.
+
+3. **`index.css`'in İKİ RESPONSIVE DALI DA ÖLÜ KOD — turun en pahalı bulgusu.**
+   `max-width:400px` blogunda 15 seçiciden **2'si**, landscape blogunda 18'den **3'ü** canlı;
+   `--pill-h` jetonu tamamen ölü (`.pill` TSX'te 0 kez geçiyor). Sebep `fc061a0` (2026-09-06,
+   Arayüz v2): HUD yeniden adlandırıldı, medya sorguları onunla gelmedi.
+   → **TUR 1'İN B-3 BULGUSUNU AÇIKLIYOR** ("alt bant her yönde 186 px sabit"): onu kısaltacak
+   dal hiç çalışmıyor. **D-128'in dar-ekran kuralı bugün fiilen uygulanmıyor.**
+
+4. **Telefon yatayı UCUZ bir CSS koluyla kurtarılamıyor.** PA (geniş kabuk) ve PC (tam en)
+   **tek hücre bile** oynatmadı — kartlar tam satır, kabuk genişleyince içerik genişliyor.
+   PB (iki sütun) yalnız Ayarlar'ı çözdü (dışarıda kalan öğe 23 → 1). Görevler/Hedefler hiç
+   değişmedi: içeriklerini tek `<ul>`de taşıyorlar, gride tek hücre giriyor.
+   → Yatay kilidi seçilirse iş **beş panelin gövdesini düzleştirmek**; kendi turunu ister.
+
+**DÖRT ARAÇ KUSURU, DÖRDÜNÜ DE GÖZ YAKALADI** (tur 1'de iki, tur 2'de iki):
+③ tablet kolu var olmayan sınıfları hedefledi (`.lvl-star`/`.cur-item` → `null`); ayrıca
+`.round-btn{46px}` kolu `hud.css`'teki `.round-btn.gear` (0,2,0) karşısında özgüllükten düştü —
+**kol kavramsal değil YAZIM olarak** başarısız oldu · ④ **`scrollHeight` taşan çocukları
+saymıyor**, altı hücrenin **beşinde** yanlış (PB/Mağaza: 350 diyor, gerçek 426). Güvenilir
+sütun `dışarıda`. §F'nin `kaydırma` sütunu bu yüzden **olduğundan iyi** gösteriyor — yön doğru,
+şiddet eksik.
+
+**BEKÇİ KIRMIZI YANDI ve gevşetilmedi:** T2 imzası `n2`, P1/L1 `n3`. Yapısal dünya üçünde de
+aynı (t20|s0|a3), ayrışan tek terim canlı NPC sayısı ve ölçülen hiçbir büyüklük ona bağlı değil.
+Yine de kırmızıyı gördükten sonra imzayı "yapısal + canlı" diye bölmek D-084'ün yasakladığı şey
+(sonuca göre aracı yumuşatmak) — ayrıştırma **ayrı bir tur kalemi**.
+
+**GÜRÜLTÜ TABANI ölçüldü:** aynı konfigürasyon iki kez koştu (T2 taban), açık zemin 507,5 ↔ 514,4
+= **%1,4**. Bu metrikte **%1,5 altı farklar gürültü**.
 
 **Tur 1'in (ölçüm, commit `d4c6cac` + `41162b6`) kalıcı üç dersi:**
 1. **Aracın İYİMSER hatası da kaçar — ve onu ancak GÖZ yakalar.** F1a'nın dersi "karamsar hata
@@ -55,22 +91,24 @@ yaptırıcam"*). Üretilen 12 aday + `tools/ikon-adaylari.html` depoda duruyor; 
 
 ## SIRADAKİ TAM ADIM
 
-**SIRADA: F1b adım 3'ün DEVAMI — karar paketi revize edilip yeniden sunulacak.** Ölçüm bitti
-(adım 2 ✅, commit #1 `d4c6cac`), karar gelmedi. Sonraki oturumun sırası:
+**SIRADA: adım 3 — KARAR.** Ölçüm bitti (adım 2 ✅, commit #1 `d4e65b5`), revize paket sunuldu.
+Kullanıcı seçince adım 4 (uygula + bekçi + en az 2 mutasyon + final TAM koşu + commit #2).
 
-1. **G-54 deliğini kapat — ÖNCE BU.** Açılan ekranlar (Görevler · Hedefler · Mağaza · Karakter
-   panelleri) yatayda ve tablette **hiç görülmedi**. Yön kararı bunlar bilinmeden tamamlanamaz;
-   kısa ekranda panel yüksekliği en olası kırılma noktası. Araç hazır: `shot-yatay-hud-f1b.mjs`
-   kalıbıyla panelleri açıp üç kadrajda kare + ölçü.
-2. **YD kolunu G-51/G-52 ile revize et:** doğal genişlik KALIR, iki blok da ORTALANIR.
-   Sayılar genişlikten geliyor, hizadan değil — yani %19,0 rakamı hizadan bağımsız olarak durur.
-3. **G-55:** tablet dalında `--pill-h`/madalyon/kese/düğmeler bir basamak YUKARI. Yeni punto
-   icat etme — mevcut ölçeğin üst basamağı (D-128 kuralı).
-4. Paketi bu üçüyle güncelle (aynı URL) → kullanıcı seçsin → adım 4 (uygula + bekçi + mutasyon).
+**Karar bekleyen üç soru:**
+1. **Ekran yönü** — K0 serbest · **K2 portre kilidi (önerilen)** · K1 yatay kilidi · K2+ portre+kelepçe.
+   Öneri tur 1'de K1'di, **tur 2'de K2'ye döndü**: yatayın dükkân avantajı duruyor ama bedeli
+   artık görünür (3 ekran gömülü, 1 ödül düğmesi kayıp, 5 panel gövdesi yeniden yazılmalı).
+2. **Yatay/tablet HUD** — **YD+ (ortalı) önerilen, takas yok**, yön kararından bağımsız.
+3. **Açılış ekranı** — çay-dolan-bardak + dile bağlı başlık.
 
-**Karar bekleyen üç soru** (hiçbiri kapanmadı): ① ekran yönü K0/K0+/K1/K2 — kullanıcı premisi
-sorguladı (*"neden kilitliyoruz?"*), paket cevabı taşıyor · ② yatay/tablet HUD: YD (revize) ·
-③ açılış ekranı: çay-dolan-bardak animasyonu + dile bağlı başlık.
+**Yön kararını BEKLEMEYEN iki iş** (kullanıcı isterse aynı turda biter):
+① YD+ uygulaması · ② **28 ölü responsive seçicinin temizlenmesi** — temizlik tek başına bir şeyi
+düzeltmez ama D-128'in kuralını yeniden *uygulanabilir* kılar.
+
+**G-55 KOLU ÇÜRÜDÜ, KALEM DURUYOR:** kullanıcının "tablette büyüt" isteği karşılanmadı çünkü
+büyütülecek sınıflar yok. Kalem, ölü dallar temizlenip **bugünkü sınıf adlarıyla yeniden
+yazıldıktan sonra** ölçülmeli. Ayrıca karede görüldü: tablette **seviye çubuğu uzun ve boş**
+duruyor (`ss/f1b-yd-YDp-T2.png`) — bu G-55'in somut hedefi.
 
 **Yeni kalemler G-51…G-57:** `docs/geribildirim-oyun-testi-2026-09-17.md` (kullanıcının kendi
 cümleleriyle). G-56 (kaynak rozeti → mağaza sekmesi) ve **G-57 (ödüllü video: 2 sa'de 4 hak,
