@@ -5,23 +5,29 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-17 — **F6/F1b KAPANDI · D-131** · Faz F 3/6 · 108/112)
+## ŞU AN (2026-09-17 — **F6 tur 3: EKRAN YÖNÜ K0** · Faz F 3/6 · 108/112)
 
 ```
-SORU            : G-54 deliği — açılan ekranlar yatayda/tablette hiç görülmedi; + G-51/G-52
-                  (ortala) + G-55 (tablet basamağı).
-ÖLÇÜLEN KOLLAR  : §F 5 panel × 3 kadraj · §G Y0/YD/YD+ × 2 kadraj · §H T0/T+/T+D
-                  · §I P0/PA/PB/PC × 5 panel (KAREDEN doğdu) = 44 hücre + 2 sonda
-SAYILAR         : docs/kabuk-raporu-f1b.md §F–§I + §Final · ham: docs/olcum-panel-f1b.txt (önce)
-                  + docs/olcum-panel-f1b-son.txt (sonra, TAM 663 sn) + olcum-panel-sonda-f1b.txt
-KARAR           : D-131 — ② YD+ (ortalı) UYGULANDI · açılan ekranlar RAY + İKİ SÜTUN UYGULANDI
-                  ① ekran yönü ve ③ açılış ekranı **SEÇİLMEDİ, AÇIK KALDI**
-UYGULAMA        : src/components/ui/hud.css (responsive dallar sıfırdan) · src/index.css (işaret)
-BEKÇİ           : tests/responsive-canli.test.ts — 7 denetim · **4/4 mutasyon** yakalandı
-                  (tools/mutasyon-responsive-d131.mjs)
-FİNAL           : vitest 1299/1299 ✓ · duman 45/45 ✓ · tsc temiz · dünya imzası TEMİZ · hata 0
-PAKET (v2)      : https://claude.ai/artifact/JGzwnM3N9rDXbt8Rbbz4jE
+SORU            : ① ekran yönü KARARI VERİLDİ — kullanıcı: *"ana tema dikey ama yatayda da
+                  kullanılabilir olmalı; tablette oynarsa yatay gibi tepki verecek"* → **K0
+                  SERBEST**. K0'ın tek ÖLÇÜLMEMİŞ yüzeyi **DÖNDÜRME ANI**: D-131 üç DURAN
+                  kareyi ölçtü (412×915 · 915×412 · 1280×800), canlı oturumu çevirmeyi hiç
+                  denemedi. K0 kilidi kaldırınca yeni olan tam olarak o geçiştir.
+ÖLÇÜLECEK KOLLAR: §J döndürme geçişi — 4 yön çifti × (HUD + 5 açık ekran).
+                  Ana ölçüt: **taze ↔ dönerek** farkı (aynı boyuta DOĞRUDAN açılınca çıkan
+                  sayı ile ÇEVİREREK varılınca çıkan sayı eşit mi). Eşit değilse bayat hâl var.
+SAYILAR         : (adım 2'den sonra dolar)
+KARAR           : (BOŞ)
+UYGULAMA        : (BOŞ)
+BEKÇİ           : (BOŞ)
 ```
+
+**KOL OLMAYAN, GEREKÇELENDİRİLEN SEÇİM (`feedback_technical_forks`):** manifestteki yön beyanı
+teknik çataldır, ürün çatalı değil — sorulmaz, en iyisi seçilir. `fullUser` seçilecek:
+dört yönün tamamına izin verir **ama cihazın kendi döndürme kilidine saygı duyar**.
+`fullSensor` kilidi EZER (kullanıcı kilitlemişken bile döner) — kullanıcının *"kullanıcı
+isterse"* cümlesinin tersi. Beyansız bırakmak (bugünkü hâl) K0'ı **yazısız** bırakır; bu
+projenin iki kez yandığı kalıp tam olarak odur (ölü/yazısız kural sessiz çürür, D-131).
 
 **SONUÇ — telefon yatayı (portre ve tablet KASITLI olarak değişmedi):**
 

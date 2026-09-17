@@ -1,0 +1,82 @@
+
+════════════════════════════════════════════════════════════════════════════════
+  F6 TUR 3 — DÖNDÜRME ANI ÖLÇÜMÜ   (kip: TAM)
+════════════════════════════════════════════════════════════════════════════════
+
+§J1 — HUD DÖNDÜRME (canli oturum cevrildi; taze ile karsilastirildi)
+
+  cift        hedef  HUD%   tasan  tuval dW/dH  tampon WxH     kamSapma  hata  durum  imza
+  P1>L1       L1        19      0          0/0      1830x824         0     0     ok  t20|s0|a3|n2
+  L1>P1       P1      19.7      0          0/0      824x1830         0     0     ok  t20|s0|a3|n3
+  T1>T2       T2       6.7      0          0/0     1918x1198         0     0     ok  t20|s0|a3|n2
+  T2>T1       T1         7      0          0/0     1198x1918         0     0     ok  t20|s0|a3|n2
+
+  TAZE ↔ DÖNEREK FARKI (bos = gecis temiz):
+    P1>L1       — temiz —
+    L1>P1       hudYuzde:19.8→19.7
+    T1>T2       hudYuzde:7.1→6.7
+    T2>T1       hudYuzde:7.1→7
+
+§J3 — GIDIS-DONUS (A→B→A; basladigi yere donuyor mu)
+
+    P1>L1>P1       hata=  0  hudYuzde:19.8→19.7
+    L1>P1>L1       hata=  0  — temiz —
+    T1>T2>T1       hata=  0  hudYuzde:7.1→7
+    T2>T1>T2       hata=  0  hudYuzde:7.1→6.7
+
+§J2 — ACIK EKRANLA DONDURME
+
+  cift        panel      acik  duzen  kabuk WxH    ust WxH     disarida/akan  gorunur/toplam  gizliOdul  kesilen  hata
+  P1>L1       Gorevler   evet  ray        915x412     192x412           5/11             1/2        0/0        0     0
+  P1>L1       Hedefler   evet  ray        915x412     192x412            3/8             2/2        0/1        0     0
+  P1>L1       Magaza     evet  ray        915x412     192x412            0/2            8/13        0/1        0     0
+  P1>L1       Karakter   evet  ray        915x412     192x412            0/1             6/7        1/3        0     0
+  P1>L1       Ayarlar    evet  ray        915x412     192x412           0/10             6/6        0/0        0     0
+  L1>P1       Gorevler   evet  serit      412x915      412x62            0/7             1/2        0/0        0     0
+  L1>P1       Hedefler   evet  serit      412x915      412x62            0/4             1/2        0/1        0     0
+  L1>P1       Magaza     evet  serit      412x915      412x62            0/2           12/13        0/1        0     0
+  L1>P1       Karakter   evet  serit      412x915      412x62            0/1             6/7        0/3        0     0
+  L1>P1       Ayarlar    evet  serit      412x915      412x62            0/1             5/6        0/0        0     0
+  T1>T2       Gorevler   evet  serit      520x800      520x62            0/7             1/2        0/0        0     0
+  T1>T2       Hedefler   evet  serit      520x800      520x62            1/4             1/2        0/1        0     0
+  T1>T2       Magaza     evet  serit      520x800      520x62            0/2           12/13        0/1        0     0
+  T1>T2       Karakter   evet  serit      520x800      520x62            1/1             3/7        3/3        0     0
+  T1>T2       Ayarlar    evet  serit      520x800      520x62            0/1             5/6        0/0        0     0
+  T2>T1       Gorevler   evet  serit     520x1280      520x62            0/7             1/2        0/0        0     0
+  T2>T1       Hedefler   evet  serit     520x1280      520x62            0/4             1/2        0/1        0     0
+  T2>T1       Magaza     evet  serit     520x1280      520x62            0/2           12/13        0/1        0     0
+  T2>T1       Karakter   evet  serit     520x1280      520x62            0/1             6/7        0/3        0     0
+  T2>T1       Ayarlar    evet  serit     520x1280      520x62            0/1             5/6        0/0        0     0
+
+  TAZE ↔ DÖNEREK FARKI (bos = gecis temiz):
+    P1>L1       Gorevler   — temiz —
+    P1>L1       Hedefler   — temiz —
+    P1>L1       Magaza     — temiz —
+    P1>L1       Karakter   — temiz —
+    P1>L1       Ayarlar    — temiz —
+    L1>P1       Gorevler   — temiz —
+    L1>P1       Hedefler   — temiz —
+    L1>P1       Magaza     — temiz —
+    L1>P1       Karakter   — temiz —
+    L1>P1       Ayarlar    — temiz —
+    T1>T2       Gorevler   — temiz —
+    T1>T2       Hedefler   — temiz —
+    T1>T2       Magaza     — temiz —
+    T1>T2       Karakter   disarida:0→1 · gorunurDugme:6→3 · gizliOdul:0→3
+    T1>T2       Ayarlar    — temiz —
+    T2>T1       Gorevler   — temiz —
+    T2>T1       Hedefler   — temiz —
+    T2>T1       Magaza     — temiz —
+    T2>T1       Karakter   — temiz —
+    T2>T1       Ayarlar    — temiz —
+
+OKUMA NOTU
+  tuval dW/dH = ucjs tuvalinin CSS kutusunun ekrandan sapmasi (px). 0/0 = tam oturmus.
+  tampon WxH  = cizim tamponunun gercek boyutu; donusten sonra yeni kadraj x dpr olmali.
+  kamSapma    = kameranin en-boyu eksi kadrajin en-boyu. 0 = kamera tazelenmis.
+  disarida    = govdenin alt kenarini GERCEKTEN asan kart sayisi (scrollHeight KULLANILMADI).
+  duzen       = ust bolge dikeyse "ray", yataysa "serit" (D-131 takasi).
+  durum       = wallet/tables/npc/stations/areas dondurmeden sonra ayni mi.
+  CENTIK OLCULMEDI: Playwright safe-area taklit edemez, --sal/--sar her kadrajda 0.
+
+  sure: 814 sn
