@@ -49,6 +49,8 @@ const T_BODY = 0.18;
 /** Gövde kalınlığı — duvarın oda tarafındaki YÜZÜ bundan türer (`config/decor.WALL_INNER`). */
 export const WALL_T_BODY = T_BODY;
 const T_WAINSCOT = 0.22;
+/** Lambri kalınlığı — zemin hizasında duvarın EN DIŞ yüzü buradan çıkar (gövde 0,18'den kalın). */
+export const WALL_T_WAINSCOT = T_WAINSCOT;
 const T_RAIL = 0.26;
 /** Çıtanın yüksekliği ve merkez y'si — maket: box(...,0.08,...) @ y = 0.94. */
 const RAIL_H = 0.08;

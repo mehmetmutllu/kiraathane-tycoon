@@ -165,16 +165,73 @@ Yani alan tonu + bordür, zeminin TAMAMINA dokunan ama hiçbir yerde bağırmaya
 
 ---
 
-## §Karar
+## §Karar — D-129 (kullanıcı, 2026-09-17)
 
-*(BOŞ — adım 3'te kullanıcı seçer. D-084: bu bölüm karar paketinden önce doldurulmaz.)*
+Karar paketi: https://claude.ai/artifact/KoKfXtRZ3CAxMsLgcd3f3s
 
----
+**Zemin ve duvar grupları TAMAMEN elendi.** Kullanıcı: *"zemin ve duvar şu anki haliyle kalsın."*
+Yani Z1/Z2/Z3 ve D1/D2/D3 uygulanmadı; D-073 (düz ahşap zemin) ve bugünkü duvar dili duruyor.
+Rapordaki §A/§B sayıları bu kollar için ÖLÇÜLDÜ ve duruyor — ileride açılmak istenirse yeniden
+ölçüm gerekmez.
+
+**Seçilen tek kol: C2 — bahçe (çim + çit + ağaç).** Ama kullanıcı kolun KAPSAMINI değiştirdi ve
+kararın asıl maddesi budur:
+
+> *"c2 Bahçe: çim + çit + ağaç çok güzel olur ama alan olarak açmadığım her yer öyle olsun,
+> açtıklarım zaten oynanabilir olacak."*
+
+Karar paketindeki C2 binanın DIŞINDAKİ kuşaktı. Kullanıcının istediği şey farklı ve daha geniş:
+bahçe **binanın ayak izinin tümleyeni**. Açılmamış bir alan zemin karesinin İÇİNDE de olabilir
+(1. alan açıkken 2. ve 3. alanların dikdörtgenleri tam orada) ve bandın yeri de bant çizilmeden
+önce bahçedir. Bahçe böylece `areasOpen` ile **küçülür**: satın alınan her alan bahçeden düşüp
+oynanabilir zemine döner.
+
+Bu kapsam, §A'nın ölçtüğü ikinci bir kusuru da kapatıyor: kilitli alanın zemini bugüne kadar
+çıplak taban ahşabıydı (sapma **1,39 / 11 ayrık renk**) — yani kullanıcının şikâyet ettiği yüzeyin
+en düz hâli tam da oradaydı.
 
 ## §Uygulama
 
-*(BOŞ — adım 4.)*
+- **`src/components/three/bahceLook.ts`** (yeni) — ölçü ve yerleşim katmanı. `binaAyakIzi(areasOpen)`
+  TEK doğru kaynak; `cimAlanlari` · `citParcalari` · `citDirekleri` · `bitkiler` üçü de ondan türer.
+  `dikdortgenFarki` eksen hizalı TAM fark (örtüşen parça üretmez → z-fighting yok).
+  Sayılar §E'den: `disPay 30` (en uzak taşma 15,12'nin iki katı) · `citPay 6` (ortanca ile P90
+  arası → çit görünür, arkasında çim kalır) · `bitkiMenzil 14` (P90 11,11'i geçer).
+  Duvar payı elle yazılmıyor, `WALL_M + WALL_T_WAINSCOT / 2` ile duvarın kendi sayısından türüyor.
+- **`src/components/three/Bahce.tsx`** (yeni) — çizim. Çim parça başına düzlem, ağaç/çalı/çit
+  dört `InstancedMesh`. Çim TEK RENK DEĞİL: her parça konumundan türeyen bir ton alır — bu turun
+  kendi bulgusu düz bir yeşil düzlemin aynı şikâyeti üreteceğini söylüyor.
+- **`src/components/three/Scene.tsx`** — `<Bahce />`, `<Ground />`den sonra.
+- **`src/config/palette.ts`** — yalnız iki renk eklendi (`lawn`, `fenceWood`); yapraklar mevcut
+  `plant`/`plantAlt`, gövde `planter` ailesini kullanıyor (yeni renk dili açılmadı).
+- **`src/components/three/streetLook.ts`** — `KALDIRIM_ARKA` eklendi, asfaltın derinliği ondan
+  türüyor. Kaldırım 19,90'da bitip asfalt 20,00'de başlıyordu; **0,10 br'lik dikişten** arka plan
+  görünüyordu. §E'nin "ön kenara düşen 80 ışının TAMAMI aynı taşmayı (2,37) veriyor" satırı ele
+  verdi: dağılımı olmayan bir boşluk bölge değil ÇİZGİdir, ve 17,6 + 2,37 = 19,97 tam dikişin içi.
+- **`src/components/three/wallPanel.tsx`** — `WALL_T_WAINSCOT` dışa verildi (bahçe payı için).
 
 ## §Bekçi
 
-*(BOŞ — adım 4.)*
+`tests/bahce-r4.test.ts` — **21 denetim**. Korunan şey çimin rengi değil KAPSAMI:
+(a) açık alanın üstünde çim yok · (b) arsa içinde binaya ait olmayan her nokta çimle kaplı ·
+(c) bahçe `areasOpen` ile küçülüyor · bant açılınca TAMAMI çimsiz · duvarın dış yüzü çimsiz
+(örnekleme değil tam hesap) · kapı eşiği–sokak hattı hiçbir zaman çimde değil · çim sokağa
+taşmıyor · kaldırım-asfalt dikişi sıfır · çim tek renk değil · bitki binanın dibinde/görünmez
+uzaklıkta değil · yerleşim kararlı · çit ön kenarda yok ve arkasında çim kalıyor.
+
+`node tools/mutasyon-bahce-r4.mjs` — **23/23 kırmızı**.
+
+**İlk koşuda 4 mutasyon kaçtı ve ikisi delik değil ÖLÜ KOD gösterdi.** M12 (müşteri koridoru
+elemesini tamamen kaldır) ve M13 (elemeyi kapıyla taşıtma) İKİSİ birden kaçtı — çünkü o eleme
+hiçbir `areasOpen` değerinde ateşlenmiyor: kapı her zaman açık bir alanın ayak izinin içinde
+(1 alanda x −8,5 → 0. alan; 2+ alanda x 0 → iki ön çeyreğin ortak kenarı) ve bahçe zaten sokak
+hattında bitiyor. Ateşlenemeyen kural koruma değil gürültüdür; silindi, yerine gerçek değişmez
+(kapı–sokak hattı çimsiz) doğrudan bekçiye kondu. Kalan ikisi gerçek delikti: M6 (duvar payı)
+bekçi payı kendi kaynağından okuduğu için, M11 (bitki menzili) sınırı kendi sabitinden aldığı
+için görünmüyordu — ikisi de dış kaynağa bağlandı (`wallPanel` sayıları, §E'nin 15,12'si).
+
+## §Final
+
+vitest **1273 ✓** (57 dosya) · duman **45/45 ✓** · tsc temiz · konsol hatası 0
+Kareler: `ss/r4-son-alan1.png` · `alan2` · `alan3` · `alan1-kenar` · `alan1-sag` · `alan3-dis`
+Çizim bütçesi: 1 alan 50 çağrı / 28.884 üçgen · 3 alan 182 çağrı / 77.016 üçgen.

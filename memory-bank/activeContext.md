@@ -5,54 +5,64 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-17 — **R4 AÇIK** · G-50 çevre sanatı · Faz R 3/4 · 105/111)
+## ŞU AN (2026-09-17 — **R4 KAPANDI (D-129)** · Faz R **4/4 ✅** · 106/111)
 
 ```
 SORU            : "Zemin, duvarlar ve yan taraflar yapılmamış asset gibi" — bu his ekranda
                   HANGİ yüzeyden geliyor, o yüzey karenin yüzde kaçı, ve ne kadar düz?
-ÖLÇÜLECEK KOLLAR: §A piksel bütçesi (hangi yüzey kaç % · BOŞLUK payı) · §B düzlük (yüzey başına
-                  parlaklık sapması + ayrık renk sayısı) · §C kesik hattı (zemin nerede bitiyor,
-                  ardında ne var) — üçü TABAN, kol değil.
-                  ADAYLAR (aynı kadraj, eleyerek seçilecek):
-                  Z1 ahşap tahta derzi · Z2 kilim adacıkları · Z3 alan başına ton + bordür
-                  D1 lambri/kordon güçlendirme · D2 çini kuşağı · D3 süpürgelik + dip gölgesi
-                  Ç1 çimenlik kuşağı (kullanıcının önerisi) · Ç2 bahçe: çim+ağaç+çit
-                  Ç3 kaldırım/sokak zenginleştirme · Ç4 ufuk silueti
-                  K1 dış kütle (kesik kenarı kapatan bina kabuğu) · K2 sis/vinyet kuşağı
-                  >>> §A/§C adayları ELEYEBİLİR: BOŞLUK payı 0 ise Ç4/K1/K2 seçime SUNULMAZ.
-SAYILAR         : docs/cevre-raporu-r4.md §Bulgular · ham: docs/olcum-cevre-r4.txt (TAM · 18
-                  kare · 6.400 ışın/kare) · aday etki tablosu §F
-KARAR           : (adım 3 AÇIK — karar paketi yayında, kullanıcı seçiyor → D-129)
-                  https://claude.ai/artifact/KoKfXtRZ3CAxMsLgcd3f3s
-UYGULAMA        : (adım 4 — yalnız kararın kolu)
-BEKÇİ           : (test dosyası + mutasyon sayısı)
+ÖLÇÜLEN KOLLAR  : §A piksel bütçesi · §B düzlük · §C kesik · §E boşluğun yer karşılığı (TABAN)
+                  + 12 aday: C1-C4 · K1-K2 (boşluk) · Z1-Z3 (zemin) · D1-D3 (duvar)
+SAYILAR         : docs/cevre-raporu-r4.md §Bulgular + §Karar · ham: docs/olcum-cevre-r4.txt
+                  (TAM · 18 kare · 6.400 ışın/kare)
+KARAR           : D-129 — zemin ve duvar grupları TAMAMEN elendi ("şu anki haliyle kalsın").
+                  Tek kol C2, ama KAPSAMI kullanıcı genişletti: bahçe = binanın ayak izinin
+                  TÜMLEYENİ, yani açılmamış her yer (kilitli alanlar dahil), areasOpen ile
+                  geri çekilir.  Paket: https://claude.ai/artifact/KoKfXtRZ3CAxMsLgcd3f3s
+UYGULAMA        : bahceLook.ts + Bahce.tsx (yeni) · Scene.tsx · palette.ts (2 renk) ·
+                  streetLook.ts (kaldırım-asfalt dikişi) · wallPanel.ts (lambri kalınlığı dışa)
+BEKÇİ           : tests/bahce-r4.test.ts (21 den.) · tools/mutasyon-bahce-r4.mjs 23/23 kırmızı
+                  (ilk koşuda 4 kaçtı; ikisi delik DEĞİL ÖLÜ KOD gösterdi)
+FINAL           : vitest 1273 ✓ · duman 45/45 ✓ · tsc temiz · konsol 0 · ss/r4-son-alan*.png
 ```
 
-**Turun bilinen tuzağı (S6'dan devreden):** kamera oyuncunun +z'sinde durup −z'ye bakar, yani
-z ≳ 20,5'e konan hiçbir şey ekrana girmez (karşı binalar %0 görünürlükle SİLİNMİŞTİ). "Etraf
-bahçe olsun" kolu bu yüzden ÖNCE görünürlükle sınanır — güzel ama görünmeyen kol, kol değildir.
+**Turun kalıcı üç dersi:**
+1. **Kullanıcı bir kolu seçerken kapsamını da değiştirebilir — ve asıl karar orada olur.**
+   Karar paketindeki C2 "binanın dışındaki kuşak"tı; kullanıcı *"alan olarak açmadığım her yer"*
+   dedi. İkisi aynı görünüyor ama farklı: ikincisi bahçeyi `areasOpen`a bağlı, geri çekilen bir
+   yüzeye çeviriyor ve kilitli alanın çıplak ahşabını da kapatıyor. Paketin kolu uygulanmadı,
+   kullanıcının cümlesi uygulandı.
+2. **Yeni yüzey, eski kusuru miras alabilir.** Bu turun bulgusu "düz yüzey bitmemiş okunuyor"du
+   (zemin sapma 1,39 / 11 renk). Düz bir yeşil düzlem şikâyeti yeşile boyardı — çim bu yüzden
+   parça başına tonlanıyor ve bekçi bunu denetliyor (M15).
+3. **Kaçan mutasyon her zaman delik göstermez; bazen ÖLÜ KOD gösterir.** M12 ve M13 birlikte
+   kaçtı, çünkü korudukları "müşteri koridoru" kuralı hiçbir `areasOpen` değerinde
+   ateşlenmiyordu. Aynı kuralın iki farklı mutasyonu birden kaçıyorsa şüphe bekçide değil
+   KURALDA olmalı. Kural silindi, yerine gerçek değişmez kondu.
 
-**Paket notu:** `kaykit-forest-nature` F2'de silindi (D-125). Ç2 seçilirse
-`git checkout 13738b5^ -- public/assets/models/kaykit-forest-nature` ile döner ve
-`tests/asset-olu-yuk.test.ts` gereği entegrasyonu AYNI turda yapılır.
+**Yolda kapanan sessiz kusur:** kaldırım 19,90'da bitip asfalt 20,00'de başlıyordu; aradaki
+**0,10 br'lik dikişten** arka plan görünüyordu. §E'nin "ön kenara düşen 80 ışının TAMAMI aynı
+taşmayı veriyor" satırı ele verdi — dağılımı olmayan bir boşluk bölge değil ÇİZGİdir.
+
+**R4'ün bıraktığı açık uçlar:** ① **zemin ve duvar kolları ölçüldü, uygulanmadı** — Z1/Z2/Z3 ve
+D1/D2/D3'ün sayıları raporda duruyor, açılmak istenirse yeniden ölçüm gerekmez (kullanıcı
+*"şimdilik"* dedi) · ② bahçenin telefon üzerindeki maliyeti ölçülmedi: 1 alan 50 çizim çağrısı /
+28.884 üçgen, 3 alan 182 / 77.016 — F1 cihaz turunda okunmalı · ③ **çim TEK ton katmanı**
+(parça başına), zeminin kendisi gibi desensiz; yakın kadrajda geniş düz yeşil kalabilir.
 
 ## SIRADAKİ TAM ADIM
 
 **FAZ R — kullanıcının 2026-09-16 geri bildirimi, 16 kalem (G-35…G-50).** Tam liste ve
 kullanıcının KENDİ cümleleri: `docs/geribildirim-oyun-testi-2026-09-16.md`.
-Bölünme kullanıcı onayıyla dört tur oldu; **R1, R2 ve R3 bitti**, sırada **R4** (G-50 çevre
-sanatı, kendi tasarım turu).
+Bölünme kullanıcı onayıyla dört tur oldu; **dördü de bitti.**
 
 1. ~~**Görev şeridi** (G-41…G-44)~~ → **R1'de KAPANDI (D-126).**
 2. ~~**Mutfak yerleşimi + çarpışma** (G-35…G-38)~~ → **R2'de KAPANDI (D-127).**
    **G-39 (masa yükseltmeleri sırayla) hâlâ açık — DENGE kapısına tabi, ayrı tutulur.**
 3. ~~**HUD çerçeveleri** (G-45…G-49)~~ → **R3'te KAPANDI (D-128).**
-4. **ŞU AN SIRADA: G-50 — çevre sanatı, KENDİ TASARIM TURU.** Kullanıcı: *"zemin ve duvarlar... yapılmamış
-   asset gibi hissettiriyor, çözümler sun"*. `feedback_show_dont_ask`: metinle kol anlatılmaz,
-   6-12 aday aynı kadrajda render edilir. Kullanıcının kendi yönü: bahçe/çimenlik kuşağı.
-   **Not:** `kaykit-forest-nature` F2'de silindi; bu kol seçilirse
-   `git checkout 13738b5^ -- public/assets/models/kaykit-forest-nature` ile geri gelir ve
-   bekçi gereği entegrasyonu AYNI turda yapılır.
+4. ~~**G-50 — çevre sanatı**~~ → **R4'te KAPANDI (D-129).** Bahçe ilkel şekillerle çizildi
+   (`feedback_primitive_art_style`), `kaykit-forest-nature` geri getirilmedi — ihtiyaç kalmadı.
+
+**FAZ R BİTTİ (4/4).** Sırada **F1 — Capacitor kabuğu + imzalı sürüm**.
 
 **R2'nin bıraktığı üç açık uç:** ① **ankraj listesi elle** — bir gövdeye bağlı noktalar
 (`dishwasherHome` · `staffWalk` · pad) tek tek türetiliyor; dördüncüsü eklenirse ne araç ne bekçi
@@ -152,6 +162,8 @@ bakıyor · mutfağın kuşbakışı karesi OYUNDAN çekilemez (tepeden kamera o
 (repro aracı `tools/olcum-panel-donusu.mjs`).
 
 **Önizlemeler**
+**R4 SONUÇ KARELERİ:** `ss/r4-son-alan{1,2,3}.png` (bahçenin geri çekilişi) ·
+`ss/r4-son-alan1-{kenar,sag}.png` · `ss/r4-son-alan3-dis.png` (pencereden bahçe)
 **R4 KARAR PAKETİ (çevre sanatı · 12 aday + ölçüm):** https://claude.ai/artifact/KoKfXtRZ3CAxMsLgcd3f3s
 **R4 kareler:** `ss/r4-taban-*.png` (18 ölçüm karesi) · `ss/r4-aday-{bos,zemin,duvar}-*.png`
 **R3 SONUÇ KARELERİ:** `ss/r3-son-{serit,ayarlar,odul,hedefler}.png` (UYGULAMA SONRASI)

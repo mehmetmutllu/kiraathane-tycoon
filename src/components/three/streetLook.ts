@@ -83,8 +83,21 @@ export const STREET_Z0 = 17.5;
 
 /** Kaldırım şeridi: TÜM cephe boyu, ön duvardan dışa. */
 export const KALDIRIM = { x: 6, z: STREET_Z0 + 1.2, w: 40, d: 2.4 } as const;
-/** Asfalt cadde. Ortası (z 23,00) hiçbir kadrajda yok; ÖN KENARI (z 20,00) %3–8 görünüyor. */
-export const ASFALT = { x: 6, z: STREET_Z0 + 5.5, w: 56, d: 6 } as const;
+
+/**
+ * Kaldırımın YOLA bakan kenarı. Asfalt buradan başlar — sayı ikinci kez yazılmaz.
+ *
+ * NEDEN AYRI SABİT (R4): kaldırım 19,90'da bitiyor, asfalt ise `d: 6` ile 20,00'de başlıyordu;
+ * arada **0,10 br'lik bir dikiş** kalmıştı ve oradan arka plan görünüyordu. R4 ölçümü bunu
+ * tesadüfen yakaladı: §E'de ön kenara düşen 80 ışının TAMAMI aynı taşmayı (2,37) veriyordu —
+ * dağılımı olmayan bir "boşluk" bölge değil ÇİZGİ demektir, ve o çizgi dünya z'sinde 19,97'ye,
+ * yani tam dikişin içine düşüyor. İki şeridin kenarı artık aynı sayıdan türüyor, dikiş
+ * kapanınca da kapalı kalıyor (`feedback_single_source_of_truth`).
+ */
+export const KALDIRIM_ARKA = KALDIRIM.z + KALDIRIM.d / 2;
+
+/** Asfalt cadde. Ortası (z 23,00) hiçbir kadrajda yok; ÖN KENARI kaldırımın arkasına YAPIŞIR. */
+export const ASFALT = { x: 6, z: STREET_Z0 + 5.5, w: 56, d: (STREET_Z0 + 5.5 - KALDIRIM_ARKA) * 2 } as const;
 
 /**
  * GÖRÜNÜR ŞERİDİN ARKA SINIRI — rapor §V. Kameranın z tavanı `FLOOR_HALF + CAMERA_DIST` = 25,50;

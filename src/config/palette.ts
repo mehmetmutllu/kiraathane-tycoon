@@ -114,6 +114,12 @@ export const PALETTE = {
   paper: '#e9e4d6', // gazete/dergi
   coat: '#3a5570', // askıdaki ceket (koyu lacivert — #2c3e50 tepeden siyah lekeye dönüyordu)
   coatAlt: '#6d4c41',
+  // BAHÇE (R4 · D-129) — açılmamış her yerin yüzeyi. Yeni bir renk AİLESİ açılmadı: yapraklar
+  // mevcut `plant`/`plantAlt` yeşilini, ağaç gövdesi `planter` ahşabını kullanıyor. Yalnız iki
+  // renk eklendi, ikisi de o ailelerin uçları: çim (yapraklardan açık ve sarıya yakın, yoksa
+  // çalı çimin içinde kaybolur) ve çitin ahşabı (`doormat`tan bir ton koyu).
+  lawn: '#6da94f',
+  fenceWood: '#7d5c3c',
 } as const;
 
 /** Kozmetik zemin temaları (WP6) — economy.config.cosmetics.floorThemes id'leriyle eşleşir.

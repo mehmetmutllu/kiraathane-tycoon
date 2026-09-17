@@ -10,6 +10,7 @@ import { SceneLights } from './lights';
 import { devPerfKol } from '../../game/devPerf';
 import { cihazSinifiOku, cihazSinifiYaz, golgeAcikMi, sinifBelirle, ISINMA_KARE, ORNEK_KARE } from '../../game/cihazSinifi';
 import { dwellState } from '../../game/dwell';
+import { Bahce } from './Bahce';
 import { GroundMarker } from './GroundMarker';
 // Etiketler ve işaret yarıçapı `markerFrame`ten gelir: çerçeve genişliği YAZIDAN çözülüyor
 // ve aynı çerçeveyi `tick.ts` tetik olarak test ediyor (D-121). Buraya düz metin yazmak
@@ -1360,6 +1361,9 @@ export function Scene() {
           Yönlü ışık gölge DÖKMEZ; yalnız yüzey yönüne göre aydınlatma (hacim hissi) verir. */}
       <SceneLights shadows={golgeAcik} />
       <Ground />
+      {/* BAHÇE (R4 · D-129) — açılmamış her yer. `Ground`dan SONRA çizilir: çim kilitli alanların
+          çıplak ahşabını örter; açılan alan bahçeden düşer ve oynanabilir zemine döner. */}
+      <Bahce />
       <Street />
       <Walls />
       <Decor />

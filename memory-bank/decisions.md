@@ -4141,3 +4141,29 @@ turunu ister.
   sağ ucunu tutuyordu; sol uç deltaya dönünce ekran hem artışı hem toplamı vaat ediyordu).
 - **Final:** vitest 1245 ✓ · konsol hatası 0.
 
+
+## D-129 — Açılmamış her yer BAHÇE (R4 · G-50) — 2026-09-17
+
+Ölçüm: `docs/cevre-raporu-r4.md` · ham `docs/olcum-cevre-r4.txt` (TAM · 18 kare · 6.400 ışın/kare).
+
+- **Şikâyetin ağırlık merkezi ölçüldü:** zemin karenin ort. **%59,6**'sı (en yüksek %82,8),
+  duvar %8,0, boşluk %4,2 (en yüksek **%20,0**). Zeminin sapması gölge almayan düzlemde
+  **1,39 / 11 ayrık renk**; yanındaki gltf yüzeyleri **27,6-39,3 / 144-372**. "Bitmemiş" hissinin
+  sayısı bu **5-6 kat**lık fark.
+- **Seçilen kol: yalnız C2 (bahçe: çim + çit + ağaç).** Kullanıcı zemin (Z1/Z2/Z3) ve duvar
+  (D1/D2/D3) gruplarının tamamını ELEDİ: *"zemin ve duvar şu anki haliyle kalsın"*. D-073 duruyor.
+- **KAPSAM kullanıcı tarafından genişletildi** — kararın asıl maddesi budur:
+  *"alan olarak açmadığım her yer öyle olsun, açtıklarım zaten oynanabilir olacak."* Bahçe binanın
+  dışındaki kuşak DEĞİL, **binanın ayak izinin tümleyeni**: kilitli alanlar ve (bant çizilmeden
+  önce) bandın yeri de bahçedir, `areasOpen` büyüdükçe bahçe geri çekilir. Çim · çit · bitki
+  üçü de `binaAyakIzi(areasOpen)`den TÜRER; ikinci liste yok.
+- **Ölçüm üç kolu SUNULMADAN eledi:** gökyüzü/ufuk silueti (ufuk üstü boşluk 18/18 karede %0,0) ·
+  sokak cephesine bahçe (boşluğun yalnız %1,6'sı ön kenarda) · vinyet.
+- **Yolda kapanan sessiz kusur:** kaldırım 19,90'da bitip asfalt 20,00'de başlıyordu; aradaki
+  **0,10 br'lik dikişten** arka plan görünüyordu. §E'nin "ön kenara düşen 80 ışının TAMAMI aynı
+  taşmayı veriyor" satırı ele verdi — dağılımı olmayan boşluk bölge değil ÇİZGİdir.
+- **Bekçi:** `tests/bahce-r4.test.ts` (21 den.) · `node tools/mutasyon-bahce-r4.mjs` **23/23 kırmızı**.
+  İlk koşuda 4 kaçtı ve ikisi GERÇEK delik değil **ÖLÜ KOD** çıkardı: "müşteri koridorunu boş
+  bırak" kuralı hiçbir `areasOpen` değerinde ateşlenmiyor (kapı her zaman ayak izinin içinde) —
+  kural silindi, yerine kapı-sokak hattının çimsiz olduğu gerçek değişmezi kondu.
+- **Final:** vitest 1273 ✓ · duman 45/45 ✓ · konsol hatası 0 · `ss/r4-son-alan{1,2,3}*.png`.

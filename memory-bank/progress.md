@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 111 · YAPILAN 105 · %95):**
+**Oturum bütçesi (TOPLAM 111 · YAPILAN 106 · %95):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -26,9 +26,9 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | E arayüz ve cila | 4/5 🔧 |
 | | **S sanat ve arayüz geçişi** | **24/24 ✅** |
 | | H oynanış düzeltmeleri | 2/2 ✅ |
-| | **R geri bildirim turları (2026-09-16)** | **3/4** 🔧 |
+| | **R geri bildirim turları (2026-09-16)** | **4/4 ✅** |
 | | F paketleme ve yayın | 1/5 🔧 |
-| **Program toplam** | | **77/83** |
+| **Program toplam** | | **78/83** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -575,7 +575,7 @@ PARALEL döndü. Yani kapı geçildi, fakat ~95 dk tahmini bu turla ne doğrulan
 **Faz S kapısı:** 185 kullanılmayan KayKit modeli oyuna bağlı + UI dili maketle onaylanmış +
 ses kaynağı kararı yazılı. Ondan sonra Faz F'e (paketleme) geçilir.
 
-## Faz R — GERİ BİLDİRİM TURLARI (3/4) 🔧 — kullanıcının 2026-09-16 oturumu
+## Faz R — GERİ BİLDİRİM TURLARI (4/4) ✅ — kullanıcının 2026-09-16 oturumu
 Kalemler ve kullanıcının KENDİ cümleleri: `docs/geribildirim-oyun-testi-2026-09-16.md`.
 - ✅ **R1 — görev şeridi (G-41…G-44)** · **D-126:** tebrik toast'ı 3,53 sn yaşarken yeni kart
   1,33 sn'de geliyordu → **2,20 sn örtüşme, 7/7 senaryoda; ekranda 2 kutu, 8 px arayla, aynı
@@ -605,7 +605,18 @@ Kalemler ve kullanıcının KENDİ cümleleri: `docs/geribildirim-oyun-testi-202
   sorulmadan elendi: uzun değerde ekranı 42,7 px aşıyor. `docs/hud-raporu-r3.md` (§Karar dolu) ·
   ham `docs/olcum-hud-r3.txt` + `docs/olcum-hud-r3b.txt` · bekçi `hud-r3` (7 den.) +
   `ekran-kabugu §5` yeniden yazıldı · `mutasyon-hud-r3` 12/12 (M6 ilk turda kaçtı) · vitest 1245 ✓.
-- ⏳ **R4 — çevre sanatı (G-50)** · tasarım turu: 6-12 aday aynı kadrajda render edilir
+- ✅ **R4 — çevre sanatı (G-50)** · **D-129:** şikâyetin ağırlık merkezi ölçüldü — zemin karenin
+  ort. **%59,6**'sı (en yüksek %82,8), duvar %8,0, boşluk %4,2 (en yüksek **%20,0**). Zeminin
+  sapması gölge almayan düzlemde **1,39 / 11 ayrık renk**, yanındaki gltf yüzeyleri **27,6-39,3 /
+  144-372** — "bitmemiş" hissi bu 5-6 katlık fark. 12 aday gerçek oyunda üç kadrajdan çizildi;
+  ölçüm üçünü SUNMADAN eledi (gökyüzü 18/18 karede %0,0 · sokak cephesi %1,6 · vinyet).
+  Kullanıcı zemin ve duvar gruplarının tamamını eledi, **yalnız C2'yi seçti ve kapsamını
+  genişletti**: bahçe artık binanın ayak izinin TÜMLEYENİ — kilitli alanlar da bahçe,
+  `areasOpen` büyüdükçe geri çekiliyor. Yolda **0,10 br'lik kaldırım-asfalt dikişi** kapandı
+  (ön kenara düşen 80 ışının tamamı aynı taşmayı veriyordu = bölge değil çizgi).
+  `docs/cevre-raporu-r4.md` (§Karar dolu) · ham `docs/olcum-cevre-r4.txt` · bekçi `bahce-r4`
+  (21 den.) · `mutasyon-bahce-r4` **23/23** (ilk koşuda 4 kaçtı, ikisi ÖLÜ KOD gösterdi) ·
+  vitest 1273 ✓ · duman 45/45 ✓.
 
 ## Faz H — OYNANIŞ DÜZELTMELERİ (2/2) ✅ — her kalem ≈ 1 oturum
 Sanat kalemi değil; Faz S'ten ayrı tutuldu ki asset işi bunların arkasında beklemesin.
