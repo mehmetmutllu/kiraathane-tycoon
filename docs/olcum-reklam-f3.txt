@@ -1,0 +1,82 @@
+# olcum-reklam-f3 — 2026-09-17T16:08:43.375Z — bölüm: A
+
+═══ §A — EKLENTİ ADAYLARI ═══
+Her satır paketin KENDİ içinden okundu (registry + tarball), ikinci el kaynak yok.
+
+                          A1 @capacitor-community A2 @capgo               A3 @admob-plus          
+──────────────────────────────────────────────────────────────────────────────────────────────────
+sürüm                     8.1.0                   8.1.18                  2.0.0-alpha.4           
+son yayın                 2026-08-14              2026-09-15              2024-11-15              
+son KARARLI sürüm         8.1.0 (2026-08-14)      8.1.18 (2026-09-15)     1.24.0 (2022-08-14)     
+toplam sürüm              68                      44                      64                      
+@capacitor/core           ^8.0.0                  >=8.0.0                 >=3                     
+lisans                    MIT                     MPL-2.0                 MIT                     
+tgz (KB)                  68,2                    34,4                    24,1                    
+dosya                     184                     42                      44                      
+android / ios             ✓ / ✓                   ✓ / ✓                   ✓ / ✓                   
+
+Google SDK                play-services-ads 25.4.+ads-mobile-sdk 0.25.0-beta01play-services-ads 23.0.0
+  SDK beta mı?            kararlı                 BETA ⚠                  kararlı                 
+UMP (rıza SDK)            ✓                       ✗                       ✗                       
+rıza API (JS)             ✓                       ✗                       ✗                       
+
+ÇOCUK-GÜVENLİĞİ BAYRAKLARI (monetization.md §3 — ZORUNLU):
+  tagForChildDirected     ✓                       ✓                       ✓                       
+  tagForUnderAgeOfCons    ✓                       ✓                       ✓                       
+  maxAdContentRating      ✓                       ✓                       ✓                       
+
+REKLAM BİÇİMLERİ:
+  banner                  ✓                       ✓                       ✓                       
+  interstitial            ✓                       ✓                       ✓                       
+  ödüllü                  ✓                       ✓                       ✓                       
+
+
+# olcum-reklam-f3 — 2026-09-17T16:08:57.127Z — bölüm: B
+
+═══ §B ÖZET — R8 EKLENTİYLE ═══
+kol          eklenti                       R8     derl.  APK       AAB       .dex      tabana göre
+─────────────────────────────────────────────────────────────────────────────────────────────────
+taban        (yok)                         açık   ✓      8,58      8,89      1,05      +0,00 MB
+com-r8       @capacitor-community/admob    açık   ✓      11,27     12,86     6,44      +2,69 MB
+com-acik     @capacitor-community/admob    KAPALI ✓      14,46     14,12     15,61     +5,87 MB
+capgo-r8     @capgo/capacitor-admob        açık   ✓      10,95     12,68     5,82      +2,37 MB
+capgo-acik   @capgo/capacitor-admob        KAPALI ✓      15,38     15,11     18,24     +6,79 MB
+
+§E — YANSIMA YÜZEYİ (R8 açık kollar · köprü sınıfı yeniden adlandırıldı mı?)
+kol          köprü sınıfı                                  durum
+──────────────────────────────────────────────────────────────────────────────────
+com-r8       com.getcapacitor.community.admob.AdMob        korundu
+capgo-r8     admob.plus.capacitor.AdMobPlusPlugin          korundu
+
+
+# olcum-reklam-f3 — 2026-09-17T16:08:57.197Z — bölüm: CD
+
+═══ §C — DOĞAL ARA (interstitial nereye konabilir) ═══
+D-066: "SADECE doğal aralarda", "eylem ortasında ASLA". Bu aralar bugüne dek sayılmadı.
+
+kesinti noktası         testid          yer                               doğal ara?
+────────────────────────────────────────────────────────────────────────────────────────
+offline dönüş özeti     offline         src/components/ui/HUD.tsx:431     EVET
+günlük görev ödülü      daily-reward    src/components/ui/HUD.tsx:641     EVET
+hedef ödülü             goal-reward     src/components/ui/HUD.tsx:620     EVET
+usta satın alma         master-bar      src/components/ui/HUD.tsx:537     HAYIR — 💎 HARCAMA anı — eylem ortası
+
+DOĞAL ARA SAYISI: 3
+
+PRESTIGE (Renovasyon) ARANIYOR — D-066 onu interstitial örneği olarak anıyor:
+  (hiçbir yerde uygulanmamış — yalnız projectBrief'te "uzun vade")
+
+═══ §D — BUGÜN PASİF DURAN REKLAM DÜĞMELERİ (D-039 kalıbı) ═══
+"Yeri belli, işlevi yok." Eklenti gelince bağlanacak yüzey tam olarak bunlar.
+
+src/components/ui/HUD.tsx:29      PlayAdIcon,
+src/components/ui/HUD.tsx:557     <button className="master-buy ad off" data-testid="master-ad" disabled>
+src/components/ui/HUD.tsx:558     <PlayAdIcon size={15} />
+src/components/ui/HUD.tsx:900     adReady = false,
+src/components/ui/HUD.tsx:914     adReady?: boolean;
+src/components/ui/HUD.tsx:994     <button className={`sheet-cta ad${adReady ? '' : ' off'}`} disabled={!adReady} onCli
+src/components/ui/HUD.tsx:995     <PlayAdIcon size={18} /> İzle, 2× al
+src/components/ui/icons.tsx:178   export function PlayAdIcon({ size = 20 }: { size?: number }) {
+
+BAĞLAMA NOKTASI (kod satırı): 8
+

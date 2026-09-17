@@ -1,0 +1,82 @@
+{
+  "taban": {
+    "kol": "taban",
+    "eklenti": "(yok)",
+    "minify": true,
+    "derlendi": true,
+    "hata": "",
+    "sureSn": 18,
+    "apkBayt": 9000618,
+    "aabBayt": 9318656,
+    "dexBayt": 1102996,
+    "zaman": "2026-09-17T16:01:22.500Z"
+  },
+  "com-r8": {
+    "kol": "com-r8",
+    "eklenti": "@capacitor-community/admob",
+    "minify": true,
+    "derlendi": true,
+    "hata": "",
+    "sureSn": 64,
+    "apkBayt": 11818573,
+    "aabBayt": 13487072,
+    "dexBayt": 6757356,
+    "yansima": {
+      "mappingSatir": 10972,
+      "siniflar": [
+        {
+          "ad": "com.getcapacitor.community.admob.AdMob",
+          "yeni": "com.getcapacitor.community.admob.AdMob",
+          "durum": "korundu"
+        }
+      ]
+    },
+    "zaman": "2026-09-17T16:07:25.483Z"
+  },
+  "com-acik": {
+    "kol": "com-acik",
+    "eklenti": "@capacitor-community/admob",
+    "minify": false,
+    "derlendi": true,
+    "hata": "",
+    "sureSn": 47,
+    "apkBayt": 15158493,
+    "aabBayt": 14809062,
+    "dexBayt": 16371512,
+    "zaman": "2026-09-17T16:03:47.901Z"
+  },
+  "capgo-r8": {
+    "kol": "capgo-r8",
+    "eklenti": "@capgo/capacitor-admob",
+    "minify": true,
+    "derlendi": true,
+    "hata": "",
+    "sureSn": 65,
+    "apkBayt": 11482388,
+    "aabBayt": 13291873,
+    "dexBayt": 6106608,
+    "yansima": {
+      "mappingSatir": 9439,
+      "siniflar": [
+        {
+          "ad": "admob.plus.capacitor.AdMobPlusPlugin",
+          "yeni": "admob.plus.capacitor.AdMobPlusPlugin",
+          "durum": "korundu"
+        }
+      ]
+    },
+    "zaman": "2026-09-17T16:08:33.096Z"
+  },
+  "capgo-acik": {
+    "kol": "capgo-acik",
+    "eklenti": "@capgo/capacitor-admob",
+    "minify": false,
+    "derlendi": true,
+    "hata": "",
+    "sureSn": 35,
+    "apkBayt": 16125629,
+    "aabBayt": 15848061,
+    "dexBayt": 19122980,
+    "zaman": "2026-09-17T16:05:52.039Z"
+  }
+}

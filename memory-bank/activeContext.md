@@ -5,61 +5,43 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-17 — **F6 tur 3 KAPANDI · D-132** · Faz F 3/6 · 108/112)
+## ŞU AN (2026-09-17 — **F3 tur 1: REKLAM ALTYAPISI · ÖLÇÜM** · Faz F 3/6 · 108/112)
 
 ```
-SORU            : ① ekran yönü KARARI VERİLDİ — kullanıcı: *"ana tema dikey ama yatayda da
-                  kullanılabilir olmalı; tablette oynarsa yatay gibi tepki verecek"* → K0 SERBEST.
-                  K0'ın tek ÖLÇÜLMEMİŞ yüzeyi DÖNDÜRME ANIydı (D-131 duran kare ölçmüştü).
-ÖLÇÜLEN KOLLAR  : §J döndürme 4 çift × (HUD + 5 ekran) + gidiş-dönüş = 28 hücre
-                  §M kusurun 4 kolu (R0/RA/RB/RC) × 4 çift × 2 panel, DÖNDÜRME üzerinden
-SAYILAR         : docs/donme-raporu-f6.md · ham: docs/olcum-donme-f6.txt (TAM 820 sn, SONRA)
-                  + olcum-donme-f6-once.txt (TAM 814 sn, ÖNCE) + olcum-kol-donme-f6.txt (TAM)
-KARAR           : D-132 — K0 serbest, manifeste `fullUser` olarak YAZILDI · kusur kolu RA
-                  (teknik çatal, sorulmadı) · ③ ikon + açılış ekranı ERTELENDİ (kullanıcı)
-UYGULAMA        : AndroidManifest.xml (screenOrientation) · hud.css (.char-card flex-shrink)
-BEKÇİ           : tests/ekran-yonu-f6.test.ts — 6 denetim · **6/6 mutasyon** yakalandı
-                  (tools/mutasyon-yon-f6.mjs)
-FİNAL           : §J2 19/20 → **20/20 temiz** · vitest 1305/1305 ✓ · duman 45/45 ✓ · tsc temiz
+SORU            : F3 (AdMob) — HANGİ eklenti, eklenti gelince R8 hâlâ güvenli mi, ve
+                  interstitial'ın "doğal arası" oyunda GERÇEKTEN nerede?
+                  KAPSAM (benim kararım, feedback_task_splitting): bu tur ALTYAPI
+                  (eklenti + R8 + mock katman + çocuk-güvenliği bayrakları).
+                  Reklamın İÇERİĞİ — G-57 ödüllü video ekonomisi (2 sa'de 4 hak, 1 💎 / 200 ₺,
+                  seviyeyle artar) — `economy.config.ts`e dokunur, VARYANT KAPISINA TABİ,
+                  kendi turunda (F3b) ölçülür. Bu turda tek bir denge sayısı yazılmaz.
+ÖLÇÜLECEK KOLLAR: §A EKLENTİ — 3 aday, hiçbiri önceden seçilmeden:
+                    A1 @capacitor-community/admob · A2 @capgo/capacitor-admob
+                    A3 @admob-plus/capacitor
+                    ölçüt: Capacitor 8 uyumu · bakım tazeliği · altta yatan Google SDK'sı ve
+                    KARARLILIĞI · UMP/rıza yüzeyi · çocuk bayrakları · lisans · APK bedeli
+                  §B R8 — D-130'un gerekçesi ("kurulu eklenti 0, yansıma yüzeyi en dar") düştü.
+                    Her finalist eklenti × {R8 açık, R8 kapalı} = APK/AAB boyutu, dex, derleme
+                    başarısı, ProGuard kuralının AAR'dan gelip gelmediği
+                  §C DOĞAL ARA — interstitial'ın meşru yerleri KODDAN sayılır (D-066 kuralı
+                    "yalnız doğal aralarda" diyor ama o aralar hiç sayılmadı)
+                  §D BAĞLAMA NOKTALARI — bugün pasif duran reklam düğmeleri (D-039 kalıbı)
+SAYILAR         : (adım 2'den sonra dolar → docs/reklam-raporu-f3.md · ham: docs/olcum-reklam-f3.txt)
+KARAR           : (adım 3 — kullanıcı seçer · D-0xx)
+UYGULAMA        : (adım 4 — yalnız kararın kolu)
+BEKÇİ           : (test dosyası + kaç mutasyonla doğrulandı)
 ```
 
-**SONUÇ — döndürme:**
-
-| | önce | sonra |
-|---|---|---|
-| açık ekranla döndürme | 19/20 temiz | **20/20 temiz** |
-| tablet P→Y, Karakter: gizli ödül | **3/3** | **0/3** |
-| tablet P→Y, Karakter: kart yüksekliği | 722 → **1202** | 722 → **722** |
-| hata · ilerleme kaybı · taşma | 0 · yok · 0 | 0 · yok · 0 |
-
-**KUSURUN SEBEBİ — bir "yeniden hesaplama" eksiği değil, bir SHRINK KİLİDİ.**
-`.char-card { flex: 1 0 auto }` → ortadaki hane `flex-shrink: 0`: kart büyüyebiliyor ama
-küçülemiyordu. Tablet portresinde (1280 px) kurulan yüksekliği yatayda (738 px gövde) bırakmıyor,
-ödül düğmeleri gövdenin altından taşıyordu. **Gövde doğru tazeleniyordu, içerik tazelenmiyordu.**
-Duran karede kusur YOK — o yüzden D-131 göremezdi ve o yüzden bu ölçüm yazıldı.
-
-**TURUN KALICI DERSİ — KANARYA BİR YÜZEYİ KORUR, ARACI DEĞİL.** İlk tam koşu **geçersiz çıktı ve
-iptal edildi**: `Escape` panelleri hiç kapatmıyordu (hiçbir sheet'te klavye kancası yok, yalnız
-`.sheet-back`). Taze referanslar `{yok:true}` kalıyor, `fark()` `undefined` alanları atladığı için
-çıktı **"— temiz —"** yazıyordu — karşılaştırma hiç yapılmadan. HUD kanaryası yeşildi çünkü HUD
-tarafı sağlamdı; kırık olan koymadığım yerdi. **Ölçümün "temiz" demesi, ölçümün çalıştığı anlamına
-gelmiyor.** F1b tur 1'in dersi *"iyimser hata kaçar"*dı ve çaresi kanaryaydı; bu tur kanaryanın
-sınırını gösterdi.
-
-**BEKÇİ TESTİ KENDİ KUSURUYLA KIRMIZI VERDİ** (ve bu iyi oldu): CSS ayrıştırıcısı yorumları
-silmeden seçici okuyordu, düzeltme kuralını hiç görmüyordu. **Karamsar** kusur olduğu için
-anlaşıldı; iyimser olsaydı sessizce yeşil kalırdı.
+**YAN İŞ (açık uç ⑤, bir satır):** `tools/sira-kilidi.mjs` ölçüm kanıtı olarak yalnız
+`tools/olcum-*.ts` tanıyor; proje aylardır `.mjs` yazıyor. Bu turun aracı da `.mjs` — yani delik
+bu turda ISIRIR. Kalıp `.ts|.mjs`e genişletilir, bekçisi `tests/sira-kilidi.test.ts`e eklenir.
 
 ## SIRADAKİ TAM ADIM
 
-**SIRADA: F3 (AdMob).** ① ekran yönü **D-132'de kapandı**, ③ açılış ekranı + ikon kullanıcı
-kararıyla **ertelendi** (*"ikonu da en son hallederiz"*) — ikon geldiğinde `mipmap-*` + adaptive
-foreground olarak takılır ve **açılış ekranı da onunla düzelir** (11 splash dosyası ölü, 106,9 KB;
-Android 12+ sistem splash'ı uygulama ikonunu gösteriyor).
-
-**F3'ün ilk işi R8 kolunu yeniden ölçmek:** eklenti sayısı 0'dan çıkınca D-130'un *"yansıma yüzeyi
-en dar"* gerekçesi düşer. G-57 (ödüllü video) `economy.config.ts`e dokunacağı için **VARYANT
-KAPISINA TABİ** — taslak sayılar karar değildir.
+**Tur yukarıdaki kartta.** F6'dan devreden iki kalem — ③ açılış ekranı + ikon — kullanıcı
+kararıyla **ertelendi** (*"ikonu sen sal ben onu chatgptye yaptırıcam"*): ikon geldiğinde
+`mipmap-*` + adaptive foreground olarak takılır ve **açılış ekranı da onunla düzelir**
+(11 splash dosyası ölü, 106,9 KB; Android 12+ sistem splash'ı uygulama ikonunu gösteriyor).
 
 **D-132'NİN BIRAKTIĞI BEŞ AÇIK UÇ:**
 ① **`.shop-card` aynı shrink kilidini taşıyor** — ölçümde kirlenmedi (Mağaza dört yön çiftinde de
@@ -91,8 +73,7 @@ cümleleriyle). G-56 (kaynak rozeti → mağaza sekmesi) ve **G-57 (ödüllü vi
 video başına 1 💎 / 200 ₺, seviyeyle artar)** **Faz F'nin F3/F4 kalemleri** — G-57 `economy.config.ts`e
 dokunacağı için **VARYANT KAPISINA TABİ**, taslak sayılar karar değildir.
 
-**Ondan sonra F3 (AdMob) → F4 (IAP) → F5 (mağaza vitrini).** F3'ün ilk işi R8 kolunu yeniden
-ölçmek olmalı: eklenti sayısı 0'dan çıkınca D-130'un "yansıma yüzeyi en dar" gerekçesi düşer.
+**F3'ten sonra F4 (IAP) → F5 (mağaza vitrini).**
 
 **FAZ R — kullanıcının 2026-09-16 geri bildirimi, 16 kalem (G-35…G-50).** Tam liste ve
 kullanıcının KENDİ cümleleri: `docs/geribildirim-oyun-testi-2026-09-16.md`.
