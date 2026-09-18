@@ -261,6 +261,162 @@
   box-shadow: var(--k3);
 }
 
+/* ═══════════════════ G-63 · ÖĞRETME KARTI (bulaşık döngüsü) ═══════════════════
+   Kullanıcı iki şeyi aynı cümlede istedi: *"oraya birden zoom yapar ve ekranda bir yazı çıkar"*
+   AMA *"bulaşığın görüldüğü yeri kapatmayacak şekilde"*. Ortada duran bir modal, kamerayı
+   çevirmenin anlamını yok ederdi — gösterilen şeyin üstüne perde çekerdi. O yüzden kart ÜST
+   BANTTA durur (HUD kaynaklarının altında), kamera hedefi alt-orta kadrajda bırakır.
+   Genişlik doğal değil KELEPÇELİ: `feedback_hud_natural_width` tam genişliğe germeyi reddediyor;
+   kart okunur bir satır uzunluğunda kalır ve ortalanır. */
+.ogretme {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: calc(var(--sat) + 92px);
+  z-index: 37;
+  width: min(420px, calc(100% - 2 * var(--sal) - 32px));
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 12px;
+  border-radius: var(--r2);
+  border: 3px solid var(--ot);
+  background: linear-gradient(180deg, var(--kart), var(--kart2));
+  box-shadow: var(--k3);
+  color: var(--tx);
+  text-align: left;
+  pointer-events: auto;
+  animation: ogretmeIn 0.42s cubic-bezier(0.18, 0.9, 0.3, 1.2) both;
+}
+@keyframes ogretmeIn {
+  from {
+    transform: translate(-50%, -14px);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+.ogretme-ikon {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r1);
+  border: 2.5px solid var(--ot);
+  background: linear-gradient(180deg, var(--kart2), var(--kart));
+}
+.ogretme-body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: block;
+  font-size: var(--p2);
+  line-height: 1.38;
+}
+.ogretme-body b {
+  display: block;
+  font-size: var(--p1);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ac);
+  margin-bottom: 2px;
+}
+.ogretme-body u {
+  text-decoration: none;
+  color: var(--ac);
+  font-weight: 800;
+}
+.ogretme-ok {
+  flex: 0 0 auto;
+  align-self: center;
+  padding: 7px 13px;
+  border-radius: var(--r1);
+  border: 2.5px solid var(--ot);
+  background: linear-gradient(180deg, var(--ok), var(--ok2));
+  color: var(--txa);
+  font-family: var(--font-game);
+  font-size: var(--p2);
+  font-weight: 800;
+  cursor: pointer;
+}
+/* Dar ekranda düğme alta iner — üç sütun 360 px'te sıkışıyordu. */
+@media (max-width: 400px) {
+  .ogretme {
+    flex-wrap: wrap;
+  }
+  .ogretme-ok {
+    margin-left: auto;
+  }
+}
+
+/* G-64 (2026-09-18) — SPOTLIGHT KONUŞMUYORDU.
+   Kullanıcı: *"tepsi yükseltmesi yapılması gerekiyor, o hani en başta kullanıcı bilmiyor ya…
+   karakter kısmına bir zum atması lazım, oraya tıklaması… Tepsiyi yükselteceğini bilmesi lazım."*
+   Bugünkü spotlight ekranı karartıp Karakter sekmesine halka koyuyordu ve HİÇBİR ŞEY YAZMIYORDU;
+   kullanıcı 5 dakikada fark etmedi. Eksik olan vurgu değil CÜMLEydi: karartma "bir şey var" der,
+   nereye ve niye dokunulacağını söylemez.
+   Kart sekmenin TAM ÜSTÜNDE durur ve aşağıyı gösteren bir ok taşır — yani yazı ile hedef arasında
+   bakışın izleyeceği bir çizgi var (`feedback_ui_form_not_color`: ölçü biçimdir). */
+.char-tip {
+  position: absolute;
+  right: calc(var(--sar) + 10px);
+  /* GÖREV BANDININ ÜSTÜNDE. İlk kurulum 74px'teydi ve bandın TAM ÜSTÜNE biniyordu (kare:
+     `docs/gorsel/ss/t2b-3-karakter-yonlendirme.png` ilk hâli) — üstelik bandın yazdığı şey
+     kartın tekrar ettiği hedefin ta kendisiydi, yani ekran aynı cümleyi iki kez söyleyip
+     birini kesiyordu. 78 (bandın alt kenarı) + 58 (bandın taban yüksekliği) + 14 pay = 150. */
+  bottom: calc(var(--sab) + 160px);
+  z-index: 36;
+  max-width: 236px;
+  padding: 10px 13px;
+  border-radius: var(--r2);
+  background: linear-gradient(180deg, var(--kart), var(--kart2));
+  border: 2.5px solid var(--ot);
+  color: var(--tx);
+  font-size: var(--p2);
+  font-weight: 700;
+  line-height: 1.35;
+  box-shadow: var(--k3);
+  animation: charTipIn 0.34s cubic-bezier(0.18, 0.9, 0.3, 1.2) both;
+}
+.char-tip b {
+  display: block;
+  font-size: var(--p1);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ac);
+  margin-bottom: 2px;
+}
+/* Sekmeye bakan ok: kartın alt kenarından çıkan küçük üçgen. */
+.char-tip::after {
+  content: '';
+  position: absolute;
+  right: 34px;
+  bottom: -11px;
+  width: 0;
+  height: 0;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+  border-top: 11px solid var(--ot);
+  animation: charTipOk 1.1s ease-in-out infinite;
+}
+@keyframes charTipIn {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+}
+@keyframes charTipOk {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(4px);
+  }
+}
+
 /* ═══════════════════════════ EKRAN KENARI OKU ═══════════════════════════ */
 
 .edge-arrow {
@@ -330,6 +486,9 @@
   cursor: pointer;
   pointer-events: auto;
   animation: bandIn 0.4s cubic-bezier(0.18, 0.9, 0.3, 1.2) both;
+  /* G-58: kutlama ışığı (`.band.done::after`) bandın dışına taşmasın. Durum farkı doğurmasın
+     diye `.done`da değil BURADA — iki hâl aynı kutuyu boyar. */
+  overflow: hidden;
 }
 @keyframes bandIn {
   from {
@@ -347,6 +506,66 @@
    "Tamamlandı". Yeşil burada AKSAN değil, İLERLEME anlamı (D-107: tek aksan amber). */
 .band.done {
   border-color: var(--ok);
+  /* G-58 (2026-09-18) — KUTLAMA BİR HÂL DEĞİL, BİR AN. Kullanıcı: *"görev tamamlayınca altta
+     ikon işte etrafı yeşile boyanıyor… onun efektinin biraz daha güzel olması sağlanabilir.
+     Kayarak gelme veya tamamlandığını böyle sallanma, şirin tarzda bir efekt."*
+     Eskiden tamamlanma YALNIZ renk değişimiydi: `key={quest.id}` biten görevle aynı kaldığı için
+     bant yeniden monte olmuyor, hiçbir hareket olmuyordu — yani göz "bitti"yi kaçırabiliyordu.
+     Üç hafif katman (`feedback_visual_polish`: animasyon göze girmez):
+       ① tek bir zıplama + minik sağa-sola yaylanma (0,52 sn, bir kez),
+       ② yeşil bir ışık bandın üstünden bir kez geçer (::after, 0,7 sn),
+       ③ onay pulu kendi içinde poplar (aşağıda).
+     Süreler kutlama penceresine (0,5 + 0,8 = 1,3 sn) sığar; pencere kapanınca bant zaten
+     yeni görevle yeniden monte olup `bandIn` oynatır. */
+  animation: bandDone 0.52s cubic-bezier(0.22, 1.2, 0.36, 1) 1 both;
+}
+/* ② geçen ışık — ayrı katman, bandın kendi gölge basamaklarına dokunmaz. */
+.band.done::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  /* Yarıçap merdivenden (mor-dil bekçisi `inherit`i reddediyor): bant `--r2` kullanıyor. */
+  border-radius: var(--r2);
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 38%, color-mix(in srgb, var(--ok) 42%, transparent) 50%, transparent 62%);
+  transform: translateX(-120%);
+  animation: bandSweep 0.7s ease-out 0.06s 1 both;
+}
+@keyframes bandDone {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  28% {
+    transform: translateY(-6px) rotate(-1.4deg);
+  }
+  55% {
+    transform: translateY(0) rotate(1deg);
+  }
+  78% {
+    transform: translateY(-2px) rotate(-0.5deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+@keyframes bandSweep {
+  to {
+    transform: translateX(120%);
+  }
+}
+/* ③ onay pulu: yerinde büyüyüp oturur. */
+.band.done .band-photo {
+  animation: onayPop 0.42s cubic-bezier(0.2, 1.5, 0.4, 1) 1 both;
+}
+@keyframes onayPop {
+  0% {
+    transform: scale(0.4) rotate(-18deg);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
 }
 .band.done .band-photo {
   background: linear-gradient(180deg, var(--ok), var(--ok2));
@@ -589,6 +808,52 @@
   50% {
     transform: scale(1.14);
     opacity: 0;
+  }
+}
+/* G-62 (2026-09-18) — BİR ŞEY TAMAMLANINCA İLGİLİ SEKME KENDİNİ GÖSTERİR.
+   Kullanıcı: *"görev falan tamamlandığında sol altta hani görevler şeyi var ya, o buton böyle
+   etrafı sarılsın… öyle bir efekt ver"* + hedefler için *"bir şeyler olsun, farkındalık olsun"*.
+   `spot`tan farkı: `spot` SÜREKLİ nabız atan bir talimattır (oyuncu oraya gitmeli), bu ise
+   BİR KEZ çalan kısa bir kutlamadır (oyuncu isterse bakar). İkisi aynı anda düşerse `spot`
+   kazanır — talimat kutlamayı yutar, ekran iki şey birden söylemez (G-60'ın kuralı). */
+.navtab.kutla:not(.spot) {
+  z-index: 36;
+  position: relative;
+}
+.navtab.kutla:not(.spot)::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: var(--r2);
+  border: 3px solid var(--ok);
+  pointer-events: none;
+  animation: navKutla 0.62s ease-out 2 both;
+}
+.navtab.kutla:not(.spot) .navtab-icon {
+  animation: navKutlaIkon 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) 1 both;
+}
+@keyframes navKutla {
+  0% {
+    transform: scale(0.82);
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.3);
+    opacity: 0;
+  }
+}
+@keyframes navKutlaIkon {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.22) rotate(-6deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
   }
 }
 

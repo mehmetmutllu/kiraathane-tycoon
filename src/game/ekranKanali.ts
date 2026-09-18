@@ -25,12 +25,14 @@
  *   3. **ipucular** — öğretici. Panel açıkken, bir bildirim ekrandayken ya da görev kutlaması
  *      sürerken BEKLERLER; kullanıcının istediği "sıralı" his tam olarak budur. İpucu kaybolmaz,
  *      koşulları sürdüğü sürece sırası gelince çıkar.
- *   4. Karakter ipucu tepsininkinden önce: biri görevin talimatı (ne yapacağını söyler), öteki
+ *   4. **Öğretme** (bulaşık döngüsü) ipucuların önünde: oyuncu o mekaniği hiç bilmiyor, bilmeden
+ *      görev de yapılamaz. İpucular ise var olan bir mekanikte kolaylık sunar.
+ *   5. Karakter ipucu tepsininkinden önce: biri görevin talimatı (ne yapacağını söyler), öteki
  *      bir kolaylık (yapabileceğini söyler).
  */
 
 /** Ekranı kesen kanallar. `null` = ekran serbest. */
-export type EkranKanali = 'cevrimdisi' | 'usta' | 'ipucu-karakter' | 'ipucu-tepsi' | null;
+export type EkranKanali = 'cevrimdisi' | 'usta' | 'ogretme-bulasik' | 'ipucu-karakter' | 'ipucu-tepsi' | null;
 
 export interface EkranGirdisi {
   /** Çevrimdışı kazanç var ve henüz kapatılmadı. */
@@ -43,6 +45,8 @@ export interface EkranGirdisi {
   bildirimVar: boolean;
   /** Görev geçiş penceresi (kutlama + boşluk) sürüyor. */
   gecisPenceresi: boolean;
+  /** Bulaşık ÖĞRETME kartının koşulları sağlandı (bulaşık görevi aktif, kart hiç görülmedi). */
+  bulasikOgretmeHazir: boolean;
   /** Karakter paneli ipucunun kendi koşulları sağlandı (karakter görevi aktif, panel hiç açılmadı). */
   karakterIpucuHazir: boolean;
   /** Tepsi ipucunun kendi koşulları sağlandı (tepside ürün var, ipucu hiç görülmedi). */
@@ -54,6 +58,9 @@ export function ekranKanali(g: EkranGirdisi): EkranKanali {
   if (g.ustaVar) return 'usta';
   // İpucular SIRA BEKLER: panel açıkken, bildirim ekrandayken ya da kutlama sürerken çıkmazlar.
   if (g.panelAcik || g.bildirimVar || g.gecisPenceresi) return null;
+  // ÖĞRETME, İPUCUNDAN ÖNCE: biri mekaniğin KENDİSİNİ tanıtır (bilmeden oynanamaz), öteki var
+  // olan bir mekanikte kolaylık sunar. G-63'ün kartı bu yüzden tepsininkinin önündedir.
+  if (g.bulasikOgretmeHazir) return 'ogretme-bulasik';
   if (g.karakterIpucuHazir) return 'ipucu-karakter';
   if (g.tepsiIpucuHazir) return 'ipucu-tepsi';
   return null;

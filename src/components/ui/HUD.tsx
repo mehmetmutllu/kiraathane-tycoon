@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useGame, goalMetricsOf, tableThemeUnlocked, tableSoftMaxLevel } from '../../game/store';
-import { claimableGoals, collectionBonus, goalViews, type GoalView } from '../../game/goals';
+import { claimableGoals, collectionBonus, goalViewsForPanel, type GoalView } from '../../game/goals';
 import { dailyViews, claimableDailyCount, type DailyQuestView } from '../../game/dailyQuests';
 import { dailyCountersOf } from '../../game/store';
 import { masterCost, toastCizilir, questInTransition } from '../../game/rules';
@@ -33,6 +33,7 @@ import {
   ResetIcon,
   TickIcon,
   DotIcon,
+  BasinIcon,
 } from './icons';
 import { Sheet } from './Sheet';
 import { CharacterPanel } from './CharacterPanel';
@@ -101,6 +102,10 @@ export function HUD() {
   const emptyTray = useGame((s) => s.emptyTray);
   const trayTipSeen = useGame((s) => s.trayTipSeen);
   const markTrayTipSeen = useGame((s) => s.markTrayTipSeen);
+  // G-63: bulaşık öğretme kartı — mekanik ile görev aynı anda doğuyordu, arada öğretme yoktu.
+  const washTipSeen = useGame((s) => s.washTipSeen);
+  const markWashTipSeen = useGame((s) => s.markWashTipSeen);
+  const focusDish = useGame((s) => s.focusDish);
   const camZoomOut = useGame((s) => s.camZoomOut);
   const toggleCamZoomOut = useGame((s) => s.toggleCamZoomOut);
   const [offlineSeen, setOfflineSeen] = useState(false);
@@ -136,16 +141,19 @@ export function HUD() {
    * kuruluyordu; sıra bir kural değil, dört ifadenin tesadüfi kesişimiydi. Artık HUD koşul
    * kurmuyor, "şu an hangi kanal üstte" diye soruyor — ikisinin aynı anda açılması imkânsız.
    */
+  const gecisPenceresi = questInTransition({ questPhase });
   const kanal = ekranKanali({
     cevrimdisiVar: offlineEarned > 0 && !offlineSeen,
     ustaVar: nearMaster != null && masterKapali !== nearMaster,
     panelAcik: sheet != null,
     bildirimVar: toastCizilir(notice),
-    gecisPenceresi: questInTransition({ questPhase }),
+    gecisPenceresi,
+    bulasikOgretmeHazir: quest?.target.type === 'washDish' && !washTipSeen,
     karakterIpucuHazir: !!charQuestActive && !charPanelSeen,
     tepsiIpucuHazir: tray + trayFood > 0 && !trayTipSeen,
   });
   const showOffline = kanal === 'cevrimdisi';
+  const bulasikOgretme = kanal === 'ogretme-bulasik';
   const spotlight = kanal === 'ipucu-karakter';
   const traySpot = kanal === 'ipucu-tepsi';
 
@@ -346,20 +354,26 @@ export function HUD() {
 
       {/* ───────── ALT NAV ───────── */}
       <nav className="botnav">
+        {/* G-62: görev tamamlanınca Görevler sekmesi kendini gösterir. Bayrak kutlama
+            penceresinin KENDİSİ (0,5 + 0,8 sn) — yeni bir sayaç/zamanlayıcı eklenmedi. */}
         <NavTab
           id="quests"
           label="Görevler"
           icon={<QuestListIcon size={25} />}
           active={sheet === 'quests'}
           bang={dailyReady}
+          kutla={gecisPenceresi}
           onClick={() => setSheet(sheet === 'quests' ? null : 'quests')}
         />
+        {/* G-81: hedef toplanabilir hâle gelince aynı farkındalık. `bang` kalıcı işarettir
+            ("hâlâ var"), halka ANIN kendisidir ("az önce oldu"). */}
         <NavTab
           id="goals"
           label="Hedefler"
           icon={<TargetIcon size={25} />}
           active={sheet === 'goals'}
           bang={goalsReady}
+          kutla={goalsReady}
           onClick={() => setSheet(sheet === 'goals' ? null : 'goals')}
         />
         <NavTab
@@ -379,7 +393,25 @@ export function HUD() {
           onClick={() => (sheet === 'char' ? setSheet(null) : openChar())}
         />
       </nav>
+      {/* G-64: karartma "bir şey var" der, CÜMLE nereye ve niye dokunulacağını söyler.
+          Metin görevin kendi hedefinden türer — hangi kademe isteniyorsa onu yazar, sabit
+          bir cümle değil (görev hattı değişirse yönlendirme de değişir). */}
+      {/* ───────── G-63 · BULAŞIK ÖĞRETME KARTI ─────────
+          Kullanıcı: *"'bulaşık yıka' diyor ama öyle bir şey olmaması gerekiyor. Ona bir uyarıcı,
+          bir modal tarzı bir şey de olur… 'müşteriler çay içtikten sonra masalarda kirli çay
+          birikmeye başlar, bunları alıp bulaşık tezgâhına bırakman gerekiyor' … ondan sonra
+          görev gelmeli"* + *"oraya birden zoom yapar ve ekranda bir yazı çıkar… bulaşığın
+          görüldüğü yeri KAPATMAYACAK şekilde"*.
+          Kart bu yüzden ekranın ÜST bandında: kamera tezgâha çevrildiğinde hedef kadrajın
+          ortasında/altında kalır, yazı onun üstünü örtmez. Kapatınca bir daha çıkmaz (persist). */}
+      {bulasikOgretme && <OgretmeBulasik onClose={markWashTipSeen} onShow={focusDish} />}
       {spotlight && <div className="spotlight-backdrop" data-testid="char-spotlight" onClick={markCharPanelSeen} />}
+      {spotlight && (
+        <div className="char-tip" data-testid="char-tip">
+          <b>Buradan yükselt</b>
+          Bu yükseltme <u>Karakter</u> sekmesinde — dokun ve satın al.
+        </div>
+      )}
 
       {/* ───────── ALT SAYFALAR ───────── */}
       {sheet === 'quests' && <QuestsSheet onClose={() => setSheet(null)} />}
@@ -473,6 +505,7 @@ function NavTab({
   bang,
   dot,
   spot,
+  kutla,
   onClick,
 }: {
   id: string;
@@ -483,11 +516,19 @@ function NavTab({
   /** Sessiz "bak buraya" noktası (tamamlanan hedef var). */
   dot?: boolean;
   spot?: boolean;
+  /**
+   * G-62 — BİR KEZ ÇALAN KUTLAMA HALKASI. `spot`tan farkı süre değil NİYET: `spot` sürekli nabız
+   * atan bir TALİMATTIR (oyuncu oraya gitmeli), bu kısa bir FARKINDALIKtır (oyuncu isterse bakar).
+   * Zamanlayıcı YOK: halka `animation-iteration-count: 2` ile iki kez çalıp durur, yani bayrak
+   * açık kalsa bile efekt birikmez. Bayrak da zaten var olan bir durumdan türer (kutlama
+   * penceresi / hazır ödül) — HUD yeni bir durum taşımaz.
+   */
+  kutla?: boolean;
   onClick: () => void;
 }) {
   return (
     <button
-      className={`navtab${active ? ' active' : ''}${spot ? ' spot' : ''}`}
+      className={`navtab${active ? ' active' : ''}${spot ? ' spot' : ''}${kutla ? ' kutla' : ''}`}
       data-testid={id}
       onClick={onClick}
     >
@@ -551,6 +592,46 @@ function EdgeArrow({ onClick }: { onClick: () => void }) {
  *
  * Reklam butonu Faz 5'te bağlanacak; şimdi pasif ama KAYBOLMAZ (D-039 kalıbı) — yeri belli olsun.
  */
+/**
+ * G-63 — BULAŞIK DÖNGÜSÜNÜN ÖĞRETME KARTI (2026-09-18).
+ *
+ * NEDEN MODAL DEĞİL, ÜST BANT: kullanıcı iki şeyi aynı cümlede istedi — *"oraya birden zoom
+ * yapar ve ekranda bir yazı çıkar"* AMA *"bulaşığın görüldüğü yeri kapatmayacak şekilde"*.
+ * Ortada duran bir modal kamerayı çevirmenin anlamını yok ederdi: gösterilen şeyin üstüne
+ * perde çekmiş olurduk. Kart ekranın üst bandında durur, kamera hedefi alt-orta kadrajda bırakır.
+ *
+ * NEDEN BİR KEZ: `washTipSeen` kayıtta (additive alan, `trayTipSeen` deseni). Öğretme bir
+ * DURUM değil bir AN — ikinci kez görülürse gürültü olur.
+ *
+ * SIRA: `ekranKanali` bunu ipucuların ÖNÜNE koyar ama kutlama/bildirim penceresinin ARKASINA —
+ * yani "görev bitti → kutlama → kart → görev" sırası kullanıcının tarif ettiği gibi akar.
+ */
+function OgretmeBulasik({ onClose, onShow }: { onClose: () => void; onShow: () => void }) {
+  // Kamera yalnız kart AÇILIRKEN bir kez çevrilir; her render'da değil.
+  useEffect(() => {
+    onShow();
+    // `onShow` store eylemi (kimliği sabit) — bağımlılık listesi bilerek boş: "açılışta bir kez".
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return (
+    <div className="ogretme" data-testid="ogretme-bulasik">
+      <span className="ogretme-ikon">
+        <BasinIcon size={30} />
+      </span>
+      <span className="ogretme-body">
+        <b>Bulaşık biriyor</b>
+        <span>
+          Müşteriler çayını içince masada <u>kirli bardak</u> bırakır. Onları topla ve
+          bulaşık tezgâhına götür — yıkanan bardaklar temiz rafa döner.
+        </span>
+      </span>
+      <button className="ogretme-ok" data-testid="ogretme-ok" onClick={onClose}>
+        Anladım
+      </button>
+    </div>
+  );
+}
+
 function UstaModal({ id, onClose }: { id: string; onClose: () => void }) {
   const diamonds = useGame((s) => s.diamonds);
   const buyMaster = useGame((s) => s.buyMaster);
@@ -789,7 +870,8 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
   const lvl = levelProgress(xp);
   const [odul, setOdul] = useState<GoalView | null>(null);
 
-  const goals = goalViews(metrics, goalsClaimed);
+  // G-81: ödülü hazır kategoriler listenin ÜSTÜNDE (gerekçe `goals.ts`).
+  const goals = goalViewsForPanel(metrics, goalsClaimed);
   const toplanabilir = goals.filter((g) => g.state === 'claimable').length;
   const bonus = collectionBonus(goalsClaimed);
   // Usta sayacı: sahip olunan KİMLİK listesinden türer (kayıtta "kaç Usta" alanı yok, D-093).

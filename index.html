@@ -1,5 +1,13 @@
 <!doctype html>
-<html lang="en">
+<!--
+  lang="tr" BİR ETİKET DEĞİL, BİR DAVRANIŞ (2026-09-18, T2b'de yakalandı).
+  CSS `text-transform: uppercase` büyük harfe çevirirken BELGENİN DİLİNE bakar. `lang="en"`
+  kaldığı sürece Türkçe "i" harfi "I"ya dönüyordu: öğretme kartının başlığı ekranda
+  **"BULAŞIK BIRIYOR"** yazıyordu. Arayüzde yedi ayrı yerde `uppercase` var; hepsi aynı kusuru
+  taşıyordu, yalnız içinde küçük "i" geçen bir metin yazılana kadar görünmedi.
+  Ekran okuyucu ve tireleme de bu bayrağı okur — düzeltme tek yerde ve kalıcı.
+-->
+<html lang="tr">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />

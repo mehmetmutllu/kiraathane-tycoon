@@ -4379,3 +4379,44 @@ turunu ister.
   ve bir erteleme satırı eklendi. Süre 1,3 sn'lik kutlama penceresidir; satın alma sırasını,
   eşikleri, maliyetleri, hiçbirini oynatmaz. Gerçekten tempo olan kanat (G-61'in kalıcı kapısı)
   bu turda BİLEREK yapılmadı ve T3-K11'e yazıldı — uyarının haklı olacağı yer orası.
+
+## D-135 — T2b: kutlama · farkındalık · öğretme (G-58 · G-62 · G-63 · G-64 · G-81)
+
+- **G-58 kutlama bir AN oldu.** Tamamlanma yalnız RENK değişimiydi ve bant `key={quest.id}` ile
+  aynı kaldığı için hiç yeniden monte olmuyordu — yani ekranda **hiçbir hareket yoktu**, göz
+  "bitti"yi kaçırabiliyordu. Üç hafif katman: bir zıplama + minik yaylanma · bandın üstünden geçen
+  yeşil ışık · onay pulunun popu. Üçü de **BİR KEZ** çalar ve üçü de 1,3 sn'lik geçiş penceresine
+  SIĞAR — uzun olsaydı G-41'in ("tebrik yeni görevin üstünde kalıyor") kendisi olurdu.
+- **G-62/G-81 halkası zamanlayıcısız.** `animation-iteration-count: 2` ile iki kez çalıp durur,
+  yani bayrak açık kalsa bile efekt birikmez; bayrak da var olan durumdan türer (geçiş penceresi /
+  hazır ödül). HUD yeni bir sayaç taşımaz. `spot` (sürekli TALİMAT) varken halka çizilmez —
+  `:not(.spot)`; ekran iki şey birden söylemez (G-60'ın kuralı).
+- **G-81 kaydırma DEĞİL sıralama.** Hazır ödül panelin üstüne çıkar (`goalViewsForPanel`);
+  grup içinde config sırası korunur. Kaydırma kısa ekranda hedefi dışarı itebilirdi ve "en üst"
+  kullanıcının kendi alternatifiydi.
+- **G-63 modal değil ÜST BANT.** Kullanıcı aynı cümlede *"oraya birden zoom yapar"* **ve**
+  *"bulaşığın görüldüğü yeri kapatmayacak şekilde"* dedi; ortadaki bir modal kamerayı çevirmenin
+  anlamını yok ederdi. Kart üstte, kamera hedefi altta. `washTipSeen` kayıtta (additive, sürüm
+  artmadı). Kamera hedefi koda gömülmedi, `servicePlace(...).dish`ten okunur.
+- **G-64 eksik olan vurgu değil CÜMLEydi.** Spotlight ekranı karartıp Karakter sekmesine halka
+  koyuyor ama **hiçbir şey yazmıyordu**; kullanıcı 5 dakikada fark etmedi. Kart sekmenin üstünde,
+  aşağıyı gösteren okla. İlk kurulum görev bandının ÜSTÜNE biniyordu ve aynı hedefi iki kez
+  yazıyordu — **kare gösterdi, düzeltildi**: kart bandın üstüne taşındı, metin artık NEREDE
+  yapılacağını söylüyor, NE yapılacağını bant söylüyor.
+- **G-71 BİLEREK YAPILMADI.** Kullanıcının kendi teşhisi doğru: kök G-68'dir (tezgâhın duvar payı).
+  Aktörler zaten birbirine katı değil; "takılma" çarpışma değil AYNI NOKTAYA kilitlenme. Emniyet
+  kemerini ölçmeden yazmak aktör hareketine dokunup taşıma tavanını sessizce oynatmak olurdu →
+  **T3-K10 ile aynı turda ölçülür.**
+- **YAN BULGU — `<html lang="en">` TÜRKÇE BÜYÜK HARFİ BOZUYORDU.** CSS `text-transform: uppercase`
+  belgenin diline bakar; öğretme kartının başlığı ekranda **"BULAŞIK BIRIYOR"** çıktı. Arayüzde
+  yedi ayrı `uppercase` var, hepsi aynı kusuru taşıyordu ama içinde küçük "i" geçen bir metin
+  yazılana kadar görünmedi — **hata testte değil KAREDE çıktı.** `lang="tr"` ile tek yerde kapandı.
+- **TURUN KALICI DERSİ — ÖLÇÜM ARACININ KENDİSİ KUSURU TAKLİT EDEBİLİR.** `tools/shot-t2b.mjs`in
+  ilk hâli kutlama karesinde YENİ görevin kartını çekiyordu: oyun kare alınırken akmaya devam
+  ediyor ve 1,3 sn'lik pencere ekran görüntüsü tamamlanana kadar kapanıyordu. Yani araç, tam da
+  düzelttiğimiz kusuru resmediyordu ve "efekt çalışmıyor" diye okunacaktı. Pencere kare için
+  dondurularak çözüldü (yalnız SAYAÇ uzatılır; sınıf, animasyon, CSS aynen çalışır).
+- **Bekçi:** `tests/kutlama-ogretme-t2b.test.ts` (24 denetim). **İki mutasyonla doğrulandı:**
+  ① öğretme kanalı sıradan çıkarıldı → kırmızı · ② panel sıralaması kaldırıldı → kırmızı.
+  **Görsel kanıt:** `docs/gorsel/ss/t2b-{1..4}-*.png` (`node tools/shot-t2b.mjs`).
+- **Final:** vitest **1361/1361** · duman **45/45** · tsc temiz.

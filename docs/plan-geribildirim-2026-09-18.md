@@ -51,7 +51,7 @@ Kullanıcının tarifi zaten bir durum makinesi:
 | **G-62** | Kutlama anında Görevler düğmesi halkalanır; kamera kısa bir an oraya yönelir. |
 | **G-63** | `q_wash`tan ÖNCE öğretme adımı: kirli bardağın olduğu masaya zoom + metin **bulaşığı kapatmayacak yerde** (ekranın karşı yarısında). Mekanik (kirli bardak doğması) öğretme kartıyla birlikte açılır, görevle değil. |
 | **G-64** | Tepsi görevinde karaktere zoom + "buraya dokun" yönlendirmesi; bugünkü sessiz `spotlight` yetmedi. |
-| **G-71** | Garson ile tezgâh önündeki NPC'nin aynı hedef noktaya kilitlenmesi: hedef noktalar arasında **sahiplenme** (bir aktör bir noktayı tutar) + sıkışma kurtarması. G-68 çözülürse kök zaten kalkar, bu emniyet kemeridir. |
+| **G-71** | **T2'de YAPILMADI — bilerek.** Kullanıcının kendi teşhisi doğru çıktı: *"o adam tezgah arkasına giderse herhâlde bu sorun çözülür"*. Kök **G-68/K10**; aktörler zaten birbirine katı değil, yani "takılma" bir çarpışma değil AYNI NOKTAYA kilitlenme. Emniyet kemerini ölçmeden yazmak, aktör hareketine dokunup taşıma tavanını (ve tempoyu) sessizce oynatmak olurdu. **K10 ile aynı turda ölçülür:** iki personel aynı 0,56 br diskte ne sıklıkta ve ne kadar süre duruyor. |
 | **G-81** | Hedefler panelinde toplanabilir satır **en üste** çıkar; tamamlanma anında ekranda kısa iz. |
 
 **Ölçüm (kısa koşu yeter, denge değil):** bir oturum boyunca "aynı karede açık kanal sayısı"

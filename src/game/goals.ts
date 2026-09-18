@@ -138,6 +138,33 @@ export function goalViews(metrics: GoalMetrics, claimedList: readonly string[]):
   });
 }
 
+/**
+ * G-81 — PANEL SIRASI: **TOPLANABİLİR ÖNCE.**
+ *
+ * Kullanıcı 2026-09-18: *"hedeflerde bir şey tamamlanınca bir şeyler olsun, farkındalık olsun
+ * diye; içine girince de görev neredeyse ona kaysın, 'al' butonunu görüp bassın diye, veya
+ * yapılan en üst falan gelsin."*
+ *
+ * Panel bugüne kadar kategorileri config SIRASIYLA çiziyordu, yani hazır ödül listenin ortasına
+ * ya da altına düşebiliyordu: alt nav rozeti *"bir şey var"* diyor ama panel açılınca ne olduğu
+ * aranıyordu. Sıralama tek kuralla düzelir — **ödül hazır olan yukarı çıkar.**
+ *
+ * Kaydırma (auto-scroll) DEĞİL sıralama seçildi: kaydırma listeyi oynatır ve kısa ekranda hedefi
+ * ekranın dışına itebilir; sıralama her ekran boyunda aynı sonucu verir ve "en üst" kullanıcının
+ * kendi alternatifiydi (*"veya yapılan en üst falan gelsin"*).
+ *
+ * Grup İÇİNDE config sırası korunur (kararlı sıralama): aynı durumdaki kategoriler her açılışta
+ * aynı yerde durur, yoksa panel her bakışta başka görünürdü.
+ */
+const PANEL_SIRA: Record<GoalState, number> = { claimable: 0, progress: 1, locked: 2, claimed: 3 };
+
+export function goalViewsForPanel(metrics: GoalMetrics, claimedList: readonly string[]): GoalView[] {
+  return goalViews(metrics, claimedList)
+    .map((g, i) => ({ g, i }))
+    .sort((a, b) => PANEL_SIRA[a.g.state] - PANEL_SIRA[b.g.state] || a.i - b.i)
+    .map((x) => x.g);
+}
+
 /** Şu an toplanabilir hedeflerin kimlikleri — HUD rozetini ve "hepsini al"ı besler. */
 export function claimableGoals(metrics: GoalMetrics, claimedList: readonly string[]): string[] {
   return goalViews(metrics, claimedList)

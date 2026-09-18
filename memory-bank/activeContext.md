@@ -5,7 +5,7 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-18 — **T1 onarım + T2a görev akışı BİTTİ** · sıradaki: T2b görsel/öğretme)
+## ŞU AN (2026-09-18 — **T1 + T2a + T2b BİTTİ** · sıradaki: T4 performans)
 
 ```
 SORU            : Kullanıcının 5 dakikalık oynanışından (ses kaydı) + yazılı notlarından çıkan
@@ -14,11 +14,12 @@ SORU            : Kullanıcının 5 dakikalık oynanışından (ses kaydı) + ya
                   Turda ölçülen tek sayı G-68'in payı: duvar–tezgâh 0,30 br · aktör çapı 0,56 br.
 SAYILAR         : docs/geribildirim-oyun-testi-2026-09-18.md (24 kalem, kodda doğrulanmış kökler)
 PLAN            : docs/plan-geribildirim-2026-09-18.md — T1→T2→T4→T3→T5 (kullanıcı onaylı)
-KARAR           : **D-133** (kalemler+sıra) · **D-134** (T2a) — sıra + G-69 "hiç olmasın" + G-68 "duvardan çıkmasın, en az pay" +
+KARAR           : **D-133** (kalemler+sıra) · **D-134** (T2a) · **D-135** (T2b) — sıra + G-69 "hiç olmasın" + G-68 "duvardan çıkmasın, en az pay" +
                   G-67 "ikisi birden" (D-092'nin hızı KALIR, üstüne ₺)
-UYGULAMA        : T1 · G-78 G-79 G-77 G-69 G-70   |   T2a · G-59 G-60 (G-61 yarısı → T3-K11)
-BEKÇİ           : tests/onarim-g58-g81.test.ts (14) + gorev-hatti-t2.test.ts (15)
-                  + gorev-kimligi.test.ts'e G-77 bekçisi → **her tur 2 mutasyonla doğrulandı**
+UYGULAMA        : T1 · G-78 G-79 G-77 G-69 G-70  |  T2a · G-59 G-60 (G-61 yarısı → T3-K11)
+                  T2b · G-58 G-62 G-63 G-64 G-81 + lang=tr (G-71 → T3-K10)
+BEKÇİ           : onarim-g58-g81 (14) + gorev-hatti-t2 (15) + kutlama-ogretme-t2b (24)
+                  + gorev-kimligi'ye G-77 bekçisi → **her tur 2 mutasyonla doğrulandı**
 ```
 
 **T1'DE KAPANANLAR — dördü de D-133'te, burada tek satır:**
@@ -50,10 +51,24 @@ bekler). **G-61 ikiye bölündü** — kalıcı kapı tempo olduğu için T3-K11
 ama ikisi de reveal'ın eseri değildi (toast biten görevin, odak bayat). Davranış değişmeseydi
 görülmeyecekti; iddia gerçekten kapsanmayan bir kuruluma taşındı.
 
-**SIRADAKİ TUR — T2b · GÖRSEL + ÖĞRETME (G-58 · G-62 · G-63 · G-64 · G-81 · G-71)**
-Bitiş efekti · Görevler düğmesi vurgusu + kısa kamera dokunuşu · bulaşık öğretme kartı (zoom +
-metin bulaşığı KAPATMAYACAK yerde) · tepsi yükseltmesinin nereden yapıldığının gösterilmesi ·
-hedef panosunda toplanabilir satırın üste çıkması · garson/NPC takılma emniyeti.
+**T2b BİTTİ (D-135) — KUTLAMA · FARKINDALIK · ÖĞRETME**
+G-58 kutlama artık bir AN (bant hiç yeniden monte olmadığı için ekranda HİÇ hareket yoktu) ·
+G-62/G-81 sekme halkası zamanlayıcısız (iki tekrar çalıp durur, bayrak var olandan türer) ve
+hedef panosunda hazır ödül üstte · G-63 öğretme kartı ÜST BANTTA (modal olsaydı kamerayı
+çevirmenin anlamı kalmazdı) · G-64 spotlight artık konuşuyor.
+**Yan bulgu:** `<html lang="en">` Türkçe büyük harfi bozuyordu — kart ekranda "BULAŞIK BIRIYOR"
+yazdı; yedi `uppercase` yeri aynı kusuru taşıyordu, hata testte değil KAREDE çıktı → `lang="tr"`.
+**Turun dersi:** ölçüm aracının kendisi kusuru taklit edebilir — `shot-t2b.mjs`in ilk hâli kutlama
+karesinde YENİ görevin kartını çekiyordu (oyun kare alınırken akmaya devam ediyor).
+**G-71 bilerek yapılmadı:** kök G-68; emniyet kemeri aktör hareketine dokunur → T3-K10'da ölçülür.
+**Görsel kanıt:** `docs/gorsel/ss/t2b-{1..4}-*.png` · `node tools/shot-t2b.mjs`
+
+**SIRADAKİ TUR — T4 · PERFORMANS (G-80)**
+Kullanıcı iki kez BÜYÜK HARFLE yazdı: *"OPTİMİZASYONU TEKRAR SÖYLÜYORUM ŞART"* — şarj tüketimi +
+kasma. Eldeki ölçüm (`docs/fps-bulgulari-2026-09-06.md`) MASAÜSTÜNDE alındı ve React tarafını
+kapattı; yeni şikâyet CİHAZ diyor, yani ölçüm bayat. Kullanıcının önerisi bir KOL: *"mekânda
+müşteri sınırı olmalı, biri çıkmadan diğeri girmesin"* — bugün tavan *toplam koltuk + 2* → 12
+masada 50 NPC. O kol hem perf hem DENGE, T3'ün ölçütleriyle birlikte okunur.
 
 **AÇIK KALAN ÖNCEKİ TUR:** F3 (AdMob) tur 1 ölçümü bitti, **karar hâlâ bekliyor** (C1′ önerildi,
 onay gelmedi) — `docs/reklam-raporu-f3.md`, progress.md Faz F. G-67'nin video ×2 kanadı buna bağlı.

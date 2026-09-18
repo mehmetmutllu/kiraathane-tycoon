@@ -368,6 +368,8 @@ export interface GameState {
   charPanelSeen: boolean;
   /** Tepsi-boşalt butonu ilk-sefer spotlight'ı görüldü mü (persist v23). */
   trayTipSeen: boolean;
+  /** Bulaşık öğretme kartı görüldü mü (G-63; `trayTipSeen` deseni — persist, additive). */
+  washTipSeen: boolean;
   /** Üst görev barı görünümü (transient; her tick türetilir; null = hat bitti). */
   quest: QuestView | null;
   /** Görev geçiş fazı (transient): active=normal, completing=bitiş flash, gap=yeni görev öncesi boşluk. */
@@ -403,6 +405,8 @@ export interface GameState {
   addMoney: (amount: number) => void;
   /** Görev barına dokununca: kamera aktif görevin hedefine kayar (görev yoksa no-op). */
   focusQuest: () => void;
+  /** G-63: kamerayı bulaşık tezgâhına çevirir (öğretme kartı açılırken). */
+  focusDish: () => void;
   /** Hedef ödülünü topla (D3/D-089). Toplanabilir değilse hiçbir şey yapmaz ve `false` döner. */
   claimGoal: (id: string) => boolean;
   /** D-093: USTA basamağını 💎 ile satın al. Kimlik `masterId()` kalıbında (`table:3`). */
@@ -444,6 +448,8 @@ export interface GameState {
   emptyTray: (kind: 'tea' | 'food') => void;
   /** Tepsi-boşalt butonu ilk-sefer spotlight'ını kapat (persist — bir daha çıkmaz). */
   markTrayTipSeen: () => void;
+  /** G-63: bulaşık öğretme kartı kapatıldı (bir daha çıkmaz; anında kaydedilir). */
+  markWashTipSeen: () => void;
   saveNow: () => void;
   hardReset: () => void;
 }
@@ -505,6 +511,7 @@ export const useGame = create<GameState>((set, get) => ({
   waiterUpgrades: defaultWaiterUpgrades(),
   charPanelSeen: false,
   trayTipSeen: false,
+  washTipSeen: false,
   quest: null,
   camFocus: null,
   camBekleyen: null,
@@ -680,6 +687,7 @@ export const useGame = create<GameState>((set, get) => ({
       waiterUpgrades,
       charPanelSeen: save.charPanelSeen,
       trayTipSeen: save.trayTipSeen,
+      washTipSeen: save.washTipSeen ?? false,
       quest:
         loadedQuestIndex < C.quests.length
           ? questView(C.quests[loadedQuestIndex], {
@@ -900,6 +908,18 @@ export const useGame = create<GameState>((set, get) => ({
   },
 
   // Görev barına dokununca: kamera aktif görevin hedefine kayar (kullanıcı onboarding isteği).
+  /**
+   * G-63 — BULAŞIK TEZGÂHINA ODAKLAN. Öğretme kartı açılırken çağrılır: kullanıcı *"oraya birden
+   * zoom yapar ve ekranda bir yazı çıkar"* dedi. Hedef koordinatı BURAYA yazılmaz, yerleşimden
+   * (`servicePlace`) okunur — tezgâh ileride taşınırsa odak da onunla gider.
+   * TTL normalden uzun (×2): kart okunurken kamera yerinde kalmalı; oyuncu joystick'e dokunursa
+   * zaten iptal olur (`questSystem`in odak kuralı).
+   */
+  focusDish: () => {
+    const p = servicePlace(get().areasOpen).dish;
+    set({ camFocus: { pos: [p[0], p[1], p[2]], ttl: CAM_FOCUS_TTL * 2 } });
+  },
+
   focusQuest: () => {
     const s = get();
     if (s.questIndex >= C.quests.length) return;
@@ -1075,6 +1095,12 @@ export const useGame = create<GameState>((set, get) => ({
     get().saveNow();
   },
 
+  markWashTipSeen: () => {
+    if (get().washTipSeen) return;
+    set({ washTipSeen: true });
+    get().saveNow();
+  },
+
   saveNow: () => {
     const s = get();
     // D-015: tables/stations/hasWaiter KAYDEDİLMEZ — yüklemede padsDone'dan türetilir.
@@ -1112,6 +1138,7 @@ export const useGame = create<GameState>((set, get) => ({
       waiterUpgrades: { ...s.waiterUpgrades },
       charPanelSeen: s.charPanelSeen,
       trayTipSeen: s.trayTipSeen,
+      washTipSeen: s.washTipSeen,
       lastSaved: Date.now(),
     });
   },

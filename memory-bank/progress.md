@@ -747,9 +747,12 @@ için **VARYANT KAPISINA TABİ**.
   okuyor (`cardQuestIndex`) · G-60 geçiş penceresinde uyarı işlenmiyor + ekran kanalları tek
   sıraya alındı (`src/game/ekranKanali.ts`). **G-61 ikiye bölündü**: pencere kanadı yapıldı,
   kalıcı kapı tempo olduğu için T3-K11'e taşındı. Bekçi: `tests/gorev-hatti-t2.test.ts`.
-- 🔜 **T2b GÖREV AKIŞI · GÖRSEL+ÖĞRETME (sıradaki):** G-58 bitiş efekti · G-62 Görevler düğmesi
-  vurgusu · G-63 bulaşık öğretme kartı + zoom · G-64 tepsi yükseltmesi yönlendirmesi ·
-  G-81 hedef panosu · G-71 takılma emniyeti.
+- ✅ **T2b GÖRSEL + ÖĞRETME (bitti, D-135):** G-58 bitiş kutlaması (zıplama + geçen ışık + onay
+  popu, üçü de bir kez ve pencereye sığar) · G-62/G-81 sekme halkası (zamanlayıcısız, `spot`
+  varken çizilmez) + hedef panosunda hazır ödül ÜSTTE · G-63 bulaşık öğretme kartı (üst bant +
+  kamera tezgâha) · G-64 spotlight artık konuşuyor. **Yan bulgu:** `<html lang="en">` Türkçe
+  büyük harfi bozuyordu ("BULAŞIK BIRIYOR") → `lang="tr"`. **G-71 bilerek yapılmadı** — kök
+  G-68, emniyet kemeri ölçümsüz yazılamaz → T3-K10. Kare: `docs/gorsel/ss/t2b-{1..4}-*.png`.
 - 🔜 **T4 PERFORMANS:** G-80 — şarj + kasma. Eldeki ölçüm masaüstünde alınmıştı, **bayat**.
 - 🔜 **T3 DENGE (varyant kapısı, iki commit):** G-65 tepsi 75₺ · G-72 garson tepsi tabanı ·
   G-73 1. salonda 2. garson · G-74 masa4 380₺ · G-75 2. salonu geciktir · **G-76 masa sırası

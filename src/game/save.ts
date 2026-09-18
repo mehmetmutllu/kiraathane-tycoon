@@ -203,6 +203,16 @@ export interface SaveData {
   charPanelSeen: boolean;
   /** Tepsi-boşalt butonu ilk-sefer spotlight'ı görüldü mü (v23; charPanelSeen deseni). */
   trayTipSeen: boolean;
+  /**
+   * BULAŞIK ÖĞRETME KARTI görüldü mü (G-63, 2026-09-18). ADDITIVE alan → sürüm ARTMADI
+   * (`trayTipSeen` deseni; eksik alanı `defaultSave()` yayılımı `false` ile doldurur).
+   *
+   * NEDEN VAR — kullanıcı: *"'bulaşık yıka' diyor ama öyle bir şey olmaması gerekiyor. Ona bir
+   * uyarıcı, bir modal tarzı bir şey… 'müşteriler çay içtikten sonra masalarda kirli çay birikmeye
+   * başlar, bunları alıp bulaşık tezgâhına bırakman gerekiyor' … ondan sonra görev gelmeli."*
+   * Mekanik (kirli bardak) ile GÖREV aynı anda doğuyordu; arada öğretme yoktu.
+   */
+  washTipSeen: boolean;
   lastSaved: number; // epoch ms
 }
 
@@ -246,6 +256,7 @@ export function defaultSave(): SaveData {
     waiterUpgrades: defaultWaiterUpgrades(),
     charPanelSeen: false,
     trayTipSeen: false,
+    washTipSeen: false,
     lastSaved: Date.now(),
   };
 }
