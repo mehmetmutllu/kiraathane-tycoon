@@ -1612,7 +1612,7 @@ const SISTEMLER: readonly (readonly [string, (c: TickCtx) => void])[] = [
 ];
 
 export function runTick(c: TickCtx): void {
-  if (import.meta.env.DEV && olcumAcik()) {
+  if (olcumAcik()) { // DEV kapısı `olcum.ts`te (node'da `import.meta.env` yok)
     for (const [ad, f] of SISTEMLER) olcKoş(ad, () => f(c));
     return;
   }

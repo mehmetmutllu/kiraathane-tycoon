@@ -120,11 +120,68 @@ export function findNavPath(
   reach: number,
 ): [number, number][] | null {
   // ÖLÇÜM DİKİŞİ (§G): bu fonksiyon geç oyunda karenin %32,4'üydü. Kapalıyken bedel tek boolean.
-  const olc = import.meta.env.DEV && olcumAcik();
+  const olc = olcumAcik(); // DEV kapısı `olcum.ts`te (node'da `import.meta.env` yok)
   const t0 = olc ? performance.now() : 0;
+  if (korpus) korpusaYaz(grid, start, tx, tz, reach);
   const yol = navPathAra(grid, start, tx, tz, reach);
   if (olc) olcEkle('findNavPath', performance.now() - t0);
   return yol;
+}
+
+// ---------------------------------------------------------------------------
+// ÇAĞRI KORPUSU (T5) — ölçüm araçları için, varsayılan KAPALI.
+// ---------------------------------------------------------------------------
+/**
+ * NEDEN: kolları uydurma başlangıç/hedef çiftleriyle karşılaştırmak yanlış kolu seçtirir —
+ * BFS'in maliyeti hedefin UZAKLIĞINA ve ızgaranın doluluğuna bağlıdır, ikisini de yerleşim
+ * ve o anki oyun durumu belirler. Bu kanca GERÇEK bir koşunun çağrılarını olduğu gibi
+ * kaydeder; kollar aynı korpusta yarışır.
+ *
+ * `start` DİZİ KİMLİĞİ aktörün kimliğidir — `navStep` aktörün canlı `pos` dizisini geçirir.
+ * Yol önbelleği kolu (N2) ancak çağrılar aktöre göre gruplanabilirse ölçülebilir; değerler
+ * kopyalanır çünkü `pos` yerinde değişir. Kapalıyken bedel tek null okumasıdır.
+ */
+export interface NavCagri {
+  /** Aktör kimliği — `start` dizisinin referans kimliğinden türer. */
+  aktor: number;
+  grid: NavGrid;
+  start: [number, number, number];
+  tx: number;
+  tz: number;
+  reach: number;
+}
+
+let korpus: NavCagri[] | null = null;
+let aktorKimlik: WeakMap<object, number> | null = null;
+let aktorSayac = 0;
+
+function korpusaYaz(
+  grid: NavGrid,
+  start: readonly [number, number, number],
+  tx: number,
+  tz: number,
+  reach: number,
+): void {
+  const anahtar = start as unknown as object;
+  let id = aktorKimlik!.get(anahtar);
+  if (id === undefined) {
+    id = aktorSayac++;
+    aktorKimlik!.set(anahtar, id);
+  }
+  korpus!.push({ aktor: id, grid, start: [start[0], start[1], start[2]], tx, tz, reach });
+}
+
+export function navKorpusAc(): void {
+  korpus = [];
+  aktorKimlik = new WeakMap();
+  aktorSayac = 0;
+}
+export function navKorpusOku(): NavCagri[] {
+  return korpus ?? [];
+}
+export function navKorpusKapat(): void {
+  korpus = null;
+  aktorKimlik = null;
 }
 
 function navPathAra(

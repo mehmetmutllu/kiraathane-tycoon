@@ -23,6 +23,19 @@ export interface OlcumKaydi {
   ms: number;
 }
 
+/**
+ * DEV kapısı BURADA, tek yerde — ve node-güvenli.
+ *
+ * T4'te dikiş `import.meta.env.DEV && olcumAcik()` olarak çağıranlara yazılmıştı. Vite bunu
+ * derlemede sabite çevirir, ama **node `import.meta.env`i hiç tanımaz**: `tsx` ile koşan her
+ * araç `Cannot read properties of undefined (reading 'DEV')` ile ölüyordu (`npm run sim`,
+ * `olcum-kuyruk`, `olcum-bardak`, `olcum-nav-oyuncu` — yani T3 denge turunun bütün takımı).
+ * Vitest vite altında koştuğu için testler bunu göremedi; bekçisi `tests/olcum-dikis.test.ts`.
+ *
+ * Kapı aç/kapat tarafına alındı: sıcak yol hâlâ TEK boolean okur, üretimde `acik` hiç true olamaz.
+ */
+const DEV = (import.meta as { env?: { DEV?: boolean } }).env?.DEV === true;
+
 const kayitlar = new Map<string, OlcumKaydi>();
 let acik = false;
 
@@ -54,6 +67,7 @@ export function olcEkle(ad: string, ms: number): void {
 }
 
 export const olcumAc = (): void => {
+  if (!DEV) return;
   kayitlar.clear();
   acik = true;
 };

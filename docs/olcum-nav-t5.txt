@@ -1,0 +1,72 @@
+=== T5 — findNavPath: kare payinin BOLUSUMU ve kollar ===
+kip tam · isinma 240 sn · kayit 60 sn · dt 1/60
+
+--- §A KORPUS: gercek gec-oyun kosusundan kaydedilen findNavPath cagrilari ---
+  kare 3600 · cagri 97486 · CAGRI/KARE 27.1
+  NPC 241 · yeniden kurulan IZ 286 · iz basina ort 340.9 cagri (ayni hedefe ardisik kare)
+  izgara 114x90 = 10260 hucre (0.3 br)
+  baslangic-hedef mesafesi: ort 9.69 br · p50 8.90 · p95 21.81 · max 27.90
+  reach degerleri: 0.40 · 0.45 · 0.50 · 1.40 · 1.47 · 1.68
+
+--- §B TABAN BOLUSUMU: bir findNavPath cagrisinin ICI (N0, bugunku kod) ---
+  ornek 12000 cagri · yol bulunamayan 0 (%0.0)
+  kuyruktan cekilen hucre (pop)      2550.9 / cagri · izgaranin %24.9'i
+  kuyruga giren hucre    (push)      2667.2 / cagri · izgaranin %26.0'i
+  bakilan komsu                     20399.5 / cagri
+  hedef testi (hucreMerkez+mesafe)   2549.9 / cagri
+  ayrilan tampon                       40.1 KB / cagri · 1085.3 KB / kare
+  donen yol uzunlugu: ort 27.0 waypoint · p95 66.0 — navStep YALNIZ ILKINI kullanir
+
+--- §C KOLLAR: ayni korpusta, ms/cagri (medyan) ---
+kol                  | ms/cagri | x taban | kare ms | kare %F | cikti
+N0 taban (bugunku)   |    0.343 |    1.00 |    9.29 |   %23.1 | BIREBIR AYNI
+N1a kalici tampon    |    0.286 |    1.20 |    7.75 |   %19.2 | BIREBIR AYNI
+N1b + hedef PUSH ta  |    0.164 |    2.10 |    4.43 |   %11.0 | BIREBIR AYNI
+N1c + hedef maskesi  |    0.145 |    2.37 |    3.92 |    %9.7 | BIREBIR AYNI
+N3 A* (oktil)        |    0.113 |    3.04 |    3.05 |    %7.6 | FARKLI (%72.3 yol)
+  -> "kare ms" = ms/cagri x 27.1 cagri/kare · "kare %F" = T4 §F'nin 40,3 ms'lik karesine gore
+  -> tampon ayirma+sifirlamanin TEK BASINA bedeli: 0.035 ms/cagri (%10.3 taban)
+
+--- §D SAPMA: birebir olmayan kol ne kadar farkli davranir ---
+  N3 A* (oktil)
+    yol birebir farkli   8679/12000 (%72.3)
+    ILK WAYPOINT farkli  3296/12000 (%27.5)  <- navStep yalniz bunu kullanir
+    toplam yol uzunlugu  x1.003 (1,000 = ayni uzunlukta)
+
+--- §E N2 YOL ONBELLEGI: BFS cagrisini AZALTMA (davranis degisir) ---
+  korpus dilimi 40000 cagri (kesintisiz)
+  kalan BFS     224 (%0.6) -> cagri/kare 0.2
+  sebep: yeni iz (aktor/hedef degisti) 196 · yol tukendi 28
+  ILK WAYPOINT sapmasi 238/1600 (%14.9)  <- davranis farki BU
+    sapma buyuklugu: ort 3.50 br · p95 14.66 br · 1,5 hucreden uzak 114 (%7.1)
+  ZARAR OLCUSU — waypoint e DUZ CIZGIDE giderken DUVARDAN GECEN adim:
+    onbellekli  30/1600 (%1.9)
+    taban (N0)  1/1600 (%0.1)   <- KONTROL, 0 olmali
+  N0 ile birlikte kare payi 0.05 ms (%0.1) · en iyi N1 koluyla 0.02 ms
+
+--- §F KAREYE CEVIRI: T4 §F kare 40,3 ms · findNavPath 12,71 ms (%31,5) ---
+Ceviri ORAN uzerinden: node`un mutlak ms`i tarayiciya tasinmaz (baska makine, baska JIT,
+baska NPC sayisi). Tasinabilir olan kolun TABANA GORE orani: 12,71 ms x (kol ms / N0 ms).
+
+kol                              | x taban | §F nav ms | kalan kare ms | kazanc
+N0 taban (bugunku)               |    1.00 |     12.71 |         40.30 | 0.0 ms
+N1a kalici tampon                |    1.20 |     10.60 |         38.19 | 2.1 ms
+N1b + hedef PUSH ta              |    2.10 |      6.06 |         33.65 | 6.6 ms
+N1c + hedef maskesi              |    2.37 |      5.36 |         32.95 | 7.3 ms
+N3 A* (oktil)                    |    3.04 |      4.18 |         31.77 | 8.5 ms
+N1c + N2 onbellegi               |  423.38 |      0.03 |         27.62 | 12.7 ms
+  -> "kalan kare ms" bu turda OLCULMEDI, §F`nin 40,3 ms`inden dogrusal cikarimdir;
+     tarayici sayisi final TAM kosusunda (olcum-perf-t4.mjs §F) dogrulanir.
+  -> UYARI: bu kosunun NPC sayisi 241 ve cagri/kare 27.1; §F'ninki NPC 38 / 20,5.
+     Node dunyasi daha dolu — mutlak ms dogrudan karsilastirilmaz, ORAN karsilastirilir.
+
+--- §G KORPUS TEMSIL EDIYOR MU: ikinci (daha hafif) dunyada ayni kollar ---
+  dunya 2: NPC 65 · cagri 30619 · cagri/kare 34.0
+kol                  | x taban (dunya 1) | x taban (dunya 2) | fark
+N0 taban (bugunku)   |              1.00 |              1.00 | 0.00
+N1a kalici tampon    |              1.20 |              1.20 | 0.00
+N1b + hedef PUSH ta  |              2.10 |              2.10 | 0.00
+N1c + hedef maskesi  |              2.37 |              2.35 | 0.02
+N3 A* (oktil)        |              3.04 |              3.24 | 0.20
+
+KONSOL HATASI: yok (node kosusu)
