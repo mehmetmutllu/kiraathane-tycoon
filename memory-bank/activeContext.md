@@ -5,7 +5,7 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-18 — **T1 + T2a + T2b BİTTİ** · sıradaki: T4 performans)
+## ŞU AN (2026-09-18 — **T1 + T2a + T2b bitti · T4 ÖLÇÜMÜ BİTTİ, KARAR BEKLİYOR**)
 
 ```
 SORU            : Kullanıcının 5 dakikalık oynanışından (ses kaydı) + yazılı notlarından çıkan
@@ -63,12 +63,23 @@ karesinde YENİ görevin kartını çekiyordu (oyun kare alınırken akmaya deva
 **G-71 bilerek yapılmadı:** kök G-68; emniyet kemeri aktör hareketine dokunur → T3-K10'da ölçülür.
 **Görsel kanıt:** `docs/gorsel/ss/t2b-{1..4}-*.png` · `node tools/shot-t2b.mjs`
 
-**SIRADAKİ TUR — T4 · PERFORMANS (G-80)**
-Kullanıcı iki kez BÜYÜK HARFLE yazdı: *"OPTİMİZASYONU TEKRAR SÖYLÜYORUM ŞART"* — şarj tüketimi +
-kasma. Eldeki ölçüm (`docs/fps-bulgulari-2026-09-06.md`) MASAÜSTÜNDE alındı ve React tarafını
-kapattı; yeni şikâyet CİHAZ diyor, yani ölçüm bayat. Kullanıcının önerisi bir KOL: *"mekânda
-müşteri sınırı olmalı, biri çıkmadan diğeri girmesin"* — bugün tavan *toplam koltuk + 2* → 12
-masada 50 NPC. O kol hem perf hem DENGE, T3'ün ölçütleriyle birlikte okunur.
+**T4 · PERFORMANS — ÖLÇÜM BİTTİ, KARAR BEKLİYOR (kod YAZILMADI)**
+Araç: `tools/olcum-perf-t4.mjs` · rapor: `docs/perf-raporu-t4.md` · ham: `docs/olcum-perf-t4.{txt,json}`
+(TAM koşu damgalı). Araç kısa koşuda İKİ kez çürütüldü: ① kare süreleri vsync'e kilitliydi
+(16,7/33,4/50,0 — kol farkları 0 okunuyordu) ② `questIndex` 0 kaldığı için **bulaşık döngüsü hiç
+çalışmıyordu** ve "kirli kap: 0" "sorun yok" diye okunacaktı.
+
+**Dört bulgu:**
+① **Yük ×6,6** — 8,3 ms/117 fps (erken) → 55,1 ms/**15,1 fps** (geç). Çağrı 36→171, üçgen ×12.
+② **SIZINTI YOK** — aynı dünyada 3 dakika: kare −%5,2, yığın **%0,0**, program sabit. Yani oyun
+   *oynadıkça* değil *büyüdükçe* yavaşlıyor → "sızıntı ara" kolu ÖLÇÜMLE ELENDİ.
+③ **dpr kolu ÖLÜ, hatta ters** (+%6,6): piksel 4 kat azaldı, kare uzadı ⇒ darboğaz CPU tarafında.
+   Gölge hâlâ en büyük tek kalem ama payı F2'deki %40'tan **%21,7**'ye düşmüş.
+④ **ŞARJIN KAYNAĞI KASMA DEĞİL:** `frameloop` verilmemiş, fps tavanı YOK — erken oyunda
+   **116,7 fps**. Oyuncu 60 üstünü göremez; 120 Hz telefonda bu doğrudan pil.
+
+**KOLLAR (ölçüldü, SEÇİLMEDİ):** K-A fps tavanı · K-B gölge cihaz sınıfına göre · K-C instancing
+(çizim çağrısı) · K-D müşteri tavanı → **DENGE, T3'e bağlı** · K-E geç oyunda React commit 0,38→0.
 
 **AÇIK KALAN ÖNCEKİ TUR:** F3 (AdMob) tur 1 ölçümü bitti, **karar hâlâ bekliyor** (C1′ önerildi,
 onay gelmedi) — `docs/reklam-raporu-f3.md`, progress.md Faz F. G-67'nin video ×2 kanadı buna bağlı.

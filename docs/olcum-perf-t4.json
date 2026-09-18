@@ -1,0 +1,760 @@
+{
+ "tarih": "2026-09-18T10:06:58.386Z",
+ "kip": "tam",
+ "cpuKisma": 4,
+ "gorevSayisi": 50,
+ "A": [
+  {
+   "ad": "A1 erken",
+   "padSayisi": 0,
+   "masaSeviye": 0,
+   "isinma": 60,
+   "not": "1 salon · 1 masa (oyunun ilk dakikası)",
+   "kare": 1169,
+   "fps": 116.69578238083355,
+   "ortanca": 8.299999999999272,
+   "p95": 10.900000000001455,
+   "enKotu": 46.79999999999927,
+   "commit": 1,
+   "commitKare": 0.000855431993156544,
+   "cagri": 36,
+   "ucgen": 20139,
+   "geometri": 116,
+   "doku": 39,
+   "program": 27,
+   "dpr": 2,
+   "golgeAcik": true,
+   "npc": 2,
+   "para": 0,
+   "kirli": 0,
+   "masa": 1,
+   "heapMB": 92.88787841796875,
+   "tuvalMs": 7509,
+   "hatalar": []
+  },
+  {
+   "ad": "A2 orta",
+   "padSayisi": 5,
+   "masaSeviye": 2,
+   "isinma": 120,
+   "not": "2 salon · masalar L3",
+   "kare": 622,
+   "fps": 61.970708378997706,
+   "ortanca": 15.599999999998545,
+   "p95": 33.5,
+   "enKotu": 35.79999999999927,
+   "commit": 3,
+   "commitKare": 0.00482315112540193,
+   "cagri": 86,
+   "ucgen": 59263,
+   "geometri": 195,
+   "doku": 60,
+   "program": 28,
+   "dpr": 2,
+   "golgeAcik": true,
+   "npc": 7,
+   "para": 7,
+   "kirli": 6,
+   "masa": 5,
+   "heapMB": 117.30194091796875,
+   "tuvalMs": 3870,
+   "hatalar": []
+  },
+  {
+   "ad": "A3 geç",
+   "padSayisi": 24,
+   "masaSeviye": 4,
+   "isinma": 240,
+   "not": "tüm pad açık · masalar tavanda",
+   "kare": 153,
+   "fps": 15.096350235324905,
+   "ortanca": 55.099999999998545,
+   "p95": 84.59999999999854,
+   "enKotu": 1316.5,
+   "commit": 58,
+   "commitKare": 0.3790849673202614,
+   "cagri": 171,
+   "ucgen": 242409,
+   "geometri": 360,
+   "doku": 103,
+   "program": 43,
+   "dpr": 2,
+   "golgeAcik": false,
+   "npc": 31,
+   "para": 20,
+   "kirli": 4,
+   "masa": 20,
+   "heapMB": 103.95050048828125,
+   "tuvalMs": 3970,
+   "hatalar": []
+  }
+ ],
+ "surucu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 (0x00002503) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "B": {
+  "dilimMs": 20000,
+  "dilimler": [
+   {
+    "i": 0,
+    "kare": 380,
+    "fps": 18.9368456198576,
+    "ortanca": 48.10000000000582,
+    "p95": 71.40000000000146,
+    "enKotu": 571.6999999999971,
+    "commit": 122,
+    "commitKare": 0.32105263157894737,
+    "cagri": 172,
+    "ucgen": 244163,
+    "geometri": 365,
+    "doku": 105,
+    "program": 43,
+    "dpr": 2,
+    "golgeAcik": false,
+    "npc": 34,
+    "para": 21,
+    "kirli": 4,
+    "masa": 20,
+    "heapMB": 141.143798828125
+   },
+   {
+    "i": 1,
+    "kare": 437,
+    "fps": 21.75709719497805,
+    "ortanca": 43.19999999999709,
+    "p95": 62.19999999999709,
+    "enKotu": 84.30000000000291,
+    "commit": 114,
+    "commitKare": 0.2608695652173913,
+    "cagri": 168,
+    "ucgen": 271939,
+    "geometri": 377,
+    "doku": 110,
+    "program": 43,
+    "dpr": 2,
+    "golgeAcik": false,
+    "npc": 36,
+    "para": 22,
+    "kirli": 5,
+    "masa": 20,
+    "heapMB": 141.143798828125
+   },
+   {
+    "i": 2,
+    "kare": 411,
+    "fps": 20.482714283578254,
+    "ortanca": 46.39999999999418,
+    "p95": 63,
+    "enKotu": 82,
+    "commit": 120,
+    "commitKare": 0.291970802919708,
+    "cagri": 171,
+    "ucgen": 263559,
+    "geometri": 379,
+    "doku": 110,
+    "program": 43,
+    "dpr": 2,
+    "golgeAcik": false,
+    "npc": 38,
+    "para": 23,
+    "kirli": 5,
+    "masa": 20,
+    "heapMB": 141.143798828125
+   },
+   {
+    "i": 3,
+    "kare": 457,
+    "fps": 22.757604127243184,
+    "ortanca": 42.40000000002328,
+    "p95": 60.19999999999709,
+    "enKotu": 69.69999999999709,
+    "commit": 147,
+    "commitKare": 0.32166301969365424,
+    "cagri": 191,
+    "ucgen": 284808,
+    "geometri": 376,
+    "doku": 110,
+    "program": 43,
+    "dpr": 2,
+    "golgeAcik": false,
+    "npc": 37,
+    "para": 23,
+    "kirli": 4,
+    "masa": 20,
+    "heapMB": 141.143798828125
+   },
+   {
+    "i": 4,
+    "kare": 396,
+    "fps": 19.722588838807678,
+    "ortanca": 47.69999999998254,
+    "p95": 70,
+    "enKotu": 85.30000000001746,
+    "commit": 110,
+    "commitKare": 0.2777777777777778,
+    "cagri": 177,
+    "ucgen": 275983,
+    "geometri": 377,
+    "doku": 110,
+    "program": 43,
+    "dpr": 2,
+    "golgeAcik": false,
+    "npc": 38,
+    "para": 23,
+    "kirli": 5,
+    "masa": 20,
+    "heapMB": 141.143798828125
+   },
+   {
+    "i": 5,
+    "kare": 449,
+    "fps": 22.378835303733503,
+    "ortanca": 42.30000000001746,
+    "p95": 62.90000000002328,
+    "enKotu": 115.69999999998254,
+    "commit": 143,
+    "commitKare": 0.3184855233853007,
+    "cagri": 170,
+    "ucgen": 276662,
+    "geometri": 377,
+    "doku": 110,
+    "program": 43,
+    "dpr": 2,
+    "golgeAcik": false,
+    "npc": 37,
+    "para": 22,
+    "kirli": 5,
+    "masa": 20,
+    "heapMB": 141.143798828125
+   },
+   {
+    "i": 6,
+    "kare": 416,
+    "fps": 20.72342693746568,
+    "ortanca": 46,
+    "p95": 65.10000000000582,
+    "enKotu": 84.39999999999418,
+    "commit": 118,
+    "commitKare": 0.28365384615384615,
+    "cagri": 171,
+    "ucgen": 275222,
+    "geometri": 379,
+    "doku": 111,
+    "program": 43,
+    "dpr": 2,
+    "golgeAcik": false,
+    "npc": 39,
+    "para": 22,
+    "kirli": 5,
+    "masa": 20,
+    "heapMB": 141.143798828125
+   },
+   {
+    "i": 7,
+    "kare": 442,
+    "fps": 22.047966798355674,
+    "ortanca": 43.10000000000582,
+    "p95": 61.69999999998254,
+    "enKotu": 82.09999999997672,
+    "commit": 109,
+    "commitKare": 0.24660633484162897,
+    "cagri": 177,
+    "ucgen": 279480,
+    "geometri": 378,
+    "doku": 111,
+    "program": 43,
+    "dpr": 2,
+    "golgeAcik": false,
+    "npc": 36,
+    "para": 22,
+    "kirli": 5,
+    "masa": 20,
+    "heapMB": 141.143798828125
+   },
+   {
+    "i": 8,
+    "kare": 424,
+    "fps": 21.123111872783266,
+    "ortanca": 45.59999999997672,
+    "p95": 60.89999999999418,
+    "enKotu": 80.40000000002328,
+    "commit": 128,
+    "commitKare": 0.3018867924528302,
+    "cagri": 174,
+    "ucgen": 275498,
+    "geometri": 380,
+    "doku": 111,
+    "program": 43,
+    "dpr": 2,
+    "golgeAcik": false,
+    "npc": 38,
+    "para": 20,
+    "kirli": 5,
+    "masa": 20,
+    "heapMB": 141.143798828125
+   }
+  ],
+  "hatalar": []
+ },
+ "C": {
+  "orneklem": [
+   {
+    "npc": 35,
+    "para": 20,
+    "kirli": 4,
+    "temiz": 0
+   },
+   {
+    "npc": 34,
+    "para": 21,
+    "kirli": 5,
+    "temiz": 2
+   },
+   {
+    "npc": 35,
+    "para": 21,
+    "kirli": 4,
+    "temiz": 4
+   },
+   {
+    "npc": 34,
+    "para": 20,
+    "kirli": 3,
+    "temiz": 3
+   },
+   {
+    "npc": 36,
+    "para": 21,
+    "kirli": 4,
+    "temiz": 2
+   },
+   {
+    "npc": 36,
+    "para": 22,
+    "kirli": 5,
+    "temiz": 3
+   },
+   {
+    "npc": 39,
+    "para": 21,
+    "kirli": 4,
+    "temiz": 2
+   },
+   {
+    "npc": 36,
+    "para": 21,
+    "kirli": 4,
+    "temiz": 1
+   },
+   {
+    "npc": 36,
+    "para": 21,
+    "kirli": 4,
+    "temiz": 1
+   },
+   {
+    "npc": 34,
+    "para": 23,
+    "kirli": 6,
+    "temiz": 0
+   },
+   {
+    "npc": 34,
+    "para": 22,
+    "kirli": 4,
+    "temiz": 4
+   },
+   {
+    "npc": 34,
+    "para": 22,
+    "kirli": 4,
+    "temiz": 3
+   },
+   {
+    "npc": 36,
+    "para": 21,
+    "kirli": 3,
+    "temiz": 2
+   },
+   {
+    "npc": 37,
+    "para": 22,
+    "kirli": 4,
+    "temiz": 1
+   },
+   {
+    "npc": 35,
+    "para": 20,
+    "kirli": 3,
+    "temiz": 0
+   },
+   {
+    "npc": 35,
+    "para": 22,
+    "kirli": 5,
+    "temiz": 2
+   },
+   {
+    "npc": 35,
+    "para": 22,
+    "kirli": 4,
+    "temiz": 1
+   },
+   {
+    "npc": 36,
+    "para": 23,
+    "kirli": 5,
+    "temiz": 1
+   },
+   {
+    "npc": 35,
+    "para": 22,
+    "kirli": 4,
+    "temiz": 2
+   },
+   {
+    "npc": 36,
+    "para": 22,
+    "kirli": 5,
+    "temiz": 2
+   },
+   {
+    "npc": 35,
+    "para": 22,
+    "kirli": 4,
+    "temiz": 1
+   },
+   {
+    "npc": 34,
+    "para": 22,
+    "kirli": 5,
+    "temiz": 0
+   },
+   {
+    "npc": 35,
+    "para": 23,
+    "kirli": 6,
+    "temiz": 0
+   },
+   {
+    "npc": 36,
+    "para": 22,
+    "kirli": 6,
+    "temiz": 0
+   },
+   {
+    "npc": 35,
+    "para": 22,
+    "kirli": 6,
+    "temiz": 2
+   },
+   {
+    "npc": 34,
+    "para": 22,
+    "kirli": 5,
+    "temiz": 1
+   },
+   {
+    "npc": 35,
+    "para": 23,
+    "kirli": 6,
+    "temiz": 0
+   },
+   {
+    "npc": 34,
+    "para": 23,
+    "kirli": 4,
+    "temiz": 2
+   },
+   {
+    "npc": 35,
+    "para": 25,
+    "kirli": 5,
+    "temiz": 3
+   },
+   {
+    "npc": 36,
+    "para": 25,
+    "kirli": 4,
+    "temiz": 4
+   },
+   {
+    "npc": 37,
+    "para": 23,
+    "kirli": 4,
+    "temiz": 4
+   },
+   {
+    "npc": 38,
+    "para": 23,
+    "kirli": 2,
+    "temiz": 3
+   },
+   {
+    "npc": 38,
+    "para": 24,
+    "kirli": 3,
+    "temiz": 2
+   },
+   {
+    "npc": 35,
+    "para": 24,
+    "kirli": 3,
+    "temiz": 1
+   },
+   {
+    "npc": 35,
+    "para": 23,
+    "kirli": 3,
+    "temiz": 3
+   },
+   {
+    "npc": 32,
+    "para": 21,
+    "kirli": 3,
+    "temiz": 2
+   },
+   {
+    "npc": 33,
+    "para": 22,
+    "kirli": 2,
+    "temiz": 1
+   },
+   {
+    "npc": 36,
+    "para": 22,
+    "kirli": 3,
+    "temiz": 1
+   },
+   {
+    "npc": 37,
+    "para": 21,
+    "kirli": 3,
+    "temiz": 2
+   },
+   {
+    "npc": 38,
+    "para": 21,
+    "kirli": 2,
+    "temiz": 2
+   },
+   {
+    "npc": 35,
+    "para": 20,
+    "kirli": 3,
+    "temiz": 2
+   },
+   {
+    "npc": 33,
+    "para": 19,
+    "kirli": 2,
+    "temiz": 1
+   },
+   {
+    "npc": 32,
+    "para": 19,
+    "kirli": 2,
+    "temiz": 1
+   },
+   {
+    "npc": 33,
+    "para": 19,
+    "kirli": 3,
+    "temiz": 3
+   },
+   {
+    "npc": 35,
+    "para": 19,
+    "kirli": 2,
+    "temiz": 2
+   },
+   {
+    "npc": 37,
+    "para": 18,
+    "kirli": 3,
+    "temiz": 2
+   },
+   {
+    "npc": 33,
+    "para": 18,
+    "kirli": 2,
+    "temiz": 1
+   },
+   {
+    "npc": 33,
+    "para": 19,
+    "kirli": 3,
+    "temiz": 3
+   },
+   {
+    "npc": 35,
+    "para": 20,
+    "kirli": 4,
+    "temiz": 2
+   },
+   {
+    "npc": 35,
+    "para": 19,
+    "kirli": 2,
+    "temiz": 2
+   },
+   {
+    "npc": 36,
+    "para": 19,
+    "kirli": 2,
+    "temiz": 1
+   },
+   {
+    "npc": 35,
+    "para": 18,
+    "kirli": 3,
+    "temiz": 0
+   },
+   {
+    "npc": 34,
+    "para": 18,
+    "kirli": 2,
+    "temiz": 2
+   },
+   {
+    "npc": 35,
+    "para": 17,
+    "kirli": 2,
+    "temiz": 2
+   },
+   {
+    "npc": 34,
+    "para": 19,
+    "kirli": 3,
+    "temiz": 1
+   },
+   {
+    "npc": 37,
+    "para": 18,
+    "kirli": 3,
+    "temiz": 1
+   },
+   {
+    "npc": 38,
+    "para": 18,
+    "kirli": 3,
+    "temiz": 2
+   },
+   {
+    "npc": 38,
+    "para": 18,
+    "kirli": 2,
+    "temiz": 4
+   },
+   {
+    "npc": 36,
+    "para": 17,
+    "kirli": 3,
+    "temiz": 3
+   },
+   {
+    "npc": 35,
+    "para": 17,
+    "kirli": 2,
+    "temiz": 3
+   }
+  ],
+  "masa": 20
+ },
+ "D": [
+  {
+   "ad": "D0 taban",
+   "sorgu": "?f2golge=2048&f2ad=D0",
+   "kare": 165,
+   "fps": 16.35428333548147,
+   "ortanca": 55.80000000000291,
+   "p95": 81.09999999999854,
+   "enKotu": 353.29999999999563,
+   "commit": 74,
+   "commitKare": 0.4484848484848485,
+   "cagri": 171,
+   "ucgen": 242025,
+   "geometri": 360,
+   "doku": 103,
+   "program": 29,
+   "dpr": 2,
+   "golgeAcik": true,
+   "npc": 29,
+   "para": 20,
+   "kirli": 4,
+   "masa": 20,
+   "heapMB": 132.56072998046875,
+   "hatalar": []
+  },
+  {
+   "ad": "D1 gölge KAPALI",
+   "sorgu": "?f2golge=0&f2ad=D1",
+   "kare": 209,
+   "fps": 20.740505512607278,
+   "ortanca": 43.69999999999709,
+   "p95": 61.80000000000291,
+   "enKotu": 291.3000000000029,
+   "commit": 105,
+   "commitKare": 0.5023923444976076,
+   "cagri": 179,
+   "ucgen": 271837,
+   "geometri": 215,
+   "doku": 95,
+   "program": 19,
+   "dpr": 2,
+   "golgeAcik": false,
+   "npc": 37,
+   "para": 20,
+   "kirli": 4,
+   "masa": 20,
+   "heapMB": 110.626220703125,
+   "hatalar": []
+  },
+  {
+   "ad": "D2 dpr tavanı 1",
+   "sorgu": "?f2golge=2048&f2dpr=1&f2ad=D2",
+   "kare": 157,
+   "fps": 15.12698963271311,
+   "ortanca": 59.5,
+   "p95": 87,
+   "enKotu": 373.3000000000029,
+   "commit": 74,
+   "commitKare": 0.4713375796178344,
+   "cagri": 179,
+   "ucgen": 273971,
+   "geometri": 368,
+   "doku": 108,
+   "program": 29,
+   "dpr": 1,
+   "golgeAcik": true,
+   "npc": 35,
+   "para": 20,
+   "kirli": 4,
+   "masa": 20,
+   "heapMB": 110.626220703125,
+   "hatalar": []
+  },
+  {
+   "ad": "D3 gölge kapalı + dpr 1",
+   "sorgu": "?f2golge=0&f2dpr=1&f2ad=D3",
+   "kare": 190,
+   "fps": 18.860994470750217,
+   "ortanca": 46.599999999998545,
+   "p95": 74.80000000000291,
+   "enKotu": 389.6999999999971,
+   "commit": 76,
+   "commitKare": 0.4,
+   "cagri": 177,
+   "ucgen": 269506,
+   "geometri": 213,
+   "doku": 94,
+   "program": 19,
+   "dpr": 1,
+   "golgeAcik": false,
+   "npc": 35,
+   "para": 20,
+   "kirli": 4,
+   "masa": 20,
+   "heapMB": 110.626220703125,
+   "hatalar": []
+  }
+ ]
+}
