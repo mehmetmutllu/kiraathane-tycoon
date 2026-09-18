@@ -216,14 +216,14 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum — Faz F · 2/6 — F1a: kabuk ve imza (D-130)",
-  "baslik": "Kolu <b>eleyen</b> ölçüm, kolu seçen ölçüm kadar denetim ister",
-  "aciklama": "Mağazaya gidecek paket dört kolla gerçekten derlendi: debug APK <b>11,84 MB</b> → release <b>10,58</b> → R8 ile <b>8,58 MB</b> (<b>−%27,5</b>). Kazancın <b>%96&#39;sı</b> koddan (<code>.dex</code> 2,37 → 0,45 MB); kaynak budamanın payı 0,08 MB. Native <code>.so</code> yok → Play&#39;in 16 KB sayfa şartı bu projeye dokunmuyor.<br><br><b>Turun asıl dersi araçta çıktı.</b> Ölçüm aracı <b>altı kez</b> yanlış okudu ve altısı da kolu <b>daha karamsar</b> gösteriyordu — düzeltilmese R8 &#34;ölü&#34; diye sessizce elenirdi. Node&#39;un <code>.bat</code>&#39;ı sessizce reddetmesi (çıkış kodu null = <i>çalışmadı</i>, <i>kırıldı</i> değil) · <code>usage.txt</code>&#39;in iki satır dilbilgisi · CRLF · iç sınıf adının çekirdek sanılması · kol yamasının kaynağın şeklini varsayması · imza sınamasının yanlış katmana bakması. Bir aracın <b>iyimser</b> hatası gözden kaçmaz (sonuç tutmaz); <b>karamsar</b> hatası kaçar.<br><br><b>Karar paket sunulduktan sonra değişti.</b> Pakette iki kimlik kolu vardı; kullanıcı ikisini de eleyip <i>&#34;genel kullanıcıya hitap etsin&#34;</i> dedi — kalem kimlik değil <b>konumlandırma</b> kalemiymiş. Doğru hamle üçüncü bir kimlik önermek değil, <b>adı kimlikten ayırmaktı</b>."
+  "etiket": "Bu oturum — 2026-09-18 geri bildirimi · T1 + T2a + T2b bitti, T4 ölçüldü",
+  "baslik": "Kullanıcının <b>tek bir cümlesi</b>, beş ayrı kolu kendi eledi",
+  "aciklama": "Ses kaydı + yazılı notlar birleşip <b>24 kalem</b> oldu (G-58…G-81) ve her biri <b>kodda doğrulandı</b> — &#34;ilk okuma&#34; değil dosya+satır. Üç tur kapandı: onarım · görev akışı · kutlama/öğretme.<br><br><b>En sert bulgu bir veri kaybıydı.</b> <code>upgradeFills</code> / <code>tableUpgradeFills</code> / <code>lavaboFill</code> kayıt şemasında <b>yoktu</b> — <code>padFills</code> vardı. Yarım bırakılan bir yükseltmeye ödenen para cüzdandan çıkıyor, dolum her yüklemede sıfırlanıyordu. Kullanıcı bunu birebir tarif etmişti: <i>&#34;800 altından 300&#39;ünü ödeyerek bıraktım, geri girdim, sıfırdan başlıyordu.&#34;</i><br><br><b>Görev akışının kökü dardı.</b> <code>questIndex</code> hedef karşılanır karşılanmaz ilerliyor (bu bilerek böyle) ama dünyayı çizen/tetikleyen <b>her yer</b> o ham sayıyı okuyordu: kart hâlâ biten görevi yazarken pad çoktan belirmiş oluyordu. Çözüm yeni bir durum değil bir <b>türev</b> — <code>cardQuestIndex</code>: kart hangi görevi gösteriyorsa dünya da onu gösterir.<br><br><b>T4&#39;te asıl iş ELEMEK oldu.</b> Üç dakikalık canlı koşuda yığın <b>%0,0</b> oynadı: <b>sızıntı yok</b>. Oyun <i>oynadıkça</i> değil <i>büyüdükçe</i> yavaşlıyor. dpr düşürme kolu <b>ters</b> çıktı (+%6,6) ⇒ darboğaz GPU&#39;da değil <b>CPU</b>&#39;da. Ve şarjın kaynağı kasma bile değilmiş: fps tavanı yok, erken oyunda <b>116,7 fps</b> çiziliyor."
  },
  "siradaki": {
-  "etiket": "Sırada — Faz F · F6 (tur adı F1b) — ikon, açılış ekranı, ekran yönü",
-  "baslik": "<b>Tasarım turu:</b> üçü de metinle sorulamaz",
-  "aciklama": "<b>İkon, açılış ekranı ve ekran yönü</b> aday render&#39;ı ister (<code>feedback_show_dont_ask</code>). Ekran yönü şu an manifestte <b>kilitli değil</b>; kararın girdisi <i>oyunun yatayda nasıl göründüğü</i>, yani telefon oranında iki kadraj ölçülüp gösterilecek. Oyun içi açılış ekranı hâlâ &#34;Köşe Kıraathanesi&#34; yazıyor — iki dilli başlık kararıyla birlikte ele alınacak.<br><br><b>Ondan sonra F3 (AdMob) → F4 (IAP) → F5 (mağaza vitrini).</b> F3&#39;ün ilk işi <b>R8 kolunu yeniden ölçmek</b> olmalı: kurulu Capacitor eklentisi bugün <b>0</b> ve D-130&#39;un &#34;yansıma yüzeyi en dar&#34; gerekçesi tam buna dayanıyor; eklenti gelince gerekçe düşer.<br><br><b>Cihazda ölçülecek şeyler birikmeye devam ediyor:</b> R8&#39;in gerçekten açıldığı (F1a) · dpr kolu (F2) · yazı-tipi ölçeği (R1) · bahçenin çizim yükü (R4).<br><br><b>Panoda olmayan yeni iş:</b> <b>yerelleştirme</b>. &#34;Genel kullanıcıya hitap etsin&#34; hedefinin gerçek bedeli ad değil, oyun metninin tamamının Türkçe olması — ölçülmedi, kendi turunu ister.<br><br><b>Faz dışı bekleyen denge kalemleri:</b> G-39 · G-06 · G-07 · G-40 — dördü de <code>economy.config.ts</code>&#39;e dokunuyor, <b>varyant kapısı</b> kendi turunu ister."
+  "etiket": "Sırada — T4 commit #2 (kod) → sonra T3 denge turu",
+  "baslik": "<b>Kalite düşürmeden</b> hızlandır: kullanıcının cümlesi kolları seçti",
+  "aciklama": "Kullanıcı kasma kolu için <i>&#34;kalite bozmadan ve düşürmeden en mantıklı hamleler ne ise onlar olsun&#34;</i> dedi ve bu cümle beş koldan üçünü <b>kendi eledi</b>: gölgeyi kapatmak kaliteyi düşürür (üstelik D-073&#39;te gölgeyi geri isteyen kendisiydi), müşteri tavanı kaliteyi değil <b>geliri</b> düşürür, dpr zaten ölçümde ters çıktı. Kalan: <b>K-A</b> 60 fps tavanı · <b>K-E</b> React commit 0,38 → 0 · <b>K-C</b> instancing (çizim çağrısı 36 → 171).<br><br><b>Kabul ölçütü sayı listesidir, izlenim değil:</b> erken fps ≤ 62 · geç çizim çağrısı 171&#39;den düşer · commit/kare ≤ 0,05 · <b>gölge AÇIK kalır</b> · sürüklenmede eğilim yok. Final koşu <code>OLCUM=tam node tools/olcum-perf-t4.mjs</code>.<br><br><b>Ondan sonra T3 denge turu</b> — 11 kol, iki commit: tepsi 75₺ · masa4 380₺ · 2. salonun gecikmesi · <b>masa seviye sırası (D-124 yeniden okunacak)</b> · seviye ödülü (<b>D-092 yeniden okunacak</b>) · garson tepsisi · bulaşık istifi · tezgâhın duvar payı.<br><br><b>Hâlâ bekleyen:</b> F3 (AdMob) kararı — C1′ önerildi, onay gelmedi; G-67&#39;nin &#34;video ×2&#34; kanadı ona bağlı."
  },
  "donemler": [
   {
@@ -388,6 +388,23 @@ h2{font-size:21px;font-weight:800}
  ],
  "gunluk": [
   {
+   "tarih": "18.09.2026",
+   "etiket": "2026-09-18 geri bildirimi · T1 + T2a + T2b + T4 ölçümü (D-133…D-136)",
+   "baslik": "Yeşil bir test, <b>ölçtüğünü sandığın şeyi</b> ölçmüyor olabilir",
+   "govde": "Turun üç ayrı yerinde aynı ders çıktı ve üçü de ancak <b>davranış değişince</b> görüldü.<br><br><b>①</b> <code>logic.test.ts</code>&#39;in &#34;reveal toast + kamera panı tetikler&#34; testi yıllardır yeşildi — ama ikisi de reveal&#39;in eseri <b>değildi</b>: gördüğü toast biten <i>görevin</i> toast&#39;ı, odak ise pad dolarken kurulmuş <b>bayat</b> bir odaktı. Test adındaki şeyi hiç ölçmüyordu. İddia, gerçekten kapsanmayan bir kuruluma taşındı.<br><br><b>②</b> Kutlama efektinin karesini çeken araç, karede <b>yeni görevin kartını</b> çekiyordu: oyun ekran görüntüsü alınırken akmaya devam ediyor ve 1,3 sn&#39;lik pencere kapanıyordu. Yani araç, tam da düzelttiğimiz kusuru resmediyordu ve &#34;efekt çalışmıyor&#34; diye okunacaktı.<br><br><b>③</b> Performans aracı ilk koşuda <b>vsync</b> ölçüyordu (kare süreleri tam 16,7 / 33,4 / 50,0) — bir vsync basamağının altındaki her kol farkı <b>0</b> okunuyordu. Aynı araç <code>questIndex</code>&#39;i 0&#39;da bıraktığı için <b>bulaşık döngüsünü hiç çalıştırmadan</b> &#34;kirli kap: 0&#34; raporluyordu; bu sayı &#34;sorun yok&#34; diye okunacaktı.<br><br><b>Ve bir kusur teste değil KAREYE düştü:</b> <code>&lt;html lang=&#34;en&#34;&gt;</code> yüzünden CSS <code>text-transform: uppercase</code> Türkçe &#34;i&#34;yi &#34;I&#34; yapıyordu — öğretme kartı ekranda <b>&#34;BULAŞIK BIRIYOR&#34;</b> yazdı. Arayüzde yedi ayrı <code>uppercase</code> yeri aynı kusuru taşıyordu; içinde küçük &#34;i&#34; geçen bir metin yazılana kadar <b>hiç görünmedi</b>.",
+   "maddeler": [
+    "<b>G-78 VERİ KAYBI:</b> kısmi ödenmiş yükseltme kayıt şemasında yoktu — para gidiyor, dolum sıfırlanıyordu. Şema <b>eklemeli</b> büyüdü (sürüm artmadı), dolum bugünkü maliyete kelepçeli",
+    "<b>G-59/G-60 tek sıra hattı:</b> pad · kenar oku · uyarı artık <b>kartın gösterdiği</b> görevi okuyor (<code>cardQuestIndex</code>); kutlama penceresinde yeni pad belirmiyor, uyarı işlenmiyor",
+    "<b>Ekran kanalları tek sıraya alındı</b> (<code>ekranKanali.ts</code>): çevrimdışı &gt; Usta &gt; öğretme &gt; ipucu — ikisinin aynı anda açılması artık <b>yapısal olarak</b> imkânsız",
+    "<b>G-63 öğretme kartı ÜST BANTTA:</b> kullanıcı aynı cümlede &#34;oraya zoom yap&#34; <b>ve</b> &#34;bulaşığın göründüğü yeri kapatma&#34; dedi — ortadaki bir modal kamerayı çevirmenin anlamını yok ederdi",
+    "<b>T4: sızıntı YOK</b> — 3 dk canlı koşuda kare −%5,2, yığın <b>%0,0</b>, program sabit. &#34;Sızıntı ara&#34; kolu kod aramadan <b>ölçümle elendi</b>",
+    "<b>T4: yük ×6,6</b> — 8,3 ms/117 fps (erken) → 55,1 ms/<b>15,1 fps</b> (geç); çizim çağrısı 36 → 171, üçgen ×12",
+    "<b>T4: dpr kolu ters çıktı</b> (+%6,6) ⇒ darboğaz fragment değil <b>CPU</b>; gölgenin payı F2&#39;deki %40&#39;tan <b>%21,7</b>&#39;ye düşmüş",
+    "<b>Bilerek YAPILMAYANLAR:</b> G-61&#39;in kalıcı kapısı, G-70&#39;in istifi, G-71&#39;in emniyeti, G-68&#39;in duvar payı — dördü de <b>tempoya</b> dokunuyor, varyant kapısına tabi",
+    "<b>Bekçi:</b> 3 yeni dosya / 53 denetim · her turda <b>2 mutasyonla</b> doğrulandı · vitest <b>1361/1361</b> · duman 45/45"
+   ]
+  },
+  {
    "tarih": "17.09.2026",
    "etiket": "Faz F · 2. oturum (F1a — kabuk ve imza — D-130)",
    "baslik": "Kullanıcı bir kolu seçerken <b>sorunun kendisini</b> değiştirebilir",
@@ -510,23 +527,6 @@ h2{font-size:21px;font-weight:800}
     "<b>Bekçi:</b> <code>tests/sira-h2.test.ts</code> 19 denetim · <b>12 mutasyon, kaçan 0</b> · vitest <b>1189</b> ✓ · duman 45/45 ✓"
    ],
    "not": "<b>Mekanizmayı bulmak, hipotezi doğrulamak değildir.</b> “Derin kol kazanıyor” görülünce sebep hemen bulundu: dörtlü masanın koltuk merdiveninde L1 ile L2 aynı koltuğu veriyor, yani L2 ölü bir basamak ve “en ucuzu al” politikası tam orada oyalanıyor. Kulağa kesin geliyordu. Karşı-deney <b>çürüttü</b>: basamak canlandırılınca koltuk açığının üçte ikisi kapandı (18 → 26) ama tuzak neredeyse kıpırdamadı (%20,6 → %19,0). Sebep kapasitede değil, bahşiş ortalamasının aritmetiğindeydi. Ölçülmeseydi “config'i düzeltip sırayı serbest bırakalım” diye yanlış bir üçüncü kol karar paketine girerdi.<br><br><b>Bekçi neyi ölçmediğini söylemez — mutasyon söyler.</b> 19 denetim yeşilken üç mutasyon kaçtı ve üçü de aynı boşluğu gösterdi: bekçi <b>tetiği</b> ölçüyordu, <b>çizimi</b> hiç. Yani “ekranda 12 nokta var, yalnız biri para alıyor” kusuru serbestti."
-  },
-  {
-   "tarih": "16.09.2026",
-   "etiket": "Faz H · 1. oturum (H1 — oynanış hataları — D-123)",
-   "baslik": "Şikâyet <b>yön</b> gösterdi, ölçüm <b>büyüklüğü</b> söyledi — ve ikisi aynı yerde durmuyordu",
-   "govde": "Üç şikâyet de ölçülünce üçü de tek bir kusurun nüshası çıktı: <b>tetik, ekranda çizilen şeyden türemiyordu.</b> Kirli kap tetiği kabın rastgele düştüğü noktadan, ürün alma tetiği 3,2 br uzunluğundaki tezgâhın merkezinden ölçülüyordu; görev panı ise hedefin görünür olup olmadığına hiç bakmıyordu.<br><br><b>Payda doğru kurulunca kol ayrıştı.</b> Aracın ilk sürümü “oyuncunun durabildiği HER yön”ü payda saydı ve masanın gereken yarıçapına <code>&gt;2,40</code> yazdı — çünkü sandalyenin arkasında kalan yön hiçbir yarıçapla kapanmaz. Sayı doğruydu, <b>sorusu yanlıştı</b>. Payda “gövdesiyle objeye değebildiği yön”e çevrilince tablo konuşmaya başladı.<br><br><b>Ve kullanıcının işaret ettiği yer, kusurun EN HAFİF olduğu yerdi.</b> <code>q_table2</code>'nin hedefi 3,62 br — en dar görüş yarıçapının (4,25) bile altında, yani zaten görünüyordu; pan orada 1,49 sn sürüyor ve oyuncuyu ekrandan <b>hiç çıkarmıyordu</b>. Asıl zarar hiç şikâyet edilmemiş görevlerdeydi: <code>q_station1</code> <b>3,15 sn</b>, <code>q_serve5</code> 2,58 sn. (S9'un ikinci dersinin aynısı: şikâyet coin'deydi, kataloğun en dar yeri ilerleme ailesindeydi.)<br><br><b>Pay değeri tahminle seçilmedi</b> ve iki bağımsız kaynak aynı sayıyı verdi: süpürmede kapsama 0,70'te masada %99,2 / tezgâhta %97,9 (sızıntı 0), <b>ve</b> yerleşimin kendi <code>pickup</code> noktası — garsonun çay aldığı yer — tezgâh gövdesine tam <b>0,70 br</b> uzakta. Önce 0,60 denendi ve mekânın kendi durak noktasını dışarıda bıraktı; <code>logic.test.ts</code> yakaladı.",
-   "maddeler": [
-    "<b>D-123:</b> M3 + O3 + K2 — üçü de “tetik çizilen şeyden türer” (S24/D-120'nin üç nüshası daha)",
-    "<b>Masa:</b> yön% <b>42,2</b> · en kötü kap <b>23,8</b> → gövde tetiği · <b>sızıntı 0</b> (pay 0,90'a kadar)",
-    "<b>Ocak:</b> ölü ön yüz <b>0,72 → 0 br</b> · yönlerin %42,6'sı ölüydü · yükseltme noktası yaşıyor (3,93/3,62 br)",
-    "<b>Kamera:</b> pan <b>6 → 0</b> · oyuncunun ekran dışı kaldığı süre <b>11,02 → 0,00 sn</b> · görüş yarıçapı 4,25–24,50 br",
-    "<b>Kapı öncelikten bağımsız</b> (alan açılışı dahil); HUD'un “hedefi göster” düğmesi kapıdan GEÇMEZ",
-    "<b>Kamera yoksa eski davranış:</b> <code>cameraView</code> kurulmadıysa pan atılır — vitest/sim deterministik kalır",
-    "<b>10 yarıçap değişmezi silinmedi, gövde modeline çevrildi</b> (park noktası · yükseltme menzili · al+servis birleşiği)",
-    "<b>Bekçi:</b> <code>tests/erisim-h1.test.ts</code> 16 denetim · <b>16 mutasyon, kaçan 0</b> · vitest <b>1170</b> ✓ · duman 45/45 ✓"
-   ],
-   "not": "<b>Yolda yıllardır yeşil yanan üç sahte test bulundu.</b> Bardak döngüsünün üç fikstürü oyuncuyu salonun ortasındaki <code>[1, 1]</code> noktasına koyup kaba <code>tableIndex: 0</code> etiketi veriyordu — ikisi birbirini tutmuyordu ve eski nokta-tetiği bunu göremediği için sorun çıkmamıştı. Gövde tetiği ilk günde yakaladı.<br><br><b>Kaçan mutasyon yine bir SINIR öğretti.</b> <code>hedefEkranda</code>'nın derinlik denetimi bugünkü kamera ankrajında <b>zemin</b> hedefleri için ölü (160 × 160 br tarandı, 0 nokta) — o yüzden silinince hiçbir test kırılmadı. Ama fonksiyon yükseklik alıyor: y yükselince taban kipte <b>3.773</b>, portrede 862 nokta kameranın <b>arkasındayken</b> “ekranda” sanılıyor. <b>Kat 3 çatı terası</b> geldiğinde kapı sessizce ters çalışırdı."
   }
  ],
  "riskler": [
@@ -781,7 +781,7 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunlukArsiv": {
-  "kart": 63,
+  "kart": 64,
   "ilk": "05.06 – 17.06.2026",
   "son": "16.09.2026",
   "yer": "memory-bank/arsiv/pano-gunluk.json"

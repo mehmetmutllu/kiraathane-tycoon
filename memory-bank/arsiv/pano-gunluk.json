@@ -1,8 +1,8 @@
 {
  "not": "İlerleme panosunun ESKİ oturum kartları. Pano her turda büyüyordu (67 kart / 219 KB) ve yayını canlı sürümün tamamının okunmasını şart koştuğu için tur başına maliyeti ARTIYORDU — okunanın neredeyse tamamı bir daha bakılmayacak arşivdi. Projenin kendi kuralı buraya da uygulandı (eski anlatı → arsiv/). Pano son 8 turu gösterir; öncesi burada ve git geçmişinde durur.",
  "kaynak": "docs/pano/ilerleme-panosu.html",
- "tasindi": "2026-09-16 (R1 turu, kullanıcı onayı)",
- "kart": 63,
+ "tasindi": "2026-09-18",
+ "kart": 64,
  "gunluk": [
   {
    "tarih": "16.09.2026",
@@ -938,6 +938,23 @@
     "<b>Bekçi:</b> iki dosya, 51 denetim, <b>32 mutasyon, kaçan 0</b> · vitest <b>1154</b> ✓ · duman 42 → <b>45/45</b> ✓"
    ],
    "not": "<b>Kaçan mutasyonlar yine kodun değil BEKÇİNİN zayıf yerini gösterdi — dört kez.</b> Seri turunda M16: denetim <code>import</code>un ADINA bakıyordu, KULLANIMINA değil (S23'ün <code>toMatch(/FloorPatch/)</code> kusurunun aynısı). Seviye turunda üç tane: sahte arka uç dosya yolunu hiç sınamıyordu · test yalnız KURULUŞ yolunu sınıyordu, oysa oyuncu kaydırıcıyı <code>ayarla</code> ile oynatıyor · motor kuruluşta zaten eşitleme çağırmadığı için tarayıcı-kilidi şartı silinse de test yeşil kalıyordu. Dördü de kapatıldı.<br><br><b>Ve iki bekçi daha iş başında yakaladı:</b> mor dilin punto kilidi CSS'e sızan ham bir <code>13px</code>'i (D-107), pano denetimi de Faz E'yi yanlışlıkla kapattığımı — E5 ses değil <b>hareketli onboarding</b>."
+  },
+  {
+   "tarih": "16.09.2026",
+   "etiket": "Faz H · 1. oturum (H1 — oynanış hataları — D-123)",
+   "baslik": "Şikâyet <b>yön</b> gösterdi, ölçüm <b>büyüklüğü</b> söyledi — ve ikisi aynı yerde durmuyordu",
+   "govde": "Üç şikâyet de ölçülünce üçü de tek bir kusurun nüshası çıktı: <b>tetik, ekranda çizilen şeyden türemiyordu.</b> Kirli kap tetiği kabın rastgele düştüğü noktadan, ürün alma tetiği 3,2 br uzunluğundaki tezgâhın merkezinden ölçülüyordu; görev panı ise hedefin görünür olup olmadığına hiç bakmıyordu.<br><br><b>Payda doğru kurulunca kol ayrıştı.</b> Aracın ilk sürümü “oyuncunun durabildiği HER yön”ü payda saydı ve masanın gereken yarıçapına <code>&gt;2,40</code> yazdı — çünkü sandalyenin arkasında kalan yön hiçbir yarıçapla kapanmaz. Sayı doğruydu, <b>sorusu yanlıştı</b>. Payda “gövdesiyle objeye değebildiği yön”e çevrilince tablo konuşmaya başladı.<br><br><b>Ve kullanıcının işaret ettiği yer, kusurun EN HAFİF olduğu yerdi.</b> <code>q_table2</code>'nin hedefi 3,62 br — en dar görüş yarıçapının (4,25) bile altında, yani zaten görünüyordu; pan orada 1,49 sn sürüyor ve oyuncuyu ekrandan <b>hiç çıkarmıyordu</b>. Asıl zarar hiç şikâyet edilmemiş görevlerdeydi: <code>q_station1</code> <b>3,15 sn</b>, <code>q_serve5</code> 2,58 sn. (S9'un ikinci dersinin aynısı: şikâyet coin'deydi, kataloğun en dar yeri ilerleme ailesindeydi.)<br><br><b>Pay değeri tahminle seçilmedi</b> ve iki bağımsız kaynak aynı sayıyı verdi: süpürmede kapsama 0,70'te masada %99,2 / tezgâhta %97,9 (sızıntı 0), <b>ve</b> yerleşimin kendi <code>pickup</code> noktası — garsonun çay aldığı yer — tezgâh gövdesine tam <b>0,70 br</b> uzakta. Önce 0,60 denendi ve mekânın kendi durak noktasını dışarıda bıraktı; <code>logic.test.ts</code> yakaladı.",
+   "maddeler": [
+    "<b>D-123:</b> M3 + O3 + K2 — üçü de “tetik çizilen şeyden türer” (S24/D-120'nin üç nüshası daha)",
+    "<b>Masa:</b> yön% <b>42,2</b> · en kötü kap <b>23,8</b> → gövde tetiği · <b>sızıntı 0</b> (pay 0,90'a kadar)",
+    "<b>Ocak:</b> ölü ön yüz <b>0,72 → 0 br</b> · yönlerin %42,6'sı ölüydü · yükseltme noktası yaşıyor (3,93/3,62 br)",
+    "<b>Kamera:</b> pan <b>6 → 0</b> · oyuncunun ekran dışı kaldığı süre <b>11,02 → 0,00 sn</b> · görüş yarıçapı 4,25–24,50 br",
+    "<b>Kapı öncelikten bağımsız</b> (alan açılışı dahil); HUD'un “hedefi göster” düğmesi kapıdan GEÇMEZ",
+    "<b>Kamera yoksa eski davranış:</b> <code>cameraView</code> kurulmadıysa pan atılır — vitest/sim deterministik kalır",
+    "<b>10 yarıçap değişmezi silinmedi, gövde modeline çevrildi</b> (park noktası · yükseltme menzili · al+servis birleşiği)",
+    "<b>Bekçi:</b> <code>tests/erisim-h1.test.ts</code> 16 denetim · <b>16 mutasyon, kaçan 0</b> · vitest <b>1170</b> ✓ · duman 45/45 ✓"
+   ],
+   "not": "<b>Yolda yıllardır yeşil yanan üç sahte test bulundu.</b> Bardak döngüsünün üç fikstürü oyuncuyu salonun ortasındaki <code>[1, 1]</code> noktasına koyup kaba <code>tableIndex: 0</code> etiketi veriyordu — ikisi birbirini tutmuyordu ve eski nokta-tetiği bunu göremediği için sorun çıkmamıştı. Gövde tetiği ilk günde yakaladı.<br><br><b>Kaçan mutasyon yine bir SINIR öğretti.</b> <code>hedefEkranda</code>'nın derinlik denetimi bugünkü kamera ankrajında <b>zemin</b> hedefleri için ölü (160 × 160 br tarandı, 0 nokta) — o yüzden silinince hiçbir test kırılmadı. Ama fonksiyon yükseklik alıyor: y yükselince taban kipte <b>3.773</b>, portrede 862 nokta kameranın <b>arkasındayken</b> “ekranda” sanılıyor. <b>Kat 3 çatı terası</b> geldiğinde kapı sessizce ters çalışırdı."
   }
  ]
 }
