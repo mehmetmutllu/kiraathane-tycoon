@@ -10,6 +10,7 @@
  * değişebilen çalışma değerleridir. `store.tick()` ctx'i kurar, `runTick`i çağırır, sonucu tek
  * `set()` ile yazar. Bu ayrım sayesinde sistemler saf, tek tek okunabilir ve test edilebilir kalır.
  */
+import { olcKoş, olcumAcik } from './olcum';
 import type { Decimal } from './decimal';
 import type { Coin, Dish, Npc, Vec3, Waiter } from './types';
 import { collectionMult } from './goals';
@@ -1581,23 +1582,39 @@ function levelNoticeSystem(c: TickCtx): void {
 }
 
 /** Bir karenin TAMAMI: sistemler sabit sırayla koşar. Sıra eski tek-gövdeli tick() ile birebirdir. */
+/**
+ * SİSTEM SIRASI — **veri olarak.** Sıra anlamlıdır (örn. `deriveSystem` türetmeleri, kendisinden
+ * önceki sistemlerin yazdığı duruma bakar), o yüzden burada tek yerde ve açıkça durur.
+ *
+ * Adlar ölçüm içindir: `olcum.ts` dikişi açıkken kare bölüşümü sistem başına raporlanır
+ * (`docs/perf-raporu-t4.md` §G — `npcSystem` tek başına karenin %27,3'üydü ve bu, liste
+ * elle sayılmadan görünmüyordu).
+ */
+const SISTEMLER: readonly (readonly [string, (c: TickCtx) => void])[] = [
+  ['brewSystem', brewSystem],
+  ['spawnSystem', spawnSystem],
+  ['npcSystem', npcSystem],
+  ['playerMoveSystem', playerMoveSystem],
+  ['coinSystem', coinSystem],
+  ['serveSystem', serveSystem],
+  ['dishCycleSystem', dishCycleSystem],
+  ['waiterSystem', waiterSystem],
+  ['dishwasherSystem', dishwasherSystem],
+  ['interactionZoneSystem', interactionZoneSystem],
+  ['revealSystem', revealSystem],
+  ['padFillSystem', padFillSystem],
+  ['stationUpgradeSystem', stationUpgradeSystem],
+  ['tableUpgradeSystem', tableUpgradeSystem],
+  ['lavaboUpgradeSystem', lavaboUpgradeSystem],
+  ['deriveSystem', deriveSystem],
+  ['questSystem', questSystem],
+  ['levelNoticeSystem', levelNoticeSystem],
+];
+
 export function runTick(c: TickCtx): void {
-  brewSystem(c);
-  spawnSystem(c);
-  npcSystem(c);
-  playerMoveSystem(c);
-  coinSystem(c);
-  serveSystem(c);
-  dishCycleSystem(c);
-  waiterSystem(c);
-  dishwasherSystem(c);
-  interactionZoneSystem(c);
-  revealSystem(c);
-  padFillSystem(c);
-  stationUpgradeSystem(c);
-  tableUpgradeSystem(c);
-  lavaboUpgradeSystem(c);
-  deriveSystem(c);
-  questSystem(c);
-  levelNoticeSystem(c);
+  if (import.meta.env.DEV && olcumAcik()) {
+    for (const [ad, f] of SISTEMLER) olcKoş(ad, () => f(c));
+    return;
+  }
+  for (const s of SISTEMLER) s[1](c);
 }

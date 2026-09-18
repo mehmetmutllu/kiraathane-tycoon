@@ -1,3 +1,4 @@
+import { olcEkle, olcumAcik } from './olcum';
 /**
  * nav.ts — Personel (garson/bulaşıkçı) için kaba ızgara BFS yol bulma.
  *
@@ -112,6 +113,21 @@ function nearestFreeIdx(grid: NavGrid, sc: number, sr: number): number {
  * Başlangıç hücresi engelin içinde olsa bile (aktör masa kenarına yapışıksa) komşulara çıkış serbest.
  */
 export function findNavPath(
+  grid: NavGrid,
+  start: readonly [number, number, number],
+  tx: number,
+  tz: number,
+  reach: number,
+): [number, number][] | null {
+  // ÖLÇÜM DİKİŞİ (§G): bu fonksiyon geç oyunda karenin %32,4'üydü. Kapalıyken bedel tek boolean.
+  const olc = import.meta.env.DEV && olcumAcik();
+  const t0 = olc ? performance.now() : 0;
+  const yol = navPathAra(grid, start, tx, tz, reach);
+  if (olc) olcEkle('findNavPath', performance.now() - t0);
+  return yol;
+}
+
+function navPathAra(
   grid: NavGrid,
   start: readonly [number, number, number],
   tx: number,

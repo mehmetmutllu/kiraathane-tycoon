@@ -4485,3 +4485,41 @@ turunu ister.
 - **Bu yüzden K-E ve K-C'nin kodu YAZILMADI ve kullanıcıya yeni karar paketiyle soruldu.** Kural
   gereği (CLAUDE.md: *"bir kararda takılırsan kod yazmadan önce sor"*): iki kolun da uygulama
   tarifi, ölçülen sayıyla çelişiyordu. Ölçüm raporda (§F), karar kullanıcıda.
+
+## D-138 — Kare BÖLÜŞÜMÜ ölçüldü: kollar bir tur boyunca yanlış yarıya bakmış
+
+- **Dersi bulduğu sayıdan önemli.** T4'ün ilk turu karenin **toplamını** ölçtü (geç oyunda
+  55,1 ms) ve beş kolun beşini de **çizim** tarafına yazdı (instancing · gölge · dpr · müşteri
+  tavanı · React). Karenin içi bölününce çizimin karenin **yarısı bile olmadığı** görüldü.
+  **Toplamı ölçmek darboğazın büyüklüğünü verir, YERİNİ vermez.**
+- **Tek en büyük kalem `findNavPath`** — ve o bir çizim kalemi değil. `navStep` (layout.ts)
+  yürüyen her aktör için **her karede** tam BFS çağırıyor, dönen yolun **yalnız ilk
+  waypoint'ini** kullanıp gerisini atıyor. Izgara **114×90 = 10.260 hücre**; her çağrı
+  `new Int32Array(10260).fill(-2)` ⇒ 41 KB ayırma + tam sıfırlama. Kare başına ~17-18 çağrı.
+- **Seçilmiş C-kolları (§F4) elenmedi, SIRAYA ALINDI.** Hepsi çizim tarafında ve hiçbiri gölge
+  geçişine dokunamıyor; ortak tavanları **ana geçiş**tir. `findNavPath` tek başına ondan büyük.
+- **Ölçüm kalıcılaştı:** `src/game/olcum.ts` — DEV, **opt-in** dikiş (kapalıyken bedeli tek
+  boolean okuması, üretim paketine girmez). `runTick`in sistem listesi **veriye** çevrildi
+  (ad + fonksiyon): sıra tek yerde açıkça duruyor ve ölçüm adı oradan okuyor, liste iki yere
+  yazılmıyor. Araca kalıcı **§F kare bölüşümü** bölümü eklendi — düzeltmenin işe yarayıp
+  yaramadığı izlenimle değil aynı sayıyla doğrulanacak.
+- **`tick.ts`e dokunuldu ama HİÇBİR denge sayısı değişmedi:** değişiklik yalnız çağrı listesinin
+  veriye dönmesi + DEV ölçüm dalı. Sistem SIRASI birebir korundu.
+- **Kollar (§G4) ölçüldü, seçilmedi.** N-1 tamponu yeniden kullan (**çıktısı BİREBİR AYNI**) ·
+  N-2 yol önbelleği (çağrı 17,6 → ~1-2, birebir değil) · N-3 görüş hattı kısayolu · N-4 karelere
+  yayma. **Sıra: N-1 → ölç → gerekirse N-2.** N-1 kaliteye dair sorulacak bir şey bırakmadığı
+  için kullanıcının "en mantıklı ve kaliteli ne ise o olsun" delegasyonu kapsamında.
+- **KUSUR 3 kayda geçti:** ilk tam koşuda §F sorgusuz açılıyordu, yani gölge kolu sabit değildi.
+  `CihazSinifiOlcer` (D-125) cihazı "zayıf" sayıp gölgeyi kapattı ve bölüşüm *"gölge haritası
+  0,2 ms"* raporladı — aynı koşunun §D'sinde gölge **12,5 ms**'ti. Sayı yanlış değil,
+  **karşılaştırılamaz**. Ancak §D ile yan yana konunca fark edildi. Araç düzeltildi: §F artık
+  §D0 ile aynı kolda açılıyor ve **gölge durumunu çıktıya yazıyor**; kapalıysa satırın
+  karşılaştırılamaz olduğunu kendisi bağırıyor. Rapor §G2 bu yüzden yalnız **mutlak ms** okuyor
+  (gölgeden bağımsız, CPU tarafı); yüzdeli tam bölüşüm sıradaki koşuda alınacak.
+- **SIRA KİLİDİ UYARISI (karma-commit) çıktı — sebebi burada:** araç `tick.ts`i denge dosyası
+  sayıyor ve ölçüm çıktısıyla aynı commit'te görünce "karar bölümü boş olamazdı" diyor. Bu commit
+  **commit #1'in ta kendisi**: içinde düzeltme kodu yok, yalnız araç + ham çıktı + rapor + ölçüm
+  dikişi. `tick.ts` dokunuşu **diff'le doğrulandı**: sadece çağrı listesinin veriye dönmesi ve
+  DEV ölçüm dalı; 18 sistemin **sırası birebir aynı**, hiçbir denge sayısı yok. Araç "ölçüm
+  dikişi" ile "denge kodu"nu ayırt edemiyor — D-133/D-134'teki emsalin aynısı.
+- **Bu commit'te düzeltme kodu YOK** (commit #1 kuralı): araç + ölçüm dikişi + rapor §G.

@@ -303,3 +303,85 @@ yapılmıyor. Kollar ve büyüklükleri §F4'te.
 | **C-2** gölge DÖKENLERİ azalt (gölge AÇIK kalır) | çizim çağrısının gölge geçişi payını keser | §D1: gölge geç oyunda %21,7 · çağrının bir kısmı gölge geçişi | gölge kalkmaz, küçük objelerin gölgesi kalkar | küçük |
 | **C-3** `BatchedMesh` (three r184) — tek materyalli duran objeler | çok mesh → **tek çizim çağrısı** | §F3: 94/156 çizim tekrar eden şekilden | değişmez | **büyük** |
 | **C-4** iskeletli karakterler | tekrar edenlerin başı | §F3: en çok tekrarlanan 10 şekil iskeletli | — | **çok büyük** (doku-pişirme ister) |
+
+---
+
+# §G — KARE BÖLÜŞÜMÜ: KOLLAR BİR TUR BOYUNCA YANLIŞ YARIYA BAKMIŞ
+
+> **Bu bölümün dersi, bulduğu sayıdan önemli.** T4'ün ilk turu karenin **toplamını** ölçtü
+> (§A: geç oyunda 55,1 ms) ve beş kolun beşini de **çizim** tarafına yazdı: instancing, gölge,
+> dpr, müşteri tavanı, React. Sonra karenin içi bölündü ve çizimin karenin **yarısı bile
+> olmadığı** görüldü. Toplamı ölçmek darboğazın *büyüklüğünü* verir, **yerini vermez.**
+> Bölüşüm artık aracın kalıcı bölümü (`§F`), her koşuda ölçülür.
+
+## §G1 — Nasıl ölçülüyor
+
+| kalem | nereden |
+|---|---|
+| `gl.render` toplamı ve **gölge geçişi** | sayfadan sarılarak (kaynağa dokunmadan) |
+| `tick()` ve **18 sistemin her biri** | `src/game/olcum.ts` dikişi — DEV, **opt-in** |
+| `findNavPath` | aynı dikiş; sistemlerin **içinden** çağrılır, ayrı kalem değil |
+| karenin işi (`advance`) | `perf.isMs` (K-A ile eklendi) |
+
+Dikiş kapalıyken sıcak yolda maliyeti **tek bir boolean okumasıdır**; üretim paketine girmez.
+`runTick` bu turda sistem listesini **veriye** çevirdi (ad + fonksiyon): sıra tek yerde açıkça
+duruyor ve ölçüm sistem adını oradan okuyor — liste iki yere yazılmıyor.
+
+## §G2 — Bulgular
+
+**SAYILAR:** `docs/olcum-perf-t4-son.txt` §F (**TAM koşu damgalı**, geç oyun, NPC 38, CPU 4× kısık).
+
+| kalem | ms / kare | notu |
+|---|---|---|
+| **`findNavPath`** | **12,71** | **20,5 çağrı/kare · 0,62 ms/çağrı** |
+| `npcSystem` (findNavPath dâhil) | 9,88 | tick'in en büyük sistemi |
+| `waiterSystem` (findNavPath dâhil) | 2,51 | |
+| `dishwasherSystem` | 0,59 | |
+| kalan **15 sistem** toplamı | **< 0,25** | hiçbiri kendi başına %0,2'yi geçmiyor |
+| `useFrame` (tick + dönüşüm) toplamı | 19,9 | |
+| `gl.render` toplamı | 20,4 | |
+
+**Okunuşu:** `tick()`in 18 sisteminden **üçü** ölçülebilir iş yapıyor ve üçü de aynı kaynağa
+bağlı — `navStep`. `findNavPath` **12,71 ms/kare** ile karenin tek en büyük kalemi; `gl.render`in
+TAMAMI 20,4 ms iken bir tek yol arama fonksiyonu 12,71 ms yiyor.
+
+> ### ⚠ KUSUR 3 — bu koşuda §F'nin gölge kolu SABİT DEĞİLDİ
+> §F sorgusuz açılıyordu; `CihazSinifiOlcer` (D-125) cihazı "zayıf" sayıp **gölgeyi kapattı** ve
+> bölüşüm *"gölge haritası 0,2 ms"* raporladı — oysa **aynı koşunun §D'sinde gölge 12,5 ms**.
+> Sayı yanlış değil, **karşılaştırılamaz**: §F başka bir yapılandırmayı ölçüyordu. Bu yüzden
+> yukarıdaki tabloda **gölge/ana-geçiş ayrımı ve yüzdeler kullanılmadı** — yalnız `findNavPath`
+> ve sistem başına **mutlak ms** okundu, o da gölgeden bağımsızdır (CPU tarafı).
+> **Araç düzeltildi:** §F artık §D0 ile aynı kolda açılıyor (`?f2golge=2048`) ve gölge durumunu
+> çıktıya yazıyor; kapalıysa satırın karşılaştırılamaz olduğunu kendisi bağırıyor. Yüzdeli tam
+> bölüşüm **sıradaki koşuda** okunacak.
+
+## §G3 — Kök: her karede sıfırdan yol arama
+
+`navStep` (layout.ts) yürüyen her aktör için **her karede** `findNavPath` çağırıyor, dönen yolun
+**yalnız ilk waypoint'ini** kullanıp gerisini atıyor. `findNavPath` ise tam BFS:
+
+```
+const prev = new Int32Array(cols * rows).fill(-2);   // her çağrıda YENİDEN
+```
+
+Izgara **114 × 90 = 10.260 hücre**. Yani her çağrı 41 KB ayırıp tamamını sıfırlıyor; kare başına
+~17-18 çağrı ⇒ **~726 KB çöp ve ~180 bin hücre yazımı / kare**, arama maliyeti bunun üstüne.
+
+## §G4 — Kollar (ölçüldü, **seçilmedi**)
+
+| Kol | Ne yapar | Çıktı aynı mı | İş |
+|---|---|---|---|
+| **N-1** tamponu yeniden kullan (kuşak damgası ile `fill` kalkar) | ayırma + sıfırlama gider, arama aynı kalır | **BİREBİR AYNI** — bekçi testi kanıtlar | küçük |
+| **N-2** yolu önbelleğe al (hedef değişince/yol tükenince yeniden ara) | çağrı sayısı 17,6 → ~1-2 / kare | çok yakın (ızgara durağan, BFS belirlenimci) ama birebir değil | orta |
+| **N-3** görüş hattı kısayolu (engel yoksa BFS'siz) | açık zeminde aramayı tamamen atlar | yol biraz değişebilir | küçük |
+| **N-4** aramayı karelere yay (aktör başına K karede bir) | maliyeti böler | duraksama görünebilir | küçük |
+
+**Sıra önerisi: N-1 → ölç → gerekirse N-2.** N-1 tek başına *çıktısı birebir aynı* olan tek kol,
+yani kaliteye dair sorulacak bir şey bırakmıyor; kazancı ölçüldükten sonra N-2'ye gerek olup
+olmadığı sayıyla belli olur.
+
+## §G5 — Bu, seçilmiş C-kollarını da yeniden sıralıyor
+
+C-1…C-4'ün (§F4) hepsi çizim tarafında ve **gölge geçişine dokunamıyor**, yani hepsinin ortak
+tavanı **ana geçiş**tir. `findNavPath` tek başına ondan büyük. Kasma kolu bu yüzden §G'ye kaydı;
+C-kolları elenmedi, **sıraya alındı**.

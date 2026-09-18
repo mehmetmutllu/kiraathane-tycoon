@@ -1,49 +1,73 @@
 ==============================================================================
-T4 PERFORMANS ÖLÇÜMÜ (G-80) · kip=tam · 2026-09-18T13:24:28.485Z
+T4 PERFORMANS ÖLÇÜMÜ (G-80) · kip=tam · 2026-09-18T15:35:22.619Z
 GPU: ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 (0x00002503) Direct3D11 vs_5_0 ps_5_0, D3D11)
 Kadraj: 412×915 @ dpr 2.625 · CPU 4× kısık
 ==============================================================================
 
 §A YÜK EĞRİSİ — mekân büyüdükçe kare (canlı simülasyon)
 kademe      | masa | NPC | para | kirli |  ms  |  p95 |  fps  | iş ms | iş p95 | çağrı |   üçgen   | commit/kare | heapMB
-A1 erken    |    1 |   2 |    0 |     0 | 10,8 | 26,5 |  59,9 |   7,2 |    8,9 |    36 |    20.139 |        0,00 | 73,1
-A2 orta     |    5 |   7 |    7 |     6 | 14,5 | 31,7 |  59,8 |  13,1 |   14,9 |    86 |    59.263 |        0,01 | 77,6
-A3 geç      |   20 |  40 |   19 |     3 | 53,8 | 69,3 |  16,2 |  50,0 |   62,5 |   179 |   284.028 |        0,41 | 132,6
+A1 erken    |    1 |   2 |    0 |     0 | 11,3 | 28,0 |  59,9 |   7,9 |   10,7 |    36 |    20.139 |        0,00 | 73,1
+A2 orta     |    5 |   7 |    7 |     6 | 16,9 | 33,5 |  57,1 |  15,3 |   18,7 |    86 |    59.263 |        0,01 | 73,1
+A3 geç      |   20 |  37 |   20 |     4 | 50,0 | 67,7 |  17,1 |  46,8 |   58,9 |   179 |   270.881 |        0,47 | 141,1
 
 §B SÜRÜKLENME — AYNI dünya, 20 sn'lik 9 dilim
 dilim |  ms  |  p95 |  fps  | iş ms | çağrı |   üçgen   | geo | doku | prog | NPC | para | kirli | heapMB | commit/kare
-    0 | 47,6 | 69,0 |  19,9 |  42,5 |   175 |   277.935 | 392 |  113 |   43 |  36 |   21 |     4 |  117,3 | 0,43
-    1 | 43,1 | 58,5 |  22,1 |  40,9 |   170 |   278.031 | 389 |  113 |   43 |  38 |   21 |     5 |  117,3 | 0,31
-    2 | 41,5 | 53,2 |  23,2 |  39,3 |   170 |   282.612 | 393 |  115 |   43 |  38 |   20 |     3 |  117,3 | 0,33
-    3 | 41,6 | 56,0 |  22,9 |  38,7 |   168 |   277.802 | 393 |  115 |   43 |  38 |   21 |     5 |  117,3 | 0,36
-    4 | 43,0 | 57,5 |  23,6 |  38,9 |   168 |   277.796 | 393 |  115 |   43 |  41 |   19 |     2 |  117,3 | 0,30
-    5 | 44,9 | 61,2 |  21,3 |  41,9 |   187 |   330.848 | 407 |  122 |   43 |  47 |   19 |     4 |  117,3 | 0,36
-    6 | 43,3 | 66,5 |  21,4 |  41,1 |   193 |   331.104 | 411 |  122 |   43 |  44 |   18 |     4 |  117,3 | 0,33
-    7 | 42,0 | 59,0 |  22,3 |  40,3 |   191 |   339.285 | 411 |  123 |   43 |  47 |   17 |     4 |  117,3 | 0,26
-    8 | 45,0 | 61,5 |  20,9 |  43,5 |   186 |   324.805 | 409 |  123 |   43 |  45 |   17 |     4 |  117,3 | 0,31
-  → kare süresi 47,6 → 45,0 ms (-5,5%)
-  → heap 117,3 → 117,3 MB (0,0%)
-  → geometri 392 → 409 · doku 113 → 123 · program 43 → 43
-  → çizim çağrısı 175 → 186 · üçgen 277.935 → 324.805
+    0 | 42,9 | 64,4 |  21,4 |  38,8 |   181 |   279.615 | 388 |  113 |   43 |  39 |   21 |     4 |  124,9 | 0,38
+    1 | 37,0 | 53,5 |  25,9 |  34,2 |   170 |   279.350 | 388 |  113 |   43 |  39 |   22 |     5 |  124,9 | 0,33
+    2 | 42,7 | 61,7 |  22,1 |  40,8 |   180 |   306.773 | 406 |  122 |   43 |  48 |   23 |     5 |  124,9 | 0,30
+    3 | 41,4 | 58,0 |  23,0 |  39,0 |   202 |   356.510 | 419 |  125 |   43 |  48 |   23 |     3 |  124,9 | 0,34
+    4 | 41,1 | 61,1 |  23,6 |  39,0 |   196 |   343.464 | 418 |  125 |   43 |  51 |   22 |     2 |  124,9 | 0,26
+    5 | 39,4 | 56,3 |  24,7 |  36,5 |   184 |   334.377 | 418 |  126 |   43 |  47 |   20 |     1 |  124,9 | 0,33
+    6 | 39,1 | 53,1 |  24,8 |  36,9 |   188 |   344.253 | 417 |  126 |   43 |  47 |   20 |     2 |  124,9 | 0,33
+    7 | 40,1 | 52,7 |  24,6 |  37,3 |   186 |   339.417 | 414 |  126 |   43 |  47 |   20 |     2 |  124,9 | 0,34
+    8 | 40,7 | 58,8 |  23,8 |  38,1 |   197 |   343.161 | 414 |  126 |   43 |  47 |   19 |     3 |  124,9 | 0,37
+  → kare süresi 42,9 → 40,7 ms (-5,1%)
+  → heap 124,9 → 124,9 MB (0,0%)
+  → geometri 388 → 414 · doku 113 → 126 · program 43 → 43
+  → çizim çağrısı 181 → 197 · üçgen 279.615 → 343.161
 
 §C NÜFUS — geç oyunda popülasyon (5 sn aralıkla örneklem)
   masa=20
-  NPC          : min 30 · ort 35,6 · max 40
-  yerdeki para : min 19 · ort 21,3 · max 24
-  kirli kap    : min 2 · ort 3,3 · max 5
+  NPC          : min 31 · ort 35,3 · max 39
+  yerdeki para : min 17 · ort 19,3 · max 22
+  kirli kap    : min 1 · ort 3,0 · max 6
 
 §D KOLLAR — geç oyun, CANLI dünya
 kol                      | gölge |  ms  |  p95 |  fps  | iş ms | çağrı | dpr  | tabana fark
-D0 taban                 | açık  | 56,5 | 79,0 |  16,9 |  50,0 |   178 | 2,00 | —
-D1 gölge KAPALI          | kapalı | 44,0 | 63,7 |  21,5 |  39,4 |   180 | 2,00 | -12,5 ms (-22,1%)
-D2 dpr tavanı 1          | açık  | 57,4 | 70,3 |  17,0 |  50,1 |   179 | 1,00 | 0,9 ms (1,6%)
-D3 gölge kapalı + dpr 1  | kapalı | 44,0 | 64,7 |  21,8 |  39,1 |   176 | 1,00 | -12,5 ms (-22,1%)
+D0 taban                 | açık  | 47,6 | 66,5 |  19,8 |  43,5 |   178 | 2,00 | —
+D1 gölge KAPALI          | kapalı | 38,2 | 51,9 |  25,9 |  32,9 |   179 | 2,00 | -9,4 ms (-19,7%)
+D2 dpr tavanı 1          | açık  | 45,2 | 63,3 |  20,8 |  41,2 |   179 | 1,00 | -2,4 ms (-5,0%)
+D3 gölge kapalı + dpr 1  | kapalı | 37,0 | 50,0 |  26,5 |  32,1 |   177 | 1,00 | -10,6 ms (-22,3%)
+
+§F KARE BÖLÜŞÜMÜ — geç oyun, NPC 38, nav ızgarası 114×90 = 10.260 hücre
+  KARENİN İŞİ (advance)          40,3 ms  %100,0
+  ├─ gl.render TOPLAM            20,4 ms  %50,6
+  │   ├─ gölge haritası           0,2 ms   %0,5
+  │   └─ ana geçiş               20,2 ms  %50,1
+  └─ useFrame (tick + dönüşüm)   19,9 ms  %49,4
+
+  tick() içinde — SİSTEM başına, kare başına ORTALAMA ms:
+    npcSystem                  9,88 ms  %24,5
+    waiterSystem               2,51 ms   %6,2
+    dishwasherSystem           0,59 ms   %1,5
+    revealSystem               0,06 ms   %0,1
+    deriveSystem               0,03 ms   %0,1
+    coinSystem                 0,03 ms   %0,1
+    interactionZoneSystem      0,03 ms   %0,1
+    playerMoveSystem           0,02 ms   %0,1
+    brewSystem                 0,02 ms   %0,0
+    spawnSystem                0,01 ms   %0,0
+    questSystem                0,01 ms   %0,0
+    (7 sistem daha: her biri < 0,005 ms/kare)
+
+  bunların İÇİNDEN çağrılan (ayrı kalem DEĞİL — yukarıdakilere dâhil):
+    findNavPath               12,71 ms  %31,5   20,5 çağrı/kare · 0,62 ms/çağrı
 
 §E KARE-HIZI TAVANI (K-A) — ERKEN oyun, AYNI koşu, aynı tohum
 kol                  |  ms  |  p95 |  fps  | rAF fps | iş ms | çağrı
-E0 tavan YOK (eski)  |  7,2 |  9,0 | 133,8 |   134,0 |   6,4 |    36
-E1 tavan 60 (K-A)    | 11,0 | 26,2 |  59,7 |    89,3 |   7,1 |    36
-E2 tavan 30          | 27,1 | 44,4 |  29,9 |    71,8 |   7,9 |    36
+E0 tavan YOK (eski)  |  5,9 |  7,8 | 160,9 |   161,1 |   5,2 |    36
+E1 tavan 60 (K-A)    | 23,1 | 25,6 |  59,9 |    93,1 |   6,0 |    36
+E2 tavan 30          | 27,3 | 43,5 |  29,9 |    73,5 |   7,0 |    36
   → "fps" ÇİZİLEN kare · "rAF fps" tarayıcının döndüğü tik · "iş ms" advance() içinde geçen süre
   → "ms" tavanlı kipte işin maliyeti DEĞİL kareler-arası ARALIK; maliyet "iş ms" sütunudur
 

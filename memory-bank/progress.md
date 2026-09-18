@@ -758,7 +758,12 @@ için **VARYANT KAPISINA TABİ**.
   (sahne + üç önizleme) takıldı; bekçi `tests/kare-tavani-t4.test.ts` (17) + duman'da 3 denetim.
   **K-E ve K-C'nin kodu YAZILMADI:** ölçüm ikisinin de tarifini çürüttü — K-E'nin tavanı karenin
   %3,1'i, K-C'de en çok tekrarlayan şekiller iskeletli (instance edilemez). Yeni karar paketi
-  kullanıcıda (rapor §F).
+  kullanıcıda (rapor §F). **Sonra kare BÖLÜŞÜMÜ ölçüldü (§G) ve kolların bir tur boyunca yanlış
+  yarıya baktığı görüldü:** çizim karenin yarısı bile değil, tek en büyük kalem `findNavPath` —
+  `navStep` her karede sıfırdan BFS yapıp yolun ilk adımı dışındakini atıyor (ızgara 10.260
+  hücre, her çağrı 41 KB ayırma + tam sıfırlama). Bölüşüm artık aracın kalıcı §F bölümü
+  (`game/olcum.ts` dikişi, DEV + opt-in). Sıradaki iş: **N-1**, çıktısı birebir aynı tampon
+  yeniden kullanımı.
 - 🔜 **T3 DENGE (varyant kapısı, iki commit):** G-65 tepsi 75₺ · G-72 garson tepsi tabanı ·
   G-73 1. salonda 2. garson · G-74 masa4 380₺ · G-75 2. salonu geciktir · **G-76 masa sırası
   genişlik-önce → D-124 yeniden okunacak** · G-66/G-67 seviye eğrisi+ödülü (**D-092 yeniden

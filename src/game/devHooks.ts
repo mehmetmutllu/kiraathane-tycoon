@@ -5,6 +5,8 @@ import { useSandbox } from './devSandbox';
 import { useGame, visiblePads, questCounterValue, LAYOUT, LAVABO, servicePlace, trayCapacity, dirtyTables, parkSpot, dailyCountersOf, tableSoftMaxLevel } from './store';
 import { THE_SERVICE, sellsTost } from './world';
 import { perf, type PerfSnapshot } from './perf';
+import { olcumAc, olcumKapat, olcumOku, type OlcumKaydi } from './olcum';
+import { getNavGrid } from './layout';
 import { collectionMult } from './goals';
 import { toastCizilir } from './rules';
 import { dailyViews } from './dailyQuests';
@@ -33,6 +35,12 @@ declare global {
     __fillDaily?: (id: string) => Record<string, unknown>;
     /** Anlık render bütçesi (FPS Tier 2): { fps, calls, tris }. PerfProbe 0.5sn'de bir günceller. */
     __perf?: () => PerfSnapshot;
+    __olcum?: {
+      ac: () => void;
+      kapat: () => void;
+      oku: () => Record<string, OlcumKaydi>;
+      izgara: () => { cols: number; rows: number; hucre: number; cell: number } | null;
+    };
     /** DEV-ONLY ham setState (canlı görsel ayar; masa/zone/seviye zorlama). Üretimde kullanılmaz. */
     __setState?: (patch: Record<string, unknown>) => Record<string, unknown>;
     /** Oyuncuyu hiçbir mekanizmayı tetiklemeyen noktaya park eder (Faz A3: duman testi elle
@@ -225,6 +233,21 @@ export function installDevHooks(): void {
   };
 
   window.__resetGame = () => useGame.getState().hardReset();
+
+  /**
+   * KARE BÖLÜŞÜMÜ ÖLÇÜMÜ (§G) — `olcum.ts` dikişinin dışa açılan ucu. Ölçüm aracı açar, koşar,
+   * okur, kapatır; kapalıyken sıcak yolda maliyeti yoktur.
+   */
+  window.__olcum = {
+    ac: () => olcumAc(),
+    kapat: () => olcumKapat(),
+    oku: () => olcumOku(),
+    izgara: () => {
+      const st = useGame.getState();
+      const g = getNavGrid(st.tables, st.areasOpen);
+      return { cols: g.cols, rows: g.rows, hucre: g.cols * g.rows, cell: g.cell };
+    },
+  };
 
   window.__addMoney = (amount: number) => {
     useGame.getState().addMoney(amount);

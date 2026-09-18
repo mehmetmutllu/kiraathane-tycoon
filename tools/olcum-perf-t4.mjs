@@ -236,6 +236,55 @@ async function dilimOlc(sayfa, sure) {
   }, sure);
 }
 
+/**
+ * §F KARE BÖLÜŞÜMÜ — karenin işi NEREDE geçiyor.
+ *
+ * NEDEN SONRADAN EKLENDİ (ve bu turun en pahalı dersi): T4'ün ilk turu karenin TOPLAMINI ölçtü
+ * (§A: geç oyunda 55,1 ms) ve kolların hepsini ÇİZİM tarafına yazdı — instancing, gölge, dpr.
+ * Bölüşüm ölçülünce çizimin karenin yarısı bile olmadığı görüldü. **Toplamı ölçmek kolun yerini
+ * göstermez.** O yüzden bölüşüm artık her koşuda, aracın kendi içinde ölçülür.
+ *
+ * `gl.render` ve gölge geçişi sayfadan sarılarak ölçülür (kaynağa dokunmadan); `tick()` ve
+ * içindeki sistemler ile `findNavPath` `game/olcum.ts` dikişinden okunur (DEV, opt-in).
+ */
+async function kareBolusumu(sayfa, sure) {
+  return sayfa.evaluate(async (ms) => {
+    const gl = window.__three.gl;
+    const golgeHarita = gl.shadowMap;
+    const cizim = [], golge = [], isler = [];
+    const eskiRender = gl.render.bind(gl);
+    const eskiGolge = golgeHarita.render.bind(golgeHarita);
+    golgeHarita.render = function (...a) { const t = performance.now(); eskiGolge(...a); golge.push(performance.now() - t); };
+    gl.render = function (...a) { const t = performance.now(); eskiRender(...a); cizim.push(performance.now() - t); };
+    window.__olcum?.ac();
+    let dur = false;
+    const olc = () => { const v = window.__perf?.().isMs; if (v > 0) isler.push(v); if (!dur) requestAnimationFrame(olc); };
+    requestAnimationFrame(olc);
+    const f0 = gl.info.render.frame;
+    await new Promise((r) => setTimeout(r, ms));
+    dur = true;
+    gl.render = eskiRender;
+    golgeHarita.render = eskiGolge;
+    const kayit = window.__olcum?.oku() ?? {};
+    window.__olcum?.kapat();
+    const kare = gl.info.render.frame - f0;
+    const orta = (a) => { const s = [...a].sort((x, y) => x - y); return s[Math.floor(s.length / 2)] ?? 0; };
+    return {
+      kare,
+      isMs: orta(isler),
+      cizimMs: orta(cizim),
+      golgeMs: orta(golge),
+      izgara: window.__olcum?.izgara() ?? null,
+      npc: window.__game().npcCount,
+      // Gölge durumu ÇIKTIYA yazılır: kusur 3 sessizce geri gelmesin.
+      golgeAcik: !!gl.shadowMap.enabled,
+      // Sistemler: TOPLAM süreyi kareye böl (ortanca değil — bir sistem bazı karelerde hiç iş
+      // yapmıyorsa ortancası 0 çıkar ve payı görünmez olur).
+      sistem: Object.entries(kayit).map(([ad, k]) => ({ ad, ms: k.ms / kare, n: k.n / kare })),
+    };
+  }, sure);
+}
+
 async function surucuAdi(sayfa) {
   return sayfa.evaluate(() => {
     const gl = window.__three?.gl?.getContext?.();
@@ -338,6 +387,22 @@ async function main() {
       rapor.D.push({ ...k, ...o, hatalar });
       await baglam.close();
     }
+    // ───────────────────────────────────────── §F KARE BÖLÜŞÜMÜ (geç oyun)
+    /*
+     * KUSUR 3 (ilk tam koşuda yakalandı): §F sorgusuz açılıyordu, yani gölge kolu SABİT DEĞİLDİ.
+     * `CihazSinifiOlcer` (D-125) ilk kareleri örnekleyip cihazı "zayıf" sayınca gölge KAPANDI ve
+     * bölüşüm "gölge haritası 0,2 ms" raporladı — oysa aynı koşunun §D'sinde gölge 12 ms'ti.
+     * Sayı yanlış değildi, KARŞILAŞTIRILAMAZDI: §F başka bir yapılandırmayı ölçüyordu ve bu
+     * ancak §D ile yan yana konunca fark edildi. Kol artık §D0 tabanıyla AYNI: gölge açık, 2048.
+     */
+    {
+      const { baglam, sayfa, hatalar } = await sayfaAc(tarayici, '?f2golge=2048&f2ad=F');
+      await dunyaKur(sayfa, padler, padler.length, 4, 240, gorevSayisi);
+      await sayfa.waitForTimeout(ISINMA_MS);
+      rapor.F = { ...(await kareBolusumu(sayfa, ORNEK_MS)), hatalar };
+      await baglam.close();
+    }
+
     // ───────────────────────────────────────── §E KARE-HIZI TAVANI (K-A) — ERKEN oyun
     // Tavan geç oyunda ısırmaz (kare zaten 60'ın altında); şarj şikâyeti ERKEN oyundan geliyordu
     // (§E: 116,7 fps). Kol bu yüzden A1 kademesinde ölçülür, aynı koşuda, aynı tohumla.
@@ -422,6 +487,38 @@ async function main() {
     );
   }
 
+  if (rapor.F) {
+    const f = rapor.F;
+    const ana = f.cizimMs - f.golgeMs;
+    const useF = f.isMs - f.cizimMs;
+    const yuz = (x) => `%${f1((x / f.isMs) * 100)}`.padStart(6);
+    yaz('');
+    yaz(`§F KARE BÖLÜŞÜMÜ — geç oyun, NPC ${f.npc}, gölge ${f.golgeAcik ? 'AÇIK' : 'KAPALI'}, nav ızgarası ${f.izgara ? `${f.izgara.cols}×${f.izgara.rows} = ${tr(f.izgara.hucre)} hücre` : '?'}`);
+    if (!f.golgeAcik) yaz('  !! GÖLGE KAPALI — bu bölüşüm §D0 tabanıyla KARŞILAŞTIRILAMAZ (kusur 3)');
+    yaz(`  KARENİN İŞİ (advance)        ${f1(f.isMs).padStart(6)} ms  %100,0`);
+    yaz(`  ├─ gl.render TOPLAM          ${f1(f.cizimMs).padStart(6)} ms ${yuz(f.cizimMs)}`);
+    yaz(`  │   ├─ gölge haritası        ${f1(f.golgeMs).padStart(6)} ms ${yuz(f.golgeMs)}`);
+    yaz(`  │   └─ ana geçiş             ${f1(ana).padStart(6)} ms ${yuz(ana)}`);
+    yaz(`  └─ useFrame (tick + dönüşüm) ${f1(useF).padStart(6)} ms ${yuz(useF)}`);
+    // `findNavPath` bir SİSTEM değil, sistemlerin İÇİNDEN çağrılır (npcSystem + waiterSystem +
+    // dishwasherSystem). Kardeşmiş gibi listelenirse toplam iki kez sayılmış görünür.
+    const sis = f.sistem.filter((x) => x.ad !== 'findNavPath').sort((a, b) => b.ms - a.ms);
+    const nav = f.sistem.find((x) => x.ad === 'findNavPath');
+    yaz('');
+    yaz('  tick() içinde — SİSTEM başına, kare başına ORTALAMA ms:');
+    for (const x of sis) {
+      if (x.ms < 0.005) continue;
+      yaz(`    ${x.ad.padEnd(24)} ${f2(x.ms).padStart(6)} ms ${yuz(x.ms)}`);
+    }
+    const atlanan = sis.filter((x) => x.ms < 0.005).length;
+    if (atlanan) yaz(`    (${atlanan} sistem daha: her biri < 0,005 ms/kare)`);
+    if (nav) {
+      yaz('');
+      yaz('  bunların İÇİNDEN çağrılan (ayrı kalem DEĞİL — yukarıdakilere dâhil):');
+      yaz(`    findNavPath              ${f2(nav.ms).padStart(6)} ms ${yuz(nav.ms)}   ${f1(nav.n)} çağrı/kare · ${f2(nav.ms / Math.max(nav.n, 1e-9))} ms/çağrı`);
+    }
+  }
+
   if (rapor.E) {
     yaz('');
     yaz('§E KARE-HIZI TAVANI (K-A) — ERKEN oyun, AYNI koşu, aynı tohum');
@@ -436,7 +533,7 @@ async function main() {
     yaz('  → "ms" tavanlı kipte işin maliyeti DEĞİL kareler-arası ARALIK; maliyet "iş ms" sütunudur');
   }
 
-  const tumHata = [...rapor.A.flatMap((a) => a.hatalar ?? []), ...(rapor.B.hatalar ?? []), ...rapor.D.flatMap((d) => d.hatalar ?? []), ...(rapor.E ?? []).flatMap((e) => e.hatalar ?? [])];
+  const tumHata = [...rapor.A.flatMap((a) => a.hatalar ?? []), ...(rapor.B.hatalar ?? []), ...rapor.D.flatMap((d) => d.hatalar ?? []), ...(rapor.E ?? []).flatMap((e) => e.hatalar ?? []), ...(rapor.F?.hatalar ?? [])];
   yaz('');
   yaz(`KONSOL HATASI: ${tumHata.length === 0 ? 'yok' : tumHata.length}`);
   for (const h of tumHata.slice(0, 10)) yaz(`  ! ${h}`);

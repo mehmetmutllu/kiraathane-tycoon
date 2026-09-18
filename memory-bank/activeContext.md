@@ -5,34 +5,33 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-18 — **K-A BİTTİ · K-E/K-C YENİDEN SORULDU**)
+## ŞU AN (2026-09-18 — **K-A BİTTİ · BÖLÜŞÜM ÖLÇÜLDÜ · DÜZELTME SIRADA**)
 
 ```
-SORU            : T4'ün seçilen üç kolu (D-136) koda nasıl iner ve kabul ölçütleri tutuyor mu?
-KARAR (önceki)  : D-136 — K-A + K-C + K-E seçilmişti
-UYGULAMA        : K-A ✅ (60 fps tavanı, DÖRT tuvalin hepsinde) · K-E ⛔ · K-C ⛔
-BEKÇİ           : tests/kare-tavani-t4.test.ts (17) → 4 mutasyon · duman +3 denetim → 2 mutasyon
-SAYILAR         : docs/olcum-perf-t4-son.{txt,json} (TAM, temiz makine) · rapor §F
-KARAR (yeni)    : D-137 — K-E ve K-C'nin TARİFİ ölçümle çürüdü, kod yazılmadı, kullanıcıya soruldu
-FİNAL           : vitest 1380/1380 · duman 48/48 · tsc temiz
+BİTEN (commit fc42a11) : K-A 60 fps tavanı — dört tuvalin hepsinde · bekçi 17 denetim / 4 mutasyon
+                         + duman 3 denetim / 2 mutasyon · erken oyun 116,7 → 59,9 fps
+KULLANICI KARARI       : K-E bırakıldı (tavanı karenin %3,1'i) · kasma kolu = "en mantıklı ve
+                         kaliteli ne ise o" (delege edildi)
+BU TURDA BULUNAN       : kollar bir tur boyunca YANLIŞ YARIYA bakmış — çizim karenin yarısı bile
+                         değil; tek en büyük kalem `findNavPath` (her karede sıfırdan BFS)
+ARAÇ                   : §F kare bölüşümü artık aracın kalıcı bölümü (`game/olcum.ts` dikişi,
+                         DEV + opt-in) · `runTick` sistem listesi VERİYE çevrildi
+SIRADAKİ               : N-1 (nav tamponunu yeniden kullan) — çıktısı BİREBİR aynı, bekçi kanıtlar
 ```
 
-**K-A — tuttu:** erken oyun **116,7 → 59,9 fps**; §E aynı koşuda kanıtladı (tavan YOK 133,8 →
-tavan 60 **59,7** → tavan 30 29,9) ve karenin **İŞİ** üç kolda da 6,4-7,9 ms, çizim çağrısı
-birebir **36** — yani tavan hiçbir şeyi ucuzlatmıyor/bozmuyor, **boşa çizilen kareyi** kesiyor.
-Gölge açık kaldı, §B'de sızıntı yok (yığın %0,0).
+**§G'nin bulduğu (rapor `docs/perf-raporu-t4.md` §G, sayılar `olcum-perf-t4-son.txt` §F):**
+`navStep` yürüyen her aktör için **her karede** tam BFS yapıyor, dönen yolun yalnız ilk
+waypoint'ini kullanıp gerisini atıyor. Izgara **114×90 = 10.260 hücre**; her çağrı 41 KB
+`Int32Array` ayırıp tamamını sıfırlıyor ⇒ kare başına ~726 KB çöp, ~180 bin hücre yazımı.
+Seçilmiş C-kollarının (§F4) hepsi çizim tarafında ve gölgeye dokunamıyor — ortak tavanları
+**ana geçiş**; `findNavPath` tek başına ondan büyük. C-kolları elenmedi, **sıraya alındı**.
 
-**NEDEN K-E/K-C DURDU (ikisi de ölçüldü, ikisi de tarifine uymadı):**
-- **K-E** "commit 0,38 → 0" idi. React `<Profiler>`: geç oyun karesinin **%3,1'i** (2,12 ms /
-  ~64 ms). Ve "0" ulaşılamaz — commit'i doğuran `notice`/`wallet`/`cleanCups`/`dishes`/`xp`
-  **gerçek arayüz içeriği**; her-kare-değişen veri zaten D-055'te çıkarılmıştı.
-- **K-C** "instancing: masa/sandalye/para/NPC" idi. Geometri **151 nesne / 88 şekil**, materyal
-  **132 / 77** (%42 boşa kopya) — ama **en çok tekrarlayan 11 şeklin 10'u iskeletli**;
-  `InstancedMesh` iskeletli mesh'i instance EDEMEZ. K-C tek iş değil, dört ayrı iş (§F4).
-
-## SIRADAKİ OTURUMUN İŞİ — kullanıcının KARAR PAKETİ cevabı
-Rapor §F4'teki dört kol (C-1 paylaşım · C-2 gölge dökenleri · C-3 BatchedMesh · C-4 iskeletli
-karakterler) + K-E'nin %3,1'i sürüp sürmeyeceği. Seçilen kol uygulanır → bekçi → final tam koşu.
+## SIRADAKİ OTURUMUN İŞİ
+1. **N-1** (`nav.ts`): kuşak damgalı kalıcı tampon → `new Int32Array(...).fill(-2)` kalkar.
+   Bekçi: eski algoritmayı oracle alıp **birebir aynı yol** döndüğünü kanıtla (rastgele
+   başlangıç/hedef çiftleri) + ≥ 2 mutasyon. Sonra `OLCUM=tam` ile §F'yi yeniden oku.
+2. Kazanç yetmezse **N-2** (yol önbelleği) — o kol birebir aynı DEĞİL, ölçüp sormak gerekir.
+3. Sonra C-kolları (§F4) ve T3 denge turu.
 
 ## AÇIK KALEMLER
 - **T3 denge turu** (varyant kapısı, iki commit): K1 tepsi 75₺ · K2 garson tepsi tabanı ·
@@ -43,7 +42,9 @@ karakterler) + K-E'nin %3,1'i sürüp sürmeyeceği. Seçilen kol uygulanır →
   G-67'nin "video ×2" kanadı buna bağlı.
 - **`npm run lint` 66 hatayla kırmızı** ama hepsi bu oturumdan ÖNCE vardı ve `tools/` altında;
   dokunulan dosyalarda yeni hata yok (dosya-başı sayımla doğrulandı).
-- **Sıra kilidi uyarısı** T1 ve T2a commit'lerinde çıktı; gerekçe D-133 ve D-134'te kayıtlı —
+- **Sıra kilidi uyarısı** bu turun ölçüm commit'inde de çıktı (`tick.ts` ölçüm dikişi denge
+  dosyası sayılıyor) — gerekçe D-138'de, diff'le doğrulandı, denge sayısı değişmedi.
+  Ayrıca T1 ve T2a commit'lerinde çıkmıştı; gerekçe D-133 ve D-134'te kayıtlı —
   diff'le doğrulandı, iki turda da **hiçbir denge sayısı değişmedi**.
 
 ---
