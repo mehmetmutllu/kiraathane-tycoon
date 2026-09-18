@@ -4523,3 +4523,72 @@ turunu ister.
   DEV ölçüm dalı; 18 sistemin **sırası birebir aynı**, hiçbir denge sayısı yok. Araç "ölçüm
   dikişi" ile "denge kodu"nu ayırt edemiyor — D-133/D-134'teki emsalin aynısı.
 - **Bu commit'te düzeltme kodu YOK** (commit #1 kuralı): araç + ölçüm dikişi + rapor §G.
+
+## D-139 — T5 nav: devralinan kol CURUDU; uc kol uygulandi, kare kazanci DOGRULANAMADI
+
+**Baglam.** D-138 `findNavPath`i karenin **%31,5**'i olarak isaretledi ve tur kartina su plani
+birakti: *"N-1 kalici tampon — her karede 41 KB `Int32Array` ayirmak pahali."* T5 once o
+varsayimi olctu (`docs/nav-raporu-t5.md`, ham `docs/olcum-nav-t5.txt`, arac
+`tools/olcum-nav-t5.ts` — korpus GERCEK gec-oyun kosusundan, 97.486 cagri).
+
+- **Varsayim curudu.** Tampon ayirma+sifirlama tabanin **%10,3**'u; kalici tampon kolu **x1,20**.
+  Para gezinmede: cagri basina **2.550,9 hucre pop** (izgaranin **%24,9**'u) + **20.399,5** komsu
+  denetimi. Plan oldugu gibi uygulansaydi vaadinin altida birini verirdi. D-138'in dersi
+  ("toplami olcmek kolun yerini gostermez") bir kademe asagida aynen tekrarlanacakti.
+- **Uygulanan: N1a + N1b + N1c, ucu de BIREBIR AYNI cikti.** Kalici tampon + kusak damgasi ·
+  hedef testi POP yerine PUSH'ta · hedef hucre maskesi onceden. **x2,37** (0,343 -> 0,145
+  ms/cagri); §F karesinde nav 12,71 -> **5,36 ms**, kare 40,3 -> **32,95 ms** (-%18).
+  Kullaniciya sorulmadi: cikti degismiyor, bu bir kod yapisi catali (ürün catali degil).
+- **N1b'nin esitligi OLCUMLE DEGIL KANITLA duruyor:** kuyruk FIFO, hucreler push sirasinda pop
+  edilir; kuyruga ILK giren hedef hucresi kuyruktan da ILK cikandir. Ayni hucre bulunur, yalniz
+  son katmanin kalani genisletilmez.
+- **N3 (A*) ELENDI.** x3,04 ama N1c'nin uzerine yalniz **1,2 ms** getiriyor ve karsiliginda ilk
+  waypoint'in **%27,5**'inde farkli rota seciyor. Yol kalitesi ayni (x1,003) — kazanilan sey
+  yolun iyiligi degil sadece sure. Kullanici bu takasi reddetti.
+- **N2 (yol onbellegi) KENDI TURUNA.** Kazanc en buyugu (BFS cagrisi %0,6'ya, kare payi 12,71 ->
+  0,03 ms) ama bu turda denenen saf politika **duvardan gecen adimi %0,1'den %1,9'a** cikariyor
+  (~19 kat): `navStep` waypoint'e DUZ CIZGIDE gider, bayat waypoint uzakta kalinca aktor masanin
+  icinden geciyor. Guvenli politika yazilabilir ama **kendi olcumunu ister**.
+- **§G korpus temsil ediyor:** ikinci bagimsiz dunyada (NPC 65) oranlar ayni (N1a 1,20/1,20 ·
+  N1b 2,10/2,10 · N1c 2,37/2,35). Kisa kosuda A* ikinci dunyada x1,96'ya dusup "kalabaliga
+  bagli" gorunmustu; **tam kosu bunu yalanladi** — kisa kosu sayisinin rapora girmeme kuralinin
+  bu turdaki karsiligi.
+
+**TARAYICI DOGRULAMASI SONUCSUZ — kare kazanci KANITLANMADI.** `OLCUM=tam T4_ETIKET=t5 node
+tools/olcum-perf-t4.mjs` kosturuldu (`docs/olcum-perf-t4-t5.txt`, konsol hatasi yok) ama T4'un
+tabaniyla karsilastirilabilir degil: ① T4'un §F'i golge KAPALI olcmustu (0,2 ms), bu kosuda
+golge ACIK ve tek basina 17,5 ms; ② makine genel olarak yavas, nav'la ilgisi olmayan kalemler
+de buyumus (§A3 "is ms" 46,8 -> 57,3 · §B dilim 0 38,8 -> 53,7). Dahasi: genel yavaslama
+x1,22-1,38 iken `findNavPath`in cagri basi maliyeti x1,66 artmis — yani kareye gore daha
+PAHALI gorunuyor, node'un x2,52'siyle ters. Aciklamasi bulunamadi.
+**Bu turun durustu: cikti esitligi ve node'daki x2,52 KANITLI, kare seviyesindeki -7,7 ms
+DEGIL.** Sonraki tura yazildi: tarayici A/B'si AYNI OTURUMDA, uretim ve oracle arka arkaya,
+golge durumu sabitlenmis halde yapilmali (§G'nin dersinin tarayici tarafindaki karsiligi).
+
+**Bekci.** `tests/nav-kol-t5.test.ts` (9 denetim) — oracle `tools/nav-oracle.ts` (T5 oncesi
+algoritmanin DONMUS kopyasi) ile birebir esitlik: ~4.200 rastgele cift, gercek + sentetik
+izgaralar, baslangic engel icinde, hedef izgara disinda, ulasilamaz hedef, izgara boyu degisimi.
+`tools/mutasyon-nav-t5.mjs` ile **7/7 gercek mutasyon yakalandi** (+1 esdeger).
+
+**Mutasyon sinavi KENDI kusurlarini da acti (D-085: kacan mutasyon kodun zayif yerini gosterir):**
+① M5 kacti -> bekcinin "izgara boyu degisince" denetimi 114x90 kullaniyordu ama ONCEKI denetimler
+tamponu zaten o boyda kurdugu icin BUYUME hic denenmiyordu; 200x160'a cikarildi.
+② M2/M3 "kalip bulunamadi" dedi -> depo CRLF, kaliplar LF; sinav "2/6 yakalandi" derken o ikisini
+hic DENEMEMISTI. ③ M5 testi dusurmuyor, ASIYOR (kuyruk tasinca sonsuz dongu) — kosu disaridan
+oldurulunce `finally` calismadi ve `nav.ts` MUTASYONLU kaldi, sonraki kosu onu "asil" sandi.
+Iki koruma eklendi: her mutasyona sert zaman asimi + baslamadan KIRLI BASLANGIC denetimi.
+
+**§0 — turun onundeki engel (ayri bir kusur, commit #1'de kapandi).** T4'un olcum dikisi
+`import.meta.env.DEV && olcumAcik()` olarak CAGIRANLARA yazilmisti; node `import.meta.env`i
+tanimadigi icin `tsx` ile kosan **her** arac TypeError ile oluyordu (`npm run sim`,
+`olcum-kuyruk`, `olcum-bardak`, `olcum-nav-oyuncu`, `tick-fingerprint` — T3 denge turunun butun
+takimi). Vitest vite altinda kostugu icin hicbir calisma-zamani testi bunu goremezdi. DEV kapisi
+`olcum.ts`e, tek yere ve node-guvenli bicimde tasindi; sicak yol hala tek boolean okur.
+Bekci `tests/olcum-dikis.test.ts` (3 denetim), **3/3 mutasyon**.
+
+**Sira kilidi.** Iki commit kuralina uyuldu (#1 arac+ham+rapor, karar bolumu BOS -> karar paketi
+-> #2 kod+bekci+rapor tamam). Commit #1'de yine **karma-commit uyarisi** cikti cunku §0 duzeltmesi
+`tick.ts`e dokunuyor; degisiklik **tek satir** ve denge icerigi yok, diff'le dogrulandi. Bu
+**dorduncu** ardisik yanlis pozitif (D-133 · D-134 · D-138) — kural yerine aracin ayirt etme
+yetenegi zayif; duzeltmesi kullaniciya birakildi, bu turda dokunulmadi.
+

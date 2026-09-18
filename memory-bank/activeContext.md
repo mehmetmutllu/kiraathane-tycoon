@@ -5,36 +5,54 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-19 — **T5 · NAV TURU · ÖLÇÜM AÇIK**)
+## ŞU AN (2026-09-19 — **T5 NAV BİTTİ · KARE KAZANCI TARAYICIDA DOĞRULANAMADI**)
 
 ```
-SORU            : findNavPath karenin %31,5'i (12,71 ms · 20,5 çağrı/kare · 0,62 ms/çağrı).
-                  Bu maliyetin NE KADARI tampon ayırma, ne kadarı BFS'in kendisi?
-                  Birebir-aynı kollar yetiyor mu, yoksa davranış değiştiren kol mu gerekiyor?
-ÖLÇÜLECEK KOLLAR: (kod YAZILMADAN, hepsi varyant)
-                  — BİREBİR AYNI ÇIKTI (varyant kapısı gerekmez, bekçi kanıtlar):
-                    N1a kalıcı tampon + kuşak damgası (41 KB Int32Array alloc+fill/çağrı kalkar,
-                        kuyruk dizisi ve nearestFreeIdx'in Uint8Array'i de kalıcıya döner)
-                    N1b hedef testi POP yerine PUSH'ta (son katman genişletilmez)
-                    N1c hedef hücre maskesi önceden (her pop'ta cellCenter + mesafe kalkar)
-                  — DAVRANIŞ DEĞİŞİR (seçilirse varyant kapısı + kullanıcı kararı):
-                    N2  yol önbelleği (navStep kare-atlamalı yeniden kullanım)
-                    N3  A* / en-iyi-öncelikli (ziyaret edilen hücre düşer, yol TIE-BREAK değişir)
+SORU            : findNavPath karenin %31,5'i. Maliyetin nesi pahalı, birebir-aynı kollar yeter mi?
+ÖLÇÜLECEK KOLLAR: N1a kalıcı tampon · N1b hedef testi PUSH'ta · N1c hedef maskesi (birebir aynı)
+                  N2 yol önbelleği · N3 A* (davranış değişir)
 SAYILAR         : docs/nav-raporu-t5.md §3 · ham docs/olcum-nav-t5.txt (TAM koşu, damgalar temiz)
-                  taban 0,343 ms/çağrı · N1a ×1,20 · N1b ×2,10 · N1c ×2,37 (üçü BİREBİR AYNI,
-                  12.000 çağrıda 0 fark) · N3 A* ×3,04 ama ilk waypoint'in %27,5'i farklı ·
-                  N2 önbellek BFS'i %0,6'ya indiriyor AMA duvardan geçen adım %1,9 (kontrol %0,1)
+                  taban (oracle) 0,456 ms/çağrı · N1a ×1,17 · N1b ×2,11 · N1c ×2,29
+                  ÜRETİM ×2,52 · N3 ×3,00 (ilk waypoint'in %27,5'i farklı)
+                  N2 BFS'i %0,6'ya indiriyor AMA duvardan geçen adım %0,1 → %1,9
                   AÇILIŞ VARSAYIMI ÇÜRÜDÜ: tampon ayırma tabanın yalnız %10,3'ü
-KARAR           : (adım 3 — karar paketi kullanıcıya sunulacak)
-UYGULAMA        : (adım 4, yalnız kararın kolu)
-BEKÇİ           : (test dosyası + kaç mutasyonla doğrulandı)
+KARAR           : D-139 — kullanıcı "N1c uygula, dur" dedi. N3 elendi, N2 kendi turuna.
+UYGULAMA        : src/game/nav.ts — kalıcı tamponlar + kuşak damgası, hedef testi push'ta,
+                  hedef maskesi önceden. Dışarıya bakan hiçbir şey değişmedi.
+BEKÇİ           : tests/nav-kol-t5.test.ts (9 denetim · oracle tools/nav-oracle.ts · ~4.200 çift)
+                  tools/mutasyon-nav-t5.mjs ile 7/7 GERÇEK mutasyon (+1 eşdeğer)
 ```
 
-**Turun dayanağı (D-138, `docs/olcum-perf-t4-son.txt` §F):** kare 40,3 ms · ana geçiş %50,1 ·
-useFrame %49,4; `tick()` içinde `npcSystem` %24,5, ve bunların İÇİNDEN `findNavPath` **%31,5**.
-Izgara 114×90 = 10.260 hücre. `navStep` her karede tam BFS yapıp dönen yolun yalnız ilk
-waypoint'ini kullanıyor. **Uyarı (D-138'in dersi):** toplamı ölçmek kolun yerini göstermez —
-bu tur da `findNavPath`in İÇİNİ bölüşür, kol seçmeden önce.
+**⚠️ TURUN AÇIK UCU — kare kazancı KANITLANMADI.** Node'da ×2,52 sağlam (aynı süreç, donmuş
+oracle, 97.486 gerçek çağrı, iki dünyada aynı oran). Ama tarayıcı koşusu
+(`docs/olcum-perf-t4-t5.txt`) bunu **göstermedi** ve T4 tabanıyla **karşılaştırılamaz**:
+T4'ün §F'i gölge KAPALI ölçmüş (0,2 ms), bu koşu gölge AÇIK (17,5 ms); ayrıca makine genel
+olarak %22-38 yavaş (nav'la ilgisiz kalemler de büyümüş). Üstelik normalize edilince
+`findNavPath` çağrı başına ×1,66 artmış, genel yavaşlama ×1,22-1,38 — yani **kareye göre daha
+pahalı** görünüyor. Açıklaması bulunamadı. Detay: `docs/nav-raporu-t5.md` §6.
+
+## SIRADAKİ OTURUMUN İŞİ
+1. **T5b — tarayıcı A/B'si AYNI OTURUMDA.** Üretim kodu ve `tools/nav-oracle.ts` arka arkaya,
+   **gölge durumu sabitlenmiş**, aynı makine yükünde. §G'nin dersi (oran karşılaştır, mutlak
+   değil) tarayıcı tarafında da uygulanmalı. Bu, T5'in kare iddiasını ya doğrular ya çürütür.
+   Çürütürse: kod yine de doğru ve çıktı-eşdeğer, ama "hızlandırdı" cümlesi geri alınır.
+2. Sonra **N2 turu** (yol önbelleği): güvenli politika (waypoint'i komşu hücreyle sınırla +
+   kuşak damgasıyla tazele) yazılıp duvardan geçen adım **0**'a inmeli; kazanç potansiyeli
+   BFS çağrılarının %99,4'ü.
+3. Sonra C-kolları (T4 §F4) ve **T3 denge turu**.
+
+## AÇIK KALEMLER
+- **T3 denge turu** (varyant kapısı, iki commit): K1 tepsi 75₺ · K2 garson tepsi tabanı ·
+  K3 1. salonda 2. garson · K4 masa4 380₺ · K5 2. salonu geciktir · **K6 masa sırası
+  (D-124 yeniden okunacak)** · K7/K8 seviye eğrisi+ödülü (**D-092 yeniden okunacak**) ·
+  K9 bulaşık istifi · K10 tezgâhın duvar payı (+G-71 takılma) · K11 yükseltme noktası kapısı.
+  **Artık koşabilir:** `npm run sim` ve tüm tsx ölçüm araçları T5'te onarıldı (D-139 §0).
+- **F3 (AdMob) kararı HÂLÂ bekliyor** — C1′ önerildi, onay gelmedi (`docs/reklam-raporu-f3.md`).
+- **`npm run lint` 66 hatayla kırmızı** ama hepsi bu turdan ÖNCE vardı ve `tools/` altında.
+- **Sıra kilidi uyarısı DÖRDÜNCÜ kez çıktı** (D-133 · D-134 · D-138 · şimdi D-139): araç
+  `tick.ts`i denge dosyası sayıyor, T5'te oraya dokunan şey **tek satırlık** node-güvenlik
+  düzeltmesiydi. Diff'le doğrulandı, hiçbir denge sayısı değişmedi. Aracın ayırt etme
+  yeteneğini düzeltmek kullanıcının kararı — bu turda dokunulmadı.
 
 ---
 

@@ -114,22 +114,40 @@ göstermez") bir kademe aşağıda aynen tekrarlanmış olurdu.
 
 ### 3.2 Kollar — aynı korpus, medyan ms/çağrı
 
+> **İki tam koşu var ve ikisi de rapora giriyor.** Ölçüm koşusu (commit #1) kolları seçmek için,
+> **final koşusu** (commit #2) uygulanan kodu doğrulamak için. Final koşuda taban artık üretim
+> kodu değil `tools/nav-oracle.ts` (T5 öncesinin donmuş kopyası) — yoksa kol kendisiyle
+> karşılaştırılmış olurdu. Mutlak ms iki koşu arasında oynar (makine yükü); **oran** oynamaz.
+
+**Final koşu** (`docs/olcum-nav-t5.txt`, damgalar temiz · 97.486 çağrı · ızgara 114×90):
+
 | kol | ms/çağrı | × taban | §F nav ms | §F kare ms | çıktı |
 |---|---|---|---|---|---|
-| **N0** taban (bugünkü) | 0,343 | 1,00 | 12,71 | 40,30 | taban |
-| **N1a** kalıcı tampon | 0,286 | 1,20 | 10,60 | 38,19 | **birebir aynı** |
-| **N1b** + hedef PUSH'ta | 0,164 | 2,10 | 6,06 | 33,65 | **birebir aynı** |
-| **N1c** + hedef maskesi | 0,145 | **2,37** | **5,36** | **32,95** | **birebir aynı** |
-| **N3** A* (oktil) | 0,113 | 3,04 | 4,18 | 31,77 | **farklı** |
-| **N1c + N2** önbellek | — | 423 | 0,03 | 27,62 | **farklı** |
+| **N0** taban (T5 öncesi, oracle) | 0,456 | 1,00 | 12,71 | 40,30 | taban |
+| **N1a** kalıcı tampon | 0,391 | 1,17 | 10,90 | 38,49 | **birebir aynı** |
+| **N1b** + hedef PUSH'ta | 0,217 | 2,11 | 6,03 | 33,62 | **birebir aynı** |
+| **N1c** + hedef maskesi | 0,199 | 2,29 | 5,54 | 33,13 | **birebir aynı** |
+| **N3** A* (oktil) | 0,152 | 3,00 | 4,24 | 31,83 | **farklı** |
+| **ÜRETİM** `findNavPath` | **0,181** | **2,52** | **5,05** | **32,64** | **birebir aynı** |
+| **N1c + N2** önbellek | — | 409 | 0,03 | 27,62 | **farklı** |
+
+**Uygulanan hâl `× 2,52`** — bu **node'da ölçülmüş** bir orandır. Üretim satırı araçta ayrı bir
+koldur ve `uretim = oracle` damgası 12.000 çağrıda **0 fark** görmüştür; bu damga T5'ten sonra da
+kalıcı bir gerileme dedektörüdür.
+
+> ⚠️ **"§F nav ms" ve "§F kare ms" sütunları PROJEKSİYONDUR, ölçüm değil** — node oranının
+> T4'ün 40,3 ms'lik karesine uygulanmasıyla bulunur. **Tarayıcı bu projeksiyonu DOĞRULAMADI**
+> (§6). Kare seviyesindeki kazanç bu turda **kanıtlanmamıştır**.
+
+*(Üretim kolunun ×2,52 ile araç içindeki N1c'nin ×2,29'unu geçmesi aynı algoritmanın farklı
+JIT davranışıdır — üretim ayrı bir modülde ve sıcak yolda çağrılıyor.)*
 
 *Kareye çeviri ORAN üzerinden:* node'un mutlak ms'i tarayıcıya taşınmaz (başka makine, başka
 JIT, başka NPC sayısı). Taşınabilir olan kolun tabana göre oranıdır: `12,71 ms × (kol / N0)`.
-"Kare ms" bu turda ölçülmedi, §F'nin 40,3 ms'inden doğrusal çıkarımdır; **tarayıcı sayısı final
-tam koşusunda doğrulanacak.**
+"Kare ms" bu turda node'da ölçülmedi, §F'nin 40,3 ms'inden doğrusal çıkarımdır.
 
-N1a→N1b→N1c birikimlidir (N1c = üçü birden). Üçü de birebir aynı çıktıyı verdi:
-**12.000 çağrıda 0 fark**, ve N1b'nin eşitliği §2'de kanıtla da duruyor.
+**Ölçüm koşusu** (commit #1, kolların seçildiği koşu) aynı sıralamayı vermişti:
+N1a ×1,20 · N1b ×2,10 · N1c ×2,37 · N3 ×3,04, taban 0,343 ms/çağrı.
 
 ### 3.3 Korpus temsil ediyor mu (§G)
 
@@ -180,12 +198,100 @@ bu turda kod yazılmadı, sayı da uydurulmadı.
 
 ---
 
-## §4 KARAR
+## §4 KARAR — D-139
 
-*(BOŞ — D-084: karar paketi kullanıcıya sunulmadan doldurulmaz.)*
+Karar paketi kullanıcıya §3'ün tablosuyla sunuldu. Seçilen: **"N1c uygula, dur."**
+
+| kol | karar | gerekçe |
+|---|---|---|
+| **N1a + N1b + N1c** | **UYGULANDI** | Çıktı birebir aynı → varyant kapısı gerekmiyor, kullanıcıya da sorulmadı: bu bir kod yapısı çatalı, ürün çatalı değil (*"teknik çatalda seçim menüsü isteme"*). Node'da ×2,52; **kare seviyesindeki kazanç tarayıcıda doğrulanamadı (§6)**. |
+| **N3** A* | **ELENDİ** | N1c'nin üstüne yalnız 1,2 ms, karşılığında ilk waypoint'in **%27,5**'inde farklı rota. Yol kalitesi aynı (×1,003) — kazanılan şey yolun iyiliği değil sadece süre. |
+| **N2** yol önbelleği | **KENDİ TURUNA** | Kazanç en büyüğü (−12,7 ms) ama bu turda denenen saf politika duvardan geçen adımı **%0,1 → %1,9**'a çıkarıyor. Güvenli politika yazılabilir, **kendi ölçümünü ister**. |
+
+**Turun asıl çıktısı bir sayı değil, bir düzeltme:** `activeContext`in devrettiği N-1 planı
+("tampon ayırmak pahalı") ölçülünce çürüdü. Uygulansaydı vaadinin altıda birini verecekti.
+D-138 *"toplamı ölçmek kolun yerini göstermez"* demişti; bu tur aynı hatanın bir kademe
+aşağıda tekrarlanmasını, yine ölçerek engelledi.
 
 ---
 
 ## §5 UYGULAMA
 
-*(BOŞ)*
+**Kod** — `src/game/nav.ts`:
+- Modül düzeyinde **kalıcı tamponlar** (`tPrev` · `tDamga` · `tKuyruk` · `tSnap` · `tHedef`),
+  `tamponHazirla()` ile ızgara büyüyünce büyür. Kuşak sayacı Int32 tavanına yaklaşırsa damgalar
+  sıfırlanır (taşma yanlış "ziyaret edildi" derdi).
+- `nearestFreeIdx` kendi kuşak damgasına döndü — çağrı başına `new Uint8Array` kalktı.
+- Hedef testi **push** tarafına taşındı (`dis:` etiketli çift döngü).
+- Hedef hücre maskesi BFS'ten önce, hedefin çevresindeki `ceil(reach/cell)+1` yarıçaplı kutuda
+  kuruluyor; hiçbir hücre menzilde değilse **erken `null`** (eski kod ızgarayı boşuna gezerdi).
+- `findNavPath`in dışı hiç değişmedi: imza, dönüş tipi, ölçüm dikişi, korpus kancası yerinde.
+
+**Bekçi** — `tests/nav-kol-t5.test.ts` (9 denetim), oracle `tools/nav-oracle.ts`:
+gerçek dünya ızgaralarında 1.500 rastgele çift · gerçek hedeflere gerçek başlangıçlardan ·
+başlangıç engelin içinde · hedef ızgara dışında / menzil ~0 · ulaşılamaz hedef · sentetik
+ızgaralarda 2.400 çift · ızgara boyu değişimi · arka arkaya aynı çağrı (tampon sızdırmıyor) ·
+`navSolids` ızgarası. **~4.200 çift, 0 fark.**
+
+**Mutasyon sınavı** — `tools/mutasyon-nav-t5.mjs`: **7/7 gerçek mutasyon yakalandı** (+1 eşdeğer).
+Sınav üç kez KENDİ kusurunu açtı ve üçü de kapatıldı:
+
+| bulgu | ne çıktı | kapanış |
+|---|---|---|
+| M5 kaçtı | bekçinin "ızgara boyu değişince" denetimi 114×90 kullanıyordu, ama önceki denetimler tamponu zaten o boyda kurduğu için **büyüme hiç denenmiyordu** | denetim 200×160'a çıkarıldı, sıradan bağımsız |
+| M2/M3 "kalıp bulunamadı" | depo CRLF, kalıplar LF → çok satırlı hiçbir kalıp tutmuyordu; sınav *"2/6 yakalandı"* derken o ikisini **hiç denememişti** | dosya LF'e normalize edilip aranıyor, bulunamayan kalıp çıkış kodunu düşürüyor |
+| M5 sınavı **astı** | mutasyon testi düşürmüyor, sonsuz döngüye sokuyor; koşu dışarıdan öldürülünce `finally` çalışmadı ve `nav.ts` **mutasyonlu kaldı**, sonraki koşu onu "asıl" sandı | her mutasyona sert zaman aşımı (asmak da bir yakalamadır) + başlamadan **kirli başlangıç** denetimi |
+
+**Final tam koşu:** `OLCUM=tam npx tsx tools/olcum-nav-t5.ts` — damgalar temiz, üretim kolu
+oracle ile birebir aynı. Test takımı **1392/1392**.
+
+**Tarayıcı doğrulaması:** `OLCUM=tam T4_ETIKET=t5 node tools/olcum-perf-t4.mjs` — §F kare
+bölüşümü T5 sonrası yeniden okundu; sonuç §6'da.
+
+---
+
+## §6 TARAYICI DOĞRULAMASI — **SONUÇSUZ, kare kazancı KANITLANMADI**
+
+`OLCUM=tam T4_ETIKET=t5 node tools/olcum-perf-t4.mjs` koşturuldu
+(`docs/olcum-perf-t4-t5.txt`). Konsol hatası yok, koşu tamamlandı — **ama T4'ün tabanıyla
+karşılaştırılabilir değil ve karşılaştırılabilir olan tek normalizasyon beklenenin TERSİNİ
+gösteriyor.**
+
+### 6.1 Ham sayılar
+
+| | T4 tabanı (18 Eyl) | T5 (19 Eyl) |
+|---|---|---|
+| §F karenin işi | 40,3 ms | **64,9 ms** |
+| §F gölge haritası | **0,2 ms** (gölge KAPALI) | **17,5 ms** (gölge AÇIK) |
+| §F `findNavPath` | 12,71 ms · 20,5 çağrı/kare · **0,62 ms/çağrı** | 18,34 ms · 17,9 çağrı/kare · **1,03 ms/çağrı** |
+| §A3 geç "iş ms" | 46,8 | **57,3** |
+| §B dilim 0 "iş ms" | 38,8 | **53,7** |
+
+### 6.2 Neden karşılaştırılamaz
+
+1. **Gölge durumu farklı.** T4'ün §F'i gölge KAPALI ölçmüş (0,2 ms — D-138'in "KUSUR 3"ü:
+   cihaz sınıflandırıcı gölgeyi kapatmıştı). Bu koşuda gölge AÇIK ve tek başına 17,5 ms.
+   40,3 ile 64,9'u yan yana koymak iki farklı sahneyi karşılaştırmaktır.
+2. **Makine bu koşuda genel olarak yavaş.** Nav'la hiç ilgisi olmayan kalemler de büyümüş:
+   §A3 "iş ms" 46,8 → 57,3 (**+%22**), §B dilim 0 38,8 → 53,7 (**+%38**). Yani tabanın kendisi
+   kaymış.
+
+### 6.3 Yine de rahatsız edici olan
+
+Genel yavaşlamayı normalize etsek bile hesap tutmuyor: toplam CPU işi ×1,22–1,38 artmışken
+`findNavPath`in çağrı başı maliyeti **×1,66** artmış. Yani nav, kareye göre **daha ucuz değil,
+daha pahalı** görünüyor — node'un ×2,52'siyle taban tabana zıt. Bunun açıklaması bu turda
+bulunamadı. Olası hatlar (hiçbiri ölçülmedi): gölge açıkken GPU geri-basıncının kare içindeki
+CPU zamanlamalarını şişirmesi · tarayıcı JIT'inin kalıcı tamponlu döngüyü node'dan farklı
+derlemesi · iki koşu arasında değişen NPC/yol dağılımı.
+
+### 6.4 Bu turun dürüst durumu
+
+- **Kanıtlanan:** kod **çıktı olarak birebir aynı** (oracle bekçisi ~4.200 çift, 7/7 mutasyon).
+- **Kanıtlanan:** node'da, aynı süreçte, donmuş oracle'a karşı, 97.486 gerçek çağrıda **×2,52**
+  ve bu oran iki ayrı dünyada sabit (§G).
+- **KANITLANMAYAN:** kare seviyesinde −7,7 ms. Tarayıcı bunu göstermedi.
+
+**Sonraki tura yazıldı:** tarayıcı A/B'si **aynı oturumda** yapılmalı — üretim kodu ve oracle
+arka arkaya, gölge durumu sabitlenmiş hâlde. T4'ün başka bir günkü sayısına karşı ölçmek
+(§G'nin dersinin tarayıcı tarafındaki karşılığı) geçerli bir doğrulama değil.

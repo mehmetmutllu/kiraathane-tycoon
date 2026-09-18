@@ -715,6 +715,21 @@ Sanat kalemi değil; Faz S'ten ayrı tutuldu ki asset işi bunların arkasında 
   onayladı) · Görevler 1,60× / Hedefler 1,47× 1,00×'e inmedi (kart yüksekliği, sanat turu) ·
   G-55 kalemi karşılanmadı, bugünkü sınıf adlarıyla yeniden yazılmalı.
 
+## Faz T — PERFORMANS TURLARI (devam) 🔧
+- ✅ **T5 — nav (`findNavPath`)** · **D-139:** devralınan N-1 planı ("41 KB tampon ayırmak pahalı")
+  ölçülüp **çürütüldü** — ayırma tabanın %10,3'ü, kolu ×1,20. Maliyet gezinmede: çağrı başına
+  2.550,9 hücre pop (ızgaranın %24,9'u) + 20.399,5 komşu denetimi. Uygulanan üç kol (kalıcı tampon
+  + kuşak damgası · hedef testi POP→PUSH · hedef maskesi) **çıktıyı değiştirmiyor**: node'da
+  **×2,52**, oracle'a karşı 12.000 çağrıda 0 fark, iki dünyada oran sabit (§G). A* elendi
+  (1,2 ms için ilk waypoint'in %27,5'i farklı); yol önbelleği kendi turuna kaldı (BFS'i %0,6'ya
+  indiriyor ama duvardan geçen adımı %0,1→%1,9 yapıyor). Bekçi `nav-kol-t5` (9 den. · ~4.200 çift)
+  **7/7 mutasyon**; sınav üç kez kendi kusurunu açtı (sıra bağımlılığı · CRLF · askıda kalma).
+  **AÇIK: kare seviyesindeki kazanç TARAYICIDA DOĞRULANAMADI** — T4 tabanı gölge KAPALI ölçülmüş,
+  bu koşu gölge AÇIK ve makine genel olarak %22-38 yavaş; üstelik normalize edilince nav daha
+  pahalı görünüyor. Tarayıcı A/B'si **aynı oturumda** yapılmalı. `docs/nav-raporu-t5.md`.
+  Yolda: T4'ün ölçüm dikişi node tarafını kırmıştı (`import.meta.env` node'da yok) — `npm run sim`
+  dâhil tüm tsx araçları ölüydü; kapı `olcum.ts`e taşındı, bekçi `olcum-dikis` (3 den. · 3 mut.).
+
 ## Kullanıcı geri bildirimi 2026-09-16 — 16 yeni kalem (G-35…G-50)
 Kullanıcı F2 turunun içinde oyunu açtı ve on iki başlık verdi; *"sonraki chatlerde bunları
 yaparsın"* dedi → bu turda hiçbiri uygulanmadı. Tam liste + kullanıcının kendi cümleleri:

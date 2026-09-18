@@ -39,6 +39,9 @@ import {
   findNavPath, navKorpusAc, navKorpusOku, navKorpusKapat,
   type NavGrid, type NavCagri,
 } from '../src/game/nav';
+// TABAN, uretim kodu DEGIL donmus oracle'dir: T5'in kollari uygulandiktan sonra `findNavPath`
+// zaten N1c'dir; taban olarak onu kullanmak kolu kendisiyle karsilastirmak olurdu.
+import { navPathOracle } from './nav-oracle';
 
 const f1 = (x: number) => x.toFixed(1);
 const f2 = (x: number) => x.toFixed(2);
@@ -677,7 +680,8 @@ console.log('');
 
 /* ── §B TABAN BÖLÜŞÜMÜ ─────────────────────────────────────────────────────── */
 const esitlikOrnek = seyrelt(k.cagrilar, ESITLIK_ORNEK);
-const uretimYollar = esitlikOrnek.map((c) => findNavPath(c.grid, c.start, c.tx, c.tz, c.reach));
+// Esitlik REFERANSI oracle'dir (T5 oncesi davranis). Uretim kodu da bir KOL gibi olculur.
+const uretimYollar = esitlikOrnek.map((c) => navPathOracle(c.grid, c.start, c.tx, c.tz, c.reach));
 
 sayacSifirla();
 const n0Yollar = esitlikOrnek.map((c) => n0Sayacli(c.grid, c.start, c.tx, c.tz, c.reach));
@@ -685,7 +689,7 @@ const n0Sayaclari: Sayac = { ...sayac };
 
 let kopyaFark = 0;
 for (let i = 0; i < uretimYollar.length; i++) if (!yolEsit(uretimYollar[i], n0Yollar[i])) kopyaFark++;
-damga('sayacli kopya (N0)', kopyaFark === 0, `${kopyaFark}/${esitlikOrnek.length} cagri uretim koduyla farkli`);
+damga('sayacli kopya (N0)', kopyaFark === 0, `${kopyaFark}/${esitlikOrnek.length} cagri oracle'dan farkli`);
 
 const nOrnek = esitlikOrnek.length;
 const bosYol = uretimYollar.filter((y) => y === null).length;
@@ -722,7 +726,7 @@ const tamponMs = (() => {
 /* ── §C KOLLAR ─────────────────────────────────────────────────────────────── */
 const zamanOrnek = seyrelt(k.cagrilar, ORNEK);
 // Isınma: JIT kollari optimize etsin, ilk kol cezali cikmasin.
-for (const kol of [findNavPath as Kol, n1a, n1b, n1c, n3]) {
+for (const kol of [navPathOracle as Kol, findNavPath as Kol, n1a, n1b, n1c, n3]) {
   for (const c of seyrelt(zamanOrnek, Math.min(200, zamanOrnek.length))) kol(c.grid, c.start, c.tx, c.tz, c.reach);
 }
 
@@ -737,11 +741,12 @@ interface KolSonuc {
 }
 
 const KOLLAR: { ad: string; kol: Kol; not: string }[] = [
-  { ad: 'N0 taban (bugunku)', kol: findNavPath as Kol, not: 'her cagrida 41 KB Int32Array + tam BFS' },
+  { ad: 'N0 taban (T5 oncesi)', kol: navPathOracle as Kol, not: 'oracle — her cagrida 41 KB Int32Array + tam BFS' },
   { ad: 'N1a kalici tampon', kol: n1a, not: 'kusak damgasi — ayirma/sifirlama yok' },
   { ad: 'N1b + hedef PUSH ta', kol: n1b, not: 'N1a + son katman genisletilmez' },
   { ad: 'N1c + hedef maskesi', kol: n1c, not: 'N1b + hucreMerkez sicak dongude yok' },
   { ad: 'N3 A* (oktil)', kol: n3, not: 'DAVRANIS DEGISIR — yol tie-break farkli' },
+  { ad: 'URETIM findNavPath', kol: findNavPath as Kol, not: 'src/game/nav.ts — T5 sonrasi N1c olmali' },
 ];
 
 const sonuclar: KolSonuc[] = [];
@@ -782,6 +787,12 @@ for (const s of sonuclar.slice(1)) {
     s.ad.startsWith('N3') ? true : s.yolFark === 0,
     `${s.yolFark} cagri farkli — birebir-ayni iddiasi cokuyor`,
   );
+}
+// URETIM kolu oracle ile birebir AYNI olmak ZORUNDA: bu damga T5'ten sonra da kalici
+// bir gerileme dedektorudur — `findNavPath` davranisi degisirse ilk burasi kirilir.
+{
+  const u = sonuclar.find((x) => x.ad.startsWith('URETIM'))!;
+  damga('uretim = oracle', u.yolFark === 0, `${u.yolFark}/${esitlikOrnek.length} cagri oracle'dan farkli`);
 }
 
 /* ── §D SAPMA (birebir olmayan kollar) ─────────────────────────────────────── */

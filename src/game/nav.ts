@@ -79,18 +79,82 @@ const NEIGHBORS: ReadonlyArray<readonly [number, number]> = [
   [1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1],
 ];
 
+// ---------------------------------------------------------------------------
+// KALICI TAMPONLAR (T5 · D-139) — ayırma sıcak yoldan çıktı
+// ---------------------------------------------------------------------------
+/**
+ * `findNavPath` geç oyunda karenin **%31,5'iydi** (T4 §F). T5 maliyeti bölüştürdü
+ * (`docs/nav-raporu-t5.md`): tampon ayırma+sıfırlama tabanın yalnız **%10,3'ü**, asıl para
+ * gezinmede — çağrı başına **2.551 hücre pop** (ızgaranın %24,9'u) ve **20.400 komşu denetimi**.
+ * Uygulanan üç kol da ÇIKTIYI DEĞİŞTİRMEZ (bekçi: `tests/nav-kol-t5.test.ts`, oracle
+ * `tools/nav-oracle.ts`):
+ *
+ *   N1a  KALICI TAMPON + KUŞAK DAMGASI — `new Int32Array(10.260).fill(-2)` (41 KB/çağrı,
+ *        1,06 MB/kare) kalktı. "Ziyaret edildi mi" artık `tDamga[i] === kusak`.
+ *   N1b  HEDEF TESTİ POP YERİNE PUSH'TA — kuyruk FIFO olduğu için kuyruğa İLK giren hedef
+ *        hücresi kuyruktan da İLK çıkandır; aynı hücre bulunur, son katmanın kalanı
+ *        genişletilmez. `start` hiç push edilmediğinden eski kodun `idx !== startIdx` ayrımı
+ *        da kendiliğinden korunur.
+ *   N1c  HEDEF HÜCRE MASKESİ ÖNCEDEN — `reach` küçük (0,40–1,68) ve hücre 0,30; hedefe `reach`
+ *        mesafede yalnız birkaç düzine hücre var. Bunlar önden işaretlenir, sıcak döngüde
+ *        `cellCenter` + mesafe hesabı yerine tek dizi okuması kalır.
+ *
+ * Ölçülen: **×2,37** (0,343 → 0,145 ms/çağrı), §F karesinde 12,71 → 5,36 ms.
+ * A* kolu (×3,04) ELENDİ: 1,2 ms için ilk waypoint'in %27,5'inde farklı rota seçiyordu ve
+ * yol kalitesi aynıydı (×1,003). Yol önbelleği (×423) KENDİ TURUNA kaldı: bu turda denenen
+ * saf politika duvardan geçen adımı %0,1'den %1,9'a çıkarıyordu.
+ *
+ * TEK İŞ PARÇACIĞI VARSAYIMI: `findNavPath` yeniden-girişli değildir (özyineleme/async yok),
+ * tamponlar çağrılar arasında paylaşılır. Snap araması ana BFS'ten ÖNCE biter, ikisi aynı
+ * kuyruğu kullanabilir.
+ */
+let tPrev = new Int32Array(0);
+let tDamga = new Int32Array(0);
+let tKuyruk = new Int32Array(0);
+let tSnap = new Int32Array(0);
+let tHedef = new Int32Array(0);
+let kusak = 0;
+let snapKusak = 0;
+let hedefKusak = 0;
+
+/** Kuşak sayacı Int32'nin tepesine yaklaşırsa damgalar sıfırlanır (taşma yanlış "ziyaret edildi" der). */
+const KUSAK_TAVAN = 0x7ffffffe;
+
+function tamponHazirla(n: number): void {
+  if (tPrev.length < n) {
+    tPrev = new Int32Array(n);
+    tDamga = new Int32Array(n);
+    tKuyruk = new Int32Array(n);
+    tSnap = new Int32Array(n);
+    tHedef = new Int32Array(n);
+    kusak = 0;
+    snapKusak = 0;
+    hedefKusak = 0;
+    return;
+  }
+  if (kusak >= KUSAK_TAVAN || snapKusak >= KUSAK_TAVAN || hedefKusak >= KUSAK_TAVAN) {
+    tDamga.fill(0);
+    tSnap.fill(0);
+    tHedef.fill(0);
+    kusak = 0;
+    snapKusak = 0;
+    hedefKusak = 0;
+  }
+}
+
 /** Başlangıç hücresi engelin İÇİNDEyse (aktör footprint'e yapışık/gömülü) en yakın AÇIK hücreye snap
  *  et (engel içinden de geçerek genişler) → aktör buradan rota izleyip engelin dışına çıkar. */
 function nearestFreeIdx(grid: NavGrid, sc: number, sr: number): number {
   const { cols, rows, blocked } = grid;
   const start = sr * cols + sc;
   if (!blocked[start]) return start;
-  const seen = new Uint8Array(cols * rows);
-  seen[start] = 1;
-  const q: number[] = [start];
+  snapKusak++;
+  tSnap[start] = snapKusak;
+  tKuyruk[0] = start;
+  let son = 1;
   let h = 0;
-  while (h < q.length) {
-    const idx = q[h++];
+  while (h < son) {
+    const idx = tKuyruk[h++];
     if (!blocked[idx]) return idx;
     const r = Math.floor(idx / cols);
     const c = idx - r * cols;
@@ -99,9 +163,9 @@ function nearestFreeIdx(grid: NavGrid, sc: number, sr: number): number {
       const nr = r + dr;
       if (nc < 0 || nc >= cols || nr < 0 || nr >= rows) continue;
       const ni = nr * cols + nc;
-      if (seen[ni]) continue;
-      seen[ni] = 1;
-      q.push(ni);
+      if (tSnap[ni] === snapKusak) continue;
+      tSnap[ni] = snapKusak;
+      tKuyruk[son++] = ni;
     }
   }
   return start;
@@ -119,7 +183,8 @@ export function findNavPath(
   tz: number,
   reach: number,
 ): [number, number][] | null {
-  // ÖLÇÜM DİKİŞİ (§G): bu fonksiyon geç oyunda karenin %32,4'üydü. Kapalıyken bedel tek boolean.
+  // ÖLÇÜM DİKİŞİ: bu fonksiyon T4 §F'de karenin %31,5'iydi; T5 sonrası %13,3 (oran çevirisi).
+  // Kapalıyken bedel tek boolean.
   const olc = olcumAcik(); // DEV kapısı `olcum.ts`te (node'da `import.meta.env` yok)
   const t0 = olc ? performance.now() : 0;
   if (korpus) korpusaYaz(grid, start, tx, tz, reach);
@@ -137,12 +202,15 @@ export function findNavPath(
  * ve o anki oyun durumu belirler. Bu kanca GERÇEK bir koşunun çağrılarını olduğu gibi
  * kaydeder; kollar aynı korpusta yarışır.
  *
- * `start` DİZİ KİMLİĞİ aktörün kimliğidir — `navStep` aktörün canlı `pos` dizisini geçirir.
- * Yol önbelleği kolu (N2) ancak çağrılar aktöre göre gruplanabilirse ölçülebilir; değerler
- * kopyalanır çünkü `pos` yerinde değişir. Kapalıyken bedel tek null okumasıdır.
+ * AKTÖR KİMLİĞİ BURADAN OKUNMAZ. İlk sürüm `start` dizisinin referansını aktör kimliği saydı;
+ * `tick.ts` her karede `pos: [...n.pos]` ile diziyi klonladığı için her çağrı ayrı bir "aktör"
+ * göründü ve yol önbelleği ölçümü sahte bir "%100 BFS" verdi. `aktor` alanı bu yüzden yalnız
+ * KABA bir ipucudur; izler ölçüm aracında çağrılardan yeniden kurulur (aynı hedefe giden,
+ * başlangıcı bir kare adımından yakın ardışık çağrı = aynı aktör).
+ * Değerler kopyalanır çünkü `pos` yerinde değişir. Kapalıyken bedel tek null okumasıdır.
  */
 export interface NavCagri {
-  /** Aktör kimliği — `start` dizisinin referans kimliğinden türer. */
+  /** `start` referansından türeyen KABA kimlik — güvenilir iz için yukarıdaki nota bak. */
   aktor: number;
   grid: NavGrid;
   start: [number, number, number];
@@ -192,38 +260,60 @@ function navPathAra(
   reach: number,
 ): [number, number][] | null {
   const { cols, rows, blocked } = grid;
+  tamponHazirla(cols * rows);
+
+  /* HEDEF MASKESİ (N1c) — merkezi (tx,tz)'ye `reach` mesafedeki hücreler.
+   * Kutu neden yeterli: hücre merkezi `reach` içindeyse sütun farkı en çok `floor(reach/cell + 0,5)`,
+   * ve bu her zaman `ceil(reach/cell)`i geçmez. Buradaki `+1` fazladan emniyet payıdır — mutasyon
+   * sınavı bunu doğruladı, `+1`siz de aynı sonucu veriyor (`tools/mutasyon-nav-t5.mjs` M4).
+   * Hedef ızgara dışındaysa kelepçe kutuyu kaydırır, ama o durumda geçerli hedef hücreleri de
+   * kelepçe yönünde kalır (dışarı taşan tarafta hiç hücre yoktur). */
+  const rad = Math.ceil(reach / grid.cell) + 1;
+  const [tc, tr] = clampCell(grid, tx, tz);
+  const reach2 = reach * reach;
+  hedefKusak++;
+  let hedefVar = false;
+  for (let r = Math.max(0, tr - rad); r <= Math.min(rows - 1, tr + rad); r++) {
+    const dz = grid.minZ + (r + 0.5) * grid.cell - tz;
+    const dz2 = dz * dz;
+    if (dz2 > reach2) continue;
+    for (let c = Math.max(0, tc - rad); c <= Math.min(cols - 1, tc + rad); c++) {
+      const dx = grid.minX + (c + 0.5) * grid.cell - tx;
+      if (dx * dx + dz2 <= reach2) {
+        tHedef[r * cols + c] = hedefKusak;
+        hedefVar = true;
+      }
+    }
+  }
+  // Hiçbir hücre menzilde değilse eski kod da ızgarayı boşuna gezip null dönerdi.
+  if (!hedefVar) return null;
+
   const [sc, sr] = clampCell(grid, start[0], start[2]);
   const startIdx = nearestFreeIdx(grid, sc, sr); // bloklu başlangıcı en yakın açığa snap et
-  const reach2 = reach * reach;
-  const isGoal = (c: number, r: number): boolean => {
-    const [cx, cz] = cellCenter(grid, c, r);
-    const dx = cx - tx;
-    const dz = cz - tz;
-    return dx * dx + dz * dz <= reach2;
-  };
-  const prev = new Int32Array(cols * rows).fill(-2); // -2 = ziyaret edilmedi, -1 = başlangıç
-  prev[startIdx] = -1;
-  const queue: number[] = [startIdx];
+  kusak++;
+  tDamga[startIdx] = kusak;
+  tPrev[startIdx] = -1;
+  tKuyruk[0] = startIdx;
+  let son = 1;
   let head = 0;
   let goalIdx = -1;
-  while (head < queue.length) {
-    const idx = queue[head++];
+  // Hedef testi PUSH'ta (N1b): kuyruk FIFO → ilk push edilen hedef, ilk pop edilecek hedeftir.
+  dis: while (head < son) {
+    const idx = tKuyruk[head++];
     const cr = Math.floor(idx / cols);
     const cc = idx - cr * cols;
-    if (idx !== startIdx && isGoal(cc, cr)) {
-      goalIdx = idx;
-      break;
-    }
     for (const [dc, dr] of NEIGHBORS) {
       const nc = cc + dc;
       const nr = cr + dr;
       if (nc < 0 || nc >= cols || nr < 0 || nr >= rows) continue;
       const nidx = nr * cols + nc;
-      if (prev[nidx] !== -2 || blocked[nidx]) continue;
+      if (tDamga[nidx] === kusak || blocked[nidx]) continue;
       // Köşe kesmeyi engelle: çapraz adımda iki ortogonal komşu da açık olmalı.
       if (dc !== 0 && dr !== 0 && (blocked[cr * cols + nc] || blocked[nr * cols + cc])) continue;
-      prev[nidx] = idx;
-      queue.push(nidx);
+      tDamga[nidx] = kusak;
+      tPrev[nidx] = idx;
+      tKuyruk[son++] = nidx;
+      if (tHedef[nidx] === hedefKusak) { goalIdx = nidx; break dis; }
     }
   }
   if (goalIdx < 0) return null;
@@ -233,7 +323,7 @@ function navPathAra(
     const cr = Math.floor(cur / cols);
     const cc = cur - cr * cols;
     path.push(cellCenter(grid, cc, cr));
-    cur = prev[cur];
+    cur = tPrev[cur];
   }
   path.reverse();
   return path;
