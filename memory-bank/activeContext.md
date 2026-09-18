@@ -78,8 +78,17 @@ Araç: `tools/olcum-perf-t4.mjs` · rapor: `docs/perf-raporu-t4.md` · ham: `doc
 ④ **ŞARJIN KAYNAĞI KASMA DEĞİL:** `frameloop` verilmemiş, fps tavanı YOK — erken oyunda
    **116,7 fps**. Oyuncu 60 üstünü göremez; 120 Hz telefonda bu doğrudan pil.
 
-**KOLLAR (ölçüldü, SEÇİLMEDİ):** K-A fps tavanı · K-B gölge cihaz sınıfına göre · K-C instancing
-(çizim çağrısı) · K-D müşteri tavanı → **DENGE, T3'e bağlı** · K-E geç oyunda React commit 0,38→0.
+**KARAR GELDİ (D-136) — KOD HÂLÂ YAZILMADI.** Şarj → **K-A 60 fps tavanı**. Kasma → kullanıcı
+*"kalite bozmadan ve düşürmeden en mantıklı hamleler"* dedi; bu cümle kolları kendisi eledi:
+**K-C** (instancing — aynı piksel/gölge, yalnız daha az çağrı) ve **K-E** (React commit 0,38→0)
+SEÇİLDİ · **K-B** (gölgeyi kapat) kaliteyi düşürdüğü + D-073 kullanıcının kendi kararı olduğu için
+ELENDİ · **K-D** (müşteri tavanı) geliri düşürür → T3.
+
+**SIRADAKİ OTURUMUN İŞİ — T4 commit #2 (sıra: K-A → K-E → K-C)**
+Kabul ölçütü SAYI LİSTESİ (`docs/perf-raporu-t4.md` §Karar): erken fps ≤ 62 · geç çizim çağrısı
+171'den düşer · commit/kare ≤ 0,05 · **gölge AÇIK kalır** · §B'de eğilim yok.
+Final koşu: `OLCUM=tam node tools/olcum-perf-t4.mjs`.
+Ondan sonra **T3 denge turu** (K1…K11 + G-70'in istif kolu + G-71/G-68 yerleşimi).
 
 **AÇIK KALAN ÖNCEKİ TUR:** F3 (AdMob) tur 1 ölçümü bitti, **karar hâlâ bekliyor** (C1′ önerildi,
 onay gelmedi) — `docs/reklam-raporu-f3.md`, progress.md Faz F. G-67'nin video ×2 kanadı buna bağlı.

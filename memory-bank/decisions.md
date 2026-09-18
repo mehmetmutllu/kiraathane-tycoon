@@ -4420,3 +4420,30 @@ turunu ister.
   ① öğretme kanalı sıradan çıkarıldı → kırmızı · ② panel sıralaması kaldırıldı → kırmızı.
   **Görsel kanıt:** `docs/gorsel/ss/t2b-{1..4}-*.png` (`node tools/shot-t2b.mjs`).
 - **Final:** vitest **1361/1361** · duman **45/45** · tsc temiz.
+
+## D-136 — T4 performans: ölçüm bitti, kollar seçildi, KOD YAZILMADI
+
+- **Şikâyet İKİYE ayrıldı ve ayrı çözülüyor:** ① şarj ② kasma. 8 ms'lik bir kare de saniyede
+  120 kez çizilirse pil yakar — ikisi aynı kol değil.
+- **En önemli bulgu ELEME:** `§B` üç dakikalık canlı koşuda kare süresi −%5,2, JS yığını **%0,0**,
+  gölgelendirici programı sabit. **Sızıntı YOK.** Yani oyun *oynadıkça* değil *büyüdükçe*
+  yavaşlıyor (§A: 8,3 ms/117 fps → 55,1 ms/**15,1 fps**, ×6,6). "Sızıntı ara" kolu kod aramadan,
+  ölçümle elendi.
+- **dpr kolu ÖLÜ, hatta ters** (+%6,6): piksel dörtte bire indi, kare uzadı ⇒ darboğaz fragment
+  değil **CPU**. F2 bunu "vekil ölçüm burada kör" diye açık bırakmıştı; artık "muhtemelen işe
+  yarar" diye varsayılamaz. Gölge hâlâ en büyük tek kalem ama payı %40 → **%21,7**'ye düşmüş.
+- **Şarjın kaynağı kasma değil:** `<Canvas>`ta `frameloop` verilmemiş ve fps tavanı YOK; erken
+  oyunda **116,7 fps** çiziliyor, oyuncu 60 üstünü göremez.
+- **KULLANICI KARARI:** şarj → **K-A 60 fps tavanı**. Kasma → *"kalite bozmadan ve düşürmeden en
+  mantıklı hamleler"* → bu cümle kolları kendisi eliyor: **K-C** (instancing; aynı piksel, aynı
+  gölge, yalnız daha az çağrı) ve **K-E** (React commit 0,38 → 0) SEÇİLDİ; **K-B** (gölgeyi
+  kapatmak) kaliteyi düşürdüğü ve D-073 kullanıcının kendi kararı olduğu için ELENDİ; **K-D**
+  (müşteri tavanı) kaliteyi değil GELİRİ düşürür → **T3 denge turu**.
+- **Sıra:** K-A → K-E → K-C. **Kabul ölçütü sayı listesidir** (rapor §Karar): erken fps ≤ 62 ·
+  geç çizim çağrısı 171'den düşer · commit/kare 0,38 → ≤0,05 · **gölge AÇIK kalır** ·
+  §B'de eğilim yok. Final koşu `OLCUM=tam node tools/olcum-perf-t4.mjs`.
+- **Aracın kendi kusurları kayda geçti:** ① kare süreleri vsync'e kilitliydi (tam 16,7/33,4/50,0)
+  — bir vsync basamağının altındaki her kol farkı 0 okunuyordu ② `questIndex` 0 kaldığı için
+  **bulaşık döngüsü hiç çalışmıyordu** ve araç "kirli kap: 0" raporluyordu; bu "sorun yok" diye
+  okunacaktı. İkisi de tam koşudan ÖNCE düzeltildi.
+- **Bu commit'te kod YOK** (commit #1 kuralı). Uygulama + bekçi + final tam koşu ayrı oturumda.

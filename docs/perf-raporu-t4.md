@@ -131,7 +131,42 @@ saniyede 117 kare çiziyor. 120 Hz telefonda bu doğrudan pil demektir ve oyuncu
 
 ---
 
-# §Karar
+# §Karar (kullanıcı, 2026-09-18)
 
-**BEKLİYOR** — kullanıcıya sorulacak.
-(Bu bölüm commit #1'de bilerek BOŞTUR: `CLAUDE.md` §Oturum akışı / D-084 — ölç → sor → uygula.)
+## ŞARJ kolu → **K-A: 60 fps tavanı**
+
+Kullanıcı seçti. Gerekçe ölçümde: erken oyunda **116,7 fps** çiziliyor ve oyuncu 60 üstünü
+göremez. Görünümde hiçbir kayıp yok, denge etkisi yok.
+
+## KASMA kolu → **kaliteyi BOZMADAN en mantıklı hamleler**
+
+Kullanıcının sözü: *"burada kalite bozmadan ve düşürmeden en mantıklı hamleler ne ise onlar olsun."*
+
+Bu cümle kolları kendisi eliyor — ölçümdeki beş koldan ikisi kaliteyi düşürüyor, ikisi düşürmüyor:
+
+| Kol | Kaliteye etkisi | Karar |
+|---|---|---|
+| **K-C** instancing (çizim çağrısı 36→171) | **YOK** — aynı piksel, aynı gölge, aynı sahne; yalnız daha az çağrı | ✅ **SEÇİLDİ** |
+| **K-E** React commit 0,38 → 0 | **YOK** — sunum hiç değişmez | ✅ **SEÇİLDİ** |
+| **K-B** gölge cihaz sınıfına göre kapat | **DÜŞÜRÜR** — gölge D-073'te kullanıcının kendi isteğiyle geri gelmişti | ❌ elendi |
+| **K-D** müşteri tavanı | Kaliteyi değil **GELİRİ** düşürür (NPC = müşteri = ₺) | ❌ bu turda değil → **T3 denge turu** |
+| dpr düşürme | — | ❌ zaten §D2'de ters çıktı |
+
+**Sıra (kolay→zor):** K-A → K-E → K-C.
+
+## UYGULAMA — bu commit'te YAPILMADI, bilerek
+
+Commit #1 kuralı gereği burada yalnız araç + ham çıktı + rapor var. **K-A/K-E/K-C ayrı bir
+oturumda uygulanacak** ve o oturumun kapanışında `tools/olcum-perf-t4.mjs` **tam koşuyla
+yeniden çalıştırılacak**: kabul ölçütü sayı listesidir, izlenim değil.
+
+**Kabul ölçütleri (final koşuda doğrulanacak):**
+
+| # | Ölçüt | Bugün | Hedef |
+|---|---|---|---|
+| 1 | erken oyun fps (§A · A1) | 116,7 | **≤ 62** (tavan tutuyor) |
+| 2 | geç oyun kare süresi (§A · A3) | 55,1 ms | **belirgin düşüş** — K-C'nin kazancı ölçülecek |
+| 3 | geç oyun çizim çağrısı | 171 | **düşmeli** (K-C'nin doğrudan ölçütü) |
+| 4 | geç oyun commit/kare | 0,38 | **0,00–0,05** (K-E) |
+| 5 | gölge | açık | **AÇIK KALIR** — kalite düşmedi denetimi |
+| 6 | §B sürüklenme | eğilim yok | **eğilim yok** (yeni kod sızıntı getirmedi) |
