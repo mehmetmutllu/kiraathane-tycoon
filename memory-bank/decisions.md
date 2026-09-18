@@ -4334,3 +4334,48 @@ turunu ister.
   edemez ve **yanlış tarafa hata yapması doğrudur** (ölçümsüz denge değişikliğini kaçırmaktansa
   zararsız bir turu işaretlesin). T3 bu dosyalara gerçekten sayıyla dokunacak; orada uyarı
   çıkmaması gerekiyor, çünkü ölçüm commit'i önce gelecek.
+
+## D-134 — T2a: görev akışı "tek sıra hattı" (mantık kanadı) — G-59 · G-60
+
+- **Kök neden bulundu ve dardı.** `questIndex` hedef karşılanır karşılanmaz ilerler ve bu BİLEREK
+  böyle (yoksa 1,3 sn'lik kutlama penceresinde yapılan eylem yeni görevin tabanına yazılır, sayaç
+  0/1'de kilitlenirdi — q_coin dominosu). Ama dünyayı ÇİZEN/TETİKLEYEN her yer o HAM sayıyı
+  okuyordu: kart hâlâ biten görevi yazarken **pad çoktan belirmiş**, **kenar oku çoktan yeni
+  hedefe atlamıştı**. Kullanıcının *"diğer görev tostu gelmeden direkt görevin pedi açılabiliyor"*
+  cümlesinin tamamı bu.
+- **Çözüm yeni bir DURUM değil, var olan ikisinin TÜREVİ:** `cardQuestIndex` (rules.ts) —
+  "kart hangi görevi gösteriyorsa dünya da onu gösterir". Pencerede biten görevi döner; biten pad
+  `padsDone`'da olduğu için `visiblePads` doğal olarak boş verir, yani pencerede yeni pad BELİRMEZ,
+  eski pad de geri gelmez. Pencere kapanınca kart · pad · kamera AYNI karede geçer.
+  Okuyanlar: `tick.interactionZoneSystem` · `Pad.tsx` · `Scene.QuestPointer` · `revealSystem`.
+- **G-60:** reveal uyarıları geçiş penceresinde artık HİÇ işlenmiyor — toast da, pan da, TÜKETME de
+  yok; pencere kapanınca aynı döngüden normal sırasıyla geçiyorlar. (G-44 yalnız KAMERAYI
+  erteliyordu; toast biten görevin toast'ının üstüne binmeye devam ediyordu.)
+- **Ekran kanalları tek sıraya alındı** (`src/game/ekranKanali.ts`): çevrimdışı > Usta > ipucular,
+  ve ipucular panel açıkken / bildirim ekrandayken / kutlama sürerken BEKLER. Eskiden bu ilişki
+  elle yazılmış `&& !showOffline && !spotlight` zincirleriydi — sıra bir kural değil dört ifadenin
+  tesadüfi kesişimiydi. HUD artık koşul kurmuyor, "hangi kanal üstte" diye soruyor; ikisinin aynı
+  anda açılması TEK değer döndüğü için yapısal olarak imkânsız.
+- **G-61 İKİYE BÖLÜNDÜ, yarısı bilerek yapılmadı.** Bu turda yalnız **pencere** kapatıldı (1,3 sn,
+  tempo etkisi yok). Kullanıcının istediği kalıcı kapı ("yükseltme noktası yalnız kendi görevi
+  aktifken canlı") satın alma SIRASINI değiştirir → tempodur → **T3-K11**, ölçülmeden yazılmaz.
+  D-124'ün masa kapısıyla aynı sınıf.
+- **TURUN KALICI DERSİ — YEŞİL TEST, ÖLÇTÜĞÜNÜ SANDIĞIN ŞEYİ ÖLÇMÜYOR OLABİLİR.**
+  `logic.test.ts`in *"bir özellik açılınca toast + kamera pan tetiklenir"* testi yıllardır yeşildi
+  ama ikisi de reveal'ın eseri DEĞİLDİ: `upgrade:0` ileride gelen `q_station1` tarafından kapsanıp
+  sessizce tüketiliyor; testin gördüğü `notice` biten görevin toast'ı, `camFocus` da pad
+  dolarken kurulmuş bayat bir odaktı. Kusur bu turda **ancak davranış değişince** görüldü.
+  İddia, gerçekten kapsanmayan bir kuruluma taşındı ve ayrı bir test oldu.
+  Aynı sebeple `gorev-seridi-g1`in G-44 testi de ölçümün BULDUĞU kaynağa (alan açılışı panı,
+  prio 3 — `docs/serit-raporu-g1.md` §Bulgular 4) taşındı; A/B artık yalnız `questPhase`te ayrışıyor.
+- **Bekçi:** `tests/gorev-hatti-t2.test.ts` (15 denetim) + `logic.test.ts` ve
+  `gorev-seridi-g1.test.ts`teki iki testin dürüstleştirilmiş hâli. **İki mutasyonla doğrulandı:**
+  ① `cardQuestIndex` ham index'e döndürüldü → 3 kırmızı · ② reveal ertelemesi kaldırıldı → 2 kırmızı.
+- **Final:** vitest **1338/1338** · duman **45/45** · tsc temiz.
+- **SIRA KİLİDİ UYARISI — yine kayda geçirildi.** `npm run sira` bu turu da **[olcum-yok]**
+  işaretledi (`rules.ts`, `tick.ts`). Diff'le doğrulandı: **hiçbir denge sayısı değişmedi.**
+  `rules.ts`e iki saf türev eklendi (`cardQuestIndex` · `questInTransition`, ikisi de var olan
+  alanları OKUYOR), `tick.ts`te tek bir OKUMA kaynağı değişti (ham `questIndex` → kartın görevi)
+  ve bir erteleme satırı eklendi. Süre 1,3 sn'lik kutlama penceresidir; satın alma sırasını,
+  eşikleri, maliyetleri, hiçbirini oynatmaz. Gerçekten tempo olan kanat (G-61'in kalıcı kapısı)
+  bu turda BİLEREK yapılmadı ve T3-K11'e yazıldı — uyarının haklı olacağı yer orası.

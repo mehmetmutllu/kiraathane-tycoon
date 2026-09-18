@@ -179,6 +179,37 @@ export const sinkDirty = (s: {
 export const QUEST_COMPLETE_DUR = 0.5;
 export const QUEST_GAP_DUR = 0.8;
 
+/**
+ * G-59 — **EKRANDAKİ GÖREV**: pad'i çizen de, tetikleyen de, kenar oku da BUNU okur.
+ *
+ * `questIndex` hedef karşılanır karşılanmaz ilerler ve bu BİLEREK böyle (yoksa 1,3 sn'lik kutlama
+ * penceresinde yapılan eylem yeni görevin tabanına yazılır, sayaç 0/1'de kilitlenirdi — q_coin
+ * dominosu, `questSystem`). Ama o yüzden kutlama sürerken `questIndex` ARTIK YENİ GÖREVİ
+ * gösteriyordu: kart hâlâ biten görevi yazarken pad çoktan belirmişti.
+ *
+ * Kullanıcı 2026-09-18: *"Diğer görev tostu gelmeden direkt görevin pedi açılabiliyor"* ve
+ * *"yeni görev kartı geldikten sonra ikinci masa pedi açılacak ve oraya zum atılacak"*.
+ *
+ * Çözüm yeni bir durum değil, var olan iki alanın TÜREVİ: kart hangi görevi gösteriyorsa dünya da
+ * onu gösterir. Kutlama/boşluk penceresinde bu BİTEN görevdir; biten pad görevi `padsDone`da
+ * olduğu için `visiblePads` doğal olarak boş döner — yani pencerede yeni pad BELİRMEZ, eski pad de
+ * geri gelmez. Pencere kapanınca kart, pad ve kamera AYNI karede yeni göreve geçer.
+ *
+ * (`questSystem`in `viewIndex`i ile aynı ifade — orada kartın, burada dünyanın kaynağı. Tek yerde
+ * tanımlı olması, ikisinin ayrışmasını yapısal olarak imkânsız kılar: D-038'in dört kanal dersi.)
+ */
+export interface QuestCardState {
+  questIndex: number;
+  questPhase: 'active' | 'completing' | 'gap';
+  /** Kutlaması süren görevin index'i; pencere dışında −1. */
+  questDoneIndex: number;
+}
+export const cardQuestIndex = (q: QuestCardState): number =>
+  q.questPhase !== 'active' && q.questDoneIndex >= 0 ? q.questDoneIndex : q.questIndex;
+
+/** Görev geçiş penceresi açık mı (kutlama + boşluk). Ekran kanalları bunu okur. */
+export const questInTransition = (q: Pick<QuestCardState, 'questPhase'>): boolean => q.questPhase !== 'active';
+
 /** stationLevel'in demleme hız (throughput) çarpanı — çay/dk; fiyatı DEĞİL. */
 export function brewThroughputMult(level: number): number {
   return upgradeOutputMultiplier(C.service.upgrade, level);

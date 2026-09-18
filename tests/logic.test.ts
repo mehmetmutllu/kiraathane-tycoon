@@ -554,7 +554,7 @@ describe('görev geçişi — kutlama penceresi yarışı (smoke 7 kırık adım
 });
 
 describe('yeni-özellik bildirimi (D-019 §4)', () => {
-  it('yeni oyunda ikincil özellik yok → revealSeen boş; bir özellik açılınca toast + kamera pan tetiklenir', () => {
+  it('yeni oyunda revealSeen boş; özellik açılınca anahtar TÜKETİLİR (toast kapsamı ayrı testte)', () => {
     useGame.getState().hardReset();
     expect(useGame.getState().revealSeen).toEqual([]);
     // Spotlight görülmüş olsun (turu-5 m.8: spotlight beklerken reveal panı bastırılır — alttaki test).
@@ -562,13 +562,50 @@ describe('yeni-özellik bildirimi (D-019 §4)', () => {
     // 2. masa aç → çay ocağı yükseltme açılır (ikincil özellik).
     useGame.getState().addMoney(50);
     expect(completePad('table2')).toBe(true);
-    // table2 tamamlandıktan SONRAKİ tick'te 'upgrade' reveal'ı belirir (oyuncuyu uzak köşeye park et).
+    // G-60 (2026-09-18): reveal artık KUTLAMA PENCERESİNDE hiç işlenmez — kullanıcı *"uyarı
+    // geldiği anda altta biten görev de var"* dedi. Reveal SİLİNMEZ, TÜKETİLMEZ de; bekler.
+    useGame.setState({ player: PARK, inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+    expect(useGame.getState().questPhase, 'kurulum gerçekten pencere içinde başlamalı').not.toBe('active');
+    // Pencere İÇİNDE bir tick at: `upgrade:0` bu tick'te zaten açık (table2 bitti) ama işlenmemeli.
+    useGame.getState().tick(0.1);
+    expect(useGame.getState().questPhase, 'tek tick pencereyi kapatmamalı').not.toBe('active');
+    expect(useGame.getState().revealSeen, 'pencerede reveal TÜKETİLMEZ (ertelenir)').toEqual([]);
+    // Pencere kapanınca aynı döngüden normal sırasıyla geçer.
+    flushQuestTransition();
     useGame.setState({ player: PARK, inputKeyboard: [0, 0], inputJoystick: [0, 0] });
     useGame.getState().tick(0.1);
     expect(useGame.getState().revealSeen).toContain('upgrade:0'); // v21: anahtarlar zone-başına
-    expect(useGame.getState().notice).not.toBeNull();
+  });
+
+  /**
+   * DÜZELTME NOTU (2026-09-18, G-60 turu): bu testin eski hâli adında *"toast + kamera pan
+   * tetiklenir"* diyor ve `notice`/`camFocus` üstünde iddia taşıyordu — ama **ikisi de reveal'ın
+   * eseri değildi.** `upgrade:0`, ileride gelen `q_station1` tarafından KAPSANIYOR (bir alttaki
+   * test tam bunu söylüyor), yani sessizce tüketiliyor: toast biten görevin `kind:'quest'`
+   * toast'ıydı, `camFocus` da pad tamamlanırken kurulmuş bayat bir odaktı. Yani test yeşildi ama
+   * adındaki şeyi ölçmüyordu. İddia buraya, GERÇEKTEN kapsanmayan bir kuruluma taşındı.
+   */
+  it('KAPSANMAYAN bir reveal gerçekten toast + kamera panı üretir (yukarıdaki testin kör noktası)', () => {
+    useGame.getState().hardReset();
+    // Görev hattı bitmiş → hiçbir görev reveal'ı kapsamıyor; tek fark bu.
+    useGame.setState({
+      charPanelSeen: true,
+      padsDone: ['table2'],
+      revealSeen: [],
+      questIndex: economyConfig.quests.length,
+      questPhase: 'active',
+      questPhaseT: 0,
+      camFocus: null,
+      player: PARK,
+      inputKeyboard: [0, 0],
+      inputJoystick: [0, 0],
+    });
+    useGame.getState().tick(0.1);
+    const s = useGame.getState();
+    expect(s.revealSeen).toContain('upgrade:0');
+    expect(s.notice?.kind, 'bu kez toast REVEAL olmalı, görev toastı değil').toBe('reveal');
     // Yeni açılan noktaya kamera pan istendi (kullanıcı 2026-06-09: "orada bir şey var" hissi).
-    expect(useGame.getState().camFocus).not.toBeNull();
+    expect(s.camFocus, 'reveal kendi panını istemeli').not.toBeNull();
   });
 
   it('⑤⑥ fix: ocak yükselt reveal\'ı bir görev (q_station2) tarafından kapsanır → toast/pan YOK (tek talimat = görev kartı)', () => {

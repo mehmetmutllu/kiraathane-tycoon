@@ -743,8 +743,13 @@ için **VARYANT KAPISINA TABİ**.
   G-79 açılışta Usta modali çevrimdışı ekranın üstüne binmiyor + dwell kenar-tetikli ·
   G-77 görev başlığındaki seviye = ekrandaki seviye · G-69 bulaşık tezgâhı mekanikle aynı anda
   doğuyor · G-70 tezgâh yalnız ona gelen kapla kirleniyor. Bekçi: `tests/onarim-g58-g81.test.ts`.
-- 🔜 **T2 GÖREV AKIŞI (sıradaki):** G-58…G-64, G-71, G-81 — "hepsi tek sıra hattı": biten görev
-  kapanır → kutlama → yeni kart → **ancak sonra** pad/zoom. G-41…G-44'ün (2026-09-16) devamı.
+- ✅ **T2a GÖREV AKIŞI · MANTIK (bitti, D-134):** G-59 pad/kenar oku/reveal artık KARTIN görevini
+  okuyor (`cardQuestIndex`) · G-60 geçiş penceresinde uyarı işlenmiyor + ekran kanalları tek
+  sıraya alındı (`src/game/ekranKanali.ts`). **G-61 ikiye bölündü**: pencere kanadı yapıldı,
+  kalıcı kapı tempo olduğu için T3-K11'e taşındı. Bekçi: `tests/gorev-hatti-t2.test.ts`.
+- 🔜 **T2b GÖREV AKIŞI · GÖRSEL+ÖĞRETME (sıradaki):** G-58 bitiş efekti · G-62 Görevler düğmesi
+  vurgusu · G-63 bulaşık öğretme kartı + zoom · G-64 tepsi yükseltmesi yönlendirmesi ·
+  G-81 hedef panosu · G-71 takılma emniyeti.
 - 🔜 **T4 PERFORMANS:** G-80 — şarj + kasma. Eldeki ölçüm masaüstünde alınmıştı, **bayat**.
 - 🔜 **T3 DENGE (varyant kapısı, iki commit):** G-65 tepsi 75₺ · G-72 garson tepsi tabanı ·
   G-73 1. salonda 2. garson · G-74 masa4 380₺ · G-75 2. salonu geciktir · **G-76 masa sırası

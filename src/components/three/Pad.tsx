@@ -1,4 +1,5 @@
 import { useGame, LAYOUT, visiblePads } from '../../game/store';
+import { cardQuestIndex } from '../../game/rules';
 import { GroundMarker } from './GroundMarker';
 
 // EKRANDA TEK PAD (quest sistemi, 2026-06-09): yalnız aktif görevin pad'i çizilir (visiblePads —
@@ -10,7 +11,9 @@ export function Pad() {
   const stationLevel = useGame((s) => s.stationLevels[0]);
   const lifetime = useGame((s) => s.lifetime);
   const wallet = useGame((s) => s.wallet);
-  const questIndex = useGame((s) => s.questIndex);
+  // G-59: çizilen pad, KARTIN gösterdiği görevden türer (tick'teki dolum mantığıyla aynı
+  // çağrı). Ham `questIndex` kutlama penceresinde çoktan yeni görevi gösteriyor.
+  const questIndex = useGame(cardQuestIndex);
   const waiterServed = useGame((s) => s.stats.waiterServed);
   const tableLevels = useGame((s) => s.tableLevels);
   const cash = wallet.toNumber();

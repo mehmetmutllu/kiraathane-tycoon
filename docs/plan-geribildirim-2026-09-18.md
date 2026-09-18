@@ -45,7 +45,7 @@ Kullanıcının tarifi zaten bir durum makinesi:
 | Kalem | Yapılacak |
 |---|---|
 | **G-59** | `visiblePads()` doğrudan `questIndex`e bakmayı bırakır; **akış durumu**nu okur. Pad ancak `HEDEF AÇILIR` adımında görünür. |
-| **G-61** | Yükseltme noktaları da AYNI kapıdan geçer — görevi olmayan yükseltme noktası açık durmaz. |
+| **G-61** | **İKİYE BÖLÜNDÜ.** T2'de: kutlama penceresi boyunca hiçbir yeni nokta/uyarı belirmez (1,3 sn — sunum, tempo etkisi yok). T3-K11'de: "yükseltme noktası yalnız kendi görevi aktifken canlı" kalıcı kapısı — o satın alma sırasını değiştirir, yani **tempo**, yani ölçülmeden yazılmaz. |
 | **G-60** | Tek bildirim kuyruğu ve sabit öncelik: `modal > öğretme kartı > görev kartı > toast > ipucu`. Aynı karede iki kanal açılamaz. |
 | **G-58** | Kutlama adımının efekti: banda kayarak giriş + kısa yaylanma (`useFrame`/damp, hafif — `feedback_visual_polish`). |
 | **G-62** | Kutlama anında Görevler düğmesi halkalanır; kamera kısa bir an oraya yönelir. |
@@ -79,7 +79,8 @@ D-087 "20 dk aşan yok" hükmü · zincir süresi.
 | **K7** | G-66 | `xp.levelBase 60 · levelGrowth 1,5` | biraz zorlaştırma kolları + ilk 4 seviyede modal |
 | **K8** | G-67 | seviye ödülü = **+%2 taşıma hızı** (D-092, ölçülerek seçildi) | ₺ · hız · ikisi birden (→ **SORU 4**). Ödüllü video ×2 kanadı **F3'e bağımlı** (reklam altyapısı kararı hâlâ bekliyor). |
 | **K9** | G-70 tam kolu | tezgâhta bekleyen bulaşık kuyruğu + süreyle yıkama | throughput etkisi ölçülür |
-| **K10** | G-68 | servis bloğu duvara **0,30 br** (gövde çapı 0,56) | bloğu ≥0,5 br içeri çekme → yürüme yolu, pad çakışması, kamera. **Ölçü dondurma turu** (→ **SORU 3**) |
+| **K10** | G-68 | servis bloğu duvara **0,30 br** (gövde çapı 0,56) | bloğu duvardan EN AZ gerekli kadar açma (kullanıcı: *"duvardan çıkmasın"*) → yürüme yolu, pad çakışması, kamera. **Ölçü dondurma turu** |
+| **K11** | G-61'in KALAN kanadı | yükseltme noktaları görevden BAĞIMSIZ açık | "yükseltme noktası yalnız kendi görevi aktifken canlı" kolu. T2'de yalnız **kutlama penceresi** kapatıldı (1,3 sn, tempo etkisi yok); kalıcı kapı satın alma SIRASINI değiştirir → tempo → ölçülür. D-124'ün masa kapısıyla aynı sınıf. |
 
 ---
 

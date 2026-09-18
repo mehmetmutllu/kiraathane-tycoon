@@ -88,6 +88,8 @@ import {
   WASH_QUEST_INDEX,
   QUEST_COMPLETE_DUR,
   QUEST_GAP_DUR,
+  cardQuestIndex,
+  questInTransition,
   CAM_FOCUS_TTL,
   brewTime,
   tableSoftMaxLevel,
@@ -1093,7 +1095,7 @@ function dishwasherSystem(c: TickCtx): void {
  * üstünden GEÇERKEN (hareket halinde) hiç alınmaz, DURDUĞU (input bıraktığı) anda HEMEN başlar (sayaç/countdown YOK).
  */
 function interactionZoneSystem(c: TickCtx): void {
-  const { lifetime, padsDone, tables, stationLevels, tableLevels, stats, questIndex } = c;
+  const { lifetime, padsDone, tables, stationLevels, tableLevels, stats } = c;
   const padGate: GateState = {
     padsDone,
     tables,
@@ -1104,7 +1106,9 @@ function interactionZoneSystem(c: TickCtx): void {
     tableLevels, // Y4: allZoneTablesLevel gate'i (2. garson pad'leri)
   };
   // EKRANDA TEK PAD (quest sistemi): görünürlük visiblePads'ten (Pad.tsx ile aynı kaynak).
-  const activePads: PadDef[] = visiblePads(questIndex, padGate);
+  // G-59: okunan index HAM `questIndex` değil EKRANDAKİ görev (`cardQuestIndex`) — kutlama
+  // penceresinde kart biten görevi yazarken pad yeni görevinkini gösteriyordu. Gerekçe rules.ts'te.
+  const activePads: PadDef[] = visiblePads(cardQuestIndex(c), padGate);
   c.padGate = padGate;
   c.activePads = activePads;
 }
@@ -1118,9 +1122,18 @@ function interactionZoneSystem(c: TickCtx): void {
  * "çay yükselt" reveal'ını ateşliyordu; kamera oraya kayarken spotlight char butonunu gösteriyordu).
  */
 function revealSystem(c: TickCtx): void {
-  const { dt, s, areasOpen, stationLevels, tableLevels, enqueueNotice, questIndex, requestFocus, input, player, padGate, activePads } = c;
+  const { dt, s, areasOpen, stationLevels, tableLevels, enqueueNotice, requestFocus, input, player, padGate, activePads } = c;
   let notice = c.notice;
   let revealSeen = c.revealSeen;
+  // G-59/G-60: reveal de EKRANDAKİ görevi okur (ham `questIndex`i değil) — kutlama penceresinde
+  // kart hâlâ biten görevi yazarken yeni görevin kapsadığı reveal'lar "kapsanmamış" görünüyordu.
+  const questIndex = cardQuestIndex(c);
+  // G-60 — GEÇİŞ PENCERESİNDE YENİ UYARI ÇIKMAZ. Kullanıcı: *"uyarı geldiği anda altta biten
+  // göreve de var; onların bir sıralaması olması gerekiyor."* Kamera panı G-44'te zaten
+  // erteleniyordu ama TOAST ertelenmiyordu: "Çay ocağını yükseltebilirsin" gibi bir reveal,
+  // görev tamamlanma toast'ının hemen ardına biniyordu. Reveal SİLİNMEZ, tüketilmez de —
+  // yalnız beklemeye alınır; pencere kapanınca aynı döngüden normal sırasıyla geçer.
+  const gecisPenceresi = questInTransition(c);
   const spotlightPending =
     questIndex < C.quests.length &&
     C.quests[questIndex].target.type === 'charStat' &&
@@ -1137,6 +1150,7 @@ function revealSystem(c: TickCtx): void {
     else if (t.type === 'pad') questCoveredReveals.add(`opt:${t.id}`);
   }
   for (const [key, text, rp] of revealKeys(padGate, areasOpen, stationLevels)) {
+    if (gecisPenceresi) break; // G-60: kutlama sürerken hiçbir reveal işlenmez (tüketilmez de)
     if (!revealSeen.includes(key)) {
       // Bir görevin kapsadığı özellik: reveal'ı sessizce tüket (toast/pan yok) → tek talimat görev kartı.
       if (questCoveredReveals.has(key)) {

@@ -5,7 +5,7 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-18 — **2026-09-18 geri bildirimi · T1 ONARIM BİTTİ** · sıradaki: T2 görev akışı)
+## ŞU AN (2026-09-18 — **T1 onarım + T2a görev akışı BİTTİ** · sıradaki: T2b görsel/öğretme)
 
 ```
 SORU            : Kullanıcının 5 dakikalık oynanışından (ses kaydı) + yazılı notlarından çıkan
@@ -14,11 +14,11 @@ SORU            : Kullanıcının 5 dakikalık oynanışından (ses kaydı) + ya
                   Turda ölçülen tek sayı G-68'in payı: duvar–tezgâh 0,30 br · aktör çapı 0,56 br.
 SAYILAR         : docs/geribildirim-oyun-testi-2026-09-18.md (24 kalem, kodda doğrulanmış kökler)
 PLAN            : docs/plan-geribildirim-2026-09-18.md — T1→T2→T4→T3→T5 (kullanıcı onaylı)
-KARAR           : **D-133** — sıra + G-69 "hiç olmasın" + G-68 "duvardan çıkmasın, en az pay" +
+KARAR           : **D-133** (kalemler+sıra) · **D-134** (T2a) — sıra + G-69 "hiç olmasın" + G-68 "duvardan çıkmasın, en az pay" +
                   G-67 "ikisi birden" (D-092'nin hızı KALIR, üstüne ₺)
-UYGULAMA        : T1 · G-78 · G-79 · G-77 · G-69 · G-70
-BEKÇİ           : tests/onarim-g58-g81.test.ts (14) + gorev-kimligi.test.ts'e G-77 bekçisi
-                  → **2 mutasyonla doğrulandı** (saveNow'dan alan çıkarma · kelepçe kaldırma)
+UYGULAMA        : T1 · G-78 G-79 G-77 G-69 G-70   |   T2a · G-59 G-60 (G-61 yarısı → T3-K11)
+BEKÇİ           : tests/onarim-g58-g81.test.ts (14) + gorev-hatti-t2.test.ts (15)
+                  + gorev-kimligi.test.ts'e G-77 bekçisi → **her tur 2 mutasyonla doğrulandı**
 ```
 
 **T1'DE KAPANANLAR — dördü de D-133'te, burada tek satır:**
@@ -38,13 +38,22 @@ ve mekanik açılmadan sahnede duruyordu. İkisi de saf yükleme olarak `rules.t
 **tezgâhta biriken istif** bugün yok (yıkama teslimde anlık). Eklemek bardak döngüsünün hızını
 değiştirir → **T3-K9**. Bu tur yanlış olanı düzeltti, yeni mekanik açmadı.
 
-**SIRADAKİ TUR — T2 · GÖREV AKIŞI "TEK SIRA HATTI" (G-58…G-64, G-71, G-81)**
-Kullanıcının dört ayrı cümlesi tek sistem: `çalışıyor → KUTLAMA → YENİ KART → HEDEF AÇILIR →
-KAMERA`, ve ekranda modal/uyarı varken zoom gelmez. Bugün `visiblePads()` doğrudan `questIndex`e
-bakıyor, pad aynı karede beliriyor. **Zemin var:** `rules.ts`te `QUEST_COMPLETE_DUR` /
-`QUEST_GAP_DUR` ve store'da `questPhase`/`questPhaseT`/`questDoneIndex` zaten duruyor — T2 sıfırdan
-kurmayacak, var olan faz makinesini pad/yükseltme/kamera/bildirim kanallarına BAĞLAYACAK.
-Bu G-41…G-44'ün (2026-09-16) kapanmadığının kanıtı; bekçi bu turda kesilmez.
+**T2a BİTTİ (D-134) — GÖREV AKIŞI, MANTIK KANADI**
+Kök neden dardı: `questIndex` hedef karşılanır karşılanmaz ilerliyor (bu BİLEREK böyle, q_coin
+dominosu) ama dünyayı çizen/tetikleyen her yer o HAM sayıyı okuyordu → kart hâlâ biten görevi
+yazarken pad çoktan beliriyor, kenar oku çoktan yeni hedefe atlıyordu. Çözüm yeni durum değil
+TÜREV: `cardQuestIndex` — "kart hangi görevi gösteriyorsa dünya da onu gösterir". G-60'ta reveal
+uyarıları pencerede hiç işlenmiyor (silinmiyor, bekliyor) ve ekran kanalları tek sıraya alındı
+(`src/game/ekranKanali.ts`: çevrimdışı > Usta > ipucular; ipucular bildirim/kutlama/panel varken
+bekler). **G-61 ikiye bölündü** — kalıcı kapı tempo olduğu için T3-K11'e taşındı.
+**Turun kalıcı dersi:** `logic.test.ts`in *"reveal toast + pan tetikler"* testi yıllardır yeşildi
+ama ikisi de reveal'ın eseri değildi (toast biten görevin, odak bayat). Davranış değişmeseydi
+görülmeyecekti; iddia gerçekten kapsanmayan bir kuruluma taşındı.
+
+**SIRADAKİ TUR — T2b · GÖRSEL + ÖĞRETME (G-58 · G-62 · G-63 · G-64 · G-81 · G-71)**
+Bitiş efekti · Görevler düğmesi vurgusu + kısa kamera dokunuşu · bulaşık öğretme kartı (zoom +
+metin bulaşığı KAPATMAYACAK yerde) · tepsi yükseltmesinin nereden yapıldığının gösterilmesi ·
+hedef panosunda toplanabilir satırın üste çıkması · garson/NPC takılma emniyeti.
 
 **AÇIK KALAN ÖNCEKİ TUR:** F3 (AdMob) tur 1 ölçümü bitti, **karar hâlâ bekliyor** (C1′ önerildi,
 onay gelmedi) — `docs/reklam-raporu-f3.md`, progress.md Faz F. G-67'nin video ×2 kanadı buna bağlı.

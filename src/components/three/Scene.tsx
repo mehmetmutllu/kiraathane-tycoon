@@ -5,7 +5,7 @@ import { cameraViewYaz } from '../../game/cameraView';
 import { useGame, questFocusPos, LAYOUT, LAVABO, BAND, BAND_SHELL, FLOOR_HALF, wallSpans, servicePlace, stationSoftMaxLevel, stationUpgradeCostAt, stationUpgradeUnlocked, tableSoftMaxLevel, tableUpgradeTarget, tableNextCost, openServices, doorX as doorAt, entranceAt, banketIslands, BANKET, WAITER_STATION, waiterStationOpen } from '../../game/store';
 import { economyConfig, lavaboUpgradeCost } from '../../config/economy.config';
 import { areaOfTable, THE_SERVICE } from '../../game/world';
-import { masterId, masterCost, masterUnlockedForTable, dishStationVisible } from '../../game/rules';
+import { masterId, masterCost, masterUnlockedForTable, dishStationVisible, cardQuestIndex } from '../../game/rules';
 import { SceneLights } from './lights';
 import { devPerfKol } from '../../game/devPerf';
 import { cihazSinifiOku, cihazSinifiYaz, golgeAcikMi, sinifBelirle, ISINMA_KARE, ORNEK_KARE } from '../../game/cihazSinifi';
@@ -89,7 +89,10 @@ function QuestPointer() {
   const v = useMemo(() => new Vector3(), []);
   useFrame(() => {
     const g = useGame.getState();
-    const def = g.questIndex < economyConfig.quests.length ? economyConfig.quests[g.questIndex] : null;
+    // G-59: kenar oku da KARTIN görevini gösterir — eskiden kutlama penceresinde ok yeni hedefe
+    // atlıyor, kart hâlâ biten görevi yazıyordu (D-038'in dört kanalı ayrışıyordu).
+    const qi = cardQuestIndex(g);
+    const def = qi < economyConfig.quests.length ? economyConfig.quests[qi] : null;
     const target = g.quest && def ? questFocusPos(def.target, g.tableLevels, g.tables, g.areasOpen, def.area ?? 0) : null;
     if (!target) {
       screenPointer.active = false;

@@ -3,7 +3,8 @@ import { useGame, goalMetricsOf, tableThemeUnlocked, tableSoftMaxLevel } from '.
 import { claimableGoals, collectionBonus, goalViews, type GoalView } from '../../game/goals';
 import { dailyViews, claimableDailyCount, type DailyQuestView } from '../../game/dailyQuests';
 import { dailyCountersOf } from '../../game/store';
-import { masterCost, toastCizilir } from '../../game/rules';
+import { masterCost, toastCizilir, questInTransition } from '../../game/rules';
+import { ekranKanali } from '../../game/ekranKanali';
 import { screenPointer } from '../../game/screenPointer';
 import { fmt } from '../../game/decimal';
 import { SAVE_VERSION } from '../../game/save';
@@ -115,6 +116,8 @@ export function HUD() {
   const dailyReady = useGame((s) => claimableDailyCount(s.daily, s.tables, dailyCountersOf(s)) > 0);
   // D8: oyuncu bir Usta noktasının yanında mı? Sahne katmanı yazar (yakınlık `useFrame`te ölçülür).
   const nearMaster = useGame((s) => s.nearMaster);
+  // G-60: görev geçiş penceresi (kutlama + boşluk) — ipucular bu pencerede sıra bekler.
+  const questPhase = useGame((s) => s.questPhase);
   // G-14: kapatılan Usta modali, oyuncu O MASADAN uzaklaşana kadar geri açılmaz. D-094'ün
   // "modal her geçişte ekranı keser" endişesinin karşılığı bu — modal geldi, tuzağı gelmedi.
   const [masterKapali, setMasterKapali] = useState<string | null>(null);
@@ -124,12 +127,27 @@ export function HUD() {
 
   const lvl = levelProgress(xp);
   const questPct = quest && quest.total != null ? Math.min(100, ((quest.cur ?? 0) / quest.total) * 100) : null;
-  const showOffline = offlineEarned > 0 && !offlineSeen;
   // Karakter panelinden alınan görevler (tepsi/garson tepsi/garson hız) → Karakter sekmesi işaretlenir.
   const charQuestActive =
     quest?.target.type === 'charStat' || quest?.target.type === 'waiterTray' || quest?.target.type === 'waiterSpeed';
-  const spotlight = charQuestActive && !charPanelSeen && sheet == null && !showOffline;
-  const traySpot = tray + trayFood > 0 && !trayTipSeen && sheet == null && !showOffline && !spotlight;
+  /**
+   * G-60 — EKRANI KESEN KANALLAR TEK SIRADAN GEÇER (`src/game/ekranKanali.ts`).
+   * Eskiden dört kanalın ilişkisi elle yazılmış `&& !showOffline && !spotlight` zincirleriyle
+   * kuruluyordu; sıra bir kural değil, dört ifadenin tesadüfi kesişimiydi. Artık HUD koşul
+   * kurmuyor, "şu an hangi kanal üstte" diye soruyor — ikisinin aynı anda açılması imkânsız.
+   */
+  const kanal = ekranKanali({
+    cevrimdisiVar: offlineEarned > 0 && !offlineSeen,
+    ustaVar: nearMaster != null && masterKapali !== nearMaster,
+    panelAcik: sheet != null,
+    bildirimVar: toastCizilir(notice),
+    gecisPenceresi: questInTransition({ questPhase }),
+    karakterIpucuHazir: !!charQuestActive && !charPanelSeen,
+    tepsiIpucuHazir: tray + trayFood > 0 && !trayTipSeen,
+  });
+  const showOffline = kanal === 'cevrimdisi';
+  const spotlight = kanal === 'ipucu-karakter';
+  const traySpot = kanal === 'ipucu-tepsi';
 
   const openChar = () => {
     markCharPanelSeen();
@@ -268,7 +286,7 @@ export function HUD() {
           yoktu; `spotlight` ve `traySpot` bu dosyada zaten `!showOffline` ile kelepçeliydi, desen
           Usta'ya uygulanmamıştı. Tetiğin KENDİSİ de ayrıca düzeltildi (Scene: dwell artık
           yüklemede değil, oyuncu bir kez hareket ettikten sonra dolar). */}
-      {nearMaster && masterKapali !== nearMaster && !showOffline && (
+      {kanal === 'usta' && nearMaster && (
         <UstaModal id={nearMaster} onClose={() => setMasterKapali(nearMaster)} />
       )}
 

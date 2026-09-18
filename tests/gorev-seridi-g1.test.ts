@@ -27,7 +27,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { CIZILEN_TOAST, toastCizilir, type GameNotice } from '../src/game/rules';
 import { economyConfig as C } from '../src/config/economy.config';
-import { useGame } from '../src/game/store';
+import { useGame, LAYOUT } from '../src/game/store';
 import type { Vec3 } from '../src/game/types';
 
 const oku = (p: string) => readFileSync(p, 'utf8');
@@ -130,24 +130,41 @@ describe('G1/3 · kutlama sürerken kamera kaçmaz (G-44, gerçek tick)', () => 
   /** Oyuncuyu hiçbir şeyi tetiklemeyen bir köşeye park eder (odak testleri temiz kalsın). */
   const park = () => useGame.setState({ inputKeyboard: [0, 0], inputJoystick: [0, 0] });
 
-  it('kutlama penceresinde GERÇEK bir pan isteği ertelenir', () => {
-    // Kurulum elle `camBekleyen` yazmaz — o, kapının ÇIKTISI. İstek gerçek yoldan gelir:
-    // `revealSeen` boşken açık pad'lerin yeni-özellik bildirimleri ateşlenir ve `revealSystem`
-    // pan ister (prio 1). Görev hattı bitirilir ki reveal'lar "görev zaten öğretiyor" diye
-    // sessizce tüketilmesin ve görevin kendi odağı (prio 2) devreye girmesin.
+  /**
+   * ALAN AÇILIŞI panının A/B kurulumu: tek değişken `questPhase`. Oyuncu zone2 pad'inin üstünde,
+   * pad 1 ₺ kalmış → bu tick'te dolar, `padFillSystem` prio 3 odak ister.
+   */
+  const zone2Kurulum = (faz: 'active' | 'completing') => ({
+    padsDone: ['table2', 'table3', 'waiter', 'table4'],
+    questIndex: C.quests.length, // hat bitti → görevin kendi tamamlanması fazı oynatmasın
+    questDoneIndex: -1,
+    questPhase: faz,
+    questPhaseT: faz === 'active' ? 0 : 0.5,
+    questBase: 0,
+    padFills: { zone2: C.pads.find((p) => p.id === 'zone2')!.cost - 1 },
+    camFocus: null,
+    camBekleyen: null,
+    player: [LAYOUT.padPos.zone2[0], 0.6, LAYOUT.padPos.zone2[2]] as Vec3,
+  });
+
+  it('kutlama penceresinde GERÇEK bir pan isteği (ALAN AÇILIŞI, prio 3) ertelenir', () => {
+    // Kurulum elle `camBekleyen` yazmaz — o, kapının ÇIKTISI. İstek gerçek yoldan gelir.
+    //
+    // KAYNAK 2026-09-18'de DEĞİŞTİ (G-60): eskiden buradaki pan `revealSystem`den geliyordu, ama
+    // artık reveal kutlama penceresinde HİÇ işlenmiyor (toast da biten görevin toast'ına biniyordu,
+    // kullanıcı bunu bildirdi) → o yoldan istek gelmez oldu. Kapının hâlâ korumak zorunda olduğu
+    // kaynak zaten ölçümün BULDUĞU kaynaktı: `docs/serit-raporu-g1.md` §Bulgular 4 — *"erken olan
+    // tek şey ALAN AÇILIŞININ panı"* (`padFillSystem` → `unlockArea` → prio 3). Test o kaynağa
+    // taşındı; yani bekçi zayıflamadı, ölçülen vakaya yaklaştı.
     park();
-    useGame.setState({
-      padsDone: ['table2', 'table3', 'waiter', 'table4', 'zone2'],
-      revealSeen: [],
-      questIndex: C.quests.length,
-      questPhase: 'completing',
-      questPhaseT: 0.5,
-      camFocus: null,
-      camBekleyen: null,
-      player: [0, 0.6, 0] as Vec3,
-    });
+    // Hat BİTMİŞ kurulur (questIndex = length): tek değişken `questPhase` kalsın. Hat bitmemiş
+    // olsaydı zone2 açılırken `q_zone2` de tamamlanır, faz kendiliğinden 'completing'e düşer ve
+    // iki kol ayırt edilemezdi — aşağıdaki körlük denetimi bunu yakaladı.
+    useGame.setState(zone2Kurulum('completing'));
+    useGame.getState().addMoney(500);
     useGame.getState().tick(0.05);
     const s = useGame.getState();
+    expect(s.padsDone, 'alan gerçekten açılmalı (istek ancak o zaman doğar)').toContain('zone2');
     expect(s.questPhase, 'pencere hâlâ sürüyor olmalı').not.toBe('active');
     expect(s.camBekleyen, 'gerçek bir pan isteği gelmeli ve sıraya girmeli').not.toBeNull();
     expect(s.camFocus, 'kutlama sürerken kamera kaymaz').toBeNull();
@@ -157,18 +174,40 @@ describe('G1/3 · kutlama sürerken kamera kaçmaz (G-44, gerçek tick)', () => 
     // Aynı kurulum, tek fark: faz 'active'. Kapı yoksa fark da olmaz — bu denetim, yukarıdaki
     // testin "zaten hiçbir pan yoktu" diye boşuna yeşil yanmasını engeller.
     park();
+    useGame.setState(zone2Kurulum('active'));
+    useGame.getState().addMoney(500);
+    useGame.getState().tick(0.05);
+    expect(useGame.getState().padsDone).toContain('zone2');
+    expect(useGame.getState().camFocus, 'kapı kapalıyken pan anında uygulanmalı').not.toBeNull();
+  });
+
+  it('G-60 · kutlama penceresinde reveal ne TOAST üretir ne de TÜKETİLİR', () => {
+    // Kullanıcı 2026-09-18: *"uyarı geldiği anda altta biten göreve de var — onların bir
+    // sıralaması olması gerekiyor."* Reveal SİLİNMEZ: pencere kapanınca sırası gelir.
+    park();
     useGame.setState({
       padsDone: ['table2', 'table3', 'waiter', 'table4', 'zone2'],
       revealSeen: [],
-      questIndex: C.quests.length,
-      questPhase: 'active',
-      questPhaseT: 0,
+      questIndex: C.quests.length, // hat bitti → hiçbir görev reveal'ı kapsamasın
+      questDoneIndex: C.quests.length - 1,
+      questPhase: 'completing',
+      questPhaseT: 0.5,
       camFocus: null,
       camBekleyen: null,
+      notice: null,
+      noticeQueue: [],
       player: [0, 0.6, 0] as Vec3,
     });
     useGame.getState().tick(0.05);
-    expect(useGame.getState().camFocus, 'kapı kapalıyken pan anında uygulanmalı').not.toBeNull();
+    const ara = useGame.getState();
+    expect(ara.revealSeen, 'pencerede tüketilmemeli').toEqual([]);
+    expect(ara.notice, 'pencerede reveal toastı çıkmamalı').toBeNull();
+    expect(ara.camBekleyen, 'reveal hiç istek yapmadığı için kuyruk da boş kalmalı').toBeNull();
+    // Pencere kapanınca aynı reveal normal sırasıyla gelir.
+    for (let i = 0; i < 40 && useGame.getState().questPhase !== 'active'; i++) useGame.getState().tick(0.1);
+    useGame.getState().tick(0.1);
+    const son = useGame.getState();
+    expect(son.revealSeen.length, 'ertelenen reveal pencere kapanınca işlenmeli').toBeGreaterThan(0);
   });
 
   it('pencere bitince bekleyen odak SALINIR (pan silinmiyor, erteleniyor)', () => {
