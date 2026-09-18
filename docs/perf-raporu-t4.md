@@ -170,3 +170,136 @@ yeniden çalıştırılacak**: kabul ölçütü sayı listesidir, izlenim değil
 | 4 | geç oyun commit/kare | 0,38 | **0,00–0,05** (K-E) |
 | 5 | gölge | açık | **AÇIK KALIR** — kalite düşmedi denetimi |
 | 6 | §B sürüklenme | eğilim yok | **eğilim yok** (yeni kod sızıntı getirmedi) |
+
+---
+
+# §F — UYGULAMA TURU (2026-09-18, ikinci oturum): K-A YAPILDI, K-E/K-C ÖLÇÜMÜ KOLLARI DEĞİŞTİRDİ
+
+> Bu bölüm kararın (D-136) uygulanmasıdır. **K-A tamamlandı ve doğrulandı.** K-E ve K-C'ye
+> dokunmadan önce ikisinin de *büyüklüğü* ölçüldü — çünkü ikisi de §Kollar tablosunda yalnız
+> "saf perf" diye sınıflanmıştı, **kaç ms ettiği yazmıyordu.** Ölçülünce ikisinin de tarifi
+> gerçeğe uymadı. Sayılar aşağıda; kararı kullanıcı verir.
+
+## §F1 — K-A (60 fps tavanı) UYGULANDI
+
+**Ne yapıldı.** `<Canvas frameloop="never">` + `KareSurucusu` (Scene.tsx): kareyi r3f'in kendi
+döngüsü değil, tavanlı bir rAF sürücüsü ilerletir. Zamanlama kararı `src/game/kareTavani.ts`te
+saf fonksiyon; bekçi `tests/kare-tavani-t4.test.ts` (17 denetim).
+
+**İki incelik, ikisi de bekçide sayıya bağlandı:**
+
+| # | İncelik | Silinirse ne olur | Hangi test yakalar |
+|---|---|---|---|
+| 1 | **Tolerans** (yarım ekran karesi erken çizme) | 144 Hz'de hedefin bir saç altındaki kare atılır → düzensiz tempo (judder) | "ekran tavanın katıysa tam düzenli kare atar" |
+| 2 | **Sabit tempo + yakalama** | hedef her çizimde şimdiye sıfırlanır → hız tavanın ÜSTÜNE tırmanır (144 Hz'de 72 fps) | "tavan hiçbir frekansta aşılmaz" |
+
+**Mutasyonla doğrulandı (4 mutasyon, 4'ü de yakalandı):** tolerans silindi → 2 test kırmızı ·
+sabit tempo silindi → 5 test kırmızı · dt kısması silindi → 1 test kırmızı · EMA ilk kurulumu
+tahminle → 1 test kırmızı.
+
+**Aracın da düzeltilmesi gerekti (ve bu bir kusur kaydıdır).** Tavandan önce "rAF tiki" ile
+"çizilen kare" aynı şeydi (`frameloop="always"` her tikte çizerdi), araç rAF'i sayıyordu. Tavanla
+birlikte ikisi ayrıştı: araç rAF'i saymaya devam etseydi **"kare süresi 3 ms, fps 300"** gibi
+anlamsız bir sayı üretir ve tavanı görmezdi. Örnekleyici artık `gl.info.render.frame`e bakar —
+three bu sayacı her `render()`ta artırır, `info.reset()` onu sıfırlamaz. **Taban sayıları
+etkilenmez** (o zaman tik = çizimdi), yani önce/sonra karşılaştırılabilir kalır.
+
+**İkinci ölçüm sütunu — "iş ms".** Tavan konunca kareler-arası SÜRE artık işin maliyeti değil
+tavanın aralığıdır (60 fps'te 16,7 ms, sahne ne kadar ucuz olursa olsun). Maliyet görünmez
+olmasın diye `advance()` içinde geçen süre ayrı ölçülür (`perf.isMs`) ve tabloya girer.
+Bu olmadan "tavan koydum, ms 8,3'ten 16,7'ye çıktı" diye yanlış okunurdu.
+
+### §F1a — FİNAL TAM KOŞU: kabul ölçütleri
+
+**Ham çıktı:** `docs/olcum-perf-t4-son.{txt,json}` (**TAM koşu damgalı**, taban dosyası ezilmedi).
+Koşu makine boşken alındı; ilk deneme başka testlerle aynı anda koştuğu için **atıldı** (CPU
+yarışı kare süresini şişirir, kirli sayı rapora girmez).
+
+| # | Ölçüt | Taban | **Final** | Durum |
+|---|---|---|---|---|
+| ① | erken oyun fps (§A · A1) | 116,7 | **59,9** | ✅ ≤ 62 |
+| ② | geç oyun kare süresi (§A · A3) | 55,1 ms | 53,8 ms | ⚠️ **açık — K-C yapılmadı** |
+| ③ | geç oyun çizim çağrısı | 171 | 179 | ⚠️ **açık — K-C yapılmadı** |
+| ④ | geç oyun commit/kare | 0,38 | 0,41 | ⚠️ **açık — K-E yapılmadı** |
+| ⑤ | gölge | açık | **açık** (§D0/§D2) | ✅ kalite düşmedi |
+| ⑥ | §B sürüklenme | eğilim yok | kare **−%5,5**, yığın **%0,0**, program **43 → 43** | ✅ yeni kod sızıntı getirmedi |
+
+**②③④ bilerek açık.** Üçü de K-E ve K-C'nin ölçütleri; §F2/§F3 ikisinin de tarifini çürüttüğü
+için kodları yazılmadı. ③'teki 171 → 179 artışı kolun gerilemesi değil **nüfus**: aynı koşuda
+geç oyun NPC'si 38 → 40'a çıktı (§A) ve §B'de dilim 5'ten sonra 38 → 47'ye tırmandı, çizim
+çağrısı da onunla birlikte 168 → 193 oldu. Yani çağrı sayısı NPC'yi izliyor — bu **§C'nin ve
+K-D'nin** (müşteri tavanı, T3) alanı.
+
+### §F1b — §E: TAVANIN KENDİSİ, AYNI KOŞUDA KANITLANDI
+
+Erken oyun, aynı tohum, tek koşu. Kol `?f2fps=` ile seçilir (`game/devPerf.ts`).
+
+| kol | **çizilen fps** | rAF fps | **iş ms** | çizim çağrısı |
+|---|---|---|---|---|
+| **E0** tavan YOK (K-A öncesi) | **133,8** | 134,0 | 6,4 | 36 |
+| **E1** tavan 60 (**uygulanan**) | **59,7** | 89,3 | 7,1 | 36 |
+| **E2** tavan 30 | 29,9 | 71,8 | 7,9 | 36 |
+
+**Üç şeyi birden söylüyor:**
+1. **Tavan tutuyor ve ayarlanabilir** — 133,8 → 59,7 → 29,9. Taban koşusundaki 116,7 ile aynı
+   yöndeki bu 133,8, tavansız hâlin ekranın verdiği kadar çizdiğini doğruluyor.
+2. **Hiçbir şey ucuzlamadı ya da bozulmadı** — karenin İŞİ üç kolda da 6,4-7,9 ms, çizim çağrısı
+   **birebir 36**. Tavan işi hafifletmiyor; **boşa çizilen kareyi** kesiyor. Şarj kanadının
+   istediği tam olarak buydu (§E: "8 ms'lik bir kare de saniyede 120 kez çizilirse pil yakar").
+3. **"ms" sütunu artık yanıltmıyor** — tavanlı kolda 7,2 → 11,0 → 27,1 *artıyor*, çünkü o sütun
+   kareler-arası ARALIK. Maliyet "iş ms"te ve o sabit. Bu ayrım olmasaydı final koşu
+   *"tavan koydum, kare süresi %50 arttı"* diye okunurdu.
+
+## §F2 — K-E'NİN BÜYÜKLÜĞÜ: React, geç oyun karesinin **%3,1'i**
+
+Karar paketinde K-E "React commit'i 0,38 → 0" diye yazılıydı. *Commit sayısı* bir maliyet değil;
+maliyet o commit'lerde harcanan **render süresidir** ve o hiç ölçülmemişti. React `<Profiler>`
+ile ölçüldü (geç oyun, 20 masa, ~36 NPC, CPU 4× kısık, 10,5 sn):
+
+| | ms / 10,5 sn | duvar saatinin payı | kare başına |
+|---|---|---|---|
+| DOM kökü (HUD, paneller) | 27,7 | %0,26 | 0,18 ms |
+| Sahne kökü (r3f — üç boyut) | 297,2 | %2,83 | 1,94 ms |
+| **TOPLAM React** | **324,9** | **%3,1** | **2,12 ms** |
+| (aynı koşuda karenin İŞİ) | | | **~64 ms** |
+
+**Yani K-E'nin tavanı 64 ms'lik karede 2,12 ms.** Sıfırlansa bile geç oyun 15,1 → ~15,6 fps olur.
+
+**Üstelik "0" hedefi ulaşılabilir değil.** Commit'i hangi verinin doğurduğu ölçüldü (store
+anahtarı ↔ commit eşleşmesi, 10 sn): commit ile **her seferinde** birlikte gelen anahtarlar
+`notice` (7) · `ready` (3) · `cleanCups` (3) · `dishes` (3) · `autoCollectSum` (3) · `wallet` (2) ·
+`lifetime` (2) · `stats` (1) · `xp` (1). Bunların hepsi **gerçek arayüz içeriği**: para değişti,
+bildirim çıktı, temiz bardak sayısı değişti. Bunları React'ten çıkarmak "optimizasyon" değil,
+HUD'u elle çizmeye başlamak olurdu. Her-kare-değişen veri (`npcs`, `coins`, konum) zaten
+D-055'te React'ten çıkarılmış; kalan commit'ler o artığın değil, **içeriğin** kendisi.
+
+## §F3 — K-C'NİN TARİFİ ÖLÇÜME UYMUYOR: tekrar edenler **iskeletli karakterler**
+
+K-C "instancing: masa/sandalye/para/NPC" diye yazılıydı. Geç oyunda çizilen her mesh'in
+geometri+materyal kimliği sayıldı (`onBeforeRender` ile — frustum kararını renderer'ın kendisi
+verir, taklit edilmez):
+
+| ölçü | sayı | okunuşu |
+|---|---|---|
+| kare başına çizilen mesh | 156 | (gl çizim çağrısı 147 — gölge geçişi dâhil) |
+| **geometri NESNESİ / farklı ŞEKİL** | **151 / 88** | **63 kopya boşa** (%42) |
+| **materyal NESNESİ / farklı GÖRÜNÜM** | **132 / 77** | **55 kopya boşa** (%42) |
+| shader programı | 29 | |
+| birden çok kez çizilen şekillerin toplam çizimi | **94 / 156** | instancing'in teorik hedefi |
+
+**Ama tekrar edenlerin başı iskeletli:** en çok tekrarlanan 11 şeklin 10'u `skinIndex`/`skinWeight`
+taşıyor (karakterler, 5-6 kopya). **`InstancedMesh` iskeletli mesh'i instance edemez** — her
+NPC'nin kendi iskeleti ve kendi pozu var. Yani kolun adındaki "NPC" kanadı, bugünkü three
+sürümünde doğrudan uygulanamaz. İskeletsiz tekrarlar ise küçük (12 üçgenlik kutu ×6).
+
+**Sonuç:** K-C tek bir iş değil, en az dört ayrı iş ve hiçbiri "instancing" diye tek kelimeyle
+yapılmıyor. Kollar ve büyüklükleri §F4'te.
+
+## §F4 — K-C'NİN GERÇEK KOLLARI (ölçüldü, **seçilmedi**)
+
+| Kol | Ne yapar | Ölçülen dayanak | Kalite | Büyüklük |
+|---|---|---|---|---|
+| **C-1** geometri/materyal paylaşımı | aynı şekli/görünümü tek nesneye indirir | §F3: 63 + 55 boşa kopya | değişmez | küçük-orta |
+| **C-2** gölge DÖKENLERİ azalt (gölge AÇIK kalır) | çizim çağrısının gölge geçişi payını keser | §D1: gölge geç oyunda %21,7 · çağrının bir kısmı gölge geçişi | gölge kalkmaz, küçük objelerin gölgesi kalkar | küçük |
+| **C-3** `BatchedMesh` (three r184) — tek materyalli duran objeler | çok mesh → **tek çizim çağrısı** | §F3: 94/156 çizim tekrar eden şekilden | değişmez | **büyük** |
+| **C-4** iskeletli karakterler | tekrar edenlerin başı | §F3: en çok tekrarlanan 10 şekil iskeletli | — | **çok büyük** (doku-pişirme ister) |

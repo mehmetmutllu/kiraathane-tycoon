@@ -13,6 +13,8 @@
  * Koşu:  ?f2golge=0      gölge kapalı
  *        ?f2golge=512    gölge açık, harita 512 (varsayılan 2048 — palette.ts LIGHTING)
  *        ?f2dpr=1        dpr tavanı 1 (varsayılan: PIXEL_BUDGET'ten türeyen değer)
+ *        ?f2fps=0        kare-hızı tavanı KAPALI (K-A öncesi davranış — tavanın kazancı ölçülsün)
+ *        ?f2fps=30       kare-hızı tavanı 30 (varsayılan: KARE_TAVANI_FPS)
  *        ?f2ad=G0        ham çıktıya yazılacak kol adı (ölçüm aracının damgası)
  * İkisi birlikte verilebilir: `?f2golge=0&f2dpr=1`.
  */
@@ -24,6 +26,8 @@ export interface PerfKol {
   golgeHarita: number;
   /** dpr tavanı; 0 = dokunma (çözünürlük bütçesi hesaplasın). */
   dprTavan: number;
+  /** Kare-hızı tavanı (fps); `-1` = dokunma (üretim tavanı), `0` = tavan yok. */
+  fpsTavan: number;
   /** Kol adı — ham çıktı damgası. */
   ad: string;
 }
@@ -36,16 +40,20 @@ function oku(): PerfKol | null {
   const q = new URLSearchParams(window.location.search);
   const golgeHam = q.get('f2golge');
   const dprHam = q.get('f2dpr');
-  if (golgeHam === null && dprHam === null) return null;
+  const fpsHam = q.get('f2fps');
+  if (golgeHam === null && dprHam === null && fpsHam === null) return null;
 
   const golgeSayi = golgeHam === null ? -1 : Number(golgeHam);
   const dprSayi = dprHam === null ? 0 : Number(dprHam);
+  const fpsSayi = fpsHam === null ? -1 : Number(fpsHam);
   return {
     // `f2golge=0` → kapalı. Verilmediyse (-1) üretim davranışı: açık.
     golge: golgeSayi !== 0,
     // 0/negatif/NaN → dokunma. Yalnız pozitif bir kenar haritayı değiştirir.
     golgeHarita: Number.isFinite(golgeSayi) && golgeSayi > 0 ? golgeSayi : 0,
     dprTavan: Number.isFinite(dprSayi) && dprSayi > 0 ? dprSayi : 0,
+    // `f2fps=0` → tavan yok (ölçüm kolu). Verilmediyse/geçersizse -1: üretim tavanı kalır.
+    fpsTavan: Number.isFinite(fpsSayi) && fpsSayi >= 0 ? fpsSayi : -1,
     ad: q.get('f2ad') || 'kol',
   };
 }

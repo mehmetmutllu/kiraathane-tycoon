@@ -5,39 +5,35 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-18 — **T4 ÖLÇÜMÜ BİTTİ, KARAR ALINDI, KOD YAZILMADI**)
+## ŞU AN (2026-09-18 — **K-A BİTTİ · K-E/K-C YENİDEN SORULDU**)
 
 ```
-SORU            : 2026-09-18 geri bildiriminin 24 kalemi (G-58…G-81) hangi sırayla kapanır,
-                  hangileri ölçümsüz kapanamaz?
-PLAN            : docs/plan-geribildirim-2026-09-18.md — T1→T2→T4→T3→T5 (kullanıcı onaylı)
-KALEMLER        : docs/geribildirim-oyun-testi-2026-09-18.md (kodda doğrulanmış köklerle)
-BİTEN           : T1 (G-78 G-79 G-77 G-69 G-70) · T2a (G-59 G-60) · T2b (G-58 G-62 G-63 G-64 G-81)
-KARAR           : D-133 (kalemler+sıra) · D-134 (T2a) · D-135 (T2b) · **D-136 (T4 kolları)**
-ÖLÇÜLEN         : T4 — docs/perf-raporu-t4.md · ham: docs/olcum-perf-t4.{txt,json} (TAM koşu)
-UYGULAMA        : **T4'ün kodu YAZILMADI** — sıradaki oturumun işi
-BEKÇİ           : onarim-g58-g81 (14) · gorev-hatti-t2 (15) · kutlama-ogretme-t2b (24)
-                  + gorev-kimligi'ye G-77 bekçisi → her tur **2 mutasyonla** doğrulandı
-FİNAL           : vitest 1361/1361 · duman 45/45 · tsc temiz
+SORU            : T4'ün seçilen üç kolu (D-136) koda nasıl iner ve kabul ölçütleri tutuyor mu?
+KARAR (önceki)  : D-136 — K-A + K-C + K-E seçilmişti
+UYGULAMA        : K-A ✅ (60 fps tavanı, DÖRT tuvalin hepsinde) · K-E ⛔ · K-C ⛔
+BEKÇİ           : tests/kare-tavani-t4.test.ts (17) → 4 mutasyon · duman +3 denetim → 2 mutasyon
+SAYILAR         : docs/olcum-perf-t4-son.{txt,json} (TAM, temiz makine) · rapor §F
+KARAR (yeni)    : D-137 — K-E ve K-C'nin TARİFİ ölçümle çürüdü, kod yazılmadı, kullanıcıya soruldu
+FİNAL           : vitest 1380/1380 · duman 48/48 · tsc temiz
 ```
 
-**T4'ÜN DÖRT BULGUSU (tamamı raporda, burada tek satır):**
-① **Yük ×6,6** — 8,3 ms/117 fps (erken) → 55,1 ms/**15,1 fps** (geç); çağrı 36→171, üçgen ×12.
-② **SIZINTI YOK** — 3 dk aynı dünyada kare −%5,2, yığın **%0,0**, program sabit. Oyun *oynadıkça*
-   değil *büyüdükçe* yavaşlıyor ⇒ "sızıntı ara" kolu kod aramadan ölçümle **elendi**.
-③ **dpr kolu ÖLÜ, hatta ters** (+%6,6) ⇒ darboğaz fragment değil **CPU**. Gölgenin payı F2'deki
-   %40'tan **%21,7**'ye düşmüş (geç oyunda gölge DIŞI maliyet büyüdüğü için).
-④ **Şarjın kaynağı kasma değil:** `frameloop` yok, fps tavanı yok — erken oyunda **116,7 fps**.
-## SIRADAKİ OTURUMUN İŞİ — T4 commit #2 (sıra: K-A → K-E → K-C)
+**K-A — tuttu:** erken oyun **116,7 → 59,9 fps**; §E aynı koşuda kanıtladı (tavan YOK 133,8 →
+tavan 60 **59,7** → tavan 30 29,9) ve karenin **İŞİ** üç kolda da 6,4-7,9 ms, çizim çağrısı
+birebir **36** — yani tavan hiçbir şeyi ucuzlatmıyor/bozmuyor, **boşa çizilen kareyi** kesiyor.
+Gölge açık kaldı, §B'de sızıntı yok (yığın %0,0).
 
-Kullanıcı kararı (D-136): şarj → **K-A 60 fps tavanı**; kasma → *"kalite bozmadan ve düşürmeden
-en mantıklı hamleler"* → **K-C** (instancing) + **K-E** (React commit 0,38→0). **K-B** (gölgeyi
-kapat) kaliteyi düşürdüğü ve D-073 kullanıcının kendi kararı olduğu için **elendi**; **K-D**
-(müşteri tavanı) geliri düşürür → **T3**.
+**NEDEN K-E/K-C DURDU (ikisi de ölçüldü, ikisi de tarifine uymadı):**
+- **K-E** "commit 0,38 → 0" idi. React `<Profiler>`: geç oyun karesinin **%3,1'i** (2,12 ms /
+  ~64 ms). Ve "0" ulaşılamaz — commit'i doğuran `notice`/`wallet`/`cleanCups`/`dishes`/`xp`
+  **gerçek arayüz içeriği**; her-kare-değişen veri zaten D-055'te çıkarılmıştı.
+- **K-C** "instancing: masa/sandalye/para/NPC" idi. Geometri **151 nesne / 88 şekil**, materyal
+  **132 / 77** (%42 boşa kopya) — ama **en çok tekrarlayan 11 şeklin 10'u iskeletli**;
+  `InstancedMesh` iskeletli mesh'i instance EDEMEZ. K-C tek iş değil, dört ayrı iş (§F4).
 
-**Kabul ölçütü SAYI LİSTESİ** (`docs/perf-raporu-t4.md` §Karar): erken fps **≤ 62** · geç çizim
-çağrısı **171'den düşer** · commit/kare **≤ 0,05** · **gölge AÇIK kalır** · §B'de eğilim yok.
-Final koşu: `OLCUM=tam node tools/olcum-perf-t4.mjs`.
+## SIRADAKİ OTURUMUN İŞİ — kullanıcının KARAR PAKETİ cevabı
+Rapor §F4'teki dört kol (C-1 paylaşım · C-2 gölge dökenleri · C-3 BatchedMesh · C-4 iskeletli
+karakterler) + K-E'nin %3,1'i sürüp sürmeyeceği. Seçilen kol uygulanır → bekçi → final tam koşu.
+
 ## AÇIK KALEMLER
 - **T3 denge turu** (varyant kapısı, iki commit): K1 tepsi 75₺ · K2 garson tepsi tabanı ·
   K3 1. salonda 2. garson · K4 masa4 380₺ · K5 2. salonu geciktir · **K6 masa sırası

@@ -38,8 +38,12 @@ const KOK = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const TAM = (process.env.OLCUM || 'kisa') === 'tam';
 const PORT = Number.parseInt(process.env.T4_PORT ?? '', 10) || 5218;
 const ADRES = `http://localhost:${PORT}/`;
-const CIKTI = path.join(KOK, 'docs/olcum-perf-t4.txt');
-const CIKTI_JSON = path.join(KOK, 'docs/olcum-perf-t4.json');
+/** `T4_ETIKET=son` → `docs/olcum-perf-t4-son.*`. Taban ham çıktısı ezilmesin: rapor ikisini
+ *  yan yana okur, "önce/sonra" iddiası dosyada da duruyor olmalı. */
+const ETIKET = (process.env.T4_ETIKET || '').trim();
+const EK = ETIKET ? `-${ETIKET}` : '';
+const CIKTI = path.join(KOK, `docs/olcum-perf-t4${EK}.txt`);
+const CIKTI_JSON = path.join(KOK, `docs/olcum-perf-t4${EK}.json`);
 
 const TELEFON = { width: 412, height: 915, deviceScaleFactor: 2.625, isMobile: true, hasTouch: true };
 /** F2 ile AYNI kısma — iki turun sayıları karşılaştırılabilir kalsın. */
@@ -154,20 +158,44 @@ async function dunyaKur(sayfa, padler, padSayisi, masaSeviye, isinmaSn, gorevSay
   await sayfa.waitForTimeout(300);
 }
 
-/** Bir örnekleme dilimi: GERÇEK rAF döngüsünde kare süresi + sayaçlar + nesne sayıları. */
+/**
+ * Bir örnekleme dilimi: GERÇEK rAF döngüsünde kare süresi + sayaçlar + nesne sayıları.
+ *
+ * ÖLÇÜLEN ŞEY **ÇİZİLEN** KAREDİR, rAF tiki değil (K-A · D-136). Tavan gelmeden önce ikisi
+ * aynı şeydi (r3f `frameloop="always"` her rAF'te çizerdi), o yüzden TABAN sayıları aynen
+ * karşılaştırılabilir kalır. Tavan gelince rAF tavandan hızlı dönmeye devam eder ama çizim
+ * seyrekleşir; rAF'i saymak "kare süresi 3 ms" gibi anlamsız bir sayı verirdi. Ayrım
+ * `gl.info.render.frame`den okunur — three bu sayacı her `render()` çağrısında artırır ve
+ * `info.reset()` onu SIFIRLAMAZ, yani çizim sayısının doğrudan kaynağıdır.
+ *
+ * Örnekleyici sürücüden SONRA kaydolduğu için aynı rAF tikinde sayaç güncellenmiş olur.
+ */
 async function dilimOlc(sayfa, sure) {
   return sayfa.evaluate(async (ms) => {
-    const kareler = [], cagrilar = [], ucgenler = [];
+    const kareler = [], cagrilar = [], ucgenler = [], isler = [];
     const commit0 = window.__commit ?? 0;
     const t0 = performance.now();
+    let rafTik = 0;
     await new Promise((coz) => {
       let onceki = performance.now();
+      let oncekiKareNo = -1;
       const bitis = onceki + ms;
       const adim = (t) => {
-        kareler.push(t - onceki);
-        onceki = t;
+        rafTik++;
         const bilgi = window.__three?.gl?.info?.render;
-        if (bilgi) { cagrilar.push(bilgi.calls); ucgenler.push(bilgi.triangles); }
+        const kareNo = bilgi?.frame ?? -1;
+        // Yeni çizim yoksa (tavan bu tiki atladı) örnek alınmaz: aralık bir sonraki ÇİZİME kadar
+        // birikir ve gerçek kareler-arası süreyi verir.
+        if (kareNo !== oncekiKareNo) {
+          if (oncekiKareNo >= 0) kareler.push(t - onceki);
+          onceki = t;
+          oncekiKareNo = kareNo;
+          if (bilgi) { cagrilar.push(bilgi.calls); ucgenler.push(bilgi.triangles); }
+          // KARENİN İŞİ — tavan (K-A) gelince kareler-arası süre işin maliyeti olmaktan çıktı
+          // (60 fps'te 16,7 ms, sahne ne kadar ucuz olursa olsun). Maliyet buradan okunur.
+          const is = window.__perf?.().isMs;
+          if (typeof is === 'number' && is > 0) isler.push(is);
+        }
         if (t < bitis) requestAnimationFrame(adim);
         else coz();
       };
@@ -183,8 +211,12 @@ async function dilimOlc(sayfa, sure) {
     return {
       kare: kareler.length,
       fps: (kareler.length / gecen) * 1000,
+      // rAF tiki ≠ çizim: tavanın gerçekten çalıştığının ikinci tanığı (tik > kare olmalı).
+      rafFps: (rafTik / gecen) * 1000,
       ortanca: orta(kareler),
       p95: yuzde(kareler, 0.95),
+      isOrtanca: orta(isler),
+      isP95: yuzde(isler, 0.95),
       enKotu: Math.max(...kareler, 0),
       commit: (window.__commit ?? 0) - commit0,
       commitKare: kareler.length ? ((window.__commit ?? 0) - commit0) / kareler.length : 0,
@@ -306,6 +338,23 @@ async function main() {
       rapor.D.push({ ...k, ...o, hatalar });
       await baglam.close();
     }
+    // ───────────────────────────────────────── §E KARE-HIZI TAVANI (K-A) — ERKEN oyun
+    // Tavan geç oyunda ısırmaz (kare zaten 60'ın altında); şarj şikâyeti ERKEN oyundan geliyordu
+    // (§E: 116,7 fps). Kol bu yüzden A1 kademesinde ölçülür, aynı koşuda, aynı tohumla.
+    const fpsKollari = [
+      { ad: 'E0 tavan YOK (eski)', sorgu: '?f2fps=0&f2ad=E0' },
+      { ad: 'E1 tavan 60 (K-A)', sorgu: '?f2fps=60&f2ad=E1' },
+      { ad: 'E2 tavan 30', sorgu: '?f2fps=30&f2ad=E2' },
+    ];
+    rapor.E = [];
+    for (const k of fpsKollari) {
+      const { baglam, sayfa, hatalar } = await sayfaAc(tarayici, k.sorgu);
+      await dunyaKur(sayfa, padler, 0, 0, 60, gorevSayisi);
+      await sayfa.waitForTimeout(ISINMA_MS);
+      const o = await dilimOlc(sayfa, ORNEK_MS);
+      rapor.E.push({ ...k, ...o, hatalar });
+      await baglam.close();
+    }
   } finally {
     await tarayici.close();
     sunucu.kill();
@@ -321,21 +370,22 @@ async function main() {
 
   yaz('');
   yaz('§A YÜK EĞRİSİ — mekân büyüdükçe kare (canlı simülasyon)');
-  yaz('kademe      | masa | NPC | para | kirli |  ms  |  p95 |  fps  | çağrı |   üçgen   | commit/kare | heapMB');
+  yaz('kademe      | masa | NPC | para | kirli |  ms  |  p95 |  fps  | iş ms | iş p95 | çağrı |   üçgen   | commit/kare | heapMB');
   for (const a of rapor.A) {
     yaz(
       `${a.ad.padEnd(11)} | ${String(a.masa).padStart(4)} | ${String(a.npc).padStart(3)} | ${String(a.para).padStart(4)} | ` +
       `${String(a.kirli).padStart(5)} | ${f1(a.ortanca).padStart(4)} | ${f1(a.p95).padStart(4)} | ${f1(a.fps).padStart(5)} | ` +
+      `${f1(a.isOrtanca).padStart(5)} | ${f1(a.isP95).padStart(6)} | ` +
       `${String(a.cagri).padStart(5)} | ${tr(a.ucgen).padStart(9)} | ${f2(a.commitKare).padStart(11)} | ${f1(a.heapMB)}`,
     );
   }
 
   yaz('');
   yaz(`§B SÜRÜKLENME — AYNI dünya, ${rapor.B.dilimMs / 1000} sn'lik ${rapor.B.dilimler.length} dilim`);
-  yaz('dilim |  ms  |  p95 |  fps  | çağrı |   üçgen   | geo | doku | prog | NPC | para | kirli | heapMB | commit/kare');
+  yaz('dilim |  ms  |  p95 |  fps  | iş ms | çağrı |   üçgen   | geo | doku | prog | NPC | para | kirli | heapMB | commit/kare');
   for (const d of rapor.B.dilimler) {
     yaz(
-      `${String(d.i).padStart(5)} | ${f1(d.ortanca).padStart(4)} | ${f1(d.p95).padStart(4)} | ${f1(d.fps).padStart(5)} | ` +
+      `${String(d.i).padStart(5)} | ${f1(d.ortanca).padStart(4)} | ${f1(d.p95).padStart(4)} | ${f1(d.fps).padStart(5)} | ${f1(d.isOrtanca).padStart(5)} | ` +
       `${String(d.cagri).padStart(5)} | ${tr(d.ucgen).padStart(9)} | ${String(d.geometri).padStart(3)} | ${String(d.doku).padStart(4)} | ` +
       `${String(d.program).padStart(4)} | ${String(d.npc).padStart(3)} | ${String(d.para).padStart(4)} | ${String(d.kirli).padStart(5)} | ` +
       `${f1(d.heapMB).padStart(6)} | ${f2(d.commitKare)}`,
@@ -361,18 +411,32 @@ async function main() {
 
   yaz('');
   yaz('§D KOLLAR — geç oyun, CANLI dünya');
-  yaz('kol                      | gölge |  ms  |  p95 |  fps  | çağrı | dpr  | tabana fark');
+  yaz('kol                      | gölge |  ms  |  p95 |  fps  | iş ms | çağrı | dpr  | tabana fark');
   const taban = rapor.D[0];
   for (const k of rapor.D) {
     const d = k.ortanca - taban.ortanca;
     yaz(
       `${k.ad.padEnd(24)} | ${(k.golgeAcik ? 'açık' : 'kapalı').padEnd(5)} | ${f1(k.ortanca).padStart(4)} | ${f1(k.p95).padStart(4)} | ` +
-      `${f1(k.fps).padStart(5)} | ${String(k.cagri).padStart(5)} | ${f2(k.dpr).padStart(4)} | ` +
+      `${f1(k.fps).padStart(5)} | ${f1(k.isOrtanca).padStart(5)} | ${String(k.cagri).padStart(5)} | ${f2(k.dpr).padStart(4)} | ` +
       `${k === taban ? '—' : `${f1(d)} ms (${f1((d / taban.ortanca) * 100)}%)`}`,
     );
   }
 
-  const tumHata = [...rapor.A.flatMap((a) => a.hatalar ?? []), ...(rapor.B.hatalar ?? []), ...rapor.D.flatMap((d) => d.hatalar ?? [])];
+  if (rapor.E) {
+    yaz('');
+    yaz('§E KARE-HIZI TAVANI (K-A) — ERKEN oyun, AYNI koşu, aynı tohum');
+    yaz('kol                  |  ms  |  p95 |  fps  | rAF fps | iş ms | çağrı');
+    for (const k of rapor.E) {
+      yaz(
+        `${k.ad.padEnd(20)} | ${f1(k.ortanca).padStart(4)} | ${f1(k.p95).padStart(4)} | ${f1(k.fps).padStart(5)} | ` +
+        `${f1(k.rafFps).padStart(7)} | ${f1(k.isOrtanca).padStart(5)} | ${String(k.cagri).padStart(5)}`,
+      );
+    }
+    yaz('  → "fps" ÇİZİLEN kare · "rAF fps" tarayıcının döndüğü tik · "iş ms" advance() içinde geçen süre');
+    yaz('  → "ms" tavanlı kipte işin maliyeti DEĞİL kareler-arası ARALIK; maliyet "iş ms" sütunudur');
+  }
+
+  const tumHata = [...rapor.A.flatMap((a) => a.hatalar ?? []), ...(rapor.B.hatalar ?? []), ...rapor.D.flatMap((d) => d.hatalar ?? []), ...(rapor.E ?? []).flatMap((e) => e.hatalar ?? [])];
   yaz('');
   yaz(`KONSOL HATASI: ${tumHata.length === 0 ? 'yok' : tumHata.length}`);
   for (const h of tumHata.slice(0, 10)) yaz(`  ! ${h}`);

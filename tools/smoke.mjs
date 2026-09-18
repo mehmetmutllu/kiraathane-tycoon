@@ -416,6 +416,43 @@ try {
   await page.click('[data-testid="menu"] .sheet-back');
   await page.waitForTimeout(200);
 
+  /*
+   * KARE-HIZI TAVANI (K-A · D-136) — üç denetim, üçü de SAYIYLA.
+   *
+   * Sahne gözle doğrulanamıyor (CLAUDE.md), o yüzden tavanın üç ayrı bozulma biçimi ayrı ayrı
+   * sayıya bağlandı:
+   *   ① sürücü dönüyor mu — `frameloop="never"` ile sürücü durursa ekran DONAR ve hiçbir test
+   *     bunu görmez; sayaç 0 kalırsa yakalanır.
+   *   ② tavan tutuyor mu — sayaç saniyede ~60'ı aşarsa tavan delinmiş demektir (şikâyetin kendisi).
+   *   ③ ÖNİZLEME tuvali de sürülüyor mu — paneldeki `<Canvas frameloop="never">` sürücüsüz
+   *     kalsaydı önizleme BOŞ çıkardı; panel açılınca hız ikiye katlanmalı.
+   */
+  {
+    const olc = async (ms) => {
+      const a = await page.evaluate(() => window.__kareSayaci ?? -1);
+      await page.waitForTimeout(ms);
+      const b = await page.evaluate(() => window.__kareSayaci ?? -1);
+      return ((b - a) / ms) * 1000;
+    };
+    const tek = await olc(1500);
+    // ALT SINIR bilerek düşük: başsız tarayıcıda ve yüklü makinede rAF'in kendisi 60'a yaklaşmaz
+    // (bu koşuda ~7/sn ölçülüyor). Buradaki iddia "oyun hızlı" DEĞİL, "sürücü yaşıyor" — sıfır
+    // demek `frameloop="never"` ile DONMUŞ ekran demektir ve başka hiçbir test onu görmez.
+    if (tek > 2) pass(`Kare sürücüsü dönüyor (${tek.toFixed(0)} kare/sn)`);
+    else fail(`Kare sürücüsü durmuş — sahne donar (${tek.toFixed(0)} kare/sn)`);
+    // ÜST SINIR asıl iddia: tavan delinirse sürücü her rAF'te ilerletir ve bu sayı fırlar.
+    if (tek <= 75) pass(`Kare tavanı tutuyor (${tek.toFixed(0)} ≤ 75 kare/sn)`);
+    else fail(`Kare tavanı delinmiş: ${tek.toFixed(0)} kare/sn`);
+
+    await page.click('[data-testid="shop"]');
+    await page.waitForSelector('[data-testid="shop-preview"]', { timeout: 5000 });
+    const cift = await olc(1500);
+    if (cift > tek * 1.4) pass(`Önizleme tuvali de sürülüyor (${tek.toFixed(0)}→${cift.toFixed(0)} kare/sn)`);
+    else fail(`Önizleme tuvali çizmiyor — boş kalır (${tek.toFixed(0)}→${cift.toFixed(0)} kare/sn)`);
+    await page.click('[data-testid="shop-panel"] .sheet-back');
+    await page.waitForSelector('[data-testid="shop-panel"]', { state: 'detached', timeout: 5000 });
+  }
+
   // Dikey (portrait) orana çevir → responsive kamera/HUD hatasız mı
   await page.setViewportSize({ width: 412, height: 915 });
   await page.waitForTimeout(500);

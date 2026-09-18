@@ -4447,3 +4447,41 @@ turunu ister.
   **bulaşık döngüsü hiç çalışmıyordu** ve araç "kirli kap: 0" raporluyordu; bu "sorun yok" diye
   okunacaktı. İkisi de tam koşudan ÖNCE düzeltildi.
 - **Bu commit'te kod YOK** (commit #1 kuralı). Uygulama + bekçi + final tam koşu ayrı oturumda.
+
+## D-137 — T4 uygulama: K-A YAPILDI; K-E ve K-C'nin tarifi ÖLÇÜMLE değişti
+
+- **K-A (60 fps tavanı) uygulandı ve tuttu.** `<Canvas frameloop="never">` + `KareTavani`
+  sürücüsü; zamanlama kararı `src/game/kareTavani.ts`te saf fonksiyon. Erken oyun **116,7 →
+  ~60 fps**, görünümde hiçbir kayıp yok, gölge açık kaldı.
+- **Tavan her `<Canvas>`a takıldı, yalnız sahneye değil.** Panellerdeki üç önizleme (karakter,
+  tema, diyorama) ayrı birer tuval; tavansız bırakılsalardı panel açıkken neredeyse durağan bir
+  kareyi saniyede 120 kez çizmeye devam ederlerdi. Kusur tekti, çözüm de tek bileşen.
+- **İki incelik bekçiye sayıyla bağlandı** (`tests/kare-tavani-t4.test.ts`, 17 denetim):
+  ① **tolerans** — silinirse 144 Hz'de tempo düzensizleşir ② **sabit tempo** — silinirse hız
+  tavanın ÜSTÜNE tırmanır (144 Hz'de 72 fps). **4 mutasyon, 4'ü de yakalandı.**
+  Duman'a 3 denetim eklendi (sürücü yaşıyor · tavan delinmemiş · önizleme tuvali çiziliyor);
+  **2 mutasyonla doğrulandı** (önizlemeden sürücü silindi → kırmızı · sahneden silindi → kırmızı).
+- **Aracın ölçtüğü şey değişti, bu yüzden araç da düzeltildi.** Tavandan önce "rAF tiki" ile
+  "çizilen kare" aynı şeydi; tavanla ayrıştılar. Araç rAF'i saymaya devam etseydi *"kare süresi
+  3 ms, fps 300"* diye anlamsız bir sayı üretirdi. Örnekleyici artık `gl.info.render.frame`e
+  bakar. **Taban sayıları etkilenmez** (o zaman tik = çizimdi) → önce/sonra karşılaştırılabilir.
+  Ayrıca **"iş ms"** sütunu eklendi: tavanlı kipte kareler-arası süre maliyeti değil ARALIĞI
+  gösterir; maliyet `advance()` içinde ayrı ölçülür, yoksa "tavan koydum, ms arttı" diye yanlış
+  okunurdu. Taban ham çıktısı ezilmesin diye final koşu `T4_ETIKET=son` ile ayrı dosyaya yazar.
+- **K-E'nin TAVANI ölçüldü: geç oyun karesinin %3,1'i** (React `<Profiler>`: DOM kökü 27,7 ms +
+  sahne kökü 297,2 ms / 10,5 sn; kare başına **2,12 ms**, karenin işi ~64 ms). Karar paketinde
+  "commit 0,38 → 0" yazıyordu ama *commit sayısı maliyet değildir* ve maliyet hiç ölçülmemişti.
+  **Üstelik "0" ulaşılabilir değil:** commit'le her seferinde birlikte gelen anahtarlar `notice`,
+  `wallet`, `cleanCups`, `dishes`, `stats`, `xp` — hepsi GERÇEK arayüz içeriği. Her-kare-değişen
+  veri zaten D-055'te React'ten çıkarılmıştı; kalan commit'ler artık değil, içeriğin kendisi.
+- **K-C'nin tarifi ölçüme uymuyor.** Kol "instancing: masa/sandalye/para/NPC" diye yazılıydı.
+  Geç oyunda çizilen her mesh sayıldı: kare başına 156 çizim · geometri **151 nesne / 88 farklı
+  şekil** (63 kopya boşa) · materyal **132 / 77** (55 kopya boşa) · tekrar eden şekillerin toplam
+  çizimi 94/156. **Ama en çok tekrarlayan 11 şeklin 10'u iskeletli** (`skinIndex`/`skinWeight` —
+  karakterler): `InstancedMesh` iskeletli mesh'i instance EDEMEZ, her NPC'nin kendi pozu var.
+  Yani kolun "NPC" kanadı bugünkü three sürümünde doğrudan uygulanamaz; iskeletsiz tekrarlar ise
+  küçük. K-C tek iş değil, en az dört ayrı iş (rapor §F4: C-1 paylaşım · C-2 gölge dökenleri ·
+  C-3 `BatchedMesh` · C-4 iskeletli karakterler).
+- **Bu yüzden K-E ve K-C'nin kodu YAZILMADI ve kullanıcıya yeni karar paketiyle soruldu.** Kural
+  gereği (CLAUDE.md: *"bir kararda takılırsan kod yazmadan önce sor"*): iki kolun da uygulama
+  tarifi, ölçülen sayıyla çelişiyordu. Ölçüm raporda (§F), karar kullanıcıda.

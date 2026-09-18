@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
+import { KareTavani } from '../three/KareTavani';
 import type { Group } from 'three';
 import { useGame } from '../../game/store';
 import { fmt, D } from '../../game/decimal';
@@ -342,7 +343,9 @@ export function CharacterPanel({ onClose }: { onClose: () => void }) {
             kullanıyordu ve üç sekmede de ayak alt kenara dayanıyordu. Kutu portreye büyüdü
             (`hud.css` .char-canvas), duruş salonunkiyle eşitlendi. */}
         <div className="char-canvas">
-          <Canvas dpr={[1, 1.5]} gl={PREVIEW_GL}>
+          <Canvas dpr={[1, 1.5]} gl={PREVIEW_GL} frameloop="never">
+            {/* K-A: önizleme de tavanlı — panel açıkken durağan kareyi 120 kez çizmesin. */}
+            <KareTavani />
             <FixedCam d={2.6} ty={1.02} />
             {/* Işık ve zemin/duvar SAHNEYLE aynı bileşenlerden: panelde gördüğün kıyafet rengi
                 salonda göreceğinle birebir (tek tanım `three/lights.tsx`). */}

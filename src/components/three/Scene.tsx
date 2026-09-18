@@ -8,6 +8,8 @@ import { areaOfTable, THE_SERVICE } from '../../game/world';
 import { masterId, masterCost, masterUnlockedForTable, dishStationVisible, cardQuestIndex } from '../../game/rules';
 import { SceneLights } from './lights';
 import { devPerfKol } from '../../game/devPerf';
+import { KARE_TAVANI_FPS } from '../../game/kareTavani';
+import { KareTavani } from './KareTavani';
 import { cihazSinifiOku, cihazSinifiYaz, golgeAcikMi, sinifBelirle, ISINMA_KARE, ORNEK_KARE } from '../../game/cihazSinifi';
 import { dwellState } from '../../game/dwell';
 import { Bahce } from './Bahce';
@@ -1364,6 +1366,8 @@ export function Scene() {
   const golgeTercihi = useGame((g) => g.settings.golge);
   const [zayifCihaz, setZayifCihaz] = useState(() => cihazSinifiOku() === 'zayif');
   const golgeAcik = olcumKolu ? olcumKolu.golge : golgeAcikMi(golgeTercihi, zayifCihaz ? 'zayif' : 'guclu');
+  // K-A: tavan üretimde sabit; DEV ölçüm kolu (`?f2fps=0`) tavansız davranışı geri getirir.
+  const fpsTavan = olcumKolu && olcumKolu.fpsTavan >= 0 ? olcumKolu.fpsTavan : KARE_TAVANI_FPS;
   return (
     // GÖLGE AÇIK (D-073 — D-054 kullanıcı tarafından geri alındı, 2026-09-07): maket üstten
     // görüldü ve *"maketteki ışık ve gölgeler baya iyiymiş, gölgeleri tekrar istiyorum"* dendi.
@@ -1372,6 +1376,8 @@ export function Scene() {
     // (kare süresi ~+0,6 ms); Faz 7'de telefonda yeniden ölçülecek.
     <Canvas
       shadows={golgeAcik ? 'soft' : false}
+      // K-A (D-136): r3f'in kendi döngüsü kapalı — kareyi `KareSurucusu` tavanlı sürer.
+      frameloop="never"
       camera={{ position: [0, 9, 11], fov: CAMERA_FOV }}
       gl={{ antialias: true, toneMappingExposure: LIGHTING.exposure }}
       dpr={olcumKolu?.dprTavan ? [1, olcumKolu.dprTavan] : [1, 2]}
@@ -1379,6 +1385,7 @@ export function Scene() {
       {/* IŞIK (G0) — renkler palette.ts LIGHTING'te, gerekçe orada yazılı.
           NOT: tone mapping ZATEN ACESFilmic (r3f varsayılanı, `flat` verilmedi) — bu yüzden
           burada yeniden atanmıyor, yalnız exposure ile değer aralığı açılıyor. */}
+      <KareTavani fps={fpsTavan} olc />
       <AdaptiveResolution />
       <CihazSinifiOlcer onSonuc={setZayifCihaz} />
       <GolgeTazele acik={golgeAcik} />

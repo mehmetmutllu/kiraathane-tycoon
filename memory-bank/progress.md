@@ -753,7 +753,12 @@ için **VARYANT KAPISINA TABİ**.
   kamera tezgâha) · G-64 spotlight artık konuşuyor. **Yan bulgu:** `<html lang="en">` Türkçe
   büyük harfi bozuyordu ("BULAŞIK BIRIYOR") → `lang="tr"`. **G-71 bilerek yapılmadı** — kök
   G-68, emniyet kemeri ölçümsüz yazılamaz → T3-K10. Kare: `docs/gorsel/ss/t2b-{1..4}-*.png`.
-- 🔜 **T4 PERFORMANS:** G-80 — şarj + kasma. Eldeki ölçüm masaüstünde alınmıştı, **bayat**.
+- 🔧 **T4 PERFORMANS (G-80): ŞARJ KANADI BİTTİ, KASMA KANADI YENİDEN SORULDU.** Ölçüm + karar
+  D-136; uygulama D-137. **K-A 60 fps tavanı yapıldı** — erken oyun 116,7 → ~60 fps, her `<Canvas>`a
+  (sahne + üç önizleme) takıldı; bekçi `tests/kare-tavani-t4.test.ts` (17) + duman'da 3 denetim.
+  **K-E ve K-C'nin kodu YAZILMADI:** ölçüm ikisinin de tarifini çürüttü — K-E'nin tavanı karenin
+  %3,1'i, K-C'de en çok tekrarlayan şekiller iskeletli (instance edilemez). Yeni karar paketi
+  kullanıcıda (rapor §F).
 - 🔜 **T3 DENGE (varyant kapısı, iki commit):** G-65 tepsi 75₺ · G-72 garson tepsi tabanı ·
   G-73 1. salonda 2. garson · G-74 masa4 380₺ · G-75 2. salonu geciktir · **G-76 masa sırası
   genişlik-önce → D-124 yeniden okunacak** · G-66/G-67 seviye eğrisi+ödülü (**D-092 yeniden
