@@ -735,6 +735,22 @@ bir basamak büyüsün.
 1 💎 ya da 200 ₺, seviyeyle artar** — taslak sayı, karar değil; `economy.config.ts`e dokunacağı
 için **VARYANT KAPISINA TABİ**.
 
+## Kullanıcı geri bildirimi 2026-09-18 — 24 yeni kalem (G-58…G-81) · **T1 UYGULANDI**
+5 dakikalık oynanış (ses kaydı) + yazılı notlar. Tam liste + kullanıcının kendi cümleleri:
+`docs/geribildirim-oyun-testi-2026-09-18.md` · plan ve turlar: `docs/plan-geribildirim-2026-09-18.md`
+· karar: **D-133**. Sıra kullanıcı onaylı: **T1 → T2 → T4 → T3 → T5.**
+- ✅ **T1 ONARIM (bitti):** G-78 kısmi ödenmiş yükseltme kayıtta durur (**veri kaybıydı**) ·
+  G-79 açılışta Usta modali çevrimdışı ekranın üstüne binmiyor + dwell kenar-tetikli ·
+  G-77 görev başlığındaki seviye = ekrandaki seviye · G-69 bulaşık tezgâhı mekanikle aynı anda
+  doğuyor · G-70 tezgâh yalnız ona gelen kapla kirleniyor. Bekçi: `tests/onarim-g58-g81.test.ts`.
+- 🔜 **T2 GÖREV AKIŞI (sıradaki):** G-58…G-64, G-71, G-81 — "hepsi tek sıra hattı": biten görev
+  kapanır → kutlama → yeni kart → **ancak sonra** pad/zoom. G-41…G-44'ün (2026-09-16) devamı.
+- 🔜 **T4 PERFORMANS:** G-80 — şarj + kasma. Eldeki ölçüm masaüstünde alınmıştı, **bayat**.
+- 🔜 **T3 DENGE (varyant kapısı, iki commit):** G-65 tepsi 75₺ · G-72 garson tepsi tabanı ·
+  G-73 1. salonda 2. garson · G-74 masa4 380₺ · G-75 2. salonu geciktir · **G-76 masa sırası
+  genişlik-önce → D-124 yeniden okunacak** · G-66/G-67 seviye eğrisi+ödülü (**D-092 yeniden
+  okunacak**) · G-68 tezgâhın duvar payı · G-70'in istif kolu (K9).
+
 ## Bilinen açık kalemler
 - ~~Hedeflerin ₺ kolu bu hâliyle kalsın mı?~~ → **D3b'de kapandı (D-090):** ₺ kolu tamamen kalktı,
   yerine kalıcı gelir çarpanı geldi. **Yeni açık kalem:** çarpan GÖRÜNMEZ bir ödüldür (panelde iki

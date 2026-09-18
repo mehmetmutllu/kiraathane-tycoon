@@ -205,3 +205,46 @@ describe('D-088 ④ kayıt ↔ oyun turu', () => {
     });
   });
 });
+
+/**
+ * G-77 BEKÇİSİ — GÖREV BAŞLIĞINDAKİ SEVİYE SAYISI = EKRANDA YAZAN SEVİYE.
+ *
+ * Kusur şuydu: masa/servis seviyesi kodda 0-tabanlı, dünyada `L${seviye+1}` yazılıyor
+ * (`tick.ts` yükseltme noktası etiketleri) ama görev başlıkları elle yazıldığı için İÇ sayıyı
+ * yazıyorlardı — "2 masayı Seviye 2'ye çıkar" hedefi `level: 2`, oyuncunun gördüğü **L3**.
+ * Kullanıcı 2026-09-18'de bildirdi. Başlıklar düzeltildi; bu test bir daha kaymasını engeller.
+ *
+ * Kapsam bilerek dar: yalnız 0-TABANLI merdivenler (masa · servis). Lavabo 1-tabanlıdır
+ * (pad açılışı = L1) ve karakter/garson tepsisi seviye değil KAPASİTE yazar ("Tepsini 3
+ * bardağa çıkar") — ikisi de dönüşümsüzdür, o yüzden bu bekçinin dışında.
+ */
+describe('G-77 · görev başlığındaki seviye = ekrandaki seviye', () => {
+  /** Başlıktaki ilk "Seviye N" sayısı (yoksa null). */
+  const basliktakiSeviye = (title: string): number | null => {
+    const m = /Seviye\s+(\d+)/.exec(title);
+    return m ? Number(m[1]) : null;
+  };
+
+  /** Hedefin EKRAN karşılığı: 0-tabanlı merdivenler dünyada +1 yazılır. */
+  const ekrandakiSeviye = (q: QuestDef): number | null => {
+    const t = q.target;
+    if (t.type === 'stationLevel' || t.type === 'tableLevel' || t.type === 'tablesAtLevel') return t.level + 1;
+    return null;
+  };
+
+  it('başlıkta "Seviye N" geçen her görevde N, hedefin ekran karşılığıdır', () => {
+    const sapan = C.quests
+      .map((q) => ({ q, yazan: basliktakiSeviye(q.title), olmasi: ekrandakiSeviye(q) }))
+      .filter((x) => x.yazan != null && x.olmasi != null && x.yazan !== x.olmasi)
+      .map((x) => `${x.q.id}: "${x.q.title}" → ekranda L${x.olmasi}`);
+    expect(sapan).toEqual([]);
+  });
+
+  it('0-tabanlı seviye hedefi olup başlığında sayı taşıyan görev, sayıyı ATLAMAZ', () => {
+    // Güvenlik ağı: birinin başlığa "Seviye" yerine "Sv"/"L3" yazıp bekçiyi atlamasını yakalar.
+    const supheli = C.quests.filter(
+      (q) => ekrandakiSeviye(q) != null && /\bL\s?\d|\bSv\.?\s?\d/i.test(q.title),
+    );
+    expect(supheli.map((q) => q.id)).toEqual([]);
+  });
+});

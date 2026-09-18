@@ -4289,3 +4289,48 @@ turunu ister.
 - **Final:** §J2 19/20 → **20/20 temiz** · vitest 1305/1305 · duman 45/45 · tsc temiz.
   Sayılar: `docs/donme-raporu-f6.md` · ham: `docs/olcum-donme-f6.txt` (+ `-once`) ·
   `docs/olcum-kol-donme-f6.txt`.
+
+## D-133 — 2026-09-18 geri bildirimi: kalemler kaydedildi, T1 (onarım) uygulandı
+
+- **Kaynak iki parça:** ses kaydı (`feedback/Kiraathane feedback 1_original.txt`, 5 dk oynanış) +
+  aynı mesajdaki yazılı notlar. 24 kalem, **G-58 … G-81**, kullanıcının kendi cümleleriyle:
+  `docs/geribildirim-oyun-testi-2026-09-18.md`. Plan ve turlar: `docs/plan-geribildirim-2026-09-18.md`.
+- **Kalemler üç kovaya ayrıldı:** ONARIM (kol yok, doğrusu tek) · SİSTEM (yeni davranış, denge
+  sayısına dokunmaz) · DENGE/ÖLÇÜM (varyant kapısı). Sıra kullanıcı onayıyla **T1 → T2 → T4 → T3 → T5**.
+- **Kullanıcı kararları:** G-69 bulaşık tezgâhı mekanik açılana kadar **"hiç olmasın"** · G-68
+  tezgâh taşınmaz, **yalnız duvardan en az gerekli kadar açılır** (*"duvardan çıkmasın"*) ·
+  G-67 seviye ödülü **ikisi birden** (D-092'nin hız artışı KALIR, üstüne ₺).
+- **T1'de kapatılanlar (bu commit):**
+  - **G-78 VERİ KAYBIYDI:** `upgradeFills`/`tableUpgradeFills`/`lavaboFill` kayıt şemasında yoktu,
+    `store.init` her yüklemede sıfırlıyordu — oyuncunun yarım yükseltmeye ödediği para yanıyordu.
+    Şema EKLEMELİ büyüdü (sürüm artmadı, `lavaboLevel` deseni) + dolum bugünkü maliyete kelepçeli.
+  - **G-79:** Usta modali çevrimdışı kazanç ekranının üstüne biniyordu (`!showOffline` kelepçesi
+    yoktu) **ve** tetiğin kendisi yanlıştı: dwell "duruyor"a bakıyordu, yüklemenin ilk karesinde
+    oyuncu tanım gereği duruyor. Artık **kenar-tetikli** — ilk hareket kolu kurar. Doğum yerini
+    kaydırmak yanlış çözüm olurdu: nokta gezici, yarın başka doğum yeri de noktanın üstünde kalır.
+  - **G-77:** görev başlıkları İÇ (0-tabanlı) seviyeyi yazıyordu, dünya `L${sv+1}` yazıyordu →
+    "Seviye 2" hedefi ekranda L3'tü. Dört başlık düzeldi; hedef sayısına DOKUNULMADI (o tempo olurdu).
+  - **G-69 / G-70:** ikisi de yanlış DURUM okuyordu → saf yükleme olarak `rules.ts`e alındı
+    (`dishStationVisible` · `sinkDirty`); bileşenin içinde kalsalar ölçülemezlerdi.
+    G-70'te tezgâh artık kattaki her bardakla değil, **ona gelen kapla** kirleniyor.
+- **Kapsam sınırı yazıldı:** kullanıcının *"birkaç tane bıraktıktan sonra"* dediği **tezgâhta
+  biriken istif** bugün YOK (yıkama teslimde anlık) — eklemek bardak döngüsünün hızını değiştirir,
+  o yüzden denge koluna taşındı (T3-K9). Bu tur yanlış olanı düzeltti, yeni mekanik açmadı.
+- **Bekçi:** `tests/onarim-g58-g81.test.ts` (14 denetim) + `tests/gorev-kimligi.test.ts`e G-77
+  bekçisi (başlıktaki "Seviye N" = hedefin ekran karşılığı). **İki mutasyonla doğrulandı:**
+  ① `saveNow`dan `upgradeFills` çıkarıldı → 2 kırmızı · ② kelepçe kaldırıldı → 2 kırmızı.
+- **Final:** vitest **1321/1321** · duman **45/45** · tsc temiz. (`npm run lint` 66 hatayla
+  kırmızı ama **tamamı bu turdan ÖNCE vardı** ve `tools/` altında — dokunulan dosyalarda yeni
+  hata yok, dosya-başı sayımla doğrulandı.)
+- **SIRA KİLİDİ UYARISI — kayda geçirildi (D-084 §3.2 gereği, sessizce geçilmedi).**
+  `npm run sira` bu turu **[olcum-yok]** işaretledi: `economy.config.ts` ve `rules.ts` değişmiş
+  ama menzilde önce gelen bir ölçüm commit'i yok. **Gerçek bir ihlal değil, araç YOL-tabanlı
+  çalıştığı için çıkan bir uyarı** — diff'le doğrulandı, iki dosyada da **hiçbir sayı değişmedi**:
+  - `economy.config.ts`: yalnız **dört görev BAŞLIĞININ metni** (G-77). Hedeflerin `level`/`count`/
+    `reward` alanları birebir aynı; sayıya dokunmak tempo olurdu ve o zaman uyarı HAKLI olurdu.
+  - `rules.ts`: yalnız **iki saf yüklem eklendi** (`dishStationVisible` · `sinkDirty`). İkisi de
+    sunum sorusu cevaplıyor, mevcut eşiği (`WASH_QUEST_INDEX`) OKUYOR, yeni eşik üretmiyor.
+  Aracın kendisi düzeltilmedi: "sunum değişikliği" ile "denge değişikliği"ni yoldan ayırt
+  edemez ve **yanlış tarafa hata yapması doğrudur** (ölçümsüz denge değişikliğini kaçırmaktansa
+  zararsız bir turu işaretlesin). T3 bu dosyalara gerçekten sayıyla dokunacak; orada uyarı
+  çıkmaması gerekiyor, çünkü ölçüm commit'i önce gelecek.

@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import type { Group, Mesh, MeshStandardMaterial } from 'three';
 import { KayTezgah } from './Kitchen';
 import { useGame } from '../../game/store';
+import { sinkDirty } from '../../game/rules';
 import { FRONT_TOP_Y, onHatGovdeleri } from './kitchenLook';
 
 /**
@@ -21,7 +22,8 @@ import { FRONT_TOP_Y, onHatGovdeleri } from './kitchenLook';
  *
  * **`tick.ts`E DOKUNULMADI.** Bu tamamen SUNUM katmanıdır (E3 / D-096 deseni): var olan durumu
  * okur, hiçbir yeni durum üretmez. Okunan iki sayı:
- *   - kirli var mı  = katta bekleyen kap + oyuncunun/bulaşıkçının taşıdığı
+ *   - kirli var mı  = TEZGÂHA GELEN kap (oyuncunun tepsisi + bulaşıkçının leğeni). G-70'e
+ *                     kadar kattaki her bardak sayılıyordu; masadaki bardak tezgâhı kirletiyordu.
  *   - `cleanCups`   = yıkanmış kap havuzu; ARTTIĞI an "yıkandı" demektir (bulaşıkçı lavaboya
  *                     vardığında `dishwasherSystem` tam bunu yapıyor)
  * Yeni bir sayaç eklemek yerine var olan korunum değişkenine bağlanması bilinçli: denge
@@ -77,13 +79,9 @@ function Yikama({ tetik }: { tetik: number }) {
  */
 export function DishSink({ pos, rot, areasOpen }: { pos: readonly [number, number, number]; rot: number; areasOpen: number }) {
   const govde = onHatGovdeleri(areasOpen).dish;
-  // Kirli var mı: kattaki kaplar + oyuncunun tepsisi + bulaşıkçının leğeni.
-  const kirli = useGame(
-    (s) =>
-      s.dishes.length > 0 ||
-      s.carriedDirty + s.carriedDirtyFood > 0 ||
-      (s.dishwasher ? s.dishwasher.tray + s.dishwasher.trayFood : 0) > 0,
-  );
+  // Kirli var mı / gövdenin sahnede olup olmadığı: ikisi de `rules.ts`teki saf yüklemlerden
+  // (`sinkDirty` · `dishStationVisible`). Gerekçe orada, tek yerde — G-69/G-70, 2026-09-18.
+  const kirli = useGame(sinkDirty);
   // Temiz kap havuzu ARTTIĞINDA yıkama olmuştur — ayrı bir olay/sayaç eklemeye gerek yok.
   const temizSayac = useGame((s) => s.cleanCups);
   // Boş ↔ dolu: paketin KARDEŞ modelleri. Ayrı bir bulaşıklık koymuyoruz — kullanıcı

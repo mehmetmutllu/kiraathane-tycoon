@@ -763,6 +763,21 @@ export const economyConfig = {
    * Pad görevleri sırasında YALNIZ o pad'in işareti çizilir ("ekranda tek pad").
    * Görev hattı bitince serbest oyun: kalan yükseltme noktaları zaten kalıcı-sade görünür.
    */
+  /**
+   * BAŞLIKTAKİ SEVİYE SAYISI = EKRANDAKİ SEVİYE (G-77, 2026-09-18).
+   *
+   * Masa ve servis seviyeleri kodda 0-TABANLI tutulur ama dünyada `L${seviye+1}` yazılır
+   * (`tick.ts` yükseltme noktası etiketleri). Görev başlıkları elle yazıldığı için İÇ sayıyı
+   * yazmışlardı: "2 masayı Seviye 2'ye çıkar" hedefi `level: 2` idi, oyuncu ekranda **L3**
+   * görüyordu. Kullanıcı bunu *"açık masa zaten lvl 1, ilk yükseltmeden sonra geleceği nokta
+   * lvl2 olmalı"* diye bildirdi.
+   *
+   * Düzeltme BAŞLIKTA yapıldı, hedefte değil: hedefin sayısını oynatmak görev eşiğini —yani
+   * tempoyu— değiştirirdi ve bu varyant kapısına girerdi. Dört başlık düzeldi (q_station2 ·
+   * q_station3 · q_tableL2x2 · q_z1allL4). Bir daha kaymaması `tests/gorev-kimligi.test.ts`
+   * bekçisine bağlandı: başlıkta "Seviye N" geçen her görev için N, hedefin EKRAN karşılığı
+   * olmak zorunda.
+   */
   quests: [
     // B2 (D-060): hat yeni zincire göre yeniden dizildi. Kalkanlar alan-başı personel görevleriydi
     // (`q_z2waiter` `q_z2dish` `q_z3waiter` `q_z3dish` `q_z3station` `q_tostTray1`); yerlerine tek
@@ -782,20 +797,20 @@ export const economyConfig = {
     { id: 'q_table3', kicker: 'ÜÇÜNCÜ MASA', title: '3. Masayı aç', target: { type: 'pad', id: 'table3' }, reward: 25 },
     { id: 'q_charTray2', kicker: 'TEPSİ', title: "Tepsini 4'e çıkar", target: { type: 'charStat', stat: 'tray', tier: 2 }, reward: 30 },
     { id: 'q_waiter', kicker: 'İLK GARSON', title: 'Garson tut', target: { type: 'pad', id: 'waiter' }, reward: 30 },
-    { id: 'q_station2', kicker: 'OCAK', title: "Ocağı Seviye 2'ye çıkar", target: { type: 'stationLevel', level: 2 }, reward: 40 },
+    { id: 'q_station2', kicker: 'OCAK', title: "Ocağı Seviye 3'e çıkar", target: { type: 'stationLevel', level: 2 }, reward: 40 },
     { id: 'q_table4', kicker: 'SALON DOLDU', title: '4. Masayı aç', target: { type: 'pad', id: 'table4' }, reward: 60 },
     { id: 'q_charMagnet', kicker: 'MIKNATIS', title: 'Para mıknatısını güçlendir', target: { type: 'charStat', stat: 'magnet', tier: 1 }, reward: 50 },
     // --- BÖLÜM 2 · 2. Alan: alan ocak GETİRMEZ → sekiz masa tek ocağa yüklenir.
     { id: 'q_zone2', kicker: 'YENİ SALON', title: '2. Salonu aç', target: { type: 'pad', id: 'zone2' }, reward: 150 },
     { id: 'q_z2table2', kicker: 'SALON 2', title: 'Salon 2: 2. Masayı aç', target: { type: 'pad', id: 'z2table2' }, area: 1, reward: 50 },
-    { id: 'q_station3', kicker: 'OCAK', title: "Ocağı Seviye 3'e çıkar", target: { type: 'stationLevel', level: 3 }, reward: 80 },
+    { id: 'q_station3', kicker: 'OCAK', title: "Ocağı Seviye 4'e çıkar", target: { type: 'stationLevel', level: 3 }, reward: 80 },
     { id: 'q_waiterL2', kicker: 'GARSON', title: 'Garsonu hızlandır', target: { type: 'waiterSpeed', tier: 1 }, reward: 50 },
     { id: 'q_tableL2', kicker: 'MASA SEVİYESİ', title: 'Bir masayı yükselt', target: { type: 'tableLevel', level: 1 }, reward: 30 },
     { id: 'q_z2table3', kicker: 'SALON 2', title: 'Salon 2: 3. Masayı aç', target: { type: 'pad', id: 'z2table3' }, area: 1, reward: 100 },
     { id: 'q_waiterTray1', kicker: 'GARSON TEPSİSİ', title: 'Garsonun tepsisini büyüt', target: { type: 'waiterTray', tier: 1 }, reward: 80 },
     { id: 'q_dish', kicker: 'BULAŞIKÇI', title: 'Bulaşıkçı tut', target: { type: 'pad', id: 'dishwasher' }, area: 1, reward: 120 },
     { id: 'q_z2table4', kicker: 'SALON 2', title: 'Salon 2: 4. Masayı aç', target: { type: 'pad', id: 'z2table4' }, area: 1, reward: 200 },
-    { id: 'q_tableL2x2', kicker: 'MASA SEVİYESİ', title: "2 masayı Seviye 2'ye çıkar", target: { type: 'tablesAtLevel', level: 2, count: 2 }, reward: 120 },
+    { id: 'q_tableL2x2', kicker: 'MASA SEVİYESİ', title: "2 masayı Seviye 3'e çıkar", target: { type: 'tablesAtLevel', level: 2, count: 2 }, reward: 120 },
     // --- BÖLÜM 3 · 3. Alan + TEZGÂH: mekânın kimliği değişir (derme çatma ocak gider, tezgâh gelir).
     { id: 'q_zone3', kicker: 'ÜÇÜNCÜ SALON', title: '3. Salonu aç', target: { type: 'pad', id: 'zone3' }, area: 2, reward: 400 },
     { id: 'q_z3table2', kicker: 'SALON 3', title: 'Salon 3: 2. Masayı aç', target: { type: 'pad', id: 'z3table2' }, area: 2, reward: 100 },
@@ -807,7 +822,7 @@ export const economyConfig = {
     { id: 'q_tost5', kicker: 'TOST', title: '5 tost servis et', target: { type: 'serveTost', count: 5 }, reward: 300 },
     { id: 'q_z3table4', kicker: 'SALON 3', title: 'Salon 3: 4. Masayı aç', target: { type: 'pad', id: 'z3table4' }, area: 2, reward: 350 },
     { id: 'q_waiterTray2', kicker: 'GARSON TEPSİSİ', title: "Garsonun tepsisini 3'e çıkar", target: { type: 'waiterTray', tier: 2 }, reward: 300 },
-    { id: 'q_z1allL4', kicker: 'SALON 1 BAKIMI', title: '4 masayı Seviye 4 yap', target: { type: 'tablesAtLevel', level: 4, count: 4, area: 0 }, reward: 400 },
+    { id: 'q_z1allL4', kicker: 'SALON 1 BAKIMI', title: '4 masayı Seviye 5 yap', target: { type: 'tablesAtLevel', level: 4, count: 4, area: 0 }, reward: 400 },
     // --- BÖLÜM 3b · ŞERİDİ DOLDUR (B5a): banketlerin kalan sekiz birimi ---
     // ÖNCE TEZGÂHIN SON BASAMAĞI. Bu görev B5a'da eklendi ve sırası tesadüf değil: şeridin masaları
     // ARZ tavana dayalıyken hiçbir şey hızlandırmaz (B2'nin dersi — kat tek noktadan beslenir), o

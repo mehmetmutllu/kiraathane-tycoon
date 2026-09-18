@@ -21,6 +21,8 @@ import {
   type CharStat,
   type CharUpgrades,
   lavaboMaxLevel,
+  lavaboUpgradeCost,
+  tableUpgradeCost,
 } from '../config/economy.config';
 import {
   defaultSave,
@@ -42,7 +44,7 @@ import {
   servicePlace,
   waiterHomeAt,
 } from './layout';
-import { deriveWorld, defaultFloorTheme, MAX_AREAS, MAX_SERVICES, roomOpen, sellsTost, THE_SERVICE, type World } from './world';
+import { areaOfTable as areaOfTableIdx, deriveWorld, defaultFloorTheme, MAX_AREAS, MAX_SERVICES, roomOpen, sellsTost, THE_SERVICE, type World } from './world';
 import { activeQuestIndex, completedQuestIds } from './questProgress';
 import {
   dayIndex,
@@ -172,6 +174,19 @@ export type { ActiveSpot, GameNotice, QuestView, QuestCtx, CamFocus } from './ru
 
 import { createTickCtx, runTick } from './tick';
 
+
+/**
+ * G-78 — KAYITTAN OKUNAN KISMİ YÜKSELTME DOLUMU, kelepçeli.
+ *
+ * Dolum kaydedilir (oyuncunun ödediği para yanmasın) ama körü körüne geri yazılmaz: `cost`
+ * bugünkü bir sonraki seviyenin maliyetidir ve dolum onu AŞAMAZ. İki hâli birden karşılar —
+ * ① kayıt bozuk/elle kurcalanmış, ② denge turunda maliyet DÜŞMÜŞ (eski dolum yeni fiyatı aşıyor).
+ * `cost` null ise (o merdiven bitmiş, alınacak seviye yok) dolum anlamsızdır → 0.
+ */
+function kismiDolum(ham: unknown, cost: number | null): number {
+  if (cost == null || !(cost > 0)) return 0;
+  return typeof ham === 'number' && Number.isFinite(ham) ? Math.min(Math.max(0, ham), cost) : 0;
+}
 
 /** Oyuncunun tepsi kapasitesi (tek turda taşınan çay/kirli) — karakter tepsi kademesinden türetilir
  *  (v20; D-018'in "sabit" kararı karakter yükseltmeleriyle değişti). Arg'sız çağrı canlı store'dan okur
@@ -616,9 +631,19 @@ export const useGame = create<GameState>((set, get) => ({
       dishes: [],
       carriedDirty: 0,
       carriedDirtyFood: 0,
-      upgradeFills: Array.from({ length: MAX_SERVICES }, () => 0),
-      tableUpgradeFills: LAYOUT.tables.map(() => 0),
-      lavaboFill: 0,
+      // G-78: kısmi ödenmiş yükseltmeler artık kayıttan GERİ GELİR (eskiden burada sıfırlanıyordu
+      // ve oyuncunun ödediği para yanıyordu). Üçü de KELEPÇELİ okunur: dolum, o slotun BUGÜNKÜ
+      // bir sonraki seviyesinin maliyetini aşamaz — denge sayısı değişirse ya da kayıt bozuksa
+      // "zaten dolmuş" bir yükseltme doğmasın (tableLevels'ın `Math.min` kelepçesiyle aynı desen).
+      upgradeFills: Array.from({ length: MAX_SERVICES }, (_, i) =>
+        kismiDolum(save.upgradeFills?.[i], stationUpgradeCost(stationLevels[i] ?? 0)),
+      ),
+      tableUpgradeFills: LAYOUT.tables.map((_, i) =>
+        kismiDolum(save.tableUpgradeFills?.[i], tableUpgradeCost(save.tableLevels[i] ?? 0, areaOfTableIdx(i))),
+      ),
+      lavaboFill: roomOpen(world, 'lavabo')
+        ? kismiDolum(save.lavaboFill, lavaboUpgradeCost(Math.max(save.lavaboLevel ?? 1, 1)))
+        : 0,
       activeSpot: null,
       notice: null,
       noticeQueue: [],
@@ -1063,6 +1088,11 @@ export const useGame = create<GameState>((set, get) => ({
       lavaboLevel: s.lavaboLevel,
       padsDone: [...s.padsDone],
       padFills: { ...s.padFills },
+      // G-78: kısmi ödenmiş yükseltmeler de kayda gider. `padFills` zaten gidiyordu; bu üçü
+      // gitmediği için oyuncunun yarım bıraktığı yükseltmeye ödediği para her yüklemede yanıyordu.
+      upgradeFills: [...s.upgradeFills],
+      tableUpgradeFills: [...s.tableUpgradeFills],
+      lavaboFill: s.lavaboFill,
       stats: { ...s.stats },
       // D-088: kayda index DEĞİL kimlik gider — hat değişse de kaydın yeri kaymasın.
       questsDone: completedQuestIds(C.quests, s.questIndex),

@@ -5,7 +5,7 @@ import { cameraViewYaz } from '../../game/cameraView';
 import { useGame, questFocusPos, LAYOUT, LAVABO, BAND, BAND_SHELL, FLOOR_HALF, wallSpans, servicePlace, stationSoftMaxLevel, stationUpgradeCostAt, stationUpgradeUnlocked, tableSoftMaxLevel, tableUpgradeTarget, tableNextCost, openServices, doorX as doorAt, entranceAt, banketIslands, BANKET, WAITER_STATION, waiterStationOpen } from '../../game/store';
 import { economyConfig, lavaboUpgradeCost } from '../../config/economy.config';
 import { areaOfTable, THE_SERVICE } from '../../game/world';
-import { masterId, masterCost, masterUnlockedForTable } from '../../game/rules';
+import { masterId, masterCost, masterUnlockedForTable, dishStationVisible } from '../../game/rules';
 import { SceneLights } from './lights';
 import { devPerfKol } from '../../game/devPerf';
 import { cihazSinifiOku, cihazSinifiYaz, golgeAcikMi, sinifBelirle, ISINMA_KARE, ORNEK_KARE } from '../../game/cihazSinifi';
@@ -612,9 +612,19 @@ function StationUpgradeSpots() {
 // (Havadaki etiket KALDIRILDI — lavabo görseli zaten ne olduğunu anlatır; D-017 §2 sadelik.)
 // D-025 rev. A: modül kendi ocağının bitişiğinde, yan duvara paralel (rotasyon ocakla aynı).
 // S4: gövde + kirli/temiz döngüsü `DishSink.tsx`e taşındı (kullanıcı isteği; sunum katmanı).
+// G-69 (2026-09-18) — BULAŞIK MEKANİĞİ AÇILMADAN TEZGÂH SAHNEDE DURMAZ.
+// Kullanıcı: *"bulaşık daha açılmadan, bulaşık tezgâh var, o da olmasın."* Kirli bardak zaten
+// `q_wash` görevinden itibaren doğuyor (`tick.ts`, WASH_QUEST_INDEX) — yani ondan öncesi boyunca
+// tezgâh hiçbir işe yaramayan, ne olduğu anlaşılmayan bir gövdeydi ve oyuncuya öğretmediği bir
+// mekaniğin sözünü veriyordu. Aynı görev tezgâhı da getirir: mekanik ile obje aynı anda doğar.
+// (`feedback_locked_object_renovation` burada geçerli DEĞİL — o kural "açık alandaki KİLİTLİ
+//  obje" içindi; bu kilitli bir obje değil, oyunun henüz tanıtmadığı bir mekanik. Kullanıcı
+//  seçenekler arasından "hiç olmasın"ı seçti.)
 function DishStation() {
   const areasOpen = useGame((s) => s.areasOpen);
+  const bulasikAcik = useGame((s) => dishStationVisible(s.questIndex));
   const place = servicePlace(areasOpen);
+  if (!bulasikAcik) return null;
   return <DishSink pos={place.dish} rot={place.dishRot} areasOpen={areasOpen} />;
 }
 
@@ -704,6 +714,20 @@ function TableMasterSpots() {
 
   const son = useRef<string | null>(null);
   const oncekiPos = useRef<[number, number]>([0, 0]);
+  /**
+   * G-79 ② — DWELL KENAR-TETİKLİ: oyuncu bir kez HAREKET edene kadar dolum başlamaz.
+   *
+   * Kullanıcı 2026-09-18: *"oyun ilk açıldığında… o an bir usta padi üzerinde durduğu için
+   * otomatik ekrana direk o modal geliyor; ya doğum yeri değişsin ya da o düzelsin."*
+   * Kök neden doğum yeri DEĞİL, tetiğin tanımı: dolum "duruyor" koşuluna bakıyordu ve yüklemenin
+   * ilk karesinde oyuncu tanım gereği duruyor. Yani noktanın üstünde AÇILMAK, oraya YÜRÜMEKLE
+   * aynı sayılıyordu. `feedback_interaction_model`: etkileşim HAREKET-temellidir.
+   *
+   * Doğum yerini kaydırmak yanlış çözüm olurdu — nokta gezici (masa Usta olunca doğar), yani
+   * bugün temiz olan doğum yeri yarın yine bir noktanın üstünde kalabilirdi. Kelepçe tetikte
+   * olmalı: en ufak bir hareket kolu kurar, ondan sonra davranış birebir eskisi gibidir.
+   */
+  const kuruldu = useRef(false);
   useFrame((_, dt) => {
     const p = useGame.getState().player;
     let en: string | null = null;
@@ -719,7 +743,8 @@ function TableMasterSpots() {
     // ölçüsü kare-başı yer değiştirme: joystick bırakılınca sıfırlanır, yürürken dolum sıfırlanır.
     const hiz = Math.hypot(p[0] - oncekiPos.current[0], p[2] - oncekiPos.current[1]) / Math.max(dt, 1e-4);
     oncekiPos.current = [p[0], p[2]];
-    const duruyor = hiz < DURMA_HIZI;
+    if (hiz >= DURMA_HIZI) kuruldu.current = true; // G-79 ②: ilk hareket kolu kurar
+    const duruyor = kuruldu.current && hiz < DURMA_HIZI;
 
     if (en && duruyor) dwellState.p = Math.min(1, dwellState.p + dt / USTA_BEKLEME);
     else if (en) dwellState.p = 0;

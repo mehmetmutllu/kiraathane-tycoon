@@ -137,6 +137,42 @@ export const TEA_PRICE = C.service.basePrice;
 // Görev hattında yoksa -1 → gate hep açık (questIndex >= -1).
 export const WASH_QUEST_INDEX = C.quests.findIndex((q) => q.target.type === 'washDish');
 
+/**
+ * G-69 — BULAŞIK TEZGÂHI SAHNEDE Mİ? Kirli bardağın doğduğu gate'in AYNISI.
+ *
+ * Kullanıcı 2026-09-18: *"bulaşık daha açılmadan, bulaşık tezgâh var, o da olmasın."* Haklıydı:
+ * kirli bardak `questIndex >= WASH_QUEST_INDEX` ile doğuyordu (`tick.ts`) ama tezgâh KOŞULSUZ
+ * çiziliyordu. Yani hattın ilk sekiz görevi boyunca ekranda hiçbir işe yaramayan, oyuncunun
+ * bilmediği bir mekaniğin sözünü veren bir gövde duruyordu.
+ *
+ * İki yer aynı sayıyı OKUMALI, ayrı ayrı yazmamalı — `visiblePads`in "çizen de tetikleyen de
+ * aynı fonksiyonu okur" deseni. Sunum bu kapıdan geçtiği için tezgâh ile mekanik aynı anda doğar.
+ */
+export const dishStationVisible = (questIndex: number): boolean => questIndex >= WASH_QUEST_INDEX;
+
+/**
+ * G-70 — BULAŞIK TEZGÂHI KİRLİ Mİ? **Yalnız ona GELEN kap sayılır.**
+ *
+ * Eski hâl katın tamamındaki kirliyi (`dishes.length`) sayıyordu, yani masaların üstünde duran
+ * bardak tezgâhı kirli gösteriyordu ve kullanıcı bunu *"ben bulaşık bırakmasam bile kirli
+ * birikmeye başlıyor"* diye bildirdi. Döngünün nedeni (taşıma) ile sonucu (tezgâhın kirlenmesi)
+ * arasındaki bağ kopmuştu.
+ *
+ * Artık gövde yalnız kirli kap TAŞINIRKEN dolu: oyuncunun tepsisinde ya da bulaşıkçının leğeninde.
+ * Teslimde temiz havuz artar → yıkama parlaması → gövde boşalır.
+ *
+ * KAPSAM: kullanıcının *"birkaç tane bıraktıktan sonra"* dediği, tezgâhta BİRİKEN istif ayrı bir
+ * iştir — bugün yıkama teslim anında anlıktır, "tezgâhta bekleyen bulaşık" durumu yoktur. Onu
+ * eklemek bardak döngüsünün hızını değiştirir → denge kolu (plan T3-K9).
+ */
+export const sinkDirty = (s: {
+  carriedDirty: number;
+  carriedDirtyFood: number;
+  dishwasher: { tray: number; trayFood: number } | null;
+}): boolean =>
+  s.carriedDirty + s.carriedDirtyFood > 0 ||
+  (s.dishwasher ? s.dishwasher.tray + s.dishwasher.trayFood : 0) > 0;
+
 // Görev geçiş ritmi (2026-06-17, kullanıcı onayı): hedef tamamlanınca kart ANINDA takas
 // olmaz. completing = bar %100 dolar + yeşil onay flash'ı; gap = yeni görev gelmeden boşluk.
 // Böylece "bitti → ara → yeni" net hissedilir (eski: aynı tick'te instant swap).

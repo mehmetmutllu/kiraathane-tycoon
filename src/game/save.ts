@@ -138,6 +138,26 @@ export interface SaveData {
   padsDone: string[];
   /** Aktif pad'lerin kısmi dolumu (pad id → ₺). Aynı anda birden çok pad doldurulabilir (v5). */
   padFills: Record<string, number>;
+  /**
+   * KISMİ ÖDENMİŞ YÜKSELTMELER (G-78, 2026-09-18). ADDITIVE alan → sürüm ARTMADI
+   * (`lavaboLevel`/`goalsClaimed`/`mastersOwned` deseni: eksik alanı `defaultSave()` yayılımı
+   * doldurur, eski kayıt sağlam açılır).
+   *
+   * NEDEN EKLENDİ — kullanıcı 2026-09-18: *"çay ocağında yükseltmede 800 altından 300'ünü falan
+   * ödeyerek bıraktım, sonra da geri girdim; para zaten verilmişti ama yükseltmede sıfırdan
+   * başlıyordu."* Doğrulandı: `padFills` kaydediliyordu ama YÜKSELTME dolumlarının üçü de
+   * kaydedilmiyordu, `store.init` her yüklemede sıfıra çekiyordu. Para cüzdandan çıkmıştı →
+   * oyuncunun ilerlemesi yanıyordu. CLAUDE.md: *"ilerleme kaybolmaz."*
+   *
+   * Pad dolumu neden `Record` de bunlar dizi: pad kimliği stringtir ve seyrektir; yükseltmeler
+   * SLOT'a bağlıdır (servis index'i / global masa slotu) ve zaten dizi olarak tutuluyorlar.
+   */
+  /** Servis noktası başına kısmi yükseltme dolumu (₺; index = servis noktası). */
+  upgradeFills: number[];
+  /** Masa başına kısmi yükseltme dolumu (₺; index = GLOBAL masa slotu). */
+  tableUpgradeFills: number[];
+  /** Lavabonun kısmi yükseltme dolumu (₺). */
+  lavaboFill: number;
   /** Kalıcı eylem sayaçları (quest + arka-plan reveal şartları; v16). */
   stats: SaveStats;
   /** TAMAMLANMIŞ görev kimlikleri (v32; D-088). Konumun TEK kaynağı — index saklanmaz, aktif
@@ -205,6 +225,9 @@ export function defaultSave(): SaveData {
     lavaboLevel: 0,
     padsDone: [],
     padFills: {},
+    upgradeFills: [],
+    tableUpgradeFills: [],
+    lavaboFill: 0,
     stats: defaultStats(),
     questsDone: [],
     goalsClaimed: [],

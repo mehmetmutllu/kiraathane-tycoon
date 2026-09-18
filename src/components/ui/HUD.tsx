@@ -260,8 +260,15 @@ export function HUD() {
       {/* ───────── USTA MODALİ (G-14) ─────────
           D8'de bu bir alt şeritti ve bandı devralıyordu; kullanıcı 2026-09-09'da şeridi reddedip
           modal istedi. Bant artık devredilmiyor — görev adımı yerinde kalır, Usta önüne modal gelir.
-          Kapatılınca oyuncu O MASADAN uzaklaşana kadar geri açılmaz (aşağıdaki effect). */}
-      {nearMaster && masterKapali !== nearMaster && (
+          Kapatılınca oyuncu O MASADAN uzaklaşana kadar geri açılmaz (aşağıdaki effect).
+
+          G-79 (2026-09-18) — ÇEVRİMDIŞI KAZANÇ EKRANININ ÜSTÜNE BİNMEZ. Kullanıcı: *"oyun ilk
+          açıldığında yokkenki geliri görürken, o an bir usta padi üzerinde durduğu için otomatik
+          ekrana direk o modal geliyor."* İki modal aynı anda açıktı çünkü Usta'nın kelepçesi
+          yoktu; `spotlight` ve `traySpot` bu dosyada zaten `!showOffline` ile kelepçeliydi, desen
+          Usta'ya uygulanmamıştı. Tetiğin KENDİSİ de ayrıca düzeltildi (Scene: dwell artık
+          yüklemede değil, oyuncu bir kez hareket ettikten sonra dolar). */}
+      {nearMaster && masterKapali !== nearMaster && !showOffline && (
         <UstaModal id={nearMaster} onClose={() => setMasterKapali(nearMaster)} />
       )}
 
