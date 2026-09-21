@@ -113,3 +113,63 @@ Yayına kalanlar (Faz F, 3/6): **F3 reklam** (C1′ önerildi, onay bekliyor) ·
 ikinci paket **teklif edilir**, kendiliğinden alınmaz) · lisansı belirsiz asset commit'lenmez ·
 manifest `public/assets/README.md`'ye işlenir · **paket en kötü üyesiyle yargılanır** (D-122).
 İndirme **PowerShell**'den yapılır (`tools/indir-itch.ps1`), Bash'ten değil.
+
+---
+
+## G · ÜÇÜNCÜ MESAJ — İZDİHAM (turun konusu oldu)
+
+> *"girişte bir süre sonra kapı dışında izdiham oluyor içeri girmeye çalışan 100lerce npc
+> birikiyor ona da bir kontrol getirilmeli artık dışarı biri çıkmadan biri spawn edilmez mi
+> yaparız yoksa farklı bir yol vs mi düşünürsün bilemem. veya biri kalkmadan başkası spawn
+> olmaz vs de olabilir ama senin araştırıp piyasa standardı ne ise bulman gerek onu uygularız
+> en mantıklısı ne ise ve en kalitelisi ne ise o olsun."*
+
+| # | Kalem | Durum |
+|---|---|---|
+| **G-91** | **Kapı önünde NPC izdihamı + kare sürüklenmesi** | **T6 turunun konusu.** T5b ölçümünün yan ürünü olarak SAYIYLA da görüldü (aşağıda). |
+
+### G-91 sayıyla — T5b'nin kısıksız tam koşusu (`docs/olcum-nav-ab-t5b-masaustu.txt` §1)
+
+Dünya 240 sn ısıtılmıştı, yani zaten "kararlı" sayılmalıydı. 20 dilim ≈ 2 dakika:
+
+| | dilim 1 | dilim 20 | değişim |
+|---|---|---|---|
+| Üçgen | 284.028 | 512.499 | **+%80** |
+| Çizim çağrısı | 170 | 240 | +%41 |
+| Karenin işi | 9,3 ms | 12,2 ms | **+%31** |
+| NPC | 39 | 56 | T4 §C'nin ölçtüğü tavan **39**'du |
+
+Ve tırmanış durmamıştı. T4 §B sürüklenmeyi ölçüp **düz** bulmuştu (%0,5) — o koşu bunu kaçırdı.
+
+### Kodda doğrulanan yapısal şüpheli
+
+`tick.ts:389` — `activeCount = npcs.filter((n) => !hasLeftTable(n.state)).length`
+
+`hasLeftTable` (`rules.ts:325`) şu durumları **SAYMIYOR**: `leaving` · `toWc` · `wcGiris` ·
+`inWc` · `wcCikis`. Doğma tavanı (`maxConcurrent = max(8, toplam koltuk + 2)`) yalnız bu
+filtreden GEÇEN NPC'lere uygulanıyor. Yani:
+
+- **Oturan/gelen nüfusun tavanı var.** ✓
+- **Ekrandaki TOPLAM nüfusun tavanı YOK.** ✗ Çıkış hattındaki (ve WC'deki) NPC'ler sayılmıyor;
+  çıkış yavaşladıkça birikiyorlar ve yerlerine yenisi doğuyor.
+
+Kapı ayrıca **tek nokta** (`doorX`: 2+ alan açıkken x = 0) ve hem girenler hem çıkanlar oradan
+geçiyor — yani çıkış yavaşlamasının doğal bir sebebi de var.
+
+### Piyasa standardı (araştırıldı)
+
+**Kullanıcının önerisi zaten standart.** Türün en büyük referansları müşteriyi **oran**la değil
+**kapasite**yle doğuruyor: Restaurant Tycoon 2/3'te müşteri ancak **uygun bir masa varsa**
+belirir (masanın en az bir sandalyesi ola, başka grupça tutulmamış ola, üstünde para olmaya).
+Yani "kuyruk dolunca müşteri küssün" değil, **"yer yoksa hiç doğmasın"**.
+
+Kuramsal karşılığı **Little yasası**dır: `N = λ × W`. Doğma hızı `λ` sabitken, sistemde geçirilen
+süre `W` sıkışma yüzünden büyürse nüfus `N` sınırsız büyür. Çözüm `λ`yı kısmak değil, doğmayı
+**çıkışa bağlamak** (kapalı çevrim) — böylece `ρ = λ/μ < 1` yapısal olarak garanti edilir.
+
+> **Bu, kodumuzun ZATEN yapmaya çalıştığı şey** (`findTableForGroup` boş koltuk arıyor).
+> Kusur tasarımda değil **kapsamda**: tavan nüfusun bir ALT KÜMESİNE uygulanıyor.
+
+Kaynaklar: [Restaurant Tycoon 3 Wiki — Customers](https://rt3.fandom.com/wiki/Customers) ·
+[Restaurant Tycoon 2 Wiki — Customers](https://restaurant-tycoon-2.fandom.com/wiki/Customers) ·
+[Little's Law](https://businessmap.io/continuous-flow/littles-law)

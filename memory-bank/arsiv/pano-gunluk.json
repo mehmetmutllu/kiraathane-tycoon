@@ -1,9 +1,26 @@
 {
  "not": "İlerleme panosunun ESKİ oturum kartları. Pano her turda büyüyordu (67 kart / 219 KB) ve yayını canlı sürümün tamamının okunmasını şart koştuğu için tur başına maliyeti ARTIYORDU — okunanın neredeyse tamamı bir daha bakılmayacak arşivdi. Projenin kendi kuralı buraya da uygulandı (eski anlatı → arsiv/). Pano son 8 turu gösterir; öncesi burada ve git geçmişinde durur.",
  "kaynak": "docs/pano/ilerleme-panosu.html",
- "tasindi": "2026-09-18",
- "kart": 64,
+ "tasindi": "2026-09-21",
+ "kart": 65,
  "gunluk": [
+  {
+   "tarih": "16.09.2026",
+   "etiket": "Faz H · 2. oturum (H2 — yükseltme sırası — D-124)",
+   "baslik": "Bir kapının bedeli, aldığı özgürlükle değil <b>kolun parmak iziyle</b> ölçülür",
+   "govde": "Altı kol ölçüldü ve hiçbiri koda dokunulmadan önce sayıya çevrildi. Kol tanımı ikiye ayrıldı, çünkü soru ikisini birden soruyordu: <b>KAPI</b> (ekranda hangi noktalar canlı — tasarımın kararı) ve <b>POLİTİKA</b> (oyuncu o kümeden hangisini seçiyor — oyuncunun kararı). Bu ayrım olmadan “serbest sıra kötü mü?” sorusu cevaplanamıyordu: T ile P arasındaki fark oyuncunun <i>kendine</i> yaptığıdır, T ile B arasındaki fark kapının <i>oyuncuya</i> yaptığı.",
+   "maddeler": [
+    "<b>D-124:</b> A — tek hedef, global kapsam. Aynı anda tek masanın noktası canlı; tavana varmadan sonraki açılmaz",
+    "<b>Tuzak:</b> 6 sa lifetime <b>58.097 ↔ 48.182 ₺ = %20,6</b> (İdealize %9,9); model bahşişi koltuk-ağırlıklı ortaladığı için bu bir <b>alt sınır</b>",
+    "<b>Kapının bedeli sıfır:</b> A ile kapısız-derin kolun parmak izi birebir (<code>fd6d3dfd</code>); 1,06 sa “ölü para” kapının değil kazanan stratejinin maliyeti",
+    "<b>Dikkat:</b> nokta ort <b>3,48 → 0,54</b>, tepe <b>12 → 1</b>, “birden çok nokta” süre payı %54,5 → <b>%0,0</b>",
+    "<b>Tek odak (D-038):</b> en yoğun durum <b>16 → 3</b> işaret · masa işareti ort 7,82 → <b>0,91</b>",
+    "<b>Üçüncü yol ÇÜRÜTÜLDÜ:</b> koltuk merdiveninde L2 ölü basamak (<code>[1,2,2,4,4]</code>); canlandırılınca tuzak %20,6 → yalnız <b>%19,0</b>",
+    "<b>Bedel:</b> bir salon en fazla <b>27 dk</b> hiç canlı nokta göstermeyebiliyor (serbest kapıda imkânsızdı) — kapatılmadı",
+    "<b>Bekçi:</b> <code>tests/sira-h2.test.ts</code> 19 denetim · <b>12 mutasyon, kaçan 0</b> · vitest <b>1189</b> ✓ · duman 45/45 ✓"
+   ],
+   "not": "<b>Mekanizmayı bulmak, hipotezi doğrulamak değildir.</b> “Derin kol kazanıyor” görülünce sebep hemen bulundu: dörtlü masanın koltuk merdiveninde L1 ile L2 aynı koltuğu veriyor, yani L2 ölü bir basamak ve “en ucuzu al” politikası tam orada oyalanıyor. Kulağa kesin geliyordu. Karşı-deney <b>çürüttü</b>: basamak canlandırılınca koltuk açığının üçte ikisi kapandı (18 → 26) ama tuzak neredeyse kıpırdamadı (%20,6 → %19,0). Sebep kapasitede değil, bahşiş ortalamasının aritmetiğindeydi. Ölçülmeseydi “config'i düzeltip sırayı serbest bırakalım” diye yanlış bir üçüncü kol karar paketine girerdi.<br><br><b>Bekçi neyi ölçmediğini söylemez — mutasyon söyler.</b> 19 denetim yeşilken üç mutasyon kaçtı ve üçü de aynı boşluğu gösterdi: bekçi <b>tetiği</b> ölçüyordu, <b>çizimi</b> hiç. Yani “ekranda 12 nokta var, yalnız biri para alıyor” kusuru serbestti."
+  },
   {
    "tarih": "16.09.2026",
    "etiket": "Faz S · 23. oturum (S24 — yükseltme tetiği — D-121)",

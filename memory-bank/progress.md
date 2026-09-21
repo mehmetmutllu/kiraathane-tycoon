@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 112 · YAPILAN 108 · %96):**
+**Oturum bütçesi (TOPLAM 121 · YAPILAN 112 · %93):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -28,7 +28,8 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | H oynanış düzeltmeleri | 2/2 ✅ |
 | | **R geri bildirim turları (2026-09-16)** | **4/4 ✅** |
 | | **F paketleme ve yayın** | **3/6** 🔧 |
-| **Program toplam** | | **80/84** |
+| | **T tur serisi (geri bildirim + performans)** | **4/9** 🔧 |
+| **Program toplam** | | **84/93** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -715,8 +716,44 @@ Sanat kalemi değil; Faz S'ten ayrı tutuldu ki asset işi bunların arkasında 
   onayladı) · Görevler 1,60× / Hedefler 1,47× 1,00×'e inmedi (kart yüksekliği, sanat turu) ·
   G-55 kalemi karşılanmadı, bugünkü sınıf adlarıyla yeniden yazılmalı.
 
-## Faz T — PERFORMANS TURLARI (devam) 🔧
-- ✅ **T5 — nav (`findNavPath`)** · **D-139:** devralınan N-1 planı ("41 KB tampon ayırmak pahalı")
+## Faz T — TUR SERİSİ: GERİ BİLDİRİM + PERFORMANS (4/9) 🔧
+> Bu faz 2026-09-18 geri bildiriminin turlarıyla başladı ve 2026-09-21'inkilerle sürüyor.
+> **Bütçe düzeltmesi 2026-09-21:** tur serisi bütçe tablosunda HİÇ YOKTU — T1/T2/T4/T5
+> yapılmış ama sayılmamıştı. Faz kendi satırını aldı (toplam 84 → 93) ve turların defteri
+> geri bildirim bölümlerinden buraya taşındı (her bilgi bir yerde, D-084).
+> Sıra kullanıcı onaylı: **T1 → T2 → T4 → T5 → T6 → T7 → T8 → T9**; T3 (denge) T8'e bağlandı.
+
+- ✅ **T1 — onarım (G-78/79/77/69/70):** G-78 kısmi ödenmiş yükseltme kayıtta durur (**veri kaybıydı**) ·
+  G-79 açılışta Usta modali çevrimdışı ekranın üstüne binmiyor + dwell kenar-tetikli ·
+  G-77 görev başlığındaki seviye = ekrandaki seviye · G-69 bulaşık tezgâhı mekanikle aynı anda
+  doğuyor · G-70 tezgâh yalnız ona gelen kapla kirleniyor. Bekçi: `tests/onarim-g58-g81.test.ts`.
+- ✅ **T2 — görev akışı · iki tur (T2a mantık D-134 · T2b görsel D-135)**
+  · **T2a MANTIK:** G-59 pad/kenar oku/reveal artık KARTIN görevini
+  okuyor (`cardQuestIndex`) · G-60 geçiş penceresinde uyarı işlenmiyor + ekran kanalları tek
+  sıraya alındı (`src/game/ekranKanali.ts`). **G-61 ikiye bölündü**: pencere kanadı yapıldı,
+  kalıcı kapı tempo olduğu için T3-K11'e taşındı. Bekçi: `tests/gorev-hatti-t2.test.ts`.
+  · **T2b GÖRSEL + ÖĞRETME:** G-58 bitiş kutlaması (zıplama + geçen ışık + onay
+  popu, üçü de bir kez ve pencereye sığar) · G-62/G-81 sekme halkası (zamanlayıcısız, `spot`
+  varken çizilmez) + hedef panosunda hazır ödül ÜSTTE · G-63 bulaşık öğretme kartı (üst bant +
+  kamera tezgâha) · G-64 spotlight artık konuşuyor. **Yan bulgu:** `<html lang="en">` Türkçe
+  büyük harfi bozuyordu ("BULAŞIK BIRIYOR") → `lang="tr"`. **G-71 bilerek yapılmadı** — kök
+  G-68, emniyet kemeri ölçümsüz yazılamaz → T3-K10. Kare: `docs/gorsel/ss/t2b-{1..4}-*.png`.
+- ✅ **T4 — performans (G-80): şarj kanadı uygulandı, kasma kanadı T5'e devredildi.** Ölçüm + karar
+  D-136; uygulama D-137. **K-A 60 fps tavanı yapıldı** — erken oyun 116,7 → ~60 fps, her `<Canvas>`a
+  (sahne + üç önizleme) takıldı; bekçi `tests/kare-tavani-t4.test.ts` (17) + duman'da 3 denetim.
+  **K-E ve K-C'nin kodu YAZILMADI:** ölçüm ikisinin de tarifini çürüttü — K-E'nin tavanı karenin
+  %3,1'i, K-C'de en çok tekrarlayan şekiller iskeletli (instance edilemez). Yeni karar paketi
+  kullanıcıda (rapor §F). **Sonra kare BÖLÜŞÜMÜ ölçüldü (§G) ve kolların bir tur boyunca yanlış
+  yarıya baktığı görüldü:** çizim karenin yarısı bile değil, tek en büyük kalem `findNavPath` —
+  `navStep` her karede sıfırdan BFS yapıp yolun ilk adımı dışındakini atıyor (ızgara 10.260
+  hücre, her çağrı 41 KB ayırma + tam sıfırlama). Bölüşüm artık aracın kalıcı §F bölümü
+  (`game/olcum.ts` dikişi, DEV + opt-in). Sıradaki iş: **N-1**, çıktısı birebir aynı tampon
+  yeniden kullanımı.
+- ⏳ **T3 — denge (varyant kapısı, iki commit) · T8'e bağlandı:** G-65 tepsi 75₺ · G-72 garson tepsi tabanı ·
+  G-73 1. salonda 2. garson · G-74 masa4 380₺ · G-75 2. salonu geciktir · **G-76 masa sırası
+  genişlik-önce → D-124 yeniden okunacak** · G-66/G-67 seviye eğrisi+ödülü (**D-092 yeniden
+  okunacak**) · G-68 tezgâhın duvar payı · G-70'in istif kolu (K9).
+- ✅ **T5 — nav (`findNavPath`) · iki tur: T5 kol + T5b tarayıcı A/B** · **D-139:** devralınan N-1 planı ("41 KB tampon ayırmak pahalı")
   ölçülüp **çürütüldü** — ayırma tabanın %10,3'ü, kolu ×1,20. Maliyet gezinmede: çağrı başına
   2.550,9 hücre pop (ızgaranın %24,9'u) + 20.399,5 komşu denetimi. Uygulanan üç kol (kalıcı tampon
   + kuşak damgası · hedef testi POP→PUSH · hedef maskesi) **çıktıyı değiştirmiyor**: node'da
@@ -724,11 +761,37 @@ Sanat kalemi değil; Faz S'ten ayrı tutuldu ki asset işi bunların arkasında 
   (1,2 ms için ilk waypoint'in %27,5'i farklı); yol önbelleği kendi turuna kaldı (BFS'i %0,6'ya
   indiriyor ama duvardan geçen adımı %0,1→%1,9 yapıyor). Bekçi `nav-kol-t5` (9 den. · ~4.200 çift)
   **7/7 mutasyon**; sınav üç kez kendi kusurunu açtı (sıra bağımlılığı · CRLF · askıda kalma).
-  **AÇIK: kare seviyesindeki kazanç TARAYICIDA DOĞRULANAMADI** — T4 tabanı gölge KAPALI ölçülmüş,
-  bu koşu gölge AÇIK ve makine genel olarak %22-38 yavaş; üstelik normalize edilince nav daha
-  pahalı görünüyor. Tarayıcı A/B'si **aynı oturumda** yapılmalı. `docs/nav-raporu-t5.md`.
+  ~~AÇIK: kare kazancı tarayıcıda doğrulanamadı~~ → **T5b'de KAPANDI.** `docs/nav-raporu-t5.md`.
   Yolda: T4'ün ölçüm dikişi node tarafını kırmıştı (`import.meta.env` node'da yok) — `npm run sim`
   dâhil tüm tsx araçları ölüydü; kapı `olcum.ts`e taşındı, bekçi `olcum-dikis` (3 den. · 3 mut.).
+
+  · **T5b — kare kazancının tarayıcı A/B'si (aynı kalemin ikinci turu)** · §6.4'ün açık ucu kapandı. Araç iki kolu **aynı
+  sayfada, ABBA deseninde, gölge montajda sabitlenmiş** hâlde koşturur ve nav'la ilgisi olmayan
+  kalemleri **DENETİM KOLU** olarak sınar (oynarsa koşu geçersiz). İki TAM koşu (telefon 4× kısık
+  + masaüstü kısıksız), denetim TEMİZ, 20/20 damga, konsol hatası 0.
+  **Tarayıcıda oran ×1,09/×1,13** — node'un ×2,52'si değil. Şüpheli AYRIŞTIRILDI: tarayıcının
+  GERÇEK çağrıları node'da oynatılınca **×2,82/×2,46** çıktı → korpus temsilî, fark ORTAMDA
+  (node blok ölçer ve GC dâhildir; tarayıcı çağrı-içi ölçer, GC dışarıda kalır).
+  **T5'in kaçırdığı asıl kazanç ölçüldü: ayırma 178,6 → 33,5 MB/sn (×5,34), çağrı başı −130,6 KB**
+  — T5 ayırmayı "tabanın %10,3'ü" diye elemişti; zaman olarak doğruydu ama ayırma bir HIZ'dır ve
+  telefonda karşılığı GC takılması + pildir. **Kare kazancı KANITLANDI ama küçük: %5,9-7,1**
+  (üç koşudan biri ters işaret verdi, raporda saklanmadı). Eşitlik **16.687 gerçek tarayıcı
+  çağrısında 0 sapma**; oracle üretim paketinde YOK (build ile doğrulandı).
+  **nav hâlâ karenin ~%30'u** → N2 sıraya girdi, elenmedi. Araç iki gerçek kusur buldu:
+  cihaz sınıfı gölgeyi koşu ortasında kapatıyordu (denetim kolu yakaladı) · `performance.memory`
+  bayraksız cache'li değer döndürüyordu. `docs/nav-raporu-t5.md` §7 · araçlar
+  `tools/olcum-nav-ab-t5b.mjs` + `tools/olcum-nav-korpus-t5b.ts`.
+- 🔧 **T6 — izdiham / sürüklenme (G-91)** · kullanıcı: *"kapı dışında izdiham oluyor, içeri
+  girmeye çalışan 100lerce npc birikiyor"*. T5b'nin yan bulgusu sayıyı verdi: 2 dakikada üçgen
+  **+%80**, kare **+%31**, NPC 39 → 56 (T4'ün ölçtüğü tavan 39'du) ve tırmanış sürüyordu.
+  Yapısal şüpheli kodda doğrulandı: `tick.ts:389` doğma tavanını yalnız `!hasLeftTable` olan
+  NPC'lere uyguluyor — `leaving`/WC'dekiler sayılmıyor, yani ekrandaki TOPLAM nüfusun tavanı yok.
+  Piyasa standardı araştırıldı: Restaurant Tycoon 2/3 müşteriyi **kapasiteyle** doğuruyor
+  ("uygun masa yoksa hiç doğma"), kuramı Little yasası. **Kollar ölçülmeden uygulanmaz**
+  (varyant kapısı: `tick.ts`). Korunum şartı: hiçbir kol ₺/dk'yı düşürmemeli.
+- ⏳ **T7 — G-82 pad çakışması + G-83/G-84 banket kademeli büyüme** (tasarım kanadı gösterilerek).
+- ⏳ **T8 — G-85 tost/çay mimarisi + G-90 tost asset'i + G-86 zincir denetimi + T3 denge (K1-K11)**.
+- ⏳ **T9 — G-88 genel tarama** (kod + oynanış, ağırlık performans) + N2 yol önbelleği + lint 66.
 
 ## Kullanıcı geri bildirimi 2026-09-16 — 16 yeni kalem (G-35…G-50)
 Kullanıcı F2 turunun içinde oyunu açtı ve on iki başlık verdi; *"sonraki chatlerde bunları
@@ -754,35 +817,24 @@ için **VARYANT KAPISINA TABİ**.
 5 dakikalık oynanış (ses kaydı) + yazılı notlar. Tam liste + kullanıcının kendi cümleleri:
 `docs/geribildirim-oyun-testi-2026-09-18.md` · plan ve turlar: `docs/plan-geribildirim-2026-09-18.md`
 · karar: **D-133**. Sıra kullanıcı onaylı: **T1 → T2 → T4 → T3 → T5.**
-- ✅ **T1 ONARIM (bitti):** G-78 kısmi ödenmiş yükseltme kayıtta durur (**veri kaybıydı**) ·
-  G-79 açılışta Usta modali çevrimdışı ekranın üstüne binmiyor + dwell kenar-tetikli ·
-  G-77 görev başlığındaki seviye = ekrandaki seviye · G-69 bulaşık tezgâhı mekanikle aynı anda
-  doğuyor · G-70 tezgâh yalnız ona gelen kapla kirleniyor. Bekçi: `tests/onarim-g58-g81.test.ts`.
-- ✅ **T2a GÖREV AKIŞI · MANTIK (bitti, D-134):** G-59 pad/kenar oku/reveal artık KARTIN görevini
-  okuyor (`cardQuestIndex`) · G-60 geçiş penceresinde uyarı işlenmiyor + ekran kanalları tek
-  sıraya alındı (`src/game/ekranKanali.ts`). **G-61 ikiye bölündü**: pencere kanadı yapıldı,
-  kalıcı kapı tempo olduğu için T3-K11'e taşındı. Bekçi: `tests/gorev-hatti-t2.test.ts`.
-- ✅ **T2b GÖRSEL + ÖĞRETME (bitti, D-135):** G-58 bitiş kutlaması (zıplama + geçen ışık + onay
-  popu, üçü de bir kez ve pencereye sığar) · G-62/G-81 sekme halkası (zamanlayıcısız, `spot`
-  varken çizilmez) + hedef panosunda hazır ödül ÜSTTE · G-63 bulaşık öğretme kartı (üst bant +
-  kamera tezgâha) · G-64 spotlight artık konuşuyor. **Yan bulgu:** `<html lang="en">` Türkçe
-  büyük harfi bozuyordu ("BULAŞIK BIRIYOR") → `lang="tr"`. **G-71 bilerek yapılmadı** — kök
-  G-68, emniyet kemeri ölçümsüz yazılamaz → T3-K10. Kare: `docs/gorsel/ss/t2b-{1..4}-*.png`.
-- 🔧 **T4 PERFORMANS (G-80): ŞARJ KANADI BİTTİ, KASMA KANADI YENİDEN SORULDU.** Ölçüm + karar
-  D-136; uygulama D-137. **K-A 60 fps tavanı yapıldı** — erken oyun 116,7 → ~60 fps, her `<Canvas>`a
-  (sahne + üç önizleme) takıldı; bekçi `tests/kare-tavani-t4.test.ts` (17) + duman'da 3 denetim.
-  **K-E ve K-C'nin kodu YAZILMADI:** ölçüm ikisinin de tarifini çürüttü — K-E'nin tavanı karenin
-  %3,1'i, K-C'de en çok tekrarlayan şekiller iskeletli (instance edilemez). Yeni karar paketi
-  kullanıcıda (rapor §F). **Sonra kare BÖLÜŞÜMÜ ölçüldü (§G) ve kolların bir tur boyunca yanlış
-  yarıya baktığı görüldü:** çizim karenin yarısı bile değil, tek en büyük kalem `findNavPath` —
-  `navStep` her karede sıfırdan BFS yapıp yolun ilk adımı dışındakini atıyor (ızgara 10.260
-  hücre, her çağrı 41 KB ayırma + tam sıfırlama). Bölüşüm artık aracın kalıcı §F bölümü
-  (`game/olcum.ts` dikişi, DEV + opt-in). Sıradaki iş: **N-1**, çıktısı birebir aynı tampon
-  yeniden kullanımı.
-- 🔜 **T3 DENGE (varyant kapısı, iki commit):** G-65 tepsi 75₺ · G-72 garson tepsi tabanı ·
-  G-73 1. salonda 2. garson · G-74 masa4 380₺ · G-75 2. salonu geciktir · **G-76 masa sırası
-  genişlik-önce → D-124 yeniden okunacak** · G-66/G-67 seviye eğrisi+ödülü (**D-092 yeniden
-  okunacak**) · G-68 tezgâhın duvar payı · G-70'in istif kolu (K9).
+> **Turların kendisi `Faz T`ye taşındı** (2026-09-21): bu bölüm artık yalnız
+> geri bildirimin kaydıdır, turların defteri fazdadır.
+
+## Kullanıcı geri bildirimi 2026-09-21 — 10 yeni kalem (G-82…G-91)
+Yazılı notlar, üç mesaj. Tam liste + kullanıcının kendi cümleleri:
+`docs/geribildirim-oyun-testi-2026-09-21.md`. Kullanıcının kapanış hedefi:
+*"bunlar bitince de yavaştan yayına gidicez."*
+- **G-82** `zone3` pad'i ↔ Salon 2 masa 3'ün yükseltme noktası **ÇAKIŞIYOR** — ölçüldü:
+  1,773 br, eşik 2,30 (`PAD_RADIUS + TABLE_UP_RADIUS`). Tüm pad'ler tarandı, başka ihlal yok.
+- **G-83/G-84** Banket adaları tam boyda doğuyor, sonradan yalnız masa asılıyor; kullanıcı
+  kademeli büyüme + renk gelişmesi istiyor. `layout.ts:396` bunun **bilerek** böyle olduğunu
+  yazıyor ("adalar şeridin DONANIMI") → bu bir hata değil, **geri alınan bir karar**.
+- **G-85** Tost ile çayın mekânsal ilişkisi belirsiz — tost ayrı obje değil, tezgâhın **L5'i**.
+- **G-86** Garson/bulaşıkçı ve görev sırası mantık denetimi istendi (beş şüphe listelendi).
+- **G-87** Performans (Faz T) · **G-88** genel tarama: kod **ve** oynanış, ağırlık performans.
+- **G-89** Mağaza görselleri + tanıtım videosu — **EN SON İŞ, yayından hemen önce** (F5).
+- **G-90** Tost + tost makinesi asset'i internetten bulunacak (mevcut ilkel kötü duruyor).
+- **G-91** **Kapı önünde NPC izdihamı** → T6'nın konusu oldu.
 
 ## Bilinen açık kalemler
 - ~~Hedeflerin ₺ kolu bu hâliyle kalsın mı?~~ → **D3b'de kapandı (D-090):** ₺ kolu tamamen kalktı,
