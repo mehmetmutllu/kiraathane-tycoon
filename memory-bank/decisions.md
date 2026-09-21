@@ -4592,3 +4592,26 @@ Bekci `tests/olcum-dikis.test.ts` (3 denetim), **3/3 mutasyon**.
 **dorduncu** ardisik yanlis pozitif (D-133 · D-134 · D-138) — kural yerine aracin ayirt etme
 yetenegi zayif; duzeltmesi kullaniciya birakildi, bu turda dokunulmadi.
 
+
+---
+
+## T6 commit #1 notu — sıra kilidi **BEŞİNCİ** yanlış pozitif (2026-09-21)
+
+Karar değil, kayıt: aracın kendisi *"sebebini kullanıcıya söyle ve `decisions.md`'ye kayda geç —
+sessizce geçme"* diyor.
+
+Commit #1 (`4a5e7e4`, araç + ham çıktı + rapor, karar bölümü BOŞ) yine **karma-commit** uyarısı
+aldı, çünkü `src/game/tick.ts` commit'in içinde. Ama oradaki değişiklik **ölçüm dikişidir**
+(`izdihamKoluAyarla` — varsayılan `null`), `nav.ts`in T5b'deki A/B kolunun birebir aynı deseni:
+kollar `tick.ts`e dokunduğu için varyant kapısı gereği **dosyaya yazılmadan** ölçülmeleri gerekir,
+bunun tek yolu da çalışma anında takılıp geri alınan bir dikiştir.
+
+**Davranış-nötr olduğu ölçüldü, iddia edilmedi:** kol takılı değilken 90 sn'lik tohumlu koşunun
+davranış parmak izi commit öncesiyle **birebir aynı** (`91925927`, NPC 73, cüzdan aynı).
+Hiçbir denge sayısı değişmedi (`economy.config.ts` 0 satır).
+
+**Beşinci ardışık yanlış pozitif** (D-133 · D-134 · D-138 · D-139 · bu tur). Desen artık net:
+araç `tick.ts`e dokunan her şeyi "denge" sayıyor, oysa turların yarısı oraya **ölçüm dikişi**
+koymak zorunda. Aracın ayırt etme yeteneğini düzeltmek (ör. dikiş dosyalarını/desenlerini tanımak,
+ya da diff'te denge sabiti değişip değişmediğine bakmak) **kullanıcının kararı** — bu turda da
+dokunulmadı.
