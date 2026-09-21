@@ -72,3 +72,8 @@ indirilen-muzik/
 # kalibin aynisi. build.gradle bu dosya YOKSA derlemeyi kirmaz, yalniz imzasiz cikar.
 android/keystore.properties
 android/*.jks
+
+# T5b nav korpus dökümü — ARA GİRDİ, ham çıktı değil (880 KB'a kadar çıkar).
+# Raporun okuduğu ham çıktı `docs/olcum-nav-korpus-t5b-*.txt`tir ve o commit'lenir.
+# Korpus yeniden üretilebilir: OLCUM=tam T5B_ETIKET=<kosul> node tools/olcum-nav-ab-t5b.mjs
+docs/olcum-nav-korpus-t5b-*.json

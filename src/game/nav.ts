@@ -188,9 +188,40 @@ export function findNavPath(
   const olc = olcumAcik(); // DEV kapısı `olcum.ts`te (node'da `import.meta.env` yok)
   const t0 = olc ? performance.now() : 0;
   if (korpus) korpusaYaz(grid, start, tx, tz, reach);
-  const yol = navPathAra(grid, start, tx, tz, reach);
+  // A/B KOLU (T5b) — `kolAra` normalde `navPathAra`dır; ölçüm aracı oracle'ı takarsa BU çağrı
+  // eski algoritmayı koşar. Kapalıyken bedel tek referans okumasıdır (dal bile yok).
+  const yol = kolAra(grid, start, tx, tz, reach);
   if (olc) olcEkle('findNavPath', performance.now() - t0);
   return yol;
+}
+
+// ---------------------------------------------------------------------------
+// A/B KOLU (T5b) — üretim ↔ oracle canlı takası, YALNIZ ölçüm için.
+// ---------------------------------------------------------------------------
+/**
+ * NEDEN VAR: T5 node'da ×2,52 ölçtü ama KARE kazancı tarayıcıda doğrulanamadı — çünkü iki
+ * koşu farklı günlerde, farklı gölge durumunda ve %22-38 farklı makine yükünde alınmıştı
+ * (`docs/nav-raporu-t5.md` §6). Ayrı koşuları karşılaştırmak bu soruyu ÇÖZEMEZ; iki kolun
+ * AYNI sayfada, AYNI dünyada, dönüşümlü koşması gerekir. Bu kanca onu mümkün kılar.
+ *
+ * Oracle T5 ÖNCESİNİN donmuş kopyasıdır (`tools/nav-oracle.ts`) ve imzası birebir aynıdır;
+ * bekçi (`tests/nav-kol-t5.test.ts`) ikisinin ~4.200 çiftte aynı diziyi verdiğini zaten
+ * doğruluyor — yani takas DAVRANIŞI değiştirmez, yalnız maliyeti değiştirir.
+ *
+ * ÜRETİMDE ERİŞİLEMEZ: kancayı `devHooks.ts` yalnız `import.meta.env.DEV` altında bağlar ve
+ * oracle modülü oraya **dinamik** import edilir, yani üretim paketine hiç girmez.
+ */
+type NavAra = typeof navPathAra;
+let kolAra: NavAra = navPathAra;
+
+/** Ölçüm aracı bunu çağırır; `null` üretim koluna döner. */
+export function navKolAyarla(f: NavAra | null): void {
+  kolAra = f ?? navPathAra;
+}
+
+/** Şu an hangi kol takılı — çıktıya damga olarak yazılır (sessizce yanlış kol ölçülmesin). */
+export function navKolAdi(): 'uretim' | 'oracle' {
+  return kolAra === navPathAra ? 'uretim' : 'oracle';
 }
 
 // ---------------------------------------------------------------------------

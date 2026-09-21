@@ -295,3 +295,120 @@ derlemesi · iki koşu arasında değişen NPC/yol dağılımı.
 **Sonraki tura yazıldı:** tarayıcı A/B'si **aynı oturumda** yapılmalı — üretim kodu ve oracle
 arka arkaya, gölge durumu sabitlenmiş hâlde. T4'ün başka bir günkü sayısına karşı ölçmek
 (§G'nin dersinin tarayıcı tarafındaki karşılığı) geçerli bir doğrulama değil.
+
+---
+
+# §7 — T5b: KARE KAZANCININ TARAYICI A/B'Sİ (2026-09-21)
+
+> §6.4'ün açık ucunu kapatır. **Karar bölümü bu commit'te BOŞ** (D-084 adım 2).
+> Araç: `tools/olcum-nav-ab-t5b.mjs` (tarayıcı) + `tools/olcum-nav-korpus-t5b.ts` (node oynatma).
+> Ham çıktı: `docs/olcum-nav-ab-t5b-{masaustu,telefon}.txt` ·
+> `docs/olcum-nav-korpus-t5b-{masaustu,telefon}.txt` · TAM koşu damgaları temiz.
+
+## 7.0 Kurulum — §6'nın üç kusurunun üçü de kapatıldı
+
+| §6'nın kusuru | T5b'de ne yapıldı |
+|---|---|
+| İki koşu **farklı günlerde** alınmıştı | İki kol **aynı sayfada**, aynı dünyada, saniyeler arayla |
+| Gölge bir koşuda kapalı, diğerinde açıktı | Gölge **montajda** sabitlenir (`?f2golge`), her dilimde okunup damgalanır |
+| Makine %22-38 yavaştı, ama bu ancak **sonradan** fark edildi | **DENETİM KOLU**: çizim ms · gölge ms · çağrı · üçgen · NPC. Oynarsa koşu geçersiz |
+| — (yeni) | **ABBA deseni**: lineer sürüklenme birinci mertebeden gider |
+
+İki TAM koşu, iki koşulda: **telefon** (412×915, CPU 4× kısık) ve **masaüstü** (kısıksız —
+ölçümün kendisini sınamak için). Her ikisinde de **denetim kolu TEMİZ**, gölge tüm dilimlerde
+SABİT, 20/20 dilim istenen kolu damgaladı, konsol hatası 0.
+
+## 7.1 Araç iki gerçek kusur buldu (ikisi de kısa koşuda)
+
+1. **Gölge koşunun ORTASINDA kendiliğinden kapandı.** `cihazSinifi.ts` (D-125) ilk ~100 kareyi
+   örnekleyip 4× kısık CPU'da "zayıf cihaz" hükmü veriyor ve gölgeyi kapatıyor — dilim 1-3
+   gölgeli, 4-8 gölgesiz ölçüldü. **Denetim kolu bunu KIRMIZI olarak yakaladı** ve koşuyu
+   geçersiz saydı; araç `gl.shadowMap.enabled`ı elle yazmayı bırakıp `devPerf.ts`in montaj-zamanı
+   koluna bağlandı. (§6'nın gölge kusuru, farklı bir kapıdan geri gelmişti.)
+2. **`performance.memory` bayraksız CACHE'lenmiş değer döndürüyor** — ilk tam koşuda ayırma hızı
+   `0,0 MB/sn` okundu. `--enable-precise-memory-info` ile canlı ve hassas hâle geldi.
+
+## 7.2 §Bulgular
+
+### Bulgu 1 — Tarayıcıda oran node'un yarısından az
+
+| Koşul | nav ms/ÇAĞRI (üretim → oracle) | oran |
+|---|---|---|
+| masaüstü (kısıksız, TAM) | 0,159 → 0,174 | **×1,09** |
+| telefon (4× kısık, TAM) | 0,905 → 1,026 | **×1,13** |
+| *node tabanı (T5, §C)* | *0,181 → 0,456* | *×2,52* |
+
+### Bulgu 2 — Şüpheli AYRIŞTIRILDI: korpus değil, ORTAM
+
+Tarayıcının GERÇEK çağrıları diske döküldü (`__navKorpus`) ve **node'da oynatıldı**:
+
+| ölçülen ortam \ korpus | node korpusu | tarayıcı korpusu (masaüstü) | tarayıcı korpusu (telefon) |
+|---|---|---|---|
+| **node** | ×2,52 | **×2,82** (13.330 çağrı) | **×2,46** (3.357 çağrı) |
+| **tarayıcı** | — | ×1,09 | ×1,13 |
+
+Aynı çağrılar node'da ×2,5-2,8, tarayıcıda ×1,1. → **Korpus temsilî.** `olcum-nav-t5.ts`in
+başsız dünyası gerçek oyunu doğru temsil ediyor; N2 turu o araca güvenebilir.
+
+### Bulgu 3 — Uçurumun SEBEBİ ölçüldü: ayırma bedeli çağrının DIŞINDA
+
+| Koşul | heap ayırma hızı (üretim → oracle) | oran | çağrı başı fark |
+|---|---|---|---|
+| masaüstü | 33,5 → **178,6 MB/sn** | ×5,34 | **−130,6 KB/çağrı** |
+| telefon | 7,0 → **47,3 MB/sn** | ×6,76 | **−128,2 KB/çağrı** |
+
+Node korpusun TAMAMINI tek blokta ölçer: oracle'ın çağrı başına ayırdığı ~130 KB'ın GC bedeli
+o bloğun İÇİNDE kalır. Tarayıcı ise `findNavPath`in kendi aralığını ölçer ve GC o aralığın
+DIŞINDA koşar. İki sayı da doğru; **farklı şeyleri** ölçüyorlar.
+
+> **T5'in kendi sonucu bu ışıkta yeniden okunmalı.** §3 "açılış varsayımı çürüdü: tampon ayırma
+> tabanın yalnız %10,3'ü" demişti — bu ZAMAN cinsinden doğruydu. Ama ayırma bir **hız**tır:
+> 178,6 → 33,5 MB/sn. Telefonda bunun karşılığı GC duraklaması (takılma) ve pildir; ikisi de
+> T5'te hiç ölçülmemişti. Kolun en büyük ve en tartışmasız kazancı buymuş.
+
+### Bulgu 4 — Kare kazancı var, ama ×2,52 değil
+
+| Koşul | karenin işi (üretim → oracle) | üretim ne kadar ucuz | nav'ın kare payı |
+|---|---|---|---|
+| masaüstü | 10,5 → 11,3 ms | **%7,1** | %28,4 → %30,1 |
+| telefon | 54,3 → 57,7 ms | **%5,9** | %31,5 → %37,5 |
+
+nav ms/KARE oranı: masaüstü ×1,14 · telefon ×1,27.
+
+> **Tek aykırı koşu vardı ve saklanmıyor:** bayraksız ilk TAM telefon koşusu `karenin işi`ni
+> 55,9 → 53,8 (üretim %3,9 *pahalı*) ölçtü. Denetim kolu temizdi; fark dilim gürültüsüdür
+> (`nav ms/çağrı` o koşuda dilimden dilime 0,751-1,309 arasında oynadı). Bayraklı tekrar ve
+> masaüstü koşusunun ikisi de aynı yöne işaret ediyor. Bu satır, "üç koşudan ikisi" demenin
+> dürüst hâlidir.
+
+### Bulgu 5 — Eşitlik, artık oyunun KENDİ çağrılarında
+
+Bekçi eşitliği üretilmiş çiftlerde doğruluyordu. T5b onu tarayıcının gerçek çağrılarında sınadı:
+
+| korpus | çağrı | sapma | yol bulunamayan (üretim/oracle) |
+|---|---|---|---|
+| masaüstü | 13.330 | **0** | 0 / 0 |
+| telefon | 3.357 | **0** | 0 / 0 |
+
+### Bulgu 6 — nav HÂLÂ karenin ~%30'u
+
+Kol uygulandıktan SONRA bile nav karenin %28,4-31,5'i. T4 §F tabanı %31,5'ti. Yani **T5 payı
+anlamlı ölçüde küçültmedi** — asıl kol hâlâ masada: **N2 yol önbelleği** BFS çağrılarının
+%99,4'ünü siliyor (T5 §5), ve duvardan geçen adım sorunu çözülürse kazanç bu payın tamamına yakını.
+
+## 7.3 §6.4'ün üç cümlesinin bugünkü hâli
+
+| §6.4 | T5b |
+|---|---|
+| Kanıtlanan: çıktı birebir aynı | **Güçlendi** — +16.687 gerçek tarayıcı çağrısı, 0 sapma |
+| Kanıtlanan: node'da ×2,52 | **Doğrulandı** ve ANLAMI netleşti: blok ölçümü, GC dâhil |
+| KANITLANMAYAN: kare seviyesinde kazanç | **KANITLANDI, ama küçük**: %5,9-7,1 (2 TAM koşu, denetim temiz) |
+
+§6.3'ün "açıklaması bulunamadı" satırı kapandı: fark ayırma bedelinin çağrı aralığının dışında
+kalmasından geliyor (Bulgu 3). §6.3'ün *"nav kareye göre daha pahalı görünüyor"* gözlemi ise
+karşılaştırılamaz iki koşunun ürünüydü — aynı oturumda ölçülünce nav'ın payı üretimde
+oracle'dan **düşük** çıkıyor (%28,4 < %30,1 · %31,5 < %37,5).
+
+## §Karar
+
+_(boş — karar paketi kullanıcıya sunulacak; D-084 adım 3)_

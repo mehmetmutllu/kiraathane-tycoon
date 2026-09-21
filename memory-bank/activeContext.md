@@ -5,54 +5,43 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-19 — **T5 NAV BİTTİ · KARE KAZANCI TARAYICIDA DOĞRULANAMADI**)
+## ŞU AN (2026-09-21 — **T5b: nav kare kazancı TARAYICIDA A/B**)
 
 ```
-SORU            : findNavPath karenin %31,5'i. Maliyetin nesi pahalı, birebir-aynı kollar yeter mi?
-ÖLÇÜLECEK KOLLAR: N1a kalıcı tampon · N1b hedef testi PUSH'ta · N1c hedef maskesi (birebir aynı)
-                  N2 yol önbelleği · N3 A* (davranış değişir)
-SAYILAR         : docs/nav-raporu-t5.md §3 · ham docs/olcum-nav-t5.txt (TAM koşu, damgalar temiz)
-                  taban (oracle) 0,456 ms/çağrı · N1a ×1,17 · N1b ×2,11 · N1c ×2,29
-                  ÜRETİM ×2,52 · N3 ×3,00 (ilk waypoint'in %27,5'i farklı)
-                  N2 BFS'i %0,6'ya indiriyor AMA duvardan geçen adım %0,1 → %1,9
-                  AÇILIŞ VARSAYIMI ÇÜRÜDÜ: tampon ayırma tabanın yalnız %10,3'ü
-KARAR           : D-139 — kullanıcı "N1c uygula, dur" dedi. N3 elendi, N2 kendi turuna.
-UYGULAMA        : src/game/nav.ts — kalıcı tamponlar + kuşak damgası, hedef testi push'ta,
-                  hedef maskesi önceden. Dışarıya bakan hiçbir şey değişmedi.
-BEKÇİ           : tests/nav-kol-t5.test.ts (9 denetim · oracle tools/nav-oracle.ts · ~4.200 çift)
-                  tools/mutasyon-nav-t5.mjs ile 7/7 GERÇEK mutasyon (+1 eşdeğer)
+SORU            : T5'in node'da ölçülen ×2,52'si KAREYE yansıyor mu? (T5'in açık ucu)
+ÖLÇÜLECEK KOLLAR: A = üretim nav (T5 sonrası)  ·  B = oracle nav (T5 öncesi, donmuş)
+                  AYNI sayfada, AYNI dünyada, gölge SABİT, A/B/A/B/A/B dönüşümlü.
+                  Karşılaştırma ORAN üstünden (§G dersi) — mutlak ms değil.
+                  DENETİM KOLU: çizim ms + üçgen + çağrı — bunlar iki kolda da AYNI kalmalı;
+                  oynarsa koşu geçersizdir (makine sürüklenmesi kolun içine sızmış demektir).
+SAYILAR         : (adım 2'den sonra dolar — docs/nav-raporu-t5.md §7)
+KARAR           : (boş)
+UYGULAMA        : (boş)
+BEKÇİ           : (boş)
 ```
 
-**⚠️ TURUN AÇIK UCU — kare kazancı KANITLANMADI.** Node'da ×2,52 sağlam (aynı süreç, donmuş
-oracle, 97.486 gerçek çağrı, iki dünyada aynı oran). Ama tarayıcı koşusu
-(`docs/olcum-perf-t4-t5.txt`) bunu **göstermedi** ve T4 tabanıyla **karşılaştırılamaz**:
-T4'ün §F'i gölge KAPALI ölçmüş (0,2 ms), bu koşu gölge AÇIK (17,5 ms); ayrıca makine genel
-olarak %22-38 yavaş (nav'la ilgisiz kalemler de büyümüş). Üstelik normalize edilince
-`findNavPath` çağrı başına ×1,66 artmış, genel yavaşlama ×1,22-1,38 — yani **kareye göre daha
-pahalı** görünüyor. Açıklaması bulunamadı. Detay: `docs/nav-raporu-t5.md` §6.
+**Bu tur bir İDDİAYI sınıyor, kod hızlandırmıyor.** İki sonuç da kabul edilebilir:
+doğrularsa T5 kapanır · çürütürse kod yine doğru ve çıktı-eşdeğer kalır (node'da 12.000 çağrıda
+0 fark, 7/7 mutasyon), yalnız **"hızlandırdı" cümlesi geri alınır** ve kol N2'ye devredilir.
 
 ## SIRADAKİ OTURUMUN İŞİ
-1. **T5b — tarayıcı A/B'si AYNI OTURUMDA.** Üretim kodu ve `tools/nav-oracle.ts` arka arkaya,
-   **gölge durumu sabitlenmiş**, aynı makine yükünde. §G'nin dersi (oran karşılaştır, mutlak
-   değil) tarayıcı tarafında da uygulanmalı. Bu, T5'in kare iddiasını ya doğrular ya çürütür.
-   Çürütürse: kod yine de doğru ve çıktı-eşdeğer, ama "hızlandırdı" cümlesi geri alınır.
-2. Sonra **N2 turu** (yol önbelleği): güvenli politika (waypoint'i komşu hücreyle sınırla +
-   kuşak damgasıyla tazele) yazılıp duvardan geçen adım **0**'a inmeli; kazanç potansiyeli
-   BFS çağrılarının %99,4'ü.
-3. Sonra C-kolları (T4 §F4) ve **T3 denge turu**.
+1. **T6 — G-82 pad çakışması + G-83/G-84 banket kademeli büyüme** (tasarım kanadı GÖSTERİLEREK
+   sorulur, metinle değil).
+2. **T7 — G-85 tost/çay mimarisi + G-90 tost asset'i + G-86 zincir denetimi + T3 denge (K1-K11).**
+3. **T8 — G-88 genel tarama** (kod + oynanış, ağırlık performans) + N2 yol önbelleği + lint 66.
+4. **Faz F — F3 reklam kararı · F4 IAP · F5 mağaza vitrini + G-89 store görseli/videosu (EN SON).**
 
 ## AÇIK KALEMLER
+- **G-82…G-90** (2026-09-21 geri bildirimi): `docs/geribildirim-oyun-testi-2026-09-21.md`.
+  G-82 ÖLÇÜLDÜ (1,773 br < 2,30 eşik). G-89 **yayından hemen önce**, kullanıcı notu.
 - **T3 denge turu** (varyant kapısı, iki commit): K1 tepsi 75₺ · K2 garson tepsi tabanı ·
   K3 1. salonda 2. garson · K4 masa4 380₺ · K5 2. salonu geciktir · **K6 masa sırası
   (D-124 yeniden okunacak)** · K7/K8 seviye eğrisi+ödülü (**D-092 yeniden okunacak**) ·
   K9 bulaşık istifi · K10 tezgâhın duvar payı (+G-71 takılma) · K11 yükseltme noktası kapısı.
-  **Artık koşabilir:** `npm run sim` ve tüm tsx ölçüm araçları T5'te onarıldı (D-139 §0).
 - **F3 (AdMob) kararı HÂLÂ bekliyor** — C1′ önerildi, onay gelmedi (`docs/reklam-raporu-f3.md`).
-- **`npm run lint` 66 hatayla kırmızı** ama hepsi bu turdan ÖNCE vardı ve `tools/` altında.
-- **Sıra kilidi uyarısı DÖRDÜNCÜ kez çıktı** (D-133 · D-134 · D-138 · şimdi D-139): araç
-  `tick.ts`i denge dosyası sayıyor, T5'te oraya dokunan şey **tek satırlık** node-güvenlik
-  düzeltmesiydi. Diff'le doğrulandı, hiçbir denge sayısı değişmedi. Aracın ayırt etme
-  yeteneğini düzeltmek kullanıcının kararı — bu turda dokunulmadı.
+- **`npm run lint` 66 hatayla kırmızı** — hepsi `tools/` altında, T8'e bağlandı.
+- **Sıra kilidi uyarısı DÖRDÜNCÜ kez çıktı** (D-133 · D-134 · D-138 · D-139): araç `tick.ts`i
+  denge dosyası sayıyor. Aracın ayırt etme yeteneğini düzeltmek kullanıcının kararı.
 
 ---
 

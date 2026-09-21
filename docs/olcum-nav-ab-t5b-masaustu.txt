@@ -1,0 +1,71 @@
+==============================================================================
+T5b NAV A/B (tarayici) · kip=tam · 2026-09-21T15:57:31.083Z
+GPU: ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 (0x00002503) Direct3D11 vs_5_0 ps_5_0, D3D11)
+Kadraj: 412x915 @ dpr 2.625 · CPU KISILMADI (olcum denetimi)
+Golge: ACIK (istenen: acik) — TUM KOLLARDA AYNI
+Nav izgarasi: 114x90 = 10.260 hucre · cell 0,30
+Desen: ABBA x 5 blok · dilim 6000 ms · A=uretim B=oracle
+==============================================================================
+
+§1 HAM DILIMLER (sira ABBA — lineer suruklenme birinci mertebeden gider)
+   # | kol     | kare | fps  | is ms | cizim | golge | cagri |  ucgen  | nav ms/kare | nav cagri/kare | nav ms/cagri
+   1 | uretim  |  361 | 60,1 |   9,3 |   4,9 |   2,1 |   170 | 284.028 |        3,41 |           21,8 |        0,156
+   2 | oracle  |  359 | 59,8 |   8,4 |   5,0 |   2,1 |   185 | 299.043 |        2,12 |           17,6 |        0,120
+   3 | oracle  |  360 | 60,0 |   9,6 |   5,0 |   2,1 |   185 | 309.637 |        3,39 |           16,8 |        0,202
+   4 | uretim  |  360 | 60,0 |   9,8 |   4,9 |   2,0 |   194 | 332.347 |        3,57 |           20,2 |        0,176
+   5 | uretim  |  360 | 60,0 |  10,0 |   5,1 |   2,2 |   190 | 350.404 |        2,96 |           21,5 |        0,138
+   6 | oracle  |  360 | 60,0 |  10,3 |   5,6 |   2,4 |   194 | 363.769 |        3,51 |           20,5 |        0,172
+   7 | oracle  |  361 | 60,1 |  11,4 |   6,1 |   2,6 |   224 | 405.237 |        3,61 |           18,3 |        0,198
+   8 | uretim  |  360 | 60,0 |  10,7 |   5,7 |   2,5 |   204 | 397.063 |        3,15 |           16,6 |        0,190
+   9 | uretim  |  360 | 60,0 |  10,5 |   5,7 |   2,4 |   204 | 393.308 |        2,87 |           18,9 |        0,152
+  10 | oracle  |  360 | 59,9 |  11,3 |   5,9 |   2,6 |   202 | 389.855 |        3,83 |           21,1 |        0,182
+  11 | oracle  |  360 | 59,9 |  10,6 |   5,8 |   2,5 |   211 | 392.304 |        3,07 |           19,8 |        0,155
+  12 | uretim  |  358 | 59,7 |   9,9 |   5,6 |   2,4 |   196 | 371.348 |        2,48 |           18,8 |        0,132
+  13 | uretim  |  360 | 60,0 |   9,6 |   5,5 |   2,4 |   194 | 365.261 |        2,65 |           15,9 |        0,167
+  14 | oracle  |  360 | 60,0 |  11,7 |   5,8 |   2,4 |   198 | 379.969 |        4,30 |           21,1 |        0,204
+  15 | oracle  |  360 | 60,0 |  10,8 |   6,0 |   2,5 |   217 | 411.104 |        3,40 |           20,9 |        0,163
+  16 | uretim  |  360 | 60,0 |  10,9 |   6,0 |   2,6 |   225 | 427.092 |        2,98 |           19,8 |        0,151
+  17 | uretim  |  361 | 60,1 |  11,0 |   6,2 |   2,6 |   230 | 456.498 |        2,82 |           16,6 |        0,169
+  18 | oracle  |  360 | 60,0 |  11,3 |   6,2 |   2,6 |   228 | 477.143 |        3,19 |           17,7 |        0,180
+  19 | oracle  |  360 | 60,0 |  11,4 |   6,6 |   2,8 |   241 | 489.702 |        3,00 |           18,6 |        0,161
+  20 | uretim  |  360 | 60,0 |  12,2 |   6,9 |   3,0 |   240 | 512.499 |        3,47 |           20,5 |        0,169
+
+§2 DENETIM KOLU — bunlar oynarsa olculen sey kol degil MAKINEDIR
+  kalem            | uretim(A) | oracle(B) | fark %  | esik  | hal
+  cizim ms         |      5,70 |      5,90 |    +3,5 |  +-8% | temiz
+  golge ms         |      2,40 |      2,50 |    +4,2 |  +-8% | temiz
+  cizim cagrisi    |    204,00 |    211,00 |    +3,4 |  +-8% | temiz
+  ucgen            | 393308,00 | 392304,00 |    -0,3 |  +-8% | temiz
+  nav cagri/kare   |     19,77 |     19,77 |    +0,0 | +-12% | temiz
+  NPC              |     55,00 |     56,00 |    +1,8 | +-15% | temiz
+  → denetim TEMIZ: kollar ayni makineyi ve ayni dunyayi olctu.
+
+§3 KOL — nav maliyeti (ORAN okunur, mutlak ms baglamdir)
+  toplam cagri   : uretim 68.613 · oracle 69.222
+  nav ms/CAGRI   : uretim 0,159 · oracle 0,174  → oracle/uretim = x1,09
+  nav ms/KARE    : uretim 2,98 · oracle 3,40  → oracle/uretim = x1,14
+  NODE TABANI (T5, ayni birim): x2,52 → tarayici DOGRULAMIYOR
+
+§4 KARE — kolun kareye yansiyani
+  karenin isi     : uretim 10,5 ms · oracle 11,3 ms  → uretim %7,1 daha ucuz
+  fps             : uretim 60,0 · oracle 60,0
+  nav'in KARE PAYI: uretim %28,4 · oracle %30,1
+  (T4 §F tabani: nav karenin %31,5'iydi)
+
+§C AYIRMA — node/tarayici ucurumunun sebebi
+  heap ayirma hizi : uretim 33,5 MB/sn · oracle 178,6 MB/sn  → oracle/uretim = x5,34
+  cagri basi       : uretim 28,9 KB · oracle 159,5 KB   (oracle her cagrida 40,1 KB Int32Array ayirir)
+  → fark 130,6 KB/cagri. Bu ayirma GERCEKTEN oluyor; tarayicinin cagri-ici olcumunde gorunmuyor olmasi, bedelinin (GC) o araligin DISINDA
+    kaldigi anlamina gelir — yani kol node un gosterdigi kadar ucuzlatmasa da
+    ayirma yukunu gercekten kaldiriyor.
+
+§D KORPUS DOKUMU (node tarafinda oynatilacak)
+  cagri            : 13.330
+  izgara nesnesi   : 1 (tek — korpus oynatilabilir)
+  dosya            : docs\olcum-nav-korpus-t5b.json
+
+§E DAMGALAR
+  konsol hatasi        : 0
+  kol damgasi          : 20/20 dilim istenen kolu dogruladi
+  golge tum dilimlerde : SABIT
+  masa sayisi sabit    : evet (20)

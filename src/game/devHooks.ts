@@ -7,6 +7,7 @@ import { THE_SERVICE, sellsTost } from './world';
 import { perf, type PerfSnapshot } from './perf';
 import { olcumAc, olcumKapat, olcumOku, type OlcumKaydi } from './olcum';
 import { getNavGrid } from './layout';
+import { navKolAyarla, navKolAdi, navKorpusAc, navKorpusOku, navKorpusKapat } from './nav';
 import { collectionMult } from './goals';
 import { toastCizilir } from './rules';
 import { dailyViews } from './dailyQuests';
@@ -15,6 +16,16 @@ import { economyConfig, levelProgress, charLevel, lavaboVisitChance, lavaboFee, 
 import type { SaveStats } from './save';
 import type { Vec3 } from './types';
 import type { KabukKipi } from '../config/kabuk';
+
+/** `__navKorpus.dok()` çıktısı — node'a taşınabilir, JSON-güvenli korpus (T5b). */
+export interface NavKorpusDokum {
+  /** Korpusta kaç FARKLI ızgara nesnesi görüldü (1 değilse dünya koşu ortasında değişmiştir). */
+  izgaraSayisi: number;
+  cagriSayisi: number;
+  grid: { cols: number; rows: number; cell: number; minX: number; minZ: number; blocked: number[] } | null;
+  /** Her çağrı: [sx, sy, sz, tx, tz, reach]. */
+  cagrilar: number[][];
+}
 
 declare global {
   interface Window {
@@ -40,6 +51,15 @@ declare global {
       kapat: () => void;
       oku: () => Record<string, OlcumKaydi>;
       izgara: () => { cols: number; rows: number; hucre: number; cell: number } | null;
+    };
+    /** NAV A/B KOLU (T5b): 'uretim' = T5 sonrası · 'oracle' = T5 öncesi donmuş kopya.
+     *  Argümansız çağrı yalnız TAKILI kolun adını döndürür (damga okuma). */
+    __navKol?: (kol?: 'uretim' | 'oracle') => Promise<'uretim' | 'oracle'>;
+    /** NAV KORPUS DÖKÜMÜ (T5b): tarayıcının GERÇEK çağrılarını node'a taşınabilir hâle getirir. */
+    __navKorpus?: {
+      ac: () => void;
+      kapat: () => void;
+      dok: () => NavKorpusDokum;
     };
     /** DEV-ONLY ham setState (canlı görsel ayar; masa/zone/seviye zorlama). Üretimde kullanılmaz. */
     __setState?: (patch: Record<string, unknown>) => Record<string, unknown>;
@@ -246,6 +266,55 @@ export function installDevHooks(): void {
       const st = useGame.getState();
       const g = getNavGrid(st.tables, st.areasOpen);
       return { cols: g.cols, rows: g.rows, hucre: g.cols * g.rows, cell: g.cell };
+    },
+  };
+
+  /**
+   * NAV A/B KOLU (T5b) — `docs/nav-raporu-t5.md` §7.
+   *
+   * Oracle **dinamik** import edilir: üretim derlemesinde `import.meta.env.DEV` false olduğu
+   * için bu dosyanın tamamı zaten ölü daldır, dinamik import de onunla birlikte düşer —
+   * `tools/nav-oracle.ts` ürün paketine HİÇ girmez.
+   */
+  window.__navKol = async (kol) => {
+    if (kol === 'oracle') {
+      const m = await import('../../tools/nav-oracle');
+      navKolAyarla(m.navPathOracle);
+    } else if (kol === 'uretim') {
+      navKolAyarla(null);
+    }
+    return navKolAdi();
+  };
+
+  /**
+   * NAV KORPUS DÖKÜMÜ (T5b) — **turun asıl sorusu burada çözülür.**
+   *
+   * Tarayıcı A/B'si iki kolu neredeyse eşit ölçtü (×1,04), node ise ×2,52. İki sayı da temiz
+   * koşulardan geliyor, yani biri "yanlış" değil — FARKLI BİR ŞEY ölçüyorlar. İki şüpheli var:
+   *   ① ORTAM  — tarayıcıdaki ölçüm/JIT davranışı farkı eziyor.
+   *   ② KORPUS — node'un korpusu `tick()`i başsız koşturarak toplanıyor; o dünyadaki çağrılar
+   *              tarayıcının canlı çağrılarından daha PAHALI olabilir (daha uzun arama).
+   * Şüpheliyi ayırmanın tek yolu AYNI korpusu iki ortamda da koşturmaktır. Bu kanca tarayıcının
+   * gerçek çağrılarını serileştirir; `tools/olcum-nav-korpus-t5b.ts` onları node'da oynatır.
+   *
+   * Izgara BİR KEZ yazılır ve kaç farklı ızgara nesnesi görüldüğü sayılır: dünya koşu ortasında
+   * değişmişse (masa/alan) korpus tek ızgarayla oynatılamaz ve döküm bunu kendisi söyler.
+   */
+  window.__navKorpus = {
+    ac: () => navKorpusAc(),
+    kapat: () => navKorpusKapat(),
+    dok: () => {
+      const c = navKorpusOku();
+      const izgaralar = new Set(c.map((x) => x.grid));
+      const g = c[0]?.grid;
+      return {
+        izgaraSayisi: izgaralar.size,
+        cagriSayisi: c.length,
+        grid: g
+          ? { cols: g.cols, rows: g.rows, cell: g.cell, minX: g.minX, minZ: g.minZ, blocked: Array.from(g.blocked) }
+          : null,
+        cagrilar: c.map((x) => [x.start[0], x.start[1], x.start[2], x.tx, x.tz, x.reach]),
+      };
     },
   };
 

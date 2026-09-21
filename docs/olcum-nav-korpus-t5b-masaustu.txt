@@ -1,0 +1,30 @@
+==============================================================================
+T5b · AYNI KORPUS, IKI ORTAM — tarayicinin gercek cagrilari NODE da oynatildi (masaustu)
+==============================================================================
+korpus     : 13.330 cagri · izgara 114x90 = 10.260 hucre
+izgara      : 1.178 kapali hucre (%11,48)
+
+--- §A MALIYET (ayni korpus, node) ---
+  uretim : 0,152 ms/cagri
+  oracle : 0,428 ms/cagri
+  → oracle/uretim = x2,82
+
+--- §B DORT HUCRE ---
+  olculen ortam \ korpus  |  node korpusu  |  tarayici korpusu
+  node                    |     x2,52      |     x2,82
+  tarayici                |       —        |     x1,04  (olcum-nav-ab-t5b)
+
+  → SUPHELI: ORTAM
+    Ayni korpus node da x2,5 veriyorsa fark ortamdadir; tarayici olcumu kolun
+    kazancini gosteremiyor demektir (JIT/olcum granulerligi).
+
+--- §C ESITLIK: kol tarayicinin GERCEK cagrilarinda da birebir ayni mi ---
+  karsilastirilan cagri : 13.330
+  yol bulunamayan       : uretim 0 · oracle 0
+
+--- DAMGALAR ---
+  ✓ korpus tek izgarali                1 izgara nesnesi
+  ✓ korpus dolu                        13.330 cagri
+  ✓ kol farki YOK (birebir ayni)       0 sapma
+  ✓ kol damgasi uretime dondu          uretim
+
