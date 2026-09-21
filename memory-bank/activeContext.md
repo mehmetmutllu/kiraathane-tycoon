@@ -5,59 +5,61 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-21 — **T6: İZDİHAM / SÜRÜKLENME (G-91)** · T5b BİTTİ)
+## ŞU AN (2026-09-21 — **T6 KARAR ALINDI, UYGULAMA SIRADAKİ OTURUMDA**)
 
 ```
-SORU            : Kapı önünde NPC birikiyor ve kare 2 dk'da +%31 sürükleniyor. Kök ne,
-                  ve doğru doğma politikası hangisi?
-ÖLÇÜLECEK KOLLAR: S0 taban (bugünkü hâl, sürüklenme eğrisi)
-                  S1 tavan TÜM nüfusa (leaving/WC dâhil) — kapsam düzeltmesi
-                  S2 çıkış hattı tavanı ayrı (leaving için kendi kotası)
-                  S3 kapı kapasitesi (aynı anda geçen NPC sınırı / geçiş şeridi)
-                  S4 uzaktaki leaving NPC'yi erken sil (görüş dışı despawn)
-                  ÖLÇÜT: 10 dk'da nüfus düz mü · kare düz mü · GELİR DEĞİŞMEMELİ (korunum)
-SAYILAR         : (adım 2'den sonra dolar — docs/izdiham-raporu-t6.md §Bulgular)
-KARAR           : (boş)
-UYGULAMA        : (boş)
-BEKÇİ           : (boş)
+SORU            : Kapı önünde NPC birikiyor ve kare sürükleniyor. Kök ne, doğru politika hangisi?
+ÖLÇÜLEN KOLLAR  : S0 taban · S1 leaving ayrışmasız · S2 çıkış dağıtımı · S3 silme yarıçapı
+                  S4 tavan tüm nüfusa · S5 = S1+S4 · S6 = S1+S3
+SAYILAR         : docs/izdiham-raporu-t6.md §Bulgular · ham docs/olcum-izdiham-t6.txt
+                  (TAM: 3 tohum × 600 sn, damgalar temiz)
+                  taban 10 dk'da NPC 193 → 494, kapıda 475
+                  S1 +%168,7 → +%4,4, kapıda 461 → 12,3
+                  S4 TEK BAŞINA ÇÜRÜDÜ: nüfus 58 sabit ama servis 6,9 → 0,1/dk (−%98,6)
+KARAR           : D-140 — kullanıcı **S1**'i seçti (benim önerim). S4 uygulanmaz; C kolu
+                  ("çıkış payı eklenmiş tavan") kendi ölçümünü ister.
+UYGULAMA        : ⏳ **SIRADAKİ OTURUMUN İLK İŞİ** — commit #2 henüz atılmadı.
+BEKÇİ           : ⏳ yazılmadı.
 ```
 
-**VARYANT KAPISI AÇIK:** kollar `tick.ts` + `economy.config.ts`e dokunuyor → sayı satırı
-olmadan hiçbiri uygulanmaz. **Korunum şartı:** hiçbir kol ₺/dk'yı düşürmemeli — izdihamı
-çözmek gelir kısmakla karıştırılmaz.
+## ⏭️ SIRADAKİ OTURUM BURADAN BAŞLAR — T6 commit #2
 
-**Piyasa standardı ARAŞTIRILDI** (`docs/geribildirim-oyun-testi-2026-09-21.md` §G):
-Restaurant Tycoon 2/3 müşteriyi **oranla değil kapasiteyle** doğuruyor ("uygun masa yoksa hiç
-doğma"). Kuramı Little yasası (`N = λ×W`). Kodumuz bunu ZATEN yapıyor — kusur kapsamda:
-`activeCount` `leaving`/WC durumlarını saymıyor, yani ekrandaki toplam nüfusun tavanı yok.
+1. **UYGULA:** `tick.ts` → `AYRISMASIZ` kümesine `'leaving'` eklenir (ölçüm kolundaki
+   `leavingAyrismasiz` dalı kalıcı hâle gelir, kol kaldırılır).
+2. **BEKÇİ:** `tests/izdiham-t6.test.ts` — en az şunlar: `leaving` ayrışmadan muaf ·
+   kalabalık çıkışta kilitlenmiyor (N dakikada nüfus düz) · `AYRISMASIZ`ın diğer üyeleri
+   bozulmadı · silme hâlâ sokak noktasında oluyor.
+3. **MUTASYON:** `tools/mutasyon-izdiham-t6.mjs` ile **en az 2** gerçek mutasyon.
+4. **FİNAL TAM KOŞU:** `OLCUM=tam npx tsx tools/olcum-izdiham-t6.ts` — uygulanmış hâl
+   S1 satırını birebir vermeli.
+5. **commit #2** + D-140 raporun §Karar bölümüne.
 
-## T5b — BİTTİ (2026-09-21, commit 8bde1ac)
-§6.4'ün açık ucu kapandı. İki TAM koşu, denetim kolu TEMİZ, gölge SABİT, 20/20 damga.
-- tarayıcıda oran ×1,09/×1,13 (node ×2,52 değil) · aynı korpus node'da ×2,82/×2,46 →
-  **korpus temsilî, fark ORTAMDA** (node blok ölçer, GC dâhil; tarayıcı çağrı-içi ölçer)
-- **T5'in kaçırdığı asıl kazanç:** ayırma 178,6 → 33,5 MB/sn (×5,34), çağrı başı −130,6 KB
-- **kare kazancı KANITLANDI ama küçük: %5,9-7,1** (üç koşudan biri ters, raporda duruyor)
-- eşitlik 16.687 gerçek tarayıcı çağrısında 0 sapma · oracle üretim paketinde YOK
-- **nav hâlâ karenin ~%30'u** → N2 (yol önbelleği) sıraya girdi, elenmedi
-Rapor: `docs/nav-raporu-t5.md` §7.
-
-## SIRADAKİ TURLAR (kullanıcı onaylı sıra)
-1. **T6 — izdiham/sürüklenme (G-91)** ← ŞU AN
-2. **T7 — G-82 pad çakışması + G-83/G-84 banket kademeli büyüme** (tasarım kanadı GÖSTERİLEREK)
-3. **T8 — G-85 tost/çay mimarisi + G-90 tost asset'i + G-86 zincir denetimi + T3 denge (K1-K11)**
-4. **T9 — G-88 genel tarama** (kod + oynanış, ağırlık performans) + N2 + lint 66
-5. **Faz F — F3 reklam · F4 IAP · F5 mağaza + G-89 store görseli/videosu (EN SON)**
+**Ölçüm kolu (`izdihamKoluAyarla`) SİLİNMEZ:** C kolu ve ileriki nüfus turları onu kullanacak.
 
 ## AÇIK KALEMLER
+- **C kolu ölçülmedi:** "tavan + çıkış payı" (`totalSeats + 2 + pay`) — sert tavan ister ama
+  bağlamasın. Kullanıcı bunu istiyor; sayısı yok, o yüzden uygulanamaz (varyant kapısı).
+- **KORUNUM çözünürlük sınırında:** tüm düzeltme kolları −%9…−%12 servis gösteriyor ama üç
+  tohumun biri yönü ters çeviriyor ve nedensel yol yok. Daha çok tohum ya da servisi doğrudan
+  hedefleyen bir koşu gerekir.
+- **Bardak havuzu masa sayısıyla ölçeklenmiyor** (20 masaya 42, sürekli 0) → **T8 denge turu**.
+- **Ölçüm dünyası kusuru DÜZELTİLDİ ama yalnız T6'da:** `olcum-nav-t5.ts` ve tarayıcı
+  araçlarının `dunyaKur`u hâlâ `stationLevels` yazmıyor → "20 masaya seviye-0 ocak".
+  Sonuçları geçersiz kılmaz (nav servise bağlı değil) ama düzeltilmeli.
 - **G-82…G-91**: `docs/geribildirim-oyun-testi-2026-09-21.md`. G-82 ÖLÇÜLDÜ (1,773 br < 2,30).
   G-89 **yayından hemen önce**, kullanıcı notu.
-- **T3 denge turu** (K1-K11) T8'e bağlandı.
 - **F3 (AdMob) kararı HÂLÂ bekliyor** — C1′ önerildi (`docs/reklam-raporu-f3.md`).
 - **`npm run lint` 66 hatayla kırmızı** — hepsi `tools/` altında, T9'a bağlandı.
-- **Sıra kilidi uyarısı DÖRDÜNCÜ kez çıktı** (D-133/134/138/139): araç `tick.ts`i denge dosyası
-  sayıyor. Aracın ayırt etme yeteneğini düzeltmek kullanıcının kararı.
-- **T4 §B sürüklenmeyi DÜZ ölçmüştü (%0,5)** ama T5b aynı dünyada +%31 gördü — T4'ün sürüklenme
-  ölçümünün neyi kaçırdığı T6'da anlaşılmalı (araç güveni sorusu).
+- **Sıra kilidi BEŞİNCİ yanlış pozitif** (D-133/134/138/139 + bu tur): araç `tick.ts`e dokunan
+  her şeyi denge sayıyor, oysa turların yarısı oraya ölçüm dikişi koyuyor. Bu turda parmak
+  iziyle davranış-nötr olduğu **ölçüldü** (`91925927`). Aracı düzeltmek kullanıcının kararı.
+
+## SONRAKİ TURLAR (kullanıcı onaylı sıra)
+1. **T6 commit #2** ← buradan başla
+2. **T7 — G-82 pad çakışması + G-83/G-84 banket kademeli büyüme** (tasarım kanadı GÖSTERİLEREK)
+3. **T8 — G-85 tost/çay mimarisi + G-90 tost asset'i + G-86 zincir denetimi + T3 denge + bardak havuzu**
+4. **T9 — G-88 genel tarama** (kod + oynanış, ağırlık performans) + N2 yol önbelleği + lint 66
+5. **Faz F — F3 reklam · F4 IAP · F5 mağaza + G-89 store görseli/videosu (EN SON)**
 
 ---
 

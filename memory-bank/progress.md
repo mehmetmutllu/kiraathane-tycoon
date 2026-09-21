@@ -781,14 +781,11 @@ Sanat kalemi değil; Faz S'ten ayrı tutuldu ki asset işi bunların arkasında 
   cihaz sınıfı gölgeyi koşu ortasında kapatıyordu (denetim kolu yakaladı) · `performance.memory`
   bayraksız cache'li değer döndürüyordu. `docs/nav-raporu-t5.md` §7 · araçlar
   `tools/olcum-nav-ab-t5b.mjs` + `tools/olcum-nav-korpus-t5b.ts`.
-- 🔧 **T6 — izdiham / sürüklenme (G-91)** · kullanıcı: *"kapı dışında izdiham oluyor, içeri
-  girmeye çalışan 100lerce npc birikiyor"*. T5b'nin yan bulgusu sayıyı verdi: 2 dakikada üçgen
-  **+%80**, kare **+%31**, NPC 39 → 56 (T4'ün ölçtüğü tavan 39'du) ve tırmanış sürüyordu.
-  Yapısal şüpheli kodda doğrulandı: `tick.ts:389` doğma tavanını yalnız `!hasLeftTable` olan
-  NPC'lere uyguluyor — `leaving`/WC'dekiler sayılmıyor, yani ekrandaki TOPLAM nüfusun tavanı yok.
-  Piyasa standardı araştırıldı: Restaurant Tycoon 2/3 müşteriyi **kapasiteyle** doğuruyor
-  ("uygun masa yoksa hiç doğma"), kuramı Little yasası. **Kollar ölçülmeden uygulanmaz**
-  (varyant kapısı: `tick.ts`). Korunum şartı: hiçbir kol ₺/dk'yı düşürmemeli.
+- 🔧 **T6 — izdiham / sürüklenme (G-91)** · **ÖLÇÜM BİTTİ, KARAR ALINDI (D-140), UYGULAMA
+  SIRADAKİ OTURUMDA.** Kök: `leaving` NPC'lerin hepsi tek noktaya yürüyor ve silme şartı
+  `d ≤ step` (kodun tek "tam varış" şartı), `npcAyristir` ise onları ×1,71 güçlü itiyor →
+  kimse silinmiyor. Kullanıcı **S1**'i seçti; **S4 ("doğmayı kıs") ölçülerek çürüdü** — nüfusu
+  sabitliyor ama servisi −%98,6 kesiyor. `docs/izdiham-raporu-t6.md` · vitest 1392.
 - ⏳ **T7 — G-82 pad çakışması + G-83/G-84 banket kademeli büyüme** (tasarım kanadı gösterilerek).
 - ⏳ **T8 — G-85 tost/çay mimarisi + G-90 tost asset'i + G-86 zincir denetimi + T3 denge (K1-K11)**.
 - ⏳ **T9 — G-88 genel tarama** (kod + oynanış, ağırlık performans) + N2 yol önbelleği + lint 66.

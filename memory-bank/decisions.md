@@ -4615,3 +4615,25 @@ araç `tick.ts`e dokunan her şeyi "denge" sayıyor, oysa turların yarısı ora
 koymak zorunda. Aracın ayırt etme yeteneğini düzeltmek (ör. dikiş dosyalarını/desenlerini tanımak,
 ya da diff'te denge sabiti değişip değişmediğine bakmak) **kullanıcının kararı** — bu turda da
 dokunulmadı.
+
+---
+
+## D-140 · İzdiham: kök `leaving` ayrışmasında, "doğmayı kıs" ölçülerek çürüdü (2026-09-21)
+
+**Karar (kullanıcı):** **S1** — `leaving` durumu müşteri-müşteri ayrışmasından muaf tutulur.
+Tavanın kapsamını genişletme kolu (S4) **uygulanmaz**; "çıkış payı eklenmiş tavan" (C) kendi
+ölçümünü ister.
+
+**Kök:** `leaving` NPC'lerin hepsi tek bir noktaya yürüyor ve silme şartı `d ≤ step` (**0,023 br**)
+— kodun 13 hareket çağrısından 12'sinin payı 0,40-0,50 iken çıkış tek istisna. Aynı karede
+`npcAyristir` onları **×1,71** daha güçlü itiyor (`AYRISMA_HIZ` 2,40 > `NPC_SPEED` 1,40) →
+kalabalık hedefe varamıyor → kimse silinmiyor → yığıldıkça itme artıyor.
+
+**Belirleyici sayılar:** taban 10 dk'da NPC **193 → 494**, kapıda **475**, `leaving`in %98'i
+bir önceki örnekte de `leaving`. S1: artış **+%168,7 → +%4,4**, kapıda **461 → 12,3**.
+
+**S4 ÖLÇÜLEREK ÇÜRÜDÜ ve turun en pahalı satırı budur:** nüfusu 58'de sabitliyor (üç tohumda da)
+ama **servis 6,9 → 0,1/dk (−%98,6)**, gelir 133 → 23 ₺/dk — izdihamı çözmüyor, dondurup oyunu
+durduruyor. Korunum sütunu olmasa "nüfus sabit" satırı onu kazanan kol gösterirdi.
+
+Detay, tuzaklar ve tohum yayılımı: `docs/izdiham-raporu-t6.md`.
