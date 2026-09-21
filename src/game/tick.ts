@@ -386,7 +386,11 @@ function spawnSystem(c: TickCtx): void {
   let nextId = c.nextId;
   let spawnTimer = c.spawnTimer;
   let spawnArea = c.spawnArea;
-  const activeCount = npcs.filter((n) => !hasLeftTable(n.state)).length;
+  // S4 kolu: tavanın KAPSAMI. Bugün yalnız `!hasLeftTable` olanlar sayılıyor — yani oturan/gelen
+  // nüfusun tavanı var, EKRANDAKİ TOPLAM nüfusun yok (`leaving`/WC sayılmıyor).
+  const activeCount = izdihamKolu?.tavanTumNufusa === true
+    ? npcs.length
+    : npcs.filter((n) => !hasLeftTable(n.state)).length;
   // Müşteri tavanı KOLTUK+2 (masa değil — Y2; M3'ün masa+2 fix'inin koltuklu hali).
   let totalSeats = 0;
   for (let i = 0; i < tables; i++) totalSeats += seatsAtTable(i, tableLevels[i] ?? 0);
@@ -438,6 +442,8 @@ function npcSystem(c: TickCtx): void {
   let cleanCups = c.cleanCups;
   let nextId = c.nextId;
   const step = NPC_SPEED * dt;
+  // ÖLÇÜM KOLU bir kez okunur (sıcak yolda her NPC için tekrar okunmasın); null = bugünkü hâl.
+  const kol = izdihamKolu;
   const removed: number[] = [];
   for (const n of npcs) {
     const slot = LAYOUT.tables[n.tableIndex];
@@ -571,7 +577,15 @@ function npcSystem(c: TickCtx): void {
         // Önce KAPIYA (içerdeyse BFS rotayla — masalara takılmaz), sonra SOKAĞA düz yürü.
         const nearDoor = n.pos[2] >= nEntrance[2] - 0.2 || dist2D(n.pos, nEntrance) <= 0.45;
         if (nearDoor) {
-          if (moveToward(n.pos, nStreet, step)) removed.push(n.id);
+          // S2 kolu: hedef dağıtılırsa herkes aynı noktaya yürümez (kimliğe bağlı, tohumsuz).
+          const yay = kol?.cikisDagitimi ?? 0;
+          const hedef: Vec3 = yay > 0
+            ? [nStreet[0] + (((n.id % 9) - 4) * yay), nStreet[1], nStreet[2]]
+            : (nStreet as Vec3);
+          const vardi = moveToward(n.pos, hedef, step);
+          // S3 kolu: tam varış yerine YARIÇAP. Bugünkü şart `d <= step` (≈0,023 br).
+          const R = kol?.silmeYariCapi ?? 0;
+          if (vardi || (R > 0 && dist2D(n.pos, hedef) <= R)) removed.push(n.id);
         } else {
           navStep(n.pos, nEntrance, step, navGrid, 0.4);
         }
@@ -636,12 +650,15 @@ const AYRISMA_HIZ = 2.4;
 function npcAyristir(npcs: Npc[], dt: number): void {
   const r2 = LAYOUT.actorRadius * 2;
   const enFazla = AYRISMA_HIZ * dt;
+  // S1 kolu: `leaving` de ayrışmasız sayılır (bkz. IzdihamKolu — ölçülen kök tam burada).
+  const muaf = (st: Npc['state']): boolean =>
+    AYRISMASIZ.has(st) || (izdihamKolu?.leavingAyrismasiz === true && st === 'leaving');
   for (let i = 0; i < npcs.length; i++) {
     const a = npcs[i];
-    if (AYRISMASIZ.has(a.state)) continue;
+    if (muaf(a.state)) continue;
     for (let j = i + 1; j < npcs.length; j++) {
       const b = npcs[j];
-      if (AYRISMASIZ.has(b.state)) continue;
+      if (muaf(b.state)) continue;
       const dx = b.pos[0] - a.pos[0];
       const dz = b.pos[2] - a.pos[2];
       const d2 = dx * dx + dz * dz;
@@ -1618,3 +1635,33 @@ export function runTick(c: TickCtx): void {
   }
   for (const s of SISTEMLER) s[1](c);
 }
+
+// ---------------------------------------------------------------------------
+// İZDİHAM ÖLÇÜM KOLU (T6) — **yalnız ölçüm; varsayılan null = bugünkü davranış.**
+// ---------------------------------------------------------------------------
+/**
+ * NEDEN VAR: G-91'in kolları `tick.ts`e dokunuyor, yani varyant kapısına tabi — raporun
+ * §Bulgular tablosunda sayı satırı olmadan hiçbiri uygulanamaz (D-084). Kolları ölçmek için
+ * dosyayı kalıcı değiştirmek tam olarak kapının yasakladığı şey; bu yüzden kollar çalışma
+ * anında takılır ve geri alınır (`tools/olcum-izdiham-t6.ts`). `nav.ts`in A/B kolu ile aynı
+ * desen: kapalıyken bedel tek null okumasıdır.
+ *
+ * ÖLÇÜLEN KÖK (aynı araç, §A3): `leaving` NPC'lerin hepsi TEK bir noktaya (sokak) yürüyor ve
+ * `npcAyristir` onları hedeften daha güçlü itiyor (AYRISMA_HIZ 2,4 > NPC_SPEED 1,4). `moveToward`
+ * ancak `d <= step` olunca siliyor, kalabalık o noktaya varamıyor → kimse silinmiyor →
+ * yığıldıkça itme artıyor. Kollar bu zincirin dört ayrı halkasına bakar.
+ */
+export interface IzdihamKolu {
+  /** S1 — `leaving` ayrışmadan muaf (oturanlar gibi). Kökün doğrudan karşılığı. */
+  leavingAyrismasiz: boolean;
+  /** S2 — çıkış hedefi dağıtılır: her NPC sokakta KENDİ x'ine yürür (0 = kapalı). */
+  cikisDagitimi: number;
+  /** S3 — silme yarıçapı: sokağa `R` kadar yaklaşan silinir (0 = bugünkü, tam varış şartı). */
+  silmeYariCapi: number;
+  /** S4 — doğma tavanı TÜM nüfusa (bugün yalnız `!hasLeftTable` olanlara). */
+  tavanTumNufusa: boolean;
+}
+
+let izdihamKolu: IzdihamKolu | null = null;
+export const izdihamKoluAyarla = (k: IzdihamKolu | null): void => { izdihamKolu = k; };
+export const izdihamKoluOku = (): IzdihamKolu | null => izdihamKolu;
