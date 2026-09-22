@@ -1,134 +1,118 @@
 === T6 — IZDIHAM: buyume bu ortamda yeniden uretilebiliyor mu? ===
 kip tam · isinma 240 sn · kayit 600 sn · ornek 30 sn
 
-dunya: 20 masa · 3 alan · 193 NPC (isinma sonu)
+dunya: 20 masa · 3 alan · 54 NPC (isinma sonu)
 
 --- §A NUFUS EGRISI ---
    sn | toplam | sayilan | sayilmayan | kapida | toTable | bekleyen | icen | leaving |   ₺/dk
-    0 |    193 |      51 |        142 |    157 |      29 |       22 |    0 |     142 |        0
-   30 |    209 |      53 |        156 |    184 |      35 |       17 |    1 |     156 |      184
-   60 |    223 |      56 |        167 |    183 |      31 |       24 |    1 |     167 |      118
-   90 |    236 |      47 |        189 |    204 |      29 |       18 |    0 |     189 |      158
-  120 |    258 |      56 |        202 |    217 |      33 |       23 |    0 |     202 |      250
-  150 |    276 |      49 |        227 |    242 |      34 |       15 |    0 |     227 |      130
-  180 |    291 |      55 |        236 |    250 |      33 |       22 |    0 |     236 |       78
-  210 |    310 |      52 |        258 |    277 |      30 |       22 |    0 |     258 |       92
-  240 |    332 |      49 |        283 |    301 |      38 |       10 |    1 |     283 |       52
-  270 |    348 |      51 |        297 |    310 |      34 |       17 |    0 |     297 |       78
-  300 |    363 |      54 |        309 |    334 |      37 |       17 |    0 |     309 |       78
-  330 |    376 |      56 |        320 |    344 |      30 |       26 |    0 |     320 |      118
-  360 |    394 |      52 |        342 |    368 |      40 |       11 |    1 |     342 |      118
-  390 |    414 |      56 |        358 |    388 |      40 |       15 |    1 |     358 |      158
-  420 |    431 |      54 |        377 |    410 |      45 |        9 |    0 |     377 |      118
-  450 |    444 |      56 |        388 |    424 |      43 |       12 |    1 |     388 |      210
-  480 |    457 |      55 |        402 |    432 |      43 |       12 |    0 |     402 |       78
-  510 |    473 |      56 |        417 |    454 |      49 |        6 |    1 |     417 |      104
-  540 |    471 |      55 |        416 |    450 |      41 |       14 |    0 |     416 |       92
-  570 |    481 |      51 |        430 |    457 |      40 |       11 |    0 |     430 |      224
-  600 |    494 |      53 |        441 |    475 |      40 |       13 |    0 |     441 |      130
+    0 |     54 |      42 |         12 |      9 |      14 |       28 |    0 |      12 |        0
+   30 |     63 |      43 |         20 |     17 |      17 |       26 |    0 |      20 |      210
+   60 |     58 |      47 |         11 |      7 |      12 |       34 |    1 |      11 |      118
+   90 |     63 |      42 |         21 |     18 |      14 |       27 |    1 |      21 |       92
+  120 |     57 |      48 |          9 |      9 |      17 |       31 |    0 |       9 |      184
+  150 |     56 |      43 |         13 |     12 |      14 |       29 |    0 |      13 |       78
+  180 |     61 |      41 |         20 |     15 |      15 |       24 |    2 |      20 |      130
+  210 |     59 |      46 |         13 |      7 |      15 |       30 |    1 |      13 |      198
+  240 |     60 |      42 |         18 |     13 |      15 |       27 |    0 |      18 |       52
+  270 |     50 |      44 |          6 |      5 |      13 |       30 |    1 |       6 |       78
+  300 |     54 |      42 |         12 |      9 |      13 |       27 |    2 |      12 |      330
+  330 |     60 |      49 |         11 |      9 |      16 |       32 |    1 |      11 |      118
+  360 |     61 |      44 |         17 |     10 |      15 |       28 |    1 |      17 |       66
+  390 |     61 |      44 |         17 |     13 |      14 |       30 |    0 |      17 |      118
+  420 |     59 |      43 |         16 |     17 |      19 |       24 |    0 |      16 |      170
+  450 |     57 |      45 |         12 |     10 |      13 |       32 |    0 |      12 |       52
+  480 |     62 |      45 |         17 |     13 |      16 |       29 |    0 |      17 |      224
+  510 |     60 |      42 |         18 |     13 |      19 |       23 |    0 |      18 |      184
+  540 |     58 |      44 |         14 |      8 |      12 |       32 |    0 |      14 |      184
+  570 |     62 |      45 |         17 |     16 |      14 |       31 |    0 |      17 |      144
+  600 |     59 |      48 |         11 |     11 |      16 |       32 |    0 |      11 |      144
 
 --- §A2 SERVIS ZINCIRI (izdiham sonuc mu, sebep mi) ---
    sn | temiz bardak | hazir cay | kirli masa | garson durumlari
-    0 |            0 |         0 |         -1 | ustlenen:2 tepsiCay:1 kirliTasiyan:1
-   30 |            0 |         3 |         -1 | ustlenen:2 tepsiCay:2 kirliTasiyan:0
-   60 |            0 |         5 |         -1 | ustlenen:2 tepsiCay:2 kirliTasiyan:0
-   90 |            0 |         3 |         -1 | ustlenen:3 tepsiCay:3 kirliTasiyan:0
-  120 |            0 |         3 |         -1 | ustlenen:3 tepsiCay:2 kirliTasiyan:0
-  150 |            2 |         4 |         -1 | ustlenen:2 tepsiCay:1 kirliTasiyan:0
-  180 |            0 |         5 |         -1 | ustlenen:2 tepsiCay:0 kirliTasiyan:0
-  210 |            0 |         4 |         -1 | ustlenen:3 tepsiCay:2 kirliTasiyan:0
-  240 |            0 |         6 |         -1 | ustlenen:1 tepsiCay:0 kirliTasiyan:0
-  270 |            0 |         2 |         -1 | ustlenen:3 tepsiCay:3 kirliTasiyan:0
-  300 |            0 |         3 |         -1 | ustlenen:3 tepsiCay:3 kirliTasiyan:0
-  330 |            0 |         3 |         -1 | ustlenen:0 tepsiCay:0 kirliTasiyan:0
-  360 |            0 |         3 |         -1 | ustlenen:0 tepsiCay:0 kirliTasiyan:0
+    0 |            4 |         6 |         -1 | ustlenen:1 tepsiCay:0 kirliTasiyan:0
+   30 |            2 |         7 |         -1 | ustlenen:0 tepsiCay:0 kirliTasiyan:0
+   60 |            0 |         4 |         -1 | ustlenen:1 tepsiCay:0 kirliTasiyan:0
+   90 |            0 |         5 |         -1 | ustlenen:1 tepsiCay:0 kirliTasiyan:0
+  120 |            0 |         6 |         -1 | ustlenen:2 tepsiCay:2 kirliTasiyan:0
+  150 |            0 |         6 |         -1 | ustlenen:0 tepsiCay:0 kirliTasiyan:0
+  180 |            1 |         6 |         -1 | ustlenen:0 tepsiCay:0 kirliTasiyan:0
+  210 |            0 |         5 |         -1 | ustlenen:1 tepsiCay:1 kirliTasiyan:0
+  240 |            0 |         3 |         -1 | ustlenen:2 tepsiCay:2 kirliTasiyan:0
+  270 |            0 |         5 |         -1 | ustlenen:2 tepsiCay:0 kirliTasiyan:0
+  300 |            0 |         3 |         -1 | ustlenen:1 tepsiCay:0 kirliTasiyan:0
+  330 |            0 |         0 |         -1 | ustlenen:1 tepsiCay:1 kirliTasiyan:0
+  360 |            0 |         1 |         -1 | ustlenen:2 tepsiCay:2 kirliTasiyan:0
   390 |            0 |         2 |         -1 | ustlenen:1 tepsiCay:1 kirliTasiyan:0
-  420 |            0 |         2 |         -1 | ustlenen:2 tepsiCay:2 kirliTasiyan:0
-  450 |            0 |         3 |         -1 | ustlenen:1 tepsiCay:1 kirliTasiyan:0
-  480 |            0 |         3 |         -1 | ustlenen:3 tepsiCay:2 kirliTasiyan:0
-  510 |            2 |         2 |         -1 | ustlenen:2 tepsiCay:2 kirliTasiyan:0
-  540 |            0 |         1 |         -1 | ustlenen:1 tepsiCay:1 kirliTasiyan:0
-  570 |            0 |         0 |         -1 | ustlenen:1 tepsiCay:1 kirliTasiyan:0
-  600 |            0 |         3 |         -1 | ustlenen:2 tepsiCay:0 kirliTasiyan:0
+  420 |            0 |         2 |         -1 | ustlenen:2 tepsiCay:1 kirliTasiyan:0
+  450 |            0 |         0 |         -1 | ustlenen:3 tepsiCay:1 kirliTasiyan:0
+  480 |            1 |         0 |         -1 | ustlenen:2 tepsiCay:0 kirliTasiyan:0
+  510 |            0 |         1 |         -1 | ustlenen:1 tepsiCay:1 kirliTasiyan:0
+  540 |            1 |         1 |         -1 | ustlenen:1 tepsiCay:0 kirliTasiyan:0
+  570 |            0 |         1 |         -1 | ustlenen:2 tepsiCay:1 kirliTasiyan:0
+  600 |            0 |         3 |         -1 | ustlenen:1 tepsiCay:1 kirliTasiyan:0
 
 --- §A3 CIKIS HATTI — "yavas" mi "takilmis" mi ---
    sn | leaving | salonda | kapi onu | esikte | sokakta | onceki ornekten KALAN | silinen/dk
-    0 |     142 |      11 |        2 |     59 |      70 |                     0 |          0
-   30 |     156 |       5 |        3 |     71 |      77 |                   136 |         20
-   60 |     167 |       2 |        2 |     76 |      87 |                   150 |         20
-   90 |     189 |      10 |        6 |     81 |      92 |                   162 |         22
-  120 |     202 |       8 |        1 |     91 |     102 |                   185 |         20
-  150 |     227 |      12 |        2 |    103 |     110 |                   200 |         16
-  180 |     236 |       8 |        6 |     98 |     124 |                   221 |         24
-  210 |     258 |       7 |        8 |    111 |     132 |                   235 |         14
-  240 |     283 |       8 |        7 |    123 |     145 |                   258 |         12
-  270 |     297 |       8 |        5 |    126 |     158 |                   279 |         28
-  300 |     309 |       5 |       13 |    137 |     154 |                   288 |         30
-  330 |     320 |       1 |       14 |    131 |     174 |                   304 |         26
-  360 |     342 |      12 |       14 |    142 |     174 |                   318 |         12
-  390 |     358 |       4 |       13 |    149 |     192 |                   342 |         16
-  420 |     377 |       6 |       21 |    157 |     193 |                   358 |         20
-  450 |     388 |       5 |       14 |    174 |     195 |                   377 |          8
-  480 |     402 |       8 |       16 |    170 |     208 |                   388 |         16
-  510 |     417 |       5 |       23 |    175 |     214 |                   400 |         12
-  540 |     416 |       2 |       20 |    176 |     218 |                   404 |         50
-  570 |     430 |       6 |       19 |    181 |     224 |                   412 |         28
-  600 |     441 |       4 |       28 |    178 |     231 |                   429 |         10
+    0 |      12 |       9 |        1 |      2 |       0 |                     0 |          0
+   30 |      20 |      13 |        3 |      3 |       1 |                     0 |         58
+   60 |      11 |       9 |        1 |      1 |       0 |                     0 |         74
+   90 |      21 |      12 |        6 |      3 |       0 |                     0 |         56
+  120 |       9 |       6 |        2 |      1 |       0 |                     0 |         96
+  150 |      13 |       8 |        1 |      3 |       1 |                     0 |         66
+  180 |      20 |      14 |        1 |      5 |       0 |                     0 |         52
+  210 |      13 |      10 |        0 |      3 |       0 |                     0 |         76
+  240 |      18 |      11 |        3 |      4 |       0 |                     0 |         72
+  270 |       6 |       5 |        0 |      1 |       0 |                     0 |         86
+  300 |      12 |       8 |        2 |      2 |       0 |                     0 |         60
+  330 |      11 |       7 |        2 |      2 |       0 |                     0 |         68
+  360 |      17 |      13 |        2 |      2 |       0 |                     0 |         70
+  390 |      17 |       9 |        4 |      4 |       0 |                     0 |         74
+  420 |      16 |       8 |        4 |      2 |       2 |                     0 |         78
+  450 |      12 |       7 |        3 |      2 |       0 |                     0 |         76
+  480 |      17 |      10 |        3 |      4 |       0 |                     0 |         58
+  510 |      18 |      12 |        0 |      5 |       1 |                     0 |         78
+  540 |      14 |      10 |        2 |      2 |       0 |                     0 |         76
+  570 |      17 |       9 |        3 |      4 |       1 |                     0 |         62
+  600 |      11 |       6 |        2 |      3 |       0 |                     0 |         82
 
 --- §B BUYUME ---
-  toplam NPC   : 193 → 494 (+%156.0)
-  sayilan      : 51 → 53 (+%3.9)   ← tavanin GORDUGU nufus
-  SAYILMAYAN   : 142 → 441 (+%210.6)   ← tavanin GORMEDIGI nufus
-  kapi kusagi  : 157 → 475 (+%202.5)
-  leaving      : 142 → 441 (+%210.6)
+  toplam NPC   : 54 → 59 (+%9.3)
+  sayilan      : 42 → 48 (+%14.3)   ← tavanin GORDUGU nufus
+  SAYILMAYAN   : 12 → 11 (%-8.3)   ← tavanin GORMEDIGI nufus
+  kapi kusagi  : 9 → 11 (+%22.2)
+  leaving      : 12 → 11 (%-8.3)
 
 --- §C TAVAN ---
   C.npc.maxConcurrent (taban) : 8
-  olculen en yuksek 'sayilan' : 56
-  olculen en yuksek TOPLAM    : 494
+  olculen en yuksek 'sayilan' : 49
+  olculen en yuksek TOPLAM    : 63
 
 --- §D KORUNUM (kollar bunu DUSURMEMELI) ---
-  gelir        : 128 ₺/dk (1.284 ₺ / 10.0 dk)
-  servis       : 93
+  gelir        : 144 ₺/dk (1.437 ₺ / 10.0 dk)
+  servis       : 94
 
 --- DAMGALAR ---
 
-✓ Damgalar temiz (tam koşu).
-
 --- §E KOLLAR (3 tohum · 600 sn · ortalama) ---
   kol                    | NPC son |  artis  | leaving | kapida | servis/dk | korunum | ₺/dk
-  S0 taban               |   485.7 |  +168.7% |   433.0 |  461.0 |       6.9 |    %0.0 |   133
-  S1 leaving ayrismasiz  |    59.3 |    +4.4% |    13.7 |   12.3 |       6.3 |   %-9.2 |   127
-  S2 cikis dagitimi 0,6  |    82.0 |   +26.4% |    37.3 |   36.3 |       6.3 |   %-8.7 |   125
-  S3 silme yaricapi 0,8  |    63.0 |    +4.5% |    14.7 |    9.3 |       6.0 |  %-12.6 |   121
-  S4 tavan tum nufusa    |    58.0 |    +0.0% |    56.0 |   58.0 |       0.1 |  %-98.6 |    23
-  S5 = S1 + S4           |    56.3 |    +0.7% |    13.7 |   10.3 |       6.1 |  %-11.1 |   114
-  S6 = S1 + S3           |    59.3 |    +5.6% |    13.7 |   12.3 |       6.3 |   %-9.2 |   127
+  S1 taban (D-140)       |    59.3 |    +4.4% |    13.7 |   12.3 |       6.3 |    %0.0 |   127
+  S1 + S2 dagitim 0,6    |    60.0 |    +4.9% |    14.3 |   13.0 |       6.3 |    %0.0 |   127
+  S1 + S3 (= eski S6)    |    59.3 |    +5.6% |    13.7 |   12.3 |       6.3 |    %0.0 |   127
+  S1 + S4 (= eski S5)    |    56.3 |    +0.7% |    13.7 |   10.3 |       6.1 |   %-2.1 |   114
 
   TOHUM YAYILIMI (ayni kol, farkli tohum — gurultunun buyuklugu)
   kol                    | NPC/servis (20260921) | NPC/servis (20260922) | NPC/servis (20260923)
-  S0 taban               | 494 /  6.6        | 467 /  7.0        | 496 /  7.1       
-  S1 leaving ayrismasiz  |  59 /  6.8        |  60 /  6.0        |  59 /  6.0       
-  S2 cikis dagitimi 0,6  | 106 /  6.1        |  79 /  6.5        |  61 /  6.3       
-  S3 silme yaricapi 0,8  |  62 /  5.8        |  64 /  5.9        |  63 /  6.4       
-  S4 tavan tum nufusa    |  58 /  0.1        |  58 /  0.2        |  58 /  0.0       
-  S5 = S1 + S4           |  57 /  6.1        |  54 /  6.5        |  58 /  5.8       
-  S6 = S1 + S3           |  59 /  6.8        |  60 /  6.0        |  59 /  6.0       
+  S1 taban (D-140)       |  59 /  6.8        |  60 /  6.0        |  59 /  6.0       
+  S1 + S2 dagitim 0,6    |  59 /  6.8        |  61 /  6.0        |  60 /  6.0       
+  S1 + S3 (= eski S6)    |  59 /  6.8        |  60 /  6.0        |  59 /  6.0       
+  S1 + S4 (= eski S5)    |  57 /  6.1        |  54 /  6.5        |  58 /  5.8       
 
-  S0 taban               — bugunku hal
-  S1 leaving ayrismasiz  — kokun dogrudan karsiligi
-  S2 cikis dagitimi 0,6  — herkes ayni noktaya yurumesin
-  S3 silme yaricapi 0,8  — tam varis yerine yaricap
-  S4 tavan tum nufusa    — piyasa standardinin KAPSAM duzeltmesi
-  S5 = S1 + S4           — kok duzeltmesi + emniyet kemeri
-  S6 = S1 + S3           — kok duzeltmesi + yaricap
+  S1 taban (D-140)       — uygulanan hal = commit #1 S1 satiri
+  S1 + S2 dagitim 0,6    — eski S2, artik kokun ustune
+  S1 + S3 (= eski S6)    — yaricap kok varken tetikleniyor mu
+  S1 + S4 (= eski S5)    — emniyet kemeri — C kolunun olcum tabani
 
 --- KOL DAMGALARI ---
-!! DAMGA KIRILDI · S3 silme yaricapi 0,8: servis korundu — %-12.6 (6.0/dk)
-!! DAMGA KIRILDI · S4 tavan tum nufusa: servis korundu — %-98.6 (0.1/dk)
-!! DAMGA KIRILDI · S5 = S1 + S4: servis korundu — %-11.1 (6.1/dk)
 
-!! 3 DAMGA KIRILDI — bu koşu ölçüm DEĞİL:
-   · S3 silme yaricapi 0,8: servis korundu — %-12.6 (6.0/dk)
-   · S4 tavan tum nufusa: servis korundu — %-98.6 (0.1/dk)
-   · S5 = S1 + S4: servis korundu — %-11.1 (6.1/dk)
+--- DAMGA SONUCU (stderr ayri yakalanamadi; cikis kodu okunur) ---
+  cikis kodu 0 → tum damgalar temiz (tam kosu): izdiham YOK · taban duz · taban = commit #1 S1 satiri (birebir) · 3 kol servis korundu

@@ -2,8 +2,25 @@
  "not": "İlerleme panosunun ESKİ oturum kartları. Pano her turda büyüyordu (67 kart / 219 KB) ve yayını canlı sürümün tamamının okunmasını şart koştuğu için tur başına maliyeti ARTIYORDU — okunanın neredeyse tamamı bir daha bakılmayacak arşivdi. Projenin kendi kuralı buraya da uygulandı (eski anlatı → arsiv/). Pano son 8 turu gösterir; öncesi burada ve git geçmişinde durur.",
  "kaynak": "docs/pano/ilerleme-panosu.html",
  "tasindi": "2026-09-21",
- "kart": 65,
+ "kart": 66,
  "gunluk": [
+  {
+   "tarih": "16.09.2026",
+   "etiket": "Faz F · 1. oturum (F2 — telefon yükü — D-125)",
+   "baslik": "Ölçüm aracı, ölçtüğü şeyden <b>önce kendisi</b> çürütülür",
+   "govde": "Kısa koşu aracı <b>dört kez</b> düşürdü ve dördü de rapora girecek sayıyı bozacaktı. Headless tarayıcı <b>yazılım GPU&#39;suna</b> düşüyordu — orada kare 233 ms, dpr sahte bir %64 &#34;kazanç&#34; gösteriyordu. Kollar <b>farklı dünyaları</b> ölçüyordu: gölge açıkken çizim çağrısı 30, kapalıyken 40 çıktı — gölge çağrı ekler, azaltmaz. Sayaçlar rastgele bir anda okunuyordu, oysa kare başına sıfırlanıyorlar. Ve tohum kayıyordu: yükleme sırası rastgele sayı tüketimini oynatınca üçgen <b>%17,2</b> sapıyordu.<br><br><b>Tam koşu bir kez daha çürüttü.</b> <code>?f2dpr=1</code> kolu tutmuyordu — sorgu dizesi doğruydu ama kod yolunda kayboluyordu (<code>setDpr</code> efekti ile Canvas prop&#39;u yarışıyor). Bunu yakalayan şey <b>varyant etki denetimi</b>: kolun tuttuğu metinden değil <b>renderer&#39;dan</b> okunuyor. Denetim olmasaydı rapor &#34;dpr&#39;nin faydası yok&#34; diye yanlış bir hüküm basacaktı.",
+   "maddeler": [
+    "<b>D-125:</b> A1 — dört ulaşılamaz paket çıkarıldı (board-game-bits 9,3 MB · resource · holiday · forest)",
+    "<b>APK 20,93 → 11,84 MB (−%43,4)</b> · dist 27,4 → 16,1 MB · model dosyası 1002 → 500",
+    "<b>Ölü yük:</b> model paketlerinin %48,5&#39;i ulaşılamaz; dünya TAM açıkken 1006 dosyanın <b>898&#39;i</b> hiç istenmiyor",
+    "<b>Gölge:</b> varlığı −%37,6, çözünürlüğü %0,4 → harita kolu <b>ÖLDÜ</b>; D-073 korundu, yalnız zayıf cihazda kapanır",
+    "<b>Sınıf kayıtta değil localStorage&#39;ta:</b> tercih cihazdan cihaza taşınır, cihazın olgusu taşınmaz",
+    "<b>Sessiz kusur:</b> <code>npm run apk</code> 9 MB fazla raporluyordu (gradle çıktıyı kısaltmıyor) → <code>apk-temizle.mjs</code>",
+    "<b>&#34;Ucuz&#34; ≠ &#34;ölçülemedi&#34;:</b> dpr 4× az piksele rağmen kıpırdamadı — RTX 3060&#39;ta fragment bağlayıcı değil, <b>cihaz turu açık</b>",
+    "<b>H3 ELENDİ:</b> banket adası geçişinden sonra açıklık 2,15 br (gereken 0,94) — premis düştü, toplam 108 → 107",
+    "Bekçi: <code>asset-olu-yuk</code> (4 den. · 3 mut.) listeye değil <b>ilişkiye</b> bakıyor · <code>golge-cihaz</code> (12 den. · 5 mut.) · kaçan 0"
+   ]
+  },
   {
    "tarih": "16.09.2026",
    "etiket": "Faz H · 2. oturum (H2 — yükseltme sırası — D-124)",

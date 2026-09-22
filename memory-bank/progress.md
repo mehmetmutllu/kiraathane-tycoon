@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 121 · YAPILAN 112 · %93):**
+**Oturum bütçesi (TOPLAM 121 · YAPILAN 113 · %93):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -28,8 +28,8 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | H oynanış düzeltmeleri | 2/2 ✅ |
 | | **R geri bildirim turları (2026-09-16)** | **4/4 ✅** |
 | | **F paketleme ve yayın** | **3/6** 🔧 |
-| | **T tur serisi (geri bildirim + performans)** | **4/9** 🔧 |
-| **Program toplam** | | **84/93** |
+| | **T tur serisi (geri bildirim + performans)** | **5/9** 🔧 |
+| **Program toplam** | | **85/93** |
 
 Kuruluş dönemi sayısı commit kaydından türetildi (114 commit / 14 çalışma günü); oturum-başı
 defter tutmak yayın programıyla başladı. **Bütçe düzeltmesi 2026-09-08:** iş akışı hızlandırma
@@ -716,7 +716,7 @@ Sanat kalemi değil; Faz S'ten ayrı tutuldu ki asset işi bunların arkasında 
   onayladı) · Görevler 1,60× / Hedefler 1,47× 1,00×'e inmedi (kart yüksekliği, sanat turu) ·
   G-55 kalemi karşılanmadı, bugünkü sınıf adlarıyla yeniden yazılmalı.
 
-## Faz T — TUR SERİSİ: GERİ BİLDİRİM + PERFORMANS (4/9) 🔧
+## Faz T — TUR SERİSİ: GERİ BİLDİRİM + PERFORMANS (5/9) 🔧
 > Bu faz 2026-09-18 geri bildiriminin turlarıyla başladı ve 2026-09-21'inkilerle sürüyor.
 > **Bütçe düzeltmesi 2026-09-21:** tur serisi bütçe tablosunda HİÇ YOKTU — T1/T2/T4/T5
 > yapılmış ama sayılmamıştı. Faz kendi satırını aldı (toplam 84 → 93) ve turların defteri
@@ -781,11 +781,8 @@ Sanat kalemi değil; Faz S'ten ayrı tutuldu ki asset işi bunların arkasında 
   cihaz sınıfı gölgeyi koşu ortasında kapatıyordu (denetim kolu yakaladı) · `performance.memory`
   bayraksız cache'li değer döndürüyordu. `docs/nav-raporu-t5.md` §7 · araçlar
   `tools/olcum-nav-ab-t5b.mjs` + `tools/olcum-nav-korpus-t5b.ts`.
-- 🔧 **T6 — izdiham / sürüklenme (G-91)** · **ÖLÇÜM BİTTİ, KARAR ALINDI (D-140), UYGULAMA
-  SIRADAKİ OTURUMDA.** Kök: `leaving` NPC'lerin hepsi tek noktaya yürüyor ve silme şartı
-  `d ≤ step` (kodun tek "tam varış" şartı), `npcAyristir` ise onları ×1,71 güçlü itiyor →
-  kimse silinmiyor. Kullanıcı **S1**'i seçti; **S4 ("doğmayı kıs") ölçülerek çürüdü** — nüfusu
-  sabitliyor ama servisi −%98,6 kesiyor. `docs/izdiham-raporu-t6.md` · vitest 1392.
+- ✅ **T6 — izdiham / sürüklenme (G-91)** · `leaving` ayrışmadan muaf (S1 uygulandı); final tam koşu
+  S1 satırını birebir verdi, S4 ölçülerek çürüdü · D-140 · `docs/izdiham-raporu-t6.md` · vitest 1397.
 - ⏳ **T7 — G-82 pad çakışması + G-83/G-84 banket kademeli büyüme** (tasarım kanadı gösterilerek).
 - ⏳ **T8 — G-85 tost/çay mimarisi + G-90 tost asset'i + G-86 zincir denetimi + T3 denge (K1-K11)**.
 - ⏳ **T9 — G-88 genel tarama** (kod + oynanış, ağırlık performans) + N2 yol önbelleği + lint 66.

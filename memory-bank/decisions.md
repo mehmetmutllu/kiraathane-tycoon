@@ -4636,4 +4636,10 @@ bir önceki örnekte de `leaving`. S1: artış **+%168,7 → +%4,4**, kapıda **
 ama **servis 6,9 → 0,1/dk (−%98,6)**, gelir 133 → 23 ₺/dk — izdihamı çözmüyor, dondurup oyunu
 durduruyor. Korunum sütunu olmasa "nüfus sabit" satırı onu kazanan kol gösterirdi.
 
+**Uygulandı (2026-09-23, commit #2):** `AYRISMASIZ`'a `leaving`; final tam koşunun tabanı S1 satırını
+tohum tohum birebir verdi. Bekçi `tests/izdiham-t6.test.ts`, mutasyon 5/5 (M3 ilk koşuda kaçtı →
+iç döngü bekçisi S18'den beri denetimsizdi, test eklendi).
+**Sıra kilidi 6. yanlış pozitif:** commit #2 `karma-commit` sayıldı — protokolün İSTEDİĞİ final tam koşu
+çıktısı + rapor §Karar kodla aynı commit'e giriyor; commit #1 (`4a5e7e4`, karar bölümü boş) zaten var.
+
 Detay, tuzaklar ve tohum yayılımı: `docs/izdiham-raporu-t6.md`.

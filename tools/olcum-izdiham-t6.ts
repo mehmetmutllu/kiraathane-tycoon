@@ -24,6 +24,11 @@
  * doğma"). Kuramı Little yasası `N = λ × W`: `λ` sabitken `W` sıkışmayla büyürse `N` sınırsız
  * büyür. Kodumuz bunu zaten yapmaya çalışıyor; kusur tasarımda değil KAPSAMDA.
  *
+ * ## D-140'tan sonra (commit #2)
+ * S1 kalıcı oldu (`AYRISMASIZ`'a `leaving`), yani `null` kol artık S1'dir ve eski S0 bu araçla
+ * üretilemez — onun sayısı `docs/olcum-izdiham-t6.txt`in commit #1 hâlinde (git). Damgalar
+ * ters döndü: taban artık BÜYÜMEMELİ ve commit #1'deki S1 satırını birebir vermeli.
+ *
  * Koşu:  npx tsx tools/olcum-izdiham-t6.ts             (kısa)
  *        OLCUM=tam npx tsx tools/olcum-izdiham-t6.ts   (tam — rapora yalnız bu girer)
  */
@@ -286,11 +291,7 @@ damga('dunya gec-oyun', st.tables >= 12, `${st.tables} masa · ${st.areasOpen} a
 damga('kosu kayit aldi', o.length >= 5, `${o.length} ornek`);
 damga('NPC akiyor (bot canli)', son.servis !== 0, `servis ${son.servis}`);
 const artis = ilk.toplam === 0 ? 0 : ((son.toplam - ilk.toplam) / ilk.toplam) * 100;
-damga(
-  'BUYUME YENIDEN URETILDI',
-  artis >= 15,
-  `toplam NPC %${f1(artis)} ${artis >= 15 ? '' : '(uretilemedi → tur tarayiciya tasinir)'}`,
-);
+damga('izdiham YOK (D-140 uygulandi)', artis < 15, `toplam NPC %${f1(artis)}`);
 damga('gelir olculdu', gelirDk > 0, `${tr(gelirDk)} ₺/dk`);
 damgaOzeti();
 
@@ -305,20 +306,12 @@ damgaOzeti();
  * KORUNUM ŞARTI: hiçbir kol ₺/dk'yı düşürmemeli. İzdihamı "doğmayı kısarak" çözmek kolaydır
  * ama o, oyunu yavaşlatmaktır — S4 tam olarak bu riski taşır ve tablo onu görünür kılacak.
  */
+const yok: IzdihamKolu = { cikisDagitimi: 0, silmeYariCapi: 0, tavanTumNufusa: false };
 const KOLLAR: { ad: string; not: string; kol: IzdihamKolu | null }[] = [
-  { ad: 'S0 taban', not: 'bugunku hal', kol: null },
-  { ad: 'S1 leaving ayrismasiz', not: 'kokun dogrudan karsiligi',
-    kol: { leavingAyrismasiz: true, cikisDagitimi: 0, silmeYariCapi: 0, tavanTumNufusa: false } },
-  { ad: 'S2 cikis dagitimi 0,6', not: 'herkes ayni noktaya yurumesin',
-    kol: { leavingAyrismasiz: false, cikisDagitimi: 0.6, silmeYariCapi: 0, tavanTumNufusa: false } },
-  { ad: 'S3 silme yaricapi 0,8', not: 'tam varis yerine yaricap',
-    kol: { leavingAyrismasiz: false, cikisDagitimi: 0, silmeYariCapi: 0.8, tavanTumNufusa: false } },
-  { ad: 'S4 tavan tum nufusa', not: 'piyasa standardinin KAPSAM duzeltmesi',
-    kol: { leavingAyrismasiz: false, cikisDagitimi: 0, silmeYariCapi: 0, tavanTumNufusa: true } },
-  { ad: 'S5 = S1 + S4', not: 'kok duzeltmesi + emniyet kemeri',
-    kol: { leavingAyrismasiz: true, cikisDagitimi: 0, silmeYariCapi: 0, tavanTumNufusa: true } },
-  { ad: 'S6 = S1 + S3', not: 'kok duzeltmesi + yaricap',
-    kol: { leavingAyrismasiz: true, cikisDagitimi: 0, silmeYariCapi: 0.8, tavanTumNufusa: false } },
+  { ad: 'S1 taban (D-140)', not: 'uygulanan hal = commit #1 S1 satiri', kol: null },
+  { ad: 'S1 + S2 dagitim 0,6', not: 'eski S2, artik kokun ustune', kol: { ...yok, cikisDagitimi: 0.6 } },
+  { ad: 'S1 + S3 (= eski S6)', not: 'yaricap kok varken tetikleniyor mu', kol: { ...yok, silmeYariCapi: 0.8 } },
+  { ad: 'S1 + S4 (= eski S5)', not: 'emniyet kemeri — C kolunun olcum tabani', kol: { ...yok, tavanTumNufusa: true } },
 ];
 
 interface KolSonuc {
@@ -409,7 +402,17 @@ for (const r of sonuclar) console.log(`  ${r.ad.padEnd(22)} — ${r.not}`);
 console.log('');
 
 console.log('--- KOL DAMGALARI ---');
-damga('taban buyuyor (kol olculebilir)', taban.artis >= 15, `%${f1(taban.artis)}`);
+damga('taban duz (izdiham kapandi)', taban.artis < 15, `%${f1(taban.artis)}`);
+/*
+ * BİREBİR DENETİMİ: uygulama, ölçülen kolun AYNISI olmalı. Commit #1'in tam koşusunda S1
+ * satırı NPC son 59,3 · servis 6,3/dk idi. Koşu tohumlu → sapma = uygulama ölçülenden farklı.
+ */
+if (!KISA) {
+  const npcSon = ortSon(taban);
+  damga('taban = commit #1 S1 satiri (birebir)',
+    Math.abs(npcSon - 59.3) < 0.05 && Math.abs(taban.servisDk - 6.3) < 0.05,
+    `NPC ${f1(npcSon)} (59,3) · servis ${f1(taban.servisDk)} (6,3)`);
+}
 damga('taban servis uretiyor (sayim guclu)', taban.servisDk >= 5, `${f1(taban.servisDk)} servis/dk`);
 for (const r of sonuclar.slice(1)) {
   const kor = taban.servisDk === 0 ? 0 : ((r.servisDk - taban.servisDk) / taban.servisDk) * 100;

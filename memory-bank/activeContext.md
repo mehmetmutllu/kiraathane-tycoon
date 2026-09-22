@@ -5,57 +5,42 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-21 — **T6 KARAR ALINDI, UYGULAMA SIRADAKİ OTURUMDA**)
+## ŞU AN (2026-09-23 — **T6 KAPANDI**, sıradaki tur T7)
 
 ```
 SORU            : Kapı önünde NPC birikiyor ve kare sürükleniyor. Kök ne, doğru politika hangisi?
-ÖLÇÜLEN KOLLAR  : S0 taban · S1 leaving ayrışmasız · S2 çıkış dağıtımı · S3 silme yarıçapı
-                  S4 tavan tüm nüfusa · S5 = S1+S4 · S6 = S1+S3
-SAYILAR         : docs/izdiham-raporu-t6.md §Bulgular · ham docs/olcum-izdiham-t6.txt
-                  (TAM: 3 tohum × 600 sn, damgalar temiz)
-                  taban 10 dk'da NPC 193 → 494, kapıda 475
-                  S1 +%168,7 → +%4,4, kapıda 461 → 12,3
-                  S4 TEK BAŞINA ÇÜRÜDÜ: nüfus 58 sabit ama servis 6,9 → 0,1/dk (−%98,6)
-KARAR           : D-140 — kullanıcı **S1**'i seçti (benim önerim). S4 uygulanmaz; C kolu
-                  ("çıkış payı eklenmiş tavan") kendi ölçümünü ister.
-UYGULAMA        : ⏳ **SIRADAKİ OTURUMUN İLK İŞİ** — commit #2 henüz atılmadı.
-BEKÇİ           : ⏳ yazılmadı.
+SAYILAR         : docs/izdiham-raporu-t6.md §Bulgular + §Karar (final tam koşu)
+KARAR           : D-140 — S1 (`leaving` ayrışmasız). Final taban S1 satırını tohum tohum birebir verdi.
+UYGULAMA        : ✅ tick.ts AYRISMASIZ'a 'leaving'. Ölçüm kolu S2/S3/S4 alanlarıyla duruyor (C kolu için).
+BEKÇİ           : ✅ tests/izdiham-t6.test.ts (5) · mutasyon 5/5 (tools/mutasyon-izdiham-t6.mjs)
 ```
 
-## ⏭️ SIRADAKİ OTURUM BURADAN BAŞLAR — T6 commit #2
+## ⏭️ SIRADAKİ OTURUM BURADAN BAŞLAR
 
-1. **UYGULA:** `tick.ts` → `AYRISMASIZ` kümesine `'leaving'` eklenir (ölçüm kolundaki
-   `leavingAyrismasiz` dalı kalıcı hâle gelir, kol kaldırılır).
-2. **BEKÇİ:** `tests/izdiham-t6.test.ts` — en az şunlar: `leaving` ayrışmadan muaf ·
-   kalabalık çıkışta kilitlenmiyor (N dakikada nüfus düz) · `AYRISMASIZ`ın diğer üyeleri
-   bozulmadı · silme hâlâ sokak noktasında oluyor.
-3. **MUTASYON:** `tools/mutasyon-izdiham-t6.mjs` ile **en az 2** gerçek mutasyon.
-4. **FİNAL TAM KOŞU:** `OLCUM=tam npx tsx tools/olcum-izdiham-t6.ts` — uygulanmış hâl
-   S1 satırını birebir vermeli.
-5. **commit #2** + D-140 raporun §Karar bölümüne.
-
-**Ölçüm kolu (`izdihamKoluAyarla`) SİLİNMEZ:** C kolu ve ileriki nüfus turları onu kullanacak.
+1. **Tarayıcıda 10 dk kare kayma ölçümü (T6'nın performans yansıması)** — kullanıcı "son testimden
+   beri performans ne kadar gelişti" diye sordu; node sayısı var (NPC 494 → 59, ayrışma çifti
+   ~27.700 → ~1.700), **tarayıcı ms'si yok**. T5b aracıyla (masaüstü + telefon profili) T6 öncesi
+   (`583f75a`) ↔ sonrası aynı dünyada. Not: araçların `dunyaKur`u hâlâ `stationLevels` yazmıyor —
+   önce onu düzelt (aşağıda).
+2. Sonra **T7** (tur kartını aç, D-084 sırası).
 
 ## AÇIK KALEMLER
-- **C kolu ölçülmedi:** "tavan + çıkış payı" (`totalSeats + 2 + pay`) — sert tavan ister ama
-  bağlamasın. Kullanıcı bunu istiyor; sayısı yok, o yüzden uygulanamaz (varyant kapısı).
-- **KORUNUM çözünürlük sınırında:** tüm düzeltme kolları −%9…−%12 servis gösteriyor ama üç
-  tohumun biri yönü ters çeviriyor ve nedensel yol yok. Daha çok tohum ya da servisi doğrudan
-  hedefleyen bir koşu gerekir.
-- **Bardak havuzu masa sayısıyla ölçeklenmiyor** (20 masaya 42, sürekli 0) → **T8 denge turu**.
-- **Ölçüm dünyası kusuru DÜZELTİLDİ ama yalnız T6'da:** `olcum-nav-t5.ts` ve tarayıcı
-  araçlarının `dunyaKur`u hâlâ `stationLevels` yazmıyor → "20 masaya seviye-0 ocak".
-  Sonuçları geçersiz kılmaz (nav servise bağlı değil) ama düzeltilmeli.
-- **G-82…G-91**: `docs/geribildirim-oyun-testi-2026-09-21.md`. G-82 ÖLÇÜLDÜ (1,773 br < 2,30).
-  G-89 **yayından hemen önce**, kullanıcı notu.
-- **F3 (AdMob) kararı HÂLÂ bekliyor** — C1′ önerildi (`docs/reklam-raporu-f3.md`).
-- **`npm run lint` 66 hatayla kırmızı** — hepsi `tools/` altında, T9'a bağlandı.
-- **Sıra kilidi BEŞİNCİ yanlış pozitif** (D-133/134/138/139 + bu tur): araç `tick.ts`e dokunan
-  her şeyi denge sayıyor, oysa turların yarısı oraya ölçüm dikişi koyuyor. Bu turda parmak
-  iziyle davranış-nötr olduğu **ölçüldü** (`91925927`). Aracı düzeltmek kullanıcının kararı.
+- **C kolu ölçülmedi:** "tavan + çıkış payı". Yeni taban S1; S1+S4 servisi −%2,1 kısıyor (rapor §Karar).
+- **KORUNUM çözünürlük sınırında** (rapor Bulgu 6) — S1 artık taban, soru kapandı sayılabilir.
+- **Bardak havuzu masa sayısıyla ölçeklenmiyor** (20 masaya 42) → **T8**.
+- **`olcum-nav-t5.ts` + tarayıcı `dunyaKur` `stationLevels` yazmıyor** → "20 masaya seviye-0 ocak".
+- **G-82…G-91**: `docs/geribildirim-oyun-testi-2026-09-21.md`. G-89 yayından hemen önce.
+- **F3 (AdMob) kararı HÂLÂ bekliyor** — C1′ önerildi (`docs/reklam-raporu-f3.md`). Reklam/kayıt
+  katmanını adaptörle kur: **YouTube Playables** mağaza yayınından SONRA denenecek (kullanıcı
+  2026-09-23; davetle giriş, AdMob/IAP orada yasak → `ytgame.ads`/`saveData`; dış URL yasak:
+  drei Draco gstatic + troika font yedeği jsdelivr kapatılmalı).
+- **`npm run lint` 66 hatayla kırmızı** — `tools/` altında, T9.
+- **Sıra kilidi yanlış pozitifleri** (D-133/134/138/139/T6) — aracı düzeltmek kullanıcının kararı.
+- **`progress.md` 86 KB** — başlangıç bütçesi ≤ 15 KB; tarihçe paragrafı + bitmiş faz anlatısı
+  `arsiv/`e taşınmalı (pano aracının denetlediği tablo/başlıklar korunarak). Kullanıcıya sor.
 
 ## SONRAKİ TURLAR (kullanıcı onaylı sıra)
-1. **T6 commit #2** ← buradan başla
+1. ~~T6 commit #2~~ ✅ · tarayıcı kayma ölçümü ← buradan başla
 2. **T7 — G-82 pad çakışması + G-83/G-84 banket kademeli büyüme** (tasarım kanadı GÖSTERİLEREK)
 3. **T8 — G-85 tost/çay mimarisi + G-90 tost asset'i + G-86 zincir denetimi + T3 denge + bardak havuzu**
 4. **T9 — G-88 genel tarama** (kod + oynanış, ağırlık performans) + N2 yol önbelleği + lint 66

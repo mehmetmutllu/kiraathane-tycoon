@@ -1,6 +1,6 @@
 # T6 — KAPI ÖNÜNDEKİ İZDİHAM (G-91)
 
-> **Karar bölümü bu commit'te BOŞ** (D-084 adım 2).
+> Karar: D-140 (S1) — commit #2'de uygulandı, §Karar.
 > Araç: `tools/olcum-izdiham-t6.ts` · ham çıktı `docs/olcum-izdiham-t6.txt`
 > Ölçüm kolu (varyant katmanı): `src/game/tick.ts` → `izdihamKoluAyarla` (varsayılan `null`).
 
@@ -271,6 +271,37 @@ Ocak tavandayken bile: havuz **42** (`3 alan × 10 + 2 × 6`), ölçülen temiz 
 **0**, 2 dakikada **15 servis**. 20 masalık bir mekân 42 bardakla besleniyor. Bu bir denge
 kalemidir ve **T8'in denge turuna** yazıldı; T6'da hiçbir kol buna dokunmadı.
 
-## §Karar
+## §Karar — D-140 (kullanıcı, 2026-09-21): **S1**
 
-_(boş — karar paketi kullanıcıya sunulacak; D-084 adım 3)_
+`leaving` müşteri-müşteri ayrışmasından muaf (`tick.ts` → `AYRISMASIZ`). S4 uygulanmadı;
+"çıkış payı eklenmiş tavan" (C) kendi ölçümünü ister. Ölçüm kolu (`izdihamKoluAyarla`) kalan
+üç alanıyla (S2/S3/S4) C turu için duruyor.
+
+### Final tam koşu (commit #2 · 3 tohum × 600 sn · `docs/olcum-izdiham-t6.txt`)
+
+Uygulanmış hâlin tabanı, commit #1'in S1 satırını **birebir** verdi — tohum tohum da aynı
+(59/6,8 · 60/6,0 · 59/6,0). Yani uygulanan kod ölçülen kolun kendisidir.
+
+| kol | NPC son | artış | leaving | kapıda | servis/dk | korunum | ₺/dk |
+|---|---|---|---|---|---|---|---|
+| **S1 taban (uygulandı)** | 59,3 | +%4,4 | 13,7 | 12,3 | 6,3 | — | 127 |
+| S1 + S2 | 60,0 | +%4,9 | 14,3 | 13,0 | 6,3 | %0,0 | 127 |
+| S1 + S3 (= eski S6) | 59,3 | +%5,6 | 13,7 | 12,3 | 6,3 | %0,0 | 127 |
+| S1 + S4 (= eski S5) | 56,3 | +%0,7 | 13,7 | 10,3 | 6,1 | −%2,1 | 114 |
+
+Ön bölüm (tek tohum, 10 dk): toplam NPC **54 → 59** (taban eskiden 193 → 494), kapı kuşağı
+**11** (eskiden 475), gelir **144 ₺/dk**. Damgalar temiz (çıkış kodu 0).
+
+**Okuma:** S1'in üstüne S2/S3 hiçbir şey eklemiyor. S4 (tavan) S1'in üstünde servisi %2,1 kısıyor —
+C kolu bu satırı taban alacak.
+
+### Bekçi
+`tests/izdiham-t6.test.ts` (5 test) + `tests/musteri-ayrisma.test.ts`. Mutasyon sınavı
+`tools/mutasyon-izdiham-t6.mjs` **5/5**. İlk koşuda **M3 (iç döngü bekçisi silindi) KAÇTI**: S18'den
+beri hiçbir test yürüyeni muaf NPC'den ÖNCE sıralamıyordu, yani iç döngü bekçisi hiç
+denetlenmiyordu. Dizi sırasını ters çeviren test eklendi, artık yakalanıyor.
+
+### Performansa yansıması (ölçülmedi, beklenti)
+Node tarafında kare başına ayrışma çifti ~27.700'e tırmanıyordu, artık ~1.700'de sabit. Tarayıcıdaki
+kare ms'si **ölçülmedi** (T5'te node ×2,5 kazanç gösterip tarayıcı ×1,14 doğrulamıştı). Tarayıcıda
+10 dk kayma ölçümü sonraki oturumda.

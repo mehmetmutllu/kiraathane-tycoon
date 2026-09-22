@@ -194,8 +194,8 @@ h2{font-size:21px;font-weight:800}
      ══════════════════════════════════════════════════════════════════════ -->
 <script type="application/json" id="durum">
 {
- "guncelleme": "21.09.2026",
- "yapilan": 112,
+ "guncelleme": "23.09.2026",
+ "yapilan": 113,
  "toplam": 121,
  "kilometre": [
   {
@@ -216,14 +216,14 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum — T5b nav A/B bitti · T6 izdiham ölçüldü, karar alındı (D-140)",
-  "baslik": "İki turda da <b>en mantıklı duran kol</b> ölçümde düştü",
-  "aciklama": "<b>T5b:</b> T5 nav kolunu node&#39;da ×2,52 ölçmüş ama kare kazancını tarayıcıda gösterememişti. İki kol AYNI sayfada, <b>ABBA</b> deseninde, gölge montajda sabitlenmiş hâlde koşturuldu ve nav&#39;la ilgisiz kalemler bir <b>DENETİM KOLU</b> olarak sınandı. Tarayıcıda oran <b>×1,09</b> çıktı; şüpheli tahminle kapatılmadı, tarayıcının GERÇEK çağrıları node&#39;da oynatıldı ve <b>×2,82</b> verdi → korpus temsilî, fark <b>ortamda</b>. Ve T5&#39;in kaçırdığı asıl kazanç buradan çıktı: ayırma <b>178,6 → 33,5 MB/sn</b>. Kare kazancı kanıtlandı ama küçük: <b>%5,9-7,1</b>.<br><br><b>T6:</b> kullanıcı kapıda yüzlerce NPC gördü. Ölçüm 10 dakikada <b>494 NPC</b> buldu ve kökü çiviledi: <code>leaving</code> durumundaki herkes tek noktaya yürüyor, silme şartı kodun tek &#34;tam varış&#34; şartı (<b>0,023 br</b>, diğer 12 çağrının payı 0,40-0,50), ve <code>npcAyristir</code> onları <b>×1,71 güçlü</b> itiyor. Kalabalık hedefe varamıyor → kimse silinmiyor → yığıldıkça itme artıyor.<br><br><b>İki turun ortak dersi:</b> en mantıklı duran kol ikisinde de ölçümde düştü. T5b&#39;de &#34;tampon ayırmak pahalı&#34; varsayımı, T6&#39;da &#34;doğmayı kıs&#34; kolu — ikincisi nüfusu gerçekten sabitliyor ama <b>servisi %98,6 kesiyor</b>. Korunum sütunu olmasa tabloyu kazanırdı."
+  "etiket": "Bu oturum — T6 uygulandı ve kapandı (D-140) · YouTube Playables araştırıldı",
+  "baslik": "Uygulanan kod, ölçülen kolun <b>ta kendisi</b> çıktı",
+  "aciklama": "<code>leaving</code> artık müşteri-müşteri ayrışmasından muaf. Final tam koşunun tabanı, commit #1'deki S1 satırını <b>tohum tohum birebir</b> verdi (NPC 59,3 · servis 6,3/dk · 127 ₺/dk). 10 dakikada nüfus <b>193 → 494</b> yerine <b>54 → 59</b>, kapı önü <b>475 → 11</b>.<br><br>Mutasyon sınavı bekçinin bir boşluğunu gösterdi: <b>M3 kaçtı</b> — iç döngü bekçisi S18'den beri hiçbir testte denetlenmiyordu, çünkü bütün testler muaf NPC'yi dizinin başına koyuyordu. Dizi sırasını ters çeviren test eklendi, sınav <b>5/5</b>.<br><br>Yan iş: <b>YouTube Playables</b> araştırıldı — teknik olarak sığıyoruz (18 MB), ama giriş davetle ve <b>AdMob/IAP orada yasak</b>. Kullanıcı kararı: mağaza yayınından sonra."
  },
  "siradaki": {
-  "etiket": "Sırada — T6 commit #2 (uygulama + bekçi), sonra T7 banket · T8 zincir+denge · T9 tarama",
-  "baslik": "Karar verildi, <b>kod henüz yazılmadı</b> — sıradaki oturum oradan başlar",
-  "aciklama": "<b>D-140: S1</b> — <code>leaving</code> durumu müşteri-müşteri ayrışmasından muaf tutulur. Ölçülen etki: artış <b>+%168,7 → +%4,4</b>, kapıdaki yığın <b>461 → 12,3</b>. Uygulama <b>tek satırlık</b> bir muafiyet ama commit #2 henüz atılmadı: bekçi testi, en az iki gerçek mutasyon ve final tam koşu sıradaki oturumun işi.<br><br><b>Ölçüm kolu silinmeyecek</b> (<code>izdihamKoluAyarla</code>): kullanıcının istediği <b>C kolu</b> — &#34;tavan + çıkış payı&#34;, yani sert tavan ama bağlamayan kelepçe — kendi ölçümünü istiyor ve sayısı olmadan uygulanamaz (varyant kapısı).<br><br><b>Sonra:</b> T7 (pad çakışması G-82 + banketlerin kademeli büyümesi G-83/G-84, tasarım kanadı <i>gösterilerek</i> sorulacak) · T8 (tost/çay mimarisi + tost asset&#39;i + zincir denetimi + T3 denge + <b>bardak havuzu</b>: 20 masaya 42 bardak ve sürekli 0) · T9 (genel tarama + N2 yol önbelleği + lint). En son Faz F ve <b>mağaza görselleri/videosu</b>."
+  "etiket": "Sırada — tarayıcıda 10 dk kare kayma ölçümü, sonra T7 banket · T8 zincir+denge · T9 tarama",
+  "baslik": "T6'nın <b>kareye</b> yansıması henüz ölçülmedi",
+  "aciklama": "Node'da ayrışma çifti <b>~27.700 → ~1.700</b> ama T5'te node ×2,52 derken tarayıcı ×1,14 doğrulamıştı — bu yüzden ms sayısı verilmedi. Sıradaki oturum T5b aracıyla T6 öncesi ↔ sonrası aynı dünyada 10 dakika ölçer (önce araçların <code>dunyaKur</code>u <code>stationLevels</code> yazacak şekilde düzeltilir).<br><br><b>Sonra:</b> T7 (pad çakışması G-82 + banketlerin kademeli büyümesi, tasarım kanadı gösterilerek) · T8 (tost/çay + zincir + T3 denge + bardak havuzu) · T9 (genel tarama + N2 yol önbelleği + lint). En son Faz F; Playables yayın sonrası."
  },
  "donemler": [
   {
@@ -386,8 +386,8 @@ h2{font-size:21px;font-weight:800}
     {
      "k": "T",
      "t": "Tur serisi: geri bildirim + performans",
-     "d": "Kullanıcının oynayıp verdiği geri bildirimin turları. <b>T1</b> onarım (bir <b>veri kaybı</b> dâhil) · <b>T2</b> görev akışı (mantık + görsel) · <b>T4</b> performans: fps tavanı yoktu, erken oyunda <b>116,7 fps</b> çiziliyordu; ve kare <b>bölüşümü</b> ölçülünce herkesin bir tur boyunca <b>yanlış yarıya</b> baktığı görüldü — çizim karenin yarısı bile değil, en büyük kalem <code>findNavPath</code>. <b>T5 (D-139):</b> devralınan plan (&#34;41 KB tampon ayırmak pahalı&#34;) ölçülüp <b>çürütüldü</b>; üç kol uygulandı, çıktı birebir aynı kaldı. <b>T5b:</b> T5&#39;in açık ucu kapandı — iki kol <b>aynı sayfada</b>, ABBA deseninde, gölge montajda sabitlenmiş hâlde koşturuldu ve nav&#39;la ilgisiz kalemler <b>denetim kolu</b> olarak sınandı. Tarayıcıda oran <b>×1,09</b> çıktı, node&#39;da <b>×2,52</b>; tarayıcının GERÇEK çağrıları node&#39;da oynatılınca <b>×2,82</b> → korpus temsilî, fark <b>ortamda</b> (node blok ölçer, GC dâhil; tarayıcı çağrı-içi ölçer, GC dışarıda). <b>T5&#39;in kaçırdığı asıl kazanç:</b> ayırma <b>178,6 → 33,5 MB/sn</b> — T5 bunu &#34;tabanın %10,3&#39;ü&#34; diye elemişti, zaman olarak doğruydu ama ayırma bir <b>hız</b>tır ve telefonda karşılığı GC takılması + pildir. Kare kazancı kanıtlandı ama küçük: <b>%5,9-7,1</b>. <b>T6 (şu an):</b> kullanıcı <i>&#34;kapı dışında izdiham oluyor, 100lerce npc birikiyor&#34;</i> dedi ve ölçüm aynı şeyi sayıyla gördü — 2 dakikada üçgen <b>+%80</b>, kare <b>+%31</b>, NPC 39 → 56. Kodda doğrulanan şüpheli: doğma tavanı <code>leaving</code>/WC durumlarını saymıyor, yani ekrandaki <b>toplam nüfusun tavanı yok</b>. Piyasa standardı araştırıldı (Restaurant Tycoon 2/3: &#34;uygun masa yoksa hiç doğma&#34;; kuramı Little yasası).",
-     "yapilan": 4,
+     "d": "Kullanıcının oynayıp verdiği geri bildirimin turları. <b>T1</b> onarım (bir <b>veri kaybı</b> dâhil) · <b>T2</b> görev akışı (mantık + görsel) · <b>T4</b> performans: fps tavanı yoktu, erken oyunda <b>116,7 fps</b> çiziliyordu; ve kare <b>bölüşümü</b> ölçülünce herkesin bir tur boyunca <b>yanlış yarıya</b> baktığı görüldü — çizim karenin yarısı bile değil, en büyük kalem <code>findNavPath</code>. <b>T5 (D-139):</b> devralınan plan (&#34;41 KB tampon ayırmak pahalı&#34;) ölçülüp <b>çürütüldü</b>; üç kol uygulandı, çıktı birebir aynı kaldı. <b>T5b:</b> T5&#39;in açık ucu kapandı — iki kol <b>aynı sayfada</b>, ABBA deseninde, gölge montajda sabitlenmiş hâlde koşturuldu ve nav&#39;la ilgisiz kalemler <b>denetim kolu</b> olarak sınandı. Tarayıcıda oran <b>×1,09</b> çıktı, node&#39;da <b>×2,52</b>; tarayıcının GERÇEK çağrıları node&#39;da oynatılınca <b>×2,82</b> → korpus temsilî, fark <b>ortamda</b> (node blok ölçer, GC dâhil; tarayıcı çağrı-içi ölçer, GC dışarıda). <b>T5&#39;in kaçırdığı asıl kazanç:</b> ayırma <b>178,6 → 33,5 MB/sn</b> — T5 bunu &#34;tabanın %10,3&#39;ü&#34; diye elemişti, zaman olarak doğruydu ama ayırma bir <b>hız</b>tır ve telefonda karşılığı GC takılması + pildir. Kare kazancı kanıtlandı ama küçük: <b>%5,9-7,1</b>. <b>T6 (D-140, kapandı):</b> kullanıcı <i>&#34;kapı dışında izdiham oluyor, 100lerce npc birikiyor&#34;</i> dedi ve ölçüm aynı şeyi sayıyla gördü — 2 dakikada üçgen <b>+%80</b>, kare <b>+%31</b>, NPC 39 → 56. Kodda doğrulanan şüpheli: doğma tavanı <code>leaving</code>/WC durumlarını saymıyor, yani ekrandaki <b>toplam nüfusun tavanı yok</b>. Piyasa standardı araştırıldı (Restaurant Tycoon 2/3: &#34;uygun masa yoksa hiç doğma&#34;; kuramı Little yasası). Kök doğma tavanı değil çıkış çıktı: <code>leaving</code> ayrışmadan muaf tutuldu → 10 dk'da NPC <b>494 → 59</b>, kapı önü <b>475 → 11</b>; final koşu ölçülen kolu birebir verdi.",
+     "yapilan": 5,
      "toplam": 9,
      "kapi": "Kullanıcının gördüğü her kusur ya düzeltilmiş ya ölçülerek elenmiş olmalı",
      "durum": "now"
@@ -396,6 +396,20 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "23.09.2026",
+   "etiket": "T6 commit #2 — izdiham kapandı (D-140) · YouTube Playables araştırması",
+   "baslik": "Kapıdaki yığın <b>475'ten 11'e</b> indi; uygulama ölçümle birebir",
+   "govde": "Karar geçen oturumda alınmıştı (S1), bu oturum yalnız onu yazdı: <code>AYRISMASIZ</code> kümesine <code>'leaving'</code>. Ölçüm kolunun S1 alanı kaldırıldı, kalan üç alan C kolu için duruyor.<br><br><b>Final tam koşu aracın kendi damgasıyla denetlendi:</b> taban, commit #1'in S1 satırını 3 tohumda da birebir vermezse koşu geçersizdi. Verdi — yani yazılan kod ölçülen kolun kendisi.<br><br><b>Mutasyon sınavı bekçinin kör noktasını buldu.</b> <code>npcAyristir</code>in iki bekçisi var; iç döngününki yalnız yürüyen, muaf NPC'den ÖNCE sıralandığında çalışır. S18'den beri bütün testler muaf olanı başa koyuyordu → M3 kaçtı. Sırayı ters çeviren test eklendi.",
+   "maddeler": [
+    "<b>Nüfus düz:</b> 10 dk'da 54 → 59 (eskiden 193 → 494) · kapı önü 11 (eskiden 475) · gelir 144 ₺/dk",
+    "<b>Üst üste kol eklemek bir şey kazandırmıyor:</b> S1+S2 ve S1+S3 servis/nüfusta S1 ile aynı; S1+S4 servisi −%2,1 kısıyor (C kolunun yeni tabanı)",
+    "<b>Mutasyon 5/5</b> (M3 ilk koşuda kaçtı → yeni test) · vitest 1397",
+    "<b>Kare ms'si ÖLÇÜLMEDİ</b> — node sayısı var (çift denetimi ~27.700 → ~1.700), tarayıcı sayısı sıradaki oturumda",
+    "<b>YouTube Playables:</b> davetle giriş · 18 MB/522 dosya sınırın çok altında · AdMob/IAP yasak (<code>ytgame.ads</code>) · iki dış URL (Draco gstatic, troika font) kapatılmalı → mağaza yayınından SONRA",
+    "<b>Sıra kilidi 6. yanlış pozitif:</b> commit #2'nin protokolün istediği final çıktısını taşıması &#34;karma commit&#34; sayıldı"
+   ]
+  },
   {
    "tarih": "21.09.2026",
    "etiket": "T5b nav A/B · 2026-09-21 geri bildirimi (G-82…G-91) · T6 izdiham ölçüldü (D-140)",
@@ -524,23 +538,6 @@ h2{font-size:21px;font-weight:800}
     "Araç dört kez daha düştü: açılış panı pencereye sızıyordu · DOM tek kartın yedi kopyasını ölçüyordu · kollar aynı dünyayı ölçmüyordu · V4&#39;ün ölçecek şeyi yoktu",
     "Bekçi: <code>gorev-seridi-g1</code> (14 den. · <b>15 mutasyon</b>, kaçan 0) — M1 tam olarak f4b1a52&#39;nin yaptığı silmedir",
     "vitest <b>1220 ✓</b> · duman <b>45/45 ✓</b> · tsc temiz"
-   ]
-  },
-  {
-   "tarih": "16.09.2026",
-   "etiket": "Faz F · 1. oturum (F2 — telefon yükü — D-125)",
-   "baslik": "Ölçüm aracı, ölçtüğü şeyden <b>önce kendisi</b> çürütülür",
-   "govde": "Kısa koşu aracı <b>dört kez</b> düşürdü ve dördü de rapora girecek sayıyı bozacaktı. Headless tarayıcı <b>yazılım GPU&#39;suna</b> düşüyordu — orada kare 233 ms, dpr sahte bir %64 &#34;kazanç&#34; gösteriyordu. Kollar <b>farklı dünyaları</b> ölçüyordu: gölge açıkken çizim çağrısı 30, kapalıyken 40 çıktı — gölge çağrı ekler, azaltmaz. Sayaçlar rastgele bir anda okunuyordu, oysa kare başına sıfırlanıyorlar. Ve tohum kayıyordu: yükleme sırası rastgele sayı tüketimini oynatınca üçgen <b>%17,2</b> sapıyordu.<br><br><b>Tam koşu bir kez daha çürüttü.</b> <code>?f2dpr=1</code> kolu tutmuyordu — sorgu dizesi doğruydu ama kod yolunda kayboluyordu (<code>setDpr</code> efekti ile Canvas prop&#39;u yarışıyor). Bunu yakalayan şey <b>varyant etki denetimi</b>: kolun tuttuğu metinden değil <b>renderer&#39;dan</b> okunuyor. Denetim olmasaydı rapor &#34;dpr&#39;nin faydası yok&#34; diye yanlış bir hüküm basacaktı.",
-   "maddeler": [
-    "<b>D-125:</b> A1 — dört ulaşılamaz paket çıkarıldı (board-game-bits 9,3 MB · resource · holiday · forest)",
-    "<b>APK 20,93 → 11,84 MB (−%43,4)</b> · dist 27,4 → 16,1 MB · model dosyası 1002 → 500",
-    "<b>Ölü yük:</b> model paketlerinin %48,5&#39;i ulaşılamaz; dünya TAM açıkken 1006 dosyanın <b>898&#39;i</b> hiç istenmiyor",
-    "<b>Gölge:</b> varlığı −%37,6, çözünürlüğü %0,4 → harita kolu <b>ÖLDÜ</b>; D-073 korundu, yalnız zayıf cihazda kapanır",
-    "<b>Sınıf kayıtta değil localStorage&#39;ta:</b> tercih cihazdan cihaza taşınır, cihazın olgusu taşınmaz",
-    "<b>Sessiz kusur:</b> <code>npm run apk</code> 9 MB fazla raporluyordu (gradle çıktıyı kısaltmıyor) → <code>apk-temizle.mjs</code>",
-    "<b>&#34;Ucuz&#34; ≠ &#34;ölçülemedi&#34;:</b> dpr 4× az piksele rağmen kıpırdamadı — RTX 3060&#39;ta fragment bağlayıcı değil, <b>cihaz turu açık</b>",
-    "<b>H3 ELENDİ:</b> banket adası geçişinden sonra açıklık 2,15 br (gereken 0,94) — premis düştü, toplam 108 → 107",
-    "Bekçi: <code>asset-olu-yuk</code> (4 den. · 3 mut.) listeye değil <b>ilişkiye</b> bakıyor · <code>golge-cihaz</code> (12 den. · 5 mut.) · kaçan 0"
    ]
   }
  ],
@@ -796,7 +793,7 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunlukArsiv": {
-  "kart": 65,
+  "kart": 66,
   "ilk": "05.06 – 17.06.2026",
   "son": "16.09.2026",
   "yer": "memory-bank/arsiv/pano-gunluk.json"

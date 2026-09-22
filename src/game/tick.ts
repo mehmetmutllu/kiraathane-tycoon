@@ -600,8 +600,17 @@ function npcSystem(c: TickCtx): void {
   c.liveNpcs = liveNpcs;
 }
 
-/** Ayrışmanın dokunmadığı durumlar: oturanın yeri koltuktur, WC'dekinin gövdesi çizilmez. */
-const AYRISMASIZ = new Set(['waitingForTea', 'drinking', 'inWc', 'wcGiris', 'wcCikis']);
+/**
+ * Ayrışmanın dokunmadığı durumlar: oturanın yeri koltuktur, WC'dekinin gövdesi çizilmez.
+ *
+ * `leaving` (T6, D-140): çıkanların HEPSİ tek bir sokak noktasına yürür ve silme şartı tam
+ * varıştır. Ayrışma (2,4 br/sn) yürüyüşten (1,4) güçlü olduğu için kalabalık o noktanın
+ * etrafında halka kurup hiç silinmiyordu — 10 dakikada kapıda 461 NPC (`docs/izdiham-raporu-t6.md`).
+ * Çıkış hattında çakışma kısa ömürlü ve kapıdan dışarıda; muafiyetin görsel bedeli yok.
+ */
+export const AYRISMASIZ: ReadonlySet<Npc['state']> = new Set<Npc['state']>([
+  'waitingForTea', 'drinking', 'inWc', 'wcGiris', 'wcCikis', 'leaving',
+]);
 
 /**
  * MÜŞTERİ-MÜŞTERİ AYRIŞMASI (S18, kullanıcı: *"gelen misafirler baya yan yana iç içe yürüyo"*).
@@ -650,15 +659,12 @@ const AYRISMA_HIZ = 2.4;
 function npcAyristir(npcs: Npc[], dt: number): void {
   const r2 = LAYOUT.actorRadius * 2;
   const enFazla = AYRISMA_HIZ * dt;
-  // S1 kolu: `leaving` de ayrışmasız sayılır (bkz. IzdihamKolu — ölçülen kök tam burada).
-  const muaf = (st: Npc['state']): boolean =>
-    AYRISMASIZ.has(st) || (izdihamKolu?.leavingAyrismasiz === true && st === 'leaving');
   for (let i = 0; i < npcs.length; i++) {
     const a = npcs[i];
-    if (muaf(a.state)) continue;
+    if (AYRISMASIZ.has(a.state)) continue;
     for (let j = i + 1; j < npcs.length; j++) {
       const b = npcs[j];
-      if (muaf(b.state)) continue;
+      if (AYRISMASIZ.has(b.state)) continue;
       const dx = b.pos[0] - a.pos[0];
       const dz = b.pos[2] - a.pos[2];
       const d2 = dx * dx + dz * dz;
@@ -1650,10 +1656,11 @@ export function runTick(c: TickCtx): void {
  * `npcAyristir` onları hedeften daha güçlü itiyor (AYRISMA_HIZ 2,4 > NPC_SPEED 1,4). `moveToward`
  * ancak `d <= step` olunca siliyor, kalabalık o noktaya varamıyor → kimse silinmiyor →
  * yığıldıkça itme artıyor. Kollar bu zincirin dört ayrı halkasına bakar.
+ *
+ * S1 (`leaving` ayrışmasız) D-140 ile KALICI oldu → `AYRISMASIZ`. Kalan üç kol, üstüne
+ * ölçülecek turlar (C kolu: tavan + çıkış payı) için duruyor.
  */
 export interface IzdihamKolu {
-  /** S1 — `leaving` ayrışmadan muaf (oturanlar gibi). Kökün doğrudan karşılığı. */
-  leavingAyrismasiz: boolean;
   /** S2 — çıkış hedefi dağıtılır: her NPC sokakta KENDİ x'ine yürür (0 = kapalı). */
   cikisDagitimi: number;
   /** S3 — silme yarıçapı: sokağa `R` kadar yaklaşan silinir (0 = bugünkü, tam varış şartı). */
