@@ -36,8 +36,7 @@ BEKÇİ           : ✅ tests/izdiham-t6.test.ts (5) · mutasyon 5/5 (tools/muta
   drei Draco gstatic + troika font yedeği jsdelivr kapatılmalı).
 - **`npm run lint` 66 hatayla kırmızı** — `tools/` altında, T9.
 - **Sıra kilidi yanlış pozitifleri** (D-133/134/138/139/T6) — aracı düzeltmek kullanıcının kararı.
-- **`progress.md` 86 KB** — başlangıç bütçesi ≤ 15 KB; tarihçe paragrafı + bitmiş faz anlatısı
-  `arsiv/`e taşınmalı (pano aracının denetlediği tablo/başlıklar korunarak). Kullanıcıya sor.
+- ~~`progress.md` 86 KB~~ → 2026-09-23 kesildi (8,5 KB), tam metin `arsiv/progress-tamamlanan.md` sonunda.
 
 ## SONRAKİ TURLAR (kullanıcı onaylı sıra)
 1. ~~T6 commit #2~~ ✅ · tarayıcı kayma ölçümü ← buradan başla
