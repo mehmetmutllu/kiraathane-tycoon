@@ -5,20 +5,21 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-23 — T9a KAPANDI · D-145; sıradaki T9b)
+## ŞU AN (2026-09-23 — T9b AÇIK: oynanış taraması)
 
 ```
-T9a SONUÇ       : tick'in %96'sı nav → N2-kesin çağrı önbelleği (anahtar: ızgara + başlangıç HÜCRESİ + hedef +
-                  reach) varsayılan AÇIK · çıktı birebir · node tick ×10,1 (final ×11,6) · telefon kare işi −%21,4
-                  g1 ELENDİ: D-142 sonrası bayattı, hattı tıkıyordu ("3 → 2" sahteydi); doğru tanımla etkisiz
-ARAÇ            : sıra kilidi (geriye bakış + §Karar-boş dikiş; 8 yanlış pozitifin 7'si kapandı) · lint 77 → 0
-SORU            : açılmadı (N2 teknik çatal, g1 etkisiz) · D-144: tost A · F3 C1′ 3 dk · T9 iki parça
+SORU            : oyunu baştan sona koşturunca nerede takılıyor / kırılıyor? (oynanış · mantık · görev sırası · UX/UI)
+ÖLÇÜLECEK KOLLAR: yok — tarama turu; çıktı BULGU LİSTESİ (kod yazılmaz), kullanıcı hangilerinin düzeltileceğini seçer
+SAYILAR         : `docs/tarama-raporu-t9b.md` §Bulgular — A 7 (A1 q_tost5 KİLİT · A2 yanlış masa oku) · B 13 · C 5 · D 6 · E araç
+KARAR           : (bulgu listesi kullanıcıya → seçilenler sonraki tura)
+UYGULAMA        : bu turda yok
+BEKÇİ           : yok (tarama) — düzeltme turunda bulgu başına
 ```
 
 ## ⏭️ SIRADAKİ ADIM
 
-**T9b — oynanış taraması** (G-88'in ikinci parçası): oyunu baştan sona oyna/koştur, takılma · görsel hata ·
-akış kırığı bul → bulgu listesi kullanıcıya (kod yazmadan önce). Sonra **Faz F** (F3 C1′ uygulaması ile başlar).
+**T9b** tarama: canlı oynanış (Playwright + `__advanceTime`) + statik mantık/görev sırası/UI incelemesi →
+`docs/tarama-raporu-t9b.md` → bulgu listesi kullanıcıya. Sonra seçilen düzeltmeler, sonra **Faz F**.
 
 ## AÇIK KALEMLER
 - **Seviye ekranının "İzle, 2× al"ı** pasif — F3 (reklam) kararına bağlı.

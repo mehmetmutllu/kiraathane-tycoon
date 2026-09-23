@@ -1,0 +1,122 @@
+async () => {
+  const S = await import('/src/game/store.ts');
+  const N = await import('/src/game/nav.ts');
+  const L = await import('/src/game/layout.ts');
+  const R = await import('/src/game/rules.ts');
+  const C = (await import('/src/config/economy.config.ts')).economyConfig;
+  const useGame = S.useGame;
+  const log = [];
+  const bot = { t: 0, lastQ: -1, lastQT: 0, lastIdx: -1, stuckLogged: false, events: log, qTimes: [], target: null, standT: 0, lastDecision: '' };
+  const dist = (a, b) => Math.hypot(a[0] - b[0], a[2] - b[2]);
+  const seatOf = (n) => { const t = S.LAYOUT.tables[n.tableIndex]; return (t.seats && t.seats[n.seatIndex]) || t.seat; };
+
+  function decide(s) {
+    const q = C.quests[s.questIndex];
+    const tgt = q ? q.target : null;
+    const p = s.player;
+    const place = S.servicePlace(s.areasOpen);
+    const trayN = s.tray + s.trayFood;
+    const dirtyN = s.carriedDirty + (s.carriedDirtyFood || 0);
+    const waiting = s.npcs.filter((n) => n.state === 'waitingForTea');
+    const off = [place.pickup[0] - place.station[0], 0, place.pickup[2] - place.station[2]];
+    const k = 0.8; const dishFront = [place.dish[0] + off[0]*k, 0, place.dish[2] + off[2]*k];
+    const pick = [place.station[0] + off[0]*k, 0, place.station[2] + off[2]*k];
+    // 1) panel görevleri: gerçek oyuncu panelden alır
+    if (tgt && tgt.type === 'charStat') { if (s.buyCharUpgrade(tgt.stat)) log.push({ t: bot.t, ev: 'panel:char:' + tgt.stat }); }
+    if (tgt && tgt.type === 'waiterTray') { if (s.buyWaiterTray()) log.push({ t: bot.t, ev: 'panel:waiterTray' }); }
+    if (tgt && tgt.type === 'waiterSpeed') { if (s.buyWaiterSpeed()) log.push({ t: bot.t, ev: 'panel:waiterSpeed' }); }
+    // 2) görev hedefi (pad / yükseltme noktası) — parası yetiyorsa
+    let focus = q ? R.questFocusPos(tgt, s.tableLevels, s.tables, s.areasOpen, q.area ?? 0) : null;
+    if (tgt && (tgt.type === 'tableLevel' || tgt.type === 'tablesAtLevel')) { const lt = S.tableUpgradeTarget(s); if (lt != null && S.LAYOUT.tables[lt]) { const sp = S.LAYOUT.tables[lt].upgradeSpot; if (!focus || Math.hypot(sp[0]-focus[0], sp[2]-focus[2]) > 0.05) { if (!bot.okSapma) bot.okSapma = []; if (bot.okSapma.length < 50) bot.okSapma.push({ t: Math.round(bot.t), q: q.id, live: lt }); } focus = sp; } }
+    const standTypes = ['pad', 'stationLevel', 'lavaboLevel', 'tableLevel', 'tablesAtLevel'];
+    if (focus && standTypes.includes(tgt.type) && trayN === 0 && dirtyN === 0) {
+      const g = window.__game();
+      const cost = tgt.type === 'pad' ? g.padCost : 0;
+      if (tgt.type !== 'pad' || s.wallet.toNumber() >= cost) return { pos: focus, why: 'gorev:' + tgt.type, stand: true };
+    }
+    // 3) kirli bardak elde → bulaşık
+    if (dirtyN > 0 && (trayN === 0 || waiting.length === 0)) return { pos: dishFront, why: 'bulasik-birak', stand: true };
+    // 4) tepside ürün + bekleyen → servis
+    const ok = waiting.filter((n) => n.product === 'tost' ? s.trayFood > 0 : s.tray > 0);
+    if (trayN > 0 && ok.length) {
+      const w = ok.slice().sort((a, b) => dist(seatOf(a), p) - dist(seatOf(b), p))[0];
+      return { pos: S.LAYOUT.tables[w.tableIndex].table, why: 'servis', stand: false };
+    }
+    // 5) para yerde → topla
+    if (s.coins.length) {
+      const c = s.coins.slice().sort((a, b) => dist(a.pos, p) - dist(b.pos, p))[0];
+      return { pos: c.pos, why: 'para', stand: false };
+    }
+    // 6) bekleyen var, tepsi boş → ocaktan al
+    if (waiting.length && trayN === 0) return { pos: pick, why: 'cay-al', stand: true };
+    // 7) kirli bardak masada ve bulaşıkçı yok → topla
+    if (s.dishes.length && !s.dishwasher && trayN === 0) {
+      const d = s.dishes.slice().sort((a, b) => dist(a.pos, p) - dist(b.pos, p))[0];
+      return { pos: S.LAYOUT.tables[d.tableIndex].table, why: 'kirli-topla', stand: false };
+    }
+    // 8) görev pickupTea / washDish / serve → ilgili yere
+    if (focus) return { pos: (tgt.type==='pickupTea'||tgt.type==='serveTea') ? pick : tgt.type==='washDish' ? dishFront : focus, why: 'gorev-bekle:' + (tgt && tgt.type), stand: true };
+    return { pos: pick, why: 'bos', stand: true };
+  }
+
+  function steer(s, goal) {
+    const dd = Math.hypot(goal[0] - s.player[0], goal[2] - s.player[2]);
+    if (dd < 2.6) { return [(goal[0] - s.player[0]) / dd, (goal[2] - s.player[2]) / dd, false]; }
+    const grid = L.getNavGrid(s.tables, s.areasOpen);
+    let path = N.findNavPath(grid, s.player, goal[0], goal[2], 0.35);
+    if (!path) path = N.findNavPath(grid, s.player, goal[0], goal[2], 0.9);
+    if (!path) path = N.findNavPath(grid, s.player, goal[0], goal[2], 1.25);
+    let wp = goal;
+    if (path && path.length) {
+      for (const pt of path) { if (Math.hypot(pt[0] - s.player[0], pt[1] - s.player[2]) > 0.45) { wp = [pt[0], 0, pt[1]]; break; } wp = [pt[0], 0, pt[1]]; }
+    }
+    const dx = wp[0] - s.player[0], dz = wp[2] - s.player[2];
+    const m = Math.hypot(dx, dz);
+    if (m < 0.2) return [0, 0, path == null];
+    return [dx / m, dz / m, path == null];
+  }
+
+  bot.run = (seconds, opts = {}) => {
+    const dt = 0.1;
+    let pathFail = 0;
+    const until = bot.t + seconds;
+    let dec = null, decT = 0;
+    while (bot.t < until) {
+      let s = useGame.getState();
+      if (s.levelUp && opts.claim !== false) { log.push({ t: +bot.t.toFixed(0), ev: "levelUp", lv: s.levelUp.level, amount: s.levelUp.amount }); s.claimLevelUp(); }
+      if (!dec || bot.t - decT > 0.5) { dec = decide(s); decT = bot.t; }
+      const d = dist(s.player, dec.pos);
+      if (bot.bestD == null || d < bot.bestD - 0.2 || bot.bestKey !== dec.why) { bot.bestD = d; bot.bestT = bot.t; bot.bestKey = dec.why; }
+      else if (bot.t - bot.bestT > 25 && d > 0.6) { useGame.setState({ player: [dec.pos[0], 0.6, dec.pos[2]] }); bot.isin = (bot.isin || 0) + 1; bot.bestD = null; s = useGame.getState(); }
+      let inp = [0, 0];
+      if (!(dec.stand && d < (dec.why.startsWith('gorev:') ? 0.5 : 0.1))) {
+        const [x, z, fail] = steer(s, dec.pos);
+        if (fail) pathFail++;
+        inp = [x, z];
+      }
+      if (bot.unstick > 0) { bot.unstick -= dt; inp = [-inp[1] * bot.side + inp[0] * 0.3, inp[0] * bot.side + inp[1] * 0.3]; }
+      else if ((inp[0] || inp[1]) && bot.prevP && Math.hypot(s.player[0] - bot.prevP[0], s.player[2] - bot.prevP[2]) < 0.005) { bot.still = (bot.still || 0) + 1; if (bot.still > 5) { bot.unstick = 0.6 + Math.random() * 1.2; bot.side = Math.random() < 0.5 ? 1 : -1; bot.still = 0; bot.unsticks = (bot.unsticks || 0) + 1; } }
+      else bot.still = 0;
+      bot.prevP = s.player.slice();
+      useGame.setState({ inputKeyboard: inp });
+      s.tick(dt);
+      bot.t += dt;
+      s = useGame.getState();
+      if (s.questIndex !== bot.lastIdx) {
+        const q = C.quests[s.questIndex];
+        bot.qTimes.push({ t: +bot.t.toFixed(0), idx: s.questIndex, id: q ? q.id : 'SON', wallet: Math.round(s.wallet.toNumber()) });
+        bot.lastIdx = s.questIndex; bot.lastQT = bot.t; bot.stuckLogged = false;
+      }
+      if (!bot.stuckLogged && bot.t - bot.lastQT > (opts.stuck || 900)) {
+        bot.stuckLogged = true;
+        const g = window.__game();
+        log.push({ t: +bot.t.toFixed(0), ev: 'TAKILMA', quest: g.quest, why: dec.why, wallet: g.wallet, padCost: g.padCost, currentPad: g.currentPad, player: g.player, goal: dec.pos });
+      }
+    }
+    useGame.setState({ inputKeyboard: [0, 0] });
+    const g = window.__game();
+    return { t: +bot.t.toFixed(0), quest: g.quest, questIndex: g.questIndex, wallet: Math.round(g.wallet), diamonds: g.diamonds, tables: g.tables, areasOpen: g.areasOpen, npc: g.npcCount, waiting: g.waitingCount, coins: g.coins, dirty: g.dirtyCount, dirtyTables: g.dirtyTables, cleanCups: g.cleanCups, level: g.level, notice: g.notice, pathFail, why: dec && dec.why };
+  };
+  window.__bot = bot;
+  return 'bot hazir';
+}
