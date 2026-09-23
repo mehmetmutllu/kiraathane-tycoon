@@ -156,6 +156,37 @@ Oyunun kendi `tick`'i, oyuncu parkta (AFK alt sınırı), 2 tohum × 420 sn (180
   22'lik dünyada ölçüldü.)
 - **Sonuç: bardak havuzu kalemi kapanır, sayıya dokunulmaz.**
 
+### Bulgu 8 — K8'in kapılı dozu açılışı korur; kullanıcı kollarının birleşimi Kat 1'i %15,8 kısaltır
+
+Bulgu 5'in yapısal çaresi ölçüldü: seviye ₺'si **Seviye 5'ten önce yok** (G-66'nın "ilk 4 seviyede
+modal"ı ile aynı çizgi, o seviyeler yalnız modal).
+
+| kol | ne | Kat 1 | ilk alım | açılış | otomasyon | GÖZLEM | ₺ toplam |
+|---|---|---|---|---|---|---|---|
+| K8b | 60 sn, kapısız | −%3,1 | **3** | 1,5 | 3,6 | 1 · 28,8 | ₺3.726 |
+| **K8d** | 60 sn, Sv 5'ten önce yok | −%2,4 | **22** | 1,6 | 6,1 | 1 · 28,8 | ₺3.482 |
+| K8e | 120 sn, Sv 5'ten önce yok | −%4,6 | 22 | 1,6 | 6,1 | 1 · 27,9 | ₺7.248 |
+
+Kapı açılış üçlüsünü birebir geri getiriyor (22 sn · 1,6 dk · 6,1 dk).
+
+**Birleşim tek kol olarak** — kullanıcının kendi cümlelerine en yakın kollar (G-65 "30'a düşür" →
+K1a · G-72 → K2b · G-73 → K3b · G-74 → K4a · G-75 "olabildiğince geciktir" → K5b · G-66 → K7a ·
+G-67 → K8d · şüphe ⑤ → W3):
+
+| kol | Kat 1 | GÖZLEM | HÜKÜM | otomasyon | Bulaşıkçı | 2. Garson | 2. Salon | seviye |
+|---|---|---|---|---|---|---|---|---|
+| T0 bugün | 6,05 sa | 1 · 29,7 | 0 | 6,1 | 60,4 | 151,9 | 34,3 | 13 |
+| **PKT** (hepsi) | **5,09 sa (−%15,8)** | 1 · 30,5 | 0 | 5,2 | 53,3 | 40,9 | 44,5 | 11 |
+| **PK2** (K5b hariç) | 5,58 sa (−%7,7) | 1 · 30,5 | 0 | 5,2 | 57,9 | 29,1 | 38,9 | 12 |
+
+- Hiçbir eşik kırılmıyor. Ama iki paket de Kat 1'i D1'in **%7 eleme eşiğinin** üstünde kısaltıyor
+  (D-092 %15,5'lik borcu bilerek kabul etmişti; aynı sınıf karar).
+- Tek kolların toplamı −%18,5, ölçülen birleşim −%15,8: kollar birbirini **yiyor** (D-090 Bulgu 10).
+- PKT'nin 58 dakikasının yarısı K5b'den geliyor. Paradoks Bulgu 4'teki: 2. salonu geciktirmek
+  oyunu kısaltıyor, çünkü erken bahşiş Kat 1'in geri kalanını hızlandırıyor.
+- Kısalma bir **içerik** sorunudur, tempo sorunu değil: bekleme hükmü aynı. Telafi kolu (geç zincirde
+  fiyat artırmak) bu turda ölçülmedi.
+
 ### Özet — hangi kol hangi kapıdan geçiyor
 
 | kol | Kat 1 | eşik kırar mı | okuma |
@@ -168,6 +199,8 @@ Oyunun kendi `tick`'i, oyuncu parkta (AFK alt sınırı), 2 tohum × 420 sn (180
 | K1a / K4a | −%0,4 / −%0,6 | hayır | his kararı |
 | K7a/b | +%1,5 | hayır | G-66 |
 | K8a/b/c | −%1,6…−%5,8 | **açılışı yiyor** (ilk alım 22 → 3 sn) | G-67, kapısız yazılamaz |
+| K8d/e (Sv 5'ten önce ₺ yok) | −%2,4 / −%4,6 | hayır | G-67'nin kapılı hâli |
+| PKT / PK2 birleşim | −%15,8 / −%7,7 | %7 içerik eşiği | Bulgu 8 |
 | K3a / K3c | +%2 | **gözlem 1 → 2** | ₺1.600'da elenir |
 | D2 | +%1,4 | **otomasyon 31 dk** (D-079) | elenir |
 | K6T / K6B | +%7 | gözlem 1 → 2 | D-124 kalır |

@@ -124,13 +124,14 @@ function yiginKur(): void {
 interface Kol { kod: string; kalem: string; ad: string; uygula: () => void; kisa?: boolean }
 
 /** K8: seviye atlayınca o anki gelirin `saniye` kadarı ₺ olarak düşer (ekonomiye ölçekli). */
-const seviyeOdemesi = (saniye: number) => () => hedefAkisiAyarla(() => {
+const seviyeOdemesi = (saniye: number, ilkOdenen = 2) => () => hedefAkisiAyarla(() => {
   let odenen = 0;
   return (d) => {
-    const n = sonKosuAtlamalari().length;
-    if (n <= odenen) return 0;
-    const k = n - odenen;
-    odenen = n;
+    const at = sonKosuAtlamalari();
+    if (at.length <= odenen) return 0;
+    // Kapı: `ilkOdenen`den düşük seviyeye atlama ₺ getirmez (açılışı korumak için).
+    const k = at.slice(odenen).filter((a) => a.seviye >= ilkOdenen).length;
+    odenen = at.length;
     const odul = k * saniye * d.oran;
     seviyeOdulu += odul;
     return odul;
@@ -191,8 +192,34 @@ const KOLLAR: Kol[] = [
   { kod: 'K8a', kalem: 'G-67', ad: 'seviye ödülü + ₺ = o anki gelirin 30 sn\'si', uygula: seviyeOdemesi(30) },
   { kod: 'K8b', kalem: 'G-67', ad: 'seviye ödülü + ₺ = o anki gelirin 60 sn\'si', kisa: true, uygula: seviyeOdemesi(60) },
   { kod: 'K8c', kalem: 'G-67', ad: 'seviye ödülü + ₺ = o anki gelirin 120 sn\'si', uygula: seviyeOdemesi(120) },
-  { kod: 'K11', kalem: 'G-61', ad: 'KAPISIZ dünyanın dürtüsel oyuncusu (parası yeten ucuz yan kalemi alır)', kisa: true, uygula: () => { durtuselAyarla(true); } },
+  { kod: 'K8d', kalem: 'G-67', ad: "seviye ₺ = gelirin 60 sn'si · KAPI: Seviye 5'ten önce ₺ yok (ilk 4 seviye yalnız modal)", uygula: seviyeOdemesi(60, 5) },
+  { kod: 'K8e', kalem: 'G-67', ad: "seviye ₺ = gelirin 120 sn'si · KAPI: Seviye 5'ten önce ₺ yok", uygula: seviyeOdemesi(120, 5) },
+  { kod: 'PKT', kalem: 'birleşim', ad: 'PAKET: K3b + W3 + K2b + K5b + K1a + K4a + K7a + K8d (tek kol olarak)', kisa: true, uygula: () => paket(true) },
+  { kod: 'PK2', kalem: 'birleşim', ad: 'PAKET − K5b: K3b + W3 + K2b + K1a + K4a + K7a + K8d', uygula: () => paket(false) },
 ];
+function paket(k5: boolean): void {
+  {
+    padTasi('waiter2', 'table4'); gorevTasi('q_waiter2', 'q_charMagnet'); pad('waiter2').cost = 800;
+    gorevEkle({ id: 'q_waiterTray3', title: 'Garson tepsisi 4', target: { type: 'waiterTray', tier: 3 }, reward: 600 }, 'q_waiter3');
+    garsonTepsiTabaniAyarla(2); cfg.waiter.trayUpgrades.costs = [1200, 2500];
+    const t1 = cfg.quests.find((q) => q.id === 'q_waiterTray1')!; const t2 = cfg.quests.find((q) => q.id === 'q_waiterTray2')!;
+    cfg.quests = cfg.quests.filter((q) => q !== t1);
+    t2.target = { type: 'waiterTray', tier: 1 };
+    // W3'ün görevi K2b'de kademe 2'yi ister (tavan kademe sayısı bir azaldı).
+    cfg.quests.find((q) => q.id === 'q_waiterTray3')!.target = { type: 'waiterTray', tier: 2 };
+    if (k5) {
+      gorevEkle({ id: 'q_z1allL1', title: '4 masayı Seviye 2 yap', target: { type: 'tablesAtLevel', level: 1, count: 4, area: 0 }, reward: 60 }, 'q_charMagnet');
+      gorevEkle({ id: 'q_z1L2x2', title: '2 masayı Seviye 3 yap', target: { type: 'tablesAtLevel', level: 2, count: 2, area: 0 }, reward: 90 }, 'q_z1allL1');
+    }
+    cfg.character.tray.costs[0] = 30;
+    pad('table4').cost = 250;
+    cfg.xp.levelBase = 90;
+    seviyeOdemesi(60, 5)();
+  }
+}
+KOLLAR.push(
+  { kod: 'K11', kalem: 'G-61', ad: 'KAPISIZ dünyanın dürtüsel oyuncusu (parası yeten ucuz yan kalemi alır)', kisa: true, uygula: () => { durtuselAyarla(true); } },
+);
 
 /* ── Ölçüm ───────────────────────────────────────────────────────────────────────── */
 interface Sonuc {
@@ -248,7 +275,7 @@ damga('K6T = T7 dünyası (Kat 1 23 323 sn)', eski.o.serit === 23323, `Kat 1 ${e
 const tekrar = olc(null);
 damga('kancalar sızmadı (taban tekrar = taban)', tekrar.iz === taban.iz, `${tekrar.iz} ≠ ${taban.iz}`);
 for (const k of secilen) varyantDamgasi(k.kod, taban.iz, sonuclar.get(k.kod)!.iz);
-for (const k of secilen.filter((x) => x.kod.startsWith('K8'))) {
+for (const k of secilen.filter((x) => x.kod.startsWith('K8') || x.kod === 'PKT')) {
   damga(`${k.kod} seviye ödülü ödendi`, sonuclar.get(k.kod)!.odul > 0, '0 ₺');
 }
 

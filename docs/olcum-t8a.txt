@@ -30,6 +30,10 @@ K7b  | G-66      |          22 |       1.6 |      6.1 | 0 · 17.1 dk |        1 
 K8a  | G-67      |           3 |       1.5 |      4.8 | 0 · 16.8 dk |        1 · 29.3 dk |    5.95 |  -1.6%
 K8b  | G-67      |           3 |       1.5 |      3.6 | 0 · 16.8 dk |        1 · 28.8 dk |    5.86 |  -3.1%
 K8c  | G-67      |           3 |       0.7 |      1.3 | 0 · 16.8 dk |        1 · 28.9 dk |    5.70 |  -5.8%
+K8d  | G-67      |          22 |       1.6 |      6.1 | 0 · 16.8 dk |        1 · 28.8 dk |    5.90 |  -2.4%
+K8e  | G-67      |          22 |       1.6 |      6.1 | 0 · 16.8 dk |        1 · 27.9 dk |    5.77 |  -4.6%
+PKT  | birleşim  |          22 |       1.6 |      5.2 | 0 · 17.1 dk |        1 · 30.5 dk |    5.09 | -15.8%
+PK2  | birleşim  |          22 |       1.6 |      5.2 | 0 · 17.1 dk |        1 · 30.5 dk |    5.58 |  -7.7%
 K11  | G-61      |          22 |       1.6 |      6.1 | 0 · 14.1 dk |        1 · 25.2 dk |    6.03 |  -0.3%
 
 --- §2 KOLLARIN TARİFİ ---
@@ -54,6 +58,10 @@ K11  | G-61      |          22 |       1.6 |      6.1 | 0 · 14.1 dk |        1 
   K8a  seviye ödülü + ₺ = o anki gelirin 30 sn'si
   K8b  seviye ödülü + ₺ = o anki gelirin 60 sn'si
   K8c  seviye ödülü + ₺ = o anki gelirin 120 sn'si
+  K8d  seviye ₺ = gelirin 60 sn'si · KAPI: Seviye 5'ten önce ₺ yok (ilk 4 seviye yalnız modal)
+  K8e  seviye ₺ = gelirin 120 sn'si · KAPI: Seviye 5'ten önce ₺ yok
+  PKT  PAKET: K3b + W3 + K2b + K5b + K1a + K4a + K7a + K8d (tek kol olarak)
+  PK2  PAKET − K5b: K3b + W3 + K2b + K1a + K4a + K7a + K8d
   K11  KAPISIZ dünyanın dürtüsel oyuncusu (parası yeten ucuz yan kalemi alır)
 
 --- §3 UĞRAKLAR (Normal profil, dk) — zincirin personel halkaları nerede ---
@@ -81,6 +89,10 @@ K7b  |   11.1 |      60.6 |     153.6 |     34.3 |           11 |               
 K8a  |    9.1 |      56.9 |     147.5 |     31.3 |           13 |          ₺1.860
 K8b  |    7.3 |      53.7 |     143.4 |     28.5 |           13 |          ₺3.726
 K8c  |    6.3 |      48.4 |     136.3 |     25.7 |           13 |          ₺9.088
+K8d  |   10.1 |      56.4 |     146.1 |     31.3 |           13 |          ₺3.482
+K8e  |    9.1 |      52.4 |     140.2 |     28.3 |           13 |          ₺7.248
+PKT  |    9.4 |      53.3 |      40.9 |     44.5 |           11 |          ₺4.069
+PK2  |    9.4 |      57.9 |      29.1 |     38.9 |           12 |          ₺4.219
 K11  |   11.1 |      74.0 |     167.6 |     67.6 |           13 |               —
 
 --- §4 20 dk'yı AŞAN ALIMLAR (Normal gözlem bandı) ---
@@ -106,6 +118,10 @@ K11  |   11.1 |      74.0 |     167.6 |     67.6 |           13 |               
   K8a  29.3 dk → servis L6
   K8b  28.8 dk → servis L6
   K8c  28.9 dk → servis L6
+  K8d  28.8 dk → servis L6
+  K8e  27.9 dk → servis L6
+  PKT  30.5 dk → servis L6
+  PK2  30.5 dk → servis L6
   K11  25.2 dk → servis L6
 
 Parmak izi (Normal boşluklar): taban b671d955
@@ -130,4 +146,8 @@ Parmak izi (Normal boşluklar): taban b671d955
   K8a  f5670565
   K8b  779dc065
   K8c  34d616f5
+  K8d  d7fd8fb5
+  K8e  9cf8475d
+  PKT  f680981d
+  PK2  aabcd5d5
   K11  b054e445
