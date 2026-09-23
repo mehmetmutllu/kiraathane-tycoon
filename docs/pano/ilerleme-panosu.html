@@ -216,14 +216,14 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum — T6 uygulandı ve kapandı (D-140) · YouTube Playables araştırıldı",
-  "baslik": "Uygulanan kod, ölçülen kolun <b>ta kendisi</b> çıktı",
-  "aciklama": "<code>leaving</code> artık müşteri-müşteri ayrışmasından muaf. Final tam koşunun tabanı, commit #1'deki S1 satırını <b>tohum tohum birebir</b> verdi (NPC 59,3 · servis 6,3/dk · 127 ₺/dk). 10 dakikada nüfus <b>193 → 494</b> yerine <b>54 → 59</b>, kapı önü <b>475 → 11</b>.<br><br>Mutasyon sınavı bekçinin bir boşluğunu gösterdi: <b>M3 kaçtı</b> — iç döngü bekçisi S18'den beri hiçbir testte denetlenmiyordu, çünkü bütün testler muaf NPC'yi dizinin başına koyuyordu. Dizi sırasını ters çeviren test eklendi, sınav <b>5/5</b>.<br><br>Yan iş: <b>YouTube Playables</b> araştırıldı — teknik olarak sığıyoruz (18 MB), ama giriş davetle ve <b>AdMob/IAP orada yasak</b>. Kullanıcı kararı: mağaza yayınından sonra."
+  "etiket": "Bu oturum — T6'nın tarayıcı ölçümü · progress.md arşive kesildi",
+  "baslik": "T6 telefonda kareyi <b>×1,15</b> hafifletti, belleği <b>−%22</b> düşürdü",
+  "aciklama": "T6 öncesi ve sonrası iki sunucudan aynı tarayıcıda, 10 dakika boyunca ölçüldü. Telefon profilinde damga temiz. Masaüstünde iki tam koşu da damgalı çıktı, o satır yalnız yön gösteriyor. Yan bulgu: izdiham <b>kare hızına bağlıydı</b> — 60 fps'te büyüyor, 12 fps'te kendiliğinden duruyordu."
  },
  "siradaki": {
-  "etiket": "Sırada — tarayıcıda 10 dk kare kayma ölçümü, sonra T7 banket · T8 zincir+denge · T9 tarama",
-  "baslik": "T6'nın <b>kareye</b> yansıması henüz ölçülmedi",
-  "aciklama": "Node'da ayrışma çifti <b>~27.700 → ~1.700</b> ama T5'te node ×2,52 derken tarayıcı ×1,14 doğrulamıştı — bu yüzden ms sayısı verilmedi. Sıradaki oturum T5b aracıyla T6 öncesi ↔ sonrası aynı dünyada 10 dakika ölçer (önce araçların <code>dunyaKur</code>u <code>stationLevels</code> yazacak şekilde düzeltilir).<br><br><b>Sonra:</b> T7 (pad çakışması G-82 + banketlerin kademeli büyümesi, tasarım kanadı gösterilerek) · T8 (tost/çay + zincir + T3 denge + bardak havuzu) · T9 (genel tarama + N2 yol önbelleği + lint). En son Faz F; Playables yayın sonrası."
+  "etiket": "Sırada — T7 banket + pad çakışması · T8 zincir+denge · T9 tarama",
+  "baslik": "T7: <b>G-82 pad çakışması</b> + banketin kademeli büyümesi",
+  "aciklama": "Tasarım kanadı aday kareleriyle GÖSTERİLEREK sorulacak. Başlangıçta ayrıca sorulacak: masaüstü ölçüm eşiği fazla mı sıkı. T9'a yeni girdi: tick kısıksız ~5 ms, karenin üçte biri."
  },
  "donemler": [
   {
@@ -398,6 +398,12 @@ h2{font-size:21px;font-weight:800}
  "gunluk": [
   {
    "tarih": "23.09.2026",
+   "etiket": "T6b — tarayıcı kayma ölçümü · defter kesimi",
+   "baslik": "Kazanç NPC'de ve bellekte büyük, <b>karede küçük</b>",
+   "govde": "Yeni araç <code>olcum-kayma-t6b</code> iki sürümü aynı tarayıcıda, dondurulan sayfalar ve ABBA dilimlerle 10 dakika ölçtü. Telefon: iş ms ×1,15, bellek 167 → 131 MB. Masaüstü: NPC 375 → 57 ama kare yalnız ~%8 — ve iki koşunun ikisi de damgalı.<br><br><b>İzdiham kare hızına bağlı çıktı:</b> aynı eski kod 1/60 adımda 332 NPC'ye büyüyor, 1/12'de ~65'te duruyor. G-91 hızlı cihazın hastalığıymış.<br><br>Ayrıca <code>progress.md</code> 86 KB → 8,5 KB (tam metin arşivde) ve T5 araçları artık ocağı tavanda kuruyor."
+  },
+  {
+   "tarih": "23.09.2026",
    "etiket": "T6 commit #2 — izdiham kapandı (D-140) · YouTube Playables araştırması",
    "baslik": "Kapıdaki yığın <b>475'ten 11'e</b> indi; uygulama ölçümle birebir",
    "govde": "Karar geçen oturumda alınmıştı (S1), bu oturum yalnız onu yazdı: <code>AYRISMASIZ</code> kümesine <code>'leaving'</code>. Ölçüm kolunun S1 alanı kaldırıldı, kalan üç alan C kolu için duruyor.<br><br><b>Final tam koşu aracın kendi damgasıyla denetlendi:</b> taban, commit #1'in S1 satırını 3 tohumda da birebir vermezse koşu geçersizdi. Verdi — yani yazılan kod ölçülen kolun kendisi.<br><br><b>Mutasyon sınavı bekçinin kör noktasını buldu.</b> <code>npcAyristir</code>in iki bekçisi var; iç döngününki yalnız yürüyen, muaf NPC'den ÖNCE sıralandığında çalışır. S18'den beri bütün testler muaf olanı başa koyuyordu → M3 kaçtı. Sırayı ters çeviren test eklendi.",
@@ -521,23 +527,6 @@ h2{font-size:21px;font-weight:800}
     "<b>Kodda çizilen ama SAYILMAYAN bir işaret bulundu:</b> L6&#39;nın ikinci tost presi düz bir <code>level >= 6</code> koşuluydu — listeye alındı",
     "Bekçi: <code>mutfak-r2</code> (25 den. · <b>17 mutasyon</b>, kaçan 0 — ilk turda 2 kaçtı, ölü dal gösterildi ve kapatıldı)",
     "vitest <b>1245 ✓</b> · duman <b>45/45 ✓</b> · tsc temiz"
-   ]
-  },
-  {
-   "tarih": "16.09.2026",
-   "etiket": "Faz R · 1. oturum (R1 — görev şeridi — D-126)",
-   "baslik": "Bekçisi olmayan karar, karar değil <b>yorumdur</b>",
-   "govde": "Kullanıcı görev bitişini dört kez şikâyet etti. Ölçüm sayıyı verdi: tebrik toast&#39;ı <b>3,53 sn</b> yaşıyor, yeni görev kartı <b>1,33 sn</b>&#39;de geliyor → aradaki <b>2,20 sn</b> boyunca ekranda aynı cümleyi söyleyen <b>iki kutu</b> duruyor, 8 px arayla. Yedi senaryonun yedisinde de aynı.<br><br><b>Ama asıl bulgu ölçümden önce koddan çıktı.</b> Bu toast 2026-09-09&#39;da kullanıcı kararıyla zaten kaldırılmıştı (G-04). Kaldıran satır <code>f4b1a52</code>&#39;de silinmiş: <code>tsc -b</code> <code>notice.kind !== &#39;quest&#39;</code> koşulunu &#34;ölü dal&#34; diye işaretledi, çünkü tip o an <code>&#39;level&#39; | &#39;reveal&#39;</code>e daralmıştı. Derleyici haklıydı — ama dal silinirken <b>kararın kendisi de silindi</b>. <code>&#39;quest&#39;</code> sonradan tipe geri geldi, toast geri geldi, HUD&#39;un içindeki yorum bugüne kadar &#34;ARTIK ÇİZİLMEZ&#34; dedi. Kural artık bir olumsuzlama değil bir <b>liste</b> (<code>CIZILEN_TOAST</code>): tip yeniden daralırsa ölü dal olmaz, kısalır.",
-   "maddeler": [
-    "<b>D-126:</b> V1 seçildi — tebrik toast&#39;ı çizilmez. Örtüşme <b>2,20 → 0,00 sn</b>, ekrandaki kutu <b>2 → 1</b>",
-    "<b>Erken zoom daraldı:</b> görev geçişinin kendi panı zaten kartla birlikte (0,00); erken olan tek şey salon açılışı (<b>−1,30 sn</b>)",
-    "<b>Pan silinmedi, ertelendi:</b> kutlama penceresinde bekler, kart gelince <code>requestFocus</code>&#39;tan yeniden geçer → 0,00 sn",
-    "<b>&#34;Üstte kesiliyor&#34; yatay değil DİKEY:</b> 50 görevin 50&#39;sinde lakap sığıyor; bant 52,0 px iç yükseklikte 54,0 px içerik tutuyordu → taban yüksekliğe geçti, taşma <b>0,0 px</b>",
-    "<b>Kullanıcı kareye bakıp ölçümde OLMAYAN bir kalem ekledi:</b> bandın üstündeki gri iç parlama — ölçüm neyi sayacağını bilir, kare neyi sormadığını gösterir",
-    "<b>Aracın beşinci kusuru uygulamadan SONRA çıktı:</b> &#34;0,00&#34; körlük de olabilirdi → <b>kontrol kolu</b> eklendi, tebriği çizilebilir türe çevirince 2,20 sn geri geliyor (parmak izi eski tabanla birebir)",
-    "Araç dört kez daha düştü: açılış panı pencereye sızıyordu · DOM tek kartın yedi kopyasını ölçüyordu · kollar aynı dünyayı ölçmüyordu · V4&#39;ün ölçecek şeyi yoktu",
-    "Bekçi: <code>gorev-seridi-g1</code> (14 den. · <b>15 mutasyon</b>, kaçan 0) — M1 tam olarak f4b1a52&#39;nin yaptığı silmedir",
-    "vitest <b>1220 ✓</b> · duman <b>45/45 ✓</b> · tsc temiz"
    ]
   }
  ],
@@ -793,7 +782,7 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunlukArsiv": {
-  "kart": 66,
+  "kart": 67,
   "ilk": "05.06 – 17.06.2026",
   "son": "16.09.2026",
   "yer": "memory-bank/arsiv/pano-gunluk.json"

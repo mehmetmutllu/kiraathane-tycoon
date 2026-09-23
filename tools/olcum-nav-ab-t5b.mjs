@@ -150,13 +150,22 @@ async function sayfaAc(tarayici) {
   return { baglam, sayfa, hatalar };
 }
 
-/** Geç oyun: tüm pad'ler açık, masalar tavanda — nav ızgarası en dolu, çağrı en çok. */
+/**
+ * Geç oyun: tüm pad'ler açık, masalar tavanda, OCAK TAVANDA — nav ızgarası en dolu, çağrı en çok.
+ * 2026-09-23'e kadar ocak seviye 0'da kalıyordu ("20 masaya seviye-0 ocak", T6 rapor §1); o
+ * tarihten önceki `docs/olcum-nav-ab-t5b*` o dünyadan. Ocak + bardak havuzu uygulamanın KENDİ
+ * modülünden yazılır (aynı URL → aynı örnek), kurulum `tools/olcum-kayma-t6b.mjs` ile aynı.
+ */
 async function dunyaKur(sayfa, padler, gorevSayisi) {
-  await sayfa.evaluate(({ pads, gs }) => {
+  await sayfa.evaluate(async ({ pads, gs }) => {
     window.__resetGame?.();
     window.__setState?.({ padsDone: pads, wallet: 1e12, diamonds: 1e6, questIndex: gs });
     const n = window.__game?.().tables ?? 4;
     for (let i = 0; i < n; i++) window.__setTableLevel?.(i, 4);
+    const { useGame, stationSoftMaxLevel, totalCupPool } = await import('/src/game/store.ts');
+    const s = useGame.getState();
+    const ocak = s.stationLevels.map(() => stationSoftMaxLevel());
+    useGame.setState({ stationLevels: ocak, cleanCups: totalCupPool(s.areasOpen, ocak) });
     window.__park?.();
   }, { pads: padler, gs: gorevSayisi });
   await sayfa.evaluate((sn) => { window.__tohumla?.(12345); window.__advanceTime?.(sn); }, ISINMA_SN);

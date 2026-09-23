@@ -301,7 +301,33 @@ C kolu bu satırı taban alacak.
 beri hiçbir test yürüyeni muaf NPC'den ÖNCE sıralamıyordu, yani iç döngü bekçisi hiç
 denetlenmiyordu. Dizi sırasını ters çeviren test eklendi, artık yakalanıyor.
 
-### Performansa yansıması (ölçülmedi, beklenti)
-Node tarafında kare başına ayrışma çifti ~27.700'e tırmanıyordu, artık ~1.700'de sabit. Tarayıcıdaki
-kare ms'si **ölçülmedi** (T5'te node ×2,5 kazanç gösterip tarayıcı ×1,14 doğrulamıştı). Tarayıcıda
-10 dk kayma ölçümü sonraki oturumda.
+### Performansa yansıması — tarayıcı ölçümü (T6b, 2026-09-23)
+Araç `tools/olcum-kayma-t6b.mjs`: T6 öncesi (`583f75a`, worktree) ↔ sonrası (HEAD) iki sunucudan
+AYNI tarayıcıda; ölçülmeyen sayfa CDP ile dondurulur, her dakika noktasında ABBA dilim (6 sn).
+Dünya T6 node aracınınki (ocak tavanda). Isınma 240 sn + 10 nokta × 60 sn (1/60 adım). Denetim:
+ısınmasız statik sahne iki kolda birebir (58 çağrı / 16.421 üçgen / 0 NPC) — iki profilde de ✓.
+Ham: `docs/olcum-kayma-t6b-{telefon,masaustu}.{txt,json}`. Rakamlar 11 noktanın ortalaması. Telefon
+koşusu tohum yeniden sabitleme eklenmeden önce alındı (Bulgu A gereği sonucu değiştirmez).
+
+| profil | NPC önce → sonra | iş ms (p50) | p95 | fps | tick ms (kısıksız) | heap MB | damga |
+|---|---|---|---|---|---|---|---|
+| telefon (4× kısık) | 70 → 58 | 81,9 → 71,2 (**×1,15**) | 94,0 → 82,4 | 11,3 → 12,7 | 5,32 → 4,75 | 167 → 131 | temiz (0/22) |
+| masaüstü (kısıksız) | 375 → 57 | 15,7 → 14,6 (×1,08) | 18,7 → 17,7 | 58,3 → 58,2 | 5,66 → 5,02 | 172 → 131 | **KIRMIZI** (3/22 çift > %25, en çok %38,1) |
+
+**Masaüstü iki tam koşunun İKİSİ de damgalı** (1. koşu en çok %49,0 — çıktısı 2.'nin altında
+kaldı, ezildi). Resim ikisinde aynı: NPC 233 → 436 büyürken iş ms'si ancak son noktalarda ayrışıyor
+(14. dk 18,9 ↔ 14,0); fps 60 tavanında ikisi de. **Eşik sonradan gevşetilmedi**; masaüstü satırı
+yön gösterir, rapora "doğrulandı" diye girmez. Açık soru kullanıcıda: eşik (dilim 6 sn, en çok %25)
+masaüstünün ~15 ms'lik karesi için fazla sıkı mı, yoksa dilim uzamalı mı.
+
+**Bulgu A — izdiham KARE HIZINA bağlı (node'da doğrulandı).** Telefon profilinde T6 öncesi kol
+hiç izdihama girmedi (67 → 68). Tohumu ısınmadan hemen önce yeniden sabitlemek bunu değiştirmedi;
+sebep adım boyu: `moveToward` yalnız `d <= adım` iken siliyor, büyük adım halkayı eritiyor.
+Aynı T6-öncesi kod, node, 8 dk: **1/60 → 332 NPC (büyüyor) · 1/30 → ~128 (plato) · 1/12 → ~65**.
+Yani G-91 hızlı cihazın hastalığıydı; yavaş cihazda kendiliğinden sınırlıydı. S1 ikisinde de kökü kapatıyor.
+
+**Bulgu B — T6'nın tarayıcıdaki kazancı NPC sayısında ve bellekte, karede küçük.** 6,6× fazla NPC
+masaüstü karesine ~%8 yansıyor; bellek iki profilde de −%22.
+
+**Bulgu C — tick ~5 ms (kısıksız, ~58 NPC).** Kısıksız karenin üçte biri simülasyon; telefonda
+darboğaz çizim değil sim. → **T9** performans taramasının girdisi.

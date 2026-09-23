@@ -32,7 +32,7 @@
 import {
   KIP, KISA, kipBandi, damga, damgaOzeti, yuzdelik, ort, seedRandom,
 } from './olcum-lib';
-import { useGame, LAYOUT, parkSpot } from '../src/game/store';
+import { useGame, LAYOUT, parkSpot, stationSoftMaxLevel, totalCupPool } from '../src/game/store';
 import { D } from '../src/game/decimal';
 import { economyConfig } from '../src/config/economy.config';
 import {
@@ -56,7 +56,11 @@ const NEIGHBORS: ReadonlyArray<readonly [number, number]> = [
 // KORPUS — geç-oyun dünyası kurulur, çağrılar kaydedilir
 // ===========================================================================
 
-/** §F'nin ölçtüğü hâl: tüm padler açık, masalar tavanda, görev hattı bitmiş, oyuncu parkta. */
+/**
+ * §F'nin ölçtüğü hâl: tüm padler açık, masalar tavanda, OCAK TAVANDA, görev hattı bitmiş, oyuncu parkta.
+ * 2026-09-23'e kadar `stationLevels` yazılmıyordu ("20 masaya seviye-0 ocak", T6 rapor §1); o
+ * tarihten önceki `docs/olcum-nav-t5.txt` o dünyadan. Kurulum artık T6 aracınınkiyle birebir.
+ */
 function gecOyunKur(isinmaSn: number, dt: number): void {
   seedRandom(20260919);
   useGame.getState().hardReset();
@@ -67,7 +71,12 @@ function gecOyunKur(isinmaSn: number, dt: number): void {
     questIndex: economyConfig.quests.length,
   } as never);
   const s0 = useGame.getState();
-  useGame.setState({ tableLevels: s0.tableLevels.map(() => 4) } as never);
+  const ocak = s0.stationLevels.map(() => stationSoftMaxLevel());
+  useGame.setState({
+    tableLevels: s0.tableLevels.map(() => 4),
+    stationLevels: ocak,
+    cleanCups: totalCupPool(s0.areasOpen, ocak),
+  } as never);
   const s1 = useGame.getState();
   useGame.setState({ player: parkSpot(s1.areasOpen, s1.tables) } as never);
   // Mekân dolsun: NPC akışı kararlı hâle gelene kadar ileri sar. Isınma KAYDEDİLMEZ.
