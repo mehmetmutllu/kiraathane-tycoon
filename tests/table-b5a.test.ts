@@ -188,12 +188,13 @@ describe('B5a — şeridin pad zinciri', () => {
     expect(strip.reduce((a, p) => a + p.cost, 0)).toBeLessThan(6 * 9000);
   });
 
-  it('banketUnitsOpen ve birim sırası: her sütun dört birim taşır, eskiler yer değiştirmez', () => {
+  it('banketUnitsOpen ve birim sırası: her sütun dört birim taşır, şerit İÇTEN dışa dolar (T7)', () => {
     expect(banketUnitsOpen(areaTableStart(2))).toBe(0);
     expect(banketUnitsOpen(MAX_TABLES)).toBe(12);
     expect(banketUnitsOpen(MAX_TABLES + 5)).toBe(12); // bozuk kayda karşı kelepçe
-    for (let u = 0; u < 12; u++) expect(banketUnit(u).col, `birim ${u}`).toBe(Math.floor(u / 4));
-    // "Var olan masalar yer değiştirmez": şeridin ilk birimi B3-2'deki index'inde (8) duruyor.
+    // col adanın DIŞ ucundan sayılır: ilk dört birim iç sütunda (2 = ∓5,3), son dördü dışta (0).
+    for (let u = 0; u < 12; u++) expect(banketUnit(u).col, `birim ${u}`).toBe(2 - Math.floor(u / 4));
+    // Seviye masa İNDEKSİNE bağlı: şeridin ilk birimi B3-2'deki index'inde (8) duruyor.
     expect(areaTableStart(2)).toBe(8);
   });
 });
@@ -227,7 +228,7 @@ describe('B5a — gating: alanın büyümesi eşiği sessizce kaydırmaz', () =>
 });
 
 describe('B5a — CANLI: şeridin son birimine gerçekten oturuluyor', () => {
-  it('20 masa açıkken müşteri en İÇ sütunun banketine (masa 19) rotayla oturur', () => {
+  it('20 masa açıkken müşteri şeridin son birimine (masa 19, en DIŞ sütun) rotayla oturur', () => {
     useGame.getState().hardReset();
     useGame.setState({
       padsDone: [...ALL_PADS],

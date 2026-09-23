@@ -40,7 +40,8 @@ export const REDDEDILEN = ['kaykit-block-bits']; // voxel küpü — mekân hacm
  * ve Kat 2 v1 kapsamı dışında. Git geçmişinde duruyorlar; geri getirilirse entegrasyonu da
  * aynı turda yapılmalı (`tests/asset-olu-yuk.test.ts` kodda karşılığı olmayan paketi geçirmez).
  */
-export const CIKARILAN = ['kaykit-board-game-bits', 'kaykit-resource-bits', 'kaykit-holiday-bits', 'kaykit-forest-nature'];
+// T7 (D-141): prototype-bits'in tek işi WC kabin kapısıydı; kabin elle çizime geçti, paket söküldü.
+export const CIKARILAN = ['kaykit-board-game-bits', 'kaykit-resource-bits', 'kaykit-holiday-bits', 'kaykit-forest-nature', 'kaykit-prototype-bits'];
 export const GEREKEN = {
   'kaykit-board-game-bits': {
     gerekce: 'okey/tavla masası (Kat 2 kimliği)',

@@ -1,10 +1,10 @@
 # T7 — PAD ÇAKIŞMASI (G-82) + BANKET KADEMELİ BÜYÜME (G-83 / G-84)
 
-> Karar: — (commit #2'de dolar, §Karar)
+> Karar: **D-141** (2026-09-23) — G-82 P2 · G-83 B4 · G-84 ada-başı tek kademe (kullanıcı R1-R3'ün yerine kendi kuralını verdi)
 > Araçlar: `tools/olcum-pad-t7.ts` → `docs/olcum-pad-t7.txt` · `tools/olcum-banket-t7.ts` →
 > `docs/olcum-banket-t7.txt` · kareler `tools/shot-banket-t7.mjs` → `docs/gorsel/ss/t7-*.png`
-> Varyant katmanı (geçici, karar sonrası silinir): `src/game/banketAday.ts` (`?banket=&gorunus=`),
-> çizici `src/components/three/banketLook.ts` + `Scene.tsx` `BanketAdaylari`.
+> Varyant katmanı (`src/game/banketAday.ts`, `?banket=&gorunus=`) ve iki araç commit #2'de söküldü;
+> ölçüm hâlleri `9cb9f33`'te.
 > Denge dosyasına (economy.config / tick / rules) dokunulmadı. İki araç da saf geometri; kısa = tam.
 
 ## §0 Soru
@@ -98,6 +98,46 @@ Kareler `t7-gorunus-R*-sol.png` (L0 · L1 · L2) · `-sag.png` (L3 · L4 · L4).
 `feedback_upgrade_legibility` (2026-06-15): *"renk rastgele/zorlama hissi verir; ilerleme MADDESEL"*.
 G-84 (2026-09-21): *"renk gelişmeleri falan olsun"*. İki cümle aynı nesnede ters yönde — karar kullanıcının.
 
+### Bulgu 7 — B4 (içten dışa) oyunu %4,3 hızlandırıyor; eşiklerin hiçbiri değişmiyor (tam koşu)
+
+Karar sonrası ölçüldü, çünkü B4 masaları yer değiştirir → yürüme mesafesi → sim sayıları. İki koşu da
+`tools/simulate.ts` `olcutler()` (12 sa Normal + İdealize, deterministik); "önce" = `6031636` worktree'si.
+
+| kol | Kat 1 süresi (sn) önce → sonra | en uzun bekleme (Normal, sn) | aşan İdealize / Normal |
+|---|---|---|---|
+| M0 taban | 30 527 → 29 143 (**−%4,5**) | 2602 → 2395 | 1/6 → 1/6 |
+| H | 29 308 → 27 991 | 2473 → 2277 | 1/5 → 1/4 |
+| R | 25 759 → 24 621 | 2133 → 1964 | 0/3 → 0/2 |
+| E | 30 017 → 28 670 | 2465 → 2270 | 1/6 → 1/6 |
+| **HRE (yürürlükte)** | 24 379 → 23 323 (**−%4,3**) | 1920 → 1769 | 0/2 → 0/2 |
+
+- Zincir borcu (HRE − M0)/M0: %20,1 → **%20,0** — D-095 bandında (%18–22).
+- İki gözlem bekçisi kaydı: `meta-pencere` Normal ihlal sayısının tam toplanması (6−1−3+0 = 2) T7'de
+  6−2−4+0 = 0 ≠ 2 oldu (tamsayı eşik taşması; sürekli ölçü %5 bandında toplanmaya devam ediyor);
+  `tempo-olcutu` g1'in ikinci dozu 7 > 6'dan 6 = 6'ya indi (elenme gerekçesi "iyileştirmiyor" duruyor).
+- Açılış ölçütleri (ilk alım 22 sn · açılış boşluğu 93 sn · otomasyon 366 sn) birebir aynı: şerit Kat 1'in ortası.
+
 ## §Karar
 
-(boş — karar paketi sonrası)
+**D-141 (kullanıcı, 2026-09-23).** Karar paketi: https://claude.ai/artifact/HFDeY7aeKtARrDXVArMfNy
+
+> *"banketler ortada olmalı ve seviye artınca banket ilerlemeli büyümeli … minder koyarken sırayla
+> parça parça değil yarısında var yarısında yok gibi değil de olanda komple gibi … önce banketler
+> uzuycak sonra da minderler gelir … banketlerin 3d çizimi de güzel olsun … lavabo kapılarından
+> memnun değilim oda kapısı gibi oraya düz lavabo kapısı istiyorum gerekirse asset yerine kendin çiz"*
+
+| konu | uygulanan | not |
+|---|---|---|
+| G-82 | **P2** (0 · 1,2) | kullanıcı itiraz etmedi; `tetik-s24` istisna listesi boşaldı |
+| G-83 | **B4** segment, içten dışa | katı çizilen sütunlardan türüyor (Bulgu 4 kapandı) |
+| G-84 | R1-R3 **değil**: ada-başı TEK kademe | ada dolmadan çıplak ahşap; dolunca en düşük masa seviyesi (0-4): keten → bordo + sırt → yastık → pirinç biye + kapitone |
+| Bulgu 3 | ada başına **tek mesh** (köşe rengi) | 24 → 2 çizim çağrısı |
+| WC | KayKit `Door_A` → **elle çizilmiş kabin** | düz laminat, yerden 0,16 açık, ray, dolu/boş; `prototype-bits` söküldü (156 KB) |
+
+**Kademe kuralının gerekçesi (teknik seçim, soru turu açılmadı):** "komple gelsin" ile "en düşük seviye"
+birlikte, ada dolmadan okunursa yeni açılan L0 masa bütün minderleri GERİ alırdı. Dolmayı beklemek
+bunu yapısal kapatıyor ve kullanıcının "önce uzar, sonra minder" sırasının ta kendisi.
+
+**Bekçi:** `tests/banket-t7.test.ts` (12 iddia) + `wc-odasi` T7/K. Mutasyon 5/5 yakalandı: dolmadan
+kademe · tam boy katı · dıştan içe sıra · yere kadar kapı · model kapı geri.
+**Final:** `npm run test` 1406/1406 · `npm run duman` 48/48 · kareler `docs/gorsel/ss/t7-son-*.png`.

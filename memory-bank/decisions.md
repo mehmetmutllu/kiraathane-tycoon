@@ -4643,3 +4643,15 @@ iç döngü bekçisi S18'den beri denetimsizdi, test eklendi).
 çıktısı + rapor §Karar kodla aynı commit'e giriyor; commit #1 (`4a5e7e4`, karar bölümü boş) zaten var.
 
 Detay, tuzaklar ve tohum yayılımı: `docs/izdiham-raporu-t6.md`.
+
+---
+
+## D-141 · Banket masayla ortadan büyür, ada TEK kademe taşır; WC kabini elle çizildi (2026-09-23)
+
+**Karar (kullanıcı):** G-82 P2 (pad 0 · 1,2) · G-83 B4 (her masa kendi bank yüzünü getirir, şerit iç
+sütundan dışa) · G-84 R1-R3 yerine kullanıcının kuralı: minder **parça parça değil adaya komple** gelir,
+**önce banket uzar sonra minder**. · WC: *"oda kapısı gibi … düz lavabo kapısı, gerekirse kendin çiz"*.
+**Uygulanan kural (teknik seçim):** ada dolmadan (6 yüz) kademe 0; dolunca = adadaki en düşük masa
+seviyesi (0-4). Dolmadan okunsaydı yeni L0 masa minderleri geri alırdı. Ada başına tek mesh (24 → 2 çağrı).
+**Bedel ölçüldü:** B4 Kat 1'i %4,3 kısaltıyor (HRE 24 379 → 23 323 sn); aşan sayıları ve D-095 bandı
+değişmedi. `prototype-bits` söküldü. Sayılar + bekçi: `docs/banket-raporu-t7.md` §Bulgu 7 · §Karar.

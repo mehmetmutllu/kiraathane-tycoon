@@ -115,9 +115,11 @@ describe('3 — D-087 EKONOMİYE dokunmadı (D1`in düzeltici kolları config`e 
 });
 
 describe('4 — elenen kolların gerekçesi yeniden üretilebilir', () => {
-  it('g1 (taşıma tavanı) ölçütü İYİLEŞTİRMİYOR — ikinci dozda ihlali ARTIRIYOR', { timeout: 90_000 }, () => {
+  it('g1 (taşıma tavanı) ölçütü İYİLEŞTİRMİYOR — ikinci dozda ihlal azalmıyor', { timeout: 90_000 }, () => {
+    // D1'de ikinci doz ihlali ARTIRIYORDU (7 > 6); T7'de (D-141) şerit içten dolunca eşitlendi
+    // (6 = 6). Elenme gerekçesi — ölçütü düzeltmiyor — aynen duruyor.
     const o = olc('g1-2', () => DENGE_KOLLARI.g1.uygula(2));
-    expect(o.normalAsan).toBeGreaterThan(taban().normalAsan);
+    expect(o.normalAsan).toBeGreaterThanOrEqual(taban().normalAsan);
   });
 
   it('m1 (akıllı oyuncu taşıyıcıyı yükseltir) ATIL: hiçbir sayıyı değiştirmiyor', { timeout: 90_000 }, () => {

@@ -100,6 +100,7 @@ export {
   parkClearance,
   BANKET,
   banketLen,
+  banketColSpan,
   banketUnit,
   banketUnitsOpen,
   banketIslands,

@@ -195,7 +195,7 @@ h2{font-size:21px;font-weight:800}
 <script type="application/json" id="durum">
 {
  "guncelleme": "23.09.2026",
- "yapilan": 113,
+ "yapilan": 114,
  "toplam": 121,
  "kilometre": [
   {
@@ -216,14 +216,14 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum — T6'nın tarayıcı ölçümü · progress.md arşive kesildi",
-  "baslik": "T6 telefonda kareyi <b>×1,15</b> hafifletti, belleği <b>−%22</b> düşürdü",
-  "aciklama": "T6 öncesi ve sonrası iki sunucudan aynı tarayıcıda, 10 dakika boyunca ölçüldü. Telefon profilinde damga temiz. Masaüstünde iki tam koşu da damgalı çıktı, o satır yalnız yön gösteriyor. Yan bulgu: izdiham <b>kare hızına bağlıydı</b> — 60 fps'te büyüyor, 12 fps'te kendiliğinden duruyordu."
+  "etiket": "Bu oturum — T7 kapandı (D-141): banket + Salon 3 pad'i + WC kabini",
+  "baslik": "Banket artık <b>masayla ortadan büyüyor</b>, minder adaya <b>komple</b> geliyor",
+  "aciklama": "Her masa kendi bank yüzünü getiriyor, şerit iç sütundan dışa doluyor. Ada dolunca en düşük masa seviyesiyle tek kademe: keten → bordo + sırt → yastık → pirinç biye + kapitone. Ada başına tek mesh. WC kapıları elle çizilmiş düz kabin oldu. Bedel ölçüldü: Kat 1 <b>−%4,3</b> kısaldı, hiçbir eşik değişmedi."
  },
  "siradaki": {
-  "etiket": "Sırada — T7 banket + pad çakışması · T8 zincir+denge · T9 tarama",
-  "baslik": "T7: <b>G-82 pad çakışması</b> + banketin kademeli büyümesi",
-  "aciklama": "Tasarım kanadı aday kareleriyle GÖSTERİLEREK sorulacak. Başlangıçta ayrıca sorulacak: masaüstü ölçüm eşiği fazla mı sıkı. T9'a yeni girdi: tick kısıksız ~5 ms, karenin üçte biri."
+  "etiket": "Sırada — T8 zincir+denge · T9 tarama · Faz F yayın",
+  "baslik": "T8: <b>tost/çay mimarisi</b> + zincir denetimi + T3 denge",
+  "aciklama": "Başlarken T7 kareleri gösterilecek ve başka rahatsız eden çizim var mı sorulacak. T9'a girdi: tick kısıksız ~5 ms, karenin üçte biri."
  },
  "donemler": [
   {
@@ -386,8 +386,8 @@ h2{font-size:21px;font-weight:800}
     {
      "k": "T",
      "t": "Tur serisi: geri bildirim + performans",
-     "d": "Kullanıcının oynayıp verdiği geri bildirimin turları. <b>T1</b> onarım (bir <b>veri kaybı</b> dâhil) · <b>T2</b> görev akışı (mantık + görsel) · <b>T4</b> performans: fps tavanı yoktu, erken oyunda <b>116,7 fps</b> çiziliyordu; ve kare <b>bölüşümü</b> ölçülünce herkesin bir tur boyunca <b>yanlış yarıya</b> baktığı görüldü — çizim karenin yarısı bile değil, en büyük kalem <code>findNavPath</code>. <b>T5 (D-139):</b> devralınan plan (&#34;41 KB tampon ayırmak pahalı&#34;) ölçülüp <b>çürütüldü</b>; üç kol uygulandı, çıktı birebir aynı kaldı. <b>T5b:</b> T5&#39;in açık ucu kapandı — iki kol <b>aynı sayfada</b>, ABBA deseninde, gölge montajda sabitlenmiş hâlde koşturuldu ve nav&#39;la ilgisiz kalemler <b>denetim kolu</b> olarak sınandı. Tarayıcıda oran <b>×1,09</b> çıktı, node&#39;da <b>×2,52</b>; tarayıcının GERÇEK çağrıları node&#39;da oynatılınca <b>×2,82</b> → korpus temsilî, fark <b>ortamda</b> (node blok ölçer, GC dâhil; tarayıcı çağrı-içi ölçer, GC dışarıda). <b>T5&#39;in kaçırdığı asıl kazanç:</b> ayırma <b>178,6 → 33,5 MB/sn</b> — T5 bunu &#34;tabanın %10,3&#39;ü&#34; diye elemişti, zaman olarak doğruydu ama ayırma bir <b>hız</b>tır ve telefonda karşılığı GC takılması + pildir. Kare kazancı kanıtlandı ama küçük: <b>%5,9-7,1</b>. <b>T6 (D-140, kapandı):</b> kullanıcı <i>&#34;kapı dışında izdiham oluyor, 100lerce npc birikiyor&#34;</i> dedi ve ölçüm aynı şeyi sayıyla gördü — 2 dakikada üçgen <b>+%80</b>, kare <b>+%31</b>, NPC 39 → 56. Kodda doğrulanan şüpheli: doğma tavanı <code>leaving</code>/WC durumlarını saymıyor, yani ekrandaki <b>toplam nüfusun tavanı yok</b>. Piyasa standardı araştırıldı (Restaurant Tycoon 2/3: &#34;uygun masa yoksa hiç doğma&#34;; kuramı Little yasası). Kök doğma tavanı değil çıkış çıktı: <code>leaving</code> ayrışmadan muaf tutuldu → 10 dk'da NPC <b>494 → 59</b>, kapı önü <b>475 → 11</b>; final koşu ölçülen kolu birebir verdi.",
-     "yapilan": 5,
+     "d": "Kullanıcının oynayıp verdiği geri bildirimin turları. <b>T1</b> onarım (bir <b>veri kaybı</b> dâhil) · <b>T2</b> görev akışı (mantık + görsel) · <b>T4</b> performans: fps tavanı yoktu, erken oyunda <b>116,7 fps</b> çiziliyordu; ve kare <b>bölüşümü</b> ölçülünce herkesin bir tur boyunca <b>yanlış yarıya</b> baktığı görüldü — çizim karenin yarısı bile değil, en büyük kalem <code>findNavPath</code>. <b>T5 (D-139):</b> devralınan plan (&#34;41 KB tampon ayırmak pahalı&#34;) ölçülüp <b>çürütüldü</b>; üç kol uygulandı, çıktı birebir aynı kaldı. <b>T5b:</b> T5&#39;in açık ucu kapandı — iki kol <b>aynı sayfada</b>, ABBA deseninde, gölge montajda sabitlenmiş hâlde koşturuldu ve nav&#39;la ilgisiz kalemler <b>denetim kolu</b> olarak sınandı. Tarayıcıda oran <b>×1,09</b> çıktı, node&#39;da <b>×2,52</b>; tarayıcının GERÇEK çağrıları node&#39;da oynatılınca <b>×2,82</b> → korpus temsilî, fark <b>ortamda</b> (node blok ölçer, GC dâhil; tarayıcı çağrı-içi ölçer, GC dışarıda). <b>T5&#39;in kaçırdığı asıl kazanç:</b> ayırma <b>178,6 → 33,5 MB/sn</b> — T5 bunu &#34;tabanın %10,3&#39;ü&#34; diye elemişti, zaman olarak doğruydu ama ayırma bir <b>hız</b>tır ve telefonda karşılığı GC takılması + pildir. Kare kazancı kanıtlandı ama küçük: <b>%5,9-7,1</b>. <b>T6 (D-140, kapandı):</b> kullanıcı <i>&#34;kapı dışında izdiham oluyor, 100lerce npc birikiyor&#34;</i> dedi ve ölçüm aynı şeyi sayıyla gördü — 2 dakikada üçgen <b>+%80</b>, kare <b>+%31</b>, NPC 39 → 56. Kodda doğrulanan şüpheli: doğma tavanı <code>leaving</code>/WC durumlarını saymıyor, yani ekrandaki <b>toplam nüfusun tavanı yok</b>. Piyasa standardı araştırıldı (Restaurant Tycoon 2/3: &#34;uygun masa yoksa hiç doğma&#34;; kuramı Little yasası). Kök doğma tavanı değil çıkış çıktı: <code>leaving</code> ayrışmadan muaf tutuldu → 10 dk'da NPC <b>494 → 59</b>, kapı önü <b>475 → 11</b>; final koşu ölçülen kolu birebir verdi. <b>T7 (D-141, kapandı):</b> banket artık masayla <b>ortadan dışa</b> büyüyor, minder adaya <b>komple</b> geliyor (ada dolunca en düşük masa seviyesi: keten → bordo + sırt → yastık → pirinç biye + kapitone), ada başına tek mesh; Salon 3 pad&#39;inin çakışması kapandı; WC kabini elle çizildi. Bedel ölçüldü: Kat 1 <b>−%4,3</b>, eşikler aynı.",
+     "yapilan": 6,
      "toplam": 9,
      "kapi": "Kullanıcının gördüğü her kusur ya düzeltilmiş ya ölçülerek elenmiş olmalı",
      "durum": "now"
@@ -396,6 +396,12 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "23.09.2026",
+   "etiket": "T7 — banket ortadan büyür · ada tek kademe · WC kabini (D-141)",
+   "baslik": "Minder artık <b>parça parça değil</b>, adaya bir anda geliyor",
+   "govde": "Kullanıcı karar paketindeki üç görünüş kolunun yerine kendi kuralını verdi: <i>&#34;önce banketler uzasın, sonra minder; yarısında var yarısında yok olmasın&#34;</i>. Kural buna göre kuruldu: ada dolmadan çıplak ahşap sedir, dolunca adadaki <b>en düşük</b> masa seviyesi. Dolmayı beklemek şart, yoksa yeni açılan L0 masa bütün minderleri geri alırdı.<br><br><b>Çizim tek mesh:</b> onlarca parça (kaide, çerçeveli pano, uç kolu, minder, kapitone) köşe rengiyle birleşti — ölçümün 24 → 88 çağrı riski 2'ye indi. <b>WC:</b> KayKit'in panelli oda kapısı söküldü, yerine yerden açık, raylı, dolu/boş göstergeli düz laminat kabin çizildi.<br><br><b>Bedel ölçüldü:</b> şeridin içten dolması masaları kapıya yaklaştırdı, Kat 1 <b>−%4,3</b> kısaldı; 20 dk'yı aşan sayılar ve D-095 bandı aynı kaldı. Mutasyon 5/5."
+  },
   {
    "tarih": "23.09.2026",
    "etiket": "T6b — tarayıcı kayma ölçümü · defter kesimi",
@@ -511,23 +517,6 @@ h2{font-size:21px;font-weight:800}
     "<b>M6 ilk turda KAÇTI:</b> bekçi geçişin yalnız sağ ucunu tutuyordu — sol uç deltaya dönünce ekran hem artışı hem toplamı vaat ediyordu. İki uç da denetleniyor",
     "vitest <b>1252 ✓</b> · duman <b>45/45 ✓</b> · konsol hatası 0"
    ]
-  },
-  {
-   "tarih": "16.09.2026",
-   "etiket": "Faz R · 2. oturum (R2 — mutfak yerleşimi + çarpışma — D-127)",
-   "baslik": "Bir ölçü <b>dünya</b> ekseninde üretilip <b>yerel</b> eksende tüketilirse, hata yalnız dönüşün sıfır olmadığı dönemde görünür",
-   "govde": "Kullanıcı: <i>&#34;sol duvara paralel olması gerekirken tam 90 derece açıyla duruyor&#34;</i> ve <i>&#34;biz tezgahın vs içinden geçiyoruz&#34;</i>. İkisi de tek kök: <code>onHatGovdeleri</code> gövde ölçüsünü çarpışma kutusundan türetiyor ama <b>dünya eksenlerinden</b>; iki çağıran da (<code>Scene.Stations</code> · <code>DishSink</code>) o gövdeyi <code>place.rot</code> ile <b>zaten döndürülmüş</b> bir grubun içine çiziyor.<br><br><b>Kusur S3&#39;ten beri yaşadı çünkü yarısı doğruydu:</b> arka bant döneminde <code>rot = 0</code>, iki eksen aynı. Sol duvarda <code>rot = π/2</code> ve yerel x dünya z&#39;ye gidiyor — gövde kutusuna dik. Bekçinin kuralı bu yüzden &#34;her denetim <b>iki dönemi</b> birden gezer&#34;: tek dönemi denetleyen bekçi, bu kusurun tam olarak kaçtığı bekçidir.<br><br><b>Ve iki mutasyon KAÇTI.</b> Sebebi bekçinin zayıflığı değildi: yanlışladıkları dal canlı kodda <b>ölü</b>ydü — birleştirme yalnız garson istasyonu sahnedeyken, o da yalnız <code>rot = 0</code> döneminde koşuyor. Sözleşme dışarı alınıp doğrudan koşturuldu. Kaçan mutasyon bir delik değil, bir <b>harita</b>.",
-   "maddeler": [
-    "<b>D-127:</b> A1 seçildi (çizim kutuya uyar) — IoU <b>0,19 → 1,00</b>, açı <b>90° → 0°</b>, duvar delme <b>0,79 → 0,00 br</b>. Kutulara dokunulmadı",
-    "<b>İçinden geçme:</b> çizilen tezgâhın <b>%19,4</b>&#39;ünden yürünüyordu → <b>0,00 br²</b>; kutusunun <b>%68,7</b>&#39;si görünmez duvardı → <b>0,00 br²</b>",
-    "<b>Zıt kol sorulmadan elendi:</b> kutuyu çizime döndürmek kullanıcının kendi cümlesinin tersini kalıcılaştırırdı",
-    "<b>Bitişiklikte ucuz yol çürütüldü:</b> birleştirme boşluğu yalnız ÇİZİMLE doldurur → sol duvarda <b>0,66 br²</b> yürünebilir gövde üretiyordu. Bulaşık kutusuyla taşındı: boşluk <b>3,20 → 0,00 br</b>",
-    "<b>Ölçümün kapsamı kararın kapsamı değil:</b> bulaşıkçı pad&#39;i araçta yoktu ve taşınmasaydı boş zemini işaretler kalacaktı",
-    "<b>Yükseltme artık biçimden okunuyor:</b> sinyal dizisi [2 2 2 3 2 <b>0</b>] (hepsi renk) → [3 3 3 3 2 2]; en pahalı basamak (9.000 ₺) ekranda iz bırakmıyordu",
-    "<b>Kodda çizilen ama SAYILMAYAN bir işaret bulundu:</b> L6&#39;nın ikinci tost presi düz bir <code>level >= 6</code> koşuluydu — listeye alındı",
-    "Bekçi: <code>mutfak-r2</code> (25 den. · <b>17 mutasyon</b>, kaçan 0 — ilk turda 2 kaçtı, ölü dal gösterildi ve kapatıldı)",
-    "vitest <b>1245 ✓</b> · duman <b>45/45 ✓</b> · tsc temiz"
-   ]
   }
  ],
  "riskler": [
@@ -592,10 +581,10 @@ h2{font-size:21px;font-weight:800}
    "p": "KayKit animasyonları gövdeden ayrı dosyalarda tutuyor ve bu iyi bir düzen — ama o dosyalar &ldquo;yalnız klip&rdquo; değil: her biri mankenin altı parça mesh&rsquo;ini de içinde taşıyor (<b>6.916 üçgen</b>). Repoya dört klip dosyası girdi, yani <b>~27 bin üçgenlik</b> geometri hiç çizilmeden ayrıştırılıyor. Oyun bunları sahneye <b>eklemiyor</b> (yalnız <code>animations</code> dizisi okunuyor), dolayısıyla çizim maliyeti sıfır; maliyet <b>indirme ve ayrıştırma</b> tarafında. Mesh&rsquo;i atan bir araç ≈ <b>0,5-1,5 MB</b> kazandırır. Bugün zararı ölçülmedi, o yüzden kalem <b>bekliyor</b> — APK boyutu Faz F&rsquo;de okunacak ve karar orada verilecek."
   },
   {
-   "sev": "Tasarım",
-   "renk": "now",
-   "b": "Yeni WC kapısı <b>yeşili götürdü, kahve getirdi</b> — D-104&rsquo;ün gerekçesine ters",
-   "p": "S13&rsquo;te kabin kapısı itme barlı yangın kapısından <b>itme barsız panel kapıya</b> geçti (D-111) ve bu, S7&rsquo;den beri açık duran bir kalemi kapattı. Ama bedeli renk oldu ve bir <b>kullanıcı kararına</b> dokunuyor: D-104&rsquo;te iki kapı arasından <code>door_A</code> seçilirken gerekçe <i>&ldquo;WC tek bir kahve kütle, yeşil onu kırıyor&rdquo;</i> idi (<code>feedback_color_variety</code>). <b>Karar paketinde verilen sayı yanlıştı ve uygulamadan önce ölçüm düzeltti:</b> &ldquo;grisi gider&rdquo; denmişti, oysa yeni kapının gözleri <code>[0,2] #828c91</code> gri (194 vertex — lavabo ve aynanın taşıdığı <b>aynı göz</b>) + <code>[0,6] #995842</code> kahve (212). Yani gri <b>yerinde kaldı</b>, giden <b>yeşil</b>. Uygulama sonrası kare bunu bir kez daha inceltti: vertex sayısı griyi baskın gösteriyor ama ekranda gri <b>tokmakta ve kasa kenarında</b> duruyor, kapının kütlesi kahve okunuyor. <b>Kodla kapatmak bir satır</b> (<code>KABIN_GOZ</code>&rsquo;e bir göz çifti yazmak) <b>ama o hamle D-099&rsquo;u deler</b> — &ldquo;atlas boyanmaz, renk varyantı TEMA kalemidir&rdquo;. İki karara birden dokunduğu için kendi turunu ister; bekçi bu listenin boş kalmasını denetliyor, yani sessizce yapılamaz."
+   "sev": "Çözüldü",
+   "renk": "done",
+   "b": "Yeni WC kapısı <b>yeşili götürdü, kahve getirdi</b> — <b>ÇÖZÜLDÜ (D-141):</b> kabin elle çizildi, laminat yeşil-gri",
+   "p": "S13&rsquo;te kabin kapısı itme barlı yangın kapısından <b>itme barsız panel kapıya</b> geçti (D-111) ve bu, S7&rsquo;den beri açık duran bir kalemi kapattı. Ama bedeli renk oldu ve bir <b>kullanıcı kararına</b> dokunuyor: D-104&rsquo;te iki kapı arasından <code>door_A</code> seçilirken gerekçe <i>&ldquo;WC tek bir kahve kütle, yeşil onu kırıyor&rdquo;</i> idi (<code>feedback_color_variety</code>). <b>Karar paketinde verilen sayı yanlıştı ve uygulamadan önce ölçüm düzeltti:</b> &ldquo;grisi gider&rdquo; denmişti, oysa yeni kapının gözleri <code>[0,2] #828c91</code> gri (194 vertex — lavabo ve aynanın taşıdığı <b>aynı göz</b>) + <code>[0,6] #995842</code> kahve (212). Yani gri <b>yerinde kaldı</b>, giden <b>yeşil</b>. Uygulama sonrası kare bunu bir kez daha inceltti: vertex sayısı griyi baskın gösteriyor ama ekranda gri <b>tokmakta ve kasa kenarında</b> duruyor, kapının kütlesi kahve okunuyor. <b>Kodla kapatmak bir satır</b> (<code>KABIN_GOZ</code>&rsquo;e bir göz çifti yazmak) <b>ama o hamle D-099&rsquo;u deler</b> — &ldquo;atlas boyanmaz, renk varyantı TEMA kalemidir&rdquo;. İki karara birden dokunduğu için kendi turunu ister; bekçi bu listenin boş kalmasını denetliyor, yani sessizce yapılamaz.<br><br><b>T7&#39;de kapandı (D-141):</b> kullanıcı kapıyı <i>&#34;oda kapısı gibi&#34;</i> buldu ve <i>&#34;gerekirse asset yerine kendin çiz&#34;</i> dedi. KayKit <code>Door_A</code> söküldü; kabin artık düz laminat kanat + yerden 0,16 açıklık + üst ray + dolu/boş göstergesiyle ilkel şekillerden çiziliyor. Laminat yeşil-gri: kahve kütle itirazı atlas boyanmadan kapandı (D-099 delinmedi). <code>prototype-bits</code> paketi ölü yük olduğu için silindi (156 KB)."
   },
   {
    "sev": "İçerik",
@@ -782,7 +771,7 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunlukArsiv": {
-  "kart": 67,
+  "kart": 68,
   "ilk": "05.06 – 17.06.2026",
   "son": "16.09.2026",
   "yer": "memory-bank/arsiv/pano-gunluk.json"

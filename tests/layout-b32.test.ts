@@ -45,14 +45,15 @@ import { DOOR } from '../src/components/three/wallPanel';
 const STRIP = Array.from({ length: areaTableSlots(2) }, (_, k) => areaTableStart(2) + k);
 
 describe('B3-2 — banket adaları maket v13 birim geometrisini taşır', () => {
-  it('BİRİM SIRASI: sol adanın iki yüzü → sağ adanın iki yüzü → sonraki sütun', () => {
-    expect(banketUnit(0)).toEqual({ side: -1, col: 0, face: 1 });
-    expect(banketUnit(1)).toEqual({ side: -1, col: 0, face: -1 });
-    expect(banketUnit(2)).toEqual({ side: 1, col: 0, face: 1 });
-    expect(banketUnit(3)).toEqual({ side: 1, col: 0, face: -1 });
-    // B5 buradan sürer: 5. birim yeni SÜTUNDUR, yeni ada değil.
+  it('BİRİM SIRASI: sol adanın iki yüzü → sağ adanın iki yüzü → sonraki (daha DIŞ) sütun', () => {
+    // T7 (G-83, D-141): şerit kapı eksenine yakın İÇ sütundan (col 2 = ∓5,3) başlar.
+    expect(banketUnit(0)).toEqual({ side: -1, col: 2, face: 1 });
+    expect(banketUnit(1)).toEqual({ side: -1, col: 2, face: -1 });
+    expect(banketUnit(2)).toEqual({ side: 1, col: 2, face: 1 });
+    expect(banketUnit(3)).toEqual({ side: 1, col: 2, face: -1 });
+    // 5. birim yeni SÜTUNDUR, yeni ada değil.
     expect(banketUnit(4)).toEqual({ side: -1, col: 1, face: 1 });
-    expect(banketUnit(11)).toEqual({ side: 1, col: 2, face: -1 });
+    expect(banketUnit(11)).toEqual({ side: 1, col: 0, face: -1 });
   });
 
   it('ADA BOYU seviyedir: dış uç SABİT kalır, ada içeri uzar (maket 3 sütun = 7,6)', () => {
@@ -106,25 +107,42 @@ describe('B3-2 — banket adaları maket v13 birim geometrisini taşır', () => 
     }
   });
 
-  it('ŞERİT AÇILINCA iki ada birden TAM BOY kurulur (donanım önce, masa sonra)', () => {
+  it('ADA MASAYLA BÜYÜR: katı yalnız açık sütunları kaplar, iç uç sabit (T7/D-141)', () => {
     expect(banketUnitsOpen(8)).toBe(0); // a2 hiç açılmadı
     expect(banketIslands(8)).toEqual([]);
-    for (const tables of [9, 10, 11, 12]) {
-      const isl = banketIslands(tables);
-      expect(isl.map((b) => b.side), `${tables} masa`).toEqual([-1, 1]);
-      for (const b of isl) {
-        expect(b.len).toBeCloseTo(banketLen(BANKET.cols), 6); // 7,6 — maketin ölçüsü
-        expect(Math.abs(b.center[0])).toBeCloseTo(8.5, 6); // maketin merkezi
+    // İlk birim yalnız SOL adanın iç sütununu kurar; sağ ada 3. birimle gelir.
+    expect(banketIslands(9).map((b) => b.side)).toEqual([-1]);
+    // [açık masa, sütun, boy] — boy banketColSpan'dan: 2,2 · 5,4 · 7,6.
+    // Ara sayılarda sol ada bir birim önde (13 masa: sol 2 sütun, sağ 1) — simetrik anlar sınanır.
+    expect(banketIslands(13).map((b) => b.cols)).toEqual([2, 1]);
+    for (const [tables, cols, len] of [[12, 1, 2.2], [16, 2, 5.4], [20, 3, 7.6]]) {
+      for (const b of banketIslands(tables)) {
+        expect(b.cols, `${tables} masa`).toBe(cols);
+        expect(b.len, `${tables} masa`).toBeCloseTo(len, 6);
+        // İç uç (∓4,7) sabit: ada dışa doğru uzar.
+        expect(Math.abs(b.center[0]) - b.len / 2).toBeCloseTo(BANKET.outerX - banketLen(BANKET.cols), 6);
         expect(b.center[2]).toBeCloseTo(BANKET.z, 6);
         expect(b.half[1]).toBeCloseTo(BANKET.coreHalf, 6); // collision = sırtlık çekirdeği
-        // Ada boyu boyunca DERİNLİĞİNDEN uzun: kütle bank gibi okunsun, dolap gibi değil.
-        expect(b.len).toBeGreaterThan(BANKET.depth);
+      }
+    }
+    // Tam boy maketin ölçüsü ve merkezi.
+    for (const b of banketIslands(20)) expect(Math.abs(b.center[0])).toBeCloseTo(8.5, 6);
+  });
+
+  it('her AÇIK şerit masası kendi adasının katısının boyu içinde (masasız bank, bankasız masa yok)', () => {
+    for (let tables = 9; tables <= 20; tables++) {
+      const isl = banketIslands(tables);
+      for (let i = 8; i < tables; i++) {
+        const t = LAYOUT.tables[i].table;
+        const b = isl.find((k) => Math.sign(k.center[0]) === Math.sign(t[0]))!;
+        expect(b, `${tables} masa · masa ${i}`).toBeDefined();
+        expect(Math.abs(t[0] - b.center[0]) + LAYOUT.deuceHalf[0], `${tables} masa · masa ${i}`).toBeLessThanOrEqual(b.half[0] + 1e-6);
       }
     }
   });
 
   it('ADA masaların ÜSTÜNE binmez (görsel derinlikte bile masa gövdesiyle çakışmaz)', () => {
-    for (const b of banketIslands(12)) {
+    for (const b of banketIslands(20)) {
       for (const i of STRIP) {
         const t = LAYOUT.tables[i].table;
         const overlap =

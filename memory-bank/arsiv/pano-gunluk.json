@@ -2,8 +2,25 @@
  "not": "İlerleme panosunun ESKİ oturum kartları. Pano her turda büyüyordu (67 kart / 219 KB) ve yayını canlı sürümün tamamının okunmasını şart koştuğu için tur başına maliyeti ARTIYORDU — okunanın neredeyse tamamı bir daha bakılmayacak arşivdi. Projenin kendi kuralı buraya da uygulandı (eski anlatı → arsiv/). Pano son 8 turu gösterir; öncesi burada ve git geçmişinde durur.",
  "kaynak": "docs/pano/ilerleme-panosu.html",
  "tasindi": "2026-09-21",
- "kart": 67,
+ "kart": 68,
  "gunluk": [
+  {
+   "tarih": "16.09.2026",
+   "etiket": "Faz R · 2. oturum (R2 — mutfak yerleşimi + çarpışma — D-127)",
+   "baslik": "Bir ölçü <b>dünya</b> ekseninde üretilip <b>yerel</b> eksende tüketilirse, hata yalnız dönüşün sıfır olmadığı dönemde görünür",
+   "govde": "Kullanıcı: <i>&#34;sol duvara paralel olması gerekirken tam 90 derece açıyla duruyor&#34;</i> ve <i>&#34;biz tezgahın vs içinden geçiyoruz&#34;</i>. İkisi de tek kök: <code>onHatGovdeleri</code> gövde ölçüsünü çarpışma kutusundan türetiyor ama <b>dünya eksenlerinden</b>; iki çağıran da (<code>Scene.Stations</code> · <code>DishSink</code>) o gövdeyi <code>place.rot</code> ile <b>zaten döndürülmüş</b> bir grubun içine çiziyor.<br><br><b>Kusur S3&#39;ten beri yaşadı çünkü yarısı doğruydu:</b> arka bant döneminde <code>rot = 0</code>, iki eksen aynı. Sol duvarda <code>rot = π/2</code> ve yerel x dünya z&#39;ye gidiyor — gövde kutusuna dik. Bekçinin kuralı bu yüzden &#34;her denetim <b>iki dönemi</b> birden gezer&#34;: tek dönemi denetleyen bekçi, bu kusurun tam olarak kaçtığı bekçidir.<br><br><b>Ve iki mutasyon KAÇTI.</b> Sebebi bekçinin zayıflığı değildi: yanlışladıkları dal canlı kodda <b>ölü</b>ydü — birleştirme yalnız garson istasyonu sahnedeyken, o da yalnız <code>rot = 0</code> döneminde koşuyor. Sözleşme dışarı alınıp doğrudan koşturuldu. Kaçan mutasyon bir delik değil, bir <b>harita</b>.",
+   "maddeler": [
+    "<b>D-127:</b> A1 seçildi (çizim kutuya uyar) — IoU <b>0,19 → 1,00</b>, açı <b>90° → 0°</b>, duvar delme <b>0,79 → 0,00 br</b>. Kutulara dokunulmadı",
+    "<b>İçinden geçme:</b> çizilen tezgâhın <b>%19,4</b>&#39;ünden yürünüyordu → <b>0,00 br²</b>; kutusunun <b>%68,7</b>&#39;si görünmez duvardı → <b>0,00 br²</b>",
+    "<b>Zıt kol sorulmadan elendi:</b> kutuyu çizime döndürmek kullanıcının kendi cümlesinin tersini kalıcılaştırırdı",
+    "<b>Bitişiklikte ucuz yol çürütüldü:</b> birleştirme boşluğu yalnız ÇİZİMLE doldurur → sol duvarda <b>0,66 br²</b> yürünebilir gövde üretiyordu. Bulaşık kutusuyla taşındı: boşluk <b>3,20 → 0,00 br</b>",
+    "<b>Ölçümün kapsamı kararın kapsamı değil:</b> bulaşıkçı pad&#39;i araçta yoktu ve taşınmasaydı boş zemini işaretler kalacaktı",
+    "<b>Yükseltme artık biçimden okunuyor:</b> sinyal dizisi [2 2 2 3 2 <b>0</b>] (hepsi renk) → [3 3 3 3 2 2]; en pahalı basamak (9.000 ₺) ekranda iz bırakmıyordu",
+    "<b>Kodda çizilen ama SAYILMAYAN bir işaret bulundu:</b> L6&#39;nın ikinci tost presi düz bir <code>level >= 6</code> koşuluydu — listeye alındı",
+    "Bekçi: <code>mutfak-r2</code> (25 den. · <b>17 mutasyon</b>, kaçan 0 — ilk turda 2 kaçtı, ölü dal gösterildi ve kapatıldı)",
+    "vitest <b>1245 ✓</b> · duman <b>45/45 ✓</b> · tsc temiz"
+   ]
+  },
   {
    "tarih": "16.09.2026",
    "etiket": "Faz R · 1. oturum (R1 — görev şeridi — D-126)",

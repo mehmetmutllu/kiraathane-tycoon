@@ -1,25 +1,17 @@
 /**
- * banketLook.ts — BANKET ADASININ O ANKİ HÂLİ: hangi sütun çizilir, her yüz hangi kademede.
+ * banketLook.ts — BANKET ADASININ O ANKİ HÂLİ: hangi sütun/yüz çizilir, ada hangi kademede.
  *
- * T7 (G-83/G-84): ada artık tek parça "donanım" değil, SÜTUN × YÜZ parçalarından kurulur. Her yüz
- * tam olarak bir banket birimidir (bir masa) ve o masanın SEVİYESİNİ taşır — obje-başı yükseltme.
+ * T7 (G-83/G-84, D-141). Kullanıcı: *"önce banketler uzuyacak sonra da minderler gelir … minder
+ * koyarken parça parça değil, yarısında var yarısında yok gibi değil, olanda komple"*. İki kural:
+ *   BOY    her masa kendi bank YÜZÜNÜ getirir; şerit iç sütundan dışa dolar (`banketUnit`).
+ *   KADEME ada TEK kademe taşır. Ada tamamlanana (6 yüz) kadar çıplak ahşap sedirdir; tamamlanınca
+ *          kademe = adadaki en düşük masa seviyesi. Böylece minder bütün adaya bir anda gelir ve
+ *          yeni masa açılınca hiçbir şey GERİ gitmez (en düşük seviye yalnız ada dolunca okunur).
  * React'e bağlı değil; vitest'te doğrudan sınanır.
  */
-import { BANKET, banketUnit, banketUnitsOpen } from '../../game/layout';
+import { BANKET, banketColSpan, banketUnit, banketUnitsOpen } from '../../game/layout';
 import { areaTableSlots, areaTableStart } from '../../game/world';
-import type { Buyume, Gorunus } from '../../game/banketAday';
-
-/** Sütun sınırları, adanın DIŞ ucundan içeri uzaklık: 0 · 2,2 · 5,4 · 7,6 (= banketLen(3)). */
-const SINIR = [0, BANKET.endPad + BANKET.colGap / 2, BANKET.endPad + 1.5 * BANKET.colGap, 2 * BANKET.endPad + 2 * BANKET.colGap];
-
-export type YuzDurum = 'acik' | 'iskelet' | 'yok';
-
-export interface BanketYuz {
-  face: -1 | 1;
-  durum: YuzDurum;
-  /** O yüzün masasının seviyesi (açık değilse 0). */
-  level: number;
-}
+import { PALETTE } from '../../config/palette';
 
 export interface BanketSutun {
   side: -1 | 1;
@@ -27,87 +19,78 @@ export interface BanketSutun {
   /** Dünya x merkezi ve sütun boyu (x ekseninde). */
   x: number;
   len: number;
-  /** Sırtlık: yüzlerden biri açıksa 'acik', yalnız iskelet sütunsa 'iskelet'. */
-  sirt: Exclude<YuzDurum, 'yok'>;
-  yuzler: [BanketYuz, BanketYuz];
+  /** Yüzlerin açık olup olmadığı: [kapı tarafı (+z), tezgâh tarafı (−z)]. */
+  yuz: [boolean, boolean];
 }
 
-/** Görünüş kademesi (yüz başına): masa merdiveniyle AYNI basamaklar (Tables.tsx). */
-export interface YuzGorunus {
-  /** Oturak minderi var mı (L2+ — taburenin minderlendiği basamak). */
-  minder: boolean;
-  /** Sırtlık minderi (L3+ — masanın büyüdüğü basamak). */
-  sirtMinder: boolean;
-  /** Yastıklar (L4+ — örtünün geldiği basamak). */
-  yastik: boolean;
-  /** Minder rengi. */
-  renk: string;
-  /** Ön kenar şeridi (biye / kilim) — yoksa null. */
-  serit: string[] | null;
-}
+/** Adanın masa (yüz) sayısı: sütun × 2. */
+export const ADA_YUZ = BANKET.cols * 2;
 
-const BORDO = '#7a2230';
-const BORDO_ACIK = '#9c3a45';
-const KETEN = '#b8894a';
-const PIRINC = '#d4af37';
-const KILIM = ['#d9a441', '#2f5d7c', '#f3ecd9', '#b23a2e'];
+/** Kademe tavanı — masa merdiveninin ₺ tavanı (L4) ile aynı basamak. */
+export const BANKET_KADEME_MAX = 4;
 
-export function yuzGorunus(gorunus: Gorunus, level: number): YuzGorunus {
-  if (gorunus === 'R0') return { minder: true, sirtMinder: true, yastik: true, renk: BORDO, serit: null };
-  const minder = level >= 2;
-  const sirtMinder = level >= 3;
-  const yastik = level >= 4;
-  if (gorunus === 'R1') return { minder, sirtMinder, yastik, renk: BORDO, serit: null };
-  if (gorunus === 'R2') {
-    return { minder, sirtMinder, yastik, renk: level >= 3 ? BORDO : KETEN, serit: yastik ? [PIRINC] : null };
+/** Sahnede çizilecek sütunlar. Şerit açılmadan hiçbir şey çizilmez — kilitli alan çizilmez (D-057). */
+export function banketSutunlari(tables: number): BanketSutun[] {
+  const acik = banketUnitsOpen(tables);
+  const out = new Map<string, BanketSutun>();
+  for (let u = 0; u < acik; u++) {
+    const { side, col, face } = banketUnit(u);
+    const k = `${side}:${col}`;
+    let s = out.get(k);
+    if (!s) {
+      const [d0, d1] = banketColSpan(col);
+      s = { side, col, x: side * (BANKET.outerX - (d0 + d1) / 2), len: d1 - d0, yuz: [false, false] };
+      out.set(k, s);
+    }
+    s.yuz[face === 1 ? 0 : 1] = true;
   }
-  return { minder, sirtMinder, yastik, renk: BORDO, serit: yastik ? KILIM : null };
+  return [...out.values()];
 }
 
-export const YASTIK_RENGI = (gorunus: Gorunus, i: number): string =>
-  gorunus === 'R3' ? KILIM[i % KILIM.length] : BORDO_ACIK;
+/** Bir adanın masa indeksleri (açık olsun olmasın), şerit sırasıyla. */
+export function adaMasalari(side: -1 | 1): number[] {
+  const out: number[] = [];
+  for (let u = 0; u < areaTableSlots(2); u++) if (banketUnit(u).side === side) out.push(areaTableStart(2) + u);
+  return out;
+}
+
+/** Adanın görünüş kademesi (0…4): ada dolmadan 0, dolunca masalarının en düşük seviyesi. */
+export function banketKademe(tables: number, levels: readonly number[], side: -1 | 1): number {
+  const masalar = adaMasalari(side);
+  if (masalar.some((t) => t >= tables)) return 0;
+  return Math.min(BANKET_KADEME_MAX, ...masalar.map((t) => levels[t] ?? 0));
+}
 
 /**
- * Sahnede çizilecek sütunlar. `tables` = açık masa sayısı, `levels` = masa seviyeleri (global).
- * Şerit açılmadan (a2'nin ilk masası) hiçbir şey çizilmez — kilitli alan çizilmez (D-057).
+ * Kademenin görünüşü — her basamak bütün adaya bir şey EKLER, hiçbir basamak boş geçmez
+ * (`feedback_upgrade_legibility`: madde + renk birlikte, tek sinyal yetmez).
+ *   0 çıplak ahşap sedir · 1 keten oturak minderi · 2 minder bordoya döner + sırt minderi
+ *   3 + yastıklar · 4 + pirinç biye + kapitone düğme (Usta'ya giden son ₺ basamağı)
  */
-export function banketSutunlari(tables: number, levels: readonly number[], buyume: Buyume): BanketSutun[] {
-  const acik = banketUnitsOpen(tables);
-  if (acik === 0) return [];
-  // (side, col, face) → masa index'i; açık değilse -1.
-  const birim = new Map<string, number>();
-  for (let u = 0; u < areaTableSlots(2); u++) {
-    const { side, col, face } = banketUnit(u);
-    birim.set(`${side}:${col}:${face}`, u < acik ? areaTableStart(2) + u : -1);
-  }
-  const out: BanketSutun[] = [];
-  for (const side of [-1, 1] as const) {
-    for (let col = 0; col < BANKET.cols; col++) {
-      const yuzler = ([1, -1] as const).map((face) => {
-        const t = birim.get(`${side}:${col}:${face}`) ?? -1;
-        return { face, acik: t >= 0, level: t >= 0 ? (levels[t] ?? 0) : 0 };
-      });
-      const herhangi = yuzler.some((y) => y.acik);
-      let durumlar: YuzDurum[];
-      if (buyume === 'B0') durumlar = ['acik', 'acik'];
-      else if (buyume === 'B3') durumlar = yuzler.map((y) => (y.acik ? 'acik' : 'iskelet'));
-      else if (!herhangi) continue;
-      else if (buyume === 'B1') durumlar = ['acik', 'acik'];
-      else durumlar = yuzler.map((y) => (y.acik ? 'acik' : 'yok')); // B2 · B4
-      const d0 = SINIR[col];
-      const d1 = SINIR[col + 1];
-      out.push({
-        side,
-        col,
-        x: side * (BANKET.outerX - (d0 + d1) / 2),
-        len: d1 - d0,
-        sirt: durumlar.includes('acik') ? 'acik' : 'iskelet',
-        yuzler: [
-          { face: 1, durum: durumlar[0], level: yuzler[0].level },
-          { face: -1, durum: durumlar[1], level: yuzler[1].level },
-        ],
-      });
-    }
-  }
-  return out;
+export interface BanketGorunus {
+  oturak: string | null;
+  sirt: string | null;
+  yastik: readonly string[] | null;
+  biye: string | null;
+  kapitone: boolean;
+}
+
+export const BANKET_RENK = {
+  keten: '#c9a46a',
+  bordo: PALETTE.banketCushion,
+  yastik: PALETTE.banketPillow,
+  hardal: '#d9a441',
+  pirinc: '#d4af37',
+} as const;
+
+export function banketGorunus(kademe: number): BanketGorunus {
+  const k = Math.max(0, Math.min(BANKET_KADEME_MAX, kademe));
+  const R = BANKET_RENK;
+  return {
+    oturak: k === 0 ? null : k === 1 ? R.keten : R.bordo,
+    sirt: k >= 2 ? R.bordo : null,
+    yastik: k >= 4 ? [R.yastik, R.hardal] : k >= 3 ? [R.yastik] : null,
+    biye: k >= 4 ? R.pirinc : null,
+    kapitone: k >= 4,
+  };
 }

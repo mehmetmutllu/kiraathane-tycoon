@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 121 · YAPILAN 113 · %93):**
+**Oturum bütçesi (TOPLAM 121 · YAPILAN 114 · %94):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -28,8 +28,8 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | H oynanış düzeltmeleri | 2/2 ✅ |
 | | **R geri bildirim turları (2026-09-16)** | **4/4 ✅** |
 | | **F paketleme ve yayın** | **3/6** 🔧 |
-| | **T tur serisi (geri bildirim + performans)** | **5/9** 🔧 |
-| **Program toplam** | | **85/93** |
+| | **T tur serisi (geri bildirim + performans)** | **6/9** 🔧 |
+| **Program toplam** | | **86/93** |
 
 Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlatısı: `memory-bank/arsiv/progress-tamamlanan.md`.
 
@@ -114,7 +114,7 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
 - ⏳ **F5 — mağaza vitrini + uyum** …
 - ✅ **F6 — açılış ekranı + ekran yönü + yatay/tablet HUD** (F1b iki tur + tur 3) …
 
-## Faz T — TUR SERİSİ: GERİ BİLDİRİM + PERFORMANS (5/9) 🔧
+## Faz T — TUR SERİSİ: GERİ BİLDİRİM + PERFORMANS (6/9) 🔧
 - ✅ **T1 — onarım (G-78/79/77/69/70):** …
 - ✅ **T2 — görev akışı · iki tur (T2a mantık D-134 · T2b görsel D-135)**
 - ✅ **T4 — performans (G-80): şarj kanadı uygulandı, kasma kanadı T5'e devredildi.** …
@@ -122,7 +122,7 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
 - ✅ **T5 — nav (`findNavPath`) · iki tur: T5 kol + T5b tarayıcı A/B** …
 - ✅ **T6 — izdiham / sürüklenme (G-91)** …
   · T6b tarayıcı ölçümü: kare ×1,15 (telefon) · bellek −%22 · izdiham kare hızına bağlı · masaüstü damgalı · `docs/izdiham-raporu-t6.md` §Performansa yansıması
-- ⏳ **T7 — G-82 pad çakışması + G-83/G-84 banket kademeli büyüme** (tasarım kanadı gösterilerek)
+- ✅ **T7 — banket ortadan büyür + ada-başı tek kademe + WC kabini elle çizildi (D-141)** · Kat 1 −%4,3 (eşikler aynı) · `docs/banket-raporu-t7.md`
 - ⏳ **T8 — G-85 tost/çay mimarisi + G-90 tost asset'i + G-86 zincir denetimi + T3 denge (K1-K11)**
 - ⏳ **T9 — G-88 genel tarama** (kod + oynanış, ağırlık performans) …
 

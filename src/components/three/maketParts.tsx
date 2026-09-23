@@ -21,7 +21,7 @@ import { BAND, BAND_SHELL, LAVABO, useGame } from '../../game/store';
 import { Model } from './Model';
 import {
   AYNA_GOZ, AYNA_S, AYNA_Y, AYNA_Z,
-  KABIN_ADIM, KABIN_ARALIK_ACI, KABIN_DZ, KABIN_GOZ, KABIN_KUTU, KABIN_MENTESE_ORTA, KABIN_SCALE, KABIN_X_OFSET,
+  KABIN_ADIM, KABIN_ARALIK_ACI, KABIN_BANT, KABIN_BOLME, KABIN_KAPI, KABIN_MENTESE_ORTA, KABIN_RAY_Y, KABIN_RENK, KABIN_X_OFSET,
   LAVABO_DUVAR_PAYI, LAVABO_DZ, LAVABO_GOZ, LAVABO_SCALE, kabinSayisi, lavaboSayisi, lavaboSlotOfset, wcSeviye,
 } from './wcLook';
 import { STEP_D, STEP_H, STEP_N } from './wallLook';
@@ -30,8 +30,6 @@ import { STEP_D, STEP_H, STEP_N } from './wallLook';
 const KAY_REST = '/assets/models/kaykit-restaurant-bits/';
 /** KayKit furniture-bits kökü — ayna oradan (`Decor.tsx` ile aynı yol). */
 const KAY_FURN = '/assets/models/kaykit-furniture-bits/';
-/** KayKit prototype-bits kökü — S13'te yalnız İTME BARSIZ KAPI için alındı (D-111). */
-const KAY_PROTO = '/assets/models/kaykit-prototype-bits/';
 
 /** Maketin `C` paleti — yalnız bu dosyanın kullandığı girdiler, maketteki hex değerleriyle. */
 const MC = {
@@ -138,16 +136,27 @@ export function MaketSink({ pos, rot = 0 }: { pos: [number, number, number]; rot
 }
 
 /**
- * GREYBOX-FIRST yedeği (CLAUDE.md): `door_A.gltf` gelmezse kabin kapısı maketin düz levhasına
- * düşer. Oynanış ve yerleşim değişmez — yalnız görsel sadeleşir. Levha artık MENTEŞE grubunun
- * içinde çizildiği için modelle aynı yerde durur (eski kod kutuyu merkezinden döndürüyordu).
+ * KABİN KANADI (T7/D-141): düz laminat levha + kol + dolu/boş göstergesi. Menteşe grubunun
+ * İÇİNDE çizilir (origin = menteşe), aralık kapı gerçek menteşeden döner. Ölçüler `wcLook`ta.
  */
-function MaketKabinKapisi() {
+function KabinKanadi({ dolu }: { dolu: boolean }) {
+  const h = KABIN_BANT.ust - KABIN_BANT.alt;
+  const kolX = KABIN_MENTESE_ORTA * 2 - 0.16;
   return (
-    <mesh position={[KABIN_MENTESE_ORTA, KABIN_KUTU.h / 2, 0]}>
-      <boxGeometry args={[KABIN_KUTU.w, KABIN_KUTU.h, 0.06]} />
-      <meshStandardMaterial color={MC.doorWood} flatShading />
-    </mesh>
+    <group>
+      <mesh castShadow position={[KABIN_MENTESE_ORTA, KABIN_BANT.alt + h / 2, 0]}>
+        <boxGeometry args={[KABIN_KAPI.w, h, KABIN_KAPI.kalinlik]} />
+        <meshStandardMaterial color={KABIN_RENK.laminat} />
+      </mesh>
+      <mesh position={[kolX, KABIN_KAPI.kolY, KABIN_KAPI.kalinlik / 2 + 0.03]}>
+        <boxGeometry args={[0.16, 0.035, 0.035]} />
+        <meshStandardMaterial color={KABIN_RENK.metal} metalness={0.5} roughness={0.35} />
+      </mesh>
+      <mesh position={[kolX, KABIN_KAPI.kolY + 0.13, KABIN_KAPI.kalinlik / 2 + 0.012]}>
+        <boxGeometry args={[0.09, 0.045, 0.02]} />
+        <meshStandardMaterial color={dolu ? KABIN_RENK.dolu : KABIN_RENK.bos} emissive={dolu ? KABIN_RENK.dolu : KABIN_RENK.bos} emissiveIntensity={0.35} />
+      </mesh>
+    </group>
   );
 }
 
@@ -317,32 +326,33 @@ export function MaketLavaboBlock() {
         <meshStandardMaterial color="#cfd8dc" />
       </mesh>
 
-      {/* arka duvar boyunca bölmeler (kabin sayısı + 1) ve aralarında kabin kapıları.
-          Sayı SEVİYEDEN gelir (S7/L) — maketin sabit "beş bölme / dört kapı"sı kalktı. */}
+      {/* KABİNLER (T7/D-141): bölme sayısı kabin + 1; bölmeler de kanat da yerden 0,16 açık,
+          1,80'de biter; önlerini alüminyum ray bağlar. Sayı SEVİYEDEN gelir (S7/L). */}
       {Array.from({ length: kabinN + 1 }, (_, i) => (
-        <mesh key={`p${i}`} position={[p0 + i * KABIN_ADIM, 1.0, zp]}>
-          <boxGeometry args={[0.06, 2.0, 1.6]} />
-          <meshStandardMaterial color={MC.wain} />
-        </mesh>
+        <group key={`p${i}`} position={[p0 + i * KABIN_ADIM, 0, zp]}>
+          <mesh castShadow position={[0, (KABIN_BANT.alt + KABIN_BANT.ust) / 2, 0]}>
+            <boxGeometry args={[KABIN_BOLME.kalinlik, KABIN_BANT.ust - KABIN_BANT.alt, KABIN_BOLME.derin]} />
+            <meshStandardMaterial color={KABIN_RENK.bolme} />
+          </mesh>
+          <mesh position={[0, KABIN_BANT.alt / 2, KABIN_BOLME.derin / 2 - 0.08]}>
+            <cylinderGeometry args={[0.025, 0.03, KABIN_BANT.alt, 8]} />
+            <meshStandardMaterial color={KABIN_RENK.metal} metalness={0.5} roughness={0.35} />
+          </mesh>
+        </group>
       ))}
+      {kabinN > 0 && (
+        <mesh position={[p0 + (kabinN * KABIN_ADIM) / 2, KABIN_RAY_Y, zd + 0.02]}>
+          <boxGeometry args={[kabinN * KABIN_ADIM + KABIN_BOLME.kalinlik, 0.05, 0.05]} />
+          <meshStandardMaterial color={KABIN_RENK.metal} metalness={0.5} roughness={0.35} />
+        </mesh>
+      )}
       {Array.from({ length: kabinN }, (_, i) => {
         const cx = p0 + KABIN_ADIM / 2 + i * KABIN_ADIM;
         const ajar = i === Math.min(2, kabinN - 1); // maket: bir kapı aralık, içeride klozet görünür
         return (
           <group key={`c${i}`}>
-            {/* S13 (D-111) — Prototype Bits `Door_A`: gri kasa + kahve panel + TOKMAK.
-                S7'nin `door_A`sının itme barı gitti; ayak izi birebir aynı olduğu için ölçek,
-                menteşe ve z telafisi hiç oynamadı. Menteşe modelin SOL kenarında (bbox x 0 →
-                1,60): kapı gerçek bir MENTEŞE etrafında açılıyor.
-                Ölçü/ölçek/gerekçe `wcLook.ts`te; burada tek sayı yok. */}
             <group position={[cx - KABIN_MENTESE_ORTA, 0, zd]} rotation={[0, ajar ? KABIN_ARALIK_ACI : 0, 0]}>
-              <Model
-                src={`${KAY_PROTO}Door_A.gltf`}
-                scale={KABIN_SCALE}
-                position={[0, 0, KABIN_DZ]}
-                esleme={KABIN_GOZ}
-                fallback={<MaketKabinKapisi />}
-              />
+              <KabinKanadi dolu={!ajar && i % 2 === 0} />
             </group>
             {ajar && (
               <group>

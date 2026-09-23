@@ -172,91 +172,47 @@ export const aynaOnZ = (): number => AYNA_Z + AYNA_NATIVE.maxZ * AYNA_S;
 export const muslukAynaPayi = (): number => muslukZ().max - aynaOnZ();
 
 // =============================================================================================
-//  KABİN KAPISI — S7/K2 (D-104). Kullanıcı: bugünkü düz kutu **"kötü"**.
+//  KABİN — T7 (D-141). Kullanıcı 2026-09-23: *"lavabo kapılarından memnun değilim, oda kapısı
+//  gibi; oraya düz lavabo kapısı istiyorum, gerekirse asset yerine kendin çiz"*.
 // =============================================================================================
 /**
- * KAPI S13'TE DEĞİŞTİ: `kaykit-restaurant-bits/door_A` → `kaykit-prototype-bits/Door_A` (D-111).
- *
- * S7'nin dersi duruyor — model SEÇİMİNİ sayı değil ÇİZİLMİŞ HÂL yapar; `tools/model-bak.mjs`
- * o yüzden doğmuştu ve bu tur ona `vitrin` kipini ekledi. Değişen şey ders değil, ELDEKİ paket:
- * S7'de "tek mesh, sökülemiyor" diye kabul edilen **itme barı** artık kabul edilmek zorunda değil,
- * çünkü Prototype Bits barsız bir panel kapı getirdi (`docs/yeni-paketler-raporu-s13.md` §B4).
- *
- * Yer değişimi ÖLÇÜ İSTEMEDİ: iki modelin ayak izi ve ankrajı birebir aynı (1,600 × 2,800,
- * menteşe x = 0, z'de simetrik). `KABIN_KUTU` · `KABIN_SCALE` · `KABIN_DZ` hiç oynamadı.
- *
- * **Kalınlık ölçüldü, tahmin edilmedi** (y dilimi başına z aralığı): gövde her yerde **0,200**;
- * kutuyu 0,546'ya çıkaran tek şey **y 0,80…1,20'deki tokmak**. Eskiden aynı bandı itme barı
- * dolduruyordu — yani kutu aynı yerden şişiyor, ama şişiren şey artık **WC kabininde yeri OLAN**
- * bir parça. Barın gidişi bu turun asıl kazancı.
- *
- * **BEDELİ RENK ve yazılı bir kullanıcı kararına dokunuyor:** D-104'te kullanıcı `door_A`yı
- * `door_B`ye tercih ederken gerekçe *"WC tek bir kahve kütle, yeşil onu kırıyor"* idi
- * (`feedback_color_variety`). Yeni kapıda o **yeşil yok**: gözleri [0,6] #995842 kahve (212 vertex)
- * + [0,2] #828c91 gri (194). Gri KALDI — hem de lavabo/aynanın taşıdığı aynı göz — giden yalnız
- * yeşil. Kahve kütle itirazı bu yüzden AÇIK bir kalem olarak tur kartında duruyor; sessizce
- * kapatılmadı.
+ * KayKit `Door_A` (S13/D-111) panelli bir ODA kapısıydı: çerçeve, tabla, tokmak, yere kadar kanat.
+ * Tuvalet kabinini kabin yapan üç işaret onda yoktu — **düz laminat kanat, yerden açıklık ve
+ * kabinleri üstten bağlayan ray**. Kabin artık bütünüyle ilkel şekille çiziliyor (model yükü de
+ * kalktı). Laminat yeşil-gri: WC'nin "tek kahve kütle" itirazı (D-104) aynı hamlede kapandı.
+ * Kabin GÖZÜ değişmedi (1,36 kanat gözü · 1,5 bölme adımı): yerleşim, nav ve kayboluş aynı.
  */
-export const KABIN_NATIVE = {
-  w: 1.6,
-  h: 2.8,
-  /** Ham kutu derinliği — modelin KALINLIĞI DEĞİL, tokmağın iki yüzdeki taşması. */
-  d: 0.546,
-  /** Tokmak hariç gövde kalınlığı (ölçüldü: y 0,80…1,20 dışındaki her dilim tam 0,200). */
-  govdeD: 0.2,
-  /** Menteşe modelin SOL kenarında: bbox x 0 → 1,60. Kapı origin'i etrafında AÇILIR. */
-  minX: 0,
-  /** z'de SİMETRİK (−0,273 … +0,273) → lavabodaki gibi bir telafi GEREKMEZ. */
-  minZ: -0.273,
-  maxZ: 0.273,
-  /** Tokmağın y aralığı — eski kapıda aynı bandı itme barı dolduruyordu (S7: 0,80…1,20). */
-  tokmak: { min: 0.8, max: 1.2 },
-} as const;
-
-/** Bugünkü kabin gözü. DEĞİŞMEDİ: yerleşim, nav ve yürüme açıklığı bu turda hiç oynamadı. */
 export const KABIN_KUTU = { w: 1.36, h: 1.95 } as const;
 
-/**
- * ÖLÇEK — TEKDÜZE DEĞİL, ve bu bilinçli. Tekdüze kollar ölçüldü ve ikisi de daha pahalı:
- *   · BOYDAN (h → 1,95): kanat 1,11 br kalıyor, kabin gözünde 0,25 br boşluk açılıyor.
- *   · ENDEN  (w → 1,36): boy 2,38'e çıkıyor, **bölmenin 2,00'ını 0,38 aşıyor** (kapı bölmeden
- *     taşar, kabin okunmaz olur).
- * Kalan kol x/y'de çarpıtma demek; bedeli **1,221** ve D-103'ün lavabo gövdesinde kabul ettiği
- * **2,715**'in ALTINDA. Derinlik x ölçeğine bağlanır (kapı z'de ezilmesin) — kabin 1,60 derin,
- * gövdenin 0,255'i rahat oturur.
- */
-export const KABIN_SCALE: [number, number, number] = [
-  KABIN_KUTU.w / KABIN_NATIVE.w,
-  KABIN_KUTU.h / KABIN_NATIVE.h,
-  KABIN_KUTU.w / KABIN_NATIVE.w,
-];
+/** Bölme ve kanat aynı bantta: yerden 0,16 açık, 1,80'de biter (oda duvarı 2,2). */
+export const KABIN_BANT = { alt: 0.16, ust: 1.8 } as const;
 
-/** Çarpıtma oranı — bekçi bunu D-103'ün kabul ettiği bedelin altında tutar. */
-export const KABIN_CARPITMA = Math.max(...KABIN_SCALE) / Math.min(...KABIN_SCALE);
+export const KABIN_KAPI = {
+  /** Kanat eni: gözden menteşe ve kilit tarafında 0,02'şer pay. */
+  w: KABIN_KUTU.w - 0.04,
+  kalinlik: 0.04,
+  /** Kol ve dolu/boş göstergesinin yüksekliği. */
+  kolY: 1.0,
+} as const;
 
-/** z telafisi — kutu z'de simetrik olduğu için SIFIR. Yazılmaz, TÜRETİLİR (lavabodaki desen). */
-export const KABIN_DZ = -((KABIN_NATIVE.minZ + KABIN_NATIVE.maxZ) / 2) * KABIN_SCALE[2];
+export const KABIN_BOLME = { kalinlik: 0.05, derin: 1.6 } as const;
+
+/** Rayın yüksekliği: kanadın hemen üstü. */
+export const KABIN_RAY_Y = KABIN_BANT.ust + 0.04;
+
+export const KABIN_RENK = {
+  laminat: '#7fa99b',
+  bolme: '#6f978a',
+  metal: '#b8c2c4',
+  bos: '#4caf50',
+  dolu: '#d84b3a',
+} as const;
 
 /** Menteşeden kanat ORTASINA olan mesafe — kapı hem kapalı hem aralık çizilirken buradan konur. */
 export const KABIN_MENTESE_ORTA = KABIN_KUTU.w / 2;
 
-/** Maketin aralık kapısının açısı (rad) — artık gerçek MENTEŞE etrafında dönüyor. */
+/** Maketin aralık kapısının açısı (rad) — gerçek MENTEŞE etrafında döner. */
 export const KABIN_ARALIK_ACI = 0.55;
-
-/**
- * GÖZ TAŞIMASI YOK — ve bu hâlâ bir KARAR, eksiklik değil.
- *
- * Yeni kapının gözleri ölçüldü: **[0,2] #828c91 gri** (194 vertex) — S6/②'de lavabonun ve
- * aynanın taşındığı **aynı göz** — ve **[0,6] #995842 kahve** (212). Ama vertex sayısı yanıltır:
- * ekranda (`docs/gorsel/ss/s7-seviye-L3.png`) gri **tokmakta ve kasa kenarında** duruyor, KÜTLE
- * kahve okunuyor. Yani atlas düzeyinde taşınacak bir şey yok; itiraz renk düzeyinde ve aşağıda.
- *
- * Kahveyi yeşile çevirmek teknik olarak BİR SATIR (bu listeye bir çift yazmak) ama o hamle
- * D-099'un *"atlas boyanmaz, renk varyantı TEMA kalemidir"* kararını sessizce deler. Kahve
- * kütle itirazı bu yüzden kod yerine **tur kartında** duruyor. Bekçi listenin boş kalmasını
- * denetler: bir sonraki tur burayı doldurursa iki karara birden dokunduğunu bilerek yapsın.
- */
-export const KABIN_GOZ: readonly (readonly [Goz, Goz])[] = [];
 
 // =============================================================================================
 //  SEVİYE SİNYALİ — S7/L (G-36 · D-104)

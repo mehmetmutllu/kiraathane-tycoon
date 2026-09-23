@@ -2,7 +2,7 @@ import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Vector3, BufferGeometry, BoxGeometry, Float32BufferAttribute, DoubleSide, MeshStandardMaterial, Object3D, type Group, type InstancedMesh, type PerspectiveCamera } from 'three';
 import { cameraViewYaz } from '../../game/cameraView';
-import { useGame, questFocusPos, LAYOUT, LAVABO, BAND, BAND_SHELL, FLOOR_HALF, wallSpans, servicePlace, stationSoftMaxLevel, stationUpgradeCostAt, stationUpgradeUnlocked, tableSoftMaxLevel, tableUpgradeTarget, tableNextCost, openServices, doorX as doorAt, entranceAt, banketIslands, BANKET, WAITER_STATION, waiterStationOpen } from '../../game/store';
+import { useGame, questFocusPos, LAYOUT, LAVABO, BAND, BAND_SHELL, FLOOR_HALF, wallSpans, servicePlace, stationSoftMaxLevel, stationUpgradeCostAt, stationUpgradeUnlocked, tableSoftMaxLevel, tableUpgradeTarget, tableNextCost, openServices, doorX as doorAt, entranceAt, BANKET, WAITER_STATION, waiterStationOpen } from '../../game/store';
 import { economyConfig, lavaboUpgradeCost } from '../../config/economy.config';
 import { areaOfTable, THE_SERVICE } from '../../game/world';
 import { masterId, masterCost, masterUnlockedForTable, dishStationVisible, cardQuestIndex } from '../../game/rules';
@@ -63,8 +63,8 @@ import {
   MaketUyariSeridi,
   MaketWall,
 } from './maketParts';
-import { banketAday } from '../../game/banketAday';
-import { banketSutunlari, yuzGorunus, YASTIK_RENGI, type BanketSutun } from './banketLook';
+import { banketKademe, banketSutunlari, type BanketSutun } from './banketLook';
+import { banketAdaGeo } from './banketGeo';
 import { CAMERA_FOCUS_MUL, CAMERA_FOV, CAMERA_ZOOM_OUT_MUL, cameraDistance } from '../../config/camera';
 import { perf } from '../../game/perf';
 import { devCam, devTimeScale, devTopDown, useSandbox } from '../../game/devSandbox';
@@ -440,171 +440,36 @@ function KitchenStaff() {
 // B4'te bandın içi açılınca gelecek.
 
 /**
- * BANKET ADALARI (B3-2 — maket v13 adım 6): orta şeridin sırt sırta oturma bankları. İki yüzlü:
- * kaide + gövde, iki yanda oturak minderi, ortada ortak sırtlık ve üstünde ahşap başlık.
- * Ada BOYU birim sayısıyla büyür (`banketIslands`); dış uç sabit kalır, ada içeri doğru uzar —
- * B5 sütun eklediğinde var olan masalar yerinde kalsın diye.
+ * BANKET ADALARI (B3-2 → T7/D-141): orta şeridin sırt sırta oturma bankları. Ada masayla büyür
+ * (her masa kendi yüzünü getirir, iç sütundan dışa) ve TEK kademe taşır — kural `banketLook`,
+ * parçalar `banketGeo`. Ada başına tek mesh; geometri yalnız biçim/kademe değişince kurulur.
  */
-const KONTRPLAK = '#c8a27a';
-const BRANDA = '#b9b4a8';
-const CIPLAK_OTURAK = '#a0714f';
-
-/** T7 aday çizimi: bir sütun (iki yüz + ortak sırtlık). Kol `?banket=&gorunus=` ile seçilir. */
-function BanketSutunu({ s, gorunus }: { s: BanketSutun; gorunus: ReturnType<typeof banketAday>['gorunus'] }) {
-  const L = s.len;
-  const sirtRenk = s.sirt === 'iskelet' ? KONTRPLAK : PALETTE.banketBody;
+function BanketAdasi({ sutunlar, kademe }: { sutunlar: BanketSutun[]; kademe: number }) {
+  const imza = `${kademe}|${sutunlar.map((s) => `${s.col}${+s.yuz[0]}${+s.yuz[1]}`).join(',')}`;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const geo = useMemo(() => banketAdaGeo(sutunlar, kademe), [imza]);
+  useEffect(() => () => geo?.dispose(), [geo]);
+  if (!geo) return null;
   return (
-    <group position={[s.x, 0, BANKET.z]}>
-      <mesh castShadow position={[0, 0.85, 0]}>
-        <boxGeometry args={[L, 0.78, 0.38]} />
-        <meshStandardMaterial color={sirtRenk} />
-      </mesh>
-      <mesh castShadow position={[0, 1.28, 0]}>
-        <boxGeometry args={[L, 0.1, 0.5]} />
-        <meshStandardMaterial color={s.sirt === 'iskelet' ? KONTRPLAK : PALETTE.banketBase} />
-      </mesh>
-      {s.yuzler.map((y) => {
-        if (y.durum === 'yok') return null;
-        const f = y.face;
-        const isk = y.durum === 'iskelet';
-        const g = yuzGorunus(gorunus, y.level);
-        const nYastik = Math.max(1, Math.floor(L / 1.6));
-        return (
-          <group key={f}>
-            <mesh castShadow position={[0, 0.1, f * 0.625]}>
-              <boxGeometry args={[L, 0.2, 1.25]} />
-              <meshStandardMaterial color={isk ? KONTRPLAK : PALETTE.banketBase} />
-            </mesh>
-            <mesh castShadow position={[0, 0.34, f * 0.6]}>
-              <boxGeometry args={[L - 0.02, 0.3, 1.1]} />
-              <meshStandardMaterial color={isk ? KONTRPLAK : PALETTE.banketBody} />
-            </mesh>
-            {isk ? (
-              <>
-                <mesh castShadow position={[0, 0.53, f * 0.72]}>
-                  <boxGeometry args={[L - 0.05, 0.08, 1.12]} />
-                  <meshStandardMaterial color={BRANDA} />
-                </mesh>
-                <MaketDuba pos={[0, 0, f * 1.55]} />
-              </>
-            ) : g.minder ? (
-              <mesh castShadow position={[0, 0.53, f * 0.72]}>
-                <boxGeometry args={[L - 0.1, 0.14, 1.02]} />
-                <meshStandardMaterial color={g.renk} />
-              </mesh>
-            ) : (
-              <mesh castShadow position={[0, 0.5, f * 0.72]}>
-                <boxGeometry args={[L - 0.1, 0.06, 1.02]} />
-                <meshStandardMaterial color={CIPLAK_OTURAK} />
-              </mesh>
-            )}
-            {!isk && g.minder && g.serit
-              ? g.serit.map((c, i) => {
-                  const n = g.serit!.length;
-                  const dz = n === 1 ? 0.44 : -0.36 + (i * 0.72) / (n - 1);
-                  return (
-                    <mesh key={c + i} position={[0, 0.605, f * (0.72 + dz)]}>
-                      <boxGeometry args={[L - 0.12, 0.012, n === 1 ? 0.07 : 0.11]} />
-                      <meshStandardMaterial color={c} />
-                    </mesh>
-                  );
-                })
-              : null}
-            {!isk && g.sirtMinder ? (
-              <mesh castShadow position={[0, 0.88, f * 0.21]}>
-                <boxGeometry args={[L - 0.12, 0.62, 0.12]} />
-                <meshStandardMaterial color={g.renk} />
-              </mesh>
-            ) : null}
-            {!isk && g.yastik
-              ? Array.from({ length: nYastik }, (_, i) => (
-                  <mesh key={i} castShadow position={[-L / 2 + (L / nYastik) * (i + 0.5), 0.86, f * 0.33]}>
-                    <boxGeometry args={[0.46, 0.38, 0.16]} />
-                    <meshStandardMaterial color={YASTIK_RENGI(gorunus, i + (f > 0 ? 0 : 1))} />
-                  </mesh>
-                ))
-              : null}
-          </group>
-        );
-      })}
-    </group>
-  );
-}
-
-function BanketAdaylari() {
-  const tables = useGame((s) => s.tables);
-  const levels = useGame((s) => s.tableLevels);
-  const kol = banketAday();
-  const sutunlar = banketSutunlari(tables, levels, kol.buyume);
-  return (
-    <group>
-      {sutunlar.map((s) => (
-        <BanketSutunu key={`${s.side}:${s.col}`} s={s} gorunus={kol.gorunus} />
-      ))}
-    </group>
+    <mesh geometry={geo} position={[0, 0, BANKET.z]} castShadow>
+      <meshStandardMaterial vertexColors />
+    </mesh>
   );
 }
 
 function BanketIslands() {
   const tables = useGame((s) => s.tables);
-  const islands = banketIslands(tables);
-  if (islands.length === 0) return null;
-  const D = BANKET.depth;
+  const levels = useGame((s) => s.tableLevels);
+  const sutunlar = banketSutunlari(tables);
   return (
     <group>
-      {islands.map((b) => {
-        const L = b.len;
-        // Sırtlık yastıkları: adanın boyuna göre sığdığı kadar, iki yüze şaşırtmalı.
-        const pillows: [number, number][] = [];
-        for (let i = 0; i < Math.max(1, Math.floor(L / 3.0)); i++) {
-          const px = -L / 2 + 1.4 + i * 3.0;
-          if (px > -L / 2 + 0.3 && px < L / 2 - 0.3) pillows.push([px, 0.28]);
-          if (px + 1.5 < L / 2 - 0.4) pillows.push([px + 1.5, -0.28]);
-        }
-        return (
-          <group key={b.side} position={b.center}>
-            {/* kaide */}
-            <mesh castShadow position={[0, 0.1, 0]}>
-              <boxGeometry args={[L, 0.2, D]} />
-              <meshStandardMaterial color={PALETTE.banketBase} />
-            </mesh>
-            {/* gövde */}
-            <mesh castShadow position={[0, 0.34, 0]}>
-              <boxGeometry args={[L - 0.16, 0.3, D - 0.16]} />
-              <meshStandardMaterial color={PALETTE.banketBody} />
-            </mesh>
-            {/* iki yüzün oturak minderleri (y = 0,53 → tabure oturağıyla aynı yükseklik) */}
-            {[0.72, -0.72].map((cz) => (
-              <mesh key={cz} castShadow position={[0, 0.53, cz]}>
-                <boxGeometry args={[L - 0.1, 0.14, 1.02]} />
-                <meshStandardMaterial color={PALETTE.banketCushion} />
-              </mesh>
-            ))}
-            {/* ortak sırtlık + iki yüzünün minderi */}
-            <mesh castShadow position={[0, 0.85, 0]}>
-              <boxGeometry args={[L, 0.78, 0.38]} />
-              <meshStandardMaterial color={PALETTE.banketBody} />
-            </mesh>
-            {[0.21, -0.21].map((cz) => (
-              <mesh key={cz} castShadow position={[0, 0.88, cz]}>
-                <boxGeometry args={[L - 0.12, 0.62, 0.12]} />
-                <meshStandardMaterial color={PALETTE.banketCushion} />
-              </mesh>
-            ))}
-            {/* üst ahşap başlık (adayı bir hacim gibi bitirir) */}
-            <mesh castShadow position={[0, 1.28, 0]}>
-              <boxGeometry args={[L + 0.12, 0.1, 0.5]} />
-              <meshStandardMaterial color={PALETTE.banketBase} />
-            </mesh>
-            {pillows.map(([px, pz]) => (
-              <mesh key={`${px}${pz}`} castShadow position={[px, 0.86, pz]}>
-                <boxGeometry args={[0.46, 0.38, 0.16]} />
-                <meshStandardMaterial color={PALETTE.banketPillow} />
-              </mesh>
-            ))}
-          </group>
-        );
-      })}
+      {([-1, 1] as const).map((side) => (
+        <BanketAdasi
+          key={side}
+          sutunlar={sutunlar.filter((s) => s.side === side)}
+          kademe={banketKademe(tables, levels, side)}
+        />
+      ))}
     </group>
   );
 }
@@ -1504,7 +1369,7 @@ export function Scene() {
       <Street />
       <Walls />
       <Decor />
-      {import.meta.env.DEV && (banketAday().buyume !== 'B0' || banketAday().gorunus !== 'R0') ? <BanketAdaylari /> : <BanketIslands />}
+      <BanketIslands />
       <WaiterStation />
       <Stations />
       <KitchenStaff />

@@ -95,15 +95,8 @@ describe('S13/A — kol B: repoya yalnız bir işe bakan model girdi', () => {
   });
 });
 
-describe('S13/B — açık kalemi kapatan model gerçekten repoda', () => {
-  it('itme barsız kapı prototype-bits içinde ve tek başına gelmedi (kasa + süslü varyant)', () => {
-    const p = 'kaykit-prototype-bits';
-    expect(existsSync(path.join(KOK, p, 'Door_A.gltf'))).toBe(true);
-    // Desen üç kapıyı alıyor: A (kullanılan), A_Decorated ve B (ileride bakılacak varyantlar).
-    expect(modelAdlari(p).sort()).toEqual(['Door_A', 'Door_A_Decorated', 'Door_B']);
-  });
-
-  it('paketten yalnız kapı ailesi alındı — 72 modelin 69u girmedi', () => {
-    expect(modelAdlari('kaykit-prototype-bits').length).toBe(3);
+describe('S13/B → T7 — kabin kapısı paketi söküldü', () => {
+  it('prototype-bits diskte yok: kabin T7de elle çizime geçti (D-141), ölü yük kalmadı', () => {
+    expect(existsSync(path.join(KOK, 'kaykit-prototype-bits'))).toBe(false);
   });
 });

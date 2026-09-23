@@ -6,7 +6,6 @@
  * yerleşimi kullanabilir; store.ts bu modülü yeniden dışa aktarır (eski importlar çalışır).
  */
 import type { Vec3 } from './types';
-import { banketIctenDisa } from './banketAday';
 import { MAX_AREAS, MAX_SERVICES, MAX_WAITERS, THE_SERVICE, areaTableSlots, areaTableStart, tableKindOfArea } from './world';
 import { SEATS_OF_KIND, areaOfTableIndex } from '../config/economy.config';
 import { ACTOR_RADIUS, PLAYER_RADIUS } from '../config/actor';
@@ -243,12 +242,11 @@ export function hasAreaNeighbor(a: number, side: AreaSide): boolean {
  * oturma bankı, ortada ortak sırtlık; her yüzünde ikili masa ve karşısında sandalye. İki ada,
  * ön kümelerle AYNI dikey sütunlarda (x = ∓11,7 · ∓8,5 · ∓5,3).
  *
- * **Adalar TAM BOY doğar (7,6 · maketin ölçüsü), büyüyen şey üstlerindeki MASA sayısıdır.** Önce
- * adaları tek sütunluk (1,2 br) kurup seviyeyle uzatmayı denedim — ekranda 1,2 × 2,5'lik bir kütle
- * banka değil DOLABA benziyor (derinliği boyundan büyük). Bank zaten mekânın sabit donanımıdır;
- * kafede uzayan şey bank değil, bankın önüne dizilen masa sayısıdır. B5'in "var olan masalar yer
- * değiştirmez" sözü aynen duruyor: `banketUnit(u)` u büyüdükçe yalnız YENİ birim üretir, eskiler
- * sabit sütunlarında kalır. (`banketLen` duruyor — B4/B5 farklı boyda bir ada isterse tek kaynak.)
+ * **T7 (G-83, D-141): ada MASAYLA BÜYÜR, ortadan dışa.** B3-2'de adalar şeridin donanımı olarak
+ * ilk masayla tam boy doğuyordu; kullanıcı *"banketler tamamen açık geliyor, sadece masa
+ * ekliyorum … oranın ortasında gelmeli"* dedi. Artık her masa kendi bank YÜZÜNÜ getirir ve şerit
+ * kapı eksenine yakın iç sütundan (∓5,3) dışa doğru dolar. Tek sütun 2,2 br: derinlikten kısa
+ * ama tek yüzde 1,25 derin — ölçüm karesinde dolap değil kısa bank okundu (banket-raporu-t7 B2).
  */
 export const BANKET = {
   /**
@@ -298,14 +296,27 @@ export const BANKET = {
 export const banketLen = (cols: number): number => 2 * BANKET.endPad + (cols - 1) * BANKET.colGap;
 
 /**
- * Banket birimi `u` (a2'nin masa slotu sırası) → hangi ada / sütun / yüz.
- * Sıra: sol adanın iki yüzü → sağ adanın iki yüzü → bir sonraki sütun. Böylece bugünkü dört birim
- * iki adayı da kurar (simetri) ve B5 sütun eklerken ESKİ birimler yerinde kalır.
+ * Sütunun ada boyundaki dilimi, adanın DIŞ ucundan içeri uzaklık olarak [d0, d1]. Sınır iki
+ * masanın tam ortasından geçer; uç sütunlar `endPad` kadar dışa taşar: 0 · 2,2 · 5,4 · 7,6.
+ */
+export function banketColSpan(col: number): [number, number] {
+  const sinir = (k: number) =>
+    k <= 0 ? 0 : k >= BANKET.cols ? banketLen(BANKET.cols) : BANKET.endPad + (k - 0.5) * BANKET.colGap;
+  return [sinir(col), sinir(col + 1)];
+}
+
+/**
+ * Banket birimi `u` (a2'nin masa slotu sırası) → hangi ada / sütun / yüz. `col` adanın DIŞ ucundan
+ * sayılır (0 = ∓11,7); şerit İÇ sütundan (2 = ∓5,3) başlar (T7/D-141).
+ * Sıra: sol adanın iki yüzü → sağ adanın iki yüzü → bir sonraki (daha dış) sütun. Böylece ilk dört
+ * birim iki adayı da kurar (simetri) ve sütun eklenirken açılmış birimler yerinde kalır.
+ * Kayıttaki seviyeler masa İNDEKSİNE bağlı: T7'den önceki kayıtta şerit masaları yer değiştirir,
+ * seviyeleri onlarla taşınır (ilerleme kaybolmaz, migrasyon gerekmez).
  */
 export function banketUnit(u: number): { side: -1 | 1; col: number; face: -1 | 1 } {
   return {
     side: Math.floor(u / 2) % 2 === 0 ? -1 : 1,
-    col: banketIctenDisa() ? BANKET.cols - 1 - Math.floor(u / 4) : Math.floor(u / 4),
+    col: BANKET.cols - 1 - Math.floor(u / 4),
     face: u % 2 === 0 ? 1 : -1,
   };
 }
@@ -386,6 +397,7 @@ export const banketUnitsOpen = (tables: number): number =>
 
 export interface BanketIsland {
   side: -1 | 1;
+  /** Açık (en az bir yüzü masalı) sütun sayısı — iç sütundan dışa bitişik. */
   cols: number;
   len: number;
   /** Görsel merkez (uzun kenar x'te). */
@@ -395,21 +407,32 @@ export interface BanketIsland {
 }
 
 /**
- * O an SAHNEDE olan banket adaları. Şerit açılınca (a2'nin ilk masası) **iki ada birden** tam boyda
- * kurulur: adalar şeridin DONANIMI, masalar ise sonradan gelen içeriktir — bir kafede bank duvarla
- * birlikte vardır, masası olmayan bank boş bir banktır, eksik bir obje değil. Kullanıcının asıl
- * şikâyeti olan boşluğu da bu kapatır: şerit ilk açıldığı anda mobilyalıdır.
+ * O an SAHNEDE olan banket adaları: her ada yalnız masası açılmış sütunlarını taşır (T7/D-141).
+ * Katı ÇİZİLENDEN türer (`feedback_single_source_of_truth`): kısa çizilen adanın boş zemininde
+ * görünmez duvar kalmaz. Şerit iç sütundan dolduğu için açık sütunlar hep bitişiktir.
  */
 export function banketIslands(tables: number): BanketIsland[] {
-  if (banketUnitsOpen(tables) === 0) return [];
-  const len = banketLen(BANKET.cols);
-  return ([-1, 1] as const).map((side) => ({
-    side,
-    cols: BANKET.cols,
-    len,
-    center: [side * (BANKET.outerX - len / 2), 0, BANKET.z] as Vec3,
-    half: [len / 2, BANKET.coreHalf] as readonly [number, number],
-  }));
+  const acik = banketUnitsOpen(tables);
+  const out: BanketIsland[] = [];
+  for (const side of [-1, 1] as const) {
+    let dis: number = BANKET.cols; // açık sütunların en dışı (col küçüldükçe dışa)
+    for (let u = 0; u < acik; u++) {
+      const b = banketUnit(u);
+      if (b.side === side) dis = Math.min(dis, b.col);
+    }
+    if (dis === BANKET.cols) continue;
+    const d0 = banketColSpan(dis)[0];
+    const d1 = banketColSpan(BANKET.cols - 1)[1];
+    const len = d1 - d0;
+    out.push({
+      side,
+      cols: BANKET.cols - dis,
+      len,
+      center: [side * (BANKET.outerX - (d0 + d1) / 2), 0, BANKET.z] as Vec3,
+      half: [len / 2, BANKET.coreHalf] as readonly [number, number],
+    });
+  }
+  return out;
 }
 
 const ALL_TABLES = TABLE_SPOTS.map((t, i) => {
@@ -674,7 +697,9 @@ export const LAYOUT = {
     z2table2: ALL_TABLES[5].table,
     z2table3: ALL_TABLES[6].table,
     z2table4: ALL_TABLES[7].table,
-    zone3: [2.0, 0, 1.8] as Vec3,
+    /* T7 (G-82, D-141): kapı ekseni + eşiğe yakın. Eski (2,0 · 1,8) çerçevesi 6. masanın yükseltme
+       çerçevesine 0,10 br giriyordu; burada iki komşuya da 1,618 br kalır (docs/banket-raporu-t7.md). */
+    zone3: [0.0, 0, 1.2] as Vec3,
     // a2'nin masa pad'leri: alanın ilk slotu açılışla gelir, kalan 11'i pad'lerle (B5a).
     ...Object.fromEntries(
       Array.from({ length: areaTableSlots(2) - 1 }, (_, k) => [

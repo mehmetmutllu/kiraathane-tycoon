@@ -201,15 +201,11 @@ function tumIsaretler(): Array<{ ad: string; pos: Vec3; c: Cerceve; grup: string
 }
 
 /**
- * BİLİNEN VE KABUL EDİLEN TEK ÇAKIŞMA (S24 ölçümü).
- *
- * `zone3` pad'inin çerçevesi masa 6'nın yükseltme noktasıyla 0,382 × 0,100 br örtüşüyor.
- * Kasıtlı bırakıldı, çünkü: (1) bugünkü DAİRE testinde aynı çift 2,3 br'lik yarıçap toplamına
- * karşı 1,773 br mesafeyle çok daha fazla örtüşüyordu — yani çerçeveye geçmek bu çakışmayı
- * YARATMIYOR, küçültüyor; (2) `tick.ts` pad'leri masalardan ÖNCE tarayıp ilk eşleşmede
- * duruyor, yani sonuç belirsiz değil: pad kazanır ve pad alınınca çakışma kendiliğinden biter.
+ * KABUL EDİLEN ÇAKIŞMA YOK. S24'ten beri tek istisna `zone3` pad'i ↔ masa 6'ydı (0,382 × 0,100 br);
+ * T7'de (G-82, D-141) pad kapı eksenine (0 · 1,2) taşındı ve liste boşaldı. Yeniden bir istisna
+ * eklenecekse gerekçesiyle buraya yazılır — ve 9. denetim onun gerçekten durduğunu da sınar.
  */
-const KABUL_EDILEN = new Set(['pad:zone3 ↔ masa6']);
+const KABUL_EDILEN = new Set<string>();
 
 describe('S24 · çerçeveler çakışmıyor ve içinde durulabiliyor', () => {
   it('9 · aynı anda etkin olabilen iki çerçeve örtüşmez (bilinen tek istisna dışında)', () => {
@@ -230,20 +226,16 @@ describe('S24 · çerçeveler çakışmıyor ve içinde durulabiliyor', () => {
     expect(bulunan).toEqual([...KABUL_EDILEN]);
   });
 
-  it('10 · kabul edilen çakışma BÜYÜMEDİ ve eski daire testinden küçük', () => {
-    const zone3 = LAYOUT.padPos.zone3;
-    const masa6 = LAYOUT.tables[6].upgradeSpot;
+  it('10 · G-82: zone3 pad çerçevesi iki komşu masa çerçevesine de ≥ 1,5 br boşluk bırakır', () => {
+    // Ölçüm (docs/banket-raporu-t7.md Bulgu 1): P2 adayı masa 3 ve masa 6'ya eşit 1,618 br.
+    const z = LAYOUT.padPos.zone3;
     const a = padCercevesi(economyConfig.pads.find((p) => p.id === 'zone3')!.label);
-    const b = masaCercevesi(11);
-    const ox = a.hw + b.hw - Math.abs(zone3[0] - masa6[0]);
-    const oz = a.hh + b.hh - Math.abs(zone3[2] - masa6[2]);
-    expect(ox).toBeLessThanOrEqual(0.4);
-    expect(oz).toBeLessThanOrEqual(0.12);
-    // Eski daireler aynı çifte çok daha geniş giriyordu.
-    const d = Math.hypot(zone3[0] - masa6[0], zone3[2] - masa6[2]);
-    expect(d, 'eski testte de çakışıyordu').toBeLessThan(PAD_RADIUS + TABLE_UP_RADIUS);
-    expect(PAD_RADIUS + TABLE_UP_RADIUS - d, 'çerçeve örtüşmesi daireninkinden küçük olmalı')
-      .toBeGreaterThan(Math.max(ox, oz));
+    for (const i of [3, 6]) {
+      const m = LAYOUT.tables[i].upgradeSpot;
+      const b = masaCercevesi(11); // en geniş etiket (eski 10. denetimle aynı)
+      const bosluk = Math.max(Math.abs(z[0] - m[0]) - a.hw - b.hw, Math.abs(z[2] - m[2]) - a.hh - b.hh);
+      expect(bosluk, `masa ${i}`).toBeGreaterThanOrEqual(1.5);
+    }
   });
 
   it('11 · her çerçevenin içinde oyuncunun DURABİLECEĞİ bir nokta var', () => {
