@@ -1,0 +1,136 @@
+<title>T8a Karar Paketi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --zemin:#f6f2ec; --kagit:#fffdf9; --murekkep:#2a211c; --soluk:#6f625a; --cizgi:#e3d9ce;
+  --cay:#a8321f; --cay-acik:#f3dfd8; --iyi:#2f6b45; --iyi-acik:#dcebe0; --kotu:#9a3412; --kotu-acik:#f7e2d7; --not:#8a6a12; --not-acik:#f4ead0;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --zemin:#1b1613; --kagit:#241d19; --murekkep:#efe6dd; --soluk:#b3a598; --cizgi:#3a302a;
+  --cay:#e0735c; --cay-acik:#3b2320; --iyi:#7cc596; --iyi-acik:#1f3327; --kotu:#f09a6b; --kotu-acik:#3a2419; --not:#e2c060; --not-acik:#33291a;
+  color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --zemin:#1b1613; --kagit:#241d19; --murekkep:#efe6dd; --soluk:#b3a598; --cizgi:#3a302a;
+  --cay:#e0735c; --cay-acik:#3b2320; --iyi:#7cc596; --iyi-acik:#1f3327; --kotu:#f09a6b; --kotu-acik:#3a2419; --not:#e2c060; --not-acik:#33291a;
+  color-scheme:dark;}
+body{background:var(--zemin);color:var(--murekkep);font:15px/1.55 "IBM Plex Sans",system-ui,sans-serif}
+.sar{max-width:980px;margin:0 auto;padding-inline:16px;padding-block:28px 60px}
+h1{font:600 clamp(26px,4vw,36px)/1.15 Fraunces,Georgia,serif;margin:0 0 6px;text-wrap:balance}
+h2{font:600 21px/1.25 Fraunces,Georgia,serif;margin:0 0 4px;text-wrap:balance}
+.ust{color:var(--soluk);max-width:68ch;margin:0}
+.etiket{font:500 11px/1 "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--cay)}
+.ozet{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:22px 0 30px}
+.kutu{background:var(--kagit);border:1px solid var(--cizgi);border-radius:6px;padding:14px 16px}
+.kutu b{display:block;font:600 24px/1.1 "IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+.kutu span{color:var(--soluk);font-size:13px}
+section{margin-top:34px;display:grid;gap:10px}
+.soz{border-left:3px solid var(--cay);padding:2px 0 2px 12px;color:var(--soluk);font-style:italic;max-width:72ch;margin:0}
+.tablo{overflow-x:auto;background:var(--kagit);border:1px solid var(--cizgi);border-radius:6px}
+table{border-collapse:collapse;width:100%;min-width:640px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--cizgi);vertical-align:top}
+th{font:500 11px/1.3 "IBM Plex Mono",monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--soluk)}
+tr:last-child td{border-bottom:0}
+td.s{font-family:"IBM Plex Mono",monospace;white-space:nowrap}
+tr.oner td{background:var(--iyi-acik)}
+tr.oner td:first-child{box-shadow:inset 3px 0 var(--iyi)}
+.cip{display:inline-block;font:500 11px/1 "IBM Plex Mono",monospace;padding:4px 7px;border-radius:3px;white-space:nowrap}
+.cip.ok{background:var(--iyi-acik);color:var(--iyi)}
+.cip.x{background:var(--kotu-acik);color:var(--kotu)}
+.cip.n{background:var(--not-acik);color:var(--not)}
+.okuma{max-width:72ch;margin:0}
+.not{background:var(--not-acik);border-radius:6px;padding:12px 16px;max-width:76ch}
+footer{margin-top:40px;color:var(--soluk);font-size:13px}
+code{font:13px "IBM Plex Mono",monospace}
+</style>
+<div class="sar">
+  <p class="etiket">Köşe Kıraathanesi · T8a · 2026-09-23</p>
+  <h1>Zincir sırası ve T3 denge kolları</h1>
+  <p class="ust">Tüm sayılar tam koşu, yürürlükteki oyun üstünde (hedef çarpanı + İtibar + Usta + D-124 tek hedef). Kat 1 = Normal profilde 20. masanın açıldığı an. Hiçbir satır <code>economy.config.ts</code>'e yazılmadı. Yeşil satır önerimdir, seçim senin.</p>
+
+  <div class="ozet">
+    <div class="kutu"><b>6,05 sa</b><span>bugün Kat 1 (T7'de 6,48 sanılıyordu: sim D-124'ü oynamıyordu)</span></div>
+    <div class="kutu"><b>152. dk</b><span>2. garson bugün bu kadar geç geliyor (Salon 3 ortası)</span></div>
+    <div class="kutu"><b>0 fark</b><span>bardak havuzunu 2 katına çıkarmak servise hiçbir şey eklemiyor</span></div>
+    <div class="kutu"><b>−%15,8</b><span>senin 8 isteğinin birleşimi Kat 1'i bu kadar kısaltıyor</span></div>
+  </div>
+
+  <section>
+    <p class="etiket">Soru 1 · Birleşim</p>
+    <h2>İsteklerin hepsi birden mi, 2. salonu geciktirme hariç mi?</h2>
+    <p class="okuma">İsteklerinin paketi: tepsi ₺30 · 4. masa ₺250 · garson 2'li tepsiyle başlar · 2. garson Salon 1 sonunda ₺800 · 2. salondan önce masa seviyesi görevleri · seviye biraz zorlaşır · seviye ödülü ₺ · garson tepsi-3 hatta. <b>Hiçbir eşiği kırmıyor.</b> Ama oyun kısalıyor, çünkü isteklerin çoğu "ucuzlat" diyor. Paradoks: 2. salonu geciktirmek de oyunu kısaltıyor, çünkü erken bahşiş geri kalanı hızlandırıyor.</p>
+    <div class="tablo"><table>
+      <tr><th>kol</th><th>Kat 1</th><th>2. garson</th><th>2. salon</th><th>bulaşıkçı</th><th>en uzun bekleme</th><th>not</th></tr>
+      <tr><td>bugün</td><td class="s">6,05 sa</td><td class="s">152 dk</td><td class="s">34 dk</td><td class="s">60 dk</td><td class="s">29,7 dk</td><td></td></tr>
+      <tr><td>PKT hepsi</td><td class="s">5,09 sa · −%15,8</td><td class="s">41 dk</td><td class="s">45 dk</td><td class="s">53 dk</td><td class="s">30,5 dk</td><td><span class="cip n">%7 içerik eşiği ×2</span></td></tr>
+      <tr class="oner"><td>PK2 geciktirme hariç ✓</td><td class="s">5,58 sa · −%7,7</td><td class="s">29 dk</td><td class="s">39 dk</td><td class="s">58 dk</td><td class="s">30,5 dk</td><td><span class="cip n">eşiğin sınırında</span></td></tr>
+    </table></div>
+    <p class="okuma"><b>Önerim PK2.</b> 2. salonu geciktirme görevleri oyunun yarım saatini tek başına yiyor. PK2 zaten 2. salonu 5 dk geciktiriyor (2. garson görevi araya giriyor). Kat 1'in ~1 saatlik içeriği korunur, bir saat kısalmaz. Hepsini istersen PKT de güvenli; bedeli yalnız süre.</p>
+  </section>
+
+  <section>
+    <p class="etiket">Soru 2 · G-86 zincir</p>
+    <h2>Garson / bulaşıkçı sırası</h2>
+    <div class="tablo"><table>
+      <tr><th>kol</th><th>Kat 1</th><th>eşik</th><th>okuma</th></tr>
+      <tr class="oner"><td>2. garson Salon 1 sonunda · ₺800 ✓</td><td class="s">−%2,1</td><td><span class="cip ok">temiz</span></td><td>"tek garson yetmiyor" haklı: 2. garson 117 dk öne geliyor</td></tr>
+      <tr><td>aynı yer · ₺1.600 (bugünkü fiyat)</td><td class="s">+%2,0</td><td><span class="cip x">30 dk bekleme</span></td><td>fiyat taşınmıyor, yeri taşınıyor</td></tr>
+      <tr class="oner"><td>garson tepsi-3 hatta ✓</td><td class="s">−%2,3</td><td><span class="cip ok">temiz</span></td><td>bugün hiç alınmıyor; bedava kazanç</td></tr>
+      <tr><td>bulaşıkçı Salon 1 sonunda</td><td class="s">+%1,2</td><td><span class="cip ok">temiz</span></td><td>23 dk erken gelir, oyun biraz uzar</td></tr>
+      <tr><td>bulaşıkçı garsondan önce</td><td class="s">+%1,4</td><td><span class="cip x">otomasyon 31 dk</span></td><td>elenir: ilk yardım çok geç gelir</td></tr>
+    </table></div>
+    <p class="okuma"><b>Önerim:</b> garson → bulaşıkçı sırası doğru, dokunulmaz. Yanlış olan tek halka 2. garsonun yeri. Tost (şüphe ④) T8b'de, tezgâhla birlikte.</p>
+  </section>
+
+  <section>
+    <p class="etiket">Soru 3 · Garson tepsisi (G-72)</p>
+    <h2>2'li tepsiyle başlasın mı, tavan nerede dursun?</h2>
+    <div class="tablo"><table>
+      <tr><th>kol</th><th>Kat 1</th><th>tavan</th><th>okuma</th></tr>
+      <tr><td>taban 2, kademeler aynı (2→3→4→5)</td><td class="s">−%4,2</td><td class="s">5</td><td>en güçlü tek kol; garson oyuncuya yaklaşır</td></tr>
+      <tr class="oner"><td>taban 2, ilk kademe düşer (2→3→4) ✓</td><td class="s">−%1,3</td><td class="s">4</td><td>başlangıç şikâyeti çözülür, "garson kısmi yardım" (D-014) korunur</td></tr>
+    </table></div>
+  </section>
+
+  <section>
+    <p class="etiket">Soru 4 · Seviye ödülü (G-67)</p>
+    <h2>Seviye ₺'si açılışı yiyor, kapı gerekiyor</h2>
+    <p class="okuma">İlk seviyeler öğretici görevlerle ilk saniyelerde atlanıyor. Ödül o anda düşerse ilk alım 22 → 3 sn'ye iniyor, otomasyon 6 → 1 dk. İlk 4 seviye yalnız modal olursa (G-66'daki isteğin) açılış birebir korunuyor.</p>
+    <div class="tablo"><table>
+      <tr><th>kol</th><th>Kat 1</th><th>ilk alım</th><th>otomasyon</th><th>12 sa ₺</th></tr>
+      <tr><td>gelirin 60 sn'si, kapısız</td><td class="s">−%3,1</td><td class="s">3 sn</td><td class="s">3,6 dk</td><td class="s">₺3.726</td></tr>
+      <tr class="oner"><td>gelirin 60 sn'si, Seviye 5'ten itibaren ✓</td><td class="s">−%2,4</td><td class="s">22 sn</td><td class="s">6,1 dk</td><td class="s">₺3.482</td></tr>
+      <tr><td>gelirin 120 sn'si, Seviye 5'ten itibaren</td><td class="s">−%4,6</td><td class="s">22 sn</td><td class="s">6,1 dk</td><td class="s">₺7.248</td></tr>
+    </table></div>
+    <p class="okuma">+%2 taşıma ödülü (D-092) kalır. "2× için video izle" düğmesi F3'e (reklam) bağlı, ayrı.</p>
+  </section>
+
+  <section>
+    <p class="etiket">Soru 5 · Yükseltme noktası kapısı (G-61)</p>
+    <h2>Yükseltme noktası yalnız kendi görevi aktifken mi görünsün?</h2>
+    <p class="soz">"çay yükseltmesi ocağı yükseltmesinde görev gelmez. Gelmese bile o yükseltme pedi açık olmasın"</p>
+    <div class="tablo"><table>
+      <tr><th>dünya</th><th>Kat 1</th><th>2. salon</th><th>2. garson</th></tr>
+      <tr><td>bugün: noktalar hep açık, oyuncu ucuz olana basıyor</td><td class="s">−%0,3</td><td class="s">68 dk</td><td class="s">168 dk</td></tr>
+      <tr class="oner"><td>kapı: nokta yalnız kendi görevinde ✓</td><td class="s">±0</td><td class="s">34 dk</td><td class="s">152 dk</td></tr>
+    </table></div>
+    <p class="okuma">Toplam süre aynı. Değişen şey ritim: kapı yokken yan yükseltmelere basan oyuncu 2. salonu iki kat geç açıyor. Kapının bedeli sıfır, kazancı görev hattının tasarlanan sırası.</p>
+  </section>
+
+  <section>
+    <p class="etiket">Karara gerek yok · bilgi</p>
+    <h2>Ölçülüp kapananlar</h2>
+    <div class="tablo"><table>
+      <tr><th>kalem</th><th>sonuç</th></tr>
+      <tr><td>G-76 masa sırası (1111→2222)</td><td>bugünkü tek hedef kuralından %7,3 yavaş, bekleme bandını bozuyor → <b>D-124 kalır</b></td></tr>
+      <tr><td>Bardak havuzu "20 masaya 42"</td><td>havuz ×2 = servis 0 fark; boşta ortalama 18 temiz bardak var. T6'nın "temiz 0" ölçümü araç hatasıydı (dünyada 22 bardak vardı). <b>Dokunulmaz.</b></td></tr>
+      <tr><td>Tepsi ₺30 · 4. masa ₺250</td><td>tempo etkisi ≤ %0,6: yalnız his. İsteğin gibi pakete girdi.</td></tr>
+      <tr><td>Seviye zorlaşsın (taban 60 → 90)</td><td>+%1,5, eşik temiz. Pakete girdi. "İlk 4 seviyede modal" arayüz işi, commit #2'de.</td></tr>
+    </table></div>
+  </section>
+
+  <div class="not" style="margin-top:30px"><b>T8b'ye kalanlar:</b> tost noktasının yeri ve görünüşü (G-85) · tost asset'i (G-90) · bulaşık kuyruğu (K9) · tezgâhın duvar payı (K10). Dördü de tezgâh arkasının aynı ölçü işi.</div>
+
+  <footer>Rapor: <code>docs/zincir-raporu-t8a.md</code> · ham çıktı: <code>docs/olcum-t8a.txt</code>, <code>docs/olcum-bardak-t8.txt</code> · commit #1: <code>aa387c8</code> + <code>e0c9f7b</code></footer>
+</div>

@@ -115,8 +115,7 @@ aynı yönde. İkinci basamak (K5b) neredeyse hiçbir şey eklemiyor.
   25 XP, eşik 60), ödül o anda düşüyor → **ilk alım 22 → 3 sn**. K8c otomasyonu 6,1 → 1,3 dk'ya
   çekiyor; bu D-079'un "öğretici tempo" ruhunu kırar (eşiği sayı olarak kırmasa da). Plan kararı
   (2026-09-18) "D-079 açılış üçlüsünü yemeyecek doz" demişti: **hiçbir doz bunu sağlamıyor.** Yapısal
-  çare: ödül ilk N seviyede kapalı ya da ₺ tavanlı. Kapı ölçülmedi (sonraki tur ya da K8 seçilirse
-  commit #2'den önce ölçülür).
+  çare: ödül ilk N seviyede kapalı → **Bulgu 8'de ölçüldü (K8d/K8e).**
 - Model sınırı: ödül seviye atlandığı an cüzdana düşüyor (oyunda modal kapanınca) → üst sınır.
 
 ### Bulgu 6 — G-61 / K11: kapı Kat 1'i değiştirmiyor, 2. salonun yerini değiştiriyor

@@ -6,6 +6,7 @@
 >
 > Yeni karar paketi / kare üretildiğinde satır BURAYA eklenir.
 
+**T8a KARAR PAKETİ (zincir + T3 denge):** https://claude.ai/artifact/24vke4Lg2CCEj5yuJJJZtV
 **T7 KARAR PAKETİ (banket + Salon 3 pad):** https://claude.ai/artifact/HFDeY7aeKtARrDXVArMfNy · **uygulanan:** `ss/t7-son-{buyume-1,4,8,12 · kademe-0..4 · wc · genel}.png`
 **T7 kareler:** `ss/t7-B{0..4}-{1,3,6,12}.png` · `ss/t7-gorunus-R{1,2,3}-{sol,sag}.png`
 **G1 KARAR PAKETİ (görev şeridi · kareler + sayılar):** https://claude.ai/artifact/F2jowE134dyDnzEQPBsAgy
