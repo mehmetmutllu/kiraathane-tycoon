@@ -85,11 +85,10 @@ export function HUD() {
   const quest = useGame((s) => s.quest);
   const [bitisGorunur, setBitisGorunur] = useState(true);
   const questBitti = quest == null;
+  // Hat yeniden uzarsa (yeni görev eklenirse) bant tekrar hak eder — render sırasında düzeltilir.
+  if (!questBitti && !bitisGorunur) setBitisGorunur(true);
   useEffect(() => {
-    if (!questBitti) {
-      setBitisGorunur(true); // hat yeniden uzarsa (yeni görev eklenirse) bant tekrar hak eder
-      return undefined;
-    }
+    if (!questBitti) return undefined;
     const t = setTimeout(() => setBitisGorunur(false), 5000);
     return () => clearTimeout(t);
   }, [questBitti]);
@@ -128,9 +127,7 @@ export function HUD() {
   // G-14: kapatılan Usta modali, oyuncu O MASADAN uzaklaşana kadar geri açılmaz. D-094'ün
   // "modal her geçişte ekranı keser" endişesinin karşılığı bu — modal geldi, tuzağı gelmedi.
   const [masterKapali, setMasterKapali] = useState<string | null>(null);
-  useEffect(() => {
-    if (!nearMaster) setMasterKapali(null);
-  }, [nearMaster]);
+  if (!nearMaster && masterKapali !== null) setMasterKapali(null);
 
   const lvl = levelProgress(xp);
   const questPct = quest && quest.total != null ? Math.min(100, ((quest.cur ?? 0) / quest.total) * 100) : null;

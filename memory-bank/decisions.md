@@ -4686,3 +4686,15 @@ leğenin arkasında; 1. garson postası payla kayar, 2.si kaymaz (pad çakışma
 (`cleanCups` kayda yazılmıyor). Pres tipi makine hiçbir CC0 pakette yok → ilkelden çizim. `docs/tezgah-raporu-t8b.md`.
 **Sıra kilidi 8. yanlış pozitif:** commit #2 `karma-commit` sayıldı — final tam koşu + rapor §Karar kodla aynı
 commit'te (protokolün istediği); commit #1 `ab57cc9` (karar bölümü boş) + paket `3207de1` push'lu.
+
+---
+
+## D-144 · Açık sorular kapandı: tost aynı tezgâhta · geçişli C1′ 3 dk · T9 iki parça · sıra kilidi düzelir (2026-09-23)
+
+**Karar (kullanıcı, açık sorular sayfası — "zaten çoğu şey seçili onlarla devam et", beşi de önerilen kol):**
+① Tost yeri **A** — aynı tezgâh, L5 tekli / L6 geniş plaka (D-143'teki hâl kalır); F (ayrı modül) kapandı.
+② F3 geçişli **C1′ · 3 dk** — soğuma kurar, panel kapanışı patlatır; ödül ekranlarından sonra asla; banner yok.
+Uygulama Faz F3'te; "İzle, 2× al" onunla açılır. ③ T9 **iki parça**: T9a performans + kod · T9b oynanış taraması.
+④ g1 kolu (garson merdiveni ucuzlatma) **T9a'da varyant olarak ölçülür**. ⑤ Sıra kilidinin yanlış
+pozitifleri (8 tur) **araçta düzeltilir**, bekçiyle kilitlenir.
+Sayfa: https://claude.ai/artifact/KeoLC7rpqJXgVGdRCPvwkd

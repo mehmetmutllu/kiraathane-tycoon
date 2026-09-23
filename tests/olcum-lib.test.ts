@@ -25,7 +25,7 @@ describe('tohum', () => {
     const c = Array.from({ length: 8 }, () => Math.random());
     expect(b).toEqual(a);
     expect(c).not.toEqual(a);
-    for (const x of a) expect(x).toBeGreaterThanOrEqual(0), expect(x).toBeLessThan(1);
+    for (const x of a) { expect(x).toBeGreaterThanOrEqual(0); expect(x).toBeLessThan(1); }
   });
 });
 

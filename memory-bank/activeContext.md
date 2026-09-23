@@ -5,38 +5,42 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-23 — T8b KAPANDI · D-143; sıradaki T9)
+## ŞU AN (2026-09-23 — T9a AÇIK · açık sorular kapandı: A · C1′ 3 dk · iki parça · g1 ölç · kilit düzelt)
 
 ```
-T8b SONUÇ       : sol duvar payı 0,30 → 0,75 · çaycı + bulaşıkçı tezgâhın ARKASINDA · arka şerit oyuncuya
-                  kapalı (`oyuncuKatilari`) · leğen birikir, 10 sn'de TOPTAN yıkanır (`cups.washBatchSec`) ·
-                  Türk tost makinesi (L5 tekli, L6 geniş plaka) · L1 tepsisindeki iki beyaz bardak kalktı
-BEDEL           : geç oyun servis 9,0 → 8,7 (−%3, yayılım bandında); K10'un servis bedeli yok
-KARELER         : docs/gorsel/ss/t8b-final.png · t8b-k10-yanyana.png · t8b-tost-aday.png
+SORU            : T9a — oyun adımı neden ~5 ms, nereye gidiyor; N2 yol önbelleğinin GÜVENLİ politikası var mı;
+                  g1 kolu (garson merdiveni ucuzlatma) D-142 sonrası ne kazandırır? + araç borcu (lint 66, sıra kilidi)
+ÖLÇÜLECEK KOLLAR: tick profili (sistem başına ms) · N2 politikaları (saf / waypoint görünürlük denetimli / süreli) ·
+                  g1 taban vs g1 (tempo ölçütü, Kat 1 süresi)
+SAYILAR         : docs/performans-raporu-t9a.md §Bulgular — tick ×10,1 node (birebir) · telefon kare işi −%21,4 · g1 ETKİSİZ (eski "iyileşme" hat tıkanmasıydı)
+KARAR           : (karar paketi)
+UYGULAMA        : —
+BEKÇİ           : —
+ARAÇ (kapısız)  : sıra kilidi: itilmiş commit #1'i görür + commit #1 dikişini ayırt eder · lint 66 → 0
 ```
+
+Kullanıcının 2026-09-23 cevapları (açık sorular sayfası https://claude.ai/artifact/KeoLC7rpqJXgVGdRCPvwkd):
+tost yeri **A** (aynı tezgâh, D→E — oyundaki hâl kalır, F kapandı) · F3 **C1′ 3 dk** (panel kapanışında,
+ödül ekranından sonra asla; Faz F'de uygulanır) · T9 **iki parça** (T9a perf+kod · T9b oynanış taraması) ·
+g1 **T9a'da ölçülür** · sıra kilidi **düzeltilir**.
 
 ## ⏭️ SIRADAKİ ADIM
 
-1. **Açılışta kullanıcıya SOR (T8b'den kalan):** tost yeri **A (aynı tezgâh, D→E makine — şu an oyunda)** mı,
-   **F (yan tezgâhta ayrı tost modülü)** mı? Kullanıcı *"bilemedim, ya d->e ya da f"* dedi; önce oyunda
-   görsün. F seçilirse iki dönemde yer ölçüsü ister (arka bantta garson postaları batı cebinde) → küçük tur.
-2. Sonra **T9 — G-88 genel tarama** (aşağıdaki sıra).
+T9a: araç borcu (sıra kilidi + lint) → tick profili + N2 + g1 ölçümü → commit #1 → karar paketi.
+Sonra **T9b — oynanış taraması** (bulgu listesi kullanıcıya).
 
 ## AÇIK KALEMLER
-- **g1 kolu (garson merdiveni ucuzlatma) D-142 sonrası ölçütü iyileştiriyor** — elenme gerekçesi düştü;
-  açılacaksa varyant kapısından (tempo-olcutu bekçisi kayda geçirdi).
 - **Seviye ekranının "İzle, 2× al"ı** pasif — F3 (reklam) kararına bağlı.
 - **C kolu ölçülmedi:** "tavan + çıkış payı" (T6). **G-82…G-91**: `docs/geribildirim-oyun-testi-2026-09-21.md`.
-- **F3 (AdMob) kararı HÂLÂ bekliyor** — C1′ önerildi (`docs/reklam-raporu-f3.md`). YouTube Playables
+- **F3 (AdMob) kararı VERİLDİ: C1′ 3 dk** (2026-09-23), uygulama Faz F'de (`docs/reklam-raporu-f3.md`). YouTube Playables
   mağaza yayınından SONRA (adaptör; dış URL yasak: Draco gstatic + troika jsdelivr kapatılmalı).
 - **`npm run lint` 66 hatayla kırmızı** — `tools/` altında, T9.
-- **Sıra kilidi yanlış pozitifleri** (D-133/134/138/139/T6) — aracı düzeltmek kullanıcının kararı.
 
 ## SONRAKİ TURLAR (kullanıcı onaylı sıra)
 1. ~~T6 commit #2~~ ✅ · ~~tarayıcı kayma ölçümü~~ ✅
 2. ~~T7 — banket + pad + WC kabini~~ ✅ D-141
-3. ~~T8a — zincir + T3 denge~~ ✅ D-142 · ~~T8b — tezgâh arkası~~ ✅ D-143 (F sorusu açık)
-4. **T9 — G-88 genel tarama** ← buradan başla (kod + oynanış, ağırlık performans) + N2 yol önbelleği + lint 66 + tick ~5 ms (T6b Bulgu C)
+3. ~~T8a — zincir + T3 denge~~ ✅ D-142 · ~~T8b — tezgâh arkası~~ ✅ D-143 (F kapandı: A)
+4. **T9 — G-88 genel tarama** ← T9a açık, sonra T9b (kod + oynanış, ağırlık performans) + N2 yol önbelleği + lint 66 + tick ~5 ms (T6b Bulgu C)
 5. **Faz F — F3 reklam · F4 IAP · F5 mağaza + G-89 store görseli/videosu (EN SON)**
 
 ---

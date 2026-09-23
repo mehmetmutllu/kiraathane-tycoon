@@ -326,7 +326,7 @@ function uvKume(p: Paket, ad: string): { goz: string; n: number; x: [number, num
   };
   const pr = g.meshes[0].primitives[0];
   const { a: pa, base: pb } = al(pr.attributes.POSITION);
-  const { a: ua, base: ub } = al(pr.attributes.TEXCOORD_0);
+  const { base: ub } = al(pr.attributes.TEXCOORD_0);
   const kume = new Map<string, { n: number; x: [number, number]; z: [number, number] }>();
   for (let i = 0; i < pa.count; i++) {
     const x = bin.readFloatLE(pb + i * 12);

@@ -1,0 +1,119 @@
+<title>Kıraathane Açık Sorular</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --zemin:#f6f2ec; --kagit:#fffdf9; --murekkep:#2a211c; --soluk:#6f625a; --cizgi:#e3d9ce;
+  --cay:#a8321f; --cay-acik:#f3dfd8; --iyi:#2f6b45; --iyi-acik:#dcebe0; --kotu:#9a3412; --kotu-acik:#f7e2d7; --not:#8a6a12; --not-acik:#f4ead0;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --zemin:#1b1613; --kagit:#241d19; --murekkep:#efe6dd; --soluk:#b3a598; --cizgi:#3a302a;
+  --cay:#e0735c; --cay-acik:#3b2320; --iyi:#7cc596; --iyi-acik:#1f3327; --kotu:#f09a6b; --kotu-acik:#3a2419; --not:#e2c060; --not-acik:#33291a;
+  color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --zemin:#1b1613; --kagit:#241d19; --murekkep:#efe6dd; --soluk:#b3a598; --cizgi:#3a302a;
+  --cay:#e0735c; --cay-acik:#3b2320; --iyi:#7cc596; --iyi-acik:#1f3327; --kotu:#f09a6b; --kotu-acik:#3a2419; --not:#e2c060; --not-acik:#33291a;
+  color-scheme:dark;}
+body{background:var(--zemin);color:var(--murekkep);font:15px/1.55 "IBM Plex Sans",system-ui,sans-serif}
+.sar{max-width:980px;margin:0 auto;padding-inline:16px;padding-block:28px 60px}
+h1{font:600 clamp(26px,4vw,36px)/1.15 Fraunces,Georgia,serif;margin:0 0 6px;text-wrap:balance}
+h2{font:600 21px/1.25 Fraunces,Georgia,serif;margin:0 0 4px;text-wrap:balance}
+.ust{color:var(--soluk);max-width:68ch;margin:0}
+.etiket{font:500 11px/1 "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--cay)}
+.ozet{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:22px 0 30px}
+.kutu{background:var(--kagit);border:1px solid var(--cizgi);border-radius:6px;padding:14px 16px}
+.kutu b{display:block;font:600 24px/1.1 "IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+.kutu span{color:var(--soluk);font-size:13px}
+section{margin-top:34px;display:grid;gap:10px}
+.soz{border-left:3px solid var(--cay);padding:2px 0 2px 12px;color:var(--soluk);font-style:italic;max-width:72ch;margin:0}
+.tablo{overflow-x:auto;background:var(--kagit);border:1px solid var(--cizgi);border-radius:6px}
+table{border-collapse:collapse;width:100%;min-width:640px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--cizgi);vertical-align:top}
+th{font:500 11px/1.3 "IBM Plex Mono",monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--soluk)}
+tr:last-child td{border-bottom:0}
+td.s{font-family:"IBM Plex Mono",monospace;white-space:nowrap}
+tr.oner td{background:var(--iyi-acik)}
+tr.oner td:first-child{box-shadow:inset 3px 0 var(--iyi)}
+.cip{display:inline-block;font:500 11px/1 "IBM Plex Mono",monospace;padding:4px 7px;border-radius:3px;white-space:nowrap}
+.cip.ok{background:var(--iyi-acik);color:var(--iyi)}
+.cip.x{background:var(--kotu-acik);color:var(--kotu)}
+.cip.n{background:var(--not-acik);color:var(--not)}
+.okuma{max-width:72ch;margin:0}
+.not{background:var(--not-acik);border-radius:6px;padding:12px 16px;max-width:76ch}
+figure{margin:0;display:grid;gap:6px}
+figure img{display:block;width:100%;height:auto;border:1px solid var(--cizgi);border-radius:6px;background:var(--kagit)}
+figcaption{color:var(--soluk);font-size:13px;max-width:76ch}
+footer{margin-top:40px;color:var(--soluk);font-size:13px}
+code{font:13px "IBM Plex Mono",monospace}
+.soru{background:var(--kagit);border:1px solid var(--cizgi);border-radius:8px;padding:18px 18px 16px;display:grid;gap:10px;margin-top:22px}
+.soru h2{display:flex;gap:10px;align-items:baseline}
+.no{font:600 13px/1 "IBM Plex Mono",monospace;color:#fff;background:var(--cay);border-radius:4px;padding:5px 7px}
+.secenek{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.kol{border:1px solid var(--cizgi);border-radius:6px;padding:10px 12px;display:grid;gap:4px;align-content:start}
+.kol.oner{border-color:var(--iyi);background:var(--iyi-acik)}
+.kol b{font:600 14px/1.3 "IBM Plex Mono",monospace}
+.kol span{font-size:14px}
+.kol small{color:var(--soluk);font-size:13px}
+.ikili{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.cevap{background:var(--not-acik);border-radius:6px;padding:14px 16px;font:14px/1.6 "IBM Plex Mono",monospace;margin-top:28px}
+.cevap b{font-family:"IBM Plex Sans",sans-serif}
+</style>
+<div class="sar">
+  <p class="etiket">Köşe Kıraathanesi · T9 öncesi · 2026-09-23</p>
+  <h1>Açık sorular</h1>
+  <p class="ust">T8b kapandı; T9'a (genel tarama) geçmeden önce beş karar bekliyor. Her soruda yeşil kutu önerim. Cevabını sohbete yaz — örnek biçim en altta.</p>
+
+  <div class="soru">
+    <h2><span class="no">1</span>Tost yeri: aynı tezgâh mı, yan tezgâh mı?</h2>
+    <p class="soz">"bilemedim, ya d->e ya da f" — T8b</p>
+    <div class="ikili">
+      <figure><img src="oyunda.png" alt="Oyunda şu anki hâl: 6. seviyede geniş plakalı Türk tost makinesi çay tezgâhının üstünde, çaycı ve bulaşıkçı tezgâhın arkasında"><figcaption><b>Şu an oyunda (A · D→E):</b> 6. seviye, geniş plaka aynı tezgâhın üstünde.</figcaption></figure>
+      <figure><img src="tost.png" alt="Altı tost adayı: alt satırda D tekli, E ikili makine ve F ayrı tost modülü"><figcaption>Adaylar: alt satırda D, E ve <b>F (ayrı modül)</b>.</figcaption></figure>
+    </div>
+    <div class="secenek">
+      <div class="kol oner"><b>A · aynı tezgâh ✓</b><span>Oyunda olan kalır. L5'te tekli makine, L6'da geniş plaka.</span><small>Ek tur yok. Tek alma noktası; ayrım makineden okunur.</small></div>
+      <div class="kol"><b>F · yan tezgâh</b><span>Çay tezgâhının yanına ayrı tost modülü: makine, tahta, istif.</span><small>En okunur seçenek. Ama iki dönemde yer ölçümü gerekiyor (arka bantta garson postaları batı cebinde), +1 küçük tur.</small></div>
+    </div>
+  </div>
+
+  <div class="soru">
+    <h2><span class="no">2</span>Geçişli reklam: C1′ onaylansın mı?</h2>
+    <p class="okuma">Banner yok (kalıcı kararın). C1′ senin "3 dk'da bir" önerinle Play'in <i>Disruptive Ads</i> kuralını birleştiriyor: <b>sayaç reklamı kurar, panel kapanışı patlatır</b>. Yani oyun ortasında hiç çıkmaz, yalnız Görevler / Hedefler / Mağaza / Karakter / Ayarlar paneli kapanırken çıkar. Ödül ekranlarından (offline, günlük görev, hedef) sonra asla çıkmaz. Seviye ekranındaki "İzle, 2× al" da bu kararla birlikte açılır.</p>
+    <div class="secenek">
+      <div class="kol oner"><b>C1′ · 3 dk ✓</b><span>Panel kapanışında, en az 3 dk arayla.</span><small>Tycoon oyunlarında olağan sıklık.</small></div>
+      <div class="kol"><b>C1′ · 5 dk</b><span>Aynı yerleşim, 5 dk arayla.</span><small>Daha az rahatsız eder, daha az gelir getirir.</small></div>
+      <div class="kol"><b>C0 · hiç yok</b><span>Geçişli yazılmaz; yalnız ödüllü video.</span><small>"Reklamları Kaldır" IAP'sinin satacağı bir şey kalmaz.</small></div>
+    </div>
+  </div>
+
+  <div class="soru">
+    <h2><span class="no">3</span>T9 genel tarama: tek tur mu, iki parça mı?</h2>
+    <p class="okuma">Kapsam: performans (oyun adımı ~5 ms, N2 yol önbelleği), <code>lint</code>'teki 66 hata (hepsi <code>tools/</code>), kod denetimi ve oynanış taraması.</p>
+    <div class="secenek">
+      <div class="kol oner"><b>İki parça ✓</b><span>T9a: performans + kod (ölçüm, N2, lint). T9b: oynanış taraması, bulgu listesi sana gelir.</span><small>Mantık ile görsel/oynanış ayrı; arada yeşil durak.</small></div>
+      <div class="kol"><b>Tek tur</b><span>Hepsi bir oturumda.</span><small>Bağlam dolarsa yarım kalma riski.</small></div>
+    </div>
+  </div>
+
+  <div class="soru">
+    <h2><span class="no">4</span>Garson merdivenini ucuzlatma (g1 kolu) ölçülsün mü?</h2>
+    <p class="okuma">T8a'dan sonra bu kol tempo ölçütünü artık iyileştiriyor (ihlal 3 → 2). Elenme gerekçesi düştü. Uygulamak için önce varyant olarak ölçülmesi gerekiyor.</p>
+    <div class="secenek">
+      <div class="kol oner"><b>T9a'ya ekle ✓</b><span>Performans ölçümüyle aynı turda varyant olarak ölçülür; karar yine sende.</span></div>
+      <div class="kol"><b>Beklet</b><span>Denge dokunulmaz, yayına kadar kalır.</span></div>
+    </div>
+  </div>
+
+  <div class="soru">
+    <h2><span class="no">5</span>Sıra kilidinin yanlış alarmları düzeltilsin mi?</h2>
+    <p class="okuma"><code>npm run sira</code>, kapanışta iki commit sırasını denetliyor; beş turda (D-133, D-134, D-138, D-139, T6) doğru sırayı da hatalı saydı.</p>
+    <div class="secenek">
+      <div class="kol oner"><b>Düzelt ✓</b><span>T9a'da aracı düzelt, bekçi testiyle kilitle.</span><small>Alarm doğruyken de görmezden gelinmesin.</small></div>
+      <div class="kol"><b>Olduğu gibi kalsın</b><span>Yanlış alarmlar elle geçilir.</span></div>
+    </div>
+  </div>
+
+  <div class="cevap"><b>Sohbete böyle yazabilirsin:</b><br>1A · 2 3dk · 3 iki · 4 ekle · 5 düzelt<br><b>ya da yalnızca:</b> hepsi öneri</div>
+  <footer>Kaynaklar: <code>docs/tezgah-raporu-t8b.md</code> · <code>docs/reklam-raporu-f3.md</code> · <code>docs/zincir-raporu-t8a.md</code> · <code>docs/geribildirim-oyun-testi-2026-09-21.md</code></footer>
+</div>

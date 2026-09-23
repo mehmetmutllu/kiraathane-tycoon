@@ -237,6 +237,7 @@ describe('gerçek dosyalar', () => {
   it('biçim kayması veri değişmeden de saptanır (kaçışlı JSON aracın çıktısına eşit değildir)', () => {
     const { durum, ham, onEk, sonEk } = panoOku(html);
     // Türkçe karakterleri \uXXXX'e çevirerek elle-düzenlenmiş panoyu taklit et.
+    // eslint-disable-next-line no-control-regex -- ASCII aralığı (0-127) sınırı, NUL denetimi değil
     const kacisli = ham.replace(/[^\x00-\x7F]/g, (c) => '\\u' + c.charCodeAt(0).toString(16).padStart(4, '0'));
     const kaymis = html.replace(onEk + ham + sonEk, onEk + kacisli + sonEk);
     expect(kacisli).not.toBe(ham); // taklit gerçekten kaydı

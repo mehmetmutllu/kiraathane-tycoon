@@ -54,14 +54,6 @@ const GEO: GeoDunya[] = [
   { ad: 'G8 Salon 2 dolu (8 masa · 2 alan)', masa: 8, alan: 2 },
 ];
 
-/** Izgaranın (x,z) hücresi kapalı mı. */
-const kapali = (g: NavGrid, x: number, z: number): boolean => {
-  const c = Math.floor((x - g.minX) / g.cell);
-  const r = Math.floor((z - g.minZ) / g.cell);
-  if (c < 0 || r < 0 || c >= g.cols || r >= g.rows) return true;
-  return g.blocked[r * g.cols + c] === 1;
-};
-
 /** Arka şerit: duvar ile gövdenin arka yüzü arasında, gövdenin z-boyu boyunca TAM açık sütun sayısı. */
 function arkaSerit(g: NavGrid, arkaYuz: number, z0: number, z1: number): { sutun: number; hucre: number } {
   let sutun = 0;

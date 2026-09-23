@@ -13,7 +13,7 @@
  *                  yalnız `carryRateOf`a biniyordu, `washRateOf`a değil).
  */
 import { describe, it, expect } from 'vitest';
-import { createTickCtx, runTick, type TickCtx } from '../src/game/tick';
+import { createTickCtx, runTick } from '../src/game/tick';
 import { useGame, LAYOUT, servicePlace, parkSpot } from '../src/game/store';
 import {
   economyConfig as C, levelProgress, reputationCarryMult, waiterSpeedFor, dishSpeedFor, playerSpeedFor, xpForLevel,

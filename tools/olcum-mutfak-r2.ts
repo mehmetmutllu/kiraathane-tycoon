@@ -76,7 +76,6 @@ const KOK = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const HUCRE = KISA ? 0.08 : 0.02;
 
 const f2 = (x: number) => x.toFixed(2).replace('.', ',');
-const f3 = (x: number) => x.toFixed(3).replace('.', ',');
 const yuzde = (a: number, b: number) => (b === 0 ? '—' : `%${((100 * a) / b).toFixed(1)}`);
 
 // =============================================================================================
@@ -396,19 +395,6 @@ function bolumB(): BKayit[] {
   for (const d of DONEMLER) {
     const solids = activeSolids(d.tables, d.areasOpen);
     const gs = govdeler(d.areasOpen);
-    // Ölçüm alanı: tüm gövdelerin kutu + çizim birleşimi, 3 br pay.
-    const hepsi: Kutu[] = [];
-    for (const k of gs) {
-      hepsi.push(solidKutu({ c: k.merkez, h: k.half }));
-      hepsi.push(cizimKutusu(k.merkez, k.rot, k.govde));
-      hepsi.push(cizimKutusu(k.merkez, k.rot, takasliGovde(k)));
-    }
-    const alan: Kutu = {
-      minX: Math.min(...hepsi.map((h) => h.minX)) - 3,
-      maxX: Math.max(...hepsi.map((h) => h.maxX)) + 3,
-      minZ: Math.min(...hepsi.map((h) => h.minZ)) - 3,
-      maxZ: Math.max(...hepsi.map((h) => h.maxZ)) + 3,
-    };
     const erisilir = erisilebilirKume(d.tables, d.areasOpen, solids, {
       minX: -FLOOR_HALF,
       maxX: FLOOR_HALF,
@@ -702,7 +688,6 @@ function bolumD(): { sinyaller: number[]; bicimSinyalleri: number[]; maxLevel: n
   const sinyaller: number[] = [];
   const bicimSinyalleri: number[] = [];
   for (let L = 0; L < maxLevel; L++) {
-    const dH = s.bodyStep;
     const r0 = s.renkler[Math.min(L, s.renkler.length - 1)];
     const r1 = s.renkler[Math.min(L + 1, s.renkler.length - 1)];
     const k0 = s.kapaklar[Math.min(L + 1, s.kapaklar.length - 1)];

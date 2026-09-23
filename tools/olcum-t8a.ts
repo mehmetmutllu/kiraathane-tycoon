@@ -78,35 +78,11 @@ function geriAl(): void {
   hedefAkisiAyarla(null);
 }
 
-const pad = (id: string): Pad => {
-  const p = cfg.pads.find((x) => x.id === id);
-  if (!p) throw new Error(`pad yok: ${id}`);
-  return p;
-};
-/** Görevi listeden çıkarıp `sonra` id'li görevin ARKASINA koyar. */
-function gorevTasi(id: string, sonra: string): void {
-  const i = cfg.quests.findIndex((q) => q.id === id);
-  const [q] = cfg.quests.splice(i, 1);
-  const j = cfg.quests.findIndex((x) => x.id === sonra);
-  if (i < 0 || j < 0) throw new Error(`görev yok: ${id} / ${sonra}`);
-  cfg.quests.splice(j + 1, 0, q);
-}
 function gorevEkle(q: Quest, sonra: string): void {
   const j = cfg.quests.findIndex((x) => x.id === sonra);
   if (j < 0) throw new Error(`görev yok: ${sonra}`);
   cfg.quests.splice(j + 1, 0, q);
 }
-/** Pad zincirinde `id`'yi çıkarır (arkasındaki halka `id`'nin önkoşulunu devralır) ve `sonra`nın arkasına bağlar. */
-function padTasi(id: string, sonra: string): void {
-  const p = pad(id);
-  const eskiOnce = (p.requires.prev as string[] | undefined)?.[0];
-  const arkasi = cfg.pads.find((x) => (x.requires.prev as string[] | undefined)?.[0] === id);
-  if (arkasi && eskiOnce) arkasi.requires = { ...arkasi.requires, prev: [eskiOnce] };
-  const yeniArka = cfg.pads.find((x) => x !== p && (x.requires.prev as string[] | undefined)?.[0] === sonra);
-  if (yeniArka) yeniArka.requires = { ...yeniArka.requires, prev: [id] };
-  p.requires = { ...p.requires, prev: [sonra] };
-}
-
 /* ── Yürürlükteki oyun: HRE yığını (D-095) ─────────────────────────────────────────── */
 let seviyeOdulu = 0;
 function yiginKur(): void {

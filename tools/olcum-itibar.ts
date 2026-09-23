@@ -287,7 +287,6 @@ damga('seviyeHesap kopyasi sapmadi', egriDenetimi() === null, egriDenetimi() ?? 
 
 for (const ad of Object.keys(ITIBAR_KOLLARI)) {
   const kol = ITIBAR_KOLLARI[ad];
-  const son = kol.dozlar[kol.dozlar.length - 1];
   const uc = satirlar.filter((r) => r.kol.ad === ad).pop()!;
   if (kol.atilBeklenir) {
     // t0 · r4 · r5: BULGUNUN KENDISI atil kalmalaridir. r4 ayrica ARACIN DENETIMIDIR — kanca

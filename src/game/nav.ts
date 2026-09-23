@@ -188,10 +188,59 @@ export function findNavPath(
   const olc = olcumAcik(); // DEV kapısı `olcum.ts`te (node'da `import.meta.env` yok)
   const t0 = olc ? performance.now() : 0;
   if (korpus) korpusaYaz(grid, start, tx, tz, reach);
-  // A/B KOLU (T5b) — `kolAra` normalde `navPathAra`dır; ölçüm aracı oracle'ı takarsa BU çağrı
-  // eski algoritmayı koşar. Kapalıyken bedel tek referans okumasıdır (dal bile yok).
-  const yol = kolAra(grid, start, tx, tz, reach);
+  const yol = onbellekAcik && kolAra === navPathAra
+    ? onbellektenAra(grid, start, tx, tz, reach)
+    : // A/B KOLU (T5b) — `kolAra` normalde `navPathAra`dır; ölçüm aracı oracle'ı takarsa BU çağrı
+      // eski algoritmayı koşar. Kapalıyken bedel tek referans okumasıdır (dal bile yok).
+      kolAra(grid, start, tx, tz, reach);
   if (olc) olcEkle('findNavPath', performance.now() - t0);
+  return yol;
+}
+
+// ---------------------------------------------------------------------------
+// N2-KESİN — BAŞLANGIÇ HÜCRESİ ANAHTARLI YOL ÖNBELLEĞİ (T9a, ölçüm kolu: varsayılan KAPALI)
+// ---------------------------------------------------------------------------
+/**
+ * T5'in N2'si aktörün yolunu tutuyordu ("waypoint'e yaklaşınca sıradakine geç") → yol bayatlıyor,
+ * duvardan geçen adım %0,1 → %1,9. Bu kol yol değil ÇAĞRI önbelleği: `navPathAra`nın çıktısı
+ * yalnız (ızgara, başlangıç HÜCRESİ, tx, tz, reach)'e bağlıdır — `start` ızgaraya `clampCell` ile
+ * girer, snap de hücreden türer, ızgara kurulduktan sonra değişmez (`getNavGrid` anahtarı değişince
+ * YENİ nesne kurar). Aktör bir hücreyi ~12 karede geçtiği için aynı anahtar ardışık karelerde
+ * tekrarlanır; dönen yol BİREBİR aynıdır, bayat olamaz.
+ *
+ * Dönen dizi paylaşılır: çağıran (`navStep`) yalnız `path[0]`ı OKUR, yazmaz.
+ */
+let onbellekAcik = false;
+let onbellekIzgara: NavGrid | null = null;
+const onbellek = new Map<string, [number, number][] | null>();
+/** Hedef sayısı sınırlı (masa, ocak, leğen, kapı…); büyüme yine de bir tavanla kesilir. */
+const ONBELLEK_TAVAN = 4096;
+
+export function navOnbellekAyarla(acik: boolean): void {
+  onbellekAcik = acik;
+  onbellek.clear();
+  onbellekIzgara = null;
+}
+export const navOnbellekAcik = (): boolean => onbellekAcik;
+
+function onbellektenAra(
+  grid: NavGrid,
+  start: readonly [number, number, number],
+  tx: number,
+  tz: number,
+  reach: number,
+): [number, number][] | null {
+  if (grid !== onbellekIzgara) {
+    onbellek.clear();
+    onbellekIzgara = grid;
+  }
+  const [sc, sr] = clampCell(grid, start[0], start[2]);
+  const anahtar = `${sr * grid.cols + sc}|${tx}|${tz}|${reach}`;
+  const hit = onbellek.get(anahtar);
+  if (hit !== undefined) return hit;
+  const yol = navPathAra(grid, start, tx, tz, reach);
+  if (onbellek.size >= ONBELLEK_TAVAN) onbellek.clear();
+  onbellek.set(anahtar, yol);
   return yol;
 }
 

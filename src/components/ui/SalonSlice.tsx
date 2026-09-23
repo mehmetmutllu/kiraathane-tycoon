@@ -17,6 +17,7 @@ export function FixedCam({ d, ty = 0.45 }: { d: number; ty?: number }) {
     cam.position.set(0, d, d);
     cam.lookAt(0, ty, 0);
     if ('fov' in cam) {
+      // eslint-disable-next-line react-hooks/immutability -- R3F kamerası sahne nesnesi; yerinde ayarlanır
       (cam as { fov: number }).fov = 50;
       cam.updateProjectionMatrix();
     }

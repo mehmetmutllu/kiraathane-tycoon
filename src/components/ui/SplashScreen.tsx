@@ -31,7 +31,8 @@ const YOKLAMA_MS = 100; // ilerleme bu aralıkla OKUNUR (abone olunmaz — gerek
  * çağrısı aynı patlamayı geri getirebiliyordu. Bu düzeltme kaynağı değil YOLU kapatıyor.)
  */
 export function SplashScreen() {
-  const mount = useRef(performance.now());
+  // Açılış anı ilk effect'te damgalanır (render'da `performance.now()` saf değil — react-hooks/purity).
+  const mount = useRef(0);
   const sawLoading = useRef(false);
   const [pct, setPct] = useState(0);
   const [done, setDone] = useState(false);
@@ -39,6 +40,7 @@ export function SplashScreen() {
 
   useEffect(() => {
     if (done) return;
+    if (mount.current === 0) mount.current = performance.now();
     const check = () => {
       const { active, progress } = useProgress.getState();
       if (active) sawLoading.current = true;

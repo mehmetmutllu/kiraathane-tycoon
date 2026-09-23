@@ -18,11 +18,22 @@
  *   C3 turu (3c396db ölçüm → 6fbac30 kod)  → TEMİZ
  *   C4 turu (df7ddee: ölçüm + kod aynı commit'te) → İHLAL  ← D-084'ün doğduğu tur
  *
+ * İKİ YANLIŞ POZİTİF DESENİ KAPANDI (D-144 · T9a — sekiz turda alarm doğru sırayı suçluyordu):
+ *   ① commit #1 karar paketinden önce push'lanıyor → kapanıştaki `@{upstream}..HEAD` menzili onu
+ *     görmüyordu, commit #2 "karma" sayılıyordu. Çare: menzilden GERİYE bakılır (`oncesi`) — durak
+ *     son denge commit'i ya da §Karar'ı dolu bir rapor (önceki tur kapanışı); arada §Karar'ı BOŞ
+ *     bir commit varsa o bu turun commit #1'idir.
+ *   ② commit #1 `tick.ts`e ölçüm DİKİŞİ koymak zorunda (kollar dosyaya yazılmadan ölçülür). Ayırt
+ *     edici işaret protokolün kendisi: raporun §Karar bölümü BOŞ. Böyle bir commit'te `tick.ts` /
+ *     `rules.ts` dokunuşu dikiş sayılır (davranış-nötr olmalı — parmak izi insanın işi); ama
+ *     `economy.config.ts` sayısı dikiş olamaz, orada karma ihlal yine yakalanır.
+ *
  * KULLANIM
  *   node tools/sira-kilidi.mjs                       # push'lanmamış commit'ler (oturumun kendisi)
  *   node tools/sira-kilidi.mjs --menzil=A..B         # geçmiş bir turu denetle
  */
 import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 
 /** Denge = bu üç dosya. Buraya dokunan commit "kod commit'i"dir (CLAUDE.md · varyant kapısı). */
 export const DENGE_DOSYALARI = [
@@ -38,20 +49,36 @@ export const OLCUM_KALIPLARI = [
   /^docs\/.*raporu.*\.md$/,
 ];
 
-export function sinifla(dosyalar) {
+/** Dikiş olamayan denge dosyası: sayı sayıdır. */
+const SAYI_DOSYASI = 'src/config/economy.config.ts';
+
+/**
+ * `kararBos`: commit'teki raporlardan birinin §Karar bölümü boş mu (commit #1'in imzası).
+ * Öyleyse `tick.ts`/`rules.ts` dokunuşu `dikis`e ayrılır, denge sayılmaz.
+ */
+export function sinifla(dosyalar, { kararBos = false } = {}) {
+  const denge = dosyalar.filter((d) => DENGE_DOSYALARI.includes(d));
+  const dikis = kararBos ? denge.filter((d) => d !== SAYI_DOSYASI) : [];
   return {
-    denge: dosyalar.filter((d) => DENGE_DOSYALARI.includes(d)),
+    denge: denge.filter((d) => !dikis.includes(d)),
+    dikis,
     olcum: dosyalar.filter((d) => OLCUM_KALIPLARI.some((r) => r.test(d))),
   };
+}
+
+/** Rapor metninde `§Karar` başlığının altındaki ilk satır "(boş" ile mi başlıyor. */
+export function kararBolumuBos(metin) {
+  const m = /^#+\s*§Karar[^\n]*\n+([^\n]*)/m.exec(metin);
+  return !!m && /^[_*]*\(?\s*boş/i.test(m[1].trim());
 }
 
 /**
  * `commitler` ESKİDEN YENİYE sıralı: `[{ sha, konu, dosyalar }]`.
  * `calismaAgaci`: henüz commit'lenmemiş dosyalar (kapanış commit'ine gidecekler).
  */
-export function siraDenetle(commitler, { calismaAgaci = [] } = {}) {
-  const kayit = commitler.map((c) => ({ ...c, ...sinifla(c.dosyalar) }));
-  const ca = sinifla(calismaAgaci);
+export function siraDenetle(commitler, { calismaAgaci = [], calismaKararBos = false, oncesi = [] } = {}) {
+  const kayit = commitler.map((c) => ({ ...c, ...sinifla(c.dosyalar, c) }));
+  const ca = sinifla(calismaAgaci, { kararBos: calismaKararBos });
   if (ca.denge.length || ca.olcum.length) {
     kayit.push({ sha: '(commit edilmemiş)', konu: 'çalışma ağacı — kapanış commit\'ine gidecek', dosyalar: calismaAgaci, ...ca });
   }
@@ -65,7 +92,11 @@ export function siraDenetle(commitler, { calismaAgaci = [] } = {}) {
   // Kural tek: İLK denge commit'inden önce bir ölçüm commit'i olmalı. "İlk" olması şart —
   // ondan öncekiler tanım gereği dengeye dokunmaz, yani ayrıca elemeye gerek yok. Ölçümü ve
   // kodu aynı commit'e koymak da bu kurala takılır: o commit kendinden önce gelemez.
-  const oncekiOlcum = kayit.slice(0, ilk).filter((k) => k.olcum.length);
+  // `oncesi`: menzilden önce, son denge commit'ine kadar olanlar (push'lanmış commit #1 burada).
+  const oncekiOlcum = [
+    ...oncesi.map((c) => ({ ...c, ...sinifla(c.dosyalar, c) })).filter((k) => k.kararBos && !k.denge.length),
+    ...kayit.slice(0, ilk).filter((k) => k.olcum.length),
+  ];
   const ihlaller = [];
   if (!oncekiOlcum.length) {
     ihlaller.push({
@@ -87,15 +118,36 @@ export function siraDenetle(commitler, { calismaAgaci = [] } = {}) {
 // ---------------------------------------------------------------------------
 const git = (...a) => execFileSync('git', a, { encoding: 'utf8' });
 
-export function menzilOku(menzil) {
-  const satirlar = git('log', '--reverse', '--format=%h %s', menzil).split('\n').filter(Boolean);
-  return satirlar.map((s) => {
-    const bosluk = s.indexOf(' ');
-    const sha = s.slice(0, bosluk);
-    const konu = s.slice(bosluk + 1);
-    const dosyalar = git('show', '--name-only', '--format=', sha).split('\n').map((x) => x.trim()).filter(Boolean);
-    return { sha, konu, dosyalar };
+const raporMu = (d) => /raporu.*\.md$/.test(d);
+
+function commitOku(sha, konu) {
+  const dosyalar = git('show', '--name-only', '--format=', sha).split('\n').map((x) => x.trim()).filter(Boolean);
+  const kararBos = dosyalar.filter(raporMu).some((d) => {
+    try { return kararBolumuBos(git('show', `${sha}:${d}`)); } catch { return false; }   // silinmiş dosya
   });
+  return { sha, konu, dosyalar, kararBos };
+}
+
+const logOku = (...a) => git('log', '--format=%h %s', ...a).split('\n').filter(Boolean).map((s) => {
+  const bosluk = s.indexOf(' ');
+  return commitOku(s.slice(0, bosluk), s.slice(bosluk + 1));
+});
+
+export function menzilOku(menzil) {
+  return logOku('--reverse', menzil);
+}
+
+/**
+ * Menzilin başından geriye — eskiden yeniye. Durak: denge commit'i ya da §Karar'ı DOLU bir rapora
+ * dokunan commit (önceki tur orada kapandı; onun commit #1'i bu tura sayılmaz).
+ */
+export function oncesiOku(menzil, sinir = 30) {
+  const oncesi = [];
+  for (const c of logOku(`-${sinir}`, menzil.split('..')[0])) {
+    if (sinifla(c.dosyalar, c).denge.length || (c.dosyalar.some(raporMu) && !c.kararBos)) break;
+    oncesi.unshift(c);
+  }
+  return oncesi;
 }
 
 export function calismaAgaciOku() {
@@ -113,25 +165,35 @@ if (process.argv[1] && process.argv[1].replace(/\\/g, '/').endsWith('tools/sira-
   };
   let menzil = arg('menzil');
   let calismaAgaci = [];
+  let calismaKararBos = false;
   if (!menzil) {
     let uzak;
     try { uzak = git('rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{upstream}').trim(); }
     catch { console.error('Uzak dal yok — menzil belirlenemedi. `--menzil=A..B` verin.'); process.exit(1); }
     menzil = `${uzak}..HEAD`;
     calismaAgaci = calismaAgaciOku();      // kapanışta henüz commit'lenmemiş kod da sayılır
+    calismaKararBos = calismaAgaci.filter(raporMu).some((d) => {
+      try { return kararBolumuBos(readFileSync(d, 'utf8')); } catch { return false; }
+    });
   }
 
   const commitler = menzilOku(menzil);
-  const s = siraDenetle(commitler, { calismaAgaci });
+  const oncesi = oncesiOku(menzil);
+  const s = siraDenetle(commitler, { calismaAgaci, calismaKararBos, oncesi });
 
   console.log(`SIRA KİLİDİ · menzil ${menzil} · ${commitler.length} commit${calismaAgaci.length ? ` + ${calismaAgaci.length} commit'lenmemiş dosya` : ''}`);
+  for (const k of oncesi.filter((c) => s.oncekiOlcum?.some((o) => o.sha === c.sha))) {
+    console.log(`  ${k.sha}  ${'ÖLÇÜM'.padEnd(12)} ${k.konu}  (menzilden önce)`);
+  }
   for (const k of s.kayit) {
-    const et = [k.olcum.length ? 'ÖLÇÜM' : null, k.denge.length ? 'DENGE' : null].filter(Boolean).join('+') || '—';
+    const et = [k.olcum.length ? 'ÖLÇÜM' : null, k.dikis?.length ? 'DİKİŞ' : null, k.denge.length ? 'DENGE' : null].filter(Boolean).join('+') || '—';
     console.log(`  ${k.sha}  ${et.padEnd(12)} ${k.konu}`);
   }
 
   if (s.durum === 'temiz') {
     console.log(`\n✓ Sıra temiz${s.sebep ? ` — ${s.sebep}` : '.'}`);
+    const dikis = [...new Set(s.kayit.flatMap((k) => k.dikis ?? []))];
+    if (dikis.length) console.log(`  Dikiş (§Karar boş commit'te ${dikis.join(', ')}): davranış-nötr mü — parmak izi rapora yazıldı mı?`);
     if (s.raporlar?.length) console.log(`  Elle bakılacak (araç denetleyemez): ${s.raporlar.join(', ')} §Bulgular'da uygulanan kolun SAYI SATIRI var mı?`);
     process.exit(0);
   }

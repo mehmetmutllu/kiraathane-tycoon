@@ -117,7 +117,7 @@ describe('§O — yükseltme oku kendi bloğunun içinde', () => {
   it('ok, parantez kollarının DİKEY bandına hiç girmiyor', () => {
     // Parantez kolları çerçevenin üst/alt kenarından `KOL` kadar içeri iner (yerel birim: hh = r).
     // Ok etiketle aynı bantta (-0,3 r merkezli) ve boyu OK_GENIS * OK_YUKSEKLIK_ORAN.
-    for (const { label, r } of ISARETLER) {
+    for (const { label } of ISARETLER) {
       void label;
       const okBoy = OK_GENIS * OK_YUKSEKLIK_ORAN; // r biriminde
       const okUst = 0.3 + okBoy / 2; // merkez -0,3 r, yukarı doğru

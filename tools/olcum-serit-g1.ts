@@ -135,8 +135,8 @@ interface Olcum {
 // =============================================================================================
 const CIZELGE_KODU = `(async ({ kol, sen, ADIM, IZLEME }) => {
   // TOHUM. Sayfadaki \`Math.random\` müşteri doğumunu ve bahşişi sürüyor; tohumsuz koşuda AYNI
-  // kolun parmak izi iki koşu arasında değişiyordu (431eba5f ↔ 189a8bbb). O hâlde \"varyant
-  // etkili\" damgası hiçbir şey denetlemez: her kol tabandan farklı çıkar, çünkü her koşu
+  // kolun parmak izi iki koşu arasında değişiyordu (431eba5f ↔ 189a8bbb). O hâlde "varyant
+  // etkili" damgası hiçbir şey denetlemez: her kol tabandan farklı çıkar, çünkü her koşu
   // farklıdır. Kollar aynı dünyayı ölçmek zorunda — tohum bunun için var, üslup için değil.
   let _a = 0x9e3779b9 >>> 0;
   Math.random = function () {
@@ -358,11 +358,11 @@ const DOM_KODU = `(async ({ idler }) => {
   // tarayıcı yedeğiyle ölçeriz ve "0/50 taşma" temiz DEĞİL, KÖR bir sonuç olur. Önce beklenir,
   // sonra yüklendiği DOĞRULANIR ve rapora damga olarak basılır.
   await document.fonts.ready;
-  // \`check()\` sorulan AĞIRLIĞA bakar ve yanıltır (Lilita One yalnız 400 var, \"700\" sorusuna
+  // \`check()\` sorulan AĞIRLIĞA bakar ve yanıltır (Lilita One yalnız 400 var, "700" sorusuna
   // yine de evet diyor). Doğrusu yüklü yüzleri SAYMAK: bant hangi yüzle çizildiyse o listede olur.
   const yuklu = [];
   document.fonts.forEach((f) => { if (f.status === 'loaded') yuklu.push(f.family + ' ' + f.weight); });
-  const ailesi = (el) => getComputedStyle(el).fontFamily.split(',')[0].replace(/['\"]/g, '').trim();
+  const ailesi = (el) => getComputedStyle(el).fontFamily.split(',')[0].replace(/['"]/g, '').trim();
   const fontDurum = {
     yuklu: [...new Set(yuklu)].sort(),
     baslikAile: '',
@@ -450,7 +450,7 @@ const DOM_KODU = `(async ({ idler }) => {
   const toastEl = document.querySelector('[data-testid="notice"]');
   const b = bantEl ? olc(bantEl) : null;
   const tt = toastEl ? olc(toastEl) : null;
-  const ornekBant = document.querySelector('[data-testid=\"quest\"]');
+  const ornekBant = document.querySelector('[data-testid="quest"]');
   if (ornekBant) {
     const bb = ornekBant.querySelector('.band-title');
     const kk = ornekBant.querySelector('.band-kicker');

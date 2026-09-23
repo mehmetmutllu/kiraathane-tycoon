@@ -33,8 +33,13 @@ export interface OlcumKaydi {
  * Vitest vite altında koştuğu için testler bunu göremedi; bekçisi `tests/olcum-dikis.test.ts`.
  *
  * Kapı aç/kapat tarafına alındı: sıcak yol hâlâ TEK boolean okur, üretimde `acik` hiç true olamaz.
+ *
+ * NODE DA AÇABİLİR (T9a): sistem bölüşümü şimdiye kadar yalnız tarayıcıda ölçülebiliyordu; `tsx`
+ * araçlarında `import.meta.env` yok, `olcumAc` sessizce hiçbir şey yapmıyordu. Üretim paketi
+ * tarayıcıda koşar ve orada `process` tanımlı değildir → kapı yine kapalı kalır.
  */
-const DEV = (import.meta as { env?: { DEV?: boolean } }).env?.DEV === true;
+const NODE = typeof (globalThis as { process?: { versions?: { node?: string } } }).process?.versions?.node === 'string';
+const DEV = (import.meta as { env?: { DEV?: boolean } }).env?.DEV === true || NODE;
 
 const kayitlar = new Map<string, OlcumKaydi>();
 let acik = false;

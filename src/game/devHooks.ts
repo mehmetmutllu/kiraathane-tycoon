@@ -7,7 +7,7 @@ import { THE_SERVICE, sellsTost } from './world';
 import { perf, type PerfSnapshot } from './perf';
 import { olcumAc, olcumKapat, olcumOku, type OlcumKaydi } from './olcum';
 import { getNavGrid, solDuvarKoluAyarla, type SolDuvarKolu } from './layout';
-import { navKolAyarla, navKolAdi, navKorpusAc, navKorpusOku, navKorpusKapat } from './nav';
+import { navKolAyarla, navKolAdi, navKorpusAc, navKorpusOku, navKorpusKapat, navOnbellekAyarla, navOnbellekAcik } from './nav';
 import { collectionMult } from './goals';
 import { toastCizilir } from './rules';
 import { dailyViews } from './dailyQuests';
@@ -16,6 +16,8 @@ import { economyConfig, levelProgress, charLevel, lavaboVisitChance, lavaboFee, 
 import type { SaveStats } from './save';
 import type { Vec3 } from './types';
 import type { KabukKipi } from '../config/kabuk';
+
+type NavKolAdi = 'uretim' | 'oracle' | 'onbellek';
 
 /** `__navKorpus.dok()` çıktısı — node'a taşınabilir, JSON-güvenli korpus (T5b). */
 export interface NavKorpusDokum {
@@ -53,9 +55,10 @@ declare global {
       oku: () => Record<string, OlcumKaydi>;
       izgara: () => { cols: number; rows: number; hucre: number; cell: number } | null;
     };
-    /** NAV A/B KOLU (T5b): 'uretim' = T5 sonrası · 'oracle' = T5 öncesi donmuş kopya.
+    /** NAV A/B KOLU (T5b): 'uretim' = T5 sonrası · 'oracle' = T5 öncesi donmuş kopya ·
+     *  'onbellek' = üretim + N2-kesin çağrı önbelleği (T9a).
      *  Argümansız çağrı yalnız TAKILI kolun adını döndürür (damga okuma). */
-    __navKol?: (kol?: 'uretim' | 'oracle') => Promise<'uretim' | 'oracle'>;
+    __navKol?: (kol?: NavKolAdi) => Promise<NavKolAdi>;
     /** NAV KORPUS DÖKÜMÜ (T5b): tarayıcının GERÇEK çağrılarını node'a taşınabilir hâle getirir. */
     __navKorpus?: {
       ac: () => void;
@@ -288,11 +291,13 @@ export function installDevHooks(): void {
   window.__navKol = async (kol) => {
     if (kol === 'oracle') {
       const m = await import('../../tools/nav-oracle');
+      navOnbellekAyarla(false);
       navKolAyarla(m.navPathOracle);
-    } else if (kol === 'uretim') {
+    } else if (kol === 'uretim' || kol === 'onbellek') {
       navKolAyarla(null);
+      navOnbellekAyarla(kol === 'onbellek');
     }
-    return navKolAdi();
+    return navOnbellekAcik() ? 'onbellek' : navKolAdi();
   };
 
   /**

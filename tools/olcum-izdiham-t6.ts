@@ -40,7 +40,6 @@ import { economyConfig } from '../src/config/economy.config';
 import type { NpcState } from '../src/game/types';
 
 const f1 = (x: number) => x.toFixed(1);
-const f2 = (x: number) => x.toFixed(2);
 const tr = (n: number) => Math.round(n).toLocaleString('tr-TR');
 
 const DT = 1 / 60;
@@ -269,10 +268,7 @@ console.log(`  kapi kusagi  : ${buyume(ilk.kapida, son.kapida)}`);
 console.log(`  leaving      : ${buyume(ilk.durum.leaving, son.durum.leaving)}`);
 console.log('');
 
-// Tavanı hesapla: `tick.ts` ile aynı formül (koltuk + 2, taban 8).
 const st = useGame.getState();
-let koltuk = 0;
-for (let i = 0; i < st.tables; i++) koltuk += st.tableLevels[i] !== undefined ? 0 : 0;
 console.log('--- §C TAVAN ---');
 console.log(`  C.npc.maxConcurrent (taban) : ${economyConfig.npc.maxConcurrent}`);
 console.log(`  olculen en yuksek 'sayilan' : ${Math.max(...o.map((x) => x.sayilan))}`);

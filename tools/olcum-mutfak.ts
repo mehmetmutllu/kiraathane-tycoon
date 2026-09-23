@@ -24,10 +24,10 @@ import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { ACTOR_HEIGHT, CAMERA_LOOK_Y, PLAYER_RADIUS } from '../src/config/actor';
 import { CAMERA_DIST, CAMERA_FOV } from '../src/config/camera';
-import { BAND, BAND_SHELL, FLOOR_HALF, LAYOUT, WAITER_STATION, clampToOpenAreas, servicePlace } from '../src/game/layout';
+import { BAND, BAND_SHELL, FLOOR_HALF, WAITER_STATION, clampToOpenAreas, servicePlace } from '../src/game/layout';
 import {
   BACK_Z, CAYCI_TEMPO, COUNTER_TOP_Y, FAYANS, FRONT_Z, FRONT_TOP_Y, KITCHEN_S, KITCHEN_UNITS, LEFT_X, MODULE_W,
-  NATIVE, RIGHT_X, cayciHali, cayciHizCarpani, sinirBolmeleri, unitBox,
+  RIGHT_X, cayciHali, cayciHizCarpani, sinirBolmeleri, unitBox,
 } from '../src/components/three/kitchenLook';
 import { KIP, damga, damgaOzeti, kipBandi } from './olcum-lib';
 

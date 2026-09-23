@@ -32,7 +32,7 @@
 import {
   KIP, KISA, kipBandi, damga, damgaOzeti, yuzdelik, ort, seedRandom,
 } from './olcum-lib';
-import { useGame, LAYOUT, parkSpot, stationSoftMaxLevel, totalCupPool } from '../src/game/store';
+import { useGame, parkSpot, stationSoftMaxLevel, totalCupPool } from '../src/game/store';
 import { D } from '../src/game/decimal';
 import { economyConfig } from '../src/config/economy.config';
 import {

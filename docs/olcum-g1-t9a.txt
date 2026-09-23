@@ -1,0 +1,14 @@
+=== T9a — g1 (taşıma tavanı: tepsi kademeleri görev hattında) D-142 sonrası (tam koşu) ===
+
+g1: TAŞIMA tavanı: görev hattına eksik taşıyıcı kademeleri eklenir
+Hüküm profili İDEALİZE (D-087); Normal gözlem bandı. Şerit = Kat 1 süresi (Normal profil, 20. masa).
+
+doz | kol                          | İdealize aşan | en uzun (İd.)       | Normal aşan | Normal en uzun      | Kat 1 (şerit)     | ilk alım | otomasyon
+  0 | kademe eklenmedi             |             1 | 22.0 dk servis L6   |           3 | 39.9 dk servis L6   | 7.49 sa           |   0.4 dk | 5.2 dk
+  1 | tepsi ₺1200/2500/5000 · hiz 1.5→2 |             1 | 22.0 dk servis L6   |           3 | 39.9 dk servis L6   | 7.65 sa +%2.2     |   0.4 dk | 5.2 dk
+  2 | tepsi ₺1200/2500/5000 · hiz 1.5→2→2.5 |             1 | 22.0 dk servis L6   |           3 | 39.9 dk servis L6   | 7.44 sa −%0.7     |   0.4 dk | 5.2 dk
+
+--- Normal profilde 20 dk`yi aşan alımlar (doz başına) ---
+doz 0: servis L5 23.6 dk · servis L6 39.9 dk · pad: waiter3 21.7 dk
+doz 1: servis L5 23.6 dk · servis L6 39.9 dk · pad: waiter3 21.7 dk
+doz 2: servis L5 23.6 dk · servis L6 39.9 dk · pad: waiter3 21.7 dk

@@ -1,0 +1,37 @@
+=== T9a — tick bölüşümü + N2-kesin (tam koşu) ===
+dünya: geç oyun (bütün pad'ler, masa L4, ocak tavanda) · ısınma 240 sn · kayıt 300 sn · dt 1/60 · tohum 20260923
+sıra ABBA: taban · N2-kesin · N2-kesin · taban (JIT ısınması bir kola yazılmasın)
+
+--- A · tick toplamı (ms/kare) ---
+kol        | p50    | ort    | p95    | NPC ort | servis/dk | parmak izi
+taban      |  3.921 |  4.008 |  5.447 |    58.3 |       7.6 | 5cbc3445
+N2-kesin   |  0.291 |  0.398 |  0.954 |    58.3 |       7.6 | 5cbc3445
+N2-kesin   |  0.290 |  0.404 |  0.978 |    58.3 |       7.6 | 5cbc3445
+taban      |  3.938 |  4.119 |  5.721 |    58.3 |       7.6 | 5cbc3445
+
+--- A · bölüşüm (ms/kare, iki koşunun ortalaması; findNavPath sistemlerin İÇİNDE) ---
+sistem                 | taban ms | pay    | N2 ms   | çağrı/kare taban → N2
+findNavPath            |    3.912 |  %96.3 |   0.281 | 26.85 → 26.85
+npcSystem              |    3.299 |  %81.2 |   0.239 | 1.00 → 1.00
+waiterSystem           |    0.495 |  %12.2 |   0.050 | 1.00 → 1.00
+dishwasherSystem       |    0.153 |   %3.8 |   0.018 | 1.00 → 1.00
+deriveSystem           |    0.010 |   %0.2 |   0.006 | 1.00 → 1.00
+coinSystem             |    0.005 |   %0.1 |   0.003 | 1.00 → 1.00
+revealSystem           |    0.004 |   %0.1 |   0.003 | 1.00 → 1.00
+brewSystem             |    0.002 |   %0.1 |   0.002 | 1.00 → 1.00
+interactionZoneSystem  |    0.002 |   %0.0 |   0.001 | 1.00 → 1.00
+spawnSystem            |    0.002 |   %0.0 |   0.001 | 1.00 → 1.00
+playerMoveSystem       |    0.002 |   %0.0 |   0.001 | 1.00 → 1.00
+dishCycleSystem        |    0.001 |   %0.0 |   0.001 | 1.00 → 1.00
+serveSystem            |    0.001 |   %0.0 |   0.000 | 1.00 → 1.00
+questSystem            |    0.000 |   %0.0 |   0.000 | 1.00 → 1.00
+levelNoticeSystem      |    0.000 |   %0.0 |   0.000 | 1.00 → 1.00
+legenSystem            |    0.000 |   %0.0 |   0.000 | 1.00 → 1.00
+padFillSystem          |    0.000 |   %0.0 |   0.000 | 1.00 → 1.00
+lavaboUpgradeSystem    |    0.000 |   %0.0 |   0.000 | 1.00 → 1.00
+stationUpgradeSystem   |    0.000 |   %0.0 |   0.000 | 1.00 → 1.00
+tableUpgradeSystem     |    0.000 |   %0.0 |   0.000 | 1.00 → 1.00
+(sistem dışı: bağlam+set) |    0.086 |   %2.1 |   0.074 |
+TOPLAM tick            |    4.064 | %100,0 |   0.401 | ×10.13
+
+N2-kesin birebir: EVET — parmak izi aynı

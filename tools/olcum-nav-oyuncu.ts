@@ -241,13 +241,12 @@ function olc(tables: number, areasOpen: number): Sonuc {
   const bil = bilesenler(og);
   const dogus = enYakinAcik(og, hucre(og, LAYOUT.player[0], LAYOUT.player[2]));
   const dogusBil = dogus >= 0 ? bil[dogus] : -1;
-  let bilesen = 0;
   const boyut = new Map<number, number>();
   for (let i = 0; i < bil.length; i++) {
     if (bil[i] < 0) continue;
     boyut.set(bil[i], (boyut.get(bil[i]) ?? 0) + 1);
   }
-  bilesen = boyut.size;
+  const bilesen = boyut.size;
   let cepHucre = 0;
   for (const [b, n] of boyut) if (b !== dogusBil) cepHucre += n;
 

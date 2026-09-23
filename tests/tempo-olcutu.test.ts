@@ -14,10 +14,10 @@
  *   4. D-087 ekonomiye DOKUNMADI — D1'de ölçülen düzeltici kolların sayıları config'e
  *      girmedi (girerlerse bu test söyler; hangi kolun hangi sayı olduğu D1 raporunda).
  *   5. Elenen kolların ELENME GEREKÇESİ yeniden üretilebilir (ölçüm bir kez değil, her
- *      koşuda doğrulanır): g1 ihlali ARTIRIYOR, m1 ATIL, f4 ölçütü tutturuyor.
+ *      koşuda doğrulanır): g1 ETKİSİZ (T9a'da D-142 dünyasına yeniden yazıldı), m1 ATIL, f4 ölçütü tutturuyor.
  */
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { KOLLAR, VARSAYILAN, kolAyarla, onbellekTemizle, milestoneTazele, olcutler, m1Ayarla } from '../tools/simulate';
+import { VARSAYILAN, kolAyarla, onbellekTemizle, milestoneTazele, olcutler, m1Ayarla } from '../tools/simulate';
 import { DENGE_KOLLARI, geriAl } from '../tools/denge-kollari';
 import { economyConfig as C } from '../src/config/economy.config';
 
@@ -116,13 +116,15 @@ describe('3 — D-087 EKONOMİYE dokunmadı (D1`in düzeltici kolları config`e 
 });
 
 describe('4 — elenen kolların gerekçesi yeniden üretilebilir', () => {
-  it('g1 (taşıma tavanı) D-142 SONRASI ölçütü iyileştiriyor — D1`in elenme gerekçesi DÜŞTÜ', { timeout: 90_000 }, () => {
-    // D1'de ikinci doz ihlali ARTIRIYORDU (7 > 6); T7'de eşitlendi (6 = 6). D-142 garson tepsisini
-    // 2'li başlatınca (g1'in kanalının bir kısmı) aynı doz 3 → 2 indiriyor: g1 artık "işe
-    // yaramayan kol" değil, uygulanmamış bir kol. Bekçi bu değişimi kayda geçirir; kol açılacaksa
-    // varyant kapısından geçer (docs/zincir-raporu-t8a.md §Uygulama).
+  it('g1 (taşıma tavanı, D-142 dünyasına yeniden yazıldı) ölçütü DEĞİŞTİRMİYOR ve hattı tıkamıyor', { timeout: 90_000 }, () => {
+    // T8a'dan beri burada "g1 ölçütü iyileştiriyor (3 → 2)" yazıyordu — SAHTEYDİ: bayat kol,
+    // merdivende olmayan kademeleri isteyen görevler ekleyip hattı TIKIYORDU, pahalı alımlar hiç
+    // yapılmadığı için ihlal düşüyor, Kat 1 hiç bitmiyordu (T9a, docs/performans-raporu-t9a.md §B).
+    // Doğru tanımla (tepsi 5 + hız 3) iki doz da tabanla aynı ihlali veriyor; kol ETKİSİZ.
     const o = olc('g1-2', () => DENGE_KOLLARI.g1.uygula(2));
-    expect(o.normalAsan).toBeLessThan(taban().normalAsan);
+    expect(o.serit).toBeDefined(); // hat tıkanırsa Kat 1 biter mi — bayat kolun ölçüm kusuru
+    expect(o.normalAsan).toBe(taban().normalAsan);
+    expect(o.idealAsan).toBe(taban().idealAsan);
   });
 
   it('m1 (akıllı oyuncu taşıyıcıyı yükseltir) ATIL: hiçbir sayıyı değiştirmiyor', { timeout: 90_000 }, () => {

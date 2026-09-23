@@ -157,7 +157,7 @@ describe('mor dil — D-107 palet ve ölçek kilidi', () => {
     // "dördüncü kabartma yok" kuralı bir istisnayla delinmiş olurdu; burada onun `--k3`ten
     // TÜREDİĞİ sayıyla sınanıyor — sapan bir değer bu testi kırar.
     const kok = oku(INDEX);
-    const al = (ad: string) => (kok.match(new RegExp(`--${ad}:\s*([^;]+);`)) ?? [])[1]?.trim() ?? '';
+    const al = (ad: string) => (kok.match(new RegExp(`--${ad}:s*([^;]+);`)) ?? [])[1]?.trim() ?? '';
     const k3 = al('k3');
     const duz = al('k3duz');
     expect(k3, '--k3 tanımlı olmalı').not.toBe('');

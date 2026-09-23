@@ -220,32 +220,33 @@ export const DENGE_KOLLARI: Record<string, DengeKol> = {
     ne: 'TAŞIMA tavanı: görev hattına eksik taşıyıcı kademeleri eklenir',
     birim: '+kademe',
     taban: 0,
-    dozlar: [0, 1, 2, 3],
+    dozlar: [0, 1, 2],
     /* NEDEN GÖREV HATTINDAN, "akıllı oyuncu"dan değil (ölçülerek öğrenildi — bkz. m1 kolu):
      * sim'in oyuncusu görev hattını takip eder, serbest oyun bloğu hat bitmeden neredeyse hiç
      * çalışmaz. Yani taşıyıcı merdiveninin hatta OLMAYAN kademesi hiçbir koşuda satın alınmaz.
-     * Bugünkü hat `waiterTray t2`de (tepsi 3) bitiyor; ÜÇÜNCÜ kademe (₺2.500 → tepsi 4) hattın
-     * hiçbir yerinde yok. Oysa `q_waiter3`in kendi yorumu "arz tavana dayanınca darboğaz
-     * TAŞIMAYA geçer" diyor — hat darboğazı adlandırıyor ama onu açan kademeyi istemiyor.
-     * (ÜÇ KOL tablosunun 20-masa satırı da `waiterTray: 3` varsayıyor; zincir onu teslim etmiyor.)
-     * Kademeler `q_z1allL4` ile `q_stationMax` ARASINA girer — 43,4 dk'lık boşluğun tam önüne. */
+     *
+     * T9a'DA YENİDEN YAZILDI (D-142 dünyasına): D1'deki tanım "tepsi 3'te biten hatta 4. tepsiyi
+     * ekle"ydi. D-142 garsonu 2'li başlattı ve tepsi 4'ü (`q_waiterTray3`, kademe 2) hattın SONUNA
+     * zaten koydu. Eski tanım bunu bilmiyordu: AYNI kimlikle, merdivende OLMAYAN kademeleri (3, 4)
+     * isteyen görevler ekliyordu → hat orada TIKANIYORDU, sonraki pahalı alımlar hiç yapılmıyordu ve
+     * ihlal bu yüzden düşüyordu (Kat 1 hiç bitmiyordu). `tempo-olcutu`nun "g1 artık iyileştiriyor"
+     * kaydı bu tıkanmanın gölgesiydi (`docs/performans-raporu-t9a.md` §B).
+     * Bugün hatta olmayan kademeler: tepsi 5 (doz 1) ve garson hızının 3. basamağı (doz 2). Görevler
+     * `q_waiterTray3`ün hemen ARKASINA girer — önlerindeki sıra değişmez. */
     uygula(n) {
       if (n <= 0) return;
-      const tepsi = [...TABAN.garsonTepsiUcret];
-      if (n >= 2) tepsi.push(5000);                       // 4. kademe: tepsi 5
-      cfg.waiter.trayUpgrades.costs = tepsi;
-      if (n >= 3) {                                        // hız merdivenine 3. kademe
+      cfg.waiter.trayUpgrades.costs = [...TABAN.garsonTepsiUcret, 5000]; // tepsi 5
+      const yeni: typeof cfg.quests = [
+        { id: 'q_g1_tepsi5', kicker: 'GARSON TEPSİSİ', title: "Garsonun tepsisini 5'e çıkar", target: { type: 'waiterTray', tier: TABAN.garsonTepsiUcret.length + 1 }, area: 0, reward: 700 },
+      ];
+      if (n >= 2) {
         cfg.waiter.speedUpgrades.speeds = [...TABAN.garsonHiz, 2.5];
         cfg.waiter.speedUpgrades.costs = [...TABAN.garsonHizUcret, 1200];
+        yeni.push({ id: 'q_g1_hiz3', kicker: 'GARSON', title: 'Garsonu daha da hızlandır', target: { type: 'waiterSpeed', tier: TABAN.garsonHizUcret.length + 1 }, area: 0, reward: 400 });
       }
-      const yeni: typeof cfg.quests = [
-        { id: 'q_waiterTray3', title: "Garsonun tepsisini 4'e çıkar", target: { type: 'waiterTray', tier: 3 }, reward: 500 },
-      ];
-      if (n >= 2) yeni.push({ id: 'q_waiterTray4', title: "Garsonun tepsisini 5'e çıkar", target: { type: 'waiterTray', tier: 4 }, reward: 700 });
-      if (n >= 3) yeni.push({ id: 'q_waiterL3', title: 'Garsonu daha da hızlandır', target: { type: 'waiterSpeed', tier: 2 }, reward: 400 });
       const q = [...TABAN.quests] as typeof cfg.quests;
-      const i = q.findIndex((x) => x.id === 'q_stationMax');
-      q.splice(i, 0, ...yeni);
+      const i = q.findIndex((x) => x.id === 'q_waiterTray3');
+      q.splice(i + 1, 0, ...yeni);
       cfg.quests = q;
     },
     yaz(n) {

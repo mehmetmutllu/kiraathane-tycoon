@@ -29,12 +29,11 @@ import {
 import {
   stationUpgradeUnlocked,
   stationSoftMaxLevel,
-  tableUpgradeUnlockedIn,
   tableUpgradeTarget,
   tableSoftMaxLevel,
   visiblePads,
 } from '../src/game/rules.ts';
-import { deriveWorld, areaOfTable } from '../src/game/world.ts';
+import { deriveWorld } from '../src/game/world.ts';
 import { LAVABO, LAYOUT, servicePlace } from '../src/game/layout.ts';
 import { markerTier, type ActiveStep } from '../src/game/activeStep.ts';
 
@@ -67,7 +66,6 @@ function gateOf(w: Walk): GateState {
 function markersOf(w: Walk): Marker[] {
   const g = gateOf(w);
   const d = deriveWorld(w.padsDone);
-  const tables = d.tables.length;
   const out: Marker[] = [];
 
   for (const p of visiblePads(w.questIdx, g)) {

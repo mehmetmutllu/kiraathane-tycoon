@@ -19,7 +19,6 @@ import {
   NAV_CELL,
   PAD_RADIUS,
   TABLE_UP_RADIUS,
-  activeSolids,
   oyuncuKatilari,
   clampToOpenAreas,
   getNavGrid,

@@ -38,7 +38,7 @@ import { BAND, WAITER_STATION, servicePlace } from '../src/game/layout';
 import { economyConfig } from '../src/config/economy.config';
 import {
   COUNTER_TOP_Y, FAYANS, FRONT_TOP_Y, KITCHEN_S, KITCHEN_UNITS, LEFT_X, MODULE_W,
-  NATIVE, RIGHT_X, modulX, unitBox, type KitchenUnit,
+  RIGHT_X, modulX, unitBox, type KitchenUnit,
 } from '../src/components/three/kitchenLook';
 import { KIP, damga, damgaOzeti, kipBandi, pearson } from './olcum-lib';
 import { bbox } from './model-olc.mjs';
@@ -163,14 +163,12 @@ for (const [, uyeler] of aileler) uyeler.sort((a, b) => (a.olcek - b.olcek) || (
  * bulaşıklığı (h %55) elemiyor; yalnız gömme gözleri eliyor.
  */
 const PARCA_ORAN = 0.4;
-let elenenParca = 0;
 for (const [kok, uyeler] of aileler) {
   if (uyeler.length < 2) continue;
   const enYuksek = Math.max(...uyeler.map((u) => bboxHam(u.ad).boyut[1]));
   const kalan = uyeler.filter((u) => {
     const b = bboxHam(u.ad);
     const parca = b.boyut[1] < enYuksek * PARCA_ORAN && b.mn[1] > enYuksek * 0.5;
-    if (parca) elenenParca++;
     return !parca;
   });
   aileler.set(kok, kalan);

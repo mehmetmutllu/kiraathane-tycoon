@@ -15,7 +15,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { SES_KATALOG, type SesId } from '../src/game/audio';
-import { ORNEKLEME, seslendir } from '../src/game/audioSynth';
+import { seslendir } from '../src/game/audioSynth';
 import { seriKarisim, wav } from './ses-taslak.ts';
 
 // WAV yazici `tools/ses-taslak.ts`te (S17): pano ve olcum de ayni yaziciyi kullaniyor.

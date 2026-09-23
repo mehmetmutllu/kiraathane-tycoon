@@ -64,9 +64,9 @@ function Onizleme({ kind, cap, dirty = 0, food = false }: {
   const trayG = useRef<Group>(null);
   const prevCap = useRef(cap);
   const pop = useRef(0);
-  if (cap > prevCap.current) pop.current = 1;
-  prevCap.current = cap;
   useFrame((st, dt) => {
+    if (cap > prevCap.current) pop.current = 1;
+    prevCap.current = cap;
     const t = st.clock.elapsedTime;
     if (sway.current) {
       // Hafif salınım (`feedback_visual_polish`: animasyon hafif olsun) — gövdenin KENDİ

@@ -214,7 +214,7 @@ export function GroundMarker({
   );
   useEffect(() => () => { bracketMat.dispose(); plateMat.dispose(); }, [bracketMat, plateMat]);
 
-  const gem = useMemo(gemShape, []);
+  const gem = useMemo(() => gemShape(), []);
   const ok = useMemo(() => okShape(OK_GENIS * r), [r]);
   const bracket = useMemo(() => bracketShape(hh * KOL, hh * KALINLIK, hh * KOSE_R), [hh]);
   // Zemin çerçeveden ZEMIN_ICE kadar içeride ve köşeleri parantezle AYNI yarıçapta.
