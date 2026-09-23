@@ -5,23 +5,26 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-23 — T6 tarayıcı ölçümü KAPANDI, sıradaki tur **T7**)
+## ŞU AN (2026-09-23 — T7 AÇIK: G-82 pad çakışması + G-83/G-84 banket kademeli büyüme)
 
 ```
-SORU            : T6 tarayıcıda kareyi ne kadar iyileştirdi? (kullanıcı: "performans ne kadar gelişti")
-SAYILAR         : docs/izdiham-raporu-t6.md §Performansa yansıması · ham docs/olcum-kayma-t6b-*.txt
-SONUÇ           : telefon (4× kısık) iş ms ×1,15, bellek −%22, damga temiz. Masaüstü iki tam koşu da
-                  DAMGALI (ABBA iç yayılım > %25) — yön gösterir, doğrulanmadı. İzdiham kare hızına
-                  bağlı (1/60 büyür · 1/12 ~65'te durur). tick ~5 ms kısıksız → T9.
-KARAR           : yok (ölçüm turu, denge dosyasına dokunulmadı)
+SORU            : (G-82) zone3 pad çerçevesi masa 6'nın yükseltme çerçevesine giriyor — pad nereye?
+                  (G-83/84) banket adası masa açıldıkça BÜYÜSÜN, seviyeyle madde+renk gelişsin — nasıl?
+ÖLÇÜLECEK KOLLAR: G-82 pad yeri adayları (çakışma · durak · kapı hattı) → tools/olcum-pad-t7.ts
+                  G-83 büyüme: B0 taban (tam boy) · B1 sütunla uzar · B2 segment (masa başı modül)
+                  · B3 tadilat iskeleti (tam iz, açılmamış segment çıplak kasa) · B4 segment + içten dışa sıra
+                  G-84 görünüş (segment kendi masasının seviyesini taşır): R1 madde · R2 madde+renk
+                  · R3 madde+kilim — kareler tools/shot-banket-t7.mjs (aynı kadraj, GÖSTEREREK)
+SAYILAR         : docs/banket-raporu-t7.md §Bulgular (boş)
+KARAR           : (adım 3)
+UYGULAMA        : (adım 4)
+BEKÇİ           : (adım 4) — tetik-s24 KABUL_EDILEN boşalır + banket büyüme testi
+DAMGA           : masaüstü damga eşiği değişmez, masaüstü satırı "yön" kalır (kullanıcı 2026-09-23 · b)
 ```
 
-## ⏭️ SIRADAKİ OTURUM BURADAN BAŞLAR
+## ⏭️ SIRADAKİ ADIM
 
-1. **T7 — G-82 pad çakışması + G-83/G-84 banket kademeli büyüme** (tur kartını aç, D-084 sırası;
-   tasarım kanadı GÖSTERİLEREK sorulur).
-2. Başlangıç onayında sor: masaüstü damgası için eşik (%25 · 6 sn dilim) fazla sıkı mı, dilim
-   uzasın mı — yoksa masaüstü satırı "yön" olarak kalsın mı.
+1. Ölç: pad adayları + banket kareleri → commit #1 → tek karar paketi (kareler + sayı tablosu).
 
 ## AÇIK KALEMLER
 - **C kolu ölçülmedi:** "tavan + çıkış payı". Yeni taban S1; S1+S4 servisi −%2,1 kısıyor (rapor §Karar).

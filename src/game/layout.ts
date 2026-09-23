@@ -6,6 +6,7 @@
  * yerleşimi kullanabilir; store.ts bu modülü yeniden dışa aktarır (eski importlar çalışır).
  */
 import type { Vec3 } from './types';
+import { banketIctenDisa } from './banketAday';
 import { MAX_AREAS, MAX_SERVICES, MAX_WAITERS, THE_SERVICE, areaTableSlots, areaTableStart, tableKindOfArea } from './world';
 import { SEATS_OF_KIND, areaOfTableIndex } from '../config/economy.config';
 import { ACTOR_RADIUS, PLAYER_RADIUS } from '../config/actor';
@@ -304,7 +305,7 @@ export const banketLen = (cols: number): number => 2 * BANKET.endPad + (cols - 1
 export function banketUnit(u: number): { side: -1 | 1; col: number; face: -1 | 1 } {
   return {
     side: Math.floor(u / 2) % 2 === 0 ? -1 : 1,
-    col: Math.floor(u / 4),
+    col: banketIctenDisa() ? BANKET.cols - 1 - Math.floor(u / 4) : Math.floor(u / 4),
     face: u % 2 === 0 ? 1 : -1,
   };
 }

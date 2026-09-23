@@ -63,6 +63,8 @@ import {
   MaketUyariSeridi,
   MaketWall,
 } from './maketParts';
+import { banketAday } from '../../game/banketAday';
+import { banketSutunlari, yuzGorunus, YASTIK_RENGI, type BanketSutun } from './banketLook';
 import { CAMERA_FOCUS_MUL, CAMERA_FOV, CAMERA_ZOOM_OUT_MUL, cameraDistance } from '../../config/camera';
 import { perf } from '../../game/perf';
 import { devCam, devTimeScale, devTopDown, useSandbox } from '../../game/devSandbox';
@@ -443,6 +445,106 @@ function KitchenStaff() {
  * Ada BOYU birim sayısıyla büyür (`banketIslands`); dış uç sabit kalır, ada içeri doğru uzar —
  * B5 sütun eklediğinde var olan masalar yerinde kalsın diye.
  */
+const KONTRPLAK = '#c8a27a';
+const BRANDA = '#b9b4a8';
+const CIPLAK_OTURAK = '#a0714f';
+
+/** T7 aday çizimi: bir sütun (iki yüz + ortak sırtlık). Kol `?banket=&gorunus=` ile seçilir. */
+function BanketSutunu({ s, gorunus }: { s: BanketSutun; gorunus: ReturnType<typeof banketAday>['gorunus'] }) {
+  const L = s.len;
+  const sirtRenk = s.sirt === 'iskelet' ? KONTRPLAK : PALETTE.banketBody;
+  return (
+    <group position={[s.x, 0, BANKET.z]}>
+      <mesh castShadow position={[0, 0.85, 0]}>
+        <boxGeometry args={[L, 0.78, 0.38]} />
+        <meshStandardMaterial color={sirtRenk} />
+      </mesh>
+      <mesh castShadow position={[0, 1.28, 0]}>
+        <boxGeometry args={[L, 0.1, 0.5]} />
+        <meshStandardMaterial color={s.sirt === 'iskelet' ? KONTRPLAK : PALETTE.banketBase} />
+      </mesh>
+      {s.yuzler.map((y) => {
+        if (y.durum === 'yok') return null;
+        const f = y.face;
+        const isk = y.durum === 'iskelet';
+        const g = yuzGorunus(gorunus, y.level);
+        const nYastik = Math.max(1, Math.floor(L / 1.6));
+        return (
+          <group key={f}>
+            <mesh castShadow position={[0, 0.1, f * 0.625]}>
+              <boxGeometry args={[L, 0.2, 1.25]} />
+              <meshStandardMaterial color={isk ? KONTRPLAK : PALETTE.banketBase} />
+            </mesh>
+            <mesh castShadow position={[0, 0.34, f * 0.6]}>
+              <boxGeometry args={[L - 0.02, 0.3, 1.1]} />
+              <meshStandardMaterial color={isk ? KONTRPLAK : PALETTE.banketBody} />
+            </mesh>
+            {isk ? (
+              <>
+                <mesh castShadow position={[0, 0.53, f * 0.72]}>
+                  <boxGeometry args={[L - 0.05, 0.08, 1.12]} />
+                  <meshStandardMaterial color={BRANDA} />
+                </mesh>
+                <MaketDuba pos={[0, 0, f * 1.55]} />
+              </>
+            ) : g.minder ? (
+              <mesh castShadow position={[0, 0.53, f * 0.72]}>
+                <boxGeometry args={[L - 0.1, 0.14, 1.02]} />
+                <meshStandardMaterial color={g.renk} />
+              </mesh>
+            ) : (
+              <mesh castShadow position={[0, 0.5, f * 0.72]}>
+                <boxGeometry args={[L - 0.1, 0.06, 1.02]} />
+                <meshStandardMaterial color={CIPLAK_OTURAK} />
+              </mesh>
+            )}
+            {!isk && g.minder && g.serit
+              ? g.serit.map((c, i) => {
+                  const n = g.serit!.length;
+                  const dz = n === 1 ? 0.44 : -0.36 + (i * 0.72) / (n - 1);
+                  return (
+                    <mesh key={c + i} position={[0, 0.605, f * (0.72 + dz)]}>
+                      <boxGeometry args={[L - 0.12, 0.012, n === 1 ? 0.07 : 0.11]} />
+                      <meshStandardMaterial color={c} />
+                    </mesh>
+                  );
+                })
+              : null}
+            {!isk && g.sirtMinder ? (
+              <mesh castShadow position={[0, 0.88, f * 0.21]}>
+                <boxGeometry args={[L - 0.12, 0.62, 0.12]} />
+                <meshStandardMaterial color={g.renk} />
+              </mesh>
+            ) : null}
+            {!isk && g.yastik
+              ? Array.from({ length: nYastik }, (_, i) => (
+                  <mesh key={i} castShadow position={[-L / 2 + (L / nYastik) * (i + 0.5), 0.86, f * 0.33]}>
+                    <boxGeometry args={[0.46, 0.38, 0.16]} />
+                    <meshStandardMaterial color={YASTIK_RENGI(gorunus, i + (f > 0 ? 0 : 1))} />
+                  </mesh>
+                ))
+              : null}
+          </group>
+        );
+      })}
+    </group>
+  );
+}
+
+function BanketAdaylari() {
+  const tables = useGame((s) => s.tables);
+  const levels = useGame((s) => s.tableLevels);
+  const kol = banketAday();
+  const sutunlar = banketSutunlari(tables, levels, kol.buyume);
+  return (
+    <group>
+      {sutunlar.map((s) => (
+        <BanketSutunu key={`${s.side}:${s.col}`} s={s} gorunus={kol.gorunus} />
+      ))}
+    </group>
+  );
+}
+
 function BanketIslands() {
   const tables = useGame((s) => s.tables);
   const islands = banketIslands(tables);
@@ -1402,7 +1504,7 @@ export function Scene() {
       <Street />
       <Walls />
       <Decor />
-      <BanketIslands />
+      {import.meta.env.DEV && (banketAday().buyume !== 'B0' || banketAday().gorunus !== 'R0') ? <BanketAdaylari /> : <BanketIslands />}
       <WaiterStation />
       <Stations />
       <KitchenStaff />

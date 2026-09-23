@@ -1,0 +1,53 @@
+# T7 · G-83/G-84 · banket büyüme kolları (boy/bos/isk = br · mesh = seviye 4)
+# Taban (B0) bugünkü hâl: iki ada tam boy, masa yalnız üstüne dizilir. Görünüş B1-B4: R2.
+# B0 satırının mesh sütunu yeni çizicinin sayımıdır; bugünkü BanketIslands sabit 24 mesh çizer (ada başına 12).
+
+## B0 (R0)
+masa  sutun  boy     bos     isk     mesh
+   1      6   15.2    28.2     0.0     76
+   2      6   15.2    26.0     0.0     76
+   3      6   15.2    23.8     0.0     76
+   4      6   15.2    21.6     0.0     76
+   6      6   15.2    15.2     0.0     76
+   8      6   15.2     8.8     0.0     76
+  12      6   15.2     0.0     0.0     76
+
+## B1 (R2)
+masa  sutun  boy     bos     isk     mesh
+   1      1    2.2     2.2     0.0     11
+   2      1    2.2     0.0     0.0     14
+   3      2    4.4     2.2     0.0     25
+   4      2    4.4     0.0     0.0     28
+   6      3    7.6     0.0     0.0     44
+   8      4   10.8     0.0     0.0     60
+  12      6   15.2     0.0     0.0     88
+
+## B2 (R2)
+masa  sutun  boy     bos     isk     mesh
+   1      1    2.2     0.0     0.0      8
+   2      1    2.2     0.0     0.0     14
+   3      2    4.4     0.0     0.0     22
+   4      2    4.4     0.0     0.0     28
+   6      3    7.6     0.0     0.0     44
+   8      4   10.8     0.0     0.0     60
+  12      6   15.2     0.0     0.0     88
+
+## B3 (R2)
+masa  sutun  boy     bos     isk     mesh
+   1      6   15.2     0.0    28.2     84
+   2      6   15.2     0.0    26.0     84
+   3      6   15.2     0.0    23.8     84
+   4      6   15.2     0.0    21.6     84
+   6      6   15.2     0.0    15.2     86
+   8      6   15.2     0.0     8.8     88
+  12      6   15.2     0.0     0.0     88
+
+## B4 (R2)
+masa  sutun  boy     bos     isk     mesh
+   1      1    2.2     0.0     0.0      8
+   2      1    2.2     0.0     0.0     14
+   3      2    4.4     0.0     0.0     22
+   4      2    4.4     0.0     0.0     28
+   6      3    7.6     0.0     0.0     44
+   8      4   10.8     0.0     0.0     60
+  12      6   15.2     0.0     0.0     88
