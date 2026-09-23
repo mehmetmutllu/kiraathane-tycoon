@@ -50,6 +50,42 @@ export function tableUpgradeUnlockedIn(area: number, g: GateState): boolean {
   return requiresMet(C.tables.upgradeRequiresByArea[area], g);
 }
 
+/** Mekânsal yükseltme noktalarının türleri (servis · masa · lavabo). */
+export type YukseltmeNoktasi = 'station' | 'table' | 'lavabo';
+
+/**
+ * T8a / D-142 (G-61) — YÜKSELTME NOKTASI YALNIZ KENDİ GÖREVİ AKTİFKEN CANLI; hat bitince hepsi.
+ * Kullanıcı: *"görev gelmese bile o yükseltme pedi açık olmasın"*. Pad'lerde bu kural zaten vardı
+ * (`visiblePads` — ekranda tek pad); yükseltme noktaları görevden bağımsız açık duruyordu.
+ *
+ * ÖLÇÜM (`docs/zincir-raporu-t8a.md` Bulgu 6): kapısız dünyada parası yeten ucuz noktaya basan
+ * oyuncu Kat 1'i aynı sürede bitiriyor ama 2. salonu İKİ KAT geç açıyor (34 → 68 dk). Kapının
+ * tempo bedeli sıfır; kazancı görev hattının tasarlanan ritmi. Masa noktasının HANGİ masada
+ * olduğunu yine `tableUpgradeTarget` söyler (D-124) — bu kapı yalnız "şu an canlı mı" der.
+ * Çizen (Scene), tetikleyen (tick) ve bildiren (revealKeys) üçü de bunu okur.
+ */
+export function upgradeSpotLive(kind: YukseltmeNoktasi, questIndex: number): boolean {
+  const q = questIndex < C.quests.length ? C.quests[questIndex] : null;
+  if (!q) return true;
+  switch (q.target.type) {
+    case 'stationLevel': return kind === 'station';
+    case 'tableLevel':
+    case 'tablesAtLevel': return kind === 'table';
+    case 'lavaboLevel': return kind === 'lavabo';
+    default: return false;
+  }
+}
+
+/**
+ * T8a / D-142 (G-67) — SEVİYE ₺ ÖDÜLÜ: seviye `levelRewardFromLevel`'dan önce 0; sonrasında
+ * son `levelRewardSec` saniyede kazanılan ₺ (`sonKazanc`). "O anki ekonomi ne kadar
+ * gerektiriyorsa" cümlesinin ölçülen karşılığı (K8d); sabit bir ₺ tablosu değil.
+ */
+export function levelRewardAmount(level: number, sonKazanc: number): number {
+  if (level < C.xp.levelRewardFromLevel) return 0;
+  return Math.max(0, Math.floor(sonKazanc));
+}
+
 /**
  * H2 / D-124 — MASA YÜKSELTMELERİNİN SIRASI: aynı anda **TEK** masanın noktası canlıdır.
  * Başlanan masa ₺ tavanına varmadan sıradaki açılmaz.
@@ -209,6 +245,11 @@ export const cardQuestIndex = (q: QuestCardState): number =>
 
 /** Görev geçiş penceresi açık mı (kutlama + boşluk). Ekran kanalları bunu okur. */
 export const questInTransition = (q: Pick<QuestCardState, 'questPhase'>): boolean => q.questPhase !== 'active';
+
+/** D-142: yükseltme noktası ŞU AN canlı mı — görev geçiş penceresinde hiçbiri (G-60: kutlama
+ *  sürerken yeni hedef belirmez), sonra aktif görevin türü. Çizen de tetikleyen de bunu okur. */
+export const upgradeSpotLiveNow = (q: QuestCardState, kind: YukseltmeNoktasi): boolean =>
+  !questInTransition(q) && upgradeSpotLive(kind, q.questIndex);
 
 /** stationLevel'in demleme hız (throughput) çarpanı — çay/dk; fiyatı DEĞİL. */
 export function brewThroughputMult(level: number): number {
@@ -406,6 +447,17 @@ export interface ActiveSpot {
 
 /** Yeni-özellik bildirimi (D-019 §4): bir özellik İLK kez açılınca beliren kısa toast (ttl = kalan sn).
  *  kind → HUD'daki SVG rozeti seçer (emoji yok — UI game-feel kuralı). */
+/** D-142 (G-66/G-67): seviye atlama ÖDÜL EKRANI (transient). Aynı anda birden çok seviye atlanırsa
+ *  tek ekranda birikir: `level` en son seviye, `amount` ₺'lerin toplamı. */
+export interface LevelUpOdul {
+  level: number;
+  /** ₺ ödülü (Seviye `levelRewardFromLevel`'dan önce 0). "Al"a basınca cüzdana geçer. */
+  amount: number;
+  /** Atlamadan ÖNCEKİ ve SONRAKİ taşıma bonusu (oran) — ekran stat'ın geçişini gösterir (D-128). */
+  carryBefore: number;
+  carryAfter: number;
+}
+
 export interface GameNotice {
   text: string;
   ttl: number;
@@ -446,6 +498,7 @@ export function revealKeys(
   g: GateState,
   areasOpen: number,
   stationLevels: number[],
+  questIndex = Number.POSITIVE_INFINITY,
 ): [string, string, RVec3 | null][] {
   const out: [string, string, RVec3 | null][] = [];
   const pre = (a: number) => (a === 0 ? '' : `Salon ${a + 1}: `);
@@ -454,7 +507,7 @@ export function revealKeys(
   // söylerdi (salonun kapısı açık olabilir ama sıra henüz o salona gelmemiş olabilir; geldiğinde
   // de canlı masa alanın ilk masası olmayabilir). H1'in dersi burada da geçerli: tetik de,
   // bildirim de ÇİZİLEN şeyden türer.
-  const hedefMasa = tableUpgradeTarget(g);
+  const hedefMasa = upgradeSpotLive('table', questIndex) ? tableUpgradeTarget(g) : null;
   if (hedefMasa != null) {
     const a = areaOfTable(hedefMasa);
     if (a < areasOpen)
@@ -463,7 +516,7 @@ export function revealKeys(
   // Servis noktası TEK (B2) → tek reveal anahtarı, alan döngüsünün dışında. Metin seviyeye göre
   // konuşur: L4'e kadar "çay ocağı", sonrası "tezgâh" (tek merdiven, iki kimlik).
   const lv = stationLevels[THE_SERVICE] ?? 0;
-  if (stationUpgradeUnlocked(g) && lv < stationSoftMaxLevel())
+  if (stationUpgradeUnlocked(g) && lv < stationSoftMaxLevel() && upgradeSpotLive('station', questIndex))
     out.push([
       `upgrade:${THE_SERVICE}`,
       isCounter(lv) ? 'Yeni: Tezgâhı yükseltebilirsin 🍞' : 'Yeni: Çay ocağını yükseltebilirsin ☕',

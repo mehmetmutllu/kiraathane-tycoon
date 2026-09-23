@@ -5,47 +5,40 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-23 — T8a AÇIK · adım 2 ÖLÇ)
-
-T8 ikiye bölündü (`feedback_task_splitting`): **T8a = sayı** (G-86 zincir · T3 K1-K8 · K11 · bardak
-havuzu) · **T8b = mekân/görsel** (G-85 tost noktası · G-90 tost asset'i · K9 bulaşık kuyruğu · K10
-tezgâh duvar payı — üçü de tezgâh arkasının aynı ölçü dondurma işi).
+## ŞU AN (2026-09-23 — T8a KAPANDI · D-142; sıradaki T8b)
 
 ```
-SORU            : zincirin hangi halkası yerinde değil (G-86) ve T3'ün fiyat/doz kolları yürürlükteki
-                  oyunda (HRE + D-124 tek hedef) tempoya ne ödüyor? Bardak havuzu bağlıyor mu?
-ÖLÇÜLECEK KOLLAR: K3a/b/c 2. garson yeri · D1/D2 bulaşıkçı yeri · W3 garson tepsi-3 hatta · K5a/b
-                  2. salonu geciktir · K1a/b tepsi T1 · K2a/b garson tepsi tabanı · K4a/b 4. masa ·
-                  K6T/K6B masa sırası · K7a/b seviye eğrisi · K8a/b/c seviye ₺ · K11 dürtüsel oyuncu ·
-                  B0-B2/Y1-Y2 havuz × yıkama (oyunun tick'i)
-SAYILAR         : docs/zincir-raporu-t8a.md §Bulgular (olcum-t8a.txt · olcum-bardak-t8.txt)
-KARAR           : (adım 3)
-UYGULAMA        : (adım 4)
-BEKÇİ           : (adım 4)
+T8a SONUÇ       : 2. garson Salon 1 sonunda ₺800 · garson 2'li tepsi (tavan 4) · tepsi T1 ₺30 ·
+                  4. masa ₺250 · seviye tabanı 90 · garson tepsi-3 görevi · seviye ₺ (Sv 5'ten, son
+                  60 sn'nin kazancı) + seviye ÖDÜL EKRANI · yükseltme noktası yalnız kendi görevinde ·
+                  kayıt v34 · 2. garson pad'i (−10,5 · 9,75)
+BEDEL           : Kat 1 6,05 → 5,58 sa (−%7,7), eşikler temiz; K5b (2. salonu geciktir) SEÇİLMEDİ
+YAN BULGU       : sim D-124'ü oynamıyordu (T8a'dan beri taban tek hedef) · bardak havuzu bağlamıyor ·
+                  T6 aracının havuzu 22'ydi (42 değil) · D1'in g1 kolu artık iyileştiriyor (3 → 2)
+KARELER         : docs/gorsel/ss/t8a-{garson2-pad,seviye-odul}.png
 ```
 
 ## ⏭️ SIRADAKİ ADIM
 
-1. Tam koşular → rapor §Bulgular → commit #1 (karar bölümü boş) → TEK karar paketi.
+1. **T8b** turunu aç: tezgâh arkası — G-85 tost noktası (ayrı obje mi, aynı merdiven mi) + G-90 tost
+   asset'i (KayKit önce; yoksa ikinci paket TEKLİF edilir) + K9 bulaşık kuyruğu + K10 tezgâhın duvar
+   payı (kullanıcı: *"duvardan çıkmasın"*, en küçük yeterli açıklık). Görsel çatalda adayları aynı
+   kadrajda göster (`feedback_show_dont_ask`).
 
 ## AÇIK KALEMLER
-- **C kolu ölçülmedi:** "tavan + çıkış payı". Yeni taban S1; S1+S4 servisi −%2,1 kısıyor (rapor §Karar).
-- **KORUNUM çözünürlük sınırında** (rapor Bulgu 6) — S1 artık taban, soru kapandı sayılabilir.
-- ~~T5 araçlarının `dunyaKur`u `stationLevels` yazmıyor~~ → 2026-09-23 düzeldi (ocak tavanda; eski çıktılar seviye-0 dünyadan).
-- **G-82…G-91**: `docs/geribildirim-oyun-testi-2026-09-21.md`. G-89 yayından hemen önce.
-- **F3 (AdMob) kararı HÂLÂ bekliyor** — C1′ önerildi (`docs/reklam-raporu-f3.md`). Reklam/kayıt
-  katmanını adaptörle kur: **YouTube Playables** mağaza yayınından SONRA denenecek (kullanıcı
-  2026-09-23; davetle giriş, AdMob/IAP orada yasak → `ytgame.ads`/`saveData`; dış URL yasak:
-  drei Draco gstatic + troika font yedeği jsdelivr kapatılmalı).
+- **g1 kolu (garson merdiveni ucuzlatma) D-142 sonrası ölçütü iyileştiriyor** — elenme gerekçesi düştü;
+  açılacaksa varyant kapısından (tempo-olcutu bekçisi kayda geçirdi).
+- **Seviye ekranının "İzle, 2× al"ı** pasif — F3 (reklam) kararına bağlı.
+- **C kolu ölçülmedi:** "tavan + çıkış payı" (T6). **G-82…G-91**: `docs/geribildirim-oyun-testi-2026-09-21.md`.
+- **F3 (AdMob) kararı HÂLÂ bekliyor** — C1′ önerildi (`docs/reklam-raporu-f3.md`). YouTube Playables
+  mağaza yayınından SONRA (adaptör; dış URL yasak: Draco gstatic + troika jsdelivr kapatılmalı).
 - **`npm run lint` 66 hatayla kırmızı** — `tools/` altında, T9.
 - **Sıra kilidi yanlış pozitifleri** (D-133/134/138/139/T6) — aracı düzeltmek kullanıcının kararı.
-- **T6b worktree** `../kiraathane-t6once` silindi; gerekirse kurulum `tools/olcum-kayma-t6b.mjs` başlığında.
-- ~~`progress.md` 86 KB~~ → 2026-09-23 kesildi (8,5 KB), tam metin `arsiv/progress-tamamlanan.md` sonunda.
 
 ## SONRAKİ TURLAR (kullanıcı onaylı sıra)
 1. ~~T6 commit #2~~ ✅ · ~~tarayıcı kayma ölçümü~~ ✅
 2. ~~T7 — banket + pad + WC kabini~~ ✅ D-141
-3. **T8 — G-85 tost/çay mimarisi + G-90 tost asset'i + G-86 zincir denetimi + T3 denge + bardak havuzu** ← buradan başla
+3. ~~T8a — zincir + T3 denge~~ ✅ D-142 · **T8b — tezgâh arkası (G-85 · G-90 · K9 · K10)** ← buradan başla
 4. **T9 — G-88 genel tarama** (kod + oynanış, ağırlık performans) + N2 yol önbelleği + lint 66 + tick ~5 ms (T6b Bulgu C)
 5. **Faz F — F3 reklam · F4 IAP · F5 mağaza + G-89 store görseli/videosu (EN SON)**
 

@@ -119,8 +119,8 @@ export const m1Ayarla = (v: boolean): void => { m1 = v; };
  * kapı açıkken dürtüsel oyuncu = sadık oyuncu (taban). Kol, kapısız dünyanın en kötü ucunu
  * ölçer: görev hattı sürerken parası yeten en ucuz yan kalemi (masa seviyesi · karakter ·
  * garson) HER SEFERİNDE alır. */
-export let garsonTepsiTabani = 1;
-export const garsonTepsiTabaniAyarla = (v: number): void => { garsonTepsiTabani = v; };
+export let garsonTepsiTabani: number | null = null; // null = oyunun değeri (`waiter.trayBase`, D-142)
+export const garsonTepsiTabaniAyarla = (v: number | null): void => { garsonTepsiTabani = v; };
 export let durtusel = false;
 export const durtuselAyarla = (v: boolean): void => { durtusel = v; };
 
@@ -601,7 +601,7 @@ function carryRateOf(s: State, oyuncusuz = false): number {
   // D6 r6 kolu: İtibar taşıma kapasitesini büyütürse buraya biner (kanca kapalıyken 1).
   // D7 e6: Usta'nın PERSONEL kolu da aynı kanala biner (garson · bulaşıkçı · karakter statları) —
   // darboğaz dağılımı kelepçenin zamanın %91'inde burada olduğunu söylüyor.
-  const ham = (player + waiters * carrierRate(garsonTepsiTabani + s.waiterTray, wSpeed, dist, ara))
+  const ham = (player + waiters * carrierRate((garsonTepsiTabani ?? C.waiter.trayBase) + s.waiterTray, wSpeed, dist, ara))
     * itibarSimdiki.tasima * ustaSimdiki.tasima;
   return M.k1a ? ham * carryRealization(w.tables.length) : ham;
 }
@@ -1024,6 +1024,9 @@ function trySpend(s: State): void {
       default:
         break; // sayaç görevi: para harcamaz, altta serbest oyun sürsün
     }
+    // D-142 (G-61): oyunda yükseltme noktaları yalnız kendi görevinde canlı → hat sürerken
+    // serbest alım YOK. (Kapısız dünyanın oyuncusu `durtusel` kolu; yukarıda, bu satırdan önce.)
+    return;
   }
 
   // SERBEST OYUN (hat bitti ya da aktif görev para istemiyor): önce servis merdiveni
@@ -1448,7 +1451,12 @@ const GEC_OYUN_PADS = ['table2', 'table3', 'waiter', 'table4', 'zone2', 'z2table
  * seviyesi, aynı garson kademeleri, karakter yükseltmesi YOK) — ölçümde oyuncu yoktur, bu yüzden
  * modelin taşıma tavanı da OYUNCUSUZ hesaplanır. Tek fark modelin kendisidir.
  */
-const ZINCIR_IDS = C.pads.map((p) => p.id);
+/* D-142 (T8a): ölçümler ESKİ dünyada alındı — o gün 2. garson Salon 3'teydi ve garson tepsisi
+ * `1 + kademe`ydi. Senaryolar bugünkü config'ten kurulsaydı G2'ye ölçülmemiş bir 2. garson ve her
+ * senaryoya bir bardak fazla tepsi girerdi: model başka bir dünyayı tahmin eder, sapma sahte
+ * büyürdü (%12 → %35). Ölçülen dünya sabitlenir; modelin kendisi değişmeden kalır. */
+const ZINCIR_IDS = GEC_OYUN_PADS;
+const OLCUM_TEPSI_TABANI = 1;
 const zincireKadar = (son: string): string[] => {
   const i = ZINCIR_IDS.indexOf(son);
   if (i < 0) throw new Error(`pad yok: ${son}`);
@@ -1478,6 +1486,16 @@ export const GERCEK: GercekSenaryo[] = [
 
 /** Senaryonun model tahmini (müşteri/dk) — oyuncusuz, o an açık kollarla. */
 export function modelDebisi(g: GercekSenaryo): number {
+  const onceki = garsonTepsiTabani;
+  garsonTepsiTabani = onceki ?? OLCUM_TEPSI_TABANI;
+  try {
+    return modelDebisiGovde(g);
+  } finally {
+    garsonTepsiTabani = onceki;
+  }
+}
+
+function modelDebisiGovde(g: GercekSenaryo): number {
   const padsDone = zincireKadar(g.sonPad);
   const st: State = {
     t: 0, wallet: 0, lifetime: 999999, stationLevels: [g.stationLevel], tableLevel: g.tableLevel,

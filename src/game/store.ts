@@ -134,6 +134,7 @@ import {
   computeOfflineEarned,
   type ActiveSpot,
   type GameNotice,
+  type LevelUpOdul,
   type QuestView,
   type CamFocus,
   tableThemeUnlocked,
@@ -171,7 +172,7 @@ export {
   questCounterValue,
   questFocusPos,
 } from './rules';
-export type { ActiveSpot, GameNotice, QuestView, QuestCtx, CamFocus } from './rules';
+export type { ActiveSpot, GameNotice, LevelUpOdul, QuestView, QuestCtx, CamFocus } from './rules';
 
 import { createTickCtx, runTick } from './tick';
 
@@ -315,6 +316,11 @@ export interface GameState {
   notice: GameNotice | null;
   /** Bekleyen toast kuyruğu (transient): bitiş/reveal/seviye sırayla gösterilir, birbirini ezmez. */
   noticeQueue: GameNotice[];
+  /** D-142: seviye atlama ödül ekranı (transient; "Al" basılınca ₺ cüzdana geçer). */
+  levelUp: LevelUpOdul | null;
+  /** D-142: seviye ₺'sinin kazanç izi — `lifetime` örnekleri (transient, `tick.ts` yazar). */
+  gelirIzi: number[];
+  gelirIziT: number;
   /** Bu oturumda zaten bildirilmiş reveal anahtarları (transient; init'te açık olanlarla doldurulur). */
   revealSeen: string[];
   /** Kalıcı eylem sayaçları (quest + arka-plan reveal şartları; v16 persist). */
@@ -410,6 +416,8 @@ export interface GameState {
   focusDish: () => void;
   /** Hedef ödülünü topla (D3/D-089). Toplanabilir değilse hiçbir şey yapmaz ve `false` döner. */
   claimGoal: (id: string) => boolean;
+  /** D-142: seviye ödül ekranını kapatır ve ₺'yi cüzdana geçirir. */
+  claimLevelUp: () => void;
   /** D-093: USTA basamağını 💎 ile satın al. Kimlik `masterId()` kalıbında (`table:3`). */
   buyMaster: (id: string) => boolean;
   /** D8: bugünün bir günlük görevinin 💎 ödülünü al. Eşik doğrulaması `dailyQuests.ts`te. */
@@ -489,6 +497,9 @@ export const useGame = create<GameState>((set, get) => ({
   activeSpot: null,
   notice: null,
   noticeQueue: [],
+  levelUp: null,
+  gelirIzi: [],
+  gelirIziT: 0,
   revealSeen: [],
   stats: defaultStats(),
   goalsClaimed: [],
@@ -655,6 +666,9 @@ export const useGame = create<GameState>((set, get) => ({
       activeSpot: null,
       notice: null,
       noticeQueue: [],
+  levelUp: null,
+  gelirIzi: [],
+  gelirIziT: 0,
       // revealSeen baseline: yüklemede ZATEN açık olan özellikler bildirilmiş sayılır (yeniden yükleme spam'ı yok).
       revealSeen: revealKeys(
         {
@@ -770,6 +784,9 @@ export const useGame = create<GameState>((set, get) => ({
         activeSpot: c.activeSpot,
         notice: c.notice,
         noticeQueue: c.noticeQueue,
+        levelUp: c.levelUp,
+        gelirIzi: c.gelirIzi,
+        gelirIziT: c.gelirIziT,
         revealSeen: c.revealSeen,
         stats: c.stats,
         daily,
@@ -842,6 +859,18 @@ export const useGame = create<GameState>((set, get) => ({
    * saklanacak bir alan yok: kayıt sürümü ARTMADI. XP de verilir — hedef, görev hattı gibi bir
    * ilerleme olayıdır.
    */
+  claimLevelUp: () => {
+    const s = get();
+    if (!s.levelUp) return;
+    const amount = s.levelUp.amount;
+    set({
+      levelUp: null,
+      wallet: amount > 0 ? s.wallet.add(amount) : s.wallet,
+      lifetime: amount > 0 ? s.lifetime.add(amount) : s.lifetime,
+    });
+    if (amount > 0) get().saveNow();
+  },
+
   claimGoal: (id) => {
     const s = get();
     const odul = claimGoalReward(id, goalMetricsOf(s), s.goalsClaimed ?? []);

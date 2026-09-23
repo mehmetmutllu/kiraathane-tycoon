@@ -5,6 +5,23 @@
  "kart": 68,
  "gunluk": [
   {
+   "tarih": "17.09.2026",
+   "etiket": "Faz R · 3. oturum (R3 — HUD çerçeveleri — D-128)",
+   "baslik": "Bir kusuru kaldırmak, <b>onun üstündeki</b> kusuru kaldırmaz",
+   "govde": "Kullanıcı seviye madalyonunda iki şey gördü: yıldız <i>&#34;yarım duruyor&#34;</i> ve <i>&#34;arkada bir çizgi var&#34;</i>. Yıldızı kaldırdık — <b>çizgi durdu</b>. Sebep bambaşkaydı: <code>-webkit-text-stroke</code> köşeleri <b>MITER</b> birleştiriyor ve Lilita One&#39;ın sivri &#34;4&#34;ünün tepesinde 5 px&#39;lik kontur ekrana bir <b>mızrak</b> olarak çıkıyordu. Dört kalınlık sınandı (5 · 4 · 3 · 2,5): 3 px&#39;te uç kayboluyor, konturun işi duruyor. Aynı 56 px&#39;te <b>iki ayrı kusur üst üste</b> duruyordu; biri diğerini gizliyordu.<br><br><b>Ödül satırında da kalabalığın adresi yanlış konmuştu.</b> &#34;Çok fazla işaret var&#34; şikâyeti kelimeyi kısaltmakla kapanmadı: asıl sorun sayının <b>cılızlığı</b>ydı — %0,4 tek başına hiçbir şey hissettirmiyor. Dış referanslar da bunu söylüyor (Idle Miner <i>&#34;Double Cash forever&#34;</i>, Idle Restaurant <i>&#34;%30 Profit Boost&#34;</i>: sayı kütleli, kelime gündelik). Çözüm sayıyı büyütmek değil <b>stat&#39;ı oynatmak</b> oldu: ekran artık <b>%3,2 → %3,6</b> yazıyor.<br><br><b>Ve kullanıcının sorduğu her çatal bir seçim değil.</b> <i>&#34;Yan yana mı alt alta mı bilemedim&#34;</i> bir zevk sorusu gibi duruyordu; ölçüm yan yana kolunun 999.99M + 12.34K&#39;da ekranı <b>42,7 px aştığını</b> gösterdi. Kol seçime sunulmadan elendi, sebebi kullanıcıya yazıldı.",
+   "maddeler": [
+    "<b>D-128 · A4:</b> kaydırıcıda kesik olan çizgi değil <b>köşeydi</b> (çizgi oranı 1,000) — üst köşe <b>4,00 → −1,00 px</b>, sol hizasızlık <b>4,00 → 0,00</b>. Açıklığın yarısı satırın değil <code>.sheet-pad</code>&#39;in <code>gap</code>&#39;iydi",
+    "<b>A2 elendi:</b> kapalı çerçeve köşeyi kapatır ama satırı <b>karta</b> çevirir — kaydırıcı bir üstteki anahtarın kardeşi değil <b>çocuğu</b>",
+    "<b>B2:</b> FPS katmanı + anahtarı + <code>showFps</code> alanı gitti; <b>saveVersion artmadı</b>, eski kayıttaki alan sessizce düşüyor (bekçi bunu koşuyor)",
+    "<b>C1 + K3:</b> ödüller ayrı eleman ve alt alta; bonus satırı delta değil <b>toplamın geçişini</b> yazıyor, ikonsuz. Satır oranı <b>0,969 → 0,591</b>",
+    "<b>G + C:</b> rozet kapsüle girdi — üst şerit <b>69,0 → 56,0 px</b> tek satır; madalyondan yıldız kalktı, disk kendi tokenına açıldı (<code>--madalyon</code>)",
+    "<b>F kese:</b> D-106&#39;nın kutusuzluğu geri alındı — kutusuz kolda geçirme <b>0,979/0,999</b> (zemin sahnenin oynamasını bire bir üstleniyordu), hapta <b>0,317/0,292</b>",
+    "Bekçi: <code>hud-r3</code> (7 den.) + <code>ekran-kabugu §5</code> yeni karara göre <b>yeniden yazıldı</b> · <code>mutasyon-hud-r3</code> <b>12/12 kırmızı</b>",
+    "<b>M6 ilk turda KAÇTI:</b> bekçi geçişin yalnız sağ ucunu tutuyordu — sol uç deltaya dönünce ekran hem artışı hem toplamı vaat ediyordu. İki uç da denetleniyor",
+    "vitest <b>1252 ✓</b> · duman <b>45/45 ✓</b> · konsol hatası 0"
+   ]
+  },
+  {
    "tarih": "16.09.2026",
    "etiket": "Faz R · 2. oturum (R2 — mutfak yerleşimi + çarpışma — D-127)",
    "baslik": "Bir ölçü <b>dünya</b> ekseninde üretilip <b>yerel</b> eksende tüketilirse, hata yalnız dönüşün sıfır olmadığı dönemde görünür",

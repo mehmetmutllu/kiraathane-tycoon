@@ -15,8 +15,9 @@ import { activeQuestIndex, completedQuestIds } from './questProgress';
  * kapısının commit denetimini boşuna tetikliyordu).
  *
  * 31 → 32: `questIndex: number` yerine `questsDone: string[]` (+ tabanın sahibi `questBaseId`).
+ * 33 → 34: garson tepsi kademesinin ANLAMI değişti (D-142: taban 1 → 2, ilk kademe düştü).
  */
-export const SAVE_VERSION = 33;
+export const SAVE_VERSION = 34;
 
 const KEY = 'kiraathane.save';
 
@@ -296,17 +297,36 @@ export function resetKeepingSettings(raw: Record<string, unknown>): SaveData {
  * eklenir ve oyuncu bugüne kadarki her şeyiyle devam eder. CLAUDE.md: *"şema değişince eski
  * kayıt migrate edilir; ilerleme kaybolmaz."*
  */
-function migrateV32(raw: Record<string, unknown>): SaveData | null {
+function migrateV32(raw: Record<string, unknown>): Record<string, unknown> | null {
   if (raw.saveVersion !== 32) return null;
   return {
     ...defaultSave(),
     ...(raw as object),
-    saveVersion: SAVE_VERSION,
+    saveVersion: 33,
     kitchenTheme: typeof raw.kitchenTheme === 'string' ? raw.kitchenTheme : 'klasik',
-  } as SaveData;
+  };
 }
 
-function migrateV31(raw: Record<string, unknown>): SaveData | null {
+/**
+ * MİGRASYON v33 → v34 (T8a · D-142) — garson tepsisi 2'li başlıyor.
+ *
+ * Kapasite = taban + kademe. Taban 1 → 2 oldu ve ₺400'lük ilk kademe merdivenden düştü (tavan
+ * yine 4). Kayıtta yalnız KADEME durur; aynı sayı yeni tabanla bir fazla kapasite demek olurdu.
+ * Göç kademeyi bir indirir → oyuncunun elindeki kapasite AYNEN korunur (kademe 0'daki oyuncu
+ * 1 → 2 kazanır; bu kararın kendisi). Görev kimlikleri dokunulmaz: `q_waiterTray1` hattan çıktı,
+ * kaydın listesinde zararsızca durur (D-088).
+ */
+function migrateV33(raw: Record<string, unknown>): Record<string, unknown> | null {
+  if (raw.saveVersion !== 33) return null;
+  const wu = (raw.waiterUpgrades ?? {}) as Partial<WaiterUpgrades>;
+  return {
+    ...raw,
+    saveVersion: 34,
+    waiterUpgrades: { ...wu, tray: Math.max(0, (wu.tray ?? 0) - 1) },
+  };
+}
+
+function migrateV31(raw: Record<string, unknown>): Record<string, unknown> | null {
   if (raw.saveVersion !== 31) return null;
   const index = typeof raw.questIndex === 'number' ? raw.questIndex : 0;
   const questsDone = completedQuestIds(C.quests, index);
@@ -315,12 +335,12 @@ function migrateV31(raw: Record<string, unknown>): SaveData | null {
   return {
     ...defaultSave(),
     ...(rest as object),
-    saveVersion: SAVE_VERSION,
+    saveVersion: 33,
     questsDone,
     questBase: typeof raw.questBase === 'number' ? raw.questBase : 0,
     // Taban eski kayıtta aktif olan görevin tabanıydı; göç konumu değiştirmediği için sahibi de aynı.
     questBaseId: active?.id ?? '',
-  } as SaveData;
+  };
 }
 
 export function loadSave(): SaveData {
@@ -334,9 +354,12 @@ export function loadSave(): SaveData {
     if (parsed.saveVersion === SAVE_VERSION) {
       return ayarla({ ...defaultSave(), ...(parsed as object) } as SaveData);
     }
-    // Göç zinciri YENİDEN ESKİYE: v32 → v33, sonra v31 → v33.
-    const gocmus = migrateV32(parsed) ?? migrateV31(parsed);
-    return gocmus ? ayarla(gocmus) : resetKeepingSettings(parsed);
+    // Göç zinciri ADIM ADIM: her göç bir sonraki sürümü üretir (v31 → v33 → v34, v32 → v33 → v34).
+    let d: Record<string, unknown> | null = parsed;
+    for (const goc of [migrateV31, migrateV32, migrateV33]) d = (d && goc(d)) ?? d;
+    return d && d.saveVersion === SAVE_VERSION
+      ? ayarla({ ...defaultSave(), ...(d as object) } as SaveData)
+      : resetKeepingSettings(parsed);
   } catch {
     return defaultSave();
   }

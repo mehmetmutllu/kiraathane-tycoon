@@ -1,11 +1,11 @@
 # T8a — ZİNCİR SIRASI (G-86) + T3 DENGE KOLLARI + BARDAK HAVUZU
 
-> Karar: (boş — adım 3)
+> Karar: **D-142** (2026-09-23) — PK2 · garson tepsi tavanı 4 · seviye ₺ 60 sn (Sv 5'ten) · nokta kapısı
 > Araçlar: `tools/olcum-t8a.ts` → `docs/olcum-t8a.txt` (sim, HRE + D-124) ·
 > `tools/olcum-bardak-t8.ts` → `docs/olcum-bardak-t8.txt` (oyunun kendi `tick`'i)
 > Sim'e iki kanca eklendi (`garsonTepsiTabani` · `durtusel`), ikisi de varsayılanda kapalı: taban
 > çıktısı birebir aynı (`sim-model` · `meta-pencere` · `tempo-olcutu` bekçileri yeşil).
-> Denge dosyasına (economy.config / tick / rules) bu commit'te dokunulmadı.
+> Commit #1 (`aa387c8` · `e0c9f7b`) denge dosyasına dokunmadı; commit #2 kararı uyguladı.
 
 ## §0 Soru
 
@@ -210,4 +210,43 @@ kol olarak koşturulur, final tam koşu o satırdır.
 
 ## §Karar
 
-(boş — karar paketinden sonra doldurulur)
+**D-142 (kullanıcı, 2026-09-23).** Karar paketi: https://claude.ai/artifact/24vke4Lg2CCEj5yuJJJZtV —
+dört sorunun dördünde önerilen kol.
+
+| soru | seçilen | kodda |
+|---|---|---|
+| birleşim | **PK2** (K5b hariç) | tepsi T1 ₺30 · 4. masa ₺250 · 2. garson Salon 1 sonu ₺800 · seviye tabanı 90 · tepsi-3 görevi |
+| garson tepsisi | **tavan 4** (K2b) | `waiter.trayBase: 2` · kademeler ₺1.200/2.500 · `q_waiterTray1` hattan çıktı |
+| seviye ₺ | **60 sn, Sv 5'ten** (K8d) | `xp.levelRewardSec/FromLevel` · `rules.levelRewardAmount` · tick'te kazanç izi |
+| nokta kapısı | **evet** | `rules.upgradeSpotLive(Now)` → Scene (çizim) · tick (tetik) · revealKeys (bildirim) |
+
+**Kararın getirdiği iki yan iş (soru turu açılmadı, teknik):**
+- **Seviye ekranı:** atlama artık toast değil ortak `RewardModal` (G-66'nın "modal" isteği + G-67'nin ₺'si
+  aynı ekranda). Ekran kanalı `seviye`: çevrimdışı/Usta'dan sonra, kutlama/panel/bildirim bitene kadar
+  bekler. Aynı anda birden çok seviye atlanırsa ₺ tek ekranda birikir.
+- **2. garson pad'i taşındı:** eski yeri (−14,7 · −5,0) Salon 3'ün bandıydı — Salon 1 döneminde yürünemez.
+  Yeni yer (−10,5 · 9,75) tarama ile seçildi: bütün çerçevelere, personel noktalarına ve çaycı yoluna
+  ≥ 0,4 br. İlk aday (−14,75 · 6,5) karede 1. garsonun ALTINDA kaldı; kare olmasa görülmezdi.
+  Kare: `docs/gorsel/ss/t8a-garson2-pad.png` · `t8a-seviye-odul.png`.
+- **Kayıt v34:** garson tepsi kademesinin anlamı değişti → göç kademeyi bir indirir, kapasite korunur.
+
+### Final tam koşu (commit #2 · `docs/olcum-t8a.txt`)
+
+Taban artık oyunun kendisi (HRE + D-124 + D-142). **Parmak izi `aabcd5d5` = commit #1'in PK2 satırı:**
+uygulanan kod ölçülen kolun kendisi (damga). Kat 1 **5,58 sa** · gözlem 1 · hüküm 0 · açılış 22 sn /
+1,6 dk / 5,2 dk. Uygulanmayan kollar yeni taban üstünde: K5b −%8,7 · tavan 5 +%0,6 · 120 sn −%2,3 ·
+seviye ₺ yok +%2,3 · serbest sıra +%6,7 · genişlik-önce +%6,9 · kapısız dürtüsel oyuncu +%3,0 (2. salon
+38,9 → 61,6 dk).
+
+**Kararın eski bekçilere etkisi (sayılar güncellendi, gerekçeler test içinde):**
+- `meta-pencere`: gözlem bandı M0 6 → **3**, HRE 2 → **1** · R'nin tek başına borcu %15,5 → **%12,1** ·
+  taşımanın kelepçe payı %93 → **%69,9** (arz %29,1). Zincir borcu **%18,7** — D-095 bandında (%18-22).
+- `tempo-olcutu`: **D1'in g1 kolu artık İYİLEŞTİRİYOR** (3 → 2) — elenme gerekçesi düştü, kol
+  uygulanmamış bir aday olarak bekliyor (varyant kapısından geçer).
+- `sim-model`: G1-G4 ölçümleri eski dünyada alınmıştı → sim o dünyayı sabitler (1'li tepsi, 2. garson
+  Salon 3'te); sabitlemeden sapma sahte biçimde %12 → %35 çıkıyordu.
+
+### Bekçi
+`tests/zincir-t8a.test.ts` (17 test: sayılar · zincir · kapı gerçek tick · seviye ekranı gerçek tick ·
+birikim · kanal sırası · v33/v32 göçü). Mutasyon `tools/mutasyon-zincir-t8a.mjs` **6/6**. Duman
+`tools/smoke.mjs` 50/50 (görevsiz nokta kapalı + seviye ekranı çıktı/kapandı denetimleri eklendi).

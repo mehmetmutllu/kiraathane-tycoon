@@ -90,6 +90,8 @@ import {
   QUEST_COMPLETE_DUR,
   QUEST_GAP_DUR,
   cardQuestIndex,
+  upgradeSpotLiveNow,
+  levelRewardAmount,
   questInTransition,
   CAM_FOCUS_TTL,
   brewTime,
@@ -117,6 +119,7 @@ import {
   type QuestCtx,
   type CamFocus,
 } from './rules';
+import type { LevelUpOdul } from './rules';
 import type { NavGrid } from './nav';
 import type { GameState } from './store'; // yalnız TİP (derlemede silinir → döngüsel import YOK)
 
@@ -217,6 +220,11 @@ export interface TickCtx {
   out: World;
   questDoneIndex: number;
   quest: QuestView | null;
+  /** D-142: `lifetime`ın `GELIR_ORNEK_SN` aralıklı örnekleri (transient) — seviye ₺'si "son 60 sn'de
+   *  kazanılan"dan okunur. */
+  gelirIzi: number[];
+  gelirIziT: number;
+  levelUp: LevelUpOdul | null;
 }
 
 /** Kare bağlamını girişteki durumdan kurar (eski tick() prologu). */
@@ -319,6 +327,9 @@ export function createTickCtx(s: GameState, dt: number): TickCtx {
     onFillId: null,
     out: world,
     questDoneIndex: s.questDoneIndex,
+    gelirIzi: s.gelirIzi,
+    gelirIziT: s.gelirIziT - dt,
+    levelUp: s.levelUp,
     quest: s.quest,
   };
   return c;
@@ -1173,7 +1184,8 @@ function revealSystem(c: TickCtx): void {
     else if (t.type === 'tablesAtLevel') questCoveredReveals.add(`tableUp:${t.area ?? 0}`);
     else if (t.type === 'pad') questCoveredReveals.add(`opt:${t.id}`);
   }
-  for (const [key, text, rp] of revealKeys(padGate, areasOpen, stationLevels)) {
+  // D-142: reveal de kapıyı okur — kutlama penceresinde zaten döngüden çıkılıyor (aşağıda).
+  for (const [key, text, rp] of revealKeys(padGate, areasOpen, stationLevels, c.questIndex)) {
     if (gecisPenceresi) break; // G-60: kutlama sürerken hiçbir reveal işlenmez (tüketilmez de)
     if (!revealSeen.includes(key)) {
       // Bir görevin kapsadığı özellik: reveal'ı sessizce tüket (toast/pan yok) → tek talimat görev kartı.
@@ -1209,6 +1221,7 @@ function revealSystem(c: TickCtx): void {
   if (
     !onFillId &&
     !inPickupRange &&
+    upgradeSpotLiveNow(c, 'station') &&
     stationUpgradeUnlocked(padGate) &&
     stationLevels[THE_SERVICE] < stationSoftMaxLevel() &&
     inFrame(player[0], player[2], c.place.upgradeSpot, servisCercevesi())
@@ -1218,7 +1231,7 @@ function revealSystem(c: TickCtx): void {
   if (!onFillId) {
     // D-124: SIRA tek hedeflidir — tetik, ÇİZİLEN tek noktadan türer (Scene.tsx aynı çağrıyı
     // yapar). Eskiden burada bütün masalar taranıyor ve alan kapısı açık her masa tetikleniyordu.
-    const hedefMasa = tableUpgradeTarget(padGate);
+    const hedefMasa = upgradeSpotLiveNow(c, 'table') ? tableUpgradeTarget(padGate) : null; // D-142
     if (hedefMasa != null) {
       // Çerçeve ÇİZİLEN etiketten türer, o da seviyeyi taşır (`SV 2` / `SV 12`) — bugün ikisi de
       // `r * 1,05` tabanına kelepçeleniyor, ama bağ kurulu: yazı büyürse tetik de büyür.
@@ -1231,6 +1244,7 @@ function revealSystem(c: TickCtx): void {
   // düşer, nokta onun yerini alır. İkisi aynı anda etkin olamaz, o yüzden çakışma da olamaz.
   if (
     !onFillId &&
+    upgradeSpotLiveNow(c, 'lavabo') &&
     c.lavaboLevel >= 1 &&
     c.lavaboLevel < lavaboMaxLevel() &&
     inFrame(player[0], player[2], LAVABO.spot, lavaboCercevesi())
@@ -1582,20 +1596,40 @@ function questSystem(c: TickCtx): void {
   c.quest = quest;
 }
 
+/** D-142: seviye ₺'sinin kazanç izi örnekleme aralığı (sn). Denge sayısı değil çözünürlük: ödül
+ *  penceresi (`xp.levelRewardSec`) bunun katlarıyla okunur. */
+const GELIR_ORNEK_SN = 5;
+
 /**
  * Level-up bildirimi: toplam XP bu tick'te seviye atlattıysa toast (kuyruğa girer).
  */
 function levelNoticeSystem(c: TickCtx): void {
-  const { s, noticeQueue, enqueueNotice, xp } = c;
+  const { s, noticeQueue, xp } = c;
   let notice = c.notice;
+
+  // D-142: kazanç izi. Pencere `levelRewardSec` kadar geriye bakar; örnek sayısı ondan türer.
+  if (c.gelirIziT <= 0) {
+    const n = Math.ceil(C.xp.levelRewardSec / GELIR_ORNEK_SN) + 1;
+    c.gelirIzi = [...c.gelirIzi, c.lifetime.toNumber()].slice(-n);
+    c.gelirIziT = GELIR_ORNEK_SN;
+  }
+
   if (xp !== s.xp) {
     const before = levelProgress(s.xp).level;
     const after = levelProgress(xp).level;
-    // D-092: seviyenin ne KAZANDIRDIĞI toast'ta yazar. Ödül görünmezse yok gibidir — D-090'ın
-    // kalıcı çarpanı tam bu yüzden açık kalem olarak duruyor.
+    // D-092 + D-142 (G-66/G-67): seviye atlama artık TOAST değil ÖDÜL EKRANI. Taşıma ödülü (D-092)
+    // kalır; Seviye 5'ten itibaren üstüne "son 60 sn'de kazandığın kadar" ₺ gelir. Aynı karede
+    // birden çok seviye atlanırsa ödüller tek ekranda toplanır.
     if (after > before) {
-      const artis = Math.round((reputationCarryMult(after) - 1) * 100);
-      enqueueNotice({ text: `Seviye ${after}! Servis hızı +%${artis}`, ttl: 4.5, kind: 'level' });
+      const sonKazanc = c.gelirIzi.length ? c.lifetime.toNumber() - c.gelirIzi[0] : 0;
+      let amount = c.levelUp?.amount ?? 0;
+      for (let lv = before + 1; lv <= after; lv++) amount += levelRewardAmount(lv, sonKazanc);
+      c.levelUp = {
+        level: after,
+        amount,
+        carryBefore: c.levelUp?.carryBefore ?? reputationCarryMult(before) - 1,
+        carryAfter: reputationCarryMult(after) - 1,
+      };
     }
   }
 

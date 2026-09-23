@@ -121,6 +121,8 @@ export function HUD() {
   const dailyReady = useGame((s) => claimableDailyCount(s.daily, s.tables, dailyCountersOf(s)) > 0);
   // D8: oyuncu bir Usta noktasının yanında mı? Sahne katmanı yazar (yakınlık `useFrame`te ölçülür).
   const nearMaster = useGame((s) => s.nearMaster);
+  const levelUp = useGame((s) => s.levelUp);
+  const claimLevelUp = useGame((s) => s.claimLevelUp);
   // G-60: görev geçiş penceresi (kutlama + boşluk) — ipucular bu pencerede sıra bekler.
   const questPhase = useGame((s) => s.questPhase);
   // G-14: kapatılan Usta modali, oyuncu O MASADAN uzaklaşana kadar geri açılmaz. D-094'ün
@@ -151,6 +153,7 @@ export function HUD() {
     bulasikOgretmeHazir: quest?.target.type === 'washDish' && !washTipSeen,
     karakterIpucuHazir: !!charQuestActive && !charPanelSeen,
     tepsiIpucuHazir: tray + trayFood > 0 && !trayTipSeen,
+    seviyeVar: levelUp != null,
   });
   const showOffline = kanal === 'cevrimdisi';
   const bulasikOgretme = kanal === 'ogretme-bulasik';
@@ -480,6 +483,20 @@ export function HUD() {
             </button>
           </div>
         </Sheet>
+      )}
+
+      {/* ───────── SEVİYE ATLAMA (D-142 · G-66/G-67) — ortak ödül ekranı ───────── */}
+      {kanal === 'seviye' && levelUp && (
+        <RewardModal
+          testid="level-up"
+          title={`Seviye ${levelUp.level}!`}
+          amount={levelUp.amount}
+          bonus={levelUp.carryAfter - levelUp.carryBefore}
+          bonusBefore={levelUp.carryBefore}
+          bonusLabel="Servis hızı"
+          onClaim={claimLevelUp}
+          claimTestid="level-up-ok"
+        />
       )}
 
       {/* ───────── OFFLINE KAZANÇ (ortak ödül ekranı kalıbı) ───────── */}
@@ -1002,6 +1019,7 @@ function RewardModal({
   diamonds = 0,
   bonus = 0,
   bonusBefore = 0,
+  bonusLabel = 'Kalıcı gelir',
   onClaim,
   claimTestid,
   adReady = false,
@@ -1016,6 +1034,8 @@ function RewardModal({
   /** Ödül ALINMADAN ÖNCEKİ toplam koleksiyon bonusu (oran). K3 satırı "%3,2 → %3,6" yazabilsin
    *  diye gerekiyor: ekran artışı değil STAT'IN GEÇİŞİNİ gösteriyor (D-128). */
   bonusBefore?: number;
+  /** Stat satırının adı — hedefler "Kalıcı gelir", seviye ekranı "Servis hızı" (D-142). */
+  bonusLabel?: string;
   onClaim: () => void;
   claimTestid: string;
   adReady?: boolean;
@@ -1047,7 +1067,7 @@ function RewardModal({
       ikiKat: true,
       icerik: (
         <>
-          <span className="odul-etiket">Kalıcı gelir</span>
+          <span className="odul-etiket">{bonusLabel}</span>
           <span className="odul-gecis">
             <span className="odul-eski">{oranYuzde(bonusBefore)}</span>
             {/* Ok bir GLİF değil çizim (B6): "→" karakteri ikonun yerine oturmaz. */}

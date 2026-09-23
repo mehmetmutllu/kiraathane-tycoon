@@ -25,6 +25,24 @@ page.on('console', (m) => {
 });
 page.on('pageerror', (e) => consoleErrors.push('pageerror: ' + e.message));
 
+/* D-142 (G-66/G-67): seviye atlama artık bir ÖDÜL EKRANI — tasarım gereği ekranı keser. Duman akışı
+ * zamanı hızlı sardığı için seviyeler üst üste atlanıyor; her HUD tıklamasından önce açık ekran
+ * "Al" ile kapatılır (oyuncunun yapacağı şey) ve ekranın akışta en az bir kez çıktığı sayılır. */
+let seviyeEkraniGoruldu = 0;
+async function seviyeKapat() {
+  for (let i = 0; i < 20; i++) {
+    const ok = await page.$('[data-testid="level-up-ok"]');
+    if (!ok) return;
+    seviyeEkraniGoruldu++;
+    await ok.click();
+    await page.waitForTimeout(50);
+  }
+}
+async function tikla(sel) {
+  await seviyeKapat();
+  await page.click(sel);
+}
+
 try {
   await page.goto(URL, { waitUntil: 'networkidle', timeout: 30000 });
   // 15 sn → 40 sn (S16): açılışta yüklenen asset yükü S14'ten beri belirgin büyüdü — dört klip
@@ -96,6 +114,12 @@ try {
   await page.evaluate(() => window.__addMoney(100000));
   const uz = (await page.evaluate(() => window.__game())).upgradeZonePos;
   await page.evaluate((pos) => window.__teleport(pos[0], pos[2]), uz);
+  // D-142 (G-61): nokta yalnız OCAK görevinde canlı — önce görevsiz dur (seviye artmamalı).
+  const gorevsiz = await page.evaluate(() => window.__advanceTime(3));
+  if (gorevsiz.stationLevel === beforeLvl) pass('Yükseltme noktası görevi yokken kapalı (D-142)');
+  else fail(`Görevi olmayan yükseltme noktası doldu (L${beforeLvl}→L${gorevsiz.stationLevel})`);
+  await page.evaluate(() => window.__setQuest('q_station1'));
+  await page.evaluate((pos) => window.__teleport(pos[0], pos[2]), uz);
   const afterUp = await page.evaluate(() => window.__advanceTime(5));
   if (afterUp.stationLevel > beforeLvl)
     pass(`Mekânsal çay yükseltme çalışıyor (L${beforeLvl}→L${afterUp.stationLevel})`);
@@ -139,9 +163,9 @@ try {
   // Garson hız yükseltme (v29): karakter PANELİNDEN satın alınır (eski mekânsal waiterUp pad'i kalktı).
   const beforeWL = (await page.evaluate(() => window.__game())).waiterUpgrades?.speed ?? 0;
   await page.evaluate(() => window.__addMoney(500));
-  await page.click('[data-testid="char"]');
-  await page.click('[data-testid="char-tab-waiter"]'); // B2: tek "Garson" sekmesi (çay/tostçu birleşti)
-  await page.click('[data-testid="waiter-speed-buy"]');
+  await tikla('[data-testid="char"]');
+  await tikla('[data-testid="char-tab-waiter"]'); // B2: tek "Garson" sekmesi (çay/tostçu birleşti)
+  await tikla('[data-testid="waiter-speed-buy"]');
   const wL2 = await page.evaluate(() => window.__game());
   if ((wL2.waiterUpgrades?.speed ?? 0) > beforeWL)
     pass(`Garson hız yükseltme panelden çalışıyor (speed ${beforeWL}→${wL2.waiterUpgrades.speed})`);
@@ -149,14 +173,14 @@ try {
   // Backdrop'un ÜST şeridine tıkla (kartın dışı). Merkeze tıklamak kırılgandı: panel açılış
   // animasyonu bitince kart backdrop'un merkezini kaplıyor ve tıklama "intercepted" oluyor —
   // test bugüne dek yalnız animasyon henüz tamamlanmadığı için geçiyordu (D3'te ortaya çıktı).
-  await page.click('[data-testid="char-panel"] .sheet-back');
+  await tikla('[data-testid="char-panel"] .sheet-back');
 
   // HEDEFLER paneli (D3/D-089 · ödül kalıbı D3b/D-090): beş kategori + ödül toplama. Ödülü CONFIG
   // verir, HUD çizer — burada sınanan şey "panel açıldı mı" değil, ödülün GERÇEKTEN işlemesi:
   // 💎 cüzdana geçiyor mu ve KALICI GELİR ÇARPANI büyüyor mu (D-090'da ₺ ödülü kalktı).
   {
     const oncesi = await page.evaluate(() => window.__addMoney(1200) && window.__game());
-    await page.click('[data-testid="goals"]');
+    await tikla('[data-testid="goals"]');
     await page.waitForSelector('[data-testid="goals-panel"]', { timeout: 5000 });
     const satir = await page.$$('[data-testid^="goal-"]:not([data-testid^="goal-claim"])');
     if (satir.length === 5) pass('Hedefler paneli: beş kategori satırı');
@@ -169,7 +193,7 @@ try {
     } else {
       await alBtn.click();
       await page.waitForSelector('[data-testid="goal-reward"]', { timeout: 5000 });
-      await page.click('[data-testid="goal-reward-ok"]');
+      await tikla('[data-testid="goal-reward-ok"]');
       const sonrasi = await page.evaluate(() => window.__game());
       if (sonrasi.diamonds > oncesi.diamonds)
         pass(`Hedef ödülü toplandı (💎 ${oncesi.diamonds}→${sonrasi.diamonds})`);
@@ -188,13 +212,13 @@ try {
       else fail(`Hedef toplandı ama gelir çarpanı 1 kaldı (×${mult})`);
     }
     // Backdrop'un ÜST şeridi (kartın dışı) — merkez kartın altında kalıyor.
-    await page.click('[data-testid="goals-panel"] .sheet-back');
+    await tikla('[data-testid="goals-panel"] .sheet-back');
   }
 
   // GÜNLÜK GÖREVLER (D8): kartlar Görevler panelinde çıkıyor mu ve ödül GERÇEKTEN 💎 veriyor mu?
   // Sınanan şey panelin açılması değil, günün ölçülen arzının (10 💎) akması.
   {
-    await page.click('[data-testid="quests"]');
+    await tikla('[data-testid="quests"]');
     await page.waitForSelector('[data-testid="quests-panel"]', { timeout: 5000 });
     const kart = await page.$$('[data-testid^="daily-"][data-state]');
     if (kart.length === 3) pass('Günlük görev: üç kart çizildi');
@@ -214,9 +238,9 @@ try {
       await page.evaluate((id) => window.__fillDaily(id), hedef.id);
       await page.waitForSelector(`[data-testid="daily-claim-${hedef.id}"]`, { timeout: 5000 });
       const oncesi = (await page.evaluate(() => window.__game())).diamonds;
-      await page.click(`[data-testid="daily-claim-${hedef.id}"]`);
+      await tikla(`[data-testid="daily-claim-${hedef.id}"]`);
       await page.waitForSelector('[data-testid="daily-reward"]', { timeout: 5000 });
-      await page.click('[data-testid="daily-reward-ok"]');
+      await tikla('[data-testid="daily-reward-ok"]');
       const sonrasi = (await page.evaluate(() => window.__game())).diamonds;
       if (sonrasi === oncesi + hedef.diamonds)
         pass(`Günlük görev ödülü ödendi (💎 ${oncesi}→${sonrasi})`);
@@ -225,7 +249,7 @@ try {
       if (!tekrar) pass('Toplanan günlük görev ikinci kez toplanamıyor');
       else fail('Toplanan günlük görevin "Ödülü al" butonu duruyor');
     }
-    await page.click('[data-testid="quests-panel"] .sheet-back');
+    await tikla('[data-testid="quests-panel"] .sheet-back');
   }
 
   // Bardak döngüsü (Faz 2e): garson servis ederken kirli bardak üretilir → oyuncu toplar → bulaşıkta yıkar.
@@ -253,9 +277,9 @@ try {
     fail(`Kirli bardak üretilmedi (dirty=${cupRun.dirtyCount}, carried=${cupRun.carriedDirty})`);
   }
 
-  // Omurga sonu (B2): 4. masa → 2. Salon → salonun masaları → BULAŞIKÇI (plan §4 adım 14).
+  // Omurga sonu (B2): 4. masa → 2. GARSON (D-142) → 2. Salon → salonun masaları → BULAŞIKÇI.
   for (const [qid, pid] of [
-    ['q_table4', 'table4'], ['q_zone2', 'zone2'], ['q_z2table2', 'z2table2'],
+    ['q_table4', 'table4'], ['q_waiter2', 'waiter2'], ['q_zone2', 'zone2'], ['q_z2table2', 'z2table2'],
     ['q_z2table3', 'z2table3'], ['q_dish', 'dishwasher'],
   ]) {
     await page.evaluate((q) => window.__setQuest(q), qid);
@@ -267,8 +291,8 @@ try {
     }
   }
   const opened = await page.evaluate(() => window.__game());
-  if ((opened.padsDone || []).includes('dishwasher') && (opened.padsDone || []).includes('table4'))
-    pass(`Omurga tamam (4. masa + 2. salon + bulaşıkçı, padsDone=${opened.padsDone.length})`);
+  if ((opened.padsDone || []).includes('dishwasher') && (opened.padsDone || []).includes('waiter2'))
+    pass(`Omurga tamam (4. masa + 2. garson + 2. salon + bulaşıkçı, padsDone=${opened.padsDone.length})`);
   else fail(`Omurga açılmadı (padsDone=${JSON.stringify(opened.padsDone)})`);
 
   // Masa yükseltme (Faz 2h, MASA-BAŞI): TÜM masalar açılınca her masanın YANINDAKİ nokta aktif. 0. masanın
@@ -277,6 +301,8 @@ try {
   if ((preTable.padsDone || []).includes('table4')) {
     const before0 = (preTable.tableLevels || [])[0] ?? 0;
     const before1 = (preTable.tableLevels || [])[1] ?? 0;
+    // D-142: masa noktası yalnız MASA görevinde canlı.
+    await page.evaluate(() => window.__setQuest('q_tableL2'));
     await page.evaluate(() => window.__addMoney(5000));
     await page.evaluate((pos) => window.__teleport(pos[0], pos[2]), preTable.tableUpgradeSpots[0]);
     const afterTable = await page.evaluate(() => window.__advanceTime(6));
@@ -311,7 +337,7 @@ try {
     else fail('Usta modali alt sayfa kabuğuna düşmüş (.modal-card)');
 
     const once = (await page.evaluate(() => window.__game())).diamonds;
-    await page.click('[data-testid="master-buy"]');
+    await tikla('[data-testid="master-buy"]');
     const sonra = await page.evaluate(() => window.__game());
     if (sonra.mastersOwned.includes('table:0')) pass(`Usta alındı (${sonra.mastersOwned.join(',')})`);
     else fail(`Usta alınamadı: ${JSON.stringify(sonra.mastersOwned)}`);
@@ -324,12 +350,12 @@ try {
     pass('Usta alınınca onay çubuğu kalktı');
 
     // Hedefler panelindeki toplu sayaç güncellendi mi (plan §5: "Usta masalar 7/20")?
-    await page.click('[data-testid="goals"]');
+    await tikla('[data-testid="goals"]');
     await page.waitForSelector('[data-testid="usta-strip"]', { timeout: 5000 });
     const sayac = await page.textContent('[data-testid="usta-owned"]');
     if (sayac.trim() === '1') pass('Hedefler panelinde Usta sayacı 1');
     else fail(`Usta sayacı yanlış: "${sayac}"`);
-    await page.click('[data-testid="goals-panel"] .sheet-back');
+    await tikla('[data-testid="goals-panel"] .sheet-back');
   }
 
 
@@ -384,7 +410,7 @@ try {
   // bağlı olduğu: kaydırıcı DOM'da mı, oynatınca kayda yazılıyor mu, anahtar kapanınca devre
   // dışı kalıyor mu. Bunlar mantık testinin göremeyeceği yerler — kaydırıcı hiç render
   // edilmese de motor testleri yeşil kalırdı.
-  await page.click('[data-testid="gear"]');
+  await tikla('[data-testid="gear"]');
   await page.waitForSelector('[data-testid="menu"]', { timeout: 3000 });
   const sesKaydirici = await page.$('[data-testid="set-sound-vol"]');
   const muzikKaydirici = await page.$('[data-testid="set-music-vol"]');
@@ -402,7 +428,7 @@ try {
     else fail(`Ses seviyesi kayda geçmedi: ${JSON.stringify(kayitli)}`);
 
     // Anahtar kapanınca kaydırıcı devre dışı — ama SEVİYE korunur ("kapat" ≠ "kıs").
-    await page.click('[data-testid="set-sound"]');
+    await tikla('[data-testid="set-sound"]');
     await page.waitForTimeout(150);
     const kapali = await page.$eval('[data-testid="set-sound-vol"]', (el) => el.disabled);
     const sonra = await page.evaluate(() => {
@@ -411,9 +437,9 @@ try {
     if (kapali && sonra && Math.abs(sonra.soundVolume - 0.4) < 1e-6)
       pass('Ses kapanınca kaydırıcı devre dışı ama SEVİYE korunuyor');
     else fail(`Kapalı durum yanlış (disabled=${kapali}, seviye=${sonra && sonra.soundVolume})`);
-    await page.click('[data-testid="set-sound"]'); // geri aç
+    await tikla('[data-testid="set-sound"]'); // geri aç
   }
-  await page.click('[data-testid="menu"] .sheet-back');
+  await tikla('[data-testid="menu"] .sheet-back');
   await page.waitForTimeout(200);
 
   /*
@@ -444,12 +470,12 @@ try {
     if (tek <= 75) pass(`Kare tavanı tutuyor (${tek.toFixed(0)} ≤ 75 kare/sn)`);
     else fail(`Kare tavanı delinmiş: ${tek.toFixed(0)} kare/sn`);
 
-    await page.click('[data-testid="shop"]');
+    await tikla('[data-testid="shop"]');
     await page.waitForSelector('[data-testid="shop-preview"]', { timeout: 5000 });
     const cift = await olc(1500);
     if (cift > tek * 1.4) pass(`Önizleme tuvali de sürülüyor (${tek.toFixed(0)}→${cift.toFixed(0)} kare/sn)`);
     else fail(`Önizleme tuvali çizmiyor — boş kalır (${tek.toFixed(0)}→${cift.toFixed(0)} kare/sn)`);
-    await page.click('[data-testid="shop-panel"] .sheet-back');
+    await tikla('[data-testid="shop-panel"] .sheet-back');
     await page.waitForSelector('[data-testid="shop-panel"]', { state: 'detached', timeout: 5000 });
   }
 
@@ -460,6 +486,10 @@ try {
   const canvasOk = await page.$('canvas');
   if (canvasOk && typeof portrait.tables === 'number') pass('Portrait orana uyum sağladı (canvas + durum okunuyor)');
   else fail('Portrait orana geçişte sorun');
+
+  await seviyeKapat();
+  if (seviyeEkraniGoruldu > 0) pass(`Seviye atlama ödül ekranı çıktı ve "Al" ile kapandı (${seviyeEkraniGoruldu} kez)`);
+  else fail('Akış boyunca hiç seviye ödül ekranı çıkmadı');
 
   if (consoleErrors.length === 0) pass('Konsol hatası yok');
   else fail(`Konsol hataları: ${consoleErrors.slice(0, 5).join(' | ')}`);

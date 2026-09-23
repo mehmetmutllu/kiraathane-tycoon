@@ -409,7 +409,9 @@ export const economyConfig = {
     // T1/T2 2026-06-11 kullanıcı kararı: 150/500 → 75/150 ("tepsi o kadar olmamalı; azıcık hız katarız").
     // turu-5 denge (ONAYLI): KÖPRÜLÜ eğri — T3/T4 ×100 sıçraması "absürt"tü (15k/60k → 5k/18k);
     // T2 150→130 (5B garson-öncesi −%15). Mıknatıs/hız orta kademeler yumuşadı.
-    tray: { values: [2, 3, 4, 5, 6], costs: [75, 130, 5_000, 18_000] },
+    // T8a (D-142, G-65): T1 75 → 30 — kullanıcı: "ilk görevlerden sonra cebinde 30 kalıyor, hemen
+    // alabilsin". Tempo etkisi −%0,4, otomasyon 6,1 → 5,2 dk (D-079 bandında).
+    tray: { values: [2, 3, 4, 5, 6], costs: [30, 130, 5_000, 18_000] },
     /** Para mıknatısı yarıçapı (dünya birimi; money.attractRadius'un yerini aldı).
      *  M1 250→200 (kullanıcı 2026-06-11: "azıcık insin" — 4. masa dönemiyle hizalanır). */
     magnet: { values: [2.6, 3.4, 4.2, 5.0], costs: [200, 700, 2_200] },
@@ -490,7 +492,11 @@ export const economyConfig = {
      */
     // turu-5 denge (ONAYLI, kullanıcının rakamları): "garson bensiz yetemiyor" — T1 amortismanı
     // 32dk→~16dk; quest sırası AYNI kaldı (v29 migrasyonu gerekmedi).
-    trayUpgrades: { costs: [400, 1200, 2500] },
+    // T8a (D-142, G-72): garson 2'li tepsiyle BAŞLAR, tavan 4'te kalır → ilk kademe (₺400) düştü.
+    // Kullanıcı: "garson çok geri kalıyor, en başta tepsisi 2'li başlayabilir". Tavanı 5'e çıkaran
+    // kol (K2a, −%4,2) daha güçlüydü; seçilen kol garsonun KISMİ yardım (D-014) sınırını koruyor.
+    trayBase: 2,
+    trayUpgrades: { costs: [1200, 2500] },
     /**
      * BOŞTA BULAŞIK (D-083, C4): garsonun servis edecek kimsesi kalmayınca (bekleyen yok — ki
      * mekân kilitlenince tam olarak bu olur, çünkü kirli masaya müşteri oturmaz) bulaşık köşesine
@@ -657,14 +663,22 @@ export const economyConfig = {
       requires: { prev: ['table2'] }, effect: { type: 'addTable' } },
     { id: 'waiter', label: 'Garson Tut', cost: 130, fillRate: 60, optional: false, area: 0, // ~2.2sn
       requires: { prev: ['table3'] }, effect: { type: 'hireWaiter' } },
-    { id: 'table4', label: '4. Masa', cost: 380, fillRate: 109, optional: false, area: 0, // ~3.5sn
+    // T8a (D-142, G-74): 380 → 250 — kullanıcı "çok geldi, oyundan çıkardım". Tempo etkisi −%0,6
+    // (docs/zincir-raporu-t8a.md Bulgu 3): bir HİS kararı, denge kararı değil.
+    { id: 'table4', label: '4. Masa', cost: 250, fillRate: 71, optional: false, area: 0, // ~3.5sn
       requires: { prev: ['waiter'] }, effect: { type: 'addTable' } },
+    // T8a (D-142, G-73/G-86 ③): 2. GARSON SALON 1'İN SONUNA taşındı ve 1600 → 800. Eskiden Salon 3'ün
+    // ortasındaydı (Normal profilde 152. dk) — kullanıcı: "tek garson yetmiyor net bir şekilde".
+    // Fiyat taşınmadı çünkü ölçüldü: aynı yer ₺1.600'la 30,4 dk'lık kendi beklemesini doğuruyor ve
+    // D-095 gözlem bandını 1 → 2 kırıyordu (K3a); ₺800 bandı koruyor, 2. garsonu 117 dk öne çekiyor (K3b).
+    { id: 'waiter2', label: '2. Garson', cost: 800, fillRate: 229, optional: false, area: 0, // ~3.5sn
+      requires: { prev: ['table4'] }, effect: { type: 'hireWaiter' } },
 
     // --- BÖLÜM 2 · 2. Alan (10-45 dk) ---
     // Alan açılınca ocak GELMEZ (B2'nin özü): sekiz masa tek ocağa yüklenir → ocak yükseltmesi
     // artık "istersen al" değil, ilerlemenin ta kendisi.
     { id: 'zone2', label: '2. Salon', cost: 750, fillRate: 215, optional: false, area: 0, // ~3.5sn
-      requires: { prev: ['table4'] }, effect: { type: 'unlockArea' } },
+      requires: { prev: ['waiter2'] }, effect: { type: 'unlockArea' } },
     { id: 'z2table2', label: '2. Masa', cost: 200, fillRate: 67, optional: false, area: 1, // ~3sn
       requires: { prev: ['zone2'] }, effect: { type: 'addTable' } },
     { id: 'z2table3', label: '3. Masa', cost: 485, fillRate: 139, optional: false, area: 1, // ~3.5sn
@@ -689,10 +703,8 @@ export const economyConfig = {
       requires: { prev: ['z2table4'] }, effect: { type: 'unlockArea' } },
     { id: 'z3table2', label: '2. Masa', cost: 900, fillRate: 257, optional: false, area: 2, // ~3.5sn
       requires: { prev: ['zone3'] }, effect: { type: 'addTable' } },
-    { id: 'waiter2', label: '2. Garson', cost: 1600, fillRate: 457, optional: false, area: 0, // ~3.5sn
-      requires: { prev: ['z3table2'] }, effect: { type: 'hireWaiter' } },
     { id: 'z3table3', label: '3. Masa', cost: 2200, fillRate: 629, optional: false, area: 2, // ~3.5sn
-      requires: { prev: ['waiter2'] }, effect: { type: 'addTable' } },
+      requires: { prev: ['z3table2'] }, effect: { type: 'addTable' } },
     { id: 'z3table4', label: '4. Masa', cost: 3200, fillRate: 914, optional: false, area: 2, // ~3.5sn
       requires: { prev: ['z3table3'] }, effect: { type: 'addTable' } },
 
@@ -800,6 +812,8 @@ export const economyConfig = {
     { id: 'q_station2', kicker: 'OCAK', title: "Ocağı Seviye 3'e çıkar", target: { type: 'stationLevel', level: 2 }, reward: 40 },
     { id: 'q_table4', kicker: 'SALON DOLDU', title: '4. Masayı aç', target: { type: 'pad', id: 'table4' }, reward: 60 },
     { id: 'q_charMagnet', kicker: 'MIKNATIS', title: 'Para mıknatısını güçlendir', target: { type: 'charStat', stat: 'magnet', tier: 1 }, reward: 50 },
+    // T8a (D-142): 2. garson Salon 1'in sonunda — eskiden Salon 3'ün ortasındaydı (G-73/G-86 ③).
+    { id: 'q_waiter2', kicker: 'İKİNCİ GARSON', title: '2. Garsonu tut', target: { type: 'pad', id: 'waiter2' }, reward: 250 },
     // --- BÖLÜM 2 · 2. Alan: alan ocak GETİRMEZ → sekiz masa tek ocağa yüklenir.
     { id: 'q_zone2', kicker: 'YENİ SALON', title: '2. Salonu aç', target: { type: 'pad', id: 'zone2' }, reward: 150 },
     { id: 'q_z2table2', kicker: 'SALON 2', title: 'Salon 2: 2. Masayı aç', target: { type: 'pad', id: 'z2table2' }, area: 1, reward: 50 },
@@ -807,7 +821,6 @@ export const economyConfig = {
     { id: 'q_waiterL2', kicker: 'GARSON', title: 'Garsonu hızlandır', target: { type: 'waiterSpeed', tier: 1 }, reward: 50 },
     { id: 'q_tableL2', kicker: 'MASA SEVİYESİ', title: 'Bir masayı yükselt', target: { type: 'tableLevel', level: 1 }, reward: 30 },
     { id: 'q_z2table3', kicker: 'SALON 2', title: 'Salon 2: 3. Masayı aç', target: { type: 'pad', id: 'z2table3' }, area: 1, reward: 100 },
-    { id: 'q_waiterTray1', kicker: 'GARSON TEPSİSİ', title: 'Garsonun tepsisini büyüt', target: { type: 'waiterTray', tier: 1 }, reward: 80 },
     { id: 'q_dish', kicker: 'BULAŞIKÇI', title: 'Bulaşıkçı tut', target: { type: 'pad', id: 'dishwasher' }, area: 1, reward: 120 },
     { id: 'q_z2table4', kicker: 'SALON 2', title: 'Salon 2: 4. Masayı aç', target: { type: 'pad', id: 'z2table4' }, area: 1, reward: 200 },
     { id: 'q_tableL2x2', kicker: 'MASA SEVİYESİ', title: "2 masayı Seviye 3'e çıkar", target: { type: 'tablesAtLevel', level: 2, count: 2 }, reward: 120 },
@@ -815,13 +828,14 @@ export const economyConfig = {
     { id: 'q_zone3', kicker: 'ÜÇÜNCÜ SALON', title: '3. Salonu aç', target: { type: 'pad', id: 'zone3' }, area: 2, reward: 400 },
     { id: 'q_z3table2', kicker: 'SALON 3', title: 'Salon 3: 2. Masayı aç', target: { type: 'pad', id: 'z3table2' }, area: 2, reward: 100 },
     { id: 'q_counter', kicker: 'TEZGÂH', title: 'Tezgâhı kur', target: { type: 'stationLevel', level: 4 }, reward: 300 },
-    { id: 'q_waiter2', kicker: 'İKİNCİ GARSON', title: '2. Garsonu tut', target: { type: 'pad', id: 'waiter2' }, reward: 250 },
     { id: 'q_z3table3', kicker: 'SALON 3', title: 'Salon 3: 3. Masayı aç', target: { type: 'pad', id: 'z3table3' }, area: 2, reward: 200 },
     // TOST: bir salondan değil, tezgâhın L5'inden gelir.
     { id: 'q_tost', kicker: 'TOST SACI', title: 'Tost sacını kur', target: { type: 'stationLevel', level: 5 }, reward: 500 },
     { id: 'q_tost5', kicker: 'TOST', title: '5 tost servis et', target: { type: 'serveTost', count: 5 }, reward: 300 },
     { id: 'q_z3table4', kicker: 'SALON 3', title: 'Salon 3: 4. Masayı aç', target: { type: 'pad', id: 'z3table4' }, area: 2, reward: 350 },
-    { id: 'q_waiterTray2', kicker: 'GARSON TEPSİSİ', title: "Garsonun tepsisini 3'e çıkar", target: { type: 'waiterTray', tier: 2 }, reward: 300 },
+    // T8a (D-142): garson 2'li başlıyor (`waiter.trayBase`) → eski 1. kademe görevi (`q_waiterTray1`)
+    // hattan çıktı; bu görev artık İLK kademeyi ister. Kimlik korunur: kaydın konumu değişmez.
+    { id: 'q_waiterTray2', kicker: 'GARSON TEPSİSİ', title: "Garsonun tepsisini 3'e çıkar", target: { type: 'waiterTray', tier: 1 }, reward: 300 },
     { id: 'q_z1allL4', kicker: 'SALON 1 BAKIMI', title: '4 masayı Seviye 5 yap', target: { type: 'tablesAtLevel', level: 4, count: 4, area: 0 }, reward: 400 },
     // --- BÖLÜM 3b · ŞERİDİ DOLDUR (B5a): banketlerin kalan sekiz birimi ---
     // ÖNCE TEZGÂHIN SON BASAMAĞI. Bu görev B5a'da eklendi ve sırası tesadüf değil: şeridin masaları
@@ -831,6 +845,9 @@ export const economyConfig = {
     { id: 'q_stationMax', kicker: 'TEZGÂH', title: 'Tezgâhı son seviyeye çıkar', target: { type: 'stationLevel', level: 6 }, reward: 800 },
     // ARZ tavana dayandığı anda darboğaz TAŞIMAYA geçer (Ö5 ölçümü) — bu görev tam o anda gelir.
     { id: 'q_waiter3', kicker: 'ÜÇÜNCÜ GARSON', title: '3. Garsonu tut', target: { type: 'pad', id: 'waiter3' }, area: 0, reward: 600 },
+    // T8a (D-142, G-86 ⑤): tepsinin son kademesi hatta YOKTU ve hiçbir koşuda alınmıyordu (D-093'ün
+    // personel Usta hedefleri bu yüzden 12 saatte açılmıyordu). Kat 1 −%2,3, eşik kırılmıyor (W3).
+    { id: 'q_waiterTray3', kicker: 'GARSON TEPSİSİ', title: "Garsonun tepsisini 4'e çıkar", target: { type: 'waiterTray', tier: 2 }, area: 0, reward: 600 },
     // Hattın SONUNA eklendiler, araya değil: önlerindeki her görev B5a öncesiyle birebir aynı sırada
     // kalsın (ölçülen altı tempo bandı bu sıraya bağlı). Her zorunlu pad'in bir görevi olması
     // değişmez kural — pad'i görevsiz bırakmak HUD'da "görev bitti ama ekranda pad var" hâli olurdu.
@@ -1052,8 +1069,9 @@ export const economyConfig = {
     perPad: 15,
     /** Her ₺ yükseltme (ocak/garson/masa) başına XP. */
     perUpgrade: 10,
-    /** L1→L2 için gereken XP. */
-    levelBase: 60,
+    /** L1→L2 için gereken XP. T8a (D-142, G-66): 60 → 90 — "seviye atlamayı biraz zorlaştır".
+     *  Kat 1 +%1,5, eşik kırılmıyor (12 saatte seviye 13 → 12). */
+    levelBase: 90,
     /** Seviye başına gereksinim büyümesi. */
     levelGrowth: 1.5,
     /**
@@ -1076,6 +1094,15 @@ export const economyConfig = {
      * birikirdi; taşıma ödülü tepside GÖRÜNÜR.
      */
     carryBonusPerLevel: 0.02,
+    /**
+     * T8a (D-142, G-67) — SEVİYE ₺ ÖDÜLÜ, taşıma ödülünün ÜSTÜNE. Kullanıcı: *"o anki ekonomi ne
+     * kadar gerektiriyorsa o kadar ödül"* → sabit ₺ değil, SON `levelRewardSec` SANİYEDE KAZANILAN ₺.
+     * Seviye `levelRewardFromLevel`'dan önce ₺ yok: ilk seviyeler öğretici görevlerle ilk saniyelerde
+     * atlanıyor ve kapısız ödül ilk alımı 22 → 3 sn'ye, otomasyonu 6,1 → 3,6 dk'ya indiriyordu
+     * (K8b). Kapı açılış üçlüsünü birebir koruyor (K8d). Ölçüm: docs/zincir-raporu-t8a.md Bulgu 8.
+     */
+    levelRewardSec: 60,
+    levelRewardFromLevel: 5,
   },
 
   /**
@@ -1385,9 +1412,9 @@ export function waiterTrayNextCost(tier: number): number | null {
   return tier < costs.length ? costs[tier] : null;
 }
 
-/** Garson tepsi kapasitesi = taban 1 + satın alınmış kademe (Y3). */
+/** Garson tepsi kapasitesi = taban (`waiter.trayBase`) + satın alınmış kademe (Y3 · D-142). */
 export function waiterTrayCapacityFor(tier: number): number {
-  return 1 + Math.min(Math.max(tier, 0), waiterTrayMaxTier());
+  return economyConfig.waiter.trayBase + Math.min(Math.max(tier, 0), waiterTrayMaxTier());
 }
 
 // ---- Bulaşıkçı leğen yükseltmeleri (v28) — kademe → değer türeticileri ----

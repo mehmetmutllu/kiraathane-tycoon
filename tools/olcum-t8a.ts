@@ -25,7 +25,7 @@
  * yığın ölçümleri serbest sırayla koştu. Burada taban tek hedeftir; eski sim tabanı `K6T` satırıdır ve
  * damga (a) onu T7'nin sayısına bağlar.
  *
- * DAMGALAR: (a) K6T = T7'nin ölçtüğü dünya (Normal aşan 2 · İdealize aşan 0); (b) her kol tabanın
+ * DAMGALAR: (a) taban = commit #1'in PK2 satırı (D-142 kararı; parmak izi); (b) her kol tabanın
  * parmak izini kımıldatmalı (C4 tuzağı ②); (c) kancalar koşu sonunda kapalı, taban geri geliyor;
  * (d) K8 kolunda en az bir seviye ödülü ÖDENMİŞ olmalı.
  */
@@ -72,7 +72,7 @@ function geriAl(): void {
   cfg.waiter.trayUpgrades.costs = [...TABAN.wTrayCosts];
   cfg.xp.levelBase = TABAN.xpBase;
   cfg.xp.levelGrowth = TABAN.xpGrowth;
-  garsonTepsiTabaniAyarla(1);
+  garsonTepsiTabaniAyarla(null);
   durtuselAyarla(false);
   masaSirasiAyarla(null);
   hedefAkisiAyarla(null);
@@ -138,88 +138,23 @@ const seviyeOdemesi = (saniye: number, ilkOdenen = 2) => () => hedefAkisiAyarla(
   };
 });
 
+/* commit #2 (D-142): uygulanan kollar (K1a · K2b · K3b · K4a · K7a · K8d · W3 · kapı) artık TABANDIR
+ * ve buradan söküldü — ölçüm hâlleri commit #1'de (`aa387c8` · `e0c9f7b`). Kalan kollar
+ * UYGULANMAYANLAR: yeni tabanın üstünde yeniden koşar ki kararın neyi bıraktığı sayıyla dursun. */
 const KOLLAR: Kol[] = [
-  // ── G-86 · zincir sırası ──
-  { kod: 'K3a', kalem: 'G-73', ad: '2. garson Salon 1 sonunda (4. masadan sonra) · ₺1.600', kisa: true, uygula: () => {
-    padTasi('waiter2', 'table4'); gorevTasi('q_waiter2', 'q_charMagnet'); pad('waiter2').area = 0;
-  } },
-  { kod: 'K3b', kalem: 'G-73', ad: '2. garson Salon 1 sonunda · ₺800', uygula: () => {
-    padTasi('waiter2', 'table4'); gorevTasi('q_waiter2', 'q_charMagnet'); pad('waiter2').cost = 800;
-  } },
-  { kod: 'K3c', kalem: 'G-73', ad: '2. garson Salon 2 başında (S2 2. masadan sonra) · ₺1.600', uygula: () => {
-    padTasi('waiter2', 'z2table2'); gorevTasi('q_waiter2', 'q_z2table2');
-  } },
-  { kod: 'D1', kalem: 'G-86 ①②', ad: 'bulaşıkçı Salon 1 sonunda (4. masadan sonra) · ₺900', kisa: true, uygula: () => {
-    padTasi('dishwasher', 'table4'); gorevTasi('q_dish', 'q_charMagnet'); pad('dishwasher').area = 0;
-  } },
-  { kod: 'D2', kalem: 'G-86 ②', ad: 'bulaşıkçı GARSONDAN ÖNCE (yer + fiyat takası: bulaşıkçı ₺130, garson ₺900)', uygula: () => {
-    // Sıra: table3 → dishwasher → table4 ... z2table3 → waiter → z2table4.
-    padTasi('dishwasher', 'table3'); pad('dishwasher').area = 0; pad('dishwasher').cost = 130;
-    padTasi('waiter', 'z2table3'); pad('waiter').area = 1; pad('waiter').cost = 900;
-    gorevTasi('q_dish', 'q_charTray2');
-    gorevTasi('q_waiter', 'q_waiterTray1');
-    // Garson görevleri garson yokken tutulamaz: garson hızı/tepsisi garsonun arkasına.
-    gorevTasi('q_waiterL2', 'q_waiter');
-    gorevTasi('q_waiterTray1', 'q_waiterL2');
-  } },
-  { kod: 'W3', kalem: 'G-86 ⑤', ad: 'garson tepsi 3. kademe hatta (3. garsondan sonra, ₺2.500)', uygula: () => {
-    gorevEkle({ id: 'q_waiterTray3', title: 'Garson tepsisi 4', target: { type: 'waiterTray', tier: 3 }, reward: 600 }, 'q_waiter3');
-  } },
-  { kod: 'K5a', kalem: 'G-75', ad: '2. salondan önce: Salon 1 dört masa Seviye 2', uygula: () => {
-    gorevEkle({ id: 'q_z1allL1', title: '4 masayı Seviye 2 yap', target: { type: 'tablesAtLevel', level: 1, count: 4, area: 0 }, reward: 60 }, 'q_charMagnet');
-  } },
-  { kod: 'K5b', kalem: 'G-75', ad: '2. salondan önce: dört masa Seviye 2 + iki masa Seviye 3', uygula: () => {
+  { kod: 'K5b', kalem: 'G-75', ad: '2. salondan önce: dört masa Seviye 2 + iki masa Seviye 3 (seçilmedi)', kisa: true, uygula: () => {
     gorevEkle({ id: 'q_z1allL1', title: '4 masayı Seviye 2 yap', target: { type: 'tablesAtLevel', level: 1, count: 4, area: 0 }, reward: 60 }, 'q_charMagnet');
     gorevEkle({ id: 'q_z1L2x2', title: '2 masayı Seviye 3 yap', target: { type: 'tablesAtLevel', level: 2, count: 2, area: 0 }, reward: 90 }, 'q_z1allL1');
   } },
-  // ── T3 fiyat/doz kolları ──
-  { kod: 'K1a', kalem: 'G-65', ad: 'oyuncu tepsi T1 ₺75 → ₺30', kisa: true, uygula: () => { cfg.character.tray.costs[0] = 30; } },
-  { kod: 'K1b', kalem: 'G-65', ad: 'oyuncu tepsi T1 ₺75 → ₺50', uygula: () => { cfg.character.tray.costs[0] = 50; } },
-  { kod: 'K2a', kalem: 'G-72', ad: 'garson tepsi tabanı 1 → 2 (kademeler aynı: 2→3→4→5)', kisa: true, uygula: () => { garsonTepsiTabaniAyarla(2); } },
-  { kod: 'K2b', kalem: 'G-72', ad: 'garson tepsi tabanı 2, ilk kademe düşer (2→3→4 · ₺1.200/2.500)', uygula: () => {
-    garsonTepsiTabaniAyarla(2); cfg.waiter.trayUpgrades.costs = [1200, 2500];
-    // Hat kademe 2'yi istiyordu; kademe sayısı bir azaldı → görev hedefleri bir kaydırılır.
-    const t1 = cfg.quests.find((q) => q.id === 'q_waiterTray1')!; const t2 = cfg.quests.find((q) => q.id === 'q_waiterTray2')!;
-    cfg.quests = cfg.quests.filter((q) => q !== t1);
-    t2.target = { type: 'waiterTray', tier: 1 };
+  { kod: 'K2a', kalem: 'G-72', ad: 'garson tepsi tavanı 5 (₺400 kademesi geri: 2→3→4→5, seçilmedi)', uygula: () => {
+    cfg.waiter.trayUpgrades.costs = [400, 1200, 2500];
   } },
-  { kod: 'K4a', kalem: 'G-74', ad: '4. masa ₺380 → ₺250', kisa: true, uygula: () => { pad('table4').cost = 250; } },
-  { kod: 'K4b', kalem: 'G-74', ad: '4. masa ₺380 → ₺300', uygula: () => { pad('table4').cost = 300; } },
-  { kod: 'K6T', kalem: 'G-76', ad: 'masa sırası SERBEST + en ucuz (D-124 öncesi · T7 dahil sim tabanı)', kisa: true, uygula: () => { masaSirasiAyarla(null); } },
-  { kod: 'K6B', kalem: 'G-76', ad: 'masa sırası GENİŞLİK-ÖNCE (1111→2222, kuşak)', kisa: true, uygula: () => { masaSirasiAyarla(siraFabrikasi(kolBul('B'))); } },
-  { kod: 'K7a', kalem: 'G-66', ad: 'seviye eğrisi: taban 60 → 90', uygula: () => { cfg.xp.levelBase = 90; } },
-  { kod: 'K7b', kalem: 'G-66', ad: 'seviye eğrisi: büyüme 1,5 → 1,6', kisa: true, uygula: () => { cfg.xp.levelGrowth = 1.6; } },
-  { kod: 'K8a', kalem: 'G-67', ad: 'seviye ödülü + ₺ = o anki gelirin 30 sn\'si', uygula: seviyeOdemesi(30) },
-  { kod: 'K8b', kalem: 'G-67', ad: 'seviye ödülü + ₺ = o anki gelirin 60 sn\'si', kisa: true, uygula: seviyeOdemesi(60) },
-  { kod: 'K8c', kalem: 'G-67', ad: 'seviye ödülü + ₺ = o anki gelirin 120 sn\'si', uygula: seviyeOdemesi(120) },
-  { kod: 'K8d', kalem: 'G-67', ad: "seviye ₺ = gelirin 60 sn'si · KAPI: Seviye 5'ten önce ₺ yok (ilk 4 seviye yalnız modal)", uygula: seviyeOdemesi(60, 5) },
-  { kod: 'K8e', kalem: 'G-67', ad: "seviye ₺ = gelirin 120 sn'si · KAPI: Seviye 5'ten önce ₺ yok", uygula: seviyeOdemesi(120, 5) },
-  { kod: 'PKT', kalem: 'birleşim', ad: 'PAKET: K3b + W3 + K2b + K5b + K1a + K4a + K7a + K8d (tek kol olarak)', kisa: true, uygula: () => paket(true) },
-  { kod: 'PK2', kalem: 'birleşim', ad: 'PAKET − K5b: K3b + W3 + K2b + K1a + K4a + K7a + K8d', uygula: () => paket(false) },
+  { kod: 'K8e', kalem: 'G-67', ad: "seviye ₺ = gelirin 120 sn'si (seçilmedi)", uygula: () => { seviyeOdemesi(120, C.xp.levelRewardFromLevel)(); } },
+  { kod: 'K8-', kalem: 'G-67', ad: 'seviye ₺ YOK (D-142 öncesi ödül: yalnız taşıma)', uygula: () => { hedefAkisiAyarla(null); } },
+  { kod: 'K6T', kalem: 'G-76', ad: 'masa sırası SERBEST + en ucuz (D-124 öncesi)', kisa: true, uygula: () => { masaSirasiAyarla(null); } },
+  { kod: 'K6B', kalem: 'G-76', ad: 'masa sırası GENİŞLİK-ÖNCE (1111→2222)', uygula: () => { masaSirasiAyarla(siraFabrikasi(kolBul('B'))); } },
+  { kod: 'K11', kalem: 'G-61', ad: 'KAPISIZ dünyanın dürtüsel oyuncusu (kapı öncesi en kötü uç)', kisa: true, uygula: () => { durtuselAyarla(true); } },
 ];
-function paket(k5: boolean): void {
-  {
-    padTasi('waiter2', 'table4'); gorevTasi('q_waiter2', 'q_charMagnet'); pad('waiter2').cost = 800;
-    gorevEkle({ id: 'q_waiterTray3', title: 'Garson tepsisi 4', target: { type: 'waiterTray', tier: 3 }, reward: 600 }, 'q_waiter3');
-    garsonTepsiTabaniAyarla(2); cfg.waiter.trayUpgrades.costs = [1200, 2500];
-    const t1 = cfg.quests.find((q) => q.id === 'q_waiterTray1')!; const t2 = cfg.quests.find((q) => q.id === 'q_waiterTray2')!;
-    cfg.quests = cfg.quests.filter((q) => q !== t1);
-    t2.target = { type: 'waiterTray', tier: 1 };
-    // W3'ün görevi K2b'de kademe 2'yi ister (tavan kademe sayısı bir azaldı).
-    cfg.quests.find((q) => q.id === 'q_waiterTray3')!.target = { type: 'waiterTray', tier: 2 };
-    if (k5) {
-      gorevEkle({ id: 'q_z1allL1', title: '4 masayı Seviye 2 yap', target: { type: 'tablesAtLevel', level: 1, count: 4, area: 0 }, reward: 60 }, 'q_charMagnet');
-      gorevEkle({ id: 'q_z1L2x2', title: '2 masayı Seviye 3 yap', target: { type: 'tablesAtLevel', level: 2, count: 2, area: 0 }, reward: 90 }, 'q_z1allL1');
-    }
-    cfg.character.tray.costs[0] = 30;
-    pad('table4').cost = 250;
-    cfg.xp.levelBase = 90;
-    seviyeOdemesi(60, 5)();
-  }
-}
-KOLLAR.push(
-  { kod: 'K11', kalem: 'G-61', ad: 'KAPISIZ dünyanın dürtüsel oyuncusu (parası yeten ucuz yan kalemi alır)', kisa: true, uygula: () => { durtuselAyarla(true); } },
-);
 
 /* ── Ölçüm ───────────────────────────────────────────────────────────────────────── */
 interface Sonuc {
@@ -240,6 +175,7 @@ function iz(b: Bosluk[]): string {
 function olc(kol: Kol | null): Sonuc {
   geriAl();
   masaSirasiAyarla(siraFabrikasi(kolBul('A'))); // oyunun kuralı (D-124); K6 kolları üstüne yazar
+  seviyeOdemesi(C.xp.levelRewardSec, C.xp.levelRewardFromLevel)(); // oyunun kuralı (D-142)
   kol?.uygula();
   yiginKur();
   seviyeOdulu = 0;
@@ -267,15 +203,17 @@ const taban = olc(null);
 const secilen = KISA ? KOLLAR.filter((k) => k.kisa) : KOLLAR;
 const sonuclar = new Map<string, Sonuc>();
 for (const k of secilen) sonuclar.set(k.kod, olc(k));
-const eski = sonuclar.get('K6T')!;
-damga('K6T = T7 dünyası (Normal aşan 2)', eski.o.normalAsan === 2, `Normal aşan ${eski.o.normalAsan}`);
-damga('K6T = T7 dünyası (İdealize aşan 0)', eski.o.idealAsan === 0, `İdealize aşan ${eski.o.idealAsan}`);
-damga('K6T = T7 dünyası (Kat 1 23 323 sn)', eski.o.serit === 23323, `Kat 1 ${eski.o.serit}`);
+// commit #2 BEKÇİSİ: uygulanan kod ölçülen kolun kendisi mi? Commit #1'de PK2 satırı (aynı kararın
+// çalışma anında uygulanmış hâli) parmak izi `aabcd5d5` · Kat 1 5,58 sa · gözlem 1 verdi.
+damga('taban = commit #1 PK2 (parmak izi aabcd5d5)', taban.iz === 'aabcd5d5', `taban izi ${taban.iz}`);
+damga('taban eşikleri (Normal aşan 1 · İdealize aşan 0)', taban.o.normalAsan === 1 && taban.o.idealAsan === 0,
+  `Normal ${taban.o.normalAsan} · İdealize ${taban.o.idealAsan}`);
+damga('taban seviye ödülü ödendi', taban.odul > 0, '0 ₺');
 
 const tekrar = olc(null);
 damga('kancalar sızmadı (taban tekrar = taban)', tekrar.iz === taban.iz, `${tekrar.iz} ≠ ${taban.iz}`);
 for (const k of secilen) varyantDamgasi(k.kod, taban.iz, sonuclar.get(k.kod)!.iz);
-for (const k of secilen.filter((x) => x.kod.startsWith('K8') || x.kod === 'PKT')) {
+for (const k of secilen.filter((x) => x.kod === 'K8e')) {
   damga(`${k.kod} seviye ödülü ödendi`, sonuclar.get(k.kod)!.odul > 0, '0 ₺');
 }
 

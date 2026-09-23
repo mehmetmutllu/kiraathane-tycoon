@@ -29,10 +29,13 @@
  *      görev de yapılamaz. İpucular ise var olan bir mekanikte kolaylık sunar.
  *   5. Karakter ipucu tepsininkinden önce: biri görevin talimatı (ne yapacağını söyler), öteki
  *      bir kolaylık (yapabileceğini söyler).
+ *   6. **seviye** (D-142, G-66/G-67) — seviye atlama ödül ekranı. Öğreticilerin ÖNÜNDE (bir ödül
+ *      bekletilmez) ama ipucular gibi SIRA BEKLER: seviye çoğu zaman görev bitince (XP) atlanır,
+ *      yani tam kutlamanın ortasında — ekran kutlama bitince gelir, üstüne binmez.
  */
 
 /** Ekranı kesen kanallar. `null` = ekran serbest. */
-export type EkranKanali = 'cevrimdisi' | 'usta' | 'ogretme-bulasik' | 'ipucu-karakter' | 'ipucu-tepsi' | null;
+export type EkranKanali = 'cevrimdisi' | 'usta' | 'seviye' | 'ogretme-bulasik' | 'ipucu-karakter' | 'ipucu-tepsi' | null;
 
 export interface EkranGirdisi {
   /** Çevrimdışı kazanç var ve henüz kapatılmadı. */
@@ -45,6 +48,8 @@ export interface EkranGirdisi {
   bildirimVar: boolean;
   /** Görev geçiş penceresi (kutlama + boşluk) sürüyor. */
   gecisPenceresi: boolean;
+  /** Seviye atlama ödül ekranı bekliyor (D-142). */
+  seviyeVar?: boolean;
   /** Bulaşık ÖĞRETME kartının koşulları sağlandı (bulaşık görevi aktif, kart hiç görülmedi). */
   bulasikOgretmeHazir: boolean;
   /** Karakter paneli ipucunun kendi koşulları sağlandı (karakter görevi aktif, panel hiç açılmadı). */
@@ -58,6 +63,7 @@ export function ekranKanali(g: EkranGirdisi): EkranKanali {
   if (g.ustaVar) return 'usta';
   // İpucular SIRA BEKLER: panel açıkken, bildirim ekrandayken ya da kutlama sürerken çıkmazlar.
   if (g.panelAcik || g.bildirimVar || g.gecisPenceresi) return null;
+  if (g.seviyeVar) return 'seviye';
   // ÖĞRETME, İPUCUNDAN ÖNCE: biri mekaniğin KENDİSİNİ tanıtır (bilmeden oynanamaz), öteki var
   // olan bir mekanikte kolaylık sunar. G-63'ün kartı bu yüzden tepsininkinin önündedir.
   if (g.bulasikOgretmeHazir) return 'ogretme-bulasik';

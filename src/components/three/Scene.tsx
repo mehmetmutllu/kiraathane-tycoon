@@ -5,7 +5,7 @@ import { cameraViewYaz } from '../../game/cameraView';
 import { useGame, questFocusPos, LAYOUT, LAVABO, BAND, BAND_SHELL, FLOOR_HALF, wallSpans, servicePlace, stationSoftMaxLevel, stationUpgradeCostAt, stationUpgradeUnlocked, tableSoftMaxLevel, tableUpgradeTarget, tableNextCost, openServices, doorX as doorAt, entranceAt, BANKET, WAITER_STATION, waiterStationOpen } from '../../game/store';
 import { economyConfig, lavaboUpgradeCost } from '../../config/economy.config';
 import { areaOfTable, THE_SERVICE } from '../../game/world';
-import { masterId, masterCost, masterUnlockedForTable, dishStationVisible, cardQuestIndex } from '../../game/rules';
+import { masterId, masterCost, masterUnlockedForTable, dishStationVisible, cardQuestIndex, upgradeSpotLiveNow } from '../../game/rules';
 import { SceneLights } from './lights';
 import { devPerfKol } from '../../game/devPerf';
 import { KARE_TAVANI_FPS } from '../../game/kareTavani';
@@ -559,6 +559,8 @@ function StationUpgradeSpots() {
   const gate = { padsDone, tables, stationLevel: stationLevels[THE_SERVICE], lifetime: lifetime.toNumber() };
   const level = stationLevels[THE_SERVICE];
   const upPos = servicePlace(areasOpen).upgradeSpot;
+  const canli = useGame((s) => upgradeSpotLiveNow(s, 'station'));
+  if (!canli) return null; // D-142: nokta yalnız kendi görevinde
   if (level >= stationSoftMaxLevel()) return null;
   if (!stationUpgradeUnlocked(gate)) return null;
   const cost = stationUpgradeCostAt(THE_SERVICE, level);
@@ -616,7 +618,8 @@ function TableUpgradeMarkers() {
   const cash = wallet.toNumber();
   // D-124: aynı anda TEK masanın noktası canlı. Tetik (tick.ts) aynı çağrıyı yapar — çizilen ile
   // tetiklenen tek kaynaktan türer (H1'in dersi).
-  const hedefMasa = tableUpgradeTarget(gate);
+  const canli = useGame((s) => upgradeSpotLiveNow(s, 'table')); // D-142
+  const hedefMasa = canli ? tableUpgradeTarget(gate) : null;
   return (
     <>
       {LAYOUT.tables.slice(0, tables).map((t, i) => {
@@ -1105,6 +1108,7 @@ function LavaboFront() {
   const level = useGame((s) => s.lavaboLevel);
   const fill = useGame((s) => s.lavaboFill);
   const wallet = useGame((s) => s.wallet);
+  const canli = useGame((s) => upgradeSpotLiveNow(s, 'lavabo')); // D-142
   if (areasOpen < 3) return null; // bant görünmüyorsa kapısı da yok
   const open = padsDone.includes('lavabo');
   const cost = lavaboUpgradeCost(level);
@@ -1137,7 +1141,7 @@ function LavaboFront() {
         </group>
       )}
       {/* Yükseltme noktası: pad bitince AYNI yerde belirir (obje-başı yükseltme). */}
-      {open && cost != null && (
+      {open && canli && cost != null && (
         <GroundMarker
           pos={LAVABO.spot}
           label={ETIKET_LAVABO}

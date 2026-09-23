@@ -198,6 +198,9 @@ function salonSahnesi(seviyeler: number[]): void {
     tableUpgradeFills: LAYOUT.tables.map(() => 0),
     npcs: [], spawnTimer: 999,
     inputKeyboard: [0, 0], inputJoystick: [0, 0],
+    // D-142: masa noktası yalnız masa görevinde canlı — bu testler SIRAYI sınar, kapıyı değil:
+    // hat bitmiş kurulur (kapının bekçisi `tests/zincir-t8a.test.ts`).
+    questIndex: C.quests.length, questPhase: 'active',
   });
   useGame.getState().addMoney(50_000);
 }

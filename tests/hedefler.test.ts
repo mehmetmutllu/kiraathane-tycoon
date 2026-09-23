@@ -278,7 +278,12 @@ describe('C · denge: uygulanan config SEÇİLEN kolun bandında', () => {
     expect(o.ilkAlim!).toBeLessThan(90);
     expect(o.acilisEnUzun).toBeLessThanOrEqual(2 * 60);
     expect(o.otomasyon!).toBeLessThan(15 * 60);
-    // Açılış SABİT kalmalı, yalnız "ölçütü geçmeli" değil: taban 6,1 dk (366 sn).
-    expect(Math.abs(o.otomasyon! - 366)).toBeLessThan(30);
+    // Açılış SABİT kalmalı, yalnız "ölçütü geçmeli" değil: çarpansız tabanla kıyaslanır. (Sabit
+    // 366 sn yazıyordu; D-142'nin ₺30'luk tepsisi tabanı 312 sn'ye çekti — çarpan değil.)
+    hedefCarpaniAyarla(null);
+    onbellekTemizle();
+    milestoneTazele();
+    const taban = olcutler();
+    expect(Math.abs(o.otomasyon! - taban.otomasyon!)).toBeLessThan(30);
   });
 });

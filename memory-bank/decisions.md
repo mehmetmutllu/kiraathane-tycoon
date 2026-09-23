@@ -4655,3 +4655,18 @@ sütundan dışa) · G-84 R1-R3 yerine kullanıcının kuralı: minder **parça 
 seviyesi (0-4). Dolmadan okunsaydı yeni L0 masa minderleri geri alırdı. Ada başına tek mesh (24 → 2 çağrı).
 **Bedel ölçüldü:** B4 Kat 1'i %4,3 kısaltıyor (HRE 24 379 → 23 323 sn); aşan sayıları ve D-095 bandı
 değişmedi. `prototype-bits` söküldü. Sayılar + bekçi: `docs/banket-raporu-t7.md` §Bulgu 7 · §Karar.
+
+---
+
+## D-142 · Zincir: 2. garson Salon 1'de, garson 2'li tepsi, seviye ₺'si, yükseltme noktası görev kapılı (2026-09-23)
+
+**Karar (kullanıcı, T8a karar paketi — dört soruda önerilen kol):** PK2 = tepsi T1 ₺30 · 4. masa ₺250 ·
+2. garson Salon 1 sonunda ₺800 · seviye tabanı 90 · garson tepsi-3 görevi · garson 2'li tepsiyle başlar,
+tavan 4 · seviye ₺'si = son 60 sn'nin kazancı, Seviye 5'ten itibaren · yükseltme noktası yalnız kendi
+görevinde canlı. 2. salonu geciktirme görevleri (K5b) SEÇİLMEDİ.
+**Belirleyici sayı:** Kat 1 6,05 → **5,58 sa (−%7,7)**, hiçbir eşik kırılmadı; 2. garson 152 → 29 dk.
+Kapısız seviye ₺'si ilk alımı 22 → 3 sn'ye indiriyordu → Sv 5 kapısı. Sim'in tabanı D-124'ü oynamıyordu
+(Kat 1'i %6,7 fazla gösteriyordu) — T8a'dan beri taban tek hedef. Bardak havuzu bağlamıyor (×2 = 0 fark).
+Seviye atlama artık ödül ekranı; kayıt v34 (tepsi kademesi göçü). `docs/zincir-raporu-t8a.md`.
+**Sıra kilidi 7. yanlış pozitif:** commit #2 `karma-commit` sayıldı — final tam koşu + rapor §Karar kodla aynı
+commit'te (protokolün istediği); commit #1 `aa387c8` + `e0c9f7b` (karar bölümü boş) push'lu.

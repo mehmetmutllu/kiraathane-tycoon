@@ -85,9 +85,10 @@ describe('1 — D-087 KAPANDI: yığın açıkken hüküm profilinde 20 dk aşı
     expect(olc('M0').idealEnUzun).toBeGreaterThan(SINIR);
   });
 
-  it('gözlem bandı (Normal) da 6`dan 2`ye indi', T, () => {
-    expect(olc('M0').normalAsan).toBe(6);
-    expect(olc('HRE').normalAsan).toBe(2);
+  it('gözlem bandı (Normal) yığınla iniyor: D-142 sonrası 3 → 1 (D-095 günü 6 → 2)', T, () => {
+    // D-142 (T8a) iki ucu birden indirdi: garson 2'li tepsiyle başlıyor, 2. garson Salon 1'de.
+    expect(olc('M0').normalAsan).toBe(3);
+    expect(olc('HRE').normalAsan).toBe(1);
   });
 });
 
@@ -169,9 +170,11 @@ describe('4 — zincir borcu D-095`in yazdığı BANTTA', () => {
     expect(Math.abs(dSerit())).toBeGreaterThan(0.07);
   });
 
-  it('borcun çoğunu R yiyor: R tek başına %14`ten fazla', T, () => {
+  it('borcun çoğunu R yiyor: R tek başına %10`dan fazla', T, () => {
+    // D-095 günü %15,5; D-142 sonrası %12,1 — garsonun 2'li tepsisi taşımayı gevşetince R'nin
+    // taşıma çarpanının payı küçüldü. "Çoğunu R yiyor" hükmü aşağıdaki kıyasla duruyor.
     const dR = ((olc('R').serit ?? NaN) - (olc('M0').serit ?? NaN)) / (olc('M0').serit ?? NaN);
-    expect(dR).toBeLessThan(-0.14);
+    expect(dR).toBeLessThan(-0.10);
     // ...ve H ile E ikisi birlikte bile R'nin yarısı kadar değil: "pahalıyı kıs, ucuzlarla
     // idare et" diye bir kol OLMADIĞININ sayısal karşılığı budur.
     const dH = ((olc('H').serit ?? NaN) - (olc('M0').serit ?? NaN)) / (olc('M0').serit ?? NaN);
@@ -212,11 +215,14 @@ describe('5 — açılış (D-079) yığın altında da sağlam: meta katman erk
 });
 
 describe('6 — kelepçe hâlâ TAŞIMADA: sonraki kolun kanalı değişmedi', () => {
-  it('yığın açıkken taşımanın payı hâlâ %85`in üstünde', T, () => {
+  it('yığın açıkken kelepçenin çoğu hâlâ taşımada (%60`ın üstünde, arzın iki katı)', T, () => {
+    // D-095 günü %93 → %85 bandı. D-142'nin 2'li garson tepsisi taşımanın payını %69,9'a indirdi,
+    // arz %29,1'e çıktı: sonraki kolun kanalı yine taşıma, ama artık tek başına değil.
     kur(true, true, true);
     const d = darbogazDagilimi(0.55);
     const top = Object.values(d).reduce((a, b) => a + b, 0);
-    expect((d['taşıma'] ?? 0) / top).toBeGreaterThan(0.85);
+    expect((d['taşıma'] ?? 0) / top).toBeGreaterThan(0.6);
+    expect(d['taşıma'] ?? 0).toBeGreaterThan(2 * (d['arz'] ?? 0));
   });
 });
 

@@ -73,10 +73,10 @@ describe('1 — hüküm İDEALİZE profilinden okunur ve GEÇER', () => {
 });
 
 describe('2 — profil seçimi ÖNEMLİ (karar boş bir yeniden adlandırma değil)', () => {
-  it('İdealize ile Normal AYNI sayıyı vermiyor: 1`e karşı 6', { timeout: 60_000 }, () => {
+  it('İdealize ile Normal AYNI sayıyı vermiyor: 1`e karşı 3 (D-087 günü 6)', { timeout: 60_000 }, () => {
     const o = taban();
     expect(o.idealAsan).toBe(1);
-    expect(o.normalAsan).toBe(6);
+    expect(o.normalAsan).toBe(3); // D-142 (T8a) sonrası
   });
 
   it('Normal profildeki en uzun bekleme İdealize`dekinden belirgin UZUN', { timeout: 60_000 }, () => {
@@ -104,8 +104,9 @@ describe('3 — D-087 EKONOMİYE dokunmadı (D1`in düzeltici kolları config`e 
     expect([g('z2table4'), g('zone3'), g('z3table3'), g('waiter3')]).toEqual([1400, 2500, 2200, 6000]);
   });
 
-  it('garson merdiveni taban değerlerinde (g1 kolu uygulanmadı)', () => {
-    expect(C.waiter.trayUpgrades.costs).toEqual([400, 1200, 2500]);
+  it('garson merdiveni: g1 kolu değil D-142 değiştirdi (taban 2, ₺400 kademesi düştü)', () => {
+    expect(C.waiter.trayBase).toBe(2);
+    expect(C.waiter.trayUpgrades.costs).toEqual([1200, 2500]);
     expect(C.waiter.speedUpgrades.speeds).toEqual([1.5, 2.0]);
   });
 
@@ -115,11 +116,13 @@ describe('3 — D-087 EKONOMİYE dokunmadı (D1`in düzeltici kolları config`e 
 });
 
 describe('4 — elenen kolların gerekçesi yeniden üretilebilir', () => {
-  it('g1 (taşıma tavanı) ölçütü İYİLEŞTİRMİYOR — ikinci dozda ihlal azalmıyor', { timeout: 90_000 }, () => {
-    // D1'de ikinci doz ihlali ARTIRIYORDU (7 > 6); T7'de (D-141) şerit içten dolunca eşitlendi
-    // (6 = 6). Elenme gerekçesi — ölçütü düzeltmiyor — aynen duruyor.
+  it('g1 (taşıma tavanı) D-142 SONRASI ölçütü iyileştiriyor — D1`in elenme gerekçesi DÜŞTÜ', { timeout: 90_000 }, () => {
+    // D1'de ikinci doz ihlali ARTIRIYORDU (7 > 6); T7'de eşitlendi (6 = 6). D-142 garson tepsisini
+    // 2'li başlatınca (g1'in kanalının bir kısmı) aynı doz 3 → 2 indiriyor: g1 artık "işe
+    // yaramayan kol" değil, uygulanmamış bir kol. Bekçi bu değişimi kayda geçirir; kol açılacaksa
+    // varyant kapısından geçer (docs/zincir-raporu-t8a.md §Uygulama).
     const o = olc('g1-2', () => DENGE_KOLLARI.g1.uygula(2));
-    expect(o.normalAsan).toBeGreaterThanOrEqual(taban().normalAsan);
+    expect(o.normalAsan).toBeLessThan(taban().normalAsan);
   });
 
   it('m1 (akıllı oyuncu taşıyıcıyı yükseltir) ATIL: hiçbir sayıyı değiştirmiyor', { timeout: 90_000 }, () => {

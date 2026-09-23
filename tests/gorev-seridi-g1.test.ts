@@ -135,7 +135,7 @@ describe('G1/3 · kutlama sürerken kamera kaçmaz (G-44, gerçek tick)', () => 
    * pad 1 ₺ kalmış → bu tick'te dolar, `padFillSystem` prio 3 odak ister.
    */
   const zone2Kurulum = (faz: 'active' | 'completing') => ({
-    padsDone: ['table2', 'table3', 'waiter', 'table4'],
+    padsDone: ['table2', 'table3', 'waiter', 'table4', 'waiter2'], // D-142: zone2 ← waiter2
     questIndex: C.quests.length, // hat bitti → görevin kendi tamamlanması fazı oynatmasın
     questDoneIndex: -1,
     questPhase: faz,

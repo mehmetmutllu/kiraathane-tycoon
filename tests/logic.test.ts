@@ -318,7 +318,10 @@ describe('generic pad sistemi + gating (quest hattı omurgası, 2026-06-09)', ()
     expect(useGame.getState().stations).toBe(1);
 
     expect(useGame.getState().padsDone.length).toBe(4);
-    // Zone-1 omurgası bitti → sıradaki omurga halkası ZONE-2 açılışı (Faz 3a).
+    // D-142 (G-73): Salon 1'in son halkası 2. GARSON; ardından ZONE-2 açılışı (Faz 3a).
+    expect(currentPad(gate())?.id).toBe('waiter2');
+    expect(completePad('waiter2')).toBe(true);
+    expect(useGame.getState().waiters.length).toBe(2);
     expect(currentPad(gate())?.id).toBe('zone2');
   });
 
@@ -574,6 +577,10 @@ describe('yeni-özellik bildirimi (D-019 §4)', () => {
     flushQuestTransition();
     useGame.setState({ player: PARK, inputKeyboard: [0, 0], inputJoystick: [0, 0] });
     useGame.getState().tick(0.1);
+    // D-142 (G-61): ocak noktası yalnız OCAK görevinde canlı — aktif görev tepsi, anahtar doğmaz.
+    expect(useGame.getState().revealSeen).not.toContain('upgrade:0');
+    useGame.setState({ questIndex: economyConfig.quests.findIndex((q) => q.id === 'q_station1') });
+    useGame.getState().tick(0.1);
     expect(useGame.getState().revealSeen).toContain('upgrade:0'); // v21: anahtarlar zone-başına
   });
 
@@ -621,6 +628,8 @@ describe('yeni-özellik bildirimi (D-019 §4)', () => {
     useGame.setState({
       player: PARK, inputKeyboard: [0, 0], inputJoystick: [0, 0],
       notice: null, noticeQueue: [], camFocus: null,
+      // D-142: nokta (ve reveal anahtarı) ancak ocak görevi aktifken doğar.
+      questIndex: economyConfig.quests.findIndex((q) => q.id === 'q_station1'),
     });
     useGame.getState().tick(0.1);
     expect(useGame.getState().revealSeen).toContain('upgrade:0'); // tüketildi (görünmeden)
@@ -937,6 +946,7 @@ describe('bulaşıkçı — omurga halkası (B2: Bölüm 2, plan §4 adım 14)',
     expect(useGame.getState().dishwasher).toBeNull();
     // Bölüm 2'nin içine kadar ilerle: alan + iki masa → sıradaki halka bulaşıkçıdır.
     expect(completePad('table4')).toBe(true);
+    expect(completePad('waiter2')).toBe(true); // D-142: Salon 1'in son halkası
     expect(completePad('zone2')).toBe(true);
     expect(completePad('z2table2')).toBe(true);
     expect(completePad('z2table3')).toBe(true);
@@ -1224,16 +1234,23 @@ describe('mekânsal çay yükseltme noktası (zone) + gating', () => {
     useGame.getState().hardReset();
     useGame.getState().addMoney(50);
     expect(completePad('table2')).toBe(true); // önkoşulu karşıla
+    // D-142: nokta yalnız OCAK görevinde canlı.
+    useGame.setState({ questIndex: economyConfig.quests.findIndex((q) => q.id === 'q_station1'), questPhase: 'active', questPhaseT: 0 });
 
     useGame.getState().addMoney(30); // L1 (25₺) yeter; max'a varmaz
     const z = SP().upgradeSpot;
     stand(z);
     const before = useGame.getState().stationLevels[0];
 
-    for (let i = 0; i < 50; i++) useGame.getState().tick(0.1);
+    // D-142: seviye alınınca görev biter ve nokta kapanır → dolum sırasında görülen tür okunur.
+    let gorulen: string | undefined;
+    for (let i = 0; i < 50; i++) {
+      useGame.getState().tick(0.1);
+      gorulen ??= useGame.getState().activeSpot?.kind;
+    }
 
     expect(useGame.getState().stationLevels[0]).toBeGreaterThan(before);
-    expect(useGame.getState().activeSpot?.kind).toBe('upgrade');
+    expect(gorulen).toBe('upgrade');
   });
 
   it('GEOMETRİ DEĞİŞMEZİ: yükseltme PAD MERKEZİ pickup dairesinin DIŞINDA (kullanıcı 2026-06-11: pad ocağın yanında)', () => {
@@ -1577,6 +1594,8 @@ describe('masa yükseltme + bahşiş (Faz 2h)', () => {
       padsDone: ['table2', 'table3', 'table4'],
       tableLevels: [0, 0, 0, 0],
       wallet: D(5000),
+      questIndex: economyConfig.quests.length, // D-142: kapı değil MASA-BAŞI sınanıyor
+      questPhase: 'active',
       player: [LAYOUT.tables[0].upgradeSpot[0], 0.6, LAYOUT.tables[0].upgradeSpot[2]],
       inputKeyboard: [0, 0],
       inputJoystick: [0, 0],
@@ -1721,7 +1740,7 @@ describe('bulaşık onboarding gate (2026-06-10) — q_wash gelmeden kirli barda
 });
 
 describe('2. ALAN (B2) — alan mekân getirir, SERVİS getirmez', () => {
-  const Z1_CHAIN = ['table2', 'table3', 'waiter', 'table4'];
+  const Z1_CHAIN = ['table2', 'table3', 'waiter', 'table4', 'waiter2']; // D-142: 2. garson Salon 1'in son halkası
 
   it('deriveWorld: 2. alan açılınca areasOpen=2 + oto 1 masa; SERVİS SAYISI ARTMAZ', () => {
     const d1 = deriveWorld([...Z1_CHAIN]);
@@ -1734,8 +1753,8 @@ describe('2. ALAN (B2) — alan mekân getirir, SERVİS getirmez', () => {
     // B2'nin özü: alan açmak ocak açmaz — servis sayısı 1'de kalır (makette 2. Alan'ın ocağı yok).
     expect(openServices(d2.areasOpen).length).toBe(1);
     expect(d2.services.length).toBe(1);
-    // Garson havuzu da alanla çoğalmaz: 1 garson, kat çapında.
-    expect(d2.services[THE_SERVICE].waiters).toBe(1);
+    // Garson havuzu da alanla çoğalmaz: Salon 1'in iki garsonu (D-142), kat çapında.
+    expect(d2.services[THE_SERVICE].waiters).toBe(2);
   });
 
   it("savunmacı: alan pad'i YOKKEN o alanın pad'leri etki edemez (bozuk kayıt sızamaz)", () => {
@@ -1824,7 +1843,7 @@ describe('WP1 bug paketi (2026-06-11) — quest-pad gate, zone kamera odağı, o
     expect(computeOfflineEarned(100, 3600, [])).toBe(Math.floor(t2Cost * frac));
     // Zone-1 bitti: sıradaki zone2 pad'i → tavan = pad × frac (2026-06-11: frac 1.2 — zone AÇILIR
     // ama salonun İÇİ bitmez: tavan < zone2 + ilk iç pad).
-    const z1 = ['table2', 'table3', 'waiter', 'table4'];
+    const z1 = ['table2', 'table3', 'waiter', 'table4', 'waiter2']; // D-142: Salon 1'in son halkası
     const capped = computeOfflineEarned(4, 3600, z1);
     const zone2Cost = economyConfig.pads.find((p) => p.id === 'zone2')!.cost;
     const z2t2Cost = economyConfig.pads.find((p) => p.id === 'z2table2')!.cost;
@@ -1914,8 +1933,9 @@ describe('kozmetik mağaza (WP6, v19) — zone-başına tema satın alma + migra
 describe('karakter yükseltmeleri (v20) — eğri, satın alma, migrasyon, görev akışı', () => {
   it('fiyat eğrisi: T1-T2 ucuz, T3-T4 köprülü-pahalı; max kademede null; değerler tasarımla birebir', () => {
     // turu-5 denge (ONAYLI): T3/T4 15k/60k → 5k/18k (köprülü eğri); T2 150→130 (5B).
-    expect(economyConfig.character.tray.costs).toEqual([75, 130, 5_000, 18_000]);
-    expect(charNextCost('tray', 0)).toBe(75);
+    // T8a (D-142, G-65): T1 75 → 30.
+    expect(economyConfig.character.tray.costs).toEqual([30, 130, 5_000, 18_000]);
+    expect(charNextCost('tray', 0)).toBe(30);
     expect(charNextCost('tray', 3)).toBe(18_000);
     expect(charNextCost('tray', 4)).toBeNull(); // MAX
     expect(charNextCost('magnet', 2)).toBe(2_200);
@@ -1943,7 +1963,7 @@ describe('karakter yükseltmeleri (v20) — eğri, satın alma, migrasyon, göre
     expect(useGame.getState().buyCharUpgrade('tray')).toBe(true);
     const s = useGame.getState();
     expect(s.charUpgrades.tray).toBe(1);
-    expect(s.wallet.toNumber()).toBe(125); // 200 - 75
+    expect(s.wallet.toNumber()).toBe(170); // 200 - 30 (D-142)
     expect(s.xp).toBe(xpBefore + economyConfig.xp.perUpgrade);
     expect(charLevel(s.charUpgrades)).toBe(1);
     // Max kademede satın alma reddedilir.
@@ -2698,7 +2718,7 @@ describe('v27 — görev hedefleri + dolum süreleri (telefon feedback 2026-06-1
     expect(questTargetMet({ type: 'stationLevel', level: 4 }, ctx)).toBe(false);
   });
 
-  it('waiterTray hedefi + eğri türeticileri (Y3): kapasite 1+kademe, tavanlar 3/2 kademe', () => {
+  it('waiterTray hedefi + eğri türeticileri (Y3 · D-142): kapasite 2+kademe, tavan 2 kademe (4 bardak)', () => {
     const ctx = {
       padsDone: [], stationLevels: [], waiterLevel: 0, tableLevels: [],
       stats: defaultStats(), questBase: 0,
@@ -2707,11 +2727,13 @@ describe('v27 — görev hedefleri + dolum süreleri (telefon feedback 2026-06-1
     // B2: tek havuz → tek eğri (tür parametresi kalktı).
     expect(questTargetMet({ type: 'waiterTray', tier: 1 }, ctx)).toBe(true);
     expect(questTargetMet({ type: 'waiterTray', tier: 2 }, ctx)).toBe(false);
-    expect(waiterTrayCapacityFor(0)).toBe(1);
-    expect(waiterTrayCapacityFor(3)).toBe(4);
-    expect(waiterTrayMaxTier()).toBe(3);
-    expect(waiterTrayNextCost(0)).toBe(400);
-    expect(waiterTrayNextCost(3)).toBeNull();
+    // D-142 (G-72): garson 2'li başlar, ₺400'lük ilk kademe düştü; tavan yine 4 bardak.
+    expect(waiterTrayCapacityFor(0)).toBe(2);
+    expect(waiterTrayCapacityFor(2)).toBe(4);
+    expect(waiterTrayCapacityFor(9)).toBe(4); // kelepçe
+    expect(waiterTrayMaxTier()).toBe(2);
+    expect(waiterTrayNextCost(0)).toBe(1200);
+    expect(waiterTrayNextCost(2)).toBeNull();
   });
 
   it('kamera odağı: servis görevleri TEK noktaya, masa görevleri masaya bakar', () => {
@@ -2741,24 +2763,24 @@ describe('Y3 — garson tepsi yükseltmeleri (panel satın alma + FSM kapasite +
   it('buyWaiterTray: yetersiz bakiye false; alımda kademe artar + cüzdan düşer; tavanda false', () => {
     useGame.getState().hardReset();
     useGame.setState({ wallet: D(100) });
-    expect(useGame.getState().buyWaiterTray()).toBe(false); // 400 > 100
+    expect(useGame.getState().buyWaiterTray()).toBe(false); // 1200 > 100
     useGame.setState({ wallet: D(10000) });
     expect(useGame.getState().buyWaiterTray()).toBe(true);
     expect(useGame.getState().waiterUpgrades.tray).toBe(1);
-    expect(useGame.getState().wallet.toNumber()).toBe(10000 - 400);
-    // Tavan: 3 kademe (B2: tek havuz, tek eğri).
-    useGame.setState({ wallet: D(1e9), waiterUpgrades: { ...defaultWaiterUpgrades(), tray: 3 } });
+    expect(useGame.getState().wallet.toNumber()).toBe(10000 - 1200);
+    // Tavan: 2 kademe (D-142: taban 2, ilk kademe düştü).
+    useGame.setState({ wallet: D(1e9), waiterUpgrades: { ...defaultWaiterUpgrades(), tray: 2 } });
     expect(useGame.getState().buyWaiterTray()).toBe(false);
   });
 
-  it('garson yüklemede tepsiyi KAPASİTE kadar doldurur (teaTray 2 → 3 bardak)', () => {
+  it('garson yüklemede tepsiyi KAPASİTE kadar doldurur (kademe 1 → 3 bardak)', () => {
     useGame.getState().hardReset();
     const pick = SP().pickup;
     const farSeat = LAYOUT.tables[1].seat;
     useGame.setState({
       padsDone: ['table2', 'waiter'],
       waiters: [{ pos: [pick[0], 0.6, pick[2]] as [number, number, number], tray: 0, trayFood: 0 }],
-      waiterUpgrades: { ...defaultWaiterUpgrades(), tray: 2 },
+      waiterUpgrades: { ...defaultWaiterUpgrades(), tray: 1 },
       player: PARK,
       inputKeyboard: [0, 0], inputJoystick: [0, 0],
       npcs: [
@@ -2768,7 +2790,7 @@ describe('Y3 — garson tepsi yükseltmeleri (panel satın alma + FSM kapasite +
     });
     useGame.setState({ ready: { tea: 5, tost: 0 } });
     useGame.getState().tick(0.1);
-    expect(useGame.getState().waiters[0]?.tray).toBe(3); // 1 + kademe 2
+    expect(useGame.getState().waiters[0]?.tray).toBe(3); // taban 2 + kademe 1 (D-142)
     expect(useGame.getState().ready.tea).toBe(2);
   });
 
@@ -2807,7 +2829,7 @@ describe('Y3 — garson tepsi yükseltmeleri (panel satın alma + FSM kapasite +
       questIndex: economyConfig.quests.length,
       stationLevels: [economyConfig.service.tostLevel],
       waiters: [{ pos: [pick[0], 0.6, pick[2]] as [number, number, number], tray: 0, trayFood: 0 }],
-      waiterUpgrades: { ...defaultWaiterUpgrades(), tray: 1 }, // kapasite 2
+      waiterUpgrades: { ...defaultWaiterUpgrades(), tray: 0 }, // kapasite 2 (D-142: taban 2)
       player: PARK,
       inputKeyboard: [0, 0], inputJoystick: [0, 0],
       npcs: [
@@ -2876,14 +2898,15 @@ describe('GARSON HAVUZU (Y4→B2) — gating (allAreaTablesLevel) + claim + opsi
     // Kuyruğun önündeki basamakların sırası B5b'nin ölçtüğü darboğaz sırası (D-066): önce ARZ
     // tavana çıkar (`q_stationMax`), o an darboğaz TAŞIMAYA geçer, üçüncü garson onu açar
     // (`q_waiter3`, +%19). Buraya kadar hattın önü B5a öncesiyle birebir aynı.
-    expect(ids.slice(-18, -15)).toEqual(['q_waiterTray2', 'q_z1allL4', 'q_stationMax']);
+    expect(ids.slice(-19, -16)).toEqual(['q_waiterTray2', 'q_z1allL4', 'q_stationMax']);
     // B4: bu noktadan sonra Kat 1'de throughput kolu TÜKENMİŞTİR (arz 0,78 fincan/sn tavanda,
     // taşıma tavanı 1,25). Geriye kalan tek büyüme yönü müşteri başına ₺ ve onu LAVABO taşıyor.
     // Bu yüzden odanın seviyeleri şeridin masalarıyla DÖNÜŞÜMLÜ: bir masa → bir seviye → bir masa.
     // Dönüşümlü olmazsa gelir yine donuyor ve şeridin kuyruğu sabit hızda akıyor (plato 1,42 sa;
     // dönüşümlü hâlde en uzun düz aralık ~13 dk — B4 ölçümü).
-    expect(ids.slice(-15)).toEqual([
-      'q_waiter3', 'q_lavabo',
+    // D-142 (G-86 ⑤): 3. garsonun arkasında garson tepsisinin SON kademesi — hatta yoktu.
+    expect(ids.slice(-16)).toEqual([
+      'q_waiter3', 'q_waiterTray3', 'q_lavabo',
       'q_z3table5', 'q_lavabo2',
       'q_z3table6', 'q_lavabo3',
       'q_z3table7', 'q_lavabo4',
@@ -3640,9 +3663,9 @@ describe('Faz B1 — kayıt v31: TEMİZ SIFIRLAMA, migrasyon yok (D-058 karar 3)
     }
   }
 
-  it('SAVE_VERSION 33e çıktı (S4: mutfak zemini teması kayıt şemasına girdi)', () => {
-    expect(SAVE_VERSION).toBe(33);
-    expect(defaultSave().saveVersion).toBe(33);
+  it('SAVE_VERSION 34e çıktı (S4 mutfak teması → v33 · D-142 garson tepsi kademesi → v34)', () => {
+    expect(SAVE_VERSION).toBe(34);
+    expect(defaultSave().saveVersion).toBe(34);
     expect(defaultSave().kitchenTheme).toBe('klasik');
   });
 
@@ -3662,7 +3685,7 @@ describe('Faz B1 — kayıt v31: TEMİZ SIFIRLAMA, migrasyon yok (D-058 karar 3)
       }),
       () => {
         const s = loadSave();
-        expect(s.saveVersion).toBe(33);
+        expect(s.saveVersion).toBe(SAVE_VERSION);
         expect(s.wallet).toBe('4242'); // İLERLEME DURUYOR
         expect(s.padsDone).toEqual(['table2', 'table3', 'waiter']);
         expect(s.tableLevels).toEqual([3, 2, 1, 0]);
@@ -3678,7 +3701,7 @@ describe('Faz B1 — kayıt v31: TEMİZ SIFIRLAMA, migrasyon yok (D-058 karar 3)
       padsDone: ['table2', 'zone2', 'z3table4'], tableLevels: [4, 4, 4, 4],
       stationLevels: [6, 3, 2], questIndex: 17, questBase: 40, xp: 900,
     });
-    expect(r.saveVersion).toBe(33);
+    expect(r.saveVersion).toBe(SAVE_VERSION);
     expect(r.wallet).toBe('0');
     expect(r.diamonds).toBe('0');
     expect(r.lifetime).toBe('0');
@@ -3738,7 +3761,7 @@ describe('Faz B1 — kayıt v31: TEMİZ SIFIRLAMA, migrasyon yok (D-058 karar 3)
       lastSaved: Date.now(),
     }), () => {
       const s = loadSave();
-      expect(s.saveVersion).toBe(33);
+      expect(s.saveVersion).toBe(SAVE_VERSION);
       expect(s.wallet).toBe('0');
       expect(s.padsDone).toEqual([]);
       expect(s.settings.sound).toBe(false);
@@ -3762,7 +3785,7 @@ describe('Faz B1 — kayıt v31: TEMİZ SIFIRLAMA, migrasyon yok (D-058 karar 3)
       expect(loadSave().padsDone).toEqual([]);
     });
     withStorage('{bozuk', () => {
-      expect(loadSave().saveVersion).toBe(33);
+      expect(loadSave().saveVersion).toBe(SAVE_VERSION);
     });
   });
 

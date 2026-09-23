@@ -172,7 +172,8 @@ describe('H1/O3 · ürün alma tetiği tezgâhın gövdesidir', () => {
     const kur = () => {
       useGame.getState().hardReset();
       useGame.getState().addMoney(100000);
-      useGame.setState({ padsDone: ['table2'], padFills: {}, upgradeFills: [0, 0, 0] });
+      // D-142: servis noktası yalnız ocak görevinde canlı — bu test GARDİYANI sınar, kapıyı değil.
+      useGame.setState({ padsDone: ['table2'], padFills: {}, upgradeFills: [0, 0, 0], questIndex: economyConfig.quests.length, questPhase: "active" });
     };
     const dolum = (x: number, z: number): number => {
       kur();

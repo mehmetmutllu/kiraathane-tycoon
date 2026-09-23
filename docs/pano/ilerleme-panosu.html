@@ -195,8 +195,8 @@ h2{font-size:21px;font-weight:800}
 <script type="application/json" id="durum">
 {
  "guncelleme": "23.09.2026",
- "yapilan": 114,
- "toplam": 121,
+ "yapilan": 116,
+ "toplam": 122,
  "kilometre": [
   {
    "at": 28,
@@ -211,19 +211,19 @@ h2{font-size:21px;font-weight:800}
    "etiket": "Model ve denge oturdu"
   },
   {
-   "at": 121,
+   "at": 122,
    "etiket": "v1.0 App Store"
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum — T7 kapandı (D-141): banket + Salon 3 pad'i + WC kabini",
-  "baslik": "Banket artık <b>masayla ortadan büyüyor</b>, minder adaya <b>komple</b> geliyor",
-  "aciklama": "Her masa kendi bank yüzünü getiriyor, şerit iç sütundan dışa doluyor. Ada dolunca en düşük masa seviyesiyle tek kademe: keten → bordo + sırt → yastık → pirinç biye + kapitone. Ada başına tek mesh. WC kapıları elle çizilmiş düz kabin oldu. Bedel ölçüldü: Kat 1 <b>−%4,3</b> kısaldı, hiçbir eşik değişmedi."
+  "etiket": "Bu oturum — T8a kapandı (D-142): zincir + T3 denge + nokta kapısı + seviye ₺",
+  "baslik": "2. garson artık <b>Salon 1'de</b>, garson <b>2'li tepsiyle</b> başlıyor",
+  "aciklama": "22 kol oyunun kendisi üstünde ölçüldü; kullanıcı dört soruda da önerilen kolu seçti. Tepsi ₺30, 4. masa ₺250, 2. garson ₺800 (152. dk → 29. dk), seviye atlama artık ödül ekranı (Seviye 5'ten itibaren son 60 sn'nin kazancı), yükseltme noktası yalnız kendi görevinde. Kat 1 <b>−%7,7</b>, hiçbir eşik kırılmadı."
  },
  "siradaki": {
-  "etiket": "Sırada — T8 zincir+denge · T9 tarama · Faz F yayın",
-  "baslik": "T8: <b>tost/çay mimarisi</b> + zincir denetimi + T3 denge",
-  "aciklama": "Başlarken T7 kareleri gösterilecek ve başka rahatsız eden çizim var mı sorulacak. T9'a girdi: tick kısıksız ~5 ms, karenin üçte biri."
+  "etiket": "Sırada — T8b tezgâh arkası · T9 tarama · Faz F yayın",
+  "baslik": "T8b: <b>tost noktası</b> + tost asset'i + bulaşık kuyruğu + tezgâh payı",
+  "aciklama": "G-85/G-90/K9/K10 aynı ölçü dondurma işi. Açık: D1'in g1 kolu D-142 sonrası artık iyileştiriyor (3 → 2) — uygulanmamış aday."
  },
  "donemler": [
   {
@@ -387,8 +387,8 @@ h2{font-size:21px;font-weight:800}
      "k": "T",
      "t": "Tur serisi: geri bildirim + performans",
      "d": "Kullanıcının oynayıp verdiği geri bildirimin turları. <b>T1</b> onarım (bir <b>veri kaybı</b> dâhil) · <b>T2</b> görev akışı (mantık + görsel) · <b>T4</b> performans: fps tavanı yoktu, erken oyunda <b>116,7 fps</b> çiziliyordu; ve kare <b>bölüşümü</b> ölçülünce herkesin bir tur boyunca <b>yanlış yarıya</b> baktığı görüldü — çizim karenin yarısı bile değil, en büyük kalem <code>findNavPath</code>. <b>T5 (D-139):</b> devralınan plan (&#34;41 KB tampon ayırmak pahalı&#34;) ölçülüp <b>çürütüldü</b>; üç kol uygulandı, çıktı birebir aynı kaldı. <b>T5b:</b> T5&#39;in açık ucu kapandı — iki kol <b>aynı sayfada</b>, ABBA deseninde, gölge montajda sabitlenmiş hâlde koşturuldu ve nav&#39;la ilgisiz kalemler <b>denetim kolu</b> olarak sınandı. Tarayıcıda oran <b>×1,09</b> çıktı, node&#39;da <b>×2,52</b>; tarayıcının GERÇEK çağrıları node&#39;da oynatılınca <b>×2,82</b> → korpus temsilî, fark <b>ortamda</b> (node blok ölçer, GC dâhil; tarayıcı çağrı-içi ölçer, GC dışarıda). <b>T5&#39;in kaçırdığı asıl kazanç:</b> ayırma <b>178,6 → 33,5 MB/sn</b> — T5 bunu &#34;tabanın %10,3&#39;ü&#34; diye elemişti, zaman olarak doğruydu ama ayırma bir <b>hız</b>tır ve telefonda karşılığı GC takılması + pildir. Kare kazancı kanıtlandı ama küçük: <b>%5,9-7,1</b>. <b>T6 (D-140, kapandı):</b> kullanıcı <i>&#34;kapı dışında izdiham oluyor, 100lerce npc birikiyor&#34;</i> dedi ve ölçüm aynı şeyi sayıyla gördü — 2 dakikada üçgen <b>+%80</b>, kare <b>+%31</b>, NPC 39 → 56. Kodda doğrulanan şüpheli: doğma tavanı <code>leaving</code>/WC durumlarını saymıyor, yani ekrandaki <b>toplam nüfusun tavanı yok</b>. Piyasa standardı araştırıldı (Restaurant Tycoon 2/3: &#34;uygun masa yoksa hiç doğma&#34;; kuramı Little yasası). Kök doğma tavanı değil çıkış çıktı: <code>leaving</code> ayrışmadan muaf tutuldu → 10 dk'da NPC <b>494 → 59</b>, kapı önü <b>475 → 11</b>; final koşu ölçülen kolu birebir verdi. <b>T7 (D-141, kapandı):</b> banket artık masayla <b>ortadan dışa</b> büyüyor, minder adaya <b>komple</b> geliyor (ada dolunca en düşük masa seviyesi: keten → bordo + sırt → yastık → pirinç biye + kapitone), ada başına tek mesh; Salon 3 pad&#39;inin çakışması kapandı; WC kabini elle çizildi. Bedel ölçüldü: Kat 1 <b>−%4,3</b>, eşikler aynı.",
-     "yapilan": 6,
-     "toplam": 9,
+     "yapilan": 8,
+     "toplam": 10,
      "kapi": "Kullanıcının gördüğü her kusur ya düzeltilmiş ya ölçülerek elenmiş olmalı",
      "durum": "now"
     }
@@ -396,6 +396,12 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "23.09.2026",
+   "etiket": "T8a — zincir + T3 denge + nokta kapısı + seviye ₺ (D-142)",
+   "baslik": "Sim oyunun sıra kuralını <b>oynamıyormuş</b>; düzelince taban 6,05 sa",
+   "govde": "Ölçüm aracı yürürlükteki oyunu kurarken bir kusur buldu: sim masa yükseltmesini serbest sırayla alıyordu, oyunda D-124'ten beri tek hedef var. Kat 1 %6,7 fazla görünüyordu. 22 kolun hepsi doğru taban üstünde koştu.<br><br><b>Seçilen:</b> 2. garson Salon 1'in sonunda ₺800 (₺1.600'da kendi 30 dk'lık beklemesini doğuruyordu) · garson 2'li tepsi, tavan 4 · tepsi ₺30 · 4. masa ₺250 · seviye tabanı 90 · seviye ₺'si Seviye 5'ten (kapısız hâli ilk alımı 22 → 3 sn'ye indiriyordu) · yükseltme noktası görev kapılı.<br><br><b>Uygulanan kod ölçülen kolun kendisi:</b> final taban commit #1'in PK2 satırını parmak izine kadar verdi. Bardak havuzu bağlamıyor çıktı; T6'nın '42 bardak, temiz 0' ölçümü araç hatasıymış (dünyada 22 bardak vardı). 2. garson pad'inin ilk yeri karede garsonun altında kaldı, taşındı. Mutasyon 6/6, duman 50/50."
+  },
   {
    "tarih": "23.09.2026",
    "etiket": "T7 — banket ortadan büyür · ada tek kademe · WC kabini (D-141)",
@@ -499,23 +505,6 @@ h2{font-size:21px;font-weight:800}
     "<b>Yolda kapanan dikiş:</b> kaldırım 19,90&#39;da bitip asfalt 20,00&#39;de başlıyordu — <b>0,10 br</b>&#39;lik çizgiden arka plan görünüyordu; ön kenara düşen 80 ışının <b>tamamı aynı taşmayı</b> verdiği için yakalandı",
     "Bekçi: <code>bahce-r4</code> (21 den.) · <code>mutasyon-bahce-r4</code> <b>23/23 kırmızı</b> · ilk koşuda 4 kaçtı, <b>ikisi ÖLÜ KOD gösterdi</b>",
     "vitest <b>1273 ✓</b> · duman <b>45/45 ✓</b> · tsc temiz · konsol hatası 0"
-   ]
-  },
-  {
-   "tarih": "17.09.2026",
-   "etiket": "Faz R · 3. oturum (R3 — HUD çerçeveleri — D-128)",
-   "baslik": "Bir kusuru kaldırmak, <b>onun üstündeki</b> kusuru kaldırmaz",
-   "govde": "Kullanıcı seviye madalyonunda iki şey gördü: yıldız <i>&#34;yarım duruyor&#34;</i> ve <i>&#34;arkada bir çizgi var&#34;</i>. Yıldızı kaldırdık — <b>çizgi durdu</b>. Sebep bambaşkaydı: <code>-webkit-text-stroke</code> köşeleri <b>MITER</b> birleştiriyor ve Lilita One&#39;ın sivri &#34;4&#34;ünün tepesinde 5 px&#39;lik kontur ekrana bir <b>mızrak</b> olarak çıkıyordu. Dört kalınlık sınandı (5 · 4 · 3 · 2,5): 3 px&#39;te uç kayboluyor, konturun işi duruyor. Aynı 56 px&#39;te <b>iki ayrı kusur üst üste</b> duruyordu; biri diğerini gizliyordu.<br><br><b>Ödül satırında da kalabalığın adresi yanlış konmuştu.</b> &#34;Çok fazla işaret var&#34; şikâyeti kelimeyi kısaltmakla kapanmadı: asıl sorun sayının <b>cılızlığı</b>ydı — %0,4 tek başına hiçbir şey hissettirmiyor. Dış referanslar da bunu söylüyor (Idle Miner <i>&#34;Double Cash forever&#34;</i>, Idle Restaurant <i>&#34;%30 Profit Boost&#34;</i>: sayı kütleli, kelime gündelik). Çözüm sayıyı büyütmek değil <b>stat&#39;ı oynatmak</b> oldu: ekran artık <b>%3,2 → %3,6</b> yazıyor.<br><br><b>Ve kullanıcının sorduğu her çatal bir seçim değil.</b> <i>&#34;Yan yana mı alt alta mı bilemedim&#34;</i> bir zevk sorusu gibi duruyordu; ölçüm yan yana kolunun 999.99M + 12.34K&#39;da ekranı <b>42,7 px aştığını</b> gösterdi. Kol seçime sunulmadan elendi, sebebi kullanıcıya yazıldı.",
-   "maddeler": [
-    "<b>D-128 · A4:</b> kaydırıcıda kesik olan çizgi değil <b>köşeydi</b> (çizgi oranı 1,000) — üst köşe <b>4,00 → −1,00 px</b>, sol hizasızlık <b>4,00 → 0,00</b>. Açıklığın yarısı satırın değil <code>.sheet-pad</code>&#39;in <code>gap</code>&#39;iydi",
-    "<b>A2 elendi:</b> kapalı çerçeve köşeyi kapatır ama satırı <b>karta</b> çevirir — kaydırıcı bir üstteki anahtarın kardeşi değil <b>çocuğu</b>",
-    "<b>B2:</b> FPS katmanı + anahtarı + <code>showFps</code> alanı gitti; <b>saveVersion artmadı</b>, eski kayıttaki alan sessizce düşüyor (bekçi bunu koşuyor)",
-    "<b>C1 + K3:</b> ödüller ayrı eleman ve alt alta; bonus satırı delta değil <b>toplamın geçişini</b> yazıyor, ikonsuz. Satır oranı <b>0,969 → 0,591</b>",
-    "<b>G + C:</b> rozet kapsüle girdi — üst şerit <b>69,0 → 56,0 px</b> tek satır; madalyondan yıldız kalktı, disk kendi tokenına açıldı (<code>--madalyon</code>)",
-    "<b>F kese:</b> D-106&#39;nın kutusuzluğu geri alındı — kutusuz kolda geçirme <b>0,979/0,999</b> (zemin sahnenin oynamasını bire bir üstleniyordu), hapta <b>0,317/0,292</b>",
-    "Bekçi: <code>hud-r3</code> (7 den.) + <code>ekran-kabugu §5</code> yeni karara göre <b>yeniden yazıldı</b> · <code>mutasyon-hud-r3</code> <b>12/12 kırmızı</b>",
-    "<b>M6 ilk turda KAÇTI:</b> bekçi geçişin yalnız sağ ucunu tutuyordu — sol uç deltaya dönünce ekran hem artışı hem toplamı vaat ediyordu. İki uç da denetleniyor",
-    "vitest <b>1252 ✓</b> · duman <b>45/45 ✓</b> · konsol hatası 0"
    ]
   }
  ],
@@ -771,9 +760,9 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunlukArsiv": {
-  "kart": 68,
+  "kart": 69,
   "ilk": "05.06 – 17.06.2026",
-  "son": "16.09.2026",
+  "son": "17.09.2026",
   "yer": "memory-bank/arsiv/pano-gunluk.json"
  }
 }

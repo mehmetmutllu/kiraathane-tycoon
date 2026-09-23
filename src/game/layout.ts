@@ -681,8 +681,8 @@ export const LAYOUT = {
   // Masa slotları — GLOBAL 12 slot (alan a → [a*4, a*4+4)).
   tables: ALL_TABLES,
   // Pad pozisyonları: açtıkları objenin TAM yerinde. Alan pad'i o alanın eşiğinde, AÇIK tarafta.
-  // Personel pad'leri servisin O ANKİ yerinin yanında durur: `waiter`/`dishwasher` sol-duvar
-  // döneminde (1-2 alan), `waiter2`/`waiter3` arka-bant döneminde (3 alan) açılır — zincir sırası
+  // Personel pad'leri servisin O ANKİ yerinin yanında durur: `waiter`/`waiter2`/`dishwasher` sol-duvar
+  // döneminde (1-2 alan), `waiter3` arka-bant döneminde (3 alan) açılır — zincir sırası
   // bunu garanti eder (economy.config pad listesi), yerleşim ayrıca dallanmaz.
   padPos: {
     table2: ALL_TABLES[1].table,
@@ -715,7 +715,13 @@ export const LAYOUT = {
     // altında: oyuncu garson pad'ini doldurmak için durunca masayı da yükseltmeye başlıyordu).
     // Adaların DIŞ uçlarından (∓12,3) sonrası duvara kadar 4,7 br boş kalır; iki pad oraya çekildi:
     // batıda servis bloğunun önündeki personel şeridi, doğuda onun aynası.
-    waiter2: [-14.7, 0, -5.0] as Vec3,
+    /* T8a (D-142, G-73): 2. garson Salon 1'in SONUNA taşındı → pad'i artık sol-duvar döneminde
+       açılıyor. Eski yeri (−14,7 · −5,0) Salon 3'ün arka bandıydı: o salon kapalıyken oraya
+       yürünemezdi. Garsonun postası (−14,5 · 9,75) bulaşıkçı pad'ine giriyor; tezgâh önü ise
+       personelin durduğu/çaycının yürüdüğü şerit (ilk kare: 1. garson pad'in yazısının ÜSTÜNDE
+       duruyordu). Seçilen nokta: bütün çerçevelere, personel noktalarına ve çaycı yoluna ≥ 0,4 br
+       boşluk bırakan, 1 salonluk ızgarada yürünebilen, postaya en yakın aday (bulaşıkçı pad'i 0,53). */
+    waiter2: [-10.5, 0, 9.75] as Vec3,
     waiter3: [14.7, 0, -5.0] as Vec3,
     // ODA (B4): lavabonun KAPISININ önünde. x = 13,4 tesadüf değil — şeridin dış sütununun
     // yükseltme noktası [11,7 · −7,3] ile arada 2,55 br kalsın diye (PAD_RADIUS + TABLE_UP_RADIUS
