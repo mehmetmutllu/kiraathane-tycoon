@@ -99,6 +99,19 @@ ikinci kez teyit edildi · **betik** = izole Playwright/eval denemesi. Önem: Y 
   servisi 40 dk'da 0 kaldı (bu, `q_tost5` kilidinden BAĞIMSIZ: sayaç 50'ye elle çekildiğinde de görev
   ilerlemedi).
 
-## §Karar
+## §Karar (D-146, kullanıcı 2026-09-24)
 
-(BOŞ — kullanıcı seçecek)
+- **Onayla düzelecek (karar gerekmedi):** A1–A7 · B1 · B2 · B4 · B7 · B8 · B9 · B11 · D2 · D6.
+- **K1 hat sonu (B3):** alt bantta GÜNLÜK GÖREV kartı; üçü bitince "Bugünkü görevleri tamamladın — yenileri yarın".
+  Kat 2 gelince hat yeniden uzar.
+- **K2 para (C1):** küsurat YOK, tam sayıya yuvarla; < 1 milyon TAM ve dile göre binlik ayraç (tr "6.042" ·
+  en "6,042"); ≥ 1 milyon dile göre kısaltma, TEK ondalık (tr "1,2 Mn" · en "1.2M"). Tek biçimleyici, yerel ayardan.
+- **K3 Sv 2-4 ekranı (B10):** ₺ EKLENMEZ (Sv 5 kapısı ölçülü, `zincir-raporu-t8a` Bulgu 8: ₺ ilk alımı 22 → 3 sn'ye
+  indiriyordu). Ekran kazanılanı büyük gösterir + tek "Harika!" düğmesi; "İzle, 2×" yalnız ikiye katlanacak ₺ varken.
+- **K4 Usta (B5):** pad gibi — ÜSTÜNDE DURUNCA dolar/açılır, yaklaşınca değil; kapatınca noktadan çıkıp yeniden basana kadar açılmaz.
+- **K5 servis (B6):** masanın GÖVDESİNDEN ölç (her kenar/köşe eşit) — `tick.ts` → varyant kapısı: önce kısa+tam ölçüm.
+- **K6 adlar (C2):** "Çaycı" (Karakter/Oyuncu yerine) · "Seviye" (İtibar yerine).
+- **K7 günlük (D1):** hedef gün başında SABİTLENİR.
+- **K8 yerdeki para (D4):** kapanırken otomatik toplanır. **K9 (C4):** "Bildirimler" anahtarı Faz F'ye kadar KALDIRILIR.
+- **K10 (E):** A/B aracı düzeltilir (ortanca · etiket · §C sabit metni · "telefon öykünmesi"); T9a raporu ve D-145 sayısı −%21,2.
+- **Sıra:** T9c mantık/kilit (A · D · K4 · K5 · K7 · K8 · K10) → T9d arayüz/metin (B · C · K1 · K2 · K3 · K6 · K9).

@@ -194,9 +194,9 @@ h2{font-size:21px;font-weight:800}
      ══════════════════════════════════════════════════════════════════════ -->
 <script type="application/json" id="durum">
 {
- "guncelleme": "23.09.2026",
- "yapilan": 118,
- "toplam": 123,
+ "guncelleme": "24.09.2026",
+ "yapilan": 119,
+ "toplam": 125,
  "kilometre": [
   {
    "at": 28,
@@ -211,19 +211,19 @@ h2{font-size:21px;font-weight:800}
    "etiket": "Model ve denge oturdu"
   },
   {
-   "at": 123,
+   "at": 125,
    "etiket": "v1.0 App Store"
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum — T9a kapandı (D-145): performans + kod",
-  "baslik": "Oyun adımı <b>×10</b> hızlandı, çıktı <b>birebir</b> aynı",
-  "aciklama": "Tick'in %96'sı yol bulmaymış. Yol çağrıları başlangıç hücresine göre önbelleğe alındı: geç oyunda 4,06 → 0,40 ms, telefonda kare işi −%21,4, fps 20 → 26 — oyunun davranışı parmak izine kadar aynı. g1 kolunun “iyileşmesi” sahte çıktı (bayat kol hattı tıkıyordu), elendi. Sıra kilidinin yanlış alarmları kapandı, lint 0."
+  "etiket": "Bu oturum — T9b kapandı (D-146): oynanış taraması",
+  "baslik": "Oyun <b>30. görevde kilitleniyormuş</b> — bot buldu",
+  "aciklama": "Oku izleyen bir bot oyunu baştan sona oynadı, kod üç açıdan okundu: 34 bulgu. En ağırı: “5 tost servis et” görevi hiç bitmiyor, hat 30/50'de duruyor. Ok bir görevde yanlış masayı gösteriyor, arka plandan dönünce çevrimdışı kazanç verilmiyor. Kullanıcı 10 kararı verdi; düzeltmeler iki tura bölündü."
  },
  "siradaki": {
-  "etiket": "Sırada — T9b oynanış taraması · Faz F yayın",
-  "baslik": "Oyunu baştan sona <b>oynayıp</b> takılan yerleri bul",
-  "aciklama": "G-88'in ikinci parçası: akış kırığı, görsel hata, takılma → bulgu listesi kullanıcıya, kod yazmadan önce. Sonra Faz F (F3 geçişli reklam: C1′ 3 dk, D-144)."
+  "etiket": "Sırada — T9c mantık · T9d arayüz · Faz F",
+  "baslik": "Kilidi ve mantık hatalarını <b>kapat</b>",
+  "aciklama": "T9c: tost kilidi, yanlış masa oku, sıcak dönüşte çevrimdışı gelir, geri tuşu, kayıt sağlamlığı, Usta noktası pad gibi, servis masa gövdesinden. T9d: para biçimi, adlar, hat sonu günlük kartı, seviye ekranı."
  },
  "donemler": [
   {
@@ -387,8 +387,8 @@ h2{font-size:21px;font-weight:800}
      "k": "T",
      "t": "Tur serisi: geri bildirim + performans",
      "d": "Kullanıcının oynayıp verdiği geri bildirimin turları. <b>T1</b> onarım (bir <b>veri kaybı</b> dâhil) · <b>T2</b> görev akışı (mantık + görsel) · <b>T4</b> performans: fps tavanı yoktu, erken oyunda <b>116,7 fps</b> çiziliyordu; ve kare <b>bölüşümü</b> ölçülünce herkesin bir tur boyunca <b>yanlış yarıya</b> baktığı görüldü — çizim karenin yarısı bile değil, en büyük kalem <code>findNavPath</code>. <b>T5 (D-139):</b> devralınan plan (&#34;41 KB tampon ayırmak pahalı&#34;) ölçülüp <b>çürütüldü</b>; üç kol uygulandı, çıktı birebir aynı kaldı. <b>T5b:</b> T5&#39;in açık ucu kapandı — iki kol <b>aynı sayfada</b>, ABBA deseninde, gölge montajda sabitlenmiş hâlde koşturuldu ve nav&#39;la ilgisiz kalemler <b>denetim kolu</b> olarak sınandı. Tarayıcıda oran <b>×1,09</b> çıktı, node&#39;da <b>×2,52</b>; tarayıcının GERÇEK çağrıları node&#39;da oynatılınca <b>×2,82</b> → korpus temsilî, fark <b>ortamda</b> (node blok ölçer, GC dâhil; tarayıcı çağrı-içi ölçer, GC dışarıda). <b>T5&#39;in kaçırdığı asıl kazanç:</b> ayırma <b>178,6 → 33,5 MB/sn</b> — T5 bunu &#34;tabanın %10,3&#39;ü&#34; diye elemişti, zaman olarak doğruydu ama ayırma bir <b>hız</b>tır ve telefonda karşılığı GC takılması + pildir. Kare kazancı kanıtlandı ama küçük: <b>%5,9-7,1</b>. <b>T6 (D-140, kapandı):</b> kullanıcı <i>&#34;kapı dışında izdiham oluyor, 100lerce npc birikiyor&#34;</i> dedi ve ölçüm aynı şeyi sayıyla gördü — 2 dakikada üçgen <b>+%80</b>, kare <b>+%31</b>, NPC 39 → 56. Kodda doğrulanan şüpheli: doğma tavanı <code>leaving</code>/WC durumlarını saymıyor, yani ekrandaki <b>toplam nüfusun tavanı yok</b>. Piyasa standardı araştırıldı (Restaurant Tycoon 2/3: &#34;uygun masa yoksa hiç doğma&#34;; kuramı Little yasası). Kök doğma tavanı değil çıkış çıktı: <code>leaving</code> ayrışmadan muaf tutuldu → 10 dk'da NPC <b>494 → 59</b>, kapı önü <b>475 → 11</b>; final koşu ölçülen kolu birebir verdi. <b>T7 (D-141, kapandı):</b> banket artık masayla <b>ortadan dışa</b> büyüyor, minder adaya <b>komple</b> geliyor (ada dolunca en düşük masa seviyesi: keten → bordo + sırt → yastık → pirinç biye + kapitone), ada başına tek mesh; Salon 3 pad&#39;inin çakışması kapandı; WC kabini elle çizildi. Bedel ölçüldü: Kat 1 <b>−%4,3</b>, eşikler aynı. <b>T8a (D-142, kapandı):</b> zincir sırası ve T3'ün fiyat kolları yürürlükteki oyunun üstünde ölçüldü — sim'in tabanının oyunun sıra kuralını (D-124) oynamadığı da bu sırada çıktı. 2. garson Salon 1'in sonuna (152. → 29. dk), garson 2'li tepsiyle başlıyor, seviye atlama ödül ekranı oldu (Seviye 5'ten itibaren son 60 sn'nin kazancı), yükseltme noktası yalnız kendi görevinde canlı. Kat 1 <b>−%7,7</b>, eşikler temiz; final taban ölçülen kolla parmak izine kadar aynı. <b>T8b (D-143, kapandı):</b> tezgâh sol duvardan 0,75 açıldı, çaycı ve bulaşıkçı arkaya geçti (0,60 en küçük yeterli paydı ama kafa duvara giriyordu); kirli leğende birikip 10 sn'de toptan yıkanıyor (kap başına süre yığın oluşturmuyordu), geç oyun −%3; Türk tost makinesi çizildi — hiçbir CC0 pakette pres tipi yok. <b>T9a (D-145, kapandı):</b> kare bölüşümü tick'in <b>%96</b>'sını yol bulmada gösterdi; yol ÇAĞRISI başlangıç hücresine göre önbelleklendi (T5'in bayatlayan yol önbelleğinin tersine) — tick <b>×10</b>, telefonda kare işi <b>−%21,4</b>, davranış parmak izine kadar aynı. g1 kolunun “iyileştiriyor” kaydı bayat kolun hattı tıkamasıymış; elendi.",
-     "yapilan": 10,
-     "toplam": 11,
+     "yapilan": 11,
+     "toplam": 13,
      "kapi": "Kullanıcının gördüğü her kusur ya düzeltilmiş ya ölçülerek elenmiş olmalı",
      "durum": "now"
     }
@@ -396,6 +396,19 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "24.09.2026",
+   "etiket": "T9b — oynanış taraması (D-146)",
+   "baslik": "Oku izleyen bot, oyunun <b>30. görevde</b> kilitlendiğini buldu",
+   "govde": "Tarayıcıda gerçek oyunun üstünde bir bot koştu: yön okunu izledi, çay taşıdı, para topladı, bulaşık götürdü. Paralelde kod üç açıdan okundu (görev sırası · oyun durumu/kayıt · arayüz).<br><br><b>Kilit:</b> “5 tost servis et” görevinin değerlendiricisi hiç yazılmamış; tost sayısı 50'ye çekildi, görev yerinden oynamadı. Simülasyon bu görevi “bitti” saydığı için aylarca görünmedi.<br><br><b>Yanlış ok:</b> “2 masayı yükselt”te birinci masa yükselince ok ikinci masaya dönüyor, yükseltme ise birincide kalıyor — bot 10 dk boş zeminde bekledi.",
+   "maddeler": [
+    "<b>34 bulgu</b> · 7 ilerlemeyi bozan · 13 arayüz · 5 metin · 6 kenar durum · 1 araç",
+    "<b>arka plandan dönüş</b> çevrimdışı kazanç vermiyor · Android geri tuşu yok",
+    "<b>ilk dokunuş yutuluyor</b> (karakter ipucu) · tepsi ipucu ilk serviste ekranı karartıyor",
+    "<b>kararlar</b> para “6.042 / 1,2 Mn” · Çaycı + Seviye · Usta pad gibi · hat sonu günlük kart",
+    "<b>T9a A/B</b> sonucu geçerli; ortanca hatası −%21,4 → −%21,2"
+   ]
+  },
   {
    "tarih": "23.09.2026",
    "etiket": "T9a — performans + kod (D-144 · D-145)",

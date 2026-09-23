@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 123 · YAPILAN 118 · %96):**
+**Oturum bütçesi (TOPLAM 125 · YAPILAN 119 · %95):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -28,8 +28,8 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | H oynanış düzeltmeleri | 2/2 ✅ |
 | | **R geri bildirim turları (2026-09-16)** | **4/4 ✅** |
 | | **F paketleme ve yayın** | **3/6** 🔧 |
-| | **T tur serisi (geri bildirim + performans)** | **10/11** 🔧 |
-| **Program toplam** | | **90/95** |
+| | **T tur serisi (geri bildirim + performans)** | **11/13** 🔧 |
+| **Program toplam** | | **91/97** |
 
 Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlatısı: `memory-bank/arsiv/progress-tamamlanan.md`.
 
@@ -114,7 +114,7 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
 - ⏳ **F5 — mağaza vitrini + uyum** …
 - ✅ **F6 — açılış ekranı + ekran yönü + yatay/tablet HUD** (F1b iki tur + tur 3) …
 
-## Faz T — TUR SERİSİ: GERİ BİLDİRİM + PERFORMANS (10/11) 🔧
+## Faz T — TUR SERİSİ: GERİ BİLDİRİM + PERFORMANS (11/13) 🔧
 - ✅ **T1 — onarım (G-78/79/77/69/70):** …
 - ✅ **T2 — görev akışı · iki tur (T2a mantık D-134 · T2b görsel D-135)**
 - ✅ **T4 — performans (G-80): şarj kanadı uygulandı, kasma kanadı T5'e devredildi.** …
@@ -126,7 +126,9 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
 - ✅ **T8 — zincir (G-86) + T3 denge + nokta kapısı + seviye ₺ + bardak havuzu · D-142** *(tur adı T8a)* · Kat 1 5,58 sa (−%7,7, eşikler temiz) · `docs/zincir-raporu-t8a.md` · vitest 1423
 - ✅ **T10 — tezgâh arkası: pay 0,75 + personel arkada · leğen 10 sn toplu · Türk tost makinesi · D-143** *(tur adı T8b)* · geç oyun servis −%3 · `docs/tezgah-raporu-t8b.md` · vitest 1430 · F sorusu kapandı: A (D-144)
 - ✅ **T9 — performans + kod: N2-kesin yol önbelleği (tick ×10, birebir) · g1 elendi (eski iyileşme sahteydi) · sıra kilidi düzeldi · lint 0 · D-145** *(tur adı T9a)* · telefon kare işi −%21,4 · `docs/performans-raporu-t9a.md` · vitest 1446
-- ⏳ **T11 — oynanış taraması** *(tur adı T9b)* (G-88'in ikinci parçası, D-144 ③; bulgu listesi kullanıcıya)
+- ✅ **T11 — oynanış taraması: 34 bulgu, hat 30/50'de KİLİT (`q_tost5`) · D-146** *(tur adı T9b)* · `docs/tarama-raporu-t9b.md` · kod yazılmadı
+- ⏳ **T12 — mantık/kilit düzeltmeleri** *(tur adı T9c)* (D-146: A · D · K4 · K5 · K7 · K8 · K10)
+- ⏳ **T13 — arayüz/metin düzeltmeleri** *(tur adı T9d)* (D-146: B · C · K1 · K2 · K3 · K6 · K9)
 
 ## Kullanıcı geri bildirimleri
 G-01…G-91 tam listesi + kullanıcının kendi cümleleri: `docs/geribildirim-oyun-testi-<tarih>.md` (09-09 · 09-16 · 09-17 · 09-18 · 09-21). Turlara dağılımı Faz T'de.

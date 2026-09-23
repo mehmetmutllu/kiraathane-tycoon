@@ -4710,3 +4710,17 @@ g1 kolu D-142'den sonra bayattı (hattı tıkıyor, "iyileşme" sahteydi); doğr
 nav ×0,24, kare işi −%21,4, fps 20,4 → 25,7 · g1 üç dozda da İdealize 1 / Normal 3 aşan (taban aynı).
 **Araç (D-144 ⑤):** sıra kilidi geriye bakış + §Karar-boş dikiş; 8 yanlış pozitifin 7'si kapandı. Lint 77 → 0.
 **Bekçi:** `tests/nav-onbellek-t9a.test.ts` 5/5 mutasyon · `sira-kilidi` 3/3. `docs/performans-raporu-t9a.md`.
+
+---
+
+## D-146 · Oynanış taraması: 34 bulgu, düzeltme iki tura — T9b (2026-09-24)
+
+**Bulgu:** hat 30/50'de KİLİTLENİYOR (`q_tost5`, `serveTost` değerlendiricisi yok) · `q_tableL2x2` oku yanlış masada ·
+sıcak dönüşte çevrimdışı gelir yok · geri tuşu yok · kayıt birleştirme/yeni sürüm kırılgan. Tam liste `docs/tarama-raporu-t9b.md`.
+**Kullanıcı kararları:** hat sonu = günlük görev kartı ("bugünkü görevleri tamamladın") · para: küsurat yok, < 1 Mn tam +
+yerel binlik ("6.042"), ≥ 1 Mn yerel kısaltma tek ondalık ("1,2 Mn") · Sv 2-4 ekranına ₺ YOK (Sv 5 kapısı ölçülü), yalnız
+kazanılanı gösteren "Harika!" · Usta noktası pad gibi (üstünde durunca) · servis masa gövdesinden (ölçümle) · "Çaycı" +
+"Seviye" · günlük hedef gün başında sabit · kapanırken yerdeki para toplanır · "Bildirimler" anahtarı Faz F'ye kadar kalkar ·
+T9a A/B aracı düzeltilir (kare işi −%21,4 → −%21,2, "telefon öykünmesi").
+**Sıra:** T9c mantık/kilit → T9d arayüz/metin → Faz F.
+
