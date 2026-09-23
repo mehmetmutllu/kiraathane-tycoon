@@ -101,7 +101,7 @@ const NEIGHBORS: ReadonlyArray<readonly [number, number]> = [
  *
  * Ölçülen: **×2,37** (0,343 → 0,145 ms/çağrı), §F karesinde 12,71 → 5,36 ms.
  * A* kolu (×3,04) ELENDİ: 1,2 ms için ilk waypoint'in %27,5'inde farklı rota seçiyordu ve
- * yol kalitesi aynıydı (×1,003). Yol önbelleği (×423) KENDİ TURUNA kaldı: bu turda denenen
+ * yol kalitesi aynıydı (×1,003). Yol önbelleği (×423) KENDİ TURUNA kaldı (T9a'da ÇAĞRI önbelleği olarak geldi, aşağıda): bu turda denenen
  * saf politika duvardan geçen adımı %0,1'den %1,9'a çıkarıyordu.
  *
  * TEK İŞ PARÇACIĞI VARSAYIMI: `findNavPath` yeniden-girişli değildir (özyineleme/async yok),
@@ -198,7 +198,7 @@ export function findNavPath(
 }
 
 // ---------------------------------------------------------------------------
-// N2-KESİN — BAŞLANGIÇ HÜCRESİ ANAHTARLI YOL ÖNBELLEĞİ (T9a, ölçüm kolu: varsayılan KAPALI)
+// N2-KESİN — BAŞLANGIÇ HÜCRESİ ANAHTARLI YOL ÖNBELLEĞİ (T9a · D-145 — varsayılan AÇIK)
 // ---------------------------------------------------------------------------
 /**
  * T5'in N2'si aktörün yolunu tutuyordu ("waypoint'e yaklaşınca sıradakine geç") → yol bayatlıyor,
@@ -208,9 +208,14 @@ export function findNavPath(
  * YENİ nesne kurar). Aktör bir hücreyi ~12 karede geçtiği için aynı anahtar ardışık karelerde
  * tekrarlanır; dönen yol BİREBİR aynıdır, bayat olamaz.
  *
+ * Ölçülen (`docs/performans-raporu-t9a.md`): geç oyunda tick 4,06 → 0,40 ms (×10,1, node); telefon
+ * tarayıcısında nav ×0,24, karenin işi −%21,4. Tam durum parmak izi iki kolda birebir.
+ * Bekçi: `tests/nav-onbellek-t9a.test.ts`. Kapatma anahtarı ölçüm araçları için durur.
+ *
+ * VARSAYIM: ızgara kurulduktan sonra `blocked` yerinde DEĞİŞMEZ (değişecekse yeni nesne kurulur).
  * Dönen dizi paylaşılır: çağıran (`navStep`) yalnız `path[0]`ı OKUR, yazmaz.
  */
-let onbellekAcik = false;
+let onbellekAcik = true;
 let onbellekIzgara: NavGrid | null = null;
 const onbellek = new Map<string, [number, number][] | null>();
 /** Hedef sayısı sınırlı (masa, ocak, leğen, kapı…); büyüme yine de bir tavanla kesilir. */

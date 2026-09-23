@@ -195,8 +195,8 @@ h2{font-size:21px;font-weight:800}
 <script type="application/json" id="durum">
 {
  "guncelleme": "23.09.2026",
- "yapilan": 117,
- "toplam": 122,
+ "yapilan": 118,
+ "toplam": 123,
  "kilometre": [
   {
    "at": 28,
@@ -211,19 +211,19 @@ h2{font-size:21px;font-weight:800}
    "etiket": "Model ve denge oturdu"
   },
   {
-   "at": 122,
+   "at": 123,
    "etiket": "v1.0 App Store"
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum — T8b kapandı (D-143): tezgâh arkası",
-  "baslik": "Adam artık tezgâhın <b>arkasında</b>, bulaşık leğende <b>birikiyor</b>",
-  "aciklama": "Tezgâh sol duvardan 0,30 → <b>0,75</b> açıldı; çaycı ve bulaşıkçı arkada çalışıyor, oyuncu arkaya giremiyor. Kirli leğende birikip her 10 sn'de toptan yıkanıyor (geç oyunda −%3 servis). Tost için hiçbir CC0 pakette pres tipi makine yok — Türk tost makinesi çizildi (L6'da plaka genişliyor). L1 tepsisindeki beyaz bardaklar kalktı."
+  "etiket": "Bu oturum — T9a kapandı (D-145): performans + kod",
+  "baslik": "Oyun adımı <b>×10</b> hızlandı, çıktı <b>birebir</b> aynı",
+  "aciklama": "Tick'in %96'sı yol bulmaymış. Yol çağrıları başlangıç hücresine göre önbelleğe alındı: geç oyunda 4,06 → 0,40 ms, telefonda kare işi −%21,4, fps 20 → 26 — oyunun davranışı parmak izine kadar aynı. g1 kolunun “iyileşmesi” sahte çıktı (bayat kol hattı tıkıyordu), elendi. Sıra kilidinin yanlış alarmları kapandı, lint 0."
  },
  "siradaki": {
-  "etiket": "Sırada — tost yeri sorusu · T9 tarama · Faz F yayın",
-  "baslik": "Önce soru: tost <b>aynı tezgâhta</b> mı kalsın, <b>ayrı modül</b> mü?",
-  "aciklama": "Kullanıcı D→E ile F arasında kaldı; makine oyunda görülerek sorulacak. Sonra T9 — G-88 genel tarama (performans ağırlıklı) + lint 66 + tick ~5 ms."
+  "etiket": "Sırada — T9b oynanış taraması · Faz F yayın",
+  "baslik": "Oyunu baştan sona <b>oynayıp</b> takılan yerleri bul",
+  "aciklama": "G-88'in ikinci parçası: akış kırığı, görsel hata, takılma → bulgu listesi kullanıcıya, kod yazmadan önce. Sonra Faz F (F3 geçişli reklam: C1′ 3 dk, D-144)."
  },
  "donemler": [
   {
@@ -386,9 +386,9 @@ h2{font-size:21px;font-weight:800}
     {
      "k": "T",
      "t": "Tur serisi: geri bildirim + performans",
-     "d": "Kullanıcının oynayıp verdiği geri bildirimin turları. <b>T1</b> onarım (bir <b>veri kaybı</b> dâhil) · <b>T2</b> görev akışı (mantık + görsel) · <b>T4</b> performans: fps tavanı yoktu, erken oyunda <b>116,7 fps</b> çiziliyordu; ve kare <b>bölüşümü</b> ölçülünce herkesin bir tur boyunca <b>yanlış yarıya</b> baktığı görüldü — çizim karenin yarısı bile değil, en büyük kalem <code>findNavPath</code>. <b>T5 (D-139):</b> devralınan plan (&#34;41 KB tampon ayırmak pahalı&#34;) ölçülüp <b>çürütüldü</b>; üç kol uygulandı, çıktı birebir aynı kaldı. <b>T5b:</b> T5&#39;in açık ucu kapandı — iki kol <b>aynı sayfada</b>, ABBA deseninde, gölge montajda sabitlenmiş hâlde koşturuldu ve nav&#39;la ilgisiz kalemler <b>denetim kolu</b> olarak sınandı. Tarayıcıda oran <b>×1,09</b> çıktı, node&#39;da <b>×2,52</b>; tarayıcının GERÇEK çağrıları node&#39;da oynatılınca <b>×2,82</b> → korpus temsilî, fark <b>ortamda</b> (node blok ölçer, GC dâhil; tarayıcı çağrı-içi ölçer, GC dışarıda). <b>T5&#39;in kaçırdığı asıl kazanç:</b> ayırma <b>178,6 → 33,5 MB/sn</b> — T5 bunu &#34;tabanın %10,3&#39;ü&#34; diye elemişti, zaman olarak doğruydu ama ayırma bir <b>hız</b>tır ve telefonda karşılığı GC takılması + pildir. Kare kazancı kanıtlandı ama küçük: <b>%5,9-7,1</b>. <b>T6 (D-140, kapandı):</b> kullanıcı <i>&#34;kapı dışında izdiham oluyor, 100lerce npc birikiyor&#34;</i> dedi ve ölçüm aynı şeyi sayıyla gördü — 2 dakikada üçgen <b>+%80</b>, kare <b>+%31</b>, NPC 39 → 56. Kodda doğrulanan şüpheli: doğma tavanı <code>leaving</code>/WC durumlarını saymıyor, yani ekrandaki <b>toplam nüfusun tavanı yok</b>. Piyasa standardı araştırıldı (Restaurant Tycoon 2/3: &#34;uygun masa yoksa hiç doğma&#34;; kuramı Little yasası). Kök doğma tavanı değil çıkış çıktı: <code>leaving</code> ayrışmadan muaf tutuldu → 10 dk'da NPC <b>494 → 59</b>, kapı önü <b>475 → 11</b>; final koşu ölçülen kolu birebir verdi. <b>T7 (D-141, kapandı):</b> banket artık masayla <b>ortadan dışa</b> büyüyor, minder adaya <b>komple</b> geliyor (ada dolunca en düşük masa seviyesi: keten → bordo + sırt → yastık → pirinç biye + kapitone), ada başına tek mesh; Salon 3 pad&#39;inin çakışması kapandı; WC kabini elle çizildi. Bedel ölçüldü: Kat 1 <b>−%4,3</b>, eşikler aynı. <b>T8a (D-142, kapandı):</b> zincir sırası ve T3'ün fiyat kolları yürürlükteki oyunun üstünde ölçüldü — sim'in tabanının oyunun sıra kuralını (D-124) oynamadığı da bu sırada çıktı. 2. garson Salon 1'in sonuna (152. → 29. dk), garson 2'li tepsiyle başlıyor, seviye atlama ödül ekranı oldu (Seviye 5'ten itibaren son 60 sn'nin kazancı), yükseltme noktası yalnız kendi görevinde canlı. Kat 1 <b>−%7,7</b>, eşikler temiz; final taban ölçülen kolla parmak izine kadar aynı. <b>T8b (D-143, kapandı):</b> tezgâh sol duvardan 0,75 açıldı, çaycı ve bulaşıkçı arkaya geçti (0,60 en küçük yeterli paydı ama kafa duvara giriyordu); kirli leğende birikip 10 sn'de toptan yıkanıyor (kap başına süre yığın oluşturmuyordu), geç oyun −%3; Türk tost makinesi çizildi — hiçbir CC0 pakette pres tipi yok.",
-     "yapilan": 9,
-     "toplam": 10,
+     "d": "Kullanıcının oynayıp verdiği geri bildirimin turları. <b>T1</b> onarım (bir <b>veri kaybı</b> dâhil) · <b>T2</b> görev akışı (mantık + görsel) · <b>T4</b> performans: fps tavanı yoktu, erken oyunda <b>116,7 fps</b> çiziliyordu; ve kare <b>bölüşümü</b> ölçülünce herkesin bir tur boyunca <b>yanlış yarıya</b> baktığı görüldü — çizim karenin yarısı bile değil, en büyük kalem <code>findNavPath</code>. <b>T5 (D-139):</b> devralınan plan (&#34;41 KB tampon ayırmak pahalı&#34;) ölçülüp <b>çürütüldü</b>; üç kol uygulandı, çıktı birebir aynı kaldı. <b>T5b:</b> T5&#39;in açık ucu kapandı — iki kol <b>aynı sayfada</b>, ABBA deseninde, gölge montajda sabitlenmiş hâlde koşturuldu ve nav&#39;la ilgisiz kalemler <b>denetim kolu</b> olarak sınandı. Tarayıcıda oran <b>×1,09</b> çıktı, node&#39;da <b>×2,52</b>; tarayıcının GERÇEK çağrıları node&#39;da oynatılınca <b>×2,82</b> → korpus temsilî, fark <b>ortamda</b> (node blok ölçer, GC dâhil; tarayıcı çağrı-içi ölçer, GC dışarıda). <b>T5&#39;in kaçırdığı asıl kazanç:</b> ayırma <b>178,6 → 33,5 MB/sn</b> — T5 bunu &#34;tabanın %10,3&#39;ü&#34; diye elemişti, zaman olarak doğruydu ama ayırma bir <b>hız</b>tır ve telefonda karşılığı GC takılması + pildir. Kare kazancı kanıtlandı ama küçük: <b>%5,9-7,1</b>. <b>T6 (D-140, kapandı):</b> kullanıcı <i>&#34;kapı dışında izdiham oluyor, 100lerce npc birikiyor&#34;</i> dedi ve ölçüm aynı şeyi sayıyla gördü — 2 dakikada üçgen <b>+%80</b>, kare <b>+%31</b>, NPC 39 → 56. Kodda doğrulanan şüpheli: doğma tavanı <code>leaving</code>/WC durumlarını saymıyor, yani ekrandaki <b>toplam nüfusun tavanı yok</b>. Piyasa standardı araştırıldı (Restaurant Tycoon 2/3: &#34;uygun masa yoksa hiç doğma&#34;; kuramı Little yasası). Kök doğma tavanı değil çıkış çıktı: <code>leaving</code> ayrışmadan muaf tutuldu → 10 dk'da NPC <b>494 → 59</b>, kapı önü <b>475 → 11</b>; final koşu ölçülen kolu birebir verdi. <b>T7 (D-141, kapandı):</b> banket artık masayla <b>ortadan dışa</b> büyüyor, minder adaya <b>komple</b> geliyor (ada dolunca en düşük masa seviyesi: keten → bordo + sırt → yastık → pirinç biye + kapitone), ada başına tek mesh; Salon 3 pad&#39;inin çakışması kapandı; WC kabini elle çizildi. Bedel ölçüldü: Kat 1 <b>−%4,3</b>, eşikler aynı. <b>T8a (D-142, kapandı):</b> zincir sırası ve T3'ün fiyat kolları yürürlükteki oyunun üstünde ölçüldü — sim'in tabanının oyunun sıra kuralını (D-124) oynamadığı da bu sırada çıktı. 2. garson Salon 1'in sonuna (152. → 29. dk), garson 2'li tepsiyle başlıyor, seviye atlama ödül ekranı oldu (Seviye 5'ten itibaren son 60 sn'nin kazancı), yükseltme noktası yalnız kendi görevinde canlı. Kat 1 <b>−%7,7</b>, eşikler temiz; final taban ölçülen kolla parmak izine kadar aynı. <b>T8b (D-143, kapandı):</b> tezgâh sol duvardan 0,75 açıldı, çaycı ve bulaşıkçı arkaya geçti (0,60 en küçük yeterli paydı ama kafa duvara giriyordu); kirli leğende birikip 10 sn'de toptan yıkanıyor (kap başına süre yığın oluşturmuyordu), geç oyun −%3; Türk tost makinesi çizildi — hiçbir CC0 pakette pres tipi yok. <b>T9a (D-145, kapandı):</b> kare bölüşümü tick'in <b>%96</b>'sını yol bulmada gösterdi; yol ÇAĞRISI başlangıç hücresine göre önbelleklendi (T5'in bayatlayan yol önbelleğinin tersine) — tick <b>×10</b>, telefonda kare işi <b>−%21,4</b>, davranış parmak izine kadar aynı. g1 kolunun “iyileştiriyor” kaydı bayat kolun hattı tıkamasıymış; elendi.",
+     "yapilan": 10,
+     "toplam": 11,
      "kapi": "Kullanıcının gördüğü her kusur ya düzeltilmiş ya ölçülerek elenmiş olmalı",
      "durum": "now"
     }
@@ -396,6 +396,19 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "23.09.2026",
+   "etiket": "T9a — performans + kod (D-144 · D-145)",
+   "baslik": "Tick'in <b>%96'sı</b> yol bulma; önbellek onu ×14 ucuzlattı",
+   "govde": "Önce açık sorular kapandı (D-144): tost aynı tezgâhta, geçişli reklam C1′ 3 dk, T9 iki parça.<br><br><b>Bölüşüm tek bir kalem gösterdi:</b> 20 sistemin 17'sinin toplamı 0,03 ms; kalan her şey <code>findNavPath</code>. T5'in yol önbelleği aktörün YOLUNU tutup bayatlatıyordu. Bu tur ÇAĞRIYI tuttu: çıktı yalnız başlangıç hücresine, hedefe ve menzile bağlı, aktör bir hücreyi ~12 karede geçiyor. Sonuç birebir aynı, üç ayrı yoldan sınandı. Telefonda kare işi −%21,4.<br><br><b>Sahte bulgu yakalandı:</b> bekçi T8a'dan beri “g1 ölçütü iyileştiriyor” diyordu. Bayat kol, olmayan kademeleri isteyip görev hattını tıkıyordu; Kat 1 hiç bitmiyordu. Doğru tanımla etkisi sıfır.",
+   "maddeler": [
+    "<b>tick</b> 4,06 → 0,40 ms (final ×11,6) · parmak izi birebir",
+    "<b>telefon</b> nav ×0,24 · kare işi −%21,4 · fps 20,4 → 25,7",
+    "<b>g1 elendi</b> · üç dozda da aşan 1/3 aynı",
+    "<b>sıra kilidi</b> 8 yanlış pozitifin 7'si kapandı (C4 ve D-138 hâlâ ihlal — doğru)",
+    "<b>lint</b> 77 → 0 · mutasyon 5/5 + 3/3 · vitest 1446"
+   ]
+  },
   {
    "tarih": "23.09.2026",
    "etiket": "T8b — tezgâh arkası (D-143)",
@@ -472,26 +485,6 @@ h2{font-size:21px;font-weight:800}
     "<b>T4: dpr kolu ters çıktı</b> (+%6,6) ⇒ darboğaz fragment değil <b>CPU</b>; gölgenin payı F2&#39;deki %40&#39;tan <b>%21,7</b>&#39;ye düşmüş",
     "<b>Bilerek YAPILMAYANLAR:</b> G-61&#39;in kalıcı kapısı, G-70&#39;in istifi, G-71&#39;in emniyeti, G-68&#39;in duvar payı — dördü de <b>tempoya</b> dokunuyor, varyant kapısına tabi",
     "<b>Bekçi:</b> 3 yeni dosya / 53 denetim · her turda <b>2 mutasyonla</b> doğrulandı · vitest <b>1361/1361</b> · duman 45/45"
-   ]
-  },
-  {
-   "tarih": "17.09.2026",
-   "etiket": "Faz F · 2. oturum (F1a — kabuk ve imza — D-130)",
-   "baslik": "Kullanıcı bir kolu seçerken <b>sorunun kendisini</b> değiştirebilir",
-   "govde": "Karar paketi üç kalem sordu: paket kimliği, küçültme, sürüm. İlkinde iki kol vardı — kabukta yazılı olan ad ve daha önce onaylanan ad. Kullanıcı <b>ikisini de eledi</b>: <i>&#34;kosekiraathanesi olmayacak, cafe tycoon gibi bir şey düşünüyorum ki genel kullanıcıya hitap etsin.&#34;</i> Yani kalem bir <b>kimlik</b> kalemi değil, bir <b>konumlandırma</b> kalemiymiş.<br><br><b>Jenerik ad ölçüldü ve elendi.</b> &#34;Cafe Tycoon&#34; ile neredeyse birebir aynı başlıkta Play&#39;de en az <b>beş</b> oyun var. O kelimede sıralanmak indirme hızıyla olur; sıfır indirmeli bir uygulama için getirisi <b>sıfır</b>, bedeli ayırt ediciliğin tamamı. Çayhane rafında ise kelime kalabalık ama <b>mekân boş</b> — üç oyun da Japon/Çin estetiği, Türk kıraathanesi rafta yok.<br><br><b>Çözüm üçüncü bir ad değil, bir AYIRMA oldu.</b> Mağaza başlığı her sürümde ve <b>dil başına</b> değişebilir; kalıcı olan yalnız <code>applicationId</code>. Kimlik bu yüzden ad taşımayan bir kök aldı (<code>com.memedobro</code>), başlıklar iki dilde ayrı seçildi ve &#34;cafe&#34; anahtar kelimesi <b>başlığı feda etmeden</b> İngilizce başlığın içine kondu. Cihazdaki simge adı da dile bağlandı: <code>values</code> İngilizce, <code>values-tr</code> Türkçe.<br><br><b>Bekçi metne bakıyordu, etkiye değil.</b> Kaçan iki mutasyon <code>.gitignore</code> satırının başına <code>#</code> koydu: kural <b>öldü</b>, metin bozulmadı, test yeşil kaldı — yani imza anahtarı ilk <code>git add -A</code> ile depoya girebilirdi ve bekçi bunu görmezdi. Düzeltme git&#39;in kendisine sormak oldu (<code>git check-ignore</code>), üstelik bir <b>karşı örnekle</b>: <code>build.gradle</code> yok sayılmamalı, yoksa fazla geniş bir kural kabuğu depodan düşürür.",
-   "maddeler": [
-    "<b>D-130:</b> kimlik <code>com.memedobro.teahousetycoon</code> (Play&#39;de <b>kalıcı</b>) · R8 + kaynak budama <b>açık</b> · sürüm <b>0.9.0</b> (versionCode 900)",
-    "<b>İmzalı çıktı:</b> APK <b>8,58 MB</b> · AAB <b>8,89 MB</b> — debug 11,84&#39;ten <b>−%27,5</b>; <code>npm run yayin</code> ikisini birden üretir",
-    "<b>Kazancın %96&#39;sı koddan:</b> <code>.dex</code> 2,37 → <b>0,45 MB</b>; kaynak budamanın payı yalnız 0,08 MB — tek kol, içindeki iki ayar <b>24 kat</b> farklı",
-    "<b>AAB, APK&#39;dan büyük</b> (8,89 &gt; 8,58) ve bu gerileme değil: AAB dağıtım kabıdır, kullanıcı onu indirmez",
-    "<b>Native <code>.so</code> yok</b> → Play&#39;in 16 KB sayfa şartı bu projeye dokunmuyor (kol boş)",
-    "<b>Sürümün iki kaynağı vardı</b> (gradle &#34;1.0&#34; ↔ package.json &#34;0.0.0&#34;) ve hiçbir yerde karşılaştırılmıyordu — gradle artık <code>package.json</code>&#39;ı okuyor",
-    "<b>Başlıklar iki dilde:</b> EN &#34;Tea House Tycoon: Idle Cafe&#34; (27/30) · TR &#34;Köşe Kıraathanesi: Tycoon&#34; (25/30)",
-    "<b>Anahtar:</b> RSA 4096 · 10.000 gün · depoda <b>değil</b> · <code>C:\\dev-ortam</code> senkronunda; anahtar yoksa derleme <b>kırılmaz</b>, imzasız çıkar",
-    "<b>Araç altı kez yanlış okudu</b> ve altısı da kolu <b>daha karamsar</b> gösteriyordu — R8 bir noktada &#34;ölü&#34; ilan edilmişti",
-    "<b>F2&#39;nin kusurunun AAB kardeşi</b> de kapatıldı: <code>apk-temizle</code> artık bundle çıktısını da siliyor",
-    "Bekçi: <code>paket-f1</code> (19 den.) · <code>mutasyon-paket-f1</code> <b>18/18 kırmızı</b> · ilk koşuda <b>2 kaçtı</b>, delik gerçekti",
-    "vitest <b>1292 ✓</b> · duman <b>45/45 ✓</b> · tsc temiz · imza doğrulandı (v2 · <code>CN=Tea House Tycoon</code>)"
    ]
   }
  ],
@@ -747,7 +740,7 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunlukArsiv": {
-  "kart": 70,
+  "kart": 71,
   "ilk": "05.06 – 17.06.2026",
   "son": "17.09.2026",
   "yer": "memory-bank/arsiv/pano-gunluk.json"

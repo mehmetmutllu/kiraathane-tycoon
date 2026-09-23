@@ -2,8 +2,28 @@
  "not": "İlerleme panosunun ESKİ oturum kartları. Pano her turda büyüyordu (67 kart / 219 KB) ve yayını canlı sürümün tamamının okunmasını şart koştuğu için tur başına maliyeti ARTIYORDU — okunanın neredeyse tamamı bir daha bakılmayacak arşivdi. Projenin kendi kuralı buraya da uygulandı (eski anlatı → arsiv/). Pano son 8 turu gösterir; öncesi burada ve git geçmişinde durur.",
  "kaynak": "docs/pano/ilerleme-panosu.html",
  "tasindi": "2026-09-23",
- "kart": 70,
+ "kart": 71,
  "gunluk": [
+  {
+   "tarih": "17.09.2026",
+   "etiket": "Faz F · 2. oturum (F1a — kabuk ve imza — D-130)",
+   "baslik": "Kullanıcı bir kolu seçerken <b>sorunun kendisini</b> değiştirebilir",
+   "govde": "Karar paketi üç kalem sordu: paket kimliği, küçültme, sürüm. İlkinde iki kol vardı — kabukta yazılı olan ad ve daha önce onaylanan ad. Kullanıcı <b>ikisini de eledi</b>: <i>&#34;kosekiraathanesi olmayacak, cafe tycoon gibi bir şey düşünüyorum ki genel kullanıcıya hitap etsin.&#34;</i> Yani kalem bir <b>kimlik</b> kalemi değil, bir <b>konumlandırma</b> kalemiymiş.<br><br><b>Jenerik ad ölçüldü ve elendi.</b> &#34;Cafe Tycoon&#34; ile neredeyse birebir aynı başlıkta Play&#39;de en az <b>beş</b> oyun var. O kelimede sıralanmak indirme hızıyla olur; sıfır indirmeli bir uygulama için getirisi <b>sıfır</b>, bedeli ayırt ediciliğin tamamı. Çayhane rafında ise kelime kalabalık ama <b>mekân boş</b> — üç oyun da Japon/Çin estetiği, Türk kıraathanesi rafta yok.<br><br><b>Çözüm üçüncü bir ad değil, bir AYIRMA oldu.</b> Mağaza başlığı her sürümde ve <b>dil başına</b> değişebilir; kalıcı olan yalnız <code>applicationId</code>. Kimlik bu yüzden ad taşımayan bir kök aldı (<code>com.memedobro</code>), başlıklar iki dilde ayrı seçildi ve &#34;cafe&#34; anahtar kelimesi <b>başlığı feda etmeden</b> İngilizce başlığın içine kondu. Cihazdaki simge adı da dile bağlandı: <code>values</code> İngilizce, <code>values-tr</code> Türkçe.<br><br><b>Bekçi metne bakıyordu, etkiye değil.</b> Kaçan iki mutasyon <code>.gitignore</code> satırının başına <code>#</code> koydu: kural <b>öldü</b>, metin bozulmadı, test yeşil kaldı — yani imza anahtarı ilk <code>git add -A</code> ile depoya girebilirdi ve bekçi bunu görmezdi. Düzeltme git&#39;in kendisine sormak oldu (<code>git check-ignore</code>), üstelik bir <b>karşı örnekle</b>: <code>build.gradle</code> yok sayılmamalı, yoksa fazla geniş bir kural kabuğu depodan düşürür.",
+   "maddeler": [
+    "<b>D-130:</b> kimlik <code>com.memedobro.teahousetycoon</code> (Play&#39;de <b>kalıcı</b>) · R8 + kaynak budama <b>açık</b> · sürüm <b>0.9.0</b> (versionCode 900)",
+    "<b>İmzalı çıktı:</b> APK <b>8,58 MB</b> · AAB <b>8,89 MB</b> — debug 11,84&#39;ten <b>−%27,5</b>; <code>npm run yayin</code> ikisini birden üretir",
+    "<b>Kazancın %96&#39;sı koddan:</b> <code>.dex</code> 2,37 → <b>0,45 MB</b>; kaynak budamanın payı yalnız 0,08 MB — tek kol, içindeki iki ayar <b>24 kat</b> farklı",
+    "<b>AAB, APK&#39;dan büyük</b> (8,89 &gt; 8,58) ve bu gerileme değil: AAB dağıtım kabıdır, kullanıcı onu indirmez",
+    "<b>Native <code>.so</code> yok</b> → Play&#39;in 16 KB sayfa şartı bu projeye dokunmuyor (kol boş)",
+    "<b>Sürümün iki kaynağı vardı</b> (gradle &#34;1.0&#34; ↔ package.json &#34;0.0.0&#34;) ve hiçbir yerde karşılaştırılmıyordu — gradle artık <code>package.json</code>&#39;ı okuyor",
+    "<b>Başlıklar iki dilde:</b> EN &#34;Tea House Tycoon: Idle Cafe&#34; (27/30) · TR &#34;Köşe Kıraathanesi: Tycoon&#34; (25/30)",
+    "<b>Anahtar:</b> RSA 4096 · 10.000 gün · depoda <b>değil</b> · <code>C:\\dev-ortam</code> senkronunda; anahtar yoksa derleme <b>kırılmaz</b>, imzasız çıkar",
+    "<b>Araç altı kez yanlış okudu</b> ve altısı da kolu <b>daha karamsar</b> gösteriyordu — R8 bir noktada &#34;ölü&#34; ilan edilmişti",
+    "<b>F2&#39;nin kusurunun AAB kardeşi</b> de kapatıldı: <code>apk-temizle</code> artık bundle çıktısını da siliyor",
+    "Bekçi: <code>paket-f1</code> (19 den.) · <code>mutasyon-paket-f1</code> <b>18/18 kırmızı</b> · ilk koşuda <b>2 kaçtı</b>, delik gerçekti",
+    "vitest <b>1292 ✓</b> · duman <b>45/45 ✓</b> · tsc temiz · imza doğrulandı (v2 · <code>CN=Tea House Tycoon</code>)"
+   ]
+  },
   {
    "tarih": "17.09.2026",
    "etiket": "Faz R · 4. oturum (R4 — çevre sanatı — D-129) — Faz R KAPANDI",

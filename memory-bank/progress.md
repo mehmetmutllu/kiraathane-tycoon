@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 122 · YAPILAN 117 · %96):**
+**Oturum bütçesi (TOPLAM 123 · YAPILAN 118 · %96):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -28,8 +28,8 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | H oynanış düzeltmeleri | 2/2 ✅ |
 | | **R geri bildirim turları (2026-09-16)** | **4/4 ✅** |
 | | **F paketleme ve yayın** | **3/6** 🔧 |
-| | **T tur serisi (geri bildirim + performans)** | **9/10** 🔧 |
-| **Program toplam** | | **89/94** |
+| | **T tur serisi (geri bildirim + performans)** | **10/11** 🔧 |
+| **Program toplam** | | **90/95** |
 
 Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlatısı: `memory-bank/arsiv/progress-tamamlanan.md`.
 
@@ -114,7 +114,7 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
 - ⏳ **F5 — mağaza vitrini + uyum** …
 - ✅ **F6 — açılış ekranı + ekran yönü + yatay/tablet HUD** (F1b iki tur + tur 3) …
 
-## Faz T — TUR SERİSİ: GERİ BİLDİRİM + PERFORMANS (9/10) 🔧
+## Faz T — TUR SERİSİ: GERİ BİLDİRİM + PERFORMANS (10/11) 🔧
 - ✅ **T1 — onarım (G-78/79/77/69/70):** …
 - ✅ **T2 — görev akışı · iki tur (T2a mantık D-134 · T2b görsel D-135)**
 - ✅ **T4 — performans (G-80): şarj kanadı uygulandı, kasma kanadı T5'e devredildi.** …
@@ -124,8 +124,9 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
   · T6b tarayıcı ölçümü: kare ×1,15 (telefon) · bellek −%22 · izdiham kare hızına bağlı · masaüstü damgalı · `docs/izdiham-raporu-t6.md` §Performansa yansıması
 - ✅ **T7 — banket ortadan büyür + ada-başı tek kademe + WC kabini elle çizildi (D-141)** · Kat 1 −%4,3 (eşikler aynı) · `docs/banket-raporu-t7.md`
 - ✅ **T8 — zincir (G-86) + T3 denge + nokta kapısı + seviye ₺ + bardak havuzu · D-142** *(tur adı T8a)* · Kat 1 5,58 sa (−%7,7, eşikler temiz) · `docs/zincir-raporu-t8a.md` · vitest 1423
-- ✅ **T10 — tezgâh arkası: pay 0,75 + personel arkada · leğen 10 sn toplu · Türk tost makinesi · D-143** *(tur adı T8b)* · geç oyun servis −%3 · `docs/tezgah-raporu-t8b.md` · vitest 1430 · F (ayrı tost modülü) sorusu açık
-- ⏳ **T9 — G-88 genel tarama** (kod + oynanış, ağırlık performans) …
+- ✅ **T10 — tezgâh arkası: pay 0,75 + personel arkada · leğen 10 sn toplu · Türk tost makinesi · D-143** *(tur adı T8b)* · geç oyun servis −%3 · `docs/tezgah-raporu-t8b.md` · vitest 1430 · F sorusu kapandı: A (D-144)
+- ✅ **T9 — performans + kod: N2-kesin yol önbelleği (tick ×10, birebir) · g1 elendi (eski iyileşme sahteydi) · sıra kilidi düzeldi · lint 0 · D-145** *(tur adı T9a)* · telefon kare işi −%21,4 · `docs/performans-raporu-t9a.md` · vitest 1446
+- ⏳ **T11 — oynanış taraması** *(tur adı T9b)* (G-88'in ikinci parçası, D-144 ③; bulgu listesi kullanıcıya)
 
 ## Kullanıcı geri bildirimleri
 G-01…G-91 tam listesi + kullanıcının kendi cümleleri: `docs/geribildirim-oyun-testi-<tarih>.md` (09-09 · 09-16 · 09-17 · 09-18 · 09-21). Turlara dağılımı Faz T'de.

@@ -4698,3 +4698,15 @@ Uygulama Faz F3'te; "İzle, 2× al" onunla açılır. ③ T9 **iki parça**: T9a
 ④ g1 kolu (garson merdiveni ucuzlatma) **T9a'da varyant olarak ölçülür**. ⑤ Sıra kilidinin yanlış
 pozitifleri (8 tur) **araçta düzeltilir**, bekçiyle kilitlenir.
 Sayfa: https://claude.ai/artifact/KeoLC7rpqJXgVGdRCPvwkd
+
+---
+
+## D-145 · N2-kesin yol önbelleği uygulandı (tick ×10), g1 elendi — T9a (2026-09-23)
+
+**Karar (teknik, soru açılmadı):** `findNavPath` (ızgara, başlangıç HÜCRESİ, hedef, reach) anahtarıyla
+önbelleklenir, varsayılan AÇIK. Çıktı birebir aynı olduğu için ürün çatalı değil (D-139'un N1c emsali).
+g1 kolu D-142'den sonra bayattı (hattı tıkıyor, "iyileşme" sahteydi); doğru tanımla ölçüte etkisi yok → elendi.
+**Belirleyici sayı:** tick'in %96'sı nav · node tick 4,06 → 0,40 ms (×10,1; final ×11,6) · telefon tarayıcısı
+nav ×0,24, kare işi −%21,4, fps 20,4 → 25,7 · g1 üç dozda da İdealize 1 / Normal 3 aşan (taban aynı).
+**Araç (D-144 ⑤):** sıra kilidi geriye bakış + §Karar-boş dikiş; 8 yanlış pozitifin 7'si kapandı. Lint 77 → 0.
+**Bekçi:** `tests/nav-onbellek-t9a.test.ts` 5/5 mutasyon · `sira-kilidi` 3/3. `docs/performans-raporu-t9a.md`.

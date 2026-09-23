@@ -85,7 +85,7 @@ function kos(kol: 'taban' | 'N2-kesin'): Kosu {
   }
   const sistem = olcumOku();
   olcumKapat();
-  navOnbellekAyarla(false);
+  navOnbellekAyarla(true); // üretim varsayılanı (D-145)
   return {
     kol,
     tickMs,

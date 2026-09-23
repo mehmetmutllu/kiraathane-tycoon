@@ -56,7 +56,8 @@ declare global {
       izgara: () => { cols: number; rows: number; hucre: number; cell: number } | null;
     };
     /** NAV A/B KOLU (T5b): 'uretim' = T5 sonrası · 'oracle' = T5 öncesi donmuş kopya ·
-     *  'onbellek' = üretim + N2-kesin çağrı önbelleği (T9a).
+     *  'onbellek' = N2-kesin çağrı önbelleği AÇIK (T9a · D-145'ten beri üretim budur;
+     *  'uretim' artık önbelleksiz T5 hâlini takar — ölçüm için).
      *  Argümansız çağrı yalnız TAKILI kolun adını döndürür (damga okuma). */
     __navKol?: (kol?: NavKolAdi) => Promise<NavKolAdi>;
     /** NAV KORPUS DÖKÜMÜ (T5b): tarayıcının GERÇEK çağrılarını node'a taşınabilir hâle getirir. */

@@ -1,6 +1,6 @@
 # T9a — PERFORMANS + KOD (G-88'in ilk parçası)
 
-> Karar: **(boş — karar paketinden sonra)** · Kullanıcının T9 öncesi seçimleri: **D-144**
+> Karar: **D-145** (2026-09-23) — N2-kesin UYGULANDI · g1 ELENDİ · Kullanıcının T9 öncesi seçimleri: **D-144**
 > Araçlar: `tools/olcum-perf-t9a.ts` → `docs/olcum-perf-t9a.txt` (node, tick bölüşümü + N2-kesin) ·
 > `tools/olcum-nav-ab-t9a.mjs` → `docs/olcum-nav-ab-t9a-telefon.{txt,json}` (tarayıcı ABBA) ·
 > `tools/olcum-g1-t9a.ts` → `docs/olcum-g1-t9a.txt` (g1 dozları, sim)
@@ -103,6 +103,29 @@ da geçerli.
   projede Compiler yok); UI'daki beş bulgu kodda düzeltildi (render'da ref yazımı → useFrame içine;
   effect'te setState → render'da koşullu düzeltme; `performance.now()` → tembel `useState`).
 
-## §Karar
+## §Karar — D-145
 
-(boş — karar paketinden sonra doldurulur)
+**Kullanıcıya soru çıkmadı** — iki bulgunun ikisi de ürün çatalı değil:
+
+| kol | karar | gerekçe |
+|---|---|---|
+| **N2-kesin** | **UYGULANDI** (varsayılan açık) | Çıktı birebir aynı (parmak izi + tam durum dökümü + bekçinin 3.000 sorgusu) → teknik çatal, D-139'un N1c emsali. |
+| **g1** | **ELENDİ** | Doğru tanımla ölçütün hiçbir sayısını değiştirmiyor; `economy.config.ts`e dokunulmadı. |
+
+### Uygulama
+- `src/game/nav.ts`: `onbellekAcik = true`. Kapatma anahtarı ölçüm araçları için durur
+  (`navOnbellekAyarla`; tarayıcıda `__navKol('uretim')` artık önbelleksiz T5 hâlini takar).
+- Denge dosyası (`economy.config.ts` / `tick.ts` / `rules.ts`) bu turda HİÇ değişmedi.
+
+### Bekçi
+`tests/nav-onbellek-t9a.test.ts` (5 test: aynı hücrede 3.000 sorgu · hücre sınırının iki yanı ·
+ızgara değişimi (iki ızgara 50+ sorguda gerçekten farklı cevap veriyor) · varsayılan açık (modül
+yüklenirken okunur) · geç oyunda 40 sn tam durum). `node tools/mutasyon-nav-onbellek-t9a.mjs` **5/5**
+(reach · ızgara temizliği · iki hücrelik kutu · varsayılan kapalı · tz). İlk koşuda **M4 KAÇTI**:
+"varsayılan açık" testi bayrağı kontrolden önce kendisi açıyordu; değer artık modül yüklenirken okunuyor.
+Mevcut `nav-kol-t5` bekçisi (~4.200 oracle çifti) önbellek açıkken de birebir.
+
+### Final tam koşu
+`docs/olcum-perf-t9a-final.txt` (TAM, damgalar temiz): tick 4,274 → **0,367 ms (×11,64)**, parmak
+izi `5cbc3445` iki kolda aynı. Tam durum dökümü (`tick-fingerprint`) varsayılan-açık üretim ile
+önbelleksiz taban arasında `cmp` birebir.
