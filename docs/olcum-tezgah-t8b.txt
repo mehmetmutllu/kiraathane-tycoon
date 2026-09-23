@@ -1,0 +1,74 @@
+=== T8b — TEZGÂH ARKASI: K10 sol duvar payı + K9 bulaşık kuyruğu ===
+aktör yarıçapı 0.28 (gövde 0.56) · oyuncu yarıçapı 0.47 (gövde 0.94) · nav hücresi 0,30
+
+§A GEOMETRİ — personel ızgarası (şişirme 0,28) · oyuncu ızgarası (şişirme 0,47, alan kelepçesi)
+--- G4 Salon 1 dolu (4 masa · 1 alan) ---
+pay  | aktör yan payı | arka şerit (sütun/hücre) | oyuncu arkada | ön koridor | çay alma↔gövde | yükseltme↔gövde | bulaşıkçı pad↔gövde | posta1↔gövde | arka→leğen | arka→masa1
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+0.30 |         -0.13 |                    0 / 0 |             0 |       3.16 |           0.70 |            2.26 |                2.30 |         0.70 | 1.1 | 1.5
+0.60 |          0.02 |                   1 / 17 |             0 |       2.86 |           0.70 |            2.26 |                2.00 |         0.40 | 0.3 | 5.6
+0.75 |          0.09 |                   2 / 34 |            17 |       2.71 |           0.70 |            2.26 |                1.85 |         0.25 | 0.2 | 5.3
+0.90 |          0.17 |                   2 / 34 |            17 |       2.56 |           0.70 |            2.26 |                1.70 |         0.10 | 0.3 | 5.3
+1.05 |          0.24 |                   3 / 51 |            34 |       2.41 |           0.70 |            2.26 |                1.55 |        -0.05 | 0.2 | 5.1
+
+--- G8 Salon 2 dolu (8 masa · 2 alan) ---
+pay  | aktör yan payı | arka şerit (sütun/hücre) | oyuncu arkada | ön koridor | çay alma↔gövde | yükseltme↔gövde | bulaşıkçı pad↔gövde | posta1↔gövde | arka→leğen | arka→masa1
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+0.30 |         -0.13 |                    0 / 0 |             0 |       3.16 |           0.70 |            2.26 |                2.30 |         0.70 | 1.1 | 1.5
+0.60 |          0.02 |                   1 / 17 |             0 |       2.86 |           0.70 |            2.26 |                2.00 |         0.40 | 0.3 | 5.6
+0.75 |          0.09 |                   2 / 34 |            17 |       2.71 |           0.70 |            2.26 |                1.85 |         0.25 | 0.2 | 5.3
+0.90 |          0.17 |                   2 / 34 |            17 |       2.56 |           0.70 |            2.26 |                1.70 |         0.10 | 0.3 | 5.3
+1.05 |          0.24 |                   3 / 51 |            34 |       2.41 |           0.70 |            2.26 |                1.55 |        -0.05 | 0.2 | 5.1
+
+  aktör yan payı: arka şeridin ORTASINDA duran aktörün iki yana kalan payı (negatif = gövdeye/duvara girer).
+  arka şerit: personel ızgarasında gövde boyunca TAM açık sütun (0 = arkadan yol yok) / açık hücre.
+  oyuncu arkada: oyuncu ızgarasında arka şeritteki açık hücre (0 = oyuncu arkaya giremez).
+  ön koridor: gövdenin ön yüzü ile z-boyunda örtüşen en yakın katı (masa/sandalye) arası; oyuncu geçişi ≥ 0,94.
+  arka→leğen / arka→masa1: bulaşıkçının ARKA postasından rota boyu (br; YOK = BFS ulaşamadı).
+
+§B OYUN — oyunun kendi tick'i, oyuncu parkta (AFK alt sınırı)
+Isınma 180 sn · kayıt 420 sn · tohum 4 · DT 1/60
+
+--- W4 Salon 1 dolu (4 masa · 2 garson · bulaşıkçı YOK · ocak L3) ---
+kol  | servis/dk (± yarı-aralık) | temiz ort | temiz=0 payı | masada kirli ort | kirli masa ort | leğen kuyruğu ort / maks
+--------------------------------------------------------------------------------------------------------------------------
+T0   |               8.0 ± 5.6 |       0.4 |        %67.7 |             14.3 |            1.5 |                  0.0 / 0
+P60  |              10.6 ± 5.0 |       0.5 |        %57.1 |             13.6 |            1.9 |                  0.0 / 0
+P75  |              13.9 ± 0.7 |       0.7 |        %42.8 |             12.8 |            1.9 |                  0.0 / 0
+P90  |              12.8 ± 2.8 |       0.7 |        %47.5 |             12.9 |            1.9 |                  0.0 / 0
+P105 |              12.0 ± 4.4 |       0.6 |        %50.9 |             13.2 |            2.0 |                  0.0 / 0
+Y05  |               9.4 ± 4.5 |       0.4 |        %62.1 |             13.8 |            1.2 |                  0.1 / 2
+Y10  |              11.3 ± 1.8 |       0.5 |        %54.2 |             13.4 |            1.6 |                  0.2 / 2
+Y20  |               7.5 ± 4.1 |       0.3 |        %70.1 |             14.2 |            2.2 |                  0.3 / 2
+
+--- W8 Salon 2 dolu (8 masa · masalar L2 · ocak L3 · bulaşıkçı yeni) ---
+kol  | servis/dk (± yarı-aralık) | temiz ort | temiz=0 payı | masada kirli ort | kirli masa ort | leğen kuyruğu ort / maks
+--------------------------------------------------------------------------------------------------------------------------
+T0   |               9.8 ± 1.8 |       5.0 |        %22.9 |             13.3 |            1.0 |                  0.0 / 0
+P60  |              10.6 ± 2.1 |       7.8 |         %3.5 |              9.4 |            0.6 |                  0.0 / 0
+P75  |              11.0 ± 1.9 |       5.0 |        %23.7 |             13.7 |            1.2 |                  0.0 / 0
+P90  |              10.3 ± 2.9 |       5.8 |        %23.1 |             12.6 |            0.4 |                  0.0 / 0
+P105 |              10.8 ± 0.8 |       7.1 |         %9.3 |             10.3 |            0.6 |                  0.0 / 0
+Y05  |               9.2 ± 3.1 |       4.7 |        %29.7 |             14.1 |            1.1 |                  0.1 / 2
+Y10  |               9.6 ± 2.2 |       5.1 |        %21.2 |             13.0 |            1.0 |                  0.2 / 3
+Y20  |               9.0 ± 3.4 |       4.5 |        %29.7 |             14.0 |            1.1 |                  0.4 / 4
+
+--- W20 geç oyun (20 masa · masalar L4 · ocak tavan · arka bant) ---
+kol  | servis/dk (± yarı-aralık) | temiz ort | temiz=0 payı | masada kirli ort | kirli masa ort | leğen kuyruğu ort / maks
+--------------------------------------------------------------------------------------------------------------------------
+T0   |               9.0 ± 0.5 |       8.6 |        %18.7 |             21.2 |            0.5 |                  0.0 / 0
+Y05  |               8.9 ± 0.7 |       8.6 |        %18.8 |             21.2 |            0.5 |                  0.1 / 2
+Y10  |               8.9 ± 0.7 |       8.5 |        %19.1 |             21.2 |            0.5 |                  0.1 / 2
+Y20  |               8.9 ± 0.6 |       8.4 |        %19.2 |             21.2 |            0.4 |                  0.3 / 3
+
+KOLLAR:
+  T0   bugün: pay 0,30 · personel önde · yıkama anlık
+  P60  pay 0,60 · personel ARKADA
+  P75  pay 0,75 · personel ARKADA
+  P90  pay 0,90 · personel ARKADA
+  P105 pay 1,05 · personel ARKADA
+  Y05  leğen kuyruğu · 0,5 sn/kap
+  Y10  leğen kuyruğu · 1,0 sn/kap
+  Y20  leğen kuyruğu · 2,0 sn/kap
+
+✓ Damgalar temiz (tam koşu).

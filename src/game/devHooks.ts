@@ -6,7 +6,7 @@ import { useGame, visiblePads, questCounterValue, LAYOUT, LAVABO, servicePlace, 
 import { THE_SERVICE, sellsTost } from './world';
 import { perf, type PerfSnapshot } from './perf';
 import { olcumAc, olcumKapat, olcumOku, type OlcumKaydi } from './olcum';
-import { getNavGrid } from './layout';
+import { getNavGrid, solDuvarKoluAyarla, type SolDuvarKolu } from './layout';
 import { navKolAyarla, navKolAdi, navKorpusAc, navKorpusOku, navKorpusKapat } from './nav';
 import { collectionMult } from './goals';
 import { toastCizilir } from './rules';
@@ -31,6 +31,7 @@ declare global {
   interface Window {
     __game?: () => Record<string, unknown>;
     __advanceTime?: (seconds: number) => Record<string, unknown>;
+    __solDuvarKolu?: (k: SolDuvarKolu | null) => void;
     __resetGame?: () => void;
     __addMoney?: (amount: number) => Record<string, unknown>;
     __upgradeStation?: () => boolean;
@@ -81,6 +82,14 @@ declare global {
 
 export function installDevHooks(): void {
   if (typeof window === 'undefined') return;
+
+  // T8b ölçüm kolu (K10): sol duvar payını KARE için değiştir. Sahne yerleşimi `areasOpen`a abone
+  // olduğu için çağıran dönemi bir kez değiştirip geri almalı (`tools/shot-t8b.mjs`); personel yeni
+  // postasından başlasın diye bulaşıkçı sıfırlanır.
+  window.__solDuvarKolu = (k: SolDuvarKolu | null) => {
+    solDuvarKoluAyarla(k);
+    useGame.setState({ dishwasher: null } as never);
+  };
 
   window.__game = () => {
     const s = useGame.getState();

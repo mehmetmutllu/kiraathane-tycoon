@@ -887,7 +887,7 @@ function dishCycleSystem(c: TickCtx): void {
   // Bulaşık noktasına yaklaşınca taşınan kirliler yıkanır → GLOBAL temiz havuza (B2: tek nokta).
   if (carriedDirty + carriedDirtyFood > 0 && dist2D(player, place.dish) < C.cups.washRadius) {
     const washed = carriedDirty + carriedDirtyFood;
-    cleanCups += washed;
+    cleanCups = lavaboyaBirak(cleanCups, washed);
     stats.dishesWashed += washed;
     xp += C.xp.perDishWashed * washed;
     carriedDirty = 0;
@@ -1038,7 +1038,7 @@ function waiterSystem(c: TickCtx): void {
         if (tasinan >= carry || (tasinan > 0 && dishes.length === 0)) {
           // Dolu (ya da toplanacak kalmadı) → leğene götür. Bardak da tabak da AYNI havuza döner.
           if (navStep(w.pos, place.dish, wStep, navGrid, reachWash(c.areasOpen), player, obstacles)) {
-            cleanCups += tasinan; // bardak da tabak da AYNI havuza döner (korunum tek)
+            cleanCups = lavaboyaBirak(cleanCups, tasinan); // bardak da tabak da AYNI havuza döner (korunum tek)
             // `stats.dishesWashed` OYUNCUNUN sayacıdır (q_wash görevi + "Temizlik" başarımı +
             // XP): personelin yıkadığı oraya yazılmaz. Bulaşıkçı da yazmaz — aynı kural.
             w.dirtyCarry = 0;
@@ -1096,7 +1096,7 @@ function dishwasherSystem(c: TickCtx): void {
     // Dolu (ya da elinde var ama toplanacak kalmadı) → bulaşıkta yıka. Bardak da tabak da AYNI
     // havuza döner (korunum değişmezi tek).
     if (navStep(dw.pos, place.dish, dStep, navGrid, reachWash(c.areasOpen), player, obstacles)) {
-      cleanCups += dw.tray + dw.trayFood;
+      cleanCups = lavaboyaBirak(cleanCups, dw.tray + dw.trayFood);
       dw.tray = 0;
       dw.trayFood = 0;
     }
@@ -1657,6 +1657,7 @@ const SISTEMLER: readonly (readonly [string, (c: TickCtx) => void])[] = [
   ['dishCycleSystem', dishCycleSystem],
   ['waiterSystem', waiterSystem],
   ['dishwasherSystem', dishwasherSystem],
+  ['bulasikKuyruguSystem', bulasikKuyruguSystem],
   ['interactionZoneSystem', interactionZoneSystem],
   ['revealSystem', revealSystem],
   ['padFillSystem', padFillSystem],
@@ -1706,3 +1707,57 @@ export interface IzdihamKolu {
 let izdihamKolu: IzdihamKolu | null = null;
 export const izdihamKoluAyarla = (k: IzdihamKolu | null): void => { izdihamKolu = k; };
 export const izdihamKoluOku = (): IzdihamKolu | null => izdihamKolu;
+
+// ---------------------------------------------------------------------------
+// BULAŞIK KUYRUĞU ÖLÇÜM KOLU (T8b · T3-K9) — **yalnız ölçüm; varsayılan null = anlık yıkama.**
+// ---------------------------------------------------------------------------
+/**
+ * K9 (G-70'in tam kolu): bırakılan kirli leğende BEKLER ve `yikamaSn` başına bir kap temize döner.
+ * Bardak döngüsünün hızını değiştirir → varyant kapısı: kalıcı yazılmadan önce ölçülür
+ * (`tools/olcum-tezgah-t8b.ts`). Kuyruk ölçüm süresince burada yaşar; korunum damgası onu sayar.
+ */
+/**
+ * İki biçim: `yikamaSn` → kuyruk sabit hızla erir (kap başına süre) · `topluSn` → kuyruk birikir ve
+ * her `topluSn` saniyede bir TOPTAN temizlenir (kullanıcının tarifi: *"birkaç tane bıraktıktan sonra
+ * … o adam oraya geldiğinde temizlenmesi gerek"*).
+ */
+export interface BulasikKolu { yikamaSn?: number; topluSn?: number }
+let bulasikKolu: BulasikKolu | null = null;
+let lavaboKuyrugu = 0;
+let lavaboBirikim = 0;
+export const bulasikKoluAyarla = (k: BulasikKolu | null): void => {
+  bulasikKolu = k;
+  lavaboKuyrugu = 0;
+  lavaboBirikim = 0;
+};
+export const lavaboKuyruguOku = (): number => lavaboKuyrugu;
+
+function lavaboyaBirak(temiz: number, n: number): number {
+  if (!bulasikKolu) return temiz + n;
+  lavaboKuyrugu += n;
+  return temiz;
+}
+
+function bulasikKuyruguSystem(c: TickCtx): void {
+  if (!bulasikKolu) return;
+  if (bulasikKolu.topluSn) {
+    lavaboBirikim += c.dt;
+    if (lavaboBirikim >= bulasikKolu.topluSn) {
+      lavaboBirikim -= bulasikKolu.topluSn;
+      c.cleanCups += lavaboKuyrugu;
+      lavaboKuyrugu = 0;
+    }
+    return;
+  }
+  if (lavaboKuyrugu === 0) {
+    lavaboBirikim = 0;
+    return;
+  }
+  lavaboBirikim += c.dt / (bulasikKolu.yikamaSn ?? 1);
+  const n = Math.min(lavaboKuyrugu, Math.floor(lavaboBirikim));
+  if (n > 0) {
+    lavaboKuyrugu -= n;
+    lavaboBirikim -= n;
+    c.cleanCups += n;
+  }
+}

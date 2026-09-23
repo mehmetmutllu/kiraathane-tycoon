@@ -513,30 +513,59 @@ const SOL_DUVAR_BULASIK_HZ = 1.0;
 /** Bulaşığın merkezi — tezgâhın kutusuna BİTİŞİK (boşluk tanım gereği 0,00). */
 const SOL_DUVAR_BULASIK_Z = SOL_DUVAR_TEZGAH_Z + SOL_DUVAR_TEZGAH_HZ + SOL_DUVAR_BULASIK_HZ;
 
-const PLACE_LEFT_WALL: ServicePlace = {
-  areaIndex: 0,
-  station: [-16.2, 0, SOL_DUVAR_TEZGAH_Z],
-  rot: Math.PI / 2,
-  half: [0.5, SOL_DUVAR_TEZGAH_HZ],
-  pickup: [-15.0, 0, SOL_DUVAR_TEZGAH_Z],
-  upgradeSpot: [-15.2, 0, 2.6],
-  dish: [-16.2, 0, SOL_DUVAR_BULASIK_Z],
-  dishRot: Math.PI / 2,
-  dishHalf: [0.5, SOL_DUVAR_BULASIK_HZ],
-  waiterHome: [-14.4, 0, 8.6],
-  waiterPosts: [[-15, 0, 5], [-14.5, 0, 9.75], [-11.75, 0, 7.5]] as const,
-  /* Bulaşıkçının postası bulaşığın 2,0 br KUZEYİNDE duruyordu (10,60 → 12,60); bulaşık 1,60
-     yanaşınca aynı ilişki korunsun diye o da türetildi. Elle bırakılsaydı boş zeminin önünde
-     bekleyen bir bulaşıkçı kalırdı. */
-  dishwasherHome: [-14.4, 0, SOL_DUVAR_BULASIK_Z + 2.0],
-  /* Çaycının yolu ÖN HATTIN boyudur: tezgâhın arka ucundan bulaşığın ön ucuna. Uçlardaki 0,1 /
-     0,2 pay, dönüp geri yürürken gövdelerin köşesine girmemesi için. */
-  staffWalk: {
-    a: [-15.1, 0, SOL_DUVAR_TEZGAH_Z - SOL_DUVAR_TEZGAH_HZ + 0.1],
-    b: [-15.1, 0, SOL_DUVAR_BULASIK_Z + SOL_DUVAR_BULASIK_HZ - 0.2],
-    face: Math.PI / 2,
-  },
-};
+/** Sol duvar döneminde tezgâh+bulaşık gövdesinin duvarın iç yüzüne uzaklığı (G-68 · T3-K10). */
+export const SOL_DUVAR_PAYI = 0.3;
+
+/**
+ * Sol duvar yerleşimi, duvar payından TÜRER. `pay` tezgâhla bulaşığın arka yüzünün duvarın iç
+ * yüzüne (x = −FLOOR_HALF) uzaklığıdır; ön yüze bağlı her nokta (çay alma, yükseltme, çaycının ön
+ * yolu) aynı miktarda kayar. `arkada`: çaycı ve bulaşıkçının postası gövdenin ARKASINA, duvarla
+ * tezgâh arasındaki şeride alınır (T8b ölçüm kolu; varsayılan ön taraf).
+ */
+function solDuvarYeri(pay: number, arkada: boolean): ServicePlace {
+  const dx = pay - SOL_DUVAR_PAYI;
+  const arkaX = -FLOOR_HALF + pay / 2;
+  return {
+    areaIndex: 0,
+    station: [-16.2 + dx, 0, SOL_DUVAR_TEZGAH_Z],
+    rot: Math.PI / 2,
+    half: [0.5, SOL_DUVAR_TEZGAH_HZ],
+    pickup: [-15.0 + dx, 0, SOL_DUVAR_TEZGAH_Z],
+    upgradeSpot: [-15.2 + dx, 0, 2.6],
+    dish: [-16.2 + dx, 0, SOL_DUVAR_BULASIK_Z],
+    dishRot: Math.PI / 2,
+    dishHalf: [0.5, SOL_DUVAR_BULASIK_HZ],
+    waiterHome: [-14.4, 0, 8.6],
+    waiterPosts: [[-15, 0, 5], [-14.5, 0, 9.75], [-11.75, 0, 7.5]] as const,
+    /* Bulaşıkçının postası bulaşığın 2,0 br KUZEYİNDE duruyordu (10,60 → 12,60); bulaşık 1,60
+       yanaşınca aynı ilişki korunsun diye o da türetildi. Elle bırakılsaydı boş zeminin önünde
+       bekleyen bir bulaşıkçı kalırdı. */
+    dishwasherHome: arkada ? [arkaX, 0, SOL_DUVAR_BULASIK_Z] : [-14.4, 0, SOL_DUVAR_BULASIK_Z + 2.0],
+    /* Çaycının yolu ÖN HATTIN boyudur: tezgâhın arka ucundan bulaşığın ön ucuna. Uçlardaki 0,1 /
+       0,2 pay, dönüp geri yürürken gövdelerin köşesine girmemesi için. */
+    staffWalk: {
+      a: [arkada ? arkaX : -15.1 + dx, 0, SOL_DUVAR_TEZGAH_Z - SOL_DUVAR_TEZGAH_HZ + 0.1],
+      b: [arkada ? arkaX : -15.1 + dx, 0, SOL_DUVAR_BULASIK_Z + SOL_DUVAR_BULASIK_HZ - 0.2],
+      face: arkada ? -Math.PI / 2 : Math.PI / 2,
+    },
+  };
+}
+
+const PLACE_LEFT_WALL: ServicePlace = solDuvarYeri(SOL_DUVAR_PAYI, false);
+
+// ---- T8b ÖLÇÜM KOLU — sol duvar payı (yalnız ölçüm; null = bugünkü yerleşim) ----
+/**
+ * K10'un kolları yerleşimi değiştiriyor ve varyant kapısına tabi (D-084): kalıcı yazılmadan ölçülür.
+ * `izdihamKolu` deseni — kapalıyken bedel tek null okumasıdır. Ayarlanınca nav önbellekleri düşer.
+ */
+export interface SolDuvarKolu { pay: number; arkada: boolean }
+let solDuvarKolu: { k: SolDuvarKolu; yer: ServicePlace } | null = null;
+export function solDuvarKoluAyarla(k: SolDuvarKolu | null): void {
+  solDuvarKolu = k ? { k, yer: solDuvarYeri(k.pay, k.arkada) } : null;
+  navCache = null;
+  playerNavCache = null;
+}
+export const solDuvarKoluOku = (): SolDuvarKolu | null => solDuvarKolu?.k ?? null;
 
 /**
  * ADIM 3+ — ARKA BANDIN servis bloğu. Tezgâh bandın ÖNÜNDE, salona bakar; arkasında çaycının
@@ -605,7 +634,8 @@ export const waiterStationOpen = (areasOpen: number): boolean => serviceMoved(ar
 
 /** Servis kümesinin O ANKİ yeri. Kat tek servisten döndüğü için index almaz (world.THE_SERVICE). */
 export function servicePlace(areasOpen: number): ServicePlace {
-  return serviceMoved(areasOpen) ? PLACE_BACK_BAND : PLACE_LEFT_WALL;
+  if (serviceMoved(areasOpen)) return PLACE_BACK_BAND;
+  return solDuvarKolu ? solDuvarKolu.yer : PLACE_LEFT_WALL;
 }
 
 /** Servisin durduğu alan — o alan AÇIK olmak zorunda (yerleşim değişmezi; testli). */

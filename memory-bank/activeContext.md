@@ -5,25 +5,31 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-23 — T8a KAPANDI · D-142; sıradaki T8b)
+## ŞU AN (2026-09-23 — T8b AÇIK · adım 2 ÖLÇ)
 
 ```
-T8a SONUÇ       : 2. garson Salon 1 sonunda ₺800 · garson 2'li tepsi (tavan 4) · tepsi T1 ₺30 ·
-                  4. masa ₺250 · seviye tabanı 90 · garson tepsi-3 görevi · seviye ₺ (Sv 5'ten, son
-                  60 sn'nin kazancı) + seviye ÖDÜL EKRANI · yükseltme noktası yalnız kendi görevinde ·
-                  kayıt v34 · 2. garson pad'i (−10,5 · 9,75)
-BEDEL           : Kat 1 6,05 → 5,58 sa (−%7,7), eşikler temiz; K5b (2. salonu geciktir) SEÇİLMEDİ
-YAN BULGU       : sim D-124'ü oynamıyordu (T8a'dan beri taban tek hedef) · bardak havuzu bağlamıyor ·
-                  T6 aracının havuzu 22'ydi (42 değil) · D1'in g1 kolu artık iyileştiriyor (3 → 2)
-KARELER         : docs/gorsel/ss/t8a-{garson2-pad,seviye-odul}.png
+SORU            : Tezgâh arkası — adam tezgâhın ARKASINDA dursun (K10, en küçük yeterli duvar payı),
+                  bulaşık tezgâhta birikip süreyle yıkansın (K9), tost noktası ekranda okunsun (G-85)
+                  ve tost makinesi gerçek asset olsun (G-90).
+ÖLÇÜLECEK KOLLAR: K10 — sol duvar payı 0,30 (bugün) · 0,60 · 0,75 · 0,90 · 1,05 br
+                  (nav şeridi · ön koridor · pad/nokta çakışması · oyuncu arkaya girebiliyor mu ·
+                  bulaşıkçı arkada → servis/dk)
+                  K9  — yıkama anlık (bugün) · kuyruk + 0,5 / 1,0 / 2,0 sn/kap (servis/dk · temiz=0 payı ·
+                  kuyruk boyu)
+                  G-85 — A aynı tezgâh okunur tost bölgesi · B ayrı tost modülü, aynı merdiven
+                  (ikisi denge dışı; C "ayrı pad + ayrı merdiven" denge işi → seçilirse kendi turu)
+                  G-90 — aday kartı: bugünkü çizim · Kenney toaster · KayKit tava/ocak · KayKit ayrı
+                  modül · yeniden çizilmiş Türk tost makinesi (aynı kadraj)
+SAYILAR         : (adım 2 — docs/tezgah-raporu-t8b.md §Bulgular)
+KARAR           : (adım 3 — D-143)
+UYGULAMA        : (adım 4)
+BEKÇİ           : (adım 4)
 ```
 
 ## ⏭️ SIRADAKİ ADIM
 
-1. **T8b** turunu aç: tezgâh arkası — G-85 tost noktası (ayrı obje mi, aynı merdiven mi) + G-90 tost
-   asset'i (KayKit önce; yoksa ikinci paket TEKLİF edilir) + K9 bulaşık kuyruğu + K10 tezgâhın duvar
-   payı (kullanıcı: *"duvardan çıkmasın"*, en küçük yeterli açıklık). Görsel çatalda adayları aynı
-   kadrajda göster (`feedback_show_dont_ask`).
+1. Ölçüm dikişleri (layout: sol duvar payı · tick: bulaşık kolu, ikisi varsayılanda kapalı) +
+   `tools/olcum-tezgah-t8b.ts` + tost aday kartı → rapor → commit #1 → karar paketi.
 
 ## AÇIK KALEMLER
 - **g1 kolu (garson merdiveni ucuzlatma) D-142 sonrası ölçütü iyileştiriyor** — elenme gerekçesi düştü;

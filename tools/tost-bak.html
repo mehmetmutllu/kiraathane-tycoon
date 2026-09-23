@@ -1,0 +1,218 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>tost-bak</title>
+<style>
+  body { margin: 0; background: #eceff1; }
+  canvas { display: block; }
+</style>
+<script type="module">
+  // tost-bak.html — T8b G-90: TOST NOKTASI ADAYLARI AYNI KADRAJDA (`feedback_show_dont_ask`).
+  //
+  // Her hücre aynı tezgâh parçası (KayKit `kitchencounter_straight_A`, oyundaki servis modülünün
+  // ölçüsüne indirildi: 1,6 × 0,9 × 0,8) + aynı ölçek işaretleri (çay bardağı + semaver). Değişen
+  // TEK şey tost noktası. Kamera oyunun yukarıdan-çapraz açısına yakın.
+  //
+  // Kenney Furniture Kit modelleri `indirilen/` altından okunur (commit'lenmez; seçilirse manifeste
+  // girer). Kullanım: node tools/tost-bak.mjs [çıktı.png]
+  import * as THREE from 'three';
+  import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.setClearColor('#eceff1');
+  renderer.shadowMap.enabled = true;
+  document.body.appendChild(renderer.domElement);
+  const scene = new THREE.Scene();
+  scene.add(new THREE.HemisphereLight('#ffffff', '#8d99a6', 2.0));
+  const dir = new THREE.DirectionalLight('#fff6e0', 1.8);
+  dir.position.set(4, 9, 6);
+  dir.castShadow = true;
+  dir.shadow.mapSize.set(2048, 2048);
+  Object.assign(dir.shadow.camera, { left: -12, right: 12, top: 8, bottom: -8 });
+  scene.add(dir);
+
+  const loader = new GLTFLoader();
+  const kay = (ad) => loader.loadAsync(`/assets/models/kaykit-restaurant-bits/${ad}.gltf`).then((g) => g.scene);
+  const ken = (ad) => loader.loadAsync(`/assets/models/kenney-food-kit/${ad}.glb`).then((g) => g.scene).catch(() => loader.loadAsync(`/indirilen/kenney-food/${ad}.glb`).then((g) => g.scene));
+  const mob = (ad) => loader.loadAsync(`/indirilen/kenney-furniture/${ad}.glb`).then((g) => g.scene);
+  const golge = (o) => { o.traverse((m) => { if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } }); return o; };
+
+  /** Modeli verilen AYAK İZİ genişliğine (x) ölçekle, tabanı y'ye otur, merkezi (x,z)'ye koy. */
+  function otur(o, { w, x = 0, y = 0, z = 0, ry = 0 }) {
+    o.rotation.y = ry;
+    const k0 = new THREE.Box3().setFromObject(o);
+    const b0 = k0.getSize(new THREE.Vector3());
+    const k = w / Math.max(b0.x, b0.z);
+    o.scale.multiplyScalar(k);
+    const k1 = new THREE.Box3().setFromObject(o);
+    const c = k1.getCenter(new THREE.Vector3());
+    o.position.set(x - c.x, y - k1.min.y, z - c.z);
+    return golge(o);
+  }
+  const mat = (color, m = 0, r = 0.6) => new THREE.MeshStandardMaterial({ color, metalness: m, roughness: r });
+  const kutu = (w, h, d, m, p) => { const x = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); x.position.set(...p); x.castShadow = true; return x; };
+  const silindir = (r0, r1, h, m, p, s = 10) => { const x = new THREE.Mesh(new THREE.CylinderGeometry(r0, r1, h, s), m); x.position.set(...p); x.castShadow = true; return x; };
+
+  const TEZGAH_Y = 0.9;
+  const TOST = '#d9913b', TOST_KOYU = '#a8632a';
+
+  /** Bugünkü hazır tost dilimi (ServicePoint.tsx). */
+  function dilim(x, y, z) {
+    const g = new THREE.Group();
+    g.add(kutu(0.18, 0.06, 0.14, mat(TOST), [x, y + 0.03, z]));
+    g.add(kutu(0.18, 0.012, 0.03, mat(TOST_KOYU), [x, y + 0.066, z]));
+    return g;
+  }
+
+  /** Türk tost makinesi — yeniden çizim: paslanmaz gövde, nervürlü alt plaka, 35° açık kapak, kalın siyah kol. */
+  function turkTostMakinesi(ikili = false) {
+    const g = new THREE.Group();
+    const celik = mat('#b8c2c8', 0.55, 0.35);
+    const koyu = mat('#3b3f44', 0.3, 0.6);
+    const plaka = mat('#2d2f33', 0.5, 0.45);
+    const genis = ikili ? 0.9 : 0.56;
+    g.add(kutu(genis, 0.1, 0.46, celik, [0, 0.05, 0]));
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) g.add(silindir(0.02, 0.02, 0.03, koyu, [sx * (genis / 2 - 0.05), -0.015, sz * 0.18], 6));
+    g.add(kutu(genis - 0.06, 0.02, 0.38, plaka, [0, 0.11, 0.01]));
+    for (let i = -3; i <= 3; i++) g.add(kutu(genis - 0.1, 0.012, 0.018, koyu, [0, 0.125, i * 0.05]));
+    const kapak = new THREE.Group();
+    kapak.position.set(0, 0.12, -0.2);
+    kapak.rotation.x = -0.62;
+    kapak.add(kutu(genis, 0.07, 0.42, celik, [0, 0.035, 0.21]));
+    kapak.add(kutu(genis - 0.06, 0.012, 0.36, plaka, [0, -0.005, 0.21]));
+    kapak.add(kutu(genis * 0.7, 0.035, 0.05, koyu, [0, 0.03, 0.46]));
+    for (const sx of [-1, 1]) kapak.add(kutu(0.035, 0.035, 0.08, koyu, [sx * genis * 0.33, 0.03, 0.43]));
+    g.add(kapak);
+    g.add(silindir(0.018, 0.018, 0.012, mat('#e53935', 0, 0.3), [genis / 2 - 0.07, 0.07, 0.235], 8));
+    g.traverse((m) => { if (m.isMesh) m.castShadow = true; });
+    return g;
+  }
+
+  /** Bugünkü çizim (ServicePoint.tsx L5): koyu sac + tek pres kapağı. */
+  function bugunkuSac() {
+    const g = new THREE.Group();
+    g.add(kutu(0.9, 0.06, 0.4, mat('#4a4a4a', 0.5, 0.4), [0, 0.03, 0]));
+    const p = new THREE.Group();
+    p.position.set(0, 0.1, -0.16);
+    p.rotation.x = 0.5;
+    p.add(kutu(0.34, 0.05, 0.3, mat('#7a7a7a', 0.4, 0.5), [0, 0, 0]));
+    p.add(silindir(0.025, 0.025, 0.1, mat('#2b2b2b'), [0, 0.06, 0.12], 8));
+    g.add(p);
+    return g;
+  }
+
+  /** Ölçek işaretleri: semaver (sağ arka) + iki çay bardağı (ön sağ) — her hücrede aynı. */
+  function olcekIsaretleri(hx) {
+    const g = new THREE.Group();
+    const pirinc = mat('#c9a13b', 0.6, 0.35);
+    g.add(silindir(0.17, 0.2, 0.46, mat('#c0392b', 0.5, 0.35), [hx + 0.48, TEZGAH_Y + 0.23, -0.14], 14));
+    g.add(silindir(0.06, 0.1, 0.06, pirinc, [hx + 0.48, TEZGAH_Y + 0.49, -0.14]));
+    for (const i of [0, 1]) g.add(silindir(0.06, 0.05, 0.16, mat('#c0392b'), [hx + 0.35 + i * 0.2, TEZGAH_Y + 0.08, 0.26], 8));
+    return g;
+  }
+
+  const hucreler = [];
+  const ADIM = 2.6;
+  const SUTUN = 3;
+  const tezgah = await kay('kitchencounter_straight_A');
+  const sandvic = await ken('sandwich').catch(() => null);
+
+  async function hucre(i, ad, alt, kur) {
+    const cx = (i % SUTUN) * ADIM;
+    const cz = Math.floor(i / SUTUN) * 3.1;
+    const grup = new THREE.Group();
+    grup.position.set(cx, 0, cz);
+    const t = tezgah.clone(true);
+    otur(t, { w: 1.6, y: 0 });
+    const tb = new THREE.Box3().setFromObject(t).getSize(new THREE.Vector3());
+    t.scale.y *= TEZGAH_Y / tb.y;
+    t.scale.z *= 0.8 / new THREE.Box3().setFromObject(t).getSize(new THREE.Vector3()).z;
+    const tk = new THREE.Box3().setFromObject(t);
+    t.position.y -= tk.min.y;
+    t.position.z -= (tk.min.z + tk.max.z) / 2;
+    grup.add(t);
+    grup.add(olcekIsaretleri(0));
+    await kur(grup);
+    scene.add(grup);
+    hucreler.push({ ad, alt, cx, cz });
+  }
+
+  // A — BUGÜN
+  await hucre(0, 'A · bugün', 'elle çizili sac + pres', async (g) => {
+    const s = bugunkuSac();
+    s.position.set(-0.35, TEZGAH_Y, -0.12);
+    g.add(s);
+    for (const i of [0, 1, 2]) g.add(dilim(-0.65 + i * 0.3, TEZGAH_Y + 0.06, -0.02));
+  });
+  // B — Kenney Furniture toaster
+  await hucre(1, 'B · Kenney toaster', 'Furniture Kit (CC0) — ekmek kızartma', async (g) => {
+    g.add(otur(await mob('toaster'), { w: 0.42, x: -0.4, y: TEZGAH_Y, z: -0.1 }));
+    if (sandvic) g.add(otur(sandvic.clone(true), { w: 0.26, x: -0.05, y: TEZGAH_Y, z: 0.18 }));
+  });
+  // C — KayKit ocak + döküm tava + Kenney tost
+  await hucre(2, 'C · KayKit ocak + tava', 'stove_single_countertop + pan_B', async (g) => {
+    g.add(otur(await kay('stove_single_countertop'), { w: 0.62, x: -0.4, y: TEZGAH_Y, z: -0.05 }));
+    g.add(otur(await kay('pan_B'), { w: 0.5, x: -0.4, y: TEZGAH_Y + 0.1, z: -0.05, ry: Math.PI }));
+    if (sandvic) g.add(otur(sandvic.clone(true), { w: 0.2, x: -0.4, y: TEZGAH_Y + 0.13, z: -0.05 }));
+  });
+  // D — yeniden çizim, tekli
+  await hucre(3, 'D · Türk tost makinesi', 'yeniden çizim (tekli)', async (g) => {
+    const m = turkTostMakinesi(false);
+    m.position.set(-0.4, TEZGAH_Y + 0.015, -0.08);
+    g.add(m);
+    for (const i of [0, 1]) g.add(dilim(-0.2 + i * 0.22, TEZGAH_Y, 0.28));
+  });
+  // E — yeniden çizim, ikili (L6'nın ikinci presi tek gövdede)
+  await hucre(4, 'E · Türk tost makinesi (ikili)', 'yeniden çizim — L6 geniş plaka', async (g) => {
+    const m = turkTostMakinesi(true);
+    m.position.set(-0.3, TEZGAH_Y + 0.015, -0.08);
+    g.add(m);
+    for (const i of [0, 1]) g.add(dilim(-0.5 + i * 0.22, TEZGAH_Y, 0.3));
+  });
+  // F — AYRI TOST MODÜLÜ (G-85 B): ikinci tezgâh parçası, makine + tahta + peynir kasası
+  await hucre(5, 'F · ayrı tost modülü (G-85 B)', 'yan tezgâh: makine + tahta + kasa', async (g) => {
+    const yan = tezgah.clone(true);
+    otur(yan, { w: 1.1, x: -1.4 });
+    const yb = new THREE.Box3().setFromObject(yan).getSize(new THREE.Vector3());
+    yan.scale.y *= TEZGAH_Y / yb.y;
+    yan.scale.z *= 0.8 / new THREE.Box3().setFromObject(yan).getSize(new THREE.Vector3()).z;
+    const yk = new THREE.Box3().setFromObject(yan);
+    yan.position.y -= yk.min.y;
+    yan.position.z -= (yk.min.z + yk.max.z) / 2;
+    g.add(yan);
+    const m = turkTostMakinesi(false);
+    m.position.set(-1.45, TEZGAH_Y + 0.015, -0.12);
+    g.add(m);
+    g.add(otur(await kay('cuttingboard'), { w: 0.3, x: -1.08, y: TEZGAH_Y, z: 0.26 }));
+    g.add(otur(await kay('crate_cheese'), { w: 0.22, x: -1.78, y: TEZGAH_Y, z: 0.27 }));
+    if (sandvic) g.add(otur(sandvic.clone(true), { w: 0.18, x: -1.08, y: TEZGAH_Y + 0.03, z: 0.26 }));
+    g.position.x += 0.7;
+  });
+
+  const zemin = new THREE.Mesh(new THREE.PlaneGeometry(40, 20), new THREE.MeshStandardMaterial({ color: '#e3e7ea' }));
+  zemin.rotation.x = -Math.PI / 2;
+  zemin.receiveShadow = true;
+  zemin.position.set(ADIM, 0, 1);
+  scene.add(zemin);
+
+  const merkez = new THREE.Vector3(ADIM * (SUTUN - 1) / 2, 0.7, 1.55);
+  const cam = new THREE.PerspectiveCamera(30, innerWidth / innerHeight, 0.1, 200);
+  cam.position.set(merkez.x, merkez.y + 8.6, merkez.z + 7.4);
+  cam.lookAt(merkez);
+  renderer.render(scene, cam);
+
+  for (const h of hucreler) {
+    const p = new THREE.Vector3(h.cx, 0, h.cz + 0.75).project(cam);
+    const el = document.createElement('div');
+    el.style.cssText = 'position:fixed;transform:translate(-50%,0);font:13px/1.35 system-ui;text-align:center;color:#263238;background:#ffffffdd;padding:3px 8px;border-radius:4px;white-space:nowrap';
+    el.innerHTML = `<b>${h.ad}</b><br>${h.alt}`;
+    el.style.left = `${((p.x + 1) / 2) * innerWidth}px`;
+    el.style.top = `${((-p.y + 1) / 2) * innerHeight + 4}px`;
+    document.body.appendChild(el);
+  }
+  const ust = document.createElement('div');
+  ust.style.cssText = 'position:fixed;left:0;top:0;font:12px system-ui;background:#fff;padding:6px 10px;color:#263238';
+  ust.textContent = 'T8b · G-90 tost noktası adayları — aynı tezgâh parçası, aynı ölçek işaretleri (semaver + iki çay bardağı), aynı kamera';
+  document.body.appendChild(ust);
+  document.title = 'hazir';
+</script>
