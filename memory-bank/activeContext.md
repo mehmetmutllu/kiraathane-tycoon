@@ -5,26 +5,32 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-23 — T7 KAPANDI · D-141; sıradaki T8)
+## ŞU AN (2026-09-23 — T8a AÇIK · adım 2 ÖLÇ)
+
+T8 ikiye bölündü (`feedback_task_splitting`): **T8a = sayı** (G-86 zincir · T3 K1-K8 · K11 · bardak
+havuzu) · **T8b = mekân/görsel** (G-85 tost noktası · G-90 tost asset'i · K9 bulaşık kuyruğu · K10
+tezgâh duvar payı — üçü de tezgâh arkasının aynı ölçü dondurma işi).
 
 ```
-T7 SONUÇ        : banket masayla ortadan dışa büyür (B4) · ada TEK kademe (dolunca en düşük masa
-                  seviyesi: çıplak ahşap → keten → bordo+sırt → yastık → pirinç biye+kapitone) ·
-                  ada başına tek mesh · Salon 3 pad'i 0/1,2 (G-82) · WC kabini elle çizildi (düz
-                  laminat, yerden açık, ray) · prototype-bits söküldü
-BEDEL           : B4 Kat 1'i −%4,3 kısalttı, aşan sayıları + D-095 bandı aynı (rapor Bulgu 7)
-KARELER         : docs/gorsel/ss/t7-son-*.png
+SORU            : zincirin hangi halkası yerinde değil (G-86) ve T3'ün fiyat/doz kolları yürürlükteki
+                  oyunda (HRE + D-124 tek hedef) tempoya ne ödüyor? Bardak havuzu bağlıyor mu?
+ÖLÇÜLECEK KOLLAR: K3a/b/c 2. garson yeri · D1/D2 bulaşıkçı yeri · W3 garson tepsi-3 hatta · K5a/b
+                  2. salonu geciktir · K1a/b tepsi T1 · K2a/b garson tepsi tabanı · K4a/b 4. masa ·
+                  K6T/K6B masa sırası · K7a/b seviye eğrisi · K8a/b/c seviye ₺ · K11 dürtüsel oyuncu ·
+                  B0-B2/Y1-Y2 havuz × yıkama (oyunun tick'i)
+SAYILAR         : docs/zincir-raporu-t8a.md §Bulgular (olcum-t8a.txt · olcum-bardak-t8.txt)
+KARAR           : (adım 3)
+UYGULAMA        : (adım 4)
+BEKÇİ           : (adım 4)
 ```
 
 ## ⏭️ SIRADAKİ ADIM
 
-1. **T8** turunu aç (aşağıdaki sıra 3): önce kullanıcıya T7 karelerini göster, "genel çirkin çizim"
-   taramasında bu turda yalnız banket + WC kabini değişti — başka rahatsız eden var mı sor.
+1. Tam koşular → rapor §Bulgular → commit #1 (karar bölümü boş) → TEK karar paketi.
 
 ## AÇIK KALEMLER
 - **C kolu ölçülmedi:** "tavan + çıkış payı". Yeni taban S1; S1+S4 servisi −%2,1 kısıyor (rapor §Karar).
 - **KORUNUM çözünürlük sınırında** (rapor Bulgu 6) — S1 artık taban, soru kapandı sayılabilir.
-- **Bardak havuzu masa sayısıyla ölçeklenmiyor** (20 masaya 42) → **T8**.
 - ~~T5 araçlarının `dunyaKur`u `stationLevels` yazmıyor~~ → 2026-09-23 düzeldi (ocak tavanda; eski çıktılar seviye-0 dünyadan).
 - **G-82…G-91**: `docs/geribildirim-oyun-testi-2026-09-21.md`. G-89 yayından hemen önce.
 - **F3 (AdMob) kararı HÂLÂ bekliyor** — C1′ önerildi (`docs/reklam-raporu-f3.md`). Reklam/kayıt

@@ -106,6 +106,24 @@ export const kolAyarla = (k: Partial<ModelKollari>): void => { M = { ...KOL_KAPA
 export let m1: boolean = false;
 export const m1Ayarla = (v: boolean): void => { m1 = v; };
 
+/* ── T8a KANCALARI (varyant katmanı; `economy.config.ts` DEĞİŞMEZ) ─────────────────────
+ * İkisi de varsayılanda KAPALI → taban çıktısı birebir korunur (`tools/olcum-t8a.ts` damgalar).
+ *
+ * `garsonTepsiTabani` (K2 · G-72): garson tepsisi bugün `1 + kademe`. Kol tabanı 2 yapar.
+ * Sim bu sayıyı config'ten değil kendi sabitinden okuyordu; kanca o sabiti açığa çıkarır.
+ *
+ * `durtusel` (K11 · G-61): sim'in oyuncusu görev hattını KUSURSUZ takip ediyor — aktif görevin
+ * kalemi için biriktirir, hiçbir yan kalemi almaz. Oysa oyunda görevden bağımsız yükseltme
+ * noktaları CANLI (bugünkü kural) ve oyuncu parası yeten ucuz noktaya basabiliyor. "Yükseltme
+ * noktası yalnız kendi görevi aktifken canlı" kapısının DEĞERİ tam bu iki oyuncunun farkıdır:
+ * kapı açıkken dürtüsel oyuncu = sadık oyuncu (taban). Kol, kapısız dünyanın en kötü ucunu
+ * ölçer: görev hattı sürerken parası yeten en ucuz yan kalemi (masa seviyesi · karakter ·
+ * garson) HER SEFERİNDE alır. */
+export let garsonTepsiTabani = 1;
+export const garsonTepsiTabaniAyarla = (v: number): void => { garsonTepsiTabani = v; };
+export let durtusel = false;
+export const durtuselAyarla = (v: boolean): void => { durtusel = v; };
+
 /** Kol adı → bayraklar. `hepsi` kolların birbirini gizleyip gizlemediğini gösterir. */
 export const KOLLAR: Record<string, Partial<ModelKollari>> = {
   /** C5 ÖNCESİ model — ölçüm turunun tabanı. Silinmedi: bekçi "yeni model eskisinden gerçekten
@@ -583,7 +601,7 @@ function carryRateOf(s: State, oyuncusuz = false): number {
   // D6 r6 kolu: İtibar taşıma kapasitesini büyütürse buraya biner (kanca kapalıyken 1).
   // D7 e6: Usta'nın PERSONEL kolu da aynı kanala biner (garson · bulaşıkçı · karakter statları) —
   // darboğaz dağılımı kelepçenin zamanın %91'inde burada olduğunu söylüyor.
-  const ham = (player + waiters * carrierRate(1 + s.waiterTray, wSpeed, dist, ara))
+  const ham = (player + waiters * carrierRate(garsonTepsiTabani + s.waiterTray, wSpeed, dist, ara))
     * itibarSimdiki.tasima * ustaSimdiki.tasima;
   return M.k1a ? ham * carryRealization(w.tables.length) : ham;
 }
@@ -883,6 +901,32 @@ function currentPad(s: State) {
   return C.pads.find((p) => !p.optional && !s.padsDone.includes(p.id) && requiresMet(p.requires, g)) ?? null;
 }
 
+/** K11 dürtüsel oyuncu: parası yeten EN UCUZ yan kalemi alır (bkz. `durtusel`). Aldıysa true. */
+function durtuselAl(s: State, d: Dunya): boolean {
+  const adaylar: [number, () => void][] = [];
+  if (M.k2) {
+    // Masa noktası sıra kapısına (D-124) uyar: oyunda aynı anda tek masa noktası canlı.
+    const m = enUcuzMasa(s, d);
+    if (m) adaylar.push([m.cost, () => { s.tableLevels[m.i] += 1; s.tableLevel = tlMin(s, d); }]);
+  }
+  for (const st of ['tray', 'magnet', 'speed'] as const) {
+    const c = charNextCost(st, s.char[st]);
+    if (c != null) adaylar.push([c, () => { s.char[st] += 1; }]);
+  }
+  if ((d.services[THE_SERVICE]?.waiters ?? 0) > 0) {
+    const wt = waiterTrayNextCost(s.waiterTray);
+    if (wt != null) adaylar.push([wt, () => { s.waiterTray += 1; }]);
+    const ws = waiterSpeedNextCost(s.waiterSpeed);
+    if (ws != null) adaylar.push([ws, () => { s.waiterSpeed += 1; }]);
+  }
+  adaylar.sort((a, b) => a[0] - b[0]);
+  const en = adaylar[0];
+  if (!en || s.wallet < en[0]) return false;
+  s.wallet -= en[0];
+  en[1]();
+  return true;
+}
+
 /**
  * OYUNCU DAVRANIŞI — GÖREV HATTI GÜDÜMLÜ (B2'de düzeltildi).
  *
@@ -896,6 +940,8 @@ function trySpend(s: State): void {
   const d = deriveWorld(s.padsDone);
   const q = s.questIdx < C.quests.length ? C.quests[s.questIdx] : null;
   const t = q?.target;
+
+  if (durtusel && q && durtuselAl(s, d)) return;
 
   if (t) {
     switch (t.type) {
